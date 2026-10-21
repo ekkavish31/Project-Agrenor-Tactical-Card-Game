@@ -59,7 +59,7 @@ function point(x,y,h){let [a,b]=rc(x,y);return {x:camera.x+(a-b)*camera.w/2,y:ca
 function ground(u){u={...u,...C.center(u)};let x=Math.max(0,Math.min((state.map.width||state.map.size)-1,u.x)),y=Math.max(0,Math.min((state.map.height||state.map.size)-1,u.y));return point(x,y,u.h??(slopeOn()?TacticsSurface.height(state.map,x,y,(state.weatherVersion||0)):C.at(state.map,Math.floor(x),Math.floor(y)).h))}
 function size(){let r=canvas.getBoundingClientRect(),dpr=Math.min(window.BattlePolish?.quality==='low'?1:2,window.devicePixelRatio||1);let cw=Math.round(r.width*dpr),ch=Math.round(r.height*dpr);if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch}ctx.setTransform(dpr,0,0,dpr,0,0);/* v36: only reallocate on a real resize — camera glides call size() every frame and must not blank the canvas */let w=Math.max(100,r.width),h=Math.max(100,r.height),S=state.map.size,tw=Math.min((w-35)/(S+1),(h-65)/(S*.5+2.6))*zoom;camera={w:tw,h:tw*.5,lift:tw*.25,x:w/2+pan.x,y:(h-S*tw*.5)/2+tw*1.15+pan.y}}
 function polygon(points,fill,stroke,width=1){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}}
-let flatPlane=false;function slopeOn(){return (state.map.authoredTerrain||window.BattlePolish?.surface==='slope')&&window.TacticsSurface&&!flatPlane}
+let flatPlane=false;function slopeOn(){return ((state.map.authoredTerrain||state.map.hillArt)||window.BattlePolish?.surface==='slope')&&window.TacticsSurface&&!flatPlane}
 function slopeCorners(t){if(!slopeOn())return null;let c=TacticsSurface.corners(state.map,t,(state.weatherVersion||0));return c.every(v=>v===t.h)?null:c}
 function diamond(t,fill,stroke,width=1){let sc=slopeCorners(t);if(sc){polygon([[-1,-1,0],[1,-1,1],[1,1,2],[-1,1,3]].map(([sx,sy,i])=>point(t.x+sx*.5,t.y+sy*.5,sc[i])),fill,stroke,width);return}let p=point(t.x,t.y,t.h),w=camera.w/2,h=camera.h/2;polygon([{x:p.x,y:p.y-h},{x:p.x+w,y:p.y},{x:p.x,y:p.y+h},{x:p.x-w,y:p.y}],fill,stroke,width)}
 function shadow(p,r){let l=C.lightInfo(state),a=viewAngle*Math.PI/2,dx=l.sunX*Math.cos(a)-l.sunY*Math.sin(a),dy=(l.sunX*Math.sin(a)+l.sunY*Math.cos(a))*.5;ctx.save();ctx.globalAlpha=state.weather==='rain'||state.weather==='mist'?.55:1;ctx.fillStyle='#24212c36';ctx.beginPath();ctx.ellipse(p.x+dx*r*.45,p.y+dy*r*.4,r*(1+l.dark*.8),r*.26,Math.atan2(dy,dx)*.25,0,Math.PI*2);ctx.fill();ctx.restore()}
@@ -72,19 +72,7 @@ function selRange(){let c=selCard();return c?C.cardInfo(state,c.id)?.range||0:0}
 function V(u){let v=vis[u.id]||(vis[u.id]={x:u.x,y:u.y,pose:'idle',walking:false});v.footprint=u.footprint;return v}
 
 // ---------- tiles / props ----------
-function tile(t,topOnly=false){if(t.cliff){cliffTile(t);return}let scR=!topOnly?slopeCorners(t):null;if(scR)topOnly='ramp';let p=point(t.x,t.y,t.h),w=camera.w/2,h=camera.h/2,depth=(t.h+BASE_DEPTH)*camera.lift;
- let SD=state.map.theme==='mine'?TacticsScenery.TILE.mine.side:null;if(!topOnly)sideFace(t,true,[{x:p.x-w,y:p.y},{x:p.x,y:p.y+h},{x:p.x,y:p.y+h+depth},{x:p.x-w,y:p.y+depth}],SD?SD[0]:state.map.theme==='forest'?'#8d7954':'#8c8879',SD?SD[1]:'#706347');if(!topOnly)sideFace(t,false,[{x:p.x,y:p.y+h},{x:p.x+w,y:p.y},{x:p.x+w,y:p.y+depth},{x:p.x,y:p.y+h+depth}],SD?SD[2]:state.map.theme==='forest'?'#b49b70':'#aba493',SD?SD[3]:'#7d6e52');
- if(scR){let Q=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([sx,sy],i)=>point(t.x+sx*.5,t.y+sy*.5,scR[i])),F=forestSide=>0,fo=state.map.theme==='forest',SDm=state.map.theme==='mine'?TacticsScenery.TILE.mine.side:null,by=y=>y+depth;
-  let open=(dx,dy)=>{let n=C.at(state.map,t.x+dx,t.y+dy);return !n||n.cliff||!TacticsSurface.eligible(n)||Math.abs(n.h-t.h)>1};
-  if(open(0,1))sideFace(t,true,[Q[3],Q[2],{x:Q[2].x,y:p.y+h+depth},{x:Q[3].x,y:p.y+depth}],SDm?SDm[0]:fo?'#8d7954':'#8c8879',SDm?SDm[1]:'#706347');
-  if(open(1,0))sideFace(t,false,[Q[2],Q[1],{x:Q[1].x,y:p.y+depth},{x:Q[2].x,y:p.y+h+depth}],SDm?SDm[2]:fo?'#b49b70':'#aba493',SDm?SDm[3]:'#7d6e52')}
- let palettes={thinsnow:['#e3eaef','#dde5ec','#e8eef2'],grass:['#93a56a','#a6b77b','#acb982','#99ab74'],path:['#d2bd8d','#d8c69a','#cbb785'],stone:['#b5b09a','#c5bca4','#aaa895'],water:['#82b8b6','#94c6c0'],...(window.TacticsScenery?.PAL||{})},pal=palettes[t.kind]||palettes.stone;diamond(t,pal[Math.floor(t.variation*pal.length)%pal.length],$('tacticsLayer').classList.contains('fullbattle')?'#00000014':'#6a76513b',.8);if(t.stamp==='crag'&&(t.kind==='stairs'||t.kind==='stone'))cragTop(t,p);
- let sc0=slopeCorners(t),dy0=sc0?-(sc0.reduce((a,b)=>a+b,0)/4-t.h)*camera.lift:0;if(dy0){ctx.save();ctx.translate(0,dy0)}
- let painted=window.BattleArt?.terrain(ctx,t,p,camera.w,camera.h,clock,t.kind==='rail'&&(![[1,0],[-1,0]].some(([dx,dy])=>C.at(state.map,t.x+dx,t.y+dy)?.kind==='rail')!==!!(rot%2)));if(t.kind==='thinsnow'&&!painted)thinSnow(t,p,camera.w,camera.h);else if(window.TacticsScenery&&!['grass','path','stone','cave','rail','water','stairs'].includes(t.kind))TacticsScenery.tileDetail(ctx,t,p,camera.w,camera.h,clock);
- if(dy0)ctx.restore();
- if(t.h>0&&!topOnly){ctx.strokeStyle='#6d5b3935';ctx.lineWidth=1;for(let d=1;d<=t.h;d++){let yy=p.y+h+d*camera.lift;ctx.beginPath();ctx.moveTo(p.x-w,p.y+d*camera.lift);ctx.lineTo(p.x,yy);ctx.lineTo(p.x+w,p.y+d*camera.lift);ctx.stroke()}}
- if(t.kind==='rail'&&!painted){let nx=[[1,0],[-1,0]].some(([dx,dy])=>C.at(state.map,t.x+dx,t.y+dy)?.kind==='rail'),q=point(t.x+(nx?1:0),t.y+(nx?0:1),t.h);TacticsScenery.rail(ctx,p,{x:(q.x-p.x)/2,y:(q.y-p.y)/2},camera.w)}else if(t.kind==='path'&&!painted){let q=camera.w*.12;ctx.strokeStyle='#b49a6d77';ctx.beginPath();ctx.moveTo(p.x-q,p.y);ctx.lineTo(p.x+q,p.y+q*.3);ctx.stroke()}else if(t.kind==='grass'&&!painted&&!t.prop){let q=camera.w*.1;ctx.strokeStyle='#5a794a55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x+q,p.y+q*.3);ctx.lineTo(p.x+q*.8,p.y-q*.3);ctx.moveTo(p.x+q,p.y+q*.3);ctx.lineTo(p.x+q*1.3,p.y-q*.1);ctx.stroke()}
- tileOverlay(t)}
+
 function tileOverlay(t){let k=C.key(t.x,t.y),idle=state.phase==='player'&&!locked;
  if(idle&&sel()==='move'&&state.hero.mp>0&&reach.costs.has(k)&&k!==C.key(state.hero.x,state.hero.y)){if(pathPreview?.dest===k)diamond(t,'#ffd45acc','#b77a12',3);else if(pathPreview?.keys.has(k))diamond(t,'#7fe0ffb8','#0f6f98',2.4);else diamond(t,'#3fb4e07a','#1781b8dd',1.8)}
  if(idle&&targetsEnemy()&&attackZone){if(attackZone.cells.has(k))diamond(t,motion&&Math.floor(clock/420)%2?'#ff5a3aa8':'#ff5a3a88','#ff2a0f',3);else if(attackZone.set.has(k))diamond(t,'#e8743c66','#d0581ecc',2);else if(!t.blocked&&C.dist(t,state.hero)<=attackZone.range)diamond(t,'#5a5a5a22','#6a6a6a44',.8)}
@@ -92,26 +80,10 @@ function tileOverlay(t){let k=C.key(t.x,t.y),idle=state.phase==='player'&&!locke
  tileRims(t);if(hover?.x===t.x&&hover?.y===t.y)diamond(t,t.blocked?'#a6423430':'#fff7d638',t.blocked?'#b15b45':'#fff4c2',2)}
 // A tall prop fades when something the player needs to see sits behind it on screen.
 // FFT-style cliff face: a non-walkable tile drawn as one inclined rock surface from the plateau edge down to the ground.
-function cliffCorner(t,sx,sy){let m=state.map,hs=[t.h];for(let [dx,dy] of [[sx,0],[0,sy],[sx,sy]]){let n=C.at(m,t.x+dx,t.y+dy);if(n)hs.push(n.cliff?n.h:n.h)}return Math.min(...hs)}
-function cliffTile(t){let cs=[[-1,-1],[1,-1],[1,1],[-1,1]],H=cs.map(([sx,sy])=>cliffCorner(t,sx,sy)),P=cs.map(([sx,sy],i)=>point(t.x+sx*.5,t.y+sy*.5,H[i]));
- let hx=(H[1]+H[2])/2-(H[0]+H[3])/2,hy=(H[2]+H[3])/2-(H[0]+H[1])/2,alongX=Math.abs(hy)>=Math.abs(hx),rock=window.CliffArt?.pattern(ctx,'cliff'),S=window.CliffArt?.size||256;
- ctx.save();ctx.beginPath();P.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.closePath();
- if(rock){ctx.clip();let O=P[0],U=alongX?{x:P[1].x-P[0].x,y:P[1].y-P[0].y}:{x:P[3].x-P[0].x,y:P[3].y-P[0].y},V=alongX?{x:P[3].x-P[0].x,y:P[3].y-P[0].y}:{x:P[1].x-P[0].x,y:P[1].y-P[0].y};
-  ctx.transform(U.x/S,U.y/S,V.x/S,V.y/S,O.x,O.y);ctx.translate(-(alongX?t.x:t.y)*S,0);ctx.fillStyle=rock;ctx.fillRect(-S*40,-S*4,S*80,S*10);ctx.setTransform(1,0,0,1,0,0)}
- else{ctx.fillStyle='#8c8879';ctx.fill()}
- ctx.restore();
- // light: faces looking toward +y (south-west on screen) are in shade, +x faces catch a little light, faces turned away stay hidden
- let shade=(hy>0.5?.3:0)+(hx>0.5?.1:0)+((hy<-.5||hx<-.5)?.18:0);if(shade){ctx.save();ctx.beginPath();P.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.closePath();ctx.fillStyle='rgba(20,14,6,'+shade+')';ctx.fill();ctx.restore()}
- // grass lip along the high edge(s)
- let hi=Math.max(...H);for(let i=0;i<4;i++){let a=i,b=(i+1)%4;if(H[a]!==hi||H[b]!==hi)continue;let la=P[(a+3)%4],lb=P[(b+1)%4],A=P[a],B=P[b],n=7,lip=.17;ctx.save();ctx.fillStyle='#6f8f45';ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);
-  for(let k=n;k>=0;k--){let u=k/n,x=A.x+(B.x-A.x)*u,y=A.y+(B.y-A.y)*u,f=(k%2?lip:lip*.45),lx=la.x+(lb.x-la.x)*u,ly=la.y+(lb.y-la.y)*u;ctx.lineTo(x+(lx-x)*f,y+(ly-y)*f)}ctx.closePath();ctx.fill();ctx.restore()}
- polygon(P,null,'#00000030',1)}
+
+
 // crag tops: flagstone texture on the summit and on stairs; stairs get step bands along the direction of ascent
-function cragTop(t,p){let pat=window.CliffArt?.pattern(ctx,'top');if(!pat)return;let w=camera.w/2,h=camera.h/2;ctx.save();ctx.beginPath();ctx.moveTo(p.x,p.y-h);ctx.lineTo(p.x+w,p.y);ctx.lineTo(p.x,p.y+h);ctx.lineTo(p.x-w,p.y);ctx.closePath();ctx.clip();
- ctx.translate(p.x-w,p.y-h);ctx.scale(camera.w/CliffArt.size,camera.h/CliffArt.size);ctx.fillStyle=pat;ctx.fillRect(0,0,CliffArt.size,CliffArt.size);ctx.restore();ctx.save();
- if(t.kind==='stairs'){let up=[[1,0],[0,1],[-1,0],[0,-1]].find(([dx,dy])=>{let n=C.at(state.map,t.x+dx,t.y+dy);return n&&n.h>t.h});if(up){ctx.beginPath();ctx.moveTo(p.x,p.y-h);ctx.lineTo(p.x+w,p.y);ctx.lineTo(p.x,p.y+h);ctx.lineTo(p.x-w,p.y);ctx.closePath();ctx.clip();
-  for(let i=0;i<5;i++){let k=-.5+(i+.5)/5,a=point(t.x+up[0]*k-up[1]*.6,t.y+up[1]*k+up[0]*.6,t.h),b=point(t.x+up[0]*k+up[1]*.6,t.y+up[1]*k-up[0]*.6,t.h);ctx.strokeStyle='#2a221599';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.strokeStyle='#fff2cc66';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(a.x,a.y-1.8);ctx.lineTo(b.x,b.y-1.8);ctx.stroke()}}}
- ctx.restore()}
+
 function opacityFor(o,hidden){let target=hidden?.4:1;o._alpha=(o._alpha??1)+(target-(o._alpha??1))*.22;return o._alpha}
 function imagePropRect(t){let p=point(t.x,t.y,t.h),w=camera.w,r=window.TacticsScenery?.PROPS.includes(t.prop)?window.BattleArt?.propRect(t.prop,p,w,clock):null;if(r)return r;let file=t.prop==='pillar'?assetFile('prop-pillar'):A.props[t.prop]?.src,im=file&&bitmap(file);if(!im)return null;let h=w*(t.prop==='tree'?1.9:t.prop==='pillar'?1.75:t.prop==='rock'?.8:.6),ww=h*im.width/im.height,pivot=t.prop==='pillar'?(window.ASSET_MANIFEST.assets.find(a=>a.id==='prop-pillar')?.pivot||[.5,.95]):A.props[t.prop].pivot;return {a:{image:im,entry:{file},sx:0,sy:0,sw:im.naturalWidth,sh:im.naturalHeight},x:p.x-ww*pivot[0],y:p.y-h*pivot[1],w:ww,h,bottom:p.y}}
 function bodyPoints(u){let g=ground(V(u)),scale=u.side==='enemy'?Math.max(.8,C.ENEMY_TYPES[u.kind]?.scale||1):1,h=camera.w*(u.hp>0?1.5*scale:.4),span=Math.max(...C.dimensions(u)),out=[g];for(let dy of [.3,.6,.85])for(let dx of [-.13,0,.13])out.push({x:g.x+camera.w*dx*span,y:g.y-h*dy});return out}
@@ -126,17 +98,8 @@ function prop(t){let p=point(t.x,t.y,t.h),w=camera.w;shadow(p,w*.3);if(window.Ta
 
 // ---------- v38e thin snow — 4 code-drawn variants until ground-thinsnow art exists ----------
 const SNOW_TEX=[];
-function snowTex(k){if(SNOW_TEX[k])return SNOW_TEX[k];let S=128,c=document.createElement('canvas');c.width=c.height=S;let g=c.getContext('2d'),seed=17+k*101,rnd=()=>(seed=(seed*9301+49297)%233280)/233280;
- let base=[['#8c8f8a','#a3a6a0'],['#7f8a84','#97a39b'],['#9aa3a8','#b4bcc0'],['#8a9aa8','#a8bac8']][k];g.fillStyle=base[0];g.fillRect(0,0,S,S);
- for(let i=0;i<40;i++){g.fillStyle=rnd()<.5?base[1]:'#00000014';g.beginPath();g.ellipse(rnd()*S,rnd()*S,rnd()*10+3,rnd()*6+2,rnd()*3,0,Math.PI*2);g.fill()}
- let cover=[.78,.6,.88,.7][k];// how much snow sits on top
- for(let i=0;i<(k===1?55:90);i++){let x=rnd()*S,y=rnd()*S,r=rnd()*(k===1?14:20)+6;if(rnd()>cover+.15)continue;let gr=g.createRadialGradient(x,y,1,x,y,r);gr.addColorStop(0,'#ffffff');gr.addColorStop(.7,'#eef4f8');gr.addColorStop(1,'#eef4f800');g.fillStyle=gr;g.beginPath();g.ellipse(x,y,r*1.3,r,rnd()*3,0,Math.PI*2);g.fill()}
- if(k===2){g.strokeStyle='#c9d6df';g.lineWidth=1.2;for(let i=0;i<9;i++){let y=rnd()*S;g.beginPath();g.moveTo(0,y);for(let x=0;x<=S;x+=16)g.lineTo(x,y+Math.sin(x*.08+i)*3);g.stroke()}}// wind-swept drift lines
- if(k===3){g.fillStyle='#bfe6f855';for(let i=0;i<6;i++){g.beginPath();g.ellipse(rnd()*S,rnd()*S,rnd()*18+8,rnd()*8+4,rnd()*3,0,Math.PI*2);g.fill()}g.strokeStyle='#ffffffaa';g.lineWidth=.8;for(let i=0;i<14;i++){let x=rnd()*S,y=rnd()*S;g.beginPath();g.moveTo(x,y);g.lineTo(x+rnd()*10-5,y+rnd()*10-5);g.stroke()}}// icy crust
- if(k===1){for(let i=0;i<7;i++){let x=rnd()*S,y=rnd()*S,r=rnd()*6+4;g.fillStyle='#6f736e';g.beginPath();g.ellipse(x,y,r*1.4,r,0,0,Math.PI*2);g.fill();g.fillStyle='#ffffffcc';g.beginPath();g.ellipse(x-1,y-r*.4,r*1.1,r*.45,0,0,Math.PI*2);g.fill()}}// pebbles capped with snow
- for(let i=0;i<120;i++){g.fillStyle=rnd()<.5?'#ffffffcc':'#d8e4ec';g.fillRect(rnd()*S,rnd()*S,1.4,1.4)}// sparkle
- return SNOW_TEX[k]=c}
-function thinSnow(t,p,W,H){let k=Math.floor(t.variation*4)%4,im=snowTex(k);ctx.save();ctx.beginPath();ctx.moveTo(p.x,p.y-H/2);ctx.lineTo(p.x+W/2,p.y);ctx.lineTo(p.x,p.y+H/2);ctx.lineTo(p.x-W/2,p.y);ctx.closePath();ctx.clip();ctx.transform(W/2,H/2,-W/2,H/2,p.x,p.y-H/2);let o=(t.x*37+t.y*61)%4;ctx.drawImage(im,0,0,128,128,-o*.05,-o*.03,1.2,1.2);ctx.restore()}
+
+
 // ---------- v37 ground look (FFT-style earth blocks) ----------
 const strataCache={},BASE_DEPTH=2.4;// earth block reaches 1.4 levels below the lowest ground, like FFT map islands
 
@@ -145,14 +108,7 @@ function strata(theme){if(strataCache[theme])return strataCache[theme];let c=doc
  for(let i=0;i<150;i++){let x=rnd()*96,y=rnd()*96,r=rnd()*2.4+.6;g.fillStyle=rnd()<.6?'#00000026':'#ffffff1c';g.beginPath();g.ellipse(x,y,r*1.6,r,0,0,Math.PI*2);g.fill()}
  for(let i=0;i<9;i++){let x=rnd()*96,y=rnd()*96,r=rnd()*5+3;g.fillStyle=mine?'#5e5a5266':'#8a7a6266';g.beginPath();g.ellipse(x,y,r*1.3,r*.8,0,0,Math.PI*2);g.fill();g.strokeStyle='#00000030';g.stroke()}
  return strataCache[theme]=ctx.createPattern(c,'repeat')}
-function sideFace(t,left,pts,fill,stroke){polygon(pts,fill,null);if(window.BattlePolish?.quality==='low'){polygon(pts,null,stroke,1);return}
- ctx.save();ctx.beginPath();pts.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.closePath();ctx.clip();
- let rock=t.stamp==='crag'?window.CliffArt?.pattern(ctx,'cliff'):null;
- if(rock){let A=pts[0],B=pts[1],S=CliffArt.size,vy=camera.lift*2.2/S;ctx.save();ctx.transform((B.x-A.x)/S,(B.y-A.y)/S,0,vy,A.x,A.y);ctx.fillStyle=rock;ctx.fillRect(0,0,S,S*30);ctx.restore();ctx.fillStyle=left?'#00000050':'#00000014';ctx.fill()}
- else{ctx.fillStyle=strata(state.map.theme);ctx.globalAlpha=.9;ctx.fill();ctx.globalAlpha=1}
- let top=Math.min(...pts.map(q=>q.y)),bot=Math.max(...pts.map(q=>q.y)),gr=ctx.createLinearGradient(0,top,0,bot);gr.addColorStop(0,left?'#00000010':'#ffffff10');gr.addColorStop(1,left?'#00000066':'#0000004a');ctx.fillStyle=gr;ctx.fillRect(Math.min(...pts.map(q=>q.x))-2,top-2,Math.max(...pts.map(q=>q.x))-Math.min(...pts.map(q=>q.x))+4,bot-top+4);
- if(['grass','tallgrass','thinsnow','snow'].includes(t.kind)){let a=pts[0],b=pts[1],lip=Math.max(3,camera.lift*.28),snowy=t.kind.includes('snow');ctx.fillStyle=snowy?(left?'#dfe7ee':'#f4f8fb'):left?'#5f7f3c':'#7a9a4a';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);let n=7;for(let i=n;i>=0;i--){let k=i/n,x=a.x+(b.x-a.x)*k,y=a.y+(b.y-a.y)*k+(i%2?lip:lip*.45);ctx.lineTo(x,y)}ctx.closePath();ctx.fill()}
- ctx.restore();polygon(pts,null,stroke,1)}
+
 // lit rims on drops, soft contact shade where a neighbour rises above this tile
 function tileRims(t){if(window.BattlePolish?.quality==='low'||slopeCorners(t))return;for(let [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){let n=C.at(state.map,t.x+dx,t.y+dy),ex=-dy,ey=dx,a=point(t.x+dx*.5+ex*.5,t.y+dy*.5+ey*.5,t.h),b=point(t.x+dx*.5-ex*.5,t.y+dy*.5-ey*.5,t.h),nh=n?n.h:-1;
   if(nh<t.h){ctx.strokeStyle=state.map.theme==='mine'?'#ffffff40':'#fff6c860';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
@@ -162,17 +118,10 @@ function tileRims(t){if(window.BattlePolish?.quality==='low'||slopeCorners(t))re
 // Between two 90° views the ground really turns: each tile top is the exact projection of its rotated square
 // (an affine map of the snapped-view drawing, so painted textures follow), side walls are rebuilt from the
 // rotated corners, and upright things (units, props, decor) stay upright at their rotated positions.
-function planeMatrix(phi,hgt){let W=camera.w/2,H=camera.h/2,c=Math.cos(phi),s=Math.sin(phi),
-  // A = P·R(phi)·P⁻¹ with P=[[W,-W],[H,H]]
-  p11=W,p12=-W,p21=H,p22=H,det=2*W*H,i11=H/det,i12=W/det,i21=-H/det,i22=W/det,
-  r11=p11*c+p12*s,r12=-p11*s+p12*c,r21=p21*c+p22*s,r22=-p21*s+p22*c,
-  a=r11*i11+r12*i21,b=r11*i12+r12*i22,cc=r21*i11+r22*i21,d=r21*i12+r22*i22,
-  cx=camera.x,cy=camera.y+(state.map.size-1)/2*camera.h-hgt*camera.lift;
- return [a,cc,b,d,cx-(a*cx+b*cy),cy-(cc*cx+d*cy)]}
-function tileSides(t){if(t.cliff)return;let SD=state.map.theme==='mine'?TacticsScenery.TILE.mine.side:null,forest=state.map.theme==='forest',L=[SD?SD[0]:forest?'#8d7954':'#8c8879',SD?SD[1]:'#706347'],Rt=[SD?SD[2]:forest?'#b49b70':'#aba493',SD?SD[3]:'#7d6e52'],d0=depth(t.x,t.y);
- for(let [nx,ny] of [[1,0],[0,1],[-1,0],[0,-1]]){if(depth(t.x+nx*.5,t.y+ny*.5)<=d0)continue;let ex=-ny,ey=nx,a={x:t.x+nx*.5+ex*.5,y:t.y+ny*.5+ey*.5},b={x:t.x+nx*.5-ex*.5,y:t.y+ny*.5-ey*.5},A=point(a.x,a.y,t.h),B=point(b.x,b.y,t.h),A2=point(a.x,a.y,1-BASE_DEPTH),B2=point(b.x,b.y,1-BASE_DEPTH),mid=point(t.x+nx*.5,t.y+ny*.5,t.h),cen=point(t.x,t.y,t.h),col=mid.x<cen.x?L:Rt;sideFace(t,col===L,[A,B,B2,A2],col[0],col[1])}}
-function drawTile(t){if(state.map.authoredTerrain&&window.TacticsHillArt){TacticsHillArt.drawTile(ctx,state.map,t,point,depth);tileOverlay(t);return}let n=Math.round(viewAngle),phi=(viewAngle-n)*Math.PI/2;if(Math.abs(phi)<1e-4){tile(t);return}
- tileSides(t);let keep=viewAngle;viewAngle=n;let m=planeMatrix(phi,t.h);ctx.save();ctx.transform(...m);flatPlane=true;try{tile(t,true)}finally{flatPlane=false;ctx.restore();viewAngle=keep}}
+
+
+// v52: one terrain renderer — every map (hand-made chunks and generated) is drawn by TacticsHillArt.
+function drawTile(t){TacticsHillArt.drawTile(ctx,state.map,t,point,depth);tileOverlay(t)}
 
 // ---------- units ----------
 function weapon(def,weaponName,hand,bodyLeft,bodyTop,bodySize,angle,isShield=false){let im=bitmap(def.src);if(!im)return;let height=bodySize*(isShield?.36:def.scale||(weaponName==='hammer'?.57:weaponName==='staff'?.77:.63)),width=height*def.size[0]/def.size[1];ctx.save();ctx.translate(bodyLeft+hand[0]*bodySize,bodyTop+hand[1]*bodySize);ctx.rotate(angle*Math.PI/180);ctx.drawImage(im,-def.pivot[0]*width,-def.pivot[1]*height,width,height);ctx.restore()}
@@ -303,7 +252,7 @@ let frozen=null;function draw(now){requestAnimationFrame(draw);if(frozen!=null)n
  for(let u of state.units)if(C.alive(u)&&!(u.fled)&&hiddenUnit(u))ghost(u);
  drawBattleDetails(now,r);drawFacingPick();drawPrediction();fxDraw(now);if(sh)ctx.restore();if(cinematic)ctx.restore();drawCompass(r)}
 function tween(ms,update){return new Promise(resolve=>{let start=performance.now(),previous=start,duration=motion?ms/(window.GAME_SPEED||1)*(performance.now()<slowUntil?2.8:1):70;function step(now){if(document.hidden||now<stopUntil){start+=now-previous;previous=now;requestAnimationFrame(step);return}previous=now;let t=Math.min(1,(now-start)/duration);update(t);if(t<1)requestAnimationFrame(step);else resolve()}requestAnimationFrame(step)})}
-async function animatePath(u,path,speed=300){let v=V(u);v.hitUntil=0;v.guardUntil=0;for(let i=1;i<path.length;i++){let a=path[i-1],b=path[i],ha=C.at(state.map,a.x,a.y).h,hb=C.at(state.map,b.x,b.y).h;u.facing=C.facing(a,b);v.walking=true;v.seg=[a,b];let lastDust=-1,lastFoot=-1;await tween(speed,t=>{v.x=a.x+(b.x-a.x)*t;v.y=a.y+(b.y-a.y)*t;v.h=state.map.authoredTerrain?TacticsSurface.height(state.map,v.x,v.y):ha+(hb-ha)*t;followStep(u);let foot=Math.floor(t*2);if(foot!==lastFoot&&t<.98){lastFoot=foot;window.BattlePolish?.footstep(C.at(state.map,b.x,b.y)?.kind,(u.traits||[]).includes('heavy'))}if(u.side==='ally'&&motion&&Math.floor(t*3)!==lastDust){lastDust=Math.floor(t*3);effects.push({kind:'dust',to:{x:v.x,y:v.y,h:v.h},start:performance.now(),duration:420})}})}v.walking=false;delete v.h;delete v.seg;v.x=(path.at(-1)||u).x;v.y=(path.at(-1)||u).y;v.pose='idle'}
+async function animatePath(u,path,speed=300){let v=V(u);v.hitUntil=0;v.guardUntil=0;for(let i=1;i<path.length;i++){let a=path[i-1],b=path[i],ha=C.at(state.map,a.x,a.y).h,hb=C.at(state.map,b.x,b.y).h;u.facing=C.facing(a,b);v.walking=true;v.seg=[a,b];let lastDust=-1,lastFoot=-1;await tween(speed,t=>{v.x=a.x+(b.x-a.x)*t;v.y=a.y+(b.y-a.y)*t;v.h=(state.map.authoredTerrain||state.map.hillArt)?TacticsSurface.height(state.map,v.x,v.y):ha+(hb-ha)*t;followStep(u);let foot=Math.floor(t*2);if(foot!==lastFoot&&t<.98){lastFoot=foot;window.BattlePolish?.footstep(C.at(state.map,b.x,b.y)?.kind,(u.traits||[]).includes('heavy'))}if(u.side==='ally'&&motion&&Math.floor(t*3)!==lastDust){lastDust=Math.floor(t*3);effects.push({kind:'dust',to:{x:v.x,y:v.y,h:v.h},start:performance.now(),duration:420})}})}v.walking=false;delete v.h;delete v.seg;v.x=(path.at(-1)||u).x;v.y=(path.at(-1)||u).y;v.pose='idle'}
 
 
 let stopUntil=0,slowUntil=0,slowStart=0,resultShown=false,cinematicUntil=0,introTimer=null,cineTarget=null,deploying=false,deploySel=null,deployTiles=new Set();
@@ -464,7 +413,7 @@ function finishCheck(){if(!state.outcome||resultShown)return;resultShown=true;le
 function showResult(){$('resultOverlay').hidden=false;let win=state.outcome==='win';$('resultEyebrow').textContent=win?'VICTORY':'TRY AGAIN';$('resultTitle').textContent=win?(state.encounter?'สำรวจสำเร็จ!':state.map.mode==='battle'?'ชนะการรบ!':'ฝึกสำเร็จ!'):'หมดแรงแล้ว';$('resultText').textContent='ใช้เวลา '+(state.round||state.turn)+' รอบ · ทำความเสียหาย '+state.stats.damageDealt+' · รับความเสียหาย '+state.stats.damageTaken+' · ล้มศัตรู '+state.stats.kills+(()=>{let B=Object.entries(state.stats.byUnit||{}).filter(([id])=>state.units.find(u=>u.id===id)?.side==='ally').sort((a,b)=>b[1].dealt-a[1].dealt)[0];return B?' · MVP: '+B[1].name+' ('+B[1].dealt+')':''})();B?.finished(state);window.BattlePolish?.victory(win);animateRewards();}
 
 // ---------- input ----------
-function pick(clientX,clientY){let r=canvas.getBoundingClientRect(),x=clientX-r.left,y=clientY-r.top,ordered=state.map.tiles.filter(t=>!t.void).sort((a,b)=>depth(b.x,b.y)-depth(a.x,a.y));for(let t of ordered){if(state.map.authoredTerrain&&window.TacticsHillArt){let g=TacticsHillArt.geometry(state.map,t,point,depth);if(TacticsSurface.contains(g.p,x,y))return t;if(g.faces.some(f=>TacticsSurface.contains(f,x,y)))return null;}else{let p=point(t.x,t.y,t.h);if(Math.abs(x-p.x)/(camera.w/2)+Math.abs(y-p.y)/(camera.h/2)<=1)return t}}return null}
+function pick(clientX,clientY){let r=canvas.getBoundingClientRect(),x=clientX-r.left,y=clientY-r.top,ordered=state.map.tiles.filter(t=>!t.void).sort((a,b)=>depth(b.x,b.y)-depth(a.x,a.y));for(let t of ordered){if((state.map.authoredTerrain||state.map.hillArt)&&window.TacticsHillArt){let g=TacticsHillArt.geometry(state.map,t,point,depth);if(TacticsSurface.contains(g.p,x,y))return t;if(g.faces.some(f=>TacticsSurface.contains(f,x,y)))return null;}else{let p=point(t.x,t.y,t.h);if(Math.abs(x-p.x)/(camera.w/2)+Math.abs(y-p.y)/(camera.h/2)<=1)return t}}return null}
 function inspect(t){hover=t;previewPathTo(t);if(typeof sel()==='number'&&targetsEnemy()&&t){let hu=C.unitAt(state,t.x,t.y);if(hu?.side==='enemy'&&C.alive(hu)&&!C.combatReason(state,sel(),hu))lockT=hu.id}if(!t){$('tileInspector').textContent='ชี้ช่องเพื่อดูความสูงและค่าเดิน';return}let u=C.unitAt(state,t.x,t.y)||state.units.find(u=>!u.removed&&u.hp<=0&&C.covers(u,t.x,t.y)),cost=reach.costs.get(C.key(t.x,t.y));$('tileInspector').textContent=u?`${u.name} · HP ${u.hp}/${u.maxHp}${u.element?' · ธาตุ'+(C.ELEMENT_NAMES?.[u.element]||''):''}${(u.traits||[]).length?' · '+u.traits.map(k=>C.TRAITS[k]).join(', '):''} · ยืนบน${(C.TERRAIN?.[t.kind]||{}).name||''}`+(u.side==='enemy'&&typeof sel()==='number'?' · '+(C.combatReason(state,sel(),u)||'โจมตีได้'):''):(pathPreview?.dest===C.key(t.x,t.y)?`เดิน ${pathPreview.steps} ช่อง · ใช้กำลังเดิน ${pathPreview.cost} · `:'')+`ช่อง ${t.x+1},${t.y+1} · สูง ${t.h} · ${(C.TERRAIN?.[t.kind]||{}).name||''}${(C.TERRAIN?.[t.kind]||{}).note?' ('+C.TERRAIN[t.kind].note+')':''} · ${t.blocked?'สิ่งกีดขวาง':cost===undefined?'เดินไม่ถึง':'ค่าเดิน '+cost}`;if(u?.hp>0&&Object.keys(u.statuses||{}).length)$('tileInspector').textContent+=' · '+Object.entries(u.statuses).map(([k,v])=>C.STATUS[k].name+' '+v.turns+' CT').join(' / ');if(u&&u.hp<=0){$('tileInspector').textContent=u.name+' · สลบ · เหลือ '+u.downTurns+' CT'+(u.side==='ally'?' · ยืนติดแล้วคลิกเพื่อช่วยฟื้น (แรง 15 / คำสั่งต่อสู้ 1)':'')}if(u&&u.hp>0&&u.side==='enemy'){if(typeof sel()==='number'){let pv=C.previewCard(state,sel(),u);if(pv)$('tileInspector').textContent+=' · HP '+u.hp+'→'+pv.hpAfter+' · โดน '+pv.hit+'% · คริ '+pv.crit+'% · '+pv.angle}stats()}}
 function reset(randomize=false){if(locked)return;stopUntil=slowUntil=slowStart=0;resultShown=false;$('v27Facing')?.remove();document.querySelectorAll('#resultOverlay .v27-reward').forEach(e=>e.remove());pending=null;if(randomize)$('seed').value='FIELD-'+Math.floor(Math.random()*999999);let seed=$('seed').value.trim()||'FOREST-04',theme=$('theme').value,h=state.leader||state.hero;
  let cfg=B?.battleConfig?.()||{};if(cfg.theme)theme=cfg.theme;state=C.create(seed,theme,cfg.mode||$('fieldMode').value,{weapon:h.weapon,shield:h.shield,deck:B?.deckConfig?.(),decks:B?.unitDecks?.(),allies:cfg.allies,encounter:cfg.encounter});$('tacticsLayer').classList.toggle('expedition',!!cfg.encounter);B?.prepare(state);window.MonsterArt?.reset();window.MonsterArt?.preload(state.units);vis={};cursor={x:state.hero.x,y:state.hero.y};hover=null;effects=[];messages=[];pan={x:0,y:0};window.BattleDiagnostics?.reset();zoom=$('tacticsLayer').classList.contains('fullbattle')?1.85:1;$('resultOverlay').hidden=true;

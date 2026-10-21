@@ -9,6 +9,9 @@ const offsets=[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]],edges=[[1,0,1,2,0,3],[0,1,2,
 function geometry(map,t,point,depth){const c=t.surfaceCorners,p=offsets.map(([x,y],i)=>point(t.x+x,t.y+y,c[i])),faces=[];
 for(const [dx,dy,a,b,na,nb]of edges){if(depth(t.x+dx*.5,t.y+dy*.5)<=depth(t.x,t.y))continue;const n=root.TacticsCore.at(map,t.x+dx,t.y+dy),nc=n&&!n.void?n.surfaceCorners:[-1,-1,-1,-1];if(c[a]>nc[na]+.001||c[b]>nc[nb]+.001)faces.push([p[a],p[b],point(t.x+offsets[b][0],t.y+offsets[b][1],Math.min(c[b],nc[nb])),point(t.x+offsets[a][0],t.y+offsets[a][1],Math.min(c[a],nc[na]))]);}
 return {p,faces};}
+const GROUND_KIND={stairs:'stone',bridge:'stone',stone:'stone',rubble:'rubble',sand:'sand',ash:'ash',snow:'snow',thinsnow:'snow',ice:'ice',cave:'cave',crystal:'crystal-floor',rail:'rail',mud:'mud',shallow:'shallow',water:'water'},
+ GROUND_TINT={stone:'#8f8a76',rubble:'#857c64',sand:'#d8c08a',ash:'#4a4038',snow:'#e8eef0',thinsnow:'#cfd8d2',ice:'#a8cfe0',cave:'#6b5843',crystal:'#4b3a6a',rail:'#55483a',mud:'#5a4630',shallow:'#5ea8a0',water:'#2f6f86'},ground={};
+for(const f of new Set(Object.values(GROUND_KIND))){const im=new Image();im.onload=()=>{caches=new WeakMap()};im.src=(document.currentScript?.src?new URL('../assets/tactics/ground/'+f+'.webp',document.currentScript.src).href:'assets/tactics/ground/'+f+'.webp');ground[f]=im}
 function paint(g,t,p,faces){
 for(const f of faces){poly(g,f,'#817b64');if(mats[2])texture(g,mats[2],f,(t.x+t.y)%6*128,0,128,512);poly(g,f,'#17271b30');}
 // FFT-style cliff tile: the whole top is an inclined rock face from the upper lip down to the ground, lit by its slope.
@@ -16,9 +19,12 @@ if(t.cliff){const c=t.surfaceCorners,hi=Math.max(...c),lo=Math.min(...c);poly(g,
  const nx=(c[0]+c[3])-(c[1]+c[2]),ny=(c[0]+c[1])-(c[3]+c[2]),light=(-nx*.6-ny*.8)/Math.max(.01,Math.hypot(nx,ny));poly(g,p,light>0?`rgba(255,240,200,${.10*light})`:`rgba(10,18,14,${-.30*light})`);
  g.strokeStyle='#5d7a3acc';g.lineWidth=2.4;g.lineCap='round';for(let i=0;i<4;i++){const j=(i+1)%4;if(c[i]>lo+.5&&c[j]>lo+.5&&Math.abs(c[i]-hi)<.01&&Math.abs(c[j]-hi)<.01){g.beginPath();g.moveTo(p[i].x,p[i].y);g.lineTo(p[j].x,p[j].y);g.stroke()}}
  return}
-const water=t.kind==='water',stone=['stone','rubble'].includes(t.kind),earth=t.route||['path','mud'].includes(t.kind),idx=stone?3:earth?1:0;
-poly(g,p,water?'#477f83':stone?'#939179':earth?'#baab78':'#7d8f4e');if(!water&&mats[idx])texture(g,mats[idx],p,t.x%16*64,t.y%16*64,64,64);
-if(t.kind==='tallgrass')poly(g,p,'#536b2c30');if(t.kind==='snow')poly(g,p,'#eef3e3b0');if(t.kind==='mud')poly(g,p,'#57463355');
+const water=t.kind==='water';
+// v52: every tile kind of every theme. Grass and dirt keep the painted hill atlas; the rest use the battle ground set.
+const gk=GROUND_KIND[t.kind],gi=gk&&ground[gk];
+if(gi?.complete&&gi.naturalWidth){let q=p;if(t.kind==='rail'&&t.railAxis==='y')q=[p[1],p[2],p[3],p[0]];poly(g,q,GROUND_TINT[t.kind]||'#777');const n=gi.naturalWidth/4;texture(g,gi,q,(t.x&3)*n,(t.y&3)*n,n,n);if(t.kind==='tallgrass')poly(g,p,'#2f4a1a40')}
+else{const earth=t.route||['path','mud'].includes(t.kind),idx=earth?1:0;poly(g,p,water?'#477f83':GROUND_TINT[t.kind]||(earth?'#baab78':'#7d8f4e'));if(!water&&mats[idx])texture(g,mats[idx],p,t.x%16*64,t.y%16*64,64,64);}
+if(t.kind==='tallgrass')poly(g,p,'#536b2c30');if(t.kind==='mud')poly(g,p,'#57463355');
 if(water){poly(g,p,'#4a9b9b30');g.strokeStyle='#bdd6bd77';g.lineWidth=1;g.beginPath();g.moveTo((p[0].x+p[3].x)/2,(p[0].y+p[3].y)/2);g.lineTo((p[1].x+p[2].x)/2,(p[1].y+p[2].y)/2);g.stroke();}
 if(t.ramp==='steps'||t.bridge){let c=t.surfaceCorners,west=Math.abs(c[0]-c[1])>.01;for(let j=1;j<4;j++){let f=j/4,a=west?[0,1]:[0,3],b=west?[3,2]:[1,2];g.strokeStyle='#62594499';g.lineWidth=1;g.beginPath();g.moveTo(p[a[0]].x*(1-f)+p[a[1]].x*f,p[a[0]].y*(1-f)+p[a[1]].y*f);g.lineTo(p[b[0]].x*(1-f)+p[b[1]].x*f,p[b[0]].y*(1-f)+p[b[1]].y*f);g.stroke();}}
 if(t.flowers){for(let i=0;i<3;i++){let x=(p[0].x+p[2].x)/2+(i-1)*3,y=(p[0].y+p[2].y)/2;g.fillStyle=i===1?'#dcb474':'#d9d8bd';g.beginPath();g.arc(x,y-i%2*2,1.4,0,7);g.fill();}}

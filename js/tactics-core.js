@@ -107,7 +107,16 @@ function fits(map,u,x,y,occupied=[]){let tiles=cells(u,x,y).map(c=>at(map,c.x,c.
 function at(map,x,y){return x>=0&&y>=0&&x<(map.width||map.size)&&y<(map.height||map.size)?map.tiles[y*(map.width||map.size)+x]:null}
 const MODES={training:{size:19,width:18,height:19,label:'ฝึก 1 ต่อ 1'},battle:{size:24,width:23,height:24,label:'สนามรบ 5 ต่อ 10'}};
 const TALL={tree:1,pillar:1};
-function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){
+// v52: one terrain renderer for every battle. Generated maps are converted to the authored format (per-corner heights,
+// exits by the ≤1 step rule, FFT cliff skin) and drawn by TacticsHillArt like the hand-made chunks. Rule heights are unchanged.
+function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){const map=generateRaw(seed,theme,mode,clearance);return map.authoredTerrain?map:toAuthored(map,seed)}
+function toAuthored(map,seed){const S=root.TacticsSurface||(typeof require==='function'?require('./tactics-surface.js'):null),M=root.TacticsMapModules||(typeof require==='function'?require('./tactics-map-modules.js'):null);if(!S||!M)return map;
+ map.width=map.width||map.size;map.height=map.height||map.size;const c=map.tiles.map(t=>S.corners(map,t).slice());map.tiles.forEach((t,i)=>{t.surfaceCorners=c[i]});
+ for(const t of map.tiles)if(t.kind==='rail'){const r=(dx,dy)=>at(map,t.x+dx,t.y+dy)?.kind==='rail';if((r(0,1)||r(0,-1))&&!(r(1,0)||r(-1,0)))t.railAxis='y'}
+ map.stepRule='height';M.cliffSkin(map,seed);for(const t of map.tiles)delete t.exits;
+ // drawn by the hill renderer, but movement keeps the core's own rules (authoredTerrain adds strict exit rules for large bosses)
+ map.hillArt=true;return map}
+function generateRaw(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){
  if(theme==='modular-wilds'&&root.TacticsMapModules)return root.TacticsMapModules.create(seed,mode,clearance);
  if(theme==='terraced-hill'&&root.TacticsTerracedHill)return root.TacticsTerracedHill.create(seed,mode);
  const VARIANTS={swamp:'forest',coast:'quarry',frost:'quarry',ruins:'quarry',crag:'forest'};let variant=VARIANTS[theme]?theme:null;if(variant)theme=VARIANTS[theme];theme=['quarry','mine'].includes(theme)?theme:'forest';mode=MODES[mode]?mode:'training';
@@ -235,12 +244,16 @@ const living=(st,side)=>st.units.filter(u=>u.side===side&&alive(u));
 const others=(st,u)=>st.units.filter(o=>o!==u&&alive(o));
 const unitAt=(st,x,y)=>st.units.find(u=>alive(u)&&covers(u,x,y))||null;
 const WEATHER={breeze:{name:'ฟ้าโปร่ง',icon:'☀'},rain:{name:'ฝน',icon:'☂'},snow:{name:'หิมะ',icon:'❄'},mist:{name:'หมอก',icon:'≋'},embers:{name:'ประกายไฟ',icon:'✧'}};
-function initEnvironment(st,minutes=540){st.environment={minutes,nextChange:4,wetRounds:0,snowRounds:0,forecast:null,changes:0};st.environmentRng=random(st.map.seed+'|weather');planWeather(st)}
-function weatherPool(st){let area=st.map.variant||st.map.theme;return area==='mine'?['embers']:area==='swamp'?['rain','mist']:area==='frost'?['snow','breeze']:area==='ruins'?['mist','breeze']:['breeze','rain']}
+// Weather holds 6–8 rounds before it may change (it used to flip every 3–4).
+function initEnvironment(st,minutes=540){st.environmentRng=random(st.map.seed+'|weather');let list=weatherPool(st).slice(),r=st.environmentRng,first=list.includes(st.weather)?st.weather:list[Math.floor(r()*list.length)],rest=list.filter(w=>w!==first),pair=[first,rest.length?rest[Math.floor(r()*rest.length)]:first];
+ st.weather=first;st.environment={minutes,pair,nextChange:6+Math.floor(r()*3),wetRounds:0,snowRounds:0,forecast:null,changes:0};planWeather(st)}
+// v52: each area has a weather list; every battle draws exactly two from it (by seed) and only alternates between those.
+const AREA_WEATHER={mine:['embers','mist'],swamp:['rain','mist','breeze'],frost:['snow','breeze','mist'],ruins:['mist','breeze','embers'],coast:['breeze','rain','mist'],quarry:['breeze','rain','mist'],forest:['breeze','rain','mist']};
+function weatherPool(st){if(st.environment?.pair)return st.environment.pair;let area=st.map.variant||st.map.theme;return AREA_WEATHER[area]||AREA_WEATHER.forest}
 function planWeather(st){let pool=weatherPool(st).filter(w=>w!==st.weather);st.environment.forecast=pool.length?pool[Math.floor(st.environmentRng()*pool.length)]:st.weather}
 function weatherInfo(st){let e=st.environment;return {current:st.weather,...(WEATHER[st.weather]||WEATHER.breeze),next:e?.forecast||st.weather,inRounds:Math.max(0,(e?.nextChange||0)-st.turn),minutes:e?.minutes??540}}
 function lightInfo(st){let minutes=st.environment?.minutes??540,phase=Math.max(0,Math.min(1,(minutes-360)/720)),elevation=Math.max(0,Math.sin(phase*Math.PI)),cave=st.map.theme==='mine',dark=cave?.18:Math.max(0,1-elevation);return {minutes,elevation,dark,sunX:Math.cos(phase*Math.PI),sunY:.4,phase:cave?'ใต้ดิน':minutes<420||minutes>=1080?'กลางคืน':minutes<600?'เช้า':minutes<900?'กลางวัน':'เย็น'}}
-function tickEnvironment(st){if(!st.environment)initEnvironment(st);let env=st.environment;env.minutes=Math.min(1200,env.minutes+5);if(st.turn>=env.nextChange){let old=st.weather;st.weather=env.forecast;env.nextChange=st.turn+3+Math.floor(st.environmentRng()*2);planWeather(st);if(old!==st.weather){env.changes++;(st.events||=[]).push({type:'weather',from:old,weather:st.weather})}}
+function tickEnvironment(st){if(!st.environment)initEnvironment(st);let env=st.environment;env.minutes=Math.min(1200,env.minutes+5);if(st.turn>=env.nextChange){let old=st.weather;st.weather=env.forecast;env.nextChange=st.turn+6+Math.floor(st.environmentRng()*3);planWeather(st);if(old!==st.weather){env.changes++;(st.events||=[]).push({type:'weather',from:old,weather:st.weather})}}
  env.wetRounds=st.weather==='rain'?env.wetRounds+1:0;env.snowRounds=st.weather==='snow'?env.snowRounds+1:0;
  let eligible=st.map.tiles.filter(t=>!t.blocked&&!t.prop&&!t.objectId),changed=[];
  if(env.wetRounds>=2||env.snowRounds>=2){let candidates=eligible.filter(t=>!t.weatherBaseKind&&(st.weather==='rain'?['grass','path'].includes(t.kind):['grass','path','shallow'].includes(t.kind)));for(let i=0;i<2&&candidates.length;i++){let n=Math.floor(st.environmentRng()*candidates.length),t=candidates.splice(n,1)[0];t.weatherBaseKind=t.kind;t.kind=st.weather==='rain'?'mud':t.kind==='shallow'?'ice':'snow';changed.push({x:t.x,y:t.y,kind:t.kind})}}
