@@ -72,10 +72,14 @@ function selRange(){let c=selCard();return c?C.cardInfo(state,c.id)?.range||0:0}
 function V(u){let v=vis[u.id]||(vis[u.id]={x:u.x,y:u.y,pose:'idle',walking:false});v.footprint=u.footprint;return v}
 
 // ---------- tiles / props ----------
-function tile(t,topOnly=false){if(!topOnly&&slopeCorners(t))topOnly='ramp';let p=point(t.x,t.y,t.h),w=camera.w/2,h=camera.h/2,depth=(t.h+BASE_DEPTH)*camera.lift;
+function tile(t,topOnly=false){if(t.cliff){cliffTile(t);return}let scR=!topOnly?slopeCorners(t):null;if(scR)topOnly='ramp';let p=point(t.x,t.y,t.h),w=camera.w/2,h=camera.h/2,depth=(t.h+BASE_DEPTH)*camera.lift;
  let SD=state.map.theme==='mine'?TacticsScenery.TILE.mine.side:null;if(!topOnly)sideFace(t,true,[{x:p.x-w,y:p.y},{x:p.x,y:p.y+h},{x:p.x,y:p.y+h+depth},{x:p.x-w,y:p.y+depth}],SD?SD[0]:state.map.theme==='forest'?'#8d7954':'#8c8879',SD?SD[1]:'#706347');if(!topOnly)sideFace(t,false,[{x:p.x,y:p.y+h},{x:p.x+w,y:p.y},{x:p.x+w,y:p.y+depth},{x:p.x,y:p.y+h+depth}],SD?SD[2]:state.map.theme==='forest'?'#b49b70':'#aba493',SD?SD[3]:'#7d6e52');
- let palettes={thinsnow:['#e3eaef','#dde5ec','#e8eef2'],grass:['#93a56a','#a6b77b','#acb982','#99ab74'],path:['#d2bd8d','#d8c69a','#cbb785'],stone:['#b5b09a','#c5bca4','#aaa895'],water:['#82b8b6','#94c6c0'],...(window.TacticsScenery?.PAL||{})},pal=palettes[t.kind]||palettes.stone;diamond(t,pal[Math.floor(t.variation*pal.length)%pal.length],$('tacticsLayer').classList.contains('fullbattle')?'#00000014':'#6a76513b',.8);let sc0=slopeCorners(t),dy0=sc0?-(sc0.reduce((a,b)=>a+b,0)/4-t.h)*camera.lift:0;if(dy0){ctx.save();ctx.translate(0,dy0)}
- let painted=window.BattleArt?.terrain(ctx,t,p,camera.w,camera.h,clock,t.kind==='rail'&&(![[1,0],[-1,0]].some(([dx,dy])=>C.at(state.map,t.x+dx,t.y+dy)?.kind==='rail')!==!!(rot%2)));if(t.kind==='thinsnow'&&!painted)thinSnow(t,p,camera.w,camera.h);else if(window.TacticsScenery&&!['grass','path','stone','cave','rail','water'].includes(t.kind))TacticsScenery.tileDetail(ctx,t,p,camera.w,camera.h,clock);
+ if(scR){let Q=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([sx,sy],i)=>point(t.x+sx*.5,t.y+sy*.5,scR[i])),F=forestSide=>0,fo=state.map.theme==='forest',SDm=state.map.theme==='mine'?TacticsScenery.TILE.mine.side:null,by=y=>y+depth;
+  sideFace(t,true,[Q[3],Q[2],{x:Q[2].x,y:p.y+h+depth},{x:Q[3].x,y:p.y+depth}],SDm?SDm[0]:fo?'#8d7954':'#8c8879',SDm?SDm[1]:'#706347');
+  sideFace(t,false,[Q[2],Q[1],{x:Q[1].x,y:p.y+depth},{x:Q[2].x,y:p.y+h+depth}],SDm?SDm[2]:fo?'#b49b70':'#aba493',SDm?SDm[3]:'#7d6e52')}
+ let palettes={thinsnow:['#e3eaef','#dde5ec','#e8eef2'],grass:['#93a56a','#a6b77b','#acb982','#99ab74'],path:['#d2bd8d','#d8c69a','#cbb785'],stone:['#b5b09a','#c5bca4','#aaa895'],water:['#82b8b6','#94c6c0'],...(window.TacticsScenery?.PAL||{})},pal=palettes[t.kind]||palettes.stone;diamond(t,pal[Math.floor(t.variation*pal.length)%pal.length],$('tacticsLayer').classList.contains('fullbattle')?'#00000014':'#6a76513b',.8);if(t.stamp==='crag'&&(t.kind==='stairs'||t.kind==='stone'))cragTop(t,p);
+ let sc0=slopeCorners(t),dy0=sc0?-(sc0.reduce((a,b)=>a+b,0)/4-t.h)*camera.lift:0;if(dy0){ctx.save();ctx.translate(0,dy0)}
+ let painted=window.BattleArt?.terrain(ctx,t,p,camera.w,camera.h,clock,t.kind==='rail'&&(![[1,0],[-1,0]].some(([dx,dy])=>C.at(state.map,t.x+dx,t.y+dy)?.kind==='rail')!==!!(rot%2)));if(t.kind==='thinsnow'&&!painted)thinSnow(t,p,camera.w,camera.h);else if(window.TacticsScenery&&!['grass','path','stone','cave','rail','water','stairs'].includes(t.kind))TacticsScenery.tileDetail(ctx,t,p,camera.w,camera.h,clock);
  if(dy0)ctx.restore();
  if(t.h>0&&!topOnly){ctx.strokeStyle='#6d5b3935';ctx.lineWidth=1;for(let d=1;d<=t.h;d++){let yy=p.y+h+d*camera.lift;ctx.beginPath();ctx.moveTo(p.x-w,p.y+d*camera.lift);ctx.lineTo(p.x,yy);ctx.lineTo(p.x+w,p.y+d*camera.lift);ctx.stroke()}}
  if(t.kind==='rail'&&!painted){let nx=[[1,0],[-1,0]].some(([dx,dy])=>C.at(state.map,t.x+dx,t.y+dy)?.kind==='rail'),q=point(t.x+(nx?1:0),t.y+(nx?0:1),t.h);TacticsScenery.rail(ctx,p,{x:(q.x-p.x)/2,y:(q.y-p.y)/2},camera.w)}else if(t.kind==='path'&&!painted){let q=camera.w*.12;ctx.strokeStyle='#b49a6d77';ctx.beginPath();ctx.moveTo(p.x-q,p.y);ctx.lineTo(p.x+q,p.y+q*.3);ctx.stroke()}else if(t.kind==='grass'&&!painted&&!t.prop){let q=camera.w*.1;ctx.strokeStyle='#5a794a55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x+q,p.y+q*.3);ctx.lineTo(p.x+q*.8,p.y-q*.3);ctx.moveTo(p.x+q,p.y+q*.3);ctx.lineTo(p.x+q*1.3,p.y-q*.1);ctx.stroke()}
@@ -85,6 +89,27 @@ function tile(t,topOnly=false){if(!topOnly&&slopeCorners(t))topOnly='ramp';let p
  let u=C.unitAt(state,t.x,t.y);if(u)diamond(t,u.side==='enemy'?'#b84b3e20':'#3f7f9420',u.side==='enemy'?'#aa4a37':'#3f7f94',u===state.hero?2:1.2);
  tileRims(t);if(hover?.x===t.x&&hover?.y===t.y)diamond(t,t.blocked?'#a6423430':'#fff7d638',t.blocked?'#b15b45':'#fff4c2',2)}
 // A tall prop fades when something the player needs to see sits behind it on screen.
+// FFT-style cliff face: a non-walkable tile drawn as one inclined rock surface from the plateau edge down to the ground.
+function cliffCorner(t,sx,sy){let m=state.map,hs=[t.h];for(let [dx,dy] of [[sx,0],[0,sy],[sx,sy]]){let n=C.at(m,t.x+dx,t.y+dy);if(n)hs.push(n.cliff?n.h:n.h)}return Math.min(...hs)}
+function cliffTile(t){let cs=[[-1,-1],[1,-1],[1,1],[-1,1]],H=cs.map(([sx,sy])=>cliffCorner(t,sx,sy)),P=cs.map(([sx,sy],i)=>point(t.x+sx*.5,t.y+sy*.5,H[i]));
+ let hx=(H[1]+H[2])/2-(H[0]+H[3])/2,hy=(H[2]+H[3])/2-(H[0]+H[1])/2,alongX=Math.abs(hy)>=Math.abs(hx),rock=window.CliffArt?.pattern(ctx,'cliff'),S=window.CliffArt?.size||256;
+ ctx.save();ctx.beginPath();P.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.closePath();
+ if(rock){ctx.clip();let O=P[0],U=alongX?{x:P[1].x-P[0].x,y:P[1].y-P[0].y}:{x:P[3].x-P[0].x,y:P[3].y-P[0].y},V=alongX?{x:P[3].x-P[0].x,y:P[3].y-P[0].y}:{x:P[1].x-P[0].x,y:P[1].y-P[0].y};
+  ctx.transform(U.x/S,U.y/S,V.x/S,V.y/S,O.x,O.y);ctx.translate(-(alongX?t.x:t.y)*S,0);ctx.fillStyle=rock;ctx.fillRect(-S*40,-S*4,S*80,S*10);ctx.setTransform(1,0,0,1,0,0)}
+ else{ctx.fillStyle='#8c8879';ctx.fill()}
+ ctx.restore();
+ // light: faces looking toward +y (south-west on screen) are in shade, +x faces catch a little light, faces turned away stay hidden
+ let shade=(hy>0.5?.3:0)+(hx>0.5?.1:0)+((hy<-.5||hx<-.5)?.18:0);if(shade){ctx.save();ctx.beginPath();P.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.closePath();ctx.fillStyle='rgba(20,14,6,'+shade+')';ctx.fill();ctx.restore()}
+ // grass lip along the high edge(s)
+ let hi=Math.max(...H);for(let i=0;i<4;i++){let a=i,b=(i+1)%4;if(H[a]!==hi||H[b]!==hi)continue;let la=P[(a+3)%4],lb=P[(b+1)%4],A=P[a],B=P[b],n=7,lip=.17;ctx.save();ctx.fillStyle='#6f8f45';ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);
+  for(let k=n;k>=0;k--){let u=k/n,x=A.x+(B.x-A.x)*u,y=A.y+(B.y-A.y)*u,f=(k%2?lip:lip*.45),lx=la.x+(lb.x-la.x)*u,ly=la.y+(lb.y-la.y)*u;ctx.lineTo(x+(lx-x)*f,y+(ly-y)*f)}ctx.closePath();ctx.fill();ctx.restore()}
+ polygon(P,null,'#00000030',1)}
+// crag tops: flagstone texture on the summit and on stairs; stairs get step bands along the direction of ascent
+function cragTop(t,p){let pat=window.CliffArt?.pattern(ctx,'top');if(!pat)return;let w=camera.w/2,h=camera.h/2;ctx.save();ctx.beginPath();ctx.moveTo(p.x,p.y-h);ctx.lineTo(p.x+w,p.y);ctx.lineTo(p.x,p.y+h);ctx.lineTo(p.x-w,p.y);ctx.closePath();ctx.clip();
+ ctx.translate(p.x-w,p.y-h);ctx.scale(camera.w/CliffArt.size,camera.h/CliffArt.size);ctx.fillStyle=pat;ctx.fillRect(0,0,CliffArt.size,CliffArt.size);ctx.restore();ctx.save();
+ if(t.kind==='stairs'){let up=[[1,0],[0,1],[-1,0],[0,-1]].find(([dx,dy])=>{let n=C.at(state.map,t.x+dx,t.y+dy);return n&&n.h>t.h});if(up){ctx.beginPath();ctx.moveTo(p.x,p.y-h);ctx.lineTo(p.x+w,p.y);ctx.lineTo(p.x,p.y+h);ctx.lineTo(p.x-w,p.y);ctx.closePath();ctx.clip();
+  for(let i=0;i<5;i++){let k=-.5+(i+.5)/5,a=point(t.x+up[0]*k-up[1]*.6,t.y+up[1]*k+up[0]*.6,t.h),b=point(t.x+up[0]*k+up[1]*.6,t.y+up[1]*k-up[0]*.6,t.h);ctx.strokeStyle='#2a221599';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.strokeStyle='#fff2cc66';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(a.x,a.y-1.8);ctx.lineTo(b.x,b.y-1.8);ctx.stroke()}}}
+ ctx.restore()}
 function opacityFor(o,hidden){let target=hidden?.4:1;o._alpha=(o._alpha??1)+(target-(o._alpha??1))*.22;return o._alpha}
 function imagePropRect(t){let p=point(t.x,t.y,t.h),w=camera.w,r=window.TacticsScenery?.PROPS.includes(t.prop)?window.BattleArt?.propRect(t.prop,p,w,clock):null;if(r)return r;let file=t.prop==='pillar'?assetFile('prop-pillar'):A.props[t.prop]?.src,im=file&&bitmap(file);if(!im)return null;let h=w*(t.prop==='tree'?1.9:t.prop==='pillar'?1.75:t.prop==='rock'?.8:.6),ww=h*im.width/im.height,pivot=t.prop==='pillar'?(window.ASSET_MANIFEST.assets.find(a=>a.id==='prop-pillar')?.pivot||[.5,.95]):A.props[t.prop].pivot;return {a:{image:im,entry:{file},sx:0,sy:0,sw:im.naturalWidth,sh:im.naturalHeight},x:p.x-ww*pivot[0],y:p.y-h*pivot[1],w:ww,h,bottom:p.y}}
 function bodyPoints(u){let g=ground(V(u)),scale=u.side==='enemy'?Math.max(.8,C.ENEMY_TYPES[u.kind]?.scale||1):1,h=camera.w*(u.hp>0?1.5*scale:.4),span=Math.max(...C.dimensions(u)),out=[g];for(let dy of [.3,.6,.85])for(let dx of [-.13,0,.13])out.push({x:g.x+camera.w*dx*span,y:g.y-h*dy});return out}
@@ -119,12 +144,15 @@ function strata(theme){if(strataCache[theme])return strataCache[theme];let c=doc
  for(let i=0;i<9;i++){let x=rnd()*96,y=rnd()*96,r=rnd()*5+3;g.fillStyle=mine?'#5e5a5266':'#8a7a6266';g.beginPath();g.ellipse(x,y,r*1.3,r*.8,0,0,Math.PI*2);g.fill();g.strokeStyle='#00000030';g.stroke()}
  return strataCache[theme]=ctx.createPattern(c,'repeat')}
 function sideFace(t,left,pts,fill,stroke){polygon(pts,fill,null);if(window.BattlePolish?.quality==='low'){polygon(pts,null,stroke,1);return}
- ctx.save();ctx.beginPath();pts.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.closePath();ctx.clip();ctx.fillStyle=strata(state.map.theme);ctx.globalAlpha=.9;ctx.fill();ctx.globalAlpha=1;
+ ctx.save();ctx.beginPath();pts.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.closePath();ctx.clip();
+ let rock=t.stamp==='crag'?window.CliffArt?.pattern(ctx,'cliff'):null;
+ if(rock){let A=pts[0],B=pts[1],S=CliffArt.size,vy=camera.lift*2.2/S;ctx.save();ctx.transform((B.x-A.x)/S,(B.y-A.y)/S,0,vy,A.x,A.y);ctx.fillStyle=rock;ctx.fillRect(0,0,S,S*30);ctx.restore();ctx.fillStyle=left?'#00000050':'#00000014';ctx.fill()}
+ else{ctx.fillStyle=strata(state.map.theme);ctx.globalAlpha=.9;ctx.fill();ctx.globalAlpha=1}
  let top=Math.min(...pts.map(q=>q.y)),bot=Math.max(...pts.map(q=>q.y)),gr=ctx.createLinearGradient(0,top,0,bot);gr.addColorStop(0,left?'#00000010':'#ffffff10');gr.addColorStop(1,left?'#00000066':'#0000004a');ctx.fillStyle=gr;ctx.fillRect(Math.min(...pts.map(q=>q.x))-2,top-2,Math.max(...pts.map(q=>q.x))-Math.min(...pts.map(q=>q.x))+4,bot-top+4);
  if(['grass','tallgrass','thinsnow','snow'].includes(t.kind)){let a=pts[0],b=pts[1],lip=Math.max(3,camera.lift*.28),snowy=t.kind.includes('snow');ctx.fillStyle=snowy?(left?'#dfe7ee':'#f4f8fb'):left?'#5f7f3c':'#7a9a4a';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);let n=7;for(let i=n;i>=0;i--){let k=i/n,x=a.x+(b.x-a.x)*k,y=a.y+(b.y-a.y)*k+(i%2?lip:lip*.45);ctx.lineTo(x,y)}ctx.closePath();ctx.fill()}
  ctx.restore();polygon(pts,null,stroke,1)}
 // lit rims on drops, soft contact shade where a neighbour rises above this tile
-function tileRims(t){if(window.BattlePolish?.quality==='low')return;for(let [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){let n=C.at(state.map,t.x+dx,t.y+dy),ex=-dy,ey=dx,a=point(t.x+dx*.5+ex*.5,t.y+dy*.5+ey*.5,t.h),b=point(t.x+dx*.5-ex*.5,t.y+dy*.5-ey*.5,t.h),nh=n?n.h:-1;
+function tileRims(t){if(window.BattlePolish?.quality==='low'||slopeCorners(t))return;for(let [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){let n=C.at(state.map,t.x+dx,t.y+dy),ex=-dy,ey=dx,a=point(t.x+dx*.5+ex*.5,t.y+dy*.5+ey*.5,t.h),b=point(t.x+dx*.5-ex*.5,t.y+dy*.5-ey*.5,t.h),nh=n?n.h:-1;
   if(nh<t.h){ctx.strokeStyle=state.map.theme==='mine'?'#ffffff40':'#fff6c860';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
   else if(nh>t.h){let c=point(t.x+dx*.18,t.y+dy*.18,t.h),g=ctx.createLinearGradient((a.x+b.x)/2,(a.y+b.y)/2,c.x,c.y);g.addColorStop(0,'#0000004d');g.addColorStop(1,'#00000000');ctx.fillStyle=g;let a2=point(t.x+dx*.05+ex*.5,t.y+dy*.05+ey*.5,t.h),b2=point(t.x+dx*.05-ex*.5,t.y+dy*.05-ey*.5,t.h);polygon([a,b,b2,a2],g,null)}}}
 
@@ -139,7 +167,7 @@ function planeMatrix(phi,hgt){let W=camera.w/2,H=camera.h/2,c=Math.cos(phi),s=Ma
   a=r11*i11+r12*i21,b=r11*i12+r12*i22,cc=r21*i11+r22*i21,d=r21*i12+r22*i22,
   cx=camera.x,cy=camera.y+(state.map.size-1)/2*camera.h-hgt*camera.lift;
  return [a,cc,b,d,cx-(a*cx+b*cy),cy-(cc*cx+d*cy)]}
-function tileSides(t){let SD=state.map.theme==='mine'?TacticsScenery.TILE.mine.side:null,forest=state.map.theme==='forest',L=[SD?SD[0]:forest?'#8d7954':'#8c8879',SD?SD[1]:'#706347'],Rt=[SD?SD[2]:forest?'#b49b70':'#aba493',SD?SD[3]:'#7d6e52'],d0=depth(t.x,t.y);
+function tileSides(t){if(t.cliff)return;let SD=state.map.theme==='mine'?TacticsScenery.TILE.mine.side:null,forest=state.map.theme==='forest',L=[SD?SD[0]:forest?'#8d7954':'#8c8879',SD?SD[1]:'#706347'],Rt=[SD?SD[2]:forest?'#b49b70':'#aba493',SD?SD[3]:'#7d6e52'],d0=depth(t.x,t.y);
  for(let [nx,ny] of [[1,0],[0,1],[-1,0],[0,-1]]){if(depth(t.x+nx*.5,t.y+ny*.5)<=d0)continue;let ex=-ny,ey=nx,a={x:t.x+nx*.5+ex*.5,y:t.y+ny*.5+ey*.5},b={x:t.x+nx*.5-ex*.5,y:t.y+ny*.5-ey*.5},A=point(a.x,a.y,t.h),B=point(b.x,b.y,t.h),A2=point(a.x,a.y,1-BASE_DEPTH),B2=point(b.x,b.y,1-BASE_DEPTH),mid=point(t.x+nx*.5,t.y+ny*.5,t.h),cen=point(t.x,t.y,t.h),col=mid.x<cen.x?L:Rt;sideFace(t,col===L,[A,B,B2,A2],col[0],col[1])}}
 function drawTile(t){let n=Math.round(viewAngle),phi=(viewAngle-n)*Math.PI/2;if(Math.abs(phi)<1e-4){tile(t);return}
  tileSides(t);let keep=viewAngle;viewAngle=n;let m=planeMatrix(phi,t.h);ctx.save();ctx.transform(...m);flatPlane=true;try{tile(t,true)}finally{flatPlane=false;ctx.restore();viewAngle=keep}}

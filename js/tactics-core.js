@@ -16,7 +16,7 @@ function affinity(target,element){let natural=target.element||WEAPON_ELEMENT[tar
 const WEAPON_ELEMENT={bow:'wind',axe:'earth',tome:'light',sword:'fire',hammer:'earth',staff:'fusion',unarmed:'earth',knife:'wind',spear:'wind',rapier:'water'};
 // cost = move points to enter · hide = share of the body hidden · def = flat damage change · boost/weak/resist = element ±25%
 const TERRAIN={
- grass:{name:'หญ้า',cost:1},path:{name:'ทางดิน',cost:1},stone:{name:'พื้นหิน',cost:1,boost:['earth']},cave:{name:'พื้นถ้ำ',cost:1,boost:['earth']},rail:{name:'รางรถแร่',cost:1},
+ grass:{name:'หญ้า',cost:1},path:{name:'ทางดิน',cost:1},stairs:{name:'บันไดหิน',cost:1,note:'ทางขึ้นเนินหิน'},stone:{name:'พื้นหิน',cost:1,boost:['earth']},cave:{name:'พื้นถ้ำ',cost:1,boost:['earth']},rail:{name:'รางรถแร่',cost:1},
  tallgrass:{name:'หญ้าสูง',cost:2,hide:.34,def:2,rangedCover:true,boost:['nature'],weak:['fire'],light:true,note:'ป้องกัน +2 · ยิงไกลเข้ามา −25% · ไฟแรงขึ้นและเผาหญ้า'},
  mud:{name:'บ่อโคลน',cost:4,hide:.5,sink:.42,def:-2,slow:1,boost:['earth','water'],heavyStop:true,wet:true,note:'ป้องกัน −2 · เทิร์นถัดไปเดิน −1'},
  shallow:{name:'น้ำตื้น',cost:3,hide:.48,sink:.34,boost:['water'],resist:['fire'],heavyStop:true,wet:true,note:'ไฟ −25% · น้ำแข็งทำให้กลายเป็นพื้นน้ำแข็ง'},
@@ -108,7 +108,7 @@ function at(map,x,y){return x>=0&&y>=0&&x<(map.width||map.size)&&y<(map.height||
 const MODES={training:{size:19,width:18,height:19,label:'ฝึก 1 ต่อ 1'},battle:{size:24,width:23,height:24,label:'สนามรบ 5 ต่อ 10'}};
 const TALL={tree:1,pillar:1};
 function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){
- const VARIANTS={swamp:'forest',coast:'quarry',frost:'quarry',ruins:'quarry'};let variant=VARIANTS[theme]?theme:null;if(variant)theme=VARIANTS[theme];theme=['quarry','mine'].includes(theme)?theme:'forest';mode=MODES[mode]?mode:'training';
+ const VARIANTS={swamp:'forest',coast:'quarry',frost:'quarry',ruins:'quarry',crag:'forest'};let variant=VARIANTS[theme]?theme:null;if(variant)theme=VARIANTS[theme];theme=['quarry','mine'].includes(theme)?theme:'forest';mode=MODES[mode]?mode:'training';
  let rng=random(seed+'|'+mode),size=MODES[mode].width,height=MODES[mode].height,c=Math.floor(size/2),tiles=[],ri=(a,b)=>a+Math.floor(rng()*(b-a+1));
  // 1. Terrain: a few soft hills, then smooth so neighbours differ by at most 1 (every slope is walkable).
  let hills=Array.from({length:ri(2,4)},()=>({x:ri(1,size-2),y:ri(1,size-2),r:ri(3,6),h:ri(1,3)}));
@@ -134,6 +134,38 @@ function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1
  let lane=(from,to,wiggle)=>{let x=from.x,y=from.y;reserveWide(at(map,x,y));let guard=0;while((x!==to.x||y!==to.y)&&guard++<400){let dx=Math.sign(to.x-x),dy=Math.sign(to.y-y);if(dx&&(!dy||rng()<.5+wiggle))x+=dx;else y+=dy;let t=at(map,x,y);reserveWide(t);t.kind=map.theme==='mine'?'rail':'path'}};
  let A=map.spawns.allies[0],E=map.spawns.enemies[0];lane(A,E,0);if(mode==='battle'){lane(map.spawns.allies.at(-1),map.spawns.enemies.at(-1),.3);lane(at(map,2,c),at(map,size-3,c),0);}
  for(let s of spawnCells)if(s.kind!=='rail')s.kind=map.theme==='mine'?'cave':'path';
+
+ // 3a. Rock crag (v52 stamp): an organic tiered hill — curved terraces, sheer faces, winding dirt paths, rocks and bushes along lips and feet.
+ // Heights: ring 0 · stair 1 · terrace 2 · stair 3 · summit 4. A step of 2+ is a cliff (no walking, no melee across it).
+ const CRAG_OLD=['..........','...agga...','..raaaam..','.agaabbaa.','spppt'+'bbba.','.agapbRpps','..appppp..','...paam...','...s......'];
+ const cragLegend={'.':[0,'grass'],a:[2,'grass'],g:[2,'tallgrass'],p:[2,'path'],b:[4,'stone'],s:[1,'stairs'],t:[3,'stairs'],r:[2,'grass','rock'],m:[2,'grass','mossrock'],R:[4,'stone','rock']};
+ const N4=[[1,0],[-1,0],[0,1],[0,-1]];
+ // Hand-authored mountain (v54), modelled on the painted reference: summit plateau (6), a wide shelf (3) below it, cliffs on every drop,
+ // a 2-wide dirt ramp up the east side (3→6) and another from the ground up the west side (0→3). '#' cliff, digit height, b/p/r props, ',' ground path.
+ const CRAG_MAP=['..............','.############.','.#6666666666#.','.#6666p66666#.','.#66666666b6#.','.#6666b66666#.','.#6666666666#.','.#########55#.','.#3333333344#.','.#3333333333#.','.#33b3333p33#.','.#3333333333#.','.#22#########.','.#11..........','..,,..........'];
+ function buildCrag(cr){let W=14,H=CRAG_MAP.length,g=[],rampTiles=new Set(['1','2','4','5']);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){let ch=CRAG_MAP[y][x],t={x,y,h:0,kind:'grass',prop:null,path:false,cliff:false,inR:ch!=='.'};
+   if(t.inR){if(ch==='#'){t.cliff=true;t.h=(y<=1?6:y===7?5:y===12?3:3)}else if(ch===','){t.kind='path'}else if(/\d/.test(ch)){t.h=+ch;if(rampTiles.has(ch)&&x>=2&&(x<=3||x>=10)){t.kind='path';t.path=true}}
+    else{t.h=y<7?6:3;t.prop={b:'bush',p:'pine',r:'rock'}[ch]}}
+   g.push(t)}
+  // cliff tiles take the height of the walkable tile they hug so the inclined skin starts at the lip
+  for(let t of g)if(t.cliff){let hs=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>g[(t.y+dy)*W+t.x+dx]).filter(n=>n&&n.inR&&!n.cliff).map(n=>n.h);t.h=hs.length?Math.max(...hs):3}
+  // scatter: bushes and mossy rocks along lips and a few tufts of dirt; never on ramps
+  for(let t of g){if(!t.inR||t.cliff||t.path||t.prop||t.h===0)continue;let lip=[[1,0],[0,1],[-1,0],[0,-1]].some(([dx,dy])=>g[(t.y+dy)*W+t.x+dx]?.cliff);if(lip&&cr()<.3)t.prop=cr()<.5?'bush':'mossrock';else if(cr()<.05)t.prop=cr()<.6?'bush':'mossrock'}
+  for(let t of g)if(t.inR&&!t.cliff&&!t.path&&t.kind==='grass'&&cr()<.06)t.kind='path';
+  return {W,H,g}}
+ if((mode==='battle'||variant==='crag')&&theme==='forest'&&(variant==='crag'||random(seed+'|crag')()<.45)){
+  let crng=random(seed+'|crag-shape'),built=null;for(let k=0;k<30&&!built;k++)built=buildCrag(crng);
+  let fw=built?built.W:10,fh=built?built.H:9,pos=random(seed+'|crag-pos'),spots=[];
+  for(let ox=1;ox+fw<=size-1;ox++)for(let oy=1;oy+fh<=height-1;oy++){let ok=true;
+   for(let dy=0;dy<fh&&ok;dy++)for(let dx=0;dx<fw&&ok;dx++){if(!at(map,ox+dx,oy+dy))ok=false}
+   if(ok&&spawnCells.every(sc=>{let dx=sc.x-ox,dy=sc.y-oy;if(dx<0||dy<0||dx>=fw||dy>=fh)return true;return built?!built.g[dy*fw+dx].inR:false}))spots.push([ox,oy])}
+  if(spots.length){let [ox,oy]=spots[Math.floor(pos()*spots.length)],stamped=new Set();
+   for(let dy=0;dy<fh;dy++)for(let dx=0;dx<fw;dx++){let t0=at(map,ox+dx,oy+dy),h0,kind,prop,cliffT=false;if(built){let b=built.g[dy*fw+dx];if(!b.inR)continue;h0=b.h;kind=b.kind;prop=b.prop;cliffT=b.cliff}else[h0,kind,prop]=cragLegend[CRAG_OLD[dy][dx]];
+    t0.h=h0;t0.kind=kind;t0.prop=prop||null;t0.blocked=!!prop||!!cliffT;t0.stamp='crag';if(cliffT){t0.cliff=true;t0.obstacleHeight=-1}if(prop)t0.obstacleHeight=PROP_H[prop];keep.add(t0);stamped.add(t0)}
+   for(let t0 of tiles)if(!stamped.has(t0)&&t0.x>=ox-1&&t0.x<ox+fw+2&&t0.y>=oy-2&&t0.y<oy+fh+2)t0.h=Math.min(t0.h,1);
+   for(let changed=true;changed;){changed=false;for(let t0 of tiles){if(stamped.has(t0))continue;for(let [dx,dy] of N4){let n0=at(map,t0.x+dx,t0.y+dy);if(n0&&t0.h-n0.h>1){t0.h--;changed=true}}}}
+   map.crag={x:ox,y:oy,w:fw,h:fh}}}
  // 4. Props: frame trees on the border, a few clustered groves inside, hard cap on density.
  let interior=tiles.filter(t=>t.x>0&&t.y>0&&t.x<size-1&&t.y<height-1),cap=Math.round(interior.length*(mode==='battle'?.11:.09)),placed=0;
  // 3b. Ground types (walkable, with effects) in patches; spawn cells and lanes stay normal ground.
