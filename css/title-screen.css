@@ -1,0 +1,95 @@
+/* v50 · Title menu, prologue and loading screen. Colours follow the game windows (navy + gold). */
+:root{--ts-gold:#e8c374;--ts-gold-2:#b8862f;--ts-ink:#f5e6c4;--ts-dim:#c9bb98;--ts-navy:#121b2e;--ts-navy-2:#1d2a44}
+/* While the title is up the game underneath stays hidden (it keeps loading behind it). */
+html.title-boot body>*:not(#titleScreen):not(#gameLoading):not(.game-dialog):not(dialog):not(script){visibility:hidden!important}
+html.title-boot,html.title-boot body{overflow:hidden}
+
+#titleScreen.ts{position:fixed;inset:0;z-index:1900;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ts-ink);font:15px/1.5 system-ui,Tahoma,sans-serif;background:#070b10;overflow:hidden;transition:opacity .45s ease}
+#titleScreen.ts.ts-out{opacity:0;pointer-events:none}
+#titleScreen .ts-bg{position:absolute;inset:-4%;background:url('../assets/scenes/area-forest.webp') center/cover no-repeat;filter:saturate(.9) brightness(.62);animation:ts-drift 38s ease-in-out infinite alternate}
+#titleScreen .ts-veil{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 42%,#0000 0,#05080dcc 75%),linear-gradient(#0a101a00 40%,#05080df2)}
+@keyframes ts-drift{from{transform:scale(1.02) translate(-1%,0)}to{transform:scale(1.1) translate(1.5%,-1%)}}
+#titleScreen .ts-motes{position:absolute;inset:0;pointer-events:none}
+#titleScreen .ts-motes i{position:absolute;bottom:-10px;width:4px;height:4px;border-radius:50%;background:#ffd98a;box-shadow:0 0 8px 2px #ffb94a88;opacity:0;animation:ts-mote 11s linear infinite}
+#titleScreen .ts-motes i:nth-child(3n){width:3px;height:3px;animation-duration:14s}.ts-motes i:nth-child(4n){animation-duration:9s}
+#titleScreen .ts-motes i:nth-child(1){left:6%;animation-delay:0s}.ts-motes i:nth-child(2){left:13%;animation-delay:3s}.ts-motes i:nth-child(3){left:19%;animation-delay:6s}.ts-motes i:nth-child(4){left:26%;animation-delay:1.5s}.ts-motes i:nth-child(5){left:33%;animation-delay:8s}.ts-motes i:nth-child(6){left:39%;animation-delay:4.5s}.ts-motes i:nth-child(7){left:45%;animation-delay:10s}.ts-motes i:nth-child(8){left:51%;animation-delay:2s}.ts-motes i:nth-child(9){left:57%;animation-delay:7s}.ts-motes i:nth-child(10){left:63%;animation-delay:.8s}.ts-motes i:nth-child(11){left:69%;animation-delay:5.5s}.ts-motes i:nth-child(12){left:75%;animation-delay:9s}.ts-motes i:nth-child(13){left:81%;animation-delay:3.6s}.ts-motes i:nth-child(14){left:87%;animation-delay:6.6s}.ts-motes i:nth-child(15){left:93%;animation-delay:1.1s}.ts-motes i:nth-child(16){left:23%;animation-delay:12s}.ts-motes i:nth-child(17){left:60%;animation-delay:11.5s}.ts-motes i:nth-child(18){left:84%;animation-delay:13s}
+@keyframes ts-mote{0%{transform:translate(0,0);opacity:0}12%{opacity:.85}80%{opacity:.5}100%{transform:translate(40px,-92vh);opacity:0}}
+
+#titleScreen .ts-main{position:relative;display:flex;flex-direction:column;align-items:center;gap:34px;animation:ts-rise .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ts-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+#titleScreen .ts-brand{text-align:center}
+#titleScreen .ts-kicker{display:block;font:600 11px/1 system-ui,sans-serif;letter-spacing:.32em;color:var(--ts-gold);opacity:.85}
+#titleScreen .ts-brand h1{margin:12px 0 4px;font:700 clamp(54px,8vw,96px)/1 Georgia,'Times New Roman',serif;letter-spacing:.02em;background:linear-gradient(#fff4d2 10%,#f0c870 52%,#a8701e 92%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #2a1806) drop-shadow(0 10px 26px #000c)}
+#titleScreen .ts-brand p{margin:0;font-size:17px;letter-spacing:.2em;color:var(--ts-dim);text-shadow:0 2px 8px #000}
+#titleScreen .ts-menu{display:flex;flex-direction:column;gap:6px;width:min(360px,calc(100vw - 40px))}
+#titleScreen .ts-menu button{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:11px 22px 11px 44px;border:1px solid #d9b46b33;border-radius:10px;background:linear-gradient(90deg,#121b2ed9,#121b2e8c);color:var(--ts-ink);cursor:pointer;text-align:left;transition:background .15s,border-color .15s,transform .15s}
+#titleScreen .ts-menu button span{font:700 19px/1.2 Georgia,serif;letter-spacing:.03em}
+#titleScreen .ts-menu button small{font-size:12px;color:var(--ts-dim)}
+#titleScreen .ts-menu button::before{content:'';position:absolute;left:18px;top:50%;width:9px;height:9px;margin-top:-5px;border:2px solid var(--ts-gold);transform:rotate(45deg) scale(.4);opacity:0;transition:.15s}
+#titleScreen .ts-menu button:not(:disabled):hover,#titleScreen .ts-menu button:not(:disabled):focus-visible{outline:none;border-color:var(--ts-gold);background:linear-gradient(90deg,#3a2c12f0,#1d2a44cc);transform:translateX(4px);color:var(--ts-ink);text-shadow:none}
+#titleScreen .ts-menu button:not(:disabled):hover::before,#titleScreen .ts-menu button:not(:disabled):focus-visible::before{opacity:1;transform:rotate(45deg) scale(1);background:#ffd98a55}
+#titleScreen .ts-menu button:disabled{opacity:.42;cursor:not-allowed}
+#titleScreen .ts-foot{position:absolute;left:0;right:0;bottom:16px;display:flex;justify-content:space-between;padding:0 24px;font-size:11px;letter-spacing:.08em;color:#c9bb9899}
+
+/* Extra: how to play · gallery · credits */
+#titleScreen .ts-extra{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;background:#04070cb8;backdrop-filter:blur(3px)}
+#titleScreen .ts-extra-box{width:min(860px,calc(100vw - 32px));max-height:calc(100dvh - 48px);display:flex;flex-direction:column;background:linear-gradient(var(--ts-navy-2),var(--ts-navy));border:2px solid #d9b46b;border-radius:14px;box-shadow:0 0 0 4px #00000055,0 20px 60px #000d}
+#titleScreen .ts-extra-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #d9b46b44}
+#titleScreen .ts-tabs{display:flex;gap:6px}
+#titleScreen .ts-tabs button,#titleScreen .ts-close{padding:7px 14px;border-radius:8px;border:1px solid #a88a5866;background:#0d1424;color:var(--ts-dim);font:600 14px system-ui,sans-serif;cursor:pointer}
+#titleScreen .ts-tabs button[aria-selected=true]{background:linear-gradient(#f0c560,#c9901f);border-color:#7a4b06;color:#2a1a05}
+#titleScreen .ts-close{padding:7px 11px}
+#titleScreen .ts-tabs button:focus-visible,#titleScreen .ts-close:focus-visible{outline:2px solid var(--ts-gold);outline-offset:2px}
+#titleScreen .ts-extra-body{overflow:auto;padding:16px 22px 22px}
+#titleScreen .ts-howto,#titleScreen .ts-credits{display:grid;grid-template-columns:150px 1fr;gap:12px 18px;margin:0}
+#titleScreen .ts-howto dt,#titleScreen .ts-credits dt{font:700 15px Georgia,serif;color:var(--ts-gold)}
+#titleScreen .ts-howto dd,#titleScreen .ts-credits dd{margin:0;color:var(--ts-ink)}
+#titleScreen .ts-extra-body h3{margin:18px 0 8px;font:700 15px Georgia,serif;color:var(--ts-gold)}
+#titleScreen .ts-gal-count{margin:0;color:var(--ts-dim);font-size:13px}
+#titleScreen .ts-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+#titleScreen .ts-gal-item{aspect-ratio:1;padding:0;border:1px solid #d9b46b55;border-radius:8px;overflow:hidden;background:#0a101c;cursor:zoom-in}
+#titleScreen .ts-gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+#titleScreen .ts-gal-item:hover img{transform:scale(1.06)}
+#titleScreen .ts-gal-item.locked{display:grid;place-items:center;cursor:default;color:#d9b46b55;font:700 28px Georgia,serif;background:repeating-linear-gradient(45deg,#0c1220 0 8px,#0f1728 8px 16px)}
+#titleScreen .ts-viewer{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:#000d;cursor:zoom-out}
+#titleScreen .ts-viewer img{max-width:92vw;max-height:88vh;border:2px solid #d9b46b;border-radius:10px;box-shadow:0 20px 60px #000}
+
+/* Prologue */
+#titleScreen .ts-story{position:absolute;inset:0;z-index:4;display:flex;align-items:flex-end;justify-content:center;background:#000;cursor:pointer;outline:none}
+#titleScreen .ts-story-bg{position:absolute;inset:-3%;background:center/cover no-repeat;filter:brightness(.55) saturate(.85)}
+#titleScreen .ts-story-bg.ts-pan{animation:ts-pan 12s ease-out both}
+@keyframes ts-pan{from{opacity:0;transform:scale(1.08)}12%{opacity:1}to{opacity:1;transform:scale(1)}}
+#titleScreen .ts-story-veil{position:absolute;inset:0;background:linear-gradient(#0000 35%,#000d 82%)}
+#titleScreen .ts-story-text{position:relative;width:min(760px,calc(100vw - 48px));min-height:5.4em;margin-bottom:96px;font:400 clamp(17px,2.1vw,22px)/1.8 Georgia,'Noto Serif Thai',serif;color:#fbf0d6;text-shadow:0 2px 10px #000;white-space:pre-line;text-align:center}
+#titleScreen .ts-story-text.ts-line{animation:ts-fade .5s ease both}
+@keyframes ts-fade{from{opacity:0}to{opacity:1}}
+#titleScreen .ts-story-hint{position:absolute;bottom:40px;font-size:12px;letter-spacing:.12em;color:#c9bb98aa;animation:ts-blink 2.2s ease-in-out infinite}
+@keyframes ts-blink{50%{opacity:.35}}
+#titleScreen .ts-skip{position:absolute;top:20px;right:22px;padding:7px 14px;border-radius:8px;border:1px solid #d9b46b66;background:#0d1424cc;color:var(--ts-ink);font:600 13px system-ui,sans-serif;cursor:pointer}
+#titleScreen .ts-name{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 32px));padding:22px 24px;text-align:center;background:linear-gradient(var(--ts-navy-2),var(--ts-navy));border:2px solid #d9b46b;border-radius:14px;box-shadow:0 0 0 4px #00000055,0 20px 60px #000d;cursor:default;animation:ts-rise .5s both}
+#titleScreen .ts-name h2{margin:10px 0 14px;font:700 26px Georgia,serif;color:#ffe8a6}
+#titleScreen .ts-name input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:9px;border:1px solid #a88a58;background:#f7e8c5;color:#2a2318;font:600 18px system-ui,sans-serif;text-align:center}
+#titleScreen .ts-name input:focus{outline:3px solid #ffe8a6;outline-offset:2px}
+#titleScreen .ts-name p{margin:8px 0 16px;font-size:12px;color:var(--ts-dim)}
+#titleScreen .ts-name button{width:100%;padding:11px;border-radius:9px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9901f);color:#2a1a05;font:700 16px system-ui,sans-serif;cursor:pointer}
+#titleScreen .ts-name button:focus-visible{outline:3px solid #ffe8a6;outline-offset:2px}
+#titleScreen.ts.ts-quick .ts-main{animation:none;opacity:0}
+
+/* Loading screen */
+#gameLoading.gl{position:fixed;inset:0;z-index:1950;display:flex;align-items:flex-end;justify-content:center;background:#05080d;color:var(--ts-ink);font:14px/1.5 system-ui,Tahoma,sans-serif;transition:opacity .38s ease}
+#gameLoading.gl[hidden],#titleScreen.ts [hidden]{display:none!important}
+#gameLoading.gl.gl-out{opacity:0;pointer-events:none}
+#gameLoading .gl-bg{position:absolute;inset:0;background:center/cover no-repeat;filter:blur(2px) brightness(.38) saturate(.8);transform:scale(1.04)}
+#gameLoading .gl-box{position:relative;width:min(560px,calc(100vw - 40px));margin-bottom:9vh}
+#gameLoading .gl-kicker{font:600 11px/1 system-ui,sans-serif;letter-spacing:.32em;color:var(--ts-gold)}
+#gameLoading .gl-title{margin:8px 0 14px;font:700 28px Georgia,serif;color:#ffe8a6;text-shadow:0 3px 14px #000}
+#gameLoading .gl-bar{height:10px;border-radius:6px;background:#0b1220;border:1px solid #d9b46b66;overflow:hidden;box-shadow:inset 0 1px 3px #000}
+#gameLoading .gl-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a8701e,#f0c870 70%,#fff2c8);box-shadow:0 0 12px #f0c87088;transition:width .18s ease-out}
+#gameLoading .gl-meta{display:flex;justify-content:space-between;margin-top:7px;font-size:12px;color:var(--ts-dim)}
+#gameLoading .gl-meta b{color:var(--ts-gold);font-variant-numeric:tabular-nums}
+#gameLoading .gl-skip{margin-top:14px;padding:8px 16px;border-radius:9px;border:1px solid #d9b46b88;background:#0d1424cc;color:var(--ts-ink);font:600 13px system-ui,sans-serif;cursor:pointer}
+#gameLoading .gl-skip:hover,#gameLoading .gl-skip:focus-visible{border-color:var(--ts-gold);background:#3a2c12;color:var(--ts-ink)}
+#gameLoading .gl-tip{margin:18px 0 0;font-size:13px;color:#c9bb98cc}
+
+@media (max-width:640px){#titleScreen .ts-howto,#titleScreen .ts-credits{grid-template-columns:1fr;gap:2px 0}#titleScreen .ts-howto dd,#titleScreen .ts-credits dd{margin-bottom:10px}#titleScreen .ts-foot span:last-child{display:none}}
+@media (prefers-reduced-motion:reduce){#titleScreen .ts-bg,#titleScreen .ts-motes i,#titleScreen .ts-main,#titleScreen .ts-story-bg.ts-pan,#titleScreen .ts-story-text.ts-line,#titleScreen .ts-story-hint,#titleScreen .ts-name{animation:none}#titleScreen .ts-motes{display:none}}

@@ -11,5 +11,5 @@ function askHeroName(first){if(typeof s==='undefined'||!s.village)return;let cur
 function syncHeroName(){document.querySelectorAll('[data-hero-name]').forEach(el=>{if(el.textContent!==heroName())el.textContent=heroName()});document.title=heroName()+' · Project A'}
 window.HeroIdentity={PLAYABLE,leaderKey,heroName,askHeroName,syncHeroName};
 document.addEventListener('click',e=>{if(e.target.closest('[data-hero-name],.hero-face,#heroFace'))askHeroName(false)});
-window.addEventListener('load',()=>{setTimeout(()=>{syncHeroName();let ed=/[?&]editor=/.test(location.search);if(!ed&&typeof s!=='undefined'&&s.village&&!s.village.heroName&&!navigator.webdriver)askHeroName(true)},600)});
+window.addEventListener('load',()=>{setTimeout(()=>{syncHeroName();let ed=/[?&]editor=/.test(location.search);if(!ed&&!window.TitleScreen?.active&&typeof s!=='undefined'&&s.village&&!s.village.heroName&&!navigator.webdriver)askHeroName(true)},600)});
 setInterval(syncHeroName,800);

@@ -16,7 +16,7 @@ try{const saved=JSON.parse(localStorage.getItem(KEY)||'{}');for(const o of locat
 let W,H,scale=1,pan={x:0,y:0},zoom=1,editing=false,showRoutes=false,showGrid=false,showLabels=false,selected=null,path=[],destination=null,notice='',time=0,last=0;
 const images={};TownArt.onLoad(()=>terrainDirty=true);
 for(const [key,file]of Object.entries({grass:'grass.png',paving:'paving.png',soil:'soil.png',details:'meadow-details.png',pond:'garden-pond.png'})){images[key]=new Image();images[key].onload=()=>terrainDirty=true;images[key].src='assets/village-town/'+file}images.house=new Image();images.house.src=HOUSE;for(const [id,src]of Object.entries(BUILDINGS)){images['building_'+id]=new Image();images['building_'+id].src=src;}
-const hero={...inv(19*MX,44*MY),dir:'SE'};
+const hero={...inv(19*MX,44*MY),dir:'SE',dir8:'SE'};
 function valid(p){return p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=2&&p.x<=98&&p.y>=2&&p.y<=98&&(!p.facing||['SE','SW'].includes(p.facing))}
 function project(u,v,z=0){return{x:2240+(u-v)*28,y:1232+(u+v)*14-z}}
 function inv(x,y){return{u:((x-2240)/28+(y-1232)/14)/2,v:((y-1232)/14-(x-2240)/28)/2}}
@@ -77,19 +77,64 @@ function route(start,end,test=blocked){start=nearestUsing(start,test,3);end=near
  cost.set(key(start),0);push({...start,g:0,f:heuristic(start)});let found=null,iterations=0;
  while(open.length&&iterations++<160000){const a=pop(),ak=key(a);if(a.g>cost.get(ak))continue;if(ak===key(end)){found=a;break}for(const [du,dv]of [[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5],[.5,-.5],[-.5,.5],[-.5,-.5]]){const b={u:a.u+du,v:a.v+dv},bk=key(b);if(test(b.u,b.v)||!clearSegment(a,b,test))continue;const nc=a.g+Math.hypot(du,dv);if(nc>=(cost.get(bk)??Infinity))continue;cost.set(bk,nc);prev.set(bk,a);push({...b,g:nc,f:nc+heuristic(b)})}}
  if(!found)return[];const out=[{u:found.u,v:found.v}];while(key(found)!==key(start)){found=prev.get(key(found));out.push({u:found.u,v:found.v})}return out.reverse()}
-function findPath(start,end){if(blocked(end.u,end.v))return[];const p=route(start,end);return p.length&&clearSegment(start,p[0],blocked)?p:[]}
-function smoothRoad(points){if(points.length<3)return points.map(p=>project(p.u,p.v));const short=[points[0]];let i=0;while(i<points.length-1){let j=points.length-1;while(j>i+1&&!clearSegment(points[i],points[j],blockedRoad))j--;short.push(points[j]);i=j}const out=[short[0]];for(let i=1;i<short.length-1;i++){const a=short[i-1],b=short[i],c=short[i+1],f=.24,before={u:b.u+(a.u-b.u)*f,v:b.v+(a.v-b.v)*f},after={u:b.u+(c.u-b.u)*f,v:b.v+(c.v-b.v)*f},curve=[];for(let j=0;j<=10;j++){const t=j/10;curve.push({u:(1-t)**2*before.u+2*(1-t)*t*b.u+t*t*after.u,v:(1-t)**2*before.v+2*(1-t)*t*b.v+t*t*after.v})}if(curve.every((p,j)=>!blockedRoad(p.u,p.v)&&(!j||clearSegment(curve[j-1],p,blockedRoad))))out.push(...curve);else out.push(b)}out.push(short.at(-1));return out.map(p=>project(p.u,p.v))}
+// v50 · grid roads — every road runs along the tile axes (u/v = the screen diagonals) and turns only at tile
+// centres, so the hero walks a road in straight lines. Walking uses the same tiles; facing is resolved in 8 directions.
+const cellKey=(u,v)=>u+','+v;let roadCells=new Map();
+function snapCell(p,test=blockedRoad,max=4){const u0=Math.round(p.u),v0=Math.round(p.v);for(let r=0;r<=max;r++){let best=null,bd=Infinity;for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++){if(Math.max(Math.abs(a),Math.abs(b))!==r)continue;const u=u0+a,v=v0+b;if(test(u,v))continue;const d=Math.hypot(u-p.u,v-p.v);if(d<bd){bd=d;best={u,v}}}if(best)return best}return null}
+const GRID_DIRS=[[1,0],[0,1],[-1,0],[0,-1]];
+// Shortest tile route in 4 directions with a turn penalty (straight roads). goal=null → stop at any tile of `network`
+// (existing roads are cheaper, so new roads merge into them instead of running beside them).
+function gridRoute(start,goal,test=blockedRoad,network=null,turn=3){if(!start)return[];const net=network||new Map();if(!goal&&net.has(cellKey(start.u,start.v)))return[{u:start.u,v:start.v}];
+ const h=goal?(u,v)=>Math.abs(u-goal.u)+Math.abs(v-goal.v):()=>0,sk=(u,v,d)=>u+','+v+','+d,open=[],best=new Map(),prev=new Map();
+ const push=n=>{open.push(n);let i=open.length-1;while(i>0){const j=(i-1)>>1;if(open[j].f<=n.f)break;open[i]=open[j];i=j}open[i]=n};
+ const pop=()=>{const n=open[0],last=open.pop();if(open.length){let i=0;while(i*2+1<open.length){let j=i*2+1;if(j+1<open.length&&open[j+1].f<open[j].f)j++;if(open[j].f>=last.f)break;open[i]=open[j];i=j}open[i]=last}return n};
+ const s0=sk(start.u,start.v,-1);best.set(s0,0);push({u:start.u,v:start.v,d:-1,g:0,f:h(start.u,start.v),k:s0});let found=null,it=0;
+ while(open.length&&it++<250000){const n=pop();if(n.g>best.get(n.k))continue;if(goal?n.u===goal.u&&n.v===goal.v:n.d>=0&&net.has(cellKey(n.u,n.v))){found=n;break}
+  for(let d=0;d<4;d++){if(n.d>=0&&d===(n.d+2)%4)continue;const[du,dv]=GRID_DIRS[d],u=n.u+du,v=n.v+dv;if(test(u,v)||test(n.u+du/2,n.v+dv/2))continue;const k=sk(u,v,d),g=n.g+(net.has(cellKey(u,v))?.35:1)+(n.d>=0&&n.d!==d?turn:0);if(g>=(best.get(k)??Infinity))continue;best.set(k,g);prev.set(k,n);push({u,v,d,g,f:g+h(u,v),k})}}
+ if(!found)return[];const out=[];for(let n=found;n;n=prev.get(n.k))out.push({u:n.u,v:n.v});return out.reverse()}
+// Keep only the corners of a tile route.
+function corners(cells){const out=[];for(const c of cells){const a=out.at(-2),b=out.at(-1);if(b&&b.u===c.u&&b.v===c.v)continue;if(a&&b&&(a.u===b.u&&b.u===c.u||a.v===b.v&&b.v===c.v))out[out.length-1]=c;else out.push(c)}return out}
+// Every tile a polyline of axis-aligned corners passes over.
+function rasterize(points){const out=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[i+1];if(!b){out.push({u:Math.round(a.u),v:Math.round(a.v)});break}const n=Math.max(Math.abs(Math.round(b.u)-Math.round(a.u)),Math.abs(Math.round(b.v)-Math.round(a.v)),1);for(let k=0;k<n;k++)out.push({u:Math.round(a.u+(b.u-a.u)*k/n),v:Math.round(a.v+(b.v-a.v)*k/n)})}return out}
+// Snap a free-hand road (screen points) to tiles: each step becomes an L along the axes, picking the corner that is not blocked.
+function gridLine(points){const cells=[];for(const p of points){const q=inv(p.x,p.y),c={u:Math.round(q.u),v:Math.round(q.v)},l=cells.at(-1);if(!l||l.u!==c.u||l.v!==c.v)cells.push(c)}if(!cells.length)return[];const out=[cells[0]];
+ for(let i=1;i<cells.length;i++){const a=out.at(-1),b=cells[i];if(a.u!==b.u&&a.v!==b.v){const prev=out.at(-2),alongU=prev?prev.v===a.v:Math.abs(b.u-a.u)>=Math.abs(b.v-a.v),c1={u:b.u,v:a.v},c2={u:a.u,v:b.v};let c=alongU?c1:c2;if(blockedRoad(c.u,c.v))c=c===c1?c2:c1;out.push(c)}out.push(b)}
+ return corners(out).map(p=>project(p.u,p.v))}
+// Used when a road is re-routed (town editor): straight tile route between the two ends.
+function smoothRoad(points){if(!points.length)return[];const a=snapCell(points[0]),b=snapCell(points.at(-1)),cells=a&&b?gridRoute(a,b,blockedRoad):[];return cells.length?corners(cells).map(p=>project(p.u,p.v)):gridLine(points.map(p=>project(p.u,p.v)))}
+// Courtyard: a straight walk from the gate to the door (they share an axis).
+function courtLines(){const out=[];for(const o of locations){if(!estate(o))continue;const a=door(o),b=gate(o);if(clearSegment(a,b,blockedBase))out.push([project(a.u,a.v),project(b.u,b.v)]);else{const p=route(a,b,blockedBase);if(p.length)out.push(p.map(q=>project(q.u,q.v)))}}return out}
+function finishRoads(){roadPath=pathFromLines(roadLines);for(const l of courtLines())roadPath.addPath(pathFromLines([l]));
+ roadCells=new Map();for(const line of roadLines)for(const c of rasterize(line.map(p=>inv(p.x,p.y))))roadCells.set(cellKey(c.u,c.v),c);
+ const mg=roadMask.getContext('2d',{willReadFrequently:true});mg.setTransform(1,0,0,1,0,0);mg.clearRect(0,0,WORLD_W,WORLD_H);mg.save();mg.scale(1,.5);mg.strokeStyle='#fff';mg.lineCap='round';mg.lineJoin='round';mg.lineWidth=108;mg.stroke(roadPath);for(const o of locations)if(estate(o))mg.fill(courtPath(o));mg.restore();roadPixels=mg.getImageData(0,0,WORLD_W,WORLD_H).data;terrainDirty=true;
+ const bad=connectionReport().filter(p=>!p.connected);$('connection').classList.toggle('warning',bad.length>0);$('connection').textContent=bad.length?'ทางยังไม่เชื่อม: '+bad.map(p=>p.name).join(', '):'ถนนเชื่อมครบ 9 สถานที่และ 6 ทางออก · ตามแนวกริด'}
+// Walking: off-road leg onto the nearest road tile → along road tiles → off-road leg to the goal.
+function courtOf(p){return locations.find(o=>{const e=estate(o);if(!e)return false;if(Math.hypot(door(o).u-p.u,door(o).v-p.v)<.9)return true;const q=canonical(o,p.u,p.v),a=q.u-e.u,b=q.v-e.v;return a>e.left&&a<e.right&&b>e.back&&b<e.front+1})}
+function roadEntry(p){const list=[...roadCells.values()].map(c=>({c,d:Math.hypot(c.u-p.u,c.v-p.v)})).filter(x=>x.d<9).sort((a,b)=>a.d-b.d);for(const x of list.slice(0,40))if(clearSegment(p,x.c,blocked))return x.c;return null}
+function findPath(start,end){if(blocked(end.u,end.v))return[];const from=courtOf(start),to=courtOf(end),A=from?gate(from):start,B=to?gate(to):end;
+ if(from&&to&&from===to)return[{u:end.u,v:end.v}];
+ const S=roadEntry(A),G=roadEntry(B);let mid=[];
+ if(S&&G){const cells=gridRoute(S,G,(u,v)=>Number.isInteger(u)&&Number.isInteger(v)&&!roadCells.has(cellKey(u,v)),null,1.5);if(cells.length)mid=corners(cells)}
+ if(!mid.length){const p=route(start,end);return p.length&&clearSegment(start,p[0],blocked)?p:[]}
+ const out=[...(from?[door(from),A]:[]),...mid,...(to?[B]:[]),{u:end.u,v:end.v}],clean=[];out.forEach((p,i)=>{const l=clean.at(-1)||start;if(Math.hypot(p.u-l.u,p.v-l.v)>(i===out.length-1?.05:.45))clean.push({u:p.u,v:p.v})})
+ // Short direct hops (both points already on one straight road piece) skip the detour onto the centre line.
+ if(Math.hypot(end.u-start.u,end.v-start.v)<2.5&&clearSegment(start,end,blocked))return[{u:end.u,v:end.v}];return clean}
+const DIR8=['E','SE','S','SW','W','NW','N','NE'];
+function facing8(du,dv){const x=(du-dv)*28,y=(du+dv)*28,i=((Math.round(Math.atan2(y,x)/(Math.PI/4))%8)+8)%8;return DIR8[i]}
+// Sprites exist for the 4 diagonal views; a pure N/S/E/W step keeps the other half of the previous view.
+function spriteDir(d8,prev){if(d8.length===2)return d8;prev=prev||'SE';return d8==='N'||d8==='S'?d8+prev[1]:prev[0]+d8}
+
 function exitDoors(){return exits.map(e=>({name:e[0],...inv(e[1]*MX,Math.max(30,Math.min(WORLD_H-30,e[2]*MY)))}))}
 function pathFromLines(lines){const path=new Path2D();for(const points of lines){if(!points.length)continue;path.moveTo(points[0].x,points[0].y*2);for(const p of points.slice(1))path.lineTo(p.x,p.y*2)}return path}
 function connectionReport(){const start=door(locations[0]);return [...locations.map(o=>({id:o.id,name:o.name,...door(o)})),...exitDoors()].map(p=>({id:p.id||p.name,name:p.name,connected:!blocked(p.u,p.v)&&(key(nearest(start))===key(nearest(p))||findPath(start,p).length>0)}))}
-function rebuildRoads(){cacheSolids();roadLines=[];const fountain=center(locations.find(o=>o.id==='square')),fp=project(fountain.u,fountain.v),ring=[];for(let i=0;i<=96;i++){const a=i/96*Math.PI*2;ring.push({x:fp.x+264*Math.cos(a),y:fp.y+132*Math.sin(a)})}roadLines.push(ring);
- const terminals=[...locations.filter(o=>o.id!=='square').map(o=>gate(o)),...exitDoors()];
- for(const target of terminals){const candidates=roadLines.flatMap(line=>line.filter((_,i)=>i%2===0)).map(p=>inv(p.x,p.y)).sort((a,b)=>Math.hypot(a.u-target.u,a.v-target.v)-Math.hypot(b.u-target.u,b.v-target.v));let found=[];for(const start of candidates.slice(0,8)){found=route(target,start,blockedRoad);if(found.length)break}if(found.length)roadLines.push(smoothRoad(found))}
- // Add a short approach from the ring to the fountain interaction point.
- const sd=door(locations.find(o=>o.id==='square')),sp=project(sd.u,sd.v);let near=ring.slice().sort((a,b)=>Math.hypot(a.x-sp.x,(a.y-sp.y)*2)-Math.hypot(b.x-sp.x,(b.y-sp.y)*2))[0];const approach=route(sd,inv(near.x,near.y),blockedBase);if(approach.length)roadLines.push(smoothRoad(approach));
- roadPath=pathFromLines(roadLines);for(const o of locations){const e=estate(o);if(!e)continue;const a=door(o),b=gate(o);const p=route(a,b,blockedBase);if(p.length)roadPath.addPath(pathFromLines([p.map(q=>project(q.u,q.v))]));}const mg=roadMask.getContext('2d',{willReadFrequently:true});mg.setTransform(1,0,0,1,0,0);mg.clearRect(0,0,WORLD_W,WORLD_H);mg.save();mg.scale(1,.5);mg.strokeStyle='#fff';mg.lineCap='round';mg.lineJoin='round';mg.lineWidth=108;mg.stroke(roadPath);for(const o of locations)if(estate(o))mg.fill(courtPath(o));mg.restore();roadPixels=mg.getImageData(0,0,WORLD_W,WORLD_H).data;terrainDirty=true;
- const report=connectionReport(),bad=report.filter(p=>!p.connected);$('connection').classList.toggle('warning',bad.length>0);$('connection').textContent=bad.length?'ทางยังไม่เชื่อม: '+bad.map(p=>p.name).join(', '):'ถนนเชื่อมครบ 9 สถานที่และ 6 ทางออก';
-}
+function rebuildRoads(){cacheSolids();roadLines=[];const sq=locations.find(o=>o.id==='square'),fc=center(sq),c={u:Math.round(fc.u),v:Math.round(fc.v)},R=5,network=new Map();
+ const add=pts=>{roadLines.push(pts.map(p=>project(p.u,p.v)));for(const q of rasterize(pts))network.set(cellKey(q.u,q.v),q)};
+ // The plaza is a square loop on the grid around the fountain.
+ add([[-R,-R],[R,-R],[R,R],[-R,R],[-R,-R]].map(([a,b])=>({u:c.u+a,v:c.v+b})));
+ const terminals=[...locations.filter(o=>estate(o)).map(o=>gate(o)),...exitDoors()].sort((a,b)=>Math.hypot(a.u-c.u,a.v-c.v)-Math.hypot(b.u-c.u,b.v-c.v));
+ for(const t of terminals){const cells=gridRoute(snapCell(t),null,blockedRoad,network);if(cells.length>1)add(corners(cells))}
+ const sd=door(sq),sc=snapCell(sd,blockedBase);if(sc){const cells=gridRoute(sc,null,blockedBase,network);if(cells.length>1)add(corners(cells))}
+ finishRoads()}
 
 function travel(o){if(editing){selected=o.id;renderList();$('status').textContent=o.name+' · หัน '+o.facing+' · ใช้ปุ่มสลับหน้าอาคารเพื่อเปลี่ยน';return;}closePlaces();selected=o.id;destination=o;path=findPath(hero,door(o));$('status').textContent=path.length?'กำลังเดินไป'+o.name:(Math.hypot(hero.u-door(o).u,hero.v-door(o).v)<1.5?'อยู่ที่ทางเข้า'+o.name:'ทางเข้าไม่ได้เชื่อมกับถนน กรุณาตรวจผัง');renderList();if(!path.length&&Math.hypot(hero.u-door(o).u,hero.v-door(o).v)<3)arrive()}
 function arrive(){if(!destination)return;const o=destination;destination=null;parent.postMessage({source:'project-a-town',type:'arrive',id:o.id},'*');if(o.id.startsWith('exit:')){$('status').textContent='ถึง'+o.name;return;}$('status').textContent='ถึง'+o.name+'แล้ว';if(['home','forge','market'].includes(o.id))return;$('arrival').querySelector('h2').textContent=o.name;if(!$('arrival').open)$('arrival').showModal()}
@@ -106,12 +151,12 @@ function drawTerrain(){
  for(const e of exits){g.fillStyle='#f2e5be';g.font='11px VillageThai,system-ui';g.textAlign='center';g.fillText('◇ '+e[0],e[1]*MX,e[2]*MY)}
 }
 
-function draw(t){if(document.hidden||!townActive){last=t;requestAnimationFrame(draw);return}time=t;const dt=Math.min(.1,(t-last)/1000||0);last=t;if(path.length&&!editing){const b=path[0],du=b.u-hero.u,dv=b.v-hero.v,len=Math.hypot(du,dv),step=dt*8;if(len<=step){hero.u=b.u;hero.v=b.v;path.shift();if(!path.length)arrive()}else{hero.u+=du/len*step;hero.v+=dv/len*step;const p=project(du,dv),zero=project(0,0),dx=p.x-zero.x,dy=p.y-zero.y;hero.dir=dy>=0?(dx>=0?'SE':'SW'):(dx>=0?'NE':'NW')}}
+function draw(t){if(document.hidden||!townActive){last=t;requestAnimationFrame(draw);return}time=t;const dt=Math.min(.1,(t-last)/1000||0);last=t;if(path.length&&!editing){const b=path[0],du=b.u-hero.u,dv=b.v-hero.v,len=Math.hypot(du,dv),step=dt*8;if(len<=step){hero.u=b.u;hero.v=b.v;path.shift();if(!path.length)arrive()}else{hero.u+=du/len*step;hero.v+=dv/len*step;hero.dir8=facing8(du,dv);hero.dir=spriteDir(hero.dir8,hero.dir)}}
  window.TownUX?.update(dt,t);g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.fillStyle=TownArt.pattern(g,'grass')||'#7d906b';g.fillRect(0,0,W,H);g.translate(W/2+pan.x,H/2+pan.y);g.scale(scale*zoom,scale*zoom);g.translate(-WORLD_W/2,-WORLD_H/2);
  if(terrainDirty){const mainG=g;g=terrain.getContext('2d');g.clearRect(0,0,WORLD_W,WORLD_H);drawTerrain();g=mainG;terrainDirty=false}g.drawImage(terrain,0,0);window.TownUX?.ground(g,t);
 
  if(path.length){g.strokeStyle='#e8d496';g.lineWidth=2.5;g.setLineDash([5,6]);g.beginPath();let p=project(hero.u,hero.v);g.moveTo(p.x,p.y);for(const a of path){p=project(a.u,a.v);g.lineTo(p.x,p.y)}g.stroke();g.setLineDash([]);const end=project(path.at(-1).u,path.at(-1).v);ellipse(end.x,end.y,13,6,'#f4dc9f88')}
- TownArt.begin(g,project(hero.u,hero.v));const objects=[...estateObjects(),...locations.map(o=>({y:(canonical(o,hero.u,hero.v).v>center(o).v+o.d+.2||canonical(o,hero.u,hero.v).u>center(o).u+o.w+.2)?Math.min(o.y*MY,project(hero.u,hero.v).y-.1):o.y*MY,draw:()=>{g.save();building(o);g.restore()}})),...(window.VillageNature?.objects()||[]),{y:project(hero.u,hero.v).y,draw:()=>{const p=project(hero.u,hero.v);ellipse(p.x,p.y,16.9,7.8,'#182b2877');TownArt.hero(g,p,hero.dir,t,path.length>0,93.6)}}];objects.sort((a,b)=>a.y-b.y).forEach(o=>o.draw());
+ TownArt.begin(g,project(hero.u,hero.v));const objects=[...estateObjects(),...locations.map(o=>({y:(canonical(o,hero.u,hero.v).v>center(o).v+o.d+.2||canonical(o,hero.u,hero.v).u>center(o).u+o.w+.2)?Math.min(o.y*MY,project(hero.u,hero.v).y-.1):o.y*MY,draw:()=>{g.save();building(o);g.restore()}})),...(window.VillageNature?.objects()||[]),{y:project(hero.u,hero.v).y,draw:()=>{const p=project(hero.u,hero.v);ellipse(p.x,p.y,16.9,7.8,'#182b2877');TownArt.hero(g,p,hero.dir,t,path.length>0,93.6,hero.dir8)}}];objects.sort((a,b)=>a.y-b.y).forEach(o=>o.draw());
  for(const o of locations){const p=window.TownUX?.labelPoint(o)||{x:o.x*MX,y:o.y*MY};if(showLabels||editing||selected===o.id||hovered===o.id){g.font='13px VillageThai,system-ui';g.textAlign='center';const text=o.num+'  '+o.name,w=g.measureText(text).width+22;g.fillStyle=selected===o.id?'#8b7146ee':'#24382fe8';g.fillRect(p.x-w/2,p.y+12,w,25);g.fillStyle='#f6e8bd';g.fillText(text,p.x,p.y+30)}if(editing){ellipse(p.x,p.y,11,11,'#e9cb7b');g.fillStyle='#3e442f';g.font='bold 11px sans-serif';g.textAlign='center';g.fillText(o.num,p.x,p.y+4)}}
  window.TownUX?.overlay(g,t);requestAnimationFrame(draw)}
 function focusHero(){const p=project(hero.u,hero.v);pan={x:-(p.x-WORLD_W/2)*scale*zoom,y:H*.15-(p.y-WORLD_H/2)*scale*zoom}}
@@ -134,7 +179,7 @@ $('toolsBtn').onclick=()=>{const p=$('toolsPanel');p.hidden=!p.hidden;$('toolsBt
 $('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch(e){$('status').textContent='เบราว์เซอร์ไม่รองรับโหมดเต็มจอ'}};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePlaces();$('toolsPanel').hidden=true}});
 $('reset').onclick=()=>{if(!confirm('คืนผังทดลองเป็นตำแหน่งต้นฉบับ?'))return;locations.forEach((o,i)=>{o.x=base[i][2];o.y=base[i][3];o.facing=['home','inn','shop','temple'].includes(o.id)?'SE':'SW'});save();heroRestore();renderList()};
-window.Village25D={canonical,center,focusHero,getLocations:()=>locations.map(o=>({...o})),getHero:()=>({...hero}),findPath,door,blocked,travel,project,getPath:()=>path.map(p=>({...p})),getRoads:()=>roadLines,gate,estate,getCamera:()=>({W,H,scale,zoom,pan}),worldSize:()=>({width:WORLD_W,height:WORLD_H}),getExits:()=>exitDoors(),isOnRoad:(u,v)=>roadAt(u,v),blockedBase,connections:()=>connectionReport(),setHero:(p)=>{Object.assign(hero,p);path=[];destination=null}};
+window.Village25D={canonical,center,focusHero,getLocations:()=>locations.map(o=>({...o})),getHero:()=>({...hero}),findPath,door,blocked,travel,project,getPath:()=>path.map(p=>({...p})),getRoads:()=>roadLines,getRoadCells:()=>[...roadCells.values()].map(c=>({...c})),facing8,gate,estate,getCamera:()=>({W,H,scale,zoom,pan}),worldSize:()=>({width:WORLD_W,height:WORLD_H}),getExits:()=>exitDoors(),isOnRoad:(u,v)=>roadAt(u,v),blockedBase,connections:()=>connectionReport(),setHero:(p)=>{Object.assign(hero,p);path=[];destination=null}};
 let townActive=true,gameState=null;const hud=document.createElement('div');hud.id='townGameHud';hud.style.cssText='position:fixed;left:24px;top:118px;z-index:7;background:#213b2de8;padding:9px 14px;border:1px solid #b6c48e80;border-radius:10px;font-size:12px;pointer-events:none';document.body.appendChild(hud);
 const sendGame=(type,data={})=>parent.postMessage({source:'project-a-town',type,...data},'*');
 function showPlace(m){const o=locations.find(o=>o.id===m.id);$('arrival').querySelector('h2').textContent=o?.name||'กิจกรรม';$('arrival').querySelector('p').textContent=m.message||'';const holder=$('placeActions');holder.replaceChildren();for(const a of m.actions||[]){const b=document.createElement('button');b.textContent=a.name+' · '+a.cost;b.title=a.reason||a.effect;b.disabled=!!a.reason;b.style.cssText='margin:4px 0;text-align:left';b.onclick=()=>{sendGame('action',{id:a.id});$('arrival').close()};holder.appendChild(b)}if(m.id==='forge'&&m.ok){const b=document.createElement('button');b.textContent='ฝึกกับหุ่นฟาง';b.onclick=()=>{$('arrival').close();sendGame('menu',{id:'training'})};holder.appendChild(b)}if(!$('arrival').open)$('arrival').showModal()}
