@@ -16,7 +16,10 @@ function create(seed='HILL-02',mode='training'){
  for(const [x,y] of [[4,11],[8,17],[16,16],[7,7],[10,4],[14,4],[2,16],[21,19],[17,3]]){let t=at(x,y);if(t&&!t.void&&!t.route)Object.assign(t,{blocked:true,prop:'rock',obstacleHeight:1.2})}
  for(const t of tiles){t.exits=[];if(t.blocked)continue;for(const [dx,dy,a,b] of [[1,0,[1,2],[0,3]],[-1,0,[0,3],[1,2]],[0,1,[3,2],[0,1]],[0,-1,[0,1],[3,2]]]){const n=at(t.x+dx,t.y+dy);if(n&&!n.blocked&&Math.abs(t.h-n.h)<=1&&a.every((j,i)=>Math.abs(t.surfaceCorners[j]-n.surfaceCorners[b[i]])<.001))t.exits.push(key(n.x,n.y));}}
  const allies=[{x:5,y:23},{x:6,y:23},{x:5,y:22},{x:6,y:22},{x:7,y:23}],enemies=[{x:10,y:8},{x:11,y:8},{x:9,y:8},{x:10,y:9},{x:11,y:9},{x:9,y:9},{x:8,y:8},{x:8,y:9},{x:12,y:8},{x:12,y:9}];
- return {size:25,width,height,tiles,objects:[],seed,theme:'forest',variant:'terraced-hill',authoredTerrain:true,mode,clearance:[1,1],start:allies[0],enemy:enemies[0],spawns:{allies,enemies},landmarks:{summit:{x:11,y:8},eastFoot:{x:21,y:17}}};
+ const map={size:25,width,height,tiles,objects:[],seed,theme:'forest',variant:'terraced-hill',authoredTerrain:true,mode,clearance:[1,1],start:allies[0],enemy:enemies[0],spawns:{allies,enemies},landmarks:{summit:{x:11,y:8},eastFoot:{x:21,y:17}}};
+ // v51: steep terrace edges become FFT rock-face slopes (shared with the terrain modules)
+ const M=root.TacticsMapModules||(typeof require==='function'?require('./tactics-map-modules.js'):null);if(M?.cliffSkin)M.cliffSkin(map,seed);
+ return map;
 }
 root.TacticsTerracedHill={create};
 })(globalThis);

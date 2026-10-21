@@ -43,7 +43,26 @@ function create(seed='MODULES-01',mode='training',clearance=[1,1]){
  for(const t of tiles)if(!t.moduleId&&(Math.abs(t.x-17)<=1||Math.abs(t.y-17)<=1)){t.kind='path';t.route=true}
  const allies=[{x:17,y:32},{x:16,y:32},{x:18,y:32},{x:16,y:31},{x:18,y:31}],enemies=Array.from({length:10},(_,i)=>({x:15+i%5,y:1+Math.floor(i/5)}));
  const map={size:width,width,height:width,tiles,objects:[],seed:String(seed),theme:'forest',variant:'modular-wilds',authoredTerrain:true,mode,clearance:[...clearance],placements,start:allies[0],enemy:enemies[0],spawns:{allies,enemies},generatorVersion:1};
- connect(map);map.validation=validate(map);if(!map.validation.ok)throw Error('Invalid terrain modules: '+map.validation.unreachable.join(';'));return map;
+ connect(map);cliffSkin(map,seed);map.validation=validate(map);if(!map.validation.ok)throw Error('Invalid terrain modules: '+map.validation.unreachable.join(';'));return map;
 }
-root.TacticsMapModules={catalog,create,connect,validate};if(typeof module!=='undefined')module.exports=root.TacticsMapModules;
+// FFT cliff skin (v51): on authored terrain, a tile at the foot of a drop of 2+ levels becomes an unwalkable
+// rock face whose top tilts from the upper lip down to the ground (corner = tallest walkable tile touching that vertex).
+// Ramps, routes, bridges, water, spawns and their neighbours are left alone; anything that would cut a tile off is reverted.
+// Lip props (bushes / mossy rocks) are placed the same way. Rule heights of walkable tiles never change.
+function cliffSkin(map,seed){const W=map.width,H=map.height,at=(x,y)=>x<0||y<0||x>=W||y>=H?null:map.tiles[y*W+x],N4=[[1,0],[-1,0],[0,1],[0,-1]],OFF=[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]];
+ const spawn=new Set([...(map.spawns?.allies||[]),...(map.spawns?.enemies||[])].map(p=>key(p.x,p.y)));
+ const keep=t=>!t||t.void||t.route||t.ramp||t.bridge||t.terrainLocked||t.kind==='water'||spawn.has(key(t.x,t.y));
+ const ok=()=>{connect(map);return validate(map)},saved=new Map(),save=t=>{if(!saved.has(t))saved.set(t,{h:t.h,blocked:t.blocked,cliff:t.cliff,prop:t.prop,obstacleHeight:t.obstacleHeight,surfaceCorners:t.surfaceCorners})},restore=t=>{Object.assign(t,saved.get(t));if(!t.cliff)delete t.cliff;if(t.prop==null)t.prop=null};
+ let cliffs=map.tiles.filter(t=>!keep(t)&&!t.blocked&&!t.prop&&N4.some(([dx,dy])=>{const n=at(t.x+dx,t.y+dy);return n&&!n.void&&!n.cliff&&n.h>=t.h+2})&&!N4.some(([dx,dy])=>{const n=at(t.x+dx,t.y+dy);return n&&(n.route||n.ramp||n.bridge)}));
+ const skin=()=>{const cornerOf=(n,vx,vy)=>n.surfaceCorners[OFF.findIndex(([ox,oy])=>Math.abs(n.x+ox-vx)<.01&&Math.abs(n.y+oy-vy)<.01)];
+  for(const t of cliffs){t.surfaceCorners=OFF.map(([ox,oy])=>{const vx=t.x+ox,vy=t.y+oy;let best=saved.get(t).h;for(const[dx,dy]of[[0,0],[ox*2,0],[0,oy*2],[ox*2,oy*2]]){const n=at(t.x+dx,t.y+dy);if(n&&!n.void&&!n.cliff)best=Math.max(best,cornerOf(n,vx,vy))}return best});t.h=Math.max(...t.surfaceCorners)}};
+ for(const t of cliffs){save(t);Object.assign(t,{cliff:true,blocked:true,obstacleHeight:-1})}
+ // revert faces that would isolate a walkable tile (rare: narrow ledges)
+ for(let pass=0;pass<6;pass++){const v=ok();if(v.ok)break;const lost=new Set(v.unreachable);const back=cliffs.filter(t=>N4.some(([dx,dy])=>lost.has(key(t.x+dx,t.y+dy))));if(!back.length)break;for(const t of back)restore(t);cliffs=cliffs.filter(t=>!back.includes(t))}
+ skin();
+ let r=[...String(seed)].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7)%2147483646+1;const rnd=()=>(r=r*16807%2147483647)/2147483647;
+ for(const t of map.tiles){if(keep(t)||t.blocked||t.prop||t.cliff||t.h===0||!N4.some(([dx,dy])=>at(t.x+dx,t.y+dy)?.cliff)||N4.some(([dx,dy])=>{const n=at(t.x+dx,t.y+dy);return n&&(n.route||n.ramp)}))continue;if(rnd()>=.16)continue;
+  save(t);Object.assign(t,{prop:rnd()<.55?'bush':'mossrock',blocked:true,obstacleHeight:1});if(!ok().ok)restore(t)}
+ connect(map);return cliffs.length}
+root.TacticsMapModules={catalog,create,connect,validate,cliffSkin};if(typeof module!=='undefined')module.exports=root.TacticsMapModules;
 })(globalThis);
