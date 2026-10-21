@@ -109,7 +109,9 @@ const MODES={training:{size:19,width:18,height:19,label:'ฝึก 1 ต่อ 1
 const TALL={tree:1,pillar:1};
 // v52: one terrain renderer for every battle. Generated maps are converted to the authored format (per-corner heights,
 // exits by the ≤1 step rule, FFT cliff skin) and drawn by TacticsHillArt like the hand-made chunks. Rule heights are unchanged.
-function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){const map=generateRaw(seed,theme,mode,clearance);return map.authoredTerrain?map:toAuthored(map,seed)}
+// v54: about one battle in four is fought at night (by seed, so a seed always looks the same). Visual only — rules are unchanged.
+const NIGHT_CHANCE=.25;
+function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){const raw=generateRaw(seed,theme,mode,clearance),map=raw.authoredTerrain?raw:toAuthored(raw,seed);map.night=random(String(seed)+'|night')()<NIGHT_CHANCE;return map}
 function toAuthored(map,seed){const S=root.TacticsSurface||(typeof require==='function'?require('./tactics-surface.js'):null),M=root.TacticsMapModules||(typeof require==='function'?require('./tactics-map-modules.js'):null);if(!S||!M)return map;
  map.width=map.width||map.size;map.height=map.height||map.size;// every tile is flat at its own height: no auto-ramps (they left seams between equal-height tiles); steps of 1 show as rock faces, cliffs get the FFT skin
  map.tiles.forEach(t=>{t.surfaceCorners=[t.h,t.h,t.h,t.h]});
