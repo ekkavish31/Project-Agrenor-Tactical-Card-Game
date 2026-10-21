@@ -1,0 +1,42 @@
+Project A v49 — validation
+
+Baseline: Project A v38 + Asset Studio v46 + both delivered v48 patches.
+Browser: Chromium 138, Playwright, desktop 1440x900; additional file:// check.
+
+Passed:
+- All 9 places and 6 exits reachable using new entry positions at object footprint edges.
+- Hover over solid house pixels selects it, shows illustrated service preview and white outline.
+- Decline service confirmation leaves the hero outside and consumes no game time or stamina.
+- Walking away from the starting doorway does not immediately reopen that doorway's prompt.
+- Walking has small dust particles; cancel button stops path movement.
+- Camera follows during walking: measured hero position error stays within about 23 px per axis
+  around the centered framing, including turns. The small offset is intentional stabilization lag.
+- Render-order check: object behind hero stays at alpha 1; object covering hero fades to .42.
+- Dragging a label moves its own offset without moving the building.
+- Dragging a building changes access roads and keeps destinations reachable.
+- Moving an entrance to a different edge connects a walkable approach around the building.
+- Pointer-drawn road changes both visible street and navigation surface.
+- Dragging road control points changes both road art and walkability.
+- Undo and redo restore geometry.
+- Reload restores labels, entry points, building layout, hand-edited roads.
+- Export-shaped layout data roundtrips through the importer/validator.
+- Moving a building after manual road edits reconnects its road, retaining existing roads.
+- Moving the fountain moves its ring and reconnects attached streets.
+- Parent inventory dialog pauses town movement; closing resumes it.
+- Confirmed market entry loads the original v48 market; stabilized market camera centers hero.
+- file:// loads new editor, service confirmation and original home entry successfully.
+- file:// uses precomputed sprite alpha: empty transparent house corners are not hit as solid.
+- No JavaScript page errors during these checks.
+
+Unchanged systems:
+- BGM files and playlists from v48 are not replaced.
+- Main hero walk frames, frame timings and Asset Studio manifests are not replaced.
+- Existing home/forge services, save and market services remain in the parent game.
+
+Limits:
+- Editing can intentionally disconnect roads or overlap estates; connection warning identifies
+  unreachable destinations. There is no invisible fallback walking across grass/buildings.
+- Entrances follow logical building footprints, not shadows or decorative leaves in the artwork.
+- Inactive places in the existing game still have no new gameplay services.
+- Default village/market sprites have precomputed alpha data. Custom replacement art may need
+  matching alpha data if used on file:// and the browser blocks pixel reads.

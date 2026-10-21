@@ -1,0 +1,38 @@
+{
+  "source": "exec-b8d4f1ab-88cc-4f3c-8fea-75815380ae57.png",
+  "file": "assets/enemies/animations/v34/cultist-native-sw.png",
+  "approvedSourceCells": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    7
+  ],
+  "rejectedSourceCells": [
+    3,
+    6,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "fallbacks": {
+    "windup": "SW guard source cell5",
+    "hit": "SW idle source cell0 + runtime recoil"
+  },
+  "added": [
+    "enemy-anim-cultist-sw-idle",
+    "enemy-anim-cultist-sw-walk",
+    "enemy-anim-cultist-sw-windup",
+    "enemy-anim-cultist-sw-strike",
+    "enemy-anim-cultist-sw-guard",
+    "enemy-anim-cultist-sw-hit",
+    "enemy-anim-cultist-sw-cast",
+    "enemy-anim-cultist-sw-down"
+  ]
+}

@@ -1,0 +1,34 @@
+Project A v48 — BGM mapping and loudness
+
+Original filename -> game filename -> scene
+Base _ Village 02.mp3 -> assets/audio/bgm/bgm-home-01.mp3 -> บ้าน / พื้นที่พัก
+Village 03.mp3 -> assets/audio/bgm/bgm-village-01.mp3 -> หมู่บ้านและตลาด 2.5D
+Blacksmith 01.mp3 -> assets/audio/bgm/bgm-forge-01.mp3 -> โรงตีเหล็ก เพลงที่ 1
+Blacksmith 02.mp3 -> assets/audio/bgm/bgm-forge-02.mp3 -> โรงตีเหล็ก เพลงที่ 2
+Battle _ Cave 01.mp3 -> assets/audio/bgm/bgm-battle-mine-01.mp3 -> ศึกในเหมือง/ถ้ำ
+Battle _ Snowing 01.mp3 -> assets/audio/bgm/bgm-battle-frost-01.mp3 -> ศึกทั่วไปแผนที่หิมะ
+Battle _ Snowing Boss 01(1).mp3 -> assets/audio/bgm/bgm-battle-frost-boss-01.mp3 -> มินิบอส/บอสแผนที่หิมะ
+March of Triumph.mp3 -> assets/audio/bgm/bgm-victory-01.mp3 -> หน้าสรุปชัยชนะ
+
+โรงตีเหล็ก: 01 -> 02 -> 01 วนตลอด ไม่แยกช่วงเตรียม/คราฟต์
+มินิบอส/บอสหิมะ: พิจารณาจากประเภทศัตรูในศึก ใช้เพลงเดิมต่อจนจบศึก
+การซื้อวัตถุดิบ ขายอุปกรณ์ และรับออร์เดอร์ใช้เพลงตลาดต่อเนื่อง
+เปิดกระเป๋าหรือหน้าตั้งค่าไม่เริ่มเพลงใหม่
+ออกหน้าสรุปชัยชนะจะค่อยลดเพลงชัยชนะและกลับไปเพลงฉากที่กลับถึง
+
+Normalization
+Two-pass FFmpeg loudnorm, target I=-18 LUFS, TP=-2 dBTP, LRA=11 LU.
+Output: stereo/source channel layout, 44.1 kHz MP3 128 kb/s, source metadata stripped (runtime provenance may be retained).
+Verified after final MP3 encoding:
+bgm-home-01.mp3: -18.44 LUFS / true peak -2.18 dBTP
+bgm-village-01.mp3: -18.45 LUFS / true peak -4.77 dBTP
+bgm-forge-01.mp3: -18.43 LUFS / true peak -6.87 dBTP
+bgm-forge-02.mp3: -18.41 LUFS / true peak -6.46 dBTP
+bgm-battle-mine-01.mp3: -18.44 LUFS / true peak -5.73 dBTP
+bgm-battle-frost-01.mp3: -18.47 LUFS / true peak -2.51 dBTP
+bgm-battle-frost-boss-01.mp3: -18.42 LUFS / true peak -6.59 dBTP
+bgm-victory-01.mp3: -18.44 LUFS / true peak -2.41 dBTP
+
+Integrated loudness spread 0.06 LU. Source loudness differences are normalized;
+musical dynamics inside each track remain. Default game music volume remains 30%.
+All source uploads are retained unchanged; only packaged copies use the new names.

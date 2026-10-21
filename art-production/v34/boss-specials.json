@@ -1,0 +1,198 @@
+[
+  {
+    "enemy": "coralGolem",
+    "source": "exec-1fb9cb4e-cac7-4baa-ae3f-00a0726b754d.png",
+    "file": "assets/enemies/animations/v34/coral-special.png",
+    "directions": [
+      "SE",
+      "NE"
+    ],
+    "framesPerDirection": 3,
+    "regions": [
+      [
+        31,
+        130,
+        459,
+        363
+      ],
+      [
+        539,
+        18,
+        474,
+        478
+      ],
+      [
+        1028,
+        186,
+        477,
+        325
+      ],
+      [
+        56,
+        618,
+        452,
+        377
+      ],
+      [
+        550,
+        506,
+        459,
+        482
+      ],
+      [
+        1026,
+        676,
+        481,
+        319
+      ]
+    ],
+    "review": "Hands/weapons, view, silhouette separation and transparent atlas checked. Timing release at 480ms."
+  },
+  {
+    "enemy": "frostQueen",
+    "source": "exec-585fd27d-e77b-4b58-bb11-7f981d9ba93c.png",
+    "file": "assets/enemies/animations/v34/queen-special.png",
+    "directions": [
+      "SE",
+      "NE"
+    ],
+    "framesPerDirection": 3,
+    "regions": [
+      [
+        96,
+        125,
+        317,
+        354
+      ],
+      [
+        583,
+        65,
+        358,
+        415
+      ],
+      [
+        1109,
+        124,
+        330,
+        356
+      ],
+      [
+        85,
+        577,
+        318,
+        371
+      ],
+      [
+        592,
+        546,
+        354,
+        406
+      ],
+      [
+        1103,
+        595,
+        349,
+        358
+      ]
+    ],
+    "review": "Hands/weapons, view, silhouette separation and transparent atlas checked. Timing release at 480ms."
+  },
+  {
+    "enemy": "voidKing",
+    "source": "exec-c3a70c3d-59fb-4cb3-9227-85b59f0bcbbb.png",
+    "file": "assets/enemies/animations/v34/void-special.png",
+    "directions": [
+      "SE",
+      "NE"
+    ],
+    "framesPerDirection": 3,
+    "regions": [
+      [
+        97,
+        177,
+        279,
+        280
+      ],
+      [
+        620,
+        98,
+        284,
+        359
+      ],
+      [
+        1098,
+        252,
+        310,
+        205
+      ],
+      [
+        92,
+        647,
+        338,
+        268
+      ],
+      [
+        620,
+        567,
+        296,
+        348
+      ],
+      [
+        1132,
+        701,
+        288,
+        216
+      ]
+    ],
+    "review": "Hands/weapons, view, silhouette separation and transparent atlas checked. Timing release at 480ms."
+  },
+  {
+    "enemy": "yeti",
+    "source": "exec-d05537e2-d80a-49f8-ad55-60e590d76b0e.png",
+    "file": "assets/enemies/animations/v34/yeti-special.png",
+    "directions": [
+      "SE",
+      "NE"
+    ],
+    "framesPerDirection": 3,
+    "regions": [
+      [
+        71,
+        104,
+        341,
+        371
+      ],
+      [
+        567,
+        74,
+        386,
+        400
+      ],
+      [
+        1017,
+        145,
+        503,
+        331
+      ],
+      [
+        58,
+        588,
+        372,
+        371
+      ],
+      [
+        581,
+        556,
+        373,
+        402
+      ],
+      [
+        1016,
+        617,
+        507,
+        352
+      ]
+    ],
+    "review": "Hands/weapons, view, silhouette separation and transparent atlas checked. Timing release at 480ms."
+  }
+]

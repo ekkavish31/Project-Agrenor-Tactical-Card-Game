@@ -1,0 +1,87 @@
+[
+  {
+    "path": "css/battle-card-flow.css",
+    "original_sha256": null,
+    "patched_sha256": "ad1185772c7bfc72a4278f8a55604d91eb75f7cefcc54c72837c934ba098b9a1"
+  },
+  {
+    "path": "docs/CHANGELOG-TH.md",
+    "original_sha256": "847ec46449e2fa6b28130063f7958b2053c15695632268462e5849b90773cf9e",
+    "patched_sha256": "db5d85a0d090cef000ee5b85200a8181db5abec64728abb9fc88d7e0749bbc65"
+  },
+  {
+    "path": "docs/PATCH-v39.md",
+    "original_sha256": null,
+    "patched_sha256": "6d36dd3e757fe112614bbe703bec709ff6b8baee3c1e844aeeaf3461d5885fa3"
+  },
+  {
+    "path": "docs/TODO-project-A.md",
+    "original_sha256": null,
+    "patched_sha256": "1486d748ed145ed2e01bcfed9871b5401a00dce797c54354444247e2cddb1b8f"
+  },
+  {
+    "path": "docs/TODO.md",
+    "original_sha256": "0aa83d430e612e6da885faf4be4563cb8fbf45bdad70c1e79fac29edbe3e5cce",
+    "patched_sha256": "68b1305ec02eb1465b1065828dc17a701d3049ec07c2b46f9a34869eb9656af3"
+  },
+  {
+    "path": "index.html",
+    "original_sha256": "39c4d96e7cd9f8d5f0b41be729f352a754563a6adef40cee1c77a230dd6f1118",
+    "patched_sha256": "316ae20f11f824cabb8146fba4ddcf1af4208758762043f01b564b1c37d3bc52"
+  },
+  {
+    "path": "js/battle-card-flow.js",
+    "original_sha256": null,
+    "patched_sha256": "2315389e85d09515d5a5c1f0833e881ba54eaad98f0c6ab773821fb46b5d56ad"
+  },
+  {
+    "path": "js/battle-flow.js",
+    "original_sha256": "eb2ced3719065f2c4d5e0b59e4d5f9a3c178c1a1ea3ed91ff2b35431e573a004",
+    "patched_sha256": "0f798155e83fc19100fb46f50797347cb60feef03a9fbf33f14c51f3ac48ce0c"
+  },
+  {
+    "path": "js/battle-polish.js",
+    "original_sha256": "48190e28b70d4cbc26d4db66703cd080dadadb995b5f7dba3a0598ec1fa62071",
+    "patched_sha256": "eb4df5d54785760cab0fc002a46a309d942b775a0d396cfd74e304eee4d7af05"
+  },
+  {
+    "path": "js/tactics-bridge.js",
+    "original_sha256": "c114e03bf55372ab9b0208cd78cd2e32e864b0f22fb278ac9bfbd571d22f7b7e",
+    "patched_sha256": "561d862693c21213be40c984c10e1b0c8401065866b4c4e49d8473880475e0e1"
+  },
+  {
+    "path": "js/tactics-core.js",
+    "original_sha256": "e18c964620c898f3f8350f855686bf832ae04f72e6211d11a1995e55cf36d9c4",
+    "patched_sha256": "7c43e4b5ed133bddf9222abe443f1a9a1c9cc7a501737517592e97b169f57a79"
+  },
+  {
+    "path": "js/tactics-decks.js",
+    "original_sha256": "f83dfa9f54871de4dff1bf7631977c21f8afd555a0261d6dcc65ba0eedad4fb6",
+    "patched_sha256": "1ca9f8f5a295841a029a385d056a549439ec9a77c6eae1f1393523abdd2a394f"
+  },
+  {
+    "path": "js/tactics-surface.js",
+    "original_sha256": null,
+    "patched_sha256": "5580d13affce2f311d5ca8cc22002652984bc0b3a91b3b3d68099a048fc9ef3c"
+  },
+  {
+    "path": "js/tactics-ui.js",
+    "original_sha256": "32461cfdbfceba8881e75bb9e67dcced5043dae0749eca680e96d855809dd0f0",
+    "patched_sha256": "36b69055317065add1b34231644477935eb3ca9f57f154bacb64eda455fad97c"
+  },
+  {
+    "path": "tools/test-card-flow-v39.cjs",
+    "original_sha256": null,
+    "patched_sha256": "5864f99a9dd9845a7d8c8fa44d6bb54d1ae0085d086572549a1a81c17e0ef8d1"
+  },
+  {
+    "path": "tools/test-cards-v39.cjs",
+    "original_sha256": null,
+    "patched_sha256": "d0e6ad78ff05657d6d1d548dc070ffd9893bb23fbb23f0457342551543197eb5"
+  },
+  {
+    "path": "tools/test-surface-v39.cjs",
+    "original_sha256": null,
+    "patched_sha256": "23b30d0a68a1b0af3721da4fac665e7d018432eedb194b02cee356fc6a8be67d"
+  }
+]

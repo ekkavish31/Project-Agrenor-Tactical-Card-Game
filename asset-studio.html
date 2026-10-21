@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Asset Studio · Adventure Card Game</title>
+<style>
+:root{--ink:#493722;--paper:#f7edd8;--panel:#fbf3e2;--line:#c5aa78;--gold:#a67939;--final:#3f7a4a;--temp:#b07a26;--code:#3d6a8a;--missing:#a5442f;--planned:#7a5c9a}
+*{box-sizing:border-box}body{margin:0;background:#efe3c9;color:var(--ink);font:14px/1.45 system-ui,"Segoe UI",sans-serif;height:100vh;display:grid;grid-template-rows:auto auto 1fr;overflow:hidden}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 14px;background:var(--paper);border-bottom:2px solid var(--line)}
+header h1{margin:0 6px 0 0;font-size:18px}header .grow{flex:1}
+button,select,input{font:inherit;color:inherit}button{background:#fbf0d7;border:2px solid #b99b64;border-radius:7px;padding:5px 11px;cursor:pointer;box-shadow:0 2px #937348}button:hover{background:#fff6e3}button:disabled{opacity:.45;cursor:default}button.primary{background:#e9c983}button.danger{border-color:#b56a55;background:#f7e0d6}
+button.small{padding:2px 8px;font-size:12px;box-shadow:none}
+.tabs{display:flex;gap:4px;padding:6px 14px 0;background:#ead9b4;border-bottom:2px solid var(--line);flex-wrap:wrap;align-items:flex-end}
+.tabs button{border-radius:9px 9px 0 0;border-bottom:none;box-shadow:none;padding:7px 16px;font-weight:600;background:#e2cd9f}.tabs button.on{background:var(--panel);position:relative;top:2px}
+.tabs .sum{margin-left:auto;padding:0 0 8px;font-size:12px;opacity:.8}
+#conn{font-size:13px}#conn.ok{background:#d9ead0;border-color:#6f9a63}#conn.warn{background:#f6dcc6;border-color:#c07d4c}
+.chip{border-radius:999px;padding:3px 10px;font-size:12px;box-shadow:none}.chip.on{background:var(--ink);color:#fff}
+input[type=search]{padding:5px 9px;border:2px solid #c9b07f;border-radius:7px;background:#fffaf0;min-width:200px}
+main{display:grid;grid-template-columns:230px minmax(0,1fr) 440px;min-height:0}
+nav{overflow:auto;border-right:2px solid var(--line);background:var(--panel);padding:8px}
+nav h4{margin:10px 2px 5px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;opacity:.65}
+nav button{display:flex;justify-content:space-between;gap:6px;width:100%;margin:0 0 4px;box-shadow:none;text-align:left;font-size:13px}nav button.on{background:#e9c983}
+nav button.sub{padding:3px 10px 3px 22px;font-size:12px;border-width:1px}
+nav small{opacity:.7;white-space:nowrap}
+#gridWrap{overflow:auto;padding:10px 12px}
+#filters{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;align-content:start}
+.ghead{grid-column:1/-1;margin:10px 0 0;font-size:14px;border-bottom:1px solid var(--line);padding-bottom:3px;display:flex;gap:8px;align-items:baseline}.ghead small{opacity:.65;font-weight:normal}
+.ghead:first-child{margin-top:0}
+.tile,.stile,.itile{background:#fffaf0;border:2px solid #d6be8e;border-radius:9px;padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:3px;min-width:0;position:relative}
+.stile{border-style:double;border-width:4px}
+.tile.sel,.stile.sel,.itile.sel{border-color:var(--gold);box-shadow:0 0 0 3px #e9c98399}.tile.pending{outline:3px dashed #3f7a4a}
+.thumb{height:104px;border-radius:6px;display:grid;place-items:center;overflow:hidden;background:repeating-conic-gradient(#e8dcc3 0 25%,#f7efdd 0 50%) 0/16px 16px;position:relative}
+.thumb img{max-width:100%;max-height:100%;object-fit:contain}.none{font-size:12px;opacity:.55;text-align:center;padding:4px}
+.thumb .stack{position:absolute;right:4px;bottom:4px;background:#493722d0;color:#fff;font-size:10px;border-radius:4px;padding:0 5px}
+.tile b,.stile b,.itile b{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tile small,.stile small,.itile small{font-size:10px;opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badges{display:flex;gap:3px;flex-wrap:wrap}
+.badge{display:inline-block;font-size:10px;color:#fff;border-radius:4px;padding:0 6px;width:max-content}
+.s-final{background:var(--final)}.s-temp{background:var(--temp)}.s-keep{background:#4a6a5a}.s-unused{background:#555}.s-code{background:var(--code)}.s-missing{background:var(--missing)}.s-planned{background:var(--planned)}
+.k-active{background:var(--final)}.k-version{background:#7b6a4e}.k-retired{background:#555}.k-loose{background:#8a5a7a}.k-cardstudio{background:#3d6a8a}.k-hist{background:#7b6a4e}
+aside{overflow:auto;border-left:2px solid var(--line);background:var(--panel);padding:12px}
+aside h2{margin:0 0 4px;font-size:16px;word-break:break-all}aside h3{margin:16px 0 6px;font-size:13px;border-top:1px solid #dcc79c;padding-top:10px}
+.where{background:#fff4dc;border:1px solid #e0c58e;border-radius:8px;padding:6px 9px;margin:8px 0;font-size:13px}.where b{display:block;font-size:11px;opacity:.7}
+.kv{display:grid;grid-template-columns:100px 1fr;gap:2px 8px;font-size:12px}.kv span:nth-child(odd){opacity:.7}.kv span{word-break:break-all}
+textarea{width:100%;min-height:150px;font:12px/1.4 ui-monospace,Consolas,monospace;border:2px solid #c9b07f;border-radius:7px;padding:7px;background:#fffaf0;color:var(--ink)}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#drop{border:3px dashed #b99b64;border-radius:10px;padding:14px;text-align:center;background:#fffaf0;cursor:pointer}#drop.hot{background:#f3e3bb}
+.stage{position:relative;border-radius:8px;overflow:hidden;margin-top:8px;background:repeating-conic-gradient(#e8dcc3 0 25%,#f7efdd 0 50%) 0/16px 16px;display:grid;place-items:center;min-height:200px}
+.stage canvas,.stage>img{max-width:100%;max-height:320px}
+.ctx-card{width:220px;padding:8px;border:3px solid #b99b64;border-radius:10px;background:#fbf0d7}.ctx-card .art{height:150px;border-radius:6px;overflow:hidden;background:#333;display:grid;place-items:center}.ctx-card .art canvas{width:100%;height:100%;object-fit:cover}.ctx-card b{display:block;margin-top:6px}
+.ctx-ground{position:relative;width:320px;height:300px;background:linear-gradient(#cfe0b0,#9fb87a)}.ctx-ground canvas{position:absolute;left:50%;transform:translateX(-50%)}
+.ctx-ground .tile-d{position:absolute;left:50%;bottom:22px;width:150px;height:75px;transform:translateX(-50%);background:#a6b77b;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);opacity:.9}
+.ctx-ground .anchor{position:absolute;left:50%;bottom:56px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#e64731;z-index:3}
+.vers{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.ver{background:#fffaf0;border:1px solid #d6be8e;border-radius:8px;padding:5px;display:flex;flex-direction:column;gap:4px;font-size:11px}
+.ver .thumb{height:84px}
+.vset{background:#fffaf0;border:1px solid #d6be8e;border-radius:8px;padding:6px;margin-bottom:6px}
+.strip{display:flex;gap:4px;overflow-x:auto;padding:2px 0}.strip .thumb{width:64px;min-width:64px;height:64px;cursor:pointer}.strip .thumb.cur{outline:2px solid var(--gold)}
+.anim{height:220px}.anim img{max-height:210px}
+.muted{opacity:.75;font-size:12px}.ok{color:var(--final)}.warn{color:var(--missing)}
+.note{background:#f6e6c2;border-left:4px solid var(--gold);padding:6px 9px;border-radius:5px;font-size:12px;margin:8px 0}
+label.inline{display:flex;gap:6px;align-items:center;font-size:12px}
+details{margin-top:12px}details summary{cursor:pointer;font-weight:600;font-size:13px}
+.toast{position:fixed;right:16px;bottom:16px;background:var(--ink);color:#fff;padding:8px 14px;border-radius:8px;opacity:0;transition:.2s;pointer-events:none;z-index:99;max-width:60vw}.toast.show{opacity:1}
+dialog{border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);max-width:min(980px,94vw)}
+#picker{width:min(980px,94vw);height:min(760px,90vh);padding:0}#picker[open]{display:grid;grid-template-rows:auto auto 1fr auto}
+#picker .ph{padding:12px 14px 4px}#picker .ph h2{margin:0;font-size:16px}#picker .pf{padding:4px 14px 8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#picker .pg{overflow:auto;padding:0 14px 10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;align-content:start}
+#picker .pb{padding:8px 14px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+.back{font-size:12px;margin-bottom:6px}
+.empty{grid-column:1/-1;padding:30px;text-align:center;opacity:.7}
+</style><link rel="stylesheet" href="css/asset-animation-review.css"><link rel="stylesheet" href="css/asset-studio-browser.css"><link rel="stylesheet" href="css/town-font.css"></head><body>
+<header><h1>Asset Studio <small>v48</small></h1>
+<button id="conn">เชื่อมโฟลเดอร์เกม</button><button id="changeFolder">เปลี่ยนโฟลเดอร์</button><button id="rescan">สแกนใหม่</button><span id="folderName" class="muted">ภาพจากเกมที่เปิดอยู่</span>
+<span class="grow"></span><button id="howto">วิธีใช้</button><button id="exportBtn" class="primary" hidden>ส่งออก ZIP</button></header>
+<div class="tabs" id="studioTabs"><button data-group="objects">Objects</button><button data-group="characters">ตัวละคร</button><button data-group="monsters">มอนสเตอร์</button><button data-group="bosses">มินิบอส / บอส</button><span class="grow"></span><select id="viewMode" aria-label="มุมมอง"><option value="slots">จัดการตัว / วัตถุ</option><option value="library">คลังไฟล์และประวัติ</option><option value="retired">ภาพที่เลิกใช้</option></select></div>
+<main><nav id="cats"></nav><section id="gridWrap"><div id="filters"></div><div id="grid"></div></section><aside id="detail"></aside></main>
+<div id="studioTools"><input type="search" id="q" placeholder="ค้นหาตัว / ชื่อท่า / ไฟล์" aria-label="ค้นหา"><button id="promptPack">คัดลอก prompt ที่ยังขาด</button><span id="summary"></span></div>
+<dialog id="picker"><div class="ph"><h2 id="pkTitle"></h2><div class="muted" id="pkSub"></div></div><div class="pf" id="pkFilters"></div><div class="pg" id="pkGrid"></div><div class="pb"><button onclick="this.closest('dialog').close()">ปิด</button></div></dialog>
+<dialog id="help"><h2>Asset Studio v48</h2><ol>
+<li>เลือกหมวด → เลือกตัวทางซ้าย → ดูตารางท่า × ทิศ กดช่องเพื่อเปิดเครื่องมือตรวจเฟรม</li>
+<li>กดเชื่อมโฟลเดอร์เกม เลือกโฟลเดอร์ที่มี index.html และ assets ใช้ Chrome / Edge บนคอมพิวเตอร์ หากเลือกโฟลเดอร์ไม่ได้ เปิดผ่าน localhost หรือ HTTPS</li>
+<li>เปลี่ยนโฟลเดอร์เลือกเกมชุดใหม่ได้เสมอ สแกนใหม่โหลดข้อมูลและภาพจากโฟลเดอร์เดิมอีกครั้ง งานรอส่งออกต้องจัดการก่อนเปลี่ยน</li>
+<li>ตารางเล่นท่าพร้อมกันเพื่อเทียบจังหวะ ปรับความเร็วร่วมกันได้ ช่องกลับภาพแสดงป้ายชัดเจน ช่องว่างคือยังไม่มีข้อมูลท่านั้น</li>
+<li>กดช่อง → เล่น / หยุด / เลื่อนทีละเฟรม / ภาพซ้อน / เทียบเวอร์ชัน / จดปัญหา / ส่งชุดแก้ให้ AI และส่งออกชีทหรือ GIF</li>
+<li>ส่วนภาพและไฟล์ใต้ตารางใช้เปลี่ยนภาพ นำเข้าชีท กู้ภาพเดิม และคัดลอก prompt เครื่องมือชุดคำขออยู่ในเมนูเครื่องมือเพิ่มเติม</li>
+<li>เชื่อมโฟลเดอร์แล้วกดใช้ภาพจะเขียนไฟล์ลงเกมและเก็บประวัติ หากยังไม่เชื่อม ให้ส่งออก ZIP แล้วแตกทับเกม</li>
+<li>ภาพที่ไม่มีเจ้าของอยู่ใน Objects → ไฟล์ยังไม่จัดหมวด ไม่ลบภาพต้นฉบับอัตโนมัติ</li></ol>
+<button onclick="this.closest('dialog').close()">ปิด</button></dialog>
+<div class="toast" id="toast"></div>
+<script src="js/asset-manifest.js"></script>
+<script>
+'use strict';
+// Asset Studio v17 — slots (where the game shows art) vs images (files in the library).
+// Swapping never overwrites art: the previous image is archived in assets/_versions/<slot id>/ and listed in asset.history.
+const M=window.ASSET_MANIFEST;if(!M){document.body.innerHTML='<p style="padding:20px">ไม่พบ asset-manifest.js — วางไฟล์นี้ไว้ในโฟลเดอร์เกมข้าง index.html</p>'}
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STATUS={keep:'วาดด้วยโค้ดถาวร',unused:'ไม่ใช้แล้ว',...M.statuses},TODO=['missing','code','temp','planned'];
+const SHORT={final:'ภาพจริง',temp:'ชั่วคราว',code:'โค้ดชั่วคราว',missing:'ยังขาด',planned:'ต้องเพิ่มโค้ด',keep:'โค้ดถาวร',unused:'เลิกใช้'};
+const KIND={active:'กำลังใช้',version:'เวอร์ชันเก่า',retired:'ชุดเลิกใช้',loose:'นอกรายการ',cardstudio:'จาก Card Studio'};
+const CATNAME=Object.assign({terrain:'พื้นสนาม','ui-packs':'ไอคอนชุด / กรอบการ์ด',elements:'ไอคอนธาตุ'},Object.fromEntries(M.categories.map(c=>[c.id,c.name])));
+const ZONES=[
+ {id:'village',name:'🏘 หมู่บ้าน & ฉาก',cats:['scenes','village-map','actions','cards','characters','hero-frames']},
+ {id:'cards',name:'🃏 การ์ด & ไอเทม',cats:['items','tactic-cards']},
+ {id:'field',name:'⚔️ สนามตาราง',cats:['tactics-hero','allies','tactics-equipment','tactics-props','terrain']},
+ {id:'enemies',name:'👹 ศัตรู',cats:['enemies','enemy-animations']},
+ {id:'ui',name:'🖥 UI & ไอคอน',cats:['ui','ui-packs','elements','cursors','textures']}];
+{let known=new Set(ZONES.flatMap(z=>z.cats)),extra=[...new Set(M.assets.map(a=>a.category))].filter(c=>!known.has(c));if(extra.length)ZONES.push({id:'other',name:'📦 อื่น ๆ',cats:extra})}
+const zoneOf=cat=>ZONES.find(z=>z.cats.includes(cat))||ZONES[ZONES.length-1];
+let tab='slots',zone='all',sub='all',filter='all',query='',sel=null,lkind='all',selected=null;
+const exportedFiles=window.StudioExportedFiles=new Map();
+const pending=new Map(); // id -> {blob,url,status,canvas}  (only when no folder is connected)
+let dir=null,scanned=null;
+let manifestJsonPath='data/asset-manifest.json',manifestJsPath='js/asset-manifest.js';
+function toast(t){let e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
+function byId(id){return M.assets.find(a=>a.id===id)}
+const isSlot=a=>a.status!=='unused';
+const hasImage=a=>pending.has(a.id)||(dir&&scanned?scanned.has(a.file):['final','temp'].includes(a.status));
+function where(a){let d=a.usedIn||'';
+ if(a.category==='hero-frames')d=`ฮีโร่ในหมู่บ้าน/ผจญภัย · ท่า ${a.clip||'-'}${a.frame?` · เฟรม ${a.frame}/${a.frames}`:''}`;
+ else if(a.category==='tactics-hero'){let m=a.id.match(/^tactics-hero-([a-z]+)-(.+?)(?:-(\d+))?$/);d=`ฮีโร่ในสนามตาราง · หันทิศ ${m?m[1].toUpperCase():''} · ท่า ${m?m[2]:''}`+(a.frame?` · เฟรม ${a.frame}/${a.frames}`:'')+(/-(sw|nw)-/.test(a.id)?' (เกมกลับภาพจาก SE/NE ได้)':'')}
+ else if(!d)d={'tactics-equipment':'อาวุธ/อุปกรณ์ที่ถือในสนามตาราง','tactics-props':'สิ่งกีดขวางบนช่องสนามตาราง','elements':'ไอคอนธาตุบนการ์ด (โต๊ะการ์ด / Card Studio)'}[a.category]||CATNAME[a.category]||a.category;
+ if(a.category==='enemies')d+=/-back$/.test(a.id)?' · มุมหลัง':' · มุมหน้า';
+ return d}
+const crumb=a=>window.StudioBrowser?window.StudioBrowser.location(a):zoneOf(a.category).name+' › '+(CATNAME[a.category]||a.category);
+// ---------- Card Studio (save in this browser) ----------
+let CS=null;function csStore(){if(CS)return CS;try{CS=JSON.parse(localStorage.getItem('card-studio-v1'))||{}}catch(e){CS={}}return CS}
+function csUploads(){let s=csStore();return Object.entries(s.cards||{}).filter(([k,c])=>c?.art?.data).map(([k,c])=>({id:k,name:c.name||k,data:c.art.data}))}
+function csUsers(path){let s=csStore();return Object.values(s.cards||{}).filter(c=>c?.art?.src===path&&!c.art.data).map(c=>c.name||'?')}
+// ---------- folder access (File System Access API) ----------
+async function walk(path,create){let parts=path.split('/'),h=dir;for(let i=0;i<parts.length-1;i++)h=await h.getDirectoryHandle(parts[i],{create});return [h,parts[parts.length-1]]}
+async function readFile(p){let [d,n]=await walk(p,false);return (await d.getFileHandle(n)).getFile()}
+async function exists(p){try{await readFile(p);return true}catch(e){return false}}
+async function writeFile(p,blob){let [d,n]=await walk(p,true),fh=await d.getFileHandle(n,{create:true}),w=await fh.createWritable();await w.write(blob);await w.close();forget(p);scanned?.add(p)}
+async function removeFile(p){let [d,n]=await walk(p,false);await d.removeEntry(n);forget(p);scanned?.delete(p)}
+async function scan(h,prefix){let out=[];for await(let [n,e] of h.entries()){let p=prefix+n;if(e.kind==='directory')out.push(...await scan(e,p+'/'));else if(/\.(webp|png|jpe?g|gif|svg)$/i.test(n))out.push(p)}return out}
+function idb(){return new Promise((res,rej)=>{let r=indexedDB.open('asset-studio',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbGet(k){try{let db=await idb();return await new Promise(r=>{let q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}catch(e){return null}}
+async function idbSet(k,v){try{let db=await idb();db.transaction('kv','readwrite').objectStore('kv').put(v,k)}catch(e){}}
+let savedHandle=null;
+async function connect(h){
+ try{if(!h){if(!window.showDirectoryPicker){alert('เบราว์เซอร์นี้เชื่อมโฟลเดอร์ไม่ได้ — ใช้ Chrome หรือ Edge (ยังดูภาพและส่งออก ZIP ได้ตามปกติ)');return}try{h=await showDirectoryPicker({id:'project-a-game',mode:'readwrite'})}catch(err){if(err.name==='SecurityError'&&window.top!==window){toast('หน้านี้เลือกโฟลเดอร์ไม่ได้ — เปิด Asset Studio ในแท็บใหม่ให้แล้ว');window.open('asset-studio.html','_blank');return}throw err}}
+  if(await h.queryPermission({mode:'readwrite'})!=='granted'&&await h.requestPermission({mode:'readwrite'})!=='granted'){toast('ไม่ได้รับอนุญาตให้เขียนโฟลเดอร์');return}
+  const readMan=async x=>JSON.parse(await (await (await x.getFileHandle('asset-manifest.json')).getFile()).text());
+  let m=null;try{m=await readMan(h)}catch(e){}
+  if(!m){// zip extracted into a nested folder (Project_A_v17/Project_A_v17/…) — look one or two levels down
+   const found=[];const look=async(x,depth)=>{for await(let [n,e] of x.entries()){if(e.kind!=='directory'||n.startsWith('.')||n==='assets'||n==='node_modules')continue;try{found.push({h:e,m:await readMan(e)})}catch(_){if(depth<1)await look(e,depth+1)}}};
+   try{await look(h,0)}catch(e){}
+   found.sort((a,b)=>b.h.name.localeCompare(a.h.name,undefined,{numeric:true}));
+   if(found.length){h=found[0].h;m=found[0].m;toast('ใช้โฟลเดอร์เกมที่อยู่ข้างใน: '+h.name)}}
+  if(!m){alert('ไม่พบไฟล์เกมในโฟลเดอร์ "'+h.name+'" (ไม่มี asset-manifest.json ทั้งในโฟลเดอร์นี้และโฟลเดอร์ย่อย)\n\nกด 📁 อีกครั้งแล้วเลือกโฟลเดอร์ที่มี index.html และ asset-studio.html');savedHandle=null;connButton();return}
+  dir=h;Object.assign(M,m);await idbSet('dir',h);
+  scanned=new Set(await scan(await h.getDirectoryHandle('assets'),'assets/'));
+  for(let [id,p] of [...pending]){let a=byId(id);if(a){await applyToSlot(a,{blob:p.blob},{status:p.status});URL.revokeObjectURL(p.url)}pending.delete(id)}
+  if(m.assets.some(a=>a.history))await pruneHistory();
+  toast('เชื่อมโฟลเดอร์ '+h.name+' แล้ว · การเปลี่ยนภาพจะเขียนลงเกมทันที');render();detail()
+ }catch(e){if(e.name!=='AbortError'){console.error(e);toast('เชื่อมโฟลเดอร์ไม่สำเร็จ: '+e.message)}}}
+async function pruneHistory(){let ch=false;for(let a of M.assets)if(a.history){let n=a.history.filter(h=>scanned.has(h.file));if(n.length!==a.history.length){a.history=n;ch=true}}if(ch)await saveManifest()}
+function connButton(){let b=$('conn');if(dir){b.className='ok';b.textContent='✅ '+dir.name;b.title='เชื่อมแล้ว — การเปลี่ยนภาพเขียนลงโฟลเดอร์นี้ทันที (คลิกเพื่อสแกนใหม่)'}
+ else if(savedHandle){b.className='warn';b.textContent='🔗 เชื่อม '+savedHandle.name+' อีกครั้ง';b.title='คลิกเพื่ออนุญาตให้เขียนโฟลเดอร์เดิม'}
+ else{b.className='';b.textContent='📁 เชื่อมโฟลเดอร์เกม'}}
+$('conn').onclick=()=>connect(dir||savedHandle||null);
+// ---------- image urls ----------
+const urlCache=new Map();let bust=Date.now();
+function forget(p){let u=urlCache.get(p);if(u){URL.revokeObjectURL(u);urlCache.delete(p)}}
+async function srcOf(p){if(!p)return '';if(p.startsWith('cs:')){let c=csUploads().find(x=>'cs:'+x.id===p);return c?c.data:''}
+ let a=M.assets.find(x=>x.file===p);if(a&&pending.has(a.id))return pending.get(a.id).url;
+ if(window.AnimationReviewExtraFiles?.has(p)){if(!urlCache.has(p))urlCache.set(p,URL.createObjectURL(window.AnimationReviewExtraFiles.get(p)));return urlCache.get(p)}
+ if(!dir&&exportedFiles.has(p))return exportedFiles.get(p).url;
+ if(!dir)return p;if(urlCache.has(p))return urlCache.get(p);
+ try{let u=URL.createObjectURL(await readFile(p));urlCache.set(p,u);return u}catch(e){return ''}}
+const noneHTML=t=>`<span class="none">${esc(t||'ไม่มีภาพ')}</span>`;
+async function fill(img){let s=await srcOf(img.dataset.p);if(!s){img.replaceWith(Object.assign(document.createElement('span'),{className:'none',textContent:'ไม่พบไฟล์'}));return}
+ img.onerror=()=>img.replaceWith(Object.assign(document.createElement('span'),{className:'none',textContent:'ไม่พบไฟล์'}));img.src=s}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){io.unobserve(e.target);fill(e.target)}}),{rootMargin:'400px'});
+function hydrate(root){root.querySelectorAll('img[data-p]:not([src])').forEach(i=>io.observe(i))}
+const imgTag=p=>`<img data-p="${esc(p)}" alt="">`;
+function thumbOf(a,extra=''){let t=hasImage(a)?imgTag(a.file):noneHTML(SHORT[a.status]);return `<div class="thumb">${t}${extra}</div>`}
+// ---------- library model ----------
+function library(){let out=[],known=new Set();
+ for(let a of M.assets){if(a.file){known.add(a.file);if(a.status==='unused'){if(!dir||scanned.has(a.file))out.push({key:a.file,path:a.file,kind:'retired',slot:a})}else if(hasImage(a))out.push({key:a.file,path:a.file,kind:'active',slot:a})}
+  for(let h of a.history||[]){known.add(h.file);out.push({key:h.file,path:h.file,kind:'version',slot:a,h})}}
+ if(dir&&scanned)for(let p of scanned)if(!known.has(p)){let m=p.match(/^assets\/_versions\/([^/]+)\//),a=m&&byId(m[1]);out.push({key:p,path:p,kind:a?'version':'loose',slot:a||null})}
+ for(let c of csUploads())out.push({key:'cs:'+c.id,path:'cs:'+c.id,kind:'cardstudio',label:c.name});
+ return out}
+const libItem=k=>library().find(x=>x.key===k);
+const fmtAt=s=>{if(!s)return '';let d=new Date(s);return isNaN(d)?s:d.toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'})};
+// ---------- list / filters ----------
+function matchQ(a){return !query||(a.id+' '+a.file+' '+(a.subject||'')+' '+(a.clip||'')+' '+where(a)).toLowerCase().includes(query)}
+function slotFilter(a){if(filter==='all')return true;if(filter==='todo')return TODO.includes(a.status);if(filter==='hist')return a.history?.length>0;return a.status===filter}
+function list(){if(tab!=='slots')return [];return M.assets.filter(a=>isSlot(a)&&(zone==='all'||zoneOf(a.category).id===zone)&&(sub==='all'||a.category===sub)&&slotFilter(a)&&matchQ(a))}
+function render(){CS=null;let slots=M.assets.filter(isSlot),todo=slots.filter(a=>TODO.includes(a.status)).length,vers=M.assets.reduce((s,a)=>s+(a.history?.length||0),0);
+ $('summary').textContent=`${slots.length} ช่อง · ยังต้องทำ ${todo} · เวอร์ชันเก่า ${vers} · ภาพชุดเลิกใช้ ${M.assets.length-slots.length}`+(pending.size?` · รอส่งออก ${pending.size}`:'');
+ document.querySelectorAll('.tabs [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+ connButton();$('exportBtn').hidden=!pending.size;$('exportBtn').textContent='ส่งออก ZIP ('+pending.size+')';
+ if(tab==='slots')renderSlots();else if(tab==='library')renderLibrary();else renderRetired();
+ hydrate($('grid'))}
+function navBtn(on,data,label,count,cls=''){return `<button class="${cls} ${on?'on':''}" ${data}><span>${label}</span><small>${count??''}</small></button>`}
+function renderSlots(){let slots=M.assets.filter(a=>isSlot(a)&&matchQ(a)&&slotFilter(a));
+ let h=navBtn(zone==='all','data-z="all" data-s="all"','ทุกจุดในเกม',slots.length);
+ for(let z of ZONES){let zs=slots.filter(a=>z.cats.includes(a.category));if(!M.assets.some(a=>isSlot(a)&&z.cats.includes(a.category)))continue;
+  h+=navBtn(zone===z.id&&sub==='all',`data-z="${z.id}" data-s="all"`,z.name,zs.length);
+  if(zone===z.id)for(let c of z.cats){let n=zs.filter(a=>a.category===c).length;if(M.assets.some(a=>isSlot(a)&&a.category===c))h+=navBtn(sub===c,`data-z="${z.id}" data-s="${c}"`,esc(CATNAME[c]||c),n,'sub')}}
+ $('cats').innerHTML='<h4>จุดในเกม</h4>'+h;
+ $('cats').querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>{zone=b.dataset.z;sub=b.dataset.s;render()});
+ $('filters').innerHTML=[['all','ทั้งหมด'],['todo','ยังต้องทำ'],['missing','ยังขาด'],['temp','ชั่วคราว'],['planned','ต้องเพิ่มโค้ด'],['final','ภาพจริง'],['keep','โค้ดถาวร'],['hist','มีเวอร์ชันเก่า']].map(([k,n])=>`<button class="chip ${filter===k?'on':''}" data-f="${k}">${n}</button>`).join('');
+ $('filters').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{filter=b.dataset.f;render()});
+ let items=list(),out='',seenClip=new Set(),lastCat=null;
+ items.sort((x,y)=>{let zx=ZONES.indexOf(zoneOf(x.category)),zy=ZONES.indexOf(zoneOf(y.category));if(zx!==zy)return zx-zy;let cx=zoneOf(x.category).cats.indexOf(x.category),cy=zoneOf(y.category).cats.indexOf(y.category);return cx-cy});
+ for(let a of items){if(a.category!==lastCat){lastCat=a.category;let n=items.filter(x=>x.category===a.category).length;out+=`<div class="ghead">${esc(CATNAME[a.category]||a.category)} <small>${zoneOf(a.category).name} · ${n} ช่อง</small></div>`}
+  if(a.clip){if(seenClip.has(a.clip))continue;seenClip.add(a.clip);out+=setTile(a.clip);continue}
+  let p=pending.has(a.id),hc=a.history?.length||0,on=sel?.t==='slot'&&sel.id===a.id;
+  out+=`<div class="tile ${on?'sel':''} ${p?'pending':''}" data-id="${esc(a.id)}">${thumbOf(a,hc?`<span class="stack" title="มีเวอร์ชันเก่า">🕘 ${hc}</span>`:'')}<b title="${esc(a.id)}">${esc(a.id)}</b><small title="${esc(where(a))}">${esc(where(a))}</small><div class="badges"><span class="badge s-${a.status}">${SHORT[a.status]||a.status}</span>${p?'<span class="badge k-hist">รอส่งออก</span>':''}</div></div>`}
+ $('grid').innerHTML=out||'<div class="empty">ไม่มีช่องที่ตรงกับตัวกรอง</div>';
+ $('grid').querySelectorAll('.tile').forEach(t=>t.onclick=()=>openSlot(t.dataset.id));
+ $('grid').querySelectorAll('.stile').forEach(t=>t.onclick=()=>openSet(t.dataset.clip))}
+function clipFrames(clip){return M.assets.filter(x=>x.clip===clip).sort((x,y)=>(x.frame||0)-(y.frame||0))}
+function setStamps(clip){let m=new Map();for(let f of clipFrames(clip))for(let h of f.history||[]){let k=h.stamp||h.at;if(!m.has(k))m.set(k,[]);m.get(k).push({a:f,h})}return [...m.entries()].sort((x,y)=>y[0]<x[0]?-1:1)}
+function setTile(clip){let fr=clipFrames(clip),a=fr[0],st=[...new Set(fr.map(f=>f.status))],on=sel?.t==='set'&&sel.clip===clip,nv=setStamps(clip).length;
+ return `<div class="stile ${on?'sel':''}" data-clip="${esc(clip)}">${thumbOf(a,`<span class="stack">🎞 ${fr.length} เฟรม${nv?' · 🕘 '+nv:''}</span>`)}<b>ชุดท่า ${esc(clip)}</b><small>${esc(where(a).replace(/ · เฟรม.*$/,''))}</small><div class="badges">${st.map(s=>`<span class="badge s-${s}">${SHORT[s]||s}</span>`).join('')}</div></div>`}
+function libFiltered(kinds){return library().filter(x=>kinds.includes(x.kind)&&(lkind==='all'||x.kind===lkind)&&(!query||(x.path+' '+(x.slot?x.slot.id+' '+where(x.slot):'')+' '+(x.label||'')).toLowerCase().includes(query)))}
+function imgTile(x){let on=sel?.t==='img'&&sel.key===x.key,s=x.slot;
+ let title=x.kind==='cardstudio'?x.label:s?s.id:x.path.split('/').pop(),info=x.kind==='version'?(x.h?fmtAt(x.h.at):'ไฟล์เวอร์ชัน'):x.kind==='cardstudio'?'อัปโหลดในการ์ด':s?where(s):x.path;
+ return `<div class="itile ${on?'sel':''}" data-k="${esc(x.key)}"><div class="thumb">${imgTag(x.path)}</div><b title="${esc(title)}">${esc(title)}</b><small title="${esc(info)}">${esc(info)}</small><div class="badges"><span class="badge k-${x.kind}">${KIND[x.kind]}</span></div></div>`}
+function renderLibrary(){let all=library(),c={};for(let x of all)c[x.kind]=(c[x.kind]||0)+1;
+ let kinds=['active','version','retired','loose','cardstudio'];
+ $('cats').innerHTML='<h4>ประเภทภาพ</h4>'+navBtn(lkind==='all','data-k="all"','ทุกภาพ',all.length)+kinds.filter(k=>c[k]||k==='loose').map(k=>navBtn(lkind===k,`data-k="${k}"`,KIND[k],c[k]||0)).join('')+(dir?'':'<p class="muted">เชื่อมโฟลเดอร์เกมเพื่อเห็นไฟล์ "นอกรายการ" (ไฟล์ที่มีในโฟลเดอร์แต่ไม่ได้อยู่ในรายการช่อง)</p>');
+ $('cats').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{lkind=b.dataset.k;render()});
+ $('filters').innerHTML='<span class="muted">คลิกภาพ → <b>ใช้กับช่อง…</b> เพื่อเอาไปใส่จุดที่ต้องการ</span>';
+ let items=libFiltered(kinds),out='',last=null;
+ for(let x of items){let g=x.slot?crumb(x.slot):x.kind==='cardstudio'?'Card Studio':'ไฟล์นอกรายการ';if(g!==last){last=g;out+=`<div class="ghead">${esc(g)}</div>`}out+=imgTile(x)}
+ $('grid').innerHTML=out||'<div class="empty">ไม่มีภาพในหมวดนี้</div>';
+ $('grid').querySelectorAll('.itile').forEach(t=>t.onclick=()=>openImg(t.dataset.k))}
+function renderRetired(){let all=library().filter(x=>x.kind==='version'||x.kind==='retired');
+ let nv=all.filter(x=>x.kind==='version').length,nr=all.length-nv;
+ $('cats').innerHTML='<h4>ภาพที่เลิกใช้</h4>'+navBtn(lkind==='all'||!['version','retired'].includes(lkind),'data-k="all"','ทั้งหมด',all.length)+navBtn(lkind==='version','data-k="version"','ภาพที่ถูกแทนที่',nv)+navBtn(lkind==='retired','data-k="retired"','ชุดท่าที่เกมไม่ใช้แล้ว',nr)+'<p class="muted">ภาพที่ถูกแทนที่เก็บอยู่ใน assets/_versions/ — กู้กลับได้ทุกเมื่อ หรือลบถาวรเพื่อลดขนาดเกม</p>';
+ $('cats').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{lkind=b.dataset.k;render()});
+ $('filters').innerHTML='';
+ let k=['version','retired'].includes(lkind)?[lkind]:['version','retired'],items=libFiltered(k),out='';
+ let vers=items.filter(x=>x.kind==='version');
+ if(vers.length){out+=`<div class="ghead">ภาพที่ถูกแทนที่ <small>${vers.length} ภาพ · เรียงตามช่อง ใหม่สุดก่อน</small></div>`;let by=new Map();for(let x of vers){let id=x.slot?.id||'?';if(!by.has(id))by.set(id,[]);by.get(id).push(x)}
+  for(let [id,xs] of by){xs.sort((p,q)=>(q.h?.at||'')<(p.h?.at||'')?-1:1);out+=xs.map(imgTile).join('')}}
+ let ret=items.filter(x=>x.kind==='retired');
+ if(ret.length){let by=new Map();for(let x of ret){let g=x.slot.clip||CATNAME[x.slot.category];if(!by.has(g))by.set(g,[]);by.get(g).push(x)}
+  for(let [g,xs] of by){out+=`<div class="ghead">เลิกใช้: ${esc(g)} <small>${xs.length} ภาพ · ${esc(xs[0].slot.note||'')}</small></div>`+xs.map(imgTile).join('')}}
+ if(!vers.length&&k.includes('version')&&!query)out=`<div class="empty" style="grid-column:1/-1">ยังไม่มีภาพที่ถูกแทนที่ — ตั้งแต่นี้ไป ทุกครั้งที่เปลี่ยนภาพในช่อง ภาพเดิมจะมาอยู่ที่นี่</div>`+out;
+ $('grid').innerHTML=out||'<div class="empty">ไม่มีภาพ</div>';
+ $('grid').querySelectorAll('.itile').forEach(t=>t.onclick=()=>openImg(t.dataset.k))}
+// ---------- navigation ----------
+function openSlot(id){sel={t:'slot',id};selected=id;markSel();detail()}
+function openSet(clip){sel={t:'set',clip};selected=clipFrames(clip)[0]?.id;markSel();detail()}
+function openImg(k){sel={t:'img',key:k};selected=null;markSel();detail()}
+function markSel(){document.querySelectorAll('#grid .sel').forEach(e=>e.classList.remove('sel'));let q=sel.t==='slot'?`.tile[data-id="${CSS.escape(sel.id)}"]`:sel.t==='set'?`.stile[data-clip="${CSS.escape(sel.clip)}"]`:`.itile[data-k="${CSS.escape(sel.key)}"]`;document.querySelector('#grid '+q)?.classList.add('sel')}
+function goSlot(a){tab='slots';zone='all';sub='all';filter='all';query='';$('q').value='';render();openSlot(a.id);let q=a.clip?`.stile[data-clip="${CSS.escape(a.clip)}"]`:`.tile[data-id="${CSS.escape(a.id)}"]`;document.querySelector('#grid '+q)?.scrollIntoView({block:'center'})}
+document.querySelectorAll('.tabs [data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;lkind='all';render();if(!sel)detail()});
+function detail(){stopAnim();if(!sel){$('detail').innerHTML=`<p class="muted">${tab==='slots'?'เลือกช่องหรือชุดท่าทางซ้าย เพื่อดูว่าภาพอยู่ตรงไหนในเกม เปลี่ยนภาพ กู้เวอร์ชันเก่า หรือใส่ภาพใหม่':'เลือกภาพทางซ้าย เพื่อดูว่าใช้ที่ไหน และเอาไปใช้กับช่องที่ต้องการ'}</p>`+(dir?'':'<div class="note">ยังไม่ได้เชื่อมโฟลเดอร์เกม — กด <b>📁 เชื่อมโฟลเดอร์เกม</b> ด้านบน เพื่อสลับ/กู้ภาพได้ทันทีโดยไม่ต้องแตก ZIP</div>');return}
+ if(sel.t==='slot')slotDetail(byId(sel.id));else if(sel.t==='set')setDetail(sel.clip);else imgDetail(libItem(sel.key))}
+// ---------- slot detail ----------
+function needFolder(){toast('ต้องเชื่อมโฟลเดอร์เกมก่อน (ปุ่ม 📁 ด้านบน)');$('conn').animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:500,iterations:2})}
+function versionsHTML(a){let hs=a.history||[];if(!hs.length)return '<p class="muted">ยังไม่มี — เมื่อเปลี่ยนภาพ ภาพเดิมจะมาอยู่ตรงนี้</p>';
+ return `<div class="vers">${hs.map((h,i)=>`<div class="ver"><div class="thumb">${imgTag(h.file)}</div><span>${esc(fmtAt(h.at))}</span>${h.note?`<small class="muted">${esc(h.note)}</small>`:''}<div class="row"><button class="small primary" data-use="${i}">↩ ใช้ภาพนี้</button><button class="small danger" data-del="${i}" title="ลบไฟล์นี้ถาวร">🗑</button></div></div>`).join('')}</div>`}
+function slotDetail(a){if(!a){sel=null;return detail()}let p=pending.get(a.id),users=csUsers(a.file),fr=a.clip?clipFrames(a.clip):null;
+ $('detail').innerHTML=`${a.clip?`<button class="small back" id="backSet">↩ กลับไปชุดท่า ${esc(a.clip)}</button>`:''}<h2>${esc(a.id)}</h2><span class="badge s-${a.status}">${esc(STATUS[a.status]||a.status)}</span>
+ <div class="where"><b>📍 อยู่ตรงไหนในเกม</b>${esc(crumb(a))}<br>${esc(where(a))}</div>
+ <div class="kv"><span>ไฟล์</span><span>${esc(a.file||'—')}</span><span>ขนาด</span><span>${a.size?a.size.join(' × ')+' px':'—'} · ${a.transparent?'โปร่งใส':'ทึบ'}</span>${a.note?`<span>หมายเหตุ</span><span>${esc(a.note)}</span>`:''}${users.length?`<span>Card Studio</span><span>การ์ดที่ใช้ภาพนี้: ${esc(users.join(', '))}</span>`:''}</div>
+ ${fr?`<div class="strip" style="margin-top:8px">${fr.map(f=>`<div class="thumb ${f.id===a.id?'cur':''}" data-fr="${esc(f.id)}" title="เฟรม ${f.frame}">${hasImage(f)?imgTag(f.file):noneHTML(f.frame)}</div>`).join('')}</div>`:''}
+ <h3>ภาพที่ใช้อยู่ตอนนี้ ${p?'<span class="badge k-hist">ภาพใหม่ รอส่งออก</span>':''}</h3><div class="stage" id="cur">${hasImage(a)?'<span class="muted">กำลังโหลด…</span>':noneHTML(STATUS[a.status])}</div>
+ <div class="row" style="margin-top:8px"><button id="pickLib" class="primary">🖼 เลือกภาพจากคลัง…</button>${p?'<button id="dropPending">ยกเลิกภาพใหม่</button>':''}</div>
+ <h3>🕘 เวอร์ชันก่อนหน้า (${a.history?.length||0})</h3>${versionsHTML(a)}
+ <h3>➕ ใส่ภาพใหม่</h3>${newImageHTML(a)}
+ <details><summary>Prompt สำหรับเจนภาพ</summary>${promptHTML(a)}</details>`;
+ hydrate($('detail'));showCurrent(a);
+ if($('backSet'))$('backSet').onclick=()=>openSet(a.clip);
+ $('detail').querySelectorAll('[data-fr]').forEach(e=>e.onclick=()=>openSlot(e.dataset.fr));
+ $('pickLib').onclick=()=>pickImageFor(a);
+ if($('dropPending'))$('dropPending').onclick=()=>{URL.revokeObjectURL(pending.get(a.id).url);pending.delete(a.id);render();detail()};
+ $('detail').querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{let h=a.history[+b.dataset.use];doApply(a,{path:h.file},{note:'ก่อนกู้เวอร์ชัน '+fmtAt(h.at)})});
+ $('detail').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>delVersion(a,a.history[+b.dataset.del]));
+ bindNewImage(a);bindPrompt(a)}
+async function showCurrent(a){let el=$('cur');if(!el||!hasImage(a))return;let s=await srcOf(a.file);if(!s){el.innerHTML=noneHTML('ไม่พบไฟล์');return}
+ let im=new Image();im.onload=()=>{let cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;cv.getContext('2d').drawImage(im,0,0);showResult(cv,a,el);let sz=a.size&&(im.naturalWidth!==a.size[0]||im.naturalHeight!==a.size[1]);el.insertAdjacentHTML('afterend',sz?`<p class="muted warn">ไฟล์จริง ${im.naturalWidth}×${im.naturalHeight} ไม่ตรงกับขนาดเป้าหมาย</p>`:'')};im.onerror=()=>el.innerHTML=noneHTML('ไม่พบไฟล์');im.src=s}
+function promptHTML(a){let ref=reference(a);return `<textarea id="promptBox">${esc(copilotPrompt(a))}</textarea><div class="row"><button id="copyPrompt" class="primary">คัดลอก prompt</button>${ref?`<a href="${ref}" download><button type="button">ดาวน์โหลดภาพอ้างอิง</button></a>`:''}</div>`}
+function bindPrompt(a){$('copyPrompt').onclick=()=>{navigator.clipboard.writeText($('promptBox').value).then(()=>toast('คัดลอก prompt แล้ว'),()=>{$('promptBox').select();document.execCommand('copy');toast('คัดลอกแล้ว')})}}
+function newImageHTML(a){return `<div id="drop">ลากภาพมาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์<input id="file" type="file" accept="image/*" hidden></div>
+ <div class="row" style="margin-top:8px"><label class="inline"><input type="checkbox" id="key" ${a.transparent?'checked':''}> ลบพื้นเขียว</label><label class="inline">ความไว <input type="range" id="tol" min="20" max="160" value="90"></label>
+ <label class="inline">จัดวาง <select id="fit"><option value="contain">ใส่ทั้งภาพ</option><option value="cover" ${a.transparent?'':'selected'}>เต็มกรอบ (ตัดขอบ)</option></select></label><label class="inline"><input type="checkbox" id="trim" ${a.transparent?'checked':''}> ตัดขอบโปร่งใส</label></div>
+ <div class="stage" id="stage"><span class="muted">ยังไม่ได้เลือกภาพใหม่</span></div>
+ <div class="row" style="margin-top:8px"><button id="useBtn" class="primary" disabled>ใช้ภาพนี้</button><label class="inline"><input type="checkbox" id="asTemp"> บันทึกเป็น "ชั่วคราว"</label></div>
+ <p class="muted">ปรับเป็น ${a.size?a.size.join('×'):'ขนาดเดิม'} แปลงเป็น WebP ตั้งชื่อ ${esc((a.file||'').split('/').pop())} ให้อัตโนมัติ · ${dir?'ภาพเดิมย้ายไป "ภาพที่เลิกใช้"':'ยังไม่เชื่อมโฟลเดอร์: ภาพจะรอส่งออก ZIP'}</p>`}
+function bindNewImage(a){let drop=$('drop');drop.onclick=()=>$('file').click();$('file').onchange=e=>e.target.files[0]&&loadSource(e.target.files[0]);
+ drop.ondragover=e=>{e.preventDefault();drop.classList.add('hot')};drop.ondragleave=()=>drop.classList.remove('hot');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('hot');let f=e.dataTransfer.files[0];if(f)loadSource(f)};
+ for(let id of ['key','tol','fit','trim'])if($(id))$(id).oninput=()=>source&&process();
+ $('useBtn').onclick=useProcessed;source=null;result=null}
+// ---------- set (animation clip) detail ----------
+let animT=null;function stopAnim(){clearInterval(animT);animT=null}
+function setDetail(clip){let fr=clipFrames(clip),a=fr[0];if(!a){sel=null;return detail()}let stamps=setStamps(clip),users=fr.filter(f=>f.status!=='unused');
+ $('detail').innerHTML=`<h2>🎞 ชุดท่า ${esc(clip)}</h2><div class="badges">${[...new Set(fr.map(f=>f.status))].map(s=>`<span class="badge s-${s}">${esc(STATUS[s]||s)}</span>`).join('')}</div>
+ <div class="where"><b>📍 อยู่ตรงไหนในเกม</b>${esc(crumb(a))}<br>${esc(where(a).replace(/ · เฟรม.*$/,''))} · ${fr.length} เฟรม${a.ms?` · ${a.ms} ms/รอบ`:''}</div>
+ <div class="stage anim" id="anim">${fr.some(hasImage)?'':noneHTML('ยังไม่มีภาพ')}</div>
+ <p class="muted">คลิกเฟรมเพื่อดู/แก้ทีละเฟรม</p><div class="strip">${fr.map(f=>`<div class="thumb" data-fr="${esc(f.id)}" title="เฟรม ${f.frame} · ${esc(SHORT[f.status])}">${hasImage(f)?imgTag(f.file):noneHTML(f.frame)}</div>`).join('')}</div>
+ <h3>🕘 เวอร์ชันก่อนหน้าของทั้งชุด (${stamps.length})</h3>${stamps.length?stamps.map(([k,xs])=>`<div class="vset"><div class="row" style="justify-content:space-between"><b style="font-size:12px">${esc(fmtAt(xs[0].h.at))} · ${xs.length}/${fr.length} เฟรม</b><button class="small primary" data-stamp="${esc(k)}">↩ ใช้ชุดนี้</button></div><div class="strip">${xs.sort((p,q)=>p.a.frame-q.a.frame).map(x=>`<div class="thumb" title="เฟรม ${x.a.frame}">${imgTag(x.h.file)}</div>`).join('')}</div></div>`).join(''):'<p class="muted">ยังไม่มี — เมื่อเปลี่ยนภาพเฟรมในชุดนี้ ภาพเดิมจะเก็บเป็นชุดเวอร์ชันไว้ที่นี่</p>'}
+ <h3>➕ ใส่ภาพใหม่ทั้งชุด</h3><div class="row"><label class="inline"><input type="checkbox" id="key" ${a.transparent?'checked':''}> ลบพื้นเขียว</label><label class="inline">ความไว <input type="range" id="tol" min="20" max="160" value="90"></label></div>
+ <div class="row" style="margin-top:6px"><button id="sheetBtn" class="primary">✂ ตัดจาก sprite sheet (${fr.length} เฟรม)</button></div><p class="muted">หรือติ๊กเลือกเฟรมในแท็บช่อง แล้วใช้ 🧩 ชุดคำขอ / นำเข้า frame sheet · ${dir?'ภาพเดิมทั้งชุดจะเก็บเป็นเวอร์ชันเดียวกัน':'ยังไม่เชื่อมโฟลเดอร์: ภาพจะรอส่งออก ZIP'}</p>
+ <details><summary>Prompt (เฟรม 1)</summary>${promptHTML(a)}</details>`;
+ hydrate($('detail'));bindPrompt(a);
+ $('detail').querySelectorAll('[data-fr]').forEach(e=>e.onclick=()=>openSlot(e.dataset.fr));
+ $('detail').querySelectorAll('[data-stamp]').forEach(b=>b.onclick=()=>restoreSet(clip,b.dataset.stamp));
+ $('sheetBtn').onclick=()=>sheetSlice(a);
+ (async()=>{let urls=[];for(let f of fr)if(hasImage(f)){let s=await srcOf(f.file);if(s)urls.push(s)}let el=$('anim');if(!el||!urls.length)return;let im=new Image();el.innerHTML='';el.appendChild(im);let i=0;im.src=urls[0];if(urls.length>1)animT=setInterval(()=>{i=(i+1)%urls.length;im.src=urls[i]},Math.max(60,(a.ms||600)/urls.length))})()}
+async function restoreSet(clip,stamp){if(!dir)return needFolder();let xs=setStamps(clip).find(([k])=>k===stamp)?.[1]||[];if(!xs.length)return;
+ if(!confirm(`ใช้ชุดเวอร์ชัน ${fmtAt(xs[0].h.at)} (${xs.length} เฟรม)?\nภาพปัจจุบันของเฟรมเหล่านี้จะถูกเก็บเป็นเวอร์ชันใหม่ กู้กลับได้`))return;
+ let st=stampNow();try{for(let x of xs)await applyToSlot(x.a,{path:x.h.file},{stamp:st,note:'ก่อนกู้ชุด'});await saveManifest();toast(`กู้ชุดท่า ${clip} แล้ว (${xs.length} เฟรม)`)}catch(e){console.error(e);toast('ผิดพลาด: '+e.message)}render();detail()}
+// ---------- image detail ----------
+function imgDetail(x){if(!x){sel=null;return detail()}let s=x.slot,title=x.kind==='cardstudio'?x.label:x.path;
+ let rel=x.kind==='active'?`ใช้อยู่ในช่องนี้`:x.kind==='version'?`เคยใช้ในช่องนี้ · ถูกแทนที่เมื่อ ${fmtAt(x.h?.at)||'-'}`:x.kind==='retired'?'ชุดท่าที่เกมไม่ใช้แล้ว':x.kind==='loose'?'ไฟล์นี้มีในโฟลเดอร์ แต่ไม่ได้อยู่ในรายการช่อง — โค้ดหรือเครื่องมืออาจเรียกใช้ตรง ๆ':'ภาพที่อัปโหลดใน Card Studio (เก็บในเซฟเบราว์เซอร์ ไม่ใช่ไฟล์เกม)';
+ $('detail').innerHTML=`<h2>${esc(title.split('/').pop())}</h2><span class="badge k-${x.kind}">${KIND[x.kind]}</span>
+ <div class="stage"><img id="bigImg" alt=""></div><p class="muted" id="dims"></p>
+ <div class="where"><b>${x.kind==='version'||x.kind==='retired'?'🗄 เคยอยู่ที่':'📍 ใช้ที่'}</b>${s?`${esc(crumb(s))}<br>${esc(where(s))} · <a href="#" id="toSlot">${esc(s.id)}</a>`:''}<div class="muted">${esc(rel)}</div></div>
+ <div class="kv">${x.kind!=='cardstudio'?`<span>ไฟล์</span><span>${esc(x.path)}</span>`:''}${x.h?.note?`<span>หมายเหตุ</span><span>${esc(x.h.note)}</span>`:''}</div>
+ <h3>ทำอะไรกับภาพนี้</h3><div class="row">
+ ${x.kind==='version'&&s?`<button class="primary" id="restore">↩ กู้กลับเข้าช่องเดิม</button>`:''}
+ <button ${x.kind==='version'&&s?'':'class="primary"'} id="useFor">🎯 ใช้กับช่อง…</button>
+ ${x.kind==='version'?`<button class="danger" id="delV">🗑 ลบถาวร</button>`:''}</div>
+ ${dir?'':'<div class="note">สลับ/กู้ภาพต้องเชื่อมโฟลเดอร์เกมก่อน (ปุ่ม 📁 ด้านบน)</div>'}`;
+ (async()=>{let im=$('bigImg'),u=await srcOf(x.path);if(!im)return;im.onload=()=>{let d=$('dims');if(d)d.textContent=im.naturalWidth+' × '+im.naturalHeight+' px'};im.src=u})();
+ if($('toSlot'))$('toSlot').onclick=e=>{e.preventDefault();goSlot(s)};
+ if($('restore'))$('restore').onclick=()=>doApply(s,{path:x.path},{note:'ก่อนกู้เวอร์ชัน '+fmtAt(x.h?.at)},true);
+ $('useFor').onclick=()=>pickSlotFor(x);
+ if($('delV'))$('delV').onclick=()=>delVersion(s,x.h||{file:x.path})}
+// ---------- pickers ----------
+function openPicker(title,subtitle,filters,build){$('pkTitle').textContent=title;$('pkSub').textContent=subtitle;let st={f:filters[0]?.[0],q:''};
+ let draw=()=>{$('pkFilters').innerHTML=filters.map(([k,n])=>`<button class="chip ${st.f===k?'on':''}" data-pf="${k}">${n}</button>`).join('')+'<input type="search" id="pkQ" placeholder="ค้นหา">';
+  let q=$('pkQ');q.value=st.q;q.oninput=()=>{st.q=q.value.toLowerCase().trim();grid()};$('pkFilters').querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{st.f=b.dataset.pf;draw()});grid()};
+ let grid=()=>{let html=build(st);$('pkGrid').innerHTML=html||'<div class="empty">ไม่มีรายการ</div>';hydrate($('pkGrid'))};
+ draw();$('picker').showModal();$('pkQ').focus()}
+function pickImageFor(a){if(!dir)return needFolder();
+ let all=library().filter(x=>x.path!==a.file),cat=a.category;
+ let rank=x=>x.slot===a?0:x.slot?.category===cat?1:x.slot&&a.size&&x.slot.size&&x.slot.size.join()===a.size.join()?2:3;
+ openPicker(`เลือกภาพใส่ช่อง ${a.id}`,where(a)+' · ภาพเดิมจะเก็บไว้ใน "ภาพที่เลิกใช้"',[['near','หมวดเดียวกัน'],['all','ทุกภาพ']],st=>{
+  let xs=all.filter(x=>(st.f==='all'||rank(x)<=2)&&(!st.q||(x.path+' '+(x.slot?.id||'')+' '+(x.label||'')).toLowerCase().includes(st.q))).sort((p,q)=>rank(p)-rank(q));
+  setTimeout(()=>$('pkGrid').querySelectorAll('[data-k]').forEach(t=>t.onclick=()=>{let x=xs.find(y=>y.key===t.dataset.k);$('picker').close();doApply(a,{path:x.kind==='cardstudio'?null:x.path,data:x.kind==='cardstudio'?csUploads().find(c=>'cs:'+c.id===x.key)?.data:null},{note:'ก่อนเปลี่ยนเป็น '+(x.slot?.id||x.label||x.path.split('/').pop())},true)}));
+  return xs.slice(0,400).map(imgTile).join('')})}
+function pickSlotFor(x){if(!dir)return needFolder();let base=x.slot;
+ let slots=M.assets.filter(a=>isSlot(a)&&a.file&&!(x.kind==='active'&&a===base));
+ let rank=a=>!base?1:a.category===base.category?0:a.size&&base.size&&a.size.join()===base.size.join()?1:2;
+ openPicker('เลือกช่องที่จะใช้ภาพนี้',(x.slot?x.slot.id:x.label||x.path)+' → ช่องที่เลือก (ภาพเดิมของช่องนั้นจะเก็บไว้ใน "ภาพที่เลิกใช้")',[['near','หมวด/ขนาดเดียวกัน'],['all','ทุกช่อง']],st=>{
+  let as=slots.filter(a=>(st.f==='all'||rank(a)<=1)&&(!st.q||(a.id+' '+where(a)).toLowerCase().includes(st.q))).sort((p,q)=>rank(p)-rank(q));
+  setTimeout(()=>$('pkGrid').querySelectorAll('[data-id]').forEach(t=>t.onclick=()=>{let a=byId(t.dataset.id);$('picker').close();
+   doApply(a,x.kind==='cardstudio'?{data:csUploads().find(c=>'cs:'+c.id===x.key)?.data}:{path:x.path},{note:'ก่อนเปลี่ยนเป็น '+(base?.id||x.label||x.path.split('/').pop())},true)}));
+  return as.slice(0,400).map(a=>`<div class="tile" data-id="${esc(a.id)}">${thumbOf(a)}<b>${esc(a.id)}</b><small>${esc(where(a))}</small><div class="badges"><span class="badge s-${a.status}">${SHORT[a.status]}</span>${a.size?`<span class="badge k-hist">${a.size.join('×')}</span>`:''}</div></div>`).join('')})}
+// ---------- write operations (folder mode) ----------
+let Q=Promise.resolve();function queue(fn){let r=Q.then(fn);Q=r.catch(()=>{});return r}
+function stampNow(){let d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`}
+const ext=p=>((p||'').match(/\.[a-z0-9]+$/i)||['.webp'])[0].toLowerCase(),MIME={'.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg'};
+function toBlobType(cv,e){return new Promise(r=>cv.toBlob(b=>r(b),MIME[e]||'image/webp',.9))}
+async function fitTo(a,blob,srcPath){let want=ext(a.file),im=await loadImage(blob),same=!a.size||(im.width===a.size[0]&&im.height===a.size[1]),typeOk=blob.type===MIME[want]||(srcPath&&ext(srcPath)===want);
+ if(same&&typeOk)return blob;let cv;if(same){cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;cv.getContext('2d').drawImage(im,0,0)}else cv=processImage(im,a,{key:false,tol:90,fit:a.transparent?'contain':'cover',trim:false});return toBlobType(cv,want)}
+function applyToSlot(a,src,opt={}){if(!dir)return Promise.reject(new Error('ยังไม่ได้เชื่อมโฟลเดอร์'));
+ return queue(async()=>{let blob=src.blob||(src.canvas?await toBlobType(src.canvas,ext(a.file)):src.data?await (await fetch(src.data)).blob():await readFile(src.path));
+  blob=await fitTo(a,blob,src.path);a.history||=[];
+  if(a.file&&src.path!==a.file&&await exists(a.file)){let st=opt.stamp||stampNow(),vp=`assets/_versions/${a.id}/${st}${ext(a.file)}`;if(a.history.some(h=>h.file===vp)||await exists(vp))vp=`assets/_versions/${a.id}/${st}-${Math.random().toString(36).slice(2,6)}${ext(a.file)}`;
+   await writeFile(vp,await readFile(a.file));a.history.unshift({file:vp,at:new Date().toISOString(),stamp:st,status:a.status,note:opt.note||''})}
+  await writeFile(a.file,blob);
+  let i=src.path?a.history.findIndex(h=>h.file===src.path):-1;if(i>=0){a.history.splice(i,1);try{await removeFile(src.path)}catch(e){}}
+  if(!a.history.length)delete a.history;
+  if(opt.status)a.status=opt.status;else if(!['final','temp','keep'].includes(a.status))a.status='final';
+  a.artRevision=stampNow()})}
+function saveManifest(){if(!dir)return Promise.resolve();return queue(async()=>{await writeFile(manifestJsonPath,new Blob([JSON.stringify(M,null,1)],{type:'application/json'}));
+ await writeFile(manifestJsPath,new Blob(['/* Generated by tools/build-asset-manifest.py and Asset Studio — the list of every game image. */\nwindow.ASSET_MANIFEST='+JSON.stringify(M)+';\n'],{type:'text/javascript'}))})}
+async function doApply(a,src,opt={},ask=false){if(!dir)return needFolder();if(!src.path&&!src.data&&!src.blob&&!src.canvas)return;
+ if(ask&&!confirm(`ใส่ภาพนี้ในช่อง ${a.id}?\n${where(a)}\n\nภาพเดิมของช่องนี้จะถูกเก็บไว้ใน "ภาพที่เลิกใช้" กู้กลับได้`))return;
+ try{await applyToSlot(a,src,opt);await saveManifest();toast('เปลี่ยนภาพ '+a.id+' แล้ว · ภาพเดิมอยู่ใน "ภาพที่เลิกใช้"');if(sel?.t==='img')sel={t:'slot',id:a.id}}catch(e){console.error(e);toast('ผิดพลาด: '+e.message)}
+ render();detail()}
+async function delVersion(a,h){if(!dir)return needFolder();if(!confirm('ลบภาพเวอร์ชันนี้ถาวร?\n'+h.file+'\n(ลบแล้วกู้กลับไม่ได้)'))return;
+ try{await queue(()=>removeFile(h.file).catch(()=>{}));if(a?.history){a.history=a.history.filter(x=>x.file!==h.file);if(!a.history.length)delete a.history}await saveManifest();toast('ลบแล้ว');if(sel?.t==='img')sel=null}catch(e){toast('ผิดพลาด: '+e.message)}render();detail()}
+// ---------- new image pipeline ----------
+let source=null,result=null;
+function loadImage(file){return new Promise((res,rej)=>{let u=URL.createObjectURL(file),im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=u})}
+async function loadSource(file){source=await loadImage(file);process()}
+function keyGreen(cv,tol){let g=cv.getContext('2d'),d=g.getImageData(0,0,cv.width,cv.height),p=d.data;for(let i=0;i<p.length;i+=4){let r=p[i],gg=p[i+1],b=p[i+2],dom=gg-Math.max(r,b);if(dom>tol*.55){p[i+3]=0}else if(dom>tol*.25){p[i+3]=Math.round(p[i+3]*(1-(dom-tol*.25)/(tol*.3)));p[i+1]=Math.max(r,b)+(dom>0?dom*.3:0)}else if(dom>8){p[i+1]=Math.max(r,b)+dom*.5}}g.putImageData(d,0,0)}
+function trimBox(cv){let g=cv.getContext('2d'),d=g.getImageData(0,0,cv.width,cv.height).data,x0=cv.width,y0=cv.height,x1=-1,y1=-1;for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++)if(d[(y*cv.width+x)*4+3]>12){if(x<x0)x0=x;if(y<y0)y0=y;if(x>x1)x1=x;if(y>y1)y1=y}return x1<0?{x:0,y:0,w:cv.width,h:cv.height}:{x:x0,y:y0,w:x1-x0+1,h:y1-y0+1}}
+function processImage(img,a,opt){let src=document.createElement('canvas');src.width=img.width;src.height=img.height;src.getContext('2d').drawImage(img,0,0);if(opt.key)keyGreen(src,opt.tol);
+ let box=opt.trim?trimBox(src):{x:0,y:0,w:src.width,h:src.height},[W,H]=a.size||[box.w,box.h],out=document.createElement('canvas');out.width=W;out.height=H;let g=out.getContext('2d');g.imageSmoothingQuality='high';
+ if(opt.fit==='cover'){let s=Math.max(W/box.w,H/box.h),w=box.w*s,h=box.h*s;g.drawImage(src,box.x,box.y,box.w,box.h,(W-w)/2,(H-h)/2,w,h)}
+ else{let pad=a.transparent?.04:0,s=Math.min(W*(1-pad*2)/box.w,H*(1-pad*2)/box.h),w=box.w*s,h=box.h*s,x=(W-w)/2,y=(H-h)/2;let anc=a.anchor||a.pivot;if(a.transparent&&a.anchor){let foot=(a.anchor[1]>=.99?378/384:a.anchor[1])*H;y=foot-h}g.drawImage(src,box.x,box.y,box.w,box.h,x,y,w,h)}
+ return out}
+function process(){let a=byId(selected);result=processImage(source,a,{key:$('key').checked,tol:+$('tol').value,fit:$('fit').value,trim:$('trim').checked});showResult(result,a);$('useBtn').disabled=false}
+function showResult(cv,a,st=$('stage')){st.innerHTML='';let show=document.createElement('canvas');show.width=cv.width;show.height=cv.height;show.getContext('2d').drawImage(cv,0,0);
+ if(['cards','tactic-cards','actions','items'].includes(a.category)&&!a.transparent){let card=document.createElement('div');card.className='ctx-card';card.innerHTML='<div class="art"></div><b>'+esc((a.subject||a.id).split(',')[0])+'</b><small class="muted">ตัวอย่างในกรอบการ์ด</small>';card.querySelector('.art').appendChild(show);st.appendChild(card)}
+ else if(['hero-frames','tactics-hero','enemies','allies','tactics-props'].includes(a.category)){let gd=document.createElement('div');gd.className='ctx-ground';gd.innerHTML='<div class="tile-d"></div><div class="anchor" title="จุดยืน"></div>';let h=230;show.style.height=h+'px';show.style.width='auto';let foot=(a.anchor?(a.anchor[1]>=.99?378/384:a.anchor[1]):(a.pivot?a.pivot[1]:1));show.style.bottom=(61-h*(1-foot))+'px';gd.appendChild(show);st.appendChild(gd)}
+ else st.appendChild(show)}
+function toBlob(cv){return new Promise(r=>cv.toBlob(b=>r(b),'image/webp',.86))}
+async function useProcessed(){let a=byId(selected);if(!result)return;await store(a,result,$('asTemp').checked?'temp':'final');toast(dir?'ใส่ภาพใหม่ใน '+a.id+' แล้ว':'เพิ่ม '+a.id+' แล้ว · รอส่งออก ZIP');render();detail()}
+let burstStamp=null,burstT=null,saveT=null;
+async function store(a,cv,status){
+ if(dir){burstStamp||=stampNow();clearTimeout(burstT);burstT=setTimeout(()=>burstStamp=null,5000);
+  try{await applyToSlot(a,{canvas:cv},{status,stamp:burstStamp,note:'ก่อนใส่ภาพใหม่'})}catch(e){console.error(e);toast('ผิดพลาด: '+e.message);return}
+  clearTimeout(saveT);saveT=setTimeout(()=>{saveT=null;saveManifest().then(()=>{render();if(sel)detail()})},400);return}
+ let blob=await toBlob(cv);if(pending.has(a.id))URL.revokeObjectURL(pending.get(a.id).url);pending.set(a.id,{blob,url:URL.createObjectURL(blob),status,canvas:cv})}
+async function sheetSlice(a){let frames=clipFrames(a.clip);let inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=async()=>{let img=await loadImage(inp.files[0]);let n=frames.length,guess=n<=4?n:Math.ceil(n/2);let cols=+prompt(`ท่า ${a.clip} มี ${n} เฟรม — sprite sheet มีกี่คอลัมน์?`,guess);if(!cols)return;let rows=+prompt('กี่แถว?',Math.ceil(n/cols));if(!rows)return;
+ let cw=img.width/cols,ch=img.height/rows,done=0;for(let i=0;i<n&&i<cols*rows;i++){let c=document.createElement('canvas');c.width=cw;c.height=ch;c.getContext('2d').drawImage(img,(i%cols)*cw,Math.floor(i/cols)*ch,cw,ch,0,0,cw,ch);let im=await new Promise(r=>{let x=new Image();x.onload=()=>r(x);x.src=c.toDataURL()});await store(frames[i],processImage(im,frames[i],{key:$('key')?.checked??true,tol:+($('tol')?.value||90),fit:'contain',trim:true}),'final');done++}
+ toast(`ตัดแล้ว ${done} เฟรม`);render();detail()};inp.click()}
+const CRC=(()=>{let t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=CRC[(c^b[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
+function zip(files){let enc=new TextEncoder(),parts=[],central=[],off=0;for(let f of files){let name=enc.encode(f.name),data=f.data,crc=crc32(data),h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(8,0,true);h.setUint32(14,crc,true);h.setUint32(18,data.length,true);h.setUint32(22,data.length,true);h.setUint16(26,name.length,true);parts.push(new Uint8Array(h.buffer),name,data);
+ let c=new DataView(new ArrayBuffer(46));c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint32(16,crc,true);c.setUint32(20,data.length,true);c.setUint32(24,data.length,true);c.setUint16(28,name.length,true);c.setUint32(42,off,true);central.push(new Uint8Array(c.buffer),name);off+=30+name.length+data.length}
+ let size=central.reduce((s,p)=>s+p.length,0),e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,size,true);e.setUint32(16,off,true);return new Blob([...parts,...central,new Uint8Array(e.buffer)],{type:'application/zip'})}
+async function exportZip(){let files=[],enc=new TextEncoder();for(let [id,p] of pending){let a=byId(id);a.status=p.status;files.push({name:a.file,data:new Uint8Array(await p.blob.arrayBuffer())})}
+ for(let [name,b] of window.AnimationReviewExtraFiles||[])files.push({name,data:new Uint8Array(await b.arrayBuffer())});
+ files.push({name:manifestJsonPath,data:enc.encode(JSON.stringify(M,null,1))},{name:manifestJsPath,data:enc.encode('/* Generated by tools/build-asset-manifest.py and Asset Studio — the list of every game image. */\nwindow.ASSET_MANIFEST='+JSON.stringify(M)+';\n')});
+ let lst=[...pending.keys()].map(id=>'- '+byId(id).file+' ('+byId(id).status+(byId(id).status==='planned'?' — ต้องเพิ่มโค้ด':'')+')').join('\n');files.push({name:'ASSET-DROP-README.txt',data:enc.encode('แตก ZIP นี้ทับโฟลเดอร์เกม แล้วเปิด index.html ใหม่\n(ครั้งหน้ากด "เชื่อมโฟลเดอร์เกม" ใน Asset Studio จะเขียนลงเกมได้ทันที และเก็บภาพเดิมไว้ให้กู้กลับได้)\n\nภาพในชุดนี้:\n'+lst+'\n')});
+ let blob=zip(files),u=URL.createObjectURL(blob),link=document.createElement('a'),d=new Date();link.href=u;link.download=`asset-drop-${stampNow()}.zip`;link.click();setTimeout(()=>URL.revokeObjectURL(u),5000);
+ for(let [id,p]of pending){let path=byId(id).file,old=exportedFiles.get(path);if(old&&old.url!==p.url)URL.revokeObjectURL(old.url);exportedFiles.set(path,{blob:p.blob,url:p.url})}for(let [path,b]of window.AnimationReviewExtraFiles||[]){let old=exportedFiles.get(path);if(old)URL.revokeObjectURL(old.url);exportedFiles.set(path,{blob:b,url:URL.createObjectURL(b)})}pending.clear();window.AnimationReviewExtraFiles?.clear();toast('ส่งออกแล้ว '+files.length+' ไฟล์');render();detail()}
+$('exportBtn').onclick=exportZip;$('howto').onclick=()=>$('help').showModal();
+$('q').oninput=e=>{query=e.target.value.toLowerCase().trim();render()};
+$('promptPack').onclick=()=>{let todo=(tab==='slots'?list():M.assets.filter(isSlot)).filter(a=>TODO.includes(a.status));let text=todo.map(a=>`### ${a.id} → ${a.file}\n${copilotPrompt(a)}`).join('\n\n');if(!todo.length)return toast('ไม่มีภาพที่ยังต้องทำในมุมมองนี้');navigator.clipboard.writeText(text).then(()=>toast('คัดลอก '+todo.length+' prompt แล้ว'))};
+window.addEventListener('beforeunload',e=>{if(pending.size||window.AnimationReviewExtraFiles?.size||window.StudioWalkImport?.hasDrafts?.()){e.preventDefault();e.returnValue=''}});
+function reference(a){if(a.category==='hero-frames'||a.category==='allies')return 'assets/characters/hero/hero_daily_idle_front_01_ready.webp';if(a.category==='tactics-hero'){let d=a.id.split('-')[2];return `assets/tactics/hero_${d==='sw'?'se':d==='nw'?'ne':d}_idle.webp`}if(a.category==='enemies')return 'assets/scarecrow.webp';if(a.category==='tactic-cards'||a.category==='cards')return 'assets/hammer-strike.webp';if(a.category==='tactics-props')return 'assets/tactics/tree.webp';if(a.category==='tactics-equipment')return 'assets/tactics/sword.webp';return null}
+function copilotPrompt(a){let s=a.size?a.size:[1024,1024],ratio=s[0]/s[1],shape=ratio>1.3?'wide landscape (16:9)':ratio<.8?'tall portrait (2:3)':'square';let ref=reference(a);return a.prompt+`\nFormat: ${shape} image, final use ${s.join('×')} px.`+(ref?`\nMatch the style and character of the attached reference image.`:'')+(a.clip?`\nThis is frame ${a.frame} of ${a.frames} of the "${a.clip}" animation — keep identical scale, outfit and camera angle across all frames.`:'')}
+render();detail();
+// Folder restoration is managed by asset-studio-browser.js after all models are ready.
+</script><script src="js/asset-batch.js"></script><script src="js/animation-data.js"></script><script src="js/idle-extra.js"></script><script src="js/village-idle.js"></script><script src="js/tactics-sprites.js"></script><script src="js/hero-motion.js"></script><script src="js/asset-animation-review.js"></script><script src="js/studio-catalog.js"></script><script src="js/asset-studio-browser.js"></script><script src="js/studio-walk-import.js"></script><script src="js/studio-unified-review.js"></script>
+</body></html>

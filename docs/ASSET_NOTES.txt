@@ -1,0 +1,28 @@
+v48 UPDATE: พื้น/ถนน/ดินและรายละเอียดสวนที่ระบุเป็น geometry ในบันทึก v1 ด้านล่าง เปลี่ยนผิวเป็นภาพแล้ว ดู ASSET_PROMPTS_v48.txt สำหรับรายการและ prompt ใหม่
+
+Asset production: built-in image_gen, transparent output. No external stock art.
+All image files remain at their original generated resolution. Runtime sprites use native source rectangles.
+
+assets/village-town/player-house.png — cozy cream plaster and oak cottage, terracotta gable roof.
+inn.png — ornate L-shaped inn, multiple roofs/chimneys, balconies and vines.
+guild.png — pale stone guild manor, twin red-roof towers, blue/gold banners.
+healer.png — ornate pale stone sanctuary, teal roofs, stained glass and gold details.
+shop.png — prosperous two-story general shop, blue/cream awning, goods against facade.
+market.png — merchant hall with attached red/cream market stalls and produce counters.
+temple.png — opulent copper-red dome temple, pale carved stone, golden doors and stair statues.
+forge.png — large timber/stone blacksmith, glowing furnace shelter, tools and anvil.
+fountain.png — ornate circular turquoise-water fountain, pale stone female statue with vessel.
+props.png — 4x2 transparent atlas: stone fence, wooden fence, flowering hedge, flower planter,
+            angel statue, table/benches, crates/barrel, pine tree.
+
+Shared final building prompt: one isolated polished painted non-pixel fantasy RPG building sprite;
+orthographic 2:1 isometric view looking down around 30 degrees, vertical walls vertical;
+visible front entrance facing bottom-left, side on right; full silhouette with transparent margin;
+soft upper-left daylight, rich material texture; no terrain island, people, text or large cast shadow.
+Reference for existing inn/guild/healer: original assets/v03/village-map.webp.
+New shop/market/temple/forge/fountain subjects are described above with the same camera/style constraints.
+Props final prompt: uniform 4 columns x 2 rows of square cells, one centered isolated object per cell,
+at least 15% transparent margin, same camera and lighting, no labels or separators.
+
+SE fronts mirror the existing SW sprite at runtime. Grounds, gates and collision transform with it.
+The ground and walkable roads remain native canvas geometry for exact connectivity and editing.

@@ -1,0 +1,42 @@
+Project A v48 — Validation
+
+Browser: Chromium 138 through Playwright, 1440x900 desktop.
+Source baseline: Project A v38 + Asset Studio v46 + Village 2.5D main patch v1.
+User-customized walking image bytes were not supplied with this request.
+Therefore the patch preserves existing asset manifests and tactics-sprites.js,
+and variable frame behavior was verified with an injected 10/12-frame fixture.
+
+Passed:
+- All 9 village places and 6 exits remain connected.
+- 72 directed place-to-place routes sampled continuously avoid blocked geometry.
+- Parent and town share 10/12-frame sequences, durations and mirror flags.
+- The battle sampler and old animation aliases use the same main walk frames.
+- Editor exposes only action "walk" / "เดิน" for hero walking, with directional cells.
+- Primary walk still opens the single unified review modal.
+- Same-origin live motion update reaches the parent game and town scene.
+- Arriving at home opens the original location; its chest action opens correctly.
+- Arriving at forge opens the original location; smelting consumes iron and updates heat.
+- Entering market charges normal travel once (home -> market: 15 min / 3 stamina).
+- All 16 combinations among market entrance and three service points are reachable.
+- Walking to materials merchant purchases food: coins 80 -> 72, food 2 -> 3.
+- Walking to board accepts the existing guard order.
+- Equipment merchant opens the existing selling panel.
+- Walking inside and leaving market charge no additional time/stamina.
+- Save reload preserves coins, orders, work and location.
+- First user input in town unlocks parent music; file-backed village BGM plays.
+- Ended events advance forge 01 -> 02 -> 01.
+- BGM selector checks cave, ordinary snow, snow miniboss/boss and victory screen.
+- House actually fades in the scene when covering hero, restores afterward.
+- Tactical battle opens without page errors; hidden town rendering pauses.
+- file:// opens town and market, including parent/iframe handshakes.
+- No JavaScript page errors in the integration and final checks.
+- All 8 normalized MP3s decoded and measured after final encoding.
+- All 5 new transparent PNG assets have non-opaque alpha ranges.
+
+Limits:
+- Full playthrough of every existing adventure area was not performed.
+- On file://, sprite opacity uses bounding-box fallback when browser blocks alpha reads.
+- Cross-tab instant update requires the same web origin. With file://, refresh game
+  after saving the Editor files or extracting the Editor export ZIP.
+- Existing inactive village places still have no gameplay service beyond the prior game.
+- New music starts after a user gesture, as required by browser autoplay rules.

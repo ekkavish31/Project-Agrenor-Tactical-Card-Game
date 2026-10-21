@@ -1,0 +1,25 @@
+/* The hand shows exactly a name, artwork and short ability. Full frames live in the floating preview. */
+#tacticsLayer .hand-row .tactic-card.compact,#tacticsLayer.fullbattle .hand-row .tactic-card.compact,#tacticsLayer .item-row .item-card.compact{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:3px!important;width:clamp(74px,6.2vw,102px)!important;min-width:74px!important;height:116px!important;padding:5px!important;border:1px solid #ac8953!important;border-radius:7px!important;background:linear-gradient(#f8ecd0,#e7d2ab)!important;box-shadow:0 2px 5px #0007!important;color:#392919!important;text-align:center!important;overflow:hidden!important;transform:none;position:relative}
+#tacticsLayer .compact .hc-name{display:block!important;flex:0 0 25px;min-height:25px;margin:0!important;font-size:10px!important;line-height:1.2!important;white-space:normal!important;overflow:hidden!important;text-align:center!important}
+#tacticsLayer .compact .hc-art{display:block;position:relative;flex:0 0 44px;height:44px;overflow:hidden;border-radius:3px;background:#4d4937}
+#tacticsLayer .compact .hc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0;margin:0}
+#tacticsLayer .compact .hc-summary{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:9px;line-height:1.15;font-weight:500;white-space:normal;color:#4f3a23}
+#tacticsLayer .compact.selected{outline:2px solid #ffda79!important;outline-offset:2px;transform:translateY(-4px)!important}
+#tacticsLayer .compact:focus-visible{outline:2px solid #fff!important;outline-offset:3px}
+#tacticsLayer .compact.unavailable,#tacticsLayer .compact.used{filter:grayscale(.55);opacity:.6}
+#handFullCard{position:fixed;z-index:100000;pointer-events:none;filter:drop-shadow(0 7px 18px #000b)}
+#handFullCard[hidden]{display:none}#handFullCard .gcard{width:100%;filter:none}
+@media(max-width:620px){#tacticsLayer .hand-row,#tacticsLayer .item-row{overflow-x:auto;overflow-y:visible;padding:4px}#tacticsLayer .hand-row .tactic-card.compact,#tacticsLayer .item-row .item-card.compact{min-width:76px!important;flex-shrink:0!important}#tacticsLayer .compact .hc-summary{display:-webkit-box!important}}
+@media(max-height:600px) and (min-width:621px){#tacticsLayer .hand-row .tactic-card.compact,#tacticsLayer .item-row .item-card.compact{height:94px!important}#tacticsLayer .compact .hc-art{height:32px;flex-basis:32px}#tacticsLayer .compact .hc-name{min-height:20px;flex-basis:20px;font-size:9px!important}#tacticsLayer .compact .hc-summary{font-size:8px;-webkit-line-clamp:2}}
+/* Hand zones retain their colour even when cards are used or unavailable. */
+#tacticsLayer .tactics-hand .hand-group{border:1px solid var(--hand-edge);background:var(--hand-zone);border-radius:9px;padding:7px 8px 8px;gap:5px;box-shadow:inset 0 1px #ffffff90}
+#tacticsLayer .tactics-hand .move-group{--hand-zone:#e4f1da;--hand-edge:#a4c58b;--hand-label:#34552c}
+#tacticsLayer .tactics-hand .combat-group{--hand-zone:#f7dfdd;--hand-edge:#d6a09a;--hand-label:#793b35}
+#tacticsLayer .tactics-hand .item-group{--hand-zone:#dfedf9;--hand-edge:#97bad7;--hand-label:#305778}
+#tacticsLayer .tactics-hand .hand-group>h4{color:var(--hand-label)!important;font-weight:700;text-shadow:none!important;margin:0!important}
+@media(max-width:620px){#tacticsLayer .tactics-hand .hand-group{padding:5px 4px}}
+#tacticsLayer.fullbattle{--hand-h:164px}
+#tacticsLayer.fullbattle .tactics-hand.two-decks{justify-content:flex-start!important;overflow-x:auto!important;overflow-y:hidden!important;padding:4px 3px;min-height:0}
+#tacticsLayer .tactics-hand .hand-group{flex:0 0 auto;min-width:max-content;box-sizing:border-box}
+#tacticsLayer .hand-row .tactic-card.compact,#tacticsLayer.fullbattle .hand-row .tactic-card.compact,#tacticsLayer .item-row .item-card.compact{width:clamp(74px,5.8vw,94px)!important;flex-shrink:0!important;box-sizing:border-box}
+@media(max-height:600px) and (min-width:621px){#tacticsLayer.fullbattle{--hand-h:140px}}

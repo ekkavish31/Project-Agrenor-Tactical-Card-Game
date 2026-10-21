@@ -1,0 +1,117 @@
+/* v11 full-screen battle (FFT style): used for adventure / expedition fights.
+   The field fills the whole game area; only battle UI floats on top. Training keeps the old layout. */
+#tacticsLayer.fullbattle{background:#0b0806!important;--hand-h:184px}
+#tacticsLayer.fullbattle .topbar{position:absolute;z-index:6;top:8px;left:8px;right:auto;display:flex;gap:10px;align-items:center;padding:5px 10px 5px 6px;background:#14100ccc;border:1px solid #6a5434;border-radius:12px;box-shadow:0 6px 18px #0007;min-height:0;height:auto}
+#tacticsLayer.fullbattle .topbar .title small{color:#c9b48c;font-size:10px}
+#tacticsLayer.fullbattle .topbar .title h1{color:#f6e3b4;font-size:16px;margin:0;white-space:nowrap}
+#tacticsLayer.fullbattle .topbar .top-actions{gap:4px}
+#tacticsLayer.fullbattle .topbar .top-actions #fullButton{display:none}
+#tacticsLayer.fullbattle .topbar button{padding:4px 9px!important;font-size:12px!important;min-height:0!important}
+#tacticsLayer.fullbattle .field-tools{position:absolute;z-index:6;top:8px;right:276px;left:auto;padding:0;background:none;border:0;box-shadow:none;width:auto;min-height:0}
+#tacticsLayer.fullbattle .field-tools>*:not(.zoom-controls){display:none!important}
+#tacticsLayer.fullbattle .zoom-controls{background:#14100ccc;border:1px solid #6a5434;border-radius:12px;padding:4px 6px;gap:4px}
+#tacticsLayer.fullbattle .zoom-controls button{padding:3px 8px!important;min-height:0!important;font-size:12px!important}
+#tacticsLayer.fullbattle .zoom-controls .rot-label{color:#f6e3b4}
+#tacticsLayer.fullbattle .battle-layout{position:absolute;inset:0;display:block;padding:0;margin:0;max-width:none;height:auto}
+#tacticsLayer.fullbattle .field-wrap{position:absolute;left:0;right:0;top:0;bottom:var(--hand-h);border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;padding:0!important;margin:0;height:auto;min-height:0}
+#tacticsLayer.fullbattle #battleCanvas{position:absolute;inset:0;width:100%!important;height:100%!important;border:0;border-radius:0;background:none}
+#tacticsLayer.fullbattle .round-banner{position:absolute;z-index:5;top:58px;left:10px;right:auto}
+#tacticsLayer.fullbattle .field-hint{display:none}
+#tacticsLayer.fullbattle .tile-inspector{bottom:8px;left:10px}
+#tacticsLayer.fullbattle .battle-journal{position:absolute;z-index:6;top:8px;right:8px;width:260px;max-height:calc(100% - var(--hand-h) - 16px);overflow:auto;background:#f7edd8eb;border:1px solid #a88a58;border-radius:12px;box-shadow:0 8px 24px #0008;padding:8px 10px;margin:0}
+#tacticsLayer.fullbattle .battle-journal .equipment,#tacticsLayer.fullbattle #anchorToggle,#tacticsLayer.fullbattle #anchorEditor,#tacticsLayer.fullbattle #fxToggle,#tacticsLayer.fullbattle #fxLab{display:none!important}
+#tacticsLayer.fullbattle .log-book{max-height:110px;overflow:auto}
+#tacticsLayer.fullbattle .hand-area{position:absolute;z-index:6;left:0;right:0;bottom:0;height:var(--hand-h);margin:0;padding:6px 14px 4px;background:linear-gradient(#0b080600,#0b0806e6 22%);border:0;box-shadow:none;display:flex;flex-direction:column;justify-content:flex-end}
+#tacticsLayer.fullbattle .hand-caption{color:#f0dfb8}
+#tacticsLayer.fullbattle .hand-caption strong,#tacticsLayer.fullbattle .hand-group h4,#tacticsLayer.fullbattle .pile-info,#tacticsLayer.fullbattle .sandbox-note{color:#e8d6ae!important}
+#tacticsLayer.fullbattle .move-group{border-right-color:#8a7048}
+#tacticsLayer.fullbattle .result-overlay{z-index:7}
+/* battle items (3 random from the bag, use 1 per turn) */
+#tacticsLayer .item-group{display:flex;flex-direction:column;gap:4px;padding-left:14px;border-left:2px dashed #c5aa78}
+#tacticsLayer.fullbattle .item-group{border-left-color:#8a7048}
+#tacticsLayer .item-row{display:flex;gap:6px}
+#tacticsLayer .item-card{width:96px;height:96px;border-radius:9px;border:1px solid #a88a58;background:linear-gradient(#f4ead2,#e2d1ac);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:4px;font-size:11px;color:#3a2a17;text-align:center;line-height:1.15}
+#tacticsLayer .item-card b{font-size:12px}
+#tacticsLayer .item-card .ico{font-size:22px;line-height:1}
+#tacticsLayer .item-card.selected{outline:3px solid #e8a33a;transform:translateY(-4px)}
+#tacticsLayer .item-card[disabled]{opacity:.45;filter:grayscale(.6);cursor:default}
+#tacticsLayer .item-group h4{margin:0;font-size:11px;color:#6c5232}
+#tacticsLayer.fullbattle .item-group h4{color:#e8d6ae}
+#tacticsLayer.fullbattle .tactics-hand.two-decks{gap:10px;justify-content:center;overflow:visible}
+#tacticsLayer.fullbattle .hand-row .tactic-card{width:100px}
+#tacticsLayer.fullbattle .item-card{width:80px;height:96px;font-size:10px}
+#tacticsLayer.fullbattle .move-group{padding-right:10px}
+#tacticsLayer.fullbattle .item-group{padding-left:10px}
+#tacticsLayer .ally-orders{margin:6px 0;padding:6px;border:1px solid #c5aa78;border-radius:8px;background:#fff8e8}
+#tacticsLayer .ally-orders b{font-size:12px}
+#tacticsLayer .ally-orders div{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px}
+#tacticsLayer .ally-orders button{font-size:11px;padding:3px 4px!important;min-height:0!important}
+#tacticsLayer .ally-orders button.on{background:#b8742c;color:#fff;border-color:#7d4d1b}
+#tacticsLayer .ally-orders small{display:block;margin-top:3px;font-size:10.5px;color:#6c5232}
+/* ---------- v12 FFT HUD ---------- */
+#tacticsLayer.fullbattle{--hand-h:150px}
+#tacticsLayer.fullbattle .battle-journal,#tacticsLayer.fullbattle .round-banner,#tacticsLayer.fullbattle .hand-caption,#tacticsLayer.fullbattle .tile-inspector,#tacticsLayer.fullbattle .pile-info{display:none!important}
+#tacticsLayer.fullbattle .field-tools{right:10px}
+#tacticsLayer.fullbattle .topbar{left:auto;right:10px;top:50px}
+#tacticsLayer.fullbattle .hand-area{padding-left:320px;padding-right:10px}
+#tacticsLayer.fullbattle .hand-row .tactic-card{width:80px;height:92px}
+#tacticsLayer.fullbattle .item-card{width:64px;height:92px;font-size:9px}
+#tacticsLayer.fullbattle .hand-group h4{font-size:10px}
+#fftHud[hidden]{display:none}
+#fftHud .fb-queue{position:absolute;z-index:7;left:10px;top:10px;display:flex;flex-direction:column;gap:5px;max-height:calc(100% - var(--hand-h) - 20px);overflow:hidden}
+#fftHud .fb-queue>small{color:#c9b48c;font-size:10px;letter-spacing:.5px}
+#fftHud .fb-q{position:relative;display:flex;align-items:center;gap:6px;cursor:default}
+#fftHud .fb-q span{width:16px;text-align:right;color:#f6e3b4;font:700 13px sans-serif;text-shadow:0 1px 2px #000}
+#fftHud .fb-q .ct-portrait{width:40px;height:40px;border-radius:7px;border:2px solid #4f86c6;background:#1c2a3a;box-shadow:0 2px 6px #0009}
+#fftHud .fb-q.enemy .ct-portrait{border-color:#c65a4f;background:#3a1c1c}
+#fftHud .fb-q.ally:not(:first-of-type){cursor:pointer}
+#fftHud .fb-q.now .ct-portrait{width:54px;height:54px;border-color:#ffd56a;box-shadow:0 0 0 2px #ffd56a88,0 2px 8px #000a}
+#fftHud .fb-q b{position:absolute;left:52px;top:-2px;background:#2a7a4a;color:#fff;font-size:9px;border-radius:4px;padding:0 3px}
+#fftHud .fb-unit,#fftHud .fb-target{position:absolute;z-index:8;display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:12px;color:#f3e7cf;box-shadow:0 8px 24px #000a}
+#fftHud .fb-unit{left:10px;bottom:8px;width:300px;height:calc(var(--hand-h) - 16px);background:linear-gradient(135deg,#1d3150f0,#13203af0);border:1px solid #4f86c6;flex-wrap:wrap}
+#fftHud .fb-unit.enemy-turn{background:linear-gradient(135deg,#4a1d1df0,#2a1212f0);border-color:#c65a4f}
+#fftHud .fb-target{right:12px;bottom:calc(var(--hand-h) + 8px);width:320px;background:linear-gradient(135deg,#1d3150f0,#13203af0);border:1px solid #4f86c6}
+#fftHud .fb-target.enemy{background:linear-gradient(135deg,#4a1d1df0,#2a1212f0);border-color:#c65a4f}
+#fftHud .fb-face{width:58px;height:58px;border-radius:9px;border:2px solid #ffffff55;background:#0006;flex:none}
+#fftHud .fb-meta{flex:1;min-width:0}
+#fftHud .fb-meta b{font-size:14px}
+#fftHud .fb-meta small{font-size:10.5px;color:#d9c7a3}
+#fftHud .fb-row{display:grid;grid-template-columns:20px 1fr 52px;align-items:center;gap:5px;font-size:11px;margin-top:2px}
+#fftHud .fb-row em{font-style:normal;text-align:right;font-weight:700}
+#fftHud .fb-bar{height:7px;border-radius:4px;background:#0008;overflow:hidden}
+#fftHud .fb-bar i{display:block;height:100%}
+#fftHud .fb-bar.hp i{background:linear-gradient(#7fe08a,#3a9a4a)}#fftHud .fb-bar.st i{background:linear-gradient(#ffe08a,#c8962a)}#fftHud .fb-bar.ct i{background:linear-gradient(#8ac8ff,#3a7ab8)}
+#fftHud .fb-ground{display:block;margin-top:3px;font-size:10px!important;color:#bcd2e8!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fftHud .fb-btns{display:flex;gap:6px;width:100%;justify-content:flex-end}
+#fftHud .fb-btns button{padding:4px 10px;border-radius:8px;border:1px solid #a88a58;background:#f4ead2;color:#3a2a17;font-weight:700;cursor:pointer;font-size:12px}
+#fftHud .fb-btns button.primary{background:#b8742c;color:#fff;border-color:#7d4d1b}
+#fftHud .fb-btns button:disabled{opacity:.45;cursor:default}
+#fftHud .fb-dmg{position:absolute;left:-150px;top:50%;transform:translateY(-50%);width:140px;text-align:center;background:#f4ead2;color:#3a2a17;border:2px solid #b8742c;border-radius:10px;padding:6px}
+#fftHud .fb-dmg b{display:block;font-size:30px;line-height:1}
+#fftHud .fb-dmg small{display:block;font-size:10px;line-height:1.2;margin-top:2px}
+#fftHud .fb-dmg.no b{color:#8a7a6a}
+#fftHud .fb-ticker{position:absolute;z-index:7;left:50%;top:10px;transform:translateX(-50%);max-width:52%;padding:5px 14px;border-radius:10px;background:#14100cd0;border:1px solid #6a5434;color:#f6e3b4;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fftHud .fb-ticker:empty{display:none}
+#fftHud .fb-target[hidden]{display:none!important}
+/* compact vertical cards in the full battle: art on top, name below, details in the tooltip */
+#tacticsLayer.fullbattle .hand-row .tactic-card{display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;padding:4px 3px!important;text-align:center}
+#tacticsLayer.fullbattle .hand-row .tactic-card>img{width:58px!important;height:46px!important;object-fit:cover;border-radius:6px;margin:0!important;grid-row:auto!important}
+#tacticsLayer.fullbattle .hand-row .tactic-card>strong{font-size:10.5px!important;line-height:1.1;white-space:normal;overflow:hidden;max-height:2.3em}
+#tacticsLayer.fullbattle .hand-row .tactic-card>.description{display:block;font-size:9px!important;line-height:1.1;opacity:.85;max-height:2.2em;overflow:hidden}
+#tacticsLayer.fullbattle .hand-row .tactic-card .keycap{position:absolute;left:3px;top:3px}
+/* v13: hand cards use the card-table frame (CardStudio) */
+#tacticsLayer.fullbattle .hand-row .tactic-card.framed,#tacticsLayer.fullbattle .item-card.framed{width:80px!important;height:118px!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;display:block!important;position:relative;overflow:visible;transition:transform .14s,filter .14s;z-index:1}
+#tacticsLayer .tactic-card.framed .gcard,#tacticsLayer .item-card.framed .gcard{width:80px;filter:drop-shadow(0 3px 5px #0009)}
+#tacticsLayer .tactic-card.framed .keycap{z-index:3;left:-4px!important;top:-6px!important}
+#tacticsLayer .tc-live{position:absolute;left:2px;right:2px;bottom:-4px;z-index:3;background:#241a10e6;color:#f6e5c0;font-size:8.5px;line-height:1.15;border-radius:5px;padding:1px 3px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+#tacticsLayer .tc-used{position:absolute;inset:40% 4px auto;z-index:3;background:#000b;color:#fff;font-size:10px;border-radius:4px;text-align:center}
+#tacticsLayer .tactic-card.framed:not([disabled]):hover,#tacticsLayer .item-card.framed:not([disabled]):hover{transform:translateY(-58px) scale(1.9);z-index:20}
+#tacticsLayer .tactic-card.framed:not([disabled]):hover .tc-live,#tacticsLayer .item-card.framed:hover .tc-live{white-space:normal}
+#tacticsLayer .tactic-card.framed.selected{outline:none!important;transform:translateY(-8px)}
+#tacticsLayer .tactic-card.framed.selected .gcard{filter:drop-shadow(0 0 3px #ffd36a) drop-shadow(0 0 7px #e8a33a)}
+#tacticsLayer .tactic-card.framed.unavailable .gcard{filter:grayscale(.55) brightness(.8)}
+#tacticsLayer .item-card.framed[disabled]{opacity:.5}
+
+/* v28: square card-face windows, shared by CT queue and unit panels. */
+#fftHud .ct-portrait{display:inline-block;background-repeat:no-repeat;flex:none;overflow:hidden;box-sizing:border-box}
+#fftHud .ct-missing{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#d8c7aa;font:bold 22px Georgia,serif}

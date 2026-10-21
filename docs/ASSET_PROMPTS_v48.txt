@@ -1,0 +1,30 @@
+Project A v48 — Generated raster art
+Generation mode: built-in image generation, no API/CLI fallback.
+Location: assets/village-town/
+The original v47 building/fountain/props PNG assets remain in use.
+All new cutouts have real alpha; grass/paving/soil are opaque repeating textures.
+Ground and path shapes remain geometric navigation data; their visible fills now use raster artwork.
+
+grass.png
+Use case: stylized-concept. Asset type: seamless repeating ground texture for a sharp hand-painted fantasy 2.5D RPG village. Create a square seamless tile of lush short meadow grass, muted natural olive green, fine delicate blades and soft variation. Orthographic directly overhead texture, evenly lit diffuse daylight, no perspective, no shadows, no objects, no paths, no borders or visible grid, no text. Subtle enough to repeat across a large village floor, detailed clean painterly non-pixel art.
+
+paving.png
+Use case: stylized-concept. Asset type: seamless repeating cobblestone ground texture for hand-painted fantasy isometric RPG. Square tile, overhead orthographic, warm pale beige aged sandstone paving, organically irregular small stones fitted closely, subtle moss in occasional joints. Flat diffuse daylight, fine crisp detail, no perspective, no objects, no border, no text, seamless edges, no obvious grid. Must fit bright elegant medieval village art.
+
+soil.png
+Use case: stylized-concept. Asset type: seamless repeating garden soil ground texture, square tile, overhead orthographic. Warm dark brown cultivated earth with very subtle small grains and sparse tiny pebbles, hand-painted fantasy RPG quality, crisp non-pixel art, natural soft variation, diffuse evenly lit, no objects or plants, no perspective, no text, no border, seamless edges.
+
+market-materials.png
+A single standalone medieval fantasy village materials merchant stall, isometric front facing lower right SE, camera elevated 30 degrees. Rich elegant hand-painted non-pixel RPG art, crisp refined details, oak timber, cream and russet striped cloth canopy, counter with iron ingots, charcoal sacks, stacked firewood, provision baskets, hanging lantern, small flower pot. Whole stall including base fully inside canvas with generous transparent margins. No people, no letters, no scenery, no ground tile, no opaque background or glow. Art style matches a lavish timber framed fantasy town. True transparent cutout.
+
+market-equipment.png
+A single standalone equipment buying merchant stall for elegant medieval fantasy RPG, front faces lower left SW, isometric camera elevated 30 degrees. Refined detailed hand-painted non-pixel art, timber booth and deep teal cloth canopy with golden trim, counter displaying a sword, small shield, leather boots and rolled cloth, sturdy wooden chest and scales, lantern. Whole object fully visible with generous transparent margins, no people, no letters, no scenery, no ground tile, no opaque background, true transparent cutout. Warm daylight, sophisticated fantasy village illustration.
+
+market-orders.png
+A single ornate freestanding village request board kiosk for a lavish medieval fantasy RPG, front facing lower right SE, isometric camera elevated 30 degrees. Detailed hand-painted sharp non-pixel art. Oak noticeboard under small red terracotta roof, pinned parchment requests with abstract unreadable strokes, brass seals, small desk with quill and ledger, lantern and flowers beside it. Complete object and base with generous transparent margins, no people, no readable text, no scene or ground tile, no opaque background or glow, genuine transparent cutout.
+
+meadow-details.png
+A GAME SPRITE ATLAS: exactly 4 equal square cells in a 2 by 2 layout, transparent background, no visible cell borders. Each cell contains one isolated vegetation patch, with generous margins and no overlap into neighboring cells. Top left: low natural meadow grass tuft. Top right: small cluster of white and yellow daisies. Bottom left: low cluster of pink purple wildflowers. Bottom right: small cultivated herb garden bed with dark soil and green aromatic herbs. Isometric 30-degree elevated perspective, sharp richly detailed hand-painted fantasy RPG style, muted olive greens with delicate flowers, no pixel art, no people, no text, no ground tile, genuine alpha background.
+
+garden-pond.png
+One small elegant oval garden pond with a low carved pale stone rim, turquoise still water, a few lily pads and reeds at one end, refined hand-painted fantasy RPG game object. Isometric 30 degree elevated camera, full object completely visible with transparent margin, no surroundings or grass tile, no people, no text, no background or glow, actual transparent cutout. Sharp detailed non-pixel illustration, warm gentle daylight.
