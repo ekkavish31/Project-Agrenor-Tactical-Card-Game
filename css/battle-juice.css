@@ -75,3 +75,28 @@
 /* cast-timing choice sits above the walk strip */
 #tacticsLayer .v38-cast{bottom:178px!important;z-index:48}
 @media (max-width:640px){#tacticsLayer .v38-cast{bottom:150px!important}}
+
+/* v56 battle opening: clear painted area art + narration, then it blurs away to the field */
+#tacticsLayer .bi{position:absolute;inset:0;z-index:80;cursor:pointer;overflow:hidden;background:#05080d}
+#tacticsLayer .bi-img{position:absolute;inset:-3%;background:center/cover no-repeat;transform:scale(1.08);transition:transform 3.2s ease-out,filter .6s ease,opacity .6s ease}
+#tacticsLayer .bi.in .bi-img{transform:scale(1)}
+#tacticsLayer .bi-bar{position:absolute;left:0;right:0;height:0;background:#05080d;transition:height .45s cubic-bezier(.3,.9,.3,1)}
+#tacticsLayer .bi-bar.top{top:0}#tacticsLayer .bi-bar.bottom{bottom:0}
+#tacticsLayer .bi.in .bi-bar{height:11%}
+#tacticsLayer .bi-text{position:absolute;left:7%;bottom:15%;max-width:min(640px,80%);color:#fbf0d6;text-shadow:0 2px 12px #000,0 0 2px #000;opacity:0;transform:translateX(-24px);transition:opacity .5s ease .15s,transform .5s ease .15s}
+#tacticsLayer .bi.in .bi-text{opacity:1;transform:none}
+#tacticsLayer .bi-text small{font:600 11px system-ui,sans-serif;letter-spacing:.32em;color:#e8c374}
+#tacticsLayer .bi-text h2{margin:6px 0 8px;font:700 clamp(30px,4.4vw,52px)/1.1 Georgia,serif;color:#ffe8a6}
+#tacticsLayer .bi-text h2::after{content:'';display:block;width:0;height:2px;margin-top:8px;background:linear-gradient(90deg,#e8c374,#e8c37400);transition:width .7s ease .3s}
+#tacticsLayer .bi.in .bi-text h2::after{width:70%}
+#tacticsLayer .bi-text p{min-height:1.6em;margin:0 0 14px;font:400 clamp(15px,1.6vw,19px)/1.6 Georgia,serif}
+#tacticsLayer .bi-text ul{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+#tacticsLayer .bi-text li{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:#0d1424cc;border:1px solid #d9b46b88;font:600 13px system-ui,sans-serif;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s}
+#tacticsLayer .bi-text li i{font-style:normal;color:#ffe8a6}
+#tacticsLayer .bi.facts li{opacity:1;transform:none}
+#tacticsLayer .bi.facts li:nth-child(2){transition-delay:.08s}#tacticsLayer .bi.facts li:nth-child(3){transition-delay:.16s}#tacticsLayer .bi.facts li:nth-child(4){transition-delay:.24s}
+#tacticsLayer .bi.out{background:transparent;transition:background .6s}
+#tacticsLayer .bi.out .bi-img{filter:blur(14px) saturate(.6);opacity:0}
+#tacticsLayer .bi.out .bi-text,#tacticsLayer .bi.out .bi-bar,#tacticsLayer .bi.out .bi-skip{opacity:0;transition:opacity .35s}
+#tacticsLayer .bi-skip{position:absolute;right:20px;top:calc(11% + 12px);padding:6px 14px!important;border-radius:8px!important;border:1px solid #d9b46b88!important;background:#0d1424cc!important;color:#fbf0d6!important;font:600 13px system-ui,sans-serif!important;cursor:pointer;width:auto!important;height:auto!important}
+@media (prefers-reduced-motion:reduce){#tacticsLayer .bi-img,#tacticsLayer .bi-bar,#tacticsLayer .bi-text,#tacticsLayer .bi-text li{transition:none!important}}

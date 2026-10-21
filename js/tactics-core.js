@@ -111,7 +111,7 @@ const TALL={tree:1,pillar:1};
 // exits by the ≤1 step rule, FFT cliff skin) and drawn by TacticsHillArt like the hand-made chunks. Rule heights are unchanged.
 // v54: about one battle in four is fought at night (by seed, so a seed always looks the same). Visual only — rules are unchanged.
 const NIGHT_CHANCE=.25;
-function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){const raw=generateRaw(seed,theme,mode,clearance),map=raw.authoredTerrain?raw:toAuthored(raw,seed);map.night=random(String(seed)+'|night')()<NIGHT_CHANCE;return map}
+function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){const raw=generateRaw(seed,theme,mode,clearance),map=raw.authoredTerrain||raw.style==='fft'?raw:toAuthored(raw,seed);map.night=random(String(seed)+'|night')()<NIGHT_CHANCE;return map}
 function toAuthored(map,seed){const S=root.TacticsSurface||(typeof require==='function'?require('./tactics-surface.js'):null),M=root.TacticsMapModules||(typeof require==='function'?require('./tactics-map-modules.js'):null);if(!S||!M)return map;
  map.width=map.width||map.size;map.height=map.height||map.size;// every tile is flat at its own height: no auto-ramps (they left seams between equal-height tiles); steps of 1 show as rock faces, cliffs get the FFT skin
  map.tiles.forEach(t=>{t.surfaceCorners=[t.h,t.h,t.h,t.h]});
@@ -120,6 +120,7 @@ function toAuthored(map,seed){const S=root.TacticsSurface||(typeof require==='fu
  // drawn by the hill renderer, but movement keeps the core's own rules (authoredTerrain adds strict exit rules for large bosses)
  map.hillArt=true;return map}
 function generateRaw(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){
+ if(theme==='fft-forest'){const F=root.TacticsFFTTerrain||(typeof require==='function'?require('./tactics-fft-terrain.js'):null);if(F)return F.create(seed,mode)}
  if(theme==='modular-wilds'&&root.TacticsMapModules)return root.TacticsMapModules.create(seed,mode,clearance);
  if(theme==='terraced-hill'&&root.TacticsTerracedHill)return root.TacticsTerracedHill.create(seed,mode);
  const VARIANTS={swamp:'forest',coast:'quarry',frost:'quarry',ruins:'quarry',crag:'forest'};let variant=VARIANTS[theme]?theme:null;if(variant)theme=VARIANTS[theme];theme=['quarry','mine'].includes(theme)?theme:'forest';mode=MODES[mode]?mode:'training';

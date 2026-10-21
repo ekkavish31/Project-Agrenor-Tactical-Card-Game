@@ -93,3 +93,8 @@ html.title-boot,html.title-boot body{overflow:hidden}
 
 @media (max-width:640px){#titleScreen .ts-howto,#titleScreen .ts-credits{grid-template-columns:1fr;gap:2px 0}#titleScreen .ts-howto dd,#titleScreen .ts-credits dd{margin-bottom:10px}#titleScreen .ts-foot span:last-child{display:none}}
 @media (prefers-reduced-motion:reduce){#titleScreen .ts-bg,#titleScreen .ts-motes i,#titleScreen .ts-main,#titleScreen .ts-story-bg.ts-pan,#titleScreen .ts-story-text.ts-line,#titleScreen .ts-story-hint,#titleScreen .ts-name{animation:none}#titleScreen .ts-motes{display:none}}
+
+/* dev tools on the title menu */
+#titleScreen .ts-tools{display:flex;gap:8px;margin-top:6px}
+#titleScreen .ts-tools a{flex:1;padding:8px 10px;border-radius:9px;border:1px dashed #d9b46b66;background:#0d1424b0;color:#d8c9a4;text-align:center;font:600 13px system-ui,sans-serif;text-decoration:none;transition:border-color .15s,color .15s,background .15s}
+#titleScreen .ts-tools a:hover,#titleScreen .ts-tools a:focus-visible{outline:none;border-style:solid;border-color:var(--ts-gold);color:var(--ts-ink);background:#3a2c12cc}
