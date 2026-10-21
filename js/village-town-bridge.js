@@ -2,7 +2,7 @@
 (function(){'use strict';
 const host=document.createElement('section');host.id='villageTownLayer';host.setAttribute('aria-label','หมู่บ้าน');host.style.cssText='position:fixed;inset:0;z-index:200;background:#718568';
 function makeFrame(title,src){const f=document.createElement('iframe');f.title=title;f.style.cssText='width:100%;height:100%;border:0';f.allow='fullscreen';if(src)f.src=src;host.appendChild(f);return f}
-const frame=makeFrame('หมู่บ้าน 2.5D','village-town.html'),marketFrame=makeFrame('ตลาดหมู่บ้าน 2.5D');marketFrame.hidden=true;document.body.appendChild(host);
+const frame=makeFrame('หมู่บ้าน 2.5D','village-town.html?v=50'),marketFrame=makeFrame('ตลาดหมู่บ้าน 2.5D');marketFrame.hidden=true;document.body.appendChild(host);
 const back=document.createElement('button');back.id='townReturn';back.textContent='← กลับแผนที่หมู่บ้าน';back.style.cssText='position:fixed;left:20px;top:78px;z-index:201;padding:10px 16px;border-radius:10px;background:#213b2df0;color:#fff0c7;border:1px solid #b6c48e';back.hidden=true;back.onclick=()=>openTown();document.body.append(back);
 let ready=false,marketReady=false,initialized=false,lastStamp='',lastMotion='',inside=false,marketOpen=false,lastVisible='';
 function post(f,data){f.contentWindow?.postMessage({source:'project-a-game',...data},'*')}
