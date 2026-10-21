@@ -1,0 +1,77 @@
+/* v53 · crystal turn: crystals, walk strip, colour-framed action fan, ceremony effects */
+:root{--bj-red:#e0523a;--bj-blue:#3d9be0;--bj-green:#4fbf6a;--bj-purple:#a46ae0;--bj-gold:#f0c560}
+
+/* crystals over the acting unit */
+.v53-crystals{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);display:flex;gap:9px;pointer-events:none}
+.v53-crystals[hidden]{display:none}
+.v53-crystals i{width:15px;height:15px;transform:rotate(45deg);border-radius:3px;background:linear-gradient(135deg,#e8fbff 0,#7fd6ff 30%,#2f7fd0 70%,#173f8c);box-shadow:0 0 8px 2px #7fd6ffaa,inset 0 0 0 1px #ffffffaa;animation:bj-bob 1.8s ease-in-out infinite}
+.v53-crystals i:nth-child(2){animation-delay:.25s}.v53-crystals i:nth-child(3){animation-delay:.5s}
+.v53-crystals i.pop{animation:bj-gem-pop .42s cubic-bezier(.3,1.6,.5,1) both,bj-bob 1.8s ease-in-out .42s infinite}
+.v53-crystals i.break{animation:bj-gem-break .24s ease-in forwards}
+.v53-crystals i.spent{opacity:.16;filter:grayscale(1);box-shadow:none;animation:none}
+@keyframes bj-bob{50%{transform:rotate(45deg) translate(-2px,-2px)}}
+@keyframes bj-gem-pop{from{transform:rotate(45deg) scale(0);opacity:0}to{transform:rotate(45deg) scale(1);opacity:1}}
+@keyframes bj-gem-break{to{transform:rotate(45deg) scale(1.7);opacity:0;filter:brightness(3)}}
+
+/* the single "cards" command */
+.v36-icons{flex-direction:column;align-items:center}
+.v36-icons button[data-cmd=cards]{width:58px!important;height:58px!important}
+
+/* walk strip at the bottom of the battle */
+#tacticsLayer .v53-walk{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:44;padding:8px 12px 10px;border-radius:14px;background:linear-gradient(#162236ee,#0e1626ee);border:2px solid #5fb8e8;box-shadow:0 10px 26px #000b;animation:bj-rise .28s ease-out}
+#tacticsLayer .v53-walk[hidden]{display:none}
+#tacticsLayer .v53-walk.spent{opacity:.55;filter:saturate(.4)}
+#tacticsLayer .v53-walk .move-group{display:flex!important;flex-direction:column;border:0!important;padding:0!important;background:none!important}
+#tacticsLayer .v53-walk .move-group>h4{margin:0 0 6px!important;color:#bfe6ff!important;font-size:12px!important;text-align:center}
+#tacticsLayer .v53-walk .hand-row{display:flex;gap:8px;justify-content:center}
+#tacticsLayer .v53-walk .tactic-card{width:78px!important;min-height:96px;height:auto!important;border:2px solid #3d6f99!important;border-radius:9px!important;transition:transform .15s,box-shadow .15s,border-color .15s}
+#tacticsLayer .v53-walk .tactic-card:hover:not(:disabled){transform:translateY(-6px)}
+#tacticsLayer .v53-walk .tactic-card.selected{border-color:var(--bj-gold)!important;box-shadow:0 0 0 2px #f0c56066,0 0 16px #f0c560aa}
+#tacticsLayer .v53-walk .tactic-card.selected::after{content:'🔒';position:absolute;top:-9px;right:-7px;font-size:15px;filter:drop-shadow(0 1px 2px #000)}
+#tacticsLayer .v53-walk .tactic-card.bj-will{transform:translateY(-8px);border-color:#9fe3ff!important;box-shadow:0 0 18px #5fc8ffcc}
+#tacticsLayer .v53-walk .bj-tip{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);white-space:nowrap;padding:4px 10px;border-radius:8px;background:#0e1626ee;border:1px solid #5fb8e8;color:#dff4ff;font:600 12px system-ui,sans-serif;pointer-events:none}
+#tacticsLayer .v53-walk .bj-tip[hidden]{display:none}
+@keyframes bj-rise{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* one fan: combat cards + items, coloured by kind, with filter chips */
+#tacticsLayer.fullbattle #tacticsHand.v36-fan{flex-direction:column}
+#tacticsLayer.fullbattle #tacticsHand.v36-fan[data-show=cards] .combat-group,
+#tacticsLayer.fullbattle #tacticsHand.v36-fan[data-show=cards] .item-group{display:flex!important}
+#tacticsLayer.fullbattle #tacticsHand.v36-fan .move-group{display:none!important}
+#tacticsHand .v53-filter{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+#tacticsHand .v53-filter button{padding:4px 10px!important;border-radius:999px!important;border:1px solid #d9b46b66!important;background:#0d1424!important;color:#d8c9a4!important;font:600 12px system-ui,sans-serif!important;cursor:pointer;min-width:0!important;width:auto!important;height:auto!important}
+#tacticsHand .v53-filter button.on{background:linear-gradient(#f0c560,#c9901f)!important;color:#2a1a05!important;border-color:#7a4b06!important}
+#tacticsHand[data-filter=attack] [data-kind]:not([data-kind=attack]),#tacticsHand[data-filter=skill] [data-kind]:not([data-kind=skill]),#tacticsHand[data-filter=item] [data-kind]:not([data-kind=item]),#tacticsHand[data-filter=react] [data-kind]:not([data-kind=react]){display:none!important}
+#tacticsHand[data-filter=attack] .item-group,#tacticsHand[data-filter=skill] .item-group,#tacticsHand[data-filter=react] .item-group,#tacticsHand[data-filter=item] .combat-group{display:none!important}
+#tacticsHand [data-kind=attack]{--bj-k:var(--bj-red)}#tacticsHand [data-kind=skill]{--bj-k:var(--bj-blue)}#tacticsHand [data-kind=item]{--bj-k:var(--bj-green)}#tacticsHand [data-kind=react]{--bj-k:var(--bj-purple)}
+#tacticsHand.v36-fan [data-kind]:not([data-kind=move]){border:2px solid var(--bj-k)!important;box-shadow:0 0 0 1px #000a,inset 0 0 14px color-mix(in srgb,var(--bj-k) 35%,transparent)!important;border-radius:9px!important;position:relative}
+#tacticsHand.v36-fan [data-kind]:not([data-kind=move])::before{content:'';position:absolute;left:0;right:0;top:0;height:5px;border-radius:7px 7px 0 0;background:var(--bj-k);opacity:.9}
+#tacticsHand.v36-fan [data-kind]:not([data-kind=move]):hover:not(:disabled){box-shadow:0 0 0 1px #000a,0 0 18px var(--bj-k)!important;transform:translateY(-10px) rotate(0) scale(1.06)!important}
+#tacticsHand.v36-fan .tactic-card.combat.selected{box-shadow:0 0 0 2px #fff8,0 0 22px var(--bj-k)!important;transform:translateY(-12px) scale(1.07)!important}
+#tacticsHand .bj-deal{animation:bj-deal .32s cubic-bezier(.2,.9,.3,1.2) var(--deal,0ms) both}
+#tacticsHand .bj-picked{animation:bj-pick .36s ease-out}
+@keyframes bj-deal{from{opacity:0;transform:translateY(26px) rotate(-8deg) scale(.85)}}
+@keyframes bj-pick{30%{transform:translateY(-18px) scale(1.12);filter:brightness(1.4)}}
+
+/* flying walk card */
+.bj-flycard{position:fixed;z-index:3000;display:grid;place-items:center;padding:4px;border-radius:9px;border:2px solid #9fe3ff;background:radial-gradient(#2f6fa8,#14304f);color:#eaf8ff;font:700 12px system-ui,sans-serif;text-align:center;box-shadow:0 0 20px #5fc8ff;pointer-events:none}
+
+/* particles */
+.bj-p{position:fixed;z-index:3001;pointer-events:none}
+.bj-shard,.bj-spark,.bj-spark-b,.bj-spark-y,.bj-heal{width:5px;height:5px;margin:-2px;border-radius:1px;animation:bj-fly var(--life,500ms) cubic-bezier(.1,.6,.3,1) forwards}
+.bj-shard{background:#bff0ff;box-shadow:0 0 6px #7fd6ff;transform:rotate(45deg)}
+.bj-spark{background:#fff3c4;box-shadow:0 0 8px #ffb84a;border-radius:50%}
+.bj-spark-b{background:#bfefff;box-shadow:0 0 8px #5fc8ff;border-radius:50%}
+.bj-spark-y{background:#fff0a8;box-shadow:0 0 8px #f0c560;border-radius:50%}
+.bj-heal{background:#c8ffd4;box-shadow:0 0 8px #4fbf6a;border-radius:50%;--dy:-60px!important}
+@keyframes bj-fly{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx,0),var(--dy,0)) scale(.3);opacity:0}}
+.bj-flash{width:90px;height:90px;margin:-45px;border-radius:50%;background:radial-gradient(#fffbe8 0,#ffd27a88 35%,#ff8a3a00 70%);mix-blend-mode:screen;animation:bj-flash var(--life,220ms) ease-out forwards}
+.bj-flash.big{width:150px;height:150px;margin:-75px}
+@keyframes bj-flash{from{transform:scale(.4);opacity:1}to{transform:scale(1.25);opacity:0}}
+
+@media (prefers-reduced-motion:reduce){.v53-crystals i,.v53-crystals i.pop,#tacticsLayer .v53-walk,#tacticsHand .bj-deal,#tacticsHand .bj-picked{animation:none!important}}
+@media (max-width:640px){#tacticsLayer .v53-walk .tactic-card{width:62px!important;min-height:80px}}
+
+/* cast-timing choice sits above the walk strip */
+#tacticsLayer .v38-cast{bottom:178px!important;z-index:48}
+@media (max-width:640px){#tacticsLayer .v38-cast{bottom:150px!important}}
