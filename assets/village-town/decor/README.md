@@ -13,3 +13,7 @@ Isometric 3/4 view (same camera as the buildings), light from upper-left, painte
 | cart.png | market, forge |
 | hay.png | forge, shepherd's house |
 | flower-box.png | home, shop, NPC homes |
+
+## Adventure gates (v64)
+`gate-mine.png` (north) · `gate-frost.png` (north-east) · `gate-forest.png` (east) · `gate-coast.png` (south-east) · `gate-ruins.png` (south-west) · `gate-swamp.png` (west)
+Arch drawn facing lower-left→upper-right; the game mirrors it to sit across the road. Replaces the code-drawn gate when present.

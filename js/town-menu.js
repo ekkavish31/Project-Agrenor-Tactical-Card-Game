@@ -30,13 +30,13 @@ function snapshot(){// ground (roads, plots) + building art at overview scale, c
  const W=world(),sx=mc.width/W.width,stamp=JSON.stringify(V().getLocations().map(o=>[o.id,o.x,o.y,o.facing]))+(root.TownArt?.image?1:0);if(base&&stamp===baseStamp)return base;baseStamp=stamp;
  base=document.createElement('canvas');base.width=mc.width;base.height=mc.height;const g=base.getContext('2d');g.fillStyle='#4f6b45';g.fillRect(0,0,base.width,base.height);
  const terrain=root.__townTerrain;if(terrain)g.drawImage(terrain,0,0,base.width,base.height);
- for(const o of V().getLocations().sort((a,b)=>a.y-b.y)){const r=root.TownUX?.art(o);if(!r?.im?.complete||!r.im.naturalWidth)continue;g.save();if(o.facing==='SE'){g.translate((r.x+r.w/2)*sx*2,0);g.scale(-1,1)}g.drawImage(r.im,r.x*sx,r.y*sx,r.w*sx,r.h*sx);g.restore()}
+ for(const o of V().getLocations().sort((a,b)=>a.y-b.y)){const r=root.TownUX?.art(o);if(!r?.im?.complete||!r.im.naturalWidth)continue;g.save();if((o.facing==='SE')!==!!o.flipArt){g.translate((r.x+r.w/2)*sx*2,0);g.scale(-1,1)}g.drawImage(r.im,r.x*sx,r.y*sx,r.w*sx,r.h*sx);g.restore()}
  for(const e of V().getExits()){const p=V().project(e.u,e.v);g.fillStyle='#f2e5be';g.font='bold 18px VillageThai,system-ui';g.textAlign='center';g.fillText('⛩',p.x*sx,p.y*sx)}
  return base}
 function drawOverview(){if(!menu.classList.contains('open'))return;const W=world(),sx=mc.width/W.width;mg.clearRect(0,0,mc.width,mc.height);mg.drawImage(snapshot(),0,0);
  const hov=mapHover||root.__townHovered;for(const o of V().getLocations()){const r=root.TownUX?.art(o);if(!r?.im?.complete)continue;if(o.id!==hov)continue;
   // white outline: draw a white silhouette offset in 8 directions, then the building again
-  const sil=silhouette(r.im);mg.save();if(o.facing==='SE'){mg.translate((r.x+r.w/2)*sx*2,0);mg.scale(-1,1)}for(const[dx,dy]of[[3,0],[-3,0],[0,3],[0,-3],[2,2],[-2,2],[2,-2],[-2,-2]])mg.drawImage(sil,r.x*sx+dx,r.y*sx+dy,r.w*sx,r.h*sx);mg.drawImage(r.im,r.x*sx,r.y*sx,r.w*sx,r.h*sx);mg.restore();
+  const sil=silhouette(r.im);mg.save();if((o.facing==='SE')!==!!o.flipArt){mg.translate((r.x+r.w/2)*sx*2,0);mg.scale(-1,1)}for(const[dx,dy]of[[3,0],[-3,0],[0,3],[0,-3],[2,2],[-2,2],[2,-2],[-2,-2]])mg.drawImage(sil,r.x*sx+dx,r.y*sx+dy,r.w*sx,r.h*sx);mg.drawImage(r.im,r.x*sx,r.y*sx,r.w*sx,r.h*sx);mg.restore();
   const l=root.TownUX.labelPoint(o);mg.font='bold 22px VillageThai,system-ui';mg.textAlign='center';const tw=mg.measureText(o.name).width+24;mg.fillStyle='#20382df0';mg.fillRect(l.x*sx-tw/2,l.y*sx+14,tw,32);mg.fillStyle='#fff3c8';mg.fillText(o.name,l.x*sx,l.y*sx+38)}
  const h=V().getHero(),hp=V().project(h.u,h.v),t=performance.now();mg.fillStyle='#ffd45a';mg.strokeStyle='#3b2a10';mg.lineWidth=3;mg.beginPath();mg.arc(hp.x*sx,hp.y*sx,9+Math.sin(t*.006)*2,0,Math.PI*2);mg.fill();mg.stroke();
  requestAnimationFrame(drawOverview)}
@@ -53,8 +53,12 @@ new MutationObserver(()=>{if(menu.classList.contains('open')){base=null;requestA
 /* ---------- gates at the exits ---------- */
 function gateAxis(e){// the road leaves along u or v: the gate spans across it
  const cells=V().getRoadCells?.()||[],near=cells.filter(c=>Math.abs(c.u-e.u)+Math.abs(c.v-e.v)<6);let du=0,dv=0;for(const c of near){du+=Math.abs(c.u-e.u);dv+=Math.abs(c.v-e.v)}return du>=dv?'v':'u'}
-function gateObjects(){const out=[];for(const e of V().getExits()){const axis=gateAxis(e),span=1.9,A=axis==='v'?{u:e.u,v:e.v-span}:{u:e.u-span,v:e.v},B=axis==='v'?{u:e.u,v:e.v+span}:{u:e.u+span,v:e.v},pa=V().project(A.u,A.v),pb=V().project(B.u,B.v),pc=V().project(e.u,e.v);
-  out.push({y:Math.max(pa.y,pb.y)+2,draw:g=>gate(g,pa,pb,pc,e.name)})}return out}
+// v64: themed gate art per adventure area (assets/village-town/decor/gate-<area>.png) replaces the code-drawn gate when present
+const GATE_AREA=['mine','frost','forest','coast','ruins','swamp'],gateImg={};
+for(const a of GATE_AREA){const im=new Image();im.onload=()=>{gateImg[a]=im};im.src='assets/village-town/decor/gate-'+a+'.png'}
+function gateSprite(g,pa,pb,im,flip){const mx=(pa.x+pb.x)/2,my=(pa.y+pb.y)/2,w=Math.abs(pb.x-pa.x)+90,h=w*im.naturalHeight/im.naturalWidth;g.save();g.translate(mx,my+10);if(flip)g.scale(-1,1);root.TownArt.draw(g,im,null,[-w/2,-h*.9,w,h],null);g.restore()}
+function gateObjects(){const out=[];V().getExits().forEach((e,i)=>{const axis=gateAxis(e),span=1.9,A=axis==='v'?{u:e.u,v:e.v-span}:{u:e.u-span,v:e.v},B=axis==='v'?{u:e.u,v:e.v+span}:{u:e.u+span,v:e.v},pa=V().project(A.u,A.v),pb=V().project(B.u,B.v),pc=V().project(e.u,e.v);
+  const im=gateImg[GATE_AREA[i]];out.push({x:pc.x,y:Math.max(pa.y,pb.y)+2,draw:g=>im?gateSprite(g,pa,pb,im,(pb.x-pa.x)*(pb.y-pa.y)>0):gate(g,pa,pb,pc,e.name)})});return out}
 function post(g,p,h){const w=18;g.fillStyle='#00000040';g.beginPath();g.ellipse(p.x,p.y+2,w,w*.45,0,0,Math.PI*2);g.fill();
  const grd=g.createLinearGradient(p.x-w/2,0,p.x+w/2,0);grd.addColorStop(0,'#cfc4a8');grd.addColorStop(.5,'#a99d80');grd.addColorStop(1,'#7a705a');g.fillStyle=grd;g.fillRect(p.x-w/2,p.y-h,w,h);
  g.strokeStyle='#5d5444';g.lineWidth=1;for(let k=1;k<5;k++){g.beginPath();g.moveTo(p.x-w/2,p.y-h*k/5);g.lineTo(p.x+w/2,p.y-h*k/5);g.stroke()}g.fillStyle='#e2d8bd';g.fillRect(p.x-w/2-3,p.y-h-6,w+6,7)}
