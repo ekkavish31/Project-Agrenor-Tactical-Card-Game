@@ -8,10 +8,12 @@ body{overflow:hidden}header{position:fixed;z-index:5;top:20px;left:24px;height:a
 'use strict';
 const WORLD_W=4480,WORLD_H=2520,MX=44.8,MY=25.2;
 const HOUSE='assets/village-town/player-house.png';const BUILDINGS={"inn": "assets/village-town/inn.png", "guild": "assets/village-town/guild.png", "healer": "assets/village-town/healer.png", "shop": "assets/village-town/shop.png", "market": "assets/village-town/market.png", "temple": "assets/village-town/temple.png", "forge": "assets/village-town/forge.png"};let hovered=null;
-const base=[['home','บ้านของเรา',19,44,1.7,1.7,68,'#a75939'],['inn','โรงแรม',27,25,2.7,2.1,100,'#ac5735'],['guild','สมาคมนักผจญภัย',51,27,2.7,2.4,114,'#944937'],['healer','สถานพยาบาล',74,25,1.8,1.8,85,'#4d7b78'],['shop','ร้านของทั่วไป',38.66980433689421,41.723889857384414,2,1.8,80,'#aa6039'],['market','ตลาด',76,48,2.1,1.9,62,'#b65d45'],['temple','วิหาร',29,73,2.4,2.1,85,'#b68d58'],['forge','โรงตีเหล็ก',70,79,2.5,2.2,72,'#69625a'],['square','ลานน้ำพุ',52,55,1.7,1.7,35,'#82b6b5']];
+const base=[['home','บ้านของเรา',19,44,1.7,1.7,68,'#a75939'],['inn','โรงแรม',27,25,2.7,2.1,100,'#ac5735'],['guild','สมาคมนักผจญภัย',51,27,2.7,2.4,114,'#944937'],['healer','สถานพยาบาล',74,25,1.8,1.8,85,'#4d7b78'],['shop','ร้านของทั่วไป',38.66980433689421,41.723889857384414,2,1.8,80,'#aa6039'],['market','ตลาด',76,48,2.1,1.9,62,'#b65d45'],['temple','วิหาร',29,73,2.4,2.1,85,'#b68d58'],['forge','โรงตีเหล็ก',70,79,2.5,2.2,72,'#69625a'],['square','ลานน้ำพุ',52,55,1.7,1.7,35,'#82b6b5'],
+ ['npc0','บ้านป้าเมย์ คนทำขนมปัง',10,74,1.3,1.3,60,'#a75939'],['npc1','บ้านลุงทอม ช่างไม้',67,60,1.3,1.3,60,'#a75939'],['npc2','บ้านคุณยายลิน',86,36,1.3,1.3,60,'#a75939'],['npc3','บ้านพี่น้องคนตัดไม้',88,66,1.3,1.3,60,'#a75939'],['npc4','บ้านนายพรานเบิร์ก',58,70,1.3,1.3,60,'#a75939'],
+ ['npc5','บ้านคุณครูมิรา',43,63,1.3,1.3,60,'#a75939'],['npc6','บ้านชาวประมงโจ',13,60,1.3,1.3,60,'#a75939'],['npc7','บ้านคนเลี้ยงแกะ',43,86,1.3,1.3,60,'#a75939'],['npc8','บ้านช่างทอผ้าเอลลา',12,29,1.3,1.3,60,'#a75939'],['npc9','บ้านหมอยาสมุนไพร',63,13,1.3,1.3,60,'#a75939']];
 const exits=[['ทางเหนือ',51,5],['ทางตะวันออกเฉียงเหนือ',92,10],['ทางตะวันออก',94,52],['ทางตะวันออกเฉียงใต้',92,87],['ทางตะวันตกเฉียงใต้',16,94],['ทางตะวันตก',6,17]];
 const $=id=>document.getElementById(id),cv=$('world'),stage=$('stage'),KEY='project-a-village-main-v1';let g=cv.getContext('2d'),terrainDirty=true;const terrain=document.createElement('canvas');terrain.width=WORLD_W;terrain.height=WORLD_H;window.__townTerrain=terrain;
-let locations=base.map((a,i)=>({id:a[0],name:a[1],x:a[2],y:a[3],w:a[4]*2,d:a[5]*2,h:a[6]*2,roof:a[7],num:i+1,facing:['home','inn','shop','temple'].includes(a[0])?'SE':'SW'}));
+let locations=base.map((a,i)=>({id:a[0],name:a[1],x:a[2],y:a[3],w:a[4]*2,d:a[5]*2,h:a[6]*2,roof:a[7],num:i+1,npc:a[0].startsWith('npc'),desc:a[0].startsWith('npc')?'บ้านชาวบ้าน · ทักทายได้เร็ว ๆ นี้':undefined,facing:['home','inn','shop','temple'].includes(a[0])||/npc[13579]/.test(a[0])?'SE':'SW'}));
 try{const saved=JSON.parse(localStorage.getItem(KEY)||'{}');for(const o of locations)if(saved[o.id]&&valid(saved[o.id]))Object.assign(o,saved[o.id])}catch(e){}
 let W,H,scale=1,pan={x:0,y:0},zoom=1,editing=false,showRoutes=false,showGrid=false,showLabels=false,selected=null,path=[],destination=null,notice='',time=0,last=0;
 const images={};TownArt.onLoad(()=>terrainDirty=true);
@@ -29,11 +31,17 @@ function door(o){const a=center(o);if(o.id==='square')return{u:a.u+o.w+2,v:a.v+o
 function poly(pts,col,stroke='#25372b50',width=1){g.beginPath();pts.forEach((p,i)=>g[i?'lineTo':'moveTo'](p.x,p.y));g.closePath();g.fillStyle=col;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=width;g.stroke()}}
 function ellipse(x,y,rx,ry,c){g.fillStyle=c;g.beginPath();g.ellipse(x,y,rx,ry,0,0,Math.PI*2);g.fill()}
 function line(a,b,c,w=1){g.strokeStyle=c;g.lineWidth=w;g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke()}
-function homeSpriteRect(o){const a=center(o),front=project(a.u,a.v+o.d),width=560,height=width*1199/1312;return{x:front.x-width*.375,y:front.y-height*.82,w:width,h:height}}
+// v59: NPC cottages reuse the house art with a subtle roof tone per household
+const HOUSE_TONES=[[0,1],[14,.9],[-10,.85],[200,.32],[24,.8],[0,.75],[188,.28],[-16,.9],[32,.7],[205,.3]],houseVariants={};
+function houseImage(o){if(!o.npc)return images.house;const i=+o.id.slice(3)||0;if(houseVariants[i])return houseVariants[i];const src=images.house;if(!src.complete||!src.naturalWidth)return src;
+ const c=document.createElement('canvas');c.width=src.naturalWidth;c.height=src.naturalHeight;const q=c.getContext('2d');q.drawImage(src,0,0);const [hue,sat]=HOUSE_TONES[i%HOUSE_TONES.length];
+ if(hue||sat!==1){const d=q.getImageData(0,0,c.width,c.height),a=d.data;for(let k=0;k<a.length;k+=4){const r=a[k],gg=a[k+1],b=a[k+2];if(!a[k+3]||r<gg+30||r<b+40)continue;const mx=Math.max(r,gg,b)/255,mn=Math.min(r,gg,b)/255,l=(mx+mn)/2,dd=mx-mn;if(!dd)continue;let h=mx===r/255?((gg-b)/255/dd+6)%6:mx===gg/255?(b-r)/255/dd+2:(r-gg)/255/dd+4;h=(h/6+hue/360+1)%1;const sv=dd/(1-Math.abs(2*l-1))*sat,C=(1-Math.abs(2*l-1))*sv,X=C*(1-Math.abs(h*6%2-1)),m=l-C/2,[R,G,B]=h<1/6?[C,X,0]:h<2/6?[X,C,0]:h<3/6?[0,C,X]:h<4/6?[0,X,C]:h<5/6?[X,0,C]:[C,0,X];a[k]=(R+m)*255;a[k+1]=(G+m)*255;a[k+2]=(B+m)*255}q.putImageData(d,0,0)}
+ const im=new Image();im.onload=()=>terrainDirty=true;im.src=c.toDataURL('image/png');houseVariants[i]=im;return im}
+function homeSpriteRect(o){const a=center(o),front=project(a.u,a.v+o.d),width=o.npc?430:560,height=width*1199/1312;return{x:front.x-width*.375,y:front.y-height*.82,w:width,h:height}}
 const artSpecs={inn:[390,.31,.85],guild:[500,.40,.92],healer:[420,.43,.90],shop:[360,.29,.84],market:[370,.29,.88],temple:[440,.31,.91],forge:[400,.34,.84]};
 function artRect(o){const spec=artSpecs[o.id],im=images['building_'+o.id];if(!spec||!im?.naturalWidth)return null;const a=center(o),front=project(a.u,a.v+o.d),width=spec[0]*2,height=width*im.naturalHeight/im.naturalWidth;return{x:front.x-width*spec[1],y:front.y-height*spec[2],w:width,h:height,im}}
 
-function estate(o){if(o.id==='square')return null;const a=center(o),extra={home:1.8,inn:2.4,guild:3.0,healer:2.4,shop:2,market:2.9,temple:3.0,forge:2.7}[o.id];return{...a,left:-o.w-extra*2,right:o.w+extra*2,back:-o.d-3.2,front:o.d+9.2}}
+function estate(o){if(o.id==='square')return null;const a=center(o),extra=o.npc?1:{home:1.8,inn:2.4,guild:3.0,healer:2.4,shop:2,market:2.9,temple:3.0,forge:2.7}[o.id];return{...a,left:-o.w-extra*2,right:o.w+extra*2,back:-o.d-(o.npc?2.2:3.2),front:o.d+(o.npc?4.6:9.2)}}
 function gate(o){const e=estate(o);return e?canonical(o,e.u,e.v+e.front+1.3):door(o)}
 function plotPoints(o){const e=estate(o);return[[e.left,e.back],[e.right,e.back],[e.right,e.front],[e.left,e.front]].map(([u,v])=>project(e.u+u,e.v+v))}
 function fenceBlocked(u,v){return locations.some(o=>{const e=estate(o);if(!e)return false;const q=canonical(o,u,v),a=q.u-e.u,b=q.v-e.v;if(a<e.left-.22||a>e.right+.22||b<e.back-.22||b>e.front+.22)return false;return Math.abs(a-e.left)<.22||Math.abs(a-e.right)<.22||Math.abs(b-e.back)<.22||(Math.abs(b-e.front)<.22&&Math.abs(a)>2.7)})}
@@ -60,7 +68,7 @@ function estateObjects(){const out=[];for(const o of locations){const e=estate(o
  if(o.id==='forge')for(let i=0;i<3;i++){const p=project(e.u+o.w+2,e.v-1.4+i*2);out.push({y:p.y,draw:()=>propSprite(6,p,110)})}
  if(o.facing==='SE')for(let i=first;i<out.length;i++){const draw=out[i].draw;out[i].draw=()=>reflectView(o,draw)}
  }return out}
-function building(o){reflectView(o,()=>{if(o.id==='square'){const a=center(o),p=project(a.u,a.v),im=images.fountain,w=400,h=w*im.naturalHeight/im.naturalWidth;if(im.complete&&im.naturalWidth)TownArt.draw(g,im,null,[p.x-w*.5,p.y-h*.67,w,h],project(hero.u,hero.v));return}if(o.id==='home'){if(images.house.complete&&images.house.naturalWidth){const r=homeSpriteRect(o);TownArt.draw(g,images.house,null,[r.x,r.y,r.w,r.h],project(hero.u,hero.v))}return}const art=artRect(o);if(art)TownArt.draw(g,art.im,null,[art.x,art.y,art.w,art.h],project(hero.u,hero.v))})}
+function building(o){reflectView(o,()=>{if(o.id==='square'){const a=center(o),p=project(a.u,a.v),im=images.fountain,w=400,h=w*im.naturalHeight/im.naturalWidth;if(im.complete&&im.naturalWidth)TownArt.draw(g,im,null,[p.x-w*.5,p.y-h*.67,w,h],project(hero.u,hero.v));return}if(o.id==='home'||o.npc){const im=houseImage(o);if(im.complete&&im.naturalWidth){const r=homeSpriteRect(o);TownArt.draw(g,im,null,[r.x,r.y,r.w,r.h],project(hero.u,hero.v))}return}const art=artRect(o);if(art)TownArt.draw(g,art.im,null,[art.x,art.y,art.w,art.h],project(hero.u,hero.v))})}
 
 let solidCache=[];
 function cacheSolids(){solidCache=locations.map(o=>{const a=center(o),e=estate(o);return{id:o.id,u:a.u,v:a.v,w:o.w,d:o.d,se:o.facing==='SE',e,extra:o.id==='market'||o.id==='shop'?3.9:.9}})}
@@ -104,13 +112,16 @@ function gridLine(points){const cells=[];for(const p of points){const q=inv(p.x,
 function smoothRoad(points){if(!points.length)return[];const a=snapCell(points[0]),b=snapCell(points.at(-1)),cells=a&&b?gridRoute(a,b,blockedRoad):[];return cells.length?corners(cells).map(p=>project(p.u,p.v)):gridLine(points.map(p=>project(p.u,p.v)))}
 // Courtyard: a straight walk from the gate to the door (they share an axis).
 function courtLines(){const out=[];for(const o of locations){if(!estate(o))continue;const a=door(o),b=gate(o);if(clearSegment(a,b,blockedBase))out.push([project(a.u,a.v),project(b.u,b.v)]);else{const p=route(a,b,blockedBase);if(p.length)out.push(p.map(q=>project(q.u,q.v)))}}return out}
-function finishRoads(){roadPath=pathFromLines(roadLines);for(const l of courtLines())roadPath.addPath(pathFromLines([l]));
+// v59: the fountain square is one wide paved plaza (paths are in the y*2 space used for road strokes)
+let plazaPath=null;
+function makePlaza(){const sq=locations.find(o=>o.id==='square');if(!sq)return null;const c=center(sq),R=8,p=new Path2D();[[-R,-R],[R,-R],[R,R],[-R,R]].map(([a,b])=>project(c.u+a,c.v+b)).forEach((q,i)=>p[i?'lineTo':'moveTo'](q.x,q.y*2));p.closePath();return p}
+function finishRoads(){plazaPath=makePlaza();roadPath=pathFromLines(roadLines);for(const l of courtLines())roadPath.addPath(pathFromLines([l]));
  roadCells=new Map();for(const line of roadLines)for(const c of rasterize(line.map(p=>inv(p.x,p.y))))roadCells.set(cellKey(c.u,c.v),c);
- const mg=roadMask.getContext('2d',{willReadFrequently:true});mg.setTransform(1,0,0,1,0,0);mg.clearRect(0,0,WORLD_W,WORLD_H);mg.save();mg.scale(1,.5);mg.strokeStyle='#fff';mg.lineCap='round';mg.lineJoin='round';mg.lineWidth=108;mg.stroke(roadPath);for(const o of locations)if(estate(o))mg.fill(courtPath(o));mg.restore();roadPixels=mg.getImageData(0,0,WORLD_W,WORLD_H).data;terrainDirty=true;
- const bad=connectionReport().filter(p=>!p.connected);$('connection').classList.toggle('warning',bad.length>0);$('connection').textContent=bad.length?'ทางยังไม่เชื่อม: '+bad.map(p=>p.name).join(', '):'ถนนเชื่อมครบ 9 สถานที่และ 6 ทางออก · ตามแนวกริด'}
+ const mg=roadMask.getContext('2d',{willReadFrequently:true});mg.setTransform(1,0,0,1,0,0);mg.clearRect(0,0,WORLD_W,WORLD_H);mg.save();mg.scale(1,.5);mg.strokeStyle='#fff';mg.lineCap='round';mg.lineJoin='round';mg.lineWidth=276;mg.stroke(roadPath);if(plazaPath)mg.fill(plazaPath);for(const o of locations)if(estate(o))mg.fill(courtPath(o));mg.restore();roadPixels=mg.getImageData(0,0,WORLD_W,WORLD_H).data;terrainDirty=true;
+ const bad=connectionReport().filter(p=>!p.connected);$('connection').classList.toggle('warning',bad.length>0);$('connection').textContent=bad.length?'ทางยังไม่เชื่อม: '+bad.map(p=>p.name).join(', '):'ถนนเชื่อมครบทุกสถานที่ บ้าน และ 6 ทางออก · ตามแนวกริด'}
 // Walking: off-road leg onto the nearest road tile → along road tiles → off-road leg to the goal.
 function courtOf(p){return locations.find(o=>{const e=estate(o);if(!e)return false;if(Math.hypot(door(o).u-p.u,door(o).v-p.v)<.9)return true;const q=canonical(o,p.u,p.v),a=q.u-e.u,b=q.v-e.v;return a>e.left&&a<e.right&&b>e.back&&b<e.front+1})}
-function roadEntry(p){const list=[...roadCells.values()].map(c=>({c,d:Math.hypot(c.u-p.u,c.v-p.v)})).filter(x=>x.d<9).sort((a,b)=>a.d-b.d);for(const x of list.slice(0,40))if(clearSegment(p,x.c,blocked))return x.c;return null}
+function roadEntry(p){const list=[...roadCells.values()].map(c=>({c,d:Math.hypot(c.u-p.u,c.v-p.v)})).filter(x=>x.d<22).sort((a,b)=>a.d-b.d);for(const x of list.slice(0,120))if(clearSegment(p,x.c,blocked))return x.c;return null}
 function findPath(start,end){if(blocked(end.u,end.v))return[];const from=courtOf(start),to=courtOf(end),A=from?gate(from):start,B=to?gate(to):end;
  if(from&&to&&from===to)return[{u:end.u,v:end.v}];
  const S=roadEntry(A),G=roadEntry(B);let mid=[];
@@ -139,21 +150,25 @@ function rebuildRoads(){cacheSolids();roadLines=[];const sq=locations.find(o=>o.
 function travel(o){if(editing){selected=o.id;renderList();$('status').textContent=o.name+' · หัน '+o.facing+' · ใช้ปุ่มสลับหน้าอาคารเพื่อเปลี่ยน';return;}closePlaces();selected=o.id;destination=o;path=findPath(hero,door(o));$('status').textContent=path.length?'กำลังเดินไป'+o.name:(Math.hypot(hero.u-door(o).u,hero.v-door(o).v)<1.5?'อยู่ที่ทางเข้า'+o.name:'ทางเข้าไม่ได้เชื่อมกับถนน กรุณาตรวจผัง');renderList();if(!path.length&&Math.hypot(hero.u-door(o).u,hero.v-door(o).v)<3)arrive()}
 function arrive(){if(!destination)return;const o=destination;destination=null;parent.postMessage({source:'project-a-town',type:'arrive',id:o.id},'*');if(o.id.startsWith('exit:')){$('status').textContent='ถึง'+o.name;return;}$('status').textContent='ถึง'+o.name+'แล้ว';if(['home','forge','market'].includes(o.id))return;$('arrival').querySelector('h2').textContent=o.name;if(!$('arrival').open)$('arrival').showModal()}
 function closePlaces(){$('locationMenu').classList.remove('open');$('menuBtn').setAttribute('aria-expanded','false')}
-function renderList(){$('places').innerHTML=locations.map(o=>`<button data-id="${o.id}" class="${selected===o.id?'active':''}"><b>${String(o.num).padStart(2,'0')}</b><span>${o.name}</span></button>`).join('');$('places').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>travel(locations.find(o=>o.id===b.dataset.id)));if(gameState?.exits){for(const a of gameState.exits){const b=document.createElement('button');b.textContent='◇ '+a.name;b.onclick=()=>{closePlaces();const i={north:0,northeast:1,east:2,southeast:3,southwest:4,west:5}[a.exit],d=exitDoors()[i];if(!d)return;destination={id:'exit:'+a.id,name:a.name};path=findPath(hero,d);$('status').textContent=path.length?'กำลังเดินไปทางออก '+a.name:'ไปทางออกนี้ไม่ได้'};$('places').appendChild(b)}}$('pins').innerHTML=locations.map(o=>`<span class="pin" style="left:${o.x}%;top:${o.y}%">${o.num}</span>`).join('')}
+function renderList(){$('places').innerHTML=locations.filter(o=>!o.npc).map(o=>`<button data-id="${o.id}" class="${selected===o.id?'active':''}"><b>${String(o.num).padStart(2,'0')}</b><span>${o.name}</span></button>`).join('');$('places').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>travel(locations.find(o=>o.id===b.dataset.id)));if(gameState?.exits){for(const a of gameState.exits){const b=document.createElement('button');b.textContent='◇ '+a.name;b.onclick=()=>{closePlaces();const i={north:0,northeast:1,east:2,southeast:3,southwest:4,west:5}[a.exit],d=exitDoors()[i];if(!d)return;destination={id:'exit:'+a.id,name:a.name};path=findPath(hero,d);$('status').textContent=path.length?'กำลังเดินไปทางออก '+a.name:'ไปทางออกนี้ไม่ได้'};$('places').appendChild(b)}}$('pins').innerHTML=locations.map(o=>`<span class="pin" style="left:${o.x}%;top:${o.y}%">${o.num}</span>`).join('')}
 function drawTerrain(){
  g.fillStyle=TownArt.pattern(g,'grass')||'#7d906b';g.fillRect(0,0,WORLD_W,WORLD_H);
  g.save();g.scale(1,.5);g.lineCap='round';g.lineJoin='round';
- g.strokeStyle=TownArt.pattern(g,'soil')||'#938569';g.lineWidth=146;g.stroke(roadPath);
- g.strokeStyle=TownArt.pattern(g,'paving')||'#c9bca0';g.lineWidth=122;g.stroke(roadPath);
+ g.strokeStyle=TownArt.pattern(g,'soil')||'#938569';g.lineWidth=326;g.stroke(roadPath);g.fillStyle=TownArt.pattern(g,'soil')||'#938569';if(plazaPath){g.save();g.lineWidth=24;g.stroke(plazaPath);g.restore();g.fill(plazaPath)}
+ g.strokeStyle=TownArt.pattern(g,'paving')||'#c9bca0';g.lineWidth=298;g.stroke(roadPath);if(plazaPath){g.fillStyle=TownArt.pattern(g,'paving')||'#c9bca0';g.fill(plazaPath)}
  g.restore();estateGround();
  window.VillageNature?.ground(g);
  if(showGrid){g.save();g.globalAlpha=.18;g.drawImage(roadMask,0,0);g.restore()}
  for(const e of exits){g.fillStyle='#f2e5be';g.font='11px VillageThai,system-ui';g.textAlign='center';g.fillText('◇ '+e[0],e[1]*MX,e[2]*MY)}
 }
 
+// v59: beyond the map edge, a blurred, darker copy of the village instead of flat grass; the map edge fades into it
+let backdrop=null;
+function makeBackdrop(){const c=document.createElement('canvas');c.width=560;c.height=315;const q=c.getContext('2d');q.filter='blur(5px) brightness(.72) saturate(.75)';q.drawImage(terrain,-20,-12,600,339);backdrop=c}
+function edgeFade(){const f=200,col='rgba(44,61,46,',sides=[[0,0,WORLD_W,f,0,0,0,f],[0,WORLD_H-f,WORLD_W,f,0,WORLD_H,0,WORLD_H-f],[0,0,f,WORLD_H,0,0,f,0],[WORLD_W-f,0,f,WORLD_H,WORLD_W,0,WORLD_W-f,0]];for(const[x,y,w,h,x0,y0,x1,y1]of sides){const gr=g.createLinearGradient(x0,y0,x1,y1);gr.addColorStop(0,col+'.85)');gr.addColorStop(1,col+'0)');g.fillStyle=gr;g.fillRect(x,y,w,h)}}
 function draw(t){if(document.hidden||!townActive){last=t;requestAnimationFrame(draw);return}time=t;const dt=Math.min(.1,(t-last)/1000||0);last=t;if(path.length&&!editing){const b=path[0],du=b.u-hero.u,dv=b.v-hero.v,len=Math.hypot(du,dv),step=dt*8;if(len<=step){hero.u=b.u;hero.v=b.v;path.shift();if(!path.length)arrive()}else{hero.u+=du/len*step;hero.v+=dv/len*step;hero.dir8=facing8(du,dv);hero.dir=spriteDir(hero.dir8,hero.dir)}}
- window.TownUX?.update(dt,t);g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.fillStyle=TownArt.pattern(g,'grass')||'#7d906b';g.fillRect(0,0,W,H);g.translate(W/2+pan.x,H/2+pan.y);g.scale(scale*zoom,scale*zoom);g.translate(-WORLD_W/2,-WORLD_H/2);
- if(terrainDirty){const mainG=g;g=terrain.getContext('2d');g.clearRect(0,0,WORLD_W,WORLD_H);drawTerrain();g=mainG;terrainDirty=false}g.drawImage(terrain,0,0);window.TownUX?.ground(g,t);
+ window.TownUX?.update(dt,t);g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.fillStyle='#2c3d2e';g.fillRect(0,0,W,H);g.translate(W/2+pan.x,H/2+pan.y);g.scale(scale*zoom,scale*zoom);g.translate(-WORLD_W/2,-WORLD_H/2);if(backdrop)g.drawImage(backdrop,-WORLD_W*.45,-WORLD_H*.45,WORLD_W*1.9,WORLD_H*1.9);
+ if(terrainDirty){const mainG=g;g=terrain.getContext('2d');g.clearRect(0,0,WORLD_W,WORLD_H);drawTerrain();g=mainG;terrainDirty=false;makeBackdrop()}g.drawImage(terrain,0,0);edgeFade();window.TownUX?.ground(g,t);
 
  if(path.length){g.strokeStyle='#e8d496';g.lineWidth=2.5;g.setLineDash([5,6]);g.beginPath();let p=project(hero.u,hero.v);g.moveTo(p.x,p.y);for(const a of path){p=project(a.u,a.v);g.lineTo(p.x,p.y)}g.stroke();g.setLineDash([]);const end=project(path.at(-1).u,path.at(-1).v);ellipse(end.x,end.y,13,6,'#f4dc9f88')}
  TownArt.begin(g,project(hero.u,hero.v));const objects=[...estateObjects(),...locations.map(o=>({y:(canonical(o,hero.u,hero.v).v>center(o).v+o.d+.2||canonical(o,hero.u,hero.v).u>center(o).u+o.w+.2)?Math.min(o.y*MY,project(hero.u,hero.v).y-.1):o.y*MY,draw:()=>{g.save();building(o);g.restore()}})),...(window.VillageNature?.objects()||[]),{y:project(hero.u,hero.v).y,draw:()=>{const p=project(hero.u,hero.v);ellipse(p.x,p.y,16.9,7.8,'#182b2877');TownArt.hero(g,p,hero.dir,t,path.length>0,93.6,hero.dir8)}}];objects.push(...(window.TownMenu?.gateObjects()||[]));objects.sort((a,b)=>a.y-b.y).forEach(o=>o.draw(g));
@@ -191,7 +206,7 @@ document.querySelectorAll('[data-game]').forEach(b=>b.onclick=()=>sendGame('menu
 
 document.addEventListener('pointerdown',()=>sendGame('input'),{capture:true});document.addEventListener('keydown',()=>sendGame('input'),{capture:true});
 rebuildRoads();heroRestore();renderList();fit();new ResizeObserver(fit).observe(stage);parent.postMessage({source:'project-a-town',type:'ready'},'*');document.fonts.ready.then(()=>terrainDirty=true);requestAnimationFrame(draw);
-</script><script src="js/town-ux.js?v=57"></script><script src="js/town-menu.js?v=57"></script><script src="js/nature-alpha-masks.js"></script><script src="js/village-nature.js"></script></html>
+</script><script src="js/town-ux.js?v=59"></script><script src="js/town-menu.js?v=59"></script><script src="js/nature-alpha-masks.js"></script><script src="js/village-nature.js"></script></html>
 
 
 <!-- Art sources and prompts: docs/ASSET_NOTES.txt. PNG objects are used for all buildings and props; roads and floor are native editable geometry. -->
