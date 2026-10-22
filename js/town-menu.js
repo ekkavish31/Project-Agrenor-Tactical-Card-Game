@@ -56,7 +56,7 @@ function gateAxis(e){// the road leaves along u or v: the gate spans across it
 // v64: themed gate art per adventure area (assets/village-town/decor/gate-<area>.png) replaces the code-drawn gate when present
 const GATE_AREA=['mine','frost','forest','coast','ruins','swamp'],gateImg={};
 for(const a of GATE_AREA){const im=new Image();im.onload=()=>{gateImg[a]=im};im.src='assets/village-town/decor/gate-'+a+'.png'}
-function gateSprite(g,pa,pb,im,flip){const mx=(pa.x+pb.x)/2,my=(pa.y+pb.y)/2,w=Math.abs(pb.x-pa.x)+90,h=w*im.naturalHeight/im.naturalWidth;g.save();g.translate(mx,my+10);if(flip)g.scale(-1,1);root.TownArt.draw(g,im,null,[-w/2,-h*.9,w,h],null);g.restore()}
+function gateSprite(g,pa,pb,im,flip){const mx=(pa.x+pb.x)/2,my=(pa.y+pb.y)/2,w=(Math.abs(pb.x-pa.x)+90)*1.3,h=w*im.naturalHeight/im.naturalWidth;g.save();g.translate(mx,my+10);if(flip)g.scale(-1,1);root.TownArt.draw(g,im,null,[-w/2,-h*.9,w,h],null);g.restore()}
 function gateObjects(){const out=[];V().getExits().forEach((e,i)=>{const axis=gateAxis(e),span=1.9,A=axis==='v'?{u:e.u,v:e.v-span}:{u:e.u-span,v:e.v},B=axis==='v'?{u:e.u,v:e.v+span}:{u:e.u+span,v:e.v},pa=V().project(A.u,A.v),pb=V().project(B.u,B.v),pc=V().project(e.u,e.v);
   const im=gateImg[GATE_AREA[i]];out.push({x:pc.x,y:Math.max(pa.y,pb.y)+2,draw:g=>im?gateSprite(g,pa,pb,im,(pb.x-pa.x)*(pb.y-pa.y)>0):gate(g,pa,pb,pc,e.name)})});return out}
 function post(g,p,h){const w=18;g.fillStyle='#00000040';g.beginPath();g.ellipse(p.x,p.y+2,w,w*.45,0,0,Math.PI*2);g.fill();
