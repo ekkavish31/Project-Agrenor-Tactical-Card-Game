@@ -50168,7 +50168,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-1",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-01.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50195,7 +50195,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-2",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-02.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50222,7 +50222,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-3",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-03.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50249,7 +50249,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-4",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-04.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50276,7 +50276,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-5",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-05.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50303,7 +50303,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-6",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-06.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50330,7 +50330,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-7",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-07.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50357,7 +50357,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-8",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-08.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50384,7 +50384,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-9",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-09.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50411,7 +50411,7 @@
    "id": "studio-hero-se-walk-mvero27t-rcpx-10",
    "file": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-10.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -50757,6 +50757,330 @@
     "group": "characters"
    },
    "artRevision": "mvf00ecw-vrmo"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-1",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-01.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-2",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-02.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-3",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-03.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-4",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-04.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-5",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-05.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-6",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-06.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-7",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-07.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-8",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-08.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-9",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-09.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-10",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-10.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-11",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-11.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
+  },
+  {
+   "id": "studio-hero-se-walk-mvjs6c89-7f20-12",
+   "file": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-12.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvjs6c89-7f20"
   }
  ],
  "studioWalks": {
@@ -50771,56 +51095,66 @@
     0.9375
    ],
    "loop": true,
-   "createdAt": "2026-10-19T04:41:01.241Z",
+   "createdAt": "2026-10-22T16:54:04.905Z",
    "frames": [
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-1",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-01.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-1",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-01.png",
      "ms": 80
     },
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-2",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-02.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-2",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-02.png",
      "ms": 80
     },
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-3",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-03.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-3",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-03.png",
      "ms": 80
     },
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-4",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-04.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-4",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-04.png",
      "ms": 80
     },
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-5",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-05.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-5",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-05.png",
      "ms": 80
     },
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-6",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-06.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-6",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-06.png",
      "ms": 80
     },
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-7",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-07.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-7",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-07.png",
      "ms": 80
     },
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-8",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-08.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-8",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-08.png",
      "ms": 80
     },
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-9",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-09.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-9",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-09.png",
      "ms": 80
     },
     {
-     "assetId": "studio-hero-se-walk-mvero27t-rcpx-10",
-     "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-10.png",
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-10",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-10.png",
+     "ms": 80
+    },
+    {
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-11",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-11.png",
+     "ms": 80
+    },
+    {
+     "assetId": "studio-hero-se-walk-mvjs6c89-7f20-12",
+     "src": "assets/tactics/imported/walk-se-mvjs6c89-7f20/frame-12.png",
      "ms": 80
     }
    ]
@@ -50903,6 +51237,79 @@
  },
  "studioWalkHistory": {
   "SE": [
+   {
+    "at": "2026-10-22T16:54:05.077Z",
+    "config": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-10-19T04:41:01.241Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-1",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-01.png",
+       "ms": 80
+      },
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-2",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-02.png",
+       "ms": 80
+      },
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-3",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-03.png",
+       "ms": 80
+      },
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-4",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-04.png",
+       "ms": 80
+      },
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-5",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-05.png",
+       "ms": 80
+      },
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-6",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-06.png",
+       "ms": 80
+      },
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-7",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-07.png",
+       "ms": 80
+      },
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-8",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-08.png",
+       "ms": 80
+      },
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-9",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-09.png",
+       "ms": 80
+      },
+      {
+       "assetId": "studio-hero-se-walk-mvero27t-rcpx-10",
+       "src": "assets/tactics/imported/walk-se-mvero27t-rcpx/frame-10.png",
+       "ms": 80
+      }
+     ]
+    },
+    "mirrors": {
+     "SE": null,
+     "SW": "SE"
+    },
+    "frames": 10
+   },
    {
     "at": "2026-10-19T08:30:43.552Z",
     "config": {
@@ -51074,5 +51481,11 @@
  "studioWalkMirrors": {
   "SW": "SE",
   "NW": "NE"
+ },
+ "studioReviews": {
+  "[\"tactics.walk.se\",\"SE\",true,[[\"studio-hero-se-walk-mvero27t-rcpx-1\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-01.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-walk-mvero27t-rcpx-2\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-02.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-walk-mvero27t-rcpx-3\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-03.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-walk-mvero27t-rcpx-4\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-04.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-walk-mvero27t-rcpx-5\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-05.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-walk-mvero27t-rcpx-6\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-06.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-walk-mvero27t-rcpx-7\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-07.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-walk-mvero27t-rcpx-8\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-08.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-walk-mvero27t-rcpx-9\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-09.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-walk-mvero27t-rcpx-10\",\"assets/tactics/imported/walk-se-mvero27t-rcpx/frame-10.png\",0,\"mvero27t-rcpx\",null,80,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  }
  }
 }
