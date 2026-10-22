@@ -5,11 +5,7 @@
  const original=estateObjects,probe=document.createElement('canvas').getContext('2d');
  let main=null,lane=null,items=null,layout='';
  function paved(x,y){
-  probe.lineCap=probe.lineJoin='round';
-  for(const [path,width] of [[roadMain,ROAD.main.pave],[roadLane,ROAD.lane.pave]]){
-   probe.lineWidth=width+16;
-   if(probe.isPointInStroke(path,x,y*2))return true;
-  }
+  if(roadHit(x,y,16))return true;
   if([plazaPath,junctionPath].some(p=>p&&probe.isPointInPath(p,x,y*2)))return true;
   return locations.some(o=>estate(o)&&probe.isPointInPath(courtPath(o),x,y*2));
  }
