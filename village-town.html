@@ -38,10 +38,10 @@ function houseImage(o){if(!o.npc)return images.house;const i=+o.id.slice(3)||0;i
  if(hue||sat!==1){const d=q.getImageData(0,0,c.width,c.height),a=d.data;for(let k=0;k<a.length;k+=4){const r=a[k],gg=a[k+1],b=a[k+2];if(!a[k+3]||r<gg+30||r<b+40)continue;const mx=Math.max(r,gg,b)/255,mn=Math.min(r,gg,b)/255,l=(mx+mn)/2,dd=mx-mn;if(!dd)continue;let h=mx===r/255?((gg-b)/255/dd+6)%6:mx===gg/255?(b-r)/255/dd+2:(r-gg)/255/dd+4;h=(h/6+hue/360+1)%1;const sv=dd/(1-Math.abs(2*l-1))*sat,C=(1-Math.abs(2*l-1))*sv,X=C*(1-Math.abs(h*6%2-1)),m=l-C/2,[R,G,B]=h<1/6?[C,X,0]:h<2/6?[X,C,0]:h<3/6?[0,C,X]:h<4/6?[0,X,C]:h<5/6?[X,0,C]:[C,0,X];a[k]=(R+m)*255;a[k+1]=(G+m)*255;a[k+2]=(B+m)*255}q.putImageData(d,0,0)}
  const im=new Image();im.onload=()=>terrainDirty=true;im.src=c.toDataURL('image/png');houseVariants[i]=im;return im}
 function homeSpriteRect(o){const a=center(o),front=project(a.u,a.v+o.d),width=o.npc?430:560,height=width*1199/1312;return{x:front.x-width*.375,y:front.y-height*.82,w:width,h:height}}
-const artSpecs={inn:[390,.31,.85],guild:[500,.40,.92],healer:[420,.43,.90],shop:[360,.29,.84],market:[370,.29,.88],temple:[440,.31,.91],forge:[400,.34,.84]};
+const artSpecs={inn:[390,.31,.85],guild:[500,.40,.92],healer:[420,.43,.90],shop:[360,.29,.84],market:[370,.29,.88],temple:[330,.31,.91],forge:[400,.34,.84]};
 function artRect(o){const spec=artSpecs[o.id],im=images['building_'+o.id];if(!spec||!im?.naturalWidth)return null;const a=center(o),front=project(a.u,a.v+o.d),width=spec[0]*2,height=width*im.naturalHeight/im.naturalWidth;return{x:front.x-width*spec[1],y:front.y-height*spec[2],w:width,h:height,im}}
 
-function estate(o){if(o.id==='square')return null;const a=center(o),extra=o.npc?1:{home:1.8,inn:2.4,guild:3.0,healer:2.4,shop:2,market:2.9,temple:3.0,forge:2.7}[o.id];return{...a,left:-o.w-extra*2,right:o.w+extra*2,back:-o.d-(o.npc?2.2:3.2),front:o.d+(o.npc?4.6:9.2)}}
+function estate(o){if(o.id==='square')return null;const a=center(o),extra=o.npc?.8:{home:1.6,inn:2.0,guild:2.4,healer:2.0,shop:1.6,market:2.2,temple:2.2,forge:2.2}[o.id];return{...a,left:-o.w-extra*1.3,right:o.w+extra*1.3,back:-o.d-(o.npc?1.6:2.2),front:o.d+(o.npc?3.4:['market','shop'].includes(o.id)?6.4:5)}}
 function gate(o){const e=estate(o);return e?canonical(o,e.u,e.v+e.front+1.3):door(o)}
 function plotPoints(o){const e=estate(o);return[[e.left,e.back],[e.right,e.back],[e.right,e.front],[e.left,e.front]].map(([u,v])=>project(e.u+u,e.v+v))}
 function fenceBlocked(u,v){return locations.some(o=>{const e=estate(o);if(!e)return false;const q=canonical(o,u,v),a=q.u-e.u,b=q.v-e.v;if(a<e.left-.22||a>e.right+.22||b<e.back-.22||b>e.front+.22)return false;return Math.abs(a-e.left)<.22||Math.abs(a-e.right)<.22||Math.abs(b-e.back)<.22||(Math.abs(b-e.front)<.22&&Math.abs(a)>2.7)})}
@@ -55,12 +55,16 @@ function estateGround(){for(const o of locations){const e=estate(o);if(!e)contin
  // Little soil beds under hedges, leaving the front approach open.
  for(const side of [-1,1]){const u=side<0?e.left+.65:e.right-.65;poly([project(e.u+u-.4,e.v+e.back+.7),project(e.u+u+.4,e.v+e.back+.7),project(e.u+u+.4,e.v+e.front-.8),project(e.u+u-.4,e.v+e.front-.8)],TownArt.pattern(g,'soil')||'#5f6847',null)}
 });}}
-let roadLines=[],roadPath=new Path2D(),roadPixels=null;const roadMask=document.createElement('canvas');roadMask.width=WORLD_W;roadMask.height=WORLD_H;
+let roadLines=[],roadKinds=[],roadMain=new Path2D(),roadLane=new Path2D(),junctionPath=null,roadPath=new Path2D(),roadPixels=null;const roadMask=document.createElement('canvas');roadMask.width=WORLD_W;roadMask.height=WORLD_H;
 images.props=new Image();images.props.src='assets/village-town/props.png';images.fountain=new Image();images.fountain.src='assets/village-town/fountain.png';
 function propSprite(index,p,w=90,h=w,flip=false){const im=images.props;if(!im.complete||!im.naturalWidth)return;const sw=im.naturalWidth/4,sh=im.naturalHeight/2;g.save();g.translate(p.x,p.y);if(flip)g.scale(-1,1);TownArt.draw(g,im,[(index%4)*sw,Math.floor(index/4)*sh,sw,sh],[-w/2,-h*.92,w,h],project(hero.u,hero.v));g.restore()}
 function tree(t){const p=project(t.u,t.v),h=t.h*3;propSprite(7,p,h*.85,h)}
 function bush(u,v,flower=false){propSprite(2,project(u,v),85,85)}
 // v60: estate borders mix hedges, flower beds and planters (FFT/cozy-village look); real fences only on some fronts
+// optional generated decor: dropped into assets/village-town/decor/<name>.png it shows up automatically
+const DECOR=['bench','market-stall-red','market-stall-blue','banner-pole','woodpile','signpost','well','cart','hay','flower-box'],decorImg={};
+for(const n of DECOR){const im=new Image();im.onload=()=>{decorImg[n]=im;terrainDirty=true};im.src='assets/village-town/decor/'+n+'.png'}
+function decor(name,p,w,flip){const im=decorImg[name];if(!im)return;const h=w*im.naturalHeight/im.naturalWidth;g.save();g.translate(p.x,p.y);if(flip)g.scale(-1,1);g.fillStyle='#00000028';g.beginPath();g.ellipse(0,0,w*.38,w*.12,0,0,Math.PI*2);g.fill();TownArt.draw(g,im,null,[-w/2,-h*.92,w,h],project(hero.u,hero.v));g.restore()}
 function hashN(id,k){let h=2166136261;for(const c of id+':'+k)h=Math.imul(h^c.charCodeAt(0),16777619);return (h>>>0)/4294967296}
 function borderStyle(o,si,k,n,front){const r=hashN(o.id,si*31+k);
  if(front){if(['guild','temple','healer'].includes(o.id))return 'stone';if(['home','forge'].includes(o.id)||o.npc&&r<.3)return r<.65?'wood':'planter';return r<.5?'flowers':r<.8?'hedge':'planter'}
@@ -84,10 +88,23 @@ function estateObjects(){const out=[];for(const o of locations){const e=estate(o
  if(['temple','guild','healer'].includes(o.id))for(const side of[-1,1]){const p=project(e.u+side*(o.w+1.2),e.v+o.d+3.4);out.push({y:p.y,draw:()=>propSprite(4,p,100,125)})}
  if(o.id==='inn')for(let i=0;i<2;i++){const p=project(e.u+o.w+1.8,e.v+o.d+2.4+i*2);out.push({y:p.y,draw:()=>propSprite(5,p,145,110)})}
  if(o.id==='forge')for(let i=0;i<3;i++){const p=project(e.u+o.w+2,e.v-1.4+i*2);out.push({y:p.y,draw:()=>propSprite(6,p,110)})}
+ // v61 district clusters: each building type gets its own little scene (3–8 props), using the art we have now
+ // plus optional generated decor (assets/village-town/decor/*.png) that appears as soon as the file exists
+ {const put=(du,dv,fn)=>{const q=P(du,dv),pp=project(q.u,q.v);out.push({y:pp.y,draw:()=>fn(pp)})},R=k=>hashN(o.id,900+k),F=e.front-.6,S=o.w+.9;
+  const herb=(du,dv)=>put(du,dv,pp=>TownArt.detail(g,3,{x:pp.x,y:pp.y+10},62)),flw=(du,dv,i=1)=>put(du,dv,pp=>TownArt.detail(g,i,{x:pp.x,y:pp.y+10},56)),crate=(du,dv)=>put(du,dv,pp=>propSprite(6,pp,92)),bush=(du,dv)=>put(du,dv,pp=>propSprite(2,{x:pp.x,y:pp.y+6},78,72)),pot=(du,dv)=>put(du,dv,pp=>propSprite(3,{x:pp.x,y:pp.y+6},64,78)),dec=(name,du,dv,w,flip)=>put(du,dv,pp=>decor(name,pp,w,flip));
+  if(o.id==='market'){crate(-S,F-1.5);crate(S,F-2.6);pot(-2.2,F);pot(2.2,F);dec('market-stall-red',-S-.6,1.2,230);dec('market-stall-blue',S+.6,1.6,230,true);dec('cart',S+.4,F-.6,150);dec('banner-pole',-1.6,F+.2,70);dec('banner-pole',1.6,F+.2,70,true)}
+  else if(o.id==='inn'){crate(S,-.6);flw(-S,F-1.2,2);bush(-S,F-.2);dec('woodpile',S+.2,1.6,120);dec('signpost',2.6,F+.3,70)}
+  else if(o.id==='home'){herb(-S,F-2);herb(-S+1,F-1.2);herb(-S,F-.6);crate(S,F-1.4);flw(S-.4,F-.4,1);dec('flower-box',-1.4,F-.2,90);dec('woodpile',S+.3,-.2,110)}
+  else if(o.id==='healer'){herb(-S,F-2.2);herb(-S,F-1);herb(S,F-2.2);herb(S,F-1);pot(-2,F);pot(2,F)}
+  else if(o.id==='guild'||o.id==='temple'){flw(-S,F-1,2);flw(S,F-1,1);pot(-2.6,F);pot(2.6,F);if(o.id==='guild'){dec('banner-pole',-3.4,F+.3,80);dec('banner-pole',3.4,F+.3,80,true)}}
+  else if(o.id==='forge'){crate(-S,F-1.2);dec('woodpile',-S-.2,.4,130);dec('cart',S+.6,F-.4,150,true);dec('hay',-S+.4,F-.2,90)}
+  else if(o.id==='shop'){crate(S,F-1);pot(-1.8,F);dec('flower-box',1.4,F-.2,80)}
+  else if(o.npc){const k=+o.id.slice(3);if(R(1)<.6)herb(-S,F-1.2);if(R(2)<.5)crate(S,F-1);if(R(3)<.7)flw(S-.3,F-.4,1+Math.floor(R(4)*2));if(R(5)<.5)bush(-S,F-.2);dec(R(6)<.5?'flower-box':'woodpile',R(7)<.5?-1.2:1.2,F-.2,90,R(8)<.5);if(k===7){dec('hay',S+.3,-.2,100);dec('hay',S+.4,1.2,90,true)}}}
  if(o.facing==='SE')for(let i=first;i<out.length;i++){const draw=out[i].draw;out[i].draw=()=>reflectView(o,draw)}
  }
  // plaza: lamps on the corners, planters between them
- const sq=locations.find(o=>o.id==='square');if(sq){const c=center(sq),R=6.6;for(const[du,dv]of[[-R,-R],[R,-R],[R,R],[-R,R]]){const pp=project(c.u+du,c.v+dv);out.push({y:pp.y,draw:()=>lamp(pp)})}for(const[du,dv]of[[0,-R],[R,0],[0,R],[-R,0]]){const pp=project(c.u+du,c.v+dv);out.push({y:pp.y,draw:()=>propSprite(3,{x:pp.x,y:pp.y+6},70,86)})}}
+ const sq=locations.find(o=>o.id==='square');if(sq){const c=center(sq),R=6.6;for(const[du,dv]of[[-R,-R],[R,-R],[R,R],[-R,R]]){const pp=project(c.u+du,c.v+dv);out.push({y:pp.y,draw:()=>lamp(pp)})}for(const[du,dv]of[[0,-R],[R,0],[0,R],[-R,0]]){const pp=project(c.u+du,c.v+dv);out.push({y:pp.y,draw:()=>propSprite(3,{x:pp.x,y:pp.y+6},70,86)})}
+ for(const[du,dv,f]of[[-3.6,-R+.6,0],[3.6,-R+.6,1],[R-.6,3.6,0],[-R+.6,3.6,1]]){const pp=project(c.u+du,c.v+dv);out.push({y:pp.y,draw:()=>decor('bench',pp,110,f)})}}
  return out}
 function building(o){reflectView(o,()=>{if(o.id==='square'){const a=center(o),p=project(a.u,a.v),im=images.fountain,w=400,h=w*im.naturalHeight/im.naturalWidth;if(im.complete&&im.naturalWidth)TownArt.draw(g,im,null,[p.x-w*.5,p.y-h*.67,w,h],project(hero.u,hero.v));return}if(o.id==='home'||o.npc){const im=houseImage(o);if(im.complete&&im.naturalWidth){const r=homeSpriteRect(o);TownArt.draw(g,im,null,[r.x,r.y,r.w,r.h],project(hero.u,hero.v))}return}const art=artRect(o);if(art)TownArt.draw(g,art.im,null,[art.x,art.y,art.w,art.h],project(hero.u,hero.v))})}
 
@@ -135,10 +152,14 @@ function smoothRoad(points){if(!points.length)return[];const a=snapCell(points[0
 function courtLines(){const out=[];for(const o of locations){if(!estate(o))continue;const a=door(o),b=gate(o);if(clearSegment(a,b,blockedBase))out.push([project(a.u,a.v),project(b.u,b.v)]);else{const p=route(a,b,blockedBase);if(p.length)out.push(p.map(q=>project(q.u,q.v)))}}return out}
 // v59: the fountain square is one wide paved plaza (paths are in the y*2 space used for road strokes)
 let plazaPath=null;
-function makePlaza(){const sq=locations.find(o=>o.id==='square');if(!sq)return null;const c=center(sq),R=8,p=new Path2D();[[-R,-R],[R,-R],[R,R],[-R,R]].map(([a,b])=>project(c.u+a,c.v+b)).forEach((q,i)=>p[i?'lineTo':'moveTo'](q.x,q.y*2));p.closePath();return p}
+function makePlaza(){const sq=locations.find(o=>o.id==='square');if(!sq)return null;const c=center(sq),R=7.5,p=new Path2D();[[-R,-R],[R,-R],[R,R],[-R,R]].map(([a,b])=>project(c.u+a,c.v+b)).forEach((q,i)=>p[i?'lineTo':'moveTo'](q.x,q.y*2));p.closePath();return p}
+// v61: road hierarchy — main streets (services, exits) wide, lanes to homes narrow, junctions open into small round plazas
+const ROAD={main:{curb:236,pave:220,walk:198},lane:{curb:146,pave:132,walk:112}};
 function finishRoads(){plazaPath=makePlaza();roadPath=pathFromLines(roadLines);for(const l of courtLines())roadPath.addPath(pathFromLines([l]));
+ roadMain=pathFromLines(roadLines.filter((_,i)=>(roadKinds[i]||'main')==='main'));roadLane=pathFromLines(roadLines.filter((_,i)=>roadKinds[i]==='lane'));for(const l of courtLines())roadLane.addPath(pathFromLines([l]));
+ junctionPath=new Path2D();roadLines.forEach((l,i)=>{if(i===0||(roadKinds[i]||'main')!=='main'||l.length<2)return;const p=l.at(-1);junctionPath.moveTo(p.x+150,p.y*2);junctionPath.arc(p.x,p.y*2,150,0,Math.PI*2)});
  roadCells=new Map();for(const line of roadLines)for(const c of rasterize(line.map(p=>inv(p.x,p.y))))roadCells.set(cellKey(c.u,c.v),c);
- const mg=roadMask.getContext('2d',{willReadFrequently:true});mg.setTransform(1,0,0,1,0,0);mg.clearRect(0,0,WORLD_W,WORLD_H);mg.save();mg.scale(1,.5);mg.strokeStyle='#fff';mg.lineCap='round';mg.lineJoin='round';mg.lineWidth=276;mg.stroke(roadPath);if(plazaPath)mg.fill(plazaPath);for(const o of locations)if(estate(o))mg.fill(courtPath(o));mg.restore();roadPixels=mg.getImageData(0,0,WORLD_W,WORLD_H).data;terrainDirty=true;
+ const mg=roadMask.getContext('2d',{willReadFrequently:true});mg.setTransform(1,0,0,1,0,0);mg.clearRect(0,0,WORLD_W,WORLD_H);mg.save();mg.scale(1,.5);mg.strokeStyle='#fff';mg.lineCap='round';mg.lineJoin='round';mg.lineWidth=ROAD.main.walk;mg.stroke(roadMain);mg.lineWidth=ROAD.lane.walk;mg.stroke(roadLane);if(plazaPath)mg.fill(plazaPath);if(junctionPath)mg.fill(junctionPath);for(const o of locations)if(estate(o))mg.fill(courtPath(o));mg.restore();roadPixels=mg.getImageData(0,0,WORLD_W,WORLD_H).data;terrainDirty=true;
  const bad=connectionReport().filter(p=>!p.connected);$('connection').classList.toggle('warning',bad.length>0);$('connection').textContent=bad.length?'ทางยังไม่เชื่อม: '+bad.map(p=>p.name).join(', '):'ถนนเชื่อมครบทุกสถานที่ บ้าน และ 6 ทางออก · ตามแนวกริด'}
 // Walking: off-road leg onto the nearest road tile → along road tiles → off-road leg to the goal.
 function courtOf(p){return locations.find(o=>{const e=estate(o);if(!e)return false;if(Math.hypot(door(o).u-p.u,door(o).v-p.v)<.9)return true;const q=canonical(o,p.u,p.v),a=q.u-e.u,b=q.v-e.v;return a>e.left&&a<e.right&&b>e.back&&b<e.front+1})}
@@ -160,11 +181,11 @@ function exitDoors(){return exits.map(e=>({name:e[0],...inv(e[1]*MX,Math.max(30,
 function pathFromLines(lines){const path=new Path2D();for(const points of lines){if(!points.length)continue;path.moveTo(points[0].x,points[0].y*2);for(const p of points.slice(1))path.lineTo(p.x,p.y*2)}return path}
 function connectionReport(){const start=door(locations[0]);return [...locations.map(o=>({id:o.id,name:o.name,...door(o)})),...exitDoors()].map(p=>({id:p.id||p.name,name:p.name,connected:!blocked(p.u,p.v)&&(key(nearest(start))===key(nearest(p))||findPath(start,p).length>0)}))}
 function rebuildRoads(){cacheSolids();roadLines=[];const sq=locations.find(o=>o.id==='square'),fc=center(sq),c={u:Math.round(fc.u),v:Math.round(fc.v)},R=5,network=new Map();
- const add=pts=>{roadLines.push(pts.map(p=>project(p.u,p.v)));for(const q of rasterize(pts))network.set(cellKey(q.u,q.v),q)};
+ roadKinds=[];const add=(pts,kind='main')=>{roadLines.push(pts.map(p=>project(p.u,p.v)));roadKinds.push(kind);for(const q of rasterize(pts))network.set(cellKey(q.u,q.v),q)};
  // The plaza is a square loop on the grid around the fountain.
  add([[-R,-R],[R,-R],[R,R],[-R,R],[-R,-R]].map(([a,b])=>({u:c.u+a,v:c.v+b})));
- const terminals=[...locations.filter(o=>estate(o)).map(o=>gate(o)),...exitDoors()].sort((a,b)=>Math.hypot(a.u-c.u,a.v-c.v)-Math.hypot(b.u-c.u,b.v-c.v));
- for(const t of terminals){const cells=gridRoute(snapCell(t),null,blockedRoad,network);if(cells.length>1)add(corners(cells))}
+ const byDist=(a,b)=>Math.hypot(a.u-c.u,a.v-c.v)-Math.hypot(b.u-c.u,b.v-c.v),mains=[...locations.filter(o=>estate(o)&&!o.npc).map(o=>gate(o)),...exitDoors()].sort(byDist),lanes=locations.filter(o=>o.npc&&estate(o)).map(o=>gate(o)).sort(byDist);
+ for(const [list,kind] of [[mains,'main'],[lanes,'lane']])for(const t of list){const cells=gridRoute(snapCell(t),null,blockedRoad,network);if(cells.length>1)add(corners(cells),kind)}
  const sd=door(sq),sc=snapCell(sd,blockedBase);if(sc){const cells=gridRoute(sc,null,blockedBase,network);if(cells.length>1)add(corners(cells))}
  finishRoads()}
 
@@ -172,11 +193,16 @@ function travel(o){if(editing){selected=o.id;renderList();$('status').textConten
 function arrive(){if(!destination)return;const o=destination;destination=null;parent.postMessage({source:'project-a-town',type:'arrive',id:o.id},'*');if(o.id.startsWith('exit:')){$('status').textContent='ถึง'+o.name;return;}$('status').textContent='ถึง'+o.name+'แล้ว';if(['home','forge','market'].includes(o.id))return;$('arrival').querySelector('h2').textContent=o.name;if(!$('arrival').open)$('arrival').showModal()}
 function closePlaces(){$('locationMenu').classList.remove('open');$('menuBtn').setAttribute('aria-expanded','false')}
 function renderList(){$('places').innerHTML=locations.filter(o=>!o.npc).map(o=>`<button data-id="${o.id}" class="${selected===o.id?'active':''}"><b>${String(o.num).padStart(2,'0')}</b><span>${o.name}</span></button>`).join('');$('places').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>travel(locations.find(o=>o.id===b.dataset.id)));if(gameState?.exits){for(const a of gameState.exits){const b=document.createElement('button');b.textContent='◇ '+a.name;b.onclick=()=>{closePlaces();const i={north:0,northeast:1,east:2,southeast:3,southwest:4,west:5}[a.exit],d=exitDoors()[i];if(!d)return;destination={id:'exit:'+a.id,name:a.name};path=findPath(hero,d);$('status').textContent=path.length?'กำลังเดินไปทางออก '+a.name:'ไปทางออกนี้ไม่ได้'};$('places').appendChild(b)}}$('pins').innerHTML=locations.map(o=>`<span class="pin" style="left:${o.x}%;top:${o.y}%">${o.num}</span>`).join('')}
+// v61: soft ground variety under everything — lush/dark grass, dry grass, bare soil, moss
+function groundPatches(){let h=91731;const r=()=>(h=Math.imul(h,1664525)+1013904223>>>0)/4294967296;const soil=TownArt.pattern(g,'soil');
+ for(let i=0;i<190;i++){const x=r()*WORLD_W,y=r()*WORLD_H,rx=60+r()*190,k=r(),gr=g.createRadialGradient(x,y,0,x,y,rx);
+  const col=k<.42?'34,64,22':k<.7?'150,146,72':k<.86?'86,110,40':'110,92,60';const a=k<.42?.22:k<.7?.16:k<.86?.2:.18;gr.addColorStop(0,`rgba(${col},${a})`);gr.addColorStop(1,`rgba(${col},0)`);g.fillStyle=gr;g.beginPath();g.ellipse(x,y,rx,rx*.55,0,0,Math.PI*2);g.fill()}
+ if(soil)for(let i=0;i<26;i++){const x=r()*WORLD_W,y=r()*WORLD_H,rx=30+r()*60;g.save();g.globalAlpha=.55;g.fillStyle=soil;g.beginPath();g.ellipse(x,y,rx,rx*.5,r()*.6,0,Math.PI*2);g.fill();g.restore()}}
 function drawTerrain(){
- g.fillStyle=TownArt.pattern(g,'grass')||'#7d906b';g.fillRect(0,0,WORLD_W,WORLD_H);
+ g.fillStyle=TownArt.pattern(g,'grass')||'#7d906b';g.fillRect(0,0,WORLD_W,WORLD_H);groundPatches();
  g.save();g.scale(1,.5);g.lineCap='round';g.lineJoin='round';
- g.strokeStyle='#5c5038';g.lineWidth=336;g.stroke(roadPath);g.strokeStyle='#d3c7a8';g.lineWidth=322;g.stroke(roadPath);if(plazaPath){g.save();g.strokeStyle='#5c5038';g.lineWidth=38;g.stroke(plazaPath);g.strokeStyle='#d3c7a8';g.lineWidth=24;g.stroke(plazaPath);g.restore()}
- g.strokeStyle=TownArt.pattern(g,'paving')||'#c9bca0';g.lineWidth=300;g.stroke(roadPath);if(plazaPath){g.fillStyle=TownArt.pattern(g,'paving')||'#c9bca0';g.fill(plazaPath)}
+ for(const [path,R] of [[roadMain,ROAD.main],[roadLane,ROAD.lane]]){g.strokeStyle='#5c5038';g.lineWidth=R.curb+14;g.stroke(path);g.strokeStyle='#d3c7a8';g.lineWidth=R.curb;g.stroke(path)}for(const P of [plazaPath,junctionPath])if(P){g.strokeStyle='#5c5038';g.lineWidth=38;g.stroke(P);g.strokeStyle='#d3c7a8';g.lineWidth=24;g.stroke(P)}
+ {const pv=TownArt.pattern(g,'paving')||'#c9bca0';g.strokeStyle=pv;g.lineWidth=ROAD.main.pave;g.stroke(roadMain);g.lineWidth=ROAD.lane.pave;g.stroke(roadLane);g.fillStyle=pv;if(plazaPath)g.fill(plazaPath);if(junctionPath)g.fill(junctionPath)}
  g.restore();estateGround();
  window.VillageNature?.ground(g);
  if(showGrid){g.save();g.globalAlpha=.18;g.drawImage(roadMask,0,0);g.restore()}
@@ -227,7 +253,7 @@ document.querySelectorAll('[data-game]').forEach(b=>b.onclick=()=>sendGame('menu
 
 document.addEventListener('pointerdown',()=>sendGame('input'),{capture:true});document.addEventListener('keydown',()=>sendGame('input'),{capture:true});
 rebuildRoads();heroRestore();renderList();fit();new ResizeObserver(fit).observe(stage);parent.postMessage({source:'project-a-town',type:'ready'},'*');document.fonts.ready.then(()=>terrainDirty=true);requestAnimationFrame(draw);
-</script><script src="js/town-ux.js?v=60"></script><script src="js/town-menu.js?v=59"></script><script src="js/nature-alpha-masks.js"></script><script src="js/village-nature.js?v=60"></script></html>
+</script><script src="js/town-ux.js?v=61"></script><script src="js/town-menu.js?v=59"></script><script src="js/nature-alpha-masks.js"></script><script src="js/village-nature.js?v=61"></script></html>
 
 
 <!-- Art sources and prompts: docs/ASSET_NOTES.txt. PNG objects are used for all buildings and props; roads and floor are native editable geometry. -->

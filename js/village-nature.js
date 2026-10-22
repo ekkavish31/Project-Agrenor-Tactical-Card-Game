@@ -15,7 +15,7 @@ function buildMask(){
   let blocked=px<24||py<24||px>WORLD_W-24||py>WORLD_H-24||Math.hypot(px-sq.x,(py-sq.y)*2)<200;
   // Include the visible stone shoulder, not only the walkable road centre.
   if(!blocked)for(const dx of[-18,0,18]){for(const dy of[-12,0,12])if(roadPixel(px+dx,py+dy)){blocked=true;break}if(blocked)break}
-  if(!blocked)blocked=estates.some(({o,e})=>{const a=canonical(o,q.u,q.v);return a.u>e.u+e.left-1&&a.u<e.u+e.right+1&&a.v>e.v+e.back-1&&a.v<e.v+e.front+1});
+  if(!blocked)blocked=estates.some(({o,e})=>{const a=canonical(o,q.u,q.v);return a.u>e.u+e.left+.6&&a.u<e.u+e.right-.6&&a.v>e.v+e.back+.6&&a.v<e.v+e.front-.2});
   if(!blocked)blocked=buildings.some(r=>px>r.x-12&&px<r.x+r.w+12&&py>r.y-12&&py<r.y+r.h+12);
   if(!blocked)blocked=exits.some(e=>Math.hypot(px-e[1]*MX,(py-e[2]*MY)*2)<115);
   occupied[y*cols+x]=blocked?1:0;
@@ -42,11 +42,13 @@ function ensure(){
  for(let i=0;i<7000&&plants.length<300;i++){
   const x=40+random()*(WORLD_W-80),y=160+random()*(WORLD_H-200),d=density(x,y),pick=random(),h=145+random()*105,flip=random()<.5;
   if(d.value<.1||pick>d.value*1.35)continue;
-  const kind=pick<.11?'oak':pick<.35?'pine':'broadleaf',w=h*(kind==='pine'?.70:kind==='oak'?1.1:.86),space=w*.42;
+  const kind=pick<.11?'oak':pick<.35?'pine':'broadleaf',w=h*(kind==='pine'?.70:kind==='oak'?1.1:.86),space=w*.26;
   if(!free(x,y,w*.46,w*.23)||nearby(x,y,space+24))continue;
   if(buildings.some(r=>x+w/2>r.x-20&&x-w/2<r.x+r.w+20&&y>r.y-20&&y-h*.93<r.y+r.h+20))continue;
   add({x,y,w,h,kind,flip,space});
  }
+ // v61 forest edge: dense, overlapping rows along the border (depth like a real woodland edge)
+ for(let i=0;i<9000&&plants.length<560;i++){const side=Math.floor(random()*4),t=random(),depth=Math.pow(random(),1.6)*420;let x=side<2?t*WORLD_W:side===2?depth+30:WORLD_W-depth-30,y=side>=2?160+t*(WORLD_H-200):side===0?170+depth:WORLD_H-depth-30;const h=150+random()*130,pick=random(),kind=pick<.14?'oak':pick<.52?'pine':'broadleaf',w=h*(kind==='pine'?.7:kind==='oak'?1.1:.86),space=w*.16;if(!free(x,y,w*.3,w*.16)||nearby(x,y,space+6))continue;if(buildings.some(r=>x+w/2>r.x-10&&x-w/2<r.x+r.w+10&&y>r.y-10&&y-h*.93<r.y+r.h+10))continue;add({x,y,w,h,kind,flip:random()<.5,space})}
  // Low bushes prefer the same groves, but occasional isolated shrubs soften open lawns.
  for(let i=0;i<7000&&plants.length<620;i++){
   const x=30+random()*(WORLD_W-60),y=30+random()*(WORLD_H-60),d=density(x,y),pick=random(),w=48+random()*43,flip=random()<.5;
