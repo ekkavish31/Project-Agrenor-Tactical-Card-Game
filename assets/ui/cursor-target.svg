@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+ <defs>
+  <radialGradient id="r" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#ffd2c4"/><stop offset=".45" stop-color="#ff4a3a"/><stop offset="1" stop-color="#7a0e10"/></radialGradient>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c0"/><stop offset=".5" stop-color="#e2b04a"/><stop offset="1" stop-color="#7a5212"/></linearGradient>
+  <linearGradient id="c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8fbff"/><stop offset="1" stop-color="#5fb8e8"/></linearGradient>
+ </defs>
+ <circle cx="20" cy="20" r="11.5" fill="none" stroke="#2a1606" stroke-width="4"/>
+ <circle cx="20" cy="20" r="11.5" fill="none" stroke="url(#g)" stroke-width="2.2"/>
+ <g stroke="#2a1606" stroke-width="1" fill="url(#c)">
+  <path d="M20 1 L22.6 7.5 L20 10.5 L17.4 7.5Z"/><path d="M20 39 L22.6 32.5 L20 29.5 L17.4 32.5Z"/>
+  <path d="M1 20 L7.5 17.4 L10.5 20 L7.5 22.6Z"/><path d="M39 20 L32.5 17.4 L29.5 20 L32.5 22.6Z"/>
+ </g>
+ <path d="M20 14.5 L24.5 20 L20 25.5 L15.5 20Z" fill="url(#r)" stroke="#2a0606" stroke-width="1.2"/>
+ <path d="M20 15.8 L22 19.2 L20 18.4Z" fill="#fff" opacity=".8"/>
+</svg>

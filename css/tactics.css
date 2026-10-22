@@ -30,3 +30,9 @@ body.tactics-open{overflow:hidden}
 #tacticsLayer .anchor-toggle{font-size:11px;padding:4px 8px}#tacticsLayer .anchor-toggle.selected{background:#e9c983}#tacticsLayer .anchor-editor{display:flex;flex-direction:column;gap:6px;padding:8px;border:2px dashed #b99b64;border-radius:7px;background:#fffaf0;font-size:12px}#tacticsLayer .ae-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#tacticsLayer .anchor-editor button{font-size:11px;padding:3px 7px}#tacticsLayer.expedition .field-tools>*:not(.zoom-controls):not(#seeThrough){display:none}
 #tacticsLayer .anchor-editor[hidden]{display:none}#tacticsLayer .field-wrap>.anchor-editor{position:absolute;left:12px;top:48px;width:270px;z-index:6;box-shadow:0 4px 14px #0003}
 #tacticsLayer .rot-label{display:inline-grid;place-items:center;min-width:24px;font-weight:700;font-size:12px}#tacticsLayer .field-wrap>.fx-lab{left:auto;right:12px;width:300px}#tacticsLayer .fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}#tacticsLayer .fx-lab small{opacity:.7}
+
+/* v79: fantasy cursors on the battlefield — gilded arrow, crystal targeting sigil over a foe */
+#tacticsLayer canvas{cursor:url(../assets/cursor-fantasy.png) 3 3,default}
+#tacticsLayer canvas[data-hover="tile"]{cursor:url(../assets/cursor-fantasy-active.png) 3 3,pointer}
+#tacticsLayer canvas[data-hover="enemy"]{cursor:url(../assets/ui/cursor-target.svg) 20 20,crosshair}
+#tacticsLayer canvas[data-hover="ally"]{cursor:url(../assets/cursor-fantasy-active.png) 3 3,pointer}
