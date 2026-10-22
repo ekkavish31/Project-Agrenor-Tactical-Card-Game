@@ -5,7 +5,7 @@
 const KEY='projectA.mood',DEF=60,subs=new Set();
 let value=DEF;try{const s=localStorage.getItem(KEY);if(s!=null&&!isNaN(+s))value=Math.max(0,Math.min(100,+s))}catch(e){}
 function css(k){return k?`brightness(${(1-.13*k).toFixed(3)}) contrast(${(1+.14*k).toFixed(3)}) saturate(${(1-.1*k).toFixed(3)}) sepia(${(.1*k).toFixed(3)})`:'none'}
-function apply(){const k=value/100,c=document.getElementById('battleCanvas');if(c)c.style.filter=css(k);subs.forEach(f=>{try{f(k)}catch(e){}})}
+function apply(){const k=value/100,c=document.getElementById('battleCanvas');if(c&&c.style.filter)c.style.filter='';/* v74: battle grade is drawn inside the canvas (hd2d.js); a CSS filter on the canvas froze/blacked the view on some GPUs */subs.forEach(f=>{try{f(k)}catch(e){}})}
 function set(v){value=Math.max(0,Math.min(100,Math.round(+v||0)));try{localStorage.setItem(KEY,String(value))}catch(e){}apply();document.querySelectorAll('input[data-mood]').forEach(i=>{if(+i.value!==value)i.value=value})}
 // a small labelled range input; any number of them stay in sync
 function slider(label='โทนภาพ (มืด/อุ่น)'){const l=document.createElement('label');l.className='moodSlider';l.innerHTML=`<span>${label}</span><input type="range" min="0" max="100" step="5" data-mood><output></output>`;const i=l.querySelector('input'),o=l.querySelector('output');i.value=value;o.textContent=value;i.oninput=()=>{o.textContent=i.value;set(i.value)};subs.add(()=>{o.textContent=value});return l}

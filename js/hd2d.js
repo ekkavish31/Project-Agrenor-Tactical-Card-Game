@@ -22,8 +22,8 @@ const css=document.createElement('style');css.textContent=`
 @keyframes hd2dMote{0%{opacity:0;transform:translate(0,0)}15%{opacity:.8}85%{opacity:.6}100%{opacity:0;transform:translate(60px,-90px)}}
 .hd2dOpts{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13px;margin:4px 0 8px}.hd2dOpts b{width:100%;font-weight:600}.hd2dOpts label{display:flex;gap:4px;align-items:center}`;
 document.head.appendChild(css);
-function build(el,battle){el.innerHTML='';if(opt.rays)el.insertAdjacentHTML('beforeend','<div class="rays"></div>');if(battle)el.insertAdjacentHTML('beforeend','<div class="vig"></div>');
- if(opt.tilt)el.insertAdjacentHTML('beforeend',`<div class="tilt top" style="--b:${battle?2.5:3.5}px"></div><div class="tilt bottom" style="--b:${battle?2:3}px"></div>`);
+function build(el,battle){el.innerHTML='';if(opt.rays&&!battle)el.insertAdjacentHTML('beforeend','<div class="rays"></div>');if(battle)el.insertAdjacentHTML('beforeend','<div class="vig"></div>');
+ if(opt.tilt&&!battle)el.insertAdjacentHTML('beforeend',`<div class="tilt top" style="--b:${battle?2.5:3.5}px"></div><div class="tilt bottom" style="--b:${battle?2:3}px"></div>`);
  if(opt.dust)for(let k=0;k<22;k++){const m=document.createElement('i');m.style.left=(Math.random()*70)+'%';m.style.top=(15+Math.random()*75)+'%';m.style.animationDuration=(9+Math.random()*10)+'s';m.style.animationDelay=(-Math.random()*18)+'s';m.style.transform=`scale(${.6+Math.random()*.8})`;el.appendChild(m)}}
 function attach(canvas,o={}){if(!canvas||canvas._hd2dOverlay)return;canvas._hd2dOverlay=true;const el=document.createElement('div');el.className='hd2d';el.dataset.battle=o.battle?'1':'';canvas.after(el);overlays.add(el);build(el,o.battle);return el}
 // bloom: ¼-size copy, keep only bright parts, blur, add back with 'screen'
@@ -36,8 +36,9 @@ function controls(){const d=document.createElement('div');d.className='hd2dOpts'
 root.addEventListener('storage',e=>{if(e.key===KEY){try{opt={...DEF,...JSON.parse(e.newValue||'{}')}}catch(x){}overlays.forEach(el=>build(el,el.dataset.battle==='1'))}});
 // battle: overlay on #battleCanvas and toggles in the battle settings dialog
 // battle bloom: runs right after a frame the battle actually drew (its clearRect marks the frame)
+function gradeBattle(ctx,c){const k=root.GameMood?root.GameMood.level():.6;if(!k)return;const W=c.width,H=c.height,mix=(a)=>`rgb(${a.map(x=>Math.round(255-(255-x)*k)).join(',')})`;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='multiply';let gr=ctx.createLinearGradient(0,0,W,H);gr.addColorStop(0,mix([255,242,222]));gr.addColorStop(1,mix([196,186,190]));ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation='soft-light';ctx.fillStyle=`rgba(255,170,96,${.16*k})`;ctx.fillRect(0,0,W,H);ctx.restore()}
 function hookBattle(c){if(c._hd2d)return;c._hd2d=true;attach(c,{battle:true});const ctx=c.getContext('2d'),clear=ctx.clearRect.bind(ctx);let fresh=false;ctx.clearRect=(...a)=>{fresh=true;return clear(...a)};
- const loop=()=>{if(fresh&&document.body.contains(c)&&c.offsetParent){fresh=false;bloom(ctx,c,.26)}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+ const loop=()=>{if(fresh&&document.body.contains(c)&&c.offsetParent){fresh=false;try{gradeBattle(ctx,c);bloom(ctx,c,.26)}catch(e){}}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
 new MutationObserver(()=>{const c=document.getElementById('battleCanvas');if(c&&!c._hd2d)hookBattle(c);const b=document.querySelector('select[data-setting="backdrop"]'),l=b?.closest('label');if(l?.parentNode&&!l.parentNode.querySelector('.hd2dOpts'))l.parentNode.appendChild(controls())}).observe(document.documentElement,{childList:true,subtree:true});
 root.HD2D={attach,bloom,set,controls,options:()=>({...opt})};
 })(globalThis);
