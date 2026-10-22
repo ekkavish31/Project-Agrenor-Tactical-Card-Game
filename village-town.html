@@ -99,7 +99,7 @@ function estateObjects(){const out=[];for(const o of locations){const e=estate(o
   else if(o.id==='guild'||o.id==='temple'){flw(-S,F-1,2);flw(S,F-1,1);pot(-2.6,F);pot(2.6,F);if(o.id==='guild'){dec('banner-pole',-3.4,F+.3,80);dec('banner-pole',3.4,F+.3,80,true)}}
   else if(o.id==='forge'){crate(-S,F-1.2);dec('woodpile',-S-.2,.4,130);dec('cart',S+.6,F-.4,150,true);dec('hay',-S+.4,F-.2,90)}
   else if(o.id==='shop'){crate(S,F-1);pot(-1.8,F);dec('flower-box',1.4,F-.2,80)}
-  else if(o.npc){const k=+o.id.slice(3);if(R(1)<.6)herb(-S,F-1.2);if(R(2)<.5)crate(S,F-1);if(R(3)<.7)flw(S-.3,F-.4,1+Math.floor(R(4)*2));if(R(5)<.5)bush(-S,F-.2);dec(R(6)<.5?'flower-box':'woodpile',R(7)<.5?-1.2:1.2,F-.2,90,R(8)<.5);if(k===7){dec('hay',S+.3,-.2,100);dec('hay',S+.4,1.2,90,true)}}}
+  else if(o.npc){const k=+o.id.slice(3);if(R(1)<.6)herb(-S,F-1.2);if(R(2)<.5)crate(S,F-1);if(R(3)<.7)flw(S-.3,F-.4,1+Math.floor(R(4)*2));if(R(5)<.5)bush(-S,F-.2);dec(R(6)<.5?'flower-box':'woodpile',R(7)<.5?-1.2:1.2,F-.2,90,R(8)<.5);if(k===7){dec('hay',S+.3,-.2,100);dec('hay',S+.4,1.2,90,true)}if(k===6||k===9)dec('well',-S-.4,F-1.6,120)}}
  if(o.facing==='SE')for(let i=first;i<out.length;i++){const draw=out[i].draw;out[i].draw=()=>reflectView(o,draw)}
  }
  // plaza: lamps on the corners, planters between them
