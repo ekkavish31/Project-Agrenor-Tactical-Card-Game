@@ -98,3 +98,5 @@ html.title-boot,html.title-boot body{overflow:hidden}
 #titleScreen .ts-tools{display:flex;gap:8px;margin-top:6px}
 #titleScreen .ts-tools a{flex:1;padding:8px 10px;border-radius:9px;border:1px dashed #d9b46b66;background:#0d1424b0;color:#d8c9a4;text-align:center;font:600 13px system-ui,sans-serif;text-decoration:none;transition:border-color .15s,color .15s,background .15s}
 #titleScreen .ts-tools a:hover,#titleScreen .ts-tools a:focus-visible{outline:none;border-style:solid;border-color:var(--ts-gold);color:var(--ts-ink);background:#3a2c12cc}
+
+#titleScreen .ts-ver em{font-style:normal;opacity:.85}#titleScreen .ts-gh-new{color:#ffd76a;opacity:1!important;font-weight:700}

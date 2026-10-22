@@ -30,7 +30,7 @@ const CREDITS=[
 ];
 const TIPS=['โจมตีจากด้านหลังศัตรูแรงกว่าด้านหน้า','ยืนบนที่สูงช่วยให้ตีแรงขึ้นและหลบได้ดีขึ้น','กด "รอ" แทนการเดินจะได้ CT คืนบางส่วน','อุปกรณ์ที่ดีต้องใช้วัตถุดิบจากพื้นที่ที่ยากขึ้น','นอนที่บ้านเพื่อฟื้นแรงและชีวิตเต็ม','ล็อกเป้าแล้วดูหน้าต่างทำนายผลก่อนโจมตี'];
 
-const SAVE='three-card-forge-v4',STARTED='project-a-started-v1',NEW_FLAG='project-a-newgame',VERSION='v50';
+const SAVE='three-card-forge-v4',STARTED='project-a-started-v1',NEW_FLAG='project-a-newgame',VERSION=(root.GAME_VERSION?.v||'v50');
 const params=new URLSearchParams(location.search);
 const skip=params.has('editor')||params.has('skipTitle')||!!root.EDITOR_MODE||root.top!==root;
 const read=k=>{try{return localStorage.getItem(k)}catch{return null}};
@@ -115,6 +115,11 @@ root.GameGallery=Gallery;
 /* ---------- title menu ---------- */
 let title=null,busyTitle=false;
 function saveSummary(){if(!saved)return'';const v=saved.village||{},h=Math.floor((saved.minutes||480)/60),m=(saved.minutes||480)%60;return `${esc(v.heroName||'นักผจญภัย')} · วันที่ ${saved.day||1} · ${h}:${String(m).padStart(2,'0')}${v.character?.level?' · Lv.'+v.character.level:''}`}
+// the newest commit on GitHub main — shows whether this browser runs the latest push (or needs Ctrl+F5)
+function checkGitHub(el){const box=el.querySelector('.ts-gh'),repo=root.GAME_VERSION?.repo;if(!box||!repo||!root.fetch)return;
+ fetch('https://api.github.com/repos/'+repo+'/commits/main',{headers:{Accept:'application/vnd.github+json'}}).then(r=>r.ok?r.json():null).then(c=>{if(!c?.sha){box.textContent='';return}
+  const msg=c.commit?.message||'',v=(msg.match(/^v\d+/)||[''])[0],sha=c.sha.slice(0,7),d=new Date(c.commit?.committer?.date||Date.now()),when=d.toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'});
+  const num=x=>+String(x).replace(/\D/g,'')||0,same=!v||num(v)<=num(VERSION);box.textContent=same?`· GitHub ${v||''} (${sha}) · ${when}`:`· GitHub มี ${v} (${sha}) ใหม่กว่า — กด Ctrl+F5 เพื่อโหลดใหม่`;box.classList.toggle('ts-gh-new',!same);box.title=msg.split('\n')[0]}).catch(()=>{box.textContent=''})}
 function buildTitle(){const el=document.createElement('div');el.id='titleScreen';el.className='ts';
  el.innerHTML=`<div class="ts-bg"></div><div class="ts-veil"></div><div class="ts-motes" aria-hidden="true">${'<i></i>'.repeat(18)}</div>
  <div class="ts-main"><div class="ts-brand"><span class="ts-kicker">AGRENOR · TACTICAL CARD ADVENTURE</span><h1>Project A</h1><p>ไพ่และการผจญภัย</p></div>
@@ -125,11 +130,11 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
   <button data-act="extra"><span>Extra</span><small>วิธีเล่น · คลังภาพ · เครดิต</small></button>
   <div class="ts-tools"><a href="editor.html" target="_blank" rel="noopener" title="แก้การ์ด แผนที่ และเลย์เอาต์ (เปิดแท็บใหม่)">✎ Editor</a><a href="asset-studio.html" target="_blank" rel="noopener" title="จัดการภาพ แอนิเมชัน และไฟล์เกม (เปิดแท็บใหม่)">▣ Asset Studio</a></div>
  </nav></div>
- <div class="ts-foot"><span>${VERSION}</span><span>↑↓ เลือก · Enter ยืนยัน</span></div>
+ <div class="ts-foot"><span class="ts-ver">Project A ${VERSION}${root.GAME_VERSION?.date?" · "+root.GAME_VERSION.date:""} <em class="ts-gh">· กำลังเช็ก GitHub…</em></span><span>↑↓ เลือก · Enter ยืนยัน</span></div>
  <section class="ts-extra" hidden aria-label="Extra"><div class="ts-extra-box"><div class="ts-extra-head"><div class="ts-tabs" role="tablist"><button role="tab" data-tab="howto">วิธีเล่น</button><button role="tab" data-tab="gallery">คลังภาพ</button><button role="tab" data-tab="credits">เครดิต</button></div><button class="ts-close" data-act="close-extra" aria-label="ปิด">✕</button></div><div class="ts-extra-body"></div></div></section>
  <section class="ts-story" hidden aria-live="polite"><div class="ts-story-bg"></div><div class="ts-story-veil"></div><div class="ts-story-text"></div><div class="ts-story-hint">คลิก หรือกด Enter เพื่อไปต่อ</div><button class="ts-skip" data-act="skip">ข้าม ▸▸</button>
   <form class="ts-name" hidden><span class="ts-kicker">ตัวเอกของเรื่อง</span><h2>เจ้าชื่ออะไร?</h2><input name="hero" maxlength="16" autocomplete="off" spellcheck="false" placeholder="นักผจญภัย"><p>เปลี่ยนภายหลังได้ในตั้งค่า หรือคลิกชื่อตัวเอกในเกม</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
- document.body.appendChild(el);title=el;
+ document.body.appendChild(el);title=el;checkGitHub(el);
  const menu=[...el.querySelectorAll('.ts-menu button')];
  el.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)act(b.dataset.act)});
  el.querySelector('.ts-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b)tab(b.dataset.tab)});
