@@ -2,7 +2,7 @@
 (function(){'use strict';
 const CELL=12,cols=Math.ceil(WORLD_W/CELL),rows=Math.ceil(WORLD_H/CELL),stride=cols+1;
 let occupied=null,integral=null,oldRoads=null,oldLayout='',plants=[],details=[],renderables=[],generation=0,buildMS=0;
-const sprites={broadleaf:TownArt.image('assets/village-town/nature/broadleaf.webp'),pine:TownArt.image('assets/village-town/nature/pine.webp'),oak:TownArt.image('assets/village-town/nature/old-oak.webp')};
+const sprites={broadleaf:TownArt.image('assets/village-town/nature/tree-round.png'),broadleaf2:TownArt.image('assets/village-town/nature/tree-round-2.png'),pine:TownArt.image('assets/village-town/nature/tree-conifer.png'),oak:TownArt.image('assets/village-town/nature/old-oak.webp'),rock:TownArt.image('assets/village-town/nature/rock-cluster.png')};
 const rng=(seed)=>()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);
 function layoutKey(){return JSON.stringify(locations.map(o=>[o.id,o.x,o.y,o.w,o.d,o.facing,...Object.values(TownUX.art(o)||{}).filter(v=>typeof v==='number')]))}
 function rects(){return locations.map(o=>TownUX.art(o)).filter(Boolean)}
@@ -53,7 +53,7 @@ function ensure(){
  for(let i=0;i<7000&&plants.length<620;i++){
   const x=30+random()*(WORLD_W-60),y=30+random()*(WORLD_H-60),d=density(x,y),pick=random(),w=48+random()*43,flip=random()<.5;
   if(pick>(.06+d.value*.55)||!free(x,y,w*.46,w*.22)||nearby(x,y,22))continue;
-  add({x,y,w,h:w,kind:'bush',flip,space:20});
+  if(random()<.16)add({x,y,w:w*1.3,h:w*1.02,kind:'rock',flip,space:24});else add({x,y,w,h:w,kind:'bush',flip,space:20});
  }
  for(let i=0;i<9000&&details.length<1800;i++){
   const x=24+random()*(WORLD_W-48),y=24+random()*(WORLD_H-48),d=density(x,y),pick=random(),w=22+random()*28;
@@ -65,7 +65,7 @@ function ensure(){
  renderables=plants.map(p=>({y:p.y,plant:p,draw:()=>drawPlant(p)}));generation++;buildMS=performance.now()-started;
 }
 function drawPlant(p){
- const im=p.kind==='bush'?images.props:sprites[p.kind];if(!im?.complete||!im.naturalWidth)return;
+ const im=p.kind==='bush'?images.props:sprites[p.kind==='broadleaf'&&(Math.round(p.x*7+p.y*3)%3===0)?'broadleaf2':p.kind];if(!im?.complete||!im.naturalWidth)return;
  g.save();g.translate(p.x,p.y);if(p.flip)g.scale(-1,1);
  const crop=p.kind==='bush'?[im.naturalWidth/2,0,im.naturalWidth/4,im.naturalHeight/2]:null;
  TownArt.draw(g,im,crop,[-p.w/2,-p.h*.93,p.w,p.h],project(hero.u,hero.v));g.restore();
