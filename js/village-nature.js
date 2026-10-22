@@ -25,6 +25,7 @@ function buildMask(){
 let gatePx=[];
 function free(x,y,rx=12,ry=8){
  // v65: keep the six adventure gates in clear view (nothing in front of or right beside them)
+ if(window.TownBiome?.at(x,y)==='water')return false;
  for(const q of gatePx)if(Math.abs(x-q.x)<150+rx&&y>q.y-90&&y<q.y+230)return false;
  if(!integral||x-rx<24||y-ry<24||x+rx>WORLD_W-24||y+ry>WORLD_H-24)return false;
  const a=Math.floor((x-rx)/CELL),b=Math.floor((y-ry)/CELL),c=Math.min(cols,Math.floor((x+rx)/CELL)+1),d=Math.min(rows,Math.floor((y+ry)/CELL)+1);
@@ -69,6 +70,7 @@ function ensure(){
  renderables=plants.map(p=>({y:p.y,plant:p,draw:()=>drawPlant(p)}));generation++;buildMS=performance.now()-started;
 }
 function drawPlant(p){
+ if(window.TownBiome?.drawPlant(g,p,project(hero.u,hero.v)))return;
  const sel=Math.round(p.x*7+p.y*3),key=p.kind==='broadleaf'?(sel%11===0?'blossom':sel%3===0?'broadleaf2':'broadleaf'):p.kind==='bush'&&sprites.bushSmall.complete&&sprites.bushSmall.naturalWidth?'bushSmall':p.kind,im=key==='bush'?images.props:sprites[key];if(!im?.complete||!im.naturalWidth)return;
  g.save();g.translate(p.x,p.y);if(p.flip)g.scale(-1,1);
  const crop=key==='bush'?[im.naturalWidth/2,0,im.naturalWidth/4,im.naturalHeight/2]:null;

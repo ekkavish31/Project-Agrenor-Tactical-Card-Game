@@ -3,10 +3,11 @@
  'use strict';
  const images=new Map(),masks=new WeakMap(),patterns=new WeakMap(),listeners=new Set();
  let motion=typeof TACTICS_SPRITES!=='undefined'?HeroMotion.snapshot(TACTICS_SPRITES):null,heroScreen=null,heroPainted=false;
+ const SIZE={paving:240,'ground/cobble.png':200,'ground/plaza-slabs.png':330,'ground/dirt-road.png':300};
  const files={grass:'grass.png',paving:'paving.png',soil:'soil.png',details:'meadow-details.png',pond:'garden-pond.png',materials:'market-materials.png',equipment:'market-equipment.png',orders:'market-orders.png',props:'props.png',fountain:'fountain.png'};
  function image(src){if(!images.has(src)){const im=new Image();im.onload=()=>listeners.forEach(f=>f());im.src=src;images.set(src,im)}return images.get(src)}
  function asset(id){return image('assets/village-town/'+(files[id]||id))}
- function pattern(g,id){const im=asset(id);if(!im.complete||!im.naturalWidth)return null;let cache=patterns.get(g);if(!cache)patterns.set(g,cache=new Map());if(!cache.has(id)){const c=document.createElement('canvas');c.width=c.height=id==='paving'?240:420;c.getContext('2d').drawImage(im,0,0,c.width,c.height);const pattern=g.createPattern(c,'repeat');if(id==='paving')pattern.setTransform(new DOMMatrix().rotate(45));cache.set(id,pattern)}return cache.get(id)}
+ function pattern(g,id){const im=asset(id);if(!im.complete||!im.naturalWidth)return null;let cache=patterns.get(g);if(!cache)patterns.set(g,cache=new Map());if(!cache.has(id)){const c=document.createElement('canvas');c.width=c.height=SIZE[id]||420;c.getContext('2d').drawImage(im,0,0,c.width,c.height);const pattern=g.createPattern(c,'repeat');if(SIZE[id])pattern.setTransform(new DOMMatrix().rotate(45));cache.set(id,pattern)}return cache.get(id)}
  function mask(im){const pre=root.VillageAlpha?.get(im.src,im.naturalWidth,im.naturalHeight);if(pre)return pre;if(masks.has(im))return masks.get(im);let out=null;try{const c=document.createElement('canvas');c.width=256;c.height=Math.max(1,Math.round(256*im.naturalHeight/im.naturalWidth));const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0,c.width,c.height);out={w:c.width,h:c.height,data:g.getImageData(0,0,c.width,c.height).data}}catch{}masks.set(im,out);return out}
  function begin(g,p){heroPainted=false;heroScreen=new DOMPoint(p.x,p.y).matrixTransform(g.getTransform())}
  function draw(g,im,crop,rect,hero){if(!im?.complete||!im.naturalWidth)return;let alpha=1;const [x,y,w,h]=rect;
