@@ -5,10 +5,10 @@
    plant stands in (snow → snow variants, water → nothing grows); objects() adds a few biome props.
    Textures: assets/village-town/ground/*.png · props: assets/village-town/edge/*.png */
 (function(root){'use strict';
-const sprite={};for(const n of ['snow-rock-s','snow-rock-m','snow-rock-l','snow-pine-s','snow-pine-m','snow-pine-l','frozen-bush','snow-log','snow-ridge','snowdrift','snow-sign','frozen-puddle']){const im=new Image();im.onload=()=>{sprite[n]=im;root.VillageNature?.refresh?.()};im.src='assets/village-town/edge/'+n+'.png'}
+const sprite={};for(const n of ['snow-rock-s','snow-rock-m','snow-rock-l','snow-pine-s','snow-pine-m','snow-pine-l','frozen-bush','snow-log','snow-ridge','snowdrift','snow-sign','frozen-puddle',...['pier','pier-end','boat','fish-net','crates-barrel','rocks-l','rocks-s','driftwood','beach-grass','lobster-trap','foam-edge','lantern-post'].map(n=>'coast-'+n)]){const im=new Image();im.onload=()=>{sprite[n]=im;root.VillageNature?.refresh?.()};im.src='assets/village-town/edge/'+n+'.png'}
 const tex={};for(const n of ['snow','sand','sea','swamp-water','dirt-road','plaza-slabs']){const im=new Image();im.onload=()=>{tex[n]=im;terrainDirty=true};im.src='assets/village-town/ground/'+n+'.png'}
 // biome per exit, in the exit order N, NE, E, SE, SW, W
-const PLAN=[[{t:'dirt-road',r:380,out:120,a:.85}],[{t:'snow',r:640,out:200,a:1,kind:'snow'}],[],[{t:'sand',r:560,out:160,a:1},{t:'sea',r:330,out:430,a:1,kind:'water'}],[{t:'plaza-slabs',r:260,out:60,a:.55}],[{t:'dirt-road',r:420,out:-120,a:.4},{t:'swamp-water',r:300,out:-230,side:1,a:1,kind:'water'},{t:'swamp-water',r:240,out:-170,side:-1,a:1,kind:'water'}]];
+const PLAN=[[{t:'dirt-road',r:380,out:120,a:.85}],[{t:'snow',r:640,out:200,a:1,kind:'snow'}],[],[{t:'sand',r:560,out:160,a:1,kind:'sand'},{t:'sea',r:330,out:430,a:1,kind:'water'}],[{t:'plaza-slabs',r:260,out:60,a:.55}],[{t:'dirt-road',r:420,out:-120,a:.4},{t:'swamp-water',r:300,out:-230,side:1,a:1,kind:'water'},{t:'swamp-water',r:240,out:-170,side:-1,a:1,kind:'water'}]];
 let zones=null;
 function build(){const V=root.Village25D;if(!V)return null;const ex=V.getExits(),mid={x:WORLD_W/2,y:WORLD_H/2};zones=[];
  ex.forEach((e,i)=>{const p=V.project(e.u,e.v);let dx=p.x-mid.x,dy=(p.y-mid.y)*2;const L=Math.hypot(dx,dy)||1;dx/=L;dy/=L;
@@ -25,11 +25,25 @@ function strength(z,x,y){return 1-Math.hypot((x-z.x)/(z.r*1.15),(y-z.y)/(z.r*.6)
 function at(x,y){if(!zones&&!build())return null;let best=null,bs=.18;for(const z of zones){if(!z.kind)continue;const s=strength(z,x,y);if(s>bs){bs=s;best=z.kind}}return best}
 // snow look-alikes for forest plants
 function snowSprite(p){const sel=Math.round(p.x*3+p.y*7);if(p.kind==='pine'||p.kind==='broadleaf'||p.kind==='oak'){return sprite[p.h>230?'snow-pine-l':p.h>185?'snow-pine-m':'snow-pine-s']}if(p.kind==='rock')return sprite[sel%2?'snow-rock-m':'snow-rock-l'];if(p.kind==='tallgrass')return sprite.snowdrift;return sprite[sel%3===0?'snow-rock-s':'frozen-bush']}
-function drawPlant(g,p,heroPt){if(at(p.x,p.y)!=='snow')return false;const im=snowSprite(p);if(!im)return false;const tree=['pine','broadleaf','oak'].includes(p.kind),h=tree?p.h:p.w*im.naturalHeight/im.naturalWidth*1.1,w=h*im.naturalWidth/im.naturalHeight;g.save();g.translate(p.x,p.y);if(p.flip)g.scale(-1,1);TownArt.draw(g,im,null,[-w/2,-h*.93,w,h],heroPt);g.restore();return true}
-// a few hand-placed props near the frost gate
+function drawPlant(g,p,heroPt){if(beach(g,p,heroPt))return true;if(at(p.x,p.y)!=='snow')return false;const im=snowSprite(p);if(!im)return false;const tree=['pine','broadleaf','oak'].includes(p.kind),h=tree?p.h:p.w*im.naturalHeight/im.naturalWidth*1.1,w=h*im.naturalWidth/im.naturalHeight;g.save();g.translate(p.x,p.y);if(p.flip)g.scale(-1,1);TownArt.draw(g,im,null,[-w/2,-h*.93,w,h],heroPt);g.restore();return true}
+// hand-placed biome props: [sprite, width, where, anchor]; where = near (gate) · land (in the zone, free ground) · water · shore
+const PROPS={snow:{exit:1,list:[['snow-sign',120,'near'],['frozen-puddle',190,'land',.6],['snow-ridge',220,'land'],['snow-log',170,'land'],['snowdrift',150,'land'],['snow-rock-l',170,'land'],['snowdrift',130,'land']]},
+ sand:{exit:3,list:[['coast-lantern-post',105,'near'],['coast-crates-barrel',125,'land'],['coast-fish-net',150,'land'],['coast-lobster-trap',125,'land'],['coast-driftwood',150,'land',.75],['coast-beach-grass',105,'land',.8],['coast-beach-grass',95,'land',.8],['coast-beach-grass',90,'land',.8],
+  ['coast-pier',210,'shore',.8],['coast-pier-end',210,'shore',.8],['coast-boat',190,'water',.7],['coast-rocks-l',190,'water',.8],['coast-rocks-s',140,'water',.8],['coast-foam-edge',230,'shore',.55],['coast-foam-edge',210,'shore',.55],['coast-foam-edge',200,'shore',.55]]}};
 let props=null;
-function objects(){if(!zones&&!build())return[];if(!props){const V=root.Village25D,ex=V.getExits()[1];if(!ex)return[];const p=V.project(ex.u,ex.v),z=zones.find(z=>z.kind==='snow');props=[];if(z){const r=rng(99);const want=[['snow-sign',120],['frozen-puddle',190],['snow-ridge',220],['snow-log',170],['snowdrift',150],['snow-rock-l',170],['snowdrift',130]];
-  for(const [n,w] of want){for(let k=0;k<80;k++){const x=z.x+(r()-.5)*z.r*1.6,y=z.y+(r()-.5)*z.r*.8;if(n==='snow-sign'&&Math.hypot(x-p.x,(y-p.y)*2)>320)continue;if(root.VillageNature&&!root.VillageNature.free(x,y,w*.45,w*.2))continue;if(props.some(q=>Math.hypot(q.x-x,(q.y-y)*2)<w))continue;props.push({x,y,n,w,flip:r()<.5});break}}}}
- return props.filter(q=>sprite[q.n]).map(q=>({x:q.x,y:q.y,draw:g=>{const im=sprite[q.n],h=q.w*im.naturalHeight/im.naturalWidth;g.save();g.translate(q.x,q.y);if(q.flip)g.scale(-1,1);TownArt.draw(g,im,null,[-q.w/2,-h*.9,q.w,h],null);g.restore()}}))}
+function place(){const V=root.Village25D;props=[];const r=rng(99);
+ for(const [kind,spec] of Object.entries(PROPS)){const ex=V.getExits()[spec.exit],z=zones.find(z=>z.kind===kind);if(!ex||!z)continue;const g=V.project(ex.u,ex.v),sea=zones.find(q=>q.exit===spec.exit&&q.kind==='water');
+  for(const [n,w,where,anchor] of spec.list){for(let k=0;k<160;k++){const base=where==='water'||where==='shore'?sea:z;if(!base)break;const x=base.x+(r()-.5)*base.r*1.8,y=base.y+(r()-.5)*base.r*.9;
+    if(x<w*.6+40||x>WORLD_W-w*.6-40||y<60||y>WORLD_H-30)continue;const gd=Math.hypot(x-g.x,(y-g.y)*2);if(where==='near'?gd<170:gd<270)continue;
+    const ss=sea?strength(sea,x,y):-1;
+    if(where==='near'&&Math.hypot(x-g.x,(y-g.y)*2)>340)continue;
+    if(where==='water'&&ss<.3)continue;if(where==='shore'&&(ss<-.06||ss>.18))continue;
+    if((where==='land'||where==='near')&&(strength(z,x,y)<.12||ss>-.05||(root.VillageNature&&!root.VillageNature.free(x,y,w*.4,w*.18))))continue;
+    if(roadPixels&&roadPixels[(Math.round(y)*WORLD_W+Math.round(x))*4+3]>40)continue;
+    if(props.some(q=>Math.hypot(q.x-x,(q.y-y)*2)<(q.w+w)*.42))continue;props.push({x,y,n,w,a:anchor||.9,flip:where!=='shore'&&r()<.5});break}}}}
+function objects(){if(!zones&&!build())return[];if(!root.Village25D)return[];if(!props)place();
+ return props.filter(q=>sprite[q.n]).map(q=>({x:q.x,y:q.n==='coast-foam-edge'?q.y-40:q.y,draw:g=>{const im=sprite[q.n],h=q.w*im.naturalHeight/im.naturalWidth;g.save();g.translate(q.x,q.y);if(q.flip)g.scale(-1,1);TownArt.draw(g,im,null,[-q.w/2,-h*q.a,q.w,h],null);g.restore()}}))}
+// beach: no trees on the sand, shrubs become beach grass, rocks become sea rocks
+function beach(g,p,heroPt){if(at(p.x,p.y)!=='sand')return false;if(['pine','broadleaf','oak'].includes(p.kind))return true;const im=sprite[p.kind==='rock'?'coast-rocks-s':'coast-beach-grass'];if(!im)return false;const w=p.w*1.2,h=w*im.naturalHeight/im.naturalWidth;g.save();g.translate(p.x,p.y);if(p.flip)g.scale(-1,1);TownArt.draw(g,im,null,[-w/2,-h*.8,w,h],heroPt);g.restore();return true}
 root.TownBiome={ground,at,drawPlant,objects,zones:()=>zones?.map(z=>({...z}))};
 })(globalThis);
