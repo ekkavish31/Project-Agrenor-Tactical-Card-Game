@@ -10,9 +10,12 @@ const css=document.createElement('style');css.textContent=`
 .bcs-stage{position:fixed;inset:0;pointer-events:none;z-index:99990}
 .bcs-card{position:absolute;left:50%;top:40%;width:210px;transform:translate(-50%,-50%);filter:drop-shadow(0 18px 30px rgba(0,0,0,.6));animation:bcsIn var(--in) cubic-bezier(.2,1.5,.4,1) both}
 .bcs-card .bcs-face{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 0 0 3px var(--tone),0 0 34px 6px var(--tone)}
-.bcs-card .bcs-face .gcard{width:100%;filter:none}.bcs-card .bcs-face>*{pointer-events:none}
+.bcs-card .bcs-face .gcard{width:100%;filter:none}.bcs-card .bcs-face>button{display:block;width:100%;aspect-ratio:750/1101;overflow:hidden}.bcs-card .bcs-face>button img{max-width:100%;max-height:60%;object-fit:cover}.bcs-card .bcs-face>*{pointer-events:none}
 .bcs-card .bcs-face::after{content:'';position:absolute;inset:-40%;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);transform:translateX(-70%);animation:bcsSweep var(--sweep) ease-out .12s both}
 .bcs-card b.bcs-tag{position:absolute;left:50%;top:-30px;transform:translateX(-50%);white-space:nowrap;padding:3px 12px;border-radius:999px;background:var(--tone);color:#10161f;font:700 13px system-ui;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.bcs-pair{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);display:flex;gap:22px}.bcs-pair .bcs-card{position:relative;left:auto;top:auto;width:180px;transform:none;animation-name:bcsInPair}.bcs-pair .bcs-card.out{animation-name:bcsOutPair}
+@keyframes bcsInPair{0%{opacity:0;transform:translateY(40px) scale(.4) rotateY(80deg)}60%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes bcsOutPair{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.22) rotate(var(--rot))}}
 .bcs-card.out{animation:bcsOut var(--out) cubic-bezier(.5,0,.75,0) forwards}
 .bcs-ring{position:absolute;left:50%;top:40%;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;border:3px solid var(--tone);opacity:0;animation:bcsRing var(--in) ease-out forwards}
 .bcs-spark{position:absolute;left:50%;top:40%;width:7px;height:7px;margin:-3px;border-radius:50%;background:var(--tone);box-shadow:0 0 10px 3px var(--tone);animation:bcsSpark var(--life) ease-out forwards}
@@ -37,15 +40,23 @@ function show(src,{tone='blue',tag='',pile=null,hold=700}={}){const html=typeof 
    setTimeout(()=>{wrap.remove();ring.remove();done()},outMs+30)},inMs+hold/speed())});
  // the next card may start while the previous one is flying out
  const p=queue.then(()=>{const start=run();return new Promise(r=>setTimeout(r,(reduced()?80:520)/speed())).then(()=>start)});queue=p.catch(()=>{});return p}
+function showPair(items,pile){const list=items.map(it=>({...it,html:typeof it.src==='string'?full(it.src):it.src?.outerHTML})).filter(it=>it.html);if(!list.length)return;
+ const st=host(),row=document.createElement('div'),inMs=(reduced()?60:420)/speed(),outMs=(reduced()?60:380)/speed();row.className='bcs-pair';
+ const cards=list.map((it,k)=>{const w=document.createElement('div');w.className='bcs-card';w.style.cssText=`--tone:${TONE[it.tone]};--in:${inMs}ms;--out:${outMs}ms;--sweep:${700/speed()}ms;animation-delay:${k*160/speed()}ms`;w.innerHTML=`<b class="bcs-tag">${it.tag}</b><div class="bcs-face">${it.html}</div>`;row.appendChild(w);return w});
+ st.appendChild(row);cards.forEach(w=>{try{root.CardStudio?.fit?.(w.querySelector('.bcs-face'))}catch(e){}});list.forEach((it,k)=>setTimeout(()=>{sparks(st,it.tone,10);chime(it.tone)},k*160/speed()));
+ const born=performance.now(),L=()=>root.TacticsLab;
+ const wait=()=>{const busy=L()?.isLocked?.();if((busy||performance.now()-born<inMs+500)&&performance.now()-born<9000)return setTimeout(wait,90);
+  const p=pile&&document.querySelector(`[data-pile="${pile}"]`)?.getBoundingClientRect();cards.forEach((w,k)=>{const r=w.getBoundingClientRect(),tx=p?p.left+p.width/2-(r.left+r.width/2):0,ty=p?p.top+p.height/2-(r.top+r.height/2):-160;w.style.setProperty('--tx',tx+'px');w.style.setProperty('--ty',ty+'px');w.style.setProperty('--rot',(k?18:-18)+'deg');w.style.animationDelay=(k*90/speed())+'ms';w.classList.add('out')});
+  setTimeout(()=>row.remove(),outMs+300/speed())};setTimeout(wait,90)}
 const handCard=i=>document.querySelector(`#tacticsHand .tactic-card.combat[data-index="${i}"]`)||document.querySelectorAll('#tacticsHand .tactic-card.combat')[i];
 function install(){const D=root.TacticsDecks,J=root.BattleJuice;if(!D||!J||D._bcs)return!!D?._bcs;D._bcs=true;
  // attacks, skills, guards: the card in hand at that index, before the rules remove it
- const consume=D.consumeCombat;D.consumeCombat=function(d,index){const owner=root.TacticsLab?.getState?.()?.deck===d,c=d?.combat?.hand?.[index],el=owner&&c&&(full('a-'+c.id)?'a-'+c.id:handCard(index)?.cloneNode(true));const ok=consume.apply(this,arguments);
+ const consume=D.consumeCombat;D.consumeCombat=function(d,index){const owner=root.TacticsLab?.getState?.()?.deck===d,c=d?.combat?.hand?.[index],hb=handCard(index),fid=hb?.dataset.fullCard||(c?'a-'+c.id:''),el=owner&&c&&(fid&&full(fid)?fid:hb?.cloneNode(true));const ok=consume.apply(this,arguments);
   if(ok&&el){const name=D.COMBAT?.[c?.id]?.name||'';show(el,{tone:['guard','wall','rest','mend'].includes(c?.id)?'blue':'red',tag:'ใช้การ์ด · '+name,pile:'combat-discard',hold:650})}return ok};
  if(D.consumeItem){const item=D.consumeItem;D.consumeItem=function(){const r=item.apply(this,arguments);const el=document.querySelector('#tacticsHand .item-card.bj-picked,#tacticsHand .item-card.selected,#tacticsHand .item-card[aria-pressed="true"]');if(el)show(el.cloneNode(true),{tone:'green',tag:'ใช้ไอเทม',hold:600});return r}}
  // walking: blue-zone card first, then the yellow-zone card
- const walk=J.walkCards;J.walkCards=function(cards,h){const strip=document.getElementById('v53Walk');(cards||[]).forEach((c,k)=>{const el=c.id&&full('m-'+c.id)?'m-'+c.id:strip?.querySelector(`.tactic-card[data-index="${c.index}"]`)?.cloneNode(true);if(el)show(el,{tone:k?'yellow':'blue',tag:(k?'โซนเหลือง · ':'โซนฟ้า · ')+(c.name||'การ์ดเดิน'),pile:'movement-discard',hold:420})});return walk.apply(this,arguments)};
+ const walk=J.walkCards;J.walkCards=function(cards,h){const strip=document.getElementById('v53Walk'),items=[];(cards||[]).forEach((c,k)=>{const btn=strip?.querySelector(`.tactic-card[data-index="${c.index}"]`),fid=btn?.dataset.fullCard||(c.id?'m-'+c.id:''),src=fid&&full(fid)?fid:btn?.cloneNode(true);if(src)items.push({src,tone:k?'yellow':'blue',tag:(k?'โซนเหลือง · ':'โซนฟ้า · ')+(c.name||'การ์ดเดิน')})});showPair(items,'movement-discard');return walk.apply(this,arguments)};
  return true}
 if(!install()){const t=setInterval(()=>{if(install())clearInterval(t)},300)}
-root.BattleCardShow={show};
+root.BattleCardShow={show,showPair};
 })(globalThis);

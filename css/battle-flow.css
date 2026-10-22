@@ -169,9 +169,14 @@
 .v38-turn small{display:block;font-size:12px;letter-spacing:2px;opacity:.8}.v38-turn b{font:700 26px Georgia,serif;color:#ffe8a6;text-shadow:0 2px 0 #0008}
 .v38-turn.out{opacity:0;transform:translateX(-40%);transition:opacity .3s,transform .3s}
 
-.v38-ability{position:absolute;z-index:58;left:50%;top:64px;transform:translate(-50%,-20px);opacity:0;padding:8px 26px;border-radius:6px;border:2px solid #d9b46b;background:linear-gradient(#1d2a44f2,#121b2ef2);color:#ffe8a6;font:700 20px Georgia,serif;letter-spacing:1px;box-shadow:0 8px 24px #000a;pointer-events:none;transition:opacity .25s,transform .25s;white-space:nowrap}
-.v38-ability.enemy{border-color:#e07a6a;background:linear-gradient(#4a1d1df2,#2a1212f2)}
-.v38-ability.show{opacity:1;transform:translate(-50%,0)}
+.v38-ability{position:absolute;z-index:58;left:50%;top:60px;transform:translate(-50%,-14px) scale(.7);opacity:0;padding:9px 46px 10px;clip-path:polygon(0 0,100% 0,calc(100% - 18px) 50%,100% 100%,0 100%,18px 50%);background:linear-gradient(#2b4a7a,#18284a 55%,#0d1630);font:800 22px system-ui,'Noto Sans Thai',sans-serif;letter-spacing:.5px;color:#ffd76a;text-shadow:0 2px 0 #0a0814,0 0 12px rgba(255,210,110,.55);pointer-events:none;transition:opacity .2s,transform .32s cubic-bezier(.2,1.6,.4,1);white-space:nowrap;filter:drop-shadow(0 6px 14px rgba(0,0,0,.6));overflow:hidden}
+.v38-ability::before{content:'';position:absolute;inset:3px 14px;border-top:2px solid #e8c878;border-bottom:2px solid #e8c878;opacity:.85;pointer-events:none}
+.v38-ability::after{content:'';position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(105deg,transparent,rgba(255,250,220,.6),transparent);transform:skewX(-20deg)}
+.v38-ability.show::after{animation:v76Sweep .7s .12s ease-out}
+@keyframes v76Sweep{to{left:calc(100% + 20px)}}
+.v38-ability.enemy{background:linear-gradient(#7a2024,#4a1014 55%,#2a080a);color:#ffc4a8;text-shadow:0 2px 0 #14080a,0 0 12px rgba(255,140,110,.6)}
+.v38-ability.enemy::before{border-color:#ff9a7a}
+.v38-ability.show{opacity:1;transform:translate(-50%,0) scale(1)}
 
 .v38-confirm{position:absolute;z-index:75;left:50%;bottom:24px;transform:translateX(-50%);width:min(440px,calc(100% - 32px));padding:12px 16px;border-radius:14px;border:2px solid #d9b46b;background:linear-gradient(#1d2a44f5,#121b2ef5);color:#f5e6c4;box-shadow:0 16px 40px #000c;animation:v38-up .22s ease-out}
 .v38-confirm header{display:flex;gap:8px;align-items:baseline;border-bottom:1px solid #d9b46b55;padding-bottom:6px;margin-bottom:8px}.v38-confirm header b{font:700 18px Georgia,serif;color:#ffe8a6}
