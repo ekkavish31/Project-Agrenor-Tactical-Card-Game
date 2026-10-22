@@ -32,28 +32,28 @@ function ensure(){
  const key=layoutKey();if(oldRoads===roadPixels&&oldLayout===key)return;
  const started=performance.now();oldRoads=roadPixels;oldLayout=key;buildMask();
  plants=[];details=[];const random=rng(502071),centres=[];
- for(let i=0;i<65;i++)centres.push({x:random()*WORLD_W,y:random()*WORLD_H,r:130+random()*230,rich:random()});
+ for(let i=0;i<120;i++)centres.push({x:random()*WORLD_W,y:random()*WORLD_H,r:130+random()*230,rich:random()});
  const density=(x,y)=>{let best=0,near=null;for(const c of centres){const d=Math.hypot(x-c.x,(y-c.y)*1.35)/c.r;if(d<1&&1-d>best){best=1-d;near=c}}return{value:best,near}};
  const bins=new Map(),bin=180;
  function nearby(x,y,r){for(let by=Math.floor((y-r)/bin);by<=Math.floor((y+r)/bin);by++)for(let bx=Math.floor((x-r)/bin);bx<=Math.floor((x+r)/bin);bx++)for(const p of bins.get(bx+','+by)||[])if(Math.hypot(x-p.x,(y-p.y)*1.6)<r+p.space)return true;return false}
  function add(p){plants.push(p);const k=Math.floor(p.x/bin)+','+Math.floor(p.y/bin);if(!bins.has(k))bins.set(k,[]);bins.get(k).push(p)}
  const buildings=rects();
  // Broad crowns and young conifers form loose groves, leaving sunny glades.
- for(let i=0;i<2600&&plants.length<110;i++){
+ for(let i=0;i<7000&&plants.length<300;i++){
   const x=40+random()*(WORLD_W-80),y=160+random()*(WORLD_H-200),d=density(x,y),pick=random(),h=145+random()*105,flip=random()<.5;
-  if(d.value<.22||pick>d.value*.8)continue;
+  if(d.value<.1||pick>d.value*1.35)continue;
   const kind=pick<.11?'oak':pick<.35?'pine':'broadleaf',w=h*(kind==='pine'?.70:kind==='oak'?1.1:.86),space=w*.42;
   if(!free(x,y,w*.46,w*.23)||nearby(x,y,space+24))continue;
   if(buildings.some(r=>x+w/2>r.x-20&&x-w/2<r.x+r.w+20&&y>r.y-20&&y-h*.93<r.y+r.h+20))continue;
   add({x,y,w,h,kind,flip,space});
  }
  // Low bushes prefer the same groves, but occasional isolated shrubs soften open lawns.
- for(let i=0;i<3200&&plants.length<290;i++){
+ for(let i=0;i<7000&&plants.length<620;i++){
   const x=30+random()*(WORLD_W-60),y=30+random()*(WORLD_H-60),d=density(x,y),pick=random(),w=48+random()*43,flip=random()<.5;
-  if(pick>(.025+d.value*.33)||!free(x,y,w*.46,w*.22)||nearby(x,y,22))continue;
+  if(pick>(.06+d.value*.55)||!free(x,y,w*.46,w*.22)||nearby(x,y,22))continue;
   add({x,y,w,h:w,kind:'bush',flip,space:20});
  }
- for(let i=0;i<4400&&details.length<1000;i++){
+ for(let i=0;i<9000&&details.length<1800;i++){
   const x=24+random()*(WORLD_W-48),y=24+random()*(WORLD_H-48),d=density(x,y),pick=random(),w=22+random()*28;
   if(pick>.045+d.value*.70||!free(x,y,w*.55,w*.38))continue;
   // Each patch favours one flower colour, avoiding multicoloured confetti everywhere.

@@ -60,14 +60,35 @@ images.props=new Image();images.props.src='assets/village-town/props.png';images
 function propSprite(index,p,w=90,h=w,flip=false){const im=images.props;if(!im.complete||!im.naturalWidth)return;const sw=im.naturalWidth/4,sh=im.naturalHeight/2;g.save();g.translate(p.x,p.y);if(flip)g.scale(-1,1);TownArt.draw(g,im,[(index%4)*sw,Math.floor(index/4)*sh,sw,sh],[-w/2,-h*.92,w,h],project(hero.u,hero.v));g.restore()}
 function tree(t){const p=project(t.u,t.v),h=t.h*3;propSprite(7,p,h*.85,h)}
 function bush(u,v,flower=false){propSprite(2,project(u,v),85,85)}
+// v60: estate borders mix hedges, flower beds and planters (FFT/cozy-village look); real fences only on some fronts
+function hashN(id,k){let h=2166136261;for(const c of id+':'+k)h=Math.imul(h^c.charCodeAt(0),16777619);return (h>>>0)/4294967296}
+function borderStyle(o,si,k,n,front){const r=hashN(o.id,si*31+k);
+ if(front){if(['guild','temple','healer'].includes(o.id))return 'stone';if(['home','forge'].includes(o.id)||o.npc&&r<.3)return r<.65?'wood':'planter';return r<.5?'flowers':r<.8?'hedge':'planter'}
+ return r<.55?'hedge':r<.82?'flowers':r<.9?'gap':'hedge'}
+function drawBorder(a,b,style,r){if(style==='gap')return;if(style==='wood'||style==='stone'){drawFence(a,b,style);return}
+ const at=q=>project(a.u+(b.u-a.u)*q,a.v+(b.v-a.v)*q);
+ if(style==='hedge'){for(const q of[.22,.72]){const p=at(q),s=74+((r*997+q*13)%1)*22;propSprite(2,{x:p.x,y:p.y+8},s,s*.92)}return}
+ if(style==='planter'){const p=at(.5);propSprite(3,{x:p.x,y:p.y+6},74,90);return}
+ for(const q of[.18,.5,.82]){const p=at(q);TownArt.detail(g,1+Math.floor(((r*7+q*3)%1)*2),{x:p.x,y:p.y+12},58)}}
+// slim iron street lamp drawn in code (warm glass, soft glow)
+function lamp(p){const h=118,t=performance.now(),fl=.85+.15*Math.sin(t*.004+p.x);g.fillStyle='#00000035';g.beginPath();g.ellipse(p.x,p.y,13,5.5,0,0,Math.PI*2);g.fill();
+ g.fillStyle='#2b2a28';g.fillRect(p.x-7,p.y-10,14,10);g.fillRect(p.x-3,p.y-h,6,h);g.fillRect(p.x-6,p.y-h-2,12,5);
+ const top=p.y-h-30;g.fillStyle='#2b2a28';g.beginPath();g.moveTo(p.x-12,top+6);g.lineTo(p.x,top-6);g.lineTo(p.x+12,top+6);g.closePath();g.fill();
+ g.fillStyle=`rgba(255,${200*fl|0},110,${fl})`;g.fillRect(p.x-9,top+6,18,22);g.strokeStyle='#2b2a28';g.lineWidth=2.5;g.strokeRect(p.x-9,top+6,18,22);g.beginPath();g.moveTo(p.x,top+6);g.lineTo(p.x,top+28);g.stroke();
+ const gl=g.createRadialGradient(p.x,top+17,0,p.x,top+17,46);gl.addColorStop(0,`rgba(255,210,120,${.35*fl})`);gl.addColorStop(1,'rgba(255,210,120,0)');g.fillStyle=gl;g.beginPath();g.arc(p.x,top+17,46,0,Math.PI*2);g.fill()}
 function drawFence(a,b,style){const length=Math.hypot(b.u-a.u,b.v-a.v),n=Math.max(1,Math.ceil(length/2));for(let i=0;i<n;i++){const q=(i+.5)/n,p=project(a.u+(b.u-a.u)*q,a.v+(b.v-a.v)*q),A=project(a.u,a.v),B=project(b.u,b.v);propSprite(style==='wood'?1:0,{x:p.x,y:p.y+10},100,100,(B.x-A.x)*(B.y-A.y)<0)}}
-function estateObjects(){const out=[];for(const o of locations){const e=estate(o);if(!e)continue;const first=out.length,P=(u,v)=>({u:e.u+u,v:e.v+v}),segments=[[P(e.left,e.back),P(e.right,e.back)],[P(e.left,e.back),P(e.left,e.front)],[P(e.right,e.back),P(e.right,e.front)],[P(e.left,e.front),P(-2.8,e.front)],[P(2.8,e.front),P(e.right,e.front)]];for(const[a,b]of segments){const n=Math.ceil(Math.hypot(a.u-b.u,a.v-b.v)/2);for(let k=0;k<n;k++){const A={u:a.u+(b.u-a.u)*k/n,v:a.v+(b.v-a.v)*k/n},B={u:a.u+(b.u-a.u)*(k+1)/n,v:a.v+(b.v-a.v)*(k+1)/n};out.push({y:(project(A.u,A.v).y+project(B.u,B.v).y)/2,draw:()=>drawFence(A,B,['home','forge'].includes(o.id)?'wood':'stone')})}}
+function estateObjects(){const out=[];for(const o of locations){const e=estate(o);if(!e)continue;const first=out.length,P=(u,v)=>({u:e.u+u,v:e.v+v}),segments=[[P(e.left,e.back),P(e.right,e.back)],[P(e.left,e.back),P(e.left,e.front)],[P(e.right,e.back),P(e.right,e.front)],[P(e.left,e.front),P(-2.8,e.front)],[P(2.8,e.front),P(e.right,e.front)]];segments.forEach(([a,b],si)=>{const n=Math.ceil(Math.hypot(a.u-b.u,a.v-b.v)/2),front=si>=3;for(let k=0;k<n;k++){const A={u:a.u+(b.u-a.u)*k/n,v:a.v+(b.v-a.v)*k/n},B={u:a.u+(b.u-a.u)*(k+1)/n,v:a.v+(b.v-a.v)*(k+1)/n},style=borderStyle(o,si,k,n,front);if(style)out.push({y:(project(A.u,A.v).y+project(B.u,B.v).y)/2,draw:()=>drawBorder(A,B,style,hashN(o.id,si*31+k))})}});
+ // one lamp at the gate of the big places only
+ if(!o.npc&&o.id!=='home'){const q=P(3.4,e.front+.4),pp=project(q.u,q.v);out.push({y:pp.y,draw:()=>lamp(pp)})}
  for(const side of[-1,1]){const u=e.u+(side<0?e.left+1.4:e.right-1.4);for(let v=e.v+e.back+1.6;v<e.v+e.front-1;v+=2.1)out.push({y:project(u,v).y,draw:()=>bush(u,v,true)});const p=project(e.u+side*3.3,e.v+e.front-.3);out.push({y:p.y,draw:()=>propSprite(3,p,90)})}
  if(['temple','guild','healer'].includes(o.id))for(const side of[-1,1]){const p=project(e.u+side*(o.w+1.2),e.v+o.d+3.4);out.push({y:p.y,draw:()=>propSprite(4,p,100,125)})}
  if(o.id==='inn')for(let i=0;i<2;i++){const p=project(e.u+o.w+1.8,e.v+o.d+2.4+i*2);out.push({y:p.y,draw:()=>propSprite(5,p,145,110)})}
  if(o.id==='forge')for(let i=0;i<3;i++){const p=project(e.u+o.w+2,e.v-1.4+i*2);out.push({y:p.y,draw:()=>propSprite(6,p,110)})}
  if(o.facing==='SE')for(let i=first;i<out.length;i++){const draw=out[i].draw;out[i].draw=()=>reflectView(o,draw)}
- }return out}
+ }
+ // plaza: lamps on the corners, planters between them
+ const sq=locations.find(o=>o.id==='square');if(sq){const c=center(sq),R=6.6;for(const[du,dv]of[[-R,-R],[R,-R],[R,R],[-R,R]]){const pp=project(c.u+du,c.v+dv);out.push({y:pp.y,draw:()=>lamp(pp)})}for(const[du,dv]of[[0,-R],[R,0],[0,R],[-R,0]]){const pp=project(c.u+du,c.v+dv);out.push({y:pp.y,draw:()=>propSprite(3,{x:pp.x,y:pp.y+6},70,86)})}}
+ return out}
 function building(o){reflectView(o,()=>{if(o.id==='square'){const a=center(o),p=project(a.u,a.v),im=images.fountain,w=400,h=w*im.naturalHeight/im.naturalWidth;if(im.complete&&im.naturalWidth)TownArt.draw(g,im,null,[p.x-w*.5,p.y-h*.67,w,h],project(hero.u,hero.v));return}if(o.id==='home'||o.npc){const im=houseImage(o);if(im.complete&&im.naturalWidth){const r=homeSpriteRect(o);TownArt.draw(g,im,null,[r.x,r.y,r.w,r.h],project(hero.u,hero.v))}return}const art=artRect(o);if(art)TownArt.draw(g,art.im,null,[art.x,art.y,art.w,art.h],project(hero.u,hero.v))})}
 
 let solidCache=[];
@@ -154,8 +175,8 @@ function renderList(){$('places').innerHTML=locations.filter(o=>!o.npc).map(o=>`
 function drawTerrain(){
  g.fillStyle=TownArt.pattern(g,'grass')||'#7d906b';g.fillRect(0,0,WORLD_W,WORLD_H);
  g.save();g.scale(1,.5);g.lineCap='round';g.lineJoin='round';
- g.strokeStyle=TownArt.pattern(g,'soil')||'#938569';g.lineWidth=326;g.stroke(roadPath);g.fillStyle=TownArt.pattern(g,'soil')||'#938569';if(plazaPath){g.save();g.lineWidth=24;g.stroke(plazaPath);g.restore();g.fill(plazaPath)}
- g.strokeStyle=TownArt.pattern(g,'paving')||'#c9bca0';g.lineWidth=298;g.stroke(roadPath);if(plazaPath){g.fillStyle=TownArt.pattern(g,'paving')||'#c9bca0';g.fill(plazaPath)}
+ g.strokeStyle='#5c5038';g.lineWidth=336;g.stroke(roadPath);g.strokeStyle='#d3c7a8';g.lineWidth=322;g.stroke(roadPath);if(plazaPath){g.save();g.strokeStyle='#5c5038';g.lineWidth=38;g.stroke(plazaPath);g.strokeStyle='#d3c7a8';g.lineWidth=24;g.stroke(plazaPath);g.restore()}
+ g.strokeStyle=TownArt.pattern(g,'paving')||'#c9bca0';g.lineWidth=300;g.stroke(roadPath);if(plazaPath){g.fillStyle=TownArt.pattern(g,'paving')||'#c9bca0';g.fill(plazaPath)}
  g.restore();estateGround();
  window.VillageNature?.ground(g);
  if(showGrid){g.save();g.globalAlpha=.18;g.drawImage(roadMask,0,0);g.restore()}
@@ -206,7 +227,7 @@ document.querySelectorAll('[data-game]').forEach(b=>b.onclick=()=>sendGame('menu
 
 document.addEventListener('pointerdown',()=>sendGame('input'),{capture:true});document.addEventListener('keydown',()=>sendGame('input'),{capture:true});
 rebuildRoads();heroRestore();renderList();fit();new ResizeObserver(fit).observe(stage);parent.postMessage({source:'project-a-town',type:'ready'},'*');document.fonts.ready.then(()=>terrainDirty=true);requestAnimationFrame(draw);
-</script><script src="js/town-ux.js?v=59"></script><script src="js/town-menu.js?v=59"></script><script src="js/nature-alpha-masks.js"></script><script src="js/village-nature.js"></script></html>
+</script><script src="js/town-ux.js?v=60"></script><script src="js/town-menu.js?v=59"></script><script src="js/nature-alpha-masks.js"></script><script src="js/village-nature.js?v=60"></script></html>
 
 
 <!-- Art sources and prompts: docs/ASSET_NOTES.txt. PNG objects are used for all buildings and props; roads and floor are native editable geometry. -->
