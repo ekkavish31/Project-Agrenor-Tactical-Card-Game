@@ -36,7 +36,9 @@ const ROSTER=[
 const EXIT_IDX={north:0,northeast:1,east:2,southeast:3,southwest:4,west:5};
 
 /* ---------- art: drop-in sprites, otherwise a code-drawn villager ---------- */
-const art={};for(const n of ROSTER){for(const k of ['','-back']){const im=new Image();im.onload=()=>{art[n.id+k]=im};im.src='assets/village-town/npc/'+n.id+k+'.png'}}
+// only files listed here are requested (no 404 noise); add an id (and id+'-back') when its sprite lands in assets/village-town/npc/
+const NPC_ART=[];
+const art={};for(const n of ROSTER){for(const k of ['','-back']){if(!NPC_ART.includes(n.id+k))continue;const im=new Image();im.onload=()=>{art[n.id+k]=im};im.src='assets/village-town/npc/'+n.id+k+'.png'}}
 function drawVillager(g,n,p,t,walking,face){const sc=n.small?.72:1,h=88*sc,bob=walking?Math.abs(Math.sin(t*.012+n.phase))*4*sc:Math.sin(t*.002+n.phase)*.8,back=face==='NE'||face==='NW',flip=face==='SW'||face==='NW';
  g.fillStyle='rgba(20,30,20,.38)';g.beginPath();g.ellipse(p.x,p.y,15*sc,6*sc,0,0,Math.PI*2);g.fill();
  const im=art[n.id+(back?'-back':'')]||art[n.id];if(im){const w=h*im.naturalWidth/im.naturalHeight*1.15;g.save();g.translate(p.x,p.y-bob);if(flip)g.scale(-1,1);root.TownArt.draw(g,im,null,[-w/2,-h*1.15,w,h*1.15],null);g.restore();return}

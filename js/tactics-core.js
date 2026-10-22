@@ -271,7 +271,7 @@ function themeCohesion(map,seed){let v=map.variant||map.theme,h=0;for(let c of s
   else if(map.theme==='mine'){if(q.kind==='sand')q.kind='rubble'}
   else if(v==='coast'){if(q.kind==='rubble'&&n<0)q.kind='stone'}}}
 function create(seed,theme,mode,opts={}){
- let kinds=opts.encounter?.enemies||[],big=kinds.map(k=>ENEMY_TYPES[k]?.footprint).filter(Boolean);if(opts.encounter?.objective==='captain')big.push(ENEMY_TYPES.captain.footprint);let clearance=[Math.max(1,...big.map(f=>f[0])),Math.max(1,...big.map(f=>f[1]))],map=generate(seed,theme,mode,clearance),_w=map.tiles.forEach(q=>{if(q.kind==='water'&&!q.prop&&!q.terrainLocked)q.blocked=false}),_c=themeCohesion(map,String(seed)),rng=random(String(seed)+'|deck'),units=[],D=root.TacticsDecks;
+ let kinds=opts.encounter?.enemies||[],big=kinds.map(k=>ENEMY_TYPES[k]?.footprint).filter(Boolean);if(opts.encounter?.objective==='captain')big.push(ENEMY_TYPES.captain.footprint);let clearance=[Math.max(1,...big.map(f=>f[0])),Math.max(1,...big.map(f=>f[1]))],map=generate(seed,theme,mode,clearance),_w=map.tiles.forEach(q=>{if(q.kind==='water'&&!q.prop&&!q.terrainLocked)q.blocked=false}),_c=themeCohesion(map,String(seed)),_g=bigProps(map),rng=random(String(seed)+'|deck'),units=[],D=root.TacticsDecks;
  let A=map.spawns.allies,E=map.spawns.enemies;
  let hero={id:'hero',side:'ally',kind:'hero',name:typeof root.heroName==='function'?root.heroName():'นักผจญภัย',x:A[0].x,y:A[0].y,hp:opts.hp??60,maxHp:60,stamina:opts.stamina??100,mp:0,guard:0,facing:'NE',weapon:opts.weapon||'sword',shield:!!opts.shield,controlled:true};
  units.push(hero);
@@ -287,6 +287,17 @@ function create(seed,theme,mode,opts={}){
  if(map.mode==='battle'){st.active=null;st.phase='queue'}else{hero.ct=100;st.active=hero}
  placeLargeUnits(st);initEnvironment(st,opts.minutes??540);faceFoes(st);
  return st}
+// v73: trees, big rocks and rune stones take a 2x2 footprint (drawn twice as big) when there is room and no route is cut
+function bigProps(map){const BIG=['tree','pine','standstone','mossrock','rock','stalagmite'],spawn=new Set([...(map.spawns?.allies||[]),...(map.spawns?.enemies||[])].map(p=>p.x+','+p.y)),N4=[[1,0],[-1,0],[0,1],[0,-1]];map.objects||=[];
+ const start=map.spawns?.allies?.[0]&&at(map,map.spawns.allies[0].x,map.spawns.allies[0].y);if(!start)return;
+ const reach=()=>{const s=new Set([start]),q=[start];while(q.length){const c=q.pop();for(const[dx,dy]of N4){const n=at(map,c.x+dx,c.y+dy);if(n&&!s.has(n)&&!n.blocked&&!n.void&&Math.abs((n.h||0)-(c.h||0))<=1){s.add(n);q.push(n)}}}return s};
+ let base=reach(),n=0;
+ for(const t of map.tiles.filter(t=>BIG.includes(t.prop)&&!t.objectId)){
+  for(const[ox,oy]of[[0,0],[-1,0],[0,-1],[-1,-1]]){const x0=t.x+ox,y0=t.y+oy,cells=[[0,0],[1,0],[0,1],[1,1]].map(([dx,dy])=>at(map,x0+dx,y0+dy));
+   if(cells.some(c=>!c||c.objectId||c.void)||cells.some(c=>c!==t&&(c.blocked||c.prop||c.route||c.ramp||spawn.has(c.x+','+c.y)||['water','shallow','path','rail','mud'].includes(c.kind)||(c.h||0)!==(t.h||0))))continue;
+   const others=cells.filter(c=>c!==t);others.forEach(c=>c.blocked=true);const r=reach(),lost=[...base].filter(c=>!others.includes(c)&&!r.has(c)).length;if(lost){others.forEach(c=>c.blocked=false);continue}
+   const o={id:'big-'+(n++),type:'prop2',x:x0,y:y0,w:2,h:2,orientation:0,ground:t.h||0,prop:t.prop,obstacleHeight:t.obstacleHeight||2};map.objects.push(o);
+   for(const c of cells){c.prop=t.prop;c.blocked=true;c.objectId=o.id;c.obstacleHeight=o.obstacleHeight}base=r;break}}}
 function clearMapCell(map,t){if(t.objectId){let id=t.objectId;for(let q of map.tiles)if(q.objectId===id){q.blocked=false;q.prop=null;delete q.objectId;delete q.obstacleHeight}map.objects=map.objects.filter(o=>o.id!==id)}t.blocked=false;t.prop=null;delete t.obstacleHeight;if(TERRAIN[t.kind]?.cost>=99)t.kind=map.theme==='mine'?'cave':'path'}
 function placeLargeUnits(st){let large=st.units.filter(u=>dimensions(u).some(n=>n>1));for(let u of large){let occupied=st.units.filter(o=>o!==u&&alive(o)),candidates=st.map.tiles.filter(t=>fits(st.map,u,t.x,t.y,occupied)).sort((a,b)=>Math.abs(a.x-u.x)+Math.abs(a.y-u.y)-Math.abs(b.x-u.x)-Math.abs(b.y-u.y));let spot=candidates[0];if(!spot){let [w,h]=dimensions(u);spot={x:Math.min(u.x,(st.map.width||st.map.size)-w),y:Math.min(u.y,(st.map.height||st.map.size)-h)};for(let c of cells(u,spot.x,spot.y)){let t=at(st.map,c.x,c.y);clearMapCell(st.map,t);t.h=at(st.map,spot.x,spot.y).h}}
  u.x=spot.x;u.y=spot.y;
