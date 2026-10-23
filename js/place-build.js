@@ -90,6 +90,18 @@ const PB_ART = (() => {
   undoS = [],
   redoS = [];
  const snap = () => JSON.stringify(M);
+ const PREFAB_KEY='project-a-place-prefabs-v1',CLIP_KEY='project-a-place-clipboard-v1';
+ function ownerAnchor(id){const s=stOf(id);return s?{u:s.u,v:s.v}:{u:0,v:0}}
+ function selectedObjects(){return place?.sel?.map(i=>M.props[i]).filter(Boolean)||[]}
+ function copySelected(){const list=selectedObjects();if(!list.length){status('เลือกของประดับก่อนคัดลอก');return}const owner=list[0].owner||null,a=ownerAnchor(owner);localStorage.setItem(CLIP_KEY,JSON.stringify({props:list.map(o=>({...copy(o),du:o.u-a.u,dv:o.v-a.v}))}));status('คัดลอกของประดับ '+list.length+' ชิ้นแล้ว · Ctrl+V เพื่อวางข้ามสถานที่')}
+ function pasteObjects(records,label='วางชุด'){if(!place){status('เปิดสถานที่ปลายทางก่อนวาง');return}const owner=place.type==='station'?place.id:null,s=owner?stOf(owner):null,a=s?{u:s.u+s.w+.8,v:s.v+s.d+.4}:{u:1,v:1};checkpoint();const ids=[];for(const rec of records){const o=copy(rec);delete o.du;delete o.dv;o.u=q4(a.u+(rec.du||0));o.v=q4(a.v+(rec.dv||0));if(owner)o.owner=owner;else delete o.owner;M.props.push(o);ids.push(M.props.length-1)}place.sel=ids;save();render();status(label+' '+ids.length+' ชิ้นแล้ว')}
+ function pasteSelected(){let p=null;try{p=JSON.parse(localStorage.getItem(CLIP_KEY)||'null')}catch(e){}if(!p?.props?.length){status('ยังไม่มีของที่คัดลอก');return}pasteObjects(p.props,'วางของ')}
+ function duplicateSelected(){const list=selectedObjects();if(!list.length){status('เลือกของประดับก่อนทำสำเนา');return}checkpoint();const ids=[];for(const o of list){M.props.push({...copy(o),u:q4(o.u+.75),v:q4(o.v+.75)});ids.push(M.props.length-1)}place.sel=ids;save();render();status('ทำสำเนา '+ids.length+' ชิ้นแล้ว')}
+ function transformSelected(kind){const list=selectedObjects();if(!list.length)return;checkpoint();if(kind==='rotate'){const cu=list.reduce((s,o)=>s+o.u,0)/list.length,cv=list.reduce((s,o)=>s+o.v,0)/list.length;for(const o of list){const u=o.u-cu,v=o.v-cv;o.u=q4(cu-v);o.v=q4(cv+u)}}else for(const o of list)o.f=!o.f;save();render();status(kind==='rotate'?'หมุนกลุ่มแล้ว':'กลับด้านของที่เลือกแล้ว')}
+ function readPrefabs(){try{return JSON.parse(localStorage.getItem(PREFAB_KEY)||'[]')}catch(e){return[]}}
+ function savePrefab(){const list=selectedObjects();if(!list.length){status('เลือกของประดับก่อนบันทึกเป็นชุด');return}const name=prompt('ชื่อชุดของแต่ง เช่น หน้าร้านแบบตลาด');if(!name?.trim())return;const cu=list.reduce((s,o)=>s+o.u,0)/list.length,cv=list.reduce((s,o)=>s+o.v,0)/list.length,prefabs=readPrefabs();prefabs.push({id:'pf'+Date.now().toString(36),name:name.trim(),props:list.map(o=>({...copy(o),du:q4(o.u-cu),dv:q4(o.v-cv)}))});localStorage.setItem(PREFAB_KEY,JSON.stringify(prefabs));status('บันทึกชุด “'+name.trim()+'” แล้ว')}
+ function openPrefabPicker(){const prefabs=readPrefabs();if(!prefabs.length){status('ยังไม่มีชุดของแต่ง · เลือกหลายชิ้นแล้วกดบันทึกเป็นชุด');return}let d=document.getElementById('pbPrefabPicker');if(!d){d=document.createElement('dialog');d.id='pbPrefabPicker';d.style.cssText='max-width:420px;width:90vw;border:1px solid #8caa8c;border-radius:12px;padding:16px;background:#182a24;color:#f2e9cf';document.body.append(d)}d.innerHTML='<h3>ชุดของแต่งที่บันทึกไว้</h3><div style="display:grid;gap:6px">'+prefabs.map((p,i)=>'<button data-pf="'+i+'">'+String(p.name).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+' · '+p.props.length+' ชิ้น</button>').join('')+'</div><div style="text-align:right;margin-top:10px"><button data-close>ปิด</button></div>';d.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const p=prefabs[+b.dataset.pf];d.close();pasteObjects(p.props,'วางชุด '+p.name)});d.querySelector('[data-close]').onclick=()=>d.close();d.showModal()
+ }
 
  function checkpoint() {
   undoS.push(snap());
@@ -745,7 +757,10 @@ const PB_ART = (() => {
    e.shiftKey ? doRedo() : doUndo();
    return
   }
+  if ((e.ctrlKey || e.metaKey) && place) {const k=e.key.toLowerCase();if(k==='c'){e.preventDefault();copySelected();return}if(k==='v'){e.preventDefault();pasteSelected();return}if(k==='d'){e.preventDefault();duplicateSelected();return}}
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if(place&&place.sel?.length&&(e.key==='r'||e.key==='R')){e.preventDefault();transformSelected('rotate');return}
+  if(place&&place.sel?.length&&(e.key==='f'||e.key==='F')){e.preventDefault();transformSelected('flip');return}
   if (place) {
    if (e.key === 'Enter') {
     e.preventDefault();
@@ -1202,7 +1217,7 @@ const PB_ART = (() => {
    <div class="art"><span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button></div></div>
    ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.3,2.5,.05,pct)}
    <label class="chk"><input type="checkbox" id="pFlip" ${o.f?'checked':''}> กลับด้าน</label>
-   <div class="row"><button id="pDup">ทำสำเนา</button><button id="pDel">ลบ (Delete)</button></div><p class="sub">ลากบนแผนที่เพื่อย้าย · ลูกศร = ขยับทีละ ¼ ช่อง</p>`;
+   <div class="row"><button id="pDup">ทำสำเนา</button><button id="pDel">ลบ (Delete)</button></div><div class="row"><button id="pSavePrefab">บันทึกเป็นชุด</button><button id="pUsePrefab">วางชุดที่บันทึก</button></div><p class="sub">ลากบนแผนที่เพื่อย้าย · ลูกศร = ขยับทีละ ¼ ช่อง · R หมุน · F กลับด้าน</p>`;
    thumbInto(body.querySelector('#pTh'), o.art, o.width || 110);
    act('#pBack', () => {
     place.sel = [];
@@ -1219,11 +1234,12 @@ const PB_ART = (() => {
     place.sel = [M.props.length - 1]
    }));
    act('#pDel', delProps);
+   act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);
    sliders((k, v) => o[k] = v);
    return
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น${sel.length>1?` · <b>เลือก ${sel.length} ชิ้น</b> ลากชิ้นใดก็ได้เพื่อย้ายทั้งกลุ่ม`:''}</p>
-  <div class="row"><button id="pAdd" style="background:#4f7a3c;border-color:#b8d39a">＋ เพิ่มของประดับ…</button>${sel.length>1?'<button id="pDelAll">ลบที่เลือก</button><button id="pNone">เลิกเลือก</button>':''}</div>
+  <div class="row"><button id="pAdd" style="background:#4f7a3c;border-color:#b8d39a">＋ เพิ่มของประดับ…</button><button id="pUsePrefab">วางชุด</button><button id="pSavePrefab">บันทึกชุด</button>${sel.length>1?'<button id="pDelAll">ลบที่เลือก</button><button id="pNone">เลิกเลือก</button>':''}</div>
   <div class="items">${props.map(([o,i])=>`<button data-i="${i}" class="${sel.includes(i)?'on':''}"><span class="mini"></span><span style="flex:1">${propName(o)}</span></button>`).join('')||'<p class="sub">ยังไม่มีของประดับ</p>'}</div>`;
   body.querySelectorAll('[data-i]').forEach(b => {
    const i = +b.dataset.i;
@@ -1244,6 +1260,7 @@ const PB_ART = (() => {
    place.sel = [];
    render()
   });
+  act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);
   act('#pAdd', () => openArtPicker('เพิ่มของประดับ', '', a => once(() => {
    const s = owner && stOf(owner),
     at = s ? {
