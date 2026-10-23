@@ -34,6 +34,13 @@ const ROSTER=[
  {id:'guard',name:'ยามรอน',role:'ยามประตูตะวันออก',home:'east',fixed:true,stops:[],look:{coat:'#5a5a6a',apron:null,hair:'#3a3a3a',hat:'helm',hatCol:'#9a9aa8'},
   lines:{morning:['ประตูตะวันออกเปิดแล้ว ถ้าจะออกไป ข้าแค่ขอให้กลับมาครบสามสิบสองนะ'],day:['ทางออกแต่ละทางมีอันตรายต่างกัน — ป่า เหมือง บึง ชายฝั่ง หิมะ ซากวิหาร เลือกให้ดีล่ะ','ถ้าเรี่ยวแรงต่ำ อย่าเพิ่งออกไป พักให้เต็มก่อน'],evening:['เลยหกโมงเย็นแล้ว ข้าไม่แนะนำให้ออกไปตอนนี้']}}];
 const EXIT_IDX={north:0,northeast:1,east:2,southeast:3,southwest:4,west:5};
+const ROUTE_KEY='project-a-npc-routes-v1';
+function routeLocations(){try{return(V()?.getLocations?.()||[]).map(o=>o.id)}catch(e){return[]}}
+function applyRouteOverrides(data){if(!data||typeof data!=='object')return;const allowed=new Set([...routeLocations(),...Object.keys(EXIT_IDX)]);for(const n of ROSTER){const r=data[n.id];if(!r)continue;if(typeof r.home==='string'&&(allowed.has(r.home)||n.fixed&&r.home in EXIT_IDX))n.home=r.home;if(Array.isArray(r.stops))n.stops=r.stops.filter(x=>typeof x==='string'&&allowed.has(x)).slice(0,16)}}
+try{applyRouteOverrides(JSON.parse(root.localStorage.getItem(ROUTE_KEY)||'null'))}catch(e){}
+function getRoutes(){return ROSTER.map(n=>({id:n.id,name:n.name,role:n.role,home:n.home,stops:[...(n.stops||[])]}))}
+function setRoutes(rows){const allowed=new Set([...routeLocations(),...Object.keys(EXIT_IDX)]),out={};for(const r of rows||[]){const n=ROSTER.find(x=>x.id===r.id);if(!n)continue;if(typeof r.home==='string'&&(allowed.has(r.home)||n.fixed&&r.home in EXIT_IDX))n.home=r.home;if(Array.isArray(r.stops))n.stops=r.stops.filter(x=>typeof x==='string'&&allowed.has(x)).slice(0,16);out[n.id]={home:n.home,stops:[...(n.stops||[])]};const live=npcs?.find(x=>x.id===n.id);if(live){live.home=n.home;live.stops=[...(n.stops||[])];live.path=[];live.stop=-1}}root.localStorage.setItem(ROUTE_KEY,JSON.stringify(out));return getRoutes()}
+
 
 /* ---------- art: drop-in sprites, otherwise a code-drawn villager ---------- */
 // only files listed here are requested (no 404 noise); add an id (and id+'-back') when its sprite lands in assets/village-town/npc/
@@ -96,5 +103,5 @@ let downOn=null;
 root.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.id!=='world'||V()?.isEditing?.())return;downOn=at(e);if(downOn)e.stopPropagation()},true);
 root.addEventListener('pointerup',e=>{if(!downOn)return;const n=at(e)===downOn?downOn:null;downOn=null;e.stopPropagation();if(n)talk(n)},true);
 root.addEventListener('pointermove',e=>{if(e.target.id!=='world')return;const n=at(e);if(n!==hover){hover=n;if(n)e.target.style.cursor='pointer'}},true);
-root.TownNPC={objects,talk:id=>{const n=npcs?.find(n=>n.id===id);if(n)talk(n)},list:()=>npcs?.map(n=>({id:n.id,u:n.u,v:n.v,walking:n.path.length>0})),roster:ROSTER};
+root.TownNPC={objects,talk:id=>{const n=npcs?.find(n=>n.id===id);if(n)talk(n)},list:()=>npcs?.map(n=>({id:n.id,u:n.u,v:n.v,walking:n.path.length>0})),roster:ROSTER,getRoutes,setRoutes,routeKey:ROUTE_KEY};
 })(globalThis);
