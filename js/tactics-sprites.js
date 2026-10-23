@@ -1000,8 +1000,15 @@ const TACTICS_SPRITES = {
    if(!config?.frames?.length){t.directions[dir].walk=base;continue}
    t.directions[dir].walk=config.frames.map((f,i)=>({...((base.length?base[Math.round(i*(base.length-1)/Math.max(1,config.frames.length-1))]:t.directions[dir].idle)||{}),src:(manifest.assets||[]).find(a=>a.id===f.assetId)?.file||f.src,ms:Math.max(20,Number(f.ms)||80),flipImage:false,mirrored:false}));
   }
-  for(let [target,source]of Object.entries(manifest?.studioWalkMirrors||{})){if(target===source||!t.directions[target]||!t.directions[source])continue;let src=t.directions[source].walk;if(!src?.length)continue;t.directions[target].walk=src.map(f=>({...f,flipImage:!f.flipImage,mirrored:!f.mirrored,right:f.right?[1-f.right[0],f.right[1]]:[.5,.5],left:f.left?[1-f.left[0],f.left[1]]:[.5,.5],rotation:-(f.rotation||0)}))}
+  for(let [target,source]of Object.entries(manifest?.studioWalkMirrors||{})){if(target===source||!t.directions[target]||!t.directions[source])continue;let src=t.directions[source].walk;if(!src?.length)continue;t.directions[target].walk=src.map(flipFrame)}
+  // v81: any hero pose can have its own frame list (studioPoses[pose][dir]) and copy the opposite direction mirrored (studioPoseMirrors[pose][target]=source)
+  if(!t._studioBasePoses)Object.defineProperty(t,'_studioBasePoses',{value:Object.fromEntries(Object.entries(t.directions).map(([d,p])=>[d,JSON.parse(JSON.stringify(Object.fromEntries(POSES.filter(k=>p[k]).map(k=>[k,p[k]]))))])),enumerable:false});
+  for(let [d,p]of Object.entries(t.directions)){for(let k of POSES){delete p[k+'Frames'];if(t._studioBasePoses[d]?.[k])p[k]=JSON.parse(JSON.stringify(t._studioBasePoses[d][k]))}}
+  for(let [pose,dirs]of Object.entries(manifest?.studioPoses||{}))for(let [d,config]of Object.entries(dirs||{})){let p=t.directions[d];if(!p||!config?.frames?.length)continue;let base=p[pose]||p.idle;p[pose+'Frames']=config.frames.map(f=>({...base,src:(manifest.assets||[]).find(a=>a.id===f.assetId)?.file||f.src,ms:Math.max(20,Number(f.ms)||120),flipImage:false,mirrored:!!base.mirrored&&false}));p[pose]={...p[pose+'Frames'][0]}}
+  for(let [pose,links]of Object.entries(manifest?.studioPoseMirrors||{}))for(let [target,source]of Object.entries(links||{})){let a=t.directions[target],b=t.directions[source];if(!a||!b||target===source)continue;if(b[pose+'Frames']?.length){a[pose+'Frames']=b[pose+'Frames'].map(flipFrame);a[pose]={...a[pose+'Frames'][0]}}else if(b[pose]){delete a[pose+'Frames'];a[pose]=flipFrame(b[pose])}}
  }
+ function flipFrame(f){return {...f,flipImage:!f.flipImage,mirrored:!f.mirrored,right:f.right?[1-f.right[0],f.right[1]]:[.5,.5],left:f.left?[1-f.left[0],f.left[1]]:[.5,.5],rotation:-(f.rotation||0)}}
+ const POSES=['idle','windup','strike','guard','hit','down'];
  function frame(frames,time){if(!frames?.length)return null;let total=frames.reduce((n,f)=>n+(Number(f.ms)||110),0),t=((time%total)+total)%total;for(let f of frames){let ms=Number(f.ms)||110;if(t<ms)return f;t-=ms}return frames.at(-1)}
  root.StudioWalks={apply,frame};apply(TACTICS_SPRITES,root.ASSET_MANIFEST);
 })(globalThis);
