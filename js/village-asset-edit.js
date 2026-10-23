@@ -1084,6 +1084,10 @@
   nudge(k[0] * n, k[1] * n)
  });
 
+ const UPLOAD_KEY='project-a-uploaded-decor-v1';
+ function readUploaded(){try{return JSON.parse(localStorage.getItem(UPLOAD_KEY)||'[]').filter(x=>x&&x.id&&x.dataUrl)}catch(e){return[]}}
+ function registerUploaded(rec){const im=new Image();im.onload=()=>{if(typeof render==='function')render()};im.src=rec.dataUrl;kind('upload:'+rec.id,rec.name||'ภาพอัปโหลด','อัปโหลด',p=>{if(im.complete&&im.naturalWidth){const w=rec.width||140,h=rec.height||110;g.drawImage(im,p.x-w/2,p.y-h,w,h)}})}
+ readUploaded().forEach(registerUploaded);
  /* ---------- thumbnails (rendered from the real draw code) ---------- */
  const thumbCache = new Map();
 
@@ -1194,7 +1198,7 @@
    q = '';
   const draw = () => {
    const list = Object.entries(KINDS).filter(([id, k]) => (tab === 'ทั้งหมด' || k.group === tab) && (!q || k.label.includes(q) || id.includes(q)));
-   picker.innerHTML = `<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"><button data-x>ปิด (Esc)</button></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid">${list.map(([id,k])=>`<button data-id="${id}" class="${id===current?'cur':''}"><span class="th"></span><span>${k.label}</span><small>${k.group}</small></button>`).join('')||'<p>ไม่พบ</p>'}</div>`;
+   picker.innerHTML = `<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"><button data-upload>＋ อัปโหลดภาพ</button><button data-x>ปิด (Esc)</button></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid">${list.map(([id,k])=>`<button data-id="${id}" class="${id===current?'cur':''}"><span class="th"></span><span>${k.label}</span><small>${k.group}</small></button>`).join('')||'<p>ไม่พบ</p>'}</div>`;
    picker.querySelectorAll('[data-id]').forEach(b => {
     const slot = b.querySelector('.th');
     putThumb(slot, kindThumb(b.dataset.id));
@@ -1211,6 +1215,7 @@
     tab = b.dataset.tab;
     draw()
    });
+   picker.querySelector('[data-upload]').onclick=()=>{const input=document.createElement('input');input.type='file';input.accept='image/*';input.onchange=()=>{const file=input.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{const im=new Image();im.onload=()=>{const max=512,sc=Math.min(1,max/im.naturalWidth,max/im.naturalHeight),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.naturalWidth*sc));c.height=Math.max(1,Math.round(im.naturalHeight*sc));c.getContext('2d').drawImage(im,0,0,c.width,c.height);let dataUrl;try{dataUrl=c.toDataURL('image/webp',.9)}catch(e){dataUrl=c.toDataURL('image/png')}const rec={id:'u'+Date.now().toString(36),name:file.name.replace(/\\.[^.]+$/,'').slice(0,48)||'ภาพอัปโหลด',dataUrl,width:Math.min(220,c.width),height:Math.min(180,c.height)};const all=readUploaded();all.push(rec);try{localStorage.setItem(UPLOAD_KEY,JSON.stringify(all))}catch(e){alert('ภาพใหญ่เกินพื้นที่เก็บในเบราว์เซอร์');return}registerUploaded(rec);thumbCache.clear();picker.close();onPick('upload:'+rec.id)};im.onerror=()=>alert('อ่านไฟล์ภาพไม่สำเร็จ');im.src=reader.result};reader.readAsDataURL(file)};input.click()};
    picker.querySelector('[data-x]').onclick = () => picker.close();
    const s = picker.querySelector('input');
    s.oninput = () => {
@@ -2109,10 +2114,11 @@
    try {
     const snap = UX.snapshot(),
      body = '// Village default layout — saved from the in-game editor ' + new Date().toISOString() + '.\nwindow.VillageDefaultLayout=' + JSON.stringify(snap, null, 2) + ';\n';
-    const sha = await GitHubPush.commit('Village layout from editor (' + Object.keys(snap.places).length + ' places' + (snap.assets ? ' + asset edits' : '') + ')', async () => [{
-     path: 'js/village-layout-v67.js',
-     content: body
-    }], m => st.textContent = m);
+    const sha = await GitHubPush.commit('Village layout from editor (' + Object.keys(snap.places).length + ' places' + (snap.assets ? ' + asset edits' : '') + ')', async head => {
+     const files=[{path:'js/village-layout-v67.js',content:body}],uploaded=localStorage.getItem(UPLOAD_KEY);
+     if(uploaded!==null){const settings=GitHubPush.parseSettings(await head.read('js/game-settings.js')||'')||{};settings[UPLOAD_KEY]=uploaded;files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
+     return files
+    }, m => st.textContent = m);
     st.textContent = sha ? '⬆ push ผังหมู่บ้านแล้ว · ' + sha : 'ไม่มีอะไรต้อง push'
    } catch (e) {
     st.textContent = 'push ไม่สำเร็จ: ' + e.message
