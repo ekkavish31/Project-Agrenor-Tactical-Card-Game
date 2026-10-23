@@ -33,16 +33,21 @@ const canonDelta=(b,dx,dy)=>{if(b?.mirror)dx=-dx;return{du:(dx/28+dy/14)/2,dv:(d
 function entry(key,owner,ax,ay,draw,src,label){const ov=data.edit[key]||{},b=baseOf(owner),d=screenDelta(b,ov.du||0,ov.dv||0),E={key,owner,ax,ay,x:ax+d.x,y:ay+d.y,ov,label,hidden:!!ov.hide,base:draw};frame.push(E);if(ov.hide)return null;
  const s=ov.s??1,r=(ov.r||0)*Math.PI/180,f=!!ov.f,k=ov.kind&&KINDS[ov.kind]?ov.kind:null,plain=!d.x&&!d.y&&s===1&&!r&&!f&&!k;
  const inner=plain?draw:gg=>{g.save();g.translate(E.x,E.y);if(r)g.rotate(r);g.scale(f?-s:s,s);g.translate(-ax,-ay);if(k)KINDS[k].draw({x:ax,y:ay});else draw(gg);g.restore()};
- const it={x:E.x,y:E.y+(ov.layer||0),draw:gg=>{if(active()&&(hoverKey===key||sel?.type==='item'&&sel.key===key))outlineDraw(inner);inner(gg)}};
+ const it={x:E.x,y:E.y+(ov.layer||0),draw:gg=>{if(active()&&(hoverKey===key||inSel(key)))outlineDraw(inner);inner(gg)}};
  if(src?.owner){it.owner=src.owner;if(src.rel)it.rel={u:src.rel.u+(ov.du||0),v:src.rel.v+(ov.dv||0)}}return it}
 function addedItems(gates){const out=[];for(const a of data.added){if(a.owner.startsWith('exit:')!==gates)continue;const b=baseOf(a.owner);if(!b||!KINDS[a.kind])continue;const p=toScreen(b,a.du,a.dv),it=entry(a.id,a.owner,p.x,p.y,()=>KINDS[a.kind].draw(p),null,KINDS[a.kind].label+' (เพิ่มเอง)');if(it)out.push(it)}return out}
+// v81.4 · names come from what the item really is (estateObjects tags each item); NAME_KIND maps it to a placeable kind
+const NAMES={'border:hedge':'แนวพุ่มไม้','border:flowers':'แปลงดอกไม้ (ขอบ)','border:planter':'กระถาง (ขอบ)','border:wood':'รั้วไม้','border:stone':'กำแพงหิน',lamp:'โคมไฟ',bushflower:'พุ่มดอกไม้',pot:'กระถาง',statue:'ของตั้งหน้าอาคาร',table:'โต๊ะ/ถัง',crate:'ลังไม้',herb:'สมุนไพร','flower:1':'ดอกไม้ชุด 1','flower:2':'ดอกไม้ชุด 2',bush:'พุ่มไม้'};
+const NAME_KIND={'border:hedge':'decor:hedge-row','border:flowers':'decor:flower-bed','border:planter':'prop:3','border:wood':'decor:fence-picket','border:stone':'decor:stone-wall-low',lamp:'lamp',bushflower:'prop:2',pot:'prop:3',statue:'prop:4',table:'prop:5',crate:'prop:6',herb:'flowers:3','flower:1':'flowers:1','flower:2':'flowers:2',bush:'prop:2'};
+const nameLabel=n=>!n?null:NAMES[n]||(n.startsWith('decor:')?DECOR_W[n.slice(6)]?.[0]||n.slice(6):null);
+const nameKind=n=>!n?null:NAME_KIND[n]||(n.startsWith('decor:')&&KINDS[n]?n:null);
 const LABEL_HINT=[['propSprite(7','ต้นไม้'],['lamp(','โคมไฟ'],["decor('bench'",'ม้านั่ง'],['drawBorder','รั้ว/แนวพุ่ม'],['bush(','พุ่มไม้'],['TownArt.detail','ดอกไม้'],['propSprite(3','กระถาง'],['propSprite(6','ลังไม้']];
 const labelOf=fn=>{const t=String(fn);for(const[k,l]of LABEL_HINT)if(t.includes(k))return l;const m=t.match(/decor\('([\w-]+)'|dec\('([\w-]+)'/);return m?(DECOR_W[m[1]||m[2]]?.[0]||'ของประดับ'):'ของประดับ'};
 const baseEstate=estateObjects;
 estateObjects=function(){frame=[];const list=baseEstate(),sq=locations.find(o=>o.id==='square'),out=[],seen={};
  for(const it of list){let owner,rel;if(it.owner&&it.rel){owner=it.owner.id;rel=it.rel}else if(sq&&it.x!=null){const w=inv(it.x,it.y),c=center(sq);owner='square';rel={u:w.u-c.u,v:w.v-c.v}}else{out.push(it);continue}
   let key=owner+':'+rel.u.toFixed(1)+','+rel.v.toFixed(1);seen[key]=(seen[key]||0)+1;if(seen[key]>1)key+='#'+seen[key];
-  const e=entry(key,owner,it.x,it.y,it.draw,it,labelOf(it.draw));if(e)out.push(e)}
+  const e=entry(key,owner,it.x,it.y,it.draw,it,nameLabel(it.name)||labelOf(it.draw));frame[frame.length-1].name=it.name||null;if(e)out.push(e)}
  return out.concat(addedItems(false))};
 const TM=window.TownMenu,baseGates=TM.gateObjects;
 TM.gateObjects=function(){const out=[];baseGates().forEach((it,i)=>{const e=entry('exit:'+i,'exit:'+i,it.x,it.y,it.draw,null,'ประตู '+(Village25D.getExits()[i]?.name||''));if(e)out.push(e)});return out.concat(addedItems(true))};
@@ -61,33 +66,40 @@ function artRect(o,r){const t=data.buildings[o.id];if(!t)return r;const p=anchor
    Pick an item (map or list) → it becomes the edit session: only it can be dragged, other items are locked.
    ✓ เสร็จ (Enter) keeps the changes · ยกเลิก (Esc) restores exactly what it was. One undo step per session. */
 const active=()=>editing&&UX.getMode()==='asset';
-let session=null,listOwner='';
+let session=null,listOwner='',band=null;
+const inSel=k=>!!session&&(session.key===k||!!session.keys?.includes(k));
 function begin(){if(session)return;if(!ckPending){UX.checkpoint();ckPending=true}}
 function commit(){ckPending=false;UX.persist();render()}
 function ovOf(key){return data.edit[key]||(data.edit[key]={})}
 function clean(key){const o=data.edit[key];if(!o)return;for(const k of Object.keys(o))if(o[k]==null||o[k]===0&&k!=='s'||k==='s'&&o[k]===1||o[k]===false||o[k]==='')delete o[k];if(!Object.keys(o).length)delete data.edit[key]}
 function pick(p,only){const R=(only?34:22)/(scale*zoom);let best=null,bd=R;for(const e of frame){if(only&&e.key!==only)continue;const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;best=e}}return best}
 function start(t,isNew=false){if(session)return;UX.checkpoint();ckPending=false;session={...t,isNew,before:JSON.stringify(data)};sel={...t};listOwner=t.owner||listOwner;if(t.type==='building')selected=t.id;hoverKey=null;render();flashStatus(t.type==='building'?'กำลังแก้อาคาร · ✓ เสร็จ (Enter) หรือ ยกเลิก (Esc)':'กำลังแก้ชิ้นนี้ · ลากเพื่อย้าย · ✓ เสร็จ (Enter) หรือ ยกเลิก (Esc)')}
-function finish(ok){if(!session)return;const s=session;session=null;if(!ok){const b=JSON.parse(s.before);set(b)}else if(s.type==='item')clean(s.key);sel=null;drag=null;UX.persist();render();flashStatus(ok?'บันทึกการแก้แล้ว':'ยกเลิกแล้ว · กลับเป็นเหมือนก่อนแก้')}
+function toGroup(key){const owner=frame.find(e=>e.key===key)?.owner;if(!session){start({type:'group',keys:[key],owner});return}if(session.type==='item'){session={...session,type:'group',keys:[session.key,key].filter((k,i,a)=>a.indexOf(k)===i)};delete session.key}else if(session.type==='group'){const i=session.keys.indexOf(key);if(i<0)session.keys.push(key);else session.keys.splice(i,1);if(!session.keys.length){finish(true);return}}else return;sel={type:'group'};render()}
+function moveKeys(keys,orig,dx,dy){for(const k of keys){const E=frame.find(e=>e.key===k);if(!E)continue;const c=canonDelta(baseOf(E.owner),dx,dy),ov=ovOf(k),o=orig[k]||{du:0,dv:0};ov.du=+(o.du+c.du).toFixed(3);ov.dv=+(o.dv+c.dv).toFixed(3)}}
+const keysOf=()=>session?.type==='group'?session.keys:session?.type==='item'?[session.key]:[];
+function finish(ok){if(!session)return;const s=session;session=null;if(!ok){const b=JSON.parse(s.before);set(b)}else for(const k of(s.keys||[s.key]))if(k)clean(k);sel=null;drag=null;UX.persist();render();flashStatus(ok?'บันทึกการแก้แล้ว':'ยกเลิกแล้ว · กลับเป็นเหมือนก่อนแก้')}
 function flashStatus(t){const st=document.getElementById('status');if(st)st.textContent=t}
 function locked(){panel.classList.remove('ae-shake');void panel.offsetWidth;panel.classList.add('ae-shake');flashStatus('กำลังแก้ชิ้นอื่นอยู่ · กด ✓ เสร็จ หรือ ยกเลิก ก่อนเลือกชิ้นใหม่')}
 function focusOn(x,y){pan={x:-(x-WORLD_W/2)*scale*zoom,y:-(y-WORLD_H/2)*scale*zoom}}
 const stageEl=document.getElementById('stage');
 stageEl.addEventListener('pointerdown',e=>{if(!active()||e.button!==0||e.target.closest('#assetEdit,#aePicker'))return;const p=world(e);
+ if(e.shiftKey&&session?.type!=='building'){const h=pick(p);e.stopPropagation();e.preventDefault();if(h)toGroup(h.key);else{band={id:e.pointerId,a:p,b:p}}return}
+ if(session?.type==='group'){const h=pick(p);if(h&&session.keys.includes(h.key)){e.stopPropagation();e.preventDefault();const orig={};for(const k of session.keys){const o=data.edit[k]||{};orig[k]={du:o.du||0,dv:o.dv||0}}drag={id:e.pointerId,p,orig,moved:false,group:true};return}if(h||UX.hitObject(p)){e.stopPropagation();e.preventDefault();locked()}return}
  if(session){let own=false;if(session.type==='item')own=!!pick(p,session.key);else{const o=UX.hitObject(p);own=o?.id===session.id}
   if(own){e.stopPropagation();e.preventDefault();if(session.type==='item'){const ov=data.edit[session.key]||{};drag={id:e.pointerId,p,du:ov.du||0,dv:ov.dv||0,moved:false}}else{const t=data.buildings[session.id]||{};drag={id:e.pointerId,p,dx:t.dx||0,dy:t.dy||0,moved:false}}return}
   if(pick(p)||UX.hitObject(p)){e.stopPropagation();e.preventDefault();locked()}return}// empty ground → camera pan as usual
  const hit=pick(p);if(hit){e.stopPropagation();e.preventDefault();start({type:'item',key:hit.key,owner:hit.owner});const ov=data.edit[hit.key]||{};drag={id:e.pointerId,p,du:ov.du||0,dv:ov.dv||0,moved:false};return}
  const o=UX.hitObject(p);if(o){e.stopPropagation();e.preventDefault();start({type:'building',id:o.id,owner:o.id});const t=data.buildings[o.id]||{};drag={id:e.pointerId,p,dx:t.dx||0,dy:t.dy||0,moved:false}}},true);
 stageEl.addEventListener('pointermove',e=>{if(!active()){hoverKey=null;return}if(drag)return;const h=pick(world(e),session?.type==='item'?session.key:null);hoverKey=session&&!h?null:h?.key||null});
-window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id||!session)return;const p=world(e),dx=p.x-drag.p.x,dy=p.y-drag.p.y;if(!drag.moved&&Math.hypot(dx,dy)*scale*zoom<4)return;drag.moved=true;
+window.addEventListener('pointermove',e=>{if(band&&e.pointerId===band.id){band.b=world(e);return}if(!drag||e.pointerId!==drag.id||!session)return;const p=world(e),dx=p.x-drag.p.x,dy=p.y-drag.p.y;if(!drag.moved&&Math.hypot(dx,dy)*scale*zoom<4)return;drag.moved=true;
+ if(drag.group){moveKeys(session.keys,drag.orig,dx,dy);return}
  if(session.type==='item'){const b=baseOf(session.owner),c=canonDelta(b,dx,dy),ov=ovOf(session.key);ov.du=+(drag.du+c.du).toFixed(3);ov.dv=+(drag.dv+c.dv).toFixed(3)}
  else{const t=data.buildings[session.id]||(data.buildings[session.id]={});t.dx=Math.round(drag.dx+dx);t.dy=Math.round(drag.dy+dy)}},true);
-window.addEventListener('pointerup',e=>{if(!drag||e.pointerId!==drag.id)return;drag=null},true);
-function nudge(dx,dy){if(!session)return;if(session.type==='item'){const c=canonDelta(baseOf(session.owner),dx,dy),ov=ovOf(session.key);ov.du=+((ov.du||0)+c.du).toFixed(3);ov.dv=+((ov.dv||0)+c.dv).toFixed(3)}else{const t=data.buildings[session.id]||(data.buildings[session.id]={});t.dx=(t.dx||0)+dx;t.dy=(t.dy||0)+dy}}
+window.addEventListener('pointerup',e=>{if(band&&e.pointerId===band.id){const x0=Math.min(band.a.x,band.b.x),x1=Math.max(band.a.x,band.b.x),y0=Math.min(band.a.y,band.b.y),y1=Math.max(band.a.y,band.b.y);band=null;const hits=frame.filter(f=>f.x>=x0&&f.x<=x1&&f.y>=y0&&f.y<=y1).map(f=>f.key);if(hits.length){for(const k of hits)if(!inSel(k))toGroup(k)}return}if(!drag||e.pointerId!==drag.id)return;drag=null},true);
+function nudge(dx,dy){if(!session)return;if(session.type==='group'){const orig={};for(const k of session.keys){const o=data.edit[k]||{};orig[k]={du:o.du||0,dv:o.dv||0}}moveKeys(session.keys,orig,dx,dy);return}if(session.type==='item'){const c=canonDelta(baseOf(session.owner),dx,dy),ov=ovOf(session.key);ov.du=+((ov.du||0)+c.du).toFixed(3);ov.dv=+((ov.dv||0)+c.dv).toFixed(3)}else{const t=data.buildings[session.id]||(data.buildings[session.id]={});t.dx=(t.dx||0)+dx;t.dy=(t.dy||0)+dy}}
 document.addEventListener('keydown',e=>{if(!active()||!session||e.target.closest('input,select,textarea')||picker?.open)return;
  if(e.key==='Enter'){e.preventDefault();finish(true);return}if(e.key==='Escape'){e.preventDefault();finish(false);return}
- if(session.type==='item'&&(e.key==='Delete'||e.key==='Backspace')){e.preventDefault();removeCurrent();return}
+ if(session.type!=='building'&&(e.key==='Delete'||e.key==='Backspace')){e.preventDefault();if(session.type==='group'){for(const k of session.keys){const a=data.added.find(x=>x.id===k);if(a){data.added=data.added.filter(x=>x!==a);delete data.edit[k]}else ovOf(k).hide=true}finish(true)}else removeCurrent();return}
  const k={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];if(!k)return;e.preventDefault();const n=e.shiftKey?10:2;nudge(k[0]*n,k[1]*n)});
 function removeCurrent(){const a=data.added.find(a=>a.id===session.key);if(a){data.added=data.added.filter(x=>x!==a);delete data.edit[a.id];session.before=session.isNew?session.before:session.before;const s=session;session=null;sel=null;UX.persist();render();flashStatus(s.isNew?'ยกเลิกของที่เพิ่ม':'ลบของที่เพิ่มแล้ว');return}ovOf(session.key).hide=true;finish(true)}
 
@@ -112,6 +124,22 @@ function openPicker(title,current,onPick){if(!picker){picker=document.createElem
   picker.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;draw()});picker.querySelector('[data-x]').onclick=()=>picker.close();const s=picker.querySelector('input');s.oninput=()=>{q=s.value.trim();const pos=s.selectionStart;draw();const n=picker.querySelector('input');n.focus();n.setSelectionRange(pos,pos)}};
  draw();picker.showModal();picker.querySelector('input').focus()}
 
+/* ---------- copy one place's decoration to other places ---------- */
+function copyTo(src,targets){const b=baseOf(src);if(!b)return{copied:0,skipped:0};const items=[];let skipped=0;
+ for(const E of frame.filter(e=>e.owner===src&&!e.hidden)){const ov=E.ov||{},add=data.added.find(a=>a.id===E.key),kind=ov.kind&&KINDS[ov.kind]?ov.kind:add?add.kind:nameKind(E.name);if(!kind){skipped++;continue}
+  const w=inv(b.mirror?b.cx*2-E.x:E.x,E.y);items.push({kind,du:+(w.u-b.u).toFixed(3),dv:+(w.v-b.v).toFixed(3),ov:{s:ov.s,r:ov.r,f:ov.f,layer:ov.layer}})}
+ for(const t of targets){if(t===src||!baseOf(t))continue;for(const E of frame.filter(e=>e.owner===t))if(!E.key.startsWith('add:'))ovOf(E.key).hide=true;
+  const gone=data.added.filter(a=>a.owner===t).map(a=>a.id);data.added=data.added.filter(a=>a.owner!==t);for(const id of gone)delete data.edit[id];
+  for(const it of items){const id='add:'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);data.added.push({id,owner:t,du:it.du,dv:it.dv,kind:it.kind});data.edit[id]={...it.ov};clean(id)}}
+ return{copied:items.length,skipped}}
+function openCopy(src){if(!picker){picker=document.createElement('dialog');picker.id='aePicker';document.body.append(picker)}
+ const places=locations.filter(o=>o.id!==src&&o.id!=='square'&&baseOf(o.id));
+ picker.innerHTML=`<div class="pk-head"><b>คัดลอกการแต่งของ ${ownerName(src)} ไปที่…</b><button data-x>ปิด (Esc)</button></div><div class="pk-tabs"><button data-all="npc">บ้าน NPC ทั้งหมด</button><button data-all="none">ล้างที่เลือก</button></div>
+ <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">${places.map(o=>`<label style="display:flex;gap:8px;align-items:center;background:#132621;border:1px solid #4d6656;border-radius:10px;padding:8px"><input type="checkbox" value="${o.id}"> ${o.name}</label>`).join('')}</div>
+ <p style="padding:0 12px;color:#c9d2b8">ของเดิมของสถานที่ปลายทางจะถูกซ่อน แล้วใส่ของชุดเดียวกับต้นทางในตำแหน่งเดียวกัน (กลับด้านให้เองถ้าอาคารหันอีกทาง) · ย้อนกลับได้</p><div class="pk-tabs" style="justify-content:flex-end"><button id="cpGo" style="background:#4f7a3c">คัดลอก</button></div>`;
+ picker.querySelector('[data-x]').onclick=()=>picker.close();picker.querySelectorAll('[data-all]').forEach(b=>b.onclick=()=>picker.querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=b.dataset.all==='npc'&&c.value.startsWith('npc')));
+ picker.querySelector('#cpGo').onclick=()=>{const t=[...picker.querySelectorAll('input:checked')].map(c=>c.value);if(!t.length)return;UX.checkpoint();const r=copyTo(src,t);UX.persist();picker.close();render();flashStatus('คัดลอก '+r.copied+' ชิ้นไป '+t.length+' แห่ง'+(r.skipped?' · ข้าม '+r.skipped+' ชิ้นที่ยังไม่มีภาพแบบเลือกได้':'')+' · กด ย้อนกลับ ได้')};picker.showModal()}
+
 /* ---------- panel ---------- */
 const css=document.createElement('style');css.textContent=`#assetEdit{position:fixed;left:16px;top:120px;z-index:9;width:310px;max-height:calc(100dvh - 140px);display:flex;flex-direction:column;background:#1b302af5;color:#f3ead0;border:1px solid #b9c48f;border-radius:12px;font-size:12px;box-shadow:0 10px 30px #0006}#assetEdit[hidden]{display:none}
 #assetEdit .body{overflow:auto;padding:12px}#assetEdit h3{margin:0 0 4px;font-size:15px;color:#fff0c7}#assetEdit .sub{color:#c9d2b8;margin:0 0 8px}#assetEdit .chip{display:inline-block;background:#e5c06b;color:#1b302a;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:6px;vertical-align:2px}
@@ -135,15 +163,25 @@ const nudgeHtml=`<div class="row" style="align-items:center"><span>ขยับ�
 function owners(){const set=new Map();for(const e of frame){if(!set.has(e.owner))set.set(e.owner,0);set.set(e.owner,set.get(e.owner)+1)}return[...set.entries()].sort((a,b)=>ownerName(a[0]).localeCompare(ownerName(b[0]),'th'))}
 function render(){panel.hidden=!active();if(panel.hidden)return;
  if(!session){const os=owners();if(!listOwner||!os.some(([o])=>o===listOwner))listOwner=os[0]?.[0]||'';const items=frame.filter(e=>e.owner===listOwner);
-  panel.innerHTML=`<div class="body"><h3>แต่ง asset ย่อย</h3><p class="sub">① คลิกชิ้นบนแผนที่ (จุดสีทอง) หรือเลือกจากรายการ · ② ปรับ · ③ กด ✓ เสร็จ — ระหว่างแก้จะเลือกชิ้นอื่นไม่ได้ กันกดพลาด · คลิกตัวอาคารเพื่อปรับมุมเอียง</p>
+  const seenN={},nm=e=>{const b=e.ov?.kind&&KINDS[e.ov.kind]?KINDS[e.ov.kind].label:e.label;seenN[b]=(seenN[b]||0)+1;return b+(items.filter(x=>(x.ov?.kind&&KINDS[x.ov.kind]?KINDS[x.ov.kind].label:x.label)===b).length>1?' '+seenN[b]:'')};
+  panel.innerHTML=`<div class="body"><h3>แต่ง asset ย่อย</h3><p class="sub">① คลิกชิ้นบนแผนที่ (จุดสีทอง) หรือเลือกจากรายการ · ② ปรับ · ③ กด ✓ เสร็จ — ระหว่างแก้จะเลือกชิ้นอื่นไม่ได้ กันกดพลาด · Shift+คลิก/Shift+ลาก = เลือกหลายชิ้น · คลิกตัวอาคารเพื่อปรับมุมเอียง</p>
   <label style="grid-template-columns:70px 1fr">สถานที่<select id="aeOwner">${os.map(([o,n])=>`<option value="${o}" ${o===listOwner?'selected':''}>${ownerName(o)} (${n})</option>`).join('')}</select></label>
-  <div class="items">${items.map(e=>`<button data-key="${e.key}"><span class="mini"></span><span style="flex:1">${e.ov?.kind&&KINDS[e.ov.kind]?KINDS[e.ov.kind].label:e.label}</span><small>${e.hidden?'ซ่อนอยู่':e.key.startsWith('add:')?'เพิ่มเอง':Object.keys(e.ov||{}).length?'แก้แล้ว':''}</small></button>`).join('')||'<p class="sub">ไม่มีชิ้นในสถานที่นี้</p>'}</div>
-  <div class="row"><button id="aeAdd">＋ เพิ่ม asset…</button><button id="aeResetOwner">คืนค่าทั้งแปลง</button></div>${blendBlock()}</div>`;
+  <div class="items">${items.map(e=>`<button data-key="${e.key}"><span class="mini"></span><span style="flex:1">${nm(e)}</span><small>${e.hidden?'ซ่อนอยู่':e.key.startsWith('add:')?'เพิ่มเอง':Object.keys(e.ov||{}).length?'แก้แล้ว':''}</small></button>`).join('')||'<p class="sub">ไม่มีชิ้นในสถานที่นี้</p>'}</div>
+  <div class="row"><button id="aeAdd">＋ เพิ่ม asset…</button><button id="aeCopy">คัดลอกการแต่งไปที่อื่น…</button><button id="aeResetOwner">คืนค่าทั้งแปลง</button></div>${blendBlock()}</div>`;
   panel.querySelector('#aeOwner').onchange=e=>{listOwner=e.target.value;render()};
   panel.querySelectorAll('[data-key]').forEach(b=>{const E=frame.find(x=>x.key===b.dataset.key),m=b.querySelector('.mini');if(E&&m){const c=miniThumb(E);if(c)m.append(c)}b.onmouseenter=()=>hoverKey=b.dataset.key;b.onmouseleave=()=>hoverKey=null;b.onclick=()=>{const E=frame.find(x=>x.key===b.dataset.key);if(!E)return;zoom=Math.max(zoom,1.5);focusOn(E.x,E.y);start({type:'item',key:E.key,owner:E.owner})}});
   panel.querySelector('#aeAdd').onclick=()=>openPicker('เพิ่ม asset ให้ '+ownerName(listOwner),'',k=>{const base=baseOf(listOwner);if(!base)return;const before=JSON.stringify(data),id='add:'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);UX.checkpoint();data.added.push({id,owner:listOwner,du:0,dv:+base.front.toFixed(2),kind:k});session={type:'item',key:id,owner:listOwner,isNew:true,before};sel={type:'item',key:id,owner:listOwner};const p=toScreen(base,0,base.front);focusOn(p.x,p.y);render();flashStatus('วางของใหม่แล้ว · ลากไปที่ต้องการ แล้วกด ✓ เสร็จ')});
+  panel.querySelector('#aeCopy').onclick=()=>openCopy(listOwner);
   panel.querySelector('#aeResetOwner').onclick=()=>{if(!window.confirm('คืนค่าของประดับทั้งหมดของ '+ownerName(listOwner)+' (รวมที่เพิ่มเอง)?'))return;UX.checkpoint();for(const k of Object.keys(data.edit))if(k.startsWith(listOwner+':')||k===listOwner||data.added.some(a=>a.id===k&&a.owner===listOwner))delete data.edit[k];data.added=data.added.filter(a=>a.owner!==listOwner);UX.persist();render()};
   bindBlend();return}
+ if(session.type==='group'){const ks=session.keys,ents=ks.map(k=>frame.find(e=>e.key===k)).filter(Boolean);
+  panel.innerHTML=`<div class="body"><h3>เลือก ${ks.length} ชิ้น<span class="chip">กลุ่ม</span></h3><p class="sub">Shift+คลิก = เพิ่ม/เอาออก · Shift+ลากพื้น = ครอบเลือก · ลากชิ้นใดก็ได้ในกลุ่มเพื่อย้ายทั้งหมด</p>
+  <div class="items">${ents.map(e=>`<button data-k="${e.key}"><span class="mini"></span><span style="flex:1">${e.ov?.kind&&KINDS[e.ov.kind]?KINDS[e.ov.kind].label:e.label}</span><small>${ownerName(e.owner)}</small><b title="เอาออกจากกลุ่ม">✕</b></button>`).join('')}</div>${nudgeHtml}
+  <div class="row"><button id="gHide">ซ่อนทั้งหมด</button><button id="gShow">แสดงทั้งหมด</button><button id="gReset">คืนค่าทั้งหมด</button>${ents.some(e=>e.key.startsWith('add:'))?'<button id="gDel">ลบที่เพิ่มเอง</button>':''}</div></div>${foot}`;
+  panel.querySelectorAll('[data-k]').forEach(b=>{const E=frame.find(x=>x.key===b.dataset.k),m=b.querySelector('.mini');if(E&&m){const c=miniThumb(E);if(c)m.append(c)}b.onmouseenter=()=>hoverKey=b.dataset.k;b.onmouseleave=()=>hoverKey=null;b.onclick=()=>toGroup(b.dataset.k)});
+  panel.querySelector('#gHide').onclick=()=>{for(const k of ks)ovOf(k).hide=true;render()};panel.querySelector('#gShow').onclick=()=>{for(const k of ks)delete ovOf(k).hide;render()};panel.querySelector('#gReset').onclick=()=>{for(const k of ks)delete data.edit[k];render()};
+  const gd=panel.querySelector('#gDel');if(gd)gd.onclick=()=>{data.added=data.added.filter(a=>!ks.includes(a.id));for(const k of ks)if(k.startsWith('add:'))delete data.edit[k];session.keys=ks.filter(k=>!k.startsWith('add:'));if(!session.keys.length)finish(true);else render()};
+  bindSession();return}
  if(session.type==='building'){const o=locations.find(x=>x.id===session.id);if(!o){session=null;render();return}const t=data.buildings[o.id]||{};
   panel.innerHTML=`<div class="body"><h3>${o.name}<span class="chip">กำลังแก้</span></h3><p class="sub">ตัวอาคาร · ลากตัวอาคารเพื่อขยับ · เส้นประฟ้า = แนว 2:1 ของพื้นและกรอบฐาน</p>
   ${slider('sx','กว้าง',t.sx??1,.5,1.6,.01,FMT.sx)}${slider('sy','สูง',t.sy??1,.5,1.6,.01,FMT.sy)}${slider('kx','เอียงซ้าย-ขวา',t.kx||0,-.6,.6,.005,FMT.kx)}${slider('ky','ยกด้านข้าง',t.ky||0,-.6,.6,.005,FMT.ky)}${nudgeHtml}
@@ -175,7 +213,8 @@ function bindBlend(){for(const k of['hero','npc']){const c=panel.querySelector('
 /* ---------- overlay: dots (dimmed while one item is being edited), building footprint + 2:1 guides ---------- */
 const baseOverlay=UX.overlay;
 UX.overlay=function(gg,t){baseOverlay(gg,t);if(!active())return;const z=scale*zoom;
- for(const e of frame){const on=session?.type==='item'&&session.key===e.key;gg.save();gg.globalAlpha=session&&!on?.25:1;gg.beginPath();gg.arc(e.x,e.y,(on?8:hoverKey===e.key?6:4.5)/z,0,Math.PI*2);gg.fillStyle=e.hidden?'#c9504a':on?'#9ff3f5':e.key.startsWith('add:')?'#a8e07a':'#e5c06b';gg.fill();gg.lineWidth=1.2/z;gg.strokeStyle='#1d2b24';gg.stroke();if(e.hidden){gg.beginPath();gg.moveTo(e.x-4/z,e.y-4/z);gg.lineTo(e.x+4/z,e.y+4/z);gg.moveTo(e.x+4/z,e.y-4/z);gg.lineTo(e.x-4/z,e.y+4/z);gg.strokeStyle='#fff';gg.stroke()}gg.restore()}
+ for(const e of frame){const on=inSel(e.key);gg.save();gg.globalAlpha=session&&!on?.25:1;gg.beginPath();gg.arc(e.x,e.y,(on?8:hoverKey===e.key?6:4.5)/z,0,Math.PI*2);gg.fillStyle=e.hidden?'#c9504a':on?'#9ff3f5':e.key.startsWith('add:')?'#a8e07a':'#e5c06b';gg.fill();gg.lineWidth=1.2/z;gg.strokeStyle='#1d2b24';gg.stroke();if(e.hidden){gg.beginPath();gg.moveTo(e.x-4/z,e.y-4/z);gg.lineTo(e.x+4/z,e.y+4/z);gg.moveTo(e.x+4/z,e.y-4/z);gg.lineTo(e.x-4/z,e.y+4/z);gg.strokeStyle='#fff';gg.stroke()}gg.restore()}
+ if(band){gg.save();gg.setLineDash([6/z,4/z]);gg.lineWidth=1.5/z;gg.strokeStyle='#9ff3f5';gg.fillStyle='#9ff3f522';gg.fillRect(band.a.x,band.a.y,band.b.x-band.a.x,band.b.y-band.a.y);gg.strokeRect(band.a.x,band.a.y,band.b.x-band.a.x,band.b.y-band.a.y);gg.restore()}
  if(session?.type==='building'){const o=locations.find(x=>x.id===session.id);if(!o)return;const a=center(o),c=project(a.u,a.v),pts=[[-o.w,-o.d],[o.w,-o.d],[o.w,o.d],[-o.w,o.d]].map(([u,v])=>project(a.u+u,a.v+v));gg.save();gg.setLineDash([8/z,6/z]);gg.lineWidth=2/z;gg.strokeStyle='#7fe3ff';gg.beginPath();pts.forEach((p,i)=>gg[i?'lineTo':'moveTo'](p.x,p.y));gg.closePath();gg.stroke();
   if(guides){gg.globalAlpha=.7;for(const s of[-.5,.5])for(const p of[pts[0],pts[2]]){gg.beginPath();gg.moveTo(p.x-700,p.y-700*s);gg.lineTo(p.x+700,p.y+700*s);gg.stroke()}}
   gg.setLineDash([]);gg.globalAlpha=1;gg.fillStyle='#7fe3ff';gg.beginPath();gg.arc(c.x,c.y,5/z,0,Math.PI*2);gg.fill();gg.restore()}};
