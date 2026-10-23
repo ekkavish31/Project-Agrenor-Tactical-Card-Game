@@ -15,7 +15,7 @@ function boot(){try{
  else if(mode==='map'){if(typeof openMapEditor==='function')openMapEditor();else openPanel('map')}
  else if(mode==='dev'){if(typeof toggleDev==='function'&&!devActive)toggleDev()}
  else if(mode==='menu'){menuPicker()}
- else if(mode==='battle'){s.village.adventure=null;s.village.location='forge';s.hp=60;s.stamina=100;s.fatigue=0;s.minutes=480;s.mode='forge';render();openTactical()}
+ else if(mode==='battle'){if(!new URLSearchParams(location.search).get('try'))try{localStorage.removeItem('battleground-try')}catch(e){}s.village.adventure=null;s.village.location='forge';s.hp=60;s.stamina=100;s.fatigue=0;s.minutes=480;s.mode='forge';render();openTactical()}
 }catch(e){console.error('editor boot',e)}}
 // menu icon chooser: each top-right button can use a picture from assets/icons/menu or the drawn icon
 const MENU_ICONS=['village','map','bag','deck','market','battle','guard','party','quest','trophy','spellbook','potion','treasure','forge','settings','mail','calendar','guild','trade','portal','castle','balance','stats','collection','gear'];

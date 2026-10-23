@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Battleground Editor</title>
+<style>
+:root{--bg:#1a1510;--panel:#241d15;--line:#4a3b29;--text:#f3e7cf;--muted:#bba57f;--gold:#f6d79b;--accent:#c9893a}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 system-ui,"Noto Sans Thai",sans-serif}
+#app{display:grid;grid-template-columns:250px 1fr 290px;height:100%}
+aside{background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:12px}aside.right{border-right:0;border-left:1px solid var(--line)}
+h2{font-size:14px;color:var(--gold);margin:4px 0 8px}h3{font-size:12px;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.05em}
+button,select,input{font:inherit;color:var(--text);background:#30271d;border:1px solid var(--line);border-radius:7px;padding:5px 8px}button{cursor:pointer}button:hover{border-color:var(--accent)}button.on{background:var(--accent);border-color:#8a5a20;color:#fff}button.primary{background:var(--accent);color:#fff;border-color:#8a5a20}
+input[type=number]{width:60px}input[type=text]{width:100%}input[type=range]{width:100%}
+.list button{display:block;width:100%;text-align:left;margin:3px 0}.row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:5px 0}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.tools button{padding:5px 2px;font-size:12px}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+main{position:relative;overflow:hidden}canvas{display:block;width:100%;height:100%;cursor:crosshair}
+#hud{position:absolute;left:12px;top:10px;right:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;pointer-events:none}#hud>*{pointer-events:auto}
+#warn{position:absolute;left:12px;bottom:12px;max-width:60%;background:#241d15e8;border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--muted)}
+table{width:100%;border-collapse:collapse}td,th{padding:4px 3px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}
+.muted{color:var(--muted)}.chk{display:flex;gap:6px;align-items:center;margin:3px 0}
+#push{position:fixed;right:14px;bottom:14px;display:flex;gap:6px;align-items:center;background:#241d15f0;border:1px solid var(--accent);border-radius:10px;padding:6px 8px;z-index:5}#pushMsg{max-width:260px;color:#e6d3a9}
+</style>
+</head>
+<body>
+<div id="app">
+ <aside>
+  <h2>⚔ Battleground Editor</h2>
+  <p class="muted">วาดชิ้นภูมิประเทศ แล้วตัวสุ่มแผนที่จะหยิบไปวางบนสนามสุ่มของพื้นที่ที่เลือก</p>
+  <h3>ชิ้นภูมิประเทศ</h3>
+  <div class="list" id="chunks"></div>
+  <div class="row"><button id="new">+ ชิ้นใหม่</button><button id="dup">ทำสำเนา</button><button id="del">ลบ</button></div>
+  <h3>ชิ้นที่เลือก</h3>
+  <label>ชื่อ <input type="text" id="name"></label>
+  <div class="row">ขนาด <input type="number" id="w" min="2" max="16"> × <input type="number" id="h" min="2" max="16"><button id="resize">ปรับ</button></div>
+  <div class="row">น้ำหนักการสุ่ม <input type="number" id="weight" min="0" max="10" step="0.5"></div>
+  <div class="muted">ใช้ในพื้นที่:</div><div id="areasOf"></div>
+  <h3>ทดสอบ</h3>
+  <div class="row"><button id="try" class="primary">▶ ลองเล่นชิ้นนี้</button></div>
+  <div class="row"><button id="legacy">เครื่องมือเดิม: จุดมืออาวุธ · เอฟเฟกต์ · Seed</button></div>
+ </aside>
+ <main><canvas id="cv"></canvas>
+  <div id="hud"><button id="rotL" title="หมุนมุมมอง">⟲</button><button id="rotR" title="หมุนมุมมอง">⟳</button><button id="undo">ย้อน</button><button id="redo">ทำซ้ำ</button><span class="muted">คลิก/ลากเพื่อระบาย · คลิกขวา = เครื่องมือตรงข้าม · ล้อเมาส์ = ซูม</span></div>
+  <div id="warn"></div>
+ </main>
+ <aside class="right">
+  <h3>ความสูง</h3>
+  <div class="tools" id="hTools"></div>
+  <h3>พื้น</h3>
+  <div class="tools" id="kTools"></div>
+  <h3>ของบนช่อง (กันทางเดิน)</h3>
+  <div class="tools" id="pTools"></div>
+  <h3>ตั้งค่าแต่ละพื้นที่</h3>
+  <table><thead><tr><th>พื้นที่</th><th>โอกาสใส่ชิ้น</th><th>กลางคืน</th></tr></thead><tbody id="areaRows"></tbody></table>
+  <p class="muted">โอกาสใส่ชิ้น = ทุกกี่ศึกจะมีชิ้นทำมือหนึ่งชิ้นวางบนแผนที่ (ถ้าวางแล้วทำให้ทางไปจุดเกิดขาด ระบบจะย้ายที่หรือไม่วาง) · กลางคืน = โอกาสเป็นฉากกลางคืน</p>
+ </aside>
+</div>
+<div id="push"><span id="pushMsg"></span><button id="pushBtn" class="primary">⬆ Push สนามต่อสู้ขึ้นเกม</button></div>
+<script src="js/game-settings.js"></script>
+<script src="js/github-push.js"></script>
+<script>
+'use strict';
+const KEY='battleground-v1',$=id=>document.getElementById(id);
+const AREAS={training:'ฝึกซ้อม',forest:'ป่า',mine:'เหมือง',swamp:'บึง',coast:'ชายฝั่ง',frost:'น้ำแข็ง',ruins:'ซากโบราณ'};
+const KINDS={grass:['หญ้า','#6c9a4a'],tallgrass:['หญ้าสูง','#4e7d35'],path:['ทางดิน','#b39566'],stone:['หิน','#9b978c'],rubble:['หินแตก','#867b6c'],sand:['ทราย','#d9c48c'],mud:['โคลน','#6b5537'],snow:['หิมะ','#e7edf1'],ice:['น้ำแข็ง','#bde1ee'],shallow:['น้ำตื้น','#6fa8c8'],water:['น้ำลึก','#3f78ad']};
+const PROPS={'':['ไม่มี','#0000'],tree:['ต้นไม้','#2f6b2a'],bush:['พุ่มไม้','#4f8f3a'],rock:['ก้อนหิน','#8a8a85'],mossrock:['หินตะไคร่','#6f8462'],pillar:['เสาหิน','#c9c2ad'],log:['ขอนไม้','#7a5434'],crystal:['คริสตัล','#8fd0ef'],cart:['เกวียน','#8a6a44']};
+let data,cur=0,tool={type:'h',v:1},view=0,zoom=1,undo=[],redo=[],painting=null;
+const blank=(w,h,name)=>({id:'g'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,w,h,weight:1,areas:['forest'],cells:Array.from({length:w*h},()=>({h:0,k:'grass',p:''}))});
+function sample(){const c=blank(7,7,'เนินหินกลางทุ่ง');c.id='sample-hill';c.areas=['forest','training'];c.cells.forEach((q,i)=>{const x=i%7,y=Math.floor(i/7),d=Math.max(Math.abs(x-3),Math.abs(y-3));q.h=d===0?4:d===1?3:d===2?(x===3&&y===5?2:2):0;q.k=d<=1?'stone':d===2?'tallgrass':'grass';if(x===3&&y>=5){q.k='path';q.h=y===5?2:1}if(x===3&&y===6)q.h=1});c.cells[0].p='tree';c.cells[6].p='rock';return c}
+function load(){try{data=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){data=null}if(!data||!Array.isArray(data.chunks))data={version:1,chunks:[sample()],areas:{}};for(const a of Object.keys(AREAS))data.areas[a]||={chance:.5,night:a==='mine'?.6:.25}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));renderSide()}
+function checkpoint(){undo.push(JSON.stringify(data));if(undo.length>60)undo.shift();redo=[]}
+const C=()=>data.chunks[cur];
+
+/* ---------- side panels ---------- */
+function renderSide(){const c=C();
+ $('chunks').innerHTML=data.chunks.map((c,i)=>`<button data-i="${i}" class="${i===cur?'on':''}">${esc(c.name)} <span class="muted">${c.w}×${c.h} · ${c.areas.map(a=>AREAS[a]).join(', ')||'ไม่ได้ใช้'}</span></button>`).join('');
+ $('chunks').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;renderSide();draw()});
+ if(!c)return;$('name').value=c.name;$('w').value=c.w;$('h').value=c.h;$('weight').value=c.weight??1;
+ $('areasOf').innerHTML=Object.entries(AREAS).map(([k,v])=>`<label class="chk"><input type="checkbox" data-a="${k}" ${c.areas.includes(k)?'checked':''}> ${v}</label>`).join('');
+ $('areasOf').querySelectorAll('[data-a]').forEach(i=>i.onchange=()=>{checkpoint();c.areas=Object.keys(AREAS).filter(k=>$('areasOf').querySelector(`[data-a=${k}]`).checked);save()});
+ $('areaRows').innerHTML=Object.entries(AREAS).map(([k,v])=>`<tr><td>${v}</td><td><input type="range" min="0" max="1" step="0.05" data-ar="${k}" data-f="chance" value="${data.areas[k].chance}"><span class="muted">${Math.round(data.areas[k].chance*100)}%</span></td><td><input type="range" min="0" max="1" step="0.05" data-ar="${k}" data-f="night" value="${data.areas[k].night}"><span class="muted">${Math.round(data.areas[k].night*100)}%</span></td></tr>`).join('');
+ $('areaRows').querySelectorAll('input').forEach(i=>{i.oninput=()=>i.nextElementSibling.textContent=Math.round(i.value*100)+'%';i.onchange=()=>{checkpoint();data.areas[i.dataset.ar][i.dataset.f]=+i.value;save()}})}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toolButtons(){const mk=(box,list)=>{$(box).innerHTML=list.map(([type,v,label,col])=>`<button data-t="${type}" data-v="${v}">${col?`<span class="swatch" style="background:${col}"></span>`:''}${label}</button>`).join('');};
+ mk('hTools',[['h',1,'▲ ยกขึ้น 1'],['h',-1,'▼ ลดลง 1'],['flat','','▬ เท่าช่องแรก'],...[0,1,2,3,4,5].map(n=>['set',n,'สูง '+n])]);
+ mk('kTools',Object.entries(KINDS).map(([k,[l,c]])=>['k',k,l,c]));mk('pTools',Object.entries(PROPS).map(([k,[l,c]])=>['p',k,l,k?c:'']));
+ document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tool={type:b.dataset.t,v:b.dataset.t==='h'||b.dataset.t==='set'?+b.dataset.v:b.dataset.v};document.querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('on',x===b))});
+ document.querySelector('[data-t=h][data-v="1"]').classList.add('on')}
+$('name').onchange=()=>{checkpoint();C().name=$('name').value.trim()||'ไม่มีชื่อ';save()};$('weight').onchange=()=>{checkpoint();C().weight=Math.max(0,+$('weight').value||0);save()};
+$('resize').onclick=()=>{const c=C(),w=Math.max(2,Math.min(16,+$('w').value|0)),h=Math.max(2,Math.min(16,+$('h').value|0));checkpoint();const cells=[];for(let y=0;y<h;y++)for(let x=0;x<w;x++)cells.push(x<c.w&&y<c.h?c.cells[y*c.w+x]:{h:0,k:'grass',p:''});Object.assign(c,{w,h,cells});save();draw()};
+$('new').onclick=()=>{checkpoint();data.chunks.push(blank(7,7,'ชิ้นใหม่ '+(data.chunks.length+1)));cur=data.chunks.length-1;save();draw()};
+$('dup').onclick=()=>{if(!C())return;checkpoint();const c=JSON.parse(JSON.stringify(C()));c.id='g'+Date.now().toString(36);c.name+=' (สำเนา)';data.chunks.splice(cur+1,0,c);cur++;save();draw()};
+$('del').onclick=()=>{if(!C()||!confirm('ลบชิ้น "'+C().name+'"?'))return;checkpoint();data.chunks.splice(cur,1);cur=Math.max(0,cur-1);if(!data.chunks.length)data.chunks.push(blank(7,7,'ชิ้นใหม่'));save();draw()};
+$('undo').onclick=()=>{if(!undo.length)return;redo.push(JSON.stringify(data));data=JSON.parse(undo.pop());cur=Math.min(cur,data.chunks.length-1);save();draw()};
+$('redo').onclick=()=>{if(!redo.length)return;undo.push(JSON.stringify(data));data=JSON.parse(redo.pop());save();draw()};
+$('rotL').onclick=()=>{view=(view+3)%4;draw()};$('rotR').onclick=()=>{view=(view+1)%4;draw()};
+$('try').onclick=()=>{save();localStorage.setItem('battleground-try',C().id);window.open('index.html?editor=battle&try='+encodeURIComponent(C().id),'_blank')};
+$('legacy').onclick=()=>window.open('index.html?editor=battle','_blank');
+document.addEventListener('keydown',e=>{if(e.target.closest('input'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();(e.shiftKey?$('redo'):$('undo')).click()}});
+
+/* ---------- iso view + painting ---------- */
+const cv=$('cv'),g=cv.getContext('2d');let W=0,H=0,TW=56,TH=28,ZH=16,origin={x:0,y:0};
+function fit(){const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;draw()}
+// view rotation: map chunk (x,y) to view (vx,vy)
+function rv(x,y,c){return[[x,y],[c.h-1-y,x],[c.w-1-x,c.h-1-y],[y,c.w-1-x]][view]}
+function vdims(c){return view%2?[c.h,c.w]:[c.w,c.h]}
+function proj(vx,vy,z){return{x:origin.x+(vx-vy)*TW/2*zoom,y:origin.y+(vx+vy)*TH/2*zoom-z*ZH*zoom}}
+function shade(hex,f){const n=parseInt(hex.slice(1),16),r=n>>16,gg=n>>8&255,b=n&255,m=v=>Math.max(0,Math.min(255,Math.round(v*f)));return`rgb(${m(r)},${m(gg)},${m(b)})`}
+function order(c){const[vw,vh]=vdims(c),out=[];for(let s=0;s<vw+vh;s++)for(let vx=0;vx<vw;vx++){const vy=s-vx;if(vy<0||vy>=vh)continue;let x,y;for(let yy=0;yy<c.h;yy++)for(let xx=0;xx<c.w;xx++){const r=rv(xx,yy,c);if(r[0]===vx&&r[1]===vy){x=xx;y=yy}}out.push({x,y,vx,vy})}return out}
+let hover=null,drawList=[];
+function draw(){const c=C();g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.clearRect(0,0,W,H);if(!c)return;const[vw,vh]=vdims(c);origin={x:W/2-(vw-vh)*TW/4*zoom,y:H/2-(vw+vh)*TH/4*zoom+40};drawList=[];
+ for(const o of order(c)){const q=c.cells[o.y*c.w+o.x],z=q.h,col=KINDS[q.k]?.[1]||'#888',p=[proj(o.vx,o.vy,z),proj(o.vx+1,o.vy,z),proj(o.vx+1,o.vy+1,z),proj(o.vx,o.vy+1,z)];
+  // side walls down to 0
+  const b1=proj(o.vx+1,o.vy,0),b2=proj(o.vx+1,o.vy+1,0),b3=proj(o.vx,o.vy+1,0);const wall=q.k==='water'||q.k==='shallow'?'#4c6f86':'#7b6a52';
+  if(z>0){poly([p[1],p[2],b2,b1],shade(wall,.8));poly([p[3],p[2],b2,b3],shade(wall,.6));for(let k=1;k<z;k++){const a=proj(o.vx+1,o.vy,k),bb=proj(o.vx+1,o.vy+1,k),cc=proj(o.vx,o.vy+1,k);g.strokeStyle='#0003';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(bb.x,bb.y);g.lineTo(cc.x,cc.y);g.stroke()}}
+  poly(p,col,'#0004');drawList.push({o,p});
+  if(hover&&hover.x===o.x&&hover.y===o.y)poly(p,'#ffffff40','#fff');
+  // cliff marks: neighbour drop of 2+ = FFT rock face (not walkable across)
+  if(q.p)prop(q.p,{x:(p[0].x+p[2].x)/2,y:(p[0].y+p[2].y)/2})}
+ checks()}
+function poly(pts,fill,stroke){g.beginPath();pts.forEach((q,i)=>g[i?'lineTo':'moveTo'](q.x,q.y));g.closePath();g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=1;g.stroke()}}
+function prop(k,c){const s=zoom;g.save();g.translate(c.x,c.y);g.scale(s,s);const col=PROPS[k][1];
+ if(k==='tree'){g.fillStyle='#5a3d22';g.fillRect(-3,-16,6,16);g.fillStyle=col;g.beginPath();g.arc(0,-26,14,0,7);g.fill();g.fillStyle='#3f8a36';g.beginPath();g.arc(-4,-30,8,0,7);g.fill()}
+ else if(k==='pillar'){g.fillStyle=col;g.fillRect(-7,-38,14,38);g.fillStyle='#e2dccb';g.fillRect(-9,-42,18,5)}
+ else if(k==='crystal'){g.fillStyle=col;g.beginPath();g.moveTo(0,-30);g.lineTo(8,-8);g.lineTo(0,0);g.lineTo(-8,-8);g.closePath();g.fill()}
+ else{g.fillStyle=col;g.beginPath();g.ellipse(0,-7,k==='log'||k==='cart'?14:11,k==='bush'?10:8,0,0,7);g.fill()}g.restore()}
+function pick(mx,my){for(let i=drawList.length-1;i>=0;i--){const{o,p}=drawList[i];g.beginPath();p.forEach((q,j)=>g[j?'lineTo':'moveTo'](q.x,q.y));g.closePath();if(g.isPointInPath(mx*devicePixelRatio,my*devicePixelRatio))return o}return null}
+function apply(o,invert){const c=C(),q=c.cells[o.y*c.w+o.x],t=tool;
+ if(t.type==='h')q.h=Math.max(0,Math.min(8,q.h+(invert?-t.v:t.v)));else if(t.type==='set')q.h=t.v;else if(t.type==='flat')q.h=painting.base;
+ else if(t.type==='k')q.k=invert?'grass':t.v;else if(t.type==='p')q.p=invert?'':t.v;draw()}
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointerdown',e=>{const r=cv.getBoundingClientRect(),o=pick(e.clientX-r.left,e.clientY-r.top);if(!o)return;checkpoint();const c=C();painting={done:new Set(),invert:e.button===2,base:c.cells[o.y*c.w+o.x].h};cv.setPointerCapture(e.pointerId);painting.done.add(o.x+','+o.y);apply(o,painting.invert)});
+cv.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect(),o=pick(e.clientX-r.left,e.clientY-r.top);const k=o&&o.x+','+o.y;if((hover&&hover.x+','+hover.y)!==k){hover=o;if(!painting)draw()}if(painting&&o&&!painting.done.has(k)){painting.done.add(k);apply(o,painting.invert)}});
+cv.addEventListener('pointerup',()=>{if(painting){painting=null;save()}});
+cv.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.4,Math.min(3,zoom*Math.exp(-e.deltaY*.001)));draw()},{passive:false});
+// what the game will do with this chunk: steps of 1 are walkable, 2+ become rock-face cliffs; tiles you can't reach from the edge are flagged
+function checks(){const c=C(),at=(x,y)=>x<0||y<0||x>=c.w||y>=c.h?null:c.cells[y*c.w+x],block=q=>!!q.p&&q.p!=='';let cliffs=0;
+ for(let y=0;y<c.h;y++)for(let x=0;x<c.w;x++){const q=at(x,y);for(const[dx,dy]of[[1,0],[0,1]]){const n=at(x+dx,y+dy);if(n&&Math.abs(n.h-q.h)>=2)cliffs++}}
+ const seen=new Set(),st=[];for(let y=0;y<c.h;y++)for(let x=0;x<c.w;x++)if((x===0||y===0||x===c.w-1||y===c.h-1)&&!block(at(x,y))&&at(x,y).h<=1){seen.add(x+','+y);st.push([x,y])}
+ while(st.length){const[x,y]=st.pop(),q=at(x,y);for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const n=at(x+dx,y+dy),k=(x+dx)+','+(y+dy);if(n&&!seen.has(k)&&!block(n)&&Math.abs(n.h-q.h)<=1){seen.add(k);st.push([x+dx,y+dy])}}}
+ let lost=0;for(let y=0;y<c.h;y++)for(let x=0;x<c.w;x++)if(!block(at(x,y))&&!seen.has(x+','+y))lost++;
+ $('warn').innerHTML=`ต่างระดับ 2 ขึ้นไป (กลายเป็นหน้าผาหิน): <b>${cliffs}</b> จุด · ${lost?`<b style="color:#f0a070">ช่องที่เดินขึ้นไม่ถึง ${lost} ช่อง</b> (ปีนได้ทีละ 1 ระดับ ต้องมีทางลาด)`:'เดินถึงทุกช่อง ✓'} · ตอนใช้จริงชิ้นนี้อาจถูกหมุน 0/90/180/270°`}
+
+/* ---------- push ---------- */
+$('pushBtn').onclick=async()=>{save();if(!GitHubPush.config().token){GitHubPush.openSettings();return}const b=$('pushBtn'),m=$('pushMsg');b.disabled=true;try{const sha=await GitHubPush.pushSettings([KEY],'Battleground',[],t=>m.textContent=t);m.textContent=sha?'⬆ push แล้ว · '+sha.slice(0,7):'ไม่มีค่าที่ต้อง push'}catch(e){m.textContent='push ไม่สำเร็จ: '+e.message}finally{b.disabled=false}};
+$('push').append(GitHubPush.settingsButton());
+
+load();if(!localStorage.getItem(KEY))save();toolButtons();renderSide();new ResizeObserver(fit).observe(cv);fit();
+</script>
+</body>
+</html>

@@ -111,7 +111,28 @@ const TALL={tree:1,pillar:1};
 // exits by the ≤1 step rule, FFT cliff skin) and drawn by TacticsHillArt like the hand-made chunks. Rule heights are unchanged.
 // v54: about one battle in four is fought at night (by seed, so a seed always looks the same). Visual only — rules are unchanged.
 const NIGHT_CHANCE=.25;
-function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){const raw=generateRaw(seed,theme,mode,clearance),map=raw.authoredTerrain||raw.style==='fft'?raw:toAuthored(raw,seed);map.night=random(String(seed)+'|night')()<NIGHT_CHANCE;return map}
+function generate(seed='FOREST-01',theme='forest',mode='training',clearance=[1,1]){const raw=generateRaw(seed,theme,mode,clearance);if(!raw.authoredTerrain&&raw.style!=='fft')stampGround(raw,seed,theme,mode,clearance);const map=raw.authoredTerrain||raw.style==='fft'?raw:toAuthored(raw,seed),A=groundSettings()?.areas?.[groundArea(theme,mode)];map.night=random(String(seed)+'|night')()<(Number.isFinite(A?.night)?A.night:NIGHT_CHANCE);return map}
+// v38k · Battleground Editor chunks (localStorage 'battleground-v1', defaults in js/game-settings.js): hand-made terrain pieces
+// stamped onto the random base map of their area. A stamp that would cut a spawn off, or sit on one, is undone and retried elsewhere.
+function groundSettings(){try{const s=root.localStorage?.getItem('battleground-v1');return s?JSON.parse(s):null}catch(e){return null}}
+const groundArea=(theme,mode)=>mode==='training'?'training':theme;
+const GROUND_BLOCK={tree:2,rock:1,pillar:2,crystal:1,cart:1,log:1,bush:1,mossrock:1};
+function stampGround(map,seed,theme,mode,clearance=[1,1]){const G=groundSettings();if(!G||!Array.isArray(G.chunks))return;const area=groundArea(theme,mode),A=G.areas?.[area]||{},rng=random(String(seed)+'|ground');
+ let forced=null;try{if(root.EDITOR_MODE==='battle'){const id=root.localStorage.getItem('battleground-try');forced=G.chunks.find(c=>c.id===id)||null}}catch(e){}
+ if(!forced&&(clearance[0]>1||clearance[1]>1))return;// big bosses need 2-wide routes the stamp can't promise
+ const pool=forced?[forced]:G.chunks.filter(c=>(c.areas||[]).includes(area)&&c.cells?.length);if(!pool.length||!forced&&rng()>=(Number.isFinite(A.chance)?A.chance:.5))return;
+ let r=rng()*pool.reduce((n,c)=>n+(c.weight||1),0),ch=pool[0];for(const c of pool){r-=c.weight||1;if(r<0){ch=c;break}}
+ let w=ch.w,h=ch.h,grid=ch.cells.slice();for(let k=Math.floor(rng()*4);k>0;k--){const g2=[];for(let y=0;y<w;y++)for(let x=0;x<h;x++)g2.push(grid[(h-1-x)*w+y]);grid=g2;[w,h]=[h,w]}
+ const W=map.width||map.size,H=map.height||map.size;if(w>W-2||h>H-2)return;const spawns=[...map.spawns.allies,...map.spawns.enemies],near=new Set(spawns.map(p=>p.x+','+p.y));
+ const ok=()=>{const start=at(map,spawns[0].x,spawns[0].y),seen=new Set([start]),q=[start];while(q.length){const t=q.pop();for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const n=at(map,t.x+dx,t.y+dy);if(n&&!seen.has(n)&&!n.blocked&&Math.abs(n.h-t.h)<=1){seen.add(n);q.push(n)}}}return spawns.every(p=>seen.has(at(map,p.x,p.y)))};
+ const spots=[];for(let oy=1;oy<=H-h-1;oy++)for(let ox=1;ox<=W-w-1;ox++){let clash=false;for(let y=-1;y<=h&&!clash;y++)for(let x=-1;x<=w;x++)if(near.has((ox+x)+','+(oy+y))){clash=true;break}if(!clash)spots.push([ox,oy])}
+ for(let i=spots.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[spots[i],spots[j]]=[spots[j],spots[i]]}
+ for(const[ox,oy]of spots.slice(0,30)){
+  let base=Infinity;for(let y=0;y<h;y++)for(let x=0;x<w;x++)base=Math.min(base,at(map,ox+x,oy+y).h);const saved=[];
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const c=grid[y*w+x];if(!c)continue;const t=at(map,ox+x,oy+y);saved.push([t,{h:t.h,kind:t.kind,prop:t.prop,blocked:t.blocked,obstacleHeight:t.obstacleHeight}]);
+   t.h=base+(c.h||0);if(c.k)t.kind=c.k;t.prop=c.p||null;t.blocked=!!GROUND_BLOCK[c.p];if(t.blocked)t.obstacleHeight=GROUND_BLOCK[c.p];else delete t.obstacleHeight;t.groundChunk=ch.id}
+  if(ok()){map.groundChunk={id:ch.id,name:ch.name,x:ox,y:oy,w,h};return}
+  for(const[t,o]of saved){Object.assign(t,o);if(o.obstacleHeight==null)delete t.obstacleHeight;delete t.groundChunk}}}
 function toAuthored(map,seed){const S=root.TacticsSurface||(typeof require==='function'?require('./tactics-surface.js'):null),M=root.TacticsMapModules||(typeof require==='function'?require('./tactics-map-modules.js'):null);if(!S||!M)return map;
  map.width=map.width||map.size;map.height=map.height||map.size;// every tile is flat at its own height: no auto-ramps (they left seams between equal-height tiles); steps of 1 show as rock faces, cliffs get the FFT skin
  map.tiles.forEach(t=>{t.surfaceCorners=[t.h,t.h,t.h,t.h]});
