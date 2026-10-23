@@ -1,6 +1,6 @@
 // v12: the game page in "editor mode" (index.html?editor=cards|map|battle|dev), embedded by editor.html.
 // • Never writes the play save (save() is a no-op) — tools keep their own storage keys (cards, routes, layout, anchors).
-// • The normal game shows a single "Editor" button that opens editor.html; the in-game dev tools are gone from the bar.
+// • Normal gameplay has no in-game editing controls. Open editor.html from the title screen to edit.
 (function(){
 const mode=new URLSearchParams(location.search).get('editor');
 window.openEditor=()=>window.open('editor.html#cards','_blank');
