@@ -5,145 +5,176 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Battleground Editor</title>
 <style>
-:root{--bg:#1a1510;--panel:#241d15;--line:#4a3b29;--text:#f3e7cf;--muted:#bba57f;--gold:#f6d79b;--accent:#c9893a}
-*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 system-ui,"Noto Sans Thai",sans-serif}
-#app{display:grid;grid-template-columns:250px 1fr 290px;height:100%}
-aside{background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:12px}aside.right{border-right:0;border-left:1px solid var(--line)}
-h2{font-size:14px;color:var(--gold);margin:4px 0 8px}h3{font-size:12px;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.05em}
-button,select,input{font:inherit;color:var(--text);background:#30271d;border:1px solid var(--line);border-radius:7px;padding:5px 8px}button{cursor:pointer}button:hover{border-color:var(--accent)}button.on{background:var(--accent);border-color:#8a5a20;color:#fff}button.primary{background:var(--accent);color:#fff;border-color:#8a5a20}
-input[type=number]{width:60px}input[type=text]{width:100%}input[type=range]{width:100%}
-.list button{display:block;width:100%;text-align:left;margin:3px 0}.row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:5px 0}
-.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.tools button{padding:5px 2px;font-size:12px}
-.cmini{width:64px;height:48px;flex:none;background:#1a1510;border-radius:6px;display:grid;place-items:center}.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
-main{position:relative;overflow:hidden}canvas{display:block;width:100%;height:100%;cursor:crosshair}
-#hud{position:absolute;left:12px;top:10px;right:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;pointer-events:none}#hud>*{pointer-events:auto}
-#warn{position:absolute;left:12px;bottom:12px;max-width:60%;background:#241d15e8;border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--muted)}
-table{width:100%;border-collapse:collapse}td,th{padding:4px 3px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}
-.muted{color:var(--muted)}.chk{display:flex;gap:6px;align-items:center;margin:3px 0}
-#push{position:fixed;right:14px;bottom:14px;display:flex;gap:6px;align-items:center;background:#241d15f0;border:1px solid var(--accent);border-radius:10px;padding:6px 8px;z-index:5}#pushMsg{max-width:260px;color:#e6d3a9}
+:root{--panel:#1b302af7;--line:#4d6656;--edge:#b9c48f;--text:#f3ead0;--muted:#c9d2b8;--gold:#e5c06b;--accent:#c9893a}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#14201b;color:var(--text);font:13px/1.45 system-ui,"Noto Sans Thai",sans-serif}
+button,select,input{font:inherit;color:var(--text);background:#233a2e;border:1px solid #7f9170;border-radius:8px;padding:5px 9px}button{cursor:pointer}button:hover{border-color:var(--gold)}button.on{background:var(--gold);color:#1b302a;border-color:var(--gold)}
+#cv{display:block;width:100vw;height:100dvh;cursor:crosshair;touch-action:none}.cmini canvas{width:64px;height:48px}
+.muted{color:var(--muted)}
+/* top bar — same layout as the village / sub-map editors */
+#bar{position:fixed;left:calc((100vw - 360px)/2);top:14px;transform:translateX(-50%);z-index:9;display:flex;gap:4px;align-items:stretch;background:#1b302af2;border:1px solid var(--edge);border-radius:12px;padding:5px;box-shadow:0 8px 24px #0006;max-width:calc(100vw - 380px)}
+#bar button{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:56px;padding:5px 6px;font-size:11px;position:relative}#bar b{font-size:17px;line-height:1.1}#bar kbd{position:absolute;right:3px;top:2px;font-size:9px;color:#9fb19a;font-family:inherit}#bar button.on kbd{color:#5b4a20}
+#bar i{width:1px;background:var(--line);margin:2px 3px}#bar select{max-width:170px;background:#132621}#bar .pp{background:var(--accent);color:#fff;border-color:#8a5a20}
+/* catalog: what the current tool paints */
+#cat{position:fixed;left:calc((100vw - 360px)/2);bottom:14px;transform:translateX(-50%);z-index:9;display:flex;gap:6px;align-items:center;background:#1b302af2;border:1px solid var(--edge);border-radius:12px;padding:7px 9px;max-width:calc(100vw - 400px);overflow-x:auto;box-shadow:0 8px 24px #0006}
+#cat button{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:64px;padding:5px;font-size:11px}#cat canvas{width:48px;height:36px}#cat .lbl{color:var(--muted);font-size:11px;padding:0 6px;white-space:nowrap}
+#cat .brush{display:flex;gap:3px;align-items:center;border-left:1px solid var(--line);padding-left:8px;margin-left:2px}#cat .brush button{min-width:34px}
+/* side panel */
+#side{position:fixed;right:14px;top:14px;z-index:9;width:340px;max-height:calc(100dvh - 28px);overflow:auto;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:12px;box-shadow:0 10px 30px #0006}
+#side h3{margin:0 0 4px;font-size:16px;color:#fff0c7}#side b.sec{display:block;margin:10px 0 4px;color:#fff0c7}#side hr{border:0;border-top:1px solid var(--line);margin:10px 0}
+#side label{display:grid;grid-template-columns:96px 1fr;gap:6px;align-items:center;margin:5px 0}#side label.chk{display:flex;gap:6px}#side input[type=text]{width:100%}#side input[type=number]{width:64px}
+.row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:6px 0}.areas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 6px}
+.list{display:grid;gap:3px;max-height:260px;overflow:auto}.list button{display:flex;gap:8px;align-items:center;text-align:left}.list button.on{border-color:#9ff3f5;background:#24443d;color:var(--text)}.cmini{width:64px;height:48px;flex:none;background:#132621;border-radius:6px;display:grid;place-items:center}
+details{margin:6px 0}summary{cursor:pointer;color:#fff0c7}table{width:100%;border-collapse:collapse}td,th{padding:4px 3px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}td input{width:100%}
+#warn{position:fixed;left:14px;bottom:86px;max-width:calc(100vw - 400px);background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--muted);z-index:8}
+#tileInfo{position:fixed;left:14px;top:14px;background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:5px 9px;color:var(--muted);z-index:8}#tileInfo:empty{display:none}
+#status{position:fixed;left:14px;bottom:14px;max-width:340px;background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:#e6d3a9;z-index:8}#status:empty{display:none}
 </style>
 </head>
 <body>
-<div id="app">
- <aside>
-  <h2>⚔ Battleground Editor</h2>
-  <p class="muted">วาดชิ้นภูมิประเทศ แล้วตัวสุ่มแผนที่จะหยิบไปวางบนสนามสุ่มของพื้นที่ที่เลือก</p>
-  <h3>ชิ้นภูมิประเทศ</h3>
-  <div class="list" id="chunks"></div>
-  <div class="row"><button id="new">+ ชิ้นใหม่</button><button id="dup">ทำสำเนา</button><button id="del">ลบ</button></div>
-  <h3>ชิ้นที่เลือก</h3>
-  <label>ชื่อ <input type="text" id="name"></label>
-  <div class="row">ขนาด <input type="number" id="w" min="2" max="16"> × <input type="number" id="h" min="2" max="16"><button id="resize">ปรับ</button></div>
-  <div class="row">น้ำหนักการสุ่ม <input type="number" id="weight" min="0" max="10" step="0.5"></div>
-  <div class="muted">ใช้ในพื้นที่:</div><div id="areasOf"></div>
-  <h3>ทดสอบ</h3>
-  <div class="row"><button id="try" class="primary">▶ ลองเล่นชิ้นนี้</button></div>
-  <div class="row"><button id="legacy">เครื่องมือเดิม: จุดมืออาวุธ · เอฟเฟกต์ · Seed</button></div>
- </aside>
- <main><canvas id="cv"></canvas>
-  <div id="hud"><button id="rotL" title="หมุนมุมมอง">⟲</button><button id="rotR" title="หมุนมุมมอง">⟳</button><button id="undo">ย้อน</button><button id="redo">ทำซ้ำ</button><span class="muted">คลิก/ลากเพื่อระบาย · คลิกขวา = ตรงข้าม · ล้อ = ซูม · คีย์: Q/A สูง-ต่ำ · 0–5 ตั้งความสูง · G พื้นถัดไป · P ของถัดไป · [ ] หมุน · N ชิ้นใหม่ · T ลองเล่น</span><span id="tileInfo" class="muted" style="margin-left:auto;background:#241d15e8;padding:4px 8px;border-radius:6px"></span></div>
-  <div id="warn"></div>
- </main>
- <aside class="right">
-  <h3>ความสูง</h3>
-  <div class="tools" id="hTools"></div>
-  <h3>พื้น</h3>
-  <div class="tools" id="kTools"></div>
-  <h3>ของบนช่อง (กันทางเดิน)</h3>
-  <div class="tools" id="pTools"></div>
-  <h3>ตั้งค่าแต่ละพื้นที่</h3>
-  <table><thead><tr><th>พื้นที่</th><th>โอกาสใส่ชิ้น</th><th>กลางคืน</th></tr></thead><tbody id="areaRows"></tbody></table>
-  <p class="muted">โอกาสใส่ชิ้น = ทุกกี่ศึกจะมีชิ้นทำมือหนึ่งชิ้นวางบนแผนที่ (ถ้าวางแล้วทำให้ทางไปจุดเกิดขาด ระบบจะย้ายที่หรือไม่วาง) · กลางคืน = โอกาสเป็นฉากกลางคืน</p>
- </aside>
+<canvas id="cv" aria-label="ชิ้นภูมิประเทศ คลิกหรือลากเพื่อระบาย"></canvas>
+<div id="bar">
+ <select id="pick" title="เลือกชิ้นภูมิประเทศ"></select><i></i>
+ <button data-tool="height"><b>🏔</b><span>ความสูง</span><kbd>1</kbd></button>
+ <button data-tool="kind"><b>🎨</b><span>พื้น</span><kbd>2</kbd></button>
+ <button data-tool="prop"><b>🌲</b><span>ของ</span><kbd>3</kbd></button>
+ <button data-tool="erase"><b>🧽</b><span>ลบ</span><kbd>4</kbd></button><i></i>
+ <button id="undo" title="Ctrl+Z"><b>↶</b><span>ย้อน</span></button><button id="redo" title="Ctrl+Shift+Z"><b>↷</b><span>ทำซ้ำ</span></button>
+ <button id="rotL" title="หมุนมุมมอง ["><b>⟲</b><span>หมุน</span></button><button id="rotR" title="หมุนมุมมอง ]"><b>⟳</b><span>หมุน</span></button><i></i>
+ <button id="try"><b>▶</b><span>ลองเล่น</span><kbd>T</kbd></button><button id="pushBtn" class="pp"><b>⬆</b><span>push</span></button>
 </div>
-<div id="push"><span id="pushMsg"></span><button id="pushBtn" class="primary">⬆ Push สนามต่อสู้ขึ้นเกม</button></div>
+<div id="cat"></div>
+<aside id="side">
+ <h3>⚔ สนามต่อสู้</h3>
+ <p class="muted" style="margin:0">วาดชิ้นภูมิประเทศ (ความสูง พื้น ของ) แล้วตัวสุ่มแผนที่จะหยิบไปวางในสนามสุ่มของพื้นที่ที่เลือก · คลิกขวา = ทำกลับ (ลด / คืนหญ้า / เอาของออก) · ลากที่ว่าง = เลื่อนมุมมอง · ล้อ = ซูม · B = ขนาดแปรง</p>
+ <b class="sec">ชิ้นนี้</b>
+ <label>ชื่อ <input type="text" id="name"></label>
+ <label>ขนาด <span><input type="number" id="w" min="2" max="16"> × <input type="number" id="h" min="2" max="16"> ช่อง</span></label>
+ <label>น้ำหนักสุ่ม <span><input type="number" id="weight" min="0" max="10" step="0.5"> <span class="muted">(0 = ไม่สุ่มใช้)</span></span></label>
+ <div class="muted">ใช้ในพื้นที่</div><div class="areas" id="areasOf"></div>
+ <hr><b class="sec" style="margin-top:0">ทุกชิ้น</b>
+ <div class="list" id="chunks"></div>
+ <div class="row"><button id="new" style="background:#4f7a3c;border-color:#b8d39a">＋ ชิ้นใหม่ <span class="muted">N</span></button><button id="dup">ทำสำเนา</button><button id="del">ลบชิ้นนี้</button></div>
+ <details><summary>ตั้งค่าแต่ละพื้นที่</summary><table><thead><tr><th>พื้นที่</th><th>โอกาสใส่ชิ้น</th><th>กลางคืน</th></tr></thead><tbody id="areaRows"></tbody></table>
+ <p class="muted">โอกาสใส่ชิ้น = ทุกกี่ศึกจะมีชิ้นทำมือหนึ่งชิ้นวางบนแผนที่ (ถ้าวางแล้วทำให้ทางไปจุดเกิดขาด ระบบจะย้ายที่หรือไม่วาง) · กลางคืน = โอกาสเป็นฉากกลางคืน</p></details>
+ <details><summary>เครื่องมือเดิม</summary><div class="row"><button id="legacy">จุดมืออาวุธ · เอฟเฟกต์ · Seed</button></div></details>
+</aside>
+<div id="tileInfo"></div><div id="warn"></div><div id="status"></div>
 <script src="js/game-settings.js"></script>
 <script src="js/github-push.js?v=81.14"></script>
 <script>
 'use strict';
+/* v82.2 · Battleground editor in the same Build Mode layout as the village / sub-maps:
+   top bar = chunk + 4 tools + undo/redo/rotate + try + push · bottom catalog = what the tool paints (+ brush size) · right panel = this chunk / all chunks. */
 const KEY='battleground-v1',$=id=>document.getElementById(id);
 const AREAS={training:'ฝึกซ้อม',forest:'ป่า',mine:'เหมือง',swamp:'บึง',coast:'ชายฝั่ง',frost:'น้ำแข็ง',ruins:'ซากโบราณ'};
 const KINDS={grass:['หญ้า','#6c9a4a'],tallgrass:['หญ้าสูง','#4e7d35'],path:['ทางดิน','#b39566'],stone:['หิน','#9b978c'],rubble:['หินแตก','#867b6c'],sand:['ทราย','#d9c48c'],mud:['โคลน','#6b5537'],snow:['หิมะ','#e7edf1'],ice:['น้ำแข็ง','#bde1ee'],shallow:['น้ำตื้น','#6fa8c8'],water:['น้ำลึก','#3f78ad']};
 const PROPS={'':['ไม่มี','#0000'],tree:['ต้นไม้','#2f6b2a'],bush:['พุ่มไม้','#4f8f3a'],rock:['ก้อนหิน','#8a8a85'],mossrock:['หินตะไคร่','#6f8462'],pillar:['เสาหิน','#c9c2ad'],log:['ขอนไม้','#7a5434'],crystal:['คริสตัล','#8fd0ef'],cart:['เกวียน','#8a6a44']};
-let data,cur=0,tool={type:'h',v:1},view=0,zoom=1,undo=[],redo=[],painting=null;
+const HEIGHT_TOOLS=[['h',1,'▲ ยกขึ้น','Q'],['h',-1,'▼ ลดลง','A'],['flat','','▬ เท่าช่องแรก','F'],...[0,1,2,3,4,5].map(n=>['set',n,'สูง '+n,''])];
+let data,cur=0,mode='height',tool={type:'h',v:1},brush=1,view=0,zoom=1,undo=[],redo=[],painting=null;
 const blank=(w,h,name)=>({id:'g'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,w,h,weight:1,areas:['forest'],cells:Array.from({length:w*h},()=>({h:0,k:'grass',p:''}))});
-function sample(){const c=blank(7,7,'เนินหินกลางทุ่ง');c.id='sample-hill';c.areas=['forest','training'];c.cells.forEach((q,i)=>{const x=i%7,y=Math.floor(i/7),d=Math.max(Math.abs(x-3),Math.abs(y-3));q.h=d===0?4:d===1?3:d===2?(x===3&&y===5?2:2):0;q.k=d<=1?'stone':d===2?'tallgrass':'grass';if(x===3&&y>=5){q.k='path';q.h=y===5?2:1}if(x===3&&y===6)q.h=1});c.cells[0].p='tree';c.cells[6].p='rock';return c}
+function sample(){const c=blank(7,7,'เนินหินกลางทุ่ง');c.id='sample-hill';c.areas=['forest','training'];c.cells.forEach((q,i)=>{const x=i%7,y=Math.floor(i/7),d=Math.max(Math.abs(x-3),Math.abs(y-3));q.h=d===0?4:d===1?3:d===2?2:0;q.k=d<=1?'stone':d===2?'tallgrass':'grass';if(x===3&&y>=5){q.k='path';q.h=y===5?2:1}if(x===3&&y===6)q.h=1});c.cells[0].p='tree';c.cells[6].p='rock';return c}
 function load(){try{data=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){data=null}if(!data||!Array.isArray(data.chunks))data={version:1,chunks:[sample()],areas:{}};for(const a of Object.keys(AREAS))data.areas[a]||={chance:.5,night:a==='mine'?.6:.25}}
 function save(){localStorage.setItem(KEY,JSON.stringify(data));renderSide()}
 function checkpoint(){undo.push(JSON.stringify(data));if(undo.length>60)undo.shift();redo=[]}
 const C=()=>data.chunks[cur];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const status=t=>{$('status').textContent=t;clearTimeout(status.t);status.t=setTimeout(()=>$('status').textContent='',4000)};
 
-/* ---------- side panels ---------- */
+/* ---------- side panel ---------- */
 function renderSide(){const c=C();
- $('chunks').innerHTML=data.chunks.map((c,i)=>`<button data-i="${i}" class="${i===cur?'on':''}" style="display:flex;gap:8px;align-items:center"><span class="cmini"></span><span>${esc(c.name)}<br><span class="muted">${c.w}×${c.h} · ${c.areas.map(a=>AREAS[a]).join(', ')||'ไม่ได้ใช้'}</span></span></button>`).join('');
- $('chunks').querySelectorAll('[data-i]').forEach(b=>b.querySelector('.cmini').append(miniChunk(data.chunks[+b.dataset.i])));
- $('chunks').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;renderSide();draw()});
+ $('pick').innerHTML=data.chunks.map((x,i)=>`<option value="${i}" ${i===cur?'selected':''}>${esc(x.name)} (${x.w}×${x.h})</option>`).join('');
+ $('chunks').innerHTML=data.chunks.map((x,i)=>`<button data-i="${i}" class="${i===cur?'on':''}"><span class="cmini"></span><span>${esc(x.name)}<br><span class="muted">${x.w}×${x.h} · ${x.areas.map(a=>AREAS[a]).join(', ')||'ไม่ได้ใช้'}</span></span></button>`).join('');
+ $('chunks').querySelectorAll('[data-i]').forEach(b=>{b.querySelector('.cmini').append(miniChunk(data.chunks[+b.dataset.i]));b.onclick=()=>select(+b.dataset.i)});
  if(!c)return;$('name').value=c.name;$('w').value=c.w;$('h').value=c.h;$('weight').value=c.weight??1;
  $('areasOf').innerHTML=Object.entries(AREAS).map(([k,v])=>`<label class="chk"><input type="checkbox" data-a="${k}" ${c.areas.includes(k)?'checked':''}> ${v}</label>`).join('');
  $('areasOf').querySelectorAll('[data-a]').forEach(i=>i.onchange=()=>{checkpoint();c.areas=Object.keys(AREAS).filter(k=>$('areasOf').querySelector(`[data-a=${k}]`).checked);save()});
  $('areaRows').innerHTML=Object.entries(AREAS).map(([k,v])=>`<tr><td>${v}</td><td><input type="range" min="0" max="1" step="0.05" data-ar="${k}" data-f="chance" value="${data.areas[k].chance}"><span class="muted">${Math.round(data.areas[k].chance*100)}%</span></td><td><input type="range" min="0" max="1" step="0.05" data-ar="${k}" data-f="night" value="${data.areas[k].night}"><span class="muted">${Math.round(data.areas[k].night*100)}%</span></td></tr>`).join('');
  $('areaRows').querySelectorAll('input').forEach(i=>{i.oninput=()=>i.nextElementSibling.textContent=Math.round(i.value*100)+'%';i.onchange=()=>{checkpoint();data.areas[i.dataset.ar][i.dataset.f]=+i.value;save()}})}
+function select(i){cur=Math.max(0,Math.min(data.chunks.length-1,i));renderSide();draw()}
 // small iso picture of a chunk for the list
 function miniChunk(c){const cv2=document.createElement('canvas');cv2.width=64;cv2.height=48;const q=cv2.getContext('2d'),tw=Math.min(48/(c.w+c.h)*2,12),th=tw/2,zh=th*.9,ox=32-(c.w-c.h)*tw/4,oy=24-(c.w+c.h)*th/4+6,P=(x,y,z)=>({x:ox+(x-y)*tw/2,y:oy+(x+y)*th/2-z*zh});
- for(let s2=0;s2<c.w+c.h;s2++)for(let x=0;x<c.w;x++){const y=s2-x;if(y<0||y>=c.h)continue;const t=c.cells[y*c.w+x],col=KINDS[t.k]?.[1]||'#888',p=[P(x,y,t.h),P(x+1,y,t.h),P(x+1,y+1,t.h),P(x,y+1,t.h)];if(t.h>0){q.fillStyle='#5a4b3a';q.beginPath();q.moveTo(p[1].x,p[1].y);q.lineTo(p[2].x,p[2].y);q.lineTo(p[3].x,p[3].y);q.lineTo(p[3].x,p[3].y+t.h*zh);q.lineTo(p[2].x,p[2].y+t.h*zh);q.lineTo(p[1].x,p[1].y+t.h*zh);q.closePath();q.fill()}q.fillStyle=col;q.beginPath();p.forEach((v,i)=>q[i?'lineTo':'moveTo'](v.x,v.y));q.closePath();q.fill();if(t.p){q.fillStyle=PROPS[t.p]?.[1]||'#333';q.beginPath();q.arc((p[0].x+p[2].x)/2,(p[0].y+p[2].y)/2-2,1.8,0,7);q.fill()}}
+ for(let s2=0;s2<c.w+c.h;s2++)for(let x=0;x<c.w;x++){const y=s2-x;if(y<0||y>=c.h)continue;const t=c.cells[y*c.w+x],col=KINDS[t.k]?.[1]||'#888',p=[P(x,y,t.h),P(x+1,y,t.h),P(x+1,y+1,t.h),P(x,y+1,t.h)];
+  if(t.h>0){q.fillStyle='#5a4b3a';q.beginPath();q.moveTo(p[1].x,p[1].y);q.lineTo(p[2].x,p[2].y);q.lineTo(p[3].x,p[3].y);q.lineTo(p[3].x,p[3].y+t.h*zh);q.lineTo(p[2].x,p[2].y+t.h*zh);q.lineTo(p[1].x,p[1].y+t.h*zh);q.closePath();q.fill()}
+  q.fillStyle=col;q.beginPath();p.forEach((v,i)=>q[i?'lineTo':'moveTo'](v.x,v.y));q.closePath();q.fill();if(t.p){q.fillStyle=PROPS[t.p]?.[1]||'#333';q.beginPath();q.arc((p[0].x+p[2].x)/2,(p[0].y+p[2].y)/2-2,1.8,0,7);q.fill()}}
  return cv2}
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function toolButtons(){const mk=(box,list)=>{$(box).innerHTML=list.map(([type,v,label,col])=>`<button data-t="${type}" data-v="${v}">${col?`<span class="swatch" style="background:${col}"></span>`:''}${label}</button>`).join('');};
- mk('hTools',[['h',1,'▲ ยกขึ้น 1 [Q]'],['h',-1,'▼ ลดลง 1 [A]'],['flat','','▬ เท่าช่องแรก [F]'],...[0,1,2,3,4,5].map(n=>['set',n,'สูง '+n+' ['+n+']'])]);
- mk('kTools',Object.entries(KINDS).map(([k,[l,c]])=>['k',k,l,c]));mk('pTools',Object.entries(PROPS).map(([k,[l,c]])=>['p',k,l,k?c:'']));
- document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tool={type:b.dataset.t,v:b.dataset.t==='h'||b.dataset.t==='set'?+b.dataset.v:b.dataset.v};document.querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('on',x===b))});
- document.querySelector('[data-t=h][data-v="1"]').classList.add('on')}
-$('name').onchange=()=>{checkpoint();C().name=$('name').value.trim()||'ไม่มีชื่อ';save()};$('weight').onchange=()=>{checkpoint();C().weight=Math.max(0,+$('weight').value||0);save()};
-$('resize').onclick=()=>{const c=C(),w=Math.max(2,Math.min(16,+$('w').value|0)),h=Math.max(2,Math.min(16,+$('h').value|0));checkpoint();const cells=[];for(let y=0;y<h;y++)for(let x=0;x<w;x++)cells.push(x<c.w&&y<c.h?c.cells[y*c.w+x]:{h:0,k:'grass',p:''});Object.assign(c,{w,h,cells});save();draw()};
-$('new').onclick=()=>{checkpoint();data.chunks.push(blank(7,7,'ชิ้นใหม่ '+(data.chunks.length+1)));cur=data.chunks.length-1;save();draw()};
+$('pick').onchange=e=>select(+e.target.value);
+$('name').onchange=()=>{checkpoint();C().name=$('name').value.trim()||'ไม่มีชื่อ';save()};
+$('weight').onchange=()=>{checkpoint();C().weight=Math.max(0,+$('weight').value||0);save()};
+// size applies as soon as it changes (no separate "ปรับ" button)
+for(const id of ['w','h'])$(id).onchange=()=>{const c=C(),w=Math.max(2,Math.min(16,+$('w').value|0)),h=Math.max(2,Math.min(16,+$('h').value|0));if(w===c.w&&h===c.h)return;checkpoint();const cells=[];for(let y=0;y<h;y++)for(let x=0;x<w;x++)cells.push(x<c.w&&y<c.h?c.cells[y*c.w+x]:{h:0,k:'grass',p:''});Object.assign(c,{w,h,cells});save();draw()};
+$('new').onclick=()=>{checkpoint();data.chunks.push(blank(7,7,'ชิ้นใหม่ '+(data.chunks.length+1)));cur=data.chunks.length-1;save();draw();$('name').focus();$('name').select()};
 $('dup').onclick=()=>{if(!C())return;checkpoint();const c=JSON.parse(JSON.stringify(C()));c.id='g'+Date.now().toString(36);c.name+=' (สำเนา)';data.chunks.splice(cur+1,0,c);cur++;save();draw()};
 $('del').onclick=()=>{if(!C()||!confirm('ลบชิ้น "'+C().name+'"?'))return;checkpoint();data.chunks.splice(cur,1);cur=Math.max(0,cur-1);if(!data.chunks.length)data.chunks.push(blank(7,7,'ชิ้นใหม่'));save();draw()};
 $('undo').onclick=()=>{if(!undo.length)return;redo.push(JSON.stringify(data));data=JSON.parse(undo.pop());cur=Math.min(cur,data.chunks.length-1);save();draw()};
-$('redo').onclick=()=>{if(!redo.length)return;undo.push(JSON.stringify(data));data=JSON.parse(redo.pop());save();draw()};
+$('redo').onclick=()=>{if(!redo.length)return;undo.push(JSON.stringify(data));data=JSON.parse(redo.pop());cur=Math.min(cur,data.chunks.length-1);save();draw()};
 $('rotL').onclick=()=>{view=(view+3)%4;draw()};$('rotR').onclick=()=>{view=(view+1)%4;draw()};
 $('try').onclick=()=>{save();localStorage.setItem('battleground-try',C().id);window.open('index.html?editor=battle&try='+encodeURIComponent(C().id),'_blank')};
 $('legacy').onclick=()=>window.open('index.html?editor=battle','_blank');
-document.addEventListener('keydown',e=>{if(e.target.closest?.('input,select'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();(e.shiftKey?$('redo'):$('undo')).click();return}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();$('redo').click();return}if(e.ctrlKey||e.metaKey||e.altKey)return;
- const press=sel=>{const b=document.querySelector(sel);if(b){b.click();b.focus()}},k=e.key.toLowerCase(),kinds=Object.keys(KINDS),props=Object.keys(PROPS);
- if(k==='q')press('[data-t=h][data-v="1"]');else if(k==='a')press('[data-t=h][data-v="-1"]');else if(k==='f')press('[data-t=flat]');else if(/^[0-5]$/.test(k))press(`[data-t=set][data-v="${k}"]`);
- else if(k==='g'){const i=tool.type==='k'?(kinds.indexOf(tool.v)+(e.shiftKey?-1:1)+kinds.length)%kinds.length:0;press(`[data-t=k][data-v="${kinds[i]}"]`)}
- else if(k==='p'){const i=tool.type==='p'?(props.indexOf(tool.v)+(e.shiftKey?-1:1)+props.length)%props.length:1;press(`[data-t=p][data-v="${props[i]}"]`)}
+
+/* ---------- tools + catalog ---------- */
+function setMode(m){mode=m;if(m==='height'&&!['h','set','flat'].includes(tool.type))tool={type:'h',v:1};else if(m==='kind'&&tool.type!=='k')tool={type:'k',v:'path'};else if(m==='prop'&&tool.type!=='p')tool={type:'p',v:'tree'};else if(m==='erase')tool={type:'erase'};renderCat()}
+function swatchKind(col){const c=document.createElement('canvas');c.width=96;c.height=72;const q=c.getContext('2d');q.fillStyle=col;q.beginPath();q.moveTo(48,10);q.lineTo(90,32);q.lineTo(48,54);q.lineTo(6,32);q.closePath();q.fill();q.fillStyle='#0003';q.beginPath();q.moveTo(6,32);q.lineTo(48,54);q.lineTo(48,64);q.lineTo(6,42);q.closePath();q.fill();q.fillStyle='#0005';q.beginPath();q.moveTo(90,32);q.lineTo(48,54);q.lineTo(48,64);q.lineTo(90,42);q.closePath();q.fill();return c}
+function swatchProp(k){const c=document.createElement('canvas');c.width=96;c.height=72;const q=c.getContext('2d');q.fillStyle='#6c9a4a';q.beginPath();q.moveTo(48,34);q.lineTo(84,52);q.lineTo(48,70);q.lineTo(12,52);q.closePath();q.fill();if(k){const old=zoom;zoom=1.4;prop(k,{x:48,y:56},q);zoom=old}return c}
+function swatchHeight(t){const c=document.createElement('canvas');c.width=96;c.height=72;const q=c.getContext('2d'),[type,v]=t,hh=type==='set'?v:type==='h'?(v>0?3:1):2;q.fillStyle='#7b6a52';q.fillRect(26,40-hh*7,44,hh*7+14);q.fillStyle='#6c9a4a';q.beginPath();q.moveTo(48,30-hh*7);q.lineTo(74,40-hh*7);q.lineTo(48,50-hh*7);q.lineTo(22,40-hh*7);q.closePath();q.fill();q.fillStyle='#fff';q.font='bold 22px system-ui';q.textAlign='center';q.fillText(type==='h'?(v>0?'▲':'▼'):type==='flat'?'▬':String(v),48,68);return c}
+function renderCat(){document.querySelectorAll('#bar [data-tool]').forEach(b=>b.classList.toggle('on',b.dataset.tool===mode));
+ const box=$('cat');let items=[];
+ if(mode==='height')items=HEIGHT_TOOLS.map(t=>({type:t[0],v:t[1],label:t[2],key:t[3],cv:swatchHeight(t)}));
+ else if(mode==='kind')items=Object.entries(KINDS).map(([k,[l,col]])=>({type:'k',v:k,label:l,cv:swatchKind(col)}));
+ else if(mode==='prop')items=Object.entries(PROPS).filter(([k])=>k).map(([k,[l]])=>({type:'p',v:k,label:l,cv:swatchProp(k)}));
+ box.innerHTML=(mode==='erase'?'<span class="lbl">🧽 ลบ = คืนเป็นหญ้า ความสูงเดิม และเอาของออก</span>':'')+items.map((it,i)=>`<button data-i="${i}" class="${tool.type===it.type&&String(tool.v)===String(it.v)?'on':''}" title="${it.label}${it.key?' ['+it.key+']':''}"><span class="sw"></span>${it.label}</button>`).join('')+`<span class="brush"><span class="lbl">แปรง</span>${[1,2,3].map(n=>`<button data-b="${n}" class="${brush===n?'on':''}">${n}×${n}</button>`).join('')}</span>`;
+ box.querySelectorAll('[data-i]').forEach(b=>{const it=items[+b.dataset.i];b.querySelector('.sw').append(it.cv);b.onclick=()=>{tool={type:it.type,v:it.v};renderCat()}});
+ box.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{brush=+b.dataset.b;renderCat()})}
+document.querySelectorAll('#bar [data-tool]').forEach(b=>b.onclick=()=>setMode(b.dataset.tool));
+document.addEventListener('keydown',e=>{if(e.target.closest?.('input,select'))return;
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();(e.shiftKey?$('redo'):$('undo')).click();return}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();$('redo').click();return}
+ if(e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase(),kinds=Object.keys(KINDS),props=Object.keys(PROPS).filter(Boolean);
+ const set=(m,t)=>{mode=m;tool=t;renderCat()};
+ if(k==='q')set('height',{type:'h',v:1});else if(k==='a')set('height',{type:'h',v:-1});else if(k==='f')set('height',{type:'flat'});
+ else if(['1','2','3','4'].includes(k))setMode(['height','kind','prop','erase'][+k-1]);
+ else if(k==='g'){const i=tool.type==='k'?(kinds.indexOf(tool.v)+(e.shiftKey?-1:1)+kinds.length)%kinds.length:0;set('kind',{type:'k',v:kinds[i]})}
+ else if(k==='p'){const i=tool.type==='p'?(props.indexOf(tool.v)+(e.shiftKey?-1:1)+props.length)%props.length:0;set('prop',{type:'p',v:props[i]})}
+ else if(k==='b'){brush=brush%3+1;renderCat()}
  else if(k==='['||k===']')(k==='['?$('rotL'):$('rotR')).click();else if(k==='n')$('new').click();else if(k==='t')$('try').click()});
 
 /* ---------- iso view + painting ---------- */
-const cv=$('cv'),g=cv.getContext('2d');let W=0,H=0,TW=56,TH=28,ZH=16,origin={x:0,y:0};
-function fit(){const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;draw()}
-// view rotation: map chunk (x,y) to view (vx,vy)
+const cv=$('cv'),g=cv.getContext('2d');let W=0,H=0,TW=56,TH=28,ZH=16,origin={x:0,y:0},pan={x:0,y:0};
+function fit(){W=innerWidth;H=innerHeight;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;draw()}
 function rv(x,y,c){return[[x,y],[c.h-1-y,x],[c.w-1-x,c.h-1-y],[y,c.w-1-x]][view]}
 function vdims(c){return view%2?[c.h,c.w]:[c.w,c.h]}
 function proj(vx,vy,z){return{x:origin.x+(vx-vy)*TW/2*zoom,y:origin.y+(vx+vy)*TH/2*zoom-z*ZH*zoom}}
 function shade(hex,f){const n=parseInt(hex.slice(1),16),r=n>>16,gg=n>>8&255,b=n&255,m=v=>Math.max(0,Math.min(255,Math.round(v*f)));return`rgb(${m(r)},${m(gg)},${m(b)})`}
 function order(c){const[vw,vh]=vdims(c),out=[];for(let s=0;s<vw+vh;s++)for(let vx=0;vx<vw;vx++){const vy=s-vx;if(vy<0||vy>=vh)continue;let x,y;for(let yy=0;yy<c.h;yy++)for(let xx=0;xx<c.w;xx++){const r=rv(xx,yy,c);if(r[0]===vx&&r[1]===vy){x=xx;y=yy}}out.push({x,y,vx,vy})}return out}
 let hover=null,drawList=[];
-function draw(){const c=C();g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.clearRect(0,0,W,H);if(!c)return;const[vw,vh]=vdims(c);origin={x:W/2-(vw-vh)*TW/4*zoom,y:H/2-(vw+vh)*TH/4*zoom+40};drawList=[];
+const inBrush=(o,h)=>{if(!h)return false;const lo=Math.floor((brush-1)/2),hi=brush-1-lo;return o.x>=h.x-lo&&o.x<=h.x+hi&&o.y>=h.y-lo&&o.y<=h.y+hi};
+function brushCells(o){const c=C(),out=[];for(let y=0;y<c.h;y++)for(let x=0;x<c.w;x++)if(inBrush({x,y},o))out.push({x,y});return out}
+function draw(){const c=C();g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.fillStyle='#14201b';g.fillRect(0,0,W,H);if(!c)return;const[vw,vh]=vdims(c),cx=(W-360)/2;
+ origin={x:cx+pan.x-(vw-vh)*TW/4*zoom,y:H/2+pan.y-(vw+vh)*TH/4*zoom+20};drawList=[];
  for(const o of order(c)){const q=c.cells[o.y*c.w+o.x],z=q.h,col=KINDS[q.k]?.[1]||'#888',p=[proj(o.vx,o.vy,z),proj(o.vx+1,o.vy,z),proj(o.vx+1,o.vy+1,z),proj(o.vx,o.vy+1,z)];
-  // side walls down to 0
-  const b1=proj(o.vx+1,o.vy,0),b2=proj(o.vx+1,o.vy+1,0),b3=proj(o.vx,o.vy+1,0);const wall=q.k==='water'||q.k==='shallow'?'#4c6f86':'#7b6a52';
+  const b1=proj(o.vx+1,o.vy,0),b2=proj(o.vx+1,o.vy+1,0),b3=proj(o.vx,o.vy+1,0),wall=q.k==='water'||q.k==='shallow'?'#4c6f86':'#7b6a52';
   if(z>0){poly([p[1],p[2],b2,b1],shade(wall,.8));poly([p[3],p[2],b2,b3],shade(wall,.6));for(let k=1;k<z;k++){const a=proj(o.vx+1,o.vy,k),bb=proj(o.vx+1,o.vy+1,k),cc=proj(o.vx,o.vy+1,k);g.strokeStyle='#0003';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(bb.x,bb.y);g.lineTo(cc.x,cc.y);g.stroke()}}
-  poly(p,col,'#0004');drawList.push({o,p});
-  if(hover&&hover.x===o.x&&hover.y===o.y)poly(p,'#ffffff40','#fff');
-  // cliff marks: neighbour drop of 2+ = FFT rock face (not walkable across)
+  poly(p,col,'#0004');drawList.push({o,p});if(inBrush(o,hover))poly(p,'#ffffff40','#fff');
   if(q.p)prop(q.p,{x:(p[0].x+p[2].x)/2,y:(p[0].y+p[2].y)/2})}
  checks()}
 function poly(pts,fill,stroke){g.beginPath();pts.forEach((q,i)=>g[i?'lineTo':'moveTo'](q.x,q.y));g.closePath();g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=1;g.stroke()}}
-function prop(k,c){const s=zoom;g.save();g.translate(c.x,c.y);g.scale(s,s);const col=PROPS[k][1];
- if(k==='tree'){g.fillStyle='#5a3d22';g.fillRect(-3,-16,6,16);g.fillStyle=col;g.beginPath();g.arc(0,-26,14,0,7);g.fill();g.fillStyle='#3f8a36';g.beginPath();g.arc(-4,-30,8,0,7);g.fill()}
- else if(k==='pillar'){g.fillStyle=col;g.fillRect(-7,-38,14,38);g.fillStyle='#e2dccb';g.fillRect(-9,-42,18,5)}
- else if(k==='crystal'){g.fillStyle=col;g.beginPath();g.moveTo(0,-30);g.lineTo(8,-8);g.lineTo(0,0);g.lineTo(-8,-8);g.closePath();g.fill()}
- else{g.fillStyle=col;g.beginPath();g.ellipse(0,-7,k==='log'||k==='cart'?14:11,k==='bush'?10:8,0,0,7);g.fill()}g.restore()}
+function prop(k,c,q=g){const s=zoom;q.save();q.translate(c.x,c.y);q.scale(s,s);const col=PROPS[k][1];
+ if(k==='tree'){q.fillStyle='#5a3d22';q.fillRect(-3,-16,6,16);q.fillStyle=col;q.beginPath();q.arc(0,-26,14,0,7);q.fill();q.fillStyle='#3f8a36';q.beginPath();q.arc(-4,-30,8,0,7);q.fill()}
+ else if(k==='pillar'){q.fillStyle=col;q.fillRect(-7,-38,14,38);q.fillStyle='#e2dccb';q.fillRect(-9,-42,18,5)}
+ else if(k==='crystal'){q.fillStyle=col;q.beginPath();q.moveTo(0,-30);q.lineTo(8,-8);q.lineTo(0,0);q.lineTo(-8,-8);q.closePath();q.fill()}
+ else{q.fillStyle=col;q.beginPath();q.ellipse(0,-7,k==='log'||k==='cart'?14:11,k==='bush'?10:8,0,0,7);q.fill()}q.restore()}
 function pick(mx,my){for(let i=drawList.length-1;i>=0;i--){const{o,p}=drawList[i];g.beginPath();p.forEach((q,j)=>g[j?'lineTo':'moveTo'](q.x,q.y));g.closePath();if(g.isPointInPath(mx*devicePixelRatio,my*devicePixelRatio))return o}return null}
-function apply(o,invert){const c=C(),q=c.cells[o.y*c.w+o.x],t=tool;
- if(t.type==='h')q.h=Math.max(0,Math.min(8,q.h+(invert?-t.v:t.v)));else if(t.type==='set')q.h=t.v;else if(t.type==='flat')q.h=painting.base;
- else if(t.type==='k')q.k=invert?'grass':t.v;else if(t.type==='p')q.p=invert?'':t.v;draw()}
+function apply(o,invert){const c=C(),t=tool;for(const b of brushCells(o)){const q=c.cells[b.y*c.w+b.x];
+  if(t.type==='h')q.h=Math.max(0,Math.min(8,q.h+(invert?-t.v:t.v)));else if(t.type==='set')q.h=t.v;else if(t.type==='flat')q.h=painting.base;
+  else if(t.type==='k')q.k=invert?'grass':t.v;else if(t.type==='p')q.p=invert?'':t.v;else if(t.type==='erase'){q.k='grass';q.p=''}}draw()}
 cv.addEventListener('contextmenu',e=>e.preventDefault());
-cv.addEventListener('pointerdown',e=>{const r=cv.getBoundingClientRect(),o=pick(e.clientX-r.left,e.clientY-r.top);if(!o)return;checkpoint();const c=C();painting={done:new Set(),invert:e.button===2,base:c.cells[o.y*c.w+o.x].h};cv.setPointerCapture(e.pointerId);painting.done.add(o.x+','+o.y);apply(o,painting.invert)});
-cv.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect(),o=pick(e.clientX-r.left,e.clientY-r.top);const k=o&&o.x+','+o.y;if((hover&&hover.x+','+hover.y)!==k){hover=o;if(!painting)draw();const c=C(),t=o&&c.cells[o.y*c.w+o.x];$('tileInfo').textContent=t?`ช่อง ${o.x+1},${o.y+1} · สูง ${t.h} · ${KINDS[t.k]?.[0]||t.k}${t.p?' · '+PROPS[t.p][0]:''}`:''}if(painting&&o&&!painting.done.has(k)){painting.done.add(k);apply(o,painting.invert)}});
-cv.addEventListener('pointerup',()=>{if(painting){painting=null;save()}});
+cv.addEventListener('pointerdown',e=>{const o=pick(e.clientX,e.clientY);
+ if(!o||e.button===1){painting={pan:true,x:e.clientX,y:e.clientY,p:{...pan}};cv.setPointerCapture(e.pointerId);return} // empty space / middle button = move the view
+ checkpoint();const c=C();painting={done:new Set(),invert:e.button===2,base:c.cells[o.y*c.w+o.x].h};cv.setPointerCapture(e.pointerId);painting.done.add(o.x+','+o.y);apply(o,painting.invert)});
+cv.addEventListener('pointermove',e=>{if(painting?.pan){pan={x:painting.p.x+e.clientX-painting.x,y:painting.p.y+e.clientY-painting.y};draw();return}
+ const o=pick(e.clientX,e.clientY),k=o&&o.x+','+o.y;
+ if((hover&&hover.x+','+hover.y)!==k){hover=o;if(!painting)draw();const c=C(),t=o&&c.cells[o.y*c.w+o.x];$('tileInfo').textContent=t?`ช่อง ${o.x+1},${o.y+1} · สูง ${t.h} · ${KINDS[t.k]?.[0]||t.k}${t.p?' · '+PROPS[t.p][0]:''}`:''}
+ if(painting&&o&&!painting.done.has(k)){painting.done.add(k);apply(o,painting.invert)}});
+cv.addEventListener('pointerup',()=>{if(painting){const was=painting;painting=null;if(!was.pan)save()}});
 cv.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.4,Math.min(3,zoom*Math.exp(-e.deltaY*.001)));draw()},{passive:false});
 // what the game will do with this chunk: steps of 1 are walkable, 2+ become rock-face cliffs; tiles you can't reach from the edge are flagged
 function checks(){const c=C(),at=(x,y)=>x<0||y<0||x>=c.w||y>=c.h?null:c.cells[y*c.w+x],block=q=>!!q.p&&q.p!=='';let cliffs=0;
@@ -154,10 +185,11 @@ function checks(){const c=C(),at=(x,y)=>x<0||y<0||x>=c.w||y>=c.h?null:c.cells[y*
  $('warn').innerHTML=`ต่างระดับ 2 ขึ้นไป (กลายเป็นหน้าผาหิน): <b>${cliffs}</b> จุด · ${lost?`<b style="color:#f0a070">ช่องที่เดินขึ้นไม่ถึง ${lost} ช่อง</b> (ปีนได้ทีละ 1 ระดับ ต้องมีทางลาด)`:'เดินถึงทุกช่อง ✓'} · ตอนใช้จริงชิ้นนี้อาจถูกหมุน 0/90/180/270°`}
 
 /* ---------- push ---------- */
-$('pushBtn').onclick=async()=>{save();if(!GitHubPush.config().token){GitHubPush.openSettings();return}const b=$('pushBtn'),m=$('pushMsg');b.disabled=true;try{const sha=await GitHubPush.pushSettings([KEY],'Battleground',[],t=>m.textContent=t);m.textContent=sha?'⬆ push แล้ว · '+sha:'ไม่มีค่าที่ต้อง push'}catch(e){m.textContent='push ไม่สำเร็จ: '+e.message}finally{b.disabled=false}};
-$('push').append(GitHubPush.settingsButton());
+$('pushBtn').onclick=async()=>{save();if(!GitHubPush.config().token){GitHubPush.openSettings();return}const b=$('pushBtn');b.disabled=true;
+ try{const sha=await GitHubPush.pushSettings([KEY],'Battleground',[],status);status(sha?'⬆ push สนามต่อสู้แล้ว · '+sha:'ไม่มีค่าที่ต้อง push')}catch(e){status('push ไม่สำเร็จ: '+e.message)}finally{b.disabled=false}};
+{const s=GitHubPush.settingsButton();s.innerHTML='<b>⚙</b><span>GitHub</span>';s.title='ตั้งค่า GitHub (token / repo)';$('bar').append(s)}
 
-load();if(!localStorage.getItem(KEY))save();toolButtons();renderSide();new ResizeObserver(fit).observe(cv);fit();
+load();if(!localStorage.getItem(KEY))save();renderSide();renderCat();addEventListener('resize',fit);fit();
 </script>
 </body>
 </html>
