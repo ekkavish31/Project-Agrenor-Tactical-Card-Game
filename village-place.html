@@ -20,7 +20,7 @@ nav{position:fixed;left:22px;bottom:76px;display:flex;gap:6px;flex-wrap:wrap;max
 <div id="status" role="status">คลิกจุดทำงานเพื่อเดินไปใช้ · ลากเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม</div>
 <section id="pick" hidden></section><section id="edit" hidden></section>
 <script src="js/game-settings.js?v=82.14"></script><script src="js/asset-manifest.js"></script><script src="js/tactics-sprites.js"></script><script src="js/hero-motion.js"></script><script src="js/village-alpha-masks.js"></script><script src="js/town-art.js"></script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=82.14"></script>
-<script src="js/village-layout-v67.js?v=82.14"></script><script>
+<script src="js/ground-paint.js?v=85"></script><script src="js/village-layout-v67.js?v=82.14"></script><script>
 'use strict';
 /* v38m · One 2.5D sub-map engine for every place (market, forge, home). Layout = data (localStorage 'place-maps-v1',
    defaults below, pushed into js/game-settings.js?v=82.14). A station walks the hero to its door and runs the game's own place
@@ -361,6 +361,10 @@ function loadAll() {
 let all = loadAll(),
  M = copy(all[PLACE] || DEFAULTS[PLACE]);
 
+// v85 · painted ground for this map (paths painted here are walkable, even outside the floor; water blocks)
+window.PlacePaint = window.GroundPaint ? GroundPaint.create({ w: 2200, h: 1400, res: .25, unitPx: 45, origin: { x: 1100, y: 700 } }) : null;
+window.PlacePaint?.load(M.ground || null);
+
 function persist() {
  all = loadAll();
  all[PLACE] = M;
@@ -408,8 +412,42 @@ const door = s => ({
 });
 
 function blocked(u, v) {
- const F = M.floor;
- return u < -F.w + .4 || u > F.w - .4 || v < -F.d + .4 || v > F.d + 1.2 || M.stations.some(s => Math.abs(u - s.u) < s.w + .25 && Math.abs(v - s.v) < s.d + .25)
+ const F = M.floor,
+  q = { x: 1100 + (u - v) * 45, y: 700 + (u + v) * 22.5 },
+  w = window.PlacePaint ? PlacePaint.walk(q.x, q.y) : 0;
+ if (w < 0 || q.x < 30 || q.x > 2170 || q.y < 30 || q.y > 1370) return true;
+ const off = u < -F.w + .4 || u > F.w - .4 || v < -F.d + .4 || v > F.d + 1.2;
+ return off && w <= 0 || M.stations.some(s => Math.abs(u - s.u) < s.w + .25 && Math.abs(v - s.v) < s.d + .25)
+}
+// v85 · automatic fence around the floor edge (gap at the exit and wherever a painted path crosses the edge)
+const FENCE_ART = { wood: 'decor:fence-picket', stone: 'decor:stone-wall-low', hedge: 'decor:hedge-row', flowers: 'decor:flower-bed' };
+function fencePieces() {
+ const F = M.floor, art = FENCE_ART[F.fence];
+ if (!art) return [];
+ const L = -F.w, R = F.w, B = -F.d, Fr = F.d + 1, sides = [], out = [];
+ if (!F.walls) sides.push([L, B, R, B], [L, B, L, Fr]);
+ sides.push([R, B, R, Fr], [L, Fr, R, Fr]);
+ for (const [u0, v0, u1, v1] of sides) {
+  const n = Math.max(1, Math.round(Math.hypot(u1 - u0, v1 - v0) / 1.25));
+  for (let i = 0; i < n; i++) {
+   const a = { u: u0 + (u1 - u0) * i / n, v: v0 + (v1 - v0) * i / n }, b = { u: u0 + (u1 - u0) * (i + 1) / n, v: v0 + (v1 - v0) * (i + 1) / n }, m = { u: (a.u + b.u) / 2, v: (a.v + b.v) / 2 };
+   if (M.exit && Math.hypot(m.u - M.exit.u, m.v - M.exit.v) < 1.6) continue;
+   const q = project(m.u, m.v);
+   if (window.PlacePaint && PlacePaint.walk(q.x, q.y) > 0) continue;
+   out.push({ a, b, m, art })
+  }
+ }
+ return out
+}
+function drawFencePiece(f, hp) {
+ const im = imgOf(f.art);
+ if (!im?.complete || !im.naturalWidth) return;
+ const A = project(f.a.u, f.a.v), Bp = project(f.b.u, f.b.v), m = project(f.m.u, f.m.v), w = Math.abs(Bp.x - A.x) + 18, h = w * im.naturalHeight / im.naturalWidth;
+ g.save();
+ g.translate(m.x, m.y + 4);
+ if ((Bp.x - A.x) * (Bp.y - A.y) > 0) g.scale(-1, 1);
+ TownArt.draw(g, im, null, [-w / 2, -h * .7, w, h], hp);
+ g.restore()
 }
 const key = p => Math.round(p.u * 2) + ',' + Math.round(p.v * 2);
 
@@ -848,6 +886,7 @@ function draw(t) {
   dirty = false
  }
  g.drawImage(terrain, 0, 0);
+ window.PlacePaint?.draw(g);
  walls();
  if (path.length) {
   g.strokeStyle = '#e4ce8e';
@@ -891,7 +930,7 @@ function draw(t) {
    r: artRect(o.art, o.u, o.v, o.width || 110, o.s || 1)
   });
   objects.push({
-   y: p.y,
+   y: p.y + (o.layer || 0),
    tag: {
     type: 'prop',
     i
@@ -899,6 +938,7 @@ function draw(t) {
    draw: () => drawArt(o.art, o.u, o.v, o.width || 110, o.s || 1, o.f, t, hp)
   })
  });
+ for (const f of fencePieces()) objects.push({ y: project(f.m.u, f.m.v).y, draw: () => drawFencePiece(f, hp) });
  objects.push({
   y: hp.y,
   draw: () => {
@@ -1314,4 +1354,4 @@ setup();
 resize();
 send('ready');
 requestAnimationFrame(draw);
-</script><script src="js/place-build.js?v=82.14"></script><script src="js/editor-tools.js?v=82.14"></script></html>
+</script><script src="js/place-build.js?v=85"></script><script src="js/editor-tools.js?v=82.14"></script></html>

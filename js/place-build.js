@@ -98,6 +98,10 @@ const PB_ART = (() => {
  function pasteSelected(){let p=null;try{p=JSON.parse(localStorage.getItem(CLIP_KEY)||'null')}catch(e){}if(!p?.props?.length){status('ยังไม่มีของที่คัดลอก');return}pasteObjects(p.props,'วางของ')}
  function duplicateSelected(){const list=selectedObjects();if(!list.length){status('เลือกของประดับก่อนทำสำเนา');return}checkpoint();const ids=[];for(const o of list){M.props.push({...copy(o),u:q4(o.u+.75),v:q4(o.v+.75)});ids.push(M.props.length-1)}place.sel=ids;save();render();status('ทำสำเนา '+ids.length+' ชิ้นแล้ว')}
  function transformSelected(kind){const list=selectedObjects();if(!list.length)return;checkpoint();if(kind==='rotate'){const cu=list.reduce((s,o)=>s+o.u,0)/list.length,cv=list.reduce((s,o)=>s+o.v,0)/list.length;for(const o of list){const u=o.u-cu,v=o.v-cv;o.u=q4(cu-v);o.v=q4(cv+u)}}else for(const o of list)o.f=!o.f;save();render();status(kind==='rotate'?'หมุนกลุ่มแล้ว':'กลับด้านของที่เลือกแล้ว')}
+ // v85 · layer / size steps for the selection
+ function groupStep(what,dir){const list=selectedObjects();if(!list.length)return;checkpoint();for(const o of list){if(what==='layer'){o.layer=Math.max(-400,Math.min(400,(o.layer||0)+dir*12));if(!o.layer)delete o.layer}else o.s=+Math.max(.2,Math.min(4,(o.s||1)*(dir>0?1.1:1/1.1))).toFixed(3)}save();render()}
+ const groupHtml=n=>`<b class="sec">จัดการ${n>1?'ทั้งกลุ่ม':''}</b><div class="row"><button id="gUp" title="PageUp">⬆ ชั้นหน้า</button><button id="gDown" title="PageDown">⬇ ชั้นหลัง</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div><div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
+ function bindGroup(){act('#gUp',()=>groupStep('layer',1));act('#gDown',()=>groupStep('layer',-1));act('#gBig',()=>groupStep('size',1));act('#gSmall',()=>groupStep('size',-1));act('#gDup',duplicateSelected);act('#gCopy',copySelected);act('#gPaste',pasteSelected)}
  function readPrefabs(){try{return JSON.parse(localStorage.getItem(PREFAB_KEY)||'[]')}catch(e){return[]}}
  function savePrefab(){const list=selectedObjects();if(!list.length){status('เลือกของประดับก่อนบันทึกเป็นชุด');return}const name=prompt('ชื่อชุดของแต่ง เช่น หน้าร้านแบบตลาด');if(!name?.trim())return;const cu=list.reduce((s,o)=>s+o.u,0)/list.length,cv=list.reduce((s,o)=>s+o.v,0)/list.length,prefabs=readPrefabs();prefabs.push({id:'pf'+Date.now().toString(36),name:name.trim(),props:list.map(o=>({...copy(o),du:q4(o.u-cu),dv:q4(o.v-cv)}))});localStorage.setItem(PREFAB_KEY,JSON.stringify(prefabs));status('บันทึกชุด “'+name.trim()+'” แล้ว')}
  function openPrefabPicker(){const prefabs=readPrefabs();if(!prefabs.length){status('ยังไม่มีชุดของแต่ง · เลือกหลายชิ้นแล้วกดบันทึกเป็นชุด');return}let d=document.getElementById('pbPrefabPicker');if(!d){d=document.createElement('dialog');d.id='pbPrefabPicker';d.style.cssText='max-width:420px;width:90vw;border:1px solid #8caa8c;border-radius:12px;padding:16px;background:#182a24;color:#f2e9cf';document.body.append(d)}d.innerHTML='<h3>ชุดของแต่งที่บันทึกไว้</h3><div style="display:grid;gap:6px">'+prefabs.map((p,i)=>'<button data-pf="'+i+'">'+String(p.name).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+' · '+p.props.length+' ชิ้น</button>').join('')+'</div><div style="text-align:right;margin-top:10px"><button data-close>ปิด</button></div>';d.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const p=prefabs[+b.dataset.pf];d.close();pasteObjects(p.props,'วางชุด '+p.name)});d.querySelector('[data-close]').onclick=()=>d.close();d.showModal()
@@ -111,6 +115,7 @@ const PB_ART = (() => {
 
  function restore(json) {
   M = JSON.parse(json);
+  window.PlacePaint?.load(M.ground || null);
   dirty = true;
   persist();
   shortcuts();
@@ -759,6 +764,8 @@ const PB_ART = (() => {
   }
   if ((e.ctrlKey || e.metaKey) && place) {const k=e.key.toLowerCase();if(k==='c'){e.preventDefault();copySelected();return}if(k==='v'){e.preventDefault();pasteSelected();return}if(k==='d'){e.preventDefault();duplicateSelected();return}}
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if(place&&place.sel?.length&&(e.key==='PageUp'||e.key==='PageDown')){e.preventDefault();groupStep('layer',e.key==='PageUp'?1:-1);return}
+  if(place&&place.sel?.length&&(e.key==='+'||e.key==='='||e.key==='-')){e.preventDefault();groupStep('size',e.key==='-'?-1:1);return}
   if(place&&place.sel?.length&&(e.key==='r'||e.key==='R')){e.preventDefault();transformSelected('rotate');return}
   if(place&&place.sel?.length&&(e.key==='f'||e.key==='F')){e.preventDefault();transformSelected('flip');return}
   if (place) {
@@ -852,6 +859,7 @@ const PB_ART = (() => {
   s.title = 'ตั้งค่า GitHub (token / repo)';
   bar.append(s)
  }
+ if (window.GroundPaint && window.PlacePaint) GroundPaint.ui(PlacePaint, { bar: () => bar, canvas: cv, toWorld: e => world(e), before: () => checkpoint(), after: j => { if (j) M.ground = j; else delete M.ground; save() }, ensureEdit: () => { if (!editing) toggleTest() }, onOpen: () => { if (place) leave(true); tool = 'select' } });
  bar.querySelector('#pbMap').onchange = e => {
   if (place) leave(true);
   persist();
@@ -1003,7 +1011,8 @@ const PB_ART = (() => {
    once(() => {
     const cast = M.cast;
     M = copy(DEFAULTS[PLACE]);
-    if (cast) M.cast = cast
+    if (cast) M.cast = cast;
+    window.PlacePaint?.load(null)
    })()
   })
  }
@@ -1192,11 +1201,14 @@ const PB_ART = (() => {
   body.innerHTML = `<label class="two">ชื่อแผนที่<input type="text" id="fName" value="${M.name}"></label><label class="two">คำอธิบาย<input type="text" id="fSub" value="${M.sub||''}"></label>
   <p class="sub">ลาก <b style="color:#7fe3ff">มุมสีฟ้า</b> บนแผนที่เพื่อขยาย/หดพื้น</p>${sl('fw','กว้างพื้น',F.w,3,16,.5)}${sl('fd','ลึกพื้น',F.d,3,16,.5)}
   <label class="two">ลายพื้น<select id="fTex">${[['paving','ดินอัด'],['soil','ดิน'],['grass','หญ้า'],['ground/cobble.png','หินก้อน'],['ground/plaza-slabs.png','แผ่นหิน'],['plank','พื้นไม้']].map(([k,l])=>`<option value="${k}" ${F.tex===k?'selected':''}>${l}</option>`).join('')}</select></label>
-  <label class="chk"><input type="checkbox" id="fWalls" ${F.walls?'checked':''}> ผนังด้านหลัง (ในอาคาร)</label>`;
+  <label class="chk"><input type="checkbox" id="fWalls" ${F.walls?'checked':''}> ผนังด้านหลัง (ในอาคาร)</label>
+  <label class="two">รั้วรอบขอบพื้น<select id="fFence">${[['','ไม่มี'],['wood','รั้วไม้'],['stone','กำแพงหินเตี้ย'],['hedge','แนวพุ่มไม้'],['flowers','แปลงดอกไม้']].map(([k,l])=>`<option value="${k}" ${(F.fence||'')===k?'selected':''}>${l}</option>`).join('')}</select></label>
+  <p class="sub">รั้วล้อมขอบพื้นให้อัตโนมัติ · เว้นช่องที่ทางออก และตรงที่วาดถนน (🖌 วาดพื้น) ตัดผ่านขอบ · ถ้ามีผนัง จะล้อมเฉพาะด้านที่ไม่มีผนัง</p>`;
   body.querySelector('#fName').onchange = e => once(() => M.name = e.target.value.trim() || M.name)();
   body.querySelector('#fSub').onchange = e => once(() => M.sub = e.target.value.trim())();
   body.querySelector('#fTex').onchange = e => once(() => F.tex = e.target.value)();
   body.querySelector('#fWalls').onchange = e => once(() => F.walls = e.target.checked)();
+  body.querySelector('#fFence').onchange = e => once(() => { if (e.target.value) F.fence = e.target.value; else delete F.fence })();
   sliders((k, v) => {
    F[k === 'fw' ? 'w' : 'd'] = v;
    dirty = true
@@ -1215,8 +1227,8 @@ const PB_ART = (() => {
     o = M.props[i];
    body.innerHTML = `<div class="row" style="margin-top:0"><button id="pBack">← ของประดับทั้งหมด</button></div><b class="sec">${propName(o)}</b>
    <div class="art"><span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button></div></div>
-   ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.3,2.5,.05,pct)}
-   <label class="chk"><input type="checkbox" id="pFlip" ${o.f?'checked':''}> กลับด้าน</label>
+   ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${sl('layer','ชั้น หน้า/หลัง',o.layer||0,-400,400,2)}
+   <label class="chk"><input type="checkbox" id="pFlip" ${o.f?'checked':''}> กลับด้าน</label>${groupHtml(1)}
    <div class="row"><button id="pDup">ทำสำเนา</button><button id="pDel">ลบ (Delete)</button></div><div class="row"><button id="pSavePrefab">บันทึกเป็นชุด</button><button id="pUsePrefab">วางชุดที่บันทึก</button></div><p class="sub">ลากบนแผนที่เพื่อย้าย · ลูกศร = ขยับทีละ ¼ ช่อง · R หมุน · F กลับด้าน</p>`;
    thumbInto(body.querySelector('#pTh'), o.art, o.width || 110);
    act('#pBack', () => {
@@ -1234,12 +1246,12 @@ const PB_ART = (() => {
     place.sel = [M.props.length - 1]
    }));
    act('#pDel', delProps);
-   act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);
+   act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);bindGroup();
    sliders((k, v) => o[k] = v);
    return
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น${sel.length>1?` · <b>เลือก ${sel.length} ชิ้น</b> ลากชิ้นใดก็ได้เพื่อย้ายทั้งกลุ่ม`:''}</p>
-  <div class="row"><button id="pAdd" style="background:#4f7a3c;border-color:#b8d39a">＋ เพิ่มของประดับ…</button><button id="pUsePrefab">วางชุด</button><button id="pSavePrefab">บันทึกชุด</button>${sel.length>1?'<button id="pDelAll">ลบที่เลือก</button><button id="pNone">เลิกเลือก</button>':''}</div>
+  <div class="row"><button id="pAdd" style="background:#4f7a3c;border-color:#b8d39a">＋ เพิ่มของประดับ…</button><button id="pUsePrefab">วางชุด</button><button id="pSavePrefab">บันทึกชุด</button>${sel.length>1?'<button id="pDelAll">ลบที่เลือก</button><button id="pNone">เลิกเลือก</button>':''}<button id="pAll">เลือกทั้งหมด</button></div>${sel.length>1?groupHtml(sel.length):`<div class="row"><button id="gPaste">วางที่คัดลอก <small>Ctrl+V</small></button></div>`}
   <div class="items">${props.map(([o,i])=>`<button data-i="${i}" class="${sel.includes(i)?'on':''}"><span class="mini"></span><span style="flex:1">${propName(o)}</span></button>`).join('')||'<p class="sub">ยังไม่มีของประดับ</p>'}</div>`;
   body.querySelectorAll('[data-i]').forEach(b => {
    const i = +b.dataset.i;
@@ -1255,7 +1267,7 @@ const PB_ART = (() => {
     render()
    }
   });
-  act('#pDelAll', delProps);
+  act('#pDelAll', delProps);bindGroup();act('#pAll',()=>{place.sel=props.map(([,i])=>i);render()});
   act('#pNone', () => {
    place.sel = [];
    render()

@@ -32,7 +32,9 @@
 
  function set(v) {
   data = empty();
+  if (!v || typeof v !== 'object') window.TownPaint?.load(null);
   if (v && typeof v === 'object') {
+   window.TownPaint?.load(v.ground || null);
    if (v.edit && typeof v.edit === 'object') data.edit = copy(v.edit);
    if (Array.isArray(v.added)) data.added = copy(v.added).filter(a => a && a.id && a.owner && a.kind);
    if (v.buildings && typeof v.buildings === 'object') data.buildings = copy(v.buildings);
@@ -53,6 +55,8 @@
   if (data.added.length) out.added = copy(data.added);
   if (Object.keys(data.buildings).length) out.buildings = copy(data.buildings);
   if (Object.keys(data.frames).length) out.frames = copy(data.frames);
+  const gp = window.TownPaint?.save();
+  if (gp) out.ground = gp;
   if (Object.keys(data.cast).length) {
    out.cast = copy(data.cast);
    const h = charScale('hero');
@@ -848,6 +852,88 @@
   render()
  }
 
+ /* ---------- v85 group tools: layer / size steps, duplicate, copy & paste between places ---------- */
+ const GCLIP = 'project-a-village-group-clip-v1',
+  clampN = (v, a, b) => Math.max(a, Math.min(b, v));
+ function recordOf(k) {
+  const E = frame.find(e => e.key === k);
+  if (!E) return null;
+  const ov = data.edit[k] || {},
+   added = data.added.find(a => a.id === k),
+   kind = ov.kind && KINDS[ov.kind] ? ov.kind : added ? added.kind : nameKind(E.name);
+  if (!kind) return null;
+  const b = baseOf(E.owner);
+  if (!b) return null;
+  const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
+  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, layer: ov.layer }
+ }
+ function addRecords(recs, owner, off) {
+  const ids = [];
+  if (!baseOf(owner)) return ids;
+  for (const r of recs) {
+   const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+   data.added.push({ id: nid, owner, du: +(r.du + off).toFixed(3), dv: +(r.dv + off).toFixed(3), kind: r.kind });
+   data.edit[nid] = { s: r.s, r: r.r, f: r.f, layer: r.layer };
+   clean(nid);
+   ids.push(nid)
+  }
+  return ids
+ }
+ function groupRecords() {
+  const recs = (place?.keys || []).map(recordOf).filter(Boolean);
+  if (!recs.length) flashStatus('เลือกของก่อน (ชิ้นที่มีภาพแบบเลือกได้เท่านั้นที่คัดลอกได้)');
+  return recs
+ }
+ function dupGroup() {
+  const recs = groupRecords();
+  if (!recs.length) return;
+  UX.checkpoint();
+  place.keys = addRecords(recs, place.id, .8);
+  UX.persist();
+  render();
+  flashStatus('ทำสำเนา ' + recs.length + ' ชิ้นแล้ว · ลากไปวางตำแหน่งใหม่ได้เลย')
+ }
+ function copyGroup() {
+  const recs = groupRecords();
+  if (!recs.length) return;
+  try { localStorage.setItem(GCLIP, JSON.stringify({ from: place.id, recs })) } catch (e) {}
+  flashStatus('คัดลอก ' + recs.length + ' ชิ้นแล้ว · เปิดสถานที่ไหนก็ได้แล้วกด วาง (Ctrl+V)');
+  render()
+ }
+ const clip = () => { try { return JSON.parse(localStorage.getItem(GCLIP) || 'null') } catch (e) { return null } };
+ function pasteGroup() {
+  const c = clip();
+  if (!place || !c?.recs?.length) { flashStatus('ยังไม่มีของที่คัดลอก'); return }
+  UX.checkpoint();
+  place.keys = addRecords(c.recs, place.id, c.from === place.id ? .8 : 0);
+  UX.persist();
+  render();
+  flashStatus('วาง ' + place.keys.length + ' ชิ้นแล้ว (ตำแหน่งเทียบกับสถานที่เหมือนต้นฉบับ)')
+ }
+ function groupStep(what, dir) {
+  if (!place?.keys.length) return;
+  UX.checkpoint();
+  for (const k of place.keys) {
+   const ov = ovOf(k);
+   if (what === 'layer') ov.layer = clampN((ov.layer || 0) + dir * 12, -400, 400);
+   else ov.s = +clampN((ov.s ?? 1) * (dir > 0 ? 1.1 : 1 / 1.1), .2, 4).toFixed(3);
+   clean(k)
+  }
+  UX.persist();
+  render()
+ }
+ const groupHtml = n => `<b class="sec">จัดการ${n > 1 ? 'ทั้งกลุ่ม' : ''}</b><div class="row"><button id="gUp" title="PageUp">⬆ ชั้นหน้า</button><button id="gDown" title="PageDown">⬇ ชั้นหลัง</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div>
+  <div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
+ function bindGroup() {
+  act('#gUp', () => groupStep('layer', 1));
+  act('#gDown', () => groupStep('layer', -1));
+  act('#gBig', () => groupStep('size', 1));
+  act('#gSmall', () => groupStep('size', -1));
+  act('#gDup', dupGroup);
+  act('#gCopy', copyGroup);
+  act('#gPaste', pasteGroup)
+ }
+
  /* ---------- characters mode ---------- */
  let selChar = null;
  const castList = () => [{
@@ -1072,6 +1158,15 @@
    removeSelected();
    return
   }
+  if (e.ctrlKey || e.metaKey) {
+   const c = e.key.toLowerCase();
+   if (c === 'c' && place.keys.length) { e.preventDefault(); copyGroup() }
+   else if (c === 'v') { e.preventDefault(); pasteGroup() }
+   else if (c === 'd' && place.keys.length) { e.preventDefault(); dupGroup() }
+   return
+  }
+  if (place.keys.length && (e.key === 'PageUp' || e.key === 'PageDown')) { e.preventDefault(); groupStep('layer', e.key === 'PageUp' ? 1 : -1); return }
+  if (place.keys.length && (e.key === '+' || e.key === '=' || e.key === '-')) { e.preventDefault(); groupStep('size', e.key === '-' ? -1 : 1); return }
   const k = {
    ArrowLeft: [-1, 0],
    ArrowRight: [1, 0],
@@ -1695,6 +1790,7 @@
   ${slider('left','ขอบซ้าย',-e.left,o.w+.4,o.w+14,.1,unit).replace('data-k','data-f="unit" data-k')}${slider('right','ขอบขวา',e.right,o.w+.4,o.w+14,.1,unit).replace('data-k','data-f="unit" data-k')}
   ${slider('back','ขอบหลัง',-e.back,o.d+.4,o.d+12,.1,unit).replace('data-k','data-f="unit" data-k')}${slider('front','ขอบหน้า',e.front,o.d+1.2,o.d+16,.1,unit).replace('data-k','data-f="unit" data-k')}
   ${slider('gate','ช่องประตูกว้าง',(e.gate??2.8)*2,1.2,14,.1,unit).replace('data-k','data-f="unit" data-k')}<hr>
+  <b class="sec">รั้วรอบอัตโนมัติ (ทุกด้าน เว้นช่องประตู)</b><div class="row" style="flex-wrap:wrap">${[['wood','🪵 รั้วไม้'],['stone','🧱 กำแพงหิน'],['hedge','🌳 พุ่มไม้'],['flowers','🌼 ดอกไม้'],['planter','🪴 กระถาง'],['none','ไม่มี'],['auto','ตามแบบเดิม']].map(([k,l])=>`<button data-fence="${k}">${l}</button>`).join('')}</div>
   <b class="sec">ขอบแต่ละด้าน</b>${Object.entries(SIDES).map(([s,l])=>`<label class="sel">${l}<select data-side="${s}">${Object.entries(BORDERS).map(([k,n])=>`<option value="${k}" ${(sides[s]||'auto')===k?'selected':''}>${n}</option>`).join('')}</select></label>`).join('')}
   <p class="sub">เปลี่ยนขนาด/ขอบแล้ว ของประดับเดิมบนแนวขอบจะถูกวางใหม่ตามแนวใหม่</p>
   <div class="row"><button id="fReset">คืนกรอบเดิม</button></div>`;
@@ -1716,6 +1812,12 @@
    F.sides = F.sides || {};
    if (s.value === 'auto') delete F.sides[s.dataset.side];
    else F.sides[s.dataset.side] = s.value;
+   tidyFrame(o.id, d)
+  }));
+  body.querySelectorAll('[data-fence]').forEach(b => b.onclick = once(() => {
+   const F = ff(), k = b.dataset.fence;
+   if (k === 'auto') delete F.sides;
+   else F.sides = { back: k, left: k, right: k, front: k };
    tidyFrame(o.id, d)
   }));
   act('#fReset', once(() => {
@@ -1740,7 +1842,7 @@
   if (keys.length > 1) {
    const ents = keys.map(k => items.find(e => e.key === k)).filter(Boolean);
    body.innerHTML = `<b class="sec">เลือก ${ents.length} ชิ้น <span class="chip">กลุ่ม</span></b><p class="sub">Shift+คลิก = เพิ่ม/เอาออก · ลากชิ้นใดก็ได้ในกลุ่มเพื่อย้ายทั้งหมด</p>
-   <div class="items">${ents.map(e=>`<button data-k="${e.key}"><span class="mini"></span><span style="flex:1">${itemName(e,items)}</span><b title="เอาออกจากกลุ่ม">✕</b></button>`).join('')}</div>${nudgeHtml}
+   <div class="items">${ents.map(e=>`<button data-k="${e.key}"><span class="mini"></span><span style="flex:1">${itemName(e,items)}</span><b title="เอาออกจากกลุ่ม">✕</b></button>`).join('')}</div>${nudgeHtml}${groupHtml(ents.length)}
    <div class="row"><button id="gHide">ซ่อนทั้งหมด</button><button id="gShow">แสดงทั้งหมด</button><button id="gReset">คืนค่าทั้งหมด</button><button id="gDel">ลบ (Delete)</button><button id="gNone">เลิกเลือก</button></div>`;
    body.querySelectorAll('[data-k]').forEach(b => {
     const E = items.find(x => x.key === b.dataset.k),
@@ -1755,6 +1857,7 @@
    act('#gShow', once(() => keys.forEach(k => delete ovOf(k).hide)));
    act('#gReset', once(() => keys.forEach(k => delete data.edit[k])));
    act('#gDel', removeSelected);
+   bindGroup();
    act('#gNone', () => {
     place.keys = [];
     render()
@@ -1763,6 +1866,7 @@
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่ (จุดสีทอง) หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น · จุดแดง = ชิ้นที่ซ่อนอยู่</p>
   <div class="row"><button id="iAdd" style="background:#4f7a3c;border-color:#b8d39a">＋ เพิ่มของ…</button>${o?'<button id="iCopy">คัดลอกการแต่งไปที่อื่น…</button>':''}<button id="iReset">คืนของย่อยทั้งหมด</button></div>
+  <div class="row"><button id="iAll">เลือกทั้งหมด</button>${clip()?.recs?.length?`<button id="gPaste">วางที่คัดลอก (${clip().recs.length}) <small>Ctrl+V</small></button>`:''}</div>
   <div class="items">${items.map(e=>`<button data-key="${e.key}"><span class="mini"></span><span style="flex:1">${itemName(e,items)}</span><small>${e.hidden?'ซ่อนอยู่':e.key.startsWith('add:')?'เพิ่มเอง':Object.keys(e.ov||{}).length?'แก้แล้ว':''}</small></button>`).join('')||'<p class="sub">ยังไม่มีของในสถานที่นี้ · กด ＋ เพิ่มของ</p>'}</div>`;
   body.querySelectorAll('[data-key]').forEach(b => {
    const E = items.find(x => x.key === b.dataset.key),
@@ -1791,6 +1895,8 @@
    flashStatus('วางของใหม่หน้าสถานที่แล้ว · ลากไปวางตำแหน่งที่ต้องการ')
   }));
   act('#iCopy', () => openCopy(place.id));
+  act('#gPaste', pasteGroup);
+  act('#iAll', () => { place.keys = items.map(e => e.key); render() });
   act('#iReset', () => {
    if (!window.confirm('คืนของย่อยทั้งหมดของ ' + ownerName(place.id) + ' (รวมของที่เพิ่มเอง)?')) return;
    once(() => {
@@ -1811,7 +1917,7 @@
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
   ${nudgeHtml}${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${slider('layer','ชั้น หน้า/หลัง',ov.layer||0,-200,200,2,FMT.layer)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
-  <div class="row">${added?'<button id="aeDel">ลบชิ้นนี้ (Delete)</button>':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชิ้นนี้ (Delete)'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>`;
+  <div class="row">${added?'<button id="aeDel">ลบชิ้นนี้ (Delete)</button>':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชิ้นนี้ (Delete)'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
   act('#iBack', () => {
    place.keys = [];
@@ -1855,6 +1961,7 @@
     place.keys = [nid]
    })()
   });
+  bindGroup();
   body.querySelector('#aeFlip').onchange = e => once(() => ovOf(key).f = e.target.checked)();
   bindSliders((k, v) => ovOf(key)[k] = v, () => clean(key))
  }
