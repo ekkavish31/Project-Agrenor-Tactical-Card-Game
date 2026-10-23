@@ -20,202 +20,1298 @@ nav{position:fixed;left:22px;bottom:76px;display:flex;gap:6px;flex-wrap:wrap;max
 <div id="status" role="status">คลิกจุดทำงานเพื่อเดินไปใช้ · ลากเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม</div>
 <section id="pick" hidden></section><section id="edit" hidden></section>
 <script src="js/game-settings.js"></script><script src="js/asset-manifest.js"></script><script src="js/tactics-sprites.js"></script><script src="js/hero-motion.js"></script><script src="js/village-alpha-masks.js"></script><script src="js/town-art.js"></script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=81.14"></script>
-<script>
+<script src="js/village-layout-v67.js"></script><script>
 'use strict';
 /* v38m · One 2.5D sub-map engine for every place (market, forge, home). Layout = data (localStorage 'place-maps-v1',
    defaults below, pushed into js/game-settings.js). A station walks the hero to its door and runs the game's own place
    action (runPlaceAction) through the parent page, so every rule stays in the game. */
-const Q=new URLSearchParams(location.search),PLACE=['market','forge','home'].includes(Q.get('place'))?Q.get('place'):'market',KEY='place-maps-v1';
-const cv=document.getElementById('world'),$=id=>document.getElementById(id),send=(type,data={})=>parent.postMessage({source:'project-a-place',place:PLACE,type,...data},'*');
-let g=cv.getContext('2d');
-const ACTIONS={market:{buy:'ซื้อวัตถุดิบ',sell:'ขายอุปกรณ์',orders:'รับ–ส่งออร์เดอร์'},forge:{smelt:'หลอมโลหะ',forge:'ตีขึ้นรูป',water:'ชุบแข็ง',recipes:'เลือกแบบงาน',rest:'พักหายใจ',meal:'อาหารอุ่น'},home:{sleep:'นอนพัก',rest:'พักหายใจ',meal:'อาหารอุ่น',chest:'หีบเก็บของ',deck:'จัดสำรับ',bed:'จัดการเตียง'}}[PLACE];
-const DEFAULTS={
- market:{name:'ตลาดหมู่บ้าน',sub:'เดินเลือกใช้บริการตามร้านค้า',floor:{w:11,d:10,tex:'paving',walls:false},exit:{u:0,v:9.4},
-  stations:[{id:'materials',name:'ร้านวัตถุดิบ',actions:['buy'],u:-6,v:-5,w:2.3,d:2.5,door:{du:3.5,dv:0},art:'vt:market-materials.png',width:470},{id:'equipment',name:'ร้านรับซื้ออุปกรณ์',actions:['sell'],u:5,v:-5,w:2.5,d:2.3,door:{du:0,dv:3.5},art:'vt:market-equipment.png',width:470},{id:'orders',name:'กระดานออร์เดอร์',actions:['orders'],u:-6,v:4,w:2.2,d:1.7,door:{du:3.5,dv:0},art:'vt:market-orders.png',width:310}],
-  props:[{art:'decor:market-stall-red',u:4,v:4,s:1},{art:'decor:cart',u:7.5,v:6,s:1},{art:'decor:hay',u:-8.5,v:-8.5,s:1},{art:'code:lamp',u:-2,v:7,s:1},{art:'code:lamp',u:2,v:7,s:1}]},
- forge:{name:'โรงตีเหล็ก',sub:'หลอม ตี ชุบ ที่จุดทำงานแต่ละจุด',floor:{w:7,d:6,tex:'soil',walls:true},exit:{u:0,v:5.6},
-  stations:[{id:'furnace',name:'เตาหลอม',actions:['smelt'],u:-4,v:-3.5,w:1.4,d:1.4,door:{du:0,dv:2},art:'code:furnace',width:160},{id:'anvil',name:'ทั่งตีเหล็ก',actions:['forge'],u:0,v:-1,w:.9,d:.7,door:{du:0,dv:1.6},art:'code:anvil',width:110},{id:'tub',name:'ถังชุบ',actions:['water'],u:4,v:-3.5,w:1,d:1,door:{du:0,dv:1.8},art:'code:tub',width:110},{id:'book',name:'แท่นสมุดงาน',actions:['recipes'],u:4.5,v:1.5,w:.7,d:.7,door:{du:-1.5,dv:0},art:'code:board',width:90},{id:'bench',name:'ม้านั่งพัก',actions:['rest','meal'],u:-4.5,v:2,w:1,d:.6,door:{du:1.6,dv:0},art:'decor:bench',width:120}],
-  props:[{art:'decor:woodpile',u:-6,v:-1,s:1},{art:'decor:hay',u:6,v:4.5,s:.9},{art:'code:crate',u:5.5,v:-1,s:1},{art:'code:crate',u:6,v:-.2,s:.8}]},
- home:{name:'บ้านของเรา',sub:'พักผ่อน จัดสำรับ และฝากของ',floor:{w:6,d:5,tex:'plank',walls:true},exit:{u:0,v:4.6},
-  stations:[{id:'bed',name:'เตียง',actions:['sleep','bed'],u:-3.6,v:-2.6,w:1.2,d:1.8,door:{du:1.8,dv:1},art:'code:bed',width:150},{id:'chest',name:'หีบเก็บของ',actions:['chest'],u:1,v:-3.8,w:.9,d:.6,door:{du:0,dv:1.5},art:'code:chest',width:90},{id:'table',name:'โต๊ะจัดสำรับ',actions:['deck'],u:3.2,v:0,w:1,d:1,door:{du:-1.7,dv:0},art:'code:table',width:120},{id:'hearth',name:'เตาผิง',actions:['meal','rest'],u:-1.6,v:-3.9,w:1.1,d:.6,door:{du:0,dv:1.6},art:'code:hearth',width:130}],
-  props:[{art:'decor:flower-box',u:3.8,v:-3.8,s:.8},{art:'code:crate',u:-4.6,v:2.6,s:.8}]}};
-const copy=x=>JSON.parse(JSON.stringify(x)),HERO_SCALE=(()=>{try{return+JSON.parse(localStorage.getItem('project-a-village-editor-v67')||'{}').assets?.chars?.hero||1}catch(e){return 1}})();
-function loadAll(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){return{}}}
-let all=loadAll(),M=copy(all[PLACE]||DEFAULTS[PLACE]);
-function persist(){all=loadAll();all[PLACE]=M;try{localStorage.setItem(KEY,JSON.stringify(all))}catch(e){}}
+const Q = new URLSearchParams(location.search),
+ PLACE = ['market', 'forge', 'home'].includes(Q.get('place')) ? Q.get('place') : 'market',
+ KEY = 'place-maps-v1';
+const cv = document.getElementById('world'),
+ $ = id => document.getElementById(id),
+ send = (type, data = {}) => parent.postMessage({
+  source: 'project-a-place',
+  place: PLACE,
+  type,
+  ...data
+ }, '*');
+let g = cv.getContext('2d');
+const ACTIONS = {
+ market: {
+  buy: 'ซื้อวัตถุดิบ',
+  sell: 'ขายอุปกรณ์',
+  orders: 'รับ–ส่งออร์เดอร์'
+ },
+ forge: {
+  smelt: 'หลอมโลหะ',
+  forge: 'ตีขึ้นรูป',
+  water: 'ชุบแข็ง',
+  recipes: 'เลือกแบบงาน',
+  rest: 'พักหายใจ',
+  meal: 'อาหารอุ่น'
+ },
+ home: {
+  sleep: 'นอนพัก',
+  rest: 'พักหายใจ',
+  meal: 'อาหารอุ่น',
+  chest: 'หีบเก็บของ',
+  deck: 'จัดสำรับ',
+  bed: 'จัดการเตียง'
+ }
+} [PLACE];
+const DEFAULTS = {
+ market: {
+  name: 'ตลาดหมู่บ้าน',
+  sub: 'เดินเลือกใช้บริการตามร้านค้า',
+  floor: {
+   w: 11,
+   d: 10,
+   tex: 'paving',
+   walls: false
+  },
+  exit: {
+   u: 0,
+   v: 9.4
+  },
+  stations: [{
+   id: 'materials',
+   name: 'ร้านวัตถุดิบ',
+   actions: ['buy'],
+   u: -6,
+   v: -5,
+   w: 2.3,
+   d: 2.5,
+   door: {
+    du: 3.5,
+    dv: 0
+   },
+   art: 'vt:market-materials.png',
+   width: 470
+  }, {
+   id: 'equipment',
+   name: 'ร้านรับซื้ออุปกรณ์',
+   actions: ['sell'],
+   u: 5,
+   v: -5,
+   w: 2.5,
+   d: 2.3,
+   door: {
+    du: 0,
+    dv: 3.5
+   },
+   art: 'vt:market-equipment.png',
+   width: 470
+  }, {
+   id: 'orders',
+   name: 'กระดานออร์เดอร์',
+   actions: ['orders'],
+   u: -6,
+   v: 4,
+   w: 2.2,
+   d: 1.7,
+   door: {
+    du: 3.5,
+    dv: 0
+   },
+   art: 'vt:market-orders.png',
+   width: 310
+  }],
+  props: [{
+   art: 'decor:market-stall-red',
+   u: 4,
+   v: 4,
+   s: 1
+  }, {
+   art: 'decor:cart',
+   u: 7.5,
+   v: 6,
+   s: 1
+  }, {
+   art: 'decor:hay',
+   u: -8.5,
+   v: -8.5,
+   s: 1
+  }, {
+   art: 'code:lamp',
+   u: -2,
+   v: 7,
+   s: 1
+  }, {
+   art: 'code:lamp',
+   u: 2,
+   v: 7,
+   s: 1
+  }]
+ },
+ forge: {
+  name: 'โรงตีเหล็ก',
+  sub: 'หลอม ตี ชุบ ที่จุดทำงานแต่ละจุด',
+  floor: {
+   w: 7,
+   d: 6,
+   tex: 'soil',
+   walls: true
+  },
+  exit: {
+   u: 0,
+   v: 5.6
+  },
+  stations: [{
+   id: 'furnace',
+   name: 'เตาหลอม',
+   actions: ['smelt'],
+   u: -4,
+   v: -3.5,
+   w: 1.4,
+   d: 1.4,
+   door: {
+    du: 0,
+    dv: 2
+   },
+   art: 'code:furnace',
+   width: 160
+  }, {
+   id: 'anvil',
+   name: 'ทั่งตีเหล็ก',
+   actions: ['forge'],
+   u: 0,
+   v: -1,
+   w: .9,
+   d: .7,
+   door: {
+    du: 0,
+    dv: 1.6
+   },
+   art: 'code:anvil',
+   width: 110
+  }, {
+   id: 'tub',
+   name: 'ถังชุบ',
+   actions: ['water'],
+   u: 4,
+   v: -3.5,
+   w: 1,
+   d: 1,
+   door: {
+    du: 0,
+    dv: 1.8
+   },
+   art: 'code:tub',
+   width: 110
+  }, {
+   id: 'book',
+   name: 'แท่นสมุดงาน',
+   actions: ['recipes'],
+   u: 4.5,
+   v: 1.5,
+   w: .7,
+   d: .7,
+   door: {
+    du: -1.5,
+    dv: 0
+   },
+   art: 'code:board',
+   width: 90
+  }, {
+   id: 'bench',
+   name: 'ม้านั่งพัก',
+   actions: ['rest', 'meal'],
+   u: -4.5,
+   v: 2,
+   w: 1,
+   d: .6,
+   door: {
+    du: 1.6,
+    dv: 0
+   },
+   art: 'decor:bench',
+   width: 120
+  }],
+  props: [{
+   art: 'decor:woodpile',
+   u: -6,
+   v: -1,
+   s: 1
+  }, {
+   art: 'decor:hay',
+   u: 6,
+   v: 4.5,
+   s: .9
+  }, {
+   art: 'code:crate',
+   u: 5.5,
+   v: -1,
+   s: 1
+  }, {
+   art: 'code:crate',
+   u: 6,
+   v: -.2,
+   s: .8
+  }]
+ },
+ home: {
+  name: 'บ้านของเรา',
+  sub: 'พักผ่อน จัดสำรับ และฝากของ',
+  floor: {
+   w: 6,
+   d: 5,
+   tex: 'plank',
+   walls: true
+  },
+  exit: {
+   u: 0,
+   v: 4.6
+  },
+  stations: [{
+   id: 'bed',
+   name: 'เตียง',
+   actions: ['sleep', 'bed'],
+   u: -3.6,
+   v: -2.6,
+   w: 1.2,
+   d: 1.8,
+   door: {
+    du: 1.8,
+    dv: 1
+   },
+   art: 'code:bed',
+   width: 150
+  }, {
+   id: 'chest',
+   name: 'หีบเก็บของ',
+   actions: ['chest'],
+   u: 1,
+   v: -3.8,
+   w: .9,
+   d: .6,
+   door: {
+    du: 0,
+    dv: 1.5
+   },
+   art: 'code:chest',
+   width: 90
+  }, {
+   id: 'table',
+   name: 'โต๊ะจัดสำรับ',
+   actions: ['deck'],
+   u: 3.2,
+   v: 0,
+   w: 1,
+   d: 1,
+   door: {
+    du: -1.7,
+    dv: 0
+   },
+   art: 'code:table',
+   width: 120
+  }, {
+   id: 'hearth',
+   name: 'เตาผิง',
+   actions: ['meal', 'rest'],
+   u: -1.6,
+   v: -3.9,
+   w: 1.1,
+   d: .6,
+   door: {
+    du: 0,
+    dv: 1.6
+   },
+   art: 'code:hearth',
+   width: 130
+  }],
+  props: [{
+   art: 'decor:flower-box',
+   u: 3.8,
+   v: -3.8,
+   s: .8
+  }, {
+   art: 'code:crate',
+   u: -4.6,
+   v: 2.6,
+   s: .8
+  }]
+ }
+};
+const copy = x => JSON.parse(JSON.stringify(x));
+// v82.1 · the hero's size / image on this map come from the map itself (M.cast), else from the village
+const VILLAGE_HERO = (() => {
+ try {
+  const a = JSON.parse(localStorage.getItem('project-a-village-editor-v67') || 'null')?.assets || window.VillageDefaultLayout?.assets || {};
+  const c = a.cast?.hero || {};
+  return {
+   ...c,
+   s: (+a.cast?.all || 1) * (+c.s || +a.chars?.hero || 1)
+  }
+ } catch (e) {
+  return {
+   s: 1
+  }
+ }
+})();
+const heroCast = () => M.cast?.hero || VILLAGE_HERO;
+
+function loadAll() {
+ try {
+  return JSON.parse(localStorage.getItem(KEY) || '{}') || {}
+ } catch (e) {
+  return {}
+ }
+}
+let all = loadAll(),
+ M = copy(all[PLACE] || DEFAULTS[PLACE]);
+
+function persist() {
+ all = loadAll();
+ all[PLACE] = M;
+ try {
+  localStorage.setItem(KEY, JSON.stringify(all))
+ } catch (e) {}
+}
 
 /* ---------- geometry ---------- */
-const S=45,project=(u,v,z=0)=>({x:1100+(u-v)*S,y:700+(u+v)*S/2-z}),inv=(x,y)=>({u:((x-1100)/S+(y-700)/(S/2))/2,v:((y-700)/(S/2)-(x-1100)/S)/2});
-const hero={u:0,v:0,dir:'NE'};let W=0,H=0,scale=1,zoom=1,pan={x:0,y:0},path=[],target=null,last=0,active=true,dirty=true,state=null,editing=Q.get('edit')==='1',sel=null,work=null,undo=[];
-const door=s=>({u:s.u+s.door.du,v:s.v+s.door.dv});
-function blocked(u,v){const F=M.floor;return u<-F.w+.4||u>F.w-.4||v<-F.d+.4||v>F.d+1.2||M.stations.some(s=>Math.abs(u-s.u)<s.w+.25&&Math.abs(v-s.v)<s.d+.25)}
-const key=p=>Math.round(p.u*2)+','+Math.round(p.v*2);
-function clear(a,b){for(let i=0;i<=8;i++){const f=i/8;if(blocked(a.u+(b.u-a.u)*f,a.v+(b.v-a.v)*f))return false}return true}
-function route(from,to){const end={u:Math.round(to.u*2)/2,v:Math.round(to.v*2)/2},start={u:Math.round(from.u*2)/2,v:Math.round(from.v*2)/2};if(blocked(end.u,end.v))return[];const open=[start],cost=new Map([[key(start),0]]),prev=new Map(),closed=new Set();let found=null;
- while(open.length){open.sort((a,b)=>(cost.get(key(a))+Math.hypot(a.u-end.u,a.v-end.v))-(cost.get(key(b))+Math.hypot(b.u-end.u,b.v-end.v)));const a=open.shift(),ak=key(a);if(closed.has(ak))continue;closed.add(ak);if(ak===key(end)){found=a;break}if(closed.size>4000)break;
-  for(const[du,dv]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5],[.5,-.5],[-.5,.5],[-.5,-.5]]){const b={u:a.u+du,v:a.v+dv},bk=key(b),n=cost.get(ak)+Math.hypot(du,dv);if(closed.has(bk)||blocked(b.u,b.v)||!clear(a,b)||n>=(cost.get(bk)??Infinity))continue;cost.set(bk,n);prev.set(bk,a);open.push(b)}}
- if(!found)return[];const out=[found];while(key(found)!==key(start)){found=prev.get(key(found));out.unshift(found)}return out}
+const S = 45,
+ project = (u, v, z = 0) => ({
+  x: 1100 + (u - v) * S,
+  y: 700 + (u + v) * S / 2 - z
+ }),
+ inv = (x, y) => ({
+  u: ((x - 1100) / S + (y - 700) / (S / 2)) / 2,
+  v: ((y - 700) / (S / 2) - (x - 1100) / S) / 2
+ });
+const hero = {
+ u: 0,
+ v: 0,
+ dir: 'NE'
+};
+let W = 0,
+ H = 0,
+ scale = 1,
+ zoom = 1,
+ pan = {
+  x: 0,
+  y: 0
+ },
+ path = [],
+ target = null,
+ last = 0,
+ active = true,
+ dirty = true,
+ state = null,
+ editing = Q.get('edit') === '1',
+ sel = null,
+ work = null,
+ undo = [];
+const door = s => ({
+ u: s.u + s.door.du,
+ v: s.v + s.door.dv
+});
+
+function blocked(u, v) {
+ const F = M.floor;
+ return u < -F.w + .4 || u > F.w - .4 || v < -F.d + .4 || v > F.d + 1.2 || M.stations.some(s => Math.abs(u - s.u) < s.w + .25 && Math.abs(v - s.v) < s.d + .25)
+}
+const key = p => Math.round(p.u * 2) + ',' + Math.round(p.v * 2);
+
+function clear(a, b) {
+ for (let i = 0; i <= 8; i++) {
+  const f = i / 8;
+  if (blocked(a.u + (b.u - a.u) * f, a.v + (b.v - a.v) * f)) return false
+ }
+ return true
+}
+
+function route(from, to) {
+ const end = {
+   u: Math.round(to.u * 2) / 2,
+   v: Math.round(to.v * 2) / 2
+  },
+  start = {
+   u: Math.round(from.u * 2) / 2,
+   v: Math.round(from.v * 2) / 2
+  };
+ if (blocked(end.u, end.v)) return [];
+ const open = [start],
+  cost = new Map([
+   [key(start), 0]
+  ]),
+  prev = new Map(),
+  closed = new Set();
+ let found = null;
+ while (open.length) {
+  open.sort((a, b) => (cost.get(key(a)) + Math.hypot(a.u - end.u, a.v - end.v)) - (cost.get(key(b)) + Math.hypot(b.u - end.u, b.v - end.v)));
+  const a = open.shift(),
+   ak = key(a);
+  if (closed.has(ak)) continue;
+  closed.add(ak);
+  if (ak === key(end)) {
+   found = a;
+   break
+  }
+  if (closed.size > 4000) break;
+  for (const [du, dv] of [
+    [.5, 0],
+    [-.5, 0],
+    [0, .5],
+    [0, -.5],
+    [.5, .5],
+    [.5, -.5],
+    [-.5, .5],
+    [-.5, -.5]
+   ]) {
+   const b = {
+     u: a.u + du,
+     v: a.v + dv
+    },
+    bk = key(b),
+    n = cost.get(ak) + Math.hypot(du, dv);
+   if (closed.has(bk) || blocked(b.u, b.v) || !clear(a, b) || n >= (cost.get(bk) ?? Infinity)) continue;
+   cost.set(bk, n);
+   prev.set(bk, a);
+   open.push(b)
+  }
+ }
+ if (!found) return [];
+ const out = [found];
+ while (key(found) !== key(start)) {
+  found = prev.get(key(found));
+  out.unshift(found)
+ }
+ return out
+}
 
 /* ---------- art: real images or code-drawn placeholders ---------- */
-const ART_LIST=[['code:furnace','เตาหลอม (โค้ด)'],['code:anvil','ทั่ง (โค้ด)'],['code:tub','ถังชุบ (โค้ด)'],['code:board','แท่นสมุด (โค้ด)'],['code:table','โต๊ะ (โค้ด)'],['code:bed','เตียง (โค้ด)'],['code:chest','หีบ (โค้ด)'],['code:hearth','เตาผิง (โค้ด)'],['code:crate','ลังไม้ (โค้ด)'],['code:lamp','โคมไฟ (โค้ด)'],['code:shelf','ชั้นวาง (โค้ด)'],
- ['vt:market-materials.png','ร้านวัตถุดิบ'],['vt:market-equipment.png','ร้านรับซื้อ'],['vt:market-orders.png','กระดานออร์เดอร์'],['vt:forge.png','โรงตีเหล็ก (อาคาร)'],['vt:fountain.png','น้ำพุ'],
- ...['bench','woodpile','hay','cart','well','signpost','banner-pole','flower-box','flower-bed','market-stall-red','market-stall-blue','stepping-stones','pond-lilies','fence-picket','stone-wall-low','hedge-row'].map(n=>['decor:'+n,n])];
-const imgOf=a=>a.startsWith('vt:')?TownArt.image('assets/village-town/'+a.slice(3)):a.startsWith('decor:')?TownArt.image('assets/village-town/decor/'+a.slice(6)+'.png'):a.startsWith('img:')?TownArt.image(a.slice(4)):null;
-function box(u,v,w,d,h,top,left,right){const P=(a,b,z)=>project(u+a,v+b,z),poly=(pts,c)=>{g.beginPath();pts.forEach((p,i)=>g[i?'lineTo':'moveTo'](p.x,p.y));g.closePath();g.fillStyle=c;g.fill();g.strokeStyle='#0003';g.lineWidth=1;g.stroke()};
- poly([P(-w,d,0),P(w,d,0),P(w,d,h),P(-w,d,h)],left);poly([P(w,-d,0),P(w,d,0),P(w,d,h),P(w,-d,h)],right);poly([P(-w,-d,h),P(w,-d,h),P(w,d,h),P(-w,d,h)],top)}
-function codeArt(kind,u,v,s,t){const k=s;switch(kind){
- case'furnace':{box(u,v,1.2*k,1.2*k,80*k,'#8b7f73','#6e645a','#5a5249');box(u-.4*k,v-.4*k,.35*k,.35*k,150*k,'#6a6058','#544b44','#463f39');const m=project(u,v+1.2*k,28*k),f=.75+.25*Math.sin(t/120);g.fillStyle=`rgba(255,${120+60*f|0},40,.95)`;g.beginPath();g.ellipse(m.x,m.y,20*k,14*k,0,0,7);g.fill();const gl=g.createRadialGradient(m.x,m.y,0,m.x,m.y,90*k);gl.addColorStop(0,`rgba(255,150,60,${.35*f})`);gl.addColorStop(1,'rgba(255,150,60,0)');g.fillStyle=gl;g.beginPath();g.arc(m.x,m.y,90*k,0,7);g.fill();break}
- case'anvil':box(u,v,.45*k,.45*k,26*k,'#7a5434','#5f412a','#4d3522');box(u,v,.7*k,.35*k,40*k,'#4b4f55','#35383d','#2a2d31');break;
- case'tub':{const c=project(u,v,0),r=40*k;g.fillStyle='#6b4a2e';g.beginPath();g.ellipse(c.x,c.y,r,r*.5,0,0,Math.PI);g.lineTo(c.x-r,c.y-34*k);g.ellipse(c.x,c.y-34*k,r,r*.5,0,Math.PI,0,true);g.closePath();g.fill();g.fillStyle='#3e7fa8';g.beginPath();g.ellipse(c.x,c.y-34*k,r*.86,r*.42,0,0,7);g.fill();g.strokeStyle='#3b2a19';g.lineWidth=3;g.beginPath();g.ellipse(c.x,c.y-14*k,r,r*.5,0,0,Math.PI);g.stroke();break}
- case'board':box(u,v,.12*k,.12*k,60*k,'#7a5434','#5f412a','#4d3522');{const p=project(u,v,60*k);g.fillStyle='#e8dcc0';g.strokeStyle='#6b4a2e';g.lineWidth=3;g.beginPath();g.rect(p.x-26*k,p.y-30*k,52*k,34*k);g.fill();g.stroke();g.fillStyle='#8a6a44';for(let i=0;i<3;i++)g.fillRect(p.x-18*k,p.y-22*k+i*9*k,36*k,2)}break;
- case'table':box(u,v,.85*k,.85*k,34*k,'#a0733f','#7d5730','#6a4927');break;
- case'bed':box(u,v,1.1*k,1.7*k,22*k,'#7a5434','#5f412a','#4d3522');box(u,v+.3*k,1*k,1.25*k,30*k,'#b5473b','#8f362d','#7a2e26');box(u,v-1.2*k,1*k,.35*k,34*k,'#efe6d3','#cfc4ad','#bdb29b');break;
- case'chest':box(u,v,.8*k,.5*k,34*k,'#8a5a2e','#6b4422','#58381c');box(u,v,.82*k,.52*k,26*k,'#c9a24a','#a8853a','#8f7130');box(u,v,.8*k,.5*k,22*k,'#8a5a2e','#6b4422','#58381c');break;
- case'hearth':{box(u,v,1*k,.5*k,70*k,'#9b8f80','#7d7366','#6a6157');const m=project(u,v+.5*k,22*k),f=.75+.25*Math.sin(t/140);g.fillStyle=`rgba(255,${130+70*f|0},50,.95)`;g.beginPath();g.ellipse(m.x,m.y,22*k,13*k,0,0,7);g.fill();break}
- case'crate':box(u,v,.45*k,.45*k,38*k,'#a07a48','#82603a','#6d5030');break;
- case'shelf':box(u,v,.9*k,.3*k,110*k,'#7a5434','#5f412a','#4d3522');break;
- case'lamp':{const p=project(u,v,0),f=.85+.15*Math.sin(t/250+u);g.fillStyle='#2b2a28';g.fillRect(p.x-3,p.y-110*k,6,110*k);g.fillStyle=`rgba(255,${200*f|0},110,${f})`;g.fillRect(p.x-8,p.y-128*k,16,20*k);const gl=g.createRadialGradient(p.x,p.y-118*k,0,p.x,p.y-118*k,50);gl.addColorStop(0,`rgba(255,210,120,${.3*f})`);gl.addColorStop(1,'rgba(255,210,120,0)');g.fillStyle=gl;g.beginPath();g.arc(p.x,p.y-118*k,50,0,7);g.fill();break}}}
-function drawArt(a,u,v,width,s=1,flip=false,t=0,hp=null){if(a.startsWith('code:')){g.save();if(flip){const c=project(u,v);g.translate(c.x*2,0);g.scale(-1,1)}codeArt(a.slice(5),u,v,s,t);g.restore();return}
- const im=imgOf(a);if(!im?.complete||!im.naturalWidth)return;const p=project(u,v),w=width*s,h=w*im.naturalHeight/im.naturalWidth;g.save();if(flip){g.translate(p.x*2,0);g.scale(-1,1)}
- if(a.startsWith('decor:')){g.fillStyle='#00000028';g.beginPath();g.ellipse(p.x,p.y,w*.36,w*.11,0,0,7);g.fill()}TownArt.draw(g,im,null,[p.x-w/2,p.y-h*(a.startsWith('vt:')?.86:.92),w,h],hp);g.restore()}
-function artRect(a,u,v,width,s=1){const p=project(u,v),w=width*s;if(a.startsWith('code:'))return{x:p.x-w/2,y:p.y-w*1.1,w,h:w*1.2};const im=imgOf(a),h=im?.naturalWidth?w*im.naturalHeight/im.naturalWidth:w;return{x:p.x-w/2,y:p.y-h*(a.startsWith('vt:')?.86:.92),w,h}}
+const ART_LIST = [
+ ['code:furnace', 'เตาหลอม (โค้ด)'],
+ ['code:anvil', 'ทั่ง (โค้ด)'],
+ ['code:tub', 'ถังชุบ (โค้ด)'],
+ ['code:board', 'แท่นสมุด (โค้ด)'],
+ ['code:table', 'โต๊ะ (โค้ด)'],
+ ['code:bed', 'เตียง (โค้ด)'],
+ ['code:chest', 'หีบ (โค้ด)'],
+ ['code:hearth', 'เตาผิง (โค้ด)'],
+ ['code:crate', 'ลังไม้ (โค้ด)'],
+ ['code:lamp', 'โคมไฟ (โค้ด)'],
+ ['code:shelf', 'ชั้นวาง (โค้ด)'],
+ ['vt:market-materials.png', 'ร้านวัตถุดิบ'],
+ ['vt:market-equipment.png', 'ร้านรับซื้อ'],
+ ['vt:market-orders.png', 'กระดานออร์เดอร์'],
+ ['vt:forge.png', 'โรงตีเหล็ก (อาคาร)'],
+ ['vt:fountain.png', 'น้ำพุ'],
+ ...['bench', 'woodpile', 'hay', 'cart', 'well', 'signpost', 'banner-pole', 'flower-box', 'flower-bed', 'market-stall-red', 'market-stall-blue', 'stepping-stones', 'pond-lilies', 'fence-picket', 'stone-wall-low', 'hedge-row'].map(n => ['decor:' + n, n])
+];
+const imgOf = a => a.startsWith('vt:') ? TownArt.image('assets/village-town/' + a.slice(3)) : a.startsWith('decor:') ? TownArt.image('assets/village-town/decor/' + a.slice(6) + '.png') : a.startsWith('img:') ? TownArt.image(a.slice(4)) : null;
+
+function box(u, v, w, d, h, top, left, right) {
+ const P = (a, b, z) => project(u + a, v + b, z),
+  poly = (pts, c) => {
+   g.beginPath();
+   pts.forEach((p, i) => g[i ? 'lineTo' : 'moveTo'](p.x, p.y));
+   g.closePath();
+   g.fillStyle = c;
+   g.fill();
+   g.strokeStyle = '#0003';
+   g.lineWidth = 1;
+   g.stroke()
+  };
+ poly([P(-w, d, 0), P(w, d, 0), P(w, d, h), P(-w, d, h)], left);
+ poly([P(w, -d, 0), P(w, d, 0), P(w, d, h), P(w, -d, h)], right);
+ poly([P(-w, -d, h), P(w, -d, h), P(w, d, h), P(-w, d, h)], top)
+}
+
+function codeArt(kind, u, v, s, t) {
+ const k = s;
+ switch (kind) {
+  case 'furnace': {
+   box(u, v, 1.2 * k, 1.2 * k, 80 * k, '#8b7f73', '#6e645a', '#5a5249');
+   box(u - .4 * k, v - .4 * k, .35 * k, .35 * k, 150 * k, '#6a6058', '#544b44', '#463f39');
+   const m = project(u, v + 1.2 * k, 28 * k),
+    f = .75 + .25 * Math.sin(t / 120);
+   g.fillStyle = `rgba(255,${120+60*f|0},40,.95)`;
+   g.beginPath();
+   g.ellipse(m.x, m.y, 20 * k, 14 * k, 0, 0, 7);
+   g.fill();
+   const gl = g.createRadialGradient(m.x, m.y, 0, m.x, m.y, 90 * k);
+   gl.addColorStop(0, `rgba(255,150,60,${.35*f})`);
+   gl.addColorStop(1, 'rgba(255,150,60,0)');
+   g.fillStyle = gl;
+   g.beginPath();
+   g.arc(m.x, m.y, 90 * k, 0, 7);
+   g.fill();
+   break
+  }
+  case 'anvil':
+   box(u, v, .45 * k, .45 * k, 26 * k, '#7a5434', '#5f412a', '#4d3522');
+   box(u, v, .7 * k, .35 * k, 40 * k, '#4b4f55', '#35383d', '#2a2d31');
+   break;
+  case 'tub': {
+   const c = project(u, v, 0),
+    r = 40 * k;
+   g.fillStyle = '#6b4a2e';
+   g.beginPath();
+   g.ellipse(c.x, c.y, r, r * .5, 0, 0, Math.PI);
+   g.lineTo(c.x - r, c.y - 34 * k);
+   g.ellipse(c.x, c.y - 34 * k, r, r * .5, 0, Math.PI, 0, true);
+   g.closePath();
+   g.fill();
+   g.fillStyle = '#3e7fa8';
+   g.beginPath();
+   g.ellipse(c.x, c.y - 34 * k, r * .86, r * .42, 0, 0, 7);
+   g.fill();
+   g.strokeStyle = '#3b2a19';
+   g.lineWidth = 3;
+   g.beginPath();
+   g.ellipse(c.x, c.y - 14 * k, r, r * .5, 0, 0, Math.PI);
+   g.stroke();
+   break
+  }
+  case 'board':
+   box(u, v, .12 * k, .12 * k, 60 * k, '#7a5434', '#5f412a', '#4d3522');
+   {
+    const p = project(u, v, 60 * k);
+    g.fillStyle = '#e8dcc0';
+    g.strokeStyle = '#6b4a2e';
+    g.lineWidth = 3;
+    g.beginPath();
+    g.rect(p.x - 26 * k, p.y - 30 * k, 52 * k, 34 * k);
+    g.fill();
+    g.stroke();
+    g.fillStyle = '#8a6a44';
+    for (let i = 0; i < 3; i++) g.fillRect(p.x - 18 * k, p.y - 22 * k + i * 9 * k, 36 * k, 2)
+   }
+   break;
+  case 'table':
+   box(u, v, .85 * k, .85 * k, 34 * k, '#a0733f', '#7d5730', '#6a4927');
+   break;
+  case 'bed':
+   box(u, v, 1.1 * k, 1.7 * k, 22 * k, '#7a5434', '#5f412a', '#4d3522');
+   box(u, v + .3 * k, 1 * k, 1.25 * k, 30 * k, '#b5473b', '#8f362d', '#7a2e26');
+   box(u, v - 1.2 * k, 1 * k, .35 * k, 34 * k, '#efe6d3', '#cfc4ad', '#bdb29b');
+   break;
+  case 'chest':
+   box(u, v, .8 * k, .5 * k, 34 * k, '#8a5a2e', '#6b4422', '#58381c');
+   box(u, v, .82 * k, .52 * k, 26 * k, '#c9a24a', '#a8853a', '#8f7130');
+   box(u, v, .8 * k, .5 * k, 22 * k, '#8a5a2e', '#6b4422', '#58381c');
+   break;
+  case 'hearth': {
+   box(u, v, 1 * k, .5 * k, 70 * k, '#9b8f80', '#7d7366', '#6a6157');
+   const m = project(u, v + .5 * k, 22 * k),
+    f = .75 + .25 * Math.sin(t / 140);
+   g.fillStyle = `rgba(255,${130+70*f|0},50,.95)`;
+   g.beginPath();
+   g.ellipse(m.x, m.y, 22 * k, 13 * k, 0, 0, 7);
+   g.fill();
+   break
+  }
+  case 'crate':
+   box(u, v, .45 * k, .45 * k, 38 * k, '#a07a48', '#82603a', '#6d5030');
+   break;
+  case 'shelf':
+   box(u, v, .9 * k, .3 * k, 110 * k, '#7a5434', '#5f412a', '#4d3522');
+   break;
+  case 'lamp': {
+   const p = project(u, v, 0),
+    f = .85 + .15 * Math.sin(t / 250 + u);
+   g.fillStyle = '#2b2a28';
+   g.fillRect(p.x - 3, p.y - 110 * k, 6, 110 * k);
+   g.fillStyle = `rgba(255,${200*f|0},110,${f})`;
+   g.fillRect(p.x - 8, p.y - 128 * k, 16, 20 * k);
+   const gl = g.createRadialGradient(p.x, p.y - 118 * k, 0, p.x, p.y - 118 * k, 50);
+   gl.addColorStop(0, `rgba(255,210,120,${.3*f})`);
+   gl.addColorStop(1, 'rgba(255,210,120,0)');
+   g.fillStyle = gl;
+   g.beginPath();
+   g.arc(p.x, p.y - 118 * k, 50, 0, 7);
+   g.fill();
+   break
+  }
+ }
+}
+
+function drawArt(a, u, v, width, s = 1, flip = false, t = 0, hp = null) {
+ if (a.startsWith('code:')) {
+  g.save();
+  if (flip) {
+   const c = project(u, v);
+   g.translate(c.x * 2, 0);
+   g.scale(-1, 1)
+  }
+  codeArt(a.slice(5), u, v, s, t);
+  g.restore();
+  return
+ }
+ const im = imgOf(a);
+ if (!im?.complete || !im.naturalWidth) return;
+ const p = project(u, v),
+  w = width * s,
+  h = w * im.naturalHeight / im.naturalWidth;
+ g.save();
+ if (flip) {
+  g.translate(p.x * 2, 0);
+  g.scale(-1, 1)
+ }
+ if (a.startsWith('decor:')) {
+  g.fillStyle = '#00000028';
+  g.beginPath();
+  g.ellipse(p.x, p.y, w * .36, w * .11, 0, 0, 7);
+  g.fill()
+ }
+ TownArt.draw(g, im, null, [p.x - w / 2, p.y - h * (a.startsWith('vt:') ? .86 : .92), w, h], hp);
+ g.restore()
+}
+
+function artRect(a, u, v, width, s = 1) {
+ const p = project(u, v),
+  w = width * s;
+ if (a.startsWith('code:')) return {
+  x: p.x - w / 2,
+  y: p.y - w * 1.1,
+  w,
+  h: w * 1.2
+ };
+ const im = imgOf(a),
+  h = im?.naturalWidth ? w * im.naturalHeight / im.naturalWidth : w;
+ return {
+  x: p.x - w / 2,
+  y: p.y - h * (a.startsWith('vt:') ? .86 : .92),
+  w,
+  h
+ }
+}
 
 /* ---------- floor ---------- */
-const terrain=document.createElement('canvas');terrain.width=2200;terrain.height=1400;
-function drawFloor(){const t=terrain.getContext('2d'),F=M.floor;t.clearRect(0,0,2200,1400);t.fillStyle=TownArt.pattern(t,'grass')||'#7d906b';t.fillRect(0,0,2200,1400);
- const pts=[[-F.w,-F.d],[F.w,-F.d],[F.w,F.d+1],[-F.w,F.d+1]].map(([u,v])=>project(u,v));t.beginPath();pts.forEach((p,i)=>t[i?'lineTo':'moveTo'](p.x,p.y));t.closePath();
- if(F.tex==='plank'){t.save();t.clip();t.fillStyle='#9a7046';t.fillRect(0,0,2200,1400);t.strokeStyle='#6f4e2e';t.lineWidth=2;for(let k=-F.w*2;k<=F.w*2+F.d*2;k++){const a=project(-F.w+k/2,-F.d),b=project(-F.w+k/2,F.d+1);t.beginPath();t.moveTo(a.x,a.y);t.lineTo(b.x,b.y);t.stroke()}for(let v=-F.d;v<F.d+1;v+=1.5)for(let u=-F.w;u<F.w;u+=3){const a=project(u+((v*7)%3),v),b=project(u+((v*7)%3),v+.5);t.strokeStyle='#5e4227';t.beginPath();t.moveTo(a.x,a.y);t.lineTo(b.x,b.y);t.stroke()}t.restore()}
- else{t.fillStyle=TownArt.pattern(t,F.tex)||'#c9bca0';t.fill()}t.strokeStyle='#4f4532';t.lineWidth=10;t.lineJoin='round';t.stroke();
- for(let i=0;i<90;i++){const u=-F.w-6+(Math.sin(i*72.7)*.5+.5)*(F.w*2+12),v=-F.d-6+(Math.sin(i*16.9)*.5+.5)*(F.d*2+12);if(u>-F.w-1&&u<F.w+1&&v>-F.d-1&&v<F.d+2)continue;TownArt.detail(t,i%5===0?1:0,project(u,v),35)}}
-function walls(){const F=M.floor;if(!F.walls)return;const h=120,P=(u,v,z)=>project(u,v,z),face=(a,b,c1)=>{g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.lineTo(b.x,b.y-h);g.lineTo(a.x,a.y-h);g.closePath();g.fillStyle=c1;g.fill();g.strokeStyle='#5b4330';g.lineWidth=2;g.stroke()};
- const base=PLACE==='forge'?['#857a6c','#73695d']:['#dccdb0','#cbbb9c'];face(P(-F.w,-F.d),P(F.w,-F.d),base[0]);face(P(-F.w,F.d+1),P(-F.w,-F.d),base[1]);
- g.strokeStyle='#6b4a2e';g.lineWidth=6;for(let k=-F.w;k<=F.w;k+=2.5){const a=P(k,-F.d);g.beginPath();g.moveTo(a.x,a.y);g.lineTo(a.x,a.y-h);g.stroke()}for(let k=-F.d;k<=F.d+1;k+=2.5){const a=P(-F.w,k);g.beginPath();g.moveTo(a.x,a.y);g.lineTo(a.x,a.y-h);g.stroke()}}
+const terrain = document.createElement('canvas');
+terrain.width = 2200;
+terrain.height = 1400;
+
+function drawFloor() {
+ const t = terrain.getContext('2d'),
+  F = M.floor;
+ t.clearRect(0, 0, 2200, 1400);
+ t.fillStyle = TownArt.pattern(t, 'grass') || '#7d906b';
+ t.fillRect(0, 0, 2200, 1400);
+ const pts = [
+  [-F.w, -F.d],
+  [F.w, -F.d],
+  [F.w, F.d + 1],
+  [-F.w, F.d + 1]
+ ].map(([u, v]) => project(u, v));
+ t.beginPath();
+ pts.forEach((p, i) => t[i ? 'lineTo' : 'moveTo'](p.x, p.y));
+ t.closePath();
+ if (F.tex === 'plank') {
+  t.save();
+  t.clip();
+  t.fillStyle = '#9a7046';
+  t.fillRect(0, 0, 2200, 1400);
+  t.strokeStyle = '#6f4e2e';
+  t.lineWidth = 2;
+  for (let k = -F.w * 2; k <= F.w * 2 + F.d * 2; k++) {
+   const a = project(-F.w + k / 2, -F.d),
+    b = project(-F.w + k / 2, F.d + 1);
+   t.beginPath();
+   t.moveTo(a.x, a.y);
+   t.lineTo(b.x, b.y);
+   t.stroke()
+  }
+  for (let v = -F.d; v < F.d + 1; v += 1.5)
+   for (let u = -F.w; u < F.w; u += 3) {
+    const a = project(u + ((v * 7) % 3), v),
+     b = project(u + ((v * 7) % 3), v + .5);
+    t.strokeStyle = '#5e4227';
+    t.beginPath();
+    t.moveTo(a.x, a.y);
+    t.lineTo(b.x, b.y);
+    t.stroke()
+   }
+  t.restore()
+ } else {
+  t.fillStyle = TownArt.pattern(t, F.tex) || '#c9bca0';
+  t.fill()
+ }
+ t.strokeStyle = '#4f4532';
+ t.lineWidth = 10;
+ t.lineJoin = 'round';
+ t.stroke();
+ for (let i = 0; i < 90; i++) {
+  const u = -F.w - 6 + (Math.sin(i * 72.7) * .5 + .5) * (F.w * 2 + 12),
+   v = -F.d - 6 + (Math.sin(i * 16.9) * .5 + .5) * (F.d * 2 + 12);
+  if (u > -F.w - 1 && u < F.w + 1 && v > -F.d - 1 && v < F.d + 2) continue;
+  TownArt.detail(t, i % 5 === 0 ? 1 : 0, project(u, v), 35)
+ }
+}
+
+function walls() {
+ const F = M.floor;
+ if (!F.walls) return;
+ const h = 120,
+  P = (u, v, z) => project(u, v, z),
+  face = (a, b, c1) => {
+   g.beginPath();
+   g.moveTo(a.x, a.y);
+   g.lineTo(b.x, b.y);
+   g.lineTo(b.x, b.y - h);
+   g.lineTo(a.x, a.y - h);
+   g.closePath();
+   g.fillStyle = c1;
+   g.fill();
+   g.strokeStyle = '#5b4330';
+   g.lineWidth = 2;
+   g.stroke()
+  };
+ const base = PLACE === 'forge' ? ['#857a6c', '#73695d'] : ['#dccdb0', '#cbbb9c'];
+ face(P(-F.w, -F.d), P(F.w, -F.d), base[0]);
+ face(P(-F.w, F.d + 1), P(-F.w, -F.d), base[1]);
+ g.strokeStyle = '#6b4a2e';
+ g.lineWidth = 6;
+ for (let k = -F.w; k <= F.w; k += 2.5) {
+  const a = P(k, -F.d);
+  g.beginPath();
+  g.moveTo(a.x, a.y);
+  g.lineTo(a.x, a.y - h);
+  g.stroke()
+ }
+ for (let k = -F.d; k <= F.d + 1; k += 2.5) {
+  const a = P(-F.w, k);
+  g.beginPath();
+  g.moveTo(a.x, a.y);
+  g.lineTo(a.x, a.y - h);
+  g.stroke()
+ }
+}
 
 /* ---------- loop ---------- */
-function resize(){W=innerWidth;H=innerHeight;cv.width=Math.round(W*devicePixelRatio);cv.height=Math.round(H*devicePixelRatio);fitView()}
-function fitView(){const F=M.floor,spanX=(F.w*2+F.d*2+2)*S,spanY=(F.w+F.d+1)*S+260;scale=Math.min((W-60)/spanX,(H-200)/spanY,1.4);zoom=1;pan={x:0,y:60}}
-function focus(){const p=project(hero.u,hero.v);pan={x:-(p.x-1100)*scale*zoom,y:H*.12-(p.y-700)*scale*zoom}}
-let hits=[];
-function draw(t){requestAnimationFrame(draw);if(!active||document.hidden){last=t;return}const dt=Math.min(.08,(t-last)/1000||0);last=t;
- if(path.length&&!editing){const b=path[0],du=b.u-hero.u,dv=b.v-hero.v,n=Math.hypot(du,dv),step=dt*5.5;if(n<=step){hero.u=b.u;hero.v=b.v;path.shift();if(!path.length)arrive()}else{hero.u+=du/n*step;hero.v+=dv/n*step;const dx=du-dv,dy=du+dv;hero.dir=dy>=0?(dx>=0?'SE':'SW'):(dx>=0?'NE':'NW')}}
- g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.fillStyle='#2c3d2e';g.fillRect(0,0,W,H);g.translate(W/2+pan.x,H/2+pan.y);g.scale(scale*zoom,scale*zoom);g.translate(-1100,-700);if(dirty){drawFloor();dirty=false}g.drawImage(terrain,0,0);walls();
- if(path.length){g.strokeStyle='#e4ce8e';g.lineWidth=2;g.setLineDash([6,7]);g.beginPath();const p=project(hero.u,hero.v);g.moveTo(p.x,p.y);for(const b of path){const q=project(b.u,b.v);g.lineTo(q.x,q.y)}g.stroke();g.setLineDash([])}
- const hp=project(hero.u,hero.v);TownArt.begin(g,hp);hits=[];const objects=[];
- M.stations.forEach((s,i)=>{const p=project(s.u,s.v);hits.push({type:'station',i,r:artRect(s.art,s.u,s.v,s.width||120,s.s||1)});objects.push({y:p.y,draw:()=>drawArt(s.art,s.u,s.v,s.width||120,s.s||1,s.f,t,hp)})});
- M.props.forEach((o,i)=>{const p=project(o.u,o.v);hits.push({type:'prop',i,r:artRect(o.art,o.u,o.v,o.width||110,o.s||1)});objects.push({y:p.y,draw:()=>drawArt(o.art,o.u,o.v,o.width||110,o.s||1,o.f,t,hp)})});
- objects.push({y:hp.y,draw:()=>{g.fillStyle='#182b2866';g.beginPath();g.ellipse(hp.x,hp.y,13,6,0,0,7);g.fill();TownArt.hero(g,hp,hero.dir,t,path.length>0,80*HERO_SCALE)}});objects.sort((a,b)=>a.y-b.y).forEach(o=>o.draw());
- if(work&&t<work.until){const s=M.stations[work.i];if(s){const p=project(s.u,s.v,60);for(let k=0;k<6;k++){const a=(t/90+k*1.1)%6.28,r=20+((t/7+k*37)%40);g.fillStyle=`rgba(255,${180+k*10},90,${.8-r/70})`;g.beginPath();g.arc(p.x+Math.cos(a)*r,p.y-Math.abs(Math.sin(a))*r,3,0,7);g.fill()}}}
+function resize() {
+ W = innerWidth;
+ H = innerHeight;
+ cv.width = Math.round(W * devicePixelRatio);
+ cv.height = Math.round(H * devicePixelRatio);
+ fitView()
+}
+
+function fitView() {
+ const F = M.floor,
+  spanX = (F.w * 2 + F.d * 2 + 2) * S,
+  spanY = (F.w + F.d + 1) * S + 260;
+ scale = Math.min((W - 60) / spanX, (H - 200) / spanY, 1.4);
+ zoom = 1;
+ pan = {
+  x: 0,
+  y: 60
+ }
+}
+
+function focus() {
+ const p = project(hero.u, hero.v);
+ pan = {
+  x: -(p.x - 1100) * scale * zoom,
+  y: H * .12 - (p.y - 700) * scale * zoom
+ }
+}
+let hits = [];
+
+function draw(t) {
+ requestAnimationFrame(draw);
+ if (!active || document.hidden) {
+  last = t;
+  return
+ }
+ const dt = Math.min(.08, (t - last) / 1000 || 0);
+ last = t;
+ if (path.length && !editing) {
+  const b = path[0],
+   du = b.u - hero.u,
+   dv = b.v - hero.v,
+   n = Math.hypot(du, dv),
+   step = dt * 5.5;
+  if (n <= step) {
+   hero.u = b.u;
+   hero.v = b.v;
+   path.shift();
+   if (!path.length) arrive()
+  } else {
+   hero.u += du / n * step;
+   hero.v += dv / n * step;
+   const dx = du - dv,
+    dy = du + dv;
+   hero.dir = dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW')
+  }
+ }
+ g.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+ g.fillStyle = '#2c3d2e';
+ g.fillRect(0, 0, W, H);
+ g.translate(W / 2 + pan.x, H / 2 + pan.y);
+ g.scale(scale * zoom, scale * zoom);
+ g.translate(-1100, -700);
+ if (dirty) {
+  drawFloor();
+  dirty = false
+ }
+ g.drawImage(terrain, 0, 0);
+ walls();
+ if (path.length) {
+  g.strokeStyle = '#e4ce8e';
+  g.lineWidth = 2;
+  g.setLineDash([6, 7]);
+  g.beginPath();
+  const p = project(hero.u, hero.v);
+  g.moveTo(p.x, p.y);
+  for (const b of path) {
+   const q = project(b.u, b.v);
+   g.lineTo(q.x, q.y)
+  }
+  g.stroke();
+  g.setLineDash([])
+ }
+ const hp = project(hero.u, hero.v);
+ TownArt.begin(g, hp);
+ hits = [];
+ const objects = [];
+ M.stations.forEach((s, i) => {
+  const p = project(s.u, s.v);
+  hits.push({
+   type: 'station',
+   i,
+   r: artRect(s.art, s.u, s.v, s.width || 120, s.s || 1)
+  });
+  objects.push({
+   y: p.y,
+   tag: {
+    type: 'station',
+    i
+   },
+   draw: () => drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp)
+  })
+ });
+ M.props.forEach((o, i) => {
+  const p = project(o.u, o.v);
+  hits.push({
+   type: 'prop',
+   i,
+   r: artRect(o.art, o.u, o.v, o.width || 110, o.s || 1)
+  });
+  objects.push({
+   y: p.y,
+   tag: {
+    type: 'prop',
+    i
+   },
+   draw: () => drawArt(o.art, o.u, o.v, o.width || 110, o.s || 1, o.f, t, hp)
+  })
+ });
+ objects.push({
+  y: hp.y,
+  draw: () => {
+   g.fillStyle = '#182b2866';
+   g.beginPath();
+   g.ellipse(hp.x, hp.y, 13, 6, 0, 0, 7);
+   g.fill();
+   const hc = heroCast();
+   if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, 80 * (hc.s || 1), hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0, 80 * (hc.s || 1))
+  }
+ });
+ objects.sort((a, b) => a.y - b.y).forEach(o => window.PlaceBuild ? PlaceBuild.drawObj(o) : o.draw());
+ if (work && t < work.until) {
+  const s = M.stations[work.i];
+  if (s) {
+   const p = project(s.u, s.v, 60);
+   for (let k = 0; k < 6; k++) {
+    const a = (t / 90 + k * 1.1) % 6.28,
+     r = 20 + ((t / 7 + k * 37) % 40);
+    g.fillStyle = `rgba(255,${180+k*10},90,${.8-r/70})`;
+    g.beginPath();
+    g.arc(p.x + Math.cos(a) * r, p.y - Math.abs(Math.sin(a)) * r, 3, 0, 7);
+    g.fill()
+   }
+  }
+ }
  // labels + doors
- for(const s of M.stations){const d=door(s),p=project(d.u,d.v);g.font='13px TownThai,system-ui';g.textAlign='center';const w=g.measureText(s.name).width+22;g.fillStyle='#233a2ee0';g.fillRect(p.x-w/2,p.y+14,w,26);g.fillStyle='#f6e8bd';g.fillText(s.name,p.x,p.y+32);if(editing){g.fillStyle='#57c4c9';g.beginPath();g.arc(p.x,p.y,6,0,7);g.fill()}}
- {const p=project(M.exit.u,M.exit.v);g.fillStyle='#233a2ee0';g.fillRect(p.x-58,p.y+10,116,26);g.fillStyle='#f6e8bd';g.font='13px TownThai,system-ui';g.textAlign='center';g.fillText('← ทางออก',p.x,p.y+28);if(editing){g.fillStyle='#e8a04a';g.beginPath();g.arc(p.x,p.y,7,0,7);g.fill()}}
- if(editing&&hoverHit&&!same(hoverHit,sel)){const h=hits.find(x=>x.type===hoverHit.type&&x.i===hoverHit.i);if(h){g.strokeStyle='#ffffffaa';g.lineWidth=1.5;g.strokeRect(h.r.x,h.r.y,h.r.w,h.r.h)}}
- if(editing&&sel){const h=hits.find(x=>x.type===sel.type&&x.i===sel.i);if(h){g.strokeStyle='#9ff3f5';g.lineWidth=2;g.setLineDash([6,5]);g.strokeRect(h.r.x,h.r.y,h.r.w,h.r.h);g.setLineDash([])}if(sel.type==='station'){const s=M.stations[sel.i],P=(a,b)=>project(s.u+a,s.v+b);g.strokeStyle='#ffd27a';g.beginPath();[P(-s.w,-s.d),P(s.w,-s.d),P(s.w,s.d),P(-s.w,s.d)].forEach((q,i)=>g[i?'lineTo':'moveTo'](q.x,q.y));g.closePath();g.stroke()}}}
+ for (const s of M.stations) {
+  const d = door(s),
+   p = project(d.u, d.v);
+  g.font = '13px TownThai,system-ui';
+  g.textAlign = 'center';
+  const w = g.measureText(s.name).width + 22;
+  g.fillStyle = '#233a2ee0';
+  g.fillRect(p.x - w / 2, p.y + 14, w, 26);
+  g.fillStyle = '#f6e8bd';
+  g.fillText(s.name, p.x, p.y + 32)
+ } {
+  const p = project(M.exit.u, M.exit.v);
+  g.fillStyle = '#233a2ee0';
+  g.fillRect(p.x - 58, p.y + 10, 116, 26);
+  g.fillStyle = '#f6e8bd';
+  g.font = '13px TownThai,system-ui';
+  g.textAlign = 'center';
+  g.fillText('← ทางออก', p.x, p.y + 28)
+ }
+ window.PlaceBuild?.overlay(g, t)
+}
 
 /* ---------- play ---------- */
-function actionInfo(id){return state?.actions?.find(a=>a.id===id)}
-function travel(i){if(editing)return;const s=M.stations[i];if(!s)return;target={i};hidePick();path=route(hero,door(s));$('status').textContent=path.length?'กำลังเดินไป'+s.name:(Math.hypot(hero.u-door(s).u,hero.v-door(s).v)<.8?'อยู่ที่'+s.name:'เดินไปจุดนี้ไม่ได้');if(!path.length&&Math.hypot(hero.u-door(s).u,hero.v-door(s).v)<.8)arrive()}
-function arrive(){const tg=target;target=null;if(!tg)return;if(tg.exit){send('leave');return}const s=M.stations[tg.i];if(!s)return;hero.dir=s.v<hero.v?(s.u<hero.u?'NW':'NE'):(s.u<hero.u?'SW':'SE');
- if(s.actions.length===1)use(tg.i,s.actions[0]);else showPick(tg.i)}
-function use(i,id){hidePick();const a=actionInfo(id),s=M.stations[i];if(a?.reason){$('status').textContent=(a.name||ACTIONS[id])+' · '+a.reason;return}work={i,until:performance.now()+1600};$('status').textContent=(s?.name||'')+' · '+(a?.name||ACTIONS[id]);send('action',{id})}
-function showPick(i){const s=M.stations[i],box=$('pick'),p=project(s.u,s.v,40),x=(p.x-1100)*scale*zoom+W/2+pan.x,y=(p.y-700)*scale*zoom+H/2+pan.y;box.innerHTML=`<h3>${s.name}</h3>`+s.actions.map(id=>{const a=actionInfo(id)||{name:ACTIONS[id]};return`<button data-a="${id}" ${a.reason?'disabled':''}>${a.name||ACTIONS[id]}<small>${a.reason||[a.cost,a.effect].filter(Boolean).join(' · ')}</small></button>`}).join('')+'<button data-close>ปิด</button>';box.style.left=Math.max(10,Math.min(W-240,x-110))+'px';box.style.top=Math.max(70,Math.min(H-260,y-180))+'px';box.hidden=false;
- box.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>use(i,b.dataset.a));box.querySelector('[data-close]').onclick=hidePick}
-function hidePick(){$('pick').hidden=true}
-function shortcuts(){$('shortcuts').innerHTML=M.stations.map((s,i)=>`<button data-i="${i}">${s.name}<small>${s.actions.map(id=>actionInfo(id)?.name||ACTIONS[id]).join(' · ')}</small></button>`).join('');$('shortcuts').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>travel(+b.dataset.i))}
-function world(e){return{x:(e.clientX-W/2-pan.x)/(scale*zoom)+1100,y:(e.clientY-H/2-pan.y)/(scale*zoom)+700}}
-function hitAt(p){for(let k=hits.length-1;k>=0;k--){const h=hits[k],r=h.r;if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return h}return null}
-let drag=null,sess=null,hoverHit=null;
-/* v81.5 · editing works like the village editor: pick one thing → it is locked in → ✓ เสร็จ (Enter) / ยกเลิก (Esc) */
-const objOf=t=>t.type==='station'?M.stations[t.i]:t.type==='prop'?M.props[t.i]:t.type==='exit'?M.exit:null;
-const same=(a,b)=>a&&b&&a.type===b.type&&a.i===b.i;
-function startSess(t,isNew=false,before=null){sess={...t,isNew,before:before||copy(M)};sel=t.type==='exit'?null:{type:t.type,i:t.i};hidePick();renderEdit();$('status').textContent='กำลังแก้ · ลากเพื่อย้าย · ✓ เสร็จ (Enter) หรือ ยกเลิก (Esc)'}
-function endSess(ok){if(!sess)return;const b=sess.before;sess=null;sel=null;if(!ok){M=b;dirty=true}else undo.push(b);persist();shortcuts();renderEdit();$('status').textContent=ok?'บันทึกการแก้แล้ว':'ยกเลิกแล้ว'}
-function shake(){const b=$('edit');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('status').textContent='กำลังแก้ชิ้นอื่นอยู่ · กด ✓ เสร็จ หรือ ยกเลิก ก่อน'}
-function grabAt(p){const ex=project(M.exit.u,M.exit.v);if(Math.hypot(p.x-ex.x,p.y-ex.y)<14)return{type:'exit'};for(const[i,s]of M.stations.entries()){const d=project(door(s).u,door(s).v);if(Math.hypot(p.x-d.x,p.y-d.y)<12)return{type:'door',i}}const h=hitAt(p);return h?{type:h.type,i:h.i}:null}
-cv.onpointerdown=e=>{if(e.button!==0)return;const p=world(e);hidePick();let grab=null;
- if(editing){grab=grabAt(p);if(grab){const owner=grab.type==='door'?{type:'station',i:grab.i}:grab;if(sess&&!same(sess,owner)){shake();grab=null}else if(!sess)startSess(owner)}}
- drag={x:e.clientX,y:e.clientY,pan:{...pan},moved:false,grab,start:inv(p.x,p.y),orig:grab?copy(grab.type==='exit'?M.exit:grab.type==='door'?M.stations[grab.i].door:grab.type==='station'?M.stations[grab.i]:M.props[grab.i]):null};cv.setPointerCapture(e.pointerId)};
-cv.onpointermove=e=>{if(!drag){if(editing){const h=hitAt(world(e));hoverHit=h&&(!sess||same(sess,h))?h:null;cv.style.cursor=h?(sess&&!same(sess,h)?'not-allowed':'pointer'):'grab'}return}const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>5&&!drag.moved)drag.moved=true;if(!drag.moved)return;
- if(drag.grab){const q=inv(world(e).x,world(e).y),du=Math.round((q.u-drag.start.u)*4)/4,dv=Math.round((q.v-drag.start.v)*4)/4,o=drag.orig,G=drag.grab;
-  if(G.type==='exit')Object.assign(M.exit,{u:o.u+du,v:o.v+dv});else if(G.type==='door')Object.assign(M.stations[G.i].door,{du:o.du+du,dv:o.dv+dv});else Object.assign(G.type==='station'?M.stations[G.i]:M.props[G.i],{u:o.u+du,v:o.v+dv})}
- else pan={x:drag.pan.x+dx,y:drag.pan.y+dy}};
-cv.onpointerup=e=>{const d=drag;drag=null;if(!d)return;if(d.moved){if(d.grab)renderEdit();return}if(editing)return;const p=world(e),h=hitAt(p);
- if(h?.type==='station'){travel(h.i);return}const q=inv(p.x,p.y);if(Math.hypot(q.u-M.exit.u,q.v-M.exit.v)<1.3){target={exit:true};path=route(hero,M.exit);if(!path.length)arrive();return}target=null;path=blocked(q.u,q.v)?[]:route(hero,q);$('status').textContent=path.length?'กำลังเดิน…':'เดินไปจุดนี้ไม่ได้'};
-cv.onpointercancel=()=>drag=null;
-cv.onwheel=e=>{e.preventDefault();const old=zoom;zoom=Math.max(editing?.35:.6,Math.min(editing?4:2.5,zoom*Math.exp(-e.deltaY*.001)));const x=e.clientX-W/2,y=e.clientY-H/2;pan={x:x-(x-pan.x)*zoom/old,y:y-(y-pan.y)*zoom/old}};
+function actionInfo(id) {
+ return state?.actions?.find(a => a.id === id)
+}
+
+function travel(i) {
+ if (editing) return;
+ const s = M.stations[i];
+ if (!s) return;
+ target = {
+  i
+ };
+ hidePick();
+ path = route(hero, door(s));
+ $('status').textContent = path.length ? 'กำลังเดินไป' + s.name : (Math.hypot(hero.u - door(s).u, hero.v - door(s).v) < .8 ? 'อยู่ที่' + s.name : 'เดินไปจุดนี้ไม่ได้');
+ if (!path.length && Math.hypot(hero.u - door(s).u, hero.v - door(s).v) < .8) arrive()
+}
+
+function arrive() {
+ const tg = target;
+ target = null;
+ if (!tg) return;
+ if (tg.exit) {
+  send('leave');
+  return
+ }
+ const s = M.stations[tg.i];
+ if (!s) return;
+ hero.dir = s.v < hero.v ? (s.u < hero.u ? 'NW' : 'NE') : (s.u < hero.u ? 'SW' : 'SE');
+ if (s.actions.length === 1) use(tg.i, s.actions[0]);
+ else showPick(tg.i)
+}
+
+function use(i, id) {
+ hidePick();
+ const a = actionInfo(id),
+  s = M.stations[i];
+ if (a?.reason) {
+  $('status').textContent = (a.name || ACTIONS[id]) + ' · ' + a.reason;
+  return
+ }
+ work = {
+  i,
+  until: performance.now() + 1600
+ };
+ $('status').textContent = (s?.name || '') + ' · ' + (a?.name || ACTIONS[id]);
+ send('action', {
+  id
+ })
+}
+
+function showPick(i) {
+ const s = M.stations[i],
+  box = $('pick'),
+  p = project(s.u, s.v, 40),
+  x = (p.x - 1100) * scale * zoom + W / 2 + pan.x,
+  y = (p.y - 700) * scale * zoom + H / 2 + pan.y;
+ box.innerHTML = `<h3>${s.name}</h3>` + s.actions.map(id => {
+  const a = actionInfo(id) || {
+   name: ACTIONS[id]
+  };
+  return `<button data-a="${id}" ${a.reason?'disabled':''}>${a.name||ACTIONS[id]}<small>${a.reason||[a.cost,a.effect].filter(Boolean).join(' · ')}</small></button>`
+ }).join('') + '<button data-close>ปิด</button>';
+ box.style.left = Math.max(10, Math.min(W - 240, x - 110)) + 'px';
+ box.style.top = Math.max(70, Math.min(H - 260, y - 180)) + 'px';
+ box.hidden = false;
+ box.querySelectorAll('[data-a]').forEach(b => b.onclick = () => use(i, b.dataset.a));
+ box.querySelector('[data-close]').onclick = hidePick
+}
+
+function hidePick() {
+ $('pick').hidden = true
+}
+
+function shortcuts() {
+ $('shortcuts').innerHTML = M.stations.map((s, i) => `<button data-i="${i}">${s.name}<small>${s.actions.map(id=>actionInfo(id)?.name||ACTIONS[id]).join(' · ')}</small></button>`).join('');
+ $('shortcuts').querySelectorAll('[data-i]').forEach(b => b.onclick = () => travel(+b.dataset.i))
+}
+
+function world(e) {
+ return {
+  x: (e.clientX - W / 2 - pan.x) / (scale * zoom) + 1100,
+  y: (e.clientY - H / 2 - pan.y) / (scale * zoom) + 700
+ }
+}
+
+function hitAt(p) {
+ for (let k = hits.length - 1; k >= 0; k--) {
+  const h = hits[k],
+   r = h.r;
+  if (p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h) return h
+ }
+ return null
+}
+let drag = null;
+cv.onpointerdown = e => {
+ if (e.button !== 0) return;
+ hidePick();
+ drag = {
+  x: e.clientX,
+  y: e.clientY,
+  pan: {
+   ...pan
+  },
+  moved: false
+ };
+ cv.setPointerCapture(e.pointerId)
+};
+cv.onpointermove = e => {
+ if (!drag) return;
+ const dx = e.clientX - drag.x,
+  dy = e.clientY - drag.y;
+ if (Math.hypot(dx, dy) > 5) drag.moved = true;
+ if (drag.moved) pan = {
+  x: drag.pan.x + dx,
+  y: drag.pan.y + dy
+ }
+};
+cv.onpointerup = e => {
+ const d = drag;
+ drag = null;
+ if (!d || d.moved || editing) return;
+ const p = world(e),
+  h = hitAt(p);
+ if (h?.type === 'station') {
+  travel(h.i);
+  return
+ }
+ const q = inv(p.x, p.y);
+ if (Math.hypot(q.u - M.exit.u, q.v - M.exit.v) < 1.3) {
+  target = {
+   exit: true
+  };
+  path = route(hero, M.exit);
+  if (!path.length) arrive();
+  return
+ }
+ target = null;
+ path = blocked(q.u, q.v) ? [] : route(hero, q);
+ $('status').textContent = path.length ? 'กำลังเดิน…' : 'เดินไปจุดนี้ไม่ได้'
+};
+cv.onpointercancel = () => drag = null;
+cv.onwheel = e => {
+ e.preventDefault();
+ const old = zoom;
+ zoom = Math.max(editing ? .35 : .6, Math.min(editing ? 4 : 2.5, zoom * Math.exp(-e.deltaY * .001)));
+ const x = e.clientX - W / 2,
+  y = e.clientY - H / 2;
+ pan = {
+  x: x - (x - pan.x) * zoom / old,
+  y: y - (y - pan.y) * zoom / old
+ }
+};
 
 /* ---------- thumbnails + visual picker ---------- */
-const thumbs=new Map();
-function thumbOf(a,width=120){const key=a+'|'+width;if(thumbs.has(key))return thumbs.get(key);const big=document.createElement('canvas');big.width=big.height=560;const q=big.getContext('2d'),main=g;g=q;try{q.translate(280-1100,520-700);drawArt(a,0,0,width,1,false,0,null)}catch(e){}finally{g=main}
- const out=document.createElement('canvas');out.width=112;out.height=92;const o=out.getContext('2d');let bx=0,by=0,bw=560,bh=560,any=true;try{const d=q.getImageData(0,0,560,560).data;let x0=560,y0=560,x1=-1,y1=-1;for(let y=0;y<560;y+=2)for(let x=0;x<560;x+=2)if(d[(y*560+x)*4+3]>20){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}if(x1<0)any=false;else{bx=x0;by=y0;bw=x1-x0+2;bh=y1-y0+2}}catch(e){}
- if(!any)return null;const sc=Math.min(104/bw,84/bh,1.2);o.drawImage(big,bx,by,bw,bh,(112-bw*sc)/2,(92-bh*sc)/2,bw*sc,bh*sc);thumbs.set(key,out);return out}
-function putThumb(slot,a,w){slot.replaceChildren();const c=thumbOf(a,w);if(c){const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);slot.append(n)}else{slot.textContent='…';setTimeout(()=>{if(slot.isConnected&&!slot.querySelector('canvas'))putThumb(slot,a,w)},700)}}
-const ART_GROUP=a=>a.startsWith('code:')?'วาดด้วยโค้ด (ชั่วคราว)':a.startsWith('vt:')?'อาคาร/ร้าน':'ของประดับ';
-function openArtPicker(title,cur,onPick){let d=document.getElementById('artPick');if(!d){d=document.createElement('dialog');d.id='artPick';document.body.append(d)}let tab='ทั้งหมด',q='';const groups=[...new Set(ART_LIST.map(([a])=>ART_GROUP(a)))];
- const draw=()=>{const list=ART_LIST.filter(([a,l])=>(tab==='ทั้งหมด'||ART_GROUP(a)===tab)&&(!q||l.includes(q)||a.includes(q)));
-  d.innerHTML=`<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"><button data-x>ปิด (Esc)</button></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid">${list.map(([a,l])=>`<button data-a="${a}" class="${a===cur?'cur':''}"><span class="th"></span><span>${l}</span></button>`).join('')}</div><div class="pk-tabs"><input id="pkFile" placeholder="หรือใส่ไฟล์ภาพเอง เช่น assets/village-town/xxx.png" style="flex:1"><button id="pkUse">ใช้ไฟล์นี้</button></div>`;
-  d.querySelectorAll('[data-a]').forEach(b=>{putThumb(b.querySelector('.th'),b.dataset.a);b.onclick=()=>{d.close();onPick(b.dataset.a)}});d.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;draw()});d.querySelector('[data-x]').onclick=()=>d.close();
-  const s=d.querySelector('input[type=search]');s.oninput=()=>{q=s.value.trim();draw();const n=d.querySelector('input[type=search]');n.focus();n.setSelectionRange(q.length,q.length)};d.querySelector('#pkUse').onclick=()=>{const v=d.querySelector('#pkFile').value.trim();if(v){d.close();onPick('img:'+v)}}};
- draw();d.showModal()}
+const thumbs = new Map();
 
-/* ---------- edit panel ---------- */
-const sl=(k,l,v,a,b,st,f=x=>x)=>`<label>${l}<input type="range" data-k="${k}" min="${a}" max="${b}" step="${st}" value="${v}"><output>${f(v)}</output></label>`;
-const pct=x=>Math.round(x*100)+'%';
-function renderEdit(){const box=$('edit');box.hidden=!editing;$('editBtn').textContent=editing?'▶ เล่น/ทดสอบ':'✎ จัดแผนที่';$('shortcuts').hidden=editing;syncTools();if(!editing)return;const F=M.floor;
- if(!sess){box.innerHTML=`<div class="body"><label class="two">สถานที่<select id="ePlace">${[['market','ตลาด'],['forge','โรงตีเหล็ก'],['home','บ้านของเรา']].map(([k,l])=>`<option value="${k}" ${k===PLACE?'selected':''}>${l}</option>`).join('')}</select></label><h3>จัดแผนที่ · ${M.name}</h3><p class="sub">① คลิกชิ้นบนแผนที่หรือในรายการ ② ปรับ ③ ✓ เสร็จ — ระหว่างแก้จะเลือกชิ้นอื่นไม่ได้ · จุดฟ้า = ที่ยืนใช้งาน · จุดส้ม = ทางออก</p>
-  <div class="items">${M.stations.map((o,i)=>`<button data-t="station" data-i="${i}"><span class="mini"></span><span style="flex:1">${o.name}</span><small>จุดทำงาน · ${o.actions.map(a=>ACTIONS[a]).join(', ')}</small></button>`).join('')}${M.props.map((o,i)=>`<button data-t="prop" data-i="${i}"><span class="mini"></span><span style="flex:1">${(ART_LIST.find(([a])=>a===o.art)||[,o.art])[1]}</span><small>ของประดับ</small></button>`).join('')}<button data-t="exit"><span class="mini">🚪</span><span style="flex:1">ทางออก</span><small>จุดออกจากแผนที่</small></button></div>
-  <div class="row"><button id="eAddSt">＋ จุดทำงาน…</button><button id="eAddPr">＋ ของประดับ…</button></div>
-  <hr><b>พื้นและผนัง</b><label class="two">ชื่อ<input type="text" id="eName" value="${M.name}"></label>${sl('fw','กว้างพื้น',F.w,3,14,.5)}${sl('fd','ลึกพื้น',F.d,3,14,.5)}
-  <label class="two">ลายพื้น<select id="eTex">${[['paving','ดินอัด'],['soil','ดิน'],['grass','หญ้า'],['ground/cobble.png','หินก้อน'],['ground/plaza-slabs.png','แผ่นหิน'],['plank','พื้นไม้']].map(([k,l])=>`<option value="${k}" ${F.tex===k?'selected':''}>${l}</option>`).join('')}</select></label>
-  <label class="two" style="display:flex;gap:6px"><input type="checkbox" id="eWalls" ${F.walls?'checked':''}> ผนังด้านหลัง (ในอาคาร)</label><div class="row"><button id="eReset">คืนแผนที่เป็นค่าเริ่มต้น</button></div>
-  <hr><div class="row"><span id="pushMsg" class="sub"></span></div></div>`;
-  box.querySelectorAll('[data-t]').forEach(b=>{const t=b.dataset.t,i=+b.dataset.i,o=t==='exit'?null:t==='station'?M.stations[i]:M.props[i];if(o)putThumb(b.querySelector('.mini'),o.art,o.width||120);b.onmouseenter=()=>hoverHit=t==='exit'?null:{type:t,i};b.onmouseleave=()=>hoverHit=null;b.onclick=()=>{const p=t==='exit'?project(M.exit.u,M.exit.v):project(o.u,o.v);zoom=Math.max(zoom,1.3);pan={x:-(p.x-1100)*scale*zoom,y:-(p.y-700)*scale*zoom};startSess(t==='exit'?{type:'exit'}:{type:t,i})}});
-  const ch=f=>{undo.push(copy(M));f();persist();dirty=true;renderEdit()};
-  $('ePlace').onchange=e=>{persist();location.search='?edit=1&place='+e.target.value};$('eName').onchange=e=>ch(()=>M.name=e.target.value||M.name);$('eTex').onchange=e=>ch(()=>F.tex=e.target.value);$('eWalls').onchange=e=>ch(()=>F.walls=e.target.checked);
-  box.querySelectorAll('[data-k=fw],[data-k=fd]').forEach(i=>{i.oninput=()=>i.nextElementSibling.textContent=i.value;i.onchange=()=>ch(()=>F[i.dataset.k==='fw'?'w':'d']=+i.value)});
-  $('eAddSt').onclick=()=>openArtPicker('ภาพของจุดทำงานใหม่','',a=>{const before=copy(M);M.stations.push({id:'st'+Date.now().toString(36),name:'จุดทำงานใหม่',actions:[Object.keys(ACTIONS)[0]],u:0,v:0,w:.8,d:.8,door:{du:0,dv:1.6},art:a,width:a.startsWith('vt:')?400:120});startSess({type:'station',i:M.stations.length-1},true,before)});
-  $('eAddPr').onclick=()=>openArtPicker('เพิ่มของประดับ','',a=>{const before=copy(M);M.props.push({art:a,u:1,v:1,s:1});startSess({type:'prop',i:M.props.length-1},true,before)});
-  $('eReset').onclick=()=>{if(!confirm('คืนแผนที่ '+M.name+' เป็นค่าเริ่มต้น?'))return;undo.push(copy(M));M=copy(DEFAULTS[PLACE]);persist();dirty=true;renderEdit();shortcuts()};return}
- if(sess.type==='exit'){box.innerHTML=`<div class="body"><h3>ทางออก<span class="chip">กำลังแก้</span></h3><p class="sub">ลากจุดสีส้มบนแผนที่ไปวางที่ทางออก · ลูกศรขยับทีละ ¼ ช่อง</p></div>${FOOT}`;bindFoot();return}
- const o=objOf(sess);if(!o){sess=null;renderEdit();return}const st=sess.type==='station';
- box.innerHTML=`<div class="body"><h3>${st?o.name:(ART_LIST.find(([a])=>a===o.art)||[,o.art])[1]}<span class="chip">${sess.isNew?'ของใหม่':'กำลังแก้'}</span></h3><p class="sub">${st?'จุดทำงาน · ลากตัวจุดเพื่อย้าย · ลากจุดฟ้าเพื่อย้ายที่ยืนใช้งาน':'ของประดับ · ลากเพื่อย้าย'}</p>
-  <div class="art"><span class="th" id="sThumb"></span><div><button id="sSwap">เปลี่ยนภาพ…</button></div></div>
-  ${st?`<label class="two">ชื่อ<input type="text" id="sName" value="${o.name}"></label><div class="sub">กิจกรรมที่จุดนี้</div><div class="acts">${Object.entries(ACTIONS).map(([id,l])=>`<label><input type="checkbox" data-act="${id}" ${o.actions.includes(id)?'checked':''}> ${l}</label>`).join('')}</div>${sl('w','กว้างฐาน',o.w,.3,4,.1)}${sl('d','ลึกฐาน',o.d,.3,4,.1)}`:''}
-  ${sl('width','ความกว้างภาพ',o.width||(st?120:110),30,700,5)}${sl('s','ขนาด',o.s||1,.3,2.5,.05,pct)}
-  <label class="two" style="display:flex;gap:6px"><input type="checkbox" id="sFlip" ${o.f?'checked':''}> กลับด้าน</label><div class="row"><button id="sDel">ลบชิ้นนี้</button></div></div>${FOOT}`;
- putThumb(box.querySelector('#sThumb'),o.art,o.width||120);
- box.querySelectorAll('input[type=range]').forEach(i=>i.oninput=()=>{o[i.dataset.k]=+i.value;i.nextElementSibling.textContent=i.dataset.k==='s'?pct(+i.value):i.value});
- $('sSwap').onclick=()=>openArtPicker('เปลี่ยนภาพ',o.art,a=>{o.art=a;renderEdit()});$('sFlip').onchange=e=>o.f=e.target.checked;
- $('sDel').onclick=()=>{const b=sess.before;(st?M.stations:M.props).splice(sess.i,1);sess=null;sel=null;undo.push(b);persist();shortcuts();renderEdit()};
- if(st){$('sName').onchange=e=>{o.name=e.target.value||o.name};box.querySelectorAll('[data-act]').forEach(c=>c.onchange=()=>{o.actions=[...box.querySelectorAll('[data-act]:checked')].map(x=>x.dataset.act);if(!o.actions.length){o.actions=[c.dataset.act];c.checked=true}})}
- bindFoot()}
-const FOOT=`<div class="foot"><button class="ok" id="sOk">✓ เสร็จ <small>Enter</small></button><button class="cancel" id="sCancel">ยกเลิก <small>Esc</small></button></div>`;
-function bindFoot(){$('sOk').onclick=()=>endSess(true);$('sCancel').onclick=()=>endSess(false)}
-function nudge(du,dv){if(!sess)return;const o=objOf(sess);if(!o)return;o.u+=du;o.v+=dv}
-$('editBtn').onclick=()=>{if(sess)endSess(true);editing=!editing;path=[];target=null;sel=null;hidePick();renderEdit()};
-document.addEventListener('keydown',e=>{if(e.target.closest?.('input,select')||document.querySelector('dialog[open]'))return;if(e.key==='Escape'){hidePick();if(sess){e.preventDefault();endSess(false)}return}
- if(sess&&e.key==='Enter'){e.preventDefault();endSess(true);return}if(sess&&e.key==='Delete'&&sess.type!=='exit'){$('sDel')?.click();return}
- const k={ArrowLeft:[-.25,.25],ArrowRight:[.25,-.25],ArrowUp:[-.25,-.25],ArrowDown:[.25,.25]}[e.key];if(sess&&k){e.preventDefault();nudge(k[0]*(e.shiftKey?4:1),k[1]*(e.shiftKey?4:1));return}
- if(editing&&!sess&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();if(!undo.length)return;M=undo.pop();persist();dirty=true;renderEdit();shortcuts();return}
- if(e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='e'||e.key==='E')$('editBtn').click();else if(editing&&!sess&&e.key==='1')$('eAddSt')?.click();else if(editing&&!sess&&e.key==='2')$('eAddPr')?.click()});
-/* ---------- top toolbar (editor) ---------- */
-const tools=document.createElement('div');tools.id='placeTools';tools.innerHTML='<button data-a="edit"><b>✎</b><span>จัดแผนที่</span><kbd>E</kbd></button><button data-a="st"><b>⚒</b><span>＋ จุดทำงาน</span><kbd>1</kbd></button><button data-a="pr"><b>🌿</b><span>＋ ของประดับ</span><kbd>2</kbd></button><i></i><button data-a="undo"><b>↶</b><span>ย้อน</span></button><button data-a="fit"><b>⤢</b><span>ดูทั้งหมด</span></button><i></i><button data-a="push" class="pp"><b>⬆</b><span>push</span></button>';document.body.append(tools);
-tools.onclick=e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;if(a==='edit')$('editBtn').click();else if(a==='st'){if(!editing)$('editBtn').click();if(sess)return shake();$('eAddSt')?.click()}else if(a==='pr'){if(!editing)$('editBtn').click();if(sess)return shake();$('eAddPr')?.click()}else if(a==='undo'){if(sess)return shake();if(!undo.length)return;M=undo.pop();persist();dirty=true;renderEdit();shortcuts()}else if(a==='fit')fitView();else if(a==='push')pushMaps()};
-function syncTools(){tools.hidden=!editing&&Q.get('edit')!=='1';tools.querySelector('[data-a=edit]').classList.toggle('on',editing)}
-async function pushMaps(){if(sess)return shake();persist();if(!GitHubPush.config().token){GitHubPush.openSettings();return}const m=$('pushMsg');try{const sha=await GitHubPush.pushSettings([KEY],'แผนที่ย่อย',[],t=>{if(m)m.textContent=t});if(m)m.textContent=sha?'⬆ push แล้ว · '+sha:'ไม่มีค่าที่ต้อง push'}catch(e){if(m)m.textContent='push ไม่สำเร็จ: '+e.message}}
-{const st=document.createElement('style');st.textContent=`#placeTools{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:9;display:flex;gap:4px;background:#1b302af2;border:1px solid #b9c48f;border-radius:12px;padding:5px;box-shadow:0 8px 24px #0006}#placeTools[hidden]{display:none}#placeTools button{display:flex;flex-direction:column;align-items:center;min-width:64px;padding:5px 6px;font-size:11px;position:relative;border-radius:8px}#placeTools b{font-size:17px}#placeTools kbd{position:absolute;right:3px;top:2px;font-size:9px;color:#9fb19a;font-family:inherit}#placeTools .on{background:#e5c06b;color:#1b302a}#placeTools i{width:1px;background:#4d6656;margin:2px 3px}#placeTools .pp{background:#c9893a;color:#fff;border-color:#8a5a20}
-#edit{padding:0;display:flex;flex-direction:column}#edit .body{overflow:auto;padding:12px}#edit .chip{display:inline-block;background:#e5c06b;color:#1b302a;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:6px}#edit .items{display:grid;gap:3px;max-height:260px;overflow:auto}#edit .items button{display:flex;align-items:center;gap:8px;text-align:left}#edit .items small{color:#c9d2b8;font-size:10px}#edit .mini{width:44px;height:36px;flex:none;display:grid;place-items:center;background:#132621;border-radius:6px}#edit .mini canvas{max-width:44px;max-height:36px}
+function thumbOf(a, width = 120) {
+ const key = a + '|' + width;
+ if (thumbs.has(key)) return thumbs.get(key);
+ const big = document.createElement('canvas');
+ big.width = big.height = 560;
+ const q = big.getContext('2d'),
+  main = g;
+ g = q;
+ try {
+  q.translate(280 - 1100, 520 - 700);
+  drawArt(a, 0, 0, width, 1, false, 0, null)
+ } catch (e) {} finally {
+  g = main
+ }
+ const out = document.createElement('canvas');
+ out.width = 112;
+ out.height = 92;
+ const o = out.getContext('2d');
+ let bx = 0,
+  by = 0,
+  bw = 560,
+  bh = 560,
+  any = true;
+ try {
+  const d = q.getImageData(0, 0, 560, 560).data;
+  let x0 = 560,
+   y0 = 560,
+   x1 = -1,
+   y1 = -1;
+  for (let y = 0; y < 560; y += 2)
+   for (let x = 0; x < 560; x += 2)
+    if (d[(y * 560 + x) * 4 + 3] > 20) {
+     if (x < x0) x0 = x;
+     if (x > x1) x1 = x;
+     if (y < y0) y0 = y;
+     if (y > y1) y1 = y
+    } if (x1 < 0) any = false;
+  else {
+   bx = x0;
+   by = y0;
+   bw = x1 - x0 + 2;
+   bh = y1 - y0 + 2
+  }
+ } catch (e) {}
+ if (!any) return null;
+ const sc = Math.min(104 / bw, 84 / bh, 1.2);
+ o.drawImage(big, bx, by, bw, bh, (112 - bw * sc) / 2, (92 - bh * sc) / 2, bw * sc, bh * sc);
+ thumbs.set(key, out);
+ return out
+}
+
+function putThumb(slot, a, w) {
+ slot.replaceChildren();
+ const c = thumbOf(a, w);
+ if (c) {
+  const n = document.createElement('canvas');
+  n.width = c.width;
+  n.height = c.height;
+  n.getContext('2d').drawImage(c, 0, 0);
+  slot.append(n)
+ } else {
+  slot.textContent = '…';
+  setTimeout(() => {
+   if (slot.isConnected && !slot.querySelector('canvas')) putThumb(slot, a, w)
+  }, 700)
+ }
+}
+const ART_GROUP = a => a.startsWith('code:') ? 'วาดด้วยโค้ด (ชั่วคราว)' : a.startsWith('vt:') ? 'อาคาร/ร้าน' : 'ของประดับ';
+
+function openArtPicker(title, cur, onPick) {
+ let d = document.getElementById('artPick');
+ if (!d) {
+  d = document.createElement('dialog');
+  d.id = 'artPick';
+  document.body.append(d)
+ }
+ let tab = 'ทั้งหมด',
+  q = '';
+ const groups = [...new Set(ART_LIST.map(([a]) => ART_GROUP(a)))];
+ const draw = () => {
+  const list = ART_LIST.filter(([a, l]) => (tab === 'ทั้งหมด' || ART_GROUP(a) === tab) && (!q || l.includes(q) || a.includes(q)));
+  d.innerHTML = `<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"><button data-x>ปิด (Esc)</button></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid">${list.map(([a,l])=>`<button data-a="${a}" class="${a===cur?'cur':''}"><span class="th"></span><span>${l}</span></button>`).join('')}</div><div class="pk-tabs"><input id="pkFile" placeholder="หรือใส่ไฟล์ภาพเอง เช่น assets/village-town/xxx.png" style="flex:1"><button id="pkUse">ใช้ไฟล์นี้</button></div>`;
+  d.querySelectorAll('[data-a]').forEach(b => {
+   putThumb(b.querySelector('.th'), b.dataset.a);
+   b.onclick = () => {
+    d.close();
+    onPick(b.dataset.a)
+   }
+  });
+  d.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => {
+   tab = b.dataset.tab;
+   draw()
+  });
+  d.querySelector('[data-x]').onclick = () => d.close();
+  const s = d.querySelector('input[type=search]');
+  s.oninput = () => {
+   q = s.value.trim();
+   draw();
+   const n = d.querySelector('input[type=search]');
+   n.focus();
+   n.setSelectionRange(q.length, q.length)
+  };
+  d.querySelector('#pkUse').onclick = () => {
+   const v = d.querySelector('#pkFile').value.trim();
+   if (v) {
+    d.close();
+    onPick('img:' + v)
+   }
+  }
+ };
+ draw();
+ d.showModal()
+}
+
+const renderEdit = () => window.PlaceBuild?.render();
+document.addEventListener('keydown', e => {
+ if (e.key === 'Escape') hidePick()
+});
+ {
+ const st = document.createElement('style');
+ st.textContent = `#edit{padding:0;display:flex;flex-direction:column}#edit .body{overflow:auto;padding:12px}#edit .chip{display:inline-block;background:#e5c06b;color:#1b302a;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:6px}#edit .items{display:grid;gap:3px;max-height:260px;overflow:auto}#edit .items button{display:flex;align-items:center;gap:8px;text-align:left}#edit .items small{color:#c9d2b8;font-size:10px}#edit .mini{width:44px;height:36px;flex:none;display:grid;place-items:center;background:#132621;border-radius:6px}#edit .mini canvas{max-width:44px;max-height:36px}
 #edit .art{display:flex;gap:10px;align-items:center;background:#132621;border:1px solid #4d6656;border-radius:10px;padding:8px;margin:6px 0}#edit .th,#artPick .th{width:112px;height:92px;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}
 #edit .foot{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #4d6656;background:#16281f;border-radius:0 0 12px 12px}#edit .foot button{flex:1;padding:9px}#edit .ok{background:#4f7a3c;border-color:#b8d39a}#edit .cancel{background:#5b3a30;border-color:#c49a8a}#edit.shake{animation:pShake .35s}@keyframes pShake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-#artPick{width:min(760px,94vw);max-height:86vh;padding:0;border:1px solid #b9c48f;border-radius:14px;background:#1b302a;color:#f3ead0}#artPick::backdrop{background:#071c17aa}#artPick .pk-head{display:flex;gap:8px;align-items:center;padding:12px;border-bottom:1px solid #4d6656}#artPick .pk-head b{flex:1;font-size:15px;color:#fff0c7}#artPick .pk-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px}#artPick .pk-tabs .on{background:#e5c06b;color:#1b302a}#artPick .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:12px;overflow:auto;max-height:56vh}#artPick .grid button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;background:#132621}#artPick .grid .cur{border-color:#9ff3f5}#artPick canvas,#edit canvas{width:auto;height:auto;display:block}`;document.head.append(st)}
-if(Q.get('edit')==='1')document.querySelectorAll('[data-menu],#leave,#focus,#fit').forEach(b=>b.style.display='none');
+#artPick{width:min(760px,94vw);max-height:86vh;padding:0;border:1px solid #b9c48f;border-radius:14px;background:#1b302a;color:#f3ead0}#artPick::backdrop{background:#071c17aa}#artPick .pk-head{display:flex;gap:8px;align-items:center;padding:12px;border-bottom:1px solid #4d6656}#artPick .pk-head b{flex:1;font-size:15px;color:#fff0c7}#artPick .pk-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px}#artPick .pk-tabs .on{background:#e5c06b;color:#1b302a}#artPick .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:12px;overflow:auto;max-height:56vh}#artPick .grid button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;background:#132621}#artPick .grid .cur{border-color:#9ff3f5}#artPick canvas,#edit canvas{width:auto;height:auto;display:block}`;
+ document.head.append(st)
+}
+if (Q.get('edit') === '1') document.querySelectorAll('[data-menu],#leave,#focus,#fit,#editBtn').forEach(b => b.style.display = 'none');
+else $('editBtn').style.display = 'none'; // editing lives only in the Editor page
 /* ---------- game link ---------- */
-$('focus').onclick=focus;$('fit').onclick=fitView;$('leave').onclick=()=>{target={exit:true};path=route(hero,M.exit);if(!path.length)arrive()};
-document.querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>send('menu',{id:b.dataset.menu}));
-function setup(){$('title').textContent=M.name;$('subtitle').textContent=M.sub||'';document.title=M.name+' · Project A';hero.u=M.exit.u;hero.v=M.exit.v-.6;hero.dir='NE';path=[];target=null;dirty=true;shortcuts();renderEdit()}
-window.addEventListener('message',e=>{if(e.source!==parent||e.data?.source!=='project-a-game')return;const m=e.data;if(m.type==='visibility'){active=m.visible;return}if(m.type==='motion'){TownArt.setMotion(m.data);return}
- if(m.type==='init'){all=loadAll();M=copy(all[PLACE]||DEFAULTS[PLACE]);setup();fitView()}
- if(m.type==='state'||m.type==='init'){state=m.data;$('hud').textContent=m.data.name+' · วันที่ '+m.data.day+' · '+Math.floor(m.data.minutes/60)+':'+String(m.data.minutes%60).padStart(2,'0')+' · ♥ '+m.data.hp+' · แรง '+m.data.stamina+' · ◉ '+m.data.coins;shortcuts()}});
-window.Place25D={place:PLACE,get:()=>copy(M),getHero:()=>({...hero}),getPath:()=>path.map(p=>({...p})),travel,route,blocked,project,setHero:p=>{Object.assign(hero,p);path=[];target=null}};
-document.addEventListener('pointerdown',()=>send('input'),{capture:true});document.addEventListener('keydown',()=>send('input'),{capture:true});TownArt.onLoad(()=>dirty=true);addEventListener('resize',resize);
-setup();resize();send('ready');requestAnimationFrame(draw);
-</script></html>
+$('focus').onclick = focus;
+$('fit').onclick = fitView;
+$('leave').onclick = () => {
+ target = {
+  exit: true
+ };
+ path = route(hero, M.exit);
+ if (!path.length) arrive()
+};
+document.querySelectorAll('[data-menu]').forEach(b => b.onclick = () => send('menu', {
+ id: b.dataset.menu
+}));
+
+function setup() {
+ $('title').textContent = M.name;
+ $('subtitle').textContent = M.sub || '';
+ document.title = M.name + ' · Project A';
+ hero.u = M.exit.u;
+ hero.v = M.exit.v - .6;
+ hero.dir = 'NE';
+ path = [];
+ target = null;
+ dirty = true;
+ shortcuts();
+ renderEdit()
+}
+window.addEventListener('message', e => {
+ if (e.source !== parent || e.data?.source !== 'project-a-game') return;
+ const m = e.data;
+ if (m.type === 'visibility') {
+  active = m.visible;
+  return
+ }
+ if (m.type === 'motion') {
+  TownArt.setMotion(m.data);
+  return
+ }
+ if (m.type === 'init') {
+  all = loadAll();
+  M = copy(all[PLACE] || DEFAULTS[PLACE]);
+  setup();
+  fitView()
+ }
+ if (m.type === 'state' || m.type === 'init') {
+  state = m.data;
+  $('hud').textContent = m.data.name + ' · วันที่ ' + m.data.day + ' · ' + Math.floor(m.data.minutes / 60) + ':' + String(m.data.minutes % 60).padStart(2, '0') + ' · ♥ ' + m.data.hp + ' · แรง ' + m.data.stamina + ' · ◉ ' + m.data.coins;
+  shortcuts()
+ }
+});
+window.Place25D = {
+ place: PLACE,
+ get: () => copy(M),
+ getHero: () => ({
+  ...hero
+ }),
+ getPath: () => path.map(p => ({
+  ...p
+ })),
+ travel,
+ route,
+ blocked,
+ project,
+ setHero: p => {
+  Object.assign(hero, p);
+  path = [];
+  target = null
+ }
+};
+document.addEventListener('pointerdown', () => send('input'), {
+ capture: true
+});
+document.addEventListener('keydown', () => send('input'), {
+ capture: true
+});
+TownArt.onLoad(() => dirty = true);
+addEventListener('resize', resize);
+setup();
+resize();
+send('ready');
+requestAnimationFrame(draw);
+</script><script src="js/place-build.js?v=82.1"></script></html>
