@@ -8,7 +8,7 @@
 :root{--bg:#1a1510;--bar:#241d15;--line:#4a3b29;--text:#f3e7cf;--muted:#bba57f;--gold:#f6d79b;--accent:#c9893a}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,"Noto Sans Thai",sans-serif;overflow:hidden}
-header{height:48px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--bar);border-bottom:1px solid var(--line)}
+header{height:48px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--bar);border-bottom:1px solid var(--line)}\n#deployStatus{font-size:11px;color:var(--muted);white-space:nowrap;border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:#17130f}#deployStatus.latest{color:#a9d9a4;border-color:#466b40}#deployStatus.waiting{color:#f3d08d;border-color:#9c7332}
 header h1{font-size:16px;margin:0 12px 0 0;color:var(--gold);white-space:nowrap}
 nav{display:flex;gap:4px;flex:1;min-width:0;overflow:auto}
 nav button{background:#30271d;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;white-space:nowrap;font:inherit}
@@ -24,13 +24,13 @@ iframe[hidden]{display:none}
 <body>
 <header>
  <h1>✎ Project A · Editor</h1>
- <nav id="tabs"></nav>
+ <nav id="tabs"></nav><span id="deployStatus">กำลังตรวจสถานะเว็บ…</span>
  <button class="tool" id="reload" title="โหลดแท็บนี้ใหม่">↻ โหลดใหม่</button>
  <a href="index.html" target="_blank" title="เปิดเกมในแท็บใหม่">▶ เปิดเกม</a>
 </header>
-<div class="note" id="note"></div>
+<div class="note" id="note"></div><div id="editorConflict" hidden role="status"></div>
 <main id="frames"></main>
-<script src="js/game-dialog.js"></script><script>
+<script src="js/game-version.js?v=82.4"></script><script src="js/game-settings.js?v=82.4"></script><script src="js/editor-deploy-status.js?v=82.4"></script><script src="js/game-dialog.js"></script><script>
 // Editor shell: every tool runs in its own frame; the game opens in "editor mode" (no play-save writes).
 // All tools share this browser's storage with the game — reload the game to see changes.
 const TABS=[
