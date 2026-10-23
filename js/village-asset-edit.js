@@ -30,7 +30,7 @@ const screenDelta=(b,du,dv)=>{const x=(du-dv)*28;return{x:b?.mirror?-x:x,y:(du+d
 const canonDelta=(b,dx,dy)=>{if(b?.mirror)dx=-dx;return{du:(dx/28+dy/14)/2,dv:(dy/14-dx/28)/2}};
 
 /* ---------- wrap each drawable with its edit (offset, scale, rotation, flip, swap, layer, hide) ---------- */
-function entry(key,owner,ax,ay,draw,src,label){const ov=data.edit[key]||{},b=baseOf(owner),d=screenDelta(b,ov.du||0,ov.dv||0),E={key,owner,ax,ay,x:ax+d.x,y:ay+d.y,ov,label,hidden:!!ov.hide};frame.push(E);if(ov.hide)return null;
+function entry(key,owner,ax,ay,draw,src,label){const ov=data.edit[key]||{},b=baseOf(owner),d=screenDelta(b,ov.du||0,ov.dv||0),E={key,owner,ax,ay,x:ax+d.x,y:ay+d.y,ov,label,hidden:!!ov.hide,base:draw};frame.push(E);if(ov.hide)return null;
  const s=ov.s??1,r=(ov.r||0)*Math.PI/180,f=!!ov.f,k=ov.kind&&KINDS[ov.kind]?ov.kind:null,plain=!d.x&&!d.y&&s===1&&!r&&!f&&!k;
  const inner=plain?draw:gg=>{g.save();g.translate(E.x,E.y);if(r)g.rotate(r);g.scale(f?-s:s,s);g.translate(-ax,-ay);if(k)KINDS[k].draw({x:ax,y:ay});else draw(gg);g.restore()};
  const it={x:E.x,y:E.y+(ov.layer||0),draw:gg=>{if(active()&&(hoverKey===key||sel?.type==='item'&&sel.key===key))outlineDraw(inner);inner(gg)}};
@@ -57,79 +57,137 @@ const baseBuilding=building;
 building=function(o){const t=data.buildings[o.id];if(!t){baseBuilding(o);return}const p=anchorOf(o);g.save();g.translate(p.x+(t.dx||0),p.y+(t.dy||0));g.transform(t.sx??1,t.ky||0,t.kx||0,t.sy??1,0,0);g.translate(-p.x,-p.y);baseBuilding(o);g.restore()};
 function artRect(o,r){const t=data.buildings[o.id];if(!t)return r;const p=anchorOf(o),sx=t.sx??1,sy=t.sy??1,x0=p.x+(t.dx||0)+(r.x-p.x)*sx,x1=p.x+(t.dx||0)+(r.x+r.w-p.x)*sx,y0=p.y+(t.dy||0)+(r.y-p.y)*sy;return{...r,x:Math.min(x0,x1),y:y0,w:Math.abs(x1-x0),h:r.h*sy}}
 
-/* ---------- editing ---------- */
+/* ---------- editing: one item at a time ----------
+   Pick an item (map or list) → it becomes the edit session: only it can be dragged, other items are locked.
+   ✓ เสร็จ (Enter) keeps the changes · ยกเลิก (Esc) restores exactly what it was. One undo step per session. */
 const active=()=>editing&&UX.getMode()==='asset';
-function begin(){if(!ckPending){UX.checkpoint();ckPending=true}}
+let session=null,listOwner='';
+function begin(){if(session)return;if(!ckPending){UX.checkpoint();ckPending=true}}
 function commit(){ckPending=false;UX.persist();render()}
 function ovOf(key){return data.edit[key]||(data.edit[key]={})}
 function clean(key){const o=data.edit[key];if(!o)return;for(const k of Object.keys(o))if(o[k]==null||o[k]===0&&k!=='s'||k==='s'&&o[k]===1||o[k]===false||o[k]==='')delete o[k];if(!Object.keys(o).length)delete data.edit[key]}
-function pick(p){const R=24/(scale*zoom);let best=null,bd=R;for(const e of frame){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;best=e}}return best}
+function pick(p,only){const R=(only?34:22)/(scale*zoom);let best=null,bd=R;for(const e of frame){if(only&&e.key!==only)continue;const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;best=e}}return best}
+function start(t,isNew=false){if(session)return;UX.checkpoint();ckPending=false;session={...t,isNew,before:JSON.stringify(data)};sel={...t};listOwner=t.owner||listOwner;if(t.type==='building')selected=t.id;hoverKey=null;render();flashStatus(t.type==='building'?'กำลังแก้อาคาร · ✓ เสร็จ (Enter) หรือ ยกเลิก (Esc)':'กำลังแก้ชิ้นนี้ · ลากเพื่อย้าย · ✓ เสร็จ (Enter) หรือ ยกเลิก (Esc)')}
+function finish(ok){if(!session)return;const s=session;session=null;if(!ok){const b=JSON.parse(s.before);set(b)}else if(s.type==='item')clean(s.key);sel=null;drag=null;UX.persist();render();flashStatus(ok?'บันทึกการแก้แล้ว':'ยกเลิกแล้ว · กลับเป็นเหมือนก่อนแก้')}
+function flashStatus(t){const st=document.getElementById('status');if(st)st.textContent=t}
+function locked(){panel.classList.remove('ae-shake');void panel.offsetWidth;panel.classList.add('ae-shake');flashStatus('กำลังแก้ชิ้นอื่นอยู่ · กด ✓ เสร็จ หรือ ยกเลิก ก่อนเลือกชิ้นใหม่')}
+function focusOn(x,y){pan={x:-(x-WORLD_W/2)*scale*zoom,y:-(y-WORLD_H/2)*scale*zoom}}
 const stageEl=document.getElementById('stage');
-stageEl.addEventListener('pointerdown',e=>{if(!active()||e.button!==0)return;const p=world(e),hit=pick(p);
- if(hit){e.stopPropagation();e.preventDefault();sel={type:'item',key:hit.key,owner:hit.owner};const ov=data.edit[hit.key]||{};drag={id:e.pointerId,p,du:ov.du||0,dv:ov.dv||0,moved:false};render();return}
- const o=UX.hitObject(p);if(o){e.stopPropagation();e.preventDefault();sel={type:'building',id:o.id,owner:o.id};selected=o.id;const t=data.buildings[o.id]||{};drag={id:e.pointerId,p,dx:t.dx||0,dy:t.dy||0,moved:false};render()}},true);
-stageEl.addEventListener('pointermove',e=>{if(!active()||drag){if(!active())hoverKey=null;return}const h=pick(world(e));hoverKey=h?.key||null;if(h)stageEl.style.cursor='pointer';else stageEl.style.cursor=''});
-window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;const p=world(e),dx=p.x-drag.p.x,dy=p.y-drag.p.y;if(!drag.moved&&Math.hypot(dx,dy)*scale*zoom<4)return;if(!drag.moved){drag.moved=true;begin()}
- if(sel?.type==='item'){const b=baseOf(sel.owner),c=canonDelta(b,dx,dy),ov=ovOf(sel.key);ov.du=+(drag.du+c.du).toFixed(3);ov.dv=+(drag.dv+c.dv).toFixed(3)}
- else if(sel?.type==='building'){const t=data.buildings[sel.id]||(data.buildings[sel.id]={});t.dx=Math.round(drag.dx+dx);t.dy=Math.round(drag.dy+dy)}},true);
-window.addEventListener('pointerup',e=>{if(!drag||e.pointerId!==drag.id)return;const moved=drag.moved;drag=null;if(moved){if(sel?.type==='item')clean(sel.key);commit()}},true);
-document.addEventListener('keydown',e=>{if(!active()||!sel||e.target.closest('input,select,textarea'))return;
- if(sel.type==='item'&&(e.key==='Delete'||e.key==='Backspace')){e.preventDefault();begin();const a=data.added.find(a=>a.id===sel.key);if(a){data.added=data.added.filter(x=>x!==a);delete data.edit[a.id];sel=null}else ovOf(sel.key).hide=true;commit();return}
- const k={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];if(!k)return;e.preventDefault();const n=e.shiftKey?10:2;begin();
- if(sel.type==='item'){const c=canonDelta(baseOf(sel.owner),k[0]*n,k[1]*n),ov=ovOf(sel.key);ov.du=+((ov.du||0)+c.du).toFixed(3);ov.dv=+((ov.dv||0)+c.dv).toFixed(3)}else{const t=data.buildings[sel.id]||(data.buildings[sel.id]={});t.dx=(t.dx||0)+k[0]*n;t.dy=(t.dy||0)+k[1]*n}commit()});
+stageEl.addEventListener('pointerdown',e=>{if(!active()||e.button!==0||e.target.closest('#assetEdit,#aePicker'))return;const p=world(e);
+ if(session){let own=false;if(session.type==='item')own=!!pick(p,session.key);else{const o=UX.hitObject(p);own=o?.id===session.id}
+  if(own){e.stopPropagation();e.preventDefault();if(session.type==='item'){const ov=data.edit[session.key]||{};drag={id:e.pointerId,p,du:ov.du||0,dv:ov.dv||0,moved:false}}else{const t=data.buildings[session.id]||{};drag={id:e.pointerId,p,dx:t.dx||0,dy:t.dy||0,moved:false}}return}
+  if(pick(p)||UX.hitObject(p)){e.stopPropagation();e.preventDefault();locked()}return}// empty ground → camera pan as usual
+ const hit=pick(p);if(hit){e.stopPropagation();e.preventDefault();start({type:'item',key:hit.key,owner:hit.owner});const ov=data.edit[hit.key]||{};drag={id:e.pointerId,p,du:ov.du||0,dv:ov.dv||0,moved:false};return}
+ const o=UX.hitObject(p);if(o){e.stopPropagation();e.preventDefault();start({type:'building',id:o.id,owner:o.id});const t=data.buildings[o.id]||{};drag={id:e.pointerId,p,dx:t.dx||0,dy:t.dy||0,moved:false}}},true);
+stageEl.addEventListener('pointermove',e=>{if(!active()){hoverKey=null;return}if(drag)return;const h=pick(world(e),session?.type==='item'?session.key:null);hoverKey=session&&!h?null:h?.key||null});
+window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id||!session)return;const p=world(e),dx=p.x-drag.p.x,dy=p.y-drag.p.y;if(!drag.moved&&Math.hypot(dx,dy)*scale*zoom<4)return;drag.moved=true;
+ if(session.type==='item'){const b=baseOf(session.owner),c=canonDelta(b,dx,dy),ov=ovOf(session.key);ov.du=+(drag.du+c.du).toFixed(3);ov.dv=+(drag.dv+c.dv).toFixed(3)}
+ else{const t=data.buildings[session.id]||(data.buildings[session.id]={});t.dx=Math.round(drag.dx+dx);t.dy=Math.round(drag.dy+dy)}},true);
+window.addEventListener('pointerup',e=>{if(!drag||e.pointerId!==drag.id)return;drag=null},true);
+function nudge(dx,dy){if(!session)return;if(session.type==='item'){const c=canonDelta(baseOf(session.owner),dx,dy),ov=ovOf(session.key);ov.du=+((ov.du||0)+c.du).toFixed(3);ov.dv=+((ov.dv||0)+c.dv).toFixed(3)}else{const t=data.buildings[session.id]||(data.buildings[session.id]={});t.dx=(t.dx||0)+dx;t.dy=(t.dy||0)+dy}}
+document.addEventListener('keydown',e=>{if(!active()||!session||e.target.closest('input,select,textarea')||picker?.open)return;
+ if(e.key==='Enter'){e.preventDefault();finish(true);return}if(e.key==='Escape'){e.preventDefault();finish(false);return}
+ if(session.type==='item'&&(e.key==='Delete'||e.key==='Backspace')){e.preventDefault();removeCurrent();return}
+ const k={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];if(!k)return;e.preventDefault();const n=e.shiftKey?10:2;nudge(k[0]*n,k[1]*n)});
+function removeCurrent(){const a=data.added.find(a=>a.id===session.key);if(a){data.added=data.added.filter(x=>x!==a);delete data.edit[a.id];session.before=session.isNew?session.before:session.before;const s=session;session=null;sel=null;UX.persist();render();flashStatus(s.isNew?'ยกเลิกของที่เพิ่ม':'ลบของที่เพิ่มแล้ว');return}ovOf(session.key).hide=true;finish(true)}
+
+/* ---------- thumbnails (rendered from the real draw code) ---------- */
+const thumbCache=new Map();
+function renderThumb(drawFn,ax,ay,w=112,h=92){const big=document.createElement('canvas');big.width=big.height=560;const q=big.getContext('2d'),main=g;g=q;try{q.translate(280-ax,520-ay);drawFn()}catch(e){}finally{g=main}
+ const out=document.createElement('canvas');out.width=w;out.height=h;const o=out.getContext('2d');let bx=0,by=0,bw=560,bh=560,any=true;try{const d=q.getImageData(0,0,560,560).data;let x0=560,y0=560,x1=-1,y1=-1;for(let y=0;y<560;y+=2)for(let x=0;x<560;x+=2)if(d[(y*560+x)*4+3]>20){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}if(x1<0)any=false;else{bx=x0;by=y0;bw=x1-x0+2;bh=y1-y0+2}}catch(e){}
+ if(any){const sc=Math.min((w-8)/bw,(h-8)/bh,1.2);o.drawImage(big,bx,by,bw,bh,(w-bw*sc)/2,(h-bh*sc)/2,bw*sc,bh*sc)}return any?out:null}
+function kindThumb(id){if(thumbCache.has(id))return thumbCache.get(id);const c=renderThumb(()=>KINDS[id].draw({x:0,y:0}),0,0);if(c)thumbCache.set(id,c);return c}
+function entryThumb(E){const k=E.ov?.kind;if(k&&KINDS[k])return kindThumb(k);return renderThumb(()=>E.base(g),E.ax,E.ay)}
+const miniCache=new Map();function miniThumb(E){const sig=E.key+'|'+JSON.stringify(E.ov||{});if(miniCache.has(sig))return cloneCv(miniCache.get(sig));const c=entryThumb(E);if(c)miniCache.set(sig,c);return c?cloneCv(c):null}
+function cloneCv(c){const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);return n}
+function putThumb(slot,c){slot.replaceChildren();if(c){const im=document.createElement('canvas');im.width=c.width;im.height=c.height;im.getContext('2d').drawImage(c,0,0);slot.append(im)}else slot.textContent='…'}
+
+/* ---------- picker: visual list of everything that can be placed ---------- */
+let picker=null;
+function openPicker(title,current,onPick){if(!picker){picker=document.createElement('dialog');picker.id='aePicker';document.body.append(picker)}
+ const groups=[...new Set(Object.values(KINDS).map(k=>k.group))];let tab='ทั้งหมด',q='';
+ const draw=()=>{const list=Object.entries(KINDS).filter(([id,k])=>(tab==='ทั้งหมด'||k.group===tab)&&(!q||k.label.includes(q)||id.includes(q)));
+  picker.innerHTML=`<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"><button data-x>ปิด (Esc)</button></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid">${list.map(([id,k])=>`<button data-id="${id}" class="${id===current?'cur':''}"><span class="th"></span><span>${k.label}</span><small>${k.group}</small></button>`).join('')||'<p>ไม่พบ</p>'}</div>`;
+  picker.querySelectorAll('[data-id]').forEach(b=>{const slot=b.querySelector('.th');putThumb(slot,kindThumb(b.dataset.id));if(!thumbCache.has(b.dataset.id))setTimeout(()=>{thumbCache.delete(b.dataset.id);putThumb(slot,kindThumb(b.dataset.id))},700);b.onclick=()=>{picker.close();onPick(b.dataset.id)}});
+  picker.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;draw()});picker.querySelector('[data-x]').onclick=()=>picker.close();const s=picker.querySelector('input');s.oninput=()=>{q=s.value.trim();const pos=s.selectionStart;draw();const n=picker.querySelector('input');n.focus();n.setSelectionRange(pos,pos)}};
+ draw();picker.showModal();picker.querySelector('input').focus()}
 
 /* ---------- panel ---------- */
-const css=document.createElement('style');css.textContent=`#assetEdit{position:fixed;left:16px;top:168px;z-index:9;width:290px;max-height:calc(100dvh - 190px);overflow:auto;background:#1b302af2;color:#f3ead0;border:1px solid #b9c48f;border-radius:12px;padding:12px;font-size:12px;box-shadow:0 10px 30px #0006}#assetEdit[hidden]{display:none}#assetEdit h3{margin:0 0 6px;font-size:14px;color:#fff0c7}#assetEdit .sub{color:#c9d2b8;margin:0 0 8px}#assetEdit label{display:grid;grid-template-columns:92px 1fr 44px;gap:6px;align-items:center;margin:5px 0}#assetEdit label.chk{display:flex}#assetEdit input[type=range]{width:100%}#assetEdit select{width:100%;padding:5px;background:#132621;color:inherit;border:1px solid #7f9170;border-radius:6px}#assetEdit .row{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}#assetEdit button{padding:5px 8px;font-size:12px}#assetEdit hr{border:0;border-top:1px solid #4d6656;margin:10px 0}#assetEdit output{text-align:right;font-variant-numeric:tabular-nums}`;document.head.append(css);
+const css=document.createElement('style');css.textContent=`#assetEdit{position:fixed;left:16px;top:120px;z-index:9;width:310px;max-height:calc(100dvh - 140px);display:flex;flex-direction:column;background:#1b302af5;color:#f3ead0;border:1px solid #b9c48f;border-radius:12px;font-size:12px;box-shadow:0 10px 30px #0006}#assetEdit[hidden]{display:none}
+#assetEdit .body{overflow:auto;padding:12px}#assetEdit h3{margin:0 0 4px;font-size:15px;color:#fff0c7}#assetEdit .sub{color:#c9d2b8;margin:0 0 8px}#assetEdit .chip{display:inline-block;background:#e5c06b;color:#1b302a;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:6px;vertical-align:2px}
+#assetEdit label{display:grid;grid-template-columns:96px 1fr 44px;gap:6px;align-items:center;margin:6px 0}#assetEdit label.chk{display:flex}#assetEdit input[type=range]{width:100%}#assetEdit select{width:100%;padding:5px;background:#132621;color:inherit;border:1px solid #7f9170;border-radius:6px}
+#assetEdit .row{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}#assetEdit button{padding:6px 9px;font-size:12px}#assetEdit hr{border:0;border-top:1px solid #4d6656;margin:10px 0}#assetEdit output{text-align:right;font-variant-numeric:tabular-nums}
+#assetEdit .art{display:flex;gap:10px;align-items:center;background:#132621;border:1px solid #4d6656;border-radius:10px;padding:8px}#assetEdit .art .th{width:112px;height:92px;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}
+#assetEdit .nudge{display:grid;grid-template-columns:repeat(3,34px);gap:3px}#assetEdit .nudge button{padding:4px 0}
+#assetEdit .foot{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #4d6656;background:#16281f;border-radius:0 0 12px 12px}#assetEdit .foot button{flex:1;padding:9px;font-size:13px}#assetEdit .ok{background:#4f7a3c;border-color:#b8d39a}#assetEdit .cancel{background:#5b3a30;border-color:#c49a8a}
+#assetEdit .items{display:grid;gap:3px;max-height:260px;overflow:auto}#assetEdit .items button{display:flex;align-items:center;gap:8px;text-align:left}#assetEdit .mini{width:44px;height:36px;flex:none;display:grid;place-items:center;background:#132621;border-radius:6px}#assetEdit .mini canvas{max-width:44px;max-height:36px}#assetEdit .items small{color:#c9d2b8}
+#assetEdit.ae-shake{animation:aeShake .35s}@keyframes aeShake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+#aePicker{width:min(760px,94vw);max-height:86vh;padding:0;border:1px solid #b9c48f;border-radius:14px;background:#1b302a;color:#f3ead0;font:13px system-ui,"Noto Sans Thai",sans-serif}#aePicker::backdrop{background:#071c17aa}
+#aePicker .pk-head{display:flex;gap:8px;align-items:center;padding:12px;border-bottom:1px solid #4d6656;position:static}#aePicker .pk-head b{flex:1;font-size:15px;color:#fff0c7}#aePicker button{width:auto!important;margin:0!important}#aePicker input{padding:6px 10px;border-radius:8px;border:1px solid #7f9170;background:#132621;color:inherit}
+#aePicker .pk-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px}#aePicker .pk-tabs button.on{background:#e5c06b;color:#1b302a}#aePicker .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:12px;overflow:auto;max-height:62vh}
+#aePicker .grid button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px;border-radius:10px;background:#132621;border:1px solid #4d6656;color:inherit;cursor:pointer}#aePicker .grid button:hover{border-color:#e5c06b}#aePicker .grid button.cur{border-color:#9ff3f5;box-shadow:0 0 0 2px #9ff3f555}
+#aePicker .th{width:112px;height:92px;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}#aePicker small{color:#9fb19a;font-size:10px}#aePicker button{font:inherit;background:#233a2e;color:inherit;border:1px solid #7f9170;border-radius:8px;padding:6px 10px;cursor:pointer}`;document.head.append(css);
 const panel=document.createElement('section');panel.id='assetEdit';panel.hidden=true;document.body.append(panel);
-const kindOptions=(cur,base)=>`<option value="">${base}</option>`+[...new Set(Object.values(KINDS).map(k=>k.group))].map(gr=>`<optgroup label="${gr}">`+Object.entries(KINDS).filter(([,k])=>k.group===gr).map(([id,k])=>`<option value="${id}" ${id===cur?'selected':''}>${k.label}</option>`).join('')+'</optgroup>').join('');
 const slider=(id,label,v,min,max,step,fmt=x=>x)=>`<label>${label}<input type="range" data-k="${id}" min="${min}" max="${max}" step="${step}" value="${v}"><output>${fmt(v)}</output></label>`;
-function addBlock(owner){return`<hr><b>เพิ่ม asset ให้ ${ownerName(owner)}</b><div class="row"><select id="aeAddKind">${kindOptions('','— เลือกของ —').replace('<option value="">— เลือกของ —</option>','')}</select><button id="aeAdd">เพิ่ม</button></div><div class="row"><button id="aeResetOwner">คืนค่าของทั้งแปลงนี้</button></div>`}
+const FMT={s:x=>Math.round(x*100)+'%',r:x=>x+'°',layer:x=>(x>0?'+':'')+x,sx:x=>Math.round(x*100)+'%',sy:x=>Math.round(x*100)+'%',kx:x=>(Math.atan(x)*180/Math.PI).toFixed(1)+'°',ky:x=>(Math.atan(x)*180/Math.PI).toFixed(1)+'°'};
+const foot=`<div class="foot"><button class="ok" id="aeOk">✓ เสร็จ <small>Enter</small></button><button class="cancel" id="aeCancel">ยกเลิก <small>Esc</small></button></div>`;
+const nudgeHtml=`<div class="row" style="align-items:center"><span>ขยับละเอียด</span><div class="nudge"><span></span><button data-n="0,-2">↑</button><span></span><button data-n="-2,0">←</button><button data-n="0,2">↓</button><button data-n="2,0">→</button></div><small class="sub" style="margin:0">หรือลากบนแผนที่ · ลูกศร (Shift เร็ว)</small></div>`;
+function owners(){const set=new Map();for(const e of frame){if(!set.has(e.owner))set.set(e.owner,0);set.set(e.owner,set.get(e.owner)+1)}return[...set.entries()].sort((a,b)=>ownerName(a[0]).localeCompare(ownerName(b[0]),'th'))}
 function render(){panel.hidden=!active();if(panel.hidden)return;
- if(!sel){panel.innerHTML=`<h3>แต่ง asset ย่อย</h3><p class="sub">คลิกจุดสีทองบนแผนที่เพื่อเลือกของประดับหรือประตูผจญภัย แล้วลากย้ายได้ · คลิกตัวอาคารเพื่อปรับขนาดและมุมเอียงให้เข้ากับพื้น isometric</p>${blendBlock()}`;bindBlend();return}
- if(sel.type==='building'){const o=locations.find(x=>x.id===sel.id);if(!o){sel=null;render();return}const t=data.buildings[o.id]||{},pct=x=>Math.round(x*100)+'%',tilt=x=>(Math.atan(x)*180/Math.PI).toFixed(1)+'°';
-  panel.innerHTML=`<h3>${o.name}</h3><p class="sub">ตัวอาคาร · ลากตัวอาคารเพื่อขยับ · เส้นประสีฟ้าคือแนว 2:1 ของพื้น และกรอบฐานอาคาร</p>
-  ${slider('sx','กว้าง',t.sx??1,.5,1.6,.01,pct)}${slider('sy','สูง',t.sy??1,.5,1.6,.01,pct)}${slider('kx','เอียงซ้าย-ขวา',t.kx||0,-.6,.6,.005,tilt)}${slider('ky','ยกด้านข้าง',t.ky||0,-.6,.6,.005,tilt)}
-  <p class="sub">"เอียงซ้าย-ขวา" ดันส่วนบนของภาพไปทางซ้าย/ขวา · "ยกด้านข้าง" ยกฝั่งขวาขึ้นหรือลง เพื่อให้ขอบผนังขนานกับเส้น 2:1</p>
+ if(!session){const os=owners();if(!listOwner||!os.some(([o])=>o===listOwner))listOwner=os[0]?.[0]||'';const items=frame.filter(e=>e.owner===listOwner);
+  panel.innerHTML=`<div class="body"><h3>แต่ง asset ย่อย</h3><p class="sub">① คลิกชิ้นบนแผนที่ (จุดสีทอง) หรือเลือกจากรายการ · ② ปรับ · ③ กด ✓ เสร็จ — ระหว่างแก้จะเลือกชิ้นอื่นไม่ได้ กันกดพลาด · คลิกตัวอาคารเพื่อปรับมุมเอียง</p>
+  <label style="grid-template-columns:70px 1fr">สถานที่<select id="aeOwner">${os.map(([o,n])=>`<option value="${o}" ${o===listOwner?'selected':''}>${ownerName(o)} (${n})</option>`).join('')}</select></label>
+  <div class="items">${items.map(e=>`<button data-key="${e.key}"><span class="mini"></span><span style="flex:1">${e.ov?.kind&&KINDS[e.ov.kind]?KINDS[e.ov.kind].label:e.label}</span><small>${e.hidden?'ซ่อนอยู่':e.key.startsWith('add:')?'เพิ่มเอง':Object.keys(e.ov||{}).length?'แก้แล้ว':''}</small></button>`).join('')||'<p class="sub">ไม่มีชิ้นในสถานที่นี้</p>'}</div>
+  <div class="row"><button id="aeAdd">＋ เพิ่ม asset…</button><button id="aeResetOwner">คืนค่าทั้งแปลง</button></div>${blendBlock()}</div>`;
+  panel.querySelector('#aeOwner').onchange=e=>{listOwner=e.target.value;render()};
+  panel.querySelectorAll('[data-key]').forEach(b=>{const E=frame.find(x=>x.key===b.dataset.key),m=b.querySelector('.mini');if(E&&m){const c=miniThumb(E);if(c)m.append(c)}b.onmouseenter=()=>hoverKey=b.dataset.key;b.onmouseleave=()=>hoverKey=null;b.onclick=()=>{const E=frame.find(x=>x.key===b.dataset.key);if(!E)return;zoom=Math.max(zoom,1.5);focusOn(E.x,E.y);start({type:'item',key:E.key,owner:E.owner})}});
+  panel.querySelector('#aeAdd').onclick=()=>openPicker('เพิ่ม asset ให้ '+ownerName(listOwner),'',k=>{const base=baseOf(listOwner);if(!base)return;const before=JSON.stringify(data),id='add:'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);UX.checkpoint();data.added.push({id,owner:listOwner,du:0,dv:+base.front.toFixed(2),kind:k});session={type:'item',key:id,owner:listOwner,isNew:true,before};sel={type:'item',key:id,owner:listOwner};const p=toScreen(base,0,base.front);focusOn(p.x,p.y);render();flashStatus('วางของใหม่แล้ว · ลากไปที่ต้องการ แล้วกด ✓ เสร็จ')});
+  panel.querySelector('#aeResetOwner').onclick=()=>{if(!window.confirm('คืนค่าของประดับทั้งหมดของ '+ownerName(listOwner)+' (รวมที่เพิ่มเอง)?'))return;UX.checkpoint();for(const k of Object.keys(data.edit))if(k.startsWith(listOwner+':')||k===listOwner||data.added.some(a=>a.id===k&&a.owner===listOwner))delete data.edit[k];data.added=data.added.filter(a=>a.owner!==listOwner);UX.persist();render()};
+  bindBlend();return}
+ if(session.type==='building'){const o=locations.find(x=>x.id===session.id);if(!o){session=null;render();return}const t=data.buildings[o.id]||{};
+  panel.innerHTML=`<div class="body"><h3>${o.name}<span class="chip">กำลังแก้</span></h3><p class="sub">ตัวอาคาร · ลากตัวอาคารเพื่อขยับ · เส้นประฟ้า = แนว 2:1 ของพื้นและกรอบฐาน</p>
+  ${slider('sx','กว้าง',t.sx??1,.5,1.6,.01,FMT.sx)}${slider('sy','สูง',t.sy??1,.5,1.6,.01,FMT.sy)}${slider('kx','เอียงซ้าย-ขวา',t.kx||0,-.6,.6,.005,FMT.kx)}${slider('ky','ยกด้านข้าง',t.ky||0,-.6,.6,.005,FMT.ky)}${nudgeHtml}
   <label class="chk"><input type="checkbox" id="aeGuides" ${guides?'checked':''}> แสดงเส้นช่วย 2:1</label>
-  <div class="row"><button id="aeBReset">คืนค่าอาคารนี้</button>${o.npc||o.id==='home'?'<button id="aeBAll">ใช้ค่านี้กับบ้านภาพเดียวกันทุกหลัง</button>':''}</div>${addBlock(o.id)}`;
-  panel.querySelectorAll('input[type=range]').forEach(i=>{i.oninput=()=>{begin();const t=data.buildings[o.id]||(data.buildings[o.id]={});t[i.dataset.k]=+i.value;i.nextElementSibling.textContent=({sx:pct,sy:pct,kx:tilt,ky:tilt})[i.dataset.k](+i.value)};i.onchange=commit});
-  panel.querySelector('#aeGuides').onchange=e=>guides=e.target.checked;
-  panel.querySelector('#aeBReset').onclick=()=>{begin();delete data.buildings[o.id];commit()};
-  const all=panel.querySelector('#aeBAll');if(all)all.onclick=()=>{begin();const t=copy(data.buildings[o.id]||{});delete t.dx;delete t.dy;for(const x of locations)if(x.npc||x.id==='home'){if(x.id===o.id)continue;const keep=data.buildings[x.id]||{};data.buildings[x.id]={...t,...(keep.dx!=null?{dx:keep.dx}:{}),...(keep.dy!=null?{dy:keep.dy}:{})}}commit()};
-  bindAdd(o.id);return}
- const E=frame.find(e=>e.key===sel.key),added=data.added.find(a=>a.id===sel.key),ov=data.edit[sel.key]||{};
- panel.innerHTML=`<h3>${E?.label||KINDS[added?.kind]?.label||'ของประดับ'}${ov.hide?' · ซ่อนอยู่':''}</h3><p class="sub">${ownerName(sel.owner)} · ลากจุดเพื่อย้าย · ลูกศร = ขยับ (Shift เร็วขึ้น) · Delete = ${added?'ลบ':'ซ่อน'}</p>
- <label style="grid-template-columns:92px 1fr">เปลี่ยนเป็น<select id="aeKind">${kindOptions(ov.kind||'','ภาพเดิม')}</select></label>
- ${slider('s','ขนาด',ov.s??1,.3,2.5,.01,x=>Math.round(x*100)+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,x=>x+'°')}${slider('layer','ชั้น (หน้า/หลัง)',ov.layer||0,-200,200,2,x=>(x>0?'+':'')+x)}
+  <div class="row"><button id="aeBReset">คืนค่าอาคารนี้</button>${o.npc||o.id==='home'?'<button id="aeBAll">ใช้ค่านี้กับบ้านภาพเดียวกันทุกหลัง</button>':''}</div></div>${foot}`;
+  panel.querySelectorAll('input[type=range]').forEach(i=>i.oninput=()=>{const t=data.buildings[o.id]||(data.buildings[o.id]={});t[i.dataset.k]=+i.value;i.nextElementSibling.textContent=FMT[i.dataset.k](+i.value)});
+  panel.querySelector('#aeGuides').onchange=e=>guides=e.target.checked;panel.querySelector('#aeBReset').onclick=()=>{delete data.buildings[o.id];render()};
+  const all=panel.querySelector('#aeBAll');if(all)all.onclick=()=>{const t=copy(data.buildings[o.id]||{});delete t.dx;delete t.dy;for(const x of locations)if((x.npc||x.id==='home')&&x.id!==o.id){const keep=data.buildings[x.id]||{};data.buildings[x.id]={...t,...(keep.dx!=null?{dx:keep.dx}:{}),...(keep.dy!=null?{dy:keep.dy}:{})}}flashStatus('ใช้ค่ากับบ้านทุกหลังแล้ว · กด ✓ เสร็จ เพื่อยืนยัน')};
+  bindSession();return}
+ const E=frame.find(e=>e.key===session.key),added=data.added.find(a=>a.id===session.key),ov=data.edit[session.key]||{},label=ov.kind&&KINDS[ov.kind]?KINDS[ov.kind].label:E?.label||KINDS[added?.kind]?.label||'ของประดับ';
+ panel.innerHTML=`<div class="body"><h3>${label}<span class="chip">${session.isNew?'ของใหม่':'กำลังแก้'}</span></h3><p class="sub">${ownerName(session.owner)}${ov.hide?' · ซ่อนอยู่':''}</p>
+ <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
+ ${nudgeHtml}${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${slider('layer','ชั้น หน้า/หลัง',ov.layer||0,-200,200,2,FMT.layer)}
  <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
- <div class="row">${added?'<button id="aeDel">ลบของที่เพิ่ม</button>':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อน (ลบ)'}</button>`}<button id="aeReset">คืนค่าเดิม</button></div>${addBlock(sel.owner)}`;
- panel.querySelectorAll('input[type=range]').forEach(i=>{i.oninput=()=>{begin();ovOf(sel.key)[i.dataset.k]=+i.value;i.nextElementSibling.textContent=({s:x=>Math.round(x*100)+'%',r:x=>x+'°',layer:x=>(x>0?'+':'')+x})[i.dataset.k](+i.value)};i.onchange=()=>{clean(sel.key);commit()}});
- panel.querySelector('#aeKind').onchange=e=>{begin();ovOf(sel.key).kind=e.target.value||null;clean(sel.key);commit()};
- panel.querySelector('#aeFlip').onchange=e=>{begin();ovOf(sel.key).f=e.target.checked;clean(sel.key);commit()};
- const hide=panel.querySelector('#aeHide');if(hide)hide.onclick=()=>{begin();ovOf(sel.key).hide=!ov.hide;clean(sel.key);commit()};
- const del=panel.querySelector('#aeDel');if(del)del.onclick=()=>{begin();data.added=data.added.filter(a=>a.id!==sel.key);delete data.edit[sel.key];sel=null;commit()};
- panel.querySelector('#aeReset').onclick=()=>{begin();delete data.edit[sel.key];commit()};
- bindAdd(sel.owner)}
-function bindAdd(owner){const b=panel.querySelector('#aeAdd');if(!b)return;b.onclick=()=>{const k=panel.querySelector('#aeAddKind').value,base=baseOf(owner);if(!k||!base)return;begin();const id='add:'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);data.added.push({id,owner,du:0,dv:+base.front.toFixed(2),kind:k});sel={type:'item',key:id,owner};commit()};
- panel.querySelector('#aeResetOwner').onclick=()=>{if(!window.confirm('คืนค่าของประดับทั้งหมดของ '+ownerName(owner)+' (รวมที่เพิ่มเอง)?'))return;begin();for(const k of Object.keys(data.edit))if(k.startsWith(owner+':')||k===owner||data.added.some(a=>a.id===k&&a.owner===owner))delete data.edit[k];data.added=data.added.filter(a=>a.owner!==owner);if(sel?.type==='item')sel=null;commit()}}
-function blendBlock(){return`<hr><b>ขนาดตัวละครในเมือง</b>${slider('char-hero','ตัวเอก',data.chars.hero??1,.5,2,.05,x=>Math.round(x*100)+'%')}${slider('char-npc','ชาวบ้าน (NPC)',data.chars.npc??1,.5,2,.05,x=>Math.round(x*100)+'%')}<p class="sub">ตัวเอกใช้ขนาดนี้ในแผนที่ย่อย (ตลาด โรงตีเหล็ก บ้าน) ด้วย</p><hr><b>พื้นถนน</b>${slider('blend','รอยต่อพื้นนุ่ม',ROAD_BLEND,0,60,1,x=>x?x+'px':'คม')}<p class="sub">ค่าความกว้างที่ลายพื้นต่างชนิดค่อย ๆ ผสมกัน (0 = ขอบคมแบบเดิม) · ลานหน้าสถานที่ใช้ลายเดียวกับถนนที่เชื่อมเข้ามา</p>`}
+ <div class="row">${added?'<button id="aeDel">ลบของที่เพิ่ม</button>':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชิ้นนี้'}</button>`}<button id="aeReset">คืนค่าเริ่มต้นของชิ้นนี้</button></div></div>${foot}`;
+ const slot=panel.querySelector('#aeThumb');putThumb(slot,E?entryThumb(E):added?kindThumb(added.kind):null);
+ panel.querySelectorAll('input[type=range]').forEach(i=>i.oninput=()=>{ovOf(session.key)[i.dataset.k]=+i.value;i.nextElementSibling.textContent=FMT[i.dataset.k](+i.value)});
+ panel.querySelector('#aeSwap').onclick=()=>openPicker('เปลี่ยนภาพของชิ้นนี้',ov.kind||added?.kind||'',k=>{if(added)added.kind=k;else ovOf(session.key).kind=k;render()});
+ const orig=panel.querySelector('#aeOrig');if(orig)orig.onclick=()=>{delete ovOf(session.key).kind;render()};
+ panel.querySelector('#aeFlip').onchange=e=>ovOf(session.key).f=e.target.checked;
+ const hide=panel.querySelector('#aeHide');if(hide)hide.onclick=()=>{ovOf(session.key).hide=!ov.hide;render()};
+ const del=panel.querySelector('#aeDel');if(del)del.onclick=removeCurrent;
+ panel.querySelector('#aeReset').onclick=()=>{delete data.edit[session.key];render()};
+ bindSession()}
+function bindSession(){panel.querySelector('#aeOk').onclick=()=>finish(true);panel.querySelector('#aeCancel').onclick=()=>finish(false);panel.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const[x,y]=b.dataset.n.split(',').map(Number);nudge(x,y)})}
+function blendBlock(){return`<hr><b>ขนาดตัวละครในเมือง</b>${slider('char-hero','ตัวเอก',data.chars.hero??1,.5,2,.05,x=>Math.round(x*100)+'%')}${slider('char-npc','ชาวบ้าน (NPC)',data.chars.npc??1,.5,2,.05,x=>Math.round(x*100)+'%')}<p class="sub">ตัวเอกใช้ขนาดนี้ในแผนที่ย่อย (ตลาด โรงตีเหล็ก บ้าน) ด้วย</p><hr><b>พื้นถนน</b>${slider('blend','รอยต่อพื้นนุ่ม',ROAD_BLEND,0,60,1,x=>x?x+'px':'คม')}<p class="sub">ความกว้างที่ลายพื้นต่างชนิดค่อย ๆ ผสมกัน (0 = ขอบคม) · ลานหน้าสถานที่ใช้ลายเดียวกับพื้นหน้าประตู</p>`}
 function bindBlend(){for(const k of['hero','npc']){const c=panel.querySelector('[data-k=char-'+k+']');if(!c)continue;c.oninput=()=>{begin();data.chars[k]=+c.value;c.nextElementSibling.textContent=Math.round(c.value*100)+'%'};c.onchange=()=>{if(data.chars[k]===1)delete data.chars[k];commit()}}const i=panel.querySelector('[data-k=blend]');if(!i)return;i.oninput=()=>i.nextElementSibling.textContent=+i.value?i.value+'px':'คม';i.onchange=()=>setRoadBlend(i.value)}
 
-/* ---------- overlay: anchor dots, selection, building footprint + 2:1 guides ---------- */
+/* ---------- overlay: dots (dimmed while one item is being edited), building footprint + 2:1 guides ---------- */
 const baseOverlay=UX.overlay;
 UX.overlay=function(gg,t){baseOverlay(gg,t);if(!active())return;const z=scale*zoom;
- for(const e of frame){const on=sel?.type==='item'&&sel.key===e.key;gg.beginPath();gg.arc(e.x,e.y,(on?8:4.5)/z,0,Math.PI*2);gg.fillStyle=e.hidden?'#c9504a':on?'#9ff3f5':e.key.startsWith('add:')?'#a8e07a':'#e5c06b';gg.fill();gg.lineWidth=1.2/z;gg.strokeStyle='#1d2b24';gg.stroke();if(e.hidden){gg.beginPath();gg.moveTo(e.x-4/z,e.y-4/z);gg.lineTo(e.x+4/z,e.y+4/z);gg.moveTo(e.x+4/z,e.y-4/z);gg.lineTo(e.x-4/z,e.y+4/z);gg.strokeStyle='#fff';gg.stroke()}}
- if(sel?.type==='building'){const o=locations.find(x=>x.id===sel.id);if(!o)return;const a=center(o),c=project(a.u,a.v),pts=[[-o.w,-o.d],[o.w,-o.d],[o.w,o.d],[-o.w,o.d]].map(([u,v])=>project(a.u+u,a.v+v));gg.save();gg.setLineDash([8/z,6/z]);gg.lineWidth=2/z;gg.strokeStyle='#7fe3ff';gg.beginPath();pts.forEach((p,i)=>gg[i?'lineTo':'moveTo'](p.x,p.y));gg.closePath();gg.stroke();
+ for(const e of frame){const on=session?.type==='item'&&session.key===e.key;gg.save();gg.globalAlpha=session&&!on?.25:1;gg.beginPath();gg.arc(e.x,e.y,(on?8:hoverKey===e.key?6:4.5)/z,0,Math.PI*2);gg.fillStyle=e.hidden?'#c9504a':on?'#9ff3f5':e.key.startsWith('add:')?'#a8e07a':'#e5c06b';gg.fill();gg.lineWidth=1.2/z;gg.strokeStyle='#1d2b24';gg.stroke();if(e.hidden){gg.beginPath();gg.moveTo(e.x-4/z,e.y-4/z);gg.lineTo(e.x+4/z,e.y+4/z);gg.moveTo(e.x+4/z,e.y-4/z);gg.lineTo(e.x-4/z,e.y+4/z);gg.strokeStyle='#fff';gg.stroke()}gg.restore()}
+ if(session?.type==='building'){const o=locations.find(x=>x.id===session.id);if(!o)return;const a=center(o),c=project(a.u,a.v),pts=[[-o.w,-o.d],[o.w,-o.d],[o.w,o.d],[-o.w,o.d]].map(([u,v])=>project(a.u+u,a.v+v));gg.save();gg.setLineDash([8/z,6/z]);gg.lineWidth=2/z;gg.strokeStyle='#7fe3ff';gg.beginPath();pts.forEach((p,i)=>gg[i?'lineTo':'moveTo'](p.x,p.y));gg.closePath();gg.stroke();
   if(guides){gg.globalAlpha=.7;for(const s of[-.5,.5])for(const p of[pts[0],pts[2]]){gg.beginPath();gg.moveTo(p.x-700,p.y-700*s);gg.lineTo(p.x+700,p.y+700*s);gg.stroke()}}
   gg.setLineDash([]);gg.globalAlpha=1;gg.fillStyle='#7fe3ff';gg.beginPath();gg.arc(c.x,c.y,5/z,0,Math.PI*2);gg.fill();gg.restore()}};
 
-// panel follows the editor mode / edit toggle
-let lastActive=false;(function tick(){const a=active();if(a!==lastActive){lastActive=a;if(!a)sel=null;render()}requestAnimationFrame(tick)})();
+// leaving the tool keeps the edit (same as ✓); the list refreshes when the map changes
+let lastActive=false,lastSig='';(function tick(){const a=active();if(a!==lastActive){lastActive=a;if(!a&&session)finish(true);render()}else if(a&&!session){const sig=frame.length+'|'+listOwner+'|'+JSON.stringify(data.edit).length+'|'+data.added.length;if(sig!==lastSig){lastSig=sig;if(!panel.contains(document.activeElement))render()}}requestAnimationFrame(tick)})();
 
 /* ---------- v38j: push the whole layout (roads, places, asset edits, building tilt) as the game's default layout ---------- */
 if(window.GitHubPush){const tools=document.getElementById('toolsPanel'),row=document.createElement('div');row.className='edit-row';row.style.marginTop='6px';
  const push=document.createElement('button');push.textContent='⬆ บันทึกผังขึ้นเกม (GitHub)';push.title='เขียนผังปัจจุบันเป็นผังเริ่มต้นของเกม (js/village-layout-v67.js) แล้ว push ขึ้น repo';
  row.append(push,GitHubPush.settingsButton());(document.getElementById('reset')||tools.lastChild).after(row);
+ if(typeof EDIT_PAGE!=='undefined'&&EDIT_PAGE){push.textContent='⬆ บันทึก + push ผังขึ้นเกม';push.style.cssText='flex:2;background:#c9893a;color:#fff;border-color:#8a5a20;font-weight:600';setTimeout(()=>{const t=document.getElementById('townTestWalk');(t||tools.firstChild).after(row)},0)}
  window.VillageLayoutPush=()=>push.click();
  push.onclick=async()=>{if(!GitHubPush.config().token){GitHubPush.openSettings();return}const st=document.getElementById('status');push.disabled=true;
   try{const snap=UX.snapshot(),body='// Village default layout — saved from the in-game editor '+new Date().toISOString()+'.\nwindow.VillageDefaultLayout='+JSON.stringify(snap,null,2)+';\n';
