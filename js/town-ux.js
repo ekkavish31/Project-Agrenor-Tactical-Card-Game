@@ -21,7 +21,7 @@ for(const b of document.querySelectorAll('.toolbar [data-game]')){const key=b.da
 document.querySelector('.toolbar').prepend(menuToggle);document.body.appendChild(gameMenu);closeGameMenu();for(const id of ['compareBtn','fit'])$('toolsPanel').appendChild($(id));
 
 // v81.x · a service point can sit deep inside the building: the hero walks to the edge, then straight over the art to it
-const deepEntry=Object.assign(document.createElement('label'),{innerHTML:'<input type="checkbox"> วางจุดเข้าลึกเข้าไปในอาคารได้ (หรือกด Shift ขณะลาก)'});deepEntry.style.cssText='display:flex;gap:6px;font-size:12px;margin:4px 0';const deepBox=deepEntry.querySelector('input');Object.defineProperty(deepEntry,'checked',{get:()=>deepBox.checked});selectMode.after(deepEntry);deepEntry.hidden=true;selectMode.addEventListener('change',()=>deepEntry.hidden=!editing||mode!=='entry');
+const deepEntry=Object.assign(document.createElement('label'),{innerHTML:'<input type="checkbox"> วางจุดเข้าลึกเข้าไปในอาคารได้ (หรือกด Shift ขณะลาก)'});deepEntry.style.cssText='gap:6px;font-size:12px;margin:4px 0';const deepBox=deepEntry.querySelector('input');Object.defineProperty(deepEntry,'checked',{get:()=>deepBox.checked});selectMode.after(deepEntry);deepEntry.hidden=true;selectMode.addEventListener('change',()=>deepEntry.hidden=!editing||mode!=='entry');
 function edgeOf(o){const a=center(o),d=entry(o),b=boundary(o,d);return canonical(o,a.u+b.du,a.v+b.dv)}
 function deepOwner(p){return locations.find(o=>o.entry?.deep&&Math.hypot(entry(o).u-p.u,entry(o).v-p.v)<.6)}
 const baseFind=findPath;findPath=function(start,end){const to=deepOwner(end),from=deepOwner(start);
@@ -85,4 +85,13 @@ function overlay(g,t){if(!editing)return;for(const o of locations){const d=entry
 window.TownUX={update,ground,overlay,labelPoint,art,hitObject,requestEntry,snapshot,apply,validate,getMode:()=>mode,setMode:m=>{mode=selectMode.value=m;updateHelp()},getDust:()=>dust.map(x=>({...x})),getCamera:()=>({follow,cam}),getPending:()=>pending?.id,manualize,getRoadHandles:roadHandles,checkpoint,persist,heroOnTop:()=>blockedBase(hero.u,hero.v)};
 try{const s=JSON.parse(localStorage.getItem(STORE)||'null');if(s)apply(s);else if(window.VillageDefaultLayout)apply(window.VillageDefaultLayout);else rebuildRoads()}catch(e){console.warn('Village layout:',e.message);manual=null;links=[];rebuildRoads()}
 heroRestore();focusHero();updateHelp();
+if(EDIT_PAGE){const hide=['menuBtn','activities','townGameHud'];for(const id of hide){const e=$(id);if(e)e.style.display='none'}document.querySelector('.toolbar')?.style.setProperty('display','none');cameraButton.remove();
+ const test=document.createElement('button');test.id='townTestWalk';test.textContent='▶ ทดสอบเดิน (ตัวเอก + NPC)';test.style.cssText='width:100%;margin:0 0 8px;background:#536c3d;border-color:#d2d5a1';
+ $('toolsPanel').prepend(test);const head=document.createElement('p');head.textContent='โหมดแก้ไขหมู่บ้าน · ลากพื้นเพื่อเลื่อนมุมมอง · ล้อเมาส์ซูม (25–500%)';head.style.cssText='margin:0 0 8px;font-size:12px;color:#d5ddc6';$('toolsPanel').prepend(head);
+ test.onclick=()=>{testWalk=!testWalk;test.textContent=testWalk?'■ หยุดทดสอบ กลับไปแก้ไข':'▶ ทดสอบเดิน (ตัวเอก + NPC)';if(testWalk===editing)$('edit').click();if(testWalk){heroRestore();follow=false;$('status').textContent='ทดสอบเดิน · คลิกถนนหรือสถานที่เพื่อเดิน · NPC เดินตามปกติ'}else{path=[];destination=null;$('status').textContent='โหมดแก้ไข'}};
+ $('toolsPanel').hidden=false;if(!editing)$('edit').click();follow=false;cam=null;setTimeout(()=>{$('fit').click();follow=false},300);
+ // no camera follow and no service pop-ups unless testing
+ const baseUpdate=update;update=function(dt,t){if(!testWalk){follow=false;return}baseUpdate(dt,t)};window.TownUX.update=update;
+ const baseRequest=requestEntry;window.TownUX.requestEntry=o=>{if(testWalk)baseRequest(o)};
+}
 })();

@@ -32,7 +32,8 @@ const canonDelta=(b,dx,dy)=>{if(b?.mirror)dx=-dx;return{du:(dx/28+dy/14)/2,dv:(d
 /* ---------- wrap each drawable with its edit (offset, scale, rotation, flip, swap, layer, hide) ---------- */
 function entry(key,owner,ax,ay,draw,src,label){const ov=data.edit[key]||{},b=baseOf(owner),d=screenDelta(b,ov.du||0,ov.dv||0),E={key,owner,ax,ay,x:ax+d.x,y:ay+d.y,ov,label,hidden:!!ov.hide};frame.push(E);if(ov.hide)return null;
  const s=ov.s??1,r=(ov.r||0)*Math.PI/180,f=!!ov.f,k=ov.kind&&KINDS[ov.kind]?ov.kind:null,plain=!d.x&&!d.y&&s===1&&!r&&!f&&!k;
- const it={x:E.x,y:E.y+(ov.layer||0),draw:plain?draw:gg=>{g.save();g.translate(E.x,E.y);if(r)g.rotate(r);g.scale(f?-s:s,s);g.translate(-ax,-ay);if(k)KINDS[k].draw({x:ax,y:ay});else draw(gg);g.restore()}};
+ const inner=plain?draw:gg=>{g.save();g.translate(E.x,E.y);if(r)g.rotate(r);g.scale(f?-s:s,s);g.translate(-ax,-ay);if(k)KINDS[k].draw({x:ax,y:ay});else draw(gg);g.restore()};
+ const it={x:E.x,y:E.y+(ov.layer||0),draw:gg=>{if(active()&&(hoverKey===key||sel?.type==='item'&&sel.key===key))outlineDraw(inner);inner(gg)}};
  if(src?.owner){it.owner=src.owner;if(src.rel)it.rel={u:src.rel.u+(ov.du||0),v:src.rel.v+(ov.dv||0)}}return it}
 function addedItems(gates){const out=[];for(const a of data.added){if(a.owner.startsWith('exit:')!==gates)continue;const b=baseOf(a.owner);if(!b||!KINDS[a.kind])continue;const p=toScreen(b,a.du,a.dv),it=entry(a.id,a.owner,p.x,p.y,()=>KINDS[a.kind].draw(p),null,KINDS[a.kind].label+' (เพิ่มเอง)');if(it)out.push(it)}return out}
 const LABEL_HINT=[['propSprite(7','ต้นไม้'],['lamp(','โคมไฟ'],["decor('bench'",'ม้านั่ง'],['drawBorder','รั้ว/แนวพุ่ม'],['bush(','พุ่มไม้'],['TownArt.detail','ดอกไม้'],['propSprite(3','กระถาง'],['propSprite(6','ลังไม้']];
@@ -46,6 +47,10 @@ estateObjects=function(){frame=[];const list=baseEstate(),sq=locations.find(o=>o
 const TM=window.TownMenu,baseGates=TM.gateObjects;
 TM.gateObjects=function(){const out=[];baseGates().forEach((it,i)=>{const e=entry('exit:'+i,'exit:'+i,it.x,it.y,it.draw,null,'ประตู '+(Village25D.getExits()[i]?.name||''));if(e)out.push(e)});return out.concat(addedItems(true))};
 
+// thin white outline for the hovered / selected item: draw it once off-screen, turn it white, stamp it around the item
+let hoverKey=null,outlineCv=null;
+function outlineDraw(inner){const main=g,W=main.canvas.width,H=main.canvas.height;if(!outlineCv)outlineCv=document.createElement('canvas');if(outlineCv.width!==W||outlineCv.height!==H){outlineCv.width=W;outlineCv.height=H}const o=outlineCv.getContext('2d');o.setTransform(1,0,0,1,0,0);o.clearRect(0,0,W,H);o.setTransform(main.getTransform());g=o;try{inner(o)}catch(e){}finally{g=main}
+ o.setTransform(1,0,0,1,0,0);o.globalCompositeOperation='source-in';o.fillStyle='#fff';o.fillRect(0,0,W,H);o.globalCompositeOperation='source-over';main.save();main.setTransform(1,0,0,1,0,0);main.globalAlpha=.95;const d=Math.max(1.5,devicePixelRatio*1.3);for(const[dx,dy]of[[d,0],[-d,0],[0,d],[0,-d],[d*.7,d*.7],[-d*.7,d*.7],[d*.7,-d*.7],[-d*.7,-d*.7]])main.drawImage(outlineCv,dx,dy);main.restore()}
 /* ---------- big building art: scale + shear (tilt) around its footprint centre ---------- */
 const anchorOf=o=>{const a=center(o);return project(a.u,a.v)};
 const baseBuilding=building;
@@ -63,6 +68,7 @@ const stageEl=document.getElementById('stage');
 stageEl.addEventListener('pointerdown',e=>{if(!active()||e.button!==0)return;const p=world(e),hit=pick(p);
  if(hit){e.stopPropagation();e.preventDefault();sel={type:'item',key:hit.key,owner:hit.owner};const ov=data.edit[hit.key]||{};drag={id:e.pointerId,p,du:ov.du||0,dv:ov.dv||0,moved:false};render();return}
  const o=UX.hitObject(p);if(o){e.stopPropagation();e.preventDefault();sel={type:'building',id:o.id,owner:o.id};selected=o.id;const t=data.buildings[o.id]||{};drag={id:e.pointerId,p,dx:t.dx||0,dy:t.dy||0,moved:false};render()}},true);
+stageEl.addEventListener('pointermove',e=>{if(!active()||drag){if(!active())hoverKey=null;return}const h=pick(world(e));hoverKey=h?.key||null;if(h)stageEl.style.cursor='pointer';else stageEl.style.cursor=''});
 window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;const p=world(e),dx=p.x-drag.p.x,dy=p.y-drag.p.y;if(!drag.moved&&Math.hypot(dx,dy)*scale*zoom<4)return;if(!drag.moved){drag.moved=true;begin()}
  if(sel?.type==='item'){const b=baseOf(sel.owner),c=canonDelta(b,dx,dy),ov=ovOf(sel.key);ov.du=+(drag.du+c.du).toFixed(3);ov.dv=+(drag.dv+c.dv).toFixed(3)}
  else if(sel?.type==='building'){const t=data.buildings[sel.id]||(data.buildings[sel.id]={});t.dx=Math.round(drag.dx+dx);t.dy=Math.round(drag.dy+dy)}},true);
