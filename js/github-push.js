@@ -44,7 +44,7 @@ function pushScreen(title){
   fail(err){clearInterval(timer);if(cur>=0){li[cur].className='bad';li[cur].querySelector('i').textContent='✕'}el.classList.add('fail');el.querySelector('.mark').textContent='✕';el.querySelector('h3').textContent='push ไม่สำเร็จ';el.querySelector('.sub').textContent=explain(err);btn.hidden=false},
   close}}
 function explain(e){const m=String(e?.message||e);if(e?.status===401)return'token ใช้ไม่ได้หรือหมดอายุ · กด ⬆ GitHub แล้วใส่ token ใหม่';if(e?.status===403||e?.status===404)return'token ไม่มีสิทธิ์เขียน repo นี้ (ต้องเป็น Contents: Read and write) · '+m;if(/Failed to fetch|NetworkError/i.test(m))return'ต่อ GitHub ไม่ได้ · เช็กอินเทอร์เน็ตแล้วลองใหม่';return m+' · งานยังอยู่ในเครื่องนี้ ลองกด push ใหม่ได้'}
-function extractSettingsForReview(text){try{const i=text.indexOf('window.GAME_SETTINGS='),a=text.indexOf('{',i),b=text.indexOf('\n};',a);return i<0||a<0||b<0?null:JSON.parse(text.slice(a,b+1))}catch(e){return null}}
+function extractSettingsForReview(text){try{const i=text.indexOf('window.GAME_SETTINGS='),a=text.indexOf('{',i),b=text.indexOf('\n};',a);return i<0||a<0||b<0?null:JSON.parse(text.slice(a,b+2))}catch(e){return null}}
 async function reviewBeforePush(message,files,head){
  let hostDoc=document;try{if(window.top&&window.top.document&&window.top.document.body)hostDoc=window.top.document}catch(e){}
  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
