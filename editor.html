@@ -44,7 +44,7 @@ const tabs=document.getElementById('tabs'),frames=document.getElementById('frame
 function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replaceState(null,'','#'+T.id);
  tabs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===T.id));note.textContent=T.note+' · ค่าที่แก้บันทึกในเบราว์เซอร์นี้ เกมเห็นเมื่อรีโหลด';
  for(let f of frames.children)f.hidden=f.dataset.id!==T.id;
- if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=T.src;f.title=T.name;frames.appendChild(f)}}
+ if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=T.src+(T.src.includes('?')?'&':'?')+'build='+encodeURIComponent((window.GAME_VERSION?.v||'')+'-'+Date.now().toString(36));f.title=T.name;frames.appendChild(f)}}
 tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}">${t.name}</button>`).join('');
 tabs.onclick=e=>{let b=e.target.closest('button');if(b)show(b.dataset.id)};
 document.getElementById('reload').onclick=()=>{let f=frames.querySelector(`[data-id="${cur}"]`);if(f)f.src=f.src};
