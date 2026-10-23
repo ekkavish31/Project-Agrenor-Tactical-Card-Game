@@ -10,57 +10,80 @@ function geometry(map,t,point,depth){const c=t.surfaceCorners,p=offsets.map(([x,
 for(const [dx,dy,a,b,na,nb]of edges){if(depth(t.x+dx*.5,t.y+dy*.5)<=depth(t.x,t.y))continue;const n=root.TacticsCore.at(map,t.x+dx,t.y+dy),nc=n&&!n.void?n.surfaceCorners:[base,base,base,base];if(c[a]>nc[na]+.001||c[b]>nc[nb]+.001){const f=[p[a],p[b],point(t.x+offsets[b][0],t.y+offsets[b][1],Math.min(c[b],nc[nb])),point(t.x+offsets[a][0],t.y+offsets[a][1],Math.min(c[a],nc[na]))];faces.push(f);meta.push({top:Math.max(c[a],c[b]),bot:Math.min(nc[na],nc[nb]),edge:!n||n.void,side:(f[1].x-f[0].x)*(f[1].y-f[0].y)>0?'R':'L'})}}
 return {p,faces,meta};}
 const GROUND_KIND={stairs:'stone',bridge:'stone',stone:'stone',rubble:'rubble',sand:'sand',ash:'ash',snow:'snow',thinsnow:'snow',ice:'ice',cave:'cave',crystal:'crystal-floor',rail:'rail',mud:'mud',shallow:'shallow',water:'water'},
- GROUND_TINT={stone:'#8f8a76',rubble:'#857c64',sand:'#d8c08a',ash:'#4a4038',snow:'#e8eef0',thinsnow:'#cfd8d2',ice:'#a8cfe0',cave:'#6b5843',crystal:'#4b3a6a',rail:'#55483a',mud:'#5a4630',shallow:'#5ea8a0',water:'#2f6f86'},ground={};
-for(const f of new Set(Object.values(GROUND_KIND))){const im=new Image();im.onload=()=>{caches=new WeakMap()};im.src=(document.currentScript?.src?new URL('../assets/tactics/ground/'+f+'.webp',document.currentScript.src).href:'assets/tactics/ground/'+f+'.webp');ground[f]=im}
+ GROUND_TINT={stone:'#8f8a76',rubble:'#857c64',sand:'#d8c08a',ash:'#4a4038',snow:'#e8eef0',thinsnow:'#cfd8d2',ice:'#a8cfe0',cave:'#6b5843',crystal:'#4b3a6a',rail:'#55483a',mud:'#5a4630',shallow:'#5ea8a0',water:'#2f6f86',grass:'#5d7a34',tallgrass:'#4f6a2c',path:'#9a8256'},ground={};
+const SCRIPT_SRC=document.currentScript?.src||'',asset=f=>SCRIPT_SRC?new URL('../'+f,SCRIPT_SRC).href:f;
+for(const f of ['crystal-floor','rail']){const im=new Image();im.onload=()=>{caches=new WeakMap()};im.src=asset('assets/tactics/ground/'+f+'.webp');ground[f]=im}
+// ---------- v83 AI terrain set (assets/terrain/ground|cliff|lip|decal): one texture per tile kind, re-skinned per area theme ----------
+const TEX={};function tex(dir,name){const k=dir+'/'+name;if(!TEX[k]){const im=new Image();im.onload=()=>{caches=new WeakMap()};im.src=asset('assets/terrain/'+k+'.webp');TEX[k]=im}return TEX[k]}
+const okImg=im=>im&&im.complete&&im.naturalWidth>0;
+const GROUND_SPAN=3; // one texture covers 3×3 tiles
+const TOP={grass:['grass-lush','grass-clover','grass-lush','grass-dry'],tallgrass:'grass-lush',path:['dirt','dirt','soil-dark'],mud:'mud-wet',sand:['sand-ripple','sand-coarse'],snow:['snow-deep','snow-trampled'],thinsnow:'snow-thin',stone:'stone-path',stairs:'stone-path',bridge:'planks',rubble:'scree',ash:'ash',cave:'cave-floor',ice:'ice-smooth',shallow:'shallow-pebbles',water:'water-deep'};
+const THEME_TOP={swamp:{grass:'moss',tallgrass:'grass-worn',path:'soil-dark',shallow:'swamp',water:'swamp'},crag:{grass:'grass-worn',path:'gravel',stone:'mountain-rock'},quarry:{stone:'mountain-rock',stairs:'slabs',path:'gravel',rubble:'scree'},ruins:{stone:'ruin-floor',stairs:'slabs',path:'slabs'},coast:{stone:'cobble',path:'sand-coarse'},frost:{ice:'ice-cracked',path:'snow-trampled',stone:'mountain-rock'},mine:{cave:'mine-floor',path:'mine-floor'}};
+const WALL_BY_KIND={snow:'snow-rock',thinsnow:'snow-rock',ice:'ice-wall',sand:'sandstone',ash:'basalt-columns',crystal:'crystal-vein',cave:'cave-wet',rail:'cave-wet'};
+const WALL_BY_THEME={forest:['granite-moss','granite-moss','ivy','granite'],swamp:'moss-heavy',crag:'granite',quarry:'granite',ruins:'ruin-wall',coast:'limestone',frost:'snow-rock',mine:'cave-wet'};
+const LIP={grass:'lip-grass',tallgrass:'lip-grass',snow:'lip-snow',thinsnow:'lip-snow',sand:'lip-sand'};
+function themeOf(map){const v=map&&map.variant;return THEME_TOP[v]||WALL_BY_THEME[v]?v:String(map&&map.theme||'forest').replace(/^fft-/,'')}
+function seedPick(map,list,salt){if(!Array.isArray(list))return list;let h=2166136261;for(const ch of String((map&&map.seed)||'')+salt)h=Math.imul(h^ch.charCodeAt(0),16777619);return list[(h>>>0)%list.length]}
+function topName(map,t){const k=t.route&&!['stairs','bridge'].includes(t.kind)?'path':t.kind,th=THEME_TOP[themeOf(map)]||{};return seedPick(map,th[k]||TOP[k],'top:'+k)}
+function topImg(map,t){if(t.kind==='crystal'||t.kind==='rail')return ground[GROUND_KIND[t.kind]];const n=topName(map,t);return n?tex('ground',n):null}
+const mirrored={};function wallImg(map,t){const k=t.route?'path':t.kind,n=WALL_BY_KIND[k]||seedPick(map,WALL_BY_THEME[themeOf(map)]||WALL_BY_THEME.forest,'wall'),im=tex('cliff',n);if(!okImg(im))return mats[2];
+ if(!mirrored[n]){const c=document.createElement('canvas');c.width=c.height=1024;const g=c.getContext('2d');for(let y=0;y<2;y++)for(let x=0;x<2;x++){g.save();g.translate(x?1024:0,y?1024:0);g.scale(x?-1:1,y?-1:1);g.drawImage(im,0,0,512,512);g.restore()}mirrored[n]=c}return mirrored[n]}
+function lipImg(map,t){if(t.route||t.kind==='path'||t.kind==='mud')return null;const n=themeOf(map)==='swamp'&&(t.kind==='grass'||t.kind==='tallgrass')?'lip-moss':LIP[t.kind];const im=n&&tex('lip',n);return okImg(im)?im:null}
+const DECALS={grass:['grass-tufts','grass-tufts','flowers','leaves','mushrooms'],tallgrass:['grass-tufts','mushrooms'],path:['pebbles','pebbles','cracks'],mud:['pebbles'],sand:['pebbles','cracks'],stone:['rubble','cracks','pebbles'],stairs:[],rubble:['rubble'],cave:['rubble','pebbles'],ash:['cracks','rubble'],crystal:['rubble']};
+const THEME_DECALS={swamp:{grass:['moss-patch','mushrooms','grass-tufts'],path:['moss-patch','pebbles']},crag:{grass:['grass-tufts','pebbles','rubble']},quarry:{path:['pebbles','rubble']},ruins:{stone:['moss-patch','cracks','rubble'],grass:['grass-tufts','rubble','flowers']}};
+function decal(g,map,t,p){if(t.cliff||t.ramp)return;const k=t.route?'path':t.kind;let list=(THEME_DECALS[themeOf(map)]||{})[k]||DECALS[k];if(t.flowers)list=['flowers'];if(!list||!list.length)return;
+ if(!t.flowers&&rnd(t.x,t.y,41)>.17)return;const im=tex('decal',list[Math.floor(rnd(t.x,t.y,42)*list.length)]);if(!okImg(im))return;
+ const sz=.42+.2*rnd(t.x,t.y,43),u0=.1+(.8-sz)*rnd(t.x,t.y,44),v0=.1+(.8-sz)*rnd(t.x,t.y,45),B=(u,v)=>{const a=mid(p[0],p[1],u),b=mid(p[3],p[2],u);return mid(a,b,v)};
+ const q=[B(u0,v0),B(u0+sz,v0),B(u0+sz,v0+sz),B(u0,v0+sz)],r=Math.floor(rnd(t.x,t.y,46)*4),qq=[0,1,2,3].map(i=>q[(i+r)%4]);texture(g,im,qq,0,0,im.naturalWidth,im.naturalHeight)}
 // ---------- v56 FFT style: grass lips, layered rock walls, contact shadows, blended ground patches, deep diorama base ----------
 const GROUP=k=>['grass','tallgrass'].includes(k)?'grass':['path','mud','stairs'].includes(k)?'earth':['shallow','water','ice'].includes(k)?'water':'stone';
 function rnd(x,y,i){let h=Math.imul(x*73856093^y*19349663^i*83492791,2654435761)>>>0;return (h%10000)/10000}
 const mid=(a,b,f=.5)=>({x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f});
-function fillTop(g,t,p){const gk=GROUND_KIND[t.kind],gi=gk&&ground[gk];if(t.kind!=='path'&&!t.route&&gi?.complete&&gi.naturalWidth){poly(g,p,GROUND_TINT[t.kind]||'#777');const n=gi.naturalWidth/4;texture(g,gi,p,(t.x&3)*n,(t.y&3)*n,n,n);return}
+function fillTop(g,t,p,map){const gi=topImg(map,t);if(okImg(gi)){let q=p;if(t.kind==='rail'&&t.railAxis==='y')q=[p[1],p[2],p[3],p[0]];poly(g,q,GROUND_TINT[t.kind]||'#777');const old=t.kind==='crystal'||t.kind==='rail',span=old?4:GROUND_SPAN,n=gi.naturalWidth/span,m=v=>((v%span)+span)%span;texture(g,gi,q,m(t.x)*n,m(t.y)*n,n,n);if(t.kind==='tallgrass')poly(g,p,'#2f4a1a40');return}
  const earth=t.route||['path','mud'].includes(t.kind),idx=earth?1:0;poly(g,p,earth?'#a8915e':'#6f8a44');if(mats[idx])texture(g,mats[idx],p,t.x%16*64,t.y%16*64,64,64);if(t.kind==='tallgrass')poly(g,p,'#3d5a1e55')}
 function paintFFT(g,t,p,faces,meta,map){const at=(x,y)=>root.TacticsCore.at(map,x,y),grp=GROUP(t.route?'path':t.kind);
  faces.forEach((f,i)=>{const m=meta[i]||{top:1,bot:0},lv=Math.max(.5,m.top-m.bot),topM=mid(f[0],f[1]),botM=mid(f[3],f[2]);
-  poly(g,f,'#6d6450');if(mats[2])texture(g,mats[2],f,(t.x*2+t.y)%6*128,(t.x+t.y*3)%4*96,128,Math.min(900,lv*120));
+  const wm=wallImg(map,t);poly(g,f,'#6d6450');if(wm)texture(g,wm,f,(t.x*2+t.y)%6*128,(t.x+t.y*3)%4*96,128,Math.min(900,lv*120));
   // strata: a darker seam with a lit lip at every level
   for(let k=1;k<lv;k++){const fr=k/lv,a=mid(f[0],f[3],fr),b=mid(f[1],f[2],fr);g.strokeStyle='rgba(38,28,18,.42)';g.lineWidth=1.3;g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke();g.strokeStyle='rgba(255,236,200,.10)';g.lineWidth=1;g.beginPath();g.moveTo(a.x,a.y-1.2);g.lineTo(b.x,b.y-1.2);g.stroke()}
   poly(g,f,m.side==='R'?'rgba(18,22,16,.34)':'rgba(255,240,210,.05)');
   // contact shadow at the foot (or fade into the dark plinth on the map edge)
   const gr=g.createLinearGradient(topM.x,topM.y,botM.x,botM.y);if(m.edge){gr.addColorStop(0,'rgba(8,10,8,0)');gr.addColorStop(.35,'rgba(8,10,8,.35)');gr.addColorStop(1,'rgba(6,8,6,.92)')}else{gr.addColorStop(0,'rgba(8,10,8,0)');gr.addColorStop(.6,'rgba(8,10,8,0)');gr.addColorStop(1,'rgba(8,10,8,.42)')}g.save();g.beginPath();f.forEach((q,j)=>j?g.lineTo(q.x,q.y):g.moveTo(q.x,q.y));g.closePath();g.fillStyle=gr;g.fill();g.restore();
   // lip: grass (or dirt) hangs over the top edge with a ragged bottom
-  if(grp==='grass'||grp==='earth'){const px=Math.hypot(botM.x-topM.x,botM.y-topM.y)/lv,n=9,band=[];for(let k=0;k<=n;k++){const a=mid(f[0],f[1],k/n);band.push(a)}for(let k=n;k>=0;k--){const a=mid(f[0],f[1],k/n),d=px*(.16+.26*rnd(t.x*13+i,t.y*7+k,3))*(k===0||k===n?.4:1);band.push({x:a.x+(botM.x-topM.x)/Math.hypot(botM.x-topM.x,botM.y-topM.y||1)*d*0,y:a.y+d})}
+  const li=lipImg(map,t);if(li){const px=Math.hypot(botM.x-topM.x,botM.y-topM.y)/lv,h=Math.min(px*.62,Math.hypot(botM.x-topM.x,botM.y-topM.y)),dn={x:0,y:h},lift=h*.12,q=[{x:f[0].x,y:f[0].y-lift},{x:f[1].x,y:f[1].y-lift},{x:f[1].x+dn.x,y:f[1].y+dn.y-lift},{x:f[0].x+dn.x,y:f[0].y+dn.y-lift}],sw=li.naturalHeight*2.6,u=rnd(t.x*13+i,t.y*7,5)*(li.naturalWidth-sw);texture(g,li,q,u,0,sw,li.naturalHeight)}
+  else if(grp==='grass'||grp==='earth'){const px=Math.hypot(botM.x-topM.x,botM.y-topM.y)/lv,n=9,band=[];for(let k=0;k<=n;k++){const a=mid(f[0],f[1],k/n);band.push(a)}for(let k=n;k>=0;k--){const a=mid(f[0],f[1],k/n),d=px*(.16+.26*rnd(t.x*13+i,t.y*7+k,3))*(k===0||k===n?.4:1);band.push({x:a.x+(botM.x-topM.x)/Math.hypot(botM.x-topM.x,botM.y-topM.y||1)*d*0,y:a.y+d})}
    g.save();g.beginPath();band.forEach((q,j)=>j?g.lineTo(q.x,q.y):g.moveTo(q.x,q.y));g.closePath();g.clip();const lipQuad=[f[0],f[1],{x:f[1].x,y:f[1].y+px},{x:f[0].x,y:f[0].y+px}];poly(g,lipQuad,grp==='grass'?'#5d7a34':'#9a8256');if(mats[grp==='grass'?0:1])texture(g,mats[grp==='grass'?0:1],lipQuad,t.x%16*64,t.y%16*64,64,40);poly(g,lipQuad,m.side==='R'?'rgba(20,30,10,.22)':'rgba(255,250,210,.06)');g.restore();
    g.strokeStyle=grp==='grass'?'rgba(32,50,14,.65)':'rgba(70,50,28,.6)';g.lineWidth=1.3;g.beginPath();band.slice(n+1).forEach((q,j)=>j?g.lineTo(q.x,q.y):g.moveTo(q.x,q.y));g.stroke()}
   g.strokeStyle='rgba(255,246,210,.28)';g.lineWidth=1;g.beginPath();g.moveTo(f[0].x,f[0].y);g.lineTo(f[1].x,f[1].y);g.stroke()});
  // top
- fillTop(g,t,p);
+ fillTop(g,t,p,map);
  if(t.kind==='shallow'){poly(g,p,'rgba(120,200,190,.18)');g.strokeStyle='rgba(220,245,235,.35)';g.lineWidth=.9;for(let k=0;k<2;k++){const a=mid(p[0],p[3],.3+.4*k),b=mid(p[1],p[2],.3+.4*k);g.beginPath();g.moveTo(a.x,a.y);g.quadraticCurveTo((a.x+b.x)/2,(a.y+b.y)/2-2,b.x,b.y);g.stroke()}}
  // organic patches: neighbouring ground of another kind (same height) bleeds in as rounded blobs — no hard tile seams
  const E=[[0,-1,0,1],[1,0,1,2],[0,1,2,3],[-1,0,3,0]];for(const [dx,dy,a,b] of E){const n=at(t.x+dx,t.y+dy);if(!n||n.void||n.cliff||Math.abs(n.h-t.h)>.01||GROUP(n.route?'path':n.kind)===grp||t.ramp||n.ramp)continue;
   const A=p[a],B=p[b],C0=mid(p[0],p[2]);g.save();g.beginPath();p.forEach((q,j)=>j?g.lineTo(q.x,q.y):g.moveTo(q.x,q.y));g.closePath();g.clip();g.beginPath();
   for(let k=0;k<3;k++){const along=mid(A,B,.18+.32*k+(rnd(t.x,t.y,k+dx*5+dy*9)-.5)*.12),inward=.08+.22*rnd(t.x+dx,t.y+dy,k),c=mid(along,C0,inward),r=Math.hypot(B.x-A.x,B.y-A.y)*(.13+.12*rnd(n.x,n.y,k));g.moveTo(c.x+r,c.y);g.ellipse(c.x,c.y,r,r*.55,0,0,Math.PI*2)}
-  g.clip();fillTop(g,n,p);g.restore()}
+  g.clip();fillTop(g,n,p,map);g.restore()}
+ decal(g,map,t,p);
  // terrace brightness: higher = a touch brighter (reads like FFT's lit plateaus)
  poly(g,p,t.h>0?`rgba(255,246,222,${Math.min(.16,.026*t.h)})`:'rgba(10,20,10,.06)');
  if(t.ramp==='steps'){let c=t.surfaceCorners,west=Math.abs(c[0]-c[1])>.01;for(let j=1;j<4;j++){let f=j/4,a=west?[0,1]:[0,3],b=west?[3,2]:[1,2];g.strokeStyle='rgba(60,46,30,.55)';g.lineWidth=1.2;g.beginPath();g.moveTo(p[a[0]].x*(1-f)+p[a[1]].x*f,p[a[0]].y*(1-f)+p[a[1]].y*f);g.lineTo(p[b[0]].x*(1-f)+p[b[1]].x*f,p[b[0]].y*(1-f)+p[b[1]].y*f);g.stroke()}}}
-function paint(g,t,p,faces){
-for(const f of faces){poly(g,f,'#817b64');if(mats[2])texture(g,mats[2],f,(t.x+t.y)%6*128,0,128,512);poly(g,f,'#17271b30');}
+function paint(g,t,p,faces,map){const wm=wallImg(map,t);
+for(const f of faces){poly(g,f,'#817b64');if(wm)texture(g,wm,f,(t.x+t.y)%6*128,0,128,512);poly(g,f,'#17271b30');}
 // FFT-style cliff tile: the whole top is an inclined rock face from the upper lip down to the ground, lit by its slope.
-if(t.cliff){const c=t.surfaceCorners,hi=Math.max(...c),lo=Math.min(...c);poly(g,p,'#7b735f');if(mats[2])texture(g,mats[2],p,(t.x*3+t.y)%6*128,96,128,320);
+if(t.cliff){const c=t.surfaceCorners,hi=Math.max(...c),lo=Math.min(...c);poly(g,p,'#7b735f');if(wm)texture(g,wm,p,(t.x*3+t.y)%6*128,96,128,320);
  const nx=(c[0]+c[3])-(c[1]+c[2]),ny=(c[0]+c[1])-(c[3]+c[2]),light=(-nx*.6-ny*.8)/Math.max(.01,Math.hypot(nx,ny));poly(g,p,light>0?`rgba(255,240,200,${.10*light})`:`rgba(10,18,14,${-.30*light})`);
  g.strokeStyle='#5d7a3acc';g.lineWidth=2.4;g.lineCap='round';for(let i=0;i<4;i++){const j=(i+1)%4;if(c[i]>lo+.5&&c[j]>lo+.5&&Math.abs(c[i]-hi)<.01&&Math.abs(c[j]-hi)<.01){g.beginPath();g.moveTo(p[i].x,p[i].y);g.lineTo(p[j].x,p[j].y);g.stroke()}}
  return}
 const water=t.kind==='water';
 // v52: every tile kind of every theme. Grass and dirt keep the painted hill atlas; the rest use the battle ground set.
-const gk=GROUND_KIND[t.kind],gi=gk&&ground[gk];
-if(gi?.complete&&gi.naturalWidth){let q=p;if(t.kind==='rail'&&t.railAxis==='y')q=[p[1],p[2],p[3],p[0]];poly(g,q,GROUND_TINT[t.kind]||'#777');const n=gi.naturalWidth/4;texture(g,gi,q,(t.x&3)*n,(t.y&3)*n,n,n);if(t.kind==='tallgrass')poly(g,p,'#2f4a1a40')}
-else{const earth=t.route||['path','mud'].includes(t.kind),idx=earth?1:0;poly(g,p,water?'#477f83':GROUND_TINT[t.kind]||(earth?'#baab78':'#7d8f4e'));if(!water&&mats[idx])texture(g,mats[idx],p,t.x%16*64,t.y%16*64,64,64);}
+if(!water||okImg(topImg(map,t)))fillTop(g,t,p,map);else poly(g,p,'#477f83');
 if(t.kind==='tallgrass')poly(g,p,'#536b2c30');if(t.kind==='mud')poly(g,p,'#57463355');
 if(water){poly(g,p,'#4a9b9b30');g.strokeStyle='#bdd6bd77';g.lineWidth=1;g.beginPath();g.moveTo((p[0].x+p[3].x)/2,(p[0].y+p[3].y)/2);g.lineTo((p[1].x+p[2].x)/2,(p[1].y+p[2].y)/2);g.stroke();}
 if(t.ramp==='steps'||t.bridge){let c=t.surfaceCorners,west=Math.abs(c[0]-c[1])>.01;for(let j=1;j<4;j++){let f=j/4,a=west?[0,1]:[0,3],b=west?[3,2]:[1,2];g.strokeStyle='#62594499';g.lineWidth=1;g.beginPath();g.moveTo(p[a[0]].x*(1-f)+p[a[1]].x*f,p[a[0]].y*(1-f)+p[a[1]].y*f);g.lineTo(p[b[0]].x*(1-f)+p[b[1]].x*f,p[b[0]].y*(1-f)+p[b[1]].y*f);g.stroke();}}
-if(t.flowers){for(let i=0;i<3;i++){let x=(p[0].x+p[2].x)/2+(i-1)*3,y=(p[0].y+p[2].y)/2;g.fillStyle=i===1?'#dcb474':'#d9d8bd';g.beginPath();g.arc(x,y-i%2*2,1.4,0,7);g.fill();}}
+decal(g,map,t,p);if(t.flowers&&!okImg(tex('decal','flowers'))){for(let i=0;i<3;i++){let x=(p[0].x+p[2].x)/2+(i-1)*3,y=(p[0].y+p[2].y)/2;g.fillStyle=i===1?'#dcb474':'#d9d8bd';g.beginPath();g.arc(x,y-i%2*2,1.4,0,7);g.fill();}}
 }
 function drawTile(ctx,map,t,point,depth){if(t.void)return;const anchor=point(t.x,t.y,0),local=(x,y,z)=>{let p=point(x,y,z);return {x:p.x-anchor.x,y:p.y-anchor.y}},geom=geometry(map,t,local,depth),fft=map.style==='fft',nsig=fft?[[0,-1],[1,0],[0,1],[-1,0]].map(([dx,dy])=>{const n=root.TacticsCore.at(map,t.x+dx,t.y+dy);return n?n.kind+n.h+(n.route?'r':''):'-'}).join():'',signature=JSON.stringify([geom,nsig,t.route,t.ramp,t.cliff,t.kind,t.bridge,t.flowers,mats.filter(Boolean).length],(k,v)=>typeof v==='number'?Math.round(v*10000)/10000:v);let cache=caches.get(map);if(!cache){cache=new Map();caches.set(map,cache)}let old=cache.get(t);
-if(!old||old.signature!==signature){if(old){old.img.width=old.img.height=1}const all=[...geom.p,...geom.faces.flat()],x=Math.floor(Math.min(...all.map(p=>p.x)))-2,y=Math.floor(Math.min(...all.map(p=>p.y)))-2,w=Math.ceil(Math.max(...all.map(p=>p.x))-x)+2,h=Math.ceil(Math.max(...all.map(p=>p.y))-y)+2,img=document.createElement('canvas');img.width=Math.max(1,w);img.height=Math.max(1,h);const g=img.getContext('2d');g.translate(-x,-y);if(fft)paintFFT(g,t,geom.p,geom.faces,geom.meta,map);else paint(g,t,geom.p,geom.faces);old={signature,img,x,y};cache.set(t,old)}ctx.drawImage(old.img,anchor.x+old.x,anchor.y+old.y);}
+if(!old||old.signature!==signature){if(old){old.img.width=old.img.height=1}const all=[...geom.p,...geom.faces.flat()],x=Math.floor(Math.min(...all.map(p=>p.x)))-2,y=Math.floor(Math.min(...all.map(p=>p.y)))-2,w=Math.ceil(Math.max(...all.map(p=>p.x))-x)+2,h=Math.ceil(Math.max(...all.map(p=>p.y))-y)+2,img=document.createElement('canvas');img.width=Math.max(1,w);img.height=Math.max(1,h);const g=img.getContext('2d');g.translate(-x,-y);if(fft)paintFFT(g,t,geom.p,geom.faces,geom.meta,map);else paint(g,t,geom.p,geom.faces,map);old={signature,img,x,y};cache.set(t,old)}ctx.drawImage(old.img,anchor.x+old.x,anchor.y+old.y);}
 const atlas=new Image();atlas.onload=()=>{for(let q=0;q<4;q++){const c=document.createElement('canvas');c.width=c.height=1024;const g=c.getContext('2d');for(let y=0;y<2;y++)for(let x=0;x<2;x++){g.save();g.translate(x?1024:0,y?1024:0);g.scale(x?-1:1,y?-1:1);g.drawImage(atlas,q%2*atlas.width/2,Math.floor(q/2)*atlas.height/2,atlas.width/2,atlas.height/2,0,0,512,512);g.restore()}const im=new Image();im.onload=()=>{mats[q]=im;caches=new WeakMap()};im.src=c.toDataURL('image/png');c.width=c.height=1}caches=new WeakMap()};atlas.src=document.currentScript?.src?new URL('../assets/terrain/hill-textures.jpg',document.currentScript.src).href:'assets/terrain/hill-textures.jpg';
 root.TacticsHillArt={drawTile,geometry,get ready(){return mats.filter(Boolean).length===4}};
 })(globalThis);
