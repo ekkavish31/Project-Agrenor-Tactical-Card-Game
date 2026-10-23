@@ -18,9 +18,12 @@ async function test(){const c=config();if(!c.token)throw new Error('ยังไ
 async function commit(message,build,onStatus=()=>{}){const c=config();if(!c.token)throw new Error('ยังไม่ได้ตั้งค่า GitHub token');
  for(let attempt=1;attempt<=3;attempt++){onStatus('กำลังอ่าน main ล่าสุด…');const ref=await json('/git/ref/heads/'+c.branch),head=ref.object.sha,base=await json('/git/commits/'+head);
   const files=await build({sha:head,read:p=>readText(p,head)});if(!files.length)return null;
+  // small change → bump the decimal of the game version (v80 → v80.1 → v80.2) and prefix the commit message with it
+  let ver='';try{const vf=await readText('js/game-version.js',head);if(vf){const m=vf.match(/v:'v(\d+)(?:\.(\d+))?'/);if(m){ver='v'+m[1]+'.'+((+m[2]||0)+1);files.push({path:'js/game-version.js',content:vf.replace(/v:'v[\d.]+'/,"v:'"+ver+"'").replace(/date:'[^']*'/,"date:'"+new Date().toISOString().slice(0,10)+"'")})}}}catch(e){}
+  const msg=ver?ver+': '+message:message;
   onStatus('กำลังอัปโหลด '+files.length+' ไฟล์…');const tree=[];for(const f of files){const blob=await json('/git/blobs',{method:'POST',body:JSON.stringify({content:await b64(f.content),encoding:'base64'})});tree.push({path:f.path,mode:'100644',type:'blob',sha:blob.sha})}
-  const t=await json('/git/trees',{method:'POST',body:JSON.stringify({base_tree:base.tree.sha,tree})}),cm=await json('/git/commits',{method:'POST',body:JSON.stringify({message,tree:t.sha,parents:[head]})});
-  try{await call('/git/refs/heads/'+c.branch,{method:'PATCH',body:JSON.stringify({sha:cm.sha,force:false})});onStatus('push แล้ว · '+cm.sha.slice(0,7));return cm.sha}
+  const t=await json('/git/trees',{method:'POST',body:JSON.stringify({base_tree:base.tree.sha,tree})}),cm=await json('/git/commits',{method:'POST',body:JSON.stringify({message:msg,tree:t.sha,parents:[head]})});
+  try{await call('/git/refs/heads/'+c.branch,{method:'PATCH',body:JSON.stringify({sha:cm.sha,force:false})});onStatus('push แล้ว · '+(ver||cm.sha.slice(0,7)));return ver||cm.sha.slice(0,7)}
   catch(e){if(e.status!==422||attempt===3)throw e;onStatus('main เพิ่งมีงานใหม่ · รวมใหม่แล้วลองอีกครั้ง…')}}}
 // same rules as tools/apply-asset-patch.py
 function assetKeys(list){const seen={};return list.map(a=>{const k=a.id+'|'+a.file;seen[k]=(seen[k]||0)+1;return k+'#'+(seen[k]-1)})}
