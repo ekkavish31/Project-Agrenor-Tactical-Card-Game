@@ -124,6 +124,7 @@ let lastActive=false;(function tick(){const a=active();if(a!==lastActive){lastAc
 if(window.GitHubPush){const tools=document.getElementById('toolsPanel'),row=document.createElement('div');row.className='edit-row';row.style.marginTop='6px';
  const push=document.createElement('button');push.textContent='⬆ บันทึกผังขึ้นเกม (GitHub)';push.title='เขียนผังปัจจุบันเป็นผังเริ่มต้นของเกม (js/village-layout-v67.js) แล้ว push ขึ้น repo';
  row.append(push,GitHubPush.settingsButton());(document.getElementById('reset')||tools.lastChild).after(row);
+ window.VillageLayoutPush=()=>push.click();
  push.onclick=async()=>{if(!GitHubPush.config().token){GitHubPush.openSettings();return}const st=document.getElementById('status');push.disabled=true;
   try{const snap=UX.snapshot(),body='// Village default layout — saved from the in-game editor '+new Date().toISOString()+'.\nwindow.VillageDefaultLayout='+JSON.stringify(snap,null,2)+';\n';
    const sha=await GitHubPush.commit('Village layout from editor ('+Object.keys(snap.places).length+' places'+(snap.assets?' + asset edits':'')+')',async()=>[{path:'js/village-layout-v67.js',content:body}],m=>st.textContent=m);

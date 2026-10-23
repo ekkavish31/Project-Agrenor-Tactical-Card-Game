@@ -34,8 +34,7 @@ iframe[hidden]{display:none}
 // Editor shell: every tool runs in its own frame; the game opens in "editor mode" (no play-save writes).
 // All tools share this browser's storage with the game — reload the game to see changes.
 const TABS=[
- {id:'enemyAnimations',name:'🐾 แอนิเมชันมอนสเตอร์',src:'dev/animation-gallery.html',note:'ท่าเดินและแอ็กชันจริง · แยกหน้า/หลัง · เล่นช้าและตรวจเฟรม'},
- {id:'assets',name:'🖼 ภาพ (Asset Studio)',src:'asset-studio.html',note:'จัดการภาพทั้งหมด · ส่งคำขอเจนเป็นชุด · นำเข้า frame sheet แล้วตัดภาพอัตโนมัติ'},
+ {id:'assets',name:'🖼 ภาพ (Asset Studio)',src:'asset-studio.html',note:'จัดการภาพทั้งหมด · แอนิเมชันตัวละคร/มอนสเตอร์ทุกท่าทุกทิศ · ส่งคำขอเจนเป็นชุด · นำเข้า frame sheet แล้วตัดภาพอัตโนมัติ · บันทึกแล้ว push ขึ้นเกมได้'},
  {id:'cards',name:'🃏 การ์ด',src:'index.html?editor=cards',note:'โต๊ะออกแบบการ์ด 9 ประเภท · ส่งออก ZIP เพื่อใส่เกมถาวร · ปุ่ม "ทดลองในเกม" ใช้ค่าจากที่นี่ในเกมทันที'},
  {id:'map',name:'🗺 แผนที่หมู่บ้าน & ถนน',src:'index.html?editor=map',note:'ลากหมุดสถานที่ · วาดถนน/เส้นโค้ง · ความเร็ววิ่ง'},
  {id:'battle',name:'⚔ สนามต่อสู้',src:'index.html?editor=battle',note:'สนามทดลอง · ✋ จุดมืออาวุธ · ✨ ทดสอบเอฟเฟกต์ · สร้างสนามด้วย Seed'},
@@ -49,7 +48,7 @@ function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replac
 tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}">${t.name}</button>`).join('');
 tabs.onclick=e=>{let b=e.target.closest('button');if(b)show(b.dataset.id)};
 document.getElementById('reload').onclick=()=>{let f=frames.querySelector(`[data-id="${cur}"]`);if(f)f.src=f.src};
-show(location.hash.slice(1)||'cards');
+show(TABS.some(t=>t.id===location.hash.slice(1))?location.hash.slice(1):'assets');
 window.addEventListener('message',e=>{let d=e.data||{};if(d.editorTab){let f=frames.querySelector(`[data-id="${d.editorTab}"]`);if(f&&d.reload)f.src=f.src;show(d.editorTab)}});
 </script>
 </body>

@@ -668,6 +668,6 @@ const APPLIED=applyToGame();
 window.addEventListener('load',()=>{if(APPLIED&&!window.EDITOR_MODE){let el=document.getElementById('saveStatus');if(el)el.insertAdjacentHTML('afterend',`<span class="try-badge" title="ปิดได้ที่ Editor → การ์ด → ปุ่ม ทดลองในเกม">▶ ทดลองค่าจากโต๊ะการ์ด (${APPLIED} ใบ)</span>`)}});
 function cardById(id){if(!store)load();return store.cards[id]||null}
 function renderCard(id,opt={}){let c=cardById(id);return c?cardHTML(c,store,opt):''}
-window.CardStudio={open,close,cardHTML,fit,bindTips,ELEMENTS,BUILTIN,cardById,renderCard,design:()=>{if(!store)load();return design()}};
+window.CardStudio={exportFiles:()=>{if(!store)load();return exportAllFiles()},open,close,cardHTML,fit,bindTips,ELEMENTS,BUILTIN,cardById,renderCard,design:()=>{if(!store)load();return design()}};
 if(typeof openPanel==='function'){const base=openPanel;window.__baseOpenPanel=base;openPanel=function(w){if(w==='editor'){if(typeof busy!=='undefined'&&busy)return;open();return}close();return base(w)}}
 })();
