@@ -11,7 +11,7 @@
  }
 
  const names={idle:'ยืน / หายใจ',walk:'เดิน',run:'วิ่ง',windup:'เตรียมโจมตี',strike:'โจมตี',attack:'โจมตี',guard:'ป้องกัน',hit:'ถูกโจมตี',down:'ล้ม / ตาย',cast:'ร่ายเวท',special:'ท่าพิเศษ'};
- const dirs=['S','SW','W','NW','N','NE','E','SE','FRONT','TOP','—'];
+ const dirs=['SW','NW','NE','SE','S','W','N','E','FRONT','TOP','—'];
  const pretty=a=>names[a]||a.replace(/^daily\./,'ชีวิตประจำวัน · ').replace(/^sword\./,'ดาบ · ').replace(/^hammer\./,'ค้อน · ').replace(/^unarmed\./,'มือเปล่า · ');
  function clipsFor(manifest){
   window.StudioWalks?.apply(runtime.tactics,manifest);
