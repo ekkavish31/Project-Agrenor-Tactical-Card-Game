@@ -39,7 +39,7 @@ const TABS=[
  {id:'map',name:'🗺 แผนที่หมู่บ้าน & ถนน',src:'index.html?editor=map',note:'ลากหมุดสถานที่ · วาดถนน/เส้นโค้ง · ความเร็ววิ่ง'},
  {id:'battle',name:'⚔ สนามต่อสู้',src:'battleground.html',note:'Battleground Editor · วาดชิ้นภูมิประเทศ (ความสูง พื้น ของ) ที่ตัวสุ่มแผนที่จะหยิบไปวางตามพื้นที่ · โอกาสกลางคืนต่อพื้นที่ · ลองเล่นได้ทันที · เครื่องมือเดิม (จุดมืออาวุธ/เอฟเฟกต์/Seed) อยู่ในปุ่มด้านซ้าย'},
  {id:'menu',name:'🎛 ไอคอนเมนู',src:'index.html?editor=menu',note:'เลือกภาพไอคอนให้ปุ่มเมนูขวาบนของเกม'},
- {id:'dev',name:'▧ จัดฉาก & layout',src:'index.html?editor=dev',note:'โหมดพัฒนา: ตำแหน่งตัวละคร ขนาด ชั้นภาพในฉาก'}];
+ {id:'places',name:'🏠 แผนที่ย่อย',src:'village-place.html?edit=1&place=forge',note:'ตลาด · โรงตีเหล็ก · บ้าน แบบ 2.5D เดินได้ · ลากจุดทำงาน/ของประดับ · ผูกกิจกรรมกับจุดทำงาน · เปลี่ยนภาพ ขนาด พื้น ผนัง · push ขึ้นเกม'}];
 const tabs=document.getElementById('tabs'),frames=document.getElementById('frames'),note=document.getElementById('note');let cur=null;
 function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replaceState(null,'','#'+T.id);
  tabs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===T.id));note.textContent=T.note+' · ค่าที่แก้บันทึกในเบราว์เซอร์นี้ เกมเห็นเมื่อรีโหลด';
