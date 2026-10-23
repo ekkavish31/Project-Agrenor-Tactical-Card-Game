@@ -165,6 +165,11 @@ function makePlaza(){const sq=locations.find(o=>o.id==='square');if(!sq)return n
 const ROAD={main:{curb:236,pave:220,walk:198},lane:{curb:146,pave:132,walk:112}};
 // v68: road brush shape. 'square' = grid-aligned rounded rectangles per segment (corners meet cleanly), 'round' = the old round brush.
 let ROAD_SHAPE=(()=>{try{return localStorage.getItem('projectA.roadShape')||'square'}catch(e){return 'square'}})();
+let ROAD_BLEND=(()=>{try{const v=+localStorage.getItem('projectA.roadBlend');return Number.isFinite(v)&&localStorage.getItem('projectA.roadBlend')!==null?Math.max(0,Math.min(60,v)):24}catch(e){return 24}})();
+function setRoadBlend(v){ROAD_BLEND=Math.max(0,Math.min(60,+v||0));try{localStorage.setItem('projectA.roadBlend',ROAD_BLEND)}catch(e){}terrainDirty=true}
+// which road reaches each place's gate → its courtyard uses that road's paving ('main' brick or 'lane' cobble)
+function courtKinds(){const out={};for(const o of locations){const e=estate(o);if(!e)continue;const gp=project(gate(o).u,gate(o).v);let best='lane',bd=Infinity;roadLines.forEach((L,i)=>{const kind=roadKinds[i]||'main';if(kind==='exit')return;for(const p of L){const d=Math.hypot(p.x-gp.x,(p.y-gp.y)*2);if(d<bd){bd=d;best=kind}}});out[o.id]=bd<160?best:'lane'}return out}
+function courtLineOf(o){const a=door(o),b=gate(o);if(clearSegment(a,b,blockedBase))return[project(a.u,a.v),project(b.u,b.v)];const p=route(a,b,blockedBase);return p.length?p.map(q=>project(q.u,q.v)):null}
 function roundPoly(p,c,r){const n=c.length,s=[(c[n-1][0]+c[0][0])/2,(c[n-1][1]+c[0][1])/2];p.moveTo(s[0],s[1]);for(let i=0;i<n;i++){const a=c[i],b=c[(i+1)%n];p.arcTo(a[0],a[1],b[0],b[1],r)}p.closePath()}
 const roadRectCache=new WeakMap();
 function roadRects(lines,width){let m=roadRectCache.get(lines);if(!m)roadRectCache.set(lines,m=new Map());if(m.has(width))return m.get(width);const p=new Path2D(),h=width/2,r=Math.min(h*.42,34);
@@ -233,8 +238,27 @@ function drawTerrain(){
  g.restore();
  // v68: the paving sits a step below the plots — a stone face shows along the far edge of every road, with a thin shadow under it.
  // Built on a scratch layer: paving mask in the face colour, then the paving itself shifted down and clipped to the mask.
- {const S=sunkLayer||(sunkLayer=document.createElement('canvas'));S.width=WORLD_W;S.height=WORLD_H;const q=S.getContext('2d'),pave=(st,dy)=>{q.save();q.translate(0,dy);q.scale(1,.5);q.lineCap=q.lineJoin='round';const T=typeof st==='string'?{main:st,lane:st,plaza:st,court:st}:st;q.strokeStyle=q.fillStyle=T.main;paintRoad(q,roadMainLines,ROAD.main.pave);if(junctionPath)q.fill(junctionPath);q.strokeStyle=q.fillStyle=T.lane;paintRoad(q,roadLaneLines,ROAD.lane.pave);q.fillStyle=T.court;for(const o of locations)if(estate(o))q.fill(courtPath(o));q.fillStyle=T.plaza;if(plazaPath)q.fill(plazaPath);q.restore()};
-  pave('#8f826a',0);q.globalCompositeOperation='source-atop';pave('rgba(40,34,24,.55)',6);{const P=id=>TownArt.pattern(q,id)||TownArt.pattern(q,'paving')||'#c9bca0';pave({main:P('paving'),lane:P('ground/cobble.png'),court:P('ground/cobble.png'),plaza:P('ground/plaza-slabs.png')},9)}g.drawImage(S,0,0);S.width=S.height=1}
+ // v38i: one paving layer. Surfaces fade into each other (ROAD_BLEND px) instead of meeting at hard seams, and each
+ // place's courtyard uses the texture of the road that reaches its gate.
+ {const S=sunkLayer||(sunkLayer=document.createElement('canvas'));S.width=WORLD_W;S.height=WORLD_H;const q=S.getContext('2d'),ck=courtKinds(),F=ROAD_BLEND,
+  laneOnly=roadLines.filter((_,i)=>roadKinds[i]==='lane'),courtsOf=k=>locations.filter(o=>estate(o)&&ck[o.id]===k),
+  groups={main:{lines:[[roadMainLines,ROAD.main.pave]],paths:[junctionPath],courts:courtsOf('main')},lane:{lines:[[laneOnly,ROAD.lane.pave]],paths:[],courts:courtsOf('lane')},plaza:{lines:[],paths:[plazaPath],courts:[]},exit:{lines:[[roadExitLines,ROAD.main.pave-10]],paths:[],courts:[]}},
+  shape=(c,G,grow=0)=>{c.lineCap=c.lineJoin='round';for(const[l,w]of G.lines)paintRoad(c,l,w+grow*2);for(const P of G.paths)if(P){c.fill(P);if(grow){c.lineWidth=grow*2;c.stroke(P)}}for(const o of G.courts){const P=courtPath(o);c.fill(P);if(grow){c.lineWidth=grow*2;c.stroke(P)}const L=courtLineOf(o);if(L)paintRoad(c,[L],ROAD.lane.pave+grow*2)}},
+  layer=(c,dy,fn)=>{c.save();c.translate(0,dy);c.scale(1,.5);fn();c.restore()},
+  union=(st,dy)=>layer(q,dy,()=>{q.strokeStyle=q.fillStyle=st;for(const k of['main','lane','plaza'])shape(q,groups[k])}),
+  P=id=>TownArt.pattern(q,id)||TownArt.pattern(q,'paving')||'#c9bca0',tex={main:P('paving'),lane:P('ground/cobble.png'),plaza:P('ground/plaza-slabs.png'),exit:TownArt.pattern(q,'ground/dirt-road.png')||'#8a6a44'};
+  union('#8f826a',0);q.globalCompositeOperation='source-atop';union('rgba(40,34,24,.55)',6);
+  if(F<=0){for(const k of['main','lane','plaza'])layer(q,9,()=>{q.strokeStyle=q.fillStyle=tex[k];shape(q,groups[k])})}
+  else{layer(q,9,()=>{q.fillStyle=tex.main;q.fillRect(0,0,WORLD_W,WORLD_H*2)});
+   // feathered overlay: grow the shape by F, blur by F/2 at half resolution, then paint the texture through that soft mask
+   const k=.5,M=document.createElement('canvas'),T=document.createElement('canvas'),L=document.createElement('canvas');M.width=T.width=WORLD_W*k;M.height=T.height=WORLD_H*k;L.width=WORLD_W;L.height=WORLD_H;const m=M.getContext('2d'),t=T.getContext('2d'),l=L.getContext('2d');
+   for(const key of['lane','plaza','exit']){const G=groups[key];if(!G.lines.some(([x])=>x.length)&&!G.paths.some(Boolean)&&!G.courts.length)continue;
+    t.setTransform(1,0,0,1,0,0);t.clearRect(0,0,T.width,T.height);t.setTransform(k,0,0,k,0,0);layer(t,9,()=>{t.strokeStyle=t.fillStyle='#fff';shape(t,G,F)});
+    m.setTransform(1,0,0,1,0,0);m.clearRect(0,0,M.width,M.height);m.filter=`blur(${F*k*.5}px)`;m.drawImage(T,0,0);m.filter='none';
+    l.globalCompositeOperation='source-over';l.clearRect(0,0,WORLD_W,WORLD_H);layer(l,9,()=>{l.fillStyle=tex[key];l.fillRect(0,0,WORLD_W,WORLD_H*2)});l.globalCompositeOperation='destination-in';l.drawImage(M,0,0,WORLD_W,WORLD_H);
+    q.globalAlpha=key==='exit'?.85:1;q.drawImage(L,0,0);q.globalAlpha=1}
+   M.width=T.width=L.width=1}
+  g.drawImage(S,0,0);S.width=S.height=1}
  window.TownMood?.shadows(g);
  window.VillageNature?.ground(g);
  if(showGrid){g.save();g.globalAlpha=.18;g.drawImage(roadMask,0,0);g.restore()}
@@ -301,7 +325,7 @@ document.querySelectorAll('[data-game]').forEach(b=>b.onclick=()=>sendGame('menu
 
 document.addEventListener('pointerdown',()=>sendGame('input'),{capture:true});document.addEventListener('keydown',()=>sendGame('input'),{capture:true});
 rebuildRoads();heroRestore();renderList();fit();new ResizeObserver(fit).observe(stage);parent.postMessage({source:'project-a-town',type:'ready'},'*');document.fonts.ready.then(()=>terrainDirty=true);requestAnimationFrame(draw);
-</script><script src="js/village-layout-v67.js"></script><script src="js/town-ux.js?v=72"></script><script src="js/town-menu.js?v=72"></script><script src="js/village-biomes.js?v=72"></script><script src="js/nature-alpha-masks.js"></script><script src="js/village-nature.js?v=72"></script><script src="js/town-npcs.js?v=73"></script><script src="js/game-mood.js?v=74"></script><script src="js/hd2d.js?v=74"></script><script src="js/town-mood.js?v=72"></script><script src="js/village-frontage.js?v=72"></script></html>
+</script><script src="js/village-layout-v67.js"></script><script src="js/town-ux.js?v=72"></script><script src="js/town-menu.js?v=72"></script><script src="js/village-biomes.js?v=72"></script><script src="js/nature-alpha-masks.js"></script><script src="js/village-nature.js?v=72"></script><script src="js/town-npcs.js?v=73"></script><script src="js/game-mood.js?v=74"></script><script src="js/hd2d.js?v=74"></script><script src="js/town-mood.js?v=72"></script><script src="js/village-frontage.js?v=72"></script><script src="js/village-asset-edit.js?v=1"></script></html>
 
 
 <!-- Art sources and prompts: docs/ASSET_NOTES.txt. PNG objects are used for all buildings and props; roads and floor are native editable geometry. -->
