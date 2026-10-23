@@ -2115,8 +2115,8 @@
     const snap = UX.snapshot(),
      body = '// Village default layout — saved from the in-game editor ' + new Date().toISOString() + '.\nwindow.VillageDefaultLayout=' + JSON.stringify(snap, null, 2) + ';\n';
     const sha = await GitHubPush.commit('Village layout from editor (' + Object.keys(snap.places).length + ' places' + (snap.assets ? ' + asset edits' : '') + ')', async head => {
-     const files=[{path:'js/village-layout-v67.js',content:body}],uploaded=localStorage.getItem(UPLOAD_KEY);
-     if(uploaded!==null){const settings=GitHubPush.parseSettings(await head.read('js/game-settings.js')||'')||{};settings[UPLOAD_KEY]=uploaded;files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
+     const files=[{path:'js/village-layout-v67.js',content:body}],uploaded=localStorage.getItem(UPLOAD_KEY),customPlaces=localStorage.getItem('project-a-village-custom-places-v1');
+     if(uploaded!==null||customPlaces!==null){const settings=GitHubPush.parseSettings(await head.read('js/game-settings.js')||'')||{};if(uploaded!==null)settings[UPLOAD_KEY]=uploaded;if(customPlaces!==null)settings['project-a-village-custom-places-v1']=customPlaces;files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
      return files
     }, m => st.textContent = m);
     st.textContent = sha ? '⬆ push ผังหมู่บ้านแล้ว · ' + sha : 'ไม่มีอะไรต้อง push'
