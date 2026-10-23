@@ -53448,9 +53448,9 @@
    "frames": {}
   },
   "[\"tactics.idle.se\",\"SE\",true,[[\"tactics-hero-se-idle\",\"assets/tactics/hero_se_idle.webp\",0,\"\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-10-23T03:48:11.772Z"
+   "approvedAt": "2026-10-23T03:48:21.965Z"
   },
   "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-se-idle-mvkfjsv5-mtb1-1\",\"assets/tactics/imported/idle-se-mvkfjsv5-mtb1/frame-01.png\",0,\"mvkfjsv5-mtb1\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-idle-mvkfjsv5-mtb1-2\",\"assets/tactics/imported/idle-se-mvkfjsv5-mtb1/frame-02.png\",0,\"mvkfjsv5-mtb1\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-idle-mvkfjsv5-mtb1-3\",\"assets/tactics/imported/idle-se-mvkfjsv5-mtb1/frame-03.png\",0,\"mvkfjsv5-mtb1\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-se-idle-mvkfjsv5-mtb1-4\",\"assets/tactics/imported/idle-se-mvkfjsv5-mtb1/frame-04.png\",0,\"mvkfjsv5-mtb1\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -53464,7 +53464,7 @@
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mvkfkutu-6pyn-1\",\"assets/tactics/imported/idle-sw-mvkfkutu-6pyn/frame-01.png\",0,\"mvkfkutu-6pyn\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvkfkutu-6pyn-2\",\"assets/tactics/imported/idle-sw-mvkfkutu-6pyn/frame-02.png\",0,\"mvkfkutu-6pyn\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvkfkutu-6pyn-3\",\"assets/tactics/imported/idle-sw-mvkfkutu-6pyn/frame-03.png\",0,\"mvkfkutu-6pyn\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvkfkutu-6pyn-4\",\"assets/tactics/imported/idle-sw-mvkfkutu-6pyn/frame-04.png\",0,\"mvkfkutu-6pyn\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-10-23T03:49:13.438Z"
+   "approvedAt": "2026-10-23T03:51:32.193Z"
   }
  },
  "studioPoses": {
@@ -53542,7 +53542,9 @@
   }
  },
  "studioPoseMirrors": {
-  "idle": {}
+  "idle": {
+   "SE": "SW"
+  }
  },
  "studioPoseHistory": {
   "idle:SE": [
@@ -53553,6 +53555,45 @@
    }
   ],
   "idle:SW": [
+   {
+    "at": "2026-10-23T03:51:32.181Z",
+    "config": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-10-23T03:49:13.362Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-sw-idle-mvkfkutu-6pyn-1",
+       "src": "assets/tactics/imported/idle-sw-mvkfkutu-6pyn/frame-01.png",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-sw-idle-mvkfkutu-6pyn-2",
+       "src": "assets/tactics/imported/idle-sw-mvkfkutu-6pyn/frame-02.png",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-sw-idle-mvkfkutu-6pyn-3",
+       "src": "assets/tactics/imported/idle-sw-mvkfkutu-6pyn/frame-03.png",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-sw-idle-mvkfkutu-6pyn-4",
+       "src": "assets/tactics/imported/idle-sw-mvkfkutu-6pyn/frame-04.png",
+       "ms": 360
+      }
+     ]
+    },
+    "mirror": null
+   },
    {
     "at": "2026-10-23T03:49:13.417Z",
     "config": null,
