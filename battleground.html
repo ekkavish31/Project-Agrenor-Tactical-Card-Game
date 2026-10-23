@@ -144,7 +144,7 @@ function checks(){const c=C(),at=(x,y)=>x<0||y<0||x>=c.w||y>=c.h?null:c.cells[y*
  $('warn').innerHTML=`ต่างระดับ 2 ขึ้นไป (กลายเป็นหน้าผาหิน): <b>${cliffs}</b> จุด · ${lost?`<b style="color:#f0a070">ช่องที่เดินขึ้นไม่ถึง ${lost} ช่อง</b> (ปีนได้ทีละ 1 ระดับ ต้องมีทางลาด)`:'เดินถึงทุกช่อง ✓'} · ตอนใช้จริงชิ้นนี้อาจถูกหมุน 0/90/180/270°`}
 
 /* ---------- push ---------- */
-$('pushBtn').onclick=async()=>{save();if(!GitHubPush.config().token){GitHubPush.openSettings();return}const b=$('pushBtn'),m=$('pushMsg');b.disabled=true;try{const sha=await GitHubPush.pushSettings([KEY],'Battleground',[],t=>m.textContent=t);m.textContent=sha?'⬆ push แล้ว · '+sha.slice(0,7):'ไม่มีค่าที่ต้อง push'}catch(e){m.textContent='push ไม่สำเร็จ: '+e.message}finally{b.disabled=false}};
+$('pushBtn').onclick=async()=>{save();if(!GitHubPush.config().token){GitHubPush.openSettings();return}const b=$('pushBtn'),m=$('pushMsg');b.disabled=true;try{const sha=await GitHubPush.pushSettings([KEY],'Battleground',[],t=>m.textContent=t);m.textContent=sha?'⬆ push แล้ว · '+sha:'ไม่มีค่าที่ต้อง push'}catch(e){m.textContent='push ไม่สำเร็จ: '+e.message}finally{b.disabled=false}};
 $('push').append(GitHubPush.settingsButton());
 
 load();if(!localStorage.getItem(KEY))save();toolButtons();renderSide();new ResizeObserver(fit).observe(cv);fit();

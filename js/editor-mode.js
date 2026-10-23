@@ -31,7 +31,7 @@ function pushBar(){if(!window.GitHubPush||!PUSH[mode])return;const bar=document.
  go.onclick=async()=>{if(!GitHubPush.config().token){GitHubPush.openSettings();return}go.disabled=true;const status=t=>msg.textContent=t;
   try{let extra=[];if(mode==='cards'){const map={'card-design.json':'data/card-design.json','card-design.js':'js/card-design.js'};extra=CardStudio.exportFiles().filter(f=>/^(card-design\.(json|js)|assets\/)/.test(f.name)).map(f=>({path:map[f.name]||f.name,content:f.data}))}
    if(mode==='map'&&window.frames.length){for(const f of document.querySelectorAll('iframe')){try{f.contentWindow.VillageLayoutPush?.()}catch(e){}}}
-   const sha=await GitHubPush.pushSettings(PUSH[mode].keys,PUSH[mode].label,extra,status);status(sha?'⬆ push แล้ว · '+sha.slice(0,7)+(mode==='map'?' · ผังหมู่บ้าน 2.5D push แยกในหน้าแผนที่':''):'ไม่มีค่าที่ต้อง push')}
+   const sha=await GitHubPush.pushSettings(PUSH[mode].keys,PUSH[mode].label,extra,status);status(sha?'⬆ push แล้ว · '+sha+(mode==='map'?' · ผังหมู่บ้าน 2.5D push แยกในหน้าแผนที่':''):'ไม่มีค่าที่ต้อง push')}
   catch(e){status('push ไม่สำเร็จ: '+e.message)}finally{go.disabled=false}}}
 window.addEventListener('load',()=>setTimeout(pushBar,400));
 window.addEventListener('load',()=>setTimeout(boot,350));

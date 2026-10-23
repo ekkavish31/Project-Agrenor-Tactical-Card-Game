@@ -128,7 +128,7 @@ if(window.GitHubPush){const tools=document.getElementById('toolsPanel'),row=docu
  push.onclick=async()=>{if(!GitHubPush.config().token){GitHubPush.openSettings();return}const st=document.getElementById('status');push.disabled=true;
   try{const snap=UX.snapshot(),body='// Village default layout — saved from the in-game editor '+new Date().toISOString()+'.\nwindow.VillageDefaultLayout='+JSON.stringify(snap,null,2)+';\n';
    const sha=await GitHubPush.commit('Village layout from editor ('+Object.keys(snap.places).length+' places'+(snap.assets?' + asset edits':'')+')',async()=>[{path:'js/village-layout-v67.js',content:body}],m=>st.textContent=m);
-   st.textContent=sha?'⬆ push ผังหมู่บ้านแล้ว · '+sha.slice(0,7):'ไม่มีอะไรต้อง push'}
+   st.textContent=sha?'⬆ push ผังหมู่บ้านแล้ว · '+sha:'ไม่มีอะไรต้อง push'}
   catch(e){st.textContent='push ไม่สำเร็จ: '+e.message}finally{push.disabled=false}}}
 
 window.VillageAssetEdit={get,set,artRect,kinds:()=>Object.keys(KINDS),getSelection:()=>sel&&{...sel}};
