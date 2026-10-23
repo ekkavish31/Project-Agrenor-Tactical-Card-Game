@@ -39,7 +39,7 @@ const DEFAULTS={
  home:{name:'บ้านของเรา',sub:'พักผ่อน จัดสำรับ และฝากของ',floor:{w:6,d:5,tex:'plank',walls:true},exit:{u:0,v:4.6},
   stations:[{id:'bed',name:'เตียง',actions:['sleep','bed'],u:-3.6,v:-2.6,w:1.2,d:1.8,door:{du:1.8,dv:1},art:'code:bed',width:150},{id:'chest',name:'หีบเก็บของ',actions:['chest'],u:1,v:-3.8,w:.9,d:.6,door:{du:0,dv:1.5},art:'code:chest',width:90},{id:'table',name:'โต๊ะจัดสำรับ',actions:['deck'],u:3.2,v:0,w:1,d:1,door:{du:-1.7,dv:0},art:'code:table',width:120},{id:'hearth',name:'เตาผิง',actions:['meal','rest'],u:-1.6,v:-3.9,w:1.1,d:.6,door:{du:0,dv:1.6},art:'code:hearth',width:130}],
   props:[{art:'decor:flower-box',u:3.8,v:-3.8,s:.8},{art:'code:crate',u:-4.6,v:2.6,s:.8}]}};
-const copy=x=>JSON.parse(JSON.stringify(x));
+const copy=x=>JSON.parse(JSON.stringify(x)),HERO_SCALE=(()=>{try{return+JSON.parse(localStorage.getItem('project-a-village-editor-v67')||'{}').assets?.chars?.hero||1}catch(e){return 1}})();
 function loadAll(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){return{}}}
 let all=loadAll(),M=copy(all[PLACE]||DEFAULTS[PLACE]);
 function persist(){all=loadAll();all[PLACE]=M;try{localStorage.setItem(KEY,JSON.stringify(all))}catch(e){}}
@@ -103,7 +103,7 @@ function draw(t){requestAnimationFrame(draw);if(!active||document.hidden){last=t
  const hp=project(hero.u,hero.v);TownArt.begin(g,hp);hits=[];const objects=[];
  M.stations.forEach((s,i)=>{const p=project(s.u,s.v);hits.push({type:'station',i,r:artRect(s.art,s.u,s.v,s.width||120,s.s||1)});objects.push({y:p.y,draw:()=>drawArt(s.art,s.u,s.v,s.width||120,s.s||1,s.f,t,hp)})});
  M.props.forEach((o,i)=>{const p=project(o.u,o.v);hits.push({type:'prop',i,r:artRect(o.art,o.u,o.v,o.width||110,o.s||1)});objects.push({y:p.y,draw:()=>drawArt(o.art,o.u,o.v,o.width||110,o.s||1,o.f,t,hp)})});
- objects.push({y:hp.y,draw:()=>{g.fillStyle='#182b2866';g.beginPath();g.ellipse(hp.x,hp.y,13,6,0,0,7);g.fill();TownArt.hero(g,hp,hero.dir,t,path.length>0,80)}});objects.sort((a,b)=>a.y-b.y).forEach(o=>o.draw());
+ objects.push({y:hp.y,draw:()=>{g.fillStyle='#182b2866';g.beginPath();g.ellipse(hp.x,hp.y,13,6,0,0,7);g.fill();TownArt.hero(g,hp,hero.dir,t,path.length>0,80*HERO_SCALE)}});objects.sort((a,b)=>a.y-b.y).forEach(o=>o.draw());
  if(work&&t<work.until){const s=M.stations[work.i];if(s){const p=project(s.u,s.v,60);for(let k=0;k<6;k++){const a=(t/90+k*1.1)%6.28,r=20+((t/7+k*37)%40);g.fillStyle=`rgba(255,${180+k*10},90,${.8-r/70})`;g.beginPath();g.arc(p.x+Math.cos(a)*r,p.y-Math.abs(Math.sin(a))*r,3,0,7);g.fill()}}}
  // labels + doors
  for(const s of M.stations){const d=door(s),p=project(d.u,d.v);g.font='13px TownThai,system-ui';g.textAlign='center';const w=g.measureText(s.name).width+22;g.fillStyle='#233a2ee0';g.fillRect(p.x-w/2,p.y+14,w,26);g.fillStyle='#f6e8bd';g.fillText(s.name,p.x,p.y+32);if(editing){g.fillStyle='#57c4c9';g.beginPath();g.arc(p.x,p.y,6,0,7);g.fill()}}

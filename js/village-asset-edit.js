@@ -4,10 +4,10 @@
    Data: edit[key] = {du,dv,s,r,f,layer,kind,hide} · added[] = {id,owner,du,dv,kind} · buildings[id] = {sx,sy,kx,ky,dx,dy} */
 (function(){'use strict';
 const STORE='project-a-village-editor-v67',UX=window.TownUX,copy=x=>JSON.parse(JSON.stringify(x)),num=(v,a,b,d)=>Math.max(a,Math.min(b,Number.isFinite(+v)?+v:d));
-let data={edit:{},added:[],buildings:{}},sel=null,frame=[],drag=null,ckPending=false,guides=true;
-const empty=()=>({edit:{},added:[],buildings:{}});
-function set(v){data=empty();if(v&&typeof v==='object'){if(v.edit&&typeof v.edit==='object')data.edit=copy(v.edit);if(Array.isArray(v.added))data.added=copy(v.added).filter(a=>a&&a.id&&a.owner&&a.kind);if(v.buildings&&typeof v.buildings==='object')data.buildings=copy(v.buildings)}if(sel&&sel.type==='item'&&!data.edit[sel.key]&&!data.added.some(a=>a.id===sel.key)&&!frame.some(e=>e.key===sel.key))sel=null;render()}
-function get(){const out={};if(Object.keys(data.edit).length)out.edit=copy(data.edit);if(data.added.length)out.added=copy(data.added);if(Object.keys(data.buildings).length)out.buildings=copy(data.buildings);return Object.keys(out).length?out:undefined}
+let data={edit:{},added:[],buildings:{},chars:{}},sel=null,frame=[],drag=null,ckPending=false,guides=true;
+const empty=()=>({edit:{},added:[],buildings:{},chars:{}});
+function set(v){data=empty();if(v&&typeof v==='object'){if(v.edit&&typeof v.edit==='object')data.edit=copy(v.edit);if(Array.isArray(v.added))data.added=copy(v.added).filter(a=>a&&a.id&&a.owner&&a.kind);if(v.buildings&&typeof v.buildings==='object')data.buildings=copy(v.buildings);if(v.chars&&typeof v.chars==='object')data.chars=copy(v.chars)}if(sel&&sel.type==='item'&&!data.edit[sel.key]&&!data.added.some(a=>a.id===sel.key)&&!frame.some(e=>e.key===sel.key))sel=null;render()}
+function get(){const out={};if(Object.keys(data.edit).length)out.edit=copy(data.edit);if(data.added.length)out.added=copy(data.added);if(Object.keys(data.buildings).length)out.buildings=copy(data.buildings);if(Object.keys(data.chars).length)out.chars=copy(data.chars);return Object.keys(out).length?out:undefined}
 
 /* ---------- what can be placed / swapped in ---------- */
 const KINDS={};
@@ -106,8 +106,8 @@ function render(){panel.hidden=!active();if(panel.hidden)return;
  bindAdd(sel.owner)}
 function bindAdd(owner){const b=panel.querySelector('#aeAdd');if(!b)return;b.onclick=()=>{const k=panel.querySelector('#aeAddKind').value,base=baseOf(owner);if(!k||!base)return;begin();const id='add:'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);data.added.push({id,owner,du:0,dv:+base.front.toFixed(2),kind:k});sel={type:'item',key:id,owner};commit()};
  panel.querySelector('#aeResetOwner').onclick=()=>{if(!window.confirm('คืนค่าของประดับทั้งหมดของ '+ownerName(owner)+' (รวมที่เพิ่มเอง)?'))return;begin();for(const k of Object.keys(data.edit))if(k.startsWith(owner+':')||k===owner||data.added.some(a=>a.id===k&&a.owner===owner))delete data.edit[k];data.added=data.added.filter(a=>a.owner!==owner);if(sel?.type==='item')sel=null;commit()}}
-function blendBlock(){return`<hr><b>พื้นถนน</b>${slider('blend','รอยต่อพื้นนุ่ม',ROAD_BLEND,0,60,1,x=>x?x+'px':'คม')}<p class="sub">ค่าความกว้างที่ลายพื้นต่างชนิดค่อย ๆ ผสมกัน (0 = ขอบคมแบบเดิม) · ลานหน้าสถานที่ใช้ลายเดียวกับถนนที่เชื่อมเข้ามา</p>`}
-function bindBlend(){const i=panel.querySelector('[data-k=blend]');if(!i)return;i.oninput=()=>i.nextElementSibling.textContent=+i.value?i.value+'px':'คม';i.onchange=()=>setRoadBlend(i.value)}
+function blendBlock(){return`<hr><b>ขนาดตัวละครในเมือง</b>${slider('char-hero','ตัวเอก',data.chars.hero??1,.5,2,.05,x=>Math.round(x*100)+'%')}${slider('char-npc','ชาวบ้าน (NPC)',data.chars.npc??1,.5,2,.05,x=>Math.round(x*100)+'%')}<p class="sub">ตัวเอกใช้ขนาดนี้ในแผนที่ย่อย (ตลาด โรงตีเหล็ก บ้าน) ด้วย</p><hr><b>พื้นถนน</b>${slider('blend','รอยต่อพื้นนุ่ม',ROAD_BLEND,0,60,1,x=>x?x+'px':'คม')}<p class="sub">ค่าความกว้างที่ลายพื้นต่างชนิดค่อย ๆ ผสมกัน (0 = ขอบคมแบบเดิม) · ลานหน้าสถานที่ใช้ลายเดียวกับถนนที่เชื่อมเข้ามา</p>`}
+function bindBlend(){for(const k of['hero','npc']){const c=panel.querySelector('[data-k=char-'+k+']');if(!c)continue;c.oninput=()=>{begin();data.chars[k]=+c.value;c.nextElementSibling.textContent=Math.round(c.value*100)+'%'};c.onchange=()=>{if(data.chars[k]===1)delete data.chars[k];commit()}}const i=panel.querySelector('[data-k=blend]');if(!i)return;i.oninput=()=>i.nextElementSibling.textContent=+i.value?i.value+'px':'คม';i.onchange=()=>setRoadBlend(i.value)}
 
 /* ---------- overlay: anchor dots, selection, building footprint + 2:1 guides ---------- */
 const baseOverlay=UX.overlay;
@@ -131,6 +131,6 @@ if(window.GitHubPush){const tools=document.getElementById('toolsPanel'),row=docu
    st.textContent=sha?'⬆ push ผังหมู่บ้านแล้ว · '+sha:'ไม่มีอะไรต้อง push'}
   catch(e){st.textContent='push ไม่สำเร็จ: '+e.message}finally{push.disabled=false}}}
 
-window.VillageAssetEdit={get,set,artRect,kinds:()=>Object.keys(KINDS),getSelection:()=>sel&&{...sel}};
+window.VillageAssetEdit={charScale:k=>+data.chars?.[k]||1,get,set,artRect,kinds:()=>Object.keys(KINDS),getSelection:()=>sel&&{...sel}};
 try{const s=JSON.parse(localStorage.getItem(STORE)||'null');set(s?s.assets:window.VillageDefaultLayout?.assets)}catch(e){console.warn('Village assets:',e.message)}
 })();
