@@ -53825,7 +53825,12 @@
   "[\"tactics.idle.nw\",\"NW\",true,[[\"studio-hero-nw-idle-mvkg16ly-7n5e-1\",\"assets/tactics/imported/idle-nw-mvkg16ly-7n5e/frame-01.png\",0,\"mvkg16ly-7n5e\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-idle-mvkg16ly-7n5e-2\",\"assets/tactics/imported/idle-nw-mvkg16ly-7n5e/frame-02.png\",0,\"mvkg16ly-7n5e\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-idle-mvkg16ly-7n5e-3\",\"assets/tactics/imported/idle-nw-mvkg16ly-7n5e/frame-03.png\",0,\"mvkg16ly-7n5e\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-idle-mvkg16ly-7n5e-4\",\"assets/tactics/imported/idle-nw-mvkg16ly-7n5e/frame-04.png\",0,\"mvkg16ly-7n5e\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-10-23T04:01:55.269Z"
+   "approvedAt": "2026-10-23T04:02:40.029Z"
+  },
+  "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-nw-idle-mvkg16ly-7n5e-1\",\"assets/tactics/imported/idle-nw-mvkg16ly-7n5e/frame-01.png\",0,\"mvkg16ly-7n5e\",null,360,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-idle-mvkg16ly-7n5e-2\",\"assets/tactics/imported/idle-nw-mvkg16ly-7n5e/frame-02.png\",0,\"mvkg16ly-7n5e\",null,360,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-idle-mvkg16ly-7n5e-3\",\"assets/tactics/imported/idle-nw-mvkg16ly-7n5e/frame-03.png\",0,\"mvkg16ly-7n5e\",null,360,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-idle-mvkg16ly-7n5e-4\",\"assets/tactics/imported/idle-nw-mvkg16ly-7n5e/frame-04.png\",0,\"mvkg16ly-7n5e\",null,360,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-10-23T04:17:22.815Z"
   }
  },
  "studioPoses": {
@@ -53938,7 +53943,9 @@
   }
  },
  "studioPoseMirrors": {
-  "idle": {}
+  "idle": {
+   "NE": "NW"
+  }
  },
  "studioPoseHistory": {
   "idle:SE": [
@@ -54075,6 +54082,13 @@
    },
    {
     "at": "2026-10-23T03:57:41.157Z",
+    "config": null,
+    "mirror": null
+   }
+  ],
+  "idle:NE": [
+   {
+    "at": "2026-10-23T04:17:22.800Z",
     "config": null,
     "mirror": null
    }
