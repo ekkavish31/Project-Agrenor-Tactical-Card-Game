@@ -13,7 +13,10 @@ button.small{padding:2px 8px;font-size:12px;box-shadow:none}
 #conn{font-size:13px}#conn.ok{background:#d9ead0;border-color:#6f9a63}#conn.warn{background:#f6dcc6;border-color:#c07d4c}
 .chip{border-radius:999px;padding:3px 10px;font-size:12px;box-shadow:none}.chip.on{background:var(--ink);color:#fff}
 input[type=search]{padding:5px 9px;border:2px solid #c9b07f;border-radius:7px;background:#fffaf0;min-width:200px}
-main{display:grid;grid-template-columns:230px minmax(0,1fr) 440px;min-height:0}
+main{display:grid;grid-template-columns:230px minmax(0,1fr) 440px;min-height:0;position:relative}
+#workshopPane{display:none;position:absolute;inset:0;z-index:20;background:var(--panel);padding:0}
+#workshopPane iframe{width:100%;height:100%;border:0;background:#151b18}
+body.workshop-open main{display:block}body.workshop-open main>nav,body.workshop-open main>#gridWrap,body.workshop-open main>aside{display:none!important}body.workshop-open #studioTools{display:none!important}#workshopTab.on{background:#3f6654;color:#fff}
 nav{overflow:auto;border-right:2px solid var(--line);background:var(--panel);padding:8px}
 nav h4{margin:10px 2px 5px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;opacity:.65}
 nav button{display:flex;justify-content:space-between;gap:6px;width:100%;margin:0 0 4px;box-shadow:none;text-align:left;font-size:13px}nav button.on{background:#e9c983}
@@ -70,8 +73,8 @@ dialog{border:2px solid var(--line);border-radius:12px;background:var(--paper);c
 <header><h1>Asset Studio <small>v48</small></h1>
 <button id="conn">เชื่อมโฟลเดอร์เกม</button><button id="changeFolder">เปลี่ยนโฟลเดอร์</button><button id="rescan">สแกนใหม่</button><span id="folderName" class="muted">ภาพจากเกมที่เปิดอยู่</span>
 <span class="grow"></span><span id="ghSlot"></span><button onclick="window.open('object-asset-studio.html','_blank')">🧰 Object Workshop</button><button id="howto">วิธีใช้</button><button id="exportBtn" class="primary" hidden>ส่งออก ZIP</button></header>
-<div class="tabs" id="studioTabs"><button data-group="objects">Objects</button><button data-group="characters">ตัวละคร</button><button data-group="monsters">มอนสเตอร์</button><button data-group="bosses">มินิบอส / บอส</button><span class="grow"></span><select id="viewMode" aria-label="มุมมอง"><option value="slots">จัดการตัว / วัตถุ</option><option value="library">คลังไฟล์และประวัติ</option><option value="retired">ภาพที่เลิกใช้</option></select></div>
-<main><nav id="cats"></nav><section id="gridWrap"><div id="filters"></div><div id="grid"></div></section><aside id="detail"></aside></main>
+<div class="tabs" id="studioTabs"><button data-group="objects">Objects</button><button data-group="characters">ตัวละคร</button><button data-group="monsters">มอนสเตอร์</button><button data-group="bosses">มินิบอส / บอส</button><button id="workshopTab" type="button">🧰 Object Workshop</button><span class="grow"></span><select id="viewMode" aria-label="มุมมอง"><option value="slots">จัดการตัว / วัตถุ</option><option value="library">คลังไฟล์และประวัติ</option><option value="retired">ภาพที่เลิกใช้</option></select></div>
+<main><nav id="cats"></nav><section id="gridWrap"><div id="filters"></div><div id="grid"></div></section><aside id="detail"></aside><section id="workshopPane" aria-label="Object Workshop"><iframe id="workshopFrame" src="object-asset-studio.html?embedded=1" title="Object Asset Workshop"></iframe></section></main>
 <div id="studioTools"><input type="search" id="q" placeholder="ค้นหาตัว / ชื่อท่า / ไฟล์" aria-label="ค้นหา"><button id="promptPack">คัดลอก prompt ที่ยังขาด</button><span id="summary"></span></div>
 <dialog id="picker"><div class="ph"><h2 id="pkTitle"></h2><div class="muted" id="pkSub"></div></div><div class="pf" id="pkFilters"></div><div class="pg" id="pkGrid"></div><div class="pb"><button onclick="this.closest('dialog').close()">ปิด</button></div></dialog>
 <dialog id="help"><h2>Asset Studio v48</h2><ol>
@@ -264,6 +267,7 @@ function slotDetail(a){if(!a){sel=null;return detail()}let p=pending.get(a.id),u
  <h3>ภาพที่ใช้อยู่ตอนนี้ ${p?'<span class="badge k-hist">ภาพใหม่ รอส่งออก</span>':''}</h3><div class="stage" id="cur">${hasImage(a)?'<span class="muted">กำลังโหลด…</span>':noneHTML(STATUS[a.status])}</div>
  <div class="row" style="margin-top:8px"><button id="pickLib" class="primary">🖼 เลือกภาพจากคลัง…</button>${p?'<button id="dropPending">ยกเลิกภาพใหม่</button>':''}</div>
  <h3>🕘 เวอร์ชันก่อนหน้า (${a.history?.length||0})</h3>${versionsHTML(a)}
+ <div class="row" style="margin-top:8px"><button id="editInWorkshop" class="primary">🧰 แก้ไขภาพนี้ใน Object Workshop</button></div>
  <h3>➕ ใส่ภาพใหม่</h3>${newImageHTML(a)}
  <details><summary>Prompt สำหรับเจนภาพ</summary>${promptHTML(a)}</details>`;
  hydrate($('detail'));showCurrent(a);
@@ -425,6 +429,19 @@ window.addEventListener('beforeunload',e=>{if(pending.size||window.AnimationRevi
 function reference(a){if(a.category==='hero-frames'||a.category==='allies')return 'assets/characters/hero/hero_daily_idle_front_01_ready.webp';if(a.category==='tactics-hero'){let d=a.id.split('-')[2];return `assets/tactics/hero_${d==='sw'?'se':d==='nw'?'ne':d}_idle.webp`}if(a.category==='enemies')return 'assets/scarecrow.webp';if(a.category==='tactic-cards'||a.category==='cards')return 'assets/hammer-strike.webp';if(a.category==='tactics-props')return 'assets/tactics/tree.webp';if(a.category==='tactics-equipment')return 'assets/tactics/sword.webp';return null}
 function copilotPrompt(a){let s=a.size?a.size:[1024,1024],ratio=s[0]/s[1],shape=ratio>1.3?'wide landscape (16:9)':ratio<.8?'tall portrait (2:3)':'square';let ref=reference(a);return a.prompt+`\nFormat: ${shape} image, final use ${s.join('×')} px.`+(ref?`\nMatch the style and character of the attached reference image.`:'')+(a.clip?`\nThis is frame ${a.frame} of ${a.frames} of the "${a.clip}" animation — keep identical scale, outfit and camera angle across all frames.`:'')}
 render();detail();
+
+ // ---------- embedded Object Workshop bridge ----------
+ let workshopReady=false,workshopAssetId=null;
+ function showWorkshop(assetId=null){document.body.classList.add('workshop-open');$('workshopPane').style.display='block';$('workshopTab').classList.add('on');if(assetId)workshopAssetId=assetId;const a=byId(workshopAssetId||selected);if(a&&isSlot(a)&&hasImage(a))sendAssetToWorkshop(a)}
+ function hideWorkshop(){document.body.classList.remove('workshop-open');$('workshopPane').style.display='none';$('workshopTab').classList.remove('on')}
+ async function sendAssetToWorkshop(a){try{let src=await srcOf(a.file);if(!src)throw Error('ไม่พบไฟล์ภาพ');let res=await fetch(src),blob=await res.blob(),reader=new FileReader();reader.onload=()=>{$('workshopFrame').contentWindow.postMessage({type:'asset-workshop:load',assetId:a.id,name:a.id,category:a.category,src:reader.result,size:a.size,transparent:a.transparent},location.origin)};reader.readAsDataURL(blob);toast('ส่ง '+a.id+' ไปยัง Object Workshop แล้ว')}catch(e){toast('โหลด Asset เข้า Workshop ไม่สำเร็จ: '+e.message)}}
+ $('workshopTab').onclick=()=>{if(document.body.classList.contains('workshop-open')){hideWorkshop();return}showWorkshop()};
+ document.querySelectorAll('#studioTabs [data-group]').forEach(b=>b.addEventListener('click',hideWorkshop));
+ window.addEventListener('message',async e=>{if(e.source!==$('workshopFrame').contentWindow||!e.data||typeof e.data.type!=='string')return;
+  if(e.data.type==='asset-workshop:ready'){workshopReady=true;if(document.body.classList.contains('workshop-open')){const a=byId(workshopAssetId||selected);if(a&&isSlot(a)&&hasImage(a))sendAssetToWorkshop(a)}}
+  if(e.data.type==='asset-workshop:apply'){const a=byId(e.data.assetId||workshopAssetId);if(!a||!e.data.dataUrl)return toast('ไม่พบ Asset ปลายทาง');try{const blob=await (await fetch(e.data.dataUrl)).blob(),im=await loadImage(blob),cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;cv.getContext('2d').drawImage(im,0,0);await store(a,cv,a.status==='temp'?'temp':'final');toast(dir?'ปรับภาพ '+a.id+' แล้ว':'ปรับภาพ '+a.id+' แล้ว · รอส่งออก ZIP');sel={t:'slot',id:a.id};selected=a.id;render();detail()}catch(err){toast('นำภาพกลับเข้า Asset Studio ไม่สำเร็จ: '+err.message)}}
+ });
+
 // Folder restoration is managed by asset-studio-browser.js after all models are ready.
 </script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=86"></script><script>document.getElementById("ghSlot").replaceWith(GitHubPush.settingsButton())</script><script src="js/asset-batch.js"></script><script src="js/animation-data.js"></script><script src="js/idle-extra.js"></script><script src="js/village-idle.js"></script><script src="js/tactics-sprites.js"></script><script src="js/hero-motion.js"></script><script src="js/asset-animation-review.js"></script><script src="js/studio-catalog.js"></script><script src="js/asset-studio-browser.js"></script><script src="js/studio-walk-import.js?v=81.16"></script><script src="js/studio-unified-review.js"></script>
 </body></html>
