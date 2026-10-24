@@ -154,7 +154,7 @@ const GRID_DIRS=[[1,0],[0,1],[-1,0],[0,-1]];
 // Shortest tile route in 4 directions with a turn penalty (straight roads). goal=null → stop at any tile of `network`
 // (existing roads are cheaper, so new roads merge into them instead of running beside them).
 function gridRoute(start,goal,test=blockedRoad,network=null,turn=3){if(!start)return[];const net=network||new Map();if(!goal&&net.has(cellKey(start.u,start.v)))return[{u:start.u,v:start.v}];
- const h=goal?(u,v)=>(Math.abs(u-goal.u)+Math.abs(v-goal.v)*(1))*(network&&network.size?.35:1):()=>0,sk=(u,v,d)=>u+','+v+','+d,open=[],best=new Map(),prev=new Map();
+ const h=goal?(u,v)=>(Math.abs(u-goal.u)+Math.abs(v-goal.v))*(network&&network.size?.35:1):()=>0,sk=(u,v,d)=>u+','+v+','+d,open=[],best=new Map(),prev=new Map();
  const push=n=>{open.push(n);let i=open.length-1;while(i>0){const j=(i-1)>>1;if(open[j].f<=n.f)break;open[i]=open[j];i=j}open[i]=n};
  const pop=()=>{const n=open[0],last=open.pop();if(open.length){let i=0;while(i*2+1<open.length){let j=i*2+1;if(j+1<open.length&&open[j+1].f<open[j].f)j++;if(open[j].f>=last.f)break;open[i]=open[j];i=j}open[i]=last}return n};
  const s0=sk(start.u,start.v,-1);best.set(s0,0);push({u:start.u,v:start.v,d:-1,g:0,f:h(start.u,start.v),k:s0});let found=null,it=0;
