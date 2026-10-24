@@ -69,7 +69,7 @@ dialog{border:2px solid var(--line);border-radius:12px;background:var(--paper);c
 </style><link rel="stylesheet" href="css/asset-animation-review.css"><link rel="stylesheet" href="css/asset-studio-browser.css"><link rel="stylesheet" href="css/town-font.css"></head><body>
 <header><h1>Asset Studio <small>v48</small></h1>
 <button id="conn">เชื่อมโฟลเดอร์เกม</button><button id="changeFolder">เปลี่ยนโฟลเดอร์</button><button id="rescan">สแกนใหม่</button><span id="folderName" class="muted">ภาพจากเกมที่เปิดอยู่</span>
-<span class="grow"></span><span id="ghSlot"></span><button id="howto">วิธีใช้</button><button id="exportBtn" class="primary" hidden>ส่งออก ZIP</button></header>
+<span class="grow"></span><span id="ghSlot"></span><button onclick="window.open('object-asset-studio.html','_blank')">🧰 Object Workshop</button><button id="howto">วิธีใช้</button><button id="exportBtn" class="primary" hidden>ส่งออก ZIP</button></header>
 <div class="tabs" id="studioTabs"><button data-group="objects">Objects</button><button data-group="characters">ตัวละคร</button><button data-group="monsters">มอนสเตอร์</button><button data-group="bosses">มินิบอส / บอส</button><span class="grow"></span><select id="viewMode" aria-label="มุมมอง"><option value="slots">จัดการตัว / วัตถุ</option><option value="library">คลังไฟล์และประวัติ</option><option value="retired">ภาพที่เลิกใช้</option></select></div>
 <main><nav id="cats"></nav><section id="gridWrap"><div id="filters"></div><div id="grid"></div></section><aside id="detail"></aside></main>
 <div id="studioTools"><input type="search" id="q" placeholder="ค้นหาตัว / ชื่อท่า / ไฟล์" aria-label="ค้นหา"><button id="promptPack">คัดลอก prompt ที่ยังขาด</button><span id="summary"></span></div>
