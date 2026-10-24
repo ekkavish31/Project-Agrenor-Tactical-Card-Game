@@ -213,13 +213,16 @@
   const s = ov.s ?? 1,
    r = (ov.r || 0) * Math.PI / 180,
    f = !!ov.f,
+   ix = ov.ix ?? 1, iy = ov.iy ?? 1,
+   ia = (ix + iy) / 2, ib = (ix - iy) / 4, ic = ix - iy, id = (ix + iy) / 2,
    k = ov.kind && KINDS[ov.kind] ? ov.kind : null,
-   plain = !d.x && !d.y && s === 1 && !r && !f && !k;
+   plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !k;
   const inner = plain ? draw : gg => {
    g.save();
    g.translate(E.x, E.y);
    if (r) g.rotate(r);
    g.scale(f ? -s : s, s);
+   g.transform(ia, ib, ic, id, 0, 0);
    g.translate(-ax, -ay);
    if (k) KINDS[k].draw({
     x: ax,
@@ -1987,7 +1990,7 @@
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
-  ${nudgeHtml}${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
+  ${nudgeHtml}${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
   <div class="row">${added?'<button id="aeDel">ลบชิ้นนี้ (Delete)</button>':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชิ้นนี้ (Delete)'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
@@ -2037,7 +2040,7 @@
   bindGroup();
   bindZ('iz', d => { const v = ovOf(key); v.z = clampN((v.z || 0) + d, -20, 20); clean(key) });
   body.querySelector('#aeFlip').onchange = e => once(() => ovOf(key).f = e.target.checked)();
-  bindSliders((k, v) => ovOf(key)[k] = v, () => clean(key))
+  bindSliders((k, v) => {const ov=ovOf(key);if(k==='ix'||k==='iy')ov[k]=v/100;else ov[k]=v}, () => clean(key))
  }
 
  function tabEntry(body, o) {
