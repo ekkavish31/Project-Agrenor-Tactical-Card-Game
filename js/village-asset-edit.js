@@ -41,6 +41,8 @@
    if (v.edit && typeof v.edit === 'object') data.edit = copy(v.edit);
    if (Array.isArray(v.added)) data.added = copy(v.added).filter(a => a && a.id && a.owner && a.kind);
    if (v.buildings && typeof v.buildings === 'object') data.buildings = copy(v.buildings);
+   // Repair legacy values written by the old percentage bug (e.g. 100 instead of 1.00).
+   for (const b of Object.values(data.buildings)) if (b && typeof b === 'object') for (const k of ['ix','iy']) if (Number.isFinite(b[k]) && b[k] > 2) b[k] = Math.max(.5, Math.min(2, b[k] / 100));
    if (v.frames && typeof v.frames === 'object') data.frames = copy(v.frames);
    if (v.cast && typeof v.cast === 'object') data.cast = copy(v.cast);
    else if (v.chars && typeof v.chars === 'object') // v81 files: plain numbers for hero / npc
