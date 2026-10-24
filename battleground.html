@@ -45,7 +45,7 @@ details{margin:6px 0}summary{cursor:pointer;color:#fff0c7}table{width:100%;borde
 <div id="cat"></div>
 <aside id="side">
  <h3>⚔ สนามต่อสู้</h3>
- <p class="muted" style="margin:0">วาดชิ้นภูมิประเทศ (ความสูง พื้น ของ) แล้วตัวสุ่มแผนที่จะหยิบไปวางในสนามสุ่มของพื้นที่ที่เลือก · คลิกขวา = ทำกลับ (ลด / คืนหญ้า / เอาของออก) · ลากที่ว่าง = เลื่อนมุมมอง · ล้อ = ซูม · B = ขนาดแปรง</p>
+ <p class="muted" style="margin:0">วาดชิ้นภูมิประเทศ (ความสูง พื้น ของ) แล้วตัวสุ่มแผนที่จะหยิบไปวางในสนามสุ่มของพื้นที่ที่เลือก · คลิกขวา = ทำกลับ (ลด / คืนหญ้า / เอาของออก) · ลากที่ว่าง = เลื่อนมุมมอง · หัวแปรงสี่เหลี่ยมตามแนว Iso 2.5D แสดงขอบเขตด้วยเส้นประ · ล้อ = ซูม · B = ขนาดแปรง</p>
  <b class="sec">ชิ้นนี้</b>
  <label>ชื่อ <input type="text" id="name"></label>
  <label>ขนาด <span><input type="number" id="w" min="2" max="16"> × <input type="number" id="h" min="2" max="16"> ช่อง</span></label>
@@ -70,7 +70,7 @@ const AREAS={training:'ฝึกซ้อม',forest:'ป่า',mine:'เหม
 const KINDS={grass:['หญ้า','#6c9a4a'],tallgrass:['หญ้าสูง','#4e7d35'],path:['ทางดิน','#b39566'],stone:['หิน','#9b978c'],rubble:['หินแตก','#867b6c'],sand:['ทราย','#d9c48c'],mud:['โคลน','#6b5537'],snow:['หิมะ','#e7edf1'],ice:['น้ำแข็ง','#bde1ee'],shallow:['น้ำตื้น','#6fa8c8'],water:['น้ำลึก','#3f78ad']};
 const PROPS={'':['ไม่มี','#0000'],tree:['ต้นไม้','#2f6b2a'],bush:['พุ่มไม้','#4f8f3a'],rock:['ก้อนหิน','#8a8a85'],mossrock:['หินตะไคร่','#6f8462'],pillar:['เสาหิน','#c9c2ad'],log:['ขอนไม้','#7a5434'],crystal:['คริสตัล','#8fd0ef'],cart:['เกวียน','#8a6a44']};
 const HEIGHT_TOOLS=[['h',1,'▲ ยกขึ้น','Q'],['h',-1,'▼ ลดลง','A'],['flat','','▬ เท่าช่องแรก',''],...[0,1,2,3,4,5].map(n=>['set',n,'สูง '+n,''])];
-let data,cur=0,mode='height',tool={type:'h',v:1},brush=1,view=0,zoom=1,undo=[],redo=[],painting=null,chunkClipboard=null;
+let data,cur=0,mode='height',tool={type:'h',v:1},brush=1,brushGuide=true,view=0,zoom=1,undo=[],redo=[],painting=null,chunkClipboard=null;
 let catalogQuery='',catalogRecentOnly=false,recentItems=[];try{recentItems=JSON.parse(localStorage.getItem('battleground-recent-v1')||'[]')}catch(e){}
 const blank=(w,h,name)=>({id:'g'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,w,h,weight:1,areas:['forest'],spawns:[],cells:Array.from({length:w*h},()=>({h:0,k:'grass',p:''}))});
 function sample(){const c=blank(7,7,'เนินหินกลางทุ่ง');c.id='sample-hill';c.areas=['forest','training'];c.cells.forEach((q,i)=>{const x=i%7,y=Math.floor(i/7),d=Math.max(Math.abs(x-3),Math.abs(y-3));q.h=d===0?4:d===1?3:d===2?2:0;q.k=d<=1?'stone':d===2?'tallgrass':'grass';if(x===3&&y>=5){q.k='path';q.h=y===5?2:1}if(x===3&&y===6)q.h=1});c.cells[0].p='tree';c.cells[6].p='rock';return c}
@@ -129,7 +129,7 @@ function renderCat(){document.querySelectorAll('#bar [data-tool]').forEach(b=>b.
  items=catalogRecentOnly?used:allItems;
  if(catalogQuery)items=items.filter(it=>it.label.toLowerCase().includes(catalogQuery.toLowerCase())||String(it.v).toLowerCase().includes(catalogQuery.toLowerCase()));
  box.innerHTML='<div class="catSearch"><input id="catSearch" type="search" placeholder="ค้นหาในแคตตาล็อก…" value="'+catalogQuery.replace(/"/g,'&quot;')+'"><button id="catRecent" class="'+(catalogRecentOnly?'on':'')+'">ใช้ล่าสุด</button></div>'+(mode==='erase'?'<span class="lbl">🧽 ลบ = คืนเป็นหญ้า ความสูงเดิม และเอาของออก</span>':'')+items.map((it,i)=>`<button data-i="${i}" class="${tool.type===it.type&&String(tool.v)===String(it.v)?'on':''}" title="${it.label}${it.key?' ['+it.key+']':''}"><span class="sw"></span>${it.label}</button>`).join('')+`<span class="brush"><span class="lbl">แปรง</span>${[1,2,3].map(n=>`<button data-b="${n}" class="${brush===n?'on':''}">${n}×${n}</button>`).join('')}</span>`;
- box.querySelectorAll('[data-i]').forEach(b=>{const it=items[+b.dataset.i];b.querySelector('.sw').append(it.cv);b.onclick=()=>{tool={type:it.type,v:it.v};const k=itemKey(it);recentItems=[k,...recentItems.filter(x=>x!==k)].slice(0,12);try{localStorage.setItem('battleground-recent-v1',JSON.stringify(recentItems))}catch(e){}renderCat()}});
+ const isoBtn=document.createElement('button');isoBtn.id='brushGuide';isoBtn.className=brushGuide?'on':'';isoBtn.textContent='◇ 2.5D';isoBtn.title='แสดงขอบเขตหัวแปรงสี่เหลี่ยมตามแนว Isometric';box.querySelector('.brush').append(isoBtn);isoBtn.onclick=()=>{brushGuide=!brushGuide;renderCat();draw()};box.querySelectorAll('[data-i]').forEach(b=>{const it=items[+b.dataset.i];b.querySelector('.sw').append(it.cv);b.onclick=()=>{tool={type:it.type,v:it.v};const k=itemKey(it);recentItems=[k,...recentItems.filter(x=>x!==k)].slice(0,12);try{localStorage.setItem('battleground-recent-v1',JSON.stringify(recentItems))}catch(e){}renderCat()}});
  box.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{brush=+b.dataset.b;renderCat()});const search=box.querySelector('#catSearch');search.oninput=()=>{catalogQuery=search.value;const p=search.selectionStart;renderCat();const n=box.querySelector('#catSearch');n.focus();n.setSelectionRange(p,p)};box.querySelector('#catRecent').onclick=()=>{catalogRecentOnly=!catalogRecentOnly;renderCat()}}
 document.querySelectorAll('#bar [data-tool]').forEach(b=>b.onclick=()=>setMode(b.dataset.tool));
 document.addEventListener('keydown',e=>{if(e.target.closest?.('input,select'))return;
@@ -157,7 +157,7 @@ function shade(hex,f){const n=parseInt(hex.slice(1),16),r=n>>16,gg=n>>8&255,b=n&
 function order(c){const[vw,vh]=vdims(c),out=[];for(let s=0;s<vw+vh;s++)for(let vx=0;vx<vw;vx++){const vy=s-vx;if(vy<0||vy>=vh)continue;let x,y;for(let yy=0;yy<c.h;yy++)for(let xx=0;xx<c.w;xx++){const r=rv(xx,yy,c);if(r[0]===vx&&r[1]===vy){x=xx;y=yy}}out.push({x,y,vx,vy})}return out}
 let hover=null,drawList=[];
 const inBrush=(o,h)=>{if(!h)return false;const lo=Math.floor((brush-1)/2),hi=brush-1-lo;return o.x>=h.x-lo&&o.x<=h.x+hi&&o.y>=h.y-lo&&o.y<=h.y+hi};
- function drawBrushGuide(){if(!hover||!C())return;const lo=Math.floor((brush-1)/2),hi=brush-1-lo,x0=hover.x-lo,y0=hover.y-lo,x1=hover.x+hi+1,y1=hover.y+hi+1;const pts=[proj(x0,y0,0),proj(x1,y0,0),proj(x1,y1,0),proj(x0,y1,0)];g.save();g.setLineDash([7,4]);g.lineWidth=2;g.strokeStyle='#fff2a8';g.shadowColor='#14201b';g.shadowBlur=4;g.beginPath();pts.forEach((p,i)=>g[i?'lineTo':'moveTo'](p.x,p.y));g.closePath();g.stroke();g.restore()}
+ function drawBrushGuide(){if(!brushGuide||!hover||!C())return;const lo=Math.floor((brush-1)/2),hi=brush-1-lo,x0=hover.x-lo,y0=hover.y-lo,x1=hover.x+hi+1,y1=hover.y+hi+1;const pts=[proj(x0,y0,0),proj(x1,y0,0),proj(x1,y1,0),proj(x0,y1,0)];g.save();g.setLineDash([7,4]);g.lineWidth=2;g.strokeStyle='#fff2a8';g.shadowColor='#14201b';g.shadowBlur=4;g.beginPath();pts.forEach((p,i)=>g[i?'lineTo':'moveTo'](p.x,p.y));g.closePath();g.stroke();g.restore()}
 function brushCells(o){const c=C(),out=[];for(let y=0;y<c.h;y++)for(let x=0;x<c.w;x++)if(inBrush({x,y},o))out.push({x,y});return out}
 function draw(){const c=C();g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.fillStyle='#14201b';g.fillRect(0,0,W,H);if(!c)return;const[vw,vh]=vdims(c),cx=(W-360)/2;
  origin={x:cx+pan.x-(vw-vh)*TW/4*zoom,y:H/2+pan.y-(vw+vh)*TH/4*zoom+20};drawList=[];
