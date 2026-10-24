@@ -10,6 +10,13 @@
 - [x] หน้าโหลดพร้อมความคืบหน้า · โหลดฉากถัดไปล่วงหน้า · หน้าโหลดตอนเข้าการต่อสู้/ผจญภัยเมื่อจำเป็น
 
 ## v50 · ต่อจากนี้
+## Battle Ground Editor · implementation progress (patch v51)
+- [x] แคตตาล็อก Object แสดงภาพ Asset จริงที่มีใน Repo และพื้นแสดง Texture จริงบนแผนที่ Editor
+- [x] เพิ่มเครื่องมือเลือกช่องและแผงตั้งค่า Collision / Occlusion / ความทึบ 55% / ระดับจม 50%; บันทึกค่ารายช่องไว้ในข้อมูล chunk ในเบราว์เซอร์
+- [ ] ยังต้องเชื่อมข้อมูล Collision/Occlusion/ระดับจมเข้ากับ Battle runtime และรูปแบบข้อมูลแผนที่ที่ใช้ตอนเล่นจริง
+- [ ] ยังไม่มีตัววาด/แก้ Occlusion Mask แบบกำหนดพื้นที่เองต่อ Object; ตัวเลือก Mask ใน patch นี้เป็น metadata เท่านั้น
+- [ ] ยังต้องทดสอบในเบราว์เซอร์จริงและตรวจภาพ/การโหลด Asset ทุกชนิด
+
 ## Battle Ground Editor · Visual Map + Collision/Occlusion (วางแผนแล้ว · ยังไม่แก้โค้ด)
 - [ ] ตรวจ Repo ก่อนออกแบบ implementation: เส้นทางหน้า Editor, renderer ที่ใช้ในสนามจริง, schema ของแผนที่/วัตถุ, texture/object catalog, collision/height/footprint, depth sorting และระบบ alpha mask ปัจจุบัน
 - [ ] เปลี่ยน Battle Ground Editor เป็น Visual Map Editor: พรีวิวแผนที่ด้วย renderer และ Asset จริงชุดเดียวกับตอนเล่น; ตัวเลือก texture/object เป็น thumbnail ภาพจริง คลิกเลือก/วาง/แก้ไขบนแผนที่ได้ทันที; คงข้อมูลเชิงเทคนิคไว้เบื้องหลังแทนการใช้ block code เป็น UI หลัก
