@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agrenor — Tree Code Motion Test</title>
+<style>
+:root{color-scheme:dark;--bg:#101711;--panel:#1b281e;--line:#3d5943;--text:#e8f0e5;--muted:#a8b9a6;--accent:#a6d98b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#263b2b,#101711 65%);color:var(--text);font:16px/1.5 system-ui,sans-serif;padding:20px}
+main{max-width:1000px;margin:auto}h1{font-size:clamp(1.4rem,4vw,2.2rem);margin:0 0 4px}p{color:var(--muted);margin:4px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.panel{background:#17221acc;border:1px solid var(--line);border-radius:16px;padding:14px;overflow:hidden}.panel h2{font-size:1rem;margin:0 0 8px}.stage{height:330px;border-radius:10px;background:linear-gradient(#263b3a 0 54%,#32452c 54% 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden}.stage:before{content:"";position:absolute;inset:auto 0 0;height:30%;background:radial-gradient(ellipse at center,#536e3b88,transparent 70%)}.tree{position:relative;width:min(90%,300px);height:95%;object-fit:contain;object-position:center bottom;image-rendering:auto;z-index:1}.anim-wrap{position:relative;width:min(90%,300px);height:95%;z-index:1}.anim-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom}.canopy{clip-path:inset(0 0 34% 0);transform-origin:50% 66%;animation:sway 3.2s ease-in-out infinite alternate;will-change:transform;filter:drop-shadow(0 0 1px #d3e9ad22)}@keyframes sway{0%{transform:rotate(calc(var(--sway, 2deg) * -1)) translateX(-1px)}100%{transform:rotate(var(--sway, 2deg)) translateX(2px)}}.paused .canopy{animation-play-state:paused}.note{font-size:.88rem;margin:10px 0 0;color:var(--muted)}.controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:14px;margin-top:14px}.control{min-width:180px;flex:1}.control label{display:flex;justify-content:space-between;gap:8px;font-size:.9rem;margin-bottom:5px}.control input{width:100%;accent-color:var(--accent)}button{background:var(--accent);color:#132014;border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer}.status{font-size:.85rem;color:var(--muted);width:100%}code{color:#d7edc9}@media(max-width:620px){body{padding:12px}.grid{grid-template-columns:1fr}.stage{height:270px}.controls{gap:12px}}
+</style>
+</head>
+<body>
+<main>
+<h1>ทดลอง Code Animation — ต้นไม้จาก Asset จริง</h1>
+<p>ใช้ภาพ <code>assets/village-town/nature/tree-round.png</code> ที่มีอยู่ใน Repo เดิม เปรียบเทียบภาพนิ่งกับการขยับด้วยโค้ด</p>
+<div class="grid">
+<section class="panel"><h2>① ต้นฉบับ — ไม่ขยับ</h2><div class="stage"><img class="tree" src="assets/village-town/nature/tree-round.png" alt="ต้นไม้ต้นฉบับ"></div><div class="note">ไฟล์ภาพเดิม ไม่มีการแก้ไข Asset</div></section>
+<section class="panel"><h2>② Code Motion — ทดลองขยับส่วนพุ่ม</h2><div class="stage" id="motionStage"><div class="anim-wrap"><img src="assets/village-town/nature/tree-round.png" alt="" aria-hidden="true"><img class="canopy" id="canopy" src="assets/village-town/nature/tree-round.png" alt="ต้นไม้ที่ขยับด้วยโค้ด"></div></div><div class="note">วางภาพเดิมซ้อนกัน แล้วขยับเฉพาะส่วนบนด้วย CSS; โคนต้นยังนิ่ง</div></section>
+</div>
+<div class="controls">
+<div class="control"><label for="amp">แรงลม <strong id="ampValue">2.0°</strong></label><input id="amp" type="range" min="0" max="5" step=".5" value="2"></div>
+<div class="control"><label for="speed">ความเร็ว <strong id="speedValue">3.2 วินาที</strong></label><input id="speed" type="range" min="1" max="8" step=".2" value="3.2"></div>
+<button id="toggle" type="button">หยุด / เล่น</button>
+<div class="status" id="status">กำลังใช้ภาพต้นไม้เดิมจาก Repo · ตัวอย่างนี้เป็นหน้าเดโมแยก ไม่ได้เปลี่ยนฉากเกม</div>
+</div>
+</main>
+<script>
+const amp=document.getElementById('amp'), speed=document.getElementById('speed'), canopy=document.getElementById('canopy'), stage=document.getElementById('motionStage'), toggle=document.getElementById('toggle');
+function update(){const a=Number(amp.value),s=Number(speed.value);canopy.style.setProperty('--sway',a+'deg');canopy.style.animationDuration=s+'s';document.getElementById('ampValue').textContent=a.toFixed(1)+'°';document.getElementById('speedValue').textContent=s.toFixed(1)+' วินาที';}
+amp.addEventListener('input',update);speed.addEventListener('input',update);toggle.addEventListener('click',()=>{stage.classList.toggle('paused');toggle.textContent=stage.classList.contains('paused')?'เล่นต่อ':'หยุด / เล่น';});update();
+</script>
+</body>
+</html>
