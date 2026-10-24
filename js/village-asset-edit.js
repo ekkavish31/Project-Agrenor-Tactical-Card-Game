@@ -429,7 +429,7 @@
 
  function drawB(o) {
   const t = data.buildings[o.id];
-  if (!t || !(t.sx != null || t.sy != null || t.kx || t.ky || t.dx || t.dy)) {
+  if (!t || !(t.sx != null || t.sy != null || t.kx || t.ky || t.ix != null || t.iy != null || t.dx || t.dy)) {
    baseBuilding(o);
    return
   }
@@ -437,7 +437,8 @@
   g.save();
   g.translate(p.x + (t.dx || 0), p.y + (t.dy || 0));
   g.transform(t.sx ?? 1, t.ky || 0, t.kx || 0, t.sy ?? 1, 0, 0);
-  g.translate(-p.x, -p.y);
+   const ix=t.ix??1,iy=t.iy??1;g.transform((ix+iy)/2,(ix-iy)/4,ix-iy,(ix+iy)/2,0,0);
+   g.translate(-p.x, -p.y);
   baseBuilding(o);
   g.restore()
  }
@@ -1791,7 +1792,7 @@
    cur = choices.find(c => c.id === (t.art || o.id)) || choices.find(c => c.id === (isHouse(o) ? (o.npc ? o.id : 'home') : o.id));
   body.innerHTML = `${choices.length?`<div class="art"><span class="th" id="bThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="bSwap">เปลี่ยนภาพ…</button></div>${t.art&&t.art!==o.id?'<button id="bOrig">ใช้ภาพเดิม</button>':''}<p class="sub" style="margin:6px 0 0">${cur?.label||''}</p></div></div>`:''}
   ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div>`:''}
-  ${slider('sx','กว้าง',t.sx??1,.5,1.6,.01,FMT.sx)}${slider('sy','สูง',t.sy??1,.5,1.6,.01,FMT.sy)}${slider('kx','เอียงซ้าย-ขวา',t.kx||0,-.6,.6,.005,FMT.kx)}${slider('ky','ยกด้านข้าง',t.ky||0,-.6,.6,.005,FMT.ky)}${nudgeHtml}
+  ${slider('sx','กว้าง',t.sx??1,.5,1.6,.01,FMT.sx)}${slider('sy','สูง',t.sy??1,.5,1.6,.01,FMT.sy)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((t.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((t.iy??1)*100),50,200,1,v=>v+'%')}${slider('kx','เอียงซ้าย-ขวา',t.kx||0,-.6,.6,.005,FMT.kx)}${slider('ky','ยกด้านข้าง',t.ky||0,-.6,.6,.005,FMT.ky)}${nudgeHtml}
   <b class="sec">ชั้น (layer)</b>${zRow('bz','ชั้นอาคาร',t.z||0,'เทียบกับของย่อยในสถานที่นี้ · ของย่อยที่เลขมากกว่าจะทับอาคาร')}${zRow('pz','ชั้นทั้งสถานที่',t.pz||0,'อาคาร+ของย่อยทั้งชุด เทียบกับสถานที่อื่น · 0 = ตามความลึก')}
   <label class="chk"><input type="checkbox" id="bGuides" ${guides?'checked':''}> แสดงเส้นช่วย 2:1 (ฟ้า = ฐานอาคาร)</label>
   <p class="sub">ป้ายชื่อ: ลากป้ายบนแผนที่ไปวางได้${o.label?' · <a href="#" id="bLabel" style="color:#9ff3f5">คืนตำแหน่งป้าย</a>':''}</p>
@@ -1842,7 +1843,7 @@
     if (isHouse(x) && x.id !== o.id) {
      const keep = data.buildings[x.id] || {},
       n = {};
-     for (const k of ['sx', 'sy', 'kx', 'ky'])
+     for (const k of ['sx', 'sy', 'ix', 'iy', 'kx', 'ky'])
       if (src[k] != null) n[k] = src[k];
      for (const k of ['dx', 'dy', 'art'])
       if (keep[k] != null) n[k] = keep[k];
