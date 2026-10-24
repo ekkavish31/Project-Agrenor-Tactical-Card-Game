@@ -274,6 +274,7 @@ function slotDetail(a){if(!a){sel=null;return detail()}let p=pending.get(a.id),u
  if($('backSet'))$('backSet').onclick=()=>openSet(a.clip);
  $('detail').querySelectorAll('[data-fr]').forEach(e=>e.onclick=()=>openSlot(e.dataset.fr));
  $('pickLib').onclick=()=>pickImageFor(a);
+ if($('editInWorkshop'))$('editInWorkshop').onclick=()=>showWorkshop(a.id);
  if($('dropPending'))$('dropPending').onclick=()=>{URL.revokeObjectURL(pending.get(a.id).url);pending.delete(a.id);render();detail()};
  $('detail').querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{let h=a.history[+b.dataset.use];doApply(a,{path:h.file},{note:'ก่อนกู้เวอร์ชัน '+fmtAt(h.at)})});
  $('detail').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>delVersion(a,a.history[+b.dataset.del]));
