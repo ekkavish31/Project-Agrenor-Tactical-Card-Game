@@ -10,6 +10,7 @@
   UX = window.TownUX,
   copy = x => JSON.parse(JSON.stringify(x)),
   num = (v, a, b, d) => Math.max(a, Math.min(b, Number.isFinite(+v) ? +v : d));
+ let courtDraw = false;
  let data = {
    edit: {},
    added: [],
@@ -759,6 +760,7 @@
   const s = place;
   place = null;
   drag = null;
+  courtDraw = false;
   if (!ok) {
    UX.apply(JSON.parse(s.before));
    UX.undoTrim(s.mark);
@@ -1026,6 +1028,10 @@
      ...extra
     }
    };
+  if (o && courtDraw && place.tab === 'entry' && o.id !== 'square') {
+   const d0 = door(o);
+   return start('court', { pts: [{ u: d0.u, v: d0.v }] })
+  }
   if (o && hasFrame(o) && place.tab === 'frame') {
    const c = Object.entries(corners(o)).find(([, q]) => nearPx(q, p, 14));
    if (c) return start('corner', {
@@ -1098,6 +1104,17 @@
    drag.moved = true;
    UX.checkpoint()
   }
+  if (drag.type === 'court') {
+   // rubber-band path on the tile axes: the live end follows the cursor along the current axis;
+   // moving a whole tile sideways fixes a corner and turns — so a diagonal drag gives a clean L, not a staircase
+   const w = inv(p.x, p.y), q = { u: Math.round(w.u), v: Math.round(w.v) }, P = drag.pts;
+   let c = P.length > 1 ? P[P.length - 2] : P[0];
+   if (P.length === 1) { if (Math.hypot(q.u - c.u, q.v - c.v) < 1) return; drag.axis = Math.abs(q.u - c.u) >= Math.abs(q.v - c.v) ? 'u' : 'v'; const g0 = drag.axis === 'u' ? { u: c.u, v: Math.round(c.v) } : { u: Math.round(c.u), v: c.v }; if (Math.hypot(g0.u - c.u, g0.v - c.v) > .05) P.push(g0); c = P[P.length - 1]; P.push({ ...c }) }
+   const along = drag.axis === 'u' ? q.u - c.u : q.v - c.v, side = drag.axis === 'u' ? q.v - c.v : q.u - c.u;
+   P[P.length - 1] = drag.axis === 'u' ? { u: c.u + along, v: c.v } : { u: c.u, v: c.v + along };
+   if (Math.abs(side) >= 1.5 && Math.abs(along) >= 1 && P.length < 60) { drag.axis = drag.axis === 'u' ? 'v' : 'u'; P.push({ ...P[P.length - 1] }) }
+   return
+  }
   if (drag.type === 'items') moveKeys(drag.keys, drag.orig, dx, dy);
   else if (drag.type === 'art') {
    const t = data.buildings[o.id] || (data.buildings[o.id] = {});
@@ -1134,6 +1151,15 @@
   const d = drag;
   drag = null;
   if (!d.moved) return;
+  if (d.type === 'court') {
+   const o = loc(place.id), a = center(o), pts = [];
+   for (const q of d.pts) { const c = canonical(o, q.u, q.v), r = { du: +(c.u - a.u).toFixed(2), dv: +(c.v - a.v).toFixed(2) }, l = pts.at(-1); if (!l || l.du !== r.du || l.dv !== r.dv) pts.push(r) }
+   // drop middle points of straight runs
+   const slim = pts.filter((q, i) => { const a1 = pts[i - 1], b1 = pts[i + 1]; return !a1 || !b1 || !((a1.du === q.du && q.du === b1.du) || (a1.dv === q.dv && q.dv === b1.dv)) });
+   courtDraw = false;
+   if (slim.length >= 2) { o.court = { pts: slim }; flashStatus('วาดทางเข้าแล้ว · ถนนจะมาเชื่อมที่ปลายเส้น') } else flashStatus('เส้นสั้นเกินไป · ลองลากให้ยาวขึ้น');
+   UX.refresh(); UX.persist(); render(); return
+  }
   if (d.type === 'entry' || d.type === 'corner') UX.refresh();
   UX.persist();
   render()
@@ -1599,14 +1625,27 @@
  }
 
  function renderRoads(m) {
-  panel.innerHTML = `<div class="body"><h3>${m==='road'?'〰 ดัดถนน':'✏ วาดถนน'}</h3><p class="sub">${m==='road'?'ลากจุดสีทองเพื่อดัดถนน · คลิกจุดเพื่อเลือกเส้น แล้วกดลบได้':'ลากบนแผนที่เพื่อเพิ่มถนนจริง แล้วเชื่อมกับถนนเดิม'} · ถนนคือพื้นเดินจริงของตัวเอกและ NPC</p>
-  <div class="row"><button data-click="townRoadDelete">ลบถนนที่เลือก</button><button data-click="townRoadReset">สร้างถนนอัตโนมัติใหม่</button></div><hr>
-  ${slider('blend','รอยต่อพื้นนุ่ม',ROAD_BLEND,0,60,1,x=>x?x+'px':'คม')}<p class="sub">ความกว้างที่ลายพื้นต่างชนิดค่อย ๆ ผสมกัน (0 = ขอบคม)</p></div>`;
+  const list = UX.roadList ? UX.roadList() : [], sel = UX.selectedRoad ? UX.selectedRoad() : -1, K = UX.ROAD_KINDS || {}, kindOpts = cur => Object.entries(K).map(([k, n]) => `<option value="${k}" ${cur===k?'selected':''}>${n}</option>`).join('');
+  panel.innerHTML = `<div class="body"><h3>${m==='road'?'〰 ดัดถนน':'✏ วาดถนน'}</h3><p class="sub">${m==='road'?'คลิกบนถนนเส้นไหนก็ได้เพื่อเลือก · ลากจุดสีทองเพื่อดัด · Delete = ลบเส้นที่เลือก':'ลากบนแผนที่เพื่อวาดถนนเส้นใหม่ (เข้ากริดอัตโนมัติ) แล้วต่อกับถนนเดิมหรือประตูสถานที่'} · ถนน = พื้นที่เดินได้ของตัวเอกและ NPC · ${UX.isManual?.()?'<b>ผังถนนแบบกำหนดเอง</b>':'ตอนนี้เป็นถนนอัตโนมัติ (แก้เส้นไหนก็จะเปลี่ยนเป็นแบบกำหนดเอง)'}</p>
+  ${m==='draw'?`<label class="sel">ชนิดถนนที่จะวาด<select id="rDrawKind">${kindOpts(UX.drawKind?.())}</select></label>`:''}
+  <b class="sec">ถนนทั้งหมด (${list.length})</b><div class="items" style="max-height:220px">${list.map(r=>`<div style="display:flex;gap:4px;align-items:center"><button data-road="${r.i}" style="flex:1;text-align:left;${r.i===sel?'background:#e5c06b;color:#1b302a':''}">เส้น ${r.i+1}</button><select data-rk="${r.i}" style="width:150px">${kindOpts(r.kind)}</select><button data-rdel="${r.i}" title="ลบเส้นนี้">✕</button></div>`).join('')||'<p class="sub">ยังไม่มีถนน · กด ✏ วาดถนน แล้วลากบนแผนที่</p>'}</div>
+  <div class="row"><button data-click="townRoadDelete" ${sel<0?'disabled':''}>ลบถนนที่เลือก</button><button id="rClear">ลบถนนทั้งหมด (วาดเองใหม่)</button></div>
+  <div class="row"><button data-click="townRoadReset">สร้างถนนอัตโนมัติใหม่</button></div><hr>
+  ${slider('blend','รอยต่อพื้นนุ่ม',ROAD_BLEND,0,60,1,x=>x?x+'px':'คม')}<p class="sub">ความกว้างที่ลายพื้นต่างชนิดค่อย ๆ ผสมกัน (0 = ขอบคม)</p>
+  <label class="sel">ทรงถนน<select id="rShape"><option value="square" ${ROAD_SHAPE==='square'?'selected':''}>เหลี่ยมตามกริด</option><option value="round" ${ROAD_SHAPE==='round'?'selected':''}>มน</option></select></label>
+  <p class="sub">พื้นทางเข้าของแต่ละสถานที่: คลิกสถานที่ → แท็บทางเข้า</p></div>`;
   bindTools();
+  panel.querySelectorAll('[data-road]').forEach(b => b.onclick = () => { UX.selectRoad(+b.dataset.road); render() });
+  panel.querySelectorAll('[data-rk]').forEach(s2 => s2.onchange = () => { UX.setRoadKind(+s2.dataset.rk, s2.value); render() });
+  panel.querySelectorAll('[data-rdel]').forEach(b => b.onclick = () => { UX.deleteRoad(+b.dataset.rdel); render() });
+  act('#rClear', () => { if (window.confirm('ลบถนนทั้งหมด แล้ววาดเองใหม่?\n(พื้นทางเข้าของแต่ละสถานที่ยังอยู่)')) { UX.clearRoads(); render() } });
+  const dk = panel.querySelector('#rDrawKind'); if (dk) dk.onchange = () => UX.setDrawKind(dk.value);
+  const sh = panel.querySelector('#rShape'); if (sh) sh.onchange = () => setRoadShape(sh.value);
   const i = panel.querySelector('[data-k=blend]');
   i.oninput = () => i.nextElementSibling.textContent = +i.value ? i.value + 'px' : 'คม';
   i.onchange = () => setRoadBlend(i.value)
  }
+
 
  function renderChars() {
   const list = castList();
@@ -1970,8 +2009,12 @@
   const deep = !!o.entry?.deep;
   body.innerHTML = `<p class="sub">ลาก <b style="color:#9ff3f5">หมุดฟ้า</b> บนแผนที่ไปวางที่ประตู · ตัวเอกเดินมาถึงจุดนี้แล้วเข้าใช้บริการ</p>
   <label class="chk"><input type="checkbox" id="eDeep" ${deep?'checked':''}> วางลึกเข้าไปในตัวอาคารได้ (ตัวเอกเดินทับภาพเข้าไป) · หรือกด Shift ขณะลาก</label>
-  <p class="sub">พื้นทางเข้าปูต่อจากถนนที่เชื่อมอยู่ให้อัตโนมัติ (ลายเดียวกับถนน)</p>
-  <div class="row"><button id="eReset">คืนจุดเข้าเดิม</button></div>`;
+  <div class="row"><button id="eReset">คืนจุดเข้าเดิม</button></div><hr>
+  <b class="sec">พื้นทางเข้า (ลานหน้าสถานที่)</b>
+  <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีพื้นทางเข้า':o.court?.pts?'วาดเอง ('+o.court.pts.length+' จุด)':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
+  <div class="row"><button id="cDraw" class="${courtDraw?'on':''}" style="${courtDraw?'background:#e5c06b;color:#1b302a':''}">✏ ${courtDraw?'กำลังวาด… ลากจากประตูไปหาถนน':'วาดทางเข้าใหม่'}</button></div>
+  <div class="row"><button id="cOff">ลบพื้นทางเข้า</button><button id="cAuto">กลับเป็นอัตโนมัติ</button></div>
+  <p class="sub">วาดใหม่: กดปุ่ม แล้วลากบนแผนที่ เส้นเริ่มที่ประตูเสมอ ปลายเส้นคือจุดที่ถนนจะมาเชื่อม · ทางเข้าที่วาดเป็นพื้นเดินได้ ลายตามถนนที่มาเชื่อม · ลบ = ไม่มีลานปู (ตัวเอกยังเดินจากประตูถึงถนนได้)</p>`;
   body.querySelector('#eDeep').onchange = e => once(() => {
    const d = UX.entryOf(o);
    UX.setEntry(o, d, e.target.checked);
@@ -1981,7 +2024,10 @@
   act('#eReset', once(() => {
    delete o.entry;
    UX.refresh()
-  }))
+  }));
+  act('#cDraw', () => { courtDraw = !courtDraw; flashStatus(courtDraw ? 'ลากบนแผนที่จากประตูไปหาถนน · ปล่อยเมาส์เพื่อจบเส้น' : 'ยกเลิกการวาดทางเข้า'); render() });
+  act('#cOff', once(() => { courtDraw = false; o.court = { off: true }; UX.refresh() }));
+  act('#cAuto', once(() => { courtDraw = false; delete o.court; UX.refresh() }))
  }
 
  /* ---------- overlay: veil + rings, then handles ---------- */
@@ -2006,6 +2052,14 @@
  function drawOverlay(gg) {
   const z = scale * zoom,
    o = place && loc(place.id);
+  if (drag?.type === 'court' && drag.pts.length) {
+   gg.save(); gg.strokeStyle = '#ffe9a8'; gg.lineWidth = 6 / z; gg.setLineDash([12 / z, 8 / z]); gg.lineJoin = 'round'; gg.beginPath();
+   drag.pts.forEach((q, i) => { const s2 = project(q.u, q.v); gg[i ? 'lineTo' : 'moveTo'](s2.x, s2.y) }); gg.stroke(); gg.restore()
+  } else if (o?.court?.pts && place.tab === 'entry') {
+   const a = center(o); gg.save(); gg.fillStyle = '#ffe9a8';
+   for (const q of o.court.pts) { const c = canonical(o, a.u + q.du, a.v + q.dv), s2 = project(c.u, c.v); gg.beginPath(); gg.arc(s2.x, s2.y, 5 / z, 0, 7); gg.fill() }
+   gg.restore()
+  }
   if (place) {
    stamp('hole', q => {
     if (o && hasFrame(o)) {
@@ -2189,7 +2243,7 @@
  let lastSig = '';
  (function tick() {
   if (place && testWalk) leave(true);
-  const sig = [editing, testWalk, UX.getMode(), place?.id, place?.tab, place?.keys.join(), selChar, frame.length, JSON.stringify(data).length, UX.undoMark()].join('|');
+  const sig = [editing, testWalk, UX.getMode(), place?.id, place?.tab, place?.keys.join(), selChar, frame.length, JSON.stringify(data).length, UX.undoMark(), UX.selectedRoad?.(), UX.roadList?.().length, courtDraw].join('|');
   if (sig !== lastSig && !sliding && !picker?.open) {
    lastSig = sig;
    render()
@@ -2222,8 +2276,14 @@
     const snap = UX.snapshot(),
      body = '// Village default layout — saved from the in-game editor ' + new Date().toISOString() + '.\nwindow.VillageDefaultLayout=' + JSON.stringify(snap, null, 2) + ';\n';
     const sha = await GitHubPush.commit('Village layout from editor (' + Object.keys(snap.places).length + ' places' + (snap.assets ? ' + asset edits' : '') + ')', async head => {
-     const files=[{path:'js/village-layout-v67.js',content:body}],uploaded=localStorage.getItem(UPLOAD_KEY),customPlaces=localStorage.getItem('project-a-village-custom-places-v1');
-     if(uploaded!==null||customPlaces!==null){const settings=GitHubPush.parseSettings(await head.read('js/game-settings.js')||'')||{};if(uploaded!==null)settings[UPLOAD_KEY]=uploaded;if(customPlaces!==null)settings['project-a-village-custom-places-v1']=customPlaces;files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
+     const files=[],old=await head.read('js/village-layout-v67.js');
+     // v86: compare the layout itself (not the timestamp line) so an unchanged layout is not re-pushed
+     if((old||'').replace(/^\/\/.*\n/,'')!==body.replace(/^\/\/.*\n/,''))files.push({path:'js/village-layout-v67.js',content:body});
+     // everything else the village editor keeps outside the layout snapshot → js/game-settings.js
+     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1'],vals={};
+     for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
+     const text=await head.read('js/game-settings.js')||'',settings=GitHubPush.parseSettings(text)||{};
+     if(Object.entries(vals).some(([k,v])=>settings[k]!==v)){Object.assign(settings,vals);files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
      return files
     }, m => st.textContent = m);
     st.textContent = sha ? '⬆ push ผังหมู่บ้านแล้ว · ' + sha : 'ไม่มีอะไรต้อง push'

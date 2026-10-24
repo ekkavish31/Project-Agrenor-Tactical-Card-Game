@@ -38,7 +38,7 @@ function create(o){
  // 1 = walkable path, -1 = water / blocked, 0 = no say (map's own rule)
  function walk(x,y){const i=Math.floor(y*res)*MW+Math.floor(x*res);if(i<0||i>=MW*MH||x<0||x>=W)return 0;let wt=0,wf=0;for(const k in alphas){const v=alphas[k][i];if(BY[k].walk)wt=Math.max(wt,v);else wf=Math.max(wf,v)}return wt>=128&&wt>=wf?1:wf>=128?-1:0}
  function empty(){for(const k of Object.keys(masks)){const d=masks[k].getContext('2d').getImageData(0,0,MW,MH).data;let any=false;for(let i=3;i<d.length;i+=16)if(d[i]>3){any=true;break}if(!any)delete masks[k]}return !Object.keys(masks).length}
- function save(){if(empty())return null;const mats={};for(const k of Object.keys(masks))mats[k]=masks[k].toDataURL('image/png');return {v:1,res,mats}}
+ let saved=null,savedVer=-1;function save(){if(savedVer===version)return saved;savedVer=version;if(empty())return saved=null;const mats={};for(const k of Object.keys(masks))mats[k]=masks[k].toDataURL('image/png');return saved={v:1,res,mats}}
  let lastJson='';
  function load(data){const json=data?JSON.stringify(data):'';if(json===lastJson)return;lastJson=json;for(const k of Object.keys(masks))delete masks[k];full();if(!data?.mats)return;const job=++loading,ids=Object.keys(data.mats).filter(k=>BY[k]);let left=ids.length;
   ids.forEach(k=>{const im=new Image();im.onload=im.onerror=()=>{if(job!==loading)return;if(im.naturalWidth)mask(k).getContext('2d').drawImage(im,0,0,MW,MH);if(--left===0){full();listeners.forEach(f=>f())}};im.src=data.mats[k]})}
