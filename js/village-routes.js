@@ -17,11 +17,13 @@ function curveOf(a,b){return villageRoutes.curves?.[ekey(a,b)]||null}
 function bez(a,c,b,t){let u=1-t;return {x:u*u*a.x+2*u*t*c.x+t*t*b.x,y:u*u*a.y+2*u*t*c.y+t*t*b.y}}
 function edgePoints(a,b,steps=10){let A=villageRoutes.nodes[a],B=villageRoutes.nodes[b],c=curveOf(a,b);if(!c)return [A,B];let out=[];for(let i=0;i<=steps;i++)out.push(bez(A,c,B,i/steps));return out}
 function edgeLength(a,b){let pts=edgePoints(a,b),L=0;for(let i=1;i<pts.length;i++)L+=mapDist(pts[i-1],pts[i]);return L}
-function villageRoutePath(from,to){let R=villageRoutes,n=R.nodes.length;if(n<2||!R.edges.length||mapDist(from,to)<3)return [from,to];
- let near=p=>{let best=-1,d=Infinity;R.nodes.forEach((q,i)=>{let v=mapDist(p,q);if(v<d){d=v;best=i}});return best},a=near(from),b=near(to);
- let dist=Array(n).fill(Infinity),prev=Array(n).fill(-1),done=Array(n).fill(false),adj=Array.from({length:n},()=>[]);for(let [u,v] of R.edges){let w=edgeLength(u,v);adj[u].push([v,w]);adj[v].push([u,w])}dist[a]=0;
+function villageRoutePath(from,to){let R=villageRoutes,n=R.nodes.length;if(n<2||!R.edges.length)return [from,to];
+ // Only use the hand-authored road graph when both ends are reasonably close to it;
+ // otherwise direct movement is intentional (e.g. editor test clicks).
+ let near=p=>{let best=-1,d=Infinity;R.nodes.forEach((q,i)=>{let v=mapDist(p,q);if(v<d){d=v;best=i}});return {i:best,d}},na=near(from),nb=near(to);if(na.d>18||nb.d>18)return [from,to];let a=na.i,b=nb.i;
+ let dist=Array(n).fill(Infinity),prev=Array(n).fill(-1),done=Array(n).fill(false),adj=Array.from({length:n},()=>[]);for(let [u,v] of R.edges){let w=edgeLength(u,v);if(!Number.isFinite(w)||w<=0)continue;adj[u].push([v,w]);adj[v].push([u,w])}for(let list of adj)list.sort((x,y)=>x[0]-y[0]);dist[a]=0;
  for(;;){let u=-1;for(let i=0;i<n;i++)if(!done[i]&&dist[i]<Infinity&&(u<0||dist[i]<dist[u]))u=i;if(u<0||u===b)break;done[u]=true;for(let [v,w] of adj[u])if(dist[u]+w<dist[v]){dist[v]=dist[u]+w;prev[v]=u}}
- if(dist[b]===Infinity)return [from,to];let ids=[];for(let u=b;u>=0;u=prev[u])ids.unshift(u);let pts=[from,R.nodes[ids[0]]];for(let i=1;i<ids.length;i++)pts.push(...edgePoints(ids[i-1],ids[i]).slice(1));pts.push(to);return pts}
+ if(dist[b]===Infinity)return [from,to];let ids=[],seen=new Set();for(let u=b;u>=0;u=prev[u]){if(seen.has(u))return [from,to];seen.add(u);ids.unshift(u)}if(ids[0]!==a||ids[ids.length-1]!==b)return [from,to];let pts=[from,R.nodes[ids[0]]];for(let i=1;i<ids.length;i++)pts.push(...edgePoints(ids[i-1],ids[i]).slice(1));pts.push(to);return pts}
 
 function mapDust(p,dir){let m=$('villageMap');if(!m||reduced)return;let d=document.createElement('i');d.className='map-dust';d.style.left=p.x+'%';d.style.top=p.y+'%';m.appendChild(d);animate(d,[{opacity:.95,transform:'translate(-50%,-50%) scale(.5)'},{opacity:0,transform:`translate(calc(-50% + ${-dir*16}px),calc(-50% - 10px)) scale(1.8)`}],{duration:600,easing:'ease-out'}).then(()=>d.remove())}
 // Frame-stepped runner so the destination can change mid-run (re-routes from where the hero is now).
