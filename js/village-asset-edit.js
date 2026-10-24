@@ -903,6 +903,25 @@
   render();
   flashStatus('ทำสำเนา ' + recs.length + ' ชิ้นแล้ว · ลากไปวางตำแหน่งใหม่ได้เลย')
  }
+ function flipGroup() {
+  if (!place?.keys.length) { flashStatus('เลือกวัตถุอย่างน้อย 1 ชิ้นก่อน'); return }
+  const items = place.keys.map(key => frame.find(e => e.key === key)).filter(Boolean);
+  if (!items.length) return;
+  const centerX = items.reduce((sum, e) => sum + e.x, 0) / items.length;
+  UX.checkpoint();
+  for (const E of items) {
+   const targetX = 2 * centerX - E.x,
+    delta = canonDelta(baseOf(E.owner), targetX - E.x, 0),
+    ov = ovOf(E.key);
+   ov.du = +((ov.du || 0) + delta.du).toFixed(3);
+   ov.dv = +((ov.dv || 0) + delta.dv).toFixed(3);
+   ov.f = !ov.f;
+   clean(E.key)
+  }
+  UX.persist();
+  render();
+  flashStatus('กลับซ้าย–ขวาทั้งชุดแล้ว · ' + items.length + ' ชิ้น')
+ }
  function copyGroup() {
   const recs = groupRecords();
   if (!recs.length) return;
@@ -940,6 +959,7 @@
   act('#gBig', () => groupStep('size', 1));
   act('#gSmall', () => groupStep('size', -1));
   act('#gDup', dupGroup);
+  act('#gFlip', flipGroup);
   act('#gCopy', copyGroup);
   act('#gPaste', pasteGroup)
  }
