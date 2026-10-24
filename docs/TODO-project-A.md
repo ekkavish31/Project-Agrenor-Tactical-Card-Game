@@ -1,4 +1,4 @@
-# TODO — Project A (อัปเดต patch v39 สำหรับ v38 · 18 ต.ค. 2026)
+# TODO — Project A (อัปเดต patch v87.4 · 24 ต.ค. 2026)
 
 > ประวัติงานที่ทำแล้วทุกเวอร์ชันอยู่ในเกมที่ `docs/CHANGELOG-TH.md` และ `docs/TODO.md` · รายการภาพที่ต้องเจนอยู่ที่ `docs/AI-ART-PROMPTS-v35.md` (ข้อ 1–11)
 
@@ -9,12 +9,20 @@
 - [x] หน้าเมนูหลัก New Game / Continue / Options / Extra (วิธีเล่น · คลังภาพ · เครดิต) · เล่าเรื่องนำ + ตั้งชื่อตัวเอก
 - [x] หน้าโหลดพร้อมความคืบหน้า · โหลดฉากถัดไปล่วงหน้า · หน้าโหลดตอนเข้าการต่อสู้/ผจญภัยเมื่อจำเป็น
 
+## v87.4 · Battle Ground Editor — ทำต่อจาก v87.3
+- [x] เชื่อม Collision รายช่องกับ Battle Runtime: วัตถุเดินผ่านไม่ได้/เดินผ่านได้
+- [x] เชื่อม Occlusion รายวัตถุ: none / depth / mask และค่า opacity ปรับได้พร้อม fade กลับ
+- [x] เพิ่มสวิตช์ระดับจมแยกจาก Collision และเชื่อมกับการวาดตัวละคร
+- [x] แก้พาธ Texture ของ Editor ให้ตรงกับ Asset จริง
+- [ ] ทดสอบในเบราว์เซอร์จริงทุกชนิด Asset/การหมุนกล้อง/การเซฟโหลด
+- [ ] ทำเครื่องมือ Custom Collision shape และเครื่องมือวาด Occlusion Mask เฉพาะ Object
+
 ## v50 · ต่อจากนี้
 ## Battle Ground Editor · implementation progress (patch v51)
 - [x] แคตตาล็อก Object แสดงภาพ Asset จริงที่มีใน Repo และพื้นแสดง Texture จริงบนแผนที่ Editor
 - [x] เพิ่มเครื่องมือเลือกช่องและแผงตั้งค่า Collision / Occlusion / ความทึบ 55% / ระดับจม 50%; บันทึกค่ารายช่องไว้ในข้อมูล chunk ในเบราว์เซอร์
-- [ ] ยังต้องเชื่อมข้อมูล Collision/Occlusion/ระดับจมเข้ากับ Battle runtime และรูปแบบข้อมูลแผนที่ที่ใช้ตอนเล่นจริง
-- [ ] ยังไม่มีตัววาด/แก้ Occlusion Mask แบบกำหนดพื้นที่เองต่อ Object; ตัวเลือก Mask ใน patch นี้เป็น metadata เท่านั้น
+- [x] เชื่อมข้อมูล Collision/Occlusion/ระดับจมเข้ากับ Battle runtime สำหรับช่องที่ใช้ใน chunk
+- [ ] ยังไม่มีตัววาด/แก้ Occlusion Mask แบบกำหนดพื้นที่เองต่อ Object; ปัจจุบัน Mask ใช้ alpha-mask ที่มีของ Asset และต้องเพิ่ม editor วาด mask เอง
 - [ ] ยังต้องทดสอบในเบราว์เซอร์จริงและตรวจภาพ/การโหลด Asset ทุกชนิด
 
 ## Battle Ground Editor · Visual Map + Collision/Occlusion (วางแผนแล้ว · ยังไม่แก้โค้ด)

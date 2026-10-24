@@ -87,10 +87,10 @@ function tileOverlay(t){let k=C.key(t.x,t.y),idle=state.phase==='player'&&!locke
 
 // crag tops: flagstone texture on the summit and on stairs; stairs get step bands along the direction of ascent
 
-function opacityFor(o,hidden){let target=hidden?.4:1;o._alpha=(o._alpha??1)+(target-(o._alpha??1))*.22;return o._alpha}
+function opacityFor(o,hidden){let target=hidden?(Number.isFinite(o.occlusionOpacity)?Math.max(0,Math.min(1,o.occlusionOpacity)):.55):1;o._alpha=(o._alpha??1)+(target-(o._alpha??1))*.22;if(Math.abs(o._alpha-target)<.008)o._alpha=target;return o._alpha}
 function imagePropRect(t,sc=t._scale||1){let p=t._center||point(t.x,t.y,t.h),w=camera.w*sc,r=window.TacticsScenery?.PROPS.includes(t.prop)?window.BattleArt?.propRect(t.prop,p,w,clock):null;if(r)return r;let file=t.prop==='pillar'?assetFile('prop-pillar'):A.props[t.prop]?.src,im=file&&bitmap(file);if(!im)return null;let h=w*(t.prop==='tree'?1.9:t.prop==='pillar'?1.75:t.prop==='rock'?.8:.6),ww=h*im.width/im.height,pivot=t.prop==='pillar'?(window.ASSET_MANIFEST.assets.find(a=>a.id==='prop-pillar')?.pivot||[.5,.95]):A.props[t.prop].pivot;return {a:{image:im,entry:{file},sx:0,sy:0,sw:im.naturalWidth,sh:im.naturalHeight},x:p.x-ww*pivot[0],y:p.y-h*pivot[1],w:ww,h,bottom:p.y}}
 function bodyPoints(u){let g=ground(V(u)),scale=u.side==='enemy'?Math.max(.8,C.ENEMY_TYPES[u.kind]?.scale||1):1,h=camera.w*(u.hp>0?1.5*scale:.4),span=Math.max(...C.dimensions(u)),out=[g];for(let dy of [.3,.6,.85])for(let dx of [-.13,0,.13])out.push({x:g.x+camera.w*dx*span,y:g.y-h*dy});return out}
-function occludes(t,left,top,width,height=null,a=null){let td=depth(t.x,t.y),rect={x:left,y:top,w:width,h:height??point(t.x,t.y,t.h).y-top};return state.units.some(u=>!u.removed&&!u.fled&&depth(C.center(V(u)).x,C.center(V(u)).y)<td&&bodyPoints(u).some(q=>q.x>left&&q.x<left+width&&q.y>top&&q.y<top+rect.h&&(!a||window.BattleArt.opaqueAt(a,rect,q))))}
+function occludes(t,left,top,width,height=null,a=null){if(t.occlusion==='none')return false;let td=depth(t.x,t.y),rect={x:left,y:top,w:width,h:height??point(t.x,t.y,t.h).y-top};return state.units.some(u=>!u.removed&&!u.fled&&depth(C.center(V(u)).x,C.center(V(u)).y)<td&&bodyPoints(u).some(q=>q.x>left&&q.x<left+width&&q.y>top&&q.y<top+rect.h&&(t.occlusion==='depth'||!a||window.BattleArt.opaqueAt(a,rect,q))))}
 function boxOf(o){let cs=[[o.x,o.y],[o.x+o.w-1,o.y],[o.x,o.y+o.h-1],[o.x+o.w-1,o.y+o.h-1]].map(([x,y])=>rc(x,y));return {a0:Math.min(...cs.map(c=>c[0])),a1:Math.max(...cs.map(c=>c[0])),b0:Math.min(...cs.map(c=>c[1])),b1:Math.max(...cs.map(c=>c[1]))}}
 // unit is behind an object only when it sits past the object's far edge on the screen-depth axes
 function behindBox(u,o){let v=V(u),c=C.center(v),[a,b]=rc(c.x,c.y),B=boxOf(o),front=a>B.a1+.01||b>B.b1+.01,back=a<B.a0-.01||b<B.b0-.01;if(front&&!back)return false;if(back&&!front)return true;return a+b<(B.a0+B.a1+B.b0+B.b1)/2}
@@ -138,7 +138,7 @@ function drawAlly(u,isGhost){let art=!(u.id==='hero')&&u.key&&!allyFrame('hero_s
  if(!isHero&&u.hp>0){ctx.font='bold '+Math.max(9,camera.w*.2)+'px sans-serif';ctx.textAlign='center';ctx.fillStyle='#2f5f70';ctx.fillText(u.name,p.x,p.y+camera.h*.55)}
  unitBar(p,bodySize*.86,u.hp/u.maxHp,isHero?'#3f8a5a':'#497c87',hpShow(u))}
 // units standing in water/mud sink and are cut at the surface; tall grass covers the legs
-function drawUnitBase(u){let v=V(u),tt=C.at(state.map,Math.round(v.x),Math.round(v.y)),T=C.TERRAIN?.[tt?.kind]||{},fly=(u.traits||[]).includes('fly'),draw=()=>u.side==='ally'?drawAlly(u):drawEnemy(u);
+function drawUnitBase(u){let v=V(u),tt=C.at(state.map,Math.round(v.x),Math.round(v.y)),base=C.TERRAIN?.[tt?.kind]||{},enabled=!!tt?.submergeEnabled&&Number(tt.submerge)>0,T=enabled?{...base,hide:Math.max(base.hide||0,tt.submerge),sink:tt.submerge,wet:true}:base,fly=(u.traits||[]).includes('fly'),draw=()=>u.side==='ally'?drawAlly(u):drawEnemy(u);
  if(!window.TacticsScenery||!T.hide||fly||u.fled&&u.hp>0){draw();return}
  if(T.wet&&C.alive(u)){let g=ground(v),sink=camera.w*1.5*(T.sink??T.hide*.5)*(u.side==='enemy'?Math.max(.8,C.ENEMY_TYPES[u.kind]?.scale||1):1);ctx.save();ctx.beginPath();ctx.rect(-1e4,-1e4,3e4,1e4+g.y);ctx.clip();ctx.translate(0,sink);draw();ctx.restore();TacticsScenery.waterline(ctx,g,camera.w,tt.kind,clock);return}
  draw();TacticsScenery.grassFront(ctx,tt,point(tt.x,tt.y,tt.h),camera.w,camera.h,clock)}
