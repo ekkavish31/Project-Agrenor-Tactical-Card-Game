@@ -20,12 +20,13 @@ const base=[['home','บ้านของเรา',19,44,1.7,1.7,68,'#a75939']
 const exits=[['ทางเหนือ',51,5],['ทางตะวันออกเฉียงเหนือ',92,10],['ทางตะวันออก',94,52],['ทางตะวันออกเฉียงใต้',92,87],['ทางตะวันตกเฉียงใต้',16,94],['ทางตะวันตก',6,17]];
 const $=id=>document.getElementById(id),cv=$('world'),stage=$('stage'),KEY='project-a-village-main-v1';let g=cv.getContext('2d'),terrainDirty=true;const terrain=document.createElement('canvas');terrain.width=WORLD_W;terrain.height=WORLD_H;window.__townTerrain=terrain;
 let locations=base.map((a,i)=>({id:a[0],name:a[1],x:a[2],y:a[3],w:a[4]*2,d:a[5]*2,h:a[6]*2,roof:a[7],num:i+1,npc:a[0].startsWith('npc'),desc:a[0].startsWith('npc')?'บ้านชาวบ้าน · ทักทายได้เร็ว ๆ นี้':undefined,facing:['home','inn','shop','temple'].includes(a[0])||/npc[13579]/.test(a[0])?'SE':'SW'}));
-const SCATTER_KEY='project-a-village-scatter-v1';try{scatterItems=JSON.parse(localStorage.getItem(SCATTER_KEY)||'[]').filter(o=>o&&['tree','bush','flower','rock'].includes(o.type)&&Number.isFinite(o.x)&&Number.isFinite(o.y))}catch(e){scatterItems=[]}
+const SCATTER_KEY='project-a-village-scatter-v1';
 const CUSTOM_PLACE_KEY='project-a-village-custom-places-v1';
 try{const custom=JSON.parse(localStorage.getItem(CUSTOM_PLACE_KEY)||'[]');for(const o of custom){if(o&&typeof o.id==='string'&&o.id.startsWith('custom-')&&!locations.some(x=>x.id===o.id))locations.push({...o,custom:true,npc:false})}}catch(e){}
 
 try{const saved=JSON.parse(localStorage.getItem(KEY)||'{}');for(const o of locations)if(saved[o.id]&&valid(saved[o.id]))Object.assign(o,saved[o.id])}catch(e){}
 let W,H,scale=1,pan={x:0,y:0},zoom=1,editing=false,showRoutes=false,showGrid=false,showLabels=false,selected=null,multiSelected=new Set(),scatterMode=false,scatterItems=[],layoutUndo=[],layoutRedo=[],path=[],destination=null,notice='',time=0,last=0;
+try{scatterItems=JSON.parse(localStorage.getItem(SCATTER_KEY)||'[]').filter(o=>o&&['tree','bush','flower','rock'].includes(o.type)&&Number.isFinite(o.x)&&Number.isFinite(o.y))}catch(e){scatterItems=[]}
 const images={};TownArt.onLoad(()=>terrainDirty=true);
 for(const [key,file]of Object.entries({grass:'grass.png',paving:'paving.png',soil:'soil.png',details:'meadow-details.png',pond:'garden-pond.png'})){images[key]=new Image();images[key].onload=()=>terrainDirty=true;images[key].src='assets/village-town/'+file}images.house=new Image();images.house.src=HOUSE;for(const [id,src]of Object.entries(BUILDINGS)){images['building_'+id]=new Image();images['building_'+id].src=src;}
 const hero={...inv(19*MX,44*MY),dir:'SE',dir8:'SE'};
