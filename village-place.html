@@ -915,6 +915,9 @@ function draw(t) {
   });
   objects.push({
    y: p.y,
+   set: s.id,
+   isStation: true,
+   z: s.z || 0,
    tag: {
     type: 'station',
     i
@@ -931,6 +934,8 @@ function draw(t) {
   });
   objects.push({
    y: p.y + (o.layer || 0),
+   set: o.owner || null,
+   z: o.z || 0,
    tag: {
     type: 'prop',
     i
@@ -950,7 +955,12 @@ function draw(t) {
    if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, 80 * (hc.s || 1), hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0, 80 * (hc.s || 1))
   }
  });
- objects.sort((a, b) => a.y - b.y).forEach(o => window.PlaceBuild ? PlaceBuild.drawObj(o) : o.draw());
+ // v87 · a work station and its own decorations are one set (layer number, then depth); sets and loose things sort by depth
+ const sets = new Map(), list = [];
+ for (const o of objects) { if (o.set && M.stations.some(s => s.id === o.set)) { let G = sets.get(o.set); if (!G) sets.set(o.set, G = { m: [], y: null }); G.m.push(o); if (o.isStation) G.y = o.y } else list.push({ y: o.y, o }) }
+ for (const G of sets.values()) list.push({ y: G.y ?? Math.min(...G.m.map(x => x.y)), G });
+ const put = o => window.PlaceBuild ? PlaceBuild.drawObj(o) : o.draw();
+ list.sort((a, b) => a.y - b.y).forEach(e => e.o ? put(e.o) : e.G.m.sort((a, b) => (a.z || 0) - (b.z || 0) || a.y - b.y).forEach(put));
  if (work && t < work.until) {
   const s = M.stations[work.i];
   if (s) {
@@ -1354,4 +1364,4 @@ setup();
 resize();
 send('ready');
 requestAnimationFrame(draw);
-</script><script src="js/place-build.js?v=85"></script><script src="js/editor-tools.js?v=82.14"></script></html>
+</script><script src="js/place-build.js?v=87"></script><script src="js/editor-tools.js?v=82.14"></script></html>

@@ -2,7 +2,9 @@
    building art (image, size, tilt, facing), outer frame (plot size, gate, border per side), sub-assets, entrance.
    Plus per-map characters (size of everyone / each one, swapped image). Map-level tools stay in the top bar.
    Edits are stored in the village layout (TownUX snapshot "assets"), so undo, export/import, reset and push include them.
-   Data: edit[key] = {du,dv,s,r,f,layer,kind,hide} · added[] = {id,owner,du,dv,kind} · buildings[id] = {sx,sy,kx,ky,dx,dy,art}
+   Layers (v87): edit[key].z = item layer, buildings[id].z = the building's layer — one integer scale per place (higher draws on top,
+   equal → depth) · buildings[id].pz = layer of the whole place against other places (equal → depth).
+   Data: edit[key] = {du,dv,s,r,f,z,layer(old px offset),kind,hide} · added[] = {id,owner,du,dv,kind} · buildings[id] = {sx,sy,kx,ky,dx,dy,art}
          frames[id] = {left,right,back,front,gate,sides:{back,left,right,front}} · cast = {all, hero:{s,img,back,flip}, npc:{s}, 'npc:<id>':{…}} */
 (function() {
  'use strict';
@@ -229,6 +231,8 @@
   const it = {
    x: E.x,
    y: E.y + (ov.layer || 0),
+   z: ov.z || 0,
+   place: loc(owner) ? owner : null,
    draw: gg => {
     if (lit(key, owner)) stamp('ring', inner);
     if (place && owner === place.id) stamp('hole', inner);
@@ -854,6 +858,10 @@
   render()
  }
 
+ /* ---------- v87 layers: integer − / + controls ---------- */
+ const layerOf = id => ({ z: data.buildings[id]?.z || 0, pz: data.buildings[id]?.pz || 0 });
+ const zRow = (id, label, v, hint) => `<div class="zrow" style="display:grid;grid-template-columns:1fr 34px 46px 34px;gap:4px;align-items:center;margin:6px 0"><span>${label}${hint?`<small style="display:block;color:#b9b49a;font-size:11px">${hint}</small>`:''}</span><button data-zid="${id}" data-zd="-1" title="ถอยไปข้างหลัง">−</button><b style="text-align:center;font-size:16px;color:#e5c06b">${v>0?'+':''}${v}</b><button data-zid="${id}" data-zd="1" title="ขึ้นมาข้างหน้า">+</button></div>`;
+ function bindZ(id, fn) { panel.querySelectorAll(`[data-zid="${id}"]`).forEach(b => b.onclick = once(() => fn(+b.dataset.zd))) }
  /* ---------- v85 group tools: layer / size steps, duplicate, copy & paste between places ---------- */
  const GCLIP = 'project-a-village-group-clip-v1',
   clampN = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -867,7 +875,7 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, layer: ov.layer }
+  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, z: ov.z, layer: ov.layer }
  }
  function addRecords(recs, owner, off) {
   const ids = [];
@@ -875,7 +883,7 @@
   for (const r of recs) {
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    data.added.push({ id: nid, owner, du: +(r.du + off).toFixed(3), dv: +(r.dv + off).toFixed(3), kind: r.kind });
-   data.edit[nid] = { s: r.s, r: r.r, f: r.f, layer: r.layer };
+   data.edit[nid] = { s: r.s, r: r.r, f: r.f, z: r.z, layer: r.layer };
    clean(nid);
    ids.push(nid)
   }
@@ -917,14 +925,14 @@
   UX.checkpoint();
   for (const k of place.keys) {
    const ov = ovOf(k);
-   if (what === 'layer') ov.layer = clampN((ov.layer || 0) + dir * 12, -400, 400);
+   if (what === 'layer') ov.z = clampN((ov.z || 0) + dir, -20, 20);
    else ov.s = +clampN((ov.s ?? 1) * (dir > 0 ? 1.1 : 1 / 1.1), .2, 4).toFixed(3);
    clean(k)
   }
   UX.persist();
   render()
  }
- const groupHtml = n => `<b class="sec">จัดการ${n > 1 ? 'ทั้งกลุ่ม' : ''}</b><div class="row"><button id="gUp" title="PageUp">⬆ ชั้นหน้า</button><button id="gDown" title="PageDown">⬇ ชั้นหลัง</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div>
+ const groupHtml = n => `<b class="sec">จัดการ${n > 1 ? 'ทั้งกลุ่ม' : ''}</b><div class="row"><button id="gUp" title="PageUp">＋ ชั้น (+1)</button><button id="gDown" title="PageDown">－ ชั้น (−1)</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div>
   <div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
  function bindGroup() {
   act('#gUp', () => groupStep('layer', 1));
@@ -1379,6 +1387,7 @@
      s: ov.s,
      r: ov.r,
      f: ov.f,
+     z: ov.z,
      layer: ov.layer
     }
    })
@@ -1760,6 +1769,7 @@
   body.innerHTML = `${choices.length?`<div class="art"><span class="th" id="bThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="bSwap">เปลี่ยนภาพ…</button></div>${t.art&&t.art!==o.id?'<button id="bOrig">ใช้ภาพเดิม</button>':''}<p class="sub" style="margin:6px 0 0">${cur?.label||''}</p></div></div>`:''}
   ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div>`:''}
   ${slider('sx','กว้าง',t.sx??1,.5,1.6,.01,FMT.sx)}${slider('sy','สูง',t.sy??1,.5,1.6,.01,FMT.sy)}${slider('kx','เอียงซ้าย-ขวา',t.kx||0,-.6,.6,.005,FMT.kx)}${slider('ky','ยกด้านข้าง',t.ky||0,-.6,.6,.005,FMT.ky)}${nudgeHtml}
+  <b class="sec">ชั้น (layer)</b>${zRow('bz','ชั้นอาคาร',t.z||0,'เทียบกับของย่อยในสถานที่นี้ · ของย่อยที่เลขมากกว่าจะทับอาคาร')}${zRow('pz','ชั้นทั้งสถานที่',t.pz||0,'อาคาร+ของย่อยทั้งชุด เทียบกับสถานที่อื่น · 0 = ตามความลึก')}
   <label class="chk"><input type="checkbox" id="bGuides" ${guides?'checked':''}> แสดงเส้นช่วย 2:1 (ฟ้า = ฐานอาคาร)</label>
   <p class="sub">ป้ายชื่อ: ลากป้ายบนแผนที่ไปวางได้${o.label?' · <a href="#" id="bLabel" style="color:#9ff3f5">คืนตำแหน่งป้าย</a>':''}</p>
   <div class="row"><button id="bReset">คืนค่าอาคารนี้</button>${isHouse(o)?'<button id="bAll">ใช้ขนาด/มุมนี้กับบ้านทุกหลัง</button>':''}</div>`;
@@ -1778,6 +1788,9 @@
    UX.persist();
    render()
   }));
+  const bset = (k, d) => { const b = data.buildings[o.id] || (data.buildings[o.id] = {}); b[k] = clampN((b[k] || 0) + d, -20, 20); if (!b[k]) delete b[k]; if (!Object.keys(b).length) delete data.buildings[o.id] };
+  bindZ('bz', d => bset('z', d));
+  bindZ('pz', d => bset('pz', d));
   act('#bOrig', once(() => {
    delete data.buildings[o.id].art;
    if (!Object.keys(data.buildings[o.id]).length) delete data.buildings[o.id]
@@ -1954,7 +1967,7 @@
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
-  ${nudgeHtml}${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${slider('layer','ชั้น หน้า/หลัง',ov.layer||0,-200,200,2,FMT.layer)}
+  ${nudgeHtml}${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
   <div class="row">${added?'<button id="aeDel">ลบชิ้นนี้ (Delete)</button>':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชิ้นนี้ (Delete)'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
@@ -1994,6 +2007,7 @@
      s: ov.s,
      r: ov.r,
      f: ov.f,
+     z: ov.z,
      layer: ov.layer
     };
     clean(nid);
@@ -2001,6 +2015,7 @@
    })()
   });
   bindGroup();
+  bindZ('iz', d => { const v = ovOf(key); v.z = clampN((v.z || 0) + d, -20, 20); clean(key) });
   body.querySelector('#aeFlip').onchange = e => once(() => ovOf(key).f = e.target.checked)();
   bindSliders((k, v) => ovOf(key)[k] = v, () => clean(key))
  }
@@ -2319,6 +2334,7 @@
   get,
   set,
   artRect: transformRect,
+  layerOf,
   kinds: () => Object.keys(KINDS),
   getSelection: () => place ? {
    type: 'place',

@@ -99,9 +99,11 @@ const PB_ART = (() => {
  function duplicateSelected(){const list=selectedObjects();if(!list.length){status('เลือกของประดับก่อนทำสำเนา');return}checkpoint();const ids=[];for(const o of list){M.props.push({...copy(o),u:q4(o.u+.75),v:q4(o.v+.75)});ids.push(M.props.length-1)}place.sel=ids;save();render();status('ทำสำเนา '+ids.length+' ชิ้นแล้ว')}
  function transformSelected(kind){const list=selectedObjects();if(!list.length)return;checkpoint();if(kind==='rotate'){const cu=list.reduce((s,o)=>s+o.u,0)/list.length,cv=list.reduce((s,o)=>s+o.v,0)/list.length;for(const o of list){const u=o.u-cu,v=o.v-cv;o.u=q4(cu-v);o.v=q4(cv+u)}}else for(const o of list)o.f=!o.f;save();render();status(kind==='rotate'?'หมุนกลุ่มแล้ว':'กลับด้านของที่เลือกแล้ว')}
  // v85 · layer / size steps for the selection
- function groupStep(what,dir){const list=selectedObjects();if(!list.length)return;checkpoint();for(const o of list){if(what==='layer'){o.layer=Math.max(-400,Math.min(400,(o.layer||0)+dir*12));if(!o.layer)delete o.layer}else o.s=+Math.max(.2,Math.min(4,(o.s||1)*(dir>0?1.1:1/1.1))).toFixed(3)}save();render()}
- const groupHtml=n=>`<b class="sec">จัดการ${n>1?'ทั้งกลุ่ม':''}</b><div class="row"><button id="gUp" title="PageUp">⬆ ชั้นหน้า</button><button id="gDown" title="PageDown">⬇ ชั้นหลัง</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div><div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
+ function groupStep(what,dir){const list=selectedObjects();if(!list.length)return;checkpoint();for(const o of list){if(what==='layer'){o.z=Math.max(-20,Math.min(20,(o.z||0)+dir));if(!o.z)delete o.z}else o.s=+Math.max(.2,Math.min(4,(o.s||1)*(dir>0?1.1:1/1.1))).toFixed(3)}save();render()}
+ const groupHtml=n=>`<b class="sec">จัดการ${n>1?'ทั้งกลุ่ม':''}</b><div class="row"><button id="gUp" title="PageUp">＋ ชั้น (+1)</button><button id="gDown" title="PageDown">－ ชั้น (−1)</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div><div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
  function bindGroup(){act('#gUp',()=>groupStep('layer',1));act('#gDown',()=>groupStep('layer',-1));act('#gBig',()=>groupStep('size',1));act('#gSmall',()=>groupStep('size',-1));act('#gDup',duplicateSelected);act('#gCopy',copySelected);act('#gPaste',pasteSelected)}
+ const zRow=(id,label,v,hint)=>`<div style="display:grid;grid-template-columns:1fr 34px 46px 34px;gap:4px;align-items:center;margin:6px 0"><span>${label}${hint?`<small style="display:block;color:#b9b49a;font-size:11px">${hint}</small>`:''}</span><button data-zid="${id}" data-zd="-1">−</button><b style="text-align:center;font-size:16px;color:#e5c06b">${v>0?'+':''}${v}</b><button data-zid="${id}" data-zd="1">+</button></div>`;
+ function bindZ(id,fn){panel.querySelectorAll(`[data-zid="${id}"]`).forEach(b=>b.onclick=()=>{checkpoint();fn(+b.dataset.zd);save();render()})}
  function readPrefabs(){try{return JSON.parse(localStorage.getItem(PREFAB_KEY)||'[]')}catch(e){return[]}}
  function savePrefab(){const list=selectedObjects();if(!list.length){status('เลือกของประดับก่อนบันทึกเป็นชุด');return}const name=prompt('ชื่อชุดของแต่ง เช่น หน้าร้านแบบตลาด');if(!name?.trim())return;const cu=list.reduce((s,o)=>s+o.u,0)/list.length,cv=list.reduce((s,o)=>s+o.v,0)/list.length,prefabs=readPrefabs();prefabs.push({id:'pf'+Date.now().toString(36),name:name.trim(),props:list.map(o=>({...copy(o),du:q4(o.u-cu),dv:q4(o.v-cv)}))});localStorage.setItem(PREFAB_KEY,JSON.stringify(prefabs));status('บันทึกชุด “'+name.trim()+'” แล้ว')}
  function openPrefabPicker(){const prefabs=readPrefabs();if(!prefabs.length){status('ยังไม่มีชุดของแต่ง · เลือกหลายชิ้นแล้วกดบันทึกเป็นชุด');return}let d=document.getElementById('pbPrefabPicker');if(!d){d=document.createElement('dialog');d.id='pbPrefabPicker';d.style.cssText='max-width:420px;width:90vw;border:1px solid #8caa8c;border-radius:12px;padding:16px;background:#182a24;color:#f2e9cf';document.body.append(d)}d.innerHTML='<h3>ชุดของแต่งที่บันทึกไว้</h3><div style="display:grid;gap:6px">'+prefabs.map((p,i)=>'<button data-pf="'+i+'">'+String(p.name).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+' · '+p.props.length+' ชิ้น</button>').join('')+'</div><div style="text-align:right;margin-top:10px"><button data-close>ปิด</button></div>';d.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const p=prefabs[+b.dataset.pf];d.close();pasteObjects(p.props,'วางชุด '+p.name)});d.querySelector('[data-close]').onclick=()=>d.close();d.showModal()
@@ -1155,9 +1157,11 @@ const PB_ART = (() => {
   body.innerHTML = `<div class="art"><span class="th" id="aTh"></span><div><button id="aSwap">เปลี่ยนภาพ…</button><p class="sub" style="margin:6px 0 0">${propName(s)}</p></div></div>
   ${sl('width','ความกว้างภาพ',s.width||120,30,700,5)}${sl('s','ขนาด',s.s||1,.3,2.5,.05,pct)}
   <label class="chk"><input type="checkbox" id="aFlip" ${s.f?'checked':''}> กลับด้านภาพ</label>
+  ${zRow('sz','ชั้นของจุดทำงาน',s.z||0,'เทียบกับของประดับของจุดนี้ · ของที่เลขมากกว่าจะทับ')}
   <p class="sub">ลากตัวจุดบนแผนที่เพื่อย้าย (ของประดับของจุดนี้ตามไปด้วย) · ลูกศร = ขยับทีละ ¼ ช่อง</p>
   <hr><div class="row"><button id="aDel">ลบจุดทำงานนี้</button></div>`;
   thumbInto(body.querySelector('#aTh'), s.art, s.width || 120);
+  bindZ('sz', d => { s.z = Math.max(-20, Math.min(20, (s.z || 0) + d)); if (!s.z) delete s.z });
   act('#aSwap', () => openArtPicker('เปลี่ยนภาพ ' + s.name, s.art, a => once(() => s.art = a)()));
   body.querySelector('#aFlip').onchange = e => once(() => s.f = e.target.checked || undefined)();
   act('#aDel', () => {
@@ -1227,7 +1231,7 @@ const PB_ART = (() => {
     o = M.props[i];
    body.innerHTML = `<div class="row" style="margin-top:0"><button id="pBack">← ของประดับทั้งหมด</button></div><b class="sec">${propName(o)}</b>
    <div class="art"><span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button></div></div>
-   ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${sl('layer','ชั้น หน้า/หลัง',o.layer||0,-400,400,2)}
+   ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${zRow('pz1','ชั้นของชิ้นนี้',o.z||0,o.owner?'ในจุดทำงานนี้ · จุดทำงาน = '+(stOf(o.owner)?.z||0):'ของประดับทั่วไป (ไม่อยู่ในชุดจุดทำงาน)')}
    <label class="chk"><input type="checkbox" id="pFlip" ${o.f?'checked':''}> กลับด้าน</label>${groupHtml(1)}
    <div class="row"><button id="pDup">ทำสำเนา</button><button id="pDel">ลบ (Delete)</button></div><div class="row"><button id="pSavePrefab">บันทึกเป็นชุด</button><button id="pUsePrefab">วางชุดที่บันทึก</button></div><p class="sub">ลากบนแผนที่เพื่อย้าย · ลูกศร = ขยับทีละ ¼ ช่อง · R หมุน · F กลับด้าน</p>`;
    thumbInto(body.querySelector('#pTh'), o.art, o.width || 110);
@@ -1246,7 +1250,7 @@ const PB_ART = (() => {
     place.sel = [M.props.length - 1]
    }));
    act('#pDel', delProps);
-   act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);bindGroup();
+   act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);bindGroup();bindZ('pz1',d=>{o.z=Math.max(-20,Math.min(20,(o.z||0)+d));if(!o.z)delete o.z});
    sliders((k, v) => o[k] = v);
    return
   }
