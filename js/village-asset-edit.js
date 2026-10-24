@@ -1351,7 +1351,7 @@
    q = '';
   const draw = () => {
    const list = Object.entries(KINDS).filter(([id, k]) => (tab === 'ทั้งหมด' || k.group === tab) && (!q || k.label.includes(q) || id.includes(q)));
-   picker.innerHTML = `<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"><button data-upload>＋ อัปโหลดภาพ</button><button data-x>ปิด (Esc)</button></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid">${list.map(([id,k])=>`<button data-id="${id}" class="${id===current?'cur':''}"><span class="th"></span><span>${k.label}</span><small>${k.group}</small></button>`).join('')||'<p>ไม่พบ</p>'}</div>`;
+   picker.innerHTML = `<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"><button data-upload>＋ อัปโหลดภาพ</button><button data-github>↙ จาก GitHub</button><button data-x>ปิด (Esc)</button></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid">${list.map(([id,k])=>`<button data-id="${id}" class="${id===current?'cur':''}"><span class="th"></span><span>${k.label}</span><small>${k.group}</small></button>`).join('')||'<p>ไม่พบ</p>'}</div>`;
    picker.querySelectorAll('[data-id]').forEach(b => {
     const slot = b.querySelector('.th');
     putThumb(slot, kindThumb(b.dataset.id));
@@ -1369,6 +1369,7 @@
     draw()
    });
    picker.querySelector('[data-upload]').onclick=()=>{const input=document.createElement('input');input.type='file';input.accept='image/*';input.onchange=()=>{const file=input.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{const im=new Image();im.onload=()=>{const max=512,sc=Math.min(1,max/im.naturalWidth,max/im.naturalHeight),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.naturalWidth*sc));c.height=Math.max(1,Math.round(im.naturalHeight*sc));c.getContext('2d').drawImage(im,0,0,c.width,c.height);let dataUrl;try{dataUrl=c.toDataURL('image/webp',.9)}catch(e){dataUrl=c.toDataURL('image/png')}const rec={id:'u'+Date.now().toString(36),name:file.name.replace(/\\.[^.]+$/,'').slice(0,48)||'ภาพอัปโหลด',dataUrl,width:Math.min(220,c.width),height:Math.min(180,c.height)};const all=readUploaded();all.push(rec);try{localStorage.setItem(UPLOAD_KEY,JSON.stringify(all))}catch(e){alert('ภาพใหญ่เกินพื้นที่เก็บในเบราว์เซอร์');return}registerUploaded(rec);thumbCache.clear();picker.close();onPick('upload:'+rec.id)};im.onerror=()=>alert('อ่านไฟล์ภาพไม่สำเร็จ');im.src=reader.result};reader.readAsDataURL(file)};input.click()};
+   picker.querySelector('[data-github]').onclick=async()=>{let url=prompt('วาง URL ของไฟล์ภาพจาก GitHub (เปิดไฟล์ภาพ แล้วเลือก Raw URL ได้)');if(!url)return;url=url.trim();if(url.includes('github.com/')&&url.includes('/blob/'))url=url.replace('https://github.com/','https://raw.githubusercontent.com/').replace('/blob/','/');if(!/^https:\/\/(raw\.githubusercontent\.com|github\.com)\//i.test(url)){alert('ใช้ URL https ของ raw.githubusercontent.com หรือ github.com เท่านั้น');return}try{const res=await fetch(url);if(!res.ok)throw Error('ดาวน์โหลดไม่สำเร็จ ('+res.status+')');const blob=await res.blob();if(!/^image\//i.test(blob.type))throw Error('ลิงก์นี้ไม่ได้ชี้ไปยังไฟล์ภาพโดยตรง');if(blob.size>8*1024*1024)throw Error('ไฟล์ใหญ่เกิน 8 MB');const tmp=URL.createObjectURL(blob),im=new Image();im.onload=()=>{URL.revokeObjectURL(tmp);const max=512,sc=Math.min(1,max/im.naturalWidth,max/im.naturalHeight),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.naturalWidth*sc));c.height=Math.max(1,Math.round(im.naturalHeight*sc));c.getContext('2d').drawImage(im,0,0,c.width,c.height);let dataUrl;try{dataUrl=c.toDataURL('image/webp',.9)}catch(e){dataUrl=c.toDataURL('image/png')}const filename=decodeURIComponent(url.split('/').pop().split('?')[0]).replace(/\.[^.]+$/,'').slice(0,48)||'GitHub asset',rec={id:'u'+Date.now().toString(36),name:filename,dataUrl,width:Math.min(220,c.width),height:Math.min(180,c.height)};const all=readUploaded();all.push(rec);try{localStorage.setItem(UPLOAD_KEY,JSON.stringify(all))}catch(e){alert('พื้นที่เก็บภาพในเบราว์เซอร์ไม่พอ');return}registerUploaded(rec);thumbCache.clear();picker.close();onPick('upload:'+rec.id)};im.onerror=()=>{URL.revokeObjectURL(tmp);alert('เปิดไฟล์ภาพจาก GitHub ไม่สำเร็จ')};im.src=tmp}catch(err){alert('นำเข้าจาก GitHub ไม่สำเร็จ: '+err.message+'\\nตรวจว่าเป็นไฟล์ภาพสาธารณะและ URL เป็น Raw') }};
    picker.querySelector('[data-x]').onclick = () => picker.close();
    const s = picker.querySelector('input');
    s.oninput = () => {
@@ -1853,7 +1854,10 @@
   }));
   body.querySelector('#bGuides').onchange = e => guides = e.target.checked;
   bindSliders((k, v) => {
-   (data.buildings[o.id] || (data.buildings[o.id] = {}))[k] = v
+   const b = data.buildings[o.id] || (data.buildings[o.id] = {});
+   // ix/iy sliders display percentages; store a multiplier (1.00 = 100%), not 100.
+   b[k] = (k === 'ix' || k === 'iy') ? v / 100 : v;
+   if ((k === 'ix' || k === 'iy') && b[k] === 1) delete b[k];
   })
  }
 
