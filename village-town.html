@@ -154,7 +154,7 @@ const GRID_DIRS=[[1,0],[0,1],[-1,0],[0,-1]];
 // Shortest tile route in 4 directions with a turn penalty (straight roads). goal=null → stop at any tile of `network`
 // (existing roads are cheaper, so new roads merge into them instead of running beside them).
 function gridRoute(start,goal,test=blockedRoad,network=null,turn=3){if(!start)return[];const net=network||new Map();if(!goal&&net.has(cellKey(start.u,start.v)))return[{u:start.u,v:start.v}];
- const h=goal?(u,v)=>Math.abs(u-goal.u)+Math.abs(v-goal.v):()=>0,sk=(u,v,d)=>u+','+v+','+d,open=[],best=new Map(),prev=new Map();
+ const h=goal?(u,v)=>(Math.abs(u-goal.u)+Math.abs(v-goal.v)*(1))*(network&&network.size?.35:1):()=>0,sk=(u,v,d)=>u+','+v+','+d,open=[],best=new Map(),prev=new Map();
  const push=n=>{open.push(n);let i=open.length-1;while(i>0){const j=(i-1)>>1;if(open[j].f<=n.f)break;open[i]=open[j];i=j}open[i]=n};
  const pop=()=>{const n=open[0],last=open.pop();if(open.length){let i=0;while(i*2+1<open.length){let j=i*2+1;if(j+1<open.length&&open[j+1].f<open[j].f)j++;if(open[j].f>=last.f)break;open[i]=open[j];i=j}open[i]=last}return n};
  const s0=sk(start.u,start.v,-1);best.set(s0,0);push({u:start.u,v:start.v,d:-1,g:0,f:h(start.u,start.v),k:s0});let found=null,it=0;
@@ -217,7 +217,7 @@ function roadEntry(p){const list=[...roadCells.values()].map(c=>({c,d:Math.hypot
 function findPath(start,end){if(blocked(end.u,end.v))return[];const from=courtOf(start),to=courtOf(end),A=from?gate(from):start,B=to?gate(to):end;
  if(from&&to&&from===to)return[{u:end.u,v:end.v}];
  const S=roadEntry(A),G=roadEntry(B);let mid=[];
- if(S&&G){const cells=gridRoute(S,G,(u,v)=>Number.isInteger(u)&&Number.isInteger(v)&&!roadCells.has(cellKey(u,v)),null,1.5);if(cells.length)mid=corners(cells)}
+ if(S&&G){const cells=gridRoute(S,G,(u,v)=>Number.isInteger(u)&&Number.isInteger(v)&&!roadCells.has(cellKey(u,v)),null,.15);if(cells.length)mid=corners(cells)}
  if(!mid.length){const p=route(start,end);return p.length&&clearSegment(start,p[0],blocked)?p:[]}
  const out=[...(from?courtWalk(from):[]),...mid,...(to?courtWalk(to).slice(1).reverse():[]),{u:end.u,v:end.v}],clean=[];out.forEach((p,i)=>{const l=clean.at(-1)||start;if(Math.hypot(p.u-l.u,p.v-l.v)>(i===out.length-1?.05:.45))clean.push({u:p.u,v:p.v})})
  // Short direct hops (both points already on one straight road piece) skip the detour onto the centre line.
