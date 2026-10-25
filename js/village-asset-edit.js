@@ -446,6 +446,20 @@
  }
  building = function(o) {
   drawB(o);
+  // Yellow dashed outline shows the selected building's transformed image bounds.
+  if (editing && selected === o.id && (data.buildings[o.id]?.bounds ?? true)) {
+   const t=data.buildings[o.id]||{}, p=anchorOf(o), r=artRect(o);
+   if (r && Number.isFinite(r.x) && Number.isFinite(r.y) && Number.isFinite(r.w) && Number.isFinite(r.h)) {
+    const ix=t.ix??1, iy=t.iy??1, a=(ix+iy)/2, b=(iy-ix)/2, sx=t.sx??1, sy=t.sy??1,
+     kx=t.kx||0, ky=t.ky||0, ox=t.dx||0, oy=t.dy||0;
+    const pts=[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h],[r.x,r.y+r.h]].map(([x,y])=>{
+     const dx=x-p.x,dy=y-p.y,qx=a*dx+b*dy,qy=b*dx+a*dy;
+     return [p.x+ox+sx*qx+kx*qy,p.y+oy+ky*qx+sy*qy]
+    });
+    g.save(); g.setTransform(1,0,0,1,0,0); g.strokeStyle='#ffd84d'; g.lineWidth=2; g.setLineDash([7,5]);
+    g.beginPath(); g.moveTo(pts[0][0],pts[0][1]); for(let i=1;i<pts.length;i++) g.lineTo(pts[i][0],pts[i][1]); g.closePath(); g.stroke(); g.restore()
+   }
+  }
   if (!editing) return;
   if (lit('bld:' + o.id, o.id) || place?.id === o.id && place.tab === 'building') stamp('ring', () => drawB(o));
   if (place?.id === o.id) stamp('hole', () => drawB(o))
@@ -1859,6 +1873,9 @@
   <b class="sec">ชั้น (layer)</b>${zRow('bz','ชั้นอาคาร',t.z||0,'เทียบกับของย่อยในสถานที่นี้ · ของย่อยที่เลขมากกว่าจะทับอาคาร')}${zRow('pz','ชั้นทั้งสถานที่',t.pz||0,'อาคาร+ของย่อยทั้งชุด เทียบกับสถานที่อื่น · 0 = ตามความลึก')}
   <label class="chk"><input type="checkbox" id="bGuides" ${guides?'checked':''}> แสดงเส้นช่วย 2:1 (ฟ้า = ฐานอาคาร)</label>
   <p class="sub">ป้ายชื่อ: ลากป้ายบนแผนที่ไปวางได้${o.label?' · <a href="#" id="bLabel" style="color:#9ff3f5">คืนตำแหน่งป้าย</a>':''}</p>
+  <div style="color:#ffd84d;font-weight:800;margin:10px 0 4px">ยืดเฉียง · ตรวจกรอบภาพ</div>
+  <label class="chk"><input type="checkbox" id="bBounds" ${(t.bounds??true)?'checked':''}> แสดงกรอบประของภาพขณะยืด</label>
+  <p class="sub">กรอบเหลือง = ขอบเขตภาพหลังยืด · ปิดได้เมื่อต้องการดูภาพจริง</p>
   <div class="row"><button id="bReset">คืนค่าอาคารนี้</button>${isHouse(o)?'<button id="bAll">ใช้ขนาด/มุมนี้กับบ้านทุกหลัง</button>':''}</div>`;
   const th = body.querySelector('#bThumb');
   if (th) {
@@ -1915,6 +1932,12 @@
     } flashStatus('ใช้ขนาด/มุมเดียวกันกับบ้านทุกหลังแล้ว · กด ย้อน ได้')
   }));
   body.querySelector('#bGuides').onchange = e => guides = e.target.checked;
+  body.querySelector('#bBounds').onchange = e => {
+   const b = data.buildings[o.id] || (data.buildings[o.id] = {});
+   b.bounds = e.target.checked;
+   UX.persist();
+   render()
+  };
   bindSliders((k, v) => {
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
    // ix/iy sliders display percentages; store a multiplier (1.00 = 100%), not 100.
