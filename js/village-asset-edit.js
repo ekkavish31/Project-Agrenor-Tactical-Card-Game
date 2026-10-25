@@ -438,8 +438,8 @@
   const p = anchorOf(o);
   g.save();
   g.translate(p.x + (t.dx || 0), p.y + (t.dy || 0));
-  g.transform(t.sx ?? 1, t.ky || 0, t.kx || 0, t.sy ?? 1, 0, 0);
-   const ix=t.ix??1,iy=t.iy??1;g.transform((ix+iy)/2,(iy-ix)/2,(iy-ix)/2,(ix+iy)/2,0,0);
+  // Upright-preserving affine transform: x'=sx*x; y'=k*x+sy*y.
+   g.transform(t.sx ?? 1, t.kx || 0, 0, t.sy ?? 1, 0, 0);
    g.translate(-p.x, -p.y);
   baseBuilding(o);
   g.restore()
@@ -450,11 +450,10 @@
   if (editing && selected === o.id && (data.buildings[o.id]?.bounds ?? true)) {
    const t=data.buildings[o.id]||{}, p=anchorOf(o), r=artRect(o);
    if (r && Number.isFinite(r.x) && Number.isFinite(r.y) && Number.isFinite(r.w) && Number.isFinite(r.h)) {
-    const ix=t.ix??1, iy=t.iy??1, a=(ix+iy)/2, b=(iy-ix)/2, sx=t.sx??1, sy=t.sy??1,
-     kx=t.kx||0, ky=t.ky||0, ox=t.dx||0, oy=t.dy||0;
+    const sx=t.sx??1, sy=t.sy??1, k=t.kx||0, ox=t.dx||0, oy=t.dy||0;
     const pts=[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h],[r.x,r.y+r.h]].map(([x,y])=>{
-     const dx=x-p.x,dy=y-p.y,qx=a*dx+b*dy,qy=b*dx+a*dy;
-     return [p.x+ox+sx*qx+kx*qy,p.y+oy+ky*qx+sy*qy]
+     const dx=x-p.x,dy=y-p.y;
+     return [p.x+ox+sx*dx,p.y+oy+k*dx+sy*dy]
     });
     g.save(); g.setTransform(1,0,0,1,0,0); g.strokeStyle='#ffd84d'; g.lineWidth=2; g.setLineDash([7,5]);
     g.beginPath(); g.moveTo(pts[0][0],pts[0][1]); for(let i=1;i<pts.length;i++) g.lineTo(pts[i][0],pts[i][1]); g.closePath(); g.stroke(); g.restore()
@@ -1869,7 +1868,7 @@
    cur = choices.find(c => c.id === (t.art || o.id)) || choices.find(c => c.id === (isHouse(o) ? (o.npc ? o.id : 'home') : o.id));
   body.innerHTML = `${choices.length?`<div class="art"><span class="th" id="bThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="bSwap">เปลี่ยนภาพ…</button></div>${t.art&&t.art!==o.id?'<button id="bOrig">ใช้ภาพเดิม</button>':''}<p class="sub" style="margin:6px 0 0">${cur?.label||''}</p></div></div>`:''}
   ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div>`:''}
-  ${slider('sx','กว้าง',t.sx??1,.5,1.6,.01,FMT.sx)}${slider('sy','สูง',t.sy??1,.5,1.6,.01,FMT.sy)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((t.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((t.iy??1)*100),50,200,1,v=>v+'%')}${slider('kx','เอียงซ้าย-ขวา',t.kx||0,-.6,.6,.005,FMT.kx)}${slider('ky','ยกด้านข้าง',t.ky||0,-.6,.6,.005,FMT.ky)}${nudgeHtml}
+  ${slider('sx','Width · ความกว้าง',t.sx??1,.5,1.6,.01,FMT.sx)}${slider('sy','Height · ความสูง',t.sy??1,.5,1.6,.01,FMT.sy)}${slider('kx','Base Slope · ความลาดฐาน',t.kx||0,-.6,.6,.005,FMT.kx)}<p class="sub">ปรับจากจุดฐานอาคาร: ความกว้าง/สูงแยกกัน · Base Slope เปลี่ยนแนวฐานโดยไม่ทำให้เส้นตั้งของอาคารเอียง</p>${nudgeHtml}
   <b class="sec">ชั้น (layer)</b>${zRow('bz','ชั้นอาคาร',t.z||0,'เทียบกับของย่อยในสถานที่นี้ · ของย่อยที่เลขมากกว่าจะทับอาคาร')}${zRow('pz','ชั้นทั้งสถานที่',t.pz||0,'อาคาร+ของย่อยทั้งชุด เทียบกับสถานที่อื่น · 0 = ตามความลึก')}
   <label class="chk"><input type="checkbox" id="bGuides" ${guides?'checked':''}> แสดงเส้นช่วย 2:1 (ฟ้า = ฐานอาคาร)</label>
   <p class="sub">ป้ายชื่อ: ลากป้ายบนแผนที่ไปวางได้${o.label?' · <a href="#" id="bLabel" style="color:#9ff3f5">คืนตำแหน่งป้าย</a>':''}</p>
@@ -1923,7 +1922,7 @@
     if (isHouse(x) && x.id !== o.id) {
      const keep = data.buildings[x.id] || {},
       n = {};
-     for (const k of ['sx', 'sy', 'ix', 'iy', 'kx', 'ky'])
+     for (const k of ['sx', 'sy', 'kx'])
       if (src[k] != null) n[k] = src[k];
      for (const k of ['dx', 'dy', 'art'])
       if (keep[k] != null) n[k] = keep[k];
@@ -1940,9 +1939,8 @@
   };
   bindSliders((k, v) => {
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
-   // ix/iy sliders display percentages; store a multiplier (1.00 = 100%), not 100.
-   b[k] = (k === 'ix' || k === 'iy') ? v / 100 : v;
-   if ((k === 'ix' || k === 'iy') && b[k] === 1) delete b[k];
+   b[k] = v;
+   if (Math.abs(v - (k === 'kx' ? 0 : 1)) < 1e-9) delete b[k];
   })
  }
 
