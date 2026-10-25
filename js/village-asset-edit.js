@@ -881,7 +881,7 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, z: ov.z, layer: ov.layer }
+  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer }
  }
  function addRecords(recs, owner, off) {
   const ids = [];
@@ -889,7 +889,7 @@
   for (const r of recs) {
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    data.added.push({ id: nid, owner, du: +(r.du + off).toFixed(3), dv: +(r.dv + off).toFixed(3), kind: r.kind });
-   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, z: r.z, layer: r.layer };
+   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer };
    clean(nid);
    ids.push(nid)
   }
