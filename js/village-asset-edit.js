@@ -1661,6 +1661,7 @@
  }
 
  function renderRoads(m) {
+  const oldListScroll = panel.querySelector('.items')?.scrollTop || 0;
   const list = UX.roadList ? UX.roadList() : [], sel = UX.selectedRoad ? UX.selectedRoad() : -1, K = UX.ROAD_KINDS || {}, kindOpts = cur => Object.entries(K).map(([k, n]) => `<option value="${k}" ${cur===k?'selected':''}>${n}</option>`).join('');
   panel.innerHTML = `<div class="body"><h3>${m==='road'?'〰 ดัดถนน':'✏ วาดถนน'}</h3><p class="sub">${m==='road'?'เลือกชื่อถนนเพื่อไฮไลท์เส้นนั้นบนแผนที่ · ลากจุดสีทองเพื่อดัด · Delete = ลบเส้นที่เลือก':'ลากบนแผนที่เพื่อวาดถนนเส้นใหม่ (เข้ากริดอัตโนมัติ) แล้วต่อกับถนนเดิมหรือประตูสถานที่'} · ถนน = พื้นที่เดินได้ของตัวเอกและ NPC · ${UX.isManual?.()?'<b>ผังถนนแบบกำหนดเอง</b>':'ตอนนี้เป็นถนนอัตโนมัติ (แก้เส้นไหนก็จะเปลี่ยนเป็นแบบกำหนดเอง)'}</p>
   ${m==='draw'?`<label class="sel">ชนิดถนนที่จะวาด<select id="rDrawKind">${kindOpts(UX.drawKind?.())}</select></label>`:''}
@@ -1670,6 +1671,7 @@
   ${slider('blend','รอยต่อพื้นนุ่ม',ROAD_BLEND,0,60,1,x=>x?x+'px':'คม')}<p class="sub">ความกว้างที่ลายพื้นต่างชนิดค่อย ๆ ผสมกัน (0 = ขอบคม)</p>
   <label class="sel">ทรงถนน<select id="rShape"><option value="square" ${ROAD_SHAPE==='square'?'selected':''}>เหลี่ยมตามกริด</option><option value="round" ${ROAD_SHAPE==='round'?'selected':''}>มน</option></select></label>
   <p class="sub">พื้นทางเข้าของแต่ละสถานที่: คลิกสถานที่ → แท็บทางเข้า</p></div>`;
+  const roadItems = panel.querySelector('.items'); if (roadItems) roadItems.scrollTop = oldListScroll;
   bindTools();
   panel.querySelectorAll('[data-road]').forEach(b => b.onclick = () => { UX.selectRoad(+b.dataset.road); render() });
   panel.querySelectorAll('[data-rk]').forEach(s2 => s2.onchange = () => { UX.setRoadKind(+s2.dataset.rk, s2.value); render() });
