@@ -951,6 +951,8 @@
   for (const k of place.keys) {
    const ov = ovOf(k);
    if (what === 'layer') ov.z = clampN((ov.z || 0) + dir, -20, 20);
+   else if (what === 'rotate') ov.r = clampN((ov.r || 0) + dir * 15, -180, 180);
+   else if (what === 'ix' || what === 'iy') ov[what] = +clampN((ov[what] ?? 1) + dir * .1, .5, 2).toFixed(2);
    else ov.s = +clampN((ov.s ?? 1) * (dir > 0 ? 1.1 : 1 / 1.1), .2, 4).toFixed(3);
    clean(k)
   }
@@ -958,12 +960,19 @@
   render()
  }
  const groupHtml = n => `<b class="sec">จัดการ${n > 1 ? 'ทั้งกลุ่ม' : ''}</b><div class="row"><button id="gUp" title="PageUp">＋ ชั้น (+1)</button><button id="gDown" title="PageDown">－ ชั้น (−1)</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div>
-  <div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gFlip" title="กลับซ้าย–ขวาทั้งกลุ่ม">⇋ กลับซ้าย–ขวา</button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
+  <div class="row"><button id="gRotL" title="หมุนทั้งกลุ่ม -15°">หมุน −15°</button><button id="gRotR" title="หมุนทั้งกลุ่ม +15°">หมุน +15°</button><button id="gIxDn" title="ปรับแกน ↗↙ ลดลง">แกน ↗↙ −</button><button id="gIxUp" title="ปรับแกน ↗↙ เพิ่มขึ้น">แกน ↗↙ +</button></div>
+  <div class="row"><button id="gIyDn" title="ปรับแกน ↖↘ ลดลง">แกน ↖↘ −</button><button id="gIyUp" title="ปรับแกน ↖↘ เพิ่มขึ้น">แกน ↖↘ +</button><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gFlip" title="กลับซ้าย–ขวาทั้งกลุ่ม">⇋ กลับซ้าย–ขวา</button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
  function bindGroup() {
   act('#gUp', () => groupStep('layer', 1));
   act('#gDown', () => groupStep('layer', -1));
   act('#gBig', () => groupStep('size', 1));
   act('#gSmall', () => groupStep('size', -1));
+  act('#gRotL', () => groupStep('rotate', -1));
+  act('#gRotR', () => groupStep('rotate', 1));
+  act('#gIxDn', () => groupStep('ix', -1));
+  act('#gIxUp', () => groupStep('ix', 1));
+  act('#gIyDn', () => groupStep('iy', -1));
+  act('#gIyUp', () => groupStep('iy', 1));
   act('#gDup', dupGroup);
   act('#gFlip', flipGroup);
   act('#gCopy', copyGroup);
