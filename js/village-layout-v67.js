@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-10-25T00:35:31.019Z.
+// Village default layout — saved from the in-game editor 2026-10-25T02:51:42.057Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -68,13 +68,12 @@ window.VillageDefaultLayout={
       }
     },
     "guild": {
-      "x": 78.5,
-      "y": 26,
-      "facing": "SW",
-      "flipArt": true,
+      "x": 11,
+      "y": 62,
+      "facing": "SE",
       "entry": {
-        "du": -5.829,
-        "dv": -1.081,
+        "du": -3.04,
+        "dv": 1.873,
         "deep": true
       },
       "label": {
@@ -86,8 +85,8 @@ window.VillageDefaultLayout={
       }
     },
     "healer": {
-      "x": 89,
-      "y": 43.14816383934789,
+      "x": 91,
+      "y": 36.5,
       "facing": "SW",
       "entry": {
         "du": -1.214,
@@ -164,8 +163,8 @@ window.VillageDefaultLayout={
       }
     },
     "temple": {
-      "x": 29,
-      "y": 73,
+      "x": 66.5,
+      "y": 27,
       "facing": "SE",
       "label": {
         "dx": 141.8037268913954,
@@ -173,8 +172,8 @@ window.VillageDefaultLayout={
       }
     },
     "forge": {
-      "x": 69.5,
-      "y": 58,
+      "x": 76,
+      "y": 56,
       "facing": "SW",
       "entry": {
         "du": -1.615,
@@ -251,8 +250,8 @@ window.VillageDefaultLayout={
       "facing": "SW"
     },
     "npc2": {
-      "x": 63,
-      "y": 15,
+      "x": 82.5,
+      "y": 68.5,
       "facing": "SW",
       "label": {
         "dx": -72.29286728252009,
@@ -260,9 +259,9 @@ window.VillageDefaultLayout={
       }
     },
     "npc3": {
-      "x": 88,
-      "y": 75,
-      "facing": "SW",
+      "x": 37,
+      "y": 65,
+      "facing": "SE",
       "label": {
         "dx": -66.99030448299254,
         "dy": -176.1630868333425
@@ -282,9 +281,14 @@ window.VillageDefaultLayout={
       }
     },
     "npc5": {
-      "x": 39.52963929472499,
-      "y": 60.21574665230261,
-      "facing": "SE",
+      "x": 17,
+      "y": 22.5,
+      "facing": "SW",
+      "entry": {
+        "du": -0.726,
+        "dv": 0.957,
+        "deep": true
+      },
       "label": {
         "dx": 84.14893818113,
         "dy": -168.4932238387321
@@ -339,8 +343,8 @@ window.VillageDefaultLayout={
       }
     },
     "npc9": {
-      "x": 78,
-      "y": 68,
+      "x": 41.5,
+      "y": 61,
       "facing": "SE",
       "entry": {
         "du": -1.273,
@@ -378,8 +382,12 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 2800,
-        "y": 1484
+        "x": 3080,
+        "y": 1428
+      },
+      {
+        "x": 2884,
+        "y": 1526
       },
       {
         "x": 2520,
@@ -398,12 +406,12 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 1596,
-        "y": 1862
+        "x": 3276,
+        "y": 714
       },
       {
-        "x": 2380,
-        "y": 1470
+        "x": 3528,
+        "y": 840
       },
       {
         "x": 2324,
@@ -412,12 +420,12 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 3808,
-        "y": 1092
+        "x": 3892,
+        "y": 938
       },
       {
-        "x": 3416,
-        "y": 896
+        "x": 3612,
+        "y": 798
       },
       {
         "x": 2604,
@@ -426,12 +434,12 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 3192,
-        "y": 672
+        "x": 784,
+        "y": 1568
       },
       {
-        "x": 3080,
-        "y": 728
+        "x": 1428,
+        "y": 1890
       },
       {
         "x": 3416,
@@ -468,16 +476,12 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 2268,
-        "y": 126
+        "x": 2632,
+        "y": 84
       },
       {
-        "x": 2184,
-        "y": 168
-      },
-      {
-        "x": 3024,
-        "y": 588
+        "x": 3528,
+        "y": 532
       }
     ],
     [
@@ -538,16 +542,6 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 1988,
-        "y": 1554
-      },
-      {
-        "x": 2100,
-        "y": 1610
-      }
-    ],
-    [
-      {
         "x": 2408,
         "y": 1792
       },
@@ -568,20 +562,6 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 2632,
-        "y": 420
-      },
-      {
-        "x": 2380,
-        "y": 294
-      },
-      {
-        "x": 2408,
-        "y": 280
-      }
-    ],
-    [
-      {
         "x": 1876,
         "y": 2030
       },
@@ -592,8 +572,12 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 3696,
-        "y": 1736
+        "x": 2072,
+        "y": 1568
+      },
+      {
+        "x": 2520,
+        "y": 1344
       },
       {
         "x": 3500,
@@ -602,8 +586,12 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 3724,
-        "y": 1918
+        "x": 1848,
+        "y": 1680
+      },
+      {
+        "x": 2520,
+        "y": 1344
       },
       {
         "x": 3696,
@@ -618,24 +606,6 @@ window.VillageDefaultLayout={
       {
         "x": 1232,
         "y": 2100
-      }
-    ],
-    [
-      {
-        "x": 560,
-        "y": 868
-      },
-      {
-        "x": 896,
-        "y": 700
-      },
-      {
-        "x": 980,
-        "y": 742
-      },
-      {
-        "x": 952,
-        "y": 756
       }
     ],
     [
@@ -675,9 +645,6 @@ window.VillageDefaultLayout={
     "exit",
     "lane",
     "lane",
-    "lane",
-    "lane",
-    "main",
     "main",
     "main",
     "main",
@@ -717,39 +684,27 @@ window.VillageDefaultLayout={
     },
     {
       "index": 13,
-      "id": "npc5"
-    },
-    {
-      "index": 14,
       "id": "npc4"
     },
     {
-      "index": 15,
+      "index": 14,
       "id": "npc1"
     },
     {
-      "index": 16,
-      "id": "npc2"
-    },
-    {
-      "index": 17,
+      "index": 15,
       "id": "npc7"
     },
     {
-      "index": 18,
+      "index": 16,
       "id": "npc9"
     },
     {
-      "index": 19,
+      "index": 17,
       "id": "npc3"
     },
     {
-      "index": 20,
+      "index": 18,
       "id": "npc6"
-    },
-    {
-      "index": 21,
-      "id": "npc8"
     }
   ],
   "assets": {
@@ -1111,12 +1066,6 @@ window.VillageDefaultLayout={
         "s": 2.593,
         "z": 1
       },
-      "add:mvlyuzv7jv87": {
-        "s": 2.593,
-        "z": 1,
-        "du": -0.828,
-        "dv": 1.532
-      },
       "add:mvlyvo1v141": {
         "du": -3.46,
         "dv": -1.159,
@@ -1162,8 +1111,8 @@ window.VillageDefaultLayout={
       },
       "exit:0": {
         "s": 1.771,
-        "du": 1.824,
-        "dv": 1.464
+        "du": 4.064,
+        "dv": 3.748
       },
       "healer:-6.2,4.1": {
         "du": -1.527,
@@ -1195,8 +1144,8 @@ window.VillageDefaultLayout={
       },
       "exit:2": {
         "s": 1.73,
-        "du": 0.476,
-        "dv": -3.101,
+        "du": 2.216,
+        "dv": 1.335,
         "r": -2
       },
       "healer:5.7,4.8": {
@@ -1262,16 +1211,16 @@ window.VillageDefaultLayout={
       "add:mvn11ve2gd6z": {
         "f": true,
         "z": 1,
-        "du": 6.481,
-        "dv": -1.261,
+        "du": 6.606,
+        "dv": -2.258,
         "s": 1.47
       },
       "add:mvn12baekqjh": {
         "s": 1.47,
         "f": true,
         "z": 1,
-        "du": -8.046,
-        "dv": -0.478
+        "du": -6.566,
+        "dv": -2.27
       },
       "add:mvn12q90hfj3": {
         "s": 1.51,
@@ -1465,6 +1414,24 @@ window.VillageDefaultLayout={
         "r": 4,
         "du": -4.832,
         "dv": -3.604
+      },
+      "npc5:3.6,1.8": {
+        "hide": true
+      },
+      "npc5:-3.6,1.8": {
+        "hide": true
+      },
+      "exit:3": {
+        "s": 1.63
+      },
+      "exit:4": {
+        "s": 1.72
+      },
+      "exit:1": {
+        "s": 1.74,
+        "du": 2.74,
+        "dv": 0.913,
+        "f": true
       }
     },
     "added": [
@@ -1630,13 +1597,6 @@ window.VillageDefaultLayout={
         "kind": "prop:7"
       },
       {
-        "id": "add:mvlyuzv7jv87",
-        "owner": "npc0",
-        "du": 4.591,
-        "dv": -1.825,
-        "kind": "prop:7"
-      },
-      {
         "id": "add:mvlyvo1v141",
         "owner": "npc0",
         "du": 0,
@@ -1773,10 +1733,12 @@ window.VillageDefaultLayout={
     "buildings": {
       "forge": {
         "dx": 26,
-        "dy": 11
+        "dy": 11,
+        "z": 1
       },
       "home": {
-        "ky": 0.04,
+        "sx": 0.73,
+        "sy": 0.73,
         "dx": 9,
         "dy": -9
       },
@@ -1787,12 +1749,14 @@ window.VillageDefaultLayout={
         "sy": 1.4
       },
       "npc8": {
-        "ky": 0.04,
+        "sx": 0.73,
+        "sy": 0.73,
         "dx": 14,
         "dy": -11
       },
       "npc0": {
-        "ky": 0.04,
+        "sx": 0.73,
+        "sy": 0.73,
         "dx": 6,
         "dy": -13
       },
@@ -1805,46 +1769,69 @@ window.VillageDefaultLayout={
         "sx": 1.02
       },
       "healer": {
-        "ky": 0.085,
-        "sx": 1.21,
-        "dx": 91,
-        "dy": 51,
-        "ix": 1.74,
-        "sy": 0.94,
-        "kx": -0.6,
-        "iy": 1.06
+        "ky": 0.505,
+        "sx": 1.54,
+        "dx": 124,
+        "dy": 42,
+        "ix": 1.81,
+        "sy": 1.3,
+        "kx": 0.23,
+        "iy": 0.92
       },
       "npc1": {
-        "ky": 0.04
+        "sx": 0.73,
+        "sy": 0.73,
+        "z": 1
       },
       "npc2": {
-        "ky": 0.04
+        "sx": 0.73,
+        "sy": 0.73
       },
       "npc3": {
-        "ky": 0.04
+        "sx": 0.73,
+        "sy": 0.73
       },
       "npc4": {
-        "ky": 0.04
+        "sx": 0.73,
+        "sy": 0.73
       },
       "npc5": {
-        "ky": 0.04
+        "ky": 0.04,
+        "sx": 0.73,
+        "sy": 0.73
       },
       "npc6": {
-        "ky": 0.04
+        "sx": 0.73,
+        "sy": 0.73
       },
       "npc7": {
-        "ky": 0.04
+        "sx": 0.73,
+        "sy": 0.73
       },
       "npc9": {
-        "ky": 0.04
+        "sx": 0.73,
+        "sy": 0.73
       },
       "market": {
         "ky": 0.03,
         "dx": 0,
         "dy": -13
       },
+      "temple": {
+        "kx": -0.16,
+        "dx": -11,
+        "dy": 6,
+        "sx": 1.41,
+        "sy": 1.2
+      },
       "guild": {
-        "ky": -0.185
+        "dx": -33,
+        "dy": 64,
+        "sy": 0.96,
+        "wx": 0.8884088713829659,
+        "wy": 0.4590530222621836,
+        "kx": -0.265,
+        "sx": 1.41
       }
     },
     "frames": {
@@ -1896,6 +1883,20 @@ window.VillageDefaultLayout={
         "front": 4.8,
         "right": 10.5,
         "back": -8.5
+      },
+      "guild": {
+        "right": 12.1,
+        "front": 8.8,
+        "back": -7.8,
+        "left": -11.1
+      },
+      "forge": {
+        "sides": {
+          "back": "none",
+          "left": "none",
+          "right": "none",
+          "front": "none"
+        }
       }
     },
     "ground": {
