@@ -216,7 +216,7 @@
    r = (ov.r || 0) * Math.PI / 180,
    f = !!ov.f,
    ix = ov.ix ?? 1, iy = ov.iy ?? 1,
-   ia = (ix + iy) / 2, ib = (ix - iy) / 4, ic = ix - iy, id = (ix + iy) / 2,
+   ia = (ix + iy) / 2, ib = (ix - iy) / 2, ic = (ix - iy) / 2, id = (ix + iy) / 2,
    k = ov.kind && KINDS[ov.kind] ? ov.kind : null,
    plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !k;
   const inner = plain ? draw : gg => {
@@ -439,7 +439,7 @@
   g.save();
   g.translate(p.x + (t.dx || 0), p.y + (t.dy || 0));
   g.transform(t.sx ?? 1, t.ky || 0, t.kx || 0, t.sy ?? 1, 0, 0);
-   const ix=t.ix??1,iy=t.iy??1;g.transform((ix+iy)/2,(ix-iy)/4,ix-iy,(ix+iy)/2,0,0);
+   const ix=t.ix??1,iy=t.iy??1;g.transform((ix+iy)/2,(ix-iy)/2,(ix-iy)/2,(ix+iy)/2,0,0);
    g.translate(-p.x, -p.y);
   baseBuilding(o);
   g.restore()
