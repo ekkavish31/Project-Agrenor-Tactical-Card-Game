@@ -1262,6 +1262,7 @@
   const id = 'repoasset:' + path;
   if (KINDS[id]) return;
   const file = new Image();
+  file.onload = () => { thumbCache.clear(); if (typeof render === 'function') render(); };
   file.src = 'https://raw.githubusercontent.com/ekkavish31/Project-Agrenor-Tactical-Card-Game/main/' + path.split('/').map(encodeURIComponent).join('/');
   const name = path.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
   kind(id, name, assetGroup(path), p => {
