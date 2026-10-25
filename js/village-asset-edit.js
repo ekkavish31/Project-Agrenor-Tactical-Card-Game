@@ -1248,22 +1248,22 @@
  let repoAssetLoadStarted = false;
  function assetGroup(path) {
   const p = path.toLowerCase();
-  if (/\\b(building|house|inn|guild|shop|market|temple|forge|healer|player-house)\\b/.test(p)) return 'อาคารจากคลังเกม';
-  if (/\\b(tree|bush|flower|grass|plant|nature|forest|leaf|herb)\\b/.test(p)) return 'ธรรมชาติจากคลังเกม';
-  if (/\\b(rock|stone|ore|crystal|mine|mountain)\\b/.test(p)) return 'หิน/แร่จากคลังเกม';
-  if (/\\b(fence|wall|gate|road|path|floor|ground|tile|terrain)\\b/.test(p)) return 'พื้น/ทาง/สิ่งก่อสร้าง';
-  if (/\\b(prop|decor|furniture|bench|barrel|crate|sign|lamp|cart|well|pond|fountain)\\b/.test(p)) return 'ของตกแต่งจากคลังเกม';
+  if (/\b(building|house|inn|guild|shop|market|temple|forge|healer|player-house)\b/.test(p)) return 'อาคารจากคลังเกม';
+  if (/\b(tree|bush|flower|grass|plant|nature|forest|leaf|herb)\b/.test(p)) return 'ธรรมชาติจากคลังเกม';
+  if (/\b(rock|stone|ore|crystal|mine|mountain)\b/.test(p)) return 'หิน/แร่จากคลังเกม';
+  if (/\b(fence|wall|gate|road|path|floor|ground|tile|terrain)\b/.test(p)) return 'พื้น/ทาง/สิ่งก่อสร้าง';
+  if (/\b(prop|decor|furniture|bench|barrel|crate|sign|lamp|cart|well|pond|fountain)\b/.test(p)) return 'ของตกแต่งจากคลังเกม';
   return 'Asset เกมอื่นๆ';
  }
  function registerRepoAsset(path) {
-  if (!path || !/\\.(png|webp|jpe?g)$/i.test(path) || !path.startsWith('assets/')) return;
+  if (!path || !/\.(png|webp|jpe?g)$/i.test(path) || !path.startsWith('assets/')) return;
   // Skip UI art, card faces, and sprite sheets: these are not standalone map objects.
-  if (/(^|\\/)(ui|icons?|cards?|portraits?|faces|animations?|spritesheets?)(\\/|[-_])/i.test(path)) return;
+  if (/(^|\/)(ui|icons?|cards?|portraits?|faces|animations?|spritesheets?)(\/|[-_])/i.test(path)) return;
   const id = 'repoasset:' + path;
   if (KINDS[id]) return;
   const file = new Image();
   file.src = 'https://raw.githubusercontent.com/ekkavish31/Project-Agrenor-Tactical-Card-Game/main/' + path.split('/').map(encodeURIComponent).join('/');
-  const name = path.split('/').pop().replace(/\\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+  const name = path.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
   kind(id, name, assetGroup(path), p => {
    if (!file.complete || !file.naturalWidth) return;
    const w = 130, h = w * file.naturalHeight / file.naturalWidth;
@@ -1281,7 +1281,7 @@
    if (!response.ok) throw new Error('GitHub asset list unavailable');
    const tree = await response.json();
    if (!Array.isArray(tree.tree)) throw new Error('Invalid GitHub asset list');
-   const paths = tree.tree.filter(x => x.type === 'blob' && x.path.startsWith('assets/') && /\\.(png|webp|jpe?g)$/i.test(x.path)).map(x => x.path);
+   const paths = tree.tree.filter(x => x.type === 'blob' && x.path.startsWith('assets/') && /\.(png|webp|jpe?g)$/i.test(x.path)).map(x => x.path);
    paths.forEach(registerRepoAsset);
    try { localStorage.setItem(REPO_ASSET_CACHE, JSON.stringify(paths)); } catch (_) {}
    thumbCache.clear();
