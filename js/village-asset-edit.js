@@ -46,6 +46,7 @@
    // Repair legacy values written by the old percentage bug (e.g. 100 instead of 1.00).
    for (const b of Object.values(data.buildings)) if (b && typeof b === 'object') for (const k of ['ix','iy']) if (Number.isFinite(b[k]) && b[k] > 2) b[k] = Math.max(.5, Math.min(2, b[k] / 100));
    if (v.frames && typeof v.frames === 'object') data.frames = copy(v.frames);
+   window.VillageFence?.set(v.fence);
    if (Array.isArray(v.lib)) data.lib = copy(v.lib).filter(a => a && a.id && Array.isArray(a.recs));
    if (v.cast && typeof v.cast === 'object') data.cast = copy(v.cast);
    else if (v.chars && typeof v.chars === 'object') // v81 files: plain numbers for hero / npc
@@ -64,6 +65,7 @@
   if (Object.keys(data.buildings).length) out.buildings = copy(data.buildings);
   if (Object.keys(data.frames).length) out.frames = copy(data.frames);
   if (data.lib.length) out.lib = copy(data.lib);
+  const fc = window.VillageFence?.get(); if (fc) out.fence = fc;
   const gp = window.TownPaint?.save();
   if (gp) out.ground = gp;
   if (Object.keys(data.cast).length) {
@@ -312,7 +314,6 @@
   ['propSprite(7', 'ต้นไม้'],
   ['lamp(', 'โคมไฟ'],
   ["decor('bench'", 'ม้านั่ง'],
-  ['drawBorder', 'รั้ว/แนวพุ่ม'],
   ['bush(', 'พุ่มไม้'],
   ['TownArt.detail', 'ดอกไม้'],
   ['propSprite(3', 'กระถาง'],
@@ -337,6 +338,7 @@
    seen = {};
   for (const it of list) {
    let owner, rel;
+   if (it.fixed) { out.push(it); continue } // fence pieces: laid out by the fence system, not hand-placed
    if (it.owner && it.rel) {
     owner = it.owner.id;
     rel = it.rel
@@ -512,28 +514,6 @@
   const fp = FP.fpOf(o);
   e.left = -fp.u0; e.right = fp.u1; e.back = -fp.v0; e.front = fp.v1;
   return e
- };
- const SIDE_OF = ['back', 'left', 'right', 'front', 'front'],
-  SIDES = {
-   back: 'ด้านหลัง',
-   left: 'ด้านซ้าย',
-   right: 'ด้านขวา',
-   front: 'ด้านหน้า (สองข้างประตู)'
-  },
-  BORDERS = {
-   auto: 'ตามแบบเดิม',
-   hedge: 'แนวพุ่มไม้',
-   flowers: 'แปลงดอกไม้',
-   planter: 'กระถาง',
-   wood: 'รั้วไม้',
-   stone: 'กำแพงหิน',
-   none: 'ไม่มีขอบ'
-  };
- const baseBorderStyle = borderStyle;
- borderStyle = function(o, si, k, n, front) {
-  const s = data.frames[o.id]?.sides?.[SIDE_OF[si]];
-  if (s && s !== 'auto') return s === 'none' ? null : s;
-  return baseBorderStyle(o, si, k, n, front)
  };
  const loc = id => locations.find(o => o.id === id);
  const hasFrame = o => !!o && !!baseEstateFn(o);
@@ -2047,57 +2027,61 @@
   })
  }
 
+ /* v91.4 · fence tab: every side chains one chosen picture along the footprint edge; entrance gaps follow the yellow cells + gate width */
  function tabFrame(body, o) {
-  const e = estate(o),
-   d = baseEstateFn(o),
-   f = data.frames[o.id] || {},
-   sides = f.sides || {};
-  body.innerHTML = `<p class="sub">ขนาดพื้นที่ปรับที่แท็บ 🏠 อาคาร (กรอบฟ้าเป็นกรอบเดียวกับกรอบนอกแล้ว) · ที่นี่ตั้งช่องประตูกับรั้ว/ขอบ</p>
-  ${slider('gate','ช่องประตูกว้าง',(e.gate??2.8)*2,1.2,14,.1,unit).replace('data-k','data-f="unit" data-k')}<hr>
-  <b class="sec">รั้วรอบอัตโนมัติ (ทุกด้าน เว้นช่องประตู)</b><div class="row" style="flex-wrap:wrap">${[['wood','🪵 รั้วไม้'],['stone','🧱 กำแพงหิน'],['hedge','🌳 พุ่มไม้'],['flowers','🌼 ดอกไม้'],['planter','🪴 กระถาง'],['none','ไม่มี'],['auto','ตามแบบเดิม']].map(([k,l])=>`<button data-fence="${k}">${l}</button>`).join('')}</div>
-  <b class="sec">ขอบแต่ละด้าน</b>${Object.entries(SIDES).map(([s,l])=>`<label class="sel">${l}<select data-side="${s}">${Object.entries(BORDERS).map(([k,n])=>`<option value="${k}" ${(sides[s]||'auto')===k?'selected':''}>${n}</option>`).join('')}</select></label>`).join('')}
-  <p class="sub">เปลี่ยนขอบแล้ว ของประดับเดิมบนแนวขอบจะถูกวางใหม่ตามแนวใหม่</p>
-  <div class="row"><button id="fReset">คืนค่าประตู/รั้วเดิม</button></div>`;
-  const ff = () => data.frames[o.id] || (data.frames[o.id] = {});
-  bindSliders((k, v) => {
-   const F = ff();
-   if (k === 'left') F.left = -v;
-   else if (k === 'back') F.back = -v;
-   else if (k === 'gate') F.gate = v / 2;
-   else F[k] = v;
-   cacheSolids();
-   terrainDirty = true
-  }, () => {
-   tidyFrame(o.id, d);
-   UX.refresh()
-  });
-  body.querySelectorAll('[data-side]').forEach(s => s.onchange = once(() => {
-   const F = ff();
-   F.sides = F.sides || {};
-   if (s.value === 'auto') delete F.sides[s.dataset.side];
-   else F.sides[s.dataset.side] = s.value;
-   tidyFrame(o.id, d)
+  const FN = window.VillageFence, pcs = FN.allPieces(), cfgSides = FN.sidesOf(o.id, borderProfile(o)), gate = FN.gateOf(o.id),
+   SIDE_L = { back: 'ด้านหลัง', left: 'ด้านซ้าย', right: 'ด้านขวา', front: 'ด้านหน้า' },
+   opts = cur => `<option value="none" ${cur === 'none' ? 'selected' : ''}>— ปิดด้าน (ไม่มีรั้ว) —</option>` + Object.entries(pcs).map(([k, v]) => `<option value="${k}" ${cur === k ? 'selected' : ''}>${v.name}</option>`).join(''),
+   custom = Object.entries(FN.cfg().pieces),
+   decorOpts = sel => Object.entries(DECOR_W).map(([k, v]) => `<option value="${k}" ${sel === k ? 'selected' : ''}>${v[0]}</option>`).join('') + `<option value="" ${sel && !DECOR_W[sel] ? 'selected' : ''}>ไฟล์ภาพ (พิมพ์พาธ)</option>`,
+   num = (id, f, label, v, min, max, step) => `<label>${label}<input type="number" data-pf="${id}:${f}" min="${min}" max="${max}" step="${step}" value="${v}"></label>`;
+  body.innerHTML = `<p class="sub">รั้ว = ภาพชิ้นเดียวต่อกันเป็นแถวตามขอบกรอบฟ้า (ชิดช่องนอกสุด เยื้องเข้าใน ¼ ช่อง) · มุมต่อกันเอง · เว้นช่องทางเข้าตามช่องเหลืองที่แตะขอบ และความกว้างประตู</p>
+  <b class="sec">ชิ้นรั้วแต่ละด้าน</b>${FN.SIDES.map(s => `<label class="sel">${SIDE_L[s]}<select data-side="${s}">${opts(cfgSides[s])}</select></label>`).join('')}
+  <div class="row" style="flex-wrap:wrap"><button data-all="wood">🪵 ไม้ทุกด้าน</button><button data-all="stone">🧱 หินทุกด้าน</button><button data-all="hedge">🌳 พุ่มทุกด้าน</button><button data-all="none">ปิดทุกด้าน</button></div>
+  ${slider('gate', 'ประตูกว้าง', gate * 2, 1, 12, .5, unit)}
+  <hr><b class="sec">ชิ้นรั้วของฉัน (กำหนดภาพ + จุด snap ระหว่างชิ้น)</b>
+  <p class="sub">len = ชิ้นหนึ่งยาวกี่ช่อง · ทับกัน = px ที่ชิ้นข้างเคียงซ้อน (พุ่มไม้ ≈ ขอบชนขอบ 0–10, กำแพงหิน ≈ เสาทับกัน 20+) · ขนาด/ลดลง = ปรับแนวตั้ง</p>
+  ${custom.map(([id, p]) => `<div class="card" style="border:1px solid #4d6656;border-radius:8px;padding:6px;margin:6px 0"><label>ชื่อ<input type="text" data-pf="${id}:name" value="${p.name.replace(/"/g, '&quot;')}"></label>
+   <label class="sel">ภาพ<select data-pfsrc="${id}">${decorOpts(p.src)}</select></label><label>พาธภาพ<input type="text" data-pf="${id}:src" value="${p.src.replace(/"/g, '&quot;')}"></label>
+   ${num(id, 'len', 'ยาว (ช่อง)', p.len, .5, 8, .5)}${num(id, 'over', 'ทับกัน (px)', p.over, -40, 120, 2)}${num(id, 'h', 'ขนาด ×', p.h, .3, 3, .05)}${num(id, 'dy', 'ลดลง (px)', p.dy, -60, 80, 2)}
+   <div class="row"><button data-pdel="${id}">ลบชิ้นนี้</button></div></div>`).join('')}
+  <div class="row"><button id="pNew">＋ สร้างชิ้นรั้วใหม่</button></div>`;
+  const cur = () => { const c = FN.get() || { pieces: {}, places: {} }; return c };
+  const save = c => { FN.set(c); cacheSolids(); terrainDirty = true; UX.refresh() };
+  const placeCfg = c => c.places[o.id] || (c.places[o.id] = {});
+  body.querySelectorAll('[data-side]').forEach(sel => sel.onchange = once(() => {
+   const c = cur(), pl = placeCfg(c);
+   pl.sides = { ...FN.sidesOf(o.id, borderProfile(o)), ...(pl.sides || {}), [sel.dataset.side]: sel.value };
+   save(c)
   }));
-  body.querySelectorAll('[data-fence]').forEach(b => b.onclick = once(() => {
-   const F = ff(), k = b.dataset.fence;
-   if (k === 'auto') delete F.sides;
-   else F.sides = { back: k, left: k, right: k, front: k };
-   tidyFrame(o.id, d)
+  body.querySelectorAll('[data-all]').forEach(b => b.onclick = once(() => {
+   const c = cur();
+   placeCfg(c).sides = Object.fromEntries(FN.SIDES.map(s => [s, b.dataset.all]));
+   save(c)
   }));
-  act('#fReset', once(() => {
-   delete data.frames[o.id];
-   UX.refresh()
+  bindSliders((k, v) => { const c = cur(); placeCfg(c).gate = v / 2; save(c) }, () => {});
+  body.querySelectorAll('[data-pf]').forEach(inp => inp.onchange = once(() => {
+   const [id, f] = inp.dataset.pf.split(':'), c = cur();
+   if (!c.pieces[id]) return;
+   c.pieces[id][f] = (f === 'name' || f === 'src') ? inp.value : +inp.value;
+   save(c)
+  }));
+  body.querySelectorAll('[data-pfsrc]').forEach(sel => sel.onchange = once(() => {
+   const id = sel.dataset.pfsrc, c = cur();
+   if (c.pieces[id] && sel.value) c.pieces[id].src = sel.value;
+   save(c)
+  }));
+  body.querySelectorAll('[data-pdel]').forEach(b => b.onclick = once(() => {
+   const c = cur();
+   delete c.pieces[b.dataset.pdel];
+   for (const pl of Object.values(c.places)) for (const [s, v] of Object.entries(pl.sides || {})) if (v === b.dataset.pdel) pl.sides[s] = 'none';
+   save(c)
+  }));
+  act('#pNew', once(() => {
+   const c = cur(), id = 'p' + Date.now().toString(36).slice(-5);
+   c.pieces[id] = { name: 'ชิ้นรั้วใหม่', src: 'fence-picket', len: 2, over: 12, h: 1, dy: 6, anc: .7 };
+   save(c)
   }))
- }
-
- function tidyFrame(id, d) {
-  const F = data.frames[id];
-  if (!F) return;
-  for (const k of ['left', 'right', 'back', 'front'])
-   if (F[k] != null && Math.abs(F[k] - d[k]) < .05) delete F[k];
-  if (F.gate != null && Math.abs(F.gate - 2.8) < .05) delete F.gate;
-  if (F.sides && !Object.keys(F.sides).length) delete F.sides;
-  if (!Object.keys(F).length) delete data.frames[id]
  }
 
  /* ---------- groups + a small library of saved groups ("asset + asset = new asset") ---------- */
