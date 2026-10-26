@@ -12,7 +12,7 @@
   UX = window.TownUX,
   copy = x => JSON.parse(JSON.stringify(x)),
   num = (v, a, b, d) => Math.max(a, Math.min(b, Number.isFinite(+v) ? +v : d));
- let courtDraw = false, courtLayer = false, courtLayerVal = 1;
+ let courtRect = false, courtDraw = false, courtLayer = false, courtLayerVal = 1;
  let data = {
    edit: {},
    added: [],
@@ -791,7 +791,7 @@
   const s = place; refChar = false; courtLayer = false; cv.style.cursor = '';
   place = null;
   drag = null;
-  courtDraw = false;
+  courtDraw = false; courtRect = false;
   if (!ok) {
    UX.apply(JSON.parse(s.before));
    UX.undoTrim(s.mark);
@@ -1191,7 +1191,7 @@
    if (!c0) return;
    const have = new Map((o.court?.cells || []).map(c => [c[0] + ',' + c[1], c])), mode = courtLayer ? 'layer' : have.has(c0[0] + ',' + c0[1]) ? 'del' : 'add';
    UX.checkpoint();
-   start('cells', { mode, have, layers: { ...(o.court?.layers || {}) } });
+   start('cells', { mode, have, layers: { ...(o.court?.layers || {}) }, rect: courtRect, c0, base: new Map(have), baseLay: { ...(o.court?.layers || {}) } });
    paintCells(o, c0);
    return
   }
@@ -1273,7 +1273,7 @@
   }
   if (drag.type === 'cells') {
    const o = loc(place.id), c = cellAt(o, inv(p.x, p.y));
-   if (c) paintCells(o, c);
+   if (c) { if (drag.rect) paintRect(o, c); else paintCells(o, c) }
    return
   }
   if (drag.type === 'fpEdge') {
@@ -2327,6 +2327,7 @@
   <b class="sec">ช่องทางเดิน (สีเหลือง)</b>
   <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีทางเดิน':o.court?.cells?o.court.cells.length+' ช่องครึ่ง':o.court?.pts?'เส้นเดิมที่วาดไว้':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
   <div class="row"><button id="cDraw" class="${courtDraw?'on':''}" style="${courtDraw?'background:#e5c06b;color:#1b302a':''}">🟨 ${courtDraw?'กำลังทาสี… คลิก/ลากบนกริด (ช่องที่มีอยู่ = ลบ)':'ทาสีช่องทางเดิน'}</button></div>
+  <div class="row"><button id="cRect" style="${courtRect ? 'background:#e5c06b;color:#1b302a' : ''}">▭ ${courtRect ? 'โหมดกรอบ: ลากเป็นกรอบแล้วถมทั้งกรอบ (เริ่มที่ช่องเหลือง = ลบทั้งกรอบ)' : 'ทาส/ลบแบบกรอบ (ลากกรอบ แล้วถมทั้งกรอบ)'}</button></div>
   <div class="row"><button id="cFill">เริ่มจากทางตรงประตู→ขอบหน้า</button><button id="cOff">ไม่มีทางเดิน</button><button id="cAuto">กลับเป็นอัตโนมัติ</button></div>
   <b class="sec">ชั้นของพื้นที่เดิน (layer)</b>
   <p class="sub">ตั้งต้น = ชั้นเดียวกับพื้นตรงนั้น (ชั้นพื้น ${o.court?.z || 0}) · ของที่ชั้นสูงกว่าจะบังตัวละคร ต่ำกว่าอยู่ใต้ตัวละคร · ชั้นเท่ากัน = เรียงตามความลึก · เลือกบางช่องให้มีชั้นต่างจากพื้นได้</p>
@@ -2348,6 +2349,7 @@
   bindZ('cz', d => { o.court = o.court || {}; o.court.z = clampN((o.court.z || 0) + d, -20, 20); if (!o.court.z) delete o.court.z; UX.refresh() });
   bindZ('cl', d => { courtLayerVal = clampN(courtLayerVal + d, -20, 20) });
   act('#cLayer', () => { if (!o.court?.cells?.length) { UX.checkpoint(); o.court = { ...(o.court || {}), cells: autoCells(o) } } courtLayer = !courtLayer; courtDraw = courtLayer; flashStatus(courtLayer ? 'ลากบนช่องเหลืองเพื่อกำหนดชั้น' : 'เลิกกำหนดชั้นรายช่อง'); render() });
+  act('#cRect', () => { courtRect = !courtRect; if (courtRect) courtDraw = true; flashStatus(courtRect ? 'ลากเป็นกรอบ ปล่อยเมาส์เพื่อถมทั้งกรอบ (เริ่มที่ช่องเหลือง = ลบ)' : 'กลับเป็นทาทีละช่อง'); render() });
   act('#cFill', once(() => { o.court = { cells: autoCells(o) }; courtDraw = false; UX.refresh() }));
   act('#cOff', once(() => { courtDraw = false; o.court = { off: true }; UX.refresh() }));
   act('#cAuto', once(() => { courtDraw = false; delete o.court; UX.refresh() }))
@@ -2406,8 +2408,14 @@
   const iu = Math.floor(du * 2), iv = Math.floor(dv * 2);
   return UX.gridMode() === '1x1' ? [iu - (iu & 1), iv - (iv & 1)] : [iu, iv]
  }
- function paintCells(o, c) {
-  const fp = window.VillageFootprint.fpOf(o), n = UX.gridMode() === '1x1' ? 2 : 1;
+ function paintRect(o, c) {
+  drag.have = new Map(drag.base); drag.layers = { ...drag.baseLay };
+  const n = UX.gridMode() === '1x1' ? 2 : 1, c0 = drag.c0;
+  const u0 = Math.min(c0[0], c[0]), u1 = Math.max(c0[0], c[0]) + n - 1, v0 = Math.min(c0[1], c[1]), v1 = Math.max(c0[1], c[1]) + n - 1;
+  for (let u = u0; u <= u1; u++) for (let v = v0; v <= v1; v++) paintCells(o, [u, v], 1)
+ }
+ function paintCells(o, c, one) {
+  const fp = window.VillageFootprint.fpOf(o), n = one ? 1 : UX.gridMode() === '1x1' ? 2 : 1;
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
    const u = c[0] + i, v = c[1] + j, k = u + ',' + v;
    if (u < -fp.u0 * 2 || u >= fp.u1 * 2 || v < -fp.v0 * 2 || v >= fp.v1 * 2) continue;
