@@ -268,7 +268,7 @@ function slotDetail(a){if(!a){sel=null;return detail()}let p=pending.get(a.id),u
  <div class="row" style="margin-top:8px"><button id="pickLib" class="primary">🖼 เลือกภาพจากคลัง…</button>${p?'<button id="dropPending">ยกเลิกภาพใหม่</button>':''}</div>
  <h3>🕘 เวอร์ชันก่อนหน้า (${a.history?.length||0})</h3>${versionsHTML(a)}
  <div class="row" style="margin-top:8px"><button id="editInWorkshop" class="primary">🧰 แก้ไขภาพนี้ใน Object Workshop</button></div>
- <h3>➕ ใส่ภาพใหม่</h3>${newImageHTML(a)}
+ <h3>➕ ใส่ / แก้ภาพ</h3>${newImageHTML(a)}
  <details><summary>Prompt สำหรับเจนภาพ</summary>${promptHTML(a)}</details>`;
  hydrate($('detail'));showCurrent(a);
  if($('backSet'))$('backSet').onclick=()=>openSet(a.clip);
@@ -283,16 +283,14 @@ async function showCurrent(a){let el=$('cur');if(!el||!hasImage(a))return;let s=
  let im=new Image();im.onload=()=>{let cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;cv.getContext('2d').drawImage(im,0,0);showResult(cv,a,el);let sz=a.size&&(im.naturalWidth!==a.size[0]||im.naturalHeight!==a.size[1]);el.insertAdjacentHTML('afterend',sz?`<p class="muted warn">ไฟล์จริง ${im.naturalWidth}×${im.naturalHeight} ไม่ตรงกับขนาดเป้าหมาย</p>`:'')};im.onerror=()=>el.innerHTML=noneHTML('ไม่พบไฟล์');im.src=s}
 function promptHTML(a){let ref=reference(a);return `<textarea id="promptBox">${esc(copilotPrompt(a))}</textarea><div class="row"><button id="copyPrompt" class="primary">คัดลอก prompt</button>${ref?`<a href="${ref}" download><button type="button">ดาวน์โหลดภาพอ้างอิง</button></a>`:''}</div>`}
 function bindPrompt(a){$('copyPrompt').onclick=()=>{navigator.clipboard.writeText($('promptBox').value).then(()=>toast('คัดลอก prompt แล้ว'),()=>{$('promptBox').select();document.execCommand('copy');toast('คัดลอกแล้ว')})}}
-function newImageHTML(a){return `<div id="drop">ลากภาพมาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์<input id="file" type="file" accept="image/*" hidden></div>
- <div class="row" style="margin-top:8px"><label class="inline"><input type="checkbox" id="key" ${a.transparent?'checked':''}> ลบพื้นเขียว</label><label class="inline">ความไว <input type="range" id="tol" min="20" max="160" value="90"></label>
- <label class="inline">จัดวาง <select id="fit"><option value="contain">ใส่ทั้งภาพ</option><option value="cover" ${a.transparent?'':'selected'}>เต็มกรอบ (ตัดขอบ)</option></select></label><label class="inline"><input type="checkbox" id="trim" ${a.transparent?'checked':''}> ตัดขอบโปร่งใส</label></div>
- <div class="stage" id="stage"><span class="muted">ยังไม่ได้เลือกภาพใหม่</span></div>
- <div class="row" style="margin-top:8px"><button id="useBtn" class="primary" disabled>ใช้ภาพนี้</button><label class="inline"><input type="checkbox" id="asTemp"> บันทึกเป็น "ชั่วคราว"</label></div>
- <p class="muted">ปรับเป็น ${a.size?a.size.join('×'):'ขนาดเดิม'} แปลงเป็น WebP ตั้งชื่อ ${esc((a.file||'').split('/').pop())} ให้อัตโนมัติ · ${dir?'ภาพเดิมย้ายไป "ภาพที่เลิกใช้"':'ยังไม่เชื่อมโฟลเดอร์: ภาพจะรอส่งออก ZIP'}</p>`}
-function bindNewImage(a){let drop=$('drop');drop.onclick=()=>$('file').click();$('file').onchange=e=>e.target.files[0]&&loadSource(e.target.files[0]);
- drop.ondragover=e=>{e.preventDefault();drop.classList.add('hot')};drop.ondragleave=()=>drop.classList.remove('hot');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('hot');let f=e.dataTransfer.files[0];if(f)loadSource(f)};
- for(let id of ['key','tol','fit','trim'])if($(id))$(id).oninput=()=>source&&process();
- $('useBtn').onclick=useProcessed;source=null;result=null}
+function newImageHTML(a){return `<div id="drop">ลากภาพมาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์ — เปิดใน Object Workshop เพื่อตัดขอบ / ลบพื้นหลัง / จัดแนว แล้วกด “✓ ใช้กับ Asset ที่เลือก”<input id="file" type="file" accept="image/*" hidden></div>
+ <div class="row" style="margin-top:8px"><button id="wsOpen" class="primary">🧰 เปิด Object Workshop สำหรับช่องนี้</button><button id="wsGh">📂 เลือกจากคลัง GitHub</button></div>
+ <p class="muted">ปรับเป็น ${a.size?a.size.join('×'):'ขนาดเดิม'} แปลงเป็น WebP ตั้งชื่อ ${esc((a.file||'').split('/').pop())} ให้อัตโนมัติ · ภาพเดิมย้ายไป "ภาพที่เลิกใช้" และเก็บไว้ก่อน Push</p>`}
+function bindNewImage(a){let drop=$('drop');const open=async f=>{showWorkshop(a.id);if(f){const r=new FileReader();r.onload=()=>postWorkshop({type:'asset-workshop:load',assetId:a.id,name:(f.name||a.id).replace(/\.[^.]+$/,''),category:a.category,src:r.result,size:a.size,transparent:a.transparent});r.readAsDataURL(f)}};
+ drop.onclick=()=>$('file').click();$('file').onchange=e=>e.target.files[0]&&open(e.target.files[0]);
+ drop.ondragover=e=>{e.preventDefault();drop.classList.add('hot')};drop.ondragleave=()=>drop.classList.remove('hot');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('hot');let f=e.dataTransfer.files[0];if(f)open(f)};
+ $('wsOpen').onclick=()=>showWorkshop(a.id);$('wsGh').onclick=()=>{showWorkshop(a.id);postWorkshop({type:'asset-workshop:open-library'})}}
+function postWorkshop(m){const go=()=>$('workshopFrame').contentWindow.postMessage(m,location.origin);if(workshopReady)go();else setTimeout(()=>postWorkshop(m),300)}
 // ---------- set (animation clip) detail ----------
 let animT=null;function stopAnim(){clearInterval(animT);animT=null}
 function setDetail(clip){let fr=clipFrames(clip),a=fr[0];if(!a){sel=null;return detail()}let stamps=setStamps(clip),users=fr.filter(f=>f.status!=='unused');
@@ -433,7 +431,7 @@ render();detail();
 
  // ---------- embedded Object Workshop bridge ----------
  let workshopReady=false,workshopAssetId=null;
- function showWorkshop(assetId=null){document.body.classList.add('workshop-open');$('workshopPane').style.display='block';$('workshopTab').classList.add('on');if(assetId)workshopAssetId=assetId;const a=byId(workshopAssetId||selected);if(a&&isSlot(a)&&hasImage(a))sendAssetToWorkshop(a)}
+ function showWorkshop(assetId=null){document.body.classList.add('workshop-open');$('workshopPane').style.display='block';$('workshopTab').classList.add('on');if(assetId)workshopAssetId=assetId;const a=byId(workshopAssetId||selected);if(a&&isSlot(a)){if(hasImage(a))sendAssetToWorkshop(a);else postWorkshop({type:'asset-workshop:target',assetId:a.id,name:a.id,category:a.category})}}
  function hideWorkshop(){document.body.classList.remove('workshop-open');$('workshopPane').style.display='none';$('workshopTab').classList.remove('on')}
  async function sendAssetToWorkshop(a){try{let src=await srcOf(a.file);if(!src)throw Error('ไม่พบไฟล์ภาพ');let res=await fetch(src),blob=await res.blob(),reader=new FileReader();reader.onload=()=>{$('workshopFrame').contentWindow.postMessage({type:'asset-workshop:load',assetId:a.id,name:a.id,category:a.category,src:reader.result,size:a.size,transparent:a.transparent},location.origin)};reader.readAsDataURL(blob);toast('ส่ง '+a.id+' ไปยัง Object Workshop แล้ว')}catch(e){toast('โหลด Asset เข้า Workshop ไม่สำเร็จ: '+e.message)}}
  $('workshopTab').onclick=()=>{if(document.body.classList.contains('workshop-open')){hideWorkshop();return}showWorkshop()};
