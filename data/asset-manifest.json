@@ -38195,7 +38195,7 @@
    "pose": "idle",
    "view": "SE",
    "subject": "frostWolf · idle · SE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38255,7 +38255,7 @@
    "pose": "walk",
    "view": "SE",
    "subject": "frostWolf · walk · SE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38354,7 +38354,7 @@
    "pose": "windup",
    "view": "SE",
    "subject": "frostWolf · windup · SE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38427,7 +38427,7 @@
    "pose": "strike",
    "view": "SE",
    "subject": "frostWolf · strike · SE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38501,7 +38501,7 @@
    "pose": "guard",
    "view": "SE",
    "subject": "frostWolf · guard · SE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38574,7 +38574,7 @@
    "pose": "hit",
    "view": "SE",
    "subject": "frostWolf · hit · SE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38647,7 +38647,7 @@
    "pose": "down",
    "view": "SE",
    "subject": "frostWolf · down · SE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38720,7 +38720,7 @@
    "pose": "cast",
    "view": "SE",
    "subject": "frostWolf · cast · SE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38793,7 +38793,7 @@
    "pose": "idle",
    "view": "NE",
    "subject": "frostWolf · idle · NE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38853,7 +38853,7 @@
    "pose": "walk",
    "view": "NE",
    "subject": "frostWolf · walk · NE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -38952,7 +38952,7 @@
    "pose": "windup",
    "view": "NE",
    "subject": "frostWolf · windup · NE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -39025,7 +39025,7 @@
    "pose": "strike",
    "view": "NE",
    "subject": "frostWolf · strike · NE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -39099,7 +39099,7 @@
    "pose": "guard",
    "view": "NE",
    "subject": "frostWolf · guard · NE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -39172,7 +39172,7 @@
    "pose": "hit",
    "view": "NE",
    "subject": "frostWolf · hit · NE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -39245,7 +39245,7 @@
    "pose": "down",
    "view": "NE",
    "subject": "frostWolf · down · NE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024
@@ -39318,7 +39318,7 @@
    "pose": "cast",
    "view": "NE",
    "subject": "frostWolf · cast · NE",
-   "file": "assets/enemies/animations/v32/frostWolf-clean.png",
+   "file": "assets/enemies/animations/v32/frostWolf-clean.webp",
    "size": [
     1536,
     1024

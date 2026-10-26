@@ -1505,3 +1505,10 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - ตรวจแล้วเก็บไว้ เพราะถูกโหลดแบบสร้างพาธตอนรัน: `assets/village-town/decor/gate-*.png`
 - ยังค้างให้ตัดสินใจ: `assets/tactics/cliff/*` (เอกสาร CRAG-STAMP.md อ้างถึง `js/cliff-art.js` ที่ไม่มีแล้ว), `assets/village-town/templates/iso-*.png` (ไม่มีโค้ดหรือเอกสารอ้างถึง)
 - เทสต์ที่ล้มอยู่ก่อนแล้ว ไม่เกี่ยวกับการจัดระเบียบนี้: `tools/test-surface-v39.cjs` (assertion ไม่ตรง), `tests/render-terrain.cjs` (ขาดแพ็กเกจ `@napi-rs/canvas`)
+
+
+## lean · นำร่อง: แผ่นสไปรต์ frostWolf เป็น WebP (ภาพเดิมหายไปแต่ไม่เปลี่ยนพฤติกรรมเกม)
+- แปลง `assets/enemies/animations/v32/frostWolf-clean.png` (2.68 MB) เป็น `.webp` คุณภาพ 90 (0.49 MB) ขนาดภาพ 1536×1024 เท่าเดิม ช่องโปร่งใส (alpha) ตรงเดิมทุกพิกเซล ค่าต่างสีเฉลี่ยของส่วนที่มองเห็น 3/255
+- แก้พาธ 16 รายการใน `js/asset-manifest.js` และ `data/asset-manifest.json` ให้ชี้ไฟล์ใหม่ (พิกัดเฟรมไม่ต้องแก้เพราะขนาดเท่าเดิม)
+- manifest generator (`tools/build-asset-manifest.py`) ไม่ได้สร้างรายการกลุ่ม enemy-animations เอง แต่เก็บรายการเดิมไว้ จึงไม่เขียนพาธกลับเป็น PNG
+- ถ้าเล่นแล้วภาพเหมือนเดิม จะแปลงแผ่นที่เหลือ (v32–v34 อีก 37 ไฟล์) ด้วยวิธีเดียวกัน
