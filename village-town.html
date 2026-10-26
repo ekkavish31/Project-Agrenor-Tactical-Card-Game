@@ -228,6 +228,7 @@ function courtOf(p){return locations.find(o=>{const e=estate(o);if(!e)return fal
 function roadEntry(p){const list=[...roadCells.values()].map(c=>({c,d:Math.hypot(c.u-p.u,c.v-p.v)})).filter(x=>x.d<22).sort((a,b)=>a.d-b.d);for(const x of list.slice(0,120))if(clearSegment(p,x.c,blocked))return x.c;return null}
 function findPath(start,end){const from=courtOf(start),to=courtOf(end);let fin=null;if(!to&&blockedFree(end.u,end.v)){const n=nearestUsing(end,blockedFree,10);if(!n)return[];fin={u:end.u,v:end.v};end=n}const A=from?gate(from):start,B=to?gate(to):end;
  if(from&&to&&from===to)return[{u:end.u,v:end.v}];
+ {const dir=routeFree(start,end);if(dir.length){const out=[...dir,{u:end.u,v:end.v},...(fin?[fin]:[])],clean=[];out.forEach((p,i)=>{const l=clean.at(-1)||start;if(Math.hypot(p.u-l.u,p.v-l.v)>(i===out.length-1?.05:.3))clean.push({u:p.u,v:p.v})});return clean}}
  {const mid=routeFree(A,B);if(mid.length){const out=[...(from?courtWalk(from):[]),...mid,...(to?courtWalk(to).slice(1).reverse():[]),{u:end.u,v:end.v},...(fin?[fin]:[])],clean=[];out.forEach((p,i)=>{const l=clean.at(-1)||start;if(Math.hypot(p.u-l.u,p.v-l.v)>(i===out.length-1?.05:.3))clean.push({u:p.u,v:p.v})});return clean}}
  const S=roadEntry(A),G=roadEntry(B);let mid=[];
  if(S&&G){const cells=gridRoute(S,G,(u,v)=>Number.isInteger(u)&&Number.isInteger(v)&&!roadCells.has(cellKey(u,v)),null,.15);if(cells.length)mid=corners(cells)}
