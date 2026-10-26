@@ -1933,11 +1933,11 @@
   const f = window.VillageFootprint?.fpOf(o);
   if (!f) return '';
   const custom = window.VillageFootprint.isCustom(o), se = o.facing === 'SE';
-  const edge = (k, label) => `<div class="row" style="align-items:center;margin:2px 0"><span style="min-width:96px">${label} ${f[k]}</span><button data-fp="${k},-1">−1</button><button data-fp="${k},-0.5">−½</button><button data-fp="${k},0.5">+½</button></div>`;
+  const edge = (k, label) => `<div class="row" style="align-items:center;margin:2px 0"><span style="min-width:96px">${label} ${f[k]}</span><button data-fp="${k},-1">−1</button><button data-fp="${k},-0.5">−½</button><button data-fp="${k},0.5">+½</button><button data-fp="${k},1">+1</button></div>`;
   return `<b class="sec">กรอบพื้นที่ (กริด)${custom ? ' · ปรับเอง' : ' · อัตโนมัติ'}</b>
   <p class="sub">พื้นฟ้าบนแผนที่ = ช่องกริดที่สถานที่นี้กิน · ชนสถานที่อื่นไม่ได้ · บีบเข้าเพื่อให้ของที่ล้นขอบ (เช่น กิ่งไม้) ไม่กินช่อง</p>
   ${edge('u0', se ? 'ซ้าย(หลัง)' : 'ซ้าย')}${edge('u1', se ? 'ขวา(หน้า)' : 'ขวา')}${edge('v0', 'หลัง')}${edge('v1', 'หน้า')}
-  <div class="row"><button data-fpa="-0.5">บีบทั้งกรอบ −½</button><button data-fpa="0.5">ขยายทั้งกรอบ +½</button></div>
+  <div class="row"><button data-fpa="-1">บีบทั้งกรอบ −1</button><button data-fpa="-0.5">บีบทั้งกรอบ −½</button><button data-fpa="0.5">ขยายทั้งกรอบ +½</button><button data-fpa="1">ขยายทั้งกรอบ +1</button></div>
   <div class="row"><button id="fpAuto"${custom ? '' : ' disabled'}>คืนค่าอัตโนมัติ</button></div>
 `;
  }
