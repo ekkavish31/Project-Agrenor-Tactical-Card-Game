@@ -29,22 +29,34 @@
     return false
   }
   const connected = o => edgePts(o).some(p => roadNear(p) || paintedNear(p));
+  function reachSet() {                       // every half-cell the hero can walk to (same rules as the game)
+    const k = (u, v) => u + ',' + v, h = nearestUsing({ u: hero.u, v: hero.v }, blockedFree, 3), seen = new Set(), q = [];
+    if (!h) return seen;
+    seen.add(k(h.u, h.v)); q.push(h);
+    for (let i = 0; i < q.length && i < 250000; i++) {
+      const a = q[i];
+      for (const [du, dv] of [[.5, 0], [-.5, 0], [0, .5], [0, -.5]]) { const n = { u: a.u + du, v: a.v + dv }, kk = k(n.u, n.v); if (!seen.has(kk) && !blockedFree(n.u, n.v)) { seen.add(kk); q.push(n) } }
+    }
+    return seen
+  }
+  const reaches = p => { const m = nearestUsing(p, blockedFree, 3); return !!m && reachSet.cache.has(m.u + ',' + m.v) };
   function lanePath(from, own) {
     const ownFp = own ? (() => { const f = VillageFootprint.fpOf(own), c = center(own); return (u, v) => { const q = canonical(own, u, v), a = q.u - c.u, b = q.v - c.v; return a > -f.u0 - .5 && a < f.u1 + .5 && b > -f.v0 - .5 && b < f.v1 + .5 } })() : () => false;                    // BFS over whole lattice cells to the nearest road cell
     const key = (u, v) => u + ',' + v, s0 = { u: Math.round(from.u), v: Math.round(from.v) }, prev = new Map([[key(s0.u, s0.v), null]]), q = [s0];
     for (let i = 0; i < q.length && i < 30000; i++) {
       const c = q[i];
-      if (roadCells.has(cellKey(c.u, c.v))) { const out = []; for (let n = c; n; n = prev.get(key(n.u, n.v))) out.unshift(n); return out }
+      if (roadCells.has(cellKey(c.u, c.v)) && (!reachSet.cache || reachSet.cache.has(c.u + ',' + c.v) || reachSet.cache.has((c.u + .5) + ',' + c.v))) { const out = []; for (let n = c; n; n = prev.get(key(n.u, n.v))) out.unshift(n); return out }
       for (const [du, dv] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
         const n = { u: c.u + du, v: c.v + dv }, k = key(n.u, n.v);
-        if (prev.has(k) || (blockedFree(n.u, n.v) && !ownFp(n.u, n.v))) continue;
+        if (prev.has(k) || (blockedFree(n.u, n.v, true) && !ownFp(n.u, n.v))) continue;
         prev.set(k, c); q.push(n)
       }
     }
     return null
   }
   function autoRoads() {
-    const todo = [...places().map(o => ({ name: nameOf(o), p: gate(o), o })), ...exitDoors().map(e => ({ name: e.name, p: e }))].filter(x => x.o ? !connected(x.o) : !roadNear(x.p));
+    reachSet.cache = reachSet();
+    const todo = [...places().map(o => ({ name: nameOf(o), p: gate(o), o })), ...exitDoors().map(e => ({ name: e.name, p: e }))].filter(x => x.o ? !(connected(x.o) && reaches(door(x.o))) : !reaches(x.p));
     if (!todo.length) return ['✔ ทุกทางเข้ามีถนนอยู่ใกล้แล้ว'];
     const log = [];
     UX().checkpoint();
