@@ -18,19 +18,21 @@
    added: [],
    buildings: {},
    frames: {},
-   cast: {}
+   cast: {},
+   lib: []
   },
   place = null,
   frame = [],
   drag = null,
   ckPending = false,
-  guides = true;
+  guides = false;
  const empty = () => ({
   edit: {},
   added: [],
   buildings: {},
   frames: {},
-  cast: {}
+  cast: {},
+  lib: []
  });
 
  function set(v) {
@@ -44,6 +46,7 @@
    // Repair legacy values written by the old percentage bug (e.g. 100 instead of 1.00).
    for (const b of Object.values(data.buildings)) if (b && typeof b === 'object') for (const k of ['ix','iy']) if (Number.isFinite(b[k]) && b[k] > 2) b[k] = Math.max(.5, Math.min(2, b[k] / 100));
    if (v.frames && typeof v.frames === 'object') data.frames = copy(v.frames);
+   if (Array.isArray(v.lib)) data.lib = copy(v.lib).filter(a => a && a.id && Array.isArray(a.recs));
    if (v.cast && typeof v.cast === 'object') data.cast = copy(v.cast);
    else if (v.chars && typeof v.chars === 'object') // v81 files: plain numbers for hero / npc
     for (const k of ['hero', 'npc'])
@@ -60,6 +63,7 @@
   if (data.added.length) out.added = copy(data.added);
   if (Object.keys(data.buildings).length) out.buildings = copy(data.buildings);
   if (Object.keys(data.frames).length) out.frames = copy(data.frames);
+  if (data.lib.length) out.lib = copy(data.lib);
   const gp = window.TownPaint?.save();
   if (gp) out.ground = gp;
   if (Object.keys(data.cast).length) {
@@ -495,12 +499,18 @@
 
  /* ---------- outer frame of a place: plot size, gate width and the border of each side (stored in data.frames) ---------- */
  const baseEstateFn = estate;
+ /* v90: the old "outer frame" and the blue footprint are ONE area. The footprint default is the old outer frame (rounded out to half cells);
+    edit it in the building tab. The border / gate settings stay in data.frames. */
+ const up2 = v => Math.ceil(v * 2 - 1e-9) / 2;
  estate = function(o) {
-  const e = baseEstateFn(o),
-   f = e && data.frames[o.id];
-  if (!f) return e;
+  const e = baseEstateFn(o), f = e && data.frames[o.id], FP = window.VillageFootprint;
+  if (!e) return e;
   for (const k of ['left', 'right', 'back', 'front', 'gate'])
-   if (Number.isFinite(f[k])) e[k] = f[k];
+   if (f && Number.isFinite(f[k])) e[k] = f[k];
+  if (!FP) return e;
+  o.fpAuto = { u0: Math.min(FP.MAX, Math.max(.5, up2(-e.left))), u1: Math.min(FP.MAX, Math.max(.5, up2(e.right))), v0: Math.min(FP.MAX, Math.max(.5, up2(-e.back))), v1: Math.min(FP.MAX, Math.max(.5, up2(e.front))) };
+  const fp = FP.fpOf(o);
+  e.left = -fp.u0; e.right = fp.u1; e.back = -fp.v0; e.front = fp.v1;
   return e
  };
  const SIDE_OF = ['back', 'left', 'right', 'front', 'front'],
@@ -969,16 +979,17 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh }
+  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, g: ov.grp }
  }
  function addRecords(recs, owner, off) {
-  const ids = [];
+  const ids = [], gmap = {};
   if (!baseOf(owner)) return ids;
   for (const r of recs) {
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    const G = window.VillageGrid, bs = baseOf(owner), sn = !G ? { du: r.du + off, dv: r.dv + off } : recs.length === 1 ? placeNewItem(owner, nid, r.du + off, r.dv + off) : G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, modeNow());
    data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
    data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh };
+   if (r.g) data.edit[nid].grp = gmap[r.g] || (gmap[r.g] = newGid());
    clean(nid);
    ids.push(nid)
   }
@@ -1161,14 +1172,13 @@
     }
    };
   if (o && courtDraw && place.tab === 'entry' && o.id !== 'square') {
-   const d0 = door(o);
-   return start('court', { pts: [{ u: d0.u, v: d0.v }] })
-  }
-  if (o && hasFrame(o) && place.tab === 'frame') {
-   const c = Object.entries(corners(o)).find(([, q]) => nearPx(q, p, 14));
-   if (c) return start('corner', {
-    which: c[0]
-   })
+   const c0 = cellAt(o, inv(p.x, p.y));
+   if (!c0) return;
+   const have = new Map((o.court?.cells || []).map(c => [c[0] + ',' + c[1], c])), mode = have.has(c0[0] + ',' + c0[1]) ? 'del' : 'add';
+   UX.checkpoint();
+   start('cells', { mode, have });
+   paintCells(o, c0);
+   return
   }
   if (o && o.id !== 'square') {
    const d = UX.entryOf(o);
@@ -1239,15 +1249,9 @@
    drag.moved = true;
    UX.checkpoint()
   }
-  if (drag.type === 'court') {
-   // rubber-band path on the tile axes: the live end follows the cursor along the current axis;
-   // moving a whole tile sideways fixes a corner and turns — so a diagonal drag gives a clean L, not a staircase
-   const w = inv(p.x, p.y), q = { u: Math.round(w.u), v: Math.round(w.v) }, P = drag.pts;
-   let c = P.length > 1 ? P[P.length - 2] : P[0];
-   if (P.length === 1) { if (Math.hypot(q.u - c.u, q.v - c.v) < 1) return; drag.axis = Math.abs(q.u - c.u) >= Math.abs(q.v - c.v) ? 'u' : 'v'; const g0 = drag.axis === 'u' ? { u: c.u, v: Math.round(c.v) } : { u: Math.round(c.u), v: c.v }; if (Math.hypot(g0.u - c.u, g0.v - c.v) > .05) P.push(g0); c = P[P.length - 1]; P.push({ ...c }) }
-   const along = drag.axis === 'u' ? q.u - c.u : q.v - c.v, side = drag.axis === 'u' ? q.v - c.v : q.u - c.u;
-   P[P.length - 1] = drag.axis === 'u' ? { u: c.u + along, v: c.v } : { u: c.u, v: c.v + along };
-   if (Math.abs(side) >= 1.5 && Math.abs(along) >= 1 && P.length < 60) { drag.axis = drag.axis === 'u' ? 'v' : 'u'; P.push({ ...P[P.length - 1] }) }
+  if (drag.type === 'cells') {
+   const o = loc(place.id), c = cellAt(o, inv(p.x, p.y));
+   if (c) paintCells(o, c);
    return
   }
   if (drag.type === 'items') moveKeys(drag.keys, drag.orig, dx, dy);
@@ -1260,20 +1264,6 @@
    dx: Math.round(drag.dx + dx),
    dy: Math.round(drag.dy + dy)
   };
-  else if (drag.type === 'corner') {
-   const e0 = estate(o),
-    w = inv(p.x, p.y),
-    q = canonical(o, w.u, w.v),
-    a = +(q.u - e0.u).toFixed(1),
-    b = +(q.v - e0.v).toFixed(1),
-    f = data.frames[o.id] || (data.frames[o.id] = {});
-   if (drag.which[0] === 'l') f.left = Math.min(a, -o.w - .4);
-   else f.right = Math.max(a, o.w + .4);
-   if (drag.which[1] === 'b') f.back = Math.min(b, -o.d - .4);
-   else f.front = Math.max(b, o.d + 1.2);
-   cacheSolids();
-   terrainDirty = true
-  }
  }, true);
  window.addEventListener('pointerup', e => {
   if (press && e.pointerId === press.id) {
@@ -1286,16 +1276,12 @@
   const d = drag;
   drag = null;
   if (!d.moved) return;
-  if (d.type === 'court') {
-   const o = loc(place.id), a = center(o), pts = [];
-   for (const q of d.pts) { const c = canonical(o, q.u, q.v), r = { du: +(c.u - a.u).toFixed(2), dv: +(c.v - a.v).toFixed(2) }, l = pts.at(-1); if (!l || l.du !== r.du || l.dv !== r.dv) pts.push(r) }
-   // drop middle points of straight runs
-   const slim = pts.filter((q, i) => { const a1 = pts[i - 1], b1 = pts[i + 1]; return !a1 || !b1 || !((a1.du === q.du && q.du === b1.du) || (a1.dv === q.dv && q.dv === b1.dv)) });
-   courtDraw = false;
-   if (slim.length >= 2) { o.court = { pts: slim }; flashStatus('วาดทางเข้าแล้ว · ถนนจะมาเชื่อมที่ปลายเส้น') } else flashStatus('เส้นสั้นเกินไป · ลองลากให้ยาวขึ้น');
+  if (d.type === 'cells') {
+   const o = loc(place.id), cells = [...d.have.values()];
+   o.court = cells.length ? { cells } : { off: true };
    UX.refresh(); UX.persist(); render(); return
   }
-  if (d.type === 'entry' || d.type === 'corner') UX.refresh();
+  if (d.type === 'entry') UX.refresh();
   UX.persist();
   render()
  }, true);
@@ -1911,7 +1897,7 @@
   place.keys = place.keys.filter(k => items.some(e => e.key === k));
   const tabs = [
    ['building', '🏠 อาคาร', !!o],
-   ['frame', '🔲 กรอบนอก', framed],
+   ['frame', '🔲 ประตู/รั้ว', framed],
    ['items', '🪴 ของย่อย ' + items.length, true],
    ['entry', '🚪 ทางเข้า', !!o && o.id !== 'square']
   ];
@@ -1969,10 +1955,9 @@
    cur = choices.find(c => c.id === (t.art || o.id)) || choices.find(c => c.id === (isHouse(o) ? (o.npc ? o.id : 'home') : o.id));
   body.innerHTML = `${choices.length?`<div class="art"><span class="th" id="bThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="bSwap">เปลี่ยนภาพ…</button></div>${t.art&&t.art!==o.id?'<button id="bOrig">ใช้ภาพเดิม</button>':''}<p class="sub" style="margin:6px 0 0">${cur?.label||''}</p></div></div>`:''}
   ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div>`:''}
-  ${slider('sx','Width · ความกว้าง',t.sx??1,.5,1.6,.01,FMT.sx)}${slider('sy','Height · ความสูง',t.sy??1,.5,1.6,.01,FMT.sy)}${slider('kx','Base Slope · ความลาดฐาน',t.kx||0,-.6,.6,.005,FMT.kx)}<p class="sub">ปรับจากจุดฐานอาคาร: ความกว้าง/สูงแยกกัน · Base Slope เปลี่ยนแนวฐานโดยไม่ทำให้เส้นตั้งของอาคารเอียง</p>${nudgeHtml}
+  ${slider('kx','Base Slope · ความลาดฐาน',t.kx||0,-.6,.6,.005,FMT.kx)}<p class="sub">Base Slope เปลี่ยนแนวฐานโดยไม่ทำให้เส้นตั้งของอาคารเอียง</p>${nudgeHtml}
   ${fpHtml(o)}
   <b class="sec">ชั้น (layer)</b>${zRow('bz','ชั้นอาคาร',t.z||0,'เทียบกับของย่อยในสถานที่นี้ · ของย่อยที่เลขมากกว่าจะทับอาคาร')}${zRow('pz','ชั้นทั้งสถานที่',t.pz||0,'อาคาร+ของย่อยทั้งชุด เทียบกับสถานที่อื่น · 0 = ตามความลึก')}
-  <label class="chk"><input type="checkbox" id="bGuides" ${guides?'checked':''}> แสดงเส้นช่วย 2:1 (ฟ้า = ฐานอาคาร)</label>
   <p class="sub">ป้ายชื่อ: ลากป้ายบนแผนที่ไปวางได้${o.label?' · <a href="#" id="bLabel" style="color:#9ff3f5">คืนตำแหน่งป้าย</a>':''}</p>
   <div style="color:#ffd84d;font-weight:800;margin:10px 0 4px">ยืดเฉียง · ตรวจกรอบภาพ</div>
   <label class="chk"><input type="checkbox" id="bBounds" ${(t.bounds??true)?'checked':''}> แสดงกรอบประของภาพขณะยืด</label>
@@ -2033,7 +2018,6 @@
      else delete data.buildings[x.id]
     } flashStatus('ใช้ขนาด/มุมเดียวกันกับบ้านทุกหลังแล้ว · กด ย้อน ได้')
   }));
-  body.querySelector('#bGuides').onchange = e => guides = e.target.checked;
   body.querySelector('#bBounds').onchange = e => {
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
    b.bounds = e.target.checked;
@@ -2052,14 +2036,12 @@
    d = baseEstateFn(o),
    f = data.frames[o.id] || {},
    sides = f.sides || {};
-  body.innerHTML = `<p class="sub">ลาก <b style="color:#7fe3ff">มุมสีฟ้า</b> บนแผนที่เพื่อขยาย/หดแปลง · พื้นลานหน้าทางเข้าและถนนจะตามให้เอง</p>
-  ${slider('left','ขอบซ้าย',-e.left,o.w+.4,o.w+14,.1,unit).replace('data-k','data-f="unit" data-k')}${slider('right','ขอบขวา',e.right,o.w+.4,o.w+14,.1,unit).replace('data-k','data-f="unit" data-k')}
-  ${slider('back','ขอบหลัง',-e.back,o.d+.4,o.d+12,.1,unit).replace('data-k','data-f="unit" data-k')}${slider('front','ขอบหน้า',e.front,o.d+1.2,o.d+16,.1,unit).replace('data-k','data-f="unit" data-k')}
+  body.innerHTML = `<p class="sub">ขนาดพื้นที่ปรับที่แท็บ 🏠 อาคาร (กรอบฟ้าเป็นกรอบเดียวกับกรอบนอกแล้ว) · ที่นี่ตั้งช่องประตูกับรั้ว/ขอบ</p>
   ${slider('gate','ช่องประตูกว้าง',(e.gate??2.8)*2,1.2,14,.1,unit).replace('data-k','data-f="unit" data-k')}<hr>
   <b class="sec">รั้วรอบอัตโนมัติ (ทุกด้าน เว้นช่องประตู)</b><div class="row" style="flex-wrap:wrap">${[['wood','🪵 รั้วไม้'],['stone','🧱 กำแพงหิน'],['hedge','🌳 พุ่มไม้'],['flowers','🌼 ดอกไม้'],['planter','🪴 กระถาง'],['none','ไม่มี'],['auto','ตามแบบเดิม']].map(([k,l])=>`<button data-fence="${k}">${l}</button>`).join('')}</div>
   <b class="sec">ขอบแต่ละด้าน</b>${Object.entries(SIDES).map(([s,l])=>`<label class="sel">${l}<select data-side="${s}">${Object.entries(BORDERS).map(([k,n])=>`<option value="${k}" ${(sides[s]||'auto')===k?'selected':''}>${n}</option>`).join('')}</select></label>`).join('')}
-  <p class="sub">เปลี่ยนขนาด/ขอบแล้ว ของประดับเดิมบนแนวขอบจะถูกวางใหม่ตามแนวใหม่</p>
-  <div class="row"><button id="fReset">คืนกรอบเดิม</button></div>`;
+  <p class="sub">เปลี่ยนขอบแล้ว ของประดับเดิมบนแนวขอบจะถูกวางใหม่ตามแนวใหม่</p>
+  <div class="row"><button id="fReset">คืนค่าประตู/รั้วเดิม</button></div>`;
   const ff = () => data.frames[o.id] || (data.frames[o.id] = {});
   bindSliders((k, v) => {
    const F = ff();
@@ -2104,8 +2086,11 @@
 
  /* ---------- groups + a small library of saved groups ("asset + asset = new asset") ---------- */
  const LIB_KEY = 'project-a-village-asset-lib-v1';
- const readLib = () => { try { return JSON.parse(localStorage.getItem(LIB_KEY) || '[]').filter(a => a && a.id && Array.isArray(a.recs)) } catch (e) { return [] } };
- const writeLib = l => { try { localStorage.setItem(LIB_KEY, JSON.stringify(l)) } catch (e) { flashStatus('เซฟคลังในเครื่องไม่ได้') } };
+ const readLib = () => {
+  if (!data.lib.length) try { const old = JSON.parse(localStorage.getItem(LIB_KEY) || '[]').filter(a => a && a.id && Array.isArray(a.recs)); if (old.length) { data.lib = old; localStorage.removeItem(LIB_KEY) } } catch (e) {}
+  return data.lib
+ };
+ const writeLib = l => { data.lib = l; UX.persist() };
  const newGid = () => 'g:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
  function grpToolsHtml(keys) {
   const grouped = keys.some(k => data.edit[k]?.grp), one = keys.length > 1 && new Set(keys.map(k => data.edit[k]?.grp || '')).size === 1 && grouped;
@@ -2180,7 +2165,7 @@
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่ (จุดสีทอง) หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น · จุดแดง = ชิ้นที่ซ่อนอยู่</p>
   <div class="row"><button id="iAdd" style="background:#4f7a3c;border-color:#b8d39a">＋ เพิ่มของ…</button>${o?'<button id="iCopy">คัดลอกการแต่งไปที่อื่น…</button>':''}<button id="iReset">คืนของย่อยทั้งหมด</button></div>
-  <div class="row"><button id="iAll">เลือกทั้งหมด</button><button id="iLib">📚 คลังที่รวมไว้ (${readLib().length})</button>${clip()?.recs?.length?`<button id="gPaste">วางที่คัดลอก (${clip().recs.length}) <small>Ctrl+V</small></button>`:''}</div>
+  <div class="row"><button id="iAll">เลือกทั้งหมด</button><button id="iLib">📚 คลังที่รวมไว้ (${readLib().length})</button>${readLib().length?'<button id="iLibDel" title="ลบ asset ออกจากคลัง">🗑 ลบจากคลัง</button>':''}${clip()?.recs?.length?`<button id="gPaste">วางที่คัดลอก (${clip().recs.length}) <small>Ctrl+V</small></button>`:''}</div>
   <div class="items">${items.map(e=>`<button data-key="${e.key}"><span class="mini"></span><span style="flex:1">${itemName(e,items)}</span><small>${e.hidden?'ซ่อนอยู่':e.key.startsWith('add:')?'เพิ่มเอง':Object.keys(e.ov||{}).length?'แก้แล้ว':''}</small></button>`).join('')||'<p class="sub">ยังไม่มีของในสถานที่นี้ · กด ＋ เพิ่มของ</p>'}</div>`;
   body.querySelectorAll('[data-key]').forEach(b => {
    const E = items.find(x => x.key === b.dataset.key),
@@ -2211,6 +2196,14 @@
   }));
   act('#iCopy', () => openCopy(place.id));
   act('#iLib', openLib);
+  act('#iLibDel', () => {
+   const lib = readLib(), n = window.prompt('ลบอันไหน? พิมพ์เลข\n' + lib.map((x, i) => (i + 1) + '. ' + x.name).join('\n'));
+   const i = (parseInt(n, 10) || 0) - 1;
+   if (!lib[i]) return;
+   UX.checkpoint();
+   writeLib(lib.filter((_, j) => j !== i));
+   render()
+  });
   act('#gPaste', pasteGroup);
   act('#iAll', () => { place.keys = items.map(e => e.key); render() });
   act('#iReset', () => {
@@ -2294,11 +2287,11 @@
   body.innerHTML = `<p class="sub">ลาก <b style="color:#9ff3f5">หมุดฟ้า</b> บนแผนที่ไปวางที่ประตู · ตัวเอกเดินมาถึงจุดนี้แล้วเข้าใช้บริการ</p>
   <label class="chk"><input type="checkbox" id="eDeep" ${deep?'checked':''}> วางลึกเข้าไปในตัวอาคารได้ (ตัวเอกเดินทับภาพเข้าไป) · หรือกด Shift ขณะลาก</label>
   <div class="row"><button id="eReset">คืนจุดเข้าเดิม</button></div><hr>
-  <b class="sec">พื้นทางเข้า (ลานหน้าสถานที่)</b>
-  <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีพื้นทางเข้า':o.court?.pts?'วาดเอง ('+o.court.pts.length+' จุด)':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
-  <div class="row"><button id="cDraw" class="${courtDraw?'on':''}" style="${courtDraw?'background:#e5c06b;color:#1b302a':''}">✏ ${courtDraw?'กำลังวาด… ลากจากประตูไปหาถนน':'วาดทางเข้าใหม่'}</button></div>
-  <div class="row"><button id="cOff">ลบพื้นทางเข้า</button><button id="cAuto">กลับเป็นอัตโนมัติ</button></div>
-  <p class="sub">วาดใหม่: กดปุ่ม แล้วลากบนแผนที่ เส้นเริ่มที่ประตูเสมอ ปลายเส้นคือจุดที่ถนนจะมาเชื่อม · ทางเข้าที่วาดเป็นพื้นเดินได้ ลายตามถนนที่มาเชื่อม · ลบ = ไม่มีลานปู (ตัวเอกยังเดินจากประตูถึงถนนได้)</p>`;
+  <b class="sec">ช่องทางเดิน (สีเหลือง)</b>
+  <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีทางเดิน':o.court?.cells?o.court.cells.length+' ช่องครึ่ง':o.court?.pts?'เส้นเดิมที่วาดไว้':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
+  <div class="row"><button id="cDraw" class="${courtDraw?'on':''}" style="${courtDraw?'background:#e5c06b;color:#1b302a':''}">🟨 ${courtDraw?'กำลังทาสี… คลิก/ลากบนกริด (ช่องที่มีอยู่ = ลบ)':'ทาสีช่องทางเดิน'}</button></div>
+  <div class="row"><button id="cFill">เริ่มจากทางตรงประตู→ขอบหน้า</button><button id="cOff">ไม่มีทางเดิน</button><button id="cAuto">กลับเป็นอัตโนมัติ</button></div>
+  <p class="sub">ตัวละครเดินทับช่องสีเหลืองได้ · ช่องต้องต่อกันจากประตูถึงขอบหน้า (ปลายทางที่ถนนมาเชื่อม) · ตัวละครอยู่ในชั้นเดียวกับพื้นตรงนั้น ของที่อยู่ด้านหน้าและชั้นสูงกว่า (เช่น กระถาง) จึงบังตัวละครได้ · Q สลับทาทีละช่อง 1×1 / ครึ่งช่อง 2×2</p>`;
   body.querySelector('#eDeep').onchange = e => once(() => {
    const d = UX.entryOf(o);
    UX.setEntry(o, d, e.target.checked);
@@ -2310,6 +2303,7 @@
    UX.refresh()
   }));
   act('#cDraw', () => { courtDraw = !courtDraw; flashStatus(courtDraw ? 'ลากบนแผนที่จากประตูไปหาถนน · ปล่อยเมาส์เพื่อจบเส้น' : 'ยกเลิกการวาดทางเข้า'); render() });
+  act('#cFill', once(() => { o.court = { cells: autoCells(o) }; courtDraw = false; UX.refresh() }));
   act('#cOff', once(() => { courtDraw = false; o.court = { off: true }; UX.refresh() }));
   act('#cAuto', once(() => { courtDraw = false; delete o.court; UX.refresh() }))
  }
@@ -2333,15 +2327,39 @@
   gg.restore()
  }
 
+ /* walk cells: half-cell units from the place centre, in the place's own axes (see courtCellPath in village-town.html) */
+ function cellAt(o, w) {
+  const a = center(o), q = canonical(o, w.u, w.v), fp = window.VillageFootprint.fpOf(o), du = q.u - a.u, dv = q.v - a.v;
+  if (du < -fp.u0 || du >= fp.u1 || dv < -fp.v0 || dv >= fp.v1) return null;
+  const iu = Math.floor(du * 2), iv = Math.floor(dv * 2);
+  return UX.gridMode() === '1x1' ? [iu - (iu & 1), iv - (iv & 1)] : [iu, iv]
+ }
+ function paintCells(o, c) {
+  const fp = window.VillageFootprint.fpOf(o), n = UX.gridMode() === '1x1' ? 2 : 1;
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+   const u = c[0] + i, v = c[1] + j, k = u + ',' + v;
+   if (u < -fp.u0 * 2 || u >= fp.u1 * 2 || v < -fp.v0 * 2 || v >= fp.v1 * 2) continue;
+   if (drag.mode === 'add') drag.have.set(k, [u, v]); else drag.have.delete(k)
+  }
+  terrainDirty = true
+ }
+ function autoCells(o) {
+  const e = estate(o), a = center(o), d = door(o);
+  let dl = o.facing === 'SE' ? { u: d.v - a.v, v: d.u - a.u } : { u: d.u - a.u, v: d.v - a.v };
+  const set = new Map(), end = { u: 0, v: e.front - .25 };
+  for (let t = 0; t <= 1.0001; t += .05) {
+   const u = dl.u + (end.u - dl.u) * t, v = dl.v + (end.v - dl.v) * t, iu = Math.floor(u * 2) - 1, iv = Math.floor(v * 2);
+   for (let i = 0; i < 4; i++) { const k = (iu + i) + ',' + iv; set.set(k, [iu + i, iv]) }
+  }
+  return [...set.values()].filter(c => c[0] >= e.left * 2 && c[0] < e.right * 2 && c[1] >= e.back * 2 && c[1] < e.front * 2)
+ }
  function drawOverlay(gg) {
   const z = scale * zoom,
    o = place && loc(place.id);
-  if (drag?.type === 'court' && drag.pts.length) {
-   gg.save(); gg.strokeStyle = '#ffe9a8'; gg.lineWidth = 6 / z; gg.setLineDash([12 / z, 8 / z]); gg.lineJoin = 'round'; gg.beginPath();
-   drag.pts.forEach((q, i) => { const s2 = project(q.u, q.v); gg[i ? 'lineTo' : 'moveTo'](s2.x, s2.y) }); gg.stroke(); gg.restore()
-  } else if (o?.court?.pts && place.tab === 'entry') {
-   const a = center(o); gg.save(); gg.fillStyle = '#ffe9a8';
-   for (const q of o.court.pts) { const c = canonical(o, a.u + q.du, a.v + q.dv), s2 = project(c.u, c.v); gg.beginPath(); gg.arc(s2.x, s2.y, 5 / z, 0, 7); gg.fill() }
+  if (o && place.tab === 'entry' && o.id !== 'square') {
+   const a = center(o), cells = drag?.type === 'cells' ? [...drag.have.values()] : (o.court?.cells || []);
+   gg.save(); gg.fillStyle = 'rgba(255,214,64,.55)'; gg.strokeStyle = '#ffd840'; gg.lineWidth = 1.5 / z;
+   for (const [iu, iv] of cells) { gg.beginPath(); [[iu, iv], [iu + 1, iv], [iu + 1, iv + 1], [iu, iv + 1]].forEach(([x, y], i) => { const c = canonical(o, a.u + x / 2, a.v + y / 2), s2 = project(c.u, c.v); gg[i ? 'lineTo' : 'moveTo'](s2.x, s2.y) }); gg.closePath(); gg.fill(); gg.stroke() }
    gg.restore()
   }
   if (place) {
@@ -2455,70 +2473,6 @@
     gg.fillStyle = '#fff';
     gg.fillText(o.entry?.deep ? 'ทางเข้า (ลึก)' : 'ทางเข้า', p.x, p.y - 14 / z)
    }
-   gg.restore()
-  }
-  // outer frame handles
-  if (place.tab === 'frame' && hasFrame(o)) {
-   const c = corners(o),
-    pts = [c.lb, c.rb, c.rf, c.lf],
-    e = estate(o),
-    g1 = plotScreen(o, -(e.gate ?? 2.8), e.front),
-    g2 = plotScreen(o, e.gate ?? 2.8, e.front);
-   gg.save();
-   gg.setLineDash([8 / z, 6 / z]);
-   gg.lineWidth = 2 / z;
-   gg.strokeStyle = '#7fe3ff';
-   gg.beginPath();
-   pts.forEach((p, i) => gg[i ? 'lineTo' : 'moveTo'](p.x, p.y));
-   gg.closePath();
-   gg.stroke();
-   gg.setLineDash([]);
-   gg.strokeStyle = '#ffd36b';
-   gg.lineWidth = 4 / z;
-   gg.beginPath();
-   gg.moveTo(g1.x, g1.y);
-   gg.lineTo(g2.x, g2.y);
-   gg.stroke();
-   for (const p of pts) {
-    gg.fillStyle = '#7fe3ff';
-    gg.strokeStyle = '#fff';
-    gg.lineWidth = 1.5 / z;
-    gg.fillRect(p.x - 7 / z, p.y - 7 / z, 14 / z, 14 / z);
-    gg.strokeRect(p.x - 7 / z, p.y - 7 / z, 14 / z, 14 / z)
-   }
-   gg.restore()
-  }
-  // building footprint + 2:1 guides
-  if (place.tab === 'building' && guides && o.id !== 'square') {
-   const a = center(o),
-    c = project(a.u, a.v),
-    pts = [
-     [-o.w, -o.d],
-     [o.w, -o.d],
-     [o.w, o.d],
-     [-o.w, o.d]
-    ].map(([u, v]) => project(a.u + u, a.v + v));
-   gg.save();
-   gg.setLineDash([8 / z, 6 / z]);
-   gg.lineWidth = 2 / z;
-   gg.strokeStyle = '#7fe3ff';
-   gg.beginPath();
-   pts.forEach((p, i) => gg[i ? 'lineTo' : 'moveTo'](p.x, p.y));
-   gg.closePath();
-   gg.stroke();
-   gg.globalAlpha = .6;
-   for (const s of [-.5, .5])
-    for (const p of [pts[0], pts[2]]) {
-     gg.beginPath();
-     gg.moveTo(p.x - 700, p.y - 700 * s);
-     gg.lineTo(p.x + 700, p.y + 700 * s);
-     gg.stroke()
-    } gg.setLineDash([]);
-   gg.globalAlpha = 1;
-   gg.fillStyle = '#7fe3ff';
-   gg.beginPath();
-   gg.arc(c.x, c.y, 5 / z, 0, Math.PI * 2);
-   gg.fill();
    gg.restore()
   }
  }

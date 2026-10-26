@@ -7,7 +7,7 @@
 (function (root) {
   'use strict';
   const G = root.VillageGrid || (typeof require !== 'undefined' ? require('./village-grid.js') : null);
-  const Q = 4, MAX = 12, EPS = 1e-9;
+  const Q = 4, MAX = 20, EPS = 1e-9;
   const up = v => Math.ceil(v * 2 - EPS) / 2;               // round outward to half a cell
   const q4 = v => Math.round(v * 2) / 2;                      // nearest half cell (the finest grid step)
 
