@@ -32,7 +32,8 @@
   buildings: {},
   frames: {},
   cast: {},
-  lib: []
+  lib: [],
+  assets: []
  });
 
  function set(v) {
@@ -47,6 +48,8 @@
    for (const b of Object.values(data.buildings)) if (b && typeof b === 'object') for (const k of ['ix','iy']) if (Number.isFinite(b[k]) && b[k] > 2) b[k] = Math.max(.5, Math.min(2, b[k] / 100));
    if (v.frames && typeof v.frames === 'object') data.frames = copy(v.frames);
    window.VillageFence?.set(v.fence);
+   if (Array.isArray(v.assets)) data.assets = v.assets.filter(a => a && /^[a-z0-9-]{2,40}$/.test(a.id) && typeof a.name === 'string').map(a => ({ id: a.id, name: a.name.slice(0, 40), w: Math.max(30, Math.min(600, +a.w || 120)) }));
+   registerAssets();
    if (Array.isArray(v.lib)) data.lib = copy(v.lib).filter(a => a && a.id && Array.isArray(a.recs));
    if (v.cast && typeof v.cast === 'object') data.cast = copy(v.cast);
    else if (v.chars && typeof v.chars === 'object') // v81 files: plain numbers for hero / npc
@@ -65,6 +68,7 @@
   if (Object.keys(data.buildings).length) out.buildings = copy(data.buildings);
   if (Object.keys(data.frames).length) out.frames = copy(data.frames);
   if (data.lib.length) out.lib = copy(data.lib);
+  if (data.assets.length) out.assets = copy(data.assets);
   const fc = window.VillageFence?.get(); if (fc) out.fence = fc;
   const gp = window.TownPaint?.save();
   if (gp) out.ground = gp;
@@ -104,6 +108,20 @@
   'hay': ['กองฟาง', 95]
  };
  for (const [n, [label, w]] of Object.entries(DECOR_W)) kind('decor:' + n, label, 'ของประดับ', p => decor(n, p, w, false));
+ /* v91.5 · pictures the user added through "＋ เพิ่มภาพ Asset": saved in the layout (id, name, width) + the PNG under assets/village-town/decor/ */
+ function registerAssets() {
+  for (const { id, name, w } of data.assets) {
+   if (!DECOR_W[id]) { DECOR_W[id] = [name, w]; kind('decor:' + id, name, 'ของประดับ (ที่เพิ่มเอง)', p => decor(id, p, DECOR_W[id][1], false)) }
+   if (!decorImg[id]) { const im = new Image(); im.onload = () => { decorImg[id] = im; terrainDirty = true }; im.src = 'assets/village-town/decor/' + id + '.png' }
+  }
+ }
+ /* called by js/asset-request.js: img = decoded picture; replaces the file in place (known id) or registers a new one */
+ function assetReady(id, name, w, img) {
+  UX.checkpoint();
+  if (!DECOR_W[id]) { data.assets.push({ id, name, w }); registerAssets() }
+  decorImg[id] = img; terrainDirty = true;
+  UX.persist()
+ }
  ['รั้วหิน (ชุดเก่า)', 'รั้วไม้ (ชุดเก่า)', 'พุ่มไม้', 'กระถางต้นไม้', 'ของตั้งหน้าอาคาร', 'โต๊ะ/ถัง', 'ลังไม้', 'ต้นไม้'].forEach((label, i) => kind('prop:' + i, label, 'ของชุดเดิม', p => i === 7 ? propSprite(7, p, 110, 130) : i === 2 ? propSprite(2, {
   x: p.x,
   y: p.y + 6
@@ -216,6 +234,7 @@
     hidden: !!ov.hide,
     base: draw
    };
+  if (ov.del) return null; // v91.5: deleted starter item - gone from the list too (⟲ on the place brings it back)
   frame.push(E);
   if (ov.hide) return null;
   const s = ov.s ?? 1,
@@ -936,7 +955,7 @@
    if (a) {
     data.added = data.added.filter(x => x !== a);
     delete data.edit[k]
-   } else ovOf(k).hide = true
+   } else { const o2 = ovOf(k); o2.del = true; delete o2.hide }
   }
   place.keys = [];
   UX.persist();
@@ -1152,7 +1171,7 @@
      ...extra
     }
    };
-  if (o && o.id !== 'square' && !courtDraw) {
+  if (o && o.id !== 'square' && !courtDraw && fpMode()) {
    const ek = fpEdgeAt(o, inv(p.x, p.y));
    if (ek) {
     const tN = performance.now(), dbE = tN - (fpEdgeAt.t || 0) < 400;
@@ -1190,7 +1209,7 @@
     dy: o.label?.dy || 0
    })
   }
-  const h = pickIn(p, place.id);
+  const h = fpMode() ? null : pickIn(p, place.id); // v91.5: in the 🏠 tab only the blue area is editable; sub-assets are edited in their own tab
   if (h) {
    if (e.shiftKey) {
     swallow(e);
@@ -1220,6 +1239,7 @@
   } // empty ground → camera pan as usual
  }, true);
  /* v91.4: the cursor tells you a side of the blue area can be dragged (diagonal arrows along the way it moves) */
+ const fpMode = () => !!place && place.tab === 'building';
  function edgeCursor(k, o) {
   if (!k) return '';
   const alongU = k[0] === 'u'; // own-axis u edges move along u: screen diagonal ↘↖ (swapped for SE places)
@@ -1229,11 +1249,11 @@
  stageEl.addEventListener('pointermove', e => {
   if (!editing || testWalk) { return }
   if (drag) { if (drag.type === 'fpEdge') setCursor(edgeCursor(drag.k, loc(place.id))); return }
-  { const o = place && loc(place.id), w = world(e); setCursor(o && o.id !== 'square' && !courtDraw ? edgeCursor(fpEdgeAt(o, inv(w.x, w.y)), o) : '') }
+  { const o = place && loc(place.id), w = world(e); setCursor(o && o.id !== 'square' && !courtDraw && fpMode() ? edgeCursor(fpEdgeAt(o, inv(w.x, w.y)), o) : '') }
   const p = world(e);
   if (place) {
    hoverOwner = null;
-   hoverKey = pickIn(p, place.id)?.key || null
+   hoverKey = fpMode() ? null : (pickIn(p, place.id)?.key || null)
   } else if (UX.getMode() === 'object') {
    hoverKey = null;
    hoverOwner = UX.hitObject(p) ? null : pickIn(p, null)?.owner || null
@@ -1564,7 +1584,7 @@
   for (const t of targets) {
    if (t === src || !baseOf(t)) continue;
    for (const E of frame.filter(e => e.owner === t))
-    if (!E.key.startsWith('add:')) ovOf(E.key).hide = true;
+    if (!E.key.startsWith('add:')) ovOf(E.key).del = true;
    const gone = data.added.filter(a => a.owner === t).map(a => a.id);
    data.added = data.added.filter(a => a.owner !== t);
    for (const id of gone) delete data.edit[id];
@@ -2176,6 +2196,7 @@
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่ (จุดสีทอง) หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น · จุดแดง = ชิ้นที่ซ่อนอยู่</p>
   <div class="row"><button id="iAdd" style="background:#4f7a3c;border-color:#b8d39a">＋ เพิ่มของ…</button>${o?'<button id="iCopy">คัดลอกการแต่งไปที่อื่น…</button>':''}<button id="iReset">คืนของย่อยทั้งหมด</button></div>
+  <div class="row"><button id="iGrid" title="กริดย่อยของ asset ย่อย (คีย์ลัด Q): 1×1 = ทีละ 1 ช่อง · 2×2 = ทีละครึ่งช่อง">🧲 กริด ${modeNow().replace('x','×')} · กด Q</button></div>
   <div class="row"><button id="iAll">เลือกทั้งหมด</button><button id="iLib">📚 คลังที่รวมไว้ (${readLib().length})</button>${readLib().length?'<button id="iLibDel" title="ลบ asset ออกจากคลัง">🗑 ลบจากคลัง</button>':''}${clip()?.recs?.length?`<button id="gPaste">วางที่คัดลอก (${clip().recs.length}) <small>Ctrl+V</small></button>`:''}</div>
   <div class="items">${items.map(e=>`<button data-key="${e.key}"><span class="mini"></span><span style="flex:1">${itemName(e,items)}</span><small>${e.hidden?'ซ่อนอยู่':e.key.startsWith('add:')?'เพิ่มเอง':Object.keys(e.ov||{}).length?'แก้แล้ว':''}</small></button>`).join('')||'<p class="sub">ยังไม่มีของในสถานที่นี้ · กด ＋ เพิ่มของ</p>'}</div>`;
   body.querySelectorAll('[data-key]').forEach(b => {
@@ -2187,6 +2208,7 @@
    b.onmouseleave = () => hoverKey = null;
    b.onclick = e => selectItem(b.dataset.key, e.shiftKey, true)
   });
+  act('#iGrid', () => { UX.toggleGridMode(); render() });
   act('#iAdd', () => openPicker('เพิ่มของให้ ' + ownerName(place.id), '', k => {
    const base = baseOf(place.id);
    if (!base) return;
@@ -2237,7 +2259,7 @@
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
   ${nudgeHtml}<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.5">กว้าง −</button><button data-fz="fw,0.5">กว้าง +</button><button data-fz="fh,-0.5">ลึก −</button><button data-fz="fh,0.5">ลึก +</button></div>${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
-  <div class="row">${added?'<button id="aeDel">ลบชิ้นนี้ (Delete)</button>':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชิ้นนี้ (Delete)'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
+  <div class="row"><button id="aeDel">ลบชิ้นนี้ (Delete)</button>${added?'':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชั่วคราว'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
   act('#iBack', () => {
    place.keys = [];
@@ -2596,6 +2618,8 @@
   pick: key => selectItem(key),
   itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner, hidden: E.hidden } : null },
   frameSig: () => JSON.stringify(data.frames),
+  assetReady,
+  decorList: () => Object.entries(DECOR_W).map(([id, [name, w]]) => ({ id, name, w })),
   get,
   set,
   artRect: transformRect,
