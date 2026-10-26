@@ -96,6 +96,7 @@
 <div class="tool"><b>ง) คัดลอกรั้ว / ขนาดกรอบ</b><small>เอาชุดรั้ว (4 ด้าน + ประตู) ของสถานที่หนึ่งไปใส่สถานที่อื่น</small>
 <div class="row"><select id="auSrc">${opts}</select> → <select id="auDst" multiple size="4" style="min-width:140px">${opts}</select></div>
 <label class="row" style="margin-top:6px"><input type="checkbox" id="auFp"> คัดลอกขนาดกรอบฟ้าด้วย</label><button id="auCopy">คัดลอก</button></div>
+<div class="tool"><b>🗑 ลบรั้ว</b><small>ลบรั้วทุกด้านของสถานที่ที่เลือก (ใช้ปุ่ม Ctrl/Shift เลือกหลายที่) หรือทั้งแผนที่ · ย้อนกลับด้วย ↶ ได้</small><div class="row"><select id="auFenceDst" multiple size="3" style="min-width:140px">${opts}</select><button id="auFenceDel">ลบรั้วที่เลือก</button><button id="auFenceAll">ลบรั้วทั้งแผนที่</button></div></div>
 <div class="tool"><b>จ) snap ของย่อยทั้งหมดเข้ากริด</b><small>จัดของย่อยทุกชิ้นทุกสถานที่ให้ตรงช่องกริดปัจจุบัน (กด Q สลับ 1×1 / 2×2 ก่อน)</small><button id="auSnap">snap ทั้งหมด</button></div>
 <b>ผล</b><div id="auLog"></div>`;
     document.body.append(win);
@@ -108,6 +109,9 @@
       if (!dst.length) return log(['เลือกสถานที่ปลายทางก่อน (กด Ctrl/Shift เพื่อเลือกหลายที่)']);
       copyFence(src, dst, $('#auFp', win).checked); log(['⧉ คัดลอกรั้ว' + ($('#auFp', win).checked ? '+กรอบ' : '') + ' จาก ' + src + ' ไป ' + dst.length + ' สถานที่แล้ว'])
     };
+    const wipe = ids => { const FN = VillageFence, c = FN.get() || { pieces: {}, places: {} }; UX().checkpoint(); for (const id of ids) { c.places[id] = { ...(c.places[id] || {}), sides: { back: 'none', left: 'none', right: 'none', front: 'none' } } } FN.set(c); cacheSolids(); terrainDirty = true; UX().refresh(); UX().persist(); log(['🗑 ลบรั้วของ ' + ids.length + ' สถานที่แล้ว']) };
+    $('#auFenceDel', win).onclick = () => { const ids = [...$('#auFenceDst', win).selectedOptions].map(o => o.value); ids.length ? wipe(ids) : log(['เลือกสถานที่ก่อน']) };
+    $('#auFenceAll', win).onclick = () => { if (confirm('ลบรั้วทุกสถานที่ในแผนที่?')) wipe(places().map(o => o.id)) };
     $('#auSnap', win).onclick = () => {
       const n = VillageAssetEdit.resnapAll(true);
       if (!n) return log(['✔ ของย่อยทุกชิ้นตรงกริดอยู่แล้ว']);

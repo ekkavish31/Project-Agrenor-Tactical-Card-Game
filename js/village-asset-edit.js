@@ -2076,13 +2076,13 @@
  function tabFrame(body, o) {
   const FN = window.VillageFence, pcs = FN.allPieces(), cfgSides = FN.sidesOf(o.id, borderProfile(o)), gate = FN.gateOf(o.id),
    SIDE_L = { back: 'ด้านหลัง', left: 'ด้านซ้าย', right: 'ด้านขวา', front: 'ด้านหน้า' },
-   opts = cur => `<option value="none" ${cur === 'none' ? 'selected' : ''}>— ปิดด้าน (ไม่มีรั้ว) —</option>` + Object.entries(pcs).map(([k, v]) => `<option value="${k}" ${cur === k ? 'selected' : ''}>${v.name}</option>`).join(''),
+   opts = cur => `<option value="none" ${cur === 'none' ? 'selected' : ''}>🗑 ลบรั้วด้านนี้ (ไม่มีรั้ว)</option>` + Object.entries(pcs).map(([k, v]) => `<option value="${k}" ${cur === k ? 'selected' : ''}>${v.name}</option>`).join(''),
    custom = Object.entries(FN.cfg().pieces),
    decorOpts = sel => Object.entries(DECOR_W).map(([k, v]) => `<option value="${k}" ${sel === k ? 'selected' : ''}>${v[0]}</option>`).join('') + `<option value="" ${sel && !DECOR_W[sel] ? 'selected' : ''}>ไฟล์ภาพ (พิมพ์พาธ)</option>`,
    num = (id, f, label, v, min, max, step) => `<label>${label}<input type="number" data-pf="${id}:${f}" min="${min}" max="${max}" step="${step}" value="${v}"></label>`;
   body.innerHTML = `<p class="sub">รั้ว = ภาพชิ้นเดียวต่อกันเป็นแถวตามขอบกรอบฟ้า (ชิดช่องนอกสุด เยื้องเข้าใน ¼ ช่อง) · มุมต่อกันเอง · เว้นช่องทางเข้าตามช่องเหลืองที่แตะขอบ และความกว้างประตู</p>
   <b class="sec">ชิ้นรั้วแต่ละด้าน</b>${FN.SIDES.map(s => `<label class="sel">${SIDE_L[s]}<select data-side="${s}">${opts(cfgSides[s])}</select></label>`).join('')}
-  <div class="row" style="flex-wrap:wrap"><button data-all="wood">🪵 ไม้ทุกด้าน</button><button data-all="stone">🧱 หินทุกด้าน</button><button data-all="hedge">🌳 พุ่มทุกด้าน</button><button data-all="none">ปิดทุกด้าน</button></div>
+  <div class="row" style="flex-wrap:wrap"><button data-all="wood">🪵 ไม้ทุกด้าน</button><button data-all="stone">🧱 หินทุกด้าน</button><button data-all="hedge">🌳 พุ่มทุกด้าน</button><button data-all="none">🗑 ลบรั้วทั้งหมดของที่นี่</button></div>
   ${slider('gate', 'ประตูกว้าง', gate * 2, 1, 12, .5, unit)}
   <hr><b class="sec">ชิ้นรั้วของฉัน (กำหนดภาพ + จุด snap ระหว่างชิ้น)</b>
   <p class="sub">len = ชิ้นหนึ่งยาวกี่ช่อง · ทับกัน = px ที่ชิ้นข้างเคียงซ้อน (พุ่มไม้ ≈ ขอบชนขอบ 0–10, กำแพงหิน ≈ เสาทับกัน 20+) · ขนาด/ลดลง = ปรับแนวตั้ง</p>
