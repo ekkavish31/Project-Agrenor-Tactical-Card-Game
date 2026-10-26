@@ -483,19 +483,6 @@
  }
  building = function(o) {
   drawB(o);
-  // Yellow dashed outline shows the selected building's transformed image bounds.
-  if (editing && selected === o.id && (data.buildings[o.id]?.bounds ?? true)) {
-   const t=data.buildings[o.id]||{}, p=anchorOf(o), r=artRect(o);
-   if (r && Number.isFinite(r.x) && Number.isFinite(r.y) && Number.isFinite(r.w) && Number.isFinite(r.h)) {
-    const sx=t.sx??1, sy=t.sy??1, k=t.kx||0, ox=t.dx||0, oy=t.dy||0;
-    const pts=[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h],[r.x,r.y+r.h]].map(([x,y])=>{
-     const dx=x-p.x,dy=y-p.y;
-     return [p.x+ox+sx*dx,p.y+oy+k*dx+sy*dy]
-    });
-    g.save(); g.setTransform(1,0,0,1,0,0); g.strokeStyle='#ffd84d'; g.lineWidth=2; g.setLineDash([7,5]);
-    g.beginPath(); g.moveTo(pts[0][0],pts[0][1]); for(let i=1;i<pts.length;i++) g.lineTo(pts[i][0],pts[i][1]); g.closePath(); g.stroke(); g.restore()
-   }
-  }
   if (!editing) return;
   if (lit('bld:' + o.id, o.id) || place?.id === o.id && place.tab === 'building') stamp('ring', () => drawB(o));
   if (place?.id === o.id) stamp('hole', () => drawB(o))
