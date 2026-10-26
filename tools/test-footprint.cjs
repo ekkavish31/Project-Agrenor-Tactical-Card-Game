@@ -65,6 +65,18 @@ test('edit helpers: pull one edge in, pull everything in, never below a quarter 
   assert.equal(F.nudgeEdge(fp, 'v1', 99).v1, F.MAX);
 });
 
+test('automatic footprint: width = one side of the base, height/2 = the other (56px per cell across)', () => {
+  const f = F.autoFromArt(448, 336);                     // 8 cells x 6 cells -> halves 4 and 3
+  assert.deepEqual(f, { u0: 4, u1: 4, v0: 3, v1: 3 });
+  assert.deepEqual(F.autoFromArt(400, 300), { u0: 4, u1: 4, v0: 3, v1: 3 });   // 7.14 / 5.36 cells -> halves 3.57 / 2.68 rounded outward to 4 / 3
+  const o = { id: 'a', w: 1, d: 1, facing: 'SW', fpAuto: f };
+  assert.deepEqual(F.defaultFp(o), f);
+  assert.deepEqual(F.fpOf(o), f);
+  assert.deepEqual(F.fpOf({ ...o, fp: { u0: 1, u1: 1, v0: 1, v1: 1 } }), { u0: 1, u1: 1, v0: 1, v1: 1 });
+  assert.deepEqual(F.defaultFp({ id: 'b', w: 2, d: 2, facing: 'SW', fpAuto: { u0: -1 } }), { u0: 2, u1: 2, v0: 2, v1: 2 }, 'a broken fpAuto falls back to w,d');
+  assert.equal(F.isCustom(o), false);
+});
+
 test('corners lists the four world corners of a rect', () => {
   const c = F.corners(G.rectFromCells(1, 2, 3, 4));
   assert.deepEqual(c, [{ u: 1, v: 2 }, { u: 4, v: 2 }, { u: 4, v: 6 }, { u: 1, v: 6 }]);

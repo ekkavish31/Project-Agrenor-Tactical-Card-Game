@@ -168,8 +168,12 @@ def main():
 
         # --- small items: edge snap, stack mode (V), groups, double click ------------
         pg.evaluate("TownUX.setMode('object')")
-        two = pg.evaluate("() => { VillageAssetEdit.enter('shop'); return VillageAssetEdit.itemKeys('shop').slice(0, 2) }")
-        pg.wait_for_timeout(400)
+        pg.reload(wait_until='networkidle'); pg.wait_for_timeout(1500)
+        pg.evaluate(JS_HELPERS)
+        pg.evaluate("TownUX.setMode('object')")
+        pg.evaluate("() => VillageAssetEdit.enter('shop')")
+        pg.wait_for_timeout(1500)
+        two = pg.evaluate("() => VillageAssetEdit.itemKeys('shop').slice(0, 2)")
         A, B = two
         cheb = pg.evaluate("""([a, b]) => { const p = VillageAssetEdit.itemWorld(a), q = VillageAssetEdit.itemWorld(b), u = VillageGrid.unproject(p.x, p.y), v = VillageGrid.unproject(q.x, q.y);
             return Math.max(Math.abs(u.u - v.u), Math.abs(u.v - v.v)) }""", [A, B])

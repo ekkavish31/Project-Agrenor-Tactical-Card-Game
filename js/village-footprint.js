@@ -11,12 +11,23 @@
   const up = v => Math.ceil(v * 2 - EPS) / 2;               // round outward to half a cell
   const q4 = v => Math.round(v * Q) / Q;                      // nearest quarter cell
 
-  function defaultFp(o) { return { u0: up(o.w), u1: up(o.w), v0: up(o.d), v1: up(o.d) } }
+  const okFp = f => !!f && ['u0', 'u1', 'v0', 'v1'].every(k => Number.isFinite(f[k]) && f[k] >= 0.25 && f[k] <= MAX);
+  /* Automatic footprint. When the artwork is known (o.fpAuto, set from the picture, never saved) it is used; before the
+     picture has loaded the old hand-tuned half sizes w,d are the fallback. */
+  function defaultFp(o) { return okFp(o && o.fpAuto) ? { ...o.fpAuto } : { u0: up(o.w), u1: up(o.w), v0: up(o.d), v1: up(o.d) } }
+
+  /* From the picture's visible size in screen px: width = one side of the base, height/2 = the other side.
+     One cell is 56px wide, so a side of the base is  width/56  and  (height/2)/28  =  height/56  cells.
+     Local u gets the width side, local v the height side; split evenly around the centre, rounded outward to half a cell. */
+  function autoFromArt(widthPx, heightPx) {
+    const lu = widthPx / 56, lv = heightPx / 56;
+    return { u0: up(lu / 2), u1: up(lu / 2), v0: up(lv / 2), v1: up(lv / 2) };
+  }
 
   /* The footprint in use: saved `fp` when it is valid, otherwise the default. */
   function fpOf(o) {
     const f = o && o.fp;
-    if (f && ['u0', 'u1', 'v0', 'v1'].every(k => Number.isFinite(f[k]) && f[k] >= 0.25 && f[k] <= MAX)) {
+    if (okFp(f)) {
       return { u0: q4(f.u0), u1: q4(f.u1), v0: q4(f.v0), v1: q4(f.v1) };
     }
     return defaultFp(o);
@@ -69,7 +80,7 @@
   }
   function nudgeAll(fp, delta) { return nudgeEdge(nudgeEdge(nudgeEdge(nudgeEdge(fp, 'u0', delta), 'u1', delta), 'v0', delta), 'v1', delta) }
 
-  const api = { defaultFp, fpOf, isCustom, worldRect, corners, hits, nearestFree, nudgeEdge, nudgeAll, MAX };
+  const api = { defaultFp, autoFromArt, fpOf, isCustom, worldRect, corners, hits, nearestFree, nudgeEdge, nudgeAll, MAX };
   root.VillageFootprint = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
