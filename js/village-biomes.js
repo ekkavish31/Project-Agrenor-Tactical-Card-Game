@@ -45,5 +45,5 @@ function objects(){if(!zones&&!build())return[];if(!root.Village25D)return[];if(
  return props.filter(q=>sprite[q.n]).map(q=>({x:q.x,y:q.n==='coast-foam-edge'?q.y-40:q.y,draw:g=>{const im=sprite[q.n],h=q.w*im.naturalHeight/im.naturalWidth;g.save();g.translate(q.x,q.y);if(q.flip)g.scale(-1,1);TownArt.draw(g,im,null,[-q.w/2,-h*q.a,q.w,h],null);g.restore()}}))}
 // beach: no trees on the sand, shrubs become beach grass, rocks become sea rocks
 function beach(g,p,heroPt){if(at(p.x,p.y)!=='sand')return false;if(['pine','broadleaf','oak'].includes(p.kind))return true;const im=sprite[p.kind==='rock'?'coast-rocks-s':'coast-beach-grass'];if(!im)return false;const w=p.w*1.2,h=w*im.naturalHeight/im.naturalWidth;g.save();g.translate(p.x,p.y);if(p.flip)g.scale(-1,1);TownArt.draw(g,im,null,[-w/2,-h*.8,w,h],heroPt);g.restore();return true}
-root.TownBiome={ground,at,drawPlant,objects,zones:()=>zones?.map(z=>({...z}))};
+root.TownBiome={reset:()=>{props=null;zones=null},ground,at,drawPlant,objects,zones:()=>zones?.map(z=>({...z}))};
 })(globalThis);
