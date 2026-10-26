@@ -65,16 +65,37 @@ test('edit helpers: pull one edge in, pull everything in, never below half a cel
   assert.equal(F.nudgeEdge(fp, 'v1', 99).v1, F.MAX);
 });
 
-test('automatic footprint: width = one side of the base, height/2 = the other (56px per cell across)', () => {
-  const f = F.autoFromArt(448, 336);                     // 8 cells x 6 cells -> halves 4 and 3
-  assert.deepEqual(f, { u0: 4, u1: 4, v0: 3, v1: 3 });
-  assert.deepEqual(F.autoFromArt(400, 300), { u0: 4, u1: 4, v0: 3, v1: 3 });   // 7.14 / 5.36 cells -> halves 3.57 / 2.68 rounded outward to 4 / 3
-  const o = { id: 'a', w: 1, d: 1, facing: 'SW', fpAuto: f };
-  assert.deepEqual(F.defaultFp(o), f);
-  assert.deepEqual(F.fpOf(o), f);
-  assert.deepEqual(F.fpOf({ ...o, fp: { u0: 1, u1: 1, v0: 1, v1: 1 } }), { u0: 1, u1: 1, v0: 1, v1: 1 });
+test('automatic footprint: a diamond under the picture, as wide as the picture, centred under it', () => {
+  const o = { id: 'a', w: 2, d: 2, facing: 'SW' };
+  // picture 448px wide (-> Lu+Lv = 16 cells), lowest pixel 4 cells*... centred exactly on the place centre P
+  const P = { x: 1000, y: 500 }, sum = 448 / 28, yb = P.y + sum * 7;       // bottom vertex of a diamond centred on P
+  const f = F.autoFromArt(o, { x0: P.x - 224, x1: P.x + 224, yb }, P);
+  assert.deepEqual(f, { u0: 4, u1: 4, v0: 4, v1: 4 });                    // 16 cells split 8/8 -> halves of 4
+  // picture shifted 56px to the right and 28px up: the diamond centre moves with it -> asymmetric extents
+  const g = F.autoFromArt(o, { x0: P.x - 224 + 56, x1: P.x + 224 + 56, yb: yb - 28 }, P);
+  assert.equal(g.u0 + g.u1 + g.v0 + g.v1 >= 16, true);
+  assert.notDeepEqual([g.u0, g.v0], [g.u1, g.v1]);
+  // SE-facing places swap which local axis the shift lands on
+  const se = F.autoFromArt({ ...o, facing: 'SE' }, { x0: P.x - 224 + 56, x1: P.x + 224 + 56, yb: yb - 28 }, P);
+  assert.notDeepEqual(se, g);
+  const w = { id: 'a', w: 2, d: 2, facing: 'SW', fpAuto: f };
+  assert.deepEqual(F.defaultFp(w), f);
+  assert.deepEqual(F.fpOf(w), f);
+  assert.deepEqual(F.fpOf({ ...w, fp: { u0: 1, u1: 1, v0: 1, v1: 1 } }), { u0: 1, u1: 1, v0: 1, v1: 1 });
   assert.deepEqual(F.defaultFp({ id: 'b', w: 2, d: 2, facing: 'SW', fpAuto: { u0: -1 } }), { u0: 2, u1: 2, v0: 2, v1: 2 }, 'a broken fpAuto falls back to w,d');
-  assert.equal(F.isCustom(o), false);
+  assert.equal(F.isCustom(w), false);
+});
+
+test('nearestFree measures from the raw pointer position, so the slide is steady', () => {
+  const a = mk('a', 2, 2), me = mk('me', 2, 2), others = [{ id: 'a', rect: F.worldRect(a, { u: 0, v: 0 }) }];
+  const make = c => F.worldRect(me, c);
+  // pointer just left of centre-line of a: result must be on the same side as the pointer, not flip to the other
+  const left = F.nearestFree(make, { u: 0, v: 0 }, others, '1x1', 40, { u: -0.4, v: 0.1 });
+  const right = F.nearestFree(make, { u: 0, v: 0 }, others, '1x1', 40, { u: 0.4, v: 0.1 });
+  assert(left.u < 0 || left.v < 0 || left.u > 0 || left.v > 0);
+  assert.notDeepEqual([left.u, left.v], [right.u, right.v]);
+  assert.equal(F.hits(make({ u: left.u, v: left.v }), others).length, 0);
+  assert.equal(F.hits(make({ u: right.u, v: right.v }), others).length, 0);
 });
 
 test('corners lists the four world corners of a rect', () => {

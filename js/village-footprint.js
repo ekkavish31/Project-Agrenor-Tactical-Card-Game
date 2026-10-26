@@ -16,23 +16,27 @@
      picture has loaded the old hand-tuned half sizes w,d are the fallback. */
   function defaultFp(o) { return okFp(o && o.fpAuto) ? { ...o.fpAuto } : { u0: up(o.w), u1: up(o.w), v0: up(o.d), v1: up(o.d) } }
 
-  /* From the picture's visible size in screen px: width = one side of the base, height/2 = the other side.
-     One cell is 56px wide, so a side of the base is  width/56  and  (height/2)/28  =  height/56  cells.
-     Local u gets the width side, local v the height side; split evenly around the centre, rounded outward to half a cell. */
-  function autoFromArt(widthPx, heightPx) {
-    const lu = widthPx / 56, lv = heightPx / 56;
-    return { u0: up(lu / 2), u1: up(lu / 2), v0: up(lv / 2), v1: up(lv / 2) };
+  /* From the picture: the ground under a building is a diamond whose widest points are the picture's left/right edges
+     and whose bottom point is the picture's lowest visible pixel. A rectangle Lu x Lv cells is (Lu+Lv)*28 px wide, so
+     Lu+Lv = width/28; the old w:d ratio splits it. The diamond is centred under the picture, not on the place centre,
+     so the extents become asymmetric. vis = { x0, x1, yb } visible box in screen px, P = place centre in screen px.
+     Rounded outward to half a cell. */
+  function autoFromArt(o, vis, P) {
+    const sum = (vis.x1 - vis.x0) / 28, lu = sum * o.w / ((o.w + o.d) || 1), lv = sum - lu;
+    const cx = (vis.x0 + vis.x1) / 2, cy = vis.yb - sum * 7;           // diamond centre on screen
+    const dx = cx - P.x, dy = cy - P.y;
+    const du = (dx / 28 + dy / 14) / 2, dv = (dy / 14 - dx / 28) / 2;    // centre shift in world cells
+    const se = o.facing === 'SE', ul = se ? dv : du, vl = se ? du : dv;    // ... in the place's own axes
+    return { u0: up(lu / 2 - ul), u1: up(lu / 2 + ul), v0: up(lv / 2 - vl), v1: up(lv / 2 + vl) };
   }
 
-  /* The footprint in use: saved `fp` when it is valid, otherwise the default. */
+  /* The footprint in use: saved `fp` when it is valid, otherwise the automatic one. */
   function fpOf(o) {
     const f = o && o.fp;
-    if (okFp(f)) {
-      return { u0: q4(f.u0), u1: q4(f.u1), v0: q4(f.v0), v1: q4(f.v1) };
-    }
+    if (okFp(f)) return { u0: q4(f.u0), u1: q4(f.u1), v0: q4(f.v0), v1: q4(f.v1) };
     return defaultFp(o);
   }
-  const isCustom = o => !!(o && o.fp && fpOf(o) && JSON.stringify(fpOf(o)) !== JSON.stringify(defaultFp(o)));
+  const isCustom = o => !!(o && o.fp && JSON.stringify(fpOf(o)) !== JSON.stringify(defaultFp(o)));
 
   /* World rectangle (quarter-cell integers) of a place whose centre is `c` = {u,v} in world cells. */
   function worldRect(o, c, fp = fpOf(o)) {
@@ -54,17 +58,17 @@
   /* Nearest free centre to `cand` ({u,v}, already on the lattice) where `makeRect(centre)` overlaps nothing.
      Search moves along the lattice step of `mode`, so a blocked drop slides to the closest free spot,
      which is flush against the neighbour's edge. Returns { u, v, moved, hit } (hit = ids at the requested spot). */
-  function nearestFree(makeRect, cand, others, mode, maxSteps = 40) {
+  function nearestFree(makeRect, cand, others, mode, maxSteps = 40, target = cand) {
     const first = hits(makeRect(cand), others);
     if (!first.length) return { u: cand.u, v: cand.v, moved: false, hit: [] };
     const s = G.stepCells(mode);
     let best = null;
     for (let r = 1; r <= maxSteps; r++) {
-      if (best && r * s > best.d + EPS) break;
+      if (best && (r - 1) * s > best.d + EPS) break;   // ring r is at least (r-1) steps from the snapped point, which is within one step of the target
       for (let i = -r; i <= r; i++) for (let j = -r; j <= r; j++) {
         if (Math.max(Math.abs(i), Math.abs(j)) !== r) continue;
         const c = { u: G.snapCell(cand.u + i * s, mode), v: G.snapCell(cand.v + j * s, mode) };
-        const d = Math.hypot(c.u - cand.u, c.v - cand.v);
+        const d = Math.hypot(c.u - target.u, c.v - target.v);
         if (best && d >= best.d - EPS) continue;
         if (!hits(makeRect(c), others).length) best = { u: c.u, v: c.v, d };
       }
