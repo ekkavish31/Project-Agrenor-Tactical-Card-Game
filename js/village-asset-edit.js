@@ -1114,16 +1114,6 @@
      ...extra
     }
    };
-  // Drag the blue width and orange height handles to choose each axis direction.
-  if (o && place.tab === 'building' && o.id !== 'square') {
-   const t=data.buildings[o.id]||{}, a=anchorOf(o), radius=76,
-    axis=(x,y)=>{const n=Math.hypot(x,y)||1;return{x:x/n,y:y/n}},
-    w=axis(t.wx??1,t.wy??0), h=axis(t.hx??0,t.hy??1),
-    wh={x:a.x+w.x*radius,y:a.y+w.y*radius},
-    hh={x:a.x+h.x*radius,y:a.y+h.y*radius};
-   if(nearPx(wh,p,15)) return start('axis',{which:'w',anchor:a,radius,sx:t.sx??1,sy:t.sy??1});
-   if(nearPx(hh,p,15)) return start('axis',{which:'h',anchor:a,radius,sx:t.sx??1,sy:t.sy??1});
-  }
   if (o && courtDraw && place.tab === 'entry' && o.id !== 'square') {
    const d0 = door(o);
    return start('court', { pts: [{ u: d0.u, v: d0.v }] })
@@ -1211,16 +1201,7 @@
    if (Math.abs(side) >= 1.5 && Math.abs(along) >= 1 && P.length < 60) { drag.axis = drag.axis === 'u' ? 'v' : 'u'; P.push({ ...P[P.length - 1] }) }
    return
   }
-  if (drag.type === 'axis') {
-   const t=data.buildings[o.id]||(data.buildings[o.id]={}),
-    vx=p.x-drag.anchor.x, vy=p.y-drag.anchor.y, len=Math.hypot(vx,vy),
-    n=Math.max(.5,Math.min(1.6,len/drag.radius));
-   if(len>8) {
-    if(drag.which==='w') { t.wx=vx/len; t.wy=vy/len; t.sx=n }
-    else { t.hx=vx/len; t.hy=vy/len; t.sy=n }
-   }
-  }
-  else if (drag.type === 'items') moveKeys(drag.keys, drag.orig, dx, dy);
+  if (drag.type === 'items') moveKeys(drag.keys, drag.orig, dx, dy);
   else if (drag.type === 'art') {
    const t = data.buildings[o.id] || (data.buildings[o.id] = {});
    t.dx = Math.round(drag.dx + dx);
@@ -2412,13 +2393,6 @@
    gg.beginPath();
    gg.arc(c.x, c.y, 5 / z, 0, Math.PI * 2);
    gg.fill();
-   // Interactive axis gizmo: blue = width, amber = height; drag the end circles.
-   const bt=data.buildings[o.id]||{}, rad=76,
-    unit=(x,y)=>{const n=Math.hypot(x,y)||1;return{x:x/n,y:y/n}},
-    uw=unit(bt.wx??1,bt.wy??0), uh=unit(bt.hx??0,bt.hy??1),
-    drawAxis=(u,col,label)=>{const q={x:c.x+u.x*rad,y:c.y+u.y*rad};gg.strokeStyle=col;gg.fillStyle=col;gg.lineWidth=3/z;gg.beginPath();gg.moveTo(c.x,c.y);gg.lineTo(q.x,q.y);gg.stroke();gg.beginPath();gg.arc(q.x,q.y,9/z,0,Math.PI*2);gg.fill();gg.font='bold '+(12/z)+'px sans-serif';gg.fillText(label,q.x+10/z,q.y-8/z)};
-   drawAxis(uw,'#43b9ff','W');
-   drawAxis(uh,'#ffb347','H');
    gg.restore()
   }
  }
