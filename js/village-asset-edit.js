@@ -1732,7 +1732,7 @@
   all: pct,
   npc: pct
  };
- const nudgeHtml = `<div class="row" style="align-items:center"><span>ขยับ 1 ช่องกริด</span><div class="nudge"><span></span><button data-n="0,-2">↑</button><span></span><button data-n="-2,0">←</button><button data-n="0,2">↓</button><button data-n="2,0">→</button></div><small class="sub" style="margin:0">ลากบนแผนที่ก็เข้ากริด · ลูกศร = 1 ช่อง (Shift ×4) · Q สลับ 2×2/4×4</small></div>`;
+ const nudgeHtml = `<div class="row" style="align-items:center"><span>ขยับ 1 ช่องกริด</span><div class="nudge"><span></span><button data-n="0,-2">↑</button><span></span><button data-n="-2,0">←</button><button data-n="0,2">↓</button><button data-n="2,0">→</button></div><small class="sub" style="margin:0">ลากบนแผนที่ก็เข้ากริด · ลูกศร = 1 ช่อง (Shift ×4) · Q สลับ 1×1/2×2</small></div>`;
  let sliding = false;
  // a slider gesture = one undo step; the value is written live, saved when released
  function bindSliders(write, done) {
@@ -1947,11 +1947,11 @@
   const f = window.VillageFootprint?.fpOf(o);
   if (!f) return '';
   const custom = window.VillageFootprint.isCustom(o), se = o.facing === 'SE';
-  const edge = (k, label) => `<div class="row" style="align-items:center;margin:2px 0"><span style="min-width:96px">${label} ${f[k]}</span><button data-fp="${k},-0.25">−¼</button><button data-fp="${k},-0.5">−½</button><button data-fp="${k},0.25">+¼</button></div>`;
+  const edge = (k, label) => `<div class="row" style="align-items:center;margin:2px 0"><span style="min-width:96px">${label} ${f[k]}</span><button data-fp="${k},-1">−1</button><button data-fp="${k},-0.5">−½</button><button data-fp="${k},0.5">+½</button></div>`;
   return `<b class="sec">กรอบพื้นที่ (กริด)${custom ? ' · ปรับเอง' : ' · อัตโนมัติ'}</b>
   <p class="sub">พื้นฟ้าบนแผนที่ = ช่องกริดที่สถานที่นี้กิน · ชนสถานที่อื่นไม่ได้ · บีบเข้าเพื่อให้ของที่ล้นขอบ (เช่น กิ่งไม้) ไม่กินช่อง</p>
   ${edge('u0', se ? 'ซ้าย(หลัง)' : 'ซ้าย')}${edge('u1', se ? 'ขวา(หน้า)' : 'ขวา')}${edge('v0', 'หลัง')}${edge('v1', 'หน้า')}
-  <div class="row"><button data-fpa="-0.25">บีบทั้งกรอบ −¼</button><button data-fpa="0.25">ขยายทั้งกรอบ +¼</button></div>
+  <div class="row"><button data-fpa="-0.5">บีบทั้งกรอบ −½</button><button data-fpa="0.5">ขยายทั้งกรอบ +½</button></div>
   <div class="row"><button id="fpAuto"${custom ? '' : ' disabled'}>คืนค่าอัตโนมัติ</button></div>
 `;
  }
@@ -2231,7 +2231,7 @@
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
-  ${nudgeHtml}<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.25">กว้าง −</button><button data-fz="fw,0.25">กว้าง +</button><button data-fz="fh,-0.25">ลึก −</button><button data-fz="fh,0.25">ลึก +</button></div>${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
+  ${nudgeHtml}<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.5">กว้าง −</button><button data-fz="fw,0.5">กว้าง +</button><button data-fz="fh,-0.5">ลึก −</button><button data-fz="fh,0.5">ลึก +</button></div>${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
   <div class="row">${added?'<button id="aeDel">ลบชิ้นนี้ (Delete)</button>':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชิ้นนี้ (Delete)'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
@@ -2249,7 +2249,7 @@
    else ovOf(key).hide = true
   }));
   body.querySelectorAll('[data-fz]').forEach(b => b.onclick = once(() => {
-   const [f, d] = b.dataset.fz.split(','), o2 = ovOf(key), v = clampN((o2[f] ?? .5) + +d, .25, 6);
+   const [f, d] = b.dataset.fz.split(','), o2 = ovOf(key), v = clampN((o2[f] ?? .5) + +d, .5, 6);
    if (v === .5) delete o2[f]; else o2[f] = v;
    clean(key)
   }));

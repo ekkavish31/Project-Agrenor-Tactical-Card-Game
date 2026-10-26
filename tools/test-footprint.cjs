@@ -10,9 +10,9 @@ test('default footprint rounds the old half sizes outward to half a cell', () =>
   assert.deepEqual(F.defaultFp(mk('c', 4, 4.2)), { u0: 4, u1: 4, v0: 4.5, v1: 4.5 });
 });
 
-test('fpOf uses a valid saved fp (snapped to quarter) and ignores a broken one', () => {
+test('fpOf uses a valid saved fp (snapped to half a cell) and ignores a broken one', () => {
   const o = mk('a', 3, 3, 'SW', { u0: 1.3, u1: 2, v0: 2, v1: 2 });
-  assert.deepEqual(F.fpOf(o), { u0: 1.25, u1: 2, v0: 2, v1: 2 });
+  assert.deepEqual(F.fpOf(o), { u0: 1.5, u1: 2, v0: 2, v1: 2 });
   assert.deepEqual(F.fpOf(mk('a', 3, 3, 'SW', { u0: -1, u1: 2, v0: 2, v1: 2 })), F.defaultFp(mk('a', 3, 3)));
   assert.deepEqual(F.fpOf(mk('a', 3, 3, 'SW', { u0: 'x' })), F.defaultFp(mk('a', 3, 3)));
   assert.equal(F.isCustom(o), true);
@@ -44,7 +44,7 @@ test('nearestFree: free spot stays; blocked spot slides flush against the neighb
   assert.equal(r.moved, true); assert.deepEqual(r.hit, ['a']);
   assert.equal(G.overlaps(make({ u: r.u, v: r.v }), others[0].rect), false);
   assert.equal(r.u, 4); assert.equal(r.v, 0.5);                       // shortest slide: out along u, v kept; touching edge
-  for (const mode of ['2x2', '4x4']) {
+  for (const mode of ['1x1', '2x2']) {
     const q = F.nearestFree(make, { u: 1, v: 1 }, others, mode);
     assert(Math.abs(q.u / G.stepCells(mode) - Math.round(q.u / G.stepCells(mode))) < 1e-9, 'result stays on the lattice');
   }
@@ -57,11 +57,11 @@ test('nearestFree always finds a spot in a crowded row and never overlaps', () =
   assert(F.hits(F.worldRect(me, { u: r.u, v: r.v }), others).length === 0);
 });
 
-test('edit helpers: pull one edge in, pull everything in, never below a quarter cell', () => {
+test('edit helpers: pull one edge in, pull everything in, never below half a cell', () => {
   let fp = { u0: 3, u1: 3, v0: 3, v1: 3 };
   assert.deepEqual(F.nudgeEdge(fp, 'u1', -0.5), { u0: 3, u1: 2.5, v0: 3, v1: 3 });
-  assert.deepEqual(F.nudgeAll(fp, -0.25), { u0: 2.75, u1: 2.75, v0: 2.75, v1: 2.75 });
-  assert.equal(F.nudgeEdge({ u0: 0.25, u1: 1, v0: 1, v1: 1 }, 'u0', -5).u0, 0.25);
+  assert.deepEqual(F.nudgeAll(fp, -0.5), { u0: 2.5, u1: 2.5, v0: 2.5, v1: 2.5 });
+  assert.equal(F.nudgeEdge({ u0: 0.5, u1: 1, v0: 1, v1: 1 }, 'u0', -5).u0, 0.5);
   assert.equal(F.nudgeEdge(fp, 'v1', 99).v1, F.MAX);
 });
 

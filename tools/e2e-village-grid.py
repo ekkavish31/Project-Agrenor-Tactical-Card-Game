@@ -53,34 +53,34 @@ def main():
         check('page loads without errors', not os_errors, os_errors[:3])
         check('VillageGrid module is loaded', pg.evaluate("typeof VillageGrid === 'object'"))
         check('old S snap API is gone', pg.evaluate("TownUX.toggleSnap === undefined && TownUX.snapEnabled === undefined"))
-        check('default grid mode is 2x2', pg.evaluate("TownUX.gridMode()") == '2x2')
+        check('default grid mode is 1x1', pg.evaluate("TownUX.gridMode()") == '1x1')
         labels = pg.evaluate("[...document.querySelectorAll('button')].filter(b => { const r = b.getBoundingClientRect(), c = getComputedStyle(b); return r.width > 0 && r.height > 0 && c.visibility !== 'hidden' && c.display !== 'none' }).map(b => b.textContent.trim())")
         check('old "จัดแนว: S" button removed', not any('จัดแนว' in t for t in labels), [t for t in labels if 'จัดแนว' in t])
-        check('grid buttons exist', any('กริด' in t for t in labels) and any('2×2' in t for t in labels), labels[:12])
+        check('grid buttons exist', any('กริด' in t for t in labels) and any('1×1' in t for t in labels), labels[:12])
 
         # --- overlay toggle -------------------------------------------------
         check('overlay off by default', pg.evaluate("TownUX.gridShown()") is False)
         pg.click('#gridShowBtn')
         pg.wait_for_timeout(300)
         check('overlay button turns the grid on', pg.evaluate("TownUX.gridShown()") is True)
-        pg.screenshot(path=SHOTS + '/e2e-grid-on-2x2.png')
+        pg.screenshot(path=SHOTS + '/e2e-grid-on-1x1.png')
 
         # --- Q switches mode ------------------------------------------------
         pg.mouse.move(700, 400)
         pg.keyboard.press('q')
         pg.wait_for_timeout(200)
-        check('Q switches to 4x4', pg.evaluate("TownUX.gridMode()") == '4x4')
-        check('mode button label follows', '4×4' in pg.inner_text('#gridModeBtn'), pg.inner_text('#gridModeBtn'))
-        pg.screenshot(path=SHOTS + '/e2e-grid-on-4x4.png')
+        check('Q switches to 2x2', pg.evaluate("TownUX.gridMode()") == '2x2')
+        check('mode button label follows', '2×2' in pg.inner_text('#gridModeBtn'), pg.inner_text('#gridModeBtn'))
+        pg.screenshot(path=SHOTS + '/e2e-grid-on-2x2.png')
         pg.keyboard.press('q')
         pg.wait_for_timeout(200)
-        check('Q switches back to 2x2', pg.evaluate("TownUX.gridMode()") == '2x2')
+        check('Q switches back to 1x1', pg.evaluate("TownUX.gridMode()") == '1x1')
         pg.keyboard.press('s')
         pg.wait_for_timeout(100)
-        check('S no longer does anything', pg.evaluate("TownUX.gridMode()") == '2x2')
+        check('S no longer does anything', pg.evaluate("TownUX.gridMode()") == '1x1')
 
         # --- drag a place: it must land on the lattice while and after dragging
-        for mode, step in (('2x2', 0.5), ('4x4', 0.25)):
+        for mode, step in (('1x1', 1), ('2x2', 0.5)):
             if pg.evaluate("TownUX.gridMode()") != mode:
                 pg.keyboard.press('q')
                 pg.wait_for_timeout(150)
@@ -103,7 +103,7 @@ def main():
                 check('%s %s centre on lattice after drop' % (mode, place_id), on_lattice(c['u'], step) and on_lattice(c['v'], step), c)
 
         # --- entry point is on the grid (normal and deep) --------------------
-        for mode, step in (('2x2', 0.5), ('4x4', 0.25)):
+        for mode, step in (('1x1', 1), ('2x2', 0.5)):
             if pg.evaluate("TownUX.gridMode()") != mode:
                 pg.keyboard.press('q')
                 pg.wait_for_timeout(150)
@@ -117,7 +117,7 @@ def main():
 
         # --- place editor: items snap on drag, arrows, add, paste ---------------
         pg.evaluate("TownUX.setMode('object')")
-        for mode, step in (('2x2', 0.5), ('4x4', 0.25)):
+        for mode, step in (('1x1', 1), ('2x2', 0.5)):
             if pg.evaluate("TownUX.gridMode()") != mode:
                 pg.keyboard.press('q')
                 pg.wait_for_timeout(150)
@@ -244,7 +244,7 @@ def main():
         pg.reload(wait_until='networkidle')
         pg.wait_for_timeout(1500)
         check('grid on/off and mode are remembered after reload',
-              pg.evaluate("[TownUX.gridShown(), TownUX.gridMode()]") == [True, '2x2'] or pg.evaluate("TownUX.gridShown()") is True)
+              pg.evaluate("[TownUX.gridShown(), TownUX.gridMode()]") == [True, '1x1'] or pg.evaluate("TownUX.gridShown()") is True)
         b.close()
 
     print('\n%d passed, %d failed' % (passes, len(fails)))

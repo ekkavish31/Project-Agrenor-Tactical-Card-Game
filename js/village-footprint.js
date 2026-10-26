@@ -2,16 +2,16 @@
    A place stores its footprint in its OWN axes as extents from its centre, in cells: { u0, u1, v0, v1 }
    (area = u from -u0 to +u1 and v from -v0 to +v1). Places that face SE swap the two axes in the world
    (same rule as canonical() in village-town.html). Default = the old hard-coded half sizes w,d rounded OUTWARD
-   to half a cell. The user can pull any edge in (or out) in steps of a quarter cell; the result is saved on the place as `fp`.
+   to half a cell. The user can pull any edge in (or out) in steps of half a cell; the result is saved on the place as `fp`.
    Items inside a place use plain world rectangles ({iu,iv,w,h} in quarter cells, see VillageGrid.rectFromCells). */
 (function (root) {
   'use strict';
   const G = root.VillageGrid || (typeof require !== 'undefined' ? require('./village-grid.js') : null);
   const Q = 4, MAX = 12, EPS = 1e-9;
   const up = v => Math.ceil(v * 2 - EPS) / 2;               // round outward to half a cell
-  const q4 = v => Math.round(v * Q) / Q;                      // nearest quarter cell
+  const q4 = v => Math.round(v * 2) / 2;                      // nearest half cell (the finest grid step)
 
-  const okFp = f => !!f && ['u0', 'u1', 'v0', 'v1'].every(k => Number.isFinite(f[k]) && f[k] >= 0.25 && f[k] <= MAX);
+  const okFp = f => !!f && ['u0', 'u1', 'v0', 'v1'].every(k => Number.isFinite(f[k]) && f[k] >= 0.5 && f[k] <= MAX);
   /* Automatic footprint. When the artwork is known (o.fpAuto, set from the picture, never saved) it is used; before the
      picture has loaded the old hand-tuned half sizes w,d are the fallback. */
   function defaultFp(o) { return okFp(o && o.fpAuto) ? { ...o.fpAuto } : { u0: up(o.w), u1: up(o.w), v0: up(o.d), v1: up(o.d) } }
@@ -72,10 +72,10 @@
     return best ? { u: best.u, v: best.v, moved: true, hit: first } : { u: cand.u, v: cand.v, moved: false, hit: first };
   }
 
-  /* Edit helpers. edge: 'u0' | 'u1' | 'v0' | 'v1'. delta in cells (negative = pull in). Never below a quarter cell. */
+  /* Edit helpers. edge: 'u0' | 'u1' | 'v0' | 'v1'. delta in cells (negative = pull in). Never below half a cell. */
   function nudgeEdge(fp, edge, delta) {
     const n = { ...fp };
-    n[edge] = Math.max(0.25, Math.min(MAX, q4(n[edge] + delta)));
+    n[edge] = Math.max(0.5, Math.min(MAX, q4(n[edge] + delta)));
     return n;
   }
   function nudgeAll(fp, delta) { return nudgeEdge(nudgeEdge(nudgeEdge(nudgeEdge(fp, 'u0', delta), 'u1', delta), 'v0', delta), 'v1', delta) }

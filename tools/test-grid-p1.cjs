@@ -9,34 +9,36 @@ let seed = 12345;
 const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
 const rr = (a, b) => a + rnd() * (b - a);
 
-test('modes: 2x2 is the default and steps are 0.5 / 0.25 cell', () => {
-  assert.equal(G.DEFAULT_MODE, '2x2');
-  assert.deepEqual(G.MODES.slice().sort(), ['2x2', '4x4']);
+test('modes: 1x1 is the default and steps are 1 / 0.5 cell', () => {
+  assert.equal(G.DEFAULT_MODE, '1x1');
+  assert.deepEqual(G.MODES.slice().sort(), ['1x1', '2x2']);
+  assert.throws(() => G.stepCells('4x4'), /unknown grid mode/);
+  assert.equal(G.stepCells('1x1'), 1);
   assert.equal(G.stepCells('2x2'), 0.5);
-  assert.equal(G.stepCells('4x4'), 0.25);
   assert.throws(() => G.stepCells('3x3'));
 });
 
 test('snapCell rounds to the nearest line, never returns -0, error stays within half a step', () => {
+  assert.equal(G.snapCell(0.6, '1x1'), 1);
+  assert.equal(G.snapCell(0.4, '1x1'), 0);
   assert.equal(G.snapCell(0.3, '2x2'), 0.5);
   assert.equal(G.snapCell(0.2, '2x2'), 0);
-  assert.equal(G.snapCell(0.1, '2x2'), 0);
-  assert.equal(G.snapCell(0.13, '4x4'), 0.25);
-  assert(Object.is(G.snapCell(-0.01, '2x2'), 0), 'negative zero');
+  assert.equal(G.snapCell(0.13, '2x2'), 0);
+  assert(Object.is(G.snapCell(-0.01, '1x1'), 0), 'negative zero');
   for (let i = 0; i < 2000; i++) {
     const v = rr(-60, 60);
+    assert(Math.abs(G.snapCell(v, '1x1') - v) <= 0.5 + 1e-12);
     assert(Math.abs(G.snapCell(v, '2x2') - v) <= 0.25 + 1e-12);
-    assert(Math.abs(G.snapCell(v, '4x4') - v) <= 0.125 + 1e-12);
   }
 });
 
 test('grids are nested and snapping is idempotent', () => {
   for (let i = 0; i < 2000; i++) {
-    const v = rr(-60, 60), a = G.snapCell(v, '2x2');
-    assert.equal(G.snapCell(a, '4x4'), a, 'a 2x2 point is already a 4x4 point');
-    assert.equal(G.snapCell(a, '2x2'), a);
-    const b = G.snapCell(v, '4x4');
-    assert.equal(G.snapCell(b, '4x4'), b);
+    const v = rr(-60, 60), a = G.snapCell(v, '1x1');
+    assert.equal(G.snapCell(a, '2x2'), a, 'a 2x2 point is already a 4x4 point');
+    assert.equal(G.snapCell(a, '1x1'), a);
+    const b = G.snapCell(v, '2x2');
+    assert.equal(G.snapCell(b, '2x2'), b);
   }
 });
 
@@ -70,14 +72,14 @@ test('offsetToWorld follows canonical() for SE-facing owners (axes swap) and rou
 });
 
 test('snapOffset puts the item on the world lattice for any owner centre and facing', () => {
-  for (const mode of ['2x2', '4x4']) {
+  for (const mode of ['1x1', '2x2']) {
     const step = G.stepCells(mode);
     for (let i = 0; i < 1000; i++) {
       const c = { u: rr(-30, 30), v: rr(-30, 30) }, du = rr(-12, 12), dv = rr(-12, 12), mirror = rnd() < 0.5;
       const r = G.snapOffset(c, mirror, du, dv, mode);
       const w = G.offsetToWorld(c, mirror, r.du, r.dv);
       near(w.u / step, Math.round(w.u / step), 1e-7); near(w.v / step, Math.round(w.v / step), 1e-7);
-      assert(r.movePx <= (mode === '2x2' ? 14.0001 : 7.0001), `move ${r.movePx}px too large in ${mode}`);
+      assert(r.movePx <= (mode === '1x1' ? 28.0001 : 14.0001), `move ${r.movePx}px too large in ${mode}`);
       const again = G.snapOffset(c, mirror, r.du, r.dv, mode);
       assert(again.movePx < 1e-6, 'second snap must not move the item');
     }
@@ -86,8 +88,8 @@ test('snapOffset puts the item on the world lattice for any owner centre and fac
 
 test('an item already on 2x2 does not move when switching to 4x4', () => {
   const c = { u: 3.37, v: -8.91 };
-  const a = G.snapOffset(c, true, 2.2, -1.9, '2x2');
-  const b = G.snapOffset(c, true, a.du, a.dv, '4x4');
+  const a = G.snapOffset(c, true, 2.2, -1.9, '1x1');
+  const b = G.snapOffset(c, true, a.du, a.dv, '2x2');
   assert(b.movePx < 1e-6);
 });
 
@@ -98,13 +100,13 @@ test('planResnap reports moves without touching its input', () => {
     { id: 'c', kind: 'court', centre: { u: 0, v: 0 }, mirror: false, du: 1, dv: 1 }
   ];
   const snapshot = JSON.stringify(items);
-  const plan = G.planResnap(items, '2x2');
+  const plan = G.planResnap(items, '1x1');
   assert.equal(JSON.stringify(items), snapshot);
   assert.equal(plan.count, 3);
   assert.equal(plan.moves[2].movePx, 0, 'c is already on the grid');
   assert.equal(plan.moved, 2);
   assert(plan.maxPx >= plan.p90Px && plan.p90Px >= 0 && plan.meanPx > 0);
-  assert.equal(G.planResnap([], '4x4').count, 0);
+  assert.equal(G.planResnap([], '2x2').count, 0);
 });
 
 test('footprints: touching edges do not overlap, shared area does', () => {
@@ -124,14 +126,14 @@ test('real data: every road point in the saved village layout already sits on th
   assert(pts.length > 0);
   for (const p of pts) {
     const c = G.unproject(p.x, p.y);
-    for (const mode of ['2x2', '4x4']) {
+    for (const mode of ['1x1', '2x2']) {
       near(c.u, G.snapCell(c.u, mode), 1e-6); near(c.v, G.snapCell(c.v, mode), 1e-6);
     }
   }
 });
 
 test('snapPoint lands on the lattice in world pixels and agrees with snapCell', () => {
-  for (const mode of ['2x2', '4x4']) {
+  for (const mode of ['1x1', '2x2']) {
     for (let i = 0; i < 500; i++) {
       const x = rr(0, 4480), y = rr(0, 2520), q = G.snapPoint(x, y, mode), c = G.unproject(q.x, q.y);
       near(c.u, G.snapCell(c.u, mode), 1e-7); near(c.v, G.snapCell(c.v, mode), 1e-7);
@@ -145,14 +147,15 @@ test('arrowStep moves along the screen axes and keeps points on the lattice', ()
   const r = G.arrowStep(1, 0, '2x2'), d = G.arrowStep(0, 1, '2x2'), l = G.arrowStep(-1, 0, '2x2'), u = G.arrowStep(0, -1, '2x2');
   near(r.du, s); near(r.dv, -s); near(d.du, s); near(d.dv, s); near(l.du, -s); near(l.dv, s); near(u.du, -s); near(u.dv, -s);
   const p0 = G.project(3, 2), p1 = G.project(3 + r.du, 2 + r.dv), p2 = G.project(3 + d.du, 2 + d.dv);
-  near(p1.y - p0.y, 0); near(p1.x - p0.x, 28);   // right: pure horizontal, 28px for 2x2
-  near(p2.x - p0.x, 0); near(p2.y - p0.y, 14);   // down: pure vertical, 14px for 2x2
-  const q = G.arrowStep(1, 0, '4x4', 4); near(q.du, 1); near(q.dv, -1);
+  near(p1.y - p0.y, 0); near(p1.x - p0.x, 28);   // right: pure horizontal, 28px for 2x2 (56px for 1x1)
+  near(p2.x - p0.x, 0); near(p2.y - p0.y, 14);   // down: pure vertical, 14px for 2x2 (28px for 1x1)
+  const q = G.arrowStep(1, 0, '2x2', 2); near(q.du, 1); near(q.dv, -1);
 });
+
 
 test('latticeSegments covers the rectangle with lines of 3 levels and drawLattice uses them', () => {
   const rect = { x0: 2000, y0: 1000, x1: 2600, y1: 1400 };
-  for (const mode of ['2x2', '4x4']) {
+  for (const mode of ['1x1', '2x2']) {
     const segs = G.latticeSegments(rect, mode);
     assert(segs.length > 20);
     for (const q of segs) {
@@ -160,12 +163,13 @@ test('latticeSegments covers the rectangle with lines of 3 levels and drawLattic
       assert(Math.abs(a.u - b.u) < 1e-7 || Math.abs(a.v - b.v) < 1e-7, 'each line has a constant u or a constant v');
     }
     const lv = new Set(segs.map(q => q.level));
-    assert(lv.has(0) && lv.has(1));
-    assert.equal(lv.has(2), mode === '4x4', 'quarter lines only exist in 4x4');
+    assert(lv.has(0));
+    assert.equal(lv.has(1), mode === '2x2', 'half lines only exist in 2x2');
+    assert.equal(lv.has(2), false, 'there are no quarter lines any more');
   }
   const calls = []; const g = new Proxy({}, { get: (_, k) => (...a) => { calls.push(k); }, set: () => true });
-  const n = G.drawLattice(g, rect, '2x2', 1);
-  assert.equal(n, G.latticeSegments(rect, '2x2').length);
+  const n = G.drawLattice(g, rect, '1x1', 1);
+  assert.equal(n, G.latticeSegments(rect, '1x1').length);
   assert(calls.includes('stroke') && calls.includes('save') && calls.includes('restore'));
 });
 

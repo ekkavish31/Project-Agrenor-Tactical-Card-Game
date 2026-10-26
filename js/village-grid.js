@@ -1,6 +1,6 @@
 /* Village grid, Phase 1 (read-only): pure math, no DOM. Nothing loads this file yet.
    World frame = village-town.html:  project(u,v) = (2240 + (u-v)*28, 1232 + (u+v)*14); one cell = 1 unit of u or v.
-   Snap modes: '2x2' (default) = steps of 0.5 cell, '4x4' = steps of 0.25 cell. Every 2x2 point is also a 4x4 point,
+   Snap modes: '1x1' (default) = steps of one whole cell, '2x2' = steps of half a cell (the finest). Every 1x1 point is also a 2x2 point,
    so switching mode never moves an item that is already snapped.
    Items store offsets (du,dv) from their owner's centre. An owner facing SE swaps the two local axes
    (see canonical() in village-town.html), so a snapped position is computed in world cells and converted back.
@@ -8,8 +8,8 @@
 (function (root) {
   'use strict';
   const ORIGIN = { x: 2240, y: 1232 }, HALF_W = 28, HALF_H = 14, QUARTERS = 4;
-  const MODES = { '2x2': 2, '4x4': 1 }; // snap step, in quarter-cells
-  const DEFAULT_MODE = '2x2';
+  const MODES = { '1x1': 4, '2x2': 2 }; // snap step, in quarter-cells (the internal unit stays a quarter cell)
+  const DEFAULT_MODE = '1x1';
 
   function stepQuarters(mode = DEFAULT_MODE) {
     const s = MODES[mode];
