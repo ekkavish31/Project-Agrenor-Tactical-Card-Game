@@ -947,6 +947,20 @@
   UX.persist()
  }
 
+ /* v91.7 · re-snap every sub-asset of every place to the current grid (1×1 / 2×2); dry = count only */
+ function resnapAll(dry) {
+  let moved = 0;
+  const todo = [];
+  for (const E of frame) {
+   const b = baseOf(E.owner);
+   if (!b || E.key.startsWith('exit:')) continue;
+   const cu = E.ov?.du || 0, cv = E.ov?.dv || 0, r = gridSnapItem(E, b, cu, cv, false);
+   if (Math.abs(r.du - cu) > .01 || Math.abs(r.dv - cv) > .01) { moved++; todo.push([E.key, r]) }
+  }
+  if (!dry && todo.length) { UX.checkpoint(); for (const [k, r] of todo) { const o = ovOf(k); o.du = r.du; o.dv = r.dv; clean(k) } UX.persist(); render() }
+  return moved
+ }
+
  function removeSelected() {
   if (!place?.keys.length) return;
   UX.checkpoint();
@@ -2613,12 +2627,15 @@
   enter,
   leave: () => leave(true),
   placeId: () => place?.id || null,
+  footprintEditing: () => place ? place.tab === 'building' : null, // false = another tab is open: the blue area hides, a dashed yellow outline stays
   itemKeys: owner => frame.filter(e => e.owner === owner && !e.hidden).map(e => e.key),
   select: ks => { if (place) { place.keys = [...ks]; place.tab = 'items'; render() } },
   pick: key => selectItem(key),
   itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner, hidden: E.hidden } : null },
   frameSig: () => JSON.stringify(data.frames),
   assetReady,
+  resnapAll,
+  frameCount: () => frame.length,
   decorList: () => Object.entries(DECOR_W).map(([id, [name, w]]) => ({ id, name, w })),
   get,
   set,
