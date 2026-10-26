@@ -98,7 +98,7 @@
   try{
    if(hasWork()){alert('มีภาพหรือเฟรมแก้ที่ยังรอใช้ / รอส่งออก กรุณาใช้หรือส่งออกงานเดิมก่อนเปลี่ยนโฟลเดอร์');return}
    await flush();
-   if(!h){if(!window.showDirectoryPicker){alert('เบราว์เซอร์นี้เลือกโฟลเดอร์ไม่ได้ ใช้ Chrome / Edge บนคอมพิวเตอร์ และเปิดผ่าน localhost หรือ HTTPS');return}h=await window.showDirectoryPicker({id:'project-a-game',mode:'readwrite'})}
+   if(!h)h=await RepoDir.open();
    if(await h.queryPermission({mode:'readwrite'})!=='granted'&&await h.requestPermission({mode:'readwrite'})!=='granted')throw new Error('ไม่ได้รับสิทธิ์อ่านและเขียนโฟลเดอร์');
    let info=await readManifest(h),assets=await h.getDirectoryHandle('assets'),paths=new Set(await scan(assets,'assets/'));
    try{let art=await h.getDirectoryHandle('art-production');for(let p of await scan(art,'art-production/'))paths.add(p)}catch(e){if(e.name!=='NotFoundError')throw e}
@@ -112,8 +112,11 @@
    await idbSet('dir',h);resetClock();render();detail();toast('เชื่อม '+h.name+' แล้ว · '+paths.size+' ภาพ');
   }catch(e){if(e.name!=='AbortError'){console.error(e);toast('เชื่อมไม่ได้: '+e.message)}}finally{state.busy=false;connButton()}
  };
- connButton=function(){let b=$('conn');b.textContent=state.busy?'กำลังโหลด…':dir?'เชื่อมแล้ว':savedHandle?'เชื่อมโฟลเดอร์เดิม':'เชื่อมโฟลเดอร์เกม';b.className=dir?'ok':'';b.disabled=state.busy;$('changeFolder').disabled=state.busy;$('rescan').disabled=state.busy||!dir;$('folderName').textContent=dir?dir.name:'ภาพจากเกมที่เปิดอยู่';b.title=dir?'เขียนภาพลง '+dir.name+' เมื่อกดใช้ภาพ':'เลือกโฟลเดอร์เกม';};
- $('conn').onclick=()=>connect(dir||savedHandle||null);$('changeFolder').onclick=()=>connect(null);$('rescan').onclick=()=>dir&&connect(dir);
+ connButton=function(){let b=$('conn');b.textContent=state.busy?'กำลังโหลด…':dir?'📦 GitHub':'📦 กำลังเชื่อม…';b.className=dir?'ok':'';b.disabled=state.busy;$('changeFolder').disabled=state.busy;$('rescan').disabled=state.busy||!dir;$('folderName').textContent='ไฟล์จาก GitHub · งานที่แก้เก็บในเบราว์เซอร์นี้จนกด Push';b.title='ไฟล์ปัจจุบันจาก GitHub · การเปลี่ยนภาพถูกเก็บไว้ก่อน แล้วกด Push เพื่อส่งขึ้น';};
+ $('conn').onclick=()=>connect(null);$('rescan').onclick=async()=>{await RepoDir.open(true);connect(null)};
+ $('stagedPush').onclick=async()=>{try{if(hasWork()){alert('ยังมีภาพที่รอใช้อยู่ — กดใช้ภาพก่อน แล้วค่อย Push');return}await flush();const t=await RepoDir.pushStaged('Asset Studio: update images ('+RepoDir.count()+' files)');if(t)toast('push แล้ว · '+t)}catch(e){console.error(e);toast('push ไม่สำเร็จ: '+e.message)}};
+ $('stagedDrop').onclick=async()=>{if(confirm('ทิ้งงานที่ยังไม่ push ทั้งหมด ('+RepoDir.count()+' ไฟล์)? โหลดหน้าใหม่หลังทิ้ง')){await RepoDir.discard();location.reload()}};
+ RepoDir.onChange(n=>{$('stagedPush').textContent='⬆ Push ที่แก้ ('+n+')';$('stagedPush').disabled=!n;$('stagedDrop').hidden=!n});
  // Show orphan files as a single selectable Objects entry; never silently delete or classify them as monsters.
  const baseRebuild=rebuild;rebuild=function(){let ee=baseRebuild();if(dir&&scanned){let known=new Set(M.assets.map(a=>a.file));for(let a of M.assets)for(let h of a.history||[])known.add(h.file);let loose=[...scanned].filter(p=>!known.has(p)&&!p.startsWith('assets/_versions/'));
    if(loose.length)ee.push({id:'object:unassigned',name:'ไฟล์ยังไม่จัดหมวด',group:'objects',assets:loose.map((p,i)=>({id:'unassigned-'+i,file:p,category:'unassigned',status:'final',size:[384,384]})),clips:[],loose:true})}return ee};
@@ -122,5 +125,5 @@
  $('animation-review')?.addEventListener('close',()=>{imageCache.clear();render()});
  window.StudioBrowser={state,location:a=>{let o=C.owner(a,meta);return C.groups[o.group]+' › '+o.name},connect,getRuntime:()=>runtime,getMetadata:()=>meta,readManifest,rebuild,hasWork,invalidate:()=>{imageCache.clear();bust=Date.now();resetClock();render();publishMotion()}};
  render();detail();requestAnimationFrame(tick);
- (async()=>{let h=await idbGet('dir');if(!h)return;savedHandle=h;connButton();try{if(await h.queryPermission({mode:'readwrite'})==='granted')await connect(h)}catch{}})();
+ (async()=>{try{await connect(null)}catch(e){console.error(e)}})();
 })();

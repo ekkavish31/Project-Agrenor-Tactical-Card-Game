@@ -71,7 +71,7 @@ dialog{border:2px solid var(--line);border-radius:12px;background:var(--paper);c
 .empty{grid-column:1/-1;padding:30px;text-align:center;opacity:.7}
 </style><link rel="stylesheet" href="css/asset-animation-review.css"><link rel="stylesheet" href="css/asset-studio-browser.css"><link rel="stylesheet" href="css/town-font.css"></head><body>
 <header><h1>Asset Studio <small>v48</small></h1>
-<button id="conn">เชื่อมโฟลเดอร์เกม</button><button id="changeFolder">เปลี่ยนโฟลเดอร์</button><button id="rescan">สแกนใหม่</button><span id="folderName" class="muted">ภาพจากเกมที่เปิดอยู่</span>
+<button id="conn" title="รายการไฟล์ปัจจุบันจาก GitHub">📦 GitHub</button><button id="changeFolder" hidden>เปลี่ยนโฟลเดอร์</button><button id="rescan" title="โหลดรายการไฟล์จาก GitHub ใหม่">↻ รีเฟรช</button><button id="stagedPush" class="primary" disabled title="ส่งภาพ/ข้อมูลที่แก้ในเครื่องนี้ขึ้น GitHub เป็น commit เดียว">⬆ Push ที่แก้ (0)</button><button id="stagedDrop" hidden title="ทิ้งงานที่ยังไม่ push">ทิ้ง</button><span id="folderName" class="muted">ไฟล์จาก GitHub · งานที่แก้เก็บในเบราว์เซอร์นี้จนกด Push</span>
 <span class="grow"></span><span id="ghSlot"></span><button id="howto">วิธีใช้</button><button id="exportBtn" class="primary" hidden>ส่งออก ZIP</button></header>
 <div class="tabs" id="studioTabs"><button data-group="objects">Objects</button><button data-group="characters">ตัวละคร</button><button data-group="monsters">มอนสเตอร์</button><button data-group="bosses">มินิบอส / บอส</button><button id="workshopTab" type="button">🧰 Object Workshop</button><span class="grow"></span><select id="viewMode" aria-label="มุมมอง"><option value="slots">จัดการตัว / วัตถุ</option><option value="library">คลังไฟล์และประวัติ</option><option value="retired">ภาพที่เลิกใช้</option></select></div>
 <main><nav id="cats"></nav><section id="gridWrap"><div id="filters"></div><div id="grid"></div></section><aside id="detail"></aside><section id="workshopPane" aria-label="Object Workshop"><iframe id="workshopFrame" src="object-asset-studio.html?embedded=1" title="Object Asset Workshop"></iframe></section></main>
@@ -79,12 +79,12 @@ dialog{border:2px solid var(--line);border-radius:12px;background:var(--paper);c
 <dialog id="picker"><div class="ph"><h2 id="pkTitle"></h2><div class="muted" id="pkSub"></div></div><div class="pf" id="pkFilters"></div><div class="pg" id="pkGrid"></div><div class="pb"><button onclick="this.closest('dialog').close()">ปิด</button></div></dialog>
 <dialog id="help"><h2>Asset Studio v48</h2><ol>
 <li>เลือกหมวด → เลือกตัวทางซ้าย → ดูตารางท่า × ทิศ กดช่องเพื่อเปิดเครื่องมือตรวจเฟรม</li>
-<li>กดเชื่อมโฟลเดอร์เกม เลือกโฟลเดอร์ที่มี index.html และ assets ใช้ Chrome / Edge บนคอมพิวเตอร์ หากเลือกโฟลเดอร์ไม่ได้ เปิดผ่าน localhost หรือ HTTPS</li>
+<li>หน้านี้ใช้ไฟล์จาก GitHub โดยตรง ไม่ต้องเชื่อมโฟลเดอร์ในเครื่อง · กด ↻ รีเฟรช เพื่อโหลดรายการไฟล์ล่าสุด</li>
 <li>เปลี่ยนโฟลเดอร์เลือกเกมชุดใหม่ได้เสมอ สแกนใหม่โหลดข้อมูลและภาพจากโฟลเดอร์เดิมอีกครั้ง งานรอส่งออกต้องจัดการก่อนเปลี่ยน</li>
 <li>ตารางเล่นท่าพร้อมกันเพื่อเทียบจังหวะ ปรับความเร็วร่วมกันได้ ช่องกลับภาพแสดงป้ายชัดเจน ช่องว่างคือยังไม่มีข้อมูลท่านั้น</li>
 <li>กดช่อง → เล่น / หยุด / เลื่อนทีละเฟรม / ภาพซ้อน / เทียบเวอร์ชัน / จดปัญหา / ส่งชุดแก้ให้ AI และส่งออกชีทหรือ GIF</li>
 <li>ส่วนภาพและไฟล์ใต้ตารางใช้เปลี่ยนภาพ นำเข้าชีท กู้ภาพเดิม และคัดลอก prompt เครื่องมือชุดคำขออยู่ในเมนูเครื่องมือเพิ่มเติม</li>
-<li>เชื่อมโฟลเดอร์แล้วกดใช้ภาพจะเขียนไฟล์ลงเกมและเก็บประวัติ หากยังไม่เชื่อม ให้ส่งออก ZIP แล้วแตกทับเกม</li>
+<li>กดใช้ภาพ = เก็บการแก้ไว้ในเบราว์เซอร์นี้ก่อน (เก็บประวัติเวอร์ชันให้) แล้วกด ⬆ Push ที่แก้ เพื่อส่งขึ้น GitHub เป็น commit เดียว · ต้องตั้ง GitHub token ก่อน</li>
 <li>ภาพที่ไม่มีเจ้าของอยู่ใน Objects → ไฟล์ยังไม่จัดหมวด ไม่ลบภาพต้นฉบับอัตโนมัติ</li></ol>
 <button onclick="this.closest('dialog').close()">ปิด</button></dialog>
 <div class="toast" id="toast"></div>
@@ -139,7 +139,7 @@ async function idbGet(k){try{let db=await idb();return await new Promise(r=>{let
 async function idbSet(k,v){try{let db=await idb();db.transaction('kv','readwrite').objectStore('kv').put(v,k)}catch(e){}}
 let savedHandle=null;
 async function connect(h){
- try{if(!h){if(!window.showDirectoryPicker){alert('เบราว์เซอร์นี้เชื่อมโฟลเดอร์ไม่ได้ — ใช้ Chrome หรือ Edge (ยังดูภาพและส่งออก ZIP ได้ตามปกติ)');return}try{h=await showDirectoryPicker({id:'project-a-game',mode:'readwrite'})}catch(err){if(err.name==='SecurityError'&&window.top!==window){toast('หน้านี้เลือกโฟลเดอร์ไม่ได้ — เปิด Asset Studio ในแท็บใหม่ให้แล้ว');window.open('asset-studio.html','_blank');return}throw err}}
+ try{if(!h)h=await RepoDir.open();
   if(await h.queryPermission({mode:'readwrite'})!=='granted'&&await h.requestPermission({mode:'readwrite'})!=='granted'){toast('ไม่ได้รับอนุญาตให้เขียนโฟลเดอร์');return}
   const readMan=async x=>JSON.parse(await (await (await x.getFileHandle('asset-manifest.json')).getFile()).text());
   let m=null;try{m=await readMan(h)}catch(e){}
@@ -256,7 +256,7 @@ document.querySelectorAll('.tabs [data-tab]').forEach(b=>b.onclick=()=>{tab=b.da
 function detail(){stopAnim();if(!sel){$('detail').innerHTML=`<p class="muted">${tab==='slots'?'เลือกช่องหรือชุดท่าทางซ้าย เพื่อดูว่าภาพอยู่ตรงไหนในเกม เปลี่ยนภาพ กู้เวอร์ชันเก่า หรือใส่ภาพใหม่':'เลือกภาพทางซ้าย เพื่อดูว่าใช้ที่ไหน และเอาไปใช้กับช่องที่ต้องการ'}</p>`+(dir?'':'<div class="note">ยังไม่ได้เชื่อมโฟลเดอร์เกม — กด <b>📁 เชื่อมโฟลเดอร์เกม</b> ด้านบน เพื่อสลับ/กู้ภาพได้ทันทีโดยไม่ต้องแตก ZIP</div>');return}
  if(sel.t==='slot')slotDetail(byId(sel.id));else if(sel.t==='set')setDetail(sel.clip);else imgDetail(libItem(sel.key))}
 // ---------- slot detail ----------
-function needFolder(){toast('ต้องเชื่อมโฟลเดอร์เกมก่อน (ปุ่ม 📁 ด้านบน)');$('conn').animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:500,iterations:2})}
+function needFolder(){toast('กำลังเชื่อม GitHub อยู่ · รอสักครู่แล้วลองใหม่');$('conn').animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:500,iterations:2})}
 function versionsHTML(a){let hs=a.history||[];if(!hs.length)return '<p class="muted">ยังไม่มี — เมื่อเปลี่ยนภาพ ภาพเดิมจะมาอยู่ตรงนี้</p>';
  return `<div class="vers">${hs.map((h,i)=>`<div class="ver"><div class="thumb">${imgTag(h.file)}</div><span>${esc(fmtAt(h.at))}</span>${h.note?`<small class="muted">${esc(h.note)}</small>`:''}<div class="row"><button class="small primary" data-use="${i}">↩ ใช้ภาพนี้</button><button class="small danger" data-del="${i}" title="ลบไฟล์นี้ถาวร">🗑</button></div></div>`).join('')}</div>`}
 function slotDetail(a){if(!a){sel=null;return detail()}let p=pending.get(a.id),users=csUsers(a.file),fr=a.clip?clipFrames(a.clip):null;
@@ -323,7 +323,7 @@ function imgDetail(x){if(!x){sel=null;return detail()}let s=x.slot,title=x.kind=
  ${x.kind==='version'&&s?`<button class="primary" id="restore">↩ กู้กลับเข้าช่องเดิม</button>`:''}
  <button ${x.kind==='version'&&s?'':'class="primary"'} id="useFor">🎯 ใช้กับช่อง…</button>
  ${x.kind==='version'?`<button class="danger" id="delV">🗑 ลบถาวร</button>`:''}</div>
- ${dir?'':'<div class="note">สลับ/กู้ภาพต้องเชื่อมโฟลเดอร์เกมก่อน (ปุ่ม 📁 ด้านบน)</div>'}`;
+ ${dir?'':'<div class="note">สลับ/กู้ภาพกำลังเชื่อม GitHub อยู่ · รอสักครู่แล้วลองใหม่</div>'}`;
  (async()=>{let im=$('bigImg'),u=await srcOf(x.path);if(!im)return;im.onload=()=>{let d=$('dims');if(d)d.textContent=im.naturalWidth+' × '+im.naturalHeight+' px'};im.src=u})();
  if($('toSlot'))$('toSlot').onclick=e=>{e.preventDefault();goSlot(s)};
  if($('restore'))$('restore').onclick=()=>doApply(s,{path:x.path},{note:'ก่อนกู้เวอร์ชัน '+fmtAt(x.h?.at)},true);
@@ -444,5 +444,5 @@ render();detail();
  });
 
 // Folder restoration is managed by asset-studio-browser.js after all models are ready.
-</script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=86"></script><script>document.getElementById("ghSlot").replaceWith(GitHubPush.settingsButton())</script><script src="js/asset-batch.js"></script><script src="js/animation-data.js"></script><script src="js/idle-extra.js"></script><script src="js/village-idle.js"></script><script src="js/tactics-sprites.js"></script><script src="js/hero-motion.js"></script><script src="js/asset-animation-review.js"></script><script src="js/studio-catalog.js"></script><script src="js/asset-studio-browser.js"></script><script src="js/studio-walk-import.js?v=81.16"></script><script src="js/studio-unified-review.js"></script>
+</script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=87"></script><script src="js/studio-repo-dir.js"></script><script>document.getElementById("ghSlot").replaceWith(GitHubPush.settingsButton())</script><script src="js/asset-batch.js"></script><script src="js/animation-data.js"></script><script src="js/idle-extra.js"></script><script src="js/village-idle.js"></script><script src="js/tactics-sprites.js"></script><script src="js/hero-motion.js"></script><script src="js/asset-animation-review.js"></script><script src="js/studio-catalog.js"></script><script src="js/asset-studio-browser.js"></script><script src="js/studio-walk-import.js?v=81.16"></script><script src="js/studio-unified-review.js"></script>
 </body></html>
