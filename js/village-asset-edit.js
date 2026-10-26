@@ -12,7 +12,7 @@
   UX = window.TownUX,
   copy = x => JSON.parse(JSON.stringify(x)),
   num = (v, a, b, d) => Math.max(a, Math.min(b, Number.isFinite(+v) ? +v : d));
- let courtDraw = false;
+ let courtDraw = false, courtLayer = false, courtLayerVal = 1;
  let data = {
    edit: {},
    added: [],
@@ -801,7 +801,7 @@
 
  function leave(ok = true) {
   if (!place) return;
-  const s = place; refChar = false; cv.style.cursor = '';
+  const s = place; refChar = false; courtLayer = false; cv.style.cursor = '';
   place = null;
   drag = null;
   courtDraw = false;
@@ -1202,9 +1202,9 @@
   if (o && courtDraw && place.tab === 'entry' && o.id !== 'square') {
    const c0 = cellAt(o, inv(p.x, p.y));
    if (!c0) return;
-   const have = new Map((o.court?.cells || []).map(c => [c[0] + ',' + c[1], c])), mode = have.has(c0[0] + ',' + c0[1]) ? 'del' : 'add';
+   const have = new Map((o.court?.cells || []).map(c => [c[0] + ',' + c[1], c])), mode = courtLayer ? 'layer' : have.has(c0[0] + ',' + c0[1]) ? 'del' : 'add';
    UX.checkpoint();
-   start('cells', { mode, have });
+   start('cells', { mode, have, layers: { ...(o.court?.layers || {}) } });
    paintCells(o, c0);
    return
   }
@@ -1315,10 +1315,13 @@
   if (!drag || e.pointerId !== drag.id) return;
   const d = drag;
   drag = null;
-  if (!d.moved) return;
+  if (!d.moved && d.type !== 'cells') return;
   if (d.type === 'cells') {
    const o = loc(place.id), cells = [...d.have.values()];
-   o.court = cells.length ? { cells } : { off: true };
+   const keep = {}; if (o.court?.z) keep.z = o.court.z;
+   const lay = {}; for (const [k, v] of Object.entries(d.layers || {})) if (d.have.has(k)) lay[k] = v;
+   if (Object.keys(lay).length) keep.layers = lay;
+   o.court = cells.length ? { cells, ...keep } : { off: true };
    UX.refresh(); UX.persist(); render(); return
   }
   if (d.type === 'entry') UX.refresh();
@@ -2338,6 +2341,11 @@
   <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีทางเดิน':o.court?.cells?o.court.cells.length+' ช่องครึ่ง':o.court?.pts?'เส้นเดิมที่วาดไว้':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
   <div class="row"><button id="cDraw" class="${courtDraw?'on':''}" style="${courtDraw?'background:#e5c06b;color:#1b302a':''}">🟨 ${courtDraw?'กำลังทาสี… คลิก/ลากบนกริด (ช่องที่มีอยู่ = ลบ)':'ทาสีช่องทางเดิน'}</button></div>
   <div class="row"><button id="cFill">เริ่มจากทางตรงประตู→ขอบหน้า</button><button id="cOff">ไม่มีทางเดิน</button><button id="cAuto">กลับเป็นอัตโนมัติ</button></div>
+  <b class="sec">ชั้นของพื้นที่เดิน (layer)</b>
+  <p class="sub">ตั้งต้น = ชั้นเดียวกับพื้นตรงนั้น (ชั้นพื้น ${o.court?.z || 0}) · ของที่ชั้นสูงกว่าจะบังตัวละคร ต่ำกว่าอยู่ใต้ตัวละคร · ชั้นเท่ากัน = เรียงตามความลึก · เลือกบางช่องให้มีชั้นต่างจากพื้นได้</p>
+  ${zRow('cz', 'ชั้นพื้นทั้งหมด', o.court?.z || 0, 'ตัวละครที่ยืนบนพื้นที่เดินนี้')}
+  <div class="row"><button id="cLayer" style="${courtLayer ? 'background:#e5c06b;color:#1b302a' : ''}">🔢 ${courtLayer ? 'กำลังกำหนดชั้นรายช่อง… (ลากบนช่องเหลือง)' : 'กำหนดชั้นเฉพาะบางช่อง'}</button></div>
+  ${courtLayer ? zRow('cl', 'ชั้นที่จะใส่', courtLayerVal, 'ลากทับช่องเหลืองเพื่อใส่ · ใส่ชั้นเท่าพื้น = ล้างค่าพิเศษ') : ''}
   <p class="sub">ตัวละครเดินทับช่องสีเหลืองได้ · ช่องต้องต่อกันจากประตูถึงขอบหน้า (ปลายทางที่ถนนมาเชื่อม) · ตัวละครอยู่ในชั้นเดียวกับพื้นตรงนั้น ของที่อยู่ด้านหน้าและชั้นสูงกว่า (เช่น กระถาง) จึงบังตัวละครได้ · Q สลับทาทีละช่อง 1×1 / ครึ่งช่อง 2×2</p>`;
   body.querySelector('#eDeep').onchange = e => once(() => {
    const d = UX.entryOf(o);
@@ -2350,6 +2358,9 @@
    UX.refresh()
   }));
   act('#cDraw', () => { courtDraw = !courtDraw; flashStatus(courtDraw ? 'ลากบนแผนที่จากประตูไปหาถนน · ปล่อยเมาส์เพื่อจบเส้น' : 'ยกเลิกการวาดทางเข้า'); render() });
+  bindZ('cz', d => { o.court = o.court || {}; o.court.z = clampN((o.court.z || 0) + d, -20, 20); if (!o.court.z) delete o.court.z; UX.refresh() });
+  bindZ('cl', d => { courtLayerVal = clampN(courtLayerVal + d, -20, 20) });
+  act('#cLayer', () => { if (!o.court?.cells?.length) { UX.checkpoint(); o.court = { ...(o.court || {}), cells: autoCells(o) } } courtLayer = !courtLayer; courtDraw = courtLayer; flashStatus(courtLayer ? 'ลากบนช่องเหลืองเพื่อกำหนดชั้น' : 'เลิกกำหนดชั้นรายช่อง'); render() });
   act('#cFill', once(() => { o.court = { cells: autoCells(o) }; courtDraw = false; UX.refresh() }));
   act('#cOff', once(() => { courtDraw = false; o.court = { off: true }; UX.refresh() }));
   act('#cAuto', once(() => { courtDraw = false; delete o.court; UX.refresh() }))
@@ -2413,7 +2424,8 @@
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
    const u = c[0] + i, v = c[1] + j, k = u + ',' + v;
    if (u < -fp.u0 * 2 || u >= fp.u1 * 2 || v < -fp.v0 * 2 || v >= fp.v1 * 2) continue;
-   if (drag.mode === 'add') drag.have.set(k, [u, v]); else drag.have.delete(k)
+   if (drag.mode === 'layer') { if (drag.have.has(k)) { if (courtLayerVal === (o.court?.z || 0)) delete drag.layers[k]; else drag.layers[k] = courtLayerVal } }
+   else if (drag.mode === 'add') drag.have.set(k, [u, v]); else drag.have.delete(k)
   }
   terrainDirty = true
  }
@@ -2434,6 +2446,16 @@
    const a = center(o), cells = drag?.type === 'cells' ? [...drag.have.values()] : (o.court?.cells || []);
    gg.save(); gg.fillStyle = 'rgba(255,214,64,.55)'; gg.strokeStyle = '#ffd840'; gg.lineWidth = 1.5 / z;
    for (const [iu, iv] of cells) { gg.beginPath(); [[iu, iv], [iu + 1, iv], [iu + 1, iv + 1], [iu, iv + 1]].forEach(([x, y], i) => { const c = canonical(o, a.u + x / 2, a.v + y / 2), s2 = project(c.u, c.v); gg[i ? 'lineTo' : 'moveTo'](s2.x, s2.y) }); gg.closePath(); gg.fill(); gg.stroke() }
+   const lays = drag?.type === 'cells' ? drag.layers : (o.court?.layers || {}), zz = o.court?.z || 0;
+   if (courtLayer || Object.keys(lays).length || zz) {
+    gg.font = 'bold ' + 11 / z + 'px system-ui'; gg.textAlign = 'center'; gg.textBaseline = 'middle';
+    for (const [iu, iv] of cells) {
+     const val = lays[iu + ',' + iv] ?? zz;
+     if (!courtLayer && val === zz && !(iu + ',' + iv in lays)) continue;
+     const c = canonical(o, a.u + (iu + .5) / 2, a.v + (iv + .5) / 2), q = project(c.u, c.v);
+     gg.fillStyle = val === zz ? '#3b3320' : '#ff5a3c'; gg.fillText((val > 0 ? '+' : '') + val, q.x, q.y)
+    }
+   }
    gg.restore()
   }
   if (place) {
@@ -2634,6 +2656,18 @@
   itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner, hidden: E.hidden } : null },
   frameSig: () => JSON.stringify(data.frames),
   assetReady,
+  heroLayer: (u, v) => {
+   for (const o of locations) {
+    const c = o.court;
+    if (!c || (!c.z && !c.layers)) continue;
+    const e = window.VillageFootprint.fpOf(o), a0 = center(o), q = canonical(o, u, v), a = q.u - a0.u, b = q.v - a0.v;
+    if (a < -e.u0 || a >= e.u1 || b < -e.v0 || b >= e.v1) continue;
+    const k = Math.floor(a * 2) + ',' + Math.floor(b * 2);
+    if (c.cells && !c.cells.some(x => x[0] + ',' + x[1] === k)) continue;
+    return c.layers?.[k] ?? c.z ?? 0
+   }
+   return 0
+  },
   resnapAll,
   frameCount: () => frame.length,
   decorList: () => Object.entries(DECOR_W).map(([id, [name, w]]) => ({ id, name, w })),
