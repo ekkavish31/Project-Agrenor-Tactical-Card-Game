@@ -1495,3 +1495,13 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - ลูกศรเลือกทิศหัน:
   - เป็นคริสตัลฟ้าเรืองแสง มีเส้นในสีขาว
   - ทิศปัจจุบันเป็นสีทอง ทิศที่ชี้อยู่เป็นสีม่วง และมีประกายที่ปลายลูกศร
+
+
+## cleanup · จัดระเบียบไฟล์ (ไม่เปลี่ยนพฤติกรรมเกม)
+- ย้ายไป `_archive/` (ยังกู้คืนได้ ไม่ได้ลบ):
+  - `js/terraced-hill-review.js` — ไม่มีหน้า HTML ไหนโหลด และต้องใช้ element `#hill-demo` ที่ไม่มีอยู่
+  - `undefined/bg1.png`, `undefined/bg2.png` — โฟลเดอร์เกิดจากส่งค่า undefined เข้าไปในพาธ ไม่มีโค้ดอ้างถึง
+- เลิกติดตามไฟล์ `tools/__pycache__/*.pyc` และเพิ่ม `__pycache__/`, `*.pyc` ใน `.gitignore`
+- ตรวจแล้วเก็บไว้ เพราะถูกโหลดแบบสร้างพาธตอนรัน: `assets/village-town/decor/gate-*.png`
+- ยังค้างให้ตัดสินใจ: `assets/tactics/cliff/*` (เอกสาร CRAG-STAMP.md อ้างถึง `js/cliff-art.js` ที่ไม่มีแล้ว), `assets/village-town/templates/iso-*.png` (ไม่มีโค้ดหรือเอกสารอ้างถึง)
+- เทสต์ที่ล้มอยู่ก่อนแล้ว ไม่เกี่ยวกับการจัดระเบียบนี้: `tools/test-surface-v39.cjs` (assertion ไม่ตรง), `tests/render-terrain.cjs` (ขาดแพ็กเกจ `@napi-rs/canvas`)
