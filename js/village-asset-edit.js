@@ -1171,6 +1171,20 @@
      ...extra
     }
    };
+  if (o && o.id !== 'square' && !courtDraw) {
+   const ek = fpEdgeAt(o, inv(p.x, p.y));
+   if (ek) {
+    const tN = performance.now(), dbE = tN - (fpEdgeAt.t || 0) < 400;
+    fpEdgeAt.t = tN;
+    if (dbE) {
+     const af = UX.autoFootprint?.(o);
+     UX.checkpoint(); swallow(e);
+     UX.setFootprint(o, af || null); UX.refresh(); UX.persist(); render();
+     return
+    }
+    return start('fpEdge', { k: ek })
+   }
+  }
   if (o && courtDraw && place.tab === 'entry' && o.id !== 'square') {
    const c0 = cellAt(o, inv(p.x, p.y));
    if (!c0) return;
@@ -1216,11 +1230,8 @@
    place.keys = [];
    place.tab = 'building';
    render();
-   const t = data.buildings[o.id] || {};
-   return start('art', {
-    dx: t.dx || 0,
-    dy: t.dy || 0
-   })
+   swallow(e); // v91.3: the main picture defines the footprint, so it can no longer be dragged inside the place
+   return
   }
   if (b || pickIn(p, null)) {
    swallow(e);
@@ -1252,6 +1263,11 @@
   if (drag.type === 'cells') {
    const o = loc(place.id), c = cellAt(o, inv(p.x, p.y));
    if (c) paintCells(o, c);
+   return
+  }
+  if (drag.type === 'fpEdge') {
+   const a = center(o), q = canonical(o, inv(p.x, p.y).u, inv(p.x, p.y).v);
+   fpEdgeSet(o, drag.k, q.u - a.u, q.v - a.v); UX.refresh(); terrainDirty = true;
    return
   }
   if (drag.type === 'items') moveKeys(drag.keys, drag.orig, dx, dy);
@@ -2328,6 +2344,22 @@
  }
 
  /* walk cells: half-cell units from the place centre, in the place's own axes (see courtCellPath in village-town.html) */
+
+ /* v91.3: drag a side of the blue footprint in/out (steps follow the grid mode); double-click a side = shrink to the picture */
+ function fpEdgeAt(o, w) {
+  const F = window.VillageFootprint, a = center(o), q = canonical(o, w.u, w.v), f = F.fpOf(o), du = q.u - a.u, dv = q.v - a.v, tol = 0.35;
+  const inU = dv >= -f.v0 - tol && dv <= f.v1 + tol, inV = du >= -f.u0 - tol && du <= f.u1 + tol;
+  let best = null;
+  const t = (k, d, ok) => { if (ok && d < tol && (!best || d < best.d)) best = { k, d } };
+  t('u0', Math.abs(du + f.u0), inU); t('u1', Math.abs(du - f.u1), inU);
+  t('v0', Math.abs(dv + f.v0), inV); t('v1', Math.abs(dv - f.v1), inV);
+  return best && best.k
+ }
+ function fpEdgeSet(o, k, du, dv) {
+  const F = window.VillageFootprint, step = UX.gridMode() === '1x1' ? 1 : 0.5, v = { u0: -du, u1: du, v0: -dv, v1: dv }[k],
+   n = Math.round(v / step) * step, f = F.fpOf(o);
+  UX.setFootprint(o, F.nudgeEdge(f, k, n - f[k]))
+ }
  function cellAt(o, w) {
   const a = center(o), q = canonical(o, w.u, w.v), fp = window.VillageFootprint.fpOf(o), du = q.u - a.u, dv = q.v - a.v;
   if (du < -fp.u0 || du >= fp.u1 || dv < -fp.v0 || dv >= fp.v1) return null;
