@@ -233,9 +233,10 @@
    else draw(gg);
    g.restore()
   };
+  if (ov.grp) grpYNow.set(ov.grp, Math.max(grpYNow.get(ov.grp) ?? -1e9, E.y));
   const it = {
    x: E.x,
-   y: E.y + (ov.layer || 0),
+   y: (ov.grp && grpYPrev.get(ov.grp) != null ? grpYPrev.get(ov.grp) : E.y) + (ov.layer || 0),
    z: ov.z || 0,
    place: loc(owner) ? owner : null,
    draw: gg => {
@@ -320,9 +321,12 @@
   const m = t.match(/decor\('([\w-]+)'|dec\('([\w-]+)'/);
   return m ? (DECOR_W[m[1] || m[2]]?.[0] || 'ของประดับ') : 'ของประดับ'
  };
+ let grpYPrev = new Map(), grpYNow = new Map();
  const baseEstate = estateObjects;
  estateObjects = function() {
   frame = [];
+  grpYPrev = grpYNow;
+  grpYNow = new Map();
   const list = baseEstate(),
    sq = locations.find(o => o.id === 'square'),
    out = [],
@@ -806,13 +810,25 @@
   render()
  }
 
- function selectItem(key, toggle) {
+ /* items can be joined in a group (ov.grp): picking one picks them all; double-click picks just that part */
+ function grpKeys(key) {
+  const g = data.edit[key]?.grp;
+  if (!g) return [key];
+  const ks = frame.filter(e => data.edit[e.key]?.grp === g).map(e => e.key);
+  return ks.includes(key) ? ks : [key]
+ }
+ let lastPick = { key: null, t: 0 };
+ function selectItem(key, toggle, single) {
   if (!place) return;
+  const ks = single ? [key] : grpKeys(key);
   if (toggle) {
-   const i = place.keys.indexOf(key);
-   if (i < 0) place.keys.push(key);
-   else place.keys.splice(i, 1)
-  } else place.keys = [key];
+   const has = place.keys.includes(key);
+   for (const k of ks) {
+    const i = place.keys.indexOf(k);
+    if (has && i >= 0) place.keys.splice(i, 1);
+    else if (!has && i < 0) place.keys.push(k)
+   }
+  } else place.keys = [...ks];
   place.tab = 'items';
   render()
  }
@@ -848,27 +864,57 @@
      du: 0,
      dv: 0
     };
-   const b = baseOf(E.owner), q = gridSnapItem(E, b, o.du + c.du, o.dv + c.dv);
+   const b = baseOf(E.owner), q = gridSnapItem(E, b, o.du + c.du, o.dv + c.dv, keys.length === 1);
    ov.du = q.du;
    ov.dv = q.dv
   }
  }
- /* grid: snap an item's final position (owner-local du,dv) onto the village lattice. Screen/world px are mirror-agnostic. */
-  function gridSnapItem(E, b, du, dv) {
-  const G = window.VillageGrid, mode = window.TownUX?.gridMode?.() || (G && G.DEFAULT_MODE);
+ /* grid: snap an item's final position (owner-local du,dv) onto the village lattice. Screen/world px are mirror-agnostic.
+    Small items also keep their footprint (default half a cell square, ov.fw/ov.fh) off their neighbours' footprints:
+    a blocked drop slides to the closest free spot, flush against the neighbour. Stack mode (V) or a multi-selection skips that. */
+ const modeNow = () => window.TownUX?.gridMode?.() || window.VillageGrid.DEFAULT_MODE;
+ const stackOn = () => !!window.TownUX?.stackOn?.();
+ const itemSize = k => ({ w: data.edit[k]?.fw ?? .5, h: data.edit[k]?.fh ?? .5 });
+ function itemRectAt(k, c) {
+  const z = itemSize(k);
+  return window.VillageGrid.rectFromCells(c.u - z.w / 2, c.v - z.h / 2, z.w, z.h)
+ }
+ function siblingRects(owner, exceptKeys) {
+  const G = window.VillageGrid;
+  return frame.filter(e => e.owner === owner && !e.hidden && !exceptKeys.includes(e.key)).map(e => ({ id: e.key, rect: itemRectAt(e.key, G.unproject(e.x, e.y)) }))
+ }
+ function freeCell(owner, key, cell) {
+  const F = window.VillageFootprint;
+  if (!F || stackOn()) return cell;
+  const r = F.nearestFree(cc => itemRectAt(key, cc), cell, siblingRects(owner, [key]), modeNow());
+  return { u: r.u, v: r.v }
+ }
+ function gridSnapItem(E, b, du, dv, solo) {
+  const G = window.VillageGrid;
   if (!G || !b) return { du: +du.toFixed(4), dv: +dv.toFixed(4) };
-  const s = screenDelta(b, du, dv), q = G.snapPoint(E.ax + s.x, E.ay + s.y, mode), r = canonDelta(b, q.x - E.ax, q.y - E.ay);
+  const s = screenDelta(b, du, dv), q = G.snapPoint(E.ax + s.x, E.ay + s.y, modeNow()),
+   c = solo ? freeCell(E.owner, E.key, { u: q.u, v: q.v }) : { u: q.u, v: q.v },
+   p = G.project(c.u, c.v), r = canonDelta(b, p.x - E.ax, p.y - E.ay);
   return { du: +r.du.toFixed(4), dv: +r.dv.toFixed(4) }
+ }
+ /* a brand-new item (add / duplicate): snap, then slide clear of its neighbours */
+ function placeNewItem(owner, key, du, dv) {
+  const G = window.VillageGrid, b = baseOf(owner), c0 = { u: b.u, v: b.v };
+  const r = G.snapOffset(c0, !!b.mirror, du, dv, modeNow()), cell = freeCell(owner, key, r.world),
+   o = G.worldToOffset(c0, !!b.mirror, cell.u, cell.v);
+  return { du: +o.du.toFixed(4), dv: +o.dv.toFixed(4) }
  }
  /* arrow keys / buttons: one grid step (Shift = 4 steps), along the screen axes */
  function nudgeGrid(ax, ay, mult) {
   if (!place?.keys.length) return;
-  const G = window.VillageGrid, mode = window.TownUX?.gridMode?.() || G.DEFAULT_MODE, st = G.stepCells(mode) * mult;
+  const G = window.VillageGrid, mode = modeNow(), st = G.stepCells(mode) * mult, solo = place.keys.length === 1;
   UX.checkpoint();
   for (const k of place.keys) {
    const E = frame.find(e => e.key === k), b = E && baseOf(E.owner);
    if (!E || !b) continue;
-   const cur = G.snapPoint(E.x, E.y, mode), q = G.snapPoint(cur.x + ax * 56 * st, cur.y + ay * 28 * st, mode), r = canonDelta(b, q.x - E.ax, q.y - E.ay), ov = ovOf(k);
+   const cur = G.snapPoint(E.x, E.y, mode), q = G.snapPoint(cur.x + ax * 56 * st, cur.y + ay * 28 * st, mode),
+    c = solo ? freeCell(E.owner, k, { u: q.u, v: q.v }) : { u: q.u, v: q.v }, p = G.project(c.u, c.v),
+    r = canonDelta(b, p.x - E.ax, p.y - E.ay), ov = ovOf(k);
    ov.du = +r.du.toFixed(4);
    ov.dv = +r.dv.toFixed(4)
   }
@@ -923,16 +969,16 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer }
+  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh }
  }
  function addRecords(recs, owner, off) {
   const ids = [];
   if (!baseOf(owner)) return ids;
   for (const r of recs) {
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-   const G = window.VillageGrid, bs = baseOf(owner), sn = G ? G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, window.TownUX?.gridMode?.() || G.DEFAULT_MODE) : { du: r.du + off, dv: r.dv + off };
+   const G = window.VillageGrid, bs = baseOf(owner), sn = !G ? { du: r.du + off, dv: r.dv + off } : recs.length === 1 ? placeNewItem(owner, nid, r.du + off, r.dv + off) : G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, modeNow());
    data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer };
+   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh };
    clean(nid);
    ids.push(nid)
   }
@@ -1146,7 +1192,10 @@
     selectItem(h.key, true);
     return
    }
-   if (!place.keys.includes(h.key)) selectItem(h.key);
+   const nowT = performance.now(), dbl = lastPick.key === h.key && nowT - lastPick.t < 400;
+   lastPick = { key: h.key, t: nowT };
+   if (dbl) selectItem(h.key, false, true);
+   else if (!place.keys.includes(h.key)) selectItem(h.key);
    return start('items', {
     keys: [...place.keys],
     orig: origOf(place.keys)
@@ -1893,6 +1942,27 @@
   })
  }
 
+ /* footprint panel: the ground area this place claims on the grid (blue tiles on the map) */
+ function fpHtml(o) {
+  const f = window.VillageFootprint?.fpOf(o);
+  if (!f) return '';
+  const custom = window.VillageFootprint.isCustom(o), se = o.facing === 'SE';
+  const edge = (k, label) => `<div class="row" style="align-items:center;margin:2px 0"><span style="min-width:96px">${label} ${f[k]}</span><button data-fp="${k},-0.25">−¼</button><button data-fp="${k},-0.5">−½</button><button data-fp="${k},0.25">+¼</button></div>`;
+  return `<b class="sec">กรอบพื้นที่ (กริด)${custom ? ' · ปรับเอง' : ' · อัตโนมัติ'}</b>
+  <p class="sub">พื้นฟ้าบนแผนที่ = ช่องกริดที่สถานที่นี้กิน · ชนสถานที่อื่นไม่ได้ · บีบเข้าเพื่อให้ของที่ล้นขอบ (เช่น กิ่งไม้) ไม่กินช่อง</p>
+  ${edge('u0', se ? 'ซ้าย(หลัง)' : 'ซ้าย')}${edge('u1', se ? 'ขวา(หน้า)' : 'ขวา')}${edge('v0', 'หลัง')}${edge('v1', 'หน้า')}
+  <div class="row"><button data-fpa="-0.25">บีบทั้งกรอบ −¼</button><button data-fpa="0.25">ขยายทั้งกรอบ +¼</button></div>
+  <div class="row"><button id="fpAuto"${custom ? '' : ' disabled'}>คืนค่าอัตโนมัติ</button></div>
+`;
+ }
+ function bindFp(body, o) {
+  const F = window.VillageFootprint;
+  if (!F) return;
+  const set = fp => { UX.checkpoint(); UX.setFootprint(o, fp); UX.refresh(); UX.persist(); render() };
+  body.querySelectorAll('[data-fp]').forEach(b => b.onclick = () => { const [k, d] = b.dataset.fp.split(','); set(F.nudgeEdge(F.fpOf(o), k, +d)) });
+  body.querySelectorAll('[data-fpa]').forEach(b => b.onclick = () => set(F.nudgeAll(F.fpOf(o), +b.dataset.fpa)));
+  act('#fpAuto', () => set(null))
+ }
  function tabBuilding(body, o) {
   const t = data.buildings[o.id] || {},
    choices = o.id === 'square' ? [] : buildingChoices(o),
@@ -1900,6 +1970,7 @@
   body.innerHTML = `${choices.length?`<div class="art"><span class="th" id="bThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="bSwap">เปลี่ยนภาพ…</button></div>${t.art&&t.art!==o.id?'<button id="bOrig">ใช้ภาพเดิม</button>':''}<p class="sub" style="margin:6px 0 0">${cur?.label||''}</p></div></div>`:''}
   ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div>`:''}
   ${slider('sx','Width · ความกว้าง',t.sx??1,.5,1.6,.01,FMT.sx)}${slider('sy','Height · ความสูง',t.sy??1,.5,1.6,.01,FMT.sy)}${slider('kx','Base Slope · ความลาดฐาน',t.kx||0,-.6,.6,.005,FMT.kx)}<p class="sub">ปรับจากจุดฐานอาคาร: ความกว้าง/สูงแยกกัน · Base Slope เปลี่ยนแนวฐานโดยไม่ทำให้เส้นตั้งของอาคารเอียง</p>${nudgeHtml}
+  ${fpHtml(o)}
   <b class="sec">ชั้น (layer)</b>${zRow('bz','ชั้นอาคาร',t.z||0,'เทียบกับของย่อยในสถานที่นี้ · ของย่อยที่เลขมากกว่าจะทับอาคาร')}${zRow('pz','ชั้นทั้งสถานที่',t.pz||0,'อาคาร+ของย่อยทั้งชุด เทียบกับสถานที่อื่น · 0 = ตามความลึก')}
   <label class="chk"><input type="checkbox" id="bGuides" ${guides?'checked':''}> แสดงเส้นช่วย 2:1 (ฟ้า = ฐานอาคาร)</label>
   <p class="sub">ป้ายชื่อ: ลากป้ายบนแผนที่ไปวางได้${o.label?' · <a href="#" id="bLabel" style="color:#9ff3f5">คืนตำแหน่งป้าย</a>':''}</p>
@@ -1913,6 +1984,7 @@
    putThumb(th, c);
    if (!c) setTimeout(() => putThumb(th, cur?.thumb?.()), 600)
   }
+  bindFp(body, o);
   act('#bSwap', () => openList('เปลี่ยนภาพ ' + o.name, choices, cur?.id, it => {
    UX.checkpoint();
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
@@ -2030,13 +2102,60 @@
   if (!Object.keys(F).length) delete data.frames[id]
  }
 
+ /* ---------- groups + a small library of saved groups ("asset + asset = new asset") ---------- */
+ const LIB_KEY = 'project-a-village-asset-lib-v1';
+ const readLib = () => { try { return JSON.parse(localStorage.getItem(LIB_KEY) || '[]').filter(a => a && a.id && Array.isArray(a.recs)) } catch (e) { return [] } };
+ const writeLib = l => { try { localStorage.setItem(LIB_KEY, JSON.stringify(l)) } catch (e) { flashStatus('เซฟคลังในเครื่องไม่ได้') } };
+ const newGid = () => 'g:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+ function grpToolsHtml(keys) {
+  const grouped = keys.some(k => data.edit[k]?.grp), one = keys.length > 1 && new Set(keys.map(k => data.edit[k]?.grp || '')).size === 1 && grouped;
+  return `<b class="sec">รวมกลุ่ม · asset ใหม่</b><p class="sub">รวมกลุ่ม = คลิก/ลากเลือกทั้งชุดพร้อมกัน และเรียงความลึกเป็นภาพเดียวบนแมพใหญ่ · ดับเบิลคลิกชิ้นไหนเพื่อแก้เฉพาะชิ้นนั้น</p>
+  <div class="row"><button id="gGroup"${one ? ' disabled' : ''}>⧉ รวมเป็นกลุ่ม</button><button id="gUngroup"${grouped ? '' : ' disabled'}>แยกกลุ่ม</button><button id="gSaveAsset">💾 บันทึกเป็น asset ใหม่…</button></div>`
+ }
+ function bindGrpTools(keys) {
+  act('#gGroup', once(() => { const g = newGid(); keys.forEach(k => ovOf(k).grp = g) }));
+  act('#gUngroup', once(() => keys.forEach(k => { if (data.edit[k]) { delete data.edit[k].grp; clean(k) } })));
+  act('#gSaveAsset', () => {
+   const recs = groupRecords();
+   if (!recs.length) return;
+   const name = (window.prompt('ชื่อ asset ใหม่', 'ชุดของฉัน ' + (readLib().length + 1)) || '').trim();
+   if (!name) return;
+   const cu = Math.round(recs.reduce((a, r) => a + r.du, 0) / recs.length * 2) / 2, cv = Math.round(recs.reduce((a, r) => a + r.dv, 0) / recs.length * 2) / 2;
+   const lib = readLib();
+   lib.push({ id: 'lib:' + Date.now().toString(36), name, recs: recs.map(r => ({ ...r, du: +(r.du - cu).toFixed(3), dv: +(r.dv - cv).toFixed(3) })) });
+   writeLib(lib);
+   flashStatus('บันทึก asset “' + name + '” แล้ว (' + recs.length + ' ชิ้น) · อยู่ใน 📚 คลัง · เก็บในเครื่องนี้ก่อน')
+   render()
+  })
+ }
+ function openLib() {
+  const lib = readLib();
+  if (!lib.length) { flashStatus('ยังไม่มี asset ที่บันทึกไว้ · เลือกหลายชิ้นแล้วกด 💾 บันทึกเป็น asset ใหม่'); return }
+  openList('คลังที่รวมไว้', lib.map(a => ({ id: a.id, label: a.name, group: 'ของฉัน', icon: '⧉' })), '', it => {
+   const a = lib.find(x => x.id === it.id), base = baseOf(place.id);
+   if (!a || !base) return;
+   UX.checkpoint();
+   const g = newGid(), ids = [];
+   for (const r of a.recs) {
+    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sn = window.VillageGrid.snapOffset({ u: base.u, v: base.v }, !!base.mirror, r.du, r.dv + +base.front.toFixed(2), modeNow());
+    data.added.push({ id: nid, owner: place.id, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
+    data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, grp: g };
+    clean(nid);
+    ids.push(nid)
+   }
+   place.keys = ids;
+   UX.persist();
+   requestAnimationFrame(() => requestAnimationFrame(render));
+   flashStatus('วาง “' + a.name + '” แล้ว · เป็นกลุ่มเดียว ลากทั้งชุดได้')
+  })
+ }
  function tabItems(body, o, items) {
   const keys = place.keys;
   if (keys.length === 1) return itemEditor(body, keys[0], items);
   if (keys.length > 1) {
    const ents = keys.map(k => items.find(e => e.key === k)).filter(Boolean);
    body.innerHTML = `<b class="sec">เลือก ${ents.length} ชิ้น <span class="chip">กลุ่ม</span></b><p class="sub">Shift+คลิก = เพิ่ม/เอาออก · ลากชิ้นใดก็ได้ในกลุ่มเพื่อย้ายทั้งหมด</p>
-   <div class="items">${ents.map(e=>`<button data-k="${e.key}"><span class="mini"></span><span style="flex:1">${itemName(e,items)}</span><b title="เอาออกจากกลุ่ม">✕</b></button>`).join('')}</div>${nudgeHtml}${groupHtml(ents.length)}
+   <div class="items">${ents.map(e=>`<button data-k="${e.key}"><span class="mini"></span><span style="flex:1">${itemName(e,items)}</span><b title="เอาออกจากกลุ่ม">✕</b></button>`).join('')}</div>${nudgeHtml}${groupHtml(ents.length)}${grpToolsHtml(keys)}
    <div class="row"><button id="gHide">ซ่อนทั้งหมด</button><button id="gShow">แสดงทั้งหมด</button><button id="gReset">คืนค่าทั้งหมด</button><button id="gDel">ลบ (Delete)</button><button id="gNone">เลิกเลือก</button></div>`;
    body.querySelectorAll('[data-k]').forEach(b => {
     const E = items.find(x => x.key === b.dataset.k),
@@ -2045,13 +2164,14 @@
     if (c) m.append(c);
     b.onmouseenter = () => hoverKey = b.dataset.k;
     b.onmouseleave = () => hoverKey = null;
-    b.onclick = () => selectItem(b.dataset.k, true)
+    b.onclick = () => selectItem(b.dataset.k, true, true)
    });
    act('#gHide', once(() => keys.forEach(k => ovOf(k).hide = true)));
    act('#gShow', once(() => keys.forEach(k => delete ovOf(k).hide)));
    act('#gReset', once(() => keys.forEach(k => delete data.edit[k])));
    act('#gDel', removeSelected);
    bindGroup();
+   bindGrpTools(keys);
    act('#gNone', () => {
     place.keys = [];
     render()
@@ -2060,7 +2180,7 @@
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่ (จุดสีทอง) หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น · จุดแดง = ชิ้นที่ซ่อนอยู่</p>
   <div class="row"><button id="iAdd" style="background:#4f7a3c;border-color:#b8d39a">＋ เพิ่มของ…</button>${o?'<button id="iCopy">คัดลอกการแต่งไปที่อื่น…</button>':''}<button id="iReset">คืนของย่อยทั้งหมด</button></div>
-  <div class="row"><button id="iAll">เลือกทั้งหมด</button>${clip()?.recs?.length?`<button id="gPaste">วางที่คัดลอก (${clip().recs.length}) <small>Ctrl+V</small></button>`:''}</div>
+  <div class="row"><button id="iAll">เลือกทั้งหมด</button><button id="iLib">📚 คลังที่รวมไว้ (${readLib().length})</button>${clip()?.recs?.length?`<button id="gPaste">วางที่คัดลอก (${clip().recs.length}) <small>Ctrl+V</small></button>`:''}</div>
   <div class="items">${items.map(e=>`<button data-key="${e.key}"><span class="mini"></span><span style="flex:1">${itemName(e,items)}</span><small>${e.hidden?'ซ่อนอยู่':e.key.startsWith('add:')?'เพิ่มเอง':Object.keys(e.ov||{}).length?'แก้แล้ว':''}</small></button>`).join('')||'<p class="sub">ยังไม่มีของในสถานที่นี้ · กด ＋ เพิ่มของ</p>'}</div>`;
   body.querySelectorAll('[data-key]').forEach(b => {
    const E = items.find(x => x.key === b.dataset.key),
@@ -2069,7 +2189,7 @@
    if (c) m.append(c);
    b.onmouseenter = () => hoverKey = b.dataset.key;
    b.onmouseleave = () => hoverKey = null;
-   b.onclick = e => selectItem(b.dataset.key, e.shiftKey)
+   b.onclick = e => selectItem(b.dataset.key, e.shiftKey, true)
   });
   act('#iAdd', () => openPicker('เพิ่มของให้ ' + ownerName(place.id), '', k => {
    const base = baseOf(place.id);
@@ -2083,13 +2203,14 @@
     dv: +base.front.toFixed(2),
     kind: k
    });
-   (() => { const a = data.added[data.added.length - 1], G = window.VillageGrid; if (!G) return; const r = G.snapOffset({ u: base.u, v: base.v }, !!base.mirror, a.du, a.dv, window.TownUX?.gridMode?.() || G.DEFAULT_MODE); a.du = +r.du.toFixed(4); a.dv = +r.dv.toFixed(4) })();
+   (() => { const a = data.added[data.added.length - 1], r = placeNewItem(place.id, nid, a.du, a.dv); a.du = r.du; a.dv = r.dv })();
    UX.persist();
    place.keys = [nid];
    requestAnimationFrame(() => requestAnimationFrame(render));
    flashStatus('วางของใหม่หน้าสถานที่แล้ว · ลากไปวางตำแหน่งที่ต้องการ')
   }));
   act('#iCopy', () => openCopy(place.id));
+  act('#iLib', openLib);
   act('#gPaste', pasteGroup);
   act('#iAll', () => { place.keys = items.map(e => e.key); render() });
   act('#iReset', () => {
@@ -2110,7 +2231,7 @@
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
-  ${nudgeHtml}${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
+  ${nudgeHtml}<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.25">กว้าง −</button><button data-fz="fw,0.25">กว้าง +</button><button data-fz="fh,-0.25">ลึก −</button><button data-fz="fh,0.25">ลึก +</button></div>${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
   <div class="row">${added?'<button id="aeDel">ลบชิ้นนี้ (Delete)</button>':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชิ้นนี้ (Delete)'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
@@ -2126,6 +2247,11 @@
   act('#aeHide', once(() => {
    if (ov.hide) delete ovOf(key).hide;
    else ovOf(key).hide = true
+  }));
+  body.querySelectorAll('[data-fz]').forEach(b => b.onclick = once(() => {
+   const [f, d] = b.dataset.fz.split(','), o2 = ovOf(key), v = clampN((o2[f] ?? .5) + +d, .25, 6);
+   if (v === .5) delete o2[f]; else o2[f] = v;
+   clean(key)
   }));
   act('#aeDel', removeSelected);
   act('#aeReset', once(() => delete data.edit[key]));
@@ -2473,7 +2599,10 @@
   enter,
   leave: () => leave(true),
   placeId: () => place?.id || null,
-  itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner } : null },
+  itemKeys: owner => frame.filter(e => e.owner === owner && !e.hidden).map(e => e.key),
+  select: ks => { if (place) { place.keys = [...ks]; place.tab = 'items'; render() } },
+  pick: key => selectItem(key),
+  itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner, hidden: E.hidden } : null },
   frameSig: () => JSON.stringify(data.frames),
   get,
   set,

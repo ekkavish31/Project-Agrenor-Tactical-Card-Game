@@ -164,6 +164,78 @@ def main():
             pg.evaluate("VillageAssetEdit.leave(false)")
             pg.wait_for_timeout(200)
 
+
+
+        # --- small items: edge snap, stack mode (V), groups, double click ------------
+        pg.evaluate("TownUX.setMode('object')")
+        two = pg.evaluate("() => { VillageAssetEdit.enter('shop'); return VillageAssetEdit.itemKeys('shop').slice(0, 2) }")
+        pg.wait_for_timeout(400)
+        A, B = two
+        cheb = pg.evaluate("""([a, b]) => { const p = VillageAssetEdit.itemWorld(a), q = VillageAssetEdit.itemWorld(b), u = VillageGrid.unproject(p.x, p.y), v = VillageGrid.unproject(q.x, q.y);
+            return Math.max(Math.abs(u.u - v.u), Math.abs(u.v - v.v)) }""", [A, B])
+        # drag A on top of B with the mouse
+        def drag_onto(a, b):
+            s0 = pg.evaluate("k => { const p = VillageAssetEdit.itemWorld(k); return __t.screenOf(p.x, p.y) }", a)
+            s1 = pg.evaluate("k => { const p = VillageAssetEdit.itemWorld(k); return __t.screenOf(p.x, p.y) }", b)
+            pg.evaluate("k => VillageAssetEdit.select([k])", a)
+            pg.wait_for_timeout(300)
+            pg.mouse.move(s0['x'], s0['y']); pg.mouse.down()
+            for i in range(1, 4):
+                pg.mouse.move(s0['x'] + (s1['x'] - s0['x']) * i / 3, s0['y'] + (s1['y'] - s0['y']) * i / 3)
+            pg.mouse.up(); pg.wait_for_timeout(300)
+        def gap():
+            return pg.evaluate("""([a, b]) => { const p = VillageAssetEdit.itemWorld(a), q = VillageAssetEdit.itemWorld(b), u = VillageGrid.unproject(p.x, p.y), v = VillageGrid.unproject(q.x, q.y);
+                return Math.max(Math.abs(u.u - v.u), Math.abs(u.v - v.v)) }""", [A, B])
+        pg.evaluate("TownUX.setStack(false)")
+        drag_onto(A, B)
+        g_off = gap()
+        check('small item dropped on another slides to touch its edge (no overlap)', g_off >= 0.5 - 1e-6, g_off)
+        pg.evaluate("TownUX.setStack(true)")
+        drag_onto(A, B)
+        g_on = gap()
+        check('stack mode (V) lets small items overlap', g_on < 0.5 - 1e-6, g_on)
+        pg.evaluate("TownUX.setStack(false)")
+        pg.keyboard.press('v'); pg.wait_for_timeout(150)
+        check('V key toggles stack mode', pg.evaluate("TownUX.stackOn()") is True)
+        pg.keyboard.press('v'); pg.wait_for_timeout(150)
+        check('V key toggles it back', pg.evaluate("TownUX.stackOn()") is False)
+        # group A+B, picking one picks both, double click picks one
+        pg.evaluate("([a, b]) => VillageAssetEdit.select([a, b])", [A, B]); pg.wait_for_timeout(500)
+        pg.click('#gGroup'); pg.wait_for_timeout(500)
+        grp = pg.evaluate("([a, b]) => { const e = VillageAssetEdit.get().edit; return [e[a]?.grp, e[b]?.grp] }", [A, B])
+        check('grouping stores the same group id on both items', grp[0] and grp[0] == grp[1], grp)
+        pg.evaluate("k => VillageAssetEdit.pick(k)", A); pg.wait_for_timeout(300)
+        check('picking one member selects the whole group', sorted(pg.evaluate("VillageAssetEdit.getSelection().keys")) == sorted([A, B]))
+        pt = pg.evaluate("k => { const p = VillageAssetEdit.itemWorld(k); return __t.screenOf(p.x, p.y) }", A)
+        pg.mouse.dblclick(pt['x'], pt['y']); pg.wait_for_timeout(500)
+        check('double click edits only that part', pg.evaluate("VillageAssetEdit.getSelection().keys") == [A], pg.evaluate("VillageAssetEdit.getSelection().keys"))
+        pg.evaluate("([a, b]) => VillageAssetEdit.select([a, b])", [A, B]); pg.wait_for_timeout(400)
+        pg.click('#gUngroup'); pg.wait_for_timeout(400)
+        check('ungroup removes the group id', pg.evaluate("([a, b]) => { const e = VillageAssetEdit.get().edit; return !e[a]?.grp && !e[b]?.grp }", [A, B]))
+        pg.evaluate("VillageAssetEdit.leave(false)"); pg.wait_for_timeout(200)
+
+        # --- footprints: places can not overlap, snap flush to the neighbour, saved with the layout ---
+        pg.evaluate("TownUX.setMode('object')")
+        pairs_js = """() => { const F = VillageFootprint, R = locations.map(o => ({ id: o.id, r: F.worldRect(o, center(o)) })), bad = [];
+            for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) if (VillageGrid.overlaps(R[i].r, R[j].r)) bad.push(R[i].id + 'x' + R[j].id); return bad }"""
+        check('no two places overlap in the saved layout', pg.evaluate(pairs_js) == [], pg.evaluate(pairs_js))
+        # push the shop straight into the market with the same call the mouse drag uses
+        res = pg.evaluate("""() => { const shop = locations.find(l => l.id === 'shop'), mk = locations.find(l => l.id === 'market'), c = center(mk);
+            const p = project(c.u, c.v), q = TownUX.gridPlace(shop, p.x, p.y + (shop.w + shop.d) * 14);
+            shop.x = q.x; shop.y = q.y; return { hit: VillageFootprint.hits(VillageFootprint.worldRect(shop, center(shop)), locations.filter(l => l !== shop).map(l => ({ id: l.id, rect: VillageFootprint.worldRect(l, center(l)) }))) } }""")
+        check('dropping a place on top of another slides it clear (no overlap)', res['hit'] == [], res)
+        check('still no overlaps anywhere after that drop', pg.evaluate(pairs_js) == [], pg.evaluate(pairs_js))
+        # saved footprint round-trips through snapshot/apply
+        fp = pg.evaluate("""() => { const o = locations.find(l => l.id === 'forge'); TownUX.setFootprint(o, { u0: 3, u1: 2.5, v0: 3, v1: 3.25 }); TownUX.persist();
+            const s = TownUX.snapshot(); return s.places.forge.fp }""")
+        check('footprint is part of the saved layout', fp == {'u0': 3, 'u1': 2.5, 'v0': 3, 'v1': 3.25}, fp)
+        pg.reload(wait_until='networkidle')
+        pg.wait_for_timeout(1200)
+        fp2 = pg.evaluate("VillageFootprint.fpOf(locations.find(l => l.id === 'forge'))")
+        check('footprint survives a reload', fp2 == {'u0': 3, 'u1': 2.5, 'v0': 3, 'v1': 3.25}, fp2)
+        pg.evaluate("TownUX.setFootprint(locations.find(l => l.id === 'forge'), null); TownUX.persist()")
+        check('removing the custom footprint returns to the automatic one', pg.evaluate("VillageFootprint.isCustom(locations.find(l => l.id === 'forge'))") is False)
+
         # --- state persists -------------------------------------------------
         pg.reload(wait_until='networkidle')
         pg.wait_for_timeout(1500)
