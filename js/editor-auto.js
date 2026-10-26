@@ -14,6 +14,21 @@
     for (const c of roadCells.values()) { const d = Math.hypot(c.u - p.u, c.v - p.v); if (d <= max && (!best || d < best.d)) best = { c, d } }
     return best && (best.d <= 1.5 || clearSegment(p, best.c, blockedFree)) ? best : null
   }
+  /* every point where the yellow walk area meets the footprint edge (not only the single gate cell) + the gate itself */
+  function edgePts(o) {
+    const out = [gate(o)], cells = o.court?.cells;
+    if (cells?.length) {
+      const fp = VillageFootprint.fpOf(o), a = center(o);
+      for (const [iu, iv] of cells) if (iv + 1 >= 2 * fp.v1 || iv <= -2 * fp.v0 || iu <= -2 * fp.u0 || iu + 1 >= 2 * fp.u1) out.push(canonical(o, a.u + (iu + .5) / 2, a.v + (iv + .5) / 2))
+    }
+    return out
+  }
+  function paintedNear(p) {
+    const P = window.TownPaint; if (!P) return false;
+    for (let du = -1.5; du <= 1.5; du += .5) for (let dv = -1.5; dv <= 1.5; dv += .5) { const q = project(p.u + du, p.v + dv); if (P.walk(q.x, q.y) > 0) return true }
+    return false
+  }
+  const connected = o => edgePts(o).some(p => roadNear(p) || paintedNear(p));
   function lanePath(from, own) {
     const ownFp = own ? (() => { const f = VillageFootprint.fpOf(own), c = center(own); return (u, v) => { const q = canonical(own, u, v), a = q.u - c.u, b = q.v - c.v; return a > -f.u0 - .5 && a < f.u1 + .5 && b > -f.v0 - .5 && b < f.v1 + .5 } })() : () => false;                    // BFS over whole lattice cells to the nearest road cell
     const key = (u, v) => u + ',' + v, s0 = { u: Math.round(from.u), v: Math.round(from.v) }, prev = new Map([[key(s0.u, s0.v), null]]), q = [s0];
@@ -29,7 +44,7 @@
     return null
   }
   function autoRoads() {
-    const todo = [...places().map(o => ({ name: nameOf(o), p: gate(o), o })), ...exitDoors().map(e => ({ name: e.name, p: e }))].filter(x => !roadNear(x.p));
+    const todo = [...places().map(o => ({ name: nameOf(o), p: gate(o), o })), ...exitDoors().map(e => ({ name: e.name, p: e }))].filter(x => x.o ? !connected(x.o) : !roadNear(x.p));
     if (!todo.length) return ['✔ ทุกทางเข้ามีถนนอยู่ใกล้แล้ว'];
     const log = [];
     UX().checkpoint();
@@ -60,7 +75,7 @@
       }
       const d = door(o), a = findPath({ u: hero.u, v: hero.v }, d);
       if (!a.length) rows.push({ id: o.id, t: '🚪 เดินไปทางเข้า ' + nameOf(o) + ' ไม่ถึง' });
-      if (!roadNear(gate(o))) rows.push({ id: o.id, t: '🛣 ไม่มีถนนใกล้ทางเข้า ' + nameOf(o) + ' (ใช้ ก) เพื่อต่อให้)' })
+      if (!connected(o)) rows.push({ id: o.id, t: '🛣 ไม่มีถนนใกล้ทางเข้า ' + nameOf(o) + ' (ใช้ ก) เพื่อต่อให้)' })
     }
     for (const e of exitDoors()) if (!findPath({ u: hero.u, v: hero.v }, e).length) rows.push({ id: null, t: '🚪 ทางออก ' + e.name + ' เดินไปไม่ถึง' });
     return rows
