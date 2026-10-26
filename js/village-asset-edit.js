@@ -411,6 +411,7 @@
    g = main
   }
  }
+ let refChar = false; // scale reference: a character standing at the entrance while editing a place
  let hoverKey = null,
   hoverOwner = null;
  const litOwner = () => hoverOwner || (typeof hovered !== 'undefined' ? hovered : null);
@@ -781,7 +782,7 @@
 
  function leave(ok = true) {
   if (!place) return;
-  const s = place;
+  const s = place; refChar = false; cv.style.cursor = '';
   place = null;
   drag = null;
   courtDraw = false;
@@ -1218,8 +1219,17 @@
    shake()
   } // empty ground → camera pan as usual
  }, true);
+ /* v91.4: the cursor tells you a side of the blue area can be dragged (diagonal arrows along the way it moves) */
+ function edgeCursor(k, o) {
+  if (!k) return '';
+  const alongU = k[0] === 'u'; // own-axis u edges move along u: screen diagonal ↘↖ (swapped for SE places)
+  return (alongU !== (o.facing === 'SE')) ? 'nwse-resize' : 'nesw-resize'
+ }
+ function setCursor(c) { if (cv.style.cursor !== c) cv.style.cursor = c }
  stageEl.addEventListener('pointermove', e => {
-  if (!editing || drag || testWalk) return;
+  if (!editing || testWalk) { return }
+  if (drag) { if (drag.type === 'fpEdge') setCursor(edgeCursor(drag.k, loc(place.id))); return }
+  { const o = place && loc(place.id), w = world(e); setCursor(o && o.id !== 'square' && !courtDraw ? edgeCursor(fpEdgeAt(o, inv(w.x, w.y)), o) : '') }
   const p = world(e);
   if (place) {
    hoverOwner = null;
@@ -1901,7 +1911,7 @@
   panel.innerHTML = `<div class="head"><h3>${ownerName(id)}<span class="chip">${changed?'แก้แล้ว':'กำลังแก้'}</span></h3><p class="sub" style="margin:0">ที่อื่นถูกล็อกไว้ · ✓ เสร็จ = เก็บทั้งสถานที่ · ยกเลิก = คืนทั้งสถานที่</p>
   <div class="tabs">${tabs.map(([t,l,on])=>`<button data-tab="${t}" class="${place.tab===t?'on':''}" ${on?'':'disabled'}>${l}</button>`).join('')}</div></div>
   <div class="body" id="peBody"></div>
-  <div class="foot"><button class="reset" id="peReset" title="คืนค่าทั้งหมดของสถานที่นี้">⟲</button><button class="ok" id="peOk">✓ เสร็จ <small>Enter</small></button><button class="cancel" id="peCancel">ยกเลิก <small>Esc</small></button></div>`;
+  <div class="foot"><button class="reset" id="peReset" title="คืนค่าทั้งหมดของสถานที่นี้">⟲</button><button class="reset" id="peRef" title="วางตัวละครที่จุดทางเข้า เพื่อเทียบสเกลประตูกับตัวละคร" style="${refChar?'background:#e6c46a;color:#2a2113':''}">👤</button><button class="ok" id="peOk">✓ เสร็จ <small>Enter</small></button><button class="cancel" id="peCancel">ยกเลิก <small>Esc</small></button></div>`;
   panel.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => {
    place.tab = b.dataset.tab;
    if (b.dataset.tab !== 'items') place.keys = [];
@@ -1910,6 +1920,7 @@
   act('#peOk', () => leave(true));
   act('#peCancel', () => leave(false));
   act('#peReset', resetPlace);
+  act('#peRef', () => { refChar = !refChar; render() });
   const body = panel.querySelector('#peBody');
   ({
    building: tabBuilding,
@@ -2310,10 +2321,21 @@
 
  /* ---------- overlay: veil + rings, then handles ---------- */
  const baseOverlay = UX.overlay;
+ function drawRefChar(gg, t) {
+  const o = loc(place.id);
+  if (!o || o.id === 'square') return;
+  const d = UX.entryOf(o), p = project(d.u, d.v), hs = charScale('hero'), tmp = g;
+  g = gg;
+  try {
+   ellipse(p.x, p.y, 16.9 * hs, 7.8 * hs, '#182b2877');
+   (drawChar('hero', gg, p, 'SE', 93.6 * hs) || TownArt.hero(gg, p, 'SE', t, false, 93.6 * hs, 'SE'))
+  } finally { g = tmp }
+ }
  UX.overlay = function(gg, t) {
   baseOverlay(gg, t);
   try {
-   if (editing && !testWalk) drawOverlay(gg)
+   if (editing && !testWalk) drawOverlay(gg);
+   if (editing && !testWalk && place && refChar) drawRefChar(gg, t)
   } finally {
    for (const b of Object.values(bufs)) b.used = false
   }
