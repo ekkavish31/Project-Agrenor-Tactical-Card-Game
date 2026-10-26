@@ -144,10 +144,10 @@ function routeFree(start,end){start=nearestUsing(start,blockedFree,3);end=neares
  const push=n=>{open.push(n);let i=open.length-1;while(i>0){const j=(i-1)>>1;if(open[j].f<=n.f)break;open[i]=open[j];i=j}open[i]=n},pop=()=>{const n=open[0],l=open.pop();if(open.length){let i=0;while(i*2+1<open.length){let j=i*2+1;if(j+1<open.length&&open[j+1].f<open[j].f)j++;if(open[j].f>=l.f)break;open[i]=open[j];i=j}open[i]=l}return n};
  g.set(k(start),0);push({...start,g:0,f:h(start)});let found=null,it=0;
  while(open.length&&it++<60000){const a=pop(),ak=k(a);if(a.g>g.get(ak))continue;if(ak===k(end)){found=a;break}
-  for(const[du,dv]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5],[.5,-.5],[-.5,.5],[-.5,-.5]]){const b={u:a.u+du,v:a.v+dv},bk=k(b);if(blockedFree(b.u,b.v))continue;const m={u:a.u+du/2,v:a.v+dv/2};if(blockedFree(m.u,m.v))continue;const nc=a.g+Math.hypot(du,dv)*(offRoad(m.u,m.v)?1.6:1);if(nc>=(g.get(bk)??Infinity))continue;g.set(bk,nc);prev.set(bk,a);push({...b,g:nc,f:nc+h(b)})}}
+  for(const[du,dv]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5],[.5,-.5],[-.5,.5],[-.5,-.5]]){const b={u:a.u+du,v:a.v+dv},bk=k(b);if(blockedFree(b.u,b.v))continue;const m={u:a.u+du/2,v:a.v+dv/2};if(blockedFree(m.u,m.v))continue;const nc=a.g+Math.hypot(du,dv);if(nc>=(g.get(bk)??Infinity))continue;g.set(bk,nc);prev.set(bk,a);push({...b,g:nc,f:nc+h(b)})}}
  if(!found)return[];const raw=[{u:found.u,v:found.v,g:found.g}];while(k(found)!==k(start)){found=prev.get(k(found));raw.push({u:found.u,v:found.v,g:found.g})}raw.reverse();
  const out=[raw[0]];let i=0;while(i<raw.length-1){let j=raw.length-1;while(j>i+1&&(!clearSegment(raw[i],raw[j],blockedFree)||segCost(raw[i],raw[j])>raw[j].g-raw[i].g+1e-6))j--;out.push(raw[j]);i=j}return out}
-function segCost(a,b){const L=Math.hypot(b.u-a.u,b.v-a.v),n=Math.max(1,Math.ceil(L*2));let c=0;for(let i=0;i<n;i++){const f=(i+.5)/n;c+=L/n*(offRoad(a.u+(b.u-a.u)*f,a.v+(b.v-a.v)*f)?1.6:1)}return c}
+function segCost(a,b){const L=Math.hypot(b.u-a.u,b.v-a.v),n=Math.max(1,Math.ceil(L*2));let c=0;for(let i=0;i<n;i++){const f=(i+.5)/n;c+=L/n}return c}
 function roadAt(u,v){if(!roadPixels)return false;const p=project(u,v),x=Math.round(p.x),y=Math.round(p.y);return x>=0&&x<WORLD_W&&y>=0&&y<WORLD_H&&roadPixels[(y*WORLD_W+x)*4+3]>230}
 function blocked(u,v){if(blockedBase(u,v))return true;const P=window.TownPaint;if(P){const q=project(u,v),w=P.walk(q.x,q.y);if(w<0)return true;if(w>0)return false}return !roadAt(u,v)}
 const key=p=>Math.round(p.u*2)+','+Math.round(p.v*2);
