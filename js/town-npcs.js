@@ -70,23 +70,25 @@ function drawVillager(g,n,p,t,walking,face){const sc=(n.small?.72:1)*(window.Vil
 /* ---------- movement ---------- */
 let npcs=null,last=0,talking=null,hover=null;
 function target(stop){const v=V();if(stop in EXIT_IDX){const e=v.getExits()[EXIT_IDX[stop]];return e?{u:e.u,v:e.v}:null}const o=v.getLocations().find(o=>o.id===stop);return o?v.door(o):null}
-function init(){const v=V();if(!v)return false;npcs=ROSTER.map((n,i)=>{let start;if(n.fixed){const e=v.getExits()[EXIT_IDX[n.home]];start={u:e.u-1.5,v:e.v+1.5};const s=snap(start);if(s)start=s}else start=target(n.home)||target('square');return {...n,u:start.u,v:start.v,path:[],wait:1+i*.6,stop:-1,face:'SE',phase:i*1.7,speed:(n.speed||1)*1.9}});return true}
+function init(){const v=V();if(!v)return false;npcs=ROSTER.map((n,i)=>{let start;if(n.fixed){const e=v.getExits()[EXIT_IDX[n.home]];start={u:e.u-1.5,v:e.v+1.5};const s=snap(start);if(s)start=s}else start=target(n.home)||target('square');return {...n,inside:null,enter:null,alpha:1,u:start.u,v:start.v,path:[],wait:1+i*.6,stop:-1,face:'SE',phase:i*1.7,speed:(n.speed||1)*1.9}});return true}
 function snap(p){const v=V();for(let r=0;r<=6;r+=.5)for(let a=0;a<8;a++){const q={u:p.u+Math.cos(a/8*Math.PI*2)*r,v:p.v+Math.sin(a/8*Math.PI*2)*r};if(!v.blocked(q.u,q.v))return q}return null}
 function update(dt){if(!npcs&&!init())return;const v=V(),h=v.getHero();
- for(const n of npcs){if(n===talking){const du=h.u-n.u,dv=h.v-n.v;n.face=faceOf(du,dv);continue}
-  if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*n.speed;n.face=faceOf(du,dv);if(len<=st){n.u=b.u;n.v=b.v;n.path.shift();if(!n.path.length)n.wait=n.pause?n.pause[0]+Math.random()*(n.pause[1]-n.pause[0]):3+Math.random()*5}else{n.u+=du/len*st;n.v+=dv/len*st}continue}
+ for(const n of npcs){n.alpha+=((n.inside?0:1)-n.alpha)*Math.min(1,dt*5);
+  if(n.inside&&n!==talking){n.path=[];n.wait-=dt;if(n.wait<=0){n.inside=null;n.wait=.6}continue}
+  if(n===talking){const du=h.u-n.u,dv=h.v-n.v;n.face=faceOf(du,dv);continue}
+  if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*n.speed;n.face=faceOf(du,dv);if(len<=st){n.u=b.u;n.v=b.v;n.path.shift();if(!n.path.length&&n.enter){n.inside=n.enter;n.enter=null;n.wait=7+Math.random()*12}else if(!n.path.length)n.wait=n.pause?n.pause[0]+Math.random()*(n.pause[1]-n.pause[0]):3+Math.random()*5}else{n.u+=du/len*st;n.v+=dv/len*st}continue}
   if(n.fixed||!n.stops.length)continue;n.wait-=dt;if(n.wait>0)continue;
   const seq=[...n.stops,n.home];n.stop=(n.stop+1)%seq.length;const tgt=target(seq[n.stop]);if(!tgt){n.wait=4;continue}
   // stand near, not exactly on, the door so villagers do not pile up
-  const off={u:tgt.u+(Math.random()-.5)*2.4,v:tgt.v+(Math.random()-.5)*2.4},goal=v.blocked(off.u,off.v)?tgt:off;
-  n.path=v.findPath({u:n.u,v:n.v},goal);if(!n.path.length)n.wait=5}}
+  const off={u:tgt.u+(Math.random()-.5)*2.4,v:tgt.v+(Math.random()-.5)*2.4},goal=v.blocked(off.u,off.v)?tgt:off,room=seq[n.stop]!=='square'&&!(seq[n.stop] in EXIT_IDX);
+  n.enter=room?seq[n.stop]:null;n.path=v.findPath({u:n.u,v:n.v},room?tgt:goal);if(!n.path.length){n.enter=null;n.wait=5}}}
 function faceOf(du,dv){const x=(du-dv)*28,y=(du+dv)*14;return y>=0?(x>=0?'SE':'SW'):(x>=0?'NE':'NW')}
 function objects(t){const dt=Math.min(.1,(t-last)/1000||0);last=t;if(root.VillageAssetEdit?.frozen?.()){if(!npcs)init()}else update(dt);if(!npcs)return[];const v=V();
- return npcs.map(n=>{const p=v.project(n.u,n.v);return {x:p.x,y:p.y,npc:n,draw:g=>{drawVillager(g,n,p,t,n.path.length>0&&n!==talking,n.face);if(hover===n||talking===n)tag(g,n,p)}}})}
+ return npcs.filter(n=>n.alpha>.02).map(n=>{const p=v.project(n.u,n.v);return {x:p.x,y:p.y,npc:n,draw:g=>{g.save();g.globalAlpha=Math.max(0,Math.min(1,n.alpha));drawVillager(g,n,p,t,n.path.length>0&&n!==talking,n.face);if(hover===n||talking===n)tag(g,n,p);g.restore()}}})}
 function tag(g,n,p){const top=p.y-(n.small?72:100);g.font='bold 15px VillageThai,system-ui';g.textAlign='center';const text=n.name+' · '+n.role,w=g.measureText(text).width+20;g.fillStyle='rgba(32,56,45,.92)';g.fillRect(p.x-w/2,top-24,w,24);g.fillStyle='#fff0c7';g.fillText(text,p.x,top-7)}
 
 /* ---------- picking + dialogue ---------- */
-function at(e){if(!npcs)return null;const w=root.world?.(e);if(!w)return null;const v=V();let best=null,bd=1e9;for(const n of npcs){const p=v.project(n.u,n.v),h=n.small?70:96;if(w.x>p.x-22&&w.x<p.x+22&&w.y>p.y-h&&w.y<p.y+6){const d=Math.abs(w.y-p.y);if(d<bd){bd=d;best=n}}}return best}
+function at(e){if(!npcs)return null;const w=root.world?.(e);if(!w)return null;const v=V();let best=null,bd=1e9;for(const n of npcs){if(n.inside)continue;const p=v.project(n.u,n.v),h=n.small?70:96;if(w.x>p.x-22&&w.x<p.x+22&&w.y>p.y-h&&w.y<p.y+6){const d=Math.abs(w.y-p.y);if(d<bd){bd=d;best=n}}}return best}
 const box=document.createElement('section');box.id='npcTalk';box.hidden=true;box.innerHTML='<canvas width="120" height="140"></canvas><div><b></b><small></small><p></p><footer><button type="button" data-next>▶ ถัดไป</button><button type="button" data-close>ปิด · Esc</button></footer></div>';document.body.appendChild(box);
 const css=document.createElement('style');css.textContent=`#npcTalk{position:fixed;z-index:20;left:50%;bottom:26px;transform:translateX(-50%);width:min(680px,calc(100vw - 32px));display:flex;gap:16px;align-items:stretch;padding:14px 18px;border-radius:14px;background:linear-gradient(#1d2a44f5,#121b2ef5);border:2px solid #d9b46b;box-shadow:0 14px 40px #000b;color:#f5e6c4;animation:npcIn .2s ease-out}#npcTalk[hidden]{display:none}#npcTalk canvas{width:96px;height:112px;flex:none;border-radius:10px;background:radial-gradient(#3a5a44,#1c2c22)}#npcTalk div{flex:1;display:flex;flex-direction:column}#npcTalk b{font-size:18px;color:#ffe8a6}#npcTalk small{color:#c9bb98;font-size:12px}#npcTalk p{margin:8px 0 10px;font-size:16px;line-height:1.65;min-height:3.3em}#npcTalk footer{display:flex;gap:8px;justify-content:flex-end;margin-top:auto}#npcTalk button{padding:6px 14px;border-radius:9px;border:1px solid #a88a58;background:#0d1424;color:#f5e6c4;cursor:pointer}#npcTalk button[data-next]{background:linear-gradient(#f0c560,#c9901f);color:#2a1a05;border-color:#7a4b06;font-weight:700}@keyframes npcIn{from{opacity:0;transform:translate(-50%,10px)}}`;document.head.appendChild(css);
 let lines=[],li=0,typing=null;
@@ -103,5 +105,5 @@ let downOn=null;
 root.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.id!=='world'||V()?.isEditing?.())return;downOn=at(e);if(downOn)e.stopPropagation()},true);
 root.addEventListener('pointerup',e=>{if(!downOn)return;const n=at(e)===downOn?downOn:null;downOn=null;e.stopPropagation();if(n)talk(n)},true);
 root.addEventListener('pointermove',e=>{if(e.target.id!=='world')return;const n=at(e);if(n!==hover){hover=n;if(n)e.target.style.cursor='pointer'}},true);
-root.TownNPC={objects,talk:id=>{const n=npcs?.find(n=>n.id===id);if(n)talk(n)},list:()=>npcs?.map(n=>({id:n.id,u:n.u,v:n.v,walking:n.path.length>0})),roster:ROSTER,getRoutes,setRoutes,routeKey:ROUTE_KEY};
+root.TownNPC={objects,talk:id=>{const n=npcs?.find(n=>n.id===id);if(n)talk(n)},list:()=>npcs?.map(n=>({id:n.id,u:n.u,v:n.v,walking:n.path.length>0,inside:n.inside})),roster:ROSTER,getRoutes,setRoutes,routeKey:ROUTE_KEY};
 })(globalThis);
