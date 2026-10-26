@@ -84,7 +84,7 @@ function update(dt){if(!npcs&&!init())return;const v=V(),h=v.getHero();
   n.enter=room?seq[n.stop]:null;n.path=v.findPath({u:n.u,v:n.v},room?tgt:goal);if(!n.path.length){n.enter=null;n.wait=5}}}
 function faceOf(du,dv){const x=(du-dv)*28,y=(du+dv)*14;return y>=0?(x>=0?'SE':'SW'):(x>=0?'NE':'NW')}
 function objects(t){const dt=Math.min(.1,(t-last)/1000||0);last=t;if(root.VillageAssetEdit?.frozen?.()){if(!npcs)init()}else update(dt);if(!npcs)return[];const v=V();
- return npcs.filter(n=>n.alpha>.02).map(n=>{const p=v.project(n.u,n.v);return {x:p.x,y:p.y,npc:n,draw:g=>{g.save();g.globalAlpha=Math.max(0,Math.min(1,n.alpha));drawVillager(g,n,p,t,n.path.length>0&&n!==talking,n.face);if(hover===n||talking===n)tag(g,n,p);g.restore()}}})}
+ return npcs.filter(n=>n.alpha>.02).map(n=>{const p=v.project(n.u,n.v);return {x:p.x,y:p.y,z:root.VillageAssetEdit?.heroLayer?.(n.u,n.v)||0,npc:n,draw:g=>{g.save();g.globalAlpha=Math.max(0,Math.min(1,n.alpha));drawVillager(g,n,p,t,n.path.length>0&&n!==talking,n.face);if(hover===n||talking===n)tag(g,n,p);g.restore()}}})}
 function tag(g,n,p){const top=p.y-(n.small?72:100);g.font='bold 15px VillageThai,system-ui';g.textAlign='center';const text=n.name+' · '+n.role,w=g.measureText(text).width+20;g.fillStyle='rgba(32,56,45,.92)';g.fillRect(p.x-w/2,top-24,w,24);g.fillStyle='#fff0c7';g.fillText(text,p.x,top-7)}
 
 /* ---------- picking + dialogue ---------- */
