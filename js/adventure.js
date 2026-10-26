@@ -90,7 +90,7 @@ function rollTypes(area){let ids=AD.GRAPH.map(g=>g[0]).filter(k=>!AD.FIXED[k]),p
  let q=ids.find(k=>out[k]==='quest');if(q&&q>'d'){let t=ids.find(k=>k<'d'&&k>'a3'&&out[k]!=='quest');if(t)swap(q,t)}
  for(let k of ['a1','a2','a3'])if(out[k]==='rest'){let t=ids.find(x=>x>'d'&&out[x]==='fight');if(t)swap(k,t)}
  return out}
-function reachableIds(adv){let N=nodesOf(adv),cur=N[adv.at];return cur?cur.next.filter(id=>!adv.cleared[id]||true):[]}
+
 function enter(area){let A=AD.AREAS[area];if(!A)return;s.village.adventure={area,types:rollTypes(area),at:'start',cleared:{start:true},visited:{start:true},quest:null,questDone:false,returnTo:s.village.location,startedAt:s.minutes,loot:{coins:0,xp:0,mats:{},items:[]},kills:0};save();show();
  modal(A.name,`<p>${esc(A.intro)}</p><ul class="adv-help"><li>เลือกจุดถัดไปบนแผนที่ (ทางแยกหลายเส้น) — เดินแต่ละช่วงใช้เวลา ${MOVE_MIN} นาที</li><li>⚔ ฝูงศัตรู · ✦ ศัตรูพิเศษ · ♜ รองหัวหน้า · ♛ หัวหน้าปลายทาง</li><li>◆ สมบัติ · ? เหตุการณ์ · ! เควส · ☾ จุดพัก · ⚖ พ่อค้าเร่ · ❔ จุดลึกลับ</li><li>กระเป๋า: ใช้ของใช้และการ์ดเหตุการณ์ได้ระหว่างทาง</li></ul>`,[{label:'ออกเดินทาง',primary:true,run:()=>closeModal()}])}
 function leave(reason,opts={}){let adv=state();if(!adv)return;let A=AD.AREAS[adv.area],L=adv.loot;s.village.adventure=null;hide();

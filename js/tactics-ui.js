@@ -396,10 +396,7 @@ function headArrow(u,face,edge){// v79: a floating magic crystal (spins, glows, 
  if(motion)for(let i=0;i<3;i++){const a=clock/520+i*2.1,r=s*1.05,x=Math.cos(a)*r,yy=Math.sin(a)*r*.35-s*.2,z=.5+.5*Math.sin(clock/160+i*2),q=s*.16*z;ctx.globalAlpha=.4+.6*z;ctx.fillStyle=pal[0];ctx.beginPath();ctx.moveTo(x,yy-q*2);ctx.lineTo(x+q*.5,yy);ctx.lineTo(x,yy+q*2);ctx.lineTo(x-q*.5,yy);ctx.closePath();ctx.moveTo(x-q*2,yy);ctx.lineTo(x,yy+q*.5);ctx.lineTo(x+q*2,yy);ctx.lineTo(x,yy-q*.5);ctx.closePath();ctx.fill()}
  ctx.restore()}
 function drawPrediction(){let a=state.active;if(a&&C.alive(a)&&!state.outcome&&!deploying)headArrow(a,'#f3e6c4','#cdb98e');if(locked||state.phase!=='player')return;let L0=lockUnit();if(L0)headArrow(L0,'#e8452f','#a8261a');let hu=hover&&C.unitAt(state,hover.x,hover.y);if(hu&&hu.side==='enemy'&&C.alive(hu)&&typeof sel()==='number'&&targetsEnemy()&&hu!==L0)headArrow(hu,'#a7a7a7','#6f6f6f')}
-function drawPredictionOld(){
- ctx.save();roundRect(x,y,w,52,8);ctx.fillStyle=ok?'#1b1424ee':'#2a2a2aee';ctx.fill();ctx.strokeStyle=ok?'#f0c560':'#888';ctx.lineWidth=2;ctx.stroke();
- let bw=w-20,bx=x+10,by=y+28,f0=u.hp/u.maxHp,f1=pv.hpAfter/u.maxHp,f2=pv.hpAfterCrit/u.maxHp;ctx.fillStyle='#3a2a2a';ctx.fillRect(bx,by,bw,7);ctx.fillStyle='#ffd45a88';ctx.fillRect(bx+bw*f2,by,bw*(f1-f2),7);ctx.fillStyle=motion&&Math.floor(clock/300)%2?'#ff7a5a':'#ff5030';ctx.fillRect(bx+bw*f1,by,bw*(f0-f1),7);ctx.fillStyle='#5bd07a';ctx.fillRect(bx,by,bw*f1,7);
- ctx.font='bold 13px sans-serif';ctx.textAlign='left';ctx.fillStyle='#fff3d2';ctx.fillText(ok?'HP '+u.hp+' → '+pv.hpAfter+(pv.hpAfter<=0?' สลบ':'')+'  (คริ '+pv.hpAfterCrit+')':pv.reason,x+10,y+19,w-20);ctx.font='11px sans-serif';ctx.fillStyle='#d9c79b';ctx.fillText((ok?'โดน '+pv.hit+'% · คริ '+pv.crit+'% · '+pv.angle:'')+(pv.notes.length?' · '+pv.notes.join(' · '):'')+(pv.cast?' · ออกผลทันที · ชาร์จหลังร่าย CT −40':''),x+10,y+47,w-20);ctx.restore()}
+
 
 // ---------- player actions ----------
 // v53: walk cards are picked automatically; clicking one pins it (max 2) so the range shrinks to what it allows
@@ -441,7 +438,7 @@ async function actAI(u){
  if(r.blocked)defendFx(atk.target,u);
  say(u.name+' → '+atk.target.name+' '+r.damage+(r.blocked?' (กัน '+r.blocked+')':'')+(r.notes?.length?' · '+r.notes.join(' · '):'')+(r.miss?' · หลบ!':r.critical?' · คริติคอล!':'')+(r.killed?' · สลบ!':''));
  await tween(Math.max(180,duration-impact),()=>{});v.pose='idle';V(state.hero).pose='idle'}
-async function aiSide(side){state.phase=side;stats();for(let u of C.sideOrder(state,side)){if(state.outcome)break;await actAI(u)}}
+
 // v53: facing is chosen once, when ending the turn (walks auto-face along the path); end again to keep the current facing
 async function endTurn(){if(locked||deploying||state.outcome||!ready)return;if(facingEnd&&facingPick){facingPick=null}if(needFacing())return;if(!facingEnd&&C.alive(state.hero)&&!state.hero.casting){facingEnd=true;chooseFacing();say('เลือกทิศหันก่อนจบเทิร์น · คลิกลูกศร หรือกดจบเทิร์นอีกครั้งเพื่อหันตามเดิม');stats();return}facingEnd=false;$('v27Facing')?.remove();facingPick=null;await runQueue(true)}
 // FFT-style: advance the CT queue; AI actors act one by one, stop at the next unit the player controls

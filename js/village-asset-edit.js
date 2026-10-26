@@ -2166,6 +2166,7 @@
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่ (จุดสีทอง) หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น · จุดแดง = ชิ้นที่ซ่อนอยู่</p>
   <div class="row"><button id="iAdd" style="background:#4f7a3c;border-color:#b8d39a">＋ เพิ่มของ…</button>${o?'<button id="iCopy">คัดลอกการแต่งไปที่อื่น…</button>':''}<button id="iReset">คืนของย่อยทั้งหมด</button></div>
   <div class="row"><button id="iAll">เลือกทั้งหมด</button><button id="iLib">📚 คลังที่รวมไว้ (${readLib().length})</button>${readLib().length?'<button id="iLibDel" title="ลบ asset ออกจากคลัง">🗑 ลบจากคลัง</button>':''}${clip()?.recs?.length?`<button id="gPaste">วางที่คัดลอก (${clip().recs.length}) <small>Ctrl+V</small></button>`:''}</div>
+  ${o&&o.id!=='square'?`<b class="sec">🌿 จัดสวน (recipe)</b><div class="row" style="flex-wrap:wrap">${RECIPES.map(r=>`<button data-recipe="${r.id}" title="${r.count} ชิ้น · ${r.pattern}">${r.name}</button>`).join('')}</div><p class="sub">วางเป็นกลุ่มเดียว บนช่องกริดว่างในกรอบ (เลี่ยงตัวอาคาร ช่องทางเดิน และของเดิม) · กดซ้ำได้ ไม่พอใจกด ย้อน</p>`:''}
   <div class="items">${items.map(e=>`<button data-key="${e.key}"><span class="mini"></span><span style="flex:1">${itemName(e,items)}</span><small>${e.hidden?'ซ่อนอยู่':e.key.startsWith('add:')?'เพิ่มเอง':Object.keys(e.ov||{}).length?'แก้แล้ว':''}</small></button>`).join('')||'<p class="sub">ยังไม่มีของในสถานที่นี้ · กด ＋ เพิ่มของ</p>'}</div>`;
   body.querySelectorAll('[data-key]').forEach(b => {
    const E = items.find(x => x.key === b.dataset.key),
@@ -2195,6 +2196,7 @@
    flashStatus('วางของใหม่หน้าสถานที่แล้ว · ลากไปวางตำแหน่งที่ต้องการ')
   }));
   act('#iCopy', () => openCopy(place.id));
+  body.querySelectorAll('[data-recipe]').forEach(b => b.onclick = () => plantRecipe(RECIPES.find(r => r.id === b.dataset.recipe)));
   act('#iLib', openLib);
   act('#iLibDel', () => {
    const lib = readLib(), n = window.prompt('ลบอันไหน? พิมพ์เลข\n' + lib.map((x, i) => (i + 1) + '. ' + x.name).join('\n'));
@@ -2327,6 +2329,50 @@
   gg.restore()
  }
 
+ /* ---------- v90 planting recipes: grouped, seeded-random placement on free grid cells inside the place's footprint ---------- */
+ const RECIPES = [
+  { id: 'bush-scatter', name: 'พุ่มไม้กระจาย', pattern: 'scatter', count: 8, pieces: [{ kind: 'bush', w: 1 }], scale: [.85, 1.1] },
+  { id: 'meadow', name: 'ทุ่งดอกไม้', pattern: 'cluster', count: 14, pieces: [{ kind: 'flowers:1', w: 1 }, { kind: 'flowers:2', w: 1 }, { kind: 'flowers:3', w: 1 }], scale: [.85, 1.2] },
+  { id: 'garden-mix', name: 'สวนผสม', pattern: 'cluster', count: 12, pieces: [{ kind: 'bush', w: 2 }, { kind: 'flowers:1', w: 1 }, { kind: 'flowers:2', w: 1 }], scale: [.85, 1.15] },
+  { id: 'edge-hedge', name: 'แนวพุ่มริมรั้ว', pattern: 'edge', count: 14, pieces: [{ kind: 'bush', w: 1 }], scale: [.9, 1.05] }
+ ];
+ function plantRecipe(R) {
+  const o = place && loc(place.id), G = window.VillageGrid, F = window.VillageFootprint, b = o && baseOf(o.id);
+  if (!R || !o || !G || !F || !b) return;
+  const fp = F.fpOf(o), a = center(o), mode = modeNow(), step = G.stepCells(mode), cells = o.court?.cells, gate = estate(o).gate ?? 2.8;
+  let seed = (Date.now() ^ 0x9e3779b9) >>> 0;
+  const rnd = () => { seed = (seed + 0x6D2B79F5) >>> 0; let t = seed; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296 };
+  const sib = siblingRects(o.id, []).map(x => x.rect), cand = [];
+  for (let lu = -fp.u0 + step / 2; lu < fp.u1; lu += step) for (let lv = -fp.v0 + step / 2; lv < fp.v1; lv += step) {
+   if (Math.abs(lu) < o.w + .6 && lv > -o.d - .6 && lv < o.d + .6) continue; // building body
+   if (cells ? cells.some(c => lu >= c[0] / 2 && lu < c[0] / 2 + .5 && lv >= c[1] / 2 && lv < c[1] / 2 + .5) : (Math.abs(lu) < gate + .3 && lv > 0)) continue; // walking cells
+   const edge = Math.min(lu + fp.u0, fp.u1 - lu, lv + fp.v0, fp.v1 - lv);
+   if (R.pattern === 'edge' && (edge > 1.2 || (Math.abs(lu) < gate + .3 && lv > fp.v1 - 1.6))) continue;
+   const w = canonical(o, a.u + lu, a.v + lv), rect = G.rectFromCells(w.u - .25, w.v - .25, .5, .5);
+   if (sib.some(r => G.overlaps(rect, r))) continue;
+   cand.push({ lu, lv, w })
+  }
+  if (!cand.length) { flashStatus('ไม่มีช่องว่างพอในกรอบ'); return }
+  const pick = [], centres = Array.from({ length: 3 }, () => cand[Math.floor(rnd() * cand.length)]);
+  const pool = cand.slice();
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]] }
+  if (R.pattern === 'cluster') pool.sort((x, y) => Math.min(...centres.map(c => Math.hypot(x.lu - c.lu, x.lv - c.lv))) - Math.min(...centres.map(c => Math.hypot(y.lu - c.lu, y.lv - c.lv))) + (rnd() - .5) * 2.5);
+  for (const c of pool) { if (pick.length >= R.count) break; pick.push(c) }
+  const tw = R.pieces.reduce((n, p) => n + p.w, 0), gid = newGid();
+  UX.checkpoint();
+  place.keys = pick.map(c => {
+   let r = rnd() * tw, kind = R.pieces[0].kind;
+   for (const p of R.pieces) { if ((r -= p.w) <= 0) { kind = p.kind; break } }
+   const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), off = G.worldToOffset({ u: b.u, v: b.v }, !!b.mirror, c.w.u, c.w.v);
+   data.added.push({ id: nid, owner: o.id, du: +off.du.toFixed(4), dv: +off.dv.toFixed(4), kind });
+   data.edit[nid] = { s: +(R.scale[0] + rnd() * (R.scale[1] - R.scale[0])).toFixed(2), f: rnd() < .5, grp: gid };
+   clean(nid);
+   return nid
+  });
+  UX.persist();
+  requestAnimationFrame(() => requestAnimationFrame(render));
+  flashStatus('จัดสวน “' + R.name + '” ' + pick.length + ' ชิ้น · เป็นกลุ่มเดียว')
+ }
  /* walk cells: half-cell units from the place centre, in the place's own axes (see courtCellPath in village-town.html) */
  function cellAt(o, w) {
   const a = center(o), q = canonical(o, w.u, w.v), fp = window.VillageFootprint.fpOf(o), du = q.u - a.u, dv = q.v - a.v;

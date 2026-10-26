@@ -249,7 +249,7 @@ function talk(name,face,text,next){let el=document.createElement('div');el.class
 function migrateDecks(){if(typeof s==='undefined'||!s.village||s.village.v38Cards)return;let add=['backstab','dive','formation','counter','evade','ambush'],fix=d=>{if(!d?.combat)return;let free=Math.max(0,(d.combat.attack||0)-4),n=0;for(let id of add){if(n>=free)break;if(!d.combat[id]){d.combat[id]=1;n++}}d.combat.attack-=n};fix(s.village.tacticDecks);for(let d of Object.values(s.village.unitDecks||{}))fix(d);s.village.v38Cards=true;if(typeof save==='function')save()}
 
 // ---------- settings toggle ----------
-function settingsToggle(){let panel=$('battleSettingsV34');if(!panel||$('v38ConfirmToggle'))return;let l=document.createElement('label');l.className='v38-toggle';l.innerHTML='<input type="checkbox" id="v38ConfirmToggle"> ยืนยันก่อนโจมตี (หน้าต่าง "ดำเนินการ?")';panel.appendChild(l);let c=l.querySelector('input');c.checked=confirmOn();c.onchange=()=>store.set('project-a-confirm-attack',c.checked)}
+
 
 function tick(){requestAnimationFrame(tick);if(!layer())return;speedButton();castBar();predictBox();tileInfo();let st=L()?.getState?.();if(!full()&&boost){boost=false}if(full()!==tick._full){tick._full=full();applySpeed()}
  let icons=document.querySelector('.v36-icons'),feet=document.querySelector('.v36-feet');if(L()?.isDeploying?.()){if(icons)icons.hidden=true;if(feet)feet.hidden=true}}

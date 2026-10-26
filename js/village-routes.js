@@ -37,7 +37,7 @@ function runMapTo(target,onArrive){let avatar=$('mapAvatar'),img=$('mapRunner');
   if(!run.path.length){mapRun=null;return run.done(true)}requestAnimationFrame(step)};
  requestAnimationFrame(step);return run.promise}
 function retargetMapRun(target){if(!mapRun)return false;let avatar=$('mapAvatar'),cur={x:parseFloat(avatar.style.left),y:parseFloat(avatar.style.top)};mapRun.target=target;mapRun.path=villageRoutePath(cur,target).slice(1);return true}
-async function runMapPath(path){let to=path.at(-1);await runMapTo(to)}
+
 function faceFront(){let img=$('mapRunner');if(!img)return;img.style.transform='scaleX(1)';img.src=HERO_ANIMATIONS.clips['daily.idle'].frames[0].src}
 
 let mapDestination=null;

@@ -161,7 +161,7 @@ function shade(hex,f){const n=parseInt(hex.slice(1),16),r=n>>16,gg=n>>8&255,b=n&
 function order(c){const[vw,vh]=vdims(c),out=[];for(let s=0;s<vw+vh;s++)for(let vx=0;vx<vw;vx++){const vy=s-vx;if(vy<0||vy>=vh)continue;let x,y;for(let yy=0;yy<c.h;yy++)for(let xx=0;xx<c.w;xx++){const r=rv(xx,yy,c);if(r[0]===vx&&r[1]===vy){x=xx;y=yy}}out.push({x,y,vx,vy})}return out}
 let hover=null,drawList=[];
 const inBrush=(o,h)=>{if(!h)return false;const lo=Math.floor((brush-1)/2),hi=brush-1-lo;return o.x>=h.x-lo&&o.x<=h.x+hi&&o.y>=h.y-lo&&o.y<=h.y+hi};
- function drawBrushGuide(){if(!brushGuide||!hover||!C())return;const lo=Math.floor((brush-1)/2),hi=brush-1-lo,x0=hover.x-lo,y0=hover.y-lo,x1=hover.x+hi+1,y1=hover.y+hi+1;const pts=[proj(x0,y0,0),proj(x1,y0,0),proj(x1,y1,0),proj(x0,y1,0)];g.save();g.setLineDash([7,4]);g.lineWidth=2;g.strokeStyle='#fff2a8';g.shadowColor='#14201b';g.shadowBlur=4;g.beginPath();pts.forEach((p,i)=>g[i?'lineTo':'moveTo'](p.x,p.y));g.closePath();g.stroke();g.restore()}
+ 
 function brushCells(o){const c=C(),out=[];for(let y=0;y<c.h;y++)for(let x=0;x<c.w;x++)if(inBrush({x,y},o))out.push({x,y});return out}
 function draw(){const c=C();g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.fillStyle='#14201b';g.fillRect(0,0,W,H);if(!c)return;const[vw,vh]=vdims(c),cx=(W-360)/2;
  origin={x:cx+pan.x-(vw-vh)*TW/4*zoom,y:H/2+pan.y-(vw+vh)*TH/4*zoom+20};drawList=[];
