@@ -81,10 +81,61 @@
   }
   function findOverlaps(rect, others) { return others.filter(o => overlaps(rect, o)); }
 
+  /* Snap a world-pixel point (same space as project()) to the nearest lattice point. */
+  function snapPoint(x, y, mode = DEFAULT_MODE) {
+    const c = unproject(x, y), U = snapCell(c.u, mode), V = snapCell(c.v, mode), p = project(U, V);
+    return { x: p.x, y: p.y, u: U, v: V };
+  }
+
+  /* One arrow-key step in world cells. ax/ay are screen directions (-1,0,1): right = +u -v, down = +u +v,
+     so the item moves along the screen axes and stays on the lattice. mult = number of grid steps. */
+  function arrowStep(ax, ay, mode = DEFAULT_MODE, mult = 1) {
+    const s = stepCells(mode) * mult;
+    return { du: (ax + ay) * s, dv: (ay - ax) * s };
+  }
+
+  /* Lattice lines that cover a world-pixel rectangle {x0,y0,x1,y1}. level: 0 = whole cell, 1 = half cell, 2 = quarter. */
+  function latticeSegments(rect, mode = DEFAULT_MODE) {
+    const s = stepCells(mode);
+    const cs = [unproject(rect.x0, rect.y0), unproject(rect.x1, rect.y0), unproject(rect.x0, rect.y1), unproject(rect.x1, rect.y1)];
+    const umin = Math.min(...cs.map(c => c.u)), umax = Math.max(...cs.map(c => c.u));
+    const vmin = Math.min(...cs.map(c => c.v)), vmax = Math.max(...cs.map(c => c.v));
+    const level = t => (Math.abs(t - Math.round(t)) < 1e-9 ? 0 : Math.abs(t * 2 - Math.round(t * 2)) < 1e-9 ? 1 : 2);
+    const out = [];
+    for (let i = Math.ceil(umin / s); i <= Math.floor(umax / s); i++) {
+      const u = i * s, a = project(u, vmin), b = project(u, vmax);
+      out.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y, level: level(u) });
+    }
+    for (let i = Math.ceil(vmin / s); i <= Math.floor(vmax / s); i++) {
+      const v = i * s, a = project(umin, v), b = project(umax, v);
+      out.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y, level: level(v) });
+    }
+    return out;
+  }
+
+  /* Draw the lattice on a canvas context that already has the world transform. z = current zoom (keeps lines 1 screen px). */
+  function drawLattice(g, rect, mode = DEFAULT_MODE, z = 1) {
+    const styles = [['rgba(255,228,140,.62)', 1.6], ['rgba(255,228,140,.34)', 1], ['rgba(130,205,255,.30)', 1]];
+    const segs = latticeSegments(rect, mode);
+    g.save();
+    g.setLineDash([]);
+    g.lineCap = 'butt';
+    for (let lv = 2; lv >= 0; lv--) {
+      g.strokeStyle = styles[lv][0];
+      g.lineWidth = styles[lv][1] / z;
+      g.beginPath();
+      for (const q of segs) if (q.level === lv) { g.moveTo(q.x1, q.y1); g.lineTo(q.x2, q.y2); }
+      g.stroke();
+    }
+    g.restore();
+    return segs.length;
+  }
+
   const api = {
     MODES: Object.keys(MODES), DEFAULT_MODE, QUARTERS, ORIGIN,
-    stepCells, snapCell, project, unproject,
+    stepCells, snapCell, snapPoint, arrowStep, project, unproject,
     offsetToWorld, worldToOffset, snapOffset, planResnap,
+    latticeSegments, drawLattice,
     rectFromCells, overlaps, findOverlaps
   };
   root.VillageGrid = api;

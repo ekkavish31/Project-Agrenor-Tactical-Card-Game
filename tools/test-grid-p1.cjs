@@ -130,4 +130,43 @@ test('real data: every road point in the saved village layout already sits on th
   }
 });
 
+test('snapPoint lands on the lattice in world pixels and agrees with snapCell', () => {
+  for (const mode of ['2x2', '4x4']) {
+    for (let i = 0; i < 500; i++) {
+      const x = rr(0, 4480), y = rr(0, 2520), q = G.snapPoint(x, y, mode), c = G.unproject(q.x, q.y);
+      near(c.u, G.snapCell(c.u, mode), 1e-7); near(c.v, G.snapCell(c.v, mode), 1e-7);
+      const again = G.snapPoint(q.x, q.y, mode); near(again.x, q.x, 1e-6); near(again.y, q.y, 1e-6);
+    }
+  }
+});
+
+test('arrowStep moves along the screen axes and keeps points on the lattice', () => {
+  const s = G.stepCells('2x2');
+  const r = G.arrowStep(1, 0, '2x2'), d = G.arrowStep(0, 1, '2x2'), l = G.arrowStep(-1, 0, '2x2'), u = G.arrowStep(0, -1, '2x2');
+  near(r.du, s); near(r.dv, -s); near(d.du, s); near(d.dv, s); near(l.du, -s); near(l.dv, s); near(u.du, -s); near(u.dv, -s);
+  const p0 = G.project(3, 2), p1 = G.project(3 + r.du, 2 + r.dv), p2 = G.project(3 + d.du, 2 + d.dv);
+  near(p1.y - p0.y, 0); near(p1.x - p0.x, 28);   // right: pure horizontal, 28px for 2x2
+  near(p2.x - p0.x, 0); near(p2.y - p0.y, 14);   // down: pure vertical, 14px for 2x2
+  const q = G.arrowStep(1, 0, '4x4', 4); near(q.du, 1); near(q.dv, -1);
+});
+
+test('latticeSegments covers the rectangle with lines of 3 levels and drawLattice uses them', () => {
+  const rect = { x0: 2000, y0: 1000, x1: 2600, y1: 1400 };
+  for (const mode of ['2x2', '4x4']) {
+    const segs = G.latticeSegments(rect, mode);
+    assert(segs.length > 20);
+    for (const q of segs) {
+      const a = G.unproject(q.x1, q.y1), b = G.unproject(q.x2, q.y2);
+      assert(Math.abs(a.u - b.u) < 1e-7 || Math.abs(a.v - b.v) < 1e-7, 'each line has a constant u or a constant v');
+    }
+    const lv = new Set(segs.map(q => q.level));
+    assert(lv.has(0) && lv.has(1));
+    assert.equal(lv.has(2), mode === '4x4', 'quarter lines only exist in 4x4');
+  }
+  const calls = []; const g = new Proxy({}, { get: (_, k) => (...a) => { calls.push(k); }, set: () => true });
+  const n = G.drawLattice(g, rect, '2x2', 1);
+  assert.equal(n, G.latticeSegments(rect, '2x2').length);
+  assert(calls.includes('stroke') && calls.includes('save') && calls.includes('restore'));
+});
+
 console.log(`grid phase 1: ${count} tests passed`);

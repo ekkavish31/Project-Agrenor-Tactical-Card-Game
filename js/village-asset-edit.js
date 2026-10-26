@@ -848,9 +848,31 @@
      du: 0,
      dv: 0
     };
-   ov.du = +(o.du + c.du).toFixed(3);
-   ov.dv = +(o.dv + c.dv).toFixed(3)
+   const b = baseOf(E.owner), q = gridSnapItem(E, b, o.du + c.du, o.dv + c.dv);
+   ov.du = q.du;
+   ov.dv = q.dv
   }
+ }
+ /* grid: snap an item's final position (owner-local du,dv) onto the village lattice. Screen/world px are mirror-agnostic. */
+  function gridSnapItem(E, b, du, dv) {
+  const G = window.VillageGrid, mode = window.TownUX?.gridMode?.() || (G && G.DEFAULT_MODE);
+  if (!G || !b) return { du: +du.toFixed(4), dv: +dv.toFixed(4) };
+  const s = screenDelta(b, du, dv), q = G.snapPoint(E.ax + s.x, E.ay + s.y, mode), r = canonDelta(b, q.x - E.ax, q.y - E.ay);
+  return { du: +r.du.toFixed(4), dv: +r.dv.toFixed(4) }
+ }
+ /* arrow keys / buttons: one grid step (Shift = 4 steps), along the screen axes */
+ function nudgeGrid(ax, ay, mult) {
+  if (!place?.keys.length) return;
+  const G = window.VillageGrid, mode = window.TownUX?.gridMode?.() || G.DEFAULT_MODE, st = G.stepCells(mode) * mult;
+  UX.checkpoint();
+  for (const k of place.keys) {
+   const E = frame.find(e => e.key === k), b = E && baseOf(E.owner);
+   if (!E || !b) continue;
+   const cur = G.snapPoint(E.x, E.y, mode), q = G.snapPoint(cur.x + ax * 56 * st, cur.y + ay * 28 * st, mode), r = canonDelta(b, q.x - E.ax, q.y - E.ay), ov = ovOf(k);
+   ov.du = +r.du.toFixed(4);
+   ov.dv = +r.dv.toFixed(4)
+  }
+  UX.persist()
  }
  const origOf = keys => Object.fromEntries(keys.map(k => [k, {
   du: data.edit[k]?.du || 0,
@@ -908,7 +930,8 @@
   if (!baseOf(owner)) return ids;
   for (const r of recs) {
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-   data.added.push({ id: nid, owner, du: +(r.du + off).toFixed(3), dv: +(r.dv + off).toFixed(3), kind: r.kind });
+   const G = window.VillageGrid, bs = baseOf(owner), sn = G ? G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, window.TownUX?.gridMode?.() || G.DEFAULT_MODE) : { du: r.du + off, dv: r.dv + off };
+   data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
    data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer };
    clean(nid);
    ids.push(nid)
@@ -1283,8 +1306,8 @@
   } [e.key];
   if (!k) return;
   e.preventDefault();
-  const n = e.shiftKey ? 10 : 2;
-  nudge(k[0] * n, k[1] * n)
+  if (place.keys.length) nudgeGrid(k[0], k[1], e.shiftKey ? 4 : 1);
+  else nudge(k[0] * (e.shiftKey ? 10 : 2), k[1] * (e.shiftKey ? 10 : 2))
  });
 
  const UPLOAD_KEY='project-a-uploaded-decor-v1';
@@ -1679,7 +1702,7 @@
   all: pct,
   npc: pct
  };
- const nudgeHtml = `<div class="row" style="align-items:center"><span>ขยับละเอียด</span><div class="nudge"><span></span><button data-n="0,-2">↑</button><span></span><button data-n="-2,0">←</button><button data-n="0,2">↓</button><button data-n="2,0">→</button></div><small class="sub" style="margin:0">หรือลากบนแผนที่ · ลูกศร (Shift เร็ว)</small></div>`;
+ const nudgeHtml = `<div class="row" style="align-items:center"><span>ขยับ 1 ช่องกริด</span><div class="nudge"><span></span><button data-n="0,-2">↑</button><span></span><button data-n="-2,0">←</button><button data-n="0,2">↓</button><button data-n="2,0">→</button></div><small class="sub" style="margin:0">ลากบนแผนที่ก็เข้ากริด · ลูกศร = 1 ช่อง (Shift ×4) · Q สลับ 2×2/4×4</small></div>`;
  let sliding = false;
  // a slider gesture = one undo step; the value is written live, saved when released
  function bindSliders(write, done) {
@@ -1884,7 +1907,8 @@
   })[place.tab](body, o, items);
   panel.querySelectorAll('[data-n]').forEach(b => b.onclick = () => {
    const [x, y] = b.dataset.n.split(',').map(Number);
-   nudge(x, y)
+   if (place.keys.length) nudgeGrid(Math.sign(x), Math.sign(y), 1);
+   else nudge(x, y)
   })
  }
 
@@ -2078,6 +2102,7 @@
     dv: +base.front.toFixed(2),
     kind: k
    });
+   (() => { const a = data.added[data.added.length - 1], G = window.VillageGrid; if (!G) return; const r = G.snapOffset({ u: base.u, v: base.v }, !!base.mirror, a.du, a.dv, window.TownUX?.gridMode?.() || G.DEFAULT_MODE); a.du = +r.du.toFixed(4); a.dv = +r.dv.toFixed(4) })();
    UX.persist();
    place.keys = [nid];
    requestAnimationFrame(() => requestAnimationFrame(render));
@@ -2474,6 +2499,7 @@
   enter,
   leave: () => leave(true),
   placeId: () => place?.id || null,
+  itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner } : null },
   frameSig: () => JSON.stringify(data.frames),
   get,
   set,
