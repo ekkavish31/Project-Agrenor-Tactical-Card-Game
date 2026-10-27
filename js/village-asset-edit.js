@@ -851,6 +851,22 @@
   render()
  }
 
+ // v91.21: a place was deleted (TownUX.removePlace) → close its editor and drop every edit/added item/frame that belonged to it
+ function dropPlace(id) {
+  if (place?.id === id) {
+   place = null; drag = null; refChar = false; courtLayer = false; courtDraw = false; courtRect = false; cv.style.cursor = '';
+   hoverKey = hoverOwner = null;
+   UX.setMode('object')
+  }
+  const mine = k => k === id || k.startsWith(id + ':') || data.added.some(a => a.id === k && a.owner === id);
+  for (const k of Object.keys(data.edit))
+   if (mine(k)) delete data.edit[k];
+  data.added = data.added.filter(a => a.owner !== id);
+  delete data.buildings[id];
+  delete data.frames[id];
+  render()
+ }
+
  function moveKeys(keys, orig, dx, dy) {
   for (const k of keys) {
    const E = frame.find(e => e.key === k);
@@ -1993,7 +2009,12 @@
   <div style="color:#ffd84d;font-weight:800;margin:10px 0 4px">ยืดเฉียง · ตรวจกรอบภาพ</div>
   <label class="chk"><input type="checkbox" id="bBounds" ${(t.bounds??true)?'checked':''}> แสดงกรอบประของภาพขณะยืด</label>
   <p class="sub">กรอบเหลือง = ขอบเขตภาพหลังยืด · ปิดได้เมื่อต้องการดูภาพจริง</p>
-  <div class="row"><button id="bReset">คืนค่าอาคารนี้</button>${isHouse(o)?'<button id="bAll">ใช้ขนาด/มุมนี้กับบ้านทุกหลัง</button>':''}</div>`;
+  <div class="row"><button id="bReset">คืนค่าอาคารนี้</button>${isHouse(o)?'<button id="bAll">ใช้ขนาด/มุมนี้กับบ้านทุกหลัง</button>':''}</div>
+  ${o.custom?'<div class="row"><button id="bDelPlace" style="color:#ff9d8f;border-color:#ff9d8f">🗑 ลบสถานที่นี้</button></div><p class="sub">ลบได้เฉพาะสถานที่ที่เพิ่มเอง · ลบแล้วย้อนกลับไม่ได้</p>':''}`;
+  act('#bDelPlace', () => {
+   if (!window.confirm('ลบสถานที่ “' + o.name + '” ถาวร?\n(ลบอาคาร ของย่อยทั้งหมดในที่นี้ และเอาออกจากเส้นทาง NPC · ย้อนกลับไม่ได้)')) return;
+   UX.removePlace(o.id)
+  });
   const th = body.querySelector('#bThumb');
   if (th) {
    const c = cur?.thumb?.();
@@ -2650,6 +2671,7 @@
   pick: key => selectItem(key),
   itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner, hidden: E.hidden } : null },
   frameSig: () => JSON.stringify(data.frames),
+  dropPlace,
   assetReady,
   heroLayer: (u, v) => {
    for (const o of locations) {

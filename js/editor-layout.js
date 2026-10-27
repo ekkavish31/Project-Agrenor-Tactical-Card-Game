@@ -18,11 +18,11 @@
     const pick = (root, sel) => root ? [...root.querySelectorAll(sel)] : [];
     const modes = pick(tools, '[data-mode]'), ground = pick(tools, 'button').find(b => /วาดพื้น/.test(b.textContent)),
       undo = q('[data-act=undo]', tools), redo = q('[data-act=redo]', tools), test = q('[data-act=test]', tools), push = q('[data-act=push]', tools), gh = q('.gh', tools),
-      time = pick(extra, '[data-time]'), npc = q('#npcRoutesBtn'), add = q('#addPlaceBtn'), gshow = q('#gridShowBtn'), gmode = q('#gridModeBtn'), stack = q('#stackBtn');
+      time = pick(extra, '[data-time]'), npc = q('#npcRoutesBtn'), add = q('#addPlaceBtn'), delp = q('#delPlaceBtn'), gshow = q('#gridShowBtn'), gmode = q('#gridModeBtn'), stack = q('#stackBtn');
     const groups = [
       ['เครื่องมือ', [...modes, ground]],
       ['กริด', [gshow, gmode, stack]],
-      ['ฉาก', [...time, npc, add]],
+      ['ฉาก', [...time, npc, add, delp]],
       ['แก้ไข', [undo, redo]],
       ['ทดสอบ & ส่ง', [test, push, gh]]
     ];
