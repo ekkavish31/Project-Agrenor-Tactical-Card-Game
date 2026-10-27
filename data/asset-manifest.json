@@ -53025,6 +53025,40 @@
     "group": "characters"
    },
    "artRevision": "mvkgz7yh-hdcx"
+  },
+  {
+   "id": "fence-picket-long",
+   "file": "assets/objects/fence-picket-long.webp",
+   "category": "tactics-props",
+   "status": "final",
+   "size": [
+    1362,
+    905
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: fence-picket-long",
+   "prompt": "",
+   "pivot": [
+    0.5025771392921013,
+    0.5919383333299748
+   ],
+   "artRevision": "20261027-101308",
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.5025771392921013,
+     0.5919383333299748
+    ],
+    "rotation": -1,
+    "isoAxisScale": [
+     1,
+     1
+    ],
+    "flipX": false
+   }
   }
  ],
  "studioWalks": {
