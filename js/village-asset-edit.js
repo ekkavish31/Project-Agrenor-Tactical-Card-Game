@@ -1922,7 +1922,16 @@
   return same.length > 1 ? b + ' ' + (same.indexOf(E) + 1) : b
  }
 
+ /* v91.57: re-rendering the panel (any click) must not throw the scroll position back to the top: keep it while the same view (place + tab + list/detail) is shown */
+ let scrollKey = null;
+ let lockRatio = false; try { lockRatio = !!localStorage.getItem('project-a-lock-ratio') } catch (e) {}
  function render() {
+  const b0 = panel.querySelector('.body'), key = place ? 'p:' + place.id + ':' + place.tab + ':' + (place.keys?.length ? 1 : 0) : 'm:' + UX.getMode(), top = b0 && scrollKey === key ? b0.scrollTop : 0;
+  renderInner();
+  scrollKey = key;
+  if (top) { const b1 = panel.querySelector('.body'); if (b1) b1.scrollTop = top }
+ }
+ function renderInner() {
   panel.hidden = !editing || testWalk;
   if (panel.hidden) return;
   if (place) return renderPlace();
@@ -2126,7 +2135,7 @@
   ${refChar?`<div class="row"><button id="bRefSolid">${refSolid?'แสดงเป็นเงา':'แสดงตัวจริง'}</button><button id="bRefHome">กลับไปจุดทางเข้า</button></div>`:''}`:''}
   ${o.id!=='square'&&!isHouse(o)?`<b class="sec">✏️ แก้ไขภาพ (เฉพาะแมพนี้)</b>
   ${slider('sx','ความกว้าง',t.sx??1,.3,2.5,.01,FMT.sx)}${slider('sy','ความสูง',t.sy??1,.3,2.5,.01,FMT.sy)}${slider('lx','เอียงเส้นตั้ง (ล้มซ้าย/ขวา)',t.lx||0,-.6,.6,.005,FMT.kx)}
-  <div class="row"><button id="bSq" title="กว้าง = สูง = ค่าเฉลี่ย">ล็อกสัดส่วน 1:1</button><button id="bRatio" title="ทำให้ภาพกลับสัดส่วนจริงของไฟล์">สัดส่วนเดิม 100%</button></div>
+  <div class="row"><button id="bLock" title="เปิดแล้วเลื่อนแกนไหนก็ได้ อีกแกนจะขยับตามสัดส่วนเดิมพร้อมกัน" style="${lockRatio?'background:#e6c46a;color:#2a2113;font-weight:800':''}">${lockRatio?'🔒':'🔓'} ล็อกสัดส่วน (ปรับสองแกนพร้อมกัน)</button><button id="bSq" title="ทำให้ กว้าง = สูง (ค่าเฉลี่ย) ครั้งเดียว">ทำเป็น 1:1</button><button id="bRatio" title="ทำให้ภาพกลับสัดส่วนจริงของไฟล์">สัดส่วนเดิม 100%</button></div>
   <p class="sub">Base Slope ด้านบน = ปรับความลาดของฐาน · แก้ที่นี่มีผลกับแมพนี้เท่านั้น จนกว่าจะกดปุ่มล่าง</p>
   <div class="row"><button id="bBake" style="background:#e6c46a;color:#2a2113;font-weight:800" ${(t.sx!=null||t.sy!=null||t.kx||t.lx)?'':'disabled'}>⬆ ส่งกลับไปอัพเดทภาพต้นฉบับ</button></div>
   <p class="sub">อบการยืด/เอียงลงในไฟล์ภาพ (${BUILDINGS[t.art||o.id]||'?'}) แล้ว push ทับ · ทุกที่ที่ใช้ภาพนี้จะเปลี่ยนตาม</p>`:''}
@@ -2177,6 +2186,7 @@
   { const r = body.querySelector('#bRef'); if (r) r.onchange = () => { refChar = r.checked; render() } }
   act('#bRefSolid', () => { refSolid = !refSolid; render() });
   act('#bRefHome', () => { refPos = null; render() });
+  act('#bLock', () => { lockRatio = !lockRatio; try { localStorage.setItem('project-a-lock-ratio', lockRatio ? '1' : '') } catch (e) {} render() });
   act('#bSq', once(() => { const b = data.buildings[o.id] || (data.buildings[o.id] = {}); const m = ((b.sx ?? 1) + (b.sy ?? 1)) / 2; b.sx = m; b.sy = m }));
   act('#bRatio', once(() => { const b = data.buildings[o.id]; if (b) { delete b.sx; delete b.sy; delete b.kx; delete b.lx; if (!Object.keys(b).length) delete data.buildings[o.id] } }));
   act('#bBake', () => bakeBuilding(o));
@@ -2210,6 +2220,12 @@
   };
   bindSliders((k, v) => {
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
+   if (lockRatio && (k === 'sx' || k === 'sy')) { // v91.57: both axes move together, keeping their ratio
+    const q = k === 'sx' ? 'sy' : 'sx', f = (b[k] ?? 1) ? v / (b[k] ?? 1) : 1, nq = Math.max(.3, Math.min(2.5, (b[q] ?? 1) * f));
+    b[q] = nq;
+    const el = panel.querySelector('input[data-k="' + q + '"]'); if (el) { el.value = nq; if (el.nextElementSibling) el.nextElementSibling.textContent = FMT[q](nq) }
+    if (Math.abs(nq - 1) < 1e-9) delete b[q]
+   }
    b[k] = v;
    if (Math.abs(v - (k === 'kx' || k === 'lx' ? 0 : 1)) < 1e-9) delete b[k];
   })
@@ -2538,6 +2554,10 @@
  function tabEntry(body, o) {
   body.innerHTML = `<p class="sub">ลาก <b style="color:#9ff3f5">หมุดฟ้า</b> บนแผนที่ไปวางที่ประตู · ตัวเอกเดินมาถึงจุดนี้แล้วเข้าใช้บริการ</p>
   <div class="row"><button id="eReset">คืนจุดเข้าเดิม</button></div><hr>
+  ${o.court?'':`<b class="sec">ถนน/ลานจากทางเข้าไปถึงถนน (อัตโนมัติ)</b>
+  ${slider('cw','ความกว้าง (ช่อง)',o.cauto?.w ?? ((o.id==='home'?2.2:o.w+1.3)*2),1,16,.5,unit)}${slider('cu','ตำแหน่ง ซ้าย ↔ ขวา (ช่อง)',o.cauto?.du??0,-10,10,.5,unit)}
+  <div class="row"><button id="eAutoReset"${o.cauto?'':' disabled'}>คืนขนาด/ตำแหน่งอัตโนมัติ</button></div>
+  <p class="sub">ปรับแถบปูพื้นจากทางเข้าไปถึงถนน และจุดที่ถนนมาเชื่อม · ถ้าอยากกำหนดรายช่องเอง ใช้ “ช่องทางเดิน (สีเหลือง)” ด้านล่าง</p><hr>`}
   <b class="sec">ช่องทางเดิน (สีเหลือง)</b>
   <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีทางเดิน':o.court?.cells?o.court.cells.length+' ช่องครึ่ง':o.court?.pts?'เส้นเดิมที่วาดไว้':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
   <div class="row"><button id="cDraw" class="${courtDraw?'on':''}" style="${courtDraw?'background:#e5c06b;color:#1b302a':''}">🟨 ${courtDraw?'กำลังทาสี… คลิก/ลากบนกริด (ช่องที่มีอยู่ = ลบ)':'ทาสีช่องทางเดิน'}</button></div>
@@ -2549,6 +2569,8 @@
   <div class="row"><button id="cLayer" style="${courtLayer ? 'background:#e5c06b;color:#1b302a' : ''}">🔢 ${courtLayer ? 'กำลังกำหนดชั้นรายช่อง… (ลากบนช่องเหลือง)' : 'กำหนดชั้นเฉพาะบางช่อง'}</button></div>
   ${courtLayer ? zRow('cl', 'ชั้นที่จะใส่', courtLayerVal, 'ลากทับช่องเหลืองเพื่อใส่ · ใส่ชั้นเท่าพื้น = ล้างค่าพิเศษ') : ''}
   <p class="sub">ตัวละครเดินทับช่องสีเหลืองได้ · ช่องต้องต่อกันจากประตูถึงขอบหน้า (ปลายทางที่ถนนมาเชื่อม) · ตัวละครอยู่ในชั้นเดียวกับพื้นตรงนั้น ของที่อยู่ด้านหน้าและชั้นสูงกว่า (เช่น กระถาง) จึงบังตัวละครได้ · Q สลับทาทีละช่อง 1×1 / ครึ่งช่อง 2×2</p>`;
+  act('#eAutoReset', once(() => { delete o.cauto; UX.refresh() }));
+  bindSliders((k, v) => { if (k !== 'cw' && k !== 'cu') return; o.cauto = o.cauto || {}; o.cauto[k === 'cw' ? 'w' : 'du'] = v; terrainDirty = true; UX.refresh() }, () => { if (o.cauto && o.cauto.w == null && !o.cauto.du) delete o.cauto; render() });
   act('#eReset', once(() => {
    delete o.entry;
    UX.refresh()
