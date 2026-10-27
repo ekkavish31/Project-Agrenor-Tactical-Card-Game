@@ -6024,7 +6024,34 @@
    "pivot": [
     0.512,
     0.9494
-   ]
+   ],
+   "history": [
+    {
+     "file": "assets/_versions/prop-fence/20261027-145831.webp",
+     "at": "2026-10-27T07:58:32.842Z",
+     "stamp": "20261027-145831",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261027-145844",
+   "mapW": 80,
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.013941131492909731,
+     0.9917609428202531
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1.67,
+     1.5954
+    ],
+    "flipX": false
+   }
   },
   {
    "id": "tactics-equip-knife",
@@ -53161,6 +53188,41 @@
     "isoAxisScale": [
      1,
      1.1117
+    ],
+    "flipX": false
+   }
+  },
+  {
+   "id": "fence-wood-2",
+   "file": "assets/objects/fence-wood-2.webp",
+   "category": "tactics-props",
+   "status": "final",
+   "size": [
+    711,
+    598
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: fence-wood-2",
+   "prompt": "",
+   "pivot": [
+    0.5265385048829212,
+    1.0157731440033517
+   ],
+   "mapW": 237,
+   "artRevision": "20261027-150038",
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.5265385048829212,
+     1.0157731440033517
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1,
+     1
     ],
     "flipX": false
    }
