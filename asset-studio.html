@@ -383,7 +383,7 @@ async function delVersion(a,h){if(!dir)return needFolder();if(!confirm('ลบ�
  try{await queue(()=>removeFile(h.file).catch(()=>{}));if(a?.history){a.history=a.history.filter(x=>x.file!==h.file);if(!a.history.length)delete a.history}await saveManifest();toast('ลบแล้ว');if(sel?.t==='img')sel=null}catch(e){toast('ผิดพลาด: '+e.message)}render();detail()}
 // ---------- new image pipeline ----------
 let source=null,result=null;
-function loadImage(file){return new Promise((res,rej)=>{let u=URL.createObjectURL(file),im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=u})}
+function loadImage(file){return new Promise((res,rej)=>{let u=URL.createObjectURL(file),im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error('ถอดรหัสภาพไม่ได้ (ภาพว่าง หรือ canvas ใหญ่เกินไป — ลองลดมาตราส่วน/ค่าเอียงใน Workshop)'));im.src=u})}
 async function loadSource(file){source=await loadImage(file);process()}
 function keyGreen(cv,tol){let g=cv.getContext('2d'),d=g.getImageData(0,0,cv.width,cv.height),p=d.data;for(let i=0;i<p.length;i+=4){let r=p[i],gg=p[i+1],b=p[i+2],dom=gg-Math.max(r,b);if(dom>tol*.55){p[i+3]=0}else if(dom>tol*.25){p[i+3]=Math.round(p[i+3]*(1-(dom-tol*.25)/(tol*.3)));p[i+1]=Math.max(r,b)+(dom>0?dom*.3:0)}else if(dom>8){p[i+1]=Math.max(r,b)+dom*.5}}g.putImageData(d,0,0)}
 function trimBox(cv){let g=cv.getContext('2d'),d=g.getImageData(0,0,cv.width,cv.height).data,x0=cv.width,y0=cv.height,x1=-1,y1=-1;for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++)if(d[(y*cv.width+x)*4+3]>12){if(x<x0)x0=x;if(y<y0)y0=y;if(x>x1)x1=x;if(y>y1)y1=y}return x1<0?{x:0,y:0,w:cv.width,h:cv.height}:{x:x0,y:y0,w:x1-x0+1,h:y1-y0+1}}
