@@ -483,8 +483,13 @@
   const a = data.buildings[o.id]?.art;
   return a && a !== o.id && artSpecs[a] ? baseArtRect(as(o, a, o.npc)) : baseArtRect(o)
  };
+/* v91.67 · a house can wear a whole building picture (e.g. Workshop 'house-01'): drawn with that picture's own width/anchor */
+ const baseHomeRect = homeSpriteRect,
+  wkArtOf = o => { const a = data.buildings[o.id]?.art; return a && a !== o.id && a !== 'home' && !/^npc\d+$/.test(a) && artSpecs[a] && images['building_' + a]?.naturalWidth ? a : null };
+ homeSpriteRect = function(o) { const a = wkArtOf(o); if (a) { const r = baseArtRect(as(o, a, false)); if (r) return r } return baseHomeRect(o) };
  houseImage = function(o) {
   const a = data.buildings[o.id]?.art;
+  if (wkArtOf(o)) return images['building_' + a];
   if (a && a !== o.id && (a === 'home' || /^npc\d+$/.test(a))) return baseHouseImage(as(o, a, a !== 'home'));
   return baseHouseImage(o)
  };
@@ -1815,7 +1820,14 @@
   return c
  }
 
+ /* v91.65 · houses also list Workshop pictures saved under อาคาร (house-01 …) */
  function buildingChoices(o) {
+  const base = buildingChoices0(o);
+  if (!isHouse(o)) return base;
+  const extra = wkAssets().filter(a => !base.some(c => c.id === a.id)).map(a => ({ id: a.id, label: a.id, group: 'อาคาร (จาก Workshop)', wk: a, thumb: () => canvasOf(wkImg(a.file)) }));
+  return [...base, ...extra]
+ }
+ function buildingChoices0(o) {
   if (isHouse(o)) return [{
    id: 'home',
    label: 'บ้านของเรา',
@@ -2135,7 +2147,7 @@
   <div class="row"><label class="chk"><input type="checkbox" id="bRef" ${refChar?'checked':''}> แสดงเงาตัวละคร (ขนาดจริงในแมพนี้ · ลากบนแผนที่เพื่อขยับ)</label></div>
   ${refChar?`<div class="row"><button id="bRefSolid">${refSolid?'แสดงเป็นเงา':'แสดงตัวจริง'}</button><button id="bRefHome">กลับไปจุดทางเข้า</button></div>`:''}`:''}
   ${o.id!=='square'&&!isHouse(o)?`<b class="sec">✏️ แก้ไขภาพ (เฉพาะแมพนี้)</b>
-  ${slider('sx','ความกว้าง',t.sx??1,.3,2.5,.01,FMT.sx)}${slider('sy','ความสูง',t.sy??1,.3,2.5,.01,FMT.sy)}${slider('lx','เอียงเส้นตั้ง (ล้มซ้าย/ขวา)',t.lx||0,-.6,.6,.005,FMT.kx)}
+  ${slider('sx','ความกว้าง',t.sx??1,.2,6,.01,FMT.sx)}${slider('sy','ความสูง',t.sy??1,.2,6,.01,FMT.sy)}${slider('lx','เอียงเส้นตั้ง (ล้มซ้าย/ขวา)',t.lx||0,-.6,.6,.005,FMT.kx)}
   <div class="row"><button id="bLock" title="เปิดแล้วเลื่อนแกนไหนก็ได้ อีกแกนจะขยับตามสัดส่วนเดิมพร้อมกัน" style="${lockRatio?'background:#e6c46a;color:#2a2113;font-weight:800':''}">${lockRatio?'🔒':'🔓'} ล็อกสัดส่วน (ปรับสองแกนพร้อมกัน)</button><button id="bSq" title="ทำให้ กว้าง = สูง (ค่าเฉลี่ย) ครั้งเดียว">ทำเป็น 1:1</button><button id="bRatio" title="ทำให้ภาพกลับสัดส่วนจริงของไฟล์">สัดส่วนเดิม 100%</button></div>
   <p class="sub">Base Slope ด้านบน = ปรับความลาดของฐาน · แก้ที่นี่มีผลกับแมพนี้เท่านั้น จนกว่าจะกดปุ่มล่าง</p>
   <div class="row"><button id="bBake" style="background:#e6c46a;color:#2a2113;font-weight:800" ${(t.sx!=null||t.sy!=null||t.kx||t.lx)?'':'disabled'}>⬆ ส่งกลับไปอัพเดทภาพต้นฉบับ</button></div>
@@ -2222,7 +2234,7 @@
   bindSliders((k, v) => {
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
    if (lockRatio && (k === 'sx' || k === 'sy')) { // v91.57: both axes move together, keeping their ratio
-    const q = k === 'sx' ? 'sy' : 'sx', f = (b[k] ?? 1) ? v / (b[k] ?? 1) : 1, nq = Math.max(.3, Math.min(2.5, (b[q] ?? 1) * f));
+    const q = k === 'sx' ? 'sy' : 'sx', f = (b[k] ?? 1) ? v / (b[k] ?? 1) : 1, nq = Math.max(.2, Math.min(6, (b[q] ?? 1) * f));
     b[q] = nq;
     const el = panel.querySelector('input[data-k="' + q + '"]'); if (el) { el.value = nq; if (el.nextElementSibling) el.nextElementSibling.textContent = FMT[q](nq) }
     if (Math.abs(nq - 1) < 1e-9) delete b[q]
