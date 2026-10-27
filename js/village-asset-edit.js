@@ -1502,11 +1502,12 @@
   if (/(^|\/)(ui|icons?|cards?|portraits?|faces|animations?|spritesheets?)(\/|[-_])/i.test(path)) return;
   const id = 'repoasset:' + path;
   if (KINDS[id]) return;
-  const file = new Image();
-  file.onload = () => { thumbCache.clear(); if (typeof render === 'function') render(); };
-  file.src = 'https://raw.githubusercontent.com/ekkavish31/Project-Agrenor-Tactical-Card-Game/main/' + path.split('/').map(encodeURIComponent).join('/');
+  /* v91.62 · lazy: the image is only requested when it is first drawn (picker thumbnail / placed object) — not for every repo file at startup */
+  let file = null;
+  const url = 'https://raw.githubusercontent.com/ekkavish31/Project-Agrenor-Tactical-Card-Game/main/' + path.split('/').map(encodeURIComponent).join('/');
   const name = path.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
   kind(id, name, assetGroup(path), p => {
+   if (!file) { file = new Image(); file.onload = () => { clearTimeout(window.__repoThumbT); window.__repoThumbT = setTimeout(() => { thumbCache.clear(); if (typeof render === 'function') render(); }, 150); }; file.src = url; return; }
    if (!file.complete || !file.naturalWidth) return;
    const w = 130, h = w * file.naturalHeight / file.naturalWidth;
    g.drawImage(file, p.x - w / 2, p.y - h, w, h);
