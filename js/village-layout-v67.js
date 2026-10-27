@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-10-27T07:56:16.307Z.
+// Village default layout — saved from the in-game editor 2026-10-27T08:34:24.033Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -1542,19 +1542,227 @@ window.VillageDefaultLayout={
         "dy": -209
       },
       "court": {
-        "pts": [
-          {
-            "du": 0,
-            "dv": 5.95
-          },
-          {
-            "du": -0.4,
-            "dv": 5.95
-          },
-          {
-            "du": -0.4,
-            "dv": 10.6
-          }
+        "cells": [
+          [
+            -3,
+            8
+          ],
+          [
+            -3,
+            9
+          ],
+          [
+            -3,
+            10
+          ],
+          [
+            -3,
+            11
+          ],
+          [
+            -3,
+            12
+          ],
+          [
+            -3,
+            13
+          ],
+          [
+            -3,
+            14
+          ],
+          [
+            -3,
+            15
+          ],
+          [
+            -3,
+            16
+          ],
+          [
+            -3,
+            17
+          ],
+          [
+            -3,
+            18
+          ],
+          [
+            -2,
+            8
+          ],
+          [
+            -2,
+            9
+          ],
+          [
+            -2,
+            10
+          ],
+          [
+            -2,
+            11
+          ],
+          [
+            -2,
+            12
+          ],
+          [
+            -2,
+            13
+          ],
+          [
+            -2,
+            14
+          ],
+          [
+            -2,
+            15
+          ],
+          [
+            -2,
+            16
+          ],
+          [
+            -2,
+            17
+          ],
+          [
+            -2,
+            18
+          ],
+          [
+            -1,
+            8
+          ],
+          [
+            -1,
+            9
+          ],
+          [
+            -1,
+            10
+          ],
+          [
+            -1,
+            11
+          ],
+          [
+            -1,
+            12
+          ],
+          [
+            -1,
+            13
+          ],
+          [
+            -1,
+            14
+          ],
+          [
+            -1,
+            15
+          ],
+          [
+            -1,
+            16
+          ],
+          [
+            -1,
+            17
+          ],
+          [
+            -1,
+            18
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            0,
+            12
+          ],
+          [
+            0,
+            13
+          ],
+          [
+            0,
+            14
+          ],
+          [
+            0,
+            15
+          ],
+          [
+            0,
+            16
+          ],
+          [
+            0,
+            17
+          ],
+          [
+            0,
+            18
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            1,
+            12
+          ],
+          [
+            1,
+            13
+          ],
+          [
+            1,
+            14
+          ],
+          [
+            1,
+            15
+          ],
+          [
+            1,
+            16
+          ],
+          [
+            1,
+            17
+          ],
+          [
+            1,
+            18
+          ]
         ]
       }
     },
@@ -1782,8 +1990,8 @@ window.VillageDefaultLayout={
       }
     },
     "custom-mvqaxpl5": {
-      "x": 94.0625,
-      "y": 58.388889,
+      "x": 89.375,
+      "y": 58.666667,
       "facing": "SW",
       "flipArt": true,
       "fp": {
@@ -2637,8 +2845,8 @@ window.VillageDefaultLayout={
         "del": true
       },
       "forge:-6.1,0.4": {
-        "du": 12.1,
-        "dv": 7.1,
+        "du": 13.1,
+        "dv": 8.6,
         "s": 0.74
       },
       "forge:-5.5,8.7": {
@@ -2652,7 +2860,38 @@ window.VillageDefaultLayout={
       "add:mvqdxl7vdg9": {
         "s": 2.01,
         "du": 15.2,
+        "dv": -1.3,
+        "z": 1
+      },
+      "add:mvqf001g4x7": {
+        "du": -5.5,
+        "dv": 2,
+        "s": 0.649,
+        "f": true,
+        "z": 1
+      },
+      "add:mvqf3g4wews": {
+        "s": 0.649,
+        "f": true,
+        "z": 1,
+        "du": 12.2,
         "dv": -1.3
+      },
+      "add:mvqf53pfegy": {
+        "s": 0.59,
+        "du": 7.5,
+        "dv": -3.5,
+        "z": 1
+      },
+      "add:mvqf5pnm69f": {
+        "du": -6,
+        "s": 0.83
+      },
+      "add:mvqf7wkzalq": {
+        "du": -5.5,
+        "dv": -3,
+        "s": 1.92,
+        "z": 1
       }
     },
     "added": [
@@ -2977,12 +3216,48 @@ window.VillageDefaultLayout={
         "du": -4.7,
         "dv": 8.3,
         "kind": "repoasset:assets/objects/fence-wood-long.webp"
+      },
+      {
+        "id": "add:mvqf001g4x7",
+        "owner": "forge",
+        "du": 0,
+        "dv": 8.5,
+        "kind": "repoasset:assets/objects/fence-wood-2.webp"
+      },
+      {
+        "id": "add:mvqf3g4wews",
+        "owner": "forge",
+        "du": -4.7,
+        "dv": 11.3,
+        "kind": "repoasset:assets/objects/fence-wood-2.webp"
+      },
+      {
+        "id": "add:mvqf53pfegy",
+        "owner": "forge",
+        "du": 0,
+        "dv": 8.5,
+        "kind": "decor:well"
+      },
+      {
+        "id": "add:mvqf5pnm69f",
+        "owner": "forge",
+        "du": 0,
+        "dv": 8.5,
+        "kind": "decor:cart"
+      },
+      {
+        "id": "add:mvqf7wkzalq",
+        "owner": "forge",
+        "du": 0,
+        "dv": 8.5,
+        "kind": "prop:7"
       }
     ],
     "buildings": {
       "forge": {
         "dx": 26,
-        "dy": 11
+        "dy": 11,
+        "z": 2
       },
       "home": {
         "sx": 0.73,
