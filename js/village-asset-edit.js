@@ -1521,7 +1521,7 @@
   const url = 'https://raw.githubusercontent.com/ekkavish31/Project-Agrenor-Tactical-Card-Game/main/' + path.split('/').map(encodeURIComponent).join('/');
   const name = path.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
   kind(id, name, assetGroup(path), p => {
-   if (!file) { file = new Image(); file.onload = () => { clearTimeout(window.__repoThumbT); window.__repoThumbT = setTimeout(() => { thumbCache.clear(); if (typeof render === 'function') render(); }, 150); }; file.src = url; return; }
+   if (!file) { file = new Image(); file.crossOrigin = 'anonymous'; /* v91.82: raw.githubusercontent allows CORS → canvas stays readable so thumbnails can crop to the visible pixels */ file.onload = () => { clearTimeout(window.__repoThumbT); window.__repoThumbT = setTimeout(() => { thumbCache.clear(); if (typeof render === 'function') render(); }, 150); }; file.src = url; return; }
    if (!file.complete || !file.naturalWidth) return;
    const w = 130, h = w * file.naturalHeight / file.naturalWidth;
    g.drawImage(file, p.x - w / 2, p.y - h, w, h);
@@ -1569,7 +1569,7 @@
  }
  const hx = e => { const h = handleOf(e); return h ? e.x + h.x : e.x }, hy = e => { const h = handleOf(e); return h ? e.y + h.y : e.y };
 
- function renderThumb(drawFn, ax, ay, w = 112, h = 92) {
+ function renderThumb(drawFn, ax, ay, w = 200, h = 164) {
   const big = document.createElement('canvas');
   big.width = big.height = 560;
   const q = big.getContext('2d'),
@@ -1596,8 +1596,8 @@
     y0 = 560,
     x1 = -1,
     y1 = -1;
-   for (let y = 0; y < 560; y += 2)
-    for (let x = 0; x < 560; x += 2)
+   for (let y = 0; y < 560; y++)
+    for (let x = 0; x < 560; x++)
      if (d[(y * 560 + x) * 4 + 3] > 20) {
       if (x < x0) x0 = x;
       if (x > x1) x1 = x;
@@ -1607,13 +1607,14 @@
    else {
     bx = x0;
     by = y0;
-    bw = x1 - x0 + 2;
-    bh = y1 - y0 + 2
+    bw = x1 - x0 + 1;
+    bh = y1 - y0 + 1
    }
   } catch (e) {}
   thumbBox = any ? { cx: bx + bw / 2 - 280, cy: by + bh / 2 - 520 } : null;
   if (any) {
-   const sc = Math.min((w - 8) / bw, (h - 8) / bh, 1.2);
+   const sc = Math.min((w - 8) / bw, (h - 8) / bh, 8); // v91.82: fill the frame whatever the source size (no 1.2× cap)
+   o.imageSmoothingEnabled = sc < 2.5; // small pixel-art sprites stay crisp when magnified
    o.drawImage(big, bx, by, bw, bh, (w - bw * sc) / 2, (h - bh * sc) / 2, bw * sc, bh * sc)
   }
   return any ? out : null
@@ -1914,7 +1915,7 @@
 #aePicker .pk-head{display:flex;gap:8px;align-items:center;padding:12px;border-bottom:1px solid #4d6656;position:static}#aePicker .pk-head input[type=search]{flex:1;min-width:0}#aePicker .pk-head b{flex:none;white-space:nowrap;font-size:15px;color:#fff0c7}#aePicker button{width:auto!important;margin:0!important}#aePicker input{padding:6px 10px;border-radius:8px;border:1px solid #7f9170;background:#132621;color:inherit}
 #aePicker .pk-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px}#aePicker .pk-tabs button.on{background:#e5c06b;color:#1b302a}#aePicker .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:12px;overflow:auto;max-height:62vh}
 #aePicker .grid button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px;border-radius:10px;background:#132621;border:1px solid #4d6656;color:inherit;cursor:pointer}#aePicker .grid button:hover{border-color:#e5c06b}#aePicker .grid button.cur{border-color:#9ff3f5;box-shadow:0 0 0 2px #9ff3f555}
-#aePicker .th{width:112px;height:92px;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}#aePicker small{color:#9fb19a;font-size:10px}#aePicker button{font:inherit;background:#233a2e;color:inherit;border:1px solid #7f9170;border-radius:8px;padding:6px 10px;cursor:pointer}
+#aePicker .th canvas{max-width:none;max-height:none;width:100%;height:100%}#aePicker .th{width:100%;aspect-ratio:200/164;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}#aePicker small{color:#9fb19a;font-size:10px}#aePicker button{font:inherit;background:#233a2e;color:inherit;border:1px solid #7f9170;border-radius:8px;padding:6px 10px;cursor:pointer}
 #townTools .gh{min-width:0!important}`;
  document.head.append(css);
  const panel = document.createElement('section');
