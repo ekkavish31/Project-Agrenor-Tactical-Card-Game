@@ -157,6 +157,7 @@ window.TownUX={addRoad:(pts,kind)=>{manualize();manual.push(pts);manualKinds.pus
  gridMode:()=>gridMode,setGridMode,toggleGridMode:()=>setGridMode(gridMode==='1x1'?'2x2':'1x1'),gridShown:()=>gridShow,setGridShow,toggleGridShow:()=>setGridShow(!gridShow),gridPlace,stackOn:()=>stackOn,setStack,toggleStack:()=>setStack(!stackOn),footprintOf:o=>FP().fpOf(o),refreshAutoFp,setFootprint:(o,fp)=>{if(fp)o.fp={...fp};else delete o.fp;pruneCourt(o)},
  // v82 · used by the place editor
  entryOf:o=>entry(o),setEntry:(o,q,deep)=>{if(deep){const a=center(o),c=canonical(o,q.u,q.v);o.entry=gridEntry(o,{du:c.u-a.u,dv:c.v-a.v,deep:true})}else o.entry=gridEntry(o,boundary(o,q))},
+ afterAdd:id=>{renumber();selected=id;persist();renderList();heroRestore();terrainDirty=true;$('status').textContent='เพิ่มสถานที่แล้ว · ลากไปจัดตำแหน่งได้'},
  refresh:()=>{for(const o of locations)pruneCourt(o);cacheSolids();save();heroRestore();terrainDirty=true},
  // v86 · manual roads
  ROAD_KINDS,roadList:()=>(manual||roadLines).map((l,i)=>{const kind=(manual?manualKinds[i]:roadKinds[i])||'main';return{i,kind,points:l.length,label:roadLabel(i,l,kind)}}),isManual:()=>!!manual,selectedRoad:()=>selectedRoad,

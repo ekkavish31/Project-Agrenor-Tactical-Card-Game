@@ -17,7 +17,8 @@
   function idb() { return new Promise((res, rej) => { const r = indexedDB.open('asset-studio', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error) }) }
   async function idbGet(k) { try { const db = await idb(); return await new Promise(r => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(null) }) } catch (e) { return null } }
   async function idbSet(k, v) { try { const db = await idb(); await new Promise(r => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = r; t.onerror = r }) } catch (e) {} }
-  const persist = () => idbSet('repo-staged', [...staged.entries()]);
+  let bc = null; try { bc = new BroadcastChannel('project-a-staged') } catch (e) {}
+  const persist = async () => { await idbSet('repo-staged', [...staged.entries()]); try { bc && bc.postMessage(staged.size) } catch (e) {} };
 
   async function loadTree(force) {
     if (!force) { try { const c = JSON.parse(sessionStorage.getItem(TREE_KEY) || 'null'); if (c && Date.now() - c.t < 6e5) return new Set(c.list) } catch (e) {} }
@@ -96,5 +97,7 @@
     return tag;
   }
   async function discard() { staged.clear(); await persist(); notify() }
-  root.RepoDir = { open, pushStaged, discard, count: () => staged.size, paths: () => [...staged.keys()], onChange: f => listeners.push(f) };
+  /* the editor shell pushed (or dropped) the staged files for us */
+  async function afterExternal() { staged.clear(); try { sessionStorage.removeItem(TREE_KEY) } catch (e) {} ready = null; await open(true); notify() }
+  root.RepoDir = { open, pushStaged, discard, afterExternal, count: () => staged.size, paths: () => [...staged.keys()], onChange: f => listeners.push(f) };
 })(globalThis);

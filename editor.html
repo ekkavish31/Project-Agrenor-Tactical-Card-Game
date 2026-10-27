@@ -26,12 +26,13 @@ iframe[hidden]{display:none}
 <header>
  <h1>✎ Project A · Editor</h1>
  <nav id="tabs"></nav><span id="deployStatus">กำลังตรวจสถานะเว็บ…</span>
+ <button class="tool" id="stagedPush" disabled title="ส่งภาพ/ไฟล์ที่แก้ค้างไว้ (จาก Asset Studio / Workshop ทุกแท็บ) ขึ้น GitHub เป็น commit เดียว" style="background:#496b3b;border-color:#6f9a5a;font-weight:700">⬆ รอ Push (0)</button><button class="tool" id="stagedDrop" hidden title="ทิ้งงานที่ยังไม่ push ทั้งหมด">ทิ้ง</button>
  <button class="tool" id="reload" title="โหลดแท็บนี้ใหม่">↻ โหลดใหม่</button>
  <a href="index.html" target="_blank" title="เปิดเกมในแท็บใหม่">▶ เปิดเกม</a>
 </header>
 <div class="note" id="note"></div><div id="editorConflict" hidden role="status"></div>
 <main id="frames"></main>
-<script src="js/game-version.js?v=82.15"></script><script src="js/game-settings.js?v=82.15"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script>
+<script src="js/game-version.js?v=82.15"></script><script src="js/game-settings.js?v=82.15"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js"></script><script>
 // Editor shell: every tool runs in its own frame; the game opens in "editor mode" (no play-save writes).
 // All tools share this browser's storage with the game — reload the game to see changes.
 const TABS=[
@@ -50,6 +51,17 @@ tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}" title="${t.note.replace(/"
 tabs.onclick=e=>{let b=e.target.closest('button');if(b)show(b.dataset.id)};
 document.getElementById('reload').onclick=()=>{let f=frames.querySelector(`[data-id="${cur}"]`);if(f)f.src=f.src};
 show(TABS.some(t=>t.id===location.hash.slice(1))?location.hash.slice(1):'assets');
+/* v91.55 · ⬆ Push of everything staged by Asset Studio / Object Workshop, from any tab (staged files live in IndexedDB, shared by all frames) */
+(function(){const sp=document.getElementById('stagedPush'),sd=document.getElementById('stagedDrop');let bc=null;try{bc=new BroadcastChannel('project-a-staged')}catch(e){}
+ const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('asset-studio',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+ const get=async()=>{try{const db=await idb();return await new Promise(r=>{const q=db.transaction('kv').objectStore('kv').get('repo-staged');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}catch(e){return null}};
+ const clear=async()=>{const db=await idb();await new Promise(r=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put([],'repo-staged');t.oncomplete=r;t.onerror=r})};
+ const tellFrames=m=>{for(const f of frames.children)try{f.contentWindow.postMessage(m,location.origin)}catch(e){}};
+ async function count(){const s=await get(),n=Array.isArray(s)?s.length:0;sp.textContent='⬆ รอ Push ('+n+')';sp.disabled=!n;sd.hidden=!n;sp.dataset.n=n;return n}
+ count();if(bc)bc.onmessage=()=>count();setInterval(count,15000);
+ sp.onclick=async()=>{const s=await get();if(!Array.isArray(s)||!s.length)return count();if(!GitHubPush.config().token){GitHubPush.openSettings(()=>sp.click());return}
+  sp.disabled=true;try{const tag=await GitHubPush.commit('Editor: update images ('+s.length+' files)',async()=>s.map(([p,b])=>b?{path:p,content:b}:{path:p,remove:true}));if(tag){await clear();try{bc&&bc.postMessage(0)}catch(e){}tellFrames({repoStagedPushed:true});alert('push แล้ว · '+tag)}}catch(e){alert('push ไม่สำเร็จ: '+(e.message||e))}finally{count()}};
+ sd.onclick=async()=>{const n=+sp.dataset.n||0;if(!confirm('ทิ้งงานที่ยังไม่ push ทั้งหมด ('+n+' ไฟล์)? ย้อนกลับไม่ได้'))return;await clear();try{bc&&bc.postMessage(0)}catch(e){}tellFrames({repoStagedDiscarded:true});count()}})();
 window.addEventListener('message',e=>{let d=e.data||{};if(d.editorTab){let f=frames.querySelector(`[data-id="${d.editorTab}"]`);if(f&&d.reload)f.src=f.src;show(d.editorTab)}});
 </script>
 </body>

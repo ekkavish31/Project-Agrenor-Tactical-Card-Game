@@ -120,6 +120,8 @@
  $('conn').onclick=()=>connect(null);$('rescan').onclick=async()=>{await RepoDir.open(true);connect(null)};
  $('stagedPush').onclick=async()=>{try{if(hasWork()){alert('ยังมีภาพที่รอใช้อยู่ — กดใช้ภาพก่อน แล้วค่อย Push');return}await flush();const t=await RepoDir.pushStaged('Asset Studio: update images ('+RepoDir.count()+' files)');if(t)toast('push แล้ว · '+t)}catch(e){console.error(e);toast('push ไม่สำเร็จ: '+e.message)}};
  $('stagedDrop').onclick=async()=>{if(confirm('ทิ้งงานที่ยังไม่ push ทั้งหมด ('+RepoDir.count()+' ไฟล์)? โหลดหน้าใหม่หลังทิ้ง')){await RepoDir.discard();location.reload()}};
+ window.addEventListener('message',e=>{if(e.origin!==location.origin)return;if(e.data?.repoStagedPushed){RepoDir.afterExternal().then(()=>connect(null))}else if(e.data?.repoStagedDiscarded)location.reload()});
+ if(window.parent!==window){const st=document.createElement('style');st.textContent='#stagedPush,#stagedDrop{display:none!important}';document.head.append(st)} // inside the editor shell the push button lives in the top bar
  RepoDir.onChange(n=>{$('stagedPush').textContent='⬆ Push ที่แก้ ('+n+')';$('stagedPush').disabled=!n;$('stagedDrop').hidden=!n});
  // Show orphan files as a single selectable Objects entry; never silently delete or classify them as monsters.
  const baseRebuild=rebuild;rebuild=function(){let ee=baseRebuild();if(dir&&scanned){let known=new Set(M.assets.map(a=>a.file));for(let a of M.assets)for(let h of a.history||[])known.add(h.file);let loose=[...scanned].filter(p=>!known.has(p)&&!p.startsWith('assets/_versions/'));
