@@ -3,106 +3,240 @@
 <title>3D Frame Generator</title>
 <style>
 :root{--bg:#151b18;--panel:#1f2a25;--ink:#f0ead6;--mut:#a9b3a6;--line:#3b4a42;--gold:#d9a441;--ok:#3f6654}
-*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:var(--bg);color:var(--ink);font:13px/1.45 system-ui,"Noto Sans Thai",sans-serif;display:grid;grid-template-columns:300px 1fr 280px;gap:10px;padding:10px}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:var(--bg);color:var(--ink);font:13px/1.45 system-ui,"Noto Sans Thai",sans-serif;display:grid;grid-template-columns:320px 1fr 290px;gap:10px;padding:10px}
 aside,section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;min-height:0}
-h3{margin:0 0 8px;font-size:13px;color:var(--gold)}label{display:block;margin:8px 0 2px;color:var(--mut);font-size:12px}
-input[type=range]{width:100%}input[type=text],select{width:100%;padding:6px;background:#10161300;border:1px solid var(--line);border-radius:6px;color:var(--ink);background:#101713}
-button{padding:7px 10px;border:1px solid var(--gold);background:#2b2415;color:var(--ink);border-radius:7px;cursor:pointer;font:inherit}button.pri{background:var(--ok);border-color:#5f8a76}button:disabled{opacity:.45;cursor:default}
-.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.val{float:right;color:var(--ink)}
-#drop{border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--mut);cursor:pointer}#drop.over{border-color:var(--gold);color:var(--ink)}
+h3{margin:14px 0 6px;font-size:13px;color:var(--gold)}h3:first-child{margin-top:0}label{display:block;margin:7px 0 2px;color:var(--mut);font-size:12px}label.chk{display:flex;gap:6px;align-items:center;color:var(--ink)}
+input[type=range]{width:100%}input[type=text],input[type=number],select{width:100%;padding:6px;border:1px solid var(--line);border-radius:6px;color:var(--ink);background:#101713}input[type=color]{width:38px;height:26px;padding:0;border:1px solid var(--line);background:none}
+button{padding:7px 10px;border:1px solid var(--gold);background:#2b2415;color:var(--ink);border-radius:7px;cursor:pointer;font:inherit}button.pri{background:var(--ok);border-color:#5f8a76}button:disabled{opacity:.45;cursor:default}button.on{background:var(--ok)}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}.val{float:right;color:var(--ink)}small{color:var(--mut)}
+#drop{border:2px dashed var(--line);border-radius:10px;padding:16px;text-align:center;color:var(--mut);cursor:pointer}#drop.over{border-color:var(--gold);color:var(--ink)}
 #stageWrap{display:flex;flex-direction:column;gap:8px;align-items:center}
-#view{width:min(100%,520px);aspect-ratio:1;background:repeating-conic-gradient(#2a352f 0 25%,#222c27 0 50%) 0 0/24px 24px;border:1px solid var(--line);border-radius:8px;image-rendering:auto}
-#dirs{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;width:min(100%,520px)}#dirs button{padding:5px 0;font-size:12px}#dirs button.on{background:var(--ok)}
-#sheet{width:100%;max-width:100%;background:repeating-conic-gradient(#2a352f 0 25%,#222c27 0 50%) 0 0/24px 24px;border:1px solid var(--line);border-radius:8px}
-#status{color:var(--mut);margin-top:8px;min-height:18px}small{color:var(--mut)}
-@media(max-width:1000px){body{grid-template-columns:1fr;height:auto}}
+.chk2{background:repeating-conic-gradient(#2a352f 0 25%,#222c27 0 50%) 0 0/24px 24px;border:1px solid var(--line);border-radius:8px}
+#prev{width:min(100%,520px);aspect-ratio:1}#prev.pick{cursor:crosshair;outline:2px solid #35f0ff}
+#dirs{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;width:min(100%,520px)}#dirs button{padding:5px 0;font-size:12px}
+#sheet{width:100%}#status{color:var(--mut);min-height:18px;text-align:center}
+.box{border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px}.chain{border:1px solid #35f0ff55;border-radius:8px;padding:6px;margin-top:6px}.chain input,.chain select{margin:2px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(max-width:1100px){body{grid-template-columns:1fr;height:auto}}
 </style></head><body>
 <aside>
  <h3>1 · นำเข้าโมเดล 3D</h3>
  <div id="drop">ลากไฟล์ .glb / .gltf มาวาง<br>หรือคลิกเพื่อเลือก</div><input id="file" type="file" accept=".glb,.gltf" hidden>
  <div id="info" style="margin-top:8px;color:var(--mut)">ยังไม่มีโมเดล</div>
- <h3 style="margin-top:14px">2 · กล้อง ISO</h3>
- <label>มุมก้ม (°) <span class="val" id="elV">30</span></label><input id="el" type="range" min="10" max="60" step="0.5" value="30"><small>30° = พื้นยุบครึ่ง (2:1) เหมือนแมพหมู่บ้าน</small>
- <label>หมุนโมเดลชดเชย (°) <span class="val" id="yawV">0</span></label><input id="yaw" type="range" min="-180" max="180" step="1" value="0"><small>ปรับให้ทิศ “S” คือด้านหน้าหันเข้าหากล้อง</small>
- <label>ความสูงตัวละครในเฟรม (%) <span class="val" id="hV">78</span></label><input id="h" type="range" min="40" max="95" step="1" value="78"><small>78% = ตรงฮีโร่ในแมพ (73px จากเฟรม 93.6px)</small>
- <label>เลื่อนขึ้น-ลง (%) <span class="val" id="fyV">90</span></label><input id="fy" type="range" min="70" max="98" step="1" value="90"><small>ตำแหน่งเท้าจากขอบบนเฟรม</small>
- <h3 style="margin-top:14px">3 · แสง</h3>
+
+ <h3>2 · กล้อง / ทิศ</h3>
+ <div class="row"><button class="pri" id="auto" disabled title="ตั้งมุมก้ม 30° ISO 2:1, ขนาดตัวละคร และเดาด้านหน้าของโมเดลให้ตรงกับมุมมองของเกม">🎯 ตั้งตามเกม (auto)</button></div>
+ <label>มุมก้ม (°) <span class="val" id="elV">30</span></label><input id="el" type="range" min="10" max="60" step="0.5" value="30"><small>30° = พื้นยุบครึ่ง (2:1) เท่ากับแมพหมู่บ้าน</small>
+ <label>หมุนโมเดลชดเชย (°) <span class="val" id="yawV">0</span></label><input id="yaw" type="range" min="-180" max="180" step="1" value="0">
+ <div class="row"><button data-yaw="-90">⟲ 90°</button><button data-yaw="90">⟳ 90°</button><button data-yaw="180">180°</button><small id="frontNote"></small></div>
+ <label>ความสูงตัวละครในเฟรม (%) <span class="val" id="hV">78</span></label><input id="h" type="range" min="40" max="95" step="1" value="78">
+ <label>ตำแหน่งเท้าจากขอบบน (%) <span class="val" id="fyV">90</span></label><input id="fy" type="range" min="70" max="98" step="1" value="90">
+
+ <h3>3 · แสง</h3>
  <label>ทิศแสง (°) <span class="val" id="laV">-40</span></label><input id="la" type="range" min="-180" max="180" step="1" value="-40">
  <label>ความสว่าง <span class="val" id="liV">1.6</span></label><input id="li" type="range" min="0.2" max="3.5" step="0.05" value="1.6">
  <label>แสงรอบด้าน <span class="val" id="amV">0.9</span></label><input id="am" type="range" min="0" max="2" step="0.05" value="0.9">
- <label><input id="shadow" type="checkbox" checked> เงาใต้เท้า</label>
+ <label class="chk"><input id="shadow" type="checkbox" checked> เงาใต้เท้า</label>
+
+ <h3>4 · สไตล์ภาพ</h3>
+ <div class="box"><label class="chk"><input id="cel" type="checkbox"> Cel-shade (แสงเป็นขั้น)</label>
+  <label>จำนวนขั้นแสง <span class="val" id="celNV">3</span></label><input id="celN" type="range" min="2" max="6" step="1" value="3"></div>
+ <div class="box"><label class="chk"><input id="ol" type="checkbox"> Outline (เส้นขอบ)</label>
+  <div class="two"><label>สี<br><input id="olC" type="color" value="#1b120c"></label><label>หนา (px) <span class="val" id="olWV">3</span><input id="olW" type="range" min="1" max="12" step="0.5" value="3"></label></div></div>
+ <div class="box"><label class="chk"><input id="aura" type="checkbox"> Aura (ออร่าเรืองรอบตัว)</label>
+  <div class="two"><label>สี<br><input id="auraC" type="color" value="#ffd36a"></label><label>รัศมี (px) <span class="val" id="auraRV">14</span><input id="auraR" type="range" min="2" max="60" step="1" value="14"></label></div>
+  <label>ความเข้ม <span class="val" id="auraSV">1.2</span></label><input id="auraS" type="range" min="0.3" max="3" step="0.1" value="1.2">
+  <label class="chk"><input id="auraP" type="checkbox"> เต้นเป็นจังหวะตามเฟรม (pulse)</label></div>
 </aside>
+
 <section id="stageWrap">
- <canvas id="view" width="384" height="384"></canvas>
+ <canvas id="view" width="384" height="384" style="display:none"></canvas>
+ <canvas id="prev" class="chk2" width="384" height="384"></canvas>
  <div id="dirs"></div>
- <div class="row"><button class="pri" id="renderAll" disabled>▶ Render 8 ทิศ</button><button id="dlSheet" disabled>⬇ สไปรต์ชีต PNG</button><button id="send" disabled>⬆ ส่งเข้าคลัง (รอ Push)</button></div>
+ <div class="row"><button id="play" disabled>▶ เล่นพรีวิว</button><label class="chk" style="margin:0"><input id="gridT" type="checkbox"> แสดงกระดูก</label><span id="frameInfo" style="color:var(--mut)"></span></div>
+ <div class="row"><button class="pri" id="renderAll" disabled>▶ Render ทุกทิศ/ทุกเฟรม</button><button id="dlSheet" disabled>⬇ สไปรต์ชีต PNG</button><button id="send" disabled>⬆ ส่งเข้าคลัง (รอ Push)</button></div>
  <div id="status"></div>
 </section>
+
 <aside>
- <h3>4 · ผลลัพธ์ 8 ทิศ</h3>
+ <h3>5 · กระดูก (Auto rig)</h3>
+ <div class="row"><button class="pri" id="rigBtn" disabled>🦴 Auto rig มนุษย์ (T-pose)</button><button id="rigOff" disabled>ถอดกระดูก</button></div>
+ <small>วางกระดูกตามสัดส่วนที่ตรวจจากโมเดล แล้วผูกน้ำหนักผิวอัตโนมัติ · ปรับตำแหน่งข้อต่อได้ด้านล่าง</small>
+ <div id="rigParams" hidden>
+  <label>ความสูงไหล่ <span class="val" id="rp_armYV"></span></label><input id="rp_armY" type="range" min="0.35" max="0.95" step="0.005">
+  <label>ความกว้างไหล่ <span class="val" id="rp_shoulderXV"></span></label><input id="rp_shoulderX" type="range" min="0.04" max="0.35" step="0.005">
+  <label>ตำแหน่งศอก <span class="val" id="rp_elbowTV"></span></label><input id="rp_elbowT" type="range" min="0.25" max="0.75" step="0.01">
+  <label>ความสูงสะโพก <span class="val" id="rp_hipYV"></span></label><input id="rp_hipY" type="range" min="0.2" max="0.65" step="0.005">
+  <label>ระยะขาห่างกึ่งกลาง <span class="val" id="rp_hipXV"></span></label><input id="rp_hipX" type="range" min="0.02" max="0.2" step="0.005">
+  <label>ตำแหน่งเข่า <span class="val" id="rp_kneeTV"></span></label><input id="rp_kneeT" type="range" min="0.25" max="0.75" step="0.01">
+  <label>ความสูงคอ (เหนือไหล่) <span class="val" id="rp_neckOffV"></span></label><input id="rp_neckOff" type="range" min="0" max="0.15" step="0.005">
+ </div>
+
+ <h3>6 · ท่าทาง (Animation)</h3>
+ <label>ท่า</label><select id="action"><option value="still">ภาพนิ่ง (ไม่ใช้กระดูก)</option></select>
+ <div class="two"><label>จำนวนเฟรม<select id="frames"><option>4</option><option>6</option><option selected>8</option><option>12</option></select></label><label>เฟรม/วินาที<select id="fps"><option>6</option><option selected>8</option><option>12</option><option>15</option></select></label></div>
+ <label class="chk"><input id="perFrame" type="checkbox"> ส่งไฟล์รายเฟรมด้วย (ไม่ติ๊ก = เฉพาะสไปรต์ชีต)</label>
+
+ <h3>7 · Bone พิเศษ (ผ้า/ผม/หาง)</h3>
+ <small>กด ＋ แล้วคลิกบนตัวโมเดลที่จะให้โซ่กระดูกห้อยออกมา (เช่นปลายผ้าพันคอ ชายผ้า)</small>
+ <div class="row"><button id="addChain" disabled>＋ เพิ่ม bone พิเศษ</button></div>
+ <div id="chains"></div>
+
+ <h3>8 · ผลลัพธ์</h3>
  <label>ขนาดเฟรม (px)</label><select id="size"><option>256</option><option selected>384</option><option>512</option></select>
  <label>ชื่อชุด</label><input id="name" type="text" value="hero-3d">
- <label>ย่อเหลือ (px) ตอนส่งออก</label><select id="outSize"><option value="0">ไม่ย่อ (ใช้ขนาดเฟรม)</option><option value="192">192</option><option value="128">128</option></select>
- <canvas id="sheet" width="10" height="10" style="margin-top:12px"></canvas>
- <p><small>ลำดับทิศ: S, SW, W, NW, N, NE, E, SE · pivot ที่ฐานเท้า (กึ่งกลางแนวนอน, ตำแหน่งเท้าตามแถบเลื่อน) · ฉากหลังโปร่งใส</small></p>
+ <label>ย่อเหลือ (px) ตอนส่งออก</label><select id="outSize"><option value="0">ไม่ย่อ (ใช้ขนาดเฟรม)</option><option value="256">256</option><option value="192">192</option><option value="128">128</option></select>
+ <canvas id="sheet" class="chk2" width="10" height="10" style="margin-top:10px"></canvas>
+ <p><small>แถว = 8 ทิศ (S SE E NE N NW W SW) · คอลัมน์ = เฟรม · pivot ที่ฐานเท้า</small></p>
 </aside>
-<script src="js/vendor/three-glb.js?v=91.40"></script>
+<script src="js/vendor/three-glb.js?v=91.43"></script>
+<script src="js/framegen-rig.js?v=91.43"></script>
 <script>
 (()=>{
 const {THREE,GLTFLoader}=window.THREE3,$=id=>document.getElementById(id);
-const DIRS=['S','SW','W','NW','N','NE','E','SE'];
-const view=$('view'),renderer=new THREE.WebGLRenderer({canvas:view,alpha:true,antialias:true,preserveDrawingBuffer:true});
-renderer.setClearColor(0,0);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
+/* screen-space facing → model yaw (camera at +Z; the model faces +Z = S, toward the camera) */
+const DIRS=['S','SE','E','NE','N','NW','W','SW'],YAW={S:0,SE:45,E:90,NE:135,N:180,NW:225,W:270,SW:315};
+const view=$('view'),prev=$('prev'),renderer=new THREE.WebGLRenderer({canvas:view,alpha:true,antialias:true,preserveDrawingBuffer:true});
+renderer.setClearColor(0,0);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
 const scene=new THREE.Scene(),pivot=new THREE.Group(),cam=new THREE.OrthographicCamera(-1,1,1,-1,.01,100);scene.add(pivot);
 const amb=new THREE.HemisphereLight(0xffffff,0x6b6a5c,.9),sun=new THREE.DirectionalLight(0xfff1dc,1.6);scene.add(amb,sun,sun.target);
-let model=null,mh=1,curDir=0,frames=[];
-const st=t=>{$('status').textContent=t};
+let model=null,mh=1,curDir=0,curFrame=0,rig=null,rigParams=null,chains=[],srcMeshes=[],pickMode=false,played=null,frames=null,outlines=[],gradTex=null;
+const st=t=>{$('status').textContent=t};const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 for(const [i,d] of DIRS.entries()){const b=document.createElement('button');b.textContent=d;b.onclick=()=>{curDir=i;draw()};$('dirs').appendChild(b)}
 function P(){return{el:+$('el').value,yaw:+$('yaw').value,h:+$('h').value/100,fy:+$('fy').value/100,la:+$('la').value,li:+$('li').value,am:+$('am').value}}
+function V(){return mh*Math.cos(P().el*Math.PI/180)/P().h}
 function setup(size){const p=P();renderer.setSize(size,size,false);const el=p.el*Math.PI/180,D=20;
  cam.position.set(0,Math.sin(el)*D,Math.cos(el)*D);cam.up.set(0,1,0);cam.lookAt(0,0,0);
- const V=mh*Math.cos(el)/p.h;cam.left=-V/2;cam.right=V/2;cam.top=V*p.fy;cam.bottom=-V*(1-p.fy);cam.updateProjectionMatrix();
+ const v=V();cam.left=-v/2;cam.right=v/2;cam.top=v*p.fy;cam.bottom=-v*(1-p.fy);cam.updateProjectionMatrix();
  const la=p.la*Math.PI/180;sun.position.set(Math.sin(la)*6,9,Math.cos(la)*6+4);sun.target.position.set(0,0,0);sun.intensity=p.li;amb.intensity=p.am;
- for(const k of ['el','yaw','h','fy','la','li','am'])$(k+'V').textContent=$(k).value}
-function renderDir(i,size){setup(size);pivot.rotation.y=(P().yaw+i*45)*Math.PI/180;renderer.render(scene,cam);return renderer.domElement}
-function withShadow(src,size){const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d'),p=P();
+ for(const k of ['el','yaw','h','fy','la','li','am'])$(k+'V').textContent=$(k).value;
+ for(const [a,b] of [['celN','celNV'],['olW','olWV'],['auraR','auraRV'],['auraS','auraSV']])$(b).textContent=$(a).value}
+
+/* ---------- materials: cel-shade + outline ---------- */
+function meshesNow(){const a=[];pivot.traverse(o=>{if((o.isMesh||o.isSkinnedMesh)&&!o.userData.outline&&!o.userData.helper&&o.visible)a.push(o)});return a}
+function gradient(n){const d=new Uint8Array(n);for(let i=0;i<n;i++)d[i]=Math.round(255*(.55+.45*i/(n-1)));const t=new THREE.DataTexture(d,n,1,THREE.RedFormat);t.minFilter=t.magFilter=THREE.NearestFilter;t.needsUpdate=true;return t}
+let gradN=0;
+function applyCel(){const on=$('cel').checked;if(on&&(!gradTex||gradN!==+$('celN').value)){if(gradTex)gradTex.dispose();gradTex=gradient(+$('celN').value);gradN=+$('celN').value;for(const m of meshesNow()){if(m.userData.toon){m.userData.toon.dispose();m.userData.toon=null}}}
+ for(const m of meshesNow()){const o=m.userData.origMat||(m.userData.origMat=m.material);
+  if(on){if(!m.userData.toon||m.userData.toonN!==+$('celN').value){m.userData.toon?.dispose();m.userData.toon=new THREE.MeshToonMaterial({map:o.map||null,normalMap:o.normalMap||null,color:o.color?o.color.clone():0xffffff,gradientMap:gradTex});m.userData.toonN=+$('celN').value}m.material=m.userData.toon}else m.material=o}}
+function clearOutlines(){for(const o of outlines){o.parent&&o.parent.remove(o)}outlines=[]}
+function buildOutlines(){clearOutlines();if(!$('ol').checked)return;
+ for(const m of meshesNow()){const skinned=!!m.isSkinnedMesh;
+  const mat=new THREE.MeshBasicMaterial({color:$('olC').value,side:THREE.BackSide});mat.userData.u={value:0};
+  mat.onBeforeCompile=sh=>{sh.uniforms.uOutline=mat.userData.u;sh.vertexShader='uniform float uOutline;\n'+sh.vertexShader.replace('#include <project_vertex>',(skinned?'transformed += normalize(objectNormal) * uOutline;':'transformed += normalize(normal) * uOutline;')+'\n#include <project_vertex>');if(skinned&&!sh.vertexShader.includes('beginnormal_vertex'))sh.vertexShader=sh.vertexShader.replace('#include <begin_vertex>','#include <beginnormal_vertex>\n#include <skinnormal_vertex>\n#include <begin_vertex>')};
+  let o;if(skinned){o=new THREE.SkinnedMesh(m.geometry,mat);o.bind(m.skeleton,m.bindMatrix)}else{o=new THREE.Mesh(m.geometry,mat);o.position.copy(m.position);o.quaternion.copy(m.quaternion);o.scale.copy(m.scale)}
+  o.userData.outline=true;o.frustumCulled=false;m.parent.add(o);outlines.push(o)}}
+function outlineW(size){return $('olW').value*V()/size}
+
+/* ---------- one frame ---------- */
+let showT=false;
+function poseAt(t){if(rig&&showT){rig.tpose()}else if(rig&&$('action').value!=='still'){rig.pose($('action').value,t)}else if(rig){rig.pose('idle',0)}if(rig&&rig.bonesHelper&&rig.updateHelper)rig.updateHelper()}
+function renderDir(i,size,t){setup(size);poseAt(t);pivot.rotation.y=(P().yaw+YAW[DIRS[i]])*Math.PI/180;
+ for(const o of outlines){o.material.userData.u.value=outlineW(size);o.visible=true}
+ renderer.render(scene,cam);return renderer.domElement}
+function compose(src,size,t){const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d'),p=P();
+ if($('aura').checked&&'filter' in g){const k=size/384,pulse=$('auraP').checked?1+.35*Math.sin(Math.PI*2*t):1,r=$('auraR').value*k*pulse,tint=document.createElement('canvas');tint.width=tint.height=size;const tg=tint.getContext('2d');tg.drawImage(src,0,0);tg.globalCompositeOperation='source-in';tg.fillStyle=$('auraC').value;tg.fillRect(0,0,size,size);
+  g.save();g.filter='blur('+r+'px)';const n=Math.max(1,Math.round(+$('auraS').value*1.5));for(let i=0;i<n;i++)g.drawImage(tint,0,0);g.filter='blur('+r*.35+'px)';g.globalAlpha=.7;g.drawImage(tint,0,0);g.restore()}
  if($('shadow').checked){const fx=size/2,fy=size*p.fy,H=size*p.h;g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(fx,fy,H*.2,H*.2*Math.sin(p.el*Math.PI/180),0,0,Math.PI*2);g.fill()}
  g.drawImage(src,0,0);return c}
-function draw(){[...$('dirs').children].forEach((b,i)=>b.classList.toggle('on',i===curDir));if(!model){const g=view.getContext?null:null;return}
- const size=+$('size').value,r=renderDir(curDir,size),c=withShadow(r,size);
- // show the composed preview (shadow + model) on a 2D overlay canvas swap: draw back onto the display canvas via bitmap
- prev.width=prev.height=size;prev.getContext('2d').clearRect(0,0,size,size);prev.getContext('2d').drawImage(c,0,0)}
-const prev=document.createElement('canvas');prev.id='prev';view.after(prev);prev.style.cssText=view.style.cssText;prev.className='';
-prev.setAttribute('style','width:min(100%,520px);aspect-ratio:1;background:repeating-conic-gradient(#2a352f 0 25%,#222c27 0 50%) 0 0/24px 24px;border:1px solid var(--line);border-radius:8px');view.style.display='none';
-for(const k of ['el','yaw','h','fy','la','li','am','shadow','size'])$(k).addEventListener('input',()=>{frames=[];lockSend();draw()});
+function nF(){return $('action').value==='still'?1:+$('frames').value}
+function draw(){[...$('dirs').children].forEach((b,i)=>b.classList.toggle('on',i===curDir));if(!model)return;
+ const size=+$('size').value,n=nF(),t=curFrame/n,r=renderDir(curDir,size,t),c=compose(r,size,t);prev.width=prev.height=size;prev.getContext('2d').drawImage(c,0,0);
+ $('frameInfo').textContent=n>1?'เฟรม '+(curFrame+1)+'/'+n:''}
+function redo(){frames=null;lockSend();draw()}
+for(const k of ['el','yaw','h','fy','la','li','am','shadow','size','aura','auraC','auraR','auraS','auraP','action','frames'])$(k).addEventListener('input',()=>{curFrame=0;redo()});
+for(const k of ['cel','celN'])$(k).addEventListener('input',()=>{applyCel();redo()});
+for(const k of ['ol','olC','olW'])$(k).addEventListener('input',()=>{if(k==='olW'){redo();return}buildOutlines();redo()});
 function lockSend(){$('dlSheet').disabled=$('send').disabled=true}
-function disposeModel(){if(!model)return;pivot.remove(model);model.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){for(const v of Object.values(o.material))if(v&&v.isTexture)v.dispose();o.material.dispose?.()}});model=null}
-async function loadBuf(buf,name){st('กำลังอ่านโมเดล … '+(buf.byteLength/1e6).toFixed(1)+' MB');await new Promise(r=>setTimeout(r,30));
- const gltf=await new Promise((res,rej)=>new GLTFLoader().parse(buf,'',res,rej));disposeModel();
+document.querySelectorAll('[data-yaw]').forEach(b=>b.onclick=()=>{let y=(+$('yaw').value+ +b.dataset.yaw);y=((y+540)%360)-180;$('yaw').value=y;redo()});
+
+/* ---------- loading ---------- */
+function disposeAll(){stop();clearOutlines();if(rig){rig.dispose();rig=null}if(model){pivot.remove(model);model.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){for(const v of Object.values(o.material))if(v&&v.isTexture)v.dispose();o.material.dispose?.()}});model=null}chains=[];renderChains();$('rigParams').hidden=true}
+function firstPositions(){const ms=meshesNow().filter(m=>m.isMesh&&!m.isSkinnedMesh);if(!ms.length)return null;ms.sort((a,b)=>b.geometry.attributes.position.count-a.geometry.attributes.position.count);const m=ms[0];m.updateWorldMatrix(true,false);const pa=m.geometry.attributes.position,out=new Float32Array(pa.count*3),mat=new THREE.Matrix4().copy(pivot.matrixWorld).invert().multiply(m.matrixWorld),v=new THREE.Vector3();for(let i=0;i<pa.count;i++){v.fromBufferAttribute(pa,i).applyMatrix4(mat);out[i*3]=v.x;out[i*3+1]=v.y;out[i*3+2]=v.z}return out}
+function autoSetup(){$('el').value=30;$('h').value=78;$('fy').value=90;$('la').value=-40;$('li').value=1.6;$('am').value=.9;
+ let note='';const pos=firstPositions();if(pos){const g=window.FrameRig.guessFront(pos,mh);$('yaw').value=g;note=g===0?'ด้านหน้า = +Z (ปกติ)':'หมุนชดเชย '+g+'° (เดาจากปลายเท้า)'}
+ $('frontNote').textContent=note;curFrame=0;redo();st('ตั้งตามเกมแล้ว · '+(note||'')+' · ถ้าหันผิดด้านให้ใช้ปุ่มหมุน 90°')}
+async function loadBuf(buf,name){st('กำลังอ่านโมเดล … '+(buf.byteLength/1e6).toFixed(1)+' MB');await sleep(30);
+ const gltf=await new Promise((res,rej)=>new GLTFLoader().parse(buf,'',res,rej));disposeAll();
  model=gltf.scene;const box=new THREE.Box3().setFromObject(model),c=box.getCenter(new THREE.Vector3());
- model.position.set(-c.x,-box.min.y,-c.z);mh=box.max.y-box.min.y;pivot.add(model);
- let tris=0;model.traverse(o=>{if(o.isMesh){const g=o.geometry;tris+=(g.index?g.index.count:g.attributes.position.count)/3;if(o.material){o.material.side=THREE.FrontSide}}});
- $('info').innerHTML=`<b>${name}</b><br>${Math.round(tris).toLocaleString()} สามเหลี่ยม · สูง ${mh.toFixed(2)} หน่วย · ${gltf.animations.length?gltf.animations.length+' animation':'ไม่มี animation (ภาพนิ่ง)'}`;
+ model.position.set(-c.x,-box.min.y,-c.z);mh=box.max.y-box.min.y;pivot.add(model);pivot.updateMatrixWorld(true);
+ let tris=0;model.traverse(o=>{if(o.isMesh){const g=o.geometry;tris+=(g.index?g.index.count:g.attributes.position.count)/3;if(o.material)o.material.side=THREE.FrontSide}});
+ srcMeshes=meshesNow();
+ $('info').innerHTML=`<b>${name}</b><br>${Math.round(tris).toLocaleString()} สามเหลี่ยม · สูง ${mh.toFixed(2)} หน่วย · ${gltf.animations.length?gltf.animations.length+' animation ในไฟล์':'ไม่มี animation / กระดูก'}`;
  if(!$('name').dataset.t)$('name').value=name.replace(/\.[^.]+$/,'').toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'')||'hero-3d';
- $('renderAll').disabled=false;frames=[];lockSend();draw();st('พร้อมแล้ว — ปรับกล้อง/แสง แล้วกด Render 8 ทิศ')}
+ for(const id of ['renderAll','auto','rigBtn','play'])$(id).disabled=false;$('play').disabled=true;applyCel();buildOutlines();autoSetup()}
 async function loadFile(f){try{await loadBuf(await f.arrayBuffer(),f.name)}catch(e){st('โหลดโมเดลไม่สำเร็จ: '+(e.message||e));console.error(e)}}
 $('name').addEventListener('input',()=>$('name').dataset.t=1);
 $('drop').onclick=()=>$('file').click();$('file').onchange=e=>e.target.files[0]&&loadFile(e.target.files[0]);
 $('drop').ondragover=e=>{e.preventDefault();$('drop').classList.add('over')};$('drop').ondragleave=()=>$('drop').classList.remove('over');
 $('drop').ondrop=e=>{e.preventDefault();$('drop').classList.remove('over');e.dataTransfer.files[0]&&loadFile(e.dataTransfer.files[0])};
-window.FrameGen={loadBuffer:loadBuf,renderAll:()=>$('renderAll').click()};
-$('renderAll').onclick=async()=>{const size=+$('size').value;frames=[];$('renderAll').disabled=true;
- for(let i=0;i<8;i++){st('กำลัง render '+DIRS[i]+' ('+(i+1)+'/8)');await new Promise(r=>setTimeout(r,20));const c=withShadow(renderDir(i,size),size);const k=document.createElement('canvas');k.width=k.height=size;k.getContext('2d').drawImage(c,0,0);frames.push(k)}
- const sh=$('sheet'),cell=Math.round(size/ (size>256?2:1));sh.width=cell*4;sh.height=cell*2;const g=sh.getContext('2d');g.clearRect(0,0,sh.width,sh.height);frames.forEach((f,i)=>g.drawImage(f,(i%4)*cell,Math.floor(i/4)*cell,cell,cell));
- curDir=0;draw();$('renderAll').disabled=false;$('dlSheet').disabled=false;$('send').disabled=false;st('เสร็จแล้ว 8 ทิศ · ดาวน์โหลดสไปรต์ชีต หรือส่งเข้าคลังได้')};
-function outFrames(){const o=+$('outSize').value;return frames.map(f=>{if(!o||o>=f.width)return f;const c=document.createElement('canvas');c.width=c.height=o;const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(f,0,0,o,o);return c})}
-function sheetCanvas(){const fs=outFrames(),s=fs[0].width,c=document.createElement('canvas');c.width=s*4;c.height=s*2;const g=c.getContext('2d');fs.forEach((f,i)=>g.drawImage(f,(i%4)*s,Math.floor(i/4)*s));return c}
-$('dlSheet').onclick=()=>{sheetCanvas().toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=($('name').value||'hero-3d')+'-sheet.png';a.click()})};
-$('send').onclick=()=>{const name=($('name').value||'hero-3d').replace(/[^a-z0-9_-]+/gi,'-'),fs=outFrames(),files=fs.map((f,i)=>({path:`assets/rendered/${name}/${name}-${DIRS[i].toLowerCase()}.png`,dataUrl:f.toDataURL('image/png')}));
- files.push({path:`assets/rendered/${name}/${name}-sheet.png`,dataUrl:sheetCanvas().toDataURL('image/png')});
- files.push({path:`assets/rendered/${name}/${name}.json`,json:{schema:'frame-generator-v1',name,dirs:DIRS,frame:fs[0].width,columns:4,rows:2,pivot:[.5,P().fy],figureHeight:P().h,elevation:P().el,yaw:P().yaw}});
+$('auto').onclick=autoSetup;
+
+/* ---------- rig ---------- */
+const RP=['armY','shoulderX','elbowT','hipY','hipX','kneeT','neckOff'];
+function syncRigUI(){for(const k of RP){$('rp_'+k).value=rigParams[k];$('rp_'+k+'V').textContent=(+rigParams[k]).toFixed(3)}}
+let rebuildT=0;
+async function buildRig(keepParams){if(!model)return;st('กำลังวางกระดูกและผูกน้ำหนักผิว … (โมเดลใหญ่อาจใช้เวลาสักครู่)');await sleep(40);
+ const FR=window.FrameRig;try{
+  if(rig){rig.dispose();pivot.remove(rig.group);rig=null}
+  pivot.rotation.set(0,0,0);pivot.updateMatrixWorld(true);
+  const sources=srcMeshes;sources.forEach(m=>m.visible=true);
+  const r=FR.build(THREE,pivot,sources,mh,keepParams?rigParams:null,chains,null);
+  rig=r;rigParams={...r.params};sources.forEach(m=>m.visible=false);pivot.add(r.group);
+  // the source meshes stay (hidden) so rebuilding can re-use their geometry/material
+  clearOutlines();applyCel();buildOutlines();syncRigUI();$('rigParams').hidden=false;$('rigOff').disabled=false;$('addChain').disabled=false;
+  const opt=$('action');if(opt.options.length<2)for(const [k,l] of Object.entries(r.actions)){const o=document.createElement('option');o.value=k;o.textContent=l;opt.append(o)}
+  if(opt.value==='still')opt.value='idle';$('play').disabled=false;$('gridT').onchange();redo();st('ผูกกระดูกแล้ว ('+r.nBody+' ท่อน'+(chains.length?' + bone พิเศษ '+chains.length+' โซ่':'')+') · เลือกท่าและกดเล่นพรีวิวได้')}
+ catch(e){st('ผูกกระดูกไม่สำเร็จ: '+(e.message||e));console.error(e)}}
+function scheduleRebuild(){clearTimeout(rebuildT);rebuildT=setTimeout(()=>buildRig(true),600)}
+$('rigBtn').onclick=()=>buildRig(false);
+$('rigOff').onclick=()=>{if(!rig)return;stop();rig.dispose();pivot.remove(rig.group);rig=null;srcMeshes.forEach(m=>m.visible=true);clearOutlines();applyCel();buildOutlines();$('rigParams').hidden=true;$('rigOff').disabled=true;$('addChain').disabled=true;$('action').value='still';chains=[];renderChains();redo();st('ถอดกระดูกแล้ว')};
+for(const k of RP)$('rp_'+k).addEventListener('input',()=>{rigParams[k]=+$('rp_'+k).value;$('rp_'+k+'V').textContent=(+rigParams[k]).toFixed(3);showT=true;if(rig){$('gridT').checked=true;rig.setHelper(true);draw()}scheduleRebuild()});
+$('gridT').onchange=()=>{if(!rig)return;rig.setHelper($('gridT').checked);draw()};
+
+/* ---------- extra bone chains ---------- */
+const CH_DEF={n:5,lenF:.2,radF:.07,motion:'flutter',amp:.5,speed:2,delay:.12,sweep:.15};
+function renderChains(){const box=$('chains');box.innerHTML='';chains.forEach((c,i)=>{const d=document.createElement('div');d.className='chain';
+ d.innerHTML=`<div class="row" style="margin:0"><input type="text" value="${c.name}" data-k="name" style="flex:1"><button data-del="1">🗑</button></div>
+ <div class="two"><label>ความยาว (%ตัว)<input type="number" data-k="lenF" step="0.01" value="${c.lenF}"></label><label>รัศมีผ้า (%ตัว)<input type="number" data-k="radF" step="0.01" value="${c.radF}"></label>
+ <label>จำนวนท่อน<input type="number" data-k="n" min="2" max="10" value="${c.n}"></label><label>การเคลื่อนไหว<select data-k="motion"><option value="flutter">ผ้าปลิว</option><option value="sway">แกว่งช้า ๆ</option><option value="spring">สปริงตามตัว</option></select></label>
+ <label>แอมพลิจูด<input type="number" data-k="amp" step="0.05" value="${c.amp}"></label><label>รอบ/ลูป<input type="number" data-k="speed" min="1" max="6" value="${c.speed}"></label>
+ <label>หน่วงต่อท่อน<input type="number" data-k="delay" step="0.02" value="${c.delay}"></label><label>ลมพัดตามตัว<input type="number" data-k="sweep" step="0.05" value="${c.sweep}"></label></div>`;
+ d.querySelector('[data-k=motion]').value=c.motion;
+ d.addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;c[k]=e.target.type==='number'?+e.target.value:e.target.value;if(k!=='name')scheduleRebuild()});
+ d.querySelector('[data-del]').onclick=()=>{chains.splice(i,1);renderChains();scheduleRebuild()};box.append(d)})}
+function chainSpec(c){return{name:c.name.replace(/[^a-z0-9_-]/gi,'_'),attach:c.attach,n:Math.max(2,Math.min(10,c.n|0)),len:c.lenF*mh,radius:c.radF*mh,motion:c.motion,amp:c.amp,speed:c.speed,delay:c.delay,sweep:c.sweep}}
+$('addChain').onclick=()=>{if(!rig)return;pickMode=true;stop();showT=true;$('gridT').checked=true;rig.setHelper(true);prev.classList.add('pick');draw();st('คลิกบนตัวโมเดลตรงจุดที่จะให้ผ้า/ผมห้อยออกมา (Esc = ยกเลิก)')};
+addEventListener('keydown',e=>{if(e.key==='Escape'&&pickMode){pickMode=false;prev.classList.remove('pick');st('ยกเลิกแล้ว')}});
+prev.addEventListener('click',e=>{if(!pickMode||!rig)return;const r=prev.getBoundingClientRect(),nx=((e.clientX-r.left)/r.width)*2-1,ny=-(((e.clientY-r.top)/r.height)*2-1);
+ const rc=new THREE.Raycaster();rc.setFromCamera({x:nx,y:ny},cam);const hit=rc.intersectObjects(rig.meshes,false)[0];if(!hit){st('คลิกโดนตัวโมเดลเท่านั้น ลองใหม่');return}
+ pickMode=false;prev.classList.remove('pick');const lp=pivot.worldToLocal(hit.point.clone());
+ chains.push({name:'ผ้า'+(chains.length+1),attach:[lp.x,lp.y,lp.z],...CH_DEF});
+ chains.forEach(c=>{if(!c.spec)c.spec=1});renderChains();buildRig(true)});
+const _build=window.FrameRig.build;window.FrameRig.build=function(T,root,src,H,p,ch,cb){return _build(T,root,src,H,p,(ch||[]).map(chainSpec),cb)};
+
+/* ---------- preview play ---------- */
+function stop(){if(played){clearInterval(played);played=null}$('play').textContent='▶ เล่นพรีวิว'}
+$('play').onclick=()=>{showT=false;if(played){stop();return}if(nF()<2){st('เลือกท่าที่เคลื่อนไหวก่อน');return}$('play').textContent='⏸ หยุด';played=setInterval(()=>{curFrame=(curFrame+1)%nF();draw()},1000/+$('fps').value)};
+$('action').addEventListener('input',()=>{showT=false;$('play').disabled=!rig||$('action').value==='still';if($('action').value==='still')stop()});
+
+/* ---------- export ---------- */
+async function renderAll(){stop();showT=false;const size=+$('size').value,n=nF(),act=$('action').value;frames=[];$('renderAll').disabled=true;
+ for(let f=0;f<n;f++){const row=[];for(let i=0;i<8;i++){st('กำลัง render '+(act==='still'?'':'เฟรม '+(f+1)+'/'+n+' · ')+DIRS[i]);await sleep(15);const t=f/n,c=compose(renderDir(i,size,t),size,t);const k=document.createElement('canvas');k.width=k.height=size;k.getContext('2d').drawImage(c,0,0);row.push(k)}frames.push(row)}
+ // preview sheet: rows = directions, columns = frames
+ const sh=$('sheet'),cell=Math.min(96,Math.round(size/ (n>1?3:2)));sh.width=cell*n;sh.height=cell*8;const g=sh.getContext('2d');frames.forEach((row,f)=>row.forEach((k,i)=>g.drawImage(k,f*cell,i*cell,cell,cell)));
+ curFrame=0;curDir=0;draw();$('renderAll').disabled=false;$('dlSheet').disabled=false;$('send').disabled=false;st('เสร็จแล้ว · '+n+' เฟรม × 8 ทิศ')}
+$('renderAll').onclick=renderAll;
+function outFrames(){const o=+$('outSize').value;return frames.map(row=>row.map(f=>{if(!o||o>=f.width)return f;const c=document.createElement('canvas');c.width=c.height=o;const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(f,0,0,o,o);return c}))}
+function sheetCanvas(){const fr=outFrames(),s=fr[0][0].width,n=fr.length,c=document.createElement('canvas');c.width=s*n;c.height=s*8;const g=c.getContext('2d');fr.forEach((row,f)=>row.forEach((k,i)=>g.drawImage(k,f*s,i*s)));return c}
+$('dlSheet').onclick=()=>{sheetCanvas().toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=($('name').value||'hero-3d')+'-'+$('action').value+'-sheet.png';a.click()})};
+$('send').onclick=()=>{const name=($('name').value||'hero-3d').replace(/[^a-z0-9_-]+/gi,'-'),act=$('action').value,fr=outFrames(),n=fr.length,s=fr[0][0].width,base=`assets/rendered/${name}/${act}`,files=[];
+ if(act==='still'||$('perFrame').checked)fr.forEach((row,f)=>row.forEach((k,i)=>files.push({path:`${base}/${DIRS[i].toLowerCase()}${n>1?'-'+String(f+1).padStart(2,'0'):''}.png`,dataUrl:k.toDataURL('image/png')})));
+ files.push({path:`${base}-sheet.png`,dataUrl:sheetCanvas().toDataURL('image/png')});
+ files.push({path:`${base}.json`,json:{schema:'frame-generator-v2',name,action:act,dirs:DIRS,frames:n,fps:+$('fps').value,frame:s,columns:n,rows:8,layout:'rows = directions (dirs order), columns = frames',pivot:[.5,P().fy],figureHeight:P().h,elevation:P().el,yaw:P().yaw,style:{cel:$('cel').checked,outline:$('ol').checked,aura:$('aura').checked}}});
  if(window.parent!==window){window.parent.postMessage({type:'framegen:save',name,files},location.origin);st('ส่ง '+files.length+' ไฟล์เข้าคิวแล้ว …')}else st('หน้านี้ไม่ได้เปิดใน Asset Studio — ใช้ดาวน์โหลดแทน')};
 window.addEventListener('message',e=>{if(e.origin!==location.origin)return;if(e.data?.type==='framegen:saved')st(e.data.msg||'เก็บเข้าคิวแล้ว · รอกด “Push ที่แก้”')});
+window.FrameGen={loadBuffer:loadBuf,buildRig:()=>buildRig(false),renderAll,state:()=>({rig:!!rig,chains:chains.length}),addChain:(x,y,z)=>{chains.push({name:'ผ้า'+(chains.length+1),attach:[x,y,z],...CH_DEF});renderChains();return buildRig(true)}};
 draw();
 })();
 </script></body></html>
