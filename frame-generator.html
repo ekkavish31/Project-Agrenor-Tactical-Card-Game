@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3D Frame Generator</title>
+<style>
+:root{--bg:#151b18;--panel:#1f2a25;--ink:#f0ead6;--mut:#a9b3a6;--line:#3b4a42;--gold:#d9a441;--ok:#3f6654}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:var(--bg);color:var(--ink);font:13px/1.45 system-ui,"Noto Sans Thai",sans-serif;display:grid;grid-template-columns:300px 1fr 280px;gap:10px;padding:10px}
+aside,section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;min-height:0}
+h3{margin:0 0 8px;font-size:13px;color:var(--gold)}label{display:block;margin:8px 0 2px;color:var(--mut);font-size:12px}
+input[type=range]{width:100%}input[type=text],select{width:100%;padding:6px;background:#10161300;border:1px solid var(--line);border-radius:6px;color:var(--ink);background:#101713}
+button{padding:7px 10px;border:1px solid var(--gold);background:#2b2415;color:var(--ink);border-radius:7px;cursor:pointer;font:inherit}button.pri{background:var(--ok);border-color:#5f8a76}button:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.val{float:right;color:var(--ink)}
+#drop{border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--mut);cursor:pointer}#drop.over{border-color:var(--gold);color:var(--ink)}
+#stageWrap{display:flex;flex-direction:column;gap:8px;align-items:center}
+#view{width:min(100%,520px);aspect-ratio:1;background:repeating-conic-gradient(#2a352f 0 25%,#222c27 0 50%) 0 0/24px 24px;border:1px solid var(--line);border-radius:8px;image-rendering:auto}
+#dirs{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;width:min(100%,520px)}#dirs button{padding:5px 0;font-size:12px}#dirs button.on{background:var(--ok)}
+#sheet{width:100%;max-width:100%;background:repeating-conic-gradient(#2a352f 0 25%,#222c27 0 50%) 0 0/24px 24px;border:1px solid var(--line);border-radius:8px}
+#status{color:var(--mut);margin-top:8px;min-height:18px}small{color:var(--mut)}
+@media(max-width:1000px){body{grid-template-columns:1fr;height:auto}}
+</style></head><body>
+<aside>
+ <h3>1 · นำเข้าโมเดล 3D</h3>
+ <div id="drop">ลากไฟล์ .glb / .gltf มาวาง<br>หรือคลิกเพื่อเลือก</div><input id="file" type="file" accept=".glb,.gltf" hidden>
+ <div id="info" style="margin-top:8px;color:var(--mut)">ยังไม่มีโมเดล</div>
+ <h3 style="margin-top:14px">2 · กล้อง ISO</h3>
+ <label>มุมก้ม (°) <span class="val" id="elV">30</span></label><input id="el" type="range" min="10" max="60" step="0.5" value="30"><small>30° = พื้นยุบครึ่ง (2:1) เหมือนแมพหมู่บ้าน</small>
+ <label>หมุนโมเดลชดเชย (°) <span class="val" id="yawV">0</span></label><input id="yaw" type="range" min="-180" max="180" step="1" value="0"><small>ปรับให้ทิศ “S” คือด้านหน้าหันเข้าหากล้อง</small>
+ <label>ความสูงตัวละครในเฟรม (%) <span class="val" id="hV">78</span></label><input id="h" type="range" min="40" max="95" step="1" value="78"><small>78% = ตรงฮีโร่ในแมพ (73px จากเฟรม 93.6px)</small>
+ <label>เลื่อนขึ้น-ลง (%) <span class="val" id="fyV">90</span></label><input id="fy" type="range" min="70" max="98" step="1" value="90"><small>ตำแหน่งเท้าจากขอบบนเฟรม</small>
+ <h3 style="margin-top:14px">3 · แสง</h3>
+ <label>ทิศแสง (°) <span class="val" id="laV">-40</span></label><input id="la" type="range" min="-180" max="180" step="1" value="-40">
+ <label>ความสว่าง <span class="val" id="liV">1.6</span></label><input id="li" type="range" min="0.2" max="3.5" step="0.05" value="1.6">
+ <label>แสงรอบด้าน <span class="val" id="amV">0.9</span></label><input id="am" type="range" min="0" max="2" step="0.05" value="0.9">
+ <label><input id="shadow" type="checkbox" checked> เงาใต้เท้า</label>
+</aside>
+<section id="stageWrap">
+ <canvas id="view" width="384" height="384"></canvas>
+ <div id="dirs"></div>
+ <div class="row"><button class="pri" id="renderAll" disabled>▶ Render 8 ทิศ</button><button id="dlSheet" disabled>⬇ สไปรต์ชีต PNG</button><button id="send" disabled>⬆ ส่งเข้าคลัง (รอ Push)</button></div>
+ <div id="status"></div>
+</section>
+<aside>
+ <h3>4 · ผลลัพธ์ 8 ทิศ</h3>
+ <label>ขนาดเฟรม (px)</label><select id="size"><option>256</option><option selected>384</option><option>512</option></select>
+ <label>ชื่อชุด</label><input id="name" type="text" value="hero-3d">
+ <label>ย่อเหลือ (px) ตอนส่งออก</label><select id="outSize"><option value="0">ไม่ย่อ (ใช้ขนาดเฟรม)</option><option value="192">192</option><option value="128">128</option></select>
+ <canvas id="sheet" width="10" height="10" style="margin-top:12px"></canvas>
+ <p><small>ลำดับทิศ: S, SW, W, NW, N, NE, E, SE · pivot ที่ฐานเท้า (กึ่งกลางแนวนอน, ตำแหน่งเท้าตามแถบเลื่อน) · ฉากหลังโปร่งใส</small></p>
+</aside>
+<script src="js/vendor/three-glb.js?v=91.40"></script>
+<script>
+(()=>{
+const {THREE,GLTFLoader}=window.THREE3,$=id=>document.getElementById(id);
+const DIRS=['S','SW','W','NW','N','NE','E','SE'];
+const view=$('view'),renderer=new THREE.WebGLRenderer({canvas:view,alpha:true,antialias:true,preserveDrawingBuffer:true});
+renderer.setClearColor(0,0);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
+const scene=new THREE.Scene(),pivot=new THREE.Group(),cam=new THREE.OrthographicCamera(-1,1,1,-1,.01,100);scene.add(pivot);
+const amb=new THREE.HemisphereLight(0xffffff,0x6b6a5c,.9),sun=new THREE.DirectionalLight(0xfff1dc,1.6);scene.add(amb,sun,sun.target);
+let model=null,mh=1,curDir=0,frames=[];
+const st=t=>{$('status').textContent=t};
+for(const [i,d] of DIRS.entries()){const b=document.createElement('button');b.textContent=d;b.onclick=()=>{curDir=i;draw()};$('dirs').appendChild(b)}
+function P(){return{el:+$('el').value,yaw:+$('yaw').value,h:+$('h').value/100,fy:+$('fy').value/100,la:+$('la').value,li:+$('li').value,am:+$('am').value}}
+function setup(size){const p=P();renderer.setSize(size,size,false);const el=p.el*Math.PI/180,D=20;
+ cam.position.set(0,Math.sin(el)*D,Math.cos(el)*D);cam.up.set(0,1,0);cam.lookAt(0,0,0);
+ const V=mh*Math.cos(el)/p.h;cam.left=-V/2;cam.right=V/2;cam.top=V*p.fy;cam.bottom=-V*(1-p.fy);cam.updateProjectionMatrix();
+ const la=p.la*Math.PI/180;sun.position.set(Math.sin(la)*6,9,Math.cos(la)*6+4);sun.target.position.set(0,0,0);sun.intensity=p.li;amb.intensity=p.am;
+ for(const k of ['el','yaw','h','fy','la','li','am'])$(k+'V').textContent=$(k).value}
+function renderDir(i,size){setup(size);pivot.rotation.y=(P().yaw+i*45)*Math.PI/180;renderer.render(scene,cam);return renderer.domElement}
+function withShadow(src,size){const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d'),p=P();
+ if($('shadow').checked){const fx=size/2,fy=size*p.fy,H=size*p.h;g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(fx,fy,H*.2,H*.2*Math.sin(p.el*Math.PI/180),0,0,Math.PI*2);g.fill()}
+ g.drawImage(src,0,0);return c}
+function draw(){[...$('dirs').children].forEach((b,i)=>b.classList.toggle('on',i===curDir));if(!model){const g=view.getContext?null:null;return}
+ const size=+$('size').value,r=renderDir(curDir,size),c=withShadow(r,size);
+ // show the composed preview (shadow + model) on a 2D overlay canvas swap: draw back onto the display canvas via bitmap
+ prev.width=prev.height=size;prev.getContext('2d').clearRect(0,0,size,size);prev.getContext('2d').drawImage(c,0,0)}
+const prev=document.createElement('canvas');prev.id='prev';view.after(prev);prev.style.cssText=view.style.cssText;prev.className='';
+prev.setAttribute('style','width:min(100%,520px);aspect-ratio:1;background:repeating-conic-gradient(#2a352f 0 25%,#222c27 0 50%) 0 0/24px 24px;border:1px solid var(--line);border-radius:8px');view.style.display='none';
+for(const k of ['el','yaw','h','fy','la','li','am','shadow','size'])$(k).addEventListener('input',()=>{frames=[];lockSend();draw()});
+function lockSend(){$('dlSheet').disabled=$('send').disabled=true}
+function disposeModel(){if(!model)return;pivot.remove(model);model.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){for(const v of Object.values(o.material))if(v&&v.isTexture)v.dispose();o.material.dispose?.()}});model=null}
+async function loadBuf(buf,name){st('กำลังอ่านโมเดล … '+(buf.byteLength/1e6).toFixed(1)+' MB');await new Promise(r=>setTimeout(r,30));
+ const gltf=await new Promise((res,rej)=>new GLTFLoader().parse(buf,'',res,rej));disposeModel();
+ model=gltf.scene;const box=new THREE.Box3().setFromObject(model),c=box.getCenter(new THREE.Vector3());
+ model.position.set(-c.x,-box.min.y,-c.z);mh=box.max.y-box.min.y;pivot.add(model);
+ let tris=0;model.traverse(o=>{if(o.isMesh){const g=o.geometry;tris+=(g.index?g.index.count:g.attributes.position.count)/3;if(o.material){o.material.side=THREE.FrontSide}}});
+ $('info').innerHTML=`<b>${name}</b><br>${Math.round(tris).toLocaleString()} สามเหลี่ยม · สูง ${mh.toFixed(2)} หน่วย · ${gltf.animations.length?gltf.animations.length+' animation':'ไม่มี animation (ภาพนิ่ง)'}`;
+ if(!$('name').dataset.t)$('name').value=name.replace(/\.[^.]+$/,'').toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'')||'hero-3d';
+ $('renderAll').disabled=false;frames=[];lockSend();draw();st('พร้อมแล้ว — ปรับกล้อง/แสง แล้วกด Render 8 ทิศ')}
+async function loadFile(f){try{await loadBuf(await f.arrayBuffer(),f.name)}catch(e){st('โหลดโมเดลไม่สำเร็จ: '+(e.message||e));console.error(e)}}
+$('name').addEventListener('input',()=>$('name').dataset.t=1);
+$('drop').onclick=()=>$('file').click();$('file').onchange=e=>e.target.files[0]&&loadFile(e.target.files[0]);
+$('drop').ondragover=e=>{e.preventDefault();$('drop').classList.add('over')};$('drop').ondragleave=()=>$('drop').classList.remove('over');
+$('drop').ondrop=e=>{e.preventDefault();$('drop').classList.remove('over');e.dataTransfer.files[0]&&loadFile(e.dataTransfer.files[0])};
+window.FrameGen={loadBuffer:loadBuf,renderAll:()=>$('renderAll').click()};
+$('renderAll').onclick=async()=>{const size=+$('size').value;frames=[];$('renderAll').disabled=true;
+ for(let i=0;i<8;i++){st('กำลัง render '+DIRS[i]+' ('+(i+1)+'/8)');await new Promise(r=>setTimeout(r,20));const c=withShadow(renderDir(i,size),size);const k=document.createElement('canvas');k.width=k.height=size;k.getContext('2d').drawImage(c,0,0);frames.push(k)}
+ const sh=$('sheet'),cell=Math.round(size/ (size>256?2:1));sh.width=cell*4;sh.height=cell*2;const g=sh.getContext('2d');g.clearRect(0,0,sh.width,sh.height);frames.forEach((f,i)=>g.drawImage(f,(i%4)*cell,Math.floor(i/4)*cell,cell,cell));
+ curDir=0;draw();$('renderAll').disabled=false;$('dlSheet').disabled=false;$('send').disabled=false;st('เสร็จแล้ว 8 ทิศ · ดาวน์โหลดสไปรต์ชีต หรือส่งเข้าคลังได้')};
+function outFrames(){const o=+$('outSize').value;return frames.map(f=>{if(!o||o>=f.width)return f;const c=document.createElement('canvas');c.width=c.height=o;const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(f,0,0,o,o);return c})}
+function sheetCanvas(){const fs=outFrames(),s=fs[0].width,c=document.createElement('canvas');c.width=s*4;c.height=s*2;const g=c.getContext('2d');fs.forEach((f,i)=>g.drawImage(f,(i%4)*s,Math.floor(i/4)*s));return c}
+$('dlSheet').onclick=()=>{sheetCanvas().toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=($('name').value||'hero-3d')+'-sheet.png';a.click()})};
+$('send').onclick=()=>{const name=($('name').value||'hero-3d').replace(/[^a-z0-9_-]+/gi,'-'),fs=outFrames(),files=fs.map((f,i)=>({path:`assets/rendered/${name}/${name}-${DIRS[i].toLowerCase()}.png`,dataUrl:f.toDataURL('image/png')}));
+ files.push({path:`assets/rendered/${name}/${name}-sheet.png`,dataUrl:sheetCanvas().toDataURL('image/png')});
+ files.push({path:`assets/rendered/${name}/${name}.json`,json:{schema:'frame-generator-v1',name,dirs:DIRS,frame:fs[0].width,columns:4,rows:2,pivot:[.5,P().fy],figureHeight:P().h,elevation:P().el,yaw:P().yaw}});
+ if(window.parent!==window){window.parent.postMessage({type:'framegen:save',name,files},location.origin);st('ส่ง '+files.length+' ไฟล์เข้าคิวแล้ว …')}else st('หน้านี้ไม่ได้เปิดใน Asset Studio — ใช้ดาวน์โหลดแทน')};
+window.addEventListener('message',e=>{if(e.origin!==location.origin)return;if(e.data?.type==='framegen:saved')st(e.data.msg||'เก็บเข้าคิวแล้ว · รอกด “Push ที่แก้”')});
+draw();
+})();
+</script></body></html>
