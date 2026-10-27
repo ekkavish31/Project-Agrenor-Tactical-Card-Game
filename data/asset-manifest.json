@@ -53129,6 +53129,41 @@
     ],
     "flipX": false
    }
+  },
+  {
+   "id": "fence-wood-long",
+   "file": "assets/objects/fence-wood-long.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    3586,
+    2184
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: fence-wood-long",
+   "prompt": "",
+   "pivot": [
+    0.011450372324665366,
+    1.0110832255207647
+   ],
+   "mapW": 1179,
+   "artRevision": "20261027-143641",
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.011450372324665366,
+     1.0110832255207647
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1,
+     1.1117
+    ],
+    "flipX": false
+   }
   }
  ],
  "studioWalks": {
