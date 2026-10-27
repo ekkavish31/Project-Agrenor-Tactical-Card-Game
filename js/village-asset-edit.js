@@ -2039,7 +2039,7 @@
   place.keys = place.keys.filter(k => items.some(e => e.key === k));
   const tabs = [
    ['building', '🏠 อาคาร', !!o],
-   ['frame', '🔲 ประตู/รั้ว', framed],
+   ['frame', '🔲 ประตู/รั้ว', false], // v91.26: automatic fences retired
    ['items', '🪴 ของย่อย ' + items.length, true],
    ['entry', '🚪 ทางเข้า', !!o && o.id !== 'square']
   ];

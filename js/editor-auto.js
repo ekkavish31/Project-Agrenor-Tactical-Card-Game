@@ -120,10 +120,10 @@
     win.innerHTML = `<h3>🪄 เครื่องมืออัตโนมัติ <button id="auX" title="ปิด">✕</button></h3>
 <div class="tool"><b>ก) ต่อถนนไปหาทางเข้า</b><small>ทางเข้าสถานที่/ทางออกที่ไม่มีถนนอยู่ใกล้ จะถูกต่อทางย่อยเข้าถนนที่ใกล้ที่สุด (ย้อนกลับด้วย ↶ ได้)</small><button id="auRoad">ต่อถนนให้อัตโนมัติ</button></div>
 <div class="tool"><b>ข) ตรวจแผนที่</b><small>กรอบฟ้าทับกัน · ช่องเหลืองไม่แตะขอบ · ทางเข้าเดินไม่ถึง · ไม่มีถนนใกล้ทางเข้า</small><button id="auCheck">ตรวจเลย</button></div>
-<div class="tool"><b>ง) คัดลอกรั้ว / ขนาดกรอบ</b><small>เอาชุดรั้ว (4 ด้าน + ประตู) ของสถานที่หนึ่งไปใส่สถานที่อื่น</small>
+<div class="tool" style="display:none"><b>ง) คัดลอกรั้ว / ขนาดกรอบ</b><small>เอาชุดรั้ว (4 ด้าน + ประตู) ของสถานที่หนึ่งไปใส่สถานที่อื่น</small>
 <div class="row"><select id="auSrc">${opts}</select> → <select id="auDst" multiple size="4" style="min-width:140px">${opts}</select></div>
 <label class="row" style="margin-top:6px"><input type="checkbox" id="auFp"> คัดลอกขนาดกรอบฟ้าด้วย</label><button id="auCopy">คัดลอก</button></div>
-<div class="tool"><b>🗑 ลบรั้ว</b><small>ลบรั้วทุกด้านของสถานที่ที่เลือก (ใช้ปุ่ม Ctrl/Shift เลือกหลายที่) หรือทั้งแผนที่ · ย้อนกลับด้วย ↶ ได้</small><div class="row"><select id="auFenceDst" multiple size="3" style="min-width:140px">${opts}</select><button id="auFenceDel">ลบรั้วที่เลือก</button><button id="auFenceAll">ลบรั้วทั้งแผนที่</button></div></div>
+<div class="tool" style="display:none"><b>🗑 ลบรั้ว</b><small>ลบรั้วทุกด้านของสถานที่ที่เลือก (ใช้ปุ่ม Ctrl/Shift เลือกหลายที่) หรือทั้งแผนที่ · ย้อนกลับด้วย ↶ ได้</small><div class="row"><select id="auFenceDst" multiple size="3" style="min-width:140px">${opts}</select><button id="auFenceDel">ลบรั้วที่เลือก</button><button id="auFenceAll">ลบรั้วทั้งแผนที่</button></div></div>
 <div class="tool"><b>จ) snap ของย่อยทั้งหมดเข้ากริด</b><small>จัดของย่อยทุกชิ้นทุกสถานที่ให้ตรงช่องกริดปัจจุบัน (กด Q สลับ 1×1 / 2×2 ก่อน)</small><button id="auSnap">snap ทั้งหมด</button></div>
 <b>ผล</b><div id="auLog"></div>`;
     document.body.append(win);
