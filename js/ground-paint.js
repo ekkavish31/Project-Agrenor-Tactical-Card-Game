@@ -8,7 +8,7 @@
 const SRC=document.currentScript?.src||'',url=f=>SRC?new URL('../'+f,SRC).href:f;
 const MATERIALS=[
  {id:'grass',name:'หญ้า',tex:'grass-lush'},{id:'clover',name:'หญ้ามีดอก',tex:'grass-clover'},{id:'drygrass',name:'หญ้าแห้ง',tex:'grass-dry'},{id:'moss',name:'มอส',tex:'moss'},
- {id:'soil',name:'ดินร่วน',tex:'soil-dark'},{id:'sand',name:'ทราย',tex:'sand-ripple'},{id:'snow',name:'หิมะ',tex:'snow-deep'},{id:'mud',name:'โคลน',tex:'mud-wet'},
+ {id:'soil',name:'ดินร่วน',tex:'soil-dark'},{id:'desert',name:'ดินทรายส้ม',tex:'dirt-orange'},{id:'sand',name:'ทราย',tex:'sand-ripple'},{id:'snow',name:'หิมะ',tex:'snow-deep'},{id:'mud',name:'โคลน',tex:'mud-wet'},
  {id:'road-dirt',name:'ถนนดิน',tex:'dirt',walk:true},{id:'road-gravel',name:'ทางกรวด',tex:'gravel',walk:true},{id:'road-cobble',name:'ถนนหินกรวด',tex:'cobble',walk:true},{id:'road-stone',name:'ทางหินแผ่น',tex:'stone-path',walk:true},
  {id:'road-slab',name:'ลานหินตัด',tex:'slabs',walk:true},{id:'road-plank',name:'พื้นไม้',tex:'planks',walk:true},{id:'water',name:'น้ำตื้น',tex:'shallow-pebbles',walk:false},{id:'pond',name:'น้ำลึก',tex:'water-deep',walk:false}];
 const BY=Object.fromEntries(MATERIALS.map(m=>[m.id,m])),texImgs={};
