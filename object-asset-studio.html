@@ -92,6 +92,14 @@ document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||/INPUT|SELEC
 window.WorkshopHasImage=()=>!!processed;window.WorkshopNewTab=()=>newScene();window.WorkshopAdd=f=>loadFile(f,true);renderTabs();
 function resize(){const r=cv.getBoundingClientRect();cv.width=Math.max(1,Math.round(r.width));cv.height=Math.max(1,Math.round(r.height));g.setTransform(1,0,0,1,0,0);draw()}new ResizeObserver(resize).observe(cv);resize();shapeStatus();})();
 </script><style>#ghLib{width:min(1100px,96vw);height:min(760px,92vh);background:#202a24;color:#f3ead5;border:1px solid #75866b;border-radius:14px;padding:0}#ghLib[open]{display:flex;flex-direction:column}#ghLib header{border-radius:14px 14px 0 0}#ghLib .gh-body{flex:1;overflow:auto;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;align-content:start}#ghLib .gh-item{background:#18211c;border:1px solid #3d4d3f;border-radius:8px;padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0;text-align:center}#ghLib .gh-item:hover{border-color:#e6c77e}#ghLib .gh-item .t{height:84px;display:flex;align-items:center;justify-content:center;background:repeating-conic-gradient(#2a352d 0 25%,#222c25 0 50%) 0 0/16px 16px;border-radius:5px}#ghLib .gh-item img{max-width:100%;max-height:84px;image-rendering:auto}#ghLib .gh-item small{font-size:11px;color:#b9c6b4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#ghLib .gh-foot{display:flex;gap:8px;align-items:center;padding:8px 12px;border-top:1px solid #526451}</style>
+<dialog id="genDlg"><h2 style="margin:0 0 4px;color:#e6c77e">✨ สร้างภาพใหม่ · ประกอบ prompt ให้</h2><p class="muted" style="margin:0 0 8px">เลือกประเภท ใส่ชื่อ/คำอธิบายสั้น ๆ แล้วแอพจะประกอบ prompt ที่ล็อกมุม 2.5D isometric, แสง, สไตล์ และขนาดให้ตรงกับเกม → คัดลอกไปให้ AI วาด แล้วนำภาพกลับมาด้วย “นำเข้าภาพ”</p>
+<div id="genKinds"></div>
+<div class="gengrid"><label>ชื่อ asset<input id="genName" type="text" placeholder="เช่น ม้านั่งไม้ / บ่อน้ำ / ร้านขายยา"></label><label>คำอธิบายสั้น ๆ<input id="genDesc" type="text" placeholder="เช่น ม้านั่งไม้โอ๊คเก่า มีมอสเกาะ"></label></div>
+<div id="genCustom" hidden><label>ประเภท / ขนาดจริงที่ต้องการ (พิมพ์เอง)<input id="genCustomKind" type="text" placeholder="เช่น ธงประดับหมู่บ้าน สูงประมาณ 3 เมตร ปักบนพื้น"></label></div>
+<div class="gengrid"><label>ฐานกว้าง (ช่อง)<input id="genCu" type="number" min=".25" max="20" step=".25"></label><label>ฐานลึก (ช่อง)<input id="genCv" type="number" min=".25" max="20" step=".25"></label><label>หันหน้า<select id="genFace"><option value="">ไม่ระบุ</option><option value="SE">↘ SE (ขวาล่าง)</option><option value="SW">↙ SW (ซ้ายล่าง)</option></select></label></div>
+<label class="muted" style="display:block;margin-top:8px">Prompt (แก้ได้ก่อนคัดลอก)</label><textarea id="genOut" style="width:100%;height:210px;background:#0f1612;color:#f3ead5;border:1px solid #526451;border-radius:8px;padding:8px;font:12px/1.4 ui-monospace,monospace"></textarea>
+<div class="row" style="margin-top:10px"><button id="genCopy" class="primary">📋 คัดลอก prompt</button><button id="genImport">นำเข้าภาพที่ได้ →</button><button id="genClose">ปิด</button></div><p id="genMsg" class="muted" style="margin:6px 0 0;min-height:18px"></p></dialog>
+<style>#genDlg{background:#202a24;color:var(--text);border:1px solid #75866b;border-radius:14px;padding:16px;width:min(680px,94vw)}#genDlg::backdrop{background:#000a}#genKinds{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}#genKinds button{padding:6px 10px}#genKinds button.on{background:#d9b66b;color:#2a2113;border-color:#d9b66b;font-weight:700}.gengrid{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.gengrid label{flex:1;min-width:130px;color:var(--muted);font-size:12px}.gengrid input,.gengrid select,#genCustom input{width:100%;margin-top:2px}#genCustom label{color:var(--muted);font-size:12px}#genCta{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;padding:16px 26px;font-size:18px;font-weight:800;border-radius:14px;background:#d9b66b;color:#2a2113;border:2px solid #fff3c4;box-shadow:0 8px 30px #000a;cursor:pointer}#genOpen{background:#d9b66b!important;color:#2a2113!important;font-weight:800!important;border-color:#fff3c4!important}</style>
 <dialog id="placeDlg"><h2 style="margin:0 0 8px;color:#e6c77e">ใส่ภาพนี้ที่ไหน?</h2><p class="muted">ใส่ลง canvas เดิม = วางเป็นชิ้นเพิ่ม เพื่อประกอบ asset หลายชิ้น · canvas ใหม่ = เปิดแท็บใหม่ (แท็บเดิมเก็บไว้ กลับมาแก้ได้)</p><div class="row"><button id="plSame" class="primary">ใส่ลง canvas เดิม</button><button id="plNew">canvas ใหม่</button><button id="plCancel">ยกเลิก</button></div></dialog>
 <dialog id="ghLib"><header><h1>📂 คลัง asset จาก GitHub</h1><input id="ghQ" type="search" placeholder="ค้นหาชื่อไฟล์ / โฟลเดอร์" style="flex:1;min-width:160px"><select id="ghDir"></select><button id="ghClose">ปิด</button></header><div class="gh-body" id="ghBody"><p class="muted">กำลังโหลดรายการ…</p></div><div class="gh-foot"><button id="ghPrev">← ก่อนหน้า</button><span id="ghInfo" class="muted" style="flex:1;text-align:center"></span><button id="ghNext">ถัดไป →</button></div></dialog>
 <script>(()=>{'use strict';const REPO='ekkavish31/Project-Agrenor-Tactical-Card-Game',$=id=>document.getElementById(id),PER=120,KEY='project-a-gh-assets-v1';let all=null,view=[],page=0;
@@ -106,4 +114,49 @@ async function pick(p){let blob=null;for(const u of [rel(p),raw(p)]){try{const r
 window.WorkshopPick=pick;function askPlace(){return new Promise(res=>{const d=$('placeDlg'),done=v=>{d.close();res(v)};$('plSame').onclick=()=>done('same');$('plNew').onclick=()=>done('new');$('plCancel').onclick=()=>done(null);d.oncancel=()=>res(null);d.showModal()})}
 $('ghLibBtn').onclick=async()=>{$('ghLib').showModal();const list=await listAll();if(!$('ghDir').options.length){const dirs=[...new Set(list.map(dirOf))].sort();$('ghDir').innerHTML='<option value="">ทุกโฟลเดอร์ ('+list.length+')</option>'+dirs.map(d=>'<option value="'+d+'">'+d+' ('+list.filter(p=>dirOf(p)===d).length+')</option>').join('')}filter()};
 $('ghClose').onclick=()=>$('ghLib').close();$('ghQ').oninput=filter;$('ghDir').onchange=filter;$('ghPrev').onclick=()=>{page--;draw()};$('ghNext').onclick=()=>{page++;draw()}})();</script>
+<script>(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const STYLE='Painterly cozy-medieval fantasy, anime-leaning, clean line work, cel-shaded with soft shading, warm amber light from the upper left, forest-green and brown palette, no neon colours. Same look as the existing village buildings and props.';
+/* label (= Workshop category value) → footprint in cells (1 cell = 56x28 px diamond on the village map), aspect, scale sentence, on-map width */
+const KINDS=[
+ {k:'tree',cat:'ต้นไม้ / พืช',label:'🌳 ต้นไม้ / พืช',cu:2,cv:2,asp:1.5,screen:140,fill:'a tree 4 m to 6 m tall (or a bush about 1 m tall), trunk base centred on the footprint'},
+ {k:'fence',cat:'รั้ว / กำแพง',label:'🧱 รั้ว / กำแพง',cu:2,cv:.5,asp:.75,screen:110,fill:'a low segment about 1 m tall that tiles left-right with itself: both short ends are cut vertically and look identical so copies line up with no visible seam'},
+ {k:'rock',cat:'หิน / ภูมิประเทศ',label:'🪨 หิน / ภูมิประเทศ',cu:1.5,cv:1.5,asp:.9,screen:90,fill:'a rock or terrain feature about 0.5 m to 2 m tall'},
+ {k:'building',cat:'อาคาร',label:'🏠 สถานที่ / อาคาร',cu:8,cv:6,asp:.95,screen:380,fill:'a building whose ground footprint is the stated diamond, door about 2 m tall (the hero is 1.7 m)'},
+ {k:'prop',cat:'ของตกแต่ง',label:'🪑 Asset ย่อย / ของตกแต่ง',cu:1,cv:1,asp:1.1,screen:100,fill:'about 0.8 m to 1.2 m tall, roughly knee-to-waist height next to the 1.7 m hero'},
+ {k:'big',cat:'ของตกแต่ง',label:'⛲ ของใหญ่ (แผง บ่อ เกวียน)',cu:2,cv:2,asp:1,screen:220,fill:'about 2 m to 3 m tall, clearly bigger than the hero'},
+ {k:'battle',cat:'Object สนามต่อสู้',label:'⚔️ Object สนามต่อสู้',cu:1.5,cv:1.5,asp:1,screen:110,fill:'about 1 m to 2.5 m tall, a cover/obstacle readable at a glance on the battle grid'},
+ {k:'custom',cat:'อื่น ๆ',label:'✍️ พิมพ์เอง',cu:2,cv:2,asp:1,screen:150,fill:''}
+];
+let cur=KINDS[4];
+const pick=k=>{cur=KINDS.find(x=>x.k===k)||cur;[...$('genKinds').children].forEach(b=>b.classList.toggle('on',b.dataset.k===cur.k));$('genCu').value=cur.cu;$('genCv').value=cur.cv;$('genCustom').hidden=cur.k!=='custom';if(cur.k!=='building')$('genFace').value='';build()};
+function build(){
+ const name=$('genName').value.trim()||'(ชื่อ)',desc=$('genDesc').value.trim(),cu=+$('genCu').value||cur.cu,cv=+$('genCv').value||cur.cv,face=$('genFace').value,
+  base=Math.min(1536,Math.round((cu+cv)*28*4/16)*16),W=Math.max(256,base),H=Math.max(256,Math.round(W*cur.asp/16)*16),
+  fill=cur.k==='custom'?($('genCustomKind').value.trim()||'a game object in proportion to the 1.7 m hero'):cur.fill;
+ $('genOut').value=[
+ `Create ONE game asset: "${name}"${desc?' — '+desc:''}.`,
+ `STYLE: ${STYLE}`,
+ `CAMERA: 2.5D isometric 3/4 view, looking down at about 30°, the same camera as the game's buildings (a 2:1 dimetric tile: one ground cell is a diamond twice as wide as tall). The object stands on the ground; its footprint is a ${cu}×${cv} cell diamond. Ground lines run at about ±26.57° from horizontal (true 2:1 dimetric, never a steeper or flatter angle). Vertical edges stay perfectly vertical.`,
+ `LIGHT: one key light from the upper left (warm amber, late-afternoon), soft cel-shaded shadows falling toward the lower right, a faint cool-green fill from the right; no glow or lens flare. Same direction and colour temperature as the rest of the village.`,
+ face?`FACING: the main door and front face the ${face==='SE'?'lower-right':'lower-left'} of the picture; the roof ridge runs along the other diagonal.`:'',
+ `SCALE: ${fill}. Shown in the game at about ${cur.screen} px wide (the main hero figure is 73 px tall on the same map).`,
+ `CANVAS: ${W}×${H} px. Solid pure green background #00FF00 (it will be removed), no ground plate, no cast-shadow plate, nothing cropped. Centre the object horizontally and let its base touch the bottom edge.`,
+ `FORBIDDEN: text, logos, frames, borders, watermarks, people (unless asked), a second object.`,
+ `REFERENCE: attach 1–2 existing village images (e.g. a bench or a building) so the style matches.`
+ ].filter(Boolean).join('\n')}
+$('genKinds').innerHTML=KINDS.map(x=>`<button type="button" data-k="${x.k}">${x.label}</button>`).join('');
+$('genKinds').onclick=e=>{const b=e.target.closest('button');if(b)pick(b.dataset.k)};
+for(const id of ['genName','genDesc','genCu','genCv','genFace','genCustomKind'])$(id).addEventListener('input',build);
+function open(){$('genMsg').textContent='';pick(cur.k);$('genDlg').showModal();setTimeout(()=>$('genName').focus(),50)}
+$('genClose').onclick=()=>$('genDlg').close();
+$('genCopy').onclick=async()=>{const t=$('genOut').value;try{await navigator.clipboard.writeText(t)}catch(e){$('genOut').select();document.execCommand('copy')}
+ const nm=$('genName').value.trim();if(nm&&$('assetName')&&(!$('assetName').value||$('assetName').value==='new-object'))$('assetName').value=nm;const cs=$('category');if(cs&&[...cs.options].some(o=>o.value===cur.cat))cs.value=cur.cat;
+ $('genMsg').textContent='คัดลอกแล้ว ✓ — เอาไปวางใน AI วาดภาพ (แนบรูปอ้างอิงด้วย) แล้วกด “นำเข้าภาพที่ได้” เพื่อใส่ canvas · หมวด “'+cur.cat+'” ถูกตั้งไว้ให้แล้ว'};
+$('genImport').onclick=()=>{$('genDlg').close();const f=$('file');f&&f.click()};
+/* prominent entry points: stage bar button + a big call-to-action while the canvas is empty */
+const sb=document.querySelector('.stagebar');if(sb){const b=document.createElement('button');b.id='genOpen';b.type='button';b.textContent='✨ ＋ สร้างภาพใหม่';b.title='ประกอบ prompt สำหรับให้ AI เจนภาพ (ล็อกมุม 2.5D · แสง · สไตล์ · ขนาด)';b.onclick=open;sb.prepend(b)}
+const wrap=$('stageWrap');if(wrap){wrap.style.position=wrap.style.position||'relative';const c=document.createElement('button');c.id='genCta';c.type='button';c.textContent='✨ ＋ สร้างภาพใหม่';c.onclick=open;wrap.append(c);const sync=()=>{c.style.display=window.WorkshopHasImage&&window.WorkshopHasImage()?'none':'block'};sync();setInterval(sync,400)}
+window.WorkshopGenPrompt=open;
+})()</script>
 </body></html>
