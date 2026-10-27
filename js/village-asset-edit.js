@@ -1862,7 +1862,7 @@
 #assetEdit label{display:grid;grid-template-columns:96px 1fr 46px;gap:6px;align-items:center;margin:6px 0}#assetEdit label.chk{display:flex}#assetEdit label.sel{grid-template-columns:118px 1fr}#assetEdit input[type=range]{width:100%}#assetEdit select{width:100%;padding:5px;background:#132621;color:inherit;border:1px solid #7f9170;border-radius:6px}
 #assetEdit .row{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}#assetEdit button{padding:6px 9px;font-size:12px}#assetEdit hr{border:0;border-top:1px solid #4d6656;margin:10px 0}#assetEdit output{text-align:right;font-variant-numeric:tabular-nums}#assetEdit b.sec{display:block;margin:4px 0 2px;color:#fff0c7}
 #assetEdit .art{display:flex;gap:10px;align-items:center;background:#132621;border:1px solid #4d6656;border-radius:10px;padding:8px}#assetEdit .th{width:112px;height:92px;flex:none;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}#assetEdit .th img,#assetEdit .th canvas{max-width:104px;max-height:86px}
-#assetEdit .nudge{display:grid;grid-template-columns:repeat(3,34px);gap:3px}#assetEdit .nudge button{padding:4px 0}
+#assetEdit [data-fp]{padding:5px 6px;min-width:0;font-size:11px}#assetEdit .nudge{display:grid;grid-template-columns:repeat(3,34px);gap:3px}#assetEdit .nudge button{padding:4px 0}
 #assetEdit .foot{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #4d6656;background:#16281f;border-radius:0 0 12px 12px}#assetEdit .foot button{flex:1;padding:9px;font-size:13px}#assetEdit .foot .reset{flex:none;padding:9px 10px}#assetEdit .ok{background:#4f7a3c;border-color:#b8d39a}#assetEdit .cancel{background:#5b3a30;border-color:#c49a8a}
 #assetEdit .items{display:grid;gap:3px;max-height:280px;overflow:auto}#assetEdit .items button{display:flex;align-items:center;gap:8px;text-align:left}#assetEdit .items button.on{border-color:#9ff3f5;background:#24443d}#assetEdit .mini{width:44px;height:36px;flex:none;display:grid;place-items:center;background:#132621;border-radius:6px;overflow:hidden}#assetEdit .mini canvas,#assetEdit .mini img{max-width:44px;max-height:36px}#assetEdit .items small{color:#c9d2b8}
 #assetEdit .places{display:grid;grid-template-columns:1fr 1fr;gap:4px}#assetEdit .places button{text-align:left}
@@ -2117,12 +2117,12 @@
   const f = window.VillageFootprint?.fpOf(o);
   if (!f) return '';
   const custom = window.VillageFootprint.isCustom(o), se = o.facing === 'SE';
-  const edge = (k, label) => `<div class="row" style="align-items:center;margin:2px 0"><span style="min-width:96px">${label} ${f[k]}</span><button data-fp="${k},-1">−1</button><button data-fp="${k},-0.5">−½</button><button data-fp="${k},0.5">+½</button><button data-fp="${k},1">+1</button></div>`;
+  const edge = (k, label) => `<div class="row" style="align-items:center;margin:2px 0"><span style="min-width:74px">${label} ${f[k]}</span><button data-fp="${k},-1">−1</button><button data-fp="${k},-0.5">−½</button><button data-fp="${k},-0.25">−¼</button><button data-fp="${k},0.25">+¼</button><button data-fp="${k},0.5">+½</button><button data-fp="${k},1">+1</button></div>`;
   return `<b class="sec">กรอบพื้นที่ (กริด)${custom ? ' · ปรับเอง' : ' · อัตโนมัติ'}</b>
   <p class="sub">พื้นฟ้าบนแผนที่ = ช่องกริดที่สถานที่นี้กิน · ชนสถานที่อื่นไม่ได้ · บีบเข้าเพื่อให้ของที่ล้นขอบ (เช่น กิ่งไม้) ไม่กินช่อง</p>
   ${edge('u0', se ? 'ซ้าย(หลัง)' : 'ซ้าย')}${edge('u1', se ? 'ขวา(หน้า)' : 'ขวา')}${edge('v0', 'หลัง')}${edge('v1', 'หน้า')}
   <div class="row"><button data-fpa="-1">บีบทั้งกรอบ −1</button><button data-fpa="-0.5">บีบทั้งกรอบ −½</button><button data-fpa="0.5">ขยายทั้งกรอบ +½</button><button data-fpa="1">ขยายทั้งกรอบ +1</button></div>
-  <div class="row"><button id="fpAuto"${custom ? '' : ' disabled'}>คืนค่าอัตโนมัติ</button></div>
+  <div class="row"><button id="fpFit" title="หดทั้ง 4 ขอบเข้าหาแถวกริดนอกสุดที่ยังมีพิกเซลภาพทับอยู่">🧲 หดพอดีภาพ</button><button id="fpAuto"${custom ? '' : ' disabled'}>คืนค่าอัตโนมัติ</button></div><p class="sub">ลากจุดขาวที่ขอบกริดฟ้าบนแผนที่ได้อิสระ · ดับเบิลคลิกจุดขาว = หดขอบนั้นเข้าหาแถวนอกสุดที่มีภาพทับ</p>
 `;
  }
  function bindFp(body, o) {
@@ -2131,6 +2131,7 @@
   const set = fp => { UX.checkpoint(); UX.setFootprint(o, fp); UX.refresh(); UX.persist(); render() };
   body.querySelectorAll('[data-fp]').forEach(b => b.onclick = () => { const [k, d] = b.dataset.fp.split(','); set(F.nudgeEdge(F.fpOf(o), k, +d)) });
   body.querySelectorAll('[data-fpa]').forEach(b => b.onclick = () => set(F.nudgeAll(F.fpOf(o), +b.dataset.fpa)));
+  act('#fpFit', () => { UX.checkpoint(); if (UX.fitFootprint(o)) { UX.persist(); render() } });
   act('#fpAuto', () => set(null))
  }
  function tabBuilding(body, o) {
@@ -2892,6 +2893,7 @@
  }
 
  window.VillageAssetEdit = {
+  refreshPanel: () => { try { render() } catch (_) {} },
   charScale,
   drawChar,
   frozen: () => editing && !testWalk && UX.getMode() === 'chars',
