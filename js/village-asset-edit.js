@@ -2713,7 +2713,7 @@
   };
   push.onclick = async () => {
    if (!GitHubPush.config().token) {
-    GitHubPush.openSettings();
+    GitHubPush.openSettings(() => push.click());
     return
    }
    const st = document.getElementById('status');
