@@ -1646,6 +1646,22 @@
 
  /* ---------- picker: visual list of everything that can be placed ---------- */
  let picker = null;
+ const thumbQ = []; let thumbBusy = false;
+ function pumpThumbs() {
+  if (thumbBusy) return;
+  thumbBusy = true;
+  requestAnimationFrame(function step() {
+   const t0 = performance.now();
+   while (thumbQ.length && performance.now() - t0 < 12) {
+    const b = thumbQ.shift();
+    if (!b.isConnected) continue;
+    const id = b.dataset.id, slot = b.querySelector('.th');
+    putThumb(slot, kindThumb(id));
+    if (!thumbCache.has(id)) setTimeout(() => { if (b.isConnected) { thumbCache.delete(id); putThumb(slot, kindThumb(id)) } }, 700)
+   }
+   if (thumbQ.length) requestAnimationFrame(step); else thumbBusy = false
+  })
+ }
 
  function openPicker(title, current, onPick) {
   if (!picker) {
@@ -1659,13 +1675,15 @@
   const draw = () => {
    const list = Object.entries(KINDS).filter(([id, k]) => (tab === 'ทั้งหมด' || k.group === tab) && (!q || k.label.includes(q) || id.includes(q)));
    picker.innerHTML = `<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"><button data-upload>＋ อัปโหลดภาพ</button><button data-github>↙ จาก GitHub</button><button data-x>ปิด (Esc)</button></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid">${list.map(([id,k])=>`<button data-id="${id}" class="${id===current?'cur':''}"><span class="th"></span><span>${k.label}</span><small>${k.group}</small></button>`).join('')||'<p>ไม่พบ</p>'}</div>`;
+   /* v91.75 · thumbnails render lazily: only the tiles scrolled into view, a few per frame (was: every kind at once → long freeze) */
+   const io = new IntersectionObserver(es => {
+    for (const en of es) if (en.isIntersecting) { io.unobserve(en.target); thumbQ.push(en.target) }
+    pumpThumbs()
+   }, { root: picker, rootMargin: '200px' });
+   picker._io?.disconnect(); picker._io = io;
    picker.querySelectorAll('[data-id]').forEach(b => {
     const slot = b.querySelector('.th');
-    putThumb(slot, kindThumb(b.dataset.id));
-    if (!thumbCache.has(b.dataset.id)) setTimeout(() => {
-     thumbCache.delete(b.dataset.id);
-     putThumb(slot, kindThumb(b.dataset.id))
-    }, 700);
+    if (thumbCache.has(b.dataset.id)) putThumb(slot, thumbCache.get(b.dataset.id)); else { slot.textContent = '…'; io.observe(b) }
     b.onclick = () => {
      picker.close();
      onPick(b.dataset.id)
