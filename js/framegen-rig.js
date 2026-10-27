@@ -1,4 +1,4 @@
-/* v91.43 · 3D Frame Generator — auto humanoid rig, pose presets and extra "special" bone chains (cloth / hair / tail).
+/* v91.98 · 3D Frame Generator — auto humanoid rig, pose presets and extra "special" bone chains (cloth / hair / tail).
    Assumes a T-pose character that stands on y=0, is centred on x/z and faces +Z (glTF convention).
    All maths is done on the model's own vertices, no network. Character's right hand = -X (seen from the camera at +Z). */
 (function () {
@@ -68,7 +68,8 @@
   }
 
   /* chain: {name, attach:[x,y,z], n, len, radius, motion, amp, speed, delay, sweep} */
-  function chainPoints(c) { const pts = []; for (let i = 0; i <= c.n; i++) pts.push(V(c.attach[0], c.attach[1] - c.len * i / c.n, c.attach[2])); return pts }
+  function chainDir(c) { const d = c.dir || [0, -1, 0], l = Math.hypot(d[0], d[1], d[2]) || 1; return [d[0] / l, d[1] / l, d[2] / l] }
+  function chainPoints(c) { const pts = [], d = chainDir(c); for (let i = 0; i <= c.n; i++) { const t = c.len * i / c.n; pts.push(V(c.attach[0] + d[0] * t, c.attach[1] + d[1] * t, c.attach[2] + d[2] * t)) } return pts }
 
   /* build everything: returns a rig that owns a SkinnedMesh made from `srcMesh` (geometry baked into `root` space) */
   function rootBoneUpdate(b) { b.updateMatrixWorld(true) }
@@ -81,7 +82,7 @@
     if (p.armY == null) p.armY = an.armY / H;
     if (p.hipY == null) p.hipY = Math.min(.5, p.armY * .62);
     const J = joints(H, p, an), T = table(J);
-    const chainList = (chains || []).map(c => ({ ...c, pts: chainPoints(c) }));
+    const chainList = (chains || []).map(c => { const d = chainDir(c); let ax = [1 - d[0] * d[0], -d[0] * d[1], -d[0] * d[2]]; let l = Math.hypot(...ax); if (l < .1) { ax = [-d[2] * d[0], -d[2] * d[1], 1 - d[2] * d[2]]; l = Math.hypot(...ax) } ax = ax.map(x => x / l); const az = [d[1] * ax[2] - d[2] * ax[1], d[2] * ax[0] - d[0] * ax[2], d[0] * ax[1] - d[1] * ax[0]]; return { ...c, pts: chainPoints(c), ax: new THREE.Vector3(...ax), az: new THREE.Vector3(...az) } });
 
     // skeleton
     const bones = {}, list = [];
@@ -172,6 +173,7 @@
       hurt: t => { const p2 = Math.sin(Math.PI * clamp01(t)), q = p2 * p2 * (1.5 - .5 * p2); bones.spine.rotation.x = -.45 * q; bones.chest.rotation.x = -.2 * q; bones.head.rotation.x = -.35 * q; for (const n of ['L', 'R']) { bones['upperArm' + n].rotation.x = .9 * q; bones['foreArm' + n].rotation.x = -.5 * q } bones.thighL.rotation.x = -.25 * q; bones.thighR.rotation.x = .3 * q; bones.shinL.rotation.x = .5 * q; bones.shinR.rotation.x = .4 * q; bones.hips.position.y = bones.hips.__rest.y - .04 * H * q; bones.hips.position.z = bones.hips.__rest.z - .03 * H * q }
     };
     rig.actions = { idle: 'ยืนหายใจ', walk: 'เดิน', run: 'วิ่ง', attack: 'ฟัน/โจมตี', cast: 'ร่ายเวท', hurt: 'โดนตี' };
+    const QZ = new THREE.Quaternion();
     rig.pose = function (action, t) {
       reset(); (P[action] || P.idle)(t);
       for (const c of chainList) {
@@ -184,7 +186,7 @@
           else if (mo === 'sway') { rz = A * Math.sin(ph) * .6; rx = .15 * A * Math.sin(ph * 2) }
           else if (mo === 'spring') { rx = A * (Math.sin(ph) * .5) - lean * .8; rz = .3 * A * Math.sin(ph + 1) }
           rx += sw * (1 + moving * .8) * (.5 + .5 * f);
-          b.rotation.x = rx; b.rotation.z = rz;
+          b.quaternion.setFromAxisAngle(c.ax, rx).multiply(QZ.setFromAxisAngle(c.az, rz));
         });
       }
       group.updateMatrixWorld(true);
@@ -195,7 +197,7 @@
       if (!on) return;
       const g = new THREE.BufferGeometry(), m = new THREE.LineBasicMaterial({ color: 0x35f0ff, depthTest: false, transparent: true });
       const l = new THREE.LineSegments(g, m); l.renderOrder = 999; l.frustumCulled = false; l.userData.helper = true; group.add(l); rig.bonesHelper = l;
-      rig.updateHelper = () => { const pts = []; const v = new THREE.Vector3(); for (const b of list) { if (b.parent && b.parent.isBone) { b.parent.getWorldPosition(v); pts.push(v.x, v.y, v.z); b.getWorldPosition(v); pts.push(v.x, v.y, v.z) } } g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3)) };
+      rig.updateHelper = () => { const pts = []; const v = new THREE.Vector3(); group.updateWorldMatrix(true, false); const inv = new THREE.Matrix4().copy(group.matrixWorld).invert(); for (const b of list) { if (b.parent && b.parent.isBone) { b.parent.getWorldPosition(v).applyMatrix4(inv); pts.push(v.x, v.y, v.z); b.getWorldPosition(v).applyMatrix4(inv); pts.push(v.x, v.y, v.z) } } g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3)) };
       rig.updateHelper();
     };
     rig.dispose = () => { rig.setHelper(false); for (const g of out) g.dispose() };

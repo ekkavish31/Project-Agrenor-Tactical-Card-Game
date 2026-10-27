@@ -78,8 +78,8 @@ button{padding:7px 10px;border:1px solid var(--gold);background:#2b2415;color:va
  <label class="chk"><input id="perFrame" type="checkbox"> ส่งไฟล์รายเฟรมด้วย (ไม่ติ๊ก = เฉพาะสไปรต์ชีต)</label>
 
  <h3>7 · Bone พิเศษ (ผ้า/ผม/หาง)</h3>
- <small>กด ＋ แล้วคลิกบนตัวโมเดลที่จะให้โซ่กระดูกห้อยออกมา (เช่นปลายผ้าพันคอ ชายผ้า)</small>
- <div class="row"><button id="addChain" disabled>＋ เพิ่ม bone พิเศษ</button></div>
+ <small>เลือกพรีเซ็ต กด ＋ แล้ว <b>กดบนตัวโมเดลตรงจุดเริ่ม ลากไปจุดปลาย</b> ปล่อยเมาส์ (แค่คลิกเฉย ๆ = ห้อยลงตามความยาวพรีเซ็ต) · เปิด “แสดงกระดูก” จะเห็นเส้นกระดูก · แต่ละโซ่มี “↻ ลากใหม่” และเปลี่ยนพรีเซ็ต/ค่าได้</small>
+ <div class="row"><select id="chainPreset"></select><button id="addChain" disabled>＋ วาง bone พิเศษ</button></div>
  <div id="chains"></div>
 
  <h3>8 · ผลลัพธ์</h3>
@@ -90,7 +90,7 @@ button{padding:7px 10px;border:1px solid var(--gold);background:#2b2415;color:va
  <p><small>แถว = 8 ทิศ (S SE E NE N NW W SW) · คอลัมน์ = เฟรม · pivot ที่ฐานเท้า</small></p>
 </aside>
 <script src="js/vendor/three-glb.js?v=91.43"></script>
-<script src="js/framegen-rig.js?v=91.97"></script>
+<script src="js/framegen-rig.js?v=91.98"></script>
 <script>
 (()=>{
 const {THREE,GLTFLoader}=window.THREE3,$=id=>document.getElementById(id);
@@ -142,6 +142,7 @@ function compose(src,size,t){const c=document.createElement('canvas');c.width=c.
 function nF(){return $('action').value==='still'?1:+$('frames').value}
 function draw(){[...$('dirs').children].forEach((b,i)=>b.classList.toggle('on',i===curDir));if(!model)return;
  const size=+$('size').value,n=nF(),t=curFrame/n,r=renderDir(curDir,size,t),c=compose(r,size,t);prev.width=prev.height=size;prev.getContext('2d').drawImage(c,0,0);
+ if(dragLine){const g=prev.getContext('2d'),k=size/dragLine.w;g.save();g.strokeStyle='#ffd23a';g.fillStyle='#ffd23a';g.lineWidth=3*k;g.setLineDash([8*k,5*k]);g.beginPath();g.moveTo(dragLine.a.x*k,dragLine.a.y*k);g.lineTo(dragLine.b.x*k,dragLine.b.y*k);g.stroke();g.beginPath();g.arc(dragLine.a.x*k,dragLine.a.y*k,5*k,0,7);g.fill();g.restore()}
  $('frameInfo').textContent=n>1?'เฟรม '+(curFrame+1)+'/'+n:''}
 function redo(){frames=null;lockSend();draw()}
 for(const k of ['el','yaw','h','fy','la','li','am','shadow','size','aura','auraC','auraR','auraS','auraP','action','frames'])$(k).addEventListener('input',()=>{curFrame=0;redo()});
@@ -195,24 +196,47 @@ for(const k of RP)$('rp_'+k).addEventListener('input',()=>{rigParams[k]=+$('rp_'
 $('gridT').onchange=()=>{if(!rig)return;rig.setHelper($('gridT').checked);draw()};
 
 /* ---------- extra bone chains ---------- */
-const CH_DEF={n:5,lenF:.2,radF:.07,motion:'flutter',amp:.5,speed:2,delay:.12,sweep:.15};
+const CH_PRE={ribbon:['ริ้วผ้า',{n:6,lenF:.22,radF:.05,motion:'flutter',amp:.6,speed:2,delay:.15,sweep:.2}],
+ hair:['ผม',{n:5,lenF:.16,radF:.06,motion:'sway',amp:.35,speed:1,delay:.1,sweep:.1}],
+ tail:['หาง',{n:6,lenF:.25,radF:.06,motion:'sway',amp:.5,speed:1,delay:.12,sweep:.1}],
+ cape:['ผ้าคลุม/ธง',{n:5,lenF:.3,radF:.12,motion:'flutter',amp:.45,speed:2,delay:.1,sweep:.25}],
+ scarf:['ผ้าพันคอ',{n:4,lenF:.18,radF:.045,motion:'flutter',amp:.7,speed:2,delay:.18,sweep:.3}],
+ dangle:['ของห้อย (สปริง)',{n:4,lenF:.1,radF:.04,motion:'spring',amp:.5,speed:2,delay:.1,sweep:.1}]};
+const CH_DEF=CH_PRE.ribbon[1];
+for(const [k,[l]] of Object.entries(CH_PRE)){const o=document.createElement('option');o.value=k;o.textContent=l;$('chainPreset').append(o)}
+let redoIdx=-1,dragSt=null,dragLine=null;
 function renderChains(){const box=$('chains');box.innerHTML='';chains.forEach((c,i)=>{const d=document.createElement('div');d.className='chain';
- d.innerHTML=`<div class="row" style="margin:0"><input type="text" value="${c.name}" data-k="name" style="flex:1"><button data-del="1">🗑</button></div>
+ d.innerHTML=`<div class="row" style="margin:0"><input type="text" value="${c.name}" data-k="name" style="flex:1"><button data-redraw="1" title="ลากจุดเริ่ม→ปลายใหม่">↻ ลากใหม่</button><button data-del="1">🗑</button></div>
+ <div class="row" style="margin:2px 0"><select data-preset="1"><option value="">— ใช้พรีเซ็ต —</option>${Object.entries(CH_PRE).map(([k,[l]])=>`<option value="${k}">${l}</option>`).join('')}</select></div>
  <div class="two"><label>ความยาว (%ตัว)<input type="number" data-k="lenF" step="0.01" value="${c.lenF}"></label><label>รัศมีผ้า (%ตัว)<input type="number" data-k="radF" step="0.01" value="${c.radF}"></label>
  <label>จำนวนท่อน<input type="number" data-k="n" min="2" max="10" value="${c.n}"></label><label>การเคลื่อนไหว<select data-k="motion"><option value="flutter">ผ้าปลิว</option><option value="sway">แกว่งช้า ๆ</option><option value="spring">สปริงตามตัว</option></select></label>
  <label>แอมพลิจูด<input type="number" data-k="amp" step="0.05" value="${c.amp}"></label><label>รอบ/ลูป<input type="number" data-k="speed" min="1" max="6" value="${c.speed}"></label>
  <label>หน่วงต่อท่อน<input type="number" data-k="delay" step="0.02" value="${c.delay}"></label><label>ลมพัดตามตัว<input type="number" data-k="sweep" step="0.05" value="${c.sweep}"></label></div>`;
  d.querySelector('[data-k=motion]').value=c.motion;
  d.addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;c[k]=e.target.type==='number'?+e.target.value:e.target.value;if(k!=='name')scheduleRebuild()});
+ d.querySelector('[data-redraw]').onclick=()=>startPick(i);
+ d.querySelector('[data-preset]').onchange=e=>{const pr=CH_PRE[e.target.value];if(!pr)return;Object.assign(c,pr[1]);renderChains();scheduleRebuild()};
  d.querySelector('[data-del]').onclick=()=>{chains.splice(i,1);renderChains();scheduleRebuild()};box.append(d)})}
-function chainSpec(c){return{name:c.name.replace(/[^a-z0-9_-]/gi,'_'),attach:c.attach,n:Math.max(2,Math.min(10,c.n|0)),len:c.lenF*mh,radius:c.radF*mh,motion:c.motion,amp:c.amp,speed:c.speed,delay:c.delay,sweep:c.sweep}}
-$('addChain').onclick=()=>{if(!rig)return;pickMode=true;stop();showT=true;$('gridT').checked=true;rig.setHelper(true);prev.classList.add('pick');draw();st('คลิกบนตัวโมเดลตรงจุดที่จะให้ผ้า/ผมห้อยออกมา (Esc = ยกเลิก)')};
-addEventListener('keydown',e=>{if(e.key==='Escape'&&pickMode){pickMode=false;prev.classList.remove('pick');st('ยกเลิกแล้ว')}});
-prev.addEventListener('click',e=>{if(!pickMode||!rig)return;const r=prev.getBoundingClientRect(),nx=((e.clientX-r.left)/r.width)*2-1,ny=-(((e.clientY-r.top)/r.height)*2-1);
- const rc=new THREE.Raycaster();rc.setFromCamera({x:nx,y:ny},cam);const hit=rc.intersectObjects(rig.meshes,false)[0];if(!hit){st('คลิกโดนตัวโมเดลเท่านั้น ลองใหม่');return}
- pickMode=false;prev.classList.remove('pick');const lp=pivot.worldToLocal(hit.point.clone());
- chains.push({name:'ผ้า'+(chains.length+1),attach:[lp.x,lp.y,lp.z],...CH_DEF});
- chains.forEach(c=>{if(!c.spec)c.spec=1});renderChains();buildRig(true)});
+function chainSpec(c){return{name:c.name.replace(/[^a-z0-9_-]/gi,'_'),attach:c.attach,dir:c.dir,n:Math.max(2,Math.min(10,c.n|0)),len:c.lenF*mh,radius:c.radF*mh,motion:c.motion,amp:c.amp,speed:c.speed,delay:c.delay,sweep:c.sweep}}
+function startPick(idx){if(!rig)return;redoIdx=idx;pickMode=true;stop();showT=true;$('gridT').checked=true;rig.setHelper(true);prev.classList.add('pick');prev.style.touchAction='none';draw();st('กดบนตัวโมเดลตรงจุดเริ่ม แล้วลากไปจุดปลาย ปล่อยเมาส์ (คลิกเฉย ๆ = ห้อยลง · Esc = ยกเลิก)')}
+$('addChain').onclick=()=>startPick(-1);
+function endPick(msg){pickMode=false;dragSt=null;dragLine=null;prev.classList.remove('pick');prev.style.touchAction='';if(msg)st(msg)}
+addEventListener('keydown',e=>{if(e.key==='Escape'&&pickMode){endPick('ยกเลิกแล้ว');draw()}});
+function ptr(e){const r=prev.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top,w:r.width,h:r.height}}
+function ndc(q){return{x:(q.x/q.w)*2-1,y:-((q.y/q.h)*2-1)}}
+prev.addEventListener('pointerdown',e=>{if(!pickMode||!rig)return;const q=ptr(e),rc=new THREE.Raycaster();rc.setFromCamera(ndc(q),cam);const hit=rc.intersectObjects(rig.meshes,false)[0];
+ if(!hit){st('กดโดนตัวโมเดลเท่านั้น ลองใหม่');return}
+ const n=new THREE.Vector3();cam.getWorldDirection(n);dragSt={q,hit:hit.point.clone(),plane:new THREE.Plane().setFromNormalAndCoplanarPoint(n,hit.point),moved:false};
+ prev.setPointerCapture(e.pointerId);e.preventDefault()});
+prev.addEventListener('pointermove',e=>{if(!dragSt)return;const q=ptr(e);dragSt.q2=q;dragSt.moved=Math.hypot(q.x-dragSt.q.x,q.y-dragSt.q.y)>6;
+ dragLine={a:dragSt.q,b:q,w:q.w,h:q.h};draw()});
+prev.addEventListener('pointerup',e=>{if(!dragSt)return;const q=ptr(e),d0=dragSt;dragSt=null;if(prev.hasPointerCapture(e.pointerId))prev.releasePointerCapture(e.pointerId);
+ const sp=Math.hypot(q.x-d0.q.x,q.y-d0.q.y)>6;let dir=[0,-1,0],lenF=null;const A=pivot.worldToLocal(d0.hit.clone());
+ if(sp){const rc=new THREE.Raycaster();rc.setFromCamera(ndc(q),cam);const pt=new THREE.Vector3();if(rc.ray.intersectPlane(d0.plane,pt)){const B=pivot.worldToLocal(pt),v=B.clone().sub(A);if(v.length()>1e-4){lenF=Math.max(.04,Math.min(.7,v.length()/mh));v.normalize();dir=[v.x,v.y,v.z]}}}
+ const idx=redoIdx;endPick();
+ if(idx>=0&&chains[idx]){const c=chains[idx];c.attach=[A.x,A.y,A.z];c.dir=dir;if(lenF)c.lenF=+lenF.toFixed(3)}
+ else{const k=$('chainPreset').value,pr=CH_PRE[k]||CH_PRE.ribbon;chains.push({name:pr[0]+(chains.length+1),attach:[A.x,A.y,A.z],dir,...pr[1],...(lenF?{lenF:+lenF.toFixed(3)}:{})})}
+ renderChains();buildRig(true)});
 const _build=window.FrameRig.build;window.FrameRig.build=function(T,root,src,H,p,ch,cb){return _build(T,root,src,H,p,(ch||[]).map(chainSpec),cb)};
 
 /* ---------- preview play ---------- */
