@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-10-27T01:28:31.865Z.
+// Village default layout — saved from the in-game editor 2026-10-27T05:39:24.140Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -73,27 +73,16 @@ window.VillageDefaultLayout={
         ]
       }
     },
-    "guild": {
-      "x": 11,
-      "y": 62,
-      "facing": "SE",
-      "entry": {
-        "du": -3.04,
-        "dv": 1.873,
-        "deep": true
-      },
-      "label": {
-        "dx": -123,
-        "dy": -387
-      },
-      "court": {
-        "off": true
-      }
-    },
     "healer": {
       "x": 91,
       "y": 36.5,
       "facing": "SW",
+      "fp": {
+        "u0": 10.5,
+        "u1": 12.5,
+        "v0": 7.5,
+        "v1": 5
+      },
       "entry": {
         "du": -1.214,
         "dv": 0.327,
@@ -1717,6 +1706,123 @@ window.VillageDefaultLayout={
         "dx": -72.59796748816461,
         "dy": -181.9472228451009
       }
+    },
+    "custom-mvq8veu1": {
+      "x": 12.5,
+      "y": 72.555556,
+      "facing": "SE",
+      "flipArt": true,
+      "fp": {
+        "u0": 18,
+        "u1": 6,
+        "v0": 11,
+        "v1": 4
+      },
+      "entry": {
+        "du": -4.5,
+        "dv": 1.5,
+        "deep": true
+      },
+      "court": {
+        "cells": [
+          [
+            -7,
+            4
+          ],
+          [
+            -7,
+            5
+          ],
+          [
+            -10,
+            2
+          ],
+          [
+            -10,
+            3
+          ],
+          [
+            -10,
+            4
+          ],
+          [
+            -10,
+            5
+          ],
+          [
+            -10,
+            6
+          ],
+          [
+            -10,
+            7
+          ],
+          [
+            -9,
+            2
+          ],
+          [
+            -9,
+            3
+          ],
+          [
+            -9,
+            4
+          ],
+          [
+            -9,
+            5
+          ],
+          [
+            -9,
+            6
+          ],
+          [
+            -9,
+            7
+          ],
+          [
+            -8,
+            3
+          ],
+          [
+            -8,
+            4
+          ],
+          [
+            -8,
+            5
+          ],
+          [
+            -8,
+            6
+          ],
+          [
+            -8,
+            7
+          ],
+          [
+            -7,
+            6
+          ],
+          [
+            -7,
+            7
+          ],
+          [
+            -6,
+            5
+          ],
+          [
+            -6,
+            6
+          ],
+          [
+            -6,
+            7
+          ]
+        ]
+      }
     }
   },
   "roads": [
@@ -1796,12 +1902,12 @@ window.VillageDefaultLayout={
     ],
     [
       {
-        "x": 784,
-        "y": 1568
+        "x": 840,
+        "y": 1736
       },
       {
-        "x": 1428,
-        "y": 1890
+        "x": 1288,
+        "y": 1960
       },
       {
         "x": 3416,
@@ -2035,10 +2141,6 @@ window.VillageDefaultLayout={
     {
       "index": 4,
       "id": "healer"
-    },
-    {
-      "index": 5,
-      "id": "guild"
     },
     {
       "index": 6,
@@ -2805,37 +2907,8 @@ window.VillageDefaultLayout={
       "shop:3.4,4.9": {
         "del": true
       },
-      "add:mvpz8by2v2m": {
-        "du": 8,
-        "dv": 1.5,
-        "iy": 0.99,
-        "ix": 0.91,
-        "r": 5,
-        "s": 0.86,
-        "grp": "g:mvpzayybh5z"
-      },
-      "add:mvpz9c0katx": {
-        "s": 0.86,
-        "r": 5,
-        "du": -3.3,
-        "dv": -0.8,
-        "grp": "g:mvpzayybh5z"
-      },
-      "add:mvpzamu9pxfu": {
-        "s": 0.86,
-        "r": 5,
-        "ix": 0.91,
-        "iy": 0.99,
-        "grp": "g:mvpzayybh5z",
-        "du": -6.5,
-        "dv": -1
-      },
-      "add:mvpzamu91rji": {
-        "s": 0.86,
-        "r": 5,
-        "grp": "g:mvpzayybh5z",
-        "du": -6.5,
-        "dv": -1
+      "custom-mvq8veu1:3.4,8.9": {
+        "del": true
       }
     },
     "added": [
@@ -3146,41 +3219,12 @@ window.VillageDefaultLayout={
         "du": 8.9,
         "dv": -2.3,
         "kind": "decor:market-stall-red"
-      },
-      {
-        "id": "add:mvpz8by2v2m",
-        "owner": "shop",
-        "du": 0,
-        "dv": 3.5,
-        "kind": "decor:fence-picket"
-      },
-      {
-        "id": "add:mvpz9c0katx",
-        "owner": "shop",
-        "du": 8.8,
-        "dv": 5.8,
-        "kind": "decor:fence-picket"
-      },
-      {
-        "id": "add:mvpzamu9pxfu",
-        "owner": "shop",
-        "du": 9,
-        "dv": 6,
-        "kind": "decor:fence-picket"
-      },
-      {
-        "id": "add:mvpzamu91rji",
-        "owner": "shop",
-        "du": 6.5,
-        "dv": 6,
-        "kind": "decor:fence-picket"
       }
     ],
     "buildings": {
       "forge": {
         "dx": 26,
-        "dy": 11,
-        "z": 1
+        "dy": 11
       },
       "home": {
         "sx": 0.73,
@@ -3271,14 +3315,10 @@ window.VillageDefaultLayout={
         "sx": 1.41,
         "sy": 1.2
       },
-      "guild": {
-        "dx": -33,
-        "dy": 64,
-        "sy": 0.96,
-        "wx": 0.8884088713829659,
-        "wy": 0.4590530222621836,
-        "kx": -0.265,
-        "sx": 1.41
+      "custom-mvq8veu1": {
+        "art": "adventurer-guild",
+        "sx": 2.102890625,
+        "sy": 2.102890625
       }
     },
     "frames": {
@@ -3331,12 +3371,6 @@ window.VillageDefaultLayout={
         "right": 10.5,
         "back": -8.5
       },
-      "guild": {
-        "right": 12.1,
-        "front": 8.8,
-        "back": -7.8,
-        "left": -11.1
-      },
       "forge": {
         "sides": {
           "back": "none",
@@ -3346,10 +3380,34 @@ window.VillageDefaultLayout={
         }
       }
     },
+    "assets": [
+      {
+        "id": "adventurer-guild",
+        "name": "adventurer-guild",
+        "w": 380,
+        "bld": 1
+      }
+    ],
     "fence": {
       "pieces": {},
       "places": {
         "shop": {
+          "sides": {
+            "back": "none",
+            "left": "none",
+            "right": "none",
+            "front": "none"
+          }
+        },
+        "healer": {
+          "sides": {
+            "back": "none",
+            "left": "none",
+            "right": "none",
+            "front": "none"
+          }
+        },
+        "forge": {
           "sides": {
             "back": "none",
             "left": "none",
