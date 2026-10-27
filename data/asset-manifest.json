@@ -53093,23 +53093,42 @@
     ],
     "flipX": false
    },
-   "history": [
-    {
-     "file": "assets/_versions/adventurer-guild/20261027-121124.webp",
-     "at": "2026-10-27T05:11:30.706Z",
-     "stamp": "20261027-121124",
-     "status": "final",
-     "note": "ก่อนใส่ภาพใหม่"
-    },
-    {
-     "file": "assets/_versions/adventurer-guild/20261027-120757.webp",
-     "at": "2026-10-27T05:08:04.107Z",
-     "stamp": "20261027-120757",
-     "status": "final",
-     "note": "ก่อนใส่ภาพใหม่"
-    }
-   ],
    "mapW": 465
+  },
+  {
+   "id": "house-01",
+   "file": "assets/objects/house-01.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    624,
+    605
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: house-01",
+   "prompt": "",
+   "pivot": [
+    0.49207418034954714,
+    0.9513868359504103
+   ],
+   "mapW": 131,
+   "artRevision": "20261027-130514",
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.49207418034954714,
+     0.9513868359504103
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1.56,
+     1.4602000000000002
+    ],
+    "flipX": false
+   }
   }
  ],
  "studioWalks": {
