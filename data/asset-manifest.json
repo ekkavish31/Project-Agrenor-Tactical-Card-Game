@@ -53076,7 +53076,7 @@
     0.3970741634815023,
     0.9032133286206215
    ],
-   "artRevision": "20261027-120804",
+   "artRevision": "20261027-121130",
    "geometry": {
     "collisionShape": [],
     "occlusionMask": [],
@@ -53086,14 +53086,21 @@
      0.3999667556296117,
      0.9079136976909336
     ],
-    "rotation": 7,
+    "rotation": 0,
     "isoAxisScale": [
-     1.0008,
-     0.9845
+     1,
+     1
     ],
     "flipX": false
    },
    "history": [
+    {
+     "file": "assets/_versions/adventurer-guild/20261027-121124.webp",
+     "at": "2026-10-27T05:11:30.706Z",
+     "stamp": "20261027-121124",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/adventurer-guild/20261027-120757.webp",
      "at": "2026-10-27T05:08:04.107Z",
