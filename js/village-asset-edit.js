@@ -48,7 +48,7 @@
    for (const b of Object.values(data.buildings)) if (b && typeof b === 'object') for (const k of ['ix','iy']) if (Number.isFinite(b[k]) && b[k] > 2) b[k] = Math.max(.5, Math.min(2, b[k] / 100));
    if (v.frames && typeof v.frames === 'object') data.frames = copy(v.frames);
    window.VillageFence?.set(v.fence);
-   if (Array.isArray(v.assets)) data.assets = v.assets.filter(a => a && /^[a-z0-9-]{2,40}$/.test(a.id) && typeof a.name === 'string').map(a => ({ id: a.id, name: a.name.slice(0, 40), w: Math.max(30, Math.min(900, +a.w || 120)), ...(a.bld ? { bld: 1 } : {}) }));
+   if (Array.isArray(v.assets)) data.assets = v.assets.filter(a => a && /^[a-z0-9-]{2,40}$/.test(a.id) && typeof a.name === 'string').map(a => ({ id: a.id, name: a.name.slice(0, 40), w: Math.max(30, Math.min(900, +a.w || 120)), ...(a.bld ? { bld: 1 } : {}), ...(typeof a.file === 'string' && /^assets\/[\w\/.-]+$/.test(a.file) ? { file: a.file } : {}), ...(a.ov ? { ov: 1 } : {}), ...(a.fx > 0 && a.fx < 1 && a.fy > 0 && a.fy <= 1 ? { fx: +a.fx, fy: +a.fy } : {}) }));
    registerAssets();
    purgeOrphans();
    if (Array.isArray(v.lib)) data.lib = copy(v.lib).filter(a => a && a.id && Array.isArray(a.recs));
@@ -113,9 +113,10 @@
  const bldName = {}; // names of the buildings added from pictures
  function registerAssets() {
   wkAssets();
-  for (const { id, name, w, bld, file } of data.assets) {
-   if (bld) { // v91.23: a whole building picture added from the "เปลี่ยนภาพ" window
-    if (!artSpecs[id]) { artSpecs[id] = [w, .3, .88]; BUILDINGS[id] = file || ('assets/village-town/buildings/' + id + '.png'); bldName[id] = name }
+  for (const { id, name, w, bld, file, ov, fx, fy } of data.assets) {
+   if (bld) {
+    if (ov && artSpecs[id]) { artSpecs[id][0] = w; if (fx != null) { artSpecs[id][1] = fx; artSpecs[id][2] = fy } } // v91.46: width written by "ส่งกลับต้นฉบับ" (image was baked) // v91.23: a whole building picture added from the "เปลี่ยนภาพ" window
+    if (!artSpecs[id]) { artSpecs[id] = [w, fx ?? .3, fy ?? .88]; BUILDINGS[id] = file || ('assets/village-town/buildings/' + id + '.png'); bldName[id] = name }
     if (!images['building_' + id]) { const im = new Image(); im.onload = () => { terrainDirty = true }; im.src = BUILDINGS[id]; images['building_' + id] = im }
     continue
    }
@@ -372,8 +373,10 @@
   fixedFence = new Map();
   grpYPrev = grpYNow;
   grpYNow = new Map();
-  const list = baseEstate(),
-   sq = locations.find(o => o.id === 'square'),
+  stableDefaults = true;
+  let list;
+  try { list = baseEstate() } finally { stableDefaults = false }
+  const sq = locations.find(o => o.id === 'square'),
    out = [],
    seen = {};
   for (const it of list) {
@@ -454,6 +457,7 @@
    g = main
   }
  }
+ let refPos = null, refSolid = false; // v91.46: reference character can be dragged (refPos = feet in world px) and shown as a dark silhouette
  let refChar = false; // scale reference: a character standing at the entrance while editing a place
  let hoverKey = null,
   hoverOwner = null;
@@ -485,7 +489,7 @@
 
  function drawB(o) {
   const t = data.buildings[o.id];
-  if (!t || !(t.sx != null || t.sy != null || t.kx || t.ky || t.ix != null || t.iy != null || t.dx || t.dy)) {
+  if (!t || !(t.sx != null || t.sy != null || t.kx || t.lx || t.ky || t.ix != null || t.iy != null || t.dx || t.dy)) {
    baseBuilding(o);
    return
   }
@@ -499,7 +503,7 @@
    g.transform((t.sx??1)*ux,(t.sx??1)*uy,(t.sy??1)*vx,(t.sy??1)*vy,0,0);
   } else {
    // Upright-preserving affine transform: x'=sx*x; y'=k*x+sy*y.
-   g.transform(t.sx ?? 1, t.kx || 0, 0, t.sy ?? 1, 0, 0);
+   g.transform(t.sx ?? 1, t.kx || 0, t.lx || 0, t.sy ?? 1, 0, 0);
   }
   g.translate(-p.x, -p.y);
   baseBuilding(o);
@@ -535,6 +539,7 @@
  /* v90: the old "outer frame" and the blue footprint are ONE area. The footprint default is the old outer frame (rounded out to half cells);
     edit it in the building tab. The border / gate settings stay in data.frames. */
  const up2 = v => Math.ceil(v * 2 - 1e-9) / 2;
+ let stableDefaults = false;
  estate = function(o) {
   const e = baseEstateFn(o), f = e && data.frames[o.id], FP = window.VillageFootprint;
   if (!e) return e;
@@ -542,7 +547,7 @@
    if (f && Number.isFinite(f[k])) e[k] = f[k];
   if (!FP) return e;
   o.fpAuto = { u0: Math.min(FP.MAX, Math.max(.5, up2(-e.left))), u1: Math.min(FP.MAX, Math.max(.5, up2(e.right))), v0: Math.min(FP.MAX, Math.max(.5, up2(-e.back))), v1: Math.min(FP.MAX, Math.max(.5, up2(e.front))) };
-  const fp = FP.fpOf(o);
+  const fp = stableDefaults ? o.fpAuto : FP.fpOf(o); // v91.46: starter items are laid out from the AUTOMATIC frame so moving the blue footprint never moves/loses them
   e.left = -fp.u0; e.right = fp.u1; e.back = -fp.v0; e.front = fp.v1;
   return e
  };
@@ -812,7 +817,7 @@
 
  function leave(ok = true) {
   if (!place) return;
-  const s = place; refChar = false; courtLayer = false; cv.style.cursor = '';
+  const s = place; refChar = false; refPos = null; courtLayer = false; cv.style.cursor = '';
   place = null;
   drag = null;
   courtDraw = false; courtRect = false;
@@ -947,7 +952,7 @@
  // v91.21: a place was deleted (TownUX.removePlace) → close its editor and drop every edit/added item/frame that belonged to it
  function dropPlace(id) {
   if (place?.id === id) {
-   place = null; drag = null; refChar = false; courtLayer = false; courtDraw = false; courtRect = false; cv.style.cursor = '';
+   place = null; drag = null; refChar = false; refPos = null; courtLayer = false; courtDraw = false; courtRect = false; cv.style.cursor = '';
    hoverKey = hoverOwner = null;
    UX.setMode('object')
   }
@@ -1283,6 +1288,10 @@
      ...extra
     }
    };
+  if (o && refChar && o.id !== 'square') {
+   const f = refFeet(o), hs = charScale('hero');
+   if (Math.abs(p.x - f.x) < 24 * hs && p.y > f.y - 96 * hs && p.y < f.y + 10 * hs) return start('ref', { ox: f.x, oy: f.y })
+  }
   if (o && o.id !== 'square' && !courtDraw && fpMode()) {
    const ek = fpEdgeAt(o, inv(p.x, p.y));
    if (ek) {
@@ -1392,7 +1401,8 @@
    fpEdgeSet(o, drag.k, q.u - a.u, q.v - a.v); UX.refresh(); terrainDirty = true;
    return
   }
-  if (drag.type === 'items') moveKeys(drag.keys, drag.orig, dx, dy);
+  if (drag.type === 'ref') refPos = { x: drag.ox + dx, y: drag.oy + dy };
+  else if (drag.type === 'items') moveKeys(drag.keys, drag.orig, dx, dy);
   else if (drag.type === 'art') {
    const t = data.buildings[o.id] || (data.buildings[o.id] = {});
    t.dx = Math.round(drag.dx + dx);
@@ -2042,11 +2052,10 @@
    framed = hasFrame(o),
    items = frame.filter(e => e.owner === id);
   if (!o && place.tab !== 'items') place.tab = 'items';
-  if (place.tab === 'frame' && !framed || place.tab === 'entry' && (!o || o.id === 'square')) place.tab = 'building';
+  if (place.tab === 'frame' ||  place.tab === 'entry' && (!o || o.id === 'square')) place.tab = 'building';
   place.keys = place.keys.filter(k => items.some(e => e.key === k));
   const tabs = [
    ['building', '🏠 อาคาร', !!o],
-   ['frame', '🔲 ประตู/รั้ว', false], // v91.26: automatic fences retired
    ['items', '🪴 ของย่อย ' + items.length, true],
    ['entry', '🚪 ทางเข้า', !!o && o.id !== 'square']
   ];
@@ -2109,6 +2118,15 @@
   ${fpHtml(o)}
   <b class="sec">ชั้น (layer)</b>${zRow('bz','ชั้นอาคาร',t.z||0,'เทียบกับของย่อยในสถานที่นี้ · ของย่อยที่เลขมากกว่าจะทับอาคาร')}${zRow('pz','ชั้นทั้งสถานที่',t.pz||0,'อาคาร+ของย่อยทั้งชุด เทียบกับสถานที่อื่น · 0 = ตามความลึก')}
   <p class="sub">ป้ายชื่อ: ลากป้ายบนแผนที่ไปวางได้${o.label?' · <a href="#" id="bLabel" style="color:#9ff3f5">คืนตำแหน่งป้าย</a>':''}</p>
+  ${o.id!=='square'?`<b class="sec">👤 เงาตัวละครเทียบขนาด</b>
+  <div class="row"><label class="chk"><input type="checkbox" id="bRef" ${refChar?'checked':''}> แสดงเงาตัวละคร (ขนาดจริงในแมพนี้ · ลากบนแผนที่เพื่อขยับ)</label></div>
+  ${refChar?`<div class="row"><button id="bRefSolid">${refSolid?'แสดงเป็นเงา':'แสดงตัวจริง'}</button><button id="bRefHome">กลับไปจุดทางเข้า</button></div>`:''}`:''}
+  ${o.id!=='square'&&!isHouse(o)?`<b class="sec">✏️ แก้ไขภาพ (เฉพาะแมพนี้)</b>
+  ${slider('sx','ความกว้าง',t.sx??1,.3,2.5,.01,FMT.sx)}${slider('sy','ความสูง',t.sy??1,.3,2.5,.01,FMT.sy)}${slider('lx','เอียงเส้นตั้ง (ล้มซ้าย/ขวา)',t.lx||0,-.6,.6,.005,FMT.kx)}
+  <div class="row"><button id="bSq" title="กว้าง = สูง = ค่าเฉลี่ย">ล็อกสัดส่วน 1:1</button><button id="bRatio" title="ทำให้ภาพกลับสัดส่วนจริงของไฟล์">สัดส่วนเดิม 100%</button></div>
+  <p class="sub">Base Slope ด้านบน = ปรับความลาดของฐาน · แก้ที่นี่มีผลกับแมพนี้เท่านั้น จนกว่าจะกดปุ่มล่าง</p>
+  <div class="row"><button id="bBake" style="background:#e6c46a;color:#2a2113;font-weight:800" ${(t.sx!=null||t.sy!=null||t.kx||t.lx)?'':'disabled'}>⬆ ส่งกลับไปอัพเดทภาพต้นฉบับ</button></div>
+  <p class="sub">อบการยืด/เอียงลงในไฟล์ภาพ (${BUILDINGS[t.art||o.id]||'?'}) แล้ว push ทับ · ทุกที่ที่ใช้ภาพนี้จะเปลี่ยนตาม</p>`:''}
   <div style="color:#ffd84d;font-weight:800;margin:10px 0 4px">ยืดเฉียง · ตรวจกรอบภาพ</div>
   <label class="chk"><input type="checkbox" id="bBounds" ${(t.bounds??true)?'checked':''}> แสดงกรอบประของภาพขณะยืด</label>
   <p class="sub">กรอบเหลือง = ขอบเขตภาพหลังยืด · ปิดได้เมื่อต้องการดูภาพจริง</p>
@@ -2127,10 +2145,11 @@
   bindFp(body, o);
   act('#bSwap', () => openList('เปลี่ยนภาพ ' + o.name, choices, cur?.id, it => {
    UX.checkpoint();
-   if (it.wk && !artSpecs[it.id]) { data.assets.push({ id: it.id, name: it.label, w: Math.round(it.wk.mapW || 380), bld: 1, file: it.wk.file }); registerAssets() }
+   if (it.wk && !artSpecs[it.id]) { data.assets.push({ id: it.id, name: it.label, w: Math.max(30, Math.round((it.wk.mapW || 380) / 2)), bld: 1, file: it.wk.file, ...(it.wk.mapFx ? { fx: it.wk.mapFx, fy: it.wk.mapFy } : Array.isArray(it.wk.pivot) && it.wk.pivot[0] > 0 && it.wk.pivot[0] < 1 && it.wk.pivot[1] > 0 && it.wk.pivot[1] <= 1 ? { fx: it.wk.pivot[0], fy: it.wk.pivot[1] } : {}) }); registerAssets() }
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
    if (it.id === o.id || !o.npc && it.id === 'home' && o.id === 'home') delete b.art;
    else b.art = it.id;
+   for (const k of ['sx', 'sy', 'kx', 'lx']) delete b[k]; // v91.46: a new picture starts from its own proportions
    if (!Object.keys(b).length) delete data.buildings[o.id];
    UX.persist();
    render()
@@ -2152,6 +2171,12 @@
    document.getElementById('flipArt').click();
    render()
   });
+  { const r = body.querySelector('#bRef'); if (r) r.onchange = () => { refChar = r.checked; render() } }
+  act('#bRefSolid', () => { refSolid = !refSolid; render() });
+  act('#bRefHome', () => { refPos = null; render() });
+  act('#bSq', once(() => { const b = data.buildings[o.id] || (data.buildings[o.id] = {}); const m = ((b.sx ?? 1) + (b.sy ?? 1)) / 2; b.sx = m; b.sy = m }));
+  act('#bRatio', once(() => { const b = data.buildings[o.id]; if (b) { delete b.sx; delete b.sy; delete b.kx; delete b.lx; if (!Object.keys(b).length) delete data.buildings[o.id] } }));
+  act('#bBake', () => bakeBuilding(o));
   act('#bLabel', once(() => delete o.label));
   act('#bReset', once(() => {
    const a = data.buildings[o.id]?.art;
@@ -2183,8 +2208,65 @@
   bindSliders((k, v) => {
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
    b[k] = v;
-   if (Math.abs(v - (k === 'kx' ? 0 : 1)) < 1e-9) delete b[k];
+   if (Math.abs(v - (k === 'kx' || k === 'lx' ? 0 : 1)) < 1e-9) delete b[k];
   })
+ }
+
+ /* v91.46 · bake this map's stretch/tilt of a building picture into its file, push it, and reset the per-map edit */
+ async function bakeBuilding(o) {
+  const t = data.buildings[o.id] || {}, artId = t.art || o.id, spec = artSpecs[artId], path = BUILDINGS[artId];
+  const say = m => flashStatus(m);
+  if (!spec || !path) return say('ภาพนี้ไม่มีไฟล์ต้นฉบับให้ทับ');
+  if (o.flipArt) return say('ปิด "พลิกภาพ" ก่อน แล้วค่อยส่งกลับ (ไฟล์ต้นฉบับยังไม่ถูกพลิก)');
+  if (!window.GitHubPush) return say('ยังไม่มีระบบ GitHub');
+  if (!GitHubPush.config().token) { GitHubPush.openSettings(() => bakeBuilding(o)); return say('ตั้ง GitHub token ก่อน แล้วกดอีกครั้ง') }
+  const r = artRect(o);
+  if (!r || !r.im?.naturalWidth) return say('ภาพยังโหลดไม่เสร็จ');
+  const se = o.facing === 'SE' ? -1 : 1, sx = t.sx ?? 1, sy = t.sy ?? 1, kx = (t.kx || 0) * se, lx = (t.lx || 0) * se, p = anchorOf(o) /* SE places are drawn mirrored: bake in the un-mirrored picture space, so the shears flip sign */, fx = spec[1], fy = spec[2];
+  const T = (x, y) => ({ x: p.x + sx * (x - p.x) + lx * (y - p.y), y: p.y + kx * (x - p.x) + sy * (y - p.y) });
+  const cs = [T(r.x, r.y), T(r.x + r.w, r.y), T(r.x, r.y + r.h), T(r.x + r.w, r.y + r.h)];
+  const bx0 = Math.min(...cs.map(c => c.x)), bx1 = Math.max(...cs.map(c => c.x)), by0 = Math.min(...cs.map(c => c.y)), by1 = Math.max(...cs.map(c => c.y));
+  const front = { x: r.x + r.w * fx, y: r.y + r.h * fy };
+  // tight crop of the transformed picture; the entrance anchor fractions are re-measured so placement on the map does not move
+  const W = bx1 - bx0, H = by1 - by0, nfx = Math.min(.98, Math.max(.02, (front.x - bx0) / W)), nfy = Math.min(1, Math.max(.02, (front.y - by0) / H));
+  let k = r.im.naturalWidth / r.w;
+  if (W * k > 4096) k = 4096 / W;
+  const cv = document.createElement('canvas');
+  cv.width = Math.max(1, Math.round(W * k)); cv.height = Math.max(1, Math.round(H * k));
+  const c = cv.getContext('2d');
+  c.scale(cv.width / W, cv.height / H); c.translate(-bx0, -by0);
+  c.translate(p.x, p.y); c.transform(sx, kx, lx, sy, 0, 0); c.translate(-p.x, -p.y);
+  c.drawImage(r.im, r.x, r.y, r.w, r.h);
+  const blob = await new Promise(ok => cv.toBlob(ok, 'image/png'));
+  const newW = Math.round(W / 2);
+  say('กำลังส่งภาพกลับไปทับ ' + path + '…');
+  try {
+   const man = (window.ASSET_MANIFEST?.assets || []).find(a => a.file === path);
+   const sha = await GitHubPush.commit('Village building picture baked from map editor: ' + artId, async head => {
+    const files = [{ path, content: blob }];
+    if (man) {
+     const jt = await head.read('data/asset-manifest.json'), jp = jt && (() => { try { return JSON.parse(jt) } catch (e) { return null } })();
+     const e = jp?.assets?.find(a => a.file === path);
+     if (e) {
+      e.mapW = Math.round(W); e.mapFx = +nfx.toFixed(4); e.mapFy = +nfy.toFixed(4); files.push({ path: 'data/asset-manifest.json', content: JSON.stringify(jp, null, 1) });
+      files.push({ path: 'js/asset-manifest.js', content: '/* Generated by tools/build-asset-manifest.py and Asset Studio — the list of every game image. */\nwindow.ASSET_MANIFEST=' + JSON.stringify(jp) + ';\n' })
+     }
+    }
+    return files
+   }, m => say(m));
+   if (sha === null) return say('ยกเลิกการส่ง · ภาพในแมพยังเป็นแบบเดิม');
+   UX.checkpoint();
+   if (man) { man.mapW = Math.round(W); man.mapFx = +nfx.toFixed(4); man.mapFy = +nfy.toFixed(4) }
+   spec[0] = newW; spec[1] = nfx; spec[2] = nfy;
+   const ent = data.assets.find(a => a.id === artId);
+   if (ent) { ent.w = newW; ent.ov = 1; ent.fx = nfx; ent.fy = nfy } else data.assets.push({ id: artId, name: bldName[artId] || artId, w: newW, bld: 1, ov: 1, fx: nfx, fy: nfy });
+   const im = new Image(); im.onload = () => { terrainDirty = true; render() }; im.src = cv.toDataURL('image/png');
+   images['building_' + artId] = im;
+   const b = data.buildings[o.id]; for (const q of ['sx', 'sy', 'kx', 'lx']) delete b[q];
+   if (!Object.keys(b).length) delete data.buildings[o.id];
+   UX.persist();
+   say('⬆ ทับภาพต้นฉบับแล้ว (' + (sha || '') + ') · กด ⬆ push ที่แถบบนอีกครั้งเพื่อบันทึกความกว้างในผัง · Ctrl+F5 ตอนเปิดใหม่')
+  } catch (e) { say('ส่งไม่สำเร็จ: ' + e.message) }
  }
 
  /* v91.4 · fence tab: every side chains one chosen picture along the footprint edge; entrance gaps follow the yellow cells + gate width */
@@ -2482,14 +2564,26 @@
 
  /* ---------- overlay: veil + rings, then handles ---------- */
  const baseOverlay = UX.overlay;
+ const refFeet = o => refPos || (d => project(d.u, d.v))(UX.entryOf(o));
+ let refCv = null;
  function drawRefChar(gg, t) {
   const o = loc(place.id);
   if (!o || o.id === 'square') return;
-  const d = UX.entryOf(o), p = project(d.u, d.v), hs = charScale('hero'), tmp = g;
+  const p = refFeet(o), hs = charScale('hero'), tmp = g, H = 93.6 * hs;
   g = gg;
   try {
    ellipse(p.x, p.y, 16.9 * hs, 7.8 * hs, '#182b2877');
-   (drawChar('hero', gg, p, 'SE', 93.6 * hs) || TownArt.hero(gg, p, 'SE', t, false, 93.6 * hs, 'SE'))
+   const paint = (c, q) => (drawChar('hero', c, q, 'SE', H) || TownArt.hero(c, q, 'SE', t, false, H, 'SE'));
+   if (refSolid) paint(gg, p);
+   else { // silhouette: same size/pose, one flat colour, so the building edge stays visible through it
+    const W = Math.ceil(H * 1.6), HH = Math.ceil(H * 1.3);
+    refCv = refCv || document.createElement('canvas');
+    if (refCv.width !== W || refCv.height !== HH) { refCv.width = W; refCv.height = HH }
+    const c = refCv.getContext('2d'); c.clearRect(0, 0, W, HH); g = c;
+    paint(c, { x: W / 2, y: HH - 12 });
+    c.globalCompositeOperation = 'source-in'; c.fillStyle = '#ff5ec8'; c.fillRect(0, 0, W, HH); c.globalCompositeOperation = 'source-over';
+    gg.save(); gg.globalAlpha = .62; gg.drawImage(refCv, p.x - W / 2, p.y - HH + 12); gg.restore()
+   }
   } finally { g = tmp }
  }
  UX.overlay = function(gg, t) {
