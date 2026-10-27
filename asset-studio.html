@@ -275,7 +275,7 @@ function slotDetail(a){if(!a){sel=null;return detail()}let p=pending.get(a.id),u
  <h3>ภาพที่ใช้อยู่ตอนนี้ ${p?'<span class="badge k-hist">ภาพใหม่ รอส่งออก</span>':''}</h3><div class="stage" id="cur">${hasImage(a)?'<span class="muted">กำลังโหลด…</span>':noneHTML(STATUS[a.status])}</div>
  <div class="row" style="margin-top:8px"><button id="pickLib" class="primary">🖼 เลือกภาพจากคลัง…</button>${p?'<button id="dropPending">ยกเลิกภาพใหม่</button>':''}</div>
  <h3>🕘 เวอร์ชันก่อนหน้า (${a.history?.length||0})</h3>${versionsHTML(a)}
- <div class="row" style="margin-top:8px"><button id="editInWorkshop" class="primary">🧰 แก้ไขภาพนี้ใน Object Workshop</button></div>
+ <div class="row" style="margin-top:8px"><button id="editInWorkshop" class="primary">🧰 แก้ไขภาพนี้ใน Object Workshop</button><button id="delAsset" class="danger" title="ลบช่อง asset นี้ + ไฟล์ภาพ + เวอร์ชันเก่า (รอ Push)">🗑 ลบ Asset นี้</button></div>
  <h3>➕ ใส่ / แก้ภาพ</h3>${newImageHTML(a)}
  <details><summary>Prompt สำหรับเจนภาพ</summary>${promptHTML(a)}</details>`;
  hydrate($('detail'));showCurrent(a);
@@ -283,6 +283,7 @@ function slotDetail(a){if(!a){sel=null;return detail()}let p=pending.get(a.id),u
  $('detail').querySelectorAll('[data-fr]').forEach(e=>e.onclick=()=>openSlot(e.dataset.fr));
  $('pickLib').onclick=()=>pickImageFor(a);
  if($('editInWorkshop'))$('editInWorkshop').onclick=()=>showWorkshop(a.id);
+ if($('delAsset'))$('delAsset').onclick=()=>delAsset(a);
  if($('dropPending'))$('dropPending').onclick=()=>{URL.revokeObjectURL(pending.get(a.id).url);pending.delete(a.id);render();detail()};
  $('detail').querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{let h=a.history[+b.dataset.use];doApply(a,{path:h.file},{note:'ก่อนกู้เวอร์ชัน '+fmtAt(h.at)})});
  $('detail').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>delVersion(a,a.history[+b.dataset.del]));
@@ -328,10 +329,11 @@ function imgDetail(x){if(!x){sel=null;return detail()}let s=x.slot,title=x.kind=
  <h3>ทำอะไรกับภาพนี้</h3><div class="row">
  ${x.kind==='version'&&s?`<button class="primary" id="restore">↩ กู้กลับเข้าช่องเดิม</button>`:''}
  <button ${x.kind==='version'&&s?'':'class="primary"'} id="useFor">🎯 ใช้กับช่อง…</button>
- ${x.kind==='version'?`<button class="danger" id="delV">🗑 ลบถาวร</button>`:''}</div>
+ ${x.kind==='version'?`<button class="danger" id="delV">🗑 ลบถาวร</button>`:''}${x.kind==='loose'?`<button class="danger" id="delLoose">🗑 ลบไฟล์นี้</button>`:''}</div>
  ${dir?'':'<div class="note">สลับ/กู้ภาพกำลังเชื่อม GitHub อยู่ · รอสักครู่แล้วลองใหม่</div>'}`;
  (async()=>{let im=$('bigImg'),u=await srcOf(x.path);if(!im)return;im.onload=()=>{let d=$('dims');if(d)d.textContent=im.naturalWidth+' × '+im.naturalHeight+' px'};im.src=u})();
  if($('toSlot'))$('toSlot').onclick=e=>{e.preventDefault();goSlot(s)};
+ if($('delLoose'))$('delLoose').onclick=()=>delLoose(x);
  if($('restore'))$('restore').onclick=()=>doApply(s,{path:x.path},{note:'ก่อนกู้เวอร์ชัน '+fmtAt(x.h?.at)},true);
  $('useFor').onclick=()=>pickSlotFor(x);
  if($('delV'))$('delV').onclick=()=>delVersion(s,x.h||{file:x.path})}
@@ -379,6 +381,12 @@ async function doApply(a,src,opt={},ask=false){if(!dir)return needFolder();if(!s
  if(ask&&!confirm(`ใส่ภาพนี้ในช่อง ${a.id}?\n${where(a)}\n\nภาพเดิมของช่องนี้จะถูกเก็บไว้ใน "ภาพที่เลิกใช้" กู้กลับได้`))return;
  try{await applyToSlot(a,src,opt);await saveManifest();toast('เปลี่ยนภาพ '+a.id+' แล้ว · ภาพเดิมอยู่ใน "ภาพที่เลิกใช้"');if(sel?.t==='img')sel={t:'slot',id:a.id}}catch(e){console.error(e);toast('ผิดพลาด: '+e.message)}
  render();detail()}
+async function delAsset(a){if(!dir)return needFolder();
+ let shared=new Set(M.assets.filter(x=>x!==a&&x.file).map(x=>x.file)),files=[a.file,...(a.history||[]).map(h=>h.file)].filter((f,i,l)=>f&&l.indexOf(f)===i),del=files.filter(f=>!shared.has(f)),users=csUsers(a.file);
+ if(!confirm(`ลบ Asset “${a.id}” ?\n\n• เอาช่องนี้ออกจากรายการ\n• ลบไฟล์ภาพ ${del.length} ไฟล์ (รวมเวอร์ชันเก่า)${files.length>del.length?`\n• ไฟล์ที่ asset อื่นใช้ร่วมอยู่ ${files.length-del.length} ไฟล์ จะไม่ถูกลบ`:''}${users.length?`\n• การ์ดที่ใช้ภาพนี้: ${users.join(', ')}`:''}\n\nถ้าโค้ดเกมเรียกภาพนี้ตรง ๆ ภาพจะหายจากเกม · ต้องกด “Push ที่แก้” ถึงจะลบบน GitHub · ย้อนกลับไม่ได้หลัง Push`))return;
+ try{await queue(async()=>{for(const f of del)await removeFile(f).catch(()=>{})});M.assets.splice(M.assets.indexOf(a),1);if(pending.has(a.id)){URL.revokeObjectURL(pending.get(a.id).url);pending.delete(a.id)}sel=null;if(typeof selected!=='undefined'&&selected===a.id)selected=null;await saveManifest();toast('ลบ Asset “'+a.id+'” แล้ว · รอกด “Push ที่แก้”')}catch(e){console.error(e);toast('ลบไม่สำเร็จ: '+(e.message||e))}render();detail()}
+async function delLoose(x){if(!dir)return needFolder();if(!confirm('ลบไฟล์นี้?\n'+x.path+'\n\n(โค้ดหรือเครื่องมือที่เรียกไฟล์นี้ตรง ๆ จะหาภาพไม่เจอ · ต้องกด “Push ที่แก้” ถึงจะลบบน GitHub)'))return;
+ try{await queue(()=>removeFile(x.path));sel=null;toast('ลบไฟล์แล้ว · รอกด “Push ที่แก้”')}catch(e){console.error(e);toast('ลบไม่สำเร็จ: '+(e.message||e))}render();detail()}
 async function delVersion(a,h){if(!dir)return needFolder();if(!confirm('ลบภาพเวอร์ชันนี้ถาวร?\n'+h.file+'\n(ลบแล้วกู้กลับไม่ได้)'))return;
  try{await queue(()=>removeFile(h.file).catch(()=>{}));if(a?.history){a.history=a.history.filter(x=>x.file!==h.file);if(!a.history.length)delete a.history}await saveManifest();toast('ลบแล้ว');if(sel?.t==='img')sel=null}catch(e){toast('ผิดพลาด: '+e.message)}render();detail()}
 // ---------- new image pipeline ----------
