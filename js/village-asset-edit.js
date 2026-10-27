@@ -1308,6 +1308,17 @@
    const f = refFeet(o), hs = charScale('hero');
    if (Math.abs(p.x - f.x) < 24 * hs && p.y > f.y - 96 * hs && p.y < f.y + 10 * hs) return start('ref', { ox: f.x, oy: f.y })
   }
+  if (o && o.id !== 'square' && place.tab === 'lead' && (o.lead?.mode === 'custom')) {
+   const i = leadPtAt(o, p);
+   UX.checkpoint();
+   if (i >= 0 && e.shiftKey) { const pts = [...o.lead.pts]; pts.splice(i, 1); leadSet(o, { pts }); UX.refresh(); UX.persist(); swallow(e); render(); return }
+   if (i >= 0) return start('leadPt', { i });
+   const pts = [...(o.lead.pts || []), leadSnap(o, inv(p.x, p.y))];
+   leadSet(o, { pts });
+   UX.refresh();
+   start('leadPt', { i: pts.length - 1 });
+   return
+  }
   if (o && o.id !== 'square' && !courtDraw && fpMode()) {
    const ek = fpEdgeAt(o, inv(p.x, p.y));
    if (ek) {
@@ -1412,6 +1423,11 @@
    if (c) { if (drag.rect) paintRect(o, c); else paintCells(o, c) }
    return
   }
+  if (drag.type === 'leadPt') {
+   const pts = [...(o.lead?.pts || [])];
+   if (pts[drag.i]) { pts[drag.i] = leadSnap(o, inv(p.x, p.y)); leadSet(o, { pts }); terrainDirty = true }
+   return
+  }
   if (drag.type === 'fpEdge') {
    const a = center(o), q = canonical(o, inv(p.x, p.y).u, inv(p.x, p.y).v);
    fpEdgeSet(o, drag.k, q.u - a.u, q.v - a.v); UX.refresh(); terrainDirty = true;
@@ -1449,7 +1465,7 @@
    o.court = cells.length ? { cells, ...keep } : { off: true };
    UX.refresh(); UX.persist(); render(); return
   }
-  if (d.type === 'entry') UX.refresh();
+  if (d.type === 'entry' || d.type === 'leadPt') UX.refresh();
   UX.persist();
   render()
  }, true);
@@ -2131,12 +2147,13 @@
    framed = hasFrame(o),
    items = frame.filter(e => e.owner === id);
   if (!o && place.tab !== 'items') place.tab = 'items';
-  if (place.tab === 'frame' ||  place.tab === 'entry' && (!o || o.id === 'square')) place.tab = 'building';
+  if (place.tab === 'frame' ||  (place.tab === 'entry' || place.tab === 'lead') && (!o || o.id === 'square')) place.tab = 'building';
   place.keys = place.keys.filter(k => items.some(e => e.key === k));
   const tabs = [
    ['building', '🏠 อาคาร', !!o],
    ['items', '🪴 ของย่อย ' + items.length, true],
-   ['entry', '🚪 ทางเข้า', !!o && o.id !== 'square']
+   ['entry', '🚪 ทางเข้า', !!o && o.id !== 'square'],
+   ['lead', '🛣 ถนนทางเข้า', !!o && o.id !== 'square']
   ];
   const changed = snapOf() !== place.before;
   panel.innerHTML = `<div class="head"><h3>${ownerName(id)}<span class="chip">${changed?'แก้แล้ว':'กำลังแก้'}</span></h3><p class="sub" style="margin:0">ที่อื่นถูกล็อกไว้ · ✓ เสร็จ = เก็บทั้งสถานที่ · ยกเลิก = คืนทั้งสถานที่</p>
@@ -2157,7 +2174,8 @@
    building: tabBuilding,
    frame: tabFrame,
    items: tabItems,
-   entry: tabEntry
+   entry: tabEntry,
+   lead: tabLead
   })[place.tab](body, o, items);
   panel.querySelectorAll('[data-n]').forEach(b => b.onclick = () => {
    const [x, y] = b.dataset.n.split(',').map(Number);
@@ -2619,6 +2637,47 @@
   const f = F.fpOf(o), a = center(o), q = canonical(o, w.u, w.v), du = q.u - a.u, dv = q.v - a.v;
   return du >= -f.u0 && du <= f.u1 && dv >= -f.v0 && dv <= f.v1
  }
+
+ /* v91.85 · 🛣 "ถนนทางเข้า" tab: the road piece that joins the entrance to the road network.
+    o.lead = { mode:'auto'|'custom'|'none', w: width × (0.3–3), pts:[{du,dv}] } (own axes, from the place centre). Manual-road maps keep their own lines: width / delete only. */
+ let leadEdit = false;
+ const leadOf = o => o.lead || {};
+ function leadSet(o, patch) {
+  const l = { ...(o.lead || {}), ...patch };
+  if ((!l.mode || l.mode === 'auto') && (!l.w || l.w === 1) && !(l.pts && l.pts.length)) delete o.lead; else { if (!l.mode) l.mode = 'auto'; o.lead = l }
+ }
+ function tabLead(body, o) {
+  const L = leadOf(o), mode = L.mode || 'auto', manualMode = UX.isManual?.(), n = UX.leadIdx?.(o).length || 0;
+  const mb = (m, label) => `<button data-lm="${m}" style="${mode === m ? 'background:#e5c06b;color:#1b302a' : ''}">${label}</button>`;
+  if (manualMode) {
+   body.innerHTML = `<p class="sub">แผนที่นี้ใช้ถนนที่แก้เอง (โหมดถนนแมนนวล) · ทางเชื่อมของที่นี่เป็นเส้นถนนเส้นหนึ่ง ${n ? '(พบ ' + n + ' เส้น)' : '(ไม่พบเส้นที่ผูกกับที่นี่)'} — ปรับความกว้าง/ลบได้ที่นี่ หรือแก้รูปเส้นด้วยเครื่องมือ “ถนน”</p>
+   ${n ? slider('lw', 'ความกว้างทางเชื่อม ×', L.w ?? 1, .3, 3, .05, x => (+x).toFixed(2)) + '<div class="row"><button id="lDel">🗑 ลบเส้นทางเชื่อมของที่นี่</button></div>' : ''}`;
+   bindSliders((k, v) => { L.w = v }, () => { UX.setLeadW(o, L.w ?? 1); leadSet(o, { w: L.w }); UX.persist(); render() });
+   act('#lDel', () => { if (confirm('ลบเส้นถนนทางเชื่อมของ ' + ownerName(o.id) + '?')) { UX.dropLead(o); UX.persist(); render() } });
+   return
+  }
+  body.innerHTML = `<p class="sub">ทางเชื่อมจากถนนมาถึงประตู (หมุดฟ้า) · ปรับให้ตรงกับภาพอาคาร ไม่ใหญ่เกิน/ไม่เลยประตู</p>
+  <b class="sec">โหมด</b>
+  <div class="row" style="flex-wrap:wrap">${mb('auto', '🤖 ออโต้')}${mb('custom', '✏ วาดเอง')}${mb('none', '⛔ ไม่มีทางเชื่อม')}</div>
+  <p class="sub">${mode === 'auto' ? 'ออโต้ = ออกทางด้านหน้าตามที่บ้านหัน แล้วหาทางต่อถนน' : mode === 'custom' ? 'วาดเอง = คลิกบนแผนที่ต่อจากประตูไปยังถนน · ลากจุดเพื่อย้าย · Shift+คลิกจุด = ลบ · ปลายเส้นควรแตะถนน' : 'ไม่มีทางเชื่อม = ไม่สร้างถนนไปที่นี่ (ต่อเองด้วยเครื่องมือถนน หรือทาพื้น)'}</p>
+  ${mode !== 'none' ? slider('lw', 'ความกว้างทางเชื่อม ×', L.w ?? 1, .3, 3, .05, x => (+x).toFixed(2)) : ''}
+  ${mode === 'custom' ? `<p class="sub">จุดที่วางแล้ว: <b>${L.pts?.length || 0}</b></p><div class="row"><button id="lUndo"${L.pts?.length ? '' : ' disabled'}>↶ ลบจุดสุดท้าย</button><button id="lClear"${L.pts?.length ? '' : ' disabled'}>ล้างเส้น</button></div>` : ''}
+  <div class="row"><button id="lReset"${o.lead ? '' : ' disabled'}>⟲ คืนค่าออโต้</button></div>`;
+  body.querySelectorAll('[data-lm]').forEach(b => b.onclick = once(() => { leadSet(o, { mode: b.dataset.lm }); UX.refresh() }));
+  bindSliders((k, v) => { if (k === 'lw') { o.lead = o.lead || { mode }; o.lead.w = v } }, () => { leadSet(o, { w: o.lead?.w }); UX.refresh(); render() });
+  act('#lUndo', once(() => { const pts = [...(o.lead.pts || [])]; pts.pop(); leadSet(o, { pts }); UX.refresh() }));
+  act('#lClear', once(() => { leadSet(o, { pts: [] }); UX.refresh() }));
+  act('#lReset', once(() => { delete o.lead; UX.refresh() }))
+ }
+ function leadPtAt(o, p) {
+  const a = center(o), L = o.lead?.pts || [];
+  for (let i = L.length - 1; i >= 0; i--) {
+   const c = canonical(o, a.u + L[i].du, a.v + L[i].dv), q = project(c.u, c.v);
+   if (nearPx(q, p, 13)) return i
+  }
+  return -1
+ }
+ function leadSnap(o, w) { const q = canonical(o, w.u, w.v), a = center(o), r = x => Math.round(x * 2) / 2; return { du: r(q.u - a.u), dv: r(q.v - a.v) } }
  function tabEntry(body, o) {
   body.innerHTML = `<p class="sub">ลาก <b style="color:#9ff3f5">หมุดฟ้า</b> บนแผนที่ไปวางที่ประตู · ตัวเอกเดินมาถึงจุดนี้แล้วเข้าใช้บริการ</p>
   <div class="row"><button id="eReset">คืนจุดเข้าเดิม</button></div><hr>
@@ -2856,6 +2915,13 @@
    gg.restore()
   }
   if (!o) return;
+  if (o.id !== 'square' && place.tab === 'lead') {
+   const L = o.lead, ptsW = (L?.pts || []).map(q => { const a = center(o), c = canonical(o, a.u + q.du, a.v + q.dv); return project(c.u, c.v) }), g0 = gate(o), gp = project(g0.u, g0.v);
+   gg.save(); gg.lineWidth = 3 / z; gg.strokeStyle = '#ffb347'; gg.setLineDash([8 / z, 6 / z]);
+   if (L?.mode === 'custom' && ptsW.length) { gg.beginPath(); gg.moveTo(gp.x, gp.y); ptsW.forEach(q => gg.lineTo(q.x, q.y)); gg.stroke(); gg.setLineDash([]); ptsW.forEach((q, i) => { gg.beginPath(); gg.arc(q.x, q.y, 6 / z, 0, 7); gg.fillStyle = i === ptsW.length - 1 ? '#ffb347' : '#ffe0a8'; gg.fill(); gg.strokeStyle = '#1d2b24'; gg.lineWidth = 1.5 / z; gg.stroke() }) }
+   gg.setLineDash([]); gg.beginPath(); gg.arc(gp.x, gp.y, 7 / z, 0, 7); gg.strokeStyle = '#ffb347'; gg.lineWidth = 2.5 / z; gg.stroke();
+   gg.restore()
+  }
   // entrance pin
   if (o.id !== 'square') {
    const d = UX.entryOf(o),
