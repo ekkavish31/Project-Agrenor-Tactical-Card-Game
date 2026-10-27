@@ -105,10 +105,11 @@
       for (let v = 0; v < n; v++) {
         const x = pa[v * 3], y = pa[v * 3 + 1], z = pa[v * 3 + 2];
         bw.fill(0);
-        for (let s = 0; s < S; s++) { const d = segDist(x, y, z, segs[s].a, segs[s].b) + EPS; const w = 1 / (d * d * d * d); if (w > bw[segs[s].bi]) bw[segs[s].bi] = w }
+        for (let s = 0; s < S; s++) { const d = segDist(x, y, z, segs[s].a, segs[s].b) + EPS; const d2 = d * d, d4 = d2 * d2, w = 1 / (d4 * d4); /* v91.97 · sharper falloff (1/d⁸, was 1/d⁴): each part follows its own bone, so limbs/torso are no longer pulled, stretched or squashed by neighbouring bones */ if (w > bw[segs[s].bi]) bw[segs[s].bi] = w }
         // top 4 body bones
         let i0 = 0, i1 = 1, i2 = 2, i3 = 3; const top = [[-1, 0], [-1, 0], [-1, 0], [-1, 0]];
         for (let b = 0; b < nBody; b++) { const w = bw[b]; if (w > top[3][1]) { top[3] = [b, w]; for (let k = 3; k > 0 && top[k][1] > top[k - 1][1]; k--) { const t = top[k]; top[k] = top[k - 1]; top[k - 1] = t } } }
+        for (let k = 1; k < 4; k++) if (top[k][1] < .12 * top[0][1]) top[k] = [-1, 0]; // ignore far-away bones
         const sum = top[0][1] + top[1][1] + top[2][1] + top[3][1] || 1;
         let cw = 0, cb = -1, cf = 0, cc = null;
         for (const c of chainList) {
