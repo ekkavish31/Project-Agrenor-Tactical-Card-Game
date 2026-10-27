@@ -53059,6 +53059,40 @@
     ],
     "flipX": false
    }
+  },
+  {
+   "id": "adventurer-guild",
+   "file": "assets/objects/adventurer-guild.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    8930,
+    9859
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: adventurer-guild",
+   "prompt": "",
+   "pivot": [
+    0.3970741634815023,
+    0.9032133286206215
+   ],
+   "artRevision": "20261027-105003",
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.3970741634815023,
+     0.9032133286206215
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1.09,
+     1
+    ],
+    "flipX": false
+   }
   }
  ],
  "studioWalks": {
