@@ -113,7 +113,10 @@
  const bldName = {}; // names of the buildings added from pictures
  function registerAssets() {
   wkAssets();
-  for (const { id, name, w, bld, file, ov, fx, fy } of data.assets) {
+  for (let { id, name, w, bld, file, ov, fx, fy } of data.assets) {
+   const wm = bld ? wkAssets().find(m => m.id === id) : null; // Workshop picture: recover what v91.45 layouts lost (file path) or got wrong (width ×2, anchor)
+   if (wm && !file) file = wm.file;
+   if (wm && fx == null && !ov) { w = Math.max(30, Math.round((wm.mapW || 380) / 2)); if (Array.isArray(wm.pivot) && wm.pivot[0] > 0 && wm.pivot[0] < 1 && wm.pivot[1] > 0 && wm.pivot[1] <= 1) { fx = wm.pivot[0]; fy = wm.pivot[1] } }
    if (bld) {
     if (ov && artSpecs[id]) { artSpecs[id][0] = w; if (fx != null) { artSpecs[id][1] = fx; artSpecs[id][2] = fy } } // v91.46: width written by "ส่งกลับต้นฉบับ" (image was baked) // v91.23: a whole building picture added from the "เปลี่ยนภาพ" window
     if (!artSpecs[id]) { artSpecs[id] = [w, fx ?? .3, fy ?? .88]; BUILDINGS[id] = file || ('assets/village-town/buildings/' + id + '.png'); bldName[id] = name }
