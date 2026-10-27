@@ -4,7 +4,7 @@
    writes one commit and moves main forward; if someone pushed in between it rebuilds and tries again. */
 (function(){'use strict';
 const KEY='projectA.github',API='https://api.github.com';
-const defaults={owner:'ekkavish31',repo:'Project-Agrenor-Tactical-Card-Game',branch:'main',token:'',auto:true};
+const defaults={owner:'ekkavish31',repo:'Project-Agrenor-Tactical-Card-Game',branch:'main',token:'',auto:true,review:false};
 function config(){try{return{...defaults,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){return{...defaults}}}
 function save(c){try{localStorage.setItem(KEY,JSON.stringify({...config(),...c}))}catch(e){}}
 const enabled=()=>{const c=config();return!!(c.token&&c.auto)};
@@ -64,7 +64,7 @@ async function commit(message,build,onStatus=()=>{}){const c=config();if(!c.toke
  const ui=pushScreen(message.replace(/\s*\(.*\)$/,'')),say=(n,t)=>{ui.step(n,t);onStatus(t)};
  try{for(let attempt=1;attempt<=3;attempt++){say(0,'กำลังอ่านเวอร์ชันล่าสุดบน GitHub…');const ref=await json('/git/ref/heads/'+c.branch),head=ref.object.sha,base=await json('/git/commits/'+head);
   say(1,'กำลังเตรียมไฟล์และรวมกับงานล่าสุด…');const files=await build({sha:head,read:p=>readText(p,head)});if(!files.length){ui.ok('');ui.note('ไม่มีอะไรเปลี่ยน · ไม่ต้อง push');onStatus('ไม่มีอะไรต้อง push');return null}
-  say(1,'กำลังรอตรวจสอบสรุปก่อน Push…');ui.pause();let review;try{review=await reviewBeforePush(message,files,{read:p=>readText(p,head)})}finally{ui.resume()}if(!review){ui.close();onStatus('ยกเลิกก่อน Push');return null}
+  if(c.review)say(1,'กำลังรอตรวจสอบสรุปก่อน Push…');let review=message;if(c.review){ui.pause();try{review=await reviewBeforePush(message,files,{read:p=>readText(p,head)})}finally{ui.resume()}}if(!review){ui.close();onStatus('ยกเลิกก่อน Push');return null}
   // Small patch → increment the version suffix (v82.3 → v82.4; suffix is a sequence, not a decimal).
   let ver='';try{const vf=await readText('js/game-version.js',head);if(vf){const m=vf.match(/v:'v(\d+)(?:\.(\d+))?'/);if(m){ver='v'+m[1]+'.'+((+m[2]||0)+1);files.push({path:'js/game-version.js',content:vf.replace(/v:'v[\d.]+'/,"v:'"+ver+"'").replace(/date:'[^']*'/,"date:'"+new Date().toISOString().slice(0,10)+"'")})}}}catch(e){}
   const msg=ver?ver+': '+review:review;
@@ -101,13 +101,14 @@ function openSettings(){if(!dlg){dlg=document.createElement('dialog');dlg.id='gh
  <label style="display:block;margin:6px 0">Repo <input id="ghRepo" style="width:100%;padding:6px" placeholder="owner/repo"></label><label style="display:block;margin:6px 0">Branch <input id="ghBranch" style="width:100%;padding:6px"></label>
  <label style="display:block;margin:6px 0">Token <input id="ghToken" type="password" style="width:100%;padding:6px" placeholder="github_pat_…" autocomplete="off"></label>
  <label style="display:flex;gap:6px;align-items:center;margin:8px 0"><input type="checkbox" id="ghAuto"> push อัตโนมัติเมื่อบันทึก (ปิด = ดาวน์โหลด ZIP แบบเดิม)</label>
+ <label style="display:flex;gap:6px;align-items:center;margin:8px 0"><input type="checkbox" id="ghReview"> แสดงหน้าสรุปให้ยืนยันก่อน push (ปิด = ขึ้นหน้าโหลดทันที)</label>
  <p id="ghMsg" style="min-height:18px;color:#315d46;margin:6px 0"></p><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="margin-right:auto;align-self:center">สร้าง token</a><button id="ghForget">ลบ token</button><button id="ghTest">ทดสอบ</button><button id="ghSave">บันทึก</button><button id="ghClose">ปิด</button></div>`;
  document.body.append(dlg);const $=id=>dlg.querySelector('#'+id),msg=t=>$('ghMsg').textContent=t;
- const read=()=>{const[owner,repo]=$('ghRepo').value.trim().split('/');return{owner:owner||defaults.owner,repo:repo||defaults.repo,branch:$('ghBranch').value.trim()||'main',auto:$('ghAuto').checked,...($('ghToken').value.trim()?{token:$('ghToken').value.trim()}:{})}};
+ const read=()=>{const[owner,repo]=$('ghRepo').value.trim().split('/');return{owner:owner||defaults.owner,repo:repo||defaults.repo,branch:$('ghBranch').value.trim()||'main',auto:$('ghAuto').checked,review:$('ghReview').checked,...($('ghToken').value.trim()?{token:$('ghToken').value.trim()}:{})}};
  $('ghSave').onclick=()=>{save(read());msg('บันทึกแล้ว');refreshBadges()};$('ghClose').onclick=()=>dlg.close();
  $('ghForget').onclick=()=>{save({token:''});$('ghToken').value='';msg('ลบ token จากเครื่องนี้แล้ว');refreshBadges()};
  $('ghTest').onclick=async()=>{save(read());msg('กำลังทดสอบ…');try{msg('ใช้ได้ · เขียน '+await test()+' ได้')}catch(e){msg('ใช้ไม่ได้: '+e.message)}refreshBadges()}}
- const c=config();dlg.querySelector('#ghRepo').value=c.owner+'/'+c.repo;dlg.querySelector('#ghBranch').value=c.branch;dlg.querySelector('#ghToken').value='';dlg.querySelector('#ghToken').placeholder=c.token?'มี token แล้ว (ใส่ใหม่เพื่อเปลี่ยน)':'github_pat_…';dlg.querySelector('#ghAuto').checked=c.auto;dlg.querySelector('#ghMsg').textContent='';dlg.showModal()}
+ const c=config();dlg.querySelector('#ghRepo').value=c.owner+'/'+c.repo;dlg.querySelector('#ghBranch').value=c.branch;dlg.querySelector('#ghToken').value='';dlg.querySelector('#ghToken').placeholder=c.token?'มี token แล้ว (ใส่ใหม่เพื่อเปลี่ยน)':'github_pat_…';dlg.querySelector('#ghAuto').checked=c.auto;dlg.querySelector('#ghReview').checked=!!c.review;dlg.querySelector('#ghMsg').textContent='';dlg.showModal()}
 const badges=new Set();
 function refreshBadges(){for(const b of badges)b.textContent=enabled()?'⬆ GitHub: เปิด':'⬆ GitHub: ปิด'}
 function settingsButton(cls=''){const b=document.createElement('button');b.type='button';b.className=cls;b.title='ตั้งค่า push ขึ้น GitHub';b.onclick=openSettings;badges.add(b);refreshBadges();return b}
