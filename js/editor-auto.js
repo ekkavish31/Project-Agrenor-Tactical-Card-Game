@@ -64,7 +64,7 @@
       const path = lanePath(x.p, x.o);
       if (path && path.length < 2) continue;
       if (!path) { log.push('✖ ' + x.name + ': หาทางต่อถนนไม่ได้ (ถูกล้อมไว้)'); continue }
-      UX().addRoad(path.map(c => project(c.u, c.v)), 'lane');
+      UX().addRoad(path.map(c => project(c.u, c.v)), 'lane', x.o?.id);
       log.push('＋ ' + x.name + ': ต่อทางย่อย ' + path.length + ' ช่อง')
     }
     UX().persist();
