@@ -26,8 +26,12 @@ nav{position:fixed;left:22px;bottom:76px;display:flex;gap:6px;flex-wrap:wrap;max
    defaults below, pushed into js/game-settings.js?v=82.14). A station walks the hero to its door and runs the game's own place
    action (runPlaceAction) through the parent page, so every rule stays in the game. */
 const Q = new URLSearchParams(location.search),
- PLACE = ['market', 'forge', 'home'].includes(Q.get('place')) ? Q.get('place') : 'market',
+ PLACE = /^[a-z0-9_-]{1,40}$/i.test(Q.get('place') || '') ? Q.get('place') : 'market',
  KEY = 'place-maps-v1';
+/* v91.42 · a sub-map can be any id (made by ＋ สถานที่ใหม่ → แมพย่อยใหม่); KIND = which built-in service set (market/forge/home) its stations may use */
+let SAVED_MAP = null;
+try { SAVED_MAP = (JSON.parse(localStorage.getItem(KEY) || '{}') || {})[PLACE] || null } catch (e) {}
+const KIND = ['market', 'forge', 'home'].includes(PLACE) ? PLACE : (['market', 'forge', 'home'].includes(Q.get('kind')) ? Q.get('kind') : (['market', 'forge', 'home'].includes(SAVED_MAP?.kind) ? SAVED_MAP.kind : 'market'));
 const cv = document.getElementById('world'),
  $ = id => document.getElementById(id),
  send = (type, data = {}) => parent.postMessage({
@@ -59,7 +63,7 @@ const ACTIONS = {
   deck: 'จัดสำรับ',
   bed: 'จัดการเตียง'
  }
-} [PLACE];
+} [KIND];
 const DEFAULTS = {
  market: {
   name: 'ตลาดหมู่บ้าน',
@@ -350,6 +354,16 @@ const VILLAGE_HERO = (() => {
  }
 })();
 const heroCast = () => M.cast?.hero || VILLAGE_HERO;
+
+if (!DEFAULTS[PLACE]) DEFAULTS[PLACE] = {
+ name: SAVED_MAP?.name || PLACE,
+ sub: SAVED_MAP?.sub || '',
+ kind: KIND,
+ floor: { w: 11, d: 10, tex: 'paving', walls: false },
+ exit: { u: 0, v: 9.4 },
+ stations: [],
+ props: []
+};
 
 function loadAll() {
  try {
@@ -797,7 +811,7 @@ function walls() {
    g.lineWidth = 2;
    g.stroke()
   };
- const base = PLACE === 'forge' ? ['#857a6c', '#73695d'] : ['#dccdb0', '#cbbb9c'];
+ const base = KIND === 'forge' ? ['#857a6c', '#73695d'] : ['#dccdb0', '#cbbb9c'];
  face(P(-F.w, -F.d), P(F.w, -F.d), base[0]);
  face(P(-F.w, F.d + 1), P(-F.w, -F.d), base[1]);
  g.strokeStyle = '#6b4a2e';

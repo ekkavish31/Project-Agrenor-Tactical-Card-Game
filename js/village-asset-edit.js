@@ -2106,9 +2106,9 @@
   <label class="chk"><input type="checkbox" id="bBounds" ${(t.bounds??true)?'checked':''}> แสดงกรอบประของภาพขณะยืด</label>
   <p class="sub">กรอบเหลือง = ขอบเขตภาพหลังยืด · ปิดได้เมื่อต้องการดูภาพจริง</p>
   <div class="row"><button id="bReset">คืนค่าอาคารนี้</button>${isHouse(o)?'<button id="bAll">ใช้ขนาด/มุมนี้กับบ้านทุกหลัง</button>':''}</div>
-  ${o.custom?'<div class="row"><button id="bDelPlace" style="color:#ff9d8f;border-color:#ff9d8f">🗑 ลบสถานที่นี้</button></div><p class="sub">ลบได้เฉพาะสถานที่ที่เพิ่มเอง · ลบแล้วย้อนกลับไม่ได้</p>':''}`;
+  ${o.id!=='square'?'<div class="row"><button id="bDelPlace" style="color:#ff9d8f;border-color:#ff9d8f">🗑 ลบสถานที่นี้</button></div><p class="sub">ลบพร้อมแมพย่อยของที่นี่'+(o.custom?' · ลบแล้วย้อนกลับไม่ได้':' · สถานที่ดั้งเดิมคืนได้ด้วยปุ่ม ↩ คืนสถานที่ (ของที่แก้ไว้จะหาย)')+'</p>':''}`;
   act('#bDelPlace', () => {
-   if (!window.confirm('ลบสถานที่ “' + o.name + '” ถาวร?\n(ลบอาคาร ของย่อยทั้งหมดในที่นี้ และเอาออกจากเส้นทาง NPC · ย้อนกลับไม่ได้)')) return;
+   if (!window.confirm('ลบสถานที่ “' + o.name + '” พร้อมแมพย่อย?\n(ลบอาคาร ของย่อยทั้งหมดในที่นี้ และเอาออกจากเส้นทาง NPC' + (o.custom ? ' · ย้อนกลับไม่ได้' : ' · คืนสถานที่ดั้งเดิมได้ภายหลัง') + ')')) return;
    UX.removePlace(o.id)
   });
   const th = body.querySelector('#bThumb');
@@ -2726,7 +2726,7 @@
      // v86: compare the layout itself (not the timestamp line) so an unchanged layout is not re-pushed
      if((old||'').replace(/^\/\/.*\n/,'')!==body.replace(/^\/\/.*\n/,''))files.push({path:'js/village-layout-v67.js',content:body});
      // everything else the village editor keeps outside the layout snapshot → js/game-settings.js
-     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1'],vals={};
+     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1'],vals={};
      for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
      const text=await head.read('js/game-settings.js')||'',settings=GitHubPush.parseSettings(text)||{};
      if(Object.entries(vals).some(([k,v])=>settings[k]!==v)){Object.assign(settings,vals);files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}

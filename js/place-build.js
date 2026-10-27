@@ -75,11 +75,15 @@ const PB_ART = (() => {
 (function() {
  'use strict';
  if (Q.get('edit') !== '1') return;
- const MAPS = [
-  ['market', 'ตลาด'],
-  ['forge', 'โรงตีเหล็ก'],
-  ['home', 'บ้านของเรา']
- ];
+ const MAPS = (() => {
+  let all = {}, hid = [];
+  try { all = JSON.parse(localStorage.getItem(KEY) || '{}') || {} } catch (e) {}
+  try { hid = JSON.parse(localStorage.getItem('project-a-village-hidden-places-v1') || '[]') || [] } catch (e) {}
+  const list = [['market', 'ตลาด'], ['forge', 'โรงตีเหล็ก'], ['home', 'บ้านของเรา']].filter(([k]) => !hid.includes('map:' + k) || k === PLACE);
+  for (const [k, m] of Object.entries(all)) if (!['market', 'forge', 'home'].includes(k) && m) list.push([k, '🗺 ' + (m.name || k)]);
+  if (!list.some(([k]) => k === PLACE)) list.push([PLACE, PLACE]);
+  return list
+ })();
  let tool = 'select',
   place = null, // {type:'station', id, tab, sel:[prop i]} | {type:'room', tab, sel:[]}
   hover = null, // {type:'station', i} | {type:'prop', i} | {type:'exit'}
