@@ -1410,7 +1410,7 @@
    const t = data.buildings[o.id] || (data.buildings[o.id] = {});
    t.dx = Math.round(drag.dx + dx);
    t.dy = Math.round(drag.dy + dy)
-  } else if (drag.type === 'entry') UX.setEntry(o, inv(p.x, p.y), e.shiftKey || !!o.entry?.deep);
+  } else if (drag.type === 'entry') UX.setEntry(o, inv(p.x, p.y), insideFp(o, inv(p.x, p.y))); // v91.56: anywhere inside the blue grid is allowed; outside it snaps to the edge
   else if (drag.type === 'label') o.label = {
    dx: Math.round(drag.dx + dx),
    dy: Math.round(drag.dy + dy)
@@ -2529,10 +2529,14 @@
   bindSliders((k, v) => {const ov=ovOf(key);if(k==='ix'||k==='iy')ov[k]=v/100;else ov[k]=v}, () => clean(key))
  }
 
+ function insideFp(o, w) {
+  const F = window.VillageFootprint;
+  if (!F) return false;
+  const f = F.fpOf(o), a = center(o), q = canonical(o, w.u, w.v), du = q.u - a.u, dv = q.v - a.v;
+  return du >= -f.u0 && du <= f.u1 && dv >= -f.v0 && dv <= f.v1
+ }
  function tabEntry(body, o) {
-  const deep = !!o.entry?.deep;
   body.innerHTML = `<p class="sub">ลาก <b style="color:#9ff3f5">หมุดฟ้า</b> บนแผนที่ไปวางที่ประตู · ตัวเอกเดินมาถึงจุดนี้แล้วเข้าใช้บริการ</p>
-  <label class="chk"><input type="checkbox" id="eDeep" ${deep?'checked':''}> วางลึกเข้าไปในตัวอาคารได้ (ตัวเอกเดินทับภาพเข้าไป) · หรือกด Shift ขณะลาก</label>
   <div class="row"><button id="eReset">คืนจุดเข้าเดิม</button></div><hr>
   <b class="sec">ช่องทางเดิน (สีเหลือง)</b>
   <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีทางเดิน':o.court?.cells?o.court.cells.length+' ช่องครึ่ง':o.court?.pts?'เส้นเดิมที่วาดไว้':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
@@ -2545,12 +2549,6 @@
   <div class="row"><button id="cLayer" style="${courtLayer ? 'background:#e5c06b;color:#1b302a' : ''}">🔢 ${courtLayer ? 'กำลังกำหนดชั้นรายช่อง… (ลากบนช่องเหลือง)' : 'กำหนดชั้นเฉพาะบางช่อง'}</button></div>
   ${courtLayer ? zRow('cl', 'ชั้นที่จะใส่', courtLayerVal, 'ลากทับช่องเหลืองเพื่อใส่ · ใส่ชั้นเท่าพื้น = ล้างค่าพิเศษ') : ''}
   <p class="sub">ตัวละครเดินทับช่องสีเหลืองได้ · ช่องต้องต่อกันจากประตูถึงขอบหน้า (ปลายทางที่ถนนมาเชื่อม) · ตัวละครอยู่ในชั้นเดียวกับพื้นตรงนั้น ของที่อยู่ด้านหน้าและชั้นสูงกว่า (เช่น กระถาง) จึงบังตัวละครได้ · Q สลับทาทีละช่อง 1×1 / ครึ่งช่อง 2×2</p>`;
-  body.querySelector('#eDeep').onchange = e => once(() => {
-   const d = UX.entryOf(o);
-   UX.setEntry(o, d, e.target.checked);
-   if (!e.target.checked && o.entry) delete o.entry.deep;
-   UX.refresh()
-  })();
   act('#eReset', once(() => {
    delete o.entry;
    UX.refresh()
@@ -2784,7 +2782,7 @@
     gg.font = `${12/z}px VillageThai,system-ui`;
     gg.textAlign = 'center';
     gg.fillStyle = '#fff';
-    gg.fillText(o.entry?.deep ? 'ทางเข้า (ลึก)' : 'ทางเข้า', p.x, p.y - 14 / z)
+    gg.fillText('ทางเข้า', p.x, p.y - 14 / z)
    }
    gg.restore()
   }
