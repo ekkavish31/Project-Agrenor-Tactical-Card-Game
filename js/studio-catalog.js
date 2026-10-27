@@ -198,7 +198,7 @@
     "rank": "boss"
   }
 };
- const groups={objects:'Objects',characters:'ตัวละคร',monsters:'มอนสเตอร์',bosses:'มินิบอส / บอส'};
+ const groups={illust:'Illust',objects:'Objects',characters:'ตัวละคร',monsters:'มอนสเตอร์',bosses:'มินิบอส / บอส'};
  const aliases={'straw-soldier':'straw','straw-archer':'archer','straw-captain':'captain','kobold-foreman':'foreman','pirate-captain':'captainHook'};
  const camel=s=>s.replace(/-([a-z])/g,(_,c)=>c.toUpperCase());
  function enemyMetadata(source){
@@ -232,6 +232,7 @@
   let ally=id.match(/^(?:ally-|card-u-)([a-z]+)$/)||id.match(/^tactics-(luna|bram|kier|mil)-/);
   if(ally)return {id:'ally:'+ally[1],name:ally[1][0].toUpperCase()+ally[1].slice(1),group:'characters'};
   if(['hero-frames','tactics-hero','village-idle','characters'].includes(cat)||id==='card-hero')return {id:'hero',name:'ตัวหลัก · Hero',group:'characters'};
+  if(['scenes','village-map'].includes(cat))return {id:'illust:'+id,name:a.studioName||id,group:'illust'}; // v91.37: big scene / cutscene pictures
   let base=id.replace(/-views$/,'').replace(/^ground-anim-/,'ground-');
   return {id:'object:'+base,name:a.studioName||base,group:'objects'};
  }
