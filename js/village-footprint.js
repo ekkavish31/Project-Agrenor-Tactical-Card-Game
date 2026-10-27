@@ -10,9 +10,10 @@
   const Q = 4, MAX = 400, MIN = 0.25, EPS = 1e-9; /* v91.67 · no practical limit: any size down to a quarter cell (the lattice resolution) */
   const up = v => Math.ceil(v * 2 - EPS) / 2;               // round outward to half a cell
   const q4 = v => Math.round(v * 4) / 4;                      // nearest quarter cell (lattice resolution)
-  const snapHalf = v => Math.max(0.5, Math.round(v * 2) / 2); // helper for double-click snapping
+  const snapHalf = v => Math.round(v * 2) / 2; // helper for double-click snapping
 
-  const okFp = f => !!f && ['u0', 'u1', 'v0', 'v1'].every(k => Number.isFinite(f[k]) && f[k] >= MIN && f[k] <= MAX);
+  /* v91.67 · an edge may cross the place centre (negative extent) so the area can sit beside the art; only the total width/depth must stay >= a quarter cell */
+  const okFp = f => !!f && ['u0', 'u1', 'v0', 'v1'].every(k => Number.isFinite(f[k]) && Math.abs(f[k]) <= MAX) && f.u0 + f.u1 >= MIN - EPS && f.v0 + f.v1 >= MIN - EPS;
   /* Automatic footprint. When the artwork is known (o.fpAuto, set from the picture, never saved) it is used; before the
      picture has loaded the old hand-tuned half sizes w,d are the fallback. */
   function defaultFp(o) { return okFp(o && o.fpAuto) ? { ...o.fpAuto } : { u0: up(o.w), u1: up(o.w), v0: up(o.d), v1: up(o.d) } }
@@ -78,14 +79,16 @@
   }
 
   /* Edit helpers. edge: 'u0' | 'u1' | 'v0' | 'v1'. delta in cells (negative = pull in). Never below half a cell. */
+  const OPP = { u0: 'u1', u1: 'u0', v0: 'v1', v1: 'v0' };
+  const clampEdge = (n, edge, v) => Math.max(MIN - n[OPP[edge]], Math.min(MAX, Math.max(-MAX, v)));
   function nudgeEdge(fp, edge, delta) {
     const n = { ...fp };
-    n[edge] = Math.max(MIN, Math.min(MAX, q4(n[edge] + delta)));
+    n[edge] = clampEdge(n, edge, q4(n[edge] + delta));
     return n;
   }
   function nudgeAll(fp, delta) { return nudgeEdge(nudgeEdge(nudgeEdge(nudgeEdge(fp, 'u0', delta), 'u1', delta), 'v0', delta), 'v1', delta) }
 
-  const api = { defaultFp, autoFromArt, fpOf, isCustom, worldRect, corners, hits, nearestFree, nudgeEdge, nudgeAll, setEdge: (fp, edge, v) => ({ ...fp, [edge]: Math.max(MIN, Math.min(MAX, q4(v))) }), snapHalf, MAX };
+  const api = { defaultFp, autoFromArt, fpOf, isCustom, worldRect, corners, hits, nearestFree, nudgeEdge, nudgeAll, setEdge: (fp, edge, v) => ({ ...fp, [edge]: clampEdge(fp, edge, q4(v)) }), snapHalf, MAX };
   root.VillageFootprint = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
