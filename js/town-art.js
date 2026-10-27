@@ -14,7 +14,16 @@
     The copy is cached per size step (1.25x apart) and built at most once per frame so zooming stays smooth; the plain image is used until it is ready. */
  let sharpOn=true,sharpAmt=.55;try{sharpOn=localStorage.getItem('project-a-sharp')!=='0';const v=parseFloat(localStorage.getItem('project-a-sharp-amt'));if(v>=0&&v<=2)sharpAmt=v}catch(e){}
  /* v91.88 · per-image override: TownArt.setCur({amt:0–2, px:true}) while one place's art is drawn (amt = sharpening, px = crisp pixel scaling) */
- let cur=null;let sharpCache=new WeakMap();let sharpBuilt=-1,frameNo=0;
+ let cur=null;let sharpCache=new WeakMap();
+ /* v91.89 · "ผสมกับพื้น": cur.feather (0–100) softens the lower silhouette of a building picture so its patch of ground melts into the map; cur.tone (0–1) dims/desaturates it toward the scene. Built once per picture+setting. */
+ const blendCache=new WeakMap();
+ function boxBlur(a,w,h,r){const t=new Float32Array(a.length),n=2*r+1;for(let y=0;y<h;y++){let s=0,o=y*w;for(let x=-r;x<=r;x++)s+=a[o+Math.min(w-1,Math.max(0,x))];for(let x=0;x<w;x++){t[o+x]=s/n;s+=a[o+Math.min(w-1,x+r+1)]-a[o+Math.max(0,x-r)]}}
+  const b=new Float32Array(a.length);for(let x=0;x<w;x++){let s=0;for(let y=-r;y<=r;y++)s+=t[Math.min(h-1,Math.max(0,y))*w+x];for(let y=0;y<h;y++){b[y*w+x]=s/n;s+=t[Math.min(h-1,y+r+1)*w+x]-t[Math.max(0,y-r)*w+x]}}return b}
+ function blendFor(im){if(!cur||!im.naturalWidth)return null;const f=+cur.feather||0,t=+cur.tone||0;if(!(f>0||t>0))return null;const key=f+'|'+t;let m=blendCache.get(im);if(!m)blendCache.set(im,m=new Map());let c=m.get(key);if(c!==undefined)return c;
+  const W=im.naturalWidth,H=im.naturalHeight;try{c=document.createElement('canvas');c.width=W;c.height=H;const q=c.getContext('2d',{willReadFrequently:true});if(t>0)q.filter='brightness('+(1-.2*t)+') saturate('+(1-.3*t)+')';q.drawImage(im,0,0);q.filter='none';
+   if(f>0){const d=q.getImageData(0,0,W,H),px=d.data,a=new Float32Array(W*H);for(let i=0;i<a.length;i++)a[i]=px[i*4+3]/255;const r=Math.max(1,Math.round(f/100*.06*W));let b=boxBlur(boxBlur(a,W,H,r),W,H,Math.max(1,r>>1));
+    for(let y=0;y<H;y++){const yy=y/H,k=yy<=.38?0:yy>=.62?1:(u=>u*u*(3-2*u))((yy-.38)/.24);if(!k)continue;for(let x=0;x<W;x++){const i=y*W+x,al=px[i*4+3];if(!al)continue;const ramp=Math.max(0,Math.min(1,(b[i]-.5)/.5));px[i*4+3]=al*(1-k*(1-ramp))}}q.putImageData(d,0,0)}
+   c.naturalWidth=W;c.naturalHeight=H}catch(e){c=null}m.set(key,c);return c}let sharpBuilt=-1,frameNo=0;
  function unsharp(c,amt){const q=c.getContext('2d',{willReadFrequently:true}),w=c.width,h=c.height,d=q.getImageData(0,0,w,h),s=d.data,o=new Uint8ClampedArray(s);for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=(y*w+x)*4;if(s[i+3]<8)continue;for(let k=0;k<3;k++){const c0=s[i+k],n=(s[i+k-4]+s[i+k+4]+s[i+k-w*4]+s[i+k+w*4])/4,v=c0+(c0-n)*amt;o[i+k]=v<0?0:v>255?255:v}}d.data.set(o);q.putImageData(d,0,0)}
  function sharpFor(g,im,w){const ov=cur&&cur.amt!=null,amt=ov?cur.amt:sharpAmt;if(cur&&cur.px)return null;if((!sharpOn&&!ov)||!im.naturalWidth)return null;const t=g.getTransform(),px=w*Math.hypot(t.a,t.b);if(!(px>8))return null;const nat=im.naturalWidth,lvl=Math.round(Math.log(px)/Math.log(1.25)),W=Math.round(Math.pow(1.25,lvl));if(W>nat*.92&&W<nat*1.08)return null;if(W>4096||W<16)return null;let m=sharpCache.get(im);if(!m)sharpCache.set(im,m=new Map());const ck=lvl+'|'+amt;let c=m.get(ck);if(c)return c;
   if(sharpBuilt===frameNo)return null;sharpBuilt=frameNo;
@@ -24,7 +33,7 @@
  function sharpCacheReset(){sharpCache=new WeakMap()}
  function draw(g,im,crop,rect,hero){if(!im?.complete||!im.naturalWidth)return;let alpha=1;const [x,y,w,h]=rect;
   if(heroPainted&&heroScreen&&hero){const p=heroScreen.matrixTransform(g.getTransform().inverse()),m=mask(im),src=crop||[0,0,im.naturalWidth,im.naturalHeight];if(p.y<y+h*.98){for(const lift of [12,30,48]){const px=p.x,py=p.y-lift;if(px<x||px>x+w||py<y||py>y+h)continue;let opaque=true;if(m){const sx=(src[0]+(px-x)/w*src[2])/im.naturalWidth,sy=(src[1]+(py-y)/h*src[3])/im.naturalHeight,ix=Math.floor(sx*m.w),iy=Math.floor(sy*m.h);opaque=(m.data[(iy*m.w+ix)*4+3]||0)>45}if(opaque){alpha=.42;break}}}}
-  g.save();g.globalAlpha*=alpha;if(im._townHovered)outline(g,im,crop,rect,3);if(crop)g.drawImage(im,...crop,...rect);else{if(cur&&cur.px)g.imageSmoothingEnabled=false;g.drawImage(sharpFor(g,im,w)||im,...rect)}g.restore();return alpha;
+  g.save();g.globalAlpha*=alpha;if(im._townHovered)outline(g,im,crop,rect,3);if(crop)g.drawImage(im,...crop,...rect);else{if(cur&&cur.px)g.imageSmoothingEnabled=false;const bs=blendFor(im)||im;g.drawImage(sharpFor(g,bs,w)||bs,...rect)}g.restore();return alpha;
  }
  function sprite(g,id,p,w,h,pivot=[.5,.92],fade=false){const im=asset(id);if(!im.complete||!im.naturalWidth)return;h=h||w*im.naturalHeight/im.naturalWidth;return draw(g,im,null,[p.x-w*pivot[0],p.y-h*pivot[1],w,h],fade?p:null)}
  function detail(g,index,p,w=40){const im=asset('details');if(!im.complete||!im.naturalWidth)return;const sw=im.naturalWidth/2,sh=im.naturalHeight/2;g.drawImage(im,index%2*sw,Math.floor(index/2)*sh,sw,sh,p.x-w/2,p.y-w*.7,w,w)}

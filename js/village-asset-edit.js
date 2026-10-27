@@ -2213,7 +2213,7 @@
   body.innerHTML = `${choices.length?`<div class="art"><span class="th" id="bThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="bSwap">เปลี่ยนภาพ…</button></div>${t.art&&t.art!==o.id?'<button id="bOrig">ใช้ภาพเดิม</button>':''}<p class="sub" style="margin:6px 0 0">${cur?.label||''}</p></div></div>`:''}
   ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div>`:''}
   ${slider('kx','Base Slope · ความลาดฐาน',t.kx||0,-.6,.6,.005,FMT.kx)}<p class="sub">Base Slope เปลี่ยนแนวฐานโดยไม่ทำให้เส้นตั้งของอาคารเอียง</p>${nudgeHtml}
-  ${o.id!=='square'?(() => { const w0 = wkSharpOf(o), eff = o.sharp?.amt ?? w0?.amt ?? (window.TownArt?.sharpOn?.() ? TownArt.sharpAmt() : 0), md = o.sharp?.px != null ? (o.sharp.px ? 'px' : 'soft') : 'def'; return `<b class="sec">🔍 ความคมชัดภาพนี้</b>${slider('sa','ความคม (unsharp)',eff,0,2,.05,x=>(+x).toFixed(2))}<label class="sel">ขยายพิกเซล<select id="sMode"><option value="def" ${md==='def'?'selected':''}>ตามค่าเริ่มต้น${w0?' (จาก Workshop)':''}</option><option value="soft" ${md==='soft'?'selected':''}>นุ่ม — ปรับขนาดเนียน + คม</option><option value="px" ${md==='px'?'selected':''}>คมพิกเซล — ขยายแบบไม่เบลอ</option></select></label><div class="row"><button id="sReset"${o.sharp?'':' disabled'}>⟲ ใช้ค่าเริ่มต้น${w0?'ของภาพ':''}</button></div><p class="sub">ปรับเฉพาะสถานที่นี้ · ค่าเริ่มต้นมาจากที่ตั้งไว้ใน Workshop หรือสวิตช์ ✨ คมชัด</p>` })():''}
+  ${o.id!=='square'?(() => { const w0 = wkSharpOf(o), eff = o.sharp?.amt ?? w0?.amt ?? (window.TownArt?.sharpOn?.() ? TownArt.sharpAmt() : 0), md = o.sharp?.px != null ? (o.sharp.px ? 'px' : 'soft') : 'def'; return `<b class="sec">🔍 ความคมชัดภาพนี้</b>${slider('sa','ความคม (unsharp)',eff,0,2,.05,x=>(+x).toFixed(2))}<label class="sel">ขยายพิกเซล<select id="sMode"><option value="def" ${md==='def'?'selected':''}>ตามค่าเริ่มต้น${w0?' (จาก Workshop)':''}</option><option value="soft" ${md==='soft'?'selected':''}>นุ่ม — ปรับขนาดเนียน + คม</option><option value="px" ${md==='px'?'selected':''}>คมพิกเซล — ขยายแบบไม่เบลอ</option></select></label><div class="row"><button id="sReset"${o.sharp?'':' disabled'}>⟲ ใช้ค่าเริ่มต้น${w0?'ของภาพ':''}</button></div><p class="sub">ปรับเฉพาะสถานที่นี้ · ค่าเริ่มต้นมาจากที่ตั้งไว้ใน Workshop หรือสวิตช์ ✨ คมชัด</p><b class="sec">🌿 ผสมกับพื้น</b>${slider('bf','ความนุ่มของขอบพื้น',o.blend?.f ?? wkBlendOf(o)?.f ?? 0,0,100,1,x=>x)}${slider('bt','ปรับโทนเข้าฉาก (ลดสว่าง/สี)',o.blend?.t ?? wkBlendOf(o)?.t ?? 0,0,1,.05,x=>(+x).toFixed(2))}<div class="row"><button id="bReset"${o.blend?'':' disabled'}>⟲ ใช้ค่าเริ่มต้น</button></div><p class="sub">ขอบพื้นนุ่ม = ขอบดินด้านล่างของภาพจางเข้าหาหญ้า · ปรับโทน = ภาพไม่สว่าง/สดเกินพื้นหลัง</p>` })():''}
   ${fpHtml(o)}
   <b class="sec">ชั้น (layer)</b>${zRow('bz','ชั้นอาคาร',t.z||0,'เทียบกับของย่อยในสถานที่นี้ · ของย่อยที่เลขมากกว่าจะทับอาคาร')}${zRow('pz','ชั้นทั้งสถานที่',t.pz||0,'อาคาร+ของย่อยทั้งชุด เทียบกับสถานที่อื่น · 0 = ตามความลึก')}
   <p class="sub">ป้ายชื่อ: ลากป้ายบนแผนที่ไปวางได้${o.label?' · <a href="#" id="bLabel" style="color:#9ff3f5">คืนตำแหน่งป้าย</a>':''}</p>
@@ -2306,9 +2306,11 @@
    render()
   };
   act('#sReset', once(() => { delete o.sharp }));
+  act('#bReset', once(() => { delete o.blend }));
   const sm = panel.querySelector('#sMode'); if (sm) sm.onchange = once(() => { const v = sm.value, cur0 = { ...(o.sharp || {}) }; if (v === 'def') delete cur0.px; else cur0.px = v === 'px'; if (cur0.amt == null && cur0.px == null) delete o.sharp; else o.sharp = cur0 });
   bindSliders((k, v) => {
    if (k === 'sa') { o.sharp = { ...(o.sharp || {}), amt: v }; return }
+   if (k === 'bf' || k === 'bt') { o.blend = { f: o.blend?.f ?? wkBlendOf(o)?.f ?? 0, t: o.blend?.t ?? wkBlendOf(o)?.t ?? 0, [k === 'bf' ? 'f' : 't']: v }; return }
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
    if (lockRatio && (k === 'sx' || k === 'sy')) { // v91.57: both axes move together, keeping their ratio
     const q = k === 'sx' ? 'sy' : 'sx', f = (b[k] ?? 1) ? v / (b[k] ?? 1) : 1, nq = Math.max(.2, Math.min(6, (b[q] ?? 1) * f));
@@ -2645,6 +2647,7 @@
  /* v91.85 · 🛣 "ถนนทางเข้า" tab: the road piece that joins the entrance to the road network.
     o.lead = { mode:'auto'|'custom'|'none', w: width × (0.3–3), pts:[{du,dv}] } (own axes, from the place centre). Manual-road maps keep their own lines: width / delete only. */
  function wkSharpOf(o) { const a = data.buildings[o.id]?.art; if (!a) return null; const m = (window.ASSET_MANIFEST?.assets || []).find(x => x.id === a); return m?.sharp && typeof m.sharp === 'object' ? m.sharp : null }
+ function wkBlendOf(o) { const a = data.buildings[o.id]?.art; if (!a) return null; const m = (window.ASSET_MANIFEST?.assets || []).find(x => x.id === a); return m?.blend && typeof m.blend === 'object' ? m.blend : null }
  let leadEdit = false;
  const leadOf = o => o.lead || {};
  function leadSet(o, patch) {
@@ -3028,6 +3031,7 @@
   leave: () => leave(true),
   placeId: () => place?.id || null,
   wkSharpOf: o => { try { return wkSharpOf(o) } catch (_) { return null } },
+  wkBlendOf: o => { try { return wkBlendOf(o) } catch (_) { return null } },
   footprintEditing: () => place ? place.tab === 'building' : null, // false = another tab is open: the blue area hides, a dashed yellow outline stays
   itemKeys: owner => frame.filter(e => e.owner === owner && !e.hidden).map(e => e.key),
   select: ks => { if (place) { place.keys = [...ks]; place.tab = 'items'; render() } },
