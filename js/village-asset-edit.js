@@ -1257,6 +1257,14 @@
    lf: plotScreen(o, e.left, e.front)
   }
  }
+ /* v91.71 · a name label is grabbed first (capture phase, before the town editor's own handler), wherever it sits — over the building art, at a grid edge …: drag = move it, plain click = open the place */
+ stageEl.addEventListener('pointerdown', e => {
+  if (!editing || testWalk || e.button !== 0 || e.target.closest('#assetEdit,#aePicker,#townTools') || UX.getMode() !== 'object') return;
+  const p = world(e), lo = UX.labelAt?.(p, place?.id);
+  if (!lo) return;
+  e.stopImmediatePropagation(); e.preventDefault();
+  drag = { id: e.pointerId, type: 'label', p, moved: false, dx: lo.label?.dx || 0, dy: lo.label?.dy || 0, lo }
+ }, true);
  stageEl.addEventListener('pointerdown', e => {
   if (!editing || testWalk || e.button !== 0 || e.target.closest('#assetEdit,#aePicker,#townTools')) return;
   const p = world(e),
@@ -1389,11 +1397,11 @@
   } else hoverKey = hoverOwner = null
  });
  window.addEventListener('pointermove', e => {
-  if (!drag || e.pointerId !== drag.id || !place) return;
+  if (!drag || e.pointerId !== drag.id || (!place && !drag.lo)) return;
   const p = world(e),
    dx = p.x - drag.p.x,
    dy = p.y - drag.p.y,
-   o = loc(place.id);
+   o = drag.lo || loc(place.id);
   if (!drag.moved) {
    if (Math.hypot(dx, dy) * scale * zoom < 4) return;
    drag.moved = true;
@@ -1431,6 +1439,7 @@
   if (!drag || e.pointerId !== drag.id) return;
   const d = drag;
   drag = null;
+  if (!d.moved && d.type === 'label' && !place && d.lo) { enter(d.lo.id); return }
   if (!d.moved && d.type !== 'cells') return;
   if (d.type === 'cells') {
    const o = loc(place.id), cells = [...d.have.values()];

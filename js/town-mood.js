@@ -22,7 +22,7 @@ function shadows(g){const k=Math.max(.35,level());g.save();g.filter='blur(14px)'
   for(let s=0;s<=1;s+=.25){const du=L*s,dv=L*s*.25,pts=[[-o.w,-o.d],[o.w,-o.d],[o.w,o.d],[-o.w,o.d]].map(([a,b])=>project(c.u+a+du,c.v+b+dv));p.moveTo(pts[0].x,pts[0].y);for(const q of pts.slice(1))p.lineTo(q.x,q.y);p.closePath()}}
  g.fill(p,'nonzero');g.restore()}
 /* lamps */
-let lamps=[],lampKey='';
+const AUTO_LAMPS=false;let lamps=[],lampKey='';
 function inPoly(x,y,pts){let a=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const p=pts[i],q=pts[j];if((p.y>y)!==(q.y>y)&&x<(q.x-p.x)*(y-p.y)/(q.y-p.y)+p.x)a=!a}return a}
 function onRoad(x,y){if(!roadPixels)return true;for(const[dx,dy]of[[0,0],[10,0],[-10,0],[0,6],[0,-6]]){const X=Math.round(x+dx),Y=Math.round(y+dy);if(X<0||Y<0||X>=WORLD_W||Y>=WORLD_H)return true;if(roadPixels[(Y*WORLD_W+X)*4+3]>40)return true}return false}
 function buildLamps(){lamps=[];const plots=locations.filter(o=>estate(o)).map(o=>plotPoints(o)),boxes=locations.filter(o=>o.w).map(o=>{const c=center(o);return{c,w:o.w+.8,d:o.d+.8}}),gates=(root.Village25D?.getExits()||[]).map(e=>project(e.u,e.v)),off=ROAD.main.curb/2+18,sqo=locations.find(o=>o.id==='square'),sq=sqo?(()=>{const c=center(sqo);return project(c.u,c.v)})():null;let side=1;
@@ -31,7 +31,8 @@ function buildLamps(){lamps=[];const plots=locations.filter(o=>estate(o)).map(o=
     if(onRoad(x,y)||plots.some(P=>inPoly(x,y,P)))continue;const uv=inv(x,y);if(boxes.some(B=>Math.abs(uv.u-B.c.u)<B.w&&Math.abs(uv.v-B.c.v)<B.d))continue;
     if(sq&&Math.hypot(sq.x-x,(sq.y-y)*2)<560)continue;if(gates.some(q=>Math.hypot(q.x-x,(q.y-y)*2)<220)||lamps.some(q=>Math.hypot(q.x-x,(q.y-y)*2)<340))continue;lamps.push({x,y});break}}
   carry=s-len}})}
-function objects(){if(!roadLines?.length||!roadPixels)return[];const key=roadLines.length+':'+locations.map(o=>o.x.toFixed(1)+o.y.toFixed(1)).join();if(key!==lampKey||!lamps.length){lampKey=key;buildLamps()}
+/* v91.72 · no automatic street lamps any more: lamps are placed by hand as props of the main map (🧺 ของทั้งแผนที่ / ของประดับ → โคมไฟถนน) */
+function objects(){if(!AUTO_LAMPS||!roadLines?.length||!roadPixels)return[];const key=roadLines.length+':'+locations.map(o=>o.x.toFixed(1)+o.y.toFixed(1)).join();if(key!==lampKey||!lamps.length){lampKey=key;buildLamps()}
  return lamps.map(p=>({x:p.x,y:p.y,draw:()=>lamp(p)}))}
 // slider in the village ⚙ tools panel
 function mount(){const panel=document.getElementById('toolsPanel');if(!panel||!root.GameMood||panel.querySelector('.moodSlider'))return;const s=root.GameMood.slider();panel.insertBefore(s,panel.querySelector('h3').nextSibling);const sh=document.createElement('label');sh.className='moodSlider';sh.innerHTML='<span>หัวแปรงถนน</span><select><option value="square">สี่เหลี่ยมมุมมน (ตามกริด)</option><option value="round">กลม (แบบเดิม)</option></select>';const sel=sh.querySelector('select');sel.value=ROAD_SHAPE;sel.onchange=()=>setRoadShape(sel.value);s.after(sh);const st=document.createElement('style');st.textContent='.moodSlider{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;font-size:13px;margin:4px 0 8px}.moodSlider input{grid-column:1/-1;width:100%}';document.head.appendChild(st);root.GameMood.onChange(()=>{terrainDirty=true});if(root.HD2D){panel.insertBefore(root.HD2D.controls(),sh.nextSibling);root.HD2D.attach(document.getElementById('world'))}}
