@@ -53066,34 +53066,34 @@
    "category": "village-map",
    "status": "final",
    "size": [
-    2717,
-    3000
+    1626,
+    1894
    ],
    "transparent": true,
    "subject": "Object Workshop: adventurer-guild",
    "prompt": "",
    "pivot": [
-    0.3970741634815023,
-    0.9032133286206215
+    0.4010715499792527,
+    0.9148896936015115
    ],
-   "artRevision": "20261027-121130",
+   "mapW": 840,
+   "artRevision": "20261027-141607",
    "geometry": {
     "collisionShape": [],
     "occlusionMask": [],
     "coordinateSpace": "normalized-source-image",
     "version": 1,
     "anchor": [
-     0.3999667556296117,
-     0.9079136976909336
+     0.4054898429262751,
+     0.9199043066703761
     ],
     "rotation": 0,
     "isoAxisScale": [
-     1,
-     1
+     1.67,
+     1.6114
     ],
     "flipX": false
-   },
-   "mapW": 465
+   }
   },
   {
    "id": "house-01",
@@ -53101,43 +53101,34 @@
    "category": "village-map",
    "status": "final",
    "size": [
-    624,
-    605
+    2131,
+    2125
    ],
    "transparent": true,
    "subject": "Object Workshop: house-01",
    "prompt": "",
    "pivot": [
-    0.49207418034954714,
-    0.9513868359504103
+    0.49092188601783804,
+    0.9522065846895712
    ],
-   "mapW": 380,
-   "artRevision": "20261027-131923",
+   "mapW": 840,
+   "artRevision": "20261027-141712",
    "geometry": {
     "collisionShape": [],
     "occlusionMask": [],
     "coordinateSpace": "normalized-source-image",
     "version": 1,
     "anchor": [
-     0.7734428140523937,
-     1.1054580199594426
+     0.49092188601783804,
+     0.9522065846895712
     ],
     "rotation": 0,
     "isoAxisScale": [
-     1.56,
-     1.4602000000000002
+     1.67,
+     1.59
     ],
     "flipX": false
-   },
-   "history": [
-    {
-     "file": "assets/_versions/house-01/20261027-131922.webp",
-     "at": "2026-10-27T06:19:23.767Z",
-     "stamp": "20261027-131922",
-     "status": "final",
-     "note": "ก่อนใส่ภาพใหม่"
-    }
-   ]
+   }
   }
  ],
  "studioWalks": {
