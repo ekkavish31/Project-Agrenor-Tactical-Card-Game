@@ -16,9 +16,10 @@ nav button:hover{border-color:var(--accent)}
 nav button.on{background:var(--accent);border-color:#8a5a20;color:#fff}
 header a,header button.tool{color:var(--text);background:#30271d;border:1px solid var(--line);border-radius:8px;padding:6px 12px;text-decoration:none;cursor:pointer;font:inherit;white-space:nowrap}
 .note{height:26px;display:flex;align-items:center;padding:0 14px;font-size:12px;color:var(--muted);background:#1f1912;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-main{position:absolute;top:74px;left:0;right:0;bottom:0}
+main{position:absolute;top:49px;left:0;right:0;bottom:0}
 iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#111}
 iframe[hidden]{display:none}
+#note{display:none}
 </style>
 </head>
 <body>
@@ -30,7 +31,7 @@ iframe[hidden]{display:none}
 </header>
 <div class="note" id="note"></div><div id="editorConflict" hidden role="status"></div>
 <main id="frames"></main>
-<script src="js/game-version.js?v=82.15"></script><script src="js/game-settings.js?v=82.15"></script><script src="js/editor-deploy-status.js?v=91.28"></script><script src="js/game-dialog.js"></script><script>
+<script src="js/game-version.js?v=82.15"></script><script src="js/game-settings.js?v=82.15"></script><script src="js/editor-deploy-status.js?v=91.36"></script><script src="js/game-dialog.js"></script><script>
 // Editor shell: every tool runs in its own frame; the game opens in "editor mode" (no play-save writes).
 // All tools share this browser's storage with the game — reload the game to see changes.
 const TABS=[
@@ -42,10 +43,10 @@ const TABS=[
  {id:'places',name:'🏠 แผนที่ย่อย',src:'village-place.html?edit=1&place=forge',note:'ตลาด · โรงตีเหล็ก · บ้าน แบบ 2.5D เดินได้ · ลากจุดทำงาน/ของประดับ · ผูกกิจกรรมกับจุดทำงาน · เปลี่ยนภาพ ขนาด พื้น ผนัง · push ขึ้นเกม'}];
 const tabs=document.getElementById('tabs'),frames=document.getElementById('frames'),note=document.getElementById('note');let cur=null;
 function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replaceState(null,'','#'+T.id);
- tabs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===T.id));note.textContent=T.note+' · ค่าที่แก้บันทึกในเบราว์เซอร์นี้ เกมเห็นเมื่อรีโหลด';
+ tabs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===T.id));
  for(let f of frames.children)f.hidden=f.dataset.id!==T.id;
  if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=T.src+(T.src.includes('?')?'&':'?')+'build='+encodeURIComponent((window.GAME_VERSION?.v||'')+'-'+Date.now().toString(36));f.title=T.name;frames.appendChild(f)}}
-tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}">${t.name}</button>`).join('');
+tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}" title="${t.note.replace(/"/g,'&quot;')} · ค่าที่แก้บันทึกในเบราว์เซอร์นี้ เกมเห็นเมื่อรีโหลด">${t.name}</button>`).join('');
 tabs.onclick=e=>{let b=e.target.closest('button');if(b)show(b.dataset.id)};
 document.getElementById('reload').onclick=()=>{let f=frames.querySelector(`[data-id="${cur}"]`);if(f)f.src=f.src};
 show(TABS.some(t=>t.id===location.hash.slice(1))?location.hash.slice(1):'assets');
