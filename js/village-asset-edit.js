@@ -112,9 +112,10 @@
  /* v91.5 · pictures the user added through "＋ เพิ่มภาพ Asset": saved in the layout (id, name, width) + the PNG under assets/village-town/decor/ */
  const bldName = {}; // names of the buildings added from pictures
  function registerAssets() {
-  for (const { id, name, w, bld } of data.assets) {
+  wkAssets();
+  for (const { id, name, w, bld, file } of data.assets) {
    if (bld) { // v91.23: a whole building picture added from the "เปลี่ยนภาพ" window
-    if (!artSpecs[id]) { artSpecs[id] = [w, .3, .88]; BUILDINGS[id] = 'assets/village-town/buildings/' + id + '.png'; bldName[id] = name }
+    if (!artSpecs[id]) { artSpecs[id] = [w, .3, .88]; BUILDINGS[id] = file || ('assets/village-town/buildings/' + id + '.png'); bldName[id] = name }
     if (!images['building_' + id]) { const im = new Image(); im.onload = () => { terrainDirty = true }; im.src = BUILDINGS[id]; images['building_' + id] = im }
     continue
    }
@@ -1813,13 +1814,19 @@
    ...it,
    thumb: () => canvasOf(baseHouseImage(as(o, it.id, it.id !== 'home')))
   }));
-  return Object.keys(artSpecs).filter(id => images['building_' + id]).map(id => ({
+  const own = Object.keys(artSpecs).filter(id => images['building_' + id]).map(id => ({
    id,
    label: loc(id)?.name || id,
    group: 'อาคาร',
    thumb: () => canvasOf(images['building_' + id])
-  }))
+  }));
+  /* v91.44 · pictures saved from the Object Workshop / Asset Studio under category อาคาร (assets/objects/…) */
+  const extra = wkAssets().filter(a => !artSpecs[a.id] || BUILDINGS[a.id] === a.file).filter(a => !own.some(c => c.id === a.id)).map(a => ({ id: a.id, label: a.id, group: 'อาคาร (จาก Workshop)', wk: a, thumb: () => canvasOf(wkImg(a.file)) }));
+  return [...own, ...extra]
  }
+ const wkCache = {};
+ function wkImg(file) { if (!wkCache[file]) { const im = new Image(); im.src = file; wkCache[file] = im } return wkCache[file] }
+ function wkAssets() { const list = (window.ASSET_MANIFEST?.assets || []).filter(a => a.category === 'village-map' && a.status !== 'unused' && /^assets\/objects\//.test(a.file || '')); list.forEach(a => wkImg(a.file)); return list }
 
  /* ---------- panel ---------- */
  const css = document.createElement('style');
@@ -2120,6 +2127,7 @@
   bindFp(body, o);
   act('#bSwap', () => openList('เปลี่ยนภาพ ' + o.name, choices, cur?.id, it => {
    UX.checkpoint();
+   if (it.wk && !artSpecs[it.id]) { data.assets.push({ id: it.id, name: it.label, w: Math.round(it.wk.mapW || 380), bld: 1, file: it.wk.file }); registerAssets() }
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
    if (it.id === o.id || !o.npc && it.id === 'home' && o.id === 'home') delete b.art;
    else b.art = it.id;
