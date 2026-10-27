@@ -24,7 +24,19 @@ document.querySelector('.toolbar').prepend(menuToggle);document.body.appendChild
 const deepEntry=Object.assign(document.createElement('label'),{innerHTML:'<input type="checkbox"> วางจุดเข้าลึกเข้าไปในอาคารได้ (หรือกด Shift ขณะลาก)'});deepEntry.style.cssText='gap:6px;font-size:12px;margin:4px 0';const deepBox=deepEntry.querySelector('input');Object.defineProperty(deepEntry,'checked',{get:()=>deepBox.checked});selectMode.after(deepEntry);deepEntry.hidden=true;selectMode.addEventListener('change',()=>deepEntry.hidden=!editing||mode!=='entry');
 function edgeOf(o){const a=center(o),d=entry(o),b=boundary(o,d);return canonical(o,a.u+b.du,a.v+b.dv)}
 function deepOwner(p){return locations.find(o=>o.entry?.deep&&Math.hypot(entry(o).u-p.u,entry(o).v-p.v)<.6)}
+/* v91.22 · path between a far point and a place's entrance that stays on the yellow walk cells: step onto the cell nearest to `far` (reached by the usual road routing), then walk cell-to-cell to the entrance. Returns points from `far` (excluded) to `ent` (included), or null. */
+function courtApproach(far,ent,o){const cells=courtCellsOf(o);if(!cells)return null;const a=center(o),set=new Map(cells.map(c=>[c[0]+','+c[1],c])),cen=c=>canonical(o,a.u+(c[0]+.5)/2,a.v+(c[1]+.5)/2),cellAt=p=>{const q=canonical(o,p.u,p.v);return set.get(Math.floor((q.u-a.u)*2)+','+Math.floor((q.v-a.v)*2))||null};
+ let goal=cellAt(ent);if(!goal){let bd=1e9;for(const c of cells){const p=cen(c),d=Math.hypot(p.u-ent.u,p.v-ent.v);if(d<bd){bd=d;goal=c}}}
+ const par=new Map([[goal[0]+','+goal[1],null]]),q=[goal];for(let i=0;i<q.length;i++){const c=q[i];for(const[du,dv]of[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const n=[c[0]+du,c[1]+dv],k=n[0]+','+n[1];if(!set.has(k)||par.has(k))continue;if(du&&dv&&!(set.has((c[0]+du)+','+c[1])&&set.has(c[0]+','+(c[1]+dv))))continue;par.set(k,c);q.push(set.get(k))}}
+ const inside=c=>{const out=[];for(let x=c;x;x=par.get(x[0]+','+x[1]))out.push(cen(x));return out};
+ let c0=cellAt(far),lead=[];
+ if(!c0||!par.has(c0[0]+','+c0[1])){const order=cells.filter(c=>par.has(c[0]+','+c[1])).map(c=>({c,d:Math.hypot(cen(c).u-far.u,cen(c).v-far.v)})).sort((x,y)=>x.d-y.d).slice(0,8);let ok=null;for(const{c}of order){const p=routeFree(far,cen(c));if(p.length){lead=p;ok=c;break}}if(!ok)return null;c0=ok}
+ const raw=[...lead,...inside(c0).slice(lead.length?1:0)],pulled=[];let i=0;pulled.push(raw[0]);while(i<raw.length-1){let j=raw.length-1;while(j>i+1&&!clearSegment(raw[i],raw[j],blockedFree))j--;pulled.push(raw[j]);i=j}
+ const out=[...pulled,{u:ent.u,v:ent.v}],clean=[];out.forEach((p,k)=>{const l=clean.at(-1)||far;if(Math.hypot(p.u-l.u,p.v-l.v)>(k===out.length-1?.05:.3))clean.push({u:p.u,v:p.v})});return clean}
 const baseFind=findPath;findPath=function(start,end){const to=deepOwner(end),from=deepOwner(start);
+ /* v91.22: when the place has yellow walk cells, they ARE the floor up to the entrance — route straight through them (from wherever the hero is) instead of detouring to the building's nearest side edge first */
+ if(to&&to!==from&&courtCellsOf(to)){const p=courtApproach(start,end,to);if(p)return p}
+ if(from&&from!==to&&courtCellsOf(from)){const r=courtApproach(end,start,from);if(r&&r.length)return[...r.slice(0,-1).reverse(),{u:end.u,v:end.v}]}
  if(to&&!(from===to)){const edge=edgeOf(to),near=Math.hypot(start.u-edge.u,start.v-edge.v)<.5,p=near?[]:baseFind(start,edge);if(!near&&!p.length)return[];return[...p,{u:edge.u,v:edge.v},{u:end.u,v:end.v}]}
  if(from&&from!==to){const edge=edgeOf(from),p=baseFind(edge,end);return p.length?[{u:edge.u,v:edge.v},...p]:[]}
  return baseFind(start,end)};
