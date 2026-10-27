@@ -1968,6 +1968,12 @@
    b.onclick = () => enter(b.dataset.open)
   });
   bindTools();
+  for (const [id, fn] of [['rsMain', v => UX.setRoadStyleChecked({ main: v / 100 })], ['rsLane', v => UX.setRoadStyleChecked({ lane: v / 100 })], ['rsEdge', v => UX.setRoadStyleChecked({ edge: v })], ['rsOne', v => UX.setRoadWidth(sel, v / 100)]]) {
+   const el = panel.querySelector('[data-k=' + id + ']'); if (!el) continue;
+   const f = id === 'rsEdge' ? x => (x > 0 ? '+' : '') + x + 'px' : x => x + '%';
+   el.oninput = () => el.nextElementSibling.textContent = f(+el.value);
+   el.onchange = () => { fn(+el.value); render() }
+  }
   const i = panel.querySelector('[data-k=blend]');
   i.oninput = () => i.nextElementSibling.textContent = +i.value ? i.value + 'px' : 'คม';
   i.onchange = () => setRoadBlend(i.value)
@@ -1983,11 +1989,15 @@
  function renderRoads(m) {
   const oldListScroll = panel.querySelector('.items')?.scrollTop || 0;
   const list = UX.roadList ? UX.roadList() : [], sel = UX.selectedRoad ? UX.selectedRoad() : -1, K = UX.ROAD_KINDS || {}, kindOpts = cur => Object.entries(K).map(([k, n]) => `<option value="${k}" ${cur===k?'selected':''}>${n}</option>`).join('');
+  const RS = UX.roadStyleGet ? UX.roadStyleGet() : { main: 1, lane: 1, edge: 0 }, selR = list.find(r => r.i === sel);
   panel.innerHTML = `<div class="body"><h3>🛣 ถนน</h3><p class="sub">ลากบนพื้นว่างเพื่อวาดเส้นใหม่ · ลากจุดสีทองเพื่อดัดเส้นเดิม · ทุกจุดเข้าช่องกริดอัตโนมัติ · Space + ลาก = เลื่อนแผนที่ · Delete = ลบเส้นที่เลือก · ถนน = พื้นที่เดินได้ของตัวเอกและ NPC</p>
   ${true?`<label class="sel">ชนิดถนนที่จะวาด<select id="rDrawKind">${kindOpts(UX.drawKind?.())}</select></label>`:''}
   <b class="sec">ถนนทั้งหมด (${list.length})</b><div class="items" style="max-height:220px">${list.map(r=>`<div style="display:flex;gap:4px;align-items:center"><button data-road="${r.i}" title="เลือกเพื่อไฮไลท์บนแผนที่" style="flex:1;text-align:left;white-space:normal;line-height:1.3;${r.i===sel?'background:#e5c06b;color:#1b302a;outline:2px solid #fff4a8':''}">${r.label||((UX.ROAD_KINDS?.[r.kind]||r.kind)+' '+(r.i+1))}<small style="display:block;opacity:.75">${r.points} จุด · คลิกเพื่อไฮไลท์</small></button><select data-rk="${r.i}" title="ชนิดถนน" style="width:150px">${kindOpts(r.kind)}</select><button data-rdel="${r.i}" title="ลบเส้นนี้">✕</button></div>`).join('')||'<p class="sub">ยังไม่มีถนน · ลากบนพื้นว่างเพื่อวาด แล้วลากบนแผนที่</p>'}</div>
   <div class="row"><button data-click="townRoadDelete" ${sel<0?'disabled':''}>ลบถนนที่เลือก</button><button id="rClear">ลบถนนทั้งหมด (วาดเองใหม่)</button></div>
   <div class="row"><button data-click="townRoadReset">สร้างถนนอัตโนมัติใหม่</button></div><hr>
+  <b class="sec">ความกว้างถนน (ทั้งหมด)</b>
+  ${slider('rsMain','ถนนหลัก',Math.round(RS.main*100),40,250,5,x=>x+'%')}${slider('rsLane','ทางย่อย',Math.round(RS.lane*100),40,250,5,x=>x+'%')}${slider('rsEdge','ขอบถนน (หนาขึ้น/ข้าง)',RS.edge,-12,60,1,x=>(x>0?'+':'')+x+'px')}
+  ${selR?`<b class="sec">เฉพาะเส้นที่เลือก</b>${slider('rsOne','ความกว้างเส้นนี้',Math.round((selR.w||1)*100),30,300,5,x=>x+'%')}<p class="sub">ถนนที่เลือกคูณจากค่าทั้งหมดด้านบน · 100% = ตามปกติ</p>`:'<p class="sub">เลือกถนนจากรายการด้านบนเพื่อปรับความกว้างเฉพาะเส้น</p>'}
   ${slider('blend','รอยต่อพื้นนุ่ม',ROAD_BLEND,0,60,1,x=>x?x+'px':'คม')}<p class="sub">ความกว้างที่ลายพื้นต่างชนิดค่อย ๆ ผสมกัน (0 = ขอบคม)</p>
   <label class="sel">ทรงถนน<select id="rShape"><option value="square" ${ROAD_SHAPE==='square'?'selected':''}>เหลี่ยมตามกริด</option><option value="round" ${ROAD_SHAPE==='round'?'selected':''}>มน</option></select></label>
   <p class="sub">พื้นทางเข้าของแต่ละสถานที่: คลิกสถานที่ → แท็บทางเข้า</p></div>`;
