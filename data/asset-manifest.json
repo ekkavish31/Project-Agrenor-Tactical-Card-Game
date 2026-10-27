@@ -53111,16 +53111,16 @@
     0.49207418034954714,
     0.9513868359504103
    ],
-   "mapW": 131,
-   "artRevision": "20261027-130514",
+   "mapW": 380,
+   "artRevision": "20261027-131923",
    "geometry": {
     "collisionShape": [],
     "occlusionMask": [],
     "coordinateSpace": "normalized-source-image",
     "version": 1,
     "anchor": [
-     0.49207418034954714,
-     0.9513868359504103
+     0.7734428140523937,
+     1.1054580199594426
     ],
     "rotation": 0,
     "isoAxisScale": [
@@ -53128,7 +53128,16 @@
      1.4602000000000002
     ],
     "flipX": false
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/house-01/20261027-131922.webp",
+     "at": "2026-10-27T06:19:23.767Z",
+     "stamp": "20261027-131922",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   }
  ],
  "studioWalks": {
