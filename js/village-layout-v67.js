@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-10-27T05:39:24.140Z.
+// Village default layout — saved from the in-game editor 2026-10-27T06:33:35.502Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -45,7 +45,7 @@ window.VillageDefaultLayout={
         "u0": 13,
         "u1": 11.5,
         "v0": 12,
-        "v1": 9
+        "v1": 8.5
       },
       "entry": {
         "du": -2.15,
@@ -1600,15 +1600,6 @@ window.VillageDefaultLayout={
       "y": 75.5,
       "facing": "SW"
     },
-    "npc2": {
-      "x": 82.5,
-      "y": 68.5,
-      "facing": "SW",
-      "label": {
-        "dx": -72.29286728252009,
-        "dy": -180.17983093794214
-      }
-    },
     "npc3": {
       "x": 37,
       "y": 65,
@@ -1822,6 +1813,23 @@ window.VillageDefaultLayout={
             7
           ]
         ]
+      }
+    },
+    "custom-mvqaxpl5": {
+      "x": 93.125,
+      "y": 65.888889,
+      "facing": "SW",
+      "flipArt": true,
+      "fp": {
+        "u0": 13,
+        "u1": 0.5,
+        "v0": 0.5,
+        "v1": 17
+      },
+      "entry": {
+        "du": -5.5,
+        "dv": 13,
+        "deep": true
       }
     }
   },
@@ -2909,6 +2917,9 @@ window.VillageDefaultLayout={
       },
       "custom-mvq8veu1:3.4,8.9": {
         "del": true
+      },
+      "market:5.1,7.3": {
+        "del": true
       }
     },
     "added": [
@@ -3274,10 +3285,6 @@ window.VillageDefaultLayout={
         "sy": 0.73,
         "z": 1
       },
-      "npc2": {
-        "sx": 0.73,
-        "sy": 0.73
-      },
       "npc3": {
         "sx": 0.73,
         "sy": 0.73
@@ -3319,6 +3326,11 @@ window.VillageDefaultLayout={
         "art": "adventurer-guild",
         "sx": 2.102890625,
         "sy": 2.102890625
+      },
+      "custom-mvqaxpl5": {
+        "art": "house-01",
+        "sy": 5.14,
+        "sx": 5.14
       }
     },
     "frames": {
@@ -3386,6 +3398,15 @@ window.VillageDefaultLayout={
         "name": "adventurer-guild",
         "w": 380,
         "bld": 1
+      },
+      {
+        "id": "house-01",
+        "name": "house-01",
+        "w": 66,
+        "bld": 1,
+        "file": "assets/objects/house-01.webp",
+        "fx": 0.49207418034954714,
+        "fy": 0.9513868359504103
       }
     ],
     "fence": {
