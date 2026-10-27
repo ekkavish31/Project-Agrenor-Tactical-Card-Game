@@ -708,7 +708,7 @@
    bd = R;
   for (const e of frame) {
    if (owner && e.owner !== owner) continue;
-   const d = Math.hypot(e.x - p.x, e.y - p.y);
+   const d = Math.hypot(hx(e) - p.x, hy(e) - p.y);
    if (d < bd) {
     bd = d;
     best = e
@@ -1550,6 +1550,24 @@
  loadRepositoryAssets();
  /* ---------- thumbnails (rendered from the real draw code) ---------- */
  const thumbCache = new Map();
+ let thumbBox = null;
+ /* v91.77 · drag handle of a sub-asset sits at the middle of its visible pixels (not at its ground anchor, which can be far from the art, e.g. a long fence) */
+ const handleCache = new Map();
+ let handleBudget = 0;
+ function handleOf(e) {
+  const sig = e.key + '|' + JSON.stringify(e.ov || {});
+  let h = handleCache.get(sig);
+  if (h) return h;
+  if (handleBudget-- > 0 && typeof entryThumb === 'function') {
+   try {
+    thumbBox = null;
+    entryThumb(e);
+    if (thumbBox) { h = { x: thumbBox.cx, y: thumbBox.cy }; handleCache.set(sig, h); return h }
+   } catch (_) {}
+  }
+  return null
+ }
+ const hx = e => { const h = handleOf(e); return h ? e.x + h.x : e.x }, hy = e => { const h = handleOf(e); return h ? e.y + h.y : e.y };
 
  function renderThumb(drawFn, ax, ay, w = 112, h = 92) {
   const big = document.createElement('canvas');
@@ -1593,6 +1611,7 @@
     bh = y1 - y0 + 2
    }
   } catch (e) {}
+  thumbBox = any ? { cx: bx + bw / 2 - 280, cy: by + bh / 2 - 520 } : null;
   if (any) {
    const sc = Math.min((w - 8) / bw, (h - 8) / bh, 1.2);
    o.drawImage(big, bx, by, bw, bh, (w - bw * sc) / 2, (h - bh * sc) / 2, bw * sc, bh * sc)
@@ -2823,12 +2842,13 @@
   }
   if (!place) return;
   // item dots of this place
+  handleBudget = 4;
   for (const e of frame) {
    if (e.owner !== place.id) continue;
    const on = inSel(e.key);
    gg.save();
    gg.beginPath();
-   gg.arc(e.x, e.y, (on ? 7 : hoverKey === e.key ? 6 : 4) / z, 0, Math.PI * 2);
+   gg.arc(hx(e), hy(e), (on ? 7 : hoverKey === e.key ? 6 : 4) / z, 0, Math.PI * 2);
    gg.fillStyle = e.hidden ? '#c9504a' : on ? '#9ff3f5' : e.key.startsWith('add:') ? '#a8e07a' : '#e5c06b';
    gg.globalAlpha = place.tab === 'items' || on ? 1 : .55;
    gg.fill();
