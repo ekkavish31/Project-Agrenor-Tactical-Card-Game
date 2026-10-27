@@ -48,8 +48,9 @@
    for (const b of Object.values(data.buildings)) if (b && typeof b === 'object') for (const k of ['ix','iy']) if (Number.isFinite(b[k]) && b[k] > 2) b[k] = Math.max(.5, Math.min(2, b[k] / 100));
    if (v.frames && typeof v.frames === 'object') data.frames = copy(v.frames);
    window.VillageFence?.set(v.fence);
-   if (Array.isArray(v.assets)) data.assets = v.assets.filter(a => a && /^[a-z0-9-]{2,40}$/.test(a.id) && typeof a.name === 'string').map(a => ({ id: a.id, name: a.name.slice(0, 40), w: Math.max(30, Math.min(600, +a.w || 120)) }));
+   if (Array.isArray(v.assets)) data.assets = v.assets.filter(a => a && /^[a-z0-9-]{2,40}$/.test(a.id) && typeof a.name === 'string').map(a => ({ id: a.id, name: a.name.slice(0, 40), w: Math.max(30, Math.min(900, +a.w || 120)), ...(a.bld ? { bld: 1 } : {}) }));
    registerAssets();
+   purgeOrphans();
    if (Array.isArray(v.lib)) data.lib = copy(v.lib).filter(a => a && a.id && Array.isArray(a.recs));
    if (v.cast && typeof v.cast === 'object') data.cast = copy(v.cast);
    else if (v.chars && typeof v.chars === 'object') // v81 files: plain numbers for hero / npc
@@ -109,11 +110,29 @@
  };
  for (const [n, [label, w]] of Object.entries(DECOR_W)) kind('decor:' + n, label, 'ของประดับ', p => decor(n, p, w, false));
  /* v91.5 · pictures the user added through "＋ เพิ่มภาพ Asset": saved in the layout (id, name, width) + the PNG under assets/village-town/decor/ */
+ const bldName = {}; // names of the buildings added from pictures
  function registerAssets() {
-  for (const { id, name, w } of data.assets) {
+  for (const { id, name, w, bld } of data.assets) {
+   if (bld) { // v91.23: a whole building picture added from the "เปลี่ยนภาพ" window
+    if (!artSpecs[id]) { artSpecs[id] = [w, .3, .88]; BUILDINGS[id] = 'assets/village-town/buildings/' + id + '.png'; bldName[id] = name }
+    if (!images['building_' + id]) { const im = new Image(); im.onload = () => { terrainDirty = true }; im.src = BUILDINGS[id]; images['building_' + id] = im }
+    continue
+   }
    if (!DECOR_W[id]) { DECOR_W[id] = [name, w]; kind('decor:' + id, name, 'ของประดับ (ที่เพิ่มเอง)', p => decor(id, p, DECOR_W[id][1], false)) }
    if (!decorImg[id]) { const im = new Image(); im.onload = () => { decorImg[id] = im; terrainDirty = true }; im.src = 'assets/village-town/decor/' + id + '.png' }
   }
+ }
+ /* v91.23 · building pictures (called by js/asset-request.js with preset 'building'): a known id gets its picture replaced in place, a new id is registered as a choice in "เปลี่ยนภาพ" */
+ function buildingReady(id, name, w, img, opt = {}) {
+  UX.checkpoint();
+  if (!artSpecs[id]) { data.assets.push({ id, name, w, bld: 1 }); registerAssets() }
+  images['building_' + id] = img; terrainDirty = true;
+  if (opt.place && opt.place !== id) {
+   const b = data.buildings[opt.place] || (data.buildings[opt.place] = {});
+   b.art = id
+  }
+  UX.persist();
+  render()
  }
  /* called by js/asset-request.js: img = decoded picture; replaces the file in place (known id) or registers a new one */
  function assetReady(id, name, w, img) {
@@ -345,10 +364,11 @@
   const m = t.match(/decor\('([\w-]+)'|dec\('([\w-]+)'/);
   return m ? (DECOR_W[m[1] || m[2]]?.[0] || 'ของประดับ') : 'ของประดับ'
  };
- let grpYPrev = new Map(), grpYNow = new Map();
+ let grpYPrev = new Map(), grpYNow = new Map(), fixedFence = new Map();
  const baseEstate = estateObjects;
  estateObjects = function() {
   frame = [];
+  fixedFence = new Map();
   grpYPrev = grpYNow;
   grpYNow = new Map();
   const list = baseEstate(),
@@ -357,7 +377,10 @@
    seen = {};
   for (const it of list) {
    let owner, rel;
-   if (it.fixed) { out.push(it); continue } // fence pieces: laid out by the fence system, not hand-placed
+   if (it.fixed) { // fence pieces: laid out by the fence system, not hand-placed
+    if (it.fenceOf) { const fk = it.fenceOf + ':' + it.side, f0 = fixedFence.get(fk); fixedFence.set(fk, { id: it.fenceOf, side: it.side, x: f0?.x ?? it.x, y: f0?.y ?? it.y, n: (f0?.n || 0) + 1 }) }
+    out.push(it); continue
+   }
    if (it.owner && it.rel) {
     owner = it.owner.id;
     rel = it.rel
@@ -851,6 +874,75 @@
   render()
  }
 
+
+ // v91.23 · data left behind by a place that no longer exists (deleted custom place) can never be reached again → drop it
+ function purgeOrphans() {
+  const alive = id => id.startsWith('exit:') || locations.some(o => o.id === id);
+  if (!Array.isArray(locations) || !locations.length) return;
+  data.added = data.added.filter(a => alive(a.owner));
+  const addedIds = new Set(data.added.map(a => a.id));
+  for (const k of Object.keys(data.edit)) { if (addedIds.has(k)) continue; const own = k.split(':')[0]; if (!alive(own) && !/^add:/.test(k)) delete data.edit[k] }
+  for (const k of Object.keys(data.buildings)) if (!alive(k)) delete data.buildings[k];
+  for (const k of Object.keys(data.frames)) if (!alive(k)) delete data.frames[k];
+  const fc = window.VillageFence?.get();
+  if (fc?.places) { let ch = false; for (const k of Object.keys(fc.places)) if (!alive(k)) { delete fc.places[k]; ch = true } if (ch) window.VillageFence.set(fc) }
+ }
+
+ /* v91.23 · "🧺 ของทั้งแผนที่": every item on the big map in one list whoever owns it — plaza items that belong to no building, fence runs, hidden ones — with locate / delete / restore */
+ const SIDE_TH = { back: 'ด้านหลัง', left: 'ด้านซ้าย', right: 'ด้านขวา', front: 'ด้านหน้า' };
+ let worldDlg = null, worldTab = 'all', worldQ = '';
+ function worldRows() {
+  const rows = [];
+  for (const E of frame) rows.push({ t: 'item', key: E.key, owner: E.owner, label: E.label || 'ของประดับ', hidden: E.hidden, x: E.x, y: E.y });
+  for (const f of fixedFence.values()) rows.push({ t: 'fence', id: f.id, side: f.side, n: f.n, owner: f.id, label: 'รั้ว/ขอบ ' + SIDE_TH[f.side] + ' (' + f.n + ' ชิ้น)', x: f.x, y: f.y });
+  for (const [k, v] of Object.entries(data.edit)) if (v.del) rows.push({ t: 'deleted', key: k, owner: k.split(':')[0], label: 'ที่ลบไว้ · ' + k });
+  return rows
+ }
+ const isFree = r => r.owner === 'square' || (!r.owner.startsWith('exit:') && !loc(r.owner));
+ function focusAt(x, y) { pan = { x: -(x - WORLD_W / 2) * scale * zoom, y: -(y - WORLD_H / 2) * scale * zoom } }
+ function drawWorld() {
+  const rows = worldRows(), owners = [...new Set(rows.map(r => r.owner))];
+  const shown = rows.filter(r => (worldTab === 'all' || (worldTab === 'free' ? isFree(r) && r.t !== 'deleted' : worldTab === 'fence' ? r.t === 'fence' : worldTab === 'hidden' ? r.hidden || r.t === 'deleted' : r.owner === worldTab)) && (!worldQ || (r.label + ownerName(r.owner)).toLowerCase().includes(worldQ.toLowerCase())));
+  const show = shown.slice(0, 300);
+  worldDlg.innerHTML = `<div class="wh"><b>🧺 ของทั้งแผนที่ (${rows.length})</b><input type="search" id="wQ" placeholder="ค้นหา…" value="${worldQ.replace(/"/g, '&quot;')}"><select id="wT"><option value="all">ทั้งหมด</option><option value="free">ไม่ผูกอาคาร (ลานกลาง/ตกค้าง)</option><option value="fence">รั้ว/ขอบ</option><option value="hidden">ซ่อน/ลบไว้</option>${owners.map(o => `<option value="${o}">${ownerName(o)}</option>`).join('')}</select><button id="wX">ปิด</button></div>
+<div class="wl">${show.map((r, i) => `<div class="wr"><span>${r.label}<br><small>${ownerName(r.owner)}${r.hidden ? ' · ซ่อนอยู่' : ''}</small></span>${r.x != null ? `<button data-f="${i}" title="เลื่อนกล้องไปที่ชิ้นนี้">📍</button>` : ''}${r.t === 'item' ? (r.hidden ? `<button data-s="${i}">แสดง</button>` : '') + `<button data-d="${i}">🗑 ลบ</button>` : r.t === 'fence' ? `<button data-c="${i}">ปิดรั้วด้านนี้</button>` : `<button data-r="${i}">⟲ เอาคืน</button>`}</div>`).join('') || '<p style="padding:12px">ไม่มีรายการ</p>'}${shown.length > 300 ? `<p class="sub">แสดง 300 จาก ${shown.length} · กรองให้แคบลง</p>` : ''}</div>
+<div class="wf">ลบแล้วกด ย้อนกลับ ได้ · ของที่ลบจะอยู่ในแท็บ "ซ่อน/ลบไว้" เอาคืนได้ · ปิดรั้วแล้วเปิดคืนได้ที่แผงรั้วของสถานที่นั้น${shown.length && shown.length <= 200 && worldTab !== 'all' && worldTab !== 'hidden' ? ` · <button id="wAll">ลบทั้งหมดที่แสดง (${shown.filter(r => r.t === 'item').length})</button>` : ''}</div>`;
+  const q = s => worldDlg.querySelector(s);
+  q('#wT').value = worldTab; if (q('#wT').value !== worldTab) worldTab = 'all';
+  q('#wQ').oninput = e => { worldQ = e.target.value; const c = e.target.selectionStart; drawWorld(); const n = worldDlg.querySelector('#wQ'); n.focus(); n.setSelectionRange(c, c) };
+  q('#wT').onchange = e => { worldTab = e.target.value; drawWorld() };
+  q('#wX').onclick = () => worldDlg.close();
+  const later = () => { setTimeout(drawWorld, 150); setTimeout(() => { if (worldDlg.open) drawWorld() }, 900) }; // the lists refill from the next frames
+  worldDlg.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { const r = show[+b.dataset.f]; focusAt(r.x, r.y); flashStatus('เลื่อนกล้องไปที่ ' + r.label) });
+  worldDlg.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { delItem(show[+b.dataset.d].key); UX.persist(); later() });
+  worldDlg.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { const k = show[+b.dataset.s].key; UX.checkpoint(); const o = ovOf(k); delete o.hide; clean(k); UX.persist(); later() });
+  worldDlg.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { const k = show[+b.dataset.r].key; UX.checkpoint(); delete ovOf(k).del; clean(k); UX.persist(); later() });
+  worldDlg.querySelectorAll('[data-c]').forEach(b => b.onclick = () => {
+   const r = show[+b.dataset.c], FN = window.VillageFence, c = FN.get() || { pieces: {}, places: {} }, o = loc(r.id);
+   UX.checkpoint();
+   const pl = c.places[r.id] || (c.places[r.id] = {});
+   pl.sides = { ...FN.sidesOf(r.id, o ? borderProfile(o) : 'none'), ...(pl.sides || {}), [r.side]: 'none' };
+   FN.set(c); terrainDirty = true; UX.persist(); later()
+  });
+  const all = q('#wAll');
+  if (all) all.onclick = () => { const its = shown.filter(r => r.t === 'item'); if (!window.confirm('ลบ ' + its.length + ' ชิ้นที่แสดงอยู่?')) return; UX.checkpoint(); for (const r of its) delItem(r.key, true); UX.persist(); later() }
+ }
+ function delItem(key, noCp) {
+  if (!noCp) UX.checkpoint();
+  const a = data.added.find(x => x.id === key);
+  if (a) { data.added = data.added.filter(x => x !== a); delete data.edit[key] }
+  else { const o2 = ovOf(key); o2.del = true; delete o2.hide }
+ }
+ function openWorld() {
+  if (!worldDlg) {
+   worldDlg = document.createElement('dialog'); worldDlg.id = 'aeWorld';
+   const st = document.createElement('style');
+   st.textContent = '#aeWorld{position:fixed;left:auto;right:14px;top:84px;margin:0;width:min(520px,94vw);max-height:84vh;padding:0;background:#172a23f5;color:#eef2dc;border:1px solid #6f8b5b;border-radius:12px;z-index:40}#aeWorld[open]{display:flex;flex-direction:column}#aeWorld .wh{display:flex;gap:6px;align-items:center;padding:9px 10px;border-bottom:1px solid #4d6656;flex-wrap:wrap}#aeWorld .wh b{flex:1;font-size:14px;min-width:150px}#aeWorld select,#aeWorld input[type=search]{background:#0f1d18;color:#eef2dc;border:1px solid #4d6656;border-radius:7px;padding:5px 7px;font:inherit;max-width:190px}#aeWorld .wl{overflow:auto;flex:1;padding:4px 10px}#aeWorld .wr{display:flex;gap:5px;align-items:center;padding:5px 2px;border-bottom:1px solid #2f4a3c;font-size:12.5px}#aeWorld .wr span{flex:1}#aeWorld .wr small{color:#9fb19a}#aeWorld button{background:#2c4a3c;color:#eef2dc;border:1px solid #6f8b5b;border-radius:7px;padding:4px 8px;cursor:pointer;font:inherit}#aeWorld .wf{padding:8px 12px;color:#c9d2b8;font-size:11.5px;border-top:1px solid #4d6656;line-height:1.6}';
+   document.head.append(st); document.body.append(worldDlg)
+  }
+  drawWorld();
+  if (!worldDlg.open) worldDlg.show()
+ }
  // v91.21: a place was deleted (TownUX.removePlace) → close its editor and drop every edit/added item/frame that belonged to it
  function dropPlace(id) {
   if (place?.id === id) {
@@ -864,6 +956,8 @@
   data.added = data.added.filter(a => a.owner !== id);
   delete data.buildings[id];
   delete data.frames[id];
+  const fc = window.VillageFence?.get();
+  if (fc?.places?.[id]) { delete fc.places[id]; window.VillageFence.set(fc) }
   render()
  }
 
@@ -1655,7 +1749,7 @@
  }
 
  /* ---------- picture list picker (building images, character images) ---------- */
- function openList(title, items, current, onPick, extra = '') {
+ function openList(title, items, current, onPick, extra = '', onAdd = null) {
   if (!picker) {
    picker = document.createElement('dialog');
    picker.id = 'aePicker';
@@ -1665,7 +1759,7 @@
   let tab = 'ทั้งหมด';
   const draw = () => {
    const list = items.filter(i => tab === 'ทั้งหมด' || i.group === tab);
-   picker.innerHTML = `<div class="pk-head"><b>${title}</b><button data-x>ปิด (Esc)</button></div>${groups.length>1?`<div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div>`:''}<div class="grid">${list.map((it,i)=>`<button data-i="${items.indexOf(it)}" class="${it.id===current?'cur':''}"><span class="th"></span><span>${it.label}</span><small>${it.group||''}</small></button>`).join('')}</div>${extra}`;
+   picker.innerHTML = `<div class="pk-head"><b>${title}</b>${onAdd?'<button data-add>＋ เพิ่มภาพ</button>':''}<button data-x>ปิด (Esc)</button></div>${groups.length>1?`<div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div>`:''}<div class="grid">${list.map((it,i)=>`<button data-i="${items.indexOf(it)}" class="${it.id===current?'cur':''}"><span class="th"></span><span>${it.label}</span><small>${it.group||''}</small></button>`).join('')}</div>${extra}`;
    picker.querySelectorAll('[data-i]').forEach(b => {
     const it = items[+b.dataset.i],
      slot = b.querySelector('.th'),
@@ -1686,7 +1780,9 @@
     tab = b.dataset.tab;
     draw()
    });
-   picker.querySelector('[data-x]').onclick = () => picker.close()
+   picker.querySelector('[data-x]').onclick = () => picker.close();
+   const ab = picker.querySelector('[data-add]');
+   if (ab) ab.onclick = () => { picker.close(); onAdd() }
   };
   draw();
   picker.showModal()
@@ -2030,7 +2126,7 @@
    if (!Object.keys(b).length) delete data.buildings[o.id];
    UX.persist();
    render()
-  }));
+  }, '', () => window.AssetRequest?.open({ preset: 'building', place: o.id, placeName: o.name, current: cur?.id, cu: Math.max(2, Math.round(o.w * 2)), cv: Math.max(2, Math.round(o.d * 2)), facing: o.facing })));
   const bset = (k, d) => { const b = data.buildings[o.id] || (data.buildings[o.id] = {}); b[k] = clampN((b[k] || 0) + d, -20, 20); if (!b[k]) delete b[k]; if (!Object.keys(b).length) delete data.buildings[o.id] };
   bindZ('bz', d => bset('z', d));
   bindZ('pz', d => bset('pz', d));
@@ -2672,6 +2768,11 @@
   itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner, hidden: E.hidden } : null },
   frameSig: () => JSON.stringify(data.frames),
   dropPlace,
+  openWorld,
+  purgeOrphans,
+  buildingReady,
+  buildingList: () => Object.keys(artSpecs).filter(id => images['building_' + id]).map(id => ({ id, name: bldName[id] || loc(id)?.name || id, w: artSpecs[id][0] })),
+  buildingPath: id => BUILDINGS[id] || null,
   assetReady,
   heroLayer: (u, v) => {
    for (const o of locations) {

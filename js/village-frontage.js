@@ -10,7 +10,7 @@
   return locations.some(o=>estate(o)&&probe.isPointInPath(courtPath(o),x,y*2));
  }
  estateObjects=function(){
-  const key=locations.map(o=>[o.x,o.y,o.facing,o.flipArt].join(',')).join(';')+(window.VillageAssetEdit?.frameSig?.()||'');
+  const key=locations.map(o=>[o.x,o.y,o.facing,o.flipArt].join(',')).join(';')+(window.VillageAssetEdit?.frameSig?.()||'')+JSON.stringify(window.VillageFence?.get()||0)+locations.map(o=>(o.court?.cells?.length||0)+':'+(o.entry?o.entry.du+','+o.entry.dv:'')).join(';'); // v91.23: fence settings, walk cells and entrances also invalidate the cached list
   if(items&&main===roadMain&&lane===roadLane&&key===layout)return items;
   main=roadMain;lane=roadLane;layout=key;
   items=original().filter(o=>!o.owner||![[0,0],[-32,0],[32,0],[0,-16],[0,16]].some(([dx,dy])=>paved(o.x+dx,o.y+dy)));
