@@ -108,7 +108,7 @@ const Gallery={state(){const v=game()?.village;if(!v)return null;if(!Array.isArr
  entries(){const g=this.state()||[],out=[],a=manifest(),add=(group,id,file,name,open)=>out.push({group,id,file,name,open});
   for(const x of a.filter(x=>x.category==='scenes')){const always=['scene-home','scene-market','scene-workshop'].includes(x.id);add('ฉากและสถานที่',x.id,x.file,x.subject||x.id,always||g.includes(x.id))}
   for(const x of a.filter(x=>x.category==='unit-card-art')){const hero=x.id==='card-hero';add(/card-en-/.test(x.id)?'มอนสเตอร์ที่เคยพบ':'ตัวละคร',x.id,x.file,'',hero||g.includes(x.id))}
-  const cards=typeof defs!=='undefined'?defs:[];cards.forEach((d,i)=>{if(d?.image)add('การ์ดงานหมู่บ้าน','craft-'+i,d.image,d.name,typeof owned!=='function'||owned(i))});return out}};
+  return out}};
 root.GameGallery=Gallery;
 
 /* ---------- title menu ---------- */

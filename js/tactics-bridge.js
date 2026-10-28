@@ -1,7 +1,7 @@
 // Grid battle ↔ village game.
-// • Training (scarecrow at the forge): real HP / stamina / time, training rewards (card copies).
+// • Training (scarecrow at the forge): real HP / stamina / time, rewards character EXP (v93: legacy card copies retired).
 // • Expedition (map exits, see expedition.js): companions join, real enemies, separate rewards:
-//   coins + materials + character EXP + companion EXP + 1 card copy. Defeat: carried home.
+//   coins + materials + character EXP + companion EXP. Defeat: carried home.
 (function(){
 const MIN_PER_TURN=5,FATIGUE_PER_TURN=2;
 let session=null;
@@ -12,12 +12,12 @@ function clockText(){let left=1200-s.minutes;return `เวลา ${clock(s.minu
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 function claimFieldDrops(st){let mats=s.village.materials;for(let d of st.drops||[])if(d.material&&!d.claimed&&(d.collected||st.outcome==='win')){mats[d.material]=(mats[d.material]||0)+d.amount;d.claimed=true}}
 function expeditionRewards(st){let enc=st.encounter,kills=st.stats.kills,captain=st.objective==='captain',coins=30+kills*4+(captain?25:0)+rnd(0,15);
- let mats={iron:rnd(1,2)+(enc.theme==='quarry'?1:0),coal:rnd(0,2),wood:rnd(0,2)+(enc.theme==='forest'?1:0),food:rnd(0,1)},card=[0,1,2,3,4,5][rnd(0,5)],xp=50+kills*5;
- s.village.coins+=coins;for(let [k,n] of Object.entries(mats))s.village.materials[k]+=n;s.loot.push(card);let lv0=s.village.character?.level;gainCharacterXP(xp);st.heroLevelUp=s.village.character?.level>lv0;
+ let mats={iron:rnd(1,2)+(enc.theme==='quarry'?1:0),coal:rnd(0,2),wood:rnd(0,2)+(enc.theme==='forest'?1:0),food:rnd(0,1)},xp=50+kills*5;
+ s.village.coins+=coins;for(let [k,n] of Object.entries(mats))s.village.materials[k]+=n;let lv0=s.village.character?.level;gainCharacterXP(xp);st.heroLevelUp=s.village.character?.level>lv0;
  let comp=window.Companions?.reward(st)||[];st.expReport=comp;
- st.rewardSummary={coins,xp,mats,card,copies:[card]};return {coins,mats,card,xp,comp}}
+ st.rewardSummary={coins,xp,mats};return {coins,mats,xp,comp}}
 function rewardHtml(r){let m=Object.entries(r.mats).filter(([,n])=>n>0).map(([k,n])=>MATERIALS[k].icon+' '+MATERIALS[k].name+' ×'+n).join(' · ');
- return `<div class="exp-reward"><p><b>◉ ${r.coins} เหรียญ</b></p><p>${m||'ไม่มีวัตถุดิบ'}</p><p>✦ EXP ตัวละคร +${r.xp} · ไพ่สำเนา: ${esc(cardFace(r.card).name)}</p>${r.comp.length?'<h3>เพื่อนร่วมทีม</h3>'+r.comp.map(c=>`<p>${esc(c.name)} +${c.xp} EXP${c.levelUp?' · <b>เลเวลอัป! Lv.'+c.level+'</b>':''}</p>`).join(''):''}</div>`}
+ return `<div class="exp-reward"><p><b>◉ ${r.coins} เหรียญ</b></p><p>${m||'ไม่มีวัตถุดิบ'}</p><p>✦ EXP ตัวละคร +${r.xp}</p>${r.comp.length?'<h3>เพื่อนร่วมทีม</h3>'+r.comp.map(c=>`<p>${esc(c.name)} +${c.xp} EXP${c.levelUp?' · <b>เลเวลอัป! Lv.'+c.level+'</b>':''}</p>`).join(''):''}</div>`}
 window.TACTICS_BRIDGE={
  visible:()=>!!layer()&&!layer().hidden,
  prepare(st){st.hero.hp=s.hp;st.hero.maxHp=60;st.hero.stamina=Math.min(100,s.stamina);st.rewarded=false;if(st.environment)st.environment.minutes=s.minutes},
@@ -32,7 +32,7 @@ window.TACTICS_BRIDGE={
    else{let lost=Math.floor(s.village.coins*.1);s.village.coins-=lost;session.defeat=true;s.log='พ่ายแพ้ที่'+st.encounter.name+' · ถูกพากลับบ้าน เสีย '+lost+' เหรียญ';txt.textContent+=' · ถูกพากลับบ้าน เสีย '+lost+' เหรียญ';session.summary={title:'พ่ายแพ้',html:`<p>เพื่อนพาคุณกลับบ้าน (ใช้เวลา 1 ชั่วโมง) · HP เหลือ 10 · เสีย ${lost} เหรียญ</p>`}}
    save();return}
   retry.hidden=false;$id('tacticsResultExit').textContent='กลับโรงตีเหล็ก';
-  if(st.outcome==='win'){let copies=[s.wins%3,[3,4,5,6,7][s.wins%5]];s.loot.push(...copies);st.rewardSummary={...(st.rewardSummary||{}),copies};s.wins++;let first=!s.advanced;s.advanced=true;session.rewards.push(first?'unlock':'win');s.log='ชนะหุ่นฟาง • ได้ไพ่สำเนา 2 ใบ'+(first?' และการ์ดพักอย่างมีสมาธิ':'');txt.textContent+=' · ได้ไพ่สำเนา 2 ใบ'+(first?' + การ์ดพักใหม่':'')+' (รับเมื่อออกจากการฝึก)'}
+  if(st.outcome==='win'){let xp=25;gainCharacterXP(xp);st.rewardSummary={...(st.rewardSummary||{}),xp};s.wins++;s.advanced=true;session.summary={title:'ฝึกสำเร็จ',html:'<p>ชนะหุ่นฟาง · ✦ EXP ตัวละคร +'+xp+'</p>'};s.log='ชนะหุ่นฟาง • EXP ตัวละคร +'+xp;txt.textContent+=' · EXP ตัวละคร +'+xp}
   else{s.log='หมดแรงระหว่างฝึก • กินอาหารหรือกลับบ้านนอนเพื่อฟื้น HP';txt.textContent+=' · HP หมด ต้องพักก่อนฝึกใหม่'}
   save();retry.disabled=s.hp<=0||s.minutes>=1180;retry.textContent=s.hp<=0?'HP หมด · ฝึกต่อไม่ได้':'ฝึกอีกรอบ (สนามใหม่)'}
 };

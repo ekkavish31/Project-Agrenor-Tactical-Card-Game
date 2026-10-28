@@ -64,7 +64,7 @@ const STEPS=[
  {id:'cave',chapter:'วันที่ 2 · ทำของ และหาคน',tag:'real',outro:'crystal',title:'ผลึกในถ้ำเหมืองเก่า',goal:'เข้าถ้ำเหมืองเก่าทางเหนือ แล้วชนะการต่อสู้ 1 ครั้ง',hint:'บนแผนที่สำรวจ เลือกจุด ⚔ เพื่อสู้ · ศัตรูในถ้ำคือค้างคาวกับสไลม์',
   check:()=>adv()?.area==='mine'&&(adv().kills||0)>=1,
   acts:[{label:'⛏ ไปถ้ำเหมืองเก่า',primary:true,hide:()=>!!adv(),run:()=>root.Adventure?.enter('mine')}],
-  reward:()=>{V().story.crystals=(V().story.crystals||0)+3}},
+  reward:()=>{V().story.crystals=(V().story.crystals||0)+3;return root.StarterKit?.unlock?.([{group:'combat',id:'skill',n:2}],{kicker:'บทเรียนจากถ้ำ',title:'ท่าโจมตีหนัก',text:'ตีแรงกว่าปกติ แต่ใช้แรงมากขึ้น · เพิ่มเข้าสำรับแล้ว'})}},
  {id:'caveBack',tag:'real',title:'กลับหมู่บ้าน',goal:'ออกจากถ้ำแล้วกลับเฟิร์นเวล',hint:'บนแผนที่สำรวจ กด "กลับหมู่บ้าน" ได้ทุกเมื่อ ของที่เก็บได้จะติดตัวกลับมา',
   check:()=>!adv(),acts:[]},
  {id:'lanterns',tag:'temp',outro:'lanternsDone',title:'โคมไฟเทศกาล',goal:'ทำโคมไฟ 3 ดวงที่โรงตีเหล็ก',hint:'โคม 1 ดวง = ไม้ 1 · ถ่าน 1 · ผลึกเรืองแสง 1 · ไม้ไม่พอให้ซื้อที่ตลาด',
@@ -72,9 +72,11 @@ const STEPS=[
   acts:[goBtn('forge'),{label:'🏮 ทำโคม',primary:true,hide:()=>!at('forge'),run:d=>{const m=mats();if((m.wood||0)<1||(m.coal||0)<1){toast('ต้องมีไม้ 1 และถ่าน 1 · ซื้อได้ที่ตลาด');return}if((V().story.crystals||0)<1){toast('ผลึกเรืองแสงหมด');return}
    const why=spend(4,20,2);if(why){toast(esc(why));return}m.wood--;m.coal--;V().story.crystals--;d.n=(d.n||0)+1;doSave();doRender();toast('🏮 โคมดวงที่ '+d.n+' เสร็จแล้ว','good')}},goBtn('market')]},
  {id:'craft',tag:'real',outro:'craftDone',title:'ของขายในงาน',goal:'ตีอาวุธ 1 ชิ้นที่โรงตีเหล็ก',hint:'หลอมให้ร้อน → ตีขึ้นรูปจนครบ 100 → ชุบแข็ง · ดาบใช้เหล็ก 2 ถ่าน 1 ไม้ 1',
-  begin:d=>{d.next=G().nextId},check:d=>(G().inventory||[]).some(x=>x.id>=d.next),acts:[goBtn('forge'),goBtn('market')]},
+  begin:d=>{d.next=G().nextId},check:d=>(G().inventory||[]).some(x=>x.id>=d.next),acts:[goBtn('forge'),goBtn('market')],
+  reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'line',n:2}],{kicker:'อาวุธเล่มใหม่',title:'แทงทะลวง',text:'โจมตีทะลุสองช่องเป็นแนวตรง · สวมดาบเล่มใหม่ได้ที่กระเป๋า'})},
  {id:'hire',tag:'real',outro:'hireDone',title:'หาคนช่วย',goal:'จ้างเพื่อนร่วมทาง 1 คนที่ตลาด',hint:'ที่ตลาดเลือก "หาเพื่อนร่วมทาง" · เพื่อนจะช่วยสู้และเก่งขึ้นตามการเดินทาง',
-  check:()=>(V().companions||[]).length>0,acts:[goBtn('market')]},
+  check:()=>(V().companions||[]).length>0,acts:[goBtn('market')],
+  reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'formation',n:2}],{kicker:'มีเพื่อนแล้ว',title:'จู่โจมประสาน',text:'มีเพื่อนยืนติดตัว ตีแรงขึ้น ×1.35'})},
  {id:'sleep2',tag:'real',outro:'day3',title:'พรุ่งนี้วันงาน',goal:'กลับบ้านแล้วนอนพัก',hint:'ก่อนนอนอย่าลืมรดน้ำฟักทองของวันนี้',
   begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[{label:'💧 รดน้ำฟักทอง',hide:()=>!at('home')||wateredToday(),run:water},goBtn('home'),{...sleepBtn,hide:()=>!at('home')}]},
  {id:'sell',chapter:'วันที่ 3 · งานเทศกาลเก็บเกี่ยว',tag:'real',outro:'soldOne',title:'แข่งขายกับเกรเวน',goal:'ขายของในตลาดให้ได้ 1 ชิ้น',hint:'ขายอาวุธหรือของจากกระเป๋าที่ตลาด · ร้านคู่แข่งยังเป็นแค่ในเนื้อเรื่อง (ระบบจริงอยู่ในแผน)',
@@ -83,18 +85,19 @@ const STEPS=[
   check:d=>d.judged,acts:[{label:'🎃 ไปลานประกวด',primary:true,run:async d=>{const days=waterDays();await root.Cutscene.play(D().contestScene(days));addCoins(days>=3?60:days===2?30:10);d.judged=true;doSave();doRender()}}]},
  {id:'raid',tag:'real',intro:'raid',outro:'awaken',title:'โจรป่าบุกงาน!',goal:'ปกป้องงานเทศกาล — ชนะการต่อสู้',hint:'ใช้ไพ่เดินเข้าหาศัตรู ไพ่โจมตีเมื่ออยู่ในระยะ · ยืนบนหญ้า/มอสช่วยกำบัง · เพื่อนร่วมทางสู้ไปพร้อมกัน',
   check:d=>d.won,acts:[{label:'⚔ ปกป้องหมู่บ้าน!',primary:true,run:d=>startRaid(d)}],
-  reward:()=>{V().story.element='earth';V().story.plate=true;if(V().character)V().character.points=(V().character.points||0)+1;try{root.Adventure?.addItem('treasureMap')}catch{}}},
+  reward:()=>{V().story.element='earth';V().story.plate=true;if(V().character)V().character.points=(V().character.points||0)+1;try{root.Adventure?.addItem('treasureMap')}catch{}return root.StarterKit?.unlock?.([{group:'combat',id:'quake',n:3},{group:'combat',id:'counter',n:1}],{kicker:'แก่นธาตุดินตื่นขึ้น',title:'พลังของผืนดิน'})}},
  {id:'plate',tag:'real',outro:'plate',title:'จานหินโบราณ',goal:'นำจานหินไปให้ผู้ใหญ่บ้านดูที่ตลาด',hint:'',check:()=>at('market'),acts:[goBtn('market')]},
  {id:'prep',chapter:'การเดินทางครั้งแรก · รังโจรป่า',tag:'real',title:'เตรียมตัวออกเดินทาง',goal:'ซื้อเสบียงอย่างน้อย 1 ชิ้นที่ตลาด',hint:'เสบียงใช้กินฟื้นความสดชื่นระหว่างทาง · ยาในกระเป๋าใช้ได้ทั้งบนแผนที่และในการต่อสู้ · จัดสำรับไพ่ได้ที่โต๊ะในบ้าน',
   begin:d=>{d.food=mats().food||0},check:d=>(mats().food||0)>d.food,acts:[goBtn('market')]},
  {id:'expedition',tag:'real',intro:'departure',outro:'camp',title:'รังโจรป่า',goal:'ออกสำรวจป่าตะวันออก ล้มศัตรูให้ได้ 3 ตัว',hint:'เลือกเส้นทางเองได้ · ◆ สมบัติ ? เหตุการณ์ ☾ จุดพัก · ถ้าแรงหรือ HP ต่ำ ใช้ของในกระเป๋า หรือกลับก่อนก็ได้',
   progress:d=>Math.min(1,(d.kills||0)/3),check:d=>(d.kills||0)>=3,
   tick:d=>{if(adv()?.area==='forest')d.kills=Math.max(d.kills||0,adv().kills||0)},
-  acts:[{label:'🌲 ออกเดินทางสู่ป่าตะวันออก',primary:true,hide:()=>!!adv(),run:()=>root.Adventure?.enter('forest')}]},
+  acts:[{label:'🌲 ออกเดินทางสู่ป่าตะวันออก',primary:true,hide:()=>!!adv(),run:()=>root.Adventure?.enter('forest')}],
+  reward:()=>root.StarterKit?.unlock?.([{group:'movement',id:'sprint',n:2},{group:'combat',id:'evade',n:1},{group:'combat',id:'firstAid',n:1}],{kicker:'ของจากค่ายโจร',title:'ทักษะเอาตัวรอด'})},
  {id:'return',tag:'real',outro:'home',title:'กลับบ้าน',goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะสำรวจต่อจนถึงหัวหน้าพื้นที่ก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!adv(),acts:[]},
  {id:'sellLoot',tag:'real',title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',check:d=>d.sales>0,acts:[goBtn('market')]},
  {id:'rest',tag:'real',outro:'finale',title:'พักฟื้น',goal:'กลับบ้านแล้วนอนพัก',hint:'',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[goBtn('home'),{...sleepBtn,hide:()=>!at('home')}],
-  reward:()=>{addCoins(30);toast('จบบทนำ · รางวัล 30 เหรียญ · เล่นอิสระได้แล้ว','quest')}}];
+  reward:async()=>{addCoins(30);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
 const byId=id=>STEPS.findIndex(x=>x.id===id);
 
 /* ---------- pumpkin (temp farming) ---------- */
@@ -117,7 +120,7 @@ function detectSale(){const now=snapshot(),p=prev;prev=now;if(!p||now.adv||p.adv
 
 /* ---------- state ---------- */
 function story(){const v=V();if(!v)return null;return v.story||null}
-function freshSave(){const g=G(),v=V();return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!v.adventure}
+function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!v.adventure}
 function init(){const v=V();if(!v||v.story)return;v.story={v:1,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
 function cur(){const st=story();return st&&st.mode==='active'?STEPS[st.i]:null}
 function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step.id]}
@@ -127,7 +130,7 @@ let box=null;
 function tracker(){if(box)return box;box=document.createElement('aside');box.id='storyTracker';box.hidden=true;box.setAttribute('aria-live','polite');document.body.appendChild(box);
  box.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b){e.stopPropagation();act(b.dataset.act);return}if(e.target.closest('.stk-head')){const st=story();if(st){st.fold=!st.fold;doSave();draw(true)}}});return box}
 let lastHtml='';
-function draw(force){const el=tracker(),st=story();if(!st||st.mode==='off'||root.TitleScreen?.active){el.hidden=true;return}
+function draw(force){const el=tracker(),st=story();if(!st||st.mode==='off'||root.TitleScreen?.active||document.querySelector('dialog[open],.ck-reveal,.mg')){el.hidden=true;return}
  let html='';el.classList.toggle('stk-done',st.mode==='done');el.classList.toggle('stk-folded',!!st.fold);
  if(st.mode==='offer')html=`<div class="stk-head"><small>บทนำใหม่</small><b>เทศกาลเฟิร์นเวล</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div><div class="stk-body"><p class="stk-goal">เล่นบทนำ 3 วันของงานเทศกาล และการเดินทางครั้งแรก</p><p class="stk-hint">เหมาะกับเซฟใหม่ · เซฟเดิมเล่นได้ บางขั้นจะผ่านเองถ้าทำไว้แล้ว</p><div class="stk-acts"><button data-act="start" class="primary" type="button">▶ เล่นบทนำ</button><button data-act="off" type="button">ซ่อน</button></div></div>`;
  else if(st.mode==='done')html=`<div class="stk-head"><small>เล่นอิสระ</small><b>เบาะแสที่ได้</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div><div class="stk-body"><p class="stk-hint">• จานหินโบราณที่มีเส้นแสง<br>• จดหมายของ "G." ถึงเมืองใหญ่<br>• ดวงทองบนฟ้าที่เคลื่อนใกล้เข้ามา<br>• แผนที่สมบัติเก่าในกระเป๋า</p><p class="stk-hint">เส้นทางไปเมืองใหญ่ยังไม่เปิด (อยู่ในแผน)</p><div class="stk-acts"><button data-act="off" type="button">ซ่อนกล่องนี้</button></div></div>`;
@@ -158,7 +161,7 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
   if(step.intro&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(D().SCENES[step.intro])}
-  if(step.check(d)){d.done=true;if(step.outro)await root.Cutscene.play(D().SCENES[step.outro]);step.reward?.(d);st.i++;doSave();doRender();
+  if(step.check(d)){d.done=true;if(step.outro)await root.Cutscene.play(D().SCENES[step.outro]);await step.reward?.(d);st.i++;doSave();doRender();
    const nx=STEPS[st.i];if(nx){toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
 

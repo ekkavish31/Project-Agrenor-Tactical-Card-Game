@@ -26,7 +26,7 @@ function arrived(id,map){if(id.startsWith('exit:')){chooseExpedition(id.slice(5)
  if(['market','forge','home'].includes(id)){render();enterPlace(id,map);return}
  inside=true;marketOpen=false;closeCardFocus();hideEntityPeek();render();applySceneLayout(true);scheduleIdle();sync();
 }
-function menu(k){if(busy)return;if(['bag','character','upgrade','editor'].includes(k))openPanel(k);else if(k==='settings')openSettings();else if(k==='activities')arrived(s.village.location);else if(k==='adventure'){if($('panel').open)$('panel').close();chooseExpedition()}else if(k==='training')openTactical()}
+function menu(k){if(busy)return;if(['bag','character','editor'].includes(k))openPanel(k);else if(k==='deck'||k==='upgrade')openPanel('tdeck');else if(k==='settings')openSettings();else if(k==='activities')arrived(s.village.location);else if(k==='adventure'){if($('panel').open)$('panel').close();chooseExpedition()}else if(k==='training')openTactical()}
 window.addEventListener('message',e=>{const m=e.data;if(e.source===frame.contentWindow&&m?.source==='project-a-town'){
  if(m.type==='ready'){ready=true;if(!initialized){initialized=true;send({type:'init',data:stateData()})}send({type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)});lastStamp='';sync()}
  else if(m.type==='arrive'&&typeof m.id==='string')arrived(m.id,typeof m.map==='string'?m.map:'');
