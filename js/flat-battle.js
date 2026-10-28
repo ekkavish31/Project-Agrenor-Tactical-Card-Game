@@ -178,6 +178,14 @@
   function aiAct(st, u) {
     const steps = [], opp = opponents(st, u); if (!alive(u) || !opp.length || st.outcome) return steps;
     if (u.stun) { u.stun = 0; steps.push({ unit: u, type: 'stun' }); return steps }
+    /* a healer companion mends the most hurt friend in reach (walking closer if needed) instead of attacking */
+    if (u.side === 'hero' && u.healer) {
+      const hurtF = st.units.filter(f => f.side === 'hero' && alive(f) && f.hp < f.maxHp * .7).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+      if (hurtF) {
+        if (dist(u, hurtF) > u.range) { const r = reach(st, u, u.move); let best = null; for (const e of r.values()) if (dist(e, hurtF) <= u.range && (!best || e.cost < best.cost)) best = e; if (!best) for (const e of r.values()) if (!best || dist(e, hurtF) < dist(best, hurtF)) best = e; if (best && (best.u !== u.u || best.v !== u.v)) { const path = pathTo(r, best); u.u = best.u; u.v = best.v; steps.push({ unit: u, type: 'move', path }) } }
+        if (dist(u, hurtF) <= u.range) { const b = hurtF.hp; hurtF.hp = Math.min(hurtF.maxHp, hurtF.hp + 12); st.log.push(u.name + ' รักษา ' + hurtF.name + ' +' + (hurtF.hp - b)); steps.push({ unit: u, type: 'heal', target: hurtF, heal: hurtF.hp - b }); return steps }
+      }
+    }
     let tgt = targets(st, u).find(t => t.id === st.target && u.side === 'hero') || targets(st, u)[0], field = null;
     /* companion orders: guard = hold the ground (+6 guard, hit only what is already in range) · follow = stay by the hero */
     if (u.side === 'hero' && u.order === 'guard') { u.guard = Math.max(u.guard || 0, 6); steps.push({ unit: u, type: 'hold' }); if (tgt) { const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0 }) } return steps }
@@ -217,7 +225,14 @@
     bram: { id: 'wall', name: 'กำแพงโล่', guard: 14, near: 8, fx: 'shield' },
     luna: { id: 'frost', name: 'หอกน้ำแข็ง', range: 4, dmg: 13, stun: 1, fx: 'ice' },
     kier: { id: 'whirl', name: 'ดาบหมุน', range: 1, dmg: 14, aoe: 'self', fx: 'wind' },
-    mil: { id: 'twin', name: 'สองคมต่อเนื่อง', range: 1, dmg: 10, hits: 2, fx: 'knife' }
+    mil: { id: 'twin', name: 'สองคมต่อเนื่อง', range: 1, dmg: 10, hits: 2, fx: 'knife' },
+    /* v92.17 recruits from the inn and the village */
+    sigrid: { id: 'cleave', name: 'ผ่าขวานหนัก', range: 1, dmg: 22, push: 1, fx: 'blunt' },
+    ren: { id: 'aimed', name: 'ธนูเล็งจุดตาย', range: 5, dmg: 22, fx: 'arrow' },
+    olwen: { id: 'flame', name: 'ระเบิดไฟนิรันดร์', range: 4, dmg: 14, aoe: 'splash', fx: 'fire' },
+    nadia: { id: 'backstab', name: 'แทงเงา', range: 1, dmg: 26, fx: 'knife' },
+    orla: { id: 'mendAll', name: 'พรแห่งผืนดิน', healAll: 15, fx: 'heal' },
+    berg: { id: 'snare', name: 'ลูกดอกตรึง', range: 4, dmg: 12, stun: 1, fx: 'arrow' }
   };
   const SKILL_CD = 3;
   function skillBlock(st, a) {
@@ -225,17 +240,20 @@
     if (!a || !alive(a) || a.side !== 'hero' || a === hero(st)) return 'สั่งไม่ได้'; const sk = ALLY_SKILL[a.key]; if (!sk) return 'ไม่มีท่าพิเศษ';
     if (a.cd > 0) return 'รออีก ' + a.cd + ' เทิร์น'; if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
     if (sk.range && !targets(st, a, sk.range).length) return 'ไม่มีศัตรูในระยะ ' + sk.range + ' ช่อง';
+    if (sk.healAll && !st.units.some(u => u.side === 'hero' && alive(u) && u.hp < u.maxHp)) return 'ทุกคนยังเลือดเต็ม';
     return '';
   }
   function allySkill(st, id) {
     const a = st.units.find(u => u.id === id), why = skillBlock(st, a); if (why) return { ok: false, reason: why };
     const sk = ALLY_SKILL[a.key], out = { ok: true, ally: a, skill: sk.id, name: sk.name, fx: sk.fx, hits: [], shielded: [] };
     st.spent++; a.cd = SKILL_CD;
+    if (sk.healAll) { out.heals = []; for (const f of st.units) if (f.side === 'hero' && alive(f)) { const b = f.hp; f.hp = Math.min(f.maxHp, f.hp + sk.healAll); if (f.hp > b) out.heals.push({ unit: f, heal: f.hp - b }) } st.log.push(a.name + ' ' + sk.name); return out }
     if (sk.guard) { a.guard = Math.max(a.guard || 0, sk.guard); out.shielded.push({ unit: a, guard: a.guard }); for (const f of st.units) if (f !== a && f.side === 'hero' && alive(f) && dist(f, a) <= 1) { f.guard = Math.max(f.guard || 0, sk.near); out.shielded.push({ unit: f, guard: f.guard }) } st.log.push(a.name + ' ' + sk.name); return out }
     const inR = targets(st, a, sk.range), t = inR.find(x => x.id === st.target) || inR[0]; out.target = t; a.face = faceOf(a, t);
-    const list = sk.aoe === 'self' ? inR.filter(o => dist(o, a) <= 1) : [t];
+    const list = sk.aoe === 'self' ? inR.filter(o => dist(o, a) <= 1) : sk.aoe === 'splash' ? opponents(st, a).filter(o => o === t || dist(o, t) <= 1) : [t];
     for (const o of list) for (let i = 0; i < (sk.hits || 1); i++) { if (!alive(o)) break; const crit = (st.rng || Math.random)() < CRIT.ally, r = hurt(st, o, sk.dmg * (crit ? CRIT.mult : 1)); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit }) }
     if (sk.stun && alive(t)) { t.stun = 1; out.stun = t }
+    if (sk.push && alive(t)) out.moved = shove(st, t, a, 1);
     st.log.push(a.name + ' ' + sk.name + ' −' + out.hits.reduce((x, h) => x + h.damage, 0)); checkOutcome(st);
     return out;
   }

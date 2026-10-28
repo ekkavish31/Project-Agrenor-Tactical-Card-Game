@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '92.16';
+  const V = '93.02';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -43,6 +43,9 @@
     kier: { name: 'เคียร์', hp: 48, atk: 13, move: 4, range: 1, fx: 'sword' },
     mil: { name: 'มิล', hp: 42, atk: 10, move: 5, range: 1, fx: 'knife' }
   };
+  /* v92.17: recruits from the village (village-life.js, loaded by battle-field.html) */
+  for (const [k, v] of Object.entries(window.VillageLife?.ALLY_STATS || {})) if (!ALLY[k]) ALLY[k] = v;
+  const ALLY_ART = ['bram', 'luna', 'kier', 'mil'];
   const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge' } : null }).filter(Boolean);
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null;
@@ -89,7 +92,7 @@
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
     const near = (o) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - o.u) + Math.abs(v - o.v) + Math.random() * .3; if (d < bd) { bd = d; best = { u, v } } } if (best) taken.add(best.u + ',' + best.v); return best };
-    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk, def: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, order: p.order })).filter(a => a.hp > 0 && a.u != null);
+    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk, def: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order })).filter(a => a.hp > 0 && a.u != null);
     const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss } }).filter(Boolean);
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', cards: true,
       hero: { ...hs, name: window.heroName?.() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX, stamina: HST }, allies, monsters: mons });
@@ -503,7 +506,9 @@
     if (busy || !st || st.turn !== 'hero') return;
     const r = FB.allySkill(st, id); if (!r.ok) { flash(r.reason); return }
     busy = true; hudSync(); handSync(); const a = r.ally; sfx('cast', .5); toast(a.name + ' · ' + r.name);
-    if (r.shielded.length) {
+    if (r.heals) {
+      await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.heals) { fx('heal', x.unit, x.unit, { color: '#7fe08a' }); impact(x.unit, 'heal', false); x.unit.flashUntil = 0; floatText(x.unit, '+' + x.heal, '#7fe08a'); x.unit.shown = x.unit.hp; hudSync(); await wait(140) } await wait(500); a.pose = 'idle' }, { z: 1.4, bars: false, lead: 220, tail: 120 });
+    } else if (r.shielded.length) {
       await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.shielded) { fx('shield', x.unit, x.unit, {}); impact(x.unit, 'shield', false); floatText(x.unit, 'GUARD ' + x.guard, '#9cc8ff', true); await wait(140) } shake(6, 220); await wait(500); a.pose = 'idle' }, { z: 1.5, bars: false, lead: 220, tail: 120 });
     } else {
       const t = r.target, last = !FB.monsters(st).some(u => u.hp > 0);
@@ -516,6 +521,7 @@
           if (x.crit) banner('CRITICAL!', 'crit'); if (down) { tu.deadAt = now() + 380; hitStop(240); shake(14, 420) } else { hitStop(120); shake(10, 320) }
           floatText(tu, '−' + x.damage, x.crit ? '#ffe14d' : '#ffe0a0', false, true); tu.shown = Math.max(tu.hp, tu.shown - x.damage); hudSync(); await wait(r.hits.length > 1 ? 240 : 200);
         }
+        if (r.moved && t.hp > 0) { const from = { u: t.vu - .5, v: t.vv - .5 }; shake(6, 200); await walkAnim(t, [from, { u: t.u, v: t.v }], 5, true) }
         if (r.stun && r.stun.hp > 0) { floatText(r.stun, 'FROZEN', '#bfe8ff', true); glows.push({ u: r.stun.vu, v: r.stun.vv, col: '150,220,255', r: UNIT * 1.4, t0: now(), dur: 700 }) }
         for (const x of r.hits) x.target.shown = x.target.hp; hudSync();
         if (last) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(300); a.pose = 'idle';
@@ -529,6 +535,7 @@
       if (s.type === 'move') await walkAnim(s.unit, s.path);
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
       else if (s.type === 'stun') { floatText(s.unit, 'FROZEN — SKIP', '#bfe8ff', true); await wait(420) }
+      else if (s.type === 'heal') { s.unit.pose = 'strike'; fx('heal', s.target, s.unit, { color: '#7fe08a' }); impact(s.target, 'heal', false); s.target.flashUntil = 0; floatText(s.target, '+' + s.heal, '#7fe08a'); s.target.shown = s.target.hp; hudSync(); await wait(650); s.unit.pose = 'idle' }
       else if (s.type === 'hold') { s.unit.pose = 'guard'; setTimeout(() => { if (s.unit.pose === 'guard') s.unit.pose = 'idle' }, 700) }
     }
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5 }
@@ -643,6 +650,9 @@
   /* companions: the old per-character pictures (<key>_<se|ne>_<idle|windup|strike|hit|guard|down>.webp), SW/NW mirrored, moved with poseMotion */
   function drawAlly(g, u, t) {
     const p = project(u.vu, u.vv), back = ['NE', 'NW'].includes(u.dir), flip = ['SW', 'NW'].includes(u.dir), pose = u.hp <= 0 ? 'down' : u.walking ? 'idle' : (['windup', 'strike', 'hit', 'guard'].includes(u.pose) ? u.pose : 'idle');
+    if (!ALLY_ART.includes(u.key) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
+      g.save(); if (u.hp <= 0) g.globalAlpha *= .5; g.translate(pm.dx * .6, pm.dy - (u.lift || 0)); VillagerDraw(g, look, p.x, p.y, t, { walking: u.walking, face: u.dir, scale: UNIT / 56 * .78, act: u.hp <= 0 ? 'sleep' : u.pose === 'strike' ? 'work' : '' });
+      if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .5; VillagerDraw(g, look, p.x, p.y, t, { face: u.dir, scale: UNIT / 56 * .78 }) } g.restore(); if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
     const i = im(`assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`) || im(`assets/tactics/${u.key}_se_idle.webp`); shadow(g, p, UNIT * .24);
     if (!i) return; const size = UNIT * 1.45, pm = poseMotion(u, t);
     g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;

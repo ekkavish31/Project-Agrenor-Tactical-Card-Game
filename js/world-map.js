@@ -32,11 +32,16 @@
   /* ---------- save ---------- */
   /* the travelling party (old companion roster): HP carries over between fights; a fallen companion gets up wounded after the fight */
   const PARTY0 = () => [{ key: 'bram', name: 'บรัม', hp: 54, max: 54 }, { key: 'luna', name: 'ลูน่า', hp: 44, max: 44 }, { key: 'kier', name: 'เคียร์', hp: 48, max: 48 }];
+  /* the village clock follows the journey's time when you go home */
+  function syncClock() { try { localStorage.setItem('agrenor-clock-v1', JSON.stringify({ day: S.day, hour: S.hour, at: Date.now() })) } catch (e) { } }
   function healParty(f) { for (const p of S.party) p.hp = Math.min(p.max, f >= 1 ? p.max : p.hp + Math.round(p.max * f)) }
   function fresh(seed) {
     world = G.generate(seed);
     S = { seed: world.seed, known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], day: 1, hour: 8, fatigue: 0, food: 18, party: PARTY0(), gold: 30, hp: 60, maxHp: 60, potions: 1,
       dest: null, cleared: {}, done: {}, battles: 0, steps: 0, log: [] };
+    /* v92.17: the party, recruits, money and potions belong to the hero, not to one world — keep them from the previous save (or from the village) */
+    try { const old = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (old) for (const k of ['party', 'bench', 'recruit', 'gold', 'potions', 'battles']) if (old[k] != null) S[k] = old[k] } catch (e) { }
+    S.bench ??= []; S.recruit ??= {};
     reveal(); save();
   }
   function load() {
@@ -285,7 +290,7 @@
       <div id="wmLog">${S.log.slice(0, 8).map(x => '<div>' + esc(x) + '</div>').join('')}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกช่องติดกัน = เดิน 1 ช่อง · คลิกช่องที่เคยเห็น = เดินไปเอง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a></div>`;
     const on = (id, fn) => { const b = hud.querySelector('#' + id); if (b) b.onclick = fn };
-    on('wmQuest', questBoard); on('wmVillage', () => { save(); location.href = 'village-town.html' }); on('wmCamp', () => camp(false)); on('wmHome', goHome);
+    on('wmQuest', questBoard); on('wmVillage', () => { save(); syncClock(); location.href = 'village-town.html' }); on('wmCamp', () => camp(false)); on('wmHome', goHome);
     on('wmPotion', () => { if (!S.potions) return; S.potions--; const b = S.hp; S.hp = Math.min(S.maxHp, S.hp + 25); log('ดื่มยาฟื้นฟู +' + (S.hp - b) + ' HP'); save(); hudSync() });
     hud.querySelectorAll('button').forEach(b => b.disabled = b.disabled || busy);
   }
@@ -442,7 +447,7 @@
     if (v) walk(p);
   }
   async function arriveHome() {
-    S.hp = S.maxHp; healParty(1); S.food = Math.max(S.food, 10); log('กลับถึงหมู่บ้าน พักฟื้นเต็มที่'); save(); hudSync();
+    S.hp = S.maxHp; healParty(1); S.food = Math.max(S.food, 10); syncClock(); log('กลับถึงหมู่บ้าน พักฟื้นเต็มที่'); save(); hudSync();
     const left = world.dests.filter(d => !S.done[d.id]).length;
     await modal(`<h2>🏠 หมู่บ้านเฟิร์นเวล</h2><p>ชาวบ้านออกมารับ เติมเสบียงให้ครบ ${S.food} ห่อ HP ฟื้นเต็ม</p><p>${left ? 'ยังมีข่าวลือรออยู่อีก ' + left + ' แห่งที่กระดานภารกิจ' : 'ทุกข่าวลือถูกพิสูจน์แล้ว — ลองสร้าง “โลกใหม่” ได้'}</p>`);
     if (S.dest && S.done[S.dest]) S.dest = null; hudSync();

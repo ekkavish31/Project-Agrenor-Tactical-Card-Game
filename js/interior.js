@@ -1,0 +1,472 @@
+/* v92.17 · place-interior.html?place=<id>&name=<name> — the inside of every place in Fernvale, drawn in code.
+   • Rooms per kind (inn, healer, shop, market, temple, forge, house, home) with furniture built from iso boxes: counters, tables,
+     stools, beds, shelves, fireplace, anvil, furnace, altar, pews, stalls, barrels, crates, rugs, lamps, a notice board …
+   • People follow their own day (VillageLife.P[*].sched on the village clock): they walk in through the door, go to their spot
+     (bar stool, table, stage, counter, altar, bed …), drink / play / work / pray / sleep, chat in bubbles, and walk out when it is time.
+   • Click the floor to walk, click someone to talk: talk, ask about them, and — for recruits — the way to make them join
+     (hire, quests, drinks, a duel, reputation, an offering, a boss). In the inn: rent a room, manage the party.
+   • The door leads back to the village (village-town.html?from=<id>). */
+(function () {
+  'use strict';
+  const Q = new URLSearchParams(location.search), L = window.VillageLife, CLK = window.VillageClock;
+  const PLACE = Q.get('place') || 'inn', NAME = Q.get('name') || ({ inn: 'โรงแรมเขากวางทอง', healer: 'บ้านหมอยา', shop: 'ร้านค้า', market: 'ตลาด', temple: 'วิหาร', forge: 'โรงตีเหล็ก' }[PLACE] || 'สถานที่');
+  const KIND = L.placeKind(PLACE, NAME), OWNER = L.HOUSE_OF[PLACE] || null;
+  const cv = document.getElementById('room'), g = cv.getContext('2d');
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  let W = 0, H = 0, dpr = 1, Z = 1, CX = 0, CY = 0, S = L.save();
+  const heroName = () => { try { return JSON.parse(localStorage.getItem('project-a-save') || '{}')?.heroName || 'นักผจญภัย' } catch (e) { return 'นักผจญภัย' } };
+  const fill = txt => String(txt).replace(/\{name\}/g, heroName());
+
+  /* ---------- iso ---------- */
+  const HW = 34, HH = 17;
+  const P = (u, v) => ({ x: (u - v) * HW, y: (u + v) * HH });
+  const screen = (u, v) => { const p = P(u, v); return { x: p.x * Z + CX, y: p.y * Z + CY } };
+  const toCell = (sx, sy) => { const x = (sx - CX) / Z, y = (sy - CY) / Z, a = x / HW, b = y / HH; return { u: (a + b) / 2, v: (b - a) / 2 } };
+
+  /* ---------- rooms ---------- */
+  function room() {
+    const R = { W: 8, D: 7, floor: 'wood', wall: 'plaster', door: 5, items: [], spots: [], wallDeco: [], light: [] };
+    const it = (k, u, v, w = 1, d = 1, o = {}) => R.items.push({ k, u, v, w, d, ...o });
+    const sp = (tag, u, v, face = 'SE', act = 'stand') => R.spots.push({ tag, u, v, face, act });
+    if (KIND === 'inn') {
+      Object.assign(R, { W: 13, D: 11, door: 8, floor: 'wood', wall: 'timber' });
+      it('counter', 2, 2, 6, 1, { h: 30 }); it('barrel', 9, 1); it('barrel', 9, 2); it('keg', 1, 1);
+      R.wallDeco.push({ k: 'shelf', side: 'back', a: 2, b: 7 }, { k: 'sword', side: 'left', a: 2.6 }, { k: 'board', side: 'left', a: 9.6 }, { k: 'window', side: 'back', a: 10.5 }, { k: 'window', side: 'left', a: 6 }, { k: 'antlers', side: 'back', a: 8.4 });
+      it('hearth', 0, 2, 1, 2, { h: 16 }); R.light.push({ u: .6, v: 3, r: 4, col: '255,150,60', flicker: true });
+      for (const [u, v] of [[4, 6], [8, 6], [5, 9], [9, 9]]) { it('table', u, v); sp('table', u - 1, v, 'SE', 'sit'); sp('table', u + 1, v, 'SW', 'sit'); sp('table', u, v - 1, 'SE', 'sit'); }
+      for (const [u, v] of [[4, 6], [8, 6], [5, 9], [9, 9]]) for (const [du, dv] of [[-1, 0], [1, 0], [0, -1]]) it('stool', u + du, v + dv, 1, 1, { walk: true });
+      it('stage', 11, 1, 2, 3, { h: 8, walk: true }); sp('stage', 11, 2, 'SW', 'play'); sp('stage', 12, 3, 'SW', 'stand');
+      it('table', 12, 9); sp('corner', 12, 8, 'SW', 'sit'); it('stool', 12, 8, 1, 1, { walk: true });
+      it('stairs', 6, 0, 2, 1, { h: 0 }); it('rug', 6, 5, 4, 3, { walk: true }); it('plant', 1, 9); it('crate', 10, 1);
+      for (let u = 2; u < 8; u++) { sp('bar', u, 3, 'NE', 'drink'); it('stool', u, 3, 1, 1, { walk: true }) }
+      sp('bar', 4, 1, 'SW', 'work'); sp('bar', 6, 1, 'SW', 'work');                                   // behind the counter (the innkeeper)
+      sp('fire', 1, 3, 'SE', 'sit'); sp('fire', 1, 4, 'SE', 'sit'); sp('fire', 2, 4, 'NW', 'stand');
+      R.light.push({ u: 5, v: 2.5, r: 3.5, col: '255,200,120' }, { u: 6.5, v: 7, r: 4.5, col: '255,190,110' }, { u: 11.5, v: 2, r: 2.5, col: '255,210,150' });
+    } else if (KIND === 'healer') {
+      Object.assign(R, { W: 9, D: 8, door: 5, floor: 'tile', wall: 'plaster' });
+      it('counter', 2, 2, 4, 1, { h: 28 }); sp('counter', 3, 1, 'SW', 'work'); sp('visit', 3, 3, 'NE', 'stand'); sp('visit', 5, 3, 'NE', 'stand');
+      it('bed', 7, 1, 2, 1); it('bed', 7, 4, 2, 1); sp('bed', 7, 2, 'SW', 'stand'); sp('bed', 6, 4, 'SE', 'stand');
+      it('table', 4, 6); it('mortar', 4, 6, 1, 1, { onTop: true }); sp('table', 3, 6, 'SE', 'sit'); sp('table', 5, 6, 'SW', 'sit');
+      R.wallDeco.push({ k: 'herbs', side: 'back', a: 1.5, b: 6 }, { k: 'window', side: 'left', a: 2.5 }, { k: 'window', side: 'back', a: 7.5 });
+      it('plant', 1, 7); it('plant', 8, 7); it('jars', 1, 1); R.light.push({ u: 4, v: 4, r: 4, col: '230,255,220' });
+    } else if (KIND === 'shop') {
+      Object.assign(R, { W: 9, D: 8, door: 5, floor: 'wood', wall: 'plaster' });
+      it('counter', 2, 3, 5, 1, { h: 28 }); sp('counter', 4, 2, 'SW', 'work'); for (const u of [3, 5, 6]) sp('browse', u, 4, 'NE', 'stand');
+      it('shelfbox', 1, 1, 1, 1, { h: 60 }); it('shelfbox', 8, 1, 1, 1, { h: 60 }); it('crate', 7, 5); it('crate', 7, 6); it('barrel', 2, 6); it('barrel', 3, 7);
+      R.wallDeco.push({ k: 'shelf', side: 'back', a: 2, b: 7 }, { k: 'window', side: 'left', a: 2.5 }); it('rug', 3, 5, 3, 2, { walk: true });
+      R.light.push({ u: 4, v: 4, r: 4, col: '255,215,150' });
+    } else if (KIND === 'market') {
+      Object.assign(R, { W: 12, D: 10, door: 7, floor: 'stone', wall: 'timber' });
+      for (const [u, v, col] of [[2, 2, '#b8463a'], [6, 2, '#3a6aa8'], [10, 2, '#4a8a3a'], [8, 6, '#c9a03a']]) { it('stall', u - 1, v, 2, 1, { col }); sp('stall', u, v - 1, 'SW', 'work'); sp('browse', u, v + 1, 'NE', 'stand') }
+      it('crate', 1, 8); it('crate', 2, 8); it('barrel', 11, 8); it('basket', 4, 6); it('basket', 5, 6); sp('browse', 4, 7, 'NE', 'stand');
+      R.wallDeco.push({ k: 'banner', side: 'back', a: 4 }, { k: 'banner', side: 'back', a: 8.5 }, { k: 'window', side: 'left', a: 3 });
+      R.light.push({ u: 6, v: 5, r: 6, col: '255,230,170' });
+    } else if (KIND === 'temple') {
+      Object.assign(R, { W: 11, D: 11, door: 9, floor: 'stone', wall: 'stone' });
+      it('altar', 4, 1, 3, 1, { h: 30 }); it('statue', 5, 0, 1, 1, { h: 0 }); sp('altar', 5, 2, 'NE', 'pray'); sp('altar', 4, 2, 'NE', 'pray');
+      for (const v of [4, 6, 8]) { it('pew', 2, v, 3, 1); it('pew', 6, v, 3, 1); for (const u of [2, 3, 4, 6, 7, 8]) sp('pew', u, v + 1, 'NE', 'pray') }
+      it('candles', 2, 1); it('candles', 8, 1); it('plant', 1, 10); it('plant', 10, 10); it('rug', 5, 3, 1, 7, { walk: true, col: '#7a2a2a' });
+      R.wallDeco.push({ k: 'glass', side: 'back', a: 2.5 }, { k: 'glass', side: 'back', a: 8.5 }, { k: 'glass', side: 'left', a: 5 });
+      R.light.push({ u: 5.5, v: 2, r: 4, col: '255,230,160', flicker: true }, { u: 5, v: 7, r: 5, col: '200,210,255' });
+    } else if (KIND === 'forge') {
+      Object.assign(R, { W: 10, D: 9, door: 6, floor: 'stone', wall: 'stone' });
+      it('furnace', 1, 1, 2, 2, { h: 50 }); R.light.push({ u: 2.5, v: 2.5, r: 4.5, col: '255,120,40', flicker: true });
+      it('anvil', 5, 4); sp('anvil', 5, 5, 'NE', 'work'); sp('anvil', 4, 4, 'SE', 'work'); it('quench', 7, 2); it('rack', 8, 1, 1, 1, { h: 50 });
+      it('crate', 8, 7); it('barrel', 1, 7); sp('watch', 6, 6, 'NW', 'stand'); sp('watch', 3, 6, 'NE', 'stand');
+      R.wallDeco.push({ k: 'tools', side: 'back', a: 4, b: 7 }, { k: 'window', side: 'left', a: 4 });
+    } else {   /* house / player's home */
+      Object.assign(R, { W: 8, D: 7, door: 5, floor: 'wood', wall: KIND === 'home' ? 'timber' : 'plaster' });
+      it('bed', 6, 1, 2, 1); sp('bed', 6, 1, 'SE', 'sleep'); it('table', 3, 4); it('stool', 2, 4, 1, 1, { walk: true }); it('stool', 4, 4, 1, 1, { walk: true }); sp('table', 2, 4, 'SE', 'sit'); sp('table', 4, 4, 'SW', 'sit');
+      it('chest', 7, 5); it('hearth', 0, 1, 1, 2, { h: 14 }); R.light.push({ u: .6, v: 2, r: 3.5, col: '255,150,60', flicker: true }); it('rug', 3, 3, 3, 3, { walk: true, col: '#6a4a8a' });
+      R.wallDeco.push({ k: 'window', side: 'back', a: 3.5 }, { k: 'shelf', side: 'back', a: 1.2, b: 2.6 });
+      const prof = { may: 'oven', tom: 'bench', ella: 'loom', berg: 'trophy', saf: 'herbs', joe: 'nets', mira: 'books', ken: 'logs', shep: 'wool', lin: 'books' }[OWNER];
+      if (prof === 'oven') { it('oven', 1, 4, 1, 1, { h: 34 }); sp('work', 2, 5, 'NW', 'work'); R.light.push({ u: 1.5, v: 4.5, r: 2.5, col: '255,140,60', flicker: true }) }
+      else if (prof === 'bench') { it('bench', 1, 5, 2, 1); sp('work', 2, 4, 'SW', 'work') }
+      else if (prof === 'loom') { it('loom', 1, 5, 1, 1, { h: 40 }); sp('work', 2, 5, 'NW', 'work') }
+      else if (prof === 'logs') { it('logs', 1, 5, 2, 1); sp('work', 3, 5, 'NW', 'work') }
+      else if (prof === 'herbs') R.wallDeco.push({ k: 'herbs', side: 'left', a: 3.5, b: 6 });
+      else if (prof === 'trophy') R.wallDeco.push({ k: 'antlers', side: 'left', a: 4 });
+      else if (prof === 'books') { it('shelfbox', 1, 5, 1, 1, { h: 56 }); sp('work', 2, 5, 'NW', 'stand') }
+      else if (prof === 'nets') { it('basket', 1, 5); R.wallDeco.push({ k: 'net', side: 'left', a: 4 }) }
+      else if (prof === 'wool') { it('basket', 1, 5); it('basket', 2, 6) }
+      sp('stand', 5, 3, 'SW', 'stand');
+    }
+    return R;
+  }
+  const R = room();
+  const DOOR = { u: 0, v: R.door };                                         // the door cell is inside, next to the left wall
+  const blocked = new Set();
+  for (const i of R.items) if (!i.walk && !i.onTop) for (let u = i.u; u < i.u + i.w; u++) for (let v = i.v; v < i.v + i.d; v++) blocked.add(u + ',' + v);
+  const inside = (u, v) => u >= 0 && v >= 0 && u < R.W && v < R.D;
+  const free = (u, v) => inside(u, v) && !blocked.has(u + ',' + v);
+  function pathTo(a, b) {
+    const k = (u, v) => u + ',' + v, start = k(a.u, a.v), goal = k(b.u, b.v), prev = new Map([[start, null]]), q = [[a.u, a.v]];
+    if (!free(b.u, b.v)) return null;
+    while (q.length) { const [u, v] = q.shift(); if (k(u, v) === goal) break; for (const [du, dv] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nu = u + du, nv = v + dv, nk = k(nu, nv); if (prev.has(nk) || !free(nu, nv)) continue; prev.set(nk, k(u, v)); q.push([nu, nv]) } }
+    if (!prev.has(goal)) return null; const out = []; for (let c = goal; c; c = prev.get(c)) { const [u, v] = c.split(',').map(Number); out.unshift({ u, v }) } return out;
+  }
+
+  /* ---------- people ---------- */
+  const people = new Map();                                               // id → actor in the room
+  const homeOf = p => p.home || Object.keys(L.HOUSE_OF).find(h => L.HOUSE_OF[h] === p.id) || null;
+  function whereNow(p, hour) {
+    for (const [a, b, at, tag] of p.sched || []) if (hour >= a && hour < b) return { at: at === 'home' ? homeOf(p) : at, tag };
+    return { at: homeOf(p), tag: p.id === OWNER ? 'bed' : null };
+  }
+  const herePlace = at => at === PLACE || (at === KIND && ['inn', 'healer', 'shop', 'market', 'temple', 'forge'].includes(KIND) && !L.HOUSE_OF[PLACE]);
+  function benchHere(id) { return KIND === 'inn' && S.bench.some(b => b.key === id) }
+  const taken = new Set();
+  function claimSpot(tag) {
+    const list = R.spots.filter(s => (!tag || s.tag === tag) && !taken.has(s.u + ',' + s.v));
+    const s = list[Math.floor(Math.random() * list.length)] || R.spots.find(s => !taken.has(s.u + ',' + s.v));
+    if (s) taken.add(s.u + ',' + s.v); return s || null;
+  }
+  function freeSpot(s) { if (s) taken.delete(s.u + ',' + s.v) }
+  function addActor(p, tag, atDoor) {
+    const s = claimSpot(tag); const a = { p, id: p.id, spot: s, u: atDoor ? DOOR.u : (s ? s.u : 3), v: atDoor ? DOOR.v : (s ? s.v : 3), vu: 0, vv: 0, path: [], face: s?.face || 'SE', act: atDoor ? '' : s?.act || 'stand', fade: atDoor ? 0 : 1, phase: Math.random() * 9, leaving: false, bubble: null };
+    a.vu = a.u + .5; a.vv = a.v + .5; people.set(p.id, a);
+    if (atDoor && s) { a.path = pathTo(a, s) || []; a.walking = true }
+    return a;
+  }
+  /* companions resting in the inn (benched) also hang around as people */
+  function benchPerson(b) { const p = L.P[b.key] || { id: b.key, name: b.name, role: 'เพื่อนร่วมทาง', look: { coat: '#5a6a8a', hair: '#3a2a1a', hat: 'none', weapon: 'sword' }, lines: { day: ['พักอยู่ที่โรงแรม พร้อมออกเดินทางเมื่อเจ้าเรียก'] } }; return { ...p, benched: true } }
+  function syncPeople(first) {
+    const hour = CLK.read().hour, want = new Map();
+    for (const p of Object.values(L.P)) { if (L.inParty(S, p.id) && !benchHere(p.id)) continue; const w = whereNow(p, hour); if (herePlace(w.at)) want.set(p.id, { p, tag: w.tag }) }
+    if (KIND === 'inn') for (const b of S.bench) if (!want.has(b.key)) want.set(b.key, { p: benchPerson(b), tag: 'table' });
+    for (const [id, w] of want) if (!people.has(id)) addActor(w.p, w.tag, !first);
+    for (const [id, a] of people) if (!want.has(id) && !a.leaving && a !== talkingTo) { a.leaving = true; freeSpot(a.spot); a.spot = null; a.path = pathTo({ u: Math.round(a.vu - .5), v: Math.round(a.vv - .5) }, DOOR) || []; a.walking = true }
+  }
+  /* the hero */
+  const hero = { u: DOOR.u, v: DOOR.v, vu: DOOR.u + .5, vv: DOOR.v + .5, path: [], face: 'SE', walking: false, then: null };
+  const heroImgs = [1, 2, 3, 4].map(i => { const im = new Image(); im.src = `assets/tactics/imported/idle-se-mvkft9t1-gv5z/frame-0${i}.webp`; return im });
+  const walkImgs = [1, 2, 3].map(i => { const im = new Image(); im.src = `assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-0${i}.webp`; return im });
+
+  function faceOf(du, dv) { return Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'SE' : 'NW') : (dv > 0 ? 'SW' : 'NE') }
+  function stepActor(a, dt, speed) {
+    if (!a.path.length) { a.walking = false; return }
+    const t = a.path[0], tu = t.u + .5, tv = t.v + .5, du = tu - a.vu, dv = tv - a.vv, d = Math.hypot(du, dv), sp = dt * speed;
+    if (d > .01) a.face = faceOf(du, dv);
+    if (d <= sp) { a.vu = tu; a.vv = tv; a.u = t.u; a.v = t.v; a.path.shift(); if (!a.path.length) a.walking = false } else { a.vu += du / d * sp; a.vv += dv / d * sp; a.walking = true }
+  }
+
+  /* ---------- painting ---------- */
+  const FLOOR = { wood: ['#8a6440', '#7c5a38', '#946c46'], stone: ['#8a8680', '#7e7a74', '#96928a'], tile: ['#c9c2b0', '#bdb6a4', '#d4ccba'] };
+  const WALL = { plaster: ['#e8dcc0', '#d9ccae'], timber: ['#e2d4b4', '#cbbd9c'], stone: ['#a8a296', '#968f84'] };
+  const WALL_H = 120;
+  function poly(pts, fillStyle, stroke) { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)); g.closePath(); if (fillStyle) { g.fillStyle = fillStyle; g.fill() } if (stroke) { g.strokeStyle = stroke; g.lineWidth = 1; g.stroke() } }
+  const up = (p, h) => ({ x: p.x, y: p.y - h });
+  /* an iso box: (u,v) back corner, w along u, d along v, height h */
+  function box(u, v, w, d, h, top, side1, side2) {
+    const a = P(u, v), b = P(u + w, v), c = P(u + w, v + d), e = P(u, v + d);
+    poly([b, c, up(c, h), up(b, h)], side1); poly([e, c, up(c, h), up(e, h)], side2); poly([up(a, h), up(b, h), up(c, h), up(e, h)], top);
+  }
+  function drawFloor(t) {
+    const pal = FLOOR[R.floor];
+    for (let u = 0; u < R.W; u++) for (let v = 0; v < R.D; v++) {
+      const a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), e = P(u, v + 1);
+      poly([a, b, c, e], pal[(u * 7 + v * 3) % 3]);
+      if (R.floor === 'wood') { g.strokeStyle = 'rgba(40,25,10,.25)'; g.lineWidth = 1; g.beginPath(); g.moveTo((a.x + e.x) / 2, (a.y + e.y) / 2); g.lineTo((b.x + c.x) / 2, (b.y + c.y) / 2); g.stroke() }
+      g.strokeStyle = R.floor === 'wood' ? 'rgba(40,25,10,.35)' : 'rgba(40,40,40,.22)'; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.stroke();
+    }
+    /* door light spilling in */
+    const dp = P(DOOR.u + .5, DOOR.v + .5), gr = g.createRadialGradient(dp.x - 20, dp.y, 4, dp.x, dp.y, 90), day = daylight();
+    gr.addColorStop(0, `rgba(255,240,200,${.35 * day})`); gr.addColorStop(1, 'rgba(255,240,200,0)'); g.fillStyle = gr; g.beginPath(); g.ellipse(dp.x, dp.y, 90, 45, 0, 0, 7); g.fill();
+  }
+  function drawWalls(t) {
+    const pal = WALL[R.wall], day = daylight();
+    /* back wall along v = 0 (u 0..W), left wall along u = 0 (v 0..D) */
+    const o = P(0, 0), bR = P(R.W, 0), bL = P(0, R.D);
+    poly([o, bR, up(bR, WALL_H), up(o, WALL_H)], pal[0]); poly([o, bL, up(bL, WALL_H), up(o, WALL_H)], pal[1]);
+    if (R.wall === 'timber') { g.strokeStyle = '#5a3a1e'; g.lineWidth = 6; for (let u = 0; u <= R.W; u += 3) { const p = P(u, 0); g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x, p.y - WALL_H); g.stroke() } for (let v = 0; v <= R.D; v += 3) { const p = P(0, v); g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x, p.y - WALL_H); g.stroke() } g.beginPath(); g.moveTo(o.x, o.y - WALL_H * .55); g.lineTo(bR.x, bR.y - WALL_H * .55); g.moveTo(o.x, o.y - WALL_H * .55); g.lineTo(bL.x, bL.y - WALL_H * .55); g.stroke() }
+    if (R.wall === 'stone') { g.strokeStyle = 'rgba(60,55,50,.35)'; g.lineWidth = 1; for (let k = 1; k < 8; k++) { const y = WALL_H * k / 8; g.beginPath(); g.moveTo(o.x, o.y - y); g.lineTo(bR.x, bR.y - y); g.moveTo(o.x, o.y - y); g.lineTo(bL.x, bL.y - y); g.stroke() } }
+    /* skirting */
+    g.strokeStyle = 'rgba(50,30,15,.6)'; g.lineWidth = 4; g.beginPath(); g.moveTo(bL.x, bL.y - 3); g.lineTo(o.x, o.y - 3); g.lineTo(bR.x, bR.y - 3); g.stroke();
+    /* top rim */
+    g.fillStyle = '#4a3220'; poly([up(bL, WALL_H), up(o, WALL_H), up(bR, WALL_H), up(bR, WALL_H + 8), up(o, WALL_H + 8), up(bL, WALL_H + 8)], '#4a3220');
+    /* door in the left wall */
+    { const a = P(0, DOOR.v), b = P(0, DOOR.v + 1), outside = day > .4 ? `rgba(200,225,255,${.5 + day * .4})` : 'rgba(30,40,80,.9)';
+      poly([a, b, up(b, 78), up(a, 78)], outside); g.strokeStyle = '#4a2e18'; g.lineWidth = 5; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(a.x, a.y - 80); g.lineTo(b.x, b.y - 80); g.lineTo(b.x, b.y); g.stroke();
+      g.fillStyle = '#6a4424'; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(a.x - 16, a.y - 6); g.lineTo(a.x - 16, a.y - 82); g.lineTo(a.x, a.y - 78); g.closePath(); g.fill() }
+    for (const d of R.wallDeco) wallDeco(d, t, day);
+  }
+  /* a point on the wall: side 'back' runs along u at v=0, side 'left' along v at u=0 */
+  const wallPt = (side, a, h) => { const p = side === 'back' ? P(a, 0) : P(0, a); return { x: p.x, y: p.y - h } };
+  function wallQuad(side, a, b, h0, h1) { return [wallPt(side, a, h0), wallPt(side, b, h0), wallPt(side, b, h1), wallPt(side, a, h1)] }
+  function wallDeco(d, t, day) {
+    if (d.k === 'window' || d.k === 'glass') {
+      const q = wallQuad(d.side, d.a - .6, d.a + .6, 40, 100), sky = day > .4 ? `rgba(180,215,255,${.55 + day * .4})` : 'rgba(30,40,90,.9)';
+      poly(q, d.k === 'glass' ? (day > .4 ? '#c8a8ff' : '#3a2a6a') : sky); g.strokeStyle = '#4a2e18'; g.lineWidth = 3; g.beginPath(); q.forEach((p, i) => i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)); g.closePath(); g.stroke();
+      const m1 = wallPt(d.side, d.a, 40), m2 = wallPt(d.side, d.a, 100); g.beginPath(); g.moveTo(m1.x, m1.y); g.lineTo(m2.x, m2.y); g.stroke();
+      if (d.k === 'glass') { g.globalAlpha = .5; for (const [c, k] of [['#ff8a6a', .3], ['#6ac8ff', .6], ['#ffe06a', .45]]) { const p = wallPt(d.side, d.a - .3 + k * .6, 70); g.fillStyle = c; g.beginPath(); g.arc(p.x, p.y, 6, 0, 7); g.fill() } g.globalAlpha = 1 }
+      if (day > .4) { const p = wallPt(d.side, d.a, 40), gr = g.createLinearGradient(p.x, p.y, p.x + (d.side === 'back' ? -40 : 40), p.y + 90); gr.addColorStop(0, `rgba(255,245,210,${.18 * day})`); gr.addColorStop(1, 'rgba(255,245,210,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(q[0].x, q[0].y); g.lineTo(q[1].x, q[1].y); g.lineTo(q[1].x + (d.side === 'back' ? -50 : 50), q[1].y + 110); g.lineTo(q[0].x + (d.side === 'back' ? -50 : 50), q[0].y + 110); g.closePath(); g.fill() }
+    } else if (d.k === 'shelf' || d.k === 'herbs' || d.k === 'tools') {
+      for (const h of [50, 80]) { const q = wallQuad(d.side, d.a, d.b, h, h + 5); poly(q, '#6a4424');
+        for (let x = d.a + .2; x < d.b - .1; x += .35) { const p = wallPt(d.side, x, h + 5), col = d.k === 'herbs' ? ['#5a8a3a', '#8aa04a', '#a07a3a'][Math.floor(x * 7) % 3] : d.k === 'tools' ? '#7a7a80' : ['#3a6a4a', '#8a3a2a', '#c9a03a', '#4a4a8a'][Math.floor(x * 9) % 4];
+          if (d.k === 'tools') { g.strokeStyle = col; g.lineWidth = 3; g.beginPath(); g.moveTo(p.x, p.y - 4); g.lineTo(p.x, p.y + 22); g.stroke() } else { g.fillStyle = col; g.fillRect(p.x - 3, p.y - 14, 6, 14); g.fillStyle = 'rgba(255,255,255,.3)'; g.fillRect(p.x - 2, p.y - 13, 2, 6) } } }
+    } else if (d.k === 'sword') { const p = wallPt(d.side, d.a, 88); g.save(); g.translate(p.x, p.y); g.rotate(-.35); g.fillStyle = '#d8dde4'; g.fillRect(-46, -2, 80, 4); g.fillStyle = '#8a6a2a'; g.fillRect(30, -7, 4, 14); g.fillRect(34, -2, 14, 4); g.restore() }
+    else if (d.k === 'board') { const q = wallQuad(d.side, d.a - .5, d.a + .5, 46, 92); poly(q, '#7a5230'); for (let i = 0; i < 4; i++) { const p = wallPt(d.side, d.a - .35 + (i % 2) * .4, 58 + Math.floor(i / 2) * 16); g.fillStyle = '#f2e6c8'; g.fillRect(p.x - 6, p.y - 10, 12, 12) } }
+    else if (d.k === 'antlers') { const p = wallPt(d.side, d.a, 96); g.strokeStyle = '#d8c8a0'; g.lineWidth = 3; g.beginPath(); for (const s of [-1, 1]) { g.moveTo(p.x, p.y); g.lineTo(p.x + s * 18, p.y - 16); g.moveTo(p.x + s * 9, p.y - 8); g.lineTo(p.x + s * 8, p.y - 20); g.moveTo(p.x + s * 15, p.y - 13); g.lineTo(p.x + s * 22, p.y - 22) } g.stroke(); g.fillStyle = '#6a4424'; g.beginPath(); g.ellipse(p.x, p.y + 4, 8, 6, 0, 0, 7); g.fill() }
+    else if (d.k === 'banner') { const p = wallPt(d.side, d.a, 108); g.fillStyle = '#8a2a2a'; g.beginPath(); g.moveTo(p.x - 12, p.y); g.lineTo(p.x + 12, p.y); g.lineTo(p.x + 12, p.y + 50); g.lineTo(p.x, p.y + 40); g.lineTo(p.x - 12, p.y + 50); g.closePath(); g.fill(); g.fillStyle = '#e0c060'; g.beginPath(); g.arc(p.x, p.y + 20, 5, 0, 7); g.fill() }
+    else if (d.k === 'net') { const q = wallQuad(d.side, d.a - .6, d.a + .6, 40, 96); g.strokeStyle = 'rgba(200,190,150,.7)'; g.lineWidth = 1; for (let i = 0; i <= 6; i++) { const a = wallPt(d.side, d.a - .6 + i * .2, 40), b = wallPt(d.side, d.a - .6 + i * .2, 96); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke() } }
+  }
+  /* furniture */
+  function drawItem(i, t) {
+    const c = P(i.u + i.w / 2, i.v + i.d / 2);
+    switch (i.k) {
+      case 'counter': box(i.u, i.v, i.w, i.d, i.h || 30, '#8a5a32', '#6a4424', '#5a3a1e'); { const a = P(i.u, i.v); for (let k = 0; k < i.w; k += 1.5) { const p = P(i.u + k + .7, i.v + .4); g.fillStyle = '#c9a060'; g.fillRect(p.x - 3, p.y - (i.h || 30) - 10, 6, 9) } } break;
+      case 'table': box(i.u + .15, i.v + .15, .7, .7, 22, '#9a6a3a', '#6a4424', '#5a3a1e'); { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#c9a060'; g.fillRect(p.x - 6, p.y - 32, 5, 8); g.fillStyle = '#e8e0c8'; g.beginPath(); g.ellipse(p.x + 6, p.y - 23, 5, 2.5, 0, 0, 7); g.fill() } break;
+      case 'stool': { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#5a3a1e'; g.fillRect(p.x - 2, p.y - 12, 4, 12); g.fillStyle = '#8a5a32'; g.beginPath(); g.ellipse(p.x, p.y - 13, 9, 4.5, 0, 0, 7); g.fill() } break;
+      case 'barrel': case 'keg': { const p = P(i.u + .5, i.v + .5), h = i.k === 'keg' ? 30 : 38; g.fillStyle = '#7a4a24'; g.fillRect(p.x - 14, p.y - h, 28, h); g.beginPath(); g.ellipse(p.x, p.y, 14, 7, 0, 0, Math.PI); g.fill(); g.fillStyle = '#9a6234'; g.beginPath(); g.ellipse(p.x, p.y - h, 14, 7, 0, 0, 7); g.fill(); g.strokeStyle = '#3a2a1a'; g.lineWidth = 2; for (const y of [.25, .75]) { g.beginPath(); g.moveTo(p.x - 14, p.y - h * y); g.lineTo(p.x + 14, p.y - h * y); g.stroke() } if (i.k === 'keg') { g.fillStyle = '#c9a060'; g.fillRect(p.x + 10, p.y - 16, 8, 3) } } break;
+      case 'crate': box(i.u + .1, i.v + .1, .8, .8, 30, '#a07a48', '#7a5a34', '#6a4a2a'); break;
+      case 'shelfbox': box(i.u + .05, i.v + .05, .9, .9, i.h || 60, '#6a4424', '#5a3a1e', '#4a2e18'); { const p = P(i.u + 1, i.v + .5); for (let k = 0; k < 3; k++) { g.fillStyle = ['#8a3a2a', '#3a6a4a', '#c9a03a'][k]; g.fillRect(p.x - 18 + k * 6, p.y - 20 - k * 14, 5, 10) } } break;
+      case 'hearth': { box(i.u, i.v, i.w, i.d, 16, '#7a7268', '#6a645c', '#5a554e'); const p = P(i.u + .5, i.v + i.d / 2), f = Math.sin(t * .02) * 2;
+        g.fillStyle = '#2a1a12'; g.beginPath(); g.ellipse(p.x, p.y - 12, 14, 8, 0, 0, 7); g.fill();
+        g.save(); g.globalCompositeOperation = 'lighter'; for (let k = 0; k < 3; k++) { g.fillStyle = ['rgba(255,120,30,.8)', 'rgba(255,190,60,.7)', 'rgba(255,240,150,.6)'][k]; g.beginPath(); g.moveTo(p.x - 9 + k * 3, p.y - 12); g.quadraticCurveTo(p.x + f, p.y - 34 + k * 6 - Math.sin(t * .015 + k) * 4, p.x + 9 - k * 3, p.y - 12); g.fill() } g.restore();
+        const a = P(i.u, i.v), b = P(i.u, i.v + i.d); g.fillStyle = '#8a8278'; poly([up(a, 16), up(b, 16), up(b, WALL_H), up(a, WALL_H)], '#8a8278') } break;
+      case 'stage': box(i.u, i.v, i.w, i.d, i.h || 8, '#7a5230', '#5a3a1e', '#4a2e18'); break;
+      case 'stairs': for (let k = 0; k < 5; k++) box(i.u + k * .3, i.v, .4, i.d, 10 + k * 14, '#7a5230', '#5a3a1e', '#4a2e18'); break;
+      case 'rug': { const a = P(i.u, i.v), b = P(i.u + i.w, i.v), c2 = P(i.u + i.w, i.v + i.d), e = P(i.u, i.v + i.d); poly([a, b, c2, e], i.col || '#8a3a2a'); g.strokeStyle = '#e0c070'; g.lineWidth = 2; g.stroke(); } break;
+      case 'plant': { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#8a4a2a'; g.fillRect(p.x - 9, p.y - 14, 18, 14); for (const [dx, dy, r] of [[-6, -24, 8], [6, -26, 8], [0, -32, 9]]) { g.fillStyle = '#4a7a3a'; g.beginPath(); g.arc(p.x + dx + Math.sin(t * .001 + dx) * 1, p.y + dy, r, 0, 7); g.fill() } } break;
+      case 'bed': box(i.u + .05, i.v + .1, i.w - .1, i.d - .2, 16, '#e8e0d0', '#7a5230', '#6a4424'); { const a = P(i.u + .25, i.v + .5); g.fillStyle = '#ffffff'; g.beginPath(); g.ellipse(a.x, a.y - 18, 10, 5, 0, 0, 7); g.fill(); const b = P(i.u + i.w * .65, i.v + .5); g.fillStyle = '#4a6a9a'; g.beginPath(); g.ellipse(b.x, b.y - 17, 22, 9, 0, 0, 7); g.fill() } break;
+      case 'mortar': { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#9a948a'; g.beginPath(); g.ellipse(p.x, p.y - 26, 6, 3, 0, 0, 7); g.fill(); g.fillRect(p.x - 5, p.y - 26, 10, 5) } break;
+      case 'jars': { const p = P(i.u + .5, i.v + .5); for (let k = 0; k < 3; k++) { g.fillStyle = ['#7ac8a0', '#c87a7a', '#c8b87a'][k]; g.fillRect(p.x - 12 + k * 8, p.y - 18, 7, 14) } } break;
+      case 'stall': { box(i.u + .05, i.v + .1, i.w - .1, i.d - .2, 26, '#9a6a3a', '#6a4424', '#5a3a1e'); const a = P(i.u, i.v), b = P(i.u + i.w, i.v), c2 = P(i.u + i.w, i.v + i.d), e = P(i.u, i.v + i.d), h = 70; poly([up(a, h), up(b, h), up(c2, h - 8), up(e, h - 8)], i.col); g.strokeStyle = '#5a3a1e'; g.lineWidth = 3; for (const p of [b, c2, e]) { g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x, p.y - h + 6); g.stroke() }
+        const m = P(i.u + i.w / 2, i.v + .5); for (let k = 0; k < 4; k++) { g.fillStyle = ['#d9a040', '#7ab04a', '#c84a3a', '#e8d090'][k]; g.beginPath(); g.arc(m.x - 18 + k * 12, m.y - 30, 5, 0, 7); g.fill() } } break;
+      case 'basket': { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#b08a4a'; g.beginPath(); g.ellipse(p.x, p.y - 8, 14, 7, 0, 0, 7); g.fill(); g.fillStyle = '#c84a3a'; for (let k = 0; k < 3; k++) { g.beginPath(); g.arc(p.x - 6 + k * 6, p.y - 12, 4, 0, 7); g.fill() } } break;
+      case 'altar': box(i.u, i.v, i.w, i.d, i.h || 30, '#d8d0c0', '#b8b0a0', '#a8a090'); { const p = P(i.u + i.w / 2, i.v + .5); g.fillStyle = '#e0c060'; g.beginPath(); g.arc(p.x, p.y - 40, 7, 0, 7); g.fill() } break;
+      case 'statue': { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#c8c0b0'; g.fillRect(p.x - 8, p.y - 100, 16, 70); g.beginPath(); g.arc(p.x, p.y - 108, 9, 0, 7); g.fill(); g.fillStyle = '#b0a898'; g.beginPath(); g.moveTo(p.x - 18, p.y - 92); g.lineTo(p.x, p.y - 80); g.lineTo(p.x + 18, p.y - 92); g.lineTo(p.x, p.y - 74); g.closePath(); g.fill() } break;
+      case 'pew': box(i.u + .05, i.v + .2, i.w - .1, .6, 16, '#7a5230', '#5a3a1e', '#4a2e18'); { const a = P(i.u + .05, i.v + .2), b = P(i.u + i.w - .05, i.v + .2); poly([up(a, 16), up(b, 16), up(b, 34), up(a, 34)], '#6a4424') } break;
+      case 'candles': { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#4a3a2a'; g.fillRect(p.x - 2, p.y - 40, 4, 40); for (const dx of [-8, 0, 8]) { g.fillStyle = '#f2ead8'; g.fillRect(p.x + dx - 2, p.y - 52, 4, 10); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = `rgba(255,200,80,${.7 + Math.sin(t * .02 + dx) * .2})`; g.beginPath(); g.ellipse(p.x + dx, p.y - 56, 2.5, 5, 0, 0, 7); g.fill(); g.restore() } } break;
+      case 'furnace': { box(i.u, i.v, i.w, i.d, i.h || 50, '#5a554e', '#6a645c', '#4a453e'); const p = P(i.u + i.w, i.v + i.d / 2 + .2); g.fillStyle = '#1a120c'; g.beginPath(); g.ellipse(p.x - 10, p.y - 18, 14, 10, 0, 0, 7); g.fill(); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = `rgba(255,${120 + Math.sin(t * .01) * 30},40,.85)`; g.beginPath(); g.ellipse(p.x - 10, p.y - 16, 10, 6, 0, 0, 7); g.fill(); g.restore();
+        if (Math.random() < .2) sparks.push({ x: p.x - 10, y: p.y - 22, vx: (Math.random() - .3) * 40, vy: -40 - Math.random() * 40, t0: t }) } break;
+      case 'anvil': { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#6a4424'; g.fillRect(p.x - 8, p.y - 16, 16, 16); g.fillStyle = '#4a4a50'; g.beginPath(); g.moveTo(p.x - 18, p.y - 22); g.lineTo(p.x + 22, p.y - 24); g.lineTo(p.x + 12, p.y - 16); g.lineTo(p.x - 12, p.y - 16); g.closePath(); g.fill(); g.fillStyle = '#6a6a72'; g.fillRect(p.x - 18, p.y - 26, 36, 4) } break;
+      case 'quench': { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#6a4424'; g.fillRect(p.x - 16, p.y - 22, 32, 22); g.fillStyle = '#3a5a6a'; g.beginPath(); g.ellipse(p.x, p.y - 22, 16, 7, 0, 0, 7); g.fill() } break;
+      case 'rack': { box(i.u + .1, i.v + .3, .8, .4, 6, '#6a4424', '#5a3a1e', '#4a2e18'); const p = P(i.u + .5, i.v + .5); for (let k = 0; k < 3; k++) { g.fillStyle = '#c8ccd2'; g.fillRect(p.x - 12 + k * 10, p.y - 56, 3, 50) } } break;
+      case 'chest': box(i.u + .15, i.v + .2, .7, .6, 20, '#8a5a2a', '#6a4424', '#5a3a1e'); { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#e0c060'; g.fillRect(p.x - 3, p.y - 16, 6, 5) } break;
+      case 'oven': { box(i.u, i.v, i.w, i.d, i.h || 34, '#b8a890', '#a89878', '#988868'); const p = P(i.u + 1, i.v + .5); g.fillStyle = '#2a1a12'; g.beginPath(); g.arc(p.x - 6, p.y - 16, 8, Math.PI, 0); g.fill(); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(255,140,40,.6)'; g.beginPath(); g.arc(p.x - 6, p.y - 14, 5, Math.PI, 0); g.fill(); g.restore() } break;
+      case 'bench': box(i.u + .05, i.v + .15, i.w - .1, i.d - .3, 26, '#a07a48', '#7a5a34', '#6a4a2a'); break;
+      case 'loom': box(i.u + .1, i.v + .1, .8, .8, 8, '#7a5230', '#5a3a1e', '#4a2e18'); { const p = P(i.u + .5, i.v + .5); g.strokeStyle = '#5a3a1e'; g.lineWidth = 3; g.strokeRect(p.x - 16, p.y - 46, 32, 34); g.fillStyle = '#a0456a'; g.fillRect(p.x - 14, p.y - 40, 28, 22) } break;
+      case 'logs': { for (let k = 0; k < 3; k++) { const p = P(i.u + .5 + k * .4, i.v + .5); g.fillStyle = '#7a5230'; g.beginPath(); g.ellipse(p.x, p.y - 8 - (k % 2) * 8, 16, 7, 0, 0, 7); g.fill(); g.fillStyle = '#c9a070'; g.beginPath(); g.ellipse(p.x + 14, p.y - 8 - (k % 2) * 8, 4, 6, 0, 0, 7); g.fill() } } break;
+    }
+  }
+  let sparks = [];
+  /* time of day: 1 = daylight, 0 = night */
+  function daylight() { const h = CLK.read().hour; return h >= 7 && h < 17 ? 1 : h >= 17 && h < 20 ? (20 - h) / 3 : h >= 5 && h < 7 ? (h - 5) / 2 : 0 }
+
+  /* ---------- frame ---------- */
+  let last = 0, bubbleAt = 0, syncAt = 0, talkingTo = null, hoverId = null;
+  function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    const w = (R.W + R.D) * HW, h = (R.W + R.D) * HH + WALL_H + 40; Z = Math.min(1.6, Math.max(.6, Math.min((W - (W < 760 ? 20 : 300)) / w, (H - 200) / h)));
+    const c = P(R.W / 2, R.D / 2); CX = (W < 760 ? W / 2 : W / 2 + 120) - c.x * Z; CY = H / 2 + 20 - c.y * Z + WALL_H * Z * .35 }
+  addEventListener('resize', resize);
+  function frame(t) {
+    requestAnimationFrame(frame);
+    const dt = Math.min(.1, (t - last) / 1000 || .016); last = t;
+    if (t > syncAt) { syncAt = t + 1000; syncPeople(false); hudSync() }
+    stepActor(hero, dt, 3.6); if (!hero.path.length && hero.then) { const f = hero.then; hero.then = null; f() }
+    for (const [id, a] of people) {
+      stepActor(a, dt, 2.4);
+      if (a.walking) a.act = ''; else if (a.spot && !a.leaving) { a.act = a.spot.act; a.face = a.spot.face }
+      if (a.fade < 1 && !a.leaving) a.fade = Math.min(1, a.fade + dt * 2.5);
+      if (a.leaving && !a.path.length) { a.fade -= dt * 3; if (a.fade <= 0) people.delete(id) }
+      /* the innkeeper sometimes carries drinks to a table */
+      if (a.id === 'marta' && !a.walking && !a.leaving && Math.random() < dt * .05) { const tbl = R.spots.filter(s => s.tag === 'table'); const s = tbl[Math.floor(Math.random() * tbl.length)]; const back = a.spot; if (s && back) { const near = [[0, 1], [1, 0], [0, -1], [-1, 0]].map(([du, dv]) => ({ u: s.u + du, v: s.v + dv })).find(c => free(c.u, c.v)); const p = near && pathTo({ u: a.u, v: a.v }, near); if (p) { a.path = p; a.walking = true; setTimeout(() => { if (people.get('marta') === a && !a.leaving) { a.path = pathTo({ u: a.u, v: a.v }, back) || []; } }, 5000) } } }
+    }
+    if (t > bubbleAt) { bubbleAt = t + 3500 + Math.random() * 3000; const list = [...people.values()].filter(a => !a.walking && !a.leaving && a !== talkingTo); const a = list[Math.floor(Math.random() * list.length)]; if (a) { const per = CLK.period(CLK.read().hour), lines = a.p.lines?.[per] || a.p.lines?.day || a.p.lines?.evening || []; if (lines.length) a.bubble = { txt: fill(lines[Math.floor(Math.random() * lines.length)]), until: t + 3600 } } }
+    draw(t);
+  }
+  function draw(t) {
+    g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#120e0a'; g.fillRect(0, 0, cv.width, cv.height);
+    g.setTransform(dpr * Z, 0, 0, dpr * Z, dpr * CX, dpr * CY);
+    drawWalls(t); drawFloor(t);
+    for (const i of R.items) if (i.k === 'rug') drawItem(i, t);
+    /* depth sort: furniture by its front corner, people by their cell */
+    const list = [];
+    for (const i of R.items) if (i.k !== 'rug' && !i.onTop) list.push({ y: i.u + i.w + i.v + i.d - 1 - (i.k === 'stool' ? .4 : 0), f: () => drawItem(i, t) });
+    for (const i of R.items) if (i.onTop) list.push({ y: i.u + i.v + 1.05, f: () => drawItem(i, t) });
+    for (const a of people.values()) list.push({ y: a.vu + a.vv, f: () => drawPerson(a, t) });
+    list.push({ y: hero.vu + hero.vv, f: () => drawHero(t) });
+    list.sort((a, b) => a.y - b.y); for (const x of list) x.f();
+    /* lights + night */
+    const day = daylight();
+    g.save(); g.globalCompositeOperation = 'lighter';
+    for (const l of R.light) { const p = P(l.u, l.v), r = l.r * HW * (l.flicker ? 1 + Math.sin(t * .013 + l.u) * .04 : 1), gr = g.createRadialGradient(p.x, p.y - 20, 4, p.x, p.y - 20, r); gr.addColorStop(0, `rgba(${l.col},${.22 + (1 - day) * .22})`); gr.addColorStop(1, `rgba(${l.col},0)`); g.fillStyle = gr; g.beginPath(); g.ellipse(p.x, p.y - 20, r, r * .6, 0, 0, 7); g.fill() }
+    g.restore();
+    sparks = sparks.filter(s => t - s.t0 < 700); g.save(); g.globalCompositeOperation = 'lighter'; for (const s of sparks) { const e = (t - s.t0) / 1000; g.fillStyle = `rgba(255,190,80,${1 - e / .7})`; g.fillRect(s.x + s.vx * e, s.y + s.vy * e + 60 * e * e, 2, 2) } g.restore();
+    if (day < 1) { g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = `rgba(15,20,55,${(1 - day) * .38})`; g.fillRect(0, 0, cv.width, cv.height) }
+    /* speech bubbles on top, in screen space */
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (const a of people.values()) if (a.bubble && t < a.bubble.until) bubble(a, a.bubble.txt);
+    if (hoverId && people.get(hoverId)) { const a = people.get(hoverId), p = screen(a.vu, a.vv); label(a.p.name + ' · ' + a.p.role, p.x, p.y - 100 * Z) }
+  }
+  function drawPerson(a, t) {
+    const p = P(a.vu, a.vv); g.save(); g.globalAlpha = Math.max(0, Math.min(1, a.fade));
+    VillagerDraw(g, a.p.look || {}, p.x, p.y, t, { walking: a.walking, face: a.face, phase: a.phase, act: a.act, scale: .95 });
+    if (a.p.recruit && !L.inParty(S, a.id)) { g.font = '700 15px system-ui'; g.textAlign = 'center'; g.fillStyle = '#ffd25a'; g.strokeStyle = '#2a1a0a'; g.lineWidth = 3; const y = p.y - 98 + Math.sin(t * .004) * 3; g.strokeText('★', p.x, y); g.fillText('★', p.x, y) }
+    if (a.p.benched) { g.font = '700 12px system-ui'; g.textAlign = 'center'; g.fillStyle = '#9fe0b0'; g.fillText('ทีม', p.x, p.y - 96) }
+    g.restore();
+  }
+  function drawHero(t) {
+    const set = hero.walking ? walkImgs : heroImgs, im = set[Math.floor(t / (hero.walking ? 110 : 260)) % set.length], s = 104, p = P(hero.vu, hero.vv);
+    g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15, 6, 0, 0, 7); g.fill();
+    if (im.complete && im.naturalWidth) { g.save(); g.translate(p.x, p.y + 3); if (hero.face === 'SW' || hero.face === 'NW') g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
+  }
+  function label(txt, x, y) { g.save(); g.font = '600 13px VillageThai,system-ui'; const w = g.measureText(txt).width + 14; g.fillStyle = 'rgba(20,14,8,.85)'; g.beginPath(); g.roundRect(x - w / 2, y - 18, w, 22, 8); g.fill(); g.fillStyle = '#ffe9b8'; g.textAlign = 'center'; g.fillText(txt, x, y - 3); g.restore() }
+  function bubble(a, txt) {
+    const p = screen(a.vu, a.vv); g.save(); g.font = '13px VillageThai,system-ui'; const maxW = 220, words = [...txt], lines = []; let cur = '';
+    for (const ch of words) { if (g.measureText(cur + ch).width > maxW) { lines.push(cur); cur = ch } else cur += ch } if (cur) lines.push(cur);
+    const w = Math.min(maxW, Math.max(...lines.map(l => g.measureText(l).width))) + 16, h = lines.length * 17 + 10, x = p.x - w / 2, y = p.y - 100 * Z - h - 6;
+    g.fillStyle = 'rgba(255,250,235,.95)'; g.strokeStyle = 'rgba(80,60,30,.6)'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, h, 10); g.fill(); g.stroke();
+    g.beginPath(); g.moveTo(p.x - 6, y + h); g.lineTo(p.x, y + h + 8); g.lineTo(p.x + 6, y + h); g.fill();
+    g.fillStyle = '#3a2a14'; g.textAlign = 'left'; lines.forEach((l, i) => g.fillText(l, x + 8, y + 18 + i * 17)); g.restore();
+  }
+
+  /* ---------- input ---------- */
+  function personAt(sx, sy) { let best = null, bd = 1e9; for (const a of people.values()) { if (a.leaving) continue; const p = screen(a.vu, a.vv), dx = sx - p.x, dy = sy - (p.y - 40 * Z); if (Math.abs(dx) < 20 * Z && Math.abs(dy) < 48 * Z) { const d = Math.hypot(dx, dy); if (d < bd) { bd = d; best = a } } } return best }
+  cv.addEventListener('pointermove', e => { const a = personAt(e.clientX, e.clientY); hoverId = a ? a.id : null; cv.style.cursor = a ? 'pointer' : 'default' });
+  cv.addEventListener('pointerup', e => {
+    if (modalOpen) return;
+    const a = personAt(e.clientX, e.clientY);
+    if (a) { walkNear(a, () => talk(a)); return }
+    const c = toCell(e.clientX, e.clientY), cell = { u: Math.floor(c.u), v: Math.floor(c.v) };
+    const nearDoor = cell.u <= 0 && Math.abs(cell.v - DOOR.v) <= 1 || (cell.u < 0 && cell.v >= DOOR.v - 1 && cell.v <= DOOR.v + 1);
+    if (nearDoor) { walkTo(DOOR, leave); return }
+    if (free(cell.u, cell.v)) walkTo(cell);
+  });
+  function walkTo(c, then) { const p = pathTo({ u: hero.u, v: hero.v }, c); if (!p) return; hero.path = p.slice(1); hero.then = then || null; if (!hero.path.length && then) { hero.then = null; then() } }
+  function walkNear(a, then) {
+    const opts = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]].map(([du, dv]) => ({ u: a.u + du, v: a.v + dv })).filter(c => free(c.u, c.v) && ![...people.values()].some(o => o !== a && o.u === c.u && o.v === c.v));
+    let best = null, bl = 1e9; for (const c of opts) { const p = pathTo({ u: hero.u, v: hero.v }, c); if (p && p.length < bl) { bl = p.length; best = c } }
+    if (best) walkTo(best, () => { hero.face = faceOf(a.u - hero.u, a.v - hero.v); then() }); else then();
+  }
+  function leave() { location.href = 'village-town.html?from=' + encodeURIComponent(PLACE) }
+
+  /* ---------- UI ---------- */
+  const css = document.createElement('style'); css.textContent = `
+  #inHud{position:fixed;left:14px;top:14px;z-index:5;width:270px;background:linear-gradient(#2a2116f2,#1b150ef2);border:1px solid #c9a86a88;border-radius:12px;padding:10px 12px;box-shadow:0 8px 30px #000a;font-size:13px}
+  #inHud h1{margin:0;font-size:17px;color:#ffe2a8}#inHud .sub{color:#bba57f;font-size:12px;margin:2px 0 8px}#inHud .row{display:flex;justify-content:space-between;margin:3px 0}
+  #inHud button,.in-dlg button{background:#c9893a;color:#fff;border:0;border-radius:8px;padding:6px 10px;margin:2px 2px 0 0}#inHud button.ghost,.in-dlg button.ghost{background:#4a3e2e}.in-dlg button:disabled{opacity:.45;cursor:default}
+  #inHud .who{margin-top:8px;max-height:210px;overflow:auto}#inHud .who div{padding:3px 6px;border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;gap:6px}#inHud .who div:hover{background:#ffffff14}#inHud .who small{color:#bba57f}
+  .in-dlg-bg{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;padding:16px;background:linear-gradient(#0000 40%,#000a)}
+  .in-dlg{width:min(760px,100%);background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:110px 1fr;gap:14px;box-shadow:0 20px 60px #000c,inset 0 0 0 2px #8a6a3a}
+  .in-dlg canvas{width:110px;height:130px;background:radial-gradient(#fff6dc,#d9c08a);border-radius:10px;border:2px solid #8a6a3a}
+  .in-dlg h2{margin:0;font-size:19px;color:#5a2e10}.in-dlg .role{font-size:12px;color:#7a5a30}.in-dlg p{margin:8px 0;line-height:1.6;min-height:3em}.in-dlg .acts{display:flex;flex-wrap:wrap;gap:4px}
+  .in-dlg .cond{font-size:12px;background:#fff7e3;border:1px dashed #b89a62;border-radius:8px;padding:6px 8px;margin:6px 0}
+  .in-toast{position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:30;padding:9px 20px;border-radius:999px;background:#14100bee;color:#ffe2a8;font:700 16px VillageThai,system-ui;box-shadow:0 6px 20px #000a;animation:inT 2.2s forwards;pointer-events:none}
+  @keyframes inT{0%{opacity:0;transform:translate(-50%,10px)}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
+  .in-party{position:fixed;inset:0;z-index:25;background:#000a;display:flex;align-items:center;justify-content:center}.in-party>div{width:min(560px,94vw);background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;border-radius:14px;padding:16px}
+  .in-party .col{display:grid;grid-template-columns:1fr 1fr;gap:10px}.in-party .slot{background:#fff7e3;border:1px solid #b89a62;border-radius:8px;padding:6px 8px;margin:4px 0;cursor:pointer;display:flex;justify-content:space-between}.in-party .slot:hover{background:#ffe9b8}
+  #inBattle{position:fixed;inset:0;z-index:40;border:0;width:100%;height:100%;background:#000}
+  @media (max-width:760px){#inHud{width:200px;font-size:12px}.in-dlg{grid-template-columns:70px 1fr}.in-dlg canvas{width:70px;height:84px}}`;
+  document.head.append(css);
+  const hud = document.createElement('div'); hud.id = 'inHud'; document.body.append(hud);
+  function hudSync() {
+    S = L.save(); const c = CLK.read(), icon = daylight() > .5 ? '☀' : '🌙';
+    const here = [...people.values()].filter(a => !a.leaving);
+    const html = `<h1>${esc(NAME)}</h1><div class="sub">Fernvale · วันที่ ${c.day} · ${icon} ${CLK.label(c.hour)}</div>
+      <div class="row"><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span><span>ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</span></div>
+      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
+      <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : a.p.role)}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
+      <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก</div>`;
+    if (html === hud._html) return; hud._html = html; hud.innerHTML = html;   // only rebuild when something changed (keeps clicks reliable)
+    hud.querySelector('#inOut').onclick = () => walkTo(DOOR, leave);
+    hud.querySelector('#inParty') && (hud.querySelector('#inParty').onclick = partyPanel);
+    hud.querySelector('#inRoom') && (hud.querySelector('#inRoom').onclick = () => rest(10));
+    hud.querySelector('#inSleep') && (hud.querySelector('#inSleep').onclick = () => rest(0));
+    hud.querySelectorAll('.who [data-id]').forEach(e => e.onclick = () => { const a = people.get(e.dataset.id); if (a) walkNear(a, () => talk(a)) });
+  }
+  function toast(t) { const d = document.createElement('div'); d.className = 'in-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 2300) }
+  async function rest(cost) {
+    S = L.save(); if (S.gold < cost) { toast('เงินไม่พอ'); return }
+    S.gold -= cost; S.hp = S.maxHp || 60; S.fatigue = 0; for (const p of [...S.party, ...S.bench]) p.hp = p.max; L.writeSave(S);
+    const c = CLK.read(); const to = c.hour < 7 ? 7 - c.hour : 31 - c.hour; document.body.style.transition = 'filter .6s'; document.body.style.filter = 'brightness(0)'; await wait(700);
+    CLK.skip(to); people.clear(); taken.clear(); syncPeople(true); document.body.style.filter = ''; toast('พักจนถึงเช้า · ทีมฟื้นเต็ม'); hudSync();
+  }
+
+  /* ---------- talking + recruiting ---------- */
+  let modalOpen = false, dlg = null;
+  function close() { dlg?.remove(); dlg = null; modalOpen = false; talkingTo = null }
+  function talk(a, line) {
+    close(); modalOpen = true; talkingTo = a; S = L.save();
+    const p = a.p, per = CLK.period(CLK.read().hour), lines = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…'];
+    const txt = line || fill(lines[Math.floor(Math.random() * lines.length)]);
+    const rec = p.recruit && !L.inParty(S, p.id) ? L.RECRUIT[p.id] : null;
+    const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
+    bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(p.name)}</h2><div class="role">${esc(p.role)}${p.age ? ' · อายุ ' + p.age : ''}${p.benched ? ' · พักอยู่กับทีม' : ''}</div>
+      <p>${esc(txt)}</p>${rec ? `<div class="cond">★ เงื่อนไขชวนเข้าทีม: <b>${esc(rec.label)}</b><br>${esc(rec.text)}${progressText(p.id, rec)}</div>` : ''}
+      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
+    document.body.append(bg); dlg = bg;
+    const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, p.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
+    bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
+    bg.onclick = e => { if (e.target === bg) close() };
+    a.face = faceOf(hero.u - a.u, hero.v - a.v);
+  }
+  function progressText(id, rec) {
+    const r = S.recruit?.[id] || {};
+    if (rec.kind === 'battles') return r.base != null ? `<br>ความคืบหน้า: ชนะแล้ว ${Math.min(rec.need, S.battles - r.base)}/${rec.need}` : '<br>(กด "ชวนเข้าทีม" เพื่อรับเควส)';
+    if (rec.kind === 'drinks') return `<br>เลี้ยงแล้ว ${r.n || 0}/${rec.need}`;
+    if (rec.kind === 'reputation') return `<br>พิชิตแล้ว ${Object.keys(S.done || {}).length}/1`;
+    if (rec.kind === 'boss') return S.done?.[rec.dest] ? '<br>✔ ล้มจ่าฝูงแล้ว' : '';
+    if (rec.kind === 'offering') return `<br>มี ${S.gold}💰 · ยา ${S.potions}`;
+    return '';
+  }
+  function joinNow(a, msg) {
+    S = L.save(); if (!L.join(S, a.id)) { talk(a, 'ข้าอยู่ในทีมเจ้าแล้วนี่'); return }
+    L.writeSave(S); toast('★ ' + a.p.name + ' เข้าร่วมทีม!' + (S.party.some(x => x.key === a.id) ? '' : ' (พักที่โรงแรม — จัดทีมเพื่อพาไป)'));
+    talk(a, msg); hudSync();
+  }
+  async function act(a, what) {
+    const p = a.p; S = L.save(); const rec = L.RECRUIT[p.id], r = (S.recruit[p.id] ||= {}), hour = CLK.read().hour;
+    if (what === 'bye') { close(); return }
+    if (what === 'talk') { talk(a); return }
+    if (what === 'about') { const ab = p.about?.length ? fill(p.about[Math.floor(Math.random() * p.about.length)]) : ''; talk(a, (p.trait ? '(' + p.trait + ') ' : '') + (ab || fill(p.story || '…'))); return }
+    if (what === 'rumor') { talk(a, 'ข่าวลือตอนนี้: ' + ['ถ้ำในป่าตะวันออกมีเสียงหอนทั้งคืน — พวกพรานไม่กล้าเข้าไป', 'คนงานเหมืองหนีออกมาบอกว่าหินในเหมืองลุกขึ้นเดิน', 'ระฆังวิหารเก่าในบึงหมอกดังเองทุกคืนข้างแรม', 'ฮิวโก้เล่าว่ามีคนกลับจากซากเมืองพร้อมผลึกแปลกประหลาด'][Math.floor(Math.random() * 4)] + ' (ไปที่ "ออกเดินทาง" เพื่อรับภารกิจ)'); return }
+    if (what === 'room') { close(); rest(10); return }
+    if (what === 'drink') {
+      if (!(hour >= 17 || hour < 4)) { talk(a, 'ตอนกลางวันข้ายังไม่ดื่ม… อย่างน้อยก็ไม่ดื่มต่อหน้าคนอื่น มาใหม่ตอนเย็นนะ'); return }
+      const day = CLK.read().day; if (r.day === day) { talk(a, 'วันนี้เจ้าเลี้ยงข้าไปแล้ว … ฮึก … พรุ่งนี้ค่อยว่ากัน'); return }
+      if (S.gold < 10) { talk(a, 'ไม่มีเงิน? งั้นก็ฟังข้าเล่าฟรี ๆ ไปก่อน'); return }
+      S.gold -= 10; r.n = (r.n || 0) + 1; r.day = day; L.writeSave(S); hudSync();
+      if (r.n >= rec.need) { joinNow(a, 'สามแก้วแล้ว! … ข้าจำไม่ได้ว่าสัญญาอะไรไว้ แต่ข้าไปกับเจ้าก็ได้ ไฟของข้ายังไม่ดับหรอก!'); return }
+      talk(a, ['อ้า … องุ่นจากหุบใต้ เจ้ารู้ใจข้า', 'แก้วที่สองแล้ว … ข้าเริ่มชอบหน้าเจ้าแล้วสิ'][r.n - 1] || 'อีกแก้วสิ'); return;
+    }
+    if (what !== 'recruit' || !rec) return;
+    if (rec.kind === 'hire') { if (S.gold < rec.cost) { talk(a, 'เงินยังไม่พอ ' + rec.cost + ' เหรียญ ไม่ต่อราคา'); return } S.gold -= rec.cost; L.writeSave(S); joinNow(a, 'ตกลง ขวานของข้าเป็นของเจ้าจนกว่างานจะจบ'); return }
+    if (rec.kind === 'battles') { if (r.base == null) { r.base = S.battles || 0; L.writeSave(S); talk(a, 'จริงนะ! งั้นไปชนะศัตรูนอกหมู่บ้านให้ได้สามครั้ง แล้วกลับมาเล่าให้ข้าฟัง!'); return } const n = (S.battles || 0) - r.base; if (n >= rec.need) { joinNow(a, 'เจ้ารอดกลับมาได้จริง ๆ! ข้าไปด้วย ลูกธนูข้าจะไม่พลาดสักดอก!'); return } talk(a, `ยังหรอก ชนะไปแค่ ${Math.max(0, n)} ครั้งเอง อีก ${rec.need - Math.max(0, n)} ครั้งนะ!`); return }
+    if (rec.kind === 'drinks') { talk(a, 'อยากให้ข้าไปด้วย? เลี้ยงเหล้าข้าก่อนสิ … สามแก้ว สามวัน'); return }
+    if (rec.kind === 'reputation') { if (Object.keys(S.done || {}).length) { joinNow(a, 'เจ้าพิชิตที่นั่นได้จริง ๆ! อาจารย์พูดถูก ข้าจะตามเจ้าไป!'); return } talk(a, 'กลับมาพร้อมชัยชนะจากข่าวลือสักแห่งก่อนนะ แล้วข้าจะตามเจ้าไปทุกที่'); return }
+    if (rec.kind === 'offering') { if (S.gold < rec.cost || S.potions < rec.potions) { talk(a, `ยังขาดอยู่ — ต้องการ ${rec.cost} เหรียญ และยาฟื้นฟู ${rec.potions} ขวด (มี ${S.gold}💰 · ยา ${S.potions})`); return } S.gold -= rec.cost; S.potions -= rec.potions; L.writeSave(S); joinNow(a, 'ขอบคุณที่ใจกว้าง ข้าจะเดินทางไปกับเจ้า และเยียวยาทุกคนในทีม'); return }
+    if (rec.kind === 'boss') { if (S.done?.[rec.dest]) { joinNow(a, 'เจ้าล้มมันได้ … พ่อของเรนคงยิ้มอยู่ที่ไหนสักแห่ง ข้าจะไปกับเจ้า'); return } talk(a, 'จ่าฝูงยังอยู่ในถ้ำ ล้มมันก่อน แล้วค่อยมาคุยกับข้า'); return }
+    if (rec.kind === 'duel') { if (!(hour >= 20 || hour < 4)) { talk(a, 'กลางวันข้าไม่ดวลกับใคร'); return } close(); duel(a); return }
+  }
+  /* a 1-vs-1 duel in the battle field (hero alone) */
+  async function duel(a) {
+    S = L.save(); modalOpen = true;
+    const fr = document.createElement('iframe'); fr.id = 'inBattle';
+    fr.src = `battle-field.html?battle=1&embed=1&r=5&biome=grass&night=1&m=bandit&ms=${encodeURIComponent('bandit*1.5')}&party=&hhp=${S.hp || 60}&hmax=${S.maxHp || 60}&title=${encodeURIComponent('ดวล · นาเดีย ·')}`;
+    document.body.append(fr);
+    const res = await new Promise(r => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); r(e.data) } }; addEventListener('message', on) });
+    fr.remove(); modalOpen = false;
+    if (res.outcome === 'win') joinNow(a, 'ฮึ … ไม่เลวนี่ ข้ายอมรับ ข้าจะตามเจ้าไป แต่อย่าคิดว่าข้าจะเชื่อฟังทุกเรื่องนะ');
+    else talk(a, res.outcome === 'flee' ? 'หนีแล้วหรือ? น่าผิดหวัง' : 'แค่นี้เองหรือ? กลับไปฝึกมาใหม่เถอะ');
+  }
+  /* party: up to 4 travel, the rest rest at the inn */
+  function partyPanel() {
+    S = L.save(); const el = document.createElement('div'); el.className = 'in-party';
+    const row = (m, where) => `<div class="slot" data-k="${m.key}" data-w="${where}"><span>${esc(m.name)}</span><small>${m.hp}/${m.max} · ${where === 'party' ? 'ออกเดินทาง →' : '← พาไปด้วย'}</small></div>`;
+    el.innerHTML = `<div><h2 style="margin:0 0 6px;color:#5a2e10">👥 จัดทีม</h2><p style="margin:0 0 8px;font-size:13px">ออกเดินทางได้สูงสุด ${L.MAX_ACTIVE} คน (ไม่รวมฮีโร่) ที่เหลือพักที่โรงแรม · คลิกเพื่อสลับ</p>
+      <div class="col"><div><b>ออกเดินทาง (${S.party.length}/${L.MAX_ACTIVE})</b>${S.party.map(m => row(m, 'party')).join('') || '<div style="font-size:12px">—</div>'}</div><div><b>พักที่โรงแรม</b>${S.bench.map(m => row(m, 'bench')).join('') || '<div style="font-size:12px">—</div>'}</div></div>
+      <div style="text-align:right;margin-top:10px"><button class="ghost" id="inPClose" style="background:#4a3e2e;color:#fff;border:0;border-radius:8px;padding:6px 12px">ปิด</button></div></div>`;
+    document.body.append(el); modalOpen = true;
+    el.querySelectorAll('.slot').forEach(s => s.onclick = () => { S = L.save(); const k = s.dataset.k; if (s.dataset.w === 'party') { const i = S.party.findIndex(m => m.key === k); S.bench.push(...S.party.splice(i, 1)) } else { if (S.party.length >= L.MAX_ACTIVE) { toast('ทีมเต็มแล้ว (' + L.MAX_ACTIVE + ' คน)'); return } const i = S.bench.findIndex(m => m.key === k); S.party.push(...S.bench.splice(i, 1)) } L.writeSave(S); el.remove(); modalOpen = false; people.clear(); taken.clear(); syncPeople(true); hudSync(); partyPanel() });
+    el.querySelector('#inPClose').onclick = () => { el.remove(); modalOpen = false };
+  }
+  addEventListener('keydown', e => { if (e.key === 'Escape') { close(); document.querySelector('.in-party')?.remove(); modalOpen = false } });
+
+  /* ---------- start ---------- */
+  resize(); syncPeople(true); hudSync(); requestAnimationFrame(frame);
+  if (KIND === 'square') toast('ลานกลางหมู่บ้านเป็นที่โล่ง — กลับออกไปข้างนอกได้เลย');
+  window.Interior = { people, hero, talk: id => { const a = people.get(id); if (a) talk(a) }, act: (id, w) => { const a = people.get(id); if (a) return act(a, w) }, room: R, kind: KIND, sync: () => { syncPeople(false); hudSync() } };
+})();

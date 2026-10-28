@@ -207,4 +207,13 @@ test('party: skills cost a crystal, have a cooldown, frost stuns, wall shields n
   B.endTurn(st); const steps = B.monsterTurn(st); assert.equal(steps[0].type, 'stun');
   assert.equal(b.cd, 2);
 });
+test('recruits: a healer companion mends the most hurt friend; mendAll heals the party; flame splashes', () => {
+  const st = mkM({ allies: [{ u: 1, v: 0, key: 'orla', name: 'ออร์ลา', hp: 40, maxHp: 40, atk: 7, range: 3, healer: true }, { u: 0, v: 1, key: 'olwen', name: 'โอลเวน', hp: 36, maxHp: 36, atk: 14, range: 4 }],
+    monsters: [{ u: 3, v: 2, hp: 40, maxHp: 40 }, { u: 4, v: 2, hp: 40, maxHp: 40 }, { u: 8, v: 8, hp: 40, maxHp: 40 }] });
+  B.hero(st).hp = 20; const steps = B.alliesTurn(st); assert.ok(steps.some(x => x.type === 'heal')); assert.equal(B.hero(st).hp, 32);
+  const s2 = mkM({ allies: [{ u: 1, v: 0, key: 'orla', name: 'ออร์ลา', hp: 40, maxHp: 40, atk: 7, range: 3, healer: true }, { u: 0, v: 1, key: 'olwen', name: 'โอลเวน', hp: 36, maxHp: 36, atk: 14, range: 4 }],
+    monsters: [{ u: 3, v: 2, hp: 40, maxHp: 40 }, { u: 4, v: 2, hp: 40, maxHp: 40 }, { u: 8, v: 8, hp: 40, maxHp: 40 }] });
+  B.hero(s2).hp = 30; const m = B.allySkill(s2, 'ally0'); assert.equal(m.ok, true); assert.equal(B.hero(s2).hp, 45);
+  B.setTarget(s2, 'monster'); const f = B.allySkill(s2, 'ally1'); assert.equal(f.ok, true); assert.equal(f.hits.length, 2);
+});
 console.log('flat battle: ' + n + ' tests passed');
