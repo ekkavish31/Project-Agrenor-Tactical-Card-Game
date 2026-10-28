@@ -113,10 +113,23 @@ test('cards: a low roll is a critical hit ×1.5; the fixed test roll (.42) never
   const st = mkC({ hero: { u: 7, v: 8 }, rng: () => .05 }); const r = B.playCombat(st, give(st, 'combat', 'attack'));
   assert.equal(r.hits[0].crit, true); assert.equal(r.hits[0].damage, 27);
 });
-test('cards: twin hits twice; heal caps at max HP; unsupported cards are refused', () => {
+test('cards: twin hits twice; heal caps at max HP', () => {
   const st = mkC({ hero: { u: 7, v: 8 } }); const r = B.playCombat(st, give(st, 'combat', 'twin')); assert.equal(r.hits.length, 2);
   const st2 = mkC({ hero: { hp: 50 } }); const h = B.playCombat(st2, give(st2, 'combat', 'mend')); assert.equal(h.heal, 10);
-  const st3 = mkC(); assert.equal(B.playCombat(st3, give(st3, 'combat', 'evade')).ok, false);
+});
+test('cards: every card in the old default deck is playable on the flat field', () => {
+  for (const id of Object.keys(TD.DEFAULT.combat)) assert.ok(B.cardRule(id), id + ' has a flat rule');
+});
+test('cards: evade makes the next monster hit miss; counter strikes back 12', () => {
+  const st = mkC({ hero: { u: 7, v: 8 } }); B.playCombat(st, give(st, 'combat', 'evade')); B.endTurn(st); B.monsterTurn(st);
+  assert.equal(B.hero(st).hp, 60); assert.equal(B.hero(st).evade, 0);
+  const s2 = mkC({ hero: { u: 7, v: 8 } }); B.playCombat(s2, give(s2, 'combat', 'counter')); B.endTurn(s2); const steps = B.monsterTurn(s2);
+  assert.equal(B.hero(s2).hp, 52); assert.equal(B.monster(s2).hp, 34 - 12); assert.equal(steps.find(x => x.type === 'attack').counter, 12);
+});
+test('cards: ambush ×1.6 on the next attack; backstab +12 from behind; dive leaps next to the target', () => {
+  const st = mkC({ hero: { u: 7, v: 8 } }); B.playCombat(st, give(st, 'combat', 'ambush')); const r = B.playCombat(st, give(st, 'combat', 'attack')); assert.equal(r.hits[0].damage, 29);
+  const s2 = mkC({ hero: { u: 7, v: 8 }, monster: { face: 'NE' } }); assert.equal(B.playCombat(s2, give(s2, 'combat', 'backstab')).hits[0].damage, 30);   // monster faces NE, hero is NW of it
+  const s3 = mkC({ hero: { u: 8, v: 5 } }); const d = B.playCombat(s3, give(s3, 'combat', 'dive')); assert.equal(d.ok, true); assert.ok(d.leap); assert.equal(B.dist(B.hero(s3), B.monster(s3)), 1);
 });
 test('cards: discard several cards for stamina costs one crystal; hands refill only at the next hero turn', () => {
   const st = mkC({ hero: { stamina: 50 } }), h = st.deck.combat.hand, m = st.deck.movement.hand;

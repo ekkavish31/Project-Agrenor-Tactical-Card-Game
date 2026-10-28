@@ -83,7 +83,7 @@
     for (const t of Object.values(tiles)) { if (!['grass', 'forest'].includes(t.biome)) continue; const d = Math.abs(t.c - COLS / 2) * 1.2 + Math.abs(t.r - ROWS * .7) + R(); if (d < hb) { hb = d; home = t } }
     if (!home) return null;
     for (const [c, r] of within(home.c, home.r, 1)) { const t = T(c, r); if (!BIOME[t.biome].pass) t.biome = 'grass' }
-    home.biome = 'grass'; home.poi = { id: 'home', name: 'หมู่บ้านริมป่า', icon: 'village' };
+    home.biome = 'grass'; home.poi = { id: 'home', name: 'หมู่บ้านเฟิร์นเวล', icon: 'village' };
     /* river: from the highest hills tile downhill until water or the edge */
     const peaks = Object.values(tiles).filter(t => t.biome === 'hills').sort((a, b) => b.elev - a.elev);
     if (peaks.length) { let cur = peaks[Math.floor(R() * Math.min(4, peaks.length))]; const seen = new Set(); for (let i = 0; i < 40 && cur; i++) { seen.add(key(cur.c, cur.r)); if (cur.biome === 'water') break; if (cur !== home) cur.river = true; const next = neighbors(cur.c, cur.r).map(([c, r]) => T(c, r)).filter(t => !seen.has(key(t.c, t.r))).sort((a, b) => a.elev - b.elev)[0]; if (!next || next.elev > cur.elev + .03) break; cur = next } }

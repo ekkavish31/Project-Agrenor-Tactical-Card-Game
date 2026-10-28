@@ -16,10 +16,10 @@
   if (!ON) {
     window.TownBattle = { active: () => false };
     /* v92.12: the way out of the village — a button to the world map (not in the editor) */
-    if (Q.get('edit') !== '1') addEventListener('DOMContentLoaded', () => { const a = document.createElement('a'); a.href = 'world-map.html'; a.textContent = '🗺 ออกเดินทาง'; a.title = 'แผนที่โลก Agrenor'; a.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:30;padding:9px 14px;border-radius:10px;background:#c9893a;color:#fff;text-decoration:none;font:600 14px VillageThai,system-ui,sans-serif;box-shadow:0 6px 18px #0008'; document.body.append(a) });
+    /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '92.12';
+  const V = '92.14';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -28,9 +28,11 @@
     wolf: { name: 'หมาป่า', hp: 26, move: 4, atk: 7, scale: .9, fx: 'knife', img: 'wolf' },
     slime: { name: 'สไลม์แร่', hp: 40, move: 2, atk: 8, scale: .85, fx: 'blunt', img: 'slime' },
     kobold: { name: 'โคโบลด์ขุดแร่', hp: 30, move: 3, atk: 9, scale: .9, fx: 'blunt', img: 'kobold' },
-    golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem' }
+    golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem' },
+    shadowWolf: { name: 'หมาป่าเงา', hp: 44, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' }
   };
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
+  const NIGHT = Q.get('night') === '1', ATKX = +Q.get('atk') || 1, HST = Q.get('hst') != null ? Math.max(0, Math.min(100, +Q.get('hst'))) : 100;
   const EMBED = Q.get('embed') === '1', TITLE = Q.get('title') || '', HHP = +Q.get('hhp') || 0, HMAX = +Q.get('hmax') || 60;
   const CINE = Q.get('cine') !== '0', OLDPOSE = Q.get('oldposes') === '1', HPX = +Q.get('hp') || 1.6;
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null;
@@ -75,7 +77,7 @@
     const spot = (cu0, cv0) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.hypot(u - cu0, v - cv0); if (d < bd) { bd = d; best = { u, v } } } return best };
     const gap = Math.min(r - 1, 3), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites ~6 cells apart: contact by turn 1–2
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', cards: true,
-      hero: { ...hs, name: window.heroName?.() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX }, monster: { ...ms, name: (TITLE ? TITLE + ' ' : '') + MT.name, hp: Math.round(MT.hp * HPX), maxHp: Math.round(MT.hp * HPX), atk: MT.atk, move: MT.move } });
+      hero: { ...hs, name: window.heroName?.() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX, stamina: HST }, monster: { ...ms, name: (TITLE ? TITLE + ' ' : '') + MT.name + (NIGHT && ATKX > 1 ? ' (ดุร้ายยามค่ำ)' : ''), hp: Math.round(MT.hp * HPX), maxHp: Math.round(MT.hp * HPX), atk: Math.round(MT.atk * ATKX), move: MT.move } });
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle' }
     FB.hero(st).dir = dirTo(FB.hero(st), FB.monster(st)); FB.monster(st).dir = dirTo(FB.monster(st), FB.hero(st));
     st.arena = { cu, cv, r };
@@ -143,7 +145,7 @@
 
   /* ---------- styles ---------- */
   const css = document.createElement('style'); css.textContent = `
-  #status,#help,#credit,.toolbar,#menuBtn{display:none!important}
+  #status,#help,#credit,.toolbar,#menuBtn,.town-icon-row,#townPreview{display:none!important}
   ${EMBED ? '.floatBtn,#townTools,#hudTop,.town-hud,.townux-top{display:none!important}' : ''}
   #fbHud{position:fixed;left:14px;top:14px;z-index:40;width:260px;background:#1b302af2;border:1px solid #b9c48a66;border-radius:12px;padding:10px 12px;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 30px #0008}
   #fbHud button{font:inherit;background:#c9893a;color:#fff;border:0;border-radius:7px;padding:6px 9px;cursor:pointer}#fbHud button:disabled{opacity:.4;cursor:default}
@@ -200,18 +202,21 @@
 
   /* ---------- card faces (old CardStudio design) ---------- */
   const cardKey = (group, id) => (group === 'movement' ? 'm-' : 'a-') + id;
+  /* cards that have no picture yet borrow a close one */
+  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell' };
   function faceHTML(group, id, mini) {
-    const html = window.CardStudio?.renderCard(cardKey(group, id), { mini, fallbackArt: 'assets/cards/tactic-' + id + '.webp' });
+    const html = window.CardStudio?.renderCard(cardKey(group, id), { mini, fallbackArt: 'assets/cards/tactic-' + (ART_SUB[id] || id) + '.webp' });
     if (html) return html;
     const name = group === 'movement' ? TD.MOVE[id]?.name : TD.COMBAT[id]?.name;
-    return `<div class="fb-fallback"><img src="assets/cards/tactic-${id}.webp" alt="" style="width:100%;height:60%;object-fit:cover"><b>${esc(name || id)}</b></div>`;
+    return `<div class="fb-fallback"><img src="assets/cards/tactic-${ART_SUB[id] || id}.webp" alt="" style="width:100%;height:60%;object-fit:cover"><b>${esc(name || id)}</b></div>`;
   }
   function cardName(group, id) { return group === 'movement' ? TD.MOVE[id]?.name : TD.COMBAT[id]?.name }
   function cardLine(group, id) {
     if (group === 'movement') { const m = TD.MOVE[id]; return 'เดิน ' + m.move + (m.stamina ? ' · แรง ' + m.stamina : '') }
     const r = FB.cardRule(id); if (!r) return 'ยังไม่รองรับ';
-    if (r.self) return r.guard ? 'ป้องกัน ' + r.guard : r.heal ? 'ฟื้น HP ' + r.heal : 'ฟื้นแรง ' + r.restore;
-    return 'พลัง ' + r.dmg + (r.hits ? '×' + r.hits : '') + ' · ระยะ ' + r.range + (r.st ? ' · แรง ' + r.st : '');
+    const stc = r.st ? ' · แรง ' + r.st : '';
+    if (r.self) return (r.guard ? 'ป้องกัน ' + r.guard : r.heal ? 'ฟื้น HP ' + r.heal : r.evade ? 'หลบการตีครั้งถัดไป' : r.counter ? 'สวนกลับ 12 เมื่อโดนตี' : r.ambush ? 'ตีครั้งถัดไป ×1.6' : 'ฟื้นแรง ' + r.restore) + stc;
+    return 'พลัง ' + r.dmg + (r.hits ? '×' + r.hits : '') + ' · ระยะ ' + r.range + (r.behind ? ' · หลัง +' + r.behind : '') + (r.leap ? ' · กระโจน' : '') + (r.guardAfter ? ' · กัน ' + r.guardAfter : '') + stc;
   }
   function cardBlock(group, i) {
     if (busy) return 'รอสักครู่'; if (st.outcome) return 'จบการต่อสู้แล้ว'; if (st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
@@ -291,11 +296,13 @@
   let pv = null;
   function preview(b) {
     hidePreview(); const group = b.dataset.group, id = b.dataset.id, why = cardBlock(group, +b.dataset.i);
+    if (group === 'combat') { const rr = FB.cardRule(id); rangeShow = rr && !rr.self ? rr.range : 0 }
     pv = document.createElement('div'); pv.className = 'fb-show';
     pv.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b><br>${esc(cardLine(group, id))}${why && st.turn === 'hero' ? '<br><span style="color:#ff9a8a">' + esc(why) + '</span>' : ''}</div>`;
     document.body.append(pv); const s = sideSpot(210, 340); pv.style.left = s.x + 'px'; pv.style.top = s.y + 'px';
   }
-  function hidePreview() { pv?.remove(); pv = null }
+  function hidePreview() { pv?.remove(); pv = null; rangeShow = 0 }
+  let rangeShow = 0;
   const TONE = { movement: '#6fc3ff', attack: '#ff7a5c', self: '#7fe08a', magic: '#c39bff' };
   /* the played card pops up full size beside the fight, stays while the action plays, then flies into the discard pile */
   function showPlay(group, id, text, fromEl) {
@@ -375,11 +382,12 @@
     const h = FB.hero(st), m = FB.monster(st);
     if (r.self) {
       h.pose = r.guard ? 'guard' : 'idle'; fx(r.fx, h, h, { color: r.heal ? '#7fe08a' : '#f4d36a' }); impact(h, r.fx, false); h.flashUntil = 0;
-      await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a');
+      await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a'); if (r.evade) floatText(h, 'EVADE READY', '#bfe8ff'); if (r.counter) floatText(h, 'COUNTER READY', '#ffd9a0'); if (r.ambush) floatText(h, 'AMBUSH ×1.6', '#d9b8ff');
       h.shown = h.hp; hudSync(); await wait(520); h.pose = 'idle'; return;
     }
     const kill = m.hp <= 0, heavy = r.big > 1 || r.hits.reduce((a, x) => a + x.damage, 0) >= 20;
     await cinematic(h, m, async () => {
+      if (r.leap) { h.pose = 'windup'; await wait(160); await leapAnim(h, r.leap.to); shake(9, 260) }
       h.dir = dirTo(h, m); h.pose = 'windup'; if (cine) { cine.z += .18; cine.speed = 4 } await wait(heavy ? 420 : 280);
       h.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(h, m) * (heavy ? 2.2 : 1.3)); lines(m, 220);
       const dur = fx(r.fx, m, h, { scale: r.big, color: r.fx === 'arcane' ? '#b49ae8' : '#7cc5db' });
@@ -392,13 +400,18 @@
         floatText(m, '−' + x.damage, x.crit ? '#ffe14d' : heavy ? '#ffd27a' : '#ff9a8a', false, heavy || x.crit); if (x.notes.length) floatText(m, noteEn(x.notes), '#cfe4ff', true);
         m.shown = Math.max(m.hp, m.shown - x.damage); hudSync(); await wait(r.hits.length > 1 ? 300 : 220);
       }
-      m.shown = m.hp; hudSync();
+      m.shown = m.hp; hudSync(); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff', true);
       if (r.moved) { const from = { u: m.vu - .5, v: m.vv - .5 }; shake(6, 200); await walkAnim(m, [from, { u: m.u, v: m.v }], 5, true) }
       if (kill) { banner('DEFEATED!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(260); h.pose = 'idle';
     }, { z: heavy ? 1.95 : 1.75 });
   }
   /* effect text is English; the log keeps the Thai notes */
   function noteEn(notes) { return notes.map(n => n === 'คริติคอล' ? '' : n.startsWith('กำบัง') ? 'COVER −30%' : n.startsWith('ป้องกัน') ? 'GUARD ' + n.replace(/[^0-9−-]/g, '') : n).filter(Boolean).join(' · ') }
+  /* dive: an arc through the air to the cell next to the target */
+  function leapAnim(u, to) {
+    return new Promise(res => { const f = { u: u.vu, v: u.vv }, t1 = { u: to.u + .5, v: to.v + .5 }, t0 = performance.now(), dur = 380; u.dir = dirTo({ u: f.u, v: f.v }, { u: t1.u, v: t1.v });
+      const tick = () => { const e = Math.min(1, (performance.now() - t0) / dur); u.vu = f.u + (t1.u - f.u) * e; u.vv = f.v + (t1.v - f.v) * e; u.lift = Math.sin(e * Math.PI) * 46; if (e < 1) requestAnimationFrame(tick); else { u.lift = 0; res() } }; tick() });
+  }
   const dirSign = (a, b) => (project(b.vu, b.vv).x >= project(a.vu, a.vv).x ? 1 : -1);
   /* hit: white flash on the sprite + a light pool on the ground at the target */
   const FXCOL = { fire: '255,140,60', ice: '150,220,255', lightning: '190,210,255', arcane: '200,160,255', heal: '140,255,160', shield: '170,210,255', wind: '200,255,220', earth: '230,190,120', parry: '255,240,190' };
@@ -440,11 +453,13 @@
     await cinematic(m, h, async () => {
       m.pose = 'windup'; if (cine) { cine.z += .15; cine.speed = 4 } await wait(Math.min(900, tw?.duration || 380));
       m.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(m, h) * 1.5); lines(h, 200); await wait(Math.min(700, ts?.impactMs ?? 160));
+      if (s.evaded) { const o = { u: h.vu, v: h.vv }, back = { u: h.vu + (h.vu - m.vu) * .35, v: h.vv + (h.vv - m.vv) * .35 }; h.vu = back.u; h.vv = back.v; fx('wind', h, m, {}); sfx('swing'); floatText(h, 'MISS', '#bfe8ff', false, true); await wait(420); h.vu = o.u; h.vv = o.v; m.pose = 'idle'; return }
       fx(guarded ? 'parry' : MT.fx, h, m, { color: '#ffb36a' }); impact(h, guarded ? 'parry' : MT.fx, { big: s.crit || s.damage >= 12, crit: s.crit, kill, from: m });
       if (s.crit) banner('CRITICAL!', 'crit'); if (s.damage && CINE) screenFlash('255,30,20', s.crit || kill ? .38 : .22, 320);
       h.pose = guarded ? 'guard' : 'hit'; if (kill) { hitStop(380); shake(20, 600) } else if (s.crit) { hitStop(200); shake(16, 440) } else { hitStop(s.damage ? 110 : 70); shake(s.damage ? 10 : 5, 300) }
       floatText(h, s.damage ? '−' + s.damage : 'BLOCKED', s.damage ? '#ff9a8a' : '#9cc8ff', false, s.damage >= 12); { const n = noteEn(s.notes); if (n) floatText(h, n, '#cfe4ff', true) } h.shown = h.hp; hudSync();
       await wait(Math.max(300, Math.min(900, (ts?.duration || 500) - (ts?.impactMs ?? 160))));
+      if (s.counter) { h.pose = 'windup'; await wait(150); h.pose = 'strike'; sfx('swing'); fx('sword', m, h, {}); impact(m, 'sword', { from: h, big: true }); m.hitUntil = now() + 420; hitStop(120); shake(10, 300); floatText(m, '−' + s.counter, '#ffd27a', false, true); floatText(m, 'COUNTER', '#ffd9a0', true); m.shown = m.hp; hudSync(); if (m.hp <= 0) m.deadAt = now() + 300; await wait(420) }
       m.pose = 'idle'; if (h.hp > 0) h.pose = 'idle';
     }, { z: 1.7 });
   }
@@ -543,7 +558,7 @@
     const size = UNIT * 1.6, left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1], i = im(f.src);
     let ox = 0; if (u.pose === 'hit') ox = Math.sin(t * .07) * 3;
     const pm = poseMotion(u, t);
-    shadow(g, p, UNIT * .26); g.save(); g.translate(ox, 0); if (u.hp <= 0) g.globalAlpha *= .6;
+    shadow(g, p, UNIT * .26); g.save(); g.translate(ox, -(u.lift || 0)); if (u.hp <= 0) g.globalAlpha *= .6;
     g.translate(p.x + pm.dx, p.y + pm.dy); g.rotate(pm.rot); g.scale(pm.sx, pm.sy); g.translate(-p.x, -p.y);
     const sword = () => { if (u.weapon && A.equipment[u.weapon]) weapon(g, A.equipment[u.weapon], f.right, left, top, size, (f.rotation || 0) + pm.wpn) };
     if (f.rightBehind) sword();
@@ -584,14 +599,18 @@
     }
     if (reachMap && !busy) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
     const m = FB.monster(st), h = FB.hero(st);
+    /* hovering a combat card: its reach around the hero in red */
+    if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }
     if (!busy && st.turn === 'hero' && !st.outcome && st.deck.combat.hand.some((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self)) { poly(g, m.u, m.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() }
     poly(g, h.u, h.v); g.strokeStyle = '#6fd18a'; g.lineWidth = 2; g.stroke();
     g.restore();
     if (CINE) spotlight(g, [h, m]);
     glowDraw(g, t);
-    const order = [h, m].sort((a, b) => project(a.vu, a.vv).y - project(b.vu, b.vv).y);
-    for (const u of order) {
-      const o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
+    /* a host page (battle-field.html) can hand in standing props so trees/rocks and units overlap by depth */
+    const extras = window.TownBattleExtras?.() || [], order = [...[h, m].map(u => ({ unit: u, y: project(u.vu, u.vv).y })), ...extras].sort((a, b) => a.y - b.y);
+    for (const it of order) {
+      if (!it.unit) { it.draw(g, t); continue }
+      const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
       if (u.deadAt && t > u.deadAt) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
       u === h ? drawHero(g, u, t) : drawMonster(g, u, t); g.restore();
     }
@@ -610,9 +629,9 @@
   function spotlight(g, units) {
     const dpr = devicePixelRatio || 1, w = Math.round(W * dpr), h = Math.round(H * dpr);
     if (!veil) veil = document.createElement('canvas'); if (veil.width !== w || veil.height !== h) { veil.width = w; veil.height = h }
-    const v = veil.getContext('2d'), k = scale * zoom * dpr, base = .1 + light * .42;
+    const v = veil.getContext('2d'), k = scale * zoom * dpr, base = .1 + light * .42 + (NIGHT ? .38 : 0);
     v.globalCompositeOperation = 'source-over'; v.clearRect(0, 0, w, h);
-    const vg = v.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .35, w / 2, h / 2, Math.max(w, h) * .75); vg.addColorStop(0, `rgba(10,12,28,${base * .6})`); vg.addColorStop(1, `rgba(6,6,16,${base + .2})`);
+    const vg = v.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .35, w / 2, h / 2, Math.max(w, h) * .75); vg.addColorStop(0, NIGHT ? `rgba(8,14,48,${base * .8})` : `rgba(10,12,28,${base * .6})`); vg.addColorStop(1, NIGHT ? `rgba(4,6,24,${Math.min(.92, base + .25)})` : `rgba(6,6,16,${base + .2})`);
     v.fillStyle = vg; v.fillRect(0, 0, w, h);
     v.globalCompositeOperation = 'destination-out';
     for (const u of units) {

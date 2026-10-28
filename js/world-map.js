@@ -32,13 +32,13 @@
   /* ---------- save ---------- */
   function fresh(seed) {
     world = G.generate(seed);
-    S = { seed: world.seed, known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], day: 1, hour: 8, food: 14, gold: 30, hp: 60, maxHp: 60, potions: 1,
+    S = { seed: world.seed, known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], day: 1, hour: 8, fatigue: 0, food: 18, gold: 30, hp: 60, maxHp: 60, potions: 1,
       dest: null, cleared: {}, done: {}, battles: 0, steps: 0, log: [] };
     reveal(); save();
   }
   function load() {
     if (Q.get('new') === '1') { fresh(+Q.get('seed') || undefined); history.replaceState(null, '', location.pathname); return }
-    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = s; reveal(); return } } catch (e) { }
+    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = s; S.fatigue ??= 0; reveal(); return } } catch (e) { }
     fresh(+Q.get('seed') || undefined);
   }
   function save() { try { localStorage.setItem(SAVE, JSON.stringify(S)) } catch (e) { } }
@@ -46,7 +46,7 @@
 
   /* ---------- fog ---------- */
   let visible = new Set(), fogDirty = true;
-  function sight() { const t = tile(S.pos.c, S.pos.r); return 1 + (t.biome === 'hills' ? 1 : 0) + (t.poi?.id === 'home' ? 1 : 0) }
+  function sight() { const t = tile(S.pos.c, S.pos.r), night = S.hour >= 21 || S.hour < 4; return Math.max(1, 1 + (t.biome === 'hills' ? 1 : 0) + (t.poi?.id === 'home' ? 1 : 0) - (night ? 1 : 0)) }   // night: the hill bonus is lost
   function reveal() {
     visible = new Set(G.within(S.pos.c, S.pos.r, sight()).map(([c, r]) => K(c, r)));
     for (const k of visible) S.known[k] = 1;
@@ -179,7 +179,7 @@
       g.save(); g.fillStyle = h.enc.type === 'battle' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, 12, 0, 7); g.fill(); g.strokeStyle = h.enc.type === 'battle' ? '#ffb19a' : '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
       g.font = '13px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
     }
-    const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านริมป่า', hp.x, hp.y + 32, '#f6e7c1', 12);
+    const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
   }
   function drawTrail() {
     if (S.trail.length < 2) return; g.save(); g.setLineDash([2, 7]); g.lineCap = 'round'; g.strokeStyle = 'rgba(255,226,150,.9)'; g.lineWidth = 3;
@@ -273,6 +273,7 @@
     const hh = Math.floor(S.hour), mm = S.hour % 1 ? '30' : '00', icon = nightness() > .5 ? '🌙' : '☀';
     hud.innerHTML = `<h1>🗺 Agrenor</h1><div class="sub">วันที่ ${S.day} · ${icon} ${String(hh).padStart(2, '0')}:${mm} · ${esc(G.BIOME[t.biome].name)}${t.poi ? ' · ' + esc(t.poi.name) : ''}</div>
       <div class="row"><span>HP</span><span>${S.hp}/${S.maxHp}</span></div><div class="bar"><i style="width:${S.hp / S.maxHp * 100}%;background:#6fd18a"></i></div>
+      <div class="row"><span>ความเหนื่อย</span><span style="color:${S.fatigue >= 80 ? '#ff8a6a' : '#e8d8a8'}">${S.fatigue}%${S.fatigue >= 80 ? ' ⚠' : ''}</span></div><div class="bar"><i style="width:${S.fatigue}%;background:${S.fatigue >= 80 ? '#e2705f' : '#c9a24a'}"></i></div>
       <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>
       <div class="row"><span>ความลึกของหมอก</span><span style="color:#ff9a7a">${stars}</span></div>
       <div class="row"><span>จุดหมาย</span><span style="color:#ffe2a8">${d ? esc(d.name) + (S.done[d.id] ? ' ✔' : ' · ' + G.dist(S.pos, d) + ' ช่อง') : '—'}</span></div>
@@ -319,7 +320,7 @@
   }
   const BOSS_NAME = { wolf: 'จ่าฝูงหมาป่า', golem: 'โกเล็มหิน', slime: 'สไลม์ยักษ์', bandit: 'หัวหน้าโจร', kobold: 'หัวหน้าโคโบลด์' };
   /* warm the browser cache with one hidden battle page so the first real fight opens quickly */
-  function warm() { if (document.getElementById('wmWarm')) return; const f = document.createElement('iframe'); f.id = 'wmWarm'; f.style.cssText = 'position:fixed;width:2px;height:2px;left:-10px;top:-10px;opacity:0;pointer-events:none;border:0'; f.src = 'village-town.html?battle=1&embed=1&warm=1'; document.body.append(f); const on = e => { if (e.data?.type === 'agrenor-battle-ready' && e.data.warm) { removeEventListener('message', on); setTimeout(() => f.remove(), 500) } }; addEventListener('message', on); setTimeout(() => f.remove(), 60000) }
+  function warm() { if (document.getElementById('wmWarm')) return; const f = document.createElement('iframe'); f.id = 'wmWarm'; f.style.cssText = 'position:fixed;width:2px;height:2px;left:-10px;top:-10px;opacity:0;pointer-events:none;border:0'; f.src = 'battle-field.html?battle=1&embed=1&warm=1'; document.body.append(f); const on = e => { if (e.data?.type === 'agrenor-battle-ready' && e.data.warm) { removeEventListener('message', on); setTimeout(() => f.remove(), 500) } }; addEventListener('message', on); setTimeout(() => f.remove(), 60000) }
   async function chooseDest(id) {
     setTimeout(warm, 2500);
     S.dest = id; const d = destOf(); log('รับภารกิจ: ' + d.name); save(); fogDirty = true; hudSync();
@@ -354,16 +355,27 @@
     await new Promise(res => { const tick = () => { const e = Math.min(1, (performance.now() - t0) / dur); token.x = from.x + (dst.x - from.x) * e; token.y = from.y + (dst.y - from.y) * e; cam.tx = token.x; cam.ty = token.y; if (e < 1) requestAnimationFrame(tick); else res() }; tick() });
     token.walking = false;
     S.prev = { ...S.pos }; S.pos = { c: to.c, r: to.r }; S.steps++; const k = K(to.c, to.r); if (S.trail.at(-1) !== k) S.trail.push(k); if (S.trail.length > 200) S.trail.shift();
-    passTime(cost);
+    const wasNight = nightness() > .6;
+    passTime(cost + (wasNight ? 1 : 0));                                              // walking in the dark is slower
+    S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * (wasNight ? 1.5 : 1)));
     if (!t.road && !t.poi) { if (S.food > 0) S.food--; else { S.hp = Math.max(1, S.hp - 5); log('เสบียงหมด! หิวโหย −5 HP'); toast('เสบียงหมด −5 HP') } }
+    if (S.fatigue >= 80) { S.hp = Math.max(1, S.hp - 2); if (S.fatigue >= 100 || Math.random() < .3) toast('เหนื่อยล้า! ควรพักแรม (−2 HP ต่อช่อง)') }
     reveal(); hudSync(); save();
     const d = destOf();
     if (d && !S.done[d.id] && d.c === to.c && d.r === to.r) { await bossFight(d); return true }
     if (t.poi?.id === 'home') { await arriveHome(); return true }
     if (t.enc && !S.cleared[k]) return await encounter(t, k);
     const night = nightness() > .6, dang = G.danger(world, t);
-    if (night && dang > .2 && Math.random() < .1) { log('ถูกซุ่มโจมตีกลางดึก!'); return await battle(pickFoe(t), dang, { ambush: true }) }
+    if (night && dang > .15 && Math.random() < .12) { log('ถูกซุ่มโจมตีกลางดึก!'); return await battle(pickFoe(t), dang, { ambush: true }) }
+    if (night && Math.random() < .07) return await nightEvent(t);
     return false;
+  }
+  /* things that only happen after dark */
+  async function nightEvent(t) {
+    const d = destOf(), r = Math.random();
+    if (r < .4 && d && !S.done[d.id]) { const p = G.path(world, t, d); if (p) p.slice(0, 5).forEach(x => S.known[K(x.c, x.r)] = 1); fogDirty = true; log('ดวงไฟวิญญาณนำทาง'); await modal(`<h2>✧ ดวงไฟวิญญาณ</h2><p>แสงสีฟ้าลอยวนอยู่กลางความมืด แล้วค่อย ๆ ล่องไปทางหนึ่ง… หมอกตามทางนั้นจางลงชั่วครู่</p>`); return true }
+    if (r < .75) { S.fatigue = Math.min(100, S.fatigue + 15); log('เสียงหอนทั้งคืน เหนื่อยขึ้น'); await modal(`<h2>🐺 เสียงหอนในความมืด</h2><p>เสียงหอนรอบทิศทำให้ต้องเดินระวังตัวทุกฝีก้าว ความเหนื่อย +15</p>`); return true }
+    const gold = Math.round(20 + Math.random() * 30); S.gold += gold; log('พบของมีค่าใต้แสงจันทร์ +' + gold); await modal(`<h2>🌙 ประกายใต้แสงจันทร์</h2><p>มีบางอย่างสะท้อนแสงจันทร์อยู่ในพงหญ้า — ถุงเหรียญของนักเดินทาง <b>+${gold} 💰</b></p>`); return true;
   }
   function passTime(h) { S.hour += h; while (S.hour >= 24) { S.hour -= 24; S.day++; log('— วันที่ ' + S.day + ' —') } }
   const pickFoe = t => { const a = G.FOES[t.biome] || G.FOES.grass; return a[Math.floor(Math.random() * a.length)] };
@@ -401,14 +413,22 @@
       hudSync();
     }
   }
+  /* camp anywhere on the road: clears fatigue and heals (full with food, a little without); at night you sleep until morning.
+     Out in the wild the camp can be attacked — more likely at night and deeper in the fog. A marked safe camp is never attacked. */
   async function camp(safe) {
-    if (S.food <= 0 && !safe) { toast('ไม่มีเสบียงให้พักแรม'); return }
-    busy = true; hudSync(); if (S.food > 0) S.food--;
-    const night = nightness() > .5, risk = safe ? 0 : (night ? .22 : .12) * (.5 + G.danger(world, tile(S.pos.c, S.pos.r)));
-    toast('⛺ พักแรม…'); await wait(900); passTime(8);
-    if (Math.random() < risk) { busy = false; log('ถูกปลุกกลางดึก! ศัตรูบุกค่าย'); await battle(pickFoe(tile(S.pos.c, S.pos.r)), G.danger(world, tile(S.pos.c, S.pos.r)), { ambush: true }); }
-    else { S.hp = S.maxHp; log('พักแรม HP เต็ม') }
-    busy = false; hudSync(); save();
+    if (busy && !safe) return;
+    const here = tile(S.pos.c, S.pos.r), dang = G.danger(world, here), night = nightness() > .5, fed = S.food > 0;
+    const risk = safe ? 0 : Math.min(.45, (night ? .24 : .1) * (.5 + dang * 1.5));
+    if (!safe) { const v = await modal(`<h2>⛺ พักแรมที่นี่?</h2><p>${night ? 'นอนจนถึงเช้า' : 'พัก 6 ชั่วโมง'} · ${fed ? 'ใช้เสบียง 1 · HP เต็ม' : 'ไม่มีเสบียง · ฟื้น HP แค่ 30%'} · ความเหนื่อยหาย</p><p>โอกาสถูกบุกค่าย <b style="color:#a0281a">${Math.round(risk * 100)}%</b>${night ? ' (กลางคืนเสี่ยงกว่า)' : ''}</p>`, [{ label: '⛺ ตั้งแคมป์', value: true }, { label: 'ยังก่อน', value: null, ghost: true }]); if (!v) return }
+    busy = true; hudSync(); if (fed) S.food--;
+    toast('⛺ พักแรม…'); await wait(900);
+    const hours = night ? ((30 - S.hour) % 24 || 6) : 6;
+    if (Math.random() < risk) {
+      passTime(Math.round(hours / 2)); S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .25)); S.fatigue = Math.round(S.fatigue / 2); busy = false;
+      log('ถูกบุกค่ายกลางดึก!'); await battle(pickFoe(here), dang, { ambush: true, camp: true }); busy = true;
+      if (S.pos.c === here.c && S.pos.r === here.r && S.hp > 0) { passTime(Math.round(hours / 2)); S.fatigue = 0; log('หลังไล่ศัตรูไปได้ ก็นอนต่อจนพอแรง') }
+    } else { passTime(hours); S.fatigue = 0; S.hp = fed ? S.maxHp : Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .3)); log('พักแรม ' + (fed ? 'HP เต็ม' : 'HP +30%') + ' หายเหนื่อย') }
+    reveal(); busy = false; hudSync(); save();
   }
   async function goHome() {
     if (busy) return; const p = G.path(world, S.pos, world.home, x => x && isKnown(K(x.c, x.r)));
@@ -420,18 +440,26 @@
   async function arriveHome() {
     S.hp = S.maxHp; S.food = Math.max(S.food, 10); log('กลับถึงหมู่บ้าน พักฟื้นเต็มที่'); save(); hudSync();
     const left = world.dests.filter(d => !S.done[d.id]).length;
-    await modal(`<h2>🏠 หมู่บ้านริมป่า</h2><p>ชาวบ้านออกมารับ เติมเสบียงให้ครบ ${S.food} ห่อ HP ฟื้นเต็ม</p><p>${left ? 'ยังมีข่าวลือรออยู่อีก ' + left + ' แห่งที่กระดานภารกิจ' : 'ทุกข่าวลือถูกพิสูจน์แล้ว — ลองสร้าง “โลกใหม่” ได้'}</p>`);
+    await modal(`<h2>🏠 หมู่บ้านเฟิร์นเวล</h2><p>ชาวบ้านออกมารับ เติมเสบียงให้ครบ ${S.food} ห่อ HP ฟื้นเต็ม</p><p>${left ? 'ยังมีข่าวลือรออยู่อีก ' + left + ' แห่งที่กระดานภารกิจ' : 'ทุกข่าวลือถูกพิสูจน์แล้ว — ลองสร้าง “โลกใหม่” ได้'}</p>`);
     if (S.dest && S.done[S.dest]) S.dest = null; hudSync();
   }
 
   /* ---------- battles (the flat card battle in an iframe) ---------- */
-  const MON_HP = { bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95 };
+  const MON_HP = { bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44 };
   async function battle(foe, dang, o = {}) {
     busy = true; hudSync();
-    const elite = !o.boss && dang > .65 && Math.random() < .5, mult = o.boss ? Math.round(130 / MON_HP[foe] * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * 10) / 10;
-    await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : 'ENCOUNTER!');
+    const here = tile(S.pos.c, S.pos.r), night = nightness() > .6;
+    /* after dark: fierce night monsters (shadow wolves in open land, enraged ones elsewhere) */
+    let fierce = false; if (night && !o.boss && Math.random() < .45) { fierce = true; if (['forest', 'grass', 'snow'].includes(here.biome)) foe = 'shadowWolf' }
+    const elite = !o.boss && dang > .65 && Math.random() < .5, base = MON_HP[foe] || 34;
+    let mult = o.boss ? Math.round(130 / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
+    if (foe === 'shadowWolf') mult = Math.round((1.1 + dang * .5) * 10) / 10;
+    const atk = fierce ? 1.3 : 1, hst = Math.max(20, Math.round(100 - S.fatigue * .6));
+    await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : fierce ? 'NIGHT TERROR!' : 'ENCOUNTER!');
     const fr = document.createElement('iframe'); fr.id = 'wmBattle';
-    fr.src = `village-town.html?battle=1&embed=1&m=${foe}&hp=${mult}&hhp=${S.hp}&hmax=${S.maxHp}&title=${encodeURIComponent((o.boss ? 'บอส · ' : elite ? 'ยอดฝีมือ · ' : '') + (BOSS_NAME[foe] && o.boss ? BOSS_NAME[foe] : ''))}`;
+    const title = (o.boss ? 'บอส · ' : elite ? 'ยอดฝีมือ · ' : '') + (BOSS_NAME[foe] && o.boss ? BOSS_NAME[foe] : '');
+    const poi = o.boss ? (destOf()?.id || '') : '';
+    fr.src = `battle-field.html?battle=1&embed=1&biome=${here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
@@ -442,7 +470,7 @@
     fr.classList.remove('on'); await wait(380); fr.remove();
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
     if (res.outcome === 'win') {
-      S.battles++; const gold = o.boss ? 0 : Math.round(10 + dang * 30 + (elite ? 20 : 0)); S.gold += gold; S.hp = Math.max(1, S.hp);
+      S.battles++; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '')); toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : ''));
     } else if (res.outcome === 'flee') {
       log('หนีออกมาได้'); if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal() } S.hp = Math.max(1, S.hp);
