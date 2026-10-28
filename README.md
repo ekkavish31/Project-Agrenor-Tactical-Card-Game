@@ -20,7 +20,7 @@
 | `dev/` | หน้าตรวจงานภาพ/แอนิเมชัน |
 | `tools/` | สคริปต์ทดสอบ/จำลอง (รันด้วย node/python จากโฟลเดอร์หลัก) |
 | `art-production/` | ภาพต้นฉบับที่ยังอ้างอิงอยู่ (hero-source, review v32, prompt v34) |
-| `docs/` | PLAN (แผนรวมฉบับเดียว), STYLE-GUIDE, ART-TODO, STORY-INTRO, คู่มือ · แผนเก่าอยู่ใน `docs/history/` · `docs/reports/` ผลตรวจรายเวอร์ชัน · `docs/CHANGELOG-TH.md` ประวัติทุกเวอร์ชัน · `docs/TODO.md` งานที่เหลือทั้งหมด (ไฟล์เดียว) |
+| `docs/` | STYLE-GUIDE, ART-TODO, STORY-INTRO, คู่มือ · `docs/history/` บันทึกติดตั้ง/แพตช์เก่า · `docs/reports/` ผลตรวจรายเวอร์ชัน · `docs/CHANGELOG-TH.md` ประวัติทุกเวอร์ชัน · `docs/TODO.md` งานที่เหลือทั้งหมด (ไฟล์เดียว) |
 
 ## กติกาสำหรับแพตช์ถัดไป
 - ไฟล์ `.js` ใหม่ → ใส่ใน `js/` และเพิ่ม `<script src="js/ชื่อไฟล์.js">` ใน `index.html`
