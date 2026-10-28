@@ -6,7 +6,7 @@
    • heirs · journey · realms (v95.05) — light in the chests of the ancient people rises and takes an element's colour; the lights wind
                 across a storybook map (snow, cliffs, storm peaks, volcano, sea, forest, mesa, shadow vale, bright plain); tents grow into towns, then kingdoms.
    • Every night/dusk sky has the purple moon (lore) and no sunset sun.
-   • fernvale — "a small village in the Navelmidia basin, near the big city": a river valley, Fernvale's houses with chimney smoke and
+   • fernvale — "a small village in the Nor'Chorthal basin, near the big city": a river valley, Fernvale's houses with chimney smoke and
                 a windmill, the big city on the horizon, a messenger bird flying from the city to the village.
    • festival — "three days to the harvest festival": dusk, bunting and lanterns lighting one by one, wheat and pumpkins, Elukhor resting high.
    • kin · kingdoms · forgotten · faith · deepwood · hearth · elukhor · homeMorning (v95.04 prologue + opening cutscene).
@@ -135,10 +135,20 @@
   }
 
   /* ---------------- journey / realms — a storybook map: lights wind through the regions, then towns grow into kingdoms ---------------- */
-  const REGIONS = [ // element index · destination on the map (0..1) · what the land looks like
-    { e: 6, x: .16, y: .14, kind: 'snow' }, { e: 1, x: .36, y: .1, kind: 'cliffs' }, { e: 3, x: .6, y: .1, kind: 'storm' }, { e: 4, x: .84, y: .16, kind: 'volcano' },
-    { e: 2, x: .9, y: .4, kind: 'sea' }, { e: 5, x: .72, y: .52, kind: 'forest' }, { e: 8, x: .3, y: .5, kind: 'mesa' }, { e: 7, x: .08, y: .4, kind: 'shadow' }, { e: 0, x: .52, y: .3, kind: 'plain' }];
-  const ORIGIN = { x: .5, y: .64 };
+  /* lore geography (docs/lore/GAME-ERA.md): north = snow · south = fire and volcanoes · far west = islands · centre = the Nor'Chorthal river plain ·
+     a sky-high range walls Nor'Chorthal off from the great forest in the east, where the ancestors came from (ORIGIN). Placement of the other
+     element lands is a proposal — edit this table only. x,y are 0..1 on the map (x: west→east, y: north→south). */
+  const REGIONS = [
+    { e: 6, x: .4, y: .06, kind: 'snow' },     // Yalm ice — the cold north
+    { e: 1, x: .16, y: .16, kind: 'cliffs' },  // Sylfae wind — north-west highlands
+    { e: 0, x: .6, y: .1, kind: 'plain' },     // Elu light — the bright northern plateau
+    { e: 3, x: .72, y: .2, kind: 'storm' },    // Caelim lightning — the high range
+    { e: 2, x: .03, y: .4, kind: 'islands' },  // Dephor water — the far western islands
+    { e: 8, x: .42, y: .36, kind: 'basin' },   // Grat earth — the Nor'Chorthal plain (humans: earth and water)
+    { e: 7, x: .18, y: .58, kind: 'shadow' },  // Nytha night — the south-west vale
+    { e: 4, x: .48, y: .66, kind: 'volcano' }, // Fren fire — the burning south
+    { e: 5, x: .8, y: .6, kind: 'forest' }];   // Lutha plant — stays near the forest, south of the range
+  const ORIGIN = { x: .94, y: .36 };
   function mapXY(w, h, x, y) { return { x: w * (.04 + x * .92), y: h * (.06 + y * .62) } }
   function pathOf(i, w, h) {
     const R = REGIONS[i], A = mapXY(w, h, ORIGIN.x, ORIGIN.y), B = mapXY(w, h, R.x, R.y), r = rng(900 + i), pts = [], k = 2 + Math.floor(r() * 3), amp = (r() - .5) * .35 + .15 * (r() < .5 ? -1 : 1), ph = r() * TAU;
@@ -148,28 +158,34 @@
   }
   function drawMap(g, w, h, t) {
     sky(g, w, h, [[0, '#0e1a2e'], [1, '#08101c']]);
-    // sea shimmer
     g.strokeStyle = 'rgba(140,180,220,.12)'; g.lineWidth = 1.2; for (let j = 0; j < 22; j++) { const y = h * (.05 + j * .04), o = (t * 12 + j * 37) % 60; g.setLineDash([16, 30]); g.lineDashOffset = -o; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y + 6); g.stroke() } g.setLineDash([]);
-    // the land (one big painted continent)
-    const c = mapXY(w, h, .5, .38), rx = w * .47, ry = h * .36, lr = rng(31);
-    const land = []; for (let j = 0; j < 64; j++) { const a = j / 64 * TAU, k = 1 + Math.sin(a * 3 + 1) * .06 + Math.sin(a * 7 + 2) * .04 + (lr() - .5) * .04; land.push({ x: c.x + Math.cos(a) * rx * k, y: c.y + Math.sin(a) * ry * k }) }
+    const M = (x, y) => mapXY(w, h, x, y);
+    // the continent: open sea in the far west, the land runs off the east edge
+    const lr = rng(31), land = [];
+    for (let j = 0; j <= 30; j++) { const u = j / 30; land.push(M(.15 + Math.sin(u * 9) * .02 + (lr() - .5) * .02, -.05 + u * 1.1)) }
+    land.push(M(1.1, 1.1), M(1.1, -.1));
     const path = () => { g.beginPath(); land.forEach((p, j) => g[j ? 'lineTo' : 'moveTo'](p.x, p.y)); g.closePath() };
-    path(); g.fillStyle = '#4e5a38'; g.fill(); g.lineWidth = 6; g.strokeStyle = 'rgba(220,200,150,.25)'; g.stroke();
+    path(); g.fillStyle = '#4e5a38'; g.fill(); g.lineWidth = 5; g.strokeStyle = 'rgba(220,200,150,.25)'; g.stroke();
     g.save(); path(); g.clip();
-    const pg = g.createRadialGradient(c.x, c.y, 10, c.x, c.y, rx); pg.addColorStop(0, '#6a7448'); pg.addColorStop(1, '#3e4a30'); g.fillStyle = pg; g.fillRect(0, 0, w, h);
-    // a desert band and a mountain range in the middle of the land (the long way round)
-    g.fillStyle = 'rgba(214,180,110,.55)'; g.beginPath(); g.ellipse(w * .62, h * .43, w * .12, h * .06, -.2, 0, TAU); g.fill();
-    g.strokeStyle = 'rgba(150,110,60,.5)'; g.lineWidth = 1.5; for (let j = 0; j < 6; j++) { const x = w * (.54 + j * .03), y = h * (.41 + (j % 2) * .02); g.beginPath(); g.arc(x, y + 6, 10, Math.PI * 1.15, Math.PI * 1.85); g.stroke() }
-    for (let j = 0; j < 9; j++) { const x = w * (.32 + j * .035), y = h * (.36 - Math.sin(j / 8 * Math.PI) * .03), s = 14 + (j % 3) * 6; g.fillStyle = '#3a3428'; g.beginPath(); g.moveTo(x - s, y + s * .6); g.lineTo(x, y - s * .8); g.lineTo(x + s, y + s * .6); g.fill(); g.fillStyle = 'rgba(230,230,240,.7)'; g.beginPath(); g.moveTo(x - s * .3, y - s * .4); g.lineTo(x, y - s * .8); g.lineTo(x + s * .3, y - s * .4); g.fill() }
-    // a river
-    g.strokeStyle = 'rgba(110,170,220,.7)'; g.lineWidth = 3; g.beginPath(); g.moveTo(w * .46, h * .2); g.bezierCurveTo(w * .4, h * .32, w * .52, h * .44, w * .46, h * .7); g.stroke();
+    let gr = g.createLinearGradient(0, M(0, 0).y, 0, M(0, .7).y);
+    gr.addColorStop(0, '#c8d4e2'); gr.addColorStop(.2, '#8a9a84'); gr.addColorStop(.35, '#6a7a48'); gr.addColorStop(.55, '#6a7448'); gr.addColorStop(.75, '#6a4a34'); gr.addColorStop(1, '#4a2a22');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);                                      // snowy north → green plain → ashen south
+    for (let j = 0; j < 14; j++) { const q = rng(60 + j), x = M(.2 + q() * .45, 0).x, y = M(0, .6 + q() * .1).y; g.strokeStyle = 'rgba(255,120,40,.35)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x, y); g.lineTo(x + 12, y + 5); g.lineTo(x + 20, y + 2); g.stroke() }   // lava cracks
+    // Nor'Chorthal: a broad river plain in the middle, the river runs west to the sea
+    const b = M(.42, .38); glow(g, b.x, b.y, w * .22, hsla(90, 40, 60), .35);
+    g.strokeStyle = 'rgba(110,170,220,.8)'; g.lineWidth = 3.5; g.beginPath(); const r0 = M(.66, .3), r1 = M(.5, .42), r2 = M(.3, .3), r3 = M(.13, .42); g.moveTo(r0.x, r0.y); g.bezierCurveTo(r1.x, r1.y - 30, r1.x - 40, r1.y + 20, b.x, b.y); g.bezierCurveTo(r2.x + 30, r2.y + 40, r2.x, r2.y, r3.x, r3.y); g.stroke();
+    // the great forest in the east
+    for (let j = 0; j < 70; j++) { const q = rng(200 + j), p = M(.8 + q() * .25, -.02 + q() * .76); g.fillStyle = q() < .5 ? '#1e3a22' : '#28482a'; g.beginPath(); g.arc(p.x, p.y, 8 + q() * 9, 0, TAU); g.fill() }
+    // the sky-high range between Nor'Chorthal and the forest (two narrow passes)
+    for (let j = 0; j < 22; j++) { const u = j / 21, p = M(.72 + Math.sin(u * 7) * .02, -.02 + u * .74); if (Math.abs(u - .42) < .03 || Math.abs(u - .72) < .03) continue; const s2 = 22 + (j % 3) * 7;
+      g.fillStyle = '#3a3830'; g.beginPath(); g.moveTo(p.x - s2, p.y + s2 * .6); g.lineTo(p.x, p.y - s2 * 1.2); g.lineTo(p.x + s2, p.y + s2 * .6); g.fill(); g.fillStyle = '#5a5648'; g.beginPath(); g.moveTo(p.x, p.y - s2 * 1.2); g.lineTo(p.x + s2, p.y + s2 * .6); g.lineTo(p.x + s2 * .3, p.y + s2 * .6); g.fill();
+      g.fillStyle = 'rgba(240,244,250,.85)'; g.beginPath(); g.moveTo(p.x - s2 * .35, p.y - s2 * .5); g.lineTo(p.x, p.y - s2 * 1.2); g.lineTo(p.x + s2 * .35, p.y - s2 * .5); g.fill() }
     g.restore();
-    // regions
-    REGIONS.forEach((R, i) => { const p = mapXY(w, h, R.x, R.y), e = ELEMENTS[R.e]; region(g, p.x, p.y, R.kind, t, e) });
-    // the place they all set out from
-    const o = mapXY(w, h, ORIGIN.x, ORIGIN.y); glow(g, o.x, o.y, 40, hsla(48, 100, 85), .7);
-    for (let j = -2; j <= 2; j++) { g.fillStyle = '#2a2418'; g.fillRect(o.x + j * 9 - 2, o.y - 14 + Math.abs(j) * 3, 4, 14 - Math.abs(j) * 3) }
-    // edge fog + vignette (storybook frame)
+    // far western islands
+    for (let j = 0; j < 7; j++) { const q = rng(300 + j), p = M(.0 + q() * .1, .1 + q() * .6); g.fillStyle = '#5a6a40'; g.beginPath(); g.ellipse(p.x, p.y, 8 + q() * 10, 5 + q() * 6, q(), 0, TAU); g.fill(); g.strokeStyle = 'rgba(220,240,255,.3)'; g.lineWidth = 1; g.stroke() }
+    REGIONS.forEach(R => { const p = mapXY(w, h, R.x, R.y); region(g, p.x, p.y, R.kind, t, ELEMENTS[R.e]) });
+    // the forest edge where they set out
+    const o = mapXY(w, h, ORIGIN.x, ORIGIN.y); glow(g, o.x, o.y, 44, hsla(48, 100, 85), .7);
     const vg = g.createRadialGradient(w / 2, h * .4, h * .35, w / 2, h * .4, h * .95); vg.addColorStop(0, 'rgba(8,10,20,0)'); vg.addColorStop(1, 'rgba(8,10,20,.75)'); g.fillStyle = vg; g.fillRect(0, 0, w, h);
   }
   function region(g, x, y, kind, t, e) {
@@ -182,6 +198,8 @@
     if (kind === 'forest') for (let j = 0; j < 7; j++) { const xx = x - 32 + (j % 4) * 20 + (j > 3 ? 10 : 0), yy = y - 6 + (j > 3 ? 12 : 0); g.fillStyle = j % 2 ? '#2f5a2a' : '#3a6a30'; g.beginPath(); g.arc(xx, yy - 10, 11, 0, TAU); g.fill() }
     if (kind === 'mesa') { g.fillStyle = '#8a5a34'; g.fillRect(x - 34, y - 14, 26, 26); g.fillRect(x + 2, y - 22, 30, 34); g.fillStyle = '#a06a40'; g.fillRect(x - 34, y - 14, 26, 5); g.fillRect(x + 2, y - 22, 30, 5) }
     if (kind === 'shadow') { glow(g, x, y, 40, hsla(260, 50, 30), .9); g.fillStyle = '#1a1428'; g.beginPath(); g.ellipse(x, y, 34, 14, 0, 0, TAU); g.fill(); for (let j = 0; j < 4; j++) glow(g, x - 20 + j * 13, y - 4 + Math.sin(t + j) * 3, 4, hsla(270, 80, 75), .7) }
+    if (kind === 'islands') { for (let j = 0; j < 3; j++) { const xx = x + 6 + j * 12, yy = y - 10 + j * 10; g.fillStyle = '#6a7a48'; g.beginPath(); g.ellipse(xx, yy, 9, 5, 0, 0, TAU); g.fill(); g.strokeStyle = `rgba(160,210,250,${.5 + .3 * Math.sin(t * 2 + j)})`; g.lineWidth = 1.5; g.beginPath(); g.ellipse(xx, yy, 13, 7, 0, 0, TAU); g.stroke() } }
+    if (kind === 'basin') { for (let j = 0; j < 6; j++) { g.fillStyle = j % 2 ? '#c8b060' : '#9ab858'; g.fillRect(x - 30 + (j % 3) * 20, y - 6 + Math.floor(j / 3) * 12, 18, 10) } }
     if (kind === 'plain') { g.fillStyle = 'rgba(240,230,190,.85)'; for (let j = 0; j < 5; j++) g.fillRect(x - 24 + j * 12, y - 8 - (j % 2) * 6, 4, 14 + (j % 2) * 6); glow(g, x, y - 6, 30, hsla(50, 100, 85), .4) }
     g.restore();
   }
@@ -322,23 +340,43 @@
     if (o.staff) { g.lineWidth = 1.5 * s; g.beginPath(); g.moveTo(x + 7 * s, y); g.lineTo(x + 9 * s, y - 40 * s - bob); g.stroke() }
   }
 
-  /* ---------------- kin · generations walk, bodies change with their element ---------------- */
+  /* ---------------- kin · one people becoming many: tall and slender, human, dwarf, burly, horned ---------------- */
+  const FORMS = [
+    { e: 1, h: 1.38, w: .72, head: .9, ears: 1, horns: 0, beard: 0, sh: .9 },    // tall and slender (long ears)
+    { e: 8, h: 1, w: 1, head: 1, ears: 0, horns: 0, beard: 0, sh: 1 },          // human
+    { e: 8, h: .62, w: 1.45, head: 1.1, ears: 0, horns: 0, beard: 1, sh: 1.3 },  // dwarf: short, stocky, bearded
+    { e: 4, h: 1.25, w: 1.75, head: .85, ears: 0, horns: 0, beard: 0, sh: 1.8 }, // burly giant-kin
+    { e: 7, h: 1.08, w: 1.1, head: 1, ears: 0, horns: 1, beard: 0, sh: 1.1 }];   // horned
+  const BASE = { h: 1, w: 1, head: 1, ears: 0, horns: 0, beard: 0, sh: 1 };
+  function person(g, x, y, S, f, col, rim, t, ph) {
+    const H = 100 * S * f.h, W = 22 * S * f.w, sh = 14 * S * f.sh, hd = 9 * S * f.head, br = Math.sin(t * 1.5 + ph) * 1.2 * S;
+    g.save(); g.fillStyle = col; g.shadowColor = rim; g.shadowBlur = 14 * S;
+    const top = y - H, neck = top + hd * 2.1, hip = y - H * .44;
+    g.beginPath();                                                            // legs
+    g.moveTo(x - W * .45, hip); g.lineTo(x - W * .5, y); g.lineTo(x - W * .1, y); g.lineTo(x, hip + H * .08); g.lineTo(x + W * .1, y); g.lineTo(x + W * .5, y); g.lineTo(x + W * .45, hip); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(x - sh, neck + 4 * S + br); g.lineTo(x + sh, neck + 4 * S + br); g.lineTo(x + W * .5, hip); g.lineTo(x - W * .5, hip); g.closePath(); g.fill();   // torso
+    for (const sg of [-1, 1]) { g.beginPath(); g.moveTo(x + sg * sh, neck + 5 * S + br); g.lineTo(x + sg * (sh + 7 * S * f.w), hip + H * .05); g.lineTo(x + sg * (sh + 2 * S), hip + H * .07); g.lineTo(x + sg * (sh - 3 * S), neck + 12 * S); g.closePath(); g.fill() }  // arms
+    const hy = top + hd + br; g.beginPath(); g.ellipse(x, hy, hd * .9, hd, 0, 0, TAU); g.fill();   // head
+    if (f.ears > .05) for (const sg of [-1, 1]) { g.beginPath(); g.moveTo(x + sg * hd * .7, hy - hd * .1); g.lineTo(x + sg * hd * (.8 + 1.3 * f.ears), hy - hd * (.4 + .9 * f.ears)); g.lineTo(x + sg * hd * .8, hy + hd * .3); g.closePath(); g.fill() }
+    if (f.horns > .05) for (const sg of [-1, 1]) { g.beginPath(); g.moveTo(x + sg * hd * .4, hy - hd * .7); g.quadraticCurveTo(x + sg * hd * (1.6 * f.horns + .4), hy - hd * (1.9 * f.horns + .4), x + sg * hd * (.9 * f.horns + .5), hy - hd * (2.4 * f.horns + .2)); g.lineTo(x + sg * hd * .7, hy - hd * .6); g.closePath(); g.fill() }
+    if (f.beard > .05) { g.beginPath(); g.moveTo(x - hd * .7, hy + hd * .2); g.quadraticCurveTo(x, hy + hd * (1 + 1.4 * f.beard), x + hd * .7, hy + hd * .2); g.closePath(); g.fill() }
+    g.restore();
+  }
   function kin(g, w, h, t) {
-    sky(g, w, h, [[0, '#100e28'], [.45, '#262246'], [.62, '#3a3254'], [1, '#3a3254']]); stars(g, w, h, t, 70, 82, h * .4, .6);
-    const hz = h * .46; ridge(g, w, h, hz - h * .05, h * .06, 81, '#3a2e48', hz + 20);
-    const gr = g.createLinearGradient(0, hz, 0, h); gr.addColorStop(0, '#2a2030'); gr.addColorStop(1, '#0c0a10'); g.fillStyle = gr; g.fillRect(0, hz, w, h - hz);
-    // the road
-    g.fillStyle = 'rgba(200,170,130,.18)'; g.beginPath(); g.moveTo(0, hz + h * .17); g.lineTo(w, hz + h * .11); g.lineTo(w, hz + h * .17); g.lineTo(0, hz + h * .24); g.fill();
-    // three bands of walkers, each shaped by an element, generations fade in and out
-    const groups = [{ e: ELEMENTS[0], o: { tall: 1.25, head: .9 } }, { e: ELEMENTS[5], o: { ears: true, lean: 2 } }, { e: ELEMENTS[8], o: { bulk: 1.5, tall: .85, horns: true } }, { e: ELEMENTS[2], o: { tall: 1.1, staff: true } }];
-    for (let k = 0; k < 14; k++) {
-      const per = 16, ph = ((t * .9 + k * per / 14) % per) / per, x = lerp(-80, w + 80, ph), y = lerp(hz + h * .2, hz + h * .14, ph);
-      const gen = clamp(ph * 1.4), grp = groups[k % groups.length], o = {}; for (const key in grp.o) o[key] = typeof grp.o[key] === 'number' ? lerp(1, grp.o[key], gen) : gen > .5 && grp.o[key];
-      o.ph = k; const e = grp.e, col = `hsl(${e.h},${lerp(0, 40, gen)}%,${lerp(12, 20, gen)}%)`;
-      glow(g, x, y - 50, 70, hsla(e.h, e.s, e.l), .3 * gen); walker(g, x, y, 2.2, t, col, o);
-    }
-    // generations ticking by: suns and moons arcing overhead
-    for (let k = 0; k < 3; k++) { const ph = ((t * .12 + k / 3) % 1), x = lerp(-20, w + 20, ph), y = hz - Math.sin(ph * Math.PI) * h * .34; const day = k % 2 === 0; if (day) { glow(g, x, y, 50, hsla(45, 100, 80), .5); g.fillStyle = '#fff2c0'; g.beginPath(); g.arc(x, y, 9, 0, TAU); g.fill() } else moon(g, x, y, 10, t) }
+    sky(g, w, h, [[0, '#100e28'], [.45, '#262246'], [.66, '#3a3254'], [1, '#3a3254']]); stars(g, w, h, t, 80, 82, h * .4, .6); moon(g, w * .86, h * .12, h * .04, t);
+    const hz = h * .62; ridge(g, w, h, hz - h * .04, h * .04, 81, '#2a2440', hz + 20); g.fillStyle = '#16121e'; g.fillRect(0, hz, w, h - hz);
+    // generations tick by: every few seconds a pulse runs through them and each body moves one step toward its new shape
+    const gen = clamp((t - .8) / 7.5), step = Math.floor(gen * 5) / 5, smooth = lerp(step, Math.min(1, step + .2), ease(((gen * 5) % 1) * 1.6)), k = gen >= 1 ? 1 : smooth;
+    const S = h / 520;
+    FORMS.forEach((F, i) => {
+      const x = w * (.14 + i * .18), y = hz + h * .08, e = ELEMENTS[F.e], f = {}; for (const key in BASE) f[key] = lerp(BASE[key], F[key], k);
+      // faded outlines of the generations before
+      for (let gnr = 1; gnr <= 3; gnr++) { const kk = Math.max(0, k - gnr * .25); if (kk <= 0 && gnr > 1) break; const pf = {}; for (const key in BASE) pf[key] = lerp(BASE[key], F[key], kk); g.globalAlpha = .16 / gnr; person(g, x - gnr * 16 * S, y - gnr * 3, S * 1.6, pf, '#0a0812', `hsla(${e.h},${e.s}%,${e.l}%,.6)`, t, i); g.globalAlpha = 1 }
+      glow(g, x, y - 80 * S * f.h, 110 * S * (.8 + f.w * .3), hsla(e.h, e.s, e.l), .22 + .15 * k);
+      person(g, x, y, S * 1.6, f, '#0a0812', `hsla(${e.h},${e.s}%,${Math.min(90, e.l + 15)}%,.9)`, t, i);
+      const pulse = ((gen * 5) % 1); if (gen < 1 && pulse < .25) { g.strokeStyle = `hsla(${e.h},${e.s}%,80%,${(1 - pulse * 4) * .6})`; g.lineWidth = 2; g.beginPath(); g.ellipse(x, y, 40 * S * (1 + pulse * 6), 10 * S * (1 + pulse * 6), 0, 0, TAU); g.stroke() }
+      for (let j = 0; j < 6; j++) { const q = rng(1000 + i * 10 + j), ph = (t * .4 + q()) % 1; glow(g, x + (q() - .5) * 60 * S, y - ph * 180 * S, 4, hsla(e.h, e.s, 80), (1 - ph) * .7) }
+    });
   }
 
   /* ---------------- forgotten · a scholar with a lantern before a wall of unreadable script ---------------- */
@@ -404,8 +442,11 @@
     // a few lights deep inside (eyes? lanterns?) and fireflies
     for (let i = 0; i < 5; i++) { const q = rng(500 + i), on = Math.sin(t * .7 + i * 2) > .6; if (on) glow(g, w * (.1 + q() * .8), h * (.6 + q() * .2), 6, hsla(q() < .5 ? 280 : 90, 80, 75), .8) }
     for (let i = 0; i < 30; i++) { const q = rng(600 + i), x = w * q() + Math.sin(t * .8 + i) * 20, y = h * (.5 + q() * .4) + Math.cos(t * .6 + i) * 10; glow(g, x, y, 5, hsla(80, 90, 70), .5 + .5 * Math.sin(t * 3 + i)) }
-    // a lone traveller's trail stops at the forest's edge
-    g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, h * .9, w, h * .1);
+    // the ancestors walk out of the forest's edge, small lights in their chests
+    g.fillStyle = '#0c1612'; g.fillRect(0, h * .6, w, h * .4);
+    for (let i = 0; i < 9; i++) { const st = 1 + i * .7, k = clamp((t - st) / 9); if (k <= 0) continue; const x = lerp(w * .84, w * .1 + i * 12, ease(k)), y = h * .6 + (i % 3) * 6, H = h * .16;
+      g.fillStyle = '#05080a'; g.beginPath(); g.moveTo(x - H * .14, y); g.lineTo(x - H * .07, y - H * .7); g.quadraticCurveTo(x, y - H * .98, x + H * .07, y - H * .7); g.lineTo(x + H * .14, y); g.fill();
+      glow(g, x, y - H * .6, H * .22, hsla(48, 100, 88), .9 * clamp(k * 6)) }
   }
 
   /* ---------------- hearth · tales by the fire in Fernvale ---------------- */
@@ -445,9 +486,10 @@
     glow(g, ox, h * .58, w * .3, hsla(48, 100, 80), .35);
     // farmers at work, a small fire shrine (Fren) with a flame offering
     g.save(); g.translate(0, -h * .12); const fr = rng(103); for (let j = 0; j < 7; j++) { const x = w * (.1 + j * .12) + fr() * 20, y = h * (.72 + fr() * .06), bend = Math.sin(t * 2 + j) * 3; g.fillStyle = '#3a3020'; g.beginPath(); g.arc(x + bend, y - 22, 4, 0, TAU); g.fill(); g.strokeStyle = '#3a3020'; g.lineWidth = 4; g.beginPath(); g.moveTo(x, y); g.lineTo(x + bend, y - 18); g.stroke(); g.strokeStyle = '#d8b860'; g.lineWidth = 2; for (let q = 0; q < 5; q++) { g.beginPath(); g.moveTo(x - 30 + q * 14, y + 6); g.lineTo(x - 30 + q * 14 + Math.sin(t * 1.5 + q) * 2, y - 12); g.stroke() } }
-    const sx = w * .86, sy = h * .74; g.fillStyle = '#8a6a4a'; g.fillRect(sx - 14, sy - 26, 28, 26); g.beginPath(); g.moveTo(sx - 18, sy - 26); g.lineTo(sx, sy - 40); g.lineTo(sx + 18, sy - 26); g.fill();
-    glow(g, sx, sy - 14, 22, hsla(24, 100, 60), .9); g.fillStyle = '#ffb050'; g.beginPath(); g.moveTo(sx - 4, sy - 8); g.quadraticCurveTo(sx + Math.sin(t * 9) * 2, sy - 20, sx + 4, sy - 8); g.fill();
-    for (let j = 0; j < 2; j++) { const x = sx - 40 - j * 18, y = sy + 4; g.fillStyle = '#4a3a2a'; g.beginPath(); g.ellipse(x, y, 7, 10, 0, Math.PI, 0); g.fill(); g.beginPath(); g.arc(x + 2, y - 12, 4, 0, TAU); g.fill() } g.restore();
+    // children running along the field edge, a kite
+    for (let j = 0; j < 3; j++) { const x = (w * .2 + ((t * 60 + j * 70) % (w * .7))), y = h * .66 + Math.abs(Math.sin(t * 9 + j)) * -4; g.fillStyle = '#3a2a1a'; g.beginPath(); g.arc(x, y - 16, 3.5, 0, TAU); g.fill(); g.strokeStyle = '#3a2a1a'; g.lineWidth = 3; g.beginPath(); g.moveTo(x, y - 12); g.lineTo(x, y - 4); g.moveTo(x, y - 4); g.lineTo(x - 3 + Math.sin(t * 14 + j) * 3, y + 2); g.moveTo(x, y - 4); g.lineTo(x + 3 - Math.sin(t * 14 + j) * 3, y + 2); g.stroke() }
+    { const kx = w * .62 + Math.sin(t * .7) * 20, ky = h * .32 + Math.cos(t * .9) * 10; g.strokeStyle = 'rgba(80,60,40,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(w * .2 + ((t * 60 + 140) % (w * .7)), h * .64); g.quadraticCurveTo(w * .5, h * .5, kx, ky); g.stroke(); g.fillStyle = '#d8483a'; g.beginPath(); g.moveTo(kx, ky - 12); g.lineTo(kx + 9, ky); g.lineTo(kx, ky + 12); g.lineTo(kx - 9, ky); g.fill() }
+    g.restore();
   }
 
   /* ---------------- homeMorning · inside the hero's house, sun through the window, father's knife on the wall ---------------- */

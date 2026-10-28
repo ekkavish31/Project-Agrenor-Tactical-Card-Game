@@ -12,19 +12,19 @@ const PROLOGUE=[
  {art:'ruins',bg:'assets/scenes/area-ruins.webp',text:'กาลครั้งหนึ่ง นานมาแล้ว…\nนานจนไม่มีใครจำได้ว่านานเท่าไร'},
  {art:'ruins',bg:'assets/scenes/area-ruins.webp',text:'ใต้แสงจันทร์สีม่วง โลกใบนี้เคยเป็นบ้านของผู้คนอีกยุคหนึ่ง\nสิ่งที่พวกเขาสร้างไว้ วันนี้เหลือเพียงเสาหักกลางทุ่งหญ้า'},
  {art:'ancient',bg:'assets/scenes/area-ruins.webp',text:'ไม่มีใครจำชื่อของพวกเขาได้อีกแล้ว\nมีเพียงร่องรอยที่ยังหลับอยู่ใต้ดิน ใต้รากไม้ และในหินที่เรืองแสงเบา ๆ'},
+ {art:'deepwood',bg:'assets/scenes/area-forest.webp',text:'บางตำนานเล่าว่า ผู้คนเหล่านั้นเดินออกมาจากป่าใหญ่ทางตะวันออก\nป่าที่ไม่มีใครเห็นปลายทาง… และจนทุกวันนี้ ก็ยังน้อยคนนักที่เข้าไปแล้วได้กลับออกมา'},
  {art:'heirs',bg:'assets/scenes/area-ruins.webp',text:'ในอกของพวกเขาแต่ละคน มีแสงดวงเล็ก ๆ ส่องอยู่\nแสงที่ส่งต่อจากพ่อสู่ลูก จากรุ่นสู่รุ่น'},
  {art:'heirs',bg:'assets/scenes/area-ruins.webp',text:'แล้ววันหนึ่ง แสงเหล่านั้นก็เริ่มมีสีของตัวเอง\nบ้างร้อนดั่งไฟ บ้างเย็นดั่งน้ำแข็ง บ้างเงียบสงบดั่งราตรี'},
- {art:'journey',bg:'assets/scenes/area-forest.webp',text:'ลูกหลานของพวกเขาจึงออกเดินทาง ตามแสงในอกของตน\nข้ามภูเขา ข้ามทะเลทราย เลาะลำธาร ไปจนสุดขอบฟ้า'},
+ {art:'journey',bg:'assets/scenes/area-forest.webp',text:'ลูกหลานของพวกเขาจึงก้าวออกจากชายป่า เดินตามแสงในอกของตน\nมุ่งไปทางตะวันตก ข้ามภูเขา ข้ามทะเลทราย เลาะลำธาร ไปจนสุดขอบฟ้า'},
  {art:'journey',bg:'assets/scenes/area-forest.webp',text:'ใครศรัทธาในไฟ ก็ไปหาแผ่นดินที่ร้อนระอุ\nใครศรัทธาในน้ำ ก็ไปตั้งรกรากริมทะเล'},
- {art:'kin',bg:'assets/scenes/area-forest.webp',text:'ปีแล้วปีเล่า ผืนแผ่นดินค่อย ๆ หล่อหลอมพวกเขา\nจนลูกหลานรุ่นหลังมีรูปร่างต่างจากบรรพบุรุษ กลายเป็นเผ่าพันธุ์ใหม่'},
+ {art:'kin',bg:'assets/scenes/area-forest.webp',text:'ปีแล้วปีเล่า ผืนแผ่นดินค่อย ๆ หล่อหลอมพวกเขา\nบ้างสูงโปร่ง บ้างเตี้ยล่ำ บ้างกำยำ บ้างมีเขางอกบนหัว… จนกลายเป็นเผ่าพันธุ์ใหม่มากมาย'},
  {art:'realms',bg:'assets/scenes/area-forest.webp',text:'กระโจมเล็ก ๆ กลายเป็นหมู่บ้าน\nหมู่บ้านกลายเป็นเมือง'},
  {art:'realms',bg:'assets/scenes/area-forest.webp',text:'เมืองผูกกันไว้ด้วยการค้าและศรัทธา\nบางแห่งรวมกันเป็นอาณาจักรยิ่งใหญ่ บางแห่งยังยืนหยัดอย่างอิสระ'},
  {art:'forgotten',bg:'assets/scenes/area-ruins.webp',text:'เวลาผ่านไปนานเข้า ชื่อใหม่และภาษาใหม่ก็เข้ามาแทนที่\nเรื่องของบรรพชนกลายเป็นนิทาน เหลือเพียงคำในบทสวดที่ไม่มีใครเข้าใจ'},
  {art:'faith',bg:'assets/scenes/area-ruins.webp',text:'ผู้คนสวดอ้อนวอนต่อเทพแห่งธาตุและผู้พิทักษ์ใกล้ตัว\nและเมื่อศรัทธามากพอ… สิ่งที่อยู่ในคำอธิษฐานก็ค่อย ๆ ลืมตาขึ้นจริง'},
- {art:'deepwood',bg:'assets/scenes/area-forest.webp',text:'ไกลออกไปทางตะวันออก มีป่าใหญ่ที่ไม่มีใครเห็นปลายทาง\nน้อยคนที่เข้าไปแล้วได้กลับออกมา แผนที่ทุกฉบับจึงหยุดอยู่แค่ชายป่า'},
- {art:'fernvale',bg:'assets/market.webp',text:'ส่วนมนุษย์ ผู้สืบสายดินและน้ำ ตั้งบ้านเรือนตามลุ่มแม่น้ำ Navelmidia\nและที่ชานเมืองใหญ่แห่งหนึ่ง… มีหมู่บ้านเล็ก ๆ ชื่อว่าเฟิร์นเวล'},
- {art:'elukhor',bg:'assets/home.webp',text:'ทุกวัน ดวงแสงสีทองที่ชาวบ้านเรียกว่า "ดวงทอง" จะลอยค้างอยู่บนฟ้า\nส่องแสงและความอบอุ่นให้ทุ่งนา ผู้คนบูชามันในนาม Elukhor เทพแห่ง Fren ธาตุไฟ'},
- {art:'hearth',bg:'assets/market.webp',text:'พอตกค่ำ ผู้คนล้อมวงข้างกองไฟใต้จันทร์สีม่วง\nเล่านิทานเรื่องบรรพชน ป่าใหญ่ และเทพธาตุ… เหมือนที่เราเล่ากันอยู่ตอนนี้'},
+ {art:'fernvale',bg:'assets/market.webp',text:'ส่วนมนุษย์ ผู้สืบสายดินและน้ำ ตั้งบ้านเรือนในที่ราบลุ่มแม่น้ำ Nor\'Chorthal\nและที่ชานเมืองใหญ่แห่งหนึ่ง… มีหมู่บ้านเล็ก ๆ ชื่อว่าเฟิร์นเวล'},
+ {art:'elukhor',bg:'assets/home.webp',text:'ยามกลางวัน ดวงทองลอยค้างอยู่บนฟ้า ส่องแสงอุ่นลงมาทั่วลุ่มน้ำ\nชาวนาก้มหน้าเกี่ยวข้าว เด็ก ๆ วิ่งเล่นตามคันนา และเสียงระฆังจากตลาดก็ดังมาแต่ไกล'},
+ {art:'hearth',bg:'assets/market.webp',text:'พอตกค่ำ ผู้คนล้อมวงข้างกองไฟใต้จันทร์สีม่วง\nเล่านิทานเรื่องบรรพชน ป่าใหญ่ และอาณาจักรไกลโพ้น… เหมือนที่เราเล่ากันอยู่ตอนนี้'},
  {art:'festival',bg:'assets/home.webp',text:'อีกสามวัน จะถึงงานเทศกาลเก็บเกี่ยวที่ทั้งหมู่บ้านรอคอย\nไม่มีใครรู้เลยว่า ปีนี้… จะไม่เหมือนทุกปี'}
 ];
 /* after the name: one more page that walks into the village chapter, then the game starts (js/story-data.js 'opening') */
@@ -162,7 +162,8 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
    A reload (New Game over an old save) loses full screen, so the first tap in the prologue asks again. */
 function goFull(force){try{if(!force&&localStorage.getItem('project-a-fullscreen')==='0')return;try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch{}if(document.fullscreenElement)return;const d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;if(f){const r=f.call(d,{navigationUI:'hide'});r?.catch?.(()=>{})}try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch{}}catch{}}
 root.goFullscreen=goFull;
-if(newGame)addEventListener('pointerdown',goFull,{once:true,capture:true});
+/* v95.06: New Game is always full screen + landscape; a reload drops full screen, so the first tap or key in the tale takes it back (no extra page) */
+if(newGame){const back=()=>{goFull(true);removeEventListener('pointerdown',back,true);removeEventListener('keydown',back,true)};addEventListener('pointerdown',back,true);addEventListener('keydown',back,true)}
 async function act(a){if(busyTitle)return;if(a==='new')goFull(true);else if(a==='continue')goFull();
  if(a==='new'){if(hasSave){const ok=await (root.GameDialog?root.GameDialog.confirm('เริ่มเกมใหม่?\nความคืบหน้าในเซฟปัจจุบันจะถูกแทนที่ (ระบบเก็บสำเนาเซฟเดิมไว้ให้ 1 ชุด) · การ์ดที่ออกแบบและผังหมู่บ้านยังอยู่'):Promise.resolve(root.confirm('เริ่มเกมใหม่?')));if(!ok)return;
    try{localStorage.setItem('three-card-forge-before-newgame',localStorage.getItem(SAVE)||'');localStorage.removeItem(SAVE);localStorage.removeItem(STARTED);for(const k of ['agrenor-world-v1','agrenor-mind-v1','agrenor-clock-v1','agrenor-standalone-v1'])localStorage.removeItem(k);/* v94: the world map, village memory and old clock start over too */sessionStorage.setItem(NEW_FLAG,'1')}catch{}busyTitle=true;title.classList.add('ts-out');await wait(reduced?0:300);location.reload();return}
@@ -211,11 +212,8 @@ const settle=()=>new Promise(r=>{let n=0;const f=()=>++n>=12?r():requestAnimatio
 let storyReady=false;
 async function prepareStory(){title.classList.add('ts-quick');
  await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(12000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900});
- storyReady=true;await tapToStart();story()}
-/* v95.05 · New Game is played full screen and landscape: a reload drops full screen, so one tap (a user gesture) takes it back before the tale starts */
-function tapToStart(){if(document.fullscreenElement&&!matchMedia('(orientation:portrait)').matches)return Promise.resolve();
- return new Promise(r=>{const g=document.createElement('button');g.type='button';g.className='ts-gate';g.innerHTML='<b>▶ แตะเพื่อเริ่มนิทาน</b><small>เกมจะเปิดเต็มจอในแนวนอน</small>';
-  g.onclick=()=>{goFull(true);g.remove();setTimeout(r,250)};title.appendChild(g);g.focus()})}
+ storyReady=true;story()}
+
 
 /* ---------- into the game ---------- */
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}

@@ -110,6 +110,3 @@ html.title-boot,html.title-boot body{overflow:hidden}
 #titleScreen .ts-story-text.ts-all .ts-w{animation:none;opacity:1}
 @keyframes ts-word{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:none}}
 #titleScreen .ts-story-text{font-size:clamp(18px,2.3vw,25px);line-height:1.9;letter-spacing:.01em}
-#titleScreen .ts-gate{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#05070cee;border:0;color:#fbf0d6;font:inherit;cursor:pointer}
-#titleScreen .ts-gate b{font:600 clamp(20px,2.6vw,30px) Georgia,'Noto Serif Thai',serif;padding:14px 28px;border:1px solid #c9a86a;border-radius:999px;background:#2a1e10aa}
-#titleScreen .ts-gate small{color:#c9bb98;letter-spacing:.06em}
