@@ -249,5 +249,8 @@
       size, get scene() { return cur?.name || null }
     };
   }
-  root.SceneArt = { create, scenes: Object.keys(SCENES), has: n => !!SCENES[n] };
+  /* draw every scene once off screen so the first real frame does not pay for it (title-screen loader) */
+  function warm() { return new Promise(r => { const c = document.createElement('canvas'); c.width = 480; c.height = 270; const g = c.getContext('2d'); const names = Object.keys(SCENES); let i = 0;
+    const step = () => { if (i >= names.length) return r(true); try { SCENES[names[i]](g, 480, 270, 6) } catch (e) { } i++; requestAnimationFrame(step) }; step() }) }
+  root.SceneArt = { create, warm, scenes: Object.keys(SCENES), has: n => !!SCENES[n] };
 })(globalThis);

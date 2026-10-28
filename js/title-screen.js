@@ -180,10 +180,18 @@ function storyEnd(){if(typing){clearInterval(typing);typing=null}const st=title.
  const input=f.elements.hero;input.value=game()?.village?.heroName||'';setTimeout(()=>input.focus(),30);
  f.onsubmit=e=>{e.preventDefault();const n=input.value.trim().slice(0,16)||'นักผจญภัย';if(game()?.village){game().village.heroName=n;doSave()}root.HeroIdentity?.syncHeroName?.();enter(true)}}
 
+/* ---------- v95.02 · New Game: load everything first, then play the prologue (no stutter while the game page and the town frame are still loading) ---------- */
+const fonts=()=>[()=>loadFont('VillageThai','assets/village-town/noto-sans-thai-thai-400-normal.woff2'),()=>document.fonts?.ready];
+const pageLoaded=()=>document.readyState==='complete'?Promise.resolve():Promise.race([new Promise(r=>root.addEventListener('load',r,{once:true})),wait(15000)]);
+const settle=()=>new Promise(r=>{let n=0;const f=()=>++n>=12?r():requestAnimationFrame(f);requestAnimationFrame(f)});   // a few quiet frames after the heavy work
+let storyReady=false;
+async function prepareStory(){title.classList.add('ts-quick');
+ await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(12000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900});
+ storyReady=true;story()}
+
 /* ---------- into the game ---------- */
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}
- const fonts=[()=>loadFont('VillageThai','assets/village-town/noto-sans-thai-thai-400-normal.woff2'),()=>document.fonts?.ready];
- await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(10000)])]}],{bg:'assets/home.webp',minMs:isNew?900:500});
+ await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(10000)])]}],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
  title.classList.add('ts-out');document.documentElement.classList.remove('title-boot');T.active=false;await wait(reduced?0:450);art?.stop();art=null;title.remove();
  try{if(typeof render==='function')render()}catch{}root.VillageTown?.sync?.();root.GameBGM?.refresh?.();startPrefetch();
  if(!isNew&&game()?.village&&!game().village.heroName)root.HeroIdentity?.askHeroName?.(true)}
@@ -191,7 +199,7 @@ async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.
 function boot(){hookScenes();setInterval(()=>Gallery.track(),2000);
  if(skip){startPrefetch();return}
  buildTitle();loadImage('assets/scenes/area-forest.webp');for(const p of PROLOGUE)if(!p.art||!root.SceneArt)loadImage(p.bg);
- if(newGame){title.classList.add('ts-quick');story()}}
+ if(newGame)prepareStory()}
 // the title is built once every game script ran (DOMContentLoaded — not window load, which waits for the town frame) (settings, adventure, battle hooks exist by then)
 if(document.readyState!=='loading')boot();else document.addEventListener('DOMContentLoaded',boot);
 T.run=run;T.load=load;T.prefetch=prefetch;T.sets={village:villageSet,battle:battleCore,battleExtra,enemies:enemySet,area:areaKinds};
