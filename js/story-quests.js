@@ -93,11 +93,11 @@ const STEPS=[
   progress:d=>Math.min(1,(d.kills||0)/3),check:d=>(d.kills||0)>=3,
   tick:d=>{if(adv()?.area==='forest')d.kills=Math.max(d.kills||0,adv().kills||0)},
   acts:[{label:'🌲 ออกเดินทางสู่ป่าตะวันออก',primary:true,hide:()=>!!adv(),run:()=>root.Adventure?.enter('forest')}],
-  reward:()=>root.StarterKit?.unlock?.([{group:'movement',id:'sprint',n:2},{group:'combat',id:'evade',n:1},{group:'combat',id:'firstAid',n:1}],{kicker:'ของจากค่ายโจร',title:'ทักษะเอาตัวรอด'})},
+  reward:()=>root.StarterKit?.unlock?.([{group:'movement',id:'sprint',n:2},{group:'combat',id:'climb',n:2},{group:'combat',id:'dive',n:1},{group:'combat',id:'evade',n:1},{group:'combat',id:'firstAid',n:1}],{kicker:'ของจากค่ายโจร',title:'ทักษะเอาตัวรอด',text:'ป่ามีเนินและหน้าผา · ปีนขึ้นที่สูงแล้วกระโจนฟาดลงมาแรงกว่าเดิม'})},
  {id:'return',tag:'real',outro:'home',title:'กลับบ้าน',goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะสำรวจต่อจนถึงหัวหน้าพื้นที่ก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!adv(),acts:[]},
  {id:'sellLoot',tag:'real',title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',check:d=>d.sales>0,acts:[goBtn('market')]},
  {id:'rest',tag:'real',outro:'finale',title:'พักฟื้น',goal:'กลับบ้านแล้วนอนพัก',hint:'',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[goBtn('home'),{...sleepBtn,hide:()=>!at('home')}],
-  reward:async()=>{addCoins(30);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
+  reward:async()=>{addCoins(30);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1},{group:'combat',id:'rockfall',n:1},{group:'combat',id:'perch',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
 const byId=id=>STEPS.findIndex(x=>x.id===id);
 
 /* ---------- pumpkin (temp farming) ---------- */

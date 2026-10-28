@@ -10,7 +10,7 @@ const has=id=>M.assets.some(a=>a.id===id&&a.file&&['final','temp'].includes(a.st
 const PAL={wind:['#12313f','#2f7f96','#c8f2ff'],dark:['#140c22','#4b2f78','#d2b4ff'],water:['#0c2a44','#1f6f9c','#a8e6ff'],light:['#3a2808','#9a7420','#fff0b8'],
  earth:['#2a1a0c','#7a5328','#ffd38a'],nature:['#0f2a16','#3f7a3a','#c8f5a0'],fire:['#2a0c06','#9a3a18','#ffc27a']};
 const LOOK={thunder:['wind','bolt'],backstab:['dark','backstab'],dive:['wind','dive'],tide:['water','wave'],formation:['light','formation'],
- counter:['earth','counter'],evade:['wind','evade'],firstAid:['nature','aid'],ambush:['dark','eye'],
+ counter:['earth','counter'],evade:['wind','evade'],firstAid:['nature','aid'],ambush:['dark','eye'],rockfall:['earth','rocks'],perch:['light','flag'],climb:['nature','peak'],
  // fallbacks for any other card that may lose its art
  attack:['earth','sword'],skill:['fire','burst'],guard:['light','shield'],rest:['nature','leaf'],push:['earth','burst'],step:['nature','boot'],walk:['wind','boot'],run:['wind','boot'],sprint:['fire','boot'],dash:['wind','boot'],creep:['dark','boot']};
 const W=600,H=640,CY=.36;// same shape as the card's art window; the lower third sits under the card's middle bar, so the icon is centred higher
@@ -38,6 +38,9 @@ const ICON={
  formation(g){const sh=(cx,cy,s)=>{g.moveTo(cx,cy-100*s);g.quadraticCurveTo(cx+70*s,cy-88*s,cx+88*s,cy-64*s);g.quadraticCurveTo(cx+88*s,cy+35*s,cx,cy+102*s);g.quadraticCurveTo(cx-88*s,cy+35*s,cx-88*s,cy-64*s);g.quadraticCurveTo(cx-70*s,cy-88*s,cx,cy-100*s);g.closePath()};sh(0,-60,1.05);sh(-115,80,.85);sh(115,80,.85)},
  counter(g){g.save();g.translate(-40,10);g.scale(.8,.8);ICON.shield(g);g.restore();g.moveTo(90,-150);g.quadraticCurveTo(220,-60,160,90);g.lineTo(200,100);g.lineTo(120,180);g.lineTo(100,70);g.lineTo(135,82);g.quadraticCurveTo(180,-50,70,-125);g.closePath()},
  evade(g){g.arc(40,-120,42,0,Math.PI*2);g.moveTo(0,-60);g.lineTo(80,-60);g.lineTo(100,40);g.lineTo(150,150);g.lineTo(110,165);g.lineTo(55,60);g.lineTo(20,170);g.lineTo(-25,160);g.lineTo(10,30);g.closePath();for(let i=0;i<3;i++)g.rect(-180+i*20,-40+i*60,110-i*20,12)},
+ peak(g){g.moveTo(-200,170);g.lineTo(-40,-60);g.lineTo(10,0);g.lineTo(80,-110);g.lineTo(200,170);g.closePath();g.moveTo(40,-180);g.lineTo(110,-110);g.lineTo(70,-110);g.lineTo(70,-50);g.lineTo(10,-50);g.lineTo(10,-110);g.lineTo(-30,-110);g.closePath()},
+ rocks(g){const r=(x,y,s)=>{g.moveTo(x-50*s,y);g.lineTo(x-25*s,y-45*s);g.lineTo(x+30*s,y-50*s);g.lineTo(x+55*s,y-5*s);g.lineTo(x+30*s,y+40*s);g.lineTo(x-30*s,y+42*s);g.closePath()};r(-80,-100,1.6);r(90,-30,1.9);r(-30,80,2.2);g.rect(-210,170,420,22)},
+ flag(g){g.moveTo(-200,170);g.lineTo(-20,-30);g.lineTo(0,-10);g.lineTo(200,170);g.closePath();g.rect(-12,-190,16,170);g.moveTo(4,-190);g.lineTo(130,-155);g.lineTo(4,-115);g.closePath()},
  aid(g){g.rect(-40,-150,80,300);g.rect(-150,-40,300,80)},
  eye(g){g.moveTo(-180,0);g.quadraticCurveTo(0,-150,180,0);g.quadraticCurveTo(0,150,-180,0);g.closePath();for(let i=0;i<5;i++){const x=-160+i*80;g.moveTo(x,150);g.quadraticCurveTo(x+25,90,x+10,40);g.quadraticCurveTo(x+45,95,x+40,150);g.closePath()}},
  burst(g){for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?90:180;i?g.lineTo(Math.cos(a)*r,Math.sin(a)*r):g.moveTo(Math.cos(a)*r,Math.sin(a)*r)}g.closePath()},
