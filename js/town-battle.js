@@ -7,12 +7,14 @@
    Sizes follow the old formulas (body = cell × 1.6, monster × its scale × clip renderHeight) times one global factor SIZE (?size=). ?m=wolf|slime|kobold|golem
    v92.09 cinematics (Fire Emblem / HD-2D feel, all code-drawn, no new images): camera director (frames both units, pushes in on attacks),
    letterbox bars, spotlight that dims the scene around the two fighters, hit stop, screen shake, camera roll kick, white hit flash,
-   impact light pools, warm light rays + dust motes, popping damage numbers, slow-motion finishing blow. ?cine=0 turns the cinematics off. */
+   impact light pools, warm light rays + dust motes, popping damage numbers, slow-motion finishing blow. ?cine=0 turns the cinematics off.
+   v92.11: hero attack poses = the new idle frame moved in code (the old windup/strike/hit/guard pictures are a different outfit; ?oldposes=1 brings
+   them back) · procedural battle sounds (BattlePolish) · smaller arena (r 5), fighters start closer, monster HP ×1.6 (?hp=). */
 (function () {
   'use strict';
   const Q = new URLSearchParams(location.search), ON = Q.get('battle') === '1';
   if (!ON) { window.TownBattle = { active: () => false }; return }
-  const V = '92.10';
+  const V = '92.11';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -24,7 +26,7 @@
     golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem' }
   };
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
-  const CINE = Q.get('cine') !== '0';
+  const CINE = Q.get('cine') !== '0', OLDPOSE = Q.get('oldposes') === '1', HPX = +Q.get('hp') || 1.6;
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null;
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
   const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -36,8 +38,8 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    for (const s of ['js/tactics-decks.js', 'js/flat-battle.js', 'js/monster-animation.js', 'js/battle-vfx.js', 'js/card-design.js', 'js/card-studio.js']) {
-      const want = { 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio' }[s];
+    for (const s of ['js/tactics-decks.js', 'js/flat-battle.js', 'js/monster-animation.js', 'js/battle-vfx.js', 'js/battle-polish.js', 'js/card-design.js', 'js/card-studio.js']) {
+      const want = { 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio' }[s];
       if (!window[want]) await loadScript(s);
     }
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
@@ -48,7 +50,7 @@
   /* ---------- arena ---------- */
   function build() {
     const sq = locations.find(o => o.id === 'square') || locations[0], c = center(sq);
-    const r = +Q.get('r') || 7, cu = Math.floor(+Q.get('u') || c.u), cv = Math.floor(+Q.get('v') || c.v);
+    const r = +Q.get('r') || 5, cu = Math.floor(+Q.get('u') || c.u), cv = Math.floor(+Q.get('v') || c.v);
     const b = { u0: cu - r, v0: cv - r, u1: cu + r, v1: cv + r }, list = [];
     for (let u = b.u0; u <= b.u1; u++) for (let v = b.v0; v <= b.v1; v++) list.push({ u, v, p: project(u + .5, v + .5) });
     const mats = window.TownPaint?.matsAt ? TownPaint.matsAt(list.map(c => c.p)) : list.map(() => null);
@@ -62,9 +64,9 @@
       cells.set(c.u + ',' + c.v, k);
     });
     const spot = (cu0, cv0) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.hypot(u - cu0, v - cv0); if (d < bd) { bd = d; best = { u, v } } } return best };
-    const hs = spot(b.u0, b.v1), ms = spot(b.u1, b.v0);
+    const gap = Math.min(r - 1, 3), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites ~6 cells apart: contact by turn 1–2
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', cards: true,
-      hero: { ...hs, name: window.heroName?.() || 'ฮีโร่' }, monster: { ...ms, name: MT.name, hp: MT.hp, maxHp: MT.hp, atk: MT.atk, move: MT.move } });
+      hero: { ...hs, name: window.heroName?.() || 'ฮีโร่' }, monster: { ...ms, name: MT.name, hp: Math.round(MT.hp * HPX), maxHp: Math.round(MT.hp * HPX), atk: MT.atk, move: MT.move } });
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle' }
     FB.hero(st).dir = dirTo(FB.hero(st), FB.monster(st)); FB.monster(st).dir = dirTo(FB.monster(st), FB.hero(st));
     st.arena = { cu, cv, r };
@@ -102,6 +104,13 @@
     const need = cardX() + CARD_W + 28 + half - W / 2;
     return Math.max(120, Math.min(need, W / 2 - half - 12));
   }
+  /* procedural battle audio from the old system (BattlePolish: synthesized + the recorded slash) */
+  const SFXK = { sword: 'slash', knife: 'knife', spear: 'spear', rapier: 'rapier', blunt: 'hammer', fire: 'magic', ice: 'ice', lightning: 'lightning', arcane: 'magic', wind: 'magic', earth: 'earth', heal: 'heal', shield: 'block', parry: 'block' };
+  function sfx(kind, s = .6) {
+    const P = window.BattlePolish; if (!P) return;
+    try { if (kind === 'slash') P.sample('slash', s); else if (kind === 'swing') P.swing('sword'); else if (kind === 'step') P.footstep('stone'); else if (kind === 'victory') P.victory(true); else if (kind === 'lose') P.victory(false); else P.sound(kind, s) } catch (e) { }
+  }
+  function hitSound(fx, o = {}) { sfx(SFXK[fx] || 'sword', o.big ? .85 : .6); if (o.crit || o.kill) { sfx('critical', .8); sfx('hammer', .55) } else if (o.big) sfx('hammer', .35) }
   function shake(px, ms) { if (!CINE) return; kick.shake = Math.max(kick.shake, px); kick.shakeT = performance.now(); kick.shakeDur = ms }
   function roll(deg) { if (CINE) kick.roll += deg }
   /* game clock: freezes during hit stop so poses, clips and effects hold for a beat */
@@ -341,7 +350,7 @@
     if (group === 'movement') {
       const show = showPlay(group, id, cardLine(group, id), b), r = FB.playMove(st, i);
       if (!r.ok) { show.el.remove(); b.style.visibility = ''; flash(r.reason); return }
-      busy = true; hudSync(); FB.hero(st).pose = 'idle'; floatText(FB.hero(st), 'MOVE +' + r.move, '#9fd4ff', true);
+      busy = true; hudSync(); FB.hero(st).pose = 'idle'; sfx('cast', .35); floatText(FB.hero(st), 'MOVE +' + r.move, '#9fd4ff', true);
       await wait(650); await show.done(); busy = false; refresh(); return;
     }
     const show = showPlay(group, id, cardLine(group, id), b), r = FB.playCombat(st, i);
@@ -361,7 +370,7 @@
     const kill = m.hp <= 0, heavy = r.big > 1 || r.hits.reduce((a, x) => a + x.damage, 0) >= 20;
     await cinematic(h, m, async () => {
       h.dir = dirTo(h, m); h.pose = 'windup'; if (cine) { cine.z += .18; cine.speed = 4 } await wait(heavy ? 420 : 280);
-      h.pose = 'strike'; if (cine) cine.speed = 9; roll(dirSign(h, m) * (heavy ? 2.2 : 1.3)); lines(m, 220);
+      h.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(h, m) * (heavy ? 2.2 : 1.3)); lines(m, 220);
       const dur = fx(r.fx, m, h, { scale: r.big, color: r.fx === 'arcane' ? '#b49ae8' : '#7cc5db' });
       await wait(Math.min(320, dur * .45));
       for (const [n, x] of r.hits.entries()) {
@@ -374,7 +383,7 @@
       }
       m.shown = m.hp; hudSync();
       if (r.moved) { const from = { u: m.vu - .5, v: m.vv - .5 }; shake(6, 200); await walkAnim(m, [from, { u: m.u, v: m.v }], 5, true) }
-      if (kill) { banner('DEFEATED!', 'win'); await wait(1100) } else await wait(260); h.pose = 'idle';
+      if (kill) { banner('DEFEATED!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(260); h.pose = 'idle';
     }, { z: heavy ? 1.95 : 1.75 });
   }
   /* effect text is English; the log keeps the Thai notes */
@@ -388,6 +397,7 @@
     const big = o.big || o.crit || o.kill, col = FXCOL[kind] || '255,230,170';
     u.flashUntil = now() + (big ? 190 : 120);
     glows.push({ u: u.vu, v: u.vv, col, r: UNIT * (big ? 1.8 : 1.2), t0: now(), dur: big ? 620 : 420 });
+    if (o.sound !== false) hitSound(kind, { big, crit: o.crit, kill: o.kill });
     if (kind === 'heal' || kind === 'shield' && !o.from) return;
     burst(u, col, big ? 30 : 16, o.from, big);
     if (o.from) knock(u, o.from, big ? 16 : 9);
@@ -418,7 +428,7 @@
     const kill = h.hp <= 0, guarded = s.notes.some(n => n.startsWith('ป้องกัน'));
     await cinematic(m, h, async () => {
       m.pose = 'windup'; if (cine) { cine.z += .15; cine.speed = 4 } await wait(Math.min(900, tw?.duration || 380));
-      m.pose = 'strike'; if (cine) cine.speed = 9; roll(dirSign(m, h) * 1.5); lines(h, 200); await wait(Math.min(700, ts?.impactMs ?? 160));
+      m.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(m, h) * 1.5); lines(h, 200); await wait(Math.min(700, ts?.impactMs ?? 160));
       fx(guarded ? 'parry' : MT.fx, h, m, { color: '#ffb36a' }); impact(h, guarded ? 'parry' : MT.fx, { big: s.crit || s.damage >= 12, crit: s.crit, kill, from: m });
       if (s.crit) banner('CRITICAL!', 'crit'); if (s.damage && CINE) screenFlash('255,30,20', s.crit || kill ? .38 : .22, 320);
       h.pose = guarded ? 'guard' : 'hit'; if (kill) { hitStop(380); shake(20, 600) } else if (s.crit) { hitStop(200); shake(16, 440) } else { hitStop(s.damage ? 110 : 70); shake(s.damage ? 10 : 5, 300) }
@@ -439,7 +449,7 @@
     if (st.outcome) { refresh(); finish(); return }
     await startTurnShow(false);
   }
-  function finish() { hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win') } else if (!CINE) toast('VICTORY!') }
+  function finish() { hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
   function flash(msg) { texts.push({ u: FB.hero(st).vu, v: FB.hero(st).vv, txt: msg, col: '#f6d79b', t0: now(), small: true }) }
   function floatText(unit, txt, col, small, big) { texts.push({ u: unit.vu, v: unit.vv, txt, col, t0: now(), small, big, dx: (Math.random() - .5) * 18 }) }
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }
@@ -478,7 +488,7 @@
       if (!tgt) { anims.splice(k, 1); a.res(); continue }
       const tu = tgt.u + .5, tv = tgt.v + .5, du = tu - u.vu, dv = tv - u.vv, len = Math.hypot(du, dv), sp = dt * a.speed;
       if (!a.slide) { u.walking = true; if (len > .01) u.dir = Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'SE' : 'NW') : (dv > 0 ? 'SW' : 'NE') }
-      if (len <= sp) { u.vu = tu; u.vv = tv; a.i++ } else { u.vu += du / len * sp; u.vv += dv / len * sp }
+      if (len <= sp) { u.vu = tu; u.vv = tv; a.i++; if (!a.slide) sfx('step', .3) } else { u.vu += du / len * sp; u.vv += dv / len * sp }
     }
   }
   function shadow(g, p, r) { g.fillStyle = '#0006'; g.beginPath(); g.ellipse(p.x, p.y, r, r * .45, 0, 0, 7); g.fill() }
@@ -491,8 +501,22 @@
     const set = A.directions[u.dir] || A.directions.SE, name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
     if (name === 'walk') return window.HeroMotion?.frame(A, u.dir, t, true) || set.idle;
     if (name === 'idle') return window.HeroMotion?.frame(A, u.dir, t, false) || set.idle;
+    if (!OLDPOSE) return set.idleFrames?.[0] || set.idle;                 // action poses: still frame of the new outfit, moved by poseMotion()
     const fr = set[name + 'Frames']; if (fr?.length) return name === 'down' ? fr.at(-1) : (window.StudioWalks?.frame(fr, t) || fr[0]);
     return set[name] || set.idle;
+  }
+  /* procedural action poses (code instead of pictures): lean back on windup, lunge + sword arc on strike, recoil on hit, crouch on guard, fall on down */
+  function poseMotion(u, t) {
+    const name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
+    if (u._lp !== name) { u._lp = name; u._pt = t }
+    const e = t - (u._pt || t), fs = ['SE', 'NE'].includes(u.dir) ? 1 : -1, ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3), m = { dx: 0, dy: 0, rot: 0, sx: 1, sy: 1, wpn: 0 };
+    if (OLDPOSE) return m;
+    if (name === 'windup') { const k = ease(e / 200); Object.assign(m, { dx: -fs * 7 * k, rot: -fs * .15 * k, sx: 1 + .03 * k, sy: 1 - .05 * k, wpn: -fs * 75 * k }) }
+    else if (name === 'strike') { const k = ease(e / 90), d = 1 - ease((e - 220) / 320); Object.assign(m, { dx: fs * 18 * k * d, dy: -2 * k * d, rot: fs * .17 * k * d, sx: 1 - .03 * k * d, sy: 1 + .05 * k * d, wpn: fs * (-75 + 170 * k) * d }) }
+    else if (name === 'hit') { const k = Math.exp(-e / 170); Object.assign(m, { dx: -fs * 9 * k, rot: -fs * .13 * k, sy: 1 - .04 * k }) }
+    else if (name === 'guard') { const k = ease(e / 130); Object.assign(m, { dx: -fs * 3 * k, sx: 1 + .04 * k, sy: 1 - .08 * k, wpn: -fs * 40 * k }) }
+    else if (name === 'down') { const k = ease(e / 450); Object.assign(m, { rot: -fs * 1.3 * k, dy: 2 * k }) }
+    return m;
   }
   function weapon(g, def, hand, left, top, size, angle) {
     const i = im(def.src); if (!i) return;
@@ -503,8 +527,10 @@
     const A = sprites(), p = project(u.vu, u.vv), f = heroFrame(u, t); if (!A || !f) return;
     const size = UNIT * 1.6, left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1], i = im(f.src);
     let ox = 0; if (u.pose === 'hit') ox = Math.sin(t * .07) * 3;
+    const pm = poseMotion(u, t);
     shadow(g, p, UNIT * .26); g.save(); g.translate(ox, 0); if (u.hp <= 0) g.globalAlpha *= .6;
-    const sword = () => { if (u.weapon && A.equipment[u.weapon]) weapon(g, A.equipment[u.weapon], f.right, left, top, size, f.rotation || 0) };
+    g.translate(p.x + pm.dx, p.y + pm.dy); g.rotate(pm.rot); g.scale(pm.sx, pm.sy); g.translate(-p.x, -p.y);
+    const sword = () => { if (u.weapon && A.equipment[u.weapon]) weapon(g, A.equipment[u.weapon], f.right, left, top, size, (f.rotation || 0) + pm.wpn) };
     if (f.rightBehind) sword();
     const body = () => { if (f.flipImage) { g.save(); g.translate(left + size / 2, 0); g.scale(-1, 1); g.drawImage(i, -size / 2, top, size, size); g.restore() } else g.drawImage(i, left, top, size, size) };
     if (i) { body(); if ((u.flashUntil || 0) > t) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; body(); body(); g.restore() } }
