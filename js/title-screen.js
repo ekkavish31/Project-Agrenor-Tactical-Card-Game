@@ -6,11 +6,12 @@
    • Skipped in editor pages (?editor=…) and with ?skipTitle (tests/tools).
    Text for the prologue, credits and how-to-play lives in the arrays right below — edit freely. */
 (function(root){'use strict';
+/* v95.02: each page is acted out by an animated scene drawn in code (js/scene-art.js · art:'…'); bg is only the fallback */
 const PROLOGUE=[// v93: short on purpose — the wider world is discovered by playing (lore: docs/lore/GAME-ERA.md)
- {bg:'assets/scenes/area-ruins.webp',text:'โลกใบนี้เก่ากว่าที่ใครจำได้\nร่องรอยของผู้คนก่อนหน้ายังซ่อนอยู่ใต้ดิน ใต้ป่า และในบทสวดที่ไม่มีใครเข้าใจ'},
- {bg:'assets/scenes/area-forest.webp',text:'ลูกหลานของพวกเขาแยกย้ายไปตามสายธาตุที่ตนศรัทธา\nตั้งเมือง สร้างอาณาจักร และค่อย ๆ ลืมว่าตนมาจากไหน'},
- {bg:'assets/market.webp',text:'ที่ลุ่มน้ำ Navelmidia มีหมู่บ้านเล็ก ๆ ชื่อเฟิร์นเวล\nใกล้เมืองใหญ่พอจะได้ยินข่าวจากโลกกว้าง แต่ไกลพอจะมีชีวิตของตัวเอง'},
- {bg:'assets/home.webp',text:'อีกสามวันจะถึงงานเทศกาลเก็บเกี่ยว\nและไม่มีใครรู้เลยว่า ปีนี้จะไม่เหมือนทุกปี'}
+ {art:'ancient',bg:'assets/scenes/area-ruins.webp',text:'โลกใบนี้เก่ากว่าที่ใครจำได้\nร่องรอยของผู้คนก่อนหน้ายังซ่อนอยู่ใต้ดิน ใต้ป่า และในบทสวดที่ไม่มีใครเข้าใจ'},
+ {art:'elements',bg:'assets/scenes/area-forest.webp',text:'ลูกหลานของพวกเขาแยกย้ายไปตามสายธาตุที่ตนศรัทธา\nตั้งเมือง สร้างอาณาจักร และค่อย ๆ ลืมว่าตนมาจากไหน'},
+ {art:'fernvale',bg:'assets/market.webp',text:'ที่ลุ่มน้ำ Navelmidia มีหมู่บ้านเล็ก ๆ ชื่อเฟิร์นเวล\nใกล้เมืองใหญ่พอจะได้ยินข่าวจากโลกกว้าง แต่ไกลพอจะมีชีวิตของตัวเอง'},
+ {art:'festival',bg:'assets/home.webp',text:'อีกสามวันจะถึงงานเทศกาลเก็บเกี่ยว\nและไม่มีใครรู้เลยว่า ปีนี้จะไม่เหมือนทุกปี'}
 ];
 const HOWTO=[
  ['หมู่บ้าน','คลิกถนนหรือสถานที่เพื่อเดิน · บ้านใช้พัก นอน จัดสำรับ · โรงตีเหล็กใช้คราฟต์อุปกรณ์และฝึกต่อสู้ · ตลาดใช้ซื้อวัตถุดิบ ขายของ รับออร์เดอร์'],
@@ -131,7 +132,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  </nav></div>
  <div class="ts-foot"><span class="ts-ver">Project A ${VERSION}${root.GAME_VERSION?.date?" · "+root.GAME_VERSION.date:""} <em class="ts-gh">· กำลังเช็ก GitHub…</em></span><span>↑↓ เลือก · Enter ยืนยัน</span></div>
  <section class="ts-extra" hidden aria-label="Extra"><div class="ts-extra-box"><div class="ts-extra-head"><div class="ts-tabs" role="tablist"><button role="tab" data-tab="howto">วิธีเล่น</button><button role="tab" data-tab="gallery">คลังภาพ</button><button role="tab" data-tab="credits">เครดิต</button></div><button class="ts-close" data-act="close-extra" aria-label="ปิด">✕</button></div><div class="ts-extra-body"></div></div></section>
- <section class="ts-story" hidden aria-live="polite"><div class="ts-story-bg"></div><div class="ts-story-veil"></div><div class="ts-story-text"></div><div class="ts-story-hint">คลิก หรือกด Enter เพื่อไปต่อ</div><button class="ts-skip" data-act="skip">ข้าม ▸▸</button>
+ <section class="ts-story" hidden aria-live="polite"><div class="ts-story-bg"></div><canvas class="ts-story-art"></canvas><div class="ts-story-veil"></div><div class="ts-story-text"></div><div class="ts-story-hint">คลิก หรือกด Enter เพื่อไปต่อ</div><button class="ts-skip" data-act="skip">ข้าม ▸▸</button>
   <form class="ts-name" hidden><span class="ts-kicker">ตัวเอกของเรื่อง</span><h2>เจ้าชื่ออะไร?</h2><input name="hero" maxlength="16" autocomplete="off" spellcheck="false" placeholder="นักผจญภัย"><p>เปลี่ยนภายหลังได้ในตั้งค่า หรือคลิกชื่อตัวเอกในเกม</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
  document.body.appendChild(el);title=el;checkGitHub(el);
  const menu=[...el.querySelectorAll('.ts-menu button')];
@@ -163,7 +164,8 @@ function tab(id){const box=title.querySelector('.ts-extra-body');title.querySele
   box.querySelectorAll('[data-src]').forEach(b=>b.onclick=()=>{const v=document.createElement('div');v.className='ts-viewer';v.innerHTML=`<img src="${b.dataset.src}" alt="">`;v.onclick=()=>v.remove();title.appendChild(v)})}}
 
 /* ---------- prologue ---------- */
-let page=-1,typing=null;
+let page=-1,typing=null,art=null;
+function artPlayer(st){if(art)return art;const c=st.querySelector('.ts-story-art');if(!c||!root.SceneArt)return null;art=root.SceneArt.create(c);return art}
 function story(){busyTitle=true;const st=title.querySelector('.ts-story');st.hidden=false;title.classList.add('ts-in-story');page=-1;busyTitle=false;
  st.onclick=e=>{if(e.target.closest('.ts-skip,.ts-name'))return;next()};
  st.onkeydown=e=>{if(e.target.closest('.ts-name'))return;if(e.key==='Enter'||e.key===' '){e.preventDefault();next()}else if(e.key==='Escape'){e.preventDefault();storyEnd()}};
@@ -171,7 +173,7 @@ function story(){busyTitle=true;const st=title.querySelector('.ts-story');st.hid
 function next(){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text');
  if(typing){clearInterval(typing);typing=null;box.textContent=PROLOGUE[page].text;return}// first press finishes the line
  page++;if(page>=PROLOGUE.length){storyEnd();return}const p=PROLOGUE[page],bg=st.querySelector('.ts-story-bg');
- bg.classList.remove('ts-pan');void bg.offsetWidth;bg.style.backgroundImage=`url("${p.bg}")`;bg.classList.add('ts-pan');
+ const pa=artPlayer(st);if(pa&&p.art&&pa.show(p.art)){bg.style.backgroundImage='none';bg.classList.remove('ts-pan')}else{bg.classList.remove('ts-pan');void bg.offsetWidth;bg.style.backgroundImage=`url("${p.bg}")`;bg.classList.add('ts-pan')}
  box.textContent='';box.classList.remove('ts-line');void box.offsetWidth;box.classList.add('ts-line');
  if(reduced){box.textContent=p.text;return}let i=0;const chars=[...p.text];typing=setInterval(()=>{i+=2;box.textContent=chars.slice(0,i).join('');if(i>=chars.length){clearInterval(typing);typing=null}},34)}
 function storyEnd(){if(typing){clearInterval(typing);typing=null}const st=title.querySelector('.ts-story'),f=st.querySelector('.ts-name');st.querySelector('.ts-story-text').textContent='';st.querySelector('.ts-story-hint').hidden=true;st.querySelector('.ts-skip').hidden=true;f.hidden=false;
@@ -182,13 +184,13 @@ function storyEnd(){if(typing){clearInterval(typing);typing=null}const st=title.
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}
  const fonts=[()=>loadFont('VillageThai','assets/village-town/noto-sans-thai-thai-400-normal.woff2'),()=>document.fonts?.ready];
  await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(10000)])]}],{bg:'assets/home.webp',minMs:isNew?900:500});
- title.classList.add('ts-out');document.documentElement.classList.remove('title-boot');T.active=false;await wait(reduced?0:450);title.remove();
+ title.classList.add('ts-out');document.documentElement.classList.remove('title-boot');T.active=false;await wait(reduced?0:450);art?.stop();art=null;title.remove();
  try{if(typeof render==='function')render()}catch{}root.VillageTown?.sync?.();root.GameBGM?.refresh?.();startPrefetch();
  if(!isNew&&game()?.village&&!game().village.heroName)root.HeroIdentity?.askHeroName?.(true)}
 
 function boot(){hookScenes();setInterval(()=>Gallery.track(),2000);
  if(skip){startPrefetch();return}
- buildTitle();loadImage('assets/scenes/area-forest.webp');for(const p of PROLOGUE)loadImage(p.bg);
+ buildTitle();loadImage('assets/scenes/area-forest.webp');for(const p of PROLOGUE)if(!p.art||!root.SceneArt)loadImage(p.bg);
  if(newGame){title.classList.add('ts-quick');story()}}
 // the title is built once every game script ran (DOMContentLoaded — not window load, which waits for the town frame) (settings, adventure, battle hooks exist by then)
 if(document.readyState!=='loading')boot();else document.addEventListener('DOMContentLoaded',boot);

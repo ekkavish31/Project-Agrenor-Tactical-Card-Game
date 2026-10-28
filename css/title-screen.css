@@ -100,3 +100,6 @@ html.title-boot,html.title-boot body{overflow:hidden}
 #titleScreen .ts-tools a:hover,#titleScreen .ts-tools a:focus-visible{outline:none;border-style:solid;border-color:var(--ts-gold);color:var(--ts-ink);background:#3a2c12cc}
 
 #titleScreen .ts-ver em{font-style:normal;opacity:.85}#titleScreen .ts-gh-new{color:#ffd76a;opacity:1!important;font-weight:700}
+
+/* v95.02 · prologue scenes drawn in code (js/scene-art.js) */
+.ts-story-art{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}

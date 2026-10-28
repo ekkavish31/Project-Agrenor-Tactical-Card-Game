@@ -160,3 +160,6 @@ body.cs-open #storyTracker,body.tactics-open #storyTracker{display:none}
 .sw-next{margin:4px 0 0;font-size:12px;line-height:1.4;color:#f0d9b0}
 body.cs-open #smithWip{display:none}
 @media (max-width:640px){#smithWip{width:170px;right:10px;top:70px}}
+
+/* v95.02 · animated scene art (js/scene-art.js) sits over the background image */
+.cs-art{position:absolute;inset:0;width:100%;height:100%;display:block}

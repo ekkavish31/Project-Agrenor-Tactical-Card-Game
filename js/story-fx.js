@@ -47,13 +47,16 @@ class Particles{
 /* ---------------- DOM ---------------- */
 let el=null,parts=null,playing=null;
 function build(){if(el)return el;el=document.createElement('div');el.id='cutscene';el.className='cs';el.hidden=true;el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','ฉากเนื้อเรื่อง');
- el.innerHTML=`<div class="cs-stage"><div class="cs-bg"></div><div class="cs-bg cs-bg-next"></div><div class="cs-tint"></div><div class="cs-rays"></div><div class="cs-orb"><i></i></div><div class="cs-mist"></div><canvas class="cs-canvas"></canvas><div class="cs-vignette"></div><div class="cs-flash"></div><div class="cs-ring"></div></div>
+ el.innerHTML=`<div class="cs-stage"><div class="cs-bg"></div><div class="cs-bg cs-bg-next"></div><canvas class="cs-art" hidden></canvas><div class="cs-tint"></div><div class="cs-rays"></div><div class="cs-orb"><i></i></div><div class="cs-mist"></div><canvas class="cs-canvas"></canvas><div class="cs-vignette"></div><div class="cs-flash"></div><div class="cs-ring"></div></div>
  <div class="cs-bar cs-top"></div><div class="cs-bar cs-bottom"></div>
  <div class="cs-card" hidden><small></small><h2></h2></div>
  <div class="cs-box" hidden><div class="cs-portrait"></div><div class="cs-talk"><b class="cs-name"></b><p class="cs-text"></p></div><span class="cs-next" aria-hidden="true">▼</span></div>
  <button type="button" class="cs-skip">ข้ามฉาก ▸▸</button>`;
  document.body.appendChild(el);parts=new Particles(el.querySelector('.cs-canvas'));root.addEventListener('resize',()=>{if(!el.hidden)parts.size()});return el}
 const $=sel=>el.querySelector(sel);
+/* v95.02 · scene/line `art:'dawn'|'orb'|…` → an animated scene drawn in code (js/scene-art.js) instead of a background image */
+let art=null;
+function setArt(name){const c=$('.cs-art');if(!name||!root.SceneArt?.has(name)){if(!c.hidden){c.hidden=true;art?.stop()}return false}c.hidden=false;art||=root.SceneArt.create(c);art.size();art.show(name);return true}
 function setBg(src,pan,instant){const a=$('.cs-bg:not(.cs-bg-next)'),b=$('.cs-bg-next');if(!src)return;const cur=a.dataset.src;if(cur===src&&!pan)return;
  if(instant||!cur){a.style.backgroundImage=`url("${src}")`;a.dataset.src=src;a.className='cs-bg'+(pan&&!reduced()?' cs-pan-'+pan:'');return}
  b.style.backgroundImage=`url("${src}")`;b.dataset.src=src;b.className='cs-bg cs-bg-next cs-show'+(pan&&!reduced()?' cs-pan-'+pan:'');
@@ -76,14 +79,14 @@ function finishTyping(){if(!typing)return false;clearInterval(typing);typing=nul
 
 /* ---------------- play ---------------- */
 async function showCard(card){const c=$('.cs-card');c.querySelector('small').textContent=fill(card.kicker||'');c.querySelector('h2').textContent=fill(card.title||'');c.hidden=false;c.classList.remove('cs-in');void c.offsetWidth;c.classList.add('cs-in');await wait(reduced()?900:2300);c.classList.add('cs-out');await wait(reduced()?0:500);c.hidden=true;c.classList.remove('cs-out')}
-function applyLine(line){if(line.bg)setBg(line.bg,line.pan);if(line.tint!=null||line.fx)setLook({tint:line.tint,fx:line.fx??[...parts.kinds]});if(line.flash)flash(line.flash===true?null:line.flash);if(line.shake)shake(line.shake==='big');if(line.burst)burst(line.burst===true?{}:line.burst)}
+function applyLine(line){if(line.art)setArt(line.art);else if(line.bg){setArt(null);setBg(line.bg,line.pan)}if(line.tint!=null||line.fx)setLook({tint:line.tint,fx:line.fx??[...parts.kinds]});if(line.flash)flash(line.flash===true?null:line.flash);if(line.shake)shake(line.shake==='big');if(line.burst)burst(line.burst===true?{}:line.burst)}
 function play(scene){if(!scene)return Promise.resolve();if(playing)return playing.then(()=>play(scene));
  build();playing=new Promise(async resolve=>{
   const lines=scene.lines||[];let i=-1,done=false,busy=false;
   el.hidden=false;document.body.classList.add('cs-open');parts.size();parts.start();
-  setBg(scene.bg,scene.pan,true);setLook({tint:scene.tint||'',fx:scene.fx||[]});$('.cs-box').hidden=true;
+  setArt(scene.art);setBg(scene.bg,scene.pan,true);setLook({tint:scene.tint||'',fx:scene.fx||[]});$('.cs-box').hidden=true;
   requestAnimationFrame(()=>el.classList.add('cs-live'));
-  const end=async()=>{if(done)return;done=true;finishTyping();el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
+  const end=async()=>{if(done)return;done=true;finishTyping();el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();setArt(null);document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
    const st=$('.cs-stage');st.dataset.tint='';st.className='cs-stage';el.querySelectorAll('.cs-bg').forEach(b=>{b.dataset.src='';b.style.backgroundImage=''});
    el.onclick=null;document.removeEventListener('keydown',key,true);playing=null;resolve()};
   const next=async()=>{if(done||busy)return;if(finishTyping())return;i++;if(i>=lines.length)return end();const line=lines[i];applyLine(line);
