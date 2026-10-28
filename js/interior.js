@@ -317,10 +317,14 @@
     placed = []; for (const a of people.values()) if (a.bubble && t < a.bubble.until) bubble(a, a.bubble.txt);
     if (hoverId && people.get(hoverId)) { const a = people.get(hoverId), p = screen(a.vu, a.vv); label(a.p.name + ' · ' + fill(a.p.role), p.x, p.y - 100 * Z) }
   }
+  /* v95.01 · the villager the current intro quest wants (js/story-quests.js) gets a gold ◆ */
+  let qT = null, qAt = 0;
+  function questNpc(id) { const n = performance.now(); if (n > qAt) { qAt = n + 500; try { qT = parent !== window ? parent.Story?.questTargets?.() : null } catch (e) { qT = null } } return !!qT?.npc?.includes(id) }
   function drawPerson(a, t) {
     const p = P(a.vu, a.vv); g.save(); g.globalAlpha = Math.max(0, Math.min(1, a.fade));
     VillagerDraw(g, a.p.look || {}, p.x, p.y, t, { walking: a.walking, face: a.face, phase: a.phase, act: a.act, scale: .95 });
     if (a.p.recruit && !L.inParty(S, a.id)) { g.font = '700 15px system-ui'; g.textAlign = 'center'; g.fillStyle = '#ffd25a'; g.strokeStyle = '#2a1a0a'; g.lineWidth = 3; const y = p.y - 98 + Math.sin(t * .004) * 3; g.strokeText('★', p.x, y); g.fillText('★', p.x, y) }
+    if (questNpc(a.id)) { const y = p.y - 122 + Math.sin(t * .006) * 5; g.shadowColor = 'rgba(255,200,60,.9)'; g.shadowBlur = 14; g.beginPath(); g.moveTo(p.x, y - 18); g.lineTo(p.x + 11, y); g.lineTo(p.x, y + 18); g.lineTo(p.x - 11, y); g.closePath(); g.fillStyle = '#ffd34d'; g.fill(); g.shadowBlur = 0; g.lineWidth = 2; g.strokeStyle = '#5a3a0a'; g.stroke() }
     if (a.p.benched) { g.font = '700 12px system-ui'; g.textAlign = 'center'; g.fillStyle = '#9fe0b0'; g.fillText('ทีม', p.x, p.y - 96) }
     g.restore();
   }
@@ -423,7 +427,7 @@
   let modalOpen = false, dlg = null;
   function close() { dlg?.remove(); dlg = null; modalOpen = false; talkingTo = null }
   function talk(a, line) {
-    close(); modalOpen = true; talkingTo = a; S = L.save();
+    close(); modalOpen = true; talkingTo = a; S = L.save(); if (!line) try{if(parent!==window)parent.Story?.talked?.(a.p.id)}catch(e){};
     const p = a.p, per = CLK.period(CLK.read().hour), lines = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…'];
     let said = null; if (!line && MIND && L.P[p.id]) { said = MIND.talk(p.id, { period: per, place: KIND, save: S }); L.writeSave(S); if (said.reward) setTimeout(() => toast('รางวัล: ' + [said.reward.gold ? '+' + said.reward.gold + ' 💰' : '', said.reward.potions ? 'ยา +' + said.reward.potions : ''].filter(Boolean).join(' · ')), 200) }
     const txt = line || (said ? fill(said.text) : fill(lines[Math.floor(Math.random() * lines.length)]));

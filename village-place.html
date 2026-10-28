@@ -1027,6 +1027,12 @@ function draw(t) {
 function actionInfo(id) {
  return state?.actions?.find(a => a.id === id)
 }
+/* v95.01 · story actions (js/story-quests.js, e.g. "ทำโคมไฟเทศกาล") join the station that has one of the actions in their `with` list */
+function stationActs(s) {
+ const own = s?.actions || [];
+ const extra = (state?.actions || []).filter(a => Array.isArray(a.with) && !own.includes(a.id) && own.some(id => a.with.includes(id))).map(a => a.id);
+ return [...own, ...extra]
+}
 
 function travel(i) {
  if (editing) return;
@@ -1052,7 +1058,8 @@ function arrive() {
  const s = M.stations[tg.i];
  if (!s) return;
  hero.dir = s.v < hero.v ? (s.u < hero.u ? 'NW' : 'NE') : (s.u < hero.u ? 'SW' : 'SE');
- if (s.actions.length === 1) use(tg.i, s.actions[0]);
+ const acts = stationActs(s);
+ if (acts.length === 1) use(tg.i, acts[0]);
  else showPick(tg.i)
 }
 
@@ -1080,7 +1087,7 @@ function showPick(i) {
   p = project(s.u, s.v, 40),
   x = (p.x - 1100) * scale * zoom + W / 2 + pan.x,
   y = (p.y - 700) * scale * zoom + H / 2 + pan.y;
- box.innerHTML = `<h3>${s.name}</h3>` + s.actions.map(id => {
+ box.innerHTML = `<h3>${s.name}</h3>` + stationActs(s).map(id => {
   const a = actionInfo(id) || {
    name: ACTIONS[id]
   };
@@ -1098,7 +1105,7 @@ function hidePick() {
 }
 
 function shortcuts() {
- $('shortcuts').innerHTML = M.stations.map((s, i) => `<button data-i="${i}">${s.name}<small>${s.actions.map(id=>actionInfo(id)?.name||ACTIONS[id]).join(' · ')}</small></button>`).join('');
+ $('shortcuts').innerHTML = M.stations.map((s, i) => `<button data-i="${i}">${s.name}<small>${stationActs(s).map(id=>actionInfo(id)?.name||ACTIONS[id]).join(' · ')}</small></button>`).join('');
  $('shortcuts').querySelectorAll('[data-i]').forEach(b => b.onclick = () => travel(+b.dataset.i))
 }
 
@@ -1390,4 +1397,4 @@ setup();
 resize();
 send('ready');
 requestAnimationFrame(draw);
-</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=94.02"></script><script src="js/villager-draw.js?v=94.02"></script><script src="js/village-life.js?v=94.02"></script><script src="js/village-lines.js?v=94.05"></script><script src="js/village-mind.js?v=94.02"></script><script src="js/place-people.js?v=94.03"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=94.02"></script><script src="js/villager-draw.js?v=94.02"></script><script src="js/village-life.js?v=94.02"></script><script src="js/village-lines.js?v=94.05"></script><script src="js/village-mind.js?v=94.02"></script><script src="js/place-people.js?v=95.01"></script><script src="js/editor-tools.js?v=91.77"></script></html>

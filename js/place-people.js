@@ -49,11 +49,16 @@
       out.push({ y: pt.y, draw: () => {
         g.fillStyle = 'rgba(20,30,20,.35)'; g.beginPath(); g.ellipse(pt.x, pt.y, 14, 6, 0, 0, 7); g.fill();
         root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, scale: 1.05 });
+        if (questNpc(a.p.id)) mark(g, pt, t);
         if (bubble?.a === a && now < bubble.until) say(g, pt, bubble.text);
       } });
     }
     return out;
   }
+  /* v95.01 · gold ◆ over the villager the current intro quest wants you to talk to (js/story-quests.js) */
+  let qT = null, qAt = 0;
+  function questNpc(id) { const n = performance.now(); if (n > qAt) { qAt = n + 500; try { qT = parent !== window ? parent.Story?.questTargets?.() : null } catch (e) { qT = null } } return !!qT?.npc?.includes(id) }
+  function mark(g, pt, t) { const y = pt.y - 128 - Math.sin(t * .006) * 5; g.save(); g.shadowColor = 'rgba(255,200,60,.9)'; g.shadowBlur = 14; g.beginPath(); g.moveTo(pt.x, y - 18); g.lineTo(pt.x + 11, y); g.lineTo(pt.x, y + 18); g.lineTo(pt.x - 11, y); g.closePath(); g.fillStyle = '#ffd34d'; g.fill(); g.shadowBlur = 0; g.lineWidth = 2; g.strokeStyle = '#5a3a0a'; g.stroke(); g.restore() }
   function say(g, pt, txt) {
     g.save(); g.font = '13px TownThai,VillageThai,system-ui'; const max = 230, words = [...txt], lines = []; let cur = '';
     for (const ch of words) { if (g.measureText(cur + ch).width > max) { lines.push(cur); cur = ch } else cur += ch } if (cur) lines.push(cur);
@@ -65,6 +70,7 @@
   function click(wp, project) {
     for (const a of people) {
       const pt = project(a.u, a.v); if (Math.abs(wp.x - pt.x) > 22 || wp.y > pt.y + 8 || wp.y < pt.y - 100) continue;
+      try{if(parent!==window)parent.Story?.talked?.(a.p.id)}catch(e){};
       const Lf = L(), C = CLK(), S = Lf.save(), per = C.period(C.read().hour);
       let text = ''; try { const r = root.Mind?.talk(a.p.id, { period: per, place: PLACE, save: S }); Lf.writeSave(S); text = r?.text || '' } catch (e) { }
       if (!text) { const ls = a.p.lines?.[per] || a.p.lines?.day || ['…']; text = ls[Math.floor(Math.random() * ls.length)] }
