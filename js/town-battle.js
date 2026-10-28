@@ -12,7 +12,7 @@
   'use strict';
   const Q = new URLSearchParams(location.search), ON = Q.get('battle') === '1';
   if (!ON) { window.TownBattle = { active: () => false }; return }
-  const V = '92.09';
+  const V = '92.10';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -75,7 +75,7 @@
      cam = world point at the screen centre + zoom. Normal: frame both fighters (shifted right/up so the HUD and the hand don't cover them).
      Cinematic: push in on attacker + target. Shake and roll kick are added on top. */
   const cam = { x: 0, y: 0, z: 1.05, set: false }, kick = { shake: 0, shakeT: 0, shakeDur: 1, roll: 0 };
-  let cine = null, lastPre = 0, light = 0;            // light: 0 normal … 1 full spotlight
+  let cine = null, lastPre = 0, light = 0, ox = 120;            // light: 0 normal … 1 full spotlight
   function frameTarget() {
     if (cine) { const a = project(cine.a.vu, cine.a.vv), b = project(cine.b.vu, cine.b.vv); return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - UNIT * .75, z: cine.z } }
     const a = project(FB.hero(st).vu, FB.hero(st).vv), b = project(FB.monster(st).vu, FB.monster(st).vv), dx = Math.abs(a.x - b.x) + UNIT * 3, dy = Math.abs(a.y - b.y) + UNIT * 3;
@@ -88,9 +88,19 @@
     cam.x += (tg.x - cam.x) * k; cam.y += (tg.y - cam.y) * k; cam.z += (tg.z - cam.z) * k; cam.set = true;
     zoom = cam.z;
     let sx = 0, sy = 0; if (kick.shake > 0) { const e = now - kick.shakeT, f = Math.max(0, 1 - e / kick.shakeDur); if (f <= 0) kick.shake = 0; else { sx = (Math.random() * 2 - 1) * kick.shake * f; sy = (Math.random() * 2 - 1) * kick.shake * f * .7 } }
-    const narrow = W < 820; pan = { x: -(cam.x - WORLD_W / 2) * scale * zoom + (narrow ? 0 : 120) + sx, y: -(cam.y - WORLD_H / 2) * scale * zoom + (narrow ? 30 : -40) + sy };
+    const narrow = W < 820; ox += ((cine ? cineOffset() : narrow ? 0 : 120) - ox) * k;
+    pan = { x: -(cam.x - WORLD_W / 2) * scale * zoom + ox + sx, y: -(cam.y - WORLD_H / 2) * scale * zoom + (narrow ? 30 : -40) + sy };
     light += ((cine ? 1 : 0) - light) * Math.min(1, dt * 6);
     kick.roll *= Math.exp(-dt * 7); cv.style.transform = Math.abs(kick.roll) > .02 ? `rotate(${kick.roll.toFixed(3)}deg) scale(${(1 + Math.abs(kick.roll) * .03).toFixed(4)})` : '';
+  }
+  const CARD_W = 210;
+  function cardX() { return W < 820 ? 12 : Math.max(12, Math.round(W / 3 - CARD_W / 2)) }
+  /* screen x offset during a cut-scene: push the pair right until it clears the card (but keep it on screen) */
+  function cineOffset() {
+    if (W < 820) return 0;
+    const a = project(cine.a.vu, cine.a.vv), b = project(cine.b.vu, cine.b.vv), k = scale * zoom, half = Math.abs(a.x - b.x) * k / 2 + UNIT * .9 * k;
+    const need = cardX() + CARD_W + 28 + half - W / 2;
+    return Math.max(120, Math.min(need, W / 2 - half - 12));
   }
   function shake(px, ms) { if (!CINE) return; kick.shake = Math.max(kick.shake, px); kick.shakeT = performance.now(); kick.shakeDur = ms }
   function roll(deg) { if (CINE) kick.roll += deg }
@@ -162,7 +172,7 @@
   .fb-banner{position:fixed;left:50%;top:30%;z-index:46;pointer-events:none;transform:translate(-50%,-50%)}
   .fb-banner span{display:block;font:italic 900 64px/1 system-ui,"Noto Sans Thai",sans-serif;letter-spacing:2px;color:#fff3b0;-webkit-text-stroke:3px #5a1a00;text-shadow:0 0 18px #ff9a2a,0 6px 0 #7a2400,0 10px 24px #000a;animation:fbBan 1.1s cubic-bezier(.2,1.4,.4,1) forwards}
   .fb-banner.crit span{color:#ffe14d;transform:skewX(-12deg)}
-  .fb-banner.win span{font:900 76px/1.3 system-ui,"Noto Sans Thai",sans-serif;letter-spacing:0;-webkit-text-stroke:0;color:#ffe9a8;text-shadow:0 0 22px #ff9a2a,0 4px 0 #7a2400,0 0 3px #5a1a00,0 10px 26px #000c;animation:fbBanWin 2.6s ease forwards}
+  .fb-banner.win span{font:italic 900 76px/1.1 system-ui,"Noto Sans Thai",sans-serif;letter-spacing:0;-webkit-text-stroke:0;color:#ffe9a8;text-shadow:0 0 22px #ff9a2a,0 4px 0 #7a2400,0 0 3px #5a1a00,0 10px 26px #000c;animation:fbBanWin 2.6s ease forwards}
   @keyframes fbBan{0%{opacity:0;transform:translateX(-120px) skewX(-18deg) scale(1.6)}18%{opacity:1;transform:translateX(0) skewX(-12deg) scale(1)}75%{opacity:1;transform:translateX(12px) skewX(-12deg)}100%{opacity:0;transform:translateX(160px) skewX(-18deg) scale(.9)}}
   @keyframes fbBanWin{0%{opacity:0;transform:scale(2.4)}12%{opacity:1;transform:scale(1);filter:none}85%{opacity:1}100%{opacity:0;transform:scale(1.05)}}
   @media (max-width:820px){.fb-banner span{font-size:40px}.fb-banner.win span{font-size:48px}}
@@ -274,8 +284,8 @@
     const el = document.createElement('div'); el.className = 'fb-show play'; el.style.setProperty('--tone', tone);
     el.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b>${text ? '<br>' + esc(text) : ''}</div>`;
     document.body.append(el);
-    /* a combat card plays as a cut-scene: the camera centres the pair right of the middle, so the card waits on the left edge */
-    const s = CINE && group === 'combat' && !r?.self ? { x: Math.max(12, Math.min(40, W * .03)), y: Math.max(70, H / 2 - 190) } : sideSpot(210, 340); el.style.left = s.x + 'px'; el.style.top = s.y + 'px';
+    /* a combat card plays as a cut-scene: the card stands at about one third from the left and the camera keeps the pair to its right */
+    const s = CINE && group === 'combat' && !r?.self ? { x: cardX(), y: Math.max(70, H / 2 - 190) } : sideSpot(210, 340); el.style.left = s.x + 'px'; el.style.top = s.y + 'px';
     if (fromEl) fromEl.style.visibility = 'hidden';
     return { el, done: async () => { const pile = hand.querySelector('#fbDiscard').getBoundingClientRect(), me = el.getBoundingClientRect(); el.style.setProperty('--tx', (pile.left + pile.width / 2 - me.left - me.width / 2) + 'px'); el.style.setProperty('--ty', (pile.top + pile.height / 2 - me.top - me.height / 2) + 'px'); el.style.setProperty('--rot', (Math.random() * 30 - 15) + 'deg'); el.classList.remove('play'); el.classList.add('out'); await wait(460); el.remove() } };
   }
@@ -298,7 +308,7 @@
   function toast(t) { const d = document.createElement('div'); d.className = 'fb-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 1700) }
   async function startTurnShow(first) {
     refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
-    toast(first ? 'เริ่มการต่อสู้ · จั่วไพ่' : `เทิร์น ${st.turns} · จั่วไพ่ใหม่ ${fresh.length} ใบ`);
+    toast(first ? 'BATTLE START · DRAW' : `TURN ${st.turns} · DRAW ${fresh.length}`);
     if (fresh.length) { busy = true; hudSync(); await drawShow(fresh); busy = false; refresh() }
   }
 
@@ -318,7 +328,7 @@
     busy = true; hudSync();
     await flyTo(picks.map(p => p.el), hand.querySelector('#fbDiscard'));
     const r = FB.discardForStamina(st, picks.map(p => ({ group: p.group, uid: p.uid })));
-    if (r.ok) floatText(FB.hero(st), 'แรง +' + r.stamina, '#ffe08a'); else toast(r.reason);
+    if (r.ok) floatText(FB.hero(st), 'STAMINA +' + r.stamina, '#ffe08a'); else toast(r.reason);
     discardMode = false; picked.clear(); busy = false; refresh();
   }
 
@@ -331,7 +341,7 @@
     if (group === 'movement') {
       const show = showPlay(group, id, cardLine(group, id), b), r = FB.playMove(st, i);
       if (!r.ok) { show.el.remove(); b.style.visibility = ''; flash(r.reason); return }
-      busy = true; hudSync(); FB.hero(st).pose = 'idle'; floatText(FB.hero(st), '+' + r.move + ' เดิน', '#9fd4ff', true);
+      busy = true; hudSync(); FB.hero(st).pose = 'idle'; floatText(FB.hero(st), 'MOVE +' + r.move, '#9fd4ff', true);
       await wait(650); await show.done(); busy = false; refresh(); return;
     }
     const show = showPlay(group, id, cardLine(group, id), b), r = FB.playCombat(st, i);
@@ -345,7 +355,7 @@
     const h = FB.hero(st), m = FB.monster(st);
     if (r.self) {
       h.pose = r.guard ? 'guard' : 'idle'; fx(r.fx, h, h, { color: r.heal ? '#7fe08a' : '#f4d36a' }); impact(h, r.fx, false); h.flashUntil = 0;
-      await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, '🛡 ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'แรง +' + r.restore, '#ffe08a');
+      await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a');
       h.shown = h.hp; hudSync(); await wait(520); h.pose = 'idle'; return;
     }
     const kill = m.hp <= 0, heavy = r.big > 1 || r.hits.reduce((a, x) => a + x.damage, 0) >= 20;
@@ -359,14 +369,16 @@
         const fin = kill && last; impact(m, r.fx, { big: heavy, crit: x.crit, kill: fin, from: h }); m.hitUntil = now() + 460;
         if (x.crit) banner('CRITICAL!', 'crit');
         if (fin) { hitStop(380); if (cine) cine.z = 2.3; shake(20, 600); m.deadAt = now() + 380 } else if (x.crit) { hitStop(210); shake(17, 460) } else { hitStop(heavy ? 140 : 100); shake(heavy ? 13 : 8, heavy ? 380 : 280) }
-        floatText(m, '−' + x.damage, x.crit ? '#ffe14d' : heavy ? '#ffd27a' : '#ff9a8a', false, heavy || x.crit); if (x.notes.length) floatText(m, x.notes.join(' · '), '#cfe4ff', true);
+        floatText(m, '−' + x.damage, x.crit ? '#ffe14d' : heavy ? '#ffd27a' : '#ff9a8a', false, heavy || x.crit); if (x.notes.length) floatText(m, noteEn(x.notes), '#cfe4ff', true);
         m.shown = Math.max(m.hp, m.shown - x.damage); hudSync(); await wait(r.hits.length > 1 ? 300 : 220);
       }
       m.shown = m.hp; hudSync();
       if (r.moved) { const from = { u: m.vu - .5, v: m.vv - .5 }; shake(6, 200); await walkAnim(m, [from, { u: m.u, v: m.v }], 5, true) }
-      if (kill) { banner('กำจัดสำเร็จ!', 'win'); await wait(1100) } else await wait(260); h.pose = 'idle';
+      if (kill) { banner('DEFEATED!', 'win'); await wait(1100) } else await wait(260); h.pose = 'idle';
     }, { z: heavy ? 1.95 : 1.75 });
   }
+  /* effect text is English; the log keeps the Thai notes */
+  function noteEn(notes) { return notes.map(n => n === 'คริติคอล' ? '' : n.startsWith('กำบัง') ? 'COVER −30%' : n.startsWith('ป้องกัน') ? 'GUARD ' + n.replace(/[^0-9−-]/g, '') : n).filter(Boolean).join(' · ') }
   const dirSign = (a, b) => (project(b.vu, b.vv).x >= project(a.vu, a.vv).x ? 1 : -1);
   /* hit: white flash on the sprite + a light pool on the ground at the target */
   const FXCOL = { fire: '255,140,60', ice: '150,220,255', lightning: '190,210,255', arcane: '200,160,255', heal: '140,255,160', shield: '170,210,255', wind: '200,255,220', earth: '230,190,120', parry: '255,240,190' };
@@ -410,7 +422,7 @@
       fx(guarded ? 'parry' : MT.fx, h, m, { color: '#ffb36a' }); impact(h, guarded ? 'parry' : MT.fx, { big: s.crit || s.damage >= 12, crit: s.crit, kill, from: m });
       if (s.crit) banner('CRITICAL!', 'crit'); if (s.damage && CINE) screenFlash('255,30,20', s.crit || kill ? .38 : .22, 320);
       h.pose = guarded ? 'guard' : 'hit'; if (kill) { hitStop(380); shake(20, 600) } else if (s.crit) { hitStop(200); shake(16, 440) } else { hitStop(s.damage ? 110 : 70); shake(s.damage ? 10 : 5, 300) }
-      floatText(h, s.damage ? '−' + s.damage : 'ป้องกันได้', s.damage ? '#ff9a8a' : '#9cc8ff', false, s.damage >= 12); h.shown = h.hp; hudSync();
+      floatText(h, s.damage ? '−' + s.damage : 'BLOCKED', s.damage ? '#ff9a8a' : '#9cc8ff', false, s.damage >= 12); { const n = noteEn(s.notes); if (n) floatText(h, n, '#cfe4ff', true) } h.shown = h.hp; hudSync();
       await wait(Math.max(300, Math.min(900, (ts?.duration || 500) - (ts?.impactMs ?? 160))));
       m.pose = 'idle'; if (h.hp > 0) h.pose = 'idle';
     }, { z: 1.7 });
@@ -427,7 +439,7 @@
     if (st.outcome) { refresh(); finish(); return }
     await startTurnShow(false);
   }
-  function finish() { hudSync(); handSync(); if (st.outcome === 'lose') { banner('พ่ายแพ้…', 'win') } else if (!CINE) toast('🏆 ชนะ!') }
+  function finish() { hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win') } else if (!CINE) toast('VICTORY!') }
   function flash(msg) { texts.push({ u: FB.hero(st).vu, v: FB.hero(st).vv, txt: msg, col: '#f6d79b', t0: now(), small: true }) }
   function floatText(unit, txt, col, small, big) { texts.push({ u: unit.vu, v: unit.vv, txt, col, t0: now(), small, big, dx: (Math.random() - .5) * 18 }) }
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }
