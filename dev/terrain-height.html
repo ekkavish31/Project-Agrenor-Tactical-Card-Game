@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ความสูงภูมิประเทศ · ดูและปรับ</title>
+<style>
+:root{color-scheme:dark}
+body{margin:0;background:#141c18;color:#e6efe8;font:14px/1.4 system-ui,sans-serif}
+header{padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;background:#1d2a24;border-bottom:1px solid #2e4238}
+label{display:flex;align-items:center;gap:6px;white-space:nowrap}
+select,input,button{background:#26382f;color:inherit;border:1px solid #3d5a4b;border-radius:6px;padding:4px 8px;font:inherit}
+button{cursor:pointer}button:hover{background:#31493d}
+input[type=number]{width:64px}input[type=text]{width:130px}
+#info{padding:8px 14px;color:#b9cfc1;min-height:2.6em}
+#info b{color:#ffd54a}
+main{overflow:auto;padding:0 8px 24px}
+canvas{max-width:100%;height:auto;display:block;margin:0 auto;cursor:crosshair}
+.ok{color:#8fe3a1}.bad{color:#ff8f8f}
+</style></head><body>
+<header>
+ <label>โซน <select id="zone"></select></label>
+ <label>seed <input id="seed" type="text" value="demo-1"></label>
+ <button id="regen">สุ่มใหม่</button>
+ <label>เมืองอยู่ทางใต้ · เรียบในรัศมี <input id="r0" type="number" min="0" max="40" value="5"> ถึงเต็มที่ที่ <input id="r1" type="number" min="1" max="60" value="26"></label>
+ <label>ระดับสูงสุด <input id="maxl" type="number" min="1" max="3" value="3"></label>
+ <label><input id="cliff" type="checkbox"> วาดหน้าผา (คลิกแล้วไม่ดึงเพื่อนบ้าน)</label>
+ <label><input id="grid" type="checkbox" checked> เส้น grid</label>
+ <label><input id="nums" type="checkbox"> เลขระดับ</label>
+ <label>แต้มเดินจากลานกลาง <input id="budget" type="number" min="0" max="80" value="0"></label>
+ <button id="copy">คัดลอก JSON</button>
+</header>
+<div id="info"></div>
+<main><canvas id="c"></canvas></main>
+<script src="../js/terrain-height.js"></script>
+<script src="../js/terrain-height-art.js"></script>
+<script>
+const T = TerrainHeight, A = TerrainHeightArt, $ = id => document.getElementById(id);
+const W = 32, H = 32, ENTRIES = [{ u: 0, v: 16 }, { u: 31, v: 16 }, { u: 16, v: 31 }];
+const PAL = { snow: 'snow', snowpeak: 'snow', sand: 'sand', mountain: 'rock', hills: 'grass' };
+const NAMES = { town: 'เมือง (เรียบ)', sand: 'หาดทราย', swamp: 'บึง', grass: 'ทุ่งหญ้า', forest: 'ป่า', snow: 'ทุ่งหิมะ', hills: 'เนินเขา', mountain: 'ภูเขา', snowpeak: 'ยอดเขาหิมะ' };
+for (const z of Object.keys(T.SEVERITY)) { const o = document.createElement('option'); o.value = z; o.textContent = NAMES[z] + ' · ' + T.SEVERITY[z]; $('zone').append(o); }
+$('zone').value = 'hills';
+let map, pad = 30, box, edits = 0, last = '';
+function build() {
+  map = T.forScene({ w: W, h: H, seed: $('seed').value + '|' + $('zone').value, biome: $('zone').value, entries: ENTRIES, maxLevel: +$('maxl').value,
+    town: { u: 16, v: 31, r0: +$('r0').value, r1: Math.max(+$('r0').value + 1, +$('r1').value) } });
+  edits = 0; draw();
+}
+function draw() {
+  box = A.bounds(map);
+  const cw = Math.ceil(box.x1 - box.x0 + pad * 2), ch = Math.ceil(box.y1 - box.y0 + pad * 2), c = $('c');
+  c.width = cw; c.height = ch;
+  const g = c.getContext('2d'); g.fillStyle = '#1d2a24'; g.fillRect(0, 0, cw, ch);
+  g.translate(-box.x0 + pad, -box.y0 + pad);
+  const budget = +$('budget').value, reach = budget > 0 ? T.reachable(map, 16, 16, budget) : null;
+  A.draw(g, map, { palette: A.PALETTES[PAL[$('zone').value] || 'grass'], roads: true, grid: $('grid').checked, numbers: $('nums').checked,
+    tint: reach ? i => (reach[(i % map.w) + ',' + Math.floor(i / map.w)] != null ? '#9ad7ff' : null) : null, mark: last ? JSON.parse(last) : null });
+  const v = T.validate(map), cliffs = T.cliffEdges(map).length, hist = [0, 0, 0, 0]; for (const l of map.levels) hist[l]++;
+  const share = hist.map(n => Math.round(100 * n / map.levels.length) + '%').join(' / ');
+  $('info').innerHTML = `ระดับ 0/1/2/3 = <b>${share}</b> · หน้าผา <b>${cliffs}</b> ขอบ · เดินถึงกัน: <span class="${v.ok ? 'ok' : 'bad'}">${v.ok ? 'ครบทุกช่อง' : 'มี ' + v.areas + ' พื้นที่แยกกัน'}</span>` +
+    ` · แก้เอง ${edits} ครั้ง · <span style="opacity:.75">คลิกซ้าย = ยกขึ้น · คลิกขวา = ลดลง · ช่องทางเหลืองคือทางหลัก (ระดับ 0 ตลอด)</span>`;
+}
+function cellAt(ev) {
+  const c = $('c'), r = c.getBoundingClientRect(), x = (ev.clientX - r.left) * c.width / r.width - (-box.x0 + pad), y = (ev.clientY - r.top) * c.height / r.height - (-box.y0 + pad);
+  return A.hitTest(map, x, y);
+}
+function paint(ev, dir) {
+  const cell = cellAt(ev); if (!cell) return;
+  const cur = T.levelAt(map, cell.u, cell.v), ch = T.setLevel(map, cell.u, cell.v, cur + dir, { cliff: $('cliff').checked });
+  if (ch.length) edits++;
+  last = JSON.stringify({ u: cell.u, v: cell.v }); draw();
+}
+$('c').addEventListener('click', e => paint(e, 1));
+$('c').addEventListener('contextmenu', e => { e.preventDefault(); paint(e, -1); });
+$('c').addEventListener('mousemove', e => { const cell = cellAt(e), s = cell ? JSON.stringify(cell) : ''; if (s !== last) { last = s; draw(); } });
+for (const id of ['zone', 'r0', 'r1', 'maxl']) $(id).addEventListener('change', build);
+$('seed').addEventListener('change', build); $('regen').onclick = () => { $('seed').value = Math.random().toString(36).slice(2, 8); build(); };
+for (const id of ['grid', 'nums', 'budget']) $(id).addEventListener('input', draw);
+$('copy').onclick = async () => { const t = JSON.stringify(T.pack(map)); try { await navigator.clipboard.writeText(t); $('copy').textContent = 'คัดลอกแล้ว'; } catch (e) { prompt('คัดลอก JSON', t); } setTimeout(() => $('copy').textContent = 'คัดลอก JSON', 1500); };
+build();
+</script></body></html>

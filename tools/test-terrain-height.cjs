@@ -132,6 +132,40 @@ test('pack / unpack round trip keeps levels, flat and blocked cells', () => {
   assert.throws(() => T.unpack({ ...p, w: p.w + 1 }), /size mismatch/);
 });
 
+test('setLevel: raising a cell slopes its neighbours (pyramid), keeps roads flat, and never leaves a 2+ step unless cliff is asked for', () => {
+  const m = T.generate({ w: 15, h: 15, seed: 'edit', zone: 'town', flat: (u, v) => u === 0 });
+  const ch = T.setLevel(m, 7, 7, 3);
+  assert.equal(T.levelAt(m, 7, 7), 3);
+  assert.equal(T.levelAt(m, 8, 7), 2); assert.equal(T.levelAt(m, 9, 7), 1); assert.equal(T.levelAt(m, 10, 7), 0);
+  assert(ch.length >= 10 && ch.every(c => c.from !== c.to));
+  for (let v = 0; v < 15; v++) for (let u = 0; u < 14; u++) { assert(Math.abs(T.levelAt(m, u, v) - T.levelAt(m, u + 1, v)) <= 1); assert(Math.abs(T.levelAt(m, v, u) - T.levelAt(m, v, u + 1)) <= 1); }
+  assert.equal(T.validate(m).ok, true);
+  assert.deepEqual(T.setLevel(m, 0, 5, 3), [], 'flat road cell cannot be edited');
+  const near = T.setLevel(m, 1, 5, 3); assert.equal(T.levelAt(m, 1, 5), 1, 'beside a road: at most level 1'); assert(near.length >= 1);
+  const c2 = T.generate({ w: 9, h: 9, seed: 'c', zone: 'town' });
+  T.setLevel(c2, 4, 4, 3, { cliff: true });
+  assert.equal(T.levelAt(c2, 4, 4), 3); assert.equal(T.levelAt(c2, 5, 4), 0); assert.equal(T.cliffEdges(c2).length, 4);
+  T.setLevel(c2, 4, 4, 99, { cliff: true }); assert.equal(T.levelAt(c2, 4, 4), 3, 'clamped to maxLevel');
+  T.setLevel(c2, 4, 4, -5, { cliff: true }); assert.equal(T.levelAt(c2, 4, 4), 0, 'clamped to 0');
+  assert.deepEqual(T.setLevel(c2, 99, 99, 1), [], 'outside the map');
+});
+
+test('renderer: draws every cell, walls only where the ground drops, and hitTest finds the lifted cell under a point', () => {
+  global.TerrainHeight = T;
+  const A = require('../js/terrain-height-art.js');
+  const m = T.generate({ w: 4, h: 4, seed: 'r', zone: 'town' });
+  T.setLevel(m, 1, 1, 2, { cliff: true });
+  const calls = { fill: 0, polys: 0 }, g = { beginPath() { calls.polys++; }, moveTo() {}, lineTo() {}, closePath() {}, fill() { calls.fill++; }, stroke() {}, save() {}, restore() {}, fillText() {} };
+  A.draw(g, m, {});
+  assert(calls.fill >= 16 + 2, 'sixteen tops plus the walls of the raised cell: ' + calls.fill);
+  const b = A.bounds(m); assert(b.x1 > b.x0 && b.y1 > b.y0);
+  // the centre of the raised cell's lifted top (level 2 -> 36 px up) must hit that cell, not the cell behind it
+  const px = 2240 + (1.5 - 1.5) * 28, py = 1232 + (1.5 + 1.5) * 14 - 2 * T.LEVEL_PX;
+  assert.deepEqual(A.hitTest(m, px, py), { u: 1, v: 1 });
+  assert.equal(A.hitTest(m, -9999, -9999), null);
+  delete global.TerrainHeight;
+});
+
 test('bad input is rejected', () => {
   assert.throws(() => T.generate({ w: 0, h: 5 }), /at least 1x1/);
   assert.throws(() => T.generate({ w: 5, h: 5, zone: 'lava' }), /unknown terrain zone/);

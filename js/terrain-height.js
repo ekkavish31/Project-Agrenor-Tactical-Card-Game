@@ -270,6 +270,33 @@
     return m;
   }
 
+  /* Hand editing: set one cell to `level`. Neighbours are pulled along so every step stays at most 1 level (the ground slopes instead of
+     leaving a hole), unless opts.cliff is true (then only this cell changes and a 2+ step becomes a cliff). Forced-flat cells never change and
+     cells beside them stay at level 1 or below. Returns the world cells that changed: [{u,v,from,to}]. */
+  function setLevel(m, u, v, level, opts) {
+    const i0 = idx(m, u - m.origin.u, v - m.origin.v);
+    if (i0 < 0 || m.flat[i0]) return [];
+    const before = Uint8Array.from(m.levels);
+    m.levels[i0] = clamp(Math.round(level), 0, m.maxLevel);
+    if (!(opts && opts.cliff)) {
+      const nb = i => { const x = i % m.w, y = (i - x) / m.w, out = []; for (const [du, dv] of DIRS) { const a = x + du, b = y + dv; if (a >= 0 && b >= 0 && a < m.w && b < m.h) out.push(b * m.w + a); } return out; };
+      if (nb(i0).some(j => m.flat[j])) m.levels[i0] = Math.min(m.levels[i0], 1);
+      const q = [i0];
+      for (let k = 0; k < q.length; k++) {
+        const i = q[k];
+        for (const j of nb(i)) {
+          if (m.flat[j]) continue;
+          const d = m.levels[j] - m.levels[i];
+          if (d > 1) { m.levels[j] = m.levels[i] + 1; q.push(j); } else if (d < -1) { m.levels[j] = m.levels[i] - 1; q.push(j); }
+        }
+        if (q.length > m.levels.length * 8) break;
+      }
+    }
+    const out = [];
+    for (let i = 0; i < m.levels.length; i++) if (m.levels[i] !== before[i]) out.push({ u: (i % m.w) + m.origin.u, v: Math.floor(i / m.w) + m.origin.v, from: before[i], to: m.levels[i] });
+    return out;
+  }
+
   /* ---------- save format: run-length string, one digit per cell, e.g. '0*12 1*3 ...' ---------- */
   function pack(m) {
     const parts = []; let run = 1;
@@ -289,7 +316,7 @@
     return { v: 1, w: p.w, h: p.h, origin: p.origin, seed: p.seed, maxLevel: p.maxLevel, levels, flat, blocked, sev: new Float32Array(n) };
   }
 
-  const api = { MAX_LEVEL, LEVEL_PX, CLIFF_SEV, SEVERITY, generate, forScene, levelAt, canStep, stepCost, reachable, cliffEdges, validate, project, pack, unpack };
+  const api = { MAX_LEVEL, LEVEL_PX, CLIFF_SEV, SEVERITY, generate, forScene, setLevel, levelAt, canStep, stepCost, reachable, cliffEdges, validate, project, pack, unpack };
   root.TerrainHeight = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
