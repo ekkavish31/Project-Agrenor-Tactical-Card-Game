@@ -2694,6 +2694,7 @@
   <div class="row"><button id="eAutoReset"${o.cauto?'':' disabled'}>คืนขนาด/ตำแหน่งอัตโนมัติ</button></div>
   <p class="sub">ปรับแถบปูพื้นจากทางเข้าไปถึงถนน และจุดที่ถนนมาเชื่อม · ถ้าอยากกำหนดรายช่องเอง ใช้ “ช่องทางเดิน (สีเหลือง)” ด้านล่าง</p><hr>`}
   <b class="sec">ช่องทางเดิน (สีเหลือง)</b>
+  ${o.court?.cells?.length ? slider('cwid', 'ความกว้างทางเดิน (ช่องครึ่ง)', courtWidthOf(o.court.cells), 1, 12, 1, x => x) + '<p class="sub">ตั้งให้ทุกแถวของทางเดินกว้างเท่ากัน (ใช้ค่าเดียวกันกับบ้านอื่นให้ทางเข้าขนาดเท่ากัน) · ช่วงที่วิ่งขนานขอบไม่ถูกแตะ</p>' : ''}
   <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีทางเดิน':o.court?.cells?o.court.cells.length+' ช่องครึ่ง':o.court?.pts?'เส้นเดิมที่วาดไว้':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
   <div class="row"><button id="cDraw" class="${courtDraw?'on':''}" style="${courtDraw?'background:#e5c06b;color:#1b302a':''}">🟨 ${courtDraw?'กำลังทาสี… คลิก/ลากบนกริด (ช่องที่มีอยู่ = ลบ)':'ทาสีช่องทางเดิน'}</button></div>
   <div class="row"><button id="cRect" style="${courtRect ? 'background:#e5c06b;color:#1b302a' : ''}">▭ ${courtRect ? 'โหมดกรอบ: ลากเป็นกรอบแล้วถมทั้งกรอบ (เริ่มที่ช่องเหลือง = ลบทั้งกรอบ)' : 'ทาส/ลบแบบกรอบ (ลากกรอบ แล้วถมทั้งกรอบ)'}</button></div>
@@ -2705,7 +2706,7 @@
   ${courtLayer ? zRow('cl', 'ชั้นที่จะใส่', courtLayerVal, 'ลากทับช่องเหลืองเพื่อใส่ · ใส่ชั้นเท่าพื้น = ล้างค่าพิเศษ') : ''}
   <p class="sub">ตัวละครเดินทับช่องสีเหลืองได้ · ช่องต้องต่อกันจากประตูถึงขอบหน้า (ปลายทางที่ถนนมาเชื่อม) · ตัวละครอยู่ในชั้นเดียวกับพื้นตรงนั้น ของที่อยู่ด้านหน้าและชั้นสูงกว่า (เช่น กระถาง) จึงบังตัวละครได้ · Q สลับทาทีละช่อง 1×1 / ครึ่งช่อง 2×2</p>`;
   act('#eAutoReset', once(() => { delete o.cauto; UX.refresh() }));
-  bindSliders((k, v) => { if (k !== 'cw' && k !== 'cu') return; o.cauto = o.cauto || {}; o.cauto[k === 'cw' ? 'w' : 'du'] = v; terrainDirty = true; UX.refresh() }, () => { if (o.cauto && o.cauto.w == null && !o.cauto.du) delete o.cauto; render() });
+  bindSliders((k, v) => { if (k === 'cwid') { setCourtWidth(o, v); terrainDirty = true; UX.refresh(); return } if (k !== 'cw' && k !== 'cu') return; o.cauto = o.cauto || {}; o.cauto[k === 'cw' ? 'w' : 'du'] = v; terrainDirty = true; UX.refresh() }, () => { if (o.cauto && o.cauto.w == null && !o.cauto.du) delete o.cauto; render() });
   act('#eReset', once(() => {
    delete o.entry;
    UX.refresh()
@@ -2801,6 +2802,10 @@
   }
   terrainDirty = true
  }
+ /* v92.00 · uniform walk-strip width: every row of the yellow strip is re-centred to N half-cells (wide rows = sideways runs are left alone) */
+ function courtRows(cells) { const m = new Map(); for (const [iu, iv] of cells) { if (!m.has(iv)) m.set(iv, []); m.get(iv).push(iu) } return m }
+ function courtWidthOf(cells) { const w = [...courtRows(cells).values()].map(r => r.length).filter(n => n <= 8).sort((a, b) => a - b); return w.length ? w[w.length >> 1] : 4 }
+ function setCourtWidth(o, N) { const e = estate(o), out = []; for (const [iv, r] of courtRows(o.court.cells)) { if (r.length > 8) { r.forEach(iu => out.push([iu, iv])); continue } const c = (Math.min(...r) + Math.max(...r) + 1) / 2, a0 = Math.round(c - N / 2); for (let i = 0; i < N; i++) { const iu = a0 + i; if (iu >= e.left * 2 && iu < e.right * 2) out.push([iu, iv]) } } o.court = { ...o.court, cells: out } }
  function autoCells(o) {
   const e = estate(o), a = center(o), d = door(o);
   let dl = o.facing === 'SE' ? { u: d.v - a.v, v: d.u - a.u } : { u: d.u - a.u, v: d.v - a.v };
