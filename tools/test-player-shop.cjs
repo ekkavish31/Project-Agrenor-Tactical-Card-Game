@@ -66,5 +66,10 @@ ok(S.simulate(g, { ...OPT, rng: () => 0 }).length === 1, 'fallback buyers when n
 // old save without a shop
 g = game(); delete g.village.shop; S.ensure(g.village); ok(g.village.shop.slots.length === 6, 'ensure creates 6 slots');
 
+// bigger stall (v95.00 money sink)
+g = game(); g.village.coins = 100; ok(S.upgrade(g) !== '' && g.village.shop.size === 6, 'upgrade needs 150');
+g.village.coins = 600; ok(S.upgrade(g) === '' && g.village.shop.slots.length === 8 && g.village.coins === 450, '6 → 8 slots for 150');
+ok(S.upgrade(g) === '' && g.village.shop.size === 10 && S.upgradeCost(g) === 0 && S.upgrade(g) !== '', '8 → 10 for 350, then max');
+
 console.log(`player-shop: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

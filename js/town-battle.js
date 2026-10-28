@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '94.06';
+  const V = '95.00';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -31,11 +31,13 @@
     golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem', shove: true , el: 'earth' },
     bat: { name: 'ค้างคาวถ้ำ', hp: 22, move: 5, atk: 7, scale: .8, fx: 'knife', img: 'bat', fly: true, el: 'dark' },
     gull: { name: 'นกนางนวลยักษ์', hp: 26, move: 5, atk: 8, scale: .9, fx: 'wind', img: 'gull', fly: true, el: 'wind' },
-    shadowWolf: { name: 'หมาป่าเงา', hp: 44, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' , el: 'dark' }
+    shadowWolf: { name: 'หมาป่าเงา', hp: 44, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' , el: 'dark' },
+    /* v95.00: the training-ground scarecrow (does not move or hit back) */
+    dummy: { name: 'หุ่นฟาง', hp: 40, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
   const NIGHT = Q.get('night') === '1', ATKX = +Q.get('atk') || 1, HST = Q.get('hst') != null ? Math.max(0, Math.min(100, +Q.get('hst'))) : 100;
-  const EMBED = Q.get('embed') === '1', TITLE = Q.get('title') || '', HHP = +Q.get('hhp') || 0, HMAX = +Q.get('hmax') || 60, HATK = +Q.get('hatk') || 0, HDEF = Q.get('hdef') != null ? +Q.get('hdef') : null;
+  const EMBED = Q.get('embed') === '1', TITLE = Q.get('title') || '', HHP = +Q.get('hhp') || 0, HMAX = +Q.get('hmax') || 60, HPRO = (() => { try { return JSON.parse(Q.get('hero') || 'null') || {} } catch (e) { return {} } })();   /* v95.00: js/progression.js battleHero() — power, spell, crit, armor, stMax, st */
   const CINE = Q.get('cine') !== '0', OLDPOSE = Q.get('oldposes') === '1', HPX = +Q.get('hp') || 1.6;
   /* v92.15 melee: companions (old roster, old pictures assets/tactics/<key>_<se|ne>_<pose>.webp) and monster groups
      ?party=bram:54:54,luna:44:44 (key:hp:max) · ?ms=wolf*1.5,wolf*1.5,bandit*1.4 (kind*hp multiplier) */
@@ -94,12 +96,12 @@
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
     const near = (o) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - o.u) + Math.abs(v - o.v) + Math.random() * .3; if (d < bd) { bd = d; best = { u, v } } } if (best) taken.add(best.u + ',' + best.v); return best };
-    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, shove: !!T.shove, el: T.el, fly: !!T.fly } }).filter(Boolean);
+    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
+    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true,
-      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX, stamina: HST, ...(HATK ? { atk: HATK } : {}), ...(HDEF != null && !isNaN(HDEF) ? { def: HDEF } : {}) }, allies, monsters: mons });
+      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons });
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)) }
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();

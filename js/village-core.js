@@ -7,7 +7,7 @@ const RECIPES={
 const MATERIALS={iron:{name:'แท่งเหล็ก',icon:'▰',price:6},coal:{name:'ถ่าน',icon:'◆',price:3},wood:{name:'ไม้',icon:'▤',price:2},food:{name:'เสบียง',icon:'♨',price:8}};
 const ORDERS=[{id:'guard',name:'ดาบสำหรับยามหมู่บ้าน',recipe:'sword',quality:1,reward:50,xp:15},{id:'apprentice',name:'ค้อนของช่างฝึกหัด',recipe:'hammer',quality:1,reward:48,xp:15},{id:'ranger',name:'ดาบของผู้พิทักษ์ป่า',recipe:'tempered',quality:2,reward:90,xp:25}];
 const PLACES={home:{name:'บ้านริมป่า',en:'A PLACE TO RETURN'},forge:{name:'โรงตีเหล็กริมป่า',en:'FOREST EDGE WORKSHOP'},market:{name:'ตลาดหมู่บ้าน',en:'VILLAGE EXCHANGE'}};
-const STATS={strength:{name:'กำลัง',icon:'⚒',description:'ขึ้นรูป +2 / โจมตีค้อน +1 ต่อแต้ม'},precision:{name:'ความประณีต',icon:'◇',description:'ทุก 3 แต้มเพิ่มคุณภาพชิ้นงาน 1'},knowledge:{name:'ความรู้',icon:'✧',description:'หลอมร้อน +3 / โจมตีบอลน้ำ +1 ต่อแต้ม'},endurance:{name:'ความอึด',icon:'ϟ',description:'พักสั้นฟื้นแรง +4 ต่อแต้ม'}};
+const STATS={strength:{name:'กำลัง',icon:'⚒',description:'ขึ้นรูป +2 · การ์ดอาวุธแรงขึ้น +1 ต่อแต้ม'},precision:{name:'ความประณีต',icon:'◇',description:'ทุก 3 แต้มเพิ่มคุณภาพชิ้นงาน 1 · คริติคอล +2% ต่อแต้ม'},knowledge:{name:'ความรู้',icon:'✧',description:'หลอมร้อน +3 · การ์ดธาตุแรงขึ้น +1 ต่อแต้ม'},endurance:{name:'ความอึด',icon:'ϟ',description:'พักสั้นฟื้นแรง +4 · แรงในสนามรบ +4 ต่อแต้ม'}};
 function villageDefaults(location='home'){return {version:8,location,coins:80,materials:{iron:6,coal:4,wood:3,food:2},chest:{materials:{iron:0,coal:0,wood:0,food:0},items:[]},character:{level:1,xp:0,points:3,stats:{strength:0,precision:0,knowledge:0,endurance:0}},smith:{level:1,xp:0,first:[]},work:{recipe:'sword',heat:0,shape:0,started:false},orders:{},deck:[0,1,2,3,4,5],bed:1}}
 const oldFresh=fresh;
 fresh=function(){let p=oldFresh();p.village=villageDefaults();p.loot=[];p.log='วันแรกของการผจญภัย • เปิดแผนที่ไปโรงตีเหล็ก หรือจัดสำรับที่โต๊ะในบ้าน';return p};
@@ -39,7 +39,9 @@ function restAtPlace(kind){let v=s.village;if(s.mode==='battle')return {ok:false
 function buyMaterial(k){let v=s.village,m=MATERIALS[k];if(v.location!=='market'||s.mode==='battle'||!m||v.coins<m.price)return false;v.coins-=m.price;v.materials[k]++;save();return true}
 function itemRecipe(x){return x.recipe||x.kind}
 function itemValue(x){return (RECIPES[itemRecipe(x)]||RECIPES.sword).sell+(x.quality-1)*5}
-function sellItem(id){let v=s.village,j=s.inventory.findIndex(x=>x.id===id);if(v.location!=='market'||s.mode==='battle'||j<0||s.equipped===id)return false;v.coins+=itemValue(s.inventory[j]);s.inventory.splice(j,1);save();return true}
+/* v95.00 · shops buy at 65% of the base price — selling at full price is what "ร้านของเรา" is for */
+const VENDOR_RATE=.65;function vendorValue(x){return Math.max(1,Math.round(itemValue(x)*VENDOR_RATE))}function vendorGoods(k){return Math.max(1,Math.round((window.ADVENTURE_DATA?.GOODS?.[k]?.price||0)*VENDOR_RATE))}
+function sellItem(id){let v=s.village,j=s.inventory.findIndex(x=>x.id===id);if(v.location!=='market'||s.mode==='battle'||j<0||s.equipped===id)return false;v.coins+=vendorValue(s.inventory[j]);s.inventory.splice(j,1);save();return true}
 function acceptOrder(id){let v=s.village;if(v.location!=='market'||s.mode==='battle'||v.orders[id]||!ORDERS.some(o=>o.id===id))return false;v.orders[id]='active';save();return true}
 function orderItem(o){return s.inventory.find(x=>itemRecipe(x)===o.recipe&&x.quality>=o.quality&&x.id!==s.equipped)}
 function fulfillOrder(id){let v=s.village,o=ORDERS.find(o=>o.id===id);if(v.location!=='market'||s.mode==='battle'||!o||v.orders[id]!=='active')return false;let x=orderItem(o);if(!x)return false;s.inventory.splice(s.inventory.indexOf(x),1);v.orders[id]='done';v.coins+=o.reward;gainSmithXP(o.xp);s.log='ส่งงาน '+o.name+' · +'+o.reward+' เหรียญ / คราฟต์ +'+o.xp+' EXP';save();return true}

@@ -11,14 +11,15 @@
    The core (simulate, shelf helpers) is plain data → tested by tools/test-player-shop.cjs. The UI part runs only in index.html. */
 (function (root) {
   'use strict';
-  const SLOTS = 6, MIN = 0.6, MAX = 2.0, LOG_MAX = 60, CATCHUP_H = 24 * 7, LOOK = 0.22, RIVAL = 0.25, LIKE_BONUS = 1.2;
+  const SLOTS = 6, MIN = 0.6, SIZES = [6, 8, 10], UPGRADE = [150, 350], MAX = 2.0, LOG_MAX = 60, CATCHUP_H = 24 * 7, LOOK = 0.22, RIVAL = 0.25, LIKE_BONUS = 1.2;
 
   function blank() { return { slots: Array(SLOTS).fill(null), log: [], sold: 0, earned: 0, last: null, news: [], unseen: 0 } }
   function ensure(v) {
     const sh = v.shop && typeof v.shop === 'object' ? v.shop : (v.shop = blank());
     if (!Array.isArray(sh.slots)) sh.slots = [];
-    while (sh.slots.length < SLOTS) sh.slots.push(null);
-    sh.slots.length = SLOTS;
+    sh.size = SIZES.includes(sh.size) ? sh.size : SLOTS;
+    while (sh.slots.length < sh.size) sh.slots.push(null);
+    sh.slots.length = sh.size;
     if (!Array.isArray(sh.log)) sh.log = []; if (!Array.isArray(sh.news)) sh.news = [];
     sh.sold ??= 0; sh.earned ??= 0; sh.unseen ??= 0;
     return sh;
@@ -62,6 +63,9 @@
     if (sl.kind === 'gear') (g.inventory ||= []).push(sl.item); else { const b = g.village.bag ||= {}; b[sl.key] = (b[sl.key] || 0) + 1 }
     sh.slots[i] = null; return true;
   }
+  /* v95.00 money sink: a bigger stall (6 → 8 → 10 slots) */
+  function upgradeCost(g) { const sh = ensure(g.village), k = SIZES.indexOf(sh.size); return k >= 0 && k < UPGRADE.length ? UPGRADE[k] : 0 }
+  function upgrade(g) { const sh = ensure(g.village), c = upgradeCost(g); if (!c) return 'ชั้นวางใหญ่สุดแล้ว'; if ((g.village.coins || 0) < c) return 'เงินไม่พอ (◉ ' + c + ')'; g.village.coins -= c; sh.size = SIZES[SIZES.indexOf(sh.size) + 1]; ensure(g.village); return '' }
   function setMult(g, i, m) { const sl = ensure(g.village).slots[i]; if (!sl) return null; sl.mult = clampMult(m); return sl.mult }
 
   /* ---------- customers ----------
@@ -100,13 +104,14 @@
     return sales;
   }
 
-  const core = { SLOTS, MIN, MAX, CATCHUP_H, blank, ensure, hourOf, buyChance, likesItem, slotInfo, priceOf, placeGear, placeBag, takeBack, setMult, simulate };
+  const core = { SLOTS, SIZES, UPGRADE, upgradeCost, upgrade, MIN, MAX, CATCHUP_H, blank, ensure, hourOf, buyChance, likesItem, slotInfo, priceOf, placeGear, placeBag, takeBack, setMult, simulate };
   if (typeof module !== 'undefined' && module.exports) { module.exports = core; return }
 
   /* =================== in the game (index.html) =================== */
   if (typeof document === 'undefined' || typeof s === 'undefined') { root.PlayerShop = core; return }
   const AD = () => root.ADVENTURE_DATA || {};
-  const bagDef = k => AD().GOODS?.[k] || AD().CONSUMABLES?.[k] || null;
+  /* consumables are valued at 70 % of the travelling merchant's price, so buying them to resell is not free money */
+  const bagDef = k => { const G = AD().GOODS?.[k]; if (G) return G; const C = AD().CONSUMABLES?.[k]; return C ? { ...C, price: Math.max(1, Math.round((C.price || 5) * .7)) } : null };
   const gearName = x => (typeof RECIPES !== 'undefined' && typeof itemRecipe === 'function' ? RECIPES[itemRecipe(x)]?.name : '') || 'อุปกรณ์';
   const gearValue = x => { try { return itemValue(x) } catch (e) { return 20 } };
   const OPT = () => ({ gearName, gearValue, bagDef });
@@ -123,7 +128,7 @@
       return `<div class="pshop-slot"><span class="pshop-n">${i + 1}</span><b>${escH(info.name)}</b><small>ราคาฐาน ◉ ${info.base}</small>
         <div class="pshop-price">${elButton('−', `PlayerShopUI.mult(${i},-0.1)`, sl.mult <= MIN)}<strong>◉ ${price}</strong>${elButton('＋', `PlayerShopUI.mult(${i},0.1)`, sl.mult >= MAX)}</div>
         <small>×${sl.mult.toFixed(1)} · โอกาสขาย ${ch}%</small>${elButton('เก็บคืน', `PlayerShopUI.back(${i})`, !atMarketNow)}</div>`;
-    }).join('')}</div>${atMarketNow ? '' : '<p class="muted small">วางหรือเก็บของได้เมื่ออยู่ที่ตลาด · ของที่วางไว้ขายต่อได้แม้ไม่อยู่</p>'}`;
+    }).join('')}</div>${upgradeCost(s) ? elButton('ขยายชั้นวางเป็น ' + SIZES[SIZES.indexOf(sh.size) + 1] + ' ช่อง · ◉ ' + upgradeCost(s), 'PlayerShopUI.grow()', !atMarketNow || s.village.coins < upgradeCost(s)) : ''}${atMarketNow ? '' : '<p class="muted small">วางหรือเก็บของได้เมื่ออยู่ที่ตลาด · ของที่วางไว้ขายต่อได้แม้ไม่อยู่</p>'}`;
   }
   function chooserHtml(i) {
     const gear = (s.inventory || []).filter(x => s.equipped !== x.id), bag = Object.entries(s.village.bag || {}).filter(([k, n]) => n > 0 && bagDef(k));
@@ -149,6 +154,7 @@
     tab(t) { tab = t; choosing = -1; render() },
     choose(i) { choosing = i; render() },
     put(kind, id) { const why = kind === 'gear' ? placeGear(s, id, 1) : placeBag(s, id, 1); if (why) toast(why); else { ensure(s.village).last ??= hourOf(s) } choosing = -1; done() },
+    grow() { if (s.village.location !== 'market') return; const why = upgrade(s); if (why) toast(why); done() },
     back(i) { if (s.village.location !== 'market') return; takeBack(s, i); done() },
     mult(i, d) { const sl = ensure(s.village).slots[i]; if (sl) setMult(s, i, sl.mult + d); done() }
   };

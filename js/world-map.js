@@ -484,8 +484,8 @@
   async function merchant() {
     for (;;) {
       const v = await modal(`<h2>💰 พ่อค้าเร่</h2><p>“เดินทางไกลถึงนี่เชียว? ของจำเป็นทั้งนั้น ราคามิตรภาพ”</p><p>มี ${S.gold} 💰 · เสบียง ${S.food} · ยา ${S.potions}</p>`,
-        [{ label: 'เสบียง 4 ห่อ · 10 💰', value: 'food', disabled: S.gold < 10 }, { label: 'ยาฟื้นฟู · 18 💰', value: 'pot', disabled: S.gold < 18 }, { label: 'ไปต่อ', value: null, ghost: true }]);
-      if (v === 'food') { S.gold -= 10; S.food += 4; log('ซื้อเสบียง 4') } else if (v === 'pot') { S.gold -= 18; S.potions++; log('ซื้อยาฟื้นฟู') } else break;
+        [{ label: 'เสบียง 2 ห่อ · 18 💰', value: 'food', disabled: S.gold < 18 }, { label: 'ยาฟื้นฟู · 24 💰', value: 'pot', disabled: S.gold < 24 }, { label: 'ไปต่อ', value: null, ghost: true }]);
+      if (v === 'food') { S.gold -= 18; S.food += 2; log('ซื้อเสบียง 2') } else if (v === 'pot') { S.gold -= 24; S.potions++; log('ซื้อยาฟื้นฟู') } else break;
       hudSync();
     }
   }
@@ -530,7 +530,9 @@
     const elite = !o.boss && dang > .65 && Math.random() < .5, base = MON_HP[foe] || 34;
     let mult = o.boss ? Math.round(130 / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
     if (foe === 'shadowWolf') mult = Math.round((1.1 + dang * .5) * 10) / 10;
-    const atk = fierce ? 1.3 : 1, hst = Math.max(20, Math.round(100 - S.fatigue * .6));
+    const fs = window.Progression ? Progression.foeScale(Progression.heroLevel(WS.game())) : { hp: 1, atk: 1 };   /* v95.00: monsters grow a little with the hero */
+    mult = Math.round(mult * fs.hp * 10) / 10;
+    const atk = Math.round((fierce ? 1.3 : 1) * fs.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6));
     await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : fierce ? 'NIGHT TERROR!' : 'ENCOUNTER!');
     const fr = document.createElement('iframe'); fr.id = 'wmBattle';
     const title = (o.boss ? 'บอส · ' : elite ? 'ยอดฝีมือ · ' : '') + (BOSS_NAME[foe] && o.boss ? BOSS_NAME[foe] : '');
@@ -538,10 +540,10 @@
     /* a group: more monsters deeper in the fog, at night and in ambushes; the boss brings two of the local monsters */
     const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
     const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
-    for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * 10) / 10) }
+    for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1)).join(',');
-    const fighters = S.party.filter(p => p.hp > 0), hc = window.Progression ? Progression.heroCombat(WS.game()) : { atk: 12, def: 3 };   /* v94.06 F2: level + weapon */
-    fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}&hatk=${hc.atk}&hdef=${hc.def}&title=${encodeURIComponent(title)}`;
+    const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
+    fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });

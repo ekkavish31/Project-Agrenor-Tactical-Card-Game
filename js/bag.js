@@ -72,9 +72,9 @@ function runEvent(key,src={}){let E=EVENTS[key],D=AD.EVENT_CARDS[key],adv=state(
 function shop(D,head,spend,src){let used=false;const stock=Object.entries(AD.CONSUMABLES).filter(([,x])=>x.rarity!=='rare'||Math.random()<.4).map(([k,x])=>[k,x.price]);
  const draw=msg=>{let sell=Object.entries(bag()).filter(([k,n])=>n>0&&AD.GOODS[k]);modal(D.name,head+`${msg?`<p class="adv-note">${esc(msg)}</p>`:''}<div class="currency-banner">◉ <strong>${s.village.coins} เหรียญ</strong></div>
   <h4>ซื้อ</h4><div class="adv-shop">${stock.map(([k,p])=>`<button data-buy="${k}" data-p="${p}" ${s.village.coins<p?'disabled':''}>${esc(nameOf(k))}<small>◉ ${p}</small></button>`).join('')}</div>
-  <h4>ขายของ</h4><div class="adv-shop">${sell.map(([k,n])=>`<button data-sell="${k}">${esc(nameOf(k))} ×${n}<small>◉ ${AD.GOODS[k].price}</small></button>`).join('')||'<p class="muted small">ไม่มีของให้ขาย</p>'}</div>`,[{label:'จบการซื้อขาย',primary:true,run:()=>{closeModal();src.after?.()}}],{onClose:()=>src.after?.()});
+  <h4>ขายของ</h4><div class="adv-shop">${sell.map(([k,n])=>`<button data-sell="${k}">${esc(nameOf(k))} ×${n}<small>◉ ${vendorGoods(k)}</small></button>`).join('')||'<p class="muted small">ไม่มีของให้ขาย</p>'}</div>`,[{label:'จบการซื้อขาย',primary:true,run:()=>{closeModal();src.after?.()}}],{onClose:()=>src.after?.()});
   modalEl.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{let p=+b.dataset.p;if(s.village.coins<p)return;if(!used){spend();used=true}s.village.coins-=p;addItem(b.dataset.buy,1);save();render();draw('ซื้อ '+nameOf(b.dataset.buy)+' แล้ว')});
-  modalEl.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{let k=b.dataset.sell;if(!hasItem(k))return;if(!used){spend();used=true}addItem(k,-1);s.village.coins+=AD.GOODS[k].price;save();render();draw('ขาย '+nameOf(k)+' แล้ว')})};
+  modalEl.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{let k=b.dataset.sell;if(!hasItem(k))return;if(!used){spend();used=true}addItem(k,-1);s.village.coins+=vendorGoods(k);save();render();draw('ขาย '+nameOf(k)+' แล้ว')})};
  draw('')}
 // v94.02: the old area adventure (node maps, quests, map fights) was deleted — journeys use the world map (world-map.html).
 const state=()=>null,refreshMap=()=>{},checkQuest=()=>'';
@@ -100,11 +100,11 @@ renderBag=function(){baseBag();let host=$('panelContent');if(!host)return;let b=
  let sec=(title,cat,btns)=>{let list=Object.entries(b).filter(([k,n])=>n>0&&itemInfo(k)?.cat===cat);return `<h3>${title}</h3><div class="bag-item-grid">${list.map(([k,n])=>tile(k,n,btns(k))).join('')||'<p class="muted small">ยังไม่มี</p>'}</div>`};
  host.insertAdjacentHTML('afterbegin',`<div class="bag-v11">${sec('ของใช้ · ใช้แล้วหมดไป','consumable',k=>AD.CONSUMABLES[k].use==='ต่อสู้'?'<small class="muted">ใช้ระหว่างต่อสู้</small>':`<button data-use="${k}">ใช้</button>`)}
  ${sec('การ์ดเหตุการณ์ · ใช้แล้วจะเกิดเรื่องราว','event',k=>`<button data-event="${k}">ใช้การ์ด</button>`)}
- ${sec('ไอเทมทั่วไป · ขายได้ที่ตลาด'+(atMarket?'':' (ไปตลาดเพื่อขาย)'),'goods',k=>atMarket?`<button data-sellg="${k}">ขาย ◉ ${AD.GOODS[k].price}</button>`:`<small class="muted">◉ ${AD.GOODS[k].price}</small>`)}<p id="bagMsg" class="small" role="status"></p></div>`);
+ ${sec('ไอเทมทั่วไป · ขายได้ที่ตลาด'+(atMarket?'':' (ไปตลาดเพื่อขาย)'),'goods',k=>atMarket?`<button data-sellg="${k}">ขาย ◉ ${vendorGoods(k)}</button>`:`<small class="muted">◉ ${vendorGoods(k)}</small>`)}<p id="bagMsg" class="small" role="status"></p></div>`);
  window.CardStudio?.fit(host);
  host.querySelectorAll('[data-use]').forEach(x=>x.onclick=()=>{let m=useConsumable(x.dataset.use);renderBag();$('bagMsg')&&($('bagMsg').textContent=m);refreshMap()});
  host.querySelectorAll('[data-event]').forEach(x=>x.onclick=()=>{$('panel').close();runEvent(x.dataset.event,{card:x.dataset.event})});
- host.querySelectorAll('[data-sellg]').forEach(x=>x.onclick=()=>{let k=x.dataset.sellg;if(!hasItem(k))return;addItem(k,-1);s.village.coins+=AD.GOODS[k].price;save();render();renderBag();$('bagMsg')&&($('bagMsg').textContent='ขาย '+nameOf(k)+' แล้ว')})};
+ host.querySelectorAll('[data-sellg]').forEach(x=>x.onclick=()=>{let k=x.dataset.sellg;if(!hasItem(k))return;addItem(k,-1);s.village.coins+=vendorGoods(k);save();render();renderBag();$('bagMsg')&&($('bagMsg').textContent='ขาย '+nameOf(k)+' แล้ว')})};
 window.addEventListener('load',()=>{if(s.village?.adventure){s.village.adventure=null;save()}});   // a save from the old area maps simply comes home
 window.Adventure={state,runEvent,bag,addItem,hasItem,EVENTS,enter:()=>window.VillageTown?.openWorld?.()};
 window.BattleItems=BattleItems;
