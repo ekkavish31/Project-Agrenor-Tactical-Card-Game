@@ -3,14 +3,20 @@
    cv, W, H, scale, zoom, pan, WORLD_W, WORLD_H, project(u,v), inv(x,y), world(e), locations, center(o), blockedBase(u,v), TownPaint.matsAt(points).
    The field is a (2R+1)² lattice square (R = ?r, default 7) (same lattice as the village) filled per biome with blocking props (trees, rocks, water, pillars),
    slow ground (mud, snow drifts, scree, sand) and cover (tall grass, reeds, bushes), plus a darker frame of scenery around it.
-   ?biome=forest|grass|hills|swamp|snow|sand · ?night=1 · ?seed= · ?poi=den|mine|ruin (boss dressing) */
+   ?biome=forest|grass|hills|swamp|snow|sand · ?night=1 · ?seed= · ?poi=den|mine|ruin (boss dressing)
+   v94: the ground has height (js/terrain-height.js, levels 0–3 by biome: grass gentle, hills/snow steeper) drawn by js/terrain-height-art.js —
+   the one terrain renderer for the 2.5D fields. project(u,v) lifts by the level under (u,v), so props and fighters stand on the ground;
+   window.FieldHeight.level(u,v) feeds the battle rules (flat-battle.js levelAt). ?flat=1 turns heights off. */
 'use strict';
 const FQ = new URLSearchParams(location.search);
 const WORLD_W = 4480, WORLD_H = 2520;
 const cv = document.getElementById('world'), g = cv.getContext('2d');
 let W = innerWidth, H = innerHeight, scale = 1, zoom = 1, pan = { x: 0, y: 0 };
-function project(u, v) { return { x: 2240 + (u - v) * 28, y: 1232 + (u + v) * 14 } }
-function inv(x, y) { const a = (x - 2240) / 28, b = (y - 1232) / 14; return { u: (a + b) / 2, v: (b - a) / 2 } }
+function projectFlat(u, v) { return { x: 2240 + (u - v) * 28, y: 1232 + (u + v) * 14 } }
+function invFlat(x, y) { const a = (x - 2240) / 28, b = (y - 1232) / 14; return { u: (a + b) / 2, v: (b - a) / 2 } }
+/* lifted by the ground height; between two walkable cells the lift eases across the edge so a walk up a step reads as a step, not a teleport */
+function project(u, v) { const p = projectFlat(u, v); return window.FieldHeight ? { x: p.x, y: p.y - FieldHeight.liftAt(u, v) } : p }
+function inv(x, y) { if (window.FieldHeight) { const c = TerrainHeightArt.hitTest(FieldHeight.map, x, y); if (c) return { u: c.u + .5, v: c.v + .5 } } return invFlat(x, y) }
 function world(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - W / 2 - pan.x) / (scale * zoom) + WORLD_W / 2, y: (e.clientY - r.top - H / 2 - pan.y) / (scale * zoom) + WORLD_H / 2 } }
 const locations = [{ id: 'square', name: 'สนาม' }];
 function center() { return { u: 0, v: 0 } }
@@ -49,6 +55,28 @@ const FIELD = (function () {
   for (let u = -R - 7; u <= R + 7; u++) for (let v = -R - 7; v <= R + 7; v++) { if (Math.abs(u) <= R && Math.abs(v) <= R) continue; const x = rnd(); outer.push({ u, v, prop: x < .3 ? MIX.props[Math.floor(rnd() * MIX.props.length)] : x < .45 ? 'tuft' : null, seed: rnd() }) }
   return { biome, R, cells, outer, MIX, rnd, key, night: FQ.get('night') === '1' };
 })();
+/* ---------- heights (v94) ---------- */
+window.FieldHeight = (function () {
+  if (!window.TerrainHeight || !window.TerrainHeightArt || FQ.get('flat') === '1') return null;
+  const R = FIELD.R, n = 2 * R + 1, S = R >= 7 ? 4 : 3, T = TerrainHeight, PX = T.LEVEL_PX;
+  const blocked = (lu, lv) => { const c = FIELD.cells.get(FIELD.key(lu - R, lv - R)); return !c || c.k === 'blocked' };
+  const zone = FQ.get('poi') === 'mine' ? 'hills' : FIELD.biome;
+  const map = T.forScene({ w: n, h: n, seed: 'field:' + (FQ.get('seed') || Math.floor(FIELD.rnd() * 1e9)) + ':' + FIELD.biome, biome: zone, blocked, entries: [{ u: R - S, v: R + S }, { u: R + S, v: R - S }] });
+  map.origin = { u: -R, v: -R };                        // local lattice → field cells (−R … R)
+  const level = (u, v) => T.levelAt(map, Math.floor(u), Math.floor(v)) ?? 0;
+  function liftAt(u, v) {
+    const cu = Math.floor(u), cv = Math.floor(v), L = level(cu, cv), fu = u - cu - .5, fv = v - cv - .5;
+    let y = L * PX;
+    for (const [f, du, dv] of [[fu, Math.sign(fu), 0], [fv, 0, Math.sign(fv)]]) {
+      const e = Math.abs(f); if (e < .3 || !(du || dv)) continue;
+      const N = T.levelAt(map, cu + du, cv + dv); if (N == null || Math.abs(N - L) > 2) continue;
+      y += (N - L) * PX * .5 * ((e - .3) / .2);         // half way at the shared edge
+    }
+    return y;
+  }
+  return { map, level, liftAt, lift: (u, v) => level(u, v) * PX, R };
+})();
+
 function blockedBase(u, v) { const c = FIELD.cells.get(FIELD.key(Math.floor(u), Math.floor(v))); return !c || c.k === 'blocked' }
 const TownPaint = { matsAt: pts => pts.map(p => { const q = inv(p.x, p.y), c = FIELD.cells.get(FIELD.key(Math.floor(q.u), Math.floor(q.v))); return !c ? null : c.k === 'slow' ? FIELD.MIX.slowMat : c.k === 'cover' ? FIELD.MIX.coverMat : null }) };
 
@@ -56,7 +84,7 @@ const TownPaint = { matsAt: pts => pts.map(p => { const q = inv(p.x, p.y), c = F
 const GROUND = { forest: ['#5f7a3e', '#6b8746', '#56703a'], grass: ['#7ea055', '#8cb062', '#729650'], hills: ['#a39168', '#b09e74', '#958560'], swamp: ['#55654a', '#5f7052', '#4b5a41'], snow: ['#dfe7ef', '#eef3f8', '#ced9e3'], sand: ['#d6c08c', '#e0cc99', '#c9b47f'] };
 const SLOWC = { mud: ['#6b5236', '#7a5f3f'], snow: ['#f7fbff', '#e6eef6'], sand: ['#c9a96a', '#d8ba7c'] }, COVERC = { forest: '#3f6a2e', grass: '#5c8f3a', hills: '#6f7f3e', swamp: '#4f6a3a', snow: '#6f8a6a', sand: '#9a9a50' };
 let groundCanvas = null;
-function diamond(ctx, u, v, pad = 0) { const a = project(u, v), b = project(u + 1, v), c = project(u + 1, v + 1), d = project(u, v + 1); ctx.beginPath(); ctx.moveTo(a.x, a.y - pad); ctx.lineTo(b.x + pad, b.y); ctx.lineTo(c.x, c.y + pad); ctx.lineTo(d.x - pad, d.y); ctx.closePath() }
+function diamond(ctx, u, v, pad = 0) { const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, P = (x, y) => { const q = projectFlat(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); ctx.beginPath(); ctx.moveTo(a.x, a.y - pad); ctx.lineTo(b.x + pad, b.y); ctx.lineTo(c.x, c.y + pad); ctx.lineTo(d.x - pad, d.y); ctx.closePath() }
 function paintGround() {
   const F = FIELD, ext = F.R + 8, a = project(-ext, ext), b = project(ext, -ext), top = project(-ext, -ext), bot = project(ext, ext);
   const x0 = Math.floor(a.x) - 40, x1 = Math.ceil(b.x) + 40, y0 = Math.floor(top.y) - 60, y1 = Math.ceil(bot.y) + 40;
@@ -66,6 +94,15 @@ function paintGround() {
   t.fillStyle = pal[0]; t.fillRect(x0, y0, x1 - x0, y1 - y0);
   for (let i = 0; i < 2600; i++) { const x = x0 + F.rnd() * (x1 - x0), y = y0 + F.rnd() * (y1 - y0); t.fillStyle = pal[1 + (i & 1)]; t.globalAlpha = .5; t.beginPath(); t.ellipse(x, y, 4 + F.rnd() * 10, 2 + F.rnd() * 5, 0, 0, 7); t.fill() }
   t.globalAlpha = 1;
+  /* v94: the raised ground (terraces, earth lips, rock cliffs) — one renderer for every outdoor field */
+  if (window.FieldHeight) {
+    const M = FieldHeight.map, base = pal[0], sh = (hex, k) => { const n = parseInt(hex.slice(1), 16), c = x => Math.max(0, Math.min(255, Math.round(x * k))).toString(16).padStart(2, '0'); return '#' + c(n >> 16) + c(n >> 8 & 255) + c(n & 255) };
+    const rock = F.biome === 'snow' ? TerrainHeightArt.PALETTES.snow : F.biome === 'sand' ? TerrainHeightArt.PALETTES.sand : TerrainHeightArt.PALETTES.rock;
+    const palette = { top: [0, 1, 2, 3].map(l => sh(base, 1 + .07 * l)), lip: F.biome === 'snow' ? '#a8b6c2' : '#7a5f3e', cliff: rock.cliff, line: 'rgba(0,0,0,.13)' };
+    const pools = new Uint8Array(M.w * M.h); for (const c of F.cells.values()) if (c.prop === 'pool') pools[(c.v - M.origin.v) * M.w + (c.u - M.origin.u)] = 1;
+    const vary = new Array(M.w * M.h).fill(0).map(() => .95 + F.rnd() * .08);
+    TerrainHeightArt.draw(t, { ...M, blocked: pools }, { palette, grid: true, tint: i => sh(palette.top[M.levels[i]], vary[i]) });
+  }
   for (const c of F.cells.values()) {
     if (c.k === 'slow') { const col = SLOWC[F.MIX.slowMat]; diamond(t, c.u, c.v, 3); t.fillStyle = col[0]; t.fill(); const p = project(c.u + .5, c.v + .5); for (let i = 0; i < 5; i++) { t.fillStyle = col[1]; t.beginPath(); t.ellipse(p.x + (F.rnd() - .5) * 34, p.y + (F.rnd() - .5) * 14, 5 + F.rnd() * 6, 2 + F.rnd() * 3, 0, 0, 7); t.fill() } if (F.MIX.slowMat === 'mud') { t.strokeStyle = 'rgba(30,20,10,.35)'; t.lineWidth = 1; t.beginPath(); t.ellipse(p.x, p.y, 12, 4, 0, 0, 7); t.stroke() } }
   }

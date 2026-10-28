@@ -1,4 +1,6 @@
-/* Town navigation: market, forge and home open a walkable 2.5D sub-map (village-place.html); stations run the game's own place actions. */
+/* Town navigation: market, forge and home open a walkable 2.5D sub-map (village-place.html); stations run the game's own place actions.
+   v94: every other place (inn, temple, healer, shop, villagers' houses …) opens its living interior (place-interior.html) in the same place frame;
+   "ผจญภัย" and the village exits open the world map (world-map.html) inside the town frame — the old area adventure is archived. */
 (function(){'use strict';
 const host=document.createElement('section');host.id='villageTownLayer';host.setAttribute('aria-label','หมู่บ้าน');host.style.cssText='position:fixed;inset:0;z-index:200;background:#718568';
 function makeFrame(title,src){const f=document.createElement('iframe');f.title=title;f.style.cssText='width:100%;height:100%;border:0';f.allow='fullscreen';if(src)f.src=src;host.appendChild(f);return f}
@@ -16,30 +18,39 @@ function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'|
  const motion=HeroMotion.snapshot(TACTICS_SPRITES),sig=JSON.stringify(motion);if(sig!==lastMotion){lastMotion=sig;send({type:'motion',data:motion});if(marketReady)post(marketFrame,{type:'motion',data:motion})}
 }
 function openTown(){if(busy||s.mode==='battle')return;inside=false;marketOpen=false;if($('panel').open)$('panel').close();stopIdle();send({type:'return'});sync();send({type:'focus'})}
-function enterPlace(id,map){const sub=map||id;placeAct=id;inside=false;marketOpen=true;stopIdle();if(placeId!==sub){placeId=sub;marketReady=false;marketFrame.src='village-place.html?place='+encodeURIComponent(sub)+(map?'&kind='+id:'')}else if(marketReady){post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)})}lastStamp='';sync()}
+function enterPlace(id,map,interior){const sub=interior?'in:'+id:map||id;placeAct=id;inside=false;marketOpen=true;stopIdle();if(placeId!==sub){placeId=sub;marketReady=false;marketFrame.src=interior?'place-interior.html?embed=1&place='+encodeURIComponent(id)+'&name='+encodeURIComponent(interior):'village-place.html?place='+encodeURIComponent(sub)+(map?'&kind='+id:'')}else if(marketReady){post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)})}lastStamp='';sync()}
 renderMap=function(edit){openTown();if(edit)send({type:'edit'})};openMapEditor=function(){renderMap(true)};
 villageTravel=function(id){if(['home','forge','market'].includes(id)){openTown();send({type:'walk',id})}};
 const oldRender=render;render=function(){const r=oldRender.apply(this,arguments);sync();return r};
-function arrived(id,map){if(id.startsWith('exit:')){chooseExpedition(id.slice(5));return}if(busy||devActive||s.mode==='battle'){send({type:'place',id,ok:false,message:'รอให้กิจกรรมปัจจุบันเสร็จก่อน',actions:[]});return}
- if(!PLACES[id]){send({type:'place',id,ok:false,message:id==='square'?'ลานกลางหมู่บ้าน':'สถานที่นี้เตรียมไว้ ยังไม่เปิดกิจกรรม',actions:[]});return}
+const CORE=['market','forge','home'];
+function arrived(id,map,info={}){if(id.startsWith('exit:')){openWorld();return}if(busy||devActive||s.mode==='battle'){send({type:'place',id,ok:false,message:'รอให้กิจกรรมปัจจุบันเสร็จก่อน',actions:[]});return}
+ // v94: the hero's own house (an editor place) is home; editor houses with an empty sub-map and every non-core place open the living interior
+ if(info.name&&/บ้านของเรา|บ้านเรา/.test(info.name))id='home';
+ const real=info.placeId||id,emptyMap=map&&!(placeMaps()[map]?.stations||[]).length;
+ if(!CORE.includes(id)||(info.custom&&emptyMap&&id!=='home')){if(id==='square'||real==='square'){send({type:'place',id,ok:false,message:'ลานกลางหมู่บ้าน',actions:[]});return}enterPlace(real,'',info.name||real);sync();return}
+ if(!PLACES[id]){send({type:'place',id,ok:false,message:'สถานที่นี้เตรียมไว้ ยังไม่เปิดกิจกรรม',actions:[]});return}
  const result=id===s.village.location?{ok:true}:travel(id);if(!result.ok){send({type:'place',id,ok:false,message:result.reason,actions:[]});return}
- if(['market','forge','home'].includes(id)){render();enterPlace(id,map);return}
+ if(CORE.includes(id)){render();enterPlace(id,info.name&&/บ้านของเรา|บ้านเรา/.test(info.name)?'':map);return}
  inside=true;marketOpen=false;closeCardFocus();hideEntityPeek();render();applySceneLayout(true);scheduleIdle();sync();
 }
-function menu(k){if(busy)return;if(['bag','character','editor'].includes(k))openPanel(k);else if(k==='deck'||k==='upgrade')openPanel('tdeck');else if(k==='settings')openSettings();else if(k==='activities')arrived(s.village.location);else if(k==='adventure'){if($('panel').open)$('panel').close();chooseExpedition()}else if(k==='training')openTactical()}
+function menu(k){if(busy)return;if(['bag','character','editor'].includes(k))openPanel(k);else if(k==='deck'||k==='upgrade')openPanel('tdeck');else if(k==='settings')openSettings();else if(k==='activities')arrived(s.village.location);else if(k==='adventure'){if($('panel').open)$('panel').close();openWorld()}else if(k==='training')openTactical()}
 window.addEventListener('message',e=>{const m=e.data;if(e.source===frame.contentWindow&&m?.source==='project-a-town'){
- if(m.type==='ready'){ready=true;if(!initialized){initialized=true;send({type:'init',data:stateData()})}send({type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)});lastStamp='';sync()}
- else if(m.type==='arrive'&&typeof m.id==='string')arrived(m.id,typeof m.map==='string'?m.map:'');
+ if(m.type==='ready'){ready=true;initialized=true;send({type:'init',data:stateData()});send({type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)});lastStamp='';sync()}
+ else if(m.type==='arrive'&&typeof m.id==='string')arrived(m.id,typeof m.map==='string'?m.map:'',{placeId:typeof m.placeId==='string'?m.placeId:'',name:typeof m.name==='string'?m.name:'',custom:!!m.custom});
  else if(m.type==='menu')menu(m.id);
  }else if(e.source===marketFrame.contentWindow&&m?.source==='project-a-place'){
  if(m.type==='ready'){marketReady=true;post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)});sync()}
  else if(m.type==='leave'&&marketOpen&&!busy)openTown();
- else if(m.type==='action'&&marketOpen&&!busy&&s.mode!=='battle'&&s.village.location===placeAct&&typeof m.id==='string')Promise.resolve(runPlaceAction(m.id)).then(()=>{lastStamp='';sync()});
+ else if(m.type==='action'&&marketOpen&&!busy&&s.mode!=='battle'&&(s.village.location===placeAct||placeId.startsWith('in:'))&&typeof m.id==='string')Promise.resolve(runPlaceAction(m.id)).then(()=>{lastStamp='';sync()});
  else if(m.type==='menu')menu(m.id);
  }});
-function chooseExpedition(area){const areas=window.ADVENTURE_DATA.AREAS;villageDialog('ออกผจญภัย',`<p>เลือกเส้นทางออกจากหมู่บ้าน · เดินทางไป 30 นาที</p><div class="place-grid">${Object.entries(areas).filter(([id])=>!area||id===area).map(([id,a])=>`<button onclick="VillageTown.expedition('${id}')"><strong>${a.name}</strong><small>ระดับ ${a.tier||1}</small></button>`).join('')}</div>`)}
-function expedition(area){if(busy||!window.ADVENTURE_DATA.AREAS[area])return;const reason=s.mode==='battle'?'จบการฝึกก่อน':s.hp<20?'HP ต่ำกว่า 20 พักก่อน':s.minutes>1080?'เลย 18:00 แล้ว':s.fatigue>=85?'ความสดชื่นต่ำเกินไป':'';if(reason){villageDialog('ยังออกผจญภัยไม่ได้','<p>'+reason+'</p>');return}if(!confirm('ออกสำรวจ '+window.ADVENTURE_DATA.AREAS[area].name+'? เดินทาง 30 นาที'))return;s.minutes=Math.min(1200,s.minutes+30);save();$('panel').close();Adventure.enter(area);sync()}
-window.VillageTown={open:openTown,frame,marketFrame,host,sync,expedition,getScene:()=>inside?s.village.location:marketOpen?'place:'+placeId:'town',enterPlace};
+/* v94: the old area adventure (adventure.js node maps) is archived — leaving the village always opens the world map in the town frame */
+function openWorld(){if(busy||s.mode==='battle')return;const reason=s.hp<20?'HP ต่ำกว่า 20 พักก่อน':s.fatigue>=85?'ความสดชื่นต่ำเกินไป':'';if(reason){villageDialog('ยังออกเดินทางไม่ได้','<p>'+reason+'</p>');return}if($('panel').open)$('panel').close();openTown();ready=false;frame.src='world-map.html';sync()}
+function openInterior(id,name){if(busy||s.mode==='battle')return;if($('panel').open)$('panel').close();openTown();enterPlace(id,'',name||id);sync()}
+function onWorld(){try{return /world-map\.html/.test(frame.contentWindow.location.pathname)}catch{return false}}
+function placeMaps(){try{return JSON.parse(localStorage.getItem('place-maps-v1')||'{}')}catch{return{}}}
+function chooseExpedition(){openWorld()}function expedition(){openWorld()}
+window.VillageTown={open:openTown,frame,marketFrame,host,sync,expedition,openWorld,openInterior,onWorld,getScene:()=>inside?s.village.location:marketOpen?'place:'+placeId:'town',enterPlace};
 new MutationObserver(()=>{const hide=activeHide();if(host.hidden!==hide||lastVisible!==JSON.stringify([!hide,marketOpen,ready,marketReady,modalOpen()]))sync()}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
 setInterval(()=>{if(!document.hidden)sync()},800);
 try{const channel=new BroadcastChannel('project-a-hero-motion');channel.onmessage=e=>{if(e.data?.kind!=='hero-walk'||!e.data.data?.directions)return;for(const[d,p]of Object.entries(e.data.data.directions)){if(!TACTICS_SPRITES.directions[d])TACTICS_SPRITES.directions[d]={};TACTICS_SPRITES.directions[d].walk=p.walk}lastMotion='';sync()}}catch{}

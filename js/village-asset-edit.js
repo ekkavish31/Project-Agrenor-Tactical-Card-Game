@@ -46,6 +46,8 @@
    if (v.buildings && typeof v.buildings === 'object') data.buildings = copy(v.buildings);
    // Repair legacy values written by the old percentage bug (e.g. 100 instead of 1.00).
    for (const b of Object.values(data.buildings)) if (b && typeof b === 'object') for (const k of ['ix','iy']) if (Number.isFinite(b[k]) && b[k] > 2) b[k] = Math.max(.5, Math.min(2, b[k] / 100));
+   // v94: the new villager homes (npc10…npc15) start at the same size as the other village houses until edited
+   for (let i = 10; i <= 15; i++) if (!data.buildings['npc' + i]) data.buildings['npc' + i] = { sx: 0.73, sy: 0.73 };
    if (v.frames && typeof v.frames === 'object') data.frames = copy(v.frames);
    window.VillageFence?.set(v.fence);
    if (Array.isArray(v.assets)) data.assets = v.assets.filter(a => a && /^[a-z0-9-]{2,40}$/.test(a.id) && typeof a.name === 'string').map(a => ({ id: a.id, name: a.name.slice(0, 40), w: Math.max(30, Math.min(900, +a.w || 120)), ...(a.bld ? { bld: 1 } : {}), ...(typeof a.file === 'string' && /^assets\/[\w\/.-]+$/.test(a.file) ? { file: a.file } : {}), ...(a.ov ? { ov: 1 } : {}), ...(a.fx > 0 && a.fx < 1 && a.fy > 0 && a.fy <= 1 ? { fx: +a.fx, fy: +a.fy } : {}) }));

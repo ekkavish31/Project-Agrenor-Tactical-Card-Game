@@ -1,21 +1,23 @@
 /* v93.03 · Village life data: the clock, the people of Fernvale (who they are, where they are at each hour, what they say) and the
    companions that can be recruited (each with its own condition). Pure data + small helpers, shared by place-interior.html.
-   The party and gold live in the world-map save ('agrenor-world-v1') so a recruit made in the inn travels on the world map. */
+   v94: the party, gold and clock live in the one game save (js/world-state.js), shared with the world map and the game. */
 (function (root) {
   'use strict';
-  /* ---------- clock: 1 real second = 2 game minutes (a day ≈ 12 real minutes); the world map sets it when you come home ---------- */
-  const CLOCK_KEY = 'agrenor-clock-v1', RATE = 2 / 60;          // game hours per real second
+  /* ---------- clock (v94): the one game clock in js/world-state.js — s.day + s.minutes; it runs while you are in the village ---------- */
+  const WS = () => root.WorldState;
   const VillageClock = {
-    read() { let c = null; try { c = JSON.parse(localStorage.getItem(CLOCK_KEY) || 'null') } catch (e) { } if (!c) { c = { day: 1, hour: 8, at: Date.now() }; this.save(c) } const h = c.hour + (Date.now() - c.at) / 1000 * RATE; return { day: c.day + Math.floor(h / 24), hour: h % 24 } },
-    save(c) { try { localStorage.setItem(CLOCK_KEY, JSON.stringify(c)) } catch (e) { } },
-    set(day, hour) { this.save({ day, hour, at: Date.now() }) },
-    skip(hours) { const n = this.read(); this.set(n.day, n.hour + hours) },
-    label(h) { const hh = Math.floor(h), mm = Math.floor((h % 1) * 60); return String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0') },
-    period(h) { return h >= 5 && h < 11 ? 'morning' : h < 17 ? 'day' : h < 21 ? 'evening' : 'night' }
+    read() { const n = WS().now(); return { day: n.day, hour: n.hour } },
+    set(day, hour) { WS().setTime(day, Math.round(hour * 60)) },
+    skip(hours) { WS().advance(Math.round(hours * 60)) },
+    label(h) { return WS().label(h) },
+    period(h) { return WS().period(h) }
   };
 
   /* ---------- places ---------- house owners follow the village map (npc0 … npc9) */
-  const HOUSE_OF = { npc0: 'may', npc1: 'tom', npc2: 'lin', npc3: 'ken', npc4: 'berg', npc5: 'mira', npc6: 'joe', npc7: 'shep', npc8: 'ella', npc9: 'saf' };
+  const HOUSE_OF = { npc0: 'may', npc1: 'tom', npc2: 'lin', npc3: 'ken', npc4: 'berg', npc5: 'mira', npc6: 'joe', npc7: 'shep', npc8: 'ella', npc9: 'saf',
+    /* v94: the houses rebuilt in the editor under new ids, and the new homes */
+    'custom-mvqg7qer': 'may', 'custom-mvqaxpl5': 'lin', 'custom-mvqfrlx9': 'mira',
+    npc10: 'oren', npc11: 'gus', npc12: 'dork', npc13: 'hilda', npc14: 'bryn', npc15: 'kier' };
   function placeKind(id, name = '') {
     if (['inn', 'healer', 'shop', 'market', 'temple', 'forge', 'square'].includes(id)) return id;
     if (HOUSE_OF[id]) return 'house';
@@ -152,12 +154,86 @@
     trait: 'ร่าเริง ช่างสังเกต จำได้ว่าใครชอบดอกอะไร', story: 'ส่งดอกไม้ให้วิหารทุกเช้า และแอบเขียนจดหมายถึงใครบางคนในเมืองใหญ่', likes: 'ดอกไม้ป่าสีฟ้า', sched: [[6, 9, 'temple', 'pew'], [9, 17, 'market'], [17, 21, 'inn', 'stage']],
     lines: { morning: ['ดอกไม้ชุดนี้เพิ่งเก็บตอนน้ำค้างยังไม่แห้ง'], day: ['ซิสเตอร์ออร์ลาชอบดอกสีขาว ส่วนนาเดีย … เธอชอบดอกที่มีหนาม'], evening: ['ฟินน์ขอดอกไม้ไปให้ใครอีกแล้วนะ'] }, about: ['ดอกไม้ป่าสีฟ้าขึ้นเฉพาะที่ที่ดินมีพลัง … คุณยายลินบอกแบบนั้น'] });
 
+
+  /* ---------- v94: homes, travellers and the old travelling party ----------
+     Everyone now either lives in Fernvale (a house, or a room in the place they keep) or comes from somewhere else (origin) and is only
+     in the village on some days (visit): {every, stay, offset, arrive, leave} = stay `stay` days out of every `every` (arriving at `arrive`,
+     leaving at `leave` o'clock) · {daily:[from,to]} = comes in every day from a nearby village. Visitors walk in and out through `gate`.
+     The places they go off to are not on the map yet (planned: other villages / towns on the world map). */
+  Object.assign(P.may, { home: 'custom-mvqg7qer' }); Object.assign(P.lin, { home: 'custom-mvqaxpl5' }); Object.assign(P.mira, { home: 'custom-mvqfrlx9' });
+  Object.assign(P.pim, { home: 'custom-mvqfrlx9' }); Object.assign(P.mother, { home: 'custom-mvqgnp43' });
+  // villagers who get a house of their own
+  Object.assign(P.oren, { home: 'npc10', sched: [[6, 8, 'home', 'work'], [8, 12, 'market'], [12, 14, 'home'], [14, 17, 'square'], [17, 20, 'inn', 'table'], [20, 24, 'home']] });
+  Object.assign(P.gus, { home: 'npc11', sched: [[6, 19, 'forge', 'anvil'], [19, 23, 'inn', 'bar'], [23, 24, 'home']] });
+  Object.assign(P.dork, { home: 'npc12', sched: [[6, 20, 'square'], [20, 23, 'inn', 'bar'], [23, 24, 'home']] });
+  Object.assign(P.hilda, { home: 'npc13', sched: [[5, 12, 'home', 'work'], [12, 15, 'market'], [15, 19, 'home', 'work'], [19, 22, 'inn', 'table'], [22, 24, 'home']] });
+  Object.assign(P.bryn, { home: 'npc14', sched: [[5, 13, 'home', 'work'], [13, 17, 'market'], [17, 22, 'inn', 'bar'], [22, 24, 'home']] });
+  // people who live where they work
+  Object.assign(P.marta, { home: 'inn', origin: 'อยู่ห้องหลังโรงแรมของตัวเอง' }); Object.assign(P.vera, { home: 'shop', origin: 'อยู่ห้องหลังร้าน' });
+  Object.assign(P.orla, { home: 'temple', origin: 'มาจากวิหารใหญ่ริมแม่น้ำ อยู่ประจำวิหารของหมู่บ้าน' });
+  Object.assign(P.olwen, { home: 'inn', origin: 'เช่าห้องประจำที่โรงแรมมาหลายปี' });
+  Object.assign(P.sigrid, { home: 'inn', origin: 'ทหารรับจ้างจากทางเหนือ พักโรงแรมรองาน' }); Object.assign(P.mil, { home: 'inn', origin: 'ศิษย์ดาบจากสำนักในเมืองหลวง พักโรงแรมระหว่างตามหาครูคนใหม่' });
+  // travellers: in Fernvale only on some days
+  Object.assign(P.finn, { home: 'inn', origin: 'กวีพเนจร ร้องเพลงไปตามหมู่บ้านตามเส้นทางการค้า', visit: { every: 5, stay: 3, offset: 1, arrive: 10, leave: 15 }, gate: 'north' });
+  Object.assign(P.graven, { home: 'inn', origin: 'พ่อค้าจากเมืองท่าทางตะวันออก มาเปิดแผงวันตลาด', visit: { every: 4, stay: 2, offset: 2, arrive: 8, leave: 16 }, gate: 'east' });
+  Object.assign(P.nadia, { home: 'inn', origin: 'ไม่มีใครรู้ว่าเธอนอนที่ไหน — ลือกันว่ามีที่ซ่อนในป่าตะวันตก', visit: { every: 2, stay: 1, arrive: 19, leave: 24 }, gate: 'west' });
+  Object.assign(P.tess, { origin: 'อยู่หมู่บ้านบรู๊คเมียร์ทางตะวันตก เดินมาขายดอกไม้ทุกวัน', visit: { daily: [6, 18] }, gate: 'west',
+    sched: [[6, 8, 'temple', 'altar'], [8, 15, 'market'], [15, 18, 'square']] });
+
+  // the old travelling party: now villagers you recruit like everyone else
+  add('kier', { name: 'เคียร์', role: 'นักดาบหนุ่ม · เพื่อนสมัยเด็กของ {name}', age: 19, recruit: 'friend', home: 'npc15', look: { coat: '#6a4a8a', hair: '#2a1f16', hat: 'none', weapon: 'sword', cape: '#3a2a4a' },
+    trait: 'กล้าบ้าบิ่น พูดเร็ว ไม่เคยยอมแพ้ใครยกเว้น {name}', story: 'โตมาด้วยกันกับ {name} ฝึกดาบไม้ด้วยกันตั้งแต่เด็ก ฝันอยากออกเดินทางมานานแล้ว แค่รอให้เพื่อนชวน',
+    likes: 'ดาบดี ๆ, การแข่งวิ่ง', sched: [[7, 12, 'home', 'work'], [12, 22, 'inn', 'table'], [22, 24, 'home']],
+    lines: { morning: ['ตื่นสายอีกแล้วนะ {name}! ข้าวิ่งรอบหมู่บ้านไปสามรอบแล้ว'], day: ['ถ้าเจ้าจะออกเดินทาง อย่าทิ้งข้าไว้นะ ข้าฝึกดาบรอมาทั้งปี'], evening: ['จำตอนเราแอบไปจับกบที่ลำธารได้ไหม … ตอนนี้ข้าอยากจับหมาป่าแทน'], night: ['ยังไม่นอนอีกเหรอ? ข้าก็นอนไม่หลับ ใจมันอยากออกไปข้างนอก'] },
+    about: ['พ่อข้าอยากให้ข้าเป็นช่างไม้ แต่มือข้าจับดาบได้ดีกว่าค้อน'] });
+  add('bram', { name: 'บรัม', role: 'นักรบค้อนรับจ้าง', age: 41, recruit: 'hire', home: 'inn', origin: 'รับจ้างคุ้มกันกองคาราวานตามหมู่บ้านริมป่า แวะพักเฟิร์นเวลเป็นพัก ๆ', visit: { every: 7, stay: 5, arrive: 9, leave: 14 }, gate: 'southeast',
+    look: { coat: '#6a5a4a', hair: '#8a5a2a', hat: 'none', beard: '#8a5a2a', weapon: 'hammer', tall: true, belt: '#3a2a1a' },
+    trait: 'ตัวใหญ่ ใจเย็น กินจุ ไว้ใจได้ถ้าจ่ายครบ', story: 'เคยเป็นยามประตูเมืองหลวง ลาออกเพราะเบื่อยืนเฉย ๆ ทั้งวัน',
+    likes: 'สตูเนื้อ, โล่หนา ๆ', sched: [[7, 24, 'inn', 'table'], [0, 2, 'inn', 'table']],
+    lines: { morning: ['สตูของมาร์ธาร้อนกำลังดี … เจ้าจะกินด้วยไหม'], day: ['หกสิบเหรียญ ข้าจะยืนหน้าเจ้ารับทุกอย่างที่พุ่งเข้ามา'], evening: ['กองคาราวานถัดไปจะผ่านมาอีกไม่กี่วัน ถ้าเจ้าไม่จ้างข้า ข้าก็ไปกับพวกนั้น'] },
+    about: ['ค้อนนี่หนักกว่าดาบสามเท่า แต่ตีทีเดียวไม่ต้องตีซ้ำ'] });
+  add('luna', { name: 'ลูน่า', role: 'นักเวทนักศึกษาซากโบราณ', age: 23, recruit: 'visits', home: 'inn', origin: 'นักศึกษาจากหอสมุดเมืองหลวง มาสำรวจซากโบราณรอบหุบ แวะพักเฟิร์นเวลเป็นช่วง ๆ', visit: { every: 3, stay: 2, offset: 1, arrive: 9, leave: 17 }, gate: 'north',
+    look: { coat: '#3a5a8a', hair: '#c9c0e0', hat: 'hood', hatCol: '#2a3a6a', weapon: 'staff', longHair: true },
+    trait: 'ช่างสงสัย จริงจังกับงาน ไม่ไว้ใจคนแปลกหน้าง่าย ๆ', story: 'ตามหาจารึกที่พูดถึงยุคก่อนเผ่าโบราณจะหายไป เชื่อว่ามีบางอย่างซ่อนอยู่ใต้หุบนี้',
+    likes: 'จารึกเก่า, ชาร้อน', sched: [[9, 12, 'temple', 'pew'], [12, 16, 'square'], [16, 23, 'inn', 'table']],
+    lines: { day: ['อักษรบนเสาวิหารนี่ไม่ใช่ภาษาของยุคเรา … เจ้าเคยเห็นแบบนี้ที่อื่นไหม'], evening: ['ข้าจดบันทึกไปสามเล่มแล้ว แต่ยังไม่เข้าใกล้ความจริงเลย'] },
+    about: ['เวทของข้าไม่ได้เรียนเพื่อสู้ … แต่ถ้าจำเป็น ข้าก็ใช้มันได้ดี'] });
+  // new travellers (not recruitable — yet)
+  add('ash', { name: 'แอช', role: 'นักผจญภัยพเนจร', age: 27, home: 'inn', origin: 'เดินทางจากเมืองท่าทางใต้ ตามล่าค่าหัวไปเรื่อย ๆ', visit: { every: 8, stay: 2, offset: 4, arrive: 11, leave: 13 }, gate: 'southeast',
+    look: { coat: '#7a3a2a', hair: '#e0d0b0', hat: 'bandana', hatCol: '#4a2a1a', weapon: 'sword', cape: '#5a3a2a', longHair: true },
+    trait: 'มั่นใจ ขี้อวด แต่ฝีมือจริง', story: 'เคยล้มโทรลล์บึงมาแล้วสองตัว (เธอว่าอย่างนั้น)', sched: [[11, 18, 'square'], [18, 24, 'inn', 'bar'], [0, 2, 'inn', 'bar']],
+    lines: { day: ['ป้ายค่าหัวที่ประตูหมู่บ้านน่ะ … ของข้าแล้ว อย่าแย่งล่ะ'], evening: ['ชนแก้วกับข้าสิ เจ้าดูเหมือนคนที่เพิ่งเริ่มออกเดินทาง'] }, about: ['ทุกเมืองมีงานให้คนกล้า … แค่ต้องกล้ากลับมาเก็บเงินด้วย'] });
+  add('pell', { name: 'เพลล์', role: 'พ่อค้าเร่ขายของจุกจิก', age: 58, home: 'inn', origin: 'ลากเกวียนเร่ขายของไปทั่วทุกหมู่บ้านในหุบ', visit: { every: 5, stay: 1, offset: 3, arrive: 8, leave: 18 }, gate: 'southwest',
+    look: { coat: '#8a7a4a', hair: '#9a9a9a', hat: 'hat', hatCol: '#5a4a2a', beard: '#aaaaaa', cape: '#6a5a3a' },
+    trait: 'พูดเก่ง ขายเก่ง จำทางได้ทุกเส้น', story: 'อ้างว่ามีแผนที่ทุกหมู่บ้านในหุบ … ขายให้ถ้าราคาถูกใจ', sched: [[8, 18, 'market']],
+    lines: { morning: ['ของใหม่จากหมู่บ้านข้างเคียง! เข็มทิศ เชือก เทียนไข ครบ!'], day: ['เจ้าจะไปทางเหนือหรือ? ข้าได้ยินว่าสะพานเก่าพังแล้วนะ'] }, about: ['เกวียนของข้าเดินทางมาไกลกว่าใครในหมู่บ้านนี้ทั้งหมดรวมกัน'] });
+  add('hugo', { name: 'ฮิวโก้', role: 'ผู้แสวงบุญ', age: 66, home: 'inn', origin: 'เดินเท้าไปไหว้วิหารธาตุทุกแห่งในแผ่นดิน เฟิร์นเวลเป็นจุดพัก', visit: { every: 10, stay: 2, offset: 6, arrive: 10, leave: 12 }, gate: 'north',
+    look: { coat: '#a89878', hair: '#e8e8e8', hat: 'hood', hatCol: '#8a7a5a', beard: '#f0f0f0', weapon: 'staff' },
+    trait: 'สงบ พูดช้า ชอบเล่าเรื่องวิหารที่ไปมา', story: 'เดินมาแล้วสิบเอ็ดวิหาร เหลืออีกสามแห่ง', sched: [[10, 18, 'temple', 'pew'], [18, 22, 'inn', 'fire']],
+    lines: { day: ['วิหารธาตุดินของที่นี่เล็ก แต่เงียบสงบกว่าที่ไหน ๆ'], evening: ['ไฟในเตาผิงอุ่นดีนะ ทำให้นึกถึงวิหารไฟทางใต้'] }, about: ['ทุกก้าวที่เดินคือคำภาวนาหนึ่งบท'] });
+
+  /* is p in Fernvale at this day/hour? (residents always) */
+  function present(p, day, hour) {
+    const v = p?.visit; if (!v) return true;
+    if (v.daily) return hour >= v.daily[0] && hour < v.daily[1];
+    const k = (((day - 1 + (v.offset || 0)) % v.every) + v.every) % v.every;
+    if (k >= v.stay) return false;
+    if (k === 0 && hour < (v.arrive ?? 9)) return false;
+    if (k === v.stay - 1 && hour >= (v.leave ?? 17)) return false;
+    return true;
+  }
+  /* a line for the about panel: where they are from and when they come by */
+  function originText(p) { const v = p?.visit; if (!p?.origin) return ''; if (!v) return p.origin; return p.origin + ' · ' + (v.daily ? 'มาทุกวัน ' + v.daily[0] + ':00–' + v.daily[1] + ':00' : 'อยู่หมู่บ้านราว ' + v.stay + ' วัน ทุก ๆ ' + v.every + ' วัน') }
+
   /* personality voice (how they say things) + how fast they hear gossip (0 slow … 3 knows everything) */
-  const VOICE = { marta: ['warm', 3], finn: ['cheerful', 3], sigrid: ['gruff', 0], ren: ['cheerful', 1], olwen: ['scholar', 2], nadia: ['sly', 2], mil: ['cheerful', 1], orla: ['gentle', 1], berg: ['gruff', 0], may: ['warm', 2], tom: ['gruff', 1], lin: ['scholar', 1], mira: ['scholar', 1], saf: ['gentle', 1], ken: ['cheerful', 1], ella: ['gentle', 2], joe: ['cheerful', 2], shep: ['anxious', 1], pim: ['cheerful', 2], dork: ['formal', 1], gus: ['gruff', 2], vera: ['sly', 2], graven: ['sly', 3], oren: ['formal', 2], mother: ['warm', 2], pip: ['cheerful', 2], bryn: ['cheerful', 2], hilda: ['anxious', 1], tess: ['gentle', 3] };
+  const VOICE = { marta: ['warm', 3], finn: ['cheerful', 3], sigrid: ['gruff', 0], ren: ['cheerful', 1], olwen: ['scholar', 2], nadia: ['sly', 2], mil: ['cheerful', 1], orla: ['gentle', 1], berg: ['gruff', 0], may: ['warm', 2], tom: ['gruff', 1], lin: ['scholar', 1], mira: ['scholar', 1], saf: ['gentle', 1], ken: ['cheerful', 1], ella: ['gentle', 2], joe: ['cheerful', 2], shep: ['anxious', 1], pim: ['cheerful', 2], dork: ['formal', 1], gus: ['gruff', 2], vera: ['sly', 2], graven: ['sly', 3], oren: ['formal', 2], mother: ['warm', 2], pip: ['cheerful', 2], bryn: ['cheerful', 2], hilda: ['anxious', 1], tess: ['gentle', 3], kier: ['cheerful', 2], bram: ['gruff', 1], luna: ['scholar', 1], ash: ['cheerful', 3], pell: ['sly', 3], hugo: ['gentle', 1] };
   for (const [id, [voice, gossip]] of Object.entries(VOICE)) if (P[id]) Object.assign(P[id], { voice, gossip });
 
   /* ---------- recruitment ---------- each recruit has a different way in */
   const RECRUIT = {
+    kier: { kind: 'friend', label: 'ชวนได้เลย (เพื่อนสมัยเด็ก)', text: 'แค่ขอ เคียร์ก็พร้อมไปด้วย', joinLine: 'ในที่สุด! ข้ารอเจ้าพูดคำนี้มาทั้งปี ไปกันเลย!' },
+    bram: { kind: 'hire', label: 'จ้าง 60 💰', cost: 60, text: 'จ่ายครั้งเดียว บรัมจะคุ้มกันทีมไปตลอดทาง', joinLine: 'ตกลง ค้อนกับโล่ของข้าเป็นของเจ้าแล้ว' },
+    luna: { kind: 'visits', label: 'คุยกับลูน่า 3 วันที่ต่างกัน', need: 3, text: 'เธอไม่ไว้ใจคนแปลกหน้า คุยด้วยบ่อย ๆ จนเธอเชื่อใจ (มาหมู่บ้านเป็นช่วง ๆ)', waitLines: ['ข้าไม่ไปกับคนที่เพิ่งรู้จักหรอก … แต่คุยกันได้', 'เจ้าก็ถามเรื่องจารึกเก่งดีนี่ … มาคุยกันอีกนะ'], joinLine: 'ก็ได้ … นอกหมู่บ้านมีซากโบราณที่ข้าอยากไปดู ไปด้วยกันเถอะ' },
     sigrid: { kind: 'hire', label: 'จ้าง 120 💰', cost: 120, text: 'จ่ายค่าจ้างครั้งเดียว ซิกริดจะร่วมทีมทันที' },
     ren: { kind: 'battles', label: 'ชนะการต่อสู้นอกหมู่บ้าน 3 ครั้ง (หลังรับเควส)', need: 3, text: 'รับเควสแล้วไปชนะศัตรูบนแผนที่โลก 3 ครั้ง แล้วกลับมาคุยกับเรน' },
     olwen: { kind: 'drinks', label: 'เลี้ยงเหล้า 3 ครั้ง ตอนเย็น/กลางคืน (ครั้งละ 10 💰)', need: 3, cost: 10, text: 'เลี้ยงได้วันละครั้ง ช่วง 17:00 เป็นต้นไป' },
@@ -168,6 +244,9 @@
   };
   /* companion combat stats (used by the battle) for the new recruits; bram/luna/kier/mil already exist there */
   const ALLY_STATS = {
+    bram: { name: 'บรัม', hp: 54, atk: 12, move: 4, range: 1, fx: 'blunt', def: 2 },
+    luna: { name: 'ลูน่า', hp: 44, atk: 11, move: 3, range: 4, fx: 'arcane' },
+    kier: { name: 'เคียร์', hp: 48, atk: 13, move: 4, range: 1, fx: 'sword' },
     sigrid: { name: 'ซิกริด', hp: 60, atk: 15, move: 4, range: 1, fx: 'blunt', def: 2 },
     ren: { name: 'เรน', hp: 40, atk: 11, move: 4, range: 5, fx: 'arrow' },
     olwen: { name: 'โอลเวน', hp: 36, atk: 14, move: 3, range: 4, fx: 'fire' },
@@ -177,17 +256,15 @@
     mil: { name: 'มิล', hp: 42, atk: 10, move: 5, range: 1, fx: 'knife' }
   };
 
-  /* ---------- party store (inside the world-map save) ---------- */
-  const SAVE = 'agrenor-world-v1', MAX_ACTIVE = 4;
-  function readSave() { try { return JSON.parse(localStorage.getItem(SAVE) || 'null') } catch (e) { return null } }
-  function writeSave(S) { try { localStorage.setItem(SAVE, JSON.stringify(S)) } catch (e) { } }
+  /* ---------- party store (v94): gold, potions, hero HP and the party live in the game save (js/world-state.js);
+     this object is the world-map save with those fields bound live onto it ---------- */
+  const MAX_ACTIVE = 4;
   function save() {
-    let S = readSave();
-    if (!S) S = { gold: 30, potions: 1, hp: 60, maxHp: 60, battles: 0, done: {} };
-    S.party ??= [{ key: 'bram', name: 'บรัม', hp: 54, max: 54 }, { key: 'luna', name: 'ลูน่า', hp: 44, max: 44 }, { key: 'kier', name: 'เคียร์', hp: 48, max: 48 }];
-    S.bench ??= []; S.recruit ??= {}; S.gold ??= 30; S.potions ??= 1; S.battles ??= 0; S.done ??= {};
+    const S = WS().bind(WS().world() || {});
+    S.done ??= {};
     return S;
   }
+  function writeSave(S) { WS().writeWorld(S) }
   const inParty = (S, key) => S.party.some(p => p.key === key) || S.bench.some(p => p.key === key);
   function join(S, key) {
     const st = ALLY_STATS[key]; if (!st || inParty(S, key)) return false;
@@ -195,6 +272,6 @@
     if (S.party.length < MAX_ACTIVE) S.party.push(m); else S.bench.push(m);
     return true;
   }
-  root.VillageLife = { VillageClock, P, homeOf: p => p.home || Object.keys(HOUSE_OF).find(h => HOUSE_OF[h] === p.id) || null, RECRUIT, ALLY_STATS, HOUSE_OF, placeKind, save, writeSave, join, inParty, MAX_ACTIVE };
+  root.VillageLife = { VillageClock, P, present, originText, homeOf: p => p.home || Object.keys(HOUSE_OF).find(h => HOUSE_OF[h] === p.id) || null, RECRUIT, ALLY_STATS, HOUSE_OF, placeKind, save, writeSave, join, inParty, MAX_ACTIVE };
   root.VillageClock = VillageClock;
 })(globalThis);

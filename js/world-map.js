@@ -3,7 +3,8 @@
    step out of the village hex by hex (time, food, HP) → encounters: battles (played in the flat card battle, embedded), chests, camps, shrines,
    merchants, traps, old maps → boss at the destination → reward, travel home along the known road.
    Fog levels per tile: hidden (black) · explored (dim, remembered) · visible (around the party; +1 sight on hills).
-   Saved in localStorage 'agrenor-world-v1'. ?seed= starts a specific world, ?new=1 a fresh one. */
+   Saved in localStorage 'agrenor-world-v1' (map only). v94: the clock, gold, potions, food, hero HP, fatigue and the party are the game's own
+   (js/world-state.js) — S.gold, S.party, S.day … are live views of the one save. ?seed= starts a specific world, ?new=1 a fresh one. */
 (function () {
   'use strict';
   const G = window.WorldGen, Q = new URLSearchParams(location.search), SAVE = 'agrenor-world-v1';
@@ -30,14 +31,12 @@
   const toWorld = (x, y) => ({ x: (x - W / 2) / cam.z + cam.x, y: (y - H / 2) / cam.z + cam.y });
 
   /* ---------- save ---------- */
-  /* the travelling party (old companion roster): HP carries over between fights; a fallen companion gets up wounded after the fight */
-  const PARTY0 = () => [{ key: 'bram', name: 'บรัม', hp: 54, max: 54 }, { key: 'luna', name: 'ลูน่า', hp: 44, max: 44 }, { key: 'kier', name: 'เคียร์', hp: 48, max: 48 }];
-  /* the village clock follows the journey's time when you go home */
+  /* the travelling party (recruited in the village, js/world-state.js): HP carries over between fights; a fallen companion gets up wounded after the fight */
+  const WS = window.WorldState;
   /* tell the village (js/village-mind.js): what happened out here becomes news and gossip back home; the party saw it */
-  function ev(type, data = {}) { try { syncClock(); window.Mind?.emit(type, { witness: S.party.map(p => p.key), ...data }) } catch (e) { } }
+  function ev(type, data = {}) { try { window.Mind?.emit(type, { witness: S.party.map(p => p.key), ...data }) } catch (e) { } }
   /* time spent in the village passes out here too; scouting jobs done in the village open up the map */
   function adoptVillage() {
-    try { const c = JSON.parse(localStorage.getItem('agrenor-clock-v1') || 'null'); if (c) { const h = c.hour + (Date.now() - c.at) / 1000 * (2 / 60), day = c.day + Math.floor(h / 24), hour = Math.floor(h % 24); if (day * 24 + hour > S.day * 24 + S.hour) { S.day = day; S.hour = hour } } } catch (e) { }
     while (S.revealQueue > 0) {
       S.revealQueue--; const d = destOf() || world.dests.find(x => !S.done[x.id]);
       if (d) { const p = G.path(world, world.home, d); if (p) p.forEach((x, i) => { if (i % 2 === 0 || i < 6) for (const [a, b] of G.within(x.c, x.r, 1)) S.known[K(a, b)] = 1 }); log('ผู้สำรวจจากหมู่บ้านวาดทางไป ' + d.name + ' มาให้') }
@@ -45,23 +44,19 @@
       fogDirty = true; setTimeout(() => toast('🗺 ผู้สำรวจกลับมาพร้อมแผนที่ทาง'), 900);
     }
   }
-  function syncClock() { try { localStorage.setItem('agrenor-clock-v1', JSON.stringify({ day: S.day, hour: S.hour, at: Date.now() })) } catch (e) { } }
+  function syncClock() { }   // v94: one clock — nothing to copy
   function healParty(f) { for (const p of S.party) p.hp = Math.min(p.max, f >= 1 ? p.max : p.hp + Math.round(p.max * f)) }
   function fresh(seed) {
     world = G.generate(seed);
-    S = { seed: world.seed, known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], day: 1, hour: 8, fatigue: 0, food: 18, party: PARTY0(), gold: 30, hp: 60, maxHp: 60, potions: 1,
-      dest: null, cleared: {}, done: {}, battles: 0, steps: 0, log: [] };
-    /* v92.17: the party, recruits, money and potions belong to the hero, not to one world — keep them from the previous save (or from the village) */
-    try { const old = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (old) for (const k of ['party', 'bench', 'recruit', 'gold', 'potions', 'battles']) if (old[k] != null) S[k] = old[k] } catch (e) { }
-    S.bench ??= []; S.recruit ??= {};
+    S = WS.bind({ seed: world.seed, known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], dest: null, cleared: {}, done: {}, steps: 0, log: [] });
     reveal(); save();
   }
   function load() {
     if (Q.get('new') === '1') { fresh(+Q.get('seed') || undefined); history.replaceState(null, '', location.pathname); return }
-    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = s; S.fatigue ??= 0; S.party ??= PARTY0(); adoptVillage(); reveal(); return } } catch (e) { }
+    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = WS.bind(s); S.done ??= {}; S.log ??= []; adoptVillage(); reveal(); return } } catch (e) { }
     fresh(+Q.get('seed') || undefined);
   }
-  function save() { try { localStorage.setItem(SAVE, JSON.stringify(S)) } catch (e) { } }
+  function save() { WS.writeWorld(S) }
   function log(t) { S.log.unshift(t); S.log = S.log.slice(0, 30) }
 
   /* ---------- fog ---------- */
@@ -459,9 +454,9 @@
     if (v) walk(p);
   }
   async function arriveHome() {
-    S.hp = S.maxHp; healParty(1); S.food = Math.max(S.food, 10); ev('journey:home', { days: Math.max(1, S.day - (S.leftDay ?? S.day)), destName: destOf()?.name }); S.leftDay = S.day; syncClock(); log('กลับถึงหมู่บ้าน พักฟื้นเต็มที่'); save(); hudSync();
+    S.hp = S.maxHp; healParty(1); ev('journey:home', { days: Math.max(1, S.day - (S.leftDay ?? S.day)), destName: destOf()?.name }); S.leftDay = S.day; syncClock(); log('กลับถึงหมู่บ้าน พักฟื้นเต็มที่'); save(); hudSync();
     const left = world.dests.filter(d => !S.done[d.id]).length;
-    await modal(`<h2>🏠 หมู่บ้านเฟิร์นเวล</h2><p>ชาวบ้านออกมารับ เติมเสบียงให้ครบ ${S.food} ห่อ HP ฟื้นเต็ม</p><p>${left ? 'ยังมีข่าวลือรออยู่อีก ' + left + ' แห่งที่กระดานภารกิจ' : 'ทุกข่าวลือถูกพิสูจน์แล้ว — ลองสร้าง “โลกใหม่” ได้'}</p>`);
+    await modal(`<h2>🏠 หมู่บ้านเฟิร์นเวล</h2><p>ชาวบ้านออกมารับ HP ฟื้นเต็ม · เสบียงเหลือ ${S.food} ห่อ${S.food < 4 ? ' (ซื้อเพิ่มได้ที่ตลาด)' : ''}</p><p>${left ? 'ยังมีข่าวลือรออยู่อีก ' + left + ' แห่งที่กระดานภารกิจ' : 'ทุกข่าวลือถูกพิสูจน์แล้ว — ลองสร้าง “โลกใหม่” ได้'}</p>`);
     if (S.dest && S.done[S.dest]) S.dest = null; hudSync();
   }
 
@@ -500,7 +495,7 @@
     if (!o.boss) ev(res.outcome === 'win' ? 'battle:win' : res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome });
     else if (res.outcome !== 'win') ev(res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome, destName: destOf()?.name });
     if (res.outcome === 'win') {
-      S.battles++; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
+      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '')); toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : ''));
     } else if (res.outcome === 'flee') {
       log('หนีออกมาได้'); if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal() } S.hp = Math.max(1, S.hp);

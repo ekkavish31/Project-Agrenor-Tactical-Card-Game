@@ -91,7 +91,9 @@ function rollTypes(area){let ids=AD.GRAPH.map(g=>g[0]).filter(k=>!AD.FIXED[k]),p
  for(let k of ['a1','a2','a3'])if(out[k]==='rest'){let t=ids.find(x=>x>'d'&&out[x]==='fight');if(t)swap(k,t)}
  return out}
 
-function enter(area){let A=AD.AREAS[area];if(!A)return;s.village.adventure={area,types:rollTypes(area),at:'start',cleared:{start:true},visited:{start:true},quest:null,questDone:false,returnTo:s.village.location,startedAt:s.minutes,loot:{coins:0,xp:0,mats:{},items:[]},kills:0};save();show();
+/* v94 ARCHIVED: the area node maps are replaced by the world map (world-map.html). The code stays until it is confirmed unused —
+   set window.LEGACY_ADVENTURE=true (dev console) to play it again. The bag / items / loot helpers in this file are still used. */
+function enter(area){if(!window.LEGACY_ADVENTURE){if(s.village.adventure)s.village.adventure=null;window.VillageTown?.openWorld?.();return}let A=AD.AREAS[area];if(!A)return;s.village.adventure={area,types:rollTypes(area),at:'start',cleared:{start:true},visited:{start:true},quest:null,questDone:false,returnTo:s.village.location,startedAt:s.minutes,loot:{coins:0,xp:0,mats:{},items:[]},kills:0};save();show();
  modal(A.name,`<p>${esc(A.intro)}</p><ul class="adv-help"><li>เลือกจุดถัดไปบนแผนที่ (ทางแยกหลายเส้น) — เดินแต่ละช่วงใช้เวลา ${MOVE_MIN} นาที</li><li>⚔ ฝูงศัตรู · ✦ ศัตรูพิเศษ · ♜ รองหัวหน้า · ♛ หัวหน้าปลายทาง</li><li>◆ สมบัติ · ? เหตุการณ์ · ! เควส · ☾ จุดพัก · ⚖ พ่อค้าเร่ · ❔ จุดลึกลับ</li><li>กระเป๋า: ใช้ของใช้และการ์ดเหตุการณ์ได้ระหว่างทาง</li></ul>`,[{label:'ออกเดินทาง',primary:true,run:()=>closeModal()}])}
 function leave(reason,opts={}){let adv=state();if(!adv)return;let A=AD.AREAS[adv.area],L=adv.loot;s.village.adventure=null;hide();
  if(opts.defeat){s.village.location='home'}else{s.minutes=Math.min(1200,s.minutes+30);s.village.location=adv.returnTo||'home'}
@@ -207,7 +209,7 @@ renderBag=function(){baseBag();let host=$('panelContent');if(!host)return;let b=
 // the village map is not reachable while adventuring
 const baseOpen=openPanel;openPanel=function(w){if(state()&&(w==='map'||w==='recruit')){refreshMap();return}return baseOpen(w)};
 // resume after reload
-window.addEventListener('load',()=>{if(state()){if(state().fight){state().fight=null;save()}show()}});
+window.addEventListener('load',()=>{if(state()){if(state().fight){state().fight=null;save()}if(!window.LEGACY_ADVENTURE){leave('กลับถึงหมู่บ้าน',{text:'การสำรวจแบบเก่าถูกเก็บเข้าคลังแล้ว · ต่อไปออกเดินทางผ่านแผนที่โลก (ปุ่มผจญภัย)'});return}show()}});   // v94: a save caught inside an archived area map comes home with its loot
 window.Adventure={enter,leave,state,battleConfig,battleEnd,afterBattle,runEvent,refresh:refreshMap,bag,addItem,EVENTS};
 window.BattleItems=BattleItems;
 })();

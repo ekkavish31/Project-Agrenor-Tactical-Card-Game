@@ -31,13 +31,14 @@ function renderRecruit(){let v=s.village,have=list();villageDialog('หาเพ
  <p class="muted small">ภาพเพื่อนรายตัวใส่ได้ผ่าน Asset Studio (ally-luna / ally-bram / ally-kier / ally-mil)</p>`)}
 window.hireCompanion=k=>{let r=ROSTER[k];if(!r||list().some(c=>c.key===k)||s.village.coins<r.cost||s.village.location!=='market')return;s.village.coins-=r.cost;list().push({key:k,level:1,xp:0});s.log=r.name+' เข้าร่วมทีมแล้ว';save();render();renderRecruit()};
 const baseOpen=openPanel;openPanel=function(w){if(w==='recruit'){if(busy)return;renderRecruit();return}return baseOpen(w)};
-const basePlace=placeActions;placeActions=function(){let a=basePlace();if(s.village.location==='market')a.push({id:'recruit',name:'หาเพื่อนร่วมทาง',image:'action-orders',kind:'panel',value:'recruit',cost:list().length+'/4 คน',effect:'จ้างเพื่อนออกสำรวจ'});return a};
+// v94 ARCHIVED: companions are villagers now, recruited in the inn (place-interior.html) — the market hire only runs with window.LEGACY_ADVENTURE
+const basePlace=placeActions;placeActions=function(){let a=basePlace();if(window.LEGACY_ADVENTURE&&s.village.location==='market')a.push({id:'recruit',name:'หาเพื่อนร่วมทาง',image:'action-orders',kind:'panel',value:'recruit',cost:list().length+'/4 คน',effect:'จ้างเพื่อนออกสำรวจ'});return a};
 // ---------- map exits → expeditions ----------
 // v13: every village exit leads to an area (tier 1: forest / mine · tier 2: swamp / coast · tier 3: frost / ruins)
 const AREA_OF={};for(let [k,A] of Object.entries(window.ADVENTURE_DATA?.AREAS||{}))if(A.exit)AREA_OF[A.exit]=k;
 for(let [node,area] of Object.entries(AREA_OF)){let n=VILLAGE_NODES[node],A=window.ADVENTURE_DATA.AREAS[area];if(!n)continue;n.expedition=node;n.name=A.name+' · '+'★'.repeat(A.tier||1);n.live=true}
 function expeditionBlock(){return s.mode==='battle'?'จบการฝึกก่อน':s.hp<20?'HP ต่ำกว่า 20 พักก่อนออกสำรวจ':s.minutes>1080?'เลย 18:00 แล้ว อันตรายเกินไป':s.fatigue>=85?'ความสดชื่นต่ำเกินไป':''}
-async function startExpedition(node){let why=expeditionBlock();if(why){$('mapStatus').textContent='ออกสำรวจไม่ได้: '+why;return}
+async function startExpedition(node){if(!window.LEGACY_ADVENTURE){window.VillageTown?.openWorld?.();return}let why=expeditionBlock();if(why){$('mapStatus').textContent='ออกสำรวจไม่ได้: '+why;return}
  let area=AREA_OF[node],AA=window.ADVENTURE_DATA.AREAS[area],party=Companions.party();if(!confirm(`ออกสำรวจ${AA.name}?\n\nแผนที่แตกกิ่งหลายเส้นทาง ปลายทางคือหัวหน้าพื้นที่\nทีม: คุณ${party.length?' + '+party.map(p=>p.name+' Lv.'+p.level).join(', '):' (ยังไม่มีเพื่อน — จ้างได้ที่ตลาด)'}\nเดินทางไป 30 นาที · เดินแต่ละจุด 10 นาที · กลับ 30 นาที\nแพ้: ถูกพากลับบ้าน เสีย 10% ของเหรียญ`))return;
  busy=true;stopIdle();let player=new FramePlayer($('mapRunner'));$('mapStatus').textContent='กำลังมุ่งหน้าไป'+AA.name;
  try{player.play('adventure.run',{loop:true});await runMapTo(mapPoint(node))}finally{player.stop();busy=false}

@@ -15,6 +15,11 @@ const goodsCount=()=>{const g=root.ADVENTURE_DATA?.GOODS||{};return Object.entri
 const adv=()=>V()?.adventure||null,at=p=>V()?.location===p&&!adv();
 const tacticsOpen=()=>document.body.classList.contains('tactics-open');
 const late=()=>(G()?.minutes||0)>=1140;
+/* v94: journeys happen on the world map (the old area maps are archived), companions are recruited in the inn */
+const onWorld=()=>!!root.VillageTown?.onWorld?.();
+const worldBtn=label=>({label,primary:true,hide:()=>onWorld(),run:()=>root.VillageTown?.openWorld?.()});
+const innBtn={label:'🍺 ไปโรงแรมเขากวางทอง',primary:true,run:()=>root.VillageTown?.openInterior?.('inn','โรงแรมเขากวางทอง')};
+const partySize=()=>(V()?.party||[]).length+(V()?.bench||[]).length;
 
 /* ---------- helpers that call existing game actions ---------- */
 function go(place){if(adv()){toast('อยู่ระหว่างออกสำรวจ กลับหมู่บ้านก่อน');return}if(V()?.location===place){toast('อยู่ที่นี่แล้ว');return}
@@ -27,7 +32,8 @@ const goBtn=p=>({label:'ไป'+PLACE[p],run:()=>go(p),hide:()=>at(p)});
 const sleepBtn={label:'🌙 นอนพัก (ข้ามวัน)',primary:true,run:sleepNow};
 
 /* ---------- story-only encounter for the festival raid (uses the existing expedition battle) ---------- */
-function registerRaid(){const C=root.TacticsCore;if(!C?.ENCOUNTERS||C.ENCOUNTERS.storyRaid)return;
+function registerRaid(){return;const C=root.TacticsCore;   // v94: the raid is a flat village battle now (startRaid)
+ if(!C?.ENCOUNTERS||C.ENCOUNTERS.storyRaid)return;
  C.ENCOUNTERS.storyRaid={name:'คืนเทศกาล · โจรป่าบุกเฟิร์นเวล',theme:'forest',objective:'rout',enemies:['wolf','bandit','wolf','bandit','poacher']}}
 
 /* ---------- temp mini-game: catch the goats ---------- */
@@ -61,12 +67,12 @@ const STEPS=[
   check:d=>d.built,acts:[goBtn('market'),{label:'🔨 ซ่อมแผง (ไม้ 2)',primary:true,hide:()=>!at('market'),run:d=>{if((mats().wood||0)<2){toast('ไม้ไม่พอ · ซื้อไม้ที่ตลาดก่อน');return}const why=spend(6,30,3);if(why){toast(esc(why));return}mats().wood-=2;d.built=true;doSave();doRender()}}]},
  {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'กลับบ้านแล้วนอนพัก',hint:'การนอนจะข้ามไปเช้าวันถัดไป ฟื้นแรงและความสดชื่น',
   begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[goBtn('home'),{...sleepBtn,hide:()=>!at('home')}]},
- {id:'cave',chapter:'วันที่ 2 · ทำของ และหาคน',tag:'real',outro:'crystal',title:'ผลึกในถ้ำเหมืองเก่า',goal:'เข้าถ้ำเหมืองเก่าทางเหนือ แล้วชนะการต่อสู้ 1 ครั้ง',hint:'บนแผนที่สำรวจ เลือกจุด ⚔ เพื่อสู้ · ศัตรูในถ้ำคือค้างคาวกับสไลม์',
-  check:()=>adv()?.area==='mine'&&(adv().kills||0)>=1,
-  acts:[{label:'⛏ ไปถ้ำเหมืองเก่า',primary:true,hide:()=>!!adv(),run:()=>root.Adventure?.enter('mine')}],
+ {id:'cave',chapter:'วันที่ 2 · ทำของ และหาคน',tag:'real',outro:'crystal',title:'ผลึกในถ้ำเหมืองเก่า',goal:'ออกเดินทางบนแผนที่โลก มุ่งไปทางเหมืองเก่า แล้วชนะการต่อสู้ 1 ครั้ง',hint:'เดินออกนอกหมู่บ้านทีละช่อง · ระหว่างทางมีศัตรูดักอยู่ · สนามรบมีเนินและหน้าผา ยืนที่สูงตีแรงกว่า',
+  begin:d=>{d.base=V().battles||0},check:d=>(V().battles||0)>d.base,
+  acts:[worldBtn('🗺 ออกเดินทาง (แผนที่โลก)')],
   reward:()=>{V().story.crystals=(V().story.crystals||0)+3;return root.StarterKit?.unlock?.([{group:'combat',id:'skill',n:2}],{kicker:'บทเรียนจากถ้ำ',title:'ท่าโจมตีหนัก',text:'ตีแรงกว่าปกติ แต่ใช้แรงมากขึ้น · เพิ่มเข้าสำรับแล้ว'})}},
- {id:'caveBack',tag:'real',title:'กลับหมู่บ้าน',goal:'ออกจากถ้ำแล้วกลับเฟิร์นเวล',hint:'บนแผนที่สำรวจ กด "กลับหมู่บ้าน" ได้ทุกเมื่อ ของที่เก็บได้จะติดตัวกลับมา',
-  check:()=>!adv(),acts:[]},
+ {id:'caveBack',tag:'real',title:'กลับหมู่บ้าน',goal:'เดินทางกลับเฟิร์นเวล',hint:'บนแผนที่โลก กด "กลับหมู่บ้าน" เดินย้อนทางที่รู้จัก หรือเดินกลับเองทีละช่อง',
+  check:()=>!onWorld(),acts:[]},
  {id:'lanterns',tag:'temp',outro:'lanternsDone',title:'โคมไฟเทศกาล',goal:'ทำโคมไฟ 3 ดวงที่โรงตีเหล็ก',hint:'โคม 1 ดวง = ไม้ 1 · ถ่าน 1 · ผลึกเรืองแสง 1 · ไม้ไม่พอให้ซื้อที่ตลาด',
   progress:d=>(d.n||0)/3,check:d=>(d.n||0)>=3,
   acts:[goBtn('forge'),{label:'🏮 ทำโคม',primary:true,hide:()=>!at('forge'),run:d=>{const m=mats();if((m.wood||0)<1||(m.coal||0)<1){toast('ต้องมีไม้ 1 และถ่าน 1 · ซื้อได้ที่ตลาด');return}if((V().story.crystals||0)<1){toast('ผลึกเรืองแสงหมด');return}
@@ -74,8 +80,8 @@ const STEPS=[
  {id:'craft',tag:'real',outro:'craftDone',title:'ของขายในงาน',goal:'ตีอาวุธ 1 ชิ้นที่โรงตีเหล็ก',hint:'หลอมให้ร้อน → ตีขึ้นรูปจนครบ 100 → ชุบแข็ง · ดาบใช้เหล็ก 2 ถ่าน 1 ไม้ 1',
   begin:d=>{d.next=G().nextId},check:d=>(G().inventory||[]).some(x=>x.id>=d.next),acts:[goBtn('forge'),goBtn('market')],
   reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'line',n:2}],{kicker:'อาวุธเล่มใหม่',title:'แทงทะลวง',text:'โจมตีทะลุสองช่องเป็นแนวตรง · สวมดาบเล่มใหม่ได้ที่กระเป๋า'})},
- {id:'hire',tag:'real',outro:'hireDone',title:'หาคนช่วย',goal:'จ้างเพื่อนร่วมทาง 1 คนที่ตลาด',hint:'ที่ตลาดเลือก "หาเพื่อนร่วมทาง" · เพื่อนจะช่วยสู้และเก่งขึ้นตามการเดินทาง',
-  check:()=>(V().companions||[]).length>0,acts:[goBtn('market')],
+ {id:'hire',tag:'real',outro:'hireDone',title:'หาคนช่วย',goal:'ชวนเพื่อนร่วมทาง 1 คนที่โรงแรมเขากวางทอง',hint:'คุยกับคนที่มี ★ · บรัมรับจ้าง 60 เหรียญ · เคียร์เพื่อนสมัยเด็กมักนั่งที่โรงแรมช่วงบ่ายถึงค่ำ ชวนได้เลย',
+  check:()=>partySize()>0,acts:[innBtn],
   reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'formation',n:2}],{kicker:'มีเพื่อนแล้ว',title:'จู่โจมประสาน',text:'มีเพื่อนยืนติดตัว ตีแรงขึ้น ×1.35'})},
  {id:'sleep2',tag:'real',outro:'day3',title:'พรุ่งนี้วันงาน',goal:'กลับบ้านแล้วนอนพัก',hint:'ก่อนนอนอย่าลืมรดน้ำฟักทองของวันนี้',
   begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[{label:'💧 รดน้ำฟักทอง',hide:()=>!at('home')||wateredToday(),run:water},goBtn('home'),{...sleepBtn,hide:()=>!at('home')}]},
@@ -84,17 +90,16 @@ const STEPS=[
  {id:'contest',tag:'temp',title:'ประกวดฟักทอง',goal:'ไปที่ลานประกวดฟักทอง',hint:'ผลขึ้นกับจำนวนวันที่รดน้ำ',
   check:d=>d.judged,acts:[{label:'🎃 ไปลานประกวด',primary:true,run:async d=>{const days=waterDays();await root.Cutscene.play(D().contestScene(days));addCoins(days>=3?60:days===2?30:10);d.judged=true;doSave();doRender()}}]},
  {id:'raid',tag:'real',intro:'raid',outro:'awaken',title:'โจรป่าบุกงาน!',goal:'ปกป้องงานเทศกาล — ชนะการต่อสู้',hint:'ใช้ไพ่เดินเข้าหาศัตรู ไพ่โจมตีเมื่ออยู่ในระยะ · ยืนบนหญ้า/มอสช่วยกำบัง · เพื่อนร่วมทางสู้ไปพร้อมกัน',
-  check:d=>d.won,acts:[{label:'⚔ ปกป้องหมู่บ้าน!',primary:true,run:d=>startRaid(d)}],
-  reward:()=>{V().story.element='earth';V().story.plate=true;if(V().character)V().character.points=(V().character.points||0)+1;try{root.Adventure?.addItem('treasureMap')}catch{}return root.StarterKit?.unlock?.([{group:'combat',id:'quake',n:3},{group:'combat',id:'counter',n:1}],{kicker:'แก่นธาตุดินตื่นขึ้น',title:'พลังของผืนดิน'})}},
+  check:d=>d.won,acts:[{label:'⚔ ปกป้องหมู่บ้าน!',primary:true,hide:d=>!!d.fighting,run:d=>startRaid(d)}],
+  reward:()=>{V().story.element='earth';V().story.plate=true;if(V().character)V().character.points=(V().character.points||0)+1;try{const b=root.Adventure?.bag?.();if(b)b.treasureMap=(b.treasureMap||0)+1}catch{}return root.StarterKit?.unlock?.([{group:'combat',id:'quake',n:3},{group:'combat',id:'counter',n:1}],{kicker:'แก่นธาตุดินตื่นขึ้น',title:'พลังของผืนดิน'})}},
  {id:'plate',tag:'real',outro:'plate',title:'จานหินโบราณ',goal:'นำจานหินไปให้ผู้ใหญ่บ้านดูที่ตลาด',hint:'',check:()=>at('market'),acts:[goBtn('market')]},
  {id:'prep',chapter:'การเดินทางครั้งแรก · รังโจรป่า',tag:'real',title:'เตรียมตัวออกเดินทาง',goal:'ซื้อเสบียงอย่างน้อย 1 ชิ้นที่ตลาด',hint:'เสบียงใช้กินฟื้นความสดชื่นระหว่างทาง · ยาในกระเป๋าใช้ได้ทั้งบนแผนที่และในการต่อสู้ · จัดสำรับไพ่ได้ที่โต๊ะในบ้าน',
   begin:d=>{d.food=mats().food||0},check:d=>(mats().food||0)>d.food,acts:[goBtn('market')]},
- {id:'expedition',tag:'real',intro:'departure',outro:'camp',title:'รังโจรป่า',goal:'ออกสำรวจป่าตะวันออก ล้มศัตรูให้ได้ 3 ตัว',hint:'เลือกเส้นทางเองได้ · ◆ สมบัติ ? เหตุการณ์ ☾ จุดพัก · ถ้าแรงหรือ HP ต่ำ ใช้ของในกระเป๋า หรือกลับก่อนก็ได้',
-  progress:d=>Math.min(1,(d.kills||0)/3),check:d=>(d.kills||0)>=3,
-  tick:d=>{if(adv()?.area==='forest')d.kills=Math.max(d.kills||0,adv().kills||0)},
-  acts:[{label:'🌲 ออกเดินทางสู่ป่าตะวันออก',primary:true,hide:()=>!!adv(),run:()=>root.Adventure?.enter('forest')}],
+ {id:'expedition',tag:'real',intro:'departure',outro:'camp',title:'รังโจรป่า',goal:'ออกเดินทางบนแผนที่โลก ล้มศัตรูให้ได้ 3 ตัว',hint:'กระดานภารกิจที่หมู่บ้านบอกทางไปจุดหมาย · พักแรมได้ทุกที่ · กลางคืนศัตรูดุร้ายขึ้น · HP ต่ำให้ดื่มยาหรือกลับก่อนก็ได้',
+  begin:d=>{d.base=V().kills||0},progress:d=>Math.min(1,((V().kills||0)-(d.base||0))/3),check:d=>(V().kills||0)-(d.base||0)>=3,
+  acts:[worldBtn('🌲 ออกเดินทาง')],
   reward:()=>root.StarterKit?.unlock?.([{group:'movement',id:'sprint',n:2},{group:'combat',id:'climb',n:2},{group:'combat',id:'dive',n:1},{group:'combat',id:'evade',n:1},{group:'combat',id:'firstAid',n:1}],{kicker:'ของจากค่ายโจร',title:'ทักษะเอาตัวรอด',text:'ป่ามีเนินและหน้าผา · ปีนขึ้นที่สูงแล้วกระโจนฟาดลงมาแรงกว่าเดิม'})},
- {id:'return',tag:'real',outro:'home',title:'กลับบ้าน',goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะสำรวจต่อจนถึงหัวหน้าพื้นที่ก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!adv(),acts:[]},
+ {id:'return',tag:'real',outro:'home',title:'กลับบ้าน',goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะเดินต่อไปจนถึงจุดหมายก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!onWorld(),acts:[]},
  {id:'sellLoot',tag:'real',title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',check:d=>d.sales>0,acts:[goBtn('market')]},
  {id:'rest',tag:'real',outro:'finale',title:'พักฟื้น',goal:'กลับบ้านแล้วนอนพัก',hint:'',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[goBtn('home'),{...sleepBtn,hide:()=>!at('home')}],
   reward:async()=>{addCoins(30);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1},{group:'combat',id:'rockfall',n:1},{group:'combat',id:'perch',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
@@ -106,12 +111,18 @@ function wateredToday(){return !!V()?.story?.water?.[G().day]}
 function water(){const st=V().story;st.water||={};if(st.water[G().day]){toast('วันนี้รดน้ำไปแล้ว');return}const why=spend(2,10,1);if(why){toast(esc(why));return}
  st.water[G().day]=true;doSave();doRender();toast('💧 รดน้ำฟักทองแล้ว ('+waterDays()+'/3 วัน)','good')}
 
-/* ---------- raid battle ---------- */
-function startRaid(d){registerRaid();if(typeof root.openTactical!=='function'){toast('ระบบต่อสู้ยังไม่พร้อม');return}if(adv()){toast('กลับหมู่บ้านก่อน');return}
- if((G().hp||0)<30){G().hp=Math.max(G().hp,40);doSave()}// the festival raid never starts the player half-dead
- d.fighting=true;d.outcome=null;doSave();root.openTactical({expedition:'storyRaid'})}
-function watchRaid(d){if(!d.fighting)return;const st=root.TacticsLab?.getState?.();if(tacticsOpen()){if(st?.outcome)d.outcome=st.outcome;return}
- d.fighting=false;if(d.outcome==='win'){d.won=true}else{toast(d.outcome==='lose'?'พ่ายแพ้... ตั้งหลักแล้วลองใหม่':'ถอยออกมา · โจรยังอยู่ในงาน','');}doSave()}
+/* ---------- raid battle (v94: the flat card battle drawn on the village square, in a frame over the game) ---------- */
+function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับหมู่บ้านก่อน');return}
+ const g=G(),v=V();if((g.hp||0)<30)g.hp=Math.max(g.hp||0,40);   // the festival raid never starts the player half-dead
+ d.fighting=true;d.outcome=null;doSave();
+ const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')).join(',');
+ const fr=document.createElement('iframe');fr.id='storyBattle';fr.title='โจรป่าบุกงาน';fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
+ fr.src='village-town.html?battle=1&embed=1&r=6&ms='+encodeURIComponent('bandit*1.2,wolf*1.1,bandit*1.2,wolf*1.1')+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax=60&title='+encodeURIComponent('คืนเทศกาล ·');
+ const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
+  g.hp=Math.max(1,Math.min(60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
+  if(r.outcome==='win'){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);d.won=true}else toast(r.outcome==='lose'?'พ่ายแพ้... ตั้งหลักแล้วลองใหม่':'ถอยออกมา · โจรยังอยู่ในงาน','');
+  d.fighting=false;doSave();fr.remove();doRender()};
+ addEventListener('message',done);document.body.appendChild(fr)}
 
 /* ---------- sales detector (coins up while an item or goods left the bag at the market) ---------- */
 let prev=null;
@@ -120,7 +131,7 @@ function detectSale(){const now=snapshot(),p=prev;prev=now;if(!p||now.adv||p.adv
 
 /* ---------- state ---------- */
 function story(){const v=V();if(!v)return null;return v.story||null}
-function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!v.adventure}
+function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!(v.party||[]).length&&!v.adventure}
 function init(){const v=V();if(!v||v.story)return;v.story={v:1,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
 function cur(){const st=story();return st&&st.mode==='active'?STEPS[st.i]:null}
 function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step.id]}
@@ -156,8 +167,9 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  const sale=detectSale();if(!st||st.mode!=='active'){draw();return}
  const step=STEPS[st.i];if(!step){st.mode='done';doSave();draw(true);return}const d=dataOf(step);
  if(sale){d.sales=(d.sales||0)+1}
- if(step.id==='raid')watchRaid(d);step.tick?.(d);
- if(root.Cutscene?.isPlaying()||tacticsOpen()){draw();return}
+ if(step.id==='raid'&&d.fighting&&!document.getElementById('storyBattle')){d.fighting=false;doSave()}
+ step.tick?.(d);
+ if(root.Cutscene?.isPlaying()||tacticsOpen()||document.getElementById('storyBattle')){draw();return}
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
   if(step.intro&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(D().SCENES[step.intro])}

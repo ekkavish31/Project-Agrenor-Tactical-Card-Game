@@ -95,15 +95,16 @@ const clockHour=()=>root.VillageClock?.read().hour??(((root.gameState?.minutes??
 function desire(n,hour){const p=n.life,S=lifeSave;
  if(S&&LIFE.inParty(S,p.id))return S.bench.some(b=>b.key===p.id)?'inn':null;   // travelling with the hero → not in town
  if(MIND()?.away?.(p.id))return 'gone';                                        // out on a job you gave them
+ if(LIFE.present&&!LIFE.present(p,root.VillageClock?.read().day??1,hour))return 'gone';   // v94: travellers and visitors are elsewhere today
  for(const [a,b,at] of p.sched||[])if(hour>=a&&hour<b)return at==='home'?(LIFE.homeOf(p)||'inn'):at;
  return LIFE.homeOf(p)||'inn'}
 function nearSquare(){const v=V(),c=target('square');if(!c)return null;for(let i=0;i<12;i++){const q={u:c.u+(Math.random()-.5)*8,v:c.v+(Math.random()-.5)*8};if(!v.blocked(q.u,q.v))return q}return c}
 function lifeGo(n,want){const v=V();n.goal=want;n.enter=null;n.leaveTown=false;
  if(want===null){n.hidden=true;n.inside=null;n.path=[];return}
- if(n.hidden&&want!=='gone'){const h=target(n.home)||target('square');if(h){n.u=h.u;n.v=h.v}}
+ if(n.hidden&&want!=='gone'){const h=(n.life?.visit?target(n.life.gate||'east'):null)||target(n.home)||target('square');if(h){n.u=h.u;n.v=h.v}}   // v94: visitors walk in through their gate
  n.hidden=false;
  if(n.inside){const d=target(n.inside);if(d){n.u=d.u;n.v=d.v}n.inside=null}
- const room=want!=='square'&&want!=='gone',tgt=want==='gone'?target('east'):want==='square'?nearSquare():target(want);
+ const room=want!=='square'&&want!=='gone',tgt=want==='gone'?target(n.life?.gate||'east'):want==='square'?nearSquare():target(want);
  if(!tgt){n.inside=room?want:null;n.hidden=!room;return}
  n.path=v.findPath({u:n.u,v:n.v},tgt);
  if(!n.path.length){if(room)n.inside=want;else if(want==='gone')n.hidden=true;else{n.u=tgt.u;n.v=tgt.v}return}
@@ -121,7 +122,7 @@ function lifeUpdate(dt){if(!npcs&&!lifeInit())return;const v=V(),h=v.getHero(),h
   if(n.goal==='square'&&!n.inside&&!n.hidden){n.wait-=dt;if(n.wait<=0){const q=nearSquare();if(q)n.path=v.findPath({u:n.u,v:n.v},q);n.wait=4+Math.random()*8}}}
  /* now and then someone near the hero says something aloud */
  if(now>sayAt&&MIND()){sayAt=now+4500+Math.random()*4000;const per=root.VillageClock?.period(hour)||'day';const near=npcs.filter(n=>!n.inside&&!n.hidden&&n!==talking&&Math.hypot(n.u-h.u,n.v-h.v)<14);const n=near[Math.floor(Math.random()*near.length)];if(n){const txt=MIND().bubble(n.id,{period:per,place:'outside'});if(txt)n.say={txt:txt.replace(/\{name\}/g,heroName()),until:now+3800}}}}
-function heroName(){try{return JSON.parse(localStorage.getItem('project-a-save')||'{}')?.heroName||root.gameState?.name||'นักผจญภัย'}catch(e){return 'นักผจญภัย'}}
+function heroName(){return root.WorldState?.heroName()||'นักผจญภัย'}   // v94: s.village.heroName in the game save
 function sayBubble(g,n,p){const top=p.y-(n.small?78:104);g.save();g.font='13px VillageThai,system-ui';const maxW=200,lines=[];let cur='';for(const ch of[...n.say.txt]){if(g.measureText(cur+ch).width>maxW){lines.push(cur);cur=ch}else cur+=ch}if(cur)lines.push(cur);
  const w=Math.max(...lines.map(l=>g.measureText(l).width))+16,hh=lines.length*17+10,x=p.x-w/2,y=top-hh-8;g.fillStyle='rgba(255,250,235,.95)';g.strokeStyle='rgba(80,60,30,.6)';g.lineWidth=1.5;g.beginPath();g.roundRect(x,y,w,hh,10);g.fill();g.stroke();g.beginPath();g.moveTo(p.x-6,y+hh);g.lineTo(p.x,y+hh+8);g.lineTo(p.x+6,y+hh);g.fill();g.fillStyle='#3a2a14';g.textAlign='left';lines.forEach((l,i)=>g.fillText(l,x+8,y+18+i*17));g.restore()}
 function faceOf(du,dv){const x=(du-dv)*28,y=(du+dv)*14;return y>=0?(x>=0?'SE':'SW'):(x>=0?'NE':'NW')}

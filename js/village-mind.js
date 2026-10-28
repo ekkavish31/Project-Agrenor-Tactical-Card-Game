@@ -16,7 +16,7 @@
     const rng = opt.rng || Math.random;
     const store = opt.storage || (typeof localStorage !== 'undefined' ? localStorage : null);
     const clock = opt.clock || (() => { const c = root.VillageClock?.read(); return c ? c.day * 24 + c.hour : 0 });
-    const heroName = opt.heroName || (() => { try { return JSON.parse(store?.getItem('project-a-save') || '{}')?.heroName || 'นักผจญภัย' } catch (e) { return 'นักผจญภัย' } });
+    const heroName = opt.heroName || (() => { if (root.WorldState) return root.WorldState.heroName(); try { return JSON.parse(store?.getItem('three-card-forge-v4') || '{}')?.village?.heroName || 'นักผจญภัย' } catch (e) { return 'นักผจญภัย' } });   // v94: the real save key
     const pick = a => a[Math.floor(rng() * a.length)];
     let M = null;
 

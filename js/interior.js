@@ -15,7 +15,7 @@
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const wait = ms => new Promise(r => setTimeout(r, ms));
   let W = 0, H = 0, dpr = 1, Z = 1, CX = 0, CY = 0, S = L.save();
-  const heroName = () => { try { return JSON.parse(localStorage.getItem('project-a-save') || '{}')?.heroName || 'นักผจญภัย' } catch (e) { return 'นักผจญภัย' } };
+  const heroName = () => window.WorldState?.heroName() || 'นักผจญภัย';   // v94: the name lives in the game save (s.village.heroName)
   const fill = txt => String(txt).replace(/\{name\}/g, heroName());
   const MIND = window.Mind || null;                                       // js/village-mind.js: memory, news, scenes, jobs, wants
   const CAP = { inn: 14, market: 10, temple: 9, square: 12 };             // how many people fit in a room at once
@@ -135,7 +135,8 @@
   function benchPerson(b) { const p = L.P[b.key] || { id: b.key, name: b.name, role: 'เพื่อนร่วมทาง', look: { coat: '#5a6a8a', hair: '#3a2a1a', hat: 'none', weapon: 'sword' }, lines: { day: ['พักอยู่ที่โรงแรม พร้อมออกเดินทางเมื่อเจ้าเรียก'] } }; return { ...p, benched: true } }
   function syncPeople(first) {
     const hour = CLK.read().hour, want = new Map();
-    for (const p of Object.values(L.P)) { if (L.inParty(S, p.id) && !benchHere(p.id)) continue; if (MIND?.away(p.id)) continue; const w = whereNow(p, hour); if (herePlace(w.at)) want.set(p.id, { p, tag: w.tag }) }
+    const day = CLK.read().day;
+    for (const p of Object.values(L.P)) { if (L.inParty(S, p.id) && !benchHere(p.id)) continue; if (MIND?.away(p.id)) continue; if (!L.inParty(S, p.id) && !L.present(p, day, hour)) continue; /* v94: travellers come and go */ const w = whereNow(p, hour); if (herePlace(w.at)) want.set(p.id, { p, tag: w.tag }) }
     if (KIND === 'inn') for (const b of S.bench) if (!want.has(b.key) && !MIND?.away(b.key)) want.set(b.key, { p: benchPerson(b), tag: 'table' });
     /* a full room: staff and people already inside stay, latecomers wait outside */
     const cap = Math.min(CAP[KIND] || 7, R.spots.length + 2);
@@ -277,6 +278,7 @@
   function frame(t) {
     requestAnimationFrame(frame);
     const dt = Math.min(.1, (t - last) / 1000 || .016); last = t;
+    if (!document.hidden && shown) window.WorldState?.tick(dt);   // v94: the one game clock keeps running indoors
     if (t > syncAt) { syncAt = t + 1000; syncPeople(false); hudSync() }
     stepActor(hero, dt, 3.6); if (!hero.path.length && hero.then) { const f = hero.then; hero.then = null; f() }
     for (const [id, a] of people) {
@@ -355,7 +357,14 @@
     let best = null, bl = 1e9; for (const c of opts) { const p = pathTo({ u: hero.u, v: hero.v }, c); if (p && p.length < bl) { bl = p.length; best = c } }
     if (best) walkTo(best, () => { hero.face = faceOf(a.u - hero.u, a.v - hero.v); then() }); else then();
   }
-  function leave() { location.href = 'village-town.html?from=' + encodeURIComponent(PLACE) }
+  /* v94: inside the game (index.html → place frame) the game closes the interior; on its own page we walk back to the village page */
+  const EMBED = Q.get('embed') === '1' && window.parent !== window;
+  let shown = true;
+  function leave() { if (EMBED) { parent.postMessage({ source: 'project-a-place', type: 'leave' }, '*'); return } location.href = 'village-town.html?from=' + encodeURIComponent(PLACE) }
+  if (EMBED) {
+    addEventListener('message', e => { if (e.source !== parent || e.data?.source !== 'project-a-game') return; if (e.data.type === 'visibility') shown = !!e.data.visible });
+    addEventListener('load', () => parent.postMessage({ source: 'project-a-place', type: 'ready' }, '*'));
+  }
 
   /* ---------- UI ---------- */
   const css = document.createElement('style'); css.textContent = `
@@ -402,9 +411,9 @@
   function toast(t) { const d = document.createElement('div'); d.className = 'in-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 2300) }
   async function rest(cost) {
     S = L.save(); if (S.gold < cost) { toast('เงินไม่พอ'); return }
-    S.gold -= cost; S.hp = S.maxHp || 60; S.fatigue = 0; for (const p of [...S.party, ...S.bench]) p.hp = p.max; L.writeSave(S);
-    const c = CLK.read(); const to = c.hour < 7 ? 7 - c.hour : 31 - c.hour; document.body.style.transition = 'filter .6s'; document.body.style.filter = 'brightness(0)'; await wait(700);
-    CLK.skip(to); people.clear(); taken.clear(); syncPeople(true); document.body.style.filter = ''; toast('พักจนถึงเช้า · ทีมฟื้นเต็ม'); hudSync();
+    S.gold -= cost; for (const p of [...S.party, ...S.bench]) p.hp = p.max; L.writeSave(S);
+    document.body.style.transition = 'filter .6s'; document.body.style.filter = 'brightness(0)'; await wait(700);
+    window.WorldState.sleep({ relief: cost ? 80 : 70 }); people.clear(); /* v94: same as sleeping at home (next morning 08:00) */ taken.clear(); syncPeople(true); document.body.style.filter = ''; toast('พักจนถึงเช้า · ทีมฟื้นเต็ม'); hudSync();
   }
 
   /* ---------- talking + recruiting ---------- */
@@ -429,6 +438,7 @@
   }
   function progressText(id, rec) {
     const r = S.recruit?.[id] || {};
+    if (rec.kind === 'visits') return `<br>คุยกันแล้ว ${(r.days || []).length}/${rec.need} วัน`;
     if (rec.kind === 'battles') return r.base != null ? `<br>ความคืบหน้า: ชนะแล้ว ${Math.min(rec.need, S.battles - r.base)}/${rec.need}` : '<br>(กด "ชวนเข้าทีม" เพื่อรับเควส)';
     if (rec.kind === 'drinks') return `<br>เลี้ยงแล้ว ${r.n || 0}/${rec.need}`;
     if (rec.kind === 'reputation') return `<br>พิชิตแล้ว ${Object.keys(S.done || {}).length}/1`;
@@ -445,7 +455,7 @@
     const p = a.p; S = L.save(); const rec = L.RECRUIT[p.id], r = (S.recruit[p.id] ||= {}), hour = CLK.read().hour;
     if (what === 'bye') { close(); return }
     if (what === 'talk') { talk(a); return }
-    if (what === 'about') { const ab = p.about?.length ? fill(p.about[Math.floor(Math.random() * p.about.length)]) : ''; talk(a, (p.trait ? '(' + p.trait + ') ' : '') + (ab || fill(p.story || '…'))); return }
+    if (what === 'about') { const ab = p.about?.length ? fill(p.about[Math.floor(Math.random() * p.about.length)]) : ''; talk(a, (p.trait ? '(' + fill(p.trait) + ') ' : '') + (ab || fill(p.story || '…')) + (L.originText?.(p) ? ' — ' + fill(L.originText(p)) : '')); return }
     if (what === 'rumor') { talk(a, 'ข่าวลือตอนนี้: ' + ['ถ้ำในป่าตะวันออกมีเสียงหอนทั้งคืน — พวกพรานไม่กล้าเข้าไป', 'คนงานเหมืองหนีออกมาบอกว่าหินในเหมืองลุกขึ้นเดิน', 'ระฆังวิหารเก่าในบึงหมอกดังเองทุกคืนข้างแรม', 'เกรเวนเล่าว่ามีคนกลับจากซากเมืองพร้อมผลึกแปลกประหลาด'][Math.floor(Math.random() * 4)] + ' (ไปที่ "ออกเดินทาง" เพื่อรับภารกิจ)'); return }
     if (what === 'room') { close(); rest(10); return }
     if (what === 'work') { workPanel(a); return }
@@ -459,7 +469,10 @@
       talk(a, ['อ้า … องุ่นจากหุบใต้ เจ้ารู้ใจข้า', 'แก้วที่สองแล้ว … ข้าเริ่มชอบหน้าเจ้าแล้วสิ'][r.n - 1] || 'อีกแก้วสิ'); return;
     }
     if (what !== 'recruit' || !rec) return;
-    if (rec.kind === 'hire') { if (S.gold < rec.cost) { talk(a, 'เงินยังไม่พอ ' + rec.cost + ' เหรียญ ไม่ต่อราคา'); return } S.gold -= rec.cost; L.writeSave(S); joinNow(a, 'ตกลง ขวานของข้าเป็นของเจ้าจนกว่างานจะจบ'); return }
+    if (rec.kind === 'hire') { if (S.gold < rec.cost) { talk(a, 'เงินยังไม่พอ ' + rec.cost + ' เหรียญ ไม่ต่อราคา'); return } S.gold -= rec.cost; L.writeSave(S); joinNow(a, rec.joinLine || 'ตกลง ขวานของข้าเป็นของเจ้าจนกว่างานจะจบ'); return }
+    /* v94 recruit kinds: a friend just needs asking · "visits" = talk to them on N different days */
+    if (rec.kind === 'friend') { joinNow(a, rec.joinLine || 'ไปด้วยกันสิ!'); return }
+    if (rec.kind === 'visits') { const day = CLK.read().day; r.days ||= []; if (!r.days.includes(day)) r.days.push(day); L.writeSave(S); if (r.days.length >= rec.need) { joinNow(a, rec.joinLine || 'ตกลง ข้าจะไปกับเจ้า'); return } talk(a, (rec.waitLines || [])[r.days.length - 1] || 'มาคุยกันใหม่วันหลังนะ'); return }
     if (rec.kind === 'battles') { if (r.base == null) { r.base = S.battles || 0; L.writeSave(S); talk(a, 'จริงนะ! งั้นไปชนะศัตรูนอกหมู่บ้านให้ได้สามครั้ง แล้วกลับมาเล่าให้ข้าฟัง!'); return } const n = (S.battles || 0) - r.base; if (n >= rec.need) { joinNow(a, 'เจ้ารอดกลับมาได้จริง ๆ! ข้าไปด้วย ลูกธนูข้าจะไม่พลาดสักดอก!'); return } talk(a, `ยังหรอก ชนะไปแค่ ${Math.max(0, n)} ครั้งเอง อีก ${rec.need - Math.max(0, n)} ครั้งนะ!`); return }
     if (rec.kind === 'drinks') { talk(a, 'อยากให้ข้าไปด้วย? เลี้ยงเหล้าข้าก่อนสิ … สามแก้ว สามวัน'); return }
     if (rec.kind === 'reputation') { if (Object.keys(S.done || {}).length) { joinNow(a, 'เจ้าพิชิตที่นั่นได้จริง ๆ! อาจารย์พูดถูก ข้าจะตามเจ้าไป!'); return } talk(a, 'กลับมาพร้อมชัยชนะจากข่าวลือสักแห่งก่อนนะ แล้วข้าจะตามเจ้าไปทุกที่'); return }
