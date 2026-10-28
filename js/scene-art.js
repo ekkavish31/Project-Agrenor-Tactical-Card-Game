@@ -7,8 +7,9 @@
                 cities rise where each stream lands, then the streams fade and mist rolls over (forgetting).
    • fernvale — "a small village in the Navelmidia basin, near the big city": a river valley, Fernvale's houses with chimney smoke and
                 a windmill, the big city on the horizon, a messenger bird flying from the city to the village.
-   • festival — "three days to the harvest festival … this year will be different": dusk, bunting and lanterns lighting one by one,
-                wheat and pumpkins; then the golden orb appears in the sky, the wind rises and crows fly off.
+   • festival — "three days to the harvest festival": dusk, bunting and lanterns lighting one by one, wheat and pumpkins, Elukhor resting high.
+   • kin · kingdoms · forgotten · faith · deepwood · hearth · elukhor · homeMorning (v95.04 prologue + opening cutscene).
+   Elukhor ("ดวงทอง") is a calm, familiar natural light — never drawn as an omen.
    • dawn / orb — Fernvale at sunrise (the opening cutscene); 'orb' adds the golden orb hanging over the horizon.
    Used by js/title-screen.js (New Game prologue, PROLOGUE[].art) and js/story-fx.js (scene/line `art:`). */
 (function (root) {
@@ -101,7 +102,7 @@
 
   /* ---------------- 2 · elements ---------------- */
   function elements(g, w, h, t) {
-    const hz = h * .64, C = { x: w * .5, y: h * .24 }, fade = ease((t - 7) / 3);
+    const hz = h * .64, C = { x: w * .5, y: h * .24 }, fade = 0;
     sky(g, w, h, [[0, '#0d0b22'], [.45, '#2b2347'], [.64, '#7a4a52'], [.66, '#7a4a52'], [1, '#1a1220']]);
     stars(g, w, h, t, 70, 21, hz * .6, .7);
     ridge(g, w, h, hz - h * .05, h * .05, 41, '#2a2036', hz + 30);
@@ -183,7 +184,7 @@
 
   /* ---------------- 4 · festival / dawn / orb ---------------- */
   function village(g, w, h, t, mode) {
-    const dusk = mode === 'festival', orbAt = mode === 'orb' ? 0 : dusk ? 3.6 : 1e9, orbK = ease((t - orbAt) / 2.4), wind = 1 + orbK * 1.4, hz = h * .5;
+    const dusk = mode === 'festival', orbAt = mode === 'orb' || dusk ? -9 : 1e9, orbK = ease((t - orbAt) / 2.4), wind = 1, hz = h * .5;
     if (dusk) sky(g, w, h, [[0, '#1c1238'], [.35, '#5a2c52'], [.55, '#d0683e'], [.62, '#f0a050'], [1, '#f0a050']]);
     else sky(g, w, h, [[0, '#3a4a7a'], [.3, '#a68aa8'], [.52, '#f4b48a'], [.6, '#ffd9a0'], [1, '#ffd9a0']]);
     if (dusk) stars(g, w, h, t, 60, 31, h * .3, .5 + orbK * .3);
@@ -191,20 +192,20 @@
     const sy = dusk ? hz + 10 : lerp(hz + 20, hz - h * .1, ease(t / 10)); glow(g, w * .3, sy, h * .45, hsla(dusk ? 20 : 38, 100, 70), .55); g.fillStyle = dusk ? '#ffb070' : '#ffe2a0'; g.beginPath(); g.arc(w * .3, sy, h * .045, 0, TAU); g.fill();
     // the golden orb
     if (orbK > 0) {
-      const ox = w * .74, oy = h * .2 + Math.sin(t * .7) * 3, R = h * .034 * orbK, pu = .75 + .25 * Math.sin(t * 2.6);
-      glow(g, ox, oy, h * .3 * orbK, hsla(46, 100, 70), .35 * pu);
+      const ox = w * .74, oy = (dusk ? h * .16 : h * .22) + Math.sin(t * .5) * 2, R = h * .034 * orbK, pu = .75 + .25 * Math.sin(t * 2.6);
+      glow(g, ox, oy, h * .42 * orbK, hsla(40, 100, 70), .4 * pu); glow(g, ox, oy + h * .3, w * .5, hsla(36, 100, 70), .12 * orbK);
       g.save(); g.translate(ox, oy); g.rotate(t * .12); g.strokeStyle = `hsla(48,100%,80%,${.25 * orbK})`; g.lineWidth = 1.5; for (let k = 0; k < 12; k++) { g.rotate(TAU / 12); g.beginPath(); g.moveTo(R * 1.6, 0); g.lineTo(R * (3 + (k % 3)), 0); g.stroke() } g.restore();
       glow(g, ox, oy, R * 2, hsla(50, 100, 92), 1); g.fillStyle = '#fff6d0'; g.beginPath(); g.arc(ox, oy, R * .8, 0, TAU); g.fill();
       const ph = (t * .35) % 1; g.strokeStyle = `hsla(46,100%,75%,${(1 - ph) * .4 * orbK})`; g.beginPath(); g.arc(ox, oy, R * (1.5 + ph * 7), 0, TAU); g.stroke();
-      // crows leave
-      for (let i = 0; i < 7; i++) { const st = orbAt + 1 + i * .25, k = clamp((t - st) / 6); if (k <= 0 || k >= 1) continue; const x = lerp(w * .62 + i * 14, -40 - i * 30, k), y = lerp(h * .44 - i * 8, h * .12 + i * 12, k), f = Math.sin(t * 13 + i) * 4; g.strokeStyle = '#1a1018'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x - 7, y - f); g.lineTo(x, y); g.lineTo(x + 7, y - f); g.stroke() }
+      // songbirds circling in the warm light
+      for (let i = 0; i < 5; i++) { const a = t * .4 + i * 1.3, x = ox - w * .12 + Math.cos(a) * w * .08 + i * 20, y = oy + h * .16 + Math.sin(a * 1.3) * h * .04, f = Math.sin(t * 11 + i) * 3; g.strokeStyle = dusk ? '#2a1a28' : '#4a3a40'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(x - 6, y - f); g.lineTo(x, y); g.lineTo(x + 6, y - f); g.stroke() }
     }
     // hills + mist
     ridge(g, w, h, hz - h * .04, h * .05, 71, dusk ? '#3a2240' : '#7a6a8a'); ridge(g, w, h, hz + h * .02, h * .03, 72, dusk ? '#2a1a2c' : '#5f7a5a');
     if (!dusk) for (let k = 0; k < 5; k++) glow(g, ((k / 5 + t * .01) % 1.2 - .1) * w, hz + 8, w * .2, hsla(30, 40, 95), .35 * (1 - ease(t / 12)));
     // houses
     const hr = rng(19), base = hz + h * .1, sil = dusk ? '#22162a' : '#5a4a48', chims = [];
-    for (let i = 0; i < 11; i++) { const x = w * (i / 10) + (hr() - .5) * 30, s = 1.6 + hr() * .9; const c = house(g, x, base + hr() * 14, s, { wall: sil, roof: dusk ? '#180f1e' : '#4a3438', shade: 'rgba(0,0,0,.12)', chimney: hr() < .6, roofDark: sil, door: dusk ? '#1a1018' : '#3a2a28', win: dusk || mode === 'dawn' ? `rgba(255,${190 + 30 * Math.sin(t * 7 + i)},110,${dusk ? .75 + .25 * Math.sin(t * (3 + orbK * 6) + i * 2) : .5})` : '#2a1e1e' }); if (c && hr() < .7) chims.push(c) }
+    for (let i = 0; i < 11; i++) { const x = w * (i / 10) + (hr() - .5) * 30, s = 1.6 + hr() * .9; const c = house(g, x, base + hr() * 14, s, { wall: sil, roof: dusk ? '#180f1e' : '#4a3438', shade: 'rgba(0,0,0,.12)', chimney: hr() < .6, roofDark: sil, door: dusk ? '#1a1018' : '#3a2a28', win: dusk || mode === 'dawn' ? `rgba(255,${190 + 30 * Math.sin(t * 7 + i)},110,${dusk ? .75 + .25 * Math.sin(t * 3 + i * 2) : .5})` : '#2a1e1e' }); if (c && hr() < .7) chims.push(c) }
     chims.forEach((c, i) => smoke(g, c.cx, c.cy, t, 1.3, i, dusk ? [120, 100, 120] : [235, 225, 230]));
     // bunting + lanterns (festival dressing)
     const poleX = [0, .2, .4, .6, .8, 1].map(k => w * k), py = hz + h * .02;
@@ -216,7 +217,7 @@
       const Y = u => py + Math.sin(u * Math.PI) * sag;
       g.strokeStyle = '#3a2a24'; g.lineWidth = 1.2; g.beginPath(); for (let k = 0; k <= 20; k++) { const u = k / 20; g[k ? 'lineTo' : 'moveTo'](lerp(a, b, u), Y(u)) } g.stroke();
       for (let k = 1; k < 10; k++) { const u = k / 10, x = lerp(a, b, u), y = Y(u), fl = Math.sin(t * 5 * wind + k + s * 3) * 3 * wind; g.fillStyle = flagCol[(k + s) % 5]; g.globalAlpha = dusk ? .75 : .9; g.beginPath(); g.moveTo(x - 6, y); g.lineTo(x + 6, y); g.lineTo(x + fl, y + 14); g.fill(); g.globalAlpha = 1 }
-      if (dusk) for (const u of [.25, .5, .75]) { const x = lerp(a, b, u) + Math.sin(t * 2 * wind + li) * 2 * wind, y = Y(u) + 22, on = clamp((t - .6 - li * .22) / .5), fl = .8 + .2 * Math.sin(t * (9 + orbK * 10) + li * 3); li++;
+      if (dusk) for (const u of [.25, .5, .75]) { const x = lerp(a, b, u) + Math.sin(t * 2 * wind + li) * 2 * wind, y = Y(u) + 22, on = clamp((t - .6 - li * .22) / .5), fl = .85 + .15 * Math.sin(t * 9 + li * 3); li++;
         g.strokeStyle = '#3a2a24'; g.beginPath(); g.moveTo(x, Y(u)); g.lineTo(x, y - 8); g.stroke();
         glow(g, x, y, 34, hsla(36, 100, 65), .55 * on * fl); g.fillStyle = on > 0 ? `hsl(${28 + 10 * on},90%,${30 + 30 * on * fl}%)` : '#4a2a20'; g.beginPath(); g.ellipse(x, y, 7, 9, 0, 0, TAU); g.fill() }
     }
@@ -225,10 +226,179 @@
     for (let i = 0; i < 160; i++) { const x = wr() * w, l = h * (.1 + wr() * .1), sw = Math.sin(t * 1.8 * wind + x * .015) * 8 * wind, y0 = h + 4; g.strokeStyle = dusk ? `rgba(${120 + wr() * 40},${80 + wr() * 30},40,1)` : `rgba(${200 + wr() * 40},${160 + wr() * 30},80,1)`; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x, y0); g.quadraticCurveTo(x + sw * .4, y0 - l * .5, x + sw, y0 - l); g.stroke(); g.fillStyle = g.strokeStyle; g.beginPath(); g.ellipse(x + sw, y0 - l, 2.2, 6, sw * .03, 0, TAU); g.fill() }
     for (const [fx, s] of [[.12, 1.2], [.2, .8], [.82, 1.4], [.9, .9], [.7, .7]]) { const x = w * fx, y = h - 18 * s, R = 22 * s; for (const [dx, k] of [[-.55, .7], [.55, .7], [0, 1]]) { g.fillStyle = dusk ? '#b8521e' : '#e8782a'; g.beginPath(); g.ellipse(x + dx * R, y, R * .55 * k + R * .2, R * .62, 0, 0, TAU); g.fill() } g.strokeStyle = 'rgba(80,30,10,.45)'; g.lineWidth = 1.5; for (const dx of [-.5, 0, .5]) { g.beginPath(); g.ellipse(x + dx * R * .7, y, R * .2, R * .6, 0, 0, TAU); g.stroke() } g.fillStyle = '#4a5a22'; g.fillRect(x - 2, y - R * .7, 4, R * .3) }
     // vignette (darker as the orb rises)
-    const vg = g.createRadialGradient(w / 2, h * .45, h * .3, w / 2, h * .45, h * .95); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(0,0,0,${.35 + orbK * .25})`); g.fillStyle = vg; g.fillRect(0, 0, w, h);
+    const vg = g.createRadialGradient(w / 2, h * .45, h * .3, w / 2, h * .45, h * .95); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.32)'); g.fillStyle = vg; g.fillRect(0, 0, w, h);
   }
 
-  const SCENES = { ancient, elements, fernvale, festival: (g, w, h, t) => village(g, w, h, t, 'festival'), dawn: (g, w, h, t) => village(g, w, h, t, 'dawn'), orb: (g, w, h, t) => village(g, w, h, t, 'orb') };
+
+  /* figure helper: a walking silhouette (x,y = feet) */
+  function walker(g, x, y, s, t, col, o = {}) {
+    const st = Math.sin(t * 6 + (o.ph || 0)), bob = Math.abs(st) * 1.5 * s;
+    g.strokeStyle = col; g.fillStyle = col; g.lineCap = 'round'; g.lineWidth = 3 * s * (o.bulk || 1);
+    g.beginPath(); g.moveTo(x, y - 14 * s - bob); g.lineTo(x + st * 5 * s, y); g.moveTo(x, y - 14 * s - bob); g.lineTo(x - st * 5 * s, y); g.stroke();
+    g.lineWidth = 5 * s * (o.bulk || 1); g.beginPath(); g.moveTo(x, y - 14 * s - bob); g.lineTo(x + (o.lean || 0) * s, y - 30 * s * (o.tall || 1) - bob); g.stroke();
+    g.beginPath(); g.arc(x + (o.lean || 0) * s, y - 35 * s * (o.tall || 1) - bob, 4.5 * s * (o.head || 1), 0, TAU); g.fill();
+    if (o.ears) { g.beginPath(); g.moveTo(x - 3 * s, y - 38 * s * (o.tall || 1) - bob); g.lineTo(x - 6 * s, y - 46 * s * (o.tall || 1) - bob); g.lineTo(x, y - 39 * s * (o.tall || 1) - bob); g.fill() }
+    if (o.horns) { g.lineWidth = 1.6 * s; g.beginPath(); g.arc(x + 4 * s, y - 40 * s * (o.tall || 1) - bob, 4 * s, Math.PI, Math.PI * 1.8); g.stroke() }
+    if (o.staff) { g.lineWidth = 1.5 * s; g.beginPath(); g.moveTo(x + 7 * s, y); g.lineTo(x + 9 * s, y - 40 * s - bob); g.stroke() }
+  }
+
+  /* ---------------- kin · generations walk, bodies change with their element ---------------- */
+  function kin(g, w, h, t) {
+    sky(g, w, h, [[0, '#1a1a38'], [.5, '#4a3a5a'], [.62, '#c08060'], [1, '#c08060']]);
+    const hz = h * .46; ridge(g, w, h, hz - h * .05, h * .06, 81, '#3a2e48', hz + 20);
+    const gr = g.createLinearGradient(0, hz, 0, h); gr.addColorStop(0, '#2a2030'); gr.addColorStop(1, '#0c0a10'); g.fillStyle = gr; g.fillRect(0, hz, w, h - hz);
+    // the road
+    g.fillStyle = 'rgba(200,170,130,.18)'; g.beginPath(); g.moveTo(0, hz + h * .17); g.lineTo(w, hz + h * .11); g.lineTo(w, hz + h * .17); g.lineTo(0, hz + h * .24); g.fill();
+    // three bands of walkers, each shaped by an element, generations fade in and out
+    const groups = [{ e: ELEMENTS[0], o: { tall: 1.25, head: .9 } }, { e: ELEMENTS[5], o: { ears: true, lean: 2 } }, { e: ELEMENTS[8], o: { bulk: 1.5, tall: .85, horns: true } }, { e: ELEMENTS[2], o: { tall: 1.1, staff: true } }];
+    for (let k = 0; k < 14; k++) {
+      const per = 16, ph = ((t * .9 + k * per / 14) % per) / per, x = lerp(-80, w + 80, ph), y = lerp(hz + h * .2, hz + h * .14, ph);
+      const gen = clamp(ph * 1.4), grp = groups[k % groups.length], o = {}; for (const key in grp.o) o[key] = typeof grp.o[key] === 'number' ? lerp(1, grp.o[key], gen) : gen > .5 && grp.o[key];
+      o.ph = k; const e = grp.e, col = `hsl(${e.h},${lerp(0, 40, gen)}%,${lerp(12, 20, gen)}%)`;
+      glow(g, x, y - 50, 70, hsla(e.h, e.s, e.l), .3 * gen); walker(g, x, y, 2.2, t, col, o);
+    }
+    // generations ticking by: suns and moons arcing overhead
+    for (let k = 0; k < 3; k++) { const ph = ((t * .12 + k / 3) % 1), x = lerp(-20, w + 20, ph), y = hz - Math.sin(ph * Math.PI) * h * .34; const day = k % 2 === 0; glow(g, x, y, day ? 50 : 30, day ? hsla(45, 100, 80) : hsla(220, 40, 85), .5); g.fillStyle = day ? '#fff2c0' : '#e8ecf8'; g.beginPath(); g.arc(x, y, day ? 9 : 6, 0, TAU); g.fill() }
+  }
+
+  /* ---------------- forgotten · a scholar with a lantern before a wall of unreadable script ---------------- */
+  function forgotten(g, w, h, t) {
+    sky(g, w, h, [[0, '#08070c'], [1, '#141018']]);
+    // the wall
+    g.fillStyle = '#1e1a1e'; g.fillRect(w * .12, h * .1, w * .76, h * .62);
+    g.strokeStyle = 'rgba(0,0,0,.4)'; g.lineWidth = 2; for (let y = h * .1; y < h * .72; y += h * .08) { g.beginPath(); g.moveTo(w * .12, y); g.lineTo(w * .88, y); g.stroke() }
+    const lx = w * .5 + Math.sin(t * .35) * w * .22, ly = h * .5, fl = .85 + .15 * Math.sin(t * 13) * Math.sin(t * 7);
+    // carved script: visible only near the lantern, and it keeps shifting (no one can read it any more)
+    const r = rng(51);
+    for (let row = 0; row < 7; row++) for (let col = 0; col < 26; col++) {
+      const x = w * .15 + col * w * .027, y = h * .16 + row * h * .075, d = Math.hypot(x - lx, (y - ly) * 1.3), a = clamp(1 - d / (w * .2)) * fl;
+      if (a <= .02) { r(); continue } const sd = Math.floor(r() * 999) + Math.floor(t * .8 + col * .3) * 7;
+      g.strokeStyle = `rgba(230,200,140,${a * .8})`; g.lineWidth = 1.3; rune(g, x, y, 6, sd);
+    }
+    // dust in the light
+    for (let i = 0; i < 40; i++) { const q = rng(200 + i)(), x = lx + Math.sin(t * .3 + i) * 90 + (q - .5) * 120, y = ly - 40 + Math.cos(t * .23 + i * 1.7) * 70; g.fillStyle = `rgba(255,220,160,${.35 * fl * clamp(1 - Math.hypot(x - lx, y - ly) / 140)})`; g.fillRect(x, y, 1.5, 1.5) }
+    glow(g, lx, ly, w * .24, hsla(38, 90, 60), .45 * fl);
+    // floor, rubble, the scholar
+    g.fillStyle = '#0a080a'; g.fillRect(0, h * .72, w, h * .28);
+    for (const [fx, s] of [[.2, 18], [.27, 10], [.76, 22], [.83, 12]]) { g.beginPath(); g.ellipse(w * fx, h * .73, s * 1.6, s * .7, 0, Math.PI, 0); g.fill() }
+    const sx = lx - 44, sy = h * .74; walker(g, sx, sy, 2.4, 0, '#050405', { lean: 5 }); g.strokeStyle = '#050405'; g.lineWidth = 5; g.beginPath(); g.moveTo(sx + 10, sy - 62); g.lineTo(lx - 4, ly + 4); g.stroke();
+    g.fillStyle = `hsl(40,100%,${55 + 15 * fl}%)`; g.beginPath(); g.ellipse(lx, ly + 14, 6, 8, 0, 0, TAU); g.fill();
+    // a scroll that unrolls and stays blank at the edges
+    g.fillStyle = 'rgba(220,200,160,.75)'; g.fillRect(sx - 54, sy - 50, 30 + 12 * Math.sin(t * .5), 18);
+  }
+
+  /* ---------------- faith · prayers rise and gather into a presence ---------------- */
+  function faith(g, w, h, t) {
+    sky(g, w, h, [[0, '#06081a'], [.6, '#1a1a3a'], [1, '#221a30']]); stars(g, w, h, t, 120, 61, h * .6, .8);
+    const hz = h * .66; ridge(g, w, h, hz, h * .06, 91, '#0c0a14');
+    // temple on the hill
+    const tx = w * .5, ty = ridgeY(w, hz, h * .06, 91, w * .5); g.fillStyle = '#0c0a14';
+    g.fillRect(tx - 60, ty - 40, 120, 40); g.beginPath(); g.moveTo(tx - 72, ty - 40); g.lineTo(tx, ty - 78); g.lineTo(tx + 72, ty - 40); g.fill();
+    for (let i = -2; i <= 2; i++) { g.fillStyle = '#ffcf7a'; g.globalAlpha = .6 + .3 * Math.sin(t * 2 + i); g.fillRect(tx + i * 22 - 3, ty - 30, 6, 12) } g.globalAlpha = 1;
+    // the presence above (grows as prayers gather), opens its eyes at the end
+    const P = { x: tx, y: h * .2 }, grow = ease((t - 2) / 7);
+    glow(g, P.x, P.y + h * .05, h * .32 * grow, hsla(42, 80, 75), .35 * grow);
+    if (grow > 0) { g.strokeStyle = `hsla(44,90%,85%,${.35 * grow})`; g.lineWidth = 1.5; g.beginPath(); g.ellipse(P.x, P.y + h * .1, w * .07 * grow, h * .16 * grow, 0, 0, TAU); g.stroke(); g.beginPath(); g.arc(P.x, P.y - h * .03 * grow, h * .035 * grow, 0, TAU); g.stroke();
+      for (const sgn of [-1, 1]) { g.beginPath(); g.moveTo(P.x + sgn * w * .05 * grow, P.y + h * .04); g.quadraticCurveTo(P.x + sgn * w * .16 * grow, P.y - h * .02, P.x + sgn * w * .2 * grow, P.y + h * .12); g.stroke() } }
+    const eyes = ease((t - 8) / 1.2); if (eyes > 0) for (const sgn of [-1, 1]) glow(g, P.x + sgn * h * .012, P.y - h * .035, 8, hsla(48, 100, 95), eyes);
+    // prayer lights rising from the people around the temple
+    for (let i = 0; i < 46; i++) { const q = rng(400 + i), sx = w * (.1 + q() * .8), per = 4 + q() * 3, ph = ((t + q() * per) % per) / per, sy = hz + h * .02 + q() * h * .1;
+      const x = lerp(sx, P.x + (q() - .5) * w * .12, ease(ph)), y = lerp(sy, P.y + h * .08, ph) + Math.sin(ph * 9 + i) * 6; glow(g, x, y, 9, hsla(40 + q() * 20, 100, 75), Math.sin(ph * Math.PI) * .9) }
+    // kneeling worshippers
+    g.fillStyle = '#05040a'; g.fillRect(0, hz + h * .05, w, h); for (let i = 0; i < 18; i++) { const x = w * (.06 + i * .052), y = hz + h * .07; g.beginPath(); g.ellipse(x, y, 7, 10, 0, Math.PI, 0); g.fill(); g.beginPath(); g.arc(x, y - 13, 4, 0, TAU); g.fill() }
+  }
+
+  /* ---------------- deepwood · the endless forest to the east ---------------- */
+  function deepwood(g, w, h, t) {
+    const push = ease(t / 14);
+    sky(g, w, h, [[0, '#0c1a1a'], [.5, '#244038'], [1, '#2a4a3a']]);
+    // a far glimmer above the canopy (the city of light in the tales) — faint, maybe not there at all
+    const cx = w * .68, cy = h * .2, seen = .5 + .5 * Math.sin(t * .6);
+    glow(g, cx, cy, h * .18, hsla(170, 60, 80), .25 * seen); g.fillStyle = `rgba(220,255,240,${.35 * seen})`; for (let i = 0; i < 7; i++) { const x = cx - 30 + i * 10, hh = 10 + (i % 3) * 12 + (i === 3 ? 22 : 0); g.fillRect(x, cy + 20 - hh, 3, hh) }
+    // layers of canopy, the camera slowly pushes in
+    const layers = [['#1a3a30', .34, 11], ['#14302a', .44, 12], ['#0e2620', .56, 13], ['#081a16', .7, 14]];
+    layers.forEach(([c, base, sd], i) => { const k = 1 + push * .08 * (i + 1), off = Math.sin(t * .1 + i) * 6; g.save(); g.translate(w / 2, h); g.scale(k, k); g.translate(-w / 2, -h);
+      const r = rng(sd); g.fillStyle = c; g.fillRect(0, h * base + 20, w, h); for (let x = -40; x < w + 40; x += 22 + r() * 26) { const th = h * (.12 + r() * .14) * (1 + i * .15), y = h * base + 30; g.beginPath(); g.moveTo(x - 20 + off, y); g.lineTo(x + off, y - th); g.lineTo(x + 20 + off, y); g.fill(); g.beginPath(); g.arc(x + off, y - th * .55, 18 + i * 4, 0, TAU); g.fill() } g.restore() });
+    // mist rolling between the layers
+    for (let k = 0; k < 7; k++) glow(g, ((k / 7 + t * .012) % 1.2 - .1) * w, h * (.45 + (k % 3) * .1), w * .2, hsla(160, 20, 80), .2);
+    // a few lights deep inside (eyes? lanterns?) and fireflies
+    for (let i = 0; i < 5; i++) { const q = rng(500 + i), on = Math.sin(t * .7 + i * 2) > .6; if (on) glow(g, w * (.1 + q() * .8), h * (.6 + q() * .2), 6, hsla(q() < .5 ? 280 : 90, 80, 75), .8) }
+    for (let i = 0; i < 30; i++) { const q = rng(600 + i), x = w * q() + Math.sin(t * .8 + i) * 20, y = h * (.5 + q() * .4) + Math.cos(t * .6 + i) * 10; glow(g, x, y, 5, hsla(80, 90, 70), .5 + .5 * Math.sin(t * 3 + i)) }
+    // a lone traveller's trail stops at the forest's edge
+    g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, h * .9, w, h * .1);
+  }
+
+  /* ---------------- hearth · tales by the fire in Fernvale ---------------- */
+  function hearth(g, w, h, t) {
+    sky(g, w, h, [[0, '#090c1e'], [.6, '#1e2034'], [1, '#1e2034']]); stars(g, w, h, t, 90, 71, h * .45, .8);
+    const hz = h * .42, hr = rng(73);
+    for (let i = 0; i < 6; i++) house(g, w * (i / 5) + (hr() - .5) * 30, hz + 10 + hr() * 10, 3.2, { wall: '#1a1624', roof: '#110e18', shade: 'rgba(0,0,0,.1)', chimney: true, roofDark: '#1a1624', door: '#100c14', win: `rgba(255,200,120,${.5 + .2 * Math.sin(t * 2 + i)})` });
+    g.fillStyle = '#100c12'; g.fillRect(0, hz + 12, w, h);
+    const fx = w * .5, fy = h * .58, fl = .85 + .15 * Math.sin(t * 17) * Math.sin(t * 5);
+    glow(g, fx, fy - 10, h * .5, hsla(28, 100, 60), .5 * fl);
+    // the flames
+    g.save(); g.translate(fx, fy); g.scale(1.8, 1.8); g.translate(-fx, -fy);
+    for (let k = 0; k < 5; k++) { const sw = Math.sin(t * 8 + k) * 4, hh = 34 + 10 * Math.sin(t * 11 + k * 2); g.fillStyle = `hsla(${20 + k * 8},100%,${55 + k * 6}%,.85)`; g.beginPath(); g.moveTo(fx - 16 + k * 4, fy); g.quadraticCurveTo(fx - 10 + k * 4 + sw, fy - hh * .6, fx - 6 + k * 3 + sw, fy - hh); g.quadraticCurveTo(fx - 2 + k * 3, fy - hh * .4, fx + 12 - k * 2, fy); g.fill() }
+    g.strokeStyle = '#2a1a10'; g.lineWidth = 6; g.beginPath(); g.moveTo(fx - 22, fy + 4); g.lineTo(fx + 22, fy - 2); g.moveTo(fx - 20, fy - 2); g.lineTo(fx + 20, fy + 5); g.stroke(); g.restore();
+    // sparks rise and briefly take shapes of the tales (a tower, a beast, a crown)
+    const shapes = [[[0, -1], [0, 1], [-.4, 1], [.4, 1], [-.2, -.6], [.2, -.6]], [[-1, 0], [-.4, -.5], [.3, -.4], [1, -.8], [.6, .1], [-.2, .2], [-.6, .6]], [[-1, .4], [-.8, -.6], [-.4, .1], [0, -.8], [.4, .1], [.8, -.6], [1, .4]]];
+    const shp = shapes[Math.floor(t / 4) % 3], form = Math.sin(((t % 4) / 4) * Math.PI);
+    for (let i = 0; i < 34; i++) { const q = rng(700 + i), ph = ((t * .5 + q()) % 1), sx = fx + (q() - .5) * 30, x0 = sx + Math.sin(ph * 6 + i) * 18, y0 = fy - 30 - ph * h * .4, p = shp[i % shp.length], tx = fx + p[0] * 80, ty = h * .2 + p[1] * 50;
+      const x = lerp(x0, tx, form * .85), y = lerp(y0, ty, form * .85); glow(g, x, y, 6, hsla(34, 100, 70), (1 - ph * .5) * .9) }
+    // listeners around the fire, the storyteller gestures
+    g.fillStyle = '#07050a';
+    for (const [dx, s0] of [[-260, 1.2], [-170, 1], [170, 1.05], [260, 1.25], [-90, .85], [90, .9]]) { const s = s0 * 2, x = fx + dx, y = fy + 60; g.beginPath(); g.ellipse(x, y, 12 * s, 18 * s, 0, Math.PI, 0); g.fill(); g.beginPath(); g.arc(x, y - 24 * s, 7 * s, 0, TAU); g.fill() }
+    { const x = fx + 350, y = fy + 60, arm = Math.sin(t * 2) * .5; g.beginPath(); g.ellipse(x, y, 28, 52, 0, Math.PI, 0); g.fill(); g.beginPath(); g.arc(x, y - 64, 16, 0, TAU); g.fill(); g.strokeStyle = '#07050a'; g.lineWidth = 9; g.beginPath(); g.moveTo(x - 12, y - 36); g.lineTo(x - 48, y - 70 - arm * 28); g.stroke() }
+  }
+
+  /* ---------------- elukhor · the golden light rests in the sky, then drifts to a new place ---------------- */
+  function elukhor(g, w, h, t) {
+    sky(g, w, h, [[0, '#4a8ac8'], [.45, '#9cc8e8'], [.62, '#f4e0b0'], [1, '#f4e0b0']]);
+    // rest · drift · rest
+    const spots = [[.28, .16], [.62, .12], [.8, .26]], per = 6, i = Math.floor(t / per) % spots.length, k = ease(clamp((t % per - 4) / 2)), a = spots[i], b = spots[(i + 1) % spots.length];
+    const ox = w * lerp(a[0], b[0], k), oy = h * lerp(a[1], b[1], k) - Math.sin(k * Math.PI) * h * .04, pu = .85 + .15 * Math.sin(t * 1.6);
+    glow(g, ox, oy, h * .7, hsla(42, 100, 80), .45 * pu);
+    g.save(); g.translate(ox, oy); g.rotate(t * .06); for (let r = 0; r < 16; r++) { g.rotate(TAU / 16); const L = h * (.09 + (r % 2) * .05); const gr = g.createLinearGradient(0, 0, L, 0); gr.addColorStop(0, 'rgba(255,240,190,.55)'); gr.addColorStop(1, 'rgba(255,240,190,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0, -3); g.lineTo(L, 0); g.lineTo(0, 3); g.fill() } g.restore();
+    glow(g, ox, oy, h * .07, hsla(48, 100, 95), 1); g.fillStyle = '#fffbe6'; g.beginPath(); g.arc(ox, oy, h * .03, 0, TAU); g.fill();
+    // warm light falls on the land under it
+    ridge(g, w, h, h * .5, h * .04, 101, '#7aa860'); ridge(g, w, h, h * .58, h * .04, 102, '#68984e');
+    glow(g, ox, h * .58, w * .3, hsla(48, 100, 80), .35);
+    // farmers at work, a small fire shrine (Fren) with a flame offering
+    g.save(); g.translate(0, -h * .12); const fr = rng(103); for (let j = 0; j < 7; j++) { const x = w * (.1 + j * .12) + fr() * 20, y = h * (.72 + fr() * .06), bend = Math.sin(t * 2 + j) * 3; g.fillStyle = '#3a3020'; g.beginPath(); g.arc(x + bend, y - 22, 4, 0, TAU); g.fill(); g.strokeStyle = '#3a3020'; g.lineWidth = 4; g.beginPath(); g.moveTo(x, y); g.lineTo(x + bend, y - 18); g.stroke(); g.strokeStyle = '#d8b860'; g.lineWidth = 2; for (let q = 0; q < 5; q++) { g.beginPath(); g.moveTo(x - 30 + q * 14, y + 6); g.lineTo(x - 30 + q * 14 + Math.sin(t * 1.5 + q) * 2, y - 12); g.stroke() } }
+    const sx = w * .86, sy = h * .74; g.fillStyle = '#8a6a4a'; g.fillRect(sx - 14, sy - 26, 28, 26); g.beginPath(); g.moveTo(sx - 18, sy - 26); g.lineTo(sx, sy - 40); g.lineTo(sx + 18, sy - 26); g.fill();
+    glow(g, sx, sy - 14, 22, hsla(24, 100, 60), .9); g.fillStyle = '#ffb050'; g.beginPath(); g.moveTo(sx - 4, sy - 8); g.quadraticCurveTo(sx + Math.sin(t * 9) * 2, sy - 20, sx + 4, sy - 8); g.fill();
+    for (let j = 0; j < 2; j++) { const x = sx - 40 - j * 18, y = sy + 4; g.fillStyle = '#4a3a2a'; g.beginPath(); g.ellipse(x, y, 7, 10, 0, Math.PI, 0); g.fill(); g.beginPath(); g.arc(x + 2, y - 12, 4, 0, TAU); g.fill() } g.restore();
+  }
+
+  /* ---------------- homeMorning · inside the hero's house, sun through the window, father's knife on the wall ---------------- */
+  function homeMorning(g, w, h, t) {
+    g.fillStyle = '#3a2a1e'; g.fillRect(0, 0, w, h);
+    // wall planks + floor
+    for (let x = 0; x < w; x += 46) { g.fillStyle = (x / 46) % 2 ? '#43301f' : '#3d2c1d'; g.fillRect(x, 0, 46, h * .74) }
+    g.fillStyle = '#2a1c12'; g.fillRect(0, h * .74, w, h * .26); g.strokeStyle = 'rgba(0,0,0,.3)'; for (let y = h * .78; y < h; y += 16) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke() }
+    // window with dawn sky, sun rising in it
+    const wx = w * .62, wy = h * .14, ww = w * .2, wh = h * .3, rise = ease(t / 10);
+    const sk = g.createLinearGradient(0, wy, 0, wy + wh); sk.addColorStop(0, '#7a8ac0'); sk.addColorStop(1, '#ffc890'); g.fillStyle = sk; g.fillRect(wx, wy, ww, wh);
+    glow(g, wx + ww * .6, lerp(wy + wh, wy + wh * .55, rise), wh * .5, hsla(40, 100, 80), .9);
+    g.strokeStyle = '#2a1a10'; g.lineWidth = 6; g.strokeRect(wx, wy, ww, wh); g.beginPath(); g.moveTo(wx + ww / 2, wy); g.lineTo(wx + ww / 2, wy + wh); g.moveTo(wx, wy + wh / 2); g.lineTo(wx + ww, wy + wh / 2); g.stroke();
+    // light beam with dust
+    g.save(); g.globalCompositeOperation = 'lighter'; const bm = g.createLinearGradient(wx, wy, wx - w * .3, h); bm.addColorStop(0, `rgba(255,210,150,${.22 * rise + .06})`); bm.addColorStop(1, 'rgba(255,210,150,0)'); g.fillStyle = bm;
+    g.beginPath(); g.moveTo(wx, wy); g.lineTo(wx + ww, wy + wh); g.lineTo(wx + ww - w * .25, h); g.lineTo(wx - w * .38, h); g.closePath(); g.fill();
+    for (let i = 0; i < 40; i++) { const q = rng(800 + i), x = wx - w * .25 + q() * w * .4 + Math.sin(t * .4 + i) * 10, y = wy + q() * h * .7 + Math.cos(t * .3 + i) * 8; g.fillStyle = `rgba(255,230,180,${.4 * rise})`; g.fillRect(x, y, 1.6, 1.6) } g.restore();
+    // bed (the hero still under the blanket, breathing), table, door, the knife on the wall
+    const bx = w * .1, by = h * .62; g.fillStyle = '#5a3a24'; g.fillRect(bx, by, w * .3, h * .14); g.fillStyle = '#8a5a4a'; g.fillRect(bx + 8, by - 12, w * .3 - 16, 20);
+    const br = 1 + Math.sin(t * 1.6) * .04; g.fillStyle = '#6a7a9a'; g.beginPath(); g.ellipse(bx + w * .17, by - 6, w * .12, 18 * br, 0, Math.PI, 0); g.fill(); g.fillStyle = '#d8b090'; g.beginPath(); g.arc(bx + 26, by - 12, 11, 0, TAU); g.fill();
+    if (Math.sin(t * .9) > .7) { g.fillStyle = 'rgba(255,255,255,.7)'; g.font = '700 16px system-ui'; g.fillText('z', bx + 40, by - 34 - (t * 20 % 20)) }
+    g.fillStyle = '#4a3020'; g.fillRect(w * .48, h * .58, w * .12, 8); g.fillRect(w * .49, h * .58, 6, h * .16); g.fillRect(w * .58, h * .58, 6, h * .16);
+    g.fillStyle = '#c8b090'; g.beginPath(); g.arc(w * .52, h * .57, 7, 0, TAU); g.fill(); smoke(g, w * .52, h * .55, t, .5, 3, [240, 240, 240]);
+    const dx = w * .86, dy = h * .3; g.fillStyle = '#2a1a10'; g.fillRect(dx, dy, w * .1, h * .44); g.fillStyle = '#c8a050'; g.beginPath(); g.arc(dx + 10, dy + h * .23, 3, 0, TAU); g.fill();
+    // the knife
+    const kx = w * .45, ky = h * .32, shine = clamp(Math.sin(t * .8 - 1.5)); g.save(); g.translate(kx, ky); g.rotate(-.5);
+    g.fillStyle = '#5a3a20'; g.fillRect(-4, 0, 8, 26); g.fillStyle = '#7a6a50'; g.fillRect(-9, -3, 18, 4); g.fillStyle = '#b8bcc4'; g.beginPath(); g.moveTo(-4, -3); g.lineTo(0, -40); g.lineTo(4, -3); g.fill(); g.restore();
+    glow(g, kx + 8, ky - 14, 30, hsla(45, 100, 85), .5 * shine);
+  }
+
+  const SCENES = { ancient, elements, kingdoms: (g, w, h, t) => elements(g, w, h, t + 4.2), kin, forgotten, faith, deepwood, hearth, elukhor, homeMorning, fernvale, festival: (g, w, h, t) => village(g, w, h, t, 'festival'), dawn: (g, w, h, t) => village(g, w, h, t, 'dawn'), orb: (g, w, h, t) => village(g, w, h, t, 'orb') };
 
   function create(canvas, opt = {}) {
     const g = canvas.getContext('2d'), buf = document.createElement('canvas'), bg = buf.getContext('2d');

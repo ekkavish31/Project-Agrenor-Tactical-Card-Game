@@ -7,11 +7,19 @@
    Text for the prologue, credits and how-to-play lives in the arrays right below — edit freely. */
 (function(root){'use strict';
 /* v95.02: each page is acted out by an animated scene drawn in code (js/scene-art.js · art:'…'); bg is only the fallback */
-const PROLOGUE=[// v93: short on purpose — the wider world is discovered by playing (lore: docs/lore/GAME-ERA.md)
- {art:'ancient',bg:'assets/scenes/area-ruins.webp',text:'โลกใบนี้เก่ากว่าที่ใครจำได้\nร่องรอยของผู้คนก่อนหน้ายังซ่อนอยู่ใต้ดิน ใต้ป่า และในบทสวดที่ไม่มีใครเข้าใจ'},
- {art:'elements',bg:'assets/scenes/area-forest.webp',text:'ลูกหลานของพวกเขาแยกย้ายไปตามสายธาตุที่ตนศรัทธา\nตั้งเมือง สร้างอาณาจักร และค่อย ๆ ลืมว่าตนมาจากไหน'},
- {art:'fernvale',bg:'assets/market.webp',text:'ที่ลุ่มน้ำ Navelmidia มีหมู่บ้านเล็ก ๆ ชื่อเฟิร์นเวล\nใกล้เมืองใหญ่พอจะได้ยินข่าวจากโลกกว้าง แต่ไกลพอจะมีชีวิตของตัวเอง'},
- {art:'festival',bg:'assets/home.webp',text:'อีกสามวันจะถึงงานเทศกาลเก็บเกี่ยว\nและไม่มีใครรู้เลยว่า ปีนี้จะไม่เหมือนทุกปี'}
+const PROLOGUE=[// v95.04: 12 pages · the ancient people are never named · Elukhor is the familiar golden light (lore: docs/lore/GAME-ERA.md)
+ {art:'ancient',bg:'assets/scenes/area-ruins.webp',text:'ก่อนจะมีชื่อเมือง ก่อนจะมีแผนที่ ก่อนจะมีคำว่าอาณาจักร\nโลกใบนี้เคยเป็นของผู้คนอีกยุคหนึ่ง'},
+ {art:'ancient',bg:'assets/scenes/area-ruins.webp',text:'ไม่มีใครจำชื่อที่แท้จริงของพวกเขาได้อีกแล้ว\nเหลือเพียงร่องรอยใต้ดิน ใต้ป่า และในหินที่ยังเรืองแสงอยู่จนทุกวันนี้'},
+ {art:'elements',bg:'assets/scenes/area-forest.webp',text:'หลายหมื่นปีผ่านไป ลูกหลานของพวกเขากระจายออกไปทั่วแผ่นดิน\nแต่ละกลุ่มตามหาธาตุที่ตอบรับหัวใจของตน ทั้งแสง ลม น้ำ สายฟ้า ไฟ พฤกษา น้ำแข็ง ราตรี และผืนดิน'},
+ {art:'kin',bg:'assets/scenes/area-forest.webp',text:'ความเชื่อกำหนดทิศทาง ส่วนผืนแผ่นดินหล่อหลอมร่างกาย\nชั่วรุ่นต่อชั่วรุ่น ผู้คนค่อย ๆ เปลี่ยนไป จนกลายเป็นเผ่าพันธุ์ใหม่'},
+ {art:'kingdoms',bg:'assets/scenes/area-forest.webp',text:'ชุมชนเติบโตเป็นเมือง เมืองผูกกันด้วยการค้าและศรัทธา\nบางแห่งรวมเป็นอาณาจักร บางแห่งยังยืนหยัดอย่างอิสระ'},
+ {art:'forgotten',bg:'assets/scenes/area-ruins.webp',text:'ชื่อใหม่และภาษาใหม่เข้ามาแทนที่ความทรงจำเก่า\nอดีตกลายเป็นตำนาน เหลือเพียงคำในบทสวดที่ไม่มีใครเข้าใจ'},
+ {art:'faith',bg:'assets/scenes/area-ruins.webp',text:'ผู้คนสวดอ้อนวอนต่อเทพแห่งธาตุและผู้พิทักษ์ใกล้ตัว\nและเมื่อศรัทธามากพอ สิ่งที่เคยอยู่เพียงในคำอธิษฐาน ก็เริ่มมีตัวตนขึ้นจริง'},
+ {art:'deepwood',bg:'assets/scenes/area-forest.webp',text:'ไกลออกไปทางตะวันออก มีป่าใหญ่ที่ดูเหมือนไม่มีที่สิ้นสุด\nนักผจญภัยไม่กี่คนที่กลับออกมาได้ วาดแผนที่ไว้เพียงชายขอบ ส่วนนครแห่งแสงเหนือยอดไม้ ยังเป็นแค่เรื่องเล่า'},
+ {art:'fernvale',bg:'assets/market.webp',text:'ส่วนมนุษย์ ผู้สืบสายดินและน้ำ ตั้งรกรากตามลุ่มแม่น้ำ Navelmidia\nที่ชานเมืองใหญ่แห่งหนึ่ง มีหมู่บ้านเล็ก ๆ ชื่อเฟิร์นเวล'},
+ {art:'hearth',bg:'assets/market.webp',text:'ใกล้เมืองพอจะได้ยินข่าวจากโลกกว้าง แต่ไกลพอจะมีชีวิตของตัวเอง\nสำหรับคนที่นี่ ตำนานและเทพธาตุเป็นเรื่องเล่าข้างกองไฟ'},
+ {art:'elukhor',bg:'assets/home.webp',text:'เหนือลุ่มน้ำมีดวงแสงสีทองที่ทุกคนรู้จัก — Elukhor ที่ชาวบ้านเรียกว่า "ดวงทอง"\nมันลอยค้างบนฟ้าครั้งละนาน ๆ แล้วค่อยย้ายไปที่ใหม่ ส่องแสงและความอบอุ่นให้แผ่นดิน หลายคนบูชาเป็นเทพแห่ง Fren ธาตุไฟ'},
+ {art:'festival',bg:'assets/home.webp',text:'อีกสามวันจะถึงงานเทศกาลเก็บเกี่ยว งานที่ทั้งหมู่บ้านรอมาทั้งปี\nและไม่มีใครรู้เลยว่า ปีนี้จะไม่เหมือนทุกปี'}
 ];
 const HOWTO=[
  ['หมู่บ้าน','คลิกถนนหรือสถานที่เพื่อเดิน · บ้านใช้พัก นอน จัดสำรับ · โรงตีเหล็กใช้คราฟต์อุปกรณ์และฝึกต่อสู้ · ตลาดใช้ซื้อวัตถุดิบ ขายของ รับออร์เดอร์'],
@@ -133,7 +141,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  <div class="ts-foot"><span class="ts-ver">Project A ${VERSION}${root.GAME_VERSION?.date?" · "+root.GAME_VERSION.date:""} <em class="ts-gh">· กำลังเช็ก GitHub…</em></span><span>↑↓ เลือก · Enter ยืนยัน</span></div>
  <section class="ts-extra" hidden aria-label="Extra"><div class="ts-extra-box"><div class="ts-extra-head"><div class="ts-tabs" role="tablist"><button role="tab" data-tab="howto">วิธีเล่น</button><button role="tab" data-tab="gallery">คลังภาพ</button><button role="tab" data-tab="credits">เครดิต</button></div><button class="ts-close" data-act="close-extra" aria-label="ปิด">✕</button></div><div class="ts-extra-body"></div></div></section>
  <section class="ts-story" hidden aria-live="polite"><div class="ts-story-bg"></div><canvas class="ts-story-art"></canvas><div class="ts-story-veil"></div><div class="ts-story-text"></div><div class="ts-story-hint">คลิก หรือกด Enter เพื่อไปต่อ</div><button class="ts-skip" data-act="skip">ข้าม ▸▸</button>
-  <form class="ts-name" hidden><span class="ts-kicker">ตัวเอกของเรื่อง</span><h2>เจ้าชื่ออะไร?</h2><input name="hero" maxlength="16" autocomplete="off" spellcheck="false" placeholder="นักผจญภัย"><p>เปลี่ยนภายหลังได้ในตั้งค่า หรือคลิกชื่อตัวเอกในเกม</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
+  <form class="ts-name" hidden><span class="ts-kicker">และเรื่องนี้เริ่มต้นจากเด็กคนหนึ่งในเฟิร์นเวล…</span><h2>เจ้าชื่ออะไร?</h2><input name="hero" maxlength="16" autocomplete="off" spellcheck="false" placeholder="นักผจญภัย"><p>เปลี่ยนภายหลังได้ในตั้งค่า หรือคลิกชื่อตัวเอกในเกม</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
  document.body.appendChild(el);title=el;checkGitHub(el);
  const menu=[...el.querySelectorAll('.ts-menu button')];
  el.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)act(b.dataset.act)});

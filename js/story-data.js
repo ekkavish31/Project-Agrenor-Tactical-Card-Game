@@ -1,6 +1,6 @@
 /* v93 · Intro story data: speakers + cutscenes for the Fernvale festival prologue and the first expedition.
    Pure data — edit text freely. {hero} = the hero's name. Backgrounds reuse existing scene art.
-   Lore source: docs/lore/GAME-ERA.md (world of the heirs, tens of thousands of years after the Glaelanar). */
+   Lore source: docs/lore/GAME-ERA.md (world of the heirs; the ancient people are never named in the game text). */
 (function(root){'use strict';
 const B={home:'assets/home.webp',market:'assets/market.webp',work:'assets/workshop.webp',anvil:'assets/forge.webp',camp:'assets/camp.webp',
  forest:'assets/scenes/area-forest.webp',mine:'assets/scenes/area-mine.webp',ruins:'assets/scenes/area-ruins.webp'};
@@ -20,15 +20,23 @@ const SPEAKERS={
  ally:{name:()=>ally()?.name||'เพื่อนร่วมทาง',portrait:()=>ally()?.portrait||null,color:'#3d6b6b'}};
 
 const SCENES={
- opening:{card:{kicker:'บทนำ',title:'เฟิร์นเวล'},art:'dawn',bg:B.home,pan:'in',tint:'dawn',fx:['rays','motes'],lines:[
-  {text:'เช้าวันหนึ่งที่เฟิร์นเวล หมู่บ้านเล็ก ๆ ชานเมืองใหญ่ ริมลุ่มน้ำของ Navelmidia'},
-  {who:'mom',text:'{hero}! ตื่นได้แล้ว อีกสามวันก็งานเทศกาลเก็บเกี่ยวแล้วนะ'},
-  {who:'mom',text:'ผู้ใหญ่บ้านโอเรนรออยู่ที่ตลาดตั้งแต่เช้า บอกว่าปีนี้ขาดคนช่วยเยอะ'},
-  {who:'mom',text:'แล้วเอามีดของพ่อติดตัวไปด้วยนะ ช่วงนี้ชายป่าไม่ค่อยปลอดภัย'},
-  {who:'hero',text:'สามวัน... ทันแน่นอนแม่ ข้าไปเดี๋ยวนี้'},
-  {art:'orb',tint:'',fx:['motes'],text:'ไกลออกไปบนขอบฟ้า แสงสีทองดวงหนึ่งลอยนิ่งอยู่เหนือทุ่ง'},
-  {who:'mom',text:'ดวงทองมาหยุดใกล้หมู่บ้านอีกแล้ว คนแก่ว่าปีไหนมันมาใกล้ ปีนั้นจะมีเรื่อง'},
-  {who:'hero',text:'แม่ก็พูดแบบนี้ทุกปี'}]},
+ opening:{card:{kicker:'บทนำ',title:'เฟิร์นเวล'},art:'homeMorning',bg:B.home,pan:'in',tint:'',fx:['motes'],lines:[
+  {text:'เช้าวันแรกก่อนงานเทศกาลสามวัน ไก่ขันอยู่หลังรั้ว ควันจากเตาขนมปังของป้าเมย์ลอยขึ้นเหนือหลังคา'},
+  {who:'mom',text:'{hero}! ตื่นได้แล้ว'},
+  {who:'hero',text:'อีกห้านาที…'},
+  {who:'mom',text:'ห้านาทีของเจ้าคือครึ่งเช้าของแม่ ลุกเดี๋ยวนี้ ผู้ใหญ่บ้านโอเรนรออยู่ที่ตลาด'},
+  {who:'mom',text:'ปีนี้ลุงทอมตกบันได คนช่วยงานไม่พอ เขาเลยขอให้เจ้าไปช่วย'},
+  {who:'hero',text:'ปีที่แล้วข้าแบกฟักทองจนหลังแทบหัก…'},
+  {who:'mom',text:'ปีนี้เจ้าจะได้ปลูกเองไงล่ะ ฮิลดาเก็บเมล็ดพันธุ์ยักษ์ไว้ให้แล้ว'},
+  {text:'บนผนังข้างประตูมีมีดสั้นเล่มเก่าแขวนอยู่ ด้ามไม้สึกจนเป็นรอยมือ'},
+  {who:'mom',text:'เอามีดของพ่อติดตัวไปด้วยนะ ยามดอร์กบอกว่าเห็นรอยหมาป่าใกล้รั้ว'},
+  {who:'hero',text:'ข้าแค่ไปตลาด ไม่ได้ไปรบนะแม่'},
+  {who:'mom',text:'…พ่อเจ้าก็พูดแบบนี้ทุกครั้ง'},
+  {who:'hero',text:'…ครับ ข้าจะพกไป'},
+  {art:'orb',fx:['motes'],text:'พอก้าวออกจากบ้าน Elukhor ลอยค้างอยู่เหนือขอบฟ้าทางตะวันออก ส่องแสงอุ่นลงมาทั่วลุ่มน้ำ'},
+  {who:'mom',text:'ดวงทองมาค้างทางตะวันออกแต่เช้า วันนี้ร้อนแน่ อย่าลืมดื่มน้ำล่ะ'},
+  {who:'hero',text:'ครับ ๆ ข้าไปละ!'},
+  {text:'เฟิร์นเวลยังเป็นเฟิร์นเวลเหมือนทุกปี… อย่างน้อยก็ในเช้าวันนั้น'}]},
  elderMeet:{bg:B.market,pan:'in',tint:'day',fx:['motes','dust'],lines:[
   {who:'elder',text:'มาแล้วรึ {hero} ดีเลย ข้ามีงานให้เพียบ'},
   {who:'elder',text:'เรื่องแรก... แพะของปิ๊บหนีออกจากคอกไปทั่วหมู่บ้าน ตัวหนึ่งขึ้นไปยืนบนหลังคาโรงเตี๊ยมแล้ว'},
@@ -145,9 +153,9 @@ const SCENES={
   {text:'เป้าหมาย: ขายของที่ได้มา แล้วกลับบ้านนอนพักฟื้น'}]},
  finale:{card:{kicker:'จบบทนำ',title:'โลกที่กว้างกว่าเฟิร์นเวล'},bg:B.home,tint:'night',fx:['stars'],lines:[
   {burst:{x:.5,y:.6,hue:280,n:30,speed:2,ring:false},text:'คืนนั้น{hero}นอนไม่หลับ จานหินวางอยู่ข้างหมอน เส้นแสงบนผิวหินเต้นช้า ๆ เหมือนลมหายใจ'},
-  {art:'orb',tint:'',fx:['motes'],text:'เช้าวันใหม่ ดวงทองยังลอยนิ่งอยู่ไกลออกไป... ใกล้กว่าเมื่อวาน'},
+  {art:'orb',tint:'',fx:['motes'],text:'เช้าวันใหม่ Elukhor ลอยค้างเหนือขอบฟ้าเหมือนทุกเช้า ส่องแสงอุ่นลงมาบนเฟิร์นเวลที่ยังมีร่องรอยของคืนเทศกาล'},
   {who:'hero',text:'จดหมายบอกว่า "ส่งไปที่เมือง"... สักวันข้าต้องไปให้ถึง'},
-  {text:'จากนี้ไปเล่นได้อิสระ ป่า เหมือง และพื้นที่รอบหมู่บ้านรอให้สำรวจ\nเบาะแส: จานหิน · จดหมายถึงเมืองใหญ่ · ดวงทองบนฟ้า'}]}};
+  {text:'จากนี้ไปเล่นได้อิสระ ป่า เหมือง และพื้นที่รอบหมู่บ้านรอให้สำรวจ\nเบาะแส: จานหิน · จดหมายถึงเมืองใหญ่ · ผลึกม่วงจากเหมืองเก่า'}]}};
 
 // pumpkin contest — result lines depend on how many days it was watered (0–3)
 function contestScene(days){const lines=[{who:'elder',text:'และผู้ชนะฟักทองยักษ์ปีนี้คือ...'},{wait:900,text:'...'}];
