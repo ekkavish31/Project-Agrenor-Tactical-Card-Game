@@ -11,7 +11,7 @@ function itemInfo(k){if(AD.CONSUMABLES[k])return {cat:'consumable',def:AD.CONSUM
 function addItem(k,n=1){if(!itemInfo(k))return;let b=bag();b[k]=(b[k]||0)+n;if(b[k]<=0)delete b[k]}
 function hasItem(k){return (bag()[k]||0)>0}
 const nameOf=k=>itemInfo(k)?.def.name||MATERIALS[k]?.name||k;
-const maxHp=()=>60;
+const maxHp=()=>s.maxHp||60;
 function heal(hp,st){let a=s.hp;s.hp=Math.min(maxHp(),s.hp+hp);let b=s.stamina;s.stamina=Math.min(cap(),s.stamina+st);return [s.hp-a,s.stamina-b]}
 // consumable use on the map / in the village (battle use is in BattleItems below)
 function useConsumable(k){let d=AD.CONSUMABLES[k];if(!d||!hasItem(k))return '';if(d.use==='ต่อสู้')return d.name+' ใช้ได้เฉพาะระหว่างต่อสู้';let [h,st]=heal(d.hp||0,d.stamina||0);addItem(k,-1);save();render();return `ใช้ ${d.name} · HP +${h} · แรง +${st}`}

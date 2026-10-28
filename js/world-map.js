@@ -539,8 +539,9 @@
     const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
     const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
     for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * 10) / 10) }
-    const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge')).join(',');
-    fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}&title=${encodeURIComponent(title)}`;
+    const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1)).join(',');
+    const fighters = S.party.filter(p => p.hp > 0), hc = window.Progression ? Progression.heroCombat(WS.game()) : { atk: 12, def: 3 };   /* v94.06 F2: level + weapon */
+    fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}&hatk=${hc.atk}&hdef=${hc.def}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
@@ -557,6 +558,14 @@
     if (res.outcome === 'win') {
       S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       const loot = dropLoot(foe, here.biome, dang, o.boss);
+      /* v94.06 F2: experience — the hero and the companions who fought */
+      if (window.Progression) {
+        const xp = Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }), ups = Progression.gainHero(WS.game(), xp);
+        log('✦ EXP +' + xp + (ups.length ? ' · เลเวลอัป! Lv.' + ups[ups.length - 1] + ' (HP สูงสุด ' + S.maxHp + ')' : ''));
+        if (ups.length) toast('LEVEL UP! Lv.' + ups[ups.length - 1]);
+        for (const p of fighters) { const m = S.party.find(x => x.key === p.key); if (!m) continue; const u = Progression.gainAlly(m, Math.round(xp * .8)); if (u.length) log(m.name + ' เลเวลอัป Lv.' + u[u.length - 1] + ' (HP ' + m.max + ')') }
+        WS.commit();
+      }
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : '')); toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
     } else if (res.outcome === 'flee') {
       log('หนีออกมาได้'); if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal() } S.hp = Math.max(1, S.hp);

@@ -7,7 +7,7 @@ const MIN_PER_TURN=5,FATIGUE_PER_TURN=2;
 let session=null;
 const layer=()=>document.getElementById('tacticsLayer'),$id=id=>document.getElementById(id);
 function equippedWeapon(){let g=typeof gear==='function'?gear():null;return g&&TacticsCore.WEAPONS[g.kind]?g.kind:'unarmed'}
-function syncBack(st){let h=st.leader||st.hero;s.hp=Math.max(0,Math.min(60,h.hp));s.stamina=Math.max(0,Math.min(cap(),Math.round(h.stamina)));save()}
+function syncBack(st){let h=st.leader||st.hero;s.hp=Math.max(0,Math.min(s.maxHp||60,h.hp));s.stamina=Math.max(0,Math.min(cap(),Math.round(h.stamina)));save()}
 function clockText(){let left=1200-s.minutes;return `เวลา ${clock(s.minutes)} · เหลือ ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')} ชม. · จบเทิร์นละ ${MIN_PER_TURN} นาที`}
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 function claimFieldDrops(st){let mats=s.village.materials;for(let d of st.drops||[])if(d.material&&!d.claimed&&(d.collected||st.outcome==='win')){mats[d.material]=(mats[d.material]||0)+d.amount;d.claimed=true}}
@@ -20,7 +20,7 @@ function rewardHtml(r){let m=Object.entries(r.mats).filter(([,n])=>n>0).map(([k,
  return `<div class="exp-reward"><p><b>◉ ${r.coins} เหรียญ</b></p><p>${m||'ไม่มีวัตถุดิบ'}</p><p>✦ EXP ตัวละคร +${r.xp}</p>${r.comp.length?'<h3>เพื่อนร่วมทีม</h3>'+r.comp.map(c=>`<p>${esc(c.name)} +${c.xp} EXP${c.levelUp?' · <b>เลเวลอัป! Lv.'+c.level+'</b>':''}</p>`).join(''):''}</div>`}
 window.TACTICS_BRIDGE={
  visible:()=>!!layer()&&!layer().hidden,
- prepare(st){st.hero.hp=s.hp;st.hero.maxHp=60;st.hero.stamina=Math.min(100,s.stamina);st.rewarded=false;if(st.environment)st.environment.minutes=s.minutes},
+ prepare(st){st.hero.hp=s.hp;st.hero.maxHp=s.maxHp||60;st.hero.stamina=Math.min(100,s.stamina);st.rewarded=false;if(st.environment)st.environment.minutes=s.minutes},
  deckConfig(){try{return s.village?.tacticDecks?TacticsDecks.validate(s.village.tacticDecks):null}catch(e){return null}},
  unitDecks(){let out={};for(let [k,v] of Object.entries(s.village?.unitDecks||{}))try{out[k]=TacticsDecks.validate(v)}catch(e){}return out},
  // Expedition → fixed encounter + recruited companions. Training → companions (if any) only matter in the test 5v10 mode.
