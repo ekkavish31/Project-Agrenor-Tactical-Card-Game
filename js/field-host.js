@@ -1,7 +1,7 @@
 /* v92.13 · battle-field.html — a light, code-drawn battle field for journeys on the world map (no village art to load).
    It plays host to js/town-battle.js by providing the few globals the village page normally gives it:
    cv, W, H, scale, zoom, pan, WORLD_W, WORLD_H, project(u,v), inv(x,y), world(e), locations, center(o), blockedBase(u,v), TownPaint.matsAt(points).
-   The field is an 11×11 lattice square (same lattice as the village) filled per biome with blocking props (trees, rocks, water, pillars),
+   The field is a (2R+1)² lattice square (R = ?r, default 7) (same lattice as the village) filled per biome with blocking props (trees, rocks, water, pillars),
    slow ground (mud, snow drifts, scree, sand) and cover (tall grass, reeds, bushes), plus a darker frame of scenery around it.
    ?biome=forest|grass|hills|swamp|snow|sand · ?night=1 · ?seed= · ?poi=den|mine|ruin (boss dressing) */
 'use strict';
@@ -29,7 +29,7 @@ const FIELD = (function () {
     snow: { block: .1, slow: .2, cover: .05, props: ['pine', 'rock'], slowMat: 'snow', coverMat: 'moss' },
     sand: { block: .07, slow: .12, cover: .06, props: ['rock', 'cactus'], slowMat: 'sand', coverMat: 'clover' }
   }[biome];
-  const R = 5, cells = new Map(), key = (u, v) => u + ',' + v;
+  const R = Math.max(4, Math.min(9, +FQ.get('r') || 7)), cells = new Map(), key = (u, v) => u + ',' + v;   // v92.15: 15×15 by default for party melees
   for (let u = -R; u <= R; u++) for (let v = -R; v <= R; v++) {
     const x = rnd(); let k = 'normal', prop = null;
     if (x < MIX.block) { k = 'blocked'; prop = MIX.props[Math.floor(rnd() * MIX.props.length)] }
@@ -40,8 +40,8 @@ const FIELD = (function () {
   const poi = FQ.get('poi');
   if (poi) for (const c of cells.values()) if ((Math.abs(c.u) === R || Math.abs(c.v) === R) && rnd() < .35) { c.k = 'blocked'; c.prop = poi === 'ruin' ? 'pillar' : poi === 'mine' ? 'boulder' : 'deadtree' }
   /* keep the two start corners open and carve a lane between them so the fight can always happen */
-  const S = 3, starts = [[-S, S], [S, -S]];
-  for (const [su, sv] of starts) for (let du = -1; du <= 1; du++) for (let dv = -1; dv <= 1; dv++) { const c = cells.get(key(su + du, sv + dv)); if (c && c.k === 'blocked') { c.k = 'normal'; c.prop = null } }
+  const S = R >= 7 ? 4 : 3, starts = [[-S, S], [S, -S]], OPEN = R >= 7 ? 2 : 1;   // each side's gathering area stays open
+  for (const [su, sv] of starts) for (let du = -OPEN; du <= OPEN; du++) for (let dv = -OPEN; dv <= OPEN; dv++) { const c = cells.get(key(su + du, sv + dv)); if (c && c.k === 'blocked') { c.k = 'normal'; c.prop = null } }
   const reach = () => { const seen = new Set([key(-S, S)]), q = [[-S, S]]; while (q.length) { const [u, v] = q.pop(); for (const [du, dv] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const c = cells.get(key(u + du, v + dv)); if (!c || c.k === 'blocked' || seen.has(key(c.u, c.v))) continue; seen.add(key(c.u, c.v)); q.push([c.u, c.v]) } } return seen.has(key(S, -S)) };
   if (!reach()) { let u = -S, v = S; while (u !== S || v !== -S) { if (u !== S && (v === -S || rnd() < .5)) u++; else v--; const c = cells.get(key(u, v)); if (c.k === 'blocked') { c.k = rnd() < .5 ? 'slow' : 'normal'; c.prop = null } } }
   /* scenery beyond the field (never part of the fight) */

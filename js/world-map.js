@@ -30,15 +30,18 @@
   const toWorld = (x, y) => ({ x: (x - W / 2) / cam.z + cam.x, y: (y - H / 2) / cam.z + cam.y });
 
   /* ---------- save ---------- */
+  /* the travelling party (old companion roster): HP carries over between fights; a fallen companion gets up wounded after the fight */
+  const PARTY0 = () => [{ key: 'bram', name: 'บรัม', hp: 54, max: 54 }, { key: 'luna', name: 'ลูน่า', hp: 44, max: 44 }, { key: 'kier', name: 'เคียร์', hp: 48, max: 48 }];
+  function healParty(f) { for (const p of S.party) p.hp = Math.min(p.max, f >= 1 ? p.max : p.hp + Math.round(p.max * f)) }
   function fresh(seed) {
     world = G.generate(seed);
-    S = { seed: world.seed, known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], day: 1, hour: 8, fatigue: 0, food: 18, gold: 30, hp: 60, maxHp: 60, potions: 1,
+    S = { seed: world.seed, known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], day: 1, hour: 8, fatigue: 0, food: 18, party: PARTY0(), gold: 30, hp: 60, maxHp: 60, potions: 1,
       dest: null, cleared: {}, done: {}, battles: 0, steps: 0, log: [] };
     reveal(); save();
   }
   function load() {
     if (Q.get('new') === '1') { fresh(+Q.get('seed') || undefined); history.replaceState(null, '', location.pathname); return }
-    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = s; S.fatigue ??= 0; reveal(); return } } catch (e) { }
+    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = s; S.fatigue ??= 0; S.party ??= PARTY0(); reveal(); return } } catch (e) { }
     fresh(+Q.get('seed') || undefined);
   }
   function save() { try { localStorage.setItem(SAVE, JSON.stringify(S)) } catch (e) { } }
@@ -273,6 +276,7 @@
     const hh = Math.floor(S.hour), mm = S.hour % 1 ? '30' : '00', icon = nightness() > .5 ? '🌙' : '☀';
     hud.innerHTML = `<h1>🗺 Agrenor</h1><div class="sub">วันที่ ${S.day} · ${icon} ${String(hh).padStart(2, '0')}:${mm} · ${esc(G.BIOME[t.biome].name)}${t.poi ? ' · ' + esc(t.poi.name) : ''}</div>
       <div class="row"><span>HP</span><span>${S.hp}/${S.maxHp}</span></div><div class="bar"><i style="width:${S.hp / S.maxHp * 100}%;background:#6fd18a"></i></div>
+      <div class="row" style="flex-wrap:wrap;gap:4px">${S.party.map(p => `<span title="${esc(p.name)}" style="font-size:11px;background:#0004;border-radius:5px;padding:1px 5px;${p.hp < p.max * .3 ? 'color:#ff9a7a' : ''}">${esc(p.name)} ${p.hp}/${p.max}</span>`).join('')}</div>
       <div class="row"><span>ความเหนื่อย</span><span style="color:${S.fatigue >= 80 ? '#ff8a6a' : '#e8d8a8'}">${S.fatigue}%${S.fatigue >= 80 ? ' ⚠' : ''}</span></div><div class="bar"><i style="width:${S.fatigue}%;background:${S.fatigue >= 80 ? '#e2705f' : '#c9a24a'}"></i></div>
       <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>
       <div class="row"><span>ความลึกของหมอก</span><span style="color:#ff9a7a">${stars}</span></div>
@@ -427,7 +431,7 @@
       passTime(Math.round(hours / 2)); S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .25)); S.fatigue = Math.round(S.fatigue / 2); busy = false;
       log('ถูกบุกค่ายกลางดึก!'); await battle(pickFoe(here), dang, { ambush: true, camp: true }); busy = true;
       if (S.pos.c === here.c && S.pos.r === here.r && S.hp > 0) { passTime(Math.round(hours / 2)); S.fatigue = 0; log('หลังไล่ศัตรูไปได้ ก็นอนต่อจนพอแรง') }
-    } else { passTime(hours); S.fatigue = 0; S.hp = fed ? S.maxHp : Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .3)); log('พักแรม ' + (fed ? 'HP เต็ม' : 'HP +30%') + ' หายเหนื่อย') }
+    } else { passTime(hours); S.fatigue = 0; S.hp = fed ? S.maxHp : Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .3)); healParty(fed ? 1 : .3); log('พักแรม ' + (fed ? 'ทีม HP เต็ม' : 'HP +30%') + ' หายเหนื่อย') }
     reveal(); busy = false; hudSync(); save();
   }
   async function goHome() {
@@ -438,7 +442,7 @@
     if (v) walk(p);
   }
   async function arriveHome() {
-    S.hp = S.maxHp; S.food = Math.max(S.food, 10); log('กลับถึงหมู่บ้าน พักฟื้นเต็มที่'); save(); hudSync();
+    S.hp = S.maxHp; healParty(1); S.food = Math.max(S.food, 10); log('กลับถึงหมู่บ้าน พักฟื้นเต็มที่'); save(); hudSync();
     const left = world.dests.filter(d => !S.done[d.id]).length;
     await modal(`<h2>🏠 หมู่บ้านเฟิร์นเวล</h2><p>ชาวบ้านออกมารับ เติมเสบียงให้ครบ ${S.food} ห่อ HP ฟื้นเต็ม</p><p>${left ? 'ยังมีข่าวลือรออยู่อีก ' + left + ' แห่งที่กระดานภารกิจ' : 'ทุกข่าวลือถูกพิสูจน์แล้ว — ลองสร้าง “โลกใหม่” ได้'}</p>`);
     if (S.dest && S.done[S.dest]) S.dest = null; hudSync();
@@ -459,7 +463,12 @@
     const fr = document.createElement('iframe'); fr.id = 'wmBattle';
     const title = (o.boss ? 'บอส · ' : elite ? 'ยอดฝีมือ · ' : '') + (BOSS_NAME[foe] && o.boss ? BOSS_NAME[foe] : '');
     const poi = o.boss ? (destOf()?.id || '') : '';
-    fr.src = `battle-field.html?battle=1&embed=1&biome=${here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}&title=${encodeURIComponent(title)}`;
+    /* a group: more monsters deeper in the fog, at night and in ambushes; the boss brings two of the local monsters */
+    const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
+    const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
+    for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * 10) / 10) }
+    const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max).join(',');
+    fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
@@ -469,13 +478,14 @@
     const res = await resP;
     fr.classList.remove('on'); await wait(380); fr.remove();
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
+    for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ') } } }
     if (res.outcome === 'win') {
       S.battles++; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '')); toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : ''));
     } else if (res.outcome === 'flee') {
       log('หนีออกมาได้'); if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal() } S.hp = Math.max(1, S.hp);
     } else {
-      const lost = Math.floor(S.gold / 2); S.gold -= lost; S.hp = Math.ceil(S.maxHp / 2); S.pos = { ...world.home }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal(); follow();
+      const lost = Math.floor(S.gold / 2); S.gold -= lost; S.hp = Math.ceil(S.maxHp / 2); healParty(.5); S.pos = { ...world.home }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal(); follow();
       log('พ่ายแพ้… ถูกพากลับหมู่บ้าน เสีย ' + lost + ' 💰'); await modal(`<h2>💀 หมดสติ</h2><p>พรานผ่านมาเจอคุณนอนอยู่กลางทาง พากลับถึงหมู่บ้าน ข้าวของหล่นหายไป <b>${lost} เหรียญ</b></p><p>ทางที่เคยเดินยังจำได้ — ลองใหม่อีกครั้ง</p>`);
     }
     busy = false; hudSync(); save(); return res.outcome;

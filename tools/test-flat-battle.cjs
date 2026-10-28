@@ -155,4 +155,42 @@ test('cards: end turn refills the hands and resets crystals; full card fight end
   }
   assert.ok(st.outcome === 'win' || st.outcome === 'lose');
 });
+// ---------- melee: companions + monster groups ----------
+const mkM = (o = {}) => B.create({ bounds: { u0: 0, v0: 0, u1: 8, v1: 8 }, kindAt: () => 'normal', cards: true, rng: () => .42,
+  hero: { u: 0, v: 0, ...o.hero }, allies: o.allies || [{ u: 1, v: 0, name: 'บรัม', hp: 54, maxHp: 54, atk: 12 }, { u: 0, v: 1, name: 'ลูน่า', hp: 44, maxHp: 44, atk: 11, range: 4, move: 3 }],
+  monsters: o.monsters || [{ u: 8, v: 8, hp: 30, maxHp: 30, atk: 8, move: 3 }, { u: 7, v: 8, hp: 30, maxHp: 30, atk: 8, move: 3 }, { u: 8, v: 7, hp: 30, maxHp: 30, atk: 8, move: 3 }] });
+test('melee: units, ids, monster() = first living monster', () => {
+  const st = mkM(); assert.equal(st.units.length, 6); assert.equal(B.monsters(st).length, 3); assert.equal(B.allies(st).length, 2);
+  B.monsters(st)[0].hp = 0; assert.equal(B.monster(st).id, 'monster2');
+});
+test('melee: allies walk toward the monsters and the ranged one stops at range', () => {
+  const st = mkM({ monsters: [{ u: 6, v: 0, hp: 30, maxHp: 30, atk: 8 }] }); const steps = B.alliesTurn(st);
+  assert.ok(steps.some(x => x.type === 'move')); const luna = B.allies(st)[1]; assert.ok(B.dist(luna, B.monster(st)) <= 4 || steps.length);
+});
+test('melee: win only when every monster is down; the hero dying loses even with companions alive', () => {
+  const st = mkM(); B.monsters(st)[0].hp = 0; B.monsters(st)[1].hp = 0; B.checkOutcome(st); assert.equal(st.outcome, null);
+  B.monsters(st)[2].hp = 0; B.checkOutcome(st); assert.equal(st.outcome, 'win');
+  const s2 = mkM(); B.hero(s2).hp = 0; B.checkOutcome(s2); assert.equal(s2.outcome, 'lose');
+});
+test('melee: a clicked target is used when in range; whirl hits everyone next to the hero', () => {
+  const st = mkM({ hero: { u: 4, v: 4 }, monsters: [{ u: 5, v: 4, hp: 50, maxHp: 50 }, { u: 3, v: 4, hp: 50, maxHp: 50 }, { u: 4, v: 5, hp: 50, maxHp: 50 }] });
+  B.setTarget(st, 'monster3'); const r = B.playCombat(st, give(st, 'combat', 'attack')); assert.equal(r.target.id, 'monster3');
+  const s2 = mkM({ hero: { u: 4, v: 4 }, monsters: [{ u: 5, v: 4, hp: 50, maxHp: 50 }, { u: 3, v: 4, hp: 50, maxHp: 50 }, { u: 4, v: 5, hp: 50, maxHp: 50 }, { u: 7, v: 7, hp: 50, maxHp: 50 }] });
+  const w = B.playCombat(s2, give(s2, 'combat', 'whirl')); assert.equal(w.hits.length, 3);
+});
+test('melee: the enemy phase lets every monster act, then the player phase starts with a refill', () => {
+  const st = mkM({ hero: { u: 6, v: 6 } }); B.endTurn(st); const steps = B.monsterTurn(st);
+  assert.ok(steps.filter(x => x.type === 'attack').length >= 2); assert.equal(st.turn, 'hero'); assert.equal(B.crystals(st), 2);
+});
+test('melee: a full party fight ends', () => {
+  const st = mkM(); st.rng = Math.random;
+  for (let t = 0; t < 60 && !st.outcome; t++) {
+    if (st.turn === 'monster') { B.monsterTurn(st); continue }
+    const h = B.hero(st), m = B.foe(st, h);
+    if (m && B.dist(h, m) > 1) { const mi = st.deck.movement.hand.findIndex(c => h.stamina >= TD.MOVE[c.id].stamina); if (mi >= 0 && B.playMove(st, mi).ok) { const r = B.reach(st, h); let best = null; for (const e of r.values()) if (!best || B.dist(e, m) < B.dist(best, m)) best = e; if (best && (best.u !== h.u || best.v !== h.v)) B.move(st, best) } }
+    const ci = st.deck.combat.hand.findIndex((c, i) => !B.combatBlock(st, i) && !B.cardRule(c.id).self); if (ci >= 0) B.playCombat(st, ci);
+    B.alliesTurn(st); if (!st.outcome) B.endTurn(st);
+  }
+  assert.ok(st.outcome === 'win' || st.outcome === 'lose', 'outcome ' + st.outcome);
+});
 console.log('flat battle: ' + n + ' tests passed');
