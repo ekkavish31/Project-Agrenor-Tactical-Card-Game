@@ -13,19 +13,25 @@
 (function () {
   'use strict';
   const Q = new URLSearchParams(location.search), ON = Q.get('battle') === '1';
-  if (!ON) { window.TownBattle = { active: () => false }; return }
-  const V = '92.11';
+  if (!ON) {
+    window.TownBattle = { active: () => false };
+    /* v92.12: the way out of the village — a button to the world map (not in the editor) */
+    if (Q.get('edit') !== '1') addEventListener('DOMContentLoaded', () => { const a = document.createElement('a'); a.href = 'world-map.html'; a.textContent = '🗺 ออกเดินทาง'; a.title = 'แผนที่โลก Agrenor'; a.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:30;padding:9px 14px;border-radius:10px;background:#c9893a;color:#fff;text-decoration:none;font:600 14px VillageThai,system-ui,sans-serif;box-shadow:0 6px 18px #0008'; document.body.append(a) });
+    return;
+  }
+  const V = '92.12';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
   const MON = {
     bandit: { name: 'โจรป่า', hp: 34, move: 3, atk: 8, scale: 1, fx: 'sword', img: 'bandit' },
-    wolf: { name: 'หมาป่า', hp: 26, move: 4, atk: 7, scale: .9, fx: 'knife', img: 'ice-wolf' },
-    slime: { name: 'สไลม์แร่', hp: 40, move: 2, atk: 8, scale: .85, fx: 'blunt', img: 'bog-slime' },
+    wolf: { name: 'หมาป่า', hp: 26, move: 4, atk: 7, scale: .9, fx: 'knife', img: 'wolf' },
+    slime: { name: 'สไลม์แร่', hp: 40, move: 2, atk: 8, scale: .85, fx: 'blunt', img: 'slime' },
     kobold: { name: 'โคโบลด์ขุดแร่', hp: 30, move: 3, atk: 9, scale: .9, fx: 'blunt', img: 'kobold' },
     golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem' }
   };
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
+  const EMBED = Q.get('embed') === '1', TITLE = Q.get('title') || '', HHP = +Q.get('hhp') || 0, HMAX = +Q.get('hmax') || 60;
   const CINE = Q.get('cine') !== '0', OLDPOSE = Q.get('oldposes') === '1', HPX = +Q.get('hp') || 1.6;
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null;
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
@@ -34,17 +40,20 @@
   const imgs = new Map(); function im(src) { let i = imgs.get(src); if (!i) { i = new Image(); i.src = src; imgs.set(src, i) } return i.complete && i.naturalWidth ? i : null }
 
   /* ---------- loading (only on ?battle=1, so the plain village stays light) ---------- */
-  function loadScript(src) { return new Promise(res => { const s = document.createElement('script'); s.src = src + '?v=' + V; s.onload = () => res(true); s.onerror = () => res(false); document.head.append(s) }) }
+  /* all battle scripts are requested at once; async=false keeps their execution order */
+  function loadScript(src) { return new Promise(res => { const s = document.createElement('script'); s.src = src + '?v=' + V; s.async = false; s.onload = () => res(true); s.onerror = () => res(false); document.head.append(s) }) }
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    for (const s of ['js/tactics-decks.js', 'js/flat-battle.js', 'js/monster-animation.js', 'js/battle-vfx.js', 'js/battle-polish.js', 'js/card-design.js', 'js/card-studio.js']) {
-      const want = { 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio' }[s];
-      if (!window[want]) await loadScript(s);
-    }
+    const want = { 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio' };
+    await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([MK], ['idle', 'walk', 'windup', 'strike', 'hit', 'down']);
   }
+  /* embedded (world map): a black veil until the arena is ready, then tell the parent */
+  let veil0 = null;
+  if (EMBED) { veil0 = document.createElement('div'); veil0.style.cssText = 'position:fixed;inset:0;z-index:100;background:#07080c;display:flex;align-items:center;justify-content:center;color:#ffe2a8;font:italic 800 22px system-ui,sans-serif;letter-spacing:3px;transition:opacity .4s'; veil0.textContent = 'PREPARING BATTLE…'; addEventListener('DOMContentLoaded', () => document.body.append(veil0)) }
+  function arenaReady() { if (veil0) { veil0.style.opacity = '0'; setTimeout(() => veil0?.remove(), 450) } if (EMBED) try { parent.postMessage({ type: 'agrenor-battle-ready', warm: Q.get('warm') === '1' }, '*') } catch (e) { } }
   boot();
 
   /* ---------- arena ---------- */
@@ -66,7 +75,7 @@
     const spot = (cu0, cv0) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.hypot(u - cu0, v - cv0); if (d < bd) { bd = d; best = { u, v } } } return best };
     const gap = Math.min(r - 1, 3), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites ~6 cells apart: contact by turn 1–2
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', cards: true,
-      hero: { ...hs, name: window.heroName?.() || 'ฮีโร่' }, monster: { ...ms, name: MT.name, hp: Math.round(MT.hp * HPX), maxHp: Math.round(MT.hp * HPX), atk: MT.atk, move: MT.move } });
+      hero: { ...hs, name: window.heroName?.() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX }, monster: { ...ms, name: (TITLE ? TITLE + ' ' : '') + MT.name, hp: Math.round(MT.hp * HPX), maxHp: Math.round(MT.hp * HPX), atk: MT.atk, move: MT.move } });
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle' }
     FB.hero(st).dir = dirTo(FB.hero(st), FB.monster(st)); FB.monster(st).dir = dirTo(FB.monster(st), FB.hero(st));
     st.arena = { cu, cv, r };
@@ -135,6 +144,7 @@
   /* ---------- styles ---------- */
   const css = document.createElement('style'); css.textContent = `
   #status,#help,#credit,.toolbar,#menuBtn{display:none!important}
+  ${EMBED ? '.floatBtn,#townTools,#hudTop,.town-hud,.townux-top{display:none!important}' : ''}
   #fbHud{position:fixed;left:14px;top:14px;z-index:40;width:260px;background:#1b302af2;border:1px solid #b9c48a66;border-radius:12px;padding:10px 12px;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 30px #0008}
   #fbHud button{font:inherit;background:#c9893a;color:#fff;border:0;border-radius:7px;padding:6px 9px;cursor:pointer}#fbHud button:disabled{opacity:.4;cursor:default}
   #fbHud .bar{height:7px;background:#0006;border-radius:4px;overflow:hidden;margin:2px 0 6px;position:relative}#fbHud .bar i{display:block;height:100%;transition:width .35s}
@@ -214,13 +224,14 @@
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
     d.innerHTML = `<b style="color:#f6d79b">⚔ สนามรบ · ไพ่</b><div id="fbTurn" style="margin:4px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd">จบเทิร์น</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button><button id="fbNew">เริ่มใหม่</button></div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd">จบเทิร์น</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button>${EMBED ? '<button id="fbFlee">🏃 หนี</button><button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : '<button id="fbNew">เริ่มใหม่</button>'}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
       <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">ใช้ไพ่เดิน → คลิกช่องฟ้า · ใช้ไพ่สู้เมื่อศัตรูอยู่ในระยะ<br>คริสตัล 2 เม็ด/เทิร์น · ไพ่จั่วเติมตอนเริ่มเทิร์น<br>ช่อง: น้ำตาล เดินช้า · เขียว กำบัง −30% · แดง กีดขวาง</div>`;
     document.body.append(d); hud = d;
     d.querySelector('#fbEnd').onclick = () => endHeroTurn();
     d.querySelector('#fbDis').onclick = () => setDiscard(!discardMode);
-    d.querySelector('#fbNew').onclick = () => { document.querySelectorAll('.fb-show,.fb-fly,#fbBar').forEach(e => e.remove()); build(); userCam = false; cam.set = false; startTurnShow(true) };
+    if (EMBED) { d.querySelector('#fbFlee').onclick = () => { if (!busy && st.turn === 'hero' && !st.outcome) report('flee') }; d.querySelector('#fbBack').onclick = () => report(st.outcome) }
+    if (!EMBED) d.querySelector('#fbNew').onclick = () => { document.querySelectorAll('.fb-show,.fb-fly,#fbBar').forEach(e => e.remove()); build(); userCam = false; cam.set = false; startTurnShow(true) };
   }
   function hudSync() {
     if (!hud || !st) return;
@@ -449,7 +460,11 @@
     if (st.outcome) { refresh(); finish(); return }
     await startTurnShow(false);
   }
-  function finish() { hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
+  /* embedded in the world map: hand the result back (also automatically a moment after the end) */
+  let reported = false;
+  function report(outcome) { if (reported || !EMBED) return; reported = true; try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp }, '*') } catch (e) { } }
+  function finish() {
+    if (EMBED) { const b = hud?.querySelector('#fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
   function flash(msg) { texts.push({ u: FB.hero(st).vu, v: FB.hero(st).vv, txt: msg, col: '#f6d79b', t0: now(), small: true }) }
   function floatText(unit, txt, col, small, big) { texts.push({ u: unit.vu, v: unit.vv, txt, col, t0: now(), small, big, dx: (Math.random() - .5) * 18 }) }
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }
@@ -559,7 +574,7 @@
   function draw(g, t0) {
     if (!ready || typeof locations === 'undefined' || !locations.length) return;
     const t = now();
-    if (!st) { build(); hudMake(); handMake(); cam.set = false; focusCamera(true); startTurnShow(true) }
+    if (!st) { build(); hudMake(); handMake(); cam.set = false; focusCamera(true); arenaReady(); if (Q.get('warm') !== '1') startTurnShow(true) }
     step(t);
     g.save();
     for (const [key, k] of cells) {
