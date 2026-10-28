@@ -1,4 +1,4 @@
-/* v92.08 · Flat-grid card battle (plan: docs/PLAN.md). v94: heights below.
+/* v92.08 · Flat-grid card battle (plan: docs/TODO.md). v94: heights below.
    v92.15: melee — the hero plus companions (create({allies:[…]}), AI-controlled, act at the end of the player phase via alliesTurn) against a
    group of monsters (create({monsters:[…]}); each acts in monsterTurn). Win = every monster down; lose = the hero down (companions can fall).
    Cards (create({cards:true})): the old deck contents (TacticsDecks: 4 move cards, 6 combat cards) drive the hero — a move card adds its points to
@@ -103,8 +103,8 @@
   /* ---------- heights (v94) ---------- */
   const lv = (st, u, v) => (st.levelAt ? st.levelAt(u, v) || 0 : 0);
   /* may `unit` step from (fu,fv) onto (tu,tv)? (unit null = any walker without the climb card) */
-  function climbOk(st, unit, fu, fv, tu, tv) { const d = lv(st, tu, tv) - lv(st, fu, fv), c = unit?.climb ? 1 : 0; return d > 0 ? d <= 1 + c : -d <= 2 + c }
-  const upCost = (st, unit, fu, fv, tu, tv) => unit?.climb ? 0 : Math.max(0, lv(st, tu, tv) - lv(st, fu, fv));
+  function climbOk(st, unit, fu, fv, tu, tv) { if (unit?.fly) return true; const d = lv(st, tu, tv) - lv(st, fu, fv), c = unit?.climb ? 1 : 0; return d > 0 ? d <= 1 + c : -d <= 2 + c }
+  const upCost = (st, unit, fu, fv, tu, tv) => unit?.climb || unit?.fly ? 0 : Math.max(0, lv(st, tu, tv) - lv(st, fu, fv));
   const gap = (st, a, b) => lv(st, a.u, a.v) - lv(st, b.u, b.v);      // > 0: a stands higher
   function heightMult(st, a, t) { const d = Math.max(-3, Math.min(3, gap(st, a, t))); if (!d) return 1; const k = (d > 0 && a.perch) || (d < 0 && t.perch) ? .2 : .1; return Math.max(.4, 1 + k * d) }
   /* ---------- Kaelam elements (v94.02, js/elements.js): the attack's element vs the target's element ---------- */
@@ -117,7 +117,9 @@
   function elMult(st, el, tgt, notes) { const W = EW(); if (!W || !el) return 1; const m = W.mult(el, elOf(tgt)); if (m !== 1) notes.push(W.note(el, elOf(tgt))); if (W.isSecret(el)) W.reveal(el); return m }
   const heightNote = m => m > 1 ? 'ที่สูง +' + Math.round((m - 1) * 100) + '%' : m < 1 ? 'ต่ำกว่า −' + Math.round((1 - m) * 100) + '%' : '';
   /* a melee blow (range 1) needs the two cells within one level of each other */
-  const meleeOk = (st, a, t) => Math.abs(gap(st, a, t)) <= 1;
+  const meleeOk = (st, a, t) => Math.abs(gap(st, a, t)) <= (a.fly || t.fly ? 3 : 1);   // flyers reach any height
+  /* a cell at the top of a 2+ drop: standing there invites a shove off the cliff */
+  const ledge = (st, u, v) => DIRS.some(([du, dv]) => inside(st, u + du, v + dv) && lv(st, u, v) - lv(st, u + du, v + dv) >= 2);
 
   /* cells `unit` can reach with `budget` movement points → Map key → { u, v, cost, from } */
   function reach(st, unit, budget = st.mp) {
@@ -230,7 +232,7 @@
       for (const o of opp) { const f = distField(st, o), d = f.get(key(u.u, u.v)); const sc = (d === undefined ? 1e6 : d) + o.hp / 200; if (sc < best) { best = sc; tgt = o; field = f } }
       const r = reach(st, u, u.move), dOf = (a, b) => { const x = field.get(key(a, b)); return x === undefined ? 1e6 : x };
       let bestE = null, bestD = dOf(u.u, u.v), bestC = 0;
-      for (const e of r.values()) { const up = lv(st, e.u, e.v) - lv(st, tgt.u, tgt.v), inR = dist(e, tgt) <= u.range && (u.range > 1 || Math.abs(up) <= 1), d = inR ? -100 + (u.range > 1 ? -dist(e, tgt) : 0) - 2 * Math.max(-2, Math.min(3, up)) : dOf(e.u, e.v);   /* v94: in reach, prefer the higher cell */ if (d < bestD || (d === bestD && e.cost < bestC)) { bestE = e; bestD = d; bestC = e.cost } }
+      for (const e of r.values()) { const up = lv(st, e.u, e.v) - lv(st, tgt.u, tgt.v), inR = dist(e, tgt) <= u.range && (u.range > 1 || Math.abs(up) <= 1), d = inR ? -100 + (u.range > 1 ? -dist(e, tgt) : 0) - 2 * Math.max(-2, Math.min(3, up)) + (!u.fly && ledge(st, e.u, e.v) ? 1.5 : 0) : dOf(e.u, e.v) + (!u.fly && ledge(st, e.u, e.v) ? .5 : 0);   /* v94: in reach, prefer the higher cell · v94.03: keep off cliff edges */ if (d < bestD || (d === bestD && e.cost < bestC)) { bestE = e; bestD = d; bestC = e.cost } }
       if (bestE && (bestE.u !== u.u || bestE.v !== u.v)) { const path = pathTo(r, bestE), pv = path[path.length - 2] || u; u.face = faceOf(pv, bestE); u.u = bestE.u; u.v = bestE.v; st.log.push(u.name + ' เดิน'); steps.push({ unit: u, type: 'move', path }) }
       tgt = targets(st, u)[0];
     }
@@ -246,7 +248,7 @@
       st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
       let counter = 0; if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; counter = hurt(st, a, 12).damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
       /* v94: heavy monsters (shove) knock a target standing at a ledge off it — down 2+ levels costs 5 HP per level */
-      let fall = null; if (st.cards && a.shove && alive(t) && dist(a, t) <= 1 && st.levelAt) { const fu = t.u, fv = t.v, du = Math.sign(t.u - a.u), dv = du ? 0 : Math.sign(t.v - a.v), nu = t.u + du, nv = t.v + dv; if (free(st, nu, nv, t) && lv(st, fu, fv) - lv(st, nu, nv) >= 2) { const drop = lv(st, fu, fv) - lv(st, nu, nv), fd = Math.min(t.hp, 5 * drop); t.u = nu; t.v = nv; t.hp -= fd; fall = { from: { u: fu, v: fv }, drop, damage: fd }; r.notes.push('ผลักตก ' + drop + ' ระดับ −' + fd); st.log.push(a.name + ' ผลัก ' + t.name + ' ตกลงไป −' + fd) } }
+      let fall = null; if (st.cards && a.shove && alive(t) && !t.fly && dist(a, t) <= 1 && st.levelAt) { const fu = t.u, fv = t.v, du = Math.sign(t.u - a.u), dv = du ? 0 : Math.sign(t.v - a.v), nu = t.u + du, nv = t.v + dv; if (free(st, nu, nv, t) && lv(st, fu, fv) - lv(st, nu, nv) >= 2) { const drop = lv(st, fu, fv) - lv(st, nu, nv), fd = Math.min(t.hp, 5 * drop); t.u = nu; t.v = nv; t.hp -= fd; fall = { from: { u: fu, v: fv }, drop, damage: fd }; r.notes.push('ผลักตก ' + drop + ' ระดับ −' + fd); st.log.push(a.name + ' ผลัก ' + t.name + ' ตกลงไป −' + fd) } }
       return { ok: true, damage: r.damage, target: t, notes: r.notes, crit, counter, fall } })();
     st.acted = keep.acted; st.mp = keep.mp; st.turn = keep.turn; st.cur = keep.cur; checkOutcome(st);
     return at;
@@ -360,7 +362,7 @@
     if (rule.guardAfter) { h.guard = Math.max(h.guard, rule.guardAfter); out.guard = h.guard }
     const total = out.hits.reduce((a, x) => a + x.damage, 0);
     st.log.push(h.name + ' ' + name + ' −' + total + (out.hits[0]?.notes.length ? ' (' + out.hits[0].notes.join(', ') + ')' : ''));
-    if (alive(t) && (rule.push || rule.pull)) { const fu = t.u, fv = t.v; out.moved = shove(st, t, h, rule.push ? 1 : -1); if (out.moved) { const drop = lv(st, fu, fv) - lv(st, t.u, t.v); if (drop >= 2) { const fd = Math.min(t.hp, 5 * drop); t.hp -= fd; out.fall = { drop, damage: fd }; st.log.push(t.name + ' ตกลง ' + drop + ' ระดับ −' + fd) } } }
+    if (alive(t) && (rule.push || rule.pull)) { const fu = t.u, fv = t.v; out.moved = shove(st, t, h, rule.push ? 1 : -1); if (out.moved) { const drop = lv(st, fu, fv) - lv(st, t.u, t.v); if (drop >= 2 && !t.fly) { const fd = Math.min(t.hp, 5 * drop); t.hp -= fd; out.fall = { drop, damage: fd }; st.log.push(t.name + ' ตกลง ' + drop + ' ระดับ −' + fd) } } }
     if (rule.slow && alive(t)) { t.slowed = 1; out.slowed = t }
     checkOutcome(st);
     return out;

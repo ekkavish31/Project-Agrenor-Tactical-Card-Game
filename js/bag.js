@@ -62,7 +62,7 @@ const EVENTS={
   choices:[{label:'แตะอักษร',run:()=>{let r=Math.random();if(r<.35){gainCharacterXP(60);return {text:'ความรู้โบราณไหลเข้าสู่ความคิด · EXP +60'}}if(r<.65){s.hp=Math.max(1,s.hp-10);return {text:'พลังย้อนกลับมาทำร้าย · HP −10'}}return {text:'อักษรแปรเป็นแผ่นการ์ดลอยลงมาในมือ',loot:{items:[pick(Object.keys(AD.EVENT_CARDS).filter(k=>k!=='strangeRune'))]}}}},{label:'ไม่ยุ่งดีกว่า',run:()=>({text:'คุณเดินผ่านไปโดยไม่หันกลับไปมอง'})}]}};
 // show an event; source = {card:key} (spent when a choice is made) or {node:true}
 function runEvent(key,src={}){let E=EVENTS[key],D=AD.EVENT_CARDS[key],adv=state();
- if(!E||!D)return;if(E.needArea&&!adv)return modal(D.name,`<p>${esc(D.text)}</p><p class="muted">การ์ดเหตุการณ์ใบนี้ยังใช้ไม่ได้ · จะย้ายไปใช้บนแผนที่โลก</p>`,[{label:'ตกลง',run:()=>closeModal()}]);
+ if(!E||!D)return;if(E.needArea&&!adv)return modal(D.name,`<p>${esc(D.text)}</p><p class="muted">การ์ดใบนี้ใช้ระหว่างเดินทาง · กด 🎴 การ์ดเหตุการณ์ บนแผนที่โลก</p>`,[{label:'ตกลง',run:()=>closeModal()}]);
  const spend=()=>{if(src.card)addItem(src.card,-1)};
  const done=(res)=>{spend();let lines=res.loot?giveLoot(res.loot,adv):[];save();render();refreshMap();
   modal(D.name,`<p>${esc(res.text)}</p>${lootHtml(lines)}${adv?checkQuest(adv):''}`,[{label:'ไปต่อ',primary:true,run:()=>{closeModal();src.after?.()}}],{noClose:true})};

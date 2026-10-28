@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '94.02';
+  const V = '94.03';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -29,6 +29,8 @@
     slime: { name: 'สไลม์แร่', hp: 40, move: 2, atk: 8, scale: .85, fx: 'blunt', img: 'slime' , el: 'water' },
     kobold: { name: 'โคโบลด์ขุดแร่', hp: 30, move: 3, atk: 9, scale: .9, fx: 'blunt', img: 'kobold' , el: 'earth' },
     golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem', shove: true , el: 'earth' },
+    bat: { name: 'ค้างคาวถ้ำ', hp: 22, move: 5, atk: 7, scale: .8, fx: 'knife', img: 'bat', fly: true, el: 'dark' },
+    gull: { name: 'นกนางนวลยักษ์', hp: 26, move: 5, atk: 8, scale: .9, fx: 'wind', img: 'gull', fly: true, el: 'wind' },
     shadowWolf: { name: 'หมาป่าเงา', hp: 44, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' , el: 'dark' }
   };
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
@@ -93,7 +95,7 @@
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
     const near = (o) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - o.u) + Math.abs(v - o.v) + Math.random() * .3; if (d < bd) { bd = d; best = { u, v } } } if (best) taken.add(best.u + ',' + best.v); return best };
     const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk, def: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, shove: !!T.shove, el: T.el } }).filter(Boolean);
+    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, shove: !!T.shove, el: T.el, fly: !!T.fly } }).filter(Boolean);
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true,
@@ -428,16 +430,16 @@
   async function heroAction(r) {
     const h = FB.hero(st), m = r.target || FB.monster(st);
     if (r.self) {
-      h.pose = r.guard ? 'guard' : 'idle'; fx(r.fx, h, h, { color: r.heal ? '#7fe08a' : '#f4d36a' }); impact(h, r.fx, false); h.flashUntil = 0;
+      h.pose = r.guard ? 'guard' : 'idle'; fx(r.fx, h, h, { color: r.heal ? '#7fe08a' : '#f4d36a' }); if (r.card === 'climb') fx('climbUp', h); if (r.card === 'perch') fx('perchFlag', h); impact(h, r.fx, false); h.flashUntil = 0;
       await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a'); if (r.evade) floatText(h, 'EVADE READY', '#bfe8ff'); if (r.counter) floatText(h, 'COUNTER READY', '#ffd9a0'); if (r.ambush) floatText(h, 'AMBUSH ×1.6', '#d9b8ff');
       h.shown = h.hp; hudSync(); await wait(520); h.pose = 'idle'; return;
     }
     const last = !FB.monsters(st).some(u => u.hp > 0), kill = last, heavy = r.big > 1 || r.hits.reduce((a, x) => a + x.damage, 0) >= 20;
     await cinematic(h, m, async () => {
-      if (r.leap) { h.pose = 'windup'; await wait(160); await leapAnim(h, r.leap.to); shake(9, 260) }
+      if (r.leap) { const from = { vu: h.vu, vv: h.vv }; h.pose = 'windup'; await wait(160); await leapAnim(h, r.leap.to); fx('diveTrail', m, from); shake(9, 260) }
       h.dir = dirTo(h, m); h.pose = 'windup'; if (cine) { cine.z += .18; cine.speed = 4 } await wait(heavy ? 420 : 280);
       h.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(h, m) * (heavy ? 2.2 : 1.3)); lines(m, 220);
-      const dur = fx(r.fx, m, h, { scale: r.big, color: r.fx === 'arcane' ? '#b49ae8' : '#7cc5db' });
+      const dur = r.card === 'rockfall' ? (fx('rockfall', m), 700) : fx(r.fx, m, h, { scale: r.big, color: r.fx === 'arcane' ? '#b49ae8' : '#7cc5db' });
       await wait(Math.min(320, dur * .45));
       for (const [n, x] of r.hits.entries()) {
         const tu = x.target || m, lastHit = n === r.hits.length - 1, fin = kill && lastHit, down = tu.hp <= 0 && !r.hits.slice(n + 1).some(y => y.target === tu);
@@ -451,7 +453,7 @@
       }
       for (const x of r.hits) (x.target || m).shown = (x.target || m).hp; hudSync(); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff', true);
       if (r.moved) { const from = { u: m.vu - .5, v: m.vv - .5 }; shake(6, 200); await walkAnim(m, [from, { u: m.u, v: m.v }], 5, true) }
-      if (r.fall) { shake(12, 380); floatText(m, 'FALL −' + r.fall.damage, '#ffb08a', false, true); m.shown = m.hp; hudSync() }
+      if (r.fall) { shake(12, 380); fx('fallDust', m); floatText(m, 'FALL −' + r.fall.damage, '#ffb08a', false, true); m.shown = m.hp; hudSync() }
       if (kill) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(260); h.pose = 'idle';
     }, { z: heavy ? 1.95 : 1.75 });
   }
@@ -516,7 +518,7 @@
       t.shown = t.hp; hudSync();
       await wait(full ? Math.max(300, Math.min(900, (ts?.duration || 500) - (ts?.impactMs ?? 160))) : 260);
       if (s.counter) { t.pose = 'windup'; await wait(150); t.pose = 'strike'; sfx('swing'); fx('sword', a, t, {}); impact(a, 'sword', { from: t, big: true }); a.hitUntil = now() + 420; hitStop(120); shake(10, 300); floatText(a, '−' + s.counter, '#ffd27a', false, true); floatText(a, 'COUNTER', '#ffd9a0', true); a.shown = a.hp; hudSync(); if (a.hp <= 0) a.deadAt = now() + 300; await wait(420) }
-      if (s.fall) { shake(12, 380); await walkAnim(t, [s.fall.from, { u: t.u, v: t.v }], 6, true); floatText(t, 'FALL −' + s.fall.damage, '#ff9a8a', false, true); t.shown = t.hp; hudSync() }   /* v94: knocked off a ledge */
+      if (s.fall) { shake(12, 380); await walkAnim(t, [s.fall.from, { u: t.u, v: t.v }], 6, true); fx('fallDust', t); floatText(t, 'FALL −' + s.fall.damage, '#ff9a8a', false, true); t.shown = t.hp; hudSync() }   /* v94: knocked off a ledge */
       a.pose = 'idle'; if (t.hp > 0) t.pose = 'idle';
     }, full ? { z: 1.7 } : { z: 1.4, bars: false, lead: 170, tail: 90 });
   }
@@ -594,11 +596,19 @@
     effects.push({ kind, seed: (Math.random() * 1e6) | 0, scale: o.scale || 1, color: o.color, to: { x: to.vu, y: to.vv }, from: from && from !== to ? { x: from.vu, y: from.vv } : null, start: now(), duration: dur });
     return dur;
   }
+  /* v94.03 · code-drawn effects for the height cards: rocks raining down, climb chevrons, the perch banner, landing dust, the dive streak */
+  const HEIGHT_FX = {
+    rockfall(g, e, t, p) { const R = n => ((e.seed * (n + 1) * 9301 + 49297) % 233280) / 233280; for (let i = 0; i < 6; i++) { const d = Math.max(0, Math.min(1, t * 1.6 - i * .1)), x = p.x + (R(i) - .5) * UNIT * .9, y0 = p.y - UNIT * 3.2, y = y0 + (p.y - UNIT * .3 - y0) * d * d, s = 6 + R(i + 9) * 9; g.globalAlpha = d >= 1 ? Math.max(0, 1 - (t - .6) * 3) : 1; g.fillStyle = i % 2 ? '#8a7f70' : '#6d6458'; g.beginPath(); g.moveTo(x - s, y); g.lineTo(x - s * .3, y - s); g.lineTo(x + s, y - s * .4); g.lineTo(x + s * .6, y + s * .5); g.closePath(); g.fill() } if (t > .55) { const k = (t - .55) / .45; g.globalAlpha = 1 - k; g.fillStyle = 'rgba(170,150,120,.7)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * (.4 + k * .8), UNIT * (.18 + k * .3), 0, 0, 7); g.fill() } },
+    climbUp(g, e, t, p) { g.strokeStyle = '#bfffd0'; g.lineWidth = 4; g.lineCap = 'round'; for (let i = 0; i < 3; i++) { const k = (t * 1.5 + i * .3) % 1, y = p.y - UNIT * (.3 + k * 1.6); g.globalAlpha = 1 - k; g.beginPath(); g.moveTo(p.x - 14, y + 8); g.lineTo(p.x, y - 4); g.lineTo(p.x + 14, y + 8); g.stroke() } },
+    perchFlag(g, e, t, p) { g.globalAlpha = 1 - t; g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.beginPath(); g.ellipse(p.x, p.y, UNIT * (.3 + t * .6), UNIT * (.14 + t * .28), 0, 0, 7); g.stroke(); g.fillStyle = '#ffd25a'; g.fillRect(p.x + 18, p.y - UNIT * 1.6, 3, UNIT * 1.1); g.beginPath(); g.moveTo(p.x + 21, p.y - UNIT * 1.6); g.lineTo(p.x + 46, p.y - UNIT * 1.45 + Math.sin(t * 20) * 3); g.lineTo(p.x + 21, p.y - UNIT * 1.3); g.fill() },
+    fallDust(g, e, t, p) { for (let i = 0; i < 10; i++) { const a = i / 10 * 6.28, r = UNIT * (.2 + t * .9); g.globalAlpha = (1 - t) * .8; g.fillStyle = '#b8a888'; g.beginPath(); g.arc(p.x + Math.cos(a) * r, p.y + Math.sin(a) * r * .45 - t * 10, 5 + t * 6, 0, 7); g.fill() } },
+    diveTrail(g, e, t, p, a) { g.globalAlpha = 1 - t; const gr = g.createLinearGradient(a.x, a.y - UNIT, p.x, p.y - UNIT * .5); gr.addColorStop(0, 'rgba(255,240,180,0)'); gr.addColorStop(1, 'rgba(255,220,120,.9)'); g.strokeStyle = gr; g.lineWidth = 10 * (1 - t) + 2; g.beginPath(); g.moveTo(a.x, a.y - UNIT * 1.4); g.quadraticCurveTo((a.x + p.x) / 2, Math.min(a.y, p.y) - UNIT * 2.4, p.x, p.y - UNIT * .5); g.stroke() }
+  };
   function fxDraw(g, now) {
     effects = effects.filter(e => now < e.start + e.duration);
     for (const e of effects) {
       const t = Math.min(1, (now - e.start) / e.duration), p = project(e.to.x, e.to.y), a = e.from ? project(e.from.x, e.from.y) : p;
-      g.save(); let ok = false; try { ok = window.BattleVFX?.draw(e, t, p, a, g, { w: UNIT, h: UNIT / 2 }) } catch (err) { ok = false }
+      g.save(); let ok = HEIGHT_FX[e.kind] ? (HEIGHT_FX[e.kind](g, e, t, p, a), true) : false; if (!ok) try { ok = window.BattleVFX?.draw(e, t, p, a, g, { w: UNIT, h: UNIT / 2 }) } catch (err) { ok = false }
       if (!ok) { g.globalAlpha = 1 - t; g.strokeStyle = e.color || '#ffd27a'; g.lineWidth = 4; g.beginPath(); g.ellipse(p.x, p.y - UNIT * .6, UNIT * (.3 + t * .6), UNIT * (.18 + t * .35), 0, 0, 7); g.stroke() }
       g.restore();
     }

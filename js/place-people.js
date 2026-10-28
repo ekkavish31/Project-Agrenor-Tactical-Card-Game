@@ -25,18 +25,30 @@
       const old = people.find(x => x.p.id === p.id); if (old) return old;
       // a stable free spot near the middle of the floor for each person
       let u = 0, v = 0; for (let k = 0; k < 40; k++) { const h = hash(p.id + k), a = (h % 360) / 57.3, r = 1.5 + (h % 7) * .6; u = Math.round(Math.cos(a) * r * 2) / 2; v = Math.round(Math.sin(a) * r * 2) / 2; if (!blocked?.(u, v)) break }
-      return { p, u, v, face: ['SE', 'SW', 'NE', 'NW'][hash(p.id) % 4], phase: i * 1.7 };
+      return { p, u, v, face: ['SE', 'SW', 'NE', 'NW'][hash(p.id) % 4], phase: i * 1.7, goal: null, wait: 1 + (hash(p.id) % 5) };
     });
   }
-  function objects(project, g, t, blocked) {
+  /* v94.03 · they move: stroll to a free spot or to a work station (stations from village-place.html: window.PLACE_STATIONS), pause, repeat */
+  let lastT = 0;
+  function walk(a, dt, blocked, hero) {
+    if (bubble?.a === a && performance.now() < bubble.until) { if (hero) a.face = faceTo(hero.u - a.u, hero.v - a.v); return false }
+    if (!a.goal) { a.wait -= dt; if (a.wait > 0) return false; const st = root.PLACE_STATIONS?.() || [], useSt = st.length && Math.random() < .45, s = useSt ? st[Math.floor(Math.random() * st.length)] : null;
+      for (let k = 0; k < 12; k++) { const q = s ? { u: s.u + (Math.random() - .5) * 2, v: s.v + s.d + .8 + Math.random() } : { u: a.u + (Math.random() - .5) * 5, v: a.v + (Math.random() - .5) * 5 }; if (!blocked?.(q.u, q.v)) { a.goal = q; break } } a.wait = 3 + Math.random() * 6; if (!a.goal) return false }
+    const du = a.goal.u - a.u, dv = a.goal.v - a.v, d = Math.hypot(du, dv), step = dt * 1.6;
+    if (d <= step) { a.u = a.goal.u; a.v = a.goal.v; a.goal = null; return false }
+    const nu = a.u + du / d * step, nv = a.v + dv / d * step; if (blocked?.(nu, nv)) { a.goal = null; return false }
+    a.u = nu; a.v = nv; a.face = faceTo(du, dv); return true;
+  }
+  const faceTo = (du, dv) => { const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') };
+  function objects(project, g, t, blocked, hero) {
     if (!root.VillagerDraw || !L()) return [];
     const now = performance.now(); if (now > lastSync) { lastSync = now + 3000; sync(blocked) }
-    const out = [];
+    const out = [], dt = Math.min(.1, (t - lastT) / 1000 || 0); lastT = t;
     for (const a of people) {
-      const pt = project(a.u, a.v);
+      const moving = walk(a, dt, blocked, hero), pt = project(a.u, a.v);
       out.push({ y: pt.y, draw: () => {
         g.fillStyle = 'rgba(20,30,20,.35)'; g.beginPath(); g.ellipse(pt.x, pt.y, 14, 6, 0, 0, 7); g.fill();
-        root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: false, face: a.face, phase: a.phase, scale: 1.05 });
+        root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, scale: 1.05 });
         if (bubble?.a === a && now < bubble.until) say(g, pt, bubble.text);
       } });
     }

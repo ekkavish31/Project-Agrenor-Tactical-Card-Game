@@ -425,6 +425,7 @@ const door = s => ({
  v: s.v + s.door.dv
 });
 
+window.PLACE_STATIONS = () => (typeof M !== 'undefined' && M?.stations) ? M.stations.map(s => ({ u: s.u, v: s.v, d: s.d || 1 })) : [];
 function blocked(u, v) {
  const F = M.floor,
   q = { x: 1100 + (u - v) * 45, y: 700 + (u + v) * 22.5 },
@@ -970,7 +971,7 @@ function draw(t) {
    if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, 80 * (hc.s || 1), hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0, 80 * (hc.s || 1))
   }
  });
- objects.push(...(window.PlacePeople?.objects(project, g, t, blocked) || []));   // v94.02 villagers who are here now
+ objects.push(...(window.PlacePeople?.objects(project, g, t, blocked, hero) || []));   // v94.02 villagers who are here now
  // v87 · a work station and its own decorations are one set (layer number, then depth); sets and loose things sort by depth
  const sets = new Map(), list = [];
  for (const o of objects) { if (o.set && M.stations.some(s => s.id === o.set)) { let G = sets.get(o.set); if (!G) sets.set(o.set, G = { m: [], y: null }); G.m.push(o); if (o.isStation) G.y = o.y } else list.push({ y: o.y, o }) }
@@ -1381,4 +1382,4 @@ setup();
 resize();
 send('ready');
 requestAnimationFrame(draw);
-</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=94.02"></script><script src="js/villager-draw.js?v=94.02"></script><script src="js/village-life.js?v=94.02"></script><script src="js/village-lines.js?v=94.02"></script><script src="js/village-mind.js?v=94.02"></script><script src="js/place-people.js?v=94.02"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=94.02"></script><script src="js/villager-draw.js?v=94.02"></script><script src="js/village-life.js?v=94.02"></script><script src="js/village-lines.js?v=94.02"></script><script src="js/village-mind.js?v=94.02"></script><script src="js/place-people.js?v=94.03"></script><script src="js/editor-tools.js?v=91.77"></script></html>

@@ -17,7 +17,7 @@
   };
   const ROAD_COST = 1;
   /* monsters by biome (keys of town-battle MON) */
-  const FOES = { grass: ['bandit', 'wolf'], forest: ['wolf', 'bandit'], hills: ['kobold', 'bandit'], swamp: ['slime'], snow: ['wolf', 'kobold'], sand: ['bandit', 'slime'] };
+  const FOES = { grass: ['bandit', 'wolf'], forest: ['wolf', 'bandit', 'bat'], hills: ['kobold', 'bandit', 'bat'], swamp: ['slime', 'bat'], snow: ['wolf', 'kobold'], sand: ['bandit', 'slime', 'gull'] };   // v94.03: bats and gulls fly (ignore heights)
   const DESTS = [
     { id: 'den', name: 'ถ้ำจ่าฝูง', biome: 'forest', boss: 'wolf', icon: 'cave', rumor: 'พรานเล่าว่าเสียงหอนดังมาจากถ้ำลึกกลางป่า ใครเข้าไปไม่เคยกลับมา', reward: 120 },
     { id: 'mine', name: 'เหมืองหินร้าง', biome: 'hills', boss: 'golem', icon: 'mine', rumor: 'คนงานเหมืองหนีออกมากลางดึก บอกว่าหินในเหมืองลุกขึ้นเดินได้', reward: 160 },

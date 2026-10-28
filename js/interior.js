@@ -314,7 +314,7 @@
     if (day < 1) { g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = `rgba(15,20,55,${(1 - day) * .38})`; g.fillRect(0, 0, cv.width, cv.height) }
     /* speech bubbles on top, in screen space */
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    for (const a of people.values()) if (a.bubble && t < a.bubble.until) bubble(a, a.bubble.txt);
+    placed = []; for (const a of people.values()) if (a.bubble && t < a.bubble.until) bubble(a, a.bubble.txt);
     if (hoverId && people.get(hoverId)) { const a = people.get(hoverId), p = screen(a.vu, a.vv); label(a.p.name + ' · ' + fill(a.p.role), p.x, p.y - 100 * Z) }
   }
   function drawPerson(a, t) {
@@ -333,7 +333,9 @@
   function bubble(a, txt) {
     const p = screen(a.vu, a.vv); g.save(); g.font = '13px VillageThai,system-ui'; const maxW = 220, words = [...txt], lines = []; let cur = '';
     for (const ch of words) { if (g.measureText(cur + ch).width > maxW) { lines.push(cur); cur = ch } else cur += ch } if (cur) lines.push(cur);
-    const w = Math.min(maxW, Math.max(...lines.map(l => g.measureText(l).width))) + 16, h = lines.length * 17 + 10, x = p.x - w / 2, y = p.y - 100 * Z - h - 6;
+    const w = Math.min(maxW, Math.max(...lines.map(l => g.measureText(l).width))) + 16, h = lines.length * 17 + 10; let x = Math.max(6, Math.min(W - w - 6, p.x - w / 2)), y = p.y - 100 * Z - h - 6;
+    /* v94.03: bubbles drawn this frame never overlap — a later one moves up past the earlier ones (and stays on screen) */
+    for (let k = 0; k < 8; k++) { const hit = placed.find(r => x < r.x + r.w + 4 && x + w + 4 > r.x && y < r.y + r.h + 4 && y + h + 4 > r.y); if (!hit) break; y = hit.y - h - 8 } y = Math.max(4, y); placed.push({ x, y, w, h });
     g.fillStyle = 'rgba(255,250,235,.95)'; g.strokeStyle = 'rgba(80,60,30,.6)'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, h, 10); g.fill(); g.stroke();
     g.beginPath(); g.moveTo(p.x - 6, y + h); g.lineTo(p.x, y + h + 8); g.lineTo(p.x + 6, y + h); g.fill();
     g.fillStyle = '#3a2a14'; g.textAlign = 'left'; lines.forEach((l, i) => g.fillText(l, x + 8, y + 18 + i * 17)); g.restore();
@@ -408,6 +410,7 @@
     acts.innerHTML = jobs.map(k => `<button data-a="job:${k}" ${S.gold < JOBS[k].cost ? 'disabled' : ''}>${esc(JOBS[k].name)} · ${JOBS[k].cost}💰 · ${JOBS[k].hours} ชม. → ${{ reveal: 'เปิดแผนที่', potions: 'ยา', food: 'เสบียง', gold: 'เงิน' }[JOBS[k].give]}</button>`).join('') + '<button class="ghost" data-a="talk">ย้อนกลับ</button>';
     acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
   }
+  let placed = [];
   function toast(t) { const d = document.createElement('div'); d.className = 'in-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 2300) }
   async function rest(cost) {
     S = L.save(); if (S.gold < cost) { toast('เงินไม่พอ'); return }

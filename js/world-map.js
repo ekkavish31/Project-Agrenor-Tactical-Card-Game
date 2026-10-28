@@ -295,11 +295,11 @@
       <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>
       <div class="row"><span>ความลึกของหมอก</span><span style="color:#ff9a7a">${stars}</span></div>
       <div class="row"><span>จุดหมาย</span><span style="color:#ffe2a8">${d ? esc(d.name) + (S.done[d.id] ? ' ✔' : ' · ' + G.dist(S.pos, d) + ' ช่อง') : '—'}</span></div>
-      <div class="btns">${atHome() ? `<button id="wmQuest">📜 กระดานภารกิจ</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button></div>
+      <div class="btns">${atHome() ? `<button id="wmQuest">📜 กระดานภารกิจ</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button>${eventCards().length ? `<button id="wmCards" class="ghost">🎴 การ์ดเหตุการณ์ (${eventCards().reduce((a, x) => a + x.n, 0)})</button>` : ''}</div>
       <div id="wmLog">${S.log.slice(0, 8).map(x => '<div>' + esc(x) + '</div>').join('')}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกช่องติดกัน = เดิน 1 ช่อง · คลิกช่องที่เคยเห็น = เดินไปเอง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a></div>`;
     const on = (id, fn) => { const b = hud.querySelector('#' + id); if (b) b.onclick = fn };
-    on('wmQuest', questBoard); on('wmVillage', () => { save(); syncClock(); location.href = 'village-town.html' }); on('wmCamp', () => camp(false)); on('wmHome', goHome);
+    on('wmCards', useEventCard); on('wmQuest', questBoard); on('wmVillage', () => { save(); syncClock(); location.href = 'village-town.html' }); on('wmCamp', () => camp(false)); on('wmHome', goHome);
     on('wmPotion', () => { if (!S.potions) return; S.potions--; const b = S.hp; S.hp = Math.min(S.maxHp, S.hp + 25); log('ดื่มยาฟื้นฟู +' + (S.hp - b) + ' HP'); save(); hudSync() });
     hud.querySelectorAll('button').forEach(b => b.disabled = b.disabled || busy);
   }
@@ -325,7 +325,7 @@
   function closeModal() { if (modalEl) { modalEl.remove(); modalEl = null; modalOpen = false; const r = modalResolve; modalResolve = null; r?.(null) } }
 
   /* ---------- v94.02 · drops: goods for the market (bag) and materials for the forge, by monster and land ---------- */
-  const DROPS = { wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'] };
+  const DROPS = { bat: ['batWing'], gull: ['driftwood'], wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'] };
   const LAND = { forest: ['herb', 'wood'], grass: ['herb'], hills: ['iron', 'coal'], swamp: ['swampHerb'], snow: ['frostFur'], sand: ['pearl', 'driftwood'] };
   const MATS = ['iron', 'coal', 'wood', 'food'];
   function dropLoot(foe, biome, dang, boss) {
@@ -441,6 +441,22 @@
   const pickFoe = t => { const a = G.FOES[t.biome] || G.FOES.grass; return a[Math.floor(Math.random() * a.length)] };
 
   /* ---------- encounters ---------- */
+  /* ---------- v94.03 · event cards from the bag, used out here (they were tied to the old area maps) ---------- */
+  const CARD_ENC = { treasureMap: 'oldmap+chest', strangeRune: 'oldmap', oldShrine: 'shrine', willowisp: 'shrine', merchant: 'merchant', hotSpring: 'camp', lostMiner: 'chest', shipwreck: 'chest', fallenCart: 'chest', cursedIdol: 'idol', howl: 'battle:wolf', wanderingKnight: 'battle:bandit' };
+  function eventCards() { const bag = WS.game().village.bag || {}, E = window.ADVENTURE_DATA?.EVENT_CARDS || {}; return Object.entries(bag).filter(([k, n]) => n > 0 && E[k] && CARD_ENC[k]).map(([k, n]) => ({ k, n, d: E[k] })) }
+  async function useEventCard() {
+    if (busy) return; const list = eventCards(); if (!list.length) return;
+    const v = await modal(`<h2>🎴 การ์ดเหตุการณ์</h2><p>ใช้การ์ดตรงจุดที่ยืนอยู่ตอนนี้ · ใช้แล้วการ์ดหายไป</p>${list.map(x => `<button data-pick="${x.k}" style="display:block;width:100%;text-align:left;margin:4px 0"><b>${esc(x.d.name)}</b> ×${x.n}<br><small>${esc(x.d.text || '')}</small></button>`).join('')}`, [{ label: 'ปิด', value: null, ghost: true }]);
+    if (!v || !CARD_ENC[v]) return; const bag = WS.game().village.bag; bag[v]--; if (bag[v] <= 0) delete bag[v]; WS.commit();
+    busy = true; const here = tile(S.pos.c, S.pos.r), kind = CARD_ENC[v], fake = k => ({ ...here, enc: { type: k } }), key = 'card:' + Date.now();
+    try {
+      if (kind.startsWith('battle:')) await battle(kind.slice(7), G.danger(world, here), {});
+      else if (kind === 'oldmap+chest') { await encounter(fake('oldmap'), key + 'a'); await encounter(fake('chest'), key + 'b') }
+      else if (kind === 'idol') await encounter(fake(Math.random() < .5 ? 'chest' : 'trap'), key);
+      else if (kind === 'camp') await camp(true);
+      else await encounter(fake(kind), key);
+    } finally { busy = false; delete S.cleared[key]; delete S.cleared[key + 'a']; delete S.cleared[key + 'b']; hudSync(); save() }
+  }
   async function encounter(t, k) {
     const e = t.enc, dang = G.danger(world, t);
     if (e.type === 'battle') { const r = await battle(e.foe, dang, {}); if (r === 'win') S.cleared[k] = true; return true }
@@ -505,7 +521,7 @@
   }
 
   /* ---------- battles (the flat card battle in an iframe) ---------- */
-  const MON_HP = { bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44 };
+  const MON_HP = { bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44, bat: 22, gull: 26 };
   async function battle(foe, dang, o = {}) {
     busy = true; hudSync();
     const here = tile(S.pos.c, S.pos.r), night = nightness() > .6;

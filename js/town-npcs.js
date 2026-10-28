@@ -90,7 +90,7 @@ function update(dt){if(!npcs&&!init())return;const v=V(),h=v.getHero();
   n.enter=room?seq[n.stop]:null;n.path=v.findPath({u:n.u,v:n.v},room?tgt:goal);if(!n.path.length){n.enter=null;n.wait=5}}}
 
 /* ---------- life mode: follow the shared daily schedule ---------- */
-let lifeSave=null,lifeSaveAt=0,sayAt=0;
+let lifeSave=null,lifeSaveAt=0,sayAt=0,sceneAt=performance.now()+12000,scenePlaying=false;
 const clockHour=()=>root.VillageClock?.read().hour??(((root.gameState?.minutes??600)/60)%24);
 function desire(n,hour){const p=n.life,S=lifeSave;
  if(S&&LIFE.inParty(S,p.id))return S.bench.some(b=>b.key===p.id)?'inn':null;   // travelling with the hero → not in town
@@ -120,6 +120,10 @@ function lifeUpdate(dt){if(!npcs&&!lifeInit())return;const v=V(),h=v.getHero(),h
   if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*n.speed;n.face=faceOf(du,dv);
    if(len<=st){n.u=b.u;n.v=b.v;n.path.shift();if(!n.path.length){if(n.enter){n.inside=n.enter;n.enter=null}else if(n.leaveTown)n.hidden=true;n.wait=3+Math.random()*6}}else{n.u+=du/len*st;n.v+=dv/len*st}continue}
   if(n.goal==='square'&&!n.inside&&!n.hidden){n.wait-=dt;if(n.wait<=0){const q=nearSquare();if(q)n.path=v.findPath({u:n.u,v:n.v},q);n.wait=4+Math.random()*8}}}
+ /* v94.03 · two villagers standing close together near the hero now and then talk to each other out loud (same scenes as indoors) */
+ if(now>sceneAt&&MIND()&&!scenePlaying){sceneAt=now+20000+Math.random()*15000;const per=root.VillageClock?.period(hour)||'day',idle=npcs.filter(n=>!n.inside&&!n.hidden&&!n.path?.length&&n!==talking&&Math.hypot(n.u-h.u,n.v-h.v)<16);
+  let pair=null;for(const a of idle){const b=idle.find(x=>x!==a&&Math.hypot(x.u-a.u,x.v-a.v)<3);if(b){pair=[a,b];break}}
+  if(pair){const sc=MIND().scene(pair.map(n=>n.id),{place:'square',period:per});if(sc?.lines?.length){scenePlaying=true;let delay=0;for(const [who,txt] of sc.lines){const n=npcs.find(x=>x.id===who);if(!n)continue;setTimeout(()=>{const o=pair.find(x=>x!==n);if(o)n.face=faceOf(o.u-n.u,o.v-n.v);n.say={txt:String(txt).replace(/\{name\}/g,heroName()),until:performance.now()+3600}},delay);delay+=3400}setTimeout(()=>{scenePlaying=false},delay+400)}}}
  /* now and then someone near the hero says something aloud */
  if(now>sayAt&&MIND()){sayAt=now+4500+Math.random()*4000;const per=root.VillageClock?.period(hour)||'day';const near=npcs.filter(n=>!n.inside&&!n.hidden&&n!==talking&&Math.hypot(n.u-h.u,n.v-h.v)<14);const n=near[Math.floor(Math.random()*near.length)];if(n){const txt=MIND().bubble(n.id,{period:per,place:'outside'});if(txt)n.say={txt:txt.replace(/\{name\}/g,heroName()),until:now+3800}}}}
 function heroName(){return root.WorldState?.heroName()||'นักผจญภัย'}   // v94: s.village.heroName in the game save
