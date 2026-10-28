@@ -20,7 +20,7 @@ const SPEAKERS={
  ally:{name:()=>ally()?.name||'เพื่อนร่วมทาง',portrait:()=>ally()?.portrait||null,color:'#3d6b6b'}};
 
 const SCENES={
- opening:{card:{kicker:'บทนำ',title:'เฟิร์นเวล'},art:'homeMorning',bg:B.home,pan:'in',tint:'',fx:['motes'],lines:[
+ opening:{card:{kicker:'บทที่ 1',title:'สามวันก่อนเทศกาล'},art:'homeMorning',bg:B.home,pan:'in',tint:'',fx:['motes'],lines:[
   {text:'เช้าวันแรกก่อนงานเทศกาลสามวัน ไก่ขันอยู่หลังรั้ว ควันจากเตาขนมปังของป้าเมย์ลอยขึ้นเหนือหลังคา'},
   {who:'mom',text:'{hero}! ตื่นได้แล้ว'},
   {who:'hero',text:'อีกห้านาที…'},

@@ -6,21 +6,29 @@
    • Skipped in editor pages (?editor=…) and with ?skipTitle (tests/tools).
    Text for the prologue, credits and how-to-play lives in the arrays right below — edit freely. */
 (function(root){'use strict';
-/* v95.02: each page is acted out by an animated scene drawn in code (js/scene-art.js · art:'…'); bg is only the fallback */
-const PROLOGUE=[// v95.04: 12 pages · the ancient people are never named · Elukhor is the familiar golden light (lore: docs/lore/GAME-ERA.md)
- {art:'ancient',bg:'assets/scenes/area-ruins.webp',text:'ก่อนจะมีชื่อเมือง ก่อนจะมีแผนที่ ก่อนจะมีคำว่าอาณาจักร\nโลกใบนี้เคยเป็นของผู้คนอีกยุคหนึ่ง'},
- {art:'ancient',bg:'assets/scenes/area-ruins.webp',text:'ไม่มีใครจำชื่อที่แท้จริงของพวกเขาได้อีกแล้ว\nเหลือเพียงร่องรอยใต้ดิน ใต้ป่า และในหินที่ยังเรืองแสงอยู่จนทุกวันนี้'},
- {art:'elements',bg:'assets/scenes/area-forest.webp',text:'หลายหมื่นปีผ่านไป ลูกหลานของพวกเขากระจายออกไปทั่วแผ่นดิน\nแต่ละกลุ่มตามหาธาตุที่ตอบรับหัวใจของตน ทั้งแสง ลม น้ำ สายฟ้า ไฟ พฤกษา น้ำแข็ง ราตรี และผืนดิน'},
- {art:'kin',bg:'assets/scenes/area-forest.webp',text:'ความเชื่อกำหนดทิศทาง ส่วนผืนแผ่นดินหล่อหลอมร่างกาย\nชั่วรุ่นต่อชั่วรุ่น ผู้คนค่อย ๆ เปลี่ยนไป จนกลายเป็นเผ่าพันธุ์ใหม่'},
- {art:'kingdoms',bg:'assets/scenes/area-forest.webp',text:'ชุมชนเติบโตเป็นเมือง เมืองผูกกันด้วยการค้าและศรัทธา\nบางแห่งรวมเป็นอาณาจักร บางแห่งยังยืนหยัดอย่างอิสระ'},
- {art:'forgotten',bg:'assets/scenes/area-ruins.webp',text:'ชื่อใหม่และภาษาใหม่เข้ามาแทนที่ความทรงจำเก่า\nอดีตกลายเป็นตำนาน เหลือเพียงคำในบทสวดที่ไม่มีใครเข้าใจ'},
- {art:'faith',bg:'assets/scenes/area-ruins.webp',text:'ผู้คนสวดอ้อนวอนต่อเทพแห่งธาตุและผู้พิทักษ์ใกล้ตัว\nและเมื่อศรัทธามากพอ สิ่งที่เคยอยู่เพียงในคำอธิษฐาน ก็เริ่มมีตัวตนขึ้นจริง'},
- {art:'deepwood',bg:'assets/scenes/area-forest.webp',text:'ไกลออกไปทางตะวันออก มีป่าใหญ่ที่ดูเหมือนไม่มีที่สิ้นสุด\nนักผจญภัยไม่กี่คนที่กลับออกมาได้ วาดแผนที่ไว้เพียงชายขอบ ส่วนนครแห่งแสงเหนือยอดไม้ ยังเป็นแค่เรื่องเล่า'},
- {art:'fernvale',bg:'assets/market.webp',text:'ส่วนมนุษย์ ผู้สืบสายดินและน้ำ ตั้งรกรากตามลุ่มแม่น้ำ Navelmidia\nที่ชานเมืองใหญ่แห่งหนึ่ง มีหมู่บ้านเล็ก ๆ ชื่อเฟิร์นเวล'},
- {art:'hearth',bg:'assets/market.webp',text:'ใกล้เมืองพอจะได้ยินข่าวจากโลกกว้าง แต่ไกลพอจะมีชีวิตของตัวเอง\nสำหรับคนที่นี่ ตำนานและเทพธาตุเป็นเรื่องเล่าข้างกองไฟ'},
- {art:'elukhor',bg:'assets/home.webp',text:'เหนือลุ่มน้ำมีดวงแสงสีทองที่ทุกคนรู้จัก — Elukhor ที่ชาวบ้านเรียกว่า "ดวงทอง"\nมันลอยค้างบนฟ้าครั้งละนาน ๆ แล้วค่อยย้ายไปที่ใหม่ ส่องแสงและความอบอุ่นให้แผ่นดิน หลายคนบูชาเป็นเทพแห่ง Fren ธาตุไฟ'},
- {art:'festival',bg:'assets/home.webp',text:'อีกสามวันจะถึงงานเทศกาลเก็บเกี่ยว งานที่ทั้งหมู่บ้านรอมาทั้งปี\nและไม่มีใครรู้เลยว่า ปีนี้จะไม่เหมือนทุกปี'}
+/* v95.05: told like a picture book — each page is a picture (js/scene-art.js · art:'…') with one or two gentle lines that appear word by word.
+   The ancient people are never named; Elukhor is the familiar golden light; nights have the purple moon. bg = fallback image only. */
+const PROLOGUE=[
+ {art:'ruins',bg:'assets/scenes/area-ruins.webp',text:'กาลครั้งหนึ่ง นานมาแล้ว…\nนานจนไม่มีใครจำได้ว่านานเท่าไร'},
+ {art:'ruins',bg:'assets/scenes/area-ruins.webp',text:'ใต้แสงจันทร์สีม่วง โลกใบนี้เคยเป็นบ้านของผู้คนอีกยุคหนึ่ง\nสิ่งที่พวกเขาสร้างไว้ วันนี้เหลือเพียงเสาหักกลางทุ่งหญ้า'},
+ {art:'ancient',bg:'assets/scenes/area-ruins.webp',text:'ไม่มีใครจำชื่อของพวกเขาได้อีกแล้ว\nมีเพียงร่องรอยที่ยังหลับอยู่ใต้ดิน ใต้รากไม้ และในหินที่เรืองแสงเบา ๆ'},
+ {art:'heirs',bg:'assets/scenes/area-ruins.webp',text:'ในอกของพวกเขาแต่ละคน มีแสงดวงเล็ก ๆ ส่องอยู่\nแสงที่ส่งต่อจากพ่อสู่ลูก จากรุ่นสู่รุ่น'},
+ {art:'heirs',bg:'assets/scenes/area-ruins.webp',text:'แล้ววันหนึ่ง แสงเหล่านั้นก็เริ่มมีสีของตัวเอง\nบ้างร้อนดั่งไฟ บ้างเย็นดั่งน้ำแข็ง บ้างเงียบสงบดั่งราตรี'},
+ {art:'journey',bg:'assets/scenes/area-forest.webp',text:'ลูกหลานของพวกเขาจึงออกเดินทาง ตามแสงในอกของตน\nข้ามภูเขา ข้ามทะเลทราย เลาะลำธาร ไปจนสุดขอบฟ้า'},
+ {art:'journey',bg:'assets/scenes/area-forest.webp',text:'ใครศรัทธาในไฟ ก็ไปหาแผ่นดินที่ร้อนระอุ\nใครศรัทธาในน้ำ ก็ไปตั้งรกรากริมทะเล'},
+ {art:'kin',bg:'assets/scenes/area-forest.webp',text:'ปีแล้วปีเล่า ผืนแผ่นดินค่อย ๆ หล่อหลอมพวกเขา\nจนลูกหลานรุ่นหลังมีรูปร่างต่างจากบรรพบุรุษ กลายเป็นเผ่าพันธุ์ใหม่'},
+ {art:'realms',bg:'assets/scenes/area-forest.webp',text:'กระโจมเล็ก ๆ กลายเป็นหมู่บ้าน\nหมู่บ้านกลายเป็นเมือง'},
+ {art:'realms',bg:'assets/scenes/area-forest.webp',text:'เมืองผูกกันไว้ด้วยการค้าและศรัทธา\nบางแห่งรวมกันเป็นอาณาจักรยิ่งใหญ่ บางแห่งยังยืนหยัดอย่างอิสระ'},
+ {art:'forgotten',bg:'assets/scenes/area-ruins.webp',text:'เวลาผ่านไปนานเข้า ชื่อใหม่และภาษาใหม่ก็เข้ามาแทนที่\nเรื่องของบรรพชนกลายเป็นนิทาน เหลือเพียงคำในบทสวดที่ไม่มีใครเข้าใจ'},
+ {art:'faith',bg:'assets/scenes/area-ruins.webp',text:'ผู้คนสวดอ้อนวอนต่อเทพแห่งธาตุและผู้พิทักษ์ใกล้ตัว\nและเมื่อศรัทธามากพอ… สิ่งที่อยู่ในคำอธิษฐานก็ค่อย ๆ ลืมตาขึ้นจริง'},
+ {art:'deepwood',bg:'assets/scenes/area-forest.webp',text:'ไกลออกไปทางตะวันออก มีป่าใหญ่ที่ไม่มีใครเห็นปลายทาง\nน้อยคนที่เข้าไปแล้วได้กลับออกมา แผนที่ทุกฉบับจึงหยุดอยู่แค่ชายป่า'},
+ {art:'fernvale',bg:'assets/market.webp',text:'ส่วนมนุษย์ ผู้สืบสายดินและน้ำ ตั้งบ้านเรือนตามลุ่มแม่น้ำ Navelmidia\nและที่ชานเมืองใหญ่แห่งหนึ่ง… มีหมู่บ้านเล็ก ๆ ชื่อว่าเฟิร์นเวล'},
+ {art:'elukhor',bg:'assets/home.webp',text:'ทุกวัน ดวงแสงสีทองที่ชาวบ้านเรียกว่า "ดวงทอง" จะลอยค้างอยู่บนฟ้า\nส่องแสงและความอบอุ่นให้ทุ่งนา ผู้คนบูชามันในนาม Elukhor เทพแห่ง Fren ธาตุไฟ'},
+ {art:'hearth',bg:'assets/market.webp',text:'พอตกค่ำ ผู้คนล้อมวงข้างกองไฟใต้จันทร์สีม่วง\nเล่านิทานเรื่องบรรพชน ป่าใหญ่ และเทพธาตุ… เหมือนที่เราเล่ากันอยู่ตอนนี้'},
+ {art:'festival',bg:'assets/home.webp',text:'อีกสามวัน จะถึงงานเทศกาลเก็บเกี่ยวที่ทั้งหมู่บ้านรอคอย\nไม่มีใครรู้เลยว่า ปีนี้… จะไม่เหมือนทุกปี'}
 ];
+/* after the name: one more page that walks into the village chapter, then the game starts (js/story-data.js 'opening') */
+const BRIDGE={art:'dawn',text:'{hero}… ในเช้าวันแรกก่อนงานเทศกาล\nนิทานของเจ้ากำลังจะเริ่มต้นขึ้น'};
 const HOWTO=[
  ['หมู่บ้าน','คลิกถนนหรือสถานที่เพื่อเดิน · บ้านใช้พัก นอน จัดสำรับ · โรงตีเหล็กใช้คราฟต์อุปกรณ์และฝึกต่อสู้ · ตลาดใช้ซื้อวัตถุดิบ ขายของ รับออร์เดอร์'],
  ['ออกผจญภัย','เดินไปทางออกขอบหมู่บ้าน เลือกพื้นที่ แล้วเลือกเส้นทางบนแผนที่ — ต่อสู้ เก็บของ เจอเหตุการณ์ และบอสท้ายพื้นที่'],
@@ -141,7 +149,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  <div class="ts-foot"><span class="ts-ver">Project A ${VERSION}${root.GAME_VERSION?.date?" · "+root.GAME_VERSION.date:""} <em class="ts-gh">· กำลังเช็ก GitHub…</em></span><span>↑↓ เลือก · Enter ยืนยัน</span></div>
  <section class="ts-extra" hidden aria-label="Extra"><div class="ts-extra-box"><div class="ts-extra-head"><div class="ts-tabs" role="tablist"><button role="tab" data-tab="howto">วิธีเล่น</button><button role="tab" data-tab="gallery">คลังภาพ</button><button role="tab" data-tab="credits">เครดิต</button></div><button class="ts-close" data-act="close-extra" aria-label="ปิด">✕</button></div><div class="ts-extra-body"></div></div></section>
  <section class="ts-story" hidden aria-live="polite"><div class="ts-story-bg"></div><canvas class="ts-story-art"></canvas><div class="ts-story-veil"></div><div class="ts-story-text"></div><div class="ts-story-hint">คลิก หรือกด Enter เพื่อไปต่อ</div><button class="ts-skip" data-act="skip">ข้าม ▸▸</button>
-  <form class="ts-name" hidden><span class="ts-kicker">และเรื่องนี้เริ่มต้นจากเด็กคนหนึ่งในเฟิร์นเวล…</span><h2>เจ้าชื่ออะไร?</h2><input name="hero" maxlength="16" autocomplete="off" spellcheck="false" placeholder="นักผจญภัย"><p>เปลี่ยนภายหลังได้ในตั้งค่า หรือคลิกชื่อตัวเอกในเกม</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
+  <form class="ts-name" hidden><span class="ts-kicker">และนิทานเรื่องนี้ เริ่มต้นจากเด็กคนหนึ่งในเฟิร์นเวล…</span><h2>เจ้าชื่ออะไร?</h2><input name="hero" maxlength="16" autocomplete="off" spellcheck="false" placeholder="นักผจญภัย"><p>เปลี่ยนภายหลังได้ในตั้งค่า หรือคลิกชื่อตัวเอกในเกม</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
  document.body.appendChild(el);title=el;checkGitHub(el);
  const menu=[...el.querySelectorAll('.ts-menu button')];
  el.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)act(b.dataset.act)});
@@ -152,13 +160,13 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  (hasSave?menu[1]:menu[0]).focus({preventScroll:true})}
 /* v94.02 · New Game / Continue enter the game in full screen by default (turn off: localStorage 'project-a-fullscreen' = '0').
    A reload (New Game over an old save) loses full screen, so the first tap in the prologue asks again. */
-function goFull(){try{if(localStorage.getItem('project-a-fullscreen')==='0'||document.fullscreenElement)return;const d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;if(f){const r=f.call(d,{navigationUI:'hide'});r?.catch?.(()=>{})}try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch{}}catch{}}
+function goFull(force){try{if(!force&&localStorage.getItem('project-a-fullscreen')==='0')return;try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch{}if(document.fullscreenElement)return;const d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;if(f){const r=f.call(d,{navigationUI:'hide'});r?.catch?.(()=>{})}try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch{}}catch{}}
 root.goFullscreen=goFull;
 if(newGame)addEventListener('pointerdown',goFull,{once:true,capture:true});
-async function act(a){if(busyTitle)return;if(a==='new'||a==='continue')goFull();
+async function act(a){if(busyTitle)return;if(a==='new')goFull(true);else if(a==='continue')goFull();
  if(a==='new'){if(hasSave){const ok=await (root.GameDialog?root.GameDialog.confirm('เริ่มเกมใหม่?\nความคืบหน้าในเซฟปัจจุบันจะถูกแทนที่ (ระบบเก็บสำเนาเซฟเดิมไว้ให้ 1 ชุด) · การ์ดที่ออกแบบและผังหมู่บ้านยังอยู่'):Promise.resolve(root.confirm('เริ่มเกมใหม่?')));if(!ok)return;
    try{localStorage.setItem('three-card-forge-before-newgame',localStorage.getItem(SAVE)||'');localStorage.removeItem(SAVE);localStorage.removeItem(STARTED);for(const k of ['agrenor-world-v1','agrenor-mind-v1','agrenor-clock-v1','agrenor-standalone-v1'])localStorage.removeItem(k);/* v94: the world map, village memory and old clock start over too */sessionStorage.setItem(NEW_FLAG,'1')}catch{}busyTitle=true;title.classList.add('ts-out');await wait(reduced?0:300);location.reload();return}
-  story();return}
+  prepareStory();return}
  if(a==='continue'&&hasSave){enter(false);return}
  if(a==='options'){if(typeof root.openSettings==='function')root.openSettings();return}
  if(a==='extra'){title.querySelector('.ts-extra').hidden=false;tab('howto');return}
@@ -172,21 +180,29 @@ function tab(id){const box=title.querySelector('.ts-extra-body');title.querySele
   box.querySelectorAll('[data-src]').forEach(b=>b.onclick=()=>{const v=document.createElement('div');v.className='ts-viewer';v.innerHTML=`<img src="${b.dataset.src}" alt="">`;v.onclick=()=>v.remove();title.appendChild(v)})}}
 
 /* ---------- prologue ---------- */
-let page=-1,typing=null,art=null;
+let page=-1,art=null;
 function artPlayer(st){if(art)return art;const c=st.querySelector('.ts-story-art');if(!c||!root.SceneArt)return null;art=root.SceneArt.create(c);return art}
 function story(){busyTitle=true;const st=title.querySelector('.ts-story');st.hidden=false;title.classList.add('ts-in-story');page=-1;busyTitle=false;
  st.onclick=e=>{if(e.target.closest('.ts-skip,.ts-name'))return;next()};
  st.onkeydown=e=>{if(e.target.closest('.ts-name'))return;if(e.key==='Enter'||e.key===' '){e.preventDefault();next()}else if(e.key==='Escape'){e.preventDefault();storyEnd()}};
  st.tabIndex=-1;st.focus();next()}
+/* v95.05 · Thai reads best word by word (Intl.Segmenter), never letter by letter */
+const seg=(()=>{try{return new Intl.Segmenter('th',{granularity:'word'})}catch{return null}})();
+const wordsOf=t=>seg?[...seg.segment(t)].map(x=>x.segment):t.split(/(\s+)/);
+let revealUntil=0;
+function reveal(box,text){const lines=String(text).split('\n');let d=.25,html='';
+ for(const [li,line] of lines.entries()){if(li)d+=.55;html+='<span class="ts-ln">'+wordsOf(line).map(w=>{const sp=/^\s+$/.test(w);const h=`<span class="ts-w" style="animation-delay:${d.toFixed(2)}s">${esc(w)}</span>`;if(!sp)d+=Math.min(.42,.1+[...w].length*.035);return h}).join('')+'</span>'}
+ box.innerHTML=html;box.classList.remove('ts-all');revealUntil=performance.now()+d*1000+600;if(reduced)box.classList.add('ts-all')}
+function showPage(p){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text'),bg=st.querySelector('.ts-story-bg'),pa=artPlayer(st);
+ if(pa&&p.art&&pa.show(p.art)){bg.style.backgroundImage='none';bg.classList.remove('ts-pan')}else if(p.bg){bg.classList.remove('ts-pan');void bg.offsetWidth;bg.style.backgroundImage=`url("${p.bg}")`;bg.classList.add('ts-pan')}
+ reveal(box,p.text)}
 function next(){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text');
- if(typing){clearInterval(typing);typing=null;box.textContent=PROLOGUE[page].text;return}// first press finishes the line
- page++;if(page>=PROLOGUE.length){storyEnd();return}const p=PROLOGUE[page],bg=st.querySelector('.ts-story-bg');
- const pa=artPlayer(st);if(pa&&p.art&&pa.show(p.art)){bg.style.backgroundImage='none';bg.classList.remove('ts-pan')}else{bg.classList.remove('ts-pan');void bg.offsetWidth;bg.style.backgroundImage=`url("${p.bg}")`;bg.classList.add('ts-pan')}
- box.textContent='';box.classList.remove('ts-line');void box.offsetWidth;box.classList.add('ts-line');
- if(reduced){box.textContent=p.text;return}let i=0;const chars=[...p.text];typing=setInterval(()=>{i+=2;box.textContent=chars.slice(0,i).join('');if(i>=chars.length){clearInterval(typing);typing=null}},34)}
-function storyEnd(){if(typing){clearInterval(typing);typing=null}const st=title.querySelector('.ts-story'),f=st.querySelector('.ts-name');st.querySelector('.ts-story-text').textContent='';st.querySelector('.ts-story-hint').hidden=true;st.querySelector('.ts-skip').hidden=true;f.hidden=false;
+ if(performance.now()<revealUntil&&!box.classList.contains('ts-all')){box.classList.add('ts-all');revealUntil=0;return}// first press shows the whole page
+ page++;if(page>=PROLOGUE.length){storyEnd();return}showPage(PROLOGUE[page])}
+function storyEnd(){const st=title.querySelector('.ts-story'),f=st.querySelector('.ts-name');st.querySelector('.ts-story-text').textContent='';st.querySelector('.ts-story-hint').hidden=true;st.querySelector('.ts-skip').hidden=true;f.hidden=false;
  const input=f.elements.hero;input.value=game()?.village?.heroName||'';setTimeout(()=>input.focus(),30);
- f.onsubmit=e=>{e.preventDefault();const n=input.value.trim().slice(0,16)||'นักผจญภัย';if(game()?.village){game().village.heroName=n;doSave()}root.HeroIdentity?.syncHeroName?.();enter(true)}}
+ f.onsubmit=async e=>{e.preventDefault();const n=input.value.trim().slice(0,16)||'นักผจญภัย';if(game()?.village){game().village.heroName=n;doSave()}root.HeroIdentity?.syncHeroName?.();
+  f.hidden=true;showPage({...BRIDGE,text:BRIDGE.text.replace('{hero}',n)});st.onclick=null;st.onkeydown=null;await wait(reduced?600:4200);enter(true)}}
 
 /* ---------- v95.02 · New Game: load everything first, then play the prologue (no stutter while the game page and the town frame are still loading) ---------- */
 const fonts=()=>[()=>loadFont('VillageThai','assets/village-town/noto-sans-thai-thai-400-normal.woff2'),()=>document.fonts?.ready];
@@ -195,7 +211,11 @@ const settle=()=>new Promise(r=>{let n=0;const f=()=>++n>=12?r():requestAnimatio
 let storyReady=false;
 async function prepareStory(){title.classList.add('ts-quick');
  await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(12000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900});
- storyReady=true;story()}
+ storyReady=true;await tapToStart();story()}
+/* v95.05 · New Game is played full screen and landscape: a reload drops full screen, so one tap (a user gesture) takes it back before the tale starts */
+function tapToStart(){if(document.fullscreenElement&&!matchMedia('(orientation:portrait)').matches)return Promise.resolve();
+ return new Promise(r=>{const g=document.createElement('button');g.type='button';g.className='ts-gate';g.innerHTML='<b>▶ แตะเพื่อเริ่มนิทาน</b><small>เกมจะเปิดเต็มจอในแนวนอน</small>';
+  g.onclick=()=>{goFull(true);g.remove();setTimeout(r,250)};title.appendChild(g);g.focus()})}
 
 /* ---------- into the game ---------- */
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}

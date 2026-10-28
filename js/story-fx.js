@@ -68,13 +68,15 @@ function burst(opt={}){const r=el.getBoundingClientRect(),x=(opt.x??.5)*r.width,
 
 /* ---------------- text ---------------- */
 let typing=null,full='';
+const SEG=(()=>{try{return new Intl.Segmenter('th',{granularity:'word'})}catch{return null}})();
 function speaker(who){const S=Cutscene.speakers[who]||{};const name=typeof S.name==='function'?S.name():S.name;return {name:name??(who==='hero'?heroName():who||''),portrait:typeof S.portrait==='function'?S.portrait():S.portrait,color:S.color||'#6b5a3a'}}
 function showLine(line){const box=$('.cs-box'),sp=speaker(line.who);box.hidden=false;box.classList.toggle('cs-narr',!line.who);
  $('.cs-name').textContent=line.who?sp.name:'';const pt=$('.cs-portrait');pt.hidden=!line.who;
  if(line.who){if(sp.portrait)pt.innerHTML=`<img src="${esc(sp.portrait)}" alt="">`;else{pt.innerHTML=`<span>${esc([...sp.name][0]||'?')}</span>`;pt.style.setProperty('--pc',sp.color)}}
  box.classList.remove('cs-in');void box.offsetWidth;box.classList.add('cs-in');
  full=fill(line.text);const t=$('.cs-text');clearInterval(typing);typing=null;if(reduced()){t.textContent=full;return}
- const chars=[...full];let i=0;t.textContent='';typing=setInterval(()=>{i+=2;t.textContent=chars.slice(0,i).join('');if(i>=chars.length){clearInterval(typing);typing=null}},26)}
+ /* v95.05: word by word (Thai word breaks), never letter by letter */
+ const words=SEG?[...SEG.segment(full)].map(x=>x.segment):full.split(/(\s+)/);let i=0;t.textContent='';typing=setInterval(()=>{i++;t.textContent=words.slice(0,i).join('');if(i>=words.length){clearInterval(typing);typing=null}},85)}
 function finishTyping(){if(!typing)return false;clearInterval(typing);typing=null;$('.cs-text').textContent=full;return true}
 
 /* ---------------- play ---------------- */

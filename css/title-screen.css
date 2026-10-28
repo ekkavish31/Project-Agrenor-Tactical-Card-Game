@@ -103,3 +103,13 @@ html.title-boot,html.title-boot body{overflow:hidden}
 
 /* v95.02 · prologue scenes drawn in code (js/scene-art.js) */
 .ts-story-art{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+
+/* v95.05 · picture-book text: words fade in one by one */
+#titleScreen .ts-story-text .ts-ln{display:block}
+#titleScreen .ts-story-text .ts-w{opacity:0;animation:ts-word .7s ease forwards;display:inline}
+#titleScreen .ts-story-text.ts-all .ts-w{animation:none;opacity:1}
+@keyframes ts-word{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:none}}
+#titleScreen .ts-story-text{font-size:clamp(18px,2.3vw,25px);line-height:1.9;letter-spacing:.01em}
+#titleScreen .ts-gate{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#05070cee;border:0;color:#fbf0d6;font:inherit;cursor:pointer}
+#titleScreen .ts-gate b{font:600 clamp(20px,2.6vw,30px) Georgia,'Noto Serif Thai',serif;padding:14px 28px;border:1px solid #c9a86a;border-radius:999px;background:#2a1e10aa}
+#titleScreen .ts-gate small{color:#c9bb98;letter-spacing:.06em}
