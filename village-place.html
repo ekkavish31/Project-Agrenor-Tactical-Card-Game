@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
-<script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><style>
+<script src="js/touch.js?v=94.02"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
 button,select,input{font:inherit;background:#233a2ef0;color:#fff0c7;border:1px solid #cad6a77a;border-radius:9px;padding:8px 12px;cursor:pointer}button:hover{background:#4b6040}button:disabled{opacity:.45;cursor:default}
@@ -870,6 +870,7 @@ function draw(t) {
  }
  const dt = Math.min(.08, (t - last) / 1000 || 0);
  last = t;
+ if (!editing) window.WorldState?.tick(dt);   // v94.02: the one clock runs here too
  if (path.length && !editing) {
   const b = path[0],
    du = b.u - hero.u,
@@ -969,6 +970,7 @@ function draw(t) {
    if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, 80 * (hc.s || 1), hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0, 80 * (hc.s || 1))
   }
  });
+ objects.push(...(window.PlacePeople?.objects(project, g, t, blocked) || []));   // v94.02 villagers who are here now
  // v87 · a work station and its own decorations are one set (layer number, then depth); sets and loose things sort by depth
  const sets = new Map(), list = [];
  for (const o of objects) { if (o.set && M.stations.some(s => s.id === o.set)) { let G = sets.get(o.set); if (!G) sets.set(o.set, G = { m: [], y: null }); G.m.push(o); if (o.isStation) G.y = o.y } else list.push({ y: o.y, o }) }
@@ -1136,6 +1138,7 @@ cv.onpointerup = e => {
  if (!d || d.moved || editing) return;
  const p = world(e),
   h = hitAt(p);
+ if (window.PlacePeople?.click(p, project)) return;
  if (h?.type === 'station') {
   travel(h.i);
   return
@@ -1378,4 +1381,4 @@ setup();
 resize();
 send('ready');
 requestAnimationFrame(draw);
-</script><script src="js/place-build.js?v=87"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=94.02"></script><script src="js/villager-draw.js?v=94.02"></script><script src="js/village-life.js?v=94.02"></script><script src="js/village-lines.js?v=94.02"></script><script src="js/village-mind.js?v=94.02"></script><script src="js/place-people.js?v=94.02"></script><script src="js/editor-tools.js?v=91.77"></script></html>

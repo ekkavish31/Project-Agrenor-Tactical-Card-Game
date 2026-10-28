@@ -8,10 +8,12 @@ const WEAPONS={sword:{name:'ดาบเหล็ก',range:1,damage:18,stamina:
 const WEAPON_TRAITS={sword:'สมดุล ไม่มีจุดอ่อน',hammer:'ทำลายเกราะของเป้าหมาย',spear:'ระยะ 2 · แทงข้ามช่องได้',rapier:'เร็ว · โดนตีประชิดมีโอกาสสวนกลับ 35%',knife:'ตีจากด้านหลังศัตรู +50%',staff:'เวทระยะ 4 · ไม่โดนลดจากที่กำบัง',bow:'ระยะ 5 · ยืนที่สูงได้โบนัสสองเท่า · ศัตรูประชิดแล้วแรงลดครึ่ง',axe:'ฟันกวาด โดนศัตรูข้างเป้าอีกตัว (50%) · ฟันหญ้าสูงโล่ง',tome:'การ์ดท่าหนักกลายเป็นรักษาเพื่อนระยะ 3',unarmed:'เร็ว แรงน้อย'};
 // Combat card rules. "attack"/"skill" follow the held weapon; "spell" is a ranged bolt for any weapon.
 // ---------- v11b: elements, terrain, traits ----------
-const ELEMENT_NAMES={fire:'ไฟ',water:'น้ำ',light:'แสง',dark:'มืด',wind:'ลม',ice:'น้ำแข็ง',earth:'ดิน',nature:'ธรรมชาติ',chaos:'โกลาหล',fusion:'ผสาน',lightning:'สายฟ้า'};
+const ELEMENT_NAMES={fire:'Fren·ไฟ',water:'Dephor·น้ำ',light:'Elu·แสง',dark:'Nytha·ราตรี',wind:'Sylfae·ลม',ice:'Yalm·น้ำแข็ง',earth:'Grat·ผืนดิน',nature:'Lutha·พฤกษา',chaos:'ธาตุลับที่ 10·โกลาหล',fusion:'ธาตุลับที่ 11·ผสาน',lightning:'Caelim·สายฟ้า'};   // v94.02 Kaelam names (js/elements.js)
 // Prototype combat affinities, not a claim about Agrenor canon. Unknown/chaos/fusion stay neutral.
 const ELEMENT_AFFINITY={fire:{weak:['water','earth'],resist:['fire','ice']},water:{weak:['lightning','nature'],resist:['water','fire']},earth:{weak:['water','nature'],resist:['earth','lightning']},wind:{weak:['ice'],resist:['wind','earth']},ice:{weak:['fire','earth'],resist:['ice','water']},nature:{weak:['fire','wind'],resist:['nature','water']},light:{weak:['dark'],resist:['light']},dark:{weak:['light'],resist:['dark']},lightning:{weak:['earth'],resist:['lightning','wind']}};
-function affinity(target,element){let natural=target.element||WEAPON_ELEMENT[target.weapon],rule=ELEMENT_AFFINITY[natural];return rule?.weak.includes(element)?20:rule?.resist.includes(element)?-15:0}
+/* v94.02: the Kaelam wheel (js/elements.js) decides: beats the next element ×1.3 (+30%), loses to the previous ×0.7 (−30%); fusion/chaos = secret elements */
+const EW=()=>root.ElementWheel||(typeof require==='function'?require('./elements.js'):null);
+function affinity(target,element){let natural=target.element||WEAPON_ELEMENT[target.weapon],W=EW();if(W)return W.percent(element,natural);let rule=ELEMENT_AFFINITY[natural];return rule?.weak.includes(element)?20:rule?.resist.includes(element)?-15:0}
 
 const WEAPON_ELEMENT={bow:'wind',axe:'earth',tome:'light',sword:'fire',hammer:'earth',staff:'fusion',unarmed:'earth',knife:'wind',spear:'wind',rapier:'water'};
 // cost = move points to enter · hide = share of the body hidden · def = flat damage change · boost/weak/resist = element ±25%

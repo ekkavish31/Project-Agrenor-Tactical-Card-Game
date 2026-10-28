@@ -324,6 +324,19 @@
   }
   function closeModal() { if (modalEl) { modalEl.remove(); modalEl = null; modalOpen = false; const r = modalResolve; modalResolve = null; r?.(null) } }
 
+  /* ---------- v94.02 · drops: goods for the market (bag) and materials for the forge, by monster and land ---------- */
+  const DROPS = { wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'] };
+  const LAND = { forest: ['herb', 'wood'], grass: ['herb'], hills: ['iron', 'coal'], swamp: ['swampHerb'], snow: ['frostFur'], sand: ['pearl', 'driftwood'] };
+  const MATS = ['iron', 'coal', 'wood', 'food'];
+  function dropLoot(foe, biome, dang, boss) {
+    const g = WS.game(), v = g.village, bag = v.bag ||= {}, got = {}, add = k => { got[k] = (got[k] || 0) + 1; if (MATS.includes(k)) v.materials[k] = (v.materials[k] || 0) + 1; else bag[k] = (bag[k] || 0) + 1 };
+    const pool = [...(DROPS[foe] || []), ...(LAND[biome] || [])], n = (boss ? 3 : 1) + (Math.random() < .35 + dang * .3 ? 1 : 0);
+    for (let i = 0; i < n && pool.length; i++) add(pool[Math.floor(Math.random() * pool.length)]);
+    if (boss) add('relic'); WS.commit();
+    const G = window.ADVENTURE_DATA?.GOODS || {}, MN = { iron: 'เหล็ก', coal: 'ถ่าน', wood: 'ไม้', food: 'เสบียง' };
+    return Object.entries(got).map(([k, c]) => (G[k]?.name || MN[k] || k) + ' ×' + c).join(' · ');
+  }
+
   /* ---------- v94 · settlements: inn, shop, rumours and the travellers who are away from Fernvale today ---------- */
   const TOWN_TEXT = {
     brookmere: 'หมู่บ้านเกษตรเล็ก ๆ ริมลำธาร ทุ่งดอกไม้ล้อมรอบ ผู้คนรู้จักเฟิร์นเวลดี',
@@ -527,7 +540,8 @@
     else if (res.outcome !== 'win') ev(res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome, destName: destOf()?.name });
     if (res.outcome === 'win') {
       S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
-      log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '')); toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : ''));
+      const loot = dropLoot(foe, here.biome, dang, o.boss);
+      log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : '')); toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
     } else if (res.outcome === 'flee') {
       log('หนีออกมาได้'); if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal() } S.hp = Math.max(1, S.hp);
     } else {

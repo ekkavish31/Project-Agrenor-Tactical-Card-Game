@@ -170,6 +170,8 @@
       if (!out && ws && !ws.asked && n.talks >= 2) { askWant(id); out = { kind: 'want', want: id, text: compose(id, ws.def.ask, {}, { open: .7, close: 0 }) } }
       /* 5 · first meeting */
       if (!out && !n.met && p.family) n.met = now;
+      /* v94.02: villagers who watched the hero grow up greet them like family; travellers and newcomers introduce themselves (voice meet lines) */
+      if (!out && !n.met && p.familiar) { n.met = now; const fam = ['{name}! มาคุยกับข้าแบบนี้นาน ๆ ทีนะ', 'อ้าว {name} โตขึ้นเยอะเลยนะ จำได้ไหมตอนเด็ก ๆ เจ้าชอบวิ่งเล่นแถวนี้', 'ไง {name} วันนี้มีอะไรให้ช่วยไหม']; out = { kind: 'meet', text: compose(id, fam[(id.length + now) % fam.length], {}, { open: .3, close: .5 }) } }
       if (!out && !n.met) { n.met = now; const v = voiceOf(id); out = { kind: 'meet', text: compose(id, fresh(id, v.meet), {}, { open: 0, close: .5 }) } }
       /* 6 · small talk: their own lines for the time of day, their voice, how close you are, what changed for them */
       if (!out) {

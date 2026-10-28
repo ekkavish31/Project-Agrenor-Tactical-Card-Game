@@ -141,7 +141,12 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
   if(!el.querySelector('.ts-story').hidden||!el.querySelector('.ts-extra').hidden)return;const live=menu.filter(b=>!b.disabled),i=live.indexOf(document.activeElement);
   if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const n=(i+(e.key==='ArrowDown'?1:-1)+live.length)%live.length;live[n<0?0:n].focus()}});
  (hasSave?menu[1]:menu[0]).focus({preventScroll:true})}
-async function act(a){if(busyTitle)return;
+/* v94.02 · New Game / Continue enter the game in full screen by default (turn off: localStorage 'project-a-fullscreen' = '0').
+   A reload (New Game over an old save) loses full screen, so the first tap in the prologue asks again. */
+function goFull(){try{if(localStorage.getItem('project-a-fullscreen')==='0'||document.fullscreenElement)return;const d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;if(f){const r=f.call(d,{navigationUI:'hide'});r?.catch?.(()=>{})}try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch{}}catch{}}
+root.goFullscreen=goFull;
+if(newGame)addEventListener('pointerdown',goFull,{once:true,capture:true});
+async function act(a){if(busyTitle)return;if(a==='new'||a==='continue')goFull();
  if(a==='new'){if(hasSave){const ok=await (root.GameDialog?root.GameDialog.confirm('เริ่มเกมใหม่?\nความคืบหน้าในเซฟปัจจุบันจะถูกแทนที่ (ระบบเก็บสำเนาเซฟเดิมไว้ให้ 1 ชุด) · การ์ดที่ออกแบบและผังหมู่บ้านยังอยู่'):Promise.resolve(root.confirm('เริ่มเกมใหม่?')));if(!ok)return;
    try{localStorage.setItem('three-card-forge-before-newgame',localStorage.getItem(SAVE)||'');localStorage.removeItem(SAVE);localStorage.removeItem(STARTED);for(const k of ['agrenor-world-v1','agrenor-mind-v1','agrenor-clock-v1','agrenor-standalone-v1'])localStorage.removeItem(k);/* v94: the world map, village memory and old clock start over too */sessionStorage.setItem(NEW_FLAG,'1')}catch{}busyTitle=true;title.classList.add('ts-out');await wait(reduced?0:300);location.reload();return}
   story();return}

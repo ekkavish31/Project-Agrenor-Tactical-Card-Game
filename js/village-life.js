@@ -215,6 +215,8 @@
 
   // v94: where away travellers can be met on the world map (js/world-gen.js TOWNS · 'wander' = a different town each day)
   for (const [id, from] of Object.entries({ tess: 'brookmere', pell: 'brookmere', graven: 'haven', ash: 'haven', bram: 'haven', luna: 'northgate', hugo: 'northgate', finn: 'wander' })) if (P[id]) P[id].from = from;
+  // v94.02: who knows the hero from childhood (familiar greeting) and who meets them as a stranger
+  for (const p of Object.values(P)) p.familiar = !p.visit && !['sigrid', 'mil', 'nadia'].includes(p.id);
   /* is p in Fernvale at this day/hour? (residents always) */
   function present(p, day, hour) {
     const v = p?.visit; if (!v) return true;

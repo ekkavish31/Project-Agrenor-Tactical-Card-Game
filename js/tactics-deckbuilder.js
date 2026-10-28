@@ -21,7 +21,7 @@ const SZ=g=>D.SIZE[g];
 const pool=()=>s.village?.cardPool||null;
 // how many of a card this character may put in a deck (hero is limited by the collection; companions are not)
 function cap(g,id){const P=pool();if(who!=='hero'||!P)return SZ(g).max;return P[g]?.[id]||0}
-function chars(){let list=[{key:'hero',name:'ตัวเอก (คุณ)',weapon:'ตามที่สวมใส่'}];for(let c of (s.village.companions||[])){let r=window.Companions?.ROSTER[c.key];if(r)list.push({key:c.key,name:r.name+' Lv.'+(c.level||1),weapon:TacticsCore.WEAPONS[r.weapon]?.name||r.weapon})}return list}
+function chars(){let list=[{key:'hero',name:'ตัวเอก (คุณ)',weapon:'ตามที่สวมใส่'}];for(let c of (s.village.party||[])){let r=window.Companions?.ROSTER[c.key];if(r)list.push({key:c.key,name:r.name+' Lv.'+(c.level||1),weapon:TacticsCore.WEAPONS[r.weapon]?.name||r.weapon})}return list}
 function fallback(k){return k==='hero'?(pool()?D.STARTER:D.DEFAULT):D.defaultFor(k)}
 function stored(k){let v=k==='hero'?s.village.tacticDecks:(s.village.unitDecks||{})[k];try{return D.validate(v||fallback(k))}catch(e){return clone(D.validate(fallback(k)))}}
 function cardPic(group,id){let sid=(group==='movement'?'m-':'a-')+id;return window.CardStudio?.renderCard(sid,{mini:true})||`<span class="tdk-dot" style="background:${COLORS[id]}"></span>`}

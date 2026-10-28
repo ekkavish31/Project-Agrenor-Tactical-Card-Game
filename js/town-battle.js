@@ -19,17 +19,17 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '94.01';
+  const V = '94.02';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
   const MON = {
-    bandit: { name: 'โจรป่า', hp: 34, move: 3, atk: 8, scale: 1, fx: 'sword', img: 'bandit', shove: true },
-    wolf: { name: 'หมาป่า', hp: 26, move: 4, atk: 7, scale: .9, fx: 'knife', img: 'wolf' },
-    slime: { name: 'สไลม์แร่', hp: 40, move: 2, atk: 8, scale: .85, fx: 'blunt', img: 'slime' },
-    kobold: { name: 'โคโบลด์ขุดแร่', hp: 30, move: 3, atk: 9, scale: .9, fx: 'blunt', img: 'kobold' },
-    golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem', shove: true },
-    shadowWolf: { name: 'หมาป่าเงา', hp: 44, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' }
+    bandit: { name: 'โจรป่า', hp: 34, move: 3, atk: 8, scale: 1, fx: 'sword', img: 'bandit', shove: true , el: 'earth' },
+    wolf: { name: 'หมาป่า', hp: 26, move: 4, atk: 7, scale: .9, fx: 'knife', img: 'wolf' , el: 'wind' },
+    slime: { name: 'สไลม์แร่', hp: 40, move: 2, atk: 8, scale: .85, fx: 'blunt', img: 'slime' , el: 'water' },
+    kobold: { name: 'โคโบลด์ขุดแร่', hp: 30, move: 3, atk: 9, scale: .9, fx: 'blunt', img: 'kobold' , el: 'earth' },
+    golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem', shove: true , el: 'earth' },
+    shadowWolf: { name: 'หมาป่าเงา', hp: 44, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' , el: 'dark' }
   };
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
   const NIGHT = Q.get('night') === '1', ATKX = +Q.get('atk') || 1, HST = Q.get('hst') != null ? Math.max(0, Math.min(100, +Q.get('hst'))) : 100;
@@ -60,7 +60,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio' };
+    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'hit', 'down']);
@@ -92,12 +92,12 @@
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
     const near = (o) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - o.u) + Math.abs(v - o.v) + Math.random() * .3; if (d < bd) { bd = d; best = { u, v } } } if (best) taken.add(best.u + ',' + best.v); return best };
-    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk, def: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, shove: !!T.shove } }).filter(Boolean);
+    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk, def: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
+    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, shove: !!T.shove, el: T.el } }).filter(Boolean);
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true,
-      hero: { ...hs, name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX, stamina: HST }, allies, monsters: mons });
+      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX, stamina: HST }, allies, monsters: mons });
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)) }
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
@@ -179,6 +179,7 @@
   #fbHand{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:41;display:flex;align-items:flex-end;gap:10px;padding:8px 12px 6px;border-radius:16px;background:linear-gradient(#0000,#0b1512cc 35%);max-width:calc(100vw - 16px);font:12px system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
   #fbHand .row{display:flex;gap:6px;align-items:flex-end}#fbHand .sep{width:1px;align-self:stretch;background:#ffffff33;margin:0 2px}
   #fbHand .lbl{position:absolute;left:0;right:0;top:-17px;text-align:center;font-size:11px;color:#cdbb8f;white-space:nowrap}
+  .fb-el{position:absolute;z-index:3;top:-8px;right:-6px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 13px system-ui;box-shadow:0 2px 6px #000a}.fb-el.adv{background:#3fbf6a;color:#fff}.fb-el.dis{background:#c9503f;color:#fff}
   .fb-card{position:relative;width:84px;padding:0;border:0;background:none;cursor:pointer;transition:transform .16s,filter .16s;border-radius:9px}
   .fb-card .face{width:84px;aspect-ratio:750/1101;border-radius:8px;overflow:hidden;box-shadow:0 4px 10px #0008;background:#2a2a2a}
   .fb-card .face .gcard{width:100%}.fb-card .face>.fb-fallback{display:flex;flex-direction:column;height:100%;align-items:center;justify-content:center;color:#fff;font-size:11px}
@@ -253,11 +254,12 @@
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
     d.innerHTML = `<b style="color:#f6d79b">⚔ สนามรบ · ไพ่</b><div id="fbTurn" style="margin:4px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd">จบเทิร์น</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button>${EMBED ? '<button id="fbFlee">🏃 หนี</button><button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : '<button id="fbNew">เริ่มใหม่</button>'}</div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd">จบเทิร์น</button><button id="fbEl" title="ตารางธาตุ">◈ ธาตุ</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button>${EMBED ? '<button id="fbFlee">🏃 หนี</button><button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : '<button id="fbNew">เริ่มใหม่</button>'}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
       <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">ใช้ไพ่เดิน → คลิกช่องฟ้า · ใช้ไพ่สู้เมื่อศัตรูอยู่ในระยะ<br>คริสตัล 2 เม็ด/เทิร์น · ไพ่จั่วเติมตอนเริ่มเทิร์น<br>ช่อง: น้ำตาล เดินช้า · เขียว กำบัง −30% · แดง กีดขวาง</div>`;
     document.body.append(d); hud = d;
     d.querySelector('#fbEnd').onclick = () => endHeroTurn();
+    d.querySelector('#fbEl').onclick = () => window.ElementWheel?.showChart();
     d.querySelector('#fbDis').onclick = () => setDiscard(!discardMode);
     if (EMBED) { d.querySelector('#fbFlee').onclick = () => { if (!busy && st.turn === 'hero' && !st.outcome) report('flee') }; d.querySelector('#fbBack').onclick = () => report(st.outcome) }
     if (!EMBED) d.querySelector('#fbNew').onclick = () => { document.querySelectorAll('.fb-show,.fb-fly,#fbBar').forEach(e => e.remove()); build(); userCam = false; cam.set = false; startTurnShow(true) };
@@ -268,7 +270,9 @@
     const allyRow = u => { const sk = FB.ALLY_SKILL[u.key], why = FB.skillBlock(st, u), o = u.order || 'charge';
       return `<div class="arow ${u.hp <= 0 ? 'down' : ''}"><div class="mini" data-id="${u.id}"><span>${esc(u.name)}${u.guard ? ' <small style="color:#9cc8ff">🛡' + u.guard + '</small>' : ''}${u.stun ? ' ❄' : ''}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:#7fc8a0"></i></div>` +
         (u.hp > 0 ? `<div class="ord">${[['charge', '⚔', 'บุก: เข้าหาศัตรูที่ใกล้สุด/เป้าที่เล็ง'], ['follow', '👣', 'ตาม: อยู่ใกล้ฮีโร่ ตีเฉพาะศัตรูที่เข้ามาใกล้'], ['guard', '🛡', 'ตั้งรับ: ไม่ขยับ ป้องกัน +6']].map(([k, ic, tt]) => `<button data-ally="${u.id}" data-order="${k}" class="${o === k ? 'on' : ''}" title="${tt}">${ic}</button>`).join('')}${sk ? `<button class="sk" data-skill="${u.id}" ${why || busy ? 'disabled' : ''} title="${esc(sk.name + (why ? ' — ' + why : ''))}">✦ ${esc(sk.name)}${u.cd ? ' (' + u.cd + ')' : ''}</button>` : ''}</div>` : '') + '</div>' };
-    const mini = (u, col) => `<div class="mini ${u.hp <= 0 ? 'down' : ''} ${st.target === u.id ? 'tgt' : ''}" data-id="${u.id}"><span>${esc(u.name)}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:${col}"></i></div>`;
+    const lvb = u => window.FieldHeight && FB.lv(st, u.u, u.v) ? ` <small style="color:#cfe4ff">▲${FB.lv(st, u.u, u.v)}</small>` : '';
+    const elb = u => { const W = window.ElementWheel, E = W?.info(u.el); return E ? ` <small class="fb-elb" style="color:${E.col}" title="${esc(W.name(u.el))}">${E.icon}${esc(W.name(u.el, true))}</small>` : '' };
+    const mini = (u, col) => `<div class="mini ${u.hp <= 0 ? 'down' : ''} ${st.target === u.id ? 'tgt' : ''}" data-id="${u.id}"><span>${esc(u.name)}${elb(u)}${lvb(u)}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:${col}"></i></div>`;
     hud.querySelector('#fbUnits').innerHTML =
       `<div>${esc(h.name)} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff">🛡' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
       `<div><small style="color:#bba57f">แรง (stamina)</small> <span style="float:right">${h.stamina}/100</span></div>${bar(h.stamina, 100, '#e8c34a')}` +
@@ -291,13 +295,22 @@
     const d = document.createElement('div'); d.id = 'fbHand';
     d.innerHTML = `<div class="fb-pile draw" id="fbDraw"></div><div class="row" id="fbMove" style="position:relative"><span class="lbl">ไพ่เดิน</span></div><div class="sep"></div><div class="row" id="fbCombat" style="position:relative"><span class="lbl">ไพ่ต่อสู้</span></div><div class="fb-pile discard" id="fbDiscard"></div>`;
     document.body.append(d); hand = d;
-    d.addEventListener('click', e => { const b = e.target.closest('.fb-card'); if (b) cardClick(b) });
-    d.addEventListener('pointerover', e => { const b = e.target.closest('.fb-card'); if (b && !discardMode && !busy) preview(b) });
-    d.addEventListener('pointerout', e => { const b = e.target.closest('.fb-card'); if (b && !b.contains(e.relatedTarget)) hidePreview() });
+    /* v94.02 touch: the first tap shows the card (range, element tip), a second tap on the same card plays it */
+    let armed = null; const touchy = () => window.Touch?.lastPointer?.() === 'touch';
+    d.addEventListener('click', e => { const b = e.target.closest('.fb-card'); if (!b) return; if (touchy() && !discardMode && armed !== b.dataset.uid) { armed = b.dataset.uid; preview(b); return } armed = null; cardClick(b) });
+    d.addEventListener('pointerover', e => { if (touchy()) return; const b = e.target.closest('.fb-card'); if (b && !discardMode && !busy) preview(b) });
+    d.addEventListener('pointerout', e => { if (touchy()) return; const b = e.target.closest('.fb-card'); if (b && !b.contains(e.relatedTarget)) hidePreview() });
+    addEventListener('pointerdown', e => { if (touchy() && armed && !e.target.closest?.('.fb-card')) { armed = null; hidePreview() } }, true);
+  }
+  /* v94.02 · element tip: the card's element against the target it would hit (Kaelam chart: js/elements.js) */
+  function elTip(group, id) {
+    const W = window.ElementWheel; if (!W || group !== 'combat') return null; const r = FB.cardRule(id); if (!r || r.self) return null;
+    const el = FB.CARD_EL[id] || FB.WEAPON_EL[FB.hero(st).weapon] || 'earth', tg = FB.pickTarget(st, r) || st.units.find(u => u.id === st.target) || FB.monster(st);
+    return W.tip(el, tg?.el);
   }
   function cardEl(group, c, i) {
     const why = st.turn === 'hero' && !discardMode ? cardBlock(group, i) : '';
-    return `<button class="fb-card ${why ? 'off' : ''} ${picked.has(c.uid) ? 'picked' : ''}" data-group="${group}" data-i="${i}" data-uid="${esc(c.uid)}" data-id="${esc(c.id)}" title="${esc(cardName(group, c.id) + ' — ' + cardLine(group, c.id) + (why ? ' · ' + why : ''))}"><div class="face">${faceHTML(group, c.id, true)}</div><span class="fb-tag"><b>${esc(cardName(group, c.id))}</b>${esc(cardLine(group, c.id))}</span></button>`;
+    return `<button class="fb-card ${why ? 'off' : ''} ${picked.has(c.uid) ? 'picked' : ''}" data-group="${group}" data-i="${i}" data-uid="${esc(c.uid)}" data-id="${esc(c.id)}" title="${esc(cardName(group, c.id) + ' — ' + cardLine(group, c.id) + (elTip(group, c.id)?.text ? ' · ' + elTip(group, c.id).text : '') + (why ? ' · ' + why : ''))}">${(() => { const e = elTip(group, c.id); return e?.cls ? `<span class="fb-el ${e.cls}">${e.cls === 'adv' ? '▲' : '▼'}</span>` : '' })()}<div class="face">${faceHTML(group, c.id, true)}</div><span class="fb-tag"><b>${esc(cardName(group, c.id))}</b>${esc(cardLine(group, c.id))}</span></button>`;
   }
   function handSync() {
     if (!hand || !st) return;
@@ -328,13 +341,15 @@
   let pv = null;
   function preview(b) {
     hidePreview(); const group = b.dataset.group, id = b.dataset.id, why = cardBlock(group, +b.dataset.i);
-    if (group === 'combat') { const rr = FB.cardRule(id); rangeShow = rr && !rr.self ? rr.range : 0 }
+    if (group === 'combat') { const rr = FB.cardRule(id); rangeShow = rr && !rr.self ? rr.range : 0; pushShow = null;
+      /* v94.02 · push / pull forecast: where the target lands and how far it falls */
+      if (rr && (rr.push || rr.pull) && window.FieldHeight) { const h = FB.hero(st), tg = FB.pickTarget(st, rr); if (tg) { const dir = rr.push ? 1 : -1, du = tg.u - h.u, dv = tg.v - h.v, su = Math.abs(du) >= Math.abs(dv) ? Math.sign(du) : 0, sv = su ? 0 : Math.sign(dv), nu = tg.u + su * dir, nv = tg.v + sv * dir, drop = FB.lv(st, tg.u, tg.v) - FB.lv(st, nu, nv), free = cells.get(nu + ',' + nv) && cells.get(nu + ',' + nv) !== 'blocked' && !st.units.some(x => x.hp > 0 && x.u === nu && x.v === nv) && drop >= -1; pushShow = free ? { u: nu, v: nv, drop, dmg: drop >= 2 ? 5 * drop : 0 } : { u: nu, v: nv, stuck: true } } } }
     pv = document.createElement('div'); pv.className = 'fb-show';
-    pv.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b><br>${esc(cardLine(group, id))}${why && st.turn === 'hero' ? '<br><span style="color:#ff9a8a">' + esc(why) + '</span>' : ''}</div>`;
+    pv.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b><br>${esc(cardLine(group, id))}${(() => { const e = elTip(group, id); return e?.text ? `<br><span style="color:${e.cls === 'adv' ? '#7fe08a' : e.cls === 'dis' ? '#ff9a8a' : '#cdbb92'}">${esc(e.text)}</span>` : '' })()}${why && st.turn === 'hero' ? '<br><span style="color:#ff9a8a">' + esc(why) + '</span>' : ''}</div>`;
     document.body.append(pv); const s = sideSpot(210, 340); pv.style.left = s.x + 'px'; pv.style.top = s.y + 'px';
   }
-  function hidePreview() { pv?.remove(); pv = null; rangeShow = 0 }
-  let rangeShow = 0;
+  function hidePreview() { pv?.remove(); pv = null; rangeShow = 0; pushShow = null }
+  let rangeShow = 0, pushShow = null;
   const TONE = { movement: '#6fc3ff', attack: '#ff7a5c', self: '#7fe08a', magic: '#c39bff' };
   /* the played card pops up full size beside the fight, stays while the action plays, then flies into the discard pile */
   function showPlay(group, id, text, fromEl) {
@@ -696,6 +711,9 @@
       g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke();
     }
     if (reachMap && !busy) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
+    /* v94.02 · height of every cell you can reach (1–3; 0 = ground) */
+    if (reachMap && !busy && window.FieldHeight) { g.font = '700 11px system-ui'; g.textAlign = 'center'; for (const e of reachMap.values()) { const L = FB.lv(st, e.u, e.v); if (!L) continue; const p = project(e.u + .5, e.v + .5); g.fillStyle = 'rgba(10,20,40,.75)'; g.beginPath(); g.arc(p.x, p.y, 8, 0, 7); g.fill(); g.fillStyle = '#cfe4ff'; g.fillText('▲' + L, p.x, p.y + 4) } }
+    if (pushShow && !busy) { poly(g, pushShow.u, pushShow.v); g.fillStyle = pushShow.stuck ? 'rgba(160,160,160,.35)' : pushShow.dmg ? 'rgba(255,60,40,.45)' : 'rgba(255,200,80,.35)'; g.fill(); const p = project(pushShow.u + .5, pushShow.v + .5); g.font = '800 13px system-ui'; g.textAlign = 'center'; g.fillStyle = '#000a'; g.fillRect(p.x - 48, p.y - 30, 96, 18); g.fillStyle = pushShow.dmg ? '#ffb0a0' : '#ffe2a8'; g.fillText(pushShow.stuck ? 'ผลักไม่ได้' : pushShow.dmg ? 'ตก ' + pushShow.drop + ' ระดับ −' + pushShow.dmg : 'ไม่ตก', p.x, p.y - 17) }
     const h = FB.hero(st), tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
     /* hovering a combat card: its reach around the hero in red */
     if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }

@@ -4,7 +4,7 @@
 (function(root){'use strict';
 const B={home:'assets/home.webp',market:'assets/market.webp',work:'assets/workshop.webp',anvil:'assets/forge.webp',camp:'assets/camp.webp',
  forest:'assets/scenes/area-forest.webp',mine:'assets/scenes/area-mine.webp',ruins:'assets/scenes/area-ruins.webp'};
-const ally=()=>{try{const c=(s.village.companions||[])[0];const R=root.Companions?.ROSTER?.[c?.key];return c&&R?{name:R.name,portrait:'assets/cards/portraits/u-'+c.key+'.webp'}:null}catch{return null}};
+const ally=()=>{try{const c=(s.village.party||[])[0];const R=root.Companions?.ROSTER?.[c?.key];return c&&R?{name:R.name,portrait:'assets/cards/portraits/u-'+c.key+'.webp'}:null}catch{return null}};
 const SPEAKERS={
  hero:{name:()=>{try{return s.village.heroName||'นักผจญภัย'}catch{return 'นักผจญภัย'}},portrait:'assets/cards/portraits/u-hero.webp'},
  mom:{name:'แม่',color:'#8a4b5c'},

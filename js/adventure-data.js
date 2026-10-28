@@ -1,4 +1,5 @@
-// v11 adventure data: items, event cards and branching area maps. Pure data (no UI).
+// v11 adventure data: items, goods, event cards and area info (names, enemies, themes). Pure data (no UI).
+// v94.02: the old branching area maps (GRAPH/FIXED/POOL/QUESTS/NODE_TYPES) were deleted with the old adventure — journeys use the world map.
 // Elements (all cards carry one): fire water light dark wind ice earth nature chaos fusion
 window.ADVENTURE_DATA=(function(){
 // ---------- consumables: used on the area map (bag) or in battle (3 random from the bag each turn, use 1) ----------
@@ -46,20 +47,6 @@ const EVENT_CARDS={
  fallenCart:{name:'เกวียนพลิกคว่ำ',element:'earth',rarity:'common',kind:'ช่วยเหลือ',area:'ทุกที่',minutes:20,text:'เกวียนขนแร่ล้มขวางทาง'},
  willowisp:{name:'แสงผีนำทาง',element:'light',rarity:'common',kind:'ลึกลับ',area:'บึง',minutes:20,text:'ดวงไฟลอยเรียกให้ตามไป'},
  strangeRune:{name:'อักษรรูนประหลาด',element:'chaos',rarity:'rare',kind:'ลึกลับ',area:'ทุกที่',minutes:10,text:'พลังที่ไม่รู้ว่าจะให้คุณหรือโทษ'}};
-// ---------- area maps (x,y in % of the map; next = edges forward). types: start treasure event quest rest fight elite miniboss boss ----------
-// v13: bigger map — 22 spots in 8 columns (start · 3 · 3 · 4 · 3 · 3 · 2 · camp · boss)
-const GRAPH=[
- ['start',5,50,['a1','a2','a3']],
- ['a1',15,20,['b1','b2']],['a2',15,50,['b2']],['a3',15,80,['b2','b3']],
- ['b1',27,14,['c1','c2']],['b2',27,47,['c2','c3']],['b3',27,82,['c3','c4']],
- ['c1',39,24,['d1']],['c2',39,46,['d1','d2']],['c3',40,66,['d2','d3']],['c4',40,88,['d3']],
- ['d1',52,30,['e1','e2']],['d2',52,58,['e2']],['d3',53,82,['e2','e3']],
- ['e1',65,20,['f1']],['e2',65,52,['f1','f2']],['e3',66,80,['f2']],
- ['f1',77,34,['g1']],['f2',77,66,['g1']],
- ['g1',87,50,['boss']],['boss',95,50,[]]];
-// fixed spots; the rest are shuffled from POOL every run
-const FIXED={start:'start',d1:'miniboss',g1:'rest',boss:'boss'};
-const POOL=['fight','fight','fight','fight','fight','fight','elite','elite','treasure','treasure','treasure','event','event','event','quest','rest','shop','mystery'];
 const AREAS={
  forest:{name:'ป่าตะวันออก',tier:1,exit:'east',theme:'forest',element:'nature',sky:['#1d3a2a','#3e6b45'],
   intro:'ทางเดินเข้าป่าแยกเป็นหลายเส้น เสียงหมาป่าดังมาจากที่ลึก — ผ่านไปให้ถึงต้นไม้เฒ่าที่คลั่งกลางป่า',
@@ -92,29 +79,5 @@ const AREAS={
   types:{start:'start',a1:'event',a2:'fight',b1:'fight',b2:'treasure',b3:'quest',c1:'elite',c2:'event',c3:'fight',d1:'miniboss',d2:'treasure',e1:'fight',e2:'rest',f1:'rest',boss:'boss'},
   enemies:{normal:['skeleton','wisp','cultist'],elite:['ghostKnight'],miniboss:'gargoyle',boss:'voidKing'},
   goods:['boneCharm','soulGem','oldCoin'],events:['cursedIdol','oldShrine','strangeRune','treasureMap','merchant','wanderingKnight']}};
-// v13 quests: each area offers several kinds — defeat the miniboss · defeat N enemies · bring N area goods
-const QUESTS={
- forest:[{giver:'นายพรานเฒ่า',kind:'miniboss',text:'ปราบจ่าฝูงหมาป่า (♜ รองหัวหน้า)',ask:'จ่าฝูงหมาป่าตัวนั้นไล่กัดสัตว์ในป่าจนเกือบหมด',reward:{coins:50,items:['bigPotion','treasureMap']}},
-  {giver:'หมอยาประจำหมู่บ้าน',kind:'collect',item:'herb',n:3,text:'เก็บสมุนไพรป่า 3 ชิ้น',ask:'ยาในร้านหมดแล้ว ช่วยเก็บสมุนไพรระหว่างทางให้หน่อย',reward:{coins:45,items:['bigPotion','tonic']}},
-  {giver:'ยามป่า',kind:'kills',n:8,text:'กำจัดศัตรูในป่า 8 ตัว',ask:'โจรกับหมาป่าเยอะเกินไป ช่วยลดจำนวนมันลงที',reward:{coins:60,items:['guardCharm']}}],
- mine:[{giver:'หัวหน้าคนงานเหมือง',kind:'miniboss',text:'ทำลายโกเล็มหิน (♜ รองหัวหน้า)',ask:'โกเล็มหินขวางทางคนงานจนเข้าเหมืองไม่ได้',reward:{coins:50,items:['bigPotion','lostMiner']}},
-  {giver:'ช่างอัญมณี',kind:'collect',item:'crystalShard',n:2,text:'หาเศษผลึกแร่ 2 ชิ้น',ask:'ข้าต้องการผลึกจากเหมืองลึกไปเจียระไน',reward:{coins:70,items:['iceBomb']}},
-  {giver:'คนงานเหมือง',kind:'kills',n:8,text:'ไล่ศัตรูในเหมือง 8 ตัว',ask:'ค้างคาวกับโคโบลด์ทำให้พวกเราทำงานไม่ได้',reward:{coins:55,items:['firebomb']}}],
- swamp:[{giver:'คนเรือจ้าง',kind:'miniboss',text:'ปราบโทรลล์โคลน (♜ รองหัวหน้า)',ask:'โทรลล์ตัวนั้นพลิกเรือข้ามฟากจนไม่มีใครกล้าข้าม',reward:{coins:60,items:['bigPotion','willowisp']}},
-  {giver:'หมอยาประจำหมู่บ้าน',kind:'collect',item:'swampHerb',n:3,text:'เก็บสมุนไพรหนองน้ำ 3 ชิ้น',ask:'ต้องการทำยาถอนพิษ ขาดแค่สมุนไพรจากบึง',reward:{coins:55,items:['bigPotion','tonic']}},
-  {giver:'นักล่าบึง',kind:'kills',n:9,text:'กำจัดศัตรูในบึง 9 ตัว',ask:'สไลม์บึงแพร่พันธุ์เร็วเกินไป',reward:{coins:65,items:['guardCharm']}}],
- coast:[{giver:'ชาวประมง',kind:'miniboss',text:'ไล่กัปตันตะขอ (♜ รองหัวหน้า)',ask:'โจรสลัดยึดท่าเรือ เรือออกหาปลาไม่ได้มาหลายวัน',reward:{coins:65,items:['bigPotion','shipwreck']}},
-  {giver:'พ่อค้าเครื่องประดับ',kind:'collect',item:'pearl',n:2,text:'หาไข่มุกทะเล 2 เม็ด',ask:'ลูกค้าสั่งสร้อยไข่มุกไว้ แต่ของยังไม่มา',reward:{coins:90,items:['tonic']}},
-  {giver:'ยามท่าเรือ',kind:'kills',n:9,text:'กำจัดโจรสลัดและสัตว์ร้าย 9 ตัว',ask:'ช่วยทำให้ชายฝั่งปลอดภัยที',reward:{coins:65,items:['firebomb','guardCharm']}}],
- frost:[{giver:'นักปีนเขา',kind:'miniboss',text:'ล้มเยติ (♜ รองหัวหน้า)',ask:'เยติตัวนั้นถล่มที่พักของพวกเราพัง',reward:{coins:65,items:['bigPotion','hotSpring']}},
-  {giver:'ช่างตัดเสื้อ',kind:'collect',item:'frostFur',n:3,text:'หาขนสัตว์หิมะ 3 ผืน',ask:'หน้าหนาวนี้ต้องตัดเสื้อกันหนาวให้ทั้งหมู่บ้าน',reward:{coins:70,items:['bread','tonic']}},
-  {giver:'พรานภูเขา',kind:'kills',n:9,text:'ล่าสัตว์ร้ายบนเขา 9 ตัว',ask:'หมาป่าหิมะลงมากินแพะของชาวบ้าน',reward:{coins:65,items:['iceBomb']}}],
- ruins:[{giver:'นักบวชพเนจร',kind:'miniboss',text:'ทำลายการ์กอยล์ (♜ รองหัวหน้า)',ask:'การ์กอยล์ปกป้องห้องบูชาที่ถูกลัทธิมืดยึด',reward:{coins:70,items:['bigPotion','guardCharm']}},
-  {giver:'นักโบราณคดี',kind:'collect',item:'soulGem',n:2,text:'หาอัญมณีวิญญาณ 2 เม็ด',ask:'ข้าอยากศึกษาพลังในอัญมณีจากวิหารนี้',reward:{coins:95,items:['strangeRune']}},
-  {giver:'อัศวินแห่งวิหาร',kind:'kills',n:10,text:'ชำระวิหาร กำจัดศัตรู 10 ตัว',ask:'วิญญาณร้ายกับสาวกลัทธิยังวนเวียนอยู่',reward:{coins:75,items:['guardCharm','firebomb']}}]};
-const NODE_TYPES={
- start:{name:'ทางเข้า',icon:'⌂',color:'#d8c9a0'},treasure:{name:'สมบัติ',icon:'◆',color:'#e6b53a'},event:{name:'เหตุการณ์',icon:'?',color:'#8fb7e0'},
- quest:{name:'เควส',icon:'!',color:'#f0d070'},shop:{name:'พ่อค้าเร่',icon:'⚖',color:'#d8a8e0'},mystery:{name:'ไม่ทราบ',icon:'❔',color:'#b0b0c8'},rest:{name:'จุดพัก',icon:'☾',color:'#9ed49a'},fight:{name:'ฝูงศัตรู',icon:'⚔',color:'#e08a6a'},
- elite:{name:'ศัตรูพิเศษ',icon:'✦',color:'#e36d4a'},miniboss:{name:'รองหัวหน้า',icon:'♜',color:'#d4483a'},boss:{name:'หัวหน้า',icon:'♛',color:'#b0222a'}};
-return {CONSUMABLES,GOODS,EVENT_CARDS,GRAPH,FIXED,POOL,AREAS,NODE_TYPES,QUESTS};
+return {CONSUMABLES,GOODS,EVENT_CARDS,AREAS};
 })();
