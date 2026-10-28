@@ -2673,7 +2673,9 @@
   const mb = (m, label) => `<button data-lm="${m}" style="${mode === m ? 'background:#e5c06b;color:#1b302a' : ''}">${label}</button>`;
   if (manualMode) {
    body.innerHTML = `<p class="sub">แผนที่นี้ใช้ถนนที่แก้เอง (โหมดถนนแมนนวล) · ทางเชื่อมของที่นี่เป็นเส้นถนนเส้นหนึ่ง ${n ? '(พบ ' + n + ' เส้น)' : '(ไม่พบเส้นที่ผูกกับที่นี่)'} — ปรับความกว้าง/ลบได้ที่นี่ หรือแก้รูปเส้นด้วยเครื่องมือ “ถนน”</p>
-   ${n ? slider('lw', 'ความกว้างทางเชื่อม ×', L.w ?? 1, .3, 3, .05, x => (+x).toFixed(2)) + '<div class="row"><button id="lDel">🗑 ลบเส้นทางเชื่อมของที่นี่</button></div>' : ''}`;
+   <p class="sub"><b style="color:#ffb347">ลากวงกลมส้มบนแผนที่</b> = ย้ายจุดที่ทางเดินต่อกับถนน (ใช้ได้เมื่อที่นี่มีช่องเหลือง)</p>
+   ${n ? slider('lw', 'ความกว้างทางเชื่อม ×', L.w ?? 1, .3, 3, .05, x => (+x).toFixed(2)) + '<div class="row"><button id="lDel">🗑 ลบเส้นทางเชื่อมของที่นี่</button></div>' : '<div class="row"><button id="lMake">＋ สร้างเส้นทางเชื่อมจากวงกลมส้มไปถนนที่ใกล้สุด</button></div><p class="sub">สร้างแล้วจะปรับความกว้างได้ที่นี่ และดึงจุดดัดเส้นด้วยเครื่องมือ “ถนน” ได้</p>'}`;
+   act('#lMake', () => { if (UX.linkLead(o)) { UX.persist(); render() } else flashStatus('ไม่พบถนนให้ต่อ') });
    bindSliders((k, v) => { L.w = v }, () => { UX.setLeadW(o, L.w ?? 1); leadSet(o, { w: L.w }); UX.persist(); render() });
    act('#lDel', () => { if (confirm('ลบเส้นถนนทางเชื่อมของ ' + ownerName(o.id) + '?')) { UX.dropLead(o); UX.persist(); render() } });
    return
