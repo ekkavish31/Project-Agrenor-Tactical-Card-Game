@@ -1,6 +1,8 @@
 /* v92.08 · Flat-grid battle (phase 2 of docs/PLAN-v92.md). No heights: one hero and one monster on the village lattice.
-   Cards (create({cards:true})): the old deck (TacticsDecks: 3 crystals a turn, 4 move cards, 6 combat cards) drives the hero — a move card adds its
-   points to st.mp, a combat card hits with the old damage numbers (sword 18, spell 14 …). Without `cards` the plain atk/def duel of v92.07 is kept.
+   Cards (create({cards:true})): the old deck contents (TacticsDecks: 4 move cards, 6 combat cards) drive the hero — a move card adds its points to
+   st.mp, a combat card hits with the old damage numbers (sword 18, spell 14 …). v92.09 flat rules: 2 action crystals a turn (any mix), a used or
+   discarded card leaves the hand and the hand is refilled only when the hero's next turn starts; discarding any number of cards at once costs
+   1 crystal and gives STAMINA_PER_DISCARD stamina per card. Without `cards` the plain atk/def duel of v92.07 is kept.
    Pure logic (works in the browser and in node). The map only has to answer kindAt(u,v) with one of the four terrain kinds:
      normal  ปกติ      cost 1
      slow    เดินช้า    cost 2 to enter
@@ -35,9 +37,30 @@
       const h = st.units[0], m = st.units[1];
       Object.assign(h, { atk: 0, def: 0, stamina: 100, guard: 0, weapon: 'sword', ...o.hero });
       Object.assign(m, { def: 0, ...o.monster }); m.guard = 0;
-      st.cards = true; st.deck = TD.create(o.deckConfig || TD.DEFAULT, o.rng || Math.random); st.mp = 0;
+      st.cards = true; st.rng = o.rng || Math.random; st.deck = TD.create(o.deckConfig || TD.DEFAULT, st.rng); st.mp = 0;
+      st.crystalMax = o.crystals || CRYSTALS; st.spent = 0; st.drawn = [...st.deck.movement.hand, ...st.deck.combat.hand].map(c => c.uid);
     }
     return st;
+  }
+  /* critical hits (card mode): hero 15 %, monster 8 %, ×1.5 damage */
+  const CRIT = { hero: .15, monster: .08, mult: 1.5 };
+  const CRYSTALS = 2, STAMINA_PER_DISCARD = 10, HAND = { movement: 4, combat: 6 };
+  const crystals = st => Math.max(0, (st.crystalMax || CRYSTALS) - (st.spent || 0));
+  function cardEvent(st, type, group, cards) { if (cards.length) (st.deck.cardEvents ||= []).push({ type, group, cards: cards.map(c => ({ ...c })), seq: st.deck.cardSeq = (st.deck.cardSeq || 0) + 1 }) }
+  /* take card `index` out of the hand into the discard pile (no refill — that waits for the next turn) */
+  function spend(st, group, index) { const p = st.deck[group], c = p.hand.splice(index, 1)[0]; p.discard.push({ ...c, used: false }); cardEvent(st, 'discard', group, [c]); return c }
+  /* start of the hero's turn: refill both hands (reshuffling the discard pile when the draw pile runs out), crystals back to full */
+  function refill(st) {
+    const TD = deckLib(), drawn = [];
+    for (const group of ['movement', 'combat']) {
+      const p = st.deck[group], got = [];
+      while (p.hand.length < HAND[group]) {
+        if (!p.draw.length) { if (!p.discard.length) break; p.draw = TD.shuffle(p.discard.map(c => ({ ...c, used: false })), st.rng || Math.random); p.discard = []; p.cycles++; cardEvent(st, 'shuffle', group, p.draw) }
+        const c = p.draw.pop(); c.used = false; p.hand.push(c); got.push(c);
+      }
+      cardEvent(st, 'draw', group, got); drawn.push(...got.map(c => c.uid));
+    }
+    st.spent = 0; st.drawn = drawn; return drawn;
   }
   function deckLib() { return root.TacticsDecks || (typeof require === 'function' ? require('./tactics-decks.js') : null) }
   /* flat versions of the old combat cards: range in cells, raw damage, stamina cost (numbers from tactics-core cardInfo, sword) */
@@ -119,17 +142,17 @@
     const a = actor(st), t = targets(st, a)[0];
     if (!t) return { ok: false, reason: 'ศัตรูอยู่นอกระยะ' };
     if (st.cards && a.side === 'hero') return { ok: false, reason: 'ใช้ไพ่โจมตี' };
-    const r = st.cards ? hurt(st, t, a.atk) : damageFor(st, a, t); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage); st.acted = true; st.mp = 0;
+    const crit = st.cards && (st.rng || Math.random)() < CRIT.monster, r = st.cards ? hurt(st, t, a.atk * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); if (crit) r.notes.unshift('คริติคอล'); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage); st.acted = true; st.mp = 0;
     st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
     if (!alive(t)) st.outcome = t.side === 'monster' ? 'win' : 'lose';
-    return { ok: true, damage: r.damage, target: t, notes: r.notes };
+    return { ok: true, damage: r.damage, target: t, notes: r.notes, crit };
   }
   function endTurn(st) {
     if (st.outcome) return { ok: false, reason: 'จบการต่อสู้แล้ว' };
-    if (st.cards && st.turn === 'hero') { deckLib().next(st.deck, Math.random); const h = hero(st); h.stamina = Math.min(100, h.stamina + 10) }
+    if (st.cards && st.turn === 'hero') { const h = hero(st); h.stamina = Math.min(100, h.stamina + 10) }
     st.turn = st.turn === 'hero' ? 'monster' : 'hero'; if (st.turn === 'hero') st.turns++;
     st.acted = false; st.mp = st.cards && st.turn === 'hero' ? 0 : actor(st).move;
-    if (st.cards && st.turn === 'hero') hero(st).guard = 0;
+    if (st.cards && st.turn === 'hero') { hero(st).guard = 0; refill(st) }
     return { ok: true, turn: st.turn };
   }
   /* the monster's whole turn: walk toward the hero as far as the points allow, attack if in range, end turn. Returns the steps (for animation). */
@@ -141,7 +164,7 @@
     let bestK = key(m.u, m.v), bestD = dOf(m.u, m.v), bestC = 0;
     for (const [k, e] of r) { const d = dOf(e.u, e.v); if (d < bestD || (d === bestD && e.cost < bestC)) { bestK = k; bestD = d; bestC = e.cost } }
     if (bestK !== key(m.u, m.v)) { const to = r.get(bestK), mv = move(st, { u: to.u, v: to.v }); if (mv.ok) steps.push({ type: 'move', path: mv.path }) }
-    const at = attack(st); if (at.ok) steps.push({ type: 'attack', damage: at.damage, notes: at.notes });
+    const at = attack(st); if (at.ok) steps.push({ type: 'attack', damage: at.damage, notes: at.notes, crit: at.crit });
     if (!st.outcome) endTurn(st);
     return steps;
   }
@@ -149,27 +172,30 @@
   function playMove(st, index) {
     if (!st.cards || st.outcome || st.turn !== 'hero') return { ok: false, reason: 'ไม่ใช่ตาคุณ' };
     if (st.acted) return { ok: false, reason: 'โจมตีแล้ว เดินต่อไม่ได้' };
-    const TD = deckLib(), h = hero(st), card = st.deck.movement.hand[index], proxy = { stamina: h.stamina, mp: 0 };
-    const r = TD.selectMove(st.deck, proxy, index); if (!r.ok) return r;
-    h.stamina = proxy.stamina; st.mp += r.card.move; st.log.push('ไพ่ ' + r.card.name + ' +' + r.card.move + ' แต้มเดิน');
-    return { ok: true, card: card.id, move: r.card.move };
+    const TD = deckLib(), h = hero(st), card = st.deck.movement.hand[index];
+    if (!card) return { ok: false, reason: 'ไม่มีไพ่ใบนี้' };
+    if (!crystals(st)) return { ok: false, reason: 'คริสตัลหมดแล้วในเทิร์นนี้' };
+    const def = TD.MOVE[card.id]; if (h.stamina < def.stamina) return { ok: false, reason: 'แรงไม่พอ (ต้อง ' + def.stamina + ')' };
+    spend(st, 'movement', index); st.spent++; h.stamina -= def.stamina; st.mp += def.move;
+    st.log.push('ไพ่ ' + def.name + ' +' + def.move + ' แต้มเดิน');
+    return { ok: true, card: card.id, uid: card.uid, name: def.name, move: def.move };
   }
   function cardRule(id) { return CARD[id] || null }
   function combatBlock(st, index) {
     if (!st.cards) return 'ไม่ได้เปิดโหมดไพ่';
     if (st.outcome) return 'จบการต่อสู้แล้ว'; if (st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
-    const TD = deckLib(), c = st.deck.combat.hand[index]; if (!c || c.used) return 'ไม่มีไพ่ใบนี้';
+    const TD = deckLib(), c = st.deck.combat.hand[index]; if (!c) return 'ไม่มีไพ่ใบนี้';
     const rule = CARD[c.id]; if (!rule) return TD.COMBAT[c.id].name + ' ยังไม่รองรับในสนามแบน';
-    const why = TD.actionBlock(st.deck, 'combat'); if (why) return why;
+    if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
     const h = hero(st); if (h.stamina < rule.st) return 'แรงไม่พอ (ต้อง ' + rule.st + ')';
     if (!rule.self) { const t = foe(st, h); if (!alive(t) || dist(h, t) > rule.range) return 'ศัตรูอยู่นอกระยะ (' + rule.range + ' ช่อง)' }
     return '';
   }
   function playCombat(st, index) {
     const why = combatBlock(st, index); if (why) return { ok: false, reason: why };
-    const TD = deckLib(), h = hero(st), t = foe(st, h), id = st.deck.combat.hand[index].id, rule = CARD[id], name = TD.COMBAT[id].name;
-    TD.consumeCombat(st.deck, index); h.stamina -= rule.st;
-    const out = { ok: true, card: id, name, fx: rule.fx, self: !!rule.self, big: rule.big || 1, hits: [] };
+    const TD = deckLib(), h = hero(st), t = foe(st, h), c0 = st.deck.combat.hand[index], id = c0.id, rule = CARD[id], name = TD.COMBAT[id].name;
+    spend(st, 'combat', index); st.spent++; h.stamina -= rule.st;
+    const out = { ok: true, card: id, uid: c0.uid, name, fx: rule.fx, self: !!rule.self, big: rule.big || 1, hits: [] };
     if (rule.self) {
       if (rule.guard) { h.guard = Math.max(h.guard, rule.guard); out.guard = h.guard }
       if (rule.restore) { h.stamina = Math.min(100, h.stamina + rule.restore); out.restore = rule.restore }
@@ -180,13 +206,26 @@
     st.acted = true; st.mp = 0;
     for (let i = 0; i < (rule.hits || 1); i++) {
       if (!alive(t)) break;
-      const r = hurt(st, t, rule.dmg); out.hits.push({ target: t, damage: r.damage, notes: r.notes });
+      const crit = (st.rng || Math.random)() < CRIT.hero, r = hurt(st, t, rule.dmg * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: r.notes, crit });
     }
     const total = out.hits.reduce((a, x) => a + x.damage, 0);
     st.log.push(h.name + ' ' + name + ' −' + total + (out.hits[0]?.notes.length ? ' (' + out.hits[0].notes.join(', ') + ')' : ''));
     if (alive(t) && (rule.push || rule.pull)) out.moved = shove(st, t, h, rule.push ? 1 : -1);
     if (!alive(t)) st.outcome = 'win';
     return out;
+  }
+  /* throw away any number of hand cards at once for stamina: costs 1 crystal, +STAMINA_PER_DISCARD per card. picks = [{group, uid}] */
+  function discardForStamina(st, picks) {
+    if (!st.cards || st.outcome || st.turn !== 'hero') return { ok: false, reason: 'ไม่ใช่ตาคุณ' };
+    if (!picks?.length) return { ok: false, reason: 'เลือกไพ่ที่จะทิ้งก่อน' };
+    if (!crystals(st)) return { ok: false, reason: 'คริสตัลหมดแล้วในเทิร์นนี้' };
+    const found = picks.map(x => ({ group: x.group, i: st.deck[x.group]?.hand.findIndex(c => c.uid === x.uid) }));
+    if (found.some(x => x.i == null || x.i < 0)) return { ok: false, reason: 'ไม่มีไพ่ใบนั้นในมือ' };
+    const out = [];
+    for (const g of ['movement', 'combat']) for (const x of found.filter(f => f.group === g).sort((a, b) => b.i - a.i)) out.push(spend(st, g, x.i));
+    st.spent++; const h = hero(st), b = h.stamina; h.stamina = Math.min(100, h.stamina + out.length * STAMINA_PER_DISCARD);
+    st.log.push('ทิ้งไพ่ ' + out.length + ' ใบ แรง +' + (h.stamina - b));
+    return { ok: true, cards: out, stamina: h.stamina - b };
   }
   /* push (dir 1) the target one cell away from `from`, or pull (dir −1) it one cell toward; stays put when blocked */
   function shove(st, t, from, dir) {
@@ -196,6 +235,6 @@
     if (!free(st, nu, nv, t)) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
