@@ -1,0 +1,114 @@
+/* v93 · cutscenes, light effects, quest tracker and story mini-games */
+.cs [hidden],#storyTracker [hidden]{display:none!important}
+.cs{position:fixed;inset:0;z-index:9500;overflow:hidden;background:#05060a;opacity:0;transition:opacity .45s ease;font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;color:#f6ecd6;cursor:pointer;user-select:none}
+.cs.cs-live{opacity:1}.cs.cs-leaving{opacity:0}
+.cs-stage{position:absolute;inset:0;overflow:hidden}
+.cs-bg{position:absolute;inset:-4%;background:#111 center/cover no-repeat;transform-origin:50% 50%}
+.cs-bg-next{opacity:0;transition:opacity .9s ease}.cs-bg-next.cs-show{opacity:1}
+.cs-pan-in{animation:csPanIn 22s ease-out forwards}.cs-pan-out{animation:csPanOut 22s ease-out forwards}
+.cs-pan-left{animation:csPanL 24s linear forwards}.cs-pan-right{animation:csPanR 24s linear forwards}
+@keyframes csPanIn{from{transform:scale(1.02)}to{transform:scale(1.14)}}@keyframes csPanOut{from{transform:scale(1.16)}to{transform:scale(1.02)}}
+@keyframes csPanL{from{transform:scale(1.1) translateX(2.5%)}to{transform:scale(1.1) translateX(-2.5%)}}@keyframes csPanR{from{transform:scale(1.1) translateX(-2.5%)}to{transform:scale(1.1) translateX(2.5%)}}
+/* tints: light of the moment */
+.cs-tint{position:absolute;inset:0;pointer-events:none;transition:background 1.6s ease,opacity 1.6s ease;mix-blend-mode:normal}
+.cs-stage[data-tint="dawn"] .cs-tint{background:linear-gradient(180deg,rgba(255,170,90,.32),rgba(255,214,150,.08) 55%,rgba(40,20,10,.25));animation:csDawn 6s ease-out both}
+@keyframes csDawn{from{opacity:0;filter:brightness(.4)}to{opacity:1}}
+.cs-stage[data-tint="dawn"] .cs-bg{filter:saturate(1.05) brightness(.92) sepia(.12)}
+.cs-stage[data-tint="day"] .cs-tint{background:linear-gradient(180deg,rgba(255,240,200,.12),transparent 60%)}
+.cs-stage[data-tint="warm"] .cs-tint{background:radial-gradient(ellipse at 50% 40%,rgba(255,190,110,.2),rgba(30,12,4,.45))}
+.cs-stage[data-tint="dusk"] .cs-tint{background:linear-gradient(180deg,rgba(150,60,90,.38),rgba(255,120,60,.22) 55%,rgba(20,8,20,.55))}
+.cs-stage[data-tint="dusk"] .cs-bg{filter:saturate(.9) brightness(.75) hue-rotate(-8deg)}
+.cs-stage[data-tint="night"] .cs-tint{background:linear-gradient(180deg,rgba(10,16,48,.72),rgba(24,30,70,.55) 60%,rgba(6,6,18,.8))}
+.cs-stage[data-tint="night"] .cs-bg{filter:saturate(.55) brightness(.55) hue-rotate(10deg)}
+.cs-stage[data-tint="cave"] .cs-tint{background:radial-gradient(ellipse at 50% 55%,rgba(150,80,255,.18),rgba(10,4,24,.72))}
+.cs-stage[data-tint="cave"] .cs-bg{filter:brightness(.7) saturate(1.1)}
+.cs-stage[data-tint="dark"] .cs-tint{background:rgba(0,0,0,.82)}
+/* god rays */
+.cs-rays{position:absolute;inset:-30%;opacity:0;pointer-events:none;transition:opacity 2s ease;mix-blend-mode:screen;
+ background:repeating-conic-gradient(from 200deg at 78% 0%,rgba(255,226,160,.16) 0deg 3deg,transparent 3deg 9deg);-webkit-mask:radial-gradient(ellipse at 78% 0%,#000 0,transparent 70%);mask:radial-gradient(ellipse at 78% 0%,#000 0,transparent 70%);animation:csRays 18s ease-in-out infinite alternate}
+.fx-rays .cs-rays{opacity:1}@keyframes csRays{from{transform:rotate(-2deg)}to{transform:rotate(3deg)}}
+/* the golden light far in the sky (Elukhor — villagers call it "ดวงทอง") */
+.cs-orb{position:absolute;left:72%;top:12%;width:9vmin;height:9vmin;margin:-4.5vmin;opacity:0;transition:opacity 2.5s ease;pointer-events:none;animation:csOrbDrift 14s ease-in-out infinite alternate}
+.cs-orb::before{content:'';position:absolute;inset:-260%;border-radius:50%;background:radial-gradient(circle,rgba(255,220,140,.42),rgba(255,190,90,.12) 35%,transparent 65%);animation:csOrbPulse 4.5s ease-in-out infinite}
+.cs-orb i{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fffbe8 0,#ffe39a 35%,rgba(255,196,90,.55) 60%,transparent 72%);box-shadow:0 0 6vmin 2vmin rgba(255,206,120,.55)}
+.fx-orb .cs-orb{opacity:1}
+@keyframes csOrbPulse{0%,100%{transform:scale(.92);opacity:.85}50%{transform:scale(1.08);opacity:1}}
+@keyframes csOrbDrift{from{transform:translate(0,0)}to{transform:translate(-2vmin,1.2vmin)}}
+/* mist */
+.cs-mist{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity 2s;background:
+ radial-gradient(ellipse 60% 18% at 20% 78%,rgba(230,235,255,.22),transparent 70%),radial-gradient(ellipse 50% 14% at 70% 86%,rgba(230,235,255,.2),transparent 70%),radial-gradient(ellipse 40% 12% at 45% 70%,rgba(230,235,255,.14),transparent 70%);
+ background-size:200% 100%;animation:csMist 26s linear infinite}
+.fx-mist .cs-mist{opacity:1}@keyframes csMist{from{background-position:0 0,0 0,0 0}to{background-position:200% 0,-200% 0,100% 0}}
+.cs-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cs-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 45%,rgba(0,0,0,.55) 100%)}
+.cs-flash{position:absolute;inset:0;opacity:0;pointer-events:none;mix-blend-mode:screen}
+.cs-flash.on{animation:csFlash .9s ease-out}@keyframes csFlash{0%{opacity:0}8%{opacity:1}100%{opacity:0}}
+.cs-ring{position:absolute;width:10px;height:10px;margin:-5px;border-radius:50%;opacity:0;pointer-events:none;border:3px solid var(--ring,#ffd68c);box-shadow:0 0 30px var(--ring,#ffd68c),inset 0 0 30px var(--ring,#ffd68c)}
+.cs-ring.on{animation:csRing 1.1s ease-out}@keyframes csRing{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(140)}}
+.cs-shake{animation:csShake .45s ease-in-out}.cs-shake-big{animation:csShake .9s ease-in-out}
+@keyframes csShake{0%,100%{transform:none}15%{transform:translate(-8px,4px)}30%{transform:translate(7px,-5px)}45%{transform:translate(-5px,-3px)}60%{transform:translate(5px,4px)}80%{transform:translate(-2px,1px)}}
+/* letterbox */
+.cs-bar{position:absolute;left:0;right:0;height:0;background:#000;z-index:2;transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.cs-top{top:0}.cs-bottom{bottom:0}.cs-live .cs-bar{height:9vh}
+/* chapter card */
+.cs-card{position:absolute;inset:0;z-index:3;display:grid;place-content:center;text-align:center;pointer-events:none}
+.cs-card small{display:block;letter-spacing:.06em;font-size:clamp(11px,1.4vw,14px);color:#e8c98a;text-transform:uppercase;margin-bottom:.6em}
+.cs-card h2{margin:0;font-size:clamp(26px,4.6vw,54px);font-weight:600;color:#fff6df;text-shadow:0 0 24px rgba(255,200,120,.55),0 2px 8px #000}
+.cs-card.cs-in small,.cs-card.cs-in h2{animation:csCardIn 1.1s cubic-bezier(.2,.8,.2,1) both}.cs-card.cs-in h2{animation-delay:.18s}
+.cs-card.cs-out{opacity:0;transition:opacity .5s}
+@keyframes csCardIn{from{opacity:0;transform:translateY(14px) scale(.96);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+/* dialog box */
+.cs-box{position:absolute;left:50%;bottom:calc(9vh + 18px);transform:translateX(-50%);z-index:4;width:min(920px,calc(100% - 32px));display:flex;gap:16px;align-items:flex-start;padding:16px 22px 18px;border-radius:14px;
+ background:linear-gradient(180deg,rgba(28,22,14,.86),rgba(14,10,6,.92));border:1px solid rgba(232,201,138,.45);box-shadow:0 10px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,236,190,.15)}
+.cs-box.cs-in{animation:csBoxIn .35s ease-out}@keyframes csBoxIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translateX(-50%)}}
+.cs-box.cs-narr{background:linear-gradient(180deg,rgba(10,10,16,.55),rgba(6,6,10,.75));border-color:rgba(232,201,138,.18);text-align:center;justify-content:center}
+.cs-box.cs-narr .cs-text{font-style:italic;color:#efe4cc}
+.cs-portrait{flex:0 0 auto;width:68px;height:68px;border-radius:50%;overflow:hidden;border:2px solid #e8c98a;background:var(--pc,#6b5a3a);display:grid;place-items:center;box-shadow:0 0 18px rgba(232,201,138,.35)}
+.cs-portrait img{width:100%;height:100%;object-fit:cover;object-position:50% 18%}.cs-portrait span{font-size:30px;font-weight:700;color:#fff3d6;text-shadow:0 1px 3px #000}
+.cs-talk{flex:1;min-width:0}.cs-name{display:block;color:#f0c977;font-size:15px;letter-spacing:.04em;margin-bottom:4px}
+.cs-text{margin:0;font-size:clamp(15px,1.7vw,19px);line-height:1.65;white-space:pre-line;min-height:3.3em}
+.cs-next{position:absolute;right:18px;bottom:10px;color:#f0c977;font-size:12px;animation:csNext 1s ease-in-out infinite}@keyframes csNext{50%{transform:translateY(3px);opacity:.5}}
+.cs-skip{position:absolute;top:calc(9vh + 12px);right:16px;z-index:5;background:rgba(0,0,0,.45);color:#f6ecd6;border:1px solid rgba(246,236,214,.35);border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;cursor:pointer}
+.cs-skip:hover{background:rgba(0,0,0,.7)}
+body.cs-open{overflow:hidden}
+@media (max-width:640px){.cs-portrait{width:48px;height:48px}.cs-portrait span{font-size:22px}.cs-box{padding:12px 14px 16px;gap:10px}.cs-live .cs-bar{height:6vh}.cs-box{bottom:calc(6vh + 10px)}.cs-skip{top:calc(6vh + 8px)}}
+
+/* ---------------- quest tracker ---------------- */
+#storyTracker{position:fixed;left:24px;top:172px;z-index:1200;width:min(320px,calc(100vw - 48px));font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;color:#f6ecd6;
+ background:linear-gradient(180deg,rgba(26,36,28,.9),rgba(18,26,20,.92));border:1px solid rgba(232,201,138,.5);border-radius:14px;box-shadow:0 8px 26px rgba(0,0,0,.4);overflow:hidden}
+#storyTracker[hidden]{display:none}
+.stk-head{display:flex;align-items:center;gap:8px;padding:9px 12px;background:linear-gradient(90deg,rgba(232,201,138,.18),transparent);cursor:pointer}
+.stk-head small{color:#e8c98a;font-size:11px}.stk-head b{flex:1;font-size:14px;font-weight:600}
+#storyTracker .stk-head .stk-fold{all:unset;color:#e8c98a;font-size:14px;cursor:pointer;padding:0 4px;line-height:1}
+.stk-body{padding:4px 12px 12px}.stk-goal{font-size:14px;line-height:1.5;margin:4px 0 2px}.stk-hint{font-size:12px;color:#c9bfa8;line-height:1.45;margin:2px 0 0}
+.stk-prog{height:5px;border-radius:3px;background:rgba(255,255,255,.12);margin:8px 0 2px;overflow:hidden}.stk-prog i{display:block;height:100%;background:linear-gradient(90deg,#e0a64a,#ffe08a);transition:width .5s}
+.stk-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.stk-acts button{font:inherit;font-size:13px;padding:6px 11px;border-radius:9px;border:1px solid rgba(232,201,138,.6);background:linear-gradient(180deg,#5b4423,#3b2b15);color:#fff1d2;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.stk-acts button.primary{background:linear-gradient(180deg,#c8892f,#8f5a19);border-color:#ffd68c;animation:stkGlow 2.2s ease-in-out infinite}
+.stk-acts button:disabled{opacity:.45;cursor:not-allowed;animation:none}
+@keyframes stkGlow{50%{box-shadow:0 0 14px rgba(255,200,110,.6),0 2px 0 rgba(0,0,0,.35)}}
+.stk-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:2px;background:rgba(120,170,255,.2);color:#bcd3ff;border:1px solid rgba(120,170,255,.35)}
+#storyTracker.stk-done .stk-head{background:linear-gradient(90deg,rgba(150,220,140,.25),transparent)}
+#storyTracker.stk-folded .stk-body{display:none}
+#storyTracker.stk-pop{animation:stkPop .7s ease-out}@keyframes stkPop{30%{transform:scale(1.04);box-shadow:0 0 30px rgba(255,214,140,.7)}}
+body.cs-open #storyTracker,body.tactics-open #storyTracker{display:none}
+@media (max-width:640px){#storyTracker{left:12px;top:auto;bottom:86px}}
+
+/* toasts */
+#storyToasts{position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:9600;display:grid;gap:8px;pointer-events:none}
+.st-toast{font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;padding:9px 18px;border-radius:999px;background:rgba(20,14,8,.88);color:#fff1d2;border:1px solid rgba(232,201,138,.6);box-shadow:0 6px 20px rgba(0,0,0,.4);animation:stIn .35s ease-out;font-size:14px;text-align:center}
+.st-toast.good{border-color:#9fe08a}.st-toast.quest{background:linear-gradient(90deg,rgba(120,80,20,.92),rgba(60,40,10,.92));border-color:#ffd68c;font-size:15px}
+.st-toast.out{opacity:0;transform:translateY(-8px);transition:.5s}@keyframes stIn{from{opacity:0;transform:translateY(-10px) scale(.96)}}
+
+/* ---------------- mini-games (temporary, code-only) ---------------- */
+.mg{position:fixed;inset:0;z-index:9400;font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;color:#fff3d6;background:radial-gradient(ellipse at 50% 40%,rgba(30,50,25,.35),rgba(5,10,5,.72));cursor:crosshair;overflow:hidden}
+.mg-hud{position:absolute;top:16px;left:50%;transform:translateX(-50%);padding:8px 18px;border-radius:999px;background:rgba(0,0,0,.55);border:1px solid rgba(232,201,138,.5);font-size:16px;text-align:center}
+.mg-hud small{display:block;font-size:12px;color:#d9cba8}
+.mg-goat{position:absolute;width:86px;height:86px;margin:-43px;display:grid;place-items:center;font-size:62px;line-height:1;cursor:pointer;filter:drop-shadow(0 6px 6px rgba(0,0,0,.5));transition:transform .15s}
+.mg-goat:hover{transform:scale(1.12)}.mg-goat.flip span{transform:scaleX(-1)}.mg-goat span{display:block;animation:mgHop .36s ease-in-out infinite alternate}
+@keyframes mgHop{to{transform:translateY(-8px)}}.mg-goat.flip span{animation-name:mgHopF}@keyframes mgHopF{from{transform:scaleX(-1)}to{transform:scaleX(-1) translateY(-8px)}}
+.mg-goat.caught{pointer-events:none;animation:mgCaught .6s ease-in forwards}@keyframes mgCaught{to{transform:scale(.2) translateY(-60px);opacity:0}}
+.mg-puff{position:absolute;width:20px;height:20px;margin:-10px;border-radius:50%;background:radial-gradient(circle,rgba(255,240,210,.9),rgba(255,220,170,0) 70%);animation:mgPuff .7s ease-out forwards;pointer-events:none}
+@keyframes mgPuff{to{transform:scale(8);opacity:0}}
+.mg-close{position:absolute;right:16px;bottom:16px;font:inherit;font-size:13px;padding:6px 12px;border-radius:9px;background:rgba(0,0,0,.5);color:#fff3d6;border:1px solid rgba(255,255,255,.3);cursor:pointer}
+.mg-plus{position:absolute;font-size:22px;font-weight:700;color:#ffe08a;text-shadow:0 2px 4px #000;animation:mgPlus 1s ease-out forwards;pointer-events:none}@keyframes mgPlus{to{transform:translateY(-50px);opacity:0}}
