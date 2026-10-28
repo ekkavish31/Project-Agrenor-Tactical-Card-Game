@@ -5,7 +5,7 @@ window.initTacticsLab=()=>{if(window.TacticsLab)return window.TacticsLab;'use st
 const B=window.TACTICS_BRIDGE||null,C=TacticsCore,D=TacticsDecks,A=TACTICS_SPRITES,$=id=>document.getElementById(id),canvas=$('battleCanvas'),ctx=canvas.getContext('2d'),images=new Map();
 let state=C.create('FOREST-04','forest','training'),locked=false,motion=true,ready=false,hover=null,cursor={x:state.hero.x,y:state.hero.y},zoom=1,pan={x:0,y:0},camera={x:0,y:0,w:64,h:32,lift:18},debugAnchors=false,effects=[],messages=[],clock=0,lastDraw=0,reach=null,pointer=null,seeThrough=false,pending=null,vis={},pathPreview=null,walkInfo=null,facingEnd=false,attackZone=null,facingPick=null,facingHits=[],follow=null;
 const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const LOOT_ATLAS='assets/battle-loot-v32.png';load(LOOT_ATLAS);
+const LOOT_ATLAS='assets/battle-loot-v32.webp';load(LOOT_ATLAS);
 const MOVE_KEYS=['q','w','e','r'];
 // v36 pacing (ms) — closer to FFT / Disgaea. One table so it can be tuned later.
 const PACE=window.BATTLE_PACE=Object.assign({abilityHold:700,turnBanner:900,focusMin:520,focusMax:1000,afterFocus:380,walkHero:380,walkAlly:340,walkEnemy:400,aiChoice:650,aiCard:850,afterAction:420,label:1500},window.BATTLE_PACE||{});

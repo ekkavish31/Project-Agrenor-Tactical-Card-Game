@@ -14,10 +14,10 @@ main{max-width:1000px;margin:auto}h1{font-size:clamp(1.4rem,4vw,2.2rem);margin:0
 <body>
 <main>
 <h1>ทดลอง Code Animation — ต้นไม้จาก Asset จริง</h1>
-<p>ใช้ภาพ <code>assets/village-town/nature/tree-round.png</code> ที่มีอยู่ใน Repo เดิม เปรียบเทียบภาพนิ่งกับการขยับด้วยโค้ด</p>
+<p>ใช้ภาพ <code>assets/village-town/nature/tree-round.webp</code> ที่มีอยู่ใน Repo เดิม เปรียบเทียบภาพนิ่งกับการขยับด้วยโค้ด</p>
 <div class="grid">
-<section class="panel"><h2>① ต้นฉบับ — ไม่ขยับ</h2><div class="stage"><img class="tree" src="assets/village-town/nature/tree-round.png" alt="ต้นไม้ต้นฉบับ"></div><div class="note">ไฟล์ภาพเดิม ไม่มีการแก้ไข Asset</div></section>
-<section class="panel"><h2>② Code Motion — ทดลองขยับส่วนพุ่ม</h2><div class="stage" id="motionStage"><div class="anim-wrap"><img src="assets/village-town/nature/tree-round.png" alt="" aria-hidden="true"><img class="canopy" id="canopy" src="assets/village-town/nature/tree-round.png" alt="ต้นไม้ที่ขยับด้วยโค้ด"></div></div><div class="note">วางภาพเดิมซ้อนกัน แล้วขยับเฉพาะส่วนบนด้วย CSS; โคนต้นยังนิ่ง</div></section>
+<section class="panel"><h2>① ต้นฉบับ — ไม่ขยับ</h2><div class="stage"><img class="tree" src="assets/village-town/nature/tree-round.webp" alt="ต้นไม้ต้นฉบับ"></div><div class="note">ไฟล์ภาพเดิม ไม่มีการแก้ไข Asset</div></section>
+<section class="panel"><h2>② Code Motion — ทดลองขยับส่วนพุ่ม</h2><div class="stage" id="motionStage"><div class="anim-wrap"><img src="assets/village-town/nature/tree-round.webp" alt="" aria-hidden="true"><img class="canopy" id="canopy" src="assets/village-town/nature/tree-round.webp" alt="ต้นไม้ที่ขยับด้วยโค้ด"></div></div><div class="note">วางภาพเดิมซ้อนกัน แล้วขยับเฉพาะส่วนบนด้วย CSS; โคนต้นยังนิ่ง</div></section>
 </div>
 <div class="controls">
 <div class="control"><label for="amp">แรงลม <strong id="ampValue">2.0°</strong></label><input id="amp" type="range" min="0" max="5" step=".5" value="2"></div>
@@ -26,7 +26,7 @@ main{max-width:1000px;margin:auto}h1{font-size:clamp(1.4rem,4vw,2.2rem);margin:0
 <div class="status" id="status">กำลังใช้ภาพต้นไม้เดิมจาก Repo · ตัวอย่างนี้เป็นหน้าเดโมแยก ไม่ได้เปลี่ยนฉากเกม</div>
 </div>
 </main>
-<script>
+<script src="js/webp-redirect.js?v=92.04"></script><script>
 const amp=document.getElementById('amp'), speed=document.getElementById('speed'), canopy=document.getElementById('canopy'), stage=document.getElementById('motionStage'), toggle=document.getElementById('toggle');
 function update(){const a=Number(amp.value),s=Number(speed.value);canopy.style.setProperty('--sway',a+'deg');canopy.style.animationDuration=s+'s';document.getElementById('ampValue').textContent=a.toFixed(1)+'°';document.getElementById('speedValue').textContent=s.toFixed(1)+' วินาที';}
 amp.addEventListener('input',update);speed.addEventListener('input',update);toggle.addEventListener('click',()=>{stage.classList.toggle('paused');toggle.textContent=stage.classList.contains('paused')?'เล่นต่อ':'หยุด / เล่น';});update();
