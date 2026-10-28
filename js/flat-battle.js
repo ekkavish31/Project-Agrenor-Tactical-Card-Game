@@ -1,4 +1,4 @@
-/* v92.08 · Flat-grid battle (phase 2 of docs/PLAN-v92.md). No heights.
+/* v92.08 · Flat-grid card battle (plan: docs/PLAN.md). v94: heights below.
    v92.15: melee — the hero plus companions (create({allies:[…]}), AI-controlled, act at the end of the player phase via alliesTurn) against a
    group of monsters (create({monsters:[…]}); each acts in monsterTurn). Win = every monster down; lose = the hero down (companions can fall).
    Cards (create({cards:true})): the old deck contents (TacticsDecks: 4 move cards, 6 combat cards) drive the hero — a move card adds its points to
@@ -209,12 +209,12 @@
     }
     let tgt = targets(st, u).find(t => t.id === st.target && u.side === 'hero') || targets(st, u)[0], field = null;
     /* companion orders: guard = hold the ground (+6 guard, hit only what is already in range) · follow = stay by the hero */
-    if (u.side === 'hero' && u.order === 'guard') { u.guard = Math.max(u.guard || 0, 6); steps.push({ unit: u, type: 'hold' }); if (tgt) { const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0 }) } return steps }
+    if (u.side === 'hero' && u.order === 'guard') { u.guard = Math.max(u.guard || 0, 6); steps.push({ unit: u, type: 'hold' }); if (tgt) { const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) } return steps }
     if (u.side === 'hero' && u.order === 'follow' && !tgt) {
       const h = hero(st), r = reach(st, u, u.move); let bestE = null, bestS = 1e9;
       for (const e of r.values()) { const near = opponents(st, u).filter(o => dist(o, e) <= u.range && dist(o, h) <= 3); const sc = near.length ? -100 + dist(e, h) : Math.abs(dist(e, h) - 1) * 10 + e.cost * .1; if (sc < bestS) { bestS = sc; bestE = e } }
       if (bestE && (bestE.u !== u.u || bestE.v !== u.v)) { const path = pathTo(r, bestE), pv = path[path.length - 2] || u; u.face = faceOf(pv, bestE); u.u = bestE.u; u.v = bestE.v; steps.push({ unit: u, type: 'move', path }) }
-      tgt = targets(st, u).find(o => dist(o, h) <= 3); if (tgt) { const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0 }) }
+      tgt = targets(st, u).find(o => dist(o, h) <= 3); if (tgt) { const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) }
       return steps;
     }
     if (!tgt) {
@@ -222,11 +222,11 @@
       for (const o of opp) { const f = distField(st, o), d = f.get(key(u.u, u.v)); const sc = (d === undefined ? 1e6 : d) + o.hp / 200; if (sc < best) { best = sc; tgt = o; field = f } }
       const r = reach(st, u, u.move), dOf = (a, b) => { const x = field.get(key(a, b)); return x === undefined ? 1e6 : x };
       let bestE = null, bestD = dOf(u.u, u.v), bestC = 0;
-      for (const e of r.values()) { const inR = dist(e, tgt) <= u.range, d = inR ? -100 + (u.range > 1 ? -dist(e, tgt) : 0) : dOf(e.u, e.v); if (d < bestD || (d === bestD && e.cost < bestC)) { bestE = e; bestD = d; bestC = e.cost } }
+      for (const e of r.values()) { const up = lv(st, e.u, e.v) - lv(st, tgt.u, tgt.v), inR = dist(e, tgt) <= u.range && (u.range > 1 || Math.abs(up) <= 1), d = inR ? -100 + (u.range > 1 ? -dist(e, tgt) : 0) - 2 * Math.max(-2, Math.min(3, up)) : dOf(e.u, e.v);   /* v94: in reach, prefer the higher cell */ if (d < bestD || (d === bestD && e.cost < bestC)) { bestE = e; bestD = d; bestC = e.cost } }
       if (bestE && (bestE.u !== u.u || bestE.v !== u.v)) { const path = pathTo(r, bestE), pv = path[path.length - 2] || u; u.face = faceOf(pv, bestE); u.u = bestE.u; u.v = bestE.v; st.log.push(u.name + ' เดิน'); steps.push({ unit: u, type: 'move', path }) }
       tgt = targets(st, u)[0];
     }
-    if (tgt) { st.cur = u; const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0 }) }
+    if (tgt) { st.cur = u; const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) }
     return steps;
   }
   function strike(st, a, t) {
@@ -237,7 +237,9 @@
       const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, r = st.cards ? hurt(st, t, a.atk * hm * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage);
       st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
       let counter = 0; if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; counter = hurt(st, a, 12).damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
-      return { ok: true, damage: r.damage, target: t, notes: r.notes, crit, counter } })();
+      /* v94: heavy monsters (shove) knock a target standing at a ledge off it — down 2+ levels costs 5 HP per level */
+      let fall = null; if (st.cards && a.shove && alive(t) && dist(a, t) <= 1 && st.levelAt) { const fu = t.u, fv = t.v, du = Math.sign(t.u - a.u), dv = du ? 0 : Math.sign(t.v - a.v), nu = t.u + du, nv = t.v + dv; if (free(st, nu, nv, t) && lv(st, fu, fv) - lv(st, nu, nv) >= 2) { const drop = lv(st, fu, fv) - lv(st, nu, nv), fd = Math.min(t.hp, 5 * drop); t.u = nu; t.v = nv; t.hp -= fd; fall = { from: { u: fu, v: fv }, drop, damage: fd }; r.notes.push('ผลักตก ' + drop + ' ระดับ −' + fd); st.log.push(a.name + ' ผลัก ' + t.name + ' ตกลงไป −' + fd) } }
+      return { ok: true, damage: r.damage, target: t, notes: r.notes, crit, counter, fall } })();
     st.acted = keep.acted; st.mp = keep.mp; st.turn = keep.turn; st.cur = keep.cur; checkOutcome(st);
     return at;
   }

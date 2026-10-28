@@ -1,4 +1,6 @@
-# Project A — v34 (จัดโครงสร้างใหม่)
+# Project A — v94 · Agrenor Tactical Card Game
+
+แผนงานฉบับเดียว: `docs/PLAN.md` · ประวัติ: `docs/CHANGELOG-TH.md`
 
 เปิดเกม: `index.html`
 
@@ -14,7 +16,7 @@
 | `dev/` | หน้าตรวจงานภาพ/แอนิเมชัน |
 | `tools/` | สคริปต์ทดสอบ/จำลอง (รันด้วย node/python จากโฟลเดอร์หลัก) |
 | `art-production/` | ภาพต้นฉบับที่ยังอ้างอิงอยู่ (hero-source, review v32, prompt v34) |
-| `docs/` | TODO, ROADMAP, STYLE-GUIDE, ART-TODO, คู่มือ · `docs/reports/` ผลตรวจรายเวอร์ชัน · `docs/CHANGELOG-TH.md` ประวัติ v01–v34 รวมไฟล์เดียว |
+| `docs/` | PLAN (แผนรวมฉบับเดียว), STYLE-GUIDE, ART-TODO, STORY-INTRO, คู่มือ · แผนเก่าอยู่ใน `docs/history/` · `docs/reports/` ผลตรวจรายเวอร์ชัน · `docs/CHANGELOG-TH.md` ประวัติ v01–v34 รวมไฟล์เดียว |
 
 ## กติกาสำหรับแพตช์ถัดไป
 - ไฟล์ `.js` ใหม่ → ใส่ใน `js/` และเพิ่ม `<script src="js/ชื่อไฟล์.js">` ใน `index.html`

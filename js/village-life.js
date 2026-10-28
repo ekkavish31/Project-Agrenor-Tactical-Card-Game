@@ -212,6 +212,9 @@
     trait: 'สงบ พูดช้า ชอบเล่าเรื่องวิหารที่ไปมา', story: 'เดินมาแล้วสิบเอ็ดวิหาร เหลืออีกสามแห่ง', sched: [[10, 18, 'temple', 'pew'], [18, 22, 'inn', 'fire']],
     lines: { day: ['วิหารธาตุดินของที่นี่เล็ก แต่เงียบสงบกว่าที่ไหน ๆ'], evening: ['ไฟในเตาผิงอุ่นดีนะ ทำให้นึกถึงวิหารไฟทางใต้'] }, about: ['ทุกก้าวที่เดินคือคำภาวนาหนึ่งบท'] });
 
+
+  // v94: where away travellers can be met on the world map (js/world-gen.js TOWNS · 'wander' = a different town each day)
+  for (const [id, from] of Object.entries({ tess: 'brookmere', pell: 'brookmere', graven: 'haven', ash: 'haven', bram: 'haven', luna: 'northgate', hugo: 'northgate', finn: 'wander' })) if (P[id]) P[id].from = from;
   /* is p in Fernvale at this day/hour? (residents always) */
   function present(p, day, hour) {
     const v = p?.visit; if (!v) return true;

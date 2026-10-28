@@ -90,7 +90,7 @@
     /* destinations: one per kind, 8–14 hexes away, on (or turned into) its biome, reachable */
     const w = { seed, cols: COLS, rows: ROWS, tiles, home: { c: home.c, r: home.r }, dests: [] };
     for (const d of DESTS) {
-      const cands = Object.values(tiles).filter(t => !t.poi && BIOME[t.biome].pass && dist(t, home) >= 8 && dist(t, home) <= 14 && w.dests.every(o => dist(o, t) >= 6));
+      const cands = Object.values(tiles).filter(t => !t.poi && !t.enc && BIOME[t.biome].pass && dist(t, home) >= 8 && dist(t, home) <= 14 && w.dests.every(o => dist(o, t) >= 6));
       cands.sort((a, b) => (b.biome === d.biome) - (a.biome === d.biome) || R() - .5);
       let placed = null;
       for (const t of cands.slice(0, 30)) { const p = path(w, home, t); if (p && p.length >= 8) { placed = t; break } }
@@ -118,12 +118,32 @@
       if (!BIOME[t.biome].pass || occupied(t) || R() > .11) continue;
       const type = pick(R, extras); t.enc = type === 'battle' ? { type, foe: pick(R, FOES[t.biome] || FOES.grass), hidden: R() < .4 } : { type };   // hidden battles only show when you are next to them
     }
+    placeTowns(w, seed);
     return w;
+  }
+  /* v94 · settlements outside Fernvale: where the village's visitors come from (js/village-life.js `from`). Safe stops on the map: inn, shop,
+     rumours, and the travellers who are away from Fernvale that day. Placed after everything else with their own random stream, so a saved
+     world keeps its roads, destinations and encounters. A town that finds no spot is simply left out. */
+  const TOWNS = [
+    { id: 'brookmere', name: 'หมู่บ้านบรู๊คเมียร์', min: 3, max: 6, side: 'west', biomes: ['grass', 'forest'] },
+    { id: 'haven', name: 'ท่าเรือซอลต์เฮเวน', min: 7, max: 13, side: 'coast', biomes: ['sand', 'grass'] },
+    { id: 'northgate', name: 'ด่านหินเหนือ', min: 6, max: 12, side: 'north', biomes: ['hills', 'snow', 'grass'] }
+  ];
+  function placeTowns(w, seed) {
+    const R = rng(seed ^ 0x70b5), T = (c, r) => w.tiles[key(c, r)], home = w.home; w.towns = [];
+    const nearWater = t => neighbors(t.c, t.r).some(([c, r]) => T(c, r).biome === 'water');
+    for (const d of TOWNS) {
+      const score = t => (d.side === 'west' ? t.c - home.c : d.side === 'north' ? t.r - home.r : nearWater(t) ? -20 : 0) + (d.biomes.includes(t.biome) ? -3 : 0) + R() * 2;
+      const cands = Object.values(w.tiles).filter(t => !t.poi && BIOME[t.biome].pass && dist(t, home) >= d.min && dist(t, home) <= d.max && w.dests.every(o => dist(o, t) >= 3) && w.towns.every(o => dist(o, t) >= 4)).sort((a, b) => score(a) - score(b));
+      const spot = cands.slice(0, 20).find(t => path(w, home, t)); if (!spot) continue;
+      spot.poi = { id: 'town:' + d.id, town: d.id, name: d.name, icon: 'town' }; spot.enc = null;
+      w.towns.push({ ...d, c: spot.c, r: spot.r });
+    }
   }
   const pick = (R, a) => a[Math.floor(R() * a.length)];
   /* how deep into the fog a tile is: 0 at the village … 1 at the far rim (monsters get tougher) */
   function danger(w, t) { return Math.min(1, dist(t, w.home) / 14) }
 
-  const api = { COLS, ROWS, BIOME, FOES, DESTS, rng, key, inside, neighbors, dist, within, stepCost, path, generate, danger };
+  const api = { COLS, ROWS, BIOME, FOES, DESTS, TOWNS, rng, key, inside, neighbors, dist, within, stepCost, path, generate, danger };
   root.WorldGen = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -19,16 +19,16 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '94.00';
+  const V = '94.01';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
   const MON = {
-    bandit: { name: 'โจรป่า', hp: 34, move: 3, atk: 8, scale: 1, fx: 'sword', img: 'bandit' },
+    bandit: { name: 'โจรป่า', hp: 34, move: 3, atk: 8, scale: 1, fx: 'sword', img: 'bandit', shove: true },
     wolf: { name: 'หมาป่า', hp: 26, move: 4, atk: 7, scale: .9, fx: 'knife', img: 'wolf' },
     slime: { name: 'สไลม์แร่', hp: 40, move: 2, atk: 8, scale: .85, fx: 'blunt', img: 'slime' },
     kobold: { name: 'โคโบลด์ขุดแร่', hp: 30, move: 3, atk: 9, scale: .9, fx: 'blunt', img: 'kobold' },
-    golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem' },
+    golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem', shove: true },
     shadowWolf: { name: 'หมาป่าเงา', hp: 44, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' }
   };
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
@@ -93,7 +93,7 @@
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
     const near = (o) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - o.u) + Math.abs(v - o.v) + Math.random() * .3; if (d < bd) { bd = d; best = { u, v } } } if (best) taken.add(best.u + ',' + best.v); return best };
     const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk, def: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss } }).filter(Boolean);
+    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, shove: !!T.shove } }).filter(Boolean);
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true,
@@ -436,6 +436,7 @@
       }
       for (const x of r.hits) (x.target || m).shown = (x.target || m).hp; hudSync(); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff', true);
       if (r.moved) { const from = { u: m.vu - .5, v: m.vv - .5 }; shake(6, 200); await walkAnim(m, [from, { u: m.u, v: m.v }], 5, true) }
+      if (r.fall) { shake(12, 380); floatText(m, 'FALL −' + r.fall.damage, '#ffb08a', false, true); m.shown = m.hp; hudSync() }
       if (kill) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(260); h.pose = 'idle';
     }, { z: heavy ? 1.95 : 1.75 });
   }
@@ -500,6 +501,7 @@
       t.shown = t.hp; hudSync();
       await wait(full ? Math.max(300, Math.min(900, (ts?.duration || 500) - (ts?.impactMs ?? 160))) : 260);
       if (s.counter) { t.pose = 'windup'; await wait(150); t.pose = 'strike'; sfx('swing'); fx('sword', a, t, {}); impact(a, 'sword', { from: t, big: true }); a.hitUntil = now() + 420; hitStop(120); shake(10, 300); floatText(a, '−' + s.counter, '#ffd27a', false, true); floatText(a, 'COUNTER', '#ffd9a0', true); a.shown = a.hp; hudSync(); if (a.hp <= 0) a.deadAt = now() + 300; await wait(420) }
+      if (s.fall) { shake(12, 380); await walkAnim(t, [s.fall.from, { u: t.u, v: t.v }], 6, true); floatText(t, 'FALL −' + s.fall.damage, '#ff9a8a', false, true); t.shown = t.hp; hudSync() }   /* v94: knocked off a ledge */
       a.pose = 'idle'; if (t.hp > 0) t.pose = 'idle';
     }, full ? { z: 1.7 } : { z: 1.4, bars: false, lead: 170, tail: 90 });
   }

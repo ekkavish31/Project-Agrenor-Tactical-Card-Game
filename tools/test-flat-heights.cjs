@@ -55,4 +55,16 @@ test('push off a ledge of 2+ levels costs fall damage', () => {
 });
 test('quake: targets below take ×1.5', () => { const a = play(field(), 'quake').dmg, b = play(field({ '4,4': 1 }), 'quake').dmg; assert.ok(b > a, `${a} < ${b}`) });
 test('no levelAt = flat field, nothing changes', () => { const st = B.create({ bounds: { u0: 0, v0: 0, u1: 4, v1: 4 }, hero: { u: 0, v: 0 }, monster: { u: 4, v: 4 } }); assert.equal(B.lv(st, 2, 2), 0); assert.ok(B.reach(st, B.hero(st)).size > 5) });
+test('monster AI: in reach, it picks the higher cell', () => {
+  const st = B.create({ bounds: { u0: 0, v0: 0, u1: 8, v1: 8 }, kindAt: () => 'normal', levelAt: (u, v) => (u === 4 && v === 3 ? 1 : 0), cards: true, rng: () => .99,
+    hero: { u: 4, v: 4, stamina: 100 }, monsters: [{ u: 4, v: 0, hp: 50, maxHp: 50, atk: 9, move: 4, range: 1 }] });
+  B.endTurn(st); B.monsterTurn(st); const m = B.monsters(st)[0]; assert.deepEqual([m.u, m.v], [4, 3]);
+});
+test('a shoving monster knocks the hero off a 2-level ledge', () => {
+  const L = { '4,4': 2, '5,4': 2, '3,4': 0 };
+  const st = B.create({ bounds: { u0: 0, v0: 0, u1: 8, v1: 8 }, kindAt: () => 'normal', levelAt: (u, v) => L[u + ',' + v] ?? 2, cards: true, rng: () => .99,
+    hero: { u: 4, v: 4, stamina: 100 }, monsters: [{ u: 5, v: 4, hp: 50, maxHp: 50, atk: 9, move: 0, range: 1, shove: true }] });
+  B.endTurn(st); const steps = B.monsterTurn(st), hit = steps.find(s => s.type === 'attack');
+  assert.ok(hit?.fall, 'fell'); assert.deepEqual([B.hero(st).u, B.hero(st).v], [3, 4]);
+});
 console.log(n + ' flat height tests passed');

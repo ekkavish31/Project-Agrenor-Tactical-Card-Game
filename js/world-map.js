@@ -107,6 +107,7 @@
     const gc = document.createElement('canvas'); gc.width = WW; gc.height = WH; gc.getContext('2d').putImageData(grain, 0, 0); t.globalCompositeOperation = 'overlay'; t.drawImage(gc, 0, 0); t.globalCompositeOperation = 'source-over';
     /* village + destinations */
     const hp = center(world.home.c, world.home.r); village(t, hp.x, hp.y);
+    for (const tw of world.towns || []) { const q = center(tw.c, tw.r); village(t, q.x, q.y) }   // v94: other settlements
   }
   function tree(t, x, y, s, rnd, snow) {
     t.fillStyle = 'rgba(0,0,0,.18)'; t.beginPath(); t.ellipse(x + 2, y + 2, s * .55, s * .22, 0, 0, 7); t.fill();
@@ -195,6 +196,7 @@
       g.font = '13px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
     }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
+    for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) { const q = center(tw.c, tw.r); label(g, tw.name, q.x, q.y + 32, '#d8f0ff', 12) }
   }
   function drawTrail() {
     if (S.trail.length < 2) return; g.save(); g.setLineDash([2, 7]); g.lineCap = 'round'; g.strokeStyle = 'rgba(255,226,150,.9)'; g.lineWidth = 3;
@@ -322,6 +324,34 @@
   }
   function closeModal() { if (modalEl) { modalEl.remove(); modalEl = null; modalOpen = false; const r = modalResolve; modalResolve = null; r?.(null) } }
 
+  /* ---------- v94 · settlements: inn, shop, rumours and the travellers who are away from Fernvale today ---------- */
+  const TOWN_TEXT = {
+    brookmere: 'หมู่บ้านเกษตรเล็ก ๆ ริมลำธาร ทุ่งดอกไม้ล้อมรอบ ผู้คนรู้จักเฟิร์นเวลดี',
+    haven: 'เมืองท่าเสียงดัง กลิ่นปลาเค็มและเกลือทะเล เรือสินค้าจอดเรียงเต็มท่า',
+    northgate: 'ด่านหินบนช่องเขา ทหารเฝ้าทางขึ้นเหนือ นักเดินทางแวะพักก่อนข้ามเขา'
+  };
+  function townsfolk(id) {
+    const L = window.VillageLife; if (!L) return [];
+    const day = S.day, hour = S.hour, finnTown = ['brookmere', 'haven', 'northgate'][day % 3];
+    return Object.values(L.P).filter(p => (p.from === id || (p.from === 'wander' && finnTown === id)) && !L.inParty(S, p.id) && !L.present(p, day, hour));
+  }
+  async function townVisit(poi) {
+    const id = poi.town; ev('town:visit', { town: id, townName: poi.name }); log('ถึง ' + poi.name);
+    for (;;) {
+      const folk = townsfolk(id), per = window.WorldState?.period(S.hour) || 'day';
+      const people = folk.length ? folk.map(p => { const ls = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…']; return `<p>👤 <b>${esc(p.name)}</b> <small>${esc(p.role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>` }).join('') : '<p style="opacity:.7">ไม่เจอคนรู้จักที่นี่ตอนนี้</p>';
+      const v = await modal(`<h2>🏘 ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p><h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>${people}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
+        [{ label: '🛏 พักโรงเตี๊ยม · 12 💰', value: 'inn', disabled: S.gold < 12 }, { label: 'เสบียง 4 ห่อ · 10 💰', value: 'food', disabled: S.gold < 10 }, { label: 'ยาฟื้นฟู · 18 💰', value: 'pot', disabled: S.gold < 18 }, { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
+      if (v === 'inn') { S.gold -= 12; const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('พักที่ ' + poi.name + ' ตื่นเช้าวันใหม่'); toast('🛏 พักเต็มอิ่ม · HP เต็ม') }
+      else if (v === 'food') { S.gold -= 10; S.food += 4; log('ซื้อเสบียง 4 ที่ ' + poi.name) }
+      else if (v === 'pot') { S.gold -= 18; S.potions++; log('ซื้อยาฟื้นฟูที่ ' + poi.name) }
+      else if (v === 'rumor') { const d = destOf() || world.dests.find(x => !S.done[x.id]); if (d) { const p = G.path(world, tile(S.pos.c, S.pos.r), d); if (p) p.slice(0, 6).forEach(x => { for (const [a, b] of G.within(x.c, x.r, 1)) S.known[K(a, b)] = 1 }); fogDirty = true; reveal(); await modal(`<h2>📜 ข่าวลือ</h2><p>คนในโรงเตี๊ยมเล่าถึง <b>${esc(d.name)}</b> และวาดทางช่วงแรกให้</p>`) } else await modal('<h2>📜 ข่าวลือ</h2><p>ช่วงนี้ไม่มีข่าวใหม่</p>') }
+      else break;
+      save(); hudSync();
+    }
+    save(); hudSync();
+  }
+
   /* ---------- quest board ---------- */
   async function questBoard() {
     if (busy) return;
@@ -380,6 +410,7 @@
     const d = destOf();
     if (d && !S.done[d.id] && d.c === to.c && d.r === to.r) { await bossFight(d); return true }
     if (t.poi?.id === 'home') { await arriveHome(); return true }
+    if (t.poi?.town) { await townVisit(t.poi); return true }
     if (t.enc && !S.cleared[k]) return await encounter(t, k);
     const night = nightness() > .6, dang = G.danger(world, t);
     if (night && dang > .15 && Math.random() < .12) { log('ถูกซุ่มโจมตีกลางดึก!'); return await battle(pickFoe(t), dang, { ambush: true }) }
