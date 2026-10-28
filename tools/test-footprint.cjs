@@ -10,10 +10,12 @@ test('default footprint rounds the old half sizes outward to half a cell', () =>
   assert.deepEqual(F.defaultFp(mk('c', 4, 4.2)), { u0: 4, u1: 4, v0: 4.5, v1: 4.5 });
 });
 
-test('fpOf uses a valid saved fp (snapped to half a cell) and ignores a broken one', () => {
+test('fpOf uses a valid saved fp (snapped to a quarter cell, since v91.70) and ignores a broken one', () => {
   const o = mk('a', 3, 3, 'SW', { u0: 1.3, u1: 2, v0: 2, v1: 2 });
-  assert.deepEqual(F.fpOf(o), { u0: 1.5, u1: 2, v0: 2, v1: 2 });
-  assert.deepEqual(F.fpOf(mk('a', 3, 3, 'SW', { u0: -1, u1: 2, v0: 2, v1: 2 })), F.defaultFp(mk('a', 3, 3)));
+  assert.deepEqual(F.fpOf(o), { u0: 1.25, u1: 2, v0: 2, v1: 2 });
+  /* v91.67/70: an edge may cross the centre; only a total width under a quarter cell (or non-numbers) is broken */
+  assert.deepEqual(F.fpOf(mk('a', 3, 3, 'SW', { u0: -1, u1: 2, v0: 2, v1: 2 })), { u0: -1, u1: 2, v0: 2, v1: 2 });
+  assert.deepEqual(F.fpOf(mk('a', 3, 3, 'SW', { u0: -2, u1: 2, v0: 2, v1: 2 })), F.defaultFp(mk('a', 3, 3)));
   assert.deepEqual(F.fpOf(mk('a', 3, 3, 'SW', { u0: 'x' })), F.defaultFp(mk('a', 3, 3)));
   assert.equal(F.isCustom(o), true);
   assert.equal(F.isCustom(mk('a', 3, 3)), false);
@@ -57,12 +59,13 @@ test('nearestFree always finds a spot in a crowded row and never overlaps', () =
   assert(F.hits(F.worldRect(me, { u: r.u, v: r.v }), others).length === 0);
 });
 
-test('edit helpers: pull one edge in, pull everything in, never below half a cell', () => {
+test('edit helpers: pull one edge in, pull everything in, never below a quarter cell in total width', () => {
   let fp = { u0: 3, u1: 3, v0: 3, v1: 3 };
   assert.deepEqual(F.nudgeEdge(fp, 'u1', -0.5), { u0: 3, u1: 2.5, v0: 3, v1: 3 });
   assert.deepEqual(F.nudgeAll(fp, -0.5), { u0: 2.5, u1: 2.5, v0: 2.5, v1: 2.5 });
-  assert.equal(F.nudgeEdge({ u0: 0.5, u1: 1, v0: 1, v1: 1 }, 'u0', -5).u0, 0.5);
-  assert.equal(F.nudgeEdge(fp, 'v1', 99).v1, F.MAX);
+  /* v91.67: an edge may pass the centre; the two opposite edges together keep at least MIN (a quarter cell) */
+  assert.equal(F.nudgeEdge({ u0: 0.5, u1: 1, v0: 1, v1: 1 }, 'u0', -5).u0, -0.75);
+  assert.equal(F.nudgeEdge(fp, 'v1', 9999).v1, F.MAX);
 });
 
 test('automatic footprint: a diamond under the picture, as wide as the picture, centred under it', () => {

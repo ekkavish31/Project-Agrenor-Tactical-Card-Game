@@ -122,7 +122,9 @@ test('footprints: touching edges do not overlap, shared area does', () => {
 test('real data: every road point in the saved village layout already sits on the lattice', () => {
   const src = fs.readFileSync(__dirname + '/../js/village-layout-v67.js', 'utf8');
   const win = {}; new Function('window', src)(win);
-  const pts = win.VillageDefaultLayout.roads.flat();
+  const roads = win.VillageDefaultLayout.roads;
+  if (!roads) return;                                  /* v92.05: automatic-road maps save no lines (roads: null) — nothing to snap */
+  const pts = roads.flat();
   assert(pts.length > 0);
   for (const p of pts) {
     const c = G.unproject(p.x, p.y);
