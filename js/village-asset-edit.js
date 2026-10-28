@@ -1308,6 +1308,10 @@
    const f = refFeet(o), hs = charScale('hero');
    if (Math.abs(p.x - f.x) < 24 * hs && p.y > f.y - 96 * hs && p.y < f.y + 10 * hs) return start('ref', { ox: f.x, oy: f.y })
   }
+  if (o && o.id !== 'square' && place.tab === 'lead' && o.lead?.mode !== 'custom' && o.lead?.mode !== 'none' && (courtCellsOf(o) || !o.court)) {
+   const g0 = gate(o), gq = project(g0.u, g0.v);
+   if (nearPx(gq, p, 18)) { UX.checkpoint(); return start('gate', {}) }
+  }
   if (o && o.id !== 'square' && place.tab === 'lead' && (o.lead?.mode === 'custom')) {
    const i = leadPtAt(o, p);
    UX.checkpoint();
@@ -1423,6 +1427,16 @@
    if (c) { if (drag.rect) paintRect(o, c); else paintCells(o, c) }
    return
   }
+  if (drag.type === 'gate') {
+   const w = inv(p.x, p.y), q = canonical(o, w.u, w.v), a = center(o);
+   if (courtCellsOf(o)) {
+    let best = null, bd = 1e9;
+    for (const c of courtCellsOf(o)) { const d = Math.hypot(a.u + (c[0] + .5) / 2 - q.u, a.v + (c[1] + .5) / 2 - q.v); if (d < bd) { bd = d; best = c } }
+    if (best) o.court = { ...o.court, exit: [best[0], best[1]] }
+   } else { const e = estate(o); o.cauto = { ...(o.cauto || {}), du: Math.max(-12, Math.min(12, Math.round((q.u - e.u) * 4) / 4)) } }
+   terrainDirty = true; UX.refresh();
+   return
+  }
   if (drag.type === 'leadPt') {
    const pts = [...(o.lead?.pts || [])];
    if (pts[drag.i]) { pts[drag.i] = leadSnap(o, inv(p.x, p.y)); leadSet(o, { pts }); terrainDirty = true }
@@ -1465,7 +1479,7 @@
    o.court = cells.length ? { cells, ...keep } : { off: true };
    UX.refresh(); UX.persist(); render(); return
   }
-  if (d.type === 'entry' || d.type === 'leadPt') UX.refresh();
+  if (d.type === 'entry' || d.type === 'leadPt' || d.type === 'gate') UX.refresh();
   UX.persist();
   render()
  }, true);
@@ -2664,7 +2678,7 @@
    act('#lDel', () => { if (confirm('ลบเส้นถนนทางเชื่อมของ ' + ownerName(o.id) + '?')) { UX.dropLead(o); UX.persist(); render() } });
    return
   }
-  body.innerHTML = `<p class="sub">ทางเชื่อมจากถนนมาถึงประตู (หมุดฟ้า) · ปรับให้ตรงกับภาพอาคาร ไม่ใหญ่เกิน/ไม่เลยประตู</p>
+  body.innerHTML = `<p class="sub"><b style="color:#ffb347">ลากวงกลมส้ม</b> = จุดที่ทางเดินต่อกับถนน (ย้ายให้ตรงประตู/ภาพอาคารได้) · ทางเชื่อมจากถนนมาถึงประตู (หมุดฟ้า) · ปรับให้ตรงกับภาพอาคาร ไม่ใหญ่เกิน/ไม่เลยประตู</p>
   <b class="sec">โหมด</b>
   <div class="row" style="flex-wrap:wrap">${mb('auto', '🤖 ออโต้')}${mb('custom', '✏ วาดเอง')}${mb('none', '⛔ ไม่มีทางเชื่อม')}</div>
   <p class="sub">${mode === 'auto' ? 'ออโต้ = ออกทางด้านหน้าตามที่บ้านหัน แล้วหาทางต่อถนน' : mode === 'custom' ? 'วาดเอง = คลิกบนแผนที่ต่อจากประตูไปยังถนน · ลากจุดเพื่อย้าย · Shift+คลิกจุด = ลบ · ปลายเส้นควรแตะถนน' : 'ไม่มีทางเชื่อม = ไม่สร้างถนนไปที่นี่ (ต่อเองด้วยเครื่องมือถนน หรือทาพื้น)'}</p>
@@ -2932,7 +2946,7 @@
    const L = o.lead, ptsW = (L?.pts || []).map(q => { const a = center(o), c = canonical(o, a.u + q.du, a.v + q.dv); return project(c.u, c.v) }), g0 = gate(o), gp = project(g0.u, g0.v);
    gg.save(); gg.lineWidth = 3 / z; gg.strokeStyle = '#ffb347'; gg.setLineDash([8 / z, 6 / z]);
    if (L?.mode === 'custom' && ptsW.length) { gg.beginPath(); gg.moveTo(gp.x, gp.y); ptsW.forEach(q => gg.lineTo(q.x, q.y)); gg.stroke(); gg.setLineDash([]); ptsW.forEach((q, i) => { gg.beginPath(); gg.arc(q.x, q.y, 6 / z, 0, 7); gg.fillStyle = i === ptsW.length - 1 ? '#ffb347' : '#ffe0a8'; gg.fill(); gg.strokeStyle = '#1d2b24'; gg.lineWidth = 1.5 / z; gg.stroke() }) }
-   gg.setLineDash([]); gg.beginPath(); gg.arc(gp.x, gp.y, 7 / z, 0, 7); gg.strokeStyle = '#ffb347'; gg.lineWidth = 2.5 / z; gg.stroke();
+   gg.setLineDash([]); gg.beginPath(); gg.arc(gp.x, gp.y, 9 / z, 0, 7); gg.fillStyle = 'rgba(255,179,71,.35)'; gg.fill(); gg.strokeStyle = '#ffb347'; gg.lineWidth = 2.5 / z; gg.stroke();
    gg.restore()
   }
   // entrance pin
