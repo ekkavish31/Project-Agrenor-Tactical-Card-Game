@@ -1,4 +1,4 @@
-/* v92.17 · place-interior.html?place=<id>&name=<name> — the inside of every place in Fernvale, drawn in code.
+/* v93.03 · place-interior.html?place=<id>&name=<name> — the inside of every place in Fernvale, drawn in code.
    • Rooms per kind (inn, healer, shop, market, temple, forge, house, home) with furniture built from iso boxes: counters, tables,
      stools, beds, shelves, fireplace, anvil, furnace, altar, pews, stalls, barrels, crates, rugs, lamps, a notice board …
    • People follow their own day (VillageLife.P[*].sched on the village clock): they walk in through the door, go to their spot
@@ -17,6 +17,8 @@
   let W = 0, H = 0, dpr = 1, Z = 1, CX = 0, CY = 0, S = L.save();
   const heroName = () => { try { return JSON.parse(localStorage.getItem('project-a-save') || '{}')?.heroName || 'นักผจญภัย' } catch (e) { return 'นักผจญภัย' } };
   const fill = txt => String(txt).replace(/\{name\}/g, heroName());
+  const MIND = window.Mind || null;                                       // js/village-mind.js: memory, news, scenes, jobs, wants
+  const CAP = { inn: 14, market: 10, temple: 9, square: 12 };             // how many people fit in a room at once
 
   /* ---------- iso ---------- */
   const HW = 34, HH = 17;
@@ -133,8 +135,11 @@
   function benchPerson(b) { const p = L.P[b.key] || { id: b.key, name: b.name, role: 'เพื่อนร่วมทาง', look: { coat: '#5a6a8a', hair: '#3a2a1a', hat: 'none', weapon: 'sword' }, lines: { day: ['พักอยู่ที่โรงแรม พร้อมออกเดินทางเมื่อเจ้าเรียก'] } }; return { ...p, benched: true } }
   function syncPeople(first) {
     const hour = CLK.read().hour, want = new Map();
-    for (const p of Object.values(L.P)) { if (L.inParty(S, p.id) && !benchHere(p.id)) continue; const w = whereNow(p, hour); if (herePlace(w.at)) want.set(p.id, { p, tag: w.tag }) }
-    if (KIND === 'inn') for (const b of S.bench) if (!want.has(b.key)) want.set(b.key, { p: benchPerson(b), tag: 'table' });
+    for (const p of Object.values(L.P)) { if (L.inParty(S, p.id) && !benchHere(p.id)) continue; if (MIND?.away(p.id)) continue; const w = whereNow(p, hour); if (herePlace(w.at)) want.set(p.id, { p, tag: w.tag }) }
+    if (KIND === 'inn') for (const b of S.bench) if (!want.has(b.key) && !MIND?.away(b.key)) want.set(b.key, { p: benchPerson(b), tag: 'table' });
+    /* a full room: staff and people already inside stay, latecomers wait outside */
+    const cap = Math.min(CAP[KIND] || 7, R.spots.length + 2);
+    if (want.size > cap) { const keep = [...want.keys()].sort((a, b) => (b === OWNER || b === 'marta' ? 2 : people.has(b) ? 1 : 0) - (a === OWNER || a === 'marta' ? 2 : people.has(a) ? 1 : 0)); for (const id of keep.slice(cap)) want.delete(id) }
     for (const [id, w] of want) if (!people.has(id)) addActor(w.p, w.tag, !first);
     for (const [id, a] of people) if (!want.has(id) && !a.leaving && a !== talkingTo) { a.leaving = true; freeSpot(a.spot); a.spot = null; a.path = pathTo({ u: Math.round(a.vu - .5), v: Math.round(a.vv - .5) }, DOOR) || []; a.walking = true }
   }
@@ -256,7 +261,15 @@
   function daylight() { const h = CLK.read().hour; return h >= 7 && h < 17 ? 1 : h >= 17 && h < 20 ? (20 - h) / 3 : h >= 5 && h < 7 ? (h - 5) / 2 : 0 }
 
   /* ---------- frame ---------- */
-  let last = 0, bubbleAt = 0, syncAt = 0, talkingTo = null, hoverId = null;
+  let last = 0, bubbleAt = 0, syncAt = 0, talkingTo = null, hoverId = null, sceneAt = 6000, scenePlaying = false;
+  /* two or more villagers in the room talk to each other (written scenes first, then small chats) */
+  async function playScene() {
+    if (!MIND) return; const here = [...people.values()].filter(a => !a.leaving && !a.walking && a !== talkingTo && L.P[a.id]).map(a => a.id);
+    if (here.length < 2) return; const sc = MIND.scene(here, { place: KIND, period: CLK.period(CLK.read().hour) }); if (!sc) return;
+    scenePlaying = true;
+    for (const [who, txt] of sc.lines) { const a = people.get(who); if (!a || a.leaving) break; const o = sc.lines.map(l => people.get(l[0])).find(x => x && x !== a); if (o) a.face = faceOf(o.u - a.u, o.v - a.v); a.bubble = { txt: fill(txt), until: performance.now() + 3400 }; await wait(3000) }
+    scenePlaying = false;
+  }
   function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
     const w = (R.W + R.D) * HW, h = (R.W + R.D) * HH + WALL_H + 40; Z = Math.min(1.6, Math.max(.6, Math.min((W - (W < 760 ? 20 : 300)) / w, (H - 200) / h)));
     const c = P(R.W / 2, R.D / 2); CX = (W < 760 ? W / 2 : W / 2 + 120) - c.x * Z; CY = H / 2 + 20 - c.y * Z + WALL_H * Z * .35 }
@@ -274,7 +287,8 @@
       /* the innkeeper sometimes carries drinks to a table */
       if (a.id === 'marta' && !a.walking && !a.leaving && Math.random() < dt * .05) { const tbl = R.spots.filter(s => s.tag === 'table'); const s = tbl[Math.floor(Math.random() * tbl.length)]; const back = a.spot; if (s && back) { const near = [[0, 1], [1, 0], [0, -1], [-1, 0]].map(([du, dv]) => ({ u: s.u + du, v: s.v + dv })).find(c => free(c.u, c.v)); const p = near && pathTo({ u: a.u, v: a.v }, near); if (p) { a.path = p; a.walking = true; setTimeout(() => { if (people.get('marta') === a && !a.leaving) { a.path = pathTo({ u: a.u, v: a.v }, back) || []; } }, 5000) } } }
     }
-    if (t > bubbleAt) { bubbleAt = t + 3500 + Math.random() * 3000; const list = [...people.values()].filter(a => !a.walking && !a.leaving && a !== talkingTo); const a = list[Math.floor(Math.random() * list.length)]; if (a) { const per = CLK.period(CLK.read().hour), lines = a.p.lines?.[per] || a.p.lines?.day || a.p.lines?.evening || []; if (lines.length) a.bubble = { txt: fill(lines[Math.floor(Math.random() * lines.length)]), until: t + 3600 } } }
+    if (t > sceneAt && !scenePlaying) { sceneAt = t + 16000 + Math.random() * 14000; playScene(t) }
+    if (t > bubbleAt && !scenePlaying) { bubbleAt = t + 3500 + Math.random() * 3000; const list = [...people.values()].filter(a => !a.walking && !a.leaving && a !== talkingTo); const a = list[Math.floor(Math.random() * list.length)]; if (a) { const per = CLK.period(CLK.read().hour); let txt = MIND && L.P[a.id] ? MIND.bubble(a.id, { period: per, place: KIND }) : ''; if (!txt) { const lines = a.p.lines?.[per] || a.p.lines?.day || a.p.lines?.evening || []; txt = lines.length ? lines[Math.floor(Math.random() * lines.length)] : '' } if (txt) a.bubble = { txt: fill(txt), until: t + 3600 } } }
     draw(t);
   }
   function draw(t) {
@@ -299,7 +313,7 @@
     /* speech bubbles on top, in screen space */
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     for (const a of people.values()) if (a.bubble && t < a.bubble.until) bubble(a, a.bubble.txt);
-    if (hoverId && people.get(hoverId)) { const a = people.get(hoverId), p = screen(a.vu, a.vv); label(a.p.name + ' · ' + a.p.role, p.x, p.y - 100 * Z) }
+    if (hoverId && people.get(hoverId)) { const a = people.get(hoverId), p = screen(a.vu, a.vv); label(a.p.name + ' · ' + fill(a.p.role), p.x, p.y - 100 * Z) }
   }
   function drawPerson(a, t) {
     const p = P(a.vu, a.vv); g.save(); g.globalAlpha = Math.max(0, Math.min(1, a.fade));
@@ -363,12 +377,13 @@
   document.head.append(css);
   const hud = document.createElement('div'); hud.id = 'inHud'; document.body.append(hud);
   function hudSync() {
-    S = L.save(); const c = CLK.read(), icon = daylight() > .5 ? '☀' : '🌙';
+    S = L.save(); const back = MIND?.tick(S) || []; if (back.length) { L.writeSave(S); for (const b of back) toast(`💼 ${L.P[b.id]?.name || b.id} กลับจากงานแล้ว · ${b.gain}`) }
+    const c = CLK.read(), icon = daylight() > .5 ? '☀' : '🌙';
     const here = [...people.values()].filter(a => !a.leaving);
     const html = `<h1>${esc(NAME)}</h1><div class="sub">Fernvale · วันที่ ${c.day} · ${icon} ${CLK.label(c.hour)}</div>
       <div class="row"><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span><span>ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</span></div>
       <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
-      <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : a.p.role)}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
+      <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : fill(a.p.role))}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก</div>`;
     if (html === hud._html) return; hud._html = html; hud.innerHTML = html;   // only rebuild when something changed (keeps clicks reliable)
     hud.querySelector('#inOut').onclick = () => walkTo(DOOR, leave);
@@ -376,6 +391,13 @@
     hud.querySelector('#inRoom') && (hud.querySelector('#inRoom').onclick = () => rest(10));
     hud.querySelector('#inSleep') && (hud.querySelector('#inSleep').onclick = () => rest(0));
     hud.querySelectorAll('.who [data-id]').forEach(e => e.onclick = () => { const a = people.get(e.dataset.id); if (a) walkNear(a, () => talk(a)) });
+  }
+  function workPanel(a) {
+    const p = a.p, jobs = MIND.canWork(p.id, p.benched), JOBS = window.VillageLines.JOBS;
+    talk(a, 'งานแบบไหนล่ะ? ข้าทำได้ ' + jobs.map(k => JOBS[k].name).join(', '));
+    const acts = dlg?.querySelector('.acts'); if (!acts) return;
+    acts.innerHTML = jobs.map(k => `<button data-a="job:${k}" ${S.gold < JOBS[k].cost ? 'disabled' : ''}>${esc(JOBS[k].name)} · ${JOBS[k].cost}💰 · ${JOBS[k].hours} ชม. → ${{ reveal: 'เปิดแผนที่', potions: 'ยา', food: 'เสบียง', gold: 'เงิน' }[JOBS[k].give]}</button>`).join('') + '<button class="ghost" data-a="talk">ย้อนกลับ</button>';
+    acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
   }
   function toast(t) { const d = document.createElement('div'); d.className = 'in-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 2300) }
   async function rest(cost) {
@@ -391,12 +413,14 @@
   function talk(a, line) {
     close(); modalOpen = true; talkingTo = a; S = L.save();
     const p = a.p, per = CLK.period(CLK.read().hour), lines = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…'];
-    const txt = line || fill(lines[Math.floor(Math.random() * lines.length)]);
+    let said = null; if (!line && MIND && L.P[p.id]) { said = MIND.talk(p.id, { period: per, place: KIND, save: S }); L.writeSave(S); if (said.reward) setTimeout(() => toast('รางวัล: ' + [said.reward.gold ? '+' + said.reward.gold + ' 💰' : '', said.reward.potions ? 'ยา +' + said.reward.potions : ''].filter(Boolean).join(' · ')), 200) }
+    const txt = line || (said ? fill(said.text) : fill(lines[Math.floor(Math.random() * lines.length)]));
+    const ws = MIND?.wantState(p.id), jobs = MIND && L.P[p.id] && !(p.recruit && !L.inParty(S, p.id)) ? MIND.canWork(p.id, p.benched) : [], aff = MIND?.npc(p.id).aff || 0;
     const rec = p.recruit && !L.inParty(S, p.id) ? L.RECRUIT[p.id] : null;
     const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
-    bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(p.name)}</h2><div class="role">${esc(p.role)}${p.age ? ' · อายุ ' + p.age : ''}${p.benched ? ' · พักอยู่กับทีม' : ''}</div>
-      <p>${esc(txt)}</p>${rec ? `<div class="cond">★ เงื่อนไขชวนเข้าทีม: <b>${esc(rec.label)}</b><br>${esc(rec.text)}${progressText(p.id, rec)}</div>` : ''}
-      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
+    bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(p.name)}${aff >= 6 ? ' <small title="สนิทมาก">💛</small>' : aff >= 3 ? ' <small title="สนิท">🙂</small>' : ''}</h2><div class="role">${esc(fill(p.role))}${p.age ? ' · อายุ ' + p.age : ''}${p.benched ? ' · พักอยู่กับทีม' : ''}</div>
+      <p>${esc(txt)}</p>${ws?.asked && !ws.done ? `<div class="cond">🤝 คำขอ: ${esc(ws.def.hint)}</div>` : ''}${rec ? `<div class="cond">★ เงื่อนไขชวนเข้าทีม: <b>${esc(rec.label)}</b><br>${esc(rec.text)}${progressText(p.id, rec)}</div>` : ''}
+      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${jobs.length ? '<button data-a="work">💼 จ้างทำงาน</button>' : ''}${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
     document.body.append(bg); dlg = bg;
     const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, p.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
     bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
@@ -414,7 +438,7 @@
   }
   function joinNow(a, msg) {
     S = L.save(); if (!L.join(S, a.id)) { talk(a, 'ข้าอยู่ในทีมเจ้าแล้วนี่'); return }
-    L.writeSave(S); toast('★ ' + a.p.name + ' เข้าร่วมทีม!' + (S.party.some(x => x.key === a.id) ? '' : ' (พักที่โรงแรม — จัดทีมเพื่อพาไป)'));
+    L.writeSave(S); MIND?.emit('recruit:join', { who: a.id, witness: [...people.keys()] }); toast('★ ' + a.p.name + ' เข้าร่วมทีม!' + (S.party.some(x => x.key === a.id) ? '' : ' (พักที่โรงแรม — จัดทีมเพื่อพาไป)'));
     talk(a, msg); hudSync();
   }
   async function act(a, what) {
@@ -422,8 +446,10 @@
     if (what === 'bye') { close(); return }
     if (what === 'talk') { talk(a); return }
     if (what === 'about') { const ab = p.about?.length ? fill(p.about[Math.floor(Math.random() * p.about.length)]) : ''; talk(a, (p.trait ? '(' + p.trait + ') ' : '') + (ab || fill(p.story || '…'))); return }
-    if (what === 'rumor') { talk(a, 'ข่าวลือตอนนี้: ' + ['ถ้ำในป่าตะวันออกมีเสียงหอนทั้งคืน — พวกพรานไม่กล้าเข้าไป', 'คนงานเหมืองหนีออกมาบอกว่าหินในเหมืองลุกขึ้นเดิน', 'ระฆังวิหารเก่าในบึงหมอกดังเองทุกคืนข้างแรม', 'ฮิวโก้เล่าว่ามีคนกลับจากซากเมืองพร้อมผลึกแปลกประหลาด'][Math.floor(Math.random() * 4)] + ' (ไปที่ "ออกเดินทาง" เพื่อรับภารกิจ)'); return }
+    if (what === 'rumor') { talk(a, 'ข่าวลือตอนนี้: ' + ['ถ้ำในป่าตะวันออกมีเสียงหอนทั้งคืน — พวกพรานไม่กล้าเข้าไป', 'คนงานเหมืองหนีออกมาบอกว่าหินในเหมืองลุกขึ้นเดิน', 'ระฆังวิหารเก่าในบึงหมอกดังเองทุกคืนข้างแรม', 'เกรเวนเล่าว่ามีคนกลับจากซากเมืองพร้อมผลึกแปลกประหลาด'][Math.floor(Math.random() * 4)] + ' (ไปที่ "ออกเดินทาง" เพื่อรับภารกิจ)'); return }
     if (what === 'room') { close(); rest(10); return }
+    if (what === 'work') { workPanel(a); return }
+    if (what.startsWith('job:')) { const k = what.slice(4), J = window.VillageLines.JOBS[k]; const r = MIND.startJob(p.id, k, S); if (!r.ok) { talk(a, r.why === 'gold' ? `ค่าจ้าง ${J.cost} เหรียญ … เจ้ายังมีไม่พอนะ` : 'ข้ายังทำงานเก่าไม่เสร็จเลย'); return } L.writeSave(S); close(); toast(`💼 ${p.name} ออกไป${J.name} · กลับราว ${J.hours} ชม.`); a.bubble = { txt: 'ไปล่ะ! เดี๋ยวกลับมาเล่าให้ฟัง', until: performance.now() + 2500 }; setTimeout(() => { syncPeople(false); hudSync() }, 300); return }
     if (what === 'drink') {
       if (!(hour >= 17 || hour < 4)) { talk(a, 'ตอนกลางวันข้ายังไม่ดื่ม… อย่างน้อยก็ไม่ดื่มต่อหน้าคนอื่น มาใหม่ตอนเย็นนะ'); return }
       const day = CLK.read().day; if (r.day === day) { talk(a, 'วันนี้เจ้าเลี้ยงข้าไปแล้ว … ฮึก … พรุ่งนี้ค่อยว่ากัน'); return }
@@ -449,6 +475,7 @@
     document.body.append(fr);
     const res = await new Promise(r => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); r(e.data) } }; addEventListener('message', on) });
     fr.remove(); modalOpen = false;
+    if (res.outcome === 'win' || res.outcome === 'lose') MIND?.emit(res.outcome === 'win' ? 'duel:win' : 'duel:lose', { who: a.id, witness: [...people.keys()] });
     if (res.outcome === 'win') joinNow(a, 'ฮึ … ไม่เลวนี่ ข้ายอมรับ ข้าจะตามเจ้าไป แต่อย่าคิดว่าข้าจะเชื่อฟังทุกเรื่องนะ');
     else talk(a, res.outcome === 'flee' ? 'หนีแล้วหรือ? น่าผิดหวัง' : 'แค่นี้เองหรือ? กลับไปฝึกมาใหม่เถอะ');
   }

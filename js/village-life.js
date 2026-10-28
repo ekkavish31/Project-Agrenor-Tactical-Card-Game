@@ -1,4 +1,4 @@
-/* v92.17 · Village life data: the clock, the people of Fernvale (who they are, where they are at each hour, what they say) and the
+/* v93.03 · Village life data: the clock, the people of Fernvale (who they are, where they are at each hour, what they say) and the
    companions that can be recruited (each with its own condition). Pure data + small helpers, shared by place-interior.html.
    The party and gold live in the world-map save ('agrenor-world-v1') so a recruit made in the inn travels on the world map. */
 (function (root) {
@@ -68,7 +68,7 @@
   add('orla', { name: 'ซิสเตอร์ออร์ลา', role: 'นักบวชแห่งวิหารธาตุดิน', age: 29, recruit: 'offering', look: { coat: '#e8e0d0', hair: '#7a4a2a', hat: 'hood', hatCol: '#c9b88a', weapon: 'staff', longHair: true },
     trait: 'อ่อนโยน มั่นคง เชื่อว่าการรักษาคือการต่อสู้อีกแบบ', story: 'เดินทางมาจากวิหารใหญ่ริมแม่น้ำ เพื่อดูแลศาลเจ้าของ Fernvale ที่ไม่มีนักบวชมาหลายปี',
     likes: 'ดอกไม้ป่า, ความเงียบตอนเช้า', sched: [[5, 20, 'temple', 'altar'], [20, 24, 'temple', 'pew']],
-    lines: { morning: ['แสงของ Elukhor มาหยุดใกล้หมู่บ้านวันนี้ เป็นวันมงคลนะ'], day: ['ถ้าเจ้าจะพาข้าไปเยียวยาผู้คนนอกหมู่บ้าน ช่วยถวายเงินบำรุงวิหาร 50 เหรียญ และยาฟื้นฟู 2 ขวดไว้แจกคนยากก่อน'], evening: ['บาดแผลที่มองไม่เห็นก็ต้องการการรักษาเหมือนกัน'] },
+    lines: { morning: ['แสงของดวงทองมาหยุดใกล้หมู่บ้านวันนี้ ชาวบ้านถือเป็นวันมงคลนะ'], day: ['ถ้าเจ้าจะพาข้าไปเยียวยาผู้คนนอกหมู่บ้าน ช่วยถวายเงินบำรุงวิหาร 50 เหรียญ และยาฟื้นฟู 2 ขวดไว้แจกคนยากก่อน'], evening: ['บาดแผลที่มองไม่เห็นก็ต้องการการรักษาเหมือนกัน'] },
     about: ['ข้าเลือกเดินทางมาเอง วิหารใหญ่มีนักบวชมากพอแล้ว ที่นี่ต่างหากที่ต้องการข้า'] });
   add('berg', { name: 'นายพรานเบิร์ก', role: 'นายพราน', age: 52, recruit: 'boss', look: { coat: '#5b4a32', hair: '#2a1f16', hat: 'hood', hatCol: '#3f5232', beard: '#3a2a1a', weapon: 'bow' },
     trait: 'เงียบขรึม รู้จักป่าดีกว่าใคร ไม่ชอบคนที่พูดมาก', story: 'สูญเสียคู่ล่า (พ่อของเรน) ให้จ่าฝูงหมาป่า ตั้งแต่นั้นไม่ยอมเข้าป่าลึกอีก',
@@ -116,7 +116,7 @@
     trait: 'อยากรู้อยากเห็น วิ่งตลอดเวลา', story: 'ฝันอยากเป็นนักผจญภัยเหมือนพี่ {name}', likes: 'ขนมปังน้ำผึ้ง',
     sched: [[8, 12, 'temple', 'pew'], [12, 17, 'square'], [17, 19, 'inn', 'fire'], [19, 24, 'home']],
     lines: { day: ['พี่ {name}! พาหนูไปผจญภัยด้วยได้ไหม'], evening: ['คุณยายลินเล่าเรื่องเมืองแห่งความมืด หนูกลัวจนนอนไม่หลับเลย'] }, about: ['โตขึ้นหนูจะเก่งกว่าพี่อีก!'] });
-  add('ron', { name: 'ยามรอน', role: 'ยามประตูตะวันออก', age: 44, look: { coat: '#5a5a6a', hair: '#3a3a3a', hat: 'helm', hatCol: '#9a9aa8', weapon: 'sword' },
+  add('dork', { name: 'ยามดอร์ก', role: 'ยามประตูหมู่บ้าน', age: 44, look: { coat: '#5a5a6a', hair: '#3a3a3a', hat: 'helm', hatCol: '#9a9aa8', weapon: 'sword' },
     trait: 'เคร่งครัด ภูมิใจในหน้าที่', story: 'เฝ้าประตูมายี่สิบปี ไม่เคยลาป่วย', likes: 'กฎ',
     sched: [[6, 20, 'square'], [20, 23, 'inn', 'bar']],
     lines: { day: ['ถ้าจะออกนอกหมู่บ้าน อย่าลืมกลับมาก่อนมืด'], evening: ['เวรข้าจบแล้ว เบียร์แก้วนี้ข้าสมควรได้'] }, about: ['ยี่สิบปี ไม่เคยลาป่วยแม้แต่วันเดียว'] });
@@ -128,10 +128,33 @@
     trait: 'หัวการค้า ต่อราคาเก่ง', story: 'ค้าขายกับพ่อค้าจากเมืองใหญ่ทุกสัปดาห์', likes: 'กำไร',
     sched: [[7, 19, 'shop', 'counter'], [19, 22, 'inn', 'table']],
     lines: { day: ['ของดีราคาไม่แพง … ไม่แพงสำหรับฉันนะ'], evening: ['พ่อค้าจากเมืองใหญ่บอกว่าราคาผลึกในเมืองขึ้นสามเท่า'] }, about: ['ร้านนี้แม่ยกให้ ฉันทำให้มันกำไรขึ้นเท่าตัว'] });
-  add('hugo', { name: 'ฮิวโก้', role: 'พ่อค้าเร่จากเมืองใหญ่', age: 50, look: { coat: '#8a6a2a', hair: '#7a6a5a', hat: 'hat', hatCol: '#5a3a1a', beard: '#7a6a5a', cape: '#3a5a6a' },
+  add('graven', { name: 'เกรเวน', role: 'พ่อค้าจากเมือง', age: 50, look: { coat: '#8a6a2a', hair: '#7a6a5a', hat: 'hat', hatCol: '#5a3a1a', beard: '#7a6a5a', cape: '#3a5a6a' },
     trait: 'ช่างคุย ค้าข่าวพอ ๆ กับค้าของ', story: 'นำข่าวซากเมืองใน Aeth\'Va-Paelas มาที่หมู่บ้าน', likes: 'ข่าวลือใหม่ ๆ',
     sched: [[9, 17, 'market'], [17, 24, 'inn', 'table'], [0, 1, 'inn', 'table']],
     lines: { day: ['เมืองใหญ่วุ่นวายจะตาย ที่นี่สงบกว่าเยอะ'], evening: ['มีคนกลับจากซากเมืองพร้อมผลึกที่ไม่มีใครเคยเห็น … ข้าเห็นกับตา!'] }, about: ['ข้าเดินทางผ่านมาสามสิบเมืองแล้ว Fernvale เป็นที่เดียวที่ขนมปังอร่อยขนาดนี้'] });
+
+  add('oren', { name: 'ผู้ใหญ่บ้านโอเรน', role: 'ผู้ใหญ่บ้าน', age: 63, look: { coat: '#56683a', hair: '#cfcfcf', hat: 'none', beard: '#dcdcdc', cape: '#3a4a2a', weapon: 'book', tall: true },
+    trait: 'สุขุม ห่วงหมู่บ้านมากกว่าตัวเอง พูดน้อยแต่ทุกคำมีน้ำหนัก', story: 'เป็นคนเก็บจานหินที่มีเส้นแสงไว้ และเป็นคนแรกที่เห็นว่ามันตอบสนองต่อ {name}', likes: 'ความสงบ, ชาร้อน', sched: [[6, 10, 'temple', 'pew'], [10, 17, 'square'], [17, 21, 'inn', 'table']],
+    lines: { morning: ['เช้านี้ดวงทองลอยต่ำ ชาวบ้านจะได้ทำงานกันเต็มที่'], day: ['หมู่บ้านเล็ก ๆ อย่างเรา อยู่รอดได้เพราะช่วยกัน'], evening: ['ข่าวจากเมืองใหญ่ช่วงนี้ไม่ค่อยดี … ข้าห่วงว่ามันจะลามมาถึงที่นี่'] }, about: ['ข้าเป็นผู้ใหญ่บ้านมาสิบห้าปี ไม่เคยมีปีไหนที่ข่าวลือเยอะเท่าปีนี้'] });
+  add('mother', { family: true, name: 'แม่', role: 'แม่ของ {name}', age: 47, look: { coat: '#8a4b5c', apron: '#efe2c8', hair: '#5a3a22', hat: 'scarf', hatCol: '#c9a07a', longHair: true }, home: 'home',
+    trait: 'อบอุ่น เข้มแข็ง ห่วงลูกจนนอนไม่หลับทุกครั้งที่ลูกออกเดินทาง', story: 'เลี้ยง {name} มาคนเดียวหลังพ่อจากไป ไม่เคยบ่นสักคำ', likes: 'ชาดอกคาโมมายล์, เสียงลูกกลับบ้าน', sched: [[5, 9, 'home', 'work'], [9, 13, 'market'], [13, 16, 'temple', 'pew'], [16, 24, 'home']],
+    lines: { morning: ['ตื่นแล้วหรือลูก ข้าวต้มอยู่บนเตา'], day: ['อย่าลืมพกยาติดตัวนะ แม่ไม่อยากต้องไปตามหาลูกกลางป่า'], evening: ['กลับมาก่อนมืดนะลูก แม่จะรอ'] }, about: ['แม่ไม่ได้ห้ามลูกออกไปหรอก แม่แค่อยากให้ลูกกลับมาทุกครั้ง'] });
+  add('pip', { name: 'ปิ๊บ', role: 'เด็กเลี้ยงแพะ', age: 11, look: { coat: '#6f8f36', hair: '#8a5a2a', hat: 'cap', hatCol: '#4a6a2a', small: true }, home: 'npc7',
+    trait: 'ซน กล้าเกินตัว แพะทุกตัวเชื่อฟังเขามากกว่าผู้ใหญ่', story: 'อยากเป็นนักผจญภัยเหมือนกัน แต่ต้องเลี้ยงแพะให้ปิแอร์ก่อน', likes: 'แพะชื่อ "จอมพล", เรื่องสู้กับมอนสเตอร์', sched: [[6, 12, 'square'], [12, 17, 'market'], [17, 19, 'inn', 'fire'], [19, 24, 'home']],
+    lines: { day: ['แพะของข้าชื่อจอมพล มันเคยขวิดหมาป่ามาแล้วนะ … ตัวเล็ก ๆ'], evening: ['พี่ {name} เล่าเรื่องสู้กับมอนให้ฟังหน่อยสิ!'] }, about: ['โตขึ้นข้าจะมีแพะศึกเป็นของตัวเอง!'] });
+  add('bryn', { name: 'บริน', role: 'คนโม่แป้ง', age: 39, look: { coat: '#c8b898', apron: '#ece4d0', hair: '#7a5a3a', hat: 'cap', hatCol: '#e8e0cc', beard: '#7a5a3a' },
+    trait: 'ขยัน ขี้เล่น ชอบท้าแข่งแขนกับทุกคน', story: 'โม่ที่ลำธารเป็นของตระกูลมาห้ารุ่น แป้งทุกกระสอบในหมู่บ้านผ่านมือเขา', likes: 'แข่งแขน, ขนมปังของป้าเมย์', sched: [[5, 14, 'market'], [14, 17, 'shop'], [17, 23, 'inn', 'table']],
+    lines: { day: ['ข้าวสาลีปีนี้เม็ดเต็ม ป้าเมย์คงอบขนมปังได้อร่อยเป็นพิเศษ'], evening: ['มาแข่งแขนกันไหม? แพ้เลี้ยงเบียร์!'] }, about: ['ห้ารุ่นแล้วที่ตระกูลข้าโม่แป้งให้ Fernvale'] });
+  add('hilda', { name: 'ฮิลดา', role: 'ชาวนา', age: 44, look: { coat: '#7a6a3a', apron: '#d8c8a0', hair: '#c9a46a', hat: 'straw', hatCol: '#d9be7a', longHair: true },
+    trait: 'ตรงไปตรงมา อ่านฟ้าฝนแม่นกว่าใคร', story: 'ทุ่งของเธออยู่ติดชายป่า เห็นอะไรแปลก ๆ บ่อยกว่าคนอื่น', likes: 'ฝนต้นฤดู', sched: [[5, 16, 'market'], [16, 18, 'temple', 'pew'], [18, 22, 'inn', 'table']],
+    lines: { morning: ['ฟ้าแดงตอนเช้า บ่ายนี้ลมแรงแน่'], day: ['ชายป่าทางทุ่งข้า มีรอยเท้าอะไรใหญ่ ๆ เดินผ่านเมื่อคืน'], evening: ['เหนื่อยทั้งวัน แต่ได้นั่งกินซุปของมาร์ธาก็หายเหนื่อย'] }, about: ['ข้าไม่เชื่อเรื่องผี แต่ข้าเชื่อรอยเท้า'] });
+  add('tess', { name: 'เทส', role: 'แม่ค้าดอกไม้', age: 20, look: { coat: '#c8789a', apron: '#f4e8d8', hair: '#e0b070', hat: 'none', longHair: true },
+    trait: 'ร่าเริง ช่างสังเกต จำได้ว่าใครชอบดอกอะไร', story: 'ส่งดอกไม้ให้วิหารทุกเช้า และแอบเขียนจดหมายถึงใครบางคนในเมืองใหญ่', likes: 'ดอกไม้ป่าสีฟ้า', sched: [[6, 9, 'temple', 'pew'], [9, 17, 'market'], [17, 21, 'inn', 'stage']],
+    lines: { morning: ['ดอกไม้ชุดนี้เพิ่งเก็บตอนน้ำค้างยังไม่แห้ง'], day: ['ซิสเตอร์ออร์ลาชอบดอกสีขาว ส่วนนาเดีย … เธอชอบดอกที่มีหนาม'], evening: ['ฟินน์ขอดอกไม้ไปให้ใครอีกแล้วนะ'] }, about: ['ดอกไม้ป่าสีฟ้าขึ้นเฉพาะที่ที่ดินมีพลัง … คุณยายลินบอกแบบนั้น'] });
+
+  /* personality voice (how they say things) + how fast they hear gossip (0 slow … 3 knows everything) */
+  const VOICE = { marta: ['warm', 3], finn: ['cheerful', 3], sigrid: ['gruff', 0], ren: ['cheerful', 1], olwen: ['scholar', 2], nadia: ['sly', 2], mil: ['cheerful', 1], orla: ['gentle', 1], berg: ['gruff', 0], may: ['warm', 2], tom: ['gruff', 1], lin: ['scholar', 1], mira: ['scholar', 1], saf: ['gentle', 1], ken: ['cheerful', 1], ella: ['gentle', 2], joe: ['cheerful', 2], shep: ['anxious', 1], pim: ['cheerful', 2], dork: ['formal', 1], gus: ['gruff', 2], vera: ['sly', 2], graven: ['sly', 3], oren: ['formal', 2], mother: ['warm', 2], pip: ['cheerful', 2], bryn: ['cheerful', 2], hilda: ['anxious', 1], tess: ['gentle', 3] };
+  for (const [id, [voice, gossip]] of Object.entries(VOICE)) if (P[id]) Object.assign(P[id], { voice, gossip });
 
   /* ---------- recruitment ---------- each recruit has a different way in */
   const RECRUIT = {
@@ -172,6 +195,6 @@
     if (S.party.length < MAX_ACTIVE) S.party.push(m); else S.bench.push(m);
     return true;
   }
-  root.VillageLife = { VillageClock, P, RECRUIT, ALLY_STATS, HOUSE_OF, placeKind, save, writeSave, join, inParty, MAX_ACTIVE };
+  root.VillageLife = { VillageClock, P, homeOf: p => p.home || Object.keys(HOUSE_OF).find(h => HOUSE_OF[h] === p.id) || null, RECRUIT, ALLY_STATS, HOUSE_OF, placeKind, save, writeSave, join, inParty, MAX_ACTIVE };
   root.VillageClock = VillageClock;
 })(globalThis);

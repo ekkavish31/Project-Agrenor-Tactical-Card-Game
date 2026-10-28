@@ -33,6 +33,18 @@
   /* the travelling party (old companion roster): HP carries over between fights; a fallen companion gets up wounded after the fight */
   const PARTY0 = () => [{ key: 'bram', name: 'บรัม', hp: 54, max: 54 }, { key: 'luna', name: 'ลูน่า', hp: 44, max: 44 }, { key: 'kier', name: 'เคียร์', hp: 48, max: 48 }];
   /* the village clock follows the journey's time when you go home */
+  /* tell the village (js/village-mind.js): what happened out here becomes news and gossip back home; the party saw it */
+  function ev(type, data = {}) { try { syncClock(); window.Mind?.emit(type, { witness: S.party.map(p => p.key), ...data }) } catch (e) { } }
+  /* time spent in the village passes out here too; scouting jobs done in the village open up the map */
+  function adoptVillage() {
+    try { const c = JSON.parse(localStorage.getItem('agrenor-clock-v1') || 'null'); if (c) { const h = c.hour + (Date.now() - c.at) / 1000 * (2 / 60), day = c.day + Math.floor(h / 24), hour = Math.floor(h % 24); if (day * 24 + hour > S.day * 24 + S.hour) { S.day = day; S.hour = hour } } } catch (e) { }
+    while (S.revealQueue > 0) {
+      S.revealQueue--; const d = destOf() || world.dests.find(x => !S.done[x.id]);
+      if (d) { const p = G.path(world, world.home, d); if (p) p.forEach((x, i) => { if (i % 2 === 0 || i < 6) for (const [a, b] of G.within(x.c, x.r, 1)) S.known[K(a, b)] = 1 }); log('ผู้สำรวจจากหมู่บ้านวาดทางไป ' + d.name + ' มาให้') }
+      else revealArea(world.home.c, world.home.r, 4);
+      fogDirty = true; setTimeout(() => toast('🗺 ผู้สำรวจกลับมาพร้อมแผนที่ทาง'), 900);
+    }
+  }
   function syncClock() { try { localStorage.setItem('agrenor-clock-v1', JSON.stringify({ day: S.day, hour: S.hour, at: Date.now() })) } catch (e) { } }
   function healParty(f) { for (const p of S.party) p.hp = Math.min(p.max, f >= 1 ? p.max : p.hp + Math.round(p.max * f)) }
   function fresh(seed) {
@@ -46,7 +58,7 @@
   }
   function load() {
     if (Q.get('new') === '1') { fresh(+Q.get('seed') || undefined); history.replaceState(null, '', location.pathname); return }
-    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = s; S.fatigue ??= 0; S.party ??= PARTY0(); reveal(); return } } catch (e) { }
+    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = s; S.fatigue ??= 0; S.party ??= PARTY0(); adoptVillage(); reveal(); return } } catch (e) { }
     fresh(+Q.get('seed') || undefined);
   }
   function save() { try { localStorage.setItem(SAVE, JSON.stringify(S)) } catch (e) { } }
@@ -332,7 +344,7 @@
   function warm() { if (document.getElementById('wmWarm')) return; const f = document.createElement('iframe'); f.id = 'wmWarm'; f.style.cssText = 'position:fixed;width:2px;height:2px;left:-10px;top:-10px;opacity:0;pointer-events:none;border:0'; f.src = 'battle-field.html?battle=1&embed=1&warm=1'; document.body.append(f); const on = e => { if (e.data?.type === 'agrenor-battle-ready' && e.data.warm) { removeEventListener('message', on); setTimeout(() => f.remove(), 500) } }; addEventListener('message', on); setTimeout(() => f.remove(), 60000) }
   async function chooseDest(id) {
     setTimeout(warm, 2500);
-    S.dest = id; const d = destOf(); log('รับภารกิจ: ' + d.name); save(); fogDirty = true; hudSync();
+    S.dest = id; const d = destOf(); log('รับภารกิจ: ' + d.name); S.leftDay = S.day; ev('journey:start', { dest: d.id, destName: d.name }); save(); fogDirty = true; hudSync();
     busy = true; const p = center(d.c, d.r); cam.tx = p.x; cam.ty = p.y; cam.tz = 1.1; toast('จุดหมาย: ' + d.name); await wait(1700); follow(1); await wait(900); busy = false; hudSync();
   }
 
@@ -382,7 +394,7 @@
   /* things that only happen after dark */
   async function nightEvent(t) {
     const d = destOf(), r = Math.random();
-    if (r < .4 && d && !S.done[d.id]) { const p = G.path(world, t, d); if (p) p.slice(0, 5).forEach(x => S.known[K(x.c, x.r)] = 1); fogDirty = true; log('ดวงไฟวิญญาณนำทาง'); await modal(`<h2>✧ ดวงไฟวิญญาณ</h2><p>แสงสีฟ้าลอยวนอยู่กลางความมืด แล้วค่อย ๆ ล่องไปทางหนึ่ง… หมอกตามทางนั้นจางลงชั่วครู่</p>`); return true }
+    if (r < .4 && d && !S.done[d.id]) { const p = G.path(world, t, d); if (p) p.slice(0, 5).forEach(x => S.known[K(x.c, x.r)] = 1); fogDirty = true; log('ดวงไฟวิญญาณนำทาง'); ev('night:wisp', { biome: t.biome }); await modal(`<h2>✧ ดวงไฟวิญญาณ</h2><p>แสงสีฟ้าลอยวนอยู่กลางความมืด แล้วค่อย ๆ ล่องไปทางหนึ่ง… หมอกตามทางนั้นจางลงชั่วครู่</p>`); return true }
     if (r < .75) { S.fatigue = Math.min(100, S.fatigue + 15); log('เสียงหอนทั้งคืน เหนื่อยขึ้น'); await modal(`<h2>🐺 เสียงหอนในความมืด</h2><p>เสียงหอนรอบทิศทำให้ต้องเดินระวังตัวทุกฝีก้าว ความเหนื่อย +15</p>`); return true }
     const gold = Math.round(20 + Math.random() * 30); S.gold += gold; log('พบของมีค่าใต้แสงจันทร์ +' + gold); await modal(`<h2>🌙 ประกายใต้แสงจันทร์</h2><p>มีบางอย่างสะท้อนแสงจันทร์อยู่ในพงหญ้า — ถุงเหรียญของนักเดินทาง <b>+${gold} 💰</b></p>`); return true;
   }
@@ -396,7 +408,7 @@
     S.cleared[k] = true;
     if (e.type === 'chest') {
       const gold = Math.round(15 + Math.random() * 25 + dang * 40), pot = Math.random() < .35; S.gold += gold; if (pot) S.potions++;
-      log('เปิดหีบ +' + gold + ' 💰' + (pot ? ' +ยา 1' : '')); await modal(`<h2>🎁 หีบสมบัติ</h2><p>ใต้รากไม้มีหีบเก่าถูกฝังไว้ ข้างในมี <b>${gold} เหรียญ</b>${pot ? ' และ <b>ยาฟื้นฟู 1 ขวด</b>' : ''}</p>`);
+      log('เปิดหีบ +' + gold + ' 💰' + (pot ? ' +ยา 1' : '')); ev('chest:found', { gold, biome: t.biome }); await modal(`<h2>🎁 หีบสมบัติ</h2><p>ใต้รากไม้มีหีบเก่าถูกฝังไว้ ข้างในมี <b>${gold} เหรียญ</b>${pot ? ' และ <b>ยาฟื้นฟู 1 ขวด</b>' : ''}</p>`);
     } else if (e.type === 'camp') {
       const v = await modal(`<h2>⛺ จุดพักแรมปลอดภัย</h2><p>ซากกองไฟเก่ากับเพิงหินกันลม ที่นี่ปลอดภัยพอจะพักได้หนึ่งคืน (ใช้เสบียง 1 · ผ่านไป 8 ชม. · HP เต็ม · ไม่มีใครซุ่มโจมตี)</p>`, [{ label: 'พักที่นี่', value: 'rest' }, { label: 'เดินต่อ', value: null, ghost: true }]);
       if (v === 'rest') await camp(true); else S.cleared[k] = false;
@@ -434,7 +446,7 @@
     const hours = night ? ((30 - S.hour) % 24 || 6) : 6;
     if (Math.random() < risk) {
       passTime(Math.round(hours / 2)); S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .25)); S.fatigue = Math.round(S.fatigue / 2); busy = false;
-      log('ถูกบุกค่ายกลางดึก!'); await battle(pickFoe(here), dang, { ambush: true, camp: true }); busy = true;
+      log('ถูกบุกค่ายกลางดึก!'); ev('camp:ambush', { biome: here.biome }); await battle(pickFoe(here), dang, { ambush: true, camp: true }); busy = true;
       if (S.pos.c === here.c && S.pos.r === here.r && S.hp > 0) { passTime(Math.round(hours / 2)); S.fatigue = 0; log('หลังไล่ศัตรูไปได้ ก็นอนต่อจนพอแรง') }
     } else { passTime(hours); S.fatigue = 0; S.hp = fed ? S.maxHp : Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .3)); healParty(fed ? 1 : .3); log('พักแรม ' + (fed ? 'ทีม HP เต็ม' : 'HP +30%') + ' หายเหนื่อย') }
     reveal(); busy = false; hudSync(); save();
@@ -447,7 +459,7 @@
     if (v) walk(p);
   }
   async function arriveHome() {
-    S.hp = S.maxHp; healParty(1); S.food = Math.max(S.food, 10); syncClock(); log('กลับถึงหมู่บ้าน พักฟื้นเต็มที่'); save(); hudSync();
+    S.hp = S.maxHp; healParty(1); S.food = Math.max(S.food, 10); ev('journey:home', { days: Math.max(1, S.day - (S.leftDay ?? S.day)), destName: destOf()?.name }); S.leftDay = S.day; syncClock(); log('กลับถึงหมู่บ้าน พักฟื้นเต็มที่'); save(); hudSync();
     const left = world.dests.filter(d => !S.done[d.id]).length;
     await modal(`<h2>🏠 หมู่บ้านเฟิร์นเวล</h2><p>ชาวบ้านออกมารับ เติมเสบียงให้ครบ ${S.food} ห่อ HP ฟื้นเต็ม</p><p>${left ? 'ยังมีข่าวลือรออยู่อีก ' + left + ' แห่งที่กระดานภารกิจ' : 'ทุกข่าวลือถูกพิสูจน์แล้ว — ลองสร้าง “โลกใหม่” ได้'}</p>`);
     if (S.dest && S.done[S.dest]) S.dest = null; hudSync();
@@ -483,7 +495,10 @@
     const res = await resP;
     fr.classList.remove('on'); await wait(380); fr.remove();
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
-    for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ') } } }
+    for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ'); ev('party:ko', { who: p.key, whoName: p.name }) } } }
+    if (fierce && res.outcome !== 'flee') ev('night:terror', { foe, biome: here.biome });
+    if (!o.boss) ev(res.outcome === 'win' ? 'battle:win' : res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome });
+    else if (res.outcome !== 'win') ev(res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome, destName: destOf()?.name });
     if (res.outcome === 'win') {
       S.battles++; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '')); toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : ''));
@@ -504,7 +519,7 @@
     if (v !== 'go') { if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal(); hudSync() } return }
     const r = await battle(d.boss, 1, { boss: true });
     if (r !== 'win') return;
-    S.done[d.id] = true; S.gold += d.reward; revealArea(d.c, d.r, 2); log('พิชิต ' + d.name + '! +' + d.reward + ' 💰'); save(); hudSync();
+    S.done[d.id] = true; S.gold += d.reward; ev('boss:win', { dest: d.id, destName: d.name, biome: d.biome }); revealArea(d.c, d.r, 2); log('พิชิต ' + d.name + '! +' + d.reward + ' 💰'); save(); hudSync();
     await modal(`<h2>🏆 พิชิต ${esc(d.name)}</h2><p>ข่าวลือกลายเป็นตำนาน หมอกรอบ ${esc(d.name)} จางหายไปถาวร</p>
       <p>รางวัล <b>${d.reward} 💰</b> · ต่อสู้ ${S.battles} ครั้ง · เดิน ${S.steps} ช่อง · วันที่ ${S.day}</p>`, [{ label: '🏠 เดินทางกลับหมู่บ้าน', value: true }]);
     goHome();
