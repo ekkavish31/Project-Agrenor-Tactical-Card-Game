@@ -85,7 +85,7 @@ const STEPS=[
   reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'formation',n:2}],{kicker:'มีเพื่อนแล้ว',title:'จู่โจมประสาน',text:'มีเพื่อนยืนติดตัว ตีแรงขึ้น ×1.35'})},
  {id:'sleep2',tag:'real',outro:'day3',title:'พรุ่งนี้วันงาน',goal:'กลับบ้านแล้วนอนพัก',hint:'ก่อนนอนอย่าลืมรดน้ำฟักทองของวันนี้',
   begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[{label:'💧 รดน้ำฟักทอง',hide:()=>!at('home')||wateredToday(),run:water},goBtn('home'),{...sleepBtn,hide:()=>!at('home')}]},
- {id:'sell',chapter:'วันที่ 3 · งานเทศกาลเก็บเกี่ยว',tag:'real',outro:'soldOne',title:'แข่งขายกับเกรเวน',goal:'ขายของในตลาดให้ได้ 1 ชิ้น',hint:'ขายอาวุธหรือของจากกระเป๋าที่ตลาด · ร้านคู่แข่งยังเป็นแค่ในเนื้อเรื่อง (ระบบจริงอยู่ในแผน)',
+ {id:'sell',chapter:'วันที่ 3 · งานเทศกาลเก็บเกี่ยว',tag:'real',outro:'soldOne',title:'แข่งขายกับเกรเวน',goal:'ขายของในตลาดให้ได้ 1 ชิ้น',hint:'ขายเองที่ร้านรับซื้อ หรือวางของใน "ร้านของเรา" ที่ตลาดแล้วรอชาวบ้านมาซื้อ · ถ้าเกรเวนอยู่ในตลาด ลูกค้าบางคนจะไปร้านเขา',
   check:d=>d.sales>0,acts:[goBtn('market'),{label:'💧 รดน้ำฟักทอง',hide:()=>!at('home')||wateredToday(),run:water}]},
  {id:'contest',tag:'temp',title:'ประกวดฟักทอง',goal:'ไปที่ลานประกวดฟักทอง',hint:'ผลขึ้นกับจำนวนวันที่รดน้ำ',
   check:d=>d.judged,acts:[{label:'🎃 ไปลานประกวด',primary:true,run:async d=>{const days=waterDays();await root.Cutscene.play(D().contestScene(days));addCoins(days>=3?60:days===2?30:10);d.judged=true;doSave();doRender()}}]},
@@ -126,8 +126,8 @@ function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับห�
 
 /* ---------- sales detector (coins up while an item or goods left the bag at the market) ---------- */
 let prev=null;
-function snapshot(){return {coins:V()?.coins||0,inv:(G()?.inventory||[]).length,goods:goodsCount(),loc:V()?.location,adv:!!adv()}}
-function detectSale(){const now=snapshot(),p=prev;prev=now;if(!p||now.adv||p.adv)return false;return now.loc==='market'&&now.coins>p.coins&&(now.inv<p.inv||now.goods<p.goods)}
+function snapshot(){return {shop:V()?.shop?.sold||0,coins:V()?.coins||0,inv:(G()?.inventory||[]).length,goods:goodsCount(),loc:V()?.location,adv:!!adv()}}
+function detectSale(){const now=snapshot(),p=prev;prev=now;if(!p)return false;if(now.shop>p.shop)return true;if(now.adv||p.adv)return false;return now.loc==='market'&&now.coins>p.coins&&(now.inv<p.inv||now.goods<p.goods)}
 
 /* ---------- state ---------- */
 function story(){const v=V();if(!v)return null;return v.story||null}

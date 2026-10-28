@@ -43,7 +43,7 @@ render=function(){routeBaseRender();let key=s.village.location+':'+s.mode;if(key
 // ---- developer mode: "เส้นทาง" tab ----
 let routeTool='draw',routeEdit=null,routeActive=null,routeSpot='enter',routeUndo=[],routeDrag=null;
 function routeEditScene(){return routeEdit||s.village.location}
-function routeSpotChoices(k){let list={enter:'จุดเข้าฉาก (เกิดเมื่อมาถึง)'};let acts={forge:[['recipes','เลือกแบบงาน'],['rest','พัก'],['auto','ทำอัตโนมัติ'],['cancel','ยกเลิกงาน']],home:[['sleep','นอนพัก'],['chest','หีบเก็บของ'],['deck','จัดสำรับ'],['bed','จัดการเตียง'],['rest','พัก']],market:[['buy','ซื้อวัตถุดิบ'],['sell','ขายอุปกรณ์'],['orders','รับ–ส่งออร์เดอร์']]}[k];for(let [id,n] of acts)list[id]=n;return list}
+function routeSpotChoices(k){let list={enter:'จุดเข้าฉาก (เกิดเมื่อมาถึง)'};let acts={forge:[['recipes','เลือกแบบงาน'],['rest','พัก'],['auto','ทำอัตโนมัติ'],['cancel','ยกเลิกงาน']],home:[['sleep','นอนพัก'],['chest','หีบเก็บของ'],['deck','จัดสำรับ'],['bed','จัดการเตียง'],['rest','พัก']],market:[['buy','ซื้อวัตถุดิบ'],['sell','ขายอุปกรณ์'],['shop','ร้านของเรา'],['orders','รับ–ส่งออร์เดอร์']]}[k];for(let [id,n] of acts)list[id]=n;return list}
 function routeSnapshot(){routeUndo.push(JSON.stringify(routes));if(routeUndo.length>60)routeUndo.shift()}
 function routeSaved(msg){let ok=persistRoutes();let el=$('routeStatus');if(el)el.textContent=ok?(msg||'✓ บันทึกเส้นทางแล้ว'):'บันทึกไม่ได้ (พื้นที่เบราว์เซอร์เต็ม?)';drawRouteOverlay()}
 const routeBaseRenderDev=renderDev;

@@ -45,6 +45,7 @@ const ACTIONS = {
  market: {
   buy: 'ซื้อวัตถุดิบ',
   sell: 'ขายอุปกรณ์',
+  shop: 'ร้านของเรา',
   orders: 'รับ–ส่งออร์เดอร์'
  },
  forge: {
@@ -372,8 +373,15 @@ function loadAll() {
   return {}
  }
 }
+/* v94.05 · F1: the market always has "ร้านของเรา" — added to the stall that buys gear (or the first stall) when a saved map has none */
+function withShop(m) {
+ if (KIND !== 'market' || !m?.stations?.length || m.stations.some(s => (s.actions || []).includes('shop'))) return m;
+ const st = m.stations.find(s => (s.actions || []).includes('sell')) || m.stations[0];
+ st.actions = [...(st.actions || []), 'shop'];
+ return m
+}
 let all = loadAll(),
- M = copy(all[PLACE] || DEFAULTS[PLACE]);
+ M = withShop(copy(all[PLACE] || DEFAULTS[PLACE]));
 
 // v85 · painted ground for this map (paths painted here are walkable, even outside the floor; water blocks)
 window.PlacePaint = window.GroundPaint ? GroundPaint.create({ w: 2200, h: 1400, res: .25, unitPx: 45, origin: { x: 1100, y: 700 } }) : null;
@@ -1341,7 +1349,7 @@ window.addEventListener('message', e => {
  }
  if (m.type === 'init') {
   all = loadAll();
-  M = copy(all[PLACE] || DEFAULTS[PLACE]);
+  M = withShop(copy(all[PLACE] || DEFAULTS[PLACE]));
   setup();
   fitView()
  }
@@ -1382,4 +1390,4 @@ setup();
 resize();
 send('ready');
 requestAnimationFrame(draw);
-</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=94.02"></script><script src="js/villager-draw.js?v=94.02"></script><script src="js/village-life.js?v=94.02"></script><script src="js/village-lines.js?v=94.02"></script><script src="js/village-mind.js?v=94.02"></script><script src="js/place-people.js?v=94.03"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=94.02"></script><script src="js/villager-draw.js?v=94.02"></script><script src="js/village-life.js?v=94.02"></script><script src="js/village-lines.js?v=94.05"></script><script src="js/village-mind.js?v=94.02"></script><script src="js/place-people.js?v=94.03"></script><script src="js/editor-tools.js?v=91.77"></script></html>
