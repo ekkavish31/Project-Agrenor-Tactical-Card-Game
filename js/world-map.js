@@ -467,7 +467,7 @@
     const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
     const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
     for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * 10) / 10) }
-    const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max).join(',');
+    const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge')).join(',');
     fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
@@ -478,7 +478,7 @@
     const res = await resP;
     fr.classList.remove('on'); await wait(380); fr.remove();
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
-    for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ') } } }
+    for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ') } } }
     if (res.outcome === 'win') {
       S.battles++; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '')); toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : ''));

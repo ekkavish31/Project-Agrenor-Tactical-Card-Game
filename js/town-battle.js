@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '92.15';
+  const V = '92.16';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -43,7 +43,7 @@
     kier: { name: 'เคียร์', hp: 48, atk: 13, move: 4, range: 1, fx: 'sword' },
     mil: { name: 'มิล', hp: 42, atk: 10, move: 5, range: 1, fx: 'knife' }
   };
-  const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp } : null }).filter(Boolean);
+  const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge' } : null }).filter(Boolean);
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null;
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
@@ -89,7 +89,7 @@
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
     const near = (o) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - o.u) + Math.abs(v - o.v) + Math.random() * .3; if (d < bd) { bd = d; best = { u, v } } } if (best) taken.add(best.u + ',' + best.v); return best };
-    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk, def: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx })).filter(a => a.hp > 0 && a.u != null);
+    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk, def: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, order: p.order })).filter(a => a.hp > 0 && a.u != null);
     const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss } }).filter(Boolean);
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', cards: true,
       hero: { ...hs, name: window.heroName?.() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX, stamina: HST }, allies, monsters: mons });
@@ -165,6 +165,7 @@
   #fbHud{position:fixed;left:14px;top:14px;z-index:40;width:260px;background:#1b302af2;border:1px solid #b9c48a66;border-radius:12px;padding:10px 12px;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 30px #0008}
   #fbHud button{font:inherit;background:#c9893a;color:#fff;border:0;border-radius:7px;padding:6px 9px;cursor:pointer}#fbHud button:disabled{opacity:.4;cursor:default}
   #fbHud .bar{height:7px;background:#0006;border-radius:4px;overflow:hidden;margin:2px 0 6px;position:relative}#fbHud .bar i{display:block;height:100%;transition:width .35s}
+  #fbHud .arow{margin:3px 0 5px}#fbHud .arow.down{opacity:.45}#fbHud .ord{display:flex;gap:3px;margin-top:2px}#fbHud .ord button{padding:2px 6px;font-size:12px;background:#33463e;border-radius:6px}#fbHud .ord button.on{background:#5d8a6e;box-shadow:inset 0 0 0 1px #bfe8c8}#fbHud .ord button.sk{flex:1;background:#6b4e9a;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #fbHud .grp{margin:6px 0 2px;color:#bba57f;font-size:11px;border-top:1px solid #ffffff1a;padding-top:4px}#fbHud .grp small{opacity:.7}
   #fbHud .mini{position:relative;display:flex;justify-content:space-between;font-size:11.5px;padding:2px 5px 4px;margin:2px 0;border-radius:6px;background:#0003;cursor:default;overflow:hidden}#fbHud .mini i{position:absolute;left:0;bottom:0;height:3px}#fbHud .mini.down{opacity:.4}#fbHud .mini.tgt{outline:2px solid #ffd25a}#fbHud .mini[data-id^=monster]{cursor:pointer}
   #fbHud{max-height:calc(100vh - 210px);overflow:auto}
@@ -259,12 +260,17 @@
   function hudSync() {
     if (!hud || !st) return;
     const h = FB.hero(st), m = FB.monster(st), bar = (v, max, col) => `<div class="bar"><i style="width:${Math.max(0, v / max * 100)}%;background:${col}"></i></div>`;
+    const allyRow = u => { const sk = FB.ALLY_SKILL[u.key], why = FB.skillBlock(st, u), o = u.order || 'charge';
+      return `<div class="arow ${u.hp <= 0 ? 'down' : ''}"><div class="mini" data-id="${u.id}"><span>${esc(u.name)}${u.guard ? ' <small style="color:#9cc8ff">🛡' + u.guard + '</small>' : ''}${u.stun ? ' ❄' : ''}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:#7fc8a0"></i></div>` +
+        (u.hp > 0 ? `<div class="ord">${[['charge', '⚔', 'บุก: เข้าหาศัตรูที่ใกล้สุด/เป้าที่เล็ง'], ['follow', '👣', 'ตาม: อยู่ใกล้ฮีโร่ ตีเฉพาะศัตรูที่เข้ามาใกล้'], ['guard', '🛡', 'ตั้งรับ: ไม่ขยับ ป้องกัน +6']].map(([k, ic, tt]) => `<button data-ally="${u.id}" data-order="${k}" class="${o === k ? 'on' : ''}" title="${tt}">${ic}</button>`).join('')}${sk ? `<button class="sk" data-skill="${u.id}" ${why || busy ? 'disabled' : ''} title="${esc(sk.name + (why ? ' — ' + why : ''))}">✦ ${esc(sk.name)}${u.cd ? ' (' + u.cd + ')' : ''}</button>` : ''}</div>` : '') + '</div>' };
     const mini = (u, col) => `<div class="mini ${u.hp <= 0 ? 'down' : ''} ${st.target === u.id ? 'tgt' : ''}" data-id="${u.id}"><span>${esc(u.name)}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:${col}"></i></div>`;
     hud.querySelector('#fbUnits').innerHTML =
       `<div>${esc(h.name)} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff">🛡' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
       `<div><small style="color:#bba57f">แรง (stamina)</small> <span style="float:right">${h.stamina}/100</span></div>${bar(h.stamina, 100, '#e8c34a')}` +
-      (FB.allies(st).length ? '<div class="grp">ทีม</div>' + FB.allies(st).map(u => mini(u, '#7fc8a0')).join('') : '') +
+      (FB.allies(st).length ? '<div class="grp">ทีม <small>(สั่งการ · ท่าพิเศษใช้ 1 คริสตัล)</small></div>' + FB.allies(st).map(u => allyRow(u)).join('') : '') +
       '<div class="grp">ศัตรู <small>(คลิกเพื่อเล็งเป้า)</small></div>' + FB.monsters(st).map(u => mini(u, '#e2705f')).join('');
+    hud.querySelectorAll('#fbUnits [data-order]').forEach(e => e.onclick = () => { if (busy) return; FB.setOrder(st, e.dataset.ally, e.dataset.order); floatText(st.units.find(u => u.id === e.dataset.ally), { charge: 'CHARGE!', follow: 'FOLLOW', guard: 'HOLD' }[e.dataset.order], '#bfe8ff', true); hudSync() });
+    hud.querySelectorAll('#fbUnits [data-skill]').forEach(e => e.onclick = () => allySkillAct(e.dataset.skill));
     hud.querySelectorAll('#fbUnits .mini[data-id^="monster"]').forEach(e => e.onclick = () => { if (st.turn === 'hero' && !busy) { FB.setTarget(st, e.dataset.id); hudSync(); handSync() } });
     hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? '🏆 ชนะ!' : '💀 แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns} · ตาคุณ · แต้มเดิน ${st.mp}` : `เทิร์น ${st.turns} · ตาศัตรู…`;
     const left = FB.crystals(st), max = st.crystalMax;
@@ -492,12 +498,38 @@
       a.pose = 'idle'; if (t.hp > 0) t.pose = 'idle';
     }, full ? { z: 1.7 } : { z: 1.4, bars: false, lead: 170, tail: 90 });
   }
+  /* companion signature skill, ordered by the player */
+  async function allySkillAct(id) {
+    if (busy || !st || st.turn !== 'hero') return;
+    const r = FB.allySkill(st, id); if (!r.ok) { flash(r.reason); return }
+    busy = true; hudSync(); handSync(); const a = r.ally; sfx('cast', .5); toast(a.name + ' · ' + r.name);
+    if (r.shielded.length) {
+      await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.shielded) { fx('shield', x.unit, x.unit, {}); impact(x.unit, 'shield', false); floatText(x.unit, 'GUARD ' + x.guard, '#9cc8ff', true); await wait(140) } shake(6, 220); await wait(500); a.pose = 'idle' }, { z: 1.5, bars: false, lead: 220, tail: 120 });
+    } else {
+      const t = r.target, last = !FB.monsters(st).some(u => u.hp > 0);
+      await cinematic(a, t, async () => {
+        a.dir = dirTo(a, t); a.pose = 'windup'; if (cine) { cine.z += .15; cine.speed = 4 } await wait(300); a.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(a, t) * 1.6); lines(t, 220);
+        fx(r.fx, t, a, { scale: 1.2, color: '#9fd4ff' }); await wait(200);
+        for (const [n, x] of r.hits.entries()) {
+          const tu = x.target, down = tu.hp <= 0 && !r.hits.slice(n + 1).some(y => y.target === tu);
+          if (tu !== t) fx(r.fx, tu, a, {}); impact(tu, r.fx, { big: true, crit: x.crit, kill: down && last, from: a }); tu.hitUntil = now() + 440;
+          if (x.crit) banner('CRITICAL!', 'crit'); if (down) { tu.deadAt = now() + 380; hitStop(240); shake(14, 420) } else { hitStop(120); shake(10, 320) }
+          floatText(tu, '−' + x.damage, x.crit ? '#ffe14d' : '#ffe0a0', false, true); tu.shown = Math.max(tu.hp, tu.shown - x.damage); hudSync(); await wait(r.hits.length > 1 ? 240 : 200);
+        }
+        if (r.stun && r.stun.hp > 0) { floatText(r.stun, 'FROZEN', '#bfe8ff', true); glows.push({ u: r.stun.vu, v: r.stun.vv, col: '150,220,255', r: UNIT * 1.4, t0: now(), dur: 700 }) }
+        for (const x of r.hits) x.target.shown = x.target.hp; hudSync();
+        if (last) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(300); a.pose = 'idle';
+      }, { z: 1.75 });
+    }
+    busy = false; refresh(); if (st.outcome) finish();
+  }
   async function playSteps(steps) {
     for (const s of steps) {
       if (st.outcome && s.type !== 'attack') continue;
       if (s.type === 'move') await walkAnim(s.unit, s.path);
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
-      else if (s.type === 'stun') { floatText(s.unit, 'STUNNED', '#cfe4ff', true); await wait(300) }
+      else if (s.type === 'stun') { floatText(s.unit, 'FROZEN — SKIP', '#bfe8ff', true); await wait(420) }
+      else if (s.type === 'hold') { s.unit.pose = 'guard'; setTimeout(() => { if (s.unit.pose === 'guard') s.unit.pose = 'idle' }, 700) }
     }
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5 }
   }
@@ -515,11 +547,11 @@
   }
   /* embedded in the world map: hand the result back (also automatically a moment after the end) */
   let reported = false;
-  function report(outcome) { if (reported || !EMBED) return; reported = true; try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp })) }, '*') } catch (e) { } }
+  function report(outcome) { if (reported || !EMBED) return; reported = true; try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })) }, '*') } catch (e) { } }
   function finish() {
     if (EMBED) { const b = hud?.querySelector('#fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
   function flash(msg) { texts.push({ u: FB.hero(st).vu, v: FB.hero(st).vv, txt: msg, col: '#f6d79b', t0: now(), small: true }) }
-  function floatText(unit, txt, col, small, big) { texts.push({ u: unit.vu, v: unit.vv, txt, col, t0: now(), small, big, dx: (Math.random() - .5) * 18 }) }
+  function floatText(unit, txt, col, small, big) { const t = now(), stack = texts.filter(x => x.unit === unit && t - x.t0 < 450).length; texts.push({ unit, u: unit.vu, v: unit.vv, txt, col, t0: t, small, big, dx: (Math.random() - .5) * 18, dy: -stack * 22 }) }   // texts on the same unit stack upward
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }
 
   function click(wp) {
@@ -618,6 +650,7 @@
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
     g.restore(); if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
   }
+  function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
   function drawMonster(g, u, t) {
     const p = project(u.vu, u.vv), v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
     const T = MON[u.kind] || MT, kind = MON[u.kind] ? u.kind : MK, bs = u.boss ? 1.25 : 1;
@@ -665,14 +698,14 @@
       if (!it.unit) { it.draw(g, t); continue }
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
       if (u.deadAt && t > u.deadAt) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
-      u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : drawMonster(g, u, t); g.restore();
+      u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), frozenMark(g, u, t)); g.restore();
     }
     fxDraw(g, t); partDraw(g, t);
     if (CINE) { speedDraw(g, t); atmosphere(g, t0); flashDraw(g) }
     texts = texts.filter(x => t - x.t0 < 1300);
     for (const x of texts) {
       const p = project(x.u, x.v), e = (t - x.t0), a = e / 1300, pop = x.small ? 1 : e < 140 ? 1 + .9 * (1 - e / 140) : 1 + .08 * Math.max(0, 1 - (e - 140) / 200);
-      const base = x.small ? 14 : x.big ? 30 : 23, y = p.y - UNIT * 1.6 - (x.small ? 18 : 0) - Math.min(1, e / 260) * 26 - a * 18;
+      const base = x.small ? 14 : x.big ? 30 : 23, y = p.y - UNIT * 1.6 - (x.small ? 18 : 0) + (x.dy || 0) - Math.min(1, e / 260) * 26 - a * 18;
       g.save(); g.globalAlpha = a < .7 ? 1 : 1 - (a - .7) / .3; g.font = `900 ${Math.round(base * pop)}px system-ui,"Noto Sans Thai",sans-serif`; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = x.small ? 4 : 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = x.col; g.strokeText(x.txt, p.x + (x.dx || 0), y); g.fillText(x.txt, p.x + (x.dx || 0), y); g.restore();
     }
   }
@@ -750,5 +783,5 @@
   /* runs before the frame's camera transform: TownUX re-centres on the village hero every frame, so the arena has to win after it */
   function pre() { if (st && (!userCam || cine)) focusCamera(); else if (kick.roll) { kick.roll = 0; cv.style.transform = '' } }
   window.TownBattle = { pre, active: () => ON, click, draw, state: () => st, cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
-    act: { move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, discard: setDiscard, confirmDiscard: doDiscard }, busy: () => busy };
+    act: { skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, discard: setDiscard, confirmDiscard: doDiscard }, busy: () => busy };
 })();

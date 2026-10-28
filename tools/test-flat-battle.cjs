@@ -193,4 +193,18 @@ test('melee: a full party fight ends', () => {
   }
   assert.ok(st.outcome === 'win' || st.outcome === 'lose', 'outcome ' + st.outcome);
 });
+test('party: orders — guard holds its ground with +6 guard, follow stays near the hero', () => {
+  const st = mkM({ monsters: [{ u: 8, v: 8, hp: 30, maxHp: 30 }] }); const [b, l] = B.allies(st);
+  B.setOrder(st, b.id, 'guard'); B.setOrder(st, l.id, 'follow'); const pos = [b.u, b.v]; B.alliesTurn(st);
+  assert.deepEqual([b.u, b.v], pos); assert.equal(b.guard, 6); assert.ok(B.dist(l, B.hero(st)) <= 2);
+});
+test('party: skills cost a crystal, have a cooldown, frost stuns, wall shields neighbours', () => {
+  const st = mkM({ allies: [{ u: 1, v: 0, key: 'bram', name: 'บรัม', hp: 54, maxHp: 54, atk: 12 }, { u: 2, v: 2, key: 'luna', name: 'ลูน่า', hp: 44, maxHp: 44, atk: 11, range: 4 }], monsters: [{ u: 4, v: 3, hp: 40, maxHp: 40 }] });
+  const [b, l] = B.allies(st);
+  const w = B.allySkill(st, b.id); assert.equal(w.ok, true); assert.equal(b.guard, 14); assert.equal(B.hero(st).guard, 8); assert.equal(B.crystals(st), 1);
+  assert.equal(B.allySkill(st, b.id).ok, false);                           // cooldown
+  const f = B.allySkill(st, l.id); assert.equal(f.ok, true); assert.equal(f.hits[0].damage, 13); assert.equal(B.monster(st).stun, 1);
+  B.endTurn(st); const steps = B.monsterTurn(st); assert.equal(steps[0].type, 'stun');
+  assert.equal(b.cd, 2);
+});
 console.log('flat battle: ' + n + ' tests passed');

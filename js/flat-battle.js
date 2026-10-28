@@ -170,7 +170,7 @@
     if (st.cards && st.turn === 'hero') { const h = hero(st); h.stamina = Math.min(100, h.stamina + 10) }
     st.turn = st.turn === 'hero' ? 'monster' : 'hero'; if (st.turn === 'hero') st.turns++;
     st.acted = false; st.mp = st.cards && st.turn === 'hero' ? 0 : actor(st).move;
-    if (st.cards && st.turn === 'hero') { hero(st).guard = 0; refill(st) }
+    if (st.cards && st.turn === 'hero') { hero(st).guard = 0; for (const a of allies(st)) { a.guard = 0; if (a.cd) a.cd-- } refill(st) }
     return { ok: true, turn: st.turn };
   }
   /* one AI unit (monster or companion): pick the opponent it can reach soonest (terrain-aware), walk toward it within its own move points
@@ -178,7 +178,16 @@
   function aiAct(st, u) {
     const steps = [], opp = opponents(st, u); if (!alive(u) || !opp.length || st.outcome) return steps;
     if (u.stun) { u.stun = 0; steps.push({ unit: u, type: 'stun' }); return steps }
-    let tgt = targets(st, u)[0], field = null;
+    let tgt = targets(st, u).find(t => t.id === st.target && u.side === 'hero') || targets(st, u)[0], field = null;
+    /* companion orders: guard = hold the ground (+6 guard, hit only what is already in range) · follow = stay by the hero */
+    if (u.side === 'hero' && u.order === 'guard') { u.guard = Math.max(u.guard || 0, 6); steps.push({ unit: u, type: 'hold' }); if (tgt) { const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0 }) } return steps }
+    if (u.side === 'hero' && u.order === 'follow' && !tgt) {
+      const h = hero(st), r = reach(st, u, u.move); let bestE = null, bestS = 1e9;
+      for (const e of r.values()) { const near = opponents(st, u).filter(o => dist(o, e) <= u.range && dist(o, h) <= 3); const sc = near.length ? -100 + dist(e, h) : Math.abs(dist(e, h) - 1) * 10 + e.cost * .1; if (sc < bestS) { bestS = sc; bestE = e } }
+      if (bestE && (bestE.u !== u.u || bestE.v !== u.v)) { const path = pathTo(r, bestE), pv = path[path.length - 2] || u; u.face = faceOf(pv, bestE); u.u = bestE.u; u.v = bestE.v; steps.push({ unit: u, type: 'move', path }) }
+      tgt = targets(st, u).find(o => dist(o, h) <= 3); if (tgt) { const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0 }) }
+      return steps;
+    }
     if (!tgt) {
       let best = 1e9;
       for (const o of opp) { const f = distField(st, o), d = f.get(key(u.u, u.v)); const sc = (d === undefined ? 1e6 : d) + o.hp / 200; if (sc < best) { best = sc; tgt = o; field = f } }
@@ -203,6 +212,34 @@
     st.acted = keep.acted; st.mp = keep.mp; st.turn = keep.turn; st.cur = keep.cur; checkOutcome(st);
     return at;
   }
+  /* companion signature skills (from the old SIGNATURE cards), ordered by the player for 1 crystal, then a cooldown of 3 player turns */
+  const ALLY_SKILL = {
+    bram: { id: 'wall', name: 'กำแพงโล่', guard: 14, near: 8, fx: 'shield' },
+    luna: { id: 'frost', name: 'หอกน้ำแข็ง', range: 4, dmg: 13, stun: 1, fx: 'ice' },
+    kier: { id: 'whirl', name: 'ดาบหมุน', range: 1, dmg: 14, aoe: 'self', fx: 'wind' },
+    mil: { id: 'twin', name: 'สองคมต่อเนื่อง', range: 1, dmg: 10, hits: 2, fx: 'knife' }
+  };
+  const SKILL_CD = 3;
+  function skillBlock(st, a) {
+    if (!st.cards) return 'ไม่ได้เปิดโหมดไพ่'; if (st.outcome) return 'จบการต่อสู้แล้ว'; if (st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
+    if (!a || !alive(a) || a.side !== 'hero' || a === hero(st)) return 'สั่งไม่ได้'; const sk = ALLY_SKILL[a.key]; if (!sk) return 'ไม่มีท่าพิเศษ';
+    if (a.cd > 0) return 'รออีก ' + a.cd + ' เทิร์น'; if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
+    if (sk.range && !targets(st, a, sk.range).length) return 'ไม่มีศัตรูในระยะ ' + sk.range + ' ช่อง';
+    return '';
+  }
+  function allySkill(st, id) {
+    const a = st.units.find(u => u.id === id), why = skillBlock(st, a); if (why) return { ok: false, reason: why };
+    const sk = ALLY_SKILL[a.key], out = { ok: true, ally: a, skill: sk.id, name: sk.name, fx: sk.fx, hits: [], shielded: [] };
+    st.spent++; a.cd = SKILL_CD;
+    if (sk.guard) { a.guard = Math.max(a.guard || 0, sk.guard); out.shielded.push({ unit: a, guard: a.guard }); for (const f of st.units) if (f !== a && f.side === 'hero' && alive(f) && dist(f, a) <= 1) { f.guard = Math.max(f.guard || 0, sk.near); out.shielded.push({ unit: f, guard: f.guard }) } st.log.push(a.name + ' ' + sk.name); return out }
+    const inR = targets(st, a, sk.range), t = inR.find(x => x.id === st.target) || inR[0]; out.target = t; a.face = faceOf(a, t);
+    const list = sk.aoe === 'self' ? inR.filter(o => dist(o, a) <= 1) : [t];
+    for (const o of list) for (let i = 0; i < (sk.hits || 1); i++) { if (!alive(o)) break; const crit = (st.rng || Math.random)() < CRIT.ally, r = hurt(st, o, sk.dmg * (crit ? CRIT.mult : 1)); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit }) }
+    if (sk.stun && alive(t)) { t.stun = 1; out.stun = t }
+    st.log.push(a.name + ' ' + sk.name + ' −' + out.hits.reduce((x, h) => x + h.damage, 0)); checkOutcome(st);
+    return out;
+  }
+  function setOrder(st, id, order) { const a = st.units.find(u => u.id === id && u.side === 'hero' && u !== hero(st)); if (a && ['charge', 'follow', 'guard'].includes(order)) a.order = order; return a }
   /* companions act at the end of the player phase (before endTurn) */
   function alliesTurn(st) { const steps = []; if (st.outcome || st.turn !== 'hero') return steps; for (const a of allies(st)) { if (!alive(a)) continue; steps.push(...aiAct(st, a)); if (st.outcome) break } return steps }
   /* the enemy phase: every living monster acts in turn, then the player phase starts. Returns the steps (for animation). */
@@ -296,6 +333,6 @@
     if (!free(st, nu, nv, t)) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
