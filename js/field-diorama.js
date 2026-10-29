@@ -290,7 +290,7 @@
       undo(s);
     }
     /* broken walls: short brick runs, two to three rule levels tall, with gaps */
-    const walls = o.poi === 'ruin' ? 3 : { hills: 2, sand: 2, snow: 1 }[o.biome] ?? (r() < .3 ? 1 : 0);
+    const walls = Math.round((o.poi === 'ruin' ? 3 : { hills: 2, sand: 2, snow: 1 }[o.biome] ?? (r() < .3 ? 1 : 0)) * (o.scale || 1));
     for (let k = 0, made = 0; k < 30 && made < walls; k++) {
       const s = snap(), along = r() < .5, len = 3 + ((r() * 3) | 0), u0 = 1 + ((r() * (m.w - 2)) | 0), v0 = 1 + ((r() * (m.h - 2)) | 0), add = (2 + ((r() * 2) | 0)) * ST, run = [];
       for (let t = 0; t < len; t++) { const u = along ? u0 + t : u0, v = along ? v0 : v0 + t; if (!inside(m, u, v)) break; const i = v * m.w + u; if (keep(u, v) || m.flat[i] || m.water[i] || m.stair[i] || (m.mat[i] && m.mat[i] !== 3)) break; if (t && r() < .2) continue; run.push(i) }
