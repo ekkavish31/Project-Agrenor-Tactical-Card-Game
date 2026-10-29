@@ -79,19 +79,29 @@
   function tex(kind, o, seed) { const k = kind + JSON.stringify(o); if (cache[k]) return cache[k]; const c = canvas(); TEX[kind](c.getContext('2d'), rng(seed || 7), o); return cache[k] = c }
 
   /* ---------- painted textures (assets/terrain/diorama, 256 px seamless, 2 cells per tile); the procedural ones stand in until they load ---------- */
-  const SRC = document.currentScript?.src || '', IMG = {}, WANT = ['grass', 'drygrass', 'dirt', 'cobble', 'snow', 'sand', 'cliff', 'earth', 'wood', 'brick', 'slab'];
-  for (const n of WANT) { const im = new Image(); im.src = SRC ? new URL('../assets/terrain/diorama/' + n + '.webp', SRC).href : 'assets/terrain/diorama/' + n + '.webp'; IMG[n] = im }
+  /* v96.02: planks, brick, slabs, water, mud, snow, sand, per-biome cliffs and the lip strips come from the terrain sets already in the repo;
+     names not listed here live in assets/terrain/diorama/<name>.webp */
+  const TEXFILE = { wood: 'terrain/ground/planks', brick: 'terrain/cliff/ruin-wall', slab: 'terrain/ground/slabs', water: 'terrain/ground/water-deep', swampw: 'terrain/ground/swamp',
+    mud: 'terrain/ground/mud-wet', snowd: 'terrain/ground/snow-deep', sandc: 'terrain/ground/sand-coarse', cliff_snow: 'terrain/cliff/snow-rock', cliff_sand: 'terrain/cliff/sandstone', cliff_swamp: 'terrain/cliff/swamp-roots',
+    lip_grass: 'terrain/lip/lip-grass', lip_moss: 'terrain/lip/lip-moss', lip_snow: 'terrain/lip/lip-snow', lip_sand: 'terrain/lip/lip-sand',
+    bg_forest: 'scenes/area-forest', bg_coast: 'scenes/area-coast', bg_frost: 'scenes/area-frost', bg_mine: 'scenes/area-mine', bg_quarry: 'scenes/area-quarry', bg_ruins: 'scenes/area-ruins', bg_swamp: 'scenes/area-swamp' };
+  const SRC = document.currentScript?.src || '', IMG = {}, CORE = ['grass', 'drygrass', 'dirt', 'cobble', 'snow', 'sand', 'cliff', 'earth'], WANT = CORE.concat(Object.keys(TEXFILE).filter(n => !n.startsWith('bg_')));
+  const imgUrl = n => { const f = 'assets/' + (TEXFILE[n] || 'terrain/diorama/' + n) + '.webp'; return SRC ? new URL('../' + f, SRC).href : f };
+  const want = n => { if (!IMG[n]) { const im = new Image(); im.src = imgUrl(n); IMG[n] = im } return IMG[n] };
+  for (const n of WANT) want(n);
   const loaded = im => im && im.complete && im.naturalWidth > 0;
-  const ready = () => Promise.all(Object.values(IMG).map(im => loaded(im) || im.complete ? 1 : new Promise(r => { im.onload = im.onerror = r }))).then(() => ['grass', 'cliff'].every(n => loaded(IMG[n])));
+  const ready = () => Promise.all(WANT.map(n => IMG[n]).map(im => loaded(im) || im.complete ? 1 : new Promise(r => { im.onload = im.onerror = r }))).then(() => ['grass', 'cliff'].every(n => loaded(IMG[n])));
   /* which painted texture each slot uses per biome, and a colour wash on top of it */
   const PAINTED = {
     grass: { top: 'grass', path: 'dirt', lip: 'earth', cliff: 'cliff' },
     forest: { top: 'grass', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { top: 'rgba(15,40,15,.22)' } },
     hills: { top: 'drygrass', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { cliff: 'rgba(150,120,80,.18)' } },
     swamp: { top: 'grass', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { top: 'rgba(25,40,20,.38)', path: 'rgba(20,15,5,.35)' } },
-    snow: { top: 'snow', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { path: 'rgba(220,230,240,.45)', cliff: 'rgba(190,210,235,.35)', lip: 'rgba(200,215,235,.25)' } },
-    sand: { top: 'sand', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { cliff: 'rgba(210,170,110,.3)', path: 'rgba(230,200,140,.25)' } }
+    snow: { top: 'snow', path: 'dirt', lip: 'earth', cliff: 'cliff_snow', wash: { path: 'rgba(220,230,240,.45)', lip: 'rgba(200,215,235,.25)' }, hang: 'lip_snow' },
+    sand: { top: 'sand', path: 'dirt', lip: 'earth', cliff: 'cliff_sand', wash: { path: 'rgba(230,200,140,.25)' }, hang: 'lip_sand' }
   };
+  PAINTED.grass.hang = PAINTED.forest.hang = PAINTED.hills.hang = 'lip_grass'; PAINTED.swamp.hang = 'lip_moss'; PAINTED.swamp.cliff = 'cliff_swamp';
+  delete PAINTED.swamp.wash.cliff;
   /* material slots (cobble, wood, brick, slab) share one painted file each across biomes */
   const MAT_SLOT = { 1: { top: 'cobble', wall: 'brick' }, 2: { top: 'wood', wall: 'wood' }, 3: { top: 'slab', wall: 'brick' }, 4: { top: 'slab', wall: 'brick' } };
 
@@ -129,10 +139,10 @@
   /* everything a cell needs to paint, made once per map (textures, per-cell variation) */
   function prepare(m, o) {
     o = o || {};
-    const mat = materials(o.biome, o.poi), PT = Object.assign({}, PAINTED[o.biome] || PAINTED.grass); if (o.poi === 'ruin') PT.path = 'cobble';
+    const mat = materials(o.biome, o.poi), PT = Object.assign({}, PAINTED[o.biome] || PAINTED.grass); if (o.poi === 'ruin') { PT.path = 'cobble'; PT.cliff = 'brick'; PT.wash = {} }
     const slot = (name, proc, seed) => loaded(IMG[name]) ? IMG[name] : tex(proc[0], proc[1], seed);
     const img = k => slot(PT[k], mat[k], k.length * 97), wash = k => (loaded(IMG[PT[k]]) && PT.wash?.[k]) || null;
-    const r = rng(1234), ctx = { o, mat, img, wash, top: img('top'), path: img('path'), lip: img('lip'), cliff: img('cliff'), vary: Array.from({ length: m.w * m.h }, () => r()), tiles: new Map(), pools: o.pools || (() => false) };
+    const r = rng(1234), ctx = { o, mat, hang: loaded(IMG[PT.hang]) ? IMG[PT.hang] : null, img, wash, top: img('top'), path: img('path'), lip: img('lip'), cliff: img('cliff'), vary: Array.from({ length: m.w * m.h }, () => r()), tiles: new Map(), pools: o.pools || (() => false) };
     ctx.matTop = { 1: slot('cobble', mat.cobble, 11), 2: slot('wood', mat.wood, 12), 3: slot('slab', mat.slab, 13), 4: slot('slab', mat.slab, 13) };
     ctx.matWall = { 1: slot('brick', mat.brick, 14), 2: slot('wood', mat.wood, 12), 3: slot('brick', mat.brick, 14), 4: slot('brick', mat.brick, 14) };
     return ctx;
@@ -156,11 +166,15 @@
       gr.addColorStop(0, `rgba(0,0,0,${side})`); gr.addColorStop(1, `rgba(0,0,0,${edge ? .92 : side + .22})`);
       poly(g, pts); g.fillStyle = gr; g.fill();
       g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 1; g.beginPath(); g.moveTo(pts[3].x, pts[3].y); g.lineTo(pts[2].x, pts[2].y); g.stroke();
-      /* grass / snow hanging over a natural lip */
+      /* grass / moss / snow hanging over a natural lip: the painted lip strip when loaded, else code blades */
       if (!mt && !water && C.mat.hang && C.mat.top[0] !== 'dirt' && !(m.flat && m.flat[i])) {
-        g.fillStyle = hex(C.mat.hang, du ? .72 : .9); g.beginPath(); g.moveTo(pts[0].x, pts[0].y);
-        const k = 7; for (let s = 0; s <= k; s++) { const t = s / k, x = pts[0].x + (pts[1].x - pts[0].x) * t, y = pts[0].y + (pts[1].y - pts[0].y) * t; g.lineTo(x, y + 2 + ((s + u * 3 + v) % 3) * 1.6) }
-        g.lineTo(pts[1].x, pts[1].y); g.closePath(); g.fill();
+        const H = C.hang;
+        if (H) { const ex = pts[1].x - pts[0].x, ey = pts[1].y - pts[0].y, tw = H.naturalWidth / 3, ph = (du ? v : u) % 3, hh = 11;   // the strip repeats every 3 cells
+          const pat = g.createPattern(H, 'repeat'); pat.setTransform(new DOMMatrix([ex / tw, ey / tw, 0, hh / H.naturalHeight, pts[0].x - ex * ph, pts[0].y - ey * ph]));
+          g.save(); g.fillStyle = pat; g.globalAlpha = du ? .8 : 1; g.beginPath(); g.moveTo(pts[0].x, pts[0].y - 1); g.lineTo(pts[1].x, pts[1].y - 1); g.lineTo(pts[1].x, pts[1].y + hh); g.lineTo(pts[0].x, pts[0].y + hh); g.closePath(); g.fill(); g.restore() }
+        else { g.fillStyle = hex(C.mat.hang, du ? .72 : .9); g.beginPath(); g.moveTo(pts[0].x, pts[0].y);
+          const k = 7; for (let s = 0; s <= k; s++) { const t = s / k, x = pts[0].x + (pts[1].x - pts[0].x) * t, y = pts[0].y + (pts[1].y - pts[0].y) * t; g.lineTo(x, y + 2 + ((s + u * 3 + v) % 3) * 1.6) }
+          g.lineTo(pts[1].x, pts[1].y); g.closePath(); g.fill() }
       }
       /* wooden posts under a bridge / boardwalk */
       if (mt === 2) { g.fillStyle = 'rgba(40,26,12,.85)'; for (const t of [.15, .85]) { const x = pts[0].x + (pts[1].x - pts[0].x) * t, y = pts[0].y + (pts[1].y - pts[0].y) * t; g.fillRect(x - 2, y, 4, Math.max(6, (pts[3].y - pts[0].y) + 10)) } }
@@ -170,9 +184,9 @@
     /* the top */
     const t4 = [P(m, u, v, c[0]), P(m, u + 1, v, c[1]), P(m, u + 1, v + 1, c[2]), P(m, u, v + 1, c[3])];
     if (water) {
-      const swamp = C.o.biome === 'swamp', gr = g.createLinearGradient(t4[0].x, t4[0].y, t4[2].x, t4[2].y);
-      gr.addColorStop(0, swamp ? '#34584a' : '#2a5a70'); gr.addColorStop(1, swamp ? '#4c7462' : '#3f7f92');
-      poly(g, t4); g.fillStyle = gr; g.fill();
+      const swamp = C.o.biome === 'swamp', W = IMG[swamp ? 'swampw' : 'water'];
+      if (loaded(W)) { poly(g, t4); g.fillStyle = groundPattern(g, W, avg); g.fill(); poly(g, t4); g.fillStyle = swamp ? 'rgba(20,40,30,.12)' : 'rgba(10,40,70,.1)'; g.fill() }
+      else { const gr = g.createLinearGradient(t4[0].x, t4[0].y, t4[2].x, t4[2].y); gr.addColorStop(0, swamp ? '#34584a' : '#2a5a70'); gr.addColorStop(1, swamp ? '#4c7462' : '#3f7f92'); poly(g, t4); g.fillStyle = gr; g.fill() }
       g.strokeStyle = 'rgba(220,245,255,.28)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(t4[3].x, t4[3].y); g.lineTo(t4[0].x, t4[0].y); g.lineTo(t4[1].x, t4[1].y); g.stroke();
       return;
     }
@@ -222,8 +236,22 @@
     const t = { canvas: cv, x: x0, y: y0, w: x1 - x0, h: y1 - y0, top: P(m, u, v, Math.max(...c)).y }; C.tiles.set(i, t); return t;
   }
 
+  /* ground-plane pattern for the host's slow patches (mud / snow / sand) at height z (sub-levels); null until the picture has loaded */
+  function pattern(g, name, z) { const im = IMG[name]; return loaded(im) ? groundPattern(g, im, z || 0) : null }
+  /* the area's painted backdrop (assets/scenes), cover-fitted, softened and darkened so the floating field stays the focus */
+  const BG = { forest: 'bg_forest', grass: 'bg_forest', hills: 'bg_quarry', swamp: 'bg_swamp', snow: 'bg_frost', sand: 'bg_coast' }, bgCache = {};
+  function backdrop(g, w, h, biome, poi, night) {
+    const n = poi === 'ruin' ? 'bg_ruins' : poi === 'mine' ? 'bg_mine' : BG[biome] || 'bg_forest', im = want(n); if (!loaded(im)) return false;
+    const k = n + w + 'x' + h + night; let c = bgCache[k];
+    if (!c) { c = document.createElement('canvas'); c.width = w; c.height = h; const q = c.getContext('2d'), sc = Math.max(w / im.naturalWidth, h / im.naturalHeight), iw = im.naturalWidth * sc, ih = im.naturalHeight * sc;
+      q.filter = 'blur(5px) saturate(.9)'; q.drawImage(im, (w - iw) / 2, (h - ih) / 2, iw, ih); q.filter = 'none';
+      const gr = q.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, night ? 'rgba(6,8,26,.78)' : 'rgba(8,12,22,.42)'); gr.addColorStop(1, night ? 'rgba(2,3,12,.9)' : 'rgba(4,6,14,.72)'); q.fillStyle = gr; q.fillRect(0, 0, w, h);
+      for (const x in bgCache) if (x !== k) delete bgCache[x]; bgCache[k] = c }
+    g.drawImage(c, 0, 0); return true;
+  }
   /* backdrop behind the floating field */
-  function sky(g, w, h, biome, night) {
+  function sky(g, w, h, biome, night, poi) {
+    if (backdrop(g, w, h, biome, poi, night ? 1 : 0)) return;
     const C = night ? ['#0d1428', '#05070f'] : { snow: ['#5c6f86', '#1c2430'], sand: ['#6a5a48', '#1e1812'], swamp: ['#2a3a34', '#0a100e'], hills: ['#4a5a6a', '#141a22'] }[biome] || ['#2f4a5e', '#0b121a'];
     const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, C[0]); gr.addColorStop(1, C[1]); g.fillStyle = gr; g.fillRect(0, 0, w, h);
     const rg = g.createRadialGradient(w / 2, h * .45, 0, w / 2, h * .45, Math.max(w, h) * .6); rg.addColorStop(0, night ? 'rgba(120,110,200,.12)' : 'rgba(255,235,190,.14)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = rg; g.fillRect(0, 0, w, h);
@@ -313,5 +341,5 @@
     return out;
   }
 
-  root.FieldDiorama = { paint, tile, sky, grade, landforms, structures, rotate, materials, ready, walkOK, areas, BASE, WATER };
+  root.FieldDiorama = { paint, tile, sky, grade, pattern, landforms, structures, rotate, materials, ready, walkOK, areas, BASE, WATER };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
