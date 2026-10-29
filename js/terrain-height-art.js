@@ -39,27 +39,28 @@
     opts = opts || {};
     const pal = Object.assign({}, PALETTES.grass, opts.palette || {}), ou = m.origin.u, ov = m.origin.v;
     for (const [u, v] of order(m)) {
-      const i = v * m.w + u, lv = m.levels[i];
+      const i = v * m.w + u, lv = m.levels[i], ST = root.TerrainHeight ? root.TerrainHeight.STEP : 1;
       // walls first (they belong to the lower neighbour's edge but are painted with the higher cell)
       for (const [du, dv] of [[1, 0], [0, 1]]) {
         const nl = L(m, u + du, v + dv), low = nl == null ? 0 : nl;
         if (lv <= low) continue;
-        const drop = lv - low, cliff = drop >= 2;
+        const drop = lv - low, cliff = drop > ST;   // v96: sub-levels — more than one rule level is a cliff
         // edge: +u side runs (u+1,v)-(u+1,v+1); +v side runs (u,v+1)-(u+1,v+1)
         const a = du ? [1, 0] : [0, 1], b = [1, 1];
         const pts = [P(m, ou, ov, u + a[0], v + a[1], lv), P(m, ou, ov, u + b[0], v + b[1], lv), P(m, ou, ov, u + b[0], v + b[1], low), P(m, ou, ov, u + a[0], v + a[1], low)];
         poly(g, pts, shade(cliff ? pal.cliff : pal.lip, du ? 0.86 : 1.0), pal.line);
         if (cliff) { // cracks so a cliff reads as rock, not as a bigger step
           g.save(); g.strokeStyle = 'rgba(0,0,0,.22)'; g.lineWidth = 1; g.beginPath();
-          for (let k = 1; k < drop * 3; k++) { const t = k / (drop * 3), p0 = { x: pts[0].x + (pts[3].x - pts[0].x) * t, y: pts[0].y + (pts[3].y - pts[0].y) * t }, p1 = { x: pts[1].x + (pts[2].x - pts[1].x) * t, y: pts[1].y + (pts[2].y - pts[1].y) * t }; g.moveTo(p0.x, p0.y); g.lineTo(p1.x, p1.y); }
+          for (let k = 1; k < drop / ST * 3; k++) { const t = k / (drop / ST * 3), p0 = { x: pts[0].x + (pts[3].x - pts[0].x) * t, y: pts[0].y + (pts[3].y - pts[0].y) * t }, p1 = { x: pts[1].x + (pts[2].x - pts[1].x) * t, y: pts[1].y + (pts[2].y - pts[1].y) * t }; g.moveTo(p0.x, p0.y); g.lineTo(p1.x, p1.y); }
           g.stroke(); g.restore();
         }
       }
-      const top = [P(m, ou, ov, u, v, lv), P(m, ou, ov, u + 1, v, lv), P(m, ou, ov, u + 1, v + 1, lv), P(m, ou, ov, u, v + 1, lv)];
+      const cz = root.TerrainHeight && m.ramp ? root.TerrainHeight.corners(m, i) : [lv, lv, lv, lv];
+      const top = [P(m, ou, ov, u, v, cz[0]), P(m, ou, ov, u + 1, v, cz[1]), P(m, ou, ov, u + 1, v + 1, cz[2]), P(m, ou, ov, u, v + 1, cz[3])];
       const tint = opts.tint ? opts.tint(i) : null;
-      poly(g, top, (opts.roads && m.flat[i]) ? pal.road : (tint || pal.top[lv]), opts.grid ? pal.line : null);
+      poly(g, top, (opts.roads && m.flat[i]) ? pal.road : (tint || pal.top[Math.min(pal.top.length - 1, Math.floor(lv / ST))]), opts.grid ? pal.line : null);
       if (m.blocked[i]) poly(g, top, 'rgba(60,110,170,.55)', null);
-      if (opts.numbers && lv) { const c = P(m, ou, ov, u + .5, v + .5, lv); g.fillStyle = 'rgba(0,0,0,.55)'; g.font = '10px sans-serif'; g.textAlign = 'center'; g.fillText(String(lv), c.x, c.y + 3); }
+      if (opts.numbers && lv) { const c = P(m, ou, ov, u + .5, v + .5, lv); g.fillStyle = 'rgba(0,0,0,.55)'; g.font = '10px sans-serif'; g.textAlign = 'center'; g.fillText(String(lv / ST), c.x, c.y + 3); }
     }
     if (opts.mark) {
       const { u, v } = opts.mark, lv = L(m, u - ou, v - ov);

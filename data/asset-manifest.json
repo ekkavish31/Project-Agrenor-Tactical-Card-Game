@@ -105,6 +105,10 @@
   {
    "id": "enemy-animations",
    "name": "แอนิเมชันมอนสเตอร์"
+  },
+  {
+   "id": "battle-field",
+   "name": "สนามรบ (พื้นผิวและพร็อพ)"
   }
  ],
  "statuses": {
@@ -53226,6 +53230,86 @@
     ],
     "flipX": false
    }
+  },
+  {
+   "id": "terrain-diorama-wood",
+   "file": "assets/terrain/diorama/wood.webp",
+   "category": "battle-field",
+   "status": "planned",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": false,
+   "subject": "wooden planks for bridges and boardwalks (planks run left-right)",
+   "prompt": "Seamless tileable square texture, top-down orthographic, hand-painted fantasy RPG style matching the existing diorama ground textures (assets/terrain/diorama/grass.webp), even lighting, no shadows baked in, no text. Subject: weathered wooden bridge planks running left to right, dark seams, a few nails.",
+   "usedIn": "สนามรบแผนที่โลก (battle-field.html)",
+   "note": "v96: ตอนนี้วาดด้วยโค้ด ใส่ไฟล์แล้วเกมใช้ทันที",
+   "artRevision": "v96"
+  },
+  {
+   "id": "terrain-diorama-brick",
+   "file": "assets/terrain/diorama/brick.webp",
+   "category": "battle-field",
+   "status": "planned",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": false,
+   "subject": "stone brick wall face for forts and broken walls (also the vertical faces)",
+   "prompt": "Seamless tileable square texture, top-down orthographic, hand-painted fantasy RPG style matching the existing diorama ground textures (assets/terrain/diorama/grass.webp), even lighting, no shadows baked in, no text. Subject: grey fortress stone bricks in offset rows, worn mortar, a little moss.",
+   "usedIn": "สนามรบแผนที่โลก (battle-field.html)",
+   "note": "v96: ตอนนี้วาดด้วยโค้ด ใส่ไฟล์แล้วเกมใช้ทันที",
+   "artRevision": "v96"
+  },
+  {
+   "id": "terrain-diorama-slab",
+   "file": "assets/terrain/diorama/slab.webp",
+   "category": "battle-field",
+   "status": "planned",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": false,
+   "subject": "large worn flagstones for fort tops and stone stairs",
+   "prompt": "Seamless tileable square texture, top-down orthographic, hand-painted fantasy RPG style matching the existing diorama ground textures (assets/terrain/diorama/grass.webp), even lighting, no shadows baked in, no text. Subject: large worn grey flagstones, cracks, moss in the joints.",
+   "usedIn": "สนามรบแผนที่โลก (battle-field.html)",
+   "note": "v96: ตอนนี้วาดด้วยโค้ด ใส่ไฟล์แล้วเกมใช้ทันที",
+   "artRevision": "v96"
+  },
+  {
+   "id": "prop-cactus",
+   "file": "assets/tactics/props/cactus.webp",
+   "category": "battle-field",
+   "status": "planned",
+   "size": [
+    384,
+    512
+   ],
+   "transparent": true,
+   "subject": "desert cactus, battle-field prop (sand biome)",
+   "prompt": "Single desert cactus, isometric 3/4 view, hand-painted fantasy RPG prop matching assets/tactics/rock.webp, full object visible, base at the bottom, on pure green #00FF00 background.",
+   "usedIn": "สนามรบแผนที่โลก (battle-field.html)",
+   "note": "v96: ตอนนี้วาดด้วยโค้ด ใส่ไฟล์แล้วเกมใช้ทันที",
+   "artRevision": "v96"
+  },
+  {
+   "id": "prop-deadtree",
+   "file": "assets/tactics/props/deadtree.webp",
+   "category": "battle-field",
+   "status": "planned",
+   "size": [
+    512,
+    640
+   ],
+   "transparent": true,
+   "subject": "bare dead swamp tree, battle-field prop (swamp biome)",
+   "prompt": "Single bare dead swamp tree with twisted branches, isometric 3/4 view, hand-painted fantasy RPG prop matching assets/tactics/tree.webp, full object visible, base at the bottom, on pure green #00FF00 background.",
+   "usedIn": "สนามรบแผนที่โลก (battle-field.html)",
+   "note": "v96: ตอนนี้วาดด้วยโค้ด ใส่ไฟล์แล้วเกมใช้ทันที",
+   "artRevision": "v96"
   }
  ],
  "studioWalks": {

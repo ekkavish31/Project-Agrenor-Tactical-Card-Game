@@ -67,4 +67,11 @@ test('a shoving monster knocks the hero off a 2-level ledge', () => {
   B.endTurn(st); const steps = B.monsterTurn(st), hit = steps.find(s => s.type === 'attack');
   assert.ok(hit?.fall, 'fell'); assert.deepEqual([B.hero(st).u, B.hero(st).v], [3, 4]);
 });
+test('v96 half levels: a 1.5 step up is a wall, 1 is fine; half a level still adds height bonus', () => {
+  const st = field({ '4,3': 1.5, '5,4': 1, '4,5': .5 }, { foe: [8, 8] }), r = B.reach(st, B.hero(st), 4);
+  assert.equal(r.has('4,3'), false); assert.ok(r.has('5,4')); assert.ok(r.has('4,5'));
+  assert.equal(B.heightMult(field({ '4,4': .5 }), B.hero(field({ '4,4': .5 })), B.monsters(field())[0]) > 1, true);
+  const flat = play(field(), 'attack').dmg, half = play(field({ '4,4': .5 }), 'attack').dmg; assert.ok(half >= flat, half + ' >= ' + flat);
+});
+
 console.log(n + ' flat height tests passed');

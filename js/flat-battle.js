@@ -11,7 +11,8 @@
      cover   กำบัง     cost 1, damage taken −30 %
      blocked กีดขวาง   cannot enter
    Turn: the side to act has `mp` movement points (spent per cell entered, by terrain) and one attack; attacking ends its movement.
-   v94 heights (create({levelAt(u,v)}) — the world-map fields use js/terrain-height.js, levels 0–3; without levelAt everything is level 0):
+   v94 heights (create({levelAt(u,v)}) — the world-map fields use js/terrain-height.js; without levelAt everything is level 0):
+     v96: levelAt may return half levels (0, 0.5 … 4: the field stores half steps) — every rule below works on the fractional value
      • walking: climb up at most 1 level (+1 movement point per level), jump down at most 2 · the ปีนป่าย card: up 2 / down 3 and no uphill cost
      • melee (range 1) only reaches a target at most 1 level up or down · ranged cards ignore height
      • height bonus: +10 % damage per level above the target, −10 % per level below (max ±30 %) · ยึดที่สูง doubles it for the percher
@@ -252,7 +253,7 @@
       st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
       let counter = 0; if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; counter = hurt(st, a, 12).damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
       /* v94: heavy monsters (shove) knock a target standing at a ledge off it — down 2+ levels costs 5 HP per level */
-      let fall = null; if (st.cards && a.shove && alive(t) && !t.fly && dist(a, t) <= 1 && st.levelAt) { const fu = t.u, fv = t.v, du = Math.sign(t.u - a.u), dv = du ? 0 : Math.sign(t.v - a.v), nu = t.u + du, nv = t.v + dv; if (free(st, nu, nv, t) && lv(st, fu, fv) - lv(st, nu, nv) >= 2) { const drop = lv(st, fu, fv) - lv(st, nu, nv), fd = Math.min(t.hp, 5 * drop); t.u = nu; t.v = nv; t.hp -= fd; fall = { from: { u: fu, v: fv }, drop, damage: fd }; r.notes.push('ผลักตก ' + drop + ' ระดับ −' + fd); st.log.push(a.name + ' ผลัก ' + t.name + ' ตกลงไป −' + fd) } }
+      let fall = null; if (st.cards && a.shove && alive(t) && !t.fly && dist(a, t) <= 1 && st.levelAt) { const fu = t.u, fv = t.v, du = Math.sign(t.u - a.u), dv = du ? 0 : Math.sign(t.v - a.v), nu = t.u + du, nv = t.v + dv; if (free(st, nu, nv, t) && lv(st, fu, fv) - lv(st, nu, nv) >= 2) { const drop = lv(st, fu, fv) - lv(st, nu, nv), fd = Math.min(t.hp, Math.round(5 * drop)); t.u = nu; t.v = nv; t.hp -= fd; fall = { from: { u: fu, v: fv }, drop, damage: fd }; r.notes.push('ผลักตก ' + drop + ' ระดับ −' + fd); st.log.push(a.name + ' ผลัก ' + t.name + ' ตกลงไป −' + fd) } }
       return { ok: true, damage: r.damage, target: t, notes: r.notes, crit, counter, fall } })();
     st.acted = keep.acted; st.mp = keep.mp; st.turn = keep.turn; st.cur = keep.cur; checkOutcome(st);
     return at;
@@ -354,7 +355,7 @@
     if (h.ambush) { mult = h.ambush; h.ambush = 0; extra.push('ซุ่ม ×1.6') }
     if (rule.leap) { const k = d0 > 0 ? 1 + .25 * Math.min(3, d0) : .85; mult *= k; extra.push(d0 > 0 ? 'กระโจนจากที่สูง ×' + k.toFixed(2) : 'ระดับเดียวกัน ×0.85') }
     else { const hm = heightMult(st, h, t); if (hm !== 1) { mult *= hm; extra.push(heightNote(hm)) } }
-    if (rule.perLevel) bonus += rule.perLevel * Math.max(0, d0);
+    if (rule.perLevel) bonus += Math.round(rule.perLevel * Math.max(0, d0));
     if (rule.aoe === 'splash' && d0 >= 1) { mult *= 1.5; extra.push('ต่ำกว่า ×1.5') }
     out.target = t;
     for (let i = 0; i < (rule.hits || 1); i++) {
@@ -366,7 +367,7 @@
     if (rule.guardAfter) { h.guard = Math.max(h.guard, rule.guardAfter); out.guard = h.guard }
     const total = out.hits.reduce((a, x) => a + x.damage, 0);
     st.log.push(h.name + ' ' + name + ' −' + total + (out.hits[0]?.notes.length ? ' (' + out.hits[0].notes.join(', ') + ')' : ''));
-    if (alive(t) && (rule.push || rule.pull)) { const fu = t.u, fv = t.v; out.moved = shove(st, t, h, rule.push ? 1 : -1); if (out.moved) { const drop = lv(st, fu, fv) - lv(st, t.u, t.v); if (drop >= 2 && !t.fly) { const fd = Math.min(t.hp, 5 * drop); t.hp -= fd; out.fall = { drop, damage: fd }; st.log.push(t.name + ' ตกลง ' + drop + ' ระดับ −' + fd) } } }
+    if (alive(t) && (rule.push || rule.pull)) { const fu = t.u, fv = t.v; out.moved = shove(st, t, h, rule.push ? 1 : -1); if (out.moved) { const drop = lv(st, fu, fv) - lv(st, t.u, t.v); if (drop >= 2 && !t.fly) { const fd = Math.min(t.hp, Math.round(5 * drop)); t.hp -= fd; out.fall = { drop, damage: fd }; st.log.push(t.name + ' ตกลง ' + drop + ' ระดับ −' + fd) } } }
     if (rule.slow && alive(t)) { t.slowed = 1; out.slowed = t }
     checkOutcome(st);
     return out;

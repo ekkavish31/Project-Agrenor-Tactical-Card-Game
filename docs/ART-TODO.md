@@ -300,3 +300,13 @@
 | id | file | ขนาด | โปร่งใส | สถานะ | รายละเอียด |
 |---|---|---|---|---|---|
 | card-recovery | assets/recovery.webp | 900x511 |  | temp | a quiet forest camp with tea and a bedroll, meditative calm |
+
+## สนามรบ v96 · พื้นผิวและพร็อพ — 5 ภาพ (ตอนนี้วาดด้วยโค้ด ใส่ไฟล์แล้วเกมใช้ทันที)
+
+| id | file | ขนาด | โปร่งใส | สถานะ | รายละเอียด |
+|---|---|---|---|---|---|
+| terrain-diorama-wood | assets/terrain/diorama/wood.webp | 256x256 |  | planned | ไม้กระดานสะพาน/ทางเดินบึง ต่อกันได้ไร้รอยต่อ (แผ่นไม้วางซ้าย-ขวา) |
+| terrain-diorama-brick | assets/terrain/diorama/brick.webp | 256x256 |  | planned | อิฐหินกำแพงป้อม/กำแพงพัง ใช้ทั้งหน้ากำแพง ต่อกันได้ไร้รอยต่อ |
+| terrain-diorama-slab | assets/terrain/diorama/slab.webp | 256x256 |  | planned | แผ่นหินปูพื้นบนป้อมและขั้นบันไดหิน ต่อกันได้ไร้รอยต่อ |
+| prop-cactus | assets/tactics/props/cactus.webp | 384x512 | ✓ | planned | กระบองเพชร พร็อพสนามทะเลทราย สไตล์เดียวกับ assets/tactics/rock.webp |
+| prop-deadtree | assets/tactics/props/deadtree.webp | 512x640 | ✓ | planned | ต้นไม้ตายกิ่งบิดในบึง สไตล์เดียวกับ assets/tactics/tree.webp |

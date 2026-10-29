@@ -10,16 +10,16 @@ test('town and low-severity zones stay flat, severity grows with the zone', () =
   assert.equal(nonZero('town'), 0);
   assert.equal(nonZero('sand'), 0);
   const g = nonZero('grass'), f = nonZero('forest'), h = nonZero('hills'), m = nonZero('mountain');
-  assert(g > 0 && g < 0.4, 'grass has gentle mounds only: ' + g);
+  assert(g > 0 && g < 0.55, 'grass has gentle mounds only (half steps included): ' + g);
   assert(g < f && f < h && h < m, 'severity order ' + [g, f, h, m]);
 });
 
-test('level cap: 0..3 only, and gentle zones never exceed level 1 or 2', () => {
+test('level cap (sub-levels, STEP = 2 per rule level): gentle zones stay low', () => {
   for (let s = 0; s < 20; s++) {
-    assert(gen('grass', 'a' + s).levels.every(l => l <= 1), 'grass <= 1');
-    assert(gen('hills', 'b' + s).levels.every(l => l <= 2), 'hills <= 2');
+    assert(gen('grass', 'a' + s).levels.every(l => l <= 2), 'grass <= rule 1');
+    assert(gen('hills', 'b' + s).levels.every(l => l <= 4), 'hills <= rule 2');
     assert(gen('snowpeak', 'c' + s).levels.every(l => l <= T.MAX_LEVEL));
-    assert(gen('snowpeak', 'd' + s, { maxLevel: 2 }).levels.every(l => l <= 2), 'maxLevel option');
+    assert(gen('snowpeak', 'd' + s, { maxLevel: 4 }).levels.every(l => l <= 4), 'maxLevel option');
   }
 });
 
@@ -46,7 +46,7 @@ test('forced-flat cells (roads) are level 0 even inside a mountain, and the grou
       if (!m.flat[v * W + u]) continue;
       for (const [du, dv] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
         const a = u + du, b = v + dv; if (a < 0 || b < 0 || a >= W || b >= m.h) continue;
-        assert(m.levels[b * W + a] <= 1, 'cell next to a road is at most level 1');
+        assert(m.levels[b * W + a] <= T.STEP, 'cell next to a road is at most one rule level');
       }
     }
   }
@@ -62,8 +62,8 @@ test('town fade: ground near the town is flat and rises with distance in the sam
       if (d <= 5) near = Math.max(near, l); else if (d >= 24) far = Math.max(far, l);
     }
   }
-  assert(near <= 1, 'near the town: ' + near);
-  assert(far >= 2, 'far from the town: ' + far);
+  assert(near <= T.STEP, 'near the town: ' + near);
+  assert(far >= 2 * T.STEP, 'far from the town: ' + far);
 });
 
 test('determinism: same seed and region = same terrain; different seed differs', () => {
@@ -80,12 +80,12 @@ test('world-coordinate noise: a sub-window of a larger region keeps the same raw
   assert(same / total > 0.9, 'overlap agreement ' + same / total);
 });
 
-test('step rules: 1 level is walkable and costs more going up, 2+ is a cliff, blocked cells stop everyone', () => {
-  const m = { w: 3, h: 1, origin: { u: 0, v: 0 }, maxLevel: 3, levels: Uint8Array.from([0, 1, 3]), flat: new Uint8Array(3), blocked: new Uint8Array(3) };
+test('step rules: up to STEP sub-levels is walkable and costs more going up, more is a cliff, blocked cells stop everyone', () => {
+  const m = { w: 3, h: 1, origin: { u: 0, v: 0 }, maxLevel: 8, levels: Uint8Array.from([0, 2, 5]), flat: new Uint8Array(3), blocked: new Uint8Array(3) };
   assert.equal(T.canStep(m, 0, 0, 1, 0), true);
   assert.equal(T.stepCost(m, 0, 0, 1, 0), 2);   // climb one level: 1 + 1
   assert.equal(T.stepCost(m, 1, 0, -1, 0), 1);  // descend: plain cost
-  assert.equal(T.canStep(m, 1, 0, 1, 0), false); // 1 -> 3 is a cliff
+  assert.equal(T.canStep(m, 1, 0, 1, 0), false); // 2 -> 5 is a cliff
   assert.equal(T.stepCost(m, 1, 0, 1, 0), null);
   assert.equal(T.canStep(m, 0, 0, 1, 1), false); // no diagonal steps
   assert.equal(T.canStep(m, 2, 0, 1, 0), false); // out of the map
@@ -94,7 +94,7 @@ test('step rules: 1 level is walkable and costs more going up, 2+ is a cliff, bl
 });
 
 test('reachable respects slope cost and cliffs', () => {
-  const m = { w: 5, h: 1, origin: { u: 0, v: 0 }, maxLevel: 3, levels: Uint8Array.from([0, 0, 1, 1, 3]), flat: new Uint8Array(5), blocked: new Uint8Array(5) };
+  const m = { w: 5, h: 1, origin: { u: 0, v: 0 }, maxLevel: 8, levels: Uint8Array.from([0, 0, 1, 1, 5]), flat: new Uint8Array(5), blocked: new Uint8Array(5) };
   const r = T.reachable(m, 0, 0, 10);
   assert.equal(r['1,0'], 1); assert.equal(r['2,0'], 3); assert.equal(r['3,0'], 4);
   assert.equal(r['4,0'], undefined, 'cliff cell not reachable');
@@ -134,18 +134,18 @@ test('pack / unpack round trip keeps levels, flat and blocked cells', () => {
 
 test('setLevel: raising a cell slopes its neighbours (pyramid), keeps roads flat, and never leaves a 2+ step unless cliff is asked for', () => {
   const m = T.generate({ w: 15, h: 15, seed: 'edit', zone: 'town', flat: (u, v) => u === 0 });
-  const ch = T.setLevel(m, 7, 7, 3);
-  assert.equal(T.levelAt(m, 7, 7), 3);
-  assert.equal(T.levelAt(m, 8, 7), 2); assert.equal(T.levelAt(m, 9, 7), 1); assert.equal(T.levelAt(m, 10, 7), 0);
+  const ch = T.setLevel(m, 7, 7, 6);
+  assert.equal(T.levelAt(m, 7, 7), 6);
+  assert.equal(T.levelAt(m, 8, 7), 4); assert.equal(T.levelAt(m, 9, 7), 2); assert.equal(T.levelAt(m, 10, 7), 0);
   assert(ch.length >= 10 && ch.every(c => c.from !== c.to));
-  for (let v = 0; v < 15; v++) for (let u = 0; u < 14; u++) { assert(Math.abs(T.levelAt(m, u, v) - T.levelAt(m, u + 1, v)) <= 1); assert(Math.abs(T.levelAt(m, v, u) - T.levelAt(m, v, u + 1)) <= 1); }
+  for (let v = 0; v < 15; v++) for (let u = 0; u < 14; u++) { assert(Math.abs(T.levelAt(m, u, v) - T.levelAt(m, u + 1, v)) <= T.STEP); assert(Math.abs(T.levelAt(m, v, u) - T.levelAt(m, v, u + 1)) <= T.STEP); }
   assert.equal(T.validate(m).ok, true);
   assert.deepEqual(T.setLevel(m, 0, 5, 3), [], 'flat road cell cannot be edited');
-  const near = T.setLevel(m, 1, 5, 3); assert.equal(T.levelAt(m, 1, 5), 1, 'beside a road: at most level 1'); assert(near.length >= 1);
+  const near = T.setLevel(m, 1, 5, 6); assert.equal(T.levelAt(m, 1, 5), T.STEP, 'beside a road: at most one rule level'); assert(near.length >= 1);
   const c2 = T.generate({ w: 9, h: 9, seed: 'c', zone: 'town' });
-  T.setLevel(c2, 4, 4, 3, { cliff: true });
-  assert.equal(T.levelAt(c2, 4, 4), 3); assert.equal(T.levelAt(c2, 5, 4), 0); assert.equal(T.cliffEdges(c2).length, 4);
-  T.setLevel(c2, 4, 4, 99, { cliff: true }); assert.equal(T.levelAt(c2, 4, 4), 3, 'clamped to maxLevel');
+  T.setLevel(c2, 4, 4, 6, { cliff: true });
+  assert.equal(T.levelAt(c2, 4, 4), 6); assert.equal(T.levelAt(c2, 5, 4), 0); assert.equal(T.cliffEdges(c2).length, 4);
+  T.setLevel(c2, 4, 4, 99, { cliff: true }); assert.equal(T.levelAt(c2, 4, 4), T.MAX_LEVEL, 'clamped to maxLevel');
   T.setLevel(c2, 4, 4, -5, { cliff: true }); assert.equal(T.levelAt(c2, 4, 4), 0, 'clamped to 0');
   assert.deepEqual(T.setLevel(c2, 99, 99, 1), [], 'outside the map');
 });
@@ -154,16 +154,31 @@ test('renderer: draws every cell, walls only where the ground drops, and hitTest
   global.TerrainHeight = T;
   const A = require('../js/terrain-height-art.js');
   const m = T.generate({ w: 4, h: 4, seed: 'r', zone: 'town' });
-  T.setLevel(m, 1, 1, 2, { cliff: true });
+  T.setLevel(m, 1, 1, 4, { cliff: true });
   const calls = { fill: 0, polys: 0 }, g = { beginPath() { calls.polys++; }, moveTo() {}, lineTo() {}, closePath() {}, fill() { calls.fill++; }, stroke() {}, save() {}, restore() {}, fillText() {} };
   A.draw(g, m, {});
   assert(calls.fill >= 16 + 2, 'sixteen tops plus the walls of the raised cell: ' + calls.fill);
   const b = A.bounds(m); assert(b.x1 > b.x0 && b.y1 > b.y0);
   // the centre of the raised cell's lifted top (level 2 -> 36 px up) must hit that cell, not the cell behind it
-  const px = 2240 + (1.5 - 1.5) * 28, py = 1232 + (1.5 + 1.5) * 14 - 2 * T.LEVEL_PX;
+  const px = 2240 + (1.5 - 1.5) * 28, py = 1232 + (1.5 + 1.5) * 14 - 4 * T.LEVEL_PX;
   assert.deepEqual(A.hitTest(m, px, py), { u: 1, v: 1 });
   assert.equal(A.hitTest(m, -9999, -9999), null);
   delete global.TerrainHeight;
+});
+
+test('half steps and ramps: odd sub-levels appear, ramps slope from level-1 to level+1, surfaceAt follows them', () => {
+  let odd = 0, ramps = 0;
+  for (let s = 0; s < 20; s++) { const m = gen('hills', 'half' + s); odd += m.levels.filter(l => l % 2).length; ramps += m.ramp.filter(Boolean).length; assert(T.validate(m).ok);
+    for (let i = 0; i < m.ramp.length; i++) if (m.ramp[i]) { const c = T.corners(m, i); assert.equal(Math.max(...c) - Math.min(...c), 2); } }
+  assert(odd > 0 && ramps > 0, odd + ' half steps, ' + ramps + ' ramps');
+  const m = { w: 3, h: 1, origin: { u: 0, v: 0 }, maxLevel: 8, levels: Uint8Array.from([0, 1, 2]), ramp: Uint8Array.from([0, 1, 0]), flat: new Uint8Array(3), blocked: new Uint8Array(3) };
+  assert.deepEqual(T.corners(m, 1), [0, 2, 2, 0]); assert.equal(T.surfaceAt(m, 1.5, .5), 1); assert.equal(T.surfaceAt(m, 1, .5), 0); assert.equal(T.surfaceAt(m, 2, .5), 2);
+});
+
+test('old v1 packs (whole levels) load at the same height: levels x STEP', () => {
+  const r = T.unpack({ v: 1, w: 3, h: 1, origin: { u: 0, v: 0 }, maxLevel: 3, rle: '0 1 3' });
+  assert.deepEqual(Array.from(r.levels), [0, 2, 6]); assert.equal(r.maxLevel, 6);
+  const m = gen('hills', 'p2'), back = T.unpack(JSON.parse(JSON.stringify(T.pack(m)))); assert.deepEqual(Array.from(back.ramp), Array.from(m.ramp));
 });
 
 test('bad input is rejected', () => {

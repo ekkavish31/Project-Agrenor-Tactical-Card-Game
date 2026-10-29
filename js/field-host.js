@@ -6,17 +6,26 @@
    ?biome=forest|grass|hills|swamp|snow|sand · ?night=1 · ?seed= · ?poi=den|mine|ruin (boss dressing)
    v94: the ground has height (js/terrain-height.js, levels 0–3 by biome: grass gentle, hills/snow steeper) drawn by js/terrain-height-art.js —
    the one terrain renderer for the 2.5D fields. project(u,v) lifts by the level under (u,v), so props and fighters stand on the ground;
-   window.FieldHeight.level(u,v) feeds the battle rules (flat-battle.js levelAt). ?flat=1 turns heights off. */
+   window.FieldHeight.level(u,v) feeds the battle rules (flat-battle.js levelAt). ?flat=1 turns heights off.
+   v96.00 · FFT-style field: half-level heights (rule levels 0–4 in 0.5 steps, ramps and stairs), stone forts, rivers with bridges, broken walls,
+   cells in front of a unit are redrawn over it (occlusion) and the hidden unit shows as a ghost, animated water, cast shadows and a colour grade,
+   the camera turns in quarter turns (Q / E or the ⟲ ⟳ buttons) and a unit panel (live portrait, HP, stats, height) sits bottom right. */
 'use strict';
 const FQ = new URLSearchParams(location.search);
 const WORLD_W = 4480, WORLD_H = 2520;
 const cv = document.getElementById('world'), g = cv.getContext('2d');
 let W = innerWidth, H = innerHeight, scale = 1, zoom = 1, pan = { x: 0, y: 0 };
-function projectFlat(u, v) { return { x: 2240 + (u - v) * 28, y: 1232 + (u + v) * 14 } }
-function invFlat(x, y) { const a = (x - 2240) / 28, b = (y - 1232) / 14; return { u: (a + b) / 2, v: (b - a) / 2 } }
+/* v96: the view can be turned by quarter turns around the field centre (0.5, 0.5): one turn maps (u, v) → (1 − v, u) */
+let ROT = 0; try { ROT = (+localStorage.getItem('projectA.fieldRot') || 0) & 3 } catch (e) { }
+function rotUV(u, v, t = ROT) { for (let k = 0; k < t; k++) { const a = 1 - v; v = u; u = a } return { u, v } }
+function unrotUV(u, v, t = ROT) { for (let k = 0; k < t; k++) { const a = v; v = 1 - u; u = a } return { u, v } }
+function projectFlat(u, v) { const r = rotUV(u, v); return { x: 2240 + (r.u - r.v) * 28, y: 1232 + (r.u + r.v) * 14 } }
+function invFlat(x, y) { const a = (x - 2240) / 28, b = (y - 1232) / 14; return unrotUV((a + b) / 2, (b - a) / 2) }
+/* depth for painter's order in view space (bigger = nearer the viewer) */
+window.FieldDepth = (u, v) => { const r = rotUV(u, v); return r.u + r.v };
 /* lifted by the ground height; between two walkable cells the lift eases across the edge so a walk up a step reads as a step, not a teleport */
 function project(u, v) { const p = projectFlat(u, v); return window.FieldHeight ? { x: p.x, y: p.y - FieldHeight.liftAt(u, v) } : p }
-function inv(x, y) { if (window.FieldHeight) { const c = TerrainHeightArt.hitTest(FieldHeight.map, x, y); if (c) return { u: c.u + .5, v: c.v + .5 } } return invFlat(x, y) }
+function inv(x, y) { if (window.FieldHeight) { const c = FieldHeight.hit(x, y, window.TownBattle?.reach?.()); if (c) return { u: c.u + .5, v: c.v + .5 } } return invFlat(x, y) }
 function world(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - W / 2 - pan.x) / (scale * zoom) + WORLD_W / 2, y: (e.clientY - r.top - H / 2 - pan.y) / (scale * zoom) + WORLD_H / 2 } }
 const locations = [{ id: 'square', name: 'สนาม' }];
 function center() { return { u: 0, v: 0 } }
@@ -57,38 +66,72 @@ const FIELD = (function () {
 })();
 /* v95.19: repaint the ground once the painted terrain textures have loaded */
 window.FieldDiorama?.ready?.().then(ok => { if (ok) groundCanvas = null });
-/* ---------- heights (v94) ---------- */
+/* ---------- heights (v94 · v96 half levels) ---------- */
 window.FieldHeight = (function () {
-  if (!window.TerrainHeight || !window.TerrainHeightArt || FQ.get('flat') === '1') return null;
-  const R = FIELD.R, n = 2 * R + 1, S = R >= 7 ? 4 : 3, T = TerrainHeight, PX = T.LEVEL_PX;
-  const blocked = (lu, lv) => { const c = FIELD.cells.get(FIELD.key(lu - R, lv - R)); return !c || c.k === 'blocked' };
-  const zone = FQ.get('poi') === 'mine' ? 'hills' : FIELD.biome;
+  if (!window.TerrainHeight || FQ.get('flat') === '1') return null;
+  const R = FIELD.R, n = 2 * R + 1, S = R >= 7 ? 4 : 3, T = TerrainHeight, PX = T.LEVEL_PX, ST = T.STEP, poi = FQ.get('poi');
+  const zone = poi === 'mine' ? 'hills' : FIELD.biome;
   const SEV = { grass: .5, forest: .55, hills: .85, swamp: .25, snow: .75, sand: .4 };   // v95.18: battle fields are hillier than the world around them
   const fseed = 'field:' + (FQ.get('seed') || Math.floor(FIELD.rnd() * 1e9)) + ':' + FIELD.biome;
+  const blocked = (lu, lv) => { const c = FIELD.cells.get(FIELD.key(lu - R, lv - R)); return !c || c.k === 'blocked' };
   const map = T.forScene({ w: n, h: n, seed: fseed, biome: SEV[zone] ?? .5, blocked, entries: [{ u: R - S, v: R + S }, { u: R + S, v: R - S }] });
   map.origin = { u: -R, v: -R };                        // local lattice → field cells (−R … R)
-  /* v95.18 · high ground: plateaus with cliffs and one stair each, never on the two gathering corners or the paths */
+  const cellAt = i => FIELD.cells.get(FIELD.key((i % n) - R, ((i / n) | 0) - R));
   if (window.FieldDiorama) {
     const near = (u, v) => [[R - S, R + S], [R + S, R - S]].some(([a, b]) => Math.abs(u - a) <= 3 && Math.abs(v - b) <= 3);
-    FieldDiorama.landforms(map, { seed: [...fseed].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261) >>> 0, keep: near, count: { hills: 3, snow: 3, grass: 2, forest: 2, sand: 2, swamp: 1 }[zone] || 2 });
-    for (const i of map.stairs || []) { const u = i % n, v = (i - u) / n, c = FIELD.cells.get(FIELD.key(u - R, v - R)); if (c && c.k === 'blocked') { c.k = 'normal'; c.prop = null } }
+    const seed = [...fseed].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261) >>> 0;
+    /* v95.18 high ground (v96: some plateaus are stone forts) · v96 rivers with bridges, broken walls, pools as real water */
+    FieldDiorama.landforms(map, { seed, keep: near, count: { hills: 3, snow: 3, grass: 2, forest: 2, sand: 2, swamp: 1 }[zone] || 2, fort: poi === 'ruin' ? .8 : { hills: .5, snow: .4, sand: .35 }[zone] ?? .2 });
+    for (const i of map.stairs || []) { const c = cellAt(i); if (c && c.k === 'blocked') { c.k = 'normal'; c.prop = null } }
+    const st = FieldDiorama.structures(map, { seed, keep: near, biome: FIELD.biome, poi, pools: i => cellAt(i)?.prop === 'pool' });
+    for (const i of st.clear) { const c = cellAt(i); if (c) { c.k = 'normal'; c.prop = null } }
+    for (const i of st.block) { const c = cellAt(i); if (c) { c.k = 'blocked'; c.prop = null } }
   }
-  const level = (u, v) => T.levelAt(map, Math.floor(u), Math.floor(v)) ?? 0;
+  const sub = (u, v) => T.levelAt(map, Math.floor(u), Math.floor(v)) ?? 0;
+  const level = (u, v) => sub(u, v) / ST;               // rule levels for flat-battle (0, 0.5, 1 … 4)
+  const ramp = (u, v) => { const i = (Math.floor(v) + R) * n + Math.floor(u) + R; return map.ramp && i >= 0 && i < n * n ? map.ramp[i] : 0 };
   function liftAt(u, v) {
-    const cu = Math.floor(u), cv = Math.floor(v), L = level(cu, cv), fu = u - cu - .5, fv = v - cv - .5;
-    let y = L * PX;
+    const cu = Math.floor(u), cv = Math.floor(v), L = sub(cu, cv), fu = u - cu - .5, fv = v - cv - .5;
+    let y = T.surfaceAt(map, u, v) * PX;
+    if (ramp(cu, cv)) return y;
     for (const [f, du, dv] of [[fu, Math.sign(fu), 0], [fv, 0, Math.sign(fv)]]) {
-      const e = Math.abs(f); if (e < .3 || !(du || dv)) continue;
-      const N = T.levelAt(map, cu + du, cv + dv); if (N == null || Math.abs(N - L) > 2) continue;
-      y += (N - L) * PX * .5 * ((e - .3) / .2);         // half way at the shared edge
+      const e = Math.abs(f); if (e < .3 || !(du || dv) || ramp(cu + du, cv + dv)) continue;
+      const N = T.levelAt(map, cu + du, cv + dv); if (N == null || Math.abs(N - L) > ST) continue;
+      y += (N - L) * PX * .5 * ((e - .3) / .2);         // half way at the shared edge, so a walk up a step reads as a step
     }
     return y;
   }
-  return { map, level, liftAt, lift: (u, v) => level(u, v) * PX, R };
+  /* the view map (turned with the camera) and its cells' screen boxes, for hit tests and occlusion */
+  let view = null, meta = null;
+  function setView() {
+    view = window.FieldDiorama ? FieldDiorama.rotate(map, ROT) : map; meta = [];
+    const P = (a, b, z) => ({ x: 2240 + (a - R - b + R) * 28 + 0, y: 1232 + (a - R + b - R) * 14 - z * PX });
+    for (let b = 0; b < n; b++) for (let a = 0; a < n; a++) {
+      const i = b * n + a, c = T.corners(view, i).map(z => view.water && view.water[i] ? z - (FieldDiorama?.WATER || .8) : z);
+      meta.push({ i, a, b, d: a + b - 2 * R + 1, x0: P(a, b + 1, 0).x, x1: P(a + 1, b, 0).x, top: Math.min(P(a, b, c[0]).y, P(a + 1, b, c[1]).y, P(a, b + 1, c[3]).y), water: view.water && view.water[i],
+        quad: [P(a, b, c[0]), P(a + 1, b, c[1]), P(a + 1, b + 1, c[2]), P(a, b + 1, c[3])] });
+    }
+    meta.sort((p, q) => p.d - q.d || p.a - q.a);
+  }
+  setView();
+  const inQuad = (q, x, y) => { let s = 0; for (let k = 0; k < 4; k++) { const a = q[k], b = q[(k + 1) & 3], c = (b.x - a.x) * (y - a.y) - (b.y - a.y) * (x - a.x); if (c !== 0) { if (s && Math.sign(c) !== s) return false; s = Math.sign(c) } } return true };
+  /* screen point (world px) → the front-most logical cell whose top contains it; with `prefer` (a Map of 'u,v' → reachable cell, the blue
+     highlights, which are drawn over everything) a highlighted cell hidden behind higher ground still wins the click */
+  function hit(x, y, prefer) {
+    let first = null;
+    for (let k = meta.length - 1; k >= 0; k--) { const m = meta[k]; if (!inQuad(m.quad, x, y)) continue; let a = m.a, b = m.b; for (let t = 0; t < ROT; t++) { const na = b; b = n - 1 - a; a = na }
+      const c = { u: a - R, v: b - R }; if (!prefer) return c; if (!first) first = c; const e = prefer.get?.(c.u + ',' + c.v); if (e && e.cost > 0) return c }
+    return first;
+  }
+  return { map, get view() { return view }, get meta() { return meta }, setView, hit, sub, level, liftAt, lift: (u, v) => sub(u, v) * PX, R, n, STEP: ST };
 })();
 
 function blockedBase(u, v) { const c = FIELD.cells.get(FIELD.key(Math.floor(u), Math.floor(v))); return !c || c.k === 'blocked' }
-const TownPaint = { matsAt: pts => pts.map(p => { const q = inv(p.x, p.y), c = FIELD.cells.get(FIELD.key(Math.floor(q.u), Math.floor(q.v))); return !c ? null : c.k === 'slow' ? FIELD.MIX.slowMat : c.k === 'cover' ? FIELD.MIX.coverMat : null }) };
+/* v96: points come from project(u+.5, v+.5); match them back to their own cell first (a tall cell in front would win a screen hit test) */
+const TownPaint = { matsAt: pts => { const own = new Map(); for (const c of FIELD.cells.values()) { const p = project(c.u + .5, c.v + .5); own.set(Math.round(p.x) + ',' + Math.round(p.y), c) }
+  return pts.map(p => { let c = own.get(Math.round(p.x) + ',' + Math.round(p.y)); if (!c) { const q = inv(p.x, p.y); c = FIELD.cells.get(FIELD.key(Math.floor(q.u), Math.floor(q.v))) } return !c ? null : c.k === 'slow' ? FIELD.MIX.slowMat : c.k === 'cover' ? FIELD.MIX.coverMat : null }) } };
+/* water, walls and forts already read as obstacles: no red blocked tint over them */
+window.FieldCellTint = (u, v, k, col) => { const F = window.FieldHeight; if (!F || k !== 'blocked') return col; const i = (v + F.R) * F.n + u + F.R, M = F.map; return M.water?.[i] || M.mat?.[i] ? null : FIELD.cells.get(FIELD.key(u, v))?.prop ? 'rgba(210,60,60,.14)' : col };
 
 /* ---------- painting ---------- */
 const GROUND = { forest: ['#5f7a3e', '#6b8746', '#56703a'], grass: ['#7ea055', '#8cb062', '#729650'], hills: ['#a39168', '#b09e74', '#958560'], swamp: ['#55654a', '#5f7052', '#4b5a41'], snow: ['#dfe7ef', '#eef3f8', '#ced9e3'], sand: ['#d6c08c', '#e0cc99', '#c9b47f'] };
@@ -96,14 +139,13 @@ const SLOWC = { mud: ['#6b5236', '#7a5f3f'], snow: ['#f7fbff', '#e6eef6'], sand:
 let groundCanvas = null;
 function diamond(ctx, u, v, pad = 0) { const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, P = (x, y) => { const q = projectFlat(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); ctx.beginPath(); ctx.moveTo(a.x, a.y - pad); ctx.lineTo(b.x + pad, b.y); ctx.lineTo(c.x, c.y + pad); ctx.lineTo(d.x - pad, d.y); ctx.closePath() }
 function paintGround() {
-  const F = FIELD, ext = F.R + 8, a = project(-ext, ext), b = project(ext, -ext), top = project(-ext, -ext), bot = project(ext, ext);
-  const x0 = Math.floor(a.x) - 40, x1 = Math.ceil(b.x) + 40, y0 = Math.floor(top.y) - 60, y1 = Math.ceil(bot.y) + 40;
+  const F = FIELD, ext = F.R + 8, cs = [project(-ext, ext), project(ext, -ext), project(-ext, -ext), project(ext, ext)];   // v96: any camera turn
+  const x0 = Math.floor(Math.min(...cs.map(p => p.x))) - 40, x1 = Math.ceil(Math.max(...cs.map(p => p.x))) + 40, y0 = Math.floor(Math.min(...cs.map(p => p.y))) - 140, y1 = Math.ceil(Math.max(...cs.map(p => p.y))) + 40;
   groundCanvas = document.createElement('canvas'); groundCanvas.width = x1 - x0; groundCanvas.height = y1 - y0; groundCanvas.ox = x0; groundCanvas.oy = y0;
   const t = groundCanvas.getContext('2d'); t.translate(-x0, -y0);
   const pal = GROUND[F.biome];
   if (window.FieldHeight && window.FieldDiorama) {   /* v95.18 · the field as a floating diorama */
-    const M = FieldHeight.map, pools = new Uint8Array(M.w * M.h); for (const c of F.cells.values()) if (c.prop === 'pool') pools[(c.v - M.origin.v) * M.w + (c.u - M.origin.u)] = 1;
-    FieldDiorama.paint(t, M, { biome: F.biome, poi: FQ.get('poi'), pools: i => pools[i] });
+    FieldDiorama.paint(t, FieldHeight.view, { biome: F.biome, poi: FQ.get('poi') });
     for (const c of F.cells.values()) if (c.k === 'slow') { const col = SLOWC[F.MIX.slowMat]; diamond(t, c.u, c.v, -3); t.globalAlpha = .7; t.fillStyle = col[0]; t.fill(); t.globalAlpha = 1; const p = project(c.u + .5, c.v + .5); for (let i = 0; i < 4; i++) { t.fillStyle = col[1]; t.beginPath(); t.ellipse(p.x + (F.rnd() - .5) * 30, p.y + (F.rnd() - .5) * 12, 4 + F.rnd() * 5, 2 + F.rnd() * 2, 0, 0, 7); t.fill() } }
     return;
   }
@@ -117,7 +159,7 @@ function paintGround() {
     const palette = { top: [0, 1, 2, 3].map(l => sh(base, 1 + .07 * l)), lip: F.biome === 'snow' ? '#a8b6c2' : '#7a5f3e', cliff: rock.cliff, line: 'rgba(0,0,0,.13)' };
     const pools = new Uint8Array(M.w * M.h); for (const c of F.cells.values()) if (c.prop === 'pool') pools[(c.v - M.origin.v) * M.w + (c.u - M.origin.u)] = 1;
     const vary = new Array(M.w * M.h).fill(0).map(() => .95 + F.rnd() * .08);
-    TerrainHeightArt.draw(t, { ...M, blocked: pools }, { palette, grid: true, tint: i => sh(palette.top[M.levels[i]], vary[i]) });
+    TerrainHeightArt.draw(t, { ...M, blocked: pools }, { palette, grid: true, tint: i => sh(palette.top[Math.min(3, M.levels[i] >> 1)], vary[i]) });
   }
   for (const c of F.cells.values()) {
     if (c.k === 'slow') { const col = SLOWC[F.MIX.slowMat]; diamond(t, c.u, c.v, 3); t.fillStyle = col[0]; t.fill(); const p = project(c.u + .5, c.v + .5); for (let i = 0; i < 5; i++) { t.fillStyle = col[1]; t.beginPath(); t.ellipse(p.x + (F.rnd() - .5) * 34, p.y + (F.rnd() - .5) * 14, 5 + F.rnd() * 6, 2 + F.rnd() * 3, 0, 0, 7); t.fill() } if (F.MIX.slowMat === 'mud') { t.strokeStyle = 'rgba(30,20,10,.35)'; t.lineWidth = 1; t.beginPath(); t.ellipse(p.x, p.y, 12, 4, 0, 0, 7); t.stroke() } }
@@ -125,9 +167,42 @@ function paintGround() {
   /* soft shading toward the edge of the field */
   const cpt = project(.5, .5), rg = t.createRadialGradient(cpt.x, cpt.y, 160, cpt.x, cpt.y, 700); rg.addColorStop(0, 'rgba(0,0,0,0)'); rg.addColorStop(1, 'rgba(0,0,0,.45)'); t.fillStyle = rg; t.fillRect(x0, y0, x1 - x0, y1 - y0);
 }
-/* props are drawn every frame (cheap shapes) so they can sway; they sit under the units (field is small, units stand between props) */
+/* v96.01 · props use the painted art already in the repo (village nature set + old tactics props), a variant per cell seed;
+   cactus and dead trees have no picture yet, so they (and any picture still loading) fall back to the code drawing below.
+   [file, size in world px, 'h' = height or 'w' = width] */
+const PA = 'assets/', PROP_ART = {
+  tree: { forest: [['tactics/tree', 124, 'h'], ['village-town/nature/broadleaf', 124, 'h'], ['village-town/nature/old-oak', 120, 'h'], ['village-town/nature/tree-round', 104, 'h'], ['tactics/stump', 46, 'w']],
+    _: [['tactics/tree', 128, 'h'], ['village-town/nature/broadleaf', 128, 'h'], ['village-town/nature/tree-round', 108, 'h'], ['village-town/nature/tree-round-2', 100, 'h'], ['village-town/nature/tree-blossom', 118, 'h']] },
+  pine: { snow: [['village-town/edge/snow-pine-m', 132, 'h'], ['village-town/edge/snow-pine-l', 140, 'h']], _: [['tactics/props/pine', 140, 'h'], ['village-town/nature/tree-conifer', 128, 'h']] },
+  rock: { snow: [['village-town/edge/snow-rock-m', 54, 'w'], ['village-town/edge/snow-rock-s', 44, 'w']], hills: [['tactics/rock', 54, 'w'], ['tactics/props/standstone', 64, 'h'], ['village-town/nature/rock-cluster', 56, 'w']],
+    sand: [['tactics/rock', 52, 'w'], ['tactics/props/standstone', 62, 'h']], forest: [['tactics/props/mossrock', 54, 'w'], ['village-town/nature/rock-cluster', 56, 'w'], ['tactics/decor/mushrooms', 46, 'w'], ['tactics/props/log', 56, 'w']],
+    swamp: [['tactics/props/mossrock', 52, 'w'], ['village-town/edge/coast-rocks-s', 56, 'w']], _: [['tactics/rock', 52, 'w'], ['tactics/props/mossrock', 52, 'w'], ['village-town/nature/rock-cluster', 56, 'w']] },
+  boulder: { snow: [['village-town/edge/snow-rock-l', 66, 'w']], _: [['tactics/rock', 64, 'w'], ['tactics/props/mossrock', 64, 'w']] },
+  bush: { snow: [['village-town/edge/frozen-bush', 46, 'w']], _: [['village-town/nature/bush-small', 46, 'w'], ['tactics/props/bush', 52, 'w']] },
+  pillar: { _: [['tactics/pillar', 112, 'h']] },
+  deadtree: { swamp: [['tactics/props/deadtree', 118, 'h'], ['tactics/props/deadtree', 104, 'h'], ['tactics/stump', 44, 'w'], ['tactics/props/log', 54, 'w']], _: [['tactics/props/deadtree', 112, 'h']] },
+  cactus: { _: [['tactics/props/cactus', 72, 'h']] }   // deadtree / cactus pictures are planned (docs/ART-TODO.md): code drawing until they exist
+};
+const PIMG = {};
+function propImg(f) {
+  let im = PIMG[f]; if (im) return im.ok ? im : null;
+  im = PIMG[f] = new Image(); im.onload = () => {   /* the picture's base = lowest opaque row, so it stands on the cell centre */
+    try { const c = document.createElement('canvas'), w = c.width = 64, h = c.height = Math.max(8, Math.round(64 * im.naturalHeight / im.naturalWidth)), q = c.getContext('2d'); q.drawImage(im, 0, 0, w, h); const d = q.getImageData(0, 0, w, h).data; let b = h - 1; for (; b > 0; b--) { let hit = false; for (let x = 0; x < w; x++) if (d[(b * w + x) * 4 + 3] > 40) { hit = true; break } if (hit) break } im.base = (b + 1) / h } catch (e) { im.base = .97 }
+    im.ok = true }; im.src = PA + f + '.webp'; return null;
+}
+function propSpec(kind, s) { const set = PROP_ART[kind]; if (!set) return null; const list = set[FIELD.biome] || set._; return list[Math.floor(s * 997) % list.length] || null }
+/* drawn size of a prop (for depth and occlusion boxes) */
+function propBox(kind, s) { const sp = propSpec(kind, s), im = sp && propImg(sp[0]); if (!im) return { w: 52, h: 95 }; const ar = im.naturalWidth / im.naturalHeight; return sp[2] === 'h' ? { w: sp[1] * ar, h: sp[1] } : { w: sp[1], h: sp[1] / ar } }
+/* props are drawn every frame so they can sway; painter's order by view depth together with the units */
 function prop(ctx, kind, u, v, s, now) {
   const p = project(u + .5, v + .5), sw = Math.sin(now * .0012 + s * 9) * 1.5;
+  const sp = propSpec(kind, s), im = sp && propImg(sp[0]);
+  if (im) {
+    const b = propBox(kind, s), tall = b.h > 90, flip = s * 1000 % 2 < 1;
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(p.x + 5, p.y + 2, Math.min(30, b.w * .42), Math.min(12, b.w * .16), 0, 0, 7); ctx.fill();
+    ctx.save(); ctx.translate(p.x, p.y + 3); if (tall) ctx.transform(1, 0, sw * .006, 1, 0, 0); if (flip) ctx.scale(-1, 1);
+    ctx.drawImage(im, -b.w / 2, -b.h * im.base, b.w, b.h); ctx.restore(); return;
+  }
   const shadow = (rx, ry) => { ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(p.x + 4, p.y + 2, rx, ry, 0, 0, 7); ctx.fill() };
   if (kind === 'tree' || kind === 'pine' || kind === 'deadtree') {
     const h = 64 + s * 26; shadow(20, 8);
@@ -154,28 +229,107 @@ function cover(ctx, c, now) {
   for (let i = 0; i < 9; i++) { const x = p.x - 20 + i * 5 + (c.seed * 7 % 3), sw = Math.sin(now * .002 + i + c.seed * 6) * 2.5, h = 12 + ((i * 7 + c.seed * 13) % 7); ctx.beginPath(); ctx.moveTo(x, p.y + 6 - Math.abs(i - 4) * 1.2); ctx.quadraticCurveTo(x + sw * .5, p.y - h * .5, x + sw, p.y - h); ctx.stroke() }
 }
 
+/* ---------- v96 · water shimmer, occlusion, camera turns, unit panel ---------- */
+function waterFx(ctx, now) {
+  const F = window.FieldHeight; if (!F || !window.FieldDiorama) return; const V = F.view, n = F.n;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (const m of F.meta) {
+    if (!m.water) continue; const hi = [[1, 0], [0, 1], [1, 1]].some(([da, db]) => { const a = m.a + da, b = m.b + db; return a < n && b < n && !V.water[b * n + a] && V.levels[b * n + a] > V.levels[m.i] });
+    const c = { x: (m.quad[0].x + m.quad[2].x) / 2, y: (m.quad[0].y + m.quad[2].y) / 2 }, s = (m.i * 9301 + 49297) % 233280 / 233280;
+    for (let k = 0; k < 3; k++) { const ph = now * .0016 + s * 6.3 + k * 2.1, a = (Math.sin(ph) + 1) / 2; if (hi && k) continue;
+      const x = c.x + Math.sin(s * 40 + k * 3) * 12 + Math.sin(now * .0005 + k) * 3, y = c.y + Math.cos(s * 30 + k * 5) * 4 - (hi ? 4 : 0);
+      ctx.strokeStyle = `rgba(210,240,255,${.12 + a * .4})`; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(x - 4 - a * 3, y); ctx.lineTo(x + 4 + a * 3, y); ctx.stroke();
+      if (a > .92) { ctx.fillStyle = `rgba(255,255,255,${(a - .92) * 10})`; ctx.fillRect(x - 1, y - 1, 2, 2) } }
+  }
+  ctx.restore();
+}
+/* a logical cell's outline on its (possibly sloped) top, for town-battle's highlights */
+window.FieldCellPoly = window.FieldHeight ? (g, u, v) => { const F = FieldHeight, i = (v + F.R) * F.n + u + F.R, c = i >= 0 && i < F.n * F.n && u >= -F.R && u <= F.R ? TerrainHeight.corners(F.map, i) : [0, 0, 0, 0], PX = TerrainHeight.LEVEL_PX;
+  const P = (x, y, z) => { const q = projectFlat(x, y); return { x: q.x, y: q.y - z * PX } }, q = [P(u, v, c[0]), P(u + 1, v, c[1]), P(u + 1, v + 1, c[2]), P(u, v + 1, c[3])];
+  g.beginPath(); g.moveTo(q[0].x, q[0].y); for (let k = 1; k < 4; k++) g.lineTo(q[k].x, q[k].y); g.closePath() } : null;
+/* entities that can hide behind higher cells in front of them: units (from town-battle) and standing props */
+function occluders(ents) {
+  const F = window.FieldHeight, out = []; if (!F || !window.FieldDiorama) return out;
+  for (const e of ents) for (const m of F.meta) {
+    if (m.water || m.d <= e.d + .02 || m.x1 < e.x0 || m.x0 > e.x1 || m.top > e.foot - 3) continue;
+    if (e.unit) e.unit._occT = true;
+    out.push({ d: m.d, y: m.top, draw: ctx => { const t = FieldDiorama.tile(F.view, m.i); if (!t) return; ctx.save(); ctx.beginPath(); ctx.rect(e.x0, e.y0, e.x1 - e.x0, e.foot + 8 - e.y0); ctx.clip(); ctx.drawImage(t.canvas, t.x, t.y); ctx.restore() } });
+  }
+  return out;
+}
+/* standing props inside the field are drawn by town-battle together with the units, sorted by depth (v96: view depth + occluders) */
+window.TownBattleExtras = () => {
+  const out = [], ents = [], D = window.FieldDepth;
+  const props = [];
+  for (const c of FIELD.cells.values()) if (c.prop && c.prop !== 'pool') { const p = project(c.u + .5, c.v + .5), d = D(c.u + .5, c.v + .5) + .01, b = propBox(c.prop, c.seed), e = { d, x0: p.x - b.w / 2, x1: p.x + b.w / 2, y0: p.y - b.h, foot: p.y }; out.push({ y: p.y, d, draw: (ctx, t) => prop(ctx, c.prop, c.u, c.v, c.seed, t) }); ents.push(e); props.push(e) }
+  const st = window.TownBattle?.state?.(); if (st) for (const u of st.units) { u._occ = false; u._occT = false; if (u.hp <= 0 && u.deadAt) continue; const p = project(u.vu, u.vv), h = 128 * (u.boss ? 1.3 : 1), e = { unit: u, d: D(u.vu, u.vv), x0: p.x - 38, x1: p.x + 38, y0: p.y - h, foot: p.y };
+    ents.push(e); /* a big tree or rock in front of a unit also leaves its ghost visible */ if (props.some(q => q.d > e.d + .02 && q.x0 < e.x1 - 12 && q.x1 > e.x0 + 12 && q.y0 < e.foot - 30 && q.foot > e.y0 + 30)) u._occ = true }
+  const occ = occluders(ents); if (st) for (const u of st.units) if (u._occT) u._occ = true; return out.concat(occ);
+};
+let fadeGround = null, fadeAt = 0;
+function turnView(d) {
+  if (!window.FieldHeight) return; fadeGround = groundCanvas; fadeAt = performance.now();
+  ROT = (ROT + d + 4) & 3; try { localStorage.setItem('projectA.fieldRot', ROT) } catch (e) { }
+  FieldHeight.setView(); groundCanvas = null; for (const u of window.TownBattle?.state?.()?.units || []) u._occ = false;
+}
+/* units face by their walk direction in the field (SE = +u …); on screen that direction turns with the camera */
+const DIRS4 = ['SE', 'SW', 'NW', 'NE'];
+window.viewDir = d => { const i = DIRS4.indexOf(d); return i < 0 ? d : DIRS4[(i + ROT) & 3] };
+const ui = document.createElement('div'); ui.id = 'fieldUi'; ui.innerHTML = `<style>
+#fieldUi{position:fixed;right:12px;top:12px;z-index:39;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:8px;font:13px VillageThai,system-ui,sans-serif;color:#f3e9c9;pointer-events:none}
+#fieldUi .turn{display:flex;gap:6px;pointer-events:auto}#fieldUi button{width:38px;height:38px;border-radius:50%;border:1px solid #b9c48a88;background:#1b302ae6;color:#f3e9c9;font:18px system-ui;cursor:pointer}
+#fieldUi button:hover{background:#2d4a40}#fieldUi .unit{display:none;gap:10px;align-items:center;min-width:250px;padding:8px 12px 8px 8px;border-radius:12px;background:linear-gradient(90deg,#14231ff2,#1b302ae6);border:1px solid #b9c48a55;box-shadow:0 6px 18px #0008}
+#fieldUi canvas{width:72px;height:72px;border-radius:10px;border:2px solid #d8c890;background:#0b120f}#fieldUi .unit.foe canvas{border-color:#e2705f}#fieldUi b{font-size:15px}#fieldUi small{color:#cdd7bf}
+#fieldUi .hp{height:7px;border-radius:4px;background:#0008;overflow:hidden;margin:4px 0 3px}#fieldUi .hp i{display:block;height:100%;background:#6fd18a}#fieldUi .unit.foe .hp i{background:#e2705f}
+@media (max-width:820px){#fieldUi .unit{min-width:0}#fieldUi canvas{width:52px;height:52px}}</style>
+<div class="unit"><canvas width="144" height="144"></canvas><div><b></b> <small class="side"></small><div class="hp"><i></i></div><small class="stats"></small></div></div>
+<div class="turn"><button data-d="-1" title="หมุนกล้องซ้าย (Q)">⟲</button><button data-d="1" title="หมุนกล้องขวา (E)">⟳</button></div>`;
+if (window.FieldHeight) document.body.append(ui);
+ui.querySelectorAll('button').forEach(b => b.onclick = () => turnView(+b.dataset.d));
+addEventListener('keydown', e => { if (e.target.closest?.('input,textarea') || e.repeat) return; const k = e.key.toLowerCase(); if (k === 'q') turnView(-1); else if (k === 'e') turnView(1) });
+let hoverCell = null; cv.addEventListener('pointermove', e => { const w = world(e), c = inv(w.x, w.y); hoverCell = { u: Math.floor(c.u), v: Math.floor(c.v) } }); cv.addEventListener('pointerleave', () => hoverCell = null);
+let panelAt = 0;
+function panel(now) {
+  if (now - panelAt < 150 || !window.FieldHeight) return; panelAt = now;
+  const st = window.TownBattle?.state?.(), box = ui.querySelector('.unit'); if (!st) { box.style.display = 'none'; return }
+  const alive = st.units.filter(u => u.hp > 0), u = (hoverCell && alive.find(x => x.u === hoverCell.u && x.v === hoverCell.v)) || (st.target && alive.find(x => x.id === st.target)) || alive.find(x => x.id === 'hero') || alive[0];
+  if (!u) { box.style.display = 'none'; return }
+  box.style.display = 'flex'; box.classList.toggle('foe', u.side === 'monster');
+  const L = FieldHeight.level(u.u, u.v), stats = [u.atk > 0 && 'ATK ' + Math.round(u.atk), u.move != null && 'เดิน ' + u.move, u.range != null && 'ระยะ ' + u.range, 'สูง ' + (Number.isInteger(L) ? L : L.toFixed(1)), u.guard && 'โล่ ' + u.guard, u.stun && 'แข็ง', u.fly && 'บิน'].filter(Boolean);
+  box.querySelector('b').textContent = u.name || u.id; box.querySelector('.side').textContent = u.side === 'monster' ? (u.boss ? 'บอส' : 'ศัตรู') : u.id === 'hero' ? 'ตัวเอก' : 'เพื่อน';
+  box.querySelector('.hp i').style.width = Math.max(0, Math.min(100, u.hp / (u.maxHp || u.hp) * 100)) + '%'; box.querySelector('.stats').textContent = `HP ${Math.ceil(u.hp)}/${u.maxHp} · ` + stats.join(' · ');
+  /* live portrait: the unit cut out of the battle view itself */
+  const pc = box.querySelector('canvas'), q = pc.getContext('2d'), p = project(u.vu, u.vv), dpr = devicePixelRatio, k = scale * zoom * dpr;
+  const sx = ((p.x - WORLD_W / 2) * scale * zoom + W / 2 + pan.x) * dpr, sy = ((p.y - 82 - WORLD_H / 2) * scale * zoom + H / 2 + pan.y) * dpr, half = 46 * k;
+  q.fillStyle = '#0b120f'; q.fillRect(0, 0, 144, 144); try { q.drawImage(cv, sx - half, sy - half, half * 2, half * 2, 0, 0, 144, 144) } catch (e) { }
+  const vg = q.createRadialGradient(72, 72, 40, 72, 72, 100); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); q.fillStyle = vg; q.fillRect(0, 0, 144, 144);
+}
+
 /* ---------- frame ---------- */
 function resize() { W = innerWidth; H = innerHeight; cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio); cv.style.width = W + 'px'; cv.style.height = H + 'px'; scale = Math.max(.7, Math.min(1.4, Math.min(W / 900, H / 620))) }
 addEventListener('resize', resize); resize();
 function frame(t) {
-  /* standing props inside the field are drawn by town-battle together with the units, sorted by depth */
-window.TownBattleExtras = () => { const out = []; for (const c of FIELD.cells.values()) if (c.prop && c.prop !== 'pool') out.push({ y: project(c.u + .5, c.v + .5).y, draw: (ctx, t) => prop(ctx, c.prop, c.u, c.v, c.seed, t) }); return out };
-requestAnimationFrame(frame);
+  requestAnimationFrame(frame);
   if (!groundCanvas) paintGround();
   window.TownBattle?.pre?.();
-  g.setTransform(1, 0, 0, 1, 0, 0); if (window.FieldDiorama && window.FieldHeight) FieldDiorama.sky(g, cv.width, cv.height, FIELD.biome, FIELD.night); else { g.fillStyle = FIELD.biome === 'snow' ? '#9aa8b5' : '#1a2016'; g.fillRect(0, 0, cv.width, cv.height) }
+  const dio = window.FieldDiorama && window.FieldHeight;
+  g.setTransform(1, 0, 0, 1, 0, 0); if (dio) FieldDiorama.sky(g, cv.width, cv.height, FIELD.biome, FIELD.night); else { g.fillStyle = FIELD.biome === 'snow' ? '#9aa8b5' : '#1a2016'; g.fillRect(0, 0, cv.width, cv.height) }
   const k = devicePixelRatio * scale * zoom; g.setTransform(k, 0, 0, k, devicePixelRatio * (W / 2 + pan.x) - WORLD_W / 2 * k, devicePixelRatio * (H / 2 + pan.y) - WORLD_H / 2 * k);
   g.drawImage(groundCanvas, groundCanvas.ox, groundCanvas.oy);
+  if (fadeGround) { const a = 1 - (performance.now() - fadeAt) / 320; if (a <= 0) fadeGround = null; else { g.globalAlpha = a; g.drawImage(fadeGround, fadeGround.ox, fadeGround.oy); g.globalAlpha = 1 } }
+  if (dio) waterFx(g, t);
   const props = [];
-  if (!(window.FieldDiorama && window.FieldHeight)) for (const o of FIELD.outer) if (o.prop) props.push([o.prop, o.u, o.v, o.seed]);   // a floating field has no land beyond its edge
+  if (!dio) for (const o of FIELD.outer) if (o.prop) props.push([o.prop, o.u, o.v, o.seed]);   // a floating field has no land beyond its edge
   for (const c of FIELD.cells.values()) if (c.prop === 'pool') props.push([c.prop, c.u, c.v, c.seed]);   // flat water stays on the ground
-  props.sort((a, b) => (a[1] + a[2]) - (b[1] + b[2]));
+  props.sort((a, b) => window.FieldDepth(a[1] + .5, a[2] + .5) - window.FieldDepth(b[1] + .5, b[2] + .5));
   for (const p of props) { if (p[0] === 'pool') prop(g, ...p, t) }
   for (const p of props) { if (p[0] !== 'pool') prop(g, ...p, t) }
   window.TownBattle?.draw?.(g, t);
   /* cover blades over the units' feet */
   const k2 = devicePixelRatio * scale * zoom; g.setTransform(k2, 0, 0, k2, devicePixelRatio * (W / 2 + pan.x) - WORLD_W / 2 * k2, devicePixelRatio * (H / 2 + pan.y) - WORLD_H / 2 * k2);
   for (const c of FIELD.cells.values()) if (c.k === 'cover') cover(g, c, t);
-  if (FIELD.night) { g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = 'rgba(10,18,55,.42)'; g.fillRect(0, 0, cv.width, cv.height) }
+  g.setTransform(1, 0, 0, 1, 0, 0); if (dio) FieldDiorama.grade(g, cv.width, cv.height, FIELD.biome, FIELD.night);
+  if (FIELD.night) { g.fillStyle = 'rgba(10,18,55,.42)'; g.fillRect(0, 0, cv.width, cv.height) }
+  panel(t);
 }
 requestAnimationFrame(frame);

@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '95.00';
+  const V = '96.00';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -623,7 +623,7 @@
 
   /* ---------- drawing ---------- */
   /* v94: a cell outline sits on its own raised top (battle-field heights); the village has none */
-  function poly(g, u, v) { const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, F = window.projectFlat || project, P = (x, y) => { const q = F(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }
+  function poly(g, u, v) { if (window.FieldCellPoly) return FieldCellPoly(g, u, v); const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, F = window.projectFlat || project, P = (x, y) => { const q = F(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }
   let last = 0;
   function step(t) {
     const dt = Math.min(.1, Math.max(0, t - last) / 1000 || 0); last = t;
@@ -724,7 +724,7 @@
     g.save();
     for (const [key, k] of cells) {
       const [u, v] = key.split(',').map(Number); poly(g, u, v);
-      if (COL[k]) { g.fillStyle = COL[k]; g.fill() }
+      const col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k]; if (col) { g.fillStyle = col; g.fill() }
       g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke();
     }
     if (reachMap && !busy) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
@@ -743,13 +743,17 @@
     if (CINE) spotlight(g, cine ? [cine.a, cine.b] : st.units.filter(u => u.hp > 0));
     glowDraw(g, t);
     /* a host page (battle-field.html) can hand in standing props so trees/rocks and units overlap by depth */
-    const extras = window.TownBattleExtras?.() || [], order = [...st.units.map(u => ({ unit: u, y: project(u.vu, u.vv).y })), ...extras].sort((a, b) => a.y - b.y);
+    /* v96: a host with view depth (battle-field.html) sorts by depth so cells in front of a unit can be drawn over it */
+    const extras = window.TownBattleExtras?.() || [], DEP = window.FieldDepth, order = [...st.units.map(u => ({ unit: u, y: project(u.vu, u.vv).y, d: DEP ? DEP(u.vu, u.vv) : 0 })), ...extras].sort(DEP ? (a, b) => (a.d ?? 0) - (b.d ?? 0) : (a, b) => a.y - b.y);
+    const drawUnit = u => { const ld = u.dir; if (window.viewDir) u.dir = viewDir(ld); try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), frozenMark(g, u, t)) } finally { u.dir = ld } };
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
       if (u.deadAt && t > u.deadAt) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
-      u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), frozenMark(g, u, t)); g.restore();
+      drawUnit(u); g.restore();
     }
+    /* v96: units hidden behind higher ground show through as a pale ghost (Tactics Ogre / Triangle Strategy style) */
+    for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .34; g.filter = 'brightness(2) saturate(.25)'; drawUnit(u); g.restore() }
     fxDraw(g, t); partDraw(g, t);
     if (CINE) { speedDraw(g, t); atmosphere(g, t0); flashDraw(g) }
     texts = texts.filter(x => t - x.t0 < 1300);
@@ -832,6 +836,6 @@
     cv.addEventListener('wheel', () => { userCam = true }, true) }
   /* runs before the frame's camera transform: TownUX re-centres on the village hero every frame, so the arena has to win after it */
   function pre() { if (st && (!userCam || cine)) focusCamera(); else if (kick.roll) { kick.roll = 0; cv.style.transform = '' } }
-  window.TownBattle = { pre, active: () => ON, click, draw, state: () => st, cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
+  window.TownBattle = { pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
     act: { skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, discard: setDiscard, confirmDiscard: doDiscard }, busy: () => busy };
 })();

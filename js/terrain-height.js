@@ -1,4 +1,8 @@
-/* v93.04 · Zone-based terrain height for the 2.5D grid. Pure logic (browser + node), no DOM.
+/* v96.00 · heights are stored in HALF steps: STEP = 2 sub-levels make one rule level (the battle rules read level/STEP, so 1.5 is possible),
+   levels 0..8 (= rule 0..4), LEVEL_PX = 9 px per sub-level (one rule level is still 18 px). Walking: a step of up to STEP sub-levels.
+   Ramps: m.ramp[i] = 1..4 (rises toward +u, -u, +v, -v) — the cell top is a slope from level-1 to level+1; m.stair marks the ramps drawn as steps.
+   Saved packs v1 (old 0..3 levels) are scaled by STEP when loaded.
+   v93.04 · Zone-based terrain height for the 2.5D grid. Pure logic (browser + node), no DOM.
    Adapted from the old FFT terrain (tactics-fft-terrain.js) to the new 1x1 cell lattice of village-grid.js.
    Rules carried over: a step of 1 level is walkable, a step of 2+ is a cliff; every walkable cell must be reachable.
    What is new:
@@ -10,7 +14,8 @@
    Cells are integer (u,v) in the same frame as village-grid.js (one cell = 1 unit of u or v). levels[v*w+u] for 0 <= u < w, 0 <= v < h. */
 (function (root) {
   'use strict';
-  const MAX_LEVEL = 3, LEVEL_PX = 18, CLIFF_SEV = 0.6, ROUND_BIAS = 0.3;
+  const STEP = 2, MAX_LEVEL = 8, LEVEL_PX = 9, CLIFF_SEV = 0.6, ROUND_BIAS = 0.3;
+  const RAMP_DIR = [null, [1, 0], [-1, 0], [0, 1], [0, -1]];
   const ORIGIN = { x: 2240, y: 1232 }, HALF_W = 28, HALF_H = 14; // same projection as village-grid.js
   const SEVERITY = { town: 0, water: 0, sand: 0.1, swamp: 0.1, grass: 0.25, forest: 0.3, snow: 0.45, hills: 0.55, mountain: 0.9, snowpeak: 0.95 };
   const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
@@ -52,10 +57,41 @@
      flat (mask of forced level-0 cells) · blocked (mask of cells nobody can enter, e.g. water; they keep a level but join no route) ·
      anchors [{u,v}] world cells that must connect to everything (default: the largest walkable area) · maxLevel (<= 3). */
   function generate(opts) {
+    const maxSub = clamp(Math.round(opts.maxLevel ?? MAX_LEVEL), 1, MAX_LEVEL), ruleMax = Math.max(1, Math.floor(maxSub / STEP));
+    const m = core({ ...opts, maxLevel: ruleMax });
+    // rule levels -> sub-levels, then half steps and ramps on the gentle slopes
+    const n = m.w * m.h; for (let i = 0; i < n; i++) m.levels[i] *= STEP;
+    m.maxLevel = maxSub; m.walk = STEP; m.ramp = new Uint8Array(n); m.stair = new Uint8Array(n);
+    soften(m, seedOf(opts.seed ?? 'terrain') ^ 0x51ed270b, opts.half ?? 0.45, opts.ramps ?? 0.5);
+    const anchors = (opts.anchors || []).map(a => (a.v - m.origin.v) * m.w + (a.u - m.origin.u)).filter(i => i >= 0 && i < n);
+    connect(m, anchors);
+    return m;
+  }
+  const walkOf = m => m.walk ?? STEP;
+  /* half steps: a cell beside a neighbour one rule level higher may rise by one sub-level (never making a new cliff), and a cell whose
+     two opposite neighbours sit one sub-level above and below becomes a ramp. Forced-flat and blocked cells never change. */
+  function soften(m, seed, half, ramps) {
+    const { w, h } = m, W = walkOf(m), lv = (u, v) => (u < 0 || v < 0 || u >= w || v >= h) ? null : m.levels[v * w + u];
+    for (let v = 0; v < h; v++) for (let u = 0; u < w; u++) {
+      const i = v * w + u, L = m.levels[i]; if (m.flat[i] || m.blocked[i] || L + 1 > m.maxLevel) continue;
+      let up = false, ok = true;
+      for (const [du, dv] of DIRS) { const N = lv(u + du, v + dv); if (N == null) continue; const j = (v + dv) * w + u + du; if (N === L + W) up = true; if (m.flat[j] && L + 1 > W) ok = false; if (Math.abs(L + 1 - N) > W && Math.abs(L - N) <= W) ok = false }
+      if (up && ok && hash2(seed, u + m.origin.u, v + m.origin.v) < half) m.levels[i] = L + 1;
+    }
+    for (let v = 0; v < h; v++) for (let u = 0; u < w; u++) {
+      const i = v * w + u, M = m.levels[i]; if (m.flat[i] || m.blocked[i] || M < 1) continue;
+      for (let d = 1; d <= 4; d++) {
+        const [du, dv] = RAMP_DIR[d], hi = lv(u + du, v + dv), lo = lv(u - du, v - dv); if (hi !== M + 1 || lo !== M - 1) continue;
+        const s1 = lv(u + dv, v + du), s2 = lv(u - dv, v - du); if ([s1, s2].some(x => x != null && Math.abs(x - M) > 1)) continue;
+        if (hash2(seed ^ 0x2545f491, u + m.origin.u, v + m.origin.v) < ramps) { m.ramp[i] = d; break }
+      }
+    }
+  }
+  function core(opts) {
     const w = opts.w | 0, h = opts.h | 0;
     if (w < 1 || h < 1) throw new Error('terrain size must be at least 1x1');
     const seed = seedOf(opts.seed ?? 'terrain'), seed2 = (seed ^ 0x9e3779b9) >>> 0;
-    const org = opts.origin || { u: 0, v: 0 }, maxLevel = clamp(opts.maxLevel ?? MAX_LEVEL, 1, MAX_LEVEL);
+    const org = opts.origin || { u: 0, v: 0 }, maxLevel = clamp(opts.maxLevel ?? 3, 1, MAX_LEVEL);
     const flatAt = maskOf(opts.flat), blockedAt = maskOf(opts.blocked), n = w * h;
     const town = opts.town, zoneAt = opts.zoneAt || (() => opts.zone ?? 'grass');
 
@@ -108,7 +144,7 @@
       if (head > 4096 && head * 2 > queue.length) { queue.splice(0, head + 1); head = -1; }
     }
 
-    const map = { v: 1, w, h, origin: { u: org.u, v: org.v }, seed: String(opts.seed ?? 'terrain'), maxLevel, levels, flat, blocked, sev };
+    const map = { v: 2, w, h, origin: { u: org.u, v: org.v }, seed: String(opts.seed ?? 'terrain'), maxLevel, walk: 1, levels, flat, blocked, sev };
 
     // 4. every walkable cell must connect (stairs are carved through cliffs)
     const anchors = (opts.anchors || []).map(a => (a.v - org.v) * w + (a.u - org.u)).filter(i => i >= 0 && i < n);
@@ -119,7 +155,7 @@
   /* ---------- rules ---------- */
   const idx = (m, u, v) => (u >= 0 && v >= 0 && u < m.w && v < m.h) ? v * m.w + u : -1;
   function levelAt(m, u, v) { const i = idx(m, u - m.origin.u, v - m.origin.v); return i < 0 ? null : m.levels[i]; }
-  const stepOk = (m, i, j) => !m.blocked[i] && !m.blocked[j] && Math.abs(m.levels[i] - m.levels[j]) <= 1;
+  const stepOk = (m, i, j) => !m.blocked[i] && !m.blocked[j] && Math.abs(m.levels[i] - m.levels[j]) <= walkOf(m);
 
   /* Can a walker standing on world cell (u,v) step by (du,dv)? Only cardinal steps. */
   function canStep(m, u, v, du, dv) {
@@ -127,11 +163,11 @@
     const i = idx(m, u - m.origin.u, v - m.origin.v), j = idx(m, u + du - m.origin.u, v + dv - m.origin.v);
     return i >= 0 && j >= 0 && stepOk(m, i, j);
   }
-  /* Movement cost of a legal step: 1 on the flat, +1 per level climbed, descending is free of extra cost. null = cliff / blocked. */
+  /* Movement cost of a legal step: 1 on the flat, +1 per rule level (or part of one) climbed, descending is free of extra cost. null = cliff / blocked. */
   function stepCost(m, u, v, du, dv) {
     if (!canStep(m, u, v, du, dv)) return null;
     const up = levelAt(m, u + du, v + dv) - levelAt(m, u, v);
-    return 1 + Math.max(0, up);
+    return 1 + Math.max(0, Math.ceil(up / walkOf(m)));
   }
 
   function components(m) {
@@ -187,14 +223,14 @@
   function carve(m, path, comp, target) {
     let prev = m.levels[path[0]], last = path[0];
     const seen = new Set(path);
-    const apply = i => {
+    const W = walkOf(m), apply = i => {
       if (m.flat[i]) { prev = 0; return false; }
-      const cur = m.levels[i], t = clamp(cur, prev - 1, prev + 1);
+      const cur = m.levels[i], t = clamp(cur, prev - W, prev + W);
       m.levels[i] = t; prev = t; return t !== cur;
     };
     for (let s = 1; s < path.length; s++) { apply(path[s]); last = path[s]; }
     // extend into the target area while the next cell still needs to change
-    for (let guard = 0; guard < m.maxLevel + 2; guard++) {
+    for (let guard = 0; guard < m.maxLevel + 2; guard++) {   // (walk 1 or STEP: maxLevel/walk steps are always enough)
       const u = last % m.w, v = (last - u) / m.w;
       let nxt = -1;
       const dirs = path.length > 1 ? [[u - (path[path.length - 2] % m.w), v - Math.floor(path[path.length - 2] / m.w)], ...DIRS] : DIRS;
@@ -240,15 +276,28 @@
       for (const [du, dv] of [[1, 0], [0, 1]]) {
         const a = u + du, b = v + dv; if (a >= m.w || b >= m.h) continue;
         const d = Math.abs(m.levels[i] - m.levels[b * m.w + a]);
-        if (d >= 2) out.push({ u: u + m.origin.u, v: v + m.origin.v, du, dv, drop: d });
+        if (d > walkOf(m)) out.push({ u: u + m.origin.u, v: v + m.origin.v, du, dv, drop: d });
       }
     }
     return out;
   }
 
-  /* Screen point of a world cell corner lifted by its level (same projection as VillageGrid.project, z in px). */
+  /* corner heights of a local cell index in sub-levels: [NW (u,v), NE (u+1,v), SE (u+1,v+1), SW (u,v+1)]; a ramp slopes from level-1 to level+1 */
+  function corners(m, i) {
+    const L = m.levels[i], d = m.ramp ? m.ramp[i] : 0;
+    if (!d) return [L, L, L, L];
+    const [du, dv] = RAMP_DIR[d], cz = (cu, cv) => L + (du ? (cu ? 1 : -1) * du : (cv ? 1 : -1) * dv);
+    return [cz(0, 0), cz(1, 0), cz(1, 1), cz(0, 1)];
+  }
+  /* ground height (sub-levels, fractional) at a world point: bilinear over the cell's corners */
+  function surfaceAt(m, u, v) {
+    const cu = Math.floor(u), cv = Math.floor(v), i = idx(m, cu - m.origin.u, cv - m.origin.v); if (i < 0) return 0;
+    const c = corners(m, i), fu = u - cu, fv = v - cv;
+    return (c[0] * (1 - fu) + c[1] * fu) * (1 - fv) + (c[3] * (1 - fu) + c[2] * fu) * fv;
+  }
+  /* Screen point of a world point lifted by the ground (same projection as VillageGrid.project, z in px). */
   function project(m, u, v) {
-    const lv = levelAt(m, Math.floor(u), Math.floor(v)) || 0, z = lv * LEVEL_PX;
+    const z = surfaceAt(m, u, v) * LEVEL_PX;
     return { x: ORIGIN.x + (u - v) * HALF_W, y: ORIGIN.y + (u + v) * HALF_H - z, z };
   }
 
@@ -265,29 +314,29 @@
       for (let v = Math.min(e.v, cv); v <= Math.max(e.v, cv); v++) add(cu, v);
     }
     const flat = (u, v) => road.has(u + ',' + v) || (o.flat ? maskOf(o.flat)(u, v) : false);
-    const m = generate({ w, h, seed: o.seed, zone: o.biome, town: o.town, flat, blocked: o.blocked, anchors: entries, maxLevel: o.maxLevel });
+    const m = generate({ w, h, seed: o.seed, zone: o.biome, town: o.town, flat, blocked: o.blocked, anchors: entries, maxLevel: o.maxLevel, half: o.half, ramps: o.ramps });
     m.entries = entries.map(e => ({ u: e.u, v: e.v }));
     return m;
   }
 
-  /* Hand editing: set one cell to `level`. Neighbours are pulled along so every step stays at most 1 level (the ground slopes instead of
-     leaving a hole), unless opts.cliff is true (then only this cell changes and a 2+ step becomes a cliff). Forced-flat cells never change and
-     cells beside them stay at level 1 or below. Returns the world cells that changed: [{u,v,from,to}]. */
+  /* Hand editing: set one cell to `level` (sub-levels). Neighbours are pulled along so every step stays walkable (at most STEP; the ground slopes
+     instead of leaving a hole), unless opts.cliff is true (then only this cell changes and a bigger step becomes a cliff). Forced-flat cells never
+     change and cells beside them stay at STEP or below. Returns the world cells that changed: [{u,v,from,to}]. */
   function setLevel(m, u, v, level, opts) {
     const i0 = idx(m, u - m.origin.u, v - m.origin.v);
     if (i0 < 0 || m.flat[i0]) return [];
-    const before = Uint8Array.from(m.levels);
-    m.levels[i0] = clamp(Math.round(level), 0, m.maxLevel);
+    const before = Uint8Array.from(m.levels), W = walkOf(m);
+    m.levels[i0] = clamp(Math.round(level), 0, m.maxLevel); if (m.ramp) m.ramp[i0] = 0;
     if (!(opts && opts.cliff)) {
       const nb = i => { const x = i % m.w, y = (i - x) / m.w, out = []; for (const [du, dv] of DIRS) { const a = x + du, b = y + dv; if (a >= 0 && b >= 0 && a < m.w && b < m.h) out.push(b * m.w + a); } return out; };
-      if (nb(i0).some(j => m.flat[j])) m.levels[i0] = Math.min(m.levels[i0], 1);
+      if (nb(i0).some(j => m.flat[j])) m.levels[i0] = Math.min(m.levels[i0], W);
       const q = [i0];
       for (let k = 0; k < q.length; k++) {
         const i = q[k];
         for (const j of nb(i)) {
           if (m.flat[j]) continue;
           const d = m.levels[j] - m.levels[i];
-          if (d > 1) { m.levels[j] = m.levels[i] + 1; q.push(j); } else if (d < -1) { m.levels[j] = m.levels[i] - 1; q.push(j); }
+          if (d > W) { m.levels[j] = m.levels[i] + W; q.push(j); } else if (d < -W) { m.levels[j] = m.levels[i] - W; q.push(j); }
         }
         if (q.length > m.levels.length * 8) break;
       }
@@ -304,19 +353,21 @@
       if (i < m.levels.length && m.levels[i] === m.levels[i - 1]) { run++; continue; }
       parts.push(m.levels[i - 1] + (run > 1 ? '*' + run : '')); run = 1;
     }
-    return { v: 1, w: m.w, h: m.h, origin: m.origin, seed: m.seed, maxLevel: m.maxLevel, rle: parts.join(' '),
-      flat: Array.from(m.flat).reduce((s, f, i) => (f ? s.concat(i) : s), []), blocked: Array.from(m.blocked).reduce((s, f, i) => (f ? s.concat(i) : s), []) };
+    const list = a => a ? Array.from(a).reduce((s, f, i) => (f ? s.concat(i) : s), []) : [];
+    return { v: 2, w: m.w, h: m.h, origin: m.origin, seed: m.seed, maxLevel: m.maxLevel, rle: parts.join(' '), flat: list(m.flat), blocked: list(m.blocked),
+      ramp: m.ramp ? Array.from(m.ramp).reduce((s, d, i) => (d ? s.concat([[i, d]]) : s), []) : [], stair: list(m.stair) };
   }
   function unpack(p) {
     const n = p.w * p.h, levels = new Uint8Array(n); let at = 0;
     for (const tok of p.rle.split(' ')) { const [d, r] = tok.split('*'); for (let k = 0; k < (r ? +r : 1); k++) levels[at++] = +d; }
     if (at !== n) throw new Error('terrain data size mismatch: ' + at + ' vs ' + n);
-    const flat = new Uint8Array(n), blocked = new Uint8Array(n);
-    for (const i of p.flat || []) flat[i] = 1; for (const i of p.blocked || []) blocked[i] = 1;
-    return { v: 1, w: p.w, h: p.h, origin: p.origin, seed: p.seed, maxLevel: p.maxLevel, levels, flat, blocked, sev: new Float32Array(n) };
+    const old = (p.v || 1) < 2; if (old) for (let i = 0; i < n; i++) levels[i] *= STEP;   // v1 packs: whole levels 0..3
+    const flat = new Uint8Array(n), blocked = new Uint8Array(n), ramp = new Uint8Array(n), stair = new Uint8Array(n);
+    for (const i of p.flat || []) flat[i] = 1; for (const i of p.blocked || []) blocked[i] = 1; for (const [i, d] of p.ramp || []) ramp[i] = d; for (const i of p.stair || []) stair[i] = 1;
+    return { v: 2, w: p.w, h: p.h, origin: p.origin, seed: p.seed, maxLevel: old ? Math.min(MAX_LEVEL, p.maxLevel * STEP) : p.maxLevel, walk: STEP, levels, flat, blocked, ramp, stair, sev: new Float32Array(n) };
   }
 
-  const api = { MAX_LEVEL, LEVEL_PX, CLIFF_SEV, SEVERITY, generate, forScene, setLevel, levelAt, canStep, stepCost, reachable, cliffEdges, validate, project, pack, unpack };
+  const api = { STEP, MAX_LEVEL, LEVEL_PX, CLIFF_SEV, SEVERITY, RAMP_DIR, generate, forScene, setLevel, levelAt, canStep, stepCost, reachable, cliffEdges, validate, corners, surfaceAt, project, pack, unpack };
   root.TerrainHeight = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
