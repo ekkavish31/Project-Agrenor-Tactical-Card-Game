@@ -400,7 +400,7 @@
     const here = [...people.values()].filter(a => !a.leaving);
     const html = `<h1>${esc(NAME)}</h1><div class="sub">Fernvale · วันที่ ${c.day} · ${icon} ${CLK.label(c.hour)}</div>
       <div class="row"><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span><span>ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</span></div>
-      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
+      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
       <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : fill(a.p.role))}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก</div>`;
     if (html === hud._html) return; hud._html = html; hud.innerHTML = html;   // only rebuild when something changed (keeps clicks reliable)
@@ -408,6 +408,7 @@
     hud.querySelector('#inParty') && (hud.querySelector('#inParty').onclick = partyPanel);
     hud.querySelector('#inRoom') && (hud.querySelector('#inRoom').onclick = () => rest(10));
     hud.querySelector('#inSleep') && (hud.querySelector('#inSleep').onclick = () => rest(0));
+    hud.querySelectorAll('[data-svc]').forEach(b => b.onclick = () => service(b.dataset.svc));
     hud.querySelectorAll('.who [data-id]').forEach(e => e.onclick = () => { const a = people.get(e.dataset.id); if (a) walkNear(a, () => talk(a)) });
   }
   function workPanel(a) {
@@ -424,6 +425,31 @@
     S.gold -= cost; for (const p of [...S.party, ...S.bench]) p.hp = p.max; L.writeSave(S);
     document.body.style.transition = 'filter .6s'; document.body.style.filter = 'brightness(0)'; await wait(700);
     window.WorldState.sleep({ relief: cost ? 80 : 70 }); people.clear(); /* v94: same as sleeping at home (next morning 08:00) */ taken.clear(); syncPeople(true); document.body.style.filter = ''; toast('พักจนถึงเช้า · ทีมฟื้นเต็ม'); hudSync();
+  }
+
+  /* ---------- v97.24 · B5: the place's own services (only while somebody of the place is in the room) ----------
+     healer: treat the whole party (1 💰 per 4 HP missing) · buy potions · shop / market: potions, travel food · temple: a free prayer once a day
+     (fatigue −40, hero HP +30 %) and an offering (+1 potion of holy water for 25 💰) */
+  const PRICE = { potion: KIND === 'healer' ? 15 : 18, food: 4 };
+  const keeperIn = () => [...people.values()].some(a => !a.leaving && (OWNER ? a.id === OWNER : !a.p.benched && !L.inParty(S, a.id)));   /* somebody of the place is in (not one of your own party) */
+  const missing = () => { S = L.save(); return Math.max(0, (S.maxHp || 60) - (S.hp ?? 60)) + [...S.party, ...S.bench].reduce((n, m) => n + Math.max(0, m.max - m.hp), 0) };
+  const healCost = () => Math.max(3, Math.ceil(missing() / 4));
+  function services() {
+    const B = (k, label, cost, why) => `<button data-svc="${k}" ${why || (cost && S.gold < cost) ? 'disabled' : ''} title="${esc(why || '')}">${label}${cost ? ' ' + cost + '💰' : ''}</button>`;
+    const away = keeperIn() ? '' : 'เจ้าของไม่อยู่ตอนนี้';
+    if (KIND === 'healer') return B('heal', '✚ รักษาทั้งทีม', missing() ? healCost() : 0, away || (missing() ? '' : 'ทุกคนแข็งแรงดี')) + B('potion', '🧪 ซื้อยา', PRICE.potion, away);
+    if (KIND === 'shop' || KIND === 'market') return B('potion', '🧪 ซื้อยา', PRICE.potion, away) + B('food', '🍞 เสบียง ×3', PRICE.food * 3, away);
+    if (KIND === 'temple') { const prayed = (S.prayDay || 0) === CLK.read().day; return B('pray', '🙏 ภาวนา', 0, prayed ? 'ภาวนาแล้ววันนี้ · พรุ่งนี้มาใหม่' : '') + B('offer', '🕯 ถวาย · น้ำมนต์', 25, away) }
+    return '';
+  }
+  function service(k) {
+    S = L.save(); const pay = c => { if (S.gold < c) { toast('เงินไม่พอ'); return false } S.gold -= c; return true };
+    if (k === 'heal') { const c = healCost(); if (!missing() || !pay(c)) return; S.hp = S.maxHp || 60; for (const m of [...S.party, ...S.bench]) m.hp = m.max; L.writeSave(S); toast('✚ รักษาแล้ว · ทุกคน HP เต็ม (−' + c + '💰)') }
+    else if (k === 'potion') { if (!pay(PRICE.potion)) return; S.potions = (S.potions || 0) + 1; L.writeSave(S); toast('🧪 ได้ยาฟื้นฟู 1 ขวด (มี ' + S.potions + ')') }
+    else if (k === 'food') { if (!pay(PRICE.food * 3)) return; S.food = (S.food || 0) + 3; L.writeSave(S); toast('🍞 ได้เสบียง 3 ห่อ (มี ' + S.food + ')') }
+    else if (k === 'pray') { const day = CLK.read().day; if ((S.prayDay || 0) === day) return; S.prayDay = day; S.fatigue = (S.fatigue || 0) - 40; S.hp = Math.min(S.maxHp || 60, (S.hp ?? 60) + Math.round((S.maxHp || 60) * .3)); L.writeSave(S); toast('🙏 ใจสงบลง · ความเหนื่อย −40 · HP +30%') }
+    else if (k === 'offer') { if (!pay(25)) return; S.potions = (S.potions || 0) + 1; L.writeSave(S); toast('🕯 ถวายแล้ว · ได้น้ำมนต์ (ยาฟื้นฟู) 1 ขวด') }
+    hud._html = ''; hudSync();
   }
 
   /* ---------- talking + recruiting ---------- */
