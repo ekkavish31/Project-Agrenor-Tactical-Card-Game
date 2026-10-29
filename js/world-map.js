@@ -53,10 +53,18 @@
   }
   function load() {
     if (Q.get('new') === '1') { fresh(+Q.get('seed') || undefined); history.replaceState(null, '', location.pathname); return }
-    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = WS.bind(s); S.done ??= {}; S.log ??= []; adoptVillage(); reveal(); return } } catch (e) { }
+    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = WS.bind(s); S.done ??= {}; S.log ??= []; adoptVillage(); adoptLeads(); reveal(); return } } catch (e) { }
     fresh(+Q.get('seed') || undefined);
   }
   function save() { WS.writeWorld(S) }
+  /* v95.16 · destinations come from leads the village gave (NPC quests, guild board, events) — see WorldState.addLead */
+  function adoptLeads() {
+    if (!S || !world) return; const L = WS.leads(); S.leads = S.leads || {};
+    for (const [id, l] of Object.entries(L)) {
+      if (!world.dests.some(d => d.id === id)) continue; S.leads[id] = { src: l.src || '' };
+      if (l.pick && !S.dest && !S.done[id]) { S.dest = id; WS.clearPick(id); log('รับภารกิจ: ' + destOf().name + (l.src ? ' (จาก ' + l.src + ')' : '')); fogDirty = true; save(); try { hudSync() } catch (e) { } }
+    }
+  }
   function log(t) { S.log.unshift(t); S.log = S.log.slice(0, 30) }
 
   /* ---------- fog ---------- */
@@ -183,16 +191,16 @@
     label(g, (S.done[d.id] ? '✔ ' : '') + d.name, p.x, p.y + 30, S.done[d.id] ? '#bfffd0' : '#ffe2a8');
   }
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
-  const ENC_ICON = { battle: '⚔', chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
+  const ENC_ICON = { chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
   function drawMarks(now) {
     for (const k in world.tiles) {
       const h = world.tiles[k]; if (!isKnown(k)) continue;
       const p = center(h.c, h.r);
       if (h.poi && h.poi.id !== 'home' && S.done[h.poi.id] && h.poi.id !== S.dest) { poiIcon(g, h.poi, p.x, p.y + 6, .8); label(g, '✔ ' + h.poi.name, p.x, p.y + 28, '#bfffd0', 11) }
       if (!h.enc || S.cleared[k] || h.enc.type === 'trap') continue;
-      if (h.enc.type === 'battle' && !visible.has(k) && h.enc.hidden) continue;
+      if (h.enc.type === 'battle') continue;   // v95.16: no battle marks — an ambush can happen on any step
       const bob = Math.sin(now * .004 + h.c) * 2, x = p.x, y = p.y - 6 + bob;
-      g.save(); g.fillStyle = h.enc.type === 'battle' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, 12, 0, 7); g.fill(); g.strokeStyle = h.enc.type === 'battle' ? '#ffb19a' : '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
+      g.save(); g.fillStyle = 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, 12, 0, 7); g.fill(); g.strokeStyle = '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
       g.font = '13px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
     }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
@@ -295,7 +303,7 @@
       <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>
       <div class="row"><span>ความลึกของหมอก</span><span style="color:#ff9a7a">${stars}</span></div>
       <div class="row"><span>จุดหมาย</span><span style="color:#ffe2a8">${d ? esc(d.name) + (S.done[d.id] ? ' ✔' : ' · ' + G.dist(S.pos, d) + ' ช่อง') : '—'}</span></div>
-      <div class="btns">${atHome() ? `<button id="wmQuest">📜 กระดานภารกิจ</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button>${eventCards().length ? `<button id="wmCards" class="ghost">🎴 การ์ดเหตุการณ์ (${eventCards().reduce((a, x) => a + x.n, 0)})</button>` : ''}</div>
+      <div class="btns">${atHome() ? `<button id="wmQuest">📜 เรื่องที่ได้ยินมา</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button>${eventCards().length ? `<button id="wmCards" class="ghost">🎴 การ์ดเหตุการณ์ (${eventCards().reduce((a, x) => a + x.n, 0)})</button>` : ''}</div>
       <div id="wmLog">${S.log.slice(0, 8).map(x => '<div>' + esc(x) + '</div>').join('')}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกช่องติดกัน = เดิน 1 ช่อง · คลิกช่องที่เคยเห็น = เดินไปเอง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a></div>`;
     const on = (id, fn) => { const b = hud.querySelector('#' + id); if (b) b.onclick = fn };
@@ -309,7 +317,7 @@
     const k = K(h.c, h.r), t = tile(h.c, h.r), known = isKnown(k), adj = G.dist(S.pos, h) === 1;
     let txt = known || adj ? G.BIOME[t.biome].name + (t.road ? ' · ถนน' : '') + (t.river ? ' · แม่น้ำ' : '') : 'หมอกดำ — ไม่รู้ว่ามีอะไร';
     const sc = G.stepCost(t); if ((known || adj) && sc < Infinity) txt += ' · ' + sc + ' ชม.'; else if (known && sc === Infinity) txt += ' · ผ่านไม่ได้';
-    if (known && t.enc && !S.cleared[k] && t.enc.type !== 'trap' && !(t.enc.hidden && !visible.has(k))) txt += ' · ' + ({ battle: '⚔ ศัตรู', chest: '🎁 หีบ', camp: '⛺ จุดพัก', shrine: '✦ ศาลเจ้า', merchant: '💰 พ่อค้า', oldmap: '📜 แผนที่เก่า' }[t.enc.type] || '');
+    if (known && t.enc && !S.cleared[k] && t.enc.type !== 'trap' && t.enc.type !== 'battle' && !(t.enc.hidden && !visible.has(k))) txt += ' · ' + ({ battle: '⚔ ศัตรู', chest: '🎁 หีบ', camp: '⛺ จุดพัก', shrine: '✦ ศาลเจ้า', merchant: '💰 พ่อค้า', oldmap: '📜 แผนที่เก่า' }[t.enc.type] || '');
     const d = destOf(); if (d && d.c === h.c && d.r === h.r) txt = '★ ' + d.name + ' — ' + txt;
     tipEl.textContent = txt; tipEl.style.display = 'block'; tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY + 14) + 'px';
   }
@@ -367,11 +375,13 @@
 
   /* ---------- quest board ---------- */
   async function questBoard() {
-    if (busy) return;
-    const cards = world.dests.map(d => {
+    if (busy) return; adoptLeads();
+    const heard = world.dests.filter(d => S.leads?.[d.id]);
+    if (!heard.length) { await modal(`<h2>📜 เรื่องที่ได้ยินมา</h2><p>ยังไม่เคยได้ยินข่าวจุดหมายที่ไหนเลย — ลองไปคุยกับชาวบ้านที่หมู่บ้าน รับเควสจากคนที่ต้องการความช่วยเหลือ ดูกระดานสมาคมเมื่อเปิด หรือเดินสำรวจเองทีละช่องก็ได้</p>`); return }
+    const cards = heard.map(d => {
       const p = G.path(world, world.home, d), hours = p.slice(1).reduce((a, x) => a + G.stepCost(tile(x.c, x.r)), 0), dg = Math.min(3, 1 + Math.round(G.dist(world.home, d) / 6));
       return `<div class="wm-q ${S.done[d.id] ? 'done' : ''}"><h3>${esc(d.name)}</h3><div class="meta">${esc(G.BIOME[d.biome].name)} · ห่าง ~${G.dist(world.home, d)} ช่อง · เดินราว ${Math.ceil(hours / 12)} วัน</div>
-        <div class="stars">${'★'.repeat(dg)}${'☆'.repeat(3 - dg)}</div><p style="font-size:13px">“${esc(d.rumor)}”</p><div class="meta">รางวัล ${d.reward} 💰 · บอส: ${esc(BOSS_NAME[d.boss] || d.boss)}</div>
+        <div class="stars">${'★'.repeat(dg)}${'☆'.repeat(3 - dg)}</div><p style="font-size:13px">“${esc(d.rumor)}”</p><div class="meta">รู้จาก: ${esc(S.leads?.[d.id]?.src || 'ข่าวลือ')} · รางวัล ${d.reward} 💰 · บอส: ${esc(BOSS_NAME[d.boss] || d.boss)}</div>
         <button data-pick="${d.id}" ${S.done[d.id] ? 'disabled' : ''}>${S.done[d.id] ? '✔ สำเร็จแล้ว' : S.dest === d.id ? 'กำลังเดินทาง' : 'รับภารกิจนี้'}</button></div>`;
     }).join('');
     const v = await modal(`<h2>📜 กระดานภารกิจ · ข่าวลือ</h2><p>หมอกดำคลุมทุกทิศ รู้เพียงข่าวลือว่ามีอะไรอยู่ที่ไหน เลือกจุดหมาย แล้วออกจากหมู่บ้านไปเปิดทางเอง — แผนที่จะเผยเฉพาะปลายทางและเส้นทางที่คุณเดินผ่าน</p><div class="wm-quests">${cards}</div>`, [{ label: 'ปิด', value: null, ghost: true }]);
@@ -389,9 +399,8 @@
   /* ---------- travel ---------- */
   function clickHex(h) {
     if (busy || modalOpen) return;
-    if (!S.dest && atHome()) { questBoard(); return }
     const t = tile(h.c, h.r), k = K(h.c, h.r);
-    if (h.c === S.pos.c && h.r === S.pos.r) { if (atHome()) questBoard(); return }
+    if (h.c === S.pos.c && h.r === S.pos.r) return;
     if (G.stepCost(t) === Infinity) { toast(isKnown(k) ? G.BIOME[t.biome].name + ' — ผ่านไม่ได้' : 'ผ่านไม่ได้'); return }
     if (G.dist(S.pos, h) === 1) { walk([S.pos, h]); return }
     if (!isKnown(k)) { toast('ยังไม่รู้ทาง — เดินทีละช่องเข้าไปในหมอก'); return }
@@ -426,7 +435,10 @@
     if (t.poi?.town) { await townVisit(t.poi); return true }
     if (t.enc && !S.cleared[k]) return await encounter(t, k);
     const night = nightness() > .6, dang = G.danger(world, t);
-    if (night && dang > .15 && Math.random() < .12) { log('ถูกซุ่มโจมตีกลางดึก!'); return await battle(pickFoe(t), dang, { ambush: true }) }
+    /* v95.16 · no battle marks on the map: every step has a chance of an ambush (more in wild/dangerous land and at night, less on a road) */
+    S.calm = Math.max(0, (S.calm || 0) - 1);
+    const odds = Math.min(.42, (.05 + dang * .24) * (t.road ? .45 : 1) * (night ? 1.6 : 1));
+    if (!S.calm && !t.poi && Math.random() < odds) { S.calm = 3; log(night ? 'ถูกซุ่มโจมตีกลางดึก!' : 'ถูกซุ่มโจมตี!'); return await battle(pickFoe(t), dang, { ambush: true }) }
     if (night && Math.random() < .07) return await nightEvent(t);
     return false;
   }
@@ -598,6 +610,6 @@
   load(); resize(); paint();
   { const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; cam.x = p.x; cam.y = p.y; cam.z = innerWidth < 700 ? .9 : 1.25 }
   hudSync(); requestAnimationFrame(frame);
-  if (!S.dest && atHome()) setTimeout(questBoard, 500);
+  setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
   window.WorldMap = { state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();

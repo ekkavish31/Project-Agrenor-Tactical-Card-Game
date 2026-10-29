@@ -133,7 +133,13 @@
   function world() { let w = null; try { w = JSON.parse(localStorage.getItem(WORLD) || 'null') } catch (e) { } return w }
   function writeWorld(w) { try { localStorage.setItem(WORLD, JSON.stringify(w)) } catch (e) { } commit() }
 
-  const api = { KEY, WORLD, RATE, DAY, LATE, MAX_ACTIVE, MAX_HP, game, commit, inGame, now, advance, setTime, tick, sleep, label, period, coins, addCoins, spendCoins, heroName, deck, unitDeck, bind, world, writeWorld, flush: commit };
+  /* v95.16 · leads: a destination is only known once someone in the game tells you (a villager's quest, the guild board, an event) — the world map never hands them out.
+     Stored apart from the map save so the village can add one before the map exists: { destId: { src:'who told you', pick:1 = start walking there } } */
+  const LEADS = 'agrenor-leads-v1';
+  const leads = () => { try { return JSON.parse(localStorage.getItem(LEADS) || '{}') || {} } catch (e) { return {} } };
+  function addLead(id, src, pick) { const L = leads(); L[id] = { ...(L[id] || {}), src: src || L[id]?.src || '', pick: pick ? 1 : (L[id]?.pick || 0) }; try { localStorage.setItem(LEADS, JSON.stringify(L)) } catch (e) { } }
+  function clearPick(id) { const L = leads(); if (L[id]) { L[id].pick = 0; try { localStorage.setItem(LEADS, JSON.stringify(L)) } catch (e) { } } }
+  const api = { leads, addLead, clearPick, KEY, WORLD, RATE, DAY, LATE, MAX_ACTIVE, MAX_HP, game, commit, inGame, now, advance, setTime, tick, sleep, label, period, coins, addCoins, spendCoins, heroName, deck, unitDeck, bind, world, writeWorld, flush: commit };
   root.WorldState = api;
   // index.html: offer the live save to the pages it opens in frames
   if (local()) root.GameHost = local();
