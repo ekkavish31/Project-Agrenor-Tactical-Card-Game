@@ -136,30 +136,27 @@
   }
 
   /* legend · the forest people raise crystals that shine like stars; the crystals break into lights of every element, which fly out over the land */
-  function crystals(g, w, h, t) {
+  function crystals(g, w, h, t) {   // v95.27: the crystal lies in each traveller's chest; on the new land it changes colour and shines
     nightSky(g, w, h, t, 44); moon(g, w * .86, h * .12, h * .045, t);
-    const hz = h * .64; ridge(g, w, h, hz - h * .1, h * .05, 45, '#121a16', hz); ridge(g, w, h, hz - h * .04, h * .03, 46, '#0e1410', hz + 10); g.fillStyle = '#080a0c'; g.fillRect(0, hz, w, h - hz);
-    for (let i = 0; i < 26; i++) { const q = rng(460 + i), x = w * q(), H = h * (.12 + q() * .1); g.fillStyle = '#0a120e'; g.beginPath(); g.moveTo(x - H * .25, hz - h * .05); g.lineTo(x, hz - h * .05 - H); g.lineTo(x + H * .25, hz - h * .05); g.fill() }
-    const n = 7, fig = h * .26, burst = 3.4;
+    const hz = h * .66; ridge(g, w, h, hz - h * .12, h * .06, 61, '#1a1730', hz); ridge(g, w, h, hz - h * .05, h * .035, 62, '#141222', hz + 10);
+    g.fillStyle = '#0b0a12'; g.fillRect(0, hz, w, h - hz);
+    const n = 7, fig = h * .27, shift = ease((t - 1.6) / 2.2), shine = ease((t - 3.6) / 1.4);
     for (let i = 0; i < n; i++) {
-      const e = ELEMENTS[(i * 4) % 9], x = w * (.14 + .72 * i / (n - 1)), y = hz + h * .02 - Math.abs(i - 3) * h * .01, cy = y - fig * 1.18;
-      const charge = ease(t / 2.4), crack = t > 2.6 && t < burst, shake = crack ? Math.sin(t * 60 + i) * 2 : 0;
-      g.fillStyle = '#06070a'; g.beginPath(); g.moveTo(x - fig * .16, y); g.lineTo(x - fig * .09, y - fig * .7); g.quadraticCurveTo(x, y - fig * .98, x + fig * .09, y - fig * .7); g.lineTo(x + fig * .16, y); g.closePath(); g.fill();
-      g.strokeStyle = '#06070a'; g.lineWidth = fig * .05; g.lineCap = 'round'; g.beginPath(); g.moveTo(x - fig * .08, y - fig * .62); g.lineTo(x - fig * .05 + shake, cy + fig * .08); g.moveTo(x + fig * .08, y - fig * .62); g.lineTo(x + fig * .05 + shake, cy + fig * .08); g.stroke();
-      const rim = t < burst ? hsla(270, 60, 85) : hsla(e.h, e.s, e.l); g.strokeStyle = rim(.35 * charge); g.lineWidth = 1.5; g.beginPath(); g.moveTo(x - fig * .09, y - fig * .7); g.quadraticCurveTo(x, y - fig * .98, x + fig * .09, y - fig * .7); g.stroke();
-      if (t < burst) {
-        glow(g, x + shake, cy, fig * (.25 + .25 * charge), hsla(270, 70, 85), .5 + .4 * charge);
-        g.save(); g.translate(x + shake, cy); g.fillStyle = `hsla(270,60%,${80 + 15 * charge}%,.95)`; g.beginPath(); g.moveTo(0, -fig * .12); g.lineTo(fig * .06, 0); g.lineTo(0, fig * .1); g.lineTo(-fig * .06, 0); g.closePath(); g.fill();
-        if (crack) { g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(-fig * .02, -fig * .08); g.lineTo(fig * .02, -fig * .01); g.lineTo(-fig * .01, fig * .06); g.stroke() } g.restore();
-      } else {
-        const k = clamp((t - burst) / 4.5), a = -Math.PI / 2 + (i - 3) * .42, dist = ease(k) * w * .75, ox = x + Math.cos(a) * dist * .7, oy = cy + Math.sin(a) * dist * .5 + Math.sin(k * Math.PI) * -h * .1;
-        if (k < .2) for (let j = 0; j < 10; j++) { const b = j / 10 * TAU, r = k * 5 * fig * .6; glow(g, x + Math.cos(b) * r, cy + Math.sin(b) * r, 6, hsla(e.h, e.s, 80), 1 - k * 5) }
-        for (let j = 0; j < 14; j++) { const kk = Math.max(0, k - j * .012), dd = ease(kk) * w * .75; glow(g, x + Math.cos(a) * dd * .7, cy + Math.sin(a) * dd * .5 + Math.sin(kk * Math.PI) * -h * .1, 10 - j * .5, hsla(e.h, e.s, Math.min(92, e.l + 15)), .5 * (1 - j / 14)) }
-        glow(g, ox, oy, 26, hsla(e.h, e.s, e.l + 10), 1); g.fillStyle = `hsl(${e.h},${e.s}%,92%)`; g.beginPath(); g.arc(ox, oy, 3.5, 0, TAU); g.fill();
-      }
+      const e = ELEMENTS[(i * 4 + 1) % 9], x = w * (.12 + .76 * i / (n - 1)), y = hz + h * .03 - Math.abs(i - 3) * h * .012, cy = y - fig * .62;
+      const col = { h: lerp(268, e.h, shift), s: lerp(40, e.s, shift), l: lerp(90, e.l, shift) };
+      /* the light reaching the ground: a ring that spreads over the land, then the land itself takes the colour */
+      if (shine > 0) { g.save(); g.globalAlpha = .5 * shine; const gr = g.createRadialGradient(x, y, 0, x, y, w * .12 * shine + 10); gr.addColorStop(0, hsla(col.h, col.s, col.l)(.55)); gr.addColorStop(1, hsla(col.h, col.s, col.l)(0)); g.fillStyle = gr; g.beginPath(); g.ellipse(x, y, w * .12 * shine + 10, (w * .12 * shine + 10) * .22, 0, 0, TAU); g.fill(); g.restore();
+        const ring = ((t - 3.6) * .5) % 1; g.strokeStyle = hsla(col.h, col.s, Math.min(92, col.l + 10))(.5 * (1 - ring) * shine); g.lineWidth = 1.5; g.beginPath(); g.ellipse(x, y, w * .1 * ring + 6, (w * .1 * ring + 6) * .22, 0, 0, TAU); g.stroke() }
+      /* the traveller: hooded, still, light glowing through the cloth */
+      g.fillStyle = '#07060b'; g.beginPath(); g.moveTo(x - fig * .17, y); g.lineTo(x - fig * .1, y - fig * .72); g.quadraticCurveTo(x, y - fig * 1.02, x + fig * .1, y - fig * .72); g.lineTo(x + fig * .17, y); g.closePath(); g.fill();
+      g.strokeStyle = hsla(col.h, col.s, col.l)(.25 + .35 * shine); g.lineWidth = 1.4; g.beginPath(); g.moveTo(x - fig * .1, y - fig * .72); g.quadraticCurveTo(x, y - fig * 1.02, x + fig * .1, y - fig * .72); g.stroke();
+      const beat = .85 + .15 * Math.sin(t * 2.2 + i), R = fig * (.16 + .14 * shine) * beat;
+      glow(g, x, cy, R * 2.2, hsla(col.h, col.s, Math.min(94, col.l + 8)), .55 + .35 * shine);
+      g.save(); g.translate(x, cy); g.fillStyle = `hsla(${col.h},${col.s}%,${Math.min(96, col.l + 10)}%,.95)`; g.beginPath(); g.moveTo(0, -fig * .07); g.lineTo(fig * .04, 0); g.lineTo(0, fig * .06); g.lineTo(-fig * .04, 0); g.closePath(); g.fill(); g.restore();
+      if (shine > 0) for (let k = 0; k < 5; k++) { const a = (k / 5) * TAU + t * .4, L = fig * (.25 + .35 * shine); g.strokeStyle = hsla(col.h, col.s, Math.min(95, col.l + 15))(.22 * shine); g.lineWidth = 2; g.beginPath(); g.moveTo(x + Math.cos(a) * fig * .05, cy + Math.sin(a) * fig * .05); g.lineTo(x + Math.cos(a) * L, cy + Math.sin(a) * L); g.stroke() }
     }
-    if (t > burst && t < burst + .5) { g.fillStyle = `rgba(255,250,240,${(1 - (t - burst) / .5) * .5})`; g.fillRect(0, 0, w, h) }
   }
+
 
   /* ---------------- journey / realms — a storybook map: lights wind through the regions, then towns grow into kingdoms ---------------- */
   /* lore geography (docs/lore/GAME-ERA.md): north = snow · south = fire and volcanoes · far west = islands · centre = the Nor'Chorthal river plain ·
@@ -169,12 +166,12 @@
     { e: 6, x: .4, y: .06, kind: 'snow' },     // Yalm ice — the cold north
     { e: 1, x: .16, y: .16, kind: 'cliffs' },  // Sylfae wind — north-west highlands
     { e: 0, x: .6, y: .1, kind: 'plain' },     // Elu light — the bright northern plateau
-    { e: 3, x: .72, y: .2, kind: 'storm' },    // Caelim lightning — the high range
+    { e: 3, x: .72, y: .2, kind: 'chaos' },    // Caelim chaos — a rift in the high range (v95.27: was lightning)
     { e: 2, x: .03, y: .4, kind: 'islands' },  // Dephor water — the far western islands
     { e: 8, x: .42, y: .36, kind: 'basin' },   // Grat earth — the Nor'Chorthal plain (humans: earth and water)
     { e: 7, x: .18, y: .58, kind: 'shadow' },  // Nytha night — the south-west vale
     { e: 4, x: .48, y: .66, kind: 'volcano' }, // Fren fire — the burning south
-    { e: 5, x: .8, y: .6, kind: 'forest' }];   // Lutha plant — stays near the forest, south of the range
+    { e: 5, x: .27, y: .45, kind: 'forest' }]; // Lutha plant — a grove far out on the western plain, well away from the old forest (v95.27)
   const ORIGIN = { x: .94, y: .36 };
   function mapXY(w, h, x, y) { return { x: w * (.04 + x * .92), y: h * (.06 + y * .62) } }
   function pathOf(i, w, h) {
@@ -216,6 +213,11 @@
     const vg = g.createRadialGradient(w / 2, h * .4, h * .35, w / 2, h * .4, h * .95); vg.addColorStop(0, 'rgba(8,10,20,0)'); vg.addColorStop(1, 'rgba(8,10,20,.75)'); g.fillStyle = vg; g.fillRect(0, 0, w, h);
   }
   function region(g, x, y, kind, t, e) {
+    if (kind === 'chaos') { // a slow rift: twisted spiral arms and shards that drift around it
+      g.save(); g.translate(x, y - 14); for (let k = 0; k < 3; k++) { g.rotate(t * .6 + k * 2.1); g.strokeStyle = `hsla(${318 + k * 18},70%,${62 + k * 6}%,.75)`; g.lineWidth = 2.2; g.beginPath(); for (let a = 0; a < 5.5; a += .2) { const r = 4 + a * 4.2; g.lineTo(Math.cos(a) * r, Math.sin(a) * r * .6) } g.stroke() } g.restore();
+      for (let k = 0; k < 6; k++) { const a = t * .5 + k * 1.05, r = 26 + 6 * Math.sin(t * 1.3 + k), sx = x + Math.cos(a) * r, sy = y - 14 + Math.sin(a) * r * .5; g.save(); g.translate(sx, sy); g.rotate(a * 2); g.fillStyle = `hsla(${300 + k * 9},70%,70%,.85)`; g.beginPath(); g.moveTo(0, -5); g.lineTo(3, 0); g.lineTo(0, 5); g.lineTo(-3, 0); g.closePath(); g.fill(); g.restore() }
+      glow(g, x, y - 14, 30, hsla(318, 70, 66), .55 + .2 * Math.sin(t * 2.3));
+    }
     g.save();
     if (kind === 'snow') for (let j = 0; j < 4; j++) { const s = 18 + j * 4, xx = x - 30 + j * 18; g.fillStyle = '#c8d4e4'; g.beginPath(); g.moveTo(xx - s, y + 14); g.lineTo(xx, y - s); g.lineTo(xx + s, y + 14); g.fill() }
     if (kind === 'cliffs') { g.fillStyle = '#7a8a7a'; g.fillRect(x - 30, y - 18, 22, 32); g.fillRect(x + 4, y - 26, 26, 40); g.strokeStyle = 'rgba(220,255,240,.5)'; g.lineWidth = 1.5; for (let j = 0; j < 3; j++) { g.beginPath(); g.arc(x - 10 + j * 14 + Math.sin(t + j) * 4, y - 34, 6, 0, Math.PI * 1.5); g.stroke() } }
@@ -238,8 +240,11 @@
   }
   function journey(g, w, h, t) {
     drawMap(g, w, h, t);
-    REGIONS.forEach((R, i) => { const e = ELEMENTS[R.e], p = ease((t - .6 - i * .35) / 5), pts = pathOf(i, w, h); if (p <= 0) return; const head = comet(g, pts, p, e);
-      glow(g, head.x, head.y, p >= 1 ? 26 + 6 * Math.sin(t * 3 + i) : 16, hsla(e.h, e.s, Math.min(95, e.l + 20)), 1) });
+    /* v95.27: people walk out of the forest with pale crystal light in their chests; only when they settle does the light take its colour */
+    const PALE = { h: 268, s: 40, l: 88 };
+    REGIONS.forEach((R, i) => { const e = ELEMENTS[R.e], p = ease((t - .6 - i * .35) / 5), pts = pathOf(i, w, h); if (p <= 0) return; const head = comet(g, pts, p, PALE);
+      const tint = p >= 1 ? ease((t - .6 - i * .35 - 5) / 1.6) : 0, col = { h: lerp(PALE.h, e.h, tint), s: lerp(PALE.s, e.s, tint), l: lerp(PALE.l, e.l, tint) };
+      glow(g, head.x, head.y, p >= 1 ? 22 + 8 * tint + 5 * Math.sin(t * 3 + i) : 14, hsla(col.h, col.s, Math.min(95, col.l + 10)), 1) });
   }
   function realms(g, w, h, t) {
     drawMap(g, w, h, t + 20);
@@ -401,6 +406,8 @@
       for (let gnr = 1; gnr <= 3; gnr++) { const kk = Math.max(0, k - gnr * .25); if (kk <= 0 && gnr > 1) break; const pf = {}; for (const key in BASE) pf[key] = lerp(BASE[key], F[key], kk); g.globalAlpha = .16 / gnr; person(g, x - gnr * 16 * S, y - gnr * 3, S * 1.6, pf, '#0a0812', `hsla(${e.h},${e.s}%,${e.l}%,.6)`, t, i); g.globalAlpha = 1 }
       glow(g, x, y - 80 * S * f.h, 110 * S * (.8 + f.w * .3), hsla(e.h, e.s, e.l), .22 + .15 * k);
       person(g, x, y, S * 1.6, f, '#0a0812', `hsla(${e.h},${e.s}%,${Math.min(90, e.l + 15)}%,.9)`, t, i);
+      /* v95.27: the crystal still glows in each chest, in the colour of the land that changed them */
+      { const cy = y - 100 * S * 1.6 * f.h * .6, R = 9 * S * 1.6 * (1 + .15 * Math.sin(t * 2 + i)); glow(g, x, cy, R * 3, hsla(e.h, e.s, Math.min(92, e.l + 10)), .8); g.fillStyle = `hsla(${e.h},${e.s}%,${Math.min(95, e.l + 18)}%,.95)`; g.beginPath(); g.moveTo(x, cy - R * .8); g.lineTo(x + R * .45, cy); g.lineTo(x, cy + R * .7); g.lineTo(x - R * .45, cy); g.closePath(); g.fill() }
       const pulse = ((gen * 5) % 1); if (gen < 1 && pulse < .25) { g.strokeStyle = `hsla(${e.h},${e.s}%,80%,${(1 - pulse * 4) * .6})`; g.lineWidth = 2; g.beginPath(); g.ellipse(x, y, 40 * S * (1 + pulse * 6), 10 * S * (1 + pulse * 6), 0, 0, TAU); g.stroke() }
       for (let j = 0; j < 6; j++) { const q = rng(1000 + i * 10 + j), ph = (t * .4 + q()) % 1; glow(g, x + (q() - .5) * 60 * S, y - ph * 180 * S, 4, hsla(e.h, e.s, 80), (1 - ph) * .7) }
     });
@@ -650,22 +657,44 @@
   }
 
   /* 7 · a study table under a lantern: fragments, rubbings, a drawing with gaps that will not close */
-  function study(g, w, h, t) {
-    g.fillStyle = '#16110c'; g.fillRect(0, 0, w, h); const fl = .85 + .15 * Math.sin(t * 11) * Math.sin(t * 5);
-    const lx = w * .5, ly = h * .22; glow(g, lx, ly + h * .2, w * .4, hsla(38, 90, 60), .5 * fl);
-    // rubbings pinned on the wall
-    [[.18, .12], [.34, .08], [.66, .1], [.8, .14]].forEach(([x, y], i) => { g.save(); g.translate(w * x, h * y); g.rotate((i - 1.5) * .05); g.fillStyle = 'rgba(220,205,170,.85)'; g.fillRect(-40, 0, 80, 60); g.strokeStyle = 'rgba(40,30,20,.7)'; g.lineWidth = 1.2; const r = rng(140 + i); for (let k = 0; k < 8; k++) if (r() < .6) rune(g, -28 + (k % 4) * 18, 16 + Math.floor(k / 4) * 24, 6, 150 + i * 10 + k); g.fillStyle = '#8a2a1a'; g.beginPath(); g.arc(0, 4, 3, 0, TAU); g.fill(); g.restore() });
-    // the table
-    g.fillStyle = '#3a2a1a'; g.fillRect(w * .08, h * .48, w * .84, h * .2); g.fillStyle = '#2a1e12'; g.fillRect(w * .08, h * .66, w * .84, 8);
-    // fragments laid out with gaps between them
-    const r = rng(170); for (let i = 0; i < 6; i++) { const x = w * (.22 + i * .1) + Math.sin(i) * 8, y = h * (.53 + (i % 2) * .05); g.fillStyle = '#7a7466'; g.beginPath(); for (let k = 0; k < 6; k++) { const a = k / 6 * TAU, rr = 18 + r() * 10; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rr, y + Math.sin(a) * rr * .6) } g.closePath(); g.fill(); g.strokeStyle = 'rgba(30,26,20,.8)'; g.lineWidth = 1.2; rune(g, x, y, 5, 180 + i) }
-    // a sketch trying to join them — dashed where nothing is known, with a question mark
-    g.strokeStyle = 'rgba(240,220,170,.6)'; g.lineWidth = 1.5; g.setLineDash([5, 6]); g.beginPath(); g.ellipse(w * .47, h * .56, w * .3, h * .07, 0, 0, TAU); g.stroke(); g.setLineDash([]);
-
-    // the lantern
-    g.strokeStyle = '#2a1e12'; g.lineWidth = 2; g.beginPath(); g.moveTo(lx, 0); g.lineTo(lx, ly - 14); g.stroke(); g.fillStyle = `hsl(40,100%,${55 + 15 * fl}%)`; g.beginPath(); g.ellipse(lx, ly, 9, 13, 0, 0, TAU); g.fill();
-    for (let i = 0; i < 30; i++) { const q = rng(200 + i), x = lx + (q() - .5) * w * .5 + Math.sin(t * .3 + i) * 12, y = ly + q() * h * .4 + Math.cos(t * .25 + i) * 8; g.fillStyle = `rgba(255,220,160,${.3 * fl})`; g.fillRect(x, y, 1.4, 1.4) }
+  function study(g, w, h, t) {   // v95.27: a dig at dusk — scholars brush the soil off a glowing inscription; under it something far larger goes on down
+    sky(g, w, h, [[0, '#1c1a34'], [.45, '#4a3a52'], [.62, '#9a6a5a'], [1, '#9a6a5a']]); stars(g, w, h, t, 40, 90, h * .3, .5); moon(g, w * .84, h * .13, h * .04, t);
+    const hz = h * .5; ridge(g, w, h, hz - h * .06, h * .04, 91, '#3a2e3a', hz); ridge(g, w, h, hz - h * .02, h * .03, 92, '#2c2430', hz + 6);
+    g.fillStyle = '#3a2c22'; g.fillRect(0, hz, w, h - hz);
+    const px = w * .5, py = h * .7, pw = w * .62, ph = h * .44;   // the pit
+    // soil strata on the pit walls
+    g.fillStyle = '#20160f'; g.beginPath(); g.ellipse(px, py, pw * .5, ph * .32, 0, 0, TAU); g.fill();
+    g.save(); g.beginPath(); g.ellipse(px, py, pw * .5, ph * .32, 0, 0, TAU); g.clip();
+    for (let k = 0; k < 5; k++) { g.fillStyle = ['#4a3424', '#3e2c1e', '#5a4030', '#342418', '#2a1c12'][k]; g.fillRect(px - pw * .5, py - ph * .32 + k * ph * .1, pw, ph * .05) }
+    // the buried thing below: a huge carved ring, only partly uncovered — it goes on further than the pit
+    const reveal = ease((t - 1) / 4), dig = ease((t - 4.5) / 3);
+    g.strokeStyle = `rgba(150,170,210,${.25 + .35 * dig})`; g.lineWidth = 3; g.beginPath(); g.ellipse(px + pw * .08, py + ph * .2, pw * .42, ph * .3, 0, 0, TAU); g.stroke(); g.beginPath(); g.ellipse(px + pw * .08, py + ph * .2, pw * .3, ph * .21, 0, 0, TAU); g.stroke();
+    for (let k = 0; k < 14; k++) { const a = k / 14 * TAU + t * .05, x = px + pw * .08 + Math.cos(a) * pw * .36, y = py + ph * .2 + Math.sin(a) * ph * .255; glow(g, x, y, 8, hsla(220, 60, 75), .3 + .5 * dig * (.5 + .5 * Math.sin(t * 2 + k))) }
+    // the inscription stone being uncovered
+    const sx = px - pw * .12, sy = py - ph * .05, SW = pw * .32, SH = ph * .34;
+    g.fillStyle = '#6a6458'; g.beginPath(); g.moveTo(sx - SW / 2, sy + SH / 2); g.lineTo(sx - SW / 2 + 6, sy - SH / 2); g.lineTo(sx + SW / 2 - 4, sy - SH / 2 + 3); g.lineTo(sx + SW / 2, sy + SH / 2); g.closePath(); g.fill();
+    g.fillStyle = `rgba(58,42,30,${1 - reveal})`; g.fillRect(sx - SW / 2, sy - SH / 2, SW, SH);   // soil still on it
+    g.strokeStyle = hsla(200, 70, 75)(.35 + .5 * reveal); g.lineWidth = 1.6;
+    const R = rng(77); for (let row = 0; row < 3; row++) for (let k = 0; k < 6; k++) { if (k / 6 > reveal * 1.1) continue; const x = sx - SW * .38 + k * SW * .15, y = sy - SH * .25 + row * SH * .25; g.beginPath(); g.moveTo(x, y - 5); g.lineTo(x + (R() - .5) * 6, y + 5); g.moveTo(x - 3, y); g.lineTo(x + 3, y - 2 + R() * 4); g.stroke() }
+    glow(g, sx, sy, SW * .8, hsla(200, 70, 70), .25 * reveal);
+    g.restore();
+    // rim of the pit, tools, rope, a tent
+    g.strokeStyle = '#5a4030'; g.lineWidth = 4; g.beginPath(); g.ellipse(px, py, pw * .5, ph * .32, 0, Math.PI, TAU); g.stroke();
+    g.strokeStyle = '#6a5a40'; g.lineWidth = 2; g.beginPath(); g.moveTo(px + pw * .42, py - ph * .2); g.quadraticCurveTo(px + pw * .38, py, px + pw * .3, py + ph * .2); g.stroke();
+    g.fillStyle = '#6a5640'; g.beginPath(); g.moveTo(w * .14, hz + h * .1); g.lineTo(w * .2, hz - h * .04); g.lineTo(w * .26, hz + h * .1); g.closePath(); g.fill(); g.fillStyle = '#3a2c20'; g.beginPath(); g.moveTo(w * .195, hz + h * .1); g.lineTo(w * .2, hz + h * .02); g.lineTo(w * .205, hz + h * .1); g.fill();
+    g.strokeStyle = '#2a1c12'; g.lineWidth = 3; g.beginPath(); g.moveTo(w * .7, h * .52); g.lineTo(w * .72, h * .66); g.stroke(); g.fillStyle = '#7a7a80'; g.fillRect(w * .708, h * .65, 18, 6);   // spade
+    // scholars: one kneels at the stone with a brush, one stands holding a lantern over the pit
+    const S = h / 380, kx = sx - SW * .05, ky = py - ph * .3;
+    g.fillStyle = '#120c0a';
+    g.beginPath(); g.ellipse(kx, ky - 24 * S, 14 * S, 22 * S, -.4, 0, TAU); g.fill(); g.beginPath(); g.arc(kx - 8 * S, ky - 50 * S, 9 * S, 0, TAU); g.fill();
+    const br = Math.sin(t * 6) * 6 * S; g.strokeStyle = '#120c0a'; g.lineWidth = 5 * S; g.beginPath(); g.moveTo(kx - 6 * S, ky - 34 * S); g.lineTo(kx - 22 * S + br, ky - 8 * S); g.stroke();
+    const lx = px + pw * .32, ly = py - ph * .42; walker(g, lx, ly, 1.7 * S * 1.6, 0, '#120c0a', { ph: 2 });
+    const lanX = lx - 16 * S, lanY = ly - 60 * S + Math.sin(t * 1.4) * 2; g.strokeStyle = '#120c0a'; g.lineWidth = 2; g.beginPath(); g.moveTo(lx - 6 * S, ly - 52 * S); g.lineTo(lanX, lanY - 8 * S); g.stroke();
+    glow(g, lanX, lanY, 120 * S, hsla(36, 100, 65), .5 + .08 * Math.sin(t * 9)); g.fillStyle = '#ffd88a'; g.fillRect(lanX - 4 * S, lanY - 6 * S, 8 * S, 10 * S);
+    // when the ring shows, a question rises in the dark: faint marks lighting up further down, beyond the pit
+    if (dig > 0) for (let k = 0; k < 4; k++) { const x = px + (k - 1.5) * pw * .35, y = h * .9 + Math.sin(t + k) * 4; glow(g, x, y, 16, hsla(220, 60, 75), .35 * dig * (.5 + .5 * Math.sin(t * 1.7 + k * 2))) }
   }
+
 
   /* 8 · the temple of the three great gods: their sign of three rings, candles, people climbing the steps — no god appears */
   function temple(g, w, h, t) {
@@ -773,7 +802,7 @@
     deepwood: { rays: MOONRAYS(.2, .12), motes: 'firefly', grade: 'night', vig: .5 }, treeline: { rays: MOONRAYS(.2, .12), motes: 'firefly', grade: 'night', vig: .5 },
     crystals: { motes: 'spark', n: 36, grade: 'night', vig: .5 }, journey: { motes: 'dust', n: 24, grade: 'warm', vig: .45 },
     trails: { rays: SUNRAYS(.18), motes: 'pollen', grade: 'gold' }, settle: { rays: SUNRAYS(.3), motes: 'dust', grade: 'gold' }, eras: { rays: SUNRAYS(.8, .35), motes: 'pollen', grade: 'warm' },
-    realmsWide: { rays: SUNRAYS(.25), motes: 'dust', grade: 'gold' }, inscription: { motes: 'dust', n: 36, grade: 'cool', vig: .6 }, study: { motes: 'dust', n: 30, grade: 'warm', vig: .6 },
+    realmsWide: { rays: SUNRAYS(.25), motes: 'dust', grade: 'gold' }, inscription: { motes: 'dust', n: 36, grade: 'cool', vig: .6 }, study: { motes: 'dust', n: 30, vig: .42 },
     temple: { motes: 'ember', n: 30, grade: 'night', vig: .5 }, shrines: { motes: 'firefly', n: 30, grade: 'warm', vig: .42 }, journal: { motes: 'dust', n: 20, grade: 'warm', vig: .55 },
     riverCity: { rays: SUNRAYS(.2), motes: 'pollen', grade: 'gold' }, roadOut: { rays: SUNRAYS(.85), motes: 'dust', grade: 'gold' }, fernvale: { rays: SUNRAYS(.85, .4), motes: 'pollen', grade: 'warm' },
     dawn: { rays: SUNRAYS(.3, .5), motes: 'pollen', grade: 'gold', vig: .3 }, orb: { motes: 'pollen', grade: 'gold', vig: .3 }, festival: { motes: 'ember', n: 36, grade: 'night', vig: .4 },
