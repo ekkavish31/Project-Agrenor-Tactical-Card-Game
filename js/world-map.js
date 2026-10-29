@@ -183,13 +183,16 @@
   /* ---------- party token (the new-outfit hero idle frames) ---------- */
   const heroImgs = [1, 2, 3, 4].map(i => { const im = new Image(); im.src = `assets/tactics/imported/idle-se-mvkft9t1-gv5z/frame-0${i}.webp`; return im });
   const walkImgs = [1, 2, 3].map(i => { const im = new Image(); im.src = `assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-0${i}.webp`; return im });
+  const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura on the map too */
   function drawToken(now) {
-    const set = token.walking ? walkImgs : heroImgs, im = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], s = 76;
+    const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 76;
     const night = nightness(), lr = 70 + Math.sin(now * .004) * 4;
     const lg = g.createRadialGradient(token.x, token.y - 8, 4, token.x, token.y - 8, lr); lg.addColorStop(0, `rgba(255,210,130,${.18 + night * .25})`); lg.addColorStop(1, 'rgba(255,210,130,0)');
     g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = lg; g.beginPath(); g.arc(token.x, token.y - 8, lr, 0, 7); g.fill(); g.restore();
     g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(token.x, token.y + 2, 14, 5, 0, 0, 7); g.fill();
-    if (im.complete && im.naturalWidth) { g.save(); g.translate(token.x, token.y + 4 - Math.abs(Math.sin(token.bob)) * (token.walking ? 3 : 0)); if (token.face < 0) g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
+    const ap = { x: token.x, y: token.y + 4 }; if (LOOK) JobLook.aura(g, LOOK, ap, s, now, false);
+    if (im0.complete && im0.naturalWidth) { g.save(); g.translate(token.x, token.y + 4 - Math.abs(Math.sin(token.bob)) * (token.walking ? 3 : 0)); if (token.face < 0) g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
+    if (LOOK) JobLook.aura(g, LOOK, ap, s, now, true);
   }
 
   /* ---------- beacon + encounter marks ---------- */

@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.22';
+  const V = '97.23';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -69,7 +69,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio' };
+    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'hit', 'down']);
@@ -938,36 +938,8 @@
   /* ---------- v97.18 · the job's look on the same hero picture (docs/TODO.md "อาชีพและอาวุธ") ----------
      outfit: the cloth pixels (the old green cloak, or the dull dark brown between shoulders and boots of the current outfit) take the job's hue / saturation / lightness — skin and hair stay;
      done once per picture and job, then cached · aura: code-drawn, behind and around the hero · emblem: the job sign next to the HP bar */
-  const jobPics = new Map();
-  function jobPic(img, src, L) {
-    if (!L || L.hue == null || !img || !img.complete || !img.naturalWidth) return img;
-    const k = src + '|' + L.hue + ',' + L.sat + ',' + L.light; let c = jobPics.get(k); if (c) return c;
-    c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0);
-    let d; try { d = x.getImageData(0, 0, c.width, c.height) } catch (e) { jobPics.set(k, img); return img }
-    const q = d.data, H2 = L.hue / 360, hue2rgb = (p, q2, t2) => { t2 = (t2 + 1) % 1; return t2 < 1 / 6 ? p + (q2 - p) * 6 * t2 : t2 < .5 ? q2 : t2 < 2 / 3 ? p + (q2 - p) * (2 / 3 - t2) * 6 : p };
-    for (let n = 0; n < q.length; n += 4) { if (q[n + 3] < 10) continue; const r = q[n] / 255, gg = q[n + 1] / 255, b = q[n + 2] / 255, mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), l = (mx + mn) / 2, dd = mx - mn; if (dd < .02) continue;
-      const s = l > .5 ? dd / (2 - mx - mn) : dd / (mx + mn); let h = mx === r ? ((gg - b) / dd + (gg < b ? 6 : 0)) : mx === gg ? (b - r) / dd + 2 : (r - gg) / dd + 4; h *= 60;
-      /* the current outfit is all dull brown: its cloth is the dark, low-saturation brown between the shoulders and the boots (skin is lighter, the head is above) */
-      const yy = (n / 4 / c.width | 0) / c.height, cloth = (h >= 42 && h <= 100 && s <= .62 && l >= .05 && l <= .7) || (h <= 40 && s < .5 && l >= .07 && l <= .46 && yy > .37 && yy < .86);
-      if (!cloth) continue;
-      const s2 = Math.min(1, L.sat * (.75 + s)), l2 = Math.max(.03, Math.min(.92, l * (1.15 + L.light * 1.6) + L.light * .22)), q2 = l2 < .5 ? l2 * (1 + s2) : l2 + s2 - l2 * s2, p2 = 2 * l2 - q2;
-      q[n] = hue2rgb(p2, q2, H2 + 1 / 3) * 255; q[n + 1] = hue2rgb(p2, q2, H2) * 255; q[n + 2] = hue2rgb(p2, q2, H2 - 1 / 3) * 255 }
-    x.putImageData(d, 0, 0); jobPics.set(k, c); return c;
-  }
-  function jobAura(g, u, p, size, t, front) {
-    const L = u.look; if (!L?.aura || u.hp <= 0) return; const T = t / 1000, cx = p.x, cy = p.y - size * .32;
-    g.save(); g.globalCompositeOperation = L.aura === 'shadow' ? 'source-over' : 'lighter';
-    const dot = (x, y, r, col, a) => { const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(${col},${a})`); gr.addColorStop(1, `rgba(${col},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill() };
-    for (let k = 0; k < 6; k++) { const ph = (T * .5 + k / 6) % 1, ang = k / 6 * 6.283 + T * (L.aura === 'spark' ? 1.4 : .6), inFront = Math.sin(ang) > 0; if (inFront !== front) continue;
-      const ox = Math.cos(ang) * size * .26, oy = Math.sin(ang) * size * .08;
-      if (L.aura === 'ember') dot(cx + ox * .8, p.y - ph * size * .7, 4.5 * (1 - ph) + 1, '255,140,60', .75 * (1 - ph));
-      else if (L.aura === 'leaf') { g.fillStyle = `rgba(120,200,90,${.65 * (1 - ph)})`; g.save(); g.translate(cx + ox, cy + oy - ph * size * .2); g.rotate(ang * 2); g.beginPath(); g.ellipse(0, 0, 4, 1.8, 0, 0, 7); g.fill(); g.restore() }
-      else if (L.aura === 'spark') { dot(cx + ox, cy + oy - Math.sin(T * 2 + k) * 6, 5, '190,150,255', .8); }
-      else if (L.aura === 'halo' && k === 0 && !front) { dot(cx, p.y - size * .78, size * .2, '255,230,150', .32 + .1 * Math.sin(T * 2)); g.strokeStyle = `rgba(255,236,170,${.55 + .2 * Math.sin(T * 3)})`; g.lineWidth = 2; g.beginPath(); g.ellipse(cx, p.y - size * .86, size * .12, size * .035, 0, 0, 7); g.stroke() }
-      else if (L.aura === 'shadow') { g.fillStyle = `rgba(20,16,40,${.35 * (1 - ph)})`; g.beginPath(); g.ellipse(cx + ox, p.y - ph * size * .35, 6 + ph * 6, 3 + ph * 3, 0, 0, 7); g.fill() }
-      else if (L.aura === 'shield' && k < 3 && front) { g.strokeStyle = `rgba(150,200,255,${.28 + .18 * Math.sin(T * 2.4 + k)})`; g.lineWidth = 1.5; g.beginPath(); g.arc(cx, cy, size * (.3 + k * .03), -2.4, -.7); g.stroke() } }
-    g.restore();
-  }
+  const jobPic = (img, src, L) => window.JobLook ? JobLook.pic(img, src, L) : img;
+  const jobAura = (g, u, p, size, t, front) => { if (u.hp > 0) window.JobLook?.aura(g, u.look, p, size, t, front) };
   function jobEmblem(g, u, p, top) {
     const L = u.look; if (!L?.icon) return; const x = p.x - 32, y = top - 7;
     g.save(); g.fillStyle = L.col || '#888'; g.strokeStyle = '#1a140c'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, 8.5, 0, 7); g.fill(); g.stroke();
