@@ -873,7 +873,7 @@
     const reduced = () => opt.reduced ?? root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     let cur = null, prev = null, raf = 0, w = 0, h = 0, d = 1;
     function size() { const r = canvas.getBoundingClientRect(); d = Math.min(2, root.devicePixelRatio || 1); w = Math.max(1, r.width); h = Math.max(1, r.height); canvas.width = buf.width = Math.round(w * d); canvas.height = buf.height = Math.round(h * d) }
-    function paint(ctx, sc, now) { const t = reduced() ? 9 : (now - sc.start) / 1000; ctx.setTransform(d, 0, 0, d, 0, 0); ctx.globalAlpha = 1; try { SCENES[sc.name](ctx, w, h, t); if (FX[sc.name]) post(ctx, w, h, t, FX[sc.name]) } catch (e) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h) } }
+    function paint(ctx, sc, now) { const t = reduced() ? 9 : (now - sc.start) / 1000; ctx.setTransform(d, 0, 0, d, 0, 0); ctx.globalAlpha = 1; try { SCENES[sc.name](ctx, w, h, t); try { root.SceneExtras?.[sc.name]?.(ctx, w, h, t) } catch (e) { } /* v97.06 · js/scene-extras.js */ if (FX[sc.name]) post(ctx, w, h, t, FX[sc.name]) } catch (e) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h) } }
     function frame(now) {
       raf = requestAnimationFrame(frame); if (!cur) return;
       const r = canvas.getBoundingClientRect(); if (Math.abs(r.width - w) > 1 || Math.abs(r.height - h) > 1) size();

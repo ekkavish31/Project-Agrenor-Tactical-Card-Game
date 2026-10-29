@@ -3,6 +3,8 @@
 /* While the title is up the game underneath stays hidden (it keeps loading behind it). */
 html.title-boot body>*:not(#titleScreen):not(#gameLoading):not(.game-dialog):not(dialog):not(script){visibility:hidden!important}
 html.title-boot,html.title-boot body{overflow:hidden}
+/* v97.05 · dark from the first paint: the reload after New Game used to flash the cream paper body before the title / loader was built */
+html.title-boot,html.title-boot body{background:#070b10!important}
 
 #titleScreen.ts{position:fixed;inset:0;z-index:1900;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ts-ink);font:15px/1.5 system-ui,Tahoma,sans-serif;background:#070b10;overflow:hidden;transition:opacity .45s ease}
 #titleScreen.ts.ts-out{opacity:0;pointer-events:none}
