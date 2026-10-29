@@ -229,6 +229,9 @@ async function prepareStory(){title.classList.add('ts-quick');
 /* ---------- into the game ---------- */
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}
  await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(10000)])]}],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
+ /* v97.04 · New Game: the opening cutscene (mother wakes the hero) fades in over the last prologue page and the title goes away underneath it,
+    so the village map never shows in between (the story loop only starts a cutscene once T.active is false) */
+ if(isNew&&root.Story&&root.Cutscene){T.active=false;const t0=Date.now();while(!root.Cutscene.isPlaying()&&Date.now()-t0<4000)await wait(100);if(root.Cutscene.isPlaying())await wait(reduced?0:600)}
  title.classList.add('ts-out');document.documentElement.classList.remove('title-boot');T.active=false;await wait(reduced?0:450);art?.stop();art=null;title.remove();
  try{if(typeof render==='function')render()}catch{}root.VillageTown?.sync?.();root.GameBGM?.refresh?.();startPrefetch();
  if(!isNew&&game()?.village&&!game().village.heroName)root.HeroIdentity?.askHeroName?.(true)}
