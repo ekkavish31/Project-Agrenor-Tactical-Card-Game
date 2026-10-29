@@ -16,15 +16,18 @@
     snow: { name: 'ทุ่งหิมะ', cost: 3, pass: true },
     sand: { name: 'หาดทราย', cost: 2, pass: true },
     ash: { name: 'ทุ่งเถ้าภูเขาไฟ', cost: 3, pass: true },
+    stone: { name: 'ลานดินหิน', cost: 3, pass: true },
+    highland: { name: 'เขาสูง', cost: 5, pass: true, sight: 2 },
     volcano: { name: 'ลาวา', cost: Infinity, pass: false }
   };
   const ROAD_COST = 1;
   /* monsters by biome (keys of town-battle MON) */
-  const FOES = { grass: ['bandit', 'wolf'], forest: ['wolf', 'bandit', 'bat'], hills: ['kobold', 'bandit', 'bat'], swamp: ['slime', 'bat'], snow: ['wolf', 'kobold'], sand: ['bandit', 'slime', 'gull'], ash: ['kobold', 'bat', 'bandit'] };   // v94.03: bats and gulls fly (ignore heights)
+  const FOES = { grass: ['bandit', 'wolf'], forest: ['wolf', 'bandit', 'bat'], hills: ['kobold', 'bandit', 'bat'], swamp: ['slime', 'bat'], snow: ['wolf', 'kobold'], sand: ['bandit', 'slime', 'gull'], ash: ['kobold', 'bat', 'bandit'], stone: ['kobold', 'bandit', 'wolf'], highland: ['snowKobold', 'bat', 'wolf'], snow: ['frostWolf', 'snowKobold', 'yeti'] };   // v94.03: bats and gulls fly (ignore heights)
   const DESTS = [
     { id: 'den', name: 'ถ้ำจ่าฝูง', biome: 'forest', boss: 'wolf', icon: 'cave', rumor: 'พรานเล่าว่าเสียงหอนดังมาจากถ้ำลึกกลางป่า ใครเข้าไปไม่เคยกลับมา', reward: 120 },
     { id: 'mine', name: 'เหมืองหินร้าง', biome: 'hills', boss: 'golem', icon: 'mine', rumor: 'คนงานเหมืองหนีออกมากลางดึก บอกว่าหินในเหมืองลุกขึ้นเดินได้', reward: 160 },
-    { id: 'ruin', name: 'วิหารจมบึง', biome: 'swamp', boss: 'slime', icon: 'ruin', rumor: 'ระฆังวิหารเก่าในบึงหมอกดังเองทุกคืนข้างแรม', reward: 140 }
+    { id: 'ruin', name: 'วิหารจมบึง', biome: 'swamp', boss: 'slime', icon: 'ruin', rumor: 'ระฆังวิหารเก่าในบึงหมอกดังเองทุกคืนข้างแรม', reward: 140 },
+    { id: 'frost', name: 'ศาลโบราณในถ้ำเขาหิมะ', biome: 'snow', boss: 'frostQueen', icon: 'cave', rumor: 'นายพรานที่ข้ามเขาเล่าว่าบนยอดหิมะมีปากถ้ำที่ลมหายใจเย็นเยียบพัดออกมา ข้างในมีเสาหินสลักลายที่ไม่มีใครอ่านออก', reward: 220, real: true }
   ];
 
   /* ---------- seeded random + value noise ---------- */
@@ -96,7 +99,7 @@
     if (peaks.length) { let cur = peaks[Math.floor(R() * Math.min(4, peaks.length))]; const seen = new Set(); for (let i = 0; i < 40 && cur; i++) { seen.add(key(cur.c, cur.r)); if (cur.biome === 'water') break; if (cur !== home) cur.river = true; const next = neighbors(cur.c, cur.r).map(([c, r]) => T(c, r)).filter(t => !seen.has(key(t.c, t.r))).sort((a, b) => a.elev - b.elev)[0]; if (!next || next.elev > cur.elev + .03) break; cur = next } }
     /* destinations: one per kind, 8–14 hexes away, on (or turned into) its biome, reachable */
     const w = { seed, cols: COLS, rows: ROWS, tiles, home: { c: home.c, r: home.r }, dests: [] };
-    for (const d of DESTS) {
+    for (const d of DESTS.filter(x => !x.real)) {
       const cands = Object.values(tiles).filter(t => !t.poi && !t.enc && BIOME[t.biome].pass && dist(t, home) >= 8 && dist(t, home) <= 14 && w.dests.every(o => dist(o, t) >= 6));
       cands.sort((a, b) => (b.biome === d.biome) - (a.biome === d.biome) || R() - .5);
       let placed = null;
@@ -129,7 +132,7 @@
     return w;
   }
   /* ---------- v95.22 · Nor'Chorthal from the author's map: fixed land, rivers, Fernvale, destinations and towns; the seed only places encounters ---------- */
-  const LETTER = { w: 'water', g: 'grass', f: 'forest', h: 'hills', m: 'mountain', M: 'mountain', n: 'snow', s: 'swamp', d: 'sand', a: 'ash', v: 'volcano' };
+  const LETTER = { r: 'stone', H: 'highland', w: 'water', g: 'grass', f: 'forest', h: 'hills', m: 'mountain', M: 'mountain', n: 'snow', s: 'swamp', d: 'sand', a: 'ash', v: 'volcano' };
   function fromMap(seed) {
     const R = rng(seed), tiles = {};
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
@@ -143,7 +146,7 @@
     for (const [c, r] of within(home.c, home.r, 1)) { const t = T(c, r); if (t.biome !== 'water' && !BIOME[t.biome].pass) t.biome = 'hills' }
     home.biome = 'grass'; home.river = false; home.poi = { id: 'home', name: 'หมู่บ้านเฟิร์นเวล', icon: 'village' };
     /* v95.24: the country around Fernvale stays temperate (grass, woods, hills, the range) — no snow, beach or ash within ~15 hexes */
-    for (const [c, r] of within(home.c, home.r, 15)) { const t = T(c, r); if (t.biome === 'snow' || t.biome === 'ash') t.biome = 'hills'; else if (t.biome === 'sand') t.biome = 'grass' }
+    for (const [c, r] of within(home.c, home.r, 9)) { const t = T(c, r); if (t.biome === 'snow' || t.biome === 'ash') t.biome = 'hills'; else if (t.biome === 'sand') t.biome = 'grass' }
     const w = { seed, cols: COLS, rows: ROWS, tiles, home: { c: home.c, r: home.r }, dests: [], towns: [], real: 'norchorthal' };
     for (const d of DESTS) {
       const t = snap(NC.marks[d.id], [d.biome]); if (!t) continue;
@@ -196,7 +199,8 @@
   }
   const pick = (R, a) => a[Math.floor(R() * a.length)];
   /* how deep into the fog a tile is: 0 at the village … 1 at the far rim (monsters get tougher) */
-  function danger(w, t) { return Math.min(1, dist(t, w.home) / (w.real ? 70 : 14)) }
+  /* the heights are dangerous however close they are: high slopes +0.2, snow +0.4 on the real map */
+  function danger(w, t) { return Math.min(1, dist(t, w.home) / (w.real ? 70 : 14) + (w.real ? ({ highland: .2, snow: .4, stone: .05 }[t.biome] || 0) : 0)) }
 
   generate.real = NC ? 'norchorthal' : null;
   const api = { COLS, ROWS, BIOME, FOES, DESTS, TOWNS, rng, key, inside, neighbors, dist, within, stepCost, path, generate, danger };

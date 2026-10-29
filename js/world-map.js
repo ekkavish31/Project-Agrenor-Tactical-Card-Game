@@ -83,7 +83,7 @@
 
   /* ---------- terrain painting (once per world) ---------- */
   const PAL = { grass: ['#7fa35a', '#8db365', '#6f9450'], forest: ['#4f7a3f', '#5a8646', '#456c37'], hills: ['#a09060', '#b0a06c', '#8f8054'], mountain: ['#8a8378', '#9b948a', '#77706a'],
-    water: ['#3f6f96', '#4a7ba3', '#365f84'], swamp: ['#5b6b45', '#66764d', '#4d5c3b'], snow: ['#dfe7ee', '#eef3f7', '#cfd9e2'], sand: ['#d8c48f', '#e2cf9c', '#cbb680'], ash: ['#4a3a34', '#5a463e', '#3c2f2a'], volcano: ['#6a2a1a', '#8a3a1a', '#4a1e14'] };
+    water: ['#3f6f96', '#4a7ba3', '#365f84'], swamp: ['#5b6b45', '#66764d', '#4d5c3b'], snow: ['#dfe7ee', '#eef3f7', '#cfd9e2'], sand: ['#d8c48f', '#e2cf9c', '#cbb680'], ash: ['#4a3a34', '#5a463e', '#3c2f2a'], stone: ['#8f8470', '#9c917c', '#7e7462'], highland: ['#6f665c', '#7c7368', '#615950'], volcano: ['#6a2a1a', '#8a3a1a', '#4a1e14'] };
   let terr = null;
   function paint() {
     /* v95.22: the real Nor'Chorthal map is big — paint it at half resolution (it is drawn scaled up) */
@@ -116,6 +116,8 @@
       else if (h.biome === 'hills') for (let i = 0; i < 2; i++) hill(t, p.x + (i ? 10 : -10) + (rnd() - .5) * 6, p.y + (i ? 6 : -4), 18 + rnd() * 6);
       else if (h.biome === 'mountain') mountain(t, p.x + (rnd() - .5) * 6, p.y + 10, 30 + rnd() * 10, world.real ? h.elev > .8 : (h.r < G.ROWS * .3 || h.elev > .8));
       else if (h.biome === 'volcano') { mountain(t, p.x, p.y + 10, 34, false); const gr = t.createRadialGradient(p.x, p.y - 20, 0, p.x, p.y - 20, 22); gr.addColorStop(0, 'rgba(255,140,40,.85)'); gr.addColorStop(1, 'rgba(255,60,20,0)'); t.fillStyle = gr; t.beginPath(); t.arc(p.x, p.y - 20, 22, 0, 7); t.fill() }
+      else if (h.biome === 'stone') { for (let i = 0; i < 4; i++) { const x = p.x + (rnd() - .5) * 40, y = p.y + (rnd() - .5) * 28, r = 2.5 + rnd() * 4; t.fillStyle = 'rgba(0,0,0,.25)'; t.beginPath(); t.ellipse(x + 1.5, y + 1.5, r, r * .6, 0, 0, 7); t.fill(); t.fillStyle = ['#b8ae98', '#a39882', '#cfc6b0'][i % 3]; t.beginPath(); t.ellipse(x, y, r, r * .62, 0, 0, 7); t.fill() } }
+      else if (h.biome === 'highland') { mountain(t, p.x + (rnd() - .5) * 10, p.y + 12, 20 + rnd() * 8, rnd() < .3); hill(t, p.x + (rnd() - .5) * 20, p.y + 6, 16) }
       else if (h.biome === 'ash' && rnd() < .6) { t.fillStyle = 'rgba(255,110,40,.35)'; for (let i = 0; i < 3; i++) { t.beginPath(); t.ellipse(p.x + (rnd() - .5) * 40, p.y + (rnd() - .5) * 30, 3 + rnd() * 4, 1.5, rnd() * 3, 0, 7); t.fill() } }
       else if (h.biome === 'swamp') for (let i = 0; i < 4; i++) reed(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .5) * R, rnd);
       else if (h.biome === 'grass' && rnd() < .5) { t.strokeStyle = 'rgba(60,90,40,.5)'; t.lineWidth = 1.2; for (let i = 0; i < 3; i++) { const x = p.x + (rnd() - .5) * 40, y = p.y + (rnd() - .5) * 30; t.beginPath(); t.moveTo(x - 3, y); t.lineTo(x - 1, y - 5); t.moveTo(x, y); t.lineTo(x + 1, y - 6); t.moveTo(x + 3, y); t.lineTo(x + 3, y - 4); t.stroke() } }
@@ -399,7 +401,7 @@
     const v = await modal(`<h2>📜 กระดานภารกิจ · ข่าวลือ</h2><p>หมอกดำคลุมทุกทิศ รู้เพียงข่าวลือว่ามีอะไรอยู่ที่ไหน เลือกจุดหมาย แล้วออกจากหมู่บ้านไปเปิดทางเอง — แผนที่จะเผยเฉพาะปลายทางและเส้นทางที่คุณเดินผ่าน</p><div class="wm-quests">${cards}</div>`, [{ label: 'ปิด', value: null, ghost: true }]);
     if (v && world.dests.some(d => d.id === v)) chooseDest(v);
   }
-  const BOSS_NAME = { wolf: 'จ่าฝูงหมาป่า', golem: 'โกเล็มหิน', slime: 'สไลม์ยักษ์', bandit: 'หัวหน้าโจร', kobold: 'หัวหน้าโคโบลด์' };
+  const BOSS_NAME = { frostQueen: 'ราชินีน้ำแข็งแห่งศาลหิมะ', wolf: 'จ่าฝูงหมาป่า', golem: 'โกเล็มหิน', slime: 'สไลม์ยักษ์', bandit: 'หัวหน้าโจร', kobold: 'หัวหน้าโคโบลด์' };
   /* warm the browser cache with one hidden battle page so the first real fight opens quickly */
   function warm() { if (document.getElementById('wmWarm')) return; const f = document.createElement('iframe'); f.id = 'wmWarm'; f.style.cssText = 'position:fixed;width:2px;height:2px;left:-10px;top:-10px;opacity:0;pointer-events:none;border:0'; f.src = 'battle-field.html?battle=1&embed=1&warm=1'; document.body.append(f); const on = e => { if (e.data?.type === 'agrenor-battle-ready' && e.data.warm) { removeEventListener('message', on); setTimeout(() => f.remove(), 500) } }; addEventListener('message', on); setTimeout(() => f.remove(), 60000) }
   async function chooseDest(id) {
@@ -569,7 +571,7 @@
     for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1)).join(',');
     const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
-    fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${({ ash: 'hills', volcano: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
+    fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });

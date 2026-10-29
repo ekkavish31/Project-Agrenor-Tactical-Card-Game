@@ -31,6 +31,11 @@
     golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem', shove: true , el: 'earth' },
     bat: { name: 'ค้างคาวถ้ำ', hp: 22, move: 5, atk: 7, scale: .8, fx: 'knife', img: 'bat', fly: true, el: 'dark' },
     gull: { name: 'นกนางนวลยักษ์', hp: 26, move: 5, atk: 8, scale: .9, fx: 'wind', img: 'gull', fly: true, el: 'wind' },
+    /* v95.25 · the snow heights of Dhai-Nor'Qrad */
+    frostWolf: { name: 'หมาป่าน้ำแข็ง', hp: 34, move: 4, atk: 9, scale: .95, fx: 'ice', img: 'frost-wolf', el: 'ice' },
+    snowKobold: { name: 'โคโบลด์หิมะ', hp: 32, move: 3, atk: 10, scale: .9, fx: 'blunt', img: 'snow-kobold', el: 'ice' },
+    yeti: { name: 'เยติ', hp: 70, move: 3, atk: 13, scale: 1.2, fx: 'blunt', img: 'yeti', shove: true, el: 'ice' },
+    frostQueen: { name: 'ราชินีน้ำแข็ง', hp: 120, move: 3, atk: 16, scale: 1.25, fx: 'ice', img: 'frost-queen', range: 3, el: 'ice' },
     shadowWolf: { name: 'หมาป่าเงา', hp: 44, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' , el: 'dark' },
     /* v95.00: the training-ground scarecrow (does not move or hit back) */
     dummy: { name: 'หุ่นฟาง', hp: 40, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
