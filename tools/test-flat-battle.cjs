@@ -252,4 +252,13 @@ test('v97.19 status effects: burn ticks, sleep skips and wakes on a hit, silence
   const s4 = B.create({ bounds: { u0: 0, v0: 0, u1: 8, v1: 8 }, kindAt, cards: true, rng: () => .1, hero: { u: 7, v: 8 }, monster: { u: 8, v: 8, hp: 34, maxHp: 34, atk: 8, move: 3, kind: 'slime' } });
   B.endTurn(s4); B.monsterTurn(s4); assert.ok(B.hero(s4).sts?.poison, 'a slime poisons');
 });
+test('v97.22 objectives: survive N turns · escape to an exit · defend a cell (a foe on it loses) · defeat the leader', () => {
+  const mo = (objective, extra = {}) => B.create({ bounds: { u0: 0, v0: 0, u1: 8, v1: 8 }, kindAt, objective, hero: { u: 0, v: 8 }, monsters: [{ u: 8, v: 0, ...extra }, { u: 8, v: 1 }] });
+  const s = mo({ type: 'survive', turns: 2 }); assert.match(B.objText(s), /2 เทิร์น/);
+  B.endTurn(s); B.endTurn(s); assert.equal(s.outcome, null, 'turn 2: still going'); B.endTurn(s); B.endTurn(s); assert.equal(s.outcome, 'win', 'past turn 2: held out');
+  const e = mo({ type: 'escape', cells: [{ u: 1, v: 8 }] }); assert.equal(B.move(e, { u: 1, v: 8 }).ok, true); assert.equal(e.outcome, 'win', 'stepping on the exit wins');
+  const d = mo({ type: 'defend', turns: 4, cells: [{ u: 5, v: 0 }] }); B.endTurn(d); B.monsterTurn(d); assert.equal(d.outcome, 'lose', 'a foe that reaches the banner takes it');
+  const l = mo({ type: 'leader' }, { leader: true }); B.hurt(l, l.units.find(u => u.leader), 999); B.checkOutcome(l); assert.equal(l.outcome, 'win', 'the leader down: the rest flee');
+  const r = mo(null); B.hurt(r, r.units.find(u => u.id === 'monster'), 999); B.checkOutcome(r); assert.equal(r.outcome, null, 'rout: one foe still stands');
+});
 console.log('flat battle: ' + n + ' tests passed');

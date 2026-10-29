@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.20';
+  const V = '97.22';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -110,10 +110,20 @@
       if (best) taken.add(best.u + ',' + best.v); return best };
     const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
     const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
+    /* v97.22: battle objective from the world map (?obj=survive:5 | escape | defend:4 | leader) */
+    const objective = (() => { const [type, n] = (Q.get('obj') || '').split(':');
+      if (type === 'survive') return { type, turns: Math.max(2, +n || 5) };
+      if (type === 'leader' && mons.length > 1) { const L = mons[0]; L.leader = true; L.hp = L.maxHp = Math.round(L.maxHp * 1.3); if (!/หัวหน้า/.test(L.name)) L.name = 'หัวหน้า' + L.name; return { type } }
+      if (type === 'defend') { const at = near(hs); return at ? { type, turns: Math.max(2, +n || 4), cells: [at] } : null }
+      if (type === 'escape') { /* exits sit in one of the two side corners, across the hero–monster axis, so the hero must run past the fight */
+        const corners = [{ u: b.u1, v: b.v1 }, { u: b.u0, v: b.v0 }], k = corners[Math.random() < .5 ? 0 : 1], out = [];
+        for (const [key, kd] of cells) { if (kd === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number); if ((u === b.u0 || u === b.u1 || v === b.v0 || v === b.v1) && Math.max(Math.abs(u - k.u), Math.abs(v - k.v)) <= 2) out.push({ u, v }) }
+        return out.length ? { type, cells: out } : null }
+      return null })();
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
-      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons });
+      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
     for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
@@ -295,9 +305,12 @@
   }
 
   /* ---------- HUD ---------- */
+  /* v97.22 · win/lose line for the HUD, the opening banner and the pause menu */
+  const goalLine = () => 'ชนะ: ' + FB.objText(st) + ' · แพ้: ' + FB.hero(st).name + ' ล้ม' + (st.obj?.type === 'defend' ? ' หรือศัตรูยืนบนจุดสีทอง' : '');
+  const turnGoal = () => st.obj?.turns ? '/' + st.obj.turns : '';
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
-    d.innerHTML = `<b style="color:#f6d79b">⚔ สนามรบ · ไพ่</b><div id="fbTurn" style="margin:4px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
+    d.innerHTML = `<b style="color:#f6d79b">⚔ สนามรบ · ไพ่</b><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
       <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space">จบเทิร์น</button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)">↶ ย้อนเดิน</button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)">⚡ Auto</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button><button id="fbMenu" title="เมนู (Esc)">☰</button>${EMBED ? '<button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : ''}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
       <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรู = ดูการ์ดที่ดีที่สุด · คลิกซ้ำ = โจมตี<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง) · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
@@ -329,8 +342,8 @@
     hud.querySelectorAll('#fbUnits [data-skill]').forEach(e => e.onclick = () => allySkillAct(e.dataset.skill));
     hud.querySelectorAll('#fbUnits [data-ctl]').forEach(e => e.onclick = () => { const u = st.units.find(x => x.id === e.dataset.ctl); if (!u) return; u.autoCtl = !u.autoCtl; floatText(u, u.autoCtl ? 'AI' : 'MANUAL', '#bfe8ff', true); hudSync() });
     hud.querySelectorAll('#fbUnits .mini[data-id^="monster"]').forEach(e => e.onclick = () => { if (st.turn === 'hero' && !busy) { FB.setTarget(st, e.dataset.id); hudSync(); handSync() } });
-    hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? '🏆 ชนะ!' : '💀 แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns} · ตาคุณ · แต้มเดิน ${st.mp}` : st.turn === 'ally' && st.cur ? `เทิร์น ${st.turns} · ตาของ ${st.cur.name} · เดิน ${st.mp}` : `เทิร์น ${st.turns} · ตาศัตรู…`;
-    hud.querySelector('#fbTurn').title = 'ชนะ: ล้มศัตรูทั้งหมด · แพ้: ' + FB.hero(st).name + ' ล้ม';
+    hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? '🏆 ชนะ!' : '💀 แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns}${turnGoal()} · ตาคุณ · แต้มเดิน ${st.mp}` : st.turn === 'ally' && st.cur ? `เทิร์น ${st.turns}${turnGoal()} · ตาของ ${st.cur.name} · เดิน ${st.mp}` : `เทิร์น ${st.turns}${turnGoal()} · ตาศัตรู…`;
+    hud.querySelector('#fbTurn').title = goalLine(); hud.querySelector('#fbGoal').textContent = '🎯 ' + FB.objText(st);
     const left = FB.crystals(st), max = st.crystalMax;
     hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<span class="gem ${i < left ? 'on' : ''}"></span>`).join('');
     hud.querySelector('#fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
@@ -446,9 +459,11 @@
      then back to the party. Skipped when the arena is only warming up and with reduced motion (CINE off). */
   async function battleIntro() {
     const d = document.createElement('div'); d.id = 'fbIntro';
-    d.innerHTML = `<small>${esc(({ forest: 'ป่า', grass: 'ทุ่งหญ้า', hills: 'เนินเขา', swamp: 'บึง', snow: 'ทุ่งหิมะ', sand: 'หาดทราย' })[Q.get('biome')] || 'สนามรบ')}${Q.get('night') === '1' ? ' · กลางคืน' : ''}</small><b>${esc(TITLE || FB.monster(st)?.name || 'การต่อสู้')}</b><span>ชนะ: ล้มศัตรูทั้งหมด · แพ้: ${esc(FB.hero(st).name)} ล้ม</span>`;
+    d.innerHTML = `<small>${esc(({ forest: 'ป่า', grass: 'ทุ่งหญ้า', hills: 'เนินเขา', swamp: 'บึง', snow: 'ทุ่งหิมะ', sand: 'หาดทราย' })[Q.get('biome')] || 'สนามรบ')}${Q.get('night') === '1' ? ' · กลางคืน' : ''}</small><b>${esc(TITLE || FB.monster(st)?.name || 'การต่อสู้')}</b><span>${esc(goalLine())}</span>`;
     document.body.append(d); sfx('cast', .3);
     const m = FB.monsters(st).find(u => u.hp > 0); if (m) await cinematic(m, m, () => wait(1900), { z: 1.45, lead: 260, tail: 160 }); else await wait(2000);
+    /* v97.22 · show where the exits / the banner are before the first turn */
+    const gc = st.obj?.cells; if (gc?.length) { const at = { vu: gc.reduce((a, c) => a + c.u, 0) / gc.length + .5, vv: gc.reduce((a, c) => a + c.v, 0) / gc.length + .5 }; d.querySelector('b').textContent = st.obj.type === 'escape' ? 'ทางออก' : 'จุดที่ต้องป้องกัน'; await cinematic(at, at, () => wait(1500), { z: 1.3, lead: 260, tail: 160 }) }
     d.classList.add('out'); setTimeout(() => d.remove(), 600);
   }
   async function startTurnShow(first) {
@@ -756,7 +771,7 @@
     if (!st || facing) return;
     const d = document.createElement('div'); d.id = 'fbPause'; pauseEl = d;
     const canAct = !busy && st.turn === 'hero' && !st.outcome;
-    d.innerHTML = `<div class="box"><b>หยุดเกม</b><small>ชนะ: ล้มศัตรูทั้งหมด · แพ้: ${esc(FB.hero(st).name)} ล้ม</small>
+    d.innerHTML = `<div class="box"><b>หยุดเกม</b><small>${esc(goalLine())}</small>
       <button data-a="resume">▶ เล่นต่อ</button><button data-a="el">◈ ตารางธาตุ</button><button data-a="keys">⌨ ปุ่มควบคุม</button>
       ${EMBED ? `<button data-a="flee" class="warn" ${canAct ? '' : 'disabled'}>🏃 หนีจากการต่อสู้</button>` : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
       <div class="keys" hidden>คลิกศัตรู · Tab = เลือกเป้าและดูการ์ดที่ดีที่สุด<br>คลิกซ้ำ · Enter = โจมตีตามที่แสดง<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง)<br>1–9 = ใช้ไพ่ต่อสู้ใบนั้น · Z / Backspace = ย้อนเดิน<br>Space = จบเทิร์น แล้วเลือกทิศด้วยลูกศร · A = Auto<br>Q / E = หมุนกล้อง · Esc = เมนูนี้</div></div>`;
@@ -1028,6 +1043,9 @@
       g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke();
     }
     if (reachMap && !busy) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
+    /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
+    if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); poly(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
+      const p = project(c.u + .5, c.v + .5); g.font = '16px system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(esc_ ? '⇲' : '🚩', p.x, p.y + 5 - 3 * pul) }
     /* v94.02 · height of every cell you can reach (1–3; 0 = ground) */
     if (reachMap && !busy && window.FieldHeight) { g.font = '700 11px system-ui'; g.textAlign = 'center'; for (const e of reachMap.values()) { const L = FB.lv(st, e.u, e.v); if (!L) continue; const p = project(e.u + .5, e.v + .5); g.fillStyle = 'rgba(10,20,40,.75)'; g.beginPath(); g.arc(p.x, p.y, 8, 0, 7); g.fill(); g.fillStyle = '#cfe4ff'; g.fillText('▲' + L, p.x, p.y + 4) } }
     if (pushShow && !busy) { poly(g, pushShow.u, pushShow.v); g.fillStyle = pushShow.stuck ? 'rgba(160,160,160,.35)' : pushShow.dmg ? 'rgba(255,60,40,.45)' : 'rgba(255,200,80,.35)'; g.fill(); const p = project(pushShow.u + .5, pushShow.v + .5); g.font = '800 13px system-ui'; g.textAlign = 'center'; g.fillStyle = '#000a'; g.fillRect(p.x - 48, p.y - 30, 96, 18); g.fillStyle = pushShow.dmg ? '#ffb0a0' : '#ffe2a8'; g.fillText(pushShow.stuck ? 'ผลักไม่ได้' : pushShow.dmg ? 'ตก ' + pushShow.drop + ' ระดับ −' + pushShow.dmg : 'ไม่ตก', p.x, p.y - 17) }
@@ -1063,7 +1081,7 @@
     for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }
     /* v97.19 · status icons above the head (sleep, burn, poison, silence, weak, frozen, slowed) */
     g.save(); g.font = '15px system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center';
-    for (const u of st.units) { if (u.hp <= 0) continue; const ic = [...Object.keys(u.sts || {}).map(k => FB.STATUS[k]?.icon), u.stun ? '❄' : '', u.slowed ? '⚡' : ''].filter(Boolean); if (!ic.length) continue;
+    for (const u of st.units) { if (u.hp <= 0) continue; const ic = [u.leader ? '👑' : '', ...Object.keys(u.sts || {}).map(k => FB.STATUS[k]?.icon), u.stun ? '❄' : '', u.slowed ? '⚡' : ''].filter(Boolean); if (!ic.length) continue;
       const q = project(u.vu, u.vv), y = q.y - UNIT * 1.95 + Math.sin(t * .004) * 2, w = ic.length * 18 + 6; g.fillStyle = 'rgba(10,14,20,.7)'; g.beginPath(); g.roundRect?.(q.x - w / 2, y - 14, w, 20, 9); g.fill(); ic.forEach((x, k) => g.fillText(x, q.x - w / 2 + 12 + k * 18, y + 1)) }
     g.restore();
     fxDraw(g, t); partDraw(g, t);

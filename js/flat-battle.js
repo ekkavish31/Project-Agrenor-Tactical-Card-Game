@@ -41,7 +41,7 @@
       ],
       turn: 'hero', turns: 1, mp: 0, acted: false, outcome: null, log: []
     };
-    st.mp = st.units[0].move;
+    st.mp = st.units[0].move; if (o.objective) st.obj = o.objective;
     if (o.ct) { st.ct = true;   /* the hero first, then his friends, then the foes */
       const r = o.rng || Math.random; for (const u of st.units) { u.speed = u.speed || (u.id === 'hero' ? 8 : 8); u.ct = u.id === 'hero' ? 100 : u.side === 'hero' ? 55 + Math.floor(r() * 40) : Math.floor(r() * u.speed * 5) } st.active = st.units[0] }
     if (o.cards) {
@@ -102,7 +102,19 @@
   const opponents = (st, u) => st.units.filter(x => x.side !== u.side && alive(x));
   /* nearest living opponent (falls back to any opponent so old callers still get a unit) */
   const foe = (st, u) => opponents(st, u).sort((a, b) => dist(u, a) - dist(u, b))[0] || st.units.find(x => x.side !== u.side);
-  function checkOutcome(st) { if (!alive(hero(st))) st.outcome = 'lose'; else if (!monsters(st).some(alive)) st.outcome = 'win'; return st.outcome }
+  /* v97.22 · win conditions beyond a rout (st.obj): survive N turns · escape (the hero reaches an exit cell) · defend a cell for N turns
+     (a foe standing on it = lost) · leader (only the marked leader has to fall). A rout always wins too. */
+  const OBJ_TEXT = { rout: 'ล้มศัตรูทั้งหมด', survive: 'อยู่รอดให้ครบ {n} เทิร์น', escape: 'พาตัวเอกไปถึงทางออก (ช่องเขียว)', defend: 'ป้องกันจุดสีทอง {n} เทิร์น', leader: 'ล้มหัวหน้า' };
+  const objText = st => (OBJ_TEXT[st.obj?.type || 'rout'] || OBJ_TEXT.rout).replace('{n}', st.obj?.turns || '');
+  function checkOutcome(st) {
+    if (st.outcome) return st.outcome; const o = st.obj;
+    if (!alive(hero(st))) st.outcome = 'lose';
+    else if (o?.type === 'defend' && o.cells?.some(c => monsters(st).some(m => alive(m) && m.u === c.u && m.v === c.v))) st.outcome = 'lose';
+    else if (!monsters(st).some(alive)) st.outcome = 'win';
+    else if (o?.type === 'leader' && !monsters(st).some(m => m.leader && alive(m))) st.outcome = 'win';
+    else if ((o?.type === 'survive' || o?.type === 'defend') && st.turns > o.turns) st.outcome = 'win';
+    else if (o?.type === 'escape' && o.cells?.some(c => c.u === hero(st).u && c.v === hero(st).v)) st.outcome = 'win';
+    return st.outcome }
   const inside = (st, u, v) => u >= st.bounds.u0 && u <= st.bounds.u1 && v >= st.bounds.v0 && v <= st.bounds.v1;
   function kind(st, u, v) { if (!inside(st, u, v)) return 'blocked'; const k = st.kindAt(u, v); return KINDS[k] ? k : 'normal' }
   const cost = (st, u, v) => KINDS[kind(st, u, v)].cost;
@@ -167,7 +179,7 @@
   function move(st, to) {
     const c = canMove(st, to); if (!c.ok) return c;
     const u = actor(st), pv = c.path[c.path.length - 2] || u; u.face = faceOf(pv, to); u.u = to.u; u.v = to.v; st.mp -= c.cost;
-    st.log.push(u.name + ' เดิน ' + c.cost + ' แต้ม');
+    st.log.push(u.name + ' เดิน ' + c.cost + ' แต้ม'); if (st.obj?.type === 'escape' && u === hero(st)) checkOutcome(st);
     return { ok: true, path: c.path, cost: c.cost };
   }
   /* facing on the lattice (+u = SE, +v = SW, −u = NW, −v = NE) — used by แทงข้างหลัง */
@@ -245,7 +257,7 @@
     return out;
   }
   function beginHeroTurn(st) {
-    st.turn = 'hero'; st.cur = null; st.turns++; st.acted = false; st.mp = 0;
+    st.turn = 'hero'; st.cur = null; st.turns++; checkOutcome(st); st.acted = false; st.mp = 0;
     if (st.cards) { const h = hero(st); h.guard = 0; if (h.perch && --h.perch <= 0) h.perch = 0; for (const a of allies(st)) if (a.cd) a.cd--; refill(st) }
   }
   /* after the hero ends the turn: run the AI units' turns in CT order until the hero is up again. Returns the steps (type 'turn' marks each unit's start) */
@@ -303,7 +315,7 @@
   function endTurn(st) {
     if (st.outcome) return { ok: false, reason: 'จบการต่อสู้แล้ว' };
     if (st.cards && st.turn === 'hero') { const h = hero(st); h.stamina = Math.min(h.stMax || 100, h.stamina + 10); h.climb = 0 }
-    st.turn = st.turn === 'hero' ? 'monster' : 'hero'; if (st.turn === 'hero') st.turns++;
+    st.turn = st.turn === 'hero' ? 'monster' : 'hero'; if (st.turn === 'hero') { st.turns++; checkOutcome(st) }
     st.acted = false; st.mp = st.cards && st.turn === 'hero' ? 0 : actor(st).move;
     if (st.cards && st.turn === 'hero') { const h = hero(st); h.guard = 0; if (h.perch && --h.perch <= 0) h.perch = 0; for (const a of allies(st)) { a.guard = 0; if (a.cd) a.cd-- } refill(st) }
     return { ok: true, turn: st.turn };
@@ -324,6 +336,9 @@
         if (dist(u, hurtF) <= u.range) { const b = hurtF.hp; hurtF.hp = Math.min(hurtF.maxHp, hurtF.hp + 12); st.log.push(u.name + ' รักษา ' + hurtF.name + ' +' + (hurtF.hp - b)); steps.push({ unit: u, type: 'heal', target: hurtF, heal: hurtF.hp - b }); return steps }
       }
     }
+    /* v97.22 · a raid on a defend objective: a foe that can step onto the guarded cell this turn takes it (and wins) */
+    if (u.side === 'monster' && st.obj?.type === 'defend') { const r = reach(st, u, u.move), g = st.obj.cells.map(c => r.get(key(c.u, c.v))).find(Boolean);
+      if (g) { const path = pathTo(r, g), pv = path[path.length - 2] || u; u.face = faceOf(pv, g); u.u = g.u; u.v = g.v; st.log.push(u.name + ' บุกยึดจุดป้องกัน!'); steps.push({ unit: u, type: 'move', path }); return steps } }
     if (u.side === 'monster' && (u.iq | 0) >= 1) return smartAct(st, u, steps);   /* v97.01 · tactics by intelligence */
     let tgt = targets(st, u).find(t => t.id === st.target && u.side === 'hero') || targets(st, u)[0], field = null;
     /* companion orders: guard = hold the ground (+6 guard, hit only what is already in range) · follow = stay by the hero */
@@ -667,6 +682,6 @@
     if (!free(st, nu, nv, t) || lv(st, nu, nv) - lv(st, t.u, t.v) > 1) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

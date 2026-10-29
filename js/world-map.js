@@ -696,7 +696,11 @@
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
     const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
     const tut = (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
-    fr.src = `battle-field.html?battle=1&embed=1${tut}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
+    /* v97.22 · battle objectives: a night camp raid → hold the camp banner · an ambush → sometimes break out to the map edge
+       · an elite group → bring down its leader · now and then: just hold out. The prologue and bosses always fight to the end. */
+    const obj = tut || o.boss ? '' : o.camp ? 'defend:4' : o.ambush && Math.random() < .35 ? 'escape' : elite && n > 2 && Math.random() < .6 ? 'leader' : Math.random() < .15 ? 'survive:5' : '';
+    const OBJ_GOLD = { defend: 1.3, escape: .8, leader: 1.25, survive: 1.2 }, OBJ_NAME = { defend: 'ป้องกันค่าย', escape: 'ฝ่าวงล้อม', leader: 'ล้มหัวหน้า', survive: 'ยื้อไว้' };
+    fr.src = `battle-field.html?battle=1&embed=1${tut}${obj ? '&obj=' + obj : ''}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
@@ -711,7 +715,7 @@
     if (!o.boss) ev(res.outcome === 'win' ? 'battle:win' : res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome });
     else if (res.outcome !== 'win') ev(res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome, destName: destOf()?.name });
     if (res.outcome === 'win') {
-      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
+      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (OBJ_GOLD[obj.split(':')[0]] || 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       const loot = dropLoot(foe, here.biome, dang, o.boss);
       /* v94.06 F2: experience — the hero and the companions who fought */
       let jobRes = null; const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
@@ -725,7 +729,7 @@
         WS.commit();
       }
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
-      if (P) await results({ title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed, job: jobRes && jobRes.id !== 'adventurer' ? { ...P.JOBS[jobRes.id], lv: P.jobLevel(WS.game(), jobRes.id), jp: P.jobsOf(WS.game()).jobs[jobRes.id]?.jp || 0, need: P.jobNeed(P.jobLevel(WS.game(), jobRes.id)), ups: jobRes.ups, max: P.JOB_MAX } : null });
+      if (P) await results({ title: (obj ? '🎯 ' + OBJ_NAME[obj.split(':')[0]] + ' สำเร็จ' + (title ? ' · ' : '') : '') + title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed, job: jobRes && jobRes.id !== 'adventurer' ? { ...P.JOBS[jobRes.id], lv: P.jobLevel(WS.game(), jobRes.id), jp: P.jobsOf(WS.game()).jobs[jobRes.id]?.jp || 0, need: P.jobNeed(P.jobLevel(WS.game(), jobRes.id)), ups: jobRes.ups, max: P.JOB_MAX } : null });
       else toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
     } else if (res.outcome === 'flee') {
       log('หนีออกมาได้'); if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal() } S.hp = Math.max(1, S.hp);
