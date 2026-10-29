@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.18';
+  const V = '97.19';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -321,7 +321,7 @@
     const IQN = ['ดุร้าย · พุ่งใส่ตัวใกล้สุด', 'เจ้าเล่ห์ · ล่าตัวอ่อนแอ จบตัวที่ใกล้ตาย', 'ชำนาญยุทธวิธี · เล็งตัวซัพพอต หลบกลางวงล้อม ถอยหนีตอนใกล้ตาย', 'จอมวางแผน · ใช้ตัวบังพวกอ่อนแอ ถอยไปฟื้นตัว'];
     const mini = (u, col) => `<div class="mini ${u.hp <= 0 ? 'down' : ''} ${st.target === u.id ? 'tgt' : ''}" data-id="${u.id}" title="${u.side === 'monster' ? esc(IQN[u.iq | 0]) : ''}"><span>${esc(u.name)}${elb(u)}${lvb(u)}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:${col}"></i></div>`;
     hud.querySelector('#fbUnits').innerHTML =
-      `<div>${esc(h.name)} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff">🛡' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
+      `<div>${esc(h.name)}${Object.keys(h.sts || {}).map(k => ` <span title="${esc(FB.STATUS[k].name)} ${h.sts[k]} เทิร์น">${FB.STATUS[k].icon}</span>`).join('')} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff">🛡' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
       `<div><small style="color:#bba57f">แรง (stamina)</small> <span style="float:right">${h.stamina}/100</span></div>${bar(h.stamina, 100, '#e8c34a')}` +
       (FB.allies(st).length ? '<div class="grp">ทีม <small>(สั่งการ · ท่าพิเศษใช้ 1 คริสตัล)</small></div>' + FB.allies(st).map(u => allyRow(u)).join('') : '') +
       '<div class="grp">ศัตรู <small>(คลิกเพื่อเล็งเป้า)</small></div>' + FB.monsters(st).map(u => mini(u, '#e2705f')).join('');
@@ -539,6 +539,7 @@
       }
       for (const x of r.hits) (x.target || m).shown = (x.target || m).hp; hudSync(); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff', true);
       if (r.moved) { const from = { u: m.vu - .5, v: m.vv - .5 }; shake(6, 200); await walkAnim(m, [from, { u: m.u, v: m.v }], 5, true) }
+      if (r.status) floatText(r.status.unit, (FB.STATUS[r.status.kind]?.icon || '') + ' ' + (FB.STATUS[r.status.kind]?.name || ''), '#ffe08a', true);
       if (r.fall) { shake(12, 380); fx('fallDust', m); floatText(m, 'FALL −' + r.fall.damage, '#ffb08a', false, true); m.shown = m.hp; hudSync() }
       if (kill) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(260); h.pose = 'idle';
     }, { z: heavy ? 1.95 : 1.75 });
@@ -651,6 +652,8 @@
       if (s.type === 'move') await walkAnim(s.unit, s.path);
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
       else if (s.type === 'stun') { floatText(s.unit, 'FROZEN — SKIP', '#bfe8ff', true); await wait(420) }
+      else if (s.type === 'dot') { const S = FB.STATUS[s.kind] || {}; s.unit.hitUntil = now() + 300; floatText(s.unit, (S.icon || '') + ' −' + s.damage, s.kind === 'burn' ? '#ffb070' : '#b6e07a'); s.unit.shown = s.unit.hp; hudSync(); if (s.unit.hp <= 0) s.unit.deadAt = now() + 300; await wait(420) }
+      else if (s.type === 'sleep') { floatText(s.unit, '💤 SLEEP — SKIP', '#c8c0ff', true); await wait(420) }
       else if (s.type === 'heal') { s.unit.pose = 'strike'; fx('heal', s.target, s.unit, { color: '#7fe08a' }); impact(s.target, 'heal', false); s.target.flashUntil = 0; floatText(s.target, '+' + s.heal, '#7fe08a'); s.target.shown = s.target.hp; hudSync(); await wait(650); s.unit.pose = 'idle' }
       else if (s.type === 'hold') { s.unit.pose = 'guard'; setTimeout(() => { if (s.unit.pose === 'guard') s.unit.pose = 'idle' }, 700) }
     }
@@ -1052,6 +1055,11 @@
     }
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
     for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }
+    /* v97.19 · status icons above the head (sleep, burn, poison, silence, weak, frozen, slowed) */
+    g.save(); g.font = '15px system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center';
+    for (const u of st.units) { if (u.hp <= 0) continue; const ic = [...Object.keys(u.sts || {}).map(k => FB.STATUS[k]?.icon), u.stun ? '❄' : '', u.slowed ? '⚡' : ''].filter(Boolean); if (!ic.length) continue;
+      const q = project(u.vu, u.vv), y = q.y - UNIT * 1.95 + Math.sin(t * .004) * 2, w = ic.length * 18 + 6; g.fillStyle = 'rgba(10,14,20,.7)'; g.beginPath(); g.roundRect?.(q.x - w / 2, y - 14, w, 20, 9); g.fill(); ic.forEach((x, k) => g.fillText(x, q.x - w / 2 + 12 + k * 18, y + 1)) }
+    g.restore();
     fxDraw(g, t); partDraw(g, t);
     if (CINE) { speedDraw(g, t); atmosphere(g, t0); flashDraw(g) }
     texts = texts.filter(x => t - x.t0 < 1300);

@@ -242,4 +242,14 @@ test('v97.18 job passives: warrior melee +3 · mage spell ×1.15 · cleric heal 
   const far = rp => { const st = mkC({ hero: { u: 3, v: 8, rangePlus: rp } }); return B.combatBlock(st, give(st, 'combat', 'spell')) }; assert.ok(far(0)); assert.equal(far(1), '');   // 5 cells: spell reaches 4, 5 with the ranger
   assert.ok(hit({ flankPlus: 1.15 }, 'attack', { face: 'SE' }).hits[0].damage > hit({}, 'attack', { face: 'SE' }).hits[0].damage, 'rogue from behind');
 });
+test('v97.19 status effects: burn ticks, sleep skips and wakes on a hit, silence blocks element cards, weak lowers hits, monsters inflict by kind', () => {
+  const st = mkC({ hero: { u: 7, v: 8 } }), m = B.monster(st);
+  assert.equal(B.inflict(st, m, 'burn', 1), 'burn'); const steps = []; B.tickStatus(st, m, steps); assert.equal(m.hp, 34 - 4); assert.equal(steps[0].type, 'dot');
+  B.inflict(st, m, 'sleep', 1); assert.equal(B.tickStatus(st, m, []), true, 'asleep: skip'); B.inflict(st, m, 'sleep', 1); B.hurt(st, m, 5); assert.ok(!m.sts?.sleep, 'a hit wakes it');
+  const s2 = mkC({ hero: { u: 7, v: 8 } }); B.inflict(s2, B.hero(s2), 'silence', 1); assert.match(B.combatBlock(s2, give(s2, 'combat', 'spell')), /ใบ้/);
+  const hit = weak => { const s3 = mkC({ hero: { u: 7, v: 8 } }); if (weak) B.inflict(s3, B.hero(s3), 'weak', 1); return B.playCombat(s3, give(s3, 'combat', 'attack')).hits[0].damage };
+  assert.ok(hit(true) < hit(false));
+  const s4 = B.create({ bounds: { u0: 0, v0: 0, u1: 8, v1: 8 }, kindAt, cards: true, rng: () => .1, hero: { u: 7, v: 8 }, monster: { u: 8, v: 8, hp: 34, maxHp: 34, atk: 8, move: 3, kind: 'slime' } });
+  B.endTurn(s4); B.monsterTurn(s4); assert.ok(B.hero(s4).sts?.poison, 'a slime poisons');
+});
 console.log('flat battle: ' + n + ' tests passed');

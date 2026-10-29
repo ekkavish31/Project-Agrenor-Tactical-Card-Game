@@ -184,12 +184,30 @@
     return { damage: d, notes };
   }
   /* one hit of `raw` damage on tgt: cover −30 %, then the guard pool soaks it up. Returns { damage, notes } (damage = HP actually lost) */
+  /* ---------- v97.19 · status effects (unit.sts = {kind: turns left}) tied to elements and monster kinds ----------
+     burn 🔥 / poison ☠: HP lost at the start of the unit's own turn · sleep 💤: skips its turns, a hit wakes it · silence 🔇: no element
+     cards or skills · weak ⬇: hits ×0.75 · freeze and shock reuse the old stun (skip a turn) and slow (−2 move). */
+  const STATUS = { burn: { name: 'ไหม้', icon: '🔥', dot: 4, turns: 2 }, poison: { name: 'พิษ', icon: '☠', dot: 3, turns: 3 }, sleep: { name: 'หลับ', icon: '💤', turns: 2 }, silence: { name: 'ใบ้', icon: '🔇', turns: 2 }, weak: { name: 'อ่อนแรง', icon: '⬇', turns: 2 }, freeze: { name: 'แข็ง', icon: '❄' }, shock: { name: 'ชา', icon: '⚡' } };
+  const CARD_STATUS = { flame: ['burn', .5], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3] };
+  const MON_STATUS = { slime: ['poison', .3], wolf: ['poison', .2], bat: ['sleep', .2], shadowWolf: ['sleep', .2], golem: ['weak', .3], frostWolf: ['freeze', .2], yeti: ['freeze', .25], frostQueen: ['freeze', .35], snowKobold: ['silence', .2], kobold: ['silence', .15], bandit: ['weak', .15] };
+  function inflict(st, t, k, chance = 1, notes) {
+    if (!st.cards || !alive(t) || !STATUS[k] || (st.rng || Math.random)() >= chance) return null;
+    if (k === 'freeze') t.stun = 1; else if (k === 'shock') t.slowed = 1; else (t.sts ||= {})[k] = STATUS[k].turns;
+    st.log.push(t.name + ' ติดสถานะ' + STATUS[k].name); notes?.push(STATUS[k].icon + ' ' + STATUS[k].name); return k;
+  }
+  /* start of a unit's own turn: damage over time, count down; true = asleep (skip the turn) */
+  function tickStatus(st, u, steps) {
+    const s = u.sts; if (!s) return false; let skip = false;
+    for (const k of Object.keys(s)) { const S = STATUS[k]; if (S.dot && alive(u)) { const d = Math.min(u.hp, S.dot); u.hp -= d; st.log.push(u.name + ' ' + S.name + ' −' + d); steps?.push({ unit: u, type: 'dot', kind: k, damage: d }) } if (k === 'sleep') skip = true; if (--s[k] <= 0) delete s[k] }
+    if (!Object.keys(s).length) delete u.sts; checkOutcome(st); return skip && alive(u);
+  }
+  const weakMult = u => u.sts?.weak ? .75 : 1;
   function hurt(st, tgt, raw) {
     let d = Math.max(1, Math.round(raw)), notes = [];
     if (kind(st, tgt.u, tgt.v) === 'cover') { d = Math.max(1, Math.round(d * (1 - KINDS.cover.reduce))); notes.push('กำบัง −30%') }
     if (st.cards && tgt.armor > 0 && d > 1) { const a = Math.min(tgt.armor, d - 1); d -= a; notes.push('เกราะ −' + a) }   /* v95.00: DEF of the hero (level) and of armoured companions */
     if (tgt.guard > 0) { const a = Math.min(tgt.guard, d); tgt.guard -= a; d -= a; notes.push('ป้องกัน −' + a) }
-    tgt.hp = Math.max(0, tgt.hp - d);
+    tgt.hp = Math.max(0, tgt.hp - d); if (d > 0 && tgt.sts?.sleep) { delete tgt.sts.sleep; notes.push('ตื่น') }
     return { damage: d, notes };
   }
   function attack(st) {
@@ -200,7 +218,7 @@
     if (st.cards && a.side === 'hero') return { ok: false, reason: 'ใช้ไพ่โจมตี' };
     a.face = faceOf(a, t);
     if (st.cards && t.evade) { t.evade = 0; st.acted = true; st.mp = 0; st.log.push(t.name + ' ก้าวหลบ ' + a.name + ' พลาด'); return { ok: true, damage: 0, target: t, notes: ['หลบ'], evaded: true } }
-    const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage); st.acted = true; st.mp = 0;
+    const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * weakMult(a) * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); if (st.cards && r.damage > 0 && MON_STATUS[a.kind]) inflict(st, t, MON_STATUS[a.kind][0], MON_STATUS[a.kind][1], r.notes); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage); st.acted = true; st.mp = 0;
     st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
     let counter = 0;
     if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; const c = hurt(st, a, 12); counter = c.damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
@@ -236,6 +254,8 @@
     for (let guard = 0; guard < 300 && !st.outcome; guard++) {
       const list = st.units.filter(alive), g = new Map(list.map(u => [u, u.ct || 0])), u = pickNext(list, g);
       for (const x of list) x.ct = g.get(x); if (u !== hero(st)) u.ct -= 100; st.active = u;   // the hero pays when his turn ends
+      /* v97.19: burns / poison tick, sleepers lose the turn */
+      if (u.sts) { const slept = tickStatus(st, u, steps); if (st.outcome) break; if (!alive(u)) continue; if (slept) { st.log.push(u.name + ' หลับอยู่'); steps.push({ unit: u, type: 'sleep' }); if (u === hero(st)) u.ct -= 100; continue } }
       if (u === hero(st)) { beginHeroTurn(st); steps.push({ type: 'turn', unit: u }); return steps }
       st.turn = 'monster'; st.cur = u; steps.push({ type: 'turn', unit: u }); if (u.side === 'hero') u.guard = 0;
       if (u.side === 'hero' && u.control && !u.autoCtl && !u.stun && st.cards) { beginAllyTurn(st, u); steps.push({ type: 'control', unit: u }); return steps }   /* v97.15 · the player commands this one */
@@ -391,7 +411,7 @@
     st.cur = a; st.acted = false; if (a.side === 'hero') st.turn = 'monster';   // let attack() resolve for this attacker
     const at = (() => { a.face = faceOf(a, t);
       if (st.cards && t.evade) { t.evade = 0; st.log.push(t.name + ' ก้าวหลบ ' + a.name + ' พลาด'); return { ok: true, damage: 0, target: t, notes: ['หลบ'], evaded: true } }
-      const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage);
+      const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * weakMult(a) * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); if (st.cards && r.damage > 0 && MON_STATUS[a.kind]) inflict(st, t, MON_STATUS[a.kind][0], MON_STATUS[a.kind][1], r.notes); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage);
       st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
       let counter = 0; if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; counter = hurt(st, a, 12).damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
       /* v94: heavy monsters (shove) knock a target standing at a ledge off it — down 2+ levels costs 5 HP per level */
@@ -418,7 +438,7 @@
   function skillBlock(st, a) {
     if (!st.cards) return 'ไม่ได้เปิดโหมดไพ่'; if (st.outcome) return 'จบการต่อสู้แล้ว'; if (st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
     if (!a || !alive(a) || a.side !== 'hero' || a === hero(st)) return 'สั่งไม่ได้'; const sk = ALLY_SKILL[a.key]; if (!sk) return 'ไม่มีท่าพิเศษ';
-    if (a.cd > 0) return 'รออีก ' + a.cd + ' เทิร์น'; if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
+    if (a.cd > 0) return 'รออีก ' + a.cd + ' เทิร์น'; if (a.sts?.silence) return '🔇 ใบ้ ใช้ท่าพิเศษไม่ได้'; if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
     if (sk.range && !targets(st, a, sk.range).length) return 'ไม่มีศัตรูในระยะ ' + sk.range + ' ช่อง';
     if (sk.healAll && !st.units.some(u => u.side === 'hero' && alive(u) && u.hp < u.maxHp)) return 'ทุกคนยังเลือดเต็ม';
     return '';
@@ -444,7 +464,7 @@
   function monsterTurn(st) {
     const steps = [];
     if (st.outcome || st.turn !== 'monster') return steps;
-    for (const m of monsters(st)) { if (!alive(m)) continue; st.cur = m; steps.push(...aiAct(st, m)); if (st.outcome) break }
+    for (const m of monsters(st)) { if (!alive(m)) continue; if (m.sts && tickStatus(st, m, steps)) { steps.push({ unit: m, type: 'sleep' }); continue } if (!alive(m) || st.outcome) { if (st.outcome) break; continue } st.cur = m; steps.push(...aiAct(st, m)); if (st.outcome) break }
     st.cur = null;
     if (!st.outcome) endTurn(st);
     return steps;
@@ -467,6 +487,7 @@
     if (st.outcome) return 'จบการต่อสู้แล้ว'; if (st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
     const TD = deckLib(), c = st.deck.combat.hand[index]; if (!c) return 'ไม่มีไพ่ใบนี้';
     const rule = CARD[c.id]; if (!rule) return TD.COMBAT[c.id].name + ' ยังไม่รองรับในสนามแบน';
+    if (hero(st).sts?.silence && SPELL_CARDS.has(c.id)) return '🔇 ใบ้ ใช้การ์ดธาตุไม่ได้ (' + hero(st).sts.silence + ' เทิร์น)';
     if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
     const h = hero(st); if (h.stamina < rule.st) return 'แรงไม่พอ (ต้อง ' + rule.st + ')';
     if (!rule.self && !pickTarget(st, rule)) return rule.high && targets(st, h, reachOf(h, rule)).length ? 'ต้องยืนสูงกว่าเป้าอย่างน้อย 1 ระดับ' : rule.range === 1 && opponents(st, h).some(o => dist(h, o) <= 1) ? 'ต่างระดับเกินระยะประชิด' : 'ศัตรูอยู่นอกระยะ (' + reachOf(h, rule) + ' ช่อง)';
@@ -504,7 +525,7 @@
     out.target = t; const sm = sideMult(st, h, t, extra);
     for (let i = 0; i < (rule.hits || 1); i++) {
       if (!alive(t)) break;
-      const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), en = [], em = elMult(st, cardEl(id, h), t, en), r = hurt(st, t, (rule.dmg + bonus + cardBonus(h, id)) * mult * sm * em * jobMult(h, id) * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: [...extra, ...en, ...r.notes], crit });
+      const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), en = [], em = elMult(st, cardEl(id, h), t, en), r = hurt(st, t, (rule.dmg + bonus + cardBonus(h, id)) * mult * sm * em * jobMult(h, id) * weakMult(h) * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: [...extra, ...en, ...r.notes], crit });
     }
     /* area cards: ดาบหมุน hits everyone next to the hero, ทุบธรณี everyone next to the target */
     if (rule.aoe) { const c = rule.aoe === 'self' ? h : t; for (const o of opponents(st, h)) { if (o === t || dist(o, c) > 1) continue; const g2 = gap(st, h, o); if (rule.aoe === 'splash' && g2 <= -2) continue; const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), r = hurt(st, o, (rule.dmg + cardBonus(h, id)) * (rule.aoe === 'splash' ? (g2 >= 1 ? 1.5 : 1) * (h.ambush || 1) : mult) * sideMult(st, h, o) * (crit ? CRIT.mult : 1)); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit, splash: true }) } }
@@ -513,6 +534,7 @@
     st.log.push(h.name + ' ' + name + ' −' + total + (out.hits[0]?.notes.length ? ' (' + out.hits[0].notes.join(', ') + ')' : ''));
     if (alive(t) && (rule.push || rule.pull)) { const fu = t.u, fv = t.v; out.moved = shove(st, t, h, rule.push ? 1 : -1); if (out.moved) { const drop = lv(st, fu, fv) - lv(st, t.u, t.v); if (drop >= 2 && !t.fly) { const fd = Math.min(t.hp, Math.round(5 * drop)); t.hp -= fd; out.fall = { drop, damage: fd }; st.log.push(t.name + ' ตกลง ' + drop + ' ระดับ −' + fd) } } }
     if (rule.slow && alive(t)) { t.slowed = 1; out.slowed = t }
+    if (CARD_STATUS[id] && out.hits.some(x => x.target === t && x.damage > 0)) { const k = inflict(st, t, CARD_STATUS[id][0], CARD_STATUS[id][1]); if (k) out.status = { unit: t, kind: k } }   /* v97.19 */
     checkOutcome(st);
     return out;
   }
@@ -627,6 +649,6 @@
     if (!free(st, nu, nv, t) || lv(st, nu, nv) - lv(st, t.u, t.v) > 1) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
