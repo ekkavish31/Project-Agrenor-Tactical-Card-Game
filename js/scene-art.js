@@ -395,17 +395,16 @@
     g.restore();
   }
   function kin(g, w, h, t) {
-    sky(g, w, h, [[0, '#100e28'], [.45, '#262246'], [.66, '#3a3254'], [1, '#3a3254']]); stars(g, w, h, t, 80, 82, h * .4, .6); moon(g, w * .86, h * .12, h * .04, t);
-    const hz = h * .62; ridge(g, w, h, hz - h * .04, h * .04, 81, '#2a2440', hz + 20); g.fillStyle = '#16121e'; g.fillRect(0, hz, w, h - hz);
+    daySky(g, w, h, true); const hz = h * .6; land(g, w, h, hz, ['#7a8a78', '#6a8058', '#6f8650', '#2e3a26']);
     // generations tick by: every few seconds a pulse runs through them and each body moves one step toward its new shape
     const gen = clamp((t - .8) / 7.5), step = Math.floor(gen * 5) / 5, smooth = lerp(step, Math.min(1, step + .2), ease(((gen * 5) % 1) * 1.6)), k = gen >= 1 ? 1 : smooth;
     const S = h / 520;
     FORMS.forEach((F, i) => {
-      const x = w * (.14 + i * .18), y = hz + h * .08, e = ELEMENTS[F.e], f = {}; for (const key in BASE) f[key] = lerp(BASE[key], F[key], k);
+      const x = w * (.14 + i * .18), y = hz + h * .14, e = ELEMENTS[F.e], f = {}; for (const key in BASE) f[key] = lerp(BASE[key], F[key], k);
       // faded outlines of the generations before
-      for (let gnr = 1; gnr <= 3; gnr++) { const kk = Math.max(0, k - gnr * .25); if (kk <= 0 && gnr > 1) break; const pf = {}; for (const key in BASE) pf[key] = lerp(BASE[key], F[key], kk); g.globalAlpha = .16 / gnr; person(g, x - gnr * 16 * S, y - gnr * 3, S * 1.6, pf, '#0a0812', `hsla(${e.h},${e.s}%,${e.l}%,.6)`, t, i); g.globalAlpha = 1 }
-      glow(g, x, y - 80 * S * f.h, 110 * S * (.8 + f.w * .3), hsla(e.h, e.s, e.l), .22 + .15 * k);
-      person(g, x, y, S * 1.6, f, '#0a0812', `hsla(${e.h},${e.s}%,${Math.min(90, e.l + 15)}%,.9)`, t, i);
+      for (let gnr = 1; gnr <= 3; gnr++) { const kk = Math.max(0, k - gnr * .25); if (kk <= 0 && gnr > 1) break; const pf = {}; for (const key in BASE) pf[key] = lerp(BASE[key], F[key], kk); g.globalAlpha = .16 / gnr; person(g, x - gnr * 16 * S, y - gnr * 3, S * 1.6, pf, '#2a2418', `hsla(${e.h},${e.s}%,${e.l}%,.6)`, t, i); g.globalAlpha = 1 }
+      glow(g, x, y - 80 * S * f.h, 90 * S * (.8 + f.w * .3), hsla(e.h, e.s, e.l), .12 + .1 * k);
+      person(g, x, y, S * 1.6, f, '#2a2418', `hsla(${e.h},${e.s}%,${Math.min(90, e.l + 15)}%,.9)`, t, i);
       /* v95.27: the crystal still glows in each chest, in the colour of the land that changed them */
       { const cy = y - 100 * S * 1.6 * f.h * .6, R = 9 * S * 1.6 * (1 + .15 * Math.sin(t * 2 + i)); glow(g, x, cy, R * 3, hsla(e.h, e.s, Math.min(92, e.l + 10)), .8); g.fillStyle = `hsla(${e.h},${e.s}%,${Math.min(95, e.l + 18)}%,.95)`; g.beginPath(); g.moveTo(x, cy - R * .8); g.lineTo(x + R * .45, cy); g.lineTo(x, cy + R * .7); g.lineTo(x - R * .45, cy); g.closePath(); g.fill() }
       const pulse = ((gen * 5) % 1); if (gen < 1 && pulse < .25) { g.strokeStyle = `hsla(${e.h},${e.s}%,80%,${(1 - pulse * 4) * .6})`; g.lineWidth = 2; g.beginPath(); g.ellipse(x, y, 40 * S * (1 + pulse * 6), 10 * S * (1 + pulse * 6), 0, 0, TAU); g.stroke() }
@@ -478,7 +477,7 @@
     for (let i = 0; i < 30; i++) { const q = rng(600 + i), x = w * q() + Math.sin(t * .8 + i) * 20, y = h * (.5 + q() * .4) + Math.cos(t * .6 + i) * 10; glow(g, x, y, 5, hsla(80, 90, 70), .5 + .5 * Math.sin(t * 3 + i)) }
     // the ancestors walk out of the forest's edge, small lights in their chests
     g.fillStyle = '#0c1612'; g.fillRect(0, h * .6, w, h * .4);
-    for (let i = 0; i < 9; i++) { const st = 1 + i * .7, k = clamp((t - st) / 9); if (k <= 0 || still) continue; const x = lerp(w * .84, w * .1 + i * 12, ease(k)), y = h * .6 + (i % 3) * 6, H = h * .16;
+    for (let i = 0; i < 9; i++) { const st = 1.5 + i * 1.5, k = clamp((t - st) / 20); if (k <= 0 || still) continue; const x = lerp(w * .84, w * .1 + i * 12, ease(k)), y = h * .6 + (i % 3) * 6, H = h * .16;
       g.fillStyle = '#05080a'; g.beginPath(); g.moveTo(x - H * .14, y); g.lineTo(x - H * .07, y - H * .7); g.quadraticCurveTo(x, y - H * .98, x + H * .07, y - H * .7); g.lineTo(x + H * .14, y); g.fill();
       glow(g, x, y - H * .6, H * .22, hsla(48, 100, 88), .9 * clamp(k * 6)) }
   }
@@ -638,6 +637,30 @@
     { const x = ((t * 22) % (w + 200)) - 100, y = lerp(h * .76, h * .7, x / w); g.fillStyle = '#5a4028'; g.fillRect(x - 22, y - 18, 44, 14); g.fillStyle = '#d8c8a0'; g.beginPath(); g.ellipse(x, y - 20, 22, 10, 0, Math.PI, 0); g.fill(); for (const d of [-14, 14]) { g.strokeStyle = '#2a1a10'; g.lineWidth = 2; g.beginPath(); g.arc(x + d, y - 3, 5, 0, TAU); g.stroke() } }
   }
 
+
+  /* v97.02 · the peoples walk on while huts grow into houses, towns, cities and kingdoms (eras + realmsWide as one scene) */
+  function tribeWalk(g, w, h, t, y0, y1, S, n = 6) {
+    for (let i = 0; i < n; i++) { const x = ((t * 26 + i * w / n) % (w + 140)) - 70, y = lerp(y0, y1, x / w), F = FORMS[i % 5]; person(g, x, y, S, F, '#2a2418', `hsla(${ELEMENTS[F.e].h},45%,62%,.6)`, t, i) }
+  }
+  function towns(g, w, h, t) {
+    daySky(g, w, h, false); const hz = h * .5; land(g, w, h, hz, ['#8a9ab0', '#6a8858', '#6f8650', '#2e3a26']);
+    const k1 = ease((t - 3) / 3), k2 = ease((t - 9) / 4);
+    g.globalAlpha = 1 - k1; [[.3, .6], [.42, .58], [.55, .61], [.68, .59]].forEach(([x, y]) => hut(g, w * x, h * y, 1.8)); g.globalAlpha = 1;
+    if (k1 > 0) { g.globalAlpha = k1 * (1 - k2 * .35); const hr = rng(41); for (let i = 0; i < 7; i++) { const x = w * (.18 + i * .1), y = h * (.6 + (i % 2) * .02); house(g, x, y, 1.5 + hr() * .5, { wall: hr() < .5 ? '#e0d0a8' : '#c8b898', roof: ['#5a6a9a', '#9a4a3a', '#4a7a5a'][i % 3], chimney: true, win: '#4a3a28', wide: 1 + hr() * .4 }) } g.globalAlpha = 1 }
+    if (k2 > 0) { g.globalAlpha = k2; const cx = w * .26, cy = h * .46; g.fillStyle = '#c8b898'; g.fillRect(cx - 90, cy - 20, 180, 22);
+      for (let i = 0; i < 6; i++) { const x = cx - 80 + i * 32, H = 30 + (i % 3) * 14; g.fillStyle = '#b8a888'; g.fillRect(x, cy - 20 - H, 16, H); g.fillStyle = ['#2a6fd6', '#9a4a3a', '#4a7a5a'][i % 3]; g.beginPath(); g.moveTo(x - 3, cy - 20 - H); g.lineTo(x + 8, cy - 34 - H); g.lineTo(x + 19, cy - 20 - H); g.fill() }
+      g.fillStyle = '#a89878'; g.fillRect(cx - 10, cy - 110, 20, 90); g.beginPath(); g.moveTo(cx - 14, cy - 110); g.lineTo(cx, cy - 136); g.lineTo(cx + 14, cy - 110); g.fill();
+      [[.66, .5], [.78, .47], [.9, .52]].forEach(([x, y], i) => { const hr = rng(60 + i); for (let j = 0; j < 3; j++) house(g, w * x + (j - 1) * 20, h * y + (j % 2) * 4, .9, { wall: '#d8c8a8', roof: ['#7a5a3a', '#5a6a4a', '#8a4a3a'][(i + j) % 3], chimney: hr() < .5, win: '#4a3a28' }); smoke(g, w * x, h * y - 22, t, .8, i) });
+      g.globalAlpha = 1 }
+    g.fillStyle = 'rgba(200,170,120,.5)'; g.beginPath(); g.moveTo(0, h * .72); g.lineTo(w, h * .66); g.lineTo(w, h * .74); g.lineTo(0, h * .8); g.fill();
+    tribeWalk(g, w, h, t, h * .8, h * .74, h / 640 * 1.05)
+  }
+  /* inscription seen close → the view pulls back to the dig (one continuous scene) */
+  function dig(g, w, h, t) {
+    inscription(g, w, h, t); const k = ease((t - 6.5) / 2.5);
+    if (k > 0) { g.save(); g.globalAlpha = k; study(g, w, h, Math.max(0, t - 6.5)); g.restore() }
+  }
+
   /* 6 · a worn inscription seen close, a light passes over it; the view pulls back: it belongs to a ruin sunk under soil and roots */
   function inscription(g, w, h, t) {
     g.fillStyle = '#120e0a'; g.fillRect(0, 0, w, h);
@@ -774,7 +797,7 @@
     for (let i = 0; i < 9; i++) { const q = rng(720 + i); g.fillStyle = q() < .5 ? '#c8b060' : '#9ab858'; g.fillRect(w * (.02 + i * .13), h * (.6 + (i % 2) * .04), w * .11, h * .035) }
     ['#d84a4a', '#f0c050', '#4a8ad0', '#5aa84a'].forEach((c, i) => { const x = w * (.25 + i * .14), y = h * .58; g.fillStyle = c; g.beginPath(); g.moveTo(x - 22, y); g.lineTo(x, y - 14); g.lineTo(x + 22, y); g.fill(); g.fillStyle = '#5a4028'; g.fillRect(x - 18, y, 36, 10) });
     g.restore(); const S = h / 640;
-    for (let i = 0; i < 6; i++) { const x = ((t * 28 + i * w / 6) % (w + 100)) - 50, y = h * .7; person(g, x, y, S * .95, FORMS[i % 5], '#2a2418', 'rgba(255,240,200,.4)', t, i) }
+    tribeWalk(g, w, h, t + 14, h * .78, h * .72, S * 1.05)
   }
 
   /* 14 · out of the city: buildings thin out, the market noise fades, carts on a dirt road toward smaller places */
@@ -835,15 +858,15 @@
     ruins: { rays: MOONRAYS(.78, .16), motes: 'spark', n: 30, grade: 'night', vig: .5 }, ancient: { motes: 'spark', n: 40, grade: 'night', vig: .55 },
     deepwood: { rays: MOONRAYS(.2, .12), motes: 'firefly', grade: 'night', vig: .5 }, treeline: { rays: MOONRAYS(.2, .12), motes: 'firefly', grade: 'night', vig: .5 },
     crystals: { motes: 'spark', n: 36, grade: 'night', vig: .5 }, journey: { motes: 'dust', n: 24, grade: 'warm', vig: .45 },
-    trails: { rays: SUNRAYS(.18), motes: 'pollen', grade: 'gold' }, settle: { rays: SUNRAYS(.3), motes: 'dust', grade: 'gold' }, eras: { rays: SUNRAYS(.8, .35), motes: 'pollen', grade: 'warm' },
-    realmsWide: { rays: SUNRAYS(.25), motes: 'dust', grade: 'gold' }, inscription: { motes: 'dust', n: 36, grade: 'cool', vig: .6 }, study: { motes: 'dust', n: 30, vig: .42 },
+    trails: { rays: SUNRAYS(.18), motes: 'pollen', grade: 'gold' }, settle: { rays: SUNRAYS(.3), motes: 'dust', grade: 'gold' }, kin: { rays: SUNRAYS(.4, .4), motes: 'pollen', grade: 'gold' }, eras: { rays: SUNRAYS(.8, .35), motes: 'pollen', grade: 'warm' },
+    towns: { rays: SUNRAYS(.5, .35), motes: 'dust', grade: 'gold' }, dig: { motes: 'dust', n: 36, grade: 'cool', vig: .55 }, realmsWide: { rays: SUNRAYS(.25), motes: 'dust', grade: 'gold' }, inscription: { motes: 'dust', n: 36, grade: 'cool', vig: .6 }, study: { motes: 'dust', n: 30, vig: .42 },
     temple: { motes: 'ember', n: 30, grade: 'night', vig: .5 }, shrines: { motes: 'firefly', n: 30, grade: 'warm', vig: .42 }, journal: { motes: 'firefly', n: 24, grade: 'night', vig: .45 },
     riverCity: { rays: SUNRAYS(.2), motes: 'pollen', grade: 'gold' }, roadOut: { rays: SUNRAYS(.85), motes: 'dust', grade: 'gold' }, fernvale: { rays: SUNRAYS(.85, .4), motes: 'pollen', grade: 'warm' },
     dawn: { rays: SUNRAYS(.3, .5), motes: 'pollen', grade: 'gold', vig: .3 }, orb: { motes: 'pollen', grade: 'gold', vig: .3 }, festival: { motes: 'ember', n: 36, grade: 'night', vig: .4 },
     homeMorning: { motes: 'dust', n: 26, vig: .45 }, heirs: { motes: 'spark', n: 30, grade: 'night', vig: .5 }, realms: { motes: 'dust', n: 24, grade: 'warm', vig: .45 }
   };
 
-  const SCENES = { crystals, trails, settle, eras, realmsWide, inscription, study, temple, shrines, journal, riverCity, roadOut, treeline: (g, w, h, t) => deepwood(g, w, h, t, true), ruins: (g, w, h, t) => ancient(g, w, h, t, true), ancient, heirs, journey, realms, kin, forgotten, faith, deepwood, hearth, elukhor, homeMorning, fernvale, festival: (g, w, h, t) => village(g, w, h, t, 'festival'), dawn: (g, w, h, t) => village(g, w, h, t, 'dawn'), orb: (g, w, h, t) => village(g, w, h, t, 'orb') };
+  const SCENES = { towns, dig, crystals, trails, settle, eras, realmsWide, inscription, study, temple, shrines, journal, riverCity, roadOut, treeline: (g, w, h, t) => deepwood(g, w, h, t, true), ruins: (g, w, h, t) => ancient(g, w, h, t, true), ancient, heirs, journey, realms, kin, forgotten, faith, deepwood, hearth, elukhor, homeMorning, fernvale, festival: (g, w, h, t) => village(g, w, h, t, 'festival'), dawn: (g, w, h, t) => village(g, w, h, t, 'dawn'), orb: (g, w, h, t) => village(g, w, h, t, 'orb') };
 
   function create(canvas, opt = {}) {
     const g = canvas.getContext('2d'), buf = document.createElement('canvas'), bg = buf.getContext('2d');
