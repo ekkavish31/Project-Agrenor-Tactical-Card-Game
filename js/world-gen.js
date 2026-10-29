@@ -142,6 +142,8 @@
     const home = snap(NC.marks.home, ['grass']);
     for (const [c, r] of within(home.c, home.r, 1)) { const t = T(c, r); if (t.biome !== 'water' && !BIOME[t.biome].pass) t.biome = 'hills' }
     home.biome = 'grass'; home.river = false; home.poi = { id: 'home', name: 'หมู่บ้านเฟิร์นเวล', icon: 'village' };
+    /* v95.24: the country around Fernvale stays temperate (grass, woods, hills, the range) — no snow, beach or ash within ~15 hexes */
+    for (const [c, r] of within(home.c, home.r, 15)) { const t = T(c, r); if (t.biome === 'snow' || t.biome === 'ash') t.biome = 'hills'; else if (t.biome === 'sand') t.biome = 'grass' }
     const w = { seed, cols: COLS, rows: ROWS, tiles, home: { c: home.c, r: home.r }, dests: [], towns: [], real: 'norchorthal' };
     for (const d of DESTS) {
       const t = snap(NC.marks[d.id], [d.biome]); if (!t) continue;
