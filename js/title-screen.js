@@ -9,6 +9,12 @@
 /* v95.05: told like a picture book — each page is a picture (js/scene-art.js · art:'…') with one or two gentle lines that appear word by word.
    The ancient people are never named; Elukhor is the familiar golden light; nights have the purple moon. bg = fallback image only. */
 const PROLOGUE=[// v95.09: the creator's script (v2, sections ก–ช) — no map with names, no reveal of where people came from, no god appears
+ // v95.12: a vague legend first — told like an old tale some peoples keep
+ {art:'ruins',text:'มีนิทานเก่าเรื่องหนึ่ง ที่บางเผ่ายังเล่าสืบกันมา\nว่าครั้งหนึ่ง โลกใบนี้เคยเป็นของผู้คนที่เก่าแก่ยิ่งกว่าใคร'},
+ {art:'deepwood',text:'พวกเขาอาศัยอยู่ในป่าลึก ที่แสงจันทร์แทบส่องไม่ถึง\nจนวันหนึ่ง ก็พากันเดินออกมา'},
+ {art:'crystals',text:'ในมือของพวกเขามีผลึกที่เรืองแสงดั่งดวงดาว\nแล้วผลึกนั้นก็แตกออกเป็นแสงหลากสี ร้อนดั่งไฟ เย็นดั่งน้ำแข็ง เงียบงันดั่งราตรี'},
+ {art:'journey',text:'แสงเหล่านั้นล่องลอยไปทั่วแผ่นดิน\nที่ใดที่แสงตกลง ที่นั่นธาตุก็ตื่นขึ้น'},
+ {art:'ancient',text:'นิทานเรื่องนี้จะจริงแค่ไหน คงไม่มีใครตอบได้\nมีเพียงหินบางก้อนใต้รากไม้ ที่ยังเรืองแสงเบา ๆ ราวกับจำได้'},
  {art:'trails',text:'นานมาแล้ว ผู้คนออกเดินทางไปทั่วผืนพิภพ\nข้ามขุนเขา ล่องตามสายน้ำ'},
  {art:'trails',text:'บ้างตามหาผืนดินที่ตอบรับความเชื่อของตน\nบ้างพบหนทางใหม่ระหว่างทาง'},
  {art:'settle',text:'แล้วหยั่งรากลงในดินแดนที่แตกต่างกัน\nแต่ละถิ่นจึงมีเรื่องราวของตนเอง'},
