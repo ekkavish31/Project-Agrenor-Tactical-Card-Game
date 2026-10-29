@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '96.03';
+  const V = '96.04';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -100,7 +100,7 @@
     const gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
-    /* v96.03: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
+    /* v96.04: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
        (spacing 2 by king-move distance); only when the area is too tight does it fall back to 1, then 0 */
     const near = (o) => {
       const pts = [...taken].map(k => k.split(',').map(Number)); let best = null;
@@ -683,10 +683,17 @@
     shadow(g, p, UNIT * .26); g.save(); g.translate(ox, -(u.lift || 0)); if (u.hp <= 0) g.globalAlpha *= .6;
     g.translate(p.x + pm.dx, p.y + pm.dy); g.rotate(pm.rot); g.scale(pm.sx, pm.sy); g.translate(-p.x, -p.y);
     const sword = () => { if (u.weapon && A.equipment[u.weapon]) weapon(g, A.equipment[u.weapon], f.right, left, top, size, (f.rotation || 0) + pm.wpn) };
-    if (f.rightBehind) sword();
+    /* v96.04: standing ready or walking, the weapon is carried on the back (behind the body when facing the camera, over it when facing away); drawn in the hand only for actions */
+    const carried = u.hp > 0 && (u.walking || !u.pose || u.pose === 'idle'), W = u.weapon && A.equipment[u.weapon];
+    const onBack = () => { if (!W) return; const away = ['NE', 'NW'].includes(u.dir), side = ['SE', 'NE'].includes(u.dir) ? -1 : 1, i2 = im(W.src); if (!i2) return;
+      const h = size * (W.scale || .63) * .9, w = h * W.size[0] / W.size[1];
+      g.save(); g.translate(left + size * (.5 + side * .06), top + size * .56); g.rotate((side * (away ? 38 : -38) + 0) * Math.PI / 180); g.drawImage(i2, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore() };
+    if (carried) { if (!['NE', 'NW'].includes(u.dir)) onBack() }
+    else if (f.rightBehind) sword();
     const body = () => { if (f.flipImage) { g.save(); g.translate(left + size / 2, 0); g.scale(-1, 1); g.drawImage(i, -size / 2, top, size, size); g.restore() } else g.drawImage(i, left, top, size, size) };
     if (i) { body(); if ((u.flashUntil || 0) > t) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; body(); body(); g.restore() } }
-    if (!f.rightBehind) sword();
+    if (carried) { if (['NE', 'NW'].includes(u.dir)) onBack() }
+    else if (!f.rightBehind) sword();
     g.restore();
     bar(g, p, top + size * .12, u.shown / u.maxHp, '#6fd18a');
   }
@@ -759,8 +766,8 @@
       if (u.deadAt && t > u.deadAt) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
       drawUnit(u); g.restore();
     }
-    /* v96: units hidden behind higher ground show through as a pale ghost (Tactics Ogre / Triangle Strategy style) */
-    for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .34; g.filter = 'brightness(2) saturate(.25)'; drawUnit(u); g.restore() }
+    /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
+    for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }
     fxDraw(g, t); partDraw(g, t);
     if (CINE) { speedDraw(g, t); atmosphere(g, t0); flashDraw(g) }
     texts = texts.filter(x => t - x.t0 < 1300);
