@@ -96,5 +96,9 @@ for (const k in L.GOSSIP) ok(L.EVENTS[k], `gossip ${k} is an event`);
   for (const id of Object.keys(P)) for (let i = 0; i < 20; i++) { const r = M.talk(id, { period: ['morning', 'day', 'evening', 'night'][i % 4], place: 'inn' }); if (!r.text || leftover(r.text)) { empty++; console.log('  bad:', id, r.kind, r.text) } adv(.5) }
   ok(empty === 0, 'all villagers produce text (' + empty + ' bad)');
 }
+/* v97.21 (R5): two pages with their own Mind never wipe each other's events */
+{ const mem = {}, storage = { getItem: k => mem[k] ?? null, setItem: (k, v) => { mem[k] = v } }, LNx = globalThis.VillageLines, evs = Object.keys(LNx.EVENTS), clock = () => 10;
+  const A = VillageMind.create({ storage, clock, people: {} }), B2 = VillageMind.create({ storage, clock, people: {} });
+  A.emit(evs[0], {}); B2.emit(evs[1], {}); A.emit(evs[2], {}); ok(JSON.parse(mem['agrenor-mind-v1']).events.length === 3, 'two Minds keep all 3 events') }
 console.log(`village-mind: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

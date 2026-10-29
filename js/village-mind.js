@@ -29,8 +29,12 @@
       m.events = m.events.filter(e => e && typeof e.type === 'string' && typeof e.t === 'number' && LN.EVENTS[e.type]);
       m.v = VERSION; return m;
     }
-    function load() { if (M) return M; let raw = null; try { raw = JSON.parse(store?.getItem(KEY) || 'null') } catch (e) { } M = migrate(raw); return M }
-    function save() { try { store?.setItem(KEY, JSON.stringify(M)) } catch (e) { } }
+    /* v97.21 (R5): several pages (village, world map, rooms) each keep a Mind; each used to write its whole cached copy and wipe what another
+       page had just added. Now every read checks the stored text first and re-reads when another page wrote since — pages of one tab run on
+       one thread, so a read → change → save inside one call can no longer lose someone else's update. */
+    let lastRaw = null;
+    function load() { let raw = null; try { raw = store?.getItem(KEY) ?? null } catch (e) { } if (M && raw === lastRaw) return M; let obj = null; try { obj = JSON.parse(raw || 'null') } catch (e) { } M = migrate(obj); lastRaw = raw; return M }
+    function save() { try { const s = JSON.stringify(M); store?.setItem(KEY, s); lastRaw = s } catch (e) { } }
     function reload() { M = null; return load() }
     const npc = id => { const m = load(); const n = (m.npc[id] ||= {}); n.said ||= {}; n.recent ||= []; n.aff ??= 0; n.flags ||= {}; return n };
 
