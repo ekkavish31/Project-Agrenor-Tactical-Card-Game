@@ -315,6 +315,7 @@
   function aiActCore(st, u) {
     const steps = [], opp = opponents(st, u); if (!alive(u) || !opp.length || st.outcome || u.passive) return steps;   /* passive = the training-ground scarecrow */
     if (u.stun) { u.stun = 0; steps.push({ unit: u, type: 'stun' }); return steps }
+    if (u.boss && u.side === 'monster' && bossTurn(st, u, steps)) return steps;   /* v97.20 */
     /* a healer companion mends the most hurt friend in reach (walking closer if needed) instead of attacking */
     if (u.side === 'hero' && u.healer) {
       const hurtF = st.units.filter(f => f.side === 'hero' && alive(f) && f.hp < f.maxHp * .7).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
@@ -345,6 +346,23 @@
     }
     if (tgt) { st.cur = u; const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) }
     return steps;
+  }
+  /* ---------- v97.20 · boss mechanics (B1): FFT-style tells and specials ----------
+     • enrage once under 50 % HP: hits ×1.25, +1 move · • every 3rd turn a special, announced the turn before ("⚠ กำลังรวบรวมพลัง"):
+       frost queen: blizzard (3 cells, everyone next to the target, freeze 50 %) · from higher ground: rock throw (4 cells, +15 % per level down)
+       · else: ground slam (everyone within 2 cells, +30 % on lower ground) — when nothing fits, the boss just fights normally */
+  function bossTurn(st, u, steps) {
+    if (!u.enraged && u.hp <= u.maxHp * .5) { u.enraged = true; u.atk = Math.round(u.atk * 1.25); u.move = (u.move || 3) + 1; st.log.push(u.name + ' คลั่ง! พลังโจมตีเพิ่มขึ้น'); steps.push({ unit: u, type: 'phase' }) }
+    u.bossT = (u.bossT || 0) + 1;
+    if (u.bossT % 3 === 2) { st.log.push(u.name + ' กำลังรวบรวมพลัง…'); steps.push({ unit: u, type: 'charge' }); return false }
+    if (u.bossT % 3 !== 0) return false;
+    const opp = opponents(st, u), hitAll = (list, mult, name, fx, extra) => { const hits = []; for (const o of list) { const r = hurt(st, o, u.atk * mult(o) * weakMult(u)); if (extra) extra(o, r); hits.push({ target: o, damage: r.damage, notes: r.notes }) }
+      st.log.push(u.name + ' ใช้ ' + name + ' (' + hits.map(h => h.target.name + ' −' + h.damage).join(', ') + ')'); steps.push({ unit: u, type: 'bossSkill', name, fx, hits }); checkOutcome(st); return true };
+    if (u.kind === 'frostQueen') { const t = opp.filter(o => dist(o, u) <= 3).sort((a, b) => a.hp - b.hp)[0]; if (t) { u.face = faceOf(u, t); return hitAll(opp.filter(o => dist(o, t) <= 1), () => .55, 'พายุน้ำแข็ง', 'ice', o => inflict(st, o, 'freeze', .5)) } }
+    const low = opp.filter(o => dist(o, u) <= 4 && gap(st, u, o) >= 1).sort((a, b) => gap(st, u, b) - gap(st, u, a))[0];
+    if (low) { u.face = faceOf(u, low); return hitAll([low], o => .9 * (1 + .15 * Math.min(4, gap(st, u, o))), 'ขว้างหินจากที่สูง', 'earth') }
+    const near = opp.filter(o => dist(o, u) <= 2); if (near.length) return hitAll(near, o => .6 * (gap(st, u, o) >= 1 ? 1.3 : 1), 'ทุบพื้น', 'earth');
+    return false;
   }
   /* ---------- v97.01 · monster tactics by intelligence (u.iq): 0 brute (nearest foe) · 1 hunts the weak and finishes kills · 2 goes for supports,
      the hero when he is low, focuses wounded foes, keeps out of crossfire, ranged units kite, flees when almost dead · 3 also protects its own
