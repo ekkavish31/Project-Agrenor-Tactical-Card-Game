@@ -312,14 +312,18 @@ function occluders(ents) {
 window.TownBattleExtras = () => {
   const out = [], ents = [], D = window.FieldDepth;
   const props = [];
-  for (const c of FIELD.cells.values()) if (c.prop && c.prop !== 'pool') { const bg = !!c.big, o = bg ? 1 : .5, p = project(c.u + o, c.v + o), d = D(c.u + o, c.v + o) + .01, b = propBox(c.prop, c.seed, bg), e = { d, x0: p.x - b.w / 2, x1: p.x + b.w / 2, y0: p.y - b.h, foot: p.y }; out.push({ y: p.y, d, draw: (ctx, t) => prop(ctx, c.prop, c.u, c.v, c.seed, t, bg) }); ents.push(e); props.push(e) }
+  for (const c of FIELD.cells.values()) if (c.prop && c.prop !== 'pool') { const bg = !!c.big, o = bg ? 1 : .5, p = project(c.u + o, c.v + o), d = D(c.u + o, c.v + o) + .01, b = propBox(c.prop, c.seed, bg), e = { d, x0: p.x - b.w / 2, x1: p.x + b.w / 2, y0: p.y - b.h, foot: p.y }; e.cell = c; out.push({ y: p.y, d, draw: (ctx, t) => { const a = c._fa ?? 1; if (a > .99) return prop(ctx, c.prop, c.u, c.v, c.seed, t, bg); ctx.save(); ctx.globalAlpha = a; prop(ctx, c.prop, c.u, c.v, c.seed, t, bg); ctx.restore() } }); ents.push(e); props.push(e) }
   /* v97.01: tall grass is sorted with everyone else (it used to be drawn last, over units and trees standing behind it) */
   for (const c of FIELD.cells.values()) if (c.k === 'cover') out.push({ d: D(c.u + .5, c.v + .5) + .005, draw: (ctx, t) => cover(ctx, c, t) });
   const st = window.TownBattle?.state?.(); if (st) for (const u of st.units) { u._occ = false; u._occT = false; if (u.hp <= 0 && u.deadAt) continue; const p = project(u.vu, u.vv), h = 128 * (u.boss ? 1.3 : 1), e = { unit: u, d: D(u.vu, u.vv), x0: p.x - 38, x1: p.x + 38, y0: p.y - h, foot: p.y };
     ents.push(e); /* a big tree or rock in front of a unit also leaves its ghost visible */ if (props.some(q => q.d > e.d + .02 && q.x0 < e.x1 - 12 && q.x1 > e.x0 + 12 && q.y0 < e.foot - 30 && q.foot > e.y0 + 30)) u._occ = true }
+  /* v97.08 · a tree / rock standing in front of a unit or of the cell under the pointer fades out (Triangle Strategy style), smoothly */
+  const hv = hoverCell && (() => { const p = project(hoverCell.u + .5, hoverCell.v + .5); return { d: D(hoverCell.u + .5, hoverCell.v + .5), x: p.x, y: p.y } })(), us = ents.filter(e => e.unit), now = performance.now(), dt = Math.min(.1, (now - (fadeT || now)) / 1000); fadeT = now;
+  for (const q of props) { const hit = us.some(e => q.d > e.d + .02 && q.x0 < e.x1 - 10 && q.x1 > e.x0 + 10 && q.y0 < e.foot - 20 && q.foot > e.y0 + 30) || (hv && q.d > hv.d + .02 && hv.x > q.x0 && hv.x < q.x1 && hv.y > q.y0 && hv.y < q.foot);
+    const c = q.cell, goal = hit ? .32 : 1; c._fa = (c._fa ?? 1) + (goal - (c._fa ?? 1)) * Math.min(1, dt * 9) }
   const occ = occluders(ents); if (st) for (const u of st.units) if (u._occT) u._occ = true; return out.concat(occ);
 };
-let fadeGround = null, fadeAt = 0;
+let fadeGround = null, fadeAt = 0, fadeT = 0;
 function turnView(d) {
   if (!window.FieldHeight) return; fadeGround = groundCanvas; fadeAt = performance.now();
   ROT = (ROT + d + 4) & 3; try { localStorage.setItem('projectA.fieldRot', ROT) } catch (e) { }
@@ -333,6 +337,7 @@ const ui = document.createElement('div'); ui.id = 'fieldUi'; ui.innerHTML = `<st
 #fieldUi .turn{display:flex;gap:6px;pointer-events:auto}#fieldUi button{width:38px;height:38px;border-radius:50%;border:1px solid #b9c48a88;background:#1b302ae6;color:#f3e9c9;font:18px system-ui;cursor:pointer}
 #fieldUi button:hover{background:#2d4a40}#fieldUi .unit{display:none;gap:10px;align-items:center;min-width:250px;padding:8px 12px 8px 8px;border-radius:12px;background:linear-gradient(90deg,#14231ff2,#1b302ae6);border:1px solid #b9c48a55;box-shadow:0 6px 18px #0008}
 #fieldUi canvas{width:72px;height:72px;border-radius:10px;border:2px solid #d8c890;background:#0b120f}#fieldUi .unit.foe canvas{border-color:#e2705f}#fieldUi b{font-size:15px}#fieldUi small{color:#cdd7bf}
+#fieldUi .cell{display:none;padding:5px 10px;border-radius:9px;background:#14231fe6;border:1px solid #b9c48a44;font-size:12.5px;color:#e6dcc0}
 #fieldUi .hp{height:7px;border-radius:4px;background:#0008;overflow:hidden;margin:4px 0 3px}#fieldUi .hp i{display:block;height:100%;background:#6fd18a}#fieldUi .unit.foe .hp i{background:#e2705f}
 @media (max-width:820px){#fieldUi .unit{min-width:0}#fieldUi canvas{width:52px;height:52px}}</style>
 <div class="unit"><canvas width="144" height="144"></canvas><div><b></b> <small class="side"></small><div class="hp"><i></i></div><small class="stats"></small></div></div>
@@ -346,6 +351,11 @@ function panel(now) {
   if (now - panelAt < 150 || !window.FieldHeight) return; panelAt = now;
   const st = window.TownBattle?.state?.(), box = ui.querySelector('.unit'); if (!st) { box.style.display = 'none'; return }
   const alive = st.units.filter(u => u.hp > 0), u = (hoverCell && alive.find(x => x.u === hoverCell.u && x.v === hoverCell.v)) || (st.target && alive.find(x => x.id === st.target)) || alive.find(x => x.id === 'hero') || alive[0];
+  /* v97.08 · the cell under the pointer: height and ground type */
+  { let ci = ui.querySelector('.cell'); if (!ci) { ci = document.createElement('div'); ci.className = 'cell'; ui.append(ci) }
+    const k = hoverCell && window.TownBattle?.cells?.()?.get(hoverCell.u + ',' + hoverCell.v), occ = hoverCell && alive.some(x => x.u === hoverCell.u && x.v === hoverCell.v);
+    if (!k || occ) ci.style.display = 'none'; else { const L = FieldHeight.level(hoverCell.u, hoverCell.v), KN = { normal: 'พื้นปกติ', slow: 'เดินช้า (2 แต้ม)', cover: 'กำบัง · โดนตี −30%', blocked: 'เดินผ่านไม่ได้' };
+      ci.style.display = 'block'; ci.textContent = `ช่อง ▲${Number.isInteger(L) ? L : L.toFixed(1)} · ${KN[k] || k}` } }
   if (!u) { box.style.display = 'none'; return }
   box.style.display = 'flex'; box.classList.toggle('foe', u.side === 'monster');
   const L = FieldHeight.level(u.u, u.v), stats = [u.atk > 0 && 'ATK ' + Math.round(u.atk), u.move != null && 'เดิน ' + u.move, u.range != null && 'ระยะ ' + u.range, 'สูง ' + (Number.isInteger(L) ? L : L.toFixed(1)), u.guard && 'โล่ ' + u.guard, u.stun && 'แข็ง', u.fly && 'บิน'].filter(Boolean);

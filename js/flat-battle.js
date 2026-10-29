@@ -171,6 +171,11 @@
   }
   /* facing on the lattice (+u = SE, +v = SW, −u = NW, −v = NE) — used by แทงข้างหลัง */
   function faceOf(a, b) { const du = b.u - a.u, dv = b.v - a.v; return Math.abs(du) >= Math.abs(dv) ? (du >= 0 ? 'SE' : 'NW') : (dv > 0 ? 'SW' : 'NE') }
+  /* v97.08 · FFT facing: hitting a unit from behind ×1.2, from the side ×1.1 (front ×1). The defender's face is where it last walked / struck,
+     or the direction the player picked at the end of the hero's turn. */
+  const FACE_V = { SE: [1, 0], NW: [-1, 0], SW: [0, 1], NE: [0, -1] }, SIDE = { back: 1.2, side: 1.1 };
+  function sideOf(t, a) { const f = FACE_V[t?.face]; if (!f) return 'front'; const du = a.u - t.u, dv = a.v - t.v, along = du * f[0] + dv * f[1], perp = Math.abs(du * f[1] - dv * f[0]); if (!du && !dv) return 'front'; return along >= perp && along > 0 ? 'front' : -along >= perp ? 'back' : 'side' }
+  function sideMult(st, a, t, notes) { if (!st.cards) return 1; const s = sideOf(t, a), m = SIDE[s] || 1; if (m !== 1 && notes) notes.push((s === 'back' ? 'ด้านหลัง' : 'ด้านข้าง') + ' ×' + m); return m }
   function targets(st, att, range = att.range) { return opponents(st, att).filter(t => dist(att, t) <= range && (range > 1 || meleeOk(st, att, t))).sort((a, b) => dist(att, a) - dist(att, b)) }
   function damageFor(st, att, tgt) {
     let d = Math.max(1, att.atk - tgt.def), notes = [];
@@ -194,7 +199,7 @@
     if (st.cards && a.side === 'hero') return { ok: false, reason: 'ใช้ไพ่โจมตี' };
     a.face = faceOf(a, t);
     if (st.cards && t.evade) { t.evade = 0; st.acted = true; st.mp = 0; st.log.push(t.name + ' ก้าวหลบ ' + a.name + ' พลาด'); return { ok: true, damage: 0, target: t, notes: ['หลบ'], evaded: true } }
-    const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, r = st.cards ? hurt(st, t, a.atk * hm * em * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage); st.acted = true; st.mp = 0;
+    const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage); st.acted = true; st.mp = 0;
     st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
     let counter = 0;
     if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; const c = hurt(st, a, 12); counter = c.damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
@@ -350,7 +355,7 @@
     st.cur = a; st.acted = false; if (a.side === 'hero') st.turn = 'monster';   // let attack() resolve for this attacker
     const at = (() => { a.face = faceOf(a, t);
       if (st.cards && t.evade) { t.evade = 0; st.log.push(t.name + ' ก้าวหลบ ' + a.name + ' พลาด'); return { ok: true, damage: 0, target: t, notes: ['หลบ'], evaded: true } }
-      const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, r = st.cards ? hurt(st, t, a.atk * hm * em * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage);
+      const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage);
       st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
       let counter = 0; if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; counter = hurt(st, a, 12).damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
       /* v94: heavy monsters (shove) knock a target standing at a ledge off it — down 2+ levels costs 5 HP per level */
@@ -458,13 +463,13 @@
     else { const hm = heightMult(st, h, t); if (hm !== 1) { mult *= hm; extra.push(heightNote(hm)) } }
     if (rule.perLevel) bonus += Math.round(rule.perLevel * Math.max(0, d0));
     if (rule.aoe === 'splash' && d0 >= 1) { mult *= 1.5; extra.push('ต่ำกว่า ×1.5') }
-    out.target = t;
+    out.target = t; const sm = sideMult(st, h, t, extra);
     for (let i = 0; i < (rule.hits || 1); i++) {
       if (!alive(t)) break;
-      const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), en = [], em = elMult(st, cardEl(id, h), t, en), r = hurt(st, t, (rule.dmg + bonus + cardBonus(h, id)) * mult * em * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: [...extra, ...en, ...r.notes], crit });
+      const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), en = [], em = elMult(st, cardEl(id, h), t, en), r = hurt(st, t, (rule.dmg + bonus + cardBonus(h, id)) * mult * sm * em * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: [...extra, ...en, ...r.notes], crit });
     }
     /* area cards: ดาบหมุน hits everyone next to the hero, ทุบธรณี everyone next to the target */
-    if (rule.aoe) { const c = rule.aoe === 'self' ? h : t; for (const o of opponents(st, h)) { if (o === t || dist(o, c) > 1) continue; const g2 = gap(st, h, o); if (rule.aoe === 'splash' && g2 <= -2) continue; const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), r = hurt(st, o, (rule.dmg + cardBonus(h, id)) * (rule.aoe === 'splash' ? (g2 >= 1 ? 1.5 : 1) * (h.ambush || 1) : mult) * (crit ? CRIT.mult : 1)); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit, splash: true }) } }
+    if (rule.aoe) { const c = rule.aoe === 'self' ? h : t; for (const o of opponents(st, h)) { if (o === t || dist(o, c) > 1) continue; const g2 = gap(st, h, o); if (rule.aoe === 'splash' && g2 <= -2) continue; const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), r = hurt(st, o, (rule.dmg + cardBonus(h, id)) * (rule.aoe === 'splash' ? (g2 >= 1 ? 1.5 : 1) * (h.ambush || 1) : mult) * sideMult(st, h, o) * (crit ? CRIT.mult : 1)); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit, splash: true }) } }
     if (rule.guardAfter) { h.guard = Math.max(h.guard, rule.guardAfter); out.guard = h.guard }
     const total = out.hits.reduce((a, x) => a + x.damage, 0);
     st.log.push(h.name + ' ' + name + ' −' + total + (out.hits[0]?.notes.length ? ' (' + out.hits[0].notes.join(', ') + ')' : ''));
@@ -493,6 +498,7 @@
     if (rule.perLevel) bonus += Math.round(rule.perLevel * Math.max(0, d0));
     if (rule.aoe === 'splash' && d0 >= 1) { mult *= 1.5; notes.push('ต่ำกว่า ×1.5') }
     const W = EW(), el = cardEl(c.id, h), em = W && el ? W.mult(el, elOf(t)) : 1; if (em !== 1 && !W.isSecret(el)) notes.push(W.note(el, elOf(t)));
+    mult *= sideMult(st, h, t, notes);
     const raw = (rule.dmg + bonus + cardBonus(h, c.id)) * mult * em, guard = { v: t.guard || 0 }, n = rule.hits || 1; let total = 0, last = null;
     for (let i = 0; i < n; i++) { last = soak(st, t, raw, guard); total += last.damage }
     const all = [...new Set([...notes, ...(last?.notes || [])])];
@@ -524,6 +530,42 @@
     }
     return { type: 'end' };
   }
+  /* ---------- v97.08 · one-click play: the game picks the card ----------
+     autoAttack(st, id): the best way to hit that enemy this turn — a combat card from here, or walk (with the points left, or a move card)
+       to a cell from where a card reaches it. → {index, to?, moveCard?, pv} | {reason}
+     autoWalk(st, to): walk there with the points left, else the smallest move card that makes it reachable. → {moveCard?} | {reason} */
+  function bestHit(st, h, id) {
+    let best = null; const keep = st.target; st.target = id;
+    st.deck.combat.hand.forEach((c, i) => { const r = CARD[c.id]; if (!r || r.self || combatBlock(st, i)) return; if (pickTarget(st, r)?.id !== id) return; const pv = preview(st, i); if (!pv || pv.self) return;
+      const sc = pv.total * (pv.kill ? 3 : 1) - r.st * .3; if (!best || sc > best.sc) best = { index: i, sc, pv } });
+    st.target = keep; return best;
+  }
+  function autoAttack(st, id) {
+    if (!st.cards || st.outcome || st.turn !== 'hero') return { reason: 'ไม่ใช่ตาคุณ' };
+    const h = hero(st), t = st.units.find(u => u.id === id && alive(u)); if (!t) return { reason: 'ไม่มีเป้านี้' };
+    if (st.acted) return { reason: 'โจมตีไปแล้วในเทิร์นนี้' };
+    const left = crystals(st); if (!left) return { reason: 'คริสตัลหมดแล้วในเทิร์นนี้' };
+    const here = bestHit(st, h, id); if (here) return { index: here.index, pv: here.pv };
+    /* walk first: try the points we have, then each move card (needs a 2nd crystal) — keep the plan that hits hardest, then walks least */
+    const TD = deckLib(), opts = [{ moveCard: null, budget: st.mp, stamina: 0 }];
+    if (left >= 2) st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (m && h.stamina >= m.stamina) opts.push({ moveCard: i, budget: st.mp + m.move, stamina: m.stamina }) });
+    const u0 = h.u, v0 = h.v, f0 = h.face, st0 = h.stamina; let best = null;
+    for (const o of opts) { if (o.budget <= 0) continue; h.u = u0; h.v = v0; h.face = f0; h.stamina = st0 - o.stamina;
+      for (const e of reach(st, h, o.budget).values()) { if (e.cost === 0) continue; h.u = e.u; h.v = e.v; h.face = faceOf({ u: u0, v: v0 }, e);
+        const b = bestHit(st, h, id); if (b) { const sc = b.sc - e.cost * .2 - (o.moveCard != null ? 4 : 0); if (!best || sc > best.sc) best = { sc, index: b.index, pv: b.pv, to: { u: e.u, v: e.v }, moveCard: o.moveCard } } } }
+    h.u = u0; h.v = v0; h.face = f0; h.stamina = st0;
+    return best ? { index: best.index, pv: best.pv, to: best.to, moveCard: best.moveCard } : { reason: 'เข้าไม่ถึงเป้านี้ในเทิร์นนี้' };
+  }
+  function autoWalk(st, to) {
+    if (!st.cards || st.outcome || st.turn !== 'hero') return { reason: 'ไม่ใช่ตาคุณ' };
+    if (st.acted) return { reason: 'โจมตีแล้ว เดินต่อไม่ได้' };
+    const h = hero(st), k = key(to.u, to.v); if (to.u === h.u && to.v === h.v) return { reason: 'ยืนอยู่ตรงนี้แล้ว' };
+    if (st.mp > 0 && reach(st, h).has(k)) return { moveCard: null };
+    if (!crystals(st)) return { reason: 'คริสตัลหมดแล้ว · เดินไม่ถึง' };
+    const TD = deckLib(); let pick = null;
+    st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (!m || h.stamina < m.stamina) return; if (!reach(st, h, st.mp + m.move).has(k)) return; if (!pick || m.move < pick.move || (m.move === pick.move && m.stamina < pick.stamina)) pick = { i, move: m.move, stamina: m.stamina } });
+    return pick ? { moveCard: pick.i } : { reason: st.deck.movement.hand.length ? 'ไกลเกินไพ่เดินที่มี' : 'ไม่มีไพ่เดินในมือ' };
+  }
   /* throw away any number of hand cards at once for stamina: costs 1 crystal, +STAMINA_PER_DISCARD per card. picks = [{group, uid}] */
   function discardForStamina(st, picks) {
     if (!st.cards || st.outcome || st.turn !== 'hero') return { ok: false, reason: 'ไม่ใช่ตาคุณ' };
@@ -547,6 +589,6 @@
     if (!free(st, nu, nv, t) || lv(st, nu, nv) - lv(st, t.u, t.v) > 1) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { preview, autoPlan, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

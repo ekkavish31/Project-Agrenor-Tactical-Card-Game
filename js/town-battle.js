@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.01';
+  const V = '97.08';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -117,7 +117,10 @@
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
     for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
-    for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)) }
+    for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir }
+    /* v97.08 · same-named enemies get a number (โจรป่า 1, โจรป่า 2 …) so the queue, the list and the log tell them apart */
+    { const n = {}, k = {}; for (const u of FB.monsters(st)) n[u.name] = (n[u.name] || 0) + 1; for (const u of FB.monsters(st)) if (n[u.name] > 1) { k[u.name] = (k[u.name] || 0) + 1; u.label = u.name + ' ' + k[u.name] } for (const u of FB.monsters(st)) if (u.label) { u.name = u.label; delete u.label } }
+    pend = null; walks = [];
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
   }
@@ -246,6 +249,14 @@
   @keyframes fbBan{0%{opacity:0;transform:translateX(-120px) skewX(-18deg) scale(1.6)}18%{opacity:1;transform:translateX(0) skewX(-12deg) scale(1)}75%{opacity:1;transform:translateX(12px) skewX(-12deg)}100%{opacity:0;transform:translateX(160px) skewX(-18deg) scale(.9)}}
   @keyframes fbBanWin{0%{opacity:0;transform:scale(2.4)}12%{opacity:1;transform:scale(1);filter:none}85%{opacity:1}100%{opacity:0;transform:scale(1.05)}}
   @media (max-width:820px){.fb-banner span{font-size:40px}.fb-banner.win span{font-size:48px}}
+  .fb-card.auto{transform:translateY(-12px)}.fb-card.auto .face{box-shadow:0 0 0 3px #ffd25a,0 0 18px 4px #ffd25a}
+  #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
+  #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
+  #fbFace [data-f]{position:fixed;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid #f3e9c9aa;background:#1b302ae6;color:#f3e9c9;font:22px system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:0 4px 12px #0008;transition:transform .12s,background .12s}
+  #fbFace [data-f] span{display:inline-block}#fbFace [data-f].on{background:#c9893a;border-color:#ffe2a8;transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
+  #fbFace .bar{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}#fbFace .bar button{padding:8px 16px;border-radius:10px;border:1px solid #b9c48a88;background:#1b302af2;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif;cursor:pointer}#fbFace .bar .ok{background:#c9893a;border-color:#ffe2a8}#fbFace .bar small{opacity:.7;font-weight:400}
+  #fbPause{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px)}#fbPause .box{display:flex;flex-direction:column;gap:8px;min-width:280px;max-width:92vw;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f3e9c9;font:14px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 16px 40px #000a}
+  #fbPause b{font-size:18px}#fbPause small{color:#cdbb92}#fbPause button{padding:9px 14px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:inherit;text-align:left;cursor:pointer}#fbPause button:hover:not(:disabled){background:#2d4a40}#fbPause button.warn{border-color:#e2705f88;color:#ffc2b4}#fbPause button:disabled{opacity:.45}#fbPause .keys{font-size:12.5px;line-height:1.7;color:#d8caa0;padding:6px 4px}
   @media (max-width:820px){#fbHud{width:200px;padding:7px 9px;font-size:12px}#fbHud .help{display:none}#fbHand{overflow-x:auto;justify-content:flex-start}.fb-card,.fb-card .face,.fb-fly,.fb-fly .face{width:58px}.fb-pile{width:40px;height:58px}#fbHand{gap:5px;padding:6px}.fb-card .fb-tag{font-size:9px}#fbBar{bottom:130px}}`;
   document.head.append(css);
 
@@ -278,17 +289,17 @@
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
     d.innerHTML = `<b style="color:#f6d79b">⚔ สนามรบ · ไพ่</b><div id="fbTurn" style="margin:4px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd">จบเทิร์น</button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (กดอีกครั้งเพื่อหยุด)">⚡ Auto</button><button id="fbEl" title="ตารางธาตุ">◈ ธาตุ</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button>${EMBED ? '<button id="fbFlee">🏃 หนี</button><button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : '<button id="fbNew">เริ่มใหม่</button>'}</div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space">จบเทิร์น</button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)">↶ ย้อนเดิน</button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)">⚡ Auto</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button><button id="fbMenu" title="เมนู (Esc)">☰</button>${EMBED ? '<button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : ''}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
-      <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">ใช้ไพ่เดิน → คลิกช่องฟ้า · ใช้ไพ่สู้เมื่อศัตรูอยู่ในระยะ<br>คริสตัล 2 เม็ด/เทิร์น · ไพ่จั่วเติมตอนเริ่มเทิร์น<br>ช่อง: น้ำตาล เดินช้า · เขียว กำบัง −30% · แดง กีดขวาง</div>`;
+      <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรู = ดูการ์ดที่ดีที่สุด · คลิกซ้ำ = โจมตี<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง) · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
     document.body.append(d); hud = d;
     d.querySelector('#fbEnd').onclick = () => endHeroTurn();
     d.querySelector('#fbAuto').onclick = () => setAuto(!auto);
     const q = document.createElement('div'); q.id = 'fbQueue'; document.body.append(q);
-    d.querySelector('#fbEl').onclick = () => window.ElementWheel?.showChart();
     d.querySelector('#fbDis').onclick = () => setDiscard(!discardMode);
-    if (EMBED) { d.querySelector('#fbFlee').onclick = () => { if (!busy && st.turn === 'hero' && !st.outcome) report('flee') }; d.querySelector('#fbBack').onclick = () => report(st.outcome) }
-    if (!EMBED) d.querySelector('#fbNew').onclick = () => { document.querySelectorAll('.fb-show,.fb-fly,#fbBar').forEach(e => e.remove()); build(); userCam = false; cam.set = false; startTurnShow(true) };
+    d.querySelector('#fbUndo').onclick = () => undoWalk();
+    d.querySelector('#fbMenu').onclick = () => pauseMenu();
+    if (EMBED) d.querySelector('#fbBack').onclick = () => report(st.outcome);
   }
   function hudSync() {
     if (!hud || !st) return;
@@ -309,9 +320,11 @@
     hud.querySelectorAll('#fbUnits [data-skill]').forEach(e => e.onclick = () => allySkillAct(e.dataset.skill));
     hud.querySelectorAll('#fbUnits .mini[data-id^="monster"]').forEach(e => e.onclick = () => { if (st.turn === 'hero' && !busy) { FB.setTarget(st, e.dataset.id); hudSync(); handSync() } });
     hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? '🏆 ชนะ!' : '💀 แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns} · ตาคุณ · แต้มเดิน ${st.mp}` : `เทิร์น ${st.turns} · ตาศัตรู…`;
+    hud.querySelector('#fbTurn').title = 'ชนะ: ล้มศัตรูทั้งหมด · แพ้: ' + FB.hero(st).name + ' ล้ม';
     const left = FB.crystals(st), max = st.crystalMax;
     hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<span class="gem ${i < left ? 'on' : ''}"></span>`).join('');
     hud.querySelector('#fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
+    hud.querySelector('#fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || !walks.length;
     { const a = hud.querySelector('#fbAuto'); a.classList.toggle('on', auto); a.textContent = auto ? '⏸ หยุด Auto' : '⚡ Auto' }
     queueSync();
     hud.querySelector('#fbDis').disabled = busy || !!st.outcome || st.turn !== 'hero' || (!left && !discardMode);
@@ -325,7 +338,7 @@
     if (st.outcome) { q.innerHTML = ''; return }
     const list = FB.queue(st, 9), act = actUnit && actUnit.hp > 0 ? actUnit : list[0], rest = list.filter(u => u !== act).slice(0, 8), chip = (u, on) => {
       const E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, u.hp / u.maxHp * 100)), side = u.side === 'monster' ? 'foe' : u === FB.hero(st) ? 'hero' : 'ally';
-      return `<div class="qc ${side} ${on ? 'on' : ''}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="ic">${E ? E.icon : esc((u.name || '?')[0])}</span><b>${esc(u.name.length > 5 ? u.name.slice(0, 5) + '…' : u.name)}</b><i style="width:${pct}%"></i></div>` };
+      return `<div class="qc ${side} ${on ? 'on' : ''}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="ic">${E ? E.icon : esc((u.name || '?')[0])}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%"></i></div>` };
     q.innerHTML = chip(act, true) + '<span class="arr">›</span>' + rest.map(u => chip(u, false)).join('');
   }
   /* ---------- hand ---------- */
@@ -420,7 +433,7 @@
   }
   function toast(t) { const d = document.createElement('div'); d.className = 'fb-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 1700) }
   async function startTurnShow(first) {
-    refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
+    walks = []; pend = null; refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
     toast(first ? 'BATTLE START · DRAW' : `TURN ${st.turns} · DRAW ${fresh.length}`);
     if (fresh.length) { busy = true; hudSync(); await drawShow(fresh); busy = false; refresh() }
     if (auto) autoTurn();
@@ -474,7 +487,7 @@
     }
     const show = showPlay(group, id, cardLine(group, id), b), r = FB.playCombat(st, i);
     if (!r.ok) { show.el.remove(); b.style.visibility = ''; flash(r.reason); return }
-    busy = true; hudSync();
+    busy = true; hudSync(); if (!r.self) walks = []; pend = null; markAuto();
     await heroAction(r);
     await show.done(); busy = false; refresh();
     if (st.outcome) finish();
@@ -548,7 +561,9 @@
   function screenFlash(col, a, ms) { flashes.push({ col, a, t0: performance.now(), dur: ms }) }
   function banner(text, cls = '') { if (!CINE && cls !== 'win') return; const d = document.createElement('div'); d.className = 'fb-banner ' + cls; d.innerHTML = `<span>${esc(text)}</span>`; document.body.append(d); setTimeout(() => d.remove(), cls === 'win' ? 2600 : 1100) }
   async function heroMove(to) {
+    const h0 = FB.hero(st), from = { u: h0.u, v: h0.v }, face = h0.face, dir = h0.dir;
     const mv = FB.move(st, to); if (!mv.ok) { flash(st.mp > 0 ? mv.reason : 'ใช้ไพ่เดินก่อน'); return }
+    walks.push({ from, face, dir, cost: mv.cost });
     busy = true; hudSync(); await walkAnim(FB.hero(st), mv.path); busy = false; FB.hero(st).dir = FB.hero(st).dir; refresh();
   }
   /* any AI attack (monster on hero/companion, companion on monster). Full cut-scene when the hero is hit, on crits, knock-outs and bosses;
@@ -616,8 +631,10 @@
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5 }
   }
   async function endHeroTurn() {
-    if (busy || st.turn !== 'hero' || st.outcome) return;
-    setDiscard(false); busy = true; refresh();
+    if (busy || st.turn !== 'hero' || st.outcome || facing) return;
+    pend = null; markAuto(); hidePreview();
+    if (auto) faceNearest(FB.hero(st)); else if (!(await pickFacing())) return;
+    walks = []; setDiscard(false); busy = true; refresh();
     if (st.ct) { const r = FB.endTurnCT(st); await playSteps(r.steps); actUnit = null; busy = false; if (st.outcome) { refresh(); finish(); return } await startTurnShow(false); return }
     const allySteps = FB.alliesTurn(st);
     if (allySteps.length) { toast('PARTY PHASE'); await wait(400); await playSteps(allySteps) }
@@ -637,12 +654,98 @@
   function floatText(unit, txt, col, small, big) { const t = now(), stack = texts.filter(x => x.unit === unit && t - x.t0 < 450).length; texts.push({ unit, u: unit.vu, v: unit.vv, txt, col, t0: t, small, big, dx: (Math.random() - .5) * 18, dy: -stack * 22 }) }   // texts on the same unit stack upward
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }
 
+  /* ---------- v97.08 · pause menu (Esc / ☰): restart, flee, element chart, controls — kept off the main HUD so they can't be hit by mistake ---------- */
+  let pauseEl = null;
+  function pauseMenu() {
+    if (pauseEl) { pauseEl.remove(); pauseEl = null; return }
+    if (!st || facing) return;
+    const d = document.createElement('div'); d.id = 'fbPause'; pauseEl = d;
+    const canAct = !busy && st.turn === 'hero' && !st.outcome;
+    d.innerHTML = `<div class="box"><b>หยุดเกม</b><small>ชนะ: ล้มศัตรูทั้งหมด · แพ้: ${esc(FB.hero(st).name)} ล้ม</small>
+      <button data-a="resume">▶ เล่นต่อ</button><button data-a="el">◈ ตารางธาตุ</button><button data-a="keys">⌨ ปุ่มควบคุม</button>
+      ${EMBED ? `<button data-a="flee" class="warn" ${canAct ? '' : 'disabled'}>🏃 หนีจากการต่อสู้</button>` : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
+      <div class="keys" hidden>คลิกศัตรู · Tab = เลือกเป้าและดูการ์ดที่ดีที่สุด<br>คลิกซ้ำ · Enter = โจมตีตามที่แสดง<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง)<br>1–9 = ใช้ไพ่ต่อสู้ใบนั้น · Z / Backspace = ย้อนเดิน<br>Space = จบเทิร์น แล้วเลือกทิศด้วยลูกศร · A = Auto<br>Q / E = หมุนกล้อง · Esc = เมนูนี้</div></div>`;
+    document.body.append(d);
+    d.onclick = e => { const a = e.target.closest('[data-a]')?.dataset.a; if (e.target === d) a || pauseMenu(); if (!a) return;
+      if (a === 'resume') pauseMenu(); else if (a === 'el') { pauseMenu(); window.ElementWheel?.showChart() } else if (a === 'keys') d.querySelector('.keys').hidden = !d.querySelector('.keys').hidden;
+      else if (a === 'flee') { const b = e.target.closest('button'); if (b.dataset.sure) { pauseMenu(); if (!busy && st.turn === 'hero' && !st.outcome) report('flee') } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อหนี' } }
+      else if (a === 'new') { const b = e.target.closest('button'); if (b.dataset.sure) { pauseMenu(); document.querySelectorAll('.fb-show,.fb-fly,#fbBar').forEach(x => x.remove()); build(); userCam = false; cam.set = false; startTurnShow(true) } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อเริ่มใหม่' } } };
+  }
+  addEventListener('keydown', e => {
+    if (!ON || !st || facing || e.target.closest?.('input,textarea') || e.repeat) return;
+    if (e.key === 'Escape') { if (pauseEl) pauseMenu(); else if (pend) { pend = null; markAuto() } else if (!document.querySelector('dialog[open]')) pauseMenu(); return }
+    if (pauseEl || busy || st.turn !== 'hero' || st.outcome) return;
+    const k = e.key.toLowerCase();
+    if (k === ' ') { e.preventDefault(); endHeroTurn() }
+    else if (k === 'z' || k === 'backspace') { e.preventDefault(); undoWalk() }
+    else if (k === 'a') setAuto(!auto)
+    else if (k === 'tab') { e.preventDefault(); const ms = FB.monsters(st).filter(m => m.hp > 0); if (!ms.length) return; const i = ms.findIndex(m => m.id === (pend?.id || st.target)); pend = null; onEnemy(ms[(i + (e.shiftKey ? ms.length - 1 : 1)) % ms.length]) }
+    else if (k === 'enter' && pend) { e.preventDefault(); const m = st.units.find(u => u.id === pend.id); if (m) onEnemy(m) }
+    else if (/^[1-9]$/.test(k)) { const b = hand?.querySelectorAll('#fbCombat .fb-card')[+k - 1]; if (b) cardClick(b) }
+  });
   function click(wp) {
-    if (!st || busy || st.outcome || st.turn !== 'hero' || discardMode) return;
+    if (!st || busy || st.outcome || st.turn !== 'hero' || discardMode || facing) return;
     const g = inv(wp.x, wp.y), to = { u: Math.floor(g.u), v: Math.floor(g.v) };
     const m = FB.monsters(st).find(u => u.hp > 0 && ((u.u === to.u && u.v === to.v) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
-    if (m) { FB.setTarget(st, m.id); floatText(m, 'TARGET', '#ffd25a', true); sfx('cast', .25); hudSync(); handSync(); return }
-    heroMove(to);
+    if (m) { onEnemy(m); return }
+    pend = null; markAuto(); walkTo(to);
+  }
+  /* ---------- v97.08 · one-click play: the game picks the card ----------
+     click an enemy: it becomes the target and the best card for it shows (gold); click it again to play — walking next to it first
+     (with a move card if needed) when no card reaches it from here. Click a cell: walk there, playing the smallest move card that reaches it.
+     Cards can still be played by hand as before. */
+  let pend = null, walks = [], facing = null;
+  const handBtn = (group, uid) => hand?.querySelector(`.fb-card[data-group="${group}"][data-uid="${uid}"]`);
+  function markAuto() { hand?.querySelectorAll('.fb-card.auto').forEach(e => e.classList.remove('auto')); if (!pend) return; handBtn('combat', pend.combatUid)?.classList.add('auto'); if (pend.moveUid) handBtn('movement', pend.moveUid)?.classList.add('auto') }
+  async function onEnemy(m) {
+    if (pend && pend.id === m.id) { const p = pend; pend = null; markAuto(); await runAttackPlan(p); return }
+    FB.setTarget(st, m.id); sfx('cast', .25); hudSync(); handSync();
+    const p = FB.autoAttack(st, m.id);
+    if (p.reason) { pend = null; markAuto(); floatText(m, 'TARGET', '#ffd25a', true); flash(p.reason); return }
+    const c = st.deck.combat.hand[p.index], mc = p.moveCard != null ? st.deck.movement.hand[p.moveCard] : null, name = cardName('combat', c.id);
+    pend = { id: m.id, to: p.to || null, combatUid: c.uid, moveUid: mc?.uid || null, total: p.pv.total, kill: p.pv.kill }; markAuto();
+    floatText(m, '≈ −' + p.pv.total + (p.pv.kill ? ' ☠' : ''), p.pv.kill ? '#ffe14d' : '#ffd0a0', true);
+    hint((p.to ? 'เดินเข้าไปแล้วใช้ ' : 'ใช้ ') + name + (mc ? ' (+ ' + cardName('movement', mc.id) + ')' : '') + ' · คลิกศัตรูอีกครั้งเพื่อโจมตี');
+  }
+  async function runAttackPlan(p) {
+    if (p.moveUid) { const b = handBtn('movement', p.moveUid); if (!b) return; await cardClick(b) }
+    if (p.to) { await heroMove(p.to); const h = FB.hero(st); if (h.u !== p.to.u || h.v !== p.to.v) return }
+    FB.setTarget(st, p.id); const b = handBtn('combat', p.combatUid); if (b) await cardClick(b);
+  }
+  async function walkTo(to) {
+    const p = FB.autoWalk(st, to); if (p.reason) { flash(p.reason); return }
+    if (p.moveCard != null) { const b = handBtn('movement', st.deck.movement.hand[p.moveCard].uid); if (!b) return; await cardClick(b) }
+    await heroMove(to);
+  }
+  function hint(text) { let d = document.getElementById('fbHint'); if (!d) { d = document.createElement('div'); d.id = 'fbHint'; document.body.append(d) } d.textContent = text; d.classList.remove('on'); void d.offsetWidth; d.classList.add('on'); clearTimeout(hint.t); hint.t = setTimeout(() => d.classList.remove('on'), 4200) }
+  /* ---------- v97.08 · undo a walk until the hero acts ---------- */
+  function undoWalk() {
+    if (busy || !st || st.turn !== 'hero' || st.outcome) return;
+    if (st.acted || !walks.length) { flash(st.acted ? 'โจมตีแล้ว ย้อนการเดินไม่ได้' : 'ยังไม่ได้เดิน'); return }
+    const w = walks.pop(), h = FB.hero(st); h.u = w.from.u; h.v = w.from.v; h.vu = h.u + .5; h.vv = h.v + .5; h.face = w.face; h.dir = w.dir; st.mp += w.cost;
+    pend = null; sfx('cast', .2); floatText(h, 'UNDO', '#bfe8ff', true); refresh();
+  }
+  /* ---------- v97.08 · FFT end of turn: pick where the hero faces (hits from behind ×1.2, from the side ×1.1) ---------- */
+  const FACES = [['SE', 1, 0], ['SW', 0, 1], ['NW', -1, 0], ['NE', 0, -1]];
+  function faceNearest(u) { let best = null, bd = 1e9; for (const o of FB.opponents(st, u)) { const d = FB.dist(u, o); if (d < bd) { bd = d; best = o } } if (best) { u.face = u.dir = FB.faceOf(u, best) } }
+  function pickFacing() {
+    return new Promise(res => {
+      const h = FB.hero(st), f0 = h.face, d0 = h.dir, c = screenOf(h), box = document.createElement('div'); box.id = 'fbFace';
+      const btns = FACES.map(([f, du, dv]) => { const p = screenOf({ vu: h.vu + du * .95, vv: h.vv + dv * .95 }); return { f, x: p.x, y: p.y, ang: Math.atan2(p.y - c.y, p.x - c.x) } });
+      box.innerHTML = `<div class="tip">หันหน้าไปทางไหน? <small>ศัตรูตีจากด้านหลัง ×1.2 · ด้านข้าง ×1.1</small></div>` +
+        btns.map(b => `<button data-f="${b.f}" style="left:${b.x}px;top:${b.y}px" title="หันไปทางนี้แล้วจบเทิร์น"><span style="transform:rotate(${(b.ang * 180 / Math.PI).toFixed(0)}deg)">➜</span></button>`).join('') +
+        `<div class="bar"><button class="ok">✓ จบเทิร์น <small>Enter</small></button><button class="no">ยกเลิก <small>Esc</small></button></div>`;
+      document.body.append(box); facing = box;
+      const set = f => { h.face = f; h.dir = f; box.querySelectorAll('[data-f]').forEach(b => b.classList.toggle('on', b.dataset.f === f)) };
+      const done = ok => { removeEventListener('keydown', key, true); box.remove(); facing = null; if (!ok) { h.face = f0; h.dir = d0 } else sfx('cast', .3); res(ok) };
+      const key = e => { const A = { ArrowRight: 0, ArrowDown: Math.PI / 2, ArrowLeft: Math.PI, ArrowUp: -Math.PI / 2 }[e.key];
+        if (A != null) { e.preventDefault(); e.stopPropagation(); let best = null, bd = 9; for (const b of btns) { const d = Math.abs(Math.atan2(Math.sin(b.ang - A), Math.cos(b.ang - A))); if (d < bd) { bd = d; best = b } } set(best.f); return }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); done(true) } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false) } };
+      addEventListener('keydown', key, true);
+      box.querySelectorAll('[data-f]').forEach(b => { b.onmouseenter = () => set(b.dataset.f); b.onclick = () => { set(b.dataset.f); done(true) } });
+      box.querySelector('.ok').onclick = () => done(true); box.querySelector('.no').onclick = () => done(false);
+      set(h.face || h.dir);
+    });
   }
 
   /* ---------- effects (old BattleVFX images; code fallback = a ring) ---------- */
@@ -799,6 +902,10 @@
     if (tg) { poly(g, tg.u, tg.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3.5; g.setLineDash([6, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) }
     for (const a of FB.allies(st)) if (a.hp > 0) { poly(g, a.u, a.v); g.strokeStyle = 'rgba(127,200,160,.7)'; g.lineWidth = 1.5; g.stroke() }
     poly(g, h.u, h.v); g.strokeStyle = '#6fd18a'; g.lineWidth = 2; g.stroke();
+    /* v97.08 · where everyone faces: a small wedge on the ground in front of each unit (hits from behind ×1.2, side ×1.1) */
+    for (const u of st.units) { const F = u.hp > 0 && FB.FACE_V[u.face]; if (!F) continue; const [fu, fv] = F, P = (a, b) => project(u.vu + fu * a - fv * b, u.vv + fv * a + fu * b), tip = P(.62, 0), l = P(.34, .17), r = P(.34, -.17);
+      g.beginPath(); g.moveTo(tip.x, tip.y); g.lineTo(l.x, l.y); g.lineTo(r.x, r.y); g.closePath(); g.fillStyle = u.side === 'monster' ? 'rgba(255,120,95,.85)' : u === h ? 'rgba(130,230,150,.9)' : 'rgba(150,215,190,.8)'; g.fill(); g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 1; g.stroke() }
+    if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) }
     g.restore();
     if (CINE) spotlight(g, cine ? [cine.a, cine.b] : st.units.filter(u => u.hp > 0));
     glowDraw(g, t);
@@ -897,5 +1004,5 @@
   /* runs before the frame's camera transform: TownUX re-centres on the village hero every frame, so the arena has to win after it */
   function pre() { if (st && (!userCam || cine)) focusCamera(); else if (kick.roll) { kick.roll = 0; cv.style.transform = '' } }
   window.TownBattle = { pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
-    act: { skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, discard: setDiscard, confirmDiscard: doDiscard }, busy: () => busy };
+    act: { undo: undoWalk, attackPlan: id => st && FB.autoAttack(st, id), skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, discard: setDiscard, confirmDiscard: doDiscard }, busy: () => busy };
 })();
