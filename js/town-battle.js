@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.28';
+  const V = '97.31';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -174,7 +174,7 @@
     try { if (kind === 'slash') P.sample('slash', s); else if (kind === 'swing') P.swing('sword'); else if (kind === 'step') P.footstep('stone'); else if (kind === 'victory') P.victory(true); else if (kind === 'lose') P.victory(false); else P.sound(kind, s) } catch (e) { }
   }
   function hitSound(fx, o = {}) { sfx(SFXK[fx] || 'sword', o.big ? .85 : .6); if (o.crit || o.kill) { sfx('critical', .8); sfx('hammer', .55) } else if (o.big) sfx('hammer', .35) }
-  function shake(px, ms) { if (!CINE) return; kick.shake = Math.max(kick.shake, px); kick.shakeT = performance.now(); kick.shakeDur = ms }
+  function shake(px, ms) { if (!CINE || window.BattlePolish?.shake === false) return; kick.shake = Math.max(kick.shake, px); kick.shakeT = performance.now(); kick.shakeDur = ms }
   function roll(deg) { if (CINE) kick.roll += deg }
   /* game clock: freezes during hit stop so poses, clips and effects hold for a beat */
   let lag = 0, stopFrom = 0, stopTo = 0;
@@ -275,7 +275,7 @@
   #fbFace [data-f] span{display:inline-block}#fbFace [data-f].on{background:#c9893a;border-color:#ffe2a8;transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
   #fbFace .bar{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}#fbFace .bar button{padding:8px 16px;border-radius:10px;border:1px solid #b9c48a88;background:#1b302af2;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif;cursor:pointer}#fbFace .bar .ok{background:#c9893a;border-color:#ffe2a8}#fbFace .bar small{opacity:.7;font-weight:400}
   #fbPause{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px)}#fbPause .box{display:flex;flex-direction:column;gap:8px;min-width:280px;max-width:92vw;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f3e9c9;font:14px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 16px 40px #000a}
-  #fbPause b{font-size:18px}#fbPause small{color:#cdbb92}#fbPause button{padding:9px 14px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:inherit;text-align:left;cursor:pointer}#fbPause button:hover:not(:disabled){background:#2d4a40}#fbPause button.warn{border-color:#e2705f88;color:#ffc2b4}#fbPause button:disabled{opacity:.45}#fbPause .keys{font-size:12.5px;line-height:1.7;color:#d8caa0;padding:6px 4px}
+  #fbPause b{font-size:18px}#fbPause small{color:#cdbb92}#fbPause button{padding:9px 14px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:inherit;text-align:left;cursor:pointer}#fbPause button:hover:not(:disabled){background:#2d4a40}#fbPause button.warn{border-color:#e2705f88;color:#ffc2b4}#fbPause button:disabled{opacity:.45}#fbPause .keys{font-size:12.5px;line-height:1.7;color:#d8caa0;padding:6px 4px}#fbPause .opt{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#d8caa0;padding:4px}#fbPause .opt[hidden]{display:none}#fbPause .opt label{display:flex;align-items:center;justify-content:space-between;gap:10px}#fbPause .opt label:has(input[type=checkbox]){justify-content:flex-start}
   @media (max-width:820px){#fbHud{width:200px;padding:7px 9px;font-size:12px}#fbHud .help{display:none}#fbHand{overflow-x:auto;justify-content:flex-start}.fb-card,.fb-card .face,.fb-fly,.fb-fly .face{width:58px}.fb-pile{width:40px;height:58px}#fbHand{gap:5px;padding:6px}.fb-card .fb-tag{font-size:9px}#fbBar{bottom:130px}}`;
   document.head.append(css);
 
@@ -785,12 +785,15 @@
     const d = document.createElement('div'); d.id = 'fbPause'; pauseEl = d;
     const canAct = !busy && st.turn === 'hero' && !st.outcome;
     d.innerHTML = `<div class="box"><b>หยุดเกม</b><small>${esc(goalLine())}</small>
-      <button data-a="resume">▶ เล่นต่อ</button><button data-a="el">◈ ตารางธาตุ</button><button data-a="keys">⌨ ปุ่มควบคุม</button>
+      <button data-a="resume">▶ เล่นต่อ</button><button data-a="el">◈ ตารางธาตุ</button><button data-a="keys">⌨ ปุ่มควบคุม</button><button data-a="opt">⚙ เสียงและภาพ</button>
       ${EMBED ? `<button data-a="flee" class="warn" ${canAct ? '' : 'disabled'}>🏃 หนีจากการต่อสู้</button>` : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
-      <div class="keys" hidden>คลิกศัตรู · Tab = เลือกเป้าและดูการ์ดที่ดีที่สุด<br>คลิกซ้ำ · Enter = โจมตีตามที่แสดง<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง)<br>1–9 = ใช้ไพ่ต่อสู้ใบนั้น · Z / Backspace = ย้อนเดิน<br>Space = จบเทิร์น แล้วเลือกทิศด้วยลูกศร · A = Auto<br>Q / E = หมุนกล้อง · Esc = เมนูนี้</div></div>`;
+      <div class="keys" hidden>คลิกศัตรู · Tab = เลือกเป้าและดูการ์ดที่ดีที่สุด<br>คลิกซ้ำ · Enter = โจมตีตามที่แสดง<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง)<br>1–9 = ใช้ไพ่ต่อสู้ใบนั้น · Z / Backspace = ย้อนเดิน<br>Space = จบเทิร์น แล้วเลือกทิศด้วยลูกศร · A = Auto<br>Q / E = หมุนกล้อง · Esc = เมนูนี้</div>
+      <div class="opt" hidden>${(() => { const P = window.BattlePolish || {}; return `<label>🔊 เสียงเอฟเฟกต์ <input type="range" min="0" max="1" step=".05" data-o="volume" value="${P.volume ?? .65}"></label><label>🎵 เพลง <input type="range" min="0" max="1" step=".05" data-o="musicVolume" value="${P.musicVolume ?? .3}"></label><label><input type="checkbox" data-o="shake" ${P.shake === false ? '' : 'checked'}> จอสั่นตอนโดนตี</label>` })()}</div></div>`;
     document.body.append(d);
+    d.querySelectorAll('[data-o]').forEach(x => x.oninput = x.onchange = () => { window.BattlePolish?.set(x.dataset.o, x.type === 'checkbox' ? x.checked : +x.value); if (x.dataset.o === 'volume') sfx('sword', .5) });   /* v97.31 · B13 */
     d.onclick = e => { const a = e.target.closest('[data-a]')?.dataset.a; if (e.target === d) a || pauseMenu(); if (!a) return;
       if (a === 'resume') pauseMenu(); else if (a === 'el') { pauseMenu(); window.ElementWheel?.showChart() } else if (a === 'keys') d.querySelector('.keys').hidden = !d.querySelector('.keys').hidden;
+      else if (a === 'opt') d.querySelector('.opt').hidden = !d.querySelector('.opt').hidden;
       else if (a === 'flee') { const b = e.target.closest('button'); if (b.dataset.sure) { pauseMenu(); if (!busy && st.turn === 'hero' && !st.outcome) report('flee') } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อหนี' } }
       else if (a === 'new') { const b = e.target.closest('button'); if (b.dataset.sure) { pauseMenu(); document.querySelectorAll('.fb-show,.fb-fly,#fbBar').forEach(x => x.remove()); build(); userCam = false; cam.set = false; startTurnShow(true) } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อเริ่มใหม่' } } };
   }
