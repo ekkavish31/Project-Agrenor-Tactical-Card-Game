@@ -185,21 +185,12 @@
   const walkImgs = [1, 2, 3].map(i => { const im = new Image(); im.src = `assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-0${i}.webp`; return im });
   /* ---------- v97.27 · companions talk on the road (TODO "เพื่อนร่วมทีมพูดระหว่างทาง"): walking (by land, night, hunger, tiredness),
      making camp, before a fight and after a win — in each companion's village voice (VillageLife.P[key].voice); a bubble over the token ---------- */
-  const SAY = {
-    warm: { walk: ['อากาศดีนะ เดินไปคุยไปก็ไม่เหนื่อย', 'ถ้าหิวบอกนะ ข้าห่อขนมมาด้วย'], night: ['มืดแล้ว เดินชิดกันไว้นะ'], tired: ['พักกันหน่อยไหม ขาเจ้าสั่นแล้ว'], hungry: ['เสบียงหมดแล้ว … ต้องหาที่พักหรือกลับหมู่บ้านแล้วล่ะ'], camp: ['ข้าก่อไฟเอง เจ้าพักเถอะ'], fight: ['ระวังตัวด้วยนะ!'], win: ['ทุกคนปลอดภัยดีใช่ไหม? ดีแล้ว'] },
-    cheerful: { walk: ['เดินทางแบบนี้สนุกที่สุดเลย!', 'ข้าแข่งกับเจ้าไปถึงเนินโน้นได้นะ!', 'ดูนั่นสิ! … อ้อ แค่ก้อนหิน'], night: ['ดาวเต็มฟ้าเลย! ข้านับได้สามร้อยดวงแล้ว'], tired: ['ข้ายังไหว … อืม จริง ๆ ไม่ค่อยไหวแล้ว'], hungry: ['ท้องข้าร้องดังกว่าหมาป่าอีก!'], camp: ['ตั้งค่าย! ใครจะเล่านิทานผีก่อน?'], fight: ['มาแล้ว! สนุกล่ะทีนี้!'], win: ['เย้! ทีมเราเก่งที่สุด!'] },
-    gruff: { walk: ['เดินต่อ อย่ามัวชมวิว', 'ทางนี้รก ระวังข้อเท้า'], night: ['กลางคืนมันออกล่า ตาเปิดไว้'], tired: ['เหนื่อยก็พัก ฝืนไปก็ตาย'], hungry: ['ไม่มีกิน ไม่มีแรงฟัน'], camp: ['ข้าเฝ้ายามก่อน นอนไป'], fight: ['มาสิ'], win: ['จบ ไปต่อ'] },
-    scholar: { walk: ['หินแถบนี้เป็นชั้นตะกอนเก่า … น่าสนใจมาก', 'ข้าจดเส้นทางไว้ เผื่อต้องทำแผนที่'], night: ['ดาวเหนืออยู่ทางนั้น เราไม่หลงแน่'], tired: ['ร่างกายมนุษย์เดินได้ราวแปดชั่วโมงต่อวัน … เราเกินแล้ว'], hungry: ['ตามตำรา คนอดอาหารจะตัดสินใจพลาดง่ายขึ้น … กลับไปหาเสบียงเถอะ'], camp: ['ขอแสงไฟหน่อย ข้าจะอ่านบันทึกต่อ'], fight: ['ดูท่าทางมัน แล้วหาจุดอ่อน!'], win: ['ข้อมูลการต่อสู้ครั้งนี้ … มีประโยชน์มาก'] },
-    sly: { walk: ['ทางลัดมีเสมอ … ถ้ากล้าพอ', 'ถ้าเจอหีบ ข้าขอเปิดก่อนนะ'], night: ['กลางคืนนี่แหละ เวลาของข้า'], tired: ['ข้าไม่เหนื่อย แต่เจ้าดูแย่แล้ว'], hungry: ['ไม่มีเสบียง … ขโมยจากค่ายโจรสักหน่อยไหมล่ะ'], camp: ['นอนหลับให้สนิทนะ … ข้าไม่ได้จะล้วงกระเป๋าเจ้าหรอก'], fight: ['ข้าจะอ้อมไปด้านหลัง'], win: ['มีของดีติดตัวมันบ้างไหมนะ'] },
-    gentle: { walk: ['ดอกไม้ข้างทางสวยจัง', 'ลมตรงนี้เย็นสบายดีนะ'], night: ['ถ้ากลัวความมืด จับแขนเสื้อข้าไว้ก็ได้'], tired: ['ไปช้า ๆ ก็ได้ ไม่มีใครรีบหรอก'], hungry: ['ข้าแบ่งขนมปังชิ้นสุดท้ายให้นะ … เดี๋ยวต้องหาเพิ่มแล้วล่ะ'], camp: ['ข้าทำแผลให้ใครก่อนดี?'], fight: ['ทุกคน อย่าบาดเจ็บนะ'], win: ['จบแล้ว … ขอให้วิญญาณพวกมันสงบ'] },
-    anxious: { walk: ['ได้ยินเสียงอะไรไหม … ไม่ได้ยินหรือ?', 'เรามาไกลจากหมู่บ้านแล้วนะ'], night: ['มืดแบบนี้ … อะไรก็โผล่มาได้'], tired: ['พักเถอะ ถ้าล้มตอนนี้ไม่มีใครช่วยนะ'], hungry: ['เสบียงหมด! เราจะอดตายกลางทางไหม!'], camp: ['ข้าจะนอนตรงกลางนะ … ไม่ได้กลัวหรอก'], fight: ['ม-มาแล้ว!'], win: ['รอดแล้ว … รอดจริง ๆ'] },
-    formal: { walk: ['เส้นทางนี้ปลอดภัยพอสมควร ข้าเห็นว่าควรเดินต่อ'], night: ['การเดินทางยามวิกาลมีความเสี่ยง ขอให้ระมัดระวัง'], tired: ['ข้าเสนอให้พักแรมก่อนเดินทางต่อ'], hungry: ['เสบียงหมดลงแล้ว ควรวางแผนกลับไปเติม'], camp: ['ข้าจะรับเวรยามช่วงแรก'], fight: ['เตรียมรับมือ!'], win: ['ภารกิจลุล่วง ขอบคุณทุกท่าน'] }
-  };
+  const SAY = window.PartyTalk?.SAY || {};
   let talkB = null, talkCD = 0;
   function chatter(kind, chance = 1) {
     const mates = (S.party || []).filter(p => p.hp > 0); if (!mates.length || Math.random() > chance) return;
     if (kind === 'walk') { if (talkCD > 0) { talkCD--; return } kind = nightness() > .6 ? 'night' : S.food <= 0 ? 'hungry' : S.fatigue >= 70 ? 'tired' : 'walk'; talkCD = 5 }
-    const m = mates[Math.floor(Math.random() * mates.length)], voice = window.VillageLife?.P?.[m.key]?.voice || 'cheerful', set = (SAY[voice] || SAY.cheerful)[kind] || SAY.cheerful[kind];
+    const m = mates[Math.floor(Math.random() * mates.length)], voice = window.PartyTalk?.voiceOf(m.key) || 'cheerful', set = (SAY[voice] || SAY.cheerful || {})[kind] || SAY.cheerful?.[kind];
     if (!set) return; const text = set[Math.floor(Math.random() * set.length)]; talkB = { who: m.name, text, until: performance.now() + 3200 }; log('💬 ' + m.name + ': ' + text);
   }
   function drawTalk(now) {

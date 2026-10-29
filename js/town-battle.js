@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.26';
+  const V = '97.28';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -69,7 +69,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook' };
+    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'hit', 'down']);
@@ -469,6 +469,7 @@
   async function startTurnShow(first) {
     walks = []; pend = null;
     if (first && CINE && Q.get('warm') !== '1' && !st.introDone) { st.introDone = true; busy = true; hudSync(); try { await battleIntro() } finally { busy = false } }
+    if (first) { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'start') }
     refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
     toast(first ? 'BATTLE START · DRAW' : `TURN ${st.turns} · DRAW ${fresh.length}`);
     if (fresh.length) { busy = true; hudSync(); await drawShow(fresh); busy = false; refresh() }
@@ -659,7 +660,18 @@
     }
   }
   let actUnit = null, auto = false, autoRun = false;
-  async function playSteps(steps) {
+  /* v97.28 · companions speak in battle (js/party-talk.js, their village voice): at the start, on a win, under 30 % HP and when they fall */
+  let sayB = null;
+  function say(u, kind) { const t = u?.key && window.PartyTalk?.line(u.key, kind); if (t) sayB = { unit: u, text: t, t0: now(), until: now() + 2600 } }
+  function talkCheck() { for (const a of FB.allies(st)) { if (a.hp <= 0 && !a._saidDown) { a._saidDown = a._saidLow = true; say(a, 'down') } else if (a.hp > 0 && a.hp <= a.maxHp * .3 && !a._saidLow) { a._saidLow = true; say(a, 'low') } } }
+  function drawSay(g) {
+    if (!sayB || now() > sayB.until) return; const u = sayB.unit, q = project(u.vu, u.vv), a = Math.min(1, (sayB.until - now()) / 300, (now() - sayB.t0) / 150);
+    g.save(); g.globalAlpha = Math.max(0, a); g.font = '600 13px VillageThai,"Noto Sans Thai",system-ui'; const w = Math.min(280, g.measureText(sayB.text).width + 20), x = q.x - w / 2, y = q.y - UNIT * 2.45;
+    g.fillStyle = 'rgba(250,242,220,.96)'; g.strokeStyle = '#5a3e18'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, 26, 11); g.fill(); g.stroke(); g.beginPath(); g.moveTo(q.x - 6, y + 26); g.lineTo(q.x, y + 34); g.lineTo(q.x + 6, y + 26); g.fill();
+    g.fillStyle = '#3a2810'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(sayB.text, q.x, y + 13.5); g.restore();
+  }
+  async function playSteps(steps) { try { await playSteps0(steps) } finally { talkCheck() } }
+  async function playSteps0(steps) {
     for (const s of steps) {
       if (st.outcome && s.type !== 'attack') continue;
       if (s.type === 'control') continue;
@@ -699,6 +711,7 @@
   let reported = false;
   function report(outcome) { if (reported || !EMBED) return; reported = true; try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })) }, '*') } catch (e) { } }
   function finish() {
+    if (st.outcome === 'win') { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'win') }
     if (EMBED) { const b = hud?.querySelector('#fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
   function flash(msg) { texts.push({ u: FB.hero(st).vu, v: FB.hero(st).vv, txt: msg, col: '#f6d79b', t0: now(), small: true }) }
   function floatText(unit, txt, col, small, big) { const t = now(), stack = texts.filter(x => x.unit === unit && t - x.t0 < 450).length; texts.push({ unit, u: unit.vu, v: unit.vv, txt, col, t0: t, small, big, dx: (Math.random() - .5) * 18, dy: -stack * 22 }) }   // texts on the same unit stack upward
@@ -1054,6 +1067,7 @@
     }
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
     for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }
+    drawSay(g);
     /* v97.19 · status icons above the head (sleep, burn, poison, silence, weak, frozen, slowed) */
     g.save(); g.font = '15px system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center';
     for (const u of st.units) { if (u.hp <= 0) continue; const ic = [u.leader ? '👑' : '', ...Object.keys(u.sts || {}).map(k => FB.STATUS[k]?.icon), u.stun ? '❄' : '', u.slowed ? '⚡' : ''].filter(Boolean); if (!ic.length) continue;
