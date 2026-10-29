@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.14';
+  const V = '97.15';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -55,7 +55,7 @@
   /* v92.17: recruits from the village (village-life.js, loaded by battle-field.html) */
   for (const [k, v] of Object.entries(window.VillageLife?.ALLY_STATS || {})) if (!ALLY[k]) ALLY[k] = v;
   const ALLY_ART = ['bram', 'luna', 'kier', 'mil'];
-  const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1) } : null }).filter(Boolean);
+  const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv, ctl] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1), control: ctl === '1' || Q.get('ctl') === '1' } : null }).filter(Boolean);
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null;
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
@@ -108,7 +108,7 @@
         for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number); if (pts.some(([a, b]) => Math.max(Math.abs(u - a), Math.abs(v - b)) < sp)) continue;
           const d = Math.hypot(u - o.u, v - o.v) + Math.random() * .6; if (d < bd) { bd = d; best = { u, v } } } }
       if (best) taken.add(best.u + ',' + best.v); return best };
-    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
+    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
     const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
@@ -124,7 +124,7 @@
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
   }
-  function refresh() { reachMap = st.turn === 'hero' && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.hero(st)) : null; hudSync(); handSync() }
+  function refresh() { reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null; allyBar(); hudSync(); handSync() }
   /* ---------- camera director ----------
      cam = world point at the screen centre + zoom. Normal: frame both fighters (shifted right/up so the HUD and the hand don't cover them).
      Cinematic: push in on attacker + target. Shake and roll kick are added on top. */
@@ -253,6 +253,9 @@
   #fbIntro{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:48;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 34px;pointer-events:none;color:#f6ecd6;text-align:center;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif;animation:fbIntroIn .5s cubic-bezier(.2,1.3,.4,1) both;background:linear-gradient(90deg,transparent,#0b1410e0 18%,#0b1410e0 82%,transparent);min-width:min(620px,92vw)}
   #fbIntro small{letter-spacing:.3em;color:#cdbb92;font-size:12px}#fbIntro b{font:900 34px/1.15 Georgia,"Noto Sans Thai",serif;color:#ffe2a8;text-shadow:0 2px 0 #000,0 0 22px #ffb34a88}#fbIntro span{font-size:14px;color:#e9dcbc}
   #fbIntro.out{animation:fbIntroOut .5s ease both}@keyframes fbIntroIn{from{opacity:0;transform:translate(-50%,-50%) scale(1.3)}}@keyframes fbIntroOut{to{opacity:0;transform:translate(-50%,-60%)}}
+  #fbAlly{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:45;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:94vw;padding:10px 14px;border-radius:14px;background:#14231ff2;border:1px solid #ffd25a88;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 10px 26px #000a}
+  #fbAlly b{font-size:16px;color:#ffe2a8}#fbAlly small{color:#cdbb92}#fbAlly button{padding:8px 12px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:600 13px inherit;font-family:inherit;cursor:pointer}#fbAlly button:disabled{opacity:.45;cursor:default}#fbAlly button.ok{background:#c9893a;border-color:#ffe2a8}
+  body.fb-ally #fbHand{opacity:.25;pointer-events:none;transform:translate(-50%,60px)}
   #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
   #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
   #fbFace [data-f]{position:fixed;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid #f3e9c9aa;background:#1b302ae6;color:#f3e9c9;font:22px system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:0 4px 12px #0008;transition:transform .12s,background .12s}
@@ -309,7 +312,7 @@
     const h = FB.hero(st), m = FB.monster(st), bar = (v, max, col) => `<div class="bar"><i style="width:${Math.max(0, v / max * 100)}%;background:${col}"></i></div>`;
     const allyRow = u => { const sk = FB.ALLY_SKILL[u.key], why = FB.skillBlock(st, u), o = u.order || 'charge';
       return `<div class="arow ${u.hp <= 0 ? 'down' : ''}"><div class="mini" data-id="${u.id}"><span>${esc(u.name)}${u.guard ? ' <small style="color:#9cc8ff">🛡' + u.guard + '</small>' : ''}${u.stun ? ' ❄' : ''}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:#7fc8a0"></i></div>` +
-        (u.hp > 0 ? `<div class="ord">${[['charge', '⚔', 'บุก: เข้าหาศัตรูที่ใกล้สุด/เป้าที่เล็ง'], ['follow', '👣', 'ตาม: อยู่ใกล้ฮีโร่ ตีเฉพาะศัตรูที่เข้ามาใกล้'], ['guard', '🛡', 'ตั้งรับ: ไม่ขยับ ป้องกัน +6']].map(([k, ic, tt]) => `<button data-ally="${u.id}" data-order="${k}" class="${o === k ? 'on' : ''}" title="${tt}">${ic}</button>`).join('')}${sk ? `<button class="sk" data-skill="${u.id}" ${why || busy ? 'disabled' : ''} title="${esc(sk.name + (why ? ' — ' + why : ''))}">✦ ${esc(sk.name)}${u.cd ? ' (' + u.cd + ')' : ''}</button>` : ''}</div>` : '') + '</div>' };
+        (u.hp > 0 ? `<div class="ord">${u.control ? `<button data-ctl="${u.id}" class="${u.autoCtl ? '' : 'on'}" title="${u.autoCtl ? 'AI เล่นคนนี้ · คลิกเพื่อสั่งเองในตาของเขา' : 'สั่งเองในตาของเขา · คลิกเพื่อให้ AI เล่น'}">${u.autoCtl ? '🤖' : '🎮'}</button>` : ''}${[['charge', '⚔', 'บุก: เข้าหาศัตรูที่ใกล้สุด/เป้าที่เล็ง'], ['follow', '👣', 'ตาม: อยู่ใกล้ฮีโร่ ตีเฉพาะศัตรูที่เข้ามาใกล้'], ['guard', '🛡', 'ตั้งรับ: ไม่ขยับ ป้องกัน +6']].map(([k, ic, tt]) => `<button data-ally="${u.id}" data-order="${k}" class="${o === k ? 'on' : ''}" title="${tt}">${ic}</button>`).join('')}${sk ? `<button class="sk" data-skill="${u.id}" ${why || busy ? 'disabled' : ''} title="${esc(sk.name + (why ? ' — ' + why : ''))}">✦ ${esc(sk.name)}${u.cd ? ' (' + u.cd + ')' : ''}</button>` : ''}</div>` : '') + '</div>' };
     const lvb = u => window.FieldHeight && FB.lv(st, u.u, u.v) ? ` <small style="color:#cfe4ff">▲${FB.lv(st, u.u, u.v)}</small>` : '';
     const elb = u => { const W = window.ElementWheel, E = W?.info(u.el); return E ? ` <small class="fb-elb" style="color:${E.col}" title="${esc(W.name(u.el))}">${E.icon}${esc(W.name(u.el, true))}</small>` : '' };
     const IQN = ['ดุร้าย · พุ่งใส่ตัวใกล้สุด', 'เจ้าเล่ห์ · ล่าตัวอ่อนแอ จบตัวที่ใกล้ตาย', 'ชำนาญยุทธวิธี · เล็งตัวซัพพอต หลบกลางวงล้อม ถอยหนีตอนใกล้ตาย', 'จอมวางแผน · ใช้ตัวบังพวกอ่อนแอ ถอยไปฟื้นตัว'];
@@ -321,8 +324,9 @@
       '<div class="grp">ศัตรู <small>(คลิกเพื่อเล็งเป้า)</small></div>' + FB.monsters(st).map(u => mini(u, '#e2705f')).join('');
     hud.querySelectorAll('#fbUnits [data-order]').forEach(e => e.onclick = () => { if (busy) return; FB.setOrder(st, e.dataset.ally, e.dataset.order); floatText(st.units.find(u => u.id === e.dataset.ally), { charge: 'CHARGE!', follow: 'FOLLOW', guard: 'HOLD' }[e.dataset.order], '#bfe8ff', true); hudSync() });
     hud.querySelectorAll('#fbUnits [data-skill]').forEach(e => e.onclick = () => allySkillAct(e.dataset.skill));
+    hud.querySelectorAll('#fbUnits [data-ctl]').forEach(e => e.onclick = () => { const u = st.units.find(x => x.id === e.dataset.ctl); if (!u) return; u.autoCtl = !u.autoCtl; floatText(u, u.autoCtl ? 'AI' : 'MANUAL', '#bfe8ff', true); hudSync() });
     hud.querySelectorAll('#fbUnits .mini[data-id^="monster"]').forEach(e => e.onclick = () => { if (st.turn === 'hero' && !busy) { FB.setTarget(st, e.dataset.id); hudSync(); handSync() } });
-    hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? '🏆 ชนะ!' : '💀 แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns} · ตาคุณ · แต้มเดิน ${st.mp}` : `เทิร์น ${st.turns} · ตาศัตรู…`;
+    hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? '🏆 ชนะ!' : '💀 แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns} · ตาคุณ · แต้มเดิน ${st.mp}` : st.turn === 'ally' && st.cur ? `เทิร์น ${st.turns} · ตาของ ${st.cur.name} · เดิน ${st.mp}` : `เทิร์น ${st.turns} · ตาศัตรู…`;
     hud.querySelector('#fbTurn').title = 'ชนะ: ล้มศัตรูทั้งหมด · แพ้: ' + FB.hero(st).name + ' ล้ม';
     const left = FB.crystals(st), max = st.crystalMax;
     hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<span class="gem ${i < left ? 'on' : ''}"></span>`).join('');
@@ -575,10 +579,10 @@
   function screenFlash(col, a, ms) { flashes.push({ col, a, t0: performance.now(), dur: ms }) }
   function banner(text, cls = '') { if (!CINE && cls !== 'win') return; const d = document.createElement('div'); d.className = 'fb-banner ' + cls; d.innerHTML = `<span>${esc(text)}</span>`; document.body.append(d); setTimeout(() => d.remove(), cls === 'win' ? 2600 : 1100) }
   async function heroMove(to) {
-    const h0 = FB.hero(st), from = { u: h0.u, v: h0.v }, face = h0.face, dir = h0.dir;
+    const h0 = FB.actor(st), from = { u: h0.u, v: h0.v }, face = h0.face, dir = h0.dir;
     const mv = FB.move(st, to); if (!mv.ok) { flash(st.mp > 0 ? mv.reason : 'ใช้ไพ่เดินก่อน'); return }
     walks.push({ from, face, dir, cost: mv.cost });
-    busy = true; hudSync(); await walkAnim(FB.hero(st), mv.path); busy = false; FB.hero(st).dir = FB.hero(st).dir; refresh();
+    busy = true; hudSync(); await walkAnim(h0, mv.path); busy = false; refresh();
   }
   /* any AI attack (monster on hero/companion, companion on monster). Full cut-scene when the hero is hit, on crits, knock-outs and bosses;
      a quick push-in without bars otherwise so a big fight keeps moving */
@@ -607,7 +611,12 @@
   async function allySkillAct(id) {
     if (busy || !st || st.turn !== 'hero') return;
     const r = FB.allySkill(st, id); if (!r.ok) { flash(r.reason); return }
-    busy = true; hudSync(); handSync(); const a = r.ally; sfx('cast', .5); toast(a.name + ' · ' + r.name);
+    busy = true; hudSync(); handSync(); await playSkill(r);
+    busy = false; refresh(); if (st.outcome) finish();
+  }
+  /* the signature-skill cut-scene (ordered from the hero's turn for a crystal, or on a controlled companion's own turn) */
+  async function playSkill(r) {
+    const a = r.ally; sfx('cast', .5); toast(a.name + ' · ' + r.name);
     if (r.heals) {
       await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.heals) { fx('heal', x.unit, x.unit, { color: '#7fe08a' }); impact(x.unit, 'heal', false); x.unit.flashUntil = 0; floatText(x.unit, '+' + x.heal, '#7fe08a'); x.unit.shown = x.unit.hp; hudSync(); await wait(140) } await wait(500); a.pose = 'idle' }, { z: 1.4, bars: false, lead: 220, tail: 120 });
     } else if (r.shielded.length) {
@@ -629,12 +638,12 @@
         if (last) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(300); a.pose = 'idle';
       }, { z: 1.75 });
     }
-    busy = false; refresh(); if (st.outcome) finish();
   }
   let actUnit = null, auto = false, autoRun = false;
   async function playSteps(steps) {
     for (const s of steps) {
       if (st.outcome && s.type !== 'attack') continue;
+      if (s.type === 'control') continue;
       if (s.type === 'turn') { actUnit = s.unit; hudSync(); if (s.unit !== FB.hero(st)) await wait(260); continue }
       if (s.type === 'move') await walkAnim(s.unit, s.path);
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
@@ -649,7 +658,7 @@
     pend = null; markAuto(); hidePreview();
     if (auto) faceNearest(FB.hero(st)); else if (!(await pickFacing())) return;
     walks = []; setDiscard(false); busy = true; refresh();
-    if (st.ct) { const r = FB.endTurnCT(st); await playSteps(r.steps); actUnit = null; busy = false; if (st.outcome) { refresh(); finish(); return } await startTurnShow(false); return }
+    if (st.ct) { const r = FB.endTurnCT(st); await playSteps(r.steps); actUnit = null; busy = false; if (st.outcome) { refresh(); finish(); return } await afterAI(); return }
     const allySteps = FB.alliesTurn(st);
     if (allySteps.length) { toast('PARTY PHASE'); await wait(400); await playSteps(allySteps) }
     if (st.outcome) { busy = false; refresh(); finish(); return }
@@ -668,6 +677,38 @@
   function floatText(unit, txt, col, small, big) { const t = now(), stack = texts.filter(x => x.unit === unit && t - x.t0 < 450).length; texts.push({ unit, u: unit.vu, v: unit.vv, txt, col, t0: t, small, big, dx: (Math.random() - .5) * 18, dy: -stack * 22 }) }   // texts on the same unit stack upward
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }
 
+  /* ---------- v97.15 · controlled companions (B14): on an unlocked companion's CT turn the battle waits for the player.
+     Click a cell = walk (its own move points) · click an enemy = show the hit (≈ damage, walking in if needed), click again = do it ·
+     ✦ = its signature skill (no crystal, usual cooldown) · 🤖 = let the AI play this one (also for later turns, until switched back) ·
+     Space / ⏭ = end the turn and pick its facing. ---------- */
+  let pendAlly = null;
+  async function afterAI() { if (st.outcome) { refresh(); finish(); return } if (st.turn === 'ally') return enterAlly(); await startTurnShow(false) }
+  function enterAlly() { walks = []; pendAlly = null; pend = null; markAuto(); const u = st.cur; actUnit = u; document.body.classList.add('fb-ally'); hint('ตาของ ' + u.name + ' · คลิกช่องเพื่อเดิน · คลิกศัตรูเพื่อตี · Space จบเทิร์น'); floatText(u, 'YOUR MOVE', '#ffe08a', true); sfx('cast', .3); refresh() }
+  function allyBar() {
+    let d = document.getElementById('fbAlly'); const on = st && st.turn === 'ally' && !st.outcome && st.cur;
+    if (!on) { d?.remove(); document.body.classList.remove('fb-ally'); return }
+    if (!d) { d = document.createElement('div'); d.id = 'fbAlly'; document.body.append(d); d.onclick = e => { const a = e.target.closest('[data-a]')?.dataset.a; if (!a || busy) return; if (a === 'end') endAllyTurn(); else if (a === 'undo') undoWalk(); else if (a === 'skill') allySkillCtl(); else if (a === 'auto') allyAutoCtl() } }
+    const u = st.cur, sk = FB.ALLY_SKILL[u.key];
+    d.innerHTML = `<b>${esc(u.name)}</b><small>Lv.${u.level || 1} · เดิน ${st.mp} · ระยะ ${u.range}${st.acted ? ' · ทำแล้ว' : ''}</small>
+      ${sk ? `<button data-a="skill" ${st.acted || u.cd ? 'disabled' : ''} title="${esc(sk.name)}">✦ ${esc(sk.name)}${u.cd ? ' (' + u.cd + ')' : ''}</button>` : ''}
+      <button data-a="undo" ${st.acted || !walks.length ? 'disabled' : ''}>↶ ย้อนเดิน</button><button data-a="auto" title="ให้ AI เล่นคนนี้แทน (สลับกลับได้ที่แผงซ้าย)">🤖 AI เล่นแทน</button><button data-a="end" class="ok">⏭ จบเทิร์น <small>Space</small></button>`;
+  }
+  function allyClick(wp) {
+    const g = inv(wp.x, wp.y), to = { u: Math.floor(g.u), v: Math.floor(g.v) };
+    const m = FB.monsters(st).find(u => u.hp > 0 && ((u.u === to.u && u.v === to.v) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
+    if (m) return allyEnemy(m);
+    pendAlly = null; heroMove(to);
+  }
+  async function allyEnemy(m) {
+    if (pendAlly && pendAlly.id === m.id) { const p = pendAlly; pendAlly = null; if (p.to) { await heroMove(p.to); const u = st.cur; if (u.u !== p.to.u || u.v !== p.to.v) return }
+      const u = st.cur, r = FB.allyHit(st, m.id); if (!r.ok) { flash(r.reason); return } walks = []; busy = true; hudSync(); await unitAttack(u, m, r); busy = false; refresh(); if (st.outcome) finish(); return }
+    FB.setTarget(st, m.id); const p = FB.allyPlan(st, m.id); if (p.reason) { pendAlly = null; flash(p.reason); return }
+    pendAlly = { id: m.id, ...p }; floatText(m, '≈ −' + p.est + (p.kill ? ' ☠' : ''), p.kill ? '#ffe14d' : '#ffd0a0', true); hint((p.to ? 'เดินเข้าไปแล้วตี' : 'ตี') + ' ' + m.name + ' · คลิกอีกครั้งเพื่อยืนยัน'); hudSync();
+  }
+  async function allySkillCtl() { const u = st.cur, r = FB.allySkillNow(st); if (!r.ok) { flash(r.reason); return } walks = []; busy = true; hudSync(); await playSkill(r); busy = false; refresh(); if (st.outcome) finish() }
+  async function allyAutoCtl() { const u = st.cur; u.autoCtl = true; busy = true; const s = FB.allyAuto(st); await playSteps(s); busy = false; await finishAlly(false) }
+  async function endAllyTurn() { if (busy || st.turn !== 'ally' || facing) return; if (!(await pickFacing(st.cur))) return; await finishAlly(true) }
+  async function finishAlly() { pendAlly = null; walks = []; busy = true; document.body.classList.remove('fb-ally'); const r = FB.endAllyTurn(st); refresh(); await playSteps(r.steps); actUnit = null; busy = false; await afterAI() }
   /* ---------- v97.08 · pause menu (Esc / ☰): restart, flee, element chart, controls — kept off the main HUD so they can't be hit by mistake ---------- */
   let pauseEl = null;
   function pauseMenu() {
@@ -688,8 +729,10 @@
   addEventListener('keydown', e => {
     if (!ON || !st || facing || e.target.closest?.('input,textarea') || e.repeat) return;
     if (e.key === 'Escape') { if (pauseEl) pauseMenu(); else if (pend) { pend = null; markAuto() } else if (!document.querySelector('dialog[open]')) pauseMenu(); return }
-    if (pauseEl || busy || st.turn !== 'hero' || st.outcome) return;
+    if (pauseEl || busy || st.outcome) return;
     const k = e.key.toLowerCase();
+    if (st.turn === 'ally') { if (k === ' ') { e.preventDefault(); endAllyTurn() } else if (k === 'z' || k === 'backspace') { e.preventDefault(); undoWalk() } else if (k === 'enter' && pendAlly) { e.preventDefault(); const m = st.units.find(u => u.id === pendAlly.id); if (m) allyEnemy(m) } else if (k === 'tab') { e.preventDefault(); const ms = FB.monsters(st).filter(m => m.hp > 0); const i = ms.findIndex(m => m.id === pendAlly?.id); pendAlly = null; if (ms.length) allyEnemy(ms[(i + 1) % ms.length]) } return }
+    if (st.turn !== 'hero') return;
     if (k === ' ') { e.preventDefault(); endHeroTurn() }
     else if (k === 'z' || k === 'backspace') { e.preventDefault(); undoWalk() }
     else if (k === 'a') setAuto(!auto)
@@ -698,6 +741,7 @@
     else if (/^[1-9]$/.test(k)) { const b = hand?.querySelectorAll('#fbCombat .fb-card')[+k - 1]; if (b) cardClick(b) }
   });
   function click(wp) {
+    if (st && st.turn === 'ally' && !busy && !st.outcome && !facing) return allyClick(wp);
     if (!st || busy || st.outcome || st.turn !== 'hero' || discardMode || facing) return;
     const g = inv(wp.x, wp.y), to = { u: Math.floor(g.u), v: Math.floor(g.v) };
     const m = FB.monsters(st).find(u => u.hp > 0 && ((u.u === to.u && u.v === to.v) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
@@ -734,17 +778,17 @@
   function hint(text) { let d = document.getElementById('fbHint'); if (!d) { d = document.createElement('div'); d.id = 'fbHint'; document.body.append(d) } d.textContent = text; d.classList.remove('on'); void d.offsetWidth; d.classList.add('on'); clearTimeout(hint.t); hint.t = setTimeout(() => d.classList.remove('on'), 4200) }
   /* ---------- v97.08 · undo a walk until the hero acts ---------- */
   function undoWalk() {
-    if (busy || !st || st.turn !== 'hero' || st.outcome) return;
+    if (busy || !st || (st.turn !== 'hero' && st.turn !== 'ally') || st.outcome) return;
     if (st.acted || !walks.length) { flash(st.acted ? 'โจมตีแล้ว ย้อนการเดินไม่ได้' : 'ยังไม่ได้เดิน'); return }
-    const w = walks.pop(), h = FB.hero(st); h.u = w.from.u; h.v = w.from.v; h.vu = h.u + .5; h.vv = h.v + .5; h.face = w.face; h.dir = w.dir; st.mp += w.cost;
+    const w = walks.pop(), h = FB.actor(st); h.u = w.from.u; h.v = w.from.v; h.vu = h.u + .5; h.vv = h.v + .5; h.face = w.face; h.dir = w.dir; st.mp += w.cost;
     pend = null; sfx('cast', .2); floatText(h, 'UNDO', '#bfe8ff', true); refresh();
   }
   /* ---------- v97.08 · FFT end of turn: pick where the hero faces (hits from behind ×1.2, from the side ×1.1) ---------- */
   const FACES = [['SE', 1, 0], ['SW', 0, 1], ['NW', -1, 0], ['NE', 0, -1]];
   function faceNearest(u) { let best = null, bd = 1e9; for (const o of FB.opponents(st, u)) { const d = FB.dist(u, o); if (d < bd) { bd = d; best = o } } if (best) { u.face = u.dir = FB.faceOf(u, best) } }
-  function pickFacing() {
+  function pickFacing(unit) {
     return new Promise(res => {
-      const h = FB.hero(st), f0 = h.face, d0 = h.dir, c = screenOf(h), box = document.createElement('div'); box.id = 'fbFace';
+      const h = unit || FB.hero(st), f0 = h.face, d0 = h.dir, c = screenOf(h), box = document.createElement('div'); box.id = 'fbFace';
       const btns = FACES.map(([f, du, dv]) => { const p = screenOf({ vu: h.vu + du * .95, vv: h.vv + dv * .95 }); return { f, x: p.x, y: p.y, ang: Math.atan2(p.y - c.y, p.x - c.x) } });
       box.innerHTML = `<div class="tip">หันหน้าไปทางไหน? <small>ศัตรูตีจากด้านหลัง ×1.2 · ด้านข้าง ×1.1</small></div>` +
         btns.map(b => `<button data-f="${b.f}" style="left:${b.x}px;top:${b.y}px" title="หันไปทางนี้แล้วจบเทิร์น"><span style="transform:rotate(${(b.ang * 180 / Math.PI).toFixed(0)}deg)">➜</span></button>`).join('') +
@@ -919,6 +963,8 @@
     /* v97.08 · where everyone faces: a small wedge on the ground in front of each unit (hits from behind ×1.2, side ×1.1) */
     for (const u of st.units) { const F = u.hp > 0 && FB.FACE_V[u.face]; if (!F) continue; const [fu, fv] = F, P = (a, b) => project(u.vu + fu * a - fv * b, u.vv + fv * a + fu * b), tip = P(.62, 0), l = P(.34, .17), r = P(.34, -.17);
       g.beginPath(); g.moveTo(tip.x, tip.y); g.lineTo(l.x, l.y); g.lineTo(r.x, r.y); g.closePath(); g.fillStyle = u.side === 'monster' ? 'rgba(255,120,95,.85)' : u === h ? 'rgba(130,230,150,.9)' : 'rgba(150,215,190,.8)'; g.fill(); g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 1; g.stroke() }
+    if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { poly(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() }
+    if (pendAlly?.to && !busy) { poly(g, pendAlly.to.u, pendAlly.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) }
     if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) }
     g.restore();
     if (CINE) spotlight(g, cine ? [cine.a, cine.b] : st.units.filter(u => u.hp > 0));

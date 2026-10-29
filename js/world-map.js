@@ -693,7 +693,7 @@
     const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
     const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
     for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * 10) / 10) }
-    const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1)).join(',');
+    const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
     const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
     fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
@@ -735,6 +735,7 @@
   }
   /* ---------- v97.09 · victory results (console style): gold and drops pop in, then each fighter's EXP bar fills, level-ups flash.
      Click / Enter / Space skips the animation, then closes. ---------- */
+  const CONTROL_LV = 3;   /* v97.15 · a companion at this level fights under the player's command (B14) */
   function chime(notes, vol = .05) { try { const A = chime.a ||= new (window.AudioContext || window.webkitAudioContext)(); notes.forEach((f, i) => { const o = A.createOscillator(), g = A.createGain(), t0 = A.currentTime + i * .09; o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + .02); g.gain.exponentialRampToValueAtTime(.0001, t0 + .5); o.connect(g).connect(A.destination); o.start(t0); o.stop(t0 + .55) }) } catch (e) { } }
   function results(r) {
     if (!document.getElementById('wmResCss')) { const s = document.createElement('style'); s.id = 'wmResCss'; s.textContent = `
@@ -766,7 +767,7 @@
         await pause(700);
         for (const [i, m] of r.members.entries()) { const row = d.querySelector(`.m[data-i="${i}"]`), bar = row.querySelector('i'), lv = row.querySelector('.lv'); m.lv = m.lv0;
           while (m.lv < m.lv1) { bar.style.width = '100%'; await pause(560); m.lv++; lv.textContent = 'Lv.' + m.lv; lv.classList.remove('up'); void lv.offsetWidth; lv.classList.add('up'); chime([659, 880, 1175], .07);
-            if (!row.querySelector('.lvup')) row.insertAdjacentHTML('beforeend', `<div class="lvup">LEVEL UP! → Lv.${m.lv1}${m.key === 'hero' ? ' · ได้แต้มสเตตัส +' + (m.lv1 - m.lv0) * 2 : ''}</div>`);
+            if (!row.querySelector('.lvup')) row.insertAdjacentHTML('beforeend', `<div class="lvup">LEVEL UP! → Lv.${m.lv1}${m.key === 'hero' ? ' · ได้แต้มสเตตัส +' + (m.lv1 - m.lv0) * 2 : m.lv0 < CONTROL_LV && m.lv1 >= CONTROL_LV ? ' · 🎮 ปลดล็อก: สั่ง ' + m.name + ' เองได้ในการต่อสู้' : ''}</div>`);
             bar.style.transition = 'none'; bar.style.width = '0%'; void bar.offsetWidth; bar.style.transition = '' }
           bar.style.width = Math.min(100, m.xp1 / need(m) * 100) + '%'; await pause(380) }
         ready = true; d.querySelector('.go').classList.add('on'); if (skip) { skip = false }

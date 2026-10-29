@@ -378,7 +378,7 @@ let panelAt = 0;
 function panel(now) {
   if (now - panelAt < 150 || !window.FieldHeight) return; panelAt = now;
   const st = window.TownBattle?.state?.(), box = ui.querySelector('.unit'); if (!st) { box.style.display = 'none'; return }
-  const alive = st.units.filter(u => u.hp > 0), u = (hoverCell && alive.find(x => x.u === hoverCell.u && x.v === hoverCell.v)) || (st.target && alive.find(x => x.id === st.target)) || alive.find(x => x.id === 'hero') || alive[0];
+  const alive = st.units.filter(u => u.hp > 0), u = (hoverCell && alive.find(x => x.u === hoverCell.u && x.v === hoverCell.v)) || (st.turn === 'ally' && st.cur && alive.includes(st.cur) && st.cur) || (st.target && alive.find(x => x.id === st.target)) || alive.find(x => x.id === 'hero') || alive[0];
   /* v97.08 · the cell under the pointer: height and ground type */
   { let ci = ui.querySelector('.cell'); if (!ci) { ci = document.createElement('div'); ci.className = 'cell'; ui.append(ci) }
     const k = hoverCell && window.TownBattle?.cells?.()?.get(hoverCell.u + ',' + hoverCell.v), occ = hoverCell && alive.some(x => x.u === hoverCell.u && x.v === hoverCell.v);

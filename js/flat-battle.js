@@ -237,9 +237,40 @@
       for (const x of list) x.ct = g.get(x); if (u !== hero(st)) u.ct -= 100; st.active = u;   // the hero pays when his turn ends
       if (u === hero(st)) { beginHeroTurn(st); steps.push({ type: 'turn', unit: u }); return steps }
       st.turn = 'monster'; st.cur = u; steps.push({ type: 'turn', unit: u }); if (u.side === 'hero') u.guard = 0;
+      if (u.side === 'hero' && u.control && !u.autoCtl && !u.stun && st.cards) { beginAllyTurn(st, u); steps.push({ type: 'control', unit: u }); return steps }   /* v97.15 · the player commands this one */
       steps.push(...aiAct(st, u)); st.cur = null; checkOutcome(st);
     }
     return steps;
+  }
+  /* ---------- v97.15 · controlled companions (B14): an unlocked companion (unit.control) gets its own turn like FFT —
+     move (its own move points), then one action: a basic attack or its signature skill (no crystal, the usual cooldown) —
+     and ends the turn facing a way the player picks. unit.autoCtl hands it back to the AI. ---------- */
+  function beginAllyTurn(st, u) { st.turn = 'ally'; st.cur = u; st.acted = false; st.mp = u.slowed ? Math.max(1, u.move - 2) : u.move; u.slowed = 0; st.active = u }
+  function allyHit(st, id) {
+    if (st.turn !== 'ally' || st.outcome) return { ok: false, reason: 'ไม่ใช่ตาเพื่อน' }; const u = st.cur; if (st.acted) return { ok: false, reason: 'ทำไปแล้วในเทิร์นนี้' };
+    const t = st.units.find(x => x.id === id && alive(x)); if (!t || !targets(st, u).includes(t)) return { ok: false, reason: 'ศัตรูอยู่นอกระยะ (' + u.range + ' ช่อง)' };
+    const at = strike(st, u, t); st.acted = true; st.mp = 0; return { ok: true, target: t, ...at };
+  }
+  function allyEstimate(st, u, t, at = u) { const W = EW(), raw = u.atk * heightMult(st, at, t) * (W && u.el ? W.mult(u.el, elOf(t)) : 1) * (SIDE[sideOf(t, at)] || 1); return Math.max(1, Math.round(raw) - (t.armor || 0) - Math.min(t.guard || 0, Math.round(raw) - 1)) }
+  /* click an enemy on a companion's turn: hit it from here, or the cell to walk to first (prefers the back, then the cheapest) */
+  function allyPlan(st, id) {
+    if (st.turn !== 'ally' || st.acted) return { reason: 'ทำไปแล้วในเทิร์นนี้' }; const u = st.cur, t = st.units.find(x => x.id === id && alive(x)); if (!t) return { reason: 'ไม่มีเป้านี้' };
+    if (targets(st, u).includes(t)) return { est: allyEstimate(st, u, t), kill: allyEstimate(st, u, t) >= t.hp };
+    let best = null; const u0 = u.u, v0 = u.v;
+    for (const e of reach(st, u, st.mp).values()) { if (e.cost === 0) continue; u.u = e.u; u.v = e.v; const ok = targets(st, u).includes(t); u.u = u0; u.v = v0; if (!ok) continue;
+      const sd = sideOf(t, e), sc = (sd === 'back' ? 10 : sd === 'side' ? 4 : 0) - e.cost * .5 + lv(st, e.u, e.v) - lv(st, t.u, t.v); if (!best || sc > best.sc) best = { sc, to: { u: e.u, v: e.v }, est: allyEstimate(st, u, t, e) } }
+    return best ? { to: best.to, est: best.est, kill: best.est >= t.hp } : { reason: 'เข้าไม่ถึงเป้านี้ในเทิร์นนี้' };
+  }
+  function allySkillNow(st) {
+    if (st.turn !== 'ally' || st.acted) return { ok: false, reason: 'ทำไปแล้วในเทิร์นนี้' }; const u = st.cur, sp = st.spent; st.turn = 'hero'; st.spent = 0;
+    let r; try { r = allySkill(st, u.id) } finally { st.turn = 'ally'; st.spent = sp }
+    if (r.ok) { st.acted = true; st.mp = 0 } return r;
+  }
+  function allyAuto(st) { const u = st.cur; st.turn = 'monster'; const s = aiAct(st, u); st.turn = 'ally'; st.acted = true; st.mp = 0; checkOutcome(st); return s }
+  function endAllyTurn(st) {
+    if (st.turn !== 'ally' || st.outcome) return { ok: false, steps: [] };
+    st.turn = 'monster'; st.cur = null; st.acted = false; st.mp = 0; checkOutcome(st);
+    return { ok: true, steps: st.outcome ? [] : runCT(st) };
   }
   /* CT version of endTurn: the hero's end-of-turn effects, then every AI turn until the hero's next one */
   function endTurnCT(st) {
@@ -593,6 +624,6 @@
     if (!free(st, nu, nv, t) || lv(st, nu, nv) - lv(st, t.u, t.v) > 1) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
