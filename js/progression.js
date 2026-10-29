@@ -76,17 +76,47 @@
   function weaponAtk(item, recipes) { if (!item) return 0; return (KIND_ATK[item.kind] ?? 1) + ((item.quality || 1) - 1) + (stars(item, recipes) - 1) }
   function equipped(g) { return (g.inventory || []).find(x => x.id === g.equipped) || null }
   const stat = (g, k) => Math.max(0, ch(g).stats?.[k] || 0);
+  /* ---------- v97.18 · jobs (docs/TODO.md "อาชีพและอาวุธ"): any weapon in any job · a job changes stats, gives one passive and teaches
+     two cards (job Lv.2 and Lv.4, kept when you change job). The look comes from the same hero picture: outfit colour (hue/sat/light of the
+     green cloak), an aura and an emblem. Base jobs open when the prologue is over; rogue and guardian need Lv.3 in ranger / warrior. ---------- */
+  const JOBS = {
+    adventurer: { name: 'นักผจญภัย', icon: '✦', col: '#8a9a6a', desc: 'ยังไม่เลือกทาง · ทุกอย่างสมดุล', passive: 'ไม่มี', mods: {}, look: null, cards: [] },
+    warrior: { name: 'นักรบ', icon: '⚔', col: '#c8402e', desc: 'ประชิดตัว ทนทาน', passive: 'การ์ดโจมตีประชิด +3', mods: { power: 2, armor: 1, hp: 8 }, pass: { meleePlus: 3 }, look: { hue: 4, sat: .5, light: 0, aura: 'ember' }, cards: ['skill', 'whirl'] },
+    ranger: { name: 'นักล่า', icon: '➶', col: '#3f8f3a', desc: 'ระยะไกล แม่นยำ', passive: 'การ์ดระยะไกล ระยะ +1', mods: { crit: .06 }, pass: { rangePlus: 1 }, look: { hue: 105, sat: .42, light: .02, aura: 'leaf' }, cards: ['aimed', 'dive'] },
+    mage: { name: 'จอมเวท', icon: '✶', col: '#7a4fd0', desc: 'พลังธาตุ ตัวบาง', passive: 'การ์ดธาตุแรงขึ้น ×1.15', mods: { spell: 3, hp: -6 }, pass: { spellMult: 1.15 }, look: { hue: 272, sat: .55, light: .02, aura: 'spark' }, cards: ['thunder', 'frost'] },
+    cleric: { name: 'นักบวช', icon: '✚', col: '#d8c06a', desc: 'ฟื้นฟูและปกป้อง', passive: 'การ์ดฟื้นฟู/ป้องกัน ได้ผล ×1.4', mods: { spell: 1, hp: 4 }, pass: { supportMult: 1.4 }, look: { hue: 44, sat: .22, light: .5, aura: 'halo' }, cards: ['mend', 'wall'] },
+    rogue: { name: 'นักฉวย', icon: '☾', col: '#4a4f74', desc: 'ลอบตี ฉวยจังหวะ', passive: 'ตีด้านหลัง/ข้าง แรงขึ้นอีก ×1.15', mods: { crit: .1, armor: -1 }, pass: { flankPlus: 1.15 }, look: { hue: 232, sat: .22, light: -.14, aura: 'shadow' }, cards: ['backstab', 'ambush'], need: ['ranger', 3] },
+    guardian: { name: 'อัศวินโล่', icon: '⛨', col: '#4f7fb0', desc: 'กำแพงของทีม', passive: 'การ์ดป้องกัน +4 · เกราะหนา', mods: { armor: 2, hp: 12, power: -1 }, pass: { guardPlus: 4 }, look: { hue: 208, sat: .42, light: .06, aura: 'shield' }, cards: ['wall', 'formation'], need: ['warrior', 3] }
+  };
+  const JOB_MAX = 5, jobNeed = lv => 50 * lv;
+  const jobsOf = g => { const c = ch(g); c.jobs ||= {}; c.job ||= 'adventurer'; return c };
+  function jobLevel(g, id) { return jobsOf(g).jobs[id]?.lv || 1 }
+  function jobOpen(g, id) { const J = JOBS[id]; if (!J) return false; if (id === 'adventurer') return true; const st = g.village?.story; if (st && st.mode === 'active') return false;   // the prologue comes first
+    return !J.need || jobLevel(g, J.need[0]) >= J.need[1] }
+  function jobWhy(g, id) { const J = JOBS[id]; if (!J) return 'ไม่มีอาชีพนี้'; if (g.village?.story?.mode === 'active' && id !== 'adventurer') return 'เปิดหลังจบบทนำ'; if (J.need && jobLevel(g, J.need[0]) < J.need[1]) return JOBS[J.need[0]].name + ' Lv.' + J.need[1]; return '' }
+  function setJob(g, id) { if (!jobOpen(g, id)) return false; jobsOf(g).job = id; return true }
+  /* job points from a won fight: the current job levels up (max 5) and teaches its cards at Lv.2 and Lv.4 (queued like level cards) */
+  function gainJob(g, jp) {
+    const c = jobsOf(g), id = c.job; if (id === 'adventurer') return { id, ups: [] }; const j = c.jobs[id] ||= { lv: 1, jp: 0 }, ups = [];
+    j.jp += Math.max(0, Math.round(jp || 0)); while (j.lv < JOB_MAX && j.jp >= jobNeed(j.lv)) { j.jp -= jobNeed(j.lv); j.lv++; ups.push(j.lv) }
+    const card = lv => JOBS[id].cards[lv === 2 ? 0 : lv === 4 ? 1 : -1];
+    for (const lv of ups) { const cid = card(lv); if (cid) (g.village.levelUnlocks ||= []).push({ level: 'job', job: id, cards: [{ group: 'combat', id: cid, n: 1 }] }) }
+    return { id, ups };
+  }
+  function jobCombat(g) { const id = jobsOf(g).job, J = JOBS[id] || JOBS.adventurer; return { id, mods: J.mods || {}, pass: J.pass || {}, look: J.look, icon: J.icon, col: J.col, name: J.name, lv: jobLevel(g, id) } }
   /* what the card battle uses (js/flat-battle.js): bonus damage on weapon cards / element cards, crit chance, armour, stamina cap */
   function heroCombat(g, recipes) {
     const lv = heroLevel(g), w = equipped(g), wb = weaponAtk(w, recipes);
     const power = wb + Math.floor((lv - 1) / 3) + Math.floor(stat(g, 'strength') / 2), spell = Math.floor(stat(g, 'knowledge') / 2) + Math.floor((lv - 1) / 3);
     const armor = Math.floor((lv - 1) / 3), stMax = (g.maxStamina || heroMaxStamina(lv)) + 4 * stat(g, 'endurance');
-    return { power, spell, crit: Math.min(.25, .02 * stat(g, 'precision')), armor, stMax, level: lv, weapon: wb, atk: BASE_ATK + power, def: BASE_DEF + armor };
+    const J = jobCombat(g).mods;   /* v97.18: the job's stat changes */
+    return { power: power + (J.power || 0), spell: spell + (J.spell || 0), crit: Math.min(.35, .02 * stat(g, 'precision') + (J.crit || 0)), armor: Math.max(0, armor + (J.armor || 0)), stMax, level: lv, weapon: wb, atk: BASE_ATK + power + (J.power || 0), def: BASE_DEF + armor, hpMod: J.hp || 0 };
   }
   /* the hero as sent into a battle frame: combat profile + the stamina to start with (tired heroes start lower) */
   function battleHero(g, recipes) {
     const c = heroCombat(g, recipes);
-    return { power: c.power, spell: c.spell, crit: c.crit, armor: c.armor, stMax: c.stMax, st: Math.max(20, Math.round(c.stMax - (g.fatigue || 0) * .6)) };
+    const j = jobCombat(g);   /* v97.18: job id, passive and look go into the battle (the arena page does not load this file) */
+    return { power: c.power, spell: c.spell, crit: c.crit, armor: c.armor, stMax: c.stMax, st: Math.max(20, Math.round(c.stMax - (g.fatigue || 0) * .6)), hpMod: c.hpMod, job: j.id, jobLv: j.lv, ...j.pass, look: j.look ? { ...j.look, icon: j.icon, col: j.col, name: j.name } : null };
   }
   const battleParam = (g, recipes) => 'hero=' + encodeURIComponent(JSON.stringify(battleHero(g, recipes)));
   /* missing materials for a recipe (materials in v.materials, goods in v.bag) — '' when enough */
@@ -110,7 +140,7 @@
   const foeScale = lv => { const k = Math.max(0, lv - 3); return { hp: 1 + .07 * k, atk: 1 + .05 * k } };   /* from Lv4 on: early levels feel the growth */
   function battleXp(o = {}) { return Math.round(o.boss ? 80 : 15 + (o.dang || 0) * 25 + (o.elite ? 20 : 0)) + 3 * (o.kills || 0) }
 
-  const api = { BASE_HP, HP_PER, BASE_ST, ST_PER, LEVEL_CARDS, KIND_ATK, ZONE_RECIPES, heroLevel, heroMaxHp, heroMaxStamina, heroNeed, allyNeed, sync, gainHero, gainAlly, allyAtk, stars, starText, weaponAtk, equipped, heroCombat, battleHero, battleParam, foeScale, recipeMissing, spendRecipe, battleXp, statsHtml };
+  const api = { JOBS, JOB_MAX, jobNeed, jobLevel, jobOpen, jobWhy, setJob, gainJob, jobCombat, jobsOf, BASE_HP, HP_PER, BASE_ST, ST_PER, LEVEL_CARDS, KIND_ATK, ZONE_RECIPES, heroLevel, heroMaxHp, heroMaxStamina, heroNeed, allyNeed, sync, gainHero, gainAlly, allyAtk, stars, starText, weaponAtk, equipped, heroCombat, battleHero, battleParam, foeScale, recipeMissing, spendRecipe, battleXp, statsHtml };
   root.Progression = api;
   if (typeof module !== 'undefined' && module.exports) { module.exports = api; return }
 
@@ -129,6 +159,7 @@
   setInterval(() => {
     const q = s?.village?.levelUnlocks; if (showing || !q?.length || busyNow() || !root.StarterKit?.unlock) return;
     const next = q.shift(); showing = true; try { save() } catch (e) { }
-    Promise.resolve(root.StarterKit.unlock(next.cards, { kicker: 'เลเวลอัป · Lv.' + next.level, title: 'การ์ดใหม่จากประสบการณ์', text: 'HP สูงสุด ' + heroMaxHp(next.level) + ' · แรงสูงสุด ' + heroMaxStamina(next.level) })).finally(() => { showing = false });
+    const J = next.level === 'job' && JOBS[next.job];   /* v97.18: a job level teaches its card */
+    Promise.resolve(root.StarterKit.unlock(next.cards, J ? { kicker: 'อาชีพ ' + J.icon + ' ' + J.name, title: 'ทักษะประจำอาชีพ', text: 'เรียนแล้วติดตัว ใช้ได้แม้เปลี่ยนอาชีพ' } : { kicker: 'เลเวลอัป · Lv.' + next.level, title: 'การ์ดใหม่จากประสบการณ์', text: 'HP สูงสุด ' + heroMaxHp(next.level) + ' · แรงสูงสุด ' + heroMaxStamina(next.level) })).finally(() => { showing = false });
   }, 1500);
 })(typeof globalThis !== 'undefined' ? globalThis : this);

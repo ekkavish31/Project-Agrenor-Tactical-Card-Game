@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.16';
+  const V = '97.18';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -113,7 +113,7 @@
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
-      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons });
+      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons });
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
     for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
@@ -403,7 +403,7 @@
   function preview(b) {
     hidePreview(); const group = b.dataset.group, id = b.dataset.id, why = cardBlock(group, +b.dataset.i);
     dmgShow = null; if (group === 'combat' && !why) { const d = FB.preview(st, +b.dataset.i); if (d && !d.self) dmgShow = d }
-    if (group === 'combat') { const rr = FB.cardRule(id); rangeShow = rr && !rr.self ? rr.range : 0; pushShow = null;
+    if (group === 'combat') { const rr = FB.cardRule(id); rangeShow = rr && !rr.self ? rr.range + (rr.range > 1 ? FB.hero(st).rangePlus || 0 : 0) : 0; pushShow = null;
       /* v94.02 · push / pull forecast: where the target lands and how far it falls */
       if (rr && (rr.push || rr.pull) && window.FieldHeight) { const h = FB.hero(st), tg = FB.pickTarget(st, rr); if (tg) { const dir = rr.push ? 1 : -1, du = tg.u - h.u, dv = tg.v - h.v, su = Math.abs(du) >= Math.abs(dv) ? Math.sign(du) : 0, sv = su ? 0 : Math.sign(dv), nu = tg.u + su * dir, nv = tg.v + sv * dir, drop = FB.lv(st, tg.u, tg.v) - FB.lv(st, nu, nv), free = cells.get(nu + ',' + nv) && cells.get(nu + ',' + nv) !== 'blocked' && !st.units.some(x => x.hp > 0 && x.u === nu && x.v === nv) && drop >= -1; pushShow = free ? { u: nu, v: nv, drop, dmg: drop >= 2 ? 5 * drop : 0 } : { u: nu, v: nv, stuck: true } } } }
     pv = document.createElement('div'); pv.className = 'fb-show';
@@ -911,9 +911,47 @@
   /* v97.01: weapons the sprite sheet has no hand anchor for (axe, bow, knife, rapier, spear, tome) use the loose pictures in assets/tactics */
   const WEXTRA = { axe: { pivot: [.5, .9], size: [256, 768], scale: .62 }, knife: { pivot: [.5, .8], size: [256, 512], scale: .34 }, rapier: { pivot: [.5, .88], size: [256, 768], scale: .78 }, spear: { pivot: [.5, .72], size: [256, 1024], scale: 1.1 }, bow: { pivot: [.5, .5], size: [128, 320], scale: .6 }, tome: { pivot: [.5, .5], size: [160, 200], scale: .26 } };
   const weaponDef = (A, k) => A.equipment[k] || (WEXTRA[k] ? { src: `assets/tactics/${k}.webp`, ...WEXTRA[k] } : null);
+  /* ---------- v97.18 · the job's look on the same hero picture (docs/TODO.md "อาชีพและอาวุธ") ----------
+     outfit: the cloth pixels (the old green cloak, or the dull dark brown between shoulders and boots of the current outfit) take the job's hue / saturation / lightness — skin and hair stay;
+     done once per picture and job, then cached · aura: code-drawn, behind and around the hero · emblem: the job sign next to the HP bar */
+  const jobPics = new Map();
+  function jobPic(img, src, L) {
+    if (!L || L.hue == null || !img || !img.complete || !img.naturalWidth) return img;
+    const k = src + '|' + L.hue + ',' + L.sat + ',' + L.light; let c = jobPics.get(k); if (c) return c;
+    c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0);
+    let d; try { d = x.getImageData(0, 0, c.width, c.height) } catch (e) { jobPics.set(k, img); return img }
+    const q = d.data, H2 = L.hue / 360, hue2rgb = (p, q2, t2) => { t2 = (t2 + 1) % 1; return t2 < 1 / 6 ? p + (q2 - p) * 6 * t2 : t2 < .5 ? q2 : t2 < 2 / 3 ? p + (q2 - p) * (2 / 3 - t2) * 6 : p };
+    for (let n = 0; n < q.length; n += 4) { if (q[n + 3] < 10) continue; const r = q[n] / 255, gg = q[n + 1] / 255, b = q[n + 2] / 255, mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), l = (mx + mn) / 2, dd = mx - mn; if (dd < .02) continue;
+      const s = l > .5 ? dd / (2 - mx - mn) : dd / (mx + mn); let h = mx === r ? ((gg - b) / dd + (gg < b ? 6 : 0)) : mx === gg ? (b - r) / dd + 2 : (r - gg) / dd + 4; h *= 60;
+      /* the current outfit is all dull brown: its cloth is the dark, low-saturation brown between the shoulders and the boots (skin is lighter, the head is above) */
+      const yy = (n / 4 / c.width | 0) / c.height, cloth = (h >= 42 && h <= 100 && s <= .62 && l >= .05 && l <= .7) || (h <= 40 && s < .5 && l >= .07 && l <= .46 && yy > .37 && yy < .86);
+      if (!cloth) continue;
+      const s2 = Math.min(1, L.sat * (.75 + s)), l2 = Math.max(.03, Math.min(.92, l * (1.15 + L.light * 1.6) + L.light * .22)), q2 = l2 < .5 ? l2 * (1 + s2) : l2 + s2 - l2 * s2, p2 = 2 * l2 - q2;
+      q[n] = hue2rgb(p2, q2, H2 + 1 / 3) * 255; q[n + 1] = hue2rgb(p2, q2, H2) * 255; q[n + 2] = hue2rgb(p2, q2, H2 - 1 / 3) * 255 }
+    x.putImageData(d, 0, 0); jobPics.set(k, c); return c;
+  }
+  function jobAura(g, u, p, size, t, front) {
+    const L = u.look; if (!L?.aura || u.hp <= 0) return; const T = t / 1000, cx = p.x, cy = p.y - size * .32;
+    g.save(); g.globalCompositeOperation = L.aura === 'shadow' ? 'source-over' : 'lighter';
+    const dot = (x, y, r, col, a) => { const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(${col},${a})`); gr.addColorStop(1, `rgba(${col},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill() };
+    for (let k = 0; k < 6; k++) { const ph = (T * .5 + k / 6) % 1, ang = k / 6 * 6.283 + T * (L.aura === 'spark' ? 1.4 : .6), inFront = Math.sin(ang) > 0; if (inFront !== front) continue;
+      const ox = Math.cos(ang) * size * .26, oy = Math.sin(ang) * size * .08;
+      if (L.aura === 'ember') dot(cx + ox * .8, p.y - ph * size * .7, 4.5 * (1 - ph) + 1, '255,140,60', .75 * (1 - ph));
+      else if (L.aura === 'leaf') { g.fillStyle = `rgba(120,200,90,${.65 * (1 - ph)})`; g.save(); g.translate(cx + ox, cy + oy - ph * size * .2); g.rotate(ang * 2); g.beginPath(); g.ellipse(0, 0, 4, 1.8, 0, 0, 7); g.fill(); g.restore() }
+      else if (L.aura === 'spark') { dot(cx + ox, cy + oy - Math.sin(T * 2 + k) * 6, 5, '190,150,255', .8); }
+      else if (L.aura === 'halo' && k === 0 && !front) { dot(cx, p.y - size * .78, size * .2, '255,230,150', .32 + .1 * Math.sin(T * 2)); g.strokeStyle = `rgba(255,236,170,${.55 + .2 * Math.sin(T * 3)})`; g.lineWidth = 2; g.beginPath(); g.ellipse(cx, p.y - size * .86, size * .12, size * .035, 0, 0, 7); g.stroke() }
+      else if (L.aura === 'shadow') { g.fillStyle = `rgba(20,16,40,${.35 * (1 - ph)})`; g.beginPath(); g.ellipse(cx + ox, p.y - ph * size * .35, 6 + ph * 6, 3 + ph * 3, 0, 0, 7); g.fill() }
+      else if (L.aura === 'shield' && k < 3 && front) { g.strokeStyle = `rgba(150,200,255,${.28 + .18 * Math.sin(T * 2.4 + k)})`; g.lineWidth = 1.5; g.beginPath(); g.arc(cx, cy, size * (.3 + k * .03), -2.4, -.7); g.stroke() } }
+    g.restore();
+  }
+  function jobEmblem(g, u, p, top) {
+    const L = u.look; if (!L?.icon) return; const x = p.x - 32, y = top - 7;
+    g.save(); g.fillStyle = L.col || '#888'; g.strokeStyle = '#1a140c'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, 8.5, 0, 7); g.fill(); g.stroke();
+    g.fillStyle = '#fff8e8'; g.font = '700 11px system-ui,"Segoe UI Symbol",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(L.icon, x, y + .5); g.restore();
+  }
   function drawHero(g, u, t) {
     const A = sprites(), p = project(u.vu, u.vv), f = heroFrame(u, t); if (!A || !f) return;
-    const size = UNIT * 1.6, left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1], i = im(f.src);
+    const size = UNIT * 1.6, left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1], i = jobPic(im(f.src), f.src, u.look);
     let ox = 0; if (u.pose === 'hit') ox = Math.sin(t * .07) * 3;
     const pm = poseMotion(u, t);
     shadow(g, p, UNIT * .26); g.save(); g.translate(ox, -(u.lift || 0)); if (u.hp <= 0) g.globalAlpha *= .6;
@@ -925,14 +963,16 @@
       const h = size * (W.scale || .63) * .9, w = h * W.size[0] / W.size[1];
       const tipUp = ['spear', 'staff', 'bow'].includes(u.weapon), flatBack = u.weapon === 'tome';   // blades, hammers: point / edge down · spears (and staves): point up
       g.save(); g.translate(left + size * (.5 + side * (['knife', 'tome', 'bow'].includes(u.weapon) ? .2 : .06)), top + size * (flatBack ? .62 : u.weapon === 'knife' ? .52 : tipUp ? .56 : .38)); g.rotate(flatBack ? 0 : (side * (away ? 38 : -38) + (tipUp ? 0 : 180)) * Math.PI / 180); g.drawImage(i2, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore() };
+    jobAura(g, u, p, size, t, false);
     if (carried) { if (!['NE', 'NW'].includes(u.dir)) onBack() }
     else if (f.rightBehind) sword();
     const body = () => { if (f.flipImage) { g.save(); g.translate(left + size / 2, 0); g.scale(-1, 1); g.drawImage(i, -size / 2, top, size, size); g.restore() } else g.drawImage(i, left, top, size, size) };
     if (i) { body(); if ((u.flashUntil || 0) > t) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; body(); body(); g.restore() } }
     if (carried) { if (['NE', 'NW'].includes(u.dir)) onBack() }
     else if (!f.rightBehind) sword();
+    jobAura(g, u, p, size, t, true);
     g.restore();
-    bar(g, p, top + size * .12, u.shown / u.maxHp, '#6fd18a');
+    bar(g, p, top + size * .12, u.shown / u.maxHp, '#6fd18a'); jobEmblem(g, u, p, top + size * .12);
   }
   /* monster: old MonsterArt clips (idle/walk/windup/strike/hit/down, SE/NE + mirror); static picture until the clip loads */
   /* companions: the old per-character pictures (<key>_<se|ne>_<idle|windup|strike|hit|guard|down>.webp), SW/NW mirrored, moved with poseMotion */
@@ -987,7 +1027,7 @@
     if (dmgShow && !busy && dmgShow.target.hp > 0) { const q = project(dmgShow.target.vu, dmgShow.target.vv), txt = '−' + dmgShow.total + (dmgShow.kill ? ' ☠' : ''); g.save(); g.font = '900 24px system-ui,"Noto Sans Thai",sans-serif'; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = dmgShow.kill ? '#ffe14d' : '#ffd0a0'; const y = q.y - UNIT * 1.75 - 4 * Math.sin(now() * .006); g.strokeText(txt, q.x, y); g.fillText(txt, q.x, y); g.restore() }
     if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }
     /* enemies some playable card can reach: red; the chosen target: gold */
-    if (!busy && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
+    if (!busy && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range + (FB.cardRule(c.id).range > 1 ? h.rangePlus || 0 : 0) : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
     if (tg) { poly(g, tg.u, tg.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3.5; g.setLineDash([6, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) }
     for (const a of FB.allies(st)) if (a.hp > 0) { poly(g, a.u, a.v); g.strokeStyle = 'rgba(127,200,160,.7)'; g.lineWidth = 1.5; g.stroke() }
     poly(g, h.u, h.v); g.strokeStyle = '#6fd18a'; g.lineWidth = 2; g.stroke();

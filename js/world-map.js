@@ -714,17 +714,18 @@
       S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       const loot = dropLoot(foe, here.biome, dang, o.boss);
       /* v94.06 F2: experience — the hero and the companions who fought */
-      const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
+      let jobRes = null; const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
       if (window.Progression) {
         const xp = Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }), ups = Progression.gainHero(WS.game(), xp);
         { const c = WS.game().village.character; Object.assign(members[0], { gain: xp, lv1: c.level, xp1: c.xp }) }
         log('✦ EXP +' + xp + (ups.length ? ' · เลเวลอัป! Lv.' + ups[ups.length - 1] + ' (HP สูงสุด ' + S.maxHp + ')' : ''));
         if (ups.length) toast('LEVEL UP! Lv.' + ups[ups.length - 1]);
         for (const p of fighters) { const m = S.party.find(x => x.key === p.key); if (!m) continue; const u = Progression.gainAlly(m, Math.round(xp * .8)); if (u.length) log(m.name + ' เลเวลอัป Lv.' + u[u.length - 1] + ' (HP ' + m.max + ')'); const mm = members.find(x => x.ref === m); if (mm) Object.assign(mm, { gain: Math.round(xp * .8), lv1: m.level, xp1: m.xp }) }
+        jobRes = Progression.gainJob ? Progression.gainJob(WS.game(), Math.round(xp * .7)) : null;   /* v97.18: job points */
         WS.commit();
       }
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
-      if (P) await results({ title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed });
+      if (P) await results({ title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed, job: jobRes && jobRes.id !== 'adventurer' ? { ...P.JOBS[jobRes.id], lv: P.jobLevel(WS.game(), jobRes.id), jp: P.jobsOf(WS.game()).jobs[jobRes.id]?.jp || 0, need: P.jobNeed(P.jobLevel(WS.game(), jobRes.id)), ups: jobRes.ups, max: P.JOB_MAX } : null });
       else toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
     } else if (res.outcome === 'flee') {
       log('หนีออกมาได้'); if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal() } S.hp = Math.max(1, S.hp);
@@ -758,6 +759,7 @@
       d.innerHTML = `<div class="box"><div class="ttl">VICTORY</div><div class="sub">${esc(r.title || 'ชนะการต่อสู้')}</div>
         <div class="loot">${[r.gold ? '💰 +' + r.gold : '', ...r.loot, r.kills ? '⚔ ล้มศัตรู ' + r.kills : ''].filter(Boolean).map((x, i) => `<span style="animation-delay:${.35 + i * .12}s">${esc(x)}</span>`).join('')}</div>
         <div class="ms">${r.members.map((m, i) => `<div class="m" data-i="${i}"><b>${esc(m.name)}</b><span class="lv">Lv.${m.lv0}</span><div class="xp"><i style="width:${Math.min(100, m.xp0 / (m.key === 'hero' ? r.heroNeed(m.lv0) : r.allyNeed(m.lv0)) * 100)}%"></i></div><span class="g">+${m.gain} EXP</span></div>`).join('')}</div>
+        ${r.job ? `<div class="m job"><b>${r.job.icon} ${esc(r.job.name)}</b><span class="lv${r.job.ups.length ? ' up' : ''}">Lv.${r.job.lv}</span><div class="xp"><i style="width:${r.job.lv >= r.job.max ? 100 : Math.min(100, r.job.jp / r.job.need * 100)}%;background:${r.job.col}"></i></div><span class="g">${r.job.ups.length ? 'อาชีพเลเวลอัป!' : 'แต้มอาชีพ'}</span></div>` : ''}
         <div class="go">คลิก หรือกด Enter เพื่อไปต่อ</div></div>`;
       document.body.append(d); chime([523, 659, 784, 1047], .06);
       const close = () => { if (!ready) { skip = true; return } removeEventListener('keydown', key, true); d.remove(); res() };

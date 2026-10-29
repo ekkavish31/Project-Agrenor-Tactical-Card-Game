@@ -216,7 +216,6 @@ test('recruits: a healer companion mends the most hurt friend; mendAll heals the
   B.hero(s2).hp = 30; const m = B.allySkill(s2, 'ally0'); assert.equal(m.ok, true); assert.equal(B.hero(s2).hp, 45);
   B.setTarget(s2, 'monster'); const f = B.allySkill(s2, 'ally1'); assert.equal(f.ok, true); assert.equal(f.hits.length, 2);
 });
-console.log('flat battle: ' + n + ' tests passed');
 
 test('v97.08 facing: back ×1.2, side ×1.1, front ×1', () => {
   const t = { u: 5, v: 5, face: 'SE' };
@@ -233,4 +232,14 @@ test('v97.08 one-click play: autoAttack picks a card, autoWalk picks a move card
   const w = B.autoWalk(near, { u: 5, v: 8 }); assert.equal(w.moveCard, si, 'no points left: the move card that reaches it');
   const far = mkC({ hero: { u: 0, v: 0 } }); far.mp = 0; give(far, 'combat', 'attack'); assert.ok(B.autoAttack(far, B.monster(far).id).reason, 'out of reach: a reason');
 });
-
+test('v97.18 job passives: warrior melee +3 · mage spell ×1.15 · cleric heal ×1.4 · guardian guard +4 · ranger range +1 · rogue flank ×1.15', () => {
+  const hit = (hero, id, mon = {}) => { const st = mkC({ hero: { u: 7, v: 8, ...hero }, monster: mon }); return B.playCombat(st, give(st, 'combat', id)) };
+  assert.equal(hit({ meleePlus: 3 }, 'attack').hits[0].damage, hit({}, 'attack').hits[0].damage + 3);
+  assert.ok(hit({ spellMult: 1.15 }, 'spell').hits[0].damage > hit({}, 'spell').hits[0].damage);
+  const heal = sup => { const st = mkC({ hero: { u: 7, v: 8, hp: 20, supportMult: sup } }); return B.playCombat(st, give(st, 'combat', 'firstAid')).heal };
+  assert.equal(heal(1.4), Math.round(heal(1) * 1.4));
+  const g = gp => { const st = mkC({ hero: { u: 7, v: 8, guardPlus: gp } }); return B.playCombat(st, give(st, 'combat', 'guard')).guard }; assert.equal(g(4), g(0) + 4);
+  const far = rp => { const st = mkC({ hero: { u: 3, v: 8, rangePlus: rp } }); return B.combatBlock(st, give(st, 'combat', 'spell')) }; assert.ok(far(0)); assert.equal(far(1), '');   // 5 cells: spell reaches 4, 5 with the ranger
+  assert.ok(hit({ flankPlus: 1.15 }, 'attack', { face: 'SE' }).hits[0].damage > hit({}, 'attack', { face: 'SE' }).hits[0].damage, 'rogue from behind');
+});
+console.log('flat battle: ' + n + ' tests passed');

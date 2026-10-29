@@ -59,7 +59,8 @@
   const CRYSTALS = 2, STAMINA_PER_DISCARD = 10, HAND = { movement: 4, combat: 6 };
   /* v95.00 · the hero's growth in card battles: weapon cards add h.power (level, weapon, strength), element cards add h.spell (knowledge) */
   const SPELL_CARDS = new Set(['spell', 'thunder', 'frost', 'flame', 'gust', 'tide', 'pull', 'quake', 'rockfall']);
-  const cardBonus = (h, id) => Math.max(0, SPELL_CARDS.has(id) ? h.spell || 0 : h.power || 0);
+  const cardBonus = (h, id) => Math.max(0, SPELL_CARDS.has(id) ? h.spell || 0 : h.power || 0) + (h.meleePlus && CARD[id] && CARD[id].range === 1 && !CARD[id].self ? h.meleePlus : 0);
+  const jobMult = (h, id) => SPELL_CARDS.has(id) ? h.spellMult || 1 : 1;   /* v97.18: mage */
   const crystals = st => Math.max(0, (st.crystalMax || CRYSTALS) - (st.spent || 0));
   function cardEvent(st, type, group, cards) { if (cards.length) (st.deck.cardEvents ||= []).push({ type, group, cards: cards.map(c => ({ ...c })), seq: st.deck.cardSeq = (st.deck.cardSeq || 0) + 1 }) }
   /* take card `index` out of the hand into the discard pile (no refill — that waits for the next turn) */
@@ -175,7 +176,7 @@
      or the direction the player picked at the end of the hero's turn. */
   const FACE_V = { SE: [1, 0], NW: [-1, 0], SW: [0, 1], NE: [0, -1] }, SIDE = { back: 1.2, side: 1.1 };
   function sideOf(t, a) { const f = FACE_V[t?.face]; if (!f) return 'front'; const du = a.u - t.u, dv = a.v - t.v, along = du * f[0] + dv * f[1], perp = Math.abs(du * f[1] - dv * f[0]); if (!du && !dv) return 'front'; return along >= perp && along > 0 ? 'front' : -along >= perp ? 'back' : 'side' }
-  function sideMult(st, a, t, notes) { if (!st.cards) return 1; const s = sideOf(t, a), m = SIDE[s] || 1; if (m !== 1 && notes) notes.push((s === 'back' ? 'ด้านหลัง' : 'ด้านข้าง') + ' ×' + m); return m }
+  function sideMult(st, a, t, notes) { if (!st.cards) return 1; const s = sideOf(t, a), m = (SIDE[s] || 1) * (s !== 'front' && a.flankPlus ? a.flankPlus : 1); if (m !== 1 && notes) notes.push((s === 'back' ? 'ด้านหลัง' : 'ด้านข้าง') + ' ×' + m); return m }
   function targets(st, att, range = att.range) { return opponents(st, att).filter(t => dist(att, t) <= range && (range > 1 || meleeOk(st, att, t))).sort((a, b) => dist(att, a) - dist(att, b)) }
   function damageFor(st, att, tgt) {
     let d = Math.max(1, att.atk - tgt.def), notes = [];
@@ -468,11 +469,13 @@
     const rule = CARD[c.id]; if (!rule) return TD.COMBAT[c.id].name + ' ยังไม่รองรับในสนามแบน';
     if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
     const h = hero(st); if (h.stamina < rule.st) return 'แรงไม่พอ (ต้อง ' + rule.st + ')';
-    if (!rule.self && !pickTarget(st, rule)) return rule.high && targets(st, h, rule.range).length ? 'ต้องยืนสูงกว่าเป้าอย่างน้อย 1 ระดับ' : rule.range === 1 && opponents(st, h).some(o => dist(h, o) <= 1) ? 'ต่างระดับเกินระยะประชิด' : 'ศัตรูอยู่นอกระยะ (' + rule.range + ' ช่อง)';
+    if (!rule.self && !pickTarget(st, rule)) return rule.high && targets(st, h, reachOf(h, rule)).length ? 'ต้องยืนสูงกว่าเป้าอย่างน้อย 1 ระดับ' : rule.range === 1 && opponents(st, h).some(o => dist(h, o) <= 1) ? 'ต่างระดับเกินระยะประชิด' : 'ศัตรูอยู่นอกระยะ (' + reachOf(h, rule) + ' ช่อง)';
     return '';
   }
   /* the chosen target (st.target = unit id, set by clicking a monster) if it is in range, else the nearest one in range */
-  function pickTarget(st, rule) { const h = hero(st), inR = targets(st, h, rule.range).filter(t => rule.high ? gap(st, h, t) >= rule.high : rule.leap ? gap(st, h, t) >= -1 : rule.aoe === 'splash' ? gap(st, t, h) < 2 : true), pick = inR.find(t => t.id === st.target); return pick || inR[0] || null }
+  /* v97.18 · job passives on the hero: rangePlus (ranger) · meleePlus (warrior) · spellMult (mage) · supportMult (cleric) · flankPlus (rogue) · guardPlus (guardian) */
+  const reachOf = (h, rule) => rule.range > 1 ? rule.range + (h.rangePlus || 0) : rule.range;
+  function pickTarget(st, rule) { const h = hero(st), inR = targets(st, h, reachOf(h, rule)).filter(t => rule.high ? gap(st, h, t) >= rule.high : rule.leap ? gap(st, h, t) >= -1 : rule.aoe === 'splash' ? gap(st, t, h) < 2 : true), pick = inR.find(t => t.id === st.target); return pick || inR[0] || null }
   function setTarget(st, id) { const t = st.units.find(u => u.id === id && u.side === 'monster' && alive(u)); st.target = t ? t.id : null; return t || null }
   function playCombat(st, index) {
     const why = combatBlock(st, index); if (why) return { ok: false, reason: why };
@@ -480,9 +483,9 @@
     spend(st, 'combat', index); st.spent++; h.stamina -= rule.st;
     const out = { ok: true, card: id, uid: c0.uid, name, fx: rule.fx, self: !!rule.self, big: rule.big || 1, hits: [] };
     if (rule.self) {
-      if (rule.guard) { h.guard = Math.max(h.guard, rule.guard); out.guard = h.guard }
+      if (rule.guard) { h.guard = Math.max(h.guard, Math.round((rule.guard + (h.guardPlus || 0)) * (h.supportMult || 1))); out.guard = h.guard }
       if (rule.restore) { h.stamina = Math.min(h.stMax || 100, h.stamina + rule.restore); out.restore = rule.restore }
-      if (rule.heal) { const b = h.hp; h.hp = Math.min(h.maxHp, h.hp + rule.heal); out.heal = h.hp - b }
+      if (rule.heal) { const b = h.hp; h.hp = Math.min(h.maxHp, h.hp + Math.round(rule.heal * (h.supportMult || 1))); out.heal = h.hp - b }
       if (rule.perch) { h.perch = rule.perch; out.perch = true } if (rule.climb) { h.climb = 1; out.climb = true } if (rule.evade) { h.evade = 1; out.evade = true } if (rule.counter) { h.counter = 1; out.counter = true } if (rule.ambush) { h.ambush = rule.ambush; out.ambush = true }
       st.log.push(name + (out.guard ? ' ป้องกัน ' + out.guard : out.heal ? ' ฟื้น ' + out.heal : out.restore ? ' แรง +' + out.restore : out.perch ? ' (ยึดที่สูง · โบนัสความสูง ×2)' : out.climb ? ' (ตานี้ปีนต่างระดับได้ 2 · ขึ้นเนินไม่เสียแต้ม)' : out.evade ? ' (หลบการโจมตีครั้งถัดไป)' : out.counter ? ' (สวนกลับเมื่อโดนตี)' : out.ambush ? ' (ตีครั้งถัดไป ×1.6)' : ''));
       return out;
@@ -501,7 +504,7 @@
     out.target = t; const sm = sideMult(st, h, t, extra);
     for (let i = 0; i < (rule.hits || 1); i++) {
       if (!alive(t)) break;
-      const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), en = [], em = elMult(st, cardEl(id, h), t, en), r = hurt(st, t, (rule.dmg + bonus + cardBonus(h, id)) * mult * sm * em * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: [...extra, ...en, ...r.notes], crit });
+      const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), en = [], em = elMult(st, cardEl(id, h), t, en), r = hurt(st, t, (rule.dmg + bonus + cardBonus(h, id)) * mult * sm * em * jobMult(h, id) * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: [...extra, ...en, ...r.notes], crit });
     }
     /* area cards: ดาบหมุน hits everyone next to the hero, ทุบธรณี everyone next to the target */
     if (rule.aoe) { const c = rule.aoe === 'self' ? h : t; for (const o of opponents(st, h)) { if (o === t || dist(o, c) > 1) continue; const g2 = gap(st, h, o); if (rule.aoe === 'splash' && g2 <= -2) continue; const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), r = hurt(st, o, (rule.dmg + cardBonus(h, id)) * (rule.aoe === 'splash' ? (g2 >= 1 ? 1.5 : 1) * (h.ambush || 1) : mult) * sideMult(st, h, o) * (crit ? CRIT.mult : 1)); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit, splash: true }) } }
@@ -534,7 +537,7 @@
     if (rule.aoe === 'splash' && d0 >= 1) { mult *= 1.5; notes.push('ต่ำกว่า ×1.5') }
     const W = EW(), el = cardEl(c.id, h), em = W && el ? W.mult(el, elOf(t)) : 1; if (em !== 1 && !W.isSecret(el)) notes.push(W.note(el, elOf(t)));
     mult *= sideMult(st, h, t, notes);
-    const raw = (rule.dmg + bonus + cardBonus(h, c.id)) * mult * em, guard = { v: t.guard || 0 }, n = rule.hits || 1; let total = 0, last = null;
+    const raw = (rule.dmg + bonus + cardBonus(h, c.id)) * mult * em * jobMult(h, c.id), guard = { v: t.guard || 0 }, n = rule.hits || 1; let total = 0, last = null;
     for (let i = 0; i < n; i++) { last = soak(st, t, raw, guard); total += last.damage }
     const all = [...new Set([...notes, ...(last?.notes || [])])];
     return { target: t, perHit: last ? last.damage : 0, hits: n, total, kill: total >= t.hp, notes: all, critTotal: Math.round(total * CRIT.mult) };
