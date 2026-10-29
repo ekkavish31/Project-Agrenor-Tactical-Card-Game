@@ -63,6 +63,11 @@ async function reviewBeforePush(message,files,head){
  return await new Promise(resolve=>{let done=false;const finish=v=>{if(done)return;done=true;dlg.close();dlg.remove();resolve(v)};dlg.querySelector('#ghReviewCancel').onclick=()=>finish(null);dlg.querySelector('#ghReviewConfirm').onclick=()=>finish(dlg.querySelector('#ghReviewNote').value.trim()||message);dlg.addEventListener('cancel',e=>{e.preventDefault();finish(null)},{once:true});dlg.showModal()});
 }
 
+/* v97.03 · every js/ file in a push gets the new version as its ?v= on every page that loads it (game-settings.js used to keep 82.14 / 82.15 / 86
+   on different pages, so some pages ran a stale browser copy of the pushed settings). */
+const PAGES=['index.html','editor.html','village-town.html','village-place.html','place-interior.html','world-map.html','battle-field.html','battleground.html','asset-studio.html','object-asset-studio.html','frame-generator.html','tree-motion-demo.html'];
+async function bumpScriptVersions(files,ver,read){const js=files.filter(f=>!f.remove&&/^js\/[^/]+\.js$/.test(f.path)).map(f=>f.path.slice(3).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));if(!ver||!js.length)return;
+ const re=new RegExp('(js/(?:'+js.join('|')+')\\?v=)[\\d.]+','g');for(const p of PAGES){if(files.some(f=>f.path===p))continue;const t=await read(p);if(!t)continue;const n=t.replace(re,'$1'+ver.slice(1));if(n!==t)files.push({path:p,content:n})}}
 // build(head) → [{path, content}] where content is string | Uint8Array | Blob; head.read(path) reads files at that commit
 async function commit(message,build,onStatus=()=>{}){const c=config();if(!c.token)throw new Error('ยังไม่ได้ตั้งค่า GitHub token');
  const ui=pushScreen(message.replace(/\s*\(.*\)$/,'')),say=(n,t)=>{ui.step(n,t);onStatus(t)};
@@ -71,6 +76,7 @@ async function commit(message,build,onStatus=()=>{}){const c=config();if(!c.toke
   let review=message;if(false){ui.pause();try{review=await reviewBeforePush(message,files,{read:p=>readText(p,head)})}finally{ui.resume()}}if(!review){ui.close();onStatus('ยกเลิกก่อน Push');return null}
   // Small patch → increment the version suffix (v82.3 → v82.4; suffix is a sequence, not a decimal).
   let ver='';try{const vf=await readText('js/game-version.js',head);if(vf){const m=vf.match(/v:'v(\d+)(?:\.(\d+))?'/);if(m){ver='v'+m[1]+'.'+((+m[2]||0)+1);files.push({path:'js/game-version.js',content:vf.replace(/v:'v[\d.]+'/,"v:'"+ver+"'").replace(/date:'[^']*'/,"date:'"+new Date().toISOString().slice(0,10)+"'")})}}}catch(e){}
+  try{await bumpScriptVersions(files,ver,p=>readText(p,head))}catch(e){}
   const msg=ver?ver+': '+review:review;
   say(2,'กำลังอัปโหลด '+files.length+' ไฟล์…');const tree=[];let n=0;ui.files(0,files.length);for(const f of files){if(f.remove){tree.push({path:f.path,mode:'100644',type:'blob',sha:null});ui.files(++n,files.length);continue}const blob=await json('/git/blobs',{method:'POST',body:JSON.stringify({content:await b64(f.content),encoding:'base64'})});tree.push({path:f.path,mode:'100644',type:'blob',sha:blob.sha});ui.files(++n,files.length)}
   say(3,'กำลังสร้าง commit '+(ver||'')+'…');const t=await json('/git/trees',{method:'POST',body:JSON.stringify({base_tree:base.tree.sha,tree})}),cm=await json('/git/commits',{method:'POST',body:JSON.stringify({message:msg,tree:t.sha,parents:[head]})});
