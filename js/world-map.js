@@ -48,12 +48,13 @@
   function healParty(f) { for (const p of S.party) p.hp = Math.min(p.max, f >= 1 ? p.max : p.hp + Math.round(p.max * f)) }
   function fresh(seed) {
     world = G.generate(seed);
-    S = WS.bind({ seed: world.seed, known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], dest: null, cleared: {}, done: {}, steps: 0, log: [] });
+    S = WS.bind({ seed: world.seed, map: world.real || 'random', known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], dest: null, cleared: {}, done: {}, steps: 0, log: [] });
     reveal(); save();
   }
   function load() {
     if (Q.get('new') === '1') { fresh(+Q.get('seed') || undefined); history.replaceState(null, '', location.pathname); return }
-    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = WS.bind(s); S.done ??= {}; S.log ??= []; adoptVillage(); adoptLeads(); reveal(); return } } catch (e) { }
+    try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (s.map || 'random') !== (G.generate.real || 'random')) { /* v95.22: an old random-map save moves to Nor'Chorthal: same seed, finished destinations kept, back at Fernvale */ fresh(s.seed); S.done = s.done || {}; S.dest = S.done[s.dest] ? null : s.dest || null; S.log = ['— แผนที่ใหม่: ดินแดน Nor\'Chorthal —']; reveal(); save(); adoptVillage(); adoptLeads(); return }
+      if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = WS.bind(s); S.done ??= {}; S.log ??= []; adoptVillage(); adoptLeads(); reveal(); return } } catch (e) { }
     fresh(+Q.get('seed') || undefined);
   }
   function save() { WS.writeWorld(S) }
@@ -82,10 +83,12 @@
 
   /* ---------- terrain painting (once per world) ---------- */
   const PAL = { grass: ['#7fa35a', '#8db365', '#6f9450'], forest: ['#4f7a3f', '#5a8646', '#456c37'], hills: ['#a09060', '#b0a06c', '#8f8054'], mountain: ['#8a8378', '#9b948a', '#77706a'],
-    water: ['#3f6f96', '#4a7ba3', '#365f84'], swamp: ['#5b6b45', '#66764d', '#4d5c3b'], snow: ['#dfe7ee', '#eef3f7', '#cfd9e2'], sand: ['#d8c48f', '#e2cf9c', '#cbb680'] };
+    water: ['#3f6f96', '#4a7ba3', '#365f84'], swamp: ['#5b6b45', '#66764d', '#4d5c3b'], snow: ['#dfe7ee', '#eef3f7', '#cfd9e2'], sand: ['#d8c48f', '#e2cf9c', '#cbb680'], ash: ['#4a3a34', '#5a463e', '#3c2f2a'], volcano: ['#6a2a1a', '#8a3a1a', '#4a1e14'] };
   let terr = null;
   function paint() {
-    terr = document.createElement('canvas'); terr.width = WW; terr.height = WH; const t = terr.getContext('2d'), rnd = G.rng(world.seed ^ 0xabc);
+    /* v95.22: the real Nor'Chorthal map is big — paint it at half resolution (it is drawn scaled up) */
+    const TS = world.real ? .5 : 1;
+    terr = document.createElement('canvas'); terr.width = Math.ceil(WW * TS); terr.height = Math.ceil(WH * TS); const t = terr.getContext('2d'), rnd = G.rng(world.seed ^ 0xabc); t.scale(TS, TS);
     t.fillStyle = '#2a2f2a'; t.fillRect(0, 0, WW, WH);
     const all = Object.values(world.tiles);
     for (const h of all) { const p = center(h.c, h.r), pal = PAL[h.biome]; hexPath(t, p.x, p.y, R + .6); t.fillStyle = pal[0]; t.fill() }
@@ -95,7 +98,14 @@
     for (const h of all) if (h.biome === 'water') { const p = center(h.c, h.r); t.save(); hexPath(t, p.x, p.y); t.clip(); t.strokeStyle = 'rgba(220,240,255,.35)'; t.lineWidth = 1.5; for (let i = 0; i < 4; i++) { const y = p.y - R * .5 + i * R * .35, x = p.x - HW * .4 + rnd() * 8; t.beginPath(); t.moveTo(x, y); t.quadraticCurveTo(x + 8, y - 4, x + 16, y); t.quadraticCurveTo(x + 24, y + 4, x + 32, y); t.stroke() } t.restore() }
     /* river */
     t.lineCap = 'round'; t.lineJoin = 'round';
-    for (const h of all) if (h.river) { const a = center(h.c, h.r); for (const [c, r] of G.neighbors(h.c, h.r)) { const n = tile(c, r); if ((n.river || n.biome === 'water') && K(c, r) > K(h.c, h.r) || n.biome === 'water') { const b = center(c, r); t.strokeStyle = '#3d6f99'; t.lineWidth = 9; t.beginPath(); t.moveTo(a.x, a.y); t.quadraticCurveTo((a.x + b.x) / 2 + 6, (a.y + b.y) / 2 - 4, b.x, b.y); t.stroke(); t.strokeStyle = 'rgba(190,225,255,.5)'; t.lineWidth = 2.5; t.stroke() } } }
+    /* v95.22: rivers as a tree (no triangles where a river is two hexes wide): join river hexes with a spanning tree, plus one mouth into open water */
+    { const par = new Map(), find = k => { while (par.get(k) !== k) { par.set(k, par.get(par.get(k))); k = par.get(k) } return k }, edges = [];
+      for (const h of all) if (h.river) par.set(K(h.c, h.r), K(h.c, h.r));
+      for (const h of all) if (h.river) for (const [c, r] of G.neighbors(h.c, h.r)) { const n = tile(c, r); if (n.river && K(c, r) > K(h.c, h.r)) edges.push([h, n]) }
+      const mouth = new Set();
+      for (const h of all) if (h.river) { const w = G.neighbors(h.c, h.r).map(([c, r]) => tile(c, r)).find(n => n.biome === 'water'); if (w && !mouth.has(find(K(h.c, h.r)))) { mouth.add(find(K(h.c, h.r))); edges.push([h, w, 1]) } }
+      for (const [a0, b0, m] of edges) { const ka = find(K(a0.c, a0.r)), kb = m ? null : find(K(b0.c, b0.r)); if (!m) { if (ka === kb) continue; par.set(ka, kb) }
+        const a = center(a0.c, a0.r), b = center(b0.c, b0.r); t.strokeStyle = '#3d6f99'; t.lineWidth = 8; t.beginPath(); t.moveTo(a.x, a.y); t.quadraticCurveTo((a.x + b.x) / 2 + 6, (a.y + b.y) / 2 - 4, b.x, b.y); t.stroke(); t.strokeStyle = 'rgba(190,225,255,.5)'; t.lineWidth = 2.5; t.stroke() } }
     /* roads */
     for (const h of all) if (h.road) { const a = center(h.c, h.r); for (const [c, r] of G.neighbors(h.c, h.r)) { const n = tile(c, r); if (n.road && K(c, r) > K(h.c, h.r)) { const b = center(c, r); t.strokeStyle = '#6b5434'; t.lineWidth = 8; t.beginPath(); t.moveTo(a.x, a.y); t.lineTo(b.x, b.y); t.stroke(); t.strokeStyle = '#c8a873'; t.lineWidth = 5; t.stroke() } } }
     /* decorations, sorted top→bottom so they overlap correctly */
@@ -104,15 +114,17 @@
       if (h.biome === 'forest') for (let i = 0; i < 5; i++) tree(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .4) * R * .9, 9 + rnd() * 5, rnd);
       else if (h.biome === 'snow' && rnd() < .35) tree(t, p.x + (rnd() - .5) * 20, p.y + (rnd() - .5) * 18, 9, rnd, true);
       else if (h.biome === 'hills') for (let i = 0; i < 2; i++) hill(t, p.x + (i ? 10 : -10) + (rnd() - .5) * 6, p.y + (i ? 6 : -4), 18 + rnd() * 6);
-      else if (h.biome === 'mountain') mountain(t, p.x + (rnd() - .5) * 6, p.y + 10, 30 + rnd() * 10, h.r < G.ROWS * .3 || h.elev > .8);
+      else if (h.biome === 'mountain') mountain(t, p.x + (rnd() - .5) * 6, p.y + 10, 30 + rnd() * 10, world.real ? h.elev > .8 : (h.r < G.ROWS * .3 || h.elev > .8));
+      else if (h.biome === 'volcano') { mountain(t, p.x, p.y + 10, 34, false); const gr = t.createRadialGradient(p.x, p.y - 20, 0, p.x, p.y - 20, 22); gr.addColorStop(0, 'rgba(255,140,40,.85)'); gr.addColorStop(1, 'rgba(255,60,20,0)'); t.fillStyle = gr; t.beginPath(); t.arc(p.x, p.y - 20, 22, 0, 7); t.fill() }
+      else if (h.biome === 'ash' && rnd() < .6) { t.fillStyle = 'rgba(255,110,40,.35)'; for (let i = 0; i < 3; i++) { t.beginPath(); t.ellipse(p.x + (rnd() - .5) * 40, p.y + (rnd() - .5) * 30, 3 + rnd() * 4, 1.5, rnd() * 3, 0, 7); t.fill() } }
       else if (h.biome === 'swamp') for (let i = 0; i < 4; i++) reed(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .5) * R, rnd);
       else if (h.biome === 'grass' && rnd() < .5) { t.strokeStyle = 'rgba(60,90,40,.5)'; t.lineWidth = 1.2; for (let i = 0; i < 3; i++) { const x = p.x + (rnd() - .5) * 40, y = p.y + (rnd() - .5) * 30; t.beginPath(); t.moveTo(x - 3, y); t.lineTo(x - 1, y - 5); t.moveTo(x, y); t.lineTo(x + 1, y - 6); t.moveTo(x + 3, y); t.lineTo(x + 3, y - 4); t.stroke() } }
     }
     /* hex grid, faint */
     t.strokeStyle = 'rgba(30,25,15,.12)'; t.lineWidth = 1; for (const h of all) { const p = center(h.c, h.r); hexPath(t, p.x, p.y); t.stroke() }
     /* paper grain + vignette */
-    const grain = t.createImageData(WW, WH); for (let i = 0; i < grain.data.length; i += 4) { const v = rnd() * 255; grain.data[i] = grain.data[i + 1] = grain.data[i + 2] = v; grain.data[i + 3] = 14 }
-    const gc = document.createElement('canvas'); gc.width = WW; gc.height = WH; gc.getContext('2d').putImageData(grain, 0, 0); t.globalCompositeOperation = 'overlay'; t.drawImage(gc, 0, 0); t.globalCompositeOperation = 'source-over';
+    const grain = t.createImageData(terr.width, terr.height); for (let i = 0; i < grain.data.length; i += 4) { const v = rnd() * 255; grain.data[i] = grain.data[i + 1] = grain.data[i + 2] = v; grain.data[i + 3] = 14 }
+    const gc = document.createElement('canvas'); gc.width = terr.width; gc.height = terr.height; gc.getContext('2d').putImageData(grain, 0, 0); t.globalCompositeOperation = 'overlay'; t.save(); t.setTransform(1, 0, 0, 1, 0, 0); t.drawImage(gc, 0, 0); t.restore(); t.globalCompositeOperation = 'source-over';
     /* village + destinations */
     const hp = center(world.home.c, world.home.r); village(t, hp.x, hp.y);
     for (const tw of world.towns || []) { const q = center(tw.c, tw.r); village(t, q.x, q.y) }   // v94: other settlements
@@ -243,12 +255,12 @@
     token.bob += dt * 12;
     g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#07080c'; g.fillRect(0, 0, cv.width, cv.height);
     g.setTransform(dpr * cam.z, 0, 0, dpr * cam.z, dpr * (W / 2 - cam.x * cam.z), dpr * (H / 2 - cam.y * cam.z));
-    if (terr) g.drawImage(terr, 0, 0);
+    if (terr) g.drawImage(terr, 0, 0, WW, WH);
     drawTrail(); drawMarks(now); drawHover(); drawToken(now);
     drawFog(now); drawBeacon(now);
     drawSky(); drawCompass();
   }
-  function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cam.z = Math.max(.55, Math.min(1.4, cam.z)) }
+  function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cam.z = Math.max(world?.real ? .18 : .55, Math.min(1.4, cam.z)) }
   addEventListener('resize', resize);
   function follow(z) { const p = center(S.pos.c, S.pos.r); cam.tx = p.x; cam.ty = p.y; if (z) cam.tz = z }
 
@@ -261,7 +273,7 @@
     if (drag.moved) { cv.classList.add('drag'); cam.tx = null; cam.tz = null; cam.x = drag.cx - dx / cam.z; cam.y = drag.cy - dy / cam.z }
   });
   cv.addEventListener('pointerup', e => { const d = drag; drag = null; cv.classList.remove('drag'); if (d && !d.moved) { const w = toWorld(e.clientX, e.clientY), h = pixelToHex(w.x, w.y); if (h) clickHex(h) } });
-  cv.addEventListener('wheel', e => { e.preventDefault(); cam.tz = null; cam.z = Math.max(.55, Math.min(2, cam.z * (e.deltaY < 0 ? 1.12 : .89))) }, { passive: false });
+  cv.addEventListener('wheel', e => { e.preventDefault(); cam.tz = null; cam.z = Math.max(world.real ? .18 : .55, Math.min(2, cam.z * (e.deltaY < 0 ? 1.12 : .89))) }, { passive: false });
   addEventListener('keydown', e => { if (e.key === 'Escape') closeModal() });
 
   /* ---------- UI (HUD, tooltip, modal, toast) ---------- */
@@ -555,7 +567,7 @@
     for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1)).join(',');
     const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
-    fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
+    fr.src = `battle-field.html?battle=1&embed=1&r=7&biome=${({ ash: 'hills', volcano: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
@@ -611,5 +623,5 @@
   { const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; cam.x = p.x; cam.y = p.y; cam.z = innerWidth < 700 ? .9 : 1.25 }
   hudSync(); requestAnimationFrame(frame);
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
-  window.WorldMap = { state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
+  window.WorldMap = { revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();

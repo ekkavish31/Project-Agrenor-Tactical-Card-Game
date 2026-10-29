@@ -4,7 +4,8 @@
    0 = hidden (black), 1 = explored (dim, remembered), 2 = visible now. */
 (function (root) {
   'use strict';
-  const COLS = 30, ROWS = 22;
+  const NC = root.NORCHORTAL || null;   // v95.22: the real map of Nor'Chorthal (js/world-norchorthal.js); without it the old random map
+  const COLS = NC ? NC.cols : 30, ROWS = NC ? NC.rows : 22;
   const BIOME = {
     grass: { name: 'ทุ่งหญ้า', cost: 2, pass: true },
     forest: { name: 'ป่า', cost: 3, pass: true },
@@ -13,11 +14,13 @@
     water: { name: 'ทะเลสาบ', cost: Infinity, pass: false },
     swamp: { name: 'บึง', cost: 4, pass: true },
     snow: { name: 'ทุ่งหิมะ', cost: 3, pass: true },
-    sand: { name: 'หาดทราย', cost: 2, pass: true }
+    sand: { name: 'หาดทราย', cost: 2, pass: true },
+    ash: { name: 'ทุ่งเถ้าภูเขาไฟ', cost: 3, pass: true },
+    volcano: { name: 'ลาวา', cost: Infinity, pass: false }
   };
   const ROAD_COST = 1;
   /* monsters by biome (keys of town-battle MON) */
-  const FOES = { grass: ['bandit', 'wolf'], forest: ['wolf', 'bandit', 'bat'], hills: ['kobold', 'bandit', 'bat'], swamp: ['slime', 'bat'], snow: ['wolf', 'kobold'], sand: ['bandit', 'slime', 'gull'] };   // v94.03: bats and gulls fly (ignore heights)
+  const FOES = { grass: ['bandit', 'wolf'], forest: ['wolf', 'bandit', 'bat'], hills: ['kobold', 'bandit', 'bat'], swamp: ['slime', 'bat'], snow: ['wolf', 'kobold'], sand: ['bandit', 'slime', 'gull'], ash: ['kobold', 'bat', 'bandit'] };   // v94.03: bats and gulls fly (ignore heights)
   const DESTS = [
     { id: 'den', name: 'ถ้ำจ่าฝูง', biome: 'forest', boss: 'wolf', icon: 'cave', rumor: 'พรานเล่าว่าเสียงหอนดังมาจากถ้ำลึกกลางป่า ใครเข้าไปไม่เคยกลับมา', reward: 120 },
     { id: 'mine', name: 'เหมืองหินร้าง', biome: 'hills', boss: 'golem', icon: 'mine', rumor: 'คนงานเหมืองหนีออกมากลางดึก บอกว่าหินในเหมืองลุกขึ้นเดินได้', reward: 160 },
@@ -44,15 +47,17 @@
 
   function stepCost(t) { if (!t || !BIOME[t.biome].pass) return Infinity; return t.road ? ROAD_COST : BIOME[t.biome].cost + (t.river ? 2 : 0) }
   /* cheapest path (Dijkstra) from a to b; ok(tile) may restrict the tiles (e.g. only known ones) */
-  function path(w, a, b, ok = () => true) {
-    const start = key(a.c, a.r), goal = key(b.c, b.r), best = new Map([[start, 0]]), from = new Map(), open = [{ k: start, c: a.c, r: a.r, d: 0 }];
-    while (open.length) {
-      open.sort((x, y) => x.d - y.d); const cur = open.shift(); if (cur.k === goal) break; if (cur.d > best.get(cur.k)) continue;
+  function path(w, a, b, ok = () => true) {   // v95.22: binary heap (the real map has ~9,000 hexes)
+    const start = key(a.c, a.r), goal = key(b.c, b.r), best = new Map([[start, 0]]), from = new Map(), H = [{ k: start, c: a.c, r: a.r, d: 0 }];
+    const push = x => { H.push(x); let i = H.length - 1; while (i) { const p = (i - 1) >> 1; if (H[p].d <= H[i].d) break;[H[p], H[i]] = [H[i], H[p]]; i = p } };
+    const pop = () => { const top = H[0], last = H.pop(); if (H.length) { H[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < H.length && H[l].d < H[m].d) m = l; if (r < H.length && H[r].d < H[m].d) m = r; if (m === i) break;[H[m], H[i]] = [H[i], H[m]]; i = m } } return top };
+    while (H.length) {
+      const cur = pop(); if (cur.k === goal) break; if (cur.d > best.get(cur.k)) continue;
       for (const [nc, nr] of neighbors(cur.c, cur.r)) {
         const t = w.tiles[key(nc, nr)], nk = key(nc, nr); if (nk !== goal && !ok(t)) continue;
         const sc = stepCost(t); if (sc === Infinity) continue;
         const d = cur.d + sc; if (best.has(nk) && best.get(nk) <= d) continue;
-        best.set(nk, d); from.set(nk, cur.k); open.push({ k: nk, c: nc, r: nr, d });
+        best.set(nk, d); from.set(nk, cur.k); push({ k: nk, c: nc, r: nr, d });
       }
     }
     if (!best.has(goal)) return null;
@@ -60,8 +65,10 @@
     return out;
   }
 
+
   /* ---------- generation ---------- */
   function generate(seed = (Math.random() * 1e9) | 0) {
+    if (NC) return fromMap(seed);
     for (let attempt = 0; attempt < 12; attempt++) { const w = tryGenerate(seed + attempt * 7919); if (w) return w }
     throw new Error('world generation failed');
   }
@@ -121,6 +128,51 @@
     placeTowns(w, seed);
     return w;
   }
+  /* ---------- v95.22 · Nor'Chorthal from the author's map: fixed land, rivers, Fernvale, destinations and towns; the seed only places encounters ---------- */
+  const LETTER = { w: 'water', g: 'grass', f: 'forest', h: 'hills', m: 'mountain', M: 'mountain', n: 'snow', s: 'swamp', d: 'sand', a: 'ash', v: 'volcano' };
+  function fromMap(seed) {
+    const R = rng(seed), tiles = {};
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const ch = NC.grid[r][c], b = LETTER[ch] || 'water';
+      tiles[key(c, r)] = { c, r, biome: b, elev: ch === 'M' ? .9 : ch === 'm' ? .75 : .4, moist: .5, road: false, river: NC.river[r][c] === '1' && BIOME[b].pass, enc: null, poi: null };
+    }
+    const T = (c, r) => tiles[key(c, r)];
+    /* the nearest passable hex to a mark (optionally preferring a biome) */
+    const snap = (m, want) => { let best = null, bd = 1e9; for (const t of Object.values(tiles)) { if (!BIOME[t.biome].pass) continue; const d = dist(t, { c: m[0], r: m[1] }) + (want && !want.includes(t.biome) ? 3 : 0); if (d < bd) { bd = d; best = t } } return best };
+    const home = snap(NC.marks.home, ['grass']);
+    for (const [c, r] of within(home.c, home.r, 1)) { const t = T(c, r); if (t.biome !== 'water' && !BIOME[t.biome].pass) t.biome = 'hills' }
+    home.biome = 'grass'; home.river = false; home.poi = { id: 'home', name: 'หมู่บ้านเฟิร์นเวล', icon: 'village' };
+    const w = { seed, cols: COLS, rows: ROWS, tiles, home: { c: home.c, r: home.r }, dests: [], towns: [], real: 'norchorthal' };
+    for (const d of DESTS) {
+      const t = snap(NC.marks[d.id], [d.biome]); if (!t) continue;
+      t.biome = d.biome; t.river = false; t.poi = { ...d }; w.dests.push({ ...d, c: t.c, r: t.r });
+    }
+    for (const d of TOWNS) {
+      const t = snap(NC.marks[d.id], d.biomes); if (!t || t.poi) continue;
+      t.poi = { id: 'town:' + d.id, town: d.id, name: d.name, icon: 'town' }; t.river = false; w.towns.push({ ...d, c: t.c, r: t.r });
+    }
+    /* every destination and town must be reachable: where a range or a channel cuts one off, open a pass (mountain → hills) or a ford (water → beach) on the cheapest way through */
+    for (const t of [...w.dests, ...w.towns]) {
+      if (path(w, home, t)) continue;
+      const keep = { m: BIOME.mountain, w: BIOME.water }; BIOME.mountain = { ...keep.m, pass: true, cost: 9 }; BIOME.water = { ...keep.w, pass: true, cost: 14 };
+      const p = path(w, home, t); BIOME.mountain = keep.m; BIOME.water = keep.w;
+      if (p) for (const q of p) { const x = T(q.c, q.r); if (x.biome === 'mountain') x.biome = 'hills'; else if (x.biome === 'water') { x.biome = 'sand'; x.river = false } }
+    }
+    /* roads: Fernvale to every town, along the cheapest way */
+    for (const tw of w.towns) { const p = path(w, home, tw); if (p) for (const q of p) T(q.c, q.r).road = true }
+    /* encounters: battles along the way to each destination, a camp half way, then a sprinkle of everything */
+    const occupied = t => t.enc || t.poi || t.road || dist(t, home) < 2;
+    for (const d of w.dests) {
+      const p = path(w, home, d); if (!p) continue;
+      const L = p.length;
+      for (const f of [.3, .5, .7, .85]) { const base = T(p[Math.round((L - 1) * f)].c, p[Math.round((L - 1) * f)].r), t = [base, ...neighbors(base.c, base.r).map(([c, r]) => T(c, r))].find(x => BIOME[x.biome].pass && !occupied(x)); if (t) t.enc = { type: 'battle', foe: pick(R, FOES[t.biome] || FOES.grass) } }
+      const mid = T(p[Math.round(L * .55)].c, p[Math.round(L * .55)].r), nm = [mid, ...neighbors(mid.c, mid.r).map(([c, r]) => T(c, r))].find(x => BIOME[x.biome].pass && !occupied(x)); if (nm) nm.enc = { type: 'camp' };
+    }
+    const extras = ['battle', 'battle', 'chest', 'chest', 'shrine', 'merchant', 'trap', 'oldmap', 'camp'];
+    for (const t of Object.values(tiles)) { if (!BIOME[t.biome].pass || occupied(t) || R() > .055) continue; const type = pick(R, extras); t.enc = type === 'battle' ? { type, foe: pick(R, FOES[t.biome] || FOES.grass), hidden: R() < .4 } : { type } }
+    return w;
+  }
+
   /* v94 · settlements outside Fernvale: where the village's visitors come from (js/village-life.js `from`). Safe stops on the map: inn, shop,
      rumours, and the travellers who are away from Fernvale that day. Placed after everything else with their own random stream, so a saved
      world keeps its roads, destinations and encounters. A town that finds no spot is simply left out. */
@@ -142,8 +194,9 @@
   }
   const pick = (R, a) => a[Math.floor(R() * a.length)];
   /* how deep into the fog a tile is: 0 at the village … 1 at the far rim (monsters get tougher) */
-  function danger(w, t) { return Math.min(1, dist(t, w.home) / 14) }
+  function danger(w, t) { return Math.min(1, dist(t, w.home) / (w.real ? 30 : 14)) }
 
+  generate.real = NC ? 'norchorthal' : null;
   const api = { COLS, ROWS, BIOME, FOES, DESTS, TOWNS, rng, key, inside, neighbors, dist, within, stepCost, path, generate, danger };
   root.WorldGen = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
