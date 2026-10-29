@@ -61,8 +61,16 @@ window.FieldHeight = (function () {
   const R = FIELD.R, n = 2 * R + 1, S = R >= 7 ? 4 : 3, T = TerrainHeight, PX = T.LEVEL_PX;
   const blocked = (lu, lv) => { const c = FIELD.cells.get(FIELD.key(lu - R, lv - R)); return !c || c.k === 'blocked' };
   const zone = FQ.get('poi') === 'mine' ? 'hills' : FIELD.biome;
-  const map = T.forScene({ w: n, h: n, seed: 'field:' + (FQ.get('seed') || Math.floor(FIELD.rnd() * 1e9)) + ':' + FIELD.biome, biome: zone, blocked, entries: [{ u: R - S, v: R + S }, { u: R + S, v: R - S }] });
+  const SEV = { grass: .5, forest: .55, hills: .85, swamp: .25, snow: .75, sand: .4 };   // v95.18: battle fields are hillier than the world around them
+  const fseed = 'field:' + (FQ.get('seed') || Math.floor(FIELD.rnd() * 1e9)) + ':' + FIELD.biome;
+  const map = T.forScene({ w: n, h: n, seed: fseed, biome: SEV[zone] ?? .5, blocked, entries: [{ u: R - S, v: R + S }, { u: R + S, v: R - S }] });
   map.origin = { u: -R, v: -R };                        // local lattice → field cells (−R … R)
+  /* v95.18 · high ground: plateaus with cliffs and one stair each, never on the two gathering corners or the paths */
+  if (window.FieldDiorama) {
+    const near = (u, v) => [[R - S, R + S], [R + S, R - S]].some(([a, b]) => Math.abs(u - a) <= 3 && Math.abs(v - b) <= 3);
+    FieldDiorama.landforms(map, { seed: [...fseed].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261) >>> 0, keep: near, count: { hills: 3, snow: 3, grass: 2, forest: 2, sand: 2, swamp: 1 }[zone] || 2 });
+    for (const i of map.stairs || []) { const u = i % n, v = (i - u) / n, c = FIELD.cells.get(FIELD.key(u - R, v - R)); if (c && c.k === 'blocked') { c.k = 'normal'; c.prop = null } }
+  }
   const level = (u, v) => T.levelAt(map, Math.floor(u), Math.floor(v)) ?? 0;
   function liftAt(u, v) {
     const cu = Math.floor(u), cv = Math.floor(v), L = level(cu, cv), fu = u - cu - .5, fv = v - cv - .5;
@@ -91,6 +99,12 @@ function paintGround() {
   groundCanvas = document.createElement('canvas'); groundCanvas.width = x1 - x0; groundCanvas.height = y1 - y0; groundCanvas.ox = x0; groundCanvas.oy = y0;
   const t = groundCanvas.getContext('2d'); t.translate(-x0, -y0);
   const pal = GROUND[F.biome];
+  if (window.FieldHeight && window.FieldDiorama) {   /* v95.18 · the field as a floating diorama */
+    const M = FieldHeight.map, pools = new Uint8Array(M.w * M.h); for (const c of F.cells.values()) if (c.prop === 'pool') pools[(c.v - M.origin.v) * M.w + (c.u - M.origin.u)] = 1;
+    FieldDiorama.paint(t, M, { biome: F.biome, poi: FQ.get('poi'), pools: i => pools[i] });
+    for (const c of F.cells.values()) if (c.k === 'slow') { const col = SLOWC[F.MIX.slowMat]; diamond(t, c.u, c.v, -3); t.globalAlpha = .7; t.fillStyle = col[0]; t.fill(); t.globalAlpha = 1; const p = project(c.u + .5, c.v + .5); for (let i = 0; i < 4; i++) { t.fillStyle = col[1]; t.beginPath(); t.ellipse(p.x + (F.rnd() - .5) * 30, p.y + (F.rnd() - .5) * 12, 4 + F.rnd() * 5, 2 + F.rnd() * 2, 0, 0, 7); t.fill() } }
+    return;
+  }
   t.fillStyle = pal[0]; t.fillRect(x0, y0, x1 - x0, y1 - y0);
   for (let i = 0; i < 2600; i++) { const x = x0 + F.rnd() * (x1 - x0), y = y0 + F.rnd() * (y1 - y0); t.fillStyle = pal[1 + (i & 1)]; t.globalAlpha = .5; t.beginPath(); t.ellipse(x, y, 4 + F.rnd() * 10, 2 + F.rnd() * 5, 0, 0, 7); t.fill() }
   t.globalAlpha = 1;
@@ -147,11 +161,11 @@ window.TownBattleExtras = () => { const out = []; for (const c of FIELD.cells.va
 requestAnimationFrame(frame);
   if (!groundCanvas) paintGround();
   window.TownBattle?.pre?.();
-  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = FIELD.biome === 'snow' ? '#9aa8b5' : '#1a2016'; g.fillRect(0, 0, cv.width, cv.height);
+  g.setTransform(1, 0, 0, 1, 0, 0); if (window.FieldDiorama && window.FieldHeight) FieldDiorama.sky(g, cv.width, cv.height, FIELD.biome, FIELD.night); else { g.fillStyle = FIELD.biome === 'snow' ? '#9aa8b5' : '#1a2016'; g.fillRect(0, 0, cv.width, cv.height) }
   const k = devicePixelRatio * scale * zoom; g.setTransform(k, 0, 0, k, devicePixelRatio * (W / 2 + pan.x) - WORLD_W / 2 * k, devicePixelRatio * (H / 2 + pan.y) - WORLD_H / 2 * k);
   g.drawImage(groundCanvas, groundCanvas.ox, groundCanvas.oy);
   const props = [];
-  for (const o of FIELD.outer) if (o.prop) props.push([o.prop, o.u, o.v, o.seed]);
+  if (!(window.FieldDiorama && window.FieldHeight)) for (const o of FIELD.outer) if (o.prop) props.push([o.prop, o.u, o.v, o.seed]);   // a floating field has no land beyond its edge
   for (const c of FIELD.cells.values()) if (c.prop === 'pool') props.push([c.prop, c.u, c.v, c.seed]);   // flat water stays on the ground
   props.sort((a, b) => (a[1] + a[2]) - (b[1] + b[2]));
   for (const p of props) { if (p[0] === 'pool') prop(g, ...p, t) }
