@@ -384,7 +384,7 @@
   .in-dlg-bg{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;padding:16px;background:linear-gradient(#0000 40%,#000a)}
   .in-dlg{width:min(760px,100%);background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:110px 1fr;gap:14px;box-shadow:0 20px 60px #000c,inset 0 0 0 2px #8a6a3a}
   .in-dlg canvas{width:110px;height:130px;background:radial-gradient(#fff6dc,#d9c08a);border-radius:10px;border:2px solid #8a6a3a}
-  .in-dlg h2{margin:0;font-size:19px;color:#5a2e10}.in-dlg .role{font-size:12px;color:#7a5a30}.in-dlg p{margin:8px 0;line-height:1.6;min-height:3em}.in-dlg .acts{display:flex;flex-wrap:wrap;gap:4px}
+  .in-dlg h2{margin:0;font-size:19px;color:#5a2e10}.in-dlg h2 .tier{font-size:12px;font-weight:600;color:#a0442a;background:#fff6;border-radius:999px;padding:1px 8px;margin-left:4px}.in-dlg .role{font-size:12px;color:#7a5a30}.in-dlg p{margin:8px 0;line-height:1.6;min-height:3em}.in-dlg .acts{display:flex;flex-wrap:wrap;gap:4px}
   .in-dlg .cond{font-size:12px;background:#fff7e3;border:1px dashed #b89a62;border-radius:8px;padding:6px 8px;margin:6px 0}
   .in-toast{position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:30;padding:9px 20px;border-radius:999px;background:#14100bee;color:#ffe2a8;font:700 16px VillageThai,system-ui;box-shadow:0 6px 20px #000a;animation:inT 2.2s forwards;pointer-events:none}
   @keyframes inT{0%{opacity:0;transform:translate(-50%,10px)}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
@@ -400,7 +400,7 @@
     const here = [...people.values()].filter(a => !a.leaving);
     const html = `<h1>${esc(NAME)}</h1><div class="sub">Fernvale · วันที่ ${c.day} · ${icon} ${CLK.label(c.hour)}</div>
       <div class="row"><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span><span>ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</span></div>
-      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
+      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
       <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : fill(a.p.role))}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก</div>`;
     if (html === hud._html) return; hud._html = html; hud.innerHTML = html;   // only rebuild when something changed (keeps clicks reliable)
@@ -408,6 +408,7 @@
     hud.querySelector('#inParty') && (hud.querySelector('#inParty').onclick = partyPanel);
     hud.querySelector('#inRoom') && (hud.querySelector('#inRoom').onclick = () => rest(10));
     hud.querySelector('#inSleep') && (hud.querySelector('#inSleep').onclick = () => rest(0));
+    hud.querySelectorAll('[data-svc]').forEach(b => b.onclick = () => service(b.dataset.svc));
     hud.querySelectorAll('.who [data-id]').forEach(e => e.onclick = () => { const a = people.get(e.dataset.id); if (a) walkNear(a, () => talk(a)) });
   }
   function workPanel(a) {
@@ -426,9 +427,59 @@
     window.WorldState.sleep({ relief: cost ? 80 : 70 }); people.clear(); /* v94: same as sleeping at home (next morning 08:00) */ taken.clear(); syncPeople(true); document.body.style.filter = ''; toast('พักจนถึงเช้า · ทีมฟื้นเต็ม'); hudSync();
   }
 
+  /* ---------- v97.24 · B5: the place's own services (only while somebody of the place is in the room) ----------
+     healer: treat the whole party (1 💰 per 4 HP missing) · buy potions · shop / market: potions, travel food · temple: a free prayer once a day
+     (fatigue −40, hero HP +30 %) and an offering (+1 potion of holy water for 25 💰) */
+  const PRICE = { potion: KIND === 'healer' ? 15 : 18, food: 4 };
+  const keeperIn = () => [...people.values()].some(a => !a.leaving && (OWNER ? a.id === OWNER : !a.p.benched && !L.inParty(S, a.id)));   /* somebody of the place is in (not one of your own party) */
+  const missing = () => { S = L.save(); return Math.max(0, (S.maxHp || 60) - (S.hp ?? 60)) + [...S.party, ...S.bench].reduce((n, m) => n + Math.max(0, m.max - m.hp), 0) };
+  const healCost = () => Math.max(3, Math.ceil(missing() / 4));
+  function services() {
+    const B = (k, label, cost, why) => `<button data-svc="${k}" ${why || (cost && S.gold < cost) ? 'disabled' : ''} title="${esc(why || '')}">${label}${cost ? ' ' + cost + '💰' : ''}</button>`;
+    const away = keeperIn() ? '' : 'เจ้าของไม่อยู่ตอนนี้';
+    if (KIND === 'healer') return B('heal', '✚ รักษาทั้งทีม', missing() ? healCost() : 0, away || (missing() ? '' : 'ทุกคนแข็งแรงดี')) + B('potion', '🧪 ซื้อยา', PRICE.potion, away);
+    if (KIND === 'shop' || KIND === 'market') return B('potion', '🧪 ซื้อยา', PRICE.potion, away) + B('food', '🍞 เสบียง ×3', PRICE.food * 3, away);
+    if (KIND === 'temple') { const prayed = (S.prayDay || 0) === CLK.read().day; return B('pray', '🙏 ภาวนา', 0, prayed ? 'ภาวนาแล้ววันนี้ · พรุ่งนี้มาใหม่' : '') + B('offer', '🕯 ถวาย · น้ำมนต์', 25, away) }
+    return '';
+  }
+  function service(k) {
+    S = L.save(); const pay = c => { if (S.gold < c) { toast('เงินไม่พอ'); return false } S.gold -= c; return true };
+    if (k === 'heal') { const c = healCost(); if (!missing() || !pay(c)) return; S.hp = S.maxHp || 60; for (const m of [...S.party, ...S.bench]) m.hp = m.max; L.writeSave(S); toast('✚ รักษาแล้ว · ทุกคน HP เต็ม (−' + c + '💰)') }
+    else if (k === 'potion') { if (!pay(PRICE.potion)) return; S.potions = (S.potions || 0) + 1; L.writeSave(S); toast('🧪 ได้ยาฟื้นฟู 1 ขวด (มี ' + S.potions + ')') }
+    else if (k === 'food') { if (!pay(PRICE.food * 3)) return; S.food = (S.food || 0) + 3; L.writeSave(S); toast('🍞 ได้เสบียง 3 ห่อ (มี ' + S.food + ')') }
+    else if (k === 'pray') { const day = CLK.read().day; if ((S.prayDay || 0) === day) return; S.prayDay = day; S.fatigue = (S.fatigue || 0) - 40; S.hp = Math.min(S.maxHp || 60, (S.hp ?? 60) + Math.round((S.maxHp || 60) * .3)); L.writeSave(S); toast('🙏 ใจสงบลง · ความเหนื่อย −40 · HP +30%') }
+    else if (k === 'offer') { if (!pay(25)) return; S.potions = (S.potions || 0) + 1; L.writeSave(S); toast('🕯 ถวายแล้ว · ได้น้ำมนต์ (ยาฟื้นฟู) 1 ขวด') }
+    hud._html = ''; hudSync();
+  }
+
   /* ---------- talking + recruiting ---------- */
   let modalOpen = false, dlg = null;
   function close() { dlg?.remove(); dlg = null; modalOpen = false; talkingTo = null }
+  /* v97.30 · relationship tiers (Mind npc.aff −5…10) and gifts by what each person likes (p.likes) — once a day per person */
+  const TIERS = [[-99, 'ไม่ไว้ใจ', '💢'], [-1, 'คนแปลกหน้า', '·'], [1, 'คนรู้จัก', '♡'], [3, 'คุ้นเคย', '♥'], [6, 'เพื่อน', '♥♥'], [9, 'เพื่อนรัก', '💛']];
+  const tierOf = aff => TIERS.filter(t => aff >= t[0]).at(-1);
+  const GIFTS = {
+    gold: { name: '10 เหรียญ', icon: '💰', like: /เงิน|เหรียญ|กำไร|แวววาว/, has: () => S.gold >= 10, take: () => { S.gold -= 10 } },
+    food: { name: 'เสบียง', icon: '🍞', like: /ขนมปัง|เนื้อ|สตู|อาหาร/, has: () => S.food > 0, take: () => { S.food -= 1 } },
+    potion: { name: 'ยาสมุนไพร', icon: '🧪', like: /ชา|สมุนไพร|ราก|ยา/, has: () => S.potions > 0, take: () => { S.potions -= 1 } },
+    iron: { name: 'แท่งเหล็ก', icon: '▰', like: /เหล็ก|ดาบ|โล่/, has: () => (mats().iron || 0) > 0, take: () => { mats().iron-- } },
+    wood: { name: 'ไม้', icon: '▤', like: /ไม้/, has: () => (mats().wood || 0) > 0, take: () => { mats().wood-- } }
+  };
+  function mats() { try { return window.WorldState.game().village.materials || {} } catch (e) { return {} } }
+  function giftPanel(a) {
+    const p = a.p, n = MIND.npc(p.id), day = CLK.read().day;
+    if (n.giftDay === day) { talk(a, 'วันนี้ให้ข้ามาแล้วนี่ ไว้วันหลังเถอะ ขอบใจนะ'); return }
+    talk(a, 'ให้ของข้าหรือ? …'); const acts = dlg.querySelector('.acts');
+    acts.innerHTML = Object.entries(GIFTS).map(([k, G]) => `<button data-a="gift:${k}" ${G.has() ? '' : 'disabled'}>${G.icon} ${G.name}</button>`).join('') + '<button class="ghost" data-a="talk">ย้อนกลับ</button>';
+    acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
+  }
+  function giveGift(a, k) {
+    const p = a.p, G = GIFTS[k], n = MIND.npc(p.id), day = CLK.read().day; S = L.save(); if (!G || !G.has() || n.giftDay === day) return;
+    const liked = G.like.test(p.likes || ''), before = tierOf(n.aff || 0); G.take(); L.writeSave(S); try { window.WorldState.commit?.() } catch (e) { }
+    n.giftDay = day; MIND.affect(p.id, liked ? 2 : .5); MIND.save(); const after = tierOf(n.aff || 0); hud._html = ''; hudSync();
+    talk(a, liked ? `${G.name}! เจ้ารู้ได้ไงว่าข้าชอบ … ขอบใจจริง ๆ` : 'ขอบใจนะ ข้าจะเก็บไว้ใช้');
+    if (after !== before) toast(`${p.name} · ความสัมพันธ์: ${after[1]} ${after[2]}`); else if (liked) toast('💝 ' + p.name + ' ชอบของขวัญนี้มาก');
+  }
   function talk(a, line) {
     close(); modalOpen = true; talkingTo = a; S = L.save(); if (!line) try{if(parent!==window)parent.Story?.talked?.(a.p.id)}catch(e){};
     const p = a.p, per = CLK.period(CLK.read().hour), lines = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…'];
@@ -437,9 +488,9 @@
     const ws = MIND?.wantState(p.id), jobs = MIND && L.P[p.id] && !(p.recruit && !L.inParty(S, p.id)) ? MIND.canWork(p.id, p.benched) : [], aff = MIND?.npc(p.id).aff || 0;
     const rec = p.recruit && !L.inParty(S, p.id) ? L.RECRUIT[p.id] : null;
     const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
-    bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(p.name)}${aff >= 6 ? ' <small title="สนิทมาก">💛</small>' : aff >= 3 ? ' <small title="สนิท">🙂</small>' : ''}</h2><div class="role">${esc(fill(p.role))}${p.age ? ' · อายุ ' + p.age : ''}${p.benched ? ' · พักอยู่กับทีม' : ''}</div>
+    bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(p.name)} <small class="tier" title="ความสัมพันธ์ ${Math.round(aff * 10) / 10}/10">${tierOf(aff)[2]} ${tierOf(aff)[1]}</small></h2><div class="role">${esc(fill(p.role))}${p.age ? ' · อายุ ' + p.age : ''}${p.benched ? ' · พักอยู่กับทีม' : ''}</div>
       <p>${esc(txt)}</p>${ws?.asked && !ws.done ? `<div class="cond">🤝 คำขอ: ${esc(ws.def.hint)}</div>` : ''}${rec ? `<div class="cond">★ เงื่อนไขชวนเข้าทีม: <b>${esc(rec.label)}</b><br>${esc(rec.text)}${progressText(p.id, rec)}</div>` : ''}
-      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${jobs.length ? '<button data-a="work">💼 จ้างทำงาน</button>' : ''}${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${teachable(p.id) ? '<button data-a="teach">📖 เรียนท่า</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
+      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${MIND && L.P[p.id] ? '<button data-a="gift">🎁 ให้ของ</button>' : ''}${jobs.length ? '<button data-a="work">💼 จ้างทำงาน</button>' : ''}${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${teachable(p.id) ? '<button data-a="teach">📖 เรียนท่า</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
     document.body.append(bg); dlg = bg;
     const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, p.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
     bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
@@ -468,6 +519,8 @@
     if (what === 'bye') { close(); return }
     if (what === 'teach') { close(); try { parent.CardSources?.teach?.(p.id) } catch (e) { } return }
     if (what === 'talk') { talk(a); return }
+    if (what === 'gift') { giftPanel(a); return }
+    if (what.startsWith('gift:')) { giveGift(a, what.slice(5)); return }
     if (what === 'about') { const ab = p.about?.length ? fill(p.about[Math.floor(Math.random() * p.about.length)]) : ''; talk(a, (p.trait ? '(' + fill(p.trait) + ') ' : '') + (ab || fill(p.story || '…')) + (L.originText?.(p) ? ' — ' + fill(L.originText(p)) : '')); return }
     if (what === 'rumor') { talk(a, 'ข่าวลือตอนนี้: ' + ['ถ้ำในป่าตะวันออกมีเสียงหอนทั้งคืน — พวกพรานไม่กล้าเข้าไป', 'คนงานเหมืองหนีออกมาบอกว่าหินในเหมืองลุกขึ้นเดิน', 'ระฆังวิหารเก่าในบึงหมอกดังเองทุกคืนข้างแรม', 'เกรเวนเล่าว่ามีคนกลับจากซากเมืองพร้อมผลึกแปลกประหลาด'][Math.floor(Math.random() * 4)] + ' (ไปที่ "ออกเดินทาง" เพื่อรับภารกิจ)'); return }
     if (what === 'room') { close(); rest(10); return }

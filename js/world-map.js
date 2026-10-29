@@ -183,6 +183,23 @@
   /* ---------- party token (the new-outfit hero idle frames) ---------- */
   const heroImgs = [1, 2, 3, 4].map(i => { const im = new Image(); im.src = `assets/tactics/imported/idle-se-mvkft9t1-gv5z/frame-0${i}.webp`; return im });
   const walkImgs = [1, 2, 3].map(i => { const im = new Image(); im.src = `assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-0${i}.webp`; return im });
+  /* ---------- v97.27 · companions talk on the road (TODO "เพื่อนร่วมทีมพูดระหว่างทาง"): walking (by land, night, hunger, tiredness),
+     making camp, before a fight and after a win — in each companion's village voice (VillageLife.P[key].voice); a bubble over the token ---------- */
+  const SAY = window.PartyTalk?.SAY || {};
+  let talkB = null, talkCD = 0;
+  function chatter(kind, chance = 1) {
+    const mates = (S.party || []).filter(p => p.hp > 0); if (!mates.length || Math.random() > chance) return;
+    if (kind === 'walk') { if (talkCD > 0) { talkCD--; return } kind = nightness() > .6 ? 'night' : S.food <= 0 ? 'hungry' : S.fatigue >= 70 ? 'tired' : 'walk'; talkCD = 5 }
+    const m = mates[Math.floor(Math.random() * mates.length)], voice = window.PartyTalk?.voiceOf(m.key) || 'cheerful', set = (SAY[voice] || SAY.cheerful || {})[kind] || SAY.cheerful?.[kind];
+    if (!set) return; const text = set[Math.floor(Math.random() * set.length)]; talkB = { who: m.name, text, until: performance.now() + 3200 }; log('💬 ' + m.name + ': ' + text);
+  }
+  function drawTalk(now) {
+    if (!talkB || now > talkB.until) return; const a = Math.min(1, (talkB.until - now) / 400, (now - talkB.until + 3200) / 200);
+    g.save(); g.globalAlpha = Math.max(0, a); g.font = '600 12px VillageThai,"Noto Sans Thai",system-ui'; const t = talkB.who + ': ' + talkB.text, w = Math.min(300, g.measureText(t).width + 18), x = token.x - w / 2, y = token.y - 104;
+    g.fillStyle = 'rgba(250,240,215,.95)'; g.strokeStyle = '#6a4a20'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, 24, 10); g.fill(); g.stroke();
+    g.beginPath(); g.moveTo(token.x - 6, y + 24); g.lineTo(token.x, y + 32); g.lineTo(token.x + 6, y + 24); g.fill();
+    g.fillStyle = '#3a2810'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t.length > 46 ? t.slice(0, 45) + '…' : t, token.x, y + 12.5); g.restore();
+  }
   const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura on the map too */
   function drawToken(now) {
     const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 76;
@@ -263,7 +280,7 @@
     g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#07080c'; g.fillRect(0, 0, cv.width, cv.height);
     g.setTransform(dpr * cam.z, 0, 0, dpr * cam.z, dpr * (W / 2 - cam.x * cam.z), dpr * (H / 2 - cam.y * cam.z));
     if (terr) g.drawImage(terr, 0, 0, WW, WH);
-    drawTrail(); drawMarks(now); drawHover(); drawToken(now);
+    drawTrail(); drawMarks(now); drawHover(); drawToken(now); drawTalk(now);
     drawFog(now); drawBeacon(now);
     drawSky(); drawCompass();
   }
@@ -467,6 +484,7 @@
     const odds = Math.min(.42, (.05 + dang * .24) * (t.road ? .45 : 1) * (night ? 1.6 : 1));
     if (!S.calm && !t.poi && Math.random() < odds) { S.calm = 3; log(night ? 'ถูกซุ่มโจมตีกลางดึก!' : 'ถูกซุ่มโจมตี!'); return await battle(pickFoe(t), dang, { ambush: true }) }
     if (night && Math.random() < .07) return await nightEvent(t);
+    chatter('walk', .35);
     return false;
   }
   /* things that only happen after dark */
@@ -652,7 +670,7 @@
     const risk = safe ? 0 : Math.min(.45, (night ? .24 : .1) * (.5 + dang * 1.5));
     if (!safe) { const v = await modal(`<h2>⛺ พักแรมที่นี่?</h2><p>${night ? 'นอนจนถึงเช้า' : 'พัก 6 ชั่วโมง'} · ${fed ? 'ใช้เสบียง 1 · HP เต็ม' : 'ไม่มีเสบียง · ฟื้น HP แค่ 30%'} · ความเหนื่อยหาย</p><p>โอกาสถูกบุกค่าย <b style="color:#a0281a">${Math.round(risk * 100)}%</b>${night ? ' (กลางคืนเสี่ยงกว่า)' : ''}</p>`, [{ label: '⛺ ตั้งแคมป์', value: true }, { label: 'ยังก่อน', value: null, ghost: true }]); if (!v) return }
     busy = true; hudSync(); if (fed) S.food--;
-    toast('⛺ พักแรม…'); await wait(900);
+    toast('⛺ พักแรม…'); chatter('camp'); await wait(900);
     const hours = night ? ((30 - S.hour) % 24 || 6) : 6;
     if (Math.random() < risk) {
       passTime(Math.round(hours / 2)); S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .25)); S.fatigue = Math.round(S.fatigue / 2); busy = false;
@@ -686,8 +704,11 @@
     let mult = o.boss ? Math.round(130 / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
     if (foe === 'shadowWolf') mult = Math.round((1.1 + dang * .5) * 10) / 10;
     const fs = window.Progression ? Progression.foeScale(Progression.heroLevel(WS.game())) : { hp: 1, atk: 1 };   /* v95.00: monsters grow a little with the hero */
-    mult = Math.round(mult * fs.hp * 10) / 10;
-    const atk = Math.round((fierce ? 1.3 : 1) * fs.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6));
+    /* v97.29 · the game's difficulty setting (⚙ ตั้งค่า · s.village.settings.difficulty — it only reached the old battles before) */
+    const DIFF = ({ easy: { hp: .8, atk: .8, gold: .9 }, hard: { hp: 1.25, atk: 1.2, gold: 1.2 } })[(() => { try { return WS.game().village.settings?.difficulty } catch (e) { return '' } })()] || { hp: 1, atk: 1, gold: 1 };
+    mult = Math.round(mult * fs.hp * DIFF.hp * 10) / 10;
+    const atk = Math.round((fierce ? 1.3 : 1) * fs.atk * DIFF.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6));
+    chatter('fight', .6);
     await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : fierce ? 'NIGHT TERROR!' : 'ENCOUNTER!');
     const fr = document.createElement('iframe'); fr.id = 'wmBattle';
     const title = (o.boss ? 'บอส · ' : elite ? 'ยอดฝีมือ · ' : '') + (BOSS_NAME[foe] && o.boss ? BOSS_NAME[foe] : '');
@@ -695,7 +716,7 @@
     /* a group: more monsters deeper in the fog, at night and in ambushes; the boss brings two of the local monsters */
     const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
     const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
-    for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * 10) / 10) }
+    for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
     const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
     const tut = (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
@@ -718,7 +739,7 @@
     if (!o.boss) ev(res.outcome === 'win' ? 'battle:win' : res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome });
     else if (res.outcome !== 'win') ev(res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome, destName: destOf()?.name });
     if (res.outcome === 'win') {
-      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (OBJ_GOLD[obj.split(':')[0]] || 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
+      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (OBJ_GOLD[obj.split(':')[0]] || 1) * DIFF.gold); S.gold += gold; S.hp = Math.max(1, S.hp);
       const loot = dropLoot(foe, here.biome, dang, o.boss);
       /* v94.06 F2: experience — the hero and the companions who fought */
       let jobRes = null; const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
@@ -731,6 +752,7 @@
         jobRes = Progression.gainJob ? Progression.gainJob(WS.game(), Math.round(xp * .7)) : null;   /* v97.18: job points */
         WS.commit();
       }
+      chatter('win', .7);
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
       if (P) await results({ title: (obj ? '🎯 ' + OBJ_NAME[obj.split(':')[0]] + ' สำเร็จ' + (title ? ' · ' : '') : '') + title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed, job: jobRes && jobRes.id !== 'adventurer' ? { ...P.JOBS[jobRes.id], lv: P.jobLevel(WS.game(), jobRes.id), jp: P.jobsOf(WS.game()).jobs[jobRes.id]?.jp || 0, need: P.jobNeed(P.jobLevel(WS.game(), jobRes.id)), ups: jobRes.ups, max: P.JOB_MAX } : null });
       else toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
@@ -807,5 +829,5 @@
   { const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; cam.x = p.x; cam.y = p.y; cam.z = innerWidth < 700 ? .9 : 1.25 }
   hudSync(); requestAnimationFrame(frame);
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
-  window.WorldMap = { results, area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
+  window.WorldMap = { results, chatter, area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();

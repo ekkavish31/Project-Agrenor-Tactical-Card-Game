@@ -36,5 +36,21 @@
   }
   function mine() {
     try { const P = root.Progression, g = root.WorldState?.game(); if (!P || !g) return null; const j = P.jobCombat(g); return j.look ? { ...j.look, icon: j.icon, col: j.col } : null } catch (e) { return null } }
-  root.JobLook = { pic, aura, mine };
+  /* v97.26 · J6: enemy variants from the same picture — every coloured pixel (not greys) turns by `hue` degrees, lightness × `light`
+     (fierce night monsters: deep violet and darker · elites: a hot red-gold) · cached per image */
+  const tints = new WeakMap();
+  function tint(img, V) {
+    if (!V || !img || !(img.naturalWidth || img.width)) return img;
+    let per = tints.get(img); if (!per) tints.set(img, per = new Map()); const k = V.hue + ',' + V.light + ',' + (V.sat || 1); let c = per.get(k); if (c) return c;
+    c = document.createElement('canvas'); c.width = img.naturalWidth || img.width; c.height = img.naturalHeight || img.height; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0);
+    let d; try { d = x.getImageData(0, 0, c.width, c.height) } catch (e) { per.set(k, img); return img }
+    const q = d.data, f = (p, q2, t2) => { t2 = (t2 + 1) % 1; return t2 < 1 / 6 ? p + (q2 - p) * 6 * t2 : t2 < .5 ? q2 : t2 < 2 / 3 ? p + (q2 - p) * (2 / 3 - t2) * 6 : p };
+    for (let n = 0; n < q.length; n += 4) { if (q[n + 3] < 10) continue; const r = q[n] / 255, g = q[n + 1] / 255, b = q[n + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), dd = mx - mn; let l = (mx + mn) / 2;
+      let s = dd < .001 ? 0 : l > .5 ? dd / (2 - mx - mn) : dd / (mx + mn), h = dd < .001 ? 0 : (mx === r ? ((g - b) / dd + (g < b ? 6 : 0)) : mx === g ? (b - r) / dd + 2 : (r - g) / dd + 4) / 6;
+      if (s > .12) { h = (h + V.hue / 360 + 1) % 1; s = Math.min(1, s * (V.sat || 1)) } l = Math.max(0, Math.min(1, l * V.light));
+      const q2 = l < .5 ? l * (1 + s) : l + s - l * s, p2 = 2 * l - q2; q[n] = f(p2, q2, h + 1 / 3) * 255; q[n + 1] = f(p2, q2, h) * 255; q[n + 2] = f(p2, q2, h - 1 / 3) * 255 }
+    x.putImageData(d, 0, 0); per.set(k, c); return c;
+  }
+  const VARIANT = { fierce: { hue: 220, light: .78, sat: 1.15, name: 'ดุร้าย' }, elite: { hue: -25, light: 1.05, sat: 1.35, name: 'ยอดฝีมือ' } };
+  root.JobLook = { pic, aura, mine, tint, VARIANT };
 })(typeof window !== 'undefined' ? window : globalThis);
