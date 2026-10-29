@@ -173,8 +173,25 @@
       for (const f of [.3, .5, .7, .85]) { const base = T(p[Math.round((L - 1) * f)].c, p[Math.round((L - 1) * f)].r), t = [base, ...neighbors(base.c, base.r).map(([c, r]) => T(c, r))].find(x => BIOME[x.biome].pass && !occupied(x)); if (t) t.enc = { type: 'battle', foe: pick(R, FOES[t.biome] || FOES.grass) } }
       const mid = T(p[Math.round(L * .55)].c, p[Math.round(L * .55)].r), nm = [mid, ...neighbors(mid.c, mid.r).map(([c, r]) => T(c, r))].find(x => BIOME[x.biome].pass && !occupied(x)); if (nm) nm.enc = { type: 'camp' };
     }
+    /* v95.26 · landmarks every 5–10 hexes so the long roads have places in them: hamlets, outposts, lookout towers, ruins, wayside shrines.
+       They stay on the map (enc.landmark) — visit them as often as you like; ruins are explored once (an area map). */
+    const NAMES = { hamlet: ['บ้านหนองเกวียน', 'บ้านโคกหญ้า', 'บ้านท่าไม้', 'บ้านริมห้วย', 'บ้านเนินลม', 'บ้านไร่ปลาย', 'บ้านกอไผ่', 'บ้านทุ่งแดง', 'บ้านหินลาด', 'บ้านต้นโพธิ์', 'บ้านสามแยก', 'บ้านน้ำใส'],
+      outpost: ['ด่านสะพานหิน', 'ด่านทางแยก', 'ด่านริมน้ำ', 'ด่านเชิงเขา', 'ด่านลมเหนือ', 'ด่านประตูทุ่ง'], tower: ['หอสังเกตการณ์เก่า', 'หอไฟบนเนิน', 'ยอดชมทิวเขา', 'หอหินร้าง', 'หอระฆังร้าง'],
+      ruins: ['ซากป้อมโบราณ', 'ซากศาลาหิน', 'ซากหมู่บ้านร้าง', 'ซากวิหารเล็ก', 'ซากหอคอยล้ม', 'ซากสะพานเก่า', 'ซากคฤหาสน์'] };
+    const used = {}, nameOf = k => { const L = NAMES[k], n = used[k] = (used[k] || 0) + 1; return L[(n - 1) % L.length] + (n > L.length ? ' ' + ['', '', 'ใต้', 'เหนือ', 'ตะวันออก', 'ตะวันตก'][Math.min(5, Math.ceil(n / L.length))] : '') };
+    const lm = [], cand = Object.values(tiles).filter(t => BIOME[t.biome].pass && !t.poi && !t.enc && dist(t, home) >= 4);
+    for (let i = cand.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1));[cand[i], cand[j]] = [cand[j], cand[i]] }
+    for (const t of cand) {
+      if (lm.some(m => dist(m, t) < 6) || [...w.dests, ...w.towns].some(m => dist(m, t) < 4)) continue;
+      const b = t.biome, wet = t.river || neighbors(t.c, t.r).some(([c, r]) => T(c, r).river);
+      const nearRoad = t.road || neighbors(t.c, t.r).some(([c, r]) => T(c, r).road);
+      let type = (b === 'highland' || b === 'hills') && R() < .4 ? 'tower' : nearRoad && R() < .75 ? 'outpost' : (b === 'grass' || b === 'forest') && (wet || R() < .45) ? 'hamlet' : ['forest', 'stone', 'swamp', 'grass', 'ash', 'hills'].includes(b) && R() < .45 ? 'ruins' : R() < .5 ? 'shrine' : b === 'grass' || b === 'forest' ? 'hamlet' : 'tower';
+      if (b === 'snow') type = R() < .5 ? 'shrine' : 'ruins';
+      t.enc = { type, landmark: true, name: type === 'shrine' ? 'ศาลริมทาง' : nameOf(type) }; lm.push(t);
+    }
+    w.landmarks = lm.map(t => ({ c: t.c, r: t.r, type: t.enc.type, name: t.enc.name }));
     const extras = ['battle', 'battle', 'chest', 'chest', 'shrine', 'merchant', 'trap', 'oldmap', 'camp'];
-    for (const t of Object.values(tiles)) { if (!BIOME[t.biome].pass || occupied(t) || R() > .035) continue; const type = pick(R, extras); t.enc = type === 'battle' ? { type, foe: pick(R, FOES[t.biome] || FOES.grass), hidden: R() < .4 } : { type } }
+    for (const t of Object.values(tiles)) { if (!BIOME[t.biome].pass || occupied(t) || R() > .03) continue; const type = pick(R, extras); t.enc = type === 'battle' ? { type, foe: pick(R, FOES[t.biome] || FOES.grass), hidden: R() < .4 } : { type } }
     return w;
   }
 

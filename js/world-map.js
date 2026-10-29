@@ -205,17 +205,19 @@
     label(g, (S.done[d.id] ? '✔ ' : '') + d.name, p.x, p.y + 30, S.done[d.id] ? '#bfffd0' : '#ffe2a8');
   }
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
-  const ENC_ICON = { chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
+  const ENC_ICON = { hamlet: '🏘', outpost: '🚩', tower: '🗼', ruins: '🏛', chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
   function drawMarks(now) {
     for (const k in world.tiles) {
       const h = world.tiles[k]; if (!isKnown(k)) continue;
       const p = center(h.c, h.r);
       if (h.poi && h.poi.id !== 'home' && S.done[h.poi.id] && h.poi.id !== S.dest) { poiIcon(g, h.poi, p.x, p.y + 6, .8); label(g, '✔ ' + h.poi.name, p.x, p.y + 28, '#bfffd0', 11) }
       if (!h.enc || S.cleared[k] || h.enc.type === 'trap') continue;
+      const lmk = h.enc.landmark;
       if (h.enc.type === 'battle') continue;   // v95.16: no battle marks — an ambush can happen on any step
       const bob = Math.sin(now * .004 + h.c) * 2, x = p.x, y = p.y - 6 + bob;
-      g.save(); g.fillStyle = 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, 12, 0, 7); g.fill(); g.strokeStyle = '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
+      g.save(); g.fillStyle = lmk ? 'rgba(70,50,20,.85)' : 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, lmk ? 14 : 12, 0, 7); g.fill(); g.strokeStyle = lmk ? '#ffd27a' : '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
       g.font = '13px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
+      if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11);
     }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
     for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) { const q = center(tw.c, tw.r); label(g, tw.name, q.x, q.y + 32, '#d8f0ff', 12) }
@@ -301,6 +303,9 @@
   .wm-enc i{position:absolute;left:-10%;width:120%;height:12.5%;background:#07080c;transform:translateX(-110%) skewX(-20deg);animation:wmShard .5s cubic-bezier(.7,0,.3,1) forwards}
   .wm-enc b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(2.2);font:italic 900 64px system-ui,sans-serif;color:#fff3b0;letter-spacing:3px;text-shadow:0 0 22px #ff6a2a,0 6px 0 #7a2400;opacity:0;animation:wmEncT .9s .25s forwards}
   @keyframes wmShard{to{transform:translateX(0) skewX(-20deg)}}@keyframes wmEncT{20%{opacity:1;transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.9)}}
+  .wm-area{position:fixed;inset:0;z-index:15;background:#07080c;animation:wmFade .3s}.wm-area canvas{position:absolute;inset:0;cursor:pointer}
+  .wm-area header{position:absolute;left:12px;right:12px;top:10px;display:flex;align-items:center;gap:12px;padding:8px 12px;background:#20190fe6;border:1px solid #8a6a3a;border-radius:10px;color:#f3e6c6;font-family:VillageThai,system-ui,sans-serif}
+  .wm-area header b{font-size:17px;color:#ffd98a}.wm-area header small{opacity:.8;flex:1}.wm-area header .st{font-size:13px;opacity:.9}.wm-area header button{background:#4a3e2e;color:#fff;border:0;border-radius:8px;padding:6px 10px}
   #wmBattle{position:fixed;inset:0;z-index:35;border:0;width:100%;height:100%;background:#000;opacity:0;transition:opacity .35s}#wmBattle.on{opacity:1}
   .wm-shake{animation:wmShake .4s}@keyframes wmShake{20%{transform:translate(6px,-3px)}40%{transform:translate(-5px,4px)}60%{transform:translate(4px,2px)}80%{transform:translate(-3px,-2px)}}
   @media (max-width:700px){#wmHud{width:210px;font-size:12px;padding:8px}#wmLog{display:none}.wm-enc b{font-size:40px}}`;
@@ -332,6 +337,7 @@
     let txt = known || adj ? G.BIOME[t.biome].name + (t.road ? ' · ถนน' : '') + (t.river ? ' · แม่น้ำ' : '') : 'หมอกดำ — ไม่รู้ว่ามีอะไร';
     const sc = G.stepCost(t); if ((known || adj) && sc < Infinity) txt += ' · ' + sc + ' ชม.'; else if (known && sc === Infinity) txt += ' · ผ่านไม่ได้';
     if (known && t.enc && !S.cleared[k] && t.enc.type !== 'trap' && t.enc.type !== 'battle' && !(t.enc.hidden && !visible.has(k))) txt += ' · ' + ({ battle: '⚔ ศัตรู', chest: '🎁 หีบ', camp: '⛺ จุดพัก', shrine: '✦ ศาลเจ้า', merchant: '💰 พ่อค้า', oldmap: '📜 แผนที่เก่า' }[t.enc.type] || '');
+    if (known && t.enc?.landmark && !S.cleared[k]) txt = t.enc.name + ' · ' + txt;
     const d = destOf(); if (d && d.c === h.c && d.r === h.r) txt = '★ ' + d.name + ' — ' + txt;
     tipEl.textContent = txt; tipEl.style.display = 'block'; tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY + 14) + 'px';
   }
@@ -440,6 +446,8 @@
     const wasNight = nightness() > .6;
     passTime(cost + (wasNight ? 1 : 0));                                              // walking in the dark is slower
     S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * (wasNight ? 1.5 : 1)));
+    /* v95.26 · the heights are cold: walking there tires you faster and eats more */
+    if (world.real && (t.biome === 'snow' || t.biome === 'highland')) { const cold = t.biome === 'snow' ? 1 : .5; S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * cold)); S.trek = (S.trek || 0) + cost * cold; if (S.coldDay !== S.day) { S.coldDay = S.day; log('ลมหนาวบนที่สูง เหนื่อยเร็วและหิวไว'); toast('❄ หนาวจัด: เหนื่อยเร็วขึ้น กินเสบียงมากขึ้น') } }
     /* v95.23: on the real map a hex is ~12 km — a ration lasts 12 hours of walking, not one hex */
     let eat = !t.road && !t.poi; if (world.real) { S.trek = (S.trek || 0) + cost; eat = S.trek >= 12; if (eat) S.trek -= 12 }
     if (eat) { if (S.food > 0) S.food--; else { S.hp = Math.max(1, S.hp - 5); log('เสบียงหมด! หิวโหย −5 HP'); toast('เสบียงหมด −5 HP') } }
@@ -486,6 +494,7 @@
     } finally { busy = false; delete S.cleared[key]; delete S.cleared[key + 'a']; delete S.cleared[key + 'b']; hudSync(); save() }
   }
   async function encounter(t, k) {
+    if (t.enc.landmark) return await landmark(t, k);
     const e = t.enc, dang = G.danger(world, t);
     if (e.type === 'battle') { const r = await battle(e.foe, dang, {}); if (r === 'win') S.cleared[k] = true; return true }
     S.cleared[k] = true;
@@ -508,6 +517,121 @@
       log('กับดัก! −' + dmg + ' HP'); await modal(`<h2>⚠ กับดัก!</h2><p>กิ่งไม้ดีดขึ้นจากใต้ใบไม้ใส่เต็ม ๆ เสีย <b>${dmg} HP</b></p>`);
     }
     hudSync(); save(); return true;
+  }
+  /* ---------- v95.26 · landmarks on the way ---------- */
+  async function landmark(t, k) {
+    const e = t.enc, dang = G.danger(world, t); S.lmk = S.lmk || {};
+    if (e.type === 'hamlet') {
+      for (;;) {
+        const v = await modal(`<h2>🏘 ${esc(e.name)}</h2><p>หมู่บ้านเล็ก ๆ ไม่กี่หลังคาเรือน ควันไฟลอยจากปล่อง ชาวบ้านมองนักเดินทางอย่างสงสัยแต่ไม่ไม่เป็นมิตร</p><p>มี ${S.gold} 💰 · เสบียง ${S.food} · HP ${S.hp}/${S.maxHp}</p>`,
+          [{ label: 'พักค้างคืน · 8 💰', value: 'rest', disabled: S.gold < 8 }, { label: 'ซื้อเสบียง 2 ห่อ · 14 💰', value: 'food', disabled: S.gold < 14 }, { label: 'ฟังข่าวรอบ ๆ', value: 'news', disabled: S.lmk[k] === S.day }, { label: 'ไปต่อ', value: null, ghost: true }]);
+        if (v === 'rest') { S.gold -= 8; passTime(S.hour < 8 ? 8 - S.hour : 32 - S.hour); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('พักที่ ' + e.name); toast('🛏 พักที่ ' + e.name + ' · ฟื้นเต็ม'); ev('rest:inn', { place: e.name }) }
+        else if (v === 'food') { S.gold -= 14; S.food += 2; log('ซื้อเสบียงที่ ' + e.name) }
+        else if (v === 'news') { S.lmk[k] = S.day; revealArea(t.c, t.r, 5); const lead = newLead('ชาวบ้านที่ ' + e.name); log('ฟังข่าวที่ ' + e.name); await modal(`<h2>🗨 ข่าวจาก${esc(e.name)}</h2><p>${lead ? 'ชาวบ้านเล่าถึง <b>' + esc(lead.name) + '</b> — “' + esc(lead.rumor) + '”' : 'ชาวบ้านชี้ทางรอบ ๆ ให้ ทางแถบนี้ไม่มีอะไรน่ากลัวเป็นพิเศษ'}</p>`) }
+        else break; hudSync(); save();
+      }
+    } else if (e.type === 'outpost') {
+      const v = await modal(`<h2>🚩 ${esc(e.name)}</h2><p>ด่านไม้ล้อมรั้ว ทหารสองสามคนผลัดกันเฝ้าทาง ที่นี่ปลอดภัยพอให้ได้นั่งพักใต้หลังคา</p>`,
+        [{ label: 'ถามข่าวจากทหาร', value: 'news', disabled: S.lmk[k] === S.day }, { label: 'พักใต้หลังคา 4 ชม.', value: 'rest' }, { label: 'ไปต่อ', value: null, ghost: true }]);
+      if (v === 'news') { S.lmk[k] = S.day; const lead = newLead('ทหารที่ ' + e.name); for (const d of world.dests) if (S.leads?.[d.id]) { const p = G.path(world, t, d); if (p) p.slice(0, 10).forEach(x => S.known[K(x.c, x.r)] = 1) } fogDirty = true; await modal(`<h2>🗨 ทหารที่${esc(e.name)}</h2><p>${lead ? 'มีข่าวลือเรื่อง <b>' + esc(lead.name) + '</b> — “' + esc(lead.rumor) + '”' : 'ทหารชี้ทางช่วงแรกไปยังที่ที่เจ้ากำลังตามหาให้'}</p>`) }
+      else if (v === 'rest') { passTime(4); S.fatigue = Math.round(S.fatigue / 2); S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .15)); log('พักที่ ' + e.name) }
+    } else if (e.type === 'tower') {
+      if (S.lmk[k]) { toast('เคยขึ้นไปดูแล้ว'); return false }
+      const v = await modal(`<h2>🗼 ${esc(e.name)}</h2><p>บันไดหินผุ ๆ วนขึ้นไปถึงยอด ถ้าปีนขึ้นไปจะมองเห็นไปได้ไกล (ใช้เวลา 1 ชม.)</p>`, [{ label: 'ปีนขึ้นไปดู', value: 'go' }, { label: 'ไปต่อ', value: null, ghost: true }]);
+      if (v === 'go') { S.lmk[k] = 1; passTime(1); revealArea(t.c, t.r, 7); log('มองจาก ' + e.name); toast('🗼 เห็นไกลรอบทิศ') }
+    } else if (e.type === 'shrine') {
+      const v = await modal(`<h2>✦ ${esc(e.name)}</h2><p>แท่นหินเล็ก ๆ ริมทาง มีเทียนไขที่ใครสักคนจุดทิ้งไว้</p>`, [{ label: 'จุดเทียนอธิษฐาน', value: 'pray', disabled: S.lmk[k] === S.day }, { label: 'ไปต่อ', value: null, ghost: true }]);
+      if (v === 'pray') { S.lmk[k] = S.day; S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .3)); S.fatigue = Math.max(0, S.fatigue - 20); revealArea(t.c, t.r, 3); log('อธิษฐานที่ศาลริมทาง'); toast('✦ HP +30% · หายเหนื่อยบ้าง') }
+    } else if (e.type === 'ruins') {
+      const v = await modal(`<h2>🏛 ${esc(e.name)}</h2><p>ซากหินที่ถูกเถาวัลย์กลืน ดูเหมือนข้างในยังมีทางเดินลึกเข้าไป อาจมีของมีค่า… หรือมีอะไรอาศัยอยู่</p>`, [{ label: 'เข้าไปสำรวจ', value: 'go' }, { label: 'ไปต่อ', value: null, ghost: true }]);
+      if (v === 'go') {
+        const r = await areaExplore({ title: e.name, sub: 'สำรวจซากปรักหักพัง · หาห้องสมบัติให้เจอ', biome: t.biome, seed: world.seed ^ (t.c * 977 + t.r * 131), dang, foes: G.FOES[t.biome] || G.FOES.grass, prize: { gold: Math.round(40 + dang * 120), potion: 1 } });
+        if (r === 'done') { S.cleared[k] = true; ev('ruins:explored', { place: e.name, biome: t.biome }) }
+      }
+    }
+    hudSync(); save(); return true;
+  }
+  /* a destination the party has not heard of yet becomes a lead (outposts, hamlets) */
+  function newLead(src) {
+    const d = world.dests.filter(x => !S.leads?.[x.id] && !S.done[x.id]).sort((a, b) => G.dist(S.pos, a) - G.dist(S.pos, b))[0]; if (!d) return null;
+    try { WS.addLead(d.id, src, false) } catch (e) { } S.leads = S.leads || {}; S.leads[d.id] = { src }; log('ได้ยินเรื่อง ' + d.name); return d;
+  }
+
+  /* ---------- v95.26 · area maps: a closer look at one hex (destinations, ruins) ----------
+     A small hex field (13 × 9) drawn from the hex's land: the way in on the left, the lair / treasure room on the far right, a few things on
+     the way (foes, a chest, an old tablet, a spring) under a short fog. Each step is 15 minutes. Resolves 'win' (boss beaten), 'done' (prize
+     taken) or 'left'. */
+  function areaExplore(o) {
+    return new Promise(resolve => {
+      const rnd = G.rng((o.seed >>> 0) || 7), AW = 13, AH = 9, RAD = 30, AHW = Math.sqrt(3) * RAD, AVS = 1.5 * RAD, KK = (c, r) => c + ',' + r;
+      const NBR = [[[1, 0], [-1, 0], [0, -1], [-1, -1], [0, 1], [-1, 1]], [[1, 0], [-1, 0], [1, -1], [0, -1], [1, 1], [0, 1]]];
+      const nb = (c, r) => NBR[r & 1].map(([a, b]) => [c + a, r + b]).filter(([a, b]) => a >= 0 && b >= 0 && a < AW && b < AH);
+      const cells = {}; for (let r = 0; r < AH; r++) for (let c = 0; c < AW; c++) cells[KK(c, r)] = { c, r, block: rnd() < .22, seed: rnd() };
+      const entry = { c: 0, r: 4 }, lair = { c: AW - 1, r: 4 };
+      /* carve a winding way in */
+      { let c = 0, r = 4; while (c < AW - 1) { cells[KK(c, r)].block = false; if (rnd() < .65) c++; else r = Math.max(1, Math.min(AH - 2, r + (rnd() < .5 ? -1 : 1))) } cells[KK(lair.c, lair.r)].block = false; for (const [a, b] of nb(lair.c, lair.r)) cells[KK(a, b)].block = false }
+      const reach = new Set([KK(0, 4)]), q = [[0, 4]]; while (q.length) { const [c, r] = q.pop(); for (const [a, b] of nb(c, r)) { const x = cells[KK(a, b)]; if (!x.block && !reach.has(KK(a, b))) { reach.add(KK(a, b)); q.push([a, b]) } } }
+      for (const k in cells) if (!reach.has(k)) cells[k].block = true;
+      const free = [...reach].map(k => cells[k]).filter(x => x.c >= 2 && x.c <= AW - 3);
+      for (let i = free.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1));[free[i], free[j]] = [free[j], free[i]] }
+      const spots = {}, kinds = ['foe', 'foe', 'chest', rnd() < .5 ? 'lore' : 'spring'];
+      for (const x of free) { if (!kinds.length) break; if (Object.values(spots).some(s => Math.abs(s.c - x.c) + Math.abs(s.r - x.r) < 3)) continue; const kind = kinds.shift(); spots[KK(x.c, x.r)] = { c: x.c, r: x.r, kind, foe: kind === 'foe' ? o.foes[Math.floor(rnd() * o.foes.length)] : null } }
+      spots[KK(lair.c, lair.r)] = { c: lair.c, r: lair.r, kind: o.boss ? 'lair' : 'prize' };
+      const seen = new Set(), look = (c, r) => { for (const k in cells) { const x = cells[k]; if (Math.abs(x.c - c) + Math.abs(x.r - r) <= 3) seen.add(k) } };
+      let pos = { ...entry }, prev = null, walking = false, done = false; look(0, 4);
+      const pal = PAL[o.biome] || PAL.grass;
+      const box = document.createElement('div'); box.className = 'wm-area';
+      box.innerHTML = `<canvas></canvas><header><b>${esc(o.title)}</b><small>${esc(o.sub || '')}</small><span class="st"></span><button type="button" class="ghost">↩ ออกจากพื้นที่</button></header>`;
+      document.body.append(box); busy = true;
+      const cvA = box.querySelector('canvas'), gA = cvA.getContext('2d'), st = box.querySelector('.st');
+      let sc = 1, ox = 0, oy = 0;
+      const fit = () => { const w = innerWidth, h = innerHeight, d = devicePixelRatio || 1; cvA.width = w * d; cvA.height = h * d; cvA.style.width = w + 'px'; cvA.style.height = h + 'px'; sc = Math.min(w / (AHW * (AW + .5) + 60), (h - 90) / (AVS * (AH - 1) + 2 * RAD + 40)); ox = (w - AHW * (AW + .5) * sc) / 2 + AHW * .5 * sc; oy = 70 + (h - 70 - (AVS * (AH - 1) + 2 * RAD) * sc) / 2 + RAD * sc };
+      fit(); addEventListener('resize', fit);
+      const ctr = (c, r) => ({ x: ox + (c + .5 * (r & 1)) * AHW * sc, y: oy + r * AVS * sc });
+      const ICON = { foe: '⚔', chest: '🎁', lore: '🪨', spring: '💧', lair: '☠', prize: '💎' };
+      const status = () => st.textContent = `${S.hp}/${S.maxHp} HP · ${String(Math.floor(S.hour)).padStart(2, '0')}:${String(Math.round((S.hour % 1) * 60)).padStart(2, '0')}`;
+      function frame(now) {
+        if (done) return; const d = devicePixelRatio || 1; gA.setTransform(d, 0, 0, d, 0, 0);
+        const bg = gA.createLinearGradient(0, 0, 0, innerHeight); bg.addColorStop(0, '#1a1e24'); bg.addColorStop(1, '#07080c'); gA.fillStyle = bg; gA.fillRect(0, 0, innerWidth, innerHeight);
+        for (let r = 0; r < AH; r++) for (let c = 0; c < AW; c++) {
+          const x = cells[KK(c, r)], p = ctr(c, r); gA.save(); gA.translate(p.x, p.y); gA.scale(sc, sc);
+          hexPath(gA, 0, 0, RAD + .6); gA.fillStyle = pal[(c + r) % 3]; gA.fill(); gA.strokeStyle = 'rgba(0,0,0,.18)'; gA.lineWidth = 1; gA.stroke();
+          const R2 = G.rng(((c * 97 + r * 31) ^ (o.seed >>> 0)) >>> 0);
+          if (x.block) { if (['forest', 'grass', 'swamp'].includes(o.biome)) { tree(gA, -8, 8, 16, R2); tree(gA, 9, 12, 14, R2) } else if (o.biome === 'snow') { mountain(gA, 0, 14, 30, true) } else { mountain(gA, 0, 14, 28, false) } }
+          else if (o.biome === 'swamp' && x.seed < .3) reed(gA, 0, 6, R2);
+          gA.restore();
+          if (!seen.has(KK(c, r))) { gA.save(); gA.translate(p.x, p.y); gA.scale(sc, sc); hexPath(gA, 0, 0, RAD + 1); gA.fillStyle = 'rgba(5,6,10,.88)'; gA.fill(); gA.restore() }
+        }
+        for (const k in spots) { if (!seen.has(k)) continue; const s = spots[k], p = ctr(s.c, s.r), bob = Math.sin(now * .004 + s.c) * 3 * sc; gA.save(); gA.fillStyle = s.kind === 'foe' || s.kind === 'lair' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; gA.beginPath(); gA.arc(p.x, p.y - 8 * sc + bob, 15 * sc, 0, 7); gA.fill(); gA.font = `${18 * sc}px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif`; gA.textAlign = 'center'; gA.textBaseline = 'middle'; gA.fillText(ICON[s.kind], p.x, p.y - 7 * sc + bob); gA.restore() }
+        const pe = ctr(entry.c, entry.r); gA.save(); gA.font = `700 ${12 * sc}px VillageThai,system-ui`; gA.fillStyle = '#e8d8a8'; gA.textAlign = 'center'; gA.fillText('ทางเข้า', pe.x, pe.y + 26 * sc); gA.restore();
+        const pp = ctr(pos.c, pos.r), im = heroImgs[Math.floor(now / 160) % 4]; if (im.complete && im.naturalWidth) { const h = 70 * sc, w = h * im.naturalWidth / im.naturalHeight; gA.drawImage(im, pp.x - w / 2, pp.y - h + 10 * sc, w, h) } else { gA.fillStyle = '#ffd36a'; gA.beginPath(); gA.arc(pp.x, pp.y - 10, 8, 0, 7); gA.fill() }
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame); status();
+      const finish = v => { done = true; removeEventListener('resize', fit); box.remove(); busy = false; hudSync(); save(); resolve(v) };
+      box.querySelector('header button').onclick = () => { if (!walking && !modalOpen) finish('left') };
+      async function arrive(s) {
+        const k = KK(s.c, s.r);
+        if (s.kind === 'foe') { const r = await battle(s.foe, o.dang, {}); if (r === 'win') delete spots[k]; else if (prev) pos = { ...prev } }
+        else if (s.kind === 'chest') { const gold = Math.round(12 + Math.random() * 20 + o.dang * 40); S.gold += gold; delete spots[k]; log('พบหีบใน ' + o.title + ' +' + gold); await modal(`<h2>🎁 หีบเก่า</h2><p>ได้ <b>${gold} เหรียญ</b></p>`) }
+        else if (s.kind === 'spring') { S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .3)); healParty(.3); delete spots[k]; await modal(`<h2>💧 ตาน้ำใส</h2><p>น้ำเย็นชื่นใจ ทีมฟื้น HP 30%</p>`) }
+        else if (s.kind === 'lore') { delete spots[k]; await modal(`<h2>🪨 ศิลาจารึก</h2><p>ตัวอักษรเก่าเลือนจนอ่านไม่ออก มีเพียงรูปแสงที่แตกออกเป็นหลายสายสลักอยู่ตรงกลาง… เหมือนนิทานที่ผู้เฒ่าเคยเล่า</p>`) }
+        else if (s.kind === 'prize') { const P = o.prize || {}; S.gold += P.gold || 0; S.potions += P.potion || 0; log('พบห้องสมบัติใน ' + o.title + ' +' + (P.gold || 0)); await modal(`<h2>💎 ห้องสมบัติ</h2><p>ลึกสุดของ${esc(o.title)} มี <b>${P.gold || 0} เหรียญ</b>${P.potion ? ' และยาฟื้นฟู ' + P.potion + ' ขวด' : ''}</p>`, [{ label: 'กลับออกไป', value: 1 }]); finish('done'); return }
+        else if (s.kind === 'lair') { const v = await modal(`<h2>☠ ${esc(o.boss.name || o.title)}</h2><p>ลมหายใจของบางอย่างดังอยู่ข้างหน้า… HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ บุก', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]); if (v !== 'go') { if (prev) pos = { ...prev }; return } const r = await battle(o.boss.foe, 1, { boss: true }); if (r === 'win') { finish('win'); return } if (prev) pos = { ...prev } }
+        hudSync(); status();
+      }
+      cvA.addEventListener('click', async e => {
+        if (walking || modalOpen || done) return; let best = null, bd = 1e9; for (const k in cells) { const x = cells[k], p = ctr(x.c, x.r), d = Math.hypot(p.x - e.clientX, p.y - e.clientY); if (d < bd) { bd = d; best = x } }
+        if (!best || bd > RAD * sc || best.block) return;
+        /* shortest way over walkable cells (unknown cells count as walkable so you can head into the fog) */
+        const start = KK(pos.c, pos.r), goal = KK(best.c, best.r), from = new Map([[start, null]]), qq = [[pos.c, pos.r]];
+        while (qq.length) { const [c, r] = qq.shift(); if (KK(c, r) === goal) break; for (const [a, b] of nb(c, r)) { const kk = KK(a, b); if (from.has(kk) || cells[kk].block) continue; from.set(kk, KK(c, r)); qq.push([a, b]) } }
+        if (!from.has(goal)) return; const path = []; for (let k = goal; k && k !== start; k = from.get(k)) path.unshift(k);
+        walking = true;
+        for (const k of path) { const [c, r] = k.split(',').map(Number); prev = { ...pos }; pos = { c, r }; look(c, r); passTime(.25); status(); await wait(170); if (spots[k]) { walking = false; await arrive(spots[k]); if (done) return; break } }
+        walking = false; save();
+      });
+    });
   }
   async function merchant() {
     for (;;) {
@@ -612,8 +736,9 @@
   async function bossFight(d) {
     const v = await modal(`<h2>☠ ${esc(d.name)}</h2><p>${esc(d.rumor)}</p><p>บางอย่างขยับอยู่ในเงามืด… <b>${esc(BOSS_NAME[d.boss] || d.boss)}</b></p><p>HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ บุกเข้าไป', value: 'go' }, { label: 'ถอยออกมาก่อน', value: null, ghost: true }]);
     if (v !== 'go') { if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal(); hudSync() } return }
-    const r = await battle(d.boss, 1, { boss: true });
-    if (r !== 'win') return;
+    /* v95.26: the destination is an area map — walk in past its guards to the lair */
+    const r = await areaExplore({ title: d.name, sub: 'ลึกเข้าไปคือที่อยู่ของ ' + (BOSS_NAME[d.boss] || d.boss), biome: d.biome, seed: world.seed ^ 0x5eed ^ (d.c * 131 + d.r), dang: Math.max(.5, G.danger(world, d)), foes: G.FOES[d.biome] || G.FOES.grass, boss: { foe: d.boss, name: BOSS_NAME[d.boss] || d.boss } });
+    if (r !== 'win') { if (r === 'left' && S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal(); hudSync() } return }
     S.done[d.id] = true; S.gold += d.reward; ev('boss:win', { dest: d.id, destName: d.name, biome: d.biome }); revealArea(d.c, d.r, 2); log('พิชิต ' + d.name + '! +' + d.reward + ' 💰'); save(); hudSync();
     /* v95.10 · F3: a boss leaves a card the hero does not own yet (js/card-sources.js in the game page) */
     try { let w = window; for (let i = 0; i < 4 && w && !w.CardSources; i++) { if (w.parent === w) break; w = w.parent } if (w?.CardSources) await w.CardSources.bossDrop(BOSS_NAME[d.boss] || d.boss) } catch (e) { }
@@ -627,5 +752,5 @@
   { const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; cam.x = p.x; cam.y = p.y; cam.z = innerWidth < 700 ? .9 : 1.25 }
   hudSync(); requestAnimationFrame(frame);
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
-  window.WorldMap = { revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
+  window.WorldMap = { area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();
