@@ -436,13 +436,15 @@
     const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
     bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(p.name)}${aff >= 6 ? ' <small title="สนิทมาก">💛</small>' : aff >= 3 ? ' <small title="สนิท">🙂</small>' : ''}</h2><div class="role">${esc(fill(p.role))}${p.age ? ' · อายุ ' + p.age : ''}${p.benched ? ' · พักอยู่กับทีม' : ''}</div>
       <p>${esc(txt)}</p>${ws?.asked && !ws.done ? `<div class="cond">🤝 คำขอ: ${esc(ws.def.hint)}</div>` : ''}${rec ? `<div class="cond">★ เงื่อนไขชวนเข้าทีม: <b>${esc(rec.label)}</b><br>${esc(rec.text)}${progressText(p.id, rec)}</div>` : ''}
-      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${jobs.length ? '<button data-a="work">💼 จ้างทำงาน</button>' : ''}${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
+      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${jobs.length ? '<button data-a="work">💼 จ้างทำงาน</button>' : ''}${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${teachable(p.id) ? '<button data-a="teach">📖 เรียนท่า</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
     document.body.append(bg); dlg = bg;
     const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, p.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
     bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
     bg.onclick = e => { if (e.target === bg) close() };
     a.face = faceOf(hero.u - a.u, hero.v - a.v);
   }
+  /* v95.10 · trainers (js/card-sources.js in the game page) */
+  function teachable(id) { try { return parent !== window && !!parent.CardSources?.teaches?.(id) } catch (e) { return false } }
   function progressText(id, rec) {
     const r = S.recruit?.[id] || {};
     if (rec.kind === 'visits') return `<br>คุยกันแล้ว ${(r.days || []).length}/${rec.need} วัน`;
@@ -461,6 +463,7 @@
   async function act(a, what) {
     const p = a.p; S = L.save(); const rec = L.RECRUIT[p.id], r = (S.recruit[p.id] ||= {}), hour = CLK.read().hour;
     if (what === 'bye') { close(); return }
+    if (what === 'teach') { close(); try { parent.CardSources?.teach?.(p.id) } catch (e) { } return }
     if (what === 'talk') { talk(a); return }
     if (what === 'about') { const ab = p.about?.length ? fill(p.about[Math.floor(Math.random() * p.about.length)]) : ''; talk(a, (p.trait ? '(' + fill(p.trait) + ') ' : '') + (ab || fill(p.story || '…')) + (L.originText?.(p) ? ' — ' + fill(L.originText(p)) : '')); return }
     if (what === 'rumor') { talk(a, 'ข่าวลือตอนนี้: ' + ['ถ้ำในป่าตะวันออกมีเสียงหอนทั้งคืน — พวกพรานไม่กล้าเข้าไป', 'คนงานเหมืองหนีออกมาบอกว่าหินในเหมืองลุกขึ้นเดิน', 'ระฆังวิหารเก่าในบึงหมอกดังเองทุกคืนข้างแรม', 'เกรเวนเล่าว่ามีคนกลับจากซากเมืองพร้อมผลึกแปลกประหลาด'][Math.floor(Math.random() * 4)] + ' (ไปที่ "ออกเดินทาง" เพื่อรับภารกิจ)'); return }

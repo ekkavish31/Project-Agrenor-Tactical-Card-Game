@@ -163,3 +163,13 @@ body.cs-open #smithWip{display:none}
 
 /* v95.02 · animated scene art (js/scene-art.js) sits over the background image */
 .cs-art{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* v95.10 · card shop + trainers (js/card-sources.js) */
+.cs-offers{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:10px 0}
+.cs-offer{background:#2a2018cc;border:1px solid #6a5a3a;border-radius:10px;padding:8px;text-align:center}
+.cs-offer.sold{opacity:.5}
+.cs-offer .cs-card{min-height:120px;display:grid;place-items:center}
+.cs-offer h3{margin:6px 0 0;font-size:15px}
+.cs-offer button,.cs-teach button{margin-top:6px;padding:6px 12px;border-radius:8px;border:1px solid #b6a070;background:#3a2a18;color:#fff0c7;cursor:pointer}
+.cs-offer button:disabled,.cs-teach button:disabled{opacity:.5;cursor:default}
+.cs-teach{list-style:none;padding:0}.cs-teach li{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #ffffff1a}.cs-teach li button{margin-left:auto}

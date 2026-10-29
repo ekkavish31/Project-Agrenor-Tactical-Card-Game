@@ -587,6 +587,8 @@
     const r = await battle(d.boss, 1, { boss: true });
     if (r !== 'win') return;
     S.done[d.id] = true; S.gold += d.reward; ev('boss:win', { dest: d.id, destName: d.name, biome: d.biome }); revealArea(d.c, d.r, 2); log('พิชิต ' + d.name + '! +' + d.reward + ' 💰'); save(); hudSync();
+    /* v95.10 · F3: a boss leaves a card the hero does not own yet (js/card-sources.js in the game page) */
+    try { let w = window; for (let i = 0; i < 4 && w && !w.CardSources; i++) { if (w.parent === w) break; w = w.parent } if (w?.CardSources) await w.CardSources.bossDrop(BOSS_NAME[d.boss] || d.boss) } catch (e) { }
     await modal(`<h2>🏆 พิชิต ${esc(d.name)}</h2><p>ข่าวลือกลายเป็นตำนาน หมอกรอบ ${esc(d.name)} จางหายไปถาวร</p>
       <p>รางวัล <b>${d.reward} 💰</b> · ต่อสู้ ${S.battles} ครั้ง · เดิน ${S.steps} ช่อง · วันที่ ${S.day}</p>`, [{ label: '🏠 เดินทางกลับหมู่บ้าน', value: true }]);
     goHome();
