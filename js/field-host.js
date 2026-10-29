@@ -55,6 +55,8 @@ const FIELD = (function () {
   for (let u = -R - 7; u <= R + 7; u++) for (let v = -R - 7; v <= R + 7; v++) { if (Math.abs(u) <= R && Math.abs(v) <= R) continue; const x = rnd(); outer.push({ u, v, prop: x < .3 ? MIX.props[Math.floor(rnd() * MIX.props.length)] : x < .45 ? 'tuft' : null, seed: rnd() }) }
   return { biome, R, cells, outer, MIX, rnd, key, night: FQ.get('night') === '1' };
 })();
+/* v95.19: repaint the ground once the painted terrain textures have loaded */
+window.FieldDiorama?.ready?.().then(ok => { if (ok) groundCanvas = null });
 /* ---------- heights (v94) ---------- */
 window.FieldHeight = (function () {
   if (!window.TerrainHeight || !window.TerrainHeightArt || FQ.get('flat') === '1') return null;

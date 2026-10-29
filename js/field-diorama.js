@@ -60,6 +60,21 @@
   };
   function tex(kind, o, seed) { const k = kind + JSON.stringify(o); if (cache[k]) return cache[k]; const c = canvas(); TEX[kind](c.getContext('2d'), rng(seed || 7), o); return cache[k] = c }
 
+  /* ---------- painted textures (assets/terrain/diorama, 256 px seamless, 2 cells per tile); the procedural ones stand in until they load ---------- */
+  const SRC = document.currentScript?.src || '', IMG = {};
+  for (const n of ['grass', 'drygrass', 'dirt', 'cobble', 'snow', 'sand', 'cliff', 'earth']) { const im = new Image(); im.src = SRC ? new URL('../assets/terrain/diorama/' + n + '.webp', SRC).href : 'assets/terrain/diorama/' + n + '.webp'; IMG[n] = im }
+  const loaded = im => im && im.complete && im.naturalWidth > 0;
+  const ready = () => Promise.all(Object.values(IMG).map(im => loaded(im) ? 1 : new Promise(r => { im.onload = im.onerror = r }))).then(() => Object.values(IMG).every(loaded));
+  /* which painted texture each slot uses per biome, and a colour wash on top of it */
+  const PAINTED = {
+    grass: { top: 'grass', path: 'dirt', lip: 'earth', cliff: 'cliff' },
+    forest: { top: 'grass', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { top: 'rgba(15,40,15,.22)' } },
+    hills: { top: 'drygrass', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { cliff: 'rgba(150,120,80,.18)' } },
+    swamp: { top: 'grass', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { top: 'rgba(25,40,20,.38)', path: 'rgba(20,15,5,.35)' } },
+    snow: { top: 'snow', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { path: 'rgba(220,230,240,.45)', cliff: 'rgba(190,210,235,.35)', lip: 'rgba(200,215,235,.25)' } },
+    sand: { top: 'sand', path: 'dirt', lip: 'earth', cliff: 'cliff', wash: { cliff: 'rgba(210,170,110,.3)', path: 'rgba(230,200,140,.25)' } }
+  };
+
   /* ---------- materials per biome ---------- */
   function materials(biome, poi) {
     const M = {
@@ -81,14 +96,15 @@
   const L = (m, u, v) => (u < 0 || v < 0 || u >= m.w || v >= m.h) ? null : m.levels[v * m.w + u];
   function poly(g, pts) { g.beginPath(); pts.forEach((q, i) => i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y)); g.closePath() }
   /* pattern laid on the ground plane: 64 texture px = one cell */
-  function groundPattern(g, img, z) { const p = g.createPattern(img, 'repeat'); p.setTransform(new DOMMatrix([HW / 64, HH / 64, -HW / 64, HH / 64, OX, OY - z * PX()])); return p }
+  function groundPattern(g, img, z) { const k = (img.naturalWidth || img.width) / 2, p = g.createPattern(img, 'repeat'); p.setTransform(new DOMMatrix([HW / k, HH / k, -HW / k, HH / k, OX, OY - z * PX()])); return p }
   /* pattern on a wall running along +u (dir 1) or along +v (dir -1): rows are heights (32 texture px = one level) */
-  function wallPattern(g, img, dir) { const p = g.createPattern(img, 'repeat'); p.setTransform(new DOMMatrix([dir * HW / 64, HH / 64, 0, PX() / 32, OX, OY])); return p }
+  function wallPattern(g, img, dir) { const w = img.naturalWidth || img.width, k = w / 2, painted = !!img.naturalWidth, p = g.createPattern(img, 'repeat'); p.setTransform(new DOMMatrix([dir * HW / k, HH / k, 0, painted ? PX() * 3 / w : PX() / 32, OX, OY])); return p }
 
   function paint(g, m, o) {
     o = o || {};
     const mat = materials(o.biome, o.poi), r = rng(1234), pools = o.pools || (() => false);
-    const img = k => tex(mat[k][0], mat[k][1], k.length * 97);
+    const PT = Object.assign({}, PAINTED[o.biome] || PAINTED.grass); if (o.poi === 'ruin') PT.path = 'cobble';
+    const img = k => loaded(IMG[PT[k]]) ? IMG[PT[k]] : tex(mat[k][0], mat[k][1], k.length * 97), wash = k => (loaded(IMG[PT[k]]) && PT.wash?.[k]) || null;
     const topImg = img('top'), pathImg = img('path'), lipImg = img('lip'), cliffImg = img('cliff');
     const order = []; for (let v = 0; v < m.h; v++) for (let u = 0; u < m.w; u++) order.push([u, v]);
     order.sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]) || a[0] - b[0]);
@@ -102,7 +118,7 @@
         const a = du ? [1, 0] : [0, 1], b = [1, 1];
         const pts = [P(m, u + a[0], v + a[1], lv), P(m, u + b[0], v + b[1], lv), P(m, u + b[0], v + b[1], low), P(m, u + a[0], v + a[1], low)];
         const cliff = edge || lv - low >= 2, dir = du ? -1 : 1;
-        poly(g, pts); g.fillStyle = wallPattern(g, cliff ? cliffImg : lipImg, dir); g.fill();
+        poly(g, pts); g.fillStyle = wallPattern(g, cliff ? cliffImg : lipImg, dir); g.fill(); const wsh = wash(cliff ? 'cliff' : 'lip'); if (wsh) { g.fillStyle = wsh; g.fill() }
         /* light: left faces lit, right faces in shade; darker toward the foot (and fading into the dark under the island) */
         const top = Math.min(pts[0].y, pts[1].y), bot = Math.max(pts[2].y, pts[3].y), gr = g.createLinearGradient(0, top, 0, bot);
         const side = du ? .38 : .1;
@@ -121,7 +137,7 @@
       /* the top */
       const t4 = [P(m, u, v, lv), P(m, u + 1, v, lv), P(m, u + 1, v + 1, lv), P(m, u, v + 1, lv)];
       const isPath = m.flat && m.flat[i];
-      poly(g, t4); g.fillStyle = groundPattern(g, isPath ? pathImg : topImg, lv); g.fill();
+      poly(g, t4); g.fillStyle = groundPattern(g, isPath ? pathImg : topImg, lv); g.fill(); const tw = wash(isPath ? 'path' : 'top'); if (tw) { g.fillStyle = tw; g.fill() }
       if (isPath && mat.top[0] === 'grass') { /* soft grass border where the path meets grass */ }
       /* height light, a little cell-to-cell variation, then ambient shadow from higher ground behind */
       const lift = lv * .045 + (vary[i] - .5) * .05;
@@ -171,5 +187,5 @@
     return made;
   }
 
-  root.FieldDiorama = { paint, sky, landforms, materials, BASE };
+  root.FieldDiorama = { paint, sky, landforms, materials, ready, BASE };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
