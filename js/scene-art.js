@@ -732,22 +732,36 @@
   }
 
   /* 11 · an old explorer's notebook: unfinished ink sketches of a city of light and a city in darkness, crossed-out notes, question marks */
-  function journal(g, w, h, t) {
-    g.fillStyle = '#1a140e'; g.fillRect(0, 0, w, h);
-    const px = w * .1, py = h * .04, pw = w * .8, ph = h * .66; const pg = g.createRadialGradient(w / 2, h * .35, 20, w / 2, h * .35, pw * .7); pg.addColorStop(0, '#efe2c2'); pg.addColorStop(1, '#c9b48a'); g.fillStyle = pg; g.fillRect(px, py, pw, ph);
-    g.strokeStyle = 'rgba(90,70,40,.5)'; g.lineWidth = 2; g.beginPath(); g.moveTo(w / 2, py); g.lineTo(w / 2, py + ph); g.stroke();
-    for (let i = 0; i < 4; i++) { const q = rng(300 + i); glow(g, px + q() * pw, py + q() * ph, 40 + q() * 40, hsla(30, 40, 40), .15) }   // stains
-    const ink = 'rgba(40,30,20,.85)', draw = (p, fn) => { if (p <= 0) return; g.save(); g.globalAlpha = Math.min(1, p * 1.5); fn(); g.restore() };
-    const k1 = ease((t - .3) / 2.5), k2 = ease((t - 2.5) / 2.5), k3 = ease((t - 4.8) / 2);
-    // left page: the city that never goes dark — spires and rays, half drawn
-    draw(k1, () => { const bx = w * .3, by = py + ph * .62; g.strokeStyle = ink; g.lineWidth = 1.6; const n = Math.ceil(7 * k1); for (let i = 0; i < n; i++) { const x = bx - 60 + i * 20, H = 40 + (i % 3) * 26 + (i === 3 ? 40 : 0); g.beginPath(); g.moveTo(x, by); g.lineTo(x, by - H); g.lineTo(x + 6, by - H - 14); g.lineTo(x + 12, by - H); g.lineTo(x + 12, by); g.stroke() }
-      g.setLineDash([3, 5]); for (let i = 0; i < 9; i++) { const a = -Math.PI + i / 8 * Math.PI; g.beginPath(); g.moveTo(bx + 10 + Math.cos(a) * 70, by - 120 + Math.sin(a) * 40); g.lineTo(bx + 10 + Math.cos(a) * 100, by - 120 + Math.sin(a) * 60); g.stroke() } g.setLineDash([]) });
-    // right page: the city hidden in darkness — an ink wash with a few points of light
-    draw(k2, () => { const bx = w * .7, by = py + ph * .56; g.fillStyle = 'rgba(30,22,16,.75)'; g.beginPath(); for (let i = 0; i <= 20; i++) { const a = i / 20 * TAU, r = 70 + Math.sin(i * 3) * 14; g[i ? 'lineTo' : 'moveTo'](bx + Math.cos(a) * r * 1.3, by + Math.sin(a) * r * .7) } g.fill(); g.fillStyle = 'rgba(240,220,170,.8)'; for (let i = 0; i < 5; i++) { const q = rng(320 + i); g.fillRect(bx - 50 + q() * 100, by - 20 + q() * 40, 2, 2) } });
-    // notes: lines of script, some crossed out, question marks in the margins
-    draw(k3, () => { g.strokeStyle = ink; g.lineWidth = 1.2; for (let i = 0; i < 5; i++) { const y = py + ph * (.78 + i * .04), x0 = px + 20, x1 = px + 20 + (pw / 2 - 50) * (.5 + (i % 3) * .2); g.beginPath(); for (let x = x0; x < x1; x += 6) g.lineTo(x, y + Math.sin(x * .7) * 1.5); g.stroke(); if (i === 1 || i === 3) { g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y - 2); g.stroke() } }
-      g.strokeStyle = ink; g.lineWidth = 1.4; for (const [x, y] of [[w * .46, py + ph * .3], [w * .86, py + ph * .2], [w * .62, py + ph * .85]]) { g.beginPath(); g.ellipse(x, y, 16, 10, -.3, .4, TAU - .2); g.stroke(); g.beginPath(); g.moveTo(x + 14, y + 8); g.lineTo(x + 30, y + 18); g.stroke() } });
+  function journal(g, w, h, t) {   // v95.28: the rumours of the deep forest, seen from its edge at night — a city that never goes dark,
+    // a city hidden in shadow, and old eyes among the trunks that do not welcome visitors
+    sky(g, w, h, [[0, '#070b14'], [.42, '#141c2a'], [.7, '#1c2a2a'], [1, '#0c1412']]); stars(g, w, h, t, 120, 135, h * .42, .8); moon(g, w * .5, h * .1, h * .035, t);
+    const R = rng(735), slow = t * .6;
+    /* far left: the city that never goes dark — golden spires rising over the canopy, haloed */
+    const lx = w * .24, ly = h * .44; glow(g, lx, ly - h * .1, h * .32, hsla(44, 90, 72), .45 + .08 * Math.sin(slow)); glow(g, lx, ly - h * .05, h * .14, hsla(48, 100, 86), .5);
+    for (let k = 0; k < 9; k++) { const x = lx + (k - 4) * w * .018, hh = h * (.06 + (k % 3) * .035 + (k === 4 ? .09 : 0) + (k === 2 || k === 6 ? .045 : 0)); g.fillStyle = 'rgba(255,236,180,.9)'; g.beginPath(); g.moveTo(x - w * .006, ly); g.lineTo(x - w * .006, ly - hh); g.lineTo(x, ly - hh - h * .025); g.lineTo(x + w * .006, ly - hh); g.lineTo(x + w * .006, ly); g.fill() }
+    for (let k = 0; k < 18; k++) { const x = lx + (R() - .5) * w * .18, y = ly - R() * h * .12; glow(g, x, y, 3 + R() * 3, hsla(46, 100, 88), .6 + .3 * Math.sin(t * 2 + k)) }
+    /* far right: the hidden city — black towers you only see by the violet edge the moon puts on them */
+    const rx = w * .76, ry = h * .45;
+    for (let k = 0; k < 7; k++) { const x = rx + (k - 3) * w * .024, hh = h * (.08 + (k % 2) * .05 + (k === 3 ? .1 : 0)), ww = w * .012; g.fillStyle = '#05060b'; g.beginPath(); g.moveTo(x - ww, ry); g.lineTo(x - ww, ry - hh); g.lineTo(x - ww * .4, ry - hh - h * .03); g.lineTo(x + ww * .2, ry - hh - h * .01); g.lineTo(x + ww, ry - hh); g.lineTo(x + ww, ry); g.fill(); g.strokeStyle = `hsla(275,60%,72%,${.35 + .2 * Math.sin(t * 1.3 + k)})`; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x - ww, ry - hh); g.lineTo(x - ww * .4, ry - hh - h * .03); g.stroke() }
+    for (let k = 0; k < 5; k++) { const on = Math.sin(t * .9 + k * 2.3) > .6; if (on) glow(g, rx + (k - 2) * w * .03, ry - h * (.05 + (k % 3) * .03), 4, hsla(280, 70, 70), .9) }
+    /* canopy layers in front, with mist bands between them */
+    const layer = (base, col, seed, amp, sz) => { const r = rng(seed); g.fillStyle = col; g.beginPath(); g.moveTo(0, h); let x = -20; while (x < w + 40) { const tw = sz * (.7 + r() * .7), th = sz * (1.6 + r() * 1.4) * amp; g.lineTo(x, base); g.lineTo(x + tw * .5, base - th); g.lineTo(x + tw, base); x += tw * .8 } g.lineTo(w + 40, h); g.closePath(); g.fill() };
+    layer(h * .5, '#0e1a1c', 801, 1, w * .03); glow(g, w * .5, h * .5, w * .55, hsla(190, 30, 60), .08);
+    for (let k = 0; k < 4; k++) glow(g, ((k * w * .33 + t * 14) % (w * 1.3)) - w * .15, h * .53, w * .2, hsla(200, 20, 70), .12);
+    layer(h * .62, '#0a1416', 802, 1.2, w * .045);
+    for (let k = 0; k < 3; k++) glow(g, ((k * w * .45 + t * 22) % (w * 1.4)) - w * .2, h * .64, w * .22, hsla(200, 15, 65), .1);
+    /* the forest edge: big dark trunks and the old ones watching from between them */
+    g.fillStyle = '#040707'; g.fillRect(0, h * .8, w, h * .2);
+    for (const [k, fx] of [.02, .1, .37, .47, .55, .63, .9, .98].entries()) { const x = w * fx, tw = w * (.03 + (k % 3) * .01); g.fillStyle = '#050909'; g.beginPath(); g.moveTo(x - tw, h); g.quadraticCurveTo(x - tw * .5, h * .7, x - tw * .35, h * .3); g.lineTo(x + tw * .35, h * .3); g.quadraticCurveTo(x + tw * .5, h * .7, x + tw, h); g.fill() }
+    { const r = rng(803); g.fillStyle = '#050909'; g.beginPath(); g.moveTo(-20, 0); let x = -20; while (x < w + 40) { const tw = w * .07 * (.7 + r() * .7), th = h * (.06 + r() * .12) * (Math.abs(x / w - .5) > .3 ? 1.6 : .7); g.lineTo(x, h * .02); g.lineTo(x + tw * .5, h * .02 + th); g.lineTo(x + tw, h * .02); x += tw * .8 } g.lineTo(w + 40, 0); g.closePath(); g.fill() }   // the canopy right over the viewer
+    for (const [ex, ey, ph] of [[.13, .69, 0], [.39, .73, 1.7], [.58, .7, 3.1], [.86, .72, 4.4], [.7, .76, 2.2]]) {
+      const open = Math.sin(t * .7 + ph) > -.2 ? 1 : 0, x = w * ex, y = h * ey, sep = w * .009;
+      if (!open) continue; for (const sg of [-1, 1]) { glow(g, x + sg * sep, y, 7, hsla(60, 90, 70), .9); g.fillStyle = '#fff6c0'; g.beginPath(); g.ellipse(x + sg * sep, y, 2.6, 1.6, 0, 0, TAU); g.fill() }
+    }
+    /* a spear or two leaning out of the dark */
+    g.strokeStyle = '#0c1210'; g.lineWidth = 3; for (const [x0, a] of [[.42, -.12], [.6, .1]]) { g.beginPath(); g.moveTo(w * x0, h); g.lineTo(w * x0 + Math.sin(a) * h * .4, h * .6); g.stroke(); g.fillStyle = '#2a3430'; g.beginPath(); const tx = w * x0 + Math.sin(a) * h * .4, ty = h * .6; g.moveTo(tx, ty - 12); g.lineTo(tx + 4, ty); g.lineTo(tx - 4, ty); g.fill() }
   }
+
 
   /* 13 · the river plain: fields, a great city on the far bank, boats coming into port, many peoples at the market */
   function riverCity(g, w, h, t) {
@@ -764,13 +778,33 @@
   }
 
   /* 14 · out of the city: buildings thin out, the market noise fades, carts on a dirt road toward smaller places */
-  function roadOut(g, w, h, t) {
+  function roadOut(g, w, h, t) {   // v95.28: one road from the city to the frontier; wagons ride ON it, villages sit beside it
     daySky(g, w, h, true); const hz = h * .46; land(g, w, h, hz, ['#8ea3bd', '#86ad62', '#7aa358', '#3a4a2a']);
     g.fillStyle = 'rgba(180,170,150,.8)'; for (let i = 0; i < 8; i++) { const H = 20 + (i % 3) * 14; g.fillRect(w * .02 + i * 14, hz - H, 10, H) }   // the city behind, far left
-    g.fillStyle = 'rgba(200,170,120,.7)'; g.beginPath(); g.moveTo(w * .1, hz); g.bezierCurveTo(w * .4, hz + h * .05, w * .5, h * .62, w * 1.05, h * .74); g.lineTo(w * 1.05, h * .82); g.bezierCurveTo(w * .5, h * .7, w * .38, hz + h * .07, w * .14, hz); g.fill();
-    [[.3, .52, 1], [.48, .56, .8], [.7, .6, .55]].forEach(([x, y, d], i) => { for (let j = 0; j < Math.round(4 * d); j++) house(g, w * x + j * 22, h * y - 18, 1, { wall: '#d8c8a8', roof: ['#7a5a3a', '#5a6a4a', '#8a4a3a'][(i + j) % 3], chimney: j === 0, win: '#4a3a28' }) });
-    for (let i = 0; i < 3; i++) { const k = ((t * .06 + i / 3) % 1), x = lerp(w * .15, w * 1.05, k), y = lerp(hz + 4, h * .77, k * k), s = lerp(.35, 1.2, k); g.save(); g.translate(x, y); g.scale(s, s); g.fillStyle = '#5a4028'; g.fillRect(-22, -18, 44, 14); g.fillStyle = '#d8c8a0'; g.beginPath(); g.ellipse(0, -20, 22, 10, 0, Math.PI, 0); g.fill(); g.strokeStyle = '#2a1a10'; g.lineWidth = 2; g.beginPath(); g.arc(-14, -3, 5, 0, TAU); g.arc(14, -3, 5, 0, TAU); g.stroke(); g.restore() }
+    const P = [[w * .12, hz + 2], [w * .42, hz + h * .05], [w * .46, h * .7], [w * 1.08, h * .8]];
+    const at = k => { const u = 1 - k; return { x: u * u * u * P[0][0] + 3 * u * u * k * P[1][0] + 3 * u * k * k * P[2][0] + k * k * k * P[3][0], y: u * u * u * P[0][1] + 3 * u * u * k * P[1][1] + 3 * u * k * k * P[2][1] + k * k * k * P[3][1] } };
+    const half = k => lerp(2, h * .05, k * k * .6 + k * .4);
+    const nrm = k => { const a = at(Math.max(0, k - .01)), b = at(Math.min(1, k + .01)), dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1; return { x: -dy / L, y: dx / L } };
+    // the road surface (and its darker ruts)
+    const N = 60, left = [], right = []; for (let i = 0; i <= N; i++) { const k = i / N, p = at(k), n = nrm(k), hw = half(k); left.push([p.x + n.x * hw, p.y + n.y * hw]); right.push([p.x - n.x * hw, p.y - n.y * hw]) }
+    g.fillStyle = 'rgba(196,166,116,.92)'; g.beginPath(); left.forEach(([x, y], i) => g[i ? 'lineTo' : 'moveTo'](x, y)); for (let i = right.length - 1; i >= 0; i--) g.lineTo(right[i][0], right[i][1]); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(120,90,55,.35)'; for (const side of [-.4, .4]) { g.lineWidth = 1.5; g.beginPath(); for (let i = 0; i <= N; i++) { const k = i / N, p = at(k), n = nrm(k), hw = half(k) * side; g[i ? 'lineTo' : 'moveTo'](p.x + n.x * hw, p.y + n.y * hw) } g.stroke() }
+    // villages beside the road (on the far side), growing as the road gets nearer
+    [[.22, 3], [.45, 4], [.7, 3]].forEach(([k, n], i) => { const p = at(k), nv = nrm(k), off = half(k) + 16 + k * 30, s0 = lerp(.45, 1.15, k); for (let j = 0; j < n; j++) { const x = p.x + nv.x * -off + (j - (n - 1) / 2) * 26 * s0, y = p.y + nv.y * -off - Math.abs(j - (n - 1) / 2) * 3; house(g, x, y, s0, { wall: '#d8c8a8', roof: ['#7a5a3a', '#5a6a4a', '#8a4a3a'][(i + j) % 3], chimney: j === 0, win: '#4a3a28' }) } });
+    // wagons rolling along the centre line, smaller in the distance
+    const carts = [0, 1, 2].map(i => ((t * .045 + i / 3) % 1)).sort((a, b) => a - b);
+    for (const k of carts) {
+      const p = at(k), s = lerp(.3, 1.25, k), bob = Math.abs(Math.sin(t * 6 + k * 20)) * 1.2 * s;
+      g.save(); g.translate(p.x, p.y - bob); g.scale(s, s);
+      g.fillStyle = 'rgba(0,0,0,.25)'; g.beginPath(); g.ellipse(2, 2, 28, 6, 0, 0, TAU); g.fill();
+      g.fillStyle = '#6a4a30'; g.fillRect(16, -14, 18, 10); g.fillStyle = '#5a3a24'; g.beginPath(); g.ellipse(36, -12, 6, 5, 0, 0, TAU); g.fill();   // the horse, ahead of the cart
+      g.strokeStyle = '#3a2614'; g.lineWidth = 2; g.beginPath(); g.moveTo(20, -4); g.lineTo(20, 2); g.moveTo(30, -4); g.lineTo(30, 2); g.stroke();
+      g.fillStyle = '#5a4028'; g.fillRect(-22, -16, 38, 12); g.fillStyle = '#d8c8a0'; g.beginPath(); g.ellipse(-3, -17, 20, 11, 0, Math.PI, 0); g.fill();
+      g.strokeStyle = '#2a1a10'; g.lineWidth = 2.5; for (const x of [-15, 9]) { g.beginPath(); g.arc(x, -3, 5, 0, TAU); g.stroke() }
+      g.restore();
+    }
   }
+
 
 /* ---------- atmosphere: applied after every scene (FX table below) ---------- */
   function shafts(g, w, h, t, o) {
@@ -803,7 +837,7 @@
     crystals: { motes: 'spark', n: 36, grade: 'night', vig: .5 }, journey: { motes: 'dust', n: 24, grade: 'warm', vig: .45 },
     trails: { rays: SUNRAYS(.18), motes: 'pollen', grade: 'gold' }, settle: { rays: SUNRAYS(.3), motes: 'dust', grade: 'gold' }, eras: { rays: SUNRAYS(.8, .35), motes: 'pollen', grade: 'warm' },
     realmsWide: { rays: SUNRAYS(.25), motes: 'dust', grade: 'gold' }, inscription: { motes: 'dust', n: 36, grade: 'cool', vig: .6 }, study: { motes: 'dust', n: 30, vig: .42 },
-    temple: { motes: 'ember', n: 30, grade: 'night', vig: .5 }, shrines: { motes: 'firefly', n: 30, grade: 'warm', vig: .42 }, journal: { motes: 'dust', n: 20, grade: 'warm', vig: .55 },
+    temple: { motes: 'ember', n: 30, grade: 'night', vig: .5 }, shrines: { motes: 'firefly', n: 30, grade: 'warm', vig: .42 }, journal: { motes: 'firefly', n: 24, grade: 'night', vig: .45 },
     riverCity: { rays: SUNRAYS(.2), motes: 'pollen', grade: 'gold' }, roadOut: { rays: SUNRAYS(.85), motes: 'dust', grade: 'gold' }, fernvale: { rays: SUNRAYS(.85, .4), motes: 'pollen', grade: 'warm' },
     dawn: { rays: SUNRAYS(.3, .5), motes: 'pollen', grade: 'gold', vig: .3 }, orb: { motes: 'pollen', grade: 'gold', vig: .3 }, festival: { motes: 'ember', n: 36, grade: 'night', vig: .4 },
     homeMorning: { motes: 'dust', n: 26, vig: .45 }, heirs: { motes: 'spark', n: 30, grade: 'night', vig: .5 }, realms: { motes: 'dust', n: 24, grade: 'warm', vig: .45 }
