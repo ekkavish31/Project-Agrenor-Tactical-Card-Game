@@ -142,9 +142,30 @@
     if (o.kind === 'plot') { gx.fillStyle = '#6a4a2a'; gx.beginPath(); gx.ellipse(p.x, p.y, 30, 14, 0, 0, 7); gx.fill(); gx.strokeStyle = '#4a3218'; gx.lineWidth = 2; gx.stroke() }
     if (!o.flee || pending === o) { gx.strokeStyle = 'rgba(255,214,90,' + (.45 + Math.sin(t * .006) * .3) + ')'; gx.lineWidth = 2.5; gx.beginPath(); gx.ellipse(p.x, p.y, 24, 11, 0, 0, 7); gx.stroke() }
     gx.font = '34px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif'; gx.textAlign = 'center';
-    gx.translate(p.x, p.y - 6 - hop); if (o.flee && o.dir && o.dir.du - o.dir.dv > 0) gx.scale(-1, 1);
-    gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
+    gx.translate(p.x, p.y - 6 - hop); { const right = o.flee && o.dir && o.dir.du - o.dir.dv > 0; if (o.kind === 'goat' ? !right : right) gx.scale(-1, 1) }   /* the emoji faces left, the drawn goat right */
+    if (o.kind === 'goat') goat(gx, o, t); else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
     if (o.flee && o.mode === 'rest') { gx.save(); gx.font = `700 ${12}px system-ui`; gx.fillStyle = '#e8f4ff'; gx.textAlign = 'center'; gx.fillText('หอบ…', p.x, p.y - 46); gx.restore() }
+  }
+  /* v97.14 · the goat is drawn (solid colours with a dark outline) instead of the pale 🐐 emoji that washed out on the light cobbles:
+     brown coat, cream belly and beard, dark horns and hooves; legs run in 4 frames, the head dips to graze when it rests */
+  function goat(gx, o, t) {
+    const run = o.mode === 'run', f = run ? Math.floor(t * .02 + o.phase) % 4 : 0, sw = [0, 4, 0, -4][f], graze = !run && o.mode !== 'rest' ? Math.max(0, Math.sin(t * .0016 + o.phase)) : 0, pant = o.mode === 'rest' ? Math.sin(t * .02) * 1.2 : 0;
+    const coat = o.coat || (o.coat = ['#7a5232', '#5e4a3a', '#8a6a48', '#4a3a30'][Math.abs(Math.round(o.phase * 7)) % 4]);
+    gx.lineJoin = 'round'; gx.lineCap = 'round'; gx.strokeStyle = '#1e140c'; gx.lineWidth = 2;
+    const leg = (x, d) => { gx.beginPath(); gx.moveTo(x, -10); gx.lineTo(x + d, 2); gx.stroke(); gx.fillStyle = '#1e140c'; gx.fillRect(x + d - 2, 0, 4, 3) };
+    gx.lineWidth = 3.4; gx.strokeStyle = '#2a1c10'; leg(-9, -sw); leg(8, sw); gx.strokeStyle = coat; gx.lineWidth = 2.6; leg(-9, -sw); leg(8, sw);
+    gx.fillStyle = coat; gx.strokeStyle = '#1e140c'; gx.lineWidth = 2; gx.beginPath(); gx.ellipse(0, -16 + pant * .3, 15, 8.5 + pant * .4, 0, 0, 7); gx.fill(); gx.stroke();
+    gx.fillStyle = '#efe2c4'; gx.beginPath(); gx.ellipse(1, -12, 9, 3.5, 0, 0, Math.PI); gx.fill();
+    gx.strokeStyle = '#2a1c10'; gx.lineWidth = 3.4; leg(-4, sw); leg(12, -sw); gx.strokeStyle = coat; gx.lineWidth = 2.6; leg(-4, sw); leg(12, -sw);
+    gx.fillStyle = coat; gx.strokeStyle = '#1e140c'; gx.lineWidth = 2; gx.beginPath(); gx.moveTo(-14, -20); gx.lineTo(-19, -25); gx.lineTo(-16, -17); gx.closePath(); gx.fill(); gx.stroke();   // tail
+    gx.save(); gx.translate(13, -21); gx.rotate(graze * .9 - .15);
+    gx.fillStyle = coat; gx.beginPath(); gx.moveTo(-3, 3); gx.lineTo(3, -8); gx.lineTo(9, -4); gx.lineTo(4, 6); gx.closePath(); gx.fill(); gx.stroke();   // neck
+    gx.beginPath(); gx.ellipse(8, -8, 7, 4.6, .45, 0, 7); gx.fill(); gx.stroke();
+    gx.fillStyle = '#efe2c4'; gx.beginPath(); gx.moveTo(11, -4); gx.lineTo(10, 3); gx.lineTo(8, -4); gx.fill();   // beard
+    gx.strokeStyle = '#2a2018'; gx.lineWidth = 2.6; gx.beginPath(); gx.moveTo(5, -11); gx.quadraticCurveTo(1, -18, -3, -15); gx.stroke();   // horn
+    gx.fillStyle = coat; gx.strokeStyle = '#1e140c'; gx.lineWidth = 1.6; gx.beginPath(); gx.ellipse(3, -9, 4, 1.8, -.6, 0, 7); gx.fill(); gx.stroke();   // ear
+    gx.fillStyle = '#111'; gx.beginPath(); gx.arc(9, -9.5, 1.3, 0, 7); gx.fill();
+    gx.restore();
   }
   function edgeArrows(gx, list) {
     gx.save(); gx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);

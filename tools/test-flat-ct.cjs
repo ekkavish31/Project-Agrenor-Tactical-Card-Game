@@ -20,4 +20,10 @@ for (let k = 0; k < 20; k++) { const st = mc({ hero: { u: 0, v: 0, weapon: 'swor
       const r = p.type === 'combat' ? B.playCombat(st, p.index) : p.type === 'moveCard' ? B.playMove(st, p.index) : B.move(st, p.to); if (!r.ok) { ok(false, 'auto plan failed: ' + JSON.stringify(p) + ' ' + r.reason); break } }
     B.endTurnCT(st) }
   ok(st.outcome, 'auto finishes the fight #' + k + ' (turns ' + st.turns + ')') }
+/* v97.15 · a controlled companion stops the CT loop on its turn: plan → walk → hit → end, and the AI only takes over when autoCtl is set */
+{ const mk = ctl => { const st = B.create({ bounds: { u0: 0, v0: 0, u1: 10, v1: 10 }, cards: true, ct: true, rng: () => .4, hero: { u: 0, v: 0, hp: 60, maxHp: 60 }, allies: [{ u: 1, v: 0, hp: 40, maxHp: 40, atk: 10, move: 4, range: 1, key: 'bram' }], monsters: [{ u: 6, v: 0, hp: 30, maxHp: 30, atk: 6, move: 3 }] }); const a = st.units.find(u => u.key === 'bram'); a.control = true; a.autoCtl = !ctl; a.speed = 9; return { st, a } };
+  const { st, a } = mk(true); B.endTurnCT(st); ok(st.turn === 'ally' && st.cur === a, 'controlled companion gets the turn');
+  const m = B.monsters(st)[0], p = B.allyPlan(st, m.id); ok(p.to && p.est > 0, 'plan walks in'); ok(B.move(st, p.to).ok, 'walks'); const h = B.allyHit(st, m.id); ok(h.ok && m.hp < 30, 'hits'); ok(!B.allyHit(st, m.id).ok, 'one action a turn');
+  B.endAllyTurn(st); ok(st.turn !== 'ally' || st.cur !== a, 'turn passes on');
+  const s2 = mk(false); B.endTurnCT(s2.st); ok(!(s2.st.turn === 'ally' && s2.st.cur === s2.a), 'autoCtl: the AI plays it') }
 console.log(fail ? fail + ' failed' : 'flat-ct: all passed'); process.exit(fail ? 1 : 0);

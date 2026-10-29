@@ -128,7 +128,7 @@ test('cards: evade makes the next monster hit miss; counter strikes back 12', ()
 });
 test('cards: ambush ×1.6 on the next attack; backstab +12 from behind; dive leaps next to the target', () => {
   const st = mkC({ hero: { u: 7, v: 8 } }); B.playCombat(st, give(st, 'combat', 'ambush')); const r = B.playCombat(st, give(st, 'combat', 'attack')); assert.equal(r.hits[0].damage, 29);
-  const s2 = mkC({ hero: { u: 7, v: 8 }, monster: { face: 'NE' } }); assert.equal(B.playCombat(s2, give(s2, 'combat', 'backstab')).hits[0].damage, 30);   // monster faces NE, hero is NW of it
+  const s2 = mkC({ hero: { u: 7, v: 8 }, monster: { face: 'NE' } }); assert.equal(B.playCombat(s2, give(s2, 'combat', 'backstab')).hits[0].damage, 33);   // monster faces NE, hero is NW of it: backstab +12 and the side ×1.1 (v97.08)
   const s3 = mkC({ hero: { u: 8, v: 5 } }); const d = B.playCombat(s3, give(s3, 'combat', 'dive')); assert.equal(d.ok, true); assert.ok(d.leap); assert.equal(B.dist(B.hero(s3), B.monster(s3)), 1);
 });
 test('cards: discard several cards for stamina costs one crystal; hands refill only at the next hero turn', () => {
@@ -217,3 +217,20 @@ test('recruits: a healer companion mends the most hurt friend; mendAll heals the
   B.setTarget(s2, 'monster'); const f = B.allySkill(s2, 'ally1'); assert.equal(f.ok, true); assert.equal(f.hits.length, 2);
 });
 console.log('flat battle: ' + n + ' tests passed');
+
+test('v97.08 facing: back ×1.2, side ×1.1, front ×1', () => {
+  const t = { u: 5, v: 5, face: 'SE' };
+  assert.equal(B.sideOf(t, { u: 6, v: 5 }), 'front'); assert.equal(B.sideOf(t, { u: 4, v: 5 }), 'back'); assert.equal(B.sideOf(t, { u: 5, v: 6 }), 'side'); assert.equal(B.sideOf(t, { u: 5, v: 4 }), 'side');
+  const front = mkC({ hero: { u: 7, v: 8 }, monster: { face: 'NW' } }), back = mkC({ hero: { u: 7, v: 8 }, monster: { face: 'SE' } });   // the hero stands at −u of the monster
+  const f = B.playCombat(front, give(front, 'combat', 'attack')).hits[0], b = B.playCombat(back, give(back, 'combat', 'attack')).hits[0];
+  assert.ok(b.damage > f.damage, 'a hit from behind does more than from the front'); assert.ok(b.notes.some(n => /ด้านหลัง/.test(n)));
+});
+test('v97.08 one-click play: autoAttack picks a card, autoWalk picks a move card', () => {
+  const st = mkC({ hero: { u: 7, v: 8 } }); give(st, 'combat', 'attack'); const m = B.monster(st);
+  const p = B.autoAttack(st, m.id); assert.ok(p.index >= 0 && !p.to, 'adjacent: attack from here'); assert.ok(p.pv.total > 0);
+  const near = mkC({ hero: { u: 6, v: 8 } }); near.mp = 0; give(near, 'combat', 'attack'); const si = give(near, 'movement', 'step');
+  const q = B.autoAttack(near, B.monster(near).id); assert.deepEqual([q.moveCard, B.dist(q.to, B.monster(near))], [si, 1], 'two cells away: play a move card, step next to it, then hit');
+  const w = B.autoWalk(near, { u: 5, v: 8 }); assert.equal(w.moveCard, si, 'no points left: the move card that reaches it');
+  const far = mkC({ hero: { u: 0, v: 0 } }); far.mp = 0; give(far, 'combat', 'attack'); assert.ok(B.autoAttack(far, B.monster(far).id).reason, 'out of reach: a reason');
+});
+

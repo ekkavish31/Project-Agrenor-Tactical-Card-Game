@@ -4,7 +4,7 @@
 (function(){'use strict';
 const host=document.createElement('section');host.id='villageTownLayer';host.setAttribute('aria-label','หมู่บ้าน');host.style.cssText='position:fixed;inset:0;z-index:200;background:#718568';
 function makeFrame(title,src){const f=document.createElement('iframe');f.title=title;f.style.cssText='width:100%;height:100%;border:0';f.allow='fullscreen';if(src)f.src=src;host.appendChild(f);return f}
-const frame=makeFrame('หมู่บ้าน 2.5D','village-town.html?v=95.11'),marketFrame=makeFrame('สถานที่ 2.5D');let placeId='',placeAct='';marketFrame.hidden=true;document.body.appendChild(host);
+const frame=makeFrame('หมู่บ้าน 2.5D','village-town.html?v=97.17'),marketFrame=makeFrame('สถานที่ 2.5D');let placeId='',placeAct='';marketFrame.hidden=true;document.body.appendChild(host);
 const back=document.createElement('button');back.id='townReturn';back.textContent='← กลับแผนที่หมู่บ้าน';back.style.cssText='position:fixed;left:20px;top:78px;z-index:201;padding:10px 16px;border-radius:10px;background:#213b2df0;color:#fff0c7;border:1px solid #b6c48e';back.hidden=true;back.onclick=()=>openTown();document.body.append(back);
 let ready=false,marketReady=false,initialized=false,lastStamp='',lastMotion='',inside=false,marketOpen=false,lastVisible='';
 function post(f,data){f.contentWindow?.postMessage({source:'project-a-game',...data},'*')}
@@ -45,7 +45,7 @@ window.addEventListener('message',e=>{const m=e.data;if(e.source===frame.content
  else if(m.type==='menu')menu(m.id);
  }});
 /* v94: the old area adventure (adventure.js node maps) is archived — leaving the village always opens the world map in the town frame */
-function openWorld(){if(busy||s.mode==='battle')return;const reason=s.hp<20?'HP ต่ำกว่า 20 พักก่อน':s.fatigue>=85?'ความสดชื่นต่ำเกินไป':'';if(reason){villageDialog('ยังออกเดินทางไม่ได้','<p>'+reason+'</p>');return}if($('panel').open)$('panel').close();openTown();ready=false;frame.src='world-map.html';sync()}
+function openWorld(){if(busy||s.mode==='battle')return;/* v97.16: the prologue decides when the world map opens */const lock=window.Story?.lock?.();if(lock){villageDialog('ยังออกเดินทางไม่ได้','<p>'+lock.replace(/[<>&]/g,'')+'</p><p>จบบทนำแล้วจะออกผจญภัยได้อิสระ</p>');return}const reason=s.hp<20?'HP ต่ำกว่า 20 พักก่อน':s.fatigue>=85?'ความสดชื่นต่ำเกินไป':'';if(reason){villageDialog('ยังออกเดินทางไม่ได้','<p>'+reason+'</p>');return}if($('panel').open)$('panel').close();openTown();ready=false;frame.src='world-map.html';sync()}
 function openInterior(id,name){if(busy||s.mode==='battle')return;if($('panel').open)$('panel').close();openTown();enterPlace(id,'',name||id);sync()}
 function onWorld(){try{return /world-map\.html/.test(frame.contentWindow.location.pathname)}catch{return false}}
 function placeMaps(){try{return JSON.parse(localStorage.getItem('place-maps-v1')||'{}')}catch{return{}}}
