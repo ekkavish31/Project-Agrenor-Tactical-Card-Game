@@ -427,7 +427,7 @@
   }
 
   /* ---------------- deepwood · the endless forest to the east ---------------- */
-  function deepwood(g, w, h, t) {
+  function deepwood(g, w, h, t, still) {
     const push = ease(t / 14);
     sky(g, w, h, [[0, '#0c1a1a'], [.5, '#244038'], [1, '#2a4a3a']]); g.globalAlpha = .55; moon(g, w * .2, h * .12, h * .04, t); g.globalAlpha = 1;
     // a far glimmer above the canopy (the city of light in the tales) — faint, maybe not there at all
@@ -444,7 +444,7 @@
     for (let i = 0; i < 30; i++) { const q = rng(600 + i), x = w * q() + Math.sin(t * .8 + i) * 20, y = h * (.5 + q() * .4) + Math.cos(t * .6 + i) * 10; glow(g, x, y, 5, hsla(80, 90, 70), .5 + .5 * Math.sin(t * 3 + i)) }
     // the ancestors walk out of the forest's edge, small lights in their chests
     g.fillStyle = '#0c1612'; g.fillRect(0, h * .6, w, h * .4);
-    for (let i = 0; i < 9; i++) { const st = 1 + i * .7, k = clamp((t - st) / 9); if (k <= 0) continue; const x = lerp(w * .84, w * .1 + i * 12, ease(k)), y = h * .6 + (i % 3) * 6, H = h * .16;
+    for (let i = 0; i < 9; i++) { const st = 1 + i * .7, k = clamp((t - st) / 9); if (k <= 0 || still) continue; const x = lerp(w * .84, w * .1 + i * 12, ease(k)), y = h * .6 + (i % 3) * 6, H = h * .16;
       g.fillStyle = '#05080a'; g.beginPath(); g.moveTo(x - H * .14, y); g.lineTo(x - H * .07, y - H * .7); g.quadraticCurveTo(x, y - H * .98, x + H * .07, y - H * .7); g.lineTo(x + H * .14, y); g.fill();
       glow(g, x, y - H * .6, H * .22, hsla(48, 100, 88), .9 * clamp(k * 6)) }
   }
@@ -520,7 +520,192 @@
     glow(g, kx + 8, ky - 14, 30, hsla(45, 100, 85), .5 * shine);
   }
 
-  const SCENES = { ruins: (g, w, h, t) => ancient(g, w, h, t, true), ancient, heirs, journey, realms, kin, forgotten, faith, deepwood, hearth, elukhor, homeMorning, fernvale, festival: (g, w, h, t) => village(g, w, h, t, 'festival'), dawn: (g, w, h, t) => village(g, w, h, t, 'dawn'), orb: (g, w, h, t) => village(g, w, h, t, 'orb') };
+
+  /* ================= v95.09 · prologue v2 (the creator's script, sections ก–ช) =================
+     Rules from the script: no map with names, no reveal of where people came from, no evolution chart or element crystals,
+     the people of later eras are new generations (not the same people changing), no god appears, legends stay legends. */
+  const RINGS = ['#2a6fd6', '#8a5ad8', '#9fe0a0'];   // the three great gods: deep sky blue · purple · light green
+  function emblem(g, x, y, r, t, a = 1) {
+    RINGS.forEach((c, i) => { const ang = -Math.PI / 2 + i * TAU / 3, cx = x + Math.cos(ang) * r * .55, cy = y + Math.sin(ang) * r * .55;
+      g.save(); g.globalAlpha = a; g.shadowColor = c; g.shadowBlur = r * .8 * (.8 + .2 * Math.sin(t * 1.6 + i)); g.strokeStyle = c; g.lineWidth = Math.max(1.5, r * .16); g.beginPath(); g.arc(cx, cy, r * .62, 0, TAU); g.stroke(); g.restore() });
+  }
+  function daySky(g, w, h, warm) { sky(g, w, h, warm ? [[0, '#6a7fa8'], [.45, '#c8b8b0'], [.6, '#f0d0a0'], [1, '#f0d0a0']] : [[0, '#5f97c9'], [.45, '#a9cbe0'], [.6, '#f2dcae'], [1, '#f2dcae']]) }
+  function land(g, w, h, hz, cols) { ridge(g, w, h, hz - h * .1, h * .06, 301, cols[0]); ridge(g, w, h, hz - h * .03, h * .04, 302, cols[1]); const gr = g.createLinearGradient(0, hz, 0, h); gr.addColorStop(0, cols[2]); gr.addColorStop(1, cols[3]); g.fillStyle = gr; g.fillRect(0, hz, w, h - hz) }
+  function hut(g, x, y, s, k = 1) { if (k <= 0) return; g.save(); g.translate(x, y); g.scale(s * k, s * k); g.fillStyle = '#7a5a3a'; g.fillRect(-10, -10, 20, 10); g.fillStyle = '#a08a5a'; g.beginPath(); g.moveTo(-14, -9); g.lineTo(0, -24); g.lineTo(14, -9); g.fill(); g.fillStyle = '#3a2a1a'; g.fillRect(-3, -7, 6, 7); g.restore() }
+  const PATHPTS = (w, h) => { const pts = []; for (let j = 0; j <= 80; j++) { const u = j / 80; pts.push({ x: lerp(w * 1.04, w * -.04, u), y: h * (.6 + Math.sin(u * 6.3) * .025 + u * .03) }) } return pts };
+  function trailLine(g, pts, p, col, lw) { const n = Math.floor(p * (pts.length - 1)); if (n < 1) return; g.strokeStyle = col; g.lineWidth = lw; g.setLineDash([lw * 2.5, lw * 2]); g.beginPath(); for (let j = 0; j <= n; j++) g[j ? 'lineTo' : 'moveTo'](pts[j].x, pts[j].y); g.stroke(); g.setLineDash([]) }
+
+  /* 1–2 · an old trail across wide land; where it began is lost in mist; later it branches toward a river plain, mountains and open land */
+  function trails(g, w, h, t) {
+    daySky(g, w, h, true); const hz = h * .54;
+    for (let i = 0; i < 4; i++) cloud(g, ((i * .3 + t * .008) % 1.3 - .15) * w, h * (.1 + (i % 2) * .08), 16 + i * 4, 'rgba(255,248,235,.6)');
+    ridge(g, w, h, h * .36, h * .07, 311, '#8a90a8');                                               // far mountains
+    land(g, w, h, hz, ['#7a8a78', '#6a8058', '#6a8050', '#2e3a26']);
+    const river = t > 3.5 ? ease((t - 3.5) / 3) : 0; if (river > 0) { g.strokeStyle = `rgba(150,200,235,${.8 * river})`; g.lineWidth = 3; g.beginPath(); g.moveTo(w * .04, h * .47); g.bezierCurveTo(w * .14, h * .5, w * .2, h * .46, w * .3, h * .49); g.stroke() }
+    const pts = PATHPTS(w, h), p = ease(t / 5);
+    trailLine(g, pts, p, 'rgba(220,190,140,.85)', 3);
+    for (let j = 6; j < pts.length * p; j += 9) { const q = pts[j]; g.fillStyle = 'rgba(70,50,30,.55)'; g.beginPath(); g.ellipse(q.x - 3, q.y + 4, 2, 1.2, 0, 0, TAU); g.ellipse(q.x + 3, q.y + 7, 2, 1.2, 0, 0, TAU); g.fill() }   // footprints
+    for (const u of [.22, .5, .8]) if (p > u) { const q = pts[Math.floor(u * 80)]; g.strokeStyle = '#5a4a3a'; g.lineWidth = 2; g.beginPath(); g.ellipse(q.x, q.y + 14, 9, 4, 0, 0, TAU); g.stroke(); glow(g, q.x, q.y + 12, 10, hsla(20, 90, 55), .35 + .2 * Math.sin(t * 3 + u * 9)) }   // old fire rings
+    // branches toward other lands, small settlements light up far apart
+    const B = [[.3, { x: .16, y: .48 }], [.55, { x: .5, y: .38 }], [.78, { x: .82, y: .47 }]];
+    B.forEach(([u, to], i) => { const k = ease((t - 4.6 - i * .7) / 2.4); if (k <= 0) return; const a = pts[Math.floor(u * 80)], b = { x: w * to.x, y: h * to.y }, bp = [];
+      for (let j = 0; j <= 30; j++) { const v = j / 30; bp.push({ x: lerp(a.x, b.x, v) + Math.sin(v * 7 + i) * 10, y: lerp(a.y, b.y, v) }) } trailLine(g, bp, k, 'rgba(220,190,140,.6)', 2);
+      if (k >= 1) { hut(g, b.x - 8, b.y, .7); hut(g, b.x + 9, b.y + 2, .6); glow(g, b.x, b.y - 4, 26, hsla(36, 100, 70), .55 + .2 * Math.sin(t * 2 + i)) } });
+    // the far end: mist hides where it began
+    for (let k = 0; k < 4; k++) glow(g, w * (.96 + Math.sin(t * .3 + k) * .02), h * (.5 + k * .05), w * .22, hsla(40, 30, 95), .55);
+  }
+
+  /* 3 · a settlement takes root: huts, fields, a ring of standing stones; hearth smoke rises and carries us on */
+  function settle(g, w, h, t) {
+    daySky(g, w, h, true); const hz = h * .5; land(g, w, h, hz, ['#7a8a78', '#6a8058', '#6f8650', '#2e3a26']);
+    for (let i = 0; i < 6; i++) { const k = ease((t - 1.6 - i * .25) / 1); if (k <= 0) continue; g.fillStyle = i % 2 ? '#a89a52' : '#8aa850'; g.globalAlpha = k; g.beginPath(); g.moveTo(w * (.06 + i * .07), h * .66); g.lineTo(w * (.12 + i * .07), h * .63); g.lineTo(w * (.16 + i * .07), h * .69); g.lineTo(w * (.1 + i * .07), h * .72); g.fill(); g.globalAlpha = 1 }
+    [[.44, .6, 1.8], [.55, .58, 1.6], [.5, .66, 2], [.62, .65, 1.7]].forEach(([x, y, s], i) => hut(g, w * x, h * y, s, ease((t - .3 - i * .45) / .8)));
+    const sc = { x: w * .8, y: h * .6 }; for (let i = 0; i < 7; i++) { const a = i / 7 * TAU, k = ease((t - 2.8 - i * .2) / .6); if (k <= 0) continue; g.fillStyle = '#8a8478'; g.fillRect(sc.x + Math.cos(a) * 46 - 5, sc.y + Math.sin(a) * 16 - 26 * k, 10, 26 * k) }
+    const fx = w * .52, fy = h * .63; glow(g, fx, fy, 30, hsla(26, 100, 60), .8); for (let k = 0; k < 3; k++) smoke(g, fx + k * 4, fy - 6, t, 2.2 + ease((t - 5) / 3) * 2.5, k, [230, 225, 220]);
+    const veil = ease((t - 6.5) / 2.5); if (veil > 0) { g.fillStyle = `rgba(235,230,225,${veil * .8})`; g.fillRect(0, 0, w, h) }
+  }
+
+  /* 4 · the same place, another age: simple huts → mist → a grown town; the people walking by are new generations */
+  function eras(g, w, h, t) {
+    daySky(g, w, h, false); const hz = h * .5; land(g, w, h, hz, ['#8a9ab0', '#6a8858', '#6f8650', '#2e3a26']);
+    const k = ease((t - 3) / 2);
+    g.globalAlpha = 1 - k; [[.3, .6], [.42, .58], [.55, .61], [.68, .59]].forEach(([x, y]) => hut(g, w * x, h * y, 1.8)); g.globalAlpha = 1;
+    if (k > 0) { g.globalAlpha = k; const hr = rng(41); for (let i = 0; i < 7; i++) { const x = w * (.18 + i * .1), y = h * (.6 + (i % 2) * .02); house(g, x, y, 1.6 + hr() * .6, { wall: hr() < .5 ? '#e0d0a8' : '#c8b898', roof: ['#5a6a9a', '#9a4a3a', '#4a7a5a'][i % 3], chimney: true, win: '#4a3a28', wide: 1 + hr() * .4 }) }
+      g.fillStyle = '#b8a88a'; g.fillRect(w * .44, h * .32, w * .05, h * .28); g.beginPath(); g.moveTo(w * .435, h * .32); g.lineTo(w * .465, h * .26); g.lineTo(w * .495, h * .32); g.fill();
+      for (let i = 0; i < 3; i++) { const x = w * (.25 + i * .25), fl = Math.sin(t * 4 + i) * 3; g.fillStyle = '#6a3a2a'; g.fillRect(x, h * .48, 2, h * .1); g.fillStyle = ['#2a6fd6', '#8a5ad8', '#9fe0a0'][i]; g.beginPath(); g.moveTo(x + 2, h * .48); g.lineTo(x + 18, h * .5 + fl); g.lineTo(x + 2, h * .53); g.fill() } g.globalAlpha = 1 }
+    // a band of mist passes between the ages
+    const m = Math.sin(clamp((t - 2.5) / 3) * Math.PI); if (m > 0) for (let i = 0; i < 6; i++) glow(g, w * (i / 5), h * .55, w * .25, hsla(40, 20, 96), .7 * m);
+    // passers-by: early on plain figures, later people of many kinds
+    const S = h / 640;
+    for (let i = 0; i < 5; i++) { const x = ((t * 40 + i * w / 5) % (w + 120)) - 60, y = h * .74; if (k < .5) walker(g, x, y, 1.6 * S * 1.6, t, '#2a2418', { ph: i }); else { const F = FORMS[i % 5]; person(g, x, y, S * 1.1, F, '#2a2418', `hsla(${ELEMENTS[F.e].h},40%,60%,.6)`, t, i) } }
+  }
+
+  /* 5 · cities and kingdoms, small free communities, and many peoples sharing one road */
+  function realmsWide(g, w, h, t) {
+    daySky(g, w, h, true); const hz = h * .5; land(g, w, h, hz, ['#8a90a8', '#6a8058', '#6f8650', '#2e3a26']);
+    const cx = w * .26, cy = h * .46; g.fillStyle = '#c8b898'; g.fillRect(cx - 90, cy - 20, 180, 22);
+    for (let i = 0; i < 6; i++) { const x = cx - 80 + i * 32, H = 30 + (i % 3) * 14; g.fillStyle = '#b8a888'; g.fillRect(x, cy - 20 - H, 16, H); g.fillStyle = ['#2a6fd6', '#9a4a3a', '#4a7a5a'][i % 3]; g.beginPath(); g.moveTo(x - 3, cy - 20 - H); g.lineTo(x + 8, cy - 34 - H); g.lineTo(x + 19, cy - 20 - H); g.fill() }
+    g.fillStyle = '#a89878'; g.fillRect(cx - 10, cy - 110, 20, 90); g.beginPath(); g.moveTo(cx - 14, cy - 110); g.lineTo(cx, cy - 136); g.lineTo(cx + 14, cy - 110); g.fill(); glow(g, cx, cy - 60, 140, hsla(40, 60, 90), .2);
+    [[.64, .5], [.76, .47], [.88, .52]].forEach(([x, y], i) => { const hr = rng(60 + i); for (let j = 0; j < 3; j++) house(g, w * x + (j - 1) * 20, h * y + (j % 2) * 4, .9, { wall: '#d8c8a8', roof: ['#7a5a3a', '#5a6a4a', '#8a4a3a'][(i + j) % 3], chimney: hr() < .5, win: '#4a3a28' }); smoke(g, w * x, h * y - 22, t, .8, i) });
+    g.fillStyle = 'rgba(200,170,120,.5)'; g.beginPath(); g.moveTo(0, h * .72); g.lineTo(w, h * .66); g.lineTo(w, h * .74); g.lineTo(0, h * .8); g.fill();
+    const S = h / 640;
+    for (let i = 0; i < 7; i++) { const x = ((t * 34 + i * w / 7) % (w + 120)) - 60, y = lerp(h * .78, h * .72, x / w); const F = FORMS[i % 5]; person(g, x, y, S * 1.05, F, '#2a2418', `hsla(${ELEMENTS[F.e].h},45%,62%,.6)`, t, i) }
+    { const x = ((t * 22) % (w + 200)) - 100, y = lerp(h * .76, h * .7, x / w); g.fillStyle = '#5a4028'; g.fillRect(x - 22, y - 18, 44, 14); g.fillStyle = '#d8c8a0'; g.beginPath(); g.ellipse(x, y - 20, 22, 10, 0, Math.PI, 0); g.fill(); for (const d of [-14, 14]) { g.strokeStyle = '#2a1a10'; g.lineWidth = 2; g.beginPath(); g.arc(x + d, y - 3, 5, 0, TAU); g.stroke() } }
+  }
+
+  /* 6 · a worn inscription seen close, a light passes over it; the view pulls back: it belongs to a ruin sunk under soil and roots */
+  function inscription(g, w, h, t) {
+    g.fillStyle = '#120e0a'; g.fillRect(0, 0, w, h);
+    const z = lerp(2.8, 1, ease((t - 3.2) / 4)), cx = w * .5, cy = h * .4;
+    g.save(); g.translate(cx, cy); g.scale(z, z); g.translate(-cx, -cy);
+    for (let i = 0; i < 6; i++) { g.fillStyle = ['#2a1f16', '#33261a', '#251b13', '#2e2217', '#201810', '#2a1f16'][i]; g.fillRect(-w, h * (-.2 + i * .2), w * 3, h * .2) }
+    const sw = w * .3, sh = h * .26, sx = cx - sw / 2, sy = cy - sh / 2; g.fillStyle = '#6a6458'; g.fillRect(sx, sy, sw, sh); g.strokeStyle = '#4a463e'; g.lineWidth = 3; g.strokeRect(sx, sy, sw, sh);
+    const r = rng(77); for (let row = 0; row < 5; row++) for (let col = 0; col < 12; col++) { const x = sx + 14 + col * (sw - 28) / 11, y = sy + 18 + row * (sh - 30) / 4, worn = r() < .4 + Math.abs(col - 5.5) * .04; const sd = Math.floor(r() * 999); if (worn) continue; g.strokeStyle = 'rgba(30,26,20,.85)'; g.lineWidth = 1.6; rune(g, x, y, 6, sd) }
+    g.fillStyle = 'rgba(18,14,10,.55)'; for (let i = 0; i < 5; i++) { const q = rng(90 + i); g.beginPath(); g.ellipse(sx + q() * sw, sy + q() * sh, 20 + q() * 30, 8 + q() * 12, q() * 3, 0, TAU); g.fill() }   // erosion
+    // the ruin around it (only seen once the view pulls back)
+    g.fillStyle = '#4a463e'; g.fillRect(sx - sw * .9, sy - 20, sw * .6, sh + 40); g.fillRect(sx + sw * 1.3, sy + 10, sw * .5, sh + 10); g.beginPath(); g.arc(cx, sy - 10, sw * .9, Math.PI, 0); g.lineWidth = 14; g.strokeStyle = '#4a463e'; g.stroke();
+    g.strokeStyle = 'rgba(80,58,36,.95)'; g.lineCap = 'round'; for (let i = 0; i < 9; i++) { const q = rng(120 + i), x = sx - sw + q() * sw * 3, L = h * (.25 + q() * .3); g.lineWidth = 3 + q() * 5; g.beginPath(); g.moveTo(x, -h * .3); g.bezierCurveTo(x + (q() - .5) * 120, L * .3, x + (q() - .5) * 160, L * .7, x + (q() - .5) * 200, L) ; g.stroke() }
+    g.restore();
+    // a slow light sweep across the stone
+    const lx = w * (.2 + ((t * .12) % 1) * .6); glow(g, lx, cy, w * .18, hsla(42, 80, 70), .3);
+    g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(0, h * .72, w, h * .28);
+  }
+
+  /* 7 · a study table under a lantern: fragments, rubbings, a drawing with gaps that will not close */
+  function study(g, w, h, t) {
+    g.fillStyle = '#16110c'; g.fillRect(0, 0, w, h); const fl = .85 + .15 * Math.sin(t * 11) * Math.sin(t * 5);
+    const lx = w * .5, ly = h * .22; glow(g, lx, ly + h * .2, w * .4, hsla(38, 90, 60), .5 * fl);
+    // rubbings pinned on the wall
+    [[.18, .12], [.34, .08], [.66, .1], [.8, .14]].forEach(([x, y], i) => { g.save(); g.translate(w * x, h * y); g.rotate((i - 1.5) * .05); g.fillStyle = 'rgba(220,205,170,.85)'; g.fillRect(-40, 0, 80, 60); g.strokeStyle = 'rgba(40,30,20,.7)'; g.lineWidth = 1.2; const r = rng(140 + i); for (let k = 0; k < 8; k++) if (r() < .6) rune(g, -28 + (k % 4) * 18, 16 + Math.floor(k / 4) * 24, 6, 150 + i * 10 + k); g.fillStyle = '#8a2a1a'; g.beginPath(); g.arc(0, 4, 3, 0, TAU); g.fill(); g.restore() });
+    // the table
+    g.fillStyle = '#3a2a1a'; g.fillRect(w * .08, h * .48, w * .84, h * .2); g.fillStyle = '#2a1e12'; g.fillRect(w * .08, h * .66, w * .84, 8);
+    // fragments laid out with gaps between them
+    const r = rng(170); for (let i = 0; i < 6; i++) { const x = w * (.22 + i * .1) + Math.sin(i) * 8, y = h * (.53 + (i % 2) * .05); g.fillStyle = '#7a7466'; g.beginPath(); for (let k = 0; k < 6; k++) { const a = k / 6 * TAU, rr = 18 + r() * 10; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rr, y + Math.sin(a) * rr * .6) } g.closePath(); g.fill(); g.strokeStyle = 'rgba(30,26,20,.8)'; g.lineWidth = 1.2; rune(g, x, y, 5, 180 + i) }
+    // a sketch trying to join them — dashed where nothing is known, with a question mark
+    g.strokeStyle = 'rgba(240,220,170,.6)'; g.lineWidth = 1.5; g.setLineDash([5, 6]); g.beginPath(); g.ellipse(w * .47, h * .56, w * .3, h * .07, 0, 0, TAU); g.stroke(); g.setLineDash([]);
+    g.fillStyle = `rgba(240,220,170,${.5 + .3 * Math.sin(t * 2)})`; g.font = `700 ${h * .05}px Georgia,serif`; g.textAlign = 'center'; g.fillText('?', w * .82, h * .54);
+    // the lantern
+    g.strokeStyle = '#2a1e12'; g.lineWidth = 2; g.beginPath(); g.moveTo(lx, 0); g.lineTo(lx, ly - 14); g.stroke(); g.fillStyle = `hsl(40,100%,${55 + 15 * fl}%)`; g.beginPath(); g.ellipse(lx, ly, 9, 13, 0, 0, TAU); g.fill();
+    for (let i = 0; i < 30; i++) { const q = rng(200 + i), x = lx + (q() - .5) * w * .5 + Math.sin(t * .3 + i) * 12, y = ly + q() * h * .4 + Math.cos(t * .25 + i) * 8; g.fillStyle = `rgba(255,220,160,${.3 * fl})`; g.fillRect(x, y, 1.4, 1.4) }
+  }
+
+  /* 8 · the temple of the three great gods: their sign of three rings, candles, people climbing the steps — no god appears */
+  function temple(g, w, h, t) {
+    sky(g, w, h, [[0, '#141a3a'], [.5, '#3a3a62'], [.62, '#6a5a78'], [1, '#6a5a78']]); stars(g, w, h, t, 60, 501, h * .4, .6); moon(g, w * .86, h * .12, h * .035, t);
+    const hz = h * .56; ridge(g, w, h, hz, h * .05, 502, '#221a30'); g.fillStyle = '#16121e'; g.fillRect(0, hz + 10, w, h);
+    const tx = w * .5, ty = h * .5, TW = w * .34, TH = h * .2;
+    g.fillStyle = '#2a2438'; g.fillRect(tx - TW / 2 - 20, ty, TW + 40, 16); g.fillRect(tx - TW / 2 - 40, ty + 16, TW + 80, 14); g.fillRect(tx - TW / 2 - 60, ty + 30, TW + 120, 12);   // steps
+    g.fillStyle = '#3a3450'; for (let i = 0; i < 6; i++) g.fillRect(tx - TW / 2 + 8 + i * (TW - 28) / 5, ty - TH, 12, TH);   // columns
+    g.fillStyle = '#2e2840'; g.fillRect(tx - TW / 2 - 10, ty - TH - 14, TW + 20, 16); g.beginPath(); g.moveTo(tx - TW / 2 - 18, ty - TH - 14); g.lineTo(tx, ty - TH - h * .12); g.lineTo(tx + TW / 2 + 18, ty - TH - 14); g.fill();
+    emblem(g, tx, ty - TH - h * .055, h * .03, t);
+    glow(g, tx, ty - TH * .5, TW * .5, hsla(40, 80, 60), .35);
+    for (let i = 0; i < 9; i++) { const x = tx - TW / 2 - 40 + i * (TW + 80) / 8, fl = .7 + .3 * Math.sin(t * 9 + i * 2); glow(g, x, ty + 26, 10, hsla(40, 100, 70), fl); g.fillStyle = '#e8d8b0'; g.fillRect(x - 1.5, ty + 26, 3, 6) }
+    const S = h / 640; for (let i = 0; i < 6; i++) { const k = ((t * .09 + i / 6) % 1), x = lerp(tx - w * .3 + i * 20, tx - 30 + i * 12, k), y = lerp(h * .7, ty + 2, k); g.globalAlpha = Math.min(1, (1 - k) * 4); person(g, x, y, S * .8, FORMS[(i + 1) % 5], '#0c0a12', 'rgba(255,220,160,.35)', t, i); g.globalAlpha = 1 }
+  }
+
+  /* 9 · smaller places of worship: by the water, under a tree, beside a hearth — then a village where the temple and small altars live together */
+  function shrineRiver(g, w, h, t) { daySky(g, w, h, true); land(g, w, h, h * .5, ['#8a90a8', '#6a8058', '#6f8650', '#2e3a26']); g.fillStyle = '#5a90b8'; g.fillRect(0, h * .6, w, h * .12); g.strokeStyle = 'rgba(230,245,255,.6)'; for (let i = 0; i < 10; i++) { const x = (i * 97 + t * 20) % w; g.beginPath(); g.moveTo(x, h * .64 + (i % 3) * 10); g.lineTo(x + 24, h * .64 + (i % 3) * 10); g.stroke() }
+    const ax = w * .5, ay = h * .6; g.save(); g.translate(ax, ay); g.scale(2.2, 2.2); g.translate(-ax, -ay); g.fillStyle = '#8a8478'; g.fillRect(ax - 24, ay - 30, 48, 30); g.fillStyle = '#d84a6a'; for (let i = 0; i < 5; i++) { g.beginPath(); g.arc(ax - 20 + i * 10, ay - 32, 4, 0, TAU); g.fill() } glow(g, ax, ay - 40, 16, hsla(40, 100, 70), .8 + .2 * Math.sin(t * 8)); g.fillStyle = '#f0e0c0'; g.fillRect(ax - 2, ay - 40, 4, 8); g.restore();
+    for (let i = 0; i < 3; i++) { const x = ((t * 18 + i * w / 3) % w), y = h * .66; glow(g, x, y, 8, hsla(40, 100, 70), .8); g.fillStyle = '#7a5a3a'; g.fillRect(x - 6, y + 2, 12, 3) } }
+  function shrineTree(g, w, h, t) { daySky(g, w, h, false); land(g, w, h, h * .52, ['#8a9ab0', '#6a8858', '#6f8650', '#2e3a26']); const tx = w * .5, ty = h * .64;
+    g.fillStyle = '#5a3a24'; g.fillRect(tx - 14, ty - h * .3, 28, h * .3); g.fillStyle = '#3a6a30'; for (let i = 0; i < 6; i++) { g.beginPath(); g.arc(tx + Math.cos(i) * 60, ty - h * .36 + Math.sin(i * 2) * 26, 48, 0, TAU); g.fill() }
+    ['#d84a4a', '#f0c050', '#4a8ad0', '#9fe0a0', '#f0f0e0'].forEach((c, i) => { const x = tx - 50 + i * 25, y = ty - h * .24, sw = Math.sin(t * 3 + i) * 5; g.strokeStyle = c; g.lineWidth = 4; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + sw, y + 20, x + sw * 1.6, y + 38); g.stroke() });
+    g.fillStyle = '#8a8478'; g.fillRect(tx - 18, ty - 10, 36, 10); glow(g, tx, ty - 16, 14, hsla(40, 100, 70), .8 + .2 * Math.sin(t * 7)); g.fillStyle = '#e0a040'; g.beginPath(); g.arc(tx - 10, ty - 14, 4, 0, TAU); g.arc(tx + 10, ty - 14, 4, 0, TAU); g.fill() }
+  function shrineHearth(g, w, h, t) { g.fillStyle = '#2a1e16'; g.fillRect(0, 0, w, h); for (let x = 0; x < w; x += 40) { g.fillStyle = (x / 40) % 2 ? '#33261a' : '#2e2217'; g.fillRect(x, 0, 40, h * .7) } g.fillStyle = '#1e160e'; g.fillRect(0, h * .7, w, h * .3);
+    const fx = w * .45, fy = h * .62; g.fillStyle = '#5a5048'; g.fillRect(fx - 70, fy - 70, 140, 80); g.fillStyle = '#120c08'; g.fillRect(fx - 46, fy - 46, 92, 56); glow(g, fx, fy - 10, 140, hsla(26, 100, 60), .55);
+    for (let k = 0; k < 4; k++) { const sw = Math.sin(t * 8 + k) * 4; g.fillStyle = `hsla(${22 + k * 8},100%,${55 + k * 7}%,.9)`; g.beginPath(); g.moveTo(fx - 22 + k * 10, fy + 6); g.quadraticCurveTo(fx - 16 + k * 10 + sw, fy - 20, fx - 12 + k * 9 + sw, fy - 36 - (k % 2) * 8); g.quadraticCurveTo(fx - 6 + k * 9, fy - 10, fx + 4 + k * 8, fy + 6); g.fill() }
+    const sx = w * .74, sy = h * .38; g.fillStyle = '#4a3020'; g.fillRect(sx - 50, sy, 100, 8); g.fillStyle = '#e8d8b0'; g.fillRect(sx - 30, sy - 14, 5, 14); g.fillRect(sx + 26, sy - 14, 5, 14); glow(g, sx - 28, sy - 18, 8, hsla(40, 100, 70), .9); glow(g, sx + 28, sy - 18, 8, hsla(40, 100, 70), .9); g.fillStyle = '#c8a050'; g.beginPath(); g.arc(sx, sy - 8, 8, 0, TAU); g.fill() }
+  function shrineVillage(g, w, h, t) { daySky(g, w, h, true); land(g, w, h, h * .52, ['#8a90a8', '#6a8058', '#6f8650', '#2e3a26']); const tx = w * .5, ty = h * .4;
+    g.fillStyle = '#b8a888'; g.fillRect(tx - 50, ty - 30, 100, 30); g.beginPath(); g.moveTo(tx - 58, ty - 30); g.lineTo(tx, ty - 58); g.lineTo(tx + 58, ty - 30); g.fill(); emblem(g, tx, ty - 40, 10, t);
+    const hr = rng(88); for (let i = 0; i < 9; i++) house(g, w * (.08 + i * .105), h * (.6 + (i % 2) * .03), 1.1, { wall: '#d8c8a8', roof: ['#7a5a3a', '#5a6a4a', '#8a4a3a'][i % 3], chimney: hr() < .5, win: '#4a3a28' });
+    for (let i = 0; i < 5; i++) { const x = w * (.15 + i * .18), y = h * .7; glow(g, x, y - 6, 14, hsla(40, 100, 70), .7 + .3 * Math.sin(t * 6 + i)); g.fillStyle = '#8a8478'; g.fillRect(x - 6, y - 4, 12, 6) } }
+  function shrines(g, w, h, t) {
+    const parts = [shrineRiver, shrineTree, shrineHearth, shrineVillage], seg = 2.8, i = Math.min(3, Math.floor(t / seg)), k = clamp((t - i * seg - (seg - .9)) / .9);
+    parts[i](g, w, h, t); if (i < 3 && k > 0) { g.save(); g.globalAlpha = ease(k); parts[i + 1](g, w, h, t); g.restore() }
+  }
+
+  /* 11 · an old explorer's notebook: unfinished ink sketches of a city of light and a city in darkness, crossed-out notes, question marks */
+  function journal(g, w, h, t) {
+    g.fillStyle = '#1a140e'; g.fillRect(0, 0, w, h);
+    const px = w * .1, py = h * .04, pw = w * .8, ph = h * .66; const pg = g.createRadialGradient(w / 2, h * .35, 20, w / 2, h * .35, pw * .7); pg.addColorStop(0, '#efe2c2'); pg.addColorStop(1, '#c9b48a'); g.fillStyle = pg; g.fillRect(px, py, pw, ph);
+    g.strokeStyle = 'rgba(90,70,40,.5)'; g.lineWidth = 2; g.beginPath(); g.moveTo(w / 2, py); g.lineTo(w / 2, py + ph); g.stroke();
+    for (let i = 0; i < 4; i++) { const q = rng(300 + i); glow(g, px + q() * pw, py + q() * ph, 40 + q() * 40, hsla(30, 40, 40), .15) }   // stains
+    const ink = 'rgba(40,30,20,.85)', draw = (p, fn) => { if (p <= 0) return; g.save(); g.globalAlpha = Math.min(1, p * 1.5); fn(); g.restore() };
+    const k1 = ease((t - .3) / 2.5), k2 = ease((t - 2.5) / 2.5), k3 = ease((t - 4.8) / 2);
+    // left page: the city that never goes dark — spires and rays, half drawn
+    draw(k1, () => { const bx = w * .3, by = py + ph * .62; g.strokeStyle = ink; g.lineWidth = 1.6; const n = Math.ceil(7 * k1); for (let i = 0; i < n; i++) { const x = bx - 60 + i * 20, H = 40 + (i % 3) * 26 + (i === 3 ? 40 : 0); g.beginPath(); g.moveTo(x, by); g.lineTo(x, by - H); g.lineTo(x + 6, by - H - 14); g.lineTo(x + 12, by - H); g.lineTo(x + 12, by); g.stroke() }
+      g.setLineDash([3, 5]); for (let i = 0; i < 9; i++) { const a = -Math.PI + i / 8 * Math.PI; g.beginPath(); g.moveTo(bx + 10 + Math.cos(a) * 70, by - 120 + Math.sin(a) * 40); g.lineTo(bx + 10 + Math.cos(a) * 100, by - 120 + Math.sin(a) * 60); g.stroke() } g.setLineDash([]) });
+    // right page: the city hidden in darkness — an ink wash with a few points of light
+    draw(k2, () => { const bx = w * .7, by = py + ph * .56; g.fillStyle = 'rgba(30,22,16,.75)'; g.beginPath(); for (let i = 0; i <= 20; i++) { const a = i / 20 * TAU, r = 70 + Math.sin(i * 3) * 14; g[i ? 'lineTo' : 'moveTo'](bx + Math.cos(a) * r * 1.3, by + Math.sin(a) * r * .7) } g.fill(); g.fillStyle = 'rgba(240,220,170,.8)'; for (let i = 0; i < 5; i++) { const q = rng(320 + i); g.fillRect(bx - 50 + q() * 100, by - 20 + q() * 40, 2, 2) } });
+    // notes: lines of script, some crossed out, question marks in the margins
+    draw(k3, () => { g.strokeStyle = ink; g.lineWidth = 1.2; for (let i = 0; i < 5; i++) { const y = py + ph * (.78 + i * .04), x0 = px + 20, x1 = px + 20 + (pw / 2 - 50) * (.5 + (i % 3) * .2); g.beginPath(); for (let x = x0; x < x1; x += 6) g.lineTo(x, y + Math.sin(x * .7) * 1.5); g.stroke(); if (i === 1 || i === 3) { g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y - 2); g.stroke() } }
+      g.font = `700 ${h * .045}px Georgia,serif`; g.fillStyle = ink; g.textAlign = 'center'; g.fillText('?', w * .46, py + ph * .3); g.fillText('?', w * .86, py + ph * .2); g.fillText('?', w * .62, py + ph * .85) });
+  }
+
+  /* 13 · the river plain: fields, a great city on the far bank, boats coming into port, many peoples at the market */
+  function riverCity(g, w, h, t) {
+    daySky(g, w, h, false); const pan = ease(t / 12) * w * .08; g.save(); g.translate(-pan, 0);
+    ridge(g, w * 1.2, h, h * .34, h * .05, 701, '#8ea3bd'); g.fillStyle = '#7aa358'; g.fillRect(0, h * .36, w * 1.2, h);
+    const cy = h * .42; g.fillStyle = '#c8b898'; g.fillRect(w * .3, cy - 18, w * .55, 18);
+    const hr = rng(702); for (let i = 0; i < 16; i++) { const x = w * .31 + i * w * .034, H = 24 + hr() * 50; g.fillStyle = hr() < .5 ? '#d8c8a8' : '#b8a888'; g.fillRect(x, cy - 18 - H, w * .026, H); g.fillStyle = ['#2a6fd6', '#9a4a3a', '#4a7a5a', '#8a5ad8'][i % 4]; g.beginPath(); g.moveTo(x - 2, cy - 18 - H); g.lineTo(x + w * .013, cy - 30 - H); g.lineTo(x + w * .028, cy - 18 - H); g.fill() }
+    g.fillStyle = '#5a90b8'; g.fillRect(0, h * .45, w * 1.2, h * .1); g.strokeStyle = 'rgba(230,245,255,.55)'; for (let i = 0; i < 18; i++) { const x = (i * 83 + t * 24) % (w * 1.2); g.beginPath(); g.moveTo(x, h * .47 + (i % 4) * 8); g.lineTo(x + 20, h * .47 + (i % 4) * 8); g.stroke() }
+    for (let i = 0; i < 3; i++) { const x = ((t * 30 + i * w * .4) % (w * 1.1)), y = h * (.48 + i * .025); g.fillStyle = '#6a4a2a'; g.beginPath(); g.moveTo(x - 22, y); g.lineTo(x + 22, y); g.lineTo(x + 16, y + 7); g.lineTo(x - 16, y + 7); g.fill(); g.fillStyle = '#efe6d0'; g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - 26); g.lineTo(x + 16, y - 4); g.fill() }
+    for (let i = 0; i < 9; i++) { const q = rng(720 + i); g.fillStyle = q() < .5 ? '#c8b060' : '#9ab858'; g.fillRect(w * (.02 + i * .13), h * (.6 + (i % 2) * .04), w * .11, h * .035) }
+    ['#d84a4a', '#f0c050', '#4a8ad0', '#5aa84a'].forEach((c, i) => { const x = w * (.25 + i * .14), y = h * .58; g.fillStyle = c; g.beginPath(); g.moveTo(x - 22, y); g.lineTo(x, y - 14); g.lineTo(x + 22, y); g.fill(); g.fillStyle = '#5a4028'; g.fillRect(x - 18, y, 36, 10) });
+    g.restore(); const S = h / 640;
+    for (let i = 0; i < 6; i++) { const x = ((t * 28 + i * w / 6) % (w + 100)) - 50, y = h * .7; person(g, x, y, S * .95, FORMS[i % 5], '#2a2418', 'rgba(255,240,200,.4)', t, i) }
+  }
+
+  /* 14 · out of the city: buildings thin out, the market noise fades, carts on a dirt road toward smaller places */
+  function roadOut(g, w, h, t) {
+    daySky(g, w, h, true); const hz = h * .46; land(g, w, h, hz, ['#8ea3bd', '#86ad62', '#7aa358', '#3a4a2a']);
+    g.fillStyle = 'rgba(180,170,150,.8)'; for (let i = 0; i < 8; i++) { const H = 20 + (i % 3) * 14; g.fillRect(w * .02 + i * 14, hz - H, 10, H) }   // the city behind, far left
+    g.fillStyle = 'rgba(200,170,120,.7)'; g.beginPath(); g.moveTo(w * .1, hz); g.bezierCurveTo(w * .4, hz + h * .05, w * .5, h * .62, w * 1.05, h * .74); g.lineTo(w * 1.05, h * .82); g.bezierCurveTo(w * .5, h * .7, w * .38, hz + h * .07, w * .14, hz); g.fill();
+    [[.3, .52, 1], [.48, .56, .8], [.7, .6, .55]].forEach(([x, y, d], i) => { for (let j = 0; j < Math.round(4 * d); j++) house(g, w * x + j * 22, h * y - 18, 1, { wall: '#d8c8a8', roof: ['#7a5a3a', '#5a6a4a', '#8a4a3a'][(i + j) % 3], chimney: j === 0, win: '#4a3a28' }) });
+    for (let i = 0; i < 3; i++) { const k = ((t * .06 + i / 3) % 1), x = lerp(w * .15, w * 1.05, k), y = lerp(hz + 4, h * .77, k * k), s = lerp(.35, 1.2, k); g.save(); g.translate(x, y); g.scale(s, s); g.fillStyle = '#5a4028'; g.fillRect(-22, -18, 44, 14); g.fillStyle = '#d8c8a0'; g.beginPath(); g.ellipse(0, -20, 22, 10, 0, Math.PI, 0); g.fill(); g.strokeStyle = '#2a1a10'; g.lineWidth = 2; g.beginPath(); g.arc(-14, -3, 5, 0, TAU); g.arc(14, -3, 5, 0, TAU); g.stroke(); g.restore() }
+  }
+
+  const SCENES = { trails, settle, eras, realmsWide, inscription, study, temple, shrines, journal, riverCity, roadOut, treeline: (g, w, h, t) => deepwood(g, w, h, t, true), ruins: (g, w, h, t) => ancient(g, w, h, t, true), ancient, heirs, journey, realms, kin, forgotten, faith, deepwood, hearth, elukhor, homeMorning, fernvale, festival: (g, w, h, t) => village(g, w, h, t, 'festival'), dawn: (g, w, h, t) => village(g, w, h, t, 'dawn'), orb: (g, w, h, t) => village(g, w, h, t, 'orb') };
 
   function create(canvas, opt = {}) {
     const g = canvas.getContext('2d'), buf = document.createElement('canvas'), bg = buf.getContext('2d');

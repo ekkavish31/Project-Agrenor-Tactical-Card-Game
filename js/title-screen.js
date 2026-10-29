@@ -8,27 +8,26 @@
 (function(root){'use strict';
 /* v95.05: told like a picture book — each page is a picture (js/scene-art.js · art:'…') with one or two gentle lines that appear word by word.
    The ancient people are never named; Elukhor is the familiar golden light; nights have the purple moon. bg = fallback image only. */
-const PROLOGUE=[
- {art:'ruins',bg:'assets/scenes/area-ruins.webp',text:'กาลครั้งหนึ่ง นานมาแล้ว…\nนานจนไม่มีใครจำได้ว่านานเท่าไร'},
- {art:'ruins',bg:'assets/scenes/area-ruins.webp',text:'ใต้แสงจันทร์สีม่วง โลกใบนี้เคยเป็นบ้านของผู้คนอีกยุคหนึ่ง\nสิ่งที่พวกเขาสร้างไว้ วันนี้เหลือเพียงเสาหักกลางทุ่งหญ้า'},
- {art:'ancient',bg:'assets/scenes/area-ruins.webp',text:'ไม่มีใครจำชื่อของพวกเขาได้อีกแล้ว\nมีเพียงร่องรอยที่ยังหลับอยู่ใต้ดิน ใต้รากไม้ และในหินที่เรืองแสงเบา ๆ'},
- {art:'deepwood',bg:'assets/scenes/area-forest.webp',text:'บางตำนานเล่าว่า ผู้คนเหล่านั้นเดินออกมาจากป่าใหญ่ทางตะวันออก\nป่าที่ไม่มีใครเห็นปลายทาง… และจนทุกวันนี้ ก็ยังน้อยคนนักที่เข้าไปแล้วได้กลับออกมา'},
- {art:'heirs',bg:'assets/scenes/area-ruins.webp',text:'ในอกของพวกเขาแต่ละคน มีแสงดวงเล็ก ๆ ส่องอยู่\nแสงที่ส่งต่อจากพ่อสู่ลูก จากรุ่นสู่รุ่น'},
- {art:'heirs',bg:'assets/scenes/area-ruins.webp',text:'แล้ววันหนึ่ง แสงเหล่านั้นก็เริ่มมีสีของตัวเอง\nบ้างร้อนดั่งไฟ บ้างเย็นดั่งน้ำแข็ง บ้างเงียบสงบดั่งราตรี'},
- {art:'journey',bg:'assets/scenes/area-forest.webp',text:'ลูกหลานของพวกเขาจึงก้าวออกจากชายป่า เดินตามแสงในอกของตน\nมุ่งไปทางตะวันตก ข้ามภูเขา ข้ามทะเลทราย เลาะลำธาร ไปจนสุดขอบฟ้า'},
- {art:'journey',bg:'assets/scenes/area-forest.webp',text:'ใครศรัทธาในไฟ ก็ไปหาแผ่นดินที่ร้อนระอุ\nใครศรัทธาในน้ำ ก็ไปตั้งรกรากริมทะเล'},
- {art:'kin',bg:'assets/scenes/area-forest.webp',text:'ปีแล้วปีเล่า ผืนแผ่นดินค่อย ๆ หล่อหลอมพวกเขา\nบ้างสูงโปร่ง บ้างเตี้ยล่ำ บ้างกำยำ บ้างมีเขางอกบนหัว… จนกลายเป็นเผ่าพันธุ์ใหม่มากมาย'},
- {art:'realms',bg:'assets/scenes/area-forest.webp',text:'กระโจมเล็ก ๆ กลายเป็นหมู่บ้าน\nหมู่บ้านกลายเป็นเมือง'},
- {art:'realms',bg:'assets/scenes/area-forest.webp',text:'เมืองผูกกันไว้ด้วยการค้าและศรัทธา\nบางแห่งรวมกันเป็นอาณาจักรยิ่งใหญ่ บางแห่งยังยืนหยัดอย่างอิสระ'},
- {art:'forgotten',bg:'assets/scenes/area-ruins.webp',text:'เวลาผ่านไปนานเข้า ชื่อใหม่และภาษาใหม่ก็เข้ามาแทนที่\nเรื่องของบรรพชนกลายเป็นนิทาน เหลือเพียงคำในบทสวดที่ไม่มีใครเข้าใจ'},
- {art:'faith',bg:'assets/scenes/area-ruins.webp',text:'ผู้คนสวดอ้อนวอนต่อเทพแห่งธาตุและผู้พิทักษ์ใกล้ตัว\nและเมื่อศรัทธามากพอ… สิ่งที่อยู่ในคำอธิษฐานก็ค่อย ๆ ลืมตาขึ้นจริง'},
- {art:'fernvale',bg:'assets/market.webp',text:'ส่วนมนุษย์ ผู้สืบสายดินและน้ำ ตั้งบ้านเรือนในที่ราบลุ่มแม่น้ำ Nor\'Chorthal\nและที่ชานเมืองใหญ่แห่งหนึ่ง… มีหมู่บ้านเล็ก ๆ ชื่อว่าเฟิร์นเวล'},
- {art:'elukhor',bg:'assets/home.webp',text:'ยามกลางวัน ดวงทองลอยค้างอยู่บนฟ้า ส่องแสงอุ่นลงมาทั่วลุ่มน้ำ\nชาวนาก้มหน้าเกี่ยวข้าว เด็ก ๆ วิ่งเล่นตามคันนา และเสียงระฆังจากตลาดก็ดังมาแต่ไกล'},
- {art:'hearth',bg:'assets/market.webp',text:'พอตกค่ำ ผู้คนล้อมวงข้างกองไฟใต้จันทร์สีม่วง\nเล่านิทานเรื่องบรรพชน ป่าใหญ่ และอาณาจักรไกลโพ้น… เหมือนที่เราเล่ากันอยู่ตอนนี้'},
- {art:'festival',bg:'assets/home.webp',text:'อีกสามวัน จะถึงงานเทศกาลเก็บเกี่ยวที่ทั้งหมู่บ้านรอคอย\nไม่มีใครรู้เลยว่า ปีนี้… จะไม่เหมือนทุกปี'}
+const PROLOGUE=[// v95.09: the creator's script (v2, sections ก–ช) — no map with names, no reveal of where people came from, no god appears
+ {art:'trails',text:'นานมาแล้ว ผู้คนออกเดินทางไปทั่วผืนพิภพ\nข้ามขุนเขา ล่องตามสายน้ำ'},
+ {art:'trails',text:'บ้างตามหาผืนดินที่ตอบรับความเชื่อของตน\nบ้างพบหนทางใหม่ระหว่างทาง'},
+ {art:'settle',text:'แล้วหยั่งรากลงในดินแดนที่แตกต่างกัน\nแต่ละถิ่นจึงมีเรื่องราวของตนเอง'},
+ {art:'eras',text:'รุ่นแล้วรุ่นเล่า รูปลักษณ์ ภาษา และวิถีชีวิต\nค่อย ๆ ต่างไปจากบรรพบุรุษ'},
+ {art:'realmsWide',text:'ถิ่นฐานเติบโตเป็นเมือง บางเมืองรวมกันเป็นอาณาจักร\nโลกจึงเต็มไปด้วยผู้คนหลากเผ่าพันธุ์'},
+ {art:'inscription',text:'ทว่า ไม่ใช่ทุกเรื่องราวจะเดินทางมาถึงวันนี้\nชื่อบางชื่อเลือนหาย และความจริงบางอย่างถูกเล่าต่อจนกลายเป็นตำนาน'},
+ {art:'study',text:'ยังมีผู้ขุดหาคำตอบจากจารึกใต้ผืนดิน\nแต่สิ่งที่พบ บางครั้งกลับทิ้งคำถามไว้มากกว่าเดิม'},
+ {art:'temple',text:'ศรัทธาในสามมหาเทพยังคงสืบทอด\nเคียงข้างผู้พิทักษ์ที่แต่ละถิ่นเคารพ'},
+ {art:'shrines',text:'บางแห่งสร้างวิหารสูงใหญ่\nบางแห่งวางเครื่องบูชาไว้ใต้ต้นไม้ข้างทาง'},
+ {art:'treeline',text:'แต่ยังมีดินแดนที่ผู้คนรู้จักจากเรื่องเล่า มากกว่าการเดินทาง\nในมหาพงไพร ทางเก่าถูกกลืนหายใต้รากไม้'},
+ {art:'journal',text:'ว่ากันว่า ลึกเข้าไปยังมีชนโบราณที่ไม่ต้อนรับผู้มาเยือน\nบ้างเล่าถึงนครที่ไม่เคยสิ้นแสง บ้างว่ามีนครซ่อนอยู่ในความมืด'},
+ {art:'treeline',text:'ไม่มีใครรู้… ว่าเรื่องเล่าเหล่านั้นจริงเพียงใด'},
+ {art:'riverCity',text:'ห่างจากเงาของมหาพงไพร สายน้ำหล่อเลี้ยงไร่นาและเมืองของมนุษย์\nผู้เดินทางต่างเผ่าพันธุ์ นำสินค้าและข่าวสารจากแดนไกลมาด้วย'},
+ {art:'roadOut',text:'บ้างมาแสวงหาความมั่งคั่ง บ้างมาตามหาสิ่งที่สูญหาย\nและบ้าง… เพียงต้องการเริ่มต้นใหม่'},
+ {art:'fernvale',text:'ริมเส้นทางสู่เมืองใหญ่ มีหมู่บ้านเล็ก ๆ แห่งหนึ่ง\nที่นครลึกลับและอารยธรรมที่สาบสูญ เป็นเพียงเรื่องเล่าจากแดนไกล'},
+ {art:'dawn',text:'เช้าวันหนึ่งเริ่มต้นขึ้น เช่นเดียวกับวันอื่น\nและเรื่องราวของเจ้า… ก็เริ่มต้นที่นี่'}
 ];
 /* after the name: one more page that walks into the village chapter, then the game starts (js/story-data.js 'opening') */
-const BRIDGE={art:'dawn',text:'{hero}… ในเช้าวันแรกก่อนงานเทศกาล\nนิทานของเจ้ากำลังจะเริ่มต้นขึ้น'};
+const BRIDGE={art:'dawn',text:'{hero}…\nเช้าวันแรกก่อนงานเทศกาลเก็บเกี่ยว'};
 const HOWTO=[
  ['หมู่บ้าน','คลิกถนนหรือสถานที่เพื่อเดิน · บ้านใช้พัก นอน จัดสำรับ · โรงตีเหล็กใช้คราฟต์อุปกรณ์และฝึกต่อสู้ · ตลาดใช้ซื้อวัตถุดิบ ขายของ รับออร์เดอร์'],
  ['ออกผจญภัย','เดินไปทางออกขอบหมู่บ้าน เลือกพื้นที่ แล้วเลือกเส้นทางบนแผนที่ — ต่อสู้ เก็บของ เจอเหตุการณ์ และบอสท้ายพื้นที่'],
@@ -149,7 +148,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  <div class="ts-foot"><span class="ts-ver">Project A ${VERSION}${root.GAME_VERSION?.date?" · "+root.GAME_VERSION.date:""} <em class="ts-gh">· กำลังเช็ก GitHub…</em></span><span>↑↓ เลือก · Enter ยืนยัน</span></div>
  <section class="ts-extra" hidden aria-label="Extra"><div class="ts-extra-box"><div class="ts-extra-head"><div class="ts-tabs" role="tablist"><button role="tab" data-tab="howto">วิธีเล่น</button><button role="tab" data-tab="gallery">คลังภาพ</button><button role="tab" data-tab="credits">เครดิต</button></div><button class="ts-close" data-act="close-extra" aria-label="ปิด">✕</button></div><div class="ts-extra-body"></div></div></section>
  <section class="ts-story" hidden aria-live="polite"><div class="ts-story-bg"></div><canvas class="ts-story-art"></canvas><div class="ts-story-veil"></div><div class="ts-story-text"></div><div class="ts-story-hint">คลิก หรือกด Enter เพื่อไปต่อ</div><button class="ts-skip" data-act="skip">ข้าม ▸▸</button>
-  <form class="ts-name" hidden><span class="ts-kicker">และนิทานเรื่องนี้ เริ่มต้นจากเด็กคนหนึ่งในเฟิร์นเวล…</span><h2>เจ้าชื่ออะไร?</h2><input name="hero" maxlength="16" autocomplete="off" spellcheck="false" placeholder="นักผจญภัย"><p>เปลี่ยนภายหลังได้ในตั้งค่า หรือคลิกชื่อตัวเอกในเกม</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
+  <form class="ts-name" hidden><span class="ts-kicker">ตัวเอกของเรื่อง</span><h2>เจ้าชื่ออะไร?</h2><input name="hero" maxlength="16" autocomplete="off" spellcheck="false" placeholder="นักผจญภัย"><p>เปลี่ยนภายหลังได้ในตั้งค่า หรือคลิกชื่อตัวเอกในเกม</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
  document.body.appendChild(el);title=el;checkGitHub(el);
  const menu=[...el.querySelectorAll('.ts-menu button')];
  el.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)act(b.dataset.act)});
@@ -234,7 +233,7 @@ async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.
 
 function boot(){hookScenes();setInterval(()=>Gallery.track(),2000);
  if(skip){startPrefetch();return}
- buildTitle();loadImage('assets/scenes/area-forest.webp');for(const p of PROLOGUE)if(!p.art||!root.SceneArt)loadImage(p.bg);
+ buildTitle();loadImage('assets/scenes/area-forest.webp');for(const p of PROLOGUE)if(p.bg&&(!p.art||!root.SceneArt))loadImage(p.bg);
  if(newGame)prepareStory()}
 // the title is built once every game script ran (DOMContentLoaded — not window load, which waits for the town frame) (settings, adventure, battle hooks exist by then)
 if(document.readyState!=='loading')boot();else document.addEventListener('DOMContentLoaded',boot);
