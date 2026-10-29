@@ -430,10 +430,11 @@
   /* ---------- v97.24 · B5: the place's own services (only while somebody of the place is in the room) ----------
      healer: treat the whole party (1 💰 per 4 HP missing) · buy potions · shop / market: potions, travel food · temple: a free prayer once a day
      (fatigue −40, hero HP +30 %) and an offering (+1 potion of holy water for 25 💰) */
-  const PRICE = { potion: KIND === 'healer' ? 15 : 18, food: 4 };
+  const VP = id => !!window.VillageProjects?.has(id);   /* v97.35 · R3 village projects: herb garden, granary, shrine */
+  const PRICE = { potion: (KIND === 'healer' ? 15 : 18) - (VP('herbs') ? 3 : 0), food: VP('granary') ? 3 : 4 };
   const keeperIn = () => [...people.values()].some(a => !a.leaving && (OWNER ? a.id === OWNER : !a.p.benched && !L.inParty(S, a.id)));   /* somebody of the place is in (not one of your own party) */
   const missing = () => { S = L.save(); return Math.max(0, (S.maxHp || 60) - (S.hp ?? 60)) + [...S.party, ...S.bench].reduce((n, m) => n + Math.max(0, m.max - m.hp), 0) };
-  const healCost = () => Math.max(3, Math.ceil(missing() / 4));
+  const healCost = () => Math.max(3, Math.ceil(missing() / 4 * (VP('herbs') ? .6 : 1)));
   function services() {
     const B = (k, label, cost, why) => `<button data-svc="${k}" ${why || (cost && S.gold < cost) ? 'disabled' : ''} title="${esc(why || '')}">${label}${cost ? ' ' + cost + '💰' : ''}</button>`;
     const away = keeperIn() ? '' : 'เจ้าของไม่อยู่ตอนนี้';
@@ -447,7 +448,7 @@
     if (k === 'heal') { const c = healCost(); if (!missing() || !pay(c)) return; S.hp = S.maxHp || 60; for (const m of [...S.party, ...S.bench]) m.hp = m.max; L.writeSave(S); toast('✚ รักษาแล้ว · ทุกคน HP เต็ม (−' + c + '💰)') }
     else if (k === 'potion') { if (!pay(PRICE.potion)) return; S.potions = (S.potions || 0) + 1; L.writeSave(S); toast('🧪 ได้ยาฟื้นฟู 1 ขวด (มี ' + S.potions + ')') }
     else if (k === 'food') { if (!pay(PRICE.food * 3)) return; S.food = (S.food || 0) + 3; L.writeSave(S); toast('🍞 ได้เสบียง 3 ห่อ (มี ' + S.food + ')') }
-    else if (k === 'pray') { const day = CLK.read().day; if ((S.prayDay || 0) === day) return; S.prayDay = day; S.fatigue = (S.fatigue || 0) - 40; S.hp = Math.min(S.maxHp || 60, (S.hp ?? 60) + Math.round((S.maxHp || 60) * .3)); L.writeSave(S); toast('🙏 ใจสงบลง · ความเหนื่อย −40 · HP +30%') }
+    else if (k === 'pray') { const day = CLK.read().day; if ((S.prayDay || 0) === day) return; S.prayDay = day; S.fatigue = (S.fatigue || 0) - 40; const k2 = VP('shrine') ? .5 : .3; S.hp = Math.min(S.maxHp || 60, (S.hp ?? 60) + Math.round((S.maxHp || 60) * k2)); L.writeSave(S); toast('🙏 ใจสงบลง · ความเหนื่อย −40 · HP +' + Math.round(k2 * 100) + '%') }
     else if (k === 'offer') { if (!pay(25)) return; S.potions = (S.potions || 0) + 1; L.writeSave(S); toast('🕯 ถวายแล้ว · ได้น้ำมนต์ (ยาฟื้นฟู) 1 ขวด') }
     hud._html = ''; hudSync();
   }
