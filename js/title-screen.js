@@ -144,7 +144,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  <div class="ts-main"><div class="ts-brand"><span class="ts-kicker">AGRENOR · TACTICAL CARD ADVENTURE</span><h1>Project A</h1><p>ไพ่และการผจญภัย</p></div>
  <nav class="ts-menu" aria-label="เมนูหลัก">
   <button data-act="new"><span>New Game</span><small>เริ่มเกมใหม่</small></button>
-  <button data-act="continue" ${hasSave?'':'disabled'}><span>Continue</span><small>${hasSave?saveSummary():'ยังไม่มีเซฟ'}</small></button>
+  <button data-act="continue" ${hasSave?'':'disabled hidden'}><span>Continue</span><small>${hasSave?saveSummary():'ยังไม่มีเซฟ'}</small></button>
   <button data-act="options"><span>Options</span><small>ตั้งค่าเกม</small></button>
   <button data-act="extra"><span>Extra</span><small>วิธีเล่น · คลังภาพ · เครดิต</small></button>
   <div class="ts-tools" ${DEV?'':'hidden'}><a href="editor.html" target="_blank" rel="noopener" title="แก้ภาพ/แอนิเมชัน การ์ด แผนที่ สนามต่อสู้ (เปิดแท็บใหม่)">✎ Editor</a></div>
