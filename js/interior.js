@@ -490,7 +490,7 @@
     const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
     bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(p.name)} <small class="tier" title="ความสัมพันธ์ ${Math.round(aff * 10) / 10}/10">${tierOf(aff)[2]} ${tierOf(aff)[1]}</small></h2><div class="role">${esc(fill(p.role))}${p.age ? ' · อายุ ' + p.age : ''}${p.benched ? ' · พักอยู่กับทีม' : ''}</div>
       <p>${esc(txt)}</p>${ws?.asked && !ws.done ? `<div class="cond">🤝 คำขอ: ${esc(ws.def.hint)}</div>` : ''}${rec ? `<div class="cond">★ เงื่อนไขชวนเข้าทีม: <b>${esc(rec.label)}</b><br>${esc(rec.text)}${progressText(p.id, rec)}</div>` : ''}
-      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${MIND && L.P[p.id] ? '<button data-a="gift">🎁 ให้ของ</button>' : ''}${jobs.length ? '<button data-a="work">💼 จ้างทำงาน</button>' : ''}${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${teachable(p.id) ? '<button data-a="teach">📖 เรียนท่า</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
+      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${MIND && L.P[p.id] ? '<button data-a="ask">❓ ถามเรื่อง…</button><button data-a="gift">🎁 ให้ของ</button>' : ''}${jobs.length ? '<button data-a="work">💼 จ้างทำงาน</button>' : ''}${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${teachable(p.id) ? '<button data-a="teach">📖 เรียนท่า</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
     document.body.append(bg); dlg = bg;
     const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, p.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
     bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
@@ -519,6 +519,8 @@
     if (what === 'bye') { close(); return }
     if (what === 'teach') { close(); try { parent.CardSources?.teach?.(p.id) } catch (e) { } return }
     if (what === 'talk') { talk(a); return }
+    if (what === 'ask') { talk(a, 'อยากรู้เรื่องอะไรล่ะ?'); const acts = dlg.querySelector('.acts'); acts.innerHTML = [['news', '📰 ข่าวล่าสุด'], ['people', '👥 คนในหมู่บ้าน'], ['road', '🧭 ทางข้างหน้า']].map(([k, n]) => `<button data-a="ask:${k}">${n}</button>`).join('') + '<button class="ghost" data-a="talk">ย้อนกลับ</button>'; acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a)); return }
+    if (what.startsWith('ask:')) { talk(a, fill(MIND.ask(p.id, what.slice(4)))); MIND.save(); return }
     if (what === 'gift') { giftPanel(a); return }
     if (what.startsWith('gift:')) { giveGift(a, what.slice(5)); return }
     if (what === 'about') { const ab = p.about?.length ? fill(p.about[Math.floor(Math.random() * p.about.length)]) : ''; talk(a, (p.trait ? '(' + fill(p.trait) + ') ' : '') + (ab || fill(p.story || '…')) + (L.originText?.(p) ? ' — ' + fill(L.originText(p)) : '')); return }

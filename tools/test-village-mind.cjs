@@ -100,5 +100,8 @@ for (const k in L.GOSSIP) ok(L.EVENTS[k], `gossip ${k} is an event`);
 { const mem = {}, storage = { getItem: k => mem[k] ?? null, setItem: (k, v) => { mem[k] = v } }, LNx = globalThis.VillageLines, evs = Object.keys(LNx.EVENTS), clock = () => 10;
   const A = VillageMind.create({ storage, clock, people: {} }), B2 = VillageMind.create({ storage, clock, people: {} });
   A.emit(evs[0], {}); B2.emit(evs[1], {}); A.emit(evs[2], {}); ok(JSON.parse(mem['agrenor-mind-v1']).events.length === 3, 'two Minds keep all 3 events') }
+/* v97.34 · ask(): every topic answers with filled text for every villager */
+{ const W = world(), M = W.M || W; M.emit(Object.keys(L.EVENTS)[0], { who: 'may' });
+  for (const id of Object.keys(P).slice(0, 12)) for (const tp of ['news', 'people', 'road']) { const t = M.ask(id, tp); ok(typeof t === 'string' && t.length > 3 && !leftover(t), 'ask ' + id + ' ' + tp + ': ' + t) } }
 console.log(`village-mind: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
