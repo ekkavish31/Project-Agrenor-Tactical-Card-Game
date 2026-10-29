@@ -130,7 +130,7 @@ function heroName(){return root.WorldState?.heroName()||'นักผจญภ�
 function sayBubble(g,n,p){const top=p.y-(n.small?78:104);g.save();g.font='13px VillageThai,system-ui';const maxW=200,lines=[];let cur='';for(const ch of[...n.say.txt]){if(g.measureText(cur+ch).width>maxW){lines.push(cur);cur=ch}else cur+=ch}if(cur)lines.push(cur);
  const w=Math.max(...lines.map(l=>g.measureText(l).width))+16,hh=lines.length*17+10,x=p.x-w/2,y=top-hh-8;g.fillStyle='rgba(255,250,235,.95)';g.strokeStyle='rgba(80,60,30,.6)';g.lineWidth=1.5;g.beginPath();g.roundRect(x,y,w,hh,10);g.fill();g.stroke();g.beginPath();g.moveTo(p.x-6,y+hh);g.lineTo(p.x,y+hh+8);g.lineTo(p.x+6,y+hh);g.fill();g.fillStyle='#3a2a14';g.textAlign='left';lines.forEach((l,i)=>g.fillText(l,x+8,y+18+i*17));g.restore()}
 function faceOf(du,dv){const x=(du-dv)*28,y=(du+dv)*14;return y>=0?(x>=0?'SE':'SW'):(x>=0?'NE':'NW')}
-function objects(t){const dt=Math.min(.1,(t-last)/1000||0);last=t;if(root.VillageAssetEdit?.frozen?.()){if(!npcs)(LIFE?lifeInit:init)()}else(LIFE?lifeUpdate:update)(dt);if(!npcs)return[];const v=V();
+function objects(t){const dt=Math.min(.1,(t-last)/1000||0);last=t;if(root.VillageAssetEdit?.frozen?.()){if(!npcs)(LIFE?lifeInit:init)()}else(LIFE?lifeUpdate:update)(dt);chase(performance.now());if(!npcs)return[];const v=V();
  return npcs.filter(n=>n.alpha>.02).map(n=>{const p=v.project(n.u,n.v);return {x:p.x,y:p.y,z:root.VillageAssetEdit?.heroLayer?.(n.u,n.v)||0,npc:n,draw:g=>{g.save();g.globalAlpha=Math.max(0,Math.min(1,n.alpha));drawVillager(g,n,p,t,n.path.length>0&&n!==talking,n.face);if(hover===n||talking===n)tag(g,n,p);g.restore();if(n.say&&performance.now()<n.say.until&&n.alpha>.5)sayBubble(g,n,p)}}})}
 function tag(g,n,p){const top=p.y-(n.small?72:100);g.font='bold 15px VillageThai,system-ui';g.textAlign='center';const text=n.name+' · '+String(n.role).replace(/\{name\}/g,heroName()),w=g.measureText(text).width+20;g.fillStyle='rgba(32,56,45,.92)';g.fillRect(p.x-w/2,top-24,w,24);g.fillStyle='#fff0c7';g.fillText(text,p.x,top-7)}
 
@@ -139,6 +139,15 @@ function at(e){if(!npcs)return null;const w=root.world?.(e);if(!w)return null;co
 const box=document.createElement('section');box.id='npcTalk';box.hidden=true;box.innerHTML='<canvas width="120" height="140"></canvas><div><b></b><small></small><p></p><footer><button type="button" data-next>▶ ถัดไป</button><button type="button" data-close>ปิด · Esc</button></footer></div>';document.body.appendChild(box);
 const css=document.createElement('style');css.textContent=`#npcTalk{position:fixed;z-index:20;left:50%;bottom:26px;transform:translateX(-50%);width:min(680px,calc(100vw - 32px));display:flex;gap:16px;align-items:stretch;padding:14px 18px;border-radius:14px;background:linear-gradient(#1d2a44f5,#121b2ef5);border:2px solid #d9b46b;box-shadow:0 14px 40px #000b;color:#f5e6c4;animation:npcIn .2s ease-out}#npcTalk[hidden]{display:none}#npcTalk canvas{width:96px;height:112px;flex:none;border-radius:10px;background:radial-gradient(#3a5a44,#1c2c22)}#npcTalk div{flex:1;display:flex;flex-direction:column}#npcTalk b{font-size:18px;color:#ffe8a6}#npcTalk small{color:#c9bb98;font-size:12px}#npcTalk p{margin:8px 0 10px;font-size:16px;line-height:1.65;min-height:3.3em}#npcTalk footer{display:flex;gap:8px;justify-content:flex-end;margin-top:auto}#npcTalk button{padding:6px 14px;border-radius:9px;border:1px solid #a88a58;background:#0d1424;color:#f5e6c4;cursor:pointer}#npcTalk button[data-next]{background:linear-gradient(#f0c560,#c9901f);color:#2a1a05;border-color:#7a4b06;font-weight:700}@keyframes npcIn{from{opacity:0;transform:translate(-50%,10px)}}`;document.head.appendChild(css);
 let lines=[],li=0,typing=null;
+/* v95.14 · talking needs you next to the villager: a click on someone far away walks the hero up to them, then the talk opens (quest talks included) */
+const REACH=1.55;let approach=null;
+const gap=n=>{const h=V().getHero();return Math.hypot(h.u-n.u,h.v-n.v)};
+function goTalk(n){if(box.hidden===false&&talking===n)return;if(gap(n)<=REACH){approach=null;talk(n);return}
+ approach={n,next:0};try{destination=null}catch(e){}walkTo(n);const st=document.getElementById('status');if(st)st.textContent='กำลังเดินไปคุยกับ '+n.name}
+function walkTo(n){const v=V();let p=[];try{p=v.findPath(v.getHero(),{u:n.u,v:n.v})}catch(e){}if(!p.length){const q=snap({u:n.u,v:n.v});if(q)try{p=v.findPath(v.getHero(),q)}catch(e){}}
+ if(p.length){try{path=p}catch(e){}n.path=[];n.wait=Math.max(n.wait||0,1)}else{approach=null;const st=document.getElementById('status');if(st)st.textContent='เดินไปหา '+n.name+' ไม่ได้ในตอนนี้'}}
+function chase(now){if(!approach)return;const n=approach.n;if(n.inside||n.hidden||n.alpha<.3){approach=null;return}if(gap(n)<=REACH){approach=null;try{path=[]}catch(e){}talk(n);return}
+ if(now>approach.next){approach.next=now+450;walkTo(n)}else{try{if(!path.length)walkTo(n)}catch(e){}}}
 function period(){const m=root.gameState?.minutes??600;return m<12*60?'morning':m<17*60?'day':'evening'}
 function talk(n){talking=n;try{if(parent!==window)parent.Story?.talked?.(n.id)}catch(e){};n.path=[];n.say=null;const name=heroName();
  if(LIFE&&MIND()){const S=LIFE.save(),per=root.VillageClock?.period(clockHour())||period(),r=MIND().talk(n.id,{period:per,place:'outside',save:S});LIFE.writeSave(S);lines=[r.text];lineKind=r.kind;extra=r.kind==='small'||r.kind==='meet'?1:2}
@@ -154,8 +163,8 @@ box.querySelector('[data-next]').onclick=next;box.querySelector('[data-close]').
 document.addEventListener('keydown',e=>{if(box.hidden)return;if(e.key==='Escape'){e.stopImmediatePropagation();close()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();next()}},true);
 // clicks on a villager are taken before the town's own walk/enter handling
 let downOn=null;
-root.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.id!=='world'||V()?.isEditing?.())return;downOn=at(e);if(downOn)e.stopPropagation()},true);
-root.addEventListener('pointerup',e=>{if(!downOn)return;const n=at(e)===downOn?downOn:null;downOn=null;e.stopPropagation();if(n)talk(n)},true);
+root.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.id!=='world'||V()?.isEditing?.())return;downOn=at(e);if(downOn)e.stopPropagation();else approach=null},true);
+root.addEventListener('pointerup',e=>{if(!downOn)return;const n=at(e)===downOn?downOn:null;downOn=null;e.stopPropagation();if(n)goTalk(n)},true);
 root.addEventListener('pointermove',e=>{if(e.target.id!=='world')return;const n=at(e);if(n!==hover){hover=n;if(n)e.target.style.cursor='pointer'}},true);
-root.TownNPC={objects,talk:id=>{const n=npcs?.find(n=>n.id===id);if(n)talk(n)},list:()=>npcs?.map(n=>({id:n.id,u:n.u,v:n.v,walking:n.path.length>0,inside:n.inside,hidden:!!n.hidden,goal:n.goal})),roster:ROSTER,getRoutes,setRoutes,routeKey:ROUTE_KEY};
+root.TownNPC={objects,talk:id=>{const n=npcs?.find(n=>n.id===id);if(n)goTalk(n)},list:()=>npcs?.map(n=>({id:n.id,u:n.u,v:n.v,walking:n.path.length>0,inside:n.inside,hidden:!!n.hidden,goal:n.goal})),roster:ROSTER,getRoutes,setRoutes,routeKey:ROUTE_KEY};
 })(globalThis);

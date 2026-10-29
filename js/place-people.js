@@ -42,7 +42,7 @@
   const faceTo = (du, dv) => { const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') };
   function objects(project, g, t, blocked, hero) {
     if (!root.VillagerDraw || !L()) return [];
-    const now = performance.now(); if (now > lastSync) { lastSync = now + 3000; sync(blocked) }
+    const now = performance.now(); chase(now, hero); if (now > lastSync) { lastSync = now + 3000; sync(blocked) }
     const out = [], dt = Math.min(.1, (t - lastT) / 1000 || 0); lastT = t;
     for (const a of people) {
       const moving = walk(a, dt, blocked, hero), pt = project(a.u, a.v);
@@ -67,18 +67,32 @@
     g.fillStyle = '#3a2a14'; g.textAlign = 'left'; lines.forEach((l, i) => g.fillText(l, x + 9, y + 18 + i * 17)); g.restore();
   }
   /* world point → talk to the villager under it. Returns true when a villager took the click. */
-  function click(wp, project) {
+  /* v95.14 · talking needs you next to the villager: a click from afar walks the hero up first (ctx = {hero, go(u,v), stop()} from village-place.html) */
+  const REACH = 1.6; let approach = null, CTX = null;
+  function click(wp, project, ctx) {
+    if (ctx) CTX = ctx; approach = null;
     for (const a of people) {
       const pt = project(a.u, a.v); if (Math.abs(wp.x - pt.x) > 22 || wp.y > pt.y + 8 || wp.y < pt.y - 100) continue;
+      if (CTX && Math.hypot(CTX.hero.u - a.u, CTX.hero.v - a.v) > REACH) { approach = { a, next: 0 }; CTX.go(a.u, a.v); return true }
+      talkTo(a); return true;
+    }
+    return false;
+  }
+  function chase(now, hero) {
+    if (!approach || !CTX) return; const a = approach.a;
+    if (!people.includes(a)) { approach = null; return }
+    if (Math.hypot(hero.u - a.u, hero.v - a.v) <= REACH) { approach = null; CTX.stop(); talkTo(a); return }
+    if (now > approach.next) { approach.next = now + 450; CTX.go(a.u, a.v) }
+  }
+  function talkTo(a) {
+    {
       try{if(parent!==window)parent.Story?.talked?.(a.p.id)}catch(e){};
       const Lf = L(), C = CLK(), S = Lf.save(), per = C.period(C.read().hour);
       let text = ''; try { const r = root.Mind?.talk(a.p.id, { period: per, place: PLACE, save: S }); Lf.writeSave(S); text = r?.text || '' } catch (e) { }
       if (!text) { const ls = a.p.lines?.[per] || a.p.lines?.day || ['…']; text = ls[Math.floor(Math.random() * ls.length)] }
       const hero = root.WorldState?.heroName() || '';
       bubble = { a, text: a.p.name + ': ' + String(text).replace(/\{name\}/g, hero), until: performance.now() + 5200 };
-      return true;
     }
-    return false;
   }
   root.PlacePeople = { objects, click, list: () => people.map(a => a.p.id) };
 })(globalThis);

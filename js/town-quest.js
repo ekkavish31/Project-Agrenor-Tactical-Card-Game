@@ -14,7 +14,7 @@
   const life = () => { try { return root.VillageLife || root.parent?.VillageLife } catch (e) { return null } };
   const objs = new Map();               // spot key → [{key,kind,u,v,i,...}]
   let T = null, lastPoll = 0, lastT = 0, chaseAt = 0, pending = null, floats = [], down = null;
-  const ICON = { goat: '🐐', plank: '🪵', plot: '🌱', stall: '🛠️', pumpkin: '🎃' };
+  const ICON = { goat: '🐐', plank: '🪵', plot: '🌿', ripe: '🎃', stall: '🛠️', pumpkin: '🎃' };
 
   /* ---------- helpers ---------- */
   const hash = s => { let h = 2166136261; for (const c of String(s)) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0 };
@@ -86,7 +86,7 @@
       }
       o.dir = best;
     }
-    if (o.dir) { const sp = 4.6, u = o.u + o.dir.du * sp * dt, v = o.v + o.dir.dv * sp * dt; if (free(u, v)) { o.u = u; o.v = v } else o.dir = null }
+    if (o.dir) { const sp = 6.4, u = o.u + o.dir.du * sp * dt, v = o.v + o.dir.dv * sp * dt; if (free(u, v)) { o.u = u; o.v = v } else o.dir = null }
     if (o.t <= 0) { o.mode = 'rest'; o.t = 2 + Math.random() * 1.2; o.dir = null }
   }
   function use(o) {
@@ -136,7 +136,7 @@
     return out;
   }
   function drawObj(gx, o, t, k) {
-    const p = project(o.u, o.v), hop = o.flee ? (o.mode === 'run' ? Math.abs(Math.sin(t * .02 + o.phase)) * 8 : o.mode === 'idle' ? Math.abs(Math.sin(t * .004 + o.phase)) * 2 : 0) : Math.sin(t * .003 + o.phase) * 2;
+    const p = project(o.u, o.v), hop = o.flee ? (o.mode === 'run' ? Math.abs(Math.sin(t * .026 + o.phase)) * 15 : o.mode === 'idle' ? Math.abs(Math.sin(t * .004 + o.phase)) * 2 : 0) : Math.sin(t * .003 + o.phase) * 2;
     gx.save();
     gx.fillStyle = 'rgba(20,30,20,.35)'; gx.beginPath(); gx.ellipse(p.x, p.y, 16, 7, 0, 0, 7); gx.fill();
     if (o.kind === 'plot') { gx.fillStyle = '#6a4a2a'; gx.beginPath(); gx.ellipse(p.x, p.y, 30, 14, 0, 0, 7); gx.fill(); gx.strokeStyle = '#4a3218'; gx.lineWidth = 2; gx.stroke() }
@@ -164,7 +164,6 @@
     const dt = Math.min(.1, (t - lastT) / 1000 || 0); lastT = t; update(dt, performance.now());
     if (!T) return;
     const k = Math.min(2.2, K());
-    for (const list of objs.values()) for (const o of list) drawObj(gx, o, t, k);
     const ms = targets(); for (const m of ms) if (!m.spot || !m.spot.flee) marker(gx, m.x, m.y, t, m.label, k);
     const now = performance.now(); floats = floats.filter(f => now - f.t0 < 1800);
     for (const f of floats) { const p = project(f.u, f.v), e = (now - f.t0) / 1800; gx.save(); gx.globalAlpha = 1 - e; gx.font = `700 ${14 * k}px VillageThai,system-ui`; gx.textAlign = 'center'; gx.lineWidth = 3 * k; gx.strokeStyle = '#2a1a0a'; gx.fillStyle = '#ffe28a'; gx.strokeText(f.text, p.x, p.y - 60 - e * 40); gx.fillText(f.text, p.x, p.y - 60 - e * 40); gx.restore() }
@@ -202,5 +201,7 @@
     if (m.o) { travel(m.o); return true }
     return false;
   }
-  root.TownQuest = { draw, guide, targets: () => T, objects: () => [...objs.values()].flat() };
+  /* v95.14: street objects join the village's own depth-sorted list, so goats are solid and pass in front of / behind the hero and buildings like any villager */
+  function sorted(t) { if (editing || !T) return []; const k = Math.min(2.2, K()); return [...objs.values()].flat().map(o => { const p = project(o.u, o.v); return { x: p.x, y: p.y, mobile: true, draw: g => drawObj(g, o, t, k) } }) }
+  root.TownQuest = { draw, sorted, guide, targets: () => T, objects: () => [...objs.values()].flat() };
 })(globalThis);

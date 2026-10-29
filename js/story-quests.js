@@ -18,6 +18,9 @@ const tacticsOpen=()=>document.body.classList.contains('tactics-open');
 const late=()=>(G()?.minutes||0)>=1140;
 /* v94: journeys happen on the world map (the old area maps are archived), companions are recruited in the inn */
 const onWorld=()=>!!root.VillageTown?.onWorld?.();
+/* v95.14: Kier walks the first expedition with you only — he joins (or is already in the party), and leaves again when you are home. He can be recruited normally afterwards. */
+function markTemp(){try{const L=root.VillageLife,S=L.save(),had=L.inParty(S,'kier');if(!had&&S.party.length+S.bench.length===0&&L.join(S,'kier')){L.writeSave(S);toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)')}else if(had)toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)');if(L.inParty(L.save(),'kier')){V().story.tempAlly='kier';doSave()}}catch(e){}}
+function leaveTemp(){try{const st=V()?.story;if(!st?.tempAlly)return;const k=st.tempAlly,S=root.VillageLife.save();S.party=S.party.filter(p=>p.key!==k);S.bench=S.bench.filter(p=>p.key!==k);root.VillageLife.writeSave(S);st.tempAlly=null;doSave();toast('เคียร์ขอกลับไปช่วยที่บ้านก่อน · ชวนเขาใหม่ได้ที่โรงแรม','good')}catch(e){}}
 const partySize=()=>(V()?.party||[]).length+(V()?.bench||[]).length;
 
 /* ---------- helpers that call existing game actions ---------- */
@@ -52,7 +55,8 @@ function targetsOf(step,d){const t=typeof step.targets==='function'?step.targets
 const SPOT={
  goats:{key:'goats',kind:'goat',near:['square','inn','market','npc7'],n:3,spread:7,flee:true},
  planks:{key:'planks',kind:'plank',near:['npc3'],n:2,spread:3,mark:true,label:'แผ่นไม้ของเคน'},
- plot:{key:'plot',kind:'plot',near:['home'],n:1,spread:2.5,mark:true,label:'แปลงฟักทอง'},
+ ripe:{key:'ripe',kind:'ripe',near:['npc13'],n:3,spread:4,mark:true,label:'ฟักทองสุก'},
+ plot:{key:'plot',kind:'plot',near:['npc13'],n:1,spread:2,mark:true,label:'ฟักทองประกวดของฮิลดา'},
  stall:{key:'stall',kind:'stall',near:['market'],n:1,spread:3,mark:true,label:'แผงขายของ'},
  contest:{key:'contest',kind:'pumpkin',near:['square'],n:1,spread:3,mark:true,label:'ลานประกวดฟักทอง'}};
 const plotIfDry=()=>(V()?.story?.seeds&&!wateredToday())?[SPOT.plot]:[];
@@ -64,10 +68,11 @@ const STEPS=[
   spot:SPOT.goats,progress:d=>(d.got||0)/3,check:d=>(d.got||0)>=3,acts:[guideBtn],
   onSpot:d=>{d.got=(d.got||0)+1;return {msg:'🐐 จับได้ '+d.got+'/3',consume:true}}},
  talkStep({id:'goatsBack',outro:'goatsDone',title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
- talkStep({id:'seeds',outro:'seeds',title:'เมล็ดฟักทองยักษ์',talk:'hilda',goal:'ไปขอเมล็ดฟักทองจากฮิลดาชาวนา',hint:'เช้าอยู่บ้าน เที่ยงถึงบ่ายสามขายผักที่ตลาด · '+HINT_WALK,
+talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮิลดา',talk:'hilda',goal:'ไปหาฮิลดาชาวนา ถามว่าช่วยอะไรได้บ้าง',hint:'เช้าอยู่ที่ไร่ เที่ยงถึงบ่ายสามขายผักที่ตลาด · '+HINT_WALK,
   reward:()=>{V().story.seeds=true}}),
- {id:'pumpkin',tag:'real',title:'ปลูกฟักทอง',goal:'เดินไปที่แปลงข้างบ้าน ปลูกและรดน้ำ',hint:'เดินไปแตะแปลงดิน 🌱 · รดน้ำได้วันละครั้ง ยิ่งรดครบทุกวัน ฟักทองยิ่งใหญ่ (ประกวดวันที่ 3)',
-  targets:()=>({spots:wateredToday()?[]:[SPOT.plot]}),check:()=>waterDays()>=1,acts:[guideBtn]},
+{id:'pumpkin',tag:'real',title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
+  spot:SPOT.ripe,progress:d=>Math.min(1,((d.got||0)+(waterDays()>=1?1:0))/4),targets:()=>({spots:wateredToday()?[]:[SPOT.plot]}),check:d=>(d.got||0)>=3&&waterDays()>=1,acts:[guideBtn],
+  onSpot:d=>{d.got=(d.got||0)+1;doSave();return {msg:'🎃 เก็บฟักทองสุก '+d.got+'/3',consume:true}}},
  talkStep({id:'tom',outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
  {id:'planks',tag:'real',title:'แผ่นไม้ของเคน',goal:'เก็บแผ่นไม้ 2 แผ่นที่กองไว้หน้าบ้านเคน',hint:'เดินไปแตะกองไม้ 🪵 · ได้ไม้เข้ากระเป๋าวัตถุดิบ',
   spot:SPOT.planks,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
@@ -89,14 +94,14 @@ const STEPS=[
  {id:'craft',tag:'real',outro:'craftDone',title:'ของขายในงาน',goal:'ตีอาวุธ 1 ชิ้นที่โรงตีเหล็ก',hint:'เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูปจนครบ 100 → ถังน้ำ: ชุบแข็ง · ดาบใช้เหล็ก 2 ถ่าน 1 ไม้ 1',
   place:'forge',begin:d=>{d.next=G().nextId},check:d=>(G().inventory||[]).some(x=>x.id>=d.next),acts:[guideBtn],
   reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'line',n:2}],{kicker:'อาวุธเล่มใหม่',title:'แทงทะลวง',text:'โจมตีทะลุสองช่องเป็นแนวตรง · สวมดาบเล่มใหม่ได้ที่กระเป๋า'})},
- {id:'hire',tag:'real',outro:'hireDone',title:'หาคนช่วย',goal:'เดินไปโรงแรมเขากวางทอง แล้วชวนเพื่อนร่วมทาง 1 คน',hint:'คุยกับคนที่มี ★ · บรัมรับจ้าง 60 เหรียญ · เคียร์เพื่อนสมัยเด็กนั่งที่โรงแรมเที่ยงถึงสี่ทุ่ม ชวนได้เลย',
-  place:'inn',targets:()=>({npc:['kier','bram'].filter(id=>npcPlace(id)==='inn')}),check:()=>partySize()>0,acts:[guideBtn],
+ {id:'hire',tag:'real',outro:'hireDone',title:'หาคนช่วย',goal:'ไปโรงแรมเขากวางทอง ชวนเคียร์เพื่อนสมัยเด็กไปด้วย (ไปด้วยเฉพาะภารกิจนี้)',hint:'คุยกับคนที่มี ★ · บรัมรับจ้าง 60 เหรียญ · เคียร์เพื่อนสมัยเด็กนั่งที่โรงแรมเที่ยงถึงสี่ทุ่ม ชวนได้เลย',
+  targets:()=>({npc:['kier']}),check:()=>partySize()>0,acts:[guideBtn],
   reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'formation',n:2}],{kicker:'มีเพื่อนแล้ว',title:'จู่โจมประสาน',text:'มีเพื่อนยืนติดตัว ตีแรงขึ้น ×1.35'})},
- {id:'sleep2',tag:'real',outro:'day3',title:'พรุ่งนี้วันงาน',goal:'รดน้ำฟักทองของวันนี้ แล้วกลับบ้านไปนอน',hint:'แปลงฟักทองอยู่ข้างบ้าน 🌱 · ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก"',
+ {id:'sleep2',tag:'real',outro:'day3',title:'พรุ่งนี้วันงาน',goal:'ดูแลฟักทองประกวดของฮิลดาวันนี้ แล้วกลับบ้านไปนอน',hint:'ฟักทองประกวดอยู่ที่ไร่ฮิลดา 🌿 · ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก"',
   place:'home',targets:()=>({spots:plotIfDry()}),begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn]},
- {id:'sell',chapter:'วันที่ 3 · งานเทศกาลเก็บเกี่ยว',tag:'real',outro:'soldOne',title:'แข่งขายกับเกรเวน',goal:'ขายของในตลาดให้ได้ 1 ชิ้น',hint:'ขายที่โต๊ะรับซื้อ หรือวางของใน "ร้านของเรา" แล้วรอชาวบ้านมาซื้อ · อย่าลืมรดน้ำฟักทองเช้านี้',
+ {id:'sell',chapter:'วันที่ 3 · งานเทศกาลเก็บเกี่ยว',tag:'real',outro:'soldOne',title:'แข่งขายกับเกรเวน',goal:'ขายของในตลาดให้ได้ 1 ชิ้น',hint:'ขายที่โต๊ะรับซื้อ หรือวางของใน "ร้านของเรา" แล้วรอชาวบ้านมาซื้อ · อย่าลืมไปดูแลฟักทองของฮิลดาเช้านี้',
   place:'market',targets:()=>({spots:plotIfDry()}),check:d=>d.sales>0,acts:[guideBtn]},
- {id:'contest',tag:'real',title:'ประกวดฟักทอง',goal:'แบกฟักทองไปที่ลานประกวดกลางหมู่บ้าน',hint:'เดินไปแตะแท่นประกวด 🎃 · ผลขึ้นกับจำนวนวันที่รดน้ำ',
+ {id:'contest',tag:'real',title:'ประกวดฟักทอง',goal:'ช่วยฮิลดาแบกฟักทองไปที่ลานประกวดกลางหมู่บ้าน',hint:'เดินไปแตะแท่นประกวด 🎃 · ผลขึ้นกับจำนวนวันที่ช่วยดูแล',
   spot:SPOT.contest,targets:()=>({spots:plotIfDry()}),check:d=>!!d.judged,acts:[guideBtn],
   onSpot:async d=>{if(d.judged)return null;d.judged=true;const days=waterDays();doSave();await root.Cutscene.play(D().contestScene(days));addCoins(days>=3?60:days===2?30:10);d.got=1;doSave();doRender();return {msg:'🎃 ประกวดเสร็จแล้ว',consume:true}}},
  {id:'raid',tag:'real',intro:'raid',outro:'awaken',title:'โจรป่าบุกงาน!',goal:'ปกป้องงานเทศกาล — ชนะการต่อสู้',hint:'ใช้ไพ่เดินเข้าหาศัตรู ไพ่โจมตีเมื่ออยู่ในระยะ · ยืนบนหญ้า/มอสช่วยกำบัง · เพื่อนร่วมทางสู้ไปพร้อมกัน',
@@ -108,10 +113,10 @@ const STEPS=[
  {id:'prep',tag:'real',title:'เตรียมตัวออกเดินทาง',goal:'ซื้อเสบียงอย่างน้อย 1 ชิ้นที่ตลาด',hint:'เดินไปที่โต๊ะซื้อวัตถุดิบในตลาด · เสบียงใช้กินฟื้นความสดชื่นระหว่างทาง · จัดสำรับได้ที่โต๊ะในบ้าน',
   place:'market',begin:d=>{d.food=mats().food||0},check:d=>(mats().food||0)>d.food,acts:[guideBtn]},
  {id:'expedition',tag:'real',intro:'departure',outro:'camp',title:'รังโจรป่า',goal:'ออกทางออกหมู่บ้าน ล้มศัตรูบนแผนที่โลกให้ได้ 3 ตัว',hint:'กระดานภารกิจที่หมู่บ้านบอกทางไปจุดหมาย · พักแรมได้ทุกที่ · กลางคืนศัตรูดุร้ายขึ้น · HP ต่ำให้ดื่มยาหรือกลับก่อนก็ได้',
-  exit:true,begin:d=>{d.base=V().kills||0},progress:d=>Math.min(1,((V().kills||0)-(d.base||0))/3),check:d=>(V().kills||0)-(d.base||0)>=3,
+  exit:true,begin:d=>{d.base=V().kills||0;markTemp()},progress:d=>Math.min(1,((V().kills||0)-(d.base||0))/3),check:d=>(V().kills||0)-(d.base||0)>=3,
   acts:[guideBtn],
   reward:()=>root.StarterKit?.unlock?.([{group:'movement',id:'sprint',n:2},{group:'combat',id:'climb',n:2},{group:'combat',id:'dive',n:1},{group:'combat',id:'evade',n:1},{group:'combat',id:'firstAid',n:1}],{kicker:'ของจากค่ายโจร',title:'ทักษะเอาตัวรอด',text:'ป่ามีเนินและหน้าผา · ปีนขึ้นที่สูงแล้วกระโจนฟาดลงมาแรงกว่าเดิม'})},
- {id:'return',tag:'real',outro:'home',title:'กลับบ้าน',goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะเดินต่อไปจนถึงจุดหมายก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!onWorld(),acts:[]},
+ {id:'return',tag:'real',outro:'home',title:'กลับบ้าน',reward:()=>leaveTemp(),goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะเดินต่อไปจนถึงจุดหมายก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!onWorld(),acts:[]},
  {id:'sellLoot',tag:'real',title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',place:'market',check:d=>d.sales>0,acts:[guideBtn]},
  {id:'rest',tag:'real',outro:'finale',title:'พักฟื้น',goal:'กลับบ้านแล้วนอนพัก',hint:'ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก"',place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn],
   reward:async()=>{addCoins(30);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1},{group:'combat',id:'rockfall',n:1},{group:'combat',id:'perch',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
@@ -120,8 +125,8 @@ const byId=id=>STEPS.findIndex(x=>x.id===id);
 /* ---------- pumpkin (temp farming) ---------- */
 function waterDays(){return Object.keys(V()?.story?.water||{}).length}
 function wateredToday(){return !!V()?.story?.water?.[G().day]}
-function water(){const st=V().story;st.water||={};if(st.water[G().day])return 'วันนี้รดน้ำไปแล้ว';const why=spend(2,10,1);if(why)return why;
- st.seeds=true;st.water[G().day]=true;doSave();doRender();return '💧 รดน้ำฟักทองแล้ว ('+waterDays()+'/3 วัน)'}
+function water(){const st=V().story;st.water||={};if(st.water[G().day])return 'วันนี้ดูแลฟักทองไปแล้ว';const why=spend(2,10,1);if(why)return why;
+ st.seeds=true;st.water[G().day]=true;doSave();doRender();return '🌿 ดูแลฟักทองประกวดของฮิลดาแล้ว ('+waterDays()+'/3 วัน)'}
 
 /* ---------- v95.01: hooks the village pages call (same origin, through parent) ---------- */
 function questTargets(){const step=cur();if(!step||onWorld())return null;const d=dataOf(step);return {id:step.id,...targetsOf(step,d)}}
