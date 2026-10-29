@@ -47,6 +47,8 @@ const CREDITS=[
 ];
 const TIPS=['โจมตีจากด้านหลังศัตรูแรงกว่าด้านหน้า','ยืนบนที่สูงช่วยให้ตีแรงขึ้นและหลบได้ดีขึ้น','กด "รอ" แทนการเดินจะได้ CT คืนบางส่วน','อุปกรณ์ที่ดีต้องใช้วัตถุดิบจากพื้นที่ที่ยากขึ้น','นอนที่บ้านเพื่อฟื้นแรงและชีวิตเต็ม','ล็อกเป้าแล้วดูหน้าต่างทำนายผลก่อนโจมตี'];
 
+/* v97.13 · a save slot picked in Load (js/console-ui.js) is copied over the auto save here, before the game page reads it */
+try{const n=sessionStorage.getItem('projectA.pendingSlot');if(n){sessionStorage.removeItem('projectA.pendingSlot');const o=JSON.parse(localStorage.getItem('projectA.slot.'+n)||'null');if(o?.data)for(const [k,v] of Object.entries(o.data)){if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v)}}}catch(e){}
 /* v97.10 · developer tools (✎ Editor on the title) only on the creator's machine: a GitHub token is set for ⬆ Push, or ?dev=1 (remembered; ?dev=0 forgets) */
 const DEV=(()=>{try{const q=new URLSearchParams(location.search).get('dev');if(q==='1')localStorage.setItem('projectA.dev','1');if(q==='0')localStorage.removeItem('projectA.dev');return localStorage.getItem('projectA.dev')==='1'||!!JSON.parse(localStorage.getItem('projectA.github')||'{}').token}catch(e){return false}})();root.PROJECT_DEV=DEV;
 const SAVE='three-card-forge-v4',STARTED='project-a-started-v1',NEW_FLAG='project-a-newgame',VERSION=(root.GAME_VERSION?.v||'v50');
@@ -145,6 +147,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  <nav class="ts-menu" aria-label="เมนูหลัก">
   <button data-act="new"><span>New Game</span><small>เริ่มเกมใหม่</small></button>
   <button data-act="continue" ${hasSave?'':'disabled hidden'}><span>Continue</span><small>${hasSave?saveSummary():'ยังไม่มีเซฟ'}</small></button>
+  ${(()=>{const n=[1,2,3].filter(i=>{try{return !!localStorage.getItem('projectA.slot.'+i)}catch(e){return false}}).length;return n?`<button data-act="load"><span>Load</span><small>โหลดจากช่องเซฟ (${n} ช่อง)</small></button>`:''})()}
   <button data-act="options"><span>Options</span><small>ตั้งค่าเกม</small></button>
   <button data-act="extra"><span>Extra</span><small>วิธีเล่น · คลังภาพ · เครดิต</small></button>
   <div class="ts-tools" ${DEV?'':'hidden'}><a href="editor.html" target="_blank" rel="noopener" title="แก้ภาพ/แอนิเมชัน การ์ด แผนที่ สนามต่อสู้ (เปิดแท็บใหม่)">✎ Editor</a></div>
@@ -181,6 +184,7 @@ async function act(a){if(busyTitle)return;
    try{localStorage.setItem('three-card-forge-before-newgame',localStorage.getItem(SAVE)||'');localStorage.removeItem(SAVE);localStorage.removeItem(STARTED);for(const k of ['agrenor-world-v1','agrenor-mind-v1','agrenor-clock-v1','agrenor-standalone-v1'])localStorage.removeItem(k);/* v94: the world map, village memory and old clock start over too */sessionStorage.setItem(NEW_FLAG,'1')}catch{}busyTitle=true;title.classList.add('ts-out');await wait(reduced?0:300);location.reload();return}
   prepareStory();return}
  if(a==='continue'&&hasSave){enter(false);return}
+ if(a==='load'){root.ConsoleUI?.slotMenu('load');return}
  if(a==='options'){if(typeof root.openSettings==='function')root.openSettings();return}
  if(a==='extra'){title.querySelector('.ts-extra').hidden=false;tab('howto');return}
  if(a==='close-extra'){title.querySelector('.ts-extra').hidden=true;title.querySelector('[data-act="extra"]').focus();return}

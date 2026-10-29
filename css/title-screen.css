@@ -1,7 +1,7 @@
 /* v50 · Title menu, prologue and loading screen. Colours follow the game windows (navy + gold). */
 :root{--ts-gold:#e8c374;--ts-gold-2:#b8862f;--ts-ink:#f5e6c4;--ts-dim:#c9bb98;--ts-navy:#121b2e;--ts-navy-2:#1d2a44}
 /* While the title is up the game underneath stays hidden (it keeps loading behind it). */
-html.title-boot body>*:not(#titleScreen):not(#gameLoading):not(.game-dialog):not(dialog):not(script){visibility:hidden!important}
+html.title-boot body>*:not(#titleScreen):not(#gameLoading):not(.game-dialog):not(dialog):not(script):not(#cuMenu){visibility:hidden!important}
 html.title-boot,html.title-boot body{overflow:hidden}
 /* v97.05 · dark from the first paint: the reload after New Game used to flash the cream paper body before the title / loader was built */
 html.title-boot,html.title-boot body{background:#070b10!important}

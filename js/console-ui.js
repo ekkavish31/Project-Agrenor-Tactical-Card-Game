@@ -50,8 +50,9 @@
   });
   const css = document.createElement('style');
   css.textContent = `:focus-visible{outline:2px solid #ffd25a!important;outline-offset:2px}
-  #cuMenu{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:#05080dc4;backdrop-filter:blur(3px);font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
+  #cuMenu{position:fixed;inset:0;z-index:2100;display:grid;place-items:center;background:#05080dc4;backdrop-filter:blur(3px);font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
   #cuMenu .box{display:grid;grid-template-columns:repeat(2,minmax(150px,1fr));gap:8px;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;box-shadow:0 16px 40px #000a;max-width:92vw}
+  #cuMenu .box.one{grid-template-columns:minmax(260px,420px)}#cuMenu button small{color:#cdbb92;font-weight:400}#cuMenu button:disabled{opacity:.45;cursor:default}
   #cuMenu h2{grid-column:1/-1;margin:0 0 4px;color:#f3e9c9;font-size:18px}#cuMenu small{grid-column:1/-1;color:#cdbb92;font-size:12px}
   #cuMenu button{padding:11px 14px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:600 14px inherit;font-family:inherit;text-align:left;cursor:pointer}#cuMenu button:hover,#cuMenu button:focus-visible{background:#2d4a40}`;
   document.head.append(css);
@@ -64,9 +65,9 @@
     const go = document.querySelector('.town-go');
     const label = b => b.id === 'elChart' ? '◈ ตารางธาตุ' : b.id === 'fullscreen' ? '⛶ เต็มจอ' : ((b.textContent || b.title || b.dataset.game).replace(/\s+/g, ' ').trim() || b.title || b.dataset.game);
     const d = document.createElement('div'); d.id = 'cuMenu';
-    d.innerHTML = `<div class="box"><h2>เมนู</h2>${pick.map((b, i) => `<button data-i="${i}">${label(b)}</button>`).join('')}${go ? '<button data-go="1">🗺 ออกเดินทาง</button>' : ''}<button data-x="1">▶ กลับไปเล่น</button><small>ลูกศร/จอย เลือก · Enter ยืนยัน · Esc ปิด</small></div>`;
+    d.innerHTML = `<div class="box"><h2>เมนู</h2>${pick.map((b, i) => `<button data-i="${i}">${label(b)}</button>`).join('')}${go ? '<button data-go="1">🗺 ออกเดินทาง</button>' : ''}<button data-slot="save">💾 บันทึกเกม</button><button data-slot="load">📂 โหลดเกม</button><button data-x="1">▶ กลับไปเล่น</button><small>ลูกศร/จอย เลือก · Enter ยืนยัน · Esc ปิด</small></div>`;
     document.body.append(d);
-    d.onclick = e => { const b = e.target.closest('button'); if (e.target === d || b?.dataset.x) { d.remove(); return } if (!b) return; d.remove(); if (b.dataset.go) go.click(); else pick[+b.dataset.i]?.click() };
+    d.onclick = e => { const b = e.target.closest('button'); if (e.target === d || b?.dataset.x) { d.remove(); return } if (!b) return; d.remove(); if (b.dataset.slot) slotMenu(b.dataset.slot); else if (b.dataset.go) go.click(); else pick[+b.dataset.i]?.click() };
     d.querySelector('button')?.focus();
     return true;
   }
@@ -76,6 +77,29 @@
     if (window.TownBattle?.active?.() || document.querySelector('dialog[open],.game-dialog,.cs:not([hidden]),#titleScreen,.wm-modal-bg') || document.body.classList.contains('cs-open')) return;
     if (/village-town\.html/.test(location.pathname) && !/[?&](battle|edit)/.test(location.search) && villageMenu()) e.preventDefault();
   });
+
+  /* ---------- v97.13 · save slots ----------
+     The game keeps saving itself to its usual keys (the auto save = Continue). A slot is a copy of every progress key at that moment
+     (game, world map, village memory, clock); loading copies it back and restarts the page, so every frame reads the same save. */
+  const SLOT_KEYS = ['three-card-forge-v4', 'project-a-started-v1', 'agrenor-world-v1', 'agrenor-mind-v1', 'agrenor-clock-v1', 'agrenor-standalone-v1'];
+  const slotKey = n => 'projectA.slot.' + n;
+  function hostSave() { try { let w = window; for (let i = 0; i < 4; i++) { if (typeof w.save === 'function' && w.s && w.s.village) { w.save(); return } if (w.parent === w) break; w = w.parent } } catch (e) { } }
+  function slotInfo(n) { try { return JSON.parse(localStorage.getItem(slotKey(n)) || 'null') } catch (e) { return null } }
+  function summary(g) { if (!g) return 'ว่าง'; const v = g.village || {}, h = Math.floor((g.minutes || 480) / 60), m = (g.minutes || 480) % 60; return `${v.heroName || 'นักผจญภัย'} · Lv.${v.character?.level || 1} · วันที่ ${g.day || 1} · ${h}:${String(m).padStart(2, '0')}` }
+  function saveSlot(n) { hostSave(); const data = {}; for (const k of SLOT_KEYS) data[k] = localStorage.getItem(k); let g = null; try { g = JSON.parse(data['three-card-forge-v4'] || 'null') } catch (e) { }
+    if (!g) return false; localStorage.setItem(slotKey(n), JSON.stringify({ at: Date.now(), text: summary(g), data })); return true }
+  /* the copy happens on the next start (js/title-screen.js reads 'projectA.pendingSlot' before the game reads its save): the page being left may still write its own save while it unloads */
+  function loadSlot(n) { const o = slotInfo(n); if (!o?.data) return false; try { sessionStorage.setItem('projectA.pendingSlot', String(n)); sessionStorage.removeItem('project-a-newgame') } catch (e) { } try { top.location.reload() } catch (e) { location.reload() } return true }
+  function slotMenu(mode) {
+    document.getElementById('cuMenu')?.remove();
+    const d = document.createElement('div'); d.id = 'cuMenu'; const when = t => t ? new Date(t).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '';
+    d.innerHTML = `<div class="box one"><h2>${mode === 'save' ? '💾 บันทึกเกม' : '📂 โหลดเกม'}</h2>${[1, 2, 3].map(n => { const o = slotInfo(n); return `<button data-n="${n}" ${mode === 'load' && !o ? 'disabled' : ''}><b>ช่อง ${n}</b> · ${o ? o.text : 'ว่าง'}<br><small>${o ? 'บันทึกเมื่อ ' + when(o.at) : mode === 'save' ? 'บันทึกที่นี่' : ''}</small></button>` }).join('')}<button data-x="1">ปิด</button><small>${mode === 'save' ? 'เกมยังเซฟอัตโนมัติเหมือนเดิม · ช่องเซฟเก็บไว้ย้อนกลับมาเล่นจุดนี้' : 'โหลดแล้วเกมจะเริ่มใหม่จากจุดที่บันทึก · เซฟอัตโนมัติปัจจุบันจะถูกแทนที่'}</small></div>`;
+    document.body.append(d);
+    d.onclick = e => { const b = e.target.closest('button'); if (e.target === d || b?.dataset.x) { d.remove(); return } if (!b?.dataset.n) return; const n = +b.dataset.n, has = !!slotInfo(n);
+      if (mode === 'save') { if (has && !b.dataset.sure) { b.dataset.sure = 1; b.querySelector('small').textContent = 'มีเซฟอยู่แล้ว · กดอีกครั้งเพื่อบันทึกทับ'; return } if (saveSlot(n)) { b.querySelector('small').textContent = '✓ บันทึกแล้ว'; b.firstElementChild.nextSibling.textContent = ' · ' + slotInfo(n).text; SFX.ok(); setTimeout(() => d.remove(), 700) } }
+      else { if (!b.dataset.sure) { b.dataset.sure = 1; b.querySelector('small').textContent = 'กดอีกครั้งเพื่อโหลด (เกมจะเริ่มใหม่จากจุดนี้)'; return } loadSlot(n) } };
+    d.querySelector('button:not(:disabled)')?.focus();
+  }
 
   /* ---------- gamepad ---------- */
   const PAD = { 0: 'Enter', 1: 'Escape', 2: 'z', 3: 'a', 4: 'q', 5: 'e', 8: 'Tab', 9: 'Escape', 12: 'ArrowUp', 13: 'ArrowDown', 14: 'ArrowLeft', 15: 'ArrowRight' };
@@ -98,5 +122,5 @@
   addEventListener('gamepadconnected', () => { try { const d = document.createElement('div'); d.textContent = '🎮 เชื่อมต่อจอยแล้ว · A ยืนยัน · B ยกเลิก · Start เมนู'; d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;padding:8px 16px;border-radius:999px;background:#14231ff2;color:#f3e9c9;border:1px solid #b9c48a88;font:600 13px system-ui,"Noto Sans Thai",sans-serif;pointer-events:none'; document.body.append(d); setTimeout(() => d.remove(), 3200) } catch (e) { } });
   requestAnimationFrame(poll);
 
-  window.ConsoleUI = { sfx: SFX, moveFocus, villageMenu };
+  window.ConsoleUI = { sfx: SFX, moveFocus, villageMenu, slotMenu, saveSlot, loadSlot, slotInfo };
 })();
