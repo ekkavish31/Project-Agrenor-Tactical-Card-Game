@@ -328,10 +328,13 @@
     if (a.p.benched) { g.font = '700 12px system-ui'; g.textAlign = 'center'; g.fillStyle = '#9fe0b0'; g.fillText('ทีม', p.x, p.y - 96) }
     g.restore();
   }
+  const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura indoors too */
   function drawHero(t) {
-    const set = hero.walking ? walkImgs : heroImgs, im = set[Math.floor(t / (hero.walking ? 110 : 260)) % set.length], s = 104, p = P(hero.vu, hero.vv);
+    const set = hero.walking ? walkImgs : heroImgs, im0 = set[Math.floor(t / (hero.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 104, p = P(hero.vu, hero.vv);
     g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15, 6, 0, 0, 7); g.fill();
-    if (im.complete && im.naturalWidth) { g.save(); g.translate(p.x, p.y + 3); if (hero.face === 'SW' || hero.face === 'NW') g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
+    if (LOOK) JobLook.aura(g, LOOK, { x: p.x, y: p.y + 3 }, s, t, false);
+    if (im0.complete && im0.naturalWidth) { g.save(); g.translate(p.x, p.y + 3); if (hero.face === 'SW' || hero.face === 'NW') g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
+    if (LOOK) JobLook.aura(g, LOOK, { x: p.x, y: p.y + 3 }, s, t, true);
   }
   function label(txt, x, y) { g.save(); g.font = '600 13px VillageThai,system-ui'; const w = g.measureText(txt).width + 14; g.fillStyle = 'rgba(20,14,8,.85)'; g.beginPath(); g.roundRect(x - w / 2, y - 18, w, 22, 8); g.fill(); g.fillStyle = '#ffe9b8'; g.textAlign = 'center'; g.fillText(txt, x, y - 3); g.restore() }
   function bubble(a, txt) {

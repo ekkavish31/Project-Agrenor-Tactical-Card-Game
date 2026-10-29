@@ -41,7 +41,7 @@
       ],
       turn: 'hero', turns: 1, mp: 0, acted: false, outcome: null, log: []
     };
-    st.mp = st.units[0].move;
+    st.mp = st.units[0].move; if (o.objective) st.obj = o.objective;
     if (o.ct) { st.ct = true;   /* the hero first, then his friends, then the foes */
       const r = o.rng || Math.random; for (const u of st.units) { u.speed = u.speed || (u.id === 'hero' ? 8 : 8); u.ct = u.id === 'hero' ? 100 : u.side === 'hero' ? 55 + Math.floor(r() * 40) : Math.floor(r() * u.speed * 5) } st.active = st.units[0] }
     if (o.cards) {
@@ -59,7 +59,8 @@
   const CRYSTALS = 2, STAMINA_PER_DISCARD = 10, HAND = { movement: 4, combat: 6 };
   /* v95.00 · the hero's growth in card battles: weapon cards add h.power (level, weapon, strength), element cards add h.spell (knowledge) */
   const SPELL_CARDS = new Set(['spell', 'thunder', 'frost', 'flame', 'gust', 'tide', 'pull', 'quake', 'rockfall']);
-  const cardBonus = (h, id) => Math.max(0, SPELL_CARDS.has(id) ? h.spell || 0 : h.power || 0);
+  const cardBonus = (h, id) => Math.max(0, SPELL_CARDS.has(id) ? h.spell || 0 : h.power || 0) + (h.meleePlus && CARD[id] && CARD[id].range === 1 && !CARD[id].self ? h.meleePlus : 0);
+  const jobMult = (h, id) => SPELL_CARDS.has(id) ? h.spellMult || 1 : 1;   /* v97.18: mage */
   const crystals = st => Math.max(0, (st.crystalMax || CRYSTALS) - (st.spent || 0));
   function cardEvent(st, type, group, cards) { if (cards.length) (st.deck.cardEvents ||= []).push({ type, group, cards: cards.map(c => ({ ...c })), seq: st.deck.cardSeq = (st.deck.cardSeq || 0) + 1 }) }
   /* take card `index` out of the hand into the discard pile (no refill — that waits for the next turn) */
@@ -101,7 +102,19 @@
   const opponents = (st, u) => st.units.filter(x => x.side !== u.side && alive(x));
   /* nearest living opponent (falls back to any opponent so old callers still get a unit) */
   const foe = (st, u) => opponents(st, u).sort((a, b) => dist(u, a) - dist(u, b))[0] || st.units.find(x => x.side !== u.side);
-  function checkOutcome(st) { if (!alive(hero(st))) st.outcome = 'lose'; else if (!monsters(st).some(alive)) st.outcome = 'win'; return st.outcome }
+  /* v97.22 · win conditions beyond a rout (st.obj): survive N turns · escape (the hero reaches an exit cell) · defend a cell for N turns
+     (a foe standing on it = lost) · leader (only the marked leader has to fall). A rout always wins too. */
+  const OBJ_TEXT = { rout: 'ล้มศัตรูทั้งหมด', survive: 'อยู่รอดให้ครบ {n} เทิร์น', escape: 'พาตัวเอกไปถึงทางออก (ช่องเขียว)', defend: 'ป้องกันจุดสีทอง {n} เทิร์น', leader: 'ล้มหัวหน้า' };
+  const objText = st => (OBJ_TEXT[st.obj?.type || 'rout'] || OBJ_TEXT.rout).replace('{n}', st.obj?.turns || '');
+  function checkOutcome(st) {
+    if (st.outcome) return st.outcome; const o = st.obj;
+    if (!alive(hero(st))) st.outcome = 'lose';
+    else if (o?.type === 'defend' && o.cells?.some(c => monsters(st).some(m => alive(m) && m.u === c.u && m.v === c.v))) st.outcome = 'lose';
+    else if (!monsters(st).some(alive)) st.outcome = 'win';
+    else if (o?.type === 'leader' && !monsters(st).some(m => m.leader && alive(m))) st.outcome = 'win';
+    else if ((o?.type === 'survive' || o?.type === 'defend') && st.turns > o.turns) st.outcome = 'win';
+    else if (o?.type === 'escape' && o.cells?.some(c => c.u === hero(st).u && c.v === hero(st).v)) st.outcome = 'win';
+    return st.outcome }
   const inside = (st, u, v) => u >= st.bounds.u0 && u <= st.bounds.u1 && v >= st.bounds.v0 && v <= st.bounds.v1;
   function kind(st, u, v) { if (!inside(st, u, v)) return 'blocked'; const k = st.kindAt(u, v); return KINDS[k] ? k : 'normal' }
   const cost = (st, u, v) => KINDS[kind(st, u, v)].cost;
@@ -166,7 +179,7 @@
   function move(st, to) {
     const c = canMove(st, to); if (!c.ok) return c;
     const u = actor(st), pv = c.path[c.path.length - 2] || u; u.face = faceOf(pv, to); u.u = to.u; u.v = to.v; st.mp -= c.cost;
-    st.log.push(u.name + ' เดิน ' + c.cost + ' แต้ม');
+    st.log.push(u.name + ' เดิน ' + c.cost + ' แต้ม'); if (st.obj?.type === 'escape' && u === hero(st)) checkOutcome(st);
     return { ok: true, path: c.path, cost: c.cost };
   }
   /* facing on the lattice (+u = SE, +v = SW, −u = NW, −v = NE) — used by แทงข้างหลัง */
@@ -175,7 +188,7 @@
      or the direction the player picked at the end of the hero's turn. */
   const FACE_V = { SE: [1, 0], NW: [-1, 0], SW: [0, 1], NE: [0, -1] }, SIDE = { back: 1.2, side: 1.1 };
   function sideOf(t, a) { const f = FACE_V[t?.face]; if (!f) return 'front'; const du = a.u - t.u, dv = a.v - t.v, along = du * f[0] + dv * f[1], perp = Math.abs(du * f[1] - dv * f[0]); if (!du && !dv) return 'front'; return along >= perp && along > 0 ? 'front' : -along >= perp ? 'back' : 'side' }
-  function sideMult(st, a, t, notes) { if (!st.cards) return 1; const s = sideOf(t, a), m = SIDE[s] || 1; if (m !== 1 && notes) notes.push((s === 'back' ? 'ด้านหลัง' : 'ด้านข้าง') + ' ×' + m); return m }
+  function sideMult(st, a, t, notes) { if (!st.cards) return 1; const s = sideOf(t, a), m = (SIDE[s] || 1) * (s !== 'front' && a.flankPlus ? a.flankPlus : 1); if (m !== 1 && notes) notes.push((s === 'back' ? 'ด้านหลัง' : 'ด้านข้าง') + ' ×' + m); return m }
   function targets(st, att, range = att.range) { return opponents(st, att).filter(t => dist(att, t) <= range && (range > 1 || meleeOk(st, att, t))).sort((a, b) => dist(att, a) - dist(att, b)) }
   function damageFor(st, att, tgt) {
     let d = Math.max(1, att.atk - tgt.def), notes = [];
@@ -183,12 +196,30 @@
     return { damage: d, notes };
   }
   /* one hit of `raw` damage on tgt: cover −30 %, then the guard pool soaks it up. Returns { damage, notes } (damage = HP actually lost) */
+  /* ---------- v97.19 · status effects (unit.sts = {kind: turns left}) tied to elements and monster kinds ----------
+     burn 🔥 / poison ☠: HP lost at the start of the unit's own turn · sleep 💤: skips its turns, a hit wakes it · silence 🔇: no element
+     cards or skills · weak ⬇: hits ×0.75 · freeze and shock reuse the old stun (skip a turn) and slow (−2 move). */
+  const STATUS = { burn: { name: 'ไหม้', icon: '🔥', dot: 4, turns: 2 }, poison: { name: 'พิษ', icon: '☠', dot: 3, turns: 3 }, sleep: { name: 'หลับ', icon: '💤', turns: 2 }, silence: { name: 'ใบ้', icon: '🔇', turns: 2 }, weak: { name: 'อ่อนแรง', icon: '⬇', turns: 2 }, freeze: { name: 'แข็ง', icon: '❄' }, shock: { name: 'ชา', icon: '⚡' } };
+  const CARD_STATUS = { flame: ['burn', .5], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3] };
+  const MON_STATUS = { slime: ['poison', .3], wolf: ['poison', .2], bat: ['sleep', .2], shadowWolf: ['sleep', .2], golem: ['weak', .3], frostWolf: ['freeze', .2], yeti: ['freeze', .25], frostQueen: ['freeze', .35], snowKobold: ['silence', .2], kobold: ['silence', .15], bandit: ['weak', .15] };
+  function inflict(st, t, k, chance = 1, notes) {
+    if (!st.cards || !alive(t) || !STATUS[k] || (st.rng || Math.random)() >= chance) return null;
+    if (k === 'freeze') t.stun = 1; else if (k === 'shock') t.slowed = 1; else (t.sts ||= {})[k] = STATUS[k].turns;
+    st.log.push(t.name + ' ติดสถานะ' + STATUS[k].name); notes?.push(STATUS[k].icon + ' ' + STATUS[k].name); return k;
+  }
+  /* start of a unit's own turn: damage over time, count down; true = asleep (skip the turn) */
+  function tickStatus(st, u, steps) {
+    const s = u.sts; if (!s) return false; let skip = false;
+    for (const k of Object.keys(s)) { const S = STATUS[k]; if (S.dot && alive(u)) { const d = Math.min(u.hp, S.dot); u.hp -= d; st.log.push(u.name + ' ' + S.name + ' −' + d); steps?.push({ unit: u, type: 'dot', kind: k, damage: d }) } if (k === 'sleep') skip = true; if (--s[k] <= 0) delete s[k] }
+    if (!Object.keys(s).length) delete u.sts; checkOutcome(st); return skip && alive(u);
+  }
+  const weakMult = u => u.sts?.weak ? .75 : 1;
   function hurt(st, tgt, raw) {
     let d = Math.max(1, Math.round(raw)), notes = [];
     if (kind(st, tgt.u, tgt.v) === 'cover') { d = Math.max(1, Math.round(d * (1 - KINDS.cover.reduce))); notes.push('กำบัง −30%') }
     if (st.cards && tgt.armor > 0 && d > 1) { const a = Math.min(tgt.armor, d - 1); d -= a; notes.push('เกราะ −' + a) }   /* v95.00: DEF of the hero (level) and of armoured companions */
     if (tgt.guard > 0) { const a = Math.min(tgt.guard, d); tgt.guard -= a; d -= a; notes.push('ป้องกัน −' + a) }
-    tgt.hp = Math.max(0, tgt.hp - d);
+    tgt.hp = Math.max(0, tgt.hp - d); if (d > 0 && tgt.sts?.sleep) { delete tgt.sts.sleep; notes.push('ตื่น') }
     return { damage: d, notes };
   }
   function attack(st) {
@@ -199,7 +230,7 @@
     if (st.cards && a.side === 'hero') return { ok: false, reason: 'ใช้ไพ่โจมตี' };
     a.face = faceOf(a, t);
     if (st.cards && t.evade) { t.evade = 0; st.acted = true; st.mp = 0; st.log.push(t.name + ' ก้าวหลบ ' + a.name + ' พลาด'); return { ok: true, damage: 0, target: t, notes: ['หลบ'], evaded: true } }
-    const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage); st.acted = true; st.mp = 0;
+    const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * weakMult(a) * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); if (st.cards && r.damage > 0 && MON_STATUS[a.kind]) inflict(st, t, MON_STATUS[a.kind][0], MON_STATUS[a.kind][1], r.notes); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage); st.acted = true; st.mp = 0;
     st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
     let counter = 0;
     if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; const c = hurt(st, a, 12); counter = c.damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
@@ -226,7 +257,7 @@
     return out;
   }
   function beginHeroTurn(st) {
-    st.turn = 'hero'; st.cur = null; st.turns++; st.acted = false; st.mp = 0;
+    st.turn = 'hero'; st.cur = null; st.turns++; checkOutcome(st); st.acted = false; st.mp = 0;
     if (st.cards) { const h = hero(st); h.guard = 0; if (h.perch && --h.perch <= 0) h.perch = 0; for (const a of allies(st)) if (a.cd) a.cd--; refill(st) }
   }
   /* after the hero ends the turn: run the AI units' turns in CT order until the hero is up again. Returns the steps (type 'turn' marks each unit's start) */
@@ -235,6 +266,8 @@
     for (let guard = 0; guard < 300 && !st.outcome; guard++) {
       const list = st.units.filter(alive), g = new Map(list.map(u => [u, u.ct || 0])), u = pickNext(list, g);
       for (const x of list) x.ct = g.get(x); if (u !== hero(st)) u.ct -= 100; st.active = u;   // the hero pays when his turn ends
+      /* v97.19: burns / poison tick, sleepers lose the turn */
+      if (u.sts) { const slept = tickStatus(st, u, steps); if (st.outcome) break; if (!alive(u)) continue; if (slept) { st.log.push(u.name + ' หลับอยู่'); steps.push({ unit: u, type: 'sleep' }); if (u === hero(st)) u.ct -= 100; continue } }
       if (u === hero(st)) { beginHeroTurn(st); steps.push({ type: 'turn', unit: u }); return steps }
       st.turn = 'monster'; st.cur = u; steps.push({ type: 'turn', unit: u }); if (u.side === 'hero') u.guard = 0;
       if (u.side === 'hero' && u.control && !u.autoCtl && !u.stun && st.cards) { beginAllyTurn(st, u); steps.push({ type: 'control', unit: u }); return steps }   /* v97.15 · the player commands this one */
@@ -282,7 +315,7 @@
   function endTurn(st) {
     if (st.outcome) return { ok: false, reason: 'จบการต่อสู้แล้ว' };
     if (st.cards && st.turn === 'hero') { const h = hero(st); h.stamina = Math.min(h.stMax || 100, h.stamina + 10); h.climb = 0 }
-    st.turn = st.turn === 'hero' ? 'monster' : 'hero'; if (st.turn === 'hero') st.turns++;
+    st.turn = st.turn === 'hero' ? 'monster' : 'hero'; if (st.turn === 'hero') { st.turns++; checkOutcome(st) }
     st.acted = false; st.mp = st.cards && st.turn === 'hero' ? 0 : actor(st).move;
     if (st.cards && st.turn === 'hero') { const h = hero(st); h.guard = 0; if (h.perch && --h.perch <= 0) h.perch = 0; for (const a of allies(st)) { a.guard = 0; if (a.cd) a.cd-- } refill(st) }
     return { ok: true, turn: st.turn };
@@ -294,6 +327,7 @@
   function aiActCore(st, u) {
     const steps = [], opp = opponents(st, u); if (!alive(u) || !opp.length || st.outcome || u.passive) return steps;   /* passive = the training-ground scarecrow */
     if (u.stun) { u.stun = 0; steps.push({ unit: u, type: 'stun' }); return steps }
+    if (u.boss && u.side === 'monster' && bossTurn(st, u, steps)) return steps;   /* v97.20 */
     /* a healer companion mends the most hurt friend in reach (walking closer if needed) instead of attacking */
     if (u.side === 'hero' && u.healer) {
       const hurtF = st.units.filter(f => f.side === 'hero' && alive(f) && f.hp < f.maxHp * .7).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
@@ -302,6 +336,9 @@
         if (dist(u, hurtF) <= u.range) { const b = hurtF.hp; hurtF.hp = Math.min(hurtF.maxHp, hurtF.hp + 12); st.log.push(u.name + ' รักษา ' + hurtF.name + ' +' + (hurtF.hp - b)); steps.push({ unit: u, type: 'heal', target: hurtF, heal: hurtF.hp - b }); return steps }
       }
     }
+    /* v97.22 · a raid on a defend objective: a foe that can step onto the guarded cell this turn takes it (and wins) */
+    if (u.side === 'monster' && st.obj?.type === 'defend') { const r = reach(st, u, u.move), g = st.obj.cells.map(c => r.get(key(c.u, c.v))).find(Boolean);
+      if (g) { const path = pathTo(r, g), pv = path[path.length - 2] || u; u.face = faceOf(pv, g); u.u = g.u; u.v = g.v; st.log.push(u.name + ' บุกยึดจุดป้องกัน!'); steps.push({ unit: u, type: 'move', path }); return steps } }
     if (u.side === 'monster' && (u.iq | 0) >= 1) return smartAct(st, u, steps);   /* v97.01 · tactics by intelligence */
     let tgt = targets(st, u).find(t => t.id === st.target && u.side === 'hero') || targets(st, u)[0], field = null;
     /* companion orders: guard = hold the ground (+6 guard, hit only what is already in range) · follow = stay by the hero */
@@ -324,6 +361,23 @@
     }
     if (tgt) { st.cur = u; const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) }
     return steps;
+  }
+  /* ---------- v97.20 · boss mechanics (B1): FFT-style tells and specials ----------
+     • enrage once under 50 % HP: hits ×1.25, +1 move · • every 3rd turn a special, announced the turn before ("⚠ กำลังรวบรวมพลัง"):
+       frost queen: blizzard (3 cells, everyone next to the target, freeze 50 %) · from higher ground: rock throw (4 cells, +15 % per level down)
+       · else: ground slam (everyone within 2 cells, +30 % on lower ground) — when nothing fits, the boss just fights normally */
+  function bossTurn(st, u, steps) {
+    if (!u.enraged && u.hp <= u.maxHp * .5) { u.enraged = true; u.atk = Math.round(u.atk * 1.25); u.move = (u.move || 3) + 1; st.log.push(u.name + ' คลั่ง! พลังโจมตีเพิ่มขึ้น'); steps.push({ unit: u, type: 'phase' }) }
+    u.bossT = (u.bossT || 0) + 1;
+    if (u.bossT % 3 === 2) { st.log.push(u.name + ' กำลังรวบรวมพลัง…'); steps.push({ unit: u, type: 'charge' }); return false }
+    if (u.bossT % 3 !== 0) return false;
+    const opp = opponents(st, u), hitAll = (list, mult, name, fx, extra) => { const hits = []; for (const o of list) { const r = hurt(st, o, u.atk * mult(o) * weakMult(u)); if (extra) extra(o, r); hits.push({ target: o, damage: r.damage, notes: r.notes }) }
+      st.log.push(u.name + ' ใช้ ' + name + ' (' + hits.map(h => h.target.name + ' −' + h.damage).join(', ') + ')'); steps.push({ unit: u, type: 'bossSkill', name, fx, hits }); checkOutcome(st); return true };
+    if (u.kind === 'frostQueen') { const t = opp.filter(o => dist(o, u) <= 3).sort((a, b) => a.hp - b.hp)[0]; if (t) { u.face = faceOf(u, t); return hitAll(opp.filter(o => dist(o, t) <= 1), () => .55, 'พายุน้ำแข็ง', 'ice', o => inflict(st, o, 'freeze', .5)) } }
+    const low = opp.filter(o => dist(o, u) <= 4 && gap(st, u, o) >= 1).sort((a, b) => gap(st, u, b) - gap(st, u, a))[0];
+    if (low) { u.face = faceOf(u, low); return hitAll([low], o => .9 * (1 + .15 * Math.min(4, gap(st, u, o))), 'ขว้างหินจากที่สูง', 'earth') }
+    const near = opp.filter(o => dist(o, u) <= 2); if (near.length) return hitAll(near, o => .6 * (gap(st, u, o) >= 1 ? 1.3 : 1), 'ทุบพื้น', 'earth');
+    return false;
   }
   /* ---------- v97.01 · monster tactics by intelligence (u.iq): 0 brute (nearest foe) · 1 hunts the weak and finishes kills · 2 goes for supports,
      the hero when he is low, focuses wounded foes, keeps out of crossfire, ranged units kite, flees when almost dead · 3 also protects its own
@@ -390,7 +444,7 @@
     st.cur = a; st.acted = false; if (a.side === 'hero') st.turn = 'monster';   // let attack() resolve for this attacker
     const at = (() => { a.face = faceOf(a, t);
       if (st.cards && t.evade) { t.evade = 0; st.log.push(t.name + ' ก้าวหลบ ' + a.name + ' พลาด'); return { ok: true, damage: 0, target: t, notes: ['หลบ'], evaded: true } }
-      const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage);
+      const crit = st.cards && (st.rng || Math.random)() < (a.side === 'monster' ? CRIT.monster : CRIT.ally), hm = st.cards ? heightMult(st, a, t) : 1, en = [], em = st.cards ? elMult(st, a.el, t, en) : 1, sm = sideMult(st, a, t, en), r = st.cards ? hurt(st, t, a.atk * hm * em * sm * weakMult(a) * (crit ? CRIT.mult : 1)) : damageFor(st, a, t); if (st.cards && r.damage > 0 && MON_STATUS[a.kind]) inflict(st, t, MON_STATUS[a.kind][0], MON_STATUS[a.kind][1], r.notes); r.notes.push(...en); if (crit) r.notes.unshift('คริติคอล'); if (hm !== 1) r.notes.push(heightNote(hm)); if (!st.cards) t.hp = Math.max(0, t.hp - r.damage);
       st.log.push(a.name + ' ตี ' + t.name + ' −' + r.damage + (r.notes.length ? ' (' + r.notes.join(', ') + ')' : ''));
       let counter = 0; if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; counter = hurt(st, a, 12).damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
       /* v94: heavy monsters (shove) knock a target standing at a ledge off it — down 2+ levels costs 5 HP per level */
@@ -417,7 +471,7 @@
   function skillBlock(st, a) {
     if (!st.cards) return 'ไม่ได้เปิดโหมดไพ่'; if (st.outcome) return 'จบการต่อสู้แล้ว'; if (st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
     if (!a || !alive(a) || a.side !== 'hero' || a === hero(st)) return 'สั่งไม่ได้'; const sk = ALLY_SKILL[a.key]; if (!sk) return 'ไม่มีท่าพิเศษ';
-    if (a.cd > 0) return 'รออีก ' + a.cd + ' เทิร์น'; if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
+    if (a.cd > 0) return 'รออีก ' + a.cd + ' เทิร์น'; if (a.sts?.silence) return '🔇 ใบ้ ใช้ท่าพิเศษไม่ได้'; if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
     if (sk.range && !targets(st, a, sk.range).length) return 'ไม่มีศัตรูในระยะ ' + sk.range + ' ช่อง';
     if (sk.healAll && !st.units.some(u => u.side === 'hero' && alive(u) && u.hp < u.maxHp)) return 'ทุกคนยังเลือดเต็ม';
     return '';
@@ -443,7 +497,7 @@
   function monsterTurn(st) {
     const steps = [];
     if (st.outcome || st.turn !== 'monster') return steps;
-    for (const m of monsters(st)) { if (!alive(m)) continue; st.cur = m; steps.push(...aiAct(st, m)); if (st.outcome) break }
+    for (const m of monsters(st)) { if (!alive(m)) continue; if (m.sts && tickStatus(st, m, steps)) { steps.push({ unit: m, type: 'sleep' }); continue } if (!alive(m) || st.outcome) { if (st.outcome) break; continue } st.cur = m; steps.push(...aiAct(st, m)); if (st.outcome) break }
     st.cur = null;
     if (!st.outcome) endTurn(st);
     return steps;
@@ -466,13 +520,16 @@
     if (st.outcome) return 'จบการต่อสู้แล้ว'; if (st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
     const TD = deckLib(), c = st.deck.combat.hand[index]; if (!c) return 'ไม่มีไพ่ใบนี้';
     const rule = CARD[c.id]; if (!rule) return TD.COMBAT[c.id].name + ' ยังไม่รองรับในสนามแบน';
+    if (hero(st).sts?.silence && SPELL_CARDS.has(c.id)) return '🔇 ใบ้ ใช้การ์ดธาตุไม่ได้ (' + hero(st).sts.silence + ' เทิร์น)';
     if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
     const h = hero(st); if (h.stamina < rule.st) return 'แรงไม่พอ (ต้อง ' + rule.st + ')';
-    if (!rule.self && !pickTarget(st, rule)) return rule.high && targets(st, h, rule.range).length ? 'ต้องยืนสูงกว่าเป้าอย่างน้อย 1 ระดับ' : rule.range === 1 && opponents(st, h).some(o => dist(h, o) <= 1) ? 'ต่างระดับเกินระยะประชิด' : 'ศัตรูอยู่นอกระยะ (' + rule.range + ' ช่อง)';
+    if (!rule.self && !pickTarget(st, rule)) return rule.high && targets(st, h, reachOf(h, rule)).length ? 'ต้องยืนสูงกว่าเป้าอย่างน้อย 1 ระดับ' : rule.range === 1 && opponents(st, h).some(o => dist(h, o) <= 1) ? 'ต่างระดับเกินระยะประชิด' : 'ศัตรูอยู่นอกระยะ (' + reachOf(h, rule) + ' ช่อง)';
     return '';
   }
   /* the chosen target (st.target = unit id, set by clicking a monster) if it is in range, else the nearest one in range */
-  function pickTarget(st, rule) { const h = hero(st), inR = targets(st, h, rule.range).filter(t => rule.high ? gap(st, h, t) >= rule.high : rule.leap ? gap(st, h, t) >= -1 : rule.aoe === 'splash' ? gap(st, t, h) < 2 : true), pick = inR.find(t => t.id === st.target); return pick || inR[0] || null }
+  /* v97.18 · job passives on the hero: rangePlus (ranger) · meleePlus (warrior) · spellMult (mage) · supportMult (cleric) · flankPlus (rogue) · guardPlus (guardian) */
+  const reachOf = (h, rule) => rule.range > 1 ? rule.range + (h.rangePlus || 0) : rule.range;
+  function pickTarget(st, rule) { const h = hero(st), inR = targets(st, h, reachOf(h, rule)).filter(t => rule.high ? gap(st, h, t) >= rule.high : rule.leap ? gap(st, h, t) >= -1 : rule.aoe === 'splash' ? gap(st, t, h) < 2 : true), pick = inR.find(t => t.id === st.target); return pick || inR[0] || null }
   function setTarget(st, id) { const t = st.units.find(u => u.id === id && u.side === 'monster' && alive(u)); st.target = t ? t.id : null; return t || null }
   function playCombat(st, index) {
     const why = combatBlock(st, index); if (why) return { ok: false, reason: why };
@@ -480,9 +537,9 @@
     spend(st, 'combat', index); st.spent++; h.stamina -= rule.st;
     const out = { ok: true, card: id, uid: c0.uid, name, fx: rule.fx, self: !!rule.self, big: rule.big || 1, hits: [] };
     if (rule.self) {
-      if (rule.guard) { h.guard = Math.max(h.guard, rule.guard); out.guard = h.guard }
+      if (rule.guard) { h.guard = Math.max(h.guard, Math.round((rule.guard + (h.guardPlus || 0)) * (h.supportMult || 1))); out.guard = h.guard }
       if (rule.restore) { h.stamina = Math.min(h.stMax || 100, h.stamina + rule.restore); out.restore = rule.restore }
-      if (rule.heal) { const b = h.hp; h.hp = Math.min(h.maxHp, h.hp + rule.heal); out.heal = h.hp - b }
+      if (rule.heal) { const b = h.hp; h.hp = Math.min(h.maxHp, h.hp + Math.round(rule.heal * (h.supportMult || 1))); out.heal = h.hp - b }
       if (rule.perch) { h.perch = rule.perch; out.perch = true } if (rule.climb) { h.climb = 1; out.climb = true } if (rule.evade) { h.evade = 1; out.evade = true } if (rule.counter) { h.counter = 1; out.counter = true } if (rule.ambush) { h.ambush = rule.ambush; out.ambush = true }
       st.log.push(name + (out.guard ? ' ป้องกัน ' + out.guard : out.heal ? ' ฟื้น ' + out.heal : out.restore ? ' แรง +' + out.restore : out.perch ? ' (ยึดที่สูง · โบนัสความสูง ×2)' : out.climb ? ' (ตานี้ปีนต่างระดับได้ 2 · ขึ้นเนินไม่เสียแต้ม)' : out.evade ? ' (หลบการโจมตีครั้งถัดไป)' : out.counter ? ' (สวนกลับเมื่อโดนตี)' : out.ambush ? ' (ตีครั้งถัดไป ×1.6)' : ''));
       return out;
@@ -501,7 +558,7 @@
     out.target = t; const sm = sideMult(st, h, t, extra);
     for (let i = 0; i < (rule.hits || 1); i++) {
       if (!alive(t)) break;
-      const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), en = [], em = elMult(st, cardEl(id, h), t, en), r = hurt(st, t, (rule.dmg + bonus + cardBonus(h, id)) * mult * sm * em * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: [...extra, ...en, ...r.notes], crit });
+      const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), en = [], em = elMult(st, cardEl(id, h), t, en), r = hurt(st, t, (rule.dmg + bonus + cardBonus(h, id)) * mult * sm * em * jobMult(h, id) * weakMult(h) * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: [...extra, ...en, ...r.notes], crit });
     }
     /* area cards: ดาบหมุน hits everyone next to the hero, ทุบธรณี everyone next to the target */
     if (rule.aoe) { const c = rule.aoe === 'self' ? h : t; for (const o of opponents(st, h)) { if (o === t || dist(o, c) > 1) continue; const g2 = gap(st, h, o); if (rule.aoe === 'splash' && g2 <= -2) continue; const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), r = hurt(st, o, (rule.dmg + cardBonus(h, id)) * (rule.aoe === 'splash' ? (g2 >= 1 ? 1.5 : 1) * (h.ambush || 1) : mult) * sideMult(st, h, o) * (crit ? CRIT.mult : 1)); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit, splash: true }) } }
@@ -510,6 +567,7 @@
     st.log.push(h.name + ' ' + name + ' −' + total + (out.hits[0]?.notes.length ? ' (' + out.hits[0].notes.join(', ') + ')' : ''));
     if (alive(t) && (rule.push || rule.pull)) { const fu = t.u, fv = t.v; out.moved = shove(st, t, h, rule.push ? 1 : -1); if (out.moved) { const drop = lv(st, fu, fv) - lv(st, t.u, t.v); if (drop >= 2 && !t.fly) { const fd = Math.min(t.hp, Math.round(5 * drop)); t.hp -= fd; out.fall = { drop, damage: fd }; st.log.push(t.name + ' ตกลง ' + drop + ' ระดับ −' + fd) } } }
     if (rule.slow && alive(t)) { t.slowed = 1; out.slowed = t }
+    if (CARD_STATUS[id] && out.hits.some(x => x.target === t && x.damage > 0)) { const k = inflict(st, t, CARD_STATUS[id][0], CARD_STATUS[id][1]); if (k) out.status = { unit: t, kind: k } }   /* v97.19 */
     checkOutcome(st);
     return out;
   }
@@ -534,7 +592,7 @@
     if (rule.aoe === 'splash' && d0 >= 1) { mult *= 1.5; notes.push('ต่ำกว่า ×1.5') }
     const W = EW(), el = cardEl(c.id, h), em = W && el ? W.mult(el, elOf(t)) : 1; if (em !== 1 && !W.isSecret(el)) notes.push(W.note(el, elOf(t)));
     mult *= sideMult(st, h, t, notes);
-    const raw = (rule.dmg + bonus + cardBonus(h, c.id)) * mult * em, guard = { v: t.guard || 0 }, n = rule.hits || 1; let total = 0, last = null;
+    const raw = (rule.dmg + bonus + cardBonus(h, c.id)) * mult * em * jobMult(h, c.id), guard = { v: t.guard || 0 }, n = rule.hits || 1; let total = 0, last = null;
     for (let i = 0; i < n; i++) { last = soak(st, t, raw, guard); total += last.damage }
     const all = [...new Set([...notes, ...(last?.notes || [])])];
     return { target: t, perHit: last ? last.damage : 0, hits: n, total, kill: total >= t.hp, notes: all, critTotal: Math.round(total * CRIT.mult) };
@@ -624,6 +682,6 @@
     if (!free(st, nu, nv, t) || lv(st, nu, nv) - lv(st, t.u, t.v) > 1) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

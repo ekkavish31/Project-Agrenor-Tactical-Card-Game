@@ -183,13 +183,16 @@
   /* ---------- party token (the new-outfit hero idle frames) ---------- */
   const heroImgs = [1, 2, 3, 4].map(i => { const im = new Image(); im.src = `assets/tactics/imported/idle-se-mvkft9t1-gv5z/frame-0${i}.webp`; return im });
   const walkImgs = [1, 2, 3].map(i => { const im = new Image(); im.src = `assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-0${i}.webp`; return im });
+  const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura on the map too */
   function drawToken(now) {
-    const set = token.walking ? walkImgs : heroImgs, im = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], s = 76;
+    const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 76;
     const night = nightness(), lr = 70 + Math.sin(now * .004) * 4;
     const lg = g.createRadialGradient(token.x, token.y - 8, 4, token.x, token.y - 8, lr); lg.addColorStop(0, `rgba(255,210,130,${.18 + night * .25})`); lg.addColorStop(1, 'rgba(255,210,130,0)');
     g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = lg; g.beginPath(); g.arc(token.x, token.y - 8, lr, 0, 7); g.fill(); g.restore();
     g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(token.x, token.y + 2, 14, 5, 0, 0, 7); g.fill();
-    if (im.complete && im.naturalWidth) { g.save(); g.translate(token.x, token.y + 4 - Math.abs(Math.sin(token.bob)) * (token.walking ? 3 : 0)); if (token.face < 0) g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
+    const ap = { x: token.x, y: token.y + 4 }; if (LOOK) JobLook.aura(g, LOOK, ap, s, now, false);
+    if (im0.complete && im0.naturalWidth) { g.save(); g.translate(token.x, token.y + 4 - Math.abs(Math.sin(token.bob)) * (token.walking ? 3 : 0)); if (token.face < 0) g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
+    if (LOOK) JobLook.aura(g, LOOK, ap, s, now, true);
   }
 
   /* ---------- beacon + encounter marks ---------- */
@@ -696,7 +699,11 @@
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
     const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
     const tut = (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
-    fr.src = `battle-field.html?battle=1&embed=1${tut}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
+    /* v97.22 · battle objectives: a night camp raid → hold the camp banner · an ambush → sometimes break out to the map edge
+       · an elite group → bring down its leader · now and then: just hold out. The prologue and bosses always fight to the end. */
+    const obj = tut || o.boss ? '' : o.camp ? 'defend:4' : o.ambush && Math.random() < .35 ? 'escape' : elite && n > 2 && Math.random() < .6 ? 'leader' : Math.random() < .15 ? 'survive:5' : '';
+    const OBJ_GOLD = { defend: 1.3, escape: .8, leader: 1.25, survive: 1.2 }, OBJ_NAME = { defend: 'ป้องกันค่าย', escape: 'ฝ่าวงล้อม', leader: 'ล้มหัวหน้า', survive: 'ยื้อไว้' };
+    fr.src = `battle-field.html?battle=1&embed=1${tut}${obj ? '&obj=' + obj : ''}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
@@ -711,20 +718,21 @@
     if (!o.boss) ev(res.outcome === 'win' ? 'battle:win' : res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome });
     else if (res.outcome !== 'win') ev(res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome, destName: destOf()?.name });
     if (res.outcome === 'win') {
-      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
+      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (OBJ_GOLD[obj.split(':')[0]] || 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       const loot = dropLoot(foe, here.biome, dang, o.boss);
       /* v94.06 F2: experience — the hero and the companions who fought */
-      const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
+      let jobRes = null; const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
       if (window.Progression) {
         const xp = Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }), ups = Progression.gainHero(WS.game(), xp);
         { const c = WS.game().village.character; Object.assign(members[0], { gain: xp, lv1: c.level, xp1: c.xp }) }
         log('✦ EXP +' + xp + (ups.length ? ' · เลเวลอัป! Lv.' + ups[ups.length - 1] + ' (HP สูงสุด ' + S.maxHp + ')' : ''));
         if (ups.length) toast('LEVEL UP! Lv.' + ups[ups.length - 1]);
         for (const p of fighters) { const m = S.party.find(x => x.key === p.key); if (!m) continue; const u = Progression.gainAlly(m, Math.round(xp * .8)); if (u.length) log(m.name + ' เลเวลอัป Lv.' + u[u.length - 1] + ' (HP ' + m.max + ')'); const mm = members.find(x => x.ref === m); if (mm) Object.assign(mm, { gain: Math.round(xp * .8), lv1: m.level, xp1: m.xp }) }
+        jobRes = Progression.gainJob ? Progression.gainJob(WS.game(), Math.round(xp * .7)) : null;   /* v97.18: job points */
         WS.commit();
       }
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
-      if (P) await results({ title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed });
+      if (P) await results({ title: (obj ? '🎯 ' + OBJ_NAME[obj.split(':')[0]] + ' สำเร็จ' + (title ? ' · ' : '') : '') + title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed, job: jobRes && jobRes.id !== 'adventurer' ? { ...P.JOBS[jobRes.id], lv: P.jobLevel(WS.game(), jobRes.id), jp: P.jobsOf(WS.game()).jobs[jobRes.id]?.jp || 0, need: P.jobNeed(P.jobLevel(WS.game(), jobRes.id)), ups: jobRes.ups, max: P.JOB_MAX } : null });
       else toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
     } else if (res.outcome === 'flee') {
       log('หนีออกมาได้'); if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal() } S.hp = Math.max(1, S.hp);
@@ -758,6 +766,7 @@
       d.innerHTML = `<div class="box"><div class="ttl">VICTORY</div><div class="sub">${esc(r.title || 'ชนะการต่อสู้')}</div>
         <div class="loot">${[r.gold ? '💰 +' + r.gold : '', ...r.loot, r.kills ? '⚔ ล้มศัตรู ' + r.kills : ''].filter(Boolean).map((x, i) => `<span style="animation-delay:${.35 + i * .12}s">${esc(x)}</span>`).join('')}</div>
         <div class="ms">${r.members.map((m, i) => `<div class="m" data-i="${i}"><b>${esc(m.name)}</b><span class="lv">Lv.${m.lv0}</span><div class="xp"><i style="width:${Math.min(100, m.xp0 / (m.key === 'hero' ? r.heroNeed(m.lv0) : r.allyNeed(m.lv0)) * 100)}%"></i></div><span class="g">+${m.gain} EXP</span></div>`).join('')}</div>
+        ${r.job ? `<div class="m job"><b>${r.job.icon} ${esc(r.job.name)}</b><span class="lv${r.job.ups.length ? ' up' : ''}">Lv.${r.job.lv}</span><div class="xp"><i style="width:${r.job.lv >= r.job.max ? 100 : Math.min(100, r.job.jp / r.job.need * 100)}%;background:${r.job.col}"></i></div><span class="g">${r.job.ups.length ? 'อาชีพเลเวลอัป!' : 'แต้มอาชีพ'}</span></div>` : ''}
         <div class="go">คลิก หรือกด Enter เพื่อไปต่อ</div></div>`;
       document.body.append(d); chime([523, 659, 784, 1047], .06);
       const close = () => { if (!ready) { skip = true; return } removeEventListener('keydown', key, true); d.remove(); res() };
