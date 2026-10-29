@@ -183,6 +183,32 @@
   /* ---------- party token (the new-outfit hero idle frames) ---------- */
   const heroImgs = [1, 2, 3, 4].map(i => { const im = new Image(); im.src = `assets/tactics/imported/idle-se-mvkft9t1-gv5z/frame-0${i}.webp`; return im });
   const walkImgs = [1, 2, 3].map(i => { const im = new Image(); im.src = `assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-0${i}.webp`; return im });
+  /* ---------- v97.27 · companions talk on the road (TODO "เพื่อนร่วมทีมพูดระหว่างทาง"): walking (by land, night, hunger, tiredness),
+     making camp, before a fight and after a win — in each companion's village voice (VillageLife.P[key].voice); a bubble over the token ---------- */
+  const SAY = {
+    warm: { walk: ['อากาศดีนะ เดินไปคุยไปก็ไม่เหนื่อย', 'ถ้าหิวบอกนะ ข้าห่อขนมมาด้วย'], night: ['มืดแล้ว เดินชิดกันไว้นะ'], tired: ['พักกันหน่อยไหม ขาเจ้าสั่นแล้ว'], hungry: ['เสบียงหมดแล้ว … ต้องหาที่พักหรือกลับหมู่บ้านแล้วล่ะ'], camp: ['ข้าก่อไฟเอง เจ้าพักเถอะ'], fight: ['ระวังตัวด้วยนะ!'], win: ['ทุกคนปลอดภัยดีใช่ไหม? ดีแล้ว'] },
+    cheerful: { walk: ['เดินทางแบบนี้สนุกที่สุดเลย!', 'ข้าแข่งกับเจ้าไปถึงเนินโน้นได้นะ!', 'ดูนั่นสิ! … อ้อ แค่ก้อนหิน'], night: ['ดาวเต็มฟ้าเลย! ข้านับได้สามร้อยดวงแล้ว'], tired: ['ข้ายังไหว … อืม จริง ๆ ไม่ค่อยไหวแล้ว'], hungry: ['ท้องข้าร้องดังกว่าหมาป่าอีก!'], camp: ['ตั้งค่าย! ใครจะเล่านิทานผีก่อน?'], fight: ['มาแล้ว! สนุกล่ะทีนี้!'], win: ['เย้! ทีมเราเก่งที่สุด!'] },
+    gruff: { walk: ['เดินต่อ อย่ามัวชมวิว', 'ทางนี้รก ระวังข้อเท้า'], night: ['กลางคืนมันออกล่า ตาเปิดไว้'], tired: ['เหนื่อยก็พัก ฝืนไปก็ตาย'], hungry: ['ไม่มีกิน ไม่มีแรงฟัน'], camp: ['ข้าเฝ้ายามก่อน นอนไป'], fight: ['มาสิ'], win: ['จบ ไปต่อ'] },
+    scholar: { walk: ['หินแถบนี้เป็นชั้นตะกอนเก่า … น่าสนใจมาก', 'ข้าจดเส้นทางไว้ เผื่อต้องทำแผนที่'], night: ['ดาวเหนืออยู่ทางนั้น เราไม่หลงแน่'], tired: ['ร่างกายมนุษย์เดินได้ราวแปดชั่วโมงต่อวัน … เราเกินแล้ว'], hungry: ['ตามตำรา คนอดอาหารจะตัดสินใจพลาดง่ายขึ้น … กลับไปหาเสบียงเถอะ'], camp: ['ขอแสงไฟหน่อย ข้าจะอ่านบันทึกต่อ'], fight: ['ดูท่าทางมัน แล้วหาจุดอ่อน!'], win: ['ข้อมูลการต่อสู้ครั้งนี้ … มีประโยชน์มาก'] },
+    sly: { walk: ['ทางลัดมีเสมอ … ถ้ากล้าพอ', 'ถ้าเจอหีบ ข้าขอเปิดก่อนนะ'], night: ['กลางคืนนี่แหละ เวลาของข้า'], tired: ['ข้าไม่เหนื่อย แต่เจ้าดูแย่แล้ว'], hungry: ['ไม่มีเสบียง … ขโมยจากค่ายโจรสักหน่อยไหมล่ะ'], camp: ['นอนหลับให้สนิทนะ … ข้าไม่ได้จะล้วงกระเป๋าเจ้าหรอก'], fight: ['ข้าจะอ้อมไปด้านหลัง'], win: ['มีของดีติดตัวมันบ้างไหมนะ'] },
+    gentle: { walk: ['ดอกไม้ข้างทางสวยจัง', 'ลมตรงนี้เย็นสบายดีนะ'], night: ['ถ้ากลัวความมืด จับแขนเสื้อข้าไว้ก็ได้'], tired: ['ไปช้า ๆ ก็ได้ ไม่มีใครรีบหรอก'], hungry: ['ข้าแบ่งขนมปังชิ้นสุดท้ายให้นะ … เดี๋ยวต้องหาเพิ่มแล้วล่ะ'], camp: ['ข้าทำแผลให้ใครก่อนดี?'], fight: ['ทุกคน อย่าบาดเจ็บนะ'], win: ['จบแล้ว … ขอให้วิญญาณพวกมันสงบ'] },
+    anxious: { walk: ['ได้ยินเสียงอะไรไหม … ไม่ได้ยินหรือ?', 'เรามาไกลจากหมู่บ้านแล้วนะ'], night: ['มืดแบบนี้ … อะไรก็โผล่มาได้'], tired: ['พักเถอะ ถ้าล้มตอนนี้ไม่มีใครช่วยนะ'], hungry: ['เสบียงหมด! เราจะอดตายกลางทางไหม!'], camp: ['ข้าจะนอนตรงกลางนะ … ไม่ได้กลัวหรอก'], fight: ['ม-มาแล้ว!'], win: ['รอดแล้ว … รอดจริง ๆ'] },
+    formal: { walk: ['เส้นทางนี้ปลอดภัยพอสมควร ข้าเห็นว่าควรเดินต่อ'], night: ['การเดินทางยามวิกาลมีความเสี่ยง ขอให้ระมัดระวัง'], tired: ['ข้าเสนอให้พักแรมก่อนเดินทางต่อ'], hungry: ['เสบียงหมดลงแล้ว ควรวางแผนกลับไปเติม'], camp: ['ข้าจะรับเวรยามช่วงแรก'], fight: ['เตรียมรับมือ!'], win: ['ภารกิจลุล่วง ขอบคุณทุกท่าน'] }
+  };
+  let talkB = null, talkCD = 0;
+  function chatter(kind, chance = 1) {
+    const mates = (S.party || []).filter(p => p.hp > 0); if (!mates.length || Math.random() > chance) return;
+    if (kind === 'walk') { if (talkCD > 0) { talkCD--; return } kind = nightness() > .6 ? 'night' : S.food <= 0 ? 'hungry' : S.fatigue >= 70 ? 'tired' : 'walk'; talkCD = 5 }
+    const m = mates[Math.floor(Math.random() * mates.length)], voice = window.VillageLife?.P?.[m.key]?.voice || 'cheerful', set = (SAY[voice] || SAY.cheerful)[kind] || SAY.cheerful[kind];
+    if (!set) return; const text = set[Math.floor(Math.random() * set.length)]; talkB = { who: m.name, text, until: performance.now() + 3200 }; log('💬 ' + m.name + ': ' + text);
+  }
+  function drawTalk(now) {
+    if (!talkB || now > talkB.until) return; const a = Math.min(1, (talkB.until - now) / 400, (now - talkB.until + 3200) / 200);
+    g.save(); g.globalAlpha = Math.max(0, a); g.font = '600 12px VillageThai,"Noto Sans Thai",system-ui'; const t = talkB.who + ': ' + talkB.text, w = Math.min(300, g.measureText(t).width + 18), x = token.x - w / 2, y = token.y - 104;
+    g.fillStyle = 'rgba(250,240,215,.95)'; g.strokeStyle = '#6a4a20'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, 24, 10); g.fill(); g.stroke();
+    g.beginPath(); g.moveTo(token.x - 6, y + 24); g.lineTo(token.x, y + 32); g.lineTo(token.x + 6, y + 24); g.fill();
+    g.fillStyle = '#3a2810'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t.length > 46 ? t.slice(0, 45) + '…' : t, token.x, y + 12.5); g.restore();
+  }
   const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura on the map too */
   function drawToken(now) {
     const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 76;
@@ -263,7 +289,7 @@
     g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#07080c'; g.fillRect(0, 0, cv.width, cv.height);
     g.setTransform(dpr * cam.z, 0, 0, dpr * cam.z, dpr * (W / 2 - cam.x * cam.z), dpr * (H / 2 - cam.y * cam.z));
     if (terr) g.drawImage(terr, 0, 0, WW, WH);
-    drawTrail(); drawMarks(now); drawHover(); drawToken(now);
+    drawTrail(); drawMarks(now); drawHover(); drawToken(now); drawTalk(now);
     drawFog(now); drawBeacon(now);
     drawSky(); drawCompass();
   }
@@ -467,6 +493,7 @@
     const odds = Math.min(.42, (.05 + dang * .24) * (t.road ? .45 : 1) * (night ? 1.6 : 1));
     if (!S.calm && !t.poi && Math.random() < odds) { S.calm = 3; log(night ? 'ถูกซุ่มโจมตีกลางดึก!' : 'ถูกซุ่มโจมตี!'); return await battle(pickFoe(t), dang, { ambush: true }) }
     if (night && Math.random() < .07) return await nightEvent(t);
+    chatter('walk', .35);
     return false;
   }
   /* things that only happen after dark */
@@ -652,7 +679,7 @@
     const risk = safe ? 0 : Math.min(.45, (night ? .24 : .1) * (.5 + dang * 1.5));
     if (!safe) { const v = await modal(`<h2>⛺ พักแรมที่นี่?</h2><p>${night ? 'นอนจนถึงเช้า' : 'พัก 6 ชั่วโมง'} · ${fed ? 'ใช้เสบียง 1 · HP เต็ม' : 'ไม่มีเสบียง · ฟื้น HP แค่ 30%'} · ความเหนื่อยหาย</p><p>โอกาสถูกบุกค่าย <b style="color:#a0281a">${Math.round(risk * 100)}%</b>${night ? ' (กลางคืนเสี่ยงกว่า)' : ''}</p>`, [{ label: '⛺ ตั้งแคมป์', value: true }, { label: 'ยังก่อน', value: null, ghost: true }]); if (!v) return }
     busy = true; hudSync(); if (fed) S.food--;
-    toast('⛺ พักแรม…'); await wait(900);
+    toast('⛺ พักแรม…'); chatter('camp'); await wait(900);
     const hours = night ? ((30 - S.hour) % 24 || 6) : 6;
     if (Math.random() < risk) {
       passTime(Math.round(hours / 2)); S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .25)); S.fatigue = Math.round(S.fatigue / 2); busy = false;
@@ -688,6 +715,7 @@
     const fs = window.Progression ? Progression.foeScale(Progression.heroLevel(WS.game())) : { hp: 1, atk: 1 };   /* v95.00: monsters grow a little with the hero */
     mult = Math.round(mult * fs.hp * 10) / 10;
     const atk = Math.round((fierce ? 1.3 : 1) * fs.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6));
+    chatter('fight', .6);
     await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : fierce ? 'NIGHT TERROR!' : 'ENCOUNTER!');
     const fr = document.createElement('iframe'); fr.id = 'wmBattle';
     const title = (o.boss ? 'บอส · ' : elite ? 'ยอดฝีมือ · ' : '') + (BOSS_NAME[foe] && o.boss ? BOSS_NAME[foe] : '');
@@ -731,6 +759,7 @@
         jobRes = Progression.gainJob ? Progression.gainJob(WS.game(), Math.round(xp * .7)) : null;   /* v97.18: job points */
         WS.commit();
       }
+      chatter('win', .7);
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
       if (P) await results({ title: (obj ? '🎯 ' + OBJ_NAME[obj.split(':')[0]] + ' สำเร็จ' + (title ? ' · ' : '') : '') + title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed, job: jobRes && jobRes.id !== 'adventurer' ? { ...P.JOBS[jobRes.id], lv: P.jobLevel(WS.game(), jobRes.id), jp: P.jobsOf(WS.game()).jobs[jobRes.id]?.jp || 0, need: P.jobNeed(P.jobLevel(WS.game(), jobRes.id)), ups: jobRes.ups, max: P.JOB_MAX } : null });
       else toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
@@ -807,5 +836,5 @@
   { const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; cam.x = p.x; cam.y = p.y; cam.z = innerWidth < 700 ? .9 : 1.25 }
   hudSync(); requestAnimationFrame(frame);
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
-  window.WorldMap = { results, area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
+  window.WorldMap = { results, chatter, area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();
