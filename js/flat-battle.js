@@ -266,6 +266,7 @@
         if (dist(u, hurtF) <= u.range) { const b = hurtF.hp; hurtF.hp = Math.min(hurtF.maxHp, hurtF.hp + 12); st.log.push(u.name + ' รักษา ' + hurtF.name + ' +' + (hurtF.hp - b)); steps.push({ unit: u, type: 'heal', target: hurtF, heal: hurtF.hp - b }); return steps }
       }
     }
+    if (u.side === 'monster' && (u.iq | 0) >= 1) return smartAct(st, u, steps);   /* v97.01 · tactics by intelligence */
     let tgt = targets(st, u).find(t => t.id === st.target && u.side === 'hero') || targets(st, u)[0], field = null;
     /* companion orders: guard = hold the ground (+6 guard, hit only what is already in range) · follow = stay by the hero */
     if (u.side === 'hero' && u.order === 'guard') { u.guard = Math.max(u.guard || 0, 6); steps.push({ unit: u, type: 'hold' }); if (tgt) { const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) } return steps }
@@ -286,6 +287,62 @@
       tgt = targets(st, u)[0];
     }
     if (tgt) { st.cur = u; const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) }
+    return steps;
+  }
+  /* ---------- v97.01 · monster tactics by intelligence (u.iq): 0 brute (nearest foe) · 1 hunts the weak and finishes kills · 2 goes for supports,
+     the hero when he is low, focuses wounded foes, keeps out of crossfire, ranged units kite, flees when almost dead · 3 also protects its own
+     weak/ranged friends with its body, trades on threat, flees earlier and recovers while out of reach ---------- */
+  const FLEE_AT = { 2: .22, 3: .35 };
+  function smartAct(st, u, steps) {
+    const iq = u.iq | 0, opp = opponents(st, u), friends = st.units.filter(f => f.side === u.side && alive(f) && f !== u), W = EW();
+    const reachMap = reach(st, u, u.move), cells = [...reachMap.values()], fields = new Map(opp.map(o => [o, distField(st, o)]));
+    const exposure = (e, except) => opp.reduce((n, o) => n + (o !== except && dist(o, e) <= (o.move || 4) + (o.range || 1) ? 1 : 0), 0);
+    const est = (o, e) => { const raw = u.atk * heightMult(st, { u: e.u, v: e.v }, o) * (W && u.el ? W.mult(u.el, elOf(o)) : 1); return Math.max(1, Math.round(raw) - (o.armor || 0) - Math.min(o.guard || 0, Math.round(raw) - 1)) };
+    const canHit = (e, o) => dist(e, o) <= u.range && (u.range > 1 || Math.abs(lv(st, e.u, e.v) - lv(st, o.u, o.v)) <= (u.fly || o.fly ? 3 : 1));
+    const move = e => { if (e.u === u.u && e.v === u.v) return; const path = pathTo(reachMap, e), pv = path[path.length - 2] || u; u.face = faceOf(pv, e); u.u = e.u; u.v = e.v; st.log.push(u.name + ' เดิน'); steps.push({ unit: u, type: 'move', path }) };
+    const hpF = u.hp / u.maxHp, fleeAt = FLEE_AT[Math.min(3, iq)] || 0;
+    /* 1. almost dead and clever: get out of every foe's reach, then catch a breath */
+    if (fleeAt && hpF < fleeAt && (u.fled || 0) < 3 && opp.length) {
+      const near = e => Math.min(...opp.map(o => dist(o, e))), safe = e => near(e) * 2 + (kind(st, e.u, e.v) === 'cover' ? 2 : 0) + lv(st, e.u, e.v) * .5 - e.cost * .1 - exposure(e) * 1.5;
+      let best = null; for (const e of cells) if (!best || safe(e) > safe(best)) best = e;
+      if (best && near(best) >= near(u) + 2) {
+        u.fled = (u.fled || 0) + 1; st.log.push(u.name + ' ถอยหนี'); move(best);
+        if (!opp.some(o => dist(o, u) <= (o.move || 4) + (o.range || 1))) { const g = Math.max(1, Math.round(u.maxHp * .1)), b = u.hp; u.hp = Math.min(u.maxHp, u.hp + g); st.log.push(u.name + ' พักฟื้น +' + (u.hp - b)); steps.push({ unit: u, type: 'heal', target: u, heal: u.hp - b }) }
+        return steps;
+      }
+    }
+    /* 2. how much do we want each foe? */
+    const want = (o, e) => {
+      const e1 = est(o, e), frac = o.hp / o.maxHp; let sc = 0;
+      if (e1 >= o.hp) sc += 80;
+      sc += (1 - frac) * (iq >= 2 ? 45 : 25);
+      if (iq >= 2) { if (o.healer) sc += 50; if (o.range > 1) sc += 18; if (o === hero(st)) sc += o.hp <= e1 * 2 ? 70 : 10 }
+      if (iq >= 3) sc += (o.atk || 0) * .6;
+      if (W && u.el && iq >= 1) sc += (W.mult(u.el, elOf(o)) - 1) * 30;
+      return sc - (o.armor || 0) * 2;
+    };
+    const guardWeak = iq >= 3 && hpF > .5 ? friends.filter(f => f.hp < f.maxHp * .5 || f.range > 1) : [];
+    let pick = null;
+    for (const o of opp) for (const e of cells) {
+      if (!canHit(e, o)) continue;
+      let sc = want(o, e) - e.cost * .1;
+      if (iq >= 2) { sc -= exposure(e, o) * 2.5; if (kind(st, e.u, e.v) === 'cover') sc += 3; sc += (lv(st, e.u, e.v) - lv(st, o.u, o.v)) * 2.5 }
+      if (iq >= 2 && u.range > 1) sc += Math.min(...opp.map(x => dist(x, e))) * 1.2;            // kite: stay as far from everyone as the range allows
+      if (u.range > 1 && iq >= 2 && opp.some(x => x !== o && x.range <= 1 && dist(x, e) <= 1)) sc -= 8;
+      for (const f of guardWeak) { const thr = opp.slice().sort((a, b) => dist(a, f) - dist(b, f))[0]; if (thr && dist(e, thr) + dist(e, f) <= dist(f, thr) + 1 && dist(e, thr) < dist(f, thr)) sc += 25 }   // stand between the weak friend and its attacker
+      if (!pick || sc > pick.sc) pick = { o, e, sc };
+    }
+    if (pick) { move(pick.e); st.cur = u; const at = strike(st, u, pick.o); steps.push({ unit: u, type: 'attack', target: pick.o, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }); return steps }
+    /* 3. nobody in reach: close in on the foe worth the most, keeping with the pack and out of crossfire */
+    let tgt = null, bs = -1e9;
+    for (const o of opp) { const f = fields.get(o), d = f.get(key(u.u, u.v)), sc = want(o, u) - (d === undefined ? 1e3 : d) * 3; if (sc > bs) { bs = sc; tgt = o } }
+    if (!tgt) return steps;
+    const f = fields.get(tgt), dOf = e => { const x = f.get(key(e.u, e.v)); return x === undefined ? 1e6 : x };
+    let bestE = null, bestS = 1e9;
+    for (const e of cells) { let sc = dOf(e) + e.cost * .05; if (iq >= 2) { sc += exposure(e) * 1.2; const near = friends.length ? Math.min(...friends.map(x => dist(x, e))) : 0; sc += near * .4 } if (sc < bestS) { bestS = sc; bestE = e } }
+    if (bestE) move(bestE);
+    const inR = targets(st, u).sort((a, b) => want(b, u) - want(a, u))[0];
+    if (inR) { st.cur = u; const at = strike(st, u, inR); steps.push({ unit: u, type: 'attack', target: inR, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) }
     return steps;
   }
   function strike(st, a, t) {

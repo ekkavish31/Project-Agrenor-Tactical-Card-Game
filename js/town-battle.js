@@ -19,26 +19,26 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.00';
+  const V = '97.01';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
   const MON = {
-    bandit: { name: 'โจรป่า', hp: 34, move: 3, atk: 8, scale: 1, fx: 'sword', img: 'bandit', shove: true , el: 'earth' },
-    wolf: { name: 'หมาป่า', hp: 26, move: 4, atk: 7, scale: .9, fx: 'knife', img: 'wolf' , el: 'wind' },
-    slime: { name: 'สไลม์แร่', hp: 40, move: 2, atk: 8, scale: .85, fx: 'blunt', img: 'slime' , el: 'water' },
-    kobold: { name: 'โคโบลด์ขุดแร่', hp: 30, move: 3, atk: 9, scale: .9, fx: 'blunt', img: 'kobold' , el: 'earth' },
-    golem: { name: 'โกเล็มหิน', hp: 95, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem', shove: true , el: 'earth' },
-    bat: { name: 'ค้างคาวถ้ำ', hp: 22, move: 5, atk: 7, scale: .8, fx: 'knife', img: 'bat', fly: true, el: 'dark' },
-    gull: { name: 'นกนางนวลยักษ์', hp: 26, move: 5, atk: 8, scale: .9, fx: 'wind', img: 'gull', fly: true, el: 'wind' },
+    bandit: { name: 'โจรป่า', hp: 34, iq: 2, move: 3, atk: 8, scale: 1, fx: 'sword', img: 'bandit', shove: true , el: 'earth' },
+    wolf: { name: 'หมาป่า', hp: 26, iq: 1, move: 4, atk: 7, scale: .9, fx: 'knife', img: 'wolf' , el: 'wind' },
+    slime: { name: 'สไลม์แร่', hp: 40, iq: 0, move: 2, atk: 8, scale: .85, fx: 'blunt', img: 'slime' , el: 'water' },
+    kobold: { name: 'โคโบลด์ขุดแร่', hp: 30, iq: 1, move: 3, atk: 9, scale: .9, fx: 'blunt', img: 'kobold' , el: 'earth' },
+    golem: { name: 'โกเล็มหิน', hp: 95, iq: 0, move: 2, atk: 15, scale: 1.3, fx: 'blunt', img: 'golem', shove: true , el: 'earth' },
+    bat: { name: 'ค้างคาวถ้ำ', hp: 22, iq: 1, move: 5, atk: 7, scale: .8, fx: 'knife', img: 'bat', fly: true, el: 'dark' },
+    gull: { name: 'นกนางนวลยักษ์', hp: 26, iq: 0, move: 5, atk: 8, scale: .9, fx: 'wind', img: 'gull', fly: true, el: 'wind' },
     /* v95.25 · the snow heights of Dhai-Nor'Qrad */
-    frostWolf: { name: 'หมาป่าน้ำแข็ง', hp: 34, move: 4, atk: 9, scale: .95, fx: 'ice', img: 'frost-wolf', el: 'ice' },
-    snowKobold: { name: 'โคโบลด์หิมะ', hp: 32, move: 3, atk: 10, scale: .9, fx: 'blunt', img: 'snow-kobold', el: 'ice' },
-    yeti: { name: 'เยติ', hp: 70, move: 3, atk: 13, scale: 1.2, fx: 'blunt', img: 'yeti', shove: true, el: 'ice' },
-    frostQueen: { name: 'ราชินีน้ำแข็ง', hp: 120, move: 3, atk: 16, scale: 1.25, fx: 'ice', img: 'frost-queen', range: 3, el: 'ice' },
-    shadowWolf: { name: 'หมาป่าเงา', hp: 44, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' , el: 'dark' },
+    frostWolf: { name: 'หมาป่าน้ำแข็ง', hp: 34, iq: 1, move: 4, atk: 9, scale: .95, fx: 'ice', img: 'frost-wolf', el: 'ice' },
+    snowKobold: { name: 'โคโบลด์หิมะ', hp: 32, iq: 1, move: 3, atk: 10, scale: .9, fx: 'blunt', img: 'snow-kobold', el: 'ice' },
+    yeti: { name: 'เยติ', hp: 70, iq: 1, move: 3, atk: 13, scale: 1.2, fx: 'blunt', img: 'yeti', shove: true, el: 'ice' },
+    frostQueen: { name: 'ราชินีน้ำแข็ง', hp: 120, iq: 3, move: 3, atk: 16, scale: 1.25, fx: 'ice', img: 'frost-queen', range: 3, el: 'ice' },
+    shadowWolf: { name: 'หมาป่าเงา', hp: 44, iq: 2, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' , el: 'dark' },
     /* v95.00: the training-ground scarecrow (does not move or hit back) */
-    dummy: { name: 'หุ่นฟาง', hp: 40, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
+    dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
   const NIGHT = Q.get('night') === '1', ATKX = +Q.get('atk') || 1, HST = Q.get('hst') != null ? Math.max(0, Math.min(100, +Q.get('hst'))) : 100;
@@ -100,7 +100,7 @@
     const gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
-    /* v97.00: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
+    /* v97.01: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
        (spacing 2 by king-move distance); only when the area is too tight does it fall back to 1, then 0 */
     const near = (o) => {
       const pts = [...taken].map(k => k.split(',').map(Number)); let best = null;
@@ -109,7 +109,7 @@
           const d = Math.hypot(u - o.u, v - o.v) + Math.random() * .6; if (d < bd) { bd = d; best = { u, v } } } }
       if (best) taken.add(best.u + ',' + best.v); return best };
     const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
+    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
@@ -298,7 +298,8 @@
         (u.hp > 0 ? `<div class="ord">${[['charge', '⚔', 'บุก: เข้าหาศัตรูที่ใกล้สุด/เป้าที่เล็ง'], ['follow', '👣', 'ตาม: อยู่ใกล้ฮีโร่ ตีเฉพาะศัตรูที่เข้ามาใกล้'], ['guard', '🛡', 'ตั้งรับ: ไม่ขยับ ป้องกัน +6']].map(([k, ic, tt]) => `<button data-ally="${u.id}" data-order="${k}" class="${o === k ? 'on' : ''}" title="${tt}">${ic}</button>`).join('')}${sk ? `<button class="sk" data-skill="${u.id}" ${why || busy ? 'disabled' : ''} title="${esc(sk.name + (why ? ' — ' + why : ''))}">✦ ${esc(sk.name)}${u.cd ? ' (' + u.cd + ')' : ''}</button>` : ''}</div>` : '') + '</div>' };
     const lvb = u => window.FieldHeight && FB.lv(st, u.u, u.v) ? ` <small style="color:#cfe4ff">▲${FB.lv(st, u.u, u.v)}</small>` : '';
     const elb = u => { const W = window.ElementWheel, E = W?.info(u.el); return E ? ` <small class="fb-elb" style="color:${E.col}" title="${esc(W.name(u.el))}">${E.icon}${esc(W.name(u.el, true))}</small>` : '' };
-    const mini = (u, col) => `<div class="mini ${u.hp <= 0 ? 'down' : ''} ${st.target === u.id ? 'tgt' : ''}" data-id="${u.id}"><span>${esc(u.name)}${elb(u)}${lvb(u)}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:${col}"></i></div>`;
+    const IQN = ['ดุร้าย · พุ่งใส่ตัวใกล้สุด', 'เจ้าเล่ห์ · ล่าตัวอ่อนแอ จบตัวที่ใกล้ตาย', 'ชำนาญยุทธวิธี · เล็งตัวซัพพอต หลบกลางวงล้อม ถอยหนีตอนใกล้ตาย', 'จอมวางแผน · ใช้ตัวบังพวกอ่อนแอ ถอยไปฟื้นตัว'];
+    const mini = (u, col) => `<div class="mini ${u.hp <= 0 ? 'down' : ''} ${st.target === u.id ? 'tgt' : ''}" data-id="${u.id}" title="${u.side === 'monster' ? esc(IQN[u.iq | 0]) : ''}"><span>${esc(u.name)}${elb(u)}${lvb(u)}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:${col}"></i></div>`;
     hud.querySelector('#fbUnits').innerHTML =
       `<div>${esc(h.name)} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff">🛡' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
       `<div><small style="color:#bba57f">แรง (stamina)</small> <span style="float:right">${h.stamina}/100</span></div>${bar(h.stamina, 100, '#e8c34a')}` +
@@ -715,7 +716,7 @@
     const h = size * (def.scale || .63), w = h * def.size[0] / def.size[1];
     g.save(); g.translate(left + hand[0] * size, top + hand[1] * size); g.rotate(angle * Math.PI / 180); g.drawImage(i, -def.pivot[0] * w, -def.pivot[1] * h, w, h); g.restore();
   }
-  /* v97.00: weapons the sprite sheet has no hand anchor for (axe, bow, knife, rapier, spear, tome) use the loose pictures in assets/tactics */
+  /* v97.01: weapons the sprite sheet has no hand anchor for (axe, bow, knife, rapier, spear, tome) use the loose pictures in assets/tactics */
   const WEXTRA = { axe: { pivot: [.5, .9], size: [256, 768], scale: .62 }, knife: { pivot: [.5, .8], size: [256, 512], scale: .34 }, rapier: { pivot: [.5, .88], size: [256, 768], scale: .78 }, spear: { pivot: [.5, .72], size: [256, 1024], scale: 1.1 }, bow: { pivot: [.5, .5], size: [128, 320], scale: .6 }, tome: { pivot: [.5, .5], size: [160, 200], scale: .26 } };
   const weaponDef = (A, k) => A.equipment[k] || (WEXTRA[k] ? { src: `assets/tactics/${k}.webp`, ...WEXTRA[k] } : null);
   function drawHero(g, u, t) {
@@ -726,7 +727,7 @@
     shadow(g, p, UNIT * .26); g.save(); g.translate(ox, -(u.lift || 0)); if (u.hp <= 0) g.globalAlpha *= .6;
     g.translate(p.x + pm.dx, p.y + pm.dy); g.rotate(pm.rot); g.scale(pm.sx, pm.sy); g.translate(-p.x, -p.y);
     const sword = () => { if (u.weapon && weaponDef(A, u.weapon)) weapon(g, weaponDef(A, u.weapon), f.right, left, top, size, (f.rotation || 0) + pm.wpn) };
-    /* v97.00: standing ready or walking, the weapon is carried on the back (behind the body when facing the camera, over it when facing away); drawn in the hand only for actions */
+    /* v97.01: standing ready or walking, the weapon is carried on the back (behind the body when facing the camera, over it when facing away); drawn in the hand only for actions */
     const carried = u.hp > 0 && (u.walking || !u.pose || u.pose === 'idle'), W = u.weapon && weaponDef(A, u.weapon);
     const onBack = () => { if (!W) return; const away = ['NE', 'NW'].includes(u.dir), side = ['SE', 'NE'].includes(u.dir) ? -1 : 1, i2 = im(W.src); if (!i2) return;
       const h = size * (W.scale || .63) * .9, w = h * W.size[0] / W.size[1];

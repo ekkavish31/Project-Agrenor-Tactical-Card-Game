@@ -12,7 +12,7 @@ const RUNS = +process.argv[2] || 300;
 // copied from js/town-battle.js (MON) and js/village-life.js (ALLY_STATS)
 const MON = { bandit: { hp: 34, move: 3, atk: 8, el: 'earth' }, wolf: { hp: 26, move: 4, atk: 7, el: 'wind' }, slime: { hp: 40, move: 2, atk: 8, el: 'water' }, kobold: { hp: 30, move: 3, atk: 9, el: 'earth' }, bat: { hp: 22, move: 5, atk: 7, el: 'dark', fly: true } };
 const ALLY = { kier: { hp: 48, atk: 13, move: 4, range: 1, el: 'fire' }, bram: { hp: 54, atk: 12, move: 4, range: 1, def: 2, el: 'earth' }, luna: { hp: 44, atk: 11, move: 3, range: 4, el: 'fusion' } };
-const FOES = Object.keys(MON);
+const FOES = Object.keys(MON), IQ = { bandit: 2, wolf: 1, kobold: 1, bat: 1, frostWolf: 1, snowKobold: 1, yeti: 1, frostQueen: 3, shadowWolf: 2 };   // = js/town-battle.js MON.iq (IQ=0 turns the tactics off)
 
 let seed = 1; const rng = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646 };
 const pick = a => a[Math.floor(rng() * a.length)];
@@ -34,7 +34,7 @@ function fight(lv, dang) {
   const g = heroSave(lv), bh = P.battleHero(g, P.ZONE_RECIPES), allyN = lv <= 3 ? 1 : lv <= 6 ? 2 : 3;
   const allies = ['kier', 'bram', 'luna'].slice(0, allyN).map((k, i) => { const a = ALLY[k], alv = Math.max(1, lv - 1); return { u: 1, v: 4 + i, key: k, name: k, hp: a.hp + 4 * (alv - 1), maxHp: a.hp + 4 * (alv - 1), atk: a.atk + alv - 1, armor: a.def || 0, move: a.move, range: a.range, el: a.el, order: 'charge' } });
   const fs = P.foeScale(lv), n = Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (rng() < .25 ? 1 : 0))), mult = (1.4 + dang * .8) * fs.hp, main = pick(FOES);
-  const monsters = Array.from({ length: n }, (_, i) => { const k = i && rng() > .6 ? pick(FOES) : main, T = MON[k], m = i ? (1.2 + dang * .6) * fs.hp : mult; return { u: 8 + (i % 2), v: 2 + i * 1.5 | 0, name: k, hp: Math.round(T.hp * m), maxHp: Math.round(T.hp * m), atk: Math.round(T.atk * fs.atk), move: T.move, el: T.el, fly: !!T.fly } });
+  const monsters = Array.from({ length: n }, (_, i) => { const k = i && rng() > .6 ? pick(FOES) : main, T = MON[k], m = i ? (1.2 + dang * .6) * fs.hp : mult; return { u: 8 + (i % 2), v: 2 + i * 1.5 | 0, name: k, hp: Math.round(T.hp * m), maxHp: Math.round(T.hp * m), atk: Math.round(T.atk * fs.atk), move: T.move, el: T.el, fly: !!T.fly, iq: process.env.IQ === '0' ? 0 : IQ[k] || 0 } });
   const st = B.create({ bounds: { u0: 0, v0: 0, u1: 10, v1: 9 }, kindAt: () => 'normal', cards: true, ct: !!process.env.CT, rng, deckConfig: deckFor(lv),
     hero: { u: 2, v: 5, hp: g.maxHp, maxHp: g.maxHp, el: 'earth', stamina: bh.st, stMax: bh.stMax, power: bh.power, spell: bh.spell, crit: bh.crit, armor: bh.armor }, allies, monsters });
   const h = B.hero(st);
