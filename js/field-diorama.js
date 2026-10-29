@@ -10,7 +10,7 @@
    FieldDiorama.paint(ctx, map, {biome, poi, pools(i)}) · tile(map, i) · sky(ctx, w, h, biome, night) · grade(ctx, w, h, biome, night) */
 (function (root) {
   'use strict';
-  const OX = 2240, OY = 1232, HW = 28, HH = 14, PX = () => (root.TerrainHeight ? root.TerrainHeight.LEVEL_PX : 18), BASE = -4;
+  const K = root.FIELD_K || 1, OX = 2240 * K, OY = 1232 * K, HW = 28 * K, HH = 14 * K, PX = () => (root.TerrainHeight ? root.TerrainHeight.LEVEL_PX : 18), BASE = -4;
 
   /* ---------- tiny seeded random ---------- */
   function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 } }
@@ -79,7 +79,7 @@
   function tex(kind, o, seed) { const k = kind + JSON.stringify(o); if (cache[k]) return cache[k]; const c = canvas(); TEX[kind](c.getContext('2d'), rng(seed || 7), o); return cache[k] = c }
 
   /* ---------- painted textures (assets/terrain/diorama, 256 px seamless, 2 cells per tile); the procedural ones stand in until they load ---------- */
-  /* v96.06: planks, brick, slabs, water, mud, snow, sand, per-biome cliffs and the lip strips come from the terrain sets already in the repo;
+  /* v96.07: planks, brick, slabs, water, mud, snow, sand, per-biome cliffs and the lip strips come from the terrain sets already in the repo;
      names not listed here live in assets/terrain/diorama/<name>.webp */
   const TEXFILE = { wood: 'terrain/ground/planks', brick: 'terrain/cliff/ruin-wall', slab: 'terrain/ground/slabs', water: 'terrain/ground/water-deep', swampw: 'terrain/ground/swamp',
     mud: 'terrain/ground/mud-wet', snowd: 'terrain/ground/snow-deep', sandc: 'terrain/ground/sand-coarse', cliff_snow: 'terrain/cliff/snow-rock', cliff_sand: 'terrain/cliff/sandstone', cliff_swamp: 'terrain/cliff/swamp-roots',
@@ -169,7 +169,7 @@
       /* grass / moss / snow hanging over a natural lip: the painted lip strip when loaded, else code blades */
       if (!mt && !water && C.mat.hang && C.mat.top[0] !== 'dirt' && !(m.flat && m.flat[i])) {
         const H = C.hang;
-        if (H) { const ex = pts[1].x - pts[0].x, ey = pts[1].y - pts[0].y, tw = H.naturalWidth / 3, ph = (du ? v : u) % 3, hh = 11;   // the strip repeats every 3 cells
+        if (H) { const ex = pts[1].x - pts[0].x, ey = pts[1].y - pts[0].y, tw = H.naturalWidth / 3, ph = (du ? v : u) % 3, hh = 11 * K;   // the strip repeats every 3 cells
           const pat = g.createPattern(H, 'repeat'); pat.setTransform(new DOMMatrix([ex / tw, ey / tw, 0, hh / H.naturalHeight, pts[0].x - ex * ph, pts[0].y - ey * ph]));
           g.save(); g.fillStyle = pat; g.globalAlpha = du ? .8 : 1; g.beginPath(); g.moveTo(pts[0].x, pts[0].y - 1); g.lineTo(pts[1].x, pts[1].y - 1); g.lineTo(pts[1].x, pts[1].y + hh); g.lineTo(pts[0].x, pts[0].y + hh); g.closePath(); g.fill(); g.restore() }
         else { g.fillStyle = hex(C.mat.hang, du ? .72 : .9); g.beginPath(); g.moveTo(pts[0].x, pts[0].y);
