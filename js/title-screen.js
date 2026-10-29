@@ -172,7 +172,9 @@ root.goFullscreen=goFull;
 for(const ev of ['fullscreenchange','webkitfullscreenchange'])document.addEventListener(ev,()=>{fsSet(fsEl()?'1':'0')});   // leaving (Esc / the in-game button) is remembered; a reload fires nothing
 if(newGame)fsSet('1');
 {const back=e=>{if(!fsWanted()||fsEl())return;goFull()};addEventListener('pointerdown',back,true);addEventListener('keydown',e=>{if(e.key!=='Escape')back(e)},true)}
-async function act(a){if(busyTitle)return;if(a==='new'||a==='continue')goFull();
+async function act(a){if(busyTitle)return;
+ /* v97.05 · New Game over a save asks first and then reloads (which leaves fullscreen anyway); going fullscreen before the question made the dialog jump. The reload re-enters fullscreen on the next click */
+ if(a==='continue'||(a==='new'&&!hasSave))goFull();
  if(a==='new'){if(hasSave){const ok=await (root.GameDialog?root.GameDialog.confirm('เริ่มเกมใหม่?\nความคืบหน้าในเซฟปัจจุบันจะถูกแทนที่ (ระบบเก็บสำเนาเซฟเดิมไว้ให้ 1 ชุด) · การ์ดที่ออกแบบและผังหมู่บ้านยังอยู่'):Promise.resolve(root.confirm('เริ่มเกมใหม่?')));if(!ok)return;
    try{localStorage.setItem('three-card-forge-before-newgame',localStorage.getItem(SAVE)||'');localStorage.removeItem(SAVE);localStorage.removeItem(STARTED);for(const k of ['agrenor-world-v1','agrenor-mind-v1','agrenor-clock-v1','agrenor-standalone-v1'])localStorage.removeItem(k);/* v94: the world map, village memory and old clock start over too */sessionStorage.setItem(NEW_FLAG,'1')}catch{}busyTitle=true;title.classList.add('ts-out');await wait(reduced?0:300);location.reload();return}
   prepareStory();return}
