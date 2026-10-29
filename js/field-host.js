@@ -324,18 +324,33 @@ window.TownBattleExtras = () => {
   const occ = occluders(ents); if (st) for (const u of st.units) if (u._occT) u._occ = true; return out.concat(occ);
 };
 let fadeGround = null, fadeAt = 0, fadeT = 0;
-/* v97.12 · the camera swings round instead of a flat cross-fade: the view tilts away (rotate + slight zoom-out + blur), turns at the
-   midpoint, then settles in from the other side (B9 / B15). Reduced motion keeps the plain swap. */
+/* v97.14 · FFT-style turn: the whole field rotates in the ground plane. A turn of the ground by θ is an affine map on screen,
+   M(θ) = P·R(θ)·P⁻¹ (P = screen vectors of one lattice step along u and v), applied to the canvas with the Web Animations API
+   around the field centre: the old view turns 45°, the view swaps at the midpoint, the new view turns the last 45° into place.
+   The sense of the turn is measured, not assumed: a cell's screen position before and after the swap tells which way is continuous.
+   Reduced motion keeps the plain swap. */
 let turning = false;
 function turnView(d) {
   if (!window.FieldHeight || turning) return;
-  const R = matchMedia('(prefers-reduced-motion: reduce)').matches, s = d > 0 ? 1 : -1;
-  if (R || !cv.animate) return turnNow(d);
-  turning = true;
-  cv.animate([{ transform: 'none', filter: 'none' }, { transform: `rotate(${-s * 12}deg) scale(.9)`, filter: 'blur(1.5px) brightness(.9)' }], { duration: 170, easing: 'cubic-bezier(.5,0,.9,.5)' }).onfinish = () => {
-    turnNow(d);
-    const b = cv.animate([{ transform: `rotate(${s * 12}deg) scale(.9)`, filter: 'blur(1.5px) brightness(.9)' }, { transform: 'none', filter: 'none' }], { duration: 260, easing: 'cubic-bezier(.1,.6,.3,1)' });
-    b.onfinish = b.oncancel = () => { turning = false } };
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !cv.animate) return turnNow(d);
+  const cs = [...FIELD.cells.values()], cu = cs.reduce((a, c) => a + c.u, 0) / cs.length + .5, cvv = cs.reduce((a, c) => a + c.v, 0) / cs.length + .5;
+  const k = scale * zoom, rect = cv.getBoundingClientRect();
+  const frame = () => { const c = projectFlat(cu, cvv), a = projectFlat(cu + 1, cvv), b = projectFlat(cu, cvv + 1); return { cx: (c.x - WORLD_W / 2) * k + W / 2 + pan.x, cy: (c.y - WORLD_H / 2) * k + H / 2 + pan.y, P: [(a.x - c.x) * k, (a.y - c.y) * k, (b.x - c.x) * k, (b.y - c.y) * k], probe: projectFlat(cu + 3, cvv + 1) } };
+  const M = (P, th) => { const [ux, uy, vx, vy] = P, det = ux * vy - vx * uy, i00 = vy / det, i01 = -vx / det, i10 = -uy / det, i11 = ux / det, c = Math.cos(th), s = Math.sin(th);
+    const r00 = c * i00 - s * i10, r01 = c * i01 - s * i11, r10 = s * i00 + c * i10, r11 = s * i01 + c * i11;   // R·P⁻¹
+    return [ux * r00 + vx * r10, uy * r00 + vy * r10, ux * r01 + vx * r11, uy * r01 + vy * r11] };   // P·R·P⁻¹ → [a b c d] of matrix(a,b,c,d,0,0)
+  const before = frame(); ROT = (ROT + d + 4) & 3; const after = frame(); ROT = (ROT - d + 4) & 3;
+  /* which sense of turn carries the old view onto the new one */
+  const q0 = { x: (before.probe.x - WORLD_W / 2) * k + W / 2 + pan.x - before.cx, y: (before.probe.y - WORLD_H / 2) * k + H / 2 + pan.y - before.cy }, q1 = { x: (after.probe.x - WORLD_W / 2) * k + W / 2 + pan.x - after.cx, y: (after.probe.y - WORLD_H / 2) * k + H / 2 + pan.y - after.cy };
+  const err = sg => { const m = M(before.P, sg * Math.PI / 2); return Math.hypot(m[0] * q0.x + m[2] * q0.y - q1.x, m[1] * q0.x + m[3] * q0.y - q1.y) }, sg = err(1) <= err(-1) ? 1 : -1;
+  const keys = (P, from, to, cx, cy) => Array.from({ length: 13 }, (_, i) => { const th = (from + (to - from) * i / 12) * Math.PI / 180, m = M(P, th), sh = 1 - .06 * Math.sin(Math.abs(th) * 2);
+    return { transformOrigin: `${(cx - rect.left).toFixed(1)}px ${(cy - rect.top).toFixed(1)}px`, transform: `matrix(${(m[0] * sh).toFixed(4)},${(m[1] * sh).toFixed(4)},${(m[2] * sh).toFixed(4)},${(m[3] * sh).toFixed(4)},0,0)`, filter: `brightness(${(1 - .08 * Math.sin(Math.abs(th) * 2)).toFixed(3)})` } });
+  turning = true; for (const u of window.TownBattle?.state?.()?.units || []) u._occ = false;
+  cv.animate(keys(before.P, 0, sg * 45, before.cx, before.cy), { duration: 230, easing: "cubic-bezier(.45,0,.9,.6)", fill: "forwards" }).onfinish = () => {
+    turnNow(d); fadeGround = null;
+    const a2 = cv.animate(keys(after.P, -sg * 45, 0, after.cx, after.cy), { duration: 300, easing: 'cubic-bezier(.1,.5,.25,1)' });
+    cv.getAnimations().forEach(x => { if (x !== a2) x.cancel() });
+    a2.onfinish = a2.oncancel = () => { turning = false } };
 }
 function turnNow(d) {
   fadeGround = groundCanvas; fadeAt = performance.now();

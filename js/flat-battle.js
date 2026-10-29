@@ -297,12 +297,12 @@
   /* ---------- v97.01 · monster tactics by intelligence (u.iq): 0 brute (nearest foe) · 1 hunts the weak and finishes kills · 2 goes for supports,
      the hero when he is low, focuses wounded foes, keeps out of crossfire, ranged units kite, flees when almost dead · 3 also protects its own
      weak/ranged friends with its body, trades on threat, flees earlier and recovers while out of reach ---------- */
-  const FLEE_AT = { 2: .22, 3: .35 };
+  const FLEE_AT = { 2: .22, 3: .35 }, FLANK = { 1: [5, 2], 2: [14, 6], 3: [22, 9] };
   function smartAct(st, u, steps) {
     const iq = u.iq | 0, opp = opponents(st, u), friends = st.units.filter(f => f.side === u.side && alive(f) && f !== u), W = EW();
     const reachMap = reach(st, u, u.move), cells = [...reachMap.values()], fields = new Map(opp.map(o => [o, distField(st, o)]));
     const exposure = (e, except) => opp.reduce((n, o) => n + (o !== except && dist(o, e) <= (o.move || 4) + (o.range || 1) ? 1 : 0), 0);
-    const est = (o, e) => { const raw = u.atk * heightMult(st, { u: e.u, v: e.v }, o) * (W && u.el ? W.mult(u.el, elOf(o)) : 1); return Math.max(1, Math.round(raw) - (o.armor || 0) - Math.min(o.guard || 0, Math.round(raw) - 1)) };
+    const est = (o, e) => { const raw = u.atk * heightMult(st, { u: e.u, v: e.v }, o) * (W && u.el ? W.mult(u.el, elOf(o)) : 1) * (SIDE[sideOf(o, e)] || 1); return Math.max(1, Math.round(raw) - (o.armor || 0) - Math.min(o.guard || 0, Math.round(raw) - 1)) };
     const canHit = (e, o) => dist(e, o) <= u.range && (u.range > 1 || Math.abs(lv(st, e.u, e.v) - lv(st, o.u, o.v)) <= (u.fly || o.fly ? 3 : 1));
     const move = e => { if (e.u === u.u && e.v === u.v) return; const path = pathTo(reachMap, e), pv = path[path.length - 2] || u; u.face = faceOf(pv, e); u.u = e.u; u.v = e.v; st.log.push(u.name + ' เดิน'); steps.push({ unit: u, type: 'move', path }) };
     const hpF = u.hp / u.maxHp, fleeAt = FLEE_AT[Math.min(3, iq)] || 0;
@@ -332,6 +332,8 @@
       if (!canHit(e, o)) continue;
       let sc = want(o, e) - e.cost * .1;
       if (iq >= 2) { sc -= exposure(e, o) * 2.5; if (kind(st, e.u, e.v) === 'cover') sc += 3; sc += (lv(st, e.u, e.v) - lv(st, o.u, o.v)) * 2.5 }
+      /* v97.14 · flanking by intelligence: 1 takes the back when it is about as easy · 2 walks round for it · 3 even more (back ×1.2, side ×1.1) */
+      { const sd = sideOf(o, e); sc += (FLANK[Math.min(3, iq)] || [0, 0])[sd === 'back' ? 0 : sd === 'side' ? 1 : 2] || 0 }
       if (iq >= 2 && u.range > 1) sc += Math.min(...opp.map(x => dist(x, e))) * 1.2;            // kite: stay as far from everyone as the range allows
       if (u.range > 1 && iq >= 2 && opp.some(x => x !== o && x.range <= 1 && dist(x, e) <= 1)) sc -= 8;
       for (const f of guardWeak) { const thr = opp.slice().sort((a, b) => dist(a, f) - dist(b, f))[0]; if (thr && dist(e, thr) + dist(e, f) <= dist(f, thr) + 1 && dist(e, thr) < dist(f, thr)) sc += 25 }   // stand between the weak friend and its attacker
@@ -348,6 +350,8 @@
     if (bestE) move(bestE);
     const inR = targets(st, u).sort((a, b) => want(b, u) - want(a, u))[0];
     if (inR) { st.cur = u; const at = strike(st, u, inR); steps.push({ unit: u, type: 'attack', target: inR, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) }
+    /* v97.14 · a clever monster that only walked turns to face the nearest foe, so its back is not left open */
+    else if (iq >= 2) { const n = opp.slice().sort((a, b) => dist(a, u) - dist(b, u))[0]; if (n) u.face = faceOf(u, n) }
     return steps;
   }
   function strike(st, a, t) {
