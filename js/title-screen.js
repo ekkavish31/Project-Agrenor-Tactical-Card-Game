@@ -47,6 +47,8 @@ const CREDITS=[
 ];
 const TIPS=['โจมตีจากด้านหลังศัตรูแรงกว่าด้านหน้า','ยืนบนที่สูงช่วยให้ตีแรงขึ้นและหลบได้ดีขึ้น','กด "รอ" แทนการเดินจะได้ CT คืนบางส่วน','อุปกรณ์ที่ดีต้องใช้วัตถุดิบจากพื้นที่ที่ยากขึ้น','นอนที่บ้านเพื่อฟื้นแรงและชีวิตเต็ม','ล็อกเป้าแล้วดูหน้าต่างทำนายผลก่อนโจมตี'];
 
+/* v97.10 · developer tools (✎ Editor on the title) only on the creator's machine: a GitHub token is set for ⬆ Push, or ?dev=1 (remembered; ?dev=0 forgets) */
+const DEV=(()=>{try{const q=new URLSearchParams(location.search).get('dev');if(q==='1')localStorage.setItem('projectA.dev','1');if(q==='0')localStorage.removeItem('projectA.dev');return localStorage.getItem('projectA.dev')==='1'||!!JSON.parse(localStorage.getItem('projectA.github')||'{}').token}catch(e){return false}})();root.PROJECT_DEV=DEV;
 const SAVE='three-card-forge-v4',STARTED='project-a-started-v1',NEW_FLAG='project-a-newgame',VERSION=(root.GAME_VERSION?.v||'v50');
 const params=new URLSearchParams(location.search);
 const skip=params.has('editor')||params.has('skipTitle')||!!root.EDITOR_MODE||root.top!==root;
@@ -145,7 +147,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
   <button data-act="continue" ${hasSave?'':'disabled'}><span>Continue</span><small>${hasSave?saveSummary():'ยังไม่มีเซฟ'}</small></button>
   <button data-act="options"><span>Options</span><small>ตั้งค่าเกม</small></button>
   <button data-act="extra"><span>Extra</span><small>วิธีเล่น · คลังภาพ · เครดิต</small></button>
-  <div class="ts-tools"><a href="editor.html" target="_blank" rel="noopener" title="แก้ภาพ/แอนิเมชัน การ์ด แผนที่ สนามต่อสู้ (เปิดแท็บใหม่)">✎ Editor</a></div>
+  <div class="ts-tools" ${DEV?'':'hidden'}><a href="editor.html" target="_blank" rel="noopener" title="แก้ภาพ/แอนิเมชัน การ์ด แผนที่ สนามต่อสู้ (เปิดแท็บใหม่)">✎ Editor</a></div>
  </nav></div>
  <div class="ts-foot"><span class="ts-ver">Project A ${VERSION}${root.GAME_VERSION?.date?" · "+root.GAME_VERSION.date:""} <em class="ts-gh">· กำลังเช็ก GitHub…</em></span><span>↑↓ เลือก · Enter ยืนยัน</span></div>
  <section class="ts-extra" hidden aria-label="Extra"><div class="ts-extra-box"><div class="ts-extra-head"><div class="ts-tabs" role="tablist"><button role="tab" data-tab="howto">วิธีเล่น</button><button role="tab" data-tab="gallery">คลังภาพ</button><button role="tab" data-tab="credits">เครดิต</button></div><button class="ts-close" data-act="close-extra" aria-label="ปิด">✕</button></div><div class="ts-extra-body"></div></div></section>
