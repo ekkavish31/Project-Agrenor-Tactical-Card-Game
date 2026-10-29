@@ -30,7 +30,7 @@ function arrived(id,map,info={}){if(id.startsWith('exit:')){openWorld();return}i
  if(!CORE.includes(id)||(info.custom&&emptyMap&&id!=='home')){if(id==='square'||real==='square'){send({type:'place',id,ok:false,message:'ลานกลางหมู่บ้าน',actions:[]});return}enterPlace(real,'',info.name||real);sync();return}
  if(!PLACES[id]){send({type:'place',id,ok:false,message:'สถานที่นี้เตรียมไว้ ยังไม่เปิดกิจกรรม',actions:[]});return}
  const result=id===s.village.location?{ok:true}:travel(id);if(!result.ok){send({type:'place',id,ok:false,message:result.reason,actions:[]});return}
- if(CORE.includes(id)){render();enterPlace(id,info.name&&/บ้านของเรา|บ้านเรา/.test(info.name)?'':map);return}
+ if(CORE.includes(id)){render();/* v95.30: the hero's house uses its own sub-map when one has been built in the editor (with home services), else the built-in home */ enterPlace(id,info.name&&/บ้านของเรา|บ้านเรา/.test(info.name)?(map&&!emptyMap?map:''):map);return}
  inside=true;marketOpen=false;closeCardFocus();hideEntityPeek();render();applySceneLayout(true);scheduleIdle();sync();
 }
 function menu(k){if(busy)return;if(k==='journal'){window.VillageJournal?.open?.();return}if(['bag','character','editor'].includes(k))openPanel(k);else if(k==='deck'||k==='upgrade')openPanel('tdeck');else if(k==='settings')openSettings();else if(k==='activities')arrived(s.village.location);else if(k==='adventure'){if($('panel').open)$('panel').close();openWorld()}else if(k==='training')openTactical()}
