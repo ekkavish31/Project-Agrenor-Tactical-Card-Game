@@ -324,8 +324,21 @@ window.TownBattleExtras = () => {
   const occ = occluders(ents); if (st) for (const u of st.units) if (u._occT) u._occ = true; return out.concat(occ);
 };
 let fadeGround = null, fadeAt = 0, fadeT = 0;
+/* v97.12 · the camera swings round instead of a flat cross-fade: the view tilts away (rotate + slight zoom-out + blur), turns at the
+   midpoint, then settles in from the other side (B9 / B15). Reduced motion keeps the plain swap. */
+let turning = false;
 function turnView(d) {
-  if (!window.FieldHeight) return; fadeGround = groundCanvas; fadeAt = performance.now();
+  if (!window.FieldHeight || turning) return;
+  const R = matchMedia('(prefers-reduced-motion: reduce)').matches, s = d > 0 ? 1 : -1;
+  if (R || !cv.animate) return turnNow(d);
+  turning = true;
+  cv.animate([{ transform: 'none', filter: 'none' }, { transform: `rotate(${-s * 12}deg) scale(.9)`, filter: 'blur(1.5px) brightness(.9)' }], { duration: 170, easing: 'cubic-bezier(.5,0,.9,.5)' }).onfinish = () => {
+    turnNow(d);
+    const b = cv.animate([{ transform: `rotate(${s * 12}deg) scale(.9)`, filter: 'blur(1.5px) brightness(.9)' }, { transform: 'none', filter: 'none' }], { duration: 260, easing: 'cubic-bezier(.1,.6,.3,1)' });
+    b.onfinish = b.oncancel = () => { turning = false } };
+}
+function turnNow(d) {
+  fadeGround = groundCanvas; fadeAt = performance.now();
   ROT = (ROT + d + 4) & 3; try { localStorage.setItem('projectA.fieldRot', ROT) } catch (e) { }
   FieldHeight.setView(); groundCanvas = null; for (const u of window.TownBattle?.state?.()?.units || []) u._occ = false;
 }

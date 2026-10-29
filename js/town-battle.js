@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.08';
+  const V = '97.12';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -250,6 +250,9 @@
   @keyframes fbBanWin{0%{opacity:0;transform:scale(2.4)}12%{opacity:1;transform:scale(1);filter:none}85%{opacity:1}100%{opacity:0;transform:scale(1.05)}}
   @media (max-width:820px){.fb-banner span{font-size:40px}.fb-banner.win span{font-size:48px}}
   .fb-card.auto{transform:translateY(-12px)}.fb-card.auto .face{box-shadow:0 0 0 3px #ffd25a,0 0 18px 4px #ffd25a}
+  #fbIntro{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:48;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 34px;pointer-events:none;color:#f6ecd6;text-align:center;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif;animation:fbIntroIn .5s cubic-bezier(.2,1.3,.4,1) both;background:linear-gradient(90deg,transparent,#0b1410e0 18%,#0b1410e0 82%,transparent);min-width:min(620px,92vw)}
+  #fbIntro small{letter-spacing:.3em;color:#cdbb92;font-size:12px}#fbIntro b{font:900 34px/1.15 Georgia,"Noto Sans Thai",serif;color:#ffe2a8;text-shadow:0 2px 0 #000,0 0 22px #ffb34a88}#fbIntro span{font-size:14px;color:#e9dcbc}
+  #fbIntro.out{animation:fbIntroOut .5s ease both}@keyframes fbIntroIn{from{opacity:0;transform:translate(-50%,-50%) scale(1.3)}}@keyframes fbIntroOut{to{opacity:0;transform:translate(-50%,-60%)}}
   #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
   #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
   #fbFace [data-f]{position:fixed;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid #f3e9c9aa;background:#1b302ae6;color:#f3e9c9;font:22px system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:0 4px 12px #0008;transition:transform .12s,background .12s}
@@ -432,8 +435,19 @@
     setTimeout(() => els.forEach(e => e.classList.remove('new')), 2200);
   }
   function toast(t) { const d = document.createElement('div'); d.className = 'fb-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 1700) }
+  /* v97.12 · battle opening (B13, first part): the field's name and the win / lose rule come in, the camera looks at the enemy leader,
+     then back to the party. Skipped when the arena is only warming up and with reduced motion (CINE off). */
+  async function battleIntro() {
+    const d = document.createElement('div'); d.id = 'fbIntro';
+    d.innerHTML = `<small>${esc(({ forest: 'ป่า', grass: 'ทุ่งหญ้า', hills: 'เนินเขา', swamp: 'บึง', snow: 'ทุ่งหิมะ', sand: 'หาดทราย' })[Q.get('biome')] || 'สนามรบ')}${Q.get('night') === '1' ? ' · กลางคืน' : ''}</small><b>${esc(TITLE || FB.monster(st)?.name || 'การต่อสู้')}</b><span>ชนะ: ล้มศัตรูทั้งหมด · แพ้: ${esc(FB.hero(st).name)} ล้ม</span>`;
+    document.body.append(d); sfx('cast', .3);
+    const m = FB.monsters(st).find(u => u.hp > 0); if (m) await cinematic(m, m, () => wait(1900), { z: 1.45, lead: 260, tail: 160 }); else await wait(2000);
+    d.classList.add('out'); setTimeout(() => d.remove(), 600);
+  }
   async function startTurnShow(first) {
-    walks = []; pend = null; refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
+    walks = []; pend = null;
+    if (first && CINE && Q.get('warm') !== '1' && !st.introDone) { st.introDone = true; busy = true; hudSync(); try { await battleIntro() } finally { busy = false } }
+    refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
     toast(first ? 'BATTLE START · DRAW' : `TURN ${st.turns} · DRAW ${fresh.length}`);
     if (fresh.length) { busy = true; hudSync(); await drawShow(fresh); busy = false; refresh() }
     if (auto) autoTurn();
