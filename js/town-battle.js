@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '96.07';
+  const V = '97.00';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -100,7 +100,7 @@
     const gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
-    /* v96.07: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
+    /* v97.00: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
        (spacing 2 by king-move distance); only when the area is too tight does it fall back to 1, then 0 */
     const near = (o) => {
       const pts = [...taken].map(k => k.split(',').map(Number)); let best = null;
@@ -112,8 +112,11 @@
     const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
-    st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true,
+    st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
       hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX, hp: HHP ? Math.min(HMAX, HHP) : HMAX, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons });
+    /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
+    const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
+    for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)) }
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
@@ -185,6 +188,11 @@
   ${EMBED ? '.floatBtn,#townTools,#hudTop,.town-hud,.townux-top{display:none!important}' : ''}
   #fbHud{position:fixed;left:14px;top:14px;z-index:40;width:260px;background:#1b302af2;border:1px solid #b9c48a66;border-radius:12px;padding:10px 12px;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 30px #0008}
   #fbHud button{font:inherit;background:#c9893a;color:#fff;border:0;border-radius:7px;padding:6px 9px;cursor:pointer}#fbHud button:disabled{opacity:.4;cursor:default}
+  #fbQueue{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:38;display:flex;gap:4px;align-items:center;pointer-events:none;font:11px system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
+  #fbQueue .qc{position:relative;width:54px;padding:3px 2px 6px;text-align:center;border-radius:8px;background:#14231fdd;border:1px solid #b9c48a55;overflow:hidden}#fbQueue .qc .ic{display:block;font-size:16px;line-height:18px}#fbQueue .qc b{display:block;font-weight:600;white-space:nowrap;overflow:hidden}
+  #fbQueue .qc i{position:absolute;left:0;bottom:0;height:3px;background:#6fd18a}#fbQueue .qc.foe{border-color:#e2705f88}#fbQueue .qc.foe i{background:#e2705f}#fbQueue .qc.ally{border-color:#8fd0b0aa}
+  #fbQueue .qc.on{width:66px;border:2px solid #ffd25a;background:#2a3a1fee;transform:scale(1.05)}#fbQueue .arr{color:#ffd25a;font-size:18px;margin:0 2px}
+  #fbHud #fbAuto.on{background:#2f8a5a}
   #fbHud .bar{height:7px;background:#0006;border-radius:4px;overflow:hidden;margin:2px 0 6px;position:relative}#fbHud .bar i{display:block;height:100%;transition:width .35s}
   #fbHud .arow{margin:3px 0 5px}#fbHud .arow.down{opacity:.45}#fbHud .ord{display:flex;gap:3px;margin-top:2px}#fbHud .ord button{padding:2px 6px;font-size:12px;background:#33463e;border-radius:6px}#fbHud .ord button.on{background:#5d8a6e;box-shadow:inset 0 0 0 1px #bfe8c8}#fbHud .ord button.sk{flex:1;background:#6b4e9a;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #fbHud .grp{margin:6px 0 2px;color:#bba57f;font-size:11px;border-top:1px solid #ffffff1a;padding-top:4px}#fbHud .grp small{opacity:.7}
@@ -270,11 +278,13 @@
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
     d.innerHTML = `<b style="color:#f6d79b">⚔ สนามรบ · ไพ่</b><div id="fbTurn" style="margin:4px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd">จบเทิร์น</button><button id="fbEl" title="ตารางธาตุ">◈ ธาตุ</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button>${EMBED ? '<button id="fbFlee">🏃 หนี</button><button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : '<button id="fbNew">เริ่มใหม่</button>'}</div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd">จบเทิร์น</button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (กดอีกครั้งเพื่อหยุด)">⚡ Auto</button><button id="fbEl" title="ตารางธาตุ">◈ ธาตุ</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button>${EMBED ? '<button id="fbFlee">🏃 หนี</button><button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : '<button id="fbNew">เริ่มใหม่</button>'}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
       <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">ใช้ไพ่เดิน → คลิกช่องฟ้า · ใช้ไพ่สู้เมื่อศัตรูอยู่ในระยะ<br>คริสตัล 2 เม็ด/เทิร์น · ไพ่จั่วเติมตอนเริ่มเทิร์น<br>ช่อง: น้ำตาล เดินช้า · เขียว กำบัง −30% · แดง กีดขวาง</div>`;
     document.body.append(d); hud = d;
     d.querySelector('#fbEnd').onclick = () => endHeroTurn();
+    d.querySelector('#fbAuto').onclick = () => setAuto(!auto);
+    const q = document.createElement('div'); q.id = 'fbQueue'; document.body.append(q);
     d.querySelector('#fbEl').onclick = () => window.ElementWheel?.showChart();
     d.querySelector('#fbDis').onclick = () => setDiscard(!discardMode);
     if (EMBED) { d.querySelector('#fbFlee').onclick = () => { if (!busy && st.turn === 'hero' && !st.outcome) report('flee') }; d.querySelector('#fbBack').onclick = () => report(st.outcome) }
@@ -300,12 +310,23 @@
     hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? '🏆 ชนะ!' : '💀 แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns} · ตาคุณ · แต้มเดิน ${st.mp}` : `เทิร์น ${st.turns} · ตาศัตรู…`;
     const left = FB.crystals(st), max = st.crystalMax;
     hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<span class="gem ${i < left ? 'on' : ''}"></span>`).join('');
-    hud.querySelector('#fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero';
+    hud.querySelector('#fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
+    { const a = hud.querySelector('#fbAuto'); a.classList.toggle('on', auto); a.textContent = auto ? '⏸ หยุด Auto' : '⚡ Auto' }
+    queueSync();
     hud.querySelector('#fbDis').disabled = busy || !!st.outcome || st.turn !== 'hero' || (!left && !discardMode);
     hud.querySelector('#fbDis').textContent = discardMode ? 'ยกเลิกการทิ้ง' : '♻ ทิ้งไพ่ฟื้นแรง';
     hud.querySelector('#fbLog').innerHTML = st.log.slice(-6).reverse().map(x => '<div>' + esc(x) + '</div>').join('');
   }
 
+  /* v97 · FFT turn queue (top centre): who acts next, the acting unit highlighted, with its HP */
+  function queueSync() {
+    const q = document.getElementById('fbQueue'); if (!q || !st) return;
+    if (st.outcome) { q.innerHTML = ''; return }
+    const list = FB.queue(st, 9), act = actUnit && actUnit.hp > 0 ? actUnit : list[0], rest = list.filter(u => u !== act).slice(0, 8), chip = (u, on) => {
+      const E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, u.hp / u.maxHp * 100)), side = u.side === 'monster' ? 'foe' : u === FB.hero(st) ? 'hero' : 'ally';
+      return `<div class="qc ${side} ${on ? 'on' : ''}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="ic">${E ? E.icon : esc((u.name || '?')[0])}</span><b>${esc(u.name.length > 5 ? u.name.slice(0, 5) + '…' : u.name)}</b><i style="width:${pct}%"></i></div>` };
+    q.innerHTML = chip(act, true) + '<span class="arr">›</span>' + rest.map(u => chip(u, false)).join('');
+  }
   /* ---------- hand ---------- */
   function handMake() {
     const d = document.createElement('div'); d.id = 'fbHand';
@@ -357,15 +378,16 @@
   let pv = null;
   function preview(b) {
     hidePreview(); const group = b.dataset.group, id = b.dataset.id, why = cardBlock(group, +b.dataset.i);
+    dmgShow = null; if (group === 'combat' && !why) { const d = FB.preview(st, +b.dataset.i); if (d && !d.self) dmgShow = d }
     if (group === 'combat') { const rr = FB.cardRule(id); rangeShow = rr && !rr.self ? rr.range : 0; pushShow = null;
       /* v94.02 · push / pull forecast: where the target lands and how far it falls */
       if (rr && (rr.push || rr.pull) && window.FieldHeight) { const h = FB.hero(st), tg = FB.pickTarget(st, rr); if (tg) { const dir = rr.push ? 1 : -1, du = tg.u - h.u, dv = tg.v - h.v, su = Math.abs(du) >= Math.abs(dv) ? Math.sign(du) : 0, sv = su ? 0 : Math.sign(dv), nu = tg.u + su * dir, nv = tg.v + sv * dir, drop = FB.lv(st, tg.u, tg.v) - FB.lv(st, nu, nv), free = cells.get(nu + ',' + nv) && cells.get(nu + ',' + nv) !== 'blocked' && !st.units.some(x => x.hp > 0 && x.u === nu && x.v === nv) && drop >= -1; pushShow = free ? { u: nu, v: nv, drop, dmg: drop >= 2 ? 5 * drop : 0 } : { u: nu, v: nv, stuck: true } } } }
     pv = document.createElement('div'); pv.className = 'fb-show';
-    pv.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b><br>${esc(cardLine(group, id))}${(() => { const e = elTip(group, id); return e?.text ? `<br><span style="color:${e.cls === 'adv' ? '#7fe08a' : e.cls === 'dis' ? '#ff9a8a' : '#cdbb92'}">${esc(e.text)}</span>` : '' })()}${why && st.turn === 'hero' ? '<br><span style="color:#ff9a8a">' + esc(why) + '</span>' : ''}</div>`;
+    pv.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b><br>${esc(cardLine(group, id))}${dmgShow ? `<br><b style="color:${dmgShow.kill ? '#ffe14d' : '#ffd0a0'}">≈ −${dmgShow.total}${dmgShow.kill ? ' · ล้ม!' : ''}</b> <small>${esc(dmgShow.target.name)}${dmgShow.notes.length ? ' · ' + esc(dmgShow.notes.join(', ')) : ''}</small>` : ''}${(() => { const e = elTip(group, id); return e?.text ? `<br><span style="color:${e.cls === 'adv' ? '#7fe08a' : e.cls === 'dis' ? '#ff9a8a' : '#cdbb92'}">${esc(e.text)}</span>` : '' })()}${why && st.turn === 'hero' ? '<br><span style="color:#ff9a8a">' + esc(why) + '</span>' : ''}</div>`;
     document.body.append(pv); const s = sideSpot(210, 340); pv.style.left = s.x + 'px'; pv.style.top = s.y + 'px';
   }
-  function hidePreview() { pv?.remove(); pv = null; rangeShow = 0; pushShow = null }
-  let rangeShow = 0, pushShow = null;
+  function hidePreview() { pv?.remove(); pv = null; rangeShow = 0; pushShow = null; dmgShow = null }
+  let rangeShow = 0, pushShow = null, dmgShow = null;
   const TONE = { movement: '#6fc3ff', attack: '#ff7a5c', self: '#7fe08a', magic: '#c39bff' };
   /* the played card pops up full size beside the fight, stays while the action plays, then flies into the discard pile */
   function showPlay(group, id, text, fromEl) {
@@ -400,7 +422,22 @@
     refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
     toast(first ? 'BATTLE START · DRAW' : `TURN ${st.turns} · DRAW ${fresh.length}`);
     if (fresh.length) { busy = true; hudSync(); await drawShow(fresh); busy = false; refresh() }
+    if (auto) autoTurn();
   }
+  /* v97 Auto: the planner in flat-battle picks each step, the normal handlers animate it */
+  async function autoTurn() {
+    if (autoRun) return; autoRun = true;
+    try {
+      for (let i = 0; i < 14 && auto && !busy && st.turn === 'hero' && !st.outcome; i++) {
+        const p = FB.autoPlan(st); if (p.type === 'end') break; await wait(380); if (!auto || busy) break;
+        if (p.type === 'walk') await heroMove(p.to);
+        else { const b = hand?.querySelector(`.fb-card[data-group="${p.type === 'combat' ? 'combat' : 'movement'}"][data-i="${p.index}"]`); if (!b) break; await cardClick(b) }
+        await wait(200);
+      }
+    } finally { autoRun = false }
+    if (auto && !busy && st.turn === 'hero' && !st.outcome) await endHeroTurn();
+  }
+  function setAuto(on) { auto = on; hudSync(); if (on && !busy && st.turn === 'hero' && !st.outcome) autoTurn() }
 
   /* ---------- discard for stamina ---------- */
   function setDiscard(on) { discardMode = on && !busy && st.turn === 'hero' && !st.outcome && (FB.crystals(st) > 0); picked.clear(); hidePreview(); refresh() }
@@ -564,9 +601,11 @@
     }
     busy = false; refresh(); if (st.outcome) finish();
   }
+  let actUnit = null, auto = false, autoRun = false;
   async function playSteps(steps) {
     for (const s of steps) {
       if (st.outcome && s.type !== 'attack') continue;
+      if (s.type === 'turn') { actUnit = s.unit; hudSync(); if (s.unit !== FB.hero(st)) await wait(260); continue }
       if (s.type === 'move') await walkAnim(s.unit, s.path);
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
       else if (s.type === 'stun') { floatText(s.unit, 'FROZEN — SKIP', '#bfe8ff', true); await wait(420) }
@@ -578,6 +617,7 @@
   async function endHeroTurn() {
     if (busy || st.turn !== 'hero' || st.outcome) return;
     setDiscard(false); busy = true; refresh();
+    if (st.ct) { const r = FB.endTurnCT(st); await playSteps(r.steps); actUnit = null; busy = false; if (st.outcome) { refresh(); finish(); return } await startTurnShow(false); return }
     const allySteps = FB.alliesTurn(st);
     if (allySteps.length) { toast('PARTY PHASE'); await wait(400); await playSteps(allySteps) }
     if (st.outcome) { busy = false; refresh(); finish(); return }
@@ -612,9 +652,9 @@
   }
   /* v94.03 · code-drawn effects for the height cards: rocks raining down, climb chevrons, the perch banner, landing dust, the dive streak */
   const HEIGHT_FX = {
-    rockfall(g, e, t, p) { const R = n => ((e.seed * (n + 1) * 9301 + 49297) % 233280) / 233280; for (let i = 0; i < 6; i++) { const d = Math.max(0, Math.min(1, t * 1.6 - i * .1)), x = p.x + (R(i) - .5) * UNIT * .9, y0 = p.y - UNIT * 3.2, y = y0 + (p.y - UNIT * .3 - y0) * d * d, s = 6 + R(i + 9) * 9; g.globalAlpha = d >= 1 ? Math.max(0, 1 - (t - .6) * 3) : 1; g.fillStyle = i % 2 ? '#8a7f70' : '#6d6458'; g.beginPath(); g.moveTo(x - s, y); g.lineTo(x - s * .3, y - s); g.lineTo(x + s, y - s * .4); g.lineTo(x + s * .6, y + s * .5); g.closePath(); g.fill() } if (t > .55) { const k = (t - .55) / .45; g.globalAlpha = 1 - k; g.fillStyle = 'rgba(170,150,120,.7)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * (.4 + k * .8), UNIT * (.18 + k * .3), 0, 0, 7); g.fill() } },
+    rockfall(g, e, t, p) { const R = n => ((e.seed * (n + 1) * 9301 + 49297) % 233280) / 233280; for (let i = 0; i < 6; i++) { const d = Math.max(0, Math.min(1, t * 1.6 - i * .1)), x = p.x + (R(i) - .5) * UNIT * .9, y0 = p.y - UNIT * 3.2, y = y0 + (p.y - UNIT * .3 - y0) * d * d, s = 6 + R(i + 9) * 9; g.globalAlpha = d >= 1 ? Math.max(0, 1 - (t - .6) * 3) : 1; g.fillStyle = i % 2 ? '#8a7f70' : '#6d6458'; g.beginPath(); g.moveTo(x - s, y); g.lineTo(x - s * .3, y - s); g.lineTo(x + s, y - s * .4); g.lineTo(x + s * .6, y + s * .5); g.closePath(); g.fill() } if (t > .55) { const k = (t - .55) / .45; g.globalAlpha = 1 - k; g.fillStyle = 'rgba(170,150,120,.7)'; g.beginPath(); g.ellipse(p.x, p.y, Math.max(0, UNIT * (.4 + k * .8)), Math.max(0, UNIT * (.18 + k * .3)), 0, 0, 7); g.fill() } },
     climbUp(g, e, t, p) { g.strokeStyle = '#bfffd0'; g.lineWidth = 4; g.lineCap = 'round'; for (let i = 0; i < 3; i++) { const k = (t * 1.5 + i * .3) % 1, y = p.y - UNIT * (.3 + k * 1.6); g.globalAlpha = 1 - k; g.beginPath(); g.moveTo(p.x - 14, y + 8); g.lineTo(p.x, y - 4); g.lineTo(p.x + 14, y + 8); g.stroke() } },
-    perchFlag(g, e, t, p) { g.globalAlpha = 1 - t; g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.beginPath(); g.ellipse(p.x, p.y, UNIT * (.3 + t * .6), UNIT * (.14 + t * .28), 0, 0, 7); g.stroke(); g.fillStyle = '#ffd25a'; g.fillRect(p.x + 18, p.y - UNIT * 1.6, 3, UNIT * 1.1); g.beginPath(); g.moveTo(p.x + 21, p.y - UNIT * 1.6); g.lineTo(p.x + 46, p.y - UNIT * 1.45 + Math.sin(t * 20) * 3); g.lineTo(p.x + 21, p.y - UNIT * 1.3); g.fill() },
+    perchFlag(g, e, t, p) { g.globalAlpha = 1 - t; g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.beginPath(); g.ellipse(p.x, p.y, Math.max(0, UNIT * (.3 + t * .6)), Math.max(0, UNIT * (.14 + t * .28)), 0, 0, 7); g.stroke(); g.fillStyle = '#ffd25a'; g.fillRect(p.x + 18, p.y - UNIT * 1.6, 3, UNIT * 1.1); g.beginPath(); g.moveTo(p.x + 21, p.y - UNIT * 1.6); g.lineTo(p.x + 46, p.y - UNIT * 1.45 + Math.sin(t * 20) * 3); g.lineTo(p.x + 21, p.y - UNIT * 1.3); g.fill() },
     fallDust(g, e, t, p) { for (let i = 0; i < 10; i++) { const a = i / 10 * 6.28, r = UNIT * (.2 + t * .9); g.globalAlpha = (1 - t) * .8; g.fillStyle = '#b8a888'; g.beginPath(); g.arc(p.x + Math.cos(a) * r, p.y + Math.sin(a) * r * .45 - t * 10, 5 + t * 6, 0, 7); g.fill() } },
     diveTrail(g, e, t, p, a) { g.globalAlpha = 1 - t; const gr = g.createLinearGradient(a.x, a.y - UNIT, p.x, p.y - UNIT * .5); gr.addColorStop(0, 'rgba(255,240,180,0)'); gr.addColorStop(1, 'rgba(255,220,120,.9)'); g.strokeStyle = gr; g.lineWidth = 10 * (1 - t) + 2; g.beginPath(); g.moveTo(a.x, a.y - UNIT * 1.4); g.quadraticCurveTo((a.x + p.x) / 2, Math.min(a.y, p.y) - UNIT * 2.4, p.x, p.y - UNIT * .5); g.stroke() }
   };
@@ -623,7 +663,7 @@
     for (const e of effects) {
       const t = Math.min(1, (now - e.start) / e.duration), p = project(e.to.x, e.to.y), a = e.from ? project(e.from.x, e.from.y) : p;
       g.save(); let ok = HEIGHT_FX[e.kind] ? (HEIGHT_FX[e.kind](g, e, t, p, a), true) : false; if (!ok) try { ok = window.BattleVFX?.draw(e, t, p, a, g, { w: UNIT, h: UNIT / 2 }) } catch (err) { ok = false }
-      if (!ok) { g.globalAlpha = 1 - t; g.strokeStyle = e.color || '#ffd27a'; g.lineWidth = 4; g.beginPath(); g.ellipse(p.x, p.y - UNIT * .6, UNIT * (.3 + t * .6), UNIT * (.18 + t * .35), 0, 0, 7); g.stroke() }
+      if (!ok) { g.globalAlpha = 1 - t; g.strokeStyle = e.color || '#ffd27a'; g.lineWidth = 4; g.beginPath(); g.ellipse(p.x, p.y - UNIT * .6, Math.max(0, UNIT * (.3 + t * .6)), Math.max(0, UNIT * (.18 + t * .35)), 0, 0, 7); g.stroke() }
       g.restore();
     }
   }
@@ -643,7 +683,7 @@
       if (len <= sp) { u.vu = tu; u.vv = tv; a.i++; if (!a.slide) sfx('step', .3) } else { u.vu += du / len * sp; u.vv += dv / len * sp }
     }
   }
-  function shadow(g, p, r) { g.fillStyle = '#0006'; g.beginPath(); g.ellipse(p.x, p.y, r, r * .45, 0, 0, 7); g.fill() }
+  function shadow(g, p, r) { g.fillStyle = '#0006'; g.beginPath(); g.ellipse(p.x, p.y, Math.max(0, r), Math.max(0, r * .45), 0, 0, 7); g.fill() }
   function bar(g, p, top, frac, col) { const bw = 46, bx = p.x - bw / 2, by = top - 8; g.fillStyle = '#000a'; g.fillRect(bx - 1, by - 1, bw + 2, 7); g.fillStyle = col; g.fillRect(bx, by, bw * Math.max(0, frac), 5) }
   /* hero: the old TACTICS_SPRITES poses (idle/walk/windup/strike/guard/hit/down) per direction, weapon drawn at the pose's hand anchor */
   /* TACTICS_SPRITES is a top-level const (not a window property) */
@@ -675,7 +715,7 @@
     const h = size * (def.scale || .63), w = h * def.size[0] / def.size[1];
     g.save(); g.translate(left + hand[0] * size, top + hand[1] * size); g.rotate(angle * Math.PI / 180); g.drawImage(i, -def.pivot[0] * w, -def.pivot[1] * h, w, h); g.restore();
   }
-  /* v96.07: weapons the sprite sheet has no hand anchor for (axe, bow, knife, rapier, spear, tome) use the loose pictures in assets/tactics */
+  /* v97.00: weapons the sprite sheet has no hand anchor for (axe, bow, knife, rapier, spear, tome) use the loose pictures in assets/tactics */
   const WEXTRA = { axe: { pivot: [.5, .9], size: [256, 768], scale: .62 }, knife: { pivot: [.5, .8], size: [256, 512], scale: .34 }, rapier: { pivot: [.5, .88], size: [256, 768], scale: .78 }, spear: { pivot: [.5, .72], size: [256, 1024], scale: 1.1 }, bow: { pivot: [.5, .5], size: [128, 320], scale: .6 }, tome: { pivot: [.5, .5], size: [160, 200], scale: .26 } };
   const weaponDef = (A, k) => A.equipment[k] || (WEXTRA[k] ? { src: `assets/tactics/${k}.webp`, ...WEXTRA[k] } : null);
   function drawHero(g, u, t) {
@@ -686,7 +726,7 @@
     shadow(g, p, UNIT * .26); g.save(); g.translate(ox, -(u.lift || 0)); if (u.hp <= 0) g.globalAlpha *= .6;
     g.translate(p.x + pm.dx, p.y + pm.dy); g.rotate(pm.rot); g.scale(pm.sx, pm.sy); g.translate(-p.x, -p.y);
     const sword = () => { if (u.weapon && weaponDef(A, u.weapon)) weapon(g, weaponDef(A, u.weapon), f.right, left, top, size, (f.rotation || 0) + pm.wpn) };
-    /* v96.07: standing ready or walking, the weapon is carried on the back (behind the body when facing the camera, over it when facing away); drawn in the hand only for actions */
+    /* v97.00: standing ready or walking, the weapon is carried on the back (behind the body when facing the camera, over it when facing away); drawn in the hand only for actions */
     const carried = u.hp > 0 && (u.walking || !u.pose || u.pose === 'idle'), W = u.weapon && weaponDef(A, u.weapon);
     const onBack = () => { if (!W) return; const away = ['NE', 'NW'].includes(u.dir), side = ['SE', 'NE'].includes(u.dir) ? -1 : 1, i2 = im(W.src); if (!i2) return;
       const h = size * (W.scale || .63) * .9, w = h * W.size[0] / W.size[1];
@@ -751,6 +791,7 @@
     if (pushShow && !busy) { poly(g, pushShow.u, pushShow.v); g.fillStyle = pushShow.stuck ? 'rgba(160,160,160,.35)' : pushShow.dmg ? 'rgba(255,60,40,.45)' : 'rgba(255,200,80,.35)'; g.fill(); const p = project(pushShow.u + .5, pushShow.v + .5); g.font = '800 13px system-ui'; g.textAlign = 'center'; g.fillStyle = '#000a'; g.fillRect(p.x - 48, p.y - 30, 96, 18); g.fillStyle = pushShow.dmg ? '#ffb0a0' : '#ffe2a8'; g.fillText(pushShow.stuck ? 'ผลักไม่ได้' : pushShow.dmg ? 'ตก ' + pushShow.drop + ' ระดับ −' + pushShow.dmg : 'ไม่ตก', p.x, p.y - 17) }
     const h = FB.hero(st), tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
     /* hovering a combat card: its reach around the hero in red */
+    if (dmgShow && !busy && dmgShow.target.hp > 0) { const q = project(dmgShow.target.vu, dmgShow.target.vv), txt = '−' + dmgShow.total + (dmgShow.kill ? ' ☠' : ''); g.save(); g.font = '900 24px system-ui,"Noto Sans Thai",sans-serif'; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = dmgShow.kill ? '#ffe14d' : '#ffd0a0'; const y = q.y - UNIT * 1.75 - 4 * Math.sin(now() * .006); g.strokeText(txt, q.x, y); g.fillText(txt, q.x, y); g.restore() }
     if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }
     /* enemies some playable card can reach: red; the chosen target: gold */
     if (!busy && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
@@ -804,7 +845,7 @@
     for (const x of glows) {
       const p = project(x.u, x.v), a = 1 - (t - x.t0) / x.dur, r = x.r * (.7 + .5 * (1 - a));
       g.save(); g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(p.x, p.y - UNIT * .2, 0, p.x, p.y - UNIT * .2, r);
-      gr.addColorStop(0, `rgba(${x.col},${.55 * a})`); gr.addColorStop(1, `rgba(${x.col},0)`); g.fillStyle = gr; g.beginPath(); g.ellipse(p.x, p.y - UNIT * .2, r, r * .55, 0, 0, 7); g.fill(); g.restore();
+      gr.addColorStop(0, `rgba(${x.col},${.55 * a})`); gr.addColorStop(1, `rgba(${x.col},0)`); g.fillStyle = gr; g.beginPath(); g.ellipse(p.x, p.y - UNIT * .2, Math.max(0, r), Math.max(0, r * .55), 0, 0, 7); g.fill(); g.restore();
     }
   }
   function partDraw(g, t) {

@@ -42,6 +42,8 @@
       turn: 'hero', turns: 1, mp: 0, acted: false, outcome: null, log: []
     };
     st.mp = st.units[0].move;
+    if (o.ct) { st.ct = true;   /* the hero first, then his friends, then the foes */
+      const r = o.rng || Math.random; for (const u of st.units) { u.speed = u.speed || (u.id === 'hero' ? 8 : 8); u.ct = u.id === 'hero' ? 100 : u.side === 'hero' ? 55 + Math.floor(r() * 40) : Math.floor(r() * u.speed * 5) } st.active = st.units[0] }
     if (o.cards) {
       const TD = deckLib(); if (!TD) throw new Error('TacticsDecks missing');
       const h = st.units[0];
@@ -198,6 +200,48 @@
     if (st.cards && t.counter && alive(t) && dist(a, t) <= 1) { t.counter = 0; const c = hurt(st, a, 12); counter = c.damage; st.log.push(t.name + ' สวนกลับ −' + counter) }
     checkOutcome(st);
     return { ok: true, damage: r.damage, target: t, notes: r.notes, crit, counter };
+  }
+  /* ---------- v97 · CT turn order (FFT queue): every unit has a speed and a gauge; the first to reach 100 acts, then pays 100.
+     Companions and monsters act on their own turn (AI); the hero keeps the card hand and the crystals. create({ct:true}) turns it on. ---------- */
+  const spd = u => Math.max(1, u.speed || 8);
+  /* who acts next on a copy of the gauges: ties go to the faster unit, then to the list order (hero first) */
+  function pickNext(list, g) {
+    for (let guard = 0; guard < 400; guard++) {
+      let best = null; for (const u of list) { if (g.get(u) >= 100 && (!best || g.get(u) > g.get(best) || (g.get(u) === g.get(best) && spd(u) > spd(best)))) best = u }
+      if (best) return best; for (const u of list) g.set(u, g.get(u) + spd(u));
+    }
+    return list[0];
+  }
+  /* the next `n` actors from now (the one acting right now first when `withActive`) */
+  function queue(st, n = 8, withActive = true) {
+    const list = st.units.filter(alive), g = new Map(list.map(u => [u, u.ct || 0])), out = [];
+    if (withActive && st.active && alive(st.active)) out.push(st.active);
+    if (withActive && st.active && g.has(st.active) && st.turn === 'hero' && st.active === hero(st)) g.set(st.active, (st.active.ct || 0) - 100);   // the hero's gauge is paid when the turn ends
+    while (out.length < n && list.length) { const u = pickNext(list, g); g.set(u, g.get(u) - 100); out.push(u) }
+    return out;
+  }
+  function beginHeroTurn(st) {
+    st.turn = 'hero'; st.cur = null; st.turns++; st.acted = false; st.mp = 0;
+    if (st.cards) { const h = hero(st); h.guard = 0; if (h.perch && --h.perch <= 0) h.perch = 0; for (const a of allies(st)) if (a.cd) a.cd--; refill(st) }
+  }
+  /* after the hero ends the turn: run the AI units' turns in CT order until the hero is up again. Returns the steps (type 'turn' marks each unit's start) */
+  function runCT(st) {
+    const steps = [];
+    for (let guard = 0; guard < 300 && !st.outcome; guard++) {
+      const list = st.units.filter(alive), g = new Map(list.map(u => [u, u.ct || 0])), u = pickNext(list, g);
+      for (const x of list) x.ct = g.get(x); if (u !== hero(st)) u.ct -= 100; st.active = u;   // the hero pays when his turn ends
+      if (u === hero(st)) { beginHeroTurn(st); steps.push({ type: 'turn', unit: u }); return steps }
+      st.turn = 'monster'; st.cur = u; steps.push({ type: 'turn', unit: u }); if (u.side === 'hero') u.guard = 0;
+      steps.push(...aiAct(st, u)); st.cur = null; checkOutcome(st);
+    }
+    return steps;
+  }
+  /* CT version of endTurn: the hero's end-of-turn effects, then every AI turn until the hero's next one */
+  function endTurnCT(st) {
+    if (st.outcome) return { ok: false, steps: [] };
+    if (st.cards && st.turn === 'hero') { const h = hero(st); h.stamina = Math.min(h.stMax || 100, h.stamina + 10); h.climb = 0 }
+    st.turn = 'monster'; st.acted = false; st.mp = 0; hero(st).ct -= 100;
+    return { ok: true, steps: runCT(st) };
   }
   function endTurn(st) {
     if (st.outcome) return { ok: false, reason: 'จบการต่อสู้แล้ว' };
@@ -372,6 +416,57 @@
     checkOutcome(st);
     return out;
   }
+  /* ---------- v97 · damage preview (no side effects: no crit, nothing consumed, secret elements stay secret) ---------- */
+  function soak(st, tgt, raw, guardLeft) {
+    let d = Math.max(1, Math.round(raw)); const notes = [];
+    if (kind(st, tgt.u, tgt.v) === 'cover') { d = Math.max(1, Math.round(d * (1 - KINDS.cover.reduce))); notes.push('กำบัง −30%') }
+    if (st.cards && tgt.armor > 0 && d > 1) { const a = Math.min(tgt.armor, d - 1); d -= a; notes.push('เกราะ −' + a) }
+    if (guardLeft.v > 0) { const a = Math.min(guardLeft.v, d); guardLeft.v -= a; d -= a; notes.push('ป้องกัน −' + a) }
+    return { damage: d, notes };
+  }
+  /* what combat card `index` would do to the target it would pick now: { target, perHit, hits, total, kill, notes, critTotal } · { self:true } for self cards · null when nothing in range */
+  function preview(st, index) {
+    const c = st.deck?.combat.hand[index], rule = c && CARD[c.id]; if (!rule) return null; if (rule.self) return { self: true };
+    const h = hero(st), t = pickTarget(st, rule); if (!t) return null;
+    const d0 = gap(st, h, t), notes = []; let bonus = 0, mult = 1;
+    if (rule.behind && t.face && faceOf(t, h) !== t.face) { bonus = rule.behind; notes.push('ข้างหลัง +' + rule.behind) }
+    if (h.ambush) { mult *= h.ambush; notes.push('ซุ่ม ×1.6') }
+    if (rule.leap) { const k = d0 > 0 ? 1 + .25 * Math.min(3, d0) : .85; mult *= k; notes.push(d0 > 0 ? 'กระโจนจากที่สูง ×' + k.toFixed(2) : 'ระดับเดียวกัน ×0.85') }
+    else { const hm = heightMult(st, h, t); if (hm !== 1) { mult *= hm; notes.push(heightNote(hm)) } }
+    if (rule.perLevel) bonus += Math.round(rule.perLevel * Math.max(0, d0));
+    if (rule.aoe === 'splash' && d0 >= 1) { mult *= 1.5; notes.push('ต่ำกว่า ×1.5') }
+    const W = EW(), el = cardEl(c.id, h), em = W && el ? W.mult(el, elOf(t)) : 1; if (em !== 1 && !W.isSecret(el)) notes.push(W.note(el, elOf(t)));
+    const raw = (rule.dmg + bonus + cardBonus(h, c.id)) * mult * em, guard = { v: t.guard || 0 }, n = rule.hits || 1; let total = 0, last = null;
+    for (let i = 0; i < n; i++) { last = soak(st, t, raw, guard); total += last.damage }
+    const all = [...new Set([...notes, ...(last?.notes || [])])];
+    return { target: t, perHit: last ? last.damage : 0, hits: n, total, kill: total >= t.hp, notes: all, critTotal: Math.round(total * CRIT.mult) };
+  }
+  /* ---------- v97 · Auto: the next thing the hero should do this turn ({type:'combat'|'moveCard'|'walk'|'end', …}) ---------- */
+  function autoPlan(st) {
+    if (!st.cards || st.outcome || st.turn !== 'hero') return { type: 'end' };
+    const h = hero(st), foes = opponents(st, h); if (!foes.length) return { type: 'end' };
+    const TD = deckLib(), left = crystals(st), hand = st.deck.combat.hand;
+    if (left && !st.acted) {   // 1. the hit that does the most (a kill counts triple)
+      let best = null;
+      hand.forEach((c, i) => { const r = CARD[c.id]; if (!r || r.self || combatBlock(st, i)) return; const pv = preview(st, i); if (!pv || pv.self) return; const sc = pv.total * (pv.kill ? 3 : 1) - r.st * .3; if (!best || sc > best.sc) best = { i, sc } });
+      if (best) return { type: 'combat', index: best.i };
+    }
+    if (left && h.hp < h.maxHp * .4) {   // 2. hurt: heal / guard / dodge
+      const i = hand.findIndex((c, k) => { const r = CARD[c.id]; return r?.self && (r.heal || r.guard || r.evade || r.counter) && !combatBlock(st, k) }); if (i >= 0) return { type: 'combat', index: i };
+    }
+    if (left && h.stamina < 25) { const i = hand.findIndex((c, k) => CARD[c.id]?.restore && !combatBlock(st, k)); if (i >= 0) return { type: 'combat', index: i } }
+    if (!st.acted) {   // 3. close in: walk with the points we have, else spend a crystal on the biggest move card
+      const reachR = Math.max(1, ...hand.map((c, i) => { const r = CARD[c.id]; return r && !r.self && h.stamina >= r.st ? r.range : 0 }));
+      let best = null, bs = 1e9;
+      for (const o of foes) { const f = distField(st, o), cur = f.get(key(h.u, h.v)) ?? 1e6; if (st.mp > 0) for (const e of reach(st, h).values()) { const d = f.get(key(e.u, e.v)) ?? 1e6, inR = dist(e, o) <= reachR && (reachR > 1 || Math.abs(gap(st, e, o)) <= 1), sc = (inR ? -100 : 0) + d + e.cost * .05 + (inR && reachR > 1 ? -dist(e, o) * -.5 : 0); if (sc < bs && (e.u !== h.u || e.v !== h.v) && (inR ? dist(h, o) > reachR || Math.abs(gap(st, h, o)) > 1 : d < cur)) { bs = sc; best = { type: 'walk', to: { u: e.u, v: e.v } } } } }
+      if (best) return best;
+      if (left && st.mp === 0 && foes.every(o => dist(h, o) > reachR)) {
+        let pick = null; st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (m && h.stamina >= m.stamina && (!pick || m.move > pick.m)) pick = { i, m: m.move } });
+        if (pick) return { type: 'moveCard', index: pick.i };
+      }
+    }
+    return { type: 'end' };
+  }
   /* throw away any number of hand cards at once for stamina: costs 1 crystal, +STAMINA_PER_DISCARD per card. picks = [{group, uid}] */
   function discardForStamina(st, picks) {
     if (!st.cards || st.outcome || st.turn !== 'hero') return { ok: false, reason: 'ไม่ใช่ตาคุณ' };
@@ -395,6 +490,6 @@
     if (!free(st, nu, nv, t) || lv(st, nu, nv) - lv(st, t.u, t.v) > 1) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { preview, autoPlan, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
