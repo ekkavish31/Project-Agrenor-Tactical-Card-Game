@@ -169,7 +169,7 @@
       const mid = T(p[Math.round(L * .55)].c, p[Math.round(L * .55)].r), nm = [mid, ...neighbors(mid.c, mid.r).map(([c, r]) => T(c, r))].find(x => BIOME[x.biome].pass && !occupied(x)); if (nm) nm.enc = { type: 'camp' };
     }
     const extras = ['battle', 'battle', 'chest', 'chest', 'shrine', 'merchant', 'trap', 'oldmap', 'camp'];
-    for (const t of Object.values(tiles)) { if (!BIOME[t.biome].pass || occupied(t) || R() > .055) continue; const type = pick(R, extras); t.enc = type === 'battle' ? { type, foe: pick(R, FOES[t.biome] || FOES.grass), hidden: R() < .4 } : { type } }
+    for (const t of Object.values(tiles)) { if (!BIOME[t.biome].pass || occupied(t) || R() > .035) continue; const type = pick(R, extras); t.enc = type === 'battle' ? { type, foe: pick(R, FOES[t.biome] || FOES.grass), hidden: R() < .4 } : { type } }
     return w;
   }
 
@@ -194,7 +194,7 @@
   }
   const pick = (R, a) => a[Math.floor(R() * a.length)];
   /* how deep into the fog a tile is: 0 at the village … 1 at the far rim (monsters get tougher) */
-  function danger(w, t) { return Math.min(1, dist(t, w.home) / (w.real ? 30 : 14)) }
+  function danger(w, t) { return Math.min(1, dist(t, w.home) / (w.real ? 70 : 14)) }
 
   generate.real = NC ? 'norchorthal' : null;
   const api = { COLS, ROWS, BIOME, FOES, DESTS, TOWNS, rng, key, inside, neighbors, dist, within, stepCost, path, generate, danger };

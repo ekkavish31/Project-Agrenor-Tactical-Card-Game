@@ -87,13 +87,13 @@
   let terr = null;
   function paint() {
     /* v95.22: the real Nor'Chorthal map is big — paint it at half resolution (it is drawn scaled up) */
-    const TS = world.real ? .5 : 1;
+    const TS = world.real ? .4 : 1;
     terr = document.createElement('canvas'); terr.width = Math.ceil(WW * TS); terr.height = Math.ceil(WH * TS); const t = terr.getContext('2d'), rnd = G.rng(world.seed ^ 0xabc); t.scale(TS, TS);
     t.fillStyle = '#2a2f2a'; t.fillRect(0, 0, WW, WH);
     const all = Object.values(world.tiles);
     for (const h of all) { const p = center(h.c, h.r), pal = PAL[h.biome]; hexPath(t, p.x, p.y, R + .6); t.fillStyle = pal[0]; t.fill() }
     /* soft blending + speckles */
-    for (const h of all) { const p = center(h.c, h.r), pal = PAL[h.biome]; t.save(); hexPath(t, p.x, p.y, R + .6); t.clip(); for (let i = 0; i < 26; i++) { t.fillStyle = pal[1 + (i & 1)]; t.globalAlpha = .45; t.beginPath(); t.arc(p.x + (rnd() - .5) * HW, p.y + (rnd() - .5) * 2 * R, 2 + rnd() * 5, 0, 7); t.fill() } t.restore() }
+    for (const h of all) { const p = center(h.c, h.r), pal = PAL[h.biome]; t.save(); hexPath(t, p.x, p.y, R + .6); t.clip(); for (let i = 0; i < (world.real ? 6 : 26); i++) { t.fillStyle = pal[1 + (i & 1)]; t.globalAlpha = .45; t.beginPath(); t.arc(p.x + (rnd() - .5) * HW, p.y + (rnd() - .5) * 2 * R, 2 + rnd() * 5, 0, 7); t.fill() } t.restore() }
     /* coast foam on water next to land */
     for (const h of all) if (h.biome === 'water') { const p = center(h.c, h.r); t.save(); hexPath(t, p.x, p.y); t.clip(); t.strokeStyle = 'rgba(220,240,255,.35)'; t.lineWidth = 1.5; for (let i = 0; i < 4; i++) { const y = p.y - R * .5 + i * R * .35, x = p.x - HW * .4 + rnd() * 8; t.beginPath(); t.moveTo(x, y); t.quadraticCurveTo(x + 8, y - 4, x + 16, y); t.quadraticCurveTo(x + 24, y + 4, x + 32, y); t.stroke() } t.restore() }
     /* river */
@@ -153,9 +153,9 @@
   }
 
   /* ---------- fog canvas (half resolution → soft edges when scaled up) ---------- */
-  const FS = .5; let fog = null, wisp = null;
+  let FS = .5, fog = null, wisp = null;
   function paintFog() {
-    if (!fog) { fog = document.createElement('canvas'); fog.width = Math.ceil(WW * FS); fog.height = Math.ceil(WH * FS); wisp = document.createElement('canvas'); wisp.width = fog.width; wisp.height = fog.height }
+    if (!fog) { FS = world.real ? .3 : .5; fog = document.createElement('canvas'); fog.width = Math.ceil(WW * FS); fog.height = Math.ceil(WH * FS); wisp = document.createElement('canvas'); wisp.width = fog.width; wisp.height = fog.height }
     const f = fog.getContext('2d'); f.globalCompositeOperation = 'source-over'; f.fillStyle = '#05060a'; f.fillRect(0, 0, fog.width, fog.height);
     f.globalCompositeOperation = 'destination-out';
     for (const k in world.tiles) {
@@ -438,7 +438,9 @@
     const wasNight = nightness() > .6;
     passTime(cost + (wasNight ? 1 : 0));                                              // walking in the dark is slower
     S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * (wasNight ? 1.5 : 1)));
-    if (!t.road && !t.poi) { if (S.food > 0) S.food--; else { S.hp = Math.max(1, S.hp - 5); log('เสบียงหมด! หิวโหย −5 HP'); toast('เสบียงหมด −5 HP') } }
+    /* v95.23: on the real map a hex is ~12 km — a ration lasts 12 hours of walking, not one hex */
+    let eat = !t.road && !t.poi; if (world.real) { S.trek = (S.trek || 0) + cost; eat = S.trek >= 12; if (eat) S.trek -= 12 }
+    if (eat) { if (S.food > 0) S.food--; else { S.hp = Math.max(1, S.hp - 5); log('เสบียงหมด! หิวโหย −5 HP'); toast('เสบียงหมด −5 HP') } }
     if (S.fatigue >= 80) { S.hp = Math.max(1, S.hp - 2); if (S.fatigue >= 100 || Math.random() < .3) toast('เหนื่อยล้า! ควรพักแรม (−2 HP ต่อช่อง)') }
     reveal(); hudSync(); save();
     const d = destOf();
