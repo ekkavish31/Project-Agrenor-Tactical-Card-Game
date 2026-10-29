@@ -79,7 +79,7 @@
   function tex(kind, o, seed) { const k = kind + JSON.stringify(o); if (cache[k]) return cache[k]; const c = canvas(); TEX[kind](c.getContext('2d'), rng(seed || 7), o); return cache[k] = c }
 
   /* ---------- painted textures (assets/terrain/diorama, 256 px seamless, 2 cells per tile); the procedural ones stand in until they load ---------- */
-  /* v96.02: planks, brick, slabs, water, mud, snow, sand, per-biome cliffs and the lip strips come from the terrain sets already in the repo;
+  /* v96.03: planks, brick, slabs, water, mud, snow, sand, per-biome cliffs and the lip strips come from the terrain sets already in the repo;
      names not listed here live in assets/terrain/diorama/<name>.webp */
   const TEXFILE = { wood: 'terrain/ground/planks', brick: 'terrain/cliff/ruin-wall', slab: 'terrain/ground/slabs', water: 'terrain/ground/water-deep', swampw: 'terrain/ground/swamp',
     mud: 'terrain/ground/mud-wet', snowd: 'terrain/ground/snow-deep', sandc: 'terrain/ground/sand-coarse', cliff_snow: 'terrain/cliff/snow-rock', cliff_sand: 'terrain/cliff/sandstone', cliff_swamp: 'terrain/cliff/swamp-roots',

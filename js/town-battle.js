@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '96.02';
+  const V = '96.03';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -100,7 +100,7 @@
     const gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
-    /* v96.02: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
+    /* v96.03: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
        (spacing 2 by king-move distance); only when the area is too tight does it fall back to 1, then 0 */
     const near = (o) => {
       const pts = [...taken].map(k => k.split(',').map(Number)); let best = null;
