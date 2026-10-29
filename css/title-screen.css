@@ -106,7 +106,7 @@ html.title-boot,html.title-boot body{overflow:hidden}
 
 /* v95.05 · picture-book text: words fade in one by one */
 #titleScreen .ts-story-text .ts-ln{display:block}
-#titleScreen .ts-story-text .ts-w{opacity:0;animation:ts-word .7s ease forwards;display:inline}
+#titleScreen .ts-story-text .ts-w{opacity:0;animation:ts-word .45s ease forwards;display:inline}
 #titleScreen .ts-story-text.ts-all .ts-w{animation:none;opacity:1}
 @keyframes ts-word{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:none}}
 #titleScreen .ts-story-text{font-size:clamp(18px,2.3vw,25px);line-height:1.9;letter-spacing:.01em}

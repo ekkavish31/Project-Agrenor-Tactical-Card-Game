@@ -74,10 +74,13 @@ function showLine(line){const box=$('.cs-box'),sp=speaker(line.who);box.hidden=f
  $('.cs-name').textContent=line.who?sp.name:'';const pt=$('.cs-portrait');pt.hidden=!line.who;
  if(line.who){if(sp.portrait)pt.innerHTML=`<img src="${esc(sp.portrait)}" alt="">`;else{pt.innerHTML=`<span>${esc([...sp.name][0]||'?')}</span>`;pt.style.setProperty('--pc',sp.color)}}
  box.classList.remove('cs-in');void box.offsetWidth;box.classList.add('cs-in');
- full=fill(line.text);const t=$('.cs-text');clearInterval(typing);typing=null;if(reduced()){t.textContent=full;return}
+ full=fill(line.text);const t=$('.cs-text');clearTimeout(typing);typing=null;if(reduced()){t.textContent=full;return}
  /* v95.05: word by word (Thai word breaks), never letter by letter */
- const words=SEG?[...SEG.segment(full)].map(x=>x.segment):full.split(/(\s+)/);let i=0;t.textContent='';typing=setInterval(()=>{i++;t.textContent=words.slice(0,i).join('');if(i>=words.length){clearInterval(typing);typing=null}},85)}
-function finishTyping(){if(!typing)return false;clearInterval(typing);typing=null;$('.cs-text').textContent=full;return true}
+ /* v95.07: fast inside a phrase, a beat at each space, longer after … ? ! and line breaks */
+ const words=SEG?[...SEG.segment(full)].map(x=>x.segment):full.split(/(\s+)/);let i=0;t.textContent='';
+ const gap=w=>/\n/.test(w)?600:/^\s+$/.test(w)?320:Math.min(150,45+[...w].length*12)+(/(…|\.\.\.)$/.test(w)?500:/[?!]$/.test(w)?380:0);
+ const step=()=>{i++;t.textContent=words.slice(0,i).join('');if(i>=words.length){typing=null;return}typing=setTimeout(step,gap(words[i-1]))};typing=setTimeout(step,60)}
+function finishTyping(){if(!typing)return false;clearTimeout(typing);typing=null;$('.cs-text').textContent=full;return true}
 
 /* ---------------- play ---------------- */
 async function showCard(card){const c=$('.cs-card');c.querySelector('small').textContent=fill(card.kicker||'');c.querySelector('h2').textContent=fill(card.title||'');c.hidden=false;c.classList.remove('cs-in');void c.offsetWidth;c.classList.add('cs-in');await wait(reduced()?900:2300);c.classList.add('cs-out');await wait(reduced()?0:500);c.hidden=true;c.classList.remove('cs-out')}

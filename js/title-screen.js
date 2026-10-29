@@ -191,8 +191,11 @@ function story(){busyTitle=true;const st=title.querySelector('.ts-story');st.hid
 const seg=(()=>{try{return new Intl.Segmenter('th',{granularity:'word'})}catch{return null}})();
 const wordsOf=t=>seg?[...seg.segment(t)].map(x=>x.segment):t.split(/(\s+)/);
 let revealUntil=0;
+/* v95.07 · pacing: words inside a phrase run quickly; a space (Thai phrase/sentence break) holds a beat, "…" and ?/! hold longer, a new line longest */
+const PACE={word:.05,perChar:.012,maxWord:.16,space:.38,ellipsis:.6,mark:.45,line:.7};
+function pauseAfter(w){if(/^\s+$/.test(w))return PACE.space;let p=Math.min(PACE.maxWord,PACE.word+[...w].length*PACE.perChar);if(/(…|\.\.\.)$/.test(w))p+=PACE.ellipsis;else if(/[?!]$/.test(w))p+=PACE.mark;return p}
 function reveal(box,text){const lines=String(text).split('\n');let d=.25,html='';
- for(const [li,line] of lines.entries()){if(li)d+=.55;html+='<span class="ts-ln">'+wordsOf(line).map(w=>{const sp=/^\s+$/.test(w);const h=`<span class="ts-w" style="animation-delay:${d.toFixed(2)}s">${esc(w)}</span>`;if(!sp)d+=Math.min(.42,.1+[...w].length*.035);return h}).join('')+'</span>'}
+ for(const [li,line] of lines.entries()){if(li)d+=PACE.line;html+='<span class="ts-ln">'+wordsOf(line).map(w=>{const h=`<span class="ts-w" style="animation-delay:${d.toFixed(2)}s">${esc(w)}</span>`;d+=pauseAfter(w);return h}).join('')+'</span>'}
  box.innerHTML=html;box.classList.remove('ts-all');revealUntil=performance.now()+d*1000+600;if(reduced)box.classList.add('ts-all')}
 function showPage(p){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text'),bg=st.querySelector('.ts-story-bg'),pa=artPlayer(st);
  if(pa&&p.art&&pa.show(p.art)){bg.style.backgroundImage='none';bg.classList.remove('ts-pan')}else if(p.bg){bg.classList.remove('ts-pan');void bg.offsetWidth;bg.style.backgroundImage=`url("${p.bg}")`;bg.classList.add('ts-pan')}
