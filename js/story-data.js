@@ -13,7 +13,7 @@ const SPEAKERS={
  tom:{name:'ลุงทอม · ช่างไม้',color:'#7a5a2a'},
  grev:{name:'เกรเวน · พ่อค้าจากเมือง',color:'#36507a'},
  guard:{name:'ยามดอร์ก',color:'#4a4a5a'},
- hilda:{name:'ฮิลดา · ชาวนา',color:'#7a6a2a'},
+ hilda:{name:'ฮิลดา · ชาวนา',color:'#7a6a2a',bust:'hilda',portrait:'assets/portraits/hilda-neutral.webp'},
  gus:{name:'กัส · ช่างตีเหล็ก',color:'#7a3a2a'},
  saf:{name:'หมอยาซาฟ',color:'#3a6a4a'},
  boss:{name:'หัวหน้าโจรป่า',portrait:'assets/cards/portraits/en-bandit.webp'},

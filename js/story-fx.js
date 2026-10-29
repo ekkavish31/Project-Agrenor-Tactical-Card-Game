@@ -69,8 +69,10 @@ function burst(opt={}){const r=el.getBoundingClientRect(),x=(opt.x??.5)*r.width,
 /* ---------------- text ---------------- */
 let typing=null,full='';
 const SEG=(()=>{try{return new Intl.Segmenter('th',{granularity:'word'})}catch{return null}})();
-function speaker(who){const S=Cutscene.speakers[who]||{};const name=typeof S.name==='function'?S.name():S.name;return {name:name??(who==='hero'?heroName():who||''),portrait:typeof S.portrait==='function'?S.portrait():S.portrait,color:S.color||'#6b5a3a'}}
+function speaker(who){const S=Cutscene.speakers[who]||{};const name=typeof S.name==='function'?S.name():S.name;return {name:name??(who==='hero'?heroName():who||''),portrait:typeof S.portrait==='function'?S.portrait():S.portrait,color:S.color||'#6b5a3a',look:S.look,bust:S.bust}}
 function showLine(line){const box=$('.cs-box'),sp=speaker(line.who);box.hidden=false;box.classList.toggle('cs-narr',!line.who);
+ /* v95.20: half-body portraits left/right with faces, emotes, glow and moods (js/story-actors.js) */
+ const hint=root.StoryActors?.line(el,line,sp)||{};if(hint.shake)shake(false);if(hint.flash)flash(hint.flash);
  $('.cs-name').textContent=line.who?sp.name:'';const pt=$('.cs-portrait');pt.hidden=!line.who;
  if(line.who){if(sp.portrait)pt.innerHTML=`<img src="${esc(sp.portrait)}" alt="">`;else{pt.innerHTML=`<span>${esc([...sp.name][0]||'?')}</span>`;pt.style.setProperty('--pc',sp.color)}}
  box.classList.remove('cs-in');void box.offsetWidth;box.classList.add('cs-in');
@@ -79,8 +81,8 @@ function showLine(line){const box=$('.cs-box'),sp=speaker(line.who);box.hidden=f
  /* v95.07: fast inside a phrase, a beat at each space, longer after … ? ! and line breaks */
  const words=SEG?[...SEG.segment(full)].map(x=>x.segment):full.split(/(\s+)/);let i=0;t.textContent='';
  const gap=w=>/\n/.test(w)?600:/^\s+$/.test(w)?320:Math.min(150,45+[...w].length*12)+(/(…|\.\.\.)$/.test(w)?500:/[?!]$/.test(w)?380:0);
- const step=()=>{i++;t.textContent=words.slice(0,i).join('');if(i>=words.length){typing=null;return}typing=setTimeout(step,gap(words[i-1]))};typing=setTimeout(step,60)}
-function finishTyping(){if(!typing)return false;clearTimeout(typing);typing=null;$('.cs-text').textContent=full;return true}
+ const step=()=>{i++;t.textContent=words.slice(0,i).join('');if(i>=words.length){typing=null;root.StoryActors?.talk(false);return}typing=setTimeout(step,gap(words[i-1]))};root.StoryActors?.talk(!!line.who);typing=setTimeout(step,60)}
+function finishTyping(){if(!typing)return false;clearTimeout(typing);typing=null;root.StoryActors?.talk(false);$('.cs-text').textContent=full;return true}
 
 /* ---------------- play ---------------- */
 async function showCard(card){const c=$('.cs-card');c.querySelector('small').textContent=fill(card.kicker||'');c.querySelector('h2').textContent=fill(card.title||'');c.hidden=false;c.classList.remove('cs-in');void c.offsetWidth;c.classList.add('cs-in');await wait(reduced()?900:2300);c.classList.add('cs-out');await wait(reduced()?0:500);c.hidden=true;c.classList.remove('cs-out')}
@@ -88,10 +90,10 @@ function applyLine(line){if(line.art)setArt(line.art);else if(line.bg){setArt(nu
 function play(scene){if(!scene)return Promise.resolve();if(playing)return playing.then(()=>play(scene));
  build();playing=new Promise(async resolve=>{
   const lines=scene.lines||[];let i=-1,done=false,busy=false;
-  el.hidden=false;document.body.classList.add('cs-open');parts.size();parts.start();
+  el.hidden=false;root.StoryActors?.begin(el);document.body.classList.add('cs-open');parts.size();parts.start();
   setArt(scene.art);setBg(scene.bg,scene.pan,true);setLook({tint:scene.tint||'',fx:scene.fx||[]});$('.cs-box').hidden=true;
   requestAnimationFrame(()=>el.classList.add('cs-live'));
-  const end=async()=>{if(done)return;done=true;finishTyping();el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();setArt(null);document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
+  const end=async()=>{if(done)return;done=true;finishTyping();el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();setArt(null);root.StoryActors?.end();document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
    const st=$('.cs-stage');st.dataset.tint='';st.className='cs-stage';el.querySelectorAll('.cs-bg').forEach(b=>{b.dataset.src='';b.style.backgroundImage=''});
    el.onclick=null;document.removeEventListener('keydown',key,true);playing=null;resolve()};
   const next=async()=>{if(done||busy)return;if(finishTyping())return;i++;if(i>=lines.length)return end();const line=lines[i];applyLine(line);
