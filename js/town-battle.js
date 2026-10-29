@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '96.04';
+  const V = '96.05';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -100,7 +100,7 @@
     const gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
-    /* v96.04: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
+    /* v96.05: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
        (spacing 2 by king-move distance); only when the area is too tight does it fall back to 1, then 0 */
     const near = (o) => {
       const pts = [...taken].map(k => k.split(',').map(Number)); let best = null;
@@ -683,11 +683,12 @@
     shadow(g, p, UNIT * .26); g.save(); g.translate(ox, -(u.lift || 0)); if (u.hp <= 0) g.globalAlpha *= .6;
     g.translate(p.x + pm.dx, p.y + pm.dy); g.rotate(pm.rot); g.scale(pm.sx, pm.sy); g.translate(-p.x, -p.y);
     const sword = () => { if (u.weapon && A.equipment[u.weapon]) weapon(g, A.equipment[u.weapon], f.right, left, top, size, (f.rotation || 0) + pm.wpn) };
-    /* v96.04: standing ready or walking, the weapon is carried on the back (behind the body when facing the camera, over it when facing away); drawn in the hand only for actions */
+    /* v96.05: standing ready or walking, the weapon is carried on the back (behind the body when facing the camera, over it when facing away); drawn in the hand only for actions */
     const carried = u.hp > 0 && (u.walking || !u.pose || u.pose === 'idle'), W = u.weapon && A.equipment[u.weapon];
     const onBack = () => { if (!W) return; const away = ['NE', 'NW'].includes(u.dir), side = ['SE', 'NE'].includes(u.dir) ? -1 : 1, i2 = im(W.src); if (!i2) return;
       const h = size * (W.scale || .63) * .9, w = h * W.size[0] / W.size[1];
-      g.save(); g.translate(left + size * (.5 + side * .06), top + size * .56); g.rotate((side * (away ? 38 : -38) + 0) * Math.PI / 180); g.drawImage(i2, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore() };
+      const tipUp = ['spear', 'staff'].includes(u.weapon);   // blades, hammers: point / edge down · spears (and staves): point up
+      g.save(); g.translate(left + size * (.5 + side * .06), top + size * (tipUp ? .56 : .38)); g.rotate((side * (away ? 38 : -38) + (tipUp ? 0 : 180)) * Math.PI / 180); g.drawImage(i2, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore() };
     if (carried) { if (!['NE', 'NW'].includes(u.dir)) onBack() }
     else if (f.rightBehind) sword();
     const body = () => { if (f.flipImage) { g.save(); g.translate(left + size / 2, 0); g.scale(-1, 1); g.drawImage(i, -size / 2, top, size, size); g.restore() } else g.drawImage(i, left, top, size, size) };

@@ -9,7 +9,7 @@
    window.FieldHeight.level(u,v) feeds the battle rules (flat-battle.js levelAt). ?flat=1 turns heights off.
    v96.00 · FFT-style field: half-level heights (rule levels 0–4 in 0.5 steps, ramps and stairs), stone forts, rivers with bridges, broken walls,
    cells in front of a unit are redrawn over it (occlusion) and the hidden unit shows as a ghost, animated water, cast shadows and a colour grade,
-   v96.04 · bigger field (R = 1.7 × ?r, up to 13 → 27×27), trees ×2 in size AND grid: a tree / pine / dead tree is a 2×2 block of blocked cells
+   v96.05 · bigger field (R = 1.7 × ?r, up to 13 → 27×27), trees ×2 in size AND grid: a tree / pine / dead tree is a 2×2 block of blocked cells
    (c.big = {id, anchor, kind}; anchor = its smallest-u/v cell, drawn at the block centre) and there are far fewer of them (MIX.big = share of the field covered).
    the camera turns in quarter turns (Q / E or the ⟲ ⟳ buttons) and a unit panel (live portrait, HP, stats, height) sits bottom right. */
 'use strict';
@@ -46,7 +46,7 @@ const FIELD = (function () {
     snow: { block: .03, big: .05, props: ['rock'], bigProps: ['pine'], slow: .2, cover: .05, slowMat: 'snow', coverMat: 'moss' },
     sand: { block: .06, big: 0, props: ['rock', 'cactus'], bigProps: [], slow: .12, cover: .06, slowMat: 'sand', coverMat: 'clover' }
   }[biome];
-  /* v96.04: the field is 1.7× wider than the ?r the host asks for (r 7 → R 12 = 25×25 instead of 15×15; r 5 → R 9) */
+  /* v96.05: the field is 1.7× wider than the ?r the host asks for (r 7 → R 12 = 25×25 instead of 15×15; r 5 → R 9) */
   const R = Math.max(6, Math.min(13, Math.round((+FQ.get('r') || 7) * 1.7))), cells = new Map(), key = (u, v) => u + ',' + v;
   const S = Math.min(6, Math.round(R * .45)), OPEN = 2;   // where each side gathers (town-battle reads window.FieldGap = S)
   for (let u = -R; u <= R; u++) for (let v = -R; v <= R; v++) {
@@ -61,7 +61,7 @@ const FIELD = (function () {
   /* keep the two start corners open and carve a lane between them so the fight can always happen */
   const starts = [[-S, S], [S, -S]];   // each side's gathering area stays open
   for (const [su, sv] of starts) for (let du = -OPEN; du <= OPEN; du++) for (let dv = -OPEN; dv <= OPEN; dv++) { const c = cells.get(key(su + du, sv + dv)); if (c && c.k === 'blocked') { c.k = 'normal'; c.prop = null } }
-  /* v96.04 · big trees: 2×2 blocks of blocked cells with a free cell all around them (so they never wall the field off) */
+  /* v96.05 · big trees: 2×2 blocks of blocked cells with a free cell all around them (so they never wall the field off) */
   const bigKinds = MIX.bigProps || [];
   if (bigKinds.length && MIX.big) {
     const want = Math.round(MIX.big * (2 * R + 1) * (2 * R + 1) / 4), nearStart = (u, v) => starts.some(([a, b]) => Math.abs(u - a) <= OPEN + 2 && Math.abs(v - b) <= OPEN + 2);
@@ -107,7 +107,7 @@ window.FieldHeight = (function () {
     for (const i of st.clear) { const c = cellAt(i); if (c) { c.k = 'normal'; c.prop = null } }
     for (const i of st.block) { const c = cellAt(i); if (c) { c.k = 'blocked'; c.prop = null } }
   }
-  /* v96.04 · a big tree stands on one flat 2×2 patch: drop it if a stair, bridge, wall, pool or road took one of its cells, else level the patch */
+  /* v96.05 · a big tree stands on one flat 2×2 patch: drop it if a stair, bridge, wall, pool or road took one of its cells, else level the patch */
   { const gr = new Map(); for (const c of FIELD.cells.values()) if (c.big) (gr.get(c.big.id) || gr.set(c.big.id, []).get(c.big.id)).push(c);
     for (const cs of gr.values()) {
       const idx = cs.map(c => (c.v + R) * n + c.u + R), at = (k, i) => map[k] ? map[k][i] : 0;
@@ -174,7 +174,7 @@ function paintGround() {
   const pal = GROUND[F.biome];
   if (window.FieldHeight && window.FieldDiorama) {   /* v95.18 · the field as a floating diorama */
     FieldDiorama.paint(t, FieldHeight.view, { biome: F.biome, poi: FQ.get('poi') });
-    /* v96.04: slow ground (mud / snow drift / sand) is the painted ground texture; the old colour + dabs only while it loads */
+    /* v96.05: slow ground (mud / snow drift / sand) is the painted ground texture; the old colour + dabs only while it loads */
     const SLOWTEX = { mud: 'mud', snow: 'snowd', sand: 'sandc' }[F.MIX.slowMat];
     for (const c of F.cells.values()) if (c.k === 'slow') { const col = SLOWC[F.MIX.slowMat], pat = FieldDiorama.pattern(t, SLOWTEX, FieldHeight.lift(c.u, c.v) / TerrainHeight.LEVEL_PX); diamond(t, c.u, c.v, -2);
       if (pat) { t.globalAlpha = .92; t.fillStyle = pat; t.fill(); t.globalAlpha = 1; t.strokeStyle = 'rgba(0,0,0,.25)'; t.lineWidth = 1; t.stroke(); continue }
@@ -199,11 +199,11 @@ function paintGround() {
   /* soft shading toward the edge of the field */
   const cpt = project(.5, .5), rg = t.createRadialGradient(cpt.x, cpt.y, 160, cpt.x, cpt.y, 700); rg.addColorStop(0, 'rgba(0,0,0,0)'); rg.addColorStop(1, 'rgba(0,0,0,.45)'); t.fillStyle = rg; t.fillRect(x0, y0, x1 - x0, y1 - y0);
 }
-/* v96.04 · props use the painted art already in the repo (village nature set + old tactics props), a variant per cell seed;
+/* v96.05 · props use the painted art already in the repo (village nature set + old tactics props), a variant per cell seed;
    cactus and dead trees have no picture yet, so they (and any picture still loading) fall back to the code drawing below.
    [file, size in world px, 'h' = height or 'w' = width] */
 const PA = 'assets/', PROP_ART = {
-  /* trees are ×2 (v96.04): a 2×2-cell block each */
+  /* trees are ×2 (v96.05): a 2×2-cell block each */
   tree: { forest: [['tactics/tree', 248, 'h'], ['village-town/nature/broadleaf', 248, 'h'], ['village-town/nature/old-oak', 240, 'h'], ['village-town/nature/tree-round', 208, 'h']],
     _: [['tactics/tree', 256, 'h'], ['village-town/nature/broadleaf', 256, 'h'], ['village-town/nature/tree-round', 216, 'h'], ['village-town/nature/tree-round-2', 200, 'h'], ['village-town/nature/tree-blossom', 236, 'h']] },
   pine: { snow: [['village-town/edge/snow-pine-m', 264, 'h'], ['village-town/edge/snow-pine-l', 280, 'h']], _: [['tactics/props/pine', 280, 'h'], ['village-town/nature/tree-conifer', 256, 'h']] },
@@ -259,7 +259,7 @@ function propCode(ctx, kind, u, v, s, now, p, sw) {
   else if (kind === 'pillar') { shadow(14, 6); ctx.fillStyle = '#bdb5a5'; ctx.fillRect(p.x - 9, p.y - 70, 18, 70); ctx.fillStyle = '#a39b8b'; ctx.fillRect(p.x + 2, p.y - 70, 7, 70); ctx.fillStyle = '#cfc7b7'; ctx.fillRect(p.x - 13, p.y - 76, 26, 8); ctx.fillStyle = 'rgba(70,100,60,.6)'; ctx.fillRect(p.x - 9, p.y - 30, 6, 30) }
   else if (kind === 'tuft') { ctx.strokeStyle = 'rgba(40,70,30,.55)'; ctx.lineWidth = 1.5; for (let i = -1; i <= 1; i++) { ctx.beginPath(); ctx.moveTo(p.x + i * 4, p.y); ctx.lineTo(p.x + i * 5 + sw, p.y - 8); ctx.stroke() } }
 }
-/* tall grass / reeds in front of whoever stands there: painted clumps (v96.04), the old blades only while the picture loads */
+/* tall grass / reeds in front of whoever stands there: painted clumps (v96.05), the old blades only while the picture loads */
 const COVER_ART = { forest: [['tactics/decor/fern', 62], ['tactics/ground/tallgrass', 64]], grass: [['tactics/ground/tallgrass', 64], ['village-town/nature/tall-grass', 58]], hills: [['tactics/ground/tallgrass', 60]],
   swamp: [['tactics/ground/tallgrass', 62], ['tactics/decor/fern', 56]], snow: [['terrain/decal/grass-tufts', 58]], sand: [['tactics/ground/tallgrass', 56]] };
 function cover(ctx, c, now) {
@@ -307,7 +307,7 @@ window.TownBattleExtras = () => {
   const out = [], ents = [], D = window.FieldDepth;
   const props = [];
   for (const c of FIELD.cells.values()) if (c.prop && c.prop !== 'pool') { const bg = !!c.big, o = bg ? 1 : .5, p = project(c.u + o, c.v + o), d = D(c.u + o, c.v + o) + .01, b = propBox(c.prop, c.seed, bg), e = { d, x0: p.x - b.w / 2, x1: p.x + b.w / 2, y0: p.y - b.h, foot: p.y }; out.push({ y: p.y, d, draw: (ctx, t) => prop(ctx, c.prop, c.u, c.v, c.seed, t, bg) }); ents.push(e); props.push(e) }
-  /* v96.04: tall grass is sorted with everyone else (it used to be drawn last, over units and trees standing behind it) */
+  /* v96.05: tall grass is sorted with everyone else (it used to be drawn last, over units and trees standing behind it) */
   for (const c of FIELD.cells.values()) if (c.k === 'cover') out.push({ d: D(c.u + .5, c.v + .5) + .005, draw: (ctx, t) => cover(ctx, c, t) });
   const st = window.TownBattle?.state?.(); if (st) for (const u of st.units) { u._occ = false; u._occT = false; if (u.hp <= 0 && u.deadAt) continue; const p = project(u.vu, u.vv), h = 128 * (u.boss ? 1.3 : 1), e = { unit: u, d: D(u.vu, u.vv), x0: p.x - 38, x1: p.x + 38, y0: p.y - h, foot: p.y };
     ents.push(e); /* a big tree or rock in front of a unit also leaves its ghost visible */ if (props.some(q => q.d > e.d + .02 && q.x0 < e.x1 - 12 && q.x1 > e.x0 + 12 && q.y0 < e.foot - 30 && q.foot > e.y0 + 30)) u._occ = true }
