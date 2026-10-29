@@ -408,8 +408,9 @@
    let key = owner + ':' + rel.u.toFixed(1) + ',' + rel.v.toFixed(1);
    seen[key] = (seen[key] || 0) + 1;
    if (seen[key] > 1) key += '#' + seen[key];
-   const e = entry(key, owner, it.x, it.y, it.draw, it, nameLabel(it.name) || labelOf(it.draw));
-   frame[frame.length - 1].name = it.name || null;
+   const n0 = frame.length, e = entry(key, owner, it.x, it.y, it.draw, it, nameLabel(it.name) || labelOf(it.draw));
+   /* v97.07: a deleted item adds no frame entry — naming "the last entry" crashed the whole map when it was the first one (frame empty) and renamed the wrong item otherwise */
+   if (frame.length > n0) frame[frame.length - 1].name = it.name || null;
    if (e) out.push(e)
   }
   return out.concat(addedItems(false))
