@@ -58,8 +58,8 @@
     g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
     g.fillStyle = 'rgba(110,60,170,.35)'; for (const [dx, dy, k] of [[-.3, .1, .22], [.25, -.25, .15], [.2, .35, .18], [-.1, -.45, .1]]) { g.beginPath(); g.arc(x + dx * r, y + dy * r, k * r, 0, TAU); g.fill() }
   }
-  const ELEMENTS = [ // Kaelam (js/elements.js): Elu light · Sylfae wind · Dephor water · Caelim lightning · Fren fire · Lutha plant · Yalm ice · Nytha night · Grat earth
-    { h: 50, s: 95, l: 78, kind: 'spire' }, { h: 150, s: 60, l: 72, kind: 'tower' }, { h: 205, s: 85, l: 60, kind: 'dome' }, { h: 268, s: 85, l: 72, kind: 'spire' },
+  const ELEMENTS = [ // Kaelam (js/elements.js): Elu light · Sylfae wind · Dephor water · Caelim chaos · Fren fire · Lutha plant · Yalm ice · Nytha night · Grat earth
+    { h: 50, s: 95, l: 78, kind: 'spire' }, { h: 150, s: 60, l: 72, kind: 'tower' }, { h: 205, s: 85, l: 60, kind: 'dome' }, { h: 318, s: 70, l: 66, kind: 'spire' },
     { h: 16, s: 95, l: 58, kind: 'tower' }, { h: 105, s: 60, l: 52, kind: 'dome' }, { h: 192, s: 80, l: 82, kind: 'spire' }, { h: 250, s: 50, l: 48, kind: 'tower' }, { h: 32, s: 55, l: 48, kind: 'dome' }];
 
   /* ---------------- 1 · ancient ---------------- */

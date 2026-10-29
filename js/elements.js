@@ -1,61 +1,63 @@
-/* v94.02 · The 9 Kaelam elements of Agrenor + 2 secret elements. Matchups follow what each element does to the other (not a simple cycle):
+/* v95.13 · The 9 Kaelam elements of Agrenor + 1 secret element (Caelim = chaos, no longer lightning).
+   v94.02 · ex-header: Matchups follow what each element does to the other (not a simple cycle):
      attack ×1.3 when the attack's element is STRONG against the target's element · ×0.7 when the target's element is strong against it · else ×1.0
    Game ids stay the keys (cards, weapons, terrain, monsters keep working):
-     light = Elu · wind = Sylfae · water = Dephor · lightning = Caelim · fire = Fren · nature = Lutha · ice = Yalm · dark = Nytha · earth = Grat
-   Secret elements: no. 10 chaos (โกลาหล) ×1.2 against every wheel element · no. 11 fusion (ผสาน) ×1.1 against every wheel element and takes ×0.9
-   from them. Their names show as "???" until the player has seen them (reveal(id)).
+     light = Elu · wind = Sylfae · water = Dephor · chaos = Caelim (old id 'lightning' is read as chaos) · fire = Fren · nature = Lutha · ice = Yalm · dark = Nytha · earth = Grat
+   Secret element: fusion (ผสาน · the primal element) ×1.1 against every wheel element and takes ×0.9 from them.
+   Its name shows as "???" until the player has seen it (reveal(id)).
    ElementWheel.showChart() opens the element chart (used by the battle HUD and the village toolbar). */
 (function (root) {
   'use strict';
-  const WHEEL = ['light', 'wind', 'water', 'lightning', 'fire', 'nature', 'ice', 'dark', 'earth'];
+  const WHEEL = ['light', 'wind', 'water', 'chaos', 'fire', 'nature', 'ice', 'dark', 'earth'];
   const KAELAM = {
     light: { k: 'Elu', th: 'แสง', col: '#f6e08a', icon: '☀' }, wind: { k: 'Sylfae', th: 'ลม', col: '#a8e6c8', icon: '🌀' }, water: { k: 'Dephor', th: 'น้ำ', col: '#6fb2ec', icon: '💧' },
-    lightning: { k: 'Caelim', th: 'สายฟ้า', col: '#c9a8ff', icon: '⚡' }, fire: { k: 'Fren', th: 'ไฟ', col: '#ff8a5a', icon: '🔥' }, nature: { k: 'Lutha', th: 'พฤกษา', col: '#8fd06a', icon: '🌿' },
+    chaos: { k: 'Caelim', th: 'โกลาหล', col: '#e06ab8', icon: '✷' }, fire: { k: 'Fren', th: 'ไฟ', col: '#ff8a5a', icon: '🔥' }, nature: { k: 'Lutha', th: 'พฤกษา', col: '#8fd06a', icon: '🌿' },
     ice: { k: 'Yalm', th: 'น้ำแข็ง', col: '#bfe8ff', icon: '❄' }, dark: { k: 'Nytha', th: 'ราตรี', col: '#a88ad8', icon: '🌑' }, earth: { k: 'Grat', th: 'ผืนดิน', col: '#c9a46a', icon: '⛰' }
   };
   /* strong against (with the reason, shown in the chart and the tips) */
   const STRONG = {
     fire: { nature: 'เผาพืชพรรณ', ice: 'หลอมน้ำแข็ง' },
     water: { fire: 'ดับไฟ', earth: 'กัดเซาะผืนดิน' },
-    earth: { lightning: 'ดูดซับสายฟ้าลงดิน', fire: 'กลบไฟให้มอด' },
-    lightning: { water: 'ไฟฟ้าวิ่งผ่านน้ำ', wind: 'ฉีกกระแสลม' },
+    earth: { chaos: 'ผืนดินมั่นคง ตรึงความโกลาหลไว้', fire: 'กลบไฟให้มอด' },
+    chaos: { water: 'ปั่นกระแสน้ำให้ปั่นป่วน', wind: 'ฉีกกระแสลมให้แตกพล่าน' },
     nature: { water: 'รากดูดซับน้ำ', earth: 'รากชอนไชแผ่นดิน' },
-    wind: { nature: 'พัดพืชให้ล้ม', lightning: 'กระจายเมฆพายุ' },
+    wind: { nature: 'พัดพืชให้ล้ม', chaos: 'ลมพัดความโกลาหลให้กระจายหาย' },
     ice: { wind: 'ทำให้ลมนิ่งเย็นจัด', water: 'แช่แข็งน้ำ' },
     light: { dark: 'แสงขับไล่ความมืด', ice: 'แดดละลายน้ำแข็ง' },
     dark: { light: 'ความมืดกลืนแสง', nature: 'ราตรีทำให้พืชเหี่ยว' }
   };
-  const SECRET = { chaos: { k: '???', th: 'โกลาหล', no: 10, col: '#ff6a9a', icon: '✷', secret: true, hit: 1.2, take: 1 }, fusion: { k: '???', th: 'ผสาน', no: 11, col: '#f0f0ff', icon: '✦', secret: true, hit: 1.1, take: .9 } };
+  const SECRET = { fusion: { k: '???', th: 'ผสาน', sub: 'ธาตุดั้งเดิม', no: 10, col: '#f0f0ff', icon: '✦', secret: true, hit: 1.1, take: .9 } };
   const BEAT = 1.3, LOSE = 0.7;
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   let seen = {}; try { seen = JSON.parse(localStorage.getItem('agrenor-secret-elements') || '{}') } catch (e) { }
-  function reveal(id) { if (!SECRET[id] || seen[id]) return; seen[id] = 1; try { localStorage.setItem('agrenor-secret-elements', JSON.stringify(seen)) } catch (e) { } }
-  const strong = (a, t) => !!STRONG[a]?.[t];
+  const norm = id => id === 'lightning' ? 'chaos' : id;   // old saves / cards / monsters
+  function reveal(id) { id = norm(id); if (!SECRET[id] || seen[id]) return; seen[id] = 1; try { localStorage.setItem('agrenor-secret-elements', JSON.stringify(seen)) } catch (e) { } }
+  const strong = (a, t) => !!STRONG[norm(a)]?.[norm(t)];
   /* damage multiplier of an attack of element `a` on a target of element `t` */
   function mult(a, t) {
-    if (!a || !t) return 1;
+    if (!a || !t) return 1; a = norm(a); t = norm(t);
     if (SECRET[a]) return WHEEL.includes(t) ? SECRET[a].hit : 1;
     if (SECRET[t]) return WHEEL.includes(a) ? SECRET[t].take : 1;
     if (strong(a, t)) return BEAT; if (strong(t, a)) return LOSE; return 1;
   }
   const percent = (a, t) => Math.round((mult(a, t) - 1) * 100);   // for the old battle (TacticsCore.affinity): +30 / −30 / 0
-  function info(id) { return KAELAM[id] || SECRET[id] || null }
-  function name(id, short) { const E = info(id); if (!E) return id || ''; if (E.secret) return seen[id] ? 'ธาตุลับที่ ' + E.no + '·' + E.th : 'ธาตุลับที่ ' + E.no + ' ???'; return short ? E.k : E.k + ' (' + E.th + ')' }
+  function info(id) { id = norm(id); return KAELAM[id] || SECRET[id] || null }
+  function name(id, short) { id = norm(id); const E = info(id); if (!E) return id || ''; if (E.secret) return seen[id] ? 'ธาตุลับ·' + E.th + ' (' + E.sub + ')' : 'ธาตุลับ ???'; return short ? E.k : E.k + ' (' + E.th + ')' }
   /* a short battle note: "Fren ชนะ Lutha ×1.3" / "Fren แพ้ Dephor ×0.7" or '' when neutral */
   function note(a, t) { const m = mult(a, t); if (m === 1) return ''; return name(a, true) + (m > 1 ? ' ชนะ ' : ' แพ้ ') + name(t, true) + ' ×' + m }
   /* tip for the card about to be played: {cls:'adv'|'dis'|'', text} */
   function tip(a, t) {
-    if (!a) return { cls: '', text: '' };
+    if (!a) return { cls: '', text: '' }; a = norm(a); t = norm(t);
     const m = mult(a, t), E = info(a); if (!t || m === 1) return { cls: '', text: (E?.icon || '') + ' ' + name(a, true) + ' · ปกติ' };
     const why = strong(a, t) ? STRONG[a][t] : strong(t, a) ? STRONG[t][a] : 'ธาตุลับ';
     return { cls: m > 1 ? 'adv' : 'dis', text: (m > 1 ? '▲ ได้เปรียบ ' : '▼ เสียเปรียบ ') + name(a, true) + ' → ' + name(t, true) + ' ×' + m + ' (' + why + ')' };
   }
-  const beats = e => Object.keys(STRONG[e] || {}), weakTo = e => WHEEL.filter(o => strong(o, e));
+  const beats = e => Object.keys(STRONG[norm(e)] || {}), weakTo = e => WHEEL.filter(o => strong(o, e));
   /* ---------- the chart ---------- */
   function chartHTML() {
     const cell = id => { const E = KAELAM[id]; return `<span class="ew-el" style="--c:${E.col}">${E.icon} <b>${E.k}</b> <small>${E.th}</small></span>` };
     const rows = WHEEL.map(id => `<tr><td>${cell(id)}</td><td>${beats(id).map(o => `${cell(o)}<i>${esc(STRONG[id][o])}</i>`).join('')}</td><td>${weakTo(id).map(cell).join('')}</td></tr>`).join('');
-    const sec = Object.entries(SECRET).map(([id, E]) => `<tr><td><span class="ew-el" style="--c:${E.col}">${E.icon} <b>${seen[id] ? E.th : '???'}</b> <small>ธาตุลับที่ ${E.no}</small></span></td><td colspan="2">${seen[id] ? (id === 'chaos' ? 'แรงขึ้น ×1.2 กับทุกธาตุ' : 'แรงขึ้น ×1.1 กับทุกธาตุ และรับความเสียหายจากทุกธาตุ ×0.9') : 'ยังไม่ค้นพบ'}</td></tr>`).join('');
+    const sec = Object.entries(SECRET).map(([id, E]) => `<tr><td><span class="ew-el" style="--c:${E.col}">${E.icon} <b>${seen[id] ? E.th : '???'}</b> <small>${seen[id] ? E.sub : 'ธาตุลับ'}</small></span></td><td colspan="2">${seen[id] ? 'ธาตุดั้งเดิมที่ทุกธาตุแยกออกมา · แรงขึ้น ×1.1 กับทุกธาตุ และรับความเสียหายจากทุกธาตุ ×0.9' : 'ยังไม่มีใครรู้จักธาตุนี้'}</td></tr>`).join('');
     return `<h2>ตารางธาตุ Kaelam</h2><p class="ew-sub">โจมตีด้วยธาตุที่ <b>ชนะทาง</b> แรงขึ้น ×1.3 · ตีธาตุที่ <b>แพ้ทาง</b> เหลือ ×0.7 · ธาตุของการ์ดดูได้ตอนเลือกการ์ด · ธาตุของศัตรูอยู่ข้างชื่อ</p>
       <table class="ew-t"><thead><tr><th>ธาตุ</th><th>ชนะทาง (×1.3)</th><th>แพ้ทาง (×0.7)</th></tr></thead><tbody>${rows}${sec}</tbody></table>`;
   }
@@ -74,7 +76,7 @@
     bg.onclick = e => { if (e.target === bg || e.target.classList.contains('ew-close')) bg.remove() };
     doc.body.append(bg);
   }
-  const api = { WHEEL, KAELAM, SECRET, STRONG, BEAT, LOSE, mult, percent, info, name, note, tip, beats, weakTo, reveal, chartHTML, showChart, isSecret: id => !!SECRET[id] };
+  const api = { WHEEL, KAELAM, SECRET, STRONG, BEAT, LOSE, mult, percent, info, name, note, tip, beats, weakTo, reveal, chartHTML, showChart, isSecret: id => !!SECRET[norm(id)], norm };
   root.ElementWheel = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
