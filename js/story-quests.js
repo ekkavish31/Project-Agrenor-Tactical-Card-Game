@@ -61,13 +61,50 @@ const SPOT={
  contest:{key:'contest',kind:'pumpkin',near:['square'],n:1,spread:3,mark:true,label:'ลานประกวดฟักทอง'}};
 const plotIfDry=()=>(V()?.story?.seeds&&!wateredToday())?[SPOT.plot]:[];
 
+/* ---------- v97.16 · the prologue is the tutorial ----------
+   Each step opens with a 📘 lesson card about the system it uses (shown once, after the step's own cutscene, also kept in the journal).
+   The battles of the prologue pass ?tut= to the arena, which coaches move by move (js/town-battle.js). The prologue cannot be skipped
+   and the world map only opens when a step sends you out — free play starts when the finale is reached. */
+const LESSON={
+ wake:['เดินในหมู่บ้าน',['คลิกถนนหรืออาคารเพื่อเดิน · ลากพื้นเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม','◆ สีทองบนแผนที่คือสิ่งที่เควสต้องการ · 📍 นำทาง ให้ตัวเอกเดินไปเอง','คลิกคนเพื่อคุย · Esc เปิดเมนู (กระเป๋า สำรับ ตัวละคร บันทึกเกม)']],
+ goats:['เวลาและแรง',['นาฬิกาเดินตลอดเวลาในหมู่บ้าน · ชาวบ้านแต่ละคนมีตารางของตัวเอง','งานและกิจกรรมใช้แรงและเวลา · แรงหมดต้องพักหรือนอน','แพะวิ่งหนีเมื่อเข้าใกล้ แต่จะหอบแล้วหยุด — รอจังหวะนั้น']],
+ seeds:['งานในหมู่บ้าน',['ชาวบ้านมีงานให้ช่วยเสมอ · ช่วยแล้วได้เงิน ของ และความสนิท','ลองคุยกับคนเดิมหลายครั้ง บทสนทนาเปลี่ยนตามเรื่องที่เกิดขึ้น']],
+ pumpkin:['งานที่ต้องทำทุกวัน',['ฟักทองประกวดต้องดูแลวันละครั้ง · ยิ่งดูแลครบหลายวัน ผลประกวดยิ่งดี','งานบางอย่างได้ผลตามจำนวนวัน ไม่ใช่ทำครั้งเดียวจบ']],
+ planks:['วัตถุดิบ',['ของที่เก็บได้เข้ากระเป๋าวัตถุดิบ (ไม้ เหล็ก ถ่าน เสบียง) · ดูได้ที่ 🎒 กระเป๋า','วัตถุดิบที่ขาดซื้อได้ที่ตลาด']],
+ stall:['ซ่อมและสร้าง',['การซ่อม/สร้างใช้วัตถุดิบ แรง และเวลา · ถ้าของไม่พอ เกมบอกว่าขาดอะไร']],
+ sleep1:['นอนพักและบันทึกเกม',['นอนที่เตียงในบ้าน = ฟื้นแรงและ HP ข้ามไปเช้าวันใหม่','เกมเซฟเองตลอด · อยากเก็บจุดนี้ไว้ ใช้ Esc → 💾 บันทึกเกม (3 ช่อง)']],
+ guard:['ออกนอกหมู่บ้าน',['แผนที่โลกเดินทีละช่อง · หมอกจางเมื่อเดินผ่าน','การเดินกินเสบียงและเวลา · กลางคืนศัตรูดุกว่า','กลับหมู่บ้านได้ทุกเมื่อด้วยปุ่ม 🏠']],
+ cave:['การต่อสู้ครั้งแรก',['คิวด้านบนบอกลำดับ: ใครเต็มแถบ CT ก่อนได้เล่นก่อน','คลิกช่องเพื่อเดิน · คลิกศัตรูเพื่อดูการ์ดที่ดีที่สุด · คลิกซ้ำเพื่อโจมตี','จบเทิร์นแล้วเลือกทิศหันหน้า — โดนตีจากด้านหลังแรงขึ้น ×1.2']],
+ gus:['ช่างตีเหล็ก',['โรงตีเหล็กคือที่ทำของ ทั้งอาวุธ ของใช้ และของขาย']],
+ lanterns:['คราฟต์ที่ทั่ง',['เดินไปที่จุดบริการ แล้วเลือกสิ่งที่จะทำ · ของแต่ละอย่างใช้วัตถุดิบต่างกัน']],
+ craft:['ตีอาวุธ',['เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูป → ถังน้ำ: ชุบแข็ง','ฝีมือดีได้อาวุธ ★ สูงกว่า · สวมอาวุธที่ 🎒 กระเป๋า แล้ว ATK ในสนามเพิ่ม']],
+ hire:['เพื่อนร่วมทาง',['ชวนคนที่มี ★ ที่โรงแรมเข้าทีม (สูงสุด 4 คน)','ในสนาม: สั่ง ⚔ บุก · 👣 ตาม · 🛡 ยึด และท่าพิเศษ (ใช้ 1 คริสตัล)','เพื่อนถึง Lv.3 แล้วสั่งเองได้ในตาของเขา 🎮']],
+ sell:['ขายของ',['ขายที่โต๊ะรับซื้อในตลาด หรือวางของใน "ร้านของเรา" แล้วตั้งราคา','ร้านขายต่อเองแม้ตัวเอกไม่อยู่ · ดูยอดในสมุดยอดขาย']],
+ raid:['สู้อย่างนักวางแผน',['ยืนสูงกว่าเป้า ตีแรงขึ้น ~10% ต่อระดับ (▲ บนช่องคือความสูง)','ธาตุชนะทาง ×1.3 · แพ้ทาง ×0.7 · ดูตารางธาตุใน Esc','การ์ดตอบโต้/หลบ ใช้ก่อนจบเทิร์น ทำงานตอนศัตรูตี']],
+ prep:['เตรียมตัวเดินทาง',['ซื้อเสบียงและยาก่อนออก · จัดสำรับที่ 🃏 สำรับ ให้เข้ากับสนาม']],
+ expedition:['การเดินทางไกล',['ศัตรูซุ่มโจมตีได้ระหว่างทาง · ชนะแล้วได้ EXP เงิน และของ','แรงหมดในสนาม ใช้ ♻ ทิ้งไพ่แลกแรง · การ์ดปีน/กระโจนใช้ความสูงให้เป็นประโยชน์']],
+ rest:['การผจญภัยของเจ้าเริ่มแล้ว',['จบบทนำแล้วเล่นได้อิสระ: บอร์ดเควส ร้านการ์ด ครูฝึก เมืองบนแผนที่โลก และบอสในตำนาน','เพื่อนเก่งขึ้นตามเลเวล · ไพ่ใหม่ได้จากเลเวล บอส ร้าน และครู']]
+};
+function lessonCard(id){const L=LESSON[id];if(!L)return Promise.resolve();
+ if(!document.getElementById('stkLessonCss')){const c=document.createElement('style');c.id='stkLessonCss';c.textContent=`#stkLesson{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;background:#05080daa;animation:stkL .3s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
+  #stkLesson .card{width:min(520px,92vw);padding:20px 22px;border-radius:14px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 20px 50px #000b;border:2px solid #b08a4a}
+  #stkLesson small{letter-spacing:.2em;color:#8a6a3a;font-size:11px}#stkLesson h3{margin:4px 0 10px;font:800 22px Georgia,"Noto Sans Thai",serif;color:#5a3a10}
+  #stkLesson ul{margin:0 0 14px;padding-left:20px;line-height:1.7;font-size:15px}#stkLesson button{width:100%;padding:10px;border-radius:10px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:700 15px inherit;font-family:inherit;cursor:pointer}
+  @keyframes stkL{from{opacity:0}}`;document.head.append(c)}
+ const st=V().story;(st.lessons||=[]).includes(id)||st.lessons.push(id);doSave();
+ return new Promise(res=>{const d=document.createElement('div');d.id='stkLesson';d.innerHTML=`<div class="card"><small>📘 บทเรียน</small><h3>${esc(L[0])}</h3><ul>${L[1].map(x=>'<li>'+esc(x)+'</li>').join('')}</ul><button type="button">เข้าใจแล้ว ▸</button></div>`;
+  const close=()=>{removeEventListener('keydown',key,true);d.remove();res()},key=e=>{if(e.key==='Enter'||e.key===' '||e.key==='Escape'){e.preventDefault();e.stopPropagation();close()}};
+  d.querySelector('button').onclick=close;addEventListener('keydown',key,true);document.body.append(d);d.querySelector('button').focus()})}
+/* world map only when the prologue sends you out (or you are already out on a step) */
+const WORLD_STEPS=['cave','caveBack','expedition','return'];
+function lock(){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||WORLD_STEPS.includes(step.id))return '';return 'ทำเควสบทนำต่อก่อน: '+step.title+' — '+step.goal}
 const STEPS=[
  talkStep({id:'wake',chapter:'วันที่ 1 · เตรียมงานเทศกาล',intro:'opening',outro:'elderMeet',title:'ไปหาผู้ใหญ่บ้าน',talk:'oren',goal:'เดินไปหาผู้ใหญ่บ้านโอเรน แล้วคลิกที่ตัวเพื่อคุย',
   hint:'ช่วงเช้าผู้ใหญ่บ้านอยู่ที่ตลาด · '+HINT_WALK}),
  {id:'goats',tag:'real',title:'แพะหนีออกจากคอก',goal:'ตามจับแพะของปิ๊บ 3 ตัวที่หนีไปทั่วหมู่บ้าน',hint:'คลิกที่แพะเพื่อวิ่งตาม · มันวิ่งหนีเมื่อเข้าใกล้ แต่วิ่งได้ไม่นานก็หอบ ตอนหยุดพักคือจังหวะจับ · ลูกศรขอบจอชี้ไปทางแพะ',
   spot:SPOT.goats,progress:d=>(d.got||0)/3,check:d=>(d.got||0)>=3,acts:[guideBtn],
   onSpot:d=>{d.got=(d.got||0)+1;return {msg:'🐐 จับได้ '+d.got+'/3',consume:true}}},
- talkStep({id:'goatsBack',outro:'goatsDone',title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
+ talkStep({id:'goatsBack',outro:'goatsDone',reward:()=>{addCoins(15);toast('รางวัล: +15 เหรียญ')},title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
 talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮิลดา',talk:'hilda',goal:'ไปหาฮิลดาชาวนา ถามว่าช่วยอะไรได้บ้าง',hint:'เช้าอยู่ที่ไร่ เที่ยงถึงบ่ายสามขายผักที่ตลาด · '+HINT_WALK,
   reward:()=>{V().story.seeds=true}}),
 {id:'pumpkin',tag:'real',title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
@@ -79,10 +116,11 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
   onSpot:d=>{mats().wood=(mats().wood||0)+1;d.got=(d.got||0)+1;doSave();doRender();return {msg:'🪵 ไม้ +1 ('+d.got+'/2)',consume:true}}},
  {id:'stall',tag:'real',outro:'stallDone',title:'ซ่อมแผงขายของ',goal:'เดินไปที่แผงหน้าตลาด แล้วซ่อม (ใช้ไม้ 2)',hint:'เดินไปแตะแผง 🛠️ · ใช้แรง 6 และเวลา 30 นาที · ไม้ไม่พอซื้อได้ที่ตลาด',
   spot:SPOT.stall,check:d=>!!d.built,acts:[guideBtn],
+  reward:()=>{addCoins(20);toast('รางวัล: +20 เหรียญจากลุงทอม')},
   onSpot:d=>{if((mats().wood||0)<2)return {msg:'ไม้ไม่พอ (ต้องใช้ 2)'};const why=spend(6,30,3);if(why)return {msg:why};mats().wood-=2;d.built=true;d.got=1;doSave();doRender();return {msg:'🔨 ซ่อมแผงเสร็จ!',consume:true}}},
  {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'เดินกลับบ้าน แล้วไปที่เตียงเพื่อนอนพัก',hint:'ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก" · การนอนข้ามไปเช้าวันถัดไป',
   place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn]},
- talkStep({id:'guard',chapter:'วันที่ 2 · ทำของ และหาคน',outro:'guardTalk',title:'ยามประตูหมู่บ้าน',talk:'dork',goal:'ไปคุยกับยามดอร์กก่อนออกนอกหมู่บ้าน',hint:'ยามดอร์กเฝ้าอยู่ที่ลานกลางหมู่บ้านทั้งวัน · '+HINT_WALK}),
+ talkStep({id:'guard',chapter:'วันที่ 2 · ทำของ และหาคน',outro:'guardTalk',reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'push',n:1}],{kicker:'คำแนะนำของยามดอร์ก',title:'ผลัก',text:'ผลักศัตรูถอยหนึ่งช่อง · ผลักตกที่สูงเสีย HP เพิ่ม'}),title:'ยามประตูหมู่บ้าน',talk:'dork',goal:'ไปคุยกับยามดอร์กก่อนออกนอกหมู่บ้าน',hint:'ยามดอร์กเฝ้าอยู่ที่ลานกลางหมู่บ้านทั้งวัน · '+HINT_WALK}),
  {id:'cave',tag:'real',outro:'crystal',title:'ผลึกในถ้ำเหมืองเก่า',goal:'เดินออกทางออกหมู่บ้าน ไปทางเหมืองเก่า แล้วชนะการต่อสู้ 1 ครั้ง',hint:'บนแผนที่โลกเดินทีละช่อง · ระหว่างทางมีศัตรูดักอยู่ · สนามรบมีเนินและหน้าผา ยืนที่สูงตีแรงกว่า',
   exit:true,begin:d=>{d.base=V().battles||0},check:d=>(V().battles||0)>d.base,acts:[guideBtn],
   reward:()=>{V().story.crystals=(V().story.crystals||0)+3;return root.StarterKit?.unlock?.([{group:'combat',id:'skill',n:2}],{kicker:'บทเรียนจากถ้ำ',title:'ท่าโจมตีหนัก',text:'ตีแรงกว่าปกติ แต่ใช้แรงมากขึ้น · เพิ่มเข้าสำรับแล้ว'})}},
@@ -117,7 +155,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
   acts:[guideBtn],
   reward:()=>root.StarterKit?.unlock?.([{group:'movement',id:'sprint',n:2},{group:'combat',id:'climb',n:2},{group:'combat',id:'dive',n:1},{group:'combat',id:'evade',n:1},{group:'combat',id:'firstAid',n:1}],{kicker:'ของจากค่ายโจร',title:'ทักษะเอาตัวรอด',text:'ป่ามีเนินและหน้าผา · ปีนขึ้นที่สูงแล้วกระโจนฟาดลงมาแรงกว่าเดิม'})},
  {id:'return',tag:'real',outro:'home',title:'กลับบ้าน',reward:()=>leaveTemp(),goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะเดินต่อไปจนถึงจุดหมายก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!onWorld(),acts:[]},
- {id:'sellLoot',tag:'real',title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',place:'market',check:d=>d.sales>0,acts:[guideBtn]},
+ {id:'sellLoot',tag:'real',reward:()=>{addCoins(20);try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}toast('รางวัล: +20 เหรียญ · ยา 1 ขวด')},title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',place:'market',check:d=>d.sales>0,acts:[guideBtn]},
  {id:'rest',tag:'real',outro:'finale',title:'พักฟื้น',goal:'กลับบ้านแล้วนอนพัก',hint:'ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก"',place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn],
   reward:async()=>{addCoins(30);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1},{group:'combat',id:'rockfall',n:1},{group:'combat',id:'perch',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
 const byId=id=>STEPS.findIndex(x=>x.id===id);
@@ -151,7 +189,7 @@ function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับห�
  d.fighting=true;d.outcome=null;doSave();
  const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')+':'+(p.level||1)).join(',');
  const fr=document.createElement('iframe');fr.id='storyBattle';fr.title='โจรป่าบุกงาน';fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
- fr.src='village-town.html?battle=1&embed=1&r=6&ms='+encodeURIComponent('bandit*1.2,wolf*1.1,bandit*1.2,wolf*1.1')+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent('คืนเทศกาล ·');
+ fr.src='village-town.html?battle=1&embed=1&r=6&ms='+encodeURIComponent('bandit*1.2,wolf*1.1,bandit*1.2,wolf*1.1')+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent('คืนเทศกาล ·')+(d.tutDone?'':'&tut=raid');d.tutDone=true;
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
   if(r.outcome==='win'){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);d.won=true;if(root.Progression){const xp=Progression.battleXp({dang:.4,kills:r.kills});gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}else toast(r.outcome==='lose'?'พ่ายแพ้... ตั้งหลักแล้วลองใหม่':'ถอยออกมา · โจรยังอยู่ในงาน','');
@@ -188,12 +226,12 @@ function draw(force){const el=tracker(),st=story();if(!st||st.mode==='off'||root
   html=`<div class="stk-head"><small>${esc(chap)}</small><b>${esc(step.title)}${step.tag==='temp'?'<span class="stk-tag" title="ระบบชั่วคราว ระบบจริงอยู่ในแผน">ชั่วคราว</span>':''}</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div>
   <div class="stk-body"><p class="stk-goal">◆ ${esc(step.goal)}</p>${p!=null?`<div class="stk-prog"><i style="width:${Math.round(p*100)}%"></i></div>`:''}${step.hint?`<p class="stk-hint">${esc(step.hint)}</p>`:''}${night}
   <div class="stk-acts">${acts.map((a,j)=>`<button type="button" data-act="${(step.acts||[]).indexOf(a)}" class="${a.primary?'primary':''}">${esc(a.label)}</button>`).join('')}</div>
-  <div class="stk-acts"><button type="button" data-act="replay" title="ดูฉากล่าสุดอีกครั้ง">↺ ดูฉาก</button>${(()=>{try{return localStorage.getItem('projectA.dev')==='1'||!!JSON.parse(localStorage.getItem('projectA.github')||'{}').token}catch(e){return false}})()?'<button type="button" data-act="skipall" title="ข้ามบทนำทั้งหมด">ข้ามบทนำ</button>':''}</div></div>`}
+  <div class="stk-acts"><button type="button" data-act="replay" title="ดูฉากล่าสุดอีกครั้ง">↺ ดูฉาก</button>${(()=>{try{return localStorage.getItem('projectA.dev')==='1'}catch(e){return false}})()?'<button type="button" data-act="skipall" title="ข้ามบทนำทั้งหมด">ข้ามบทนำ</button>':''}</div></div>`}
  if(html!==lastHtml||force){el.innerHTML=html;lastHtml=html}el.hidden=false}
 function chapterOf(i){for(let j=i;j>=0;j--)if(STEPS[j].chapter)return STEPS[j].chapter;return ''}
 async function act(a){const st=story();if(!st)return;
  if(a==='start'){st.mode='active';st.i=0;st.data={};doSave();draw(true);return}
- if(a==='off'){st.mode='off';doSave();draw(true);return}
+ if(a==='off'){if(st.mode==='active')return;st.mode='off';doSave();draw(true);return}   /* v97.16: an active prologue cannot be switched off */
  if(a==='skipall'){const ok=root.GameDialog?await root.GameDialog.confirm('ข้ามบทนำทั้งหมด?\nจะไม่ได้รางวัลและฉากที่เหลือ (เปิดเล่นใหม่ได้จาก Story.reset() ในโหมดนักพัฒนา)'):confirm('ข้ามบทนำทั้งหมด?');if(!ok)return;st.mode='done';doSave();draw(true);return}
  if(a==='replay'){const sc=lastScene();if(sc)root.Cutscene.play(D().SCENES[sc]);return}
  const step=cur();const x=step?.acts?.[+a];if(x)await x.run(dataOf(step));draw(true)}
@@ -211,6 +249,7 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
   if(step.intro&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(D().SCENES[step.intro])}
+  if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();await lessonCard(step.id)}
   if(step.check(d)){d.done=true;if(step.outro)await root.Cutscene.play(D().SCENES[step.outro]);await step.reward?.(d);st.i++;doSave();doRender();
    const nx=STEPS[st.i];if(nx){toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
@@ -222,7 +261,7 @@ function boot(){Object.assign(root.Cutscene.speakers,D().SPEAKERS);hookActions()
  setInterval(()=>{tick().catch(e=>{busy=false;console.warn('[story]',e)})},700)}
 if(document.readyState!=='loading')setTimeout(boot,0);else document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0));
 
-root.Story={steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={lock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

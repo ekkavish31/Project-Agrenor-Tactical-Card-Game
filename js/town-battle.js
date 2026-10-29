@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.15';
+  const V = '97.16';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -124,7 +124,7 @@
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
   }
-  function refresh() { reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null; allyBar(); hudSync(); handSync() }
+  function refresh() { if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null; allyBar(); hudSync(); handSync() }
   /* ---------- camera director ----------
      cam = world point at the screen centre + zoom. Normal: frame both fighters (shifted right/up so the HUD and the hand don't cover them).
      Cinematic: push in on attacker + target. Shake and roll kick are added on top. */
@@ -256,6 +256,9 @@
   #fbAlly{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:45;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:94vw;padding:10px 14px;border-radius:14px;background:#14231ff2;border:1px solid #ffd25a88;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 10px 26px #000a}
   #fbAlly b{font-size:16px;color:#ffe2a8}#fbAlly small{color:#cdbb92}#fbAlly button{padding:8px 12px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:600 13px inherit;font-family:inherit;cursor:pointer}#fbAlly button:disabled{opacity:.45;cursor:default}#fbAlly button.ok{background:#c9893a;border-color:#ffe2a8}
   body.fb-ally #fbHand{opacity:.25;pointer-events:none;transform:translate(-50%,60px)}
+  #fbCoach{position:fixed;left:50%;top:104px;transform:translateX(-50%);z-index:46;display:flex;gap:10px;align-items:center;max-width:min(760px,94vw);padding:9px 12px 9px 16px;border-radius:12px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;border:2px solid #b08a4a;box-shadow:0 10px 26px #0009;font:14px system-ui,"Noto Sans Thai",sans-serif}
+  #fbCoach.on{animation:fbCoachIn .35s ease both}@keyframes fbCoachIn{from{opacity:0;transform:translate(-50%,-10px)}}#fbCoach small{white-space:nowrap;color:#8a6a3a;font-weight:700}#fbCoach span{flex:1;min-width:0;line-height:1.5}
+  #fbCoach button{padding:6px 12px;border-radius:9px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:700 13px inherit;font-family:inherit;cursor:pointer;white-space:nowrap}#fbCoach button.x{background:none;border:none;padding:4px 6px;color:#8a6a3a}
   #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
   #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
   #fbFace [data-f]{position:fixed;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid #f3e9c9aa;background:#1b302ae6;color:#f3e9c9;font:22px system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:0 4px 12px #0008;transition:transform .12s,background .12s}
@@ -581,7 +584,7 @@
   async function heroMove(to) {
     const h0 = FB.actor(st), from = { u: h0.u, v: h0.v }, face = h0.face, dir = h0.dir;
     const mv = FB.move(st, to); if (!mv.ok) { flash(st.mp > 0 ? mv.reason : 'ใช้ไพ่เดินก่อน'); return }
-    walks.push({ from, face, dir, cost: mv.cost });
+    walks.push({ from, face, dir, cost: mv.cost }); coachState.moved = true;
     busy = true; hudSync(); await walkAnim(h0, mv.path); busy = false; refresh();
   }
   /* any AI attack (monster on hero/companion, companion on monster). Full cut-scene when the hero is hit, on crits, knock-outs and bosses;
@@ -677,6 +680,34 @@
   function floatText(unit, txt, col, small, big) { const t = now(), stack = texts.filter(x => x.unit === unit && t - x.t0 < 450).length; texts.push({ unit, u: unit.vu, v: unit.vv, txt, col, t0: t, small, big, dx: (Math.random() - .5) * 18, dy: -stack * 22 }) }   // texts on the same unit stack upward
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }
 
+  /* ---------- v97.16 · battle coach for the prologue's fights (?tut=cave|raid|expedition): one tip at a time at the top of the screen;
+     a tip with a check moves on by itself when the player has done it, the others have "ถัดไป". ---------- */
+  const TUT = Q.get('tut'), coachState = { i: 0, moved: false, t0: 0 };
+  const COACH = {
+    cave: [
+      { t: 'แถบบนสุดคือคิวเทิร์น · กรอบทองคือตัวที่ได้เล่นตอนนี้ — ตอนนี้ตาคุณ' },
+      { t: 'คลิกช่องว่างเพื่อเดิน (เกมเลือกไพ่เดินให้เอง) · เดินพลาดกด Z หรือ ↶ ย้อนเดิน', done: () => coachState.moved },
+      { t: 'คลิกศัตรู 1 ครั้ง ดูการ์ดที่ดีที่สุดกับดาเมจ · คลิกซ้ำเพื่อโจมตี (ยังไม่ถึงระยะ เกมพาเดินเข้าไปให้)', done: () => st.acted },
+      { t: 'กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า — หันเข้าหาศัตรู เพราะโดนตีจากด้านหลังแรงขึ้น ×1.2', done: () => st.turns > coachState.t0 },
+      { t: 'ลูกศรใต้ตัวบอกทิศที่แต่ละตัวหัน · อ้อมไปตีศัตรูจากด้านหลังได้ ×1.2 · ล้มศัตรูให้หมดเพื่อชนะ' }],
+    raid: [
+      { t: 'ตัวเลข ▲ บนช่องคือความสูง · ยืนสูงกว่าเป้าตีแรงขึ้น · ชี้ช่องดูความสูงและชนิดพื้นที่มุมขวาบน' },
+      { t: 'ไอคอนข้างชื่อศัตรูคือธาตุ · ธาตุชนะทาง ×1.3 แพ้ทาง ×0.7 · Esc → ◈ ตารางธาตุ' },
+      { t: 'เพื่อนที่แผงซ้าย: ⚔ บุก · 👣 ตาม · 🛡 ยึด · ✦ ท่าพิเศษใช้ 1 คริสตัล' },
+      { t: 'การ์ดตอบโต้/ก้าวหลบ ใช้ก่อนจบเทิร์น แล้วจะทำงานเองตอนศัตรูตีเข้ามา' }],
+    expedition: [
+      { t: 'แรงหมด? กด ♻ ทิ้งไพ่ฟื้นแรง เลือกไพ่ที่ไม่ใช้ แลกเป็นแรง (ใช้ 1 คริสตัล)' },
+      { t: 'หญ้าสูง/มอสคือกำบัง โดนตี −30% · ถอยไปยืนตอนเลือดน้อย' },
+      { t: 'การ์ดปีนป่าย กระโจน หินถล่ม ใช้ความสูงให้ได้เปรียบ · ผลักศัตรูตกผาเสีย HP เพิ่ม' }]
+  };
+  function coach() {
+    const list = TUT && COACH[TUT]; let d = document.getElementById('fbCoach');
+    if (!list || !st || st.outcome || coachState.i >= list.length) { d?.remove(); return }
+    const c = list[coachState.i]; if (c.done && c.done()) { coachState.i++; sfx('cast', .25); return coach() }
+    if (!d) { d = document.createElement('div'); d.id = 'fbCoach'; document.body.append(d); d.onclick = e => { const a = e.target.closest('[data-c]')?.dataset.c; if (a === 'next') { coachState.i++; coach() } else if (a === 'close') { coachState.i = 1e9; coach() } } }
+    const html = `<small>📘 บทเรียน ${coachState.i + 1}/${list.length}</small><span>${esc(c.t)}</span>${c.done ? '' : '<button data-c="next">ถัดไป ▸</button>'}<button data-c="close" class="x" title="ปิดบทเรียน">✕</button>`;
+    if (d.dataset.k !== TUT + coachState.i) { d.dataset.k = TUT + coachState.i; d.innerHTML = html; d.classList.remove('on'); void d.offsetWidth; d.classList.add('on') }
+  }
   /* ---------- v97.15 · controlled companions (B14): on an unlocked companion's CT turn the battle waits for the player.
      Click a cell = walk (its own move points) · click an enemy = show the hit (≈ damage, walking in if needed), click again = do it ·
      ✦ = its signature skill (no crystal, usual cooldown) · 🤖 = let the AI play this one (also for later turns, until switched back) ·
