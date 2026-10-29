@@ -48,7 +48,7 @@
       const moving = walk(a, dt, blocked, hero), pt = project(a.u, a.v);
       out.push({ y: pt.y, draw: () => {
         g.fillStyle = 'rgba(20,30,20,.35)'; g.beginPath(); g.ellipse(pt.x, pt.y, 14, 6, 0, 0, 7); g.fill();
-        root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, scale: 1.05 });
+        root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, scale: castScale('npc:' + a.p.id) });
         if (questNpc(a.p.id)) mark(g, pt, t);
         if (bubble?.a === a && now < bubble.until) say(g, pt, bubble.text);
       } });
@@ -65,6 +65,13 @@
     const w = Math.min(max, Math.max(...lines.map(l => g.measureText(l).width))) + 18, h = lines.length * 17 + 12, x = pt.x - w / 2, y = pt.y - 120 - h;
     g.fillStyle = 'rgba(255,248,230,.96)'; g.strokeStyle = '#8a6a3a'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, h, 9); g.fill(); g.stroke();
     g.fillStyle = '#3a2a14'; g.textAlign = 'left'; lines.forEach((l, i) => g.fillText(l, x + 9, y + 18 + i * 17)); g.restore();
+  }
+  /* v95.21 · villagers here are the same size as on the village map: the village editor's cast scales (all × npc × this one) */
+  let castCache = null, castAt = 0;
+  function castScale(k) {
+    const now = performance.now(); if (!castCache || now > castAt) { castAt = now + 2000; try { castCache = (JSON.parse(localStorage.getItem('project-a-village-editor-v67') || 'null')?.assets || root.VillageDefaultLayout?.assets || {}).cast || {} } catch (e) { castCache = {} } }
+    const C = castCache, o = x => (C[x] && typeof C[x] === 'object' ? C[x] : null), all = +C.all || 1;
+    return all * (o(k)?.s ?? 1) * (o('npc')?.s ?? 1);
   }
   /* world point → talk to the villager under it. Returns true when a villager took the click. */
   /* v95.14 · talking needs you next to the villager: a click from afar walks the hero up first (ctx = {hero, go(u,v), stop()} from village-place.html) */
