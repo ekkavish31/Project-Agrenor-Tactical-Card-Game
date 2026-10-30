@@ -233,6 +233,8 @@
   }
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
   const ENC_ICON = { hamlet: '🏘', outpost: '🚩', tower: '🗼', ruins: '🏛', chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
+  /* v97.84 · the target's own picture stands over its wanted mark */
+  const bountyImgs = {}, bountyPic = b => { const src = Bounties.picOf(b); let im = bountyImgs[src]; if (!im) { im = bountyImgs[src] = new Image(); im.src = src } return im.complete && im.naturalWidth ? im : null };
   function drawMarks(now) {
     if (window.Estates) for (const p of Estates.list(S)) { if (!p.at.startsWith('tile:')) continue; const [c, r] = p.at.slice(5).split(',').map(Number), q = center(c, r); g.save(); g.font = '18px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(p.kind ? Estates.KINDS[p.kind].icon : '🚩', q.x + 14, q.y - 14); g.restore() }   /* v97.49 · your plots */
     for (const k in world.tiles) {
@@ -248,7 +250,7 @@
       if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11);
     }
     if (window.Bounties) for (const b of Bounties.active(S)) { if (b.state !== 'open' || b.c == null || !isKnown(b.c + ',' + b.r)) continue; const p = center(b.c, b.r), y = p.y - 8 + Math.sin(now * .005 + b.c) * 2;   /* v97.73 · wanted */
-      g.save(); g.fillStyle = 'rgba(140,25,20,.9)'; g.beginPath(); g.arc(p.x, y, 14, 0, 7); g.fill(); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); g.font = '15px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('☠', p.x, y + 1); g.restore(); label(g, b.name, p.x, y + 26, '#ffb0a0', 11) }
+      g.save(); g.fillStyle = 'rgba(140,25,20,.9)'; g.beginPath(); g.arc(p.x, y, 14, 0, 7); g.fill(); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); g.font = '15px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('☠', p.x, y + 1); { const im = bountyPic(b); if (im) { const h = 46, w = h * im.naturalWidth / im.naturalHeight; g.drawImage(im, p.x - w / 2, y - 14 - h, w, h) } } g.restore(); label(g, b.name, p.x, y + 26, '#ffb0a0', 11) }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
     for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) { const q = center(tw.c, tw.r); label(g, tw.name, q.x, q.y + 32, '#d8f0ff', 12) }
   }
@@ -345,11 +347,13 @@
   function hudSync() {
     const d = destOf(), t = tile(S.pos.c, S.pos.r), dang = G.danger(world, t), stars = '★'.repeat(1 + Math.round(dang * 3)) + '☆'.repeat(3 - Math.round(dang * 3));
     const hh = Math.floor(S.hour), mm = S.hour % 1 ? '30' : '00', icon = nightness() > .5 ? '🌙' : '☀';
-    hud.innerHTML = `<h1>🗺 Agrenor</h1><div class="sub">วันที่ ${S.day} · ${icon} ${String(hh).padStart(2, '0')}:${mm} · ${esc(G.BIOME[t.biome].name)}${t.poi ? ' · ' + esc(t.poi.name) : ''}</div>
+    hud.innerHTML = `<h1>🗺 Agrenor</h1><div class="sub">${window.WorldState?.season ? WorldState.season(S.day)[2] + ' ' : ''}วันที่ ${S.day} · ${icon} ${String(hh).padStart(2, '0')}:${mm} · ${esc(G.BIOME[t.biome].name)}${t.poi ? ' · ' + esc(t.poi.name) : ''}</div>
       <div class="row"><span>HP</span><span>${S.hp}/${S.maxHp}</span></div><div class="bar"><i style="width:${S.hp / S.maxHp * 100}%;background:#6fd18a"></i></div>
       <div class="row" style="flex-wrap:wrap;gap:4px">${S.party.map(p => `<span title="${esc(p.name)}" style="font-size:11px;background:#0004;border-radius:5px;padding:1px 5px;${p.hp < p.max * .3 ? 'color:#ff9a7a' : ''}">${esc(p.name)} ${p.hp}/${p.max}</span>`).join('')}</div>
       <div class="row"><span>ความเหนื่อย</span><span style="color:${S.fatigue >= 80 ? '#ff8a6a' : '#e8d8a8'}">${S.fatigue}%${S.fatigue >= 80 ? ' ⚠' : ''}</span></div><div class="bar"><i style="width:${S.fatigue}%;background:${S.fatigue >= 80 ? '#e2705f' : '#c9a24a'}"></i></div>
-      <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>
+      <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>${(() => { const bs = window.Bounties?.active(S) || []; if (!bs.length) return ''; const won = bs.filter(b => b.state === 'slain').length, open = bs.length - won; const near = bs.filter(b => b.state === 'open' && b.c != null).map(b => ({ b, d: G.dist(S.pos, b) })).sort((a, b) => a.d - b.d)[0];   /* v97.84 · which way to the nearest one */
+        const dir = near ? (() => { const dx = near.b.c - S.pos.c, dy = near.b.r - S.pos.r; if (!dx && !dy) return 'ตรงนี้'; const a = Math.atan2(dy, dx), k = Math.round(a / (Math.PI / 4)) & 7; return ['ตะวันออก', 'ตะวันออกเฉียงใต้', 'ใต้', 'ตะวันตกเฉียงใต้', 'ตะวันตก', 'ตะวันตกเฉียงเหนือ', 'เหนือ', 'ตะวันออกเฉียงเหนือ'][k] })() : '';
+        return `<div class="row" style="color:#ffb0a0"><span>☠ ค่าหัว${open ? ' ' + open + ' ใบ' : ''}</span><span>${won ? '✔ รอรับรางวัล ' + won : 'เหลือ ' + Math.max(0, Math.min(...bs.filter(b => b.state === 'open').map(b => b.until)) - S.day) + ' วัน'}</span></div>${near && !won ? `<div style="color:#ffb0a0;font-size:11.5px">ใกล้สุด ${esc(near.b.name)} · ทาง${dir} ${near.d} ช่อง</div>` : ''}` })()}
       <div class="row"><span>ความลึกของหมอก</span><span style="color:#ff9a7a">${stars}</span></div>
       <div class="row"><span>จุดหมาย</span><span style="color:#ffe2a8">${d ? esc(d.name) + (S.done[d.id] ? ' ✔' : ' · ' + G.dist(S.pos, d) + ' ช่อง') : '—'}</span></div>
       <div class="btns">${atHome() ? `<button id="wmQuest">📜 เรื่องที่ได้ยินมา</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}${landHere() ? `<button id="wmLand" class="ghost">🏡 ที่ดิน${Estates.at(S, landHere()).length ? ' (' + Estates.at(S, landHere()).length + ')' : ''}</button>` : ''}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button>${eventCards().length ? `<button id="wmCards" class="ghost">🎴 การ์ดเหตุการณ์ (${eventCards().reduce((a, x) => a + x.n, 0)})</button>` : ''}</div>
@@ -363,9 +367,12 @@
   const atHome = () => S.pos.c === world.home.c && S.pos.r === world.home.r;
   /* v97.49 · T4: land you can hold here — Fernvale (rented), or open passable land with no place on it (claimed free) */
   const landHere = () => { if (!window.Estates) return null; if (atHome()) return 'town:fernvale'; const t = tile(S.pos.c, S.pos.r); if (t.poi || !G.BIOME[t.biome]?.pass) return null; return 'tile:' + S.pos.c + ',' + S.pos.r };
+  /* v97.82 · into the farm sub-map, and back here afterwards */
+  function enterFarm(r) { if (typeof r !== 'string' || !r.startsWith('enter:')) return false; const p = Estates.list(S).find(x => x.id === r.slice(6)); if (!p) return false; save(); location.href = 'place-interior.html?place=farm&farm=' + encodeURIComponent(p.id) + '&name=' + encodeURIComponent('ไร่ · ' + p.name) + '&back=world-map.html'; return true }
   async function landPanel(where, label) {
     if (!where || busy) return; busy = true; hudSync();
     try { for (const m of Estates.tickAll(S)) log(m); const r = await Estates.panel(S, where, label, () => { save(); hudSync() });
+      if (enterFarm(r)) return;
       if (r === 'sleep') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('🛏 นอนพักที่บ้านของตัวเอง ตื่นเช้าวันใหม่'); toast('🛏 พักเต็มอิ่ม · HP เต็ม') } }
     finally { busy = false; save(); hudSync() }
   }
@@ -418,6 +425,8 @@
     haven: 'เมืองท่าเสียงดัง กลิ่นปลาเค็มและเกลือทะเล เรือสินค้าจอดเรียงเต็มท่า',
     northgate: 'ด่านหินบนช่องเขา ทหารเฝ้าทางขึ้นเหนือ นักเดินทางแวะพักก่อนข้ามเขา'
   }, { get: (o, k) => o[k] || window.Settlements?.SETTLEMENTS?.[k]?.text || '' });   /* v97.72 · the new towns describe themselves in js/settlements.js */
+  /* v97.84 · the village exit-gate pictures we already have, on the towns they suit */
+  const TOWN_PIC = { deepcairn: 'mine', haven: 'coast', thornwatch: 'forest', northgate: 'frost' };
   function townsfolk(id) {
     const L = window.VillageLife; if (!L) return [];
     const day = S.day, hour = S.hour, finnTown = ['brookmere', 'haven', 'northgate'][day % 3];
@@ -438,8 +447,11 @@
       const ST = window.Settlements, pInn = ST ? ST.price(id, 'inn', 12) : 12, pFood = ST ? ST.price(id, 'food', 10) : 10, pPot = ST ? ST.price(id, 'potion', 18) : 18;
       const tev = window.TownEvents?.card(S, id);
       const locals = (ST?.LOCALS?.[id] || []).map(([n, role, ls]) => `<p>👤 <b>${esc(n)}</b> <small>${esc(role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>`).join('');
-      const v = await modal(`<h2>${ST?.SETTLEMENTS?.[id]?.capital ? '🏰' : '🏘'} ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}${tev ? tev.html : ''}${locals ? '<h3 style="margin:8px 0 2px;font-size:14px">ผู้คนที่นี่</h3>' + locals : ''}${folk.length || !locals ? '<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>' + people : ''}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
-        [...(tev?.button ? [tev.button] : []), ...(window.TownServices ? TownServices.list(S, id).map(o => ({ label: o.label + (o.disabled && o.title ? ' (' + o.title + ')' : ''), value: 'svc:' + o.key, disabled: o.disabled })) : []), { label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates ? [{ label: '🏡 ที่ดิน', value: 'land' }] : []), ...(ST ? [{ label: '📜 ยื่นคำร้อง', value: 'petition' }] : []), ...(window.Offices && (Object.values(Offices.OFFICES).some(O => O.town === id) || S.office) ? [{ label: '🏛 รับราชการ', value: 'office' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
+      let v = await modal(`${TOWN_PIC[id] ? `<img src="assets/village-town/decor/gate-${TOWN_PIC[id]}.webp" alt="" style="float:right;width:150px;margin:-6px 0 4px 10px;filter:drop-shadow(0 4px 8px #0006)">` : ''}<h2>${ST?.SETTLEMENTS?.[id]?.capital ? '🏰' : '🏘'} ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}${tev ? tev.html : ''}${locals ? '<h3 style="margin:8px 0 2px;font-size:14px">ผู้คนที่นี่</h3>' + locals : ''}${folk.length || !locals ? '<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>' + people : ''}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
+        [...(tev?.button ? [tev.button] : []), ...(window.TownServices ? TownServices.list(S, id).map(o => ({ label: o.label + (o.disabled && o.title ? ' (' + o.title + ')' : ''), value: 'svc:' + o.key, disabled: o.disabled })) : []), { label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates || ST || window.Offices ? [{ label: '🏛 ศาลากลาง', value: 'hall' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
+      /* v97.76 · land, petitions and offices sit behind the town hall so the card keeps to the everyday things */
+      if (v === 'hall') v = await modal(`<h2><img src="assets/icons/menu/castle.webp" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px">ศาลากลาง · ${esc(poi.name)}</h2><p>${esc(ST?.SETTLEMENTS?.[id]?.leader || '')}</p>`, [...(window.Estates ? [{ label: '🏡 ที่ดิน', value: 'land' }] : []), ...(ST ? [{ label: '📜 ยื่นคำร้องนโยบาย', value: 'petition' }] : []), ...(window.Offices && (Object.values(Offices.OFFICES).some(O => O.town === id) || S.office) ? [{ label: '🏛 รับราชการ', value: 'office' }] : []), { label: 'กลับ', value: 'back', ghost: true }]);
+      if (v === 'back') continue;
       if (v === 'inn') { S.gold -= pInn; const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('พักที่ ' + poi.name + ' ตื่นเช้าวันใหม่'); toast('🛏 พักเต็มอิ่ม · HP เต็ม') }
       else if (v === 'food') { S.gold -= pFood; S.food += 4; log('ซื้อเสบียง 4 ที่ ' + poi.name) }
       else if (v === 'petition') { const pol = await ST.petitionPanel(id); if (pol) { log('📜 ' + poi.name + ' เปลี่ยนนโยบายเป็น ' + ST.POLICIES[pol].name); toast('📜 นโยบายใหม่: ' + ST.POLICIES[pol].name) } }
@@ -452,7 +464,7 @@
       else if (v === 'event') { const here = tile(S.pos.c, S.pos.r), lines = await TownEvents.act(S, id, { job: window.Progression?.jobsOf(window.WorldState.game()).job, passTime, battle: () => battle(pickFoe(here), Math.max(.2, G.danger(world, here)), {}) }); for (const m of lines) log(m); if (lines.length) await modal('<h2>' + TownEvents.EVENTS[TownEvents.today(id)?.id]?.icon + ' ' + esc(poi.name) + '</h2>' + lines.map(m => '<p>' + esc(m) + '</p>').join('')) }
       else if (v === 'office') { await Offices.panel(S, () => { save(); hudSync() }, id) }   /* v97.68 · T7 offices in other towns */
       else if (v === 'trade') { await ST.tradePanel(id, S, () => { save(); hudSync() }) }
-      else if (v === 'land') { for (const m of Estates.tickAll(S)) log(m); const r = await Estates.panel(S, 'town:' + id, poi.name, () => { save(); hudSync() }); if (r === 'sleep') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('🛏 นอนพักที่บ้านของตัวเองใน ' + poi.name); toast('🛏 พักเต็มอิ่ม · HP เต็ม') } }
+      else if (v === 'land') { for (const m of Estates.tickAll(S)) log(m); const r = await Estates.panel(S, 'town:' + id, poi.name, () => { save(); hudSync() }); if (enterFarm(r)) return; if (r === 'sleep') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('🛏 นอนพักที่บ้านของตัวเองใน ' + poi.name); toast('🛏 พักเต็มอิ่ม · HP เต็ม') } }
       else if (v === 'pot') { S.gold -= pPot; S.potions++; log('ซื้อยาฟื้นฟูที่ ' + poi.name) }
       else if (v === 'rumor') { const d = destOf() || world.dests.find(x => !S.done[x.id]); if (d) { const p = G.path(world, tile(S.pos.c, S.pos.r), d); if (p) p.slice(0, 6).forEach(x => { for (const [a, b] of G.within(x.c, x.r, 1)) S.known[K(a, b)] = 1 }); fogDirty = true; reveal(); await modal(`<h2>📜 ข่าวลือ</h2><p>คนในโรงเตี๊ยมเล่าถึง <b>${esc(d.name)}</b> และวาดทางช่วงแรกให้</p>`) } else await modal('<h2>📜 ข่าวลือ</h2><p>ช่วงนี้ไม่มีข่าวใหม่</p>') }
       else break;
@@ -527,7 +539,7 @@
     if (t.poi?.town) { await townVisit(t.poi); return true }
     if (await plotRaid()) return true;   /* v97.49 · T5 */
     { const b = window.Bounties?.at(S, to.c, to.r); if (b) {   /* v97.73 · T3: the wanted one is here */
-      const v = await modal(`<h2>☠ ${esc(b.name)}</h2><p>${esc(b.text)}</p><p>ค่าหัว ${b.reward} 💰 · HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ ลงมือ', value: 'go' }, { label: 'ถอยไปก่อน', value: null, ghost: true }]);
+      const v = await modal(`<h2>☠ ${esc(b.name)}</h2><div style="display:flex;gap:12px;align-items:center"><img src="${Bounties.picOf(b)}" alt="" style="height:120px;filter:drop-shadow(0 4px 6px #0008)"><div><p>${esc(b.text)}</p><p>ค่าหัว ${b.reward} 💰 · HP ตอนนี้ ${S.hp}/${S.maxHp}</p></div></div>`, [{ label: '⚔ ลงมือ', value: 'go' }, { label: 'ถอยไปก่อน', value: null, ghost: true }]);
       if (v === 'go') { const r = await battle(b.foe, Math.min(1, G.danger(world, t) + .15 * b.tier), b.tier >= 3 ? { boss: true } : {}); if (r === 'win') { const m = Bounties.slain(S, b); log(m); toast(m); save(); hudSync() } }
       return true } }
     if (t.enc && !S.cleared[k]) return await encounter(t, k);

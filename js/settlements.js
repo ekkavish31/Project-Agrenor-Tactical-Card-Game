@@ -3,6 +3,7 @@
    ruler: the faction that governs it (js/factions.js) — your standing with it changes prices there.
    goods: what is cheap there (made locally) and what is dear (brought in) — the base for trade runs later (T6 / L3).
    land: weekly rent for a plot inside the walls (T4) · outside the walls land is free but raided (T5).
+   farmland: the village has fields to rent for a farm (v97.77 · the user: farming only where a place has land for it, or outside towns).
    Fernvale is the home village; the other three are the towns placed on the world map by js/world-gen.js (TOWNS). */
 (function (root) {
   'use strict';
@@ -13,9 +14,9 @@
   };
   const GOODS = { food: 'เสบียง', potion: 'ยาฟื้นฟู', iron: 'แท่งเหล็ก', wood: 'ไม้', fish: 'ปลาเค็ม', salt: 'เกลือ', cloth: 'ผ้าทอ', herbs: 'สมุนไพร', fur: 'ขนสัตว์', ore: 'แร่', dye: 'ผ้าย้อมสี', crystal: 'ผลึก', wine: 'ไวน์' };
   const SETTLEMENTS = {
-    fernvale: { name: 'หมู่บ้านเฟิร์นเวล', size: 'village', ruler: 'village', leader: 'ผู้ใหญ่บ้านโอเรน', land: 15, cheap: ['wood', 'herbs', 'food'], dear: ['salt', 'ore'],
+    fernvale: { name: 'หมู่บ้านเฟิร์นเวล', size: 'village', farmland: true, ruler: 'village', leader: 'ผู้ใหญ่บ้านโอเรน', land: 15, cheap: ['wood', 'herbs', 'food'], dear: ['salt', 'ore'],
       text: 'หมู่บ้านบ้านเกิดริมป่า มีโรงตีเหล็ก ตลาดเล็ก และสมาคมนักผจญภัย' },
-    brookmere: { name: 'หมู่บ้านบรู๊คเมียร์', size: 'village', ruler: 'village', leader: 'ผู้ใหญ่บ้านแอนนา', land: 12, cheap: ['food', 'cloth'], dear: ['iron', 'potion'],
+    brookmere: { name: 'หมู่บ้านบรู๊คเมียร์', size: 'village', farmland: true, ruler: 'village', leader: 'ผู้ใหญ่บ้านแอนนา', land: 12, cheap: ['food', 'cloth'], dear: ['iron', 'potion'],
       text: 'หมู่บ้านเกษตรเล็ก ๆ ริมลำธาร ทุ่งดอกไม้ล้อมรอบ ผู้คนรู้จักเฟิร์นเวลดี' },
     haven: { name: 'ท่าเรือซอลต์เฮเวน', size: 'city', ruler: 'merchants', leader: 'สภาพ่อค้าแห่งท่าเรือ', land: 60, cheap: ['fish', 'salt', 'potion'], dear: ['wood', 'fur'],
       text: 'เมืองท่าเสียงดัง กลิ่นปลาเค็มและเกลือทะเล เรือสินค้าจอดเรียงเต็มท่า' },
@@ -25,13 +26,13 @@
        Lakenhold is the "เมืองใหญ่" the villagers talk about — closed until the prologue is over (js/world-map.js). */
     lakenhold: { name: 'นครหลวงลาเคนฮอลด์', size: 'city', ruler: 'crown', leader: 'เจ้าเมืองผู้ปกครองแทนพระราชา', land: 80, cheap: ['dye', 'cloth', 'potion'], dear: ['food', 'wood', 'fur', 'crystal'],
       text: 'นครหลวงแห่งราชอาณาจักรอัลเดรน ริมทะเลสาบ กำแพงสูง สะพานหิน หอคอยเวท พิพิธภัณฑ์ และตลาดที่ใหญ่ที่สุดในที่ราบ', capital: true },
-    willowshore: { name: 'หมู่บ้านวิลโลว์ชอร์', size: 'village', ruler: 'crown', leader: 'ผู้ใหญ่บ้านมาร์ติน', land: 12, cheap: ['fish', 'cloth', 'food'], dear: ['iron', 'wood'],
+    willowshore: { name: 'หมู่บ้านวิลโลว์ชอร์', size: 'village', farmland: true, ruler: 'crown', leader: 'ผู้ใหญ่บ้านมาร์ติน', land: 12, cheap: ['fish', 'cloth', 'food'], dear: ['iron', 'wood'],
       text: 'หมู่บ้านชาวประมงใต้ต้นหลิว เรือพายจอดเรียงริมทะเลสาบ มีเรือข้ามฟากไปนครหลวง' },
     deepcairn: { name: 'หมู่บ้านดีปแคร์น', size: 'village', ruler: 'crown', leader: 'หัวหน้าคนงานเหมืองโบดิล', land: 10, cheap: ['ore', 'crystal', 'iron'], dear: ['food', 'herbs', 'wine'],
       text: 'หมู่บ้านคนงานเหมืองบนลานหิน เสียงค้อนดังทั้งวัน ปากเหมืองเรืองแสงจาง ๆ ตอนกลางคืน' },
     thornwatch: { name: 'ธอร์นวอตช์', size: 'village', ruler: 'guild', leader: 'ผู้ดูแลค่ายของสมาคม', land: 8, cheap: ['fur', 'herbs', 'wood'], dear: ['salt', 'potion', 'cloth'],
       text: 'ค่ายรั้วไม้ที่ปากช่องเขาตะวันออก จุดพักสุดท้ายของนายพรานและนักสำรวจก่อนเข้าป่าใหญ่' },
-    vinehollow: { name: 'หมู่บ้านไวน์ฮอลโลว์', size: 'village', ruler: 'temple', leader: 'นักบวชผู้ดูแลศาลเจ้า', land: 12, cheap: ['wine', 'food'], dear: ['fish', 'cloth'],
+    vinehollow: { name: 'หมู่บ้านไวน์ฮอลโลว์', size: 'village', farmland: true, ruler: 'temple', leader: 'นักบวชผู้ดูแลศาลเจ้า', land: 12, cheap: ['wine', 'food'], dear: ['fish', 'cloth'],
       text: 'หมู่บ้านไร่องุ่นบนดินแดงทางใต้ มีบ่อน้ำร้อนข้างศาลเจ้าเก่า ไอน้ำลอยขึ้นทุกเช้า' }
   };
   /* v97.72 · people you meet in the new places: [name, role, lines] (lines may use {name} for the hero) */
@@ -156,7 +157,7 @@
           return `<tr><td>${GOODS[k]} ${tag}</td><td style="text-align:right">${buyPrice(id, k)}</td><td style="text-align:right">${sellPrice(id, k)}</td><td style="text-align:center">${have}</td>
             <td><button data-k="${k}" data-n="1">ซื้อ 1</button><button data-k="${k}" data-n="5">ซื้อ 5</button><button data-k="${k}" data-n="-1" ${have ? '' : 'disabled'}>ขาย 1</button><button data-k="${k}" data-n="-99" ${have ? '' : 'disabled'}>ขายหมด</button></td></tr>` }).join('');
         d.innerHTML = `<div style="width:min(760px,96vw);max-height:92vh;overflow:auto;padding:16px 18px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c">
-          <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button><h2 style="margin:0 0 4px;font:800 22px Georgia,'Noto Sans Thai',serif">🛒 ตลาดสินค้า · ${T.name}</h2>
+          <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button><h2 style="margin:0 0 4px;font:800 22px Georgia,'Noto Sans Thai',serif"><img src="assets/icons/menu/trade.webp" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px">ตลาดสินค้า · ${T.name}</h2>
           <p style="margin:0 0 10px;font-size:13px;color:#6a5030">ซื้อของที่เมืองนี้ผลิตเอง แล้วไปขายเมืองที่ขาดแคลน · ขายได้ 80% ของราคาท้องถิ่น · 💰 ${S.gold} · เกวียน ${load(S)}/${cargoMax(S)}${escorted(S) ? ' · 🛡 มีคนคุ้มกันถึงวันที่ ' + S.escortUntil : ''}</p>${news(id) ? `<p style="margin:0 0 8px;font-size:13px;color:#7a3a10">${news(id)}</p>` : ''}
           <div style="margin:0 0 8px">${WAGON[S.wagon || 0] ? `<button data-w style="margin:2px;padding:5px 10px;border-radius:8px;border:1px solid #7a4b06;background:#e8d29a;font:600 12.5px inherit;font-family:inherit;cursor:pointer">🛒 ซื้อ${WAGON[S.wagon || 0][1]} (จุ ${WAGON[S.wagon || 0][2]}) ${WAGON[S.wagon || 0][0]}💰</button>` : ''}<button data-e style="margin:2px;padding:5px 10px;border-radius:8px;border:1px solid #7a4b06;background:#e8d29a;font:600 12.5px inherit;font-family:inherit;cursor:pointer">🛡 จ้างคุ้มกัน ${ESCORT.days} วัน ${ESCORT.cost}💰</button></div>
           <table style="width:100%;border-collapse:collapse;font-size:13.5px"><tr style="text-align:left;color:#7a6040"><th>สินค้า</th><th style="text-align:right">ซื้อ</th><th style="text-align:right">ขาย</th><th>มี</th><th></th></tr>${rows}</table></div>`;

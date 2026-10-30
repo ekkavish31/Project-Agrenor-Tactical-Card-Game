@@ -139,7 +139,10 @@
   const leads = () => { try { return JSON.parse(localStorage.getItem(LEADS) || '{}') || {} } catch (e) { return {} } };
   function addLead(id, src, pick) { const L = leads(); L[id] = { ...(L[id] || {}), src: src || L[id]?.src || '', pick: pick ? 1 : (L[id]?.pick || 0) }; try { localStorage.setItem(LEADS, JSON.stringify(L)) } catch (e) { } }
   function clearPick(id) { const L = leads(); if (L[id]) { L[id].pick = 0; try { localStorage.setItem(LEADS, JSON.stringify(L)) } catch (e) { } } }
-  const api = { leads, addLead, clearPick, KEY, WORLD, RATE, DAY, LATE, MAX_ACTIVE, MAX_HP, game, commit, inGame, now, advance, setTime, tick, sleep, label, period, coins, addCoins, spendCoins, heroName, deck, unitDeck, bind, world, writeWorld, flush: commit };
+  /* v97.76 · the season of a day (28 days each from day 1 · js/garden.js uses the same calendar): [key, name, icon] */
+  const SEASONS = [['spring', 'ฤดูใบไม้ผลิ', '🌸'], ['summer', 'ฤดูร้อน', '☀'], ['autumn', 'ฤดูใบไม้ร่วง', '🍂'], ['winter', 'ฤดูหนาว', '❄']];
+  const season = d => SEASONS[Math.floor((Math.max(1, d || game().day || 1) - 1) / 28) % 4];
+  const api = { season, leads, addLead, clearPick, KEY, WORLD, RATE, DAY, LATE, MAX_ACTIVE, MAX_HP, game, commit, inGame, now, advance, setTime, tick, sleep, label, period, coins, addCoins, spendCoins, heroName, deck, unitDeck, bind, world, writeWorld, flush: commit };
   root.WorldState = api;
   // index.html: offer the live save to the pages it opens in frames
   if (local()) root.GameHost = local();
