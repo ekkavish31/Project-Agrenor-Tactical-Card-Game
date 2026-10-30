@@ -18,6 +18,10 @@
     eye: { name: 'สายข่าวพ่อค้า', rank2: 'หัวหน้าสายข่าว', icon: '☾', body: 'merchants', jobs: ['rogue'], duty: 'townVisits', n: 1, dutyText: 'แวะเมืองอื่น 1 ครั้งต่อสัปดาห์' }
   };
   const PAY = [40, 70];
+  /* v97.57 · what each office gives besides pay (rank 2 doubles it): watch — fewer ambushes near Fernvale · hunter — food after a win ·
+     magus — guild contracts pay more · warden — prayer also mends the party · eye — goods sell for more */
+  const PERK = { watch: 'ถูกซุ่มโจมตีใกล้เฟิร์นเวลน้อยลง 20%', hunter: 'ได้เสบียง +1 ทุกครั้งที่ชนะการต่อสู้', magus: 'ค่าจ้างงานกิลด์ +15%', warden: 'ภาวนาแล้วเพื่อนในทีมฟื้น HP 30% ด้วย', eye: 'ขายสินค้าได้ราคาดีขึ้น 5%' };
+  const perk = (S, id) => S?.office?.id === id ? S.office.rank : 0;
   const game = () => { try { return root.WorldState?.game?.() } catch (e) { return null } };
   const today = () => game()?.day || 1;
   const counter = (S, k) => k === 'contracts' ? (S.guild?.done || 0) : (S[k] || 0);
@@ -52,8 +56,8 @@
       const btn = (a, l, dis, t) => `<button data-a="${a}" ${dis ? 'disabled' : ''} title="${t || ''}" style="margin:3px;padding:6px 11px;border-radius:8px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:600 13px inherit;font-family:inherit;cursor:pointer;${dis ? 'opacity:.45;cursor:default' : ''}">${l}</button>`;
       const draw = note => {
         const o = S.office, pr = progress(S), F = root.Factions;
-        const cur = o ? (() => { const O = OFFICES[o.id], w2 = why(S, o.id, 2); return `<div style="padding:10px;border-radius:12px;background:#eef6e0cc;border:2px solid #5a9a4a;margin:8px 0"><b>${O.icon} ${o.rank === 2 ? O.rank2 : O.name}</b> <small>· ตั้งแต่วันที่ ${o.since} · เงินเดือน ${PAY[o.rank - 1]} 💰/สัปดาห์</small><div style="font-size:13px">หน้าที่: ${O.dutyText} · สัปดาห์นี้ ${pr.done}/${pr.n} · เหลือ ${pr.daysLeft} วัน${o.missed ? ' · <b style="color:#a0442a">เตือนแล้ว ' + o.missed + ' ครั้ง</b>' : ''}</div>${o.rank < 2 ? btn('up', '⬆ ขอเลื่อนเป็น' + O.rank2, !!w2, w2) : ''}${btn('quit', '✕ ลาออก')}</div>` })() : '';
-        const rows = Object.entries(OFFICES).map(([id, O]) => { const w = why(S, id); return `<div style="padding:9px 10px;border-radius:12px;background:#fff8;border:2px solid #b08a4a44;margin:6px 0"><b>${O.icon} ${O.name}</b> <small style="color:#7a6040">· ${F?.FACTIONS[O.body]?.icon || ''} ${F?.FACTIONS[O.body]?.name || O.body} · ${O.dutyText} · ${PAY[0]}→${PAY[1]} 💰/สัปดาห์</small><br>${S.office ? '' : btn('take:' + id, 'รับตำแหน่ง', !!w)} <small style="color:${w ? '#a0442a' : '#3a7a2a'}">${w || '✔ คุณสมบัติครบ'}</small></div>` }).join('');
+        const cur = o ? (() => { const O = OFFICES[o.id], w2 = why(S, o.id, 2); return `<div style="padding:10px;border-radius:12px;background:#eef6e0cc;border:2px solid #5a9a4a;margin:8px 0"><b>${O.icon} ${o.rank === 2 ? O.rank2 : O.name}</b> <small>· ตั้งแต่วันที่ ${o.since} · เงินเดือน ${PAY[o.rank - 1]} 💰/สัปดาห์</small><div style="font-size:13px">✦ สิทธิพิเศษ: ${PERK[o.id]}${o.rank === 2 ? ' (ขั้น 2 ได้สองเท่า)' : ''}</div><div style="font-size:13px">หน้าที่: ${O.dutyText} · สัปดาห์นี้ ${pr.done}/${pr.n} · เหลือ ${pr.daysLeft} วัน${o.missed ? ' · <b style="color:#a0442a">เตือนแล้ว ' + o.missed + ' ครั้ง</b>' : ''}</div>${o.rank < 2 ? btn('up', '⬆ ขอเลื่อนเป็น' + O.rank2, !!w2, w2) : ''}${btn('quit', '✕ ลาออก')}</div>` })() : '';
+        const rows = Object.entries(OFFICES).map(([id, O]) => { const w = why(S, id); return `<div style="padding:9px 10px;border-radius:12px;background:#fff8;border:2px solid #b08a4a44;margin:6px 0"><b>${O.icon} ${O.name}</b> <small style="color:#7a6040">· ${F?.FACTIONS[O.body]?.icon || ''} ${F?.FACTIONS[O.body]?.name || O.body} · ${O.dutyText} · ${PAY[0]}→${PAY[1]} 💰/สัปดาห์ · ✦ ${PERK[id]}</small><br>${S.office ? '' : btn('take:' + id, 'รับตำแหน่ง', !!w)} <small style="color:${w ? '#a0442a' : '#3a7a2a'}">${w || '✔ คุณสมบัติครบ'}</small></div>` }).join('');
         d.innerHTML = `<div style="width:min(640px,96vw);max-height:92vh;overflow:auto;padding:16px 18px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c">
           <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button><h2 style="margin:0 0 4px;font:800 22px Georgia,'Noto Sans Thai',serif">🏛 รับราชการ</h2>
           <p style="margin:0 0 6px;font-size:13px;color:#6a5030">ตำแหน่งตามอาชีพ · ต้องเลเวลอาชีพ 2 และชื่อเสียง "เป็นมิตร" กับหน่วยงาน · ทำหน้าที่ครบสัปดาห์ได้เงินเดือนและชื่อเสียง · ขาดสองสัปดาห์ติดถูกปลด · ทำได้ทีละตำแหน่ง</p>
@@ -69,6 +73,6 @@
         onChange?.(); draw(note) };
     });
   }
-  root.Offices = { OFFICES, PAY, why, take, promote, resign, settle, progress, panel };
+  root.Offices = { OFFICES, PAY, PERK, perk, why, take, promote, resign, settle, progress, panel };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.Offices;
 })(typeof window !== 'undefined' ? window : globalThis);

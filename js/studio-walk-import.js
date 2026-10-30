@@ -34,6 +34,9 @@
  function transform(f){let ff=frames(),w=Math.max(...ff.map(x=>x.w)),h=Math.max(...ff.map(x=>x.h)),scale=(f.baseScale??Math.min(368/w,346/h))*number(el('scale').value,.5,1.5,1)*number(f.scale,.25,2,1);return {scale,x:(384-f.w*scale)/2+number(el('x').value,-384,384,0)+f.dx,y:360-(f.baseScale===1?360:f.h)*scale+number(el('y').value,-384,384,0)+f.dy}}
  function output(f){if(outputCache.has(f.key))return outputCache.get(f.key);let {scale,x,y}=transform(f),c=document.createElement('canvas');c.width=c.height=384;let g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(f.raw,x,y,f.w*scale,f.h*scale);outputCache.set(f.key,c);return c}
  function checkClipping(){let bad=[];for(let [index,f]of frames().entries()){let {scale,x:x0,y:y0}=transform(f),d=f.raw.getContext('2d').getImageData(0,0,f.w,f.h).data,clipped=false;for(let y=0;y<f.h&&!clipped;y++)for(let x=0;x<f.w;x++)if(d[(y*f.w+x)*4+3]>32&&(x0+x*scale<0||x0+(x+1)*scale>384||y0+y*scale<0||y0+(y+1)*scale>384)){clipped=true;break}if(clipped)bad.push(index+1)}return bad}
+ // v97.60 · art that runs past the 384 canvas used to block the save outright (a pose drawn low only needed a few px of drag);
+ // now the part outside is cut off after one confirm
+ function clipOk(){let bad=checkClipping();if(!bad.length)return true;if(confirm('ภาพล้นผืนในเฟรม '+bad.join(', ')+' · ส่วนที่ล้นขอบจะถูกตัดออก บันทึกต่อหรือไม่?'))return true;message('ยังไม่บันทึก · ภาพล้นผืนในเฟรม '+bad.join(', ')+' ลดขนาดหรือขยับกลับก่อน');return false}
  function selectFrame(f){playing=false;previewIndex=order.indexOf(f.key);el('play').textContent='เล่น';el('order').querySelectorAll('.wi-frame').forEach(box=>box.classList.toggle('selected',box.dataset.key===f.key))}
  function drawUI(){
   if(drawingUI)return;drawingUI=true;try{
@@ -69,7 +72,7 @@
   finally{setBusy(false);drawUI()}
  }
  const HERO_POSES=['walk','idle','windup','strike','guard','hit','down'],heroPose=()=>targetClip&&(targetClip.entity==='hero'||String(targetClip.id).startsWith('runtime:hero:'))&&HERO_POSES.includes(targetClip.action)?targetClip.action:null;
- async function save(){if(saving||!order.length)return;if(targetClip&&!heroPose())return saveGeneric();const action=heroPose()||'walk';await saveDraft().catch(e=>message(e.message));let clipped=checkClipping();if(clipped.length){message('ภาพออกนอกผืนในเฟรม '+clipped.join(', ')+' ลดขนาดหรือขยับให้ครบก่อนบันทึก');return}
+ async function save(){if(saving||!order.length)return;if(targetClip&&!heroPose())return saveGeneric();const action=heroPose()||'walk';await saveDraft().catch(e=>message(e.message));if(!clipOk())return;
   let canvases=frames().map(output);setBusy(true);let stamp=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),direction=el('dir').value,ff=frames(),newAssets=[],blobs=[],config={version:1,canvas:[384,384],anchor:[.5,.9375],loop:true,createdAt:new Date().toISOString(),frames:[]};
   if(action!=='walk')config.loop=['idle','guard'].includes(action);
   for(let [i,f]of ff.entries()){let path=`assets/tactics/imported/${action}-${direction.toLowerCase()}-${stamp}/frame-${String(i+1).padStart(2,'0')}.png`,id=`studio-hero-${direction.toLowerCase()}-${action}-${stamp}-${i+1}`,blob=await new Promise((res,rej)=>canvases[i].toBlob(b=>b?res(b):rej(new Error('สร้าง PNG ไม่ได้')),'image/png'));blobs.push({path,blob});newAssets.push({id,file:path,category:'tactics-hero',status:'final',size:[384,384],transparent:true,view:direction,pose:action,frame:i+1,frames:ff.length,ms:f.ms,pivot:[.5,.9375],...(action==='walk'?{studioImportedWalk:true}:{studioImportedPose:true}),studioOwner:{id:'hero',name:'ตัวหลัก · Hero',group:'characters'},artRevision:stamp});config.frames.push({assetId:id,src:path,ms:f.ms})}
@@ -143,14 +146,16 @@
  el('project-open').onclick=()=>el('project-file').click();el('project-file').onchange=async()=>{try{let file=el('project-file').files[0];if(file){if(file.size>100*1024*1024)throw new Error('ไฟล์งานใหญ่เกิน 100 MB');await restoreDraft(JSON.parse(await file.text()))}}catch(e){message('เปิดไฟล์งานไม่สำเร็จ: '+e.message)}finally{el('project-file').value=''}};
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&dirty&&sheets.length)saveDraft().catch(()=>{})});
 
+ // a catalog frame drawn on the 384×384 editing canvas, the same way loadCurrent places it
+ function renderClipFrame(f,im){let raw=document.createElement('canvas');raw.width=raw.height=384;let g=raw.getContext('2d'),sw=f.size[0],sh=f.size[1],sc=Math.min(368/sw,346/sh),x=192-sw*sc*f.pivot[0],y=360-sh*sc*f.pivot[1];if(byId(f.assetId)?.studioImportedWalk||(!f.crop&&sw===384&&sh===384)){sc=1;x=0;y=0}if(im){g.save();if(f.flip){g.translate(384,0);g.scale(-1,1)}if(f.crop)g.drawImage(im,...f.crop,x,y,sw*sc,sh*sc);else g.drawImage(im,x,y,sw*sc,sh*sc);g.restore()}return {raw,x,y,sw,sh,sc}}
  async function loadCurrent(c,images){
   clearTimeout(draftTimer);targetClip=copy(c);anchor=null;alignUndo=null;picking=false;sheets=[];order=[];el('dir').innerHTML=['SE','SW','NE','NW','E','W','S','N','FRONT','TOP','—'].map(d=>`<option>${d}</option>`).join('');el('dir').value=c.view;for(let id of ['scale','x','y'])el(id).value=id==='scale'?1:0;el('ms').value=c.frames[0]?.ms||80;el('mirror').checked=M.studioWalkMirrors?.[opposite[c.view]]===c.view;
   let cols=Math.min(8,c.frames.length),sheetCanvas=document.createElement('canvas');sheetCanvas.width=cols*384;sheetCanvas.height=Math.ceil(c.frames.length/cols)*384;let sheet={id:++serial,name:'เฟรมปัจจุบัน · '+c.action+' '+c.view,image:sheetCanvas,cols,rows:Math.ceil(c.frames.length/cols),smart:false,fromGame:true,cells:[]};
-  c.frames.forEach((f,i)=>{let raw=document.createElement('canvas');raw.width=raw.height=384;let g=raw.getContext('2d'),im=images[i],sw=f.size[0],sh=f.size[1],sc=Math.min(368/sw,346/sh),x=192-sw*sc*f.pivot[0],y=360-sh*sc*f.pivot[1];if(byId(f.assetId)?.studioImportedWalk||(!f.crop&&sw===384&&sh===384)){sc=1;x=0;y=0}if(im){g.save();if(f.flip){g.translate(384,0);g.scale(-1,1)}if(f.crop)g.drawImage(im,...f.crop,x,y,sw*sc,sh*sc);else g.drawImage(im,x,y,sw*sc,sh*sc);g.restore()}let key=sheet.id+':'+i,originalRaw=document.createElement('canvas');originalRaw.width=originalRaw.height=384;originalRaw.getContext('2d').drawImage(raw,0,0);let frame={key,sheet:sheet.id,index:i,raw,originalRaw,w:384,h:384,ms:f.ms,dx:0,dy:0,scale:1,baseScale:1,sourceFrame:{...copy(f),loadRect:[x,y,sw*sc,sh*sc]},erases:[],eraseRedo:[],empty:!im};sheet.cells.push(frame);order.push(key);sheetCanvas.getContext('2d').drawImage(raw,(i%cols)*384,Math.floor(i/cols)*384)});
+  c.frames.forEach((f,i)=>{let im=images[i],{raw,x,y,sw,sh,sc}=renderClipFrame(f,im);let key=sheet.id+':'+i,originalRaw=document.createElement('canvas');originalRaw.width=originalRaw.height=384;originalRaw.getContext('2d').drawImage(raw,0,0);let frame={key,sheet:sheet.id,index:i,raw,originalRaw,w:384,h:384,ms:f.ms,dx:0,dy:0,scale:1,baseScale:1,sourceFrame:{...copy(f),loadRect:[x,y,sw*sc,sh*sc]},erases:[],eraseRedo:[],empty:!im};sheet.cells.push(frame);order.push(key);sheetCanvas.getContext('2d').drawImage(raw,(i%cols)*384,Math.floor(i/cols)*384)});
   sheet.source=sheetCanvas.toDataURL('image/png');sheets=[sheet];el('draft-status').textContent='ชุดในเกม · ไม่มีการแก้ไข';dirty=false;previewIndex=0;playing=true;started=performance.now();drawUI();message('โหลดชุดปัจจุบันแล้ว · เลือกเฟรมเพื่อแก้ตำแหน่ง ขนาด เวลา หรือลบเศษภาพ');
  }
  async function saveGeneric(){
-  if(order.length!==targetClip.frames.length){message('ชุดนี้ต้องคงจำนวน '+targetClip.frames.length+' เฟรมตามโครงเกมเดิม · แทนภาพและเรียงลำดับได้');return}await saveDraft().catch(e=>message(e.message));if(checkClipping().length){message('มีภาพล้นผืน กรุณาลดขนาดหรือขยับก่อนบันทึก');return}
+  if(order.length!==targetClip.frames.length){message('ชุดนี้ต้องคงจำนวน '+targetClip.frames.length+' เฟรมตามโครงเกมเดิม · แทนภาพและเรียงลำดับได้');return}await saveDraft().catch(e=>message(e.message));if(!clipOk())return;
   setBusy(true);let before=copy(M),pendingBefore=new Map(pending),extraBefore=new Map(window.AnimationReviewExtraFiles),newUrls=[];
   try{let groups=new Map(),ff=frames(),stamp=Date.now().toString(36),history=[];
    for(let [i,dest]of targetClip.frames.entries()){let a=byId(dest.assetId);if(!a)throw new Error('ไม่พบช่องภาพ '+dest.assetId);if(!groups.has(a.id)){let im=await loadImage(await(await fetch(await srcOf(a.file))).blob()),cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;cv.getContext('2d').drawImage(im,0,0);groups.set(a.id,{a,cv,original:await new Promise(r=>cv.toBlob(r)),seen:new Map()})}let group=groups.get(a.id),f=ff[i],out=output(f),source=f.sourceFrame||dest,rect=source.loadRect||[0,0,384,384],native=document.createElement('canvas');native.width=out.width;native.height=out.height;let ng=native.getContext('2d');if(dest.flip){ng.translate(384,0);ng.scale(-1,1)}ng.drawImage(out,0,0);let crop=dest.crop||[0,0,group.cv.width,group.cv.height],key=crop.join(','),hash=native.toDataURL();if(group.seen.has(key)&&group.seen.get(key)!==hash)throw new Error('เฟรม '+(i+1)+' ใช้ช่องภาพซ้ำกับเฟรมอื่น กรุณาปรับภาพของช่องเดียวกันให้ตรงกัน');group.seen.set(key,hash);let g=group.cv.getContext('2d');g.clearRect(...crop);let rr=!!dest.flip!==!!source.flip?[384-rect[0]-rect[2],rect[1],rect[2],rect[3]]:rect;g.drawImage(native,...rr,...crop);}
@@ -173,6 +178,7 @@
  function alignHead(){let f=cur();if(!f)return;let d=pixels(f),top=-1;for(let y=0;y<384&&top<0;y++)for(let x=0;x<384;x++)if(d[(y*384+x)*4+3]>40){top=y;break}if(top<0){message('เฟรมนี้ไม่มีภาพ');return}let sx=0,c=0;for(let y=top;y<Math.min(384,top+28);y++)for(let x=0;x<384;x++)if(d[(y*384+x)*4+3]>40){sx+=x;c++}anchor={x:Math.round(sx/c),y:Math.min(383,top+22),key:f.key};alignToAnchor('จัดหัวให้ตรงกันแล้ว')}
  // Template match: a patch around the anchor in the reference frame, searched in each other frame (premultiplied RGB + alpha, coarse then fine).
  function alignToAnchor(label='จัดจุดที่เลือกให้ตรงกันแล้ว'){if(!anchor)return;let ref=byKey(anchor.key),ff=frames();if(!ref||!ff.includes(ref)){message('เฟรมต้นแบบถูกนำออกแล้ว เลือกจุดใหม่');return}
+  if(ff.length===1)return alignToClip(ref,label);
   let ax=el('al-x').checked,ay=el('al-y').checked;if(!ax&&!ay){message('เลือกแนวนอนหรือแนวตั้งอย่างน้อยหนึ่งแบบ');return}
   keepUndo();outputCache.clear();let R=pixels(ref),X=Math.round(anchor.x),Y=Math.round(anchor.y),P=24,S=80,n=0;
   const px=(d,x,y,o)=>{if(x<0||y<0||x>383||y>383)return 0;let i=(y*384+x)*4,a=d[i+3];return o===3?a:d[i+o]*a/255};
@@ -183,6 +189,23 @@
    let [cx,cy]=best;bc=Infinity;for(let oy=cy-(ay?2:0);oy<=cy+(ay?2:0);oy++)for(let ox=cx-(ax?2:0);ox<=cx+(ax?2:0);ox++){let c=cost(D,ox,oy,1);if(c<bc){bc=c;best=[ox,oy]}}
    let nx=clampN(f.dx-best[0]),ny=clampN(f.dy-best[1]);if(nx!==f.dx||ny!==f.dy){f.dx=nx;f.dy=ny;n++}outputCache.delete(f.key)}
   finishAlign(n,label+' (ต้นแบบ: เฟรม '+(ff.indexOf(ref)+1)+')')}
+ // v97.60 · a clip with one frame has nothing to line up inside it, so the chosen point is matched against the same
+ // character's idle (or walk) in the same direction — the pose then stays put when the game switches into it
+ function refClip(){const c=targetClip;if(!c)return null;const all=AnimationReviewModel.catalog(M).filter(x=>x.id!==c.id&&x.entity===c.entity&&x.view===c.view&&x.frames.length);return all.find(x=>x.action==='idle')||all.find(x=>x.action==='walk')||null}
+ async function alignToClip(f,label){const rc=refClip();if(!rc){message('ชุดนี้มีเฟรมเดียว และไม่พบท่ายืนหรือท่าเดินทิศ '+(targetClip?.view||'')+' ไว้เทียบ');return}
+  let im;try{const src=await srcOf(rc.frames[0].file);im=await loadImage(await(await fetch(src)).blob())}catch(e){message('โหลดท่าต้นแบบไม่ได้: '+e.message);return}
+  let ax=el('al-x').checked,ay=el('al-y').checked;if(!ax&&!ay){message('เลือกแนวนอนหรือแนวตั้งอย่างน้อยหนึ่งแบบ');return}
+  const D=renderClipFrame(rc.frames[0],im).raw.getContext('2d').getImageData(0,0,384,384).data,best=matchPatch(pixels(f),D,Math.round(anchor.x),Math.round(anchor.y),ax,ay);
+  keepUndo();let nx=clampN(f.dx+best[0]),ny=clampN(f.dy+best[1]),n=+(nx!==f.dx||ny!==f.dy);f.dx=nx;f.dy=ny;anchor={...anchor,x:anchor.x+best[0],y:anchor.y+best[1]};outputCache.delete(f.key);
+  finishAlign(n,label+' (เทียบกับท่า '+rc.action+' '+rc.view+' เฟรม 1 · เลื่อน '+best[0]+', '+best[1]+' px)')}
+ // where the patch around (X,Y) in R sits in D: [ox,oy] so that R(X,Y) ≈ D(X+ox,Y+oy)
+ function matchPatch(R,D,X,Y,ax,ay,P=24,S=80){
+  const px=(d,x,y,o)=>{if(x<0||y<0||x>383||y>383)return 0;let i=(y*384+x)*4,a=d[i+3];return o===3?a:d[i+o]*a/255};
+  const ref4=[];for(let y=-P;y<=P;y++)for(let x=-P;x<=P;x++)ref4.push(x,y,px(R,X+x,Y+y,0),px(R,X+x,Y+y,1),px(R,X+x,Y+y,2),px(R,X+x,Y+y,3));
+  const cost=(ox,oy,step)=>{let s=0;for(let k=0;k<ref4.length;k+=6*step){let x=X+ref4[k]+ox,y=Y+ref4[k+1]+oy;s+=Math.abs(ref4[k+2]-px(D,x,y,0))+Math.abs(ref4[k+3]-px(D,x,y,1))+Math.abs(ref4[k+4]-px(D,x,y,2))+2*Math.abs(ref4[k+5]-px(D,x,y,3))}return s};
+  let best=[0,0],bc=Infinity;for(let oy=ay?-S:0;oy<=(ay?S:0);oy+=2)for(let ox=ax?-S:0;ox<=(ax?S:0);ox+=2){let c=cost(ox,oy,5);if(c<bc){bc=c;best=[ox,oy]}}
+  let [cx,cy]=best;bc=Infinity;for(let oy=cy-(ay?2:0);oy<=cy+(ay?2:0);oy++)for(let ox=cx-(ax?2:0);ox<=cx+(ax?2:0);ox++){let c=cost(ox,oy,1);if(c<bc){bc=c;best=[ox,oy]}}
+  return best}
  // v38n · procedural motion controls for the clip being edited (key = clip canonical id)
  function procUI(){const P=window.ProcMotion,k=targetClip?.canonical;el('proc').hidden=!P||!k;if(!P||!k)return;const raw=P.raw(k),def=P.defaultFor({frames:frames().length,pose:targetClip.action});
   el('proc-type').innerHTML=`<option value="auto">อัตโนมัติ (${def?P.TYPES[def.type]:'ไม่ขยับ'})</option>`+Object.entries(P.TYPES).map(([t,l])=>`<option value="${t}">${l}</option>`).join('');el('proc-type').value=raw?raw.type:'auto';

@@ -14,4 +14,5 @@ g.day = 22; m = O.settle(S); assert.equal(S.office, null, 'two weeks missed: dis
 O.take(S, 'watch'); assert.equal(O.promote(S), false, 'rank 2 needs job Lv.4 and standing 50');
 g.village.character.jobs.warrior.lv = 4; F.add('village', 40); assert.ok(O.promote(S)); assert.equal(S.office.rank, 2);
 S.battles += 2; g.day = 29; O.settle(S); assert.equal(S.gold, 40 + 70, 'rank 2 pays 70');
-console.log('offices: 15 checks passed');
+assert.equal(O.perk(S, 'watch'), 2, 'rank 2 doubles the perk'); assert.equal(O.perk(S, 'magus'), 0); assert.ok(O.PERK.eye);
+console.log('offices: 18 checks passed');

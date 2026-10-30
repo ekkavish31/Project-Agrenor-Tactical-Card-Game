@@ -87,7 +87,7 @@
   /* T6 phase 2: losing a fight (or fleeing) on the road costs part of the cargo — little when escorted */
   function loseCargo(S, share) { const out = []; for (const k of Object.keys(S.cargo || {})) { const n = Math.ceil(S.cargo[k] * share); if (!n) continue; S.cargo[k] -= n; if (S.cargo[k] <= 0) delete S.cargo[k]; out.push(GOODS[k] + ' ' + n) } return out }
   const buyPrice = (id, k) => price(id, k, TRADE[k]);
-  const sellPrice = (id, k) => { const T = SETTLEMENTS[id]; if (!T) return 0; const local = T.cheap.includes(k) ? .75 : T.dear.includes(k) ? 1.35 : 1; return Math.max(1, Math.floor(TRADE[k] * local * swing(id, k) * (policy(id) === 'trade' ? 1.1 : 1) * .8)) };
+  const sellPrice = (id, k) => { const T = SETTLEMENTS[id]; if (!T) return 0; const local = T.cheap.includes(k) ? .75 : T.dear.includes(k) ? 1.35 : 1; return Math.max(1, Math.floor(TRADE[k] * local * swing(id, k) * (policy(id) === 'trade' ? 1.1 : 1) * (1 + .05 * (root.Offices?.perk?.((() => { try { return root.WorldState?.world?.() } catch (e) { return null } })(), 'eye') || 0)) * .8)) };
   const load = S => Object.values(S.cargo || {}).reduce((a, n) => a + n, 0);
   function trade(id, S, k, n) {   /* n > 0 buy, n < 0 sell · returns the gold moved or 0 */
     S.cargo ||= {}; if (!TRADE[k] || !SETTLEMENTS[id]) return 0;
