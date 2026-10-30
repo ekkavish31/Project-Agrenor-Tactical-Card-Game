@@ -23,25 +23,26 @@
     if (act === 'sleep') { g.save(); g.fillStyle = '#f2f2ff'; g.font = `700 ${12 * s}px system-ui`; const k = (t * .001 + ph) % 1; g.globalAlpha = 1 - k; g.fillText('z', x + 12 * s, y - 80 * s - k * 16); g.restore() }
     if (act === 'play') { g.save(); g.fillStyle = '#ffe9a0'; g.font = `700 ${13 * s}px system-ui`; for (let i = 0; i < 2; i++) { const k = (t * .0007 + ph + i * .5) % 1; g.globalAlpha = 1 - k; g.fillText('♪', x + (10 + i * 6) * s + Math.sin(k * 6) * 6, y - 70 * s - k * 30) } g.restore() }
   }
-  /* v97.37 · picture-based people. look.sprite = 'bram' → assets/village-town/npc/bram/<se|sw|ne|nw>-<stand|walk1|walk2>.webp
-     (384×384, feet at y=372, true 4 directions, no mirroring). Falls back to the code-drawn figure until the standing picture has loaded. */
-  const SPR = {}, SPR_KEYS = ['stand', 'walk1', 'walk2'], SPR_DIRS = ['se', 'sw', 'ne', 'nw'];
+  /* v97.37 · picture-based people. look.sprite = 'bram' → assets/village-town/npc/bram/<se|sw|ne|nw>-<stand|walk1..walk4>.webp
+     (384×384, feet at y=372). v97.59: a direction without its own pictures uses the opposite one mirrored (SE←SW, NW←NE and back), so two directions are enough ·
+     walk frames: 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 0 = the standing picture with a bob.
+     Falls back to the code-drawn figure until a standing picture has loaded. */
+  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 2 }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0 } }, SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
   function sprites(name) {
-    let S = SPR[name]; if (S) return S; S = SPR[name] = {};
-    if (typeof Image === 'undefined') return S;
-    for (const d of SPR_DIRS) for (const k of SPR_KEYS) { const im = new Image(); im.src = 'assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp'; S[d + '-' + k] = im }
+    let S = SPR[name]; if (S) return S; S = SPR[name] = {}; const info = SPR_INFO[name]; if (!info || typeof Image === 'undefined') return S;
+    for (const d of info.dirs) for (const k of ['stand', ...Array.from({ length: info.walk }, (_, n) => 'walk' + (n + 1))]) { const im = new Image(); im.src = 'assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp'; S[d + '-' + k] = im }
     return S;
   }
   const ready = im => im && im.complete && im.naturalWidth > 0;
+  function pic(S, d, k) { const own = S[d + '-' + k]; if (ready(own)) return { im: own, flip: false }; const m = S[MIR[d] + '-' + k]; return ready(m) ? { im: m, flip: true } : null }
   function spriteDraw(g, L, x, y, t, o) {
-    const S = sprites(L.sprite), d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
-    const stand = S[d + '-stand']; if (!ready(stand)) return false;
+    const S = sprites(L.sprite), info = SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
+    let P = pic(S, d, 'stand'); if (!P) return false;
     const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330;
-    let im = stand;
-    if (walking && act === '') { const p = t * .012 + ph, f = ((Math.round(p / (Math.PI / 2)) % 4) + 4) % 4, w = S[d + '-' + (f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand')]; if (ready(w)) im = w }
+    if (walking && act === '' && info.walk) { const p = t * .012 + ph, f = ((Math.round(p / (Math.PI / 2)) % 4) + 4) % 4, key = info.walk >= 4 ? 'walk' + (f + 1) : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, d, key); if (W) P = W }
     const bob = walking ? Math.abs(Math.sin(t * .012 + ph)) * 4 * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
     g.save(); g.fillStyle = 'rgba(20,20,20,.32)'; g.beginPath(); g.ellipse(x, y, 15 * s, 6 * s, 0, 0, 7); g.fill(); g.restore();
-    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); g.drawImage(im, -192 * k, -372 * k, 384 * k, 384 * k); g.restore();
+    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -372 * k, 384 * k, 384 * k); g.restore();
     fx(g, act, x, y, s, t, ph);
     return true;
   }
