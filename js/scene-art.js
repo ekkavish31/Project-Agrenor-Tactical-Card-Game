@@ -58,7 +58,7 @@
     g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
     g.fillStyle = 'rgba(110,60,170,.35)'; for (const [dx, dy, k] of [[-.3, .1, .22], [.25, -.25, .15], [.2, .35, .18], [-.1, -.45, .1]]) { g.beginPath(); g.arc(x + dx * r, y + dy * r, k * r, 0, TAU); g.fill() }
   }
-  const ELEMENTS = [ // Kaelam (js/elements.js): Elu light · Sylfae wind · Dephor water · Caelim chaos · Fren fire · Lutha plant · Yalm ice · Nytha night · Grat earth
+  const ELEMENTS = [ // Kaelam (js/elements.js): Elu light · Lutha wind · Fren water · Grat chaos · Caelim fire · Sylfae plant · Nytha ice · Dephor night · Yalm earth
     { h: 50, s: 95, l: 78, kind: 'spire' }, { h: 150, s: 60, l: 72, kind: 'tower' }, { h: 205, s: 85, l: 60, kind: 'dome' }, { h: 318, s: 70, l: 66, kind: 'spire' },
     { h: 16, s: 95, l: 58, kind: 'tower' }, { h: 105, s: 60, l: 52, kind: 'dome' }, { h: 192, s: 80, l: 82, kind: 'spire' }, { h: 250, s: 50, l: 48, kind: 'tower' }, { h: 32, s: 55, l: 48, kind: 'dome' }];
 
@@ -163,15 +163,15 @@
      a sky-high range walls Nor'Chorthal off from the great forest in the east, where the ancestors came from (ORIGIN). Placement of the other
      element lands is a proposal — edit this table only. x,y are 0..1 on the map (x: west→east, y: north→south). */
   const REGIONS = [
-    { e: 6, x: .4, y: .06, kind: 'snow' },     // Yalm ice — the cold north
-    { e: 1, x: .16, y: .16, kind: 'cliffs' },  // Sylfae wind — north-west highlands
+    { e: 6, x: .4, y: .06, kind: 'snow' },     // Nytha ice — the cold north
+    { e: 1, x: .16, y: .16, kind: 'cliffs' },  // Lutha wind — north-west highlands
     { e: 0, x: .6, y: .1, kind: 'plain' },     // Elu light — the bright northern plateau
-    { e: 3, x: .72, y: .2, kind: 'chaos' },    // Caelim chaos — a rift in the high range (v95.27: was lightning)
-    { e: 2, x: .03, y: .4, kind: 'islands' },  // Dephor water — the far western islands
-    { e: 8, x: .42, y: .36, kind: 'basin' },   // Grat earth — the Nor'Chorthal plain (humans: earth and water)
-    { e: 7, x: .18, y: .58, kind: 'shadow' },  // Nytha night — the south-west vale
-    { e: 4, x: .48, y: .66, kind: 'volcano' }, // Fren fire — the burning south
-    { e: 5, x: .27, y: .45, kind: 'forest' }]; // Lutha plant — a grove far out on the western plain, well away from the old forest (v95.27)
+    { e: 3, x: .72, y: .2, kind: 'chaos' },    // Grat chaos — a rift in the high range (v95.27: was lightning)
+    { e: 2, x: .03, y: .4, kind: 'islands' },  // Fren water — the far western islands
+    { e: 8, x: .42, y: .36, kind: 'basin' },   // Yalm earth — the Nor'Chorthal plain (humans: earth and water)
+    { e: 7, x: .18, y: .58, kind: 'shadow' },  // Dephor night — the south-west vale
+    { e: 4, x: .48, y: .66, kind: 'volcano' }, // Caelim fire — the burning south
+    { e: 5, x: .27, y: .45, kind: 'forest' }]; // Sylfae plant — a grove far out on the western plain, well away from the old forest (v95.27)
   const ORIGIN = { x: .94, y: .36 };
   function mapXY(w, h, x, y) { return { x: w * (.04 + x * .92), y: h * (.06 + y * .62) } }
   function pathOf(i, w, h) {
@@ -517,7 +517,7 @@
     // warm light falls on the land under it
     ridge(g, w, h, h * .5, h * .04, 101, '#7aa860'); ridge(g, w, h, h * .58, h * .04, 102, '#68984e');
     glow(g, ox, h * .58, w * .3, hsla(48, 100, 80), .35);
-    // farmers at work, a small fire shrine (Fren) with a flame offering
+    // farmers at work, a small fire shrine (Caelim) with a flame offering
     g.save(); g.translate(0, -h * .12); const fr = rng(103); for (let j = 0; j < 7; j++) { const x = w * (.1 + j * .12) + fr() * 20, y = h * (.72 + fr() * .06), bend = Math.sin(t * 2 + j) * 3; g.fillStyle = '#3a3020'; g.beginPath(); g.arc(x + bend, y - 22, 4, 0, TAU); g.fill(); g.strokeStyle = '#3a3020'; g.lineWidth = 4; g.beginPath(); g.moveTo(x, y); g.lineTo(x + bend, y - 18); g.stroke(); g.strokeStyle = '#d8b860'; g.lineWidth = 2; for (let q = 0; q < 5; q++) { g.beginPath(); g.moveTo(x - 30 + q * 14, y + 6); g.lineTo(x - 30 + q * 14 + Math.sin(t * 1.5 + q) * 2, y - 12); g.stroke() } }
     // children running along the field edge, a kite
     for (let j = 0; j < 3; j++) { const x = (w * .2 + ((t * 60 + j * 70) % (w * .7))), y = h * .66 + Math.abs(Math.sin(t * 9 + j)) * -4; g.fillStyle = '#3a2a1a'; g.beginPath(); g.arc(x, y - 16, 3.5, 0, TAU); g.fill(); g.strokeStyle = '#3a2a1a'; g.lineWidth = 3; g.beginPath(); g.moveTo(x, y - 12); g.lineTo(x, y - 4); g.moveTo(x, y - 4); g.lineTo(x - 3 + Math.sin(t * 14 + j) * 3, y + 2); g.moveTo(x, y - 4); g.lineTo(x + 3 - Math.sin(t * 14 + j) * 3, y + 2); g.stroke() }

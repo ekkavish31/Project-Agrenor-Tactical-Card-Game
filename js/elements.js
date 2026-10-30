@@ -1,8 +1,8 @@
-/* v95.13 · The 9 Kaelam elements of Agrenor + 1 secret element (Caelim = chaos, no longer lightning).
+/* v97.49 · The 9 Kaelam elements of Agrenor + 1 secret element (names re-mapped to Codex v10a: Caelim = fire, Grat = chaos).
    v94.02 · ex-header: Matchups follow what each element does to the other (not a simple cycle):
      attack ×1.3 when the attack's element is STRONG against the target's element · ×0.7 when the target's element is strong against it · else ×1.0
    Game ids stay the keys (cards, weapons, terrain, monsters keep working):
-     light = Elu · wind = Sylfae · water = Dephor · chaos = Caelim (old id 'lightning' is read as chaos) · fire = Fren · nature = Lutha · ice = Yalm · dark = Nytha · earth = Grat
+     light = Elu · wind = Lutha · water = Fren · chaos = Grat (old id 'lightning' is read as chaos) · fire = Caelim · nature = Sylfae · ice = Nytha · dark = Dephor · earth = Yalm  (v97.49: names follow the Codex v10a, docs/lore/source)
    Secret element: fusion (ผสาน · the primal element) ×1.1 against every wheel element and takes ×0.9 from them.
    Its name shows as "???" until the player has seen it (reveal(id)).
    ElementWheel.showChart() opens the element chart (used by the battle HUD and the village toolbar). */
@@ -10,9 +10,9 @@
   'use strict';
   const WHEEL = ['light', 'wind', 'water', 'chaos', 'fire', 'nature', 'ice', 'dark', 'earth'];
   const KAELAM = {
-    light: { k: 'Elu', th: 'แสง', col: '#f6e08a', icon: '☀' }, wind: { k: 'Sylfae', th: 'ลม', col: '#a8e6c8', icon: '🌀' }, water: { k: 'Dephor', th: 'น้ำ', col: '#6fb2ec', icon: '💧' },
-    chaos: { k: 'Caelim', th: 'โกลาหล', col: '#e06ab8', icon: '✷' }, fire: { k: 'Fren', th: 'ไฟ', col: '#ff8a5a', icon: '🔥' }, nature: { k: 'Lutha', th: 'พฤกษา', col: '#8fd06a', icon: '🌿' },
-    ice: { k: 'Yalm', th: 'น้ำแข็ง', col: '#bfe8ff', icon: '❄' }, dark: { k: 'Nytha', th: 'ราตรี', col: '#a88ad8', icon: '🌑' }, earth: { k: 'Grat', th: 'ผืนดิน', col: '#c9a46a', icon: '⛰' }
+    light: { k: 'Elu', th: 'แสง', col: '#f6e08a', icon: '☀' }, wind: { k: 'Lutha', th: 'ลม', col: '#a8e6c8', icon: '🌀' }, water: { k: 'Fren', th: 'น้ำ', col: '#6fb2ec', icon: '💧' },
+    chaos: { k: 'Grat', th: 'โกลาหล', col: '#e06ab8', icon: '✷' }, fire: { k: 'Caelim', th: 'ไฟ', col: '#ff8a5a', icon: '🔥' }, nature: { k: 'Sylfae', th: 'พฤกษา', col: '#8fd06a', icon: '🌿' },
+    ice: { k: 'Nytha', th: 'น้ำแข็ง', col: '#bfe8ff', icon: '❄' }, dark: { k: 'Dephor', th: 'ราตรี', col: '#a88ad8', icon: '🌑' }, earth: { k: 'Yalm', th: 'ผืนดิน', col: '#c9a46a', icon: '⛰' }
   };
   /* strong against (with the reason, shown in the chart and the tips) */
   const STRONG = {
