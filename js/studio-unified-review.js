@@ -26,6 +26,27 @@
  document.getElementById('wi-clear').hidden=true;
  footer.replaceChildren(saved,exportDetails,fileDetails,save);
  const mirror=document.createElement('details');mirror.id='ur-mirror';mirror.innerHTML='<summary>ใช้ทิศคู่กลับด้าน</summary><div></div>';for(let id of ['wi-mirror-label','wi-use-mirror'])mirror.lastElementChild.append(document.getElementById(id));settings.append(mirror);
+ /* v98.01 · layout: title + pickers in one row · left = big preview, review tools and a one-row frame strip · right = settings in tabs · save bar always visible.
+    Only existing elements are moved, so every handler stays. */
+ {d.classList.add('ur-v2');const head=d.querySelector('.ur-head');head.firstElementChild.after(d.querySelector('.ur-toolbar'));
+  const top=q('editor').querySelector('.wi-top'),left=document.createElement('div');left.className='ur-left';top.prepend(left);
+  let mrow=document.getElementById('wi-mirror-row');if(!mrow){mrow=document.createElement('div');mrow.id='wi-mirror-row';mrow.className='row'}
+  const order=document.getElementById('wi-order'),orderTitle=order.previousElementSibling;
+  left.append(preview.parentElement,document.getElementById('wi-message'),orderTitle,order);
+  const kids=[...settings.children],firstAlign=kids.find(c=>c.classList.contains('wi-align')&&!c.id),basic=kids.filter(c=>!c.classList.contains('wi-align')&&!c.classList.contains('ur-play-tools')&&c.id!=='ur-mirror');
+  const TABS=[['set','ทั้งชุด',basic],['align','จัดตำแหน่ง',[firstAlign]],['ghost','เงา · กลับด้าน',[document.getElementById('wi-flipscale')]],['proc','ขยับในเกม',[document.getElementById('wi-proc')]],['view','พรีวิว',[settings.querySelector('.ur-play-tools'),q('mirror')]],['import','นำเข้า',[q('import')]],['compare','เปรียบเทียบ',[q('compare')]]];
+  const nav=document.createElement('div');nav.className='ur-tabs';settings.replaceChildren(nav);const panels={};
+  for(const[id,label,els]of TABS){const b=document.createElement('button');b.type='button';b.dataset.tab=id;b.textContent=label;nav.append(b);const pnl=document.createElement('div');pnl.className='ur-tab';pnl.dataset.tab=id;pnl.hidden=true;for(const el of els)if(el)pnl.append(el);settings.append(pnl);panels[id]=pnl}
+  const show=id=>{if(!panels[id])id='set';for(const b of nav.children)b.classList.toggle('on',b.dataset.tab===id);for(const[k,pnl]of Object.entries(panels))pnl.hidden=k!==id;
+   // the import / compare sections only work while their <details> is open
+   if(q('import').open!==(id==='import'))q('import').open=id==='import';if(q('compare').open!==(id==='compare'))q('compare').open=id==='compare';try{localStorage.setItem('ur-tab',id)}catch(_){}};
+  nav.onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.tab)};
+  // review tools and the opposite-direction row sit under the tabs, always visible (the right column has room; the left keeps the preview and the frame strip)
+  const dock=document.createElement('div');dock.className='ur-dock';dock.append(q('editor').querySelector('.ur-review-tools'),mrow);settings.append(dock);
+  q('history').addEventListener('click',()=>show('compare'));
+  let saved='set';try{saved=localStorage.getItem('ur-tab')||'set'}catch(_){}show(saved==='import'||saved==='compare'?'set':saved);
+  // load() closes import / compare; keep the tab bar in step
+  for(const id of['import','compare'])q(id).addEventListener('toggle',()=>{const want=q(id).open;if(want&&panels[id].hidden)show(id);else if(!want&&!panels[id].hidden)show('set')})}
  let firstSource=true,lastDirty=false;
  function allClips(){return R.catalog(M)}
  function status(text){q('status').textContent=text}
@@ -35,6 +56,25 @@
  function partner(c=clip){let m=/^runtime:hero:([^:]+):([^:]+)$/.exec(c?.id||''),o=m&&opposite[m[2]];if(!o)return null;let links=m[1]==='walk'?M.studioWalkMirrors||{}:M.studioPoseMirrors?.[m[1]]||{};if(links[m[2]]!==o&&links[o]!==m[2])return null;window.StudioWalks?.apply(B.getRuntime().tactics,M);return allClips().find(x=>x.id==='runtime:hero:'+m[1]+':'+o)||null}
  function shareReview(from=clip){let p=partner(from);if(!p)return;let a=entries(from),b=entries(p);b.status=a.status;if(a.approvedAt)b.approvedAt=a.approvedAt;else delete b.approvedAt;b.frames=copy(a.frames||{})}
  async function mirrorLinked(map){if(!clip)return;for(let [target,source]of Object.entries(map||{})){if(!source)continue;let from=allClips().find(c=>c.id===clip.id.replace(/[^:]+$/,source));if(from){shareReview(from);persist()}}let fresh=allClips().find(c=>c.id===clip.id);if(fresh&&R.signature(fresh)!==R.signature(clip)){if(E.hasDrafts())await E.saveDraft();await load(fresh)}B.invalidate()}
+ // Other characters (one picture per direction): copy the opposite direction mirrored into the editor. Nothing is saved until บันทึกเข้าเกม.
+ function oppositeClip(c=clip){let o=opposite[c?.view];if(!o||/^runtime:hero:/.test(c.id))return null;return allClips().find(x=>x.entity===c.entity&&x.action===c.action&&x.view===o&&x.id!==c.id)||null}
+ async function copyMirror(mode){if(!clip||loading||E.getState().saving)return;let o=oppositeClip();if(!o)return;
+  try{if(o.frames.length!==clip.frames.length)throw new Error('จำนวนเฟรมไม่เท่ากัน ('+o.view+' '+o.frames.length+' · '+clip.view+' '+clip.frames.length+')');
+   if(mode==='from'){let imgs=await Promise.all(o.frames.map(f=>image(f.file)));E.applyMirror(o.frames.map((f,i)=>{let r=E.renderClipFrame(f,imgs[i]),rect=[r.x,r.y,r.sw*r.sc,r.sh*r.sc];return {canvas:r.raw,rect:f.flip?[384-rect[0]-rect[2],rect[1],rect[2],rect[3]]:rect}}));status('ลอก '+o.view+' กลับด้านมาเป็น '+clip.view+' แล้ว · ตรวจแล้วกดบันทึกเข้าเกม')}
+   else{let from=clip.view,canvases=E.getFrames().map(f=>{let c=document.createElement('canvas');c.width=c.height=384;c.getContext('2d').drawImage(f.canvas,0,0);return {canvas:c}});await switchClip(o.id);if(clip?.id!==o.id)return;E.applyMirror(canvases);status('ลอก '+from+' กลับด้านมาเป็น '+o.view+' แล้ว · ตรวจแล้วกดบันทึกเข้าเกม')}
+   changed()}catch(e){status('ลอกไม่ได้: '+e.message)}}
+ /* v98.01 · group scale: every set of the given clips is opened in the editor, its shared size (ขนาดตัวร่วมกัน) set to 1+pct/100
+    (scaled around the feet) and saved the normal way (history kept). Pictures shared by two sets are scaled once; a hero direction
+    copied mirrored from its opposite is left to its source. Without a linked folder the ZIP / GitHub push happens once at the end. */
+ async function batchScale(ids,pct,onStep){if(E.getState().saving||loading)throw new Error('กำลังบันทึกอยู่');if(E.hasDrafts())await E.saveDraft();
+  const want=new Set(ids),clips=allClips().filter(c=>want.has(c.id)&&c.frames.length).sort((a,b)=>a.frames.filter(f=>f.flip).length-b.frames.filter(f=>f.flip).length),done=new Set(),todo=[],skipped=[];
+  for(const c of clips){const m=/^runtime:hero:([^:]+):([^:]+)$/.exec(c.id);if(m){const links=m[1]==='walk'?M.studioWalkMirrors||{}:M.studioPoseMirrors?.[m[1]]||{};if(links[m[2]]){skipped.push(c);continue}}
+   const files=c.frames.map(f=>f.file);if(files.some(f=>done.has(f))){skipped.push(c);continue}files.forEach(f=>done.add(f));todo.push(c)}
+  const failed=[],clippedSets=[];let n=0;window.__studioBatch=true;
+  try{for(const c of todo){onStep?.(++n,todo.length,c);try{await load(c);if(!E.getState().frames)throw new Error('โหลดภาพไม่ได้');E.setScale(1+pct/100);if(E.clipped().length)clippedSets.push(c);await E.save({batch:true});if(E.getState().dirty)throw new Error('บันทึกไม่สำเร็จ')}catch(e){failed.push(c.label+' '+c.action+' '+c.view+': '+e.message)}}}
+  finally{window.__studioBatch=false}
+  if(!dir&&todo.length>failed.length)try{await exportZip('patch','scale-'+(pct>0?'+':'')+pct)}catch(e){failed.push('ส่งออก: '+e.message)}
+  try{if(d.open)d.close()}catch(_){}E.clear();clip=null;token++;loading=false;B.invalidate();return{done:todo.length-failed.length,skipped:skipped.length,failed,clipped:clippedSets.map(c=>c.action+' '+c.view)}}
  function persist(){try{localStorage.setItem(key,JSON.stringify(reviewStore))}catch{status('เซฟสถานะตรวจในเบราว์เซอร์ไม่ได้')};M.studioReviews=copy(reviewStore)}
  function entries(c=clip){if(!c)return {};let k=R.signature(c);return reviewStore[k]||(reviewStore[k]={status:'unreviewed',frames:{}})}
  function fillSelectors(){let clips=allClips(),entities=[...new Map(clips.map(c=>[c.entity,c.label])).entries()];q('entity').innerHTML=entities.map(([id,name])=>`<option value="${esc(id)}">${esc(name)}</option>`).join('');q('entity').value=clip.entity;fillActions()}
@@ -74,7 +114,7 @@
  q('ai').onclick=async()=>{if(!clip||E.hasDrafts()){status('บันทึกชุดที่แก้ก่อนส่งคำขอ เพื่อให้หมายเลขเฟรมและข้อมูลเกมตรงกัน');return}try{let req=R.request(clip,entries().frames||{});if(!req.targets.length){status('ทำเครื่องหมายเฟรมที่ต้องแก้และใส่หมายเหตุก่อน');return}let files=[],enc=new TextEncoder(),needed=new Set(req.targets.flatMap(t=>[t.frame,...t.referenceFrames]));for(let n of needed){let f=clip.frames[n-1],im=await image(f.file),c=document.createElement('canvas');c.width=f.size[0];c.height=f.size[1];let g=c.getContext('2d');if(f.crop)g.drawImage(im,...f.crop,0,0,c.width,c.height);else g.drawImage(im,0,0,c.width,c.height);let b=await new Promise(r=>c.toBlob(r));files.push({name:'frames/frame-'+String(n).padStart(2,'0')+'.png',data:new Uint8Array(await b.arrayBuffer())})}let prompt='Repair only the marked original game animation frames. Preserve identity, pose, dimensions and all parts not mentioned in request.json. Stored frames are NOT mirrored for preview. '+req.targets.map(t=>'Frame '+t.frame+': '+t.note).join(' | ');files.push({name:'request.json',data:enc.encode(JSON.stringify(req,null,2))},{name:'prompt.txt',data:enc.encode(prompt)});let u=URL.createObjectURL(zip(files)),a=document.createElement('a');a.href=u;a.download=R.safe(clip.label+'-'+clip.action+'-'+clip.view)+'-AI-repair.zip';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);status('ส่งออกภาพต้นฉบับและคำขอแก้เฉพาะเฟรมแล้ว')}catch(e){status('ส่งออกคำขอไม่ได้: '+e.message)}};
  migrateReviews();B.invalidate();
  function preApprove(){if(!clip)return;let fresh=allClips().find(c=>c.id===clip.id);if(fresh)clip=copy(fresh);let r=entries();r.status='approved';r.approvedAt=new Date().toISOString();r.frames={};shareReview();persist()};
- const api=window.StudioUnifiedReview={preApprove,mirrorLinked,open,close,status,changed,committed,history,isOpen:()=>d.open,get speed(){return speed},get onion(){return onion},getState:()=>({clip:clip?.id,loading,...E.getState()}),reset:()=>{token++;loading=false;clip=null;E.clear();comparisonImages=[];if(d.open)d.close()}};
+ const api=window.StudioUnifiedReview={batchScale,preApprove,mirrorLinked,oppositeClip,copyMirror,open,close,status,changed,committed,history,isOpen:()=>d.open,get speed(){return speed},get onion(){return onion},getState:()=>({clip:clip?.id,loading,...E.getState()}),reset:()=>{token++;loading=false;clip=null;E.clear();comparisonImages=[];if(d.open)d.close()}};
  window.AssetAnimationReview={...api,refresh:target=>switchClip(target||clip?.id),hasDrafts:()=>E.hasDrafts(),exportSheet:()=>document.getElementById('wi-sheet-export').click(),exportGif,getState:()=>({clip:clip?.id,loading,...E.getState()})};
  document.getElementById('animationReviewButton').onclick=()=>open();
 })();

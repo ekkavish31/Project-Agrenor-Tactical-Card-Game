@@ -27,3 +27,59 @@ main{grid-template-columns:238px minmax(0,1fr);position:relative}nav{border-righ
 
 /* v91.37 · Animation sub-tabs in the left nav */
 .subtabs{display:flex;gap:4px;margin:0 0 8px}.subtabs button{flex:1;padding:5px 4px;font-size:12px;border:1px solid #b9a77a;background:transparent;border-radius:7px;cursor:pointer;color:inherit}.subtabs button.on{background:#3f6654;color:#fff;border-color:#2f4d3e}
+
+/* v98.01 · group scale (สเกลกลุ่ม) in the animation grid toolbar + live preview */
+.grp-scale{display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border:1px solid #d6cfb8;border-radius:10px;background:#fbf8ef;font-size:12px}
+.grp-scale select{font:inherit;padding:3px 4px;border-radius:6px}
+.grp-scale button{min-width:30px;padding:4px 6px}
+.grp-scale b{min-width:44px;text-align:center}
+#gsApply:not(:disabled){background:#2f5d46;color:#fff;border-color:#2f5d46}
+#grid.gs-preview .anim-matrix canvas{transform:scale(var(--gs,1));transform-origin:50% 88%}
+
+/* v98.01 · Animation Editor layout: fits the window (no page scroll) · left = preview + review + frame strip · right = tabbed settings · save bar fixed */
+#animation-review.ur-v2{width:min(1500px,98vw);max-width:98vw;height:96vh;max-height:96vh;overflow:hidden;padding:10px 14px}
+#animation-review.ur-v2[open]{display:flex;flex-direction:column}
+#animation-review.ur-v2 .ur-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:0 0 6px;margin:0;border-bottom:1px solid #d9d2bd}
+#animation-review.ur-v2 .ur-head h2{font-size:17px;margin:0;white-space:nowrap}
+#animation-review.ur-v2 #ur-context{font-size:11px;color:#6b7963}
+#animation-review.ur-v2 .ur-toolbar{flex:1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0;padding:0;border:0;background:none}
+#animation-review.ur-v2 .ur-toolbar select,#animation-review.ur-v2 .ur-toolbar button{padding:5px 8px;font-size:12px}
+#animation-review.ur-v2 #ur-status{margin:4px 0;padding:3px 10px;font-size:12px;min-height:0}
+#animation-review.ur-v2 #ur-editor{flex:1;min-height:0;display:flex;flex-direction:column}
+#animation-review.ur-v2 .wi-top{flex:1;min-height:0;display:grid!important;grid-template-columns:minmax(0,1fr) 440px!important;gap:12px;align-items:stretch!important;margin:0}
+#animation-review.ur-v2 .ur-left{min-height:0;min-width:0;display:flex;flex-direction:column;gap:6px;overflow:auto;padding-right:2px}
+#animation-review.ur-v2 .ur-preview-box{display:flex;flex-direction:column;align-items:center;flex:none}
+#animation-review.ur-v2 .ur-review-tools{margin:0;padding:6px 8px;flex-wrap:wrap;gap:6px;font-size:12px}
+#animation-review.ur-v2 #wi-mirror-row{margin:0!important;font-size:12px}
+#animation-review.ur-v2 #wi-mirror-row:empty{display:none}
+#animation-review.ur-v2 #wi-message{margin:0;padding:3px 8px;font-size:12px;min-height:0}
+#animation-review.ur-v2 .ur-left>h3{margin:2px 0 0;font-size:13px}
+#animation-review.ur-v2 #wi-order{display:flex!important;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:6px;padding-bottom:6px;flex:none}
+#animation-review.ur-v2 .wi-frame{flex:0 0 150px;display:grid!important;grid-template-columns:1fr 1fr;gap:3px;justify-items:stretch;font-size:11px;padding:5px}
+#animation-review.ur-v2 .wi-frame>b,#animation-review.ur-v2 .wi-frame>canvas,#animation-review.ur-v2 .wi-frame>.row{grid-column:1/-1;justify-self:center}
+#animation-review.ur-v2 .wi-frame>.row{gap:3px}#animation-review.ur-v2 .wi-frame button{padding:3px 5px;font-size:11px}
+#animation-review.ur-v2 .wi-frame label{display:flex;gap:3px;align-items:center;justify-content:space-between}
+#animation-review.ur-v2 .wi-frame input{width:48px;padding:2px 3px;font-size:11px}
+#animation-review.ur-v2 .wi-settings{max-height:none!important;min-height:0;overflow:hidden!important;display:flex;flex-direction:column;padding:0!important}
+#animation-review.ur-v2 .ur-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:8px;border-bottom:1px solid #c7d0bd;flex:none}
+#animation-review.ur-v2 .ur-tabs button{padding:5px 9px;border-radius:7px;font-size:12px}
+#animation-review.ur-v2 .ur-tabs button.on{background:#2f5d46;color:#fff;border-color:#2f5d46}
+#animation-review.ur-v2 .ur-tab{flex:1;min-height:0;overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+#animation-review.ur-v2 .ur-tab[hidden]{display:none}
+#animation-review.ur-v2 .ur-tab>details{border:0;padding:0;margin:0}
+#animation-review.ur-v2 .ur-tab>details>summary{display:none}
+#animation-review.ur-v2 .ur-tab>.wi-align{margin:0}
+#animation-review.ur-v2 .wi-footer{flex:none;margin-top:8px}
+#animation-review.ur-v2 #wi-eraser:not([hidden]){position:fixed;inset:4vh 8vw;z-index:50;overflow:auto;background:#f7f5ee;border:1px solid #c7a35a;border-radius:14px;padding:14px;box-shadow:0 20px 60px #0007}
+@media (max-width:1050px){#animation-review.ur-v2{overflow:auto}#animation-review.ur-v2 .wi-top{grid-template-columns:1fr!important}#animation-review.ur-v2 .wi-settings{max-height:70vh!important}}
+#animation-review.ur-v2 #ur-editor .wi-top{position:static;max-height:none;padding:0;border:0;background:none}
+#animation-review.ur-v2 #ur-editor .wi-top>.ur-left{max-height:none;padding:0 2px 0 0}
+#animation-review.ur-v2 #ur-editor .ur-preview-box canvas{max-width:min(440px,100%)}
+#animation-review.ur-v2 #ur-editor .ur-preview-box canvas#wi-preview{width:min(36vh,420px);height:auto;max-width:none}
+#animation-review.ur-v2 .wi-frame>canvas{width:72px!important;height:72px!important;max-width:none}
+#animation-review.ur-v2 .wi-frame{flex-basis:140px}
+#animation-review.ur-v2 .ur-dock{flex:none;border-top:1px solid #c7d0bd;padding:8px;display:flex;flex-direction:column;gap:6px}
+#animation-review.ur-v2 .ur-dock .ur-review-tools{display:grid;grid-template-columns:auto 1fr;gap:6px;align-items:center}
+#animation-review.ur-v2 .ur-dock .ur-review-tools #ur-note{grid-column:1/-1}
+#animation-review.ur-v2 .ur-dock .ur-review-tools button{font-size:12px}
+#animation-review.ur-v2 .ur-dock #wi-mirror-row{justify-content:flex-start}

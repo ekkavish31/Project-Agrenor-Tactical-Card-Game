@@ -2072,18 +2072,18 @@
    <div class="row"><button id="rBack">← กลับไปภาพรวมถนนทั้งหมด</button><button data-click="townRoadDelete">ลบเส้นนี้</button></div>
    <label class="sel">ชนิด/พื้นถนนเส้นนี้<select data-rk="${selR.i}">${kindOpts(selR.kind)}</select></label>
    <p class="sub">ถนนหลัก = กว้าง ปูหิน · ทางย่อย = แคบ · ทางออก = ดินนอกหมู่บ้าน</p>
-   ${slider('rsOne','ความกว้างเส้นนี้',Math.round((selR.w||1)*100),30,300,5,x=>x+'%')}
-   <p class="sub">100% = กว้างตามปกติของชนิดนี้ (ถ้าปรับภาพรวมไว้จะคูณต่อจากนั้น) · เลื่อนแล้วถนนขยับให้เห็นทันที</p></div>`;
+   ${slider('rsOne','ความกว้างเส้นนี้',Math.round(UX.roadCells(selR.i)*2)/2,.5,12,.5,x=>x+' ช่อง')}
+   <p class="sub">1 ช่อง = 1 ช่องกริด · ปรับทีละครึ่งช่อง · คลิกขวาที่เส้นก็ปรับได้</p></div>`;
   } else
   {
-  panel.innerHTML = `<div class="body"><h3>🛣 ถนน</h3><p class="sub">ลากบนพื้นว่างเพื่อวาดเส้นใหม่ · ลากจุดสีทองเพื่อดัดเส้นเดิม · ทุกจุดเข้าช่องกริดอัตโนมัติ · Space + ลาก = เลื่อนแผนที่ · Delete = ลบเส้นที่เลือก · ถนน = พื้นที่เดินได้ของตัวเอกและ NPC</p>
+  panel.innerHTML = `<div class="body"><h3>🛣 ถนน</h3><p class="sub">ลากพื้นว่าง = วาดเส้นใหม่ · ลากจุด = ย้ายเฉพาะจุดนั้น (Shift = แนวตรง) · คลิกเส้น = เลือก แล้วลากเพื่อย้ายทั้งเส้น · <b>คลิกขวา</b>ที่จุดหรือเส้น = เมนู · Space + ลาก หรือปุ่มซ้ายล่าง = เลื่อนแผนที่ · ถนนสีแดง = ทับสถานที่ (ถูกตัดออก) · ⚠ = สถานที่ที่เดินไปไม่ถึงหลังแก้ถนน</p>
   ${true?`<label class="sel">ชนิดถนนที่จะวาด<select id="rDrawKind">${kindOpts(UX.drawKind?.())}</select></label>`:''}
   <b class="sec">ถนนทั้งหมด (${list.length})</b><div class="items" style="max-height:220px">${list.map(r=>`<div style="display:flex;gap:4px;align-items:center"><button data-road="${r.i}" title="เลือกเพื่อไฮไลท์บนแผนที่" style="flex:1;text-align:left;white-space:normal;line-height:1.3;${r.i===sel?'background:#e5c06b;color:#1b302a;outline:2px solid #fff4a8':''}">${r.label||((UX.ROAD_KINDS?.[r.kind]||r.kind)+' '+(r.i+1))}<small style="display:block;opacity:.75">${r.points} จุด · คลิกเพื่อไฮไลท์</small></button><select data-rk="${r.i}" title="ชนิดถนน" style="width:150px">${kindOpts(r.kind)}</select><button data-rdel="${r.i}" title="ลบเส้นนี้">✕</button></div>`).join('')||'<p class="sub">ยังไม่มีถนน · ลากบนพื้นว่างเพื่อวาด แล้วลากบนแผนที่</p>'}</div>
   <div class="row"><button data-click="townRoadDelete" ${sel<0?'disabled':''}>ลบถนนที่เลือก</button><button id="rClear">ลบถนนทั้งหมด (วาดเองใหม่)</button></div>
   <div class="row"><button data-click="townRoadReset">สร้างถนนอัตโนมัติใหม่</button></div><hr>
   <b class="sec">ความกว้างถนน (ทั้งหมด)</b>
-  ${slider('rsMain','ถนนหลัก',Math.round(RS.main*100),40,250,5,x=>x+'%')}${slider('rsLane','ทางย่อย',Math.round(RS.lane*100),40,250,5,x=>x+'%')}${slider('rsEdge','ขอบถนน (หนาขึ้น/ข้าง)',RS.edge,-12,60,1,x=>(x>0?'+':'')+x+'px')}
-  ${selR?`<b class="sec">เฉพาะเส้นที่เลือก</b>${slider('rsOne','ความกว้างเส้นนี้',Math.round((selR.w||1)*100),30,300,5,x=>x+'%')}<p class="sub">ถนนที่เลือกคูณจากค่าทั้งหมดด้านบน · 100% = ตามปกติ</p>`:'<p class="sub">เลือกถนนจากรายการด้านบนเพื่อปรับความกว้างเฉพาะเส้น</p>'}
+  ${slider('rsMain','ถนนหลัก',Math.round(UX.kindCells('main')*2)/2,Math.ceil(UX.baseCells('main')*.8)/2,Math.floor(UX.baseCells('main')*5)/2,.5,x=>x+' ช่อง')}${slider('rsLane','ทางย่อย',Math.round(UX.kindCells('lane')*2)/2,Math.ceil(UX.baseCells('lane')*.8)/2,Math.floor(UX.baseCells('lane')*5)/2,.5,x=>x+' ช่อง')}${slider('rsEdge','ขอบถนน (หนาขึ้น/ข้าง)',RS.edge,-12,60,1,x=>(x>0?'+':'')+x+'px')}
+  ${selR?`<b class="sec">เฉพาะเส้นที่เลือก</b>${slider('rsOne','ความกว้างเส้นนี้',Math.round(UX.roadCells(selR.i)*2)/2,.5,12,.5,x=>x+' ช่อง')}<p class="sub">ถนนที่เลือกคูณจากค่าทั้งหมดด้านบน · 100% = ตามปกติ</p>`:'<p class="sub">เลือกถนนจากรายการด้านบนเพื่อปรับความกว้างเฉพาะเส้น</p>'}
   ${slider('blend','รอยต่อพื้นนุ่ม',ROAD_BLEND,0,60,1,x=>x?x+'px':'คม')}<p class="sub">ความกว้างที่ลายพื้นต่างชนิดค่อย ๆ ผสมกัน (0 = ขอบคม)</p>
   <label class="sel">ทรงถนน<select id="rShape"><option value="square" ${ROAD_SHAPE==='square'?'selected':''}>เหลี่ยมตามกริด</option><option value="round" ${ROAD_SHAPE==='round'?'selected':''}>มน</option></select></label>
   <p class="sub">พื้นทางเข้าของแต่ละสถานที่: คลิกสถานที่ → แท็บทางเข้า</p></div>`;
@@ -2091,9 +2091,9 @@
   const roadItems = panel.querySelector('.items'); if (roadItems) roadItems.scrollTop = oldListScroll;
   bindTools();
   /* v95.15: sliders move the road live while dragging (the layout is saved on release) */
-  for (const [id, live] of [['rsMain', v => UX.roadLive.style({ main: v / 100 })], ['rsLane', v => UX.roadLive.style({ lane: v / 100 })], ['rsEdge', v => UX.roadLive.style({ edge: v })], ['rsOne', v => UX.roadLive.width(sel, v / 100)]]) {
+  for (const [id, live] of [['rsMain', v => UX.roadLive.style({ main: v / UX.baseCells('main') })], ['rsLane', v => UX.roadLive.style({ lane: v / UX.baseCells('lane') })], ['rsEdge', v => UX.roadLive.style({ edge: v })], ['rsOne', v => UX.roadLive.width(sel, UX.cellsToW(sel, v))]]) {
    const el = panel.querySelector('[data-k=' + id + ']'); if (!el) continue;
-   const f = id === 'rsEdge' ? x => (x > 0 ? '+' : '') + x + 'px' : x => x + '%';
+   const f = id === 'rsEdge' ? x => (x > 0 ? '+' : '') + x + 'px' : x => x + ' ช่อง';
    let began = false, tm = 0;
    el.oninput = () => { el.nextElementSibling.textContent = f(+el.value); if (!began) { began = true; UX.roadLive.begin() } clearTimeout(tm); tm = setTimeout(() => live(+el.value), 40) };
    el.onchange = () => { clearTimeout(tm); if (!began) UX.roadLive.begin(); began = false; live(+el.value); UX.roadLive.commit(); render() }

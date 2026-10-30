@@ -17,7 +17,10 @@ async function test(){const c=config();if(!c.token)throw new Error('ยังไ
 /* v92.04 · every picture pushed to assets/ is stored as WebP (≈5× smaller → fast loads). PNG inputs are converted here, in one place, for every editor. */
 const KEEP_PNG=/(^|\/)(cursor-[^/]*|_versions\/.*|_reviews\/.*)$/i;
 async function toWebp(content){const blob=content instanceof Blob?content:new Blob([content],{type:'image/png'});const bmp=await createImageBitmap(blob),cv=document.createElement('canvas');cv.width=bmp.width;cv.height=bmp.height;cv.getContext('2d').drawImage(bmp,0,0);bmp.close?.();const out=await new Promise(r=>cv.toBlob(r,'image/webp',.92));if(!out||out.type!=='image/webp')throw new Error('แปลง WebP ไม่สำเร็จ');return out}
-async function webpFiles(files){const have=new Set(files.map(f=>f.path)),out=[];for(const f of files){if(f.remove||!/^assets\/.+\.png$/i.test(f.path)||KEEP_PNG.test(f.path)||typeof f.content==='string'){out.push(f);continue}const wp=f.path.replace(/\.png$/i,'.webp');if(have.has(wp)){continue}try{out.push({...f,path:wp,content:await toWebp(f.content)});have.add(wp)}catch(e){out.push(f)}}return out}
+async function webpFiles(files){const have=new Set(files.map(f=>f.path)),out=[],conv=[];for(const f of files){if(f.remove||!/^assets\/.+\.png$/i.test(f.path)||KEEP_PNG.test(f.path)||typeof f.content==='string'){out.push(f);continue}const wp=f.path.replace(/\.png$/i,'.webp');if(have.has(wp)){conv.push(f.path);continue}try{out.push({...f,path:wp,content:await toWebp(f.content)});have.add(wp);conv.push(f.path)}catch(e){out.push(f)}}
+  /* v97.93: the manifest still named the converted pictures ".png" (the Studio then showed them as missing) — point those names at the .webp too */
+  if(conv.length)for(const f of out){if(!f.remove&&typeof f.content==='string'&&/(^|\/)asset-manifest\.(json|js)$/.test(f.path)){let t=f.content;for(const c of conv)t=t.split('"'+c+'"').join('"'+c.replace(/\.png$/i,'.webp')+'"');f.content=t}}
+  return out}
 // build(head) → [{path, content}] where content is string | Uint8Array | Blob; head.read(path) reads files at that commit
 /* ---------- v80.x · push progress screen: steps, file progress, elapsed time, clear result ---------- */
 function pushScreen(title){

@@ -3,7 +3,8 @@
  'use strict';
  const images=new Map(),masks=new WeakMap(),patterns=new WeakMap(),listeners=new Set();
  let motion=typeof TACTICS_SPRITES!=='undefined'?HeroMotion.snapshot(TACTICS_SPRITES):null,heroScreen=null,heroPainted=false;
- const SIZE={paving:240,'ground/cobble.png':200,'ground/plaza-slabs.png':330,'ground/dirt-road.png':300};
+ /* v98.01 · grass drawn at 120px per tile (420 → 190 in v97.99 → 120): its clovers and daisies were head-sized next to the houses */
+ const SIZE={grass:120,paving:240,'ground/cobble.png':200,'ground/plaza-slabs.png':330,'ground/dirt-road.png':300};
  const files={grass:'grass.png',paving:'paving.png',soil:'soil.png',details:'meadow-details.png',pond:'garden-pond.png',materials:'market-materials.png',equipment:'market-equipment.png',orders:'market-orders.png',props:'props.png',fountain:'fountain.png'};
  function image(src){if(!images.has(src)){const im=new Image();im.onload=()=>listeners.forEach(f=>f());im.src=src;images.set(src,im)}return images.get(src)}
  function asset(id){return image('assets/village-town/'+(files[id]||id))}
@@ -45,6 +46,11 @@
  function outline(g,im,crop,rect,radius=3){if(!im?.complete||!im.naturalWidth)return;let c=silhouettes.get(im);if(!c){c=document.createElement('canvas');c.width=Math.min(768,im.naturalWidth);c.height=Math.round(c.width*im.naturalHeight/im.naturalWidth);const q=c.getContext('2d');q.drawImage(im,0,0,c.width,c.height);q.globalCompositeOperation='source-in';q.fillStyle='#fff';q.fillRect(0,0,c.width,c.height);silhouettes.set(im,c)}g.save();g.globalAlpha*=.88;const src=crop?[crop[0]/im.naturalWidth*c.width,crop[1]/im.naturalHeight*c.height,crop[2]/im.naturalWidth*c.width,crop[3]/im.naturalHeight*c.height]:[0,0,c.width,c.height];for(const[a,b]of[[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[-.7,.7],[.7,-.7],[-.7,-.7]])g.drawImage(c,...src,rect[0]+a*radius,rect[1]+b*radius,rect[2],rect[3]);g.restore()}
  function hit(im,x,y){if(x<0||x>1||y<0||y>1)return false;const m=mask(im);return !m||(m.data[(Math.min(m.h-1,Math.floor(y*m.h))*m.w+Math.min(m.w-1,Math.floor(x*m.w)))*4+3]||0)>35}
  function setMotion(data){if(!data?.directions)return;motion=data;for(const d of Object.values(data.directions)){if(d.idle?.src)image(d.idle.src);for(const f of d.walk||[])if(f.src)image(f.src)}}
- root.TownArt={setCur:v=>{cur=v||null},sharpOn:()=>sharpOn,sharpAmt:()=>sharpAmt,setSharp,image,asset,pattern,begin,draw,outline,hit,sprite,detail,hero,setMotion,onLoad:f=>listeners.add(f),getMotion:()=>motion};
+  // v97.99 · large soft light/dark patches over the small grass tile, so the repeat does not read as a grid
+ function grassTone(g,w,h,seed=7){const n=40,c=document.createElement('canvas');c.width=c.height=n;const q=c.getContext('2d'),d=q.createImageData(n,n);let r=seed>>>0;const rnd=()=>((r=(r*1664525+1013904223)>>>0)/4294967296);
+  for(let i=0;i<n*n;i++){const v=rnd(),k=i*4;if(v<.5){d.data[k]=34;d.data[k+1]=58;d.data[k+2]=24;d.data[k+3]=Math.round((.5-v)*2*255)}else{d.data[k]=214;d.data[k+1]=206;d.data[k+2]=120;d.data[k+3]=Math.round((v-.5)*2*200)}}
+  q.putImageData(d,0,0);const big=document.createElement('canvas');big.width=big.height=n*8;const b=big.getContext('2d');b.imageSmoothingEnabled=true;b.filter='blur(6px)';b.drawImage(c,0,0,big.width,big.height);
+  g.save();g.globalAlpha=.32;g.imageSmoothingEnabled=true;g.drawImage(big,8,8,big.width-16,big.height-16,0,0,w,h);g.restore()}
+ root.TownArt={grassTone,setCur:v=>{cur=v||null},sharpOn:()=>sharpOn,sharpAmt:()=>sharpAmt,setSharp,image,asset,pattern,begin,draw,outline,hit,sprite,detail,hero,setMotion,onLoad:f=>listeners.add(f),getMotion:()=>motion};
  Object.keys(files).forEach(asset);if(motion)setMotion(motion);
 })(globalThis);
