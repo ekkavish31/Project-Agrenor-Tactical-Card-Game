@@ -310,3 +310,12 @@
 | terrain-diorama-slab | assets/terrain/diorama/slab.webp | 256x256 |  | planned | แผ่นหินปูพื้นบนป้อมและขั้นบันไดหิน ต่อกันได้ไร้รอยต่อ |
 | prop-cactus | assets/tactics/props/cactus.webp | 384x512 | ✓ | planned | กระบองเพชร พร็อพสนามทะเลทราย สไตล์เดียวกับ assets/tactics/rock.webp |
 | prop-deadtree | assets/tactics/props/deadtree.webp | 512x640 | ✓ | planned | ต้นไม้ตายกิ่งบิดในบึง สไตล์เดียวกับ assets/tactics/tree.webp |
+
+
+## ขอบหมู่บ้านเฟิร์นเวล (V9 · ผู้ใช้สั่ง 30 ต.ค. 2026 · ตอนนี้ใช้ป่าทึบแทน)
+ภาพโปร่งใส มุมมอง isometric แบบเดียวกับอาคารในหมู่บ้าน · ทุกชิ้นต่อกันได้เป็นแนวยาว
+- กำแพงหิน: ชิ้นตรง 2 ทิศ (แนว ↗ และ ↘) · ชิ้นมุม · `assets/village-town/edge/wall-stone-*.webp`
+- ซุ้มประตูกำแพงหิน + ป้อมยามสองข้าง (มีที่ยืนยาม) · `edge/gatehouse.webp`
+- รั้วซุงแหลม (palisade): ชิ้นตรง 2 ทิศ · ชิ้นมุม · ประตูไม้ · `edge/palisade-*.webp`
+- รั้วไม้เตี้ย / แนวพุ่มไม้ (ใช้ชุดรั้วรอบสถานที่ที่มีอยู่ได้)
+- ผาหิน: ชิ้นตรง 2 ทิศ · ชิ้นมุม · `edge/cliff-*.webp`
