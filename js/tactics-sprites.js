@@ -13,7 +13,8 @@ const TACTICS_SPRITES = {
   "directions": {
     "SE": {
       "idle": {
-        "src": "assets/tactics/hero_se_idle.webp",
+        "src": "assets/tactics/imported/idle-sw-mvkgx1xj-xj7n/frame-01.webp",
+        "flipImage": true,
         "right": [
           0.4951,
           0.5981
@@ -227,7 +228,7 @@ const TACTICS_SPRITES = {
     },
     "SW": {
       "idle": {
-        "src": "assets/tactics/hero_sw_idle.webp",
+        "src": "assets/tactics/imported/idle-sw-mvkgx1xj-xj7n/frame-01.webp",
         "right": [
           0.3375,
           0.62613
@@ -453,7 +454,8 @@ const TACTICS_SPRITES = {
     },
     "NE": {
       "idle": {
-        "src": "assets/tactics/hero_ne_idle.webp",
+        "src": "assets/tactics/imported/idle-nw-mvkgz7yh-hdcx/frame-01.webp",
+        "flipImage": true,
         "right": [
           0.7026,
           0.5706
@@ -667,7 +669,7 @@ const TACTICS_SPRITES = {
     },
     "NW": {
       "idle": {
-        "src": "assets/tactics/hero_nw_idle.webp",
+        "src": "assets/tactics/imported/idle-nw-mvkgz7yh-hdcx/frame-01.webp",
         "right": [
           0.57575,
           0.53585

@@ -2715,3 +2715,9 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 ## v97.42 · รวมงานบรัมจาก main (30 ต.ค. 2026)
 - รวมภาพบรัมชุดใหม่ (v97.37b บน main) เข้ากับงาน v97.37–v97.41 · อัปเวอร์ชันไฟล์ `js/villager-draw.js` และ `js/village-life.js` ให้เบราว์เซอร์โหลดใหม่
+
+## v97.43 · ภาพยืนของตัวเอกใช้ชุดใหม่ 4 เฟรมล้วน ลบภาพ idle เก่า (30 ต.ค. 2026)
+- ลบ `assets/tactics/hero_{se,sw,ne,nw}_idle.webp` (ภาพนิ่งเดียว ตัวผ้าคลุมเขียวเก่า) · ฮีโร่ยืนหายใจจาก `studioPoses.idle` (4 เฟรม SW/NW และ SE/NE ได้จากการกลับภาพ) ซึ่งเกมใช้อยู่แล้ว
+- `js/tactics-sprites.js` และ `assets/tactics/manifest.json`: ภาพ idle สำรองของแต่ละทิศชี้ไปเฟรมแรกของชุดใหม่ (SE/NE กลับภาพ) ไม่มีที่ไหนอ้างไฟล์เก่าอีก
+- `data/asset-manifest.json`, `js/asset-manifest.js`: `tactics-hero-{se,sw,ne,nw}-idle` เป็น `unused` → แถวล่าง "1 เฟรม · รอตรวจ" ของแถว "ยืน / หายใจ" หายจาก Asset Studio (โหลดหน้า Studio ใหม่) · `tools/build-asset-manifest.py` คงสถานะนี้ตอนสร้างใหม่
+- ท่าโจมตี เตรียมโจมตี ป้องกัน ถูกโจมตี ล้ม ของตัวเอกยังเป็นภาพเก่า รอชุดใหม่
