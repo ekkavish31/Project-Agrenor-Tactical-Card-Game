@@ -124,11 +124,11 @@
       const p = center(h.c, h.r);
       if (h.biome === 'forest') for (let i = 0; i < 5; i++) tree(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .4) * R * .9, 9 + rnd() * 5, rnd);
       else if (h.biome === 'snow' && rnd() < .35) tree(t, p.x + (rnd() - .5) * 20, p.y + (rnd() - .5) * 18, 9, rnd, true);
-      else if (h.biome === 'hills') for (let i = 0; i < 2; i++) hill(t, p.x + (i ? 10 : -10) + (rnd() - .5) * 6, p.y + (i ? 6 : -4), 18 + rnd() * 6);
-      else if (h.biome === 'mountain') mountain(t, p.x + (rnd() - .5) * 6, p.y + 10, 30 + rnd() * 10, world.real ? h.elev > .8 : (h.r < G.ROWS * .3 || h.elev > .8));
+      else if (h.biome === 'hills') for (let i = 0; i < 2; i++) hill(t, p.x + (rnd() - .5) * HW * .8, p.y + (rnd() - .5) * R * .9, 15 + rnd() * 12);   /* v97.94 · scattered, not in rows */
+      else if (h.biome === 'mountain') { const snowy = world.real ? h.elev > .8 : (h.r < G.ROWS * .3 || h.elev > .8), n = rnd() < .45 ? 2 : 1; for (let i = 0; i < n; i++) mountain(t, p.x + (rnd() - .5) * HW * .75, p.y + 10 + (rnd() - .5) * R * .8, (n > 1 ? 22 : 30) + rnd() * 14, snowy) }   /* v97.94 · ranges, not rows */
       else if (h.biome === 'volcano') { mountain(t, p.x, p.y + 10, 34, false); const gr = t.createRadialGradient(p.x, p.y - 20, 0, p.x, p.y - 20, 22); gr.addColorStop(0, 'rgba(255,140,40,.85)'); gr.addColorStop(1, 'rgba(255,60,20,0)'); t.fillStyle = gr; t.beginPath(); t.arc(p.x, p.y - 20, 22, 0, 7); t.fill() }
       else if (h.biome === 'stone') { for (let i = 0; i < 4; i++) { const x = p.x + (rnd() - .5) * 40, y = p.y + (rnd() - .5) * 28, r = 2.5 + rnd() * 4; t.fillStyle = 'rgba(0,0,0,.25)'; t.beginPath(); t.ellipse(x + 1.5, y + 1.5, r, r * .6, 0, 0, 7); t.fill(); t.fillStyle = ['#b8ae98', '#a39882', '#cfc6b0'][i % 3]; t.beginPath(); t.ellipse(x, y, r, r * .62, 0, 0, 7); t.fill() } }
-      else if (h.biome === 'highland') { mountain(t, p.x + (rnd() - .5) * 10, p.y + 12, 20 + rnd() * 8, rnd() < .3); hill(t, p.x + (rnd() - .5) * 20, p.y + 6, 16) }
+      else if (h.biome === 'highland') { mountain(t, p.x + (rnd() - .5) * HW * .7, p.y + 12 + (rnd() - .5) * R * .6, 16 + rnd() * 12, rnd() < .3); hill(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .5) * R * .6, 14 + rnd() * 6) }
       else if (h.biome === 'ash' && rnd() < .6) { t.fillStyle = 'rgba(255,110,40,.35)'; for (let i = 0; i < 3; i++) { t.beginPath(); t.ellipse(p.x + (rnd() - .5) * 40, p.y + (rnd() - .5) * 30, 3 + rnd() * 4, 1.5, rnd() * 3, 0, 7); t.fill() } }
       else if (h.biome === 'swamp') for (let i = 0; i < 4; i++) reed(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .5) * R, rnd);
       else if (h.biome === 'grass' && rnd() < .5) { t.strokeStyle = 'rgba(60,90,40,.5)'; t.lineWidth = 1.2; for (let i = 0; i < 3; i++) { const x = p.x + (rnd() - .5) * 40, y = p.y + (rnd() - .5) * 30; t.beginPath(); t.moveTo(x - 3, y); t.lineTo(x - 1, y - 5); t.moveTo(x, y); t.lineTo(x + 1, y - 6); t.moveTo(x + 3, y); t.lineTo(x + 3, y - 4); t.stroke() } }
