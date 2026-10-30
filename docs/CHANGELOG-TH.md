@@ -2756,3 +2756,10 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 ## v97.48 · รวมงานจาก main (30 ต.ค. 2026)
 - รวมท่าต่อสู้ตัวเอกชุดใหม่ (v97.47b บน main) และเอกสาร lore ยุคโบราณ เข้ากับ v97.46–v97.47
+
+## v97.49 · ชื่อธาตุ Kaelam ตรงกับ Codex v10a (30 ต.ค. 2026)
+- Codex v10a (`docs/lore/source/`) จับคู่ชื่อกับธาตุต่างจากที่เกมใช้ เหลือตรงกันแค่ Elu = แสง จึงแก้ชื่อในเกมให้ตรง: ลม = **Lutha** · น้ำ = **Fren** · โกลาหล = **Grat** · ไฟ = **Caelim** · พฤกษา = **Sylfae** · น้ำแข็ง = **Nytha** · ราตรี = **Dephor** · ผืนดิน = **Yalm**
+- แก้ที่ `KAELAM` (`js/elements.js`) · `ELEMENT_NAMES` (`js/tactics-core.js`) · คอมเมนต์ใน `js/scene-art.js` · บทพูดออร์ลาที่เคยโยง Elukhor กับ Fren เปลี่ยนเป็น Elu
+- id ภายในเกม (`fire`, `water` ฯลฯ) ไม่เปลี่ยน การ์ด อาวุธ ภูมิประเทศ และตารางแพ้ชนะจึงทำงานเหมือนเดิม เปลี่ยนเฉพาะชื่อที่ผู้เล่นเห็น
+- ขยับ `?v=` ของ `elements.js` · `tactics-core.js` · `scene-art.js` · `village-lines.js` ในหน้า HTML ที่โหลด และ `V` ใน `js/town-battle.js`
+- `GAME-ERA.md`: Elukhor ผูกกับ Elu (แสง) ไม่ใช่ไฟ
