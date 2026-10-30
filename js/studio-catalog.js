@@ -250,7 +250,7 @@
    // Objects own individual sheets; do not put all animated ground under one entry.
    let cc={...c,entity:e.id,label:e.name};e.clips.push(cc);c.frames.forEach(f=>used.add(f.assetId));
   }
-  for(let e of entities.values())for(let a of e.assets){if(used.has(a.id)||!a.file)continue;if(e.id==='hero'&&/(?:walk|run)/i.test([a.id,a.clip,a.pose].join(' ')))continue;e.clips.push({...staticClip(a),entity:e.id,label:e.name})}
+  for(let e of entities.values())for(let a of e.assets){if(used.has(a.id)||!a.file)continue;if(e.id==='hero'&&/(?:walk|run)/i.test([a.id,a.clip,a.pose].join(' ')))continue;const sc=staticClip(a);/* v97.66: a single picture is not shown as its own row when an animated clip already fills the same action × direction */if(e.clips.some(c=>c.kind!=='static'&&c.action===sc.action&&c.view===sc.view))continue;e.clips.push({...sc,entity:e.id,label:e.name})}
   return [...entities.values()].sort((a,b)=>a.name.localeCompare(b.name,'th',{numeric:true}));
  }
  root.StudioCatalog={groups,owner,build,enemyMetadata,jsonAssignment};
