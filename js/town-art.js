@@ -3,8 +3,8 @@
  'use strict';
  const images=new Map(),masks=new WeakMap(),patterns=new WeakMap(),listeners=new Set();
  let motion=typeof TACTICS_SPRITES!=='undefined'?HeroMotion.snapshot(TACTICS_SPRITES):null,heroScreen=null,heroPainted=false;
- /* v97.99 · grass drawn at 190px per tile (was 420): its clovers and daisies were head-sized next to the houses */
- const SIZE={grass:190,paving:240,'ground/cobble.png':200,'ground/plaza-slabs.png':330,'ground/dirt-road.png':300};
+ /* v98.01 · grass drawn at 120px per tile (420 → 190 in v97.99 → 120): its clovers and daisies were head-sized next to the houses */
+ const SIZE={grass:120,paving:240,'ground/cobble.png':200,'ground/plaza-slabs.png':330,'ground/dirt-road.png':300};
  const files={grass:'grass.png',paving:'paving.png',soil:'soil.png',details:'meadow-details.png',pond:'garden-pond.png',materials:'market-materials.png',equipment:'market-equipment.png',orders:'market-orders.png',props:'props.png',fountain:'fountain.png'};
  function image(src){if(!images.has(src)){const im=new Image();im.onload=()=>listeners.forEach(f=>f());im.src=src;images.set(src,im)}return images.get(src)}
  function asset(id){return image('assets/village-town/'+(files[id]||id))}
