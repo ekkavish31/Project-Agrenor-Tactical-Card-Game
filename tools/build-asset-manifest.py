@@ -81,7 +81,7 @@ for f in sorted(glob.glob('assets/cursor-*.png')):
 # --- hero animation frames (village) ---
 src = open('js/animation-data.js', encoding='utf8').read()
 data = json.loads(src[src.index('{', src.index('HERO_ANIMATIONS')):src.rindex('}')+1])
-extra = json.load(open('assets/characters/hero/extra/clips.json', encoding='utf8'))
+extra = json.load(open('assets/characters/hero/extra/clips.json', encoding='utf8')) if os.path.exists('assets/characters/hero/extra/clips.json') else {}   # v97.61: the old 2D-scene hero frames were deleted
 clips = {**data['clips'], **extra}
 for clip, c in clips.items():
     for i, fr in enumerate(c['frames']):

@@ -2118,7 +2118,7 @@
    "id": "frame-hero_sword_idle_right_01_ready",
    "file": "assets/characters/hero/hero_sword_idle_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2140,7 +2140,7 @@
    "id": "frame-hero_sword_idle_right_02_inhale",
    "file": "assets/characters/hero/hero_sword_idle_right_02_inhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2162,7 +2162,7 @@
    "id": "frame-hero_sword_idle_right_03_exhale",
    "file": "assets/characters/hero/hero_sword_idle_right_03_exhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2184,7 +2184,7 @@
    "id": "frame-hero_sword_idle_right_04_recover",
    "file": "assets/characters/hero/hero_sword_idle_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2294,7 +2294,7 @@
    "id": "frame-hero_sword_attack_right_01_ready",
    "file": "assets/characters/hero/hero_sword_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2316,7 +2316,7 @@
    "id": "frame-hero_sword_attack_right_02_windup",
    "file": "assets/characters/hero/hero_sword_attack_right_02_windup.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2338,7 +2338,7 @@
    "id": "frame-hero_sword_attack_right_03_impact",
    "file": "assets/characters/hero/hero_sword_attack_right_03_impact.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2360,7 +2360,7 @@
    "id": "frame-hero_sword_attack_right_01_ready",
    "file": "assets/characters/hero/hero_sword_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2382,7 +2382,7 @@
    "id": "frame-hero_sword_attack_right_01_ready",
    "file": "assets/characters/hero/hero_sword_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2404,7 +2404,7 @@
    "id": "frame-hero_sword_hit_right_01_ready",
    "file": "assets/characters/hero/hero_sword_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2426,7 +2426,7 @@
    "id": "frame-hero_sword_hit_right_02_action",
    "file": "assets/characters/hero/hero_sword_hit_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2448,7 +2448,7 @@
    "id": "frame-hero_sword_hit_right_03_action",
    "file": "assets/characters/hero/hero_sword_hit_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2470,7 +2470,7 @@
    "id": "frame-hero_sword_hit_right_04_recover",
    "file": "assets/characters/hero/hero_sword_hit_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2492,7 +2492,7 @@
    "id": "frame-hero_sword_hit_right_01_ready",
    "file": "assets/characters/hero/hero_sword_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2514,7 +2514,7 @@
    "id": "frame-hero_hammer_idle_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_idle_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2536,7 +2536,7 @@
    "id": "frame-hero_hammer_idle_right_02_inhale",
    "file": "assets/characters/hero/hero_hammer_idle_right_02_inhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2558,7 +2558,7 @@
    "id": "frame-hero_hammer_idle_right_03_exhale",
    "file": "assets/characters/hero/hero_hammer_idle_right_03_exhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2580,7 +2580,7 @@
    "id": "frame-hero_hammer_idle_right_04_recover",
    "file": "assets/characters/hero/hero_hammer_idle_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2690,7 +2690,7 @@
    "id": "frame-hero_hammer_attack_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2712,7 +2712,7 @@
    "id": "frame-hero_hammer_attack_right_02_windup",
    "file": "assets/characters/hero/hero_hammer_attack_right_02_windup.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2734,7 +2734,7 @@
    "id": "frame-hero_hammer_attack_right_03_impact",
    "file": "assets/characters/hero/hero_hammer_attack_right_03_impact.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2756,7 +2756,7 @@
    "id": "frame-hero_hammer_attack_right_04_followthrough",
    "file": "assets/characters/hero/hero_hammer_attack_right_04_followthrough.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2778,7 +2778,7 @@
    "id": "frame-hero_hammer_attack_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2800,7 +2800,7 @@
    "id": "frame-hero_hammer_hit_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2822,7 +2822,7 @@
    "id": "frame-hero_hammer_hit_right_02_action",
    "file": "assets/characters/hero/hero_hammer_hit_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2844,7 +2844,7 @@
    "id": "frame-hero_hammer_hit_right_03_action",
    "file": "assets/characters/hero/hero_hammer_hit_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2866,7 +2866,7 @@
    "id": "frame-hero_hammer_hit_right_04_recover",
    "file": "assets/characters/hero/hero_hammer_hit_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2888,7 +2888,7 @@
    "id": "frame-hero_hammer_hit_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2910,7 +2910,7 @@
    "id": "frame-hero_unarmed_idle_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_idle_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2932,7 +2932,7 @@
    "id": "frame-hero_unarmed_idle_right_02_inhale",
    "file": "assets/characters/hero/hero_unarmed_idle_right_02_inhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2954,7 +2954,7 @@
    "id": "frame-hero_unarmed_idle_right_03_exhale",
    "file": "assets/characters/hero/hero_unarmed_idle_right_03_exhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2976,7 +2976,7 @@
    "id": "frame-hero_unarmed_idle_right_04_recover",
    "file": "assets/characters/hero/hero_unarmed_idle_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3086,7 +3086,7 @@
    "id": "frame-hero_unarmed_attack_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3108,7 +3108,7 @@
    "id": "frame-hero_unarmed_attack_right_02_windup",
    "file": "assets/characters/hero/hero_unarmed_attack_right_02_windup.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3130,7 +3130,7 @@
    "id": "frame-hero_unarmed_attack_right_03_impact",
    "file": "assets/characters/hero/hero_unarmed_attack_right_03_impact.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3152,7 +3152,7 @@
    "id": "frame-hero_unarmed_attack_right_04_followthrough",
    "file": "assets/characters/hero/hero_unarmed_attack_right_04_followthrough.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3174,7 +3174,7 @@
    "id": "frame-hero_unarmed_attack_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3196,7 +3196,7 @@
    "id": "frame-hero_unarmed_hit_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3218,7 +3218,7 @@
    "id": "frame-hero_unarmed_hit_right_02_action",
    "file": "assets/characters/hero/hero_unarmed_hit_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3240,7 +3240,7 @@
    "id": "frame-hero_unarmed_hit_right_03_action",
    "file": "assets/characters/hero/hero_unarmed_hit_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3262,7 +3262,7 @@
    "id": "frame-hero_unarmed_hit_right_04_recover",
    "file": "assets/characters/hero/hero_unarmed_hit_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3284,7 +3284,7 @@
    "id": "frame-hero_unarmed_hit_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3306,7 +3306,7 @@
    "id": "frame-hero_adventure_cast_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_cast_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3328,7 +3328,7 @@
    "id": "frame-hero_adventure_cast_right_02_action",
    "file": "assets/characters/hero/hero_adventure_cast_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3350,7 +3350,7 @@
    "id": "frame-hero_adventure_cast_right_03_action",
    "file": "assets/characters/hero/hero_adventure_cast_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3372,7 +3372,7 @@
    "id": "frame-hero_adventure_cast_right_04_recover",
    "file": "assets/characters/hero/hero_adventure_cast_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3394,7 +3394,7 @@
    "id": "frame-hero_adventure_cast_right_05_ready",
    "file": "assets/characters/hero/hero_adventure_cast_right_05_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3416,7 +3416,7 @@
    "id": "frame-hero_adventure_cast_right_06_action",
    "file": "assets/characters/hero/hero_adventure_cast_right_06_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3438,7 +3438,7 @@
    "id": "frame-hero_adventure_cast_right_07_action",
    "file": "assets/characters/hero/hero_adventure_cast_right_07_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3460,7 +3460,7 @@
    "id": "frame-hero_adventure_cast_right_08_recover",
    "file": "assets/characters/hero/hero_adventure_cast_right_08_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3482,7 +3482,7 @@
    "id": "frame-hero_adventure_cast_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_cast_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3504,7 +3504,7 @@
    "id": "frame-hero_adventure_meal_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_meal_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3526,7 +3526,7 @@
    "id": "frame-hero_adventure_meal_right_02_action",
    "file": "assets/characters/hero/hero_adventure_meal_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3548,7 +3548,7 @@
    "id": "frame-hero_adventure_meal_right_03_action",
    "file": "assets/characters/hero/hero_adventure_meal_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3570,7 +3570,7 @@
    "id": "frame-hero_adventure_meal_right_04_recover",
    "file": "assets/characters/hero/hero_adventure_meal_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3592,7 +3592,7 @@
    "id": "frame-hero_adventure_meal_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_meal_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3614,7 +3614,7 @@
    "id": "frame-hero_adventure_rest_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_rest_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3636,7 +3636,7 @@
    "id": "frame-hero_adventure_rest_right_02_inhale",
    "file": "assets/characters/hero/hero_adventure_rest_right_02_inhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3658,7 +3658,7 @@
    "id": "frame-hero_adventure_rest_right_03_exhale",
    "file": "assets/characters/hero/hero_adventure_rest_right_03_exhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3680,7 +3680,7 @@
    "id": "frame-hero_adventure_rest_right_04_recover",
    "file": "assets/characters/hero/hero_adventure_rest_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3702,7 +3702,7 @@
    "id": "frame-hero_adventure_rest_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_rest_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3724,7 +3724,7 @@
    "id": "frame-hero_adventure_sleep_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_sleep_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3746,7 +3746,7 @@
    "id": "frame-hero_adventure_sleep_right_02_lower",
    "file": "assets/characters/hero/hero_adventure_sleep_right_02_lower.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3768,7 +3768,7 @@
    "id": "frame-hero_adventure_sleep_right_03_hold",
    "file": "assets/characters/hero/hero_adventure_sleep_right_03_hold.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3790,7 +3790,7 @@
    "id": "frame-hero_adventure_sleep_right_04_rise",
    "file": "assets/characters/hero/hero_adventure_sleep_right_04_rise.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -9169,6 +9169,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-luna-sw-idle",
+   "file": "assets/tactics/luna_sw_idle.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-luna-se-windup",
    "file": "assets/tactics/luna_se_windup.webp",
    "category": "allies",
@@ -9182,6 +9198,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-luna-sw-windup",
+   "file": "assets/tactics/luna_sw_windup.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-windup",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9201,6 +9233,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-luna-sw-strike",
+   "file": "assets/tactics/luna_sw_strike.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-strike",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-luna-se-guard",
    "file": "assets/tactics/luna_se_guard.webp",
    "category": "allies",
@@ -9214,6 +9262,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-luna-sw-guard",
+   "file": "assets/tactics/luna_sw_guard.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-guard",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9233,6 +9297,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-luna-sw-hit",
+   "file": "assets/tactics/luna_sw_hit.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-hit",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-luna-se-down",
    "file": "assets/tactics/luna_se_down.webp",
    "category": "allies",
@@ -9246,6 +9326,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-luna-sw-down",
+   "file": "assets/tactics/luna_sw_down.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-down",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9265,6 +9361,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-luna-nw-idle",
+   "file": "assets/tactics/luna_nw_idle.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-luna-ne-windup",
    "file": "assets/tactics/luna_ne_windup.webp",
    "category": "allies",
@@ -9278,6 +9390,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-luna-nw-windup",
+   "file": "assets/tactics/luna_nw_windup.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9297,6 +9425,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-luna-nw-strike",
+   "file": "assets/tactics/luna_nw_strike.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-strike",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-luna-ne-guard",
    "file": "assets/tactics/luna_ne_guard.webp",
    "category": "allies",
@@ -9310,6 +9454,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-luna-nw-guard",
+   "file": "assets/tactics/luna_nw_guard.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-guard",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9329,6 +9489,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-luna-nw-hit",
+   "file": "assets/tactics/luna_nw_hit.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-hit",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-luna-ne-down",
    "file": "assets/tactics/luna_ne_down.webp",
    "category": "allies",
@@ -9342,6 +9518,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-luna-nw-down",
+   "file": "assets/tactics/luna_nw_down.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-down",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9361,6 +9553,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-bram-sw-idle",
+   "file": "assets/tactics/bram_sw_idle.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-bram-se-windup",
    "file": "assets/tactics/bram_se_windup.webp",
    "category": "allies",
@@ -9374,6 +9582,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-bram-sw-windup",
+   "file": "assets/tactics/bram_sw_windup.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-windup",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9393,6 +9617,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-bram-sw-strike",
+   "file": "assets/tactics/bram_sw_strike.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-strike",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-bram-se-guard",
    "file": "assets/tactics/bram_se_guard.webp",
    "category": "allies",
@@ -9406,6 +9646,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-bram-sw-guard",
+   "file": "assets/tactics/bram_sw_guard.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-guard",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9425,6 +9681,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-bram-sw-hit",
+   "file": "assets/tactics/bram_sw_hit.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-hit",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-bram-se-down",
    "file": "assets/tactics/bram_se_down.webp",
    "category": "allies",
@@ -9438,6 +9710,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-bram-sw-down",
+   "file": "assets/tactics/bram_sw_down.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-down",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9457,6 +9745,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-bram-nw-idle",
+   "file": "assets/tactics/bram_nw_idle.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-bram-ne-windup",
    "file": "assets/tactics/bram_ne_windup.webp",
    "category": "allies",
@@ -9470,6 +9774,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-bram-nw-windup",
+   "file": "assets/tactics/bram_nw_windup.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9489,6 +9809,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-bram-nw-strike",
+   "file": "assets/tactics/bram_nw_strike.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-strike",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-bram-ne-guard",
    "file": "assets/tactics/bram_ne_guard.webp",
    "category": "allies",
@@ -9502,6 +9838,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-bram-nw-guard",
+   "file": "assets/tactics/bram_nw_guard.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-guard",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9521,6 +9873,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-bram-nw-hit",
+   "file": "assets/tactics/bram_nw_hit.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-hit",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "artRevision": "v16"
+  },
+  {
    "id": "tactics-bram-ne-down",
    "file": "assets/tactics/bram_ne_down.webp",
    "category": "allies",
@@ -9534,6 +9902,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "artRevision": "v16"
+  },
+  {
+   "id": "tactics-bram-nw-down",
+   "file": "assets/tactics/bram_nw_down.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-down",
+   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -11818,7 +12202,7 @@
    "id": "idle-front-neutral",
    "file": "assets/characters/hero/village/idle-neutral.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -11833,7 +12217,7 @@
    "id": "idle-front-look",
    "file": "assets/characters/hero/village/idle-look.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -11848,7 +12232,7 @@
    "id": "idle-front-adjust",
    "file": "assets/characters/hero/village/idle-adjust.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -11863,7 +12247,7 @@
    "id": "idle-front-stretch",
    "file": "assets/characters/hero/village/idle-stretch.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -12661,7 +13045,7 @@
    "id": "village-idle-yawn",
    "file": "assets/characters/hero/village/idle-yawn.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -12679,7 +13063,7 @@
    "id": "village-idle-squat",
    "file": "assets/characters/hero/village/idle-squat.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -12697,7 +13081,7 @@
    "id": "village-idle-stretch-up",
    "file": "assets/characters/hero/village/idle-stretch-up.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -12715,7 +13099,7 @@
    "id": "village-idle-easy",
    "file": "assets/characters/hero/village/idle-easy.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
