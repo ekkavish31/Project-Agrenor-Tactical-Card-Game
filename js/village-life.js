@@ -182,7 +182,7 @@
     sched: [[6, 8, 'temple', 'altar'], [8, 15, 'market'], [15, 18, 'square']] });
 
   // the old travelling party: now villagers you recruit like everyone else
-  add('kier', { name: 'เคียร์', role: 'นักดาบหนุ่ม · เพื่อนสมัยเด็กของ {name}', age: 19, recruit: 'friend', home: 'npc15', look: { coat: '#6a4a8a', hair: '#2a1f16', hat: 'none', weapon: 'sword', cape: '#3a2a4a' },
+  add('kier', { name: 'เคียร์', role: 'นักดาบหนุ่ม · เพื่อนสมัยเด็กของ {name}', age: 19, recruit: 'friend', home: 'npc15', look: { coat: '#6a4a8a', hair: '#2a1f16', hat: 'none', weapon: 'sword', cape: '#3a2a4a', sprite: 'kier' },
     trait: 'กล้าบ้าบิ่น พูดเร็ว ไม่เคยยอมแพ้ใครยกเว้น {name}', story: 'โตมาด้วยกันกับ {name} ฝึกดาบไม้ด้วยกันตั้งแต่เด็ก ฝันอยากออกเดินทางมานานแล้ว แค่รอให้เพื่อนชวน',
     likes: 'ดาบดี ๆ, การแข่งวิ่ง', sched: [[7, 12, 'home', 'work'], [12, 22, 'inn', 'table'], [22, 24, 'home']],
     lines: { morning: ['ตื่นสายอีกแล้วนะ {name}! ข้าวิ่งรอบหมู่บ้านไปสามรอบแล้ว'], day: ['ถ้าเจ้าจะออกเดินทาง อย่าทิ้งข้าไว้นะ ข้าฝึกดาบรอมาทั้งปี'], evening: ['จำตอนเราแอบไปจับกบที่ลำธารได้ไหม … ตอนนี้ข้าอยากจับหมาป่าแทน'], night: ['ยังไม่นอนอีกเหรอ? ข้าก็นอนไม่หลับ ใจมันอยากออกไปข้างนอก'] },

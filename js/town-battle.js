@@ -54,7 +54,7 @@
   };
   /* v92.17: recruits from the village (village-life.js, loaded by battle-field.html) */
   for (const [k, v] of Object.entries(window.VillageLife?.ALLY_STATS || {})) if (!ALLY[k]) ALLY[k] = v;
-  const ALLY_ART = ['bram', 'luna', 'kier', 'mil'];
+  const ALLY_ART = ['bram', 'luna', 'mil'];   /* v97.76: kier left out — his old battle pictures are a different design; the new village picture + code poses (drawNpcSprite) are used until his battle sheets arrive. Put 'kier' back when they do (and in ALLY_OWN if all four views exist) */
   const ALLY_OWN = { bram: ['se', 'sw', 'ne', 'nw'], luna: ['se', 'sw', 'ne', 'nw'] };   /* v97.65: allies that have their own picture for every diagonal (the rest are mirrored in code) */
   const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv, ctl] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1), control: ctl === '1' || Q.get('ctl') === '1' } : null }).filter(Boolean);
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
