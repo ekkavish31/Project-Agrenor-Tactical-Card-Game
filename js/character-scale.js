@@ -15,6 +15,7 @@ window.CHARACTER_SCALE = {
       "battle": { "SW": 74, "NW": 74, "NE": 74, "SE": 74 },
       "village": { "SW": 74, "NW": 68, "NE": 68, "SE": 75 }
     },
+    "kier": { "village": { "SW": 61, "NW": 59, "NE": 58, "SE": 62 } },
     "luna": {
       "battle": { "SW": 96, "NW": 84, "NE": 84, "SE": 96 },
       "village": { "SW": 96, "NW": 92, "NE": 85, "SE": 92 }

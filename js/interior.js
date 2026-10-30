@@ -53,7 +53,6 @@
       if (G?.have.scarecrow) it('scarecrow', 13, 10, 1, 1, { h: 0 });
       if (G?.have.compost) it('compost', 1, 12);
       if (G?.have.channel) it('trough', 3, 6, 10, 1, { h: 4, walk: true });
-      R.light.push({ u: 11, v: 8, r: 12, col: '255,240,200' });
         } else if (KIND === 'inn') {
       Object.assign(R, { W: 13, D: 11, door: 8, floor: 'wood', wall: 'timber' });
       it('counter', 2, 2, 6, 1, { h: 30 }); it('barrel', 9, 1); it('barrel', 9, 2); it('keg', 1, 1);
