@@ -2812,3 +2812,9 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - `data/animation-data.json` / `js/animation-data.js` เหลือ 5 คลิป: `daily.walk`, `sword.walk`, `hammer.walk`, `unarmed.walk`, `adventure.run` (ถูกแมปไปใช้ท่าเดินของภาพใหม่อยู่แล้ว)
 - manifest: 142 รายการของเฟรมที่ลบเป็น `unused` → แถวชีวิตประจำวัน/ผจญภัย/อาวุธ หายจากตาราง Asset Studio · `tools/build-asset-manifest.py` ไม่พังเมื่อไม่มีโฟลเดอร์ extra
 - โค้ดฉาก 2D เก่า (`animation-runtime.js` ฯลฯ) ยังอยู่ แต่เล่นคลิปที่ไม่มีแล้วข้ามเงียบ ๆ · `village-routes.js` กัน error เมื่อไม่มีคลิปยืน · ภาพอ้างอิงใน Asset Studio เปลี่ยนไปใช้ท่ายืนใหม่ของตัวเอก
+
+## v97.62 · เก็บกวาดโค้ดฉาก 2D เก่า (30 ต.ค. 2026)
+- ลบสคริปต์ที่เหลือของฉาก 2D เก่า 6 ไฟล์ (ชั้นแอนิเมชันตัวเอกบนฉากเก่า · แผนที่หมู่บ้านเก่า · เส้นทางเดิน · ท่าหันหน้า): `animation-runtime.js`, `village-outfit.js`, `village-map.js`, `village-routes.js`, `routes.js`, `facing.js` (รวมราว 62 KB) และแท็กใน `index.html`
+- ตัดการเรียก `stopIdle()/scheduleIdle()` ใน `village-town-bridge.js` และ `tactics-bridge.js` · `openMapEditor` ประกาศใน bridge เอง (เดิมประกาศอยู่ใน village-map.js)
+- ทดสอบก่อน/หลังด้วยเบราว์เซอร์จำลอง: หลอม ตี ชุบ พักสั้น กินอาหาร นอน ซื้อ ขาย → ค่าสถานะ (แรง วัตถุดิบ เหรียญ ชิ้นงาน วัน สถานที่) ตรงกันทุกค่า · ต่างแค่นาทีเกมซึ่งเดินตามเวลาจริง (ไม่มีแอนิเมชันเดินแล้ว) · โหลดหน้าไม่มี error
+- ยังไม่ได้ลบ: โครง DOM/CSS ของฉากเก่าใน `index.html`, `ui.js`/`village-ui.js` (ยังเป็นฐานของ station, villageRest, การ์ดงานเก่า), `animation-data.js` (คลิปเดิน/วิ่งที่ผูกกับ `hero-motion.js`)
