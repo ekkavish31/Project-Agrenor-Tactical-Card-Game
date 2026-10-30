@@ -22,15 +22,39 @@ document.querySelector('.toolbar').prepend(menuToggle);document.body.appendChild
 /* v92.13 · the game menu is no longer a drop-down: its buttons float as a row of big icons (white outline) at the top right, together with
    activities, full screen and the journey to the world map */
 (function(){const row=gameMenu;row.hidden=false;row.className='town-icon-row';row.removeAttribute('style');menuToggle.remove();
- const extra=[['activities','🎯'],['fullscreen','⛶']];for(const [id,emo] of extra){const b=$(id);if(!b)continue;const i=document.createElement('span');i.className='ico-emoji';i.textContent=emo;b.prepend(i);row.appendChild(b)}
+ const extra=[['activities','🎯'],['fullscreen','⛶']];{const mb=document.createElement('button');mb.id='townMapBtn';mb.type='button';mb.title='แผนที่เมือง (M)';mb.innerHTML='<span class="ico-emoji">🧭</span>แผนที่เมือง';mb.onclick=()=>townMap();row.prepend(mb)}for(const [id,emo] of extra){const b=$(id);if(!b)continue;const i=document.createElement('span');i.className='ico-emoji';i.textContent=emo;b.prepend(i);row.appendChild(b)}
  if(!EDIT_PAGE&&new URLSearchParams(location.search).get('battle')!=='1'){const a=document.createElement('a');a.href='world-map.html';a.className='town-go';a.innerHTML='<span class="ico-emoji">🗺</span>ออกเดินทาง';row.appendChild(a)}
  const css=document.createElement('style');css.textContent=`.town-icon-row{position:fixed;top:14px;right:14px;z-index:12;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 28px)}
- .town-icon-row>button,.town-icon-row>a{width:72px;height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 4px;border:2px solid #fff;border-radius:16px;background:#14241fd9;color:#fff;font:600 11px VillageThai,system-ui,sans-serif;text-decoration:none;box-shadow:0 6px 18px #0008,inset 0 0 0 1px #0004;backdrop-filter:blur(6px);cursor:pointer;transition:transform .15s,background .15s}
- .town-icon-row>button:hover,.town-icon-row>a:hover{transform:translateY(-3px);background:#22392fe6}
- .town-icon-row img{width:40px!important;height:40px!important;margin:0!important;filter:drop-shadow(0 2px 3px #0008)}.town-icon-row .ico-emoji{font-size:30px;line-height:1;filter:drop-shadow(0 2px 3px #0008)}
- .town-icon-row>a.town-go{background:#8a5a22e6}
- @media (max-width:700px){.town-icon-row{gap:6px;top:8px;right:8px}.town-icon-row>button,.town-icon-row>a{width:54px;height:58px;font-size:9.5px;border-radius:12px}.town-icon-row img{width:28px!important;height:28px!important}.town-icon-row .ico-emoji{font-size:22px}}`;document.head.appendChild(css)})();for(const id of ['compareBtn','fit'])$('toolsPanel').appendChild($(id));
+ /* v97.37 · floating icons: no frame or background, twice the old size, a white outline traced around each icon */
+ .town-icon-row>button,.town-icon-row>a{width:96px;min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;padding:0;border:0;border-radius:0;background:none;color:#fff;font:700 12.5px VillageThai,system-ui,sans-serif;text-decoration:none;box-shadow:none;cursor:pointer;transition:transform .15s;text-shadow:0 0 3px #000,0 1px 2px #000,0 0 6px #000a}
+ .town-icon-row>button:hover,.town-icon-row>a:hover{transform:translateY(-4px) scale(1.06);background:none}
+ .town-icon-row>button:focus-visible,.town-icon-row>a:focus-visible{outline:2px dashed #fff;outline-offset:2px}
+ .town-icon-row img,.town-icon-row .ico-emoji{filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 4px 5px #000a)}
+ .town-icon-row img{width:80px!important;height:80px!important;margin:0!important}.town-icon-row .ico-emoji{font-size:60px;line-height:80px;height:80px}
+ .town-icon-row>a.town-go{background:none}
+ @media (max-width:900px){.town-icon-row{gap:4px;top:8px;right:8px}.town-icon-row>button,.town-icon-row>a{width:62px;min-height:70px;font-size:10px}.town-icon-row img{width:50px!important;height:50px!important}.town-icon-row .ico-emoji{font-size:38px;line-height:50px;height:50px}}`;document.head.appendChild(css)})();for(const id of ['compareBtn','fit'])$('toolsPanel').appendChild($(id));
 
+/* v97.37 · town map (top-right 🧭 or M): the whole village fitted to the screen once, frozen into a picture, with a marker per place —
+   click a marker to walk there. The camera zoom itself stays limited, so the normal view never gets tiny. */
+async function townMap(){if(EDIT_PAGE)return;const old=document.getElementById('townMap');if(old){old.remove();return}
+ const d=document.createElement('div');d.id='townMap';d.innerHTML='<div class="tm-box"><div class="tm-head"><b>🧭 แผนที่ เฟิร์นเวล</b><small>คลิกสถานที่เพื่อเดินไป · Esc/M ปิด</small><button class="tm-x">✕</button></div><div class="tm-pic"><canvas></canvas></div></div>';
+ if(!document.getElementById('townMapCss')){const c=document.createElement('style');c.id='townMapCss';c.textContent=`#townMap{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#06090cd9;backdrop-filter:blur(4px);font-family:VillageThai,system-ui,sans-serif}
+  #townMap .tm-box{width:min(1700px,96vw);padding:12px 14px 14px;border-radius:16px;background:linear-gradient(#efe0bc,#d9c495);box-shadow:0 24px 60px #000c;color:#3a2810}
+  #townMap .tm-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}#townMap .tm-head b{font:800 20px Georgia,"Noto Sans Thai",serif}#townMap .tm-head small{color:#6a5030;flex:1}
+  #townMap .tm-x{background:none;border:0;font-size:22px;cursor:pointer;color:#3a2810}#townMap .tm-pic{position:relative;border-radius:10px;overflow:hidden;border:3px solid #6a4a20;background:#2c3d2e}
+  #townMap canvas{display:block;width:100%;height:auto}#townMap .tm-pin{position:absolute;transform:translate(-50%,-100%);padding:3px 9px;border-radius:999px;background:#1d2a20e6;color:#fff3d6;font:700 12px VillageThai,system-ui,sans-serif;border:1.5px solid #f0d290;white-space:nowrap;cursor:pointer;box-shadow:0 2px 6px #0008}
+  #townMap .tm-pin:hover{background:#c9902e;color:#2a1a06;z-index:2}#townMap .tm-pin.me{background:#2f7a4a;border-color:#fff}`;document.head.appendChild(c)}
+ document.body.appendChild(d);const close=()=>{d.remove();removeEventListener('keydown',key,true)},key=e=>{if(e.key==='Escape'||e.key==='m'||e.key==='M'){e.preventDefault();e.stopPropagation();close()}};addEventListener('keydown',key,true);
+ d.onclick=e=>{if(e.target===d||e.target.closest('.tm-x'))close()};
+ /* freeze one frame at a zoom that fits the village, then put the camera back */
+ const save={zoom,px:pan.x,py:pan.y,follow};follow=false;const fit=Math.min(W*.99/(scale*WORLD_W),H*.99/(scale*WORLD_H));zoom=fit;pan.x=0;pan.y=0;
+ for(let i=0;i<4;i++)await new Promise(r=>requestAnimationFrame(r));await new Promise(r=>setTimeout(r,60));
+ const cvs=d.querySelector('canvas'),src=document.querySelector('canvas#world')||cv,k=scale*zoom*devicePixelRatio,cx=Math.max(0,(W/2+pan.x-WORLD_W/2*scale*zoom)*devicePixelRatio),cy=Math.max(0,(H/2+pan.y-WORLD_H/2*scale*zoom)*devicePixelRatio);cvs.width=Math.min(src.width-cx,WORLD_W*k);cvs.height=Math.min(src.height-cy,WORLD_H*k);cvs.getContext('2d').drawImage(src,cx,cy,cvs.width,cvs.height,0,0,cvs.width,cvs.height);
+ const toPct=p=>{const sx=(W/2+pan.x+(p.x-WORLD_W/2)*scale*zoom)*devicePixelRatio,sy=(H/2+pan.y+(p.y-WORLD_H/2)*scale*zoom)*devicePixelRatio;return{x:(sx-cx)/cvs.width*100,y:(sy-cy)/cvs.height*100}};
+ const pic=d.querySelector('.tm-pic');pic.style.width='min(100%,'+Math.round((innerHeight-110)*cvs.width/cvs.height)+'px)';pic.style.margin='0 auto';for(const o of locations){if(!o.name)continue;const q=toPct(project(door(o).u,door(o).v));if(q.x<0||q.x>100||q.y<0||q.y>100)continue;const b=document.createElement('span');b.className='tm-pin';b.textContent=o.name;b.style.left=q.x+'%';b.style.top=q.y+'%';b.onclick=()=>{close();travel(o)};pic.appendChild(b)}
+ {const q=toPct(project(hero.u,hero.v)),b=document.createElement('span');b.className='tm-pin me';b.textContent='● คุณอยู่ที่นี่';b.style.left=q.x+'%';b.style.top=q.y+'%';pic.appendChild(b)}
+ zoom=save.zoom;pan.x=save.px;pan.y=save.py;follow=save.follow}
+addEventListener('keydown',e=>{if((e.key==='m'||e.key==='M')&&!e.target.closest?.('input,textarea')&&!document.getElementById('townMap')&&!document.querySelector('dialog[open]'))townMap()});
 // v81.x · a service point can sit deep inside the building: the hero walks to the edge, then straight over the art to it
 const deepEntry=Object.assign(document.createElement('label'),{innerHTML:'<input type="checkbox"> วางจุดเข้าลึกเข้าไปในอาคารได้ (หรือกด Shift ขณะลาก)'});deepEntry.style.cssText='gap:6px;font-size:12px;margin:4px 0';const deepBox=deepEntry.querySelector('input');Object.defineProperty(deepEntry,'checked',{get:()=>deepBox.checked});selectMode.after(deepEntry);deepEntry.hidden=true;selectMode.addEventListener('change',()=>deepEntry.hidden=!editing||mode!=='entry');
 function edgeOf(o){const a=center(o),d=entry(o),b=boundary(o,d);return canonical(o,a.u+b.du,a.v+b.dv)}
