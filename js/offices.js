@@ -80,6 +80,7 @@
           ${note ? `<p style="margin:6px 0;padding:6px 10px;border-radius:8px;background:#fff9;font-size:13px">${note}</p>` : ''}${cur}${rows}</div>`;
       };
       draw(settle(S).join('<br>')); document.body.append(d);
+      root.Tips?.once('office', 'รับราชการ', ['แต่ละตำแหน่งต้องเป็นอาชีพที่กำหนด มีเลเวลอาชีพและชื่อเสียงกับหน่วยงานถึงเกณฑ์', 'ทำหน้าที่ครบในแต่ละสัปดาห์ได้เงินเดือนและชื่อเสียง · ขาดสองสัปดาห์ติดจะถูกปลด', 'ขอเลื่อนขั้นได้ที่เมืองของตำแหน่งนั้น · สิทธิพิเศษจะแรงขึ้นตามขั้น'], 'assets/icons/menu/castle.webp');   /* v97.89 */
       const close = () => { removeEventListener('keydown', key, true); d.remove(); res() }, key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close() } };
       addEventListener('keydown', key, true);
       d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) return close(); const b = e.target.closest('[data-a]'); if (!b || b.disabled) return; const [a, id] = b.dataset.a.split(':'); let note = '';

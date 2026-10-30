@@ -76,6 +76,7 @@
           ${off.map(o => { const w = why(S, o); return `<div style="display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;padding:9px 10px;border-radius:12px;background:#f8efd8;border:2px solid #8a6a3a66;margin:5px 0;box-shadow:inset 0 0 18px #b08a4a33"><div style="height:96px;border-radius:8px;background:#e8d8b0 url('${picOf(o)}') center 20%/cover no-repeat;border:2px solid #6a4a2a;filter:sepia(.35)"></div><div><b style="font-size:15px">WANTED · ${stars(o.tier)} ${o.name}</b> <small style="color:#7a6040">· ${TIERS[o.tier].name} · ${o.reward} 💰</small><br><small>${o.text}</small><br>${btn('take:' + o.id, 'รับประกาศ', !!w)} <small style="color:#a0442a">${w}</small></div></div>` }).join('')}</div>`;
       };
       draw(expire(S).join('<br>')); document.body.append(d);
+      root.Tips?.once('bounty', 'ประกาศจับ', ['รับได้ทีละ 2 ใบ ใบละ 10 วัน · ประกาศใหม่ทุกสัปดาห์', 'เป้าหมายขึ้นเป็น ☠ บนแผนที่โลก · HUD บอกทิศและระยะของใบที่ใกล้ที่สุด', 'ปราบแล้วกลับมารับรางวัลที่กระดานไหนก็ได้ (กิลด์เฟิร์นเวล หรือสำนักใหญ่ในนครหลวง)'], 'assets/icons/menu/quest.webp');   /* v97.89 */
       const close = () => { removeEventListener('keydown', key, true); d.remove(); res() }, key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close() } };
       addEventListener('keydown', key, true);
       d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) return close(); const b = e.target.closest('[data-a]'); if (!b || b.disabled) return; const [a, id] = b.dataset.a.split(':'); let note = '';

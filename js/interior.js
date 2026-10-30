@@ -789,7 +789,7 @@
   addEventListener('keydown', e => { if (e.key === 'Escape') { close(); document.querySelector('.in-party')?.remove(); modalOpen = false } });
 
   /* ---------- start ---------- */
-  if (KIND === 'farm') { const msgs = farmDo(G => window.Garden.tick(G)) || []; for (const m of msgs.slice(0, 3)) toast(m) }   /* v97.82 · the days you were away */
+  if (KIND === 'farm') { const msgs = farmDo(G => window.Garden.tick(G)) || []; for (const m of msgs.slice(0, 3)) toast(m); window.Tips?.once('farm', 'ไร่ของเรา', ['คลิกช่องในทุ่ง: ถางหิน ตอไม้ กิ่งไม้ และวัชพืช แล้วไถดิน', 'เลือก 🌱 เมล็ดในมือ แล้วคลิกดินที่ไถแล้วเพื่อปลูก · รดน้ำทุกวัน (ฝนตกรดให้เอง)', 'กระท่อม = จัดการไร่และนอนพัก · กล่องส่งขาย = ขายของในตะกร้า · บ่อน้ำ = ตกปลา', 'ถางและไถทำให้เหนื่อย ถ้าเหนื่อยมากต้องพักก่อน'], 'assets/icons/menu/village.webp') }   /* v97.82 · the days you were away · v97.89 the first-time tip */
   resize(); syncPeople(true); hudSync(); requestAnimationFrame(frame);
   if (KIND === 'square') toast('ลานกลางหมู่บ้านเป็นที่โล่ง — กลับออกไปข้างนอกได้เลย');
   window.Interior = { people, hero, talk: id => { const a = people.get(id); if (a) talk(a) }, act: (id, w) => { const a = people.get(id); if (a) return act(a, w) }, room: R, kind: KIND, sync: () => { syncPeople(false); hudSync() } };
