@@ -38,7 +38,7 @@ function runMapTo(target,onArrive){let avatar=$('mapAvatar'),img=$('mapRunner');
  requestAnimationFrame(step);return run.promise}
 function retargetMapRun(target){if(!mapRun)return false;let avatar=$('mapAvatar'),cur={x:parseFloat(avatar.style.left),y:parseFloat(avatar.style.top)};mapRun.target=target;mapRun.path=villageRoutePath(cur,target).slice(1);return true}
 
-function faceFront(){let img=$('mapRunner');if(!img)return;img.style.transform='scaleX(1)';img.src=HERO_ANIMATIONS.clips['daily.idle'].frames[0].src}
+function faceFront(){let img=$('mapRunner');if(!img)return;img.style.transform='scaleX(1)';const f=HERO_ANIMATIONS.clips['daily.idle']?.frames?.[0];if(f)img.src=f.src}
 
 let mapDestination=null;
 villageTravel=async function(to){if(busy||devActive)return;let reason=travelReason(to);if(reason){if($('mapStatus'))$('mapStatus').textContent=reason;return}if(!$('panel').open||!$('mapAvatar'))renderMap();busy=true;stopIdle();mapDestination=to;let player=new FramePlayer($('mapRunner'));$('mapStatus').textContent='กำลังวิ่งไป'+VILLAGE_NODES[to].name+' · แตะสถานที่อื่นเพื่อเปลี่ยนจุดหมาย';document.body.classList.add('busy');let close=$('panel').querySelector('.panelhead button');close.disabled=true;

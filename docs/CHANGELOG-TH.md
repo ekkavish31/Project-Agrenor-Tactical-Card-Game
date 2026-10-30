@@ -2806,3 +2806,9 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 ## v97.60 · ลูน่าเดิน (30 ต.ค. 2026)
 - `assets/village-town/npc/luna/<se|sw|ne|nw>-walk1.webp` เฟรมก้าวเดียวต่อทิศ · ตอนเดินสลับเฟรมก้าว ↔ ท่ายืน (`SPR_INFO.luna.walk = 1`) · ได้ชุดก้าวขาอีกข้างมาแล้วเปลี่ยนเป็น `walk: 2` ได้เลย
+
+## v97.61 · ลบเฟรมตัวเอกของฉาก 2D เก่า (30 ต.ค. 2026)
+- ฉาก 2D เก่าที่โต้ตอบได้ถูกแมพย่อยแทนทั้งหมดแล้ว → ลบคลิปและภาพที่เหลือของมัน: `assets/characters/hero/` 122 ไฟล์ (ชีวิตประจำวัน ยืน/หาว/นั่งยอง/มอง/เหยียดแขน · ผจญภัย cast/meal/rest/sleep · ดาบ/ค้อน/มือเปล่า idle/attack/hit · โฟลเดอร์ extra และ village) และ `js/idle-extra.js`, `js/village-idle.js`
+- `data/animation-data.json` / `js/animation-data.js` เหลือ 5 คลิป: `daily.walk`, `sword.walk`, `hammer.walk`, `unarmed.walk`, `adventure.run` (ถูกแมปไปใช้ท่าเดินของภาพใหม่อยู่แล้ว)
+- manifest: 142 รายการของเฟรมที่ลบเป็น `unused` → แถวชีวิตประจำวัน/ผจญภัย/อาวุธ หายจากตาราง Asset Studio · `tools/build-asset-manifest.py` ไม่พังเมื่อไม่มีโฟลเดอร์ extra
+- โค้ดฉาก 2D เก่า (`animation-runtime.js` ฯลฯ) ยังอยู่ แต่เล่นคลิปที่ไม่มีแล้วข้ามเงียบ ๆ · `village-routes.js` กัน error เมื่อไม่มีคลิปยืน · ภาพอ้างอิงใน Asset Studio เปลี่ยนไปใช้ท่ายืนใหม่ของตัวเอก

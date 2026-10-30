@@ -2118,7 +2118,7 @@
    "id": "frame-hero_sword_idle_right_01_ready",
    "file": "assets/characters/hero/hero_sword_idle_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2140,7 +2140,7 @@
    "id": "frame-hero_sword_idle_right_02_inhale",
    "file": "assets/characters/hero/hero_sword_idle_right_02_inhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2162,7 +2162,7 @@
    "id": "frame-hero_sword_idle_right_03_exhale",
    "file": "assets/characters/hero/hero_sword_idle_right_03_exhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2184,7 +2184,7 @@
    "id": "frame-hero_sword_idle_right_04_recover",
    "file": "assets/characters/hero/hero_sword_idle_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2294,7 +2294,7 @@
    "id": "frame-hero_sword_attack_right_01_ready",
    "file": "assets/characters/hero/hero_sword_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2316,7 +2316,7 @@
    "id": "frame-hero_sword_attack_right_02_windup",
    "file": "assets/characters/hero/hero_sword_attack_right_02_windup.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2338,7 +2338,7 @@
    "id": "frame-hero_sword_attack_right_03_impact",
    "file": "assets/characters/hero/hero_sword_attack_right_03_impact.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2360,7 +2360,7 @@
    "id": "frame-hero_sword_attack_right_01_ready",
    "file": "assets/characters/hero/hero_sword_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2382,7 +2382,7 @@
    "id": "frame-hero_sword_attack_right_01_ready",
    "file": "assets/characters/hero/hero_sword_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2404,7 +2404,7 @@
    "id": "frame-hero_sword_hit_right_01_ready",
    "file": "assets/characters/hero/hero_sword_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2426,7 +2426,7 @@
    "id": "frame-hero_sword_hit_right_02_action",
    "file": "assets/characters/hero/hero_sword_hit_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2448,7 +2448,7 @@
    "id": "frame-hero_sword_hit_right_03_action",
    "file": "assets/characters/hero/hero_sword_hit_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2470,7 +2470,7 @@
    "id": "frame-hero_sword_hit_right_04_recover",
    "file": "assets/characters/hero/hero_sword_hit_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2492,7 +2492,7 @@
    "id": "frame-hero_sword_hit_right_01_ready",
    "file": "assets/characters/hero/hero_sword_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2514,7 +2514,7 @@
    "id": "frame-hero_hammer_idle_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_idle_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2536,7 +2536,7 @@
    "id": "frame-hero_hammer_idle_right_02_inhale",
    "file": "assets/characters/hero/hero_hammer_idle_right_02_inhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2558,7 +2558,7 @@
    "id": "frame-hero_hammer_idle_right_03_exhale",
    "file": "assets/characters/hero/hero_hammer_idle_right_03_exhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2580,7 +2580,7 @@
    "id": "frame-hero_hammer_idle_right_04_recover",
    "file": "assets/characters/hero/hero_hammer_idle_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2690,7 +2690,7 @@
    "id": "frame-hero_hammer_attack_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2712,7 +2712,7 @@
    "id": "frame-hero_hammer_attack_right_02_windup",
    "file": "assets/characters/hero/hero_hammer_attack_right_02_windup.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2734,7 +2734,7 @@
    "id": "frame-hero_hammer_attack_right_03_impact",
    "file": "assets/characters/hero/hero_hammer_attack_right_03_impact.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2756,7 +2756,7 @@
    "id": "frame-hero_hammer_attack_right_04_followthrough",
    "file": "assets/characters/hero/hero_hammer_attack_right_04_followthrough.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2778,7 +2778,7 @@
    "id": "frame-hero_hammer_attack_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2800,7 +2800,7 @@
    "id": "frame-hero_hammer_hit_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2822,7 +2822,7 @@
    "id": "frame-hero_hammer_hit_right_02_action",
    "file": "assets/characters/hero/hero_hammer_hit_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2844,7 +2844,7 @@
    "id": "frame-hero_hammer_hit_right_03_action",
    "file": "assets/characters/hero/hero_hammer_hit_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2866,7 +2866,7 @@
    "id": "frame-hero_hammer_hit_right_04_recover",
    "file": "assets/characters/hero/hero_hammer_hit_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2888,7 +2888,7 @@
    "id": "frame-hero_hammer_hit_right_01_ready",
    "file": "assets/characters/hero/hero_hammer_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2910,7 +2910,7 @@
    "id": "frame-hero_unarmed_idle_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_idle_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2932,7 +2932,7 @@
    "id": "frame-hero_unarmed_idle_right_02_inhale",
    "file": "assets/characters/hero/hero_unarmed_idle_right_02_inhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2954,7 +2954,7 @@
    "id": "frame-hero_unarmed_idle_right_03_exhale",
    "file": "assets/characters/hero/hero_unarmed_idle_right_03_exhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -2976,7 +2976,7 @@
    "id": "frame-hero_unarmed_idle_right_04_recover",
    "file": "assets/characters/hero/hero_unarmed_idle_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3086,7 +3086,7 @@
    "id": "frame-hero_unarmed_attack_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3108,7 +3108,7 @@
    "id": "frame-hero_unarmed_attack_right_02_windup",
    "file": "assets/characters/hero/hero_unarmed_attack_right_02_windup.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3130,7 +3130,7 @@
    "id": "frame-hero_unarmed_attack_right_03_impact",
    "file": "assets/characters/hero/hero_unarmed_attack_right_03_impact.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3152,7 +3152,7 @@
    "id": "frame-hero_unarmed_attack_right_04_followthrough",
    "file": "assets/characters/hero/hero_unarmed_attack_right_04_followthrough.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3174,7 +3174,7 @@
    "id": "frame-hero_unarmed_attack_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_attack_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3196,7 +3196,7 @@
    "id": "frame-hero_unarmed_hit_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3218,7 +3218,7 @@
    "id": "frame-hero_unarmed_hit_right_02_action",
    "file": "assets/characters/hero/hero_unarmed_hit_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3240,7 +3240,7 @@
    "id": "frame-hero_unarmed_hit_right_03_action",
    "file": "assets/characters/hero/hero_unarmed_hit_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3262,7 +3262,7 @@
    "id": "frame-hero_unarmed_hit_right_04_recover",
    "file": "assets/characters/hero/hero_unarmed_hit_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3284,7 +3284,7 @@
    "id": "frame-hero_unarmed_hit_right_01_ready",
    "file": "assets/characters/hero/hero_unarmed_hit_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3306,7 +3306,7 @@
    "id": "frame-hero_adventure_cast_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_cast_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3328,7 +3328,7 @@
    "id": "frame-hero_adventure_cast_right_02_action",
    "file": "assets/characters/hero/hero_adventure_cast_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3350,7 +3350,7 @@
    "id": "frame-hero_adventure_cast_right_03_action",
    "file": "assets/characters/hero/hero_adventure_cast_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3372,7 +3372,7 @@
    "id": "frame-hero_adventure_cast_right_04_recover",
    "file": "assets/characters/hero/hero_adventure_cast_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3394,7 +3394,7 @@
    "id": "frame-hero_adventure_cast_right_05_ready",
    "file": "assets/characters/hero/hero_adventure_cast_right_05_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3416,7 +3416,7 @@
    "id": "frame-hero_adventure_cast_right_06_action",
    "file": "assets/characters/hero/hero_adventure_cast_right_06_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3438,7 +3438,7 @@
    "id": "frame-hero_adventure_cast_right_07_action",
    "file": "assets/characters/hero/hero_adventure_cast_right_07_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3460,7 +3460,7 @@
    "id": "frame-hero_adventure_cast_right_08_recover",
    "file": "assets/characters/hero/hero_adventure_cast_right_08_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3482,7 +3482,7 @@
    "id": "frame-hero_adventure_cast_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_cast_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3504,7 +3504,7 @@
    "id": "frame-hero_adventure_meal_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_meal_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3526,7 +3526,7 @@
    "id": "frame-hero_adventure_meal_right_02_action",
    "file": "assets/characters/hero/hero_adventure_meal_right_02_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3548,7 +3548,7 @@
    "id": "frame-hero_adventure_meal_right_03_action",
    "file": "assets/characters/hero/hero_adventure_meal_right_03_action.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3570,7 +3570,7 @@
    "id": "frame-hero_adventure_meal_right_04_recover",
    "file": "assets/characters/hero/hero_adventure_meal_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3592,7 +3592,7 @@
    "id": "frame-hero_adventure_meal_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_meal_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3614,7 +3614,7 @@
    "id": "frame-hero_adventure_rest_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_rest_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3636,7 +3636,7 @@
    "id": "frame-hero_adventure_rest_right_02_inhale",
    "file": "assets/characters/hero/hero_adventure_rest_right_02_inhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3658,7 +3658,7 @@
    "id": "frame-hero_adventure_rest_right_03_exhale",
    "file": "assets/characters/hero/hero_adventure_rest_right_03_exhale.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3680,7 +3680,7 @@
    "id": "frame-hero_adventure_rest_right_04_recover",
    "file": "assets/characters/hero/hero_adventure_rest_right_04_recover.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3702,7 +3702,7 @@
    "id": "frame-hero_adventure_rest_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_rest_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3724,7 +3724,7 @@
    "id": "frame-hero_adventure_sleep_right_01_ready",
    "file": "assets/characters/hero/hero_adventure_sleep_right_01_ready.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3746,7 +3746,7 @@
    "id": "frame-hero_adventure_sleep_right_02_lower",
    "file": "assets/characters/hero/hero_adventure_sleep_right_02_lower.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3768,7 +3768,7 @@
    "id": "frame-hero_adventure_sleep_right_03_hold",
    "file": "assets/characters/hero/hero_adventure_sleep_right_03_hold.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -3790,7 +3790,7 @@
    "id": "frame-hero_adventure_sleep_right_04_rise",
    "file": "assets/characters/hero/hero_adventure_sleep_right_04_rise.webp",
    "category": "hero-frames",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -11818,7 +11818,7 @@
    "id": "idle-front-neutral",
    "file": "assets/characters/hero/village/idle-neutral.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -11833,7 +11833,7 @@
    "id": "idle-front-look",
    "file": "assets/characters/hero/village/idle-look.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -11848,7 +11848,7 @@
    "id": "idle-front-adjust",
    "file": "assets/characters/hero/village/idle-adjust.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -11863,7 +11863,7 @@
    "id": "idle-front-stretch",
    "file": "assets/characters/hero/village/idle-stretch.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -12661,7 +12661,7 @@
    "id": "village-idle-yawn",
    "file": "assets/characters/hero/village/idle-yawn.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -12679,7 +12679,7 @@
    "id": "village-idle-squat",
    "file": "assets/characters/hero/village/idle-squat.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -12697,7 +12697,7 @@
    "id": "village-idle-stretch-up",
    "file": "assets/characters/hero/village/idle-stretch-up.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
@@ -12715,7 +12715,7 @@
    "id": "village-idle-easy",
    "file": "assets/characters/hero/village/idle-easy.webp",
    "category": "village-idle",
-   "status": "final",
+   "status": "unused",
    "size": [
     900,
     900
