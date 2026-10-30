@@ -1004,6 +1004,21 @@
     }
     g.restore();
   }
+  /* v97.69 · recruits with a village picture but no battle sheet (look.sprite): the village stand/walk picture acts the fight in code (lean, lunge, recoil, crouch, fall from poseMotion)
+     with the floating weapon + swing trail. Characters that have their own battle pictures (ALLY_ART) keep using those. */
+  const NPCW = { sword: 'sword', axe: 'axe', bow: 'bow', staff: 'staff', dagger: 'knife', hammer: 'hammer', book: 'tome' };
+  function drawNpcSprite(g, u, t, p, look, pm, UNITv, A, scaleK) {
+    const sc = scaleK, size = 384 * sc * 84 / 330;   /* the 384 canvas of the picture as drawn by VillagerDraw (feet at y 372) */
+    g.save(); if (u.hp <= 0) g.globalAlpha *= .5;
+    g.translate(p.x + pm.dx, p.y + pm.dy - (u.lift || 0)); g.rotate(pm.rot); g.scale(pm.sx, pm.sy);
+    window.VillagerDraw(g, look, 0, 0, t, { walking: u.walking && u.hp > 0, face: u.dir, scale: sc });
+    if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .5; window.VillagerDraw(g, look, 0, 0, t, { face: u.dir, scale: sc }) }
+    g.restore();
+    const wk = NPCW[look.weapon];
+    if (A && wk && u.hp > 0 && FLOATPOSE.includes(actState(u, t).act)) {
+      g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * 372 / 384, size); actionTrail(g, u, t, wk, 0, -size * 372 / 384, size, 0, .56); g.restore();
+    }
+  }
   /* ---------- v97.18 · the job's look on the same hero picture (docs/TODO.md "อาชีพและอาวุธ") ----------
      outfit: the cloth pixels (the old green cloak, or the dull dark brown between shoulders and boots of the current outfit) take the job's hue / saturation / lightness — skin and hair stay;
      done once per picture and job, then cached · aura: code-drawn, behind and around the hero · emblem: the job sign next to the HP bar */
@@ -1047,6 +1062,7 @@
   function drawAlly(g, u, t) {
     const p = project(u.vu, u.vv), back = ['NE', 'NW'].includes(u.dir), flip = ['SW', 'NW'].includes(u.dir), pose = u.hp <= 0 ? 'down' : u.walking ? 'idle' : (['windup', 'strike', 'hit', 'guard'].includes(u.pose) ? u.pose : 'idle');
     if (!ALLY_ART.includes(u.key) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
+      if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT / 56 * .78); if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
       g.save(); if (u.hp <= 0) g.globalAlpha *= .5; g.translate(pm.dx * .6, pm.dy - (u.lift || 0)); VillagerDraw(g, look, p.x, p.y, t, { walking: u.walking, face: u.dir, scale: UNIT / 56 * .78, act: u.hp <= 0 ? 'sleep' : u.pose === 'strike' ? 'work' : '' });
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .5; VillagerDraw(g, look, p.x, p.y, t, { face: u.dir, scale: UNIT / 56 * .78 }) } g.restore(); if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
     /* v97.65: allies with their own SW/NW pictures (ALLY_OWN) use them as they are; everyone else mirrors SE/NE */
