@@ -11,7 +11,8 @@
     guild: { name: 'สมาคมนักผจญภัย', icon: '⚔', col: '#b0502e', perk: 'ค่าจ้างงานกิลด์สูงขึ้น' },
     merchants: { name: 'พ่อค้าแห่งหุบเขา', icon: '⚖', col: '#c9902e', perk: 'ของในร้านค้าและตลาดถูกลง' },
     temple: { name: 'วิหารธาตุ', icon: '⛩', col: '#7a6ac8', perk: 'ถวายได้น้ำมนต์มากขึ้น' },
-    garrison: { name: 'กองทหารด่านเหนือ', icon: '🛡', col: '#4f7fb0', perk: 'ของที่ด่านหินเหนือถูกลง' }   /* v97.43 · rules Northgate (js/settlements.js) */
+    garrison: { name: 'กองทหารด่านเหนือ', icon: '🛡', col: '#4f7fb0', perk: 'ของที่ด่านหินเหนือถูกลง' },   /* v97.43 · rules Northgate (js/settlements.js) */
+    crown: { name: 'ราชสำนักอัลเดรน', icon: '👑', col: '#8a5ab0', perk: 'ของในนครหลวงและหมู่บ้านหลวงถูกลง' }   /* v97.72 · the king's court at Lakenhold */
   };
   const TIERS = [[-100, 'ศัตรู', '#a03a2a'], [-40, 'ไม่ไว้ใจ', '#c0702a'], [-10, 'กลาง ๆ', '#8a8a7a'], [20, 'เป็นมิตร', '#5a9a4a'], [50, 'นับถือ', '#3a8aa8'], [80, 'ยกย่อง', '#c9a02e']];
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

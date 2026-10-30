@@ -153,8 +153,8 @@
       t.biome = d.biome; t.river = false; t.poi = { ...d }; w.dests.push({ ...d, c: t.c, r: t.r });
     }
     for (const d of TOWNS) {
-      const t = snap(NC.marks[d.id], d.biomes); if (!t || t.poi) continue;
-      t.poi = { id: 'town:' + d.id, town: d.id, name: d.name, icon: 'town' }; t.river = false; w.towns.push({ ...d, c: t.c, r: t.r });
+      const m = NC.marks[d.id] || d.mark; if (!m) continue; const t = snap(m, d.biomes); if (!t || t.poi) continue;
+      t.poi = { id: 'town:' + d.id, town: d.id, name: d.name, icon: d.icon || 'town' }; t.river = false; w.towns.push({ ...d, c: t.c, r: t.r });
     }
     /* every destination and town must be reachable: where a range or a channel cuts one off, open a pass (mountain → hills) or a ford (water → beach) on the cheapest way through */
     for (const t of [...w.dests, ...w.towns]) {
@@ -201,16 +201,23 @@
   const TOWNS = [
     { id: 'brookmere', name: 'หมู่บ้านบรู๊คเมียร์', min: 3, max: 6, side: 'west', biomes: ['grass', 'forest'] },
     { id: 'haven', name: 'ท่าเรือซอลต์เฮเวน', min: 7, max: 13, side: 'coast', biomes: ['sand', 'grass'] },
-    { id: 'northgate', name: 'ด่านหินเหนือ', min: 6, max: 12, side: 'north', biomes: ['hills', 'snow', 'grass'] }
+    { id: 'northgate', name: 'ด่านหินเหนือ', min: 6, max: 12, side: 'north', biomes: ['hills', 'snow', 'grass'] },
+    /* v97.72 · the Kingdom of Aldren (js/settlements.js): placed after the old three so their spots stay where saves left them.
+       mark = where they sit on the real map (the lake south-west of Fernvale, the stony north, the foot of the eastern pass, the red southern plain) */
+    { id: 'lakenhold', name: 'นครหลวงลาเคนฮอลด์', min: 8, max: 16, side: 'lake', biomes: ['grass', 'forest', 'sand'], mark: [65, 71], icon: 'city' },
+    { id: 'willowshore', name: 'หมู่บ้านวิลโลว์ชอร์', min: 5, max: 14, side: 'lake', biomes: ['grass', 'swamp', 'sand'], mark: [54, 71] },
+    { id: 'deepcairn', name: 'หมู่บ้านดีปแคร์น', min: 4, max: 12, side: 'north', biomes: ['stone', 'hills'], mark: [67, 31] },
+    { id: 'thornwatch', name: 'ธอร์นวอตช์', min: 5, max: 14, side: 'east', biomes: ['hills', 'forest', 'stone'], mark: [81, 44] },
+    { id: 'vinehollow', name: 'หมู่บ้านไวน์ฮอลโลว์', min: 4, max: 12, side: 'south', biomes: ['grass', 'hills'], mark: [74, 88] }
   ];
   function placeTowns(w, seed) {
     const R = rng(seed ^ 0x70b5), T = (c, r) => w.tiles[key(c, r)], home = w.home; w.towns = [];
     const nearWater = t => neighbors(t.c, t.r).some(([c, r]) => T(c, r).biome === 'water');
     for (const d of TOWNS) {
-      const score = t => (d.side === 'west' ? t.c - home.c : d.side === 'north' ? t.r - home.r : nearWater(t) ? -20 : 0) + (d.biomes.includes(t.biome) ? -3 : 0) + R() * 2;
+      const score = t => (d.side === 'west' ? t.c - home.c : d.side === 'north' ? t.r - home.r : d.side === 'east' ? home.c - t.c : d.side === 'south' ? home.r - t.r : nearWater(t) ? -20 : 0) + (d.biomes.includes(t.biome) ? -3 : 0) + R() * 2;
       const cands = Object.values(w.tiles).filter(t => !t.poi && BIOME[t.biome].pass && dist(t, home) >= d.min && dist(t, home) <= d.max && w.dests.every(o => dist(o, t) >= 3) && w.towns.every(o => dist(o, t) >= 4)).sort((a, b) => score(a) - score(b));
       const spot = cands.slice(0, 20).find(t => path(w, home, t)); if (!spot) continue;
-      spot.poi = { id: 'town:' + d.id, town: d.id, name: d.name, icon: 'town' }; spot.enc = null;
+      spot.poi = { id: 'town:' + d.id, town: d.id, name: d.name, icon: d.icon || 'town' }; spot.enc = null;
       w.towns.push({ ...d, c: spot.c, r: spot.r });
     }
   }

@@ -11,7 +11,7 @@
     town: { name: 'เมือง', defence: 'กองยามประจำเมือง', guards: 8, safety: .75 },
     city: { name: 'เมืองใหญ่', defence: 'กองทหารรักษาการณ์และแม่ทัพ', guards: 30, safety: .92 }
   };
-  const GOODS = { food: 'เสบียง', potion: 'ยาฟื้นฟู', iron: 'แท่งเหล็ก', wood: 'ไม้', fish: 'ปลาเค็ม', salt: 'เกลือ', cloth: 'ผ้าทอ', herbs: 'สมุนไพร', fur: 'ขนสัตว์', ore: 'แร่' };
+  const GOODS = { food: 'เสบียง', potion: 'ยาฟื้นฟู', iron: 'แท่งเหล็ก', wood: 'ไม้', fish: 'ปลาเค็ม', salt: 'เกลือ', cloth: 'ผ้าทอ', herbs: 'สมุนไพร', fur: 'ขนสัตว์', ore: 'แร่', dye: 'ผ้าย้อมสี', crystal: 'ผลึก', wine: 'ไวน์' };
   const SETTLEMENTS = {
     fernvale: { name: 'หมู่บ้านเฟิร์นเวล', size: 'village', ruler: 'village', leader: 'ผู้ใหญ่บ้านโอเรน', land: 15, cheap: ['wood', 'herbs', 'food'], dear: ['salt', 'ore'],
       text: 'หมู่บ้านบ้านเกิดริมป่า มีโรงตีเหล็ก ตลาดเล็ก และสมาคมนักผจญภัย' },
@@ -20,7 +20,33 @@
     haven: { name: 'ท่าเรือซอลต์เฮเวน', size: 'city', ruler: 'merchants', leader: 'สภาพ่อค้าแห่งท่าเรือ', land: 60, cheap: ['fish', 'salt', 'potion'], dear: ['wood', 'fur'],
       text: 'เมืองท่าเสียงดัง กลิ่นปลาเค็มและเกลือทะเล เรือสินค้าจอดเรียงเต็มท่า' },
     northgate: { name: 'ด่านหินเหนือ', size: 'town', ruler: 'garrison', leader: 'แม่ทัพเฝ้าด่าน', land: 30, cheap: ['iron', 'ore', 'fur'], dear: ['food', 'herbs'],
-      text: 'ด่านหินบนช่องเขา ทหารเฝ้าทางขึ้นเหนือ นักเดินทางแวะพักก่อนข้ามเขา' }
+      text: 'ด่านหินบนช่องเขา ทหารเฝ้าทางขึ้นเหนือ นักเดินทางแวะพักก่อนข้ามเขา' },
+    /* v97.72 · the Kingdom of Aldren (docs/PROPOSAL-SETTLEMENTS.md): its royal capital on the lake, and four villages around the plain.
+       Lakenhold is the "เมืองใหญ่" the villagers talk about — closed until the prologue is over (js/world-map.js). */
+    lakenhold: { name: 'นครหลวงลาเคนฮอลด์', size: 'city', ruler: 'crown', leader: 'เจ้าเมืองผู้ปกครองแทนพระราชา', land: 80, cheap: ['dye', 'cloth', 'potion'], dear: ['food', 'wood', 'fur', 'crystal'],
+      text: 'นครหลวงแห่งราชอาณาจักรอัลเดรน ริมทะเลสาบ กำแพงสูง สะพานหิน หอคอยเวท พิพิธภัณฑ์ และตลาดที่ใหญ่ที่สุดในที่ราบ', capital: true },
+    willowshore: { name: 'หมู่บ้านวิลโลว์ชอร์', size: 'village', ruler: 'crown', leader: 'ผู้ใหญ่บ้านมาร์ติน', land: 12, cheap: ['fish', 'cloth', 'food'], dear: ['iron', 'wood'],
+      text: 'หมู่บ้านชาวประมงใต้ต้นหลิว เรือพายจอดเรียงริมทะเลสาบ มีเรือข้ามฟากไปนครหลวง' },
+    deepcairn: { name: 'หมู่บ้านดีปแคร์น', size: 'village', ruler: 'crown', leader: 'หัวหน้าคนงานเหมืองโบดิล', land: 10, cheap: ['ore', 'crystal', 'iron'], dear: ['food', 'herbs', 'wine'],
+      text: 'หมู่บ้านคนงานเหมืองบนลานหิน เสียงค้อนดังทั้งวัน ปากเหมืองเรืองแสงจาง ๆ ตอนกลางคืน' },
+    thornwatch: { name: 'ธอร์นวอตช์', size: 'village', ruler: 'guild', leader: 'ผู้ดูแลค่ายของสมาคม', land: 8, cheap: ['fur', 'herbs', 'wood'], dear: ['salt', 'potion', 'cloth'],
+      text: 'ค่ายรั้วไม้ที่ปากช่องเขาตะวันออก จุดพักสุดท้ายของนายพรานและนักสำรวจก่อนเข้าป่าใหญ่' },
+    vinehollow: { name: 'หมู่บ้านไวน์ฮอลโลว์', size: 'village', ruler: 'temple', leader: 'นักบวชผู้ดูแลศาลเจ้า', land: 12, cheap: ['wine', 'food'], dear: ['fish', 'cloth'],
+      text: 'หมู่บ้านไร่องุ่นบนดินแดงทางใต้ มีบ่อน้ำร้อนข้างศาลเจ้าเก่า ไอน้ำลอยขึ้นทุกเช้า' }
+  };
+  /* v97.72 · people you meet in the new places: [name, role, lines] (lines may use {name} for the hero) */
+  const LOCALS = {
+    lakenhold: [['อาจารย์ซีลัส', 'นักเวทแห่งหอคอย', ['มิรายังสอนเด็ก ๆ อยู่ที่เฟิร์นเวลหรือ? บอกนางด้วยว่าหอคอยยังเก็บห้องทดลองของนางไว้… ห้องที่ไหม้ไปครึ่งหนึ่งนั่นแหละ', 'เวทไม่ใช่ของเล่น แต่ก็ไม่ใช่ของต้องห้าม หอคอยรับคนที่อยากเรียนจริงเสมอ']],
+      ['ท่านหญิงโอเดตต์', 'นักโบราณคดีของพิพิธภัณฑ์', ['ผลึกเรืองแสงพวกนั้น … ไม่มีใครรู้ว่ามันเรืองเพราะอะไร ถ้าเจออีกเอามาให้ข้าดูก่อนใคร', 'จารึกที่พบในป่าตะวันออกใช้ตัวอักษรที่ไม่มีใครอ่านออก แต่ลายเส้นบางเส้นซ้ำกันอย่างจงใจ']],
+      ['จ่าฮาโรลด์', 'ทหารหน้าประตูเมือง', ['คนจากเฟิร์นเวลรึ? หมู่บ้านเล็กแต่ส่งของดีมาเสมอ ผ่านไปได้', 'ในเมืองหลวงอย่าเดินเข้าย่านริมน้ำตอนกลางคืนคนเดียว']]],
+    willowshore: [['ป้ากรีตา', 'แม่ค้าปลา ญาติของโจ', ['เจ้ารู้จักโจหรือ? เด็กคนนั้นออกไปตกปลาที่เฟิร์นเวลแล้วไม่ยอมกลับมาเลย', 'ปลาทะเลสาบหวานกว่าปลาทะเล ไม่เชื่อลองชิมดู']],
+      ['ลุงเฟอร์กัส', 'คนพายเรือข้ามฟาก', ['ข้ามไปนครหลวงสามชั่วโมง ถ้าลมดีก็เร็วกว่านั้น', 'บางคืนกลางทะเลสาบมีแสงสะท้อนขึ้นมาจากใต้น้ำ ข้าไม่เคยพายเข้าไปใกล้']]],
+    deepcairn: [['โบดิล', 'หัวหน้าคนงานเหมือง', ['ขาดคนงานทุกวัน ถ้าอยากได้เงินจริงก็มาจับพลั่ว', 'ชั้นล่างของเหมืองเราปิดไว้แล้ว ไม่ใช่เพราะแร่หมด']],
+      ['เทลมา', 'ช่างเจียผลึก', ['ผลึกที่นี่ราคาขึ้นทุกเดือน พ่อค้าจากนครหลวงมากว้านซื้อไม่หยุด', 'ผลึกบางก้อนอุ่นเหมือนมีชีวิต … ข้าไม่ชอบจับนาน ๆ']]],
+    thornwatch: [['เรนัลด์', 'ผู้ดูแลค่ายของสมาคม', ['เกินรั้วนี้ไปคือป่าใหญ่ทางตะวันออก ลงชื่อไว้ก่อนออก จะได้รู้ว่าใครไม่กลับมา', 'สมาคมจ่ายดีสำหรับแผนที่ชายป่า แต่ไม่มีใครจ่ายให้ศพ']],
+      ['ไอวี', 'นายพรานหญิง', ['รอยเท้าสัตว์ในป่าลึกใหญ่กว่าที่ควรจะเป็น', 'ข้าตามกวางเข้าไปสองวัน วันที่สามรู้สึกว่ามีอะไรตามข้าอยู่ เลยกลับ']]],
+    vinehollow: [['นักบวชเบเนดิกต์', 'ผู้ดูแลศาลเจ้า', ['บ่อน้ำร้อนนี้อุ่นมาตั้งแต่ก่อนมีหมู่บ้าน ชาวบ้านเชื่อว่าเป็นพรจากใต้พิภพ', 'ทางใต้ไกลออกไปคือแดนภูเขาไฟ อย่าเดินทางไปโดยไม่มีน้ำติดตัว']],
+      ['ซาบีน', 'เจ้าของไร่องุ่น', ['ไวน์ปีนี้หวานกว่าทุกปี ดินแดงตรงนี้ปลูกอะไรก็งาม', 'พ่อค้าจากนครหลวงชอบไวน์เรา แต่ต่อราคาเก่งเหลือเกิน']]]
   };
   const BASE = { food: 2.5, potion: 18, inn: 12 };
   /* local price of a good: cheap −25 % · dear +35 % · then your standing with the ruler (−5 % a step) */
@@ -91,8 +117,9 @@
   function price(id, good, base) {
     const T = SETTLEMENTS[id]; if (!T) return base; const F = root.Factions;
     const local = T.cheap.includes(good) ? .75 : T.dear.includes(good) ? 1.35 : 1;
-    return Math.max(1, Math.round(base * local * swing(id, good) * polMult(id, good) * (F ? F.priceMult(T.ruler) : 1)));
+    return Math.max(1, Math.round(base * local * swing(id, good) * polMult(id, good) * (F ? F.priceMult(T.ruler) : 1) * (T.capital ? 1 - .03 * (root.Offices?.perk?.(wsave(), 'royal') || 0) : 1)));
   }
+  const wsave = () => { try { return root.WorldState?.world?.() } catch (e) { return null } };   /* v97.72 · the royal guard's discount reads the world save */
   const info = id => { const T = SETTLEMENTS[id]; return T && { ...T, id, sizeInfo: SIZE[T.size] } };
   function card(id) {
     const T = info(id); if (!T) return ''; const F = root.Factions, R = F?.FACTIONS[T.ruler], tier = F?.tier(T.ruler);
@@ -102,7 +129,7 @@
   /* ---------- v97.44 · T6 lite: trade goods between towns ----------
      Buy where a good is made (cheap), sell where it is brought in (dear). Selling pays 80 % of the local price. Cargo lives in the world
      save (S.cargo) and is limited by the wagon (CARGO_MAX). A trade of 5+ units raises standing with the merchants. */
-  const TRADE = { fish: 6, salt: 8, cloth: 10, iron: 6, fur: 12, ore: 7, herbs: 5, wood: 4 };
+  const TRADE = { fish: 6, salt: 8, cloth: 10, iron: 6, fur: 12, ore: 7, herbs: 5, wood: 4, dye: 14, crystal: 20, wine: 11 };   /* v97.72 · dye, crystal, wine */
   const CARGO_MAX = 12, WAGON = [[150, 'เกวียนสองล้อ', 20], [300, 'เกวียนใหญ่ลากด้วยวัว', 30]], ESCORT = { cost: 30, days: 3 };
   const cargoMax = S => (S.wagon ? WAGON[S.wagon - 1][2] : CARGO_MAX) + 5 * (root.Offices?.perk?.(S, 'harbor') || 0);   /* v97.68 · harbour office */
   function wagonUp(S) { const w = WAGON[S.wagon || 0]; if (!w || (S.gold || 0) < w[0]) return false; S.gold -= w[0]; S.wagon = (S.wagon || 0) + 1; return true }
@@ -141,6 +168,6 @@
       d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) return close(); if (e.target.closest('[data-w]')) { if (wagonUp(S)) { onChange?.(0); draw() } return } if (e.target.closest('[data-e]')) { if (hireEscort(S)) { onChange?.(0); draw() } return } const b = e.target.closest('button[data-k]'); if (!b || b.disabled) return; const g = trade(id, S, b.dataset.k, +b.dataset.n); if (g) { onChange?.(g); draw() } };
     });
   }
-  root.Settlements = { POLICIES, policy, petition, petitionPanel, COUNCIL_PAY, COUNCIL_REP, councillor, councilWhy, joinCouncil, councilSettle, SIZE, GOODS, SETTLEMENTS, BASE, price, info, card, TRADE, CARGO_MAX, WAGON, ESCORT, cargoMax, wagonUp, escorted, hireEscort, loseCargo, swing, news, buyPrice, sellPrice, load, trade, tradePanel };
+  root.Settlements = { LOCALS, POLICIES, policy, petition, petitionPanel, COUNCIL_PAY, COUNCIL_REP, councillor, councilWhy, joinCouncil, councilSettle, SIZE, GOODS, SETTLEMENTS, BASE, price, info, card, TRADE, CARGO_MAX, WAGON, ESCORT, cargoMax, wagonUp, escorted, hireEscort, loseCargo, swing, news, buyPrice, sellPrice, load, trade, tradePanel };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.Settlements;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -33,7 +33,7 @@
   /* on entering: automatic events (the toll) · returns log lines */
   function arrive(S, id) {
     const E = today(id); if (!E?.auto || done(S, id)) return []; mark(S, id);
-    if ((F()?.rep(ruler(id)) || 0) >= 50) return [E.icon + ' ' + E.name + ': ยามจำคุณได้ ยกเว้นภาษีให้'];
+    if ((F()?.rep(ruler(id)) || 0) >= 50 || root.Offices?.perk?.(S, 'royal')) return [E.icon + ' ' + E.name + ': ยามจำคุณได้ ยกเว้นภาษีให้'];
     const t = Math.min(25, Math.max(0, Math.floor((S.gold || 0) * .05))); S.gold = (S.gold || 0) - t;
     return t ? [E.icon + ' จ่ายภาษีผ่านเมือง' + townName(id) + ' ' + t + ' 💰'] : [];
   }
