@@ -25,9 +25,9 @@
   }
   /* v97.37 · picture-based people. look.sprite = 'bram' → assets/village-town/npc/bram/<se|sw|ne|nw>-<stand|walk1..walk4>.webp
      (384×384, feet at y=372). v97.59: a direction without its own pictures uses the opposite one mirrored (SE←SW, NW←NE and back), so two directions are enough ·
-     walk frames: 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 0 = the standing picture with a bob.
+     walk frames: 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 1 = contact, stand, contact, stand · 0 = the standing picture with a bob.
      Falls back to the code-drawn figure until a standing picture has loaded. */
-  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 2 }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0 } }, SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
+  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 2 }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 } }, SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
   function sprites(name) {
     let S = SPR[name]; if (S) return S; S = SPR[name] = {}; const info = SPR_INFO[name]; if (!info || typeof Image === 'undefined') return S;
     for (const d of info.dirs) for (const k of ['stand', ...Array.from({ length: info.walk }, (_, n) => 'walk' + (n + 1))]) { const im = new Image(); im.src = 'assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp'; S[d + '-' + k] = im }
@@ -39,7 +39,7 @@
     const S = sprites(L.sprite), info = SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
     let P = pic(S, d, 'stand'); if (!P) return false;
     const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330;
-    if (walking && act === '' && info.walk) { const p = t * .012 + ph, f = ((Math.round(p / (Math.PI / 2)) % 4) + 4) % 4, key = info.walk >= 4 ? 'walk' + (f + 1) : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, d, key); if (W) P = W }
+    if (walking && act === '' && info.walk) { const p = t * .012 + ph, f = ((Math.round(p / (Math.PI / 2)) % 4) + 4) % 4, key = info.walk >= 4 ? 'walk' + (f + 1) : info.walk === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, d, key); if (W) P = W }
     const bob = walking ? Math.abs(Math.sin(t * .012 + ph)) * 4 * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
     g.save(); g.fillStyle = 'rgba(20,20,20,.32)'; g.beginPath(); g.ellipse(x, y, 15 * s, 6 * s, 0, 0, 7); g.fill(); g.restore();
     g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -372 * k, 384 * k, 384 * k); g.restore();
