@@ -61,7 +61,8 @@
         const lost = [p.gold ? p.gold + '💰' : '', p.food ? p.food + ' เสบียง' : ''].filter(Boolean).join(' และ ');
         p.gold = 0; p.food = 0; p.hp = Math.max(0, p.hp - 35);
         const trod = p.garden && root.Garden ? root.Garden.trample(p.garden, r) : 0;   /* v97.77 */
-        out.push(`⚠ ${KINDS[p.kind]?.name || 'ที่ดิน'}ที่${p.name}ถูกบุก${lost ? ' เสีย ' + lost : ''}${trod ? ' · ผักถูกเหยียบเสียหาย ' + trod + ' แปลง' : ''} (สภาพ ${p.hp}%)`);
+        const gone = p.garden && root.Garden ? root.Garden.steal(p.garden, r) : null;   /* v97.81 · and maybe an animal */
+        out.push(`⚠ ${KINDS[p.kind]?.name || 'ที่ดิน'}ที่${p.name}ถูกบุก${lost ? ' เสีย ' + lost : ''}${trod ? ' · ผักถูกเหยียบเสียหาย ' + trod + ' แปลง' : ''}${gone ? ' · ' + gone.name + 'ถูกต้อนหายไป' : ''} (สภาพ ${p.hp}%)`);
         if (!p.hp) { out.push(`💥 ${KINDS[p.kind].name}ที่${p.name}พังเสียหายทั้งหลัง`); p.kind = null; p.hp = 100 }
       }
     }
@@ -84,7 +85,7 @@
         const town = townOf(where), mine = at(S, where), rent = town ? T(town)?.land || 0 : 0;
         const rows = mine.map(p => { const K = KINDS[p.kind]; const left = town ? p.paidTo - (S.day || 1) : null;
           return `<div style="padding:10px;border-radius:12px;background:#fff8;border:2px solid #b08a4a44;margin:8px 0"><b>${K ? K.icon + ' ' + K.name : '🟫 ที่ว่าง'}</b> <small style="color:#7a6040">· ${town ? (left >= 0 ? 'จ่ายค่าเช่าถึงอีก ' + left + ' วัน' : '<b style="color:#a0442a">ค้างค่าเช่า ' + (-left) + ' วัน</b>') : 'ที่ดินกลางป่า · รั้ว ' + p.fence + '/2'}${p.kind ? ' · สภาพ ' + p.hp + '%' : ''}</small>
-            ${p.kind === 'shop' ? `<div style="font-size:13px">เงินในร้าน ${p.gold} 💰 (วันละ ${SHOP_DAY[sizeOf(p)]})</div>` : ''}${p.kind === 'farm' ? `<div style="font-size:13px">เสบียงจากคอกสัตว์ในยุ้ง ${p.food} ห่อ (วันละ 2)</div>${root.Garden ? btn('garden:' + p.id, '🌱 ดูแลแปลงผัก' + root.Garden.badge(root.Garden.of(p))) : ''}` : ''}
+            ${p.kind === 'shop' ? `<div style="font-size:13px">เงินในร้าน ${p.gold} 💰 (วันละ ${SHOP_DAY[sizeOf(p)]})</div>` : ''}${p.kind === 'farm' ? `<div style="font-size:13px">เสบียงในยุ้ง ${p.food} ห่อ (วันละ 2)</div>${root.Garden ? btn('garden:' + p.id, '🌱 แปลงผักและคอกสัตว์' + root.Garden.badge(root.Garden.of(p))) : ''}` : ''}
             <div>${p.kind ? '' : Object.entries(KINDS).map(([k, K]) => { const no = k === 'farm' ? farmWhy(p.at) : ''; return btn('build:' + p.id + ':' + k, K.icon + ' สร้าง' + K.name + ' ' + K.cost + '💰' + (no ? ' (ไม่มีที่ทำไร่)' : ''), S.gold < K.cost || !!no) }).join('')}
             ${p.kind === 'house' ? btn('sleep:' + p.id, '🛏 นอนพัก (ฟรี)') : ''}${p.gold || p.food ? btn('collect:' + p.id, '📦 เก็บของ') : ''}
             ${!town && p.kind ? btn('guard:' + p.id, (p.guardTo || 0) >= (S.day || 1) ? '🛡 มียามถึงวันที่ ' + p.guardTo + ' · ต่อ 7 วัน ' + GUARD.cost + '💰' : '🛡 จ้างยามเฝ้า 7 วัน ' + GUARD.cost + '💰', S.gold < GUARD.cost) : ''}${town ? btn('rent:' + p.id, '💰 จ่ายค่าเช่าอีก 7 วัน ' + rent + '💰', S.gold < rent) : p.fence < 2 ? btn('fence:' + p.id, '🪵 สร้างรั้วระดับ ' + (p.fence + 1) + ' ' + FENCE_COST[p.fence] + '💰', S.gold < FENCE_COST[p.fence]) : ''}

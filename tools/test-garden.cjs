@@ -38,4 +38,22 @@ eq(Gd.upgrade(G, 'size'), ''); eq(G.plots.length, 9); eq(Gd.upgrade(G, 'channel'
 eq(Gd.upgrade(G, 'compost'), ''); G.fert = 0; G.last = g.day; g.day += 4; Gd.tick(G); ok(G.fert >= 1, 'compost makes fertiliser');
 /* raiders trample about half the crops on open land */
 const WG = Gd.of(wild.plot); for (let i = 0; i < 6; i++) WG.plots[i] = { crop: 'herb', g: 1, dry: 0, w: 0, fert: false, perfect: true }; let k = 0; const trod = Gd.trample(WG, () => (k++ % 2) / 2); eq(trod, 3, 'half trampled');
+/* v97.81 · the pen */
+g.village.coins = 1000; const P = Gd.of(r.plot); P.last = g.day; P.basket = {};
+eq(Gd.buyAnimal(P, 'chicken'), ''); eq(Gd.buyAnimal(P, 'cow'), ''); eq(P.animals.length, 2);
+g.day++; Gd.tick(P); eq(P.basket.egg || 0, 0, 'no hay: nothing'); ok(P.animals[0].hungry);
+eq(Gd.buyHay(P), ''); eq(P.hay, 10); Gd.patAll(P); g.day++; Gd.tick(P); eq(P.basket.egg, 1, 'a fed hen lays'); eq(P.basket.milk, 2, 'a fed cow gives 2'); eq(P.hay, 8, 'one bundle each');
+P.animals.forEach(a => a.mood = 9); g.day++; Gd.tick(P); eq(P.basket.egg, 3, 'a happy hen lays one more');
+P.hay = 0; P.basket.wheat = 2; g.day++; Gd.tick(P); eq(P.basket.wheat || 0, 0, 'wheat from the basket feeds them when the hay runs out');
+for (let k = 0; k < 2; k++) Gd.buyAnimal(P, 'chicken'); ok(/คอกเต็ม/.test(Gd.buyAnimal(P, 'goat')), 'four to a pen'); eq(Gd.buildBarn(P), ''); eq(Gd.buyAnimal(P, 'goat'), '', 'a barn holds more');
+let st = 0; const stolen = Gd.steal(P, () => (st++ ? .1 : .2)); ok(stolen && P.animals.length === 4, 'raiders may drive one off');
+/* produce into the bag, known to the shop as goods */
+globalThis.ADVENTURE_DATA = { GOODS: {} }; Gd.registerGoods(); eq(ADVENTURE_DATA.GOODS.veg_egg.price, 5); g.village.bag = {};
+const moved = Gd.toBag(P); ok(moved > 0 && g.village.bag.veg_egg >= 3 && !Object.keys(P.basket).length, 'basket into the bag');
+/* the harvest contest */
+let ad = 1; while (!Gd.contestOpen(ad)) ad++; eq(Gd.season(ad)[0], 'autumn'); g.day = ad;
+const S2 = { gold: 0 }; P.best = { pumpkin: 3 };
+ok(/ยังไม่มี/.test(Gd.contest(S2, [P], 'carrot').why), 'only what you grew'); const res = Gd.contest(S2, [P], 'pumpkin', () => .99);
+eq(res.place, 1, 'a ★3 pumpkin wins'); eq(S2.gold, 120); ok(/แล้ว/.test(Gd.contest(S2, [P], 'pumpkin').why), 'once a year');
+g.day = ad - 30; ok(/ช่วง/.test(Gd.contest({}, [P], 'pumpkin').why), 'only in the last week of autumn');
 console.log('garden: ' + n + ' checks passed');
