@@ -233,6 +233,30 @@
   }
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
   const ENC_ICON = { hamlet: '🏘', outpost: '🚩', tower: '🗼', ruins: '🏛', chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
+  /* v97.90 · W2 travellers on the road: villagers who come from another town (VillageLife P.from + P.visit) walk the real road
+     the day before they arrive (town → Fernvale) and the day after they leave (Fernvale → town), between 7:00 and 19:00.
+     Their place on the road follows the hour. Met on the road: a chat, and they sketch the way to their town onto your map. */
+  const roadCache = {};
+  function travellers(hour = S.hour) {
+    const L = window.VillageLife; if (!L || hour < 7 || hour >= 19) return [];
+    const out = [], f = (hour - 7) / 12;
+    for (const p of Object.values(L.P)) {
+      const v = p.visit; if (!p.from || p.from === 'wander' || !v || v.daily || L.inParty(S, p.id)) continue;
+      const tw = world.towns.find(t => t.id === p.from); if (!tw) continue;
+      const k = (((S.day - 1 + (v.offset || 0)) % v.every) + v.every) % v.every, away = v.every - v.stay; if (away < 2) continue;
+      const dir = k === v.every - 1 ? 'in' : k === v.stay ? 'out' : null; if (!dir) continue;
+      const road = roadCache[p.from] ||= G.path(world, tile(tw.c, tw.r), tile(world.home.c, world.home.r)) || []; if (road.length < 3) continue;
+      const i = Math.round((dir === 'in' ? f : 1 - f) * (road.length - 1)), q = road[Math.min(road.length - 2, Math.max(1, i))];
+      out.push({ p, c: q.c, r: q.r, dir, town: tw });
+    }
+    return out;
+  }
+  async function meetTraveller(tv) {
+    (S.metTv ||= {})[tv.p.id] = S.day; const per = window.WorldState?.period(S.hour) || 'day', ls = tv.p.lines?.[per] || tv.p.lines?.day || ['…'];
+    const road = roadCache[tv.p.from] || []; for (const q of road) for (const [a, b] of G.within(q.c, q.r, 1)) S.known[K(a, b)] = 1; fogDirty = true; reveal();
+    await modal(`<h2>🧳 ${esc(tv.p.name)}</h2><p><small>${esc(tv.p.role || '')} · ${tv.dir === 'in' ? 'กำลังเดินทางไปเฟิร์นเวล' : 'กำลังกลับ' + esc(tv.town.name)}</small></p><p>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p><p style="font-size:12.5px;opacity:.8">🗺 ${esc(tv.p.name)}วาดทางไป${esc(tv.town.name)}ให้ดู · เส้นทางเปิดบนแผนที่แล้ว</p>`);
+    save(); hudSync();
+  }
   /* v97.84 · the target's own picture stands over its wanted mark */
   const bountyImgs = {}, bountyPic = b => { const src = Bounties.picOf(b); let im = bountyImgs[src]; if (!im) { im = bountyImgs[src] = new Image(); im.src = src } return im.complete && im.naturalWidth ? im : null };
   function drawMarks(now) {
@@ -251,6 +275,8 @@
     }
     if (window.Bounties) for (const b of Bounties.active(S)) { if (b.state !== 'open' || b.c == null || !isKnown(b.c + ',' + b.r)) continue; const p = center(b.c, b.r), y = p.y - 8 + Math.sin(now * .005 + b.c) * 2;   /* v97.73 · wanted */
       g.save(); g.fillStyle = 'rgba(140,25,20,.9)'; g.beginPath(); g.arc(p.x, y, 14, 0, 7); g.fill(); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); g.font = '15px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('☠', p.x, y + 1); { const im = bountyPic(b); if (im) { const h = 46, w = h * im.naturalWidth / im.naturalHeight; g.drawImage(im, p.x - w / 2, y - 14 - h, w, h) } } g.restore(); label(g, b.name, p.x, y + 26, '#ffb0a0', 11) }
+    for (const tv of travellers()) { if (!isKnown(tv.c + ',' + tv.r)) continue; const p = center(tv.c, tv.r), y = p.y - 6 + Math.sin(now * .006 + tv.c) * 1.5;   /* v97.90 · W2 */
+      g.save(); g.fillStyle = 'rgba(40,60,90,.88)'; g.beginPath(); g.arc(p.x - 16, y, 11, 0, 7); g.fill(); g.strokeStyle = '#cfe6ff'; g.lineWidth = 1.5; g.stroke(); g.font = '12px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('🧳', p.x - 16, y + 1); g.restore(); label(g, tv.p.name, p.x - 16, y + 22, '#cfe6ff', 10) }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
     for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) { const q = center(tw.c, tw.r); label(g, tw.name, q.x, q.y + 32, '#d8f0ff', 12) }
   }
@@ -539,6 +565,7 @@
     if (t.poi?.id === 'home') { await arriveHome(); return true }
     if (t.poi?.town) { await townVisit(t.poi); return true }
     if (await plotRaid()) return true;   /* v97.49 · T5 */
+    { let tv = null; for (let h = S.hour; h >= S.hour - 4 && !tv; h -= .25) tv = travellers(h).find(x => G.dist(x, to) <= 1 && (S.metTv?.[x.p.id] !== S.day));   /* a step takes hours and they keep walking: crossing their way in that time counts */ if (tv) { await meetTraveller(tv); return true } }   /* v97.90 · W2 */
     { const b = window.Bounties?.at(S, to.c, to.r); if (b) {   /* v97.73 · T3: the wanted one is here */
       const v = await modal(`<h2>☠ ${esc(b.name)}</h2><div style="display:flex;gap:12px;align-items:center"><img src="${Bounties.picOf(b)}" alt="" style="height:120px;filter:drop-shadow(0 4px 6px #0008)"><div><p>${esc(b.text)}</p><p>ค่าหัว ${b.reward} 💰 · HP ตอนนี้ ${S.hp}/${S.maxHp}</p></div></div>`, [{ label: '⚔ ลงมือ', value: 'go' }, { label: 'ถอยไปก่อน', value: null, ghost: true }]);
       if (v === 'go') { const r = await battle(b.foe, Math.min(1, G.danger(world, t) + .15 * b.tier), b.tier >= 3 ? { boss: true } : {}); if (r === 'win') { const m = Bounties.slain(S, b); log(m); toast(m); save(); hudSync() } }
@@ -899,5 +926,5 @@
   try { if (window.Bounties) { for (const m of Bounties.expire(S)) log(m); Bounties.place(S, world, G); save() } } catch (e) { }   /* v97.73 · bounties get their hex */
   hudSync(); requestAnimationFrame(frame);
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
-  window.WorldMap = { results, chatter, townVisit, landPanel, hudSync: () => hudSync(), area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
+  window.WorldMap = { travellers: () => travellers().map(t => ({ id: t.p.id, name: t.p.name, c: t.c, r: t.r, dir: t.dir })), results, chatter, townVisit, landPanel, hudSync: () => hudSync(), area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();
