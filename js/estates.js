@@ -7,6 +7,8 @@
    Town plots: rent runs out after the paid weeks; two weeks unpaid and the town takes the plot back (standing with its ruler −5).
    Open land: no rent, but beasts and bandits raid it — each day 12 % (fence: −40 % per level, two levels). A raid takes what was stored
    and damages the building; at 0 it is ruined. Arriving while raiders are there starts a defend battle (the world map runs it).
+   v97.77 · a farm can only go where there is farmland: a village that has some (Settlements.SETTLEMENTS[id].farmland) or open land.
+   It keeps vegetable plots (js/garden.js, plot.garden) tended from this panel; raiders on open land trample half the crops.
    Everything lives in the world save: S.estates = [{ id, at, name, kind, hp, fence, paidTo, last, gold, food, day0 }]. */
 (function (root) {
   'use strict';
@@ -34,8 +36,11 @@
     const p = { id: 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + list(S).length, at: where, name: name || (town ? T(town)?.name : 'ที่ดินกลางป่า'), kind: null, hp: 100, fence: 0, paidTo: (S.day || 1) + (town ? 7 : 0), last: S.day || 1, gold: 0, food: 0, day0: S.day || 1 };
     list(S).push(p); return { ok: true, plot: p };
   }
+  /* v97.77 · farmland: open land always · in a town only where the settlement has fields */
+  const farmWhy = at => { const t = townOf(at); return !t || T(t)?.farmland ? '' : (T(t)?.name || 'ที่นี่') + 'ไม่มีที่ให้ทำไร่ · ลองหมู่บ้านที่มีทุ่งนา หรือที่ดินนอกเมือง' };
   function build(S, id, kind) {
     const p = list(S).find(x => x.id === id), K = KINDS[kind]; if (!p || !K || p.kind) return { ok: false, why: 'สร้างไม่ได้' };
+    if (kind === 'farm' && farmWhy(p.at)) return { ok: false, why: farmWhy(p.at) };
     if ((S.gold || 0) < K.cost) return { ok: false, why: 'ต้องใช้ ' + K.cost + ' 💰' };
     S.gold -= K.cost; p.kind = kind; p.hp = 100; p.last = S.day || 1; return { ok: true };
   }
@@ -55,7 +60,8 @@
       if (!townOf(p.at) && p.kind && r() < RAID * (1 - .4 * p.fence) * (guarded ? .35 : 1)) {
         const lost = [p.gold ? p.gold + '💰' : '', p.food ? p.food + ' เสบียง' : ''].filter(Boolean).join(' และ ');
         p.gold = 0; p.food = 0; p.hp = Math.max(0, p.hp - 35);
-        out.push(`⚠ ${KINDS[p.kind]?.name || 'ที่ดิน'}ที่${p.name}ถูกบุก${lost ? ' เสีย ' + lost : ''} (สภาพ ${p.hp}%)`);
+        const trod = p.garden && root.Garden ? root.Garden.trample(p.garden, r) : 0;   /* v97.77 */
+        out.push(`⚠ ${KINDS[p.kind]?.name || 'ที่ดิน'}ที่${p.name}ถูกบุก${lost ? ' เสีย ' + lost : ''}${trod ? ' · ผักถูกเหยียบเสียหาย ' + trod + ' แปลง' : ''} (สภาพ ${p.hp}%)`);
         if (!p.hp) { out.push(`💥 ${KINDS[p.kind].name}ที่${p.name}พังเสียหายทั้งหลัง`); p.kind = null; p.hp = 100 }
       }
     }
@@ -78,8 +84,8 @@
         const town = townOf(where), mine = at(S, where), rent = town ? T(town)?.land || 0 : 0;
         const rows = mine.map(p => { const K = KINDS[p.kind]; const left = town ? p.paidTo - (S.day || 1) : null;
           return `<div style="padding:10px;border-radius:12px;background:#fff8;border:2px solid #b08a4a44;margin:8px 0"><b>${K ? K.icon + ' ' + K.name : '🟫 ที่ว่าง'}</b> <small style="color:#7a6040">· ${town ? (left >= 0 ? 'จ่ายค่าเช่าถึงอีก ' + left + ' วัน' : '<b style="color:#a0442a">ค้างค่าเช่า ' + (-left) + ' วัน</b>') : 'ที่ดินกลางป่า · รั้ว ' + p.fence + '/2'}${p.kind ? ' · สภาพ ' + p.hp + '%' : ''}</small>
-            ${p.kind === 'shop' ? `<div style="font-size:13px">เงินในร้าน ${p.gold} 💰 (วันละ ${SHOP_DAY[sizeOf(p)]})</div>` : ''}${p.kind === 'farm' ? `<div style="font-size:13px">เสบียงในยุ้ง ${p.food} ห่อ (วันละ 2)</div>` : ''}
-            <div>${p.kind ? '' : Object.entries(KINDS).map(([k, K]) => btn('build:' + p.id + ':' + k, K.icon + ' สร้าง' + K.name + ' ' + K.cost + '💰', S.gold < K.cost)).join('')}
+            ${p.kind === 'shop' ? `<div style="font-size:13px">เงินในร้าน ${p.gold} 💰 (วันละ ${SHOP_DAY[sizeOf(p)]})</div>` : ''}${p.kind === 'farm' ? `<div style="font-size:13px">เสบียงจากคอกสัตว์ในยุ้ง ${p.food} ห่อ (วันละ 2)</div>${root.Garden ? btn('garden:' + p.id, '🌱 ดูแลแปลงผัก' + root.Garden.badge(root.Garden.of(p))) : ''}` : ''}
+            <div>${p.kind ? '' : Object.entries(KINDS).map(([k, K]) => { const no = k === 'farm' ? farmWhy(p.at) : ''; return btn('build:' + p.id + ':' + k, K.icon + ' สร้าง' + K.name + ' ' + K.cost + '💰' + (no ? ' (ไม่มีที่ทำไร่)' : ''), S.gold < K.cost || !!no) }).join('')}
             ${p.kind === 'house' ? btn('sleep:' + p.id, '🛏 นอนพัก (ฟรี)') : ''}${p.gold || p.food ? btn('collect:' + p.id, '📦 เก็บของ') : ''}
             ${!town && p.kind ? btn('guard:' + p.id, (p.guardTo || 0) >= (S.day || 1) ? '🛡 มียามถึงวันที่ ' + p.guardTo + ' · ต่อ 7 วัน ' + GUARD.cost + '💰' : '🛡 จ้างยามเฝ้า 7 วัน ' + GUARD.cost + '💰', S.gold < GUARD.cost) : ''}${town ? btn('rent:' + p.id, '💰 จ่ายค่าเช่าอีก 7 วัน ' + rent + '💰', S.gold < rent) : p.fence < 2 ? btn('fence:' + p.id, '🪵 สร้างรั้วระดับ ' + (p.fence + 1) + ' ' + FENCE_COST[p.fence] + '💰', S.gold < FENCE_COST[p.fence]) : ''}
             ${btn('drop:' + p.id, '✕ ทิ้งที่ดิน')}</div>
@@ -105,10 +111,11 @@
         else if (a === 'collect') { const r = collect(S, id); note = '📦 ได้ ' + [r.gold ? r.gold + ' 💰' : '', r.food ? r.food + ' เสบียง' : ''].filter(Boolean).join(' · ') }
         else if (a === 'drop') { if (b.dataset.sure) { abandon(S, id); note = 'ทิ้งที่ดินแล้ว' } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อยืนยัน'; return } }
         else if (a === 'sleep') return close('sleep');
+        else if (a === 'garden') { const p = list(S).find(x => x.id === id); if (p && root.Garden) root.Garden.open(root.Garden.of(p), { title: p.name, onChange, onClose: () => draw() }); return }
         onChange?.(); draw(note);
       };
     });
   }
-  root.Estates = { GUARD, hireGuard, KINDS, MAX_PLOTS, SHOP_DAY, FENCE_COST, list, at, claim, build, payRent, fence, abandon, tick, tickAll, collect, raidNow, panel };
+  root.Estates = { farmWhy, GUARD, hireGuard, KINDS, MAX_PLOTS, SHOP_DAY, FENCE_COST, list, at, claim, build, payRent, fence, abandon, tick, tickAll, collect, raidNow, panel };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.Estates;
 })(typeof window !== 'undefined' ? window : globalThis);

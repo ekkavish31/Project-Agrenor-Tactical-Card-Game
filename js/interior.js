@@ -413,9 +413,9 @@
     S = L.save(); const back = MIND?.tick(S) || []; if (back.length) { L.writeSave(S); for (const b of back) toast(`💼 ${L.P[b.id]?.name || b.id} กลับจากงานแล้ว · ${b.gain}`) }
     const c = CLK.read(), icon = daylight() > .5 ? '☀' : '🌙';
     const here = [...people.values()].filter(a => !a.leaving);
-    const html = `<h1>${esc(NAME)}</h1><div class="sub">Fernvale · วันที่ ${c.day} · ${icon} ${CLK.label(c.hour)}</div>
+    const html = `<h1>${esc(NAME)}</h1><div class="sub">Fernvale · ${window.WorldState?.season ? window.WorldState.season(c.day)[2] + ' ' : ''}วันที่ ${c.day} · ${icon} ${CLK.label(c.hour)}</div>
       <div class="row"><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span><span>ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</span></div>
-      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' + (window.Garden ? '<button id="inGarden">🌱 สวนหลังบ้าน</button>' : '') : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
+      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
       <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : fill(a.p.role))}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก</div>`;
     if (html === hud._html) return; hud._html = html; hud.innerHTML = html;   // only rebuild when something changed (keeps clicks reliable)
@@ -423,7 +423,6 @@
     hud.querySelector('#inParty') && (hud.querySelector('#inParty').onclick = partyPanel);
     hud.querySelector('#inRoom') && (hud.querySelector('#inRoom').onclick = () => rest(10));
     hud.querySelector('#inSleep') && (hud.querySelector('#inSleep').onclick = () => rest(0));
-    hud.querySelector('#inGarden') && (hud.querySelector('#inGarden').onclick = () => window.Garden.open({ onChange: () => { hud._html = ''; hudSync() } }));   /* v97.75 · L5 */
     hud.querySelectorAll('[data-svc]').forEach(b => b.onclick = () => service(b.dataset.svc));
     hud.querySelectorAll('.who [data-id]').forEach(e => e.onclick = () => { const a = people.get(e.dataset.id); if (a) walkNear(a, () => talk(a)) });
   }
@@ -470,7 +469,7 @@
     if (KIND === 'temple') { const prayed = (S.prayDay || 0) === CLK.read().day; return B('pray', '🙏 ภาวนา', 0, prayed ? 'ภาวนาแล้ววันนี้ · พรุ่งนี้มาใหม่' : '') + B('offer', '🕯 ถวาย · น้ำมนต์', 25, away) }
     return '';
   }
-  const HOUSE_SVC = { may: [['bread', '🍞 ขนมปัง ×3', 9]], hilda: [['veg', '🥕 ผักสด ×3', 9], ['garden', '🌱 เมล็ดพันธุ์ · สวนของเรา', 0]], bryn: [['flour', '🌾 แป้งและเสบียง ×3', 9]], joe: [['fish', '🐟 ปลาย่าง ×3', 9]],
+  const HOUSE_SVC = { may: [['bread', '🍞 ขนมปัง ×3', 9]], hilda: [['veg', '🥕 ผักสด ×3', 9]], bryn: [['flour', '🌾 แป้งและเสบียง ×3', 9]], joe: [['fish', '🐟 ปลาย่าง ×3', 9]],
     saf: [['potion', '🧪 ยาสมุนไพร', 14]], oren: [['projects', '🏗 พัฒนาหมู่บ้าน', 0], ['office', '🏛 รับราชการ', 0], ['petition', '📜 คำร้อง · 🪑 สภาหมู่บ้าน', 0]], mira: [['lessons', '📘 ทบทวนบทเรียน', 0]], dork: [['safety', '🛡 ถามเรื่องความปลอดภัย', 0], ['payfine', '⚖ จ่ายค่าปรับ / ล้างคดี', 0]] };
   /* guild contracts: 3 a day (seeded by the day), one taken at a time, counted by the foes the hero brings down on the world map (S.kills) */
   function contract() {
@@ -482,7 +481,6 @@
   function service(k) {
     S = L.save(); const pay = c => { if (S.gold < c) { toast('เงินไม่พอ'); return false } S.gold -= c; return true };
     if (k.startsWith('take:')) { const G = contract(), o = G.offers[+k.slice(5)]; if (!o || G.taken || G.active) return; G.active = { ...o, base: S.kills || 0 }; G.taken = true; L.writeSave(S); toast('📜 รับงาน: ' + o.label) }
-    else if (k === 'garden') { window.Garden?.open({ onChange: () => { hud._html = ''; hudSync() } }); return }   /* v97.75 · Hilda sells the seeds */
     else if (k === 'bounty') { const S0 = S; window.Bounties.panel(S0, 'fernvale', () => { L.writeSave(S0); hud._html = ''; hudSync() }); return }
     else if (k === 'turnin') { const G = contract(), a = G.active; if (!a || (S.kills || 0) - a.base < a.n) return; a.reward = Math.round(a.reward * (FC()?.payMult('guild') ?? 1) * (1 + .15 * (window.Offices?.perk(S, 'magus') || 0))); S.gold += a.reward; FC()?.add('guild', 6, 'ส่งงาน ' + a.label); window.Law?.service(S, 'fernvale'); FC()?.add('village', 2, 'ช่วยกำจัดภัยรอบหมู่บ้าน'); G.done = (G.done || 0) + 1; G.active = null; L.writeSave(S); toast('✔ ส่งงานกิลด์ +' + a.reward + '💰 (ทำสำเร็จแล้ว ' + G.done + ' งาน)') }
     else if (k === 'drop') { const G = contract(); G.active = null; L.writeSave(S); toast('ยกเลิกงานแล้ว') }

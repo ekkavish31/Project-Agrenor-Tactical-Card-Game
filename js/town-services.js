@@ -25,7 +25,7 @@
     lakenhold: [
       { key: 'bounty', label: '📜 สำนักใหญ่สมาคม · ประกาศจับ', cost: 0 },   /* v97.73 · T3 */
       { key: 'tower', label: '🗼 หอคอยเวท · เรียนพิเศษ', cost: 40, daily: true },
-      { key: 'museum', label: '🏛 พิพิธภัณฑ์ · ขายผลึก', cost: 0, why: S => (S.cargo?.crystal ? '' : 'ไม่มีผลึกในเกวียน') },
+      { key: 'museum', label: '🏺 พิพิธภัณฑ์ · ขายผลึก', cost: 0, why: S => (S.cargo?.crystal ? '' : 'ไม่มีผลึกในเกวียน') },
       { key: 'blessing', label: '⛩ มหาวิหาร · รับพร', cost: 15, daily: true },
       { key: 'ferry', label: '⛵ เรือข้ามฟากไปวิลโลว์ชอร์', cost: 10 }
     ],
@@ -59,7 +59,7 @@
       const res = P.gainJob(g, 20); out.push('🗼 อาจารย์ในหอคอยสอนพิเศษหนึ่งบท · แต้มอาชีพ +20'); if (res.ups?.length) out.push('⬆ อาชีพเลเวล ' + res.ups[res.ups.length - 1] + '!');
       ctx.passTime?.(2); return { lines: out };
     }
-    if (key === 'museum') { const n = S.cargo.crystal, p = Math.round((ST()?.sellPrice('lakenhold', 'crystal') || 20) * 1.3); S.gold += n * p; delete S.cargo.crystal; S.traded = (S.traded || 0) + n; F()?.add('crown', 1, 'ส่งผลึกให้พิพิธภัณฑ์'); return { lines: ['🏛 นักโบราณคดีรับซื้อผลึก ' + n + ' ก้อน ก้อนละ ' + p + ' 💰 เพื่อนำไปศึกษา'] } }
+    if (key === 'museum') { const n = S.cargo.crystal, p = Math.round((ST()?.sellPrice('lakenhold', 'crystal') || 20) * 1.3); S.gold += n * p; delete S.cargo.crystal; S.traded = (S.traded || 0) + n; F()?.add('crown', 1, 'ส่งผลึกให้พิพิธภัณฑ์'); return { lines: ['🏺 นักโบราณคดีรับซื้อผลึก ' + n + ' ก้อน ก้อนละ ' + p + ' 💰 เพื่อนำไปศึกษา'] } }
     if (key === 'blessing') { ctx.healParty?.(1); S.hp = S.maxHp; F()?.add('temple', 1, 'รับพรที่มหาวิหารนครหลวง'); return { lines: ['⛩ นักบวชสวดใต้วงแสงสามวง ทั้งทีมรู้สึกสดชื่น · HP เต็ม'] } }
     return { lines: out };
   }
