@@ -33,11 +33,19 @@
   function walk(a, dt, blocked, hero) {
     if (bubble?.a === a && performance.now() < bubble.until) { if (hero) a.face = faceTo(hero.u - a.u, hero.v - a.v); return false }
     if (!a.goal) { a.wait -= dt; if (a.wait > 0) return false; const st = root.PLACE_STATIONS?.() || [], useSt = st.length && Math.random() < .45, s = useSt ? st[Math.floor(Math.random() * st.length)] : null;
-      for (let k = 0; k < 12; k++) { const q = s ? { u: s.u + (Math.random() - .5) * 2, v: s.v + s.d + .8 + Math.random() } : { u: a.u + (Math.random() - .5) * 5, v: a.v + (Math.random() - .5) * 5 }; if (!blocked?.(q.u, q.v)) { a.goal = q; break } } a.wait = 3 + Math.random() * 6; if (!a.goal) return false }
-    const du = a.goal.u - a.u, dv = a.goal.v - a.v, d = Math.hypot(du, dv), step = dt * 1.6;
-    if (d <= step) { a.u = a.goal.u; a.v = a.goal.v; a.goal = null; return false }
-    const nu = a.u + du / d * step, nv = a.v + dv / d * step; if (blocked?.(nu, nv)) { a.goal = null; return false }
-    a.u = nu; a.v = nv; a.face = faceTo(du, dv); return true;
+      for (let k = 0; k < 12; k++) { const q = s ? { u: s.u + (Math.random() - .5) * 2, v: s.v + s.d + .8 + Math.random() } : { u: a.u + (Math.random() - .5) * 5, v: a.v + (Math.random() - .5) * 5 }; if (!blocked?.(q.u, q.v) && plan(a, q)) { a.goal = q; break } } a.wait = 3 + Math.random() * 6; if (!a.goal) return false }
+    const w = a.path?.[0] || a.goal, du = w.u - a.u, dv = w.v - a.v, d = Math.hypot(du, dv), step = dt * 1.6;
+    if (d <= step) { a.u = w.u; a.v = w.v; if (a.path?.length > 1) { a.path.shift(); return true } a.goal = null; a.path = null; return false }
+    const nu = a.u + du / d * step, nv = a.v + dv / d * step;
+    if (blocked?.(nu, nv)) { if (!a.replanned && plan(a, a.goal)) { a.replanned = true; return false } a.goal = null; a.path = null; return false }
+    a.replanned = false; a.u = nu; a.v = nv; a.face = faceTo(du, dv); return true;
+  }
+  /* v97.69 · V2: a route around furniture (village-place.html's A* on half-cells) instead of a straight line that stops at the first table.
+     Without the page's router (older pages) they still walk straight. Returns false when the spot cannot be reached. */
+  function plan(a, q) {
+    const R = root.PLACE_ROUTE; if (!R) { a.path = [q]; return true }
+    const p = R({ u: a.u, v: a.v }, q); if (!p.length) return false;
+    a.path = p.slice(1).map(x => ({ u: x.u, v: x.v })); if (a.path.length) a.path[a.path.length - 1] = { u: q.u, v: q.v }; else a.path = [q]; return true;
   }
   const faceTo = (du, dv) => { const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') };
   function objects(project, g, t, blocked, hero) {
@@ -101,5 +109,5 @@
       bubble = { a, text: a.p.name + ': ' + String(text).replace(/\{name\}/g, hero), until: performance.now() + 5200 };
     }
   }
-  root.PlacePeople = { objects, click, list: () => people.map(a => a.p.id) };
+  root.PlacePeople = { objects, click, list: () => people.map(a => a.p.id), state: () => people.map(a => ({ id: a.p.id, u: a.u, v: a.v, steps: a.path?.length || 0 })) };
 })(globalThis);
