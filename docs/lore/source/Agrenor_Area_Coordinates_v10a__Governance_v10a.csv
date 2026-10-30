@@ -1,0 +1,16 @@
+AGRENOR AREA COORDINATES v10(a),ALIGNED WITH AGRENOR_Lore_v10.docx
+Status,REVIEWED / v10-ALIGNED SUPPORTING RELEASE
+Source workbook,Agrenor_Area_Coordinates_v05.xlsx
+Revision,First supporting revision under Lore v10: suffix (a)
+Authority,Lore v10 > World Codex v10(a) > Area data
+Spatial Rule,Coordinates and areas retained; no new coordinates created
+Canon Lock,Grat-Va-Frenol spelling normalized
+Canon Lock,Shael'Itharas records 14.1 and 14.2 remain one continuous entity across map wrap
+Classification,Settlement/City/Region/Wonder/Faction remain distinct entity types
+Change Type,Alignment + governance; no spatial retcon
+0. Change Log and Supersession v10,Numbered governance record
+0.1,"Coordinates, cells, routes, and areas retained without spatial retcon"
+0.2,"Lexrenae distribution is an overlapping influence layer, not a new coordinate boundary"
+0.3,Shael'Itharas remains the World-Tree reference name
+0.4,"Aeth'Va-Paelas as the whole world is Glaelanar perspective, not map fact"
+0.99,End of v10 change record
