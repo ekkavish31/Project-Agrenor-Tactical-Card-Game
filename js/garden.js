@@ -32,7 +32,14 @@
     cow: { name: 'วัว', icon: '🐄', cost: 180, product: 'milk', every: 1, n: 2 }
   };
   const PRODUCTS = { egg: { name: 'ไข่ไก่', icon: '🥚', sell: 5, food: 1 }, goatmilk: { name: 'นมแพะ', icon: '🥛', sell: 9, food: 1 }, milk: { name: 'นมวัว', icon: '🍶', sell: 8, food: 1 }, wool: { name: 'ขนแกะ', icon: '🧶', sell: 14, food: 0 } };
-  const GOODS = { ...CROPS, ...PRODUCTS };   /* everything that can sit in the basket */
+  /* v97.85 · processing in the cabin: basket goods made into something worth more */
+  const MADE = {
+    cheese: { name: 'ชีส', icon: '🧀', from: { milk: 3 }, sell: 40, food: 3 }, goatcheese: { name: 'ชีสนมแพะ', icon: '🧀', from: { goatmilk: 3 }, sell: 42, food: 3 },
+    yarn: { name: 'ด้ายขนแกะ', icon: '🧶', from: { wool: 2 }, sell: 36, food: 0 }, flour: { name: 'แป้งสาลี', icon: '🥖', from: { wheat: 3 }, sell: 20, food: 3 },
+    jam: { name: 'แยมสตรอว์เบอร์รี', icon: '🍯', from: { strawberry: 3 }, sell: 46, food: 2 }, soup: { name: 'ซุปผักรวม', icon: '🍲', from: { carrot: 1, potato: 1, lettuce: 1 }, sell: 26, food: 6 },
+    omelette: { name: 'ไข่เจียวสมุนไพร', icon: '🍳', from: { egg: 2, herb: 1 }, sell: 22, food: 4 }
+  };
+  const GOODS = { ...CROPS, ...PRODUCTS, ...MADE };   /* everything that can sit in the basket */
   const PEN = [4, 8], BARN_COST = 200, HAY = { n: 10, cost: 15 };
   const SIZES = [6, 9, 12], SIZE_COST = [0, 120, 220];   /* before v97.83 · kept for old saves */
   /* v97.83 · the field (the user: a farm laid out like the old farming games before you build it up): FW × FH tiles that start
@@ -116,6 +123,8 @@
     if (what === 'size') { const k = SIZES.indexOf(G.size) + 1; if (k >= SIZES.length) return 'ขยายสุดแล้ว'; if ((g.village.coins || 0) < SIZE_COST[k]) return 'เงินไม่พอ'; g.village.coins -= SIZE_COST[k]; G.size = SIZES[k]; of({ garden: G }); commit(); return '' }
     const I = ITEMS[what]; if (!I || G.have[what]) return 'มีแล้ว'; if ((g.village.coins || 0) < I.cost) return 'เงินไม่พอ'; g.village.coins -= I.cost; G.have[what] = true; if (what === 'compost') G.compostDay = today(); commit(); return '';
   }
+  const canMake = (G, k) => Object.entries(MADE[k]?.from || {}).every(([x, n]) => (G.basket[x] || 0) >= n);
+  function make(G, k) { const M = MADE[k]; if (!M) return 'ไม่มีสูตรนี้'; if (!canMake(G, k)) return 'วัตถุดิบในตะกร้าไม่พอ'; for (const [x, n] of Object.entries(M.from)) { G.basket[x] -= n; if (!G.basket[x]) delete G.basket[x] } G.basket[k] = (G.basket[k] || 0) + 1; commit(); return '' }
   /* v97.83 · clearing and tilling · returns '' or why not */
   const fatigue = () => game()?.fatigue || 0;
   function work(n) { const g = game(); if ((g.fatigue || 0) + n > 100) return false; g.fatigue = Math.min(100, (g.fatigue || 0) + n); return true }
@@ -211,6 +220,7 @@
         <div class="row"><button data-a="waterall">💧 รดน้ำทุกแปลง</button><button data-a="harvestall">🧺 เก็บทุกแปลงที่สุก</button></div>
         ${seeds}${(() => { const c = fieldCount(G); return `<p class="sub">แปลงที่ไถแล้ว ${c.soil} · ปลูกอยู่ ${c.planted} · ยังต้องถาง ${c.debris} ช่อง · ความเหนื่อย ${fatigue()}% (ถางและไถในฉากไร่)</p>` })()}<div class="grid">${G.plots.map((p, i) => G.ground && G.ground[i] !== 'soil' ? '' : plot(p, i)).join('')}</div>
         <div class="note"><b>🧺 ตะกร้า</b> ${basket.length ? basket.map(([k, n]) => (GOODS[k]?.icon || '') + ' ' + (GOODS[k]?.name || k) + ' ×' + n).join(' · ') : 'ว่าง'}${basket.length ? `<div class="row"><button data-a="cook">🍲 ทำเป็นเสบียง (+${basket.reduce((a, [k, n]) => a + (GOODS[k]?.food || 0) * n, 0)})</button><button data-a="sell">💰 ส่งขายตลาด (+${basket.reduce((a, [k, n]) => a + (GOODS[k]?.sell || 0) * n, 0)})</button><button data-a="bag" title="เอาไปวางขายในร้านของเราเองได้ ราคาตั้งเอง">🎒 เก็บเข้ากระเป๋า (ไว้วางขายในร้านของเรา)</button></div>` : ''}</div>
+        <div class="note"><b>🧀 แปรรูปในกระท่อม</b> <small>ใช้ของในตะกร้า ได้ของที่ขายแพงขึ้นหรือทำเสบียงได้มากขึ้น</small><div class="row">${Object.entries(MADE).map(([k, M]) => `<button data-a="make:${k}" ${canMake(G, k) ? '' : 'disabled'} title="ขาย ${M.sell} 💰${M.food ? ' · เสบียง ' + M.food : ''}">${M.icon} ${M.name} ← ${Object.entries(M.from).map(([x, n]) => GOODS[x].icon + '×' + n).join(' ')}</button>`).join('')}</div></div>
         <div class="note"><b>🐾 คอกสัตว์</b> ${G.animals.length}/${G.have.barn ? PEN[1] : PEN[0]} ตัว · ฟาง ${G.hay} มัด (กินตัวละ 1 มัดต่อวัน · หมดแล้วใช้ข้าวสาลีในตะกร้า)
           <div class="row">${G.animals.map(a => `<span title="อารมณ์ ${a.mood}/10" style="padding:3px 8px;border-radius:8px;background:#fff8">${ANIMALS[a.kind].icon} ${a.name} ${a.hungry ? '😣' : a.mood >= 7 ? '😊' : '🙂'}${a.pat === now ? ' 🤚' : ''}</span>`).join('') || '<small>ยังไม่มีสัตว์</small>'}</div>
           <div class="row">${G.animals.length ? '<button data-a="pat">🤚 ลูบหัวทุกตัว</button>' : ''}<button data-a="hay">🌾 ซื้อฟาง ${HAY.n} มัด · ${HAY.cost} 💰</button>${Object.entries(ANIMALS).map(([k, A]) => `<button data-a="animal:${k}" title="ให้${PRODUCTS[A.product].name} ${A.n}${A.every > 1 ? ' ทุก ' + A.every + ' วัน' : ' ต่อวัน'}">${A.icon} ซื้อ${A.name} · ${A.cost} 💰</button>`).join('')}${G.have.barn ? '' : `<button data-a="barn">🏚 สร้างโรงนา (เลี้ยงได้ ${PEN[1]} ตัว) · ${BARN_COST} 💰</button>`}</div></div>
@@ -229,11 +239,12 @@
       else if (a === 'clear') clear(G, i);
       else if (a === 'cook') note = '🍲 ได้เสบียง +' + cook(G); else if (a === 'sell') note = '💰 ขายได้ ' + sell(G) + ' 💰';
       else if (a === 'up') note = upgrade(G, v) || '🔨 ปรับปรุงไร่เรียบร้อยแล้ว';
+      else if (a === 'make') note = make(G, v) || MADE[v].icon + ' ทำ' + MADE[v].name + 'เสร็จ เข้าตะกร้าแล้ว';
       else if (a === 'animal') note = buyAnimal(G, v) || ANIMALS[v].icon + ' ซื้อ' + ANIMALS[v].name + 'เข้าคอกแล้ว อย่าลืมเตรียมฟาง';
       else if (a === 'pat') note = '🤚 ลูบหัว ' + patAll(G) + ' ตัว สัตว์ดูอารมณ์ดี'; else if (a === 'hay') note = buyHay(G) || '🌾 ได้ฟาง ' + HAY.n + ' มัด';
       else if (a === 'barn') note = buildBarn(G) || '🏚 สร้างโรงนาเสร็จแล้ว'; else if (a === 'bag') note = '🎒 เก็บเข้ากระเป๋า ' + toBag(G) + ' ชิ้น · วางขายได้ที่ร้านของเราในตลาด';
       opts.onChange?.(); draw() };
   }
-  root.Garden = { FW, FH, FN, DEBRIS, clearTile, till, fieldCount, contestPanel, ANIMALS, PRODUCTS, GOODS, PEN, HAY, buyAnimal, patAll, buyHay, buildBarn, steal, toBag, bagKey, registerGoods, contestOpen, entries, contest, RIVALS, of, trample, status, badge, SEASONS, CROPS, ITEMS, SIZES, SIZE_COST, season, seasonDay, rain, tick, canPlant, plant, water, waterAll, fertilise, harvest, harvestAll, clear, cook, sell, upgrade, stars, open };
+  root.Garden = { MADE, canMake, make, FW, FH, FN, DEBRIS, clearTile, till, fieldCount, contestPanel, ANIMALS, PRODUCTS, GOODS, PEN, HAY, buyAnimal, patAll, buyHay, buildBarn, steal, toBag, bagKey, registerGoods, contestOpen, entries, contest, RIVALS, of, trample, status, badge, SEASONS, CROPS, ITEMS, SIZES, SIZE_COST, season, seasonDay, rain, tick, canPlant, plant, water, waterAll, fertilise, harvest, harvestAll, clear, cook, sell, upgrade, stars, open };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.Garden;
 })(typeof window !== 'undefined' ? window : globalThis);
