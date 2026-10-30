@@ -31,7 +31,7 @@
     sheep: { name: 'แกะ', icon: '🐑', cost: 100, product: 'wool', every: 3, n: 2 },
     cow: { name: 'วัว', icon: '🐄', cost: 180, product: 'milk', every: 1, n: 2 }
   };
-  const PRODUCTS = { egg: { name: 'ไข่ไก่', icon: '🥚', sell: 5, food: 1 }, goatmilk: { name: 'นมแพะ', icon: '🥛', sell: 9, food: 1 }, milk: { name: 'นมวัว', icon: '🍶', sell: 8, food: 1 }, wool: { name: 'ขนแกะ', icon: '🧶', sell: 14, food: 0 } };
+  const PRODUCTS = { fish: { name: 'ปลาบ่อ', icon: '🐟', sell: 10, food: 2 }, koi: { name: 'ปลาคาร์ปทอง', icon: '🐠', sell: 60, food: 0 }, egg: { name: 'ไข่ไก่', icon: '🥚', sell: 5, food: 1 }, goatmilk: { name: 'นมแพะ', icon: '🥛', sell: 9, food: 1 }, milk: { name: 'นมวัว', icon: '🍶', sell: 8, food: 1 }, wool: { name: 'ขนแกะ', icon: '🧶', sell: 14, food: 0 } };
   /* v97.85 · processing in the cabin: basket goods made into something worth more */
   const MADE = {
     cheese: { name: 'ชีส', icon: '🧀', from: { milk: 3 }, sell: 40, food: 3 }, goatcheese: { name: 'ชีสนมแพะ', icon: '🧀', from: { goatmilk: 3 }, sell: 42, food: 3 },
@@ -125,6 +125,8 @@
   }
   const canMake = (G, k) => Object.entries(MADE[k]?.from || {}).every(([x, n]) => (G.basket[x] || 0) >= n);
   function make(G, k) { const M = MADE[k]; if (!M) return 'ไม่มีสูตรนี้'; if (!canMake(G, k)) return 'วัตถุดิบในตะกร้าไม่พอ'; for (const [x, n] of Object.entries(M.from)) { G.basket[x] -= n; if (!G.basket[x]) delete G.basket[x] } G.basket[k] = (G.basket[k] || 0) + 1; commit(); return '' }
+  /* v97.86 · fishing at the farm pond: half an hour and a little fatigue a cast; most casts catch a pond fish, a few a golden carp */
+  function fish(G, rng = Math.random) { if (fatigue() >= TIRED || !work(2)) return { why: 'เหนื่อยเกินไปแล้ว พักก่อนเถอะ' }; try { root.WorldState?.advance?.(30) } catch (e) { } const r = rng(); const k = r < .05 ? 'koi' : r < .6 ? 'fish' : null; if (k) G.basket[k] = (G.basket[k] || 0) + 1; commit(); return { k } }
   /* v97.83 · clearing and tilling · returns '' or why not */
   const fatigue = () => game()?.fatigue || 0;
   function work(n) { const g = game(); if ((g.fatigue || 0) + n > 100) return false; g.fatigue = Math.min(100, (g.fatigue || 0) + n); return true }
@@ -245,6 +247,6 @@
       else if (a === 'barn') note = buildBarn(G) || '🏚 สร้างโรงนาเสร็จแล้ว'; else if (a === 'bag') note = '🎒 เก็บเข้ากระเป๋า ' + toBag(G) + ' ชิ้น · วางขายได้ที่ร้านของเราในตลาด';
       opts.onChange?.(); draw() };
   }
-  root.Garden = { MADE, canMake, make, FW, FH, FN, DEBRIS, clearTile, till, fieldCount, contestPanel, ANIMALS, PRODUCTS, GOODS, PEN, HAY, buyAnimal, patAll, buyHay, buildBarn, steal, toBag, bagKey, registerGoods, contestOpen, entries, contest, RIVALS, of, trample, status, badge, SEASONS, CROPS, ITEMS, SIZES, SIZE_COST, season, seasonDay, rain, tick, canPlant, plant, water, waterAll, fertilise, harvest, harvestAll, clear, cook, sell, upgrade, stars, open };
+  root.Garden = { fish, MADE, canMake, make, FW, FH, FN, DEBRIS, clearTile, till, fieldCount, contestPanel, ANIMALS, PRODUCTS, GOODS, PEN, HAY, buyAnimal, patAll, buyHay, buildBarn, steal, toBag, bagKey, registerGoods, contestOpen, entries, contest, RIVALS, of, trample, status, badge, SEASONS, CROPS, ITEMS, SIZES, SIZE_COST, season, seasonDay, rain, tick, canPlant, plant, water, waterAll, fertilise, harvest, harvestAll, clear, cook, sell, upgrade, stars, open };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.Garden;
 })(typeof window !== 'undefined' ? window : globalThis);

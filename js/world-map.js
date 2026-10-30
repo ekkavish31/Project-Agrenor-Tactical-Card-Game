@@ -236,7 +236,7 @@
   /* v97.84 · the target's own picture stands over its wanted mark */
   const bountyImgs = {}, bountyPic = b => { const src = Bounties.picOf(b); let im = bountyImgs[src]; if (!im) { im = bountyImgs[src] = new Image(); im.src = src } return im.complete && im.naturalWidth ? im : null };
   function drawMarks(now) {
-    if (window.Estates) for (const p of Estates.list(S)) { if (!p.at.startsWith('tile:')) continue; const [c, r] = p.at.slice(5).split(',').map(Number), q = center(c, r); g.save(); g.font = '18px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(p.kind ? Estates.KINDS[p.kind].icon : '🚩', q.x + 14, q.y - 14); g.restore() }   /* v97.49 · your plots */
+    if (window.Estates) for (const p of Estates.list(S)) { if (!p.at.startsWith('tile:')) continue; const [c, r] = p.at.slice(5).split(',').map(Number), q = center(c, r); g.save(); g.font = '18px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(p.kind ? Estates.KINDS[p.kind].icon : '🚩', q.x + 14, q.y - 14); if (p.kind === 'farm' && p.garden && window.Garden) { const st = Garden.status(p.garden); if (st.ripe || st.thirsty) { g.font = '11px system-ui,"Segoe UI Emoji",sans-serif'; g.fillText((st.ripe ? '🧺' : '') + (st.thirsty ? '💧' : ''), q.x + 14, q.y - 30) } }   /* v97.86 · what the farm needs */ g.restore() }   /* v97.49 · your plots */
     for (const k in world.tiles) {
       const h = world.tiles[k]; if (!isKnown(k)) continue;
       const p = center(h.c, h.r);

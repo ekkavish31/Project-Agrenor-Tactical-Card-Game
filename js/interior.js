@@ -488,6 +488,8 @@
       const thing = R.items.find(i => ['cabin', 'bin', 'coop', 'barn'].includes(i.k) && cell.u >= i.u - 1 && cell.u <= i.u + i.w && cell.v >= i.v - 1 && cell.v <= i.v + i.d);
       if (thing?.k === 'cabin') { walkNear({ u: thing.u + 1, v: thing.v + thing.d }, cabinMenu); return }
       if (thing?.k === 'bin') { walkNear({ u: thing.u, v: thing.v }, shipAll); return }
+      const pond = R.items.find(i => i.k === 'pond' && cell.u >= i.u - 1 && cell.u <= i.u + i.w && cell.v >= i.v - 1 && cell.v <= i.v + i.d);
+      if (pond) { walkNear({ u: pond.u + 1, v: pond.v + 1 }, castLine); return }   /* v97.86 */
       const pen = R.pen && cell.u >= R.pen.u - 1 && cell.u <= R.pen.u + R.pen.w && cell.v >= R.pen.v - 1 && cell.v <= R.pen.v + R.pen.d;
       if (pen || thing) { const edge = { u: R.pen.u - 2, v: R.pen.v + 1 }; walkTo(free(edge.u, edge.v) ? edge : { u: hero.u, v: hero.v }, () => penAction()); return }
     }
@@ -537,7 +539,7 @@
       <div class="row"><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span><span>ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</span></div>
       <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}${KIND === 'farm' ? (() => { const G = farmG(), b = G ? window.Garden.badge(G) : ''; const Gd = window.Garden, c = G ? Gd.fieldCount(G) : null; return '<div style="font-size:12px;margin:2px 0">🌱 เมล็ดในมือ <select id="fmSeed"><option value="">— เลือกตอนปลูก —</option>' + Object.entries(Gd.CROPS).filter(([k]) => Gd.canPlant(k)).map(([k, C]) => `<option value="${k}" ${k === seedPick ? 'selected' : ''}>${C.icon} ${C.name} ${C.seed}💰</option>`).join('') + '</select></div>' + (c ? `<div style="font-size:12px">แปลงไถแล้ว ${c.soil} · ปลูก ${c.planted} · ต้องถาง ${c.debris} · เหนื่อย ${S.fatigue}%</div>` : '') + '<button id="fmOpen">🌾 จัดการไร่' + b + '</button><button id="fmWater">💧 รดน้ำทุกแปลง</button><button id="fmHarvest">🧺 เก็บทุกแปลงที่สุก</button>' })() : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
       <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : fill(a.p.role))}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
-      <div style="margin-top:6px;font-size:11px;color:#9a8a6a">${KIND === 'farm' ? 'คลิกช่องในไร่ = ถาง → ไถ → ปลูก → รดน้ำ → เก็บ · กระท่อม = จัดการไร่ · กล่องส่งขาย = ขายของในตะกร้า · คอก = ลูบหัวสัตว์ · ประตูซ้าย = ออก' : 'คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก'}</div>`;
+      <div style="margin-top:6px;font-size:11px;color:#9a8a6a">${KIND === 'farm' ? 'คลิกช่องในไร่ = ถาง → ไถ → ปลูก → รดน้ำ → เก็บ · กระท่อม = จัดการไร่ · กล่องส่งขาย = ขายของในตะกร้า · คอก = ลูบหัวสัตว์ · บ่อน้ำ = ตกปลา · ประตูซ้าย = ออก' : 'คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก'}</div>`;
     if (html === hud._html) return; hud._html = html; hud.innerHTML = html;   // only rebuild when something changed (keeps clicks reliable)
     hud.querySelector('#inOut').onclick = () => walkTo(DOOR, leave);
     if (KIND === 'farm') {
@@ -575,7 +577,7 @@
       return '🌿 ' + Gd.CROPS[p.crop].name + ' โตแล้ว ' + Math.floor(p.g) + '/' + Gd.CROPS[p.crop].days + ' วัน · วันนี้รดน้ำแล้ว' });
     if (msg === 'seed') return openFarm(i); if (msg) toast(msg);
   }
-  if (KIND === 'farm') window.FarmScene = { go: (u, v) => walkTo({ u, v }), act: i => fieldAction(i), ship: () => shipAll(), pen: () => penAction(), seed: k => { seedPick = k }, screenOf: i => { const it = R.items.find(x => x.k === 'ftile' && x.idx === i); return it && screen(it.u + .5, it.v + .5) } };   /* for tests and tools */
+  if (KIND === 'farm') window.FarmScene = { go: (u, v) => walkTo({ u, v }), cell: (u, v) => screen(u + .5, v + .5), act: i => fieldAction(i), ship: () => shipAll(), pen: () => penAction(), seed: k => { seedPick = k }, screenOf: i => { const it = R.items.find(x => x.k === 'ftile' && x.idx === i); return it && screen(it.u + .5, it.v + .5) } };   /* for tests and tools */
   /* v97.84 · the cabin: the farm's book, or a bed to sleep off the day's clearing */
   function cabinMenu() {
     close(); modalOpen = true; const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
@@ -584,6 +586,7 @@
     document.body.append(bg); dlg = bg;
     bg.onclick = e => { const b = e.target.closest('[data-a]'); if (e.target === bg || b?.dataset.a === 'x') return close(); if (!b) return; close(); if (b.dataset.a === 'book') openFarm(); else rest(0) };
   }
+  function castLine() { const r = farmDo(G => window.Garden.fish(G)); if (!r) return; toast(r.why || (r.k === 'koi' ? '🐠 ได้ปลาคาร์ปทอง! หายากมาก' : r.k ? '🐟 ได้ปลาบ่อ 1 ตัว · เข้าตะกร้าแล้ว' : '🎣 ปลาไม่กินเหยื่อ ลองใหม่อีกที')) }
   function shipAll() { const c = farmDo(G => window.Garden.sell(G)); toast(c ? '📦 ส่งขายผลผลิตในตะกร้า ได้ ' + c + ' 💰' : '📦 ตะกร้ายังว่าง · เก็บผักหรือผลผลิตจากคอกก่อน') }
   function penAction() { const n = farmDo(G => G.animals.length ? window.Garden.patAll(G) : -1); toast(n < 0 ? '🐾 คอกยังว่าง · ซื้อสัตว์ได้ที่ 🌾 จัดการไร่' : n ? '🤚 ลูบหัวสัตว์ ' + n + ' ตัว ดูอารมณ์ดีขึ้น' : '🐾 วันนี้ลูบหัวครบทุกตัวแล้ว') }
   function openFarm(pick) {
