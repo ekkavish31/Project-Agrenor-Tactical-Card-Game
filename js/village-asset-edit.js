@@ -12,7 +12,7 @@
   UX = window.TownUX,
   copy = x => JSON.parse(JSON.stringify(x)),
   num = (v, a, b, d) => Math.max(a, Math.min(b, Number.isFinite(+v) ? +v : d));
- let courtRect = false, courtDraw = false, courtLayer = false, courtLayerVal = 1;
+ let courtRect = false, courtDraw = false, courtLayer = false, courtLayerVal = 1, greenDraw = false;   /* v97.46 · greenDraw: paint the green (walk-in-on-purpose) cells */
  let data = {
    edit: {},
    added: [],
@@ -831,7 +831,7 @@
   const s = place; refChar = false; refPos = null; courtLayer = false; cv.style.cursor = '';
   place = null;
   drag = null;
-  courtDraw = false; courtRect = false;
+  courtDraw = false; courtRect = false; greenDraw = false;
   if (!ok) {
    UX.apply(JSON.parse(s.before));
    UX.undoTrim(s.mark);
@@ -963,7 +963,7 @@
  // v91.21: a place was deleted (TownUX.removePlace) → close its editor and drop every edit/added item/frame that belonged to it
  function dropPlace(id) {
   if (place?.id === id) {
-   place = null; drag = null; refChar = false; refPos = null; courtLayer = false; courtDraw = false; courtRect = false; cv.style.cursor = '';
+   place = null; drag = null; refChar = false; refPos = null; courtLayer = false; courtDraw = false; courtRect = false; greenDraw = false; cv.style.cursor = '';
    hoverKey = hoverOwner = null;
    UX.setMode('object')
   }
@@ -1340,12 +1340,12 @@
     return start('fpEdge', { k: ek })
    }
   }
-  if (o && courtDraw && place.tab === 'entry' && o.id !== 'square') {
+  if (o && (courtDraw || greenDraw) && place.tab === 'entry' && o.id !== 'square') {
    const c0 = cellAt(o, inv(p.x, p.y));
    if (!c0) return;
-   const have = new Map((o.court?.cells || []).map(c => [c[0] + ',' + c[1], c])), mode = courtLayer ? 'layer' : have.has(c0[0] + ',' + c0[1]) ? 'del' : 'add';
+   const green = greenDraw, have = new Map(((green ? o.green : o.court)?.cells || []).map(c => [c[0] + ',' + c[1], c])), mode = !green && courtLayer ? 'layer' : have.has(c0[0] + ',' + c0[1]) ? 'del' : 'add';
    UX.checkpoint();
-   start('cells', { mode, have, layers: { ...(o.court?.layers || {}) }, rect: courtRect, c0, base: new Map(have), baseLay: { ...(o.court?.layers || {}) } });
+   start('cells', { green, mode, have, layers: green ? {} : { ...(o.court?.layers || {}) }, rect: courtRect, c0, base: new Map(have), baseLay: green ? {} : { ...(o.court?.layers || {}) } });
    paintCells(o, c0);
    return
   }
@@ -1476,6 +1476,7 @@
   if (!d.moved && d.type !== 'cells') return;
   if (d.type === 'cells') {
    const o = loc(place.id), cells = [...d.have.values()];
+   if (d.green) { if (cells.length) o.green = { cells }; else delete o.green; UX.refresh(); UX.persist(); render(); return }
    const keep = {}; if (o.court?.z) keep.z = o.court.z;
    const lay = {}; for (const [k, v] of Object.entries(d.layers || {})) if (d.have.has(k)) lay[k] = v;
    if (Object.keys(lay).length) keep.layers = lay;
@@ -2736,6 +2737,9 @@
   ${zRow('cz', 'ชั้นพื้นทั้งหมด', o.court?.z || 0, 'ตัวละครที่ยืนบนพื้นที่เดินนี้')}
   <div class="row"><button id="cLayer" style="${courtLayer ? 'background:#e5c06b;color:#1b302a' : ''}">🔢 ${courtLayer ? 'กำลังกำหนดชั้นรายช่อง… (ลากบนช่องเหลือง)' : 'กำหนดชั้นเฉพาะบางช่อง'}</button></div>
   ${courtLayer ? zRow('cl', 'ชั้นที่จะใส่', courtLayerVal, 'ลากทับช่องเหลืองเพื่อใส่ · ใส่ชั้นเท่าพื้น = ล้างค่าพิเศษ') : ''}
+  <b class="sec">ช่องเดินเข้าเอง (สีเขียว)</b>
+  <p class="sub">อยู่ในกรอบฟ้า · เดินเข้าได้เมื่อผู้เล่นคลิกเข้าไปเอง (ไม่ใช้เป็นทางลัด) · ไม่สร้างถนนให้ — ใช้วาดพื้นเองได้ · ตอนนี้: <b>${o.green?.cells?.length ? o.green.cells.length + ' ช่องครึ่ง' : 'ไม่มี'}</b></p>
+  <div class="row"><button id="gDraw" style="${greenDraw ? 'background:#5fd08a;color:#10261a' : ''}">🟩 ${greenDraw ? 'กำลังทาสีเขียว… คลิก/ลากในกรอบฟ้า (ช่องที่มีอยู่ = ลบ)' : 'ทาสีช่องเดินเข้าเอง'}</button><button id="gClear"${o.green?.cells?.length ? '' : ' disabled'}>ลบช่องเขียวทั้งหมด</button></div>
   <p class="sub">ตัวละครเดินทับช่องสีเหลืองได้ · ช่องต้องต่อกันจากประตูถึงขอบหน้า (ปลายทางที่ถนนมาเชื่อม) · ตัวละครอยู่ในชั้นเดียวกับพื้นตรงนั้น ของที่อยู่ด้านหน้าและชั้นสูงกว่า (เช่น กระถาง) จึงบังตัวละครได้ · Q สลับทาทีละช่อง 1×1 / ครึ่งช่อง 2×2</p>`;
   act('#eAutoReset', once(() => { delete o.cauto; UX.refresh() }));
   bindSliders((k, v) => { if (k === 'cwid') { setCourtWidth(o, v); terrainDirty = true; UX.refresh(); return } if (k !== 'cw' && k !== 'cu') return; o.cauto = o.cauto || {}; o.cauto[k === 'cw' ? 'w' : 'du'] = v; terrainDirty = true; UX.refresh() }, () => { if (o.cauto && o.cauto.w == null && !o.cauto.du) delete o.cauto; render() });
@@ -2743,7 +2747,9 @@
    delete o.entry;
    UX.refresh()
   }));
-  act('#cDraw', () => { courtDraw = !courtDraw; flashStatus(courtDraw ? 'ลากบนแผนที่จากประตูไปหาถนน · ปล่อยเมาส์เพื่อจบเส้น' : 'ยกเลิกการวาดทางเข้า'); render() });
+  act('#gDraw', () => { greenDraw = !greenDraw; if (greenDraw) { courtDraw = false; courtLayer = false } flashStatus(greenDraw ? 'คลิก/ลากในกรอบฟ้าเพื่อทาสีช่องเขียว · ใช้โหมดกรอบได้' : 'หยุดทาสีช่องเขียว'); render() });
+  act('#gClear', once(() => { greenDraw = false; delete o.green; UX.refresh() }));
+  act('#cDraw', () => { greenDraw = false; courtDraw = !courtDraw; flashStatus(courtDraw ? 'ลากบนแผนที่จากประตูไปหาถนน · ปล่อยเมาส์เพื่อจบเส้น' : 'ยกเลิกการวาดทางเข้า'); render() });
   bindZ('cz', d => { o.court = o.court || {}; o.court.z = clampN((o.court.z || 0) + d, -20, 20); if (!o.court.z) delete o.court.z; UX.refresh() });
   bindZ('cl', d => { courtLayerVal = clampN(courtLayerVal + d, -20, 20) });
   act('#cLayer', () => { if (!o.court?.cells?.length) { UX.checkpoint(); o.court = { ...(o.court || {}), cells: autoCells(o) } } courtLayer = !courtLayer; courtDraw = courtLayer; flashStatus(courtLayer ? 'ลากบนช่องเหลืองเพื่อกำหนดชั้น' : 'เลิกกำหนดชั้นรายช่อง'); render() });
@@ -2852,7 +2858,11 @@
   const z = scale * zoom,
    o = place && loc(place.id);
   if (o && place.tab === 'entry' && o.id !== 'square') {
-   const a = center(o), cells = drag?.type === 'cells' ? [...drag.have.values()] : (o.court?.cells || []);
+   const a = center(o), gDrag = drag?.type === 'cells' && drag.green, cells = drag?.type === 'cells' && !gDrag ? [...drag.have.values()] : (o.court?.cells || []);
+   const gcells = gDrag ? [...drag.have.values()] : (o.green?.cells || []);   /* v97.46 · green cells */
+   gg.save(); gg.fillStyle = 'rgba(70,200,110,.5)'; gg.strokeStyle = '#3fd27a'; gg.lineWidth = 1.5 / z;
+   for (const [iu, iv] of gcells) { gg.beginPath(); [[iu, iv], [iu + 1, iv], [iu + 1, iv + 1], [iu, iv + 1]].forEach(([x, y], i) => { const c = canonical(o, a.u + x / 2, a.v + y / 2), s2 = project(c.u, c.v); gg[i ? 'lineTo' : 'moveTo'](s2.x, s2.y) }); gg.closePath(); gg.fill(); gg.stroke() }
+   gg.restore();
    gg.save(); gg.fillStyle = 'rgba(255,214,64,.55)'; gg.strokeStyle = '#ffd840'; gg.lineWidth = 1.5 / z;
    for (const [iu, iv] of cells) { gg.beginPath(); [[iu, iv], [iu + 1, iv], [iu + 1, iv + 1], [iu, iv + 1]].forEach(([x, y], i) => { const c = canonical(o, a.u + x / 2, a.v + y / 2), s2 = project(c.u, c.v); gg[i ? 'lineTo' : 'moveTo'](s2.x, s2.y) }); gg.closePath(); gg.fill(); gg.stroke() }
    const lays = drag?.type === 'cells' ? drag.layers : (o.court?.layers || {}), zz = o.court?.z || 0;
