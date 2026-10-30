@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.51';
+  const V = '97.93';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -471,6 +471,7 @@
     walks = []; pend = null;
     if (first && CINE && Q.get('warm') !== '1' && !st.introDone) { st.introDone = true; busy = true; hudSync(); try { await battleIntro() } finally { busy = false } }
     if (first) { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'start') }
+    if (first && !TUT && Q.get('warm') !== '1') battleTip();   /* v97.93 · C10: one new rule per battle, the first few battles after the prologue */
     refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
     toast(first ? 'BATTLE START · DRAW' : `TURN ${st.turns} · DRAW ${fresh.length}`);
     if (fresh.length) { busy = true; hudSync(); await drawShow(fresh); busy = false; refresh() }
@@ -750,9 +751,16 @@
      Click a cell = walk (its own move points) · click an enemy = show the hit (≈ damage, walking in if needed), click again = do it ·
      ✦ = its signature skill (no crystal, usual cooldown) · 🤖 = let the AI play this one (also for later turns, until switched back) ·
      Space / ⏭ = end the turn and pick its facing. ---------- */
+  /* v97.93 · C10 first-time tips for the battle rules (js/tips.js · numbers from js/flat-battle.js) — one new one per battle */
+  const BATTLE_TIPS = [
+    ['b_element', 'ธาตุแพ้ชนะ', ['ตีธาตุที่ชนะทาง แรงขึ้น ×1.3 · ตีธาตุที่แพ้ทาง เบาลง ×0.7', 'ดูธาตุของศัตรูได้ที่แผงข้อมูลยูนิต · ตารางธาตุ ◈ อยู่ในเมนูหมู่บ้าน', 'การ์ดเวทแต่ละใบมีธาตุของมัน เลือกใบที่ชนะทาง'], 'assets/icons/pack/fusion.webp'],
+    ['b_height', 'ความสูงของสนาม', ['ยืนสูงกว่าเป้า ตีแรงขึ้น 10% ต่อระดับ · อยู่ต่ำกว่าก็เบาลง', 'ตีประชิดได้แค่ต่างระดับไม่เกิน 1 · การ์ดบางใบ เช่น กระโจนฟาด ตีลงจากที่สูงได้', 'ผลักศัตรูตกที่สูงทำดาเมจเพิ่ม'], 'assets/icons/pack/power-up.webp'],
+    ['b_back', 'ตีจากด้านหลัง', ['ตีจากด้านหลังของเป้า แรงขึ้น ×1.2 · จากด้านข้าง ×1.1', 'ทุกตัวหันหน้าไปทางที่เดินหรือโจมตีล่าสุด · ตอนจบตาเลือกทิศที่จะหันได้', 'ศัตรูที่ฉลาดจะพยายามอ้อมไปตีหลังเราเหมือนกัน'], 'assets/icons/pack/target.webp']
+  ];
+  function battleTip() { const T = window.Tips; if (!T) return; for (const [k, title, lines, icon] of BATTLE_TIPS) if (!T.seen(k)) { setTimeout(() => T.once(k, title, lines, icon), 900); return } }
   let pendAlly = null;
   async function afterAI() { if (st.outcome) { refresh(); finish(); return } if (st.turn === 'ally') return enterAlly(); await startTurnShow(false) }
-  function enterAlly() { walks = []; pendAlly = null; pend = null; markAuto(); const u = st.cur; actUnit = u; document.body.classList.add('fb-ally'); hint('ตาของ ' + u.name + ' · คลิกช่องเพื่อเดิน · คลิกศัตรูเพื่อตี · Space จบเทิร์น'); floatText(u, 'YOUR MOVE', '#ffe08a', true); sfx('cast', .3); refresh() }
+  function enterAlly() { window.Tips?.once('b_ally', 'สั่งเพื่อนร่วมทีม', ['เพื่อนที่ปลดล็อกแล้วรอให้คุณสั่งในตาของเขา', 'คลิกช่อง = เดิน · คลิกศัตรู = ดูดาเมจที่จะทำ คลิกซ้ำ = โจมตี', '✦ = ท่าประจำตัว · 🤖 = ให้ AI เล่นตัวนี้แทน · Space = จบตาแล้วเลือกทิศ'], 'assets/icons/menu/party.webp'); walks = []; pendAlly = null; pend = null; markAuto(); const u = st.cur; actUnit = u; document.body.classList.add('fb-ally'); hint('ตาของ ' + u.name + ' · คลิกช่องเพื่อเดิน · คลิกศัตรูเพื่อตี · Space จบเทิร์น'); floatText(u, 'YOUR MOVE', '#ffe08a', true); sfx('cast', .3); refresh() }
   function allyBar() {
     let d = document.getElementById('fbAlly'); const on = st && st.turn === 'ally' && !st.outcome && st.cur;
     if (!on) { d?.remove(); document.body.classList.remove('fb-ally'); return }
