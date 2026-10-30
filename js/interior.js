@@ -77,12 +77,20 @@
       it('anvil', 5, 4); sp('anvil', 5, 5, 'NE', 'work'); sp('anvil', 4, 4, 'SE', 'work'); it('quench', 7, 2); it('rack', 8, 1, 1, 1, { h: 50 });
       it('crate', 8, 7); it('barrel', 1, 7); sp('watch', 6, 6, 'NW', 'stand'); sp('watch', 3, 6, 'NE', 'stand');
       R.wallDeco.push({ k: 'tools', side: 'back', a: 4, b: 7 }, { k: 'window', side: 'left', a: 4 });
+    } else if (KIND === 'guild') {   /* v97.40 · adventurers' guild: a counter, the contract board, tables for the parties, trophies */
+      Object.assign(R, { W: 11, D: 9, door: 6, floor: 'wood', wall: 'timber' });
+      it('counter', 2, 2, 4, 1, { h: 30 }); sp('counter', 3, 1, 'SW', 'work'); sp('visit', 4, 3, 'NE', 'stand');
+      it('rack', 8, 1, 1, 1, { h: 50 }); it('rack', 9, 1, 1, 1, { h: 50 }); it('chest', 7, 1); sp('board', 9, 3, 'NE', 'stand'); sp('board', 8, 3, 'NE', 'stand');
+      for (const [u, v] of [[3, 6], [7, 6]]) { it('table', u, v); it('stool', u - 1, v, 1, 1, { walk: true }); it('stool', u + 1, v, 1, 1, { walk: true }); sp('table', u - 1, v, 'SE', 'sit'); sp('table', u + 1, v, 'SW', 'sit') }
+      it('barrel', 10, 7); it('crate', 10, 8); it('plant', 1, 8); it('rug', 4, 4, 3, 1, { walk: true, col: '#6a2a2a' });
+      R.wallDeco.push({ k: 'board', side: 'back', a: 8.5 }, { k: 'banner', side: 'back', a: 1.4 }, { k: 'sword', side: 'back', a: 6.5 }, { k: 'antlers', side: 'left', a: 4 }, { k: 'window', side: 'left', a: 7 });
+      it('hearth', 0, 2, 1, 2, { h: 16 }); R.light.push({ u: .6, v: 3, r: 4, col: '255,150,60', flicker: true }, { u: 6, v: 5, r: 5, col: '255,220,160' });
     } else {   /* house / player's home */
       Object.assign(R, { W: 8, D: 7, door: 5, floor: 'wood', wall: KIND === 'home' ? 'timber' : 'plaster' });
       it('bed', 6, 1, 2, 1); sp('bed', 6, 1, 'SE', 'sleep'); it('table', 3, 4); it('stool', 2, 4, 1, 1, { walk: true }); it('stool', 4, 4, 1, 1, { walk: true }); sp('table', 2, 4, 'SE', 'sit'); sp('table', 4, 4, 'SW', 'sit');
       it('chest', 7, 5); it('hearth', 0, 1, 1, 2, { h: 14 }); R.light.push({ u: .6, v: 2, r: 3.5, col: '255,150,60', flicker: true }); it('rug', 3, 3, 3, 3, { walk: true, col: '#6a4a8a' });
       R.wallDeco.push({ k: 'window', side: 'back', a: 3.5 }, { k: 'shelf', side: 'back', a: 1.2, b: 2.6 });
-      const prof = { may: 'oven', tom: 'bench', ella: 'loom', berg: 'trophy', saf: 'herbs', joe: 'nets', mira: 'books', ken: 'logs', shep: 'wool', lin: 'books' }[OWNER];
+      const prof = { may: 'oven', tom: 'bench', ella: 'loom', berg: 'trophy', saf: 'herbs', joe: 'nets', mira: 'books', ken: 'logs', shep: 'wool', lin: 'books', oren: 'desk', gus: 'smith', dork: 'guard', hilda: 'farm', bryn: 'mill', kier: 'sword' }[OWNER];
       if (prof === 'oven') { it('oven', 1, 4, 1, 1, { h: 34 }); sp('work', 2, 5, 'NW', 'work'); R.light.push({ u: 1.5, v: 4.5, r: 2.5, col: '255,140,60', flicker: true }) }
       else if (prof === 'bench') { it('bench', 1, 5, 2, 1); sp('work', 2, 4, 'SW', 'work') }
       else if (prof === 'loom') { it('loom', 1, 5, 1, 1, { h: 40 }); sp('work', 2, 5, 'NW', 'work') }
@@ -92,6 +100,13 @@
       else if (prof === 'books') { it('shelfbox', 1, 5, 1, 1, { h: 56 }); sp('work', 2, 5, 'NW', 'stand') }
       else if (prof === 'nets') { it('basket', 1, 5); R.wallDeco.push({ k: 'net', side: 'left', a: 4 }) }
       else if (prof === 'wool') { it('basket', 1, 5); it('basket', 2, 6) }
+      /* v97.40 · the rest of the village keep their trade at home too (along the back wall, clear of the door) */
+      else if (prof === 'desk') { it('table', 3, 1); it('shelfbox', 2, 1, 1, 1, { h: 56 }); sp('work', 3, 2, 'NE', 'sit'); R.wallDeco.push({ k: 'banner', side: 'back', a: 5.2 }, { k: 'board', side: 'left', a: 3 }) }
+      else if (prof === 'smith') { it('anvil', 3, 1); it('rack', 2, 1, 1, 1, { h: 50 }); sp('work', 3, 2, 'NE', 'work'); R.wallDeco.push({ k: 'tools', side: 'back', a: 3.6, b: 5.4 }) }
+      else if (prof === 'guard') { it('rack', 3, 1, 1, 1, { h: 50 }); it('chest', 4, 1); R.wallDeco.push({ k: 'sword', side: 'back', a: 5.2 }, { k: 'banner', side: 'left', a: 3 }) }
+      else if (prof === 'farm') { it('basket', 2, 1); it('basket', 3, 1); it('crate', 4, 1); R.wallDeco.push({ k: 'tools', side: 'back', a: 4.6, b: 5.8 }) }
+      else if (prof === 'mill') { it('barrel', 2, 1); it('crate', 3, 1); it('basket', 4, 1); it('mortar', 3, 1, 1, 1, { onTop: true }); sp('work', 3, 2, 'NE', 'work') }
+      else if (prof === 'sword') { it('rack', 3, 1, 1, 1, { h: 50 }); R.wallDeco.push({ k: 'sword', side: 'back', a: 5 }) }
       sp('stand', 5, 3, 'SW', 'stand');
     }
     return R;
@@ -116,7 +131,7 @@
     for (const [a, b, at, tag] of p.sched || []) if (hour >= a && hour < b) return { at: at === 'home' ? homeOf(p) : at, tag };
     return { at: homeOf(p), tag: p.id === OWNER ? 'bed' : null };
   }
-  const herePlace = at => at === PLACE || (at === KIND && ['inn', 'healer', 'shop', 'market', 'temple', 'forge'].includes(KIND) && !L.HOUSE_OF[PLACE]);
+  const herePlace = at => at === PLACE || (at === KIND && ['inn', 'healer', 'shop', 'market', 'temple', 'forge', 'guild'].includes(KIND) && !L.HOUSE_OF[PLACE]);
   function benchHere(id) { return KIND === 'inn' && S.bench.some(b => b.key === id) }
   const taken = new Set();
   function claimSpot(tag) {
@@ -440,12 +455,33 @@
     const away = keeperIn() ? '' : 'เจ้าของไม่อยู่ตอนนี้';
     if (KIND === 'healer') return B('heal', '✚ รักษาทั้งทีม', missing() ? healCost() : 0, away || (missing() ? '' : 'ทุกคนแข็งแรงดี')) + B('potion', '🧪 ซื้อยา', PRICE.potion, away);
     if (KIND === 'shop' || KIND === 'market') return B('potion', '🧪 ซื้อยา', PRICE.potion, away) + B('food', '🍞 เสบียง ×3', PRICE.food * 3, away);
+    /* v97.40 · the guild's contracts and what each household offers */
+    if (KIND === 'guild') { const c = contract(); if (away) return B('x', '📜 งานกิลด์', 0, 'ซิกริดไม่อยู่ที่เคาน์เตอร์ (8:00–17:00)');
+      if (c.active) { const k = Math.max(0, (S.kills || 0) - c.active.base), done = k >= c.active.n; return B('turnin', done ? `✔ ส่งงาน ${c.active.label} +${c.active.reward}💰` : `📜 ${c.active.label} ${k}/${c.active.n}`, 0, done ? '' : 'ล้มศัตรูบนแผนที่โลกให้ครบก่อน') + (done ? '' : B('drop', '✕ ยกเลิกงาน', 0)) }
+      return c.offers.map((o, i) => B('take:' + i, `📜 ${o.label} → ${o.reward}💰`, 0, c.taken ? 'วันนี้รับงานไปแล้ว พรุ่งนี้มีงานใหม่' : '')).join('') }
+    if (KIND === 'house') { const H = HOUSE_SVC[OWNER]; if (H) return H.map(([k, label, cost]) => B(k, label, cost, k === 'projects' || k === 'lessons' || k === 'safety' ? '' : away)).join('') }
     if (KIND === 'temple') { const prayed = (S.prayDay || 0) === CLK.read().day; return B('pray', '🙏 ภาวนา', 0, prayed ? 'ภาวนาแล้ววันนี้ · พรุ่งนี้มาใหม่' : '') + B('offer', '🕯 ถวาย · น้ำมนต์', 25, away) }
     return '';
   }
+  const HOUSE_SVC = { may: [['bread', '🍞 ขนมปัง ×3', 9]], hilda: [['veg', '🥕 ผักสด ×3', 9]], bryn: [['flour', '🌾 แป้งและเสบียง ×3', 9]], joe: [['fish', '🐟 ปลาย่าง ×3', 9]],
+    saf: [['potion', '🧪 ยาสมุนไพร', 14]], oren: [['projects', '🏗 พัฒนาหมู่บ้าน', 0]], mira: [['lessons', '📘 ทบทวนบทเรียน', 0]], dork: [['safety', '🛡 ถามเรื่องความปลอดภัย', 0]] };
+  /* guild contracts: 3 a day (seeded by the day), one taken at a time, counted by the foes the hero brings down on the world map (S.kills) */
+  function contract() {
+    S.guild ||= {}; const day = CLK.read().day, G = S.guild;
+    if (G.day !== day) { let h = day * 2654435761 >>> 0; const r = () => (h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0) / 4294967296;
+      G.day = day; G.taken = false; G.offers = [['กวาดล้างสัตว์ร้ายรอบหมู่บ้าน', 3], ['คุ้มกันทางเกวียน', 5], ['ล่าค่าหัวกลุ่มโจรป่า', 7]].map(([t, n]) => { const k = n + Math.floor(r() * 3); return { label: t + ' (ล้ม ' + k + ' ตัว)', n: k, reward: 25 + k * 11 } }) }
+    return G;
+  }
   function service(k) {
     S = L.save(); const pay = c => { if (S.gold < c) { toast('เงินไม่พอ'); return false } S.gold -= c; return true };
-    if (k === 'heal') { const c = healCost(); if (!missing() || !pay(c)) return; S.hp = S.maxHp || 60; for (const m of [...S.party, ...S.bench]) m.hp = m.max; L.writeSave(S); toast('✚ รักษาแล้ว · ทุกคน HP เต็ม (−' + c + '💰)') }
+    if (k.startsWith('take:')) { const G = contract(), o = G.offers[+k.slice(5)]; if (!o || G.taken || G.active) return; G.active = { ...o, base: S.kills || 0 }; G.taken = true; L.writeSave(S); toast('📜 รับงาน: ' + o.label) }
+    else if (k === 'turnin') { const G = contract(), a = G.active; if (!a || (S.kills || 0) - a.base < a.n) return; S.gold += a.reward; G.done = (G.done || 0) + 1; G.active = null; L.writeSave(S); toast('✔ ส่งงานกิลด์ +' + a.reward + '💰 (ทำสำเร็จแล้ว ' + G.done + ' งาน)') }
+    else if (k === 'drop') { const G = contract(); G.active = null; L.writeSave(S); toast('ยกเลิกงานแล้ว') }
+    else if (['bread', 'veg', 'flour', 'fish'].includes(k)) { if (!pay(9)) return; S.food = (S.food || 0) + 3; L.writeSave(S); toast({ bread: '🍞', veg: '🥕', flour: '🌾', fish: '🐟' }[k] + ' ได้เสบียง 3 ห่อ (มี ' + S.food + ')') }
+    else if (k === 'projects') { try { (parent.VillageProjects || window.VillageProjects)?.open() } catch (e) { } }
+    else if (k === 'lessons') { let ls = []; try { ls = parent.Story?.lessons?.() || [] } catch (e) { } const a = [...people.values()].find(x => x.id === 'mira'); if (a) talk(a, ls.length ? 'บทเรียนที่เจ้าเคยเรียน: ' + ls.map(x => x.title).filter(Boolean).join(' · ') + ' — อยากทวนเรื่องไหน เปิดสมุดหมู่บ้านดูได้เลยนะ' : 'ยังไม่มีบทเรียนให้ทวนเลย ออกไปลองของจริงก่อนสิ'); else toast('ครูมิราไม่อยู่บ้านตอนนี้') }
+    else if (k === 'safety') { const VPj = window.VillageProjects; const w = VPj?.has('watch'), r = VPj?.has('road'); const a = [...people.values()].find(x => x.id === 'dork'); const line = (w ? 'หอเฝ้ายามตะวันออกช่วยได้มาก ข้ามองเห็นได้ไกลถึงแนวป่า' : 'รั้วตะวันออกยังโหว่ ถ้ามีหอเฝ้ายามสักหลังข้าจะนอนหลับขึ้น') + ' · ' + (r ? 'ถนนใหม่ทำให้พวกพ่อค้ามาบ่อยขึ้น' : 'ถนนออกหมู่บ้านยังพังอยู่ คาราวานบ่นกันทุกคน'); if (a) talk(a, line); else toast('🛡 ' + line) }
+    else if (k === 'heal') { const c = healCost(); if (!missing() || !pay(c)) return; S.hp = S.maxHp || 60; for (const m of [...S.party, ...S.bench]) m.hp = m.max; L.writeSave(S); toast('✚ รักษาแล้ว · ทุกคน HP เต็ม (−' + c + '💰)') }
     else if (k === 'potion') { if (!pay(PRICE.potion)) return; S.potions = (S.potions || 0) + 1; L.writeSave(S); toast('🧪 ได้ยาฟื้นฟู 1 ขวด (มี ' + S.potions + ')') }
     else if (k === 'food') { if (!pay(PRICE.food * 3)) return; S.food = (S.food || 0) + 3; L.writeSave(S); toast('🍞 ได้เสบียง 3 ห่อ (มี ' + S.food + ')') }
     else if (k === 'pray') { const day = CLK.read().day; if ((S.prayDay || 0) === day) return; S.prayDay = day; S.fatigue = (S.fatigue || 0) - 40; const k2 = VP('shrine') ? .5 : .3; S.hp = Math.min(S.maxHp || 60, (S.hp ?? 60) + Math.round((S.maxHp || 60) * k2)); L.writeSave(S); toast('🙏 ใจสงบลง · ความเหนื่อย −40 · HP +' + Math.round(k2 * 100) + '%') }
