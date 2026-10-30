@@ -456,7 +456,7 @@
     const B = (k, label, cost, why) => `<button data-svc="${k}" ${why || (cost && S.gold < cost) ? 'disabled' : ''} title="${esc(why || '')}">${label}${cost ? ' ' + cost + '💰' : ''}</button>`;
     const away = keeperIn() ? '' : 'เจ้าของไม่อยู่ตอนนี้';
     if (KIND === 'healer') return B('heal', '✚ รักษาทั้งทีม', missing() ? healCost() : 0, away || (missing() ? '' : 'ทุกคนแข็งแรงดี')) + B('potion', '🧪 ซื้อยา', PRICE.potion, away);
-    if (KIND === 'shop' || KIND === 'market') return B('potion', '🧪 ซื้อยา', PRICE.potion, away) + B('food', '🍞 เสบียง ×3', PRICE.food * 3, away);
+    if (KIND === 'shop' || KIND === 'market') return B('potion', '🧪 ซื้อยา', PRICE.potion, away) + B('food', '🍞 เสบียง ×3', PRICE.food * 3, away) + (KIND === 'market' && window.Settlements ? B('trade', '🛒 ซื้อขายสินค้า', 0, away) : '');
     /* v97.40 · the guild's contracts and what each household offers */
     if (KIND === 'guild') { const c = contract(); if (away) return B('x', '📜 งานกิลด์', 0, 'ซิกริดไม่อยู่ที่เคาน์เตอร์ (8:00–17:00)');
       if (c.active) { const k = Math.max(0, (S.kills || 0) - c.active.base), done = k >= c.active.n; return B('turnin', done ? `✔ ส่งงาน ${c.active.label} +${c.active.reward}💰` : `📜 ${c.active.label} ${k}/${c.active.n}`, 0, done ? '' : 'ล้มศัตรูบนแผนที่โลกให้ครบก่อน') + (done ? '' : B('drop', '✕ ยกเลิกงาน', 0)) }
@@ -480,6 +480,7 @@
     else if (k === 'turnin') { const G = contract(), a = G.active; if (!a || (S.kills || 0) - a.base < a.n) return; a.reward = Math.round(a.reward * (FC()?.payMult('guild') ?? 1)); S.gold += a.reward; FC()?.add('guild', 6, 'ส่งงาน ' + a.label); FC()?.add('village', 2, 'ช่วยกำจัดภัยรอบหมู่บ้าน'); G.done = (G.done || 0) + 1; G.active = null; L.writeSave(S); toast('✔ ส่งงานกิลด์ +' + a.reward + '💰 (ทำสำเร็จแล้ว ' + G.done + ' งาน)') }
     else if (k === 'drop') { const G = contract(); G.active = null; L.writeSave(S); toast('ยกเลิกงานแล้ว') }
     else if (['bread', 'veg', 'flour', 'fish'].includes(k)) { if (!pay(9)) return; S.food = (S.food || 0) + 3; L.writeSave(S); toast({ bread: '🍞', veg: '🥕', flour: '🌾', fish: '🐟' }[k] + ' ได้เสบียง 3 ห่อ (มี ' + S.food + ')') }
+    else if (k === 'trade') { window.Settlements.tradePanel('fernvale', S, () => { L.writeSave(S); hud._html = ''; hudSync() }); return }
     else if (k === 'projects') { try { (parent.VillageProjects || window.VillageProjects)?.open() } catch (e) { } }
     else if (k === 'lessons') { let ls = []; try { ls = parent.Story?.lessons?.() || [] } catch (e) { } const a = [...people.values()].find(x => x.id === 'mira'); if (a) talk(a, ls.length ? 'บทเรียนที่เจ้าเคยเรียน: ' + ls.map(x => x.title).filter(Boolean).join(' · ') + ' — อยากทวนเรื่องไหน เปิดสมุดหมู่บ้านดูได้เลยนะ' : 'ยังไม่มีบทเรียนให้ทวนเลย ออกไปลองของจริงก่อนสิ'); else toast('ครูมิราไม่อยู่บ้านตอนนี้') }
     else if (k === 'safety') { const VPj = window.VillageProjects; const w = VPj?.has('watch'), r = VPj?.has('road'); const a = [...people.values()].find(x => x.id === 'dork'); const line = (w ? 'หอเฝ้ายามตะวันออกช่วยได้มาก ข้ามองเห็นได้ไกลถึงแนวป่า' : 'รั้วตะวันออกยังโหว่ ถ้ามีหอเฝ้ายามสักหลังข้าจะนอนหลับขึ้น') + ' · ' + (r ? 'ถนนใหม่ทำให้พวกพ่อค้ามาบ่อยขึ้น' : 'ถนนออกหมู่บ้านยังพังอยู่ คาราวานบ่นกันทุกคน'); if (a) talk(a, line); else toast('🛡 ' + line) }

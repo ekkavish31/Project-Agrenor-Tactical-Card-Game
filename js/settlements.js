@@ -1,0 +1,75 @@
+/* v97.43 · T1: the settlements of the valley as data (docs/TODO.md "T ที่อยู่ เมือง แฟคชั่น และการปกครอง").
+   size: village · town · city  — decides the defence (village watch · town guard · city garrison with a general) and the land price.
+   ruler: the faction that governs it (js/factions.js) — your standing with it changes prices there.
+   goods: what is cheap there (made locally) and what is dear (brought in) — the base for trade runs later (T6 / L3).
+   land: weekly rent for a plot inside the walls (T4) · outside the walls land is free but raided (T5).
+   Fernvale is the home village; the other three are the towns placed on the world map by js/world-gen.js (TOWNS). */
+(function (root) {
+  'use strict';
+  const SIZE = {
+    village: { name: 'หมู่บ้าน', defence: 'ยามหมู่บ้าน', guards: 2, safety: .55 },
+    town: { name: 'เมือง', defence: 'กองยามประจำเมือง', guards: 8, safety: .75 },
+    city: { name: 'เมืองใหญ่', defence: 'กองทหารรักษาการณ์และแม่ทัพ', guards: 30, safety: .92 }
+  };
+  const GOODS = { food: 'เสบียง', potion: 'ยาฟื้นฟู', iron: 'แท่งเหล็ก', wood: 'ไม้', fish: 'ปลาเค็ม', salt: 'เกลือ', cloth: 'ผ้าทอ', herbs: 'สมุนไพร', fur: 'ขนสัตว์', ore: 'แร่' };
+  const SETTLEMENTS = {
+    fernvale: { name: 'หมู่บ้านเฟิร์นเวล', size: 'village', ruler: 'village', leader: 'ผู้ใหญ่บ้านโอเรน', land: 15, cheap: ['wood', 'herbs', 'food'], dear: ['salt', 'ore'],
+      text: 'หมู่บ้านบ้านเกิดริมป่า มีโรงตีเหล็ก ตลาดเล็ก และสมาคมนักผจญภัย' },
+    brookmere: { name: 'หมู่บ้านบรู๊คเมียร์', size: 'village', ruler: 'village', leader: 'ผู้ใหญ่บ้านแอนนา', land: 12, cheap: ['food', 'cloth'], dear: ['iron', 'potion'],
+      text: 'หมู่บ้านเกษตรเล็ก ๆ ริมลำธาร ทุ่งดอกไม้ล้อมรอบ ผู้คนรู้จักเฟิร์นเวลดี' },
+    haven: { name: 'ท่าเรือซอลต์เฮเวน', size: 'city', ruler: 'merchants', leader: 'สภาพ่อค้าแห่งท่าเรือ', land: 60, cheap: ['fish', 'salt', 'potion'], dear: ['wood', 'fur'],
+      text: 'เมืองท่าเสียงดัง กลิ่นปลาเค็มและเกลือทะเล เรือสินค้าจอดเรียงเต็มท่า' },
+    northgate: { name: 'ด่านหินเหนือ', size: 'town', ruler: 'garrison', leader: 'แม่ทัพเฝ้าด่าน', land: 30, cheap: ['iron', 'ore', 'fur'], dear: ['food', 'herbs'],
+      text: 'ด่านหินบนช่องเขา ทหารเฝ้าทางขึ้นเหนือ นักเดินทางแวะพักก่อนข้ามเขา' }
+  };
+  const BASE = { food: 2.5, potion: 18, inn: 12 };
+  /* local price of a good: cheap −25 % · dear +35 % · then your standing with the ruler (−5 % a step) */
+  function price(id, good, base) {
+    const T = SETTLEMENTS[id]; if (!T) return base; const F = root.Factions;
+    const local = T.cheap.includes(good) ? .75 : T.dear.includes(good) ? 1.35 : 1;
+    return Math.max(1, Math.round(base * local * (F ? F.priceMult(T.ruler) : 1)));
+  }
+  const info = id => { const T = SETTLEMENTS[id]; return T && { ...T, id, sizeInfo: SIZE[T.size] } };
+  function card(id) {
+    const T = info(id); if (!T) return ''; const F = root.Factions, R = F?.FACTIONS[T.ruler], tier = F?.tier(T.ruler);
+    const g = list => list.map(k => GOODS[k] || k).join(' · ');
+    return `<div style="font-size:12.5px;line-height:1.7;margin:6px 0;padding:8px 10px;border-radius:10px;background:#0001">🏛 <b>${T.sizeInfo.name}</b> · ปกครองโดย ${R ? R.icon + ' ' + R.name : T.ruler} (${T.leader})${tier ? ` · ชื่อเสียงของคุณ: <b style="color:${tier[2]}">${tier[1]}</b>` : ''}<br>🛡 ${T.sizeInfo.defence} · ⬇ ของถูก: ${g(T.cheap)} · ⬆ ของแพง: ${g(T.dear)}<br>🏠 เช่าที่ในเมือง ${T.land} 💰/สัปดาห์ (เปิดเร็ว ๆ นี้) · นอกเมืองจับจองฟรีแต่เสี่ยงโดนบุก</div>`;
+  }
+  /* ---------- v97.44 · T6 lite: trade goods between towns ----------
+     Buy where a good is made (cheap), sell where it is brought in (dear). Selling pays 80 % of the local price. Cargo lives in the world
+     save (S.cargo) and is limited by the wagon (CARGO_MAX). A trade of 5+ units raises standing with the merchants. */
+  const TRADE = { fish: 6, salt: 8, cloth: 10, iron: 6, fur: 12, ore: 7, herbs: 5, wood: 4 };
+  const CARGO_MAX = 12;
+  const buyPrice = (id, k) => price(id, k, TRADE[k]);
+  const sellPrice = (id, k) => { const T = SETTLEMENTS[id]; if (!T) return 0; const local = T.cheap.includes(k) ? .75 : T.dear.includes(k) ? 1.35 : 1; return Math.max(1, Math.floor(TRADE[k] * local * .8)) };
+  const load = S => Object.values(S.cargo || {}).reduce((a, n) => a + n, 0);
+  function trade(id, S, k, n) {   /* n > 0 buy, n < 0 sell · returns the gold moved or 0 */
+    S.cargo ||= {}; if (!TRADE[k] || !SETTLEMENTS[id]) return 0;
+    if (n > 0) { n = Math.min(n, CARGO_MAX - load(S), Math.floor((S.gold || 0) / buyPrice(id, k))); if (n <= 0) return 0; const c = n * buyPrice(id, k); S.gold -= c; S.cargo[k] = (S.cargo[k] || 0) + n; if (n >= 5) root.Factions?.add('merchants', 1, 'ซื้อ' + GOODS[k] + 'ที่' + SETTLEMENTS[id].name); return -c }
+    n = Math.min(-n, S.cargo[k] || 0); if (n <= 0) return 0; const g = n * sellPrice(id, k); S.gold += g; S.cargo[k] -= n; if (!S.cargo[k]) delete S.cargo[k]; if (n >= 5) root.Factions?.add('merchants', 1, 'ขาย' + GOODS[k] + 'ที่' + SETTLEMENTS[id].name); return g;
+  }
+  /* the market panel (one overlay, used by the world map's towns and Fernvale's market) — resolves when closed */
+  function tradePanel(id, S, onChange) {
+    return new Promise(res => {
+      const T = SETTLEMENTS[id]; if (!T) return res(); document.getElementById('stTrade')?.remove();
+      const d = document.createElement('div'); d.id = 'stTrade';
+      d.style.cssText = 'position:fixed;inset:0;z-index:2100;display:grid;place-items:center;background:#05080dcc;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif';
+      const draw = () => {
+        const rows = Object.keys(TRADE).map(k => { const have = S.cargo?.[k] || 0, tag = T.cheap.includes(k) ? '<span style="color:#3a7a2a">⬇ ถูก</span>' : T.dear.includes(k) ? '<span style="color:#a0442a">⬆ แพง</span>' : '';
+          return `<tr><td>${GOODS[k]} ${tag}</td><td style="text-align:right">${buyPrice(id, k)}</td><td style="text-align:right">${sellPrice(id, k)}</td><td style="text-align:center">${have}</td>
+            <td><button data-k="${k}" data-n="1">ซื้อ 1</button><button data-k="${k}" data-n="5">ซื้อ 5</button><button data-k="${k}" data-n="-1" ${have ? '' : 'disabled'}>ขาย 1</button><button data-k="${k}" data-n="-99" ${have ? '' : 'disabled'}>ขายหมด</button></td></tr>` }).join('');
+        d.innerHTML = `<div style="width:min(760px,96vw);max-height:92vh;overflow:auto;padding:16px 18px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c">
+          <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button><h2 style="margin:0 0 4px;font:800 22px Georgia,'Noto Sans Thai',serif">🛒 ตลาดสินค้า · ${T.name}</h2>
+          <p style="margin:0 0 10px;font-size:13px;color:#6a5030">ซื้อของที่เมืองนี้ผลิตเอง แล้วไปขายเมืองที่ขาดแคลน · ขายได้ 80% ของราคาท้องถิ่น · 💰 ${S.gold} · เกวียน ${load(S)}/${CARGO_MAX}</p>
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px"><tr style="text-align:left;color:#7a6040"><th>สินค้า</th><th style="text-align:right">ซื้อ</th><th style="text-align:right">ขาย</th><th>มี</th><th></th></tr>${rows}</table></div>`;
+        d.querySelectorAll('button[data-k]').forEach(b => { b.style.cssText = 'margin:2px;padding:4px 8px;border-radius:7px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:600 12px inherit;font-family:inherit;cursor:pointer'; if (b.disabled) b.style.opacity = .45 });
+      };
+      draw(); document.body.append(d);
+      const close = () => { removeEventListener('keydown', key, true); d.remove(); res() }, key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close() } };
+      addEventListener('keydown', key, true);
+      d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) return close(); const b = e.target.closest('button[data-k]'); if (!b || b.disabled) return; const g = trade(id, S, b.dataset.k, +b.dataset.n); if (g) { onChange?.(g); draw() } };
+    });
+  }
+  root.Settlements = { SIZE, GOODS, SETTLEMENTS, BASE, price, info, card, TRADE, CARGO_MAX, buyPrice, sellPrice, load, trade, tradePanel };
+  if (typeof module !== 'undefined' && module.exports) module.exports = root.Settlements;
+})(typeof window !== 'undefined' ? window : globalThis);
