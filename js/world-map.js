@@ -201,6 +201,8 @@
     g.fillStyle = '#3a2810'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t.length > 46 ? t.slice(0, 45) + '…' : t, token.x, y + 12.5); g.restore();
   }
   const VP = id => !!window.VillageProjects?.has(id);
+  /* v97.54 · T6 phase 2: a loaded wagon draws bandits (up to ×1.5), an escort keeps them off (×0.6) */
+  const cargoRisk = () => { const ST = window.Settlements; if (!ST) return 1; const n = ST.load(S); return (n ? 1 + Math.min(.5, n / 24) : 1) * (ST.escorted(S) ? .6 : 1) };
   const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura on the map too */
   function drawToken(now) {
     const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 76;
@@ -421,6 +423,8 @@
       const folk = townsfolk(id), per = window.WorldState?.period(S.hour) || 'day';
       const people = folk.length ? folk.map(p => { const ls = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…']; return `<p>👤 <b>${esc(p.name)}</b> <small>${esc(p.role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>` }).join('') : '<p style="opacity:.7">ไม่เจอคนรู้จักที่นี่ตอนนี้</p>';
       /* v97.43 · T1: prices by what the town makes and lacks, and by your standing with whoever rules it (js/settlements.js) */
+      /* v97.52 · T3: wanted here → the gate guards stop you first */
+      if (window.Law && Law.file(S, id).wanted) { const a = await Law.arrest(S, id, 'ยามที่ประตู' + poi.name + 'จำหน้าคุณได้ — คุณถูกหมายจับที่นี่'); if (a === 'jail') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to) } save(); hudSync(); if (a === 'run') { log('🏃 หนีออกจาก' + poi.name); break } }
       const ST = window.Settlements, pInn = ST ? ST.price(id, 'inn', 12) : 12, pFood = ST ? ST.price(id, 'food', 10) : 10, pPot = ST ? ST.price(id, 'potion', 18) : 18;
       const v = await modal(`<h2>🏘 ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>${people}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
         [{ label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates ? [{ label: '🏡 ที่ดิน', value: 'land' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
@@ -505,7 +509,7 @@
     const night = nightness() > .6, dang = G.danger(world, t);
     /* v95.16 · no battle marks on the map: every step has a chance of an ambush (more in wild/dangerous land and at night, less on a road) */
     S.calm = Math.max(0, (S.calm || 0) - 1);
-    const odds = Math.min(.42, (.05 + dang * .24) * (t.road ? .45 : 1) * (night ? 1.6 : 1) * (VP('watch') ? .75 : 1));
+    const odds = Math.min(.42, (.05 + dang * .24) * (t.road ? .45 : 1) * (night ? 1.6 : 1) * (VP('watch') ? .75 : 1) * cargoRisk());
     if (!S.calm && !t.poi && Math.random() < odds) { S.calm = 3; log(night ? 'ถูกซุ่มโจมตีกลางดึก!' : 'ถูกซุ่มโจมตี!'); return await battle(pickFoe(t), dang, { ambush: true }) }
     if (night && Math.random() < .07) return await nightEvent(t);
     chatter('walk', .35);
@@ -759,6 +763,7 @@
     fr.classList.remove('on'); await wait(380); fr.remove();
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
     for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ'); ev('party:ko', { who: p.key, whoName: p.name }) } } }
+    { const ST = window.Settlements; if (ST && ST.load(S) && (res.outcome === 'lose' || res.outcome === 'flee')) { const lost = ST.loseCargo(S, ST.escorted(S) ? .1 : res.outcome === 'lose' ? .5 : .25); if (lost.length) { log('📦 สินค้าหายระหว่างหนี/พ่ายแพ้: ' + lost.join(' · ')); toast('📦 สินค้าหาย ' + lost.join(' · ')) } } }   /* v97.54 · T6 */
     if (fierce && res.outcome !== 'flee') ev('night:terror', { foe, biome: here.biome });
     if (!o.boss) ev(res.outcome === 'win' ? 'battle:win' : res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome });
     else if (res.outcome !== 'win') ev(res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome, destName: destOf()?.name });
