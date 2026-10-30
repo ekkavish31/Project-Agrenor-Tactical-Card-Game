@@ -21,6 +21,7 @@
     warden: { name: 'ผู้ดูแลวิหาร', icon: '✚', body: 'temple', town: 'fernvale', jobs: ['cleric'], duty: 'prays', n: 2, dutyText: 'ภาวนาที่วิหาร 2 วันต่อสัปดาห์', ranks: [['ผู้ดูแลวิหาร', 2, 20, 40], ['นักบวชผู้ใหญ่', 4, 50, 70]] },
     eye: { name: 'สายข่าวพ่อค้า', icon: '☾', body: 'merchants', town: 'fernvale', jobs: ['rogue'], duty: 'townVisits', n: 1, dutyText: 'แวะเมืองอื่น 1 ครั้งต่อสัปดาห์', ranks: [['สายข่าวพ่อค้า', 2, 20, 40], ['หัวหน้าสายข่าว', 4, 50, 70]] },
     garrison: { name: 'ทหารด่านหินเหนือ', icon: '⚔', body: 'garrison', town: 'northgate', jobs: ['warrior', 'guardian', 'ranger'], duty: 'battles', n: 3, dutyText: 'ชนะการต่อสู้ 3 ครั้งต่อสัปดาห์', ranks: [['พลทหารด่าน', 2, 20, 50], ['นายกอง', 3, 40, 80], ['ผู้กองด่าน', 4, 60, 120], ['แม่ทัพรอง', 5, 75, 170], ['แม่ทัพ', 5, 90, 240]] },
+    royal: { name: 'องครักษ์นครหลวง', icon: '👑', body: 'crown', town: 'lakenhold', jobs: ['warrior', 'guardian', 'ranger', 'mage', 'cleric'], duty: 'battles', n: 3, dutyText: 'ชนะการต่อสู้ 3 ครั้งต่อสัปดาห์', ranks: [['ยามนครหลวง', 2, 20, 60], ['นายร้อยองครักษ์', 3, 40, 100], ['นายพันองครักษ์', 4, 60, 160], ['แม่ทัพใหญ่แห่งอัลเดรน', 5, 90, 320]] },   /* v97.72 */
     harbor: { name: 'เจ้าหน้าที่ท่าเรือ', icon: '⚓', body: 'merchants', town: 'haven', jobs: null, duty: 'traded', n: 10, dutyText: 'ขายสินค้าในตลาด 10 ชิ้นต่อสัปดาห์', ranks: [['เสมียนท่าเรือ', 2, 20, 45], ['ผู้ตรวจสินค้า', 3, 45, 80], ['นายท่า', 4, 70, 130]] }
   };
   const title = (id, rank) => OFFICES[id]?.ranks[Math.max(0, Math.min(OFFICES[id].ranks.length, rank) - 1)]?.[0] || '';
@@ -29,7 +30,7 @@
      magus — guild contracts pay more · warden — prayer also mends the party · eye — goods sell for more
      v97.68 · garrison — fewer ambushes anywhere (−8 % a rank) and from vice-general up soldiers guard your wagon · harbor — the wagon carries 5 more a rank */
   const PERK = { watch: 'ถูกซุ่มโจมตีใกล้เฟิร์นเวลน้อยลง 20%', hunter: 'ได้เสบียง +1 ทุกครั้งที่ชนะการต่อสู้', magus: 'ค่าจ้างงานกิลด์ +15%', warden: 'ภาวนาแล้วเพื่อนในทีมฟื้น HP 30% ด้วย', eye: 'ขายสินค้าได้ราคาดีขึ้น 5%',
-    garrison: 'ถูกซุ่มโจมตีทุกที่น้อยลง 8% · ขั้นแม่ทัพรองขึ้นไป ทหารคุ้มกันเกวียนให้ฟรี', harbor: 'เกวียนบรรทุกได้เพิ่ม 5 ชิ้น' };
+    garrison: 'ถูกซุ่มโจมตีทุกที่น้อยลง 8% · ขั้นแม่ทัพรองขึ้นไป ทหารคุ้มกันเกวียนให้ฟรี', royal: 'ของในนครหลวงถูกลง 3% · ไม่ต้องเสียภาษีผ่านเมือง', harbor: 'เกวียนบรรทุกได้เพิ่ม 5 ชิ้น' };
   const perk = (S, id) => S?.office?.id === id ? S.office.rank : 0;
   const game = () => { try { return root.WorldState?.game?.() } catch (e) { return null } };
   const today = () => game()?.day || 1;
