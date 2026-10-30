@@ -4960,7 +4960,7 @@
    "id": "tactics-hero-se-idle",
    "file": "assets/tactics/hero_se_idle.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -5184,7 +5184,7 @@
    "id": "tactics-hero-sw-idle",
    "file": "assets/tactics/hero_sw_idle.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -5428,7 +5428,7 @@
    "id": "tactics-hero-ne-idle",
    "file": "assets/tactics/hero_ne_idle.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -5652,7 +5652,7 @@
    "id": "tactics-hero-nw-idle",
    "file": "assets/tactics/hero_nw_idle.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -53697,7 +53697,7 @@
   },
   {
    "id": "studio-hero-ne-idle-mvu9bv72-5r1m-1",
-   "file": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-01.png",
+   "file": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-01.webp",
    "category": "tactics-hero",
    "status": "unused",
    "size": [
@@ -53724,7 +53724,7 @@
   },
   {
    "id": "studio-hero-ne-idle-mvu9bv72-5r1m-2",
-   "file": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-02.png",
+   "file": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-02.webp",
    "category": "tactics-hero",
    "status": "unused",
    "size": [
@@ -53751,7 +53751,7 @@
   },
   {
    "id": "studio-hero-ne-idle-mvu9bv72-5r1m-3",
-   "file": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-03.png",
+   "file": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-03.webp",
    "category": "tactics-hero",
    "status": "unused",
    "size": [
@@ -53778,7 +53778,7 @@
   },
   {
    "id": "studio-hero-ne-idle-mvu9bv72-5r1m-4",
-   "file": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-04.png",
+   "file": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-04.webp",
    "category": "tactics-hero",
    "status": "unused",
    "size": [
@@ -53805,7 +53805,7 @@
   },
   {
    "id": "studio-hero-nw-idle-mvvgxyll-ms5w-1",
-   "file": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-01.png",
+   "file": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -53832,7 +53832,7 @@
   },
   {
    "id": "studio-hero-nw-idle-mvvgxyll-ms5w-2",
-   "file": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-02.png",
+   "file": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-02.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -53859,7 +53859,7 @@
   },
   {
    "id": "studio-hero-nw-idle-mvvgxyll-ms5w-3",
-   "file": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-03.png",
+   "file": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-03.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -53886,7 +53886,7 @@
   },
   {
    "id": "studio-hero-nw-idle-mvvgxyll-ms5w-4",
-   "file": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-04.png",
+   "file": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-04.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -53913,7 +53913,7 @@
   },
   {
    "id": "studio-hero-ne-idle-mvvgy110-r34e-1",
-   "file": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-01.png",
+   "file": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -53940,7 +53940,7 @@
   },
   {
    "id": "studio-hero-ne-idle-mvvgy110-r34e-2",
-   "file": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-02.png",
+   "file": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-02.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -53967,7 +53967,7 @@
   },
   {
    "id": "studio-hero-ne-idle-mvvgy110-r34e-3",
-   "file": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-03.png",
+   "file": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-03.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -53994,7 +53994,7 @@
   },
   {
    "id": "studio-hero-ne-idle-mvvgy110-r34e-4",
-   "file": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-04.png",
+   "file": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-04.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -54021,7 +54021,7 @@
   },
   {
    "id": "studio-hero-sw-windup-mvvgzd72-u7aq-1",
-   "file": "assets/tactics/imported/windup-sw-mvvgzd72-u7aq/frame-01.png",
+   "file": "assets/tactics/imported/windup-sw-mvvgzd72-u7aq/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -54048,7 +54048,7 @@
   },
   {
    "id": "studio-hero-se-windup-mvvgzk39-ll10-1",
-   "file": "assets/tactics/imported/windup-se-mvvgzk39-ll10/frame-01.png",
+   "file": "assets/tactics/imported/windup-se-mvvgzk39-ll10/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -54075,7 +54075,7 @@
   },
   {
    "id": "studio-hero-ne-windup-mvvgzya8-iqp0-1",
-   "file": "assets/tactics/imported/windup-ne-mvvgzya8-iqp0/frame-01.png",
+   "file": "assets/tactics/imported/windup-ne-mvvgzya8-iqp0/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -54102,7 +54102,7 @@
   },
   {
    "id": "studio-hero-nw-windup-mvvh03kw-rcjg-1",
-   "file": "assets/tactics/imported/windup-nw-mvvh03kw-rcjg/frame-01.png",
+   "file": "assets/tactics/imported/windup-nw-mvvh03kw-rcjg/frame-01.webp",
    "category": "tactics-hero",
    "status": "unused",
    "size": [
@@ -54129,7 +54129,7 @@
   },
   {
    "id": "studio-hero-nw-windup-mvvh17ys-mfkf-1",
-   "file": "assets/tactics/imported/windup-nw-mvvh17ys-mfkf/frame-01.png",
+   "file": "assets/tactics/imported/windup-nw-mvvh17ys-mfkf/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -54156,7 +54156,7 @@
   },
   {
    "id": "studio-hero-sw-strike-mvvh1zsf-khoh-1",
-   "file": "assets/tactics/imported/strike-sw-mvvh1zsf-khoh/frame-01.png",
+   "file": "assets/tactics/imported/strike-sw-mvvh1zsf-khoh/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -54183,7 +54183,7 @@
   },
   {
    "id": "studio-hero-se-strike-mvvh57eh-tcis-1",
-   "file": "assets/tactics/imported/strike-se-mvvh57eh-tcis/frame-01.png",
+   "file": "assets/tactics/imported/strike-se-mvvh57eh-tcis/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -54210,7 +54210,7 @@
   },
   {
    "id": "studio-hero-nw-strike-mvvh5f9k-5iv9-1",
-   "file": "assets/tactics/imported/strike-nw-mvvh5f9k-5iv9/frame-01.png",
+   "file": "assets/tactics/imported/strike-nw-mvvh5f9k-5iv9/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -54237,7 +54237,7 @@
   },
   {
    "id": "studio-hero-ne-strike-mvvh5htc-axhz-1",
-   "file": "assets/tactics/imported/strike-ne-mvvh5htc-axhz/frame-01.png",
+   "file": "assets/tactics/imported/strike-ne-mvvh5htc-axhz/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -55576,22 +55576,22 @@
     "frames": [
      {
       "assetId": "studio-hero-nw-idle-mvvgxyll-ms5w-1",
-      "src": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-01.png",
+      "src": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-01.webp",
       "ms": 360
      },
      {
       "assetId": "studio-hero-nw-idle-mvvgxyll-ms5w-2",
-      "src": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-02.png",
+      "src": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-02.webp",
       "ms": 360
      },
      {
       "assetId": "studio-hero-nw-idle-mvvgxyll-ms5w-3",
-      "src": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-03.png",
+      "src": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-03.webp",
       "ms": 360
      },
      {
       "assetId": "studio-hero-nw-idle-mvvgxyll-ms5w-4",
-      "src": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-04.png",
+      "src": "assets/tactics/imported/idle-nw-mvvgxyll-ms5w/frame-04.webp",
       "ms": 360
      }
     ]
@@ -55611,22 +55611,22 @@
     "frames": [
      {
       "assetId": "studio-hero-ne-idle-mvvgy110-r34e-1",
-      "src": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-01.png",
+      "src": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-01.webp",
       "ms": 360
      },
      {
       "assetId": "studio-hero-ne-idle-mvvgy110-r34e-2",
-      "src": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-02.png",
+      "src": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-02.webp",
       "ms": 360
      },
      {
       "assetId": "studio-hero-ne-idle-mvvgy110-r34e-3",
-      "src": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-03.png",
+      "src": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-03.webp",
       "ms": 360
      },
      {
       "assetId": "studio-hero-ne-idle-mvvgy110-r34e-4",
-      "src": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-04.png",
+      "src": "assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-04.webp",
       "ms": 360
      }
     ]
@@ -55648,7 +55648,7 @@
     "frames": [
      {
       "assetId": "studio-hero-sw-windup-mvvgzd72-u7aq-1",
-      "src": "assets/tactics/imported/windup-sw-mvvgzd72-u7aq/frame-01.png",
+      "src": "assets/tactics/imported/windup-sw-mvvgzd72-u7aq/frame-01.webp",
       "ms": 120
      }
     ]
@@ -55668,7 +55668,7 @@
     "frames": [
      {
       "assetId": "studio-hero-se-windup-mvvgzk39-ll10-1",
-      "src": "assets/tactics/imported/windup-se-mvvgzk39-ll10/frame-01.png",
+      "src": "assets/tactics/imported/windup-se-mvvgzk39-ll10/frame-01.webp",
       "ms": 120
      }
     ]
@@ -55688,7 +55688,7 @@
     "frames": [
      {
       "assetId": "studio-hero-ne-windup-mvvgzya8-iqp0-1",
-      "src": "assets/tactics/imported/windup-ne-mvvgzya8-iqp0/frame-01.png",
+      "src": "assets/tactics/imported/windup-ne-mvvgzya8-iqp0/frame-01.webp",
       "ms": 120
      }
     ]
@@ -55708,7 +55708,7 @@
     "frames": [
      {
       "assetId": "studio-hero-nw-windup-mvvh17ys-mfkf-1",
-      "src": "assets/tactics/imported/windup-nw-mvvh17ys-mfkf/frame-01.png",
+      "src": "assets/tactics/imported/windup-nw-mvvh17ys-mfkf/frame-01.webp",
       "ms": 120
      }
     ]
@@ -55730,7 +55730,7 @@
     "frames": [
      {
       "assetId": "studio-hero-sw-strike-mvvh1zsf-khoh-1",
-      "src": "assets/tactics/imported/strike-sw-mvvh1zsf-khoh/frame-01.png",
+      "src": "assets/tactics/imported/strike-sw-mvvh1zsf-khoh/frame-01.webp",
       "ms": 120
      }
     ]
@@ -55750,7 +55750,7 @@
     "frames": [
      {
       "assetId": "studio-hero-se-strike-mvvh57eh-tcis-1",
-      "src": "assets/tactics/imported/strike-se-mvvh57eh-tcis/frame-01.png",
+      "src": "assets/tactics/imported/strike-se-mvvh57eh-tcis/frame-01.webp",
       "ms": 120
      }
     ]
@@ -55770,7 +55770,7 @@
     "frames": [
      {
       "assetId": "studio-hero-nw-strike-mvvh5f9k-5iv9-1",
-      "src": "assets/tactics/imported/strike-nw-mvvh5f9k-5iv9/frame-01.png",
+      "src": "assets/tactics/imported/strike-nw-mvvh5f9k-5iv9/frame-01.webp",
       "ms": 120
      }
     ]
@@ -55790,7 +55790,7 @@
     "frames": [
      {
       "assetId": "studio-hero-ne-strike-mvvh5htc-axhz-1",
-      "src": "assets/tactics/imported/strike-ne-mvvh5htc-axhz/frame-01.png",
+      "src": "assets/tactics/imported/strike-ne-mvvh5htc-axhz/frame-01.webp",
       "ms": 120
      }
     ]
@@ -56078,22 +56078,22 @@
      "frames": [
       {
        "assetId": "studio-hero-ne-idle-mvu9bv72-5r1m-1",
-       "src": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-01.png",
+       "src": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-01.webp",
        "ms": 360
       },
       {
        "assetId": "studio-hero-ne-idle-mvu9bv72-5r1m-2",
-       "src": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-02.png",
+       "src": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-02.webp",
        "ms": 360
       },
       {
        "assetId": "studio-hero-ne-idle-mvu9bv72-5r1m-3",
-       "src": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-03.png",
+       "src": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-03.webp",
        "ms": 360
       },
       {
        "assetId": "studio-hero-ne-idle-mvu9bv72-5r1m-4",
-       "src": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-04.png",
+       "src": "assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-04.webp",
        "ms": 360
       }
      ]
@@ -56150,7 +56150,7 @@
      "frames": [
       {
        "assetId": "studio-hero-nw-windup-mvvh03kw-rcjg-1",
-       "src": "assets/tactics/imported/windup-nw-mvvh03kw-rcjg/frame-01.png",
+       "src": "assets/tactics/imported/windup-nw-mvvh03kw-rcjg/frame-01.webp",
        "ms": 120
       }
      ]
