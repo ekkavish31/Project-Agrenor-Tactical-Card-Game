@@ -951,6 +951,58 @@
   /* v97.01: weapons the sprite sheet has no hand anchor for (axe, bow, knife, rapier, spear, tome) use the loose pictures in assets/tactics */
   const WEXTRA = { axe: { pivot: [.5, .9], size: [256, 768], scale: .62 }, knife: { pivot: [.5, .8], size: [256, 512], scale: .34 }, rapier: { pivot: [.5, .88], size: [256, 768], scale: .78 }, spear: { pivot: [.5, .72], size: [256, 1024], scale: 1.1 }, bow: { pivot: [.5, .5], size: [128, 320], scale: .6 }, tome: { pivot: [.5, .5], size: [160, 200], scale: .26 } };
   const weaponDef = (A, k) => A.equipment[k] || (WEXTRA[k] ? { src: `assets/tactics/${k}.webp`, ...WEXTRA[k] } : null);
+  /* ---------- v97.48 · attack poses without hand anchors: the weapon floats in front of the fighter, the swing is a code-drawn trail ----------
+     windup: weapon lifts behind the head and glows · strike: it swings over the top to the front with a light trail, a flash and (hammer/axe) a ground ring
+     · guard: held up in front with a shimmer arc · hit: hangs loose. Allies carry their class weapon the same way. */
+  const FLOATPOSE = ['windup', 'strike', 'guard', 'hit'], ALLYW = { bram: 'hammer', kier: 'sword', mil: 'knife', luna: 'staff' };
+  const wkind = k => ['hammer', 'axe'].includes(k) ? 'blunt' : ['spear', 'rapier'].includes(k) ? 'pierce' : ['staff', 'tome', 'bow'].includes(k) ? 'magic' : 'blade';
+  const actState = (u, t) => ({ act: u.hp <= 0 ? 'down' : u.walking ? 'walk' : (u.pose || 'idle'), e: Math.max(0, t - (u._pt || t)), fs: ['SE', 'NE'].includes(u.dir) ? 1 : -1 });
+  const aEase = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3), aLerp = (a, b, k) => a + (b - a) * k;
+  function floatPos(S, t) {   /* x: forward of the body centre (sprite widths) · y: down from the sprite top · a: degrees, tip up = 0, forward = + */
+    const { act, e } = S; let x = .2, y = .4, a = 20, glow = 0;
+    if (act === 'windup') { const k = aEase(e / 200); x = aLerp(.1, .03, k); y = aLerp(.34, .2, k); a = aLerp(-30, -88, k); glow = k }
+    else if (act === 'strike') { const k = aEase(e / 90), d = 1 - aEase((e - 260) / 260); x = aLerp(.2, aLerp(.03, .27, k), d); y = aLerp(.4, aLerp(.2, .47, k), d); a = aLerp(20, aLerp(-88, 118, k), d) }
+    else if (act === 'guard') { const k = aEase(e / 130); x = aLerp(.1, .25, k); y = aLerp(.4, .46, k); a = aLerp(40, 4, k) }
+    else if (act === 'hit') { const k = Math.exp(-e / 170); x = .2 - .08 * k; y = .42 + .03 * k; a = 20 - 40 * k }
+    return { x, y: y + Math.sin(t * .004) * .008, a, glow };
+  }
+  function actionWeapon(g, u, t, wkey, A, cx, top, size) {
+    const W = wkey && weaponDef(A, wkey), i = W && im(W.src); if (!i) return;
+    const S = actState(u, t), P = floatPos(S, t), h = size * (W.scale || .63), w = h * W.size[0] / W.size[1], x = cx + S.fs * size * P.x, y = top + size * P.y;
+    g.save();
+    if (P.glow > 0) { const r = size * .22, gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(255,230,170,${.45 * P.glow})`); gr.addColorStop(1, 'rgba(255,200,120,0)'); g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.globalCompositeOperation = 'source-over' }
+    g.translate(x, y); g.rotate(S.fs * P.a * Math.PI / 180); g.drawImage(i, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore();
+  }
+  function actionTrail(g, u, t, wkey, cx, top, size, gy, cyN) {
+    if (!wkey) return; const S = actState(u, t), { act, e, fs } = S; if (!['strike', 'guard'].includes(act)) return;
+    const kind = wkind(wkey), cy = top + size * cyN, R = size * (kind === 'blunt' ? .34 : .4);
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    if (act === 'guard') {
+      g.save(); g.translate(cx, cy); g.scale(fs, 1); for (const [r, al] of [[.3, .3], [.24, .18]]) { g.strokeStyle = `rgba(170,210,255,${(al + .12 * Math.sin(t * .012)) * aEase(e / 130)})`; g.lineWidth = 4; g.beginPath(); g.arc(size * .1, 0, size * r, -1.1, 1.1); g.stroke() } g.restore();
+    } else if (e < 420) {
+      const col = kind === 'blunt' ? '255,190,120' : kind === 'magic' ? '190,170,255' : '255,240,205', fade = e < 150 ? 1 : Math.max(0, 1 - (e - 150) / 250);
+      if (kind === 'magic') {
+        const P = floatPos(S, t), x = cx + fs * size * P.x, y = top + size * P.y, k = Math.min(1, e / 350);
+        g.strokeStyle = `rgba(${col},${.8 * (1 - k)})`; g.lineWidth = 3; g.beginPath(); g.arc(x, y, size * (.05 + .3 * k), 0, 7); g.stroke();
+        const gr = g.createRadialGradient(x, y, 0, x, y, size * .2); gr.addColorStop(0, `rgba(${col},${.7 * (1 - k)})`); gr.addColorStop(1, `rgba(${col},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x, y, size * .2, 0, 7); g.fill();
+      } else {
+        g.save(); g.translate(cx, cy); g.scale(fs, 1);
+        if (kind === 'pierce') { const len = size * .5 * aEase(e / 100); [[2.5, .5], [6, .35], [12, .2]].forEach(([wd, al]) => { g.strokeStyle = `rgba(${col},${al * fade})`; g.lineWidth = wd; g.beginPath(); g.moveTo(size * .08, size * .06); g.lineTo(size * .08 + len, size * .06); g.stroke() }) }
+        else {
+          const th0 = -2.5, th1 = .9, hd = th0 + (th1 - th0) * aEase(e / 110), tl = Math.max(th0, hd - 1.5), N = 16, wd = kind === 'blunt' ? 16 : 9;
+          for (let j = 0; j < N; j++) { const a0 = tl + (hd - tl) * j / N, a1 = tl + (hd - tl) * (j + 1) / N, q = (j + 1) / N;
+            for (const [wm, am, c] of [[2.2, .22, col], [1, .55, col], [.35, .95, '255,255,245']]) { g.strokeStyle = `rgba(${c},${am * q * fade})`; g.lineWidth = wd * wm * q; g.beginPath(); g.arc(0, 0, R, a0, a1 + .03); g.stroke() } }
+        }
+        g.restore();
+        if (e > 70 && e < 260) {
+          const k = (e - 70) / 190, ix = cx + fs * R * Math.cos(.9), iy = cy + R * Math.sin(.9), r = size * (.1 + .12 * k), gr = g.createRadialGradient(ix, iy, 0, ix, iy, r);
+          gr.addColorStop(0, `rgba(255,250,225,${.8 * (1 - k)})`); gr.addColorStop(1, 'rgba(255,190,110,0)'); g.fillStyle = gr; g.beginPath(); g.arc(ix, iy, r, 0, 7); g.fill();
+          if (kind === 'blunt') { g.strokeStyle = `rgba(255,220,170,${.55 * (1 - k)})`; g.lineWidth = 3; g.beginPath(); g.ellipse(cx + fs * size * .3, gy, size * (.08 + .3 * k), size * (.03 + .1 * k), 0, 0, 7); g.stroke() }
+        }
+      }
+    }
+    g.restore();
+  }
   /* ---------- v97.18 · the job's look on the same hero picture (docs/TODO.md "อาชีพและอาวุธ") ----------
      outfit: the cloth pixels (the old green cloak, or the dull dark brown between shoulders and boots of the current outfit) take the job's hue / saturation / lightness — skin and hair stay;
      done once per picture and job, then cached · aura: code-drawn, behind and around the hero · emblem: the job sign next to the HP bar */
@@ -975,13 +1027,16 @@
       const h = size * (W.scale || .63) * .9, w = h * W.size[0] / W.size[1];
       const tipUp = ['spear', 'staff', 'bow'].includes(u.weapon), flatBack = u.weapon === 'tome';   // blades, hammers: point / edge down · spears (and staves): point up
       g.save(); g.translate(left + size * (.5 + side * (['knife', 'tome', 'bow'].includes(u.weapon) ? .2 : .06)), top + size * (flatBack ? .62 : u.weapon === 'knife' ? .52 : tipUp ? .56 : .38)); g.rotate(flatBack ? 0 : (side * (away ? 38 : -38) + (tipUp ? 0 : 180)) * Math.PI / 180); g.drawImage(i2, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore() };
+    const faceAway = ['NE', 'NW'].includes(u.dir), useFloat = !OLDPOSE && !carried && u.hp > 0 && !!W && FLOATPOSE.includes(actState(u, t).act);   /* v97.48: floating weapon instead of the hand anchor */
     jobAura(g, u, p, size, t, false);
     if (carried) { if (!['NE', 'NW'].includes(u.dir)) onBack() }
-    else if (f.rightBehind) sword();
+    else if (useFloat) { if (faceAway) actionWeapon(g, u, t, u.weapon, A, p.x, top, size) }
+    else if (OLDPOSE && f.rightBehind) sword();
     const body = () => { if (f.flipImage) { g.save(); g.translate(left + size / 2, 0); g.scale(-1, 1); g.drawImage(i, -size / 2, top, size, size); g.restore() } else g.drawImage(i, left, top, size, size) };
     if (i) { body(); if ((u.flashUntil || 0) > t) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; body(); body(); g.restore() } }
     if (carried) { if (['NE', 'NW'].includes(u.dir)) onBack() }
-    else if (!f.rightBehind) sword();
+    else if (useFloat) { if (!faceAway) actionWeapon(g, u, t, u.weapon, A, p.x, top, size); actionTrail(g, u, t, u.weapon, p.x, top, size, p.y, .52) }
+    else if (OLDPOSE && !f.rightBehind) sword();
     jobAura(g, u, p, size, t, true);
     g.restore();
     bar(g, p, top + size * .12, u.shown / u.maxHp, '#6fd18a'); jobEmblem(g, u, p, top + size * .12);
@@ -998,7 +1053,10 @@
     g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
     g.drawImage(i, -size / 2, -size * .94, size, size);
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
-    g.restore(); if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
+    g.restore();
+    { const A = sprites(), wk = ALLYW[u.key];   /* v97.48: class weapon floating in front + swing trail */
+      if (!OLDPOSE && A && wk && u.hp > 0 && FLOATPOSE.includes(actState(u, t).act)) { g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * .94, size); actionTrail(g, u, t, wk, 0, -size * .94, size, 0, .56); g.restore() } }
+    if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
   }
   function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
   function drawMonster(g, u, t) {
