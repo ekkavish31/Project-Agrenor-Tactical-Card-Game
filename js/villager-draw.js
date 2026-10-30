@@ -1,4 +1,4 @@
-/* v92.17 · Code-drawn people (no image needed): villagers, inn regulars and recruits. Shared by the place interiors and the battle
+/* v97.37 · look.sprite draws a picture set instead of the code figure (see spriteDraw). v92.17 · Code-drawn people (no image needed): villagers, inn regulars and recruits. Shared by the place interiors and the battle
    (companions without their own picture). look = { coat, apron, hair, hat: none|cap|hood|scarf|straw|helm|bandana|hat, hatCol, skin,
    beard, cape, weapon: sword|axe|bow|staff|dagger|lute|mug|broom|hammer|book, small, tall }.
    VillagerDraw(g, look, x, y, t, { walking, face: SE|SW|NE|NW, scale, phase, act }) — feet at (x, y). */
@@ -19,7 +19,34 @@
     else if (w === 'lute') { g.translate(-15 * s, 4 * s); g.rotate(-.6); g.fillStyle = '#b07a3a'; g.beginPath(); g.ellipse(0, 0, 8 * s, 6 * s, 0, 0, 7); g.fill(); g.fillStyle = '#6a4a2a'; g.fillRect(6 * s, -1.5 * s, 16 * s, 3 * s); g.fillStyle = '#3a2a1a'; g.beginPath(); g.arc(0, 0, 2 * s, 0, 7); g.fill() }
     g.restore();
   }
+  function fx(g, act, x, y, s, t, ph) {
+    if (act === 'sleep') { g.save(); g.fillStyle = '#f2f2ff'; g.font = `700 ${12 * s}px system-ui`; const k = (t * .001 + ph) % 1; g.globalAlpha = 1 - k; g.fillText('z', x + 12 * s, y - 80 * s - k * 16); g.restore() }
+    if (act === 'play') { g.save(); g.fillStyle = '#ffe9a0'; g.font = `700 ${13 * s}px system-ui`; for (let i = 0; i < 2; i++) { const k = (t * .0007 + ph + i * .5) % 1; g.globalAlpha = 1 - k; g.fillText('♪', x + (10 + i * 6) * s + Math.sin(k * 6) * 6, y - 70 * s - k * 30) } g.restore() }
+  }
+  /* v97.37 · picture-based people. look.sprite = 'bram' → assets/village-town/npc/bram/<se|sw|ne|nw>-<stand|walk1|walk2>.webp
+     (384×384, feet at y=372, true 4 directions, no mirroring). Falls back to the code-drawn figure until the standing picture has loaded. */
+  const SPR = {}, SPR_KEYS = ['stand', 'walk1', 'walk2'], SPR_DIRS = ['se', 'sw', 'ne', 'nw'];
+  function sprites(name) {
+    let S = SPR[name]; if (S) return S; S = SPR[name] = {};
+    if (typeof Image === 'undefined') return S;
+    for (const d of SPR_DIRS) for (const k of SPR_KEYS) { const im = new Image(); im.src = 'assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp'; S[d + '-' + k] = im }
+    return S;
+  }
+  const ready = im => im && im.complete && im.naturalWidth > 0;
+  function spriteDraw(g, L, x, y, t, o) {
+    const S = sprites(L.sprite), d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
+    const stand = S[d + '-stand']; if (!ready(stand)) return false;
+    const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330;
+    let im = stand;
+    if (walking && act === '') { const p = t * .012 + ph, f = ((Math.round(p / (Math.PI / 2)) % 4) + 4) % 4, w = S[d + '-' + (f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand')]; if (ready(w)) im = w }
+    const bob = walking ? Math.abs(Math.sin(t * .012 + ph)) * 4 * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
+    g.save(); g.fillStyle = 'rgba(20,20,20,.32)'; g.beginPath(); g.ellipse(x, y, 15 * s, 6 * s, 0, 0, 7); g.fill(); g.restore();
+    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); g.drawImage(im, -192 * k, -372 * k, 384 * k, 384 * k); g.restore();
+    fx(g, act, x, y, s, t, ph);
+    return true;
+  }
   function draw(g, L, x, y, t, o = {}) {
+    if (L && L.sprite && spriteDraw(g, L, x, y, t, o)) return;
     const face = o.face || 'SE', back = face === 'NE' || face === 'NW', flip = face === 'SW' || face === 'NW', ph = o.phase || 0, walking = !!o.walking;
     const s = (o.scale || 1) * (L.small ? .72 : L.tall ? 1.1 : 1), act = o.act || '';
     const bob = walking ? Math.abs(Math.sin(t * .012 + ph)) * 4 * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
@@ -61,8 +88,7 @@
     else if (L.hat === 'hat') { g.beginPath(); g.ellipse(0, -77 * s, 16 * s, 4 * s, 0, 0, 7); g.fill(); g.beginPath(); g.moveTo(-8 * s, -77 * s); g.lineTo(-4 * s, -92 * s); g.lineTo(9 * s, -88 * s); g.lineTo(8 * s, -77 * s); g.closePath(); g.fill() }
     if (back) weapon(g, L.weapon, s, 0, back);
     g.restore();
-    if (act === 'sleep') { g.save(); g.fillStyle = '#f2f2ff'; g.font = `700 ${12 * s}px system-ui`; const k = (t * .001 + ph) % 1; g.globalAlpha = 1 - k; g.fillText('z', x + 12 * s, y - 80 * s - k * 16); g.restore() }
-    if (act === 'play') { g.save(); g.fillStyle = '#ffe9a0'; g.font = `700 ${13 * s}px system-ui`; for (let i = 0; i < 2; i++) { const k = (t * .0007 + ph + i * .5) % 1; g.globalAlpha = 1 - k; g.fillText('♪', x + (10 + i * 6) * s + Math.sin(k * 6) * 6, y - 70 * s - k * 30) } g.restore() }
+    fx(g, act, x, y, s, t, ph);
   }
   root.VillagerDraw = draw;
 })(globalThis);
