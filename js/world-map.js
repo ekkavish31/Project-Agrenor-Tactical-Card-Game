@@ -418,7 +418,7 @@
     return Object.values(L.P).filter(p => (p.from === id || (p.from === 'wander' && finnTown === id)) && !L.inParty(S, p.id) && !L.present(p, day, hour));
   }
   async function townVisit(poi) {
-    const id = poi.town; ev('town:visit', { town: id, townName: poi.name }); log('ถึง ' + poi.name);
+    const id = poi.town; ev('town:visit', { town: id, townName: poi.name }); log('ถึง ' + poi.name); S.townVisits = (S.townVisits || 0) + 1;   /* v97.55 · T7 duty counter */
     for (;;) {
       const folk = townsfolk(id), per = window.WorldState?.period(S.hour) || 'day';
       const people = folk.length ? folk.map(p => { const ls = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…']; return `<p>👤 <b>${esc(p.name)}</b> <small>${esc(p.role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>` }).join('') : '<p style="opacity:.7">ไม่เจอคนรู้จักที่นี่ตอนนี้</p>';
@@ -427,9 +427,10 @@
       if (window.Law && Law.file(S, id).wanted) { const a = await Law.arrest(S, id, 'ยามที่ประตู' + poi.name + 'จำหน้าคุณได้ — คุณถูกหมายจับที่นี่'); if (a === 'jail') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to) } save(); hudSync(); if (a === 'run') { log('🏃 หนีออกจาก' + poi.name); break } }
       const ST = window.Settlements, pInn = ST ? ST.price(id, 'inn', 12) : 12, pFood = ST ? ST.price(id, 'food', 10) : 10, pPot = ST ? ST.price(id, 'potion', 18) : 18;
       const v = await modal(`<h2>🏘 ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>${people}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
-        [{ label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates ? [{ label: '🏡 ที่ดิน', value: 'land' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
+        [{ label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates ? [{ label: '🏡 ที่ดิน', value: 'land' }] : []), ...(ST ? [{ label: '📜 ยื่นคำร้อง', value: 'petition' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
       if (v === 'inn') { S.gold -= pInn; const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('พักที่ ' + poi.name + ' ตื่นเช้าวันใหม่'); toast('🛏 พักเต็มอิ่ม · HP เต็ม') }
       else if (v === 'food') { S.gold -= pFood; S.food += 4; log('ซื้อเสบียง 4 ที่ ' + poi.name) }
+      else if (v === 'petition') { const pol = await ST.petitionPanel(id); if (pol) { log('📜 ' + poi.name + ' เปลี่ยนนโยบายเป็น ' + ST.POLICIES[pol].name); toast('📜 นโยบายใหม่: ' + ST.POLICIES[pol].name) } }
       else if (v === 'trade') { await ST.tradePanel(id, S, () => { save(); hudSync() }) }
       else if (v === 'land') { for (const m of Estates.tickAll(S)) log(m); const r = await Estates.panel(S, 'town:' + id, poi.name, () => { save(); hudSync() }); if (r === 'sleep') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('🛏 นอนพักที่บ้านของตัวเองใน ' + poi.name); toast('🛏 พักเต็มอิ่ม · HP เต็ม') } }
       else if (v === 'pot') { S.gold -= pPot; S.potions++; log('ซื้อยาฟื้นฟูที่ ' + poi.name) }
@@ -522,7 +523,7 @@
     if (r < .75) { S.fatigue = Math.min(100, S.fatigue + 15); log('เสียงหอนทั้งคืน เหนื่อยขึ้น'); await modal(`<h2>🐺 เสียงหอนในความมืด</h2><p>เสียงหอนรอบทิศทำให้ต้องเดินระวังตัวทุกฝีก้าว ความเหนื่อย +15</p>`); return true }
     const gold = Math.round(20 + Math.random() * 30); S.gold += gold; log('พบของมีค่าใต้แสงจันทร์ +' + gold); await modal(`<h2>🌙 ประกายใต้แสงจันทร์</h2><p>มีบางอย่างสะท้อนแสงจันทร์อยู่ในพงหญ้า — ถุงเหรียญของนักเดินทาง <b>+${gold} 💰</b></p>`); return true;
   }
-  function passTime(h) { S.hour += h; let nd = false; while (S.hour >= 24) { S.hour -= 24; S.day++; nd = true; log('— วันที่ ' + S.day + ' —') } if (nd && window.Estates) for (const m of Estates.tickAll(S)) { log(m); toast(m) } }
+  function passTime(h) { S.hour += h; let nd = false; while (S.hour >= 24) { S.hour -= 24; S.day++; nd = true; log('— วันที่ ' + S.day + ' —') } if (nd && window.Estates) for (const m of Estates.tickAll(S)) { log(m); toast(m) } if (nd && window.Offices) for (const m of Offices.settle(S)) { log(m); toast(m) } }
   const pickFoe = t => { const a = G.FOES[t.biome] || G.FOES.grass; return a[Math.floor(Math.random() * a.length)] };
 
   /* ---------- encounters ---------- */

@@ -28,16 +28,52 @@
   const week = () => { try { return Math.floor(((root.WorldState?.game?.()?.day) || 1) / 7) } catch (e) { return 0 } };
   function swing(id, good, w = week()) { if (good === 'inn') return 1; let h = 0; for (const c of id + ':' + good + ':' + w) h = Math.imul(h ^ c.charCodeAt(0), 2654435761) >>> 0; h ^= h >>> 13; return .8 + ((h >>> 0) % 1000) / 1000 * .45 }
   function news(id) { const T = SETTLEMENTS[id]; if (!T) return ''; let best = null; for (const k of Object.keys(TRADE)) { const v = swing(id, k); if (!best || Math.abs(v - 1) > Math.abs(best[1] - 1)) best = [k, v] } return best && Math.abs(best[1] - 1) > .12 ? (best[1] > 1 ? '📈 ' + GOODS[best[0]] + 'ขาดตลาดที่' + T.name + ' ราคาสูงขึ้น' : '📉 ' + GOODS[best[0]] + 'ล้นตลาดที่' + T.name + ' ราคาตก') + ' (สัปดาห์นี้)' : '' }
+  /* ---------- v97.56 · T8 governance lite: each settlement runs one policy for a month (seeded), or the one you petitioned for ----------
+     tax_high prices ×1.1 · tax_low ×0.95 · trade sell ×1.1 and buy ×0.97 · safety thieves caught more (law) and fewer ambushes on the way in · festival inn half price.
+     Petition (standing "นับถือ" 50+ with the ruler, 80 💰): choose next month's policy — stored in the game save (village.policy[id]). */
+  const POLICIES = {
+    tax_high: { name: 'ขึ้นภาษี', icon: '💰', text: 'ราคาของทุกอย่าง +10%' },
+    tax_low: { name: 'ลดภาษี', icon: '🪙', text: 'ราคาของทุกอย่าง −5%' },
+    trade: { name: 'ส่งเสริมการค้า', icon: '⚖', text: 'ขายสินค้าได้ราคาดีขึ้น 10% · ซื้อถูกลง 3%' },
+    safety: { name: 'เข้มงวดความปลอดภัย', icon: '🛡', text: 'ลักของถูกจับง่ายขึ้น · โจรซุ่มแถวนี้น้อยลง' },
+    festival: { name: 'เทศกาลประจำเมือง', icon: '🎉', text: 'โรงเตี๊ยมลดครึ่งราคา · ผู้คนคึกคัก' }
+  };
+  const month = () => { try { return Math.floor(((root.WorldState?.game?.()?.day) || 1) / 28) } catch (e) { return 0 } };
+  function policy(id) {
+    let o = null; try { o = root.WorldState?.game?.()?.village?.policy?.[id] } catch (e) { }
+    if (o && o.month === month()) return o.id;
+    const keys = Object.keys(POLICIES); let h = month() * 2654435761 >>> 0; for (const c of id) h = Math.imul(h ^ c.charCodeAt(0), 2246822507) >>> 0; return keys[h % keys.length];
+  }
+  function petition(id, pol) {
+    const T = SETTLEMENTS[id], F = root.Factions, g = root.WorldState?.game?.(); if (!T || !POLICIES[pol] || !g) return 'ไม่มีนโยบายนี้';
+    if ((F?.rep(T.ruler) || 0) < 50) return 'ต้องมีชื่อเสียง "นับถือ" (50) กับ' + (F?.FACTIONS[T.ruler]?.name || T.ruler);
+    if ((g.village.coins || 0) < 80) return 'ค่าธรรมเนียมยื่นคำร้อง 80 💰';
+    g.village.coins -= 80; (g.village.policy ||= {})[id] = { id: pol, month: month() }; try { root.WorldState.commit?.() } catch (e) { } return '';
+  }
+  function petitionPanel(id) {
+    return new Promise(res => {
+      const T = SETTLEMENTS[id]; if (!T) return res(); document.getElementById('stPet')?.remove(); const d = document.createElement('div'); d.id = 'stPet';
+      d.style.cssText = 'position:fixed;inset:0;z-index:2150;display:grid;place-items:center;background:#05080dcc;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif';
+      const cur = policy(id), F = root.Factions, rep = F?.rep(T.ruler) || 0;
+      d.innerHTML = `<div style="width:min(560px,94vw);padding:16px 18px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c">
+        <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button><h2 style="margin:0 0 4px;font:800 21px Georgia,'Noto Sans Thai',serif">📜 ยื่นคำร้องต่อ${T.leader}</h2>
+        <p style="margin:0 0 8px;font-size:13px;color:#6a5030">เลือกนโยบายของ${T.name}ไปจนจบเดือนนี้ · ต้องมีชื่อเสียง "นับถือ" (50) กับ${F?.FACTIONS[T.ruler]?.name || T.ruler} (ตอนนี้ ${rep}) · ค่าธรรมเนียม 80 💰</p><p class="msg" style="font-size:13px;margin:4px 0"></p>
+        ${Object.entries(POLICIES).map(([k, P]) => `<button data-p="${k}" ${k === cur ? 'disabled' : ''} style="display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px;border-radius:9px;border:1px solid #7a4b06;background:${k === cur ? '#d8c8a0' : 'linear-gradient(#f0c560,#c9902e)'};color:#2a1a06;font:600 13px inherit;font-family:inherit;cursor:pointer">${P.icon} <b>${P.name}</b> — ${P.text}${k === cur ? ' (ตอนนี้)' : ''}</button>`).join('')}</div>`;
+      document.body.append(d);
+      d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) { d.remove(); return res() } const b = e.target.closest('[data-p]'); if (!b || b.disabled) return; const w = petition(id, b.dataset.p); if (w) d.querySelector('.msg').textContent = '✖ ' + w; else { d.remove(); res(b.dataset.p) } };
+    });
+  }
+  const polMult = (id, good) => { const p = policy(id); return p === 'tax_high' ? 1.1 : p === 'tax_low' ? .95 : p === 'trade' ? .97 : p === 'festival' && good === 'inn' ? .5 : 1 };
   function price(id, good, base) {
     const T = SETTLEMENTS[id]; if (!T) return base; const F = root.Factions;
     const local = T.cheap.includes(good) ? .75 : T.dear.includes(good) ? 1.35 : 1;
-    return Math.max(1, Math.round(base * local * swing(id, good) * (F ? F.priceMult(T.ruler) : 1)));
+    return Math.max(1, Math.round(base * local * swing(id, good) * polMult(id, good) * (F ? F.priceMult(T.ruler) : 1)));
   }
   const info = id => { const T = SETTLEMENTS[id]; return T && { ...T, id, sizeInfo: SIZE[T.size] } };
   function card(id) {
     const T = info(id); if (!T) return ''; const F = root.Factions, R = F?.FACTIONS[T.ruler], tier = F?.tier(T.ruler);
     const g = list => list.map(k => GOODS[k] || k).join(' · ');
-    return `<div style="font-size:12.5px;line-height:1.7;margin:6px 0;padding:8px 10px;border-radius:10px;background:#0001">🏛 <b>${T.sizeInfo.name}</b> · ปกครองโดย ${R ? R.icon + ' ' + R.name : T.ruler} (${T.leader})${tier ? ` · ชื่อเสียงของคุณ: <b style="color:${tier[2]}">${tier[1]}</b>` : ''}<br>🛡 ${T.sizeInfo.defence} · ⬇ ของถูก: ${g(T.cheap)} · ⬆ ของแพง: ${g(T.dear)}<br>🏠 เช่าที่ในเมือง ${T.land} 💰/สัปดาห์ (เปิดเร็ว ๆ นี้) · นอกเมืองจับจองฟรีแต่เสี่ยงโดนบุก</div>`;
+    return `<div style="font-size:12.5px;line-height:1.7;margin:6px 0;padding:8px 10px;border-radius:10px;background:#0001">🏛 <b>${T.sizeInfo.name}</b> · ปกครองโดย ${R ? R.icon + ' ' + R.name : T.ruler} (${T.leader})${tier ? ` · ชื่อเสียงของคุณ: <b style="color:${tier[2]}">${tier[1]}</b>` : ''}<br>🛡 ${T.sizeInfo.defence} · ⬇ ของถูก: ${g(T.cheap)} · ⬆ ของแพง: ${g(T.dear)}<br>📜 นโยบายเดือนนี้: ${POLICIES[policy(id)].icon} <b>${POLICIES[policy(id)].name}</b> — ${POLICIES[policy(id)].text}<br>🏠 เช่าที่ในเมือง ${T.land} 💰/สัปดาห์ · นอกเมืองจับจองฟรีแต่เสี่ยงโดนบุก</div>`;
   }
   /* ---------- v97.44 · T6 lite: trade goods between towns ----------
      Buy where a good is made (cheap), sell where it is brought in (dear). Selling pays 80 % of the local price. Cargo lives in the world
@@ -51,7 +87,7 @@
   /* T6 phase 2: losing a fight (or fleeing) on the road costs part of the cargo — little when escorted */
   function loseCargo(S, share) { const out = []; for (const k of Object.keys(S.cargo || {})) { const n = Math.ceil(S.cargo[k] * share); if (!n) continue; S.cargo[k] -= n; if (S.cargo[k] <= 0) delete S.cargo[k]; out.push(GOODS[k] + ' ' + n) } return out }
   const buyPrice = (id, k) => price(id, k, TRADE[k]);
-  const sellPrice = (id, k) => { const T = SETTLEMENTS[id]; if (!T) return 0; const local = T.cheap.includes(k) ? .75 : T.dear.includes(k) ? 1.35 : 1; return Math.max(1, Math.floor(TRADE[k] * local * swing(id, k) * .8)) };
+  const sellPrice = (id, k) => { const T = SETTLEMENTS[id]; if (!T) return 0; const local = T.cheap.includes(k) ? .75 : T.dear.includes(k) ? 1.35 : 1; return Math.max(1, Math.floor(TRADE[k] * local * swing(id, k) * (policy(id) === 'trade' ? 1.1 : 1) * .8)) };
   const load = S => Object.values(S.cargo || {}).reduce((a, n) => a + n, 0);
   function trade(id, S, k, n) {   /* n > 0 buy, n < 0 sell · returns the gold moved or 0 */
     S.cargo ||= {}; if (!TRADE[k] || !SETTLEMENTS[id]) return 0;
@@ -81,6 +117,6 @@
       d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) return close(); if (e.target.closest('[data-w]')) { if (wagonUp(S)) { onChange?.(0); draw() } return } if (e.target.closest('[data-e]')) { if (hireEscort(S)) { onChange?.(0); draw() } return } const b = e.target.closest('button[data-k]'); if (!b || b.disabled) return; const g = trade(id, S, b.dataset.k, +b.dataset.n); if (g) { onChange?.(g); draw() } };
     });
   }
-  root.Settlements = { SIZE, GOODS, SETTLEMENTS, BASE, price, info, card, TRADE, CARGO_MAX, WAGON, ESCORT, cargoMax, wagonUp, escorted, hireEscort, loseCargo, swing, news, buyPrice, sellPrice, load, trade, tradePanel };
+  root.Settlements = { POLICIES, policy, petition, petitionPanel, SIZE, GOODS, SETTLEMENTS, BASE, price, info, card, TRADE, CARGO_MAX, WAGON, ESCORT, cargoMax, wagonUp, escorted, hireEscort, loseCargo, swing, news, buyPrice, sellPrice, load, trade, tradePanel };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.Settlements;
 })(typeof window !== 'undefined' ? window : globalThis);

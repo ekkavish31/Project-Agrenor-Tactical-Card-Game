@@ -14,11 +14,11 @@
   const day = () => { try { return root.WorldState?.game?.()?.day || 1 } catch (e) { return 1 } };
   const file = (S, id) => { S.law ||= {}; const f = S.law[id] ||= { heat: 0, fine: 0, wanted: false, last: day() }; const d = day(); if (d - f.last >= 7) { f.heat = Math.max(0, f.heat - Math.floor((d - f.last) / 7)); f.last = d } return f };
   const clean = (S, id) => { const f = file(S, id); return !f.fine && !f.wanted };
-  const stealChance = (opts = {}) => Math.min(.92, (opts.rogue ? .72 : .42) + (opts.unwatched ? .2 : 0) - (opts.heat || 0) * .06);
+  const stealChance = (opts = {}) => Math.min(.92, (opts.rogue ? .72 : .42) + (opts.unwatched ? .2 : 0) - (opts.heat || 0) * .06 - (opts.safety ? .15 : 0));   /* v97.56 · a town on a safety drive catches more thieves */
   /* a theft attempt: returns { ok } or { caught, fine } (the caller then offers pay / cells / run) */
   function steal(S, id, opts = {}) {
     const f = file(S, id), r = opts.rng || Math.random;
-    if (r() < stealChance({ ...opts, heat: f.heat })) return { ok: true };
+    if (r() < stealChance({ ...opts, heat: f.heat, safety: root.Settlements?.policy?.(id) === 'safety' })) return { ok: true };
     f.heat = Math.min(5, f.heat + 1); f.fine += 20 + 10 * f.heat; f.last = day();
     root.Factions?.add(RULER(id), -8, 'ถูกจับได้ว่าขโมยของที่' + NAME(id));
     return { caught: true, fine: f.fine };
