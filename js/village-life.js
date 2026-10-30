@@ -21,6 +21,7 @@
   function placeKind(id, name = '') {
     if (['inn', 'healer', 'shop', 'market', 'temple', 'forge', 'square'].includes(id)) return id;
     if (HOUSE_OF[id]) return 'house';
+    if (/สมาคม|กิลด์|guild/i.test(name)) return 'guild';   /* v97.40 · the adventurers' guild has its own room */
     if (/โรงแรม|โรงเตี๊ยม|inn/i.test(name)) return 'inn'; if (/วิหาร|ศาล|temple/i.test(name)) return 'temple'; if (/ตีเหล็ก|forge/i.test(name)) return 'forge';
     if (/หมอ|ยา|healer/i.test(name)) return 'healer'; if (/ตลาด|market/i.test(name)) return 'market'; if (/ร้าน|ขาย|shop/i.test(name)) return 'shop';
     if (/ของเรา|บ้านเรา/.test(name)) return 'home';
@@ -44,7 +45,7 @@
     about: ['เพลงที่ดีที่สุดยังไม่ถูกแต่ง และข้าจะเป็นคนแต่งมันเอง'] });
   add('sigrid', { name: 'ซิกริด', role: 'ทหารรับจ้างถือขวาน', age: 34, recruit: 'hire', look: { coat: '#5a4a3a', hair: '#d9d0c0', hat: 'none', beard: '#c0b8a8', cape: '#7a2a2a', weapon: 'axe', belt: '#3a2a1a', tall: true },
     trait: 'พูดน้อย ซื่อตรงกับคนที่จ่ายเงิน ไม่เคยทิ้งงานกลางทาง', story: 'มาจากทางเหนือที่หิมะไม่เคยละลาย หน่วยของเธอถูกยุบหลังเจ้านายตาย ตอนนี้รับงานทีละงาน',
-    likes: 'เงินสด, เบียร์ดำ', dislikes: 'คนต่อราคา', sched: [[8, 24, 'inn', 'table']],
+    likes: 'เงินสด, เบียร์ดำ', dislikes: 'คนต่อราคา', sched: [[8, 17, 'guild', 'counter'], [17, 24, 'inn', 'table']],
     lines: { day: ['ถ้าไม่ได้มาจ้าง ก็อย่ายืนบังแสง', '120 เหรียญ ข้าจะยืนข้างหน้าเจ้าจนกว่างานจะจบ'], night: ['ขวานข้าไม่เคยถามว่าศัตรูคือใคร'] },
     about: ['หน่วยข้าชื่อ "หมาป่าหิมะ" เหลือข้าคนเดียวแล้ว'] });
   add('ren', { name: 'เรน', role: 'นักธนูหนุ่ม', age: 17, recruit: 'quest', look: { coat: '#3a6a3a', hair: '#5a3a1a', hat: 'hood', hatCol: '#2f5a2f', weapon: 'bow', small: false },
@@ -189,7 +190,7 @@
   add('bram', { name: 'บรัม', role: 'นักรบค้อนรับจ้าง', age: 41, recruit: 'hire', home: 'inn', origin: 'รับจ้างคุ้มกันกองคาราวานตามหมู่บ้านริมป่า แวะพักเฟิร์นเวลเป็นพัก ๆ', visit: { every: 7, stay: 5, arrive: 9, leave: 14 }, gate: 'southeast',
     look: { coat: '#6a5a4a', hair: '#8a5a2a', hat: 'none', beard: '#8a5a2a', weapon: 'hammer', tall: true, belt: '#3a2a1a', sprite: 'bram' },
     trait: 'ตัวใหญ่ ใจเย็น กินจุ ไว้ใจได้ถ้าจ่ายครบ', story: 'เคยเป็นยามประตูเมืองหลวง ลาออกเพราะเบื่อยืนเฉย ๆ ทั้งวัน',
-    likes: 'สตูเนื้อ, โล่หนา ๆ', sched: [[7, 24, 'inn', 'table'], [0, 2, 'inn', 'table']],
+    likes: 'สตูเนื้อ, โล่หนา ๆ', sched: [[7, 9, 'inn', 'table'], [9, 16, 'guild', 'table'], [16, 24, 'inn', 'table'], [0, 2, 'inn', 'table']],
     lines: { morning: ['สตูของมาร์ธาร้อนกำลังดี … เจ้าจะกินด้วยไหม'], day: ['หกสิบเหรียญ ข้าจะยืนหน้าเจ้ารับทุกอย่างที่พุ่งเข้ามา'], evening: ['กองคาราวานถัดไปจะผ่านมาอีกไม่กี่วัน ถ้าเจ้าไม่จ้างข้า ข้าก็ไปกับพวกนั้น'] },
     about: ['ค้อนนี่หนักกว่าดาบสามเท่า แต่ตีทีเดียวไม่ต้องตีซ้ำ'] });
   add('luna', { name: 'ลูน่า', role: 'นักเวทนักศึกษาซากโบราณ', age: 23, recruit: 'visits', home: 'inn', origin: 'นักศึกษาจากหอสมุดเมืองหลวง มาสำรวจซากโบราณรอบหุบ แวะพักเฟิร์นเวลเป็นช่วง ๆ', visit: { every: 3, stay: 2, offset: 1, arrive: 9, leave: 17 }, gate: 'north',
@@ -201,7 +202,7 @@
   // new travellers (not recruitable — yet)
   add('ash', { name: 'แอช', role: 'นักผจญภัยพเนจร', age: 27, home: 'inn', origin: 'เดินทางจากเมืองท่าทางใต้ ตามล่าค่าหัวไปเรื่อย ๆ', visit: { every: 8, stay: 2, offset: 4, arrive: 11, leave: 13 }, gate: 'southeast',
     look: { coat: '#7a3a2a', hair: '#e0d0b0', hat: 'bandana', hatCol: '#4a2a1a', weapon: 'sword', cape: '#5a3a2a', longHair: true },
-    trait: 'มั่นใจ ขี้อวด แต่ฝีมือจริง', story: 'เคยล้มโทรลล์บึงมาแล้วสองตัว (เธอว่าอย่างนั้น)', sched: [[11, 18, 'square'], [18, 24, 'inn', 'bar'], [0, 2, 'inn', 'bar']],
+    trait: 'มั่นใจ ขี้อวด แต่ฝีมือจริง', story: 'เคยล้มโทรลล์บึงมาแล้วสองตัว (เธอว่าอย่างนั้น)', sched: [[11, 15, 'guild', 'board'], [15, 18, 'square'], [18, 24, 'inn', 'bar'], [0, 2, 'inn', 'bar']],
     lines: { day: ['ป้ายค่าหัวที่ประตูหมู่บ้านน่ะ … ของข้าแล้ว อย่าแย่งล่ะ'], evening: ['ชนแก้วกับข้าสิ เจ้าดูเหมือนคนที่เพิ่งเริ่มออกเดินทาง'] }, about: ['ทุกเมืองมีงานให้คนกล้า … แค่ต้องกล้ากลับมาเก็บเงินด้วย'] });
   add('pell', { name: 'เพลล์', role: 'พ่อค้าเร่ขายของจุกจิก', age: 58, home: 'inn', origin: 'ลากเกวียนเร่ขายของไปทั่วทุกหมู่บ้านในหุบ', visit: { every: 5, stay: 1, offset: 3, arrive: 8, leave: 18 }, gate: 'southwest',
     look: { coat: '#8a7a4a', hair: '#9a9a9a', hat: 'hat', hatCol: '#5a4a2a', beard: '#aaaaaa', cape: '#6a5a3a' },

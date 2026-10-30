@@ -23,6 +23,7 @@
     g.village.coins -= P.cost; (g.village.projects ||= {})[id] = g.day || 1;
     try { save() } catch (e) { root.WorldState?.commit?.() }
     try { root.Mind?.emit?.('want:done', { who: 'may', result: P.name }) } catch (e) { }
+    try { root.Factions?.add('village', 10, 'ลงขัน' + P.name) } catch (e) { }
     return true;
   }
   function css() {
