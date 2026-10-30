@@ -144,6 +144,23 @@
       if (out.length) save(); return out;
     }
 
+    /* ---------- v97.34 · "ถามเรื่อง…": answers on a topic the player picks — news (the latest thing they know), people (who they like or
+       dislike, from the relationship table), the road (a gameplay tip, or their own stake in a destination) ---------- */
+    const TIPS = ['กลางคืนข้างนอกอันตรายกว่า พักแรมก่อนมืดดีกว่า', 'เดินบนถนนโดนซุ่มน้อยกว่าในป่าเกินครึ่ง', 'เสบียงหมดกลางทางจะหิวจนเสียเลือดทุกช่อง ซื้อติดตัวไว้ก่อน',
+      'ตีจากด้านหลังแรงกว่าตีตรงหน้า ด้านข้างก็ยังดี', 'ถ้าเห็นตัวใหญ่ส่องแสงรวบรวมพลัง แยกกันยืนเข้าไว้', 'ยืนบนที่สูงตีแรงกว่า ศัตรูก็รู้เรื่องนี้เหมือนกัน',
+      'หมอยารักษาทั้งทีมได้ในครั้งเดียว ถูกกว่าใช้ยาทีละขวด', 'ที่วิหารภาวนาได้วันละครั้ง หายเหนื่อยไปเยอะ', 'กระดานออร์เดอร์ที่ตลาดมีงานใหม่ทุกวัน'];
+    function ask(id, topic) {
+      const P = people(), now = clock(), pick = a => a[Math.floor(rng() * a.length)];
+      if (topic === 'news') { const e = known(id, now).filter(x => x.who !== id).sort((a, b) => b.t - a.t)[0];
+        if (!e) return compose(id, pick(['ช่วงนี้เงียบดี ไม่มีข่าวอะไรใหม่', 'ยังไม่ได้ยินอะไรเลย ถ้าเจ้ามีเรื่องเล่าก็มาเล่าให้ฟังสิ']));
+        const { list } = reactLines(id, e); return compose(id, pick(list.length ? list : ['ได้ยินมาบ้างเหมือนกัน']), e) }
+      if (topic === 'people') { const others = Object.keys(P).filter(k => k !== id && P[k]?.name && !P[k].visit), o = others.sort((a, b) => Math.abs(rel(id, b)) - Math.abs(rel(id, a)) || rng() - .5)[0];
+        if (!o) return compose(id, 'ข้ายังไม่รู้จักใครที่นี่มากนัก'); const r = rel(id, o), nm = P[o].name;
+        return compose(id, r >= 3 ? pick([`${nm}น่ะหรือ? คนดีที่สุดในหมู่บ้านเลย`, `ข้ากับ${nm}สนิทกันมาก มีอะไรก็ช่วยกัน`]) : r <= -1 ? pick([`อย่าพูดถึง${nm}ต่อหน้าข้าเลย`, `${nm}กับข้า … ไม่ค่อยลงรอยกัน`]) : pick([`${nm}? ก็รู้จักกันอยู่ ทักทายกันทุกเช้า`, `ข้ายังไม่ค่อยได้คุยกับ${nm}เท่าไหร่ ดูเป็นคนดีนะ`])) }
+      const per = LN.PERSONAL[id] || {}, stake = Object.keys(per).filter(k => k.startsWith('journey:start@'));
+      return compose(id, stake.length && rng() < .5 ? pick(per[pick(stake)]) : 'ข้าบอกอะไรเจ้าอย่างหนึ่งนะ — ' + pick(TIPS));
+    }
+
     /* ---------- relationships ---------- */
     const pairKey = (a, b) => [a, b].sort().join('|');
     const rel = (a, b) => load().rel[pairKey(a, b)] || 0;
@@ -226,7 +243,7 @@
       return { id: key, lines: tpl.map(([w, t]) => { const self = w === 'a' ? a : b; return [self, fillSlots(t.replace(/\{a\}/g, P[a].name).replace(/\{b\}/g, P[b].name).replace(/\{arole\}/g, P[a].role).replace(/\{brole\}/g, P[b].role).replace(/\{aline\}/g, al).replace(/\{bline\}/g, bl), {}, self)] }) };
     }
 
-    return { KEY, VERSION, load, save, reload, migrate, emit, prune, known, knows, talk, bubble, scene, startJob, tick, away, canWork, wantState, rel, addRel, affect, npc, fillSlots, get state() { return load() } };
+    return { KEY, VERSION, load, save, reload, migrate, emit, prune, known, knows, talk, ask, bubble, scene, startJob, tick, away, canWork, wantState, rel, addRel, affect, npc, fillSlots, get state() { return load() } };
   }
 
   root.VillageMind = { create };

@@ -200,6 +200,7 @@
     g.beginPath(); g.moveTo(token.x - 6, y + 24); g.lineTo(token.x, y + 32); g.lineTo(token.x + 6, y + 24); g.fill();
     g.fillStyle = '#3a2810'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t.length > 46 ? t.slice(0, 45) + '…' : t, token.x, y + 12.5); g.restore();
   }
+  const VP = id => !!window.VillageProjects?.has(id);
   const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura on the map too */
   function drawToken(now) {
     const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 76;
@@ -465,7 +466,7 @@
     S.prev = { ...S.pos }; S.pos = { c: to.c, r: to.r }; S.steps++; const k = K(to.c, to.r); if (S.trail.at(-1) !== k) S.trail.push(k); if (S.trail.length > 200) S.trail.shift();
     const wasNight = nightness() > .6;
     passTime(cost + (wasNight ? 1 : 0));                                              // walking in the dark is slower
-    S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * (wasNight ? 1.5 : 1)));
+    S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * (wasNight ? 1.5 : 1) * (VP('road') ? .8 : 1)));   /* v97.35 · R3 projects */
     /* v95.26 · the heights are cold: walking there tires you faster and eats more */
     if (world.real && (t.biome === 'snow' || t.biome === 'highland')) { const cold = t.biome === 'snow' ? 1 : .5; S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * cold)); S.trek = (S.trek || 0) + cost * cold; if (S.coldDay !== S.day) { S.coldDay = S.day; log('ลมหนาวบนที่สูง เหนื่อยเร็วและหิวไว'); toast('❄ หนาวจัด: เหนื่อยเร็วขึ้น กินเสบียงมากขึ้น') } }
     /* v95.23: on the real map a hex is ~12 km — a ration lasts 12 hours of walking, not one hex */
@@ -481,7 +482,7 @@
     const night = nightness() > .6, dang = G.danger(world, t);
     /* v95.16 · no battle marks on the map: every step has a chance of an ambush (more in wild/dangerous land and at night, less on a road) */
     S.calm = Math.max(0, (S.calm || 0) - 1);
-    const odds = Math.min(.42, (.05 + dang * .24) * (t.road ? .45 : 1) * (night ? 1.6 : 1));
+    const odds = Math.min(.42, (.05 + dang * .24) * (t.road ? .45 : 1) * (night ? 1.6 : 1) * (VP('watch') ? .75 : 1));
     if (!S.calm && !t.poi && Math.random() < odds) { S.calm = 3; log(night ? 'ถูกซุ่มโจมตีกลางดึก!' : 'ถูกซุ่มโจมตี!'); return await battle(pickFoe(t), dang, { ambush: true }) }
     if (night && Math.random() < .07) return await nightEvent(t);
     chatter('walk', .35);
@@ -667,7 +668,7 @@
   async function camp(safe) {
     if (busy && !safe) return;
     const here = tile(S.pos.c, S.pos.r), dang = G.danger(world, here), night = nightness() > .5, fed = S.food > 0;
-    const risk = safe ? 0 : Math.min(.45, (night ? .24 : .1) * (.5 + dang * 1.5));
+    const risk = safe ? 0 : Math.min(.45, (night ? .24 : .1) * (.5 + dang * 1.5)) * (VP('watch') ? .5 : 1);
     if (!safe) { const v = await modal(`<h2>⛺ พักแรมที่นี่?</h2><p>${night ? 'นอนจนถึงเช้า' : 'พัก 6 ชั่วโมง'} · ${fed ? 'ใช้เสบียง 1 · HP เต็ม' : 'ไม่มีเสบียง · ฟื้น HP แค่ 30%'} · ความเหนื่อยหาย</p><p>โอกาสถูกบุกค่าย <b style="color:#a0281a">${Math.round(risk * 100)}%</b>${night ? ' (กลางคืนเสี่ยงกว่า)' : ''}</p>`, [{ label: '⛺ ตั้งแคมป์', value: true }, { label: 'ยังก่อน', value: null, ghost: true }]); if (!v) return }
     busy = true; hudSync(); if (fed) S.food--;
     toast('⛺ พักแรม…'); chatter('camp'); await wait(900);
@@ -744,7 +745,7 @@
       /* v94.06 F2: experience — the hero and the companions who fought */
       let jobRes = null; const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
       if (window.Progression) {
-        const xp = Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }), ups = Progression.gainHero(WS.game(), xp);
+        const xp = Math.round(Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }) * (VP('drill') ? 1.15 : 1)), ups = Progression.gainHero(WS.game(), xp);
         { const c = WS.game().village.character; Object.assign(members[0], { gain: xp, lv1: c.level, xp1: c.xp }) }
         log('✦ EXP +' + xp + (ups.length ? ' · เลเวลอัป! Lv.' + ups[ups.length - 1] + ' (HP สูงสุด ' + S.maxHp + ')' : ''));
         if (ups.length) toast('LEVEL UP! Lv.' + ups[ups.length - 1]);
