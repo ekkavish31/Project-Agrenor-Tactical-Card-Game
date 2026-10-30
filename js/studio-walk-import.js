@@ -73,8 +73,8 @@
  function syncStatuses(){let paths=new Set(Object.entries(M.studioWalks||{}).filter(([d])=>!M.studioWalkMirrors?.[d]).flatMap(([,c])=>c.frames.map(f=>M.assets.find(a=>a.id===f.assetId)?.file||f.src)));for(let a of M.assets)if(a.studioImportedWalk)a.status=paths.has(a.file)?'final':'unused';
   let posePaths=new Set(Object.entries(M.studioPoses||{}).flatMap(([pose,dirs])=>Object.entries(dirs||{}).filter(([d])=>!M.studioPoseMirrors?.[pose]?.[d]).flatMap(([,c])=>(c?.frames||[]).map(f=>M.assets.find(a=>a.id===f.assetId)?.file||f.src))));for(let a of M.assets)if(a.studioImportedPose)a.status=posePaths.has(a.file)?'final':'unused'}
  function setBusy(value){saving=value;B.state.busy=value;(editHost||dialog).querySelectorAll('button,input,select').forEach(e=>e.disabled=value);connButton()}
- async function commit(config,newAssets=[],blobs=[],links=null){
-  let direction=el('dir').value,before=copy(M),created=[];setBusy(true);
+ async function commit(config,newAssets=[],blobs=[],links=null,direction=el('dir').value){
+  let before=copy(M),created=[];setBusy(true);
   try{await Q;if(saveT){clearTimeout(saveT);saveT=null;await saveManifest()}
    if(dir)for(let {path,blob}of blobs)await queue(()=>writeFile(path,blob));
    M.studioWalks||={};M.studioWalkHistory||={};M.studioWalkHistory[direction]||=[];M.studioWalkHistory[direction].unshift({at:new Date().toISOString(),config:copy(M.studioWalks[direction]||null),mirrors:Object.fromEntries([direction,opposite[direction]].filter(Boolean).map(d=>[d,M.studioWalkMirrors?.[d]||null])),frames:B.getRuntime().tactics?.directions?.[direction]?.walk?.length||M.studioWalks[direction]?.frames.length||0});M.studioWalkHistory[direction]=M.studioWalkHistory[direction].slice(0,12);
@@ -88,11 +88,14 @@
   finally{setBusy(false);drawUI()}
  }
  const HERO_POSES=['walk','idle','windup','strike','guard','hit','down'],heroPose=()=>targetClip&&(targetClip.entity==='hero'||String(targetClip.id).startsWith('runtime:hero:'))&&HERO_POSES.includes(targetClip.action)?targetClip.action:null;
- async function save(){if(saving||!order.length)return;if(targetClip&&!heroPose())return saveGeneric();const action=heroPose()||'walk';await saveDraft().catch(e=>message(e.message));if(!clipOk())return;
-  let canvases=frames().map(output);setBusy(true);let stamp=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),direction=el('dir').value,ff=frames(),newAssets=[],blobs=[],config={version:1,canvas:[384,384],anchor:[.5,.9375],loop:true,createdAt:new Date().toISOString(),frames:[]};
+ async function save(){if(saving||!order.length)return;if(!eraser.hidden)closeEraser();if(targetClip&&!heroPose())return saveGeneric();const action=heroPose()||'walk';await saveDraft().catch(e=>message(e.message));if(!clipOk())return;
+  // A direction copied mirrored from its opposite saves into that source (flipped back), so both directions stay linked.
+  const view=el('dir').value,mirrorLinks=action==='walk'?M.studioWalkMirrors||{}:M.studioPoseMirrors?.[action]||{},source=opposite[view]&&mirrorLinks[view]===opposite[view]?opposite[view]:null;
+  let canvases=frames().map(output);if(source)canvases=canvases.map(c=>{let m=document.createElement('canvas');m.width=c.width;m.height=c.height;let g=m.getContext('2d');g.translate(c.width,0);g.scale(-1,1);g.drawImage(c,0,0);return m});setBusy(true);let stamp=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),direction=source||view,ff=frames(),newAssets=[],blobs=[],config={version:1,canvas:[384,384],anchor:[.5,.9375],loop:true,createdAt:new Date().toISOString(),frames:[]};
   if(action!=='walk')config.loop=['idle','guard'].includes(action);
   for(let [i,f]of ff.entries()){let path=`assets/tactics/imported/${action}-${direction.toLowerCase()}-${stamp}/frame-${String(i+1).padStart(2,'0')}.png`,id=`studio-hero-${direction.toLowerCase()}-${action}-${stamp}-${i+1}`,blob=await new Promise((res,rej)=>canvases[i].toBlob(b=>b?res(b):rej(new Error('สร้าง PNG ไม่ได้')),'image/png'));blobs.push({path,blob});newAssets.push({id,file:path,category:'tactics-hero',status:'final',size:[384,384],transparent:true,view:direction,pose:action,frame:i+1,frames:ff.length,ms:f.ms,pivot:[.5,.9375],...(action==='walk'?{studioImportedWalk:true}:{studioImportedPose:true}),studioOwner:{id:'hero',name:'ตัวหลัก · Hero',group:'characters'},artRevision:stamp});config.frames.push({assetId:id,src:path,ms:f.ms})}
-  if(action==='walk')await commit(config,newAssets,blobs);else await commitPose(action,direction,config,newAssets,blobs);
+  if(action==='walk')await commit(config,newAssets,blobs,source?{mirrors:{[view]:source,[source]:null}}:null,direction);else await commitPose(action,direction,config,newAssets,blobs);
+  if(source&&!dirty)message(el('message').textContent+' · '+view+' ใช้ภาพกลับด้านจาก '+source+' จึงบันทึกเข้า '+source+' และ '+view+' เปลี่ยนตาม');
  }
  // v81 · non-walk hero poses: variable frame count, same storage pattern as the walk (studioPoses[pose][dir])
  async function commitPose(action,direction,config,newAssets,blobs,mirror){const before=copy(M),created=[];setBusy(true);
@@ -113,9 +116,11 @@
   const link=async map=>{
    const links=pose==='walk'?(M.studioWalkMirrors||={}):((M.studioPoseMirrors||={})[pose]||={});
    for(const [dir,source] of Object.entries(map)){if(source)links[dir]=source;else delete links[dir]}
-   B.invalidate();
+   if(pose==='walk')el('mirror').checked=links[o]===d;
+   window.StudioWalks?.apply(B.getRuntime().tactics,M);B.invalidate();
    mirrorRow();
    const description=pose==='walk'?'ชุดเดิน':'ท่า '+pose;
+   await window.StudioUnifiedReview?.mirrorLinked?.(map);
    message('ตั้งค่าลอกทิศของ '+description+' แล้ว · ยังไม่บันทึกหรือ Push — ใช้ปุ่ม Push เดิมเมื่อพร้อม');
   };
   row.querySelector('#wi-mir-to').onclick=()=>link({[o]:d,[d]:null});row.querySelector('#wi-mir-from').onclick=()=>link({[d]:o,[o]:null});const off=row.querySelector('#wi-mir-off');if(off)off.onclick=()=>link(from?{[d]:null}:{[o]:null})}
