@@ -10,7 +10,11 @@
   'use strict';
   const Q = new URLSearchParams(location.search), L = window.VillageLife, CLK = window.VillageClock;
   const PLACE = Q.get('place') || 'inn', NAME = Q.get('name') || ({ inn: 'โรงแรมเขากวางทอง', healer: 'บ้านหมอยา', shop: 'ร้านค้า', market: 'ตลาด', temple: 'วิหาร', forge: 'โรงตีเหล็ก' }[PLACE] || 'สถานที่');
-  const KIND = L.placeKind(PLACE, NAME), OWNER = L.HOUSE_OF[PLACE] || null;
+  const KIND = PLACE === 'farm' ? 'farm' : L.placeKind(PLACE, NAME), OWNER = L.HOUSE_OF[PLACE] || null;
+  /* v97.82 · the farm sub-map (place-interior.html?place=farm&farm=<plot id>&back=<page>): a 🌾 farm plot of js/estates.js, drawn
+     outdoors — soil beds that show each crop of js/garden.js as it grows, the pen with its animals, the barn and the tools you bought.
+     Click a bed: plant (opens the seed list) · water · harvest · clear. Click the pen: pat them. The gate leads back to where you came from. */
+  const FARM_ID = Q.get('farm') || '', farmPlot = SS => (SS.estates || []).find(p => p.id === FARM_ID) || null;
   const cv = document.getElementById('room'), g = cv.getContext('2d');
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -31,7 +35,22 @@
     const R = { W: 8, D: 7, floor: 'wood', wall: 'plaster', door: 5, items: [], spots: [], wallDeco: [], light: [] };
     const it = (k, u, v, w = 1, d = 1, o = {}) => R.items.push({ k, u, v, w, d, ...o });
     const sp = (tag, u, v, face = 'SE', act = 'stand') => R.spots.push({ tag, u, v, face, act });
-    if (KIND === 'inn') {
+    if (KIND === 'farm') {
+      const G = window.Garden && farmPlot(S) ? window.Garden.of(farmPlot(S)) : null, n = G ? G.plots.length : 6, rows = Math.ceil(n / 3), barn = !!G?.have.barn;
+      Object.assign(R, { W: 14, D: Math.max(9, 3 + rows * 2), door: 4, floor: 'grass', wall: 'fence' });
+      for (let i = 0; i < n; i++) it('bed', 2 + (i % 3) * 2, 2 + Math.floor(i / 3) * 2, 1, 1, { idx: i, h: 6 });
+      const pu = 9, pv = 1, pw = 4, pd = barn ? 6 : 4; R.pen = { u: pu + 1, v: pv + 1, w: pw - 1, d: pd - 1 };
+      for (let u = pu; u <= pu + pw; u++) { it('fence', u, pv, 1, 1, { side: 'u' }); it('fence', u, pv + pd, 1, 1, { side: 'u' }) }
+      for (let v = pv + 1; v < pv + pd; v++) { it('fence', pu, v, 1, 1, { side: 'v' }); it('fence', pu + pw, v, 1, 1, { side: 'v' }) }
+      for (let u = pu + 1; u < pu + pw; u++) for (let v = pv + 1; v < pv + pd; v++) it('penfloor', u, v, 1, 1, { walk: false, flat: true });
+      it('hay', pu + pw - 1, pv + 1, 1, 1, { onTop: true });
+      if (barn) it('barn', 12, R.D - 2, 2, 2, { h: 46 });
+      if (G?.have.scarecrow) it('scarecrow', 1, 1, 1, 1, { h: 0 });
+      if (G?.have.compost) it('compost', 1, R.D - 2);
+      if (G?.have.channel) it('trough', 2, 0, 5, 1, { h: 6 });
+      it('basket', 7, R.D - 2); it('crate', 8, R.D - 2);
+      R.light.push({ u: 6, v: 4, r: 7, col: '255,240,200' });
+    } else if (KIND === 'inn') {
       Object.assign(R, { W: 13, D: 11, door: 8, floor: 'wood', wall: 'timber' });
       it('counter', 2, 2, 6, 1, { h: 30 }); it('barrel', 9, 1); it('barrel', 9, 2); it('keg', 1, 1);
       R.wallDeco.push({ k: 'shelf', side: 'back', a: 2, b: 7 }, { k: 'sword', side: 'left', a: 2.6 }, { k: 'board', side: 'left', a: 9.6 }, { k: 'window', side: 'back', a: 10.5 }, { k: 'window', side: 'left', a: 6 }, { k: 'antlers', side: 'back', a: 8.4 });
@@ -173,8 +192,8 @@
   }
 
   /* ---------- painting ---------- */
-  const FLOOR = { wood: ['#8a6440', '#7c5a38', '#946c46'], stone: ['#8a8680', '#7e7a74', '#96928a'], tile: ['#c9c2b0', '#bdb6a4', '#d4ccba'] };
-  const WALL = { plaster: ['#e8dcc0', '#d9ccae'], timber: ['#e2d4b4', '#cbbd9c'], stone: ['#a8a296', '#968f84'] };
+  const FLOOR = { grass: ['#6f9a4a', '#668f44', '#78a352'], wood: ['#8a6440', '#7c5a38', '#946c46'], stone: ['#8a8680', '#7e7a74', '#96928a'], tile: ['#c9c2b0', '#bdb6a4', '#d4ccba'] };
+  const WALL = { fence: ['#8a6440', '#7a5634'], plaster: ['#e8dcc0', '#d9ccae'], timber: ['#e2d4b4', '#cbbd9c'], stone: ['#a8a296', '#968f84'] };
   const WALL_H = 120;
   function poly(pts, fillStyle, stroke) { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)); g.closePath(); if (fillStyle) { g.fillStyle = fillStyle; g.fill() } if (stroke) { g.strokeStyle = stroke; g.lineWidth = 1; g.stroke() } }
   const up = (p, h) => ({ x: p.x, y: p.y - h });
@@ -192,10 +211,19 @@
       g.strokeStyle = R.floor === 'wood' ? 'rgba(40,25,10,.35)' : 'rgba(40,40,40,.22)'; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.stroke();
     }
     /* door light spilling in */
+    if (R.wall === 'fence') return;
     const dp = P(DOOR.u + .5, DOOR.v + .5), gr = g.createRadialGradient(dp.x - 20, dp.y, 4, dp.x, dp.y, 90), day = daylight();
     gr.addColorStop(0, `rgba(255,240,200,${.35 * day})`); gr.addColorStop(1, 'rgba(255,240,200,0)'); g.fillStyle = gr; g.beginPath(); g.ellipse(dp.x, dp.y, 90, 45, 0, 0, 7); g.fill();
   }
   function drawWalls(t) {
+    if (R.wall === 'fence') {   /* v97.82 · outdoors: a split-rail fence on the back and left edges, a gap for the gate */
+      g.strokeStyle = '#6a4a2a'; g.lineWidth = 4;
+      const rail = (a, b) => { for (const h of [12, 26]) { g.beginPath(); g.moveTo(a.x, a.y - h); g.lineTo(b.x, b.y - h); g.stroke() } };
+      for (let u = 0; u < R.W; u++) { const a = P(u, 0), b = P(u + 1, 0); rail(a, b); g.fillStyle = '#5a3a1e'; g.fillRect(a.x - 2, a.y - 32, 4, 32) }
+      for (let v = 0; v < R.D; v++) { if (v === DOOR.v) continue; const a = P(0, v), b = P(0, v + 1); rail(a, b); g.fillStyle = '#5a3a1e'; g.fillRect(a.x - 2, a.y - 32, 4, 32) }
+      const gp = P(0, DOOR.v + .5); g.fillStyle = '#e8d8a8'; g.font = '700 12px system-ui,sans-serif'; g.textAlign = 'center'; g.fillText('ทางออก', gp.x - 26, gp.y - 8);
+      return;
+    }
     const pal = WALL[R.wall], day = daylight();
     /* back wall along v = 0 (u 0..W), left wall along u = 0 (v 0..D) */
     const o = P(0, 0), bR = P(R.W, 0), bL = P(0, R.D);
@@ -233,7 +261,45 @@
     else if (d.k === 'net') { const q = wallQuad(d.side, d.a - .6, d.a + .6, 40, 96); g.strokeStyle = 'rgba(200,190,150,.7)'; g.lineWidth = 1; for (let i = 0; i <= 6; i++) { const a = wallPt(d.side, d.a - .6 + i * .2, 40), b = wallPt(d.side, d.a - .6 + i * .2, 96); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke() } }
   }
   /* furniture */
+  /* v97.82 · the farm's own pieces */
+  const CROP_COL = { lettuce: '#7ec850', carrot: '#4f9a3a', potato: '#5a8a3a', wheat: '#c9b04a', tomato: '#3f8a3a', strawberry: '#4a9a4a', pumpkin: '#4a8a3a', herb: '#3e9a5a', cabbage: '#6aa86a' };
+  let farmCache = null, farmAt = 0;
+  function farmG() { const now = performance.now(); if (!farmCache || now - farmAt > 500) { farmAt = now; const fp = farmPlot(S); farmCache = fp && window.Garden ? window.Garden.of(fp) : null } return farmCache }
+  function drawFarmItem(i, t) {
+    const c = P(i.u + .5, i.v + .5), G = farmG(), today = window.WorldState?.game?.()?.day || 1;
+    if (i.k === 'bed') {
+      const p = G?.plots[i.idx], wet = p && (p.w === today || window.Garden?.rain(today) || G?.have.channel);
+      box(i.u + .08, i.v + .08, .84, .84, 6, wet ? '#4a3220' : '#6a4a2c', '#5a3c22', '#4a3018');
+      g.fillStyle = 'rgba(0,0,0,.18)'; for (let k = 0; k < 3; k++) { const a = P(i.u + .2, i.v + .25 + k * .25), b = P(i.u + .8, i.v + .25 + k * .25); g.fillRect(a.x, a.y - 7, b.x - a.x || 1, 1.5) }
+      if (!p) return; const C = window.Garden.CROPS[p.crop], y = c.y - 6;
+      if (p.dead) { g.strokeStyle = '#7a5a2a'; g.lineWidth = 2; for (const dx of [-8, 0, 8]) { g.beginPath(); g.moveTo(c.x + dx, y); g.lineTo(c.x + dx + 4, y - 10); g.stroke() } return }
+      const f = Math.min(1, p.g / C.days), sway = Math.sin(t * .002 + i.idx) * 1.5, col = CROP_COL[p.crop] || '#5a9a3a';
+      if (p.ripe) { g.font = '26px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(C.icon, c.x + sway, y - 4); g.fillStyle = 'rgba(255,230,120,.35)'; g.beginPath(); g.ellipse(c.x, y - 12, 18, 12, 0, 0, 7); g.fill(); return }
+      const h = 6 + f * 22, leaves = f < .25 ? 2 : f < .6 ? 3 : 5;
+      g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 2;
+      for (let k = 0; k < leaves; k++) { const a = (k / (leaves - 1 || 1) - .5) * 1.6, x2 = c.x + Math.sin(a) * h * .6 + sway, y2 = y - Math.cos(a) * h; g.beginPath(); g.moveTo(c.x, y); g.quadraticCurveTo(c.x + Math.sin(a) * h * .2, y - h * .5, x2, y2); g.stroke(); g.beginPath(); g.ellipse(x2, y2, 3 + f * 3, 2 + f * 2, a, 0, 7); g.fill() }
+      if (!wet) { g.fillStyle = 'rgba(120,180,255,.9)'; g.font = '11px system-ui,"Segoe UI Emoji",sans-serif'; g.fillText('💧', c.x + 16, y - h - 2) }
+      return;
+    }
+    if (i.k === 'fence') { const a = i.side === 'u' ? P(i.u, i.v + .5) : P(i.u + .5, i.v), b = i.side === 'u' ? P(i.u + 1, i.v + .5) : P(i.u + .5, i.v + 1); g.strokeStyle = '#7a5634'; g.lineWidth = 3.5; for (const h of [8, 18]) { g.beginPath(); g.moveTo(a.x, a.y - h); g.lineTo(b.x, b.y - h); g.stroke() } g.fillStyle = '#5a3a1e'; g.fillRect(a.x - 2, a.y - 24, 4, 24); return }
+    if (i.k === 'penfloor') { poly([P(i.u, i.v), P(i.u + 1, i.v), P(i.u + 1, i.v + 1), P(i.u, i.v + 1)], (i.u + i.v) % 2 ? '#9a8a52' : '#a3925a'); return }
+    if (i.k === 'hay') { g.fillStyle = '#d8b84a'; g.beginPath(); g.ellipse(c.x, c.y - 8, 16, 9, 0, 0, 7); g.fill(); g.strokeStyle = '#a88a2a'; g.lineWidth = 1; for (let k = -2; k <= 2; k++) { g.beginPath(); g.moveTo(c.x + k * 5, c.y - 14); g.lineTo(c.x + k * 6, c.y - 2); g.stroke() } return }
+    if (i.k === 'barn') { box(i.u, i.v, i.w, i.d, i.h, '#9a3a2a', '#8a2e22', '#76261c'); const a = P(i.u, i.v), b = P(i.u + i.w, i.v), e = P(i.u, i.v + i.d), cc = P(i.u + i.w, i.v + i.d); g.fillStyle = '#5a3a2a'; g.beginPath(); g.moveTo(e.x, e.y - i.h); g.lineTo((e.x + cc.x) / 2, (e.y + cc.y) / 2 - i.h - 26); g.lineTo(cc.x, cc.y - i.h); g.closePath(); g.fill(); g.fillStyle = '#e8d8b8'; const m = P(i.u + i.w * .5, i.v + i.d); g.fillRect(m.x - 8, m.y - 26, 16, 26); return }
+    if (i.k === 'scarecrow') { g.strokeStyle = '#6a4a2a'; g.lineWidth = 3; g.beginPath(); g.moveTo(c.x, c.y); g.lineTo(c.x, c.y - 46); g.moveTo(c.x - 16, c.y - 34); g.lineTo(c.x + 16, c.y - 34); g.stroke(); g.fillStyle = '#c9a04a'; g.beginPath(); g.arc(c.x, c.y - 50, 7, 0, 7); g.fill(); g.fillStyle = '#5a3a2a'; g.fillRect(c.x - 10, c.y - 58, 20, 3); g.fillRect(c.x - 5, c.y - 66, 10, 8); g.fillStyle = '#8a4a3a'; g.fillRect(c.x - 7, c.y - 38, 14, 14); return }
+    if (i.k === 'compost') { g.fillStyle = '#4a3420'; g.beginPath(); g.ellipse(c.x, c.y - 6, 18, 10, 0, Math.PI, 0); g.fill(); g.fillStyle = '#6a4a2a'; g.beginPath(); g.ellipse(c.x - 4, c.y - 10, 8, 5, 0, 0, 7); g.fill(); return }
+    if (i.k === 'trough') { box(i.u, i.v + .3, i.w, .4, 6, '#5a8ac8', '#6a4a2a', '#5a3a1e'); g.fillStyle = `rgba(200,230,255,${.3 + Math.sin(t * .004) * .15})`; const a = P(i.u + .5, i.v + .5); g.fillRect(a.x - 4, a.y - 9, 30, 2); return }
+  }
+  /* the animals wander inside the pen */
+  const herd = [];
+  function syncHerd() {
+    const G = farmG(); if (!G || !R.pen) return; const want = G.animals || [];
+    while (herd.length > want.length) herd.pop();
+    for (let k = 0; k < want.length; k++) { const a = want[k]; if (!herd[k]) herd[k] = { u: R.pen.u + Math.random() * R.pen.w, v: R.pen.v + Math.random() * R.pen.d, tu: 0, tv: 0, wait: Math.random() * 2 }; herd[k].a = a }
+  }
+  function stepHerd(dt) { for (const h of herd) { if ((h.wait -= dt) > 0) continue; const du = h.tu - h.u, dv = h.tv - h.v, d = Math.hypot(du, dv); if (d < .05 || !h.tu) { h.tu = R.pen.u + .3 + Math.random() * (R.pen.w - .6); h.tv = R.pen.v + .3 + Math.random() * (R.pen.d - .6); h.wait = 1 + Math.random() * 3; continue } const sp = dt * .6; h.u += du / d * Math.min(sp, d); h.v += dv / d * Math.min(sp, d) } }
+  function drawAnimal(h, t) { const A = window.Garden.ANIMALS[h.a.kind], p = P(h.u, h.v), hop = h.wait > 0 ? 0 : Math.abs(Math.sin(t * .01 + h.u)) * 3; g.fillStyle = 'rgba(0,0,0,.25)'; g.beginPath(); g.ellipse(p.x, p.y, 12, 5, 0, 0, 7); g.fill(); g.font = '26px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(A.icon, p.x, p.y - 4 - hop); if (h.a.hungry) { g.font = '12px system-ui,"Segoe UI Emoji",sans-serif'; g.fillText('😣', p.x + 12, p.y - 26) } }
   function drawItem(i, t) {
+    if (KIND === 'farm' && ['bed', 'fence', 'penfloor', 'hay', 'barn', 'scarecrow', 'compost', 'trough'].includes(i.k)) return drawFarmItem(i, t);
     const c = P(i.u + i.w / 2, i.v + i.d / 2);
     switch (i.k) {
       case 'counter': box(i.u, i.v, i.w, i.d, i.h || 30, '#8a5a32', '#6a4424', '#5a3a1e'); { const a = P(i.u, i.v); for (let k = 0; k < i.w; k += 1.5) { const p = P(i.u + k + .7, i.v + .4); g.fillStyle = '#c9a060'; g.fillRect(p.x - 3, p.y - (i.h || 30) - 10, 6, 9) } } break;
@@ -295,6 +361,7 @@
     const dt = Math.min(.1, (t - last) / 1000 || .016); last = t;
     if (!document.hidden && shown) window.WorldState?.tick(dt);   // v94: the one game clock keeps running indoors
     if (t > syncAt) { syncAt = t + 1000; syncPeople(false); hudSync() }
+    if (KIND === 'farm') { if (t > (frame.herdAt || 0)) { frame.herdAt = t + 700; syncHerd() } stepHerd(dt) }
     stepActor(hero, dt, 3.6); if (!hero.path.length && hero.then) { const f = hero.then; hero.then = null; f() }
     for (const [id, a] of people) {
       stepActor(a, dt, 2.4);
@@ -312,10 +379,11 @@
     g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#120e0a'; g.fillRect(0, 0, cv.width, cv.height);
     g.setTransform(dpr * Z, 0, 0, dpr * Z, dpr * CX, dpr * CY);
     drawWalls(t); drawFloor(t);
-    for (const i of R.items) if (i.k === 'rug') drawItem(i, t);
+    for (const i of R.items) if (i.k === 'rug' || i.flat) drawItem(i, t);
     /* depth sort: furniture by its front corner, people by their cell */
     const list = [];
-    for (const i of R.items) if (i.k !== 'rug' && !i.onTop) list.push({ y: i.u + i.w + i.v + i.d - 1 - (i.k === 'stool' ? .4 : 0), f: () => drawItem(i, t) });
+    if (KIND === 'farm') for (const h of herd) list.push({ y: h.u + h.v, f: () => drawAnimal(h, t) });
+    for (const i of R.items) if (i.k !== 'rug' && !i.flat && !i.onTop) list.push({ y: i.u + i.w + i.v + i.d - 1 - (i.k === 'stool' ? .4 : 0), f: () => drawItem(i, t) });
     for (const i of R.items) if (i.onTop) list.push({ y: i.u + i.v + 1.05, f: () => drawItem(i, t) });
     for (const a of people.values()) list.push({ y: a.vu + a.vv, f: () => drawPerson(a, t) });
     list.push({ y: hero.vu + hero.vv, f: () => drawHero(t) });
@@ -371,6 +439,12 @@
     const a = personAt(e.clientX, e.clientY);
     if (a) { walkNear(a, () => talk(a)); return }
     const c = toCell(e.clientX, e.clientY), cell = { u: Math.floor(c.u), v: Math.floor(c.v) };
+    if (KIND === 'farm') {   /* v97.82 · beds and the pen */
+      const bed = R.items.find(i => i.k === 'bed' && i.u === cell.u && i.v === cell.v);
+      if (bed) { walkNear({ u: bed.u, v: bed.v }, () => bedAction(bed.idx)); return }
+      const pen = R.pen && cell.u >= R.pen.u - 1 && cell.u <= R.pen.u + R.pen.w && cell.v >= R.pen.v - 1 && cell.v <= R.pen.v + R.pen.d;
+      if (pen) { const edge = { u: R.pen.u - 2, v: Math.min(R.D - 1, R.pen.v + 1) }; walkTo(free(edge.u, edge.v) ? edge : { u: hero.u, v: hero.v }, () => penAction()); return }
+    }
     const nearDoor = cell.u <= 0 && Math.abs(cell.v - DOOR.v) <= 1 || (cell.u < 0 && cell.v >= DOOR.v - 1 && cell.v <= DOOR.v + 1);
     if (nearDoor) { walkTo(DOOR, leave); return }
     if (free(cell.u, cell.v)) walkTo(cell);
@@ -384,7 +458,7 @@
   /* v94: inside the game (index.html → place frame) the game closes the interior; on its own page we walk back to the village page */
   const EMBED = Q.get('embed') === '1' && window.parent !== window;
   let shown = true;
-  function leave() { if (EMBED) { parent.postMessage({ source: 'project-a-place', type: 'leave' }, '*'); return } location.href = 'village-town.html?from=' + encodeURIComponent(PLACE) }
+  function leave() { if (KIND === 'farm') { location.href = /^[a-z0-9_-]+\.html$/i.test(Q.get('back') || '') ? Q.get('back') : 'world-map.html'; return } if (EMBED) { parent.postMessage({ source: 'project-a-place', type: 'leave' }, '*'); return } location.href = 'village-town.html?from=' + encodeURIComponent(PLACE) }
   if (EMBED) {
     addEventListener('message', e => { if (e.source !== parent || e.data?.source !== 'project-a-game') return; if (e.data.type === 'visibility') shown = !!e.data.visible });
     addEventListener('load', () => parent.postMessage({ source: 'project-a-place', type: 'ready' }, '*'));
@@ -415,11 +489,16 @@
     const here = [...people.values()].filter(a => !a.leaving);
     const html = `<h1>${esc(NAME)}</h1><div class="sub">Fernvale · ${window.WorldState?.season ? window.WorldState.season(c.day)[2] + ' ' : ''}วันที่ ${c.day} · ${icon} ${CLK.label(c.hour)}</div>
       <div class="row"><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span><span>ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</span></div>
-      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
+      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}${KIND === 'farm' ? (() => { const G = farmG(), b = G ? window.Garden.badge(G) : ''; return '<button id="fmOpen">🌾 จัดการไร่' + b + '</button><button id="fmWater">💧 รดน้ำทุกแปลง</button><button id="fmHarvest">🧺 เก็บทุกแปลงที่สุก</button>' })() : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
       <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : fill(a.p.role))}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก</div>`;
     if (html === hud._html) return; hud._html = html; hud.innerHTML = html;   // only rebuild when something changed (keeps clicks reliable)
     hud.querySelector('#inOut').onclick = () => walkTo(DOOR, leave);
+    if (KIND === 'farm') {
+      hud.querySelector('#fmOpen').onclick = () => openFarm();
+      hud.querySelector('#fmWater').onclick = () => toast('💧 รดน้ำ ' + (farmDo(G => window.Garden.waterAll(G)) || 0) + ' แปลง');
+      hud.querySelector('#fmHarvest').onclick = () => toast('🧺 เก็บได้ ' + (farmDo(G => window.Garden.harvestAll(G)) || 0) + ' ผล');
+    }
     hud.querySelector('#inParty') && (hud.querySelector('#inParty').onclick = partyPanel);
     hud.querySelector('#inRoom') && (hud.querySelector('#inRoom').onclick = () => rest(10));
     hud.querySelector('#inSleep') && (hud.querySelector('#inSleep').onclick = () => rest(0));
@@ -434,6 +513,23 @@
     acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
   }
   let placed = [];
+  /* v97.82 · farm actions — each one reloads the world save, changes the farm and writes it back */
+  function farmDo(fn) { const S0 = L.save(), fp = farmPlot(S0); if (!fp || !window.Garden) return null; const G = window.Garden.of(fp), r = fn(G, S0); L.writeSave(S0); farmCache = null; hud._html = ''; hudSync(); return r }
+  function bedAction(i) {
+    const today = window.WorldState?.game?.()?.day || 1;
+    const msg = farmDo(G => { const Gd = window.Garden, p = G.plots[i]; if (!p) return 'seed';
+      if (p.dead) { Gd.clear(G, i); return '🥀 ถอนต้นที่ตายแล้ว' }
+      if (p.ripe) { const C = Gd.CROPS[p.crop]; return '🧺 เก็บ' + C.name + ' ได้ ' + Gd.harvest(G, i) + ' ผล' }
+      if (p.w !== today) { Gd.water(G, i); return '💧 รดน้ำ' + Gd.CROPS[p.crop].name + 'แล้ว' }
+      return '🌿 ' + Gd.CROPS[p.crop].name + ' โตแล้ว ' + Math.floor(p.g) + '/' + Gd.CROPS[p.crop].days + ' วัน · วันนี้รดน้ำแล้ว' });
+    if (msg === 'seed') return openFarm(i); if (msg) toast(msg);
+  }
+  function penAction() { const n = farmDo(G => G.animals.length ? window.Garden.patAll(G) : -1); toast(n < 0 ? '🐾 คอกยังว่าง · ซื้อสัตว์ได้ที่ 🌾 จัดการไร่' : n ? '🤚 ลูบหัวสัตว์ ' + n + ' ตัว ดูอารมณ์ดีขึ้น' : '🐾 วันนี้ลูบหัวครบทุกตัวแล้ว') }
+  function openFarm(pick) {
+    const S0 = L.save(), fp = farmPlot(S0); if (!fp || !window.Garden) return; const G = window.Garden.of(fp), size0 = G.plots.length, barn0 = !!G.have.barn, have0 = JSON.stringify(G.have);
+    modalOpen = true;
+    window.Garden.open(G, { title: fp.name, pick, onChange: () => { L.writeSave(S0); farmCache = null; hud._html = ''; hudSync() }, onClose: () => { modalOpen = false; L.writeSave(S0); farmCache = null; if (G.plots.length !== size0 || !!G.have.barn !== barn0 || JSON.stringify(G.have) !== have0) location.reload() } });
+  }
   function toast(t) { const d = document.createElement('div'); d.className = 'in-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 2300) }
   async function rest(cost) {
     S = L.save(); if (S.gold < cost) { toast('เงินไม่พอ'); return }
@@ -629,6 +725,7 @@
   addEventListener('keydown', e => { if (e.key === 'Escape') { close(); document.querySelector('.in-party')?.remove(); modalOpen = false } });
 
   /* ---------- start ---------- */
+  if (KIND === 'farm') { const msgs = farmDo(G => window.Garden.tick(G)) || []; for (const m of msgs.slice(0, 3)) toast(m) }   /* v97.82 · the days you were away */
   resize(); syncPeople(true); hudSync(); requestAnimationFrame(frame);
   if (KIND === 'square') toast('ลานกลางหมู่บ้านเป็นที่โล่ง — กลับออกไปข้างนอกได้เลย');
   window.Interior = { people, hero, talk: id => { const a = people.get(id); if (a) talk(a) }, act: (id, w) => { const a = people.get(id); if (a) return act(a, w) }, room: R, kind: KIND, sync: () => { syncPeople(false); hudSync() } };

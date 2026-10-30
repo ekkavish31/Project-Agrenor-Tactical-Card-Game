@@ -85,7 +85,7 @@
         const town = townOf(where), mine = at(S, where), rent = town ? T(town)?.land || 0 : 0;
         const rows = mine.map(p => { const K = KINDS[p.kind]; const left = town ? p.paidTo - (S.day || 1) : null;
           return `<div style="padding:10px;border-radius:12px;background:#fff8;border:2px solid #b08a4a44;margin:8px 0"><b>${K ? K.icon + ' ' + K.name : '🟫 ที่ว่าง'}</b> <small style="color:#7a6040">· ${town ? (left >= 0 ? 'จ่ายค่าเช่าถึงอีก ' + left + ' วัน' : '<b style="color:#a0442a">ค้างค่าเช่า ' + (-left) + ' วัน</b>') : 'ที่ดินกลางป่า · รั้ว ' + p.fence + '/2'}${p.kind ? ' · สภาพ ' + p.hp + '%' : ''}</small>
-            ${p.kind === 'shop' ? `<div style="font-size:13px">เงินในร้าน ${p.gold} 💰 (วันละ ${SHOP_DAY[sizeOf(p)]})</div>` : ''}${p.kind === 'farm' ? `<div style="font-size:13px">เสบียงในยุ้ง ${p.food} ห่อ (วันละ 2)</div>${root.Garden ? btn('garden:' + p.id, '🌱 แปลงผักและคอกสัตว์' + root.Garden.badge(root.Garden.of(p))) : ''}` : ''}
+            ${p.kind === 'shop' ? `<div style="font-size:13px">เงินในร้าน ${p.gold} 💰 (วันละ ${SHOP_DAY[sizeOf(p)]})</div>` : ''}${p.kind === 'farm' ? `<div style="font-size:13px">เสบียงในยุ้ง ${p.food} ห่อ (วันละ 2)</div>${root.Garden ? btn('enter:' + p.id, '🚪 เข้าไร่' + root.Garden.badge(root.Garden.of(p))) + btn('garden:' + p.id, '🌾 จัดการไร่') : ''}` : ''}
             <div>${p.kind ? '' : Object.entries(KINDS).map(([k, K]) => { const no = k === 'farm' ? farmWhy(p.at) : ''; return btn('build:' + p.id + ':' + k, K.icon + ' สร้าง' + K.name + ' ' + K.cost + '💰' + (no ? ' (ไม่มีที่ทำไร่)' : ''), S.gold < K.cost || !!no) }).join('')}
             ${p.kind === 'house' ? btn('sleep:' + p.id, '🛏 นอนพัก (ฟรี)') : ''}${p.gold || p.food ? btn('collect:' + p.id, '📦 เก็บของ') : ''}
             ${!town && p.kind ? btn('guard:' + p.id, (p.guardTo || 0) >= (S.day || 1) ? '🛡 มียามถึงวันที่ ' + p.guardTo + ' · ต่อ 7 วัน ' + GUARD.cost + '💰' : '🛡 จ้างยามเฝ้า 7 วัน ' + GUARD.cost + '💰', S.gold < GUARD.cost) : ''}${town ? btn('rent:' + p.id, '💰 จ่ายค่าเช่าอีก 7 วัน ' + rent + '💰', S.gold < rent) : p.fence < 2 ? btn('fence:' + p.id, '🪵 สร้างรั้วระดับ ' + (p.fence + 1) + ' ' + FENCE_COST[p.fence] + '💰', S.gold < FENCE_COST[p.fence]) : ''}
@@ -112,6 +112,7 @@
         else if (a === 'collect') { const r = collect(S, id); note = '📦 ได้ ' + [r.gold ? r.gold + ' 💰' : '', r.food ? r.food + ' เสบียง' : ''].filter(Boolean).join(' · ') }
         else if (a === 'drop') { if (b.dataset.sure) { abandon(S, id); note = 'ทิ้งที่ดินแล้ว' } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อยืนยัน'; return } }
         else if (a === 'sleep') return close('sleep');
+        else if (a === 'enter') return close('enter:' + id);   /* v97.82 · walk into the farm (js/interior.js, place=farm) */
         else if (a === 'garden') { const p = list(S).find(x => x.id === id); if (p && root.Garden) root.Garden.open(root.Garden.of(p), { title: p.name, onChange, onClose: () => draw() }); return }
         onChange?.(); draw(note);
       };

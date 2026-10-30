@@ -168,7 +168,7 @@
   }
   function open(G, opts = {}) {
     if (!G) return; css(); document.getElementById('gdUI')?.remove();
-    const d = document.createElement('div'); d.id = 'gdUI'; let pick = null, note = tick(G).join('<br>');
+    const d = document.createElement('div'); d.id = 'gdUI'; let pick = Number.isInteger(opts.pick) && !G.plots[opts.pick] ? opts.pick : null, note = tick(G).join('<br>');
     const draw = () => {
       const g = game(), now = today(), [sk, sn, si] = season(now), wetToday = rain(now) || G.have.channel, tomorrow = rain(now + 1), nxt = SIZES.indexOf(G.size) + 1;
       const plot = (p, i) => {

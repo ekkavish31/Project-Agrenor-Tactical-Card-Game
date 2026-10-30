@@ -363,9 +363,12 @@
   const atHome = () => S.pos.c === world.home.c && S.pos.r === world.home.r;
   /* v97.49 · T4: land you can hold here — Fernvale (rented), or open passable land with no place on it (claimed free) */
   const landHere = () => { if (!window.Estates) return null; if (atHome()) return 'town:fernvale'; const t = tile(S.pos.c, S.pos.r); if (t.poi || !G.BIOME[t.biome]?.pass) return null; return 'tile:' + S.pos.c + ',' + S.pos.r };
+  /* v97.82 · into the farm sub-map, and back here afterwards */
+  function enterFarm(r) { if (typeof r !== 'string' || !r.startsWith('enter:')) return false; const p = Estates.list(S).find(x => x.id === r.slice(6)); if (!p) return false; save(); location.href = 'place-interior.html?place=farm&farm=' + encodeURIComponent(p.id) + '&name=' + encodeURIComponent('ไร่ · ' + p.name) + '&back=world-map.html'; return true }
   async function landPanel(where, label) {
     if (!where || busy) return; busy = true; hudSync();
     try { for (const m of Estates.tickAll(S)) log(m); const r = await Estates.panel(S, where, label, () => { save(); hudSync() });
+      if (enterFarm(r)) return;
       if (r === 'sleep') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('🛏 นอนพักที่บ้านของตัวเอง ตื่นเช้าวันใหม่'); toast('🛏 พักเต็มอิ่ม · HP เต็ม') } }
     finally { busy = false; save(); hudSync() }
   }
@@ -455,7 +458,7 @@
       else if (v === 'event') { const here = tile(S.pos.c, S.pos.r), lines = await TownEvents.act(S, id, { job: window.Progression?.jobsOf(window.WorldState.game()).job, passTime, battle: () => battle(pickFoe(here), Math.max(.2, G.danger(world, here)), {}) }); for (const m of lines) log(m); if (lines.length) await modal('<h2>' + TownEvents.EVENTS[TownEvents.today(id)?.id]?.icon + ' ' + esc(poi.name) + '</h2>' + lines.map(m => '<p>' + esc(m) + '</p>').join('')) }
       else if (v === 'office') { await Offices.panel(S, () => { save(); hudSync() }, id) }   /* v97.68 · T7 offices in other towns */
       else if (v === 'trade') { await ST.tradePanel(id, S, () => { save(); hudSync() }) }
-      else if (v === 'land') { for (const m of Estates.tickAll(S)) log(m); const r = await Estates.panel(S, 'town:' + id, poi.name, () => { save(); hudSync() }); if (r === 'sleep') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('🛏 นอนพักที่บ้านของตัวเองใน ' + poi.name); toast('🛏 พักเต็มอิ่ม · HP เต็ม') } }
+      else if (v === 'land') { for (const m of Estates.tickAll(S)) log(m); const r = await Estates.panel(S, 'town:' + id, poi.name, () => { save(); hudSync() }); if (enterFarm(r)) return; if (r === 'sleep') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('🛏 นอนพักที่บ้านของตัวเองใน ' + poi.name); toast('🛏 พักเต็มอิ่ม · HP เต็ม') } }
       else if (v === 'pot') { S.gold -= pPot; S.potions++; log('ซื้อยาฟื้นฟูที่ ' + poi.name) }
       else if (v === 'rumor') { const d = destOf() || world.dests.find(x => !S.done[x.id]); if (d) { const p = G.path(world, tile(S.pos.c, S.pos.r), d); if (p) p.slice(0, 6).forEach(x => { for (const [a, b] of G.within(x.c, x.r, 1)) S.known[K(a, b)] = 1 }); fogDirty = true; reveal(); await modal(`<h2>📜 ข่าวลือ</h2><p>คนในโรงเตี๊ยมเล่าถึง <b>${esc(d.name)}</b> และวาดทางช่วงแรกให้</p>`) } else await modal('<h2>📜 ข่าวลือ</h2><p>ช่วงนี้ไม่มีข่าวใหม่</p>') }
       else break;
