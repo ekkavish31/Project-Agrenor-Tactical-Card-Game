@@ -55,6 +55,7 @@
   /* v92.17: recruits from the village (village-life.js, loaded by battle-field.html) */
   for (const [k, v] of Object.entries(window.VillageLife?.ALLY_STATS || {})) if (!ALLY[k]) ALLY[k] = v;
   const ALLY_ART = ['bram', 'luna', 'kier', 'mil'];
+  const ALLY_OWN = { bram: ['se', 'sw', 'ne', 'nw'], luna: ['se', 'sw', 'ne', 'nw'] };   /* v97.65: allies that have their own picture for every diagonal (the rest are mirrored in code) */
   const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv, ctl] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1), control: ctl === '1' || Q.get('ctl') === '1' } : null }).filter(Boolean);
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null;
@@ -1048,9 +1049,13 @@
     if (!ALLY_ART.includes(u.key) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
       g.save(); if (u.hp <= 0) g.globalAlpha *= .5; g.translate(pm.dx * .6, pm.dy - (u.lift || 0)); VillagerDraw(g, look, p.x, p.y, t, { walking: u.walking, face: u.dir, scale: UNIT / 56 * .78, act: u.hp <= 0 ? 'sleep' : u.pose === 'strike' ? 'work' : '' });
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .5; VillagerDraw(g, look, p.x, p.y, t, { face: u.dir, scale: UNIT / 56 * .78 }) } g.restore(); if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
-    const i = im(`assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`) || im(`assets/tactics/${u.key}_se_idle.webp`); shadow(g, p, UNIT * .24);
+    /* v97.65: allies with their own SW/NW pictures (ALLY_OWN) use them as they are; everyone else mirrors SE/NE */
+    const own = (ALLY_OWN[u.key] || []).includes(u.dir.toLowerCase()), mirSrc = `assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`;
+    let i = own && im(`assets/tactics/${u.key}_${u.dir.toLowerCase()}_${pose}.webp`), useFlip = false;
+    if (!i) { i = im(mirSrc) || im(`assets/tactics/${u.key}_se_idle.webp`); useFlip = flip }
+    shadow(g, p, UNIT * .24);
     if (!i) return; const size = UNIT * 1.45, pm = poseMotion(u, t);
-    g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
+    g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (useFlip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
     g.drawImage(i, -size / 2, -size * .94, size, size);
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
     g.restore();
