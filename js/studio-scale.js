@@ -29,12 +29,12 @@
     if (ch === 'hero') {
       const sets = {}; for (const dir of DIRS) { const D = rt?.directions?.[dir]; if (!D) continue; for (const pose of POSES) {
         const ff = pose === 'walk' ? (D.walk?.length ? D.walk : [D['walk-left'], D['walk-right']].filter(Boolean)) : (D[pose + 'Frames']?.length ? D[pose + 'Frames'] : [D[pose]]).filter(Boolean);
-        if (ff.length) (sets[pose] ||= {})[dir] = ff.map(f => f.src) } }
+        if (ff.length) (sets[pose] ||= {})[dir] = ff.map(f => ({ src: f.src, flip: !!f.flipImage })) } }
       out.push({ ctx: 'battle', label: 'สนามรบ / ในเมือง (ภาพฮีโร่ชุดเดียวกัน)', sets });
     } else {
-      const b = {}; for (const dir of DIRS) for (const pose of POSES) if (pose !== 'walk') (b[pose] ||= {})[dir] = [`assets/tactics/${ch}_${dir.toLowerCase()}_${pose}.webp`];
+      const b = {}; for (const dir of DIRS) for (const pose of POSES) if (pose !== 'walk') (b[pose] ||= {})[dir] = [{ src: `assets/tactics/${ch}_${dir.toLowerCase()}_${pose}.webp`, flip: false }];
       out.push({ ctx: 'battle', label: 'สนามรบ', sets: b });
-      const v = {}; for (const dir of DIRS) { (v.stand ||= {})[dir] = [`assets/village-town/npc/${ch}/${dir.toLowerCase()}-stand.webp`]; (v.walk ||= {})[dir] = [1, 2, 3, 4].map(n => `assets/village-town/npc/${ch}/${dir.toLowerCase()}-walk${n}.webp`) }
+      const v = {}; for (const dir of DIRS) { (v.stand ||= {})[dir] = [{ src: `assets/village-town/npc/${ch}/${dir.toLowerCase()}-stand.webp`, flip: false }]; (v.walk ||= {})[dir] = [1, 2, 3, 4].map(n => ({ src: `assets/village-town/npc/${ch}/${dir.toLowerCase()}-walk${n}.webp`, flip: false })) }
       out.push({ ctx: 'village', label: 'หมู่บ้าน / ห้องภายใน', sets: v });
     }
     return out;
@@ -52,7 +52,7 @@
         let cells = '';
         for (const dir of DIRS) {
           const files = g.sets[pose][dir]; if (!files) { cells += '<td style="color:#999">—</td>'; continue }
-          const std = standard(who.ch, g.ctx, dir), ms = []; for (const f of files) { const im = await load(f); n++; document.getElementById('scProg').textContent = `กำลังวัด… ${n}/${total}`; if (!im) continue; const m = measure(im); if (m) ms.push(m) }
+          const std = standard(who.ch, g.ctx, dir), ms = []; for (const fo of files) { const f = fo.src || fo; const im = await load(f); n++; document.getElementById('scProg').textContent = `กำลังวัด… ${n}/${total}`; if (!im) continue; const m = measure(im); if (m) ms.push(m) }
           if (!ms.length) { cells += '<td style="color:#999">ไม่มีไฟล์</td>'; continue }
           if (pose === 'idle' || pose === 'stand') idleH[dir] = idleH[dir] || ms[0].height;
           const heads = ms.map(m => m.head), lo = Math.min(...heads), hi = Math.max(...heads);
