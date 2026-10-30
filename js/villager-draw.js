@@ -25,9 +25,9 @@
   }
   /* v97.37 · picture-based people. look.sprite = 'bram' → assets/village-town/npc/bram/<se|sw|ne|nw>-<stand|walk1..walk4>.webp
      (384×384, feet at y=372). v97.59: a direction without its own pictures uses the opposite one mirrored (SE←SW, NW←NE and back), so two directions are enough ·
-     walk frames: 12 = a full 12-picture cycle (only the directions in wd have them; the rest use the standing picture) · 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 1 = contact, stand, contact, stand · 0 = the standing picture with a bob.
+     walk frames: 12 = a full 12-picture cycle (only the directions in wd have them; the others use them mirrored) · 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 1 = contact, stand, contact, stand · 0 = the standing picture with a bob.
      Falls back to the code-drawn figure until a standing picture has loaded. */
-  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 2 }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 12, wd: ['sw'] } }, SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
+  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 2 }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 12, wd: ['sw', 'ne'] } }, SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
   function sprites(name) {
     let S = SPR[name]; if (S) return S; S = SPR[name] = {}; const info = SPR_INFO[name]; if (!info || typeof Image === 'undefined') return S;
     for (const d of info.dirs) for (const k of ['stand', ...(info.wd && !info.wd.includes(d) ? [] : Array.from({ length: info.walk }, (_, n) => 'walk' + (n + 1)))]) { const im = new Image(); im.src = 'assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp'; S[d + '-' + k] = im }
