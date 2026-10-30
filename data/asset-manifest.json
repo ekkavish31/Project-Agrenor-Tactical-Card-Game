@@ -9550,23 +9550,7 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "mvvj6j0v",
-   "history": [
-    {
-     "file": "assets/_versions/unified/mvvj6j0v/tactics-bram-se-idle.png",
-     "at": "2026-10-30T22:15:31.365Z",
-     "stamp": "mvvj6j0v",
-     "status": "final",
-     "note": "ก่อนแก้ใน modal"
-    },
-    {
-     "file": "assets/_versions/unified/mvvj3vkm/tactics-bram-se-idle.png",
-     "at": "2026-10-30T22:13:27.665Z",
-     "stamp": "mvvj3vkm",
-     "status": "final",
-     "note": "ก่อนแก้ใน modal"
-    }
-   ]
+   "artRevision": "v16"
   },
   {
    "id": "tactics-bram-sw-idle",
@@ -9582,15 +9566,8 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "mvvj6rqu",
+   "artRevision": "mvvihj13",
    "history": [
-    {
-     "file": "assets/_versions/unified/mvvj6rqu/tactics-bram-sw-idle.png",
-     "at": "2026-10-30T22:15:42.667Z",
-     "stamp": "mvvj6rqu",
-     "status": "final",
-     "note": "ก่อนแก้ใน modal"
-    },
     {
      "file": "assets/_versions/unified/mvvihj13/tactics-bram-sw-idle.png",
      "at": "2026-10-30T21:56:04.991Z",
@@ -9781,16 +9758,7 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ภาพกลับด้านจาก NW (v97.69) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "mvvj5f86",
-   "history": [
-    {
-     "file": "assets/_versions/unified/mvvj5f86/tactics-bram-ne-idle.png",
-     "at": "2026-10-30T22:14:39.776Z",
-     "stamp": "mvvj5f86",
-     "status": "final",
-     "note": "ก่อนแก้ใน modal"
-    }
-   ]
+   "artRevision": "v16"
   },
   {
    "id": "tactics-bram-nw-idle",
@@ -9806,16 +9774,7 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "วาดจริง (v97.69) · ทิศ NE กลับด้านจากภาพนี้",
-   "artRevision": "mvvj5pwj",
-   "history": [
-    {
-     "file": "assets/_versions/unified/mvvj5pwj/tactics-bram-nw-idle.png",
-     "at": "2026-10-30T22:14:53.618Z",
-     "stamp": "mvvj5pwj",
-     "status": "final",
-     "note": "ก่อนแก้ใน modal"
-    }
-   ]
+   "artRevision": "v16"
   },
   {
    "id": "tactics-bram-ne-windup",
@@ -54323,7 +54282,7 @@
    "id": "studio-hero-nw-idle-mvvhjutr-feui-1",
    "file": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-01.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -54350,7 +54309,7 @@
    "id": "studio-hero-nw-idle-mvvhjutr-feui-2",
    "file": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-02.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -54377,7 +54336,7 @@
    "id": "studio-hero-nw-idle-mvvhjutr-feui-3",
    "file": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-03.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -54404,7 +54363,7 @@
    "id": "studio-hero-nw-idle-mvvhjutr-feui-4",
    "file": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-04.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -55022,8 +54981,8 @@
    "artRevision": "mvviei73-503a"
   },
   {
-   "id": "studio-hero-sw-idle-mvvj7g9i-q3jb-1",
-   "file": "assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-01.png",
+   "id": "studio-hero-sw-idle-mvvja6ll-3v5e-1",
+   "file": "assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-01.png",
    "category": "tactics-hero",
    "status": "unused",
    "size": [
@@ -55046,11 +55005,11 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mvvj7g9i-q3jb"
+   "artRevision": "mvvja6ll-3v5e"
   },
   {
-   "id": "studio-hero-sw-idle-mvvj7g9i-q3jb-2",
-   "file": "assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-02.png",
+   "id": "studio-hero-sw-idle-mvvja6ll-3v5e-2",
+   "file": "assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-02.png",
    "category": "tactics-hero",
    "status": "unused",
    "size": [
@@ -55073,11 +55032,11 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mvvj7g9i-q3jb"
+   "artRevision": "mvvja6ll-3v5e"
   },
   {
-   "id": "studio-hero-sw-idle-mvvj7g9i-q3jb-3",
-   "file": "assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-03.png",
+   "id": "studio-hero-sw-idle-mvvja6ll-3v5e-3",
+   "file": "assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-03.png",
    "category": "tactics-hero",
    "status": "unused",
    "size": [
@@ -55100,11 +55059,11 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mvvj7g9i-q3jb"
+   "artRevision": "mvvja6ll-3v5e"
   },
   {
-   "id": "studio-hero-sw-idle-mvvj7g9i-q3jb-4",
-   "file": "assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-04.png",
+   "id": "studio-hero-sw-idle-mvvja6ll-3v5e-4",
+   "file": "assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-04.png",
    "category": "tactics-hero",
    "status": "unused",
    "size": [
@@ -55127,11 +55086,38 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mvvj7g9i-q3jb"
+   "artRevision": "mvvja6ll-3v5e"
   },
   {
-   "id": "studio-hero-sw-idle-mvvj7rld-6gri-1",
-   "file": "assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-01.png",
+   "id": "studio-hero-sw-idle-mvvjemj5-qyvl-1",
+   "file": "assets/tactics/imported/idle-sw-mvvjemj5-qyvl/frame-01.png",
+   "category": "tactics-hero",
+   "status": "unused",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "frame": 1,
+   "frames": 1,
+   "ms": 360,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedPose": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mvvjemj5-qyvl"
+  },
+  {
+   "id": "studio-hero-sw-idle-mvvjerz1-zo68-1",
+   "file": "assets/tactics/imported/idle-sw-mvvjerz1-zo68/frame-01.png",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -55142,7 +55128,7 @@
    "view": "SW",
    "pose": "idle",
    "frame": 1,
-   "frames": 4,
+   "frames": 1,
    "ms": 360,
    "pivot": [
     0.5,
@@ -55154,11 +55140,11 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mvvj7rld-6gri"
+   "artRevision": "mvvjerz1-zo68"
   },
   {
-   "id": "studio-hero-sw-idle-mvvj7rld-6gri-2",
-   "file": "assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-02.png",
+   "id": "studio-hero-nw-idle-mvvjex4z-jav0-1",
+   "file": "assets/tactics/imported/idle-nw-mvvjex4z-jav0/frame-01.png",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -55166,10 +55152,10 @@
     384
    ],
    "transparent": true,
-   "view": "SW",
+   "view": "NW",
    "pose": "idle",
-   "frame": 2,
-   "frames": 4,
+   "frame": 1,
+   "frames": 1,
    "ms": 360,
    "pivot": [
     0.5,
@@ -55181,11 +55167,11 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mvvj7rld-6gri"
+   "artRevision": "mvvjex4z-jav0"
   },
   {
-   "id": "studio-hero-sw-idle-mvvj7rld-6gri-3",
-   "file": "assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-03.png",
+   "id": "studio-hero-ne-idle-mvvjf26d-mdg1-1",
+   "file": "assets/tactics/imported/idle-ne-mvvjf26d-mdg1/frame-01.png",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -55193,10 +55179,10 @@
     384
    ],
    "transparent": true,
-   "view": "SW",
+   "view": "NE",
    "pose": "idle",
-   "frame": 3,
-   "frames": 4,
+   "frame": 1,
+   "frames": 1,
    "ms": 360,
    "pivot": [
     0.5,
@@ -55208,34 +55194,7 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mvvj7rld-6gri"
-  },
-  {
-   "id": "studio-hero-sw-idle-mvvj7rld-6gri-4",
-   "file": "assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-04.png",
-   "category": "tactics-hero",
-   "status": "final",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": true,
-   "view": "SW",
-   "pose": "idle",
-   "frame": 4,
-   "frames": 4,
-   "ms": 360,
-   "pivot": [
-    0.5,
-    0.9375
-   ],
-   "studioImportedPose": true,
-   "studioOwner": {
-    "id": "hero",
-    "name": "ตัวหลัก · Hero",
-    "group": "characters"
-   },
-   "artRevision": "mvvj7rld-6gri"
+   "artRevision": "mvvjf26d-mdg1"
   }
  ],
  "studioWalks": {
@@ -56366,12 +56325,12 @@
    "frames": {}
   },
   "[\"tactics.idle.nw\",\"NW\",true,[[\"studio-hero-nw-idle-mvvhjutr-feui-1\",\"assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-01.webp\",0,\"mvvhjutr-feui\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-idle-mvvhjutr-feui-2\",\"assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-02.webp\",0,\"mvvhjutr-feui\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-idle-mvvhjutr-feui-3\",\"assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-03.webp\",0,\"mvvhjutr-feui\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-idle-mvvhjutr-feui-4\",\"assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-04.webp\",0,\"mvvhjutr-feui\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
    "approvedAt": "2026-10-30T21:29:54.034Z"
   },
   "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-ne-idle-mvvhk2gr-340h-1\",\"assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-01.webp\",0,\"mvvhk2gr-340h\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-idle-mvvhk2gr-340h-2\",\"assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-02.webp\",0,\"mvvhk2gr-340h\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-idle-mvvhk2gr-340h-3\",\"assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-03.webp\",0,\"mvvhk2gr-340h\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-idle-mvvhk2gr-340h-4\",\"assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-04.webp\",0,\"mvvhk2gr-340h\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
    "approvedAt": "2026-10-30T21:30:03.973Z"
   },
@@ -56890,6 +56849,51 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-10-30T21:29:54.034Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mvvj7rld-6gri-1\",\"assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-01.png\",0,\"mvvj7rld-6gri\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvj7rld-6gri-2\",\"assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-02.png\",0,\"mvvj7rld-6gri\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvj7rld-6gri-3\",\"assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-03.png\",0,\"mvvj7rld-6gri\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvj7rld-6gri-4\",\"assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-04.png\",0,\"mvvj7rld-6gri\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-10-30T22:16:29.318Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mvvj7rld-6gri-1\",\"assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-01.png\",0,\"mvvj7rld-6gri\",null,360,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvj7rld-6gri-2\",\"assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-02.png\",0,\"mvvj7rld-6gri\",null,360,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvj7rld-6gri-3\",\"assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-03.png\",0,\"mvvj7rld-6gri\",null,360,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvj7rld-6gri-4\",\"assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-04.png\",0,\"mvvj7rld-6gri\",null,360,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-10-30T22:16:29.318Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mvvja6ll-3v5e-1\",\"assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-01.png\",0,\"mvvja6ll-3v5e\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvja6ll-3v5e-2\",\"assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-02.png\",0,\"mvvja6ll-3v5e\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvja6ll-3v5e-3\",\"assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-03.png\",0,\"mvvja6ll-3v5e\",null,360,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvja6ll-3v5e-4\",\"assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-04.png\",0,\"mvvja6ll-3v5e\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "approvedAt": "2026-10-30T22:18:21.981Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mvvja6ll-3v5e-1\",\"assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-01.png\",0,\"mvvja6ll-3v5e\",null,360,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvja6ll-3v5e-2\",\"assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-02.png\",0,\"mvvja6ll-3v5e\",null,360,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvja6ll-3v5e-3\",\"assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-03.png\",0,\"mvvja6ll-3v5e\",null,360,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-idle-mvvja6ll-3v5e-4\",\"assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-04.png\",0,\"mvvja6ll-3v5e\",null,360,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "approvedAt": "2026-10-30T22:18:21.981Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mvvjemj5-qyvl-1\",\"assets/tactics/imported/idle-sw-mvvjemj5-qyvl/frame-01.png\",0,\"mvvjemj5-qyvl\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-10-30T22:21:49.259Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mvvjemj5-qyvl-1\",\"assets/tactics/imported/idle-sw-mvvjemj5-qyvl/frame-01.png\",0,\"mvvjemj5-qyvl\",null,360,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-10-30T22:21:49.259Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mvvjerz1-zo68-1\",\"assets/tactics/imported/idle-sw-mvvjerz1-zo68/frame-01.png\",0,\"mvvjerz1-zo68\",null,360,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-10-30T22:21:56.289Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mvvjerz1-zo68-1\",\"assets/tactics/imported/idle-sw-mvvjerz1-zo68/frame-01.png\",0,\"mvvjerz1-zo68\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-10-30T22:21:56.289Z"
+  },
+  "[\"tactics.idle.nw\",\"NW\",true,[[\"studio-hero-nw-idle-mvvjex4z-jav0-1\",\"assets/tactics/imported/idle-nw-mvvjex4z-jav0/frame-01.png\",0,\"mvvjex4z-jav0\",null,360,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-10-30T22:22:02.977Z"
   }
  },
  "studioPoses": {
@@ -56940,26 +56944,11 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-10-30T22:16:29.041Z",
+    "createdAt": "2026-10-30T22:21:56.125Z",
     "frames": [
      {
-      "assetId": "studio-hero-sw-idle-mvvj7rld-6gri-1",
-      "src": "assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-01.png",
-      "ms": 360
-     },
-     {
-      "assetId": "studio-hero-sw-idle-mvvj7rld-6gri-2",
-      "src": "assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-02.png",
-      "ms": 360
-     },
-     {
-      "assetId": "studio-hero-sw-idle-mvvj7rld-6gri-3",
-      "src": "assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-03.png",
-      "ms": 360
-     },
-     {
-      "assetId": "studio-hero-sw-idle-mvvj7rld-6gri-4",
-      "src": "assets/tactics/imported/idle-sw-mvvj7rld-6gri/frame-04.png",
+      "assetId": "studio-hero-sw-idle-mvvjerz1-zo68-1",
+      "src": "assets/tactics/imported/idle-sw-mvvjerz1-zo68/frame-01.png",
       "ms": 360
      }
     ]
@@ -56975,26 +56964,11 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-10-30T21:29:53.871Z",
+    "createdAt": "2026-10-30T22:22:02.819Z",
     "frames": [
      {
-      "assetId": "studio-hero-nw-idle-mvvhjutr-feui-1",
-      "src": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-01.webp",
-      "ms": 360
-     },
-     {
-      "assetId": "studio-hero-nw-idle-mvvhjutr-feui-2",
-      "src": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-02.webp",
-      "ms": 360
-     },
-     {
-      "assetId": "studio-hero-nw-idle-mvvhjutr-feui-3",
-      "src": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-03.webp",
-      "ms": 360
-     },
-     {
-      "assetId": "studio-hero-nw-idle-mvvhjutr-feui-4",
-      "src": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-04.webp",
+      "assetId": "studio-hero-nw-idle-mvvjex4z-jav0-1",
+      "src": "assets/tactics/imported/idle-nw-mvvjex4z-jav0/frame-01.png",
       "ms": 360
      }
     ]
@@ -57010,26 +56984,11 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-10-30T21:30:03.771Z",
+    "createdAt": "2026-10-30T22:22:09.349Z",
     "frames": [
      {
-      "assetId": "studio-hero-ne-idle-mvvhk2gr-340h-1",
-      "src": "assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-01.webp",
-      "ms": 360
-     },
-     {
-      "assetId": "studio-hero-ne-idle-mvvhk2gr-340h-2",
-      "src": "assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-02.webp",
-      "ms": 360
-     },
-     {
-      "assetId": "studio-hero-ne-idle-mvvhk2gr-340h-3",
-      "src": "assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-03.webp",
-      "ms": 360
-     },
-     {
-      "assetId": "studio-hero-ne-idle-mvvhk2gr-340h-4",
-      "src": "assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-04.webp",
+      "assetId": "studio-hero-ne-idle-mvvjf26d-mdg1-1",
+      "src": "assets/tactics/imported/idle-ne-mvvjf26d-mdg1/frame-01.png",
       "ms": 360
      }
     ]
@@ -57368,8 +57327,7 @@
  },
  "studioPoseMirrors": {
   "idle": {
-   "SE": "SW",
-   "NE": "NW"
+   "SE": "SW"
   },
   "windup": {},
   "strike": {},
@@ -57432,7 +57390,7 @@
   ],
   "idle:SW": [
    {
-    "at": "2026-10-30T22:16:29.195Z",
+    "at": "2026-10-30T22:21:56.176Z",
     "config": {
      "version": 1,
      "canvas": [
@@ -57444,26 +57402,11 @@
       0.9375
      ],
      "loop": true,
-     "createdAt": "2026-10-30T22:16:14.358Z",
+     "createdAt": "2026-10-30T22:21:49.073Z",
      "frames": [
       {
-       "assetId": "studio-hero-sw-idle-mvvj7g9i-q3jb-1",
-       "src": "assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-01.png",
-       "ms": 360
-      },
-      {
-       "assetId": "studio-hero-sw-idle-mvvj7g9i-q3jb-2",
-       "src": "assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-02.png",
-       "ms": 360
-      },
-      {
-       "assetId": "studio-hero-sw-idle-mvvj7g9i-q3jb-3",
-       "src": "assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-03.png",
-       "ms": 360
-      },
-      {
-       "assetId": "studio-hero-sw-idle-mvvj7g9i-q3jb-4",
-       "src": "assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-04.png",
+       "assetId": "studio-hero-sw-idle-mvvjemj5-qyvl-1",
+       "src": "assets/tactics/imported/idle-sw-mvvjemj5-qyvl/frame-01.png",
        "ms": 360
       }
      ]
@@ -57471,7 +57414,46 @@
     "mirror": null
    },
    {
-    "at": "2026-10-30T22:16:14.527Z",
+    "at": "2026-10-30T22:21:49.124Z",
+    "config": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-10-30T22:18:21.801Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-sw-idle-mvvja6ll-3v5e-1",
+       "src": "assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-01.png",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-sw-idle-mvvja6ll-3v5e-2",
+       "src": "assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-02.png",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-sw-idle-mvvja6ll-3v5e-3",
+       "src": "assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-03.png",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-sw-idle-mvvja6ll-3v5e-4",
+       "src": "assets/tactics/imported/idle-sw-mvvja6ll-3v5e/frame-04.png",
+       "ms": 360
+      }
+     ]
+    },
+    "mirror": null
+   },
+   {
+    "at": "2026-10-30T22:18:21.883Z",
     "config": {
      "version": 1,
      "canvas": [
@@ -57594,6 +57576,45 @@
    }
   ],
   "idle:NW": [
+   {
+    "at": "2026-10-30T22:22:02.870Z",
+    "config": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-10-30T21:29:53.871Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-nw-idle-mvvhjutr-feui-1",
+       "src": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-01.webp",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-nw-idle-mvvhjutr-feui-2",
+       "src": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-02.webp",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-nw-idle-mvvhjutr-feui-3",
+       "src": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-03.webp",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-nw-idle-mvvhjutr-feui-4",
+       "src": "assets/tactics/imported/idle-nw-mvvhjutr-feui/frame-04.webp",
+       "ms": 360
+      }
+     ]
+    },
+    "mirror": null
+   },
    {
     "at": "2026-10-30T21:29:53.954Z",
     "config": {
@@ -57757,6 +57778,45 @@
    }
   ],
   "idle:NE": [
+   {
+    "at": "2026-10-30T22:22:09.404Z",
+    "config": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-10-30T21:30:03.771Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-ne-idle-mvvhk2gr-340h-1",
+       "src": "assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-01.webp",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-ne-idle-mvvhk2gr-340h-2",
+       "src": "assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-02.webp",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-ne-idle-mvvhk2gr-340h-3",
+       "src": "assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-03.webp",
+       "ms": 360
+      },
+      {
+       "assetId": "studio-hero-ne-idle-mvvhk2gr-340h-4",
+       "src": "assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-04.webp",
+       "ms": 360
+      }
+     ]
+    },
+    "mirror": null
+   },
    {
     "at": "2026-10-30T21:30:03.890Z",
     "config": {
@@ -58226,46 +58286,6 @@
  "studioClipHistory": {
   "static:tactics-bram-sw-idle": [
    {
-    "at": "2026-10-30T22:15:42.667Z",
-    "entries": [
-     {
-      "asset": {
-       "id": "tactics-bram-sw-idle",
-       "file": "assets/tactics/bram_sw_idle.webp",
-       "category": "allies",
-       "status": "final",
-       "size": [
-        384,
-        384
-       ],
-       "transparent": true,
-       "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle",
-       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-       "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-       "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-       "artRevision": "mvvihj13",
-       "history": [
-        {
-         "file": "assets/_versions/unified/mvvihj13/tactics-bram-sw-idle.png",
-         "at": "2026-10-30T21:56:04.991Z",
-         "stamp": "mvvihj13",
-         "status": "final",
-         "note": "ก่อนแก้ใน modal"
-        },
-        {
-         "file": "assets/_versions/unified/mvvih2p6/tactics-bram-sw-idle.png",
-         "at": "2026-10-30T21:55:43.828Z",
-         "stamp": "mvvih2p6",
-         "status": "final",
-         "note": "ก่อนแก้ใน modal"
-        }
-       ]
-      },
-      "archive": "assets/_versions/unified/mvvj6rqu/tactics-bram-sw-idle.png"
-     }
-    ]
-   },
-   {
     "at": "2026-10-30T21:56:04.991Z",
     "entries": [
      {
@@ -58319,117 +58339,6 @@
        "artRevision": "v16"
       },
       "archive": "assets/_versions/unified/mvvih2p6/tactics-bram-sw-idle.png"
-     }
-    ]
-   }
-  ],
-  "static:tactics-bram-se-idle": [
-   {
-    "at": "2026-10-30T22:15:31.365Z",
-    "entries": [
-     {
-      "asset": {
-       "id": "tactics-bram-se-idle",
-       "file": "assets/tactics/bram_se_idle.webp",
-       "category": "allies",
-       "status": "final",
-       "size": [
-        384,
-        384
-       ],
-       "transparent": true,
-       "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle",
-       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-       "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-       "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-       "artRevision": "mvvj3vkm",
-       "history": [
-        {
-         "file": "assets/_versions/unified/mvvj3vkm/tactics-bram-se-idle.png",
-         "at": "2026-10-30T22:13:27.665Z",
-         "stamp": "mvvj3vkm",
-         "status": "final",
-         "note": "ก่อนแก้ใน modal"
-        }
-       ]
-      },
-      "archive": "assets/_versions/unified/mvvj6j0v/tactics-bram-se-idle.png"
-     }
-    ]
-   },
-   {
-    "at": "2026-10-30T22:13:27.665Z",
-    "entries": [
-     {
-      "asset": {
-       "id": "tactics-bram-se-idle",
-       "file": "assets/tactics/bram_se_idle.webp",
-       "category": "allies",
-       "status": "final",
-       "size": [
-        384,
-        384
-       ],
-       "transparent": true,
-       "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle",
-       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-       "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-       "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-       "artRevision": "v16"
-      },
-      "archive": "assets/_versions/unified/mvvj3vkm/tactics-bram-se-idle.png"
-     }
-    ]
-   }
-  ],
-  "static:tactics-bram-ne-idle": [
-   {
-    "at": "2026-10-30T22:14:39.776Z",
-    "entries": [
-     {
-      "asset": {
-       "id": "tactics-bram-ne-idle",
-       "file": "assets/tactics/bram_ne_idle.webp",
-       "category": "allies",
-       "status": "final",
-       "size": [
-        384,
-        384
-       ],
-       "transparent": true,
-       "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle",
-       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-       "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-       "note": "ภาพกลับด้านจาก NW (v97.69) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-       "artRevision": "v16"
-      },
-      "archive": "assets/_versions/unified/mvvj5f86/tactics-bram-ne-idle.png"
-     }
-    ]
-   }
-  ],
-  "static:tactics-bram-nw-idle": [
-   {
-    "at": "2026-10-30T22:14:53.618Z",
-    "entries": [
-     {
-      "asset": {
-       "id": "tactics-bram-nw-idle",
-       "file": "assets/tactics/bram_nw_idle.webp",
-       "category": "allies",
-       "status": "final",
-       "size": [
-        384,
-        384
-       ],
-       "transparent": true,
-       "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle",
-       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-       "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-       "note": "วาดจริง (v97.69) · ทิศ NE กลับด้านจากภาพนี้",
-       "artRevision": "v16"
-      },
-      "archive": "assets/_versions/unified/mvvj5pwj/tactics-bram-nw-idle.png"
      }
     ]
    }
