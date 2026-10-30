@@ -3115,3 +3115,9 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 ## v97.95 — 31 ตุลาคม 2026 · แผนที่โลก เฟส 3: ภูเขาเป็นเทือก
 - ภูเขา เนิน และที่สูงบนแผนที่โลกกระจายตำแหน่งและขนาดเอง (บางจุดมี 2 ยอด) เลยดูเป็นเทือกเขาต่อเนื่อง ไม่เรียงเป็นแถวตามช่องเหมือนเดิม
+
+## v97.96 — 31 ตุลาคม 2026 · C3 ขั้น 1: เก็บกวาดโค้ดฉากรบเก่า
+- ลบสคริปต์ของฉากรบแบบเก่า (ก่อนย้ายลานฝึกไปใช้สนามรบใหม่ใน v95.00) 15 ไฟล์ที่ไม่มีระบบไหนเรียกใช้แล้ว: `battle-art` `battle-idle` `battle-diagnostics` `battle-controls-v34` `tactics-terraced-hill` `tactics-map-modules` `tactics-fft-terrain` `tactics-scenery` `tactics-surface` `battle-card-flow` `tactics-hill-art` `battle-fft` `battle-cardshow` `battle-night` `battle-intro` · `index.html` โหลดสคริปต์น้อยลง 15 ไฟล์
+- ลบเทสต์ที่ทดสอบเครื่องรบเก่า 7 ไฟล์ · การ์ดเดียวกัน (เช่น หินถล่ม ยึดที่สูง กระโจนฟาด) ยังมีเทสต์ของสนามรบใหม่อยู่ใน `tools/test-flat-heights.cjs` และ `tools/test-flat-battle.cjs`
+- **วิธีตรวจก่อนลบ**: สคริปต์ทดสอบในเบราว์เซอร์บล็อกไฟล์เหล่านี้ไม่ให้โหลด แล้วเปิดทุกแผง (กระเป๋า ตัวละคร สำรับ อัปเกรด แผนที่ ตีเหล็ก ขาย ตลาด ออร์เดอร์ หีบ พัก) ลานฝึก เมนู Esc Card Studio อาชีพ ชื่อเสียง และตั้งค่า · ไม่มี error ทั้งตอนบล็อกและหลังลบจริง · ลานฝึกยังเปิดสนามรบใหม่ได้ตามเดิม
+- ยังไม่ลบ (ขั้น 2): `tactics-core` `tactics-ui` `tactics-bridge` `battle-flow` `battle-polish` `battle-vfx` `battle-juice` `tactics-deckbuilder` เพราะยังมีระบบที่ใช้ค่าบางอย่างจากไฟล์เหล่านี้ (เช่น `EDITOR_MODE`, ข้อมูลอาวุธใน `TacticsCore`, `openTactical`) ต้องย้ายของพวกนั้นออกมาก่อน
