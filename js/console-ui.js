@@ -58,6 +58,8 @@
   document.head.append(css);
 
   /* ---------- village main menu (Esc) ---------- */
+  /* v97.85 · your farm in Fernvale (js/estates.js · town:fernvale), walked into straight from the village */
+  function farmHere() { try { return ((parent.WorldState || window.WorldState)?.world()?.estates || []).find(p => p.at === 'town:fernvale' && p.kind === 'farm') || null } catch (e) { return null } }
   function villageMenu() {
     const old = document.getElementById('cuMenu'); if (old) { old.remove(); return true }
     if (!document.querySelector('[data-game]')) return false;   // town-ux moves the toolbar buttons into its icon row (#townGameMenu)
@@ -65,9 +67,9 @@
     const go = document.querySelector('.town-go');
     const label = b => b.id === 'elChart' ? '◈ ตารางธาตุ' : b.id === 'fullscreen' ? '⛶ เต็มจอ' : ((b.textContent || b.title || b.dataset.game).replace(/\s+/g, ' ').trim() || b.title || b.dataset.game);
     const d = document.createElement('div'); d.id = 'cuMenu';
-    d.innerHTML = `<div class="box"><h2>เมนู</h2>${pick.map((b, i) => `<button data-i="${i}">${label(b)}</button>`).join('')}${go ? '<button data-go="1">🗺 ออกเดินทาง</button>' : ''}<button data-jobs="1">⚔ อาชีพ</button><button data-proj="1">🏗 พัฒนาหมู่บ้าน</button><button data-rep="1">🏛 ชื่อเสียง</button><button data-slot="save">💾 บันทึกเกม</button><button data-slot="load">📂 โหลดเกม</button><button data-x="1">▶ กลับไปเล่น</button><small>ลูกศร/จอย เลือก · Enter ยืนยัน · Esc ปิด</small></div>`;
+    d.innerHTML = `<div class="box"><h2>เมนู</h2>${pick.map((b, i) => `<button data-i="${i}">${label(b)}</button>`).join('')}${go ? '<button data-go="1">🗺 ออกเดินทาง</button>' : ''}<button data-jobs="1">⚔ อาชีพ</button><button data-proj="1">🏗 พัฒนาหมู่บ้าน</button>${farmHere() ? '<button data-farm="1">🌾 ไร่ของเรา</button>' : ''}<button data-rep="1">🏛 ชื่อเสียง</button><button data-slot="save">💾 บันทึกเกม</button><button data-slot="load">📂 โหลดเกม</button><button data-x="1">▶ กลับไปเล่น</button><small>ลูกศร/จอย เลือก · Enter ยืนยัน · Esc ปิด</small></div>`;
     document.body.append(d);
-    d.onclick = e => { const b = e.target.closest('button'); if (e.target === d || b?.dataset.x) { d.remove(); return } if (!b) return; d.remove(); if (b.dataset.jobs) { try { (parent.JobsUI || window.JobsUI)?.open() } catch (er) { } return } if (b.dataset.proj) { try { (parent.VillageProjects || window.VillageProjects)?.open() } catch (er) { } return } if (b.dataset.rep) { try { (parent.Factions || window.Factions)?.open() } catch (er) { } return } if (b.dataset.slot) slotMenu(b.dataset.slot); else if (b.dataset.go) go.click(); else pick[+b.dataset.i]?.click() };
+    d.onclick = e => { const b = e.target.closest('button'); if (e.target === d || b?.dataset.x) { d.remove(); return } if (!b) return; d.remove(); if (b.dataset.jobs) { try { (parent.JobsUI || window.JobsUI)?.open() } catch (er) { } return } if (b.dataset.farm) { const f = farmHere(); if (f) location.href = 'place-interior.html?place=farm&farm=' + encodeURIComponent(f.id) + '&name=' + encodeURIComponent('ไร่ · ' + f.name) + '&back=village-town.html'; return } if (b.dataset.proj) { try { (parent.VillageProjects || window.VillageProjects)?.open() } catch (er) { } return } if (b.dataset.rep) { try { (parent.Factions || window.Factions)?.open() } catch (er) { } return } if (b.dataset.slot) slotMenu(b.dataset.slot); else if (b.dataset.go) go.click(); else pick[+b.dataset.i]?.click() };
     d.querySelector('button')?.focus();
     return true;
   }

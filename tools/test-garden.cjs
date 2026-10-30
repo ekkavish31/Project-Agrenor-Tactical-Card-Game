@@ -64,4 +64,7 @@ const S2 = { gold: 0 }; P.best = { pumpkin: 3 };
 ok(/ยังไม่มี/.test(Gd.contest(S2, [P], 'carrot').why), 'only what you grew'); const res = Gd.contest(S2, [P], 'pumpkin', () => .99);
 eq(res.place, 1, 'a ★3 pumpkin wins'); eq(S2.gold, 120); ok(/แล้ว/.test(Gd.contest(S2, [P], 'pumpkin').why), 'once a year');
 g.day = ad - 30; ok(/ช่วง/.test(Gd.contest({}, [P], 'pumpkin').why), 'only in the last week of autumn');
+/* v97.85 · processing · v97.86 · fishing */
+const K = Gd.of({ id: 'kitchen' }); K.basket = { milk: 3, egg: 2, herb: 1 }; eq(Gd.make(K, 'cheese'), ''); eq(K.basket.cheese, 1); ok(!K.basket.milk, 'milk used up'); ok(/ไม่พอ/.test(Gd.make(K, 'cheese')), 'not enough milk now'); eq(Gd.make(K, 'omelette'), ''); eq(Gd.GOODS.cheese.sell, 40, 'made goods sell like any other');
+g.fatigue = 0; let f1 = Gd.fish(K, () => .01); eq(f1.k, 'koi', 'a rare golden carp'); f1 = Gd.fish(K, () => .3); eq(f1.k, 'fish'); f1 = Gd.fish(K, () => .9); eq(f1.k, null, 'sometimes nothing bites'); eq(g.fatigue, 6, 'each cast tires a little');
 console.log('garden: ' + n + ' checks passed');
