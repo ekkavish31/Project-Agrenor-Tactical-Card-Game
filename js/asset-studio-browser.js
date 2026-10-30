@@ -93,8 +93,6 @@
  async function optional(h,path,fn){try{return fn(await readAt(h,path))}catch(e){if(e.name==='NotFoundError')return null;throw e}}
  function validateManifest(m){if(!m||!Array.isArray(m.assets)||!Array.isArray(m.categories)||!m.statuses)throw new Error('รูปแบบ manifest ไม่ถูกต้อง');for(let a of m.assets)if(a.file&&(!(/^(assets|art-production)\//.test(a.file))||a.file.split('/').some(p=>p==='..'||p==='.')||a.file.includes('\\')))throw new Error('พาธภาพไม่ปลอดภัย: '+a.id);return m}
  async function readManifest(h){for(let [path,js]of [['data/asset-manifest.json',false],['asset-manifest.json',false],['js/asset-manifest.js',true],['asset-manifest.js',true]]){let m=await optional(h,path,s=>validateManifest(js?C.jsonAssignment(s,'ASSET_MANIFEST'):JSON.parse(s)));if(m)return {m,json:path.endsWith('.json')?path:path.replace(/^js\//,'data/').replace(/\.js$/,'.json'),js:path.startsWith('data/')?'js/asset-manifest.js':path.replace(/\.json$/,'.js')}}throw new Error('ไม่พบ data/asset-manifest.json หรือ js/asset-manifest.js เลือกโฟลเดอร์ที่มี index.html และ assets')}
- function applyVillageRuntime(hero,manifest){if(!hero)return;let files=new Set(manifest.assets.map(a=>a.file)),base='assets/characters/hero/village/',neutral=ms=>({src:base+'idle-neutral.webp',ms});if(!files.has(base+'idle-neutral.webp'))return;
-  hero.clips['daily.idle']={loop:false,frames:[neutral(1800)]};for(let [key,pose,ms]of [['look','look',1400],['adjust','adjust',1400],['relax','stretch',1400],['yawn','yawn',1600],['squat','squat',3200],['stretch-up','stretch-up',2000],['easy','easy',2600]]){let src=base+'idle-'+pose+'.webp';if(files.has(src))hero.clips['daily.'+key]={loop:false,frames:[neutral(key==='look'||key==='adjust'||key==='relax'?350:300),{src,ms},neutral(key==='look'||key==='adjust'||key==='relax'?500:450)]}}}
  function hasWork(){return pending.size||window.AnimationReviewExtraFiles?.size||window.AssetAnimationReview?.hasDrafts?.()||window.StudioWalkImport?.hasDrafts?.()}
  function clearCaches(){for(let f of window.StudioExportedFiles?.values()||[])URL.revokeObjectURL(f.url);window.StudioExportedFiles?.clear();window.AssetAnimationReview.reset?.();state.generation++;for(let url of urlCache.values())URL.revokeObjectURL(url);urlCache.clear();imageCache.clear();bust=Date.now()+state.generation;state.entries=[]}
  async function flush(){let due=saveT;clearTimeout(saveT);saveT=null;await Q;if(due&&dir)await saveManifest();await Q}
@@ -109,7 +107,7 @@
    let hero=await optional(h,'data/animation-data.json',JSON.parse)||await optional(h,'js/animation-data.js',s=>C.jsonAssignment(s,'HERO_ANIMATIONS'));
    let tactics=await optional(h,'js/tactics-sprites.js',s=>C.jsonAssignment(s,'TACTICS_SPRITES'));
    let enemySource=await optional(h,'js/tactics-core.js',s=>s),nextMeta=enemySource?C.enemyMetadata(enemySource):{};
-   if(hero&&!hero.clips)throw new Error('animation-data ไม่มี clips');applyVillageRuntime(hero,info.m);
+   if(hero&&!hero.clips)throw new Error('animation-data ไม่มี clips');
    clearCaches();dir=h;savedHandle=h;scanned=paths;manifestJsonPath=info.json;manifestJsPath=info.js;for(let k of Object.keys(M))delete M[k];Object.assign(M,info.m);runtime={hero,tactics};meta=nextMeta;
    sel=null;selected=null;source=null;result=null;CS=null;sessionStorage.removeItem('asset-batch-sel');for(let id of ['selNone'])$(id)?.click();
    // Keep unregistered image files accessible, without adding them to the game manifest.

@@ -2822,3 +2822,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 ## v97.63 · ลูน่าท่าต่อสู้ชุดใหม่ (HD-2D) ในสนามรบ (30 ต.ค. 2026)
 - `assets/tactics/luna_<se|ne>_<idle|windup|strike|guard|hit|down>.webp` 12 ไฟล์ · ทิศ NE วาดจริง ทิศ SE มาจาก SW กลับด้าน (เกมกลับ SE→SW และ NE→NW เอง) · หัวกว้างเท่าภาพยืนของเธอในหมู่บ้าน เท้าที่เส้นพื้นเดียวกับบรัม
 - ไม้เท้าของลูน่าลอยหน้าตัวและร่ายเป็นวงแหวนพลัง (ระบบอาวุธลอยจาก v97.50) · manifest: `tactics-luna-se/ne-*` เป็น `final`
+
+## v97.64 · Asset Studio: เอาแถว "ชีวิตประจำวัน" ที่ค้างออก (30 ต.ค. 2026)
+- `js/asset-studio-browser.js`: ลบ `applyVillageRuntime` ที่สร้างคลิป daily.idle/look/adjust/relax/yawn/squat/stretch-up/easy ขึ้นเองจากรายการไฟล์ใน manifest (ไฟล์ภาพถูกลบไปใน v97.61 แล้ว แต่ตัวนี้ยังสร้างแถวภาพแตกให้) → ตารางตัวเอกเหลือแต่คลิปเดิน/วิ่ง
