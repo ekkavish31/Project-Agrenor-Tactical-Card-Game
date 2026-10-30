@@ -228,6 +228,7 @@
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
   const ENC_ICON = { hamlet: '🏘', outpost: '🚩', tower: '🗼', ruins: '🏛', chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
   function drawMarks(now) {
+    if (window.Estates) for (const p of Estates.list(S)) { if (!p.at.startsWith('tile:')) continue; const [c, r] = p.at.slice(5).split(',').map(Number), q = center(c, r); g.save(); g.font = '18px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(p.kind ? Estates.KINDS[p.kind].icon : '🚩', q.x + 14, q.y - 14); g.restore() }   /* v97.49 · your plots */
     for (const k in world.tiles) {
       const h = world.tiles[k]; if (!isKnown(k)) continue;
       const p = center(h.c, h.r);
@@ -343,15 +344,32 @@
       <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>
       <div class="row"><span>ความลึกของหมอก</span><span style="color:#ff9a7a">${stars}</span></div>
       <div class="row"><span>จุดหมาย</span><span style="color:#ffe2a8">${d ? esc(d.name) + (S.done[d.id] ? ' ✔' : ' · ' + G.dist(S.pos, d) + ' ช่อง') : '—'}</span></div>
-      <div class="btns">${atHome() ? `<button id="wmQuest">📜 เรื่องที่ได้ยินมา</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button>${eventCards().length ? `<button id="wmCards" class="ghost">🎴 การ์ดเหตุการณ์ (${eventCards().reduce((a, x) => a + x.n, 0)})</button>` : ''}</div>
+      <div class="btns">${atHome() ? `<button id="wmQuest">📜 เรื่องที่ได้ยินมา</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}${landHere() ? `<button id="wmLand" class="ghost">🏡 ที่ดิน${Estates.at(S, landHere()).length ? ' (' + Estates.at(S, landHere()).length + ')' : ''}</button>` : ''}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button>${eventCards().length ? `<button id="wmCards" class="ghost">🎴 การ์ดเหตุการณ์ (${eventCards().reduce((a, x) => a + x.n, 0)})</button>` : ''}</div>
       <div id="wmLog">${S.log.slice(0, 8).map(x => '<div>' + esc(x) + '</div>').join('')}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกช่องติดกัน = เดิน 1 ช่อง · คลิกช่องที่เคยเห็น = เดินไปเอง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a></div>`;
     const on = (id, fn) => { const b = hud.querySelector('#' + id); if (b) b.onclick = fn };
-    on('wmCards', useEventCard); on('wmQuest', questBoard); on('wmVillage', () => { save(); syncClock(); location.href = 'village-town.html' }); on('wmCamp', () => camp(false)); on('wmHome', goHome);
+    on('wmCards', useEventCard); on('wmQuest', questBoard); on('wmVillage', () => { save(); syncClock(); location.href = 'village-town.html' }); on('wmCamp', () => camp(false)); on('wmHome', goHome); on('wmLand', () => landPanel(landHere(), atHome() ? 'หมู่บ้านเฟิร์นเวล' : 'ที่ดินกลางป่า'));
     on('wmPotion', () => { if (!S.potions) return; S.potions--; const b = S.hp; S.hp = Math.min(S.maxHp, S.hp + 25); log('ดื่มยาฟื้นฟู +' + (S.hp - b) + ' HP'); save(); hudSync() });
     hud.querySelectorAll('button').forEach(b => b.disabled = b.disabled || busy);
   }
   const atHome = () => S.pos.c === world.home.c && S.pos.r === world.home.r;
+  /* v97.49 · T4: land you can hold here — Fernvale (rented), or open passable land with no place on it (claimed free) */
+  const landHere = () => { if (!window.Estates) return null; if (atHome()) return 'town:fernvale'; const t = tile(S.pos.c, S.pos.r); if (t.poi || !G.BIOME[t.biome]?.pass) return null; return 'tile:' + S.pos.c + ',' + S.pos.r };
+  async function landPanel(where, label) {
+    if (!where || busy) return; busy = true; hudSync();
+    try { for (const m of Estates.tickAll(S)) log(m); const r = await Estates.panel(S, where, label, () => { save(); hudSync() });
+      if (r === 'sleep') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('🛏 นอนพักที่บ้านของตัวเอง ตื่นเช้าวันใหม่'); toast('🛏 พักเต็มอิ่ม · HP เต็ม') } }
+    finally { busy = false; save(); hudSync() }
+  }
+  /* T5: raiders at your own plot out in the wild when you arrive — fight to hold it (a defend battle) */
+  async function plotRaid() {
+    if (!window.Estates) return false; const where = 'tile:' + S.pos.c + ',' + S.pos.r, p = Estates.at(S, where).find(x => x.kind); if (!p || !Estates.raidNow(S, p)) return false;
+    const here = tile(S.pos.c, S.pos.r), v = await modal(`<h2>⚠ ที่ดินของคุณถูกบุก!</h2><p>${esc(Estates.KINDS[p.kind].name)}ที่นี่มีผู้บุกรุกอยู่ ถ้าไม่สู้ จะเสียของที่เก็บไว้และอาคารเสียหาย</p>`, [{ label: '⚔ ป้องกันที่ดิน', value: 'fight' }, { label: 'ปล่อยไป', value: null, ghost: true }]);
+    if (v !== 'fight') { p.gold = 0; p.food = 0; p.hp = Math.max(0, p.hp - 35); if (!p.hp) { p.kind = null; p.hp = 100; log('💥 อาคารบนที่ดินพังเสียหาย') } else log('⚠ ผู้บุกรุกขนของไป · สภาพ ' + p.hp + '%'); save(); hudSync(); return true }
+    const r = await battle(pickFoe(here), G.danger(world, here), { camp: true, ambush: true });
+    if (r === 'win') { window.Factions?.add('village', 1, 'ป้องกันที่ดินของตัวเอง'); log('🛡 ไล่ผู้บุกรุกออกจากที่ดินได้') } else { p.gold = 0; p.food = 0; p.hp = Math.max(0, p.hp - 35); if (!p.hp) { p.kind = null; p.hp = 100 } }
+    save(); hudSync(); return true;
+  }
   function tip(e, h) {
     if (!h || modalOpen || drag?.moved) { tipEl.style.display = 'none'; return }
     const k = K(h.c, h.r), t = tile(h.c, h.r), known = isKnown(k), adj = G.dist(S.pos, h) === 1;
@@ -405,10 +423,11 @@
       /* v97.43 · T1: prices by what the town makes and lacks, and by your standing with whoever rules it (js/settlements.js) */
       const ST = window.Settlements, pInn = ST ? ST.price(id, 'inn', 12) : 12, pFood = ST ? ST.price(id, 'food', 10) : 10, pPot = ST ? ST.price(id, 'potion', 18) : 18;
       const v = await modal(`<h2>🏘 ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>${people}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
-        [{ label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
+        [{ label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates ? [{ label: '🏡 ที่ดิน', value: 'land' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
       if (v === 'inn') { S.gold -= pInn; const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('พักที่ ' + poi.name + ' ตื่นเช้าวันใหม่'); toast('🛏 พักเต็มอิ่ม · HP เต็ม') }
       else if (v === 'food') { S.gold -= pFood; S.food += 4; log('ซื้อเสบียง 4 ที่ ' + poi.name) }
       else if (v === 'trade') { await ST.tradePanel(id, S, () => { save(); hudSync() }) }
+      else if (v === 'land') { for (const m of Estates.tickAll(S)) log(m); const r = await Estates.panel(S, 'town:' + id, poi.name, () => { save(); hudSync() }); if (r === 'sleep') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('🛏 นอนพักที่บ้านของตัวเองใน ' + poi.name); toast('🛏 พักเต็มอิ่ม · HP เต็ม') } }
       else if (v === 'pot') { S.gold -= pPot; S.potions++; log('ซื้อยาฟื้นฟูที่ ' + poi.name) }
       else if (v === 'rumor') { const d = destOf() || world.dests.find(x => !S.done[x.id]); if (d) { const p = G.path(world, tile(S.pos.c, S.pos.r), d); if (p) p.slice(0, 6).forEach(x => { for (const [a, b] of G.within(x.c, x.r, 1)) S.known[K(a, b)] = 1 }); fogDirty = true; reveal(); await modal(`<h2>📜 ข่าวลือ</h2><p>คนในโรงเตี๊ยมเล่าถึง <b>${esc(d.name)}</b> และวาดทางช่วงแรกให้</p>`) } else await modal('<h2>📜 ข่าวลือ</h2><p>ช่วงนี้ไม่มีข่าวใหม่</p>') }
       else break;
@@ -481,6 +500,7 @@
     if (d && !S.done[d.id] && d.c === to.c && d.r === to.r) { await bossFight(d); return true }
     if (t.poi?.id === 'home') { await arriveHome(); return true }
     if (t.poi?.town) { await townVisit(t.poi); return true }
+    if (await plotRaid()) return true;   /* v97.49 · T5 */
     if (t.enc && !S.cleared[k]) return await encounter(t, k);
     const night = nightness() > .6, dang = G.danger(world, t);
     /* v95.16 · no battle marks on the map: every step has a chance of an ambush (more in wild/dangerous land and at night, less on a road) */
@@ -498,7 +518,7 @@
     if (r < .75) { S.fatigue = Math.min(100, S.fatigue + 15); log('เสียงหอนทั้งคืน เหนื่อยขึ้น'); await modal(`<h2>🐺 เสียงหอนในความมืด</h2><p>เสียงหอนรอบทิศทำให้ต้องเดินระวังตัวทุกฝีก้าว ความเหนื่อย +15</p>`); return true }
     const gold = Math.round(20 + Math.random() * 30); S.gold += gold; log('พบของมีค่าใต้แสงจันทร์ +' + gold); await modal(`<h2>🌙 ประกายใต้แสงจันทร์</h2><p>มีบางอย่างสะท้อนแสงจันทร์อยู่ในพงหญ้า — ถุงเหรียญของนักเดินทาง <b>+${gold} 💰</b></p>`); return true;
   }
-  function passTime(h) { S.hour += h; while (S.hour >= 24) { S.hour -= 24; S.day++; log('— วันที่ ' + S.day + ' —') } }
+  function passTime(h) { S.hour += h; let nd = false; while (S.hour >= 24) { S.hour -= 24; S.day++; nd = true; log('— วันที่ ' + S.day + ' —') } if (nd && window.Estates) for (const m of Estates.tickAll(S)) { log(m); toast(m) } }
   const pickFoe = t => { const a = G.FOES[t.biome] || G.FOES.grass; return a[Math.floor(Math.random() * a.length)] };
 
   /* ---------- encounters ---------- */
@@ -834,5 +854,5 @@
   { const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; cam.x = p.x; cam.y = p.y; cam.z = innerWidth < 700 ? .9 : 1.25 }
   hudSync(); requestAnimationFrame(frame);
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
-  window.WorldMap = { results, chatter, townVisit, area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
+  window.WorldMap = { results, chatter, townVisit, landPanel, hudSync: () => hudSync(), area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();
