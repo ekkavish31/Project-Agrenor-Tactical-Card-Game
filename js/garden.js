@@ -166,11 +166,11 @@
     return new Promise(res => {
       css(); document.getElementById('gdUI')?.remove(); const d = document.createElement('div'); d.id = 'gdUI';
       const gardens = (S.estates || []).map(p => p.garden).filter(Boolean), list = entries(gardens).sort((a, b) => b.score - a.score), now = today(), open = contestOpen(now), done = S.contestYear === year(now);
-      const draw = r => { d.innerHTML = `<div class="box"><button class="x" data-x>✕</button><h2>🏆 ประกวดผลผลิต · เทศกาลเก็บเกี่ยวเฟิร์นเวล</h2>
+      const draw = r => { d.innerHTML = `<div class="box"><button class="x" data-x>✕</button><h2><img src="assets/icons/menu/trophy.webp" alt="" style="width:32px;height:32px;vertical-align:middle;margin-right:6px">ประกวดผลผลิต · เทศกาลเก็บเกี่ยวเฟิร์นเวล</h2><div style="display:flex;gap:12px;align-items:flex-start"><img src="assets/portraits/hilda-${r && !r.why ? (r.place === 1 ? 'surprised' : 'happy') : 'neutral'}.webp" alt="ฮิลดา" style="height:150px;border-radius:10px;flex:none"><div>
         <p class="sub">จัดสัปดาห์สุดท้ายของฤดูใบไม้ร่วง (วันที่ 22–28) ปีละครั้ง · ส่งผลผลิตจากไร่ของเราได้ 1 อย่าง · ดาวคุณภาพสำคัญที่สุด · ที่ 1 ได้ 120 💰 และชาวบ้านนับถือขึ้น</p>
         ${r ? `<div class="note">${r.why ? r.why : `<b>ผลการตัดสิน</b><br>${r.board.map((x, i) => `${['🥇', '🥈', '🥉', '4.'][i]} ${x.who} · ${x.what}`).join('<br>')}<br>${r.prize ? 'ได้รางวัล ' + r.prize + ' 💰' : 'ปีหน้าเอาใหม่!'}`}</div>` : ''}
         ${!open ? `<div class="note">ยังไม่ถึงช่วงงาน · ตอนนี้ ${season(now)[2]} ${season(now)[1]} วันที่ ${seasonDay(now)}/28</div>` : done ? '<div class="note">ปีนี้ส่งประกวดไปแล้ว</div>' : ''}
-        <div class="row">${list.length ? list.map(e => `<button data-c="${e.crop}" ${open && !done ? '' : 'disabled'}>${CROPS[e.crop].icon} ${CROPS[e.crop].name} ${'★'.repeat(e.stars)}</button>`).join('') : '<small>ยังไม่มีผลผลิตที่เคยเก็บจากไร่ของเรา · ปลูกผักให้ได้ดาวสูง ๆ แล้วค่อยมาส่ง</small>'}</div></div>` };
+        <div class="row">${list.length ? list.map(e => `<button data-c="${e.crop}" ${open && !done ? '' : 'disabled'}>${CROPS[e.crop].icon} ${CROPS[e.crop].name} ${'★'.repeat(e.stars)}</button>`).join('') : '<small>ยังไม่มีผลผลิตที่เคยเก็บจากไร่ของเรา · ปลูกผักให้ได้ดาวสูง ๆ แล้วค่อยมาส่ง</small>'}</div></div></div></div>` };
       draw(); document.body.append(d);
       const close = () => { removeEventListener('keydown', key, true); d.remove(); res() }, key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close() } };
       addEventListener('keydown', key, true);
