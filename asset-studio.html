@@ -96,7 +96,7 @@ const gh=document.getElementById('ghSlot'),grow=h.querySelector('.grow');h.inser
 <li>ภาพที่ไม่มีเจ้าของอยู่ใน Objects → ไฟล์ยังไม่จัดหมวด ไม่ลบภาพต้นฉบับอัตโนมัติ</li></ol>
 <button onclick="this.closest('dialog').close()">ปิด</button></dialog>
 <div class="toast" id="toast"></div>
-<script src="js/asset-manifest.js?v=97.94"></script>
+<script src="js/asset-manifest.js?v=97.97"></script>
 <script>
 'use strict';
 // Asset Studio v17 — slots (where the game shows art) vs images (files in the library).
@@ -123,7 +123,7 @@ let manifestJsonPath='data/asset-manifest.json',manifestJsPath='js/asset-manifes
 function toast(t){let e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
 function byId(id){return M.assets.find(a=>a.id===id)}
 const isSlot=a=>a.status!=='unused';
-const hasImage=a=>pending.has(a.id)||(dir&&scanned?scanned.has(a.file):['final','temp'].includes(a.status));
+const hasImage=a=>pending.has(a.id)||(dir&&scanned?hasFile(a.file):['final','temp'].includes(a.status));
 function where(a){let d=a.usedIn||'';
  if(a.category==='hero-frames')d=`ฮีโร่ในหมู่บ้าน/ผจญภัย · ท่า ${a.clip||'-'}${a.frame?` · เฟรม ${a.frame}/${a.frames}`:''}`;
  else if(a.category==='tactics-hero'){let m=a.id.match(/^tactics-hero-([a-z]+)-(.+?)(?:-(\d+))?$/);d=`ฮีโร่ในสนามตาราง · หันทิศ ${m?m[1].toUpperCase():''} · ท่า ${m?m[2]:''}`+(a.frame?` · เฟรม ${a.frame}/${a.frames}`:'')+(/-(sw|nw)-/.test(a.id)?' (เกมกลับภาพจาก SE/NE ได้)':'')}
@@ -137,7 +137,10 @@ function csUploads(){let s=csStore();return Object.entries(s.cards||{}).filter((
 function csUsers(path){let s=csStore();return Object.values(s.cards||{}).filter(c=>c?.art?.src===path&&!c.art.data).map(c=>c.name||'?')}
 // ---------- folder access (File System Access API) ----------
 async function walk(path,create){let parts=path.split('/'),h=dir;for(let i=0;i<parts.length-1;i++)h=await h.getDirectoryHandle(parts[i],{create});return [h,parts[parts.length-1]]}
-async function readFile(p){let [d,n]=await walk(p,false);return (await d.getFileHandle(n)).getFile()}
+/* v97.97 · pushes convert pictures to .webp, but the manifest may still say .png: a .png name also finds its .webp (and the reverse) */
+const webpTwin=p=>/\.png$/i.test(p||'')?p.replace(/\.png$/i,'.webp'):/\.webp$/i.test(p||'')?p.replace(/\.webp$/i,'.png'):null;
+function hasFile(p){return !!scanned&&(scanned.has(p)||scanned.has(webpTwin(p)))}
+async function readFile(p){try{let [d,n]=await walk(p,false);return await (await d.getFileHandle(n)).getFile()}catch(e){let t=webpTwin(p);if(e.name!=='NotFoundError'&&e.name!=='TypeError'||!t)throw e;let [d,n]=await walk(t,false);return (await d.getFileHandle(n)).getFile()}}
 async function exists(p){try{await readFile(p);return true}catch(e){return false}}
 async function writeFile(p,blob){let [d,n]=await walk(p,true),fh=await d.getFileHandle(n,{create:true}),w=await fh.createWritable();await w.write(blob);await w.close();forget(p);scanned?.add(p)}
 async function removeFile(p){let [d,n]=await walk(p,false);await d.removeEntry(n);forget(p);scanned?.delete(p)}
@@ -163,7 +166,7 @@ async function connect(h){
   if(m.assets.some(a=>a.history))await pruneHistory();
   toast('เชื่อมโฟลเดอร์ '+h.name+' แล้ว · การเปลี่ยนภาพจะเขียนลงเกมทันที');render();detail()
  }catch(e){if(e.name!=='AbortError'){console.error(e);toast('เชื่อมโฟลเดอร์ไม่สำเร็จ: '+e.message)}}}
-async function pruneHistory(){let ch=false;for(let a of M.assets)if(a.history){let n=a.history.filter(h=>scanned.has(h.file));if(n.length!==a.history.length){a.history=n;ch=true}}if(ch)await saveManifest()}
+async function pruneHistory(){let ch=false;for(let a of M.assets)if(a.history){let n=a.history.filter(h=>hasFile(h.file));if(n.length!==a.history.length){a.history=n;ch=true}}if(ch)await saveManifest()}
 function connButton(){let b=$('conn');if(dir){b.className='ok';b.textContent='✅ '+dir.name;b.title='เชื่อมแล้ว — การเปลี่ยนภาพเขียนลงโฟลเดอร์นี้ทันที (คลิกเพื่อสแกนใหม่)'}
  else if(savedHandle){b.className='warn';b.textContent='🔗 เชื่อม '+savedHandle.name+' อีกครั้ง';b.title='คลิกเพื่ออนุญาตให้เขียนโฟลเดอร์เดิม'}
  else{b.className='';b.textContent='📁 เชื่อมโฟลเดอร์เกม'}}
@@ -186,9 +189,9 @@ const imgTag=p=>`<img data-p="${esc(p)}" alt="">`;
 function thumbOf(a,extra=''){let t=hasImage(a)?imgTag(a.file):noneHTML(SHORT[a.status]);return `<div class="thumb">${t}${extra}</div>`}
 // ---------- library model ----------
 function library(){let out=[],known=new Set();
- for(let a of M.assets){if(a.file){known.add(a.file);if(a.status==='unused'){if(!dir||scanned.has(a.file))out.push({key:a.file,path:a.file,kind:'retired',slot:a})}else if(hasImage(a))out.push({key:a.file,path:a.file,kind:'active',slot:a})}
+ for(let a of M.assets){if(a.file){known.add(a.file);if(a.status==='unused'){if(!dir||hasFile(a.file))out.push({key:a.file,path:a.file,kind:'retired',slot:a})}else if(hasImage(a))out.push({key:a.file,path:a.file,kind:'active',slot:a})}
   for(let h of a.history||[]){known.add(h.file);out.push({key:h.file,path:h.file,kind:'version',slot:a,h})}}
- if(dir&&scanned)for(let p of scanned)if(!known.has(p)){let m=p.match(/^assets\/_versions\/([^/]+)\//),a=m&&byId(m[1]);out.push({key:p,path:p,kind:a?'version':'loose',slot:a||null})}
+ if(dir&&scanned)for(let p of scanned)if(!known.has(p)&&!known.has(webpTwin(p))){let m=p.match(/^assets\/_versions\/([^/]+)\//),a=m&&byId(m[1]);out.push({key:p,path:p,kind:a?'version':'loose',slot:a||null})}
  for(let c of csUploads())out.push({key:'cs:'+c.id,path:'cs:'+c.id,kind:'cardstudio',label:c.name});
  return out}
 const libItem=k=>library().find(x=>x.key===k);
@@ -471,5 +474,5 @@ render();detail();
  });
 
 // Folder restoration is managed by asset-studio-browser.js after all models are ready.
-</script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=97.93"></script><script src="js/studio-repo-dir.js?v=55"></script><script src="js/character-scale.js?v=97.76"></script><script src="js/studio-scale.js?v=97.75"></script><script>document.getElementById("ghSlot").replaceWith(GitHubPush.settingsButton())</script><script src="js/asset-batch.js"></script><script src="js/animation-data.js"></script><script src="js/tactics-sprites.js?v=97.47"></script><script src="js/hero-motion.js"></script><script src="js/asset-animation-review.js"></script><script src="js/studio-catalog.js"></script><script src="js/asset-studio-browser.js?v=97.68"></script><script src="js/studio-walk-import.js?v=97.95"></script><script src="js/studio-unified-review.js?v=97.92"></script>
+</script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=97.93"></script><script src="js/studio-repo-dir.js?v=55"></script><script src="js/character-scale.js?v=97.76"></script><script src="js/studio-scale.js?v=97.75"></script><script>document.getElementById("ghSlot").replaceWith(GitHubPush.settingsButton())</script><script src="js/asset-batch.js"></script><script src="js/animation-data.js"></script><script src="js/tactics-sprites.js?v=97.47"></script><script src="js/hero-motion.js"></script><script src="js/asset-animation-review.js"></script><script src="js/studio-catalog.js"></script><script src="js/asset-studio-browser.js?v=97.97"></script><script src="js/studio-walk-import.js?v=97.95"></script><script src="js/studio-unified-review.js?v=97.92"></script>
 </body></html>
