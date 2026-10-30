@@ -9741,7 +9741,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "note": "ภาพกลับด้านจาก NW (v97.69) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9757,7 +9757,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "note": "วาดจริง (v97.69) · ทิศ NE กลับด้านจากภาพนี้",
    "artRevision": "v16"
   },
   {
@@ -9773,7 +9773,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "note": "ภาพกลับด้านจาก NW (v97.69) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9789,7 +9789,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "note": "วาดจริง (v97.69) · ทิศ NE กลับด้านจากภาพนี้",
    "artRevision": "v16"
   },
   {
@@ -9805,7 +9805,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-strike",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "note": "ภาพกลับด้านจาก NW (v97.69) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9821,7 +9821,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-strike",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "note": "วาดจริง (v97.69) · ทิศ NE กลับด้านจากภาพนี้",
    "artRevision": "v16"
   },
   {
@@ -9837,7 +9837,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-guard",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "note": "ภาพกลับด้านจาก NW (v97.69) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9853,7 +9853,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-guard",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "note": "วาดจริง (v97.69) · ทิศ NE กลับด้านจากภาพนี้",
    "artRevision": "v16"
   },
   {
@@ -9869,7 +9869,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-hit",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "note": "ภาพกลับด้านจาก NW (v97.69) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9885,7 +9885,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-hit",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "note": "วาดจริง (v97.69) · ทิศ NE กลับด้านจากภาพนี้",
    "artRevision": "v16"
   },
   {
@@ -9901,7 +9901,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-down",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-right (NE, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+   "note": "ภาพกลับด้านจาก NW (v97.69) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
    "artRevision": "v16"
   },
   {
@@ -9917,7 +9917,7 @@
    "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-down",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing up-left (NW, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
-   "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+   "note": "วาดจริง (v97.69) · ทิศ NE กลับด้านจากภาพนี้",
    "artRevision": "v16"
   },
   {
