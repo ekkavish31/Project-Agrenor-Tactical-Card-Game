@@ -4960,7 +4960,7 @@
    "id": "tactics-hero-se-idle",
    "file": "assets/tactics/hero_se_idle.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -5184,7 +5184,7 @@
    "id": "tactics-hero-sw-idle",
    "file": "assets/tactics/hero_sw_idle.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -5428,7 +5428,7 @@
    "id": "tactics-hero-ne-idle",
    "file": "assets/tactics/hero_ne_idle.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -5652,7 +5652,7 @@
    "id": "tactics-hero-nw-idle",
    "file": "assets/tactics/hero_nw_idle.webp",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384

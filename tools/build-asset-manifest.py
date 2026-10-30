@@ -199,6 +199,7 @@ items += [o for k, o in old.items() if k not in seen]
 for e in items:   # v15 policy: battle-field pieces stay code-drawn · old apron village clips are no longer used
     if e['category'] == 'terrain' and e['status'] not in ('final','temp'): e['status'] = 'keep'
     if 'hero_daily_' in (e.get('file') or '') or e.get('file') == 'assets/hero.webp' : e['status'] = 'unused'
+    if e['id'] in ('tactics-hero-se-idle','tactics-hero-sw-idle','tactics-hero-ne-idle','tactics-hero-nw-idle'): e['status'] = 'unused'   # v97.43: hero idle comes from studioPoses.idle (4 frames); the old single pictures were removed
 manifest = {'version': 1, 'game': 'Adventure Card Game', 'categories': [{'id': c, 'name': n} for c, n in CATS],
             'statuses': {'final':'ภาพจริง','temp':'มีภาพแต่ชั่วคราว','code':'วาดด้วยโค้ดชั่วคราว','missing':'ยังไม่มีภาพ (เกมรองรับแล้ว ใส่ไฟล์ได้เลย)','planned':'ยังไม่มีภาพ และต้องเพิ่มโค้ด','keep':'วาดด้วยโค้ดถาวร (ไม่ต้องเจน)','unused':'ไม่ใช้แล้ว (ไม่ต้องเจน)'},
             'style': STYLE, 'greenScreen': GREEN.strip(), 'assets': items}
