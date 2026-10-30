@@ -11,7 +11,15 @@ const W = { day: 1 }; Object.defineProperty(W, 'gold', { get: () => g.village.co
 let r = E.claim(W, 'town:lakenhold', 'นครหลวง'); ok(r.ok); ok(/ไม่มีที่ให้ทำไร่/.test(E.build(W, r.plot.id, 'farm').why), 'no farm in the capital'); ok(E.build(W, r.plot.id, 'house').ok, 'a house is fine there');
 r = E.claim(W, 'town:fernvale', 'เฟิร์นเวล'); ok(E.build(W, r.plot.id, 'farm').ok, 'Fernvale has fields'); const wild = E.claim(W, 'tile:3,4', 'กลางป่า'); ok(E.build(W, wild.plot.id, 'farm').ok, 'open land is fine');
 g.village.coins = 500;
-const G = Gd.of(r.plot); eq(G.plots.length, 6, 'six plots to start'); eq(Gd.of(r.plot), G, 'one garden per farm');
+const G = Gd.of(r.plot); eq(G.plots.length, Gd.FN, 'a field of FW×FH tiles'); eq(G.ground.filter(k => k === 'soil').length, 6, 'six tiles tilled to start'); ok(Gd.fieldCount(G).debris > 15, 'the rest is overgrown'); eq(Gd.of(r.plot), G, 'one garden per farm');
+/* v97.83 · clearing and tilling */
+const rockAt = G.ground.indexOf('rock'), grassAt = G.ground.indexOf('grass'); g.village.materials = {}; g.fatigue = 0;
+ok(/ไถดิน/.test(Gd.plant(G, rockAt, 'lettuce')), 'no planting on rocks'); eq(Gd.clearTile(G, rockAt), ''); eq(G.ground[rockAt], 'grass'); eq(g.village.materials.stone, 1, 'a rock gives stone'); eq(g.fatigue, 3, 'clearing tires you');
+eq(Gd.till(G, rockAt), ''); eq(G.ground[rockAt], 'soil'); ok(/ไถแล้ว/.test(Gd.till(G, rockAt)));
+g.fatigue = 99; const stump = G.ground.indexOf('stump'); ok(/เหนื่อย/.test(Gd.clearTile(G, stump)), 'too tired to chop a stump'); g.fatigue = 0;
+let wd = 0; const before = G.ground.filter(k => k === 'grass').length; G.last = 1; g.day = 120; Gd.tick(G); ok(G.ground.filter(k => k === 'grass').length < before, 'weeds creep back onto grass'); g.day = 1; G.last = 1;
+/* an old 6-bed garden moves onto a field and keeps its crops */
+const old = { id: 'oldfarm', garden: { plots: [{ crop: 'carrot', g: 2, dry: 0, w: 0, fert: false, perfect: true }, null, null, null, null, null], size: 6, last: 1, basket: {}, have: {}, fert: 0, compostDay: 1 } }; const OG = Gd.of(old); eq(OG.plots[0].crop, 'carrot'); eq(OG.ground[0], 'soil'); eq(OG.plots.length, Gd.FN);
 /* a dry stretch for the test: find a day from which 6 days have no rain */
 let d0 = 1; while ([0, 1, 2, 3, 4, 5].some(k => Gd.rain(d0 + k)) || Gd.season(d0)[0] !== 'spring' || Gd.season(d0 + 6)[0] !== 'spring') d0++;
 g.day = d0; G.last = d0;
@@ -34,7 +42,7 @@ G.have.scarecrow = false; let lost = 0; for (let t = 0; t < 60; t++) { G.plots[4
 const coins = g.village.coins; G.basket = { carrot: 2, pumpkin: 1 }; eq(Gd.cook(G), 6, 'carrots 2 + pumpkin 4 rations'); eq(g.village.materials.food, 6);
 G.basket = { pumpkin: 2 }; eq(Gd.sell(G), 68); eq(g.village.coins, coins + 68);
 /* upgrades */
-eq(Gd.upgrade(G, 'size'), ''); eq(G.plots.length, 9); eq(Gd.upgrade(G, 'channel'), ''); G.last = g.day; G.plots[5] = { crop: 'herb', g: 0, dry: 0, w: 0, fert: false, perfect: true }; g.day++; Gd.tick(G); eq(G.plots[5].g, 1, 'the water channel waters every day');
+ok(/ถาง/.test(Gd.upgrade(G, 'size')), 'no more bought plots: you clear the land'); eq(Gd.upgrade(G, 'channel'), ''); G.last = g.day; G.plots[5] = { crop: 'herb', g: 0, dry: 0, w: 0, fert: false, perfect: true }; g.day++; Gd.tick(G); eq(G.plots[5].g, 1, 'the water channel waters every day');
 eq(Gd.upgrade(G, 'compost'), ''); G.fert = 0; G.last = g.day; g.day += 4; Gd.tick(G); ok(G.fert >= 1, 'compost makes fertiliser');
 /* raiders trample about half the crops on open land */
 const WG = Gd.of(wild.plot); for (let i = 0; i < 6; i++) WG.plots[i] = { crop: 'herb', g: 1, dry: 0, w: 0, fert: false, perfect: true }; let k = 0; const trod = Gd.trample(WG, () => (k++ % 2) / 2); eq(trod, 3, 'half trampled');
