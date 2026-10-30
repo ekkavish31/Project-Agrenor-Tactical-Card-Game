@@ -91,11 +91,19 @@
     terr = document.createElement('canvas'); terr.width = Math.ceil(WW * TS); terr.height = Math.ceil(WH * TS); const t = terr.getContext('2d'), rnd = G.rng(world.seed ^ 0xabc); t.scale(TS, TS);
     t.fillStyle = '#2a2f2a'; t.fillRect(0, 0, WW, WH);
     const all = Object.values(world.tiles);
-    for (const h of all) { const p = center(h.c, h.r), pal = PAL[h.biome]; hexPath(t, p.x, p.y, R + .6); t.fillStyle = pal[0]; t.fill() }
+    /* v97.94 · the world painted without the hex grid (the user chose free walking on a painted map): every hex is an irregular blob a bit larger
+       than the hex, drawn in a shuffled order, so the land types run into each other like a painted map; the hexes stay underneath for the rules */
+    const blob = (x, y, rad, seedv) => { t.beginPath(); for (let i = 0; i <= 10; i++) { const a = i / 10 * Math.PI * 2, k = rad * (.86 + .3 * Math.abs(Math.sin(seedv * 7.1 + i * 2.3))); i ? t.lineTo(x + Math.cos(a) * k, y + Math.sin(a) * k * .92) : t.moveTo(x + Math.cos(a) * k, y + Math.sin(a) * k * .92) } t.closePath() };
+    const order = all.slice().sort((a, b) => (a.c * 7919 + a.r * 104729) % 97 - (b.c * 7919 + b.r * 104729) % 97);
+    { /* the base colours painted small (about 4 px a hex) and stretched with smoothing: soft, painterly borders between land types */
+      const LS = 1 / 18, L = document.createElement('canvas'); L.width = Math.ceil(WW * LS); L.height = Math.ceil(WH * LS); const l = L.getContext('2d'); l.scale(LS, LS);
+      for (const h of all) { const p = center(h.c, h.r); hexPath(l, p.x, p.y, R + 2); l.fillStyle = PAL[h.biome][0]; l.fill() }
+      t.save(); t.imageSmoothingEnabled = true; t.imageSmoothingQuality = 'high'; t.drawImage(L, 0, 0, WW, WH); t.restore() }
+    /* (water takes its edge from the soft base layer) */
     /* soft blending + speckles */
-    for (const h of all) { const p = center(h.c, h.r), pal = PAL[h.biome]; t.save(); hexPath(t, p.x, p.y, R + .6); t.clip(); for (let i = 0; i < (world.real ? 6 : 26); i++) { t.fillStyle = pal[1 + (i & 1)]; t.globalAlpha = .45; t.beginPath(); t.arc(p.x + (rnd() - .5) * HW, p.y + (rnd() - .5) * 2 * R, 2 + rnd() * 5, 0, 7); t.fill() } t.restore() }
+    for (const h of all) { const p = center(h.c, h.r), pal = PAL[h.biome]; t.save(); for (let i = 0; i < (world.real ? 6 : 26); i++) { t.fillStyle = pal[1 + (i & 1)]; t.globalAlpha = .4; t.beginPath(); t.arc(p.x + (rnd() - .5) * HW * 1.1, p.y + (rnd() - .5) * 2.1 * R, 2 + rnd() * 6, 0, 7); t.fill() } t.restore() }   /* v97.94 · no clipping: speckles run across the old hex edges */
     /* coast foam on water next to land */
-    for (const h of all) if (h.biome === 'water') { const p = center(h.c, h.r); t.save(); hexPath(t, p.x, p.y); t.clip(); t.strokeStyle = 'rgba(220,240,255,.35)'; t.lineWidth = 1.5; for (let i = 0; i < 4; i++) { const y = p.y - R * .5 + i * R * .35, x = p.x - HW * .4 + rnd() * 8; t.beginPath(); t.moveTo(x, y); t.quadraticCurveTo(x + 8, y - 4, x + 16, y); t.quadraticCurveTo(x + 24, y + 4, x + 32, y); t.stroke() } t.restore() }
+    /* v97.94 · the shore is the soft edge of the base layer */
     /* river */
     t.lineCap = 'round'; t.lineJoin = 'round';
     /* v95.22: rivers as a tree (no triangles where a river is two hexes wide): join river hexes with a spanning tree, plus one mouth into open water */
@@ -107,23 +115,26 @@
       for (const [a0, b0, m] of edges) { const ka = find(K(a0.c, a0.r)), kb = m ? null : find(K(b0.c, b0.r)); if (!m) { if (ka === kb) continue; par.set(ka, kb) }
         const a = center(a0.c, a0.r), b = center(b0.c, b0.r); t.strokeStyle = '#3d6f99'; t.lineWidth = 8; t.beginPath(); t.moveTo(a.x, a.y); t.quadraticCurveTo((a.x + b.x) / 2 + 6, (a.y + b.y) / 2 - 4, b.x, b.y); t.stroke(); t.strokeStyle = 'rgba(190,225,255,.5)'; t.lineWidth = 2.5; t.stroke() } }
     /* roads */
-    for (const h of all) if (h.road) { const a = center(h.c, h.r); for (const [c, r] of G.neighbors(h.c, h.r)) { const n = tile(c, r); if (n.road && K(c, r) > K(h.c, h.r)) { const b = center(c, r); t.strokeStyle = '#6b5434'; t.lineWidth = 8; t.beginPath(); t.moveTo(a.x, a.y); t.lineTo(b.x, b.y); t.stroke(); t.strokeStyle = '#c8a873'; t.lineWidth = 5; t.stroke() } } }
+    /* v97.94 · roads bend through each hex (edge middle → centre → edge middle) instead of zig-zagging centre to centre */
+    { const ends = h => G.neighbors(h.c, h.r).map(([c, r]) => tile(c, r)).filter(n => n && n.road).map(n => { const a = center(h.c, h.r), b = center(n.c, n.r); return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } });
+      for (const pass of [['#6b5434', 8], ['#c8a873', 5]]) { t.strokeStyle = pass[0]; t.lineWidth = pass[1]; t.lineCap = 'round';
+        for (const h of all) { if (!h.road) continue; const c0 = center(h.c, h.r), e = ends(h); if (e.length === 1) { t.beginPath(); t.moveTo(c0.x, c0.y); t.lineTo(e[0].x, e[0].y); t.stroke() } for (let i = 0; i < e.length; i++) for (let j = i + 1; j < e.length; j++) { t.beginPath(); t.moveTo(e[i].x, e[i].y); t.quadraticCurveTo(c0.x, c0.y, e[j].x, e[j].y); t.stroke() } } } }
     /* decorations, sorted top→bottom so they overlap correctly */
     for (const h of all.sort((a, b) => a.r - b.r || a.c - b.c)) {
       const p = center(h.c, h.r);
       if (h.biome === 'forest') for (let i = 0; i < 5; i++) tree(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .4) * R * .9, 9 + rnd() * 5, rnd);
       else if (h.biome === 'snow' && rnd() < .35) tree(t, p.x + (rnd() - .5) * 20, p.y + (rnd() - .5) * 18, 9, rnd, true);
-      else if (h.biome === 'hills') for (let i = 0; i < 2; i++) hill(t, p.x + (i ? 10 : -10) + (rnd() - .5) * 6, p.y + (i ? 6 : -4), 18 + rnd() * 6);
-      else if (h.biome === 'mountain') mountain(t, p.x + (rnd() - .5) * 6, p.y + 10, 30 + rnd() * 10, world.real ? h.elev > .8 : (h.r < G.ROWS * .3 || h.elev > .8));
+      else if (h.biome === 'hills') for (let i = 0; i < 2; i++) hill(t, p.x + (rnd() - .5) * HW * .8, p.y + (rnd() - .5) * R * .9, 15 + rnd() * 12);   /* v97.94 · scattered, not in rows */
+      else if (h.biome === 'mountain') { const snowy = world.real ? h.elev > .8 : (h.r < G.ROWS * .3 || h.elev > .8), n = rnd() < .45 ? 2 : 1; for (let i = 0; i < n; i++) mountain(t, p.x + (rnd() - .5) * HW * .75, p.y + 10 + (rnd() - .5) * R * .8, (n > 1 ? 22 : 30) + rnd() * 14, snowy) }   /* v97.94 · ranges, not rows */
       else if (h.biome === 'volcano') { mountain(t, p.x, p.y + 10, 34, false); const gr = t.createRadialGradient(p.x, p.y - 20, 0, p.x, p.y - 20, 22); gr.addColorStop(0, 'rgba(255,140,40,.85)'); gr.addColorStop(1, 'rgba(255,60,20,0)'); t.fillStyle = gr; t.beginPath(); t.arc(p.x, p.y - 20, 22, 0, 7); t.fill() }
       else if (h.biome === 'stone') { for (let i = 0; i < 4; i++) { const x = p.x + (rnd() - .5) * 40, y = p.y + (rnd() - .5) * 28, r = 2.5 + rnd() * 4; t.fillStyle = 'rgba(0,0,0,.25)'; t.beginPath(); t.ellipse(x + 1.5, y + 1.5, r, r * .6, 0, 0, 7); t.fill(); t.fillStyle = ['#b8ae98', '#a39882', '#cfc6b0'][i % 3]; t.beginPath(); t.ellipse(x, y, r, r * .62, 0, 0, 7); t.fill() } }
-      else if (h.biome === 'highland') { mountain(t, p.x + (rnd() - .5) * 10, p.y + 12, 20 + rnd() * 8, rnd() < .3); hill(t, p.x + (rnd() - .5) * 20, p.y + 6, 16) }
+      else if (h.biome === 'highland') { mountain(t, p.x + (rnd() - .5) * HW * .7, p.y + 12 + (rnd() - .5) * R * .6, 16 + rnd() * 12, rnd() < .3); hill(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .5) * R * .6, 14 + rnd() * 6) }
       else if (h.biome === 'ash' && rnd() < .6) { t.fillStyle = 'rgba(255,110,40,.35)'; for (let i = 0; i < 3; i++) { t.beginPath(); t.ellipse(p.x + (rnd() - .5) * 40, p.y + (rnd() - .5) * 30, 3 + rnd() * 4, 1.5, rnd() * 3, 0, 7); t.fill() } }
       else if (h.biome === 'swamp') for (let i = 0; i < 4; i++) reed(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .5) * R, rnd);
       else if (h.biome === 'grass' && rnd() < .5) { t.strokeStyle = 'rgba(60,90,40,.5)'; t.lineWidth = 1.2; for (let i = 0; i < 3; i++) { const x = p.x + (rnd() - .5) * 40, y = p.y + (rnd() - .5) * 30; t.beginPath(); t.moveTo(x - 3, y); t.lineTo(x - 1, y - 5); t.moveTo(x, y); t.lineTo(x + 1, y - 6); t.moveTo(x + 3, y); t.lineTo(x + 3, y - 4); t.stroke() } }
     }
     /* hex grid, faint */
-    t.strokeStyle = 'rgba(30,25,15,.12)'; t.lineWidth = 1; for (const h of all) { const p = center(h.c, h.r); hexPath(t, p.x, p.y); t.stroke() }
+    /* v97.94 · no hex grid lines */
     /* paper grain + vignette */
     const grain = t.createImageData(terr.width, terr.height); for (let i = 0; i < grain.data.length; i += 4) { const v = rnd() * 255; grain.data[i] = grain.data[i + 1] = grain.data[i + 2] = v; grain.data[i + 3] = 14 }
     const gc = document.createElement('canvas'); gc.width = terr.width; gc.height = terr.height; gc.getContext('2d').putImageData(grain, 0, 0); t.globalCompositeOperation = 'overlay'; t.save(); t.setTransform(1, 0, 0, 1, 0, 0); t.drawImage(gc, 0, 0); t.restore(); t.globalCompositeOperation = 'source-over';
@@ -166,8 +177,8 @@
     f.globalCompositeOperation = 'destination-out';
     for (const k in world.tiles) {
       const vis = visible.has(k), kn = S.known[k]; if (!vis && !kn) continue;
-      const h = world.tiles[k], p = center(h.c, h.r), rad = R * 1.35 * FS, a = vis ? 1 : .62;
-      const gr = f.createRadialGradient(p.x * FS, p.y * FS, rad * .35, p.x * FS, p.y * FS, rad); gr.addColorStop(0, `rgba(0,0,0,${a})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      const h = world.tiles[k], p = center(h.c, h.r), rad = R * 2 * FS, a = vis ? .55 : .34;   /* v97.94 · wide, faint circles merge into one soft clearing (no bubbles per hex) */
+      const gr = f.createRadialGradient(p.x * FS, p.y * FS, rad * .15, p.x * FS, p.y * FS, rad); gr.addColorStop(0, `rgba(0,0,0,${a})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
       f.fillStyle = gr; f.beginPath(); f.arc(p.x * FS, p.y * FS, rad, 0, 7); f.fill();
     }
     const d = destOf(); if (d) { const p = center(d.c, d.r), rad = R * 1.15 * FS, gr = f.createRadialGradient(p.x * FS, p.y * FS, 0, p.x * FS, p.y * FS, rad); gr.addColorStop(0, 'rgba(0,0,0,.95)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); f.fillStyle = gr; f.beginPath(); f.arc(p.x * FS, p.y * FS, rad, 0, 7); f.fill() }
@@ -233,6 +244,30 @@
   }
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
   const ENC_ICON = { hamlet: '🏘', outpost: '🚩', tower: '🗼', ruins: '🏛', chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
+  /* v97.90 · W2 travellers on the road: villagers who come from another town (VillageLife P.from + P.visit) walk the real road
+     the day before they arrive (town → Fernvale) and the day after they leave (Fernvale → town), between 7:00 and 19:00.
+     Their place on the road follows the hour. Met on the road: a chat, and they sketch the way to their town onto your map. */
+  const roadCache = {};
+  function travellers(hour = S.hour) {
+    const L = window.VillageLife; if (!L || hour < 7 || hour >= 19) return [];
+    const out = [], f = (hour - 7) / 12;
+    for (const p of Object.values(L.P)) {
+      const v = p.visit; if (!p.from || p.from === 'wander' || !v || v.daily || L.inParty(S, p.id)) continue;
+      const tw = world.towns.find(t => t.id === p.from); if (!tw) continue;
+      const k = (((S.day - 1 + (v.offset || 0)) % v.every) + v.every) % v.every, away = v.every - v.stay; if (away < 2) continue;
+      const dir = k === v.every - 1 ? 'in' : k === v.stay ? 'out' : null; if (!dir) continue;
+      const road = roadCache[p.from] ||= G.path(world, tile(tw.c, tw.r), tile(world.home.c, world.home.r)) || []; if (road.length < 3) continue;
+      const i = Math.round((dir === 'in' ? f : 1 - f) * (road.length - 1)), q = road[Math.min(road.length - 2, Math.max(1, i))];
+      out.push({ p, c: q.c, r: q.r, dir, town: tw });
+    }
+    return out;
+  }
+  async function meetTraveller(tv) {
+    (S.metTv ||= {})[tv.p.id] = S.day; const per = window.WorldState?.period(S.hour) || 'day', ls = tv.p.lines?.[per] || tv.p.lines?.day || ['…'];
+    const road = roadCache[tv.p.from] || []; for (const q of road) for (const [a, b] of G.within(q.c, q.r, 1)) S.known[K(a, b)] = 1; fogDirty = true; reveal();
+    await modal(`<h2>🧳 ${esc(tv.p.name)}</h2><p><small>${esc(tv.p.role || '')} · ${tv.dir === 'in' ? 'กำลังเดินทางไปเฟิร์นเวล' : 'กำลังกลับ' + esc(tv.town.name)}</small></p><p>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p><p style="font-size:12.5px;opacity:.8">🗺 ${esc(tv.p.name)}วาดทางไป${esc(tv.town.name)}ให้ดู · เส้นทางเปิดบนแผนที่แล้ว</p>`);
+    save(); hudSync();
+  }
   /* v97.84 · the target's own picture stands over its wanted mark */
   const bountyImgs = {}, bountyPic = b => { const src = Bounties.picOf(b); let im = bountyImgs[src]; if (!im) { im = bountyImgs[src] = new Image(); im.src = src } return im.complete && im.naturalWidth ? im : null };
   function drawMarks(now) {
@@ -251,6 +286,8 @@
     }
     if (window.Bounties) for (const b of Bounties.active(S)) { if (b.state !== 'open' || b.c == null || !isKnown(b.c + ',' + b.r)) continue; const p = center(b.c, b.r), y = p.y - 8 + Math.sin(now * .005 + b.c) * 2;   /* v97.73 · wanted */
       g.save(); g.fillStyle = 'rgba(140,25,20,.9)'; g.beginPath(); g.arc(p.x, y, 14, 0, 7); g.fill(); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); g.font = '15px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('☠', p.x, y + 1); { const im = bountyPic(b); if (im) { const h = 46, w = h * im.naturalWidth / im.naturalHeight; g.drawImage(im, p.x - w / 2, y - 14 - h, w, h) } } g.restore(); label(g, b.name, p.x, y + 26, '#ffb0a0', 11) }
+    for (const tv of travellers()) { if (!isKnown(tv.c + ',' + tv.r)) continue; const p = center(tv.c, tv.r), y = p.y - 6 + Math.sin(now * .006 + tv.c) * 1.5;   /* v97.90 · W2 */
+      g.save(); g.fillStyle = 'rgba(40,60,90,.88)'; g.beginPath(); g.arc(p.x - 16, y, 11, 0, 7); g.fill(); g.strokeStyle = '#cfe6ff'; g.lineWidth = 1.5; g.stroke(); g.font = '12px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('🧳', p.x - 16, y + 1); g.restore(); label(g, tv.p.name, p.x - 16, y + 22, '#cfe6ff', 10) }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
     for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) { const q = center(tw.c, tw.r); label(g, tw.name, q.x, q.y + 32, '#d8f0ff', 12) }
   }
@@ -261,7 +298,7 @@
   function drawHover() {
     if (!hover || modalOpen) return; const h = tile(hover.c, hover.r), k = K(hover.c, hover.r), p = center(hover.c, hover.r), adj = G.dist(S.pos, hover) === 1;
     const ok = (adj || isKnown(k)) && G.stepCost(h) < Infinity;
-    g.save(); hexPath(g, p.x, p.y, R - 2); g.strokeStyle = ok ? 'rgba(255,240,190,.9)' : 'rgba(255,110,90,.8)'; g.lineWidth = 2.5; g.stroke(); g.restore();
+    g.save(); g.strokeStyle = ok ? 'rgba(255,240,190,.85)' : 'rgba(255,110,90,.75)'; g.lineWidth = 2.5; g.beginPath(); g.ellipse(p.x, p.y + 6, 16, 8, 0, 0, 7); g.stroke(); g.globalAlpha = .35; g.beginPath(); g.ellipse(p.x, p.y + 6, 24, 12, 0, 0, 7); g.stroke(); g.restore();   /* v97.94 · a soft target ring instead of a hex */
   }
   /* time of day tint (screen space) */
   function nightness() { const h = S.hour; return h >= 21 || h < 4 ? 1 : h >= 18 ? (h - 18) / 3 : h < 7 ? (7 - h) / 3 : 0 }
@@ -279,7 +316,7 @@
     if (s.x > m && s.x < W - m && s.y > m && s.y < H - m) return;
     const cx = W / 2, cy = H / 2, ang = Math.atan2(s.y - cy, s.x - cx), k = Math.min((W / 2 - m) / Math.abs(Math.cos(ang) || 1e-6), (H / 2 - m) / Math.abs(Math.sin(ang) || 1e-6)), x = cx + Math.cos(ang) * k, y = cy + Math.sin(ang) * k;
     g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.translate(x, y); g.rotate(ang); g.fillStyle = 'rgba(255,205,120,.95)'; g.beginPath(); g.moveTo(16, 0); g.lineTo(-8, -10); g.lineTo(-3, 0); g.lineTo(-8, 10); g.closePath(); g.fill(); g.restore();
-    g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); label(g, d.name + ' · ' + G.dist(S.pos, d) + ' ช่อง', x - Math.cos(ang) * 40, y - Math.sin(ang) * 26, '#ffe2a8', 12); g.restore();
+    g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); label(g, d.name + ' · ' + G.dist(S.pos, d) * (world.real ? 12 : 1) + (world.real ? ' กม.' : ' ช่อง'), x - Math.cos(ang) * 40, y - Math.sin(ang) * 26, '#ffe2a8', 12); g.restore();
   }
 
   /* ---------- frame ---------- */
@@ -353,12 +390,12 @@
       <div class="row"><span>ความเหนื่อย</span><span style="color:${S.fatigue >= 80 ? '#ff8a6a' : '#e8d8a8'}">${S.fatigue}%${S.fatigue >= 80 ? ' ⚠' : ''}</span></div><div class="bar"><i style="width:${S.fatigue}%;background:${S.fatigue >= 80 ? '#e2705f' : '#c9a24a'}"></i></div>
       <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>${(() => { const bs = window.Bounties?.active(S) || []; if (!bs.length) return ''; const won = bs.filter(b => b.state === 'slain').length, open = bs.length - won; const near = bs.filter(b => b.state === 'open' && b.c != null).map(b => ({ b, d: G.dist(S.pos, b) })).sort((a, b) => a.d - b.d)[0];   /* v97.84 · which way to the nearest one */
         const dir = near ? (() => { const dx = near.b.c - S.pos.c, dy = near.b.r - S.pos.r; if (!dx && !dy) return 'ตรงนี้'; const a = Math.atan2(dy, dx), k = Math.round(a / (Math.PI / 4)) & 7; return ['ตะวันออก', 'ตะวันออกเฉียงใต้', 'ใต้', 'ตะวันตกเฉียงใต้', 'ตะวันตก', 'ตะวันตกเฉียงเหนือ', 'เหนือ', 'ตะวันออกเฉียงเหนือ'][k] })() : '';
-        return `<div class="row" style="color:#ffb0a0"><span>☠ ค่าหัว${open ? ' ' + open + ' ใบ' : ''}</span><span>${won ? '✔ รอรับรางวัล ' + won : 'เหลือ ' + Math.max(0, Math.min(...bs.filter(b => b.state === 'open').map(b => b.until)) - S.day) + ' วัน'}</span></div>${near && !won ? `<div style="color:#ffb0a0;font-size:11.5px">ใกล้สุด ${esc(near.b.name)} · ทาง${dir} ${near.d} ช่อง</div>` : ''}` })()}
+        return `<div class="row" style="color:#ffb0a0"><span>☠ ค่าหัว${open ? ' ' + open + ' ใบ' : ''}</span><span>${won ? '✔ รอรับรางวัล ' + won : 'เหลือ ' + Math.max(0, Math.min(...bs.filter(b => b.state === 'open').map(b => b.until)) - S.day) + ' วัน'}</span></div>${near && !won ? `<div style="color:#ffb0a0;font-size:11.5px">ใกล้สุด ${esc(near.b.name)} · ทาง${dir} ${world.real ? near.d * 12 + ' กม.' : near.d + ' ช่อง'}</div>` : ''}` })()}
       <div class="row"><span>ความลึกของหมอก</span><span style="color:#ff9a7a">${stars}</span></div>
       <div class="row"><span>จุดหมาย</span><span style="color:#ffe2a8">${d ? esc(d.name) + (S.done[d.id] ? ' ✔' : ' · ' + G.dist(S.pos, d) + ' ช่อง') : '—'}</span></div>
       <div class="btns">${atHome() ? `<button id="wmQuest">📜 เรื่องที่ได้ยินมา</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}${landHere() ? `<button id="wmLand" class="ghost">🏡 ที่ดิน${Estates.at(S, landHere()).length ? ' (' + Estates.at(S, landHere()).length + ')' : ''}</button>` : ''}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button>${eventCards().length ? `<button id="wmCards" class="ghost">🎴 การ์ดเหตุการณ์ (${eventCards().reduce((a, x) => a + x.n, 0)})</button>` : ''}</div>
       <div id="wmLog">${S.log.slice(0, 8).map(x => '<div>' + esc(x) + '</div>').join('')}</div>
-      <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกช่องติดกัน = เดิน 1 ช่อง · คลิกช่องที่เคยเห็น = เดินไปเอง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a></div>`;
+      <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกที่ไหนก็ได้ = เดินไป · ในหมอกจะเดินไปให้ใกล้ที่สุดเท่าที่รู้ทาง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a></div>`;
     const on = (id, fn) => { const b = hud.querySelector('#' + id); if (b) b.onclick = fn };
     on('wmCards', useEventCard); on('wmQuest', questBoard); on('wmVillage', () => { save(); syncClock(); location.href = 'village-town.html' }); on('wmCamp', () => camp(false)); on('wmHome', goHome); on('wmLand', () => landPanel(landHere(), atHome() ? 'หมู่บ้านเฟิร์นเวล' : 'ที่ดินกลางป่า'));
     on('wmPotion', () => { if (!S.potions) return; S.potions--; const b = S.hp; S.hp = Math.min(S.maxHp, S.hp + 25); log('ดื่มยาฟื้นฟู +' + (S.hp - b) + ' HP'); save(); hudSync() });
@@ -450,6 +487,7 @@
       let v = await modal(`${TOWN_PIC[id] ? `<img src="assets/village-town/decor/gate-${TOWN_PIC[id]}.webp" alt="" style="float:right;width:150px;margin:-6px 0 4px 10px;filter:drop-shadow(0 4px 8px #0006)">` : ''}<h2>${ST?.SETTLEMENTS?.[id]?.capital ? '🏰' : '🏘'} ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}${tev ? tev.html : ''}${locals ? '<h3 style="margin:8px 0 2px;font-size:14px">ผู้คนที่นี่</h3>' + locals : ''}${folk.length || !locals ? '<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>' + people : ''}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
         [...(tev?.button ? [tev.button] : []), ...(window.TownServices ? TownServices.list(S, id).map(o => ({ label: o.label + (o.disabled && o.title ? ' (' + o.title + ')' : ''), value: 'svc:' + o.key, disabled: o.disabled })) : []), { label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates || ST || window.Offices ? [{ label: '🏛 ศาลากลาง', value: 'hall' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
       /* v97.76 · land, petitions and offices sit behind the town hall so the card keeps to the everyday things */
+      if (v === 'hall') window.Tips?.once('hall', 'ศาลากลาง', ['🏡 ที่ดิน: เช่าที่ในเมืองหรือจับจองที่ดินนอกเมือง สร้างบ้าน ร้านสาขา หรือไร่ (ไร่สร้างได้เฉพาะหมู่บ้านที่มีทุ่งนา หรือนอกเมือง)', '📜 ยื่นคำร้อง: เปลี่ยนนโยบายของเมือง เมื่อชื่อเสียงถึง "นับถือ"', '🏛 รับราชการ: ตำแหน่งตามอาชีพ มีเงินเดือนรายสัปดาห์'], 'assets/icons/menu/castle.webp');   /* v97.89 */
       if (v === 'hall') v = await modal(`<h2><img src="assets/icons/menu/castle.webp" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px">ศาลากลาง · ${esc(poi.name)}</h2><p>${esc(ST?.SETTLEMENTS?.[id]?.leader || '')}</p>`, [...(window.Estates ? [{ label: '🏡 ที่ดิน', value: 'land' }] : []), ...(ST ? [{ label: '📜 ยื่นคำร้องนโยบาย', value: 'petition' }] : []), ...(window.Offices && (Object.values(Offices.OFFICES).some(O => O.town === id) || S.office) ? [{ label: '🏛 รับราชการ', value: 'office' }] : []), { label: 'กลับ', value: 'back', ghost: true }]);
       if (v === 'back') continue;
       if (v === 'inn') { S.gold -= pInn; const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to); S.hp = S.maxHp; S.fatigue = 0; healParty(1); log('พักที่ ' + poi.name + ' ตื่นเช้าวันใหม่'); toast('🛏 พักเต็มอิ่ม · HP เต็ม') }
@@ -503,7 +541,12 @@
     if (h.c === S.pos.c && h.r === S.pos.r) return;
     if (G.stepCost(t) === Infinity) { toast(isKnown(k) ? G.BIOME[t.biome].name + ' — ผ่านไม่ได้' : 'ผ่านไม่ได้'); return }
     if (G.dist(S.pos, h) === 1) { walk([S.pos, h]); return }
-    if (!isKnown(k)) { toast('ยังไม่รู้ทาง — เดินทีละช่องเข้าไปในหมอก'); return }
+    if (!isKnown(k)) {   /* v97.94 · into the fog: walk as close as the known land allows, then one step into the unknown */
+      const near = Object.values(world.tiles).filter(x => isKnown(K(x.c, x.r)) && G.stepCost(x) < Infinity).sort((a, b) => G.dist(a, h) - G.dist(b, h)).slice(0, 12);
+      for (const n of near) { const p = n.c === S.pos.c && n.r === S.pos.r ? [S.pos] : G.path(world, S.pos, n, x => x && isKnown(K(x.c, x.r))); if (!p) continue;
+        const into = G.neighbors(n.c, n.r).map(([c, r]) => tile(c, r)).filter(x => x && G.stepCost(x) < Infinity).sort((a, b) => G.dist(a, h) - G.dist(b, h))[0];
+        if (into && G.dist(into, h) < G.dist(n, h)) p.push(into); if (p.length > 1) { walk(p); return } }
+      toast('ยังไม่มีทางที่รู้จักไปทางนั้น'); return }
     const p = G.path(world, S.pos, h, x => x && isKnown(K(x.c, x.r))); if (!p) { toast('ยังไม่มีทางที่รู้จักไปถึง'); return }
     walk(p);
   }
@@ -538,6 +581,7 @@
     if (t.poi?.id === 'home') { await arriveHome(); return true }
     if (t.poi?.town) { await townVisit(t.poi); return true }
     if (await plotRaid()) return true;   /* v97.49 · T5 */
+    { let tv = null; for (let h = S.hour; h >= S.hour - 4 && !tv; h -= .25) tv = travellers(h).find(x => G.dist(x, to) <= 1 && (S.metTv?.[x.p.id] !== S.day));   /* a step takes hours and they keep walking: crossing their way in that time counts */ if (tv) { await meetTraveller(tv); return true } }   /* v97.90 · W2 */
     { const b = window.Bounties?.at(S, to.c, to.r); if (b) {   /* v97.73 · T3: the wanted one is here */
       const v = await modal(`<h2>☠ ${esc(b.name)}</h2><div style="display:flex;gap:12px;align-items:center"><img src="${Bounties.picOf(b)}" alt="" style="height:120px;filter:drop-shadow(0 4px 6px #0008)"><div><p>${esc(b.text)}</p><p>ค่าหัว ${b.reward} 💰 · HP ตอนนี้ ${S.hp}/${S.maxHp}</p></div></div>`, [{ label: '⚔ ลงมือ', value: 'go' }, { label: 'ถอยไปก่อน', value: null, ghost: true }]);
       if (v === 'go') { const r = await battle(b.foe, Math.min(1, G.danger(world, t) + .15 * b.tier), b.tier >= 3 ? { boss: true } : {}); if (r === 'win') { const m = Bounties.slain(S, b); log(m); toast(m); save(); hudSync() } }
@@ -898,5 +942,5 @@
   try { if (window.Bounties) { for (const m of Bounties.expire(S)) log(m); Bounties.place(S, world, G); save() } } catch (e) { }   /* v97.73 · bounties get their hex */
   hudSync(); requestAnimationFrame(frame);
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
-  window.WorldMap = { results, chatter, townVisit, landPanel, hudSync: () => hudSync(), area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
+  window.WorldMap = { travellers: () => travellers().map(t => ({ id: t.p.id, name: t.p.name, c: t.c, r: t.r, dir: t.dir })), results, chatter, townVisit, landPanel, hudSync: () => hudSync(), area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();

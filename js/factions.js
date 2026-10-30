@@ -23,12 +23,21 @@
   const tier = id => TIERS[tierIdx(rep(id))];
   /* steps above "กลาง ๆ" (0 … 3) — what the perks scale with */
   const rank = id => Math.max(0, tierIdx(rep(id)) - 2);
-  function add(id, d, why) {
+  /* v97.92 · how the factions stand with each other: helping one pleases its allies a little and annoys its rivals a little
+     (and hurting one does the opposite). village–crown (Fernvale is crown land) · crown–garrison (the king's army) · village–temple ·
+     guild–merchants (the guild guards the caravans) are allies; merchants–crown (the free merchants of Saltharbour against the king's taxes)
+     and guild–garrison (who handles the trouble on the roads) are rivals. */
+  const TIES = [['village', 'crown', 1], ['crown', 'garrison', 1], ['village', 'temple', 1], ['guild', 'merchants', 1], ['merchants', 'crown', -1], ['guild', 'garrison', -1]];
+  const ALLY = .25, RIVAL = .2;
+  const tiesOf = id => TIES.filter(t => t[0] === id || t[1] === id).map(t => [t[0] === id ? t[1] : t[0], t[2]]);
+  function add(id, d, why, spill = true) {
     const V = store(); if (!V || !FACTIONS[id] || !d) return 0;
     const before = tierIdx(V.rep[id] || 0); V.rep[id] = Math.max(-100, Math.min(100, Math.round(((V.rep[id] || 0) + d) * 10) / 10));
     V.repLog.unshift({ id, d, why: why || '', day: game()?.day || 1 }); V.repLog.length = Math.min(V.repLog.length, 12);
     try { if (typeof save === 'function' && typeof s !== 'undefined') save(); else root.WorldState?.commit?.() } catch (e) { }
     const after = tierIdx(V.rep[id]); if (after !== before) try { (root.StoryToast || root.parent?.StoryToast)?.(`${FACTIONS[id].icon} ${FACTIONS[id].name}: ${TIERS[after][1]}`, 'quest') } catch (e) { }
+    if (spill) for (const [o, k] of tiesOf(id)) { const x = Math.round(d * (k > 0 ? ALLY : -RIVAL) * 10) / 10; if (Math.abs(x) >= .5 && FACTIONS[o]) add(o, x, (k > 0 ? 'พันธมิตรของ' : 'คู่แข่งของ') + FACTIONS[id].name + (why ? ' · ' + why : ''), false) }
+    if (spill) { const i = V.repLog.findIndex(l => l.id === id && l.d === d); if (i > 0) V.repLog.unshift(V.repLog.splice(i, 1)[0]) }   /* the thing you did stays on top of the log */
     return V.rep[id];
   }
   /* perks */
@@ -53,12 +62,13 @@
       return `<div class="f"><span class="ic" style="background:${F.col}">${F.icon}</span><div><b>${esc(F.name)}</b> <small>${n > 0 ? '+' : ''}${n}</small><div class="bar"><b></b><i style="left:${left}%;width:${w}%;background:${T[2]}"></i></div><small>${rank(id) ? '✦ ' + esc(F.perk) + ' (ขั้น ' + rank(id) + ')' : 'ถึงขั้น "เป็นมิตร" แล้วจะได้: ' + esc(F.perk)}</small></div><span class="t" style="color:${T[2]}">${T[1]}</span></div>` };
     d.innerHTML = `<div class="box"><button class="x" title="ปิด (Esc)">✕</button><h2><img src="assets/icons/menu/balance.webp" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px">ชื่อเสียง</h2><p class="sub">ทำงานกิลด์ ส่งออร์เดอร์ สร้างหมู่บ้าน ถวายวิหาร และปราบโจร ชื่อเสียงจะเพิ่มขึ้น · ทุกขั้นได้ส่วนลดหรือค่าจ้างเพิ่ม</p>
       ${Object.entries(FACTIONS).map(row).join('')}
+      <div class="log"><b>🔗 ความสัมพันธ์ระหว่างกลุ่ม</b><br>${TIES.map(([a, b, k]) => `${FACTIONS[a].icon} ${esc(FACTIONS[a].name)} ${k > 0 ? '🤝 พันธมิตร' : '⚔ คู่แข่ง'} ${FACTIONS[b].icon} ${esc(FACTIONS[b].name)}`).join('<br>')}<br><small>ช่วยกลุ่มหนึ่ง พันธมิตรของเขาจะชอบคุณขึ้นเล็กน้อย แต่คู่แข่งจะไม่พอใจเล็กน้อย</small></div>
       ${(() => { const L = root.Law, ST = root.Settlements, g = game(), W = (() => { try { return root.WorldState?.world?.() } catch (e) { return null } })(); if (!L || !ST || !W) return ''; const rows = Object.keys(ST.SETTLEMENTS).map(id => [id, L.status(W, id)]).filter(r => r[1]); return `<div class="log"><b>⚖ คดีความ</b><br>${rows.length ? rows.map(([id, t]) => esc(ST.SETTLEMENTS[id].name) + ' · ' + esc(t)).join('<br>') : 'ไม่มีคดีค้าง'}</div>` })()}
       <div class="log"><b>ล่าสุด</b><br>${V.repLog.length ? V.repLog.map(l => `วันที่ ${l.day} · ${FACTIONS[l.id]?.icon || ''} ${esc(FACTIONS[l.id]?.name || l.id)} ${l.d > 0 ? '+' : ''}${l.d} · ${esc(l.why)}`).join('<br>') : 'ยังไม่มี'}</div></div>`;
     document.body.append(d);
     const close = () => { removeEventListener('keydown', key, true); d.remove() }, key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close() } };
     addEventListener('keydown', key, true); d.onclick = e => { if (e.target === d || e.target.closest('.x')) close() };
   }
-  root.Factions = { FACTIONS, TIERS, rep, tier, rank, add, priceMult, payMult, open };
+  root.Factions = { TIES, tiesOf, FACTIONS, TIERS, rep, tier, rank, add, priceMult, payMult, open };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.Factions;
 })(typeof window !== 'undefined' ? window : globalThis);

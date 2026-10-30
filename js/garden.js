@@ -183,6 +183,7 @@
         ${!open ? `<div class="note">ยังไม่ถึงช่วงงาน · ตอนนี้ ${season(now)[2]} ${season(now)[1]} วันที่ ${seasonDay(now)}/28</div>` : done ? '<div class="note">ปีนี้ส่งประกวดไปแล้ว</div>' : ''}
         <div class="row">${list.length ? list.map(e => `<button data-c="${e.crop}" ${open && !done ? '' : 'disabled'}>${CROPS[e.crop].icon} ${CROPS[e.crop].name} ${'★'.repeat(e.stars)}</button>`).join('') : '<small>ยังไม่มีผลผลิตที่เคยเก็บจากไร่ของเรา · ปลูกผักให้ได้ดาวสูง ๆ แล้วค่อยมาส่ง</small>'}</div></div></div></div>` };
       draw(); document.body.append(d);
+      root.Tips?.once('contest', 'ประกวดผลผลิต', ['จัดปีละครั้ง ช่วงวันที่ 22–28 ของฤดูใบไม้ร่วง', 'ส่งพืชที่เคยเก็บจากไร่ของเราได้ 1 อย่าง · ดาวคุณภาพสำคัญที่สุด', 'ได้ดาวเพิ่มจากการใส่ปุ๋ยและรดน้ำทุกวันไม่ขาด'], 'assets/icons/menu/trophy.webp');   /* v97.89 */
       const close = () => { removeEventListener('keydown', key, true); d.remove(); res() }, key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close() } };
       addEventListener('keydown', key, true);
       d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) return close(); const b = e.target.closest('[data-c]'); if (!b || b.disabled) return; const r = contest(S, gardens, b.dataset.c); onChange?.(); draw(r); d.querySelectorAll('[data-c]').forEach(x => x.disabled = true) };
