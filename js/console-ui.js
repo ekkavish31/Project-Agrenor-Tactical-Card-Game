@@ -54,7 +54,7 @@
   #cuMenu .box{display:grid;grid-template-columns:repeat(2,minmax(150px,1fr));gap:8px;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;box-shadow:0 16px 40px #000a;max-width:92vw}
   #cuMenu .box.one{grid-template-columns:minmax(260px,420px)}#cuMenu button small{color:#cdbb92;font-weight:400}#cuMenu button:disabled{opacity:.45;cursor:default}
   #cuMenu h2{grid-column:1/-1;margin:0 0 4px;color:#f3e9c9;font-size:18px}#cuMenu small{grid-column:1/-1;color:#cdbb92;font-size:12px}
-  #cuMenu button{padding:11px 14px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:600 14px inherit;font-family:inherit;text-align:left;cursor:pointer}#cuMenu button:hover,#cuMenu button:focus-visible{background:#2d4a40}`;
+  #cuMenu button.cu-group{display:flex;flex-direction:column;gap:2px;font-size:16px;padding:13px 16px}#cuMenu button.cu-group small{grid-column:auto;font-size:12px}#cuMenu button.cu-back{background:none;border-style:dashed}#cuMenu button{padding:11px 14px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:600 14px inherit;font-family:inherit;text-align:left;cursor:pointer}#cuMenu button:hover,#cuMenu button:focus-visible{background:#2d4a40}`;
   document.head.append(css);
 
   /* ---------- village main menu (Esc) ---------- */
@@ -63,13 +63,28 @@
   function villageMenu() {
     const old = document.getElementById('cuMenu'); if (old) { old.remove(); return true }
     if (!document.querySelector('[data-game]')) return false;   // town-ux moves the toolbar buttons into its icon row (#townGameMenu)
-    const pick = [...document.querySelectorAll('[data-game],#activities,#elChart,#fullscreen')].filter(b => b.style.display !== 'none' && !b.closest('#cuMenu'));
-    const go = document.querySelector('.town-go');
-    const label = b => b.id === 'elChart' ? '◈ ตารางธาตุ' : b.id === 'fullscreen' ? '⛶ เต็มจอ' : ((b.textContent || b.title || b.dataset.game).replace(/\s+/g, ' ').trim() || b.title || b.dataset.game);
-    const d = document.createElement('div'); d.id = 'cuMenu';
-    d.innerHTML = `<div class="box"><h2>เมนู</h2>${pick.map((b, i) => `<button data-i="${i}">${label(b)}</button>`).join('')}${go ? '<button data-go="1">🗺 ออกเดินทาง</button>' : ''}<button data-jobs="1">⚔ อาชีพ</button><button data-proj="1">🏗 พัฒนาหมู่บ้าน</button>${farmHere() ? '<button data-farm="1">🌾 ไร่ของเรา</button>' : ''}<button data-rep="1">🏛 ชื่อเสียง</button><button data-slot="save">💾 บันทึกเกม</button><button data-slot="load">📂 โหลดเกม</button><button data-x="1">▶ กลับไปเล่น</button><small>ลูกศร/จอย เลือก · Enter ยืนยัน · Esc ปิด</small></div>`;
-    document.body.append(d);
-    d.onclick = e => { const b = e.target.closest('button'); if (e.target === d || b?.dataset.x) { d.remove(); return } if (!b) return; d.remove(); if (b.dataset.jobs) { try { (parent.JobsUI || window.JobsUI)?.open() } catch (er) { } return } if (b.dataset.farm) { const f = farmHere(); if (f) location.href = 'place-interior.html?place=farm&farm=' + encodeURIComponent(f.id) + '&name=' + encodeURIComponent('ไร่ · ' + f.name) + '&back=village-town.html'; return } if (b.dataset.proj) { try { (parent.VillageProjects || window.VillageProjects)?.open() } catch (er) { } return } if (b.dataset.rep) { try { (parent.Factions || window.Factions)?.open() } catch (er) { } return } if (b.dataset.slot) slotMenu(b.dataset.slot); else if (b.dataset.go) go.click(); else pick[+b.dataset.i]?.click() };
+    /* v98.4 · three groups instead of 16 buttons (docs/UI-BRUSHUP.md): the first screen shows ตัวเรา · ชีวิต · ระบบ · กลับไปเล่น,
+       a group opens in place (← กลับ returns). Every item still clicks the same button / opens the same window as before. */
+    const q = sel => document.querySelector(sel), go = q('.town-go') || q('[data-game="adventure"]');
+    const openFarm = () => { const f = farmHere(); if (f) location.href = 'place-interior.html?place=farm&farm=' + encodeURIComponent(f.id) + '&name=' + encodeURIComponent('ไร่ · ' + f.name) + '&back=village-town.html' };
+    const host = n => { try { return parent[n] || window[n] } catch (e) { return window[n] } };
+    const item = (label, fn, ok = true) => ok ? { label, fn } : null;
+    const GROUPS = [
+      ['me', '👤 ตัวเรา', 'ตัวละคร · อาชีพ · สำรับ · กระเป๋า', () => [item('ตัวละคร', () => q('[data-game="character"]')?.click()), item('⚔ อาชีพ', () => host('JobsUI')?.open()), item('สำรับ', () => q('[data-game="deck"]')?.click()), item('กระเป๋า', () => q('[data-game="bag"]')?.click()), item('◈ ตารางธาตุ', () => q('#elChart')?.click(), !!q('#elChart'))]],
+      ['life', '🏡 ชีวิต', 'สมุดหมู่บ้าน · กิจกรรม · ไร่ · หมู่บ้าน', () => [item('สมุดหมู่บ้าน', () => q('[data-game="journal"]')?.click()), item('🎯 กิจกรรม', () => q('#activities')?.click(), !!q('#activities')), item('🌾 ไร่ของเรา', openFarm, !!farmHere()), item('🏗 พัฒนาหมู่บ้าน', () => host('VillageProjects')?.open()), item('🏛 ชื่อเสียง', () => host('Factions')?.open()), item('🗺 ออกเดินทาง', () => go?.click(), !!go)]],
+      ['sys', '⚙ ระบบ', 'บันทึก · โหลด · ตั้งค่า · เต็มจอ', () => [item('💾 บันทึกเกม', () => slotMenu('save')), item('📂 โหลดเกม', () => slotMenu('load')), item('ตั้งค่า', () => q('[data-game="settings"]')?.click()), item('⛶ เต็มจอ', () => q('#fullscreen')?.click(), !!q('#fullscreen'))]]
+    ];
+    const d = document.createElement('div'); d.id = 'cuMenu'; let acts = [];
+    const draw = g => {
+      const grp = GROUPS.find(x => x[0] === g); acts = [];
+      const btn = (html, fn, cls = '') => { acts.push(fn); return `<button data-a="${acts.length - 1}" class="${cls}">${html}</button>` };
+      d.innerHTML = grp
+        ? `<div class="box one"><h2>${grp[1]}</h2>${grp[3]().filter(Boolean).map(it => btn(it.label, () => { d.remove(); it.fn() })).join('')}${btn('← กลับ', () => draw(null), 'cu-back')}<small>ลูกศร/จอย เลือก · Enter ยืนยัน · Esc ปิด</small></div>`
+        : `<div class="box one"><h2>เมนู</h2>${GROUPS.map(([id, t, sub]) => btn(`${t}<small>${sub}</small>`, () => draw(id), 'cu-group')).join('')}${btn('▶ กลับไปเล่น', () => d.remove())}<small>ลูกศร/จอย เลือก · Enter ยืนยัน · Esc ปิด</small></div>`;
+      d.querySelector('button')?.focus();
+    };
+    d.onclick = e => { if (e.target === d) { d.remove(); return } const b = e.target.closest('button'); if (b && b.dataset.a != null) acts[+b.dataset.a]?.() };
+    document.body.append(d); draw(null);
     d.querySelector('button')?.focus();
     return true;
   }
