@@ -23,6 +23,7 @@
   const SVC = {
     willowshore: [{ key: 'ferry', label: '⛵ เรือข้ามฟากไปนครหลวง', cost: 10, why: () => capitalOpen() ? '' : 'เรือยังไม่รับคนไปนครหลวง' }],
     lakenhold: [
+      { key: 'bounty', label: '📜 สำนักใหญ่สมาคม · ประกาศจับ', cost: 0 },   /* v97.73 · T3 */
       { key: 'tower', label: '🗼 หอคอยเวท · เรียนพิเศษ', cost: 40, daily: true },
       { key: 'museum', label: '🏛 พิพิธภัณฑ์ · ขายผลึก', cost: 0, why: S => (S.cargo?.crystal ? '' : 'ไม่มีผลึกในเกวียน') },
       { key: 'blessing', label: '⛩ มหาวิหาร · รับพร', cost: 15, daily: true },
@@ -41,6 +42,7 @@
     const w = list(S, id).find(x => x.key === key); if (w.disabled) return { lines: [w.title] };
     if (o.cost) S.gold -= o.cost; if (o.daily) use(S, id, key);
     const r = ctx.rng || Math.random, out = [];
+    if (key === 'bounty') return { lines: [], panel: 'bounty' };
     if (key === 'ferry') { ctx.passTime?.(3); return { lines: ['⛵ ล่องเรือข้ามทะเลสาบสามชั่วโมง ลมเย็นสบาย'], goto: id === 'willowshore' ? 'lakenhold' : 'willowshore' } }
     if (key === 'mine') {
       ctx.passTime?.(4); S.fatigue = Math.min(100, (S.fatigue || 0) + 20); S.gold += 12; out.push('⛏ ทำงานกะหนึ่ง ได้ค่าแรง 12 💰 · เหนื่อย +20');
