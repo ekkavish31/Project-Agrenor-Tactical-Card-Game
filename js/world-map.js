@@ -247,6 +247,8 @@
       g.font = '13px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
       if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11);
     }
+    if (window.Bounties) for (const b of Bounties.active(S)) { if (b.state !== 'open' || b.c == null || !isKnown(b.c + ',' + b.r)) continue; const p = center(b.c, b.r), y = p.y - 8 + Math.sin(now * .005 + b.c) * 2;   /* v97.73 · wanted */
+      g.save(); g.fillStyle = 'rgba(140,25,20,.9)'; g.beginPath(); g.arc(p.x, y, 14, 0, 7); g.fill(); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); g.font = '15px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('☠', p.x, y + 1); g.restore(); label(g, b.name, p.x, y + 26, '#ffb0a0', 11) }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
     for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) { const q = center(tw.c, tw.r); label(g, tw.name, q.x, q.y + 32, '#d8f0ff', 12) }
   }
@@ -443,6 +445,7 @@
       else if (v === 'petition') { const pol = await ST.petitionPanel(id); if (pol) { log('📜 ' + poi.name + ' เปลี่ยนนโยบายเป็น ' + ST.POLICIES[pol].name); toast('📜 นโยบายใหม่: ' + ST.POLICIES[pol].name) } }
       else if (typeof v === 'string' && v.startsWith('svc:')) {   /* v97.72 · the town's own service (js/town-services.js) */
         const r = TownServices.run(S, id, v.slice(4), { passTime, healParty, game: () => window.WorldState.game(), reveal: n => { for (const [a, b] of G.within(S.pos.c, S.pos.r, n)) S.known[K(a, b)] = 1; fogDirty = true; reveal() } });
+        if (r.panel === 'bounty' && window.Bounties) { await Bounties.panel(S, id, () => { save(); hudSync() }); Bounties.place(S, world, G); fogDirty = true; save(); hudSync() }
         for (const m of r.lines) log(m); save(); hudSync(); if (r.lines.length) await modal('<h2>' + esc(poi.name) + '</h2>' + r.lines.map(m => '<p>' + esc(m) + '</p>').join(''));
         if (r.goto) { const tw = world.towns.find(x => x.id === r.goto); if (tw) { S.pos = { c: tw.c, r: tw.r }; S.known[K(tw.c, tw.r)] = 1; fogDirty = true; reveal(); save(); hudSync(); { const p = center(tw.c, tw.r); token.x = p.x; token.y = p.y; follow() } await townVisit(tile(tw.c, tw.r).poi); return } }
       }
@@ -523,6 +526,10 @@
     if (t.poi?.id === 'home') { await arriveHome(); return true }
     if (t.poi?.town) { await townVisit(t.poi); return true }
     if (await plotRaid()) return true;   /* v97.49 · T5 */
+    { const b = window.Bounties?.at(S, to.c, to.r); if (b) {   /* v97.73 · T3: the wanted one is here */
+      const v = await modal(`<h2>☠ ${esc(b.name)}</h2><p>${esc(b.text)}</p><p>ค่าหัว ${b.reward} 💰 · HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ ลงมือ', value: 'go' }, { label: 'ถอยไปก่อน', value: null, ghost: true }]);
+      if (v === 'go') { const r = await battle(b.foe, Math.min(1, G.danger(world, t) + .15 * b.tier), b.tier >= 3 ? { boss: true } : {}); if (r === 'win') { const m = Bounties.slain(S, b); log(m); toast(m); save(); hudSync() } }
+      return true } }
     if (t.enc && !S.cleared[k]) return await encounter(t, k);
     const night = nightness() > .6, dang = G.danger(world, t);
     /* v95.16 · no battle marks on the map: every step has a chance of an ambush (more in wild/dangerous land and at night, less on a road) */
@@ -540,7 +547,7 @@
     if (r < .75) { S.fatigue = Math.min(100, S.fatigue + 15); log('เสียงหอนทั้งคืน เหนื่อยขึ้น'); await modal(`<h2>🐺 เสียงหอนในความมืด</h2><p>เสียงหอนรอบทิศทำให้ต้องเดินระวังตัวทุกฝีก้าว ความเหนื่อย +15</p>`); return true }
     const gold = Math.round(20 + Math.random() * 30); S.gold += gold; log('พบของมีค่าใต้แสงจันทร์ +' + gold); await modal(`<h2>🌙 ประกายใต้แสงจันทร์</h2><p>มีบางอย่างสะท้อนแสงจันทร์อยู่ในพงหญ้า — ถุงเหรียญของนักเดินทาง <b>+${gold} 💰</b></p>`); return true;
   }
-  function passTime(h) { S.hour += h; let nd = false; while (S.hour >= 24) { S.hour -= 24; S.day++; nd = true; log('— วันที่ ' + S.day + ' —') } if (nd && window.Estates) for (const m of Estates.tickAll(S)) { log(m); toast(m) } if (nd && window.Offices) for (const m of Offices.settle(S)) { log(m); toast(m) } if (nd && window.Settlements?.councilSettle) for (const m of Settlements.councilSettle()) { log(m); toast(m) } }
+  function passTime(h) { S.hour += h; let nd = false; while (S.hour >= 24) { S.hour -= 24; S.day++; nd = true; log('— วันที่ ' + S.day + ' —') } if (nd && window.Estates) for (const m of Estates.tickAll(S)) { log(m); toast(m) } if (nd && window.Offices) for (const m of Offices.settle(S)) { log(m); toast(m) } if (nd && window.Settlements?.councilSettle) for (const m of Settlements.councilSettle()) { log(m); toast(m) } if (nd && window.Bounties) for (const m of Bounties.expire(S)) { log(m); toast(m) } }
   const pickFoe = t => { const a = G.FOES[t.biome] || G.FOES.grass; return a[Math.floor(Math.random() * a.length)] };
 
   /* ---------- encounters ---------- */
@@ -876,6 +883,7 @@
   /* ---------- start ---------- */
   load(); resize(); paint();
   { const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; cam.x = p.x; cam.y = p.y; cam.z = innerWidth < 700 ? .9 : 1.25 }
+  try { if (window.Bounties) { for (const m of Bounties.expire(S)) log(m); Bounties.place(S, world, G); save() } } catch (e) { }   /* v97.73 · bounties get their hex */
   hudSync(); requestAnimationFrame(frame);
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
   window.WorldMap = { results, chatter, townVisit, landPanel, hudSync: () => hudSync(), area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };

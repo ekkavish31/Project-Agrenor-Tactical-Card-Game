@@ -462,8 +462,9 @@
     if (KIND === 'shop' || KIND === 'market') return B('potion', '🧪 ซื้อยา', PRICE.potion, away) + B('food', '🍞 เสบียง ×3', PRICE.food * 3, away) + (KIND === 'market' && window.Settlements ? B('trade', '🛒 ซื้อขายสินค้า', 0, away) : '') + steal;
     /* v97.40 · the guild's contracts and what each household offers */
     if (KIND === 'guild') { const c = contract(); if (away) return B('x', '📜 งานกิลด์', 0, 'ซิกริดไม่อยู่ที่เคาน์เตอร์ (8:00–17:00)');
-      if (c.active) { const k = Math.max(0, (S.kills || 0) - c.active.base), done = k >= c.active.n; return B('turnin', done ? `✔ ส่งงาน ${c.active.label} +${c.active.reward}💰` : `📜 ${c.active.label} ${k}/${c.active.n}`, 0, done ? '' : 'ล้มศัตรูบนแผนที่โลกให้ครบก่อน') + (done ? '' : B('drop', '✕ ยกเลิกงาน', 0)) }
-      return c.offers.map((o, i) => B('take:' + i, `📜 ${o.label} → ${o.reward}💰`, 0, c.taken ? 'วันนี้รับงานไปแล้ว พรุ่งนี้มีงานใหม่' : '')).join('') }
+      const bn = window.Bounties ? B('bounty', '☠ ประกาศจับ' + (window.Bounties.active(S).some(b => b.state === 'slain') ? ' · มีรางวัลรอรับ' : ''), 0) : '';   /* v97.73 · T3 */
+      if (c.active) { const k = Math.max(0, (S.kills || 0) - c.active.base), done = k >= c.active.n; return bn + B('turnin', done ? `✔ ส่งงาน ${c.active.label} +${c.active.reward}💰` : `📜 ${c.active.label} ${k}/${c.active.n}`, 0, done ? '' : 'ล้มศัตรูบนแผนที่โลกให้ครบก่อน') + (done ? '' : B('drop', '✕ ยกเลิกงาน', 0)) }
+      return bn + c.offers.map((o, i) => B('take:' + i, `📜 ${o.label} → ${o.reward}💰`, 0, c.taken ? 'วันนี้รับงานไปแล้ว พรุ่งนี้มีงานใหม่' : '')).join('') }
     if (KIND === 'house') { const H = HOUSE_SVC[OWNER]; if (H) return H.filter(([k]) => k !== 'payfine' || (window.Law && window.Law.owed(S, 'fernvale'))).map(([k, label, cost]) => B(k, k === 'payfine' ? label + ' ' + window.Law.owed(S, 'fernvale') + '💰' : label, cost, k === 'projects' || k === 'lessons' || k === 'safety' || (k === 'office' && !window.Offices) || (k === 'petition' && !window.Settlements) ? '' : k === 'payfine' ? (S.gold < window.Law.owed(S, 'fernvale') ? 'เงินไม่พอ' : away) : away)).join('') }
     if (KIND === 'temple') { const prayed = (S.prayDay || 0) === CLK.read().day; return B('pray', '🙏 ภาวนา', 0, prayed ? 'ภาวนาแล้ววันนี้ · พรุ่งนี้มาใหม่' : '') + B('offer', '🕯 ถวาย · น้ำมนต์', 25, away) }
     return '';
@@ -480,6 +481,7 @@
   function service(k) {
     S = L.save(); const pay = c => { if (S.gold < c) { toast('เงินไม่พอ'); return false } S.gold -= c; return true };
     if (k.startsWith('take:')) { const G = contract(), o = G.offers[+k.slice(5)]; if (!o || G.taken || G.active) return; G.active = { ...o, base: S.kills || 0 }; G.taken = true; L.writeSave(S); toast('📜 รับงาน: ' + o.label) }
+    else if (k === 'bounty') { const S0 = S; window.Bounties.panel(S0, 'fernvale', () => { L.writeSave(S0); hud._html = ''; hudSync() }); return }
     else if (k === 'turnin') { const G = contract(), a = G.active; if (!a || (S.kills || 0) - a.base < a.n) return; a.reward = Math.round(a.reward * (FC()?.payMult('guild') ?? 1) * (1 + .15 * (window.Offices?.perk(S, 'magus') || 0))); S.gold += a.reward; FC()?.add('guild', 6, 'ส่งงาน ' + a.label); window.Law?.service(S, 'fernvale'); FC()?.add('village', 2, 'ช่วยกำจัดภัยรอบหมู่บ้าน'); G.done = (G.done || 0) + 1; G.active = null; L.writeSave(S); toast('✔ ส่งงานกิลด์ +' + a.reward + '💰 (ทำสำเร็จแล้ว ' + G.done + ' งาน)') }
     else if (k === 'drop') { const G = contract(); G.active = null; L.writeSave(S); toast('ยกเลิกงานแล้ว') }
     else if (['bread', 'veg', 'flour', 'fish'].includes(k)) { if (!pay(9)) return; S.food = (S.food || 0) + 3; L.writeSave(S); toast({ bread: '🍞', veg: '🥕', flour: '🌾', fish: '🐟' }[k] + ' ได้เสบียง 3 ห่อ (มี ' + S.food + ')') }
