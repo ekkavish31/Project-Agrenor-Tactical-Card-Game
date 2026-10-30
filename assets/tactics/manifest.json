@@ -60,12 +60,12 @@
       "windup": {
         "src": "assets/tactics/hero_se_windup.webp",
         "right": [
-          0.5041,
-          0.1443
+          0.715,
+          0.17
         ],
         "left": [
-          0.7458,
-          0.6623
+          0.655,
+          0.63
         ],
         "rotation": -25,
         "rightBehind": false,
@@ -75,12 +75,12 @@
       "strike": {
         "src": "assets/tactics/hero_se_strike.webp",
         "right": [
-          0.7884,
-          0.5604
+          0.496,
+          0.75
         ],
         "left": [
-          0.6051,
-          0.5339
+          0.432,
+          0.62
         ],
         "rotation": 100,
         "rightBehind": false,
@@ -90,12 +90,12 @@
       "guard": {
         "src": "assets/tactics/hero_se_guard.webp",
         "right": [
-          0.5327,
-          0.5341
+          0.84,
+          0.45
         ],
         "left": [
-          0.692,
-          0.3853
+          0.67,
+          0.43
         ],
         "rotation": 10,
         "rightBehind": false,
@@ -105,12 +105,12 @@
       "hit": {
         "src": "assets/tactics/hero_se_hit.webp",
         "right": [
-          0.2445,
-          0.5999
+          0.82,
+          0.46
         ],
         "left": [
-          0.7598,
-          0.4033
+          0.515,
+          0.655
         ],
         "rotation": -20,
         "rightBehind": false,
@@ -182,12 +182,12 @@
       "windup": {
         "src": "assets/tactics/hero_sw_windup.webp",
         "right": [
-          0.4959,
-          0.1443
+          0.285,
+          0.17
         ],
         "left": [
-          0.2542,
-          0.6623
+          0.345,
+          0.63
         ],
         "rotation": 25,
         "rightBehind": false,
@@ -197,12 +197,12 @@
       "strike": {
         "src": "assets/tactics/hero_sw_strike.webp",
         "right": [
-          0.2116,
-          0.5604
+          0.504,
+          0.75
         ],
         "left": [
-          0.3949,
-          0.5339
+          0.568,
+          0.62
         ],
         "rotation": -100,
         "rightBehind": false,
@@ -212,12 +212,12 @@
       "guard": {
         "src": "assets/tactics/hero_sw_guard.webp",
         "right": [
-          0.4673,
-          0.5341
+          0.16,
+          0.45
         ],
         "left": [
-          0.308,
-          0.3853
+          0.33,
+          0.43
         ],
         "rotation": -10,
         "rightBehind": false,
@@ -227,12 +227,12 @@
       "hit": {
         "src": "assets/tactics/hero_sw_hit.webp",
         "right": [
-          0.7555,
-          0.5999
+          0.18,
+          0.46
         ],
         "left": [
-          0.2402,
-          0.4033
+          0.485,
+          0.655
         ],
         "rotation": 20,
         "rightBehind": false,
@@ -305,8 +305,8 @@
       "windup": {
         "src": "assets/tactics/hero_ne_windup.webp",
         "right": [
-          0.6389,
-          0.1835
+          0.58,
+          0.156
         ],
         "left": [
           0.2591,
@@ -320,8 +320,8 @@
       "strike": {
         "src": "assets/tactics/hero_ne_strike.webp",
         "right": [
-          0.8262,
-          0.5199
+          0.862,
+          0.475
         ],
         "left": [
           0.5712,
@@ -335,12 +335,12 @@
       "guard": {
         "src": "assets/tactics/hero_ne_guard.webp",
         "right": [
-          0.7323,
-          0.3688
+          0.74,
+          0.43
         ],
         "left": [
-          0.5305,
-          0.5202
+          0.62,
+          0.47
         ],
         "rotation": 10,
         "rightBehind": false,
@@ -354,8 +354,8 @@
           0.4498
         ],
         "left": [
-          0.7621,
-          0.5906
+          0.81,
+          0.46
         ],
         "rotation": -20,
         "rightBehind": false,
@@ -427,8 +427,8 @@
       "windup": {
         "src": "assets/tactics/hero_nw_windup.webp",
         "right": [
-          0.3611,
-          0.1835
+          0.42,
+          0.156
         ],
         "left": [
           0.7409,
@@ -442,8 +442,8 @@
       "strike": {
         "src": "assets/tactics/hero_nw_strike.webp",
         "right": [
-          0.1738,
-          0.5199
+          0.138,
+          0.475
         ],
         "left": [
           0.4288,
@@ -457,12 +457,12 @@
       "guard": {
         "src": "assets/tactics/hero_nw_guard.webp",
         "right": [
-          0.2677,
-          0.3688
+          0.26,
+          0.43
         ],
         "left": [
-          0.4695,
-          0.5202
+          0.38,
+          0.47
         ],
         "rotation": -10,
         "rightBehind": false,
@@ -476,8 +476,8 @@
           0.4498
         ],
         "left": [
-          0.2379,
-          0.5906
+          0.19,
+          0.46
         ],
         "rotation": 20,
         "rightBehind": false,
