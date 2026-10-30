@@ -413,7 +413,7 @@
    if (frame.length > n0) frame[frame.length - 1].name = it.name || null;
    if (e) out.push(e)
   }
-  return out.concat(addedItems(false))
+  const all = out.concat(addedItems(false)); rebuildBlocks(); return all
  };
  const TM = window.TownMenu,
   baseGates = TM.gateObjects;
@@ -423,7 +423,7 @@
    const e = entry('exit:' + i, 'exit:' + i, it.x, it.y, it.draw, null, 'ประตู ' + (Village25D.getExits()[i]?.name || ''));
    if (e) out.push(e)
   });
-  return out.concat(addedItems(true))
+  const all = out.concat(addedItems(true)); rebuildBlocks(); return all
  };
 
 
@@ -999,6 +999,11 @@
  const modeNow = () => window.TownUX?.gridMode?.() || window.VillageGrid.DEFAULT_MODE;
  const stackOn = () => !!window.TownUX?.stackOn?.();
  const itemSize = k => ({ w: data.edit[k]?.fw ?? .5, h: data.edit[k]?.fh ?? .5 });
+ /* v97.47 · a first guess of the blocking frame (cells) from the item's name; adjusted with กว้าง/ลึก ± */
+ function guessBlock(label) { const t = String(label || ''); return /ต้นไม้|ต้นโอ๊ก|ต้นสน|tree|oak|pine/i.test(t) ? [1, 1] : /เกวียน|รถ|cart|wagon/i.test(t) ? [1.5, 1] : /บ่อ|well|น้ำพุ|รูปปั้น|statue/i.test(t) ? [1.5, 1.5] : /โคม|lamp|ถัง|barrel|ลัง|crate|ป้าย|sign/i.test(t) ? [.5, .5] : /หิน|rock/i.test(t) ? [1, 1] : [1, 1] }
+ let blockList = [];
+ function rebuildBlocks() { blockList = frame.filter(e => e.ov?.block && !e.hidden).map(e => { const z = itemSize(e.key), c = inv(e.x, e.y); return { u0: c.u - z.w / 2, u1: c.u + z.w / 2, v0: c.v - z.h / 2, v1: c.v + z.h / 2 } }) }
+ const blockedAt = (u, v) => { for (const r of blockList) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
  function itemRectAt(k, c) {
   const z = itemSize(k);
   return window.VillageGrid.rectFromCells(c.u - z.w / 2, c.v - z.h / 2, z.w, z.h)
@@ -2612,6 +2617,7 @@
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
   ${nudgeHtml}<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.5">กว้าง −</button><button data-fz="fw,0.5">กว้าง +</button><button data-fz="fh,-0.5">ลึก −</button><button data-fz="fh,0.5">ลึก +</button></div>${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
+  <label class="chk" title="ใช้กรอบพื้นของชิ้นนี้เป็นกริดฟ้า: ตัวเอกและ NPC เดินผ่านไม่ได้ (ปรับขนาดด้วยปุ่ม กว้าง/ลึก ข้างบน)"><input type="checkbox" id="aeBlock" ${ov.block?'checked':''}> ▦ กริดฟ้า · เดินผ่านไม่ได้ ${ov.block?'('+itemSize(key).w+'×'+itemSize(key).h+' ช่อง)':''}</label>
   <div class="row"><button id="aeDel">ลบชิ้นนี้ (Delete)</button>${added?'':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชั่วคราว'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
   act('#iBack', () => {
@@ -2665,6 +2671,8 @@
   bindGroup();
   bindZ('iz', d => { const v = ovOf(key); v.z = clampN((v.z || 0) + d, -20, 20); clean(key) });
   body.querySelector('#aeFlip').onchange = e => once(() => ovOf(key).f = e.target.checked)();
+  /* v97.47 · blue grid under a decoration outside the buildings: its ground frame blocks walking. The first time, guess a size from what it is */
+  body.querySelector('#aeBlock').onchange = e => once(() => { const v = ovOf(key); if (e.target.checked) { v.block = true; if (v.fw == null && v.fh == null) { const g = guessBlock(label); v.fw = g[0]; v.fh = g[1] } } else delete v.block; render() })();
   bindSliders((k, v) => {const ov=ovOf(key);if(k==='ix'||k==='iy')ov[k]=v/100;else ov[k]=v}, () => clean(key))
  }
 
@@ -3069,6 +3077,7 @@
  }
 
  window.VillageAssetEdit = {
+  blockedAt, blocks: () => blockList.map(r => ({ ...r })),
   refreshPanel: () => { try { render() } catch (_) {} },
   charScale,
   drawChar,
