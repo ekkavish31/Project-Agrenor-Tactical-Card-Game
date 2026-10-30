@@ -44,8 +44,28 @@
     if (o && o.month === month()) return o.id;
     const keys = Object.keys(POLICIES); let h = month() * 2654435761 >>> 0; for (const c of id) h = Math.imul(h ^ c.charCodeAt(0), 2246822507) >>> 0; return keys[h % keys.length];
   }
+  /* v97.68 · T8 phase 2: a seat on Fernvale's council (standing 60 with the village and 3 village projects built).
+     A councillor sets Fernvale's policy free of charge and takes a weekly share of the village chest — the policy decides how much,
+     and how the villagers feel about it (high tax pays most but costs standing). Stored in the game save: village.council. */
+  const COUNCIL_PAY = { tax_high: 45, tax_low: 10, trade: 30, safety: 20, festival: 15 };
+  const COUNCIL_REP = { tax_high: -3, tax_low: 3, trade: 1, safety: 1, festival: 3 };
+  const gm = () => { try { return root.WorldState?.game?.() } catch (e) { return null } };
+  const councillor = () => !!gm()?.village?.council;
+  function councilWhy() {
+    const g = gm(), F = root.Factions, VP = root.VillageProjects; if (!g) return 'ยังไม่ได้เริ่มเกม'; if (g.village.council) return 'เป็นสมาชิกสภาอยู่แล้ว';
+    const rep = F?.rep('village') || 0; if (rep < 60) return 'ต้องมีชื่อเสียงกับหมู่บ้านเฟิร์นเวล 60 (ตอนนี้ ' + rep + ')';
+    const built = VP ? Object.keys(VP.PROJECTS).filter(k => VP.has(k)).length : 0; if (built < 3) return 'ต้องช่วยสร้างโครงการพัฒนาหมู่บ้าน 3 อย่าง (ตอนนี้ ' + built + ')';
+    return '';
+  }
+  function joinCouncil() { if (councilWhy()) return false; const g = gm(); g.village.council = { since: g.day || 1, week: g.day || 1 }; try { root.WorldState.commit?.() } catch (e) { } return true }
+  function councilSettle() {
+    const g = gm(), c = g?.village?.council, out = []; if (!c) return out;
+    while ((g.day || 1) - c.week >= 7) { const p = policy('fernvale'); g.village.coins = (g.village.coins || 0) + COUNCIL_PAY[p]; root.Factions?.add('village', COUNCIL_REP[p], 'นโยบาย' + POLICIES[p].name + 'ของสภา'); out.push(`🪑 ส่วนแบ่งจากสภาหมู่บ้าน +${COUNCIL_PAY[p]} 💰 · ชาวบ้าน${COUNCIL_REP[p] < 0 ? 'บ่นเรื่อง' : 'ชอบ'}${POLICIES[p].name}`); c.week += 7 }
+    if (out.length) try { root.WorldState.commit?.() } catch (e) { } return out;
+  }
   function petition(id, pol) {
     const T = SETTLEMENTS[id], F = root.Factions, g = root.WorldState?.game?.(); if (!T || !POLICIES[pol] || !g) return 'ไม่มีนโยบายนี้';
+    if (id === 'fernvale' && g.village.council) { (g.village.policy ||= {})[id] = { id: pol, month: month() }; try { root.WorldState.commit?.() } catch (e) { } return '' }   /* the council decides */
     if ((F?.rep(T.ruler) || 0) < 50) return 'ต้องมีชื่อเสียง "นับถือ" (50) กับ' + (F?.FACTIONS[T.ruler]?.name || T.ruler);
     if ((g.village.coins || 0) < 80) return 'ค่าธรรมเนียมยื่นคำร้อง 80 💰';
     g.village.coins -= 80; (g.village.policy ||= {})[id] = { id: pol, month: month() }; try { root.WorldState.commit?.() } catch (e) { } return '';
@@ -54,13 +74,17 @@
     return new Promise(res => {
       const T = SETTLEMENTS[id]; if (!T) return res(); document.getElementById('stPet')?.remove(); const d = document.createElement('div'); d.id = 'stPet';
       d.style.cssText = 'position:fixed;inset:0;z-index:2150;display:grid;place-items:center;background:#05080dcc;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif';
-      const cur = policy(id), F = root.Factions, rep = F?.rep(T.ruler) || 0;
-      d.innerHTML = `<div style="width:min(560px,94vw);padding:16px 18px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c">
-        <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button><h2 style="margin:0 0 4px;font:800 21px Georgia,'Noto Sans Thai',serif">📜 ยื่นคำร้องต่อ${T.leader}</h2>
-        <p style="margin:0 0 8px;font-size:13px;color:#6a5030">เลือกนโยบายของ${T.name}ไปจนจบเดือนนี้ · ต้องมีชื่อเสียง "นับถือ" (50) กับ${F?.FACTIONS[T.ruler]?.name || T.ruler} (ตอนนี้ ${rep}) · ค่าธรรมเนียม 80 💰</p><p class="msg" style="font-size:13px;margin:4px 0"></p>
-        ${Object.entries(POLICIES).map(([k, P]) => `<button data-p="${k}" ${k === cur ? 'disabled' : ''} style="display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px;border-radius:9px;border:1px solid #7a4b06;background:${k === cur ? '#d8c8a0' : 'linear-gradient(#f0c560,#c9902e)'};color:#2a1a06;font:600 13px inherit;font-family:inherit;cursor:pointer">${P.icon} <b>${P.name}</b> — ${P.text}${k === cur ? ' (ตอนนี้)' : ''}</button>`).join('')}</div>`;
-      document.body.append(d);
-      d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) { d.remove(); return res() } const b = e.target.closest('[data-p]'); if (!b || b.disabled) return; const w = petition(id, b.dataset.p); if (w) d.querySelector('.msg').textContent = '✖ ' + w; else { d.remove(); res(b.dataset.p) } };
+      const draw = msg => {
+      const cur = policy(id), F = root.Factions, rep = F?.rep(T.ruler) || 0, home = id === 'fernvale', seat = home && councillor(), cw = home && !seat ? councilWhy() : '';
+      const share = k => seat ? ` <small>· ส่วนแบ่ง ${COUNCIL_PAY[k]} 💰/สัปดาห์ · ชาวบ้าน ${COUNCIL_REP[k] > 0 ? '+' : ''}${COUNCIL_REP[k]}</small>` : '';
+      d.innerHTML = `<div style="width:min(580px,94vw);max-height:92vh;overflow:auto;padding:16px 18px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c">
+        <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button><h2 style="margin:0 0 4px;font:800 21px Georgia,'Noto Sans Thai',serif">${seat ? '🪑 สภาหมู่บ้านเฟิร์นเวล' : '📜 ยื่นคำร้องต่อ' + T.leader}</h2>
+        <p style="margin:0 0 8px;font-size:13px;color:#6a5030">${seat ? 'คุณเป็นสมาชิกสภา · เลือกนโยบายของเดือนนี้ได้ฟรี · ได้ส่วนแบ่งทุกสัปดาห์ตามนโยบาย' : `เลือกนโยบายของ${T.name}ไปจนจบเดือนนี้ · ต้องมีชื่อเสียง "นับถือ" (50) กับ${F?.FACTIONS[T.ruler]?.name || T.ruler} (ตอนนี้ ${rep}) · ค่าธรรมเนียม 80 💰`}</p><p class="msg" style="font-size:13px;margin:4px 0">${msg || ''}</p>
+        ${Object.entries(POLICIES).map(([k, P]) => `<button data-p="${k}" ${k === cur ? 'disabled' : ''} style="display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px;border-radius:9px;border:1px solid #7a4b06;background:${k === cur ? '#d8c8a0' : 'linear-gradient(#f0c560,#c9902e)'};color:#2a1a06;font:600 13px inherit;font-family:inherit;cursor:pointer">${P.icon} <b>${P.name}</b> — ${P.text}${k === cur ? ' (ตอนนี้)' : ''}${share(k)}</button>`).join('')}
+        ${home && !seat ? `<div style="margin-top:10px;padding:9px 10px;border-radius:10px;background:#fff8;font-size:13px"><b>🪑 เข้าสภาหมู่บ้าน</b> — ตั้งนโยบายเฟิร์นเวลได้เองฟรี และได้ส่วนแบ่งรายสัปดาห์ · ต้องมีชื่อเสียงกับหมู่บ้าน 60 และช่วยสร้างโครงการพัฒนาหมู่บ้าน 3 อย่าง<br><button data-join ${cw ? 'disabled' : ''} style="margin-top:6px;padding:6px 11px;border-radius:8px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);font:600 13px inherit;font-family:inherit;cursor:pointer;${cw ? 'opacity:.45' : ''}">🪑 ขอเข้าสภา</button> <small style="color:${cw ? '#a0442a' : '#3a7a2a'}">${cw || '✔ คุณสมบัติครบ'}</small></div>` : ''}</div>`;
+      };
+      draw(id === 'fernvale' ? councilSettle().join('<br>') : ''); document.body.append(d);
+      d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) { d.remove(); return res() } if (e.target.closest('[data-join]')) { if (joinCouncil()) { root.Factions?.add('village', 2, 'ได้รับเลือกเข้าสภาหมู่บ้าน'); draw('🪑 ยินดีด้วย คุณได้เป็นสมาชิกสภาหมู่บ้านเฟิร์นเวลแล้ว') } return } const b = e.target.closest('[data-p]'); if (!b || b.disabled) return; const w = petition(id, b.dataset.p); if (w) d.querySelector('.msg').textContent = '✖ ' + w; else { d.remove(); res(b.dataset.p) } };
     });
   }
   const polMult = (id, good) => { const p = policy(id); return p === 'tax_high' ? 1.1 : p === 'tax_low' ? .95 : p === 'trade' ? .97 : p === 'festival' && good === 'inn' ? .5 : 1 };
@@ -80,9 +104,9 @@
      save (S.cargo) and is limited by the wagon (CARGO_MAX). A trade of 5+ units raises standing with the merchants. */
   const TRADE = { fish: 6, salt: 8, cloth: 10, iron: 6, fur: 12, ore: 7, herbs: 5, wood: 4 };
   const CARGO_MAX = 12, WAGON = [[150, 'เกวียนสองล้อ', 20], [300, 'เกวียนใหญ่ลากด้วยวัว', 30]], ESCORT = { cost: 30, days: 3 };
-  const cargoMax = S => S.wagon ? WAGON[S.wagon - 1][2] : CARGO_MAX;
+  const cargoMax = S => (S.wagon ? WAGON[S.wagon - 1][2] : CARGO_MAX) + 5 * (root.Offices?.perk?.(S, 'harbor') || 0);   /* v97.68 · harbour office */
   function wagonUp(S) { const w = WAGON[S.wagon || 0]; if (!w || (S.gold || 0) < w[0]) return false; S.gold -= w[0]; S.wagon = (S.wagon || 0) + 1; return true }
-  const escorted = S => (S.escortUntil || 0) >= (root.WorldState?.game?.()?.day || 1);
+  const escorted = S => (S.escortUntil || 0) >= (root.WorldState?.game?.()?.day || 1) || (root.Offices?.perk?.(S, 'garrison') || 0) >= 4;   /* v97.68 · a vice-general's soldiers ride along */
   function hireEscort(S) { if ((S.gold || 0) < ESCORT.cost) return false; S.gold -= ESCORT.cost; S.escortUntil = (root.WorldState?.game?.()?.day || 1) + ESCORT.days - 1; return true }
   /* T6 phase 2: losing a fight (or fleeing) on the road costs part of the cargo — little when escorted */
   function loseCargo(S, share) { const out = []; for (const k of Object.keys(S.cargo || {})) { const n = Math.ceil(S.cargo[k] * share); if (!n) continue; S.cargo[k] -= n; if (S.cargo[k] <= 0) delete S.cargo[k]; out.push(GOODS[k] + ' ' + n) } return out }
@@ -92,7 +116,7 @@
   function trade(id, S, k, n) {   /* n > 0 buy, n < 0 sell · returns the gold moved or 0 */
     S.cargo ||= {}; if (!TRADE[k] || !SETTLEMENTS[id]) return 0;
     if (n > 0) { n = Math.min(n, cargoMax(S) - load(S), Math.floor((S.gold || 0) / buyPrice(id, k))); if (n <= 0) return 0; const c = n * buyPrice(id, k); S.gold -= c; S.cargo[k] = (S.cargo[k] || 0) + n; if (n >= 5) root.Factions?.add('merchants', 1, 'ซื้อ' + GOODS[k] + 'ที่' + SETTLEMENTS[id].name); return -c }
-    n = Math.min(-n, S.cargo[k] || 0); if (n <= 0) return 0; const g = n * sellPrice(id, k); S.gold += g; S.cargo[k] -= n; if (!S.cargo[k]) delete S.cargo[k]; if (n >= 5) root.Factions?.add('merchants', 1, 'ขาย' + GOODS[k] + 'ที่' + SETTLEMENTS[id].name); return g;
+    n = Math.min(-n, S.cargo[k] || 0); if (n <= 0) return 0; const g = n * sellPrice(id, k); S.gold += g; S.traded = (S.traded || 0) + n; S.cargo[k] -= n; if (!S.cargo[k]) delete S.cargo[k]; if (n >= 5) root.Factions?.add('merchants', 1, 'ขาย' + GOODS[k] + 'ที่' + SETTLEMENTS[id].name); return g;
   }
   /* the market panel (one overlay, used by the world map's towns and Fernvale's market) — resolves when closed */
   function tradePanel(id, S, onChange) {
@@ -117,6 +141,6 @@
       d.onclick = e => { if (e.target === d || e.target.closest('[data-x]')) return close(); if (e.target.closest('[data-w]')) { if (wagonUp(S)) { onChange?.(0); draw() } return } if (e.target.closest('[data-e]')) { if (hireEscort(S)) { onChange?.(0); draw() } return } const b = e.target.closest('button[data-k]'); if (!b || b.disabled) return; const g = trade(id, S, b.dataset.k, +b.dataset.n); if (g) { onChange?.(g); draw() } };
     });
   }
-  root.Settlements = { POLICIES, policy, petition, petitionPanel, SIZE, GOODS, SETTLEMENTS, BASE, price, info, card, TRADE, CARGO_MAX, WAGON, ESCORT, cargoMax, wagonUp, escorted, hireEscort, loseCargo, swing, news, buyPrice, sellPrice, load, trade, tradePanel };
+  root.Settlements = { POLICIES, policy, petition, petitionPanel, COUNCIL_PAY, COUNCIL_REP, councillor, councilWhy, joinCouncil, councilSettle, SIZE, GOODS, SETTLEMENTS, BASE, price, info, card, TRADE, CARGO_MAX, WAGON, ESCORT, cargoMax, wagonUp, escorted, hireEscort, loseCargo, swing, news, buyPrice, sellPrice, load, trade, tradePanel };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.Settlements;
 })(typeof window !== 'undefined' ? window : globalThis);
