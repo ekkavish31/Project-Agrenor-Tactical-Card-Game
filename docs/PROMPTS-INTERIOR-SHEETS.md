@@ -26,6 +26,7 @@
 | **2 ✅ ใช้ในเกมแล้ว (v98.25)** | เคาน์เตอร์และเวที: เคาน์เตอร์บาร์ (ช่วงตรง · มุม · ปลาย) · เคาน์เตอร์ร้าน · เวทีเล็ก · บันได | โรงแรม · ร้าน · สถานพยาบาล · สมาคม |
 | 3 | ของเก็บ: ลัง · ถัง · ถังเล็ก (keg) · ตะกร้า · หีบ · ตู้เตี้ย · ชั้นสูง (shelfbox) · ชั้นวางอาวุธ/เครื่องมือ | ทุกห้อง |
 | 4 | ห้องนอนและพรม: เตียง · เตียงผู้ป่วย · หีบปลายเตียง · พรมหลายขนาด (3×3 · 4×3 · ทางเดิน 1×7) | บ้าน · สถานพยาบาล · โรงแรม |
+| **5A (โรงตีเหล็ก — ทำก่อนตามที่ขอ)** | โรงตีเหล็ก: เตาหลอม 2×2 · ทั่ง · ถังชุบ · เครื่องสูบลม · หินลับ · โต๊ะช่างพร้อมปากกาจับ · ถังถ่าน · กองแท่งเหล็ก · เตาไฟเปิด | โรงตีเหล็ก · บ้านช่างตีเหล็ก |
 | 5 | เตาและไฟ: เตาผิง 1×2 · เตาหลอม 2×2 · ทั่ง · ถังชุบ · เตาอบขนมปัง · เตาผิงมีหม้อ | โรงแรม · โรงตีเหล็ก · บ้านคนทำขนม |
 | 6 | งานฝีมือ: กี่ทอผ้า · ม้านั่งช่าง · กองฟืน · โต๊ะเขียนหนังสือ · ชั้นหนังสือ · ตาข่าย · เครื่องโม่ | บ้านชาวบ้านตามอาชีพ |
 | 7 | วิหาร: แท่นบูชา · รูปปั้น · ม้านั่งยาวพร้อมพนัก (pew) · เชิงเทียนพื้น · เชิงเทียนยืน | วิหาร |
@@ -144,3 +145,37 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 **ตรวจรับชีท 3**: เหมือนชีทก่อน + ⑥ ชั้นและชั้นวางเรียงของเรียบร้อย ไม่มีตัวหนังสือบนสันหนังสือ/ป้าย ⑦ ลัง/ถัง/ตะกร้า/หีบ ปิดและว่าง
 
 พิมพ์ "ชีทถัดไป" ถ้าอยากได้ชีท 4 (ห้องนอนและพรม)
+
+
+---
+
+## ชีท 5A · โรงตีเหล็ก (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `furnace` · `anvil` · `quench` · `bellows` · `grindstone` · `bench-smith` · `coal-bin` · `ingots` · `forge-open`
+
+ใช้แทน: `furnace` (เตาหลอม 2×2) · `anvil` · `quench` ในโรงตีเหล็ก และ `anvil` ในบ้านช่างตีเหล็ก · ที่เหลือเพิ่มเป็นของตกแต่งใหม่ในห้อง
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (a blacksmith's forge): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people. Do not let any fire glow or light spill onto the green background; any glow stays inside the object's own silhouette.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT (the working side, opening or face) points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. Piece 1 (the furnace) covers a 2x2-tile footprint, so it sits on a large diamond 62% of the cell width wide; every other piece has a 1x1-tile footprint (or smaller) and sits on one single diamond. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): furnace body about 1.1 tile-widths high with its hood, anvil about 0.5 including its stump, quench trough about 0.4, bellows about 0.6, grindstone about 0.55, workbench about 0.5, coal bin about 0.4, ingot stack about 0.25, open forge about 0.45.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (stone blocks and mortar, soot, hammered iron, rivets, wood grain, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows and its own flickering firelight). Palette: soot-grey and warm grey fieldstone, blackened iron, dark steel with soft blue-grey highlights, oak and walnut wood, copper accents; the only saturated colour is the orange-red fire and embers inside the furnace and open forge. Slightly desaturated overall so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Blacksmith's furnace, 2x2 tiles: a chunky fieldstone body with a tall tapering stone hood and chimney going up, a wide arched fire mouth on the front-right face glowing orange-red with embers and a white-hot core, an iron grate, a small side shelf holding a pair of tongs.
+2. Anvil on a stump, 1x1 tile: a classic blacksmith's anvil with horn and flat face on a thick oak log stump bound with an iron band, clean and empty.
+3. Quenching trough, 1x1 tile: a rectangular oak and iron-banded water trough, dark still water inside, a small glint on the surface, a hanging ladle on its side.
+4. Forge bellows on a stand, 1x1 tile: a big leather-and-wood double bellows mounted on a low oak frame with an iron nozzle pointing forward and a lever handle.
+5. Grindstone, 1x1 tile: a round sharpening stone wheel in a wooden trough frame with a foot pedal or hand crank, wet stone surface.
+6. Smith's workbench, 1x1 tile: heavy oak bench with an iron vise bolted to the front corner, a hammer, a file and a pair of pliers lying on the top.
+7. Coal bin, 1x1 tile: an open-topped wooden bin heaped with black coal lumps, a small iron shovel leaning in it.
+8. Stack of iron ingots, smaller than a tile: a neat pyramid of dark grey iron bars on a low wooden pallet, plus two rough steel billets on top.
+9. Open forge hearth, 1x1 tile: a low waist-high stone hearth with an open top bed of glowing coals and embers, a short iron hood bracket above, a poker leaning on the side.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 5A**: เหมือนชีทก่อน + ⑥ เตาหลอมกว้าง 2 ช่อง (ใหญ่กว่าชิ้นอื่นชัดเจน) ⑦ ไฟอยู่แค่ในปากเตา/เตาเปิด ไม่เรืองออกไปบนพื้นเขียว ⑧ ทั่งว่างเปล่า ถังชุบน้ำนิ่ง
