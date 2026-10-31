@@ -6,7 +6,7 @@
    Textures: assets/village-town/ground/*.png · props: assets/village-town/edge/*.png */
 (function(root){'use strict';
 const sprite={};for(const n of ['snow-rock-s','snow-rock-m','snow-rock-l','snow-pine-s','snow-pine-m','snow-pine-l','frozen-bush','snow-log','snow-ridge','snowdrift','snow-sign','frozen-puddle',...['pier','pier-end','boat','fish-net','crates-barrel','rocks-l','rocks-s','driftwood','beach-grass','lobster-trap','foam-edge','lantern-post'].map(n=>'coast-'+n)]){const im=new Image();im.onload=()=>{sprite[n]=im;root.VillageNature?.refresh?.()};im.src='assets/village-town/edge/'+n+'.png'}
-const tex={};for(const n of ['snow','sand','sea','swamp-water','dirt-road','plaza-slabs']){const im=new Image();im.onload=()=>{tex[n]=im;terrainDirty=true};im.src='assets/village-town/ground/'+n+'.png'}
+const tex={};for(const n of ['snow','sand','sea','swamp-water','dirt-road','plaza-slabs']){const im=new Image();im.onload=()=>{tex[n]=im;typeof lateTerrain==='function'?lateTerrain():terrainDirty=true};im.src='assets/village-town/ground/'+n+'.png'}
 // biome per exit, in the exit order N, NE, E, SE, SW, W
 const PLAN=[[{t:'dirt-road',r:380,out:120,a:.85}],[{t:'snow',r:640,out:200,a:1,kind:'snow'}],[],[{t:'sand',r:560,out:160,a:1,kind:'sand'},{t:'sea',r:330,out:430,a:1,kind:'water'}],[{t:'plaza-slabs',r:260,out:60,a:.55}],[{t:'dirt-road',r:420,out:-120,a:.4},{t:'swamp-water',r:300,out:-230,side:1,a:1,kind:'water'},{t:'swamp-water',r:240,out:-170,side:-1,a:1,kind:'water'}]];
 let zones=null;

@@ -28,8 +28,11 @@ function build(el,battle){el.innerHTML='';if(opt.rays&&!battle)el.insertAdjacent
 function attach(canvas,o={}){if(!canvas||canvas._hd2dOverlay)return;canvas._hd2dOverlay=true;const el=document.createElement('div');el.className='hd2d';el.dataset.battle=o.battle?'1':'';canvas.after(el);overlays.add(el);build(el,o.battle);return el}
 // bloom: ¼-size copy, keep only bright parts, blur, add back with 'screen'
 let small=null;
-function bloom(ctx,canvas,strength=.32){if(!opt.bloom||!canvas.width)return;const w=Math.max(1,canvas.width>>2),h=Math.max(1,canvas.height>>2);if(!small){small=document.createElement('canvas')}if(small.width!==w||small.height!==h){small.width=w;small.height=h}
- const q=small.getContext('2d');q.globalCompositeOperation='copy';q.filter='brightness(.75) contrast(2.6) saturate(1.2) blur(2px)';q.drawImage(canvas,0,0,w,h);q.filter='none';q.globalCompositeOperation='source-over';
+let bloomAt=0,bloomCost=0,bloomFor=null;
+function bloom(ctx,canvas,strength=.32,force=false){if(!opt.bloom||!canvas.width)return;const w=Math.max(1,canvas.width>>2),h=Math.max(1,canvas.height>>2);if(!small){small=document.createElement('canvas')}const resized=small.width!==w||small.height!==h;if(resized){small.width=w;small.height=h}
+ /* v98.13 · the glow is a soft blur: rebuild it at most every max(140 ms, 6× its own cost), and just re-draw the last one in between */
+ const now=performance.now();if(force||resized||canvas!==bloomFor||!bloomAt||now-bloomAt>Math.max(140,bloomCost*6)){bloomFor=canvas;const q=small.getContext('2d');q.globalCompositeOperation='copy';q.filter='brightness(.75) contrast(2.6) saturate(1.2) blur(2px)';q.drawImage(canvas,0,0,w,h);q.filter='none';q.globalCompositeOperation='source-over';bloomAt=performance.now();bloomCost=bloomAt-now}
+
  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='screen';ctx.globalAlpha=strength;ctx.imageSmoothingEnabled=true;ctx.drawImage(small,0,0,canvas.width,canvas.height);ctx.restore()}
 function set(k,v){opt[k]=!!v;try{localStorage.setItem(KEY,JSON.stringify(opt))}catch(e){}overlays.forEach(el=>build(el,el.dataset.battle==='1'));document.querySelectorAll('.hd2dOpts input').forEach(i=>i.checked=!!opt[i.dataset.k])}
 function controls(){const d=document.createElement('div');d.className='hd2dOpts';d.innerHTML='<b>สไตล์ HD-2D</b>'+[['tilt','เบลอบน-ล่าง'],['bloom','แสงฟุ้ง'],['rays','ลำแสง'],['dust','ฝุ่นในแสง']].map(([k,t])=>`<label><input type="checkbox" data-k="${k}" ${opt[k]?'checked':''}>${t}</label>`).join('');d.onchange=e=>{const i=e.target.closest('input');if(i)set(i.dataset.k,i.checked)};return d}
@@ -38,7 +41,7 @@ root.addEventListener('storage',e=>{if(e.key===KEY){try{opt={...DEF,...JSON.pars
 // battle bloom: runs right after a frame the battle actually drew (its clearRect marks the frame)
 function gradeBattle(ctx,c){const k=root.GameMood?root.GameMood.level():.6;if(!k)return;const W=c.width,H=c.height,mix=(a)=>`rgb(${a.map(x=>Math.round(255-(255-x)*k)).join(',')})`;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='multiply';let gr=ctx.createLinearGradient(0,0,W,H);gr.addColorStop(0,mix([255,242,222]));gr.addColorStop(1,mix([196,186,190]));ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation='soft-light';ctx.fillStyle=`rgba(255,170,96,${.16*k})`;ctx.fillRect(0,0,W,H);ctx.restore()}
 function hookBattle(c){if(c._hd2d)return;c._hd2d=true;attach(c,{battle:true});const ctx=c.getContext('2d'),clear=ctx.clearRect.bind(ctx);let fresh=false;ctx.clearRect=(...a)=>{fresh=true;return clear(...a)};
- const loop=()=>{if(fresh&&document.body.contains(c)&&c.offsetParent){fresh=false;try{gradeBattle(ctx,c);bloom(ctx,c,.26)}catch(e){}}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+ const loop=()=>{if(fresh&&document.body.contains(c)&&c.offsetParent){fresh=false;try{gradeBattle(ctx,c);bloom(ctx,c,.26,true)}catch(e){}}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
 new MutationObserver(()=>{const c=document.getElementById('battleCanvas');if(c&&!c._hd2d)hookBattle(c);const b=document.querySelector('select[data-setting="backdrop"]'),l=b?.closest('label');if(l?.parentNode&&!l.parentNode.querySelector('.hd2dOpts'))l.parentNode.appendChild(controls())}).observe(document.documentElement,{childList:true,subtree:true});
 root.HD2D={attach,bloom,set,controls,options:()=>({...opt})};
 })(globalThis);

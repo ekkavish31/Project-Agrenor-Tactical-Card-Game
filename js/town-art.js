@@ -51,6 +51,11 @@
   for(let i=0;i<n*n;i++){const v=rnd(),k=i*4;if(v<.5){d.data[k]=34;d.data[k+1]=58;d.data[k+2]=24;d.data[k+3]=Math.round((.5-v)*2*255)}else{d.data[k]=214;d.data[k+1]=206;d.data[k+2]=120;d.data[k+3]=Math.round((v-.5)*2*200)}}
   q.putImageData(d,0,0);const big=document.createElement('canvas');big.width=big.height=n*8;const b=big.getContext('2d');b.imageSmoothingEnabled=true;b.filter='blur(6px)';b.drawImage(c,0,0,big.width,big.height);
   g.save();g.globalAlpha=.32;g.imageSmoothingEnabled=true;g.drawImage(big,8,8,big.width-16,big.height-16,0,0,w,h);g.restore()}
- root.TownArt={grassTone,setCur:v=>{cur=v||null},sharpOn:()=>sharpOn,sharpAmt:()=>sharpAmt,setSharp,image,asset,pattern,begin,draw,outline,hit,sprite,detail,hero,setMotion,onLoad:f=>listeners.add(f),getMotion:()=>motion};
+ /* v98.13 · speed: world-space rectangle currently visible through ctx's transform (null when it cannot be told), grown by `pad` world px.
+ Used to draw only the part of the big ground bitmaps / object lists that is on screen. */
+ function view(ctx,pad=0){try{const m=ctx.getTransform();if(!m.is2D||Math.abs(m.b)>1e-6||Math.abs(m.c)>1e-6||!m.a||!m.d)return null;const w=ctx.canvas.width,h=ctx.canvas.height,x0=(0-m.e)/m.a,x1=(w-m.e)/m.a,y0=(0-m.f)/m.d,y1=(h-m.f)/m.d;return{x0:Math.min(x0,x1)-pad,x1:Math.max(x0,x1)+pad,y0:Math.min(y0,y1)-pad,y1:Math.max(y0,y1)+pad}}catch(e){return null}}
+ /* draw an image whose pixels are 1:1 with world px at (0,0), cropped to the visible part */
+ function drawWorld(ctx,im,pad=6){const v=view(ctx,pad);if(!v){ctx.drawImage(im,0,0);return}const x=Math.max(0,Math.floor(v.x0)),y=Math.max(0,Math.floor(v.y0)),w=Math.min(im.width,Math.ceil(v.x1))-x,h=Math.min(im.height,Math.ceil(v.y1))-y;if(w>0&&h>0)ctx.drawImage(im,x,y,w,h,x,y,w,h)}
+ root.TownArt={view,drawWorld,grassTone,setCur:v=>{cur=v||null},sharpOn:()=>sharpOn,sharpAmt:()=>sharpAmt,setSharp,image,asset,pattern,begin,draw,outline,hit,sprite,detail,hero,setMotion,onLoad:f=>listeners.add(f),getMotion:()=>motion};
  Object.keys(files).forEach(asset);if(motion)setMotion(motion);
 })(globalThis);
