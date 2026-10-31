@@ -455,9 +455,26 @@
     g.restore();
   }
   const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura indoors too */
+  /* v98.19 · the hero is drawn with the same motion data as the village and the battle (4 directions, the 12-frame walk, mirrored sets, procedural bob) instead of 3 hard-coded south-east frames flipped for the other sides */
+  const MOTION = (() => { try { return window.HeroMotion && typeof TACTICS_SPRITES !== 'undefined' ? HeroMotion.snapshot(TACTICS_SPRITES) : null } catch (e) { return null } })();
+  const motionPics = new Map(), motionPic = src => { let im = motionPics.get(src); if (!im) { im = new Image(); im.src = src; motionPics.set(src, im) } return im };
+  function drawHeroMotion(t, p, s) {
+    if (!MOTION) return false;
+    let f = null; try { f = HeroMotion.frame(MOTION, hero.face, t, hero.walking) } catch (e) { }
+    if (!f || !f.src) return false;
+    const im0 = motionPic(f.src); if (!im0.complete || !im0.naturalWidth) return false;
+    const a = MOTION.anchor || [.5, .9375], im = LOOK ? JobLook.pic(im0, f.src, LOOK) : im0, face = hero.face, walking = hero.walking;
+    g.save(); g.translate(p.x, p.y + 3);
+    try { window.ProcMotion?.apply(g, 'tactics.' + (walking ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: walking ? (MOTION.directions?.[face]?.walk?.length || 1) : 1, pose: walking ? 'walk' : 'idle' }, t, s, 'town-hero') } catch (e) { }
+    if (f.flipImage) g.scale(-1, 1);
+    if (LOOK) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, false);
+    g.drawImage(im, -s * a[0], -s * a[1], s, s);
+    if (LOOK) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, true);
+    g.restore(); return true;
+  }
   function drawHero(t) {
-    const set = hero.walking ? walkImgs : heroImgs, im0 = set[Math.floor(t / (hero.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 104, p = P(hero.vu, hero.vv);
-    g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15, 6, 0, 0, 7); g.fill();
+    { const p0 = P(hero.vu, hero.vv); g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p0.x, p0.y, 15, 6, 0, 0, 7); g.fill(); if (drawHeroMotion(t, p0, 104)) return }
+    const set = hero.walking ? walkImgs : heroImgs, im0 = set[Math.floor(t / (hero.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 104, p = P(hero.vu, hero.vv);   /* (the shadow was drawn above) */
     if (LOOK) JobLook.aura(g, LOOK, { x: p.x, y: p.y + 3 }, s, t, false);
     if (im0.complete && im0.naturalWidth) { g.save(); g.translate(p.x, p.y + 3); if (hero.face === 'SW' || hero.face === 'NW') g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
     if (LOOK) JobLook.aura(g, LOOK, { x: p.x, y: p.y + 3 }, s, t, true);

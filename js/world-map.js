@@ -219,12 +219,29 @@
   /* v97.54 · T6 phase 2: a loaded wagon draws bandits (up to ×1.5), an escort keeps them off (×0.6) */
   const cargoRisk = () => { const ST = window.Settlements; if (!ST) return 1; const n = ST.load(S); return (n ? 1 + Math.min(.5, n / 24) : 1) * (ST.escorted(S) ? .6 : 1) };
   const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura on the map too */
+  /* v98.19 · the hero token uses the same walk data as the village and the battle (12-frame walk, procedural bob) — facing left/right = SW/SE */
+  const MOTION = (() => { try { return window.HeroMotion && typeof TACTICS_SPRITES !== 'undefined' ? HeroMotion.snapshot(TACTICS_SPRITES) : null } catch (e) { return null } })();
+  const motionPics = new Map(), motionPic = src => { let im = motionPics.get(src); if (!im) { im = new Image(); im.src = src; motionPics.set(src, im) } return im };
+  function drawTokenMotion(now, s) {
+    if (!MOTION) return false;
+    const face = token.face < 0 ? 'SW' : 'SE'; let f = null; try { f = HeroMotion.frame(MOTION, face, now, token.walking) } catch (e) { }
+    if (!f || !f.src) return false; const im0 = motionPic(f.src); if (!im0.complete || !im0.naturalWidth) return false;
+    const a = MOTION.anchor || [.5, .9375], im = LOOK ? JobLook.pic(im0, f.src, LOOK) : im0, ap = { x: 0, y: 0 };
+    g.save(); g.translate(token.x, token.y + 4);
+    try { window.ProcMotion?.apply(g, 'tactics.' + (token.walking ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: token.walking ? (MOTION.directions?.[face]?.walk?.length || 1) : 1, pose: token.walking ? 'walk' : 'idle' }, now, s, 'town-hero') } catch (e) { }
+    if (f.flipImage) g.scale(-1, 1);
+    if (LOOK) JobLook.aura(g, LOOK, ap, s, now, false);
+    g.drawImage(im, -s * a[0], -s * a[1], s, s);
+    if (LOOK) JobLook.aura(g, LOOK, ap, s, now, true);
+    g.restore(); return true;
+  }
   function drawToken(now) {
     const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 76;
     const night = nightness(), lr = 70 + Math.sin(now * .004) * 4;
     const lg = g.createRadialGradient(token.x, token.y - 8, 4, token.x, token.y - 8, lr); lg.addColorStop(0, `rgba(255,210,130,${.18 + night * .25})`); lg.addColorStop(1, 'rgba(255,210,130,0)');
     g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = lg; g.beginPath(); g.arc(token.x, token.y - 8, lr, 0, 7); g.fill(); g.restore();
     g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(token.x, token.y + 2, 14, 5, 0, 0, 7); g.fill();
+    if (drawTokenMotion(now, s)) return;
     const ap = { x: token.x, y: token.y + 4 }; if (LOOK) JobLook.aura(g, LOOK, ap, s, now, false);
     if (im0.complete && im0.naturalWidth) { g.save(); g.translate(token.x, token.y + 4 - Math.abs(Math.sin(token.bob)) * (token.walking ? 3 : 0)); if (token.face < 0) g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
     if (LOOK) JobLook.aura(g, LOOK, ap, s, now, true);
