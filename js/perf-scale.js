@@ -6,6 +6,7 @@
 (function () {
   'use strict';
   if (/[?&](edit|battle|perf)=1/.test(location.search)) return;   // ?perf=1 = the speed check: measure at full quality
+  try { if (window.parent !== window && /[?&]perf=1/.test(parent.location.search)) return } catch (e) { }
   try { if (localStorage.getItem('projectA.autoRes') === '0') return } catch (e) { }
   const real = window.devicePixelRatio || 1, STEPS = [1, .75, .6, .5], KEY = 'projectA.renderStep';
   let step = 0; try { step = Math.max(0, Math.min(STEPS.length - 1, +localStorage.getItem(KEY) || 0)) } catch (e) { }

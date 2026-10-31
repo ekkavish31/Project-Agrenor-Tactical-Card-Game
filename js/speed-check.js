@@ -4,7 +4,9 @@
    and in WebGL, so we can tell whether WebGL would help on THAT machine. Nothing is sent anywhere. Without ?perf=1 this file does nothing. */
 (function () {
   'use strict';
-  if (!/[?&]perf=1/.test(location.search)) return;
+  /* the real game runs this page inside index.html's frame: ?perf=1 on the outer address counts too */
+  const ON = /[?&]perf=1/.test(location.search) || (() => { try { return window.parent !== window && /[?&]perf=1/.test(parent.location.search) } catch (e) { return false } })();
+  if (!ON) return;
   const VER = (() => { try { return new URL(document.currentScript.src).searchParams.get('v') } catch (e) { return null } })();   // the ?v= of this file = the game version that shipped it
   const lt = [];
   try { new PerformanceObserver(l => { for (const e of l.getEntries()) lt.push([e.startTime, e.duration]) }).observe({ type: 'longtask', buffered: true }) } catch (e) { }
@@ -53,8 +55,8 @@
     const t0 = performance.now();
     for (; ;) {
       const big = lt.filter(x => x[1] > 300), lastEnd = big.length ? Math.max(...big.map(x => x[0] + x[1])) : 0, d = window.__townDrawnAt || 0, now = performance.now();
-      if ((d && now - Math.max(d, lastEnd) > 3000) || now - t0 > 60000) break;
-      show('⏱ ตรวจความเร็ว… รอให้เกมเปิดเสร็จ (' + Math.round(now / 1000) + ' วิ)\nอย่าสลับแท็บและอย่าขยับกล้องจนกว่าจะขึ้นว่า "เสร็จ"'); await wait(500);
+      if (d && (now - Math.max(d, lastEnd) > 3000 || now - t0 > 90000)) break;   // never measure before the village has really been shown (it can sit hidden behind the title screen)
+      show(d ? '⏱ ตรวจความเร็ว… รอให้เกมเปิดเสร็จ (' + Math.round(now / 1000) + ' วิ)\nอย่าสลับแท็บและอย่าขยับกล้องจนกว่าจะขึ้นว่า "เสร็จ"' : '⏱ ตรวจความเร็ว… รอเข้าหมู่บ้าน\nถ้ายังอยู่หน้าเมนูแรก กด "เล่นต่อ" หรือ "เริ่มเกมใหม่" ก่อน'); await wait(500);
     }
     show('⏱ กำลังวัด… (ประมาณ 10 วินาที) อย่าสลับแท็บ'); await wait(300);
     const b2 = median([bench2d(), bench2d(), bench2d()]); const gl = benchGL(); const glMs = gl ? median([benchGL().ms, gl.ms, benchGL().ms]) : null;
