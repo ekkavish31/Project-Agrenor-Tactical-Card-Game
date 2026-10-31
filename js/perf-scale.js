@@ -5,7 +5,7 @@
    Turn it off:  localStorage.setItem('projectA.autoRes','0')  ·  the last step is remembered so the next visit starts at a speed that worked. */
 (function () {
   'use strict';
-  if (/[?&](edit|battle)=1/.test(location.search)) return;
+  if (/[?&](edit|battle|perf)=1/.test(location.search)) return;   // ?perf=1 = the speed check: measure at full quality
   try { if (localStorage.getItem('projectA.autoRes') === '0') return } catch (e) { }
   const real = window.devicePixelRatio || 1, STEPS = [1, .75, .6, .5], KEY = 'projectA.renderStep';
   let step = 0; try { step = Math.max(0, Math.min(STEPS.length - 1, +localStorage.getItem(KEY) || 0)) } catch (e) { }
