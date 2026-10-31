@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheet 1). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–2). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -73,5 +73,88 @@ window.INTERIOR_ART={
   "fx": 127,
   "fy": 301,
   "k": 0.157
+ },
+ "counter-bar": {
+  "src": "assets/interior/counter-bar.webp",
+  "w": 412,
+  "h": 334,
+  "fx": 206,
+  "fy": 231,
+  "k": 0.3301,
+  "stretch": 3,
+  "noShadow": true
+ },
+ "counter-bar-end": {
+  "src": "assets/interior/counter-bar-end.webp",
+  "w": 234,
+  "h": 255,
+  "fx": 117,
+  "fy": 196,
+  "k": 0.2906
+ },
+ "counter-shop": {
+  "src": "assets/interior/counter-shop.webp",
+  "w": 416,
+  "h": 331,
+  "fx": 208,
+  "fy": 227,
+  "k": 0.3269,
+  "stretch": 3,
+  "noShadow": true
+ },
+ "counter-guild": {
+  "src": "assets/interior/counter-guild.webp",
+  "w": 403,
+  "h": 331,
+  "fx": 202,
+  "fy": 230,
+  "k": 0.3375,
+  "stretch": 3,
+  "noShadow": true
+ },
+ "counter-healer": {
+  "src": "assets/interior/counter-healer.webp",
+  "w": 384,
+  "h": 319,
+  "fx": 192,
+  "fy": 223,
+  "k": 0.3542,
+  "stretch": 3,
+  "noShadow": true
+ },
+ "desk-writing": {
+  "src": "assets/interior/desk-writing.webp",
+  "w": 326,
+  "h": 326,
+  "fx": 163,
+  "fy": 261,
+  "k": 0.3129
+ },
+ "stage": {
+  "src": "assets/interior/stage.webp",
+  "w": 466,
+  "h": 282,
+  "fx": 233,
+  "fy": 152,
+  "k": 0.31,
+  "noShadow": true
+ },
+ "stairs": {
+  "src": "assets/interior/stairs.webp",
+  "w": 293,
+  "h": 355,
+  "fx": 146,
+  "fy": 282,
+  "k": 0.3481,
+  "mirror": true,
+  "noShadow": true
+ },
+ "counter-flap": {
+  "src": "assets/interior/counter-flap.webp",
+  "w": 263,
+  "h": 291,
+  "fx": 132,
+  "fy": 225,
+  "k": 0.2586
  }
 };

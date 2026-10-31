@@ -61,9 +61,9 @@
       it('hearth', 0, 2, 1, 2, { h: 16 }); R.light.push({ u: .6, v: 3, r: 4, col: '255,150,60', flicker: true });
       for (const [u, v] of [[4, 6], [8, 6], [5, 9], [9, 9]]) { it('table', u, v); sp('table', u - 1, v, 'SE', 'sit'); sp('table', u + 1, v, 'SW', 'sit'); sp('table', u, v - 1, 'SE', 'sit'); }
       for (const [u, v] of [[4, 6], [8, 6], [5, 9], [9, 9]]) for (const [du, dv] of [[-1, 0], [1, 0], [0, -1]]) it('stool', u + du, v + dv, 1, 1, { walk: true });
-      it('stage', 11, 1, 2, 3, { h: 8, walk: true }); sp('stage', 11, 2, 'SW', 'play'); sp('stage', 12, 3, 'SW', 'stand');
+      it('stage', 10, 1, 2, 2, { h: 8, walk: true }); sp('stage', 10, 2, 'SW', 'play'); sp('stage', 11, 2, 'SW', 'stand');   /* v98.24 · 2×2, steps on the lower-right */
       it('table', 12, 9); sp('corner', 12, 8, 'SW', 'sit'); it('stool', 12, 8, 1, 1, { walk: true });
-      it('stairs', 6, 0, 2, 1, { h: 0 }); it('rug', 6, 5, 4, 3, { walk: true }); it('plant', 1, 9); it('crate', 10, 1);
+      it('stairs', 6, 0, 2, 1, { h: 0 }); it('rug', 6, 5, 4, 3, { walk: true }); it('plant', 1, 9); it('crate', 9, 3);
       for (let u = 2; u < 8; u++) { sp('bar', u, 3, 'NE', 'drink'); it('stool', u, 3, 1, 1, { walk: true, tall: true }) }
       sp('bar', 4, 1, 'SW', 'work'); sp('bar', 6, 1, 'SW', 'work');                                   // behind the counter (the innkeeper)
       sp('fire', 1, 3, 'SE', 'sit'); sp('fire', 1, 4, 'SE', 'sit'); sp('fire', 2, 4, 'NW', 'stand');
@@ -340,13 +340,22 @@
   }
   /* v98.23 · hand-painted sprites (js/interior-art.js) for the pieces that have one: table (round / square, picked by position), stool (the tall bar stool when {tall:true}), barrel / keg */
   const ART = window.INTERIOR_ART || {}, artImgs = {};
-  const artFor = i => i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (i.k === 'barrel' || i.k === 'keg') ? 'table-barrel' : null;
+  const COUNTER = { inn: 'counter-bar', shop: 'counter-shop', guild: 'counter-guild', healer: 'counter-healer' };
+  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (i.k === 'barrel' || i.k === 'keg') ? 'table-barrel' : null;
   function drawArt(i, c) {
     const name = artFor(i), a = name && ART[name]; if (!a) return false;
     const im = artImgs[name] || (artImgs[name] = Object.assign(new Image(), { src: a.src })); if (!im.complete || !im.naturalWidth) return false;
-    const k = a.k * (i.k === 'keg' ? .8 : 1), rx = a.w * k * (name === 'table-barrel' ? .42 : .36);
-    g.fillStyle = 'rgba(0,0,0,.22)'; g.beginPath(); g.ellipse(c.x, c.y + 1, rx, rx * .5, 0, 0, 7); g.fill();
-    g.drawImage(im, c.x - a.fx * k, c.y - a.fy * k, a.w * k, a.h * k); return true;
+    const k = a.k * (i.k === 'keg' ? .8 : 1);
+    if (!a.noShadow) { const rx = a.w * k * (name === 'table-barrel' ? .42 : .36); g.fillStyle = 'rgba(0,0,0,.22)'; g.beginPath(); g.ellipse(c.x, c.y + 1, rx, rx * .5, 0, 0, 7); g.fill() }
+    g.save(); if (a.mirror) { g.translate(c.x * 2, 0); g.scale(-1, 1) }
+    if (a.stretch && i.w > a.stretch && i.d === 1) {
+      /* a long counter: the left half, (w − 3) one-tile strips cut from the middle, then the right half (every tile along the counter moves the picture by half a tile across and a quarter down) */
+      const n = i.w - a.stretch, cx = a.fx, hw = Math.round(HW / k), L = { x: c.x - n / 2 * HW, y: c.y - n / 2 * HH }, y0 = L.y - a.fy * k;
+      g.drawImage(im, 0, 0, cx, a.h, L.x - cx * k, y0, cx * k, a.h * k);
+      for (let m = 1; m <= n; m++) g.drawImage(im, cx - hw, 0, hw, a.h, L.x - hw * k + m * HW - .3, y0 + m * HH, hw * k + .6, a.h * k);
+      g.drawImage(im, cx, 0, a.w - cx, a.h, L.x + n * HW, y0 + n * HH, (a.w - cx) * k, a.h * k);
+    } else g.drawImage(im, c.x - a.fx * k, c.y - a.fy * k, a.w * k, a.h * k);
+    g.restore(); return true;
   }
   function drawItem(i, t) {
     if (KIND === 'farm' && ['ftile', 'fobj', 'path', 'pond', 'tree', 'cabin', 'coop', 'bin', 'well', 'woodpile', 'cart', 'signpost', 'fence', 'penfloor', 'hay', 'barn', 'scarecrow', 'compost', 'trough'].includes(i.k)) return drawFarmItem(i, t);

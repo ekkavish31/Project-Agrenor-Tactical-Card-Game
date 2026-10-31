@@ -23,7 +23,7 @@
 | ชีท | เนื้อหา | ใช้ในห้อง |
 |---|---|---|
 | **1 ✅ ใช้ในเกมแล้ว (v98.23)** | โต๊ะและที่นั่ง: โต๊ะกลม · โต๊ะเหลี่ยม · โต๊ะยาว · สตูล · เก้าอี้ · ม้านั่งยาว · สตูลบาร์ · โต๊ะข้าง · ถังไวน์ใช้เป็นโต๊ะ | โรงแรม · สมาคม · บ้าน · วิหาร |
-| 2 | เคาน์เตอร์และเวที: เคาน์เตอร์บาร์ (ช่วงตรง · มุม · ปลาย) · เคาน์เตอร์ร้าน · เวทีเล็ก · บันได | โรงแรม · ร้าน · สถานพยาบาล · สมาคม |
+| **2 ✅ ใช้ในเกมแล้ว (v98.25)** | เคาน์เตอร์และเวที: เคาน์เตอร์บาร์ (ช่วงตรง · มุม · ปลาย) · เคาน์เตอร์ร้าน · เวทีเล็ก · บันได | โรงแรม · ร้าน · สถานพยาบาล · สมาคม |
 | 3 | ของเก็บ: ลัง · ถัง · ถังเล็ก (keg) · ตะกร้า · หีบ · ตู้เตี้ย · ชั้นสูง (shelfbox) · ชั้นวางอาวุธ/เครื่องมือ | ทุกห้อง |
 | 4 | ห้องนอนและพรม: เตียง · เตียงผู้ป่วย · หีบปลายเตียง · พรมหลายขนาด (3×3 · 4×3 · ทางเดิน 1×7) | บ้าน · สถานพยาบาล · โรงแรม |
 | 5 | เตาและไฟ: เตาผิง 1×2 · เตาหลอม 2×2 · ทั่ง · ถังชุบ · เตาอบขนมปัง · เตาผิงมีหม้อ | โรงแรม · โรงตีเหล็ก · บ้านคนทำขนม |
@@ -106,4 +106,41 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 
 **ตรวจรับชีท 2**: เหมือนชีท 1 + ④ ปลายเคาน์เตอร์ตัดเรียบต่อกันได้ ⑤ ท็อปทุกชิ้นว่าง ⑥ สีไม้เข้ากับชีท 1
 
-พิมพ์ "ชีทถัดไป" ถ้าอยากได้ชีท 3 (ของเก็บ: ลัง ถัง ตะกร้า หีบ ชั้น)
+**ผลในเกม (v98.25)**: `counter` → เคาน์เตอร์ตามห้อง (โรงแรม=บาร์ไม้โอ๊กทองเหลือง · ร้าน=ไม้สนผ้าเขียวมีลิ้นชัก · สมาคม=วอลนัตเหล็ก · สถานพยาบาล=ปูนขาวขอบเขียว) **ยืดได้ทุกความยาว** โดยตัดภาพเป็นครึ่งซ้าย + แถบกลางซ้ำ + ครึ่งขวา (ภาพยาว 3 ช่อง ห้องใช้ 4–6) · `stage` → เวที 2×2 มีบันได (โรงแรมย้ายเข้ามาหนึ่งช่องให้บันไดอยู่บนพื้น) · `stairs` → บันไดกลับภาพ ขึ้นไปทางบนขวาที่ผนังหลัง · ชิ้นที่ตัดแล้วยังไม่ใช้: `counter-bar-end` · `counter-flap` · `desk-writing`
+
+**บทเรียนจากชีท 2**: ชิ้นยาวล้นช่องได้ (AI วาดไม่ตามตารางเป๊ะ) → สคริปต์ตัดแยกชิ้นตามรูปร่าง ไม่ใช่ตัดตามตาราง · สเกลต่อชีทไม่เท่ากัน (ชีท 1 k≈0.245 · ชีท 2 k≈0.33) → เกมคำนวณ k รายชิ้นจากขนาดช่องพื้นที่ควรกิน
+
+---
+
+## ชีท 3 · ของเก็บและชั้นวาง (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `crate` · `crate-stack` · `keg` · `basket` · `trunk` · `shelf-store` · `shelf-books` · `rack-weapons` · `rack-tools`
+
+ใช้แทน: ลัง (`crate`) · ถังเล็ก (`keg`) · ตะกร้า (`basket`) · หีบ (`chest`) · ตู้ชั้นสูง (`shelfbox`) · ชั้นวางอาวุธ/เครื่องมือ (`rack`) ในโรงแรม ร้าน สมาคม โรงตีเหล็ก บ้าน
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior: exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated storage piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people. Only the shelf and rack pieces (cells 6 to 9) carry items, exactly as described; every other piece is empty and closed.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT faces the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2 (they rise or fall one pixel for every two pixels across). The floor footprint of one grid tile is a diamond twice as wide as it is tall.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. Every piece here has a 1x1-tile footprint and sits on exactly one such diamond (the keg and basket are a little smaller than the diamond). The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 10% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): crate about 0.45 tile-widths high, stacked crates about 0.8, keg about 0.5, basket about 0.3, trunk about 0.4, tall shelves about 1.0, racks about 0.85.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (wood grain, nail heads, iron bands, rope, wicker weave, chips and wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: warm oak and honey-coloured wood, dark walnut accents, wrought-iron fittings, muted forest green and russet red used sparingly, slightly desaturated so the pieces sit naturally in a lavish timber-framed medieval fantasy town and match the attached reference images, including the previous two sheets (same oak tone, same detail level, same outline weight).
+
+CONTENT, row by row, left to right:
+1. Wooden storage crate, 1x1 tile, closed lid with a few nailed slats and iron corner brackets, rope handle on the visible side.
+2. Two crates stacked, 1x1 tile footprint: a larger crate with a smaller crate on top, slightly off-centre, both closed.
+3. Small upright keg, a little smaller than a tile: oak staves, two iron hoops, a wooden tap near the bottom of the visible side, flat lid.
+4. Round wicker basket with two loop handles folded down, empty, woven in honey-coloured reed, a little smaller than a tile.
+5. Wooden trunk, 1x1 tile: curved-top travelling chest with iron bands, a brass lock plate and two leather handles, closed.
+6. Tall general-store shelf cabinet, 1x1 tile, about one tile-width high: open front with three shelves stocked with clay jars, folded cloth rolls and small sacks (no labels, no writing).
+7. Tall bookshelf cabinet, 1x1 tile, same size and wood as piece 6: shelves with leather-bound books of varied muted colours and a few scrolls (no writing on the spines).
+8. Free-standing weapon rack, 1x1 tile: oak frame holding three swords and two spears upright with clean visible hilts and blades.
+9. Free-standing tool rack, 1x1 tile: oak frame with a smith's hammer, tongs, a pick and a long-handled shovel hanging neatly.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 3**: เหมือนชีทก่อน + ⑥ ชั้นและชั้นวางเรียงของเรียบร้อย ไม่มีตัวหนังสือบนสันหนังสือ/ป้าย ⑦ ลัง/ถัง/ตะกร้า/หีบ ปิดและว่าง
+
+พิมพ์ "ชีทถัดไป" ถ้าอยากได้ชีท 4 (ห้องนอนและพรม)
