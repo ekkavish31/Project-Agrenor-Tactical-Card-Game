@@ -79,7 +79,7 @@
  }
  const legacyLibrary=renderLibrary,legacyRetired=renderRetired;
  render=function(){CS=null;rebuild();let inGroup=state.model.filter(e=>e.group===state.group);if(!inGroup.some(e=>e.id===state.entity))state.entity=inGroup[0]?.id||'';
-  document.querySelectorAll('[data-group]').forEach(b=>b.classList.toggle('on',b.dataset.group===state.group));$('animTab')?.classList.toggle('on',['characters','monsters','bosses'].includes(state.group));$('viewMode').value=tab;connButton();$('exportBtn').hidden=!pending.size&&!window.AnimationReviewExtraFiles?.size;$('exportBtn').textContent='ส่งออก ZIP ('+pending.size+')';
+  document.querySelectorAll('[data-group]').forEach(b=>b.classList.toggle('on',b.dataset.group===state.group));$('animTab')?.classList.toggle('on',['characters','monsters','bosses'].includes(state.group));if(document.body.classList.contains('workshop-open')){document.querySelectorAll('[data-group]').forEach(b=>b.classList.remove('on'));$('animTab')?.classList.remove('on')}/* v98.16 · Workshop / 3D Frame cover the library: only their own tab stays lit */$('viewMode').value=tab;connButton();$('exportBtn').hidden=!pending.size&&!window.AnimationReviewExtraFiles?.size;$('exportBtn').textContent='ส่งออก ZIP ('+pending.size+')';
   $('summary').textContent=`${state.model.length} ตัว / วัตถุ · ${M.assets.filter(isSlot).length} ช่อง${pending.size?' · รอส่งออก '+pending.size:''}`;
   if(tab==='slots'){renderNav();renderEntity()}else{state.entries=[];if(tab==='library')legacyLibrary();else legacyRetired();hydrate($('grid'))}
  };
@@ -131,7 +131,45 @@
  // Show orphan files as a single selectable Objects entry; never silently delete or classify them as monsters.
  const baseRebuild=rebuild;rebuild=function(){let ee=baseRebuild();if(dir&&scanned){let known=new Set(M.assets.map(a=>a.file));for(let a of M.assets)for(let h of a.history||[])known.add(h.file);let loose=[...scanned].filter(p=>!known.has(p)&&!known.has(webpTwin(p))&&!p.startsWith('assets/_versions/'));
    if(loose.length)ee.push({id:'object:unassigned',name:'ไฟล์ยังไม่จัดหมวด',group:'objects',assets:loose.map((p,i)=>({id:'unassigned-'+i,file:p,category:'unassigned',status:'final',size:[384,384]})),clips:[],loose:true})}return ee};
- const baseRenderEntity=renderEntity;renderEntity=function(){if(!entity()?.loose)return baseRenderEntity();state.entries=[];let e=entity();$('filters').innerHTML='';$('grid').innerHTML='<h2>ไฟล์ยังไม่จัดหมวด</h2><p class="muted">พบในโฟลเดอร์ แต่ไม่มีใน manifest เลือกภาพเพื่อดูและนำไปใช้กับช่องในเกม</p><div class="asset-cards">'+e.assets.map(a=>`<div class="itile" data-k="${esc(a.file)}"><div class="thumb">${imgTag(a.file)}</div><b>${esc(a.file)}</b></div>`).join('')+'</div>';$('grid').querySelectorAll('[data-k]').forEach(t=>t.onclick=()=>openImg(t.dataset.k));hydrate($('grid'))};
+
+ /* v98.16 · ไฟล์ยังไม่จัดหมวด: แยกเป็นหมวดตามโฟลเดอร์ + ตัวกรอง + ค้นหา (ชีทรวมถูกตัดเป็นชิ้นเดี่ยวใน assets/village-town/props/) */
+ const LOOSE_CATS=[
+  [/^assets\/village-town\/props\//,'props','🪑','Props ชิ้นเดี่ยว (หมู่บ้าน)'],
+  [/^assets\/village-town\/buildings\//,'vt-bld','🏠','อาคาร (หมู่บ้าน)'],
+  [/^assets\/village-town\/decor\//,'vt-decor','🌷','ของตกแต่ง (หมู่บ้าน)'],
+  [/^assets\/village-town\/nature\//,'vt-nature','🌳','ธรรมชาติ (หมู่บ้าน)'],
+  [/^assets\/village-town\/edge\//,'vt-edge','🧱','ขอบ / รั้ว (หมู่บ้าน)'],
+  [/^assets\/village-town\/ground\//,'vt-ground','🟫','พื้นผิว (หมู่บ้าน)'],
+  [/^assets\/village-town\/templates\//,'vt-tpl','📐','เทมเพลต (หมู่บ้าน)'],
+  [/^assets\/village-town\/npc\/([^/]+)\//,'npc','🧑','NPC',m=>m[1]],
+  [/^assets\/village-town\/[^/]+$/,'sheet','🖼','ชีทรวม / ภาพใหญ่ (หมู่บ้าน)'],
+  [/^assets\/enemies\/animations\/([^/]+)\//,'enemy','👾','ศัตรู · เฟรมอนิเมชัน',m=>m[1]],
+  [/^assets\/fx\/particle\//,'fx-p','✨','เอฟเฟกต์ · อนุภาค'],
+  [/^assets\/fx\/skill\//,'fx-s','💥','เอฟเฟกต์ · สกิล'],
+  [/^assets\/terrain\/cliff\//,'t-cliff','⛰','พื้นสนาม · หน้าผา'],
+  [/^assets\/terrain\/decal\//,'t-decal','🩹','พื้นสนาม · ดีคอล'],
+  [/^assets\/terrain\/diorama\//,'t-dio','🏞','พื้นสนาม · ไดโอรามา'],
+  [/^assets\/terrain\/ground\//,'t-ground','🟩','พื้นสนาม · พื้นดิน'],
+  [/^assets\/terrain\/lip\//,'t-lip','〰','พื้นสนาม · ขอบหน้าผา'],
+  [/^assets\/terrain\//,'t-other','🗺','พื้นสนาม · อื่น ๆ'],
+  [/^assets\/tactics\/imported\//,'tac-imp','📥','สนามตาราง · นำเข้า'],
+  [/^assets\/tactics\/cliff\//,'tac-cliff','⛰','สนามตาราง · หน้าผา'],
+  [/^assets\/tactics\//,'tac','♟','สนามตาราง'],
+  [/^assets\/portraits\//,'portrait','👤','ภาพบุคคล'],
+  [/^assets\/cards\//,'cards','🃏','การ์ด']];
+ function looseCat(p){for(const [re,id,ic,name,sub] of LOOSE_CATS){const m=p.match(re);if(m){const s=sub?sub(m):'';return {key:id+(s?':'+s:''),icon:ic,name:name+(s?' · '+s:''),order:LOOSE_CATS.findIndex(c=>c[1]===id)}}}return {key:'other',icon:'📁',name:'อื่น ๆ',order:99}}
+ const baseRenderEntity=renderEntity;renderEntity=function(){if(!entity()?.loose)return baseRenderEntity();state.entries=[];previewObserver.disconnect();viewed.clear();let e=entity();$('filters').innerHTML='';
+  const q=(state.looseQ||'').trim().toLowerCase(),cat=state.looseCat||'',groups=new Map();
+  for(const a of e.assets){const c=looseCat(a.file);if(!groups.has(c.key))groups.set(c.key,{...c,files:[]});groups.get(c.key).files.push(a.file)}
+  const all=[...groups.values()].sort((a,b)=>a.order-b.order||a.name.localeCompare(b.name,'th')),nat=(a,b)=>a.localeCompare(b,undefined,{numeric:true});
+  const shown=all.filter(g=>!cat||g.key===cat).map(g=>({...g,files:g.files.filter(f=>!q||f.toLowerCase().includes(q)||g.name.toLowerCase().includes(q)).sort(nat)})).filter(g=>g.files.length),total=shown.reduce((n,g)=>n+g.files.length,0);
+  $('grid').innerHTML=`<h2>ไฟล์ยังไม่จัดหมวด · ${e.assets.length} ไฟล์</h2><p class="muted">พบในโฟลเดอร์ แต่ไม่มีใน manifest · แยกตามหมวด เลือกภาพเพื่อดูและนำไปใช้กับช่องในเกม</p>
+   <div class="loose-bar"><input id="looseQ" type="search" placeholder="ค้นหาชื่อไฟล์ / หมวด" value="${esc(state.looseQ||'')}"><span class="muted">แสดง ${total} ไฟล์</span></div>
+   <div class="loose-chips"><button data-lc="" class="${cat?'':'on'}">ทั้งหมด <i>${e.assets.length}</i></button>${all.map(g=>`<button data-lc="${esc(g.key)}" class="${cat===g.key?'on':''}">${g.icon} ${esc(g.name)} <i>${g.files.length}</i></button>`).join('')}</div>
+   ${shown.map(g=>`<details class="loose-sec" open><summary>${g.icon} ${esc(g.name)} <i>${g.files.length}</i></summary><div class="asset-cards">${g.files.map(f=>`<div class="itile" data-k="${esc(f)}" title="${esc(f)}"><div class="thumb">${imgTag(f)}</div><b>${esc(f.split('/').pop())}</b></div>`).join('')}</div></details>`).join('')||'<p class="muted">ไม่พบไฟล์ที่ตรงกับคำค้น</p>'}`;
+  $('grid').querySelectorAll('[data-k]').forEach(t=>t.onclick=()=>openImg(t.dataset.k));
+  $('grid').querySelectorAll('[data-lc]').forEach(b=>b.onclick=()=>{state.looseCat=b.dataset.lc;renderEntity()});
+  $('looseQ').oninput=ev=>{const c=ev.target.selectionStart;state.looseQ=ev.target.value;renderEntity();$('looseQ').focus();$('looseQ').setSelectionRange(c,c)};hydrate($('grid'))};
  // Refresh matrix review badges when the reviewer closes.
  $('animation-review')?.addEventListener('close',()=>{imageCache.clear();render()});
  window.StudioBrowser={loadImage:im,state,location:a=>{let o=C.owner(a,meta);return C.groups[o.group]+' › '+o.name},connect,getRuntime:()=>runtime,getMetadata:()=>meta,readManifest,rebuild,hasWork,invalidate:()=>{imageCache.clear();bust=Date.now();resetClock();render();publishMotion()}};
