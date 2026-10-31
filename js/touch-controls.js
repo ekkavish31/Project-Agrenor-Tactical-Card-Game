@@ -29,7 +29,8 @@
     if (held.has('left')) x -= 1; if (held.has('right')) x += 1; if (held.has('up')) y -= 1; if (held.has('down')) y += 1;
     const l = Math.hypot(x, y); return l ? { x: x / l, y: y / l } : { x: 0, y: 0 };
   }
-  const moving = () => { const v = vec(); return Math.hypot(v.x, v.y) > .12 };
+  let lastMove = -1e9;
+  const moving = () => { const v = vec(); const m = Math.hypot(v.x, v.y) > .12; if (m) lastMove = performance.now(); return m };
   const KEYS = { ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right', ArrowUp: 'up', w: 'up', W: 'up', ArrowDown: 'down', s: 'down', S: 'down' };
   const editing = () => /[?&]edit=1/.test(location.search) || !!root.editing;
 
@@ -46,12 +47,14 @@
     try { navigator.vibrate?.(12) } catch (e) { }
     adapter.act?.(c); return true;
   }
+  /* radial angle of option i of n: the fan ends straight up (270°) and opens to the upper-left, wider for more options */
+  const ang = (i, n) => { if (n === 1) return 270; const span = Math.min(84, (n - 1) * 28); return 270 - span + i * span / (n - 1) };
   function openRadial() {
     const c = ctx; if (!c?.options?.length || c.options.length < 2 || !ui) return false;
     btn.radial = true; btn.sel = 0; ui.rad.innerHTML = '';
-    const n = c.options.length, R = 138;
+    const n = c.options.length, R = n > 3 ? 152 : 138;
     c.options.forEach((o, i) => {
-      const a = (n === 1 ? 270 : 215 + i * (55 / (n - 1))) * Math.PI / 180, e = doc.createElement('div');
+      const a = ang(i, n) * Math.PI / 180, e = doc.createElement('div');
       e.className = 'ro';
       e.style.right = (-Math.cos(a) * R + 48 - 34) + 'px'; e.style.bottom = (Math.sin(a) * -R + 48 - 34) + 'px';
       e.innerHTML = `<img src="assets/icons/menu/${o.icon || 'quest'}.webp" alt="" draggable="false"><b>${(o.label || '').replace(/</g, '&lt;')}</b>`;
@@ -68,19 +71,20 @@
   function pickDir(x, y) {
     const c = ctx; if (!c?.options || Math.hypot(x, y) < .35) return;
     const n = c.options.length, ang = Math.atan2(y, x) * 180 / Math.PI, a = ((ang % 360) + 360) % 360;   // 270 = up · options fan out from the upper-left (215) to straight up (270)
-    let best = 0, bd = 1e9; for (let i = 0; i < n; i++) { const t = n === 1 ? 270 : 215 + i * (55 / (n - 1)), d = Math.abs(a - t); if (d < bd) { bd = d; best = i } }
+    let best = 0, bd = 1e9; for (let i = 0; i < n; i++) { const t = ang(i, n), d = Math.abs(a - t); if (d < bd) { bd = d; best = i } }
     if (best !== btn.sel) { btn.sel = best; selMark(); try { navigator.vibrate?.(6) } catch (e) { } }
   }
 
   /* ---- keyboard ---- */
   addEventListener('keydown', e => {
-    if (!visible() || typing() || e.ctrlKey || e.metaKey || e.altKey || editing()) return;
+    if (!visible() || adapter.keys === false || typing() || e.ctrlKey || e.metaKey || e.altKey || editing()) return;
     const d = KEYS[e.key];
     if (d && !blocked()) { held.add(d); if (!btn.radial) e.preventDefault(); return }
     if ((e.key === 'e' || e.key === 'E' || e.code === 'Space') && !blocked()) { if (!e.repeat && (ctx || adapter.alwaysAct)) { pressStart('key'); e.preventDefault() } else if (btn.down) e.preventDefault() }
     if (btn.radial && /^[1-5]$/.test(e.key)) { btn.sel = Math.min(+e.key - 1, (ctx?.options?.length || 1) - 1); selMark(); e.preventDefault() }
   }, true);
   addEventListener('keyup', e => {
+    if (adapter?.keys === false) return;
     const d = KEYS[e.key]; if (d) held.delete(d);
     if (e.key === 'e' || e.key === 'E' || e.code === 'Space') pressEnd('key');
   }, true);
@@ -101,7 +105,7 @@
       if (edge(0)) pressStart('pad'); if (rel(0)) pressEnd('pad');
       if (edge(1)) { if (adapter.back) adapter.back(); else dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })) }
       const by = id => adapter.buttons?.find(b => b.id === id);
-      if (edge(2)) by('bag')?.run?.(); if (edge(3)) by('map')?.run?.(); if (edge(9)) by('menu')?.run?.() ?? dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      if (edge(2)) by('bag')?.run?.(); if (edge(3)) by('map')?.run?.(); if (edge(8)) by('wip')?.run?.(); if (edge(9)) by('menu')?.run?.() ?? dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
       if (edge(4)) adapter.shoulder?.(-1); if (edge(5)) adapter.shoulder?.(1);
     }
     pads.prev = g.buttons.map(b => !!b.pressed);
@@ -132,7 +136,8 @@
     if (!adapter) return;
     const vis = visible(); if (ui) ui.el.hidden = !vis;
     let c = null; try { c = !vis || blocked() ? null : adapter.context?.() || null } catch (e) { }
-    ctx = c; if (!ui) return;
+    ctx = c; root.Interactables?.setFocus(c && (ui || performance.now() - lastMove < 4000) ? c.id : null);   /* white outline on whatever A would act on */
+    if (!ui) return;
     const sig = c ? c.kind + '|' + c.label + '|' + c.icon + '|' + (c.quest ? 1 : 0) + '|' + (c.options?.length || 0) : '';
     if (sig === lastCtx) return; lastCtx = sig;
     ui.A.classList.toggle('idle', !c);

@@ -841,16 +841,26 @@
     if (!ok(nu, nv)) { if (ok(nu, hero.vv)) nv = hero.vv; else if (ok(hero.vu, nv)) nu = hero.vu; else { nu = hero.vu; nv = hero.vv } }
     hero.vu = nu; hero.vv = nv; hero.u = Math.floor(nu); hero.v = Math.floor(nv); hero.face = faceOf(du, dv); hero.walking = true; hero.path = []; hero.then = null; return true;
   }
+  /* the same registry as the village (js/interactables.js): villagers in the room + the door. Hold the big button on a villager = choices. */
+  const clickAfter = (sel, ms = 140) => setTimeout(() => { const b = document.querySelector(sel); if (b) b.click() }, ms);
+  window.Interactables?.add(() => {
+    const out = [], dd = { u: DOOR.u + .5, v: DOOR.v + .5 };
+    out.push({ id: 'door', kind: 'exit', u: dd.u, v: dd.v, r: 1.9, bumpR: 1.1, bumpT: .12, bump: true, pri: -.6, label: 'ออกไปข้างนอก', icon: 'portal', run: () => leave() });
+    for (const [id, a] of people) {
+      if (a.leaving || a.fade < .5) continue; const nm = a.p?.name || id, go = sel => () => { talk(a); if (sel) clickAfter(sel) };
+      out.push({ id: 'p:' + id, kind: 'talk', u: a.vu, v: a.vv, r: 2.5, bumpR: 1.3, bumpT: .3, bump: true, label: 'คุย · ' + nm, icon: 'party', run: go(),
+        options: [{ label: 'คุย', icon: 'party', run: go() }, { label: 'ถามเรื่อง', icon: 'quest', run: go('[data-a="ask"]') }, { label: 'ให้ของ', icon: 'treasure', run: go('[data-a="gift"]') }, { label: 'จ้างงาน', icon: 'trade', run: go('[data-a="work"]') }] });
+    }
+    return out;
+  });
   window.TouchControls?.attach({
     paused: () => modalOpen,
     context() {
-      if (modalOpen) return null;
-      if (Math.hypot(hero.vu - (DOOR.u + .5), hero.vv - (DOOR.v + .5)) < 1.7) return { kind: 'exit', icon: 'portal', label: 'ออกไปข้างนอก' };
-      let best = null, bd = 2.4;
-      for (const [id, a] of people) { if (a.leaving || a.fade < .5) continue; const d = Math.hypot(a.vu - hero.vu, a.vv - hero.vv); if (d < bd) { bd = d; best = { kind: 'talk', id, icon: 'party', label: 'คุย · ' + (a.p?.name || id) } } }
-      return best;
+      if (modalOpen || !window.Interactables) return null;
+      const it = Interactables.nearest({ u: hero.vu, v: hero.vv }); if (!it) return null;
+      return { ...it, sx: ((it.u - hero.vu) - (it.v - hero.vv)) * HW, sy: ((it.u - hero.vu) + (it.v - hero.vv)) * HH };
     },
-    act(c) { if (c.kind === 'talk') { const a = people.get(c.id); if (a) talk(a) } else leave() },
+    act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
     buttons: []
   });
   window.Interior = { people, hero, talk: id => { const a = people.get(id); if (a) talk(a) }, act: (id, w) => { const a = people.get(id); if (a) return act(a, w) }, room: R, kind: KIND, sync: () => { syncPeople(false); hudSync() } };

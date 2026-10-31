@@ -491,8 +491,10 @@ window.TouchControls?.attach({paused:joyBusy,context:joyContext,act:joyAct,butto
  {id:'bag',icon:'bag',title:'กระเป๋า',run:()=>clickEl('[data-game="bag"]')},
  {id:'menu',icon:'settings',title:'เมนู (Esc)',run:()=>dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))}]});
 /* hover tooltip over villagers / doors / quest things */
-cv.addEventListener('pointermove',e=>{if(editing||e.pointerType==='touch'){window.Interactables.showTip(null);return}const w=world(e),it=Interactables.at(w.x,w.y);Interactables.showTip(it,e.clientX,e.clientY)});
-cv.addEventListener('pointerleave',()=>Interactables.showTip(null));
+cv.addEventListener('pointermove',e=>{if(editing||e.pointerType==='touch'){Interactables.showTip(null);Interactables.setHover(null);return}const w=world(e),it=Interactables.at(w.x,w.y);Interactables.showTip(it,e.clientX,e.clientY);Interactables.setHover(it?.id)});
+cv.addEventListener('pointerleave',()=>{Interactables.showTip(null);Interactables.setHover(null)});
+/* a place is outlined when the pointer is over it OR the big button would enter it (the mouse hover on a building is TownUX's own; this adds the joystick/keys case) */
+setInterval(()=>{const a=Interactables.active();for(const o of locations){const r=window.TownUX?.art(o);if(!r?.im)continue;const on=a==='place:'+o.id;if(on&&!r.im._ixOn){r.im._ixOn=true;r.im._townHovered=true}else if(!on&&r.im._ixOn){r.im._ixOn=false;if(window.TownUX&&!TownUX.isHovered?.(o))r.im._townHovered=false}}},80);
 </script></html>
 
 

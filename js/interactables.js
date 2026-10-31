@@ -46,5 +46,9 @@
     if (tipFor !== it.id) { tipFor = it.id; tip.textContent = (it.quest ? '★ ' : '') + (it.label || it.id) }
     tip.hidden = false; tip.style.left = Math.min(innerWidth - 8, cx + 14) + 'px'; tip.style.top = Math.max(4, cy - 34) + 'px';
   }
-  root.Interactables = { add, all, near, nearest, at, showTip };
+  /* ---- which item is "live": under the mouse, or what the big button would act on (stick / keys / pad). Drawn with a white outline by each page. */
+  let hoverId = null, focusId = null;
+  const setHover = id => { hoverId = id || null }, setFocus = id => { focusId = id || null };
+  const isActive = id => !!id && (id === hoverId || (hoverId == null && id === focusId));
+  root.Interactables = { add, all, near, nearest, at, showTip, setHover, setFocus, isActive, active: () => hoverId || focusId };
 })(globalThis);

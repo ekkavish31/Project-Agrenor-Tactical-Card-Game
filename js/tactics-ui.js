@@ -510,4 +510,21 @@ setInterval(()=>{if(!B||!B.visible()||document.hidden||!renderInfo.lastReal)retu
 // v71 watchdog: the player's controls are never left locked by a stalled animation (15 s on the player's turn)
 {let stuck=0;setInterval(()=>{if(locked&&state?.phase==='player'&&!state.outcome&&!document.hidden){if(++stuck>=15){stuck=0;locked=false;console.warn('battle: released a stuck input lock');try{say('ปลดล็อกการควบคุมให้แล้ว · เล่นต่อได้');stats()}catch(e){}}}else stuck=0},1000)}
 window.TacticsLab={renderInfo:()=>({...renderInfo,contextLost:!!ctx.isContextLost?.(),canvas:[canvas.width,canvas.height],css:getComputedStyle(canvas).filter,now:Math.round(performance.now())}),lockTarget:()=>lockUnit(),hoverOut:()=>{let hu=hover&&C.unitAt(state,hover.x,hover.y);return hu&&hu.side==='enemy'&&C.alive(hu)&&typeof sel()==='number'&&targetsEnemy()&&C.combatReason(state,sel(),hu)?hu:null},headY,isDeploying:()=>deploying,fxText:(u,c,x)=>fx('text',u,c,x),pathPreview:()=>pathPreview,unitPoint:u=>ground(V(u)),camera:()=>camera,canvas,facingPending:()=>!!facingPick,pace:PACE,chooseFacing,projectTile:(x,y)=>point(x,y,C.at(state.map,x,y)?.h||0),hover:()=>hover,selected:()=>sel(),focusUnit,runQueue,reset,size,stats,say,finish:finishCheck,getState:()=>state,presentRituals,copyRewardCard,setLoadout(w,sh){state.hero.weapon=w;state.hero.shield=!!sh;$('weapon').value=w;$('shield').checked=!!sh;stats()},isLocked:()=>locked,playFx,freeze:ms=>{/* v77: a short hit-stop in ms (BattleJuice). It used to set a fixed render clock that never cleared, which froze the battle view after heavy blows */stopUntil=Math.max(stopUntil,performance.now()+Math.min(400,Math.max(0,+ms||0)))},endTurn,playMoveCard,selectCombat,act,runCombat};
+/* v98.20 · joystick / gamepad / on-screen buttons in the tactical battle (js/touch-controls.js). The stick moves the tile cursor (one tile every 170 ms,
+   mapped through the field rotation), A = confirm the tile (move / attack / target), B = back to move mode, LB/RB = previous / next card.
+   Keyboard keys stay the battle's own (arrows, 1-6, Space, Esc), so TouchControls' key handling is off here. */
+if(window.TouchControls){
+ let stepAt=0;const cell=()=>C.at(state.map,cursor.x,cursor.y),hand=()=>state.deck?.combat?.hand||[];
+ const cycleCard=d=>{const h=hand();if(!h.length||locked||state.outcome||!ready)return;let i=typeof sel()==='number'?sel():d>0?-1:0;for(let k=0;k<h.length;k++){i=(i+d+h.length)%h.length;if(!h[i].used){selectCombat(i);return}}};
+ const stepCursor=v=>{const a=viewAngle*Math.PI/2;let du=v.x/2+v.y,dv=v.y-v.x/2;const l=Math.hypot(du,dv)||1;du/=l;dv/=l;const dx=du*Math.cos(a)+dv*Math.sin(a),dy=-du*Math.sin(a)+dv*Math.cos(a),m=Math.max(Math.abs(dx),Math.abs(dy)),sx=Math.abs(dx)>m*.45?Math.sign(dx):0,sy=Math.abs(dy)>m*.45?Math.sign(dy):0,W=state.map.width||state.map.size,H=state.map.height||state.map.size;
+  cursor.x=Math.max(0,Math.min(W-1,cursor.x+sx));cursor.y=Math.max(0,Math.min(H-1,cursor.y+sy));inspect(C.at(state.map,cursor.x,cursor.y))};
+ setInterval(()=>{if(!TouchControls.moving()||!B?.visible?.()||locked||state.outcome||!ready)return;const now=performance.now();if(now<stepAt)return;stepAt=now+170;stepCursor(TouchControls.vec())},40);
+ TouchControls.attach({keys:false,visible:()=>!!B?.visible?.(),paused:()=>locked||!!state.outcome||!ready,
+  context(){if(locked||state.outcome||!ready||state.phase!=='player')return null;const c=cell();if(!c)return null;const u=C.unitAt(state,c.x,c.y),nm=u?(u.label||u.name||u.id||''):'';
+   const enemy=u?.side==='enemy',mv=sel()==='move';return{kind:'cell',icon:enemy?'battle':u?'guard':mv?'map':'battle',label:enemy?'โจมตี '+nm:u?'เลือก '+nm:mv?'เดินไปช่องนี้':'ใช้การ์ดที่ช่องนี้'}},
+  act(){confirmAct(cell())},
+  back(){if(typeof sel()==='number')selectMoveMode()},
+  shoulder:cycleCard,
+  buttons:[{id:'deck',icon:'deck',title:'การ์ดถัดไป',run:()=>cycleCard(1)},{id:'move',icon:'guard',title:'โหมดเดิน (Esc)',run:()=>selectMoveMode()},{id:'end',icon:'calendar',title:'จบเทิร์น (Space)',run:()=>endTurn()}]});
+}
 return window.TacticsLab};

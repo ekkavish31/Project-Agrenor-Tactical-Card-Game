@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
-<script src="js/touch.js?v=94.02"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><style>
+<script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.20"></script><script src="js/touch-controls.js?v=98.20"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
 button,select,input{font:inherit;background:#233a2ef0;color:#fff0c7;border:1px solid #cad6a77a;border-radius:9px;padding:8px 12px;cursor:pointer}button:hover{background:#4b6040}button:disabled{opacity:.45;cursor:default}
@@ -16,7 +16,7 @@ nav{position:fixed;left:22px;bottom:76px;display:flex;gap:6px;flex-wrap:wrap;max
 <canvas id="world" aria-label="แผนที่สถานที่ คลิกจุดทำงานเพื่อเดินไปใช้"></canvas>
 <header><h1 id="title">สถานที่</h1><small id="subtitle">เดินไปที่จุดทำงานเพื่อใช้บริการ</small></header><div id="hud"></div>
 <div class="toolbar"><button data-menu="bag">กระเป๋า</button><button data-menu="character">ตัวละคร</button><button data-menu="settings">ตั้งค่า</button><button id="focus">หาตัวละคร</button><button id="fit">ดูทั้งหมด</button><button id="editBtn">✎ จัดแผนที่</button><button id="leave">← กลับหมู่บ้าน</button></div>
-<nav id="shortcuts" aria-label="จุดทำงาน"></nav>
+<nav id="shortcuts" aria-label="จุดทำงาน" hidden></nav><style>#shortcuts{display:none!important}</style>
 <div id="status" role="status">คลิกจุดทำงานเพื่อเดินไปใช้ · ลากเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม</div>
 <section id="pick" hidden></section><section id="edit" hidden></section>
 <script src="js/game-settings.js?v=97.03"></script><script src="js/asset-manifest.js?v=98.2"></script><script src="js/tactics-sprites.js?v=97.47"></script><script src="js/hero-motion.js"></script><script src="js/village-alpha-masks.js"></script><script src="js/town-art.js"></script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=97.93"></script>
@@ -851,16 +851,23 @@ function resize() {
  fitView()
 }
 
+const PLACE_ZOOM = 1.65;
+/* characters keep the same size relative to the floor grid as on the village map (that grid is 56 px wide per cell, this one 90) */
+const PLACE_CHAR_K = 90 / 56;
+window.PLACE_CHAR_K = PLACE_CHAR_K;
+let camHold = 0;
 function fitView() {
  const F = M.floor,
   spanX = (F.w * 2 + F.d * 2 + 2) * S,
   spanY = (F.w + F.d + 1) * S + 260;
  scale = Math.min((W - 60) / spanX, (H - 200) / spanY, 1.4);
- zoom = 1;
+ /* v98.20 · play view: zoomed in on the hero (the whole room is still one wheel-turn away); the editor keeps the fit-all view */
+ zoom = (typeof editing !== 'undefined' && editing) ? 1 : PLACE_ZOOM;
  pan = {
   x: 0,
   y: 60
  }
+ if (zoom !== 1 && typeof hero !== 'undefined' && typeof M !== 'undefined') focus()
 }
 
 function focus() {
@@ -900,6 +907,8 @@ function draw(t) {
    hero.dir = dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW')
   }
  }
+ window.joyPlaceWalk?.(dt);
+ if (!editing && !drag && performance.now() > camHold) { const hq = project(hero.u, hero.v), tx = -(hq.x - 1100) * scale * zoom, ty = H * .12 - (hq.y - 700) * scale * zoom, kf = 1 - Math.exp(-dt * 5); pan = { x: pan.x + (tx - pan.x) * kf, y: pan.y + (ty - pan.y) * kf } }
  g.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
  g.fillStyle = '#2c3d2e';
  g.fillRect(0, 0, W, H);
@@ -947,7 +956,7 @@ function draw(t) {
     type: 'station',
     i
    },
-   draw: () => drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp)
+   draw: () => { if (window.Interactables?.isActive('st:' + i)) stationOutline(s); drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp) }
   })
  });
  M.props.forEach((o, i) => {
@@ -974,10 +983,10 @@ function draw(t) {
   draw: () => {
    g.fillStyle = '#182b2866';
    g.beginPath();
-   g.ellipse(hp.x, hp.y, 13, 6, 0, 0, 7);
+   g.ellipse(hp.x, hp.y, 13 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7);
    g.fill();
    const hc = heroCast();
-   /* v95.21: same size as on the village map (93.6 px × the village's hero scale) */ if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, 93.6 * (hc.s || 1), hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0, 93.6 * (hc.s || 1))
+   /* v95.21: same size as on the village map (93.6 px × the village's hero scale) */ if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, 93.6 * (hc.s || 1) * PLACE_CHAR_K, hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0 || !!window.TouchControls?.moving?.(), 93.6 * (hc.s || 1) * PLACE_CHAR_K)
   }
  });
  objects.push(...(window.PlacePeople?.objects(project, g, t, blocked, hero) || []));   // v94.02 villagers who are here now
@@ -1001,6 +1010,7 @@ function draw(t) {
    }
   }
  }
+ drawFx(t);
  // labels + doors
  for (const s of M.stations) {
   const d = door(s),
@@ -1066,6 +1076,7 @@ function arrive() {
 
 function use(i, id) {
  hidePick();
+ lastSt = i;
  const a = actionInfo(id),
   s = M.stations[i];
  if (a?.reason) {
@@ -1140,10 +1151,12 @@ cv.onpointerdown = e => {
  cv.setPointerCapture(e.pointerId)
 };
 cv.onpointermove = e => {
+ if (!drag && !editing && e.pointerType !== 'touch') { const w = world(e), h = hitAt(w), it = h?.type === 'station' ? { id: 'st:' + h.i, label: M.stations[h.i].name, x: e.clientX, y: e.clientY } : window.Interactables?.at(w.x, w.y); window.Interactables?.setHover(it?.id); window.Interactables?.showTip(it ? { ...it, x: 0 } : null, e.clientX, e.clientY) }
  if (!drag) return;
  const dx = e.clientX - drag.x,
   dy = e.clientY - drag.y;
  if (Math.hypot(dx, dy) > 5) drag.moved = true;
+ if (drag.moved) camHold = performance.now() + 3500;
  if (drag.moved) pan = {
   x: drag.pan.x + dx,
   y: drag.pan.y + dy
@@ -1351,6 +1364,7 @@ window.addEventListener('message', e => {
   active = m.visible;
   return
  }
+ if (m.type === 'wip-fx') { addFx(m.kind, m.amt); return }
  if (m.type === 'motion') {
   TownArt.setMotion(m.data);
   return
@@ -1398,4 +1412,94 @@ setup();
 resize();
 send('ready');
 requestAnimationFrame(draw);
+
+
+/* v98.20 · WIP juice. The game page (js/smith-wip.js) tells us when the piece in progress moves ('wip-fx': hit = shaped · heat = heated · quench = cooled · done = finished);
+   we answer with light + particles on the station you were just using. And we report where the station and the hero are on screen ('layout'),
+   so the WIP card can sit next to the station without covering it or you. */
+let lastSt = -1, fxs = [], parts = [], fxLast = 0, layoutAt = 0, layoutSig = '';
+const stationForFx = () => { let i = lastSt; if (!M.stations[i]) { let bd = 1e9; M.stations.forEach((s, k) => { const d = Math.hypot(s.u - hero.u, s.v - hero.v); if (d < bd) { bd = d; i = k } }) } return M.stations[i] ? i : -1 };
+function addFx(kind, amt = 8) {
+ const i = stationForFx(); if (i < 0) return; const s = M.stations[i], p = project(s.u, s.v), top = p.y - (s.width || 120) * (s.s || 1) * .35;
+ fxs.push({ kind, t0: performance.now(), x: p.x, y: top, i });
+ const n = kind === 'done' ? 46 : kind === 'hit' ? 12 + Math.min(14, amt) : kind === 'heat' ? 9 : 10;
+ for (let k = 0; k < n; k++) {
+  const a = Math.random() * 6.28, sp = kind === 'done' ? 120 + Math.random() * 260 : kind === 'hit' ? 90 + Math.random() * 190 : 30 + Math.random() * 60;
+  parts.push({ x: p.x + (Math.random() - .5) * 30, y: top + (Math.random() - .5) * 14, vx: Math.cos(a) * sp * (kind === 'heat' || kind === 'quench' ? .35 : 1), vy: kind === 'heat' ? -40 - Math.random() * 70 : kind === 'quench' ? -30 - Math.random() * 50 : Math.sin(a) * sp - 90,
+   g: kind === 'heat' || kind === 'quench' ? -10 : 520, life: 0, max: kind === 'quench' ? 1.1 : .55 + Math.random() * .6, r: kind === 'quench' ? 7 + Math.random() * 8 : 2 + Math.random() * 2.6, kind });
+ }
+}
+function drawFx(t) {
+ const dt = Math.min(.06, (t - (fxLast || t)) / 1000); fxLast = t;
+ g.save(); g.globalCompositeOperation = 'lighter';
+ fxs = fxs.filter(f => t - f.t0 < 1100);
+ for (const f of fxs) {   // light bloom on the station
+  const a = (t - f.t0) / 1000, k = f.kind === 'done' ? 1 - a / 1.1 : f.kind === 'hit' ? 1 - a / .5 : 1 - a / .8; if (k <= 0) continue;
+  const R = (f.kind === 'done' ? 210 : f.kind === 'hit' ? 130 : 100) * (1 + (1 - k) * .35), col = f.kind === 'quench' ? '120,190,255' : f.kind === 'done' ? '255,236,170' : '255,170,70';
+  const gr = g.createRadialGradient(f.x, f.y, 4, f.x, f.y, R); gr.addColorStop(0, `rgba(${col},${.75 * k})`); gr.addColorStop(.45, `rgba(${col},${.28 * k})`); gr.addColorStop(1, `rgba(${col},0)`);
+  g.fillStyle = gr; g.beginPath(); g.arc(f.x, f.y, R, 0, 7); g.fill();
+  if (f.kind === 'done' || f.kind === 'hit') { g.strokeStyle = `rgba(255,240,200,${.7 * k})`; g.lineWidth = 3 * k + 1; g.beginPath(); g.ellipse(f.x, f.y + 14, R * (1 - k) * 1.1 + 12, (R * (1 - k) * 1.1 + 12) * .5, 0, 0, 7); g.stroke() }
+ }
+ parts = parts.filter(q => q.life < q.max);
+ for (const q of parts) {
+  q.life += dt; q.vy += q.g * dt; q.x += q.vx * dt; q.y += q.vy * dt; const k = 1 - q.life / q.max;
+  if (q.kind === 'quench') { g.fillStyle = `rgba(220,235,255,${.35 * k})`; g.beginPath(); g.arc(q.x, q.y, q.r * (1 + (1 - k)), 0, 7); g.fill() }
+  else { g.fillStyle = `rgba(255,${190 + (1 - k) * 40 | 0},${90 + (1 - k) * 90 | 0},${k})`; g.beginPath(); g.arc(q.x, q.y, q.r * (.5 + k * .7), 0, 7); g.fill() }
+ }
+ g.restore();
+}
+/* where things are on screen (iframe coordinates) → the game page puts the WIP card beside the station */
+function reportLayout() {
+ const i = stationForFx(); if (i < 0) return; const s = M.stations[i], R = artRect(s.art, s.u, s.v, s.width || 120, s.s || 1), k = scale * zoom,
+  X = x => (x - 1100) * k + W / 2 + pan.x, Y = y => (y - 700) * k + H / 2 + pan.y, hp = project(hero.u, hero.v);
+ const msg = { w: W, h: H, i, station: { x: X(R.x), y: Y(R.y), w: R.w * k, h: R.h * k + 34 }, hero: { x: X(hp.x) - 30 * PLACE_CHAR_K * k, y: Y(hp.y) - 110 * PLACE_CHAR_K * k, w: 60 * PLACE_CHAR_K * k, h: 120 * PLACE_CHAR_K * k + 10 } },
+  sig = JSON.stringify(msg, (kk, v) => typeof v === 'number' ? Math.round(v / 6) : v); const nw = performance.now(); if (sig === layoutSig && nw - layoutAt < 1500) return; layoutSig = sig; layoutAt = nw; send('layout', msg);
+}
+setInterval(() => { try { if (!editing && active) reportLayout() } catch (e) { } }, 220);
+
+/* v98.20 · play, don't press. Every work station, villager and the exit is something you walk up to and ACT on (big button / E / click); the station
+   shortcut menu is gone. Several actions on one station = hold the big button for the ring of choices. (js/interactables.js + js/touch-controls.js) */
+function stationOutline(s) {
+ const a = s.art, w = (s.width || 120) * (s.s || 1), p = project(s.u, s.v);
+ if (!a || a.startsWith('code:')) { g.save(); g.strokeStyle = '#fff'; g.lineWidth = 3; g.globalAlpha = .9; g.beginPath(); g.ellipse(p.x, p.y, w * .42, w * .16, 0, 0, 7); g.stroke(); g.restore(); return }
+ const im = imgOf(a); if (!im?.complete || !im.naturalWidth) return;
+ const h = w * im.naturalHeight / im.naturalWidth; g.save();
+ if (s.f) { g.translate(p.x * 2, 0); g.scale(-1, 1) }
+ TownArt.outline(g, im, null, [p.x - w / 2, p.y - h * (a.startsWith('vt:') ? .86 : .92), w, h], 3); g.restore();
+}
+const ST_ICON = { smelt: 'forge', forge: 'forge', quench: 'forge', temper: 'forge', repair: 'forge', train: 'battle', rest: 'castle', sleep: 'castle', buy: 'market', sell: 'trade', shop: 'market', orders: 'quest' };
+const stIcon = ids => { for (const id of ids) if (ST_ICON[id]) return ST_ICON[id]; return KIND === 'forge' ? 'forge' : KIND === 'market' ? 'market' : 'quest' };
+const faceTo = (u, v) => { hero.dir = v < hero.v ? (u < hero.u ? 'NW' : 'NE') : (u < hero.u ? 'SW' : 'SE') };
+function useAt(i, id) { path = []; target = null; hidePick(); const s = M.stations[i]; if (s) faceTo(s.u, s.v); lastSt = i; use(i, id) }
+function actAt(i) { const s = M.stations[i]; if (!s) return; const acts = stationActs(s); useAt(i, acts.find(id => !actionInfo(id)?.reason) || acts[0]) }
+Interactables.add(() => {
+ if (editing || typeof M === 'undefined' || !M?.stations) return [];
+ const out = [];
+ M.stations.forEach((s, i) => {
+  const d = door(s), acts = stationActs(s), p = project(d.u, d.v), names = acts.map(id => actionInfo(id)?.name || ACTIONS[id] || id);
+  out.push({ id: 'st:' + i, kind: 'station', u: d.u, v: d.v, r: 2.3, label: (s.name || 'จุดทำงาน') + (acts.length === 1 ? ' · ' + names[0] : ''), icon: stIcon(acts), x: p.x, y: p.y,
+   run: () => actAt(i), options: acts.length > 1 ? acts.map((id, k) => ({ label: names[k], icon: stIcon([id]), run: () => useAt(i, id) })) : undefined });
+ });
+ for (const a of window.PlacePeople?.state?.() || []) {
+  const p = project(a.u, a.v), nm = window.VillageLife?.P?.[a.id]?.name || a.id;
+  out.push({ id: 'p:' + a.id, kind: 'talk', u: a.u, v: a.v, r: 2.4, bumpR: 1.3, bumpT: .3, bump: true, label: 'คุย · ' + nm, icon: 'party', x: p.x, y: p.y,
+   run: () => window.PlacePeople.click({ x: p.x, y: p.y - 10 }, project, { hero, go: () => { }, stop: () => { path = [] } }) });
+ }
+ if (M.exit) { const p = project(M.exit.u, M.exit.v); out.push({ id: 'exit', kind: 'exit', u: M.exit.u, v: M.exit.v, r: 1.9, bumpR: 1.1, bumpT: .12, bump: true, pri: -.6, label: 'ออกไปข้างนอก', icon: 'portal', x: p.x, y: p.y, run: () => send('leave') }) }
+ return out;
+});
+window.joyPlaceWalk = dt => {
+ const tc = window.TouchControls; if (!tc || editing || !tc.moving() || !$('pick').hidden || document.querySelector('dialog[open]')) return;
+ const v = tc.vec(); let du = v.x / 2 + v.y, dv = v.y - v.x / 2; const l = Math.hypot(du, dv) || 1; du /= l; dv /= l;
+ const sp = dt * 5.5 * Math.min(1, Math.hypot(v.x, v.y)), nu = hero.u + du * sp, nv = hero.v + dv * sp;
+ path = []; target = null;
+ if (!blocked(nu, nv)) { hero.u = nu; hero.v = nv } else if (!blocked(nu, hero.v)) hero.u = nu; else if (!blocked(hero.u, nv)) hero.v = nv;
+ const dx = du - dv, dy = du + dv; hero.dir = dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW');
+};
+window.TouchControls?.attach({
+ paused: () => editing || !$('pick').hidden,
+ context() { if (editing) return null; const it = Interactables.nearest(hero); return it && { ...it, sx: ((it.u - hero.u) - (it.v - hero.v)) * 45, sy: ((it.u - hero.u) + (it.v - hero.v)) * 22.5 } },
+ act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
+ buttons: [{ id: 'bag', icon: 'bag', title: 'กระเป๋า', run: () => send('menu', { id: 'bag' }) }, { id: 'menu', icon: 'settings', title: 'เมนู', run: () => send('menu', { id: 'settings' }) }, ...(KIND === 'forge' ? [{ id: 'wip', icon: 'forge', title: 'ซ่อน/แสดงการ์ดงาน', run: () => send('wip-toggle') }] : [])]
+});
 </script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=97.76"></script><script src="js/villager-draw.js?v=97.96"></script><script src="js/village-life.js?v=97.76"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=97.69"></script><script src="js/editor-tools.js?v=91.77"></script></html>

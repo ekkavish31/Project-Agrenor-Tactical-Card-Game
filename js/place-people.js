@@ -56,7 +56,7 @@
       const moving = walk(a, dt, blocked, hero), pt = project(a.u, a.v);
       out.push({ y: pt.y, draw: () => {
         g.fillStyle = 'rgba(20,30,20,.35)'; g.beginPath(); g.ellipse(pt.x, pt.y, 14, 6, 0, 0, 7); g.fill();
-        root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, scale: castScale('npc:' + a.p.id) });
+        root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, scale: castScale('npc:' + a.p.id) * (root.PLACE_CHAR_K || 1) });
         if (questNpc(a.p.id)) mark(g, pt, t);
         if (bubble?.a === a && now < bubble.until) say(g, pt, bubble.text);
       } });
