@@ -104,6 +104,8 @@ function play(scene){if(!scene)return Promise.resolve();if(playing)return playin
   const end=async()=>{if(done)return;done=true;finishTyping();el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();setArt(null);root.StoryActors?.end();document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
    const st=$('.cs-stage');st.dataset.tint='';st.className='cs-stage';el.querySelectorAll('.cs-bg').forEach(b=>{b.dataset.src='';b.style.backgroundImage=''});
    el.onclick=null;document.removeEventListener('keydown',key,true);document.removeEventListener('keyup',keyUp,true);curNext=null;ff(false);clearTimeout(autoT);playing=null;resolve()};
+  /* v98.16 · "ข้ามฉาก" skips only to the next part of a scene (a line marked seg:true) — e.g. the opening narration → the talk with mum; the last part ends the scene */
+  const skip=()=>{if(done)return;let j=-1;for(let k=i+1;k<lines.length;k++)if(lines[k].seg){j=k;break}if(j<0){end();return}if(busy)return;finishTyping();clearTimeout(autoT);i=j-1;next()};
   const next=async()=>{if(done||busy)return;if(finishTyping())return;i++;if(i>=lines.length)return end();const line=lines[i];applyLine(line);
    if(line.wait){busy=true;$('.cs-box').hidden=true;await wait(reduced()?150:line.wait);busy=false;if(!line.text)return next()}
    if(line.text)showLine(line);else next()};
@@ -112,11 +114,11 @@ function play(scene){if(!scene)return Promise.resolve();if(playing)return playin
    if(e.key==='l'||e.key==='L'){e.preventDefault();e.stopPropagation();logToggle();return}
    if(logOpen){if(e.key==='Escape'||e.key==='Enter'){e.preventDefault();e.stopPropagation();logToggle(false)}return}
    if(e.key==='a'||e.key==='A'){e.preventDefault();e.stopPropagation();setAuto(!autoOn);return}
-   if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();next()}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();end()}};
+   if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();next()}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();skip()}};
   const keyUp=e=>{if(e.key==='Control')ff(false)};document.addEventListener('keyup',keyUp,true);
   history=[];curNext=()=>next();$('.cs-auto-btn').classList.toggle('on',autoOn);$('.cs-log').hidden=true;
   const ffb=$('.cs-ff-btn');ffb.onpointerdown=e=>{e.stopPropagation();ff(true)};ffb.onpointerup=ffb.onpointerleave=ffb.onpointercancel=e=>{e.stopPropagation();ff(false)};
-  el.onclick=e=>{if(e.target.closest('.cs-skip')){end();return}if(e.target.closest('.cs-auto-btn')){setAuto(!autoOn);return}if(e.target.closest('.cs-log-btn')){logToggle();return}if(e.target.closest('.cs-ff-btn'))return;if(!$('.cs-log').hidden){if(!e.target.closest('.cs-log-in'))logToggle(false);return}next()};document.addEventListener('keydown',key,true);
+  el.onclick=e=>{if(e.target.closest('.cs-skip')){skip();return}if(e.target.closest('.cs-auto-btn')){setAuto(!autoOn);return}if(e.target.closest('.cs-log-btn')){logToggle();return}if(e.target.closest('.cs-ff-btn'))return;if(!$('.cs-log').hidden){if(!e.target.closest('.cs-log-in'))logToggle(false);return}next()};document.addEventListener('keydown',key,true);
   $('.cs-skip').focus?.({preventScroll:true});
   await wait(reduced()?0:450);if(scene.card){busy=true;await showCard(scene.card);busy=false}
   next()});
