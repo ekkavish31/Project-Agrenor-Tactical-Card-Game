@@ -562,6 +562,8 @@
   e.left = -fp.u0; e.right = fp.u1; e.back = -fp.v0; e.front = fp.v1;
   return e
  };
+ /* v98.16 · the walk cache was built from the old frame before this patch: rebuild it, or the hero is walled in at the default frame edge */
+ try { if (typeof cacheSolids === 'function') { cacheSolids(); terrainDirty = true } } catch (_) {}
  const loc = id => locations.find(o => o.id === id);
  const hasFrame = o => !!o && !!baseEstateFn(o);
  const mirrorX = (o, p) => o.facing === 'SE' ? {
