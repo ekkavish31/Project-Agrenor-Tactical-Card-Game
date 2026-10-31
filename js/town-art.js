@@ -10,10 +10,10 @@
  function asset(id){return image('assets/village-town/'+(files[id]||id))}
  function pattern(g,id){const im=asset(id);if(!im.complete||!im.naturalWidth)return null;let cache=patterns.get(g);if(!cache)patterns.set(g,cache=new Map());if(!cache.has(id)){const c=document.createElement('canvas');c.width=c.height=SIZE[id]||420;c.getContext('2d').drawImage(im,0,0,c.width,c.height);const pattern=g.createPattern(c,'repeat');if(SIZE[id])pattern.setTransform(new DOMMatrix().rotate(45));cache.set(id,pattern)}return cache.get(id)}
  function mask(im){const pre=root.VillageAlpha?.get(im.src,im.naturalWidth,im.naturalHeight);if(pre)return pre;if(masks.has(im))return masks.get(im);let out=null;try{const c=document.createElement('canvas');c.width=256;c.height=Math.max(1,Math.round(256*im.naturalHeight/im.naturalWidth));const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0,c.width,c.height);out={w:c.width,h:c.height,data:g.getImageData(0,0,c.width,c.height).data}}catch{}masks.set(im,out);return out}
- function begin(g,p){frameNo++;heroPainted=false;heroScreen=new DOMPoint(p.x,p.y).matrixTransform(g.getTransform())}
+ function begin(g,p){frameNo++;heroPainted=false;xray=false;heroScreen=new DOMPoint(p.x,p.y).matrixTransform(g.getTransform())}
  /* v91.70 · auto sharpness: art is drawn from a copy pre-scaled (in halving steps, high quality) to the size it is shown at, plus a light unsharp mask.
     The copy is cached per size step (1.25x apart) and built at most once per frame so zooming stays smooth; the plain image is used until it is ready. */
- let sharpOn=true,sharpAmt=.55;try{sharpOn=localStorage.getItem('project-a-sharp')!=='0';const v=parseFloat(localStorage.getItem('project-a-sharp-amt'));if(v>=0&&v<=2)sharpAmt=v}catch(e){}
+ let xray=false,sharpOn=true,sharpAmt=.55;try{sharpOn=localStorage.getItem('project-a-sharp')!=='0';const v=parseFloat(localStorage.getItem('project-a-sharp-amt'));if(v>=0&&v<=2)sharpAmt=v}catch(e){}
  /* v91.88 · per-image override: TownArt.setCur({amt:0–2, px:true}) while one place's art is drawn (amt = sharpening, px = crisp pixel scaling) */
  let cur=null;let sharpCache=new WeakMap();
  /* v91.89 · "ผสมกับพื้น": cur.feather (0–100) softens the lower silhouette of a building picture so its patch of ground melts into the map; cur.tone (0–1) dims/desaturates it toward the scene. Built once per picture+setting. */
@@ -32,9 +32,18 @@
   c=document.createElement('canvas');c.width=W;c.height=Math.max(1,Math.round(W*im.naturalHeight/nat));const q=c.getContext('2d');q.imageSmoothingEnabled=true;q.imageSmoothingQuality='high';q.drawImage(src,0,0,c.width,c.height);try{if(amt>0&&c.width*c.height<=6e6)unsharp(c,amt)}catch(e){}m.set(ck,c);return c}
  function setSharp(on,amt){sharpOn=!!on;if(amt!=null&&amt>=0&&amt<=2)sharpAmt=amt;try{localStorage.setItem('project-a-sharp',sharpOn?'1':'0');localStorage.setItem('project-a-sharp-amt',String(sharpAmt))}catch(e){}if(amt!=null)sharpCacheReset();document.dispatchEvent(new CustomEvent('town-sharp-change',{detail:{on:sharpOn,amt:sharpAmt}}))}
  function sharpCacheReset(){sharpCache=new WeakMap()}
- function draw(g,im,crop,rect,hero){if(!im?.complete||!im.naturalWidth)return;let alpha=1;const [x,y,w,h]=rect;
-  if(heroPainted&&heroScreen&&hero){const p=heroScreen.matrixTransform(g.getTransform().inverse()),m=mask(im),src=crop||[0,0,im.naturalWidth,im.naturalHeight];if(p.y<y+h*.98){for(const lift of [12,30,48]){const px=p.x,py=p.y-lift;if(px<x||px>x+w||py<y||py>y+h)continue;let opaque=true;if(m){const sx=(src[0]+(px-x)/w*src[2])/im.naturalWidth,sy=(src[1]+(py-y)/h*src[3])/im.naturalHeight,ix=Math.floor(sx*m.w),iy=Math.floor(sy*m.h);opaque=(m.data[(iy*m.w+ix)*4+3]||0)>45}if(opaque){alpha=.42;break}}}}
-  g.save();g.globalAlpha*=alpha;if(im._townHovered)outline(g,im,crop,rect,3);if(crop)g.drawImage(im,...crop,...rect);else{if(cur&&cur.px)g.imageSmoothingEnabled=false;const bs=blendFor(im)||im;g.drawImage(sharpFor(g,bs,w)||bs,...rect)}g.restore();return alpha;
+ /* v98.19 · the place that covers the hero is drawn into a scratch canvas, a soft round hole (an aura around the hero) is erased from it, then it is painted: only that part of the picture turns see-through */
+ let holeCv=null;const AURA=92;
+ function holeDraw(g,im,crop,rect,hole){const [x,y,w,h]=rect,t=g.getTransform(),s=Math.min(2,Math.max(.5,Math.hypot(t.a,t.b))),cw=Math.max(1,Math.ceil(w*s)),ch=Math.max(1,Math.ceil(h*s));
+  if(!holeCv)holeCv=document.createElement('canvas');if(holeCv.width!==cw||holeCv.height!==ch){holeCv.width=cw;holeCv.height=ch}
+  const q=holeCv.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,cw,ch);q.imageSmoothingEnabled=true;q.imageSmoothingQuality='high';
+  if(crop)q.drawImage(im,...crop,0,0,cw,ch);else q.drawImage(blendFor(im)||im,0,0,cw,ch);
+  const hx=(hole.x-x)*s,hy=(hole.y-y)*s,R=AURA*s;q.save();q.translate(hx,hy);q.scale(.85,1.15);const gr=q.createRadialGradient(0,0,R*.3,0,0,R);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(.6,'rgba(0,0,0,.75)');gr.addColorStop(1,'rgba(0,0,0,0)');
+  q.globalCompositeOperation='destination-out';q.fillStyle=gr;q.fillRect(-R,-R,R*2,R*2);q.restore();q.globalCompositeOperation='source-over';
+  g.drawImage(holeCv,0,0,cw,ch,x,y,w,h)}
+ function draw(g,im,crop,rect,hero){if(!im?.complete||!im.naturalWidth)return;let alpha=1,hole=null;const [x,y,w,h]=rect;
+  if(heroPainted&&heroScreen&&hero){const p=heroScreen.matrixTransform(g.getTransform().inverse()),m=mask(im),src=crop||[0,0,im.naturalWidth,im.naturalHeight];if(p.y<y+h*.98){for(const lift of [12,30,48]){const px=p.x,py=p.y-lift;if(px<x||px>x+w||py<y||py>y+h)continue;let opaque=true;if(m){const sx=(src[0]+(px-x)/w*src[2])/im.naturalWidth,sy=(src[1]+(py-y)/h*src[3])/im.naturalHeight,ix=Math.floor(sx*m.w),iy=Math.floor(sy*m.h);opaque=(m.data[(iy*m.w+ix)*4+3]||0)>45}if(opaque){hole={x:p.x,y:p.y-44};break}/* v98.19 · the picture stays solid except a soft round window around the hero (see holeDraw) */}}}
+  g.save();g.globalAlpha*=alpha;if(hole){holeDraw(g,im,crop,rect,hole);g.restore();return alpha}if(im._townHovered)outline(g,im,crop,rect,3);if(crop)g.drawImage(im,...crop,...rect);else{if(cur&&cur.px)g.imageSmoothingEnabled=false;const bs=blendFor(im)||im;g.drawImage(sharpFor(g,bs,w)||bs,...rect)}g.restore();return alpha;
  }
  function sprite(g,id,p,w,h,pivot=[.5,.92],fade=false){const im=asset(id);if(!im.complete||!im.naturalWidth)return;h=h||w*im.naturalHeight/im.naturalWidth;return draw(g,im,null,[p.x-w*pivot[0],p.y-h*pivot[1],w,h],fade?p:null)}
  function detail(g,index,p,w=40){const im=asset('details');if(!im.complete||!im.naturalWidth)return;const sw=im.naturalWidth/2,sh=im.naturalHeight/2;g.drawImage(im,index%2*sw,Math.floor(index/2)*sh,sw,sh,p.x-w/2,p.y-w*.7,w,w)}
@@ -56,6 +65,6 @@
  function view(ctx,pad=0){try{const m=ctx.getTransform();if(!m.is2D||Math.abs(m.b)>1e-6||Math.abs(m.c)>1e-6||!m.a||!m.d)return null;const w=ctx.canvas.width,h=ctx.canvas.height,x0=(0-m.e)/m.a,x1=(w-m.e)/m.a,y0=(0-m.f)/m.d,y1=(h-m.f)/m.d;return{x0:Math.min(x0,x1)-pad,x1:Math.max(x0,x1)+pad,y0:Math.min(y0,y1)-pad,y1:Math.max(y0,y1)+pad}}catch(e){return null}}
  /* draw an image whose pixels are 1:1 with world px at (0,0), cropped to the visible part */
  function drawWorld(ctx,im,pad=6){const v=view(ctx,pad);if(!v){ctx.drawImage(im,0,0);return}const x=Math.max(0,Math.floor(v.x0)),y=Math.max(0,Math.floor(v.y0)),w=Math.min(im.width,Math.ceil(v.x1))-x,h=Math.min(im.height,Math.ceil(v.y1))-y;if(w>0&&h>0)ctx.drawImage(im,x,y,w,h,x,y,w,h)}
- root.TownArt={view,drawWorld,grassTone,setCur:v=>{cur=v||null},sharpOn:()=>sharpOn,sharpAmt:()=>sharpAmt,setSharp,image,asset,pattern,begin,draw,outline,hit,sprite,detail,hero,setMotion,onLoad:f=>listeners.add(f),getMotion:()=>motion};
+ root.TownArt={xray:()=>xray,view,drawWorld,grassTone,setCur:v=>{cur=v||null},sharpOn:()=>sharpOn,sharpAmt:()=>sharpAmt,setSharp,image,asset,pattern,begin,draw,outline,hit,sprite,detail,hero,setMotion,onLoad:f=>listeners.add(f),getMotion:()=>motion};
  Object.keys(files).forEach(asset);if(motion)setMotion(motion);
 })(globalThis);

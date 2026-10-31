@@ -224,5 +224,5 @@
   }
   /* v95.14: street objects join the village's own depth-sorted list, so goats are solid and pass in front of / behind the hero and buildings like any villager */
   function sorted(t) { if (editing || !T) return []; const k = Math.min(2.2, K()); return [...objs.values()].flat().map(o => { const p = project(o.u, o.v); return { x: p.x, y: p.y, mobile: true, draw: g => drawObj(g, o, t, k) } }) }
-  root.TownQuest = { draw, sorted, guide, targets: () => T, objects: () => [...objs.values()].flat() };
+  root.TownQuest = { draw, sorted, guide, use, targets, objects: () => [...objs.values()].flat() };
 })(globalThis);
