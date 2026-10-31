@@ -56,7 +56,7 @@
   }
   function autoRoads() {
     reachSet.cache = reachSet();
-    const todo = [...places().map(o => ({ name: nameOf(o), p: gate(o), o })), ...exitDoors().map(e => ({ name: e.name, p: e }))].filter(x => x.o ? !(connected(x.o) && reaches(door(x.o))) : !reaches(x.p));
+    const todo = [...places().map(o => ({ name: nameOf(o), p: gate(o), o })), ...exitDoors().filter(e => !e.off).map(e => ({ name: e.name, p: e }))].filter(x => x.o ? !(connected(x.o) && reaches(door(x.o))) : !reaches(x.p));
     if (!todo.length) return ['✔ ทุกทางเข้ามีถนนอยู่ใกล้แล้ว'];
     const log = [];
     UX().checkpoint();
@@ -89,7 +89,7 @@
       if (!a.length) rows.push({ id: o.id, t: '🚪 เดินไปทางเข้า ' + nameOf(o) + ' ไม่ถึง' });
       if (!connected(o)) rows.push({ id: o.id, t: '🛣 ไม่มีถนนใกล้ทางเข้า ' + nameOf(o) + ' (ใช้ ก) เพื่อต่อให้)' })
     }
-    for (const e of exitDoors()) if (!findPath({ u: hero.u, v: hero.v }, e).length) rows.push({ id: null, t: '🚪 ทางออก ' + e.name + ' เดินไปไม่ถึง' });
+    for (const e of exitDoors().filter(e => !e.off)) if (!findPath({ u: hero.u, v: hero.v }, e).length) rows.push({ id: null, t: '🚪 ทางออก ' + e.name + ' เดินไปไม่ถึง' });
     return rows
   }
 

@@ -40,7 +40,7 @@
   }
   function exitTarget() {
     const ds = typeof exitDoors === 'function' ? exitDoors() : []; let best = -1, bd = 1e9;
-    ds.forEach((d, i) => { const k = dist(hero, d); if (k < bd) { bd = k; best = i } });
+    ds.forEach((d, i) => { if (d.off) return; const k = dist(hero, d); if (k < bd) { bd = k; best = i } });
     if (best < 0) return null; const d = ds[best], map = { north: 0, northeast: 1, east: 2, southeast: 3, southwest: 4, west: 5 };
     const a = (gameState?.exits || []).find(e => map[e.exit] === best);
     return { door: d, id: a ? 'exit:' + a.id : null, name: a?.name || d.name };

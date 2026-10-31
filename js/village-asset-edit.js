@@ -186,8 +186,9 @@
  }
 
  /* ---------- owners: a place (estate frame, mirrored when it faces SE), the plaza, or an exit gate ---------- */
+ function gateName(i) { const n = Village25D.getExits()[i]?.name || ''; return /^ประตู/.test(n) ? n : 'ประตู' + n }
  function ownerName(owner) {
-  if (owner.startsWith('exit:')) return 'ประตู' + (Village25D.getExits()[+owner.slice(5)]?.name || '');
+  if (owner.startsWith('exit:')) return gateName(+owner.slice(5));
   return locations.find(o => o.id === owner)?.name || owner
  }
 
@@ -419,8 +420,9 @@
   baseGates = TM.gateObjects;
  TM.gateObjects = function() {
   const out = [];
-  baseGates().forEach((it, i) => {
-   const e = entry('exit:' + i, 'exit:' + i, it.x, it.y, it.draw, null, 'ประตู ' + (Village25D.getExits()[i]?.name || ''));
+  baseGates().forEach((it, k) => {
+   const i = it.i ?? k;   /* v98.20 · the slot number of the gate (only two slots exist now) */
+   const e = entry('exit:' + i, 'exit:' + i, it.x, it.y, it.draw, null, gateName(i));
    if (e) out.push(e)
   });
   const all = out.concat(addedItems(true)); rebuildBlocks(); return all
@@ -2040,7 +2042,7 @@
  }
 
  function renderMap() {
-  const gates = Village25D.getExits().map((x, i) => ['exit:' + i, 'ประตู' + (x.name || '')]);
+  const gates = Village25D.getExits().filter(x => !x.off).map(x => ['exit:' + x.i, gateName(x.i)]);
   panel.innerHTML = `<div class="body"><h3>🗺 หมู่บ้าน</h3><p class="sub">ชี้สถานที่ = เห็นกรอบขาวทั้งแปลง · <b>คลิก</b> = เปิดแก้ในสถานที่นั้น · <b>ลาก</b> = ย้ายทั้งแปลง (ถนนตามไปเอง)</p>
   <b class="sec">สถานที่</b><div class="places">${locations.map(o=>`<button data-open="${o.id}">${o.num??''} ${o.name}</button>`).join('')}</div>
   <b class="sec" style="margin-top:8px">ประตูผจญภัย</b><div class="places">${gates.map(([k,n])=>`<button data-open="${k}">${n}</button>`).join('')}</div><hr>

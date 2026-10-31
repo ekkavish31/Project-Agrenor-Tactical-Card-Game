@@ -32,7 +32,7 @@
   function corridorDist(x, y) {   /* distance to the nearest exit road (dirt roads to the gates) */
     const lines = typeof roadExitLines !== 'undefined' ? roadExitLines : []; let best = 1e9;
     for (const L of lines) for (let i = 0; i < L.length - 1; i++) { const a = L[i], b = L[i + 1], dx = b.x - a.x, dy = (b.y - a.y) * 2, l2 = dx * dx + dy * dy || 1; let t = ((x - a.x) * dx + (y - a.y) * 2 * dy) / l2; t = Math.max(0, Math.min(1, t)); best = Math.min(best, Math.hypot(x - (a.x + dx * t), (y - a.y) * 2 - dy * t)) }
-    try { for (const e of exitDoors()) { const p = project(e.u, e.v); best = Math.min(best, sd(x, y, p.x, p.y) * .8) } } catch (e) { }
+    try { for (const e of exitDoors()) { if (e.off) continue; const p = project(e.u, e.v); best = Math.min(best, sd(x, y, p.x, p.y) * .5)   /* v98.20 · a wider clearing around the two town gates */ } } catch (e) { }
     return best;
   }
   /* is this world pixel forest ground? (outside the village outline, not in a corridor, not a gate biome, not water / road) */
