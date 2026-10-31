@@ -120,10 +120,11 @@
       if (btn.radial) { const v = vec(); pickDir(v.x, v.y) }
     }
     cool = Math.max(0, cool - dt);
+    if (visible() && !blocked() && moving()) { try { ctx = adapter.context?.() || null } catch (e) { } }   /* fresh while walking: a door is passed in a fraction of a second */
     const c = ctx; let p = 0;
     if (c && c.bump && bumpOn() && !blocked() && !btn.radial && cool <= 0 && c.sx != null) {
-      const v = vec(), l = Math.hypot(c.sx, c.sy) || 1, dot = (v.x * c.sx + v.y * c.sy) / l;
-      if (Math.hypot(v.x, v.y) > .3 && dot > .55 && (c.dist ?? 9) <= (c.bumpR ?? 1.2)) { bumpT += dt; p = Math.min(1, bumpT / BUMP); if (bumpT >= BUMP) { bumpT = 0; cool = 1.6; act(c) } } else bumpT = Math.max(0, bumpT - dt * 2.5);
+      const v = vec(), l = Math.hypot(c.sx, c.sy) || 1, vm = Math.hypot(v.x, v.y) || 1, dot = (v.x * c.sx + v.y * c.sy) / (l * vm);   // both directions normalised: a half-tilted stick counts the same
+      if (Math.hypot(v.x, v.y) > .3 && dot > .55 && (c.dist ?? 9) <= (c.bumpR ?? 1.2)) { const need = c.bumpT ?? BUMP; bumpT += dt; p = Math.min(1, bumpT / need); if (bumpT >= need) { bumpT = 0; cool = 1.6; act(c) } } else bumpT = Math.max(0, bumpT - dt * 2.5);
     } else bumpT = Math.max(0, bumpT - dt * 2.5);
     if (ui) { ui.A.style.setProperty('--p', Math.round(Math.max(p, btn.down && !btn.radial ? Math.min(1, btn.t / HOLD) * (ctx?.options?.length > 1 ? 1 : 0) : 0) * 100) + '%'); ui.A.classList.toggle('press', btn.down) }
   }

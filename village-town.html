@@ -477,11 +477,11 @@ const clickEl=sel=>{const b=document.querySelector(sel);if(b)b.click()};
 /* what can be used in the village — ONE list for the big button, bump-to-interact, hold-for-choices, the hover tooltip */
 Interactables.add(()=>{const out=[],Q=window.TownQuest?.targets?.()||[],qp=new Set(Q.filter(t=>t.o).map(t=>'place:'+t.o.id)),qn=new Set(Q.filter(t=>t.npc).map(t=>'npc:'+t.npc.id));
  for(const n of window.TownNPC?.list?.()||[]){if(n.inside||n.hidden)continue;const p=project(n.u,n.v),id='npc:'+n.id,nm=npcName(n.id);
-  out.push({id,kind:'talk',u:n.u,v:n.v,r:3.2,bumpR:1.5,bump:true,quest:qn.has(id),label:'คุย · '+nm,icon:'party',x:p.x,y:p.y,
+  out.push({id,kind:'talk',u:n.u,v:n.v,r:3.2,bumpR:1.3,bumpT:.3,bump:true,quest:qn.has(id),label:'คุย · '+nm,icon:'party',x:p.x,y:p.y,
    run:()=>window.TownNPC.talk(n.id),
    options:[{label:'คุย',icon:'party',run:()=>window.TownNPC.talk(n.id)},{label:'ถามข่าว',icon:'quest',run:()=>{window.TownNPC.talk(n.id);setTimeout(()=>clickEl('#npcTalk [data-ask]'),450)}},{label:'ดูตัวละคร',icon:'collection',run:()=>{window.TownNPC.talk(n.id);setTimeout(()=>clickEl('#npcTalk [data-next]'),450)}}]})}
  for(const o of locations){if(o.id==='square'||o.hidden)continue;const d=door(o),p=project(d.u,d.v),id='place:'+o.id;
-  out.push({id,kind:'enter',u:d.u,v:d.v,r:2.8,bumpR:1.7,bump:true,quest:qp.has(id),label:'เข้า · '+(o.name||o.id),icon:'village',x:p.x,y:p.y,run:()=>{path.length=0;window.TownUX?.requestEntry?.(o)}})}
+  out.push({id,kind:'enter',u:d.u,v:d.v,r:2.8,bumpR:1.3,bumpT:.1,bump:true,quest:qp.has(id),label:'เข้า · '+(o.name||o.id),icon:'village',x:p.x,y:p.y,run:()=>{path.length=0;window.TownUX?.requestEntry?.(o)}})}
  for(const o of window.TownQuest?.objects?.()||[]){const p=project(o.u,o.v);out.push({id:'q:'+o.key+':'+o.i,kind:'quest',u:o.u,v:o.v,r:2.1,quest:true,pri:1.5,label:o.label||(o.kind==='goat'?'จับแพะ':'เก็บของ'),icon:'treasure',x:p.x,y:p.y,run:()=>window.TownQuest.use?.(o)})}
  return out});
 function joyContext(){if(joyBusy())return null;const it=Interactables.nearest(hero);if(!it)return null;return{...it,...sxy(it)}}
