@@ -405,7 +405,7 @@
     if (!document.hidden && shown) window.WorldState?.tick(dt);   // v94: the one game clock keeps running indoors
     if (t > syncAt) { syncAt = t + 1000; syncPeople(false); hudSync() }
     if (KIND === 'farm') { if (t > (frame.herdAt || 0)) { frame.herdAt = t + 700; syncHerd() } stepHerd(dt); followCam(false) }
-    stepActor(hero, dt, 3.6); if (!hero.path.length && hero.then) { const f = hero.then; hero.then = null; f() }
+    if (!(window.TouchControls?.moving?.() && !modalOpen && joyHero(dt))) stepActor(hero, dt, 3.6); if (!hero.path.length && hero.then) { const f = hero.then; hero.then = null; f() }
     for (const [id, a] of people) {
       stepActor(a, dt, 2.4);
       if (a.walking) a.act = ''; else if (a.spot && !a.leaving) { a.act = a.spot.act; a.face = a.spot.face }
@@ -792,5 +792,25 @@
   if (KIND === 'farm') { const msgs = farmDo(G => window.Garden.tick(G)) || []; for (const m of msgs.slice(0, 3)) toast(m); window.Tips?.once('farm', 'ไร่ของเรา', ['คลิกช่องในทุ่ง: ถางหิน ตอไม้ กิ่งไม้ และวัชพืช แล้วไถดิน', 'เลือก 🌱 เมล็ดในมือ แล้วคลิกดินที่ไถแล้วเพื่อปลูก · รดน้ำทุกวัน (ฝนตกรดให้เอง)', 'กระท่อม = จัดการไร่และนอนพัก · กล่องส่งขาย = ขายของในตะกร้า · บ่อน้ำ = ตกปลา', 'ถางและไถทำให้เหนื่อย ถ้าเหนื่อยมากต้องพักก่อน'], 'assets/icons/menu/village.webp') }   /* v97.82 · the days you were away · v97.89 the first-time tip */
   resize(); syncPeople(true); hudSync(); requestAnimationFrame(frame);
   if (KIND === 'square') toast('ลานกลางหมู่บ้านเป็นที่โล่ง — กลับออกไปข้างนอกได้เลย');
+  /* v98.16 · joystick / keyboard walking and the one-button action (js/touch-controls.js) */
+  function joyHero(dt) {
+    const v = window.TouchControls.vec(); let du = v.x / HW + v.y / HH, dv = v.y / HH - v.x / HW; const l = Math.hypot(du, dv); if (!l) return false; du /= l; dv /= l;
+    const sp = dt * 3.6 * Math.min(1, Math.hypot(v.x, v.y)), ok = (a, b) => free(Math.floor(a), Math.floor(b));
+    let nu = hero.vu + du * sp, nv = hero.vv + dv * sp;
+    if (!ok(nu, nv)) { if (ok(nu, hero.vv)) nv = hero.vv; else if (ok(hero.vu, nv)) nu = hero.vu; else { nu = hero.vu; nv = hero.vv } }
+    hero.vu = nu; hero.vv = nv; hero.u = Math.floor(nu); hero.v = Math.floor(nv); hero.face = faceOf(du, dv); hero.walking = true; hero.path = []; hero.then = null; return true;
+  }
+  window.TouchControls?.attach({
+    paused: () => modalOpen,
+    context() {
+      if (modalOpen) return null;
+      if (Math.hypot(hero.vu - (DOOR.u + .5), hero.vv - (DOOR.v + .5)) < 1.7) return { kind: 'exit', icon: 'portal', label: 'ออกไปข้างนอก' };
+      let best = null, bd = 2.4;
+      for (const [id, a] of people) { if (a.leaving || a.fade < .5) continue; const d = Math.hypot(a.vu - hero.vu, a.vv - hero.vv); if (d < bd) { bd = d; best = { kind: 'talk', id, icon: 'party', label: 'คุย · ' + (a.p?.name || id) } } }
+      return best;
+    },
+    act(c) { if (c.kind === 'talk') { const a = people.get(c.id); if (a) talk(a) } else leave() },
+    buttons: []
+  });
   window.Interior = { people, hero, talk: id => { const a = people.get(id); if (a) talk(a) }, act: (id, w) => { const a = people.get(id); if (a) return act(a, w) }, room: R, kind: KIND, sync: () => { syncPeople(false); hudSync() } };
 })();
