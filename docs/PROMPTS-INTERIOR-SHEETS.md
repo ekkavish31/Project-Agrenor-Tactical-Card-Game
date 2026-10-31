@@ -9,7 +9,8 @@
 - **มุมกล้อง**: isometric แบบ 2:1 (dimetric) · ช่องพื้น 1 ช่อง = ข้าวหลามตัดกว้าง:สูง = 2:1 (68×34 px ในห้อง) · กล้องยกสูง **30°** เหนือขอบฟ้า · เส้นขอบแนวนอนลาดเอียง 1:2 พอดี · เส้นตั้งต้องตั้งตรงเสมอ (ไม่ใช่มุมมองเพอร์สเปกทีฟ)
 - **ทิศ**: แกน u ชี้ลงขวา (SE) · แกน v ชี้ลงซ้าย (SW) · ของในห้องหันหน้าไป **SE** (ล่างขวา) · เกม**กลับภาพซ้าย-ขวา**ให้เองเมื่อต้องหัน SW → วาดแค่ทิศ SE ทิศเดียว · ของยาวให้ด้านยาวพาดจากบนซ้ายไปล่างขวา (กลับภาพแล้วจะพาดอีกแกน)
 - **ของติดผนัง**: ผนังหลัง (แกน u) หันหน้าห้องไป SW · ผนังซ้าย (แกน v) หันหน้าห้องไป SE → ชีทของติดผนังวาดแบบแปะผนังหัน SE ไว้ก่อน (ผนังอีกด้านใช้ภาพกลับด้าน)
-- **สเกล**: ตัวละครสูงราว 1.45 เท่าของความกว้างช่องพื้น · โต๊ะสูง ≈ 0.55 · เก้าอี้บาร์ ≈ 0.62 · สตูล ≈ 0.4 (หน่วยเป็นความกว้างช่องพื้น)
+- **สเกล**: ตัวละครสูงราว **1.25** เท่าของความกว้างช่องพื้น (ชีท 1 ใช้ 1.45 แต่ไม่กระทบ เพราะเกมย่อภาพตามช่องพื้นเอง) · โต๊ะ ≈ 0.5 · สตูล ≈ 0.35 · เคาน์เตอร์ ≈ 0.75 · เก้าอี้บาร์ ≈ 0.6 (หน่วยเป็นความกว้างช่องพื้น)
+- **ผลจริงที่เรียนรู้จากชีท 1**: AI วาดชิ้นใหญ่กว่าที่สั่งราว 1.5–2 เท่า (ไม่ตามสัดส่วนช่องพื้นเป๊ะ) แต่ **สัดส่วนระหว่างชิ้นในชีทเดียวกันใช้ได้** → เกมย่อทั้งชีทด้วยตัวเลขเดียว (`k` ใน `js/interior-art.js`) แล้วปรับรายชิ้นที่ผิดสัดส่วน เช่น สตูล · ไม่ต้องกังวลเรื่องขนาดพิกเซลที่ได้
 - **ไม่วาดเงาตกพื้น**: เกมวาดเงาและแสงเองด้วยโค้ด (แสงคบไฟ หน้าต่าง กลางวัน-กลางคืน)
 - **พื้นหลัง**: เขียวล้วน `#00FF00` เรียบ ๆ ไม่มีไล่สี ไม่มีเงา (Asset Studio ลบพื้นเขียวให้) · ถ้าเครื่องมือเจนรองรับพื้นโปร่งใสจริง ให้ใช้ได้เลย
 
@@ -21,7 +22,7 @@
 
 | ชีท | เนื้อหา | ใช้ในห้อง |
 |---|---|---|
-| **1** | โต๊ะและที่นั่ง: โต๊ะกลม · โต๊ะเหลี่ยม · โต๊ะยาว · สตูล · เก้าอี้ · ม้านั่งยาว · สตูลบาร์ · โต๊ะข้าง · ถังไวน์ใช้เป็นโต๊ะ | โรงแรม · สมาคม · บ้าน · วิหาร |
+| **1 ✅ ใช้ในเกมแล้ว (v98.23)** | โต๊ะและที่นั่ง: โต๊ะกลม · โต๊ะเหลี่ยม · โต๊ะยาว · สตูล · เก้าอี้ · ม้านั่งยาว · สตูลบาร์ · โต๊ะข้าง · ถังไวน์ใช้เป็นโต๊ะ | โรงแรม · สมาคม · บ้าน · วิหาร |
 | 2 | เคาน์เตอร์และเวที: เคาน์เตอร์บาร์ (ช่วงตรง · มุม · ปลาย) · เคาน์เตอร์ร้าน · เวทีเล็ก · บันได | โรงแรม · ร้าน · สถานพยาบาล · สมาคม |
 | 3 | ของเก็บ: ลัง · ถัง · ถังเล็ก (keg) · ตะกร้า · หีบ · ตู้เตี้ย · ชั้นสูง (shelfbox) · ชั้นวางอาวุธ/เครื่องมือ | ทุกห้อง |
 | 4 | ห้องนอนและพรม: เตียง · เตียงผู้ป่วย · หีบปลายเตียง · พรมหลายขนาด (3×3 · 4×3 · ทางเดิน 1×7) | บ้าน · สถานพยาบาล · โรงแรม |
@@ -70,4 +71,39 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 
 **ตรวจรับชีท**: ① ทุกชิ้นมุมกล้องเดียวกัน (เส้นตั้งตรง ขอบลาด 1:2) ② ฐานอยู่เส้นเดียวกันทุกช่อง ③ ขนาดตรงสเกล (โต๊ะกลมกินช่องพื้น 1 ช่อง · โต๊ะยาว 2 ช่อง) ④ ไม่มีตัวหนังสือ/ของวางบนโต๊ะ ⑤ แสงมาจากซ้ายบนเหมือนกันทุกชิ้น ⑥ สีไม้เข้ากับอาคารในหมู่บ้าน — ถ้าข้อไหนไม่ผ่านให้เจนใหม่ทั้งชีท (หรือเจนเฉพาะชิ้นแล้วแนบชีทนี้เป็นอ้างอิง)
 
-พิมพ์ "ชีทถัดไป" แล้วผมส่งพรอมต์ชีท 2 ให้
+**ผลในเกม (v98.23)**: `table` → โต๊ะกลม/เหลี่ยมสลับตามตำแหน่ง · `stool` → สตูล (สตูลบาร์แดงที่เคาน์เตอร์โรงแรม) · `barrel`/`keg` → ถังไม้ · ชิ้นที่ตัดแล้วแต่ยังไม่มีที่ใช้ (`chair` · `bench-long` · `table-long` · `table-side`) เก็บไว้ใน `assets/interior/` พร้อมข้อมูลใน `js/interior-art.js` รอเลย์เอาต์ห้องเรียกใช้
+
+---
+
+## ชีท 2 · เคาน์เตอร์ โต๊ะทำงาน เวที บันได (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `counter-bar` · `counter-bar-end` · `counter-shop` · `counter-guild` · `counter-healer` · `desk-writing` · `stage` · `stairs` · `counter-flap`
+
+หมายเหตุสำหรับเกม: ชิ้นยาว (เคาน์เตอร์ 3×1) เกมต่อซ้ำเป็นแถวได้ จึงต้อง**ปลายตัดเรียบ** ไม่มีขอบหรือลายที่ปลายซ้ายขวา · บันไดวาดให้ขึ้นไปทางบนซ้าย หน้าขั้นหัน SE (เกมกลับภาพเป็นขึ้นไปทางบนขวาสำหรับบันไดชิดผนังหลัง)
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior: exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated furniture piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people, and nothing placed on the furniture (all counter tops and desk tops completely empty and clean: no mugs, no papers, no books, no bottles).
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT faces the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2 (they rise or fall one pixel for every two pixels across). The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every elongated piece runs from the upper-left to the lower-right of the image, so its long customer-facing side is the visible left-hand face (facing lower-left).
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. A 3x1-tile piece sits on three such diamonds joined along the upper-left to lower-right direction; a 2x2 piece on a 2-by-2 block of diamonds. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 10% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. If the 3x1 pieces would not fit with that margin, draw every piece in the sheet slightly smaller by the same factor (keep their relative proportions). A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): counter top height about 0.75 tile-widths, writing desk top about 0.6, stage platform about 0.15 high, stairs rising about 0.9.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (wood grain, nail heads, iron bands, chips and wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: warm oak and honey-coloured wood, dark walnut accents, wrought-iron and brass fittings, muted forest green and russet red used sparingly, slightly desaturated so the pieces sit naturally in a lavish timber-framed medieval fantasy town and match the attached reference images, including the previous sheet of tables and stools (same oak tone, same detail level, same outline weight).
+
+CONTENT, row by row, left to right:
+1. Tavern bar counter, straight section, 3x1 tiles: thick dark-oak plank top with a polished brass trim along the front edge, panelled front with a brass foot rail near the bottom, flat clean cut ends (it will be tiled end to end).
+2. Tavern bar counter end piece, 1x1 tile: same oak and brass as piece 1, one end rounded like a bullnose, the other end flat.
+3. Shop counter, straight section, 3x1 tiles: lighter pine, a green wool cloth runner lying along the top, a row of small drawers with iron pulls in the front, flat clean cut ends.
+4. Adventurers' guild counter, straight section, 3x1 tiles: dark walnut, iron corner plates and iron-banded front panels, a heavy slab top, flat clean cut ends.
+5. Healer's counter, straight section, 3x1 tiles: whitewashed plaster front with muted forest-green painted trim, honey-oak top, small shelf under the top, flat clean cut ends.
+6. Writing desk, 2x1 tiles: sloped oak top, three drawers on the front with brass pulls, turned legs; top completely empty.
+7. Low wooden stage platform, 2x2 tiles: plank top about 0.15 tile-widths high with a front edge skirt and two broad steps on the lower-right side.
+8. Wooden staircase, 2x1 tiles: climbing towards the upper-left, the step fronts facing the lower-right, solid side stringers, a simple handrail on the visible left side, the top landing flat and clean (no wall, no floor).
+9. Hinged counter flap (bar gate), 1x1 tile: a short lift-up counter section in the same oak as piece 1 with two iron hinges, shown closed and flat.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background, nothing on the tops.
+```
+
+**ตรวจรับชีท 2**: เหมือนชีท 1 + ④ ปลายเคาน์เตอร์ตัดเรียบต่อกันได้ ⑤ ท็อปทุกชิ้นว่าง ⑥ สีไม้เข้ากับชีท 1
+
+พิมพ์ "ชีทถัดไป" ถ้าอยากได้ชีท 3 (ของเก็บ: ลัง ถัง ตะกร้า หีบ ชั้น)

@@ -64,7 +64,7 @@
       it('stage', 11, 1, 2, 3, { h: 8, walk: true }); sp('stage', 11, 2, 'SW', 'play'); sp('stage', 12, 3, 'SW', 'stand');
       it('table', 12, 9); sp('corner', 12, 8, 'SW', 'sit'); it('stool', 12, 8, 1, 1, { walk: true });
       it('stairs', 6, 0, 2, 1, { h: 0 }); it('rug', 6, 5, 4, 3, { walk: true }); it('plant', 1, 9); it('crate', 10, 1);
-      for (let u = 2; u < 8; u++) { sp('bar', u, 3, 'NE', 'drink'); it('stool', u, 3, 1, 1, { walk: true }) }
+      for (let u = 2; u < 8; u++) { sp('bar', u, 3, 'NE', 'drink'); it('stool', u, 3, 1, 1, { walk: true, tall: true }) }
       sp('bar', 4, 1, 'SW', 'work'); sp('bar', 6, 1, 'SW', 'work');                                   // behind the counter (the innkeeper)
       sp('fire', 1, 3, 'SE', 'sit'); sp('fire', 1, 4, 'SE', 'sit'); sp('fire', 2, 4, 'NW', 'stand');
       R.light.push({ u: 5, v: 2.5, r: 3.5, col: '255,200,120' }, { u: 6.5, v: 7, r: 4.5, col: '255,190,110' }, { u: 11.5, v: 2, r: 2.5, col: '255,210,150' });
@@ -338,9 +338,20 @@
     g.restore();
     if (h.a.hungry) { g.fillStyle = '#c84a3a'; g.font = '700 12px system-ui,sans-serif'; g.textAlign = 'center'; g.fillText('!', p.x + 14, p.y - 30) }
   }
+  /* v98.23 · hand-painted sprites (js/interior-art.js) for the pieces that have one: table (round / square, picked by position), stool (the tall bar stool when {tall:true}), barrel / keg */
+  const ART = window.INTERIOR_ART || {}, artImgs = {};
+  const artFor = i => i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (i.k === 'barrel' || i.k === 'keg') ? 'table-barrel' : null;
+  function drawArt(i, c) {
+    const name = artFor(i), a = name && ART[name]; if (!a) return false;
+    const im = artImgs[name] || (artImgs[name] = Object.assign(new Image(), { src: a.src })); if (!im.complete || !im.naturalWidth) return false;
+    const k = a.k * (i.k === 'keg' ? .8 : 1), rx = a.w * k * (name === 'table-barrel' ? .42 : .36);
+    g.fillStyle = 'rgba(0,0,0,.22)'; g.beginPath(); g.ellipse(c.x, c.y + 1, rx, rx * .5, 0, 0, 7); g.fill();
+    g.drawImage(im, c.x - a.fx * k, c.y - a.fy * k, a.w * k, a.h * k); return true;
+  }
   function drawItem(i, t) {
     if (KIND === 'farm' && ['ftile', 'fobj', 'path', 'pond', 'tree', 'cabin', 'coop', 'bin', 'well', 'woodpile', 'cart', 'signpost', 'fence', 'penfloor', 'hay', 'barn', 'scarecrow', 'compost', 'trough'].includes(i.k)) return drawFarmItem(i, t);
     const c = P(i.u + i.w / 2, i.v + i.d / 2);
+    if (drawArt(i, c)) return;
     switch (i.k) {
       case 'counter': box(i.u, i.v, i.w, i.d, i.h || 30, '#8a5a32', '#6a4424', '#5a3a1e'); { const a = P(i.u, i.v); for (let k = 0; k < i.w; k += 1.5) { const p = P(i.u + k + .7, i.v + .4); g.fillStyle = '#c9a060'; g.fillRect(p.x - 3, p.y - (i.h || 30) - 10, 6, 9) } } break;
       case 'table': box(i.u + .15, i.v + .15, .7, .7, 22, '#9a6a3a', '#6a4424', '#5a3a1e'); { const p = P(i.u + .5, i.v + .5); g.fillStyle = '#c9a060'; g.fillRect(p.x - 6, p.y - 32, 5, 8); g.fillStyle = '#e8e0c8'; g.beginPath(); g.ellipse(p.x + 6, p.y - 23, 5, 2.5, 0, 0, 7); g.fill() } break;
