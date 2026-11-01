@@ -125,7 +125,7 @@
       else if (prof === 'wool') { it('basket', 1, 5); it('basket', 2, 6) }
       /* v97.40 · the rest of the village keep their trade at home too (along the back wall, clear of the door) */
       else if (prof === 'desk') { it('table', 3, 1); it('shelfbox', 2, 1, 1, 1, { h: 56 }); sp('work', 3, 2, 'NE', 'sit'); R.wallDeco.push({ k: 'banner', side: 'back', a: 5.2 }, { k: 'board', side: 'left', a: 3 }) }
-      else if (prof === 'smith') { it('anvil', 3, 1); it('rack', 2, 1, 1, 1, { h: 50 }); sp('work', 3, 2, 'NE', 'work'); R.wallDeco.push({ k: 'tools', side: 'back', a: 3.6, b: 5.4 }) }
+      else if (prof === 'smith') { it('anvil', 3, 1); it('rack', 2, 1, 1, 1, { h: 50, tools: true }); sp('work', 3, 2, 'NE', 'work'); R.wallDeco.push({ k: 'tools', side: 'back', a: 3.6, b: 5.4 }) }
       else if (prof === 'guard') { it('rack', 3, 1, 1, 1, { h: 50 }); it('chest', 4, 1); R.wallDeco.push({ k: 'sword', side: 'back', a: 5.2 }, { k: 'banner', side: 'left', a: 3 }) }
       else if (prof === 'farm') { it('basket', 2, 1); it('basket', 3, 1); it('crate', 4, 1); R.wallDeco.push({ k: 'tools', side: 'back', a: 4.6, b: 5.8 }) }
       else if (prof === 'mill') { it('barrel', 2, 1); it('crate', 3, 1); it('basket', 4, 1); it('mortar', 3, 1, 1, 1, { onTop: true }); sp('work', 3, 2, 'NE', 'work') }
@@ -341,11 +341,14 @@
   /* v98.23 · hand-painted sprites (js/interior-art.js) for the pieces that have one: table (round / square, picked by position), stool (the tall bar stool when {tall:true}), barrel / keg */
   const ART = window.INTERIOR_ART || {}, artImgs = {};
   const COUNTER = { inn: 'counter-bar', shop: 'counter-shop', guild: 'counter-guild', healer: 'counter-healer' };
-  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (i.k === 'barrel' || i.k === 'keg') ? 'table-barrel' : null;
+  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : i.k === 'barrel' ? 'table-barrel' : i.k === 'keg' ? 'keg' : i.k === 'basket' ? 'basket' : i.k === 'chest' ? 'trunk'
+    : i.k === 'crate' ? ((i.u + i.v * 2) % 3 === 0 ? 'crate-stack' : 'crate')
+    : i.k === 'shelfbox' ? (['guild', 'temple', 'home', 'house'].includes(KIND) ? 'shelf-books' : 'shelf-store')
+    : i.k === 'rack' ? (KIND === 'forge' || i.tools ? 'rack-tools' : 'rack-weapons') : null;
   function drawArt(i, c) {
     const name = artFor(i), a = name && ART[name]; if (!a) return false;
     const im = artImgs[name] || (artImgs[name] = Object.assign(new Image(), { src: a.src })); if (!im.complete || !im.naturalWidth) return false;
-    const k = a.k * (i.k === 'keg' ? .8 : 1);
+    const k = a.k;
     if (!a.noShadow) { const rx = a.w * k * (name === 'table-barrel' ? .42 : .36); g.fillStyle = 'rgba(0,0,0,.22)'; g.beginPath(); g.ellipse(c.x, c.y + 1, rx, rx * .5, 0, 0, 7); g.fill() }
     g.save(); if (a.mirror) { g.translate(c.x * 2, 0); g.scale(-1, 1) }
     if (a.stretch && i.w > a.stretch && i.d === 1) {

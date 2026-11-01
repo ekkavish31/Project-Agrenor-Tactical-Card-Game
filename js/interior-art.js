@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–2). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–3). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -156,5 +156,77 @@ window.INTERIOR_ART={
   "fx": 132,
   "fy": 225,
   "k": 0.2586
+ },
+ "crate": {
+  "src": "assets/interior/crate.webp",
+  "w": 280,
+  "h": 278,
+  "fx": 140,
+  "fy": 208,
+  "k": 0.21
+ },
+ "crate-stack": {
+  "src": "assets/interior/crate-stack.webp",
+  "w": 274,
+  "h": 346,
+  "fx": 137,
+  "fy": 278,
+  "k": 0.22
+ },
+ "keg": {
+  "src": "assets/interior/keg.webp",
+  "w": 215,
+  "h": 277,
+  "fx": 107,
+  "fy": 234,
+  "k": 0.22
+ },
+ "basket": {
+  "src": "assets/interior/basket.webp",
+  "w": 262,
+  "h": 210,
+  "fx": 131,
+  "fy": 158,
+  "k": 0.19
+ },
+ "trunk": {
+  "src": "assets/interior/trunk.webp",
+  "w": 297,
+  "h": 257,
+  "fx": 148,
+  "fy": 183,
+  "k": 0.22
+ },
+ "shelf-store": {
+  "src": "assets/interior/shelf-store.webp",
+  "w": 280,
+  "h": 396,
+  "fx": 140,
+  "fy": 326,
+  "k": 0.23
+ },
+ "shelf-books": {
+  "src": "assets/interior/shelf-books.webp",
+  "w": 281,
+  "h": 397,
+  "fx": 140,
+  "fy": 327,
+  "k": 0.23
+ },
+ "rack-weapons": {
+  "src": "assets/interior/rack-weapons.webp",
+  "w": 308,
+  "h": 393,
+  "fx": 154,
+  "fy": 341,
+  "k": 0.205
+ },
+ "rack-tools": {
+  "src": "assets/interior/rack-tools.webp",
+  "w": 309,
+  "h": 337,
+  "fx": 154,
+  "fy": 284,
+  "k": 0.205
  }
 };
