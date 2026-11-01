@@ -844,6 +844,7 @@
     const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
     for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
+    const hp0 = S.hp;   /* v98.41 · for titles: was the win flawless / a close call */
     const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
     const tut = (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
     /* v97.22 · battle objectives: a night camp raid → hold the camp banner · an ambush → sometimes break out to the map edge
@@ -865,14 +866,16 @@
     if (fierce && res.outcome !== 'flee') ev('night:terror', { foe, biome: here.biome });
     if (!o.boss) ev(res.outcome === 'win' ? 'battle:win' : res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome });
     else if (res.outcome !== 'win') ev(res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome, destName: destOf()?.name });
+    /* v98.41 · ฉายา: count the fight, award titles whose hidden condition is now true */
+    let TM = {}; try { const T = window.Titles; if (T) { const g0 = WS.game(), got = T.battle(g0, { outcome: res.outcome, foe, boss: !!o.boss, elite, night, kills: res.kills || 0, hp0, hp1: S.hp, maxHp: S.maxHp, party: fighters.length, allyDown: (res.party || []).filter(r => r.hp <= 0).length }); TM = T.mods(g0); for (const d of got) { log('🏅 ได้รับฉายา «' + d.name + '» (' + T.TIERS[d.tier].name + ')'); toast('🏅 ฉายาใหม่ «' + d.name + '»') } if (got.length) WS.commit() } } catch (e) { }
     if (res.outcome === 'win') {
-      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (OBJ_GOLD[obj.split(':')[0]] || 1) * DIFF.gold); S.gold += gold; S.hp = Math.max(1, S.hp);
+      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (1 + (TM.gold || 0)) * (OBJ_GOLD[obj.split(':')[0]] || 1) * DIFF.gold); S.gold += gold; S.hp = Math.max(1, S.hp);
       const loot = dropLoot(foe, here.biome, dang, o.boss);
       { const hp = window.Offices?.perk(S, 'hunter') || 0; if (hp) { S.food += hp; log('➶ พรานหลวงได้เสบียง +' + hp) } }   /* v97.57 · office perk */
       /* v94.06 F2: experience — the hero and the companions who fought */
       let jobRes = null; const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
       if (window.Progression) {
-        const xp = Math.round(Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }) * (VP('drill') ? 1.15 : 1)), ups = Progression.gainHero(WS.game(), xp);
+        const xp = Math.round(Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }) * (VP('drill') ? 1.15 : 1) * (1 + (TM.xp || 0))), ups = Progression.gainHero(WS.game(), xp);
         { const c = WS.game().village.character; Object.assign(members[0], { gain: xp, lv1: c.level, xp1: c.xp }) }
         log('✦ EXP +' + xp + (ups.length ? ' · เลเวลอัป! Lv.' + ups[ups.length - 1] + ' (HP สูงสุด ' + S.maxHp + ')' : ''));
         if (ups.length) toast('LEVEL UP! Lv.' + ups[ups.length - 1]);

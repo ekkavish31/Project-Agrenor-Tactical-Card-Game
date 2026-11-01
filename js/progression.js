@@ -110,7 +110,8 @@
     const power = wb + Math.floor((lv - 1) / 3) + Math.floor(stat(g, 'strength') / 2), spell = Math.floor(stat(g, 'knowledge') / 2) + Math.floor((lv - 1) / 3);
     const armor = Math.floor((lv - 1) / 3), stMax = (g.maxStamina || heroMaxStamina(lv)) + 4 * stat(g, 'endurance');
     const J = jobCombat(g).mods;   /* v97.18: the job's stat changes */
-    return { power: power + (J.power || 0), spell: spell + (J.spell || 0), crit: Math.min(.35, .02 * stat(g, 'precision') + (J.crit || 0)), armor: Math.max(0, armor + (J.armor || 0)), stMax, level: lv, weapon: wb, atk: BASE_ATK + power + (J.power || 0), def: BASE_DEF + armor, hpMod: J.hp || 0 };
+    const TM = root.Titles?.mods(g) || {};   /* v98.41: equipped titles (js/titles.js) */
+    return { power: power + (J.power || 0) + (TM.power || 0), spell: spell + (J.spell || 0) + (TM.spell || 0), crit: Math.min(.35, .02 * stat(g, 'precision') + (J.crit || 0) + (TM.crit || 0)), armor: Math.max(0, armor + (J.armor || 0) + (TM.armor || 0)), stMax: stMax + (TM.st || 0), level: lv, weapon: wb, atk: BASE_ATK + power + (J.power || 0) + (TM.power || 0), def: BASE_DEF + armor + (TM.armor || 0), hpMod: (J.hp || 0) + (TM.hp || 0) };
   }
   /* the hero as sent into a battle frame: combat profile + the stamina to start with (tired heroes start lower) */
   function battleHero(g, recipes) {

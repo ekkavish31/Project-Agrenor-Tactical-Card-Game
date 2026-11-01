@@ -1,0 +1,137 @@
+/* v98.44 · ฉายา (Titles) — hidden-condition epithets that give small permanent bonuses.
+   • 5 tiers: 1 สามัญ · 2 ชำนาญ · 3 เลื่องลือ · 4 ตำนาน · 5 ลับ (secret: not even listed until earned).
+   • Conditions are NEVER shown to the player: a locked title shows "???" and its tier only. When earned it shows the line `story`.
+   • Bonuses (equipped titles only, slots = 1 at Lv1 · 2 at Lv5 · 3 at Lv10 · 4 at Lv18): power · spell · crit · armor · hp · st · xp% · gold%.
+     Harder title → bigger bonus. Totals are capped so a full set cannot break the card battles (CAP below).
+   • Data: g.village.titles = { tally:{key:n}, earned:{id:{day}}, equipped:[id], streak, best }.
+     Counters come from Titles.battle(g, info) (world-map fights) and Titles.note(g, key, n); the rest is read from the save when Titles.check(g) runs.
+   Pure functions on the save object → tools/test-titles.cjs. */
+(function (root) {
+  'use strict';
+  const TIERS = { 1: { name: 'สามัญ', col: '#a9855a', mark: '●' }, 2: { name: 'ชำนาญ', col: '#9aa7b3', mark: '◆' }, 3: { name: 'เลื่องลือ', col: '#e0b13c', mark: '★' }, 4: { name: 'ตำนาน', col: '#b06af0', mark: '✦' }, 5: { name: 'ลับ', col: '#ff6a5a', mark: '❖' } };
+  const CAP = { power: 6, spell: 6, crit: .12, armor: 5, hp: 60, st: 40, xp: .25, gold: .25 };
+  const LABEL = { power: 'การ์ดอาวุธ', spell: 'การ์ดธาตุ', crit: 'คริติคอล', armor: 'เกราะ', hp: 'HP สูงสุด', st: 'แรงสนามรบ', xp: 'EXP การต่อสู้', gold: 'เงินจากการต่อสู้' };
+  const PCT = new Set(['crit', 'xp', 'gold']);
+
+  /* c(g, T) → true when earned. T = tally. `lv` etc. are read from the save. */
+  const num = (x, d = 0) => Number.isFinite(+x) ? +x : d;
+  const V = g => g.village || {};
+  const lvOf = g => num(V(g).character?.level, 1);
+  const jobs = g => V(g).character?.jobs || {};
+  const maxJob = g => Math.max(0, ...Object.values(jobs(g)).map(j => num(j?.lv)));
+  const jobsAt = (g, n) => Object.values(jobs(g)).filter(j => num(j?.lv) >= n).length;
+  const T = (id, name, tier, fx, story, cond) => ({ id, name, tier, fx, story, cond });
+  const LIST = [
+    /* ── ระดับ 1 สามัญ ── */
+    T('rookie', 'มือใหม่หัดดาบ', 1, { hp: 3 }, 'ชนะการต่อสู้ครั้งแรกนอกหมู่บ้าน', (g, t) => t.win >= 1),
+    T('wolfbane', 'ผู้ไล่หมาป่า', 1, { hp: 4 }, 'ปราบหมาป่าไปห้าตัวแล้ว เสียงหอนเริ่มเบาลง', (g, t) => (t['foe:wolf'] || 0) >= 5),
+    T('bandithunter', 'หนามยอกโจร', 1, { hp: 4 }, 'โจรป่าเริ่มเปลี่ยนเส้นทางเมื่อเห็นเงาคุณ', (g, t) => (t['foe:bandit'] || 0) >= 5),
+    T('wayfarer', 'เท้าเปื้อนดิน', 1, { st: 6 }, 'เดินทางมาครบหนึ่งสัปดาห์', (g) => num(g.day) >= 8),
+    T('survivor', 'รอดมาได้', 1, { hp: 5 }, 'ชนะทั้งที่เลือดเกือบหมดตัว', (g, t) => t.clutch >= 1),
+    T('seasoned', 'ผ่านร้อนผ่านหนาว', 1, { st: 8 }, 'เติบโตจนเป็นนักเดินทางตัวจริง', (g) => lvOf(g) >= 5),
+    T('pennywise', 'รู้ค่าเหรียญ', 1, { gold: .03 }, 'เก็บเหรียญได้ถึงห้าร้อย', (g) => num(V(g).coins) >= 500),
+    /* ── ระดับ 2 ชำนาญ ── */
+    T('veteran', 'ทหารผ่านศึก', 2, { power: 1 }, 'ผ่านสนามรบมายี่สิบห้าครั้ง', (g, t) => t.win >= 25),
+    T('nightwalker', 'ผู้เดินราตรี', 2, { crit: .02 }, 'ความมืดไม่ใช่ปัญหาของคุณ', (g, t) => t.night >= 5),
+    T('unscathed', 'ไร้รอยขีดข่วน', 2, { armor: 1 }, 'ชนะโดยไม่เสียเลือดสักหยด หลายต่อหลายครั้ง', (g, t) => t.flawless >= 3),
+    T('closecall', 'ฉิวเฉียดความตาย', 2, { hp: 8 }, 'หวุดหวิดจนเพื่อนใจหาย — และทำซ้ำอีก', (g, t) => t.clutch >= 3),
+    T('lonewolf', 'หมาป่าเดียวดาย', 2, { power: 1, crit: .01 }, 'ออกรบคนเดียวแล้วชนะมาได้', (g, t) => t.solo >= 5),
+    T('packhunter', 'นักล่าฝูง', 2, { power: 1 }, 'ร้อยชีวิตแห่งป่าผ่านมือคุณ', (g, t) => t.kills >= 100),
+    T('scholar', 'ผู้ใฝ่รู้', 2, { spell: 1, xp: .03 }, 'ฝึกฝนอาชีพจนชำนาญ', (g) => maxJob(g) >= 3),
+    T('craftsman', 'ลูกมือเหล็กกล้า', 2, { xp: .05 }, 'ฝีมือช่างเริ่มเป็นที่ร่ำลือ', (g) => num(V(g).smith?.level, 1) >= 4),
+    T('guardian', 'เพื่อนร่วมสาบาน', 2, { hp: 6, armor: 1 }, 'พาเพื่อนรอดมาทุกครั้ง', (g, t) => t.allySafe >= 10),
+    /* ── ระดับ 3 เลื่องลือ ── */
+    T('bosskiller', 'ผู้สยบเจ้าป่า', 3, { power: 2 }, 'เจ้าถิ่นสามตนล้มลงตรงหน้า', (g, t) => t.boss >= 3),
+    T('streak10', 'ไร้พ่าย', 3, { crit: .03, armor: 1 }, 'ชนะติดต่อกันสิบครั้ง', (g, t) => t.best >= 10),
+    T('eliteslayer', 'หนามยอกอก', 3, { power: 1, hp: 8 }, 'ยอดฝีมือสิบคนล้มเพราะคุณ', (g, t) => t.elite >= 10),
+    T('shadowless', 'เงาไร้รอย', 3, { armor: 2 }, 'สิบครั้งที่ไม่มีใครแตะต้องตัวคุณได้', (g, t) => t.flawless >= 10),
+    T('ironwill', 'จิตเหล็ก', 3, { hp: 14 }, 'ยืนหยัดจากปากเหว สิบครั้ง', (g, t) => t.clutch >= 10),
+    T('grown', 'ผู้เติบโต', 3, { hp: 10, st: 10 }, 'ก้าวเข้าสู่ระดับสิบ', (g) => lvOf(g) >= 10),
+    T('adept', 'ปรมาจารย์สายอาชีพ', 3, { spell: 2, xp: .05 }, 'เส้นทางอาชีพถึงขั้นสูงสุด', (g) => maxJob(g) >= 5),
+    T('merchantking', 'เศรษฐีผู้ถ่อมตน', 3, { gold: .08 }, 'ทรัพย์สินพันเหรียญ แต่ยังใส่รองเท้าเดิม', (g) => num(V(g).coins) >= 1500),
+    /* ── ระดับ 4 ตำนาน ── */
+    T('legend', 'ตำนานแห่งเฟิร์น', 4, { power: 3, crit: .04 }, 'ชื่อของคุณถูกเล่าในโรงเตี๊ยมทุกหลัง', (g, t) => t.kills >= 500 && t.boss >= 10),
+    T('undying', 'ผู้ไม่ล้ม', 4, { armor: 3, hp: 20 }, 'ชนะติดต่อกันยี่สิบห้าครั้ง', (g, t) => t.best >= 25),
+    T('polymath', 'ร้อยศาสตร์', 4, { spell: 3, power: 2, xp: .06 }, 'เชี่ยวชาญหลายเส้นทางพร้อมกัน', (g) => jobsAt(g, 3) >= 4),
+    T('bulwark', 'ป้อมปราการเดินได้', 4, { armor: 3, hp: 25 }, 'หนึ่งร้อยครั้งที่ไม่เสียเพื่อนแม้แต่คนเดียว', (g, t) => t.allySafe >= 100),
+    /* ── ระดับ 5 ลับ ── */
+    T('stubborn', 'คนไม่ยอมแพ้', 5, { power: 1, hp: 10 }, 'ล้มมาแล้วนับครั้งไม่ถ้วน แต่ยังลุกขึ้นทุกครั้ง', (g, t) => t.lose >= 15 && t.win >= 15),
+    T('phoenix', 'ฟื้นจากเถ้า', 5, { hp: 20, armor: 1, xp: .05 }, 'แพ้ติดกันสามครั้ง แล้วกลับมาชนะติดกันห้าครั้ง', (g, t) => !!t.phoenix),
+    T('coward', 'ผู้หนีอย่างมีศิลป์', 5, { st: 15, armor: 1 }, 'หนีรอดมาสิบครั้ง — บางทีนั่นคือความฉลาด', (g, t) => t.flee >= 10),
+    T('ancient', 'ผู้อยู่มานาน', 5, { hp: 15, st: 15 }, 'หนึ่งร้อยวันผ่านไปแล้ว', (g) => num(g.day) >= 100),
+    T('chosen', 'ผู้ถูกเลือก', 5, { power: 2, spell: 2, crit: .03, armor: 2, hp: 20, st: 10, xp: .05 }, 'สะสมฉายาไว้มากพอจะทำให้โลกหันมามอง', (g, t, earned) => Object.keys(earned).length >= 20)
+  ];
+  const BY = Object.fromEntries(LIST.map(x => [x.id, x]));
+
+  const st = g => { const v = (g.village ||= {}); const o = (v.titles ||= {}); o.tally ||= {}; o.earned ||= {}; o.equipped ||= []; return o };
+  const slots = g => { const l = lvOf(g); return 1 + (l >= 5) + (l >= 10) + (l >= 18) };
+  const tally = g => { const o = st(g); return { ...o.tally, best: o.best || 0 } };
+
+  function note(g, key, n = 1) { const o = st(g); o.tally[key] = (o.tally[key] || 0) + n; return o.tally[key] }
+
+  /* a finished fight on the world map.
+     info = { outcome:'win'|'lose'|'flee', foe, boss, elite, night, kills, hp0, hp1, maxHp, party:int (companions who fought), allyDown:int } */
+  function battle(g, info) {
+    const o = st(g), i = info || {}; o.streak = o.streak || 0; o.lossRun = o.lossRun || 0;
+    if (i.outcome === 'win') {
+      note(g, 'win'); note(g, 'kills', num(i.kills));
+      if (i.boss) note(g, 'boss'); if (i.elite) note(g, 'elite'); if (i.night) note(g, 'night');
+      if (i.foe) note(g, 'foe:' + String(i.foe).replace(/\*.*$/, ''));
+      if (num(i.hp1) >= num(i.hp0) && num(i.hp0) > 0) note(g, 'flawless');
+      if (num(i.maxHp) > 0 && num(i.hp1) > 0 && num(i.hp1) <= num(i.maxHp) * .15) note(g, 'clutch');
+      if (!i.party) note(g, 'solo'); else if (!i.allyDown) note(g, 'allySafe');
+      o.streak++; o.best = Math.max(o.best || 0, o.streak);
+      if (o.armed) { o.rec = (o.rec || 0) + 1; if (o.rec >= 5) o.tally.phoenix = 1 }
+      o.lossRun = 0;
+    } else {
+      o.streak = 0;
+      if (i.outcome === 'flee') note(g, 'flee');
+      else { note(g, 'lose'); o.lossRun++; o.rec = 0; if (o.lossRun >= 3) o.armed = true }
+    }
+    return check(g);
+  }
+
+  /* looks at the save and awards everything whose (hidden) condition is now true. returns the new title objects */
+  function check(g) {
+    const o = st(g), t = tally(g), out = [];
+    for (let pass = 0; pass < 2; pass++) for (const d of LIST) {
+      if (o.earned[d.id]) continue;
+      let ok = false; try { ok = !!d.cond(g, t, o.earned) } catch (e) { }
+      if (ok) { o.earned[d.id] = { day: num(g.day, 1) }; out.push(d); if (o.equipped.length < slots(g)) o.equipped.push(d.id) }
+    }
+    if (out.length) { sync(g); try { root.Titles.onEarn?.(out, g) } catch (e) { } }
+    return out;
+  }
+  function sync() { /* bonuses are read live by Progression.heroCombat */ }
+
+  function equip(g, id) {
+    const o = st(g); if (!o.earned[id] || o.equipped.includes(id)) return false;
+    if (o.equipped.length >= slots(g)) return false; o.equipped.push(id); sync(g); return true;
+  }
+  function unequip(g, id) { const o = st(g), i = o.equipped.indexOf(id); if (i < 0) return false; o.equipped.splice(i, 1); sync(g); return true }
+  function swap(g, outId, inId) { unequip(g, outId); return equip(g, inId) }
+
+  /* summed bonuses of the equipped titles, capped */
+  function mods(g) {
+    const o = g?.village?.titles, m = {}; if (!o) return m;
+    for (const id of o.equipped || []) { const d = BY[id]; if (!d || !o.earned?.[id]) continue; for (const [k, v] of Object.entries(d.fx)) m[k] = (m[k] || 0) + v }
+    for (const k of Object.keys(m)) if (CAP[k] != null) m[k] = Math.min(CAP[k], m[k]);
+    return m;
+  }
+  function fxText(fx) { return Object.entries(fx).map(([k, v]) => LABEL[k] + ' +' + (PCT.has(k) ? Math.round(v * 100) + '%' : v)).join(' · ') }
+
+  /* what the UI may show. Locked titles reveal ONLY their tier; secret (tier 5) locked titles are not listed at all (just counted as "?"). */
+  function view(g) {
+    const o = st(g), rows = [];
+    for (const d of LIST) {
+      const got = o.earned[d.id];
+      if (got) rows.push({ id: d.id, name: d.name, tier: d.tier, got: true, day: got.day, story: d.story, fx: fxText(d.fx), on: o.equipped.includes(d.id) });
+      else if (d.tier < 5) rows.push({ id: d.id, tier: d.tier, got: false });
+    }
+    return { rows, secretLeft: LIST.filter(d => d.tier === 5 && !o.earned[d.id]).length, slots: slots(g), used: o.equipped.length, total: LIST.length, earned: Object.keys(o.earned).length };
+  }
+  const current = g => (st(g).equipped || []).map(id => BY[id]).filter(Boolean);
+  const api = { TIERS, LIST, BY, CAP, LABEL, st, slots, note, battle, check, equip, unequip, swap, mods, view, current, fxText, onEarn: null };
+  root.Titles = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
