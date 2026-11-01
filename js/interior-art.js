@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 5B, 6, 7, 8, 9, 10, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 5B, 6, 7, 8, 9, 10, 12, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -935,5 +935,86 @@ window.INTERIOR_ART={
   "fx": 170,
   "fy": 250,
   "k": 0.19
+ },
+ "tankards": {
+  "src": "assets/interior/tankards.webp",
+  "w": 336,
+  "h": 333,
+  "fx": 168,
+  "fy": 266,
+  "k": 0.09,
+  "noShadow": true
+ },
+ "plate-food": {
+  "src": "assets/interior/plate-food.webp",
+  "w": 353,
+  "h": 235,
+  "fx": 176,
+  "fy": 157,
+  "k": 0.1,
+  "noShadow": true
+ },
+ "stew-pot": {
+  "src": "assets/interior/stew-pot.webp",
+  "w": 368,
+  "h": 357,
+  "fx": 184,
+  "fy": 283,
+  "k": 0.09,
+  "noShadow": true
+ },
+ "candles-cluster": {
+  "src": "assets/interior/candles-cluster.webp",
+  "w": 340,
+  "h": 355,
+  "fx": 170,
+  "fy": 287,
+  "k": 0.1,
+  "noShadow": true
+ },
+ "book-scrolls": {
+  "src": "assets/interior/book-scrolls.webp",
+  "w": 353,
+  "h": 316,
+  "fx": 176,
+  "fy": 245,
+  "k": 0.09,
+  "noShadow": true
+ },
+ "wine-set": {
+  "src": "assets/interior/wine-set.webp",
+  "w": 345,
+  "h": 390,
+  "fx": 172,
+  "fy": 321,
+  "k": 0.09,
+  "noShadow": true
+ },
+ "plant-large": {
+  "src": "assets/interior/plant-large.webp",
+  "w": 377,
+  "h": 408,
+  "fx": 188,
+  "fy": 333,
+  "k": 0.2,
+  "noShadow": true
+ },
+ "plant-fern": {
+  "src": "assets/interior/plant-fern.webp",
+  "w": 349,
+  "h": 356,
+  "fx": 174,
+  "fy": 286,
+  "k": 0.15,
+  "noShadow": true
+ },
+ "flower-vase": {
+  "src": "assets/interior/flower-vase.webp",
+  "w": 326,
+  "h": 377,
+  "fx": 163,
+  "fy": 312,
+  "k": 0.1,
+  "noShadow": true
  }
 };

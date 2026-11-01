@@ -35,9 +35,9 @@
 | **10 ✅ ใช้ในเกมแล้ว (v98.41)** | สมาคม: กระดานรับงาน · ถ้วยรางวัล · เขากวางติดผนัง · ธงสมาคม · ดาบไขว้ติดผนัง · โต๊ะลงทะเบียน | สมาคมนักผจญภัย |
 | **11A ✅ ใช้ในเกมแล้ว (v98.32)** | ประตูและหน้าต่าง: ประตูเปิด · ประตูปิด · ประตูคู่ · ประตูโค้งหิน · หน้าต่างบานเปิด · หน้าต่างเล็กมีลูกกรง · หน้าต่างโค้งสูง · กระจกสี · หน้าต่างมีบานเกล็ด | ทุกห้อง |
 | **11B ✅ ใช้ในเกมแล้ว (v98.33)** | ของแขวนผนัง: ชั้นผนัง (ขวด/หนังสือ) · กระดานข่าว · ธงยาว/สั้น · ดาบไขว้+โล่ · เขากวาง · คบไฟติดผนัง · กรอบภาพ | ทุกห้อง |
-| 12 (พรอมต์พร้อมแล้ว) | ของเล็กบนโต๊ะและต้นไม้: แก้ว · จาน · เทียน · หนังสือ · ขวด · หม้อ · ตะเกียง (ใช้วางบนเฟอร์นิเจอร์ได้) | ทุกห้อง |
+| **12 ✅ ใช้ในเกมแล้ว (v98.43)** | ของเล็กบนโต๊ะและต้นไม้: แก้ว · จาน · เทียน · หนังสือ · ขวด · หม้อ · ตะเกียง (ใช้วางบนเฟอร์นิเจอร์ได้) | ทุกห้อง |
 | 13 | ไร่: โรงนา · กระท่อม · เล้าไก่ · รางน้ำสัตว์ · บ่อน้ำ · หุ่นไล่กา · กองฟาง · รั้ว · ป้ายบอกทาง · กองปุ๋ย | ไร่ (กลางแจ้ง) |
-| 14 | พื้นและผนัง (เทกซ์เจอร์ต่อเนื่อง — แยกวิธีเจน เป็นภาพแบนต่อซ้ำได้ ไม่ใช่ชีทวัตถุ): พื้นไม้กระดาน · พื้นหิน · พื้นกระเบื้อง · ผนังปูนขาว · ผนังไม้ครึ่งปูน · ผนังหิน | ทุกห้อง |
+| 14 (พรอมต์พร้อมแล้ว) | พื้นและผนัง (เทกซ์เจอร์ต่อเนื่อง — แยกวิธีเจน เป็นภาพแบนต่อซ้ำได้ ไม่ใช่ชีทวัตถุ): พื้นไม้กระดาน · พื้นหิน · พื้นกระเบื้อง · ผนังปูนขาว · ผนังไม้ครึ่งปูน · ผนังหิน | ทุกห้อง |
 
 หลังเจน: ตัดทีละช่อง → ตรวจเส้นฐาน/สเกลให้ตรงกันทุกช่อง → ใส่ใน manifest → ต่อเข้า `js/interior.js` แทนโค้ดวาดเดิมทีละชนิด (ของที่ยังไม่มีภาพจะใช้โค้ดวาดเดิมต่อไป)
 
@@ -512,3 +512,36 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 ```
 
 **ตรวจรับชีท 12**: เหมือนชีทก่อน + ⑥ ชิ้นเล็กฐานแบนเรียบวางบนโต๊ะได้ ⑦ เปลวเทียนอยู่ในตัววัตถุ ⑧ ไม่มีตัวหนังสือบนหนังสือ/ม้วนกระดาษ ⑨ ต้นไม้ 2 ต้นสูงต่างกัน
+
+---
+
+## ชีท 14 · พื้นและผนัง (เทกซ์เจอร์ 3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `floor-wood` · `floor-wood-dark` · `floor-stone` · `floor-tile` · `floor-dirt` · `wall-plaster` · `wall-timber` · `wall-stone` · `wall-wood`
+
+**ต่างจากชีทอื่นทั้งหมด**: ไม่ใช่วัตถุบนพื้นเขียว · ทุกช่อง**ถูกเติมเต็มสี่เหลี่ยมจรดขอบ ไม่มีพื้นเขียว ไม่มีขอบ ไม่มีเงา** · พื้นวาดมองตรงจากด้านบน (top-down แบนราบ ไม่ใช่ isometric) ส่วนผนังวาดมองตรงจากด้านหน้า (แบนราบ) · เกมจะดึงภาพไปวางบนพื้นและผนังตามมุมกล้องเองเหมือนพรม · ต้องต่อซ้ำได้เนียน (ขอบซ้าย-ขวาและบน-ล่างต่อกันได้)
+
+```
+A TEXTURE ATLAS for a 2.5D fantasy RPG: exactly 3 columns × 3 rows of equal square cells (9 cells). Every cell is COMPLETELY FILLED edge to edge with its own seamless, tileable material texture; there is no background, no green, no gap, no border, no frame, no grid line, no margin between cells. No text, no objects, no people, no shadows, no perspective, no lighting gradient, no vignette, no baked highlights from a light source: the lighting is perfectly flat and even so that the texture repeats without visible seams or brightness changes. Each texture must tile seamlessly: its left edge continues into its right edge, and its top edge continues into its bottom edge. Do not place any unique feature (a single stain, a single knot, a single crack) near the middle: keep the pattern evenly distributed so repetition is not obvious.
+
+CAMERA: floor textures (cells 1 to 5) are seen perfectly flat from directly above (a flat top-down orthographic map of the floor, no perspective). Wall textures (cells 6 to 9) are seen perfectly flat from directly in front (a flat elevation of the wall surface, no perspective), with horizontal courses running exactly horizontal and vertical beams exactly vertical.
+
+SCALE: the whole cell shows an area of floor or wall that is 2 game tiles wide and 2 game tiles tall. In that area: wooden planks are about 0.25 tile wide (eight planks across a cell) and 1 tile long with staggered joints; stone flags are about 0.7 tile square; the pale floor tiles are 0.5 tile square (four across a cell); wall stone blocks are about 0.5 tile long and 0.25 tile tall; timber-frame panels show a dark beam grid every 1 tile.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art and NOT photographic. Soft clean edges with thin soft dark-brown joint lines, rich but readable material detail (wood grain, nail heads, chiselled stone, mortar, plaster brushstrokes, wear). Palette: warm honey oak floors, dark walnut, warm grey fieldstone, cream plaster and soft sage-and-cream tiles, rammed earth browns; slightly desaturated and gently muted so the textures sit behind furniture without competing with it, and match the attached reference images and the previous sheets (same outline weight, same level of detail, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Honey oak plank floor: even planks with staggered end joints, visible grain, a few nail heads, mild wear, medium brightness.
+2. Dark walnut plank floor: the same layout in a darker brown, slightly more worn, lower brightness.
+3. Grey flagstone floor: irregular rectangular flagstones in two or three greys with thin dark mortar lines and subtle chips.
+4. Pale ceramic floor tile: square cream and sage-green tiles in a checker pattern with thin grout lines and subtle glaze variation.
+5. Packed earth floor: tamped brown earth with scattered small pebbles, a few straw bits and faint footprints worn into it.
+6. Plaster wall: cream lime plaster with soft trowel marks, fine hairline cracks and gentle mottling, no beams.
+7. Timber-frame wall: cream plaster panels between a regular grid of dark oak beams (one beam square every 1 tile, vertical posts and horizontal rails, a diagonal brace in some panels), beam grain visible.
+8. Stone block wall: warm grey stone blocks laid in running-bond courses with thin mortar joints, subtle colour variation between blocks.
+9. Wood panel wall: vertical oak boards with thin gaps, a horizontal rail across the middle, nail heads and gentle grain.
+
+Every cell is a full-bleed seamless square texture. No objects, no text, no ground plane, no scenery.
+```
+
+**ตรวจรับชีท 14**: ① ทุกช่องเต็มสี่เหลี่ยม ไม่มีเขียว ไม่มีขอบ ② ไม่มีเงา/แสงไล่ระดับ (ภาพต้องเรียบเสมอกัน) ③ ถ้าเอาช่องเดียวมาวางต่อกัน 2×2 แล้วขอบต่อกันเนียน ④ พื้นมองตรงจากบน ผนังมองตรงจากหน้า (ไม่เอียง)
