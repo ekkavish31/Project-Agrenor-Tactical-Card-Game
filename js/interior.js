@@ -91,7 +91,7 @@
       Object.assign(R, { W: 11, D: 11, door: 9, floor: 'stone', wall: 'stone' });
       it('altar', 4, 1, 3, 1, { h: 30 }); it('statue', 5, 0, 1, 1, { h: 0 }); sp('altar', 5, 2, 'NE', 'pray'); sp('altar', 4, 2, 'NE', 'pray');
       for (const v of [4, 6, 8]) { it('pew', 2, v, 3, 1); it('pew', 6, v, 3, 1); for (const u of [2, 3, 4, 6, 7, 8]) sp('pew', u, v + 1, 'NE', 'pray') }
-      it('candles', 2, 1); it('candles', 8, 1); it('plant', 1, 10); it('plant', 10, 10); it('rug', 5, 3, 1, 7, { walk: true, col: '#7a2a2a' });
+      it('candles', 2, 1); it('candles', 8, 1); it('lectern', 8, 2); it('candle-stand', 1, 4); it('font', 1, 6); it('brazier', 9, 4); it('offering-box', 9, 8); it('plant', 1, 10); it('plant', 10, 10); it('rug', 5, 3, 1, 7, { walk: true, col: '#7a2a2a' });
       R.wallDeco.push({ k: 'glass', side: 'back', a: 2.5 }, { k: 'glass', side: 'back', a: 8.5 }, { k: 'glass', side: 'left', a: 5 });
       R.light.push({ u: 5.5, v: 2, r: 4, col: '255,230,160', flicker: true }, { u: 5, v: 7, r: 5, col: '200,210,255' });
     } else if (KIND === 'forge') {
@@ -342,7 +342,7 @@
   /* v98.23 · hand-painted sprites (js/interior-art.js) for the pieces that have one: table (round / square, picked by position), stool (the tall bar stool when {tall:true}), barrel / keg */
   const ART = window.INTERIOR_ART || {}, artImgs = {};
   const COUNTER = { inn: 'counter-bar', shop: 'counter-shop', guild: 'counter-guild', healer: 'counter-healer' };
-  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (['furnace', 'anvil', 'quench', 'bellows', 'grindstone', 'bench-smith', 'coal-bin', 'ingots', 'forge-open'].includes(i.k)) ? i.k : i.k === 'rug' ? rugArt(i) : i.k === 'bed' ? (KIND === 'healer' ? 'bed-cot' : 'bed-single') : i.k === 'wardrobe' ? 'wardrobe' : i.k === 'barrel' ? 'table-barrel' : i.k === 'keg' ? 'keg' : i.k === 'basket' ? 'basket' : i.k === 'chest' ? (['home', 'house', 'inn'].includes(KIND) ? 'footlocker' : 'trunk')
+  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (['altar', 'statue', 'pew', 'lectern', 'brazier', 'font', 'candle-stand', 'offering-box'].includes(i.k)) ? i.k : i.k === 'candles' ? 'candelabra' : (['furnace', 'anvil', 'quench', 'bellows', 'grindstone', 'bench-smith', 'coal-bin', 'ingots', 'forge-open'].includes(i.k)) ? i.k : i.k === 'rug' ? rugArt(i) : i.k === 'bed' ? (KIND === 'healer' ? 'bed-cot' : 'bed-single') : i.k === 'wardrobe' ? 'wardrobe' : i.k === 'barrel' ? 'table-barrel' : i.k === 'keg' ? 'keg' : i.k === 'basket' ? 'basket' : i.k === 'chest' ? (['home', 'house', 'inn'].includes(KIND) ? 'footlocker' : 'trunk')
     : i.k === 'crate' ? ((i.u + i.v * 2) % 3 === 0 ? 'crate-stack' : 'crate')
     : i.k === 'shelfbox' ? (['guild', 'temple', 'home', 'house'].includes(KIND) ? 'shelf-books' : 'shelf-store')
     : i.k === 'rack' ? (KIND === 'forge' || i.tools ? 'rack-tools' : 'rack-weapons') : null;

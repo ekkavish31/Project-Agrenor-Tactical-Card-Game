@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A and 7 (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -368,5 +368,77 @@ window.INTERIOR_ART={
   "h": 238,
   "quad": [192, -45, 458, 118, -75, 118],
   "noShadow": true
+ },
+ "altar": {
+  "src": "assets/interior/altar.webp",
+  "w": 416,
+  "h": 344,
+  "fx": 208,
+  "fy": 244,
+  "k": 0.34
+ },
+ "statue": {
+  "src": "assets/interior/statue.webp",
+  "w": 191,
+  "h": 438,
+  "fx": 95,
+  "fy": 390,
+  "k": 0.3
+ },
+ "pew": {
+  "src": "assets/interior/pew.webp",
+  "w": 398,
+  "h": 353,
+  "fx": 199,
+  "fy": 257,
+  "k": 0.33
+ },
+ "candelabra": {
+  "src": "assets/interior/candelabra.webp",
+  "w": 195,
+  "h": 392,
+  "fx": 97,
+  "fy": 369,
+  "k": 0.21
+ },
+ "candle-stand": {
+  "src": "assets/interior/candle-stand.webp",
+  "w": 223,
+  "h": 322,
+  "fx": 111,
+  "fy": 277,
+  "k": 0.2
+ },
+ "font": {
+  "src": "assets/interior/font.webp",
+  "w": 222,
+  "h": 305,
+  "fx": 111,
+  "fy": 256,
+  "k": 0.2
+ },
+ "lectern": {
+  "src": "assets/interior/lectern.webp",
+  "w": 230,
+  "h": 366,
+  "fx": 115,
+  "fy": 315,
+  "k": 0.21
+ },
+ "offering-box": {
+  "src": "assets/interior/offering-box.webp",
+  "w": 256,
+  "h": 264,
+  "fx": 128,
+  "fy": 203,
+  "k": 0.17
+ },
+ "brazier": {
+  "src": "assets/interior/brazier.webp",
+  "w": 198,
+  "h": 305,
+  "fx": 99,
+  "fy": 265,
+  "k": 0.18
  }
 };
