@@ -784,12 +784,28 @@
     const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
     bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(p.name)} <small class="tier" title="ความสัมพันธ์ ${Math.round(aff * 10) / 10}/10">${tierOf(aff)[2]} ${tierOf(aff)[1]}</small></h2><div class="role">${esc(fill(p.role))}${p.age ? ' · อายุ ' + p.age : ''}${p.benched ? ' · พักอยู่กับทีม' : ''}</div>
       <p>${esc(txt)}</p>${ws?.asked && !ws.done ? `<div class="cond">🤝 คำขอ: ${esc(ws.def.hint)}</div>` : ''}${rec ? `<div class="cond">★ เงื่อนไขชวนเข้าทีม: <b>${esc(rec.label)}</b><br>${esc(rec.text)}${progressText(p.id, rec)}</div>` : ''}
-      <div class="acts"><button data-a="talk">💬 คุยต่อ</button><button data-a="about">❔ เรื่องของเขา</button>${MIND && L.P[p.id] ? '<button data-a="ask">❓ ถามเรื่อง…</button><button data-a="gift">🎁 ให้ของ</button>' : ''}${jobs.length ? '<button data-a="work">💼 จ้างทำงาน</button>' : ''}${rec ? '<button data-a="recruit">★ ชวนเข้าทีม</button>' : ''}${teachable(p.id) ? '<button data-a="teach">📖 เรียนท่า</button>' : ''}${p.id === 'olwen' && rec ? '<button data-a="drink">🍺 เลี้ยงเหล้า 10💰</button>' : ''}${p.id === 'marta' ? '<button data-a="rumor">📜 ข่าวลือ</button><button data-a="room">🛏 เช่าห้อง 10💰</button>' : ''}<button class="ghost" data-a="bye">ลาก่อน</button></div></div></div>`;
+      <div class="acts">${talkActs(p, jobs, rec)}</div></div></div>`;
     document.body.append(bg); dlg = bg;
     const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, p.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
     bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
     bg.onclick = e => { if (e.target === bg) close() };
     a.face = faceOf(hero.u - a.u, hero.v - a.v);
+  }
+
+  /* v98.21 · UI-BRUSHUP #4: at most 4 buttons — 💬 คุย (topics) · 🎁 ให้ของ · the ONE thing this person does (or 🛠 บริการ ▸ when several) · ลาก่อน.
+     Chat topics and services open as a short choice list inside the conversation (with ย้อนกลับ), not as a long row of buttons. */
+  function roleActs(p, jobs, rec) {
+    return [rec && ['recruit', '★ ชวนเข้าทีม'], teachable(p.id) && ['teach', '📖 เรียนท่า'], jobs.length && ['work', '💼 จ้างทำงาน'], p.id === 'olwen' && rec && ['drink', '🍺 เลี้ยงเหล้า 10💰'], p.id === 'marta' && ['room', '🛏 เช่าห้อง 10💰']].filter(Boolean);
+  }
+  function talkActs(p, jobs, rec) {
+    const roles = roleActs(p, jobs, rec), btn = ([k, n]) => `<button data-a="${k}">${n}</button>`;
+    return '<button data-a="chat">💬 คุย</button>' + (MIND && L.P[p.id] ? '<button data-a="gift">🎁 ให้ของ</button>' : '')
+      + (roles.length === 1 ? btn(roles[0]) : roles.length > 1 ? '<button data-a="service">🛠 บริการ ▸</button>' : '') + '<button class="ghost" data-a="bye">ลาก่อน</button>';
+  }
+  function choices(a, line, list) {
+    talk(a, line); const acts = dlg.querySelector('.acts');
+    acts.innerHTML = list.map(([k, n]) => `<button data-a="${k}">${n}</button>`).join('') + '<button class="ghost" data-a="talk">ย้อนกลับ</button>';
+    acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
   }
   /* v95.10 · trainers (js/card-sources.js in the game page) */
   function teachable(id) { try { return parent !== window && !!parent.CardSources?.teaches?.(id) } catch (e) { return false } }
@@ -813,6 +829,8 @@
     if (what === 'bye') { close(); return }
     if (what === 'teach') { close(); try { parent.CardSources?.teach?.(p.id) } catch (e) { } return }
     if (what === 'talk') { talk(a); return }
+    if (what === 'chat') { choices(a, 'อยากคุยเรื่องอะไรดี?', [['talk', '💬 คุยเล่น'], ['about', '❔ เรื่องของเขา'], ...(MIND && L.P[p.id] ? [['ask', '❓ ถามข่าว…']] : []), ...(p.id === 'marta' ? [['rumor', '📜 ข่าวลือ']] : [])]); return }
+    if (what === 'service') { choices(a, 'ให้ช่วยเรื่องอะไรดี?', roleActs(p, MIND && L.P[p.id] && !(p.recruit && !L.inParty(S, p.id)) ? MIND.canWork(p.id, p.benched) : [], p.recruit && !L.inParty(S, p.id) ? L.RECRUIT[p.id] : null)); return }
     if (what === 'ask') { talk(a, 'อยากรู้เรื่องอะไรล่ะ?'); const acts = dlg.querySelector('.acts'); acts.innerHTML = [['news', '📰 ข่าวล่าสุด'], ['people', '👥 คนในหมู่บ้าน'], ['road', '🧭 ทางข้างหน้า']].map(([k, n]) => `<button data-a="ask:${k}">${n}</button>`).join('') + '<button class="ghost" data-a="talk">ย้อนกลับ</button>'; acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a)); return }
     if (what.startsWith('ask:')) { talk(a, fill(MIND.ask(p.id, what.slice(4)))); MIND.save(); return }
     if (what === 'gift') { giftPanel(a); return }
@@ -880,14 +898,22 @@
     hero.vu = nu; hero.vv = nv; hero.u = Math.floor(nu); hero.v = Math.floor(nv); hero.face = faceOf(du, dv); hero.walking = true; hero.path = []; hero.then = null; return true;
   }
   /* the same registry as the village (js/interactables.js): villagers in the room + the door. Hold the big button on a villager = choices. */
-  const clickAfter = (sel, ms = 140) => setTimeout(() => { const b = document.querySelector(sel); if (b) b.click() }, ms);
+  /* hold the big button on a villager = a ring of what THIS person can do (the same actions as the talk panel's choice lists) */
+  const ROLE_ICON = { recruit: 'guild', teach: 'spellbook', work: 'trade', drink: 'potion', room: 'castle' }, optCache = new Map();
+  function personOptions(a) {
+    const c = optCache.get(a.id); if (c && performance.now() - c.t < 2000) return c.o;
+    const p = a.p; S = L.save(); const rec = p.recruit && !L.inParty(S, p.id) ? L.RECRUIT[p.id] : null, jobs = MIND && L.P[p.id] && !(p.recruit && !L.inParty(S, p.id)) ? MIND.canWork(p.id, p.benched) : [];
+    const o = [{ label: 'คุย', icon: 'party', run: () => talk(a) }];
+    if (MIND && L.P[p.id]) o.push({ label: 'ถามข่าว', icon: 'quest', run: () => act(a, 'ask') }, { label: 'ให้ของ', icon: 'treasure', run: () => act(a, 'gift') });
+    for (const [k, n] of roleActs(p, jobs, rec)) o.push({ label: n.replace(/^\S+\s/, '').replace(/ \d+💰/, ''), icon: ROLE_ICON[k] || 'quest', run: () => act(a, k) });
+    optCache.set(a.id, { t: performance.now(), o: o.slice(0, 5) }); return o.slice(0, 5);
+  }
   window.Interactables?.add(() => {
     const out = [], dd = { u: DOOR.u + .5, v: DOOR.v + .5 };
     out.push({ id: 'door', kind: 'exit', u: dd.u, v: dd.v, r: 1.9, bumpR: 1.1, bumpT: .12, bump: true, pri: -.6, label: 'ออกไปข้างนอก', icon: 'portal', run: () => leave() });
     for (const [id, a] of people) {
-      if (a.leaving || a.fade < .5) continue; const nm = a.p?.name || id, go = sel => () => { talk(a); if (sel) clickAfter(sel) };
-      out.push({ id: 'p:' + id, kind: 'talk', u: a.vu, v: a.vv, r: 2.5, bumpR: 1.3, bumpT: .3, bump: true, label: 'คุย · ' + nm, icon: 'party', run: go(),
-        options: [{ label: 'คุย', icon: 'party', run: go() }, { label: 'ถามเรื่อง', icon: 'quest', run: go('[data-a="ask"]') }, { label: 'ให้ของ', icon: 'treasure', run: go('[data-a="gift"]') }, { label: 'จ้างงาน', icon: 'trade', run: go('[data-a="work"]') }] });
+      if (a.leaving || a.fade < .5) continue; const nm = a.p?.name || id;
+      out.push({ id: 'p:' + id, kind: 'talk', u: a.vu, v: a.vv, r: 2.5, bumpR: 1.3, bumpT: .3, bump: true, label: 'คุย · ' + nm, icon: 'party', run: () => talk(a), get options() { return personOptions(a) } });
     }
     return out;
   });

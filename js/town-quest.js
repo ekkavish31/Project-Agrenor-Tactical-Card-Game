@@ -133,6 +133,9 @@
     }
     if (T.exit) { const e = exitTarget(); if (e) { const p = project(e.door.u, e.door.v); out.push({ x: p.x, y: p.y - 60, label: 'ทางออก ' + e.name, exit: e }) } }
     for (const list of objs.values()) if (list[0] && T.spots?.find(s => s.key === list[0].key)?.mark) for (const o of list) { const p = project(o.u, o.v); out.push({ x: p.x, y: p.y - 70, label: o.label, spot: o }) }
+    /* v98.21 · the shared registry (js/interactables.js): anything a system registers with quest:true gets the same ◆ marker and edge arrow.
+       (places / villagers / quest spots above are already registered from THIS list, so they are skipped here) */
+    for (const it of root.Interactables?.all?.() || []) if (it.quest && it.x != null && !/^(place|npc|q):/.test(it.id)) out.push({ x: it.x, y: it.y - 60, label: it.label || '', reg: it.id });
     return out;
   }
   function drawObj(gx, o, t, k) {
