@@ -92,7 +92,7 @@
       it('altar', 4, 1, 3, 1, { h: 30 }); it('statue', 5, 0, 1, 1, { h: 0 }); sp('altar', 5, 2, 'NE', 'pray'); sp('altar', 4, 2, 'NE', 'pray');
       for (const v of [4, 6, 8]) { it('pew', 2, v, 3, 1); it('pew', 6, v, 3, 1); for (const u of [2, 3, 4, 6, 7, 8]) sp('pew', u, v + 1, 'NE', 'pray') }
       it('candles', 2, 1); it('candles', 8, 1); it('lectern', 8, 2); it('candle-stand', 1, 4); it('font', 1, 6); it('brazier', 9, 4); it('offering-box', 9, 8); it('plant', 1, 10); it('plant', 10, 10); it('rug', 5, 3, 1, 7, { walk: true, col: '#7a2a2a' });
-      R.wallDeco.push({ k: 'glass', side: 'back', a: 2.5 }, { k: 'glass', side: 'back', a: 8.5 }, { k: 'glass', side: 'left', a: 5 });
+      R.wallDeco.push({ k: 'glass', side: 'back', a: 2.5 }, { k: 'glass', side: 'back', a: 8.5 }, { k: 'glass', side: 'left', a: 5 }, { k: 'torch', side: 'back', a: 5.5 }, { k: 'torch', side: 'left', a: 2.2 });
       R.light.push({ u: 5.5, v: 2, r: 4, col: '255,230,160', flicker: true }, { u: 5, v: 7, r: 5, col: '200,210,255' });
     } else if (KIND === 'forge') {
       Object.assign(R, { W: 10, D: 9, door: 6, floor: 'stone', wall: 'stone' });
@@ -113,7 +113,7 @@
       Object.assign(R, { W: 8, D: 7, door: 5, floor: 'wood', wall: KIND === 'home' ? 'timber' : 'plaster' });
       it('bed', 6, 1, 2, 1); sp('bed', 6, 1, 'SE', 'sleep'); it('table', 3, 4); it('stool', 2, 4, 1, 1, { walk: true }); it('stool', 4, 4, 1, 1, { walk: true }); sp('table', 2, 4, 'SE', 'sit'); sp('table', 4, 4, 'SW', 'sit');
       it('chest', 7, 5); it('wardrobe', 5, 1); it('hearth', 0, 1, 1, 2, { h: 14 }); R.light.push({ u: .6, v: 2, r: 3.5, col: '255,150,60', flicker: true }); it('rug', 3, 3, 3, 3, { walk: true, col: '#6a4a8a' });
-      R.wallDeco.push({ k: 'window', side: 'back', a: 3.5 }, { k: 'shelf', side: 'back', a: 1.2, b: 2.6 });
+      R.wallDeco.push({ k: 'window', side: 'back', a: 3.5 }, { k: 'shelf', side: 'back', a: 1.2, b: 2.6 }, { k: 'painting', side: 'left', a: 3.2 });
       const prof = { may: 'oven', tom: 'bench', ella: 'loom', berg: 'trophy', saf: 'herbs', joe: 'nets', mira: 'books', ken: 'logs', shep: 'wool', lin: 'books', oren: 'desk', gus: 'smith', dork: 'guard', hilda: 'farm', bryn: 'mill', kier: 'sword' }[OWNER];
       if (prof === 'oven') { it('oven', 1, 4, 1, 1, { h: 34 }); sp('work', 2, 5, 'NW', 'work'); R.light.push({ u: 1.5, v: 4.5, r: 2.5, col: '255,140,60', flicker: true }) }
       else if (prof === 'bench') { it('bench', 1, 5, 2, 1); sp('work', 2, 4, 'SW', 'work') }
@@ -269,6 +269,13 @@
   }
   let holeCv = null;
   function wallDeco(d, t, day) {
+    /* hand-painted wall pieces first; the code-drawn shapes below stay as the fallback while a picture loads */
+    const WD = { board: ['noticeboard', 46], antlers: ['antlers', 70], sword: ['swords-shield', 66], torch: ['wall-torch', 60], painting: ['painting', 64], banner: KIND === 'guild' ? ['banner-guild', 56] : ['banner-long', 36] };
+    if (WD[d.k]) { if (wallSprite(WD[d.k][0], d.side, d.a, WD[d.k][1])) return }
+    else if (d.k === 'shelf' || d.k === 'herbs') {
+      const nm = d.k === 'herbs' || ['shop', 'healer', 'market'].includes(KIND) ? 'wall-shelf-jars' : 'wall-shelf-books', n = Math.max(1, Math.round((d.b - d.a) / 2));
+      let ok = true; for (let k = 0; k < n && ok; k++) ok = wallSprite(nm, d.side, d.a + (d.b - d.a) * (k + .5) / n, 46); if (ok) return
+    }
     if (d.k === 'window' || d.k === 'glass') {
       const q = wallQuad(d.side, d.a - .6, d.a + .6, 40, 100), sky = day > .4 ? `rgba(180,215,255,${.55 + day * .4})` : 'rgba(30,40,90,.9)';
       const wn = d.k === 'glass' ? 'window-stained' : KIND === 'forge' ? 'window-barred' : (KIND === 'inn' || KIND === 'guild') ? 'window-arched' : (KIND === 'house' || KIND === 'home') ? 'window-shuttered' : 'window-casement', wh = wn === 'window-barred' ? 50 : wn === 'window-casement' || wn === 'window-shuttered' ? 40 : 30;

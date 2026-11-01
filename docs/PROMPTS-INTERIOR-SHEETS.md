@@ -31,10 +31,10 @@
 | 6 | งานฝีมือ: กี่ทอผ้า · ม้านั่งช่าง · กองฟืน · โต๊ะเขียนหนังสือ · ชั้นหนังสือ · ตาข่าย · เครื่องโม่ | บ้านชาวบ้านตามอาชีพ |
 | **7 ✅ ใช้ในเกมแล้ว (v98.31)** | วิหาร: แท่นบูชา · รูปปั้น · ม้านั่งยาวพร้อมพนัก (pew) · เชิงเทียนพื้น · เชิงเทียนยืน | วิหาร |
 | 8 (พรอมต์พร้อมแล้ว) | สถานพยาบาล: ครกบด · ขวดโหล · ชั้นสมุนไพร · ถาดยา · เก้าอี้หมอ · ผ้าพันแผลม้วน | สถานพยาบาล |
-| 9 | ตลาด: แผงขาย 4 สีผ้าหลังคา · กองผลไม้/ผัก · ตะกร้าผลผลิต · ป้ายราคา (ไม่มีตัวหนังสือ) | ตลาด |
+| 9 (พรอมต์พร้อมแล้ว) | ตลาด: แผงขาย 4 สีผ้าหลังคา · กองผลไม้/ผัก · ตะกร้าผลผลิต · ป้ายราคา (ไม่มีตัวหนังสือ) | ตลาด |
 | 10 | สมาคม: กระดานรับงาน · ถ้วยรางวัล · เขากวางติดผนัง · ธงสมาคม · ดาบไขว้ติดผนัง · โต๊ะลงทะเบียน | สมาคมนักผจญภัย |
 | **11A ✅ ใช้ในเกมแล้ว (v98.32)** | ประตูและหน้าต่าง: ประตูเปิด · ประตูปิด · ประตูคู่ · ประตูโค้งหิน · หน้าต่างบานเปิด · หน้าต่างเล็กมีลูกกรง · หน้าต่างโค้งสูง · กระจกสี · หน้าต่างมีบานเกล็ด | ทุกห้อง |
-| **11B (พรอมต์พร้อมแล้ว)** | ของแขวนผนัง: ชั้นผนัง (ขวด/หนังสือ) · กระดานข่าว · ธงยาว/สั้น · ดาบไขว้+โล่ · เขากวาง · คบไฟติดผนัง · กรอบภาพ | ทุกห้อง |
+| **11B ✅ ใช้ในเกมแล้ว (v98.33)** | ของแขวนผนัง: ชั้นผนัง (ขวด/หนังสือ) · กระดานข่าว · ธงยาว/สั้น · ดาบไขว้+โล่ · เขากวาง · คบไฟติดผนัง · กรอบภาพ | ทุกห้อง |
 | 12 | ของเล็กบนโต๊ะ: แก้ว · จาน · เทียน · หนังสือ · ขวด · หม้อ · ตะเกียง (ใช้วางบนเฟอร์นิเจอร์ได้) | ทุกห้อง |
 | 13 | ไร่: โรงนา · กระท่อม · เล้าไก่ · รางน้ำสัตว์ · บ่อน้ำ · หุ่นไล่กา · กองฟาง · รั้ว · ป้ายบอกทาง · กองปุ๋ย | ไร่ (กลางแจ้ง) |
 | 14 | พื้นและผนัง (เทกซ์เจอร์ต่อเนื่อง — แยกวิธีเจน เป็นภาพแบนต่อซ้ำได้ ไม่ใช่ชีทวัตถุ): พื้นไม้กระดาน · พื้นหิน · พื้นกระเบื้อง · ผนังปูนขาว · ผนังไม้ครึ่งปูน · ผนังหิน | ทุกห้อง |
@@ -347,3 +347,36 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 ```
 
 **ตรวจรับชีท 8**: เหมือนชีทก่อน + ⑥ ไม่มีตัวหนังสือบนขวด/โหล/ลิ้นชัก ⑦ ฉากกั้นกว้าง 2 ช่อง ⑧ ไม่มีสัญลักษณ์กากบาทแดงหรือรูปคน
+
+---
+
+## ชีท 9 · ตลาด (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `stall-red` · `stall-blue` · `stall-green` · `stall-gold` · `fruit-crate` · `veg-basket` · `sack-pile` · `cheese-table` · `price-post`
+
+ใช้แทน: แผงขายของ (`stall` 2×1 สลับ 4 สีผ้า) ที่ตอนนี้เป็นกล่องสีล้วน · ที่เหลือเป็นของตกแต่งตลาด · **แผงทั้ง 4 ต้องเป็นโครงเดียวกันเปลี่ยนแค่สีผ้า** เพื่อให้เกมเลือกสีตามตำแหน่งได้ · แผงพาดซ้ายบน→ขวาล่าง
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (an indoor market hall): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people. No writing anywhere: signs and price tags are blank.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT (the selling side) points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every stall runs from the upper-left to the lower-right of the image.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. Pieces 1 to 4 (the stalls) each cover a 2x1-tile footprint (two diamonds joined along the upper-left to lower-right direction) and are exactly the same size and shape as each other; every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): the stall counter about 0.55 high, the stall's canopy poles up to about 1.5, fruit crate about 0.4, vegetable basket about 0.35, sack pile about 0.5, cheese table about 0.5, price post about 0.9.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (wood grain, striped canvas weave, fruit skins, burlap, wax rind, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: warm oak and honey-coloured wood, striped cloth canopies in muted brick red, deep blue, leaf green and golden yellow (each with cream stripes), natural produce colours kept slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Market stall with a RED canopy, 2x1 tiles: an oak counter with a slanted striped brick-red and cream cloth canopy on four slim posts with a scalloped front edge, the counter top displaying a neat mix of loaves of bread and pastries on cloth.
+2. Market stall with a BLUE canopy, 2x1 tiles: exactly the same stall frame, counter and canopy shape as piece 1, striped deep-blue and cream canopy, the counter top displaying folded bolts of cloth and spools of thread.
+3. Market stall with a GREEN canopy, 2x1 tiles: exactly the same frame as piece 1, striped leaf-green and cream canopy, the counter top displaying pots, clay jugs and small potted herbs.
+4. Market stall with a GOLD canopy, 2x1 tiles: exactly the same frame as piece 1, striped golden-yellow and cream canopy, the counter top displaying metalwork, small tools, horseshoes and lanterns.
+5. Fruit crate, 1x1 tile: an open wooden crate overflowing with apples, pears and oranges, a few fruits resting on the front edge.
+6. Vegetable basket, smaller than a tile: a large round wicker basket heaped with carrots, cabbages, turnips and leeks.
+7. Sack pile, 1x1 tile: three burlap sacks of grain and flour stacked, one open sack showing golden grain, a wooden scoop in it.
+8. Cheese table, 1x1 tile: a small trestle table with wheels and wedges of cheese, a wooden board with a knife, a clay butter dish, a hanging cloth cover.
+9. Price post, 1x1 tile or smaller: a slim wooden post with a blank hanging wooden sign board and a small blank chalk slate, a coil of rope tied around the base, no writing at all.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 9**: เหมือนชีทก่อน + ⑥ แผง 4 แผงโครงเหมือนกันเป๊ะ เปลี่ยนแค่สีผ้าและของบนเคาน์เตอร์ ⑦ ป้ายราคาเปล่า ไม่มีตัวหนังสือ ⑧ หลังคาผ้าไม่บังเคาน์เตอร์จนมองไม่เห็นของ

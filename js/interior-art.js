@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 7 and 11A (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 7, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -508,5 +508,68 @@ window.INTERIOR_ART={
   "h": 355,
   "wall": [10, 309, 365, 234, 236.5],
   "ww": 2.2
+ },
+ "wall-shelf-jars": {
+  "src": "assets/interior/wall-shelf-jars.webp",
+  "w": 366,
+  "h": 348,
+  "wall": [20, 342, 336, 324, 269.5],
+  "ww": 2
+ },
+ "wall-shelf-books": {
+  "src": "assets/interior/wall-shelf-books.webp",
+  "w": 361,
+  "h": 353,
+  "wall": [24, 346, 356, 256, 289.0],
+  "ww": 2
+ },
+ "noticeboard": {
+  "src": "assets/interior/noticeboard.webp",
+  "w": 262,
+  "h": 365,
+  "wall": [15, 358, 257, 300, 310.0],
+  "ww": 1
+ },
+ "banner-long": {
+  "src": "assets/interior/banner-long.webp",
+  "w": 212,
+  "h": 390,
+  "wall": [0, 389, 211, 389, 389],
+  "ww": 0.7
+ },
+ "banner-guild": {
+  "src": "assets/interior/banner-guild.webp",
+  "w": 268,
+  "h": 366,
+  "wall": [0, 365, 267, 365, 365],
+  "ww": 0.9
+ },
+ "swords-shield": {
+  "src": "assets/interior/swords-shield.webp",
+  "w": 332,
+  "h": 353,
+  "wall": [0, 352, 331, 352, 352],
+  "ww": 1.2
+ },
+ "antlers": {
+  "src": "assets/interior/antlers.webp",
+  "w": 343,
+  "h": 363,
+  "wall": [0, 362, 342, 362, 362],
+  "ww": 1
+ },
+ "wall-torch": {
+  "src": "assets/interior/wall-torch.webp",
+  "w": 174,
+  "h": 357,
+  "wall": [0, 356, 173, 356, 356],
+  "ww": 0.4
+ },
+ "painting": {
+  "src": "assets/interior/painting.webp",
+  "w": 297,
+  "h": 348,
+  "wall": [17, 343, 292, 277, 283.5],
+  "ww": 0.9
  }
 };
