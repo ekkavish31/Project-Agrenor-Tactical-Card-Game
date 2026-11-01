@@ -33,8 +33,8 @@
 | 8 | สถานพยาบาล: ครกบด · ขวดโหล · ชั้นสมุนไพร · ถาดยา · เก้าอี้หมอ · ผ้าพันแผลม้วน | สถานพยาบาล |
 | 9 | ตลาด: แผงขาย 4 สีผ้าหลังคา · กองผลไม้/ผัก · ตะกร้าผลผลิต · ป้ายราคา (ไม่มีตัวหนังสือ) | ตลาด |
 | 10 | สมาคม: กระดานรับงาน · ถ้วยรางวัล · เขากวางติดผนัง · ธงสมาคม · ดาบไขว้ติดผนัง · โต๊ะลงทะเบียน | สมาคมนักผจญภัย |
-| **11A (พรอมต์พร้อมแล้ว)** | ประตูและหน้าต่าง: ประตูเปิด · ประตูปิด · ประตูคู่ · ประตูโค้งหิน · หน้าต่างบานเปิด · หน้าต่างเล็กมีลูกกรง · หน้าต่างโค้งสูง · กระจกสี · หน้าต่างมีบานเกล็ด | ทุกห้อง |
-| 11B | ของแขวนผนัง: ชั้นผนัง (ขวด/หนังสือ) · กระดานข่าว · ธงยาว/สั้น · ดาบไขว้+โล่ · เขากวาง · คบไฟติดผนัง · กรอบภาพ | ทุกห้อง |
+| **11A ✅ ใช้ในเกมแล้ว (v98.32)** | ประตูและหน้าต่าง: ประตูเปิด · ประตูปิด · ประตูคู่ · ประตูโค้งหิน · หน้าต่างบานเปิด · หน้าต่างเล็กมีลูกกรง · หน้าต่างโค้งสูง · กระจกสี · หน้าต่างมีบานเกล็ด | ทุกห้อง |
+| **11B (พรอมต์พร้อมแล้ว)** | ของแขวนผนัง: ชั้นผนัง (ขวด/หนังสือ) · กระดานข่าว · ธงยาว/สั้น · ดาบไขว้+โล่ · เขากวาง · คบไฟติดผนัง · กรอบภาพ | ทุกห้อง |
 | 12 | ของเล็กบนโต๊ะ: แก้ว · จาน · เทียน · หนังสือ · ขวด · หม้อ · ตะเกียง (ใช้วางบนเฟอร์นิเจอร์ได้) | ทุกห้อง |
 | 13 | ไร่: โรงนา · กระท่อม · เล้าไก่ · รางน้ำสัตว์ · บ่อน้ำ · หุ่นไล่กา · กองฟาง · รั้ว · ป้ายบอกทาง · กองปุ๋ย | ไร่ (กลางแจ้ง) |
 | 14 | พื้นและผนัง (เทกซ์เจอร์ต่อเนื่อง — แยกวิธีเจน เป็นภาพแบนต่อซ้ำได้ ไม่ใช่ชีทวัตถุ): พื้นไม้กระดาน · พื้นหิน · พื้นกระเบื้อง · ผนังปูนขาว · ผนังไม้ครึ่งปูน · ผนังหิน | ทุกห้อง |
@@ -280,3 +280,37 @@ Each piece is a complete cut-out fully inside its own cell. No text, no wall, no
 ```
 
 **ตรวจรับชีท 11A**: เหมือนชีทก่อน + ⑥ ช่องเปิดประตูและบานกระจกเป็นเขียวล้วนเหมือนพื้นหลัง (ยกเว้นช่อง 8 กระจกสี) ⑦ ไม่มีผนังรอบ ๆ ⑧ เส้นนอนลาดขึ้นทางขวา (ถ้าลาดลงทางขวา เกมใช้ภาพกลับด้านได้ ไม่เป็นปัญหา) ⑨ ไม่มีตัวหนังสือหรือรูปคนบนกระจกสี
+
+
+---
+
+## ชีท 11B · ของแขวนผนัง (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `wall-shelf-jars` · `wall-shelf-books` · `noticeboard` · `banner-long` · `banner-guild` · `swords-shield` · `antlers` · `wall-torch` · `painting`
+
+ใช้แทน: ชั้นผนัง (`shelf`/`herbs`) · กระดานข่าว (`board`) · ธง (`banner`) · ดาบ (`sword`) · เขากวาง (`antlers`) ที่ตอนนี้เป็นเส้นโค้ด · คบไฟและกรอบภาพเป็นของใหม่ · วาดติดผนังด้านซ้าย (หน้าผนังหัน SE เส้นขอบนอนลาดขึ้นทางขวา "/") เหมือนชีท 11A
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior: wall-hung decorations. Exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no runes, no labels, no people, no scenery. The surrounding wall is NOT drawn: each piece is a cut-out that the game will hang on a wall. Flame glow stays inside the piece's own silhouette and never spills onto the green.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon. Each piece hangs flat against a wall surface that faces the lower-right (south-east) of the image: its horizontal edges therefore rise toward the right at exactly 1:2 (they go up one pixel for every two pixels moving right), its vertical edges stay perfectly vertical, and you see the front face plus a thin slice of the piece's own depth on its left and underside. Shelves, the torch and the antlers stick out of the wall a little, so you also see their top surfaces and left-hand sides in the same 2:1 isometric view. Orthographic: no perspective convergence, no fisheye.
+
+SCALE: all pieces share one scale. One unit of wall width measures 34 pixels horizontally across the image (and rises 17 pixels over that run). Heights are real vertical pixels. In those units: the jar shelf and the book shelf are each 2 units wide (68 px) and 40 px tall including the two tiers; the notice board is 1 unit wide (34 px) and 46 px tall; the long banner is 0.7 units wide (24 px) and 78 px tall; the guild banner is 0.9 units wide (30 px) and 54 px tall; the crossed swords with shield are 1.2 units wide (41 px) and 44 px tall; the antlers are 1 unit wide (34 px) and 36 px tall; the wall torch is 0.4 units wide (14 px) and 40 px tall; the painting is 0.9 units wide (30 px) and 40 px tall. Draw each piece as large as fits in its cell while keeping these exact proportions between pieces (the whole sheet can be scaled up equally, but the pieces keep their relative sizes). Leave 10% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (wood grain, woven cloth, forged iron, parchment fibres, wax and glass). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own light and shadow). Palette: warm oak and honey-coloured wood, dark walnut, wrought iron and steel, muted russet red, deep blue and forest green cloth, cream parchment, slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Wall shelf with jars, 2 units wide: two oak shelves one above the other held by iron brackets, the upper shelf with clay jars and stoppered glass bottles of herbal tinctures, the lower shelf with small sacks, a mortar and a few bundles of dried herbs hanging from the upper shelf's front edge (no labels, no writing).
+2. Wall shelf with books, 2 units wide: the same two-tier oak shelf with iron brackets, leather-bound books of varied muted colours standing and leaning, a few rolled scrolls and a small brass candlestick (no writing on the spines).
+3. Notice board, 1 unit wide: an oak-framed cork-and-plank board with several blank pinned parchment notes and a torn blank poster, pinned with small iron nails and a bit of string (no writing at all, only faint blurred grey lines are not allowed: leave the notes blank).
+4. Long banner, narrow and tall: a russet-red cloth banner with a cream border and a swallow-tail bottom edge, hanging from a dark wooden rod with two small brass finials, a simple plain gold stripe down the middle (no emblem, no text).
+5. Guild banner, shorter: a deep-blue cloth banner with a cream border hanging from an iron bar, bearing one simple stylised cream-and-gold sword-and-star emblem (a symbol only, no letters).
+6. Crossed swords with shield: two steel swords crossed diagonally behind a round oak shield with an iron boss and iron rim, mounted on a small dark wooden plaque.
+7. Antlers trophy: a mounted deer skull with a broad pair of branching antlers on a small carved oak shield-shaped plaque.
+8. Wall torch: a wrought-iron wall sconce holding a wooden torch with a small lit flame at the top, sooty wall bracket, a little ember glow only on the torch head.
+9. Framed painting: a wooden frame with a gold inner edge holding a small painted landscape of rolling green hills, a river and a distant village (painted picture only, no text, no signature).
+
+Each piece is a complete cut-out fully inside its own cell. No text, no wall, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 11B**: เหมือนชีทก่อน + ⑥ ไม่มีตัวหนังสือบนสันหนังสือ ป้ายบอร์ด ธง ⑦ ไฟคบไฟอยู่ในตัววัตถุ ⑧ ชั้นวางเห็นด้านบนและด้านซ้ายนิดหน่อย

@@ -241,19 +241,41 @@
     g.fillStyle = '#4a3220'; poly([up(bL, WALL_H), up(o, WALL_H), up(bR, WALL_H), up(bR, WALL_H + 8), up(o, WALL_H + 8), up(bL, WALL_H + 8)], '#4a3220');
     /* door in the left wall */
     { const a = P(0, DOOR.v), b = P(0, DOOR.v + 1), outside = day > .4 ? `rgba(200,225,255,${.5 + day * .4})` : 'rgba(30,40,80,.9)';
+      if (!wallSprite('door-open', 'left', DOOR.v + .5, 0, outside)) {
       poly([a, b, up(b, 78), up(a, 78)], outside); g.strokeStyle = '#4a2e18'; g.lineWidth = 5; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(a.x, a.y - 80); g.lineTo(b.x, b.y - 80); g.lineTo(b.x, b.y); g.stroke();
-      g.fillStyle = '#6a4424'; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(a.x - 16, a.y - 6); g.lineTo(a.x - 16, a.y - 82); g.lineTo(a.x, a.y - 78); g.closePath(); g.fill() }
+      g.fillStyle = '#6a4424'; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(a.x - 16, a.y - 6); g.lineTo(a.x - 16, a.y - 82); g.lineTo(a.x, a.y - 78); g.closePath(); g.fill() } }
     for (const d of R.wallDeco) wallDeco(d, t, day);
   }
   /* a point on the wall: side 'back' runs along u at v=0, side 'left' along v at u=0 */
   const wallPt = (side, a, h) => { const p = side === 'back' ? P(a, 0) : P(0, a); return { x: p.x, y: p.y - h } };
   function wallQuad(side, a, b, h0, h1) { return [wallPt(side, a, h0), wallPt(side, b, h0), wallPt(side, b, h1), wallPt(side, a, h1)] }
+  /* hand-painted wall pieces (doors, windows): the picture's bottom-left / bottom-right corners and height are stretched onto the wall plane; the back wall gets the mirrored picture */
+  function wallSprite(name, side, a, h0, sky) {
+    const A = ART[name]; if (!A || !A.wall) return false;
+    const im = artImgs[name] || (artImgs[name] = Object.assign(new Image(), { src: A.src })); if (!im.complete || !im.naturalWidth) return false;
+    const [blx, bly, brx, bry, H] = A.wall, mir = side === 'back', W = A.w;
+    const ex = mir ? W - brx : blx, ey = mir ? bry : bly, e1x = mir ? (W - blx) - (W - brx) : brx - blx, e1y = mir ? bly - bry : bry - bly;
+    const S0 = wallPt(side, mir ? a - A.ww / 2 : a + A.ww / 2, h0), S1 = wallPt(side, mir ? a + A.ww / 2 : a - A.ww / 2, h0);
+    const kk = A.ww * HW / Math.abs(e1x), s1x = S1.x - S0.x, s1y = S1.y - S0.y, e2y = -H, s2y = -H * kk;
+    /* image basis e1 = (e1x, e1y), e2 = (0, e2y)  ->  screen basis s1 = (s1x, s1y), s2 = (0, s2y) */
+    const det = e1x * e2y, m11 = s1x * e2y / det, m21 = (s1y * e2y - s2y * e1y) / det, m22 = s2y / e2y;
+    g.save(); g.transform(m11, m21, 0, m22, S0.x - m11 * ex, S0.y - m21 * ex - m22 * ey);
+    if (mir) { g.transform(-1, 0, 0, 1, W, 0) }
+    if (A.hole && sky) {   /* the sky / daylight shows only through the opening (a tinted copy of the hole mask) */
+      const hm = artImgs[name + '#h'] || (artImgs[name + '#h'] = Object.assign(new Image(), { src: A.hole }));
+      if (hm.complete && hm.naturalWidth) { const oc = holeCv || (holeCv = document.createElement('canvas')); oc.width = hm.naturalWidth; oc.height = hm.naturalHeight; const o = oc.getContext('2d'); o.drawImage(hm, 0, 0); o.globalCompositeOperation = 'source-in'; o.fillStyle = sky; o.fillRect(0, 0, oc.width, oc.height); g.drawImage(oc, 0, 0) }
+    }
+    g.drawImage(im, 0, 0); g.restore(); return true
+  }
+  let holeCv = null;
   function wallDeco(d, t, day) {
     if (d.k === 'window' || d.k === 'glass') {
       const q = wallQuad(d.side, d.a - .6, d.a + .6, 40, 100), sky = day > .4 ? `rgba(180,215,255,${.55 + day * .4})` : 'rgba(30,40,90,.9)';
-      poly(q, d.k === 'glass' ? (day > .4 ? '#c8a8ff' : '#3a2a6a') : sky); g.strokeStyle = '#4a2e18'; g.lineWidth = 3; g.beginPath(); q.forEach((p, i) => i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)); g.closePath(); g.stroke();
-      const m1 = wallPt(d.side, d.a, 40), m2 = wallPt(d.side, d.a, 100); g.beginPath(); g.moveTo(m1.x, m1.y); g.lineTo(m2.x, m2.y); g.stroke();
-      if (d.k === 'glass') { g.globalAlpha = .5; for (const [c, k] of [['#ff8a6a', .3], ['#6ac8ff', .6], ['#ffe06a', .45]]) { const p = wallPt(d.side, d.a - .3 + k * .6, 70); g.fillStyle = c; g.beginPath(); g.arc(p.x, p.y, 6, 0, 7); g.fill() } g.globalAlpha = 1 }
+      const wn = d.k === 'glass' ? 'window-stained' : KIND === 'forge' ? 'window-barred' : (KIND === 'inn' || KIND === 'guild') ? 'window-arched' : (KIND === 'house' || KIND === 'home') ? 'window-shuttered' : 'window-casement', wh = wn === 'window-barred' ? 50 : wn === 'window-casement' || wn === 'window-shuttered' ? 40 : 30;
+      const skyC = d.k === 'glass' ? (day > .4 ? '#c8a8ff' : '#3a2a6a') : sky;
+      if (!wallSprite(wn, d.side, d.a, wh, skyC)) { poly(q, skyC); g.strokeStyle = '#4a2e18'; g.lineWidth = 3; g.beginPath(); q.forEach((p, i) => i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)); g.closePath(); g.stroke();
+        const m1 = wallPt(d.side, d.a, 40), m2 = wallPt(d.side, d.a, 100); g.beginPath(); g.moveTo(m1.x, m1.y); g.lineTo(m2.x, m2.y); g.stroke() }
+      if (d.k === 'glass' && !ART['window-stained']) { g.globalAlpha = .5; for (const [c, k] of [['#ff8a6a', .3], ['#6ac8ff', .6], ['#ffe06a', .45]]) { const p = wallPt(d.side, d.a - .3 + k * .6, 70); g.fillStyle = c; g.beginPath(); g.arc(p.x, p.y, 6, 0, 7); g.fill() } g.globalAlpha = 1 }
       if (day > .4) { const p = wallPt(d.side, d.a, 40), gr = g.createLinearGradient(p.x, p.y, p.x + (d.side === 'back' ? -40 : 40), p.y + 90); gr.addColorStop(0, `rgba(255,245,210,${.18 * day})`); gr.addColorStop(1, 'rgba(255,245,210,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(q[0].x, q[0].y); g.lineTo(q[1].x, q[1].y); g.lineTo(q[1].x + (d.side === 'back' ? -50 : 50), q[1].y + 110); g.lineTo(q[0].x + (d.side === 'back' ? -50 : 50), q[0].y + 110); g.closePath(); g.fill() }
     } else if (d.k === 'shelf' || d.k === 'herbs' || d.k === 'tools') {
       for (const h of [50, 80]) { const q = wallQuad(d.side, d.a, d.b, h, h + 5); poly(q, '#6a4424');

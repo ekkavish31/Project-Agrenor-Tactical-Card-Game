@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A and 7 (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 7 and 11A (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -440,5 +440,73 @@ window.INTERIOR_ART={
   "fx": 99,
   "fy": 265,
   "k": 0.18
+ },
+ "door-open": {
+  "src": "assets/interior/door-open.webp",
+  "hole": "assets/interior/door-open-hole.webp",
+  "w": 262,
+  "h": 389,
+  "wall": [21, 383, 256, 333, 337.5],
+  "ww": 1
+ },
+ "door-closed": {
+  "src": "assets/interior/door-closed.webp",
+  "w": 234,
+  "h": 393,
+  "wall": [22, 387, 228, 342, 348.0],
+  "ww": 1
+ },
+ "door-double": {
+  "src": "assets/interior/door-double.webp",
+  "w": 367,
+  "h": 403,
+  "wall": [29, 399, 359, 335, 342.5],
+  "ww": 2
+ },
+ "door-arch": {
+  "src": "assets/interior/door-arch.webp",
+  "w": 260,
+  "h": 383,
+  "wall": [31, 378, 256, 329, 309.0],
+  "ww": 1
+ },
+ "window-casement": {
+  "src": "assets/interior/window-casement.webp",
+  "hole": "assets/interior/window-casement-hole.webp",
+  "w": 258,
+  "h": 336,
+  "wall": [28, 329, 254, 256, 291.5],
+  "ww": 1.2
+ },
+ "window-barred": {
+  "src": "assets/interior/window-barred.webp",
+  "hole": "assets/interior/window-barred-hole.webp",
+  "w": 248,
+  "h": 279,
+  "wall": [28, 273, 243, 223, 237.0],
+  "ww": 0.8
+ },
+ "window-arched": {
+  "src": "assets/interior/window-arched.webp",
+  "hole": "assets/interior/window-arched-hole.webp",
+  "w": 205,
+  "h": 395,
+  "wall": [22, 389, 200, 346, 331.5],
+  "ww": 1
+ },
+ "window-stained": {
+  "src": "assets/interior/window-stained.webp",
+  "w": 208,
+  "h": 400,
+  "wall": [24, 394, 204, 349, 337.5],
+  "ww": 1
+ },
+ "window-shuttered": {
+  "src": "assets/interior/window-shuttered.webp",
+  "hole": "assets/interior/window-shuttered-hole.webp",
+  "w": 370,
+  "h": 355,
+  "wall": [10, 309, 365, 234, 236.5],
+  "ww": 2.2
  }
 };
