@@ -131,6 +131,7 @@
     requestAnimationFrame(poll);
     if (!navigator.getGamepads || !document.hasFocus()) return;
     const pads = [...navigator.getGamepads()].filter(Boolean); if (!pads.length) return;
+    if (window.TouchControls?.owns?.()) { for (const i in held) held[i] = false; return }   /* v98.21 · the game's own pad controls (js/touch-controls.js) have the pad while you play; menus still use this bridge */
     const p = pads[0], now = performance.now(), ax = p.axes[0] || 0, ay = p.axes[1] || 0;
     const state = {}; for (const i in PAD) state[i] = !!p.buttons[i]?.pressed;
     if (ax < -.55) state[14] = true; if (ax > .55) state[15] = true; if (ay < -.55) state[12] = true; if (ay > .55) state[13] = true;

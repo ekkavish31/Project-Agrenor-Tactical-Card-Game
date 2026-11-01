@@ -1136,6 +1136,7 @@
     if (tg) { poly(g, tg.u, tg.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3.5; g.setLineDash([6, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) }
     for (const a of FB.allies(st)) if (a.hp > 0) { poly(g, a.u, a.v); g.strokeStyle = 'rgba(127,200,160,.7)'; g.lineWidth = 1.5; g.stroke() }
     poly(g, h.u, h.v); g.strokeStyle = '#6fd18a'; g.lineWidth = 2; g.stroke();
+    if (padOn && padCur && !busy && st.turn === 'hero' && !st.outcome) { const pu = .55 + .45 * Math.sin(t * .008); poly(g, padCur.u, padCur.v); g.fillStyle = `rgba(255,255,255,${.12 + .1 * pu})`; g.fill(); g.strokeStyle = `rgba(255,255,255,${.7 + .3 * pu})`; g.lineWidth = 3; g.stroke() }   /* v98.21 · stick / pad cursor */
     /* v97.08 · where everyone faces: a small wedge on the ground in front of each unit (hits from behind ×1.2, side ×1.1) */
     for (const u of st.units) { const F = u.hp > 0 && FB.FACE_V[u.face]; if (!F) continue; const [fu, fv] = F, P = (a, b) => project(u.vu + fu * a - fv * b, u.vv + fv * a + fu * b), tip = P(.62, 0), l = P(.34, .17), r = P(.34, -.17);
       g.beginPath(); g.moveTo(tip.x, tip.y); g.lineTo(l.x, l.y); g.lineTo(r.x, r.y); g.closePath(); g.fillStyle = u.side === 'monster' ? 'rgba(255,120,95,.85)' : u === h ? 'rgba(130,230,150,.9)' : 'rgba(150,215,190,.8)'; g.fill(); g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 1; g.stroke() }
@@ -1250,6 +1251,39 @@
     cv.addEventListener('wheel', () => { userCam = true }, true) }
   /* runs before the frame's camera transform: TownUX re-centres on the village hero every frame, so the arena has to win after it */
   function pre() { if (st && (!userCam || cine)) focusCamera(); else if (kick.roll) { kick.roll = 0; cv.style.transform = '' } }
-  window.TownBattle = { pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
+
+  /* ---------- v98.21 · stick / gamepad / keys (js/touch-controls.js): a tile cursor on the grid ----------
+     stick = move the cursor one tile every 150 ms along the floor axes · A = click that tile (walk / target / attack) · hold A = ring (attack the target · end turn · undo · auto)
+     LB / RB = next / previous enemy (like Tab). Mouse use hides the cursor again. */
+  let padCur = null, padOn = false, padAt = 0;
+  const padHeroCell = () => { const h = FB.hero(st); return { u: Math.floor(h.u), v: Math.floor(h.v) } };
+  const padReady = () => st && !busy && !st.outcome && st.turn === 'hero' && !discardMode && !facing && !pauseEl;
+  function padStep(v) {
+    if (!padReady()) return; const now = performance.now(); if (now < padAt) return; padAt = now + 150;
+    if (!padCur) padCur = padHeroCell();
+    let du = v.x / 2 + v.y, dv = v.y - v.x / 2; const l = Math.hypot(du, dv) || 1; du /= l; dv /= l;
+    const m = Math.max(Math.abs(du), Math.abs(dv)), su = Math.abs(du) > m * .45 ? Math.sign(du) : 0, sv = Math.abs(dv) > m * .45 ? Math.sign(dv) : 0;
+    const nu = padCur.u + su, nv = padCur.v + sv; if (cells.has(nu + ',' + nv)) padCur = { u: nu, v: nv }; padOn = true;
+  }
+  const padEnemyAt = c => c && FB.monsters(st).find(u => u.hp > 0 && Math.floor(u.u) === c.u && Math.floor(u.v) === c.v);
+  function padConfirm() { if (!padReady()) return; if (!padCur) padCur = padHeroCell(); padOn = true; const p = project(padCur.u + .5, padCur.v + .5); click({ x: p.x, y: p.y - 4 }) }
+  function padTarget(d) {
+    if (!padReady()) return; const ms = FB.monsters(st).filter(m => m.hp > 0); if (!ms.length) return;
+    const i = ms.findIndex(m => m.id === (pend?.id || st.target)), m = ms[i < 0 ? (d < 0 ? ms.length - 1 : 0) : (i + (d < 0 ? ms.length - 1 : 1)) % ms.length]; pend = null; padOn = true; padCur = { u: Math.floor(m.u), v: Math.floor(m.v) }; onEnemy(m);
+  }
+  function padContext() {
+    if (!padReady() || !padOn && !padCur) return padReady() ? { kind: 'cell', id: 'cell', icon: 'map', label: 'เลื่อนเคอร์เซอร์ด้วยจอยสติ๊ก', options: padOptions() } : null;
+    const c = padCur || padHeroCell(), m = padEnemyAt(c), tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
+    const label = m ? (pend && pend.id === m.id ? 'โจมตี ' : 'เล็ง ') + (m.name || m.label || m.kind || m.id) : 'เดินไปช่องนี้';
+    return { kind: 'cell', id: 'cell', icon: m ? 'battle' : 'map', label, options: padOptions(!!tg) };
+  }
+  function padOptions(hasTarget) {
+    const o = [];
+    if (hasTarget !== false) o.push({ label: 'โจมตีเป้าหมาย', icon: 'battle', run: () => { const t = st.target && st.units.find(u => u.id === st.target && u.hp > 0); if (t) { pend = null; onEnemy(t); setTimeout(() => padReady() && onEnemy(t), 60) } } });
+    o.push({ label: 'จบเทิร์น', icon: 'calendar', run: () => endHeroTurn() }, { label: 'ย้อนเดิน', icon: 'guard', run: () => undoWalk() }, { label: 'ออโต้', icon: 'gear', run: () => setAuto(!auto) });
+    return o;
+  }
+  addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') padOn = false }, true);
+  window.TownBattle = { pad: { menuOpen: () => !!(pauseEl || facing || discardMode), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
     act: { undo: undoWalk, attackPlan: id => st && FB.autoAttack(st, id), skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, discard: setDiscard, confirmDiscard: doDiscard }, busy: () => busy };
 })();

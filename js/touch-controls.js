@@ -18,6 +18,10 @@
   let adapter = null, ui = null, ctx = null, lastCtx = '', timer = 0, raf = 0;
   const held = new Set(), stick = { x: 0, y: 0, on: false }, padV = { x: 0, y: 0 };
   const visible = () => !!adapter && (adapter.visible?.() ?? true);
+  /* owns(): the game itself is being played with our controls (no menu / dialog / facing picker open) → the older ConsoleUI gamepad→keys bridge must stay quiet,
+     or A would press twice and B would open-and-close the pause menu. */
+  const menuUp = () => !!doc.querySelector('dialog[open],#cuMenu,#fbPause') || (adapter?.menuOpen?.() ?? false);
+  const owns = () => visible() && !menuUp();
   const blocked = () => !visible() || !!doc.querySelector('dialog[open]') || (adapter?.paused?.() ?? false);
 
   /* ---- direction ---- */
@@ -76,7 +80,7 @@
   /* choose a radial option from a direction (stick/keys/pointer): the option whose angle is closest */
   function pickDir(x, y) {
     const c = ctx; if (!c?.options || Math.hypot(x, y) < .35) return;
-    const n = c.options.length, ang = Math.atan2(y, x) * 180 / Math.PI, a = ((ang % 360) + 360) % 360;   // 270 = up · options fan out from the upper-left (215) to straight up (270)
+    const n = c.options.length, deg = Math.atan2(y, x) * 180 / Math.PI, a = ((deg % 360) + 360) % 360;   // 270 = up · options fan out from the upper-left (215) to straight up (270)
     let best = 0, bd = 1e9; for (let i = 0; i < n; i++) { const t = ang(i, n), d = Math.abs(a - t); if (d < bd) { bd = d; best = i } }
     if (best !== btn.sel) { btn.sel = best; selMark(); try { navigator.vibrate?.(6) } catch (e) { } }
   }
@@ -86,7 +90,7 @@
     if (!visible() || adapter.keys === false || typing() || e.ctrlKey || e.metaKey || e.altKey || editing()) return;
     const d = KEYS[e.key];
     if (d && !blocked()) { held.add(d); if (!btn.radial) e.preventDefault(); return }
-    if ((e.key === 'e' || e.key === 'E' || e.code === 'Space') && !blocked()) { if (!e.repeat && (ctx || adapter.alwaysAct)) { pressStart('key'); e.preventDefault() } else if (btn.down) e.preventDefault() }
+    if ((e.key === 'e' || e.key === 'E' || e.code === 'Space') && adapter.noActKey !== true && !blocked()) { if (!e.repeat && (ctx || adapter.alwaysAct)) { pressStart('key'); e.preventDefault() } else if (btn.down) e.preventDefault() }
     if (btn.radial && /^[1-5]$/.test(e.key)) { btn.sel = Math.min(+e.key - 1, (ctx?.options?.length || 1) - 1); selMark(); e.preventDefault() }
   }, true);
   addEventListener('keyup', e => {
@@ -107,11 +111,12 @@
     if (B(14)) x = -1; if (B(15)) x = 1; if (B(12)) y = -1; if (B(13)) y = 1;
     padV.x = x; padV.y = y;
     const edge = i => B(i) && !pads.prev[i], rel = i => !B(i) && pads.prev[i];
-    if (visible() && !doc.querySelector('dialog[open]')) {
+    if (owns()) {
       if (edge(0)) pressStart('pad'); if (rel(0)) pressEnd('pad');
       if (edge(1)) { if (adapter.back) adapter.back(); else dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })) }
       const by = id => adapter.buttons?.find(b => b.id === id);
-      if (edge(2)) by('bag')?.run?.(); if (edge(3)) by('map')?.run?.(); if (edge(8)) by('wip')?.run?.(); if (edge(9)) by('menu')?.run?.() ?? dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      const pb = adapter.padButtons;
+      if (edge(2)) (pb?.[2] || (() => by('bag')?.run?.()))(); if (edge(3)) (pb?.[3] || (() => by('map')?.run?.()))(); if (edge(8)) (pb?.[8] || (() => by('wip')?.run?.()))(); if (edge(9)) (pb?.[9] || (() => by('menu')?.run?.() ?? dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))))();
       if (edge(4)) adapter.shoulder?.(-1); if (edge(5)) adapter.shoulder?.(1);
     }
     pads.prev = g.buttons.map(b => !!b.pressed);
@@ -191,6 +196,7 @@
     const el = doc.createElement('div'); el.id = 'tc';
     el.innerHTML = `<div class="stick" aria-label="จอยสติ๊กเดิน"><i>▲</i><i>▼</i><i>◀</i><i>▶</i><div class="knob"></div></div>
       <div class="btns"><div class="tcTag"></div><button class="b A idle" type="button" aria-label="ทำสิ่งที่อยู่ตรงหน้า (กดค้าง = ตัวเลือก)"><img src="assets/icons/menu/quest.webp" alt="" draggable="false"></button><div class="rad" hidden></div></div>`;
+    if (adapter.z) el.style.zIndex = adapter.z;   /* the battle's card bar sits at z 41: the controls must be above it */
     doc.body.append(el);
     const btns = el.querySelector('.btns'), A = btns.querySelector('.A'), tag = btns.querySelector('.tcTag'), Aimg = A.querySelector('img'), rad = btns.querySelector('.rad');
     ui = { el, A, Aimg, tag, rad, stick: el.querySelector('.stick'), knob: el.querySelector('.knob') };
@@ -232,5 +238,5 @@
     doc.body ? start() : addEventListener('DOMContentLoaded', start);
   }
   function setMode(m) { try { localStorage.setItem(KEY, m) } catch (e) { } if (adapter) { if (wantUI()) build(); else destroy() } }
-  root.TouchControls = { attach, vec, moving, act: () => act(), setMode, mode, setBump: on => { try { localStorage.setItem(BUMPKEY, on ? '1' : '0') } catch (e) { } }, bumpOn, enabled: () => wantUI(), shown: () => !!ui, context: () => ctx, toast, dbg: () => ({ bumpT, cool, held: [...held], vec: vec(), moving: moving(), vis: visible(), blocked: blocked(), bump: bumpOn(), ctx: ctx && { kind: ctx.kind, bump: ctx.bump, dist: ctx.dist, sx: ctx.sx, bumpR: ctx.bumpR } }) };
+  root.TouchControls = { owns, attach, vec, moving, act: () => act(), setMode, mode, setBump: on => { try { localStorage.setItem(BUMPKEY, on ? '1' : '0') } catch (e) { } }, bumpOn, enabled: () => wantUI(), shown: () => !!ui, context: () => ctx, toast, dbg: () => ({ bumpT, cool, held: [...held], vec: vec(), moving: moving(), vis: visible(), blocked: blocked(), bump: bumpOn(), ctx: ctx && { kind: ctx.kind, bump: ctx.bump, dist: ctx.dist, sx: ctx.sx, bumpR: ctx.bumpR } }) };
 })(globalThis);

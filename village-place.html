@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
-<script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.20"></script><script src="js/touch-controls.js?v=98.20"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><style>
+<script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
 button,select,input{font:inherit;background:#233a2ef0;color:#fff0c7;border:1px solid #cad6a77a;border-radius:9px;padding:8px 12px;cursor:pointer}button:hover{background:#4b6040}button:disabled{opacity:.45;cursor:default}
@@ -1502,4 +1502,4 @@ window.TouchControls?.attach({
  act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
  buttons: [{ id: 'bag', icon: 'bag', title: 'กระเป๋า', run: () => send('menu', { id: 'bag' }) }, { id: 'menu', icon: 'settings', title: 'เมนู', run: () => send('menu', { id: 'settings' }) }, ...(KIND === 'forge' ? [{ id: 'wip', icon: 'forge', title: 'ซ่อน/แสดงการ์ดงาน', run: () => send('wip-toggle') }] : [])]
 });
-</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=97.76"></script><script src="js/villager-draw.js?v=97.96"></script><script src="js/village-life.js?v=97.76"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=97.69"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=97.76"></script><script src="js/villager-draw.js?v=97.96"></script><script src="js/village-life.js?v=97.76"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=98.31"></script><script src="js/editor-tools.js?v=91.77"></script></html>
