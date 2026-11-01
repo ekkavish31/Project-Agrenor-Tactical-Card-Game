@@ -61,6 +61,7 @@
     T('ancient', 'ผู้อยู่มานาน', 5, { hp: 15, st: 15 }, 'หนึ่งร้อยวันผ่านไปแล้ว', (g) => num(g.day) >= 100),
     T('chosen', 'ผู้ถูกเลือก', 5, { power: 2, spell: 2, crit: .03, armor: 2, hp: 20, st: 10, xp: .05 }, 'สะสมฉายาไว้มากพอจะทำให้โลกหันมามอง', (g, t, earned) => Object.keys(earned).length >= 20)
   ];
+  const ICON = {"rookie": "🗡", "wolfbane": "🐺", "bandithunter": "🏹", "wayfarer": "👣", "survivor": "🩹", "seasoned": "⛰", "pennywise": "🪙", "veteran": "🛡", "nightwalker": "🌙", "unscathed": "✨", "closecall": "⚡", "lonewolf": "🐾", "packhunter": "🏔", "scholar": "📖", "craftsman": "🔨", "guardian": "🤝", "bosskiller": "👑", "streak10": "🔥", "eliteslayer": "🥀", "shadowless": "🌫", "ironwill": "⛓", "grown": "🌳", "adept": "🔮", "merchantking": "💰", "legend": "🏆", "undying": "♾", "polymath": "☯", "bulwark": "🏰", "stubborn": "💢", "phoenix": "🔥", "coward": "🍃", "ancient": "⏳", "chosen": "👁"};
   const BY = Object.fromEntries(LIST.map(x => [x.id, x]));
 
   const st = g => { const v = (g.village ||= {}); const o = (v.titles ||= {}); o.tally ||= {}; o.earned ||= {}; o.equipped ||= []; return o };
@@ -125,13 +126,46 @@
     const o = st(g), rows = [];
     for (const d of LIST) {
       const got = o.earned[d.id];
-      if (got) rows.push({ id: d.id, name: d.name, tier: d.tier, got: true, day: got.day, story: d.story, fx: fxText(d.fx), on: o.equipped.includes(d.id) });
+      if (got) rows.push({ id: d.id, name: d.name, icon: ICON[d.id] || '✦', tier: d.tier, got: true, day: got.day, story: d.story, fx: fxText(d.fx), on: o.equipped.includes(d.id) });
       else if (d.tier < 5) rows.push({ id: d.id, tier: d.tier, got: false });
     }
     return { rows, secretLeft: LIST.filter(d => d.tier === 5 && !o.earned[d.id]).length, slots: slots(g), used: o.equipped.length, total: LIST.length, earned: Object.keys(o.earned).length };
   }
   const current = g => (st(g).equipped || []).map(id => BY[id]).filter(Boolean);
-  const api = { TIERS, LIST, BY, CAP, LABEL, st, slots, note, battle, check, equip, unequip, swap, mods, view, current, fxText, onEarn: null };
+
+  /* ---------- the title CARD (pure HTML + CSS injected once; tier 3+ gets a holo shimmer, tier 5 a red flame frame) ---------- */
+  const CSS = `.tcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:12px;margin:8px 0 14px}
+.tcard{--c:#a9855a;position:relative;aspect-ratio:5/7;border-radius:12px;padding:8px 8px 9px;display:flex;flex-direction:column;align-items:center;text-align:center;color:#fff3d8;cursor:default;border:0;font:inherit;
+ background:linear-gradient(160deg,#2a2218,#15110b 70%);box-shadow:0 0 0 2px var(--c),0 0 0 4px #0008,0 6px 14px #0007;overflow:hidden;transition:transform .15s}
+button.tcard{cursor:pointer}button.tcard:hover:not(:disabled){transform:translateY(-3px) rotate(-.6deg)}button.tcard:disabled{cursor:not-allowed;opacity:.8}
+.tcard .tt{font-size:10px;letter-spacing:.08em;color:var(--c);font-weight:700}
+.tcard .em{margin:6px 0 4px;width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-size:32px;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--c) 55%,#fff),var(--c) 60%,#000 140%);box-shadow:inset 0 0 0 2px #fff6,0 0 14px var(--c)}
+.tcard b{font-size:13px;line-height:1.15;margin:2px 0}.tcard .fx{font-size:10.5px;color:#ffe6a8;margin-top:auto}.tcard .st{font-size:9.5px;opacity:.72;margin:3px 0;line-height:1.25}
+.tcard .on{position:absolute;top:6px;right:-24px;transform:rotate(40deg);background:var(--c);color:#1a1208;font-size:9px;font-weight:800;padding:1px 26px}
+.tcard.t3::after,.tcard.t4::after,.tcard.t5::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 30%,#ffffff38 48%,transparent 66%);background-size:250% 100%;animation:tcShine 3.2s linear infinite}
+.tcard.t4{background:linear-gradient(160deg,#2b1745,#120a1f 70%)}.tcard.t5{background:linear-gradient(160deg,#4a1410,#1a0705 70%);animation:tcFlame 1.6s ease-in-out infinite alternate}
+.tcard.lock{background:repeating-linear-gradient(45deg,#1b1812 0 8px,#211d15 8px 16px);filter:saturate(.5)}.tcard.lock .em{background:#2c261b;box-shadow:inset 0 0 0 2px #fff2;font-size:28px;opacity:.7}.tcard.lock b{opacity:.6}
+@keyframes tcShine{to{background-position:-150% 0}}@keyframes tcFlame{to{box-shadow:0 0 0 2px var(--c),0 0 0 4px #0008,0 0 22px #ff4a2a99}}
+.tcReveal{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#000b;opacity:0;transition:opacity .3s}.tcReveal.on{opacity:1}
+.tcReveal .tcard{width:min(62vw,250px);transform:rotateY(90deg) scale(.7);animation:tcFlip .7s .15s cubic-bezier(.2,1.3,.4,1) forwards}.tcReveal p{color:#ffe6a8;text-align:center;margin:12px 0 0;font:600 14px system-ui,sans-serif}
+@keyframes tcFlip{to{transform:rotateY(0) scale(1)}}`;
+  function css() { if (typeof document === 'undefined' || document.getElementById('tcardCss')) return; const e = document.createElement('style'); e.id = 'tcardCss'; e.textContent = CSS; document.head.append(e) }
+  /* r = a row of Titles.view(). Locked rows show a blank card back — no name, no bonus. extra: {button, onclick} */
+  function cardHtml(r, o = {}) {
+    css(); const t = TIERS[r.tier], tag = o.onclick ? 'button' : 'div';
+    if (!r.got) return `<${tag} class="tcard lock t${r.tier}" style="--c:${t.col}" disabled><span class="tt">${t.mark} ${t.name}</span><span class="em">?</span><b>«???»</b><span class="st">ยังไม่รู้ว่าทำอย่างไรจึงจะได้</span></${tag}>`;
+    return `<${tag} class="tcard t${r.tier}" style="--c:${t.col}" ${o.onclick ? `onclick="${o.onclick}"` : ''} ${o.disabled ? 'disabled' : ''} title="${o.title || ''}">${r.on ? '<span class="on">ใส่อยู่</span>' : ''}<span class="tt">${t.mark} ${t.name}</span><span class="em">${r.icon}</span><b>«${r.name}»</b><span class="st">${r.story}</span><span class="fx">${r.fx}</span></${tag}>`;
+  }
+  /* full-screen "you got a title" reveal (tier 3+ from the caller's choice); tap to close */
+  function reveal(d, g) {
+    if (typeof document === 'undefined') return; css();
+    const row = { id: d.id, name: d.name, icon: ICON[d.id] || '✦', tier: d.tier, got: true, story: d.story, fx: fxText(d.fx), on: false };
+    const el = document.createElement('div'); el.className = 'tcReveal'; el.innerHTML = cardHtml(row) + `<p>🏅 ได้รับฉายาใหม่ · แตะเพื่อปิด</p>`;
+    el.style.flexDirection = 'column'; el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center';
+    el.onclick = () => { el.classList.remove('on'); setTimeout(() => el.remove(), 300) }; document.body.append(el); requestAnimationFrame(() => el.classList.add('on'));
+    setTimeout(() => el.isConnected && el.onclick(), 6000);
+  }
+  const api = { cardHtml, reveal, css, TIERS, LIST, BY, CAP, LABEL, st, slots, note, battle, check, equip, unequip, swap, mods, view, current, fxText, onEarn: null };
   root.Titles = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
