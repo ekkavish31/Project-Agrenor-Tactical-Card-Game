@@ -98,6 +98,7 @@
       Object.assign(R, { W: 10, D: 9, door: 6, floor: 'stone', wall: 'stone' });
       it('furnace', 1, 1, 2, 2, { h: 50 }); R.light.push({ u: 2.5, v: 2.5, r: 4.5, col: '255,120,40', flicker: true });
       it('anvil', 5, 4); sp('anvil', 5, 5, 'NE', 'work'); sp('anvil', 4, 4, 'SE', 'work'); it('quench', 7, 2); it('rack', 8, 1, 1, 1, { h: 50 });
+      it('bellows', 1, 3); it('coal-bin', 4, 1); it('ingots', 9, 1); it('grindstone', 9, 3); it('bench-smith', 8, 5); it('forge-open', 1, 5);
       it('crate', 8, 7); it('barrel', 1, 7); sp('watch', 6, 6, 'NW', 'stand'); sp('watch', 3, 6, 'NE', 'stand');
       R.wallDeco.push({ k: 'tools', side: 'back', a: 4, b: 7 }, { k: 'window', side: 'left', a: 4 });
     } else if (KIND === 'guild') {   /* v97.40 · adventurers' guild: a counter, the contract board, tables for the parties, trophies */
@@ -341,7 +342,7 @@
   /* v98.23 · hand-painted sprites (js/interior-art.js) for the pieces that have one: table (round / square, picked by position), stool (the tall bar stool when {tall:true}), barrel / keg */
   const ART = window.INTERIOR_ART || {}, artImgs = {};
   const COUNTER = { inn: 'counter-bar', shop: 'counter-shop', guild: 'counter-guild', healer: 'counter-healer' };
-  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : i.k === 'barrel' ? 'table-barrel' : i.k === 'keg' ? 'keg' : i.k === 'basket' ? 'basket' : i.k === 'chest' ? 'trunk'
+  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (['furnace', 'anvil', 'quench', 'bellows', 'grindstone', 'bench-smith', 'coal-bin', 'ingots', 'forge-open'].includes(i.k)) ? i.k : i.k === 'barrel' ? 'table-barrel' : i.k === 'keg' ? 'keg' : i.k === 'basket' ? 'basket' : i.k === 'chest' ? 'trunk'
     : i.k === 'crate' ? ((i.u + i.v * 2) % 3 === 0 ? 'crate-stack' : 'crate')
     : i.k === 'shelfbox' ? (['guild', 'temple', 'home', 'house'].includes(KIND) ? 'shelf-books' : 'shelf-store')
     : i.k === 'rack' ? (KIND === 'forge' || i.tools ? 'rack-tools' : 'rack-weapons') : null;

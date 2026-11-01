@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–3). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–3 and 5A). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -228,5 +228,77 @@ window.INTERIOR_ART={
   "fx": 154,
   "fy": 284,
   "k": 0.205
+ },
+ "furnace": {
+  "src": "assets/interior/furnace.webp",
+  "w": 426,
+  "h": 474,
+  "fx": 213,
+  "fy": 389,
+  "k": 0.3
+ },
+ "anvil": {
+  "src": "assets/interior/anvil.webp",
+  "w": 240,
+  "h": 281,
+  "fx": 120,
+  "fy": 228,
+  "k": 0.2
+ },
+ "quench": {
+  "src": "assets/interior/quench.webp",
+  "w": 315,
+  "h": 278,
+  "fx": 157,
+  "fy": 199,
+  "k": 0.205
+ },
+ "bellows": {
+  "src": "assets/interior/bellows.webp",
+  "w": 351,
+  "h": 332,
+  "fx": 175,
+  "fy": 262,
+  "k": 0.19
+ },
+ "grindstone": {
+  "src": "assets/interior/grindstone.webp",
+  "w": 288,
+  "h": 307,
+  "fx": 144,
+  "fy": 244,
+  "k": 0.21
+ },
+ "bench-smith": {
+  "src": "assets/interior/bench-smith.webp",
+  "w": 363,
+  "h": 306,
+  "fx": 181,
+  "fy": 233,
+  "k": 0.2
+ },
+ "coal-bin": {
+  "src": "assets/interior/coal-bin.webp",
+  "w": 318,
+  "h": 331,
+  "fx": 159,
+  "fy": 252,
+  "k": 0.205
+ },
+ "ingots": {
+  "src": "assets/interior/ingots.webp",
+  "w": 295,
+  "h": 220,
+  "fx": 147,
+  "fy": 155,
+  "k": 0.21
+ },
+ "forge-open": {
+  "src": "assets/interior/forge-open.webp",
+  "w": 317,
+  "h": 377,
+  "fx": 158,
+  "fy": 298,
+  "k": 0.2
  }
 };
