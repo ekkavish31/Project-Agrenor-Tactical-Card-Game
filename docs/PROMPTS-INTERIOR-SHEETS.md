@@ -27,7 +27,7 @@
 | **3 ✅ ใช้ในเกมแล้ว (v98.27)** | ของเก็บ: ลัง · ถัง · ถังเล็ก (keg) · ตะกร้า · หีบ · ตู้เตี้ย · ชั้นสูง (shelfbox) · ชั้นวางอาวุธ/เครื่องมือ | ทุกห้อง |
 | **4 ✅ ใช้ในเกมแล้ว (v98.30)** | ห้องนอนและพรม: เตียง · เตียงผู้ป่วย · หีบปลายเตียง · พรมหลายขนาด (3×3 · 4×3 · ทางเดิน 1×7) | บ้าน · สถานพยาบาล · โรงแรม |
 | **5A ✅ ใช้ในเกมแล้ว (v98.28)** | โรงตีเหล็ก: เตาหลอม 2×2 · ทั่ง · ถังชุบ · เครื่องสูบลม · หินลับ · โต๊ะช่างพร้อมปากกาจับ · ถังถ่าน · กองแท่งเหล็ก · เตาไฟเปิด | โรงตีเหล็ก · บ้านช่างตีเหล็ก |
-| 5 | เตาและไฟ: เตาผิง 1×2 · เตาหลอม 2×2 · ทั่ง · ถังชุบ · เตาอบขนมปัง · เตาผิงมีหม้อ | โรงแรม · โรงตีเหล็ก · บ้านคนทำขนม |
+| 5B (พรอมต์พร้อมแล้ว) | เตาและไฟ: เตาผิง 1×2 · เตาหลอม 2×2 · ทั่ง · ถังชุบ · เตาอบขนมปัง · เตาผิงมีหม้อ | โรงแรม · โรงตีเหล็ก · บ้านคนทำขนม |
 | 6 (พรอมต์พร้อมแล้ว) | งานฝีมือ: กี่ทอผ้า · ม้านั่งช่าง · กองฟืน · โต๊ะเขียนหนังสือ · ชั้นหนังสือ · ตาข่าย · เครื่องโม่ | บ้านชาวบ้านตามอาชีพ |
 | **7 ✅ ใช้ในเกมแล้ว (v98.31)** | วิหาร: แท่นบูชา · รูปปั้น · ม้านั่งยาวพร้อมพนัก (pew) · เชิงเทียนพื้น · เชิงเทียนยืน | วิหาร |
 | **8 ✅ ใช้ในเกมแล้ว (v98.36)** | สถานพยาบาล: ครกบด · ขวดโหล · ชั้นสมุนไพร · ถาดยา · เก้าอี้หมอ · ผ้าพันแผลม้วน | สถานพยาบาล |
@@ -446,3 +446,36 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 ```
 
 **ตรวจรับชีท 6**: เหมือนชีทก่อน + ⑥ ม้านั่งช่างกับกองฟืนกว้าง 2 ช่อง ⑦ ไฟในเตาอบ/เตาผิงอยู่ในตัววัตถุ ไม่เรืองบนพื้นเขียว ⑧ ไม่มีตัวหนังสือบนสมุดและม้วนกระดาษ
+
+---
+
+## ชีท 5B · เตาผิงและแสงสว่าง (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `fireplace-stone` · `fireplace-grand` · `fireplace-pot` · `stove-iron` · `fire-tools` · `log-basket` · `floor-lamp` · `table-lantern` · `fire-pit`
+
+ใช้แทน: เตาผิง (`hearth` 1×2 ติดผนังซ้าย) ในโรงแรม สมาคม บ้าน · เตาเหล็ก/โคมไฟเป็นของใหม่ · **เตาผิง 3 แบบแรกติดผนังที่พาดจากล่างซ้ายไปบนขวา ("/") หน้าเตาหันไปล่างขวา** (ต่างจากชีทอื่น ๆ ที่ของยาวพาดซ้ายบน→ขวาล่าง) เพราะเตาผิงในเกมติดผนังซ้าย
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (fireplaces, stoves and lamps): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people. Every flame, ember and glow stays strictly inside the object's own silhouette and never spills onto the green background.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT (the fire opening, the lamp's open side) points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. SPECIAL RULE for pieces 1, 2 and 3 (the fireplaces): each is built against a wall, so its long side (its width along the wall) runs from the LOWER-LEFT to the UPPER-RIGHT of the image, and only its front face (facing lower-right) and its top are seen; the back is flat against the wall and not shown.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. Fireplaces 1 and 3 cover a 1x2-tile footprint (two diamonds joined along the lower-left to upper-right direction), fireplace 2 covers 1x3 tiles along the same direction (so it is the widest piece, about 62% of the cell width at its footprint); every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): simple fireplace with chimney breast about 1.3, grand fireplace about 1.5, fireplace with pot about 1.0, iron stove about 0.9 with its pipe going up to 1.6, fire tools stand about 0.6, log basket about 0.35, floor lamp about 1.3, table lantern about 0.25, fire pit about 0.4.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (stone blocks and mortar, soot, cast iron, wrought iron scrollwork, brass, wood grain, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows and its own flickering firelight). Palette: warm grey and sand-coloured fieldstone, dark soot, black cast iron, brass, oak wood; the only saturated colour is the orange-red fire and embers inside the fireboxes and lamps, slightly desaturated overall so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Stone fireplace, 1x2 tiles, against a wall: a plain fieldstone fireplace with a chimney breast rising to the top of the cell, a wide arched firebox with a lit log fire, a simple stone mantel shelf with two clay mugs and a candle.
+2. Grand fireplace, 1x3 tiles, against a wall: a wide carved-stone fireplace with a heavy oak mantel beam, a big firebox with a roaring log fire on iron firedogs, a chimney breast above it, a pair of crossed iron fire tools leaning at one side and a small stack of logs at the other.
+3. Cottage fireplace with pot, 1x2 tiles, against a wall: a low brick-and-stone hearth with a small chimney, a black iron cooking pot hanging from a swing arm over a modest fire, a kettle on the hearth stone and a ladle hanging on a hook.
+4. Cast-iron stove, 1x1 tile: a squat black iron wood stove on short legs with a small glowing door and a vent, a flat top with a kettle, a stove pipe rising up and out of the top of the cell.
+5. Fire tools stand, 1x1 tile or less: a slim wrought-iron stand holding a poker, tongs, a small shovel and a brush, with a coil-tipped handle design.
+6. Log basket, smaller than a tile: a round wicker basket stacked with split firewood logs, a few kindling sticks across the top.
+7. Floor lamp, 1x1 tile or less: a tall wrought-iron stand with a scrolled foot, topped by a glass oil lantern with a small steady flame and brass trim.
+8. Table lantern, tiny: a small tin-and-glass hand lantern with a ring handle and a candle flame inside, sitting on a short wooden base (meant to stand on a table).
+9. Fire pit, 1x1 tile or less: a low ring of stones holding a small campfire of crossed logs with flames, a tripod of iron rods with a hanging cauldron over it.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 5B**: เหมือนชีทก่อน + ⑥ เตาผิง 3 ช่องแรก **ยาวพาดล่างซ้าย→บนขวา** (หน้าเตาหันล่างขวา) ⑦ เตาผิงยิ่งใหญ่กว้างที่สุดในชีท ⑧ เปลวไฟอยู่ในตัววัตถุ ไม่เรืองบนพื้นเขียว
