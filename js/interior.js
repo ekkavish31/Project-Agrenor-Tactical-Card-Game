@@ -112,7 +112,7 @@
     } else {   /* house / player's home */
       Object.assign(R, { W: 8, D: 7, door: 5, floor: 'wood', wall: KIND === 'home' ? 'timber' : 'plaster' });
       it('bed', 6, 1, 2, 1); sp('bed', 6, 1, 'SE', 'sleep'); it('table', 3, 4); it('stool', 2, 4, 1, 1, { walk: true }); it('stool', 4, 4, 1, 1, { walk: true }); sp('table', 2, 4, 'SE', 'sit'); sp('table', 4, 4, 'SW', 'sit');
-      it('chest', 7, 5); it('hearth', 0, 1, 1, 2, { h: 14 }); R.light.push({ u: .6, v: 2, r: 3.5, col: '255,150,60', flicker: true }); it('rug', 3, 3, 3, 3, { walk: true, col: '#6a4a8a' });
+      it('chest', 7, 5); it('wardrobe', 5, 1); it('hearth', 0, 1, 1, 2, { h: 14 }); R.light.push({ u: .6, v: 2, r: 3.5, col: '255,150,60', flicker: true }); it('rug', 3, 3, 3, 3, { walk: true, col: '#6a4a8a' });
       R.wallDeco.push({ k: 'window', side: 'back', a: 3.5 }, { k: 'shelf', side: 'back', a: 1.2, b: 2.6 });
       const prof = { may: 'oven', tom: 'bench', ella: 'loom', berg: 'trophy', saf: 'herbs', joe: 'nets', mira: 'books', ken: 'logs', shep: 'wool', lin: 'books', oren: 'desk', gus: 'smith', dork: 'guard', hilda: 'farm', bryn: 'mill', kier: 'sword' }[OWNER];
       if (prof === 'oven') { it('oven', 1, 4, 1, 1, { h: 34 }); sp('work', 2, 5, 'NW', 'work'); R.light.push({ u: 1.5, v: 4.5, r: 2.5, col: '255,140,60', flicker: true }) }
@@ -342,13 +342,22 @@
   /* v98.23 · hand-painted sprites (js/interior-art.js) for the pieces that have one: table (round / square, picked by position), stool (the tall bar stool when {tall:true}), barrel / keg */
   const ART = window.INTERIOR_ART || {}, artImgs = {};
   const COUNTER = { inn: 'counter-bar', shop: 'counter-shop', guild: 'counter-guild', healer: 'counter-healer' };
-  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (['furnace', 'anvil', 'quench', 'bellows', 'grindstone', 'bench-smith', 'coal-bin', 'ingots', 'forge-open'].includes(i.k)) ? i.k : i.k === 'barrel' ? 'table-barrel' : i.k === 'keg' ? 'keg' : i.k === 'basket' ? 'basket' : i.k === 'chest' ? 'trunk'
+  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (['furnace', 'anvil', 'quench', 'bellows', 'grindstone', 'bench-smith', 'coal-bin', 'ingots', 'forge-open'].includes(i.k)) ? i.k : i.k === 'rug' ? rugArt(i) : i.k === 'bed' ? (KIND === 'healer' ? 'bed-cot' : 'bed-single') : i.k === 'wardrobe' ? 'wardrobe' : i.k === 'barrel' ? 'table-barrel' : i.k === 'keg' ? 'keg' : i.k === 'basket' ? 'basket' : i.k === 'chest' ? (['home', 'house', 'inn'].includes(KIND) ? 'footlocker' : 'trunk')
     : i.k === 'crate' ? ((i.u + i.v * 2) % 3 === 0 ? 'crate-stack' : 'crate')
     : i.k === 'shelfbox' ? (['guild', 'temple', 'home', 'house'].includes(KIND) ? 'shelf-books' : 'shelf-store')
     : i.k === 'rack' ? (KIND === 'forge' || i.tools ? 'rack-tools' : 'rack-weapons') : null;
+  const rugArt = i => { const a = Math.min(i.w, i.d), b = Math.max(i.w, i.d); return a === 1 || b / a >= 2.5 ? 'rug-runner' : i.round ? 'rug-round' : i.w === i.d ? 'rug-3x3' : 'rug-4x3' };
+  function drawRug(i, a, im) {   /* a flat rug: the picture's top / right / left corners are stretched onto the rug's floor rectangle */
+    const [tx, ty, rx, ry, lx, ly] = a.quad, long = i.w < i.d && !i.round;
+    const T = P(i.u, i.v), Rp = long ? P(i.u, i.v + i.d) : P(i.u + i.w, i.v), Lp = long ? P(i.u + i.w, i.v) : P(i.u, i.v + i.d);
+    const e1x = rx - tx, e1y = ry - ty, e2x = lx - tx, e2y = ly - ty, s1x = Rp.x - T.x, s1y = Rp.y - T.y, s2x = Lp.x - T.x, s2y = Lp.y - T.y, det = e1x * e2y - e2x * e1y;
+    const m11 = (s1x * e2y - s2x * e1y) / det, m12 = (-s1x * e2x + s2x * e1x) / det, m21 = (s1y * e2y - s2y * e1y) / det, m22 = (-s1y * e2x + s2y * e1x) / det;
+    g.save(); g.transform(m11, m21, m12, m22, T.x - m11 * tx - m12 * ty, T.y - m21 * tx - m22 * ty); g.drawImage(im, 0, 0); g.restore(); return true
+  }
   function drawArt(i, c) {
     const name = artFor(i), a = name && ART[name]; if (!a) return false;
     const im = artImgs[name] || (artImgs[name] = Object.assign(new Image(), { src: a.src })); if (!im.complete || !im.naturalWidth) return false;
+    if (a.quad) return drawRug(i, a, im);
     const k = a.k;
     if (!a.noShadow) { const rx = a.w * k * (name === 'table-barrel' ? .42 : .36); g.fillStyle = 'rgba(0,0,0,.22)'; g.beginPath(); g.ellipse(c.x, c.y + 1, rx, rx * .5, 0, 0, 7); g.fill() }
     g.save(); if (a.mirror) { g.translate(c.x * 2, 0); g.scale(-1, 1) }

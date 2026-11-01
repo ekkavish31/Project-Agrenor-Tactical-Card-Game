@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–3 and 5A). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -300,5 +300,73 @@ window.INTERIOR_ART={
   "fx": 158,
   "fy": 298,
   "k": 0.2
+ },
+ "bed-single": {
+  "src": "assets/interior/bed-single.webp",
+  "w": 346,
+  "h": 350,
+  "fx": 173,
+  "fy": 267,
+  "k": 0.31
+ },
+ "bed-double": {
+  "src": "assets/interior/bed-double.webp",
+  "w": 409,
+  "h": 383,
+  "fx": 204,
+  "fy": 285,
+  "k": 0.34
+ },
+ "bed-cot": {
+  "src": "assets/interior/bed-cot.webp",
+  "w": 351,
+  "h": 287,
+  "fx": 175,
+  "fy": 203,
+  "k": 0.3
+ },
+ "footlocker": {
+  "src": "assets/interior/footlocker.webp",
+  "w": 317,
+  "h": 274,
+  "fx": 158,
+  "fy": 195,
+  "k": 0.21
+ },
+ "wardrobe": {
+  "src": "assets/interior/wardrobe.webp",
+  "w": 254,
+  "h": 383,
+  "fx": 127,
+  "fy": 317,
+  "k": 0.26
+ },
+ "rug-3x3": {
+  "src": "assets/interior/rug-3x3.webp",
+  "w": 440,
+  "h": 340,
+  "quad": [208, 3, 436, 166, 3, 139],
+  "noShadow": true
+ },
+ "rug-4x3": {
+  "src": "assets/interior/rug-4x3.webp",
+  "w": 428,
+  "h": 337,
+  "quad": [167, 3, 424, 222, 3, 90],
+  "noShadow": true
+ },
+ "rug-runner": {
+  "src": "assets/interior/rug-runner.webp",
+  "w": 396,
+  "h": 324,
+  "quad": [93, 3, 392, 259, 4, 48],
+  "noShadow": true
+ },
+ "rug-round": {
+  "src": "assets/interior/rug-round.webp",
+  "w": 384,
+  "h": 238,
+  "quad": [192, -45, 458, 118, -75, 118],
+  "noShadow": true
  }
 };
