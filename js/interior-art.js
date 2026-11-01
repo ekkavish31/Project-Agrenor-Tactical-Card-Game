@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 7, 8, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 6, 7, 8, 9, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -643,5 +643,150 @@ window.INTERIOR_ART={
   "fx": 158,
   "fy": 302,
   "k": 0.2
+ },
+ "loom": {
+  "src": "assets/interior/loom.webp",
+  "w": 331,
+  "h": 405,
+  "fx": 165,
+  "fy": 326,
+  "k": 0.22
+ },
+ "bread-oven": {
+  "src": "assets/interior/bread-oven.webp",
+  "w": 336,
+  "h": 388,
+  "fx": 168,
+  "fy": 307,
+  "k": 0.2
+ },
+ "carpenter-bench": {
+  "src": "assets/interior/carpenter-bench.webp",
+  "w": 400,
+  "h": 338,
+  "fx": 200,
+  "fy": 246,
+  "k": 0.27
+ },
+ "log-pile": {
+  "src": "assets/interior/log-pile.webp",
+  "w": 405,
+  "h": 355,
+  "fx": 202,
+  "fy": 262,
+  "k": 0.26
+ },
+ "writing-desk": {
+  "src": "assets/interior/writing-desk.webp",
+  "w": 314,
+  "h": 342,
+  "fx": 157,
+  "fy": 267,
+  "k": 0.21
+ },
+ "net-rack": {
+  "src": "assets/interior/net-rack.webp",
+  "w": 344,
+  "h": 373,
+  "fx": 172,
+  "fy": 297,
+  "k": 0.2
+ },
+ "millstone": {
+  "src": "assets/interior/millstone.webp",
+  "w": 330,
+  "h": 304,
+  "fx": 165,
+  "fy": 225,
+  "k": 0.16
+ },
+ "spinning-wheel": {
+  "src": "assets/interior/spinning-wheel.webp",
+  "w": 269,
+  "h": 349,
+  "fx": 134,
+  "fy": 290,
+  "k": 0.22
+ },
+ "cook-hearth": {
+  "src": "assets/interior/cook-hearth.webp",
+  "w": 396,
+  "h": 374,
+  "fx": 198,
+  "fy": 283,
+  "k": 0.27,
+  "longU": true
+ },
+ "stall-red": {
+  "src": "assets/interior/stall-red.webp",
+  "w": 383,
+  "h": 407,
+  "fx": 191,
+  "fy": 319,
+  "k": 0.27
+ },
+ "stall-blue": {
+  "src": "assets/interior/stall-blue.webp",
+  "w": 381,
+  "h": 408,
+  "fx": 190,
+  "fy": 320,
+  "k": 0.27
+ },
+ "stall-green": {
+  "src": "assets/interior/stall-green.webp",
+  "w": 383,
+  "h": 415,
+  "fx": 191,
+  "fy": 327,
+  "k": 0.27
+ },
+ "stall-gold": {
+  "src": "assets/interior/stall-gold.webp",
+  "w": 385,
+  "h": 415,
+  "fx": 192,
+  "fy": 326,
+  "k": 0.27
+ },
+ "fruit-crate": {
+  "src": "assets/interior/fruit-crate.webp",
+  "w": 338,
+  "h": 291,
+  "fx": 169,
+  "fy": 210,
+  "k": 0.19
+ },
+ "veg-basket": {
+  "src": "assets/interior/veg-basket.webp",
+  "w": 380,
+  "h": 308,
+  "fx": 190,
+  "fy": 224,
+  "k": 0.15
+ },
+ "sack-pile": {
+  "src": "assets/interior/sack-pile.webp",
+  "w": 352,
+  "h": 320,
+  "fx": 176,
+  "fy": 243,
+  "k": 0.17
+ },
+ "cheese-table": {
+  "src": "assets/interior/cheese-table.webp",
+  "w": 364,
+  "h": 310,
+  "fx": 182,
+  "fy": 230,
+  "k": 0.19
+ },
+ "price-post": {
+  "src": "assets/interior/price-post.webp",
+  "w": 193,
+  "h": 357,
+  "fx": 96,
+  "fy": 322,
+  "k": 0.22
  }
 };

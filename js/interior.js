@@ -84,7 +84,7 @@
     } else if (KIND === 'market') {
       Object.assign(R, { W: 12, D: 10, door: 7, floor: 'stone', wall: 'timber' });
       for (const [u, v, col] of [[2, 2, '#b8463a'], [6, 2, '#3a6aa8'], [10, 2, '#4a8a3a'], [8, 6, '#c9a03a']]) { it('stall', u - 1, v, 2, 1, { col }); sp('stall', u, v - 1, 'SW', 'work'); sp('browse', u, v + 1, 'NE', 'stand') }
-      it('crate', 1, 8); it('crate', 2, 8); it('barrel', 11, 8); it('basket', 4, 6); it('basket', 5, 6); sp('browse', 4, 7, 'NE', 'stand');
+      it('crate', 1, 8); it('crate', 2, 8); it('barrel', 11, 8); it('price-post', 1, 5); it('cheese-table', 9, 8); it('sack-pile', 7, 8); it('basket', 4, 6); it('basket', 5, 6); sp('browse', 4, 7, 'NE', 'stand');
       R.wallDeco.push({ k: 'banner', side: 'back', a: 4 }, { k: 'banner', side: 'back', a: 8.5 }, { k: 'window', side: 'left', a: 3 });
       R.light.push({ u: 6, v: 5, r: 6, col: '255,230,170' });
     } else if (KIND === 'temple') {
@@ -122,14 +122,14 @@
       else if (prof === 'herbs') R.wallDeco.push({ k: 'herbs', side: 'left', a: 3.5, b: 6 });
       else if (prof === 'trophy') R.wallDeco.push({ k: 'antlers', side: 'left', a: 4 });
       else if (prof === 'books') { it('shelfbox', 1, 5, 1, 1, { h: 56 }); sp('work', 2, 5, 'NW', 'stand') }
-      else if (prof === 'nets') { it('basket', 1, 5); R.wallDeco.push({ k: 'net', side: 'left', a: 4 }) }
-      else if (prof === 'wool') { it('basket', 1, 5); it('basket', 2, 6) }
+      else if (prof === 'nets') { it('net-rack', 1, 5); R.wallDeco.push({ k: 'net', side: 'left', a: 4 }) }
+      else if (prof === 'wool') { it('spinning-wheel', 1, 5); it('basket', 2, 6) }
       /* v97.40 · the rest of the village keep their trade at home too (along the back wall, clear of the door) */
-      else if (prof === 'desk') { it('table', 3, 1); it('shelfbox', 2, 1, 1, 1, { h: 56 }); sp('work', 3, 2, 'NE', 'sit'); R.wallDeco.push({ k: 'banner', side: 'back', a: 5.2 }, { k: 'board', side: 'left', a: 3 }) }
+      else if (prof === 'desk') { it('writing-desk', 3, 1); it('shelfbox', 2, 1, 1, 1, { h: 56 }); sp('work', 3, 2, 'NE', 'sit'); R.wallDeco.push({ k: 'banner', side: 'back', a: 5.2 }, { k: 'board', side: 'left', a: 3 }) }
       else if (prof === 'smith') { it('anvil', 3, 1); it('rack', 2, 1, 1, 1, { h: 50, tools: true }); sp('work', 3, 2, 'NE', 'work'); R.wallDeco.push({ k: 'tools', side: 'back', a: 3.6, b: 5.4 }) }
       else if (prof === 'guard') { it('rack', 3, 1, 1, 1, { h: 50 }); it('chest', 4, 1); R.wallDeco.push({ k: 'sword', side: 'back', a: 5.2 }, { k: 'banner', side: 'left', a: 3 }) }
       else if (prof === 'farm') { it('basket', 2, 1); it('basket', 3, 1); it('crate', 4, 1); R.wallDeco.push({ k: 'tools', side: 'back', a: 4.6, b: 5.8 }) }
-      else if (prof === 'mill') { it('barrel', 2, 1); it('crate', 3, 1); it('basket', 4, 1); it('mortar', 3, 1, 1, 1, { onTop: true }); sp('work', 3, 2, 'NE', 'work') }
+      else if (prof === 'mill') { it('barrel', 2, 1); it('millstone', 3, 1); it('basket', 4, 1); sp('work', 3, 2, 'NE', 'work') }
       else if (prof === 'sword') { it('rack', 3, 1, 1, 1, { h: 50 }); R.wallDeco.push({ k: 'sword', side: 'back', a: 5 }) }
       sp('stand', 5, 3, 'SW', 'stand');
     }
@@ -371,8 +371,8 @@
   /* v98.23 · hand-painted sprites (js/interior-art.js) for the pieces that have one: table (round / square, picked by position), stool (the tall bar stool when {tall:true}), barrel / keg */
   const ART = window.INTERIOR_ART || {}, artImgs = {};
   const COUNTER = { inn: 'counter-bar', shop: 'counter-shop', guild: 'counter-guild', healer: 'counter-healer' };
-  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'table' && KIND === 'healer' ? 'mortar-table' : i.k === 'jars' ? 'herb-cabinet' : (['potion-table', 'drawer-cabinet', 'doctor-chair', 'bandage-basket', 'folding-screen', 'wash-stand', 'herb-drying-rack'].includes(i.k)) ? i.k : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (['altar', 'statue', 'pew', 'lectern', 'brazier', 'font', 'candle-stand', 'offering-box'].includes(i.k)) ? i.k : i.k === 'candles' ? 'candelabra' : (['furnace', 'anvil', 'quench', 'bellows', 'grindstone', 'bench-smith', 'coal-bin', 'ingots', 'forge-open'].includes(i.k)) ? i.k : i.k === 'rug' ? rugArt(i) : i.k === 'bed' ? (KIND === 'healer' ? 'bed-cot' : 'bed-single') : i.k === 'wardrobe' ? 'wardrobe' : i.k === 'barrel' ? 'table-barrel' : i.k === 'keg' ? 'keg' : i.k === 'basket' ? 'basket' : i.k === 'chest' ? (['home', 'house', 'inn'].includes(KIND) ? 'footlocker' : 'trunk')
-    : i.k === 'crate' ? ((i.u + i.v * 2) % 3 === 0 ? 'crate-stack' : 'crate')
+  const artFor = i => i.k === 'counter' ? (COUNTER[KIND] || 'counter-bar') : i.k === 'stage' ? 'stage' : i.k === 'stairs' ? 'stairs' : i.k === 'stall' ? ({ '#b8463a': 'stall-red', '#3a6aa8': 'stall-blue', '#4a8a3a': 'stall-green', '#c9a03a': 'stall-gold' }[i.col] || 'stall-red') : i.k === 'oven' ? 'bread-oven' : i.k === 'bench' ? 'carpenter-bench' : i.k === 'logs' ? 'log-pile' : (['loom', 'writing-desk', 'net-rack', 'millstone', 'spinning-wheel', 'price-post', 'cheese-table', 'sack-pile'].includes(i.k)) ? i.k : i.k === 'hearth' && (KIND === 'house' || KIND === 'home') ? 'cook-hearth' : i.k === 'table' && KIND === 'healer' ? 'mortar-table' : i.k === 'jars' ? 'herb-cabinet' : (['potion-table', 'drawer-cabinet', 'doctor-chair', 'bandage-basket', 'folding-screen', 'wash-stand', 'herb-drying-rack'].includes(i.k)) ? i.k : i.k === 'table' ? ((i.u * 5 + i.v * 3) % 2 ? 'table-square' : 'table-round') : i.k === 'stool' ? (i.tall ? 'stool-bar' : 'stool') : (['altar', 'statue', 'pew', 'lectern', 'brazier', 'font', 'candle-stand', 'offering-box'].includes(i.k)) ? i.k : i.k === 'candles' ? 'candelabra' : (['furnace', 'anvil', 'quench', 'bellows', 'grindstone', 'bench-smith', 'coal-bin', 'ingots', 'forge-open'].includes(i.k)) ? i.k : i.k === 'rug' ? rugArt(i) : i.k === 'bed' ? (KIND === 'healer' ? 'bed-cot' : 'bed-single') : i.k === 'wardrobe' ? 'wardrobe' : i.k === 'barrel' ? 'table-barrel' : i.k === 'keg' ? 'keg' : i.k === 'basket' ? (KIND === 'market' ? 'veg-basket' : 'basket') : i.k === 'chest' ? (['home', 'house', 'inn'].includes(KIND) ? 'footlocker' : 'trunk')
+    : i.k === 'crate' ? (KIND === 'market' ? 'fruit-crate' : (i.u + i.v * 2) % 3 === 0 ? 'crate-stack' : 'crate')
     : i.k === 'shelfbox' ? (['guild', 'temple', 'home', 'house'].includes(KIND) ? 'shelf-books' : 'shelf-store')
     : i.k === 'rack' ? (KIND === 'forge' || i.tools ? 'rack-tools' : 'rack-weapons') : null;
   const rugArt = i => { const a = Math.min(i.w, i.d), b = Math.max(i.w, i.d); return a === 1 || b / a >= 2.5 ? 'rug-runner' : i.round ? 'rug-round' : i.w === i.d ? 'rug-3x3' : 'rug-4x3' };
@@ -389,7 +389,7 @@
     if (a.quad) return drawRug(i, a, im);
     const k = a.k;
     if (!a.noShadow) { const rx = a.w * k * (name === 'table-barrel' ? .42 : .36); g.fillStyle = 'rgba(0,0,0,.22)'; g.beginPath(); g.ellipse(c.x, c.y + 1, rx, rx * .5, 0, 0, 7); g.fill() }
-    g.save(); if (a.mirror) { g.translate(c.x * 2, 0); g.scale(-1, 1) }
+    g.save(); if (a.mirror || (a.longU && i.d > i.w)) { g.translate(c.x * 2, 0); g.scale(-1, 1) }
     if (a.stretch && i.w > a.stretch && i.d === 1) {
       /* a long counter: the left half, (w − 3) one-tile strips cut from the middle, then the right half (every tile along the counter moves the picture by half a tile across and a quarter down) */
       const n = i.w - a.stretch, cx = a.fx, hw = Math.round(HW / k), L = { x: c.x - n / 2 * HW, y: c.y - n / 2 * HH }, y0 = L.y - a.fy * k;
