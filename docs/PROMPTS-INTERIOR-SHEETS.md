@@ -29,7 +29,7 @@
 | **5A ✅ ใช้ในเกมแล้ว (v98.28)** | โรงตีเหล็ก: เตาหลอม 2×2 · ทั่ง · ถังชุบ · เครื่องสูบลม · หินลับ · โต๊ะช่างพร้อมปากกาจับ · ถังถ่าน · กองแท่งเหล็ก · เตาไฟเปิด | โรงตีเหล็ก · บ้านช่างตีเหล็ก |
 | 5 | เตาและไฟ: เตาผิง 1×2 · เตาหลอม 2×2 · ทั่ง · ถังชุบ · เตาอบขนมปัง · เตาผิงมีหม้อ | โรงแรม · โรงตีเหล็ก · บ้านคนทำขนม |
 | 6 | งานฝีมือ: กี่ทอผ้า · ม้านั่งช่าง · กองฟืน · โต๊ะเขียนหนังสือ · ชั้นหนังสือ · ตาข่าย · เครื่องโม่ | บ้านชาวบ้านตามอาชีพ |
-| 7 | วิหาร: แท่นบูชา · รูปปั้น · ม้านั่งยาวพร้อมพนัก (pew) · เชิงเทียนพื้น · เชิงเทียนยืน | วิหาร |
+| 7 (พรอมต์พร้อมแล้ว) | วิหาร: แท่นบูชา · รูปปั้น · ม้านั่งยาวพร้อมพนัก (pew) · เชิงเทียนพื้น · เชิงเทียนยืน | วิหาร |
 | 8 | สถานพยาบาล: ครกบด · ขวดโหล · ชั้นสมุนไพร · ถาดยา · เก้าอี้หมอ · ผ้าพันแผลม้วน | สถานพยาบาล |
 | 9 | ตลาด: แผงขาย 4 สีผ้าหลังคา · กองผลไม้/ผัก · ตะกร้าผลผลิต · ป้ายราคา (ไม่มีตัวหนังสือ) | ตลาด |
 | 10 | สมาคม: กระดานรับงาน · ถ้วยรางวัล · เขากวางติดผนัง · ธงสมาคม · ดาบไขว้ติดผนัง · โต๊ะลงทะเบียน | สมาคมนักผจญภัย |
@@ -212,3 +212,36 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 ```
 
 **ตรวจรับชีท 4**: เหมือนชีทก่อน + ⑥ หัวเตียงอยู่ซ้ายบน ปลายเตียงอยู่ขวาล่าง ⑦ พรมแบนราบจริง (ไม่มีเงา ไม่มีขอบหนา) ⑧ ไม่มีสัญลักษณ์/ตัวหนังสือบนเตียงหมอ
+
+---
+
+## ชีท 7 · วิหาร (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `altar` · `statue` · `pew` · `candelabra` · `candle-stand` · `font` · `lectern` · `offering-box` · `brazier`
+
+ใช้แทน: แท่นบูชา (`altar` 3×1) · รูปปั้น (`statue`) · ม้านั่งยาว (`pew` 3×1) · เชิงเทียน (`candles`) ในวิหาร · ที่เหลือเป็นของใหม่ · แท่นบูชาและม้านั่งยาวพาดตามแกนซ้ายบน→ขวาล่าง
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (a temple of an earth-and-harvest goddess): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no runes or letters, no people. Flames and glows stay inside the object's own silhouette and never spill onto the green background.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every elongated piece (altar, pew) runs from the upper-left to the lower-right of the image.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. The altar and the pew each cover a 3x1-tile footprint (three diamonds joined along the upper-left to lower-right direction, so the piece is wide in the image, about 62% of the cell width at its footprint); every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): altar about 0.55, goddess statue with its plinth about 1.9 (the tallest piece, allowed to fill the cell height), pew seat about 0.35 with a backrest to about 0.7, candelabra about 1.2, candle stand about 0.9, font about 0.6, lectern about 0.8, offering box about 0.45, brazier about 0.5.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (stone grain, chiselled edges, wood grain, brass patina, wax drips, linen folds). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows and its own flickering candlelight). Palette: pale warm limestone and cream marble, dark walnut and oak wood, aged brass and gold used sparingly, white and deep-blue altar cloth, tiny warm candle flames as the only saturated glow, slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Temple altar, 3x1 tiles: a long cream-marble altar block with a carved base and cornice, covered on top with a white linen cloth with a deep-blue embroidered border hanging down the front, a brass chalice and a small open book on top (no writing on the pages).
+2. Goddess statue on a plinth, 1x1 tile: a serene robed woman carved in pale marble holding a sheaf of wheat in one arm and a bowl in the other, standing on a square stone plinth, hands and face gently weathered, no halo glow.
+3. Pew, 3x1 tiles: a long dark-oak church bench with a straight backrest, carved end panels and a slightly worn seat, empty.
+4. Floor candelabra, 1x1 tile: a tall wrought-iron and brass stand with five lit tapers on branching arms, wax drips on the candles, small round iron base.
+5. Candle stand, 1x1 tile: a shorter wooden-and-iron stand with a wide tray filled with many small votive candles, some lit, some burnt down.
+6. Holy water font, 1x1 tile: a waist-high carved marble pedestal with a shallow round basin of clear water, a small brass ladle resting on the rim.
+7. Lectern, 1x1 tile: a slim oak reading stand with a slanted top holding a large closed book with a brass clasp, carved front panel (no text).
+8. Offering box, smaller than a tile: a chunky oak-and-iron donation chest with a coin slot in the lid, a heavy hasp and a small brass plate (blank).
+9. Incense brazier, smaller than a tile: a bronze bowl on three curled legs with glowing coals and a thin curl of pale smoke rising a short way.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 7**: เหมือนชีทก่อน + ⑥ แท่นบูชากับม้านั่งกว้าง 3 ช่อง พาดซ้ายบน→ขวาล่าง ⑦ รูปปั้นสูงที่สุดในชีท ⑧ เปลวเทียน/ถ่านอยู่ในตัววัตถุ ไม่เรืองบนพื้นเขียว ⑨ ไม่มีตัวหนังสือบนหนังสือ/แผ่นทอง
