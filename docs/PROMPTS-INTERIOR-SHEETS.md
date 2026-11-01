@@ -545,3 +545,102 @@ Every cell is a full-bleed seamless square texture. No objects, no text, no grou
 ```
 
 **ตรวจรับชีท 14**: ① ทุกช่องเต็มสี่เหลี่ยม ไม่มีเขียว ไม่มีขอบ ② ไม่มีเงา/แสงไล่ระดับ (ภาพต้องเรียบเสมอกัน) ③ ถ้าเอาช่องเดียวมาวางต่อกัน 2×2 แล้วขอบต่อกันเนียน ④ พื้นมองตรงจากบน ผนังมองตรงจากหน้า (ไม่เอียง)
+
+---
+
+## ชีท 15 · โรงเตี๊ยมและครัว (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `roast-spit` · `kitchen-table` · `barrel-rack` · `wine-rack` · `lute-stand` · `drum-stool` · `game-table` · `pot-rack` · `mead-cask`
+
+ใช้ใน: โรงแรม · บ้านคนทำขนม · บ้านชาวบ้าน
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (a tavern and its kitchen): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people. Nothing carries writing. Flames and glows stay inside the object's own silhouette and never spill onto the green.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every elongated piece runs from the upper-left to the lower-right of the image.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. The kitchen table, the barrel rack and the game table each cover a 2x1-tile footprint (two diamonds joined along the upper-left to lower-right direction); every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): roast spit about 0.75, kitchen table about 0.5, barrel rack about 0.9, wine rack about 1.1, lute stand about 0.9, drum stool about 0.45, game table about 0.5, pot rack about 1.1, mead cask about 0.7.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (wood grain, iron hoops, glazed clay, brass, cloth, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: warm oak and honey-coloured wood, dark walnut, black iron, copper pots, deep red and cream cloth, muted green glass, slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Roast spit, 1x1 tile: two forked iron uprights with a hand crank holding a skewered roast joint and a roasting bird above a small bed of glowing coals in an iron tray.
+2. Kitchen table, 2x1 tiles: a long scrubbed oak prep table with a wooden chopping board, a cleaver, a heap of chopped vegetables, a rolling pin and a flour-dusted lump of dough, a lower shelf with bowls.
+3. Barrel rack, 2x1 tiles: a sturdy timber cradle holding four wine barrels in two tiers with iron hoops and small wooden taps, the barrel ends facing the lower-right.
+4. Wine rack, 1x1 tile: a tall oak lattice rack with diamond cubbies, each cradling a corked wine bottle lying on its side, a few empty cubbies.
+5. Lute stand, 1x1 tile or less: a slim wooden floor stand cradling a round-backed lute with strings and a decorated sound hole, a small wooden stool beside it.
+6. Drum stool, smaller than a tile: a round stool with a large hand drum with stretched skin and a tambourine resting on the seat, two drumsticks crossed on top.
+7. Game table, 2x1 tiles: a long plank table with a worn chessboard with carved pieces on one half and scattered dice, playing cards and a few coins on the other half.
+8. Pot rack, 1x1 tile: a freestanding iron frame with hooks holding copper pots, a frying pan, ladles and a string of onions and garlic.
+9. Mead cask, 1x1 tile or less: a fat oak cask lying on a low wooden stand with a brass tap and a drip tray, a pewter tankard beneath the tap.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 15**: เหมือนชีทก่อน + ① ทุกชิ้นหันหน้าขวาล่าง พื้นเขียวล้วน ② ไม่มีตัวหนังสือบนกระดานหมากรุก/ไพ่ ③ ถังเหล้าองุ่น 2×1 พาดซ้ายบน→ขวาล่าง ④ ไฟถ่านอยู่ในตัววัตถุ
+
+---
+
+## ชีท 16 · ห้องสมุดและนักปราชญ์ (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `big-bookcase` · `reading-chair` · `globe-stand` · `telescope` · `alchemy-table` · `scroll-rack` · `astrolabe-table` · `specimen-cabinet` · `armchair-set`
+
+ใช้ใน: บ้านนักเรียน/อาจารย์ · สมาคม · วิหาร
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (a scholar's study and small library): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people. Nothing carries writing. Flames and glows stay inside the object's own silhouette and never spill onto the green.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every elongated piece runs from the upper-left to the lower-right of the image.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. The tall bookcase and the alchemy table each cover a 2x1-tile footprint (two diamonds joined along the upper-left to lower-right direction); every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): big bookcase about 1.3, reading chair about 0.8, globe stand about 0.8, telescope about 1.2, alchemy table about 0.55, scroll rack about 1.0, astrolabe table about 0.6, specimen cabinet about 1.1, armchair set about 0.7.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (leather, brass instruments, glass flasks, parchment, wood grain, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: dark walnut and warm oak, aged brass, deep green and burgundy leather, cream parchment, clear glass with muted blue and amber liquids, slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Big bookcase, 2x1 tiles: a wide floor-to-near-ceiling oak bookcase with five shelves packed with leather books of varied muted colours, rolled scrolls and a brass candlestick, a small library ladder on a rail at one side (no writing on spines).
+2. Reading chair, 1x1 tile: a high-backed wooden chair with a deep-green padded seat and back, brass studs and a folded blanket over one arm, a small open book on the seat.
+3. Globe stand, 1x1 tile: a large painted terrestrial globe in a carved wooden ring stand on a pedestal, simple continents and seas in muted colours (no names, no letters).
+4. Telescope, 1x1 tile: a long brass telescope on a wooden tripod pointing diagonally up, leather grip bands, a brass eyepiece.
+5. Alchemy table, 2x1 tiles: a long oak bench with glass flasks of coloured liquids, a copper still, a small burner with a flame, a mortar and pestle and a rack of vials.
+6. Scroll rack, 1x1 tile: a floor-standing wooden pigeonhole rack holding many rolled scrolls tied with coloured ribbons and a few wax seals.
+7. Astrolabe table, 1x1 tile: a small round table with a brass astrolabe, a brass armillary sphere, a compass and a rolled star chart (no letters).
+8. Specimen cabinet, 1x1 tile: a glass-fronted wooden cabinet showing a small animal skull, pinned butterflies, shells, crystals and a jar with a pale preserved plant.
+9. Armchair set, 1x1 tile or less: a cosy cushioned armchair with a small round side table holding a steaming teacup and a stacked pair of books, a footstool in front.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 16**: เหมือนชีทก่อน + ① ทุกชิ้นหันหน้าขวาล่าง พื้นเขียวล้วน ② ไม่มีตัวหนังสือบนสันหนังสือ/โลก/แผนที่ ③ ตู้หนังสือกับโต๊ะนักเล่นแร่กว้าง 2 ช่อง ④ เปลวไฟเตาในตัววัตถุ
+
+---
+
+## ชีท 17 · ของขายในร้านและโชว์สินค้า (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `weapon-display` · `armor-display` · `potion-display` · `jewel-case` · `tool-stand` · `cloth-shelf` · `rug-barrel` · `pack-rack` · `till-scale`
+
+ใช้ใน: ร้านค้า · โรงตีเหล็ก · ตลาด
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (a shop's merchandise displays): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people. Nothing carries writing. Flames and glows stay inside the object's own silhouette and never spill onto the green.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every elongated piece runs from the upper-left to the lower-right of the image.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. The cloth shelf and the weapon display each cover a 2x1-tile footprint (two diamonds joined along the upper-left to lower-right direction); every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): weapon display about 1.0, armor display about 1.2, potion display about 0.55, jewel case about 0.5, tool stand about 1.0, cloth shelf about 1.1, rug barrel about 0.7, pack rack about 1.0, till with scale about 0.35.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (polished steel, leather, folded cloth, glass, brass, wood grain, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: warm oak and honey-coloured wood, dark walnut, steel and brass, indigo, russet and cream cloth, muted green and amber glass, slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Weapon display, 2x1 tiles: a long wooden wall-less display frame with two tiers holding swords, daggers, an axe, a mace and a short bow on pegs and cradles, clean visible blades.
+2. Armor display, 1x1 tile: a wooden stand with a steel helmet on top, a breastplate on a bust form, a round shield and a pair of leather gauntlets hung on pegs.
+3. Potion display, 1x1 tile: a small slanted-top oak table covered in rows of corked glass potion bottles in muted red, blue, green and amber on a cloth runner, no labels.
+4. Jewel case, 1x1 tile: a low glass-topped oak counter case with velvet trays showing rings, amulets and gem pieces, brass corners.
+5. Tool stand, 1x1 tile: a freestanding rack with hammers, saws, a shovel, a pickaxe, a coil of rope and a lantern hanging on pegs.
+6. Cloth shelf, 2x1 tiles: a wide oak shelf unit with three tiers of neatly folded bolts of cloth in indigo, russet, green, cream and gold with a few spools of thread on top.
+7. Rug barrel, 1x1 tile or less: a large barrel standing upright filled with several rolled-up rugs of different patterns and a stack of folded blankets leaning beside it.
+8. Pack rack, 1x1 tile: a wooden rack with leather backpacks, a bedroll, a canteen, a coil of rope and a pair of boots hanging and resting on it.
+9. Till with scale, smaller than a tile: a small wooden box with a brass balance scale with two pans, a few stacked coins, a small iron cash box and a hand bell.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 17**: เหมือนชีทก่อน + ① ทุกชิ้นหันหน้าขวาล่าง พื้นเขียวล้วน ② ไม่มีตัวหนังสือบนฉลากขวดยา ③ ชั้นผ้ากับตู้แสดงอาวุธกว้าง 2 ช่อง ④ ใบมีดอาวุธเห็นชัด
