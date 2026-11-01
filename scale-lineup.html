@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scale Lineup · เทียบสเกลตัวละคร</title>
+<link rel="stylesheet" href="css/town-font.css">
+<style>
+:root{--bg:#f4f1e8;--panel:#fffdf6;--ink:#2a2418;--muted:#7a6e55;--line:#d6cdb4;--gold:#c9a45a;--ok:#2f7d3a;--warn:#b0701a;--bad:#a8402f;--ruler:#8a7a52}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1a14;--panel:#26231a;--ink:#f1ead6;--muted:#a89c7e;--line:#433d2c;--ruler:#bfae7c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px VillageThai,"Noto Sans Thai",system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+h1{font-size:16px;margin:0}header small{color:var(--muted)}.grow{flex:1}
+button,select{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer}
+button[aria-pressed=true]{background:var(--gold);color:#1d1608;border-color:#e6c47c}
+main{display:grid;grid-template-columns:230px 1fr 270px;gap:12px;padding:12px 16px;max-width:1500px;margin:auto}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;min-width:0}
+#list{display:flex;flex-direction:column;gap:4px;max-height:78vh;overflow:auto}
+.row{display:flex;gap:8px;align-items:center;text-align:left;padding:4px 6px}.row img{width:36px;height:36px;object-fit:contain;image-rendering:auto}
+.row span{flex:1;min-width:0}.row b{display:block;font-size:13px}.row small{color:var(--muted)}
+.chip{font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.chip.ok{color:var(--ok)}.chip.warn{color:var(--warn)}.chip.bad{color:var(--bad)}
+#stageWrap{overflow-x:auto}#stage{position:relative;height:430px;min-width:100%}
+#stage .ch{position:absolute;pointer-events:auto;cursor:pointer}#stage .ch.sel{filter:drop-shadow(0 0 3px var(--gold))}
+#stage .ghost{position:absolute;opacity:.28;filter:grayscale(1) brightness(.4);pointer-events:none}
+#stage .tick{position:absolute;left:0;right:0;border-top:1px dashed var(--ruler);font-size:11px;color:var(--muted)}
+#stage .tick span{position:absolute;left:4px;top:-15px}
+#stage .base{position:absolute;left:0;right:0;border-top:2px solid var(--ink)}
+#stage .nm{position:absolute;font-size:11px;text-align:center;transform:translateX(-50%);white-space:nowrap}
+#stage .nm i{font-style:normal;color:var(--muted)}
+.hint{color:var(--muted);font-size:12px;margin:6px 0 0}
+dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:8px 0;font-size:13px}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}
+code{font-size:12px}
+</style></head><body>
+<header><h1>⚖ Scale Lineup <small>เฟส 1 · ดูและวัดอย่างเดียว (ยังไม่แก้ค่าใด ๆ)</small></h1>
+<span id="ctxBtns"></span><span class="grow"></span>
+<button id="bGhost" aria-pressed="true" title="เงาตัวเอกซ้อนหลังทุกตัว">เงาตัวเอก</button>
+<button id="bSort" aria-pressed="false" title="เรียงตามความสูง">เรียงตามความสูง</button></header>
+<main>
+<section class="card"><b>ตัวละคร</b><div id="list" role="list"></div></section>
+<section class="card"><div id="stageWrap"><div id="stage"></div></div>
+<p class="hint" id="note"></p></section>
+<aside class="card" id="insp"></aside>
+</main>
+<script>
+'use strict';
+/* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
+   on-screen height (UNIT = one battle cell) = silhouette height ÷ picture height × the size the game draws the picture at:
+     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js drawHero · CHARACTER_SCALE.drawSize.hero)
+     ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
+     monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
+   metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
+const HERO_M = 1.70, DS = { hero: 1.6, ally: 1.45 };
+const HERO_SRC = 'assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-01.webp';
+const ALLIES = { bram: 'บรัม', luna: 'ลูน่า', kier: 'เคียร์' };
+const $ = id => document.getElementById(id);
+const load = src => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src });
+function measure(img) {
+  const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0); const d = g.getImageData(0, 0, w, h).data;
+  let y0 = h, y1 = -1, x0 = w, x1 = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 40) { if (y < y0) y0 = y; if (y > y1) y1 = y; if (x < x0) x0 = x; if (x > x1) x1 = x }
+  if (y1 < 0) return null;
+  const H = y1 - y0 + 1; let lo = w, hi = -1;
+  for (let y = y0; y < y0 + Math.max(1, Math.floor(H * .2)); y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 40) { if (x < lo) lo = x; if (x > hi) hi = x }
+  return { w, h, top: y0, bottom: y1, H, x0, x1, headW: hi - lo + 1 };
+}
+const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
+async function build() {
+  const add = async (id, name, kind, ctx, src, factor, formula) => {
+    const img = await load(src); if (!img) return; const m = measure(img); if (!m) return;
+    let e = ENTRIES.find(x => x.id === id); if (!e) ENTRIES.push(e = { id, name, kind, ctx: {} });
+    e.ctx[ctx] = { img, m, src, units: m.H / (kind === 'monster' ? m.h : 384) * factor, factor, formula };
+  };
+  await add('hero', 'ตัวเอก', 'hero', 'battle', HERO_SRC, DS.hero, `${'สูง'} ÷ 384 × ${DS.hero}`);
+  await add('hero', 'ตัวเอก', 'hero', 'village', HERO_SRC, DS.hero, `${'สูง'} ÷ 384 × ${DS.hero}`);
+  for (const [c, n] of Object.entries(ALLIES)) {
+    await add(c, n, 'ally', 'battle', `assets/tactics/${c}_sw_idle.webp`, DS.ally, `สูง ÷ 384 × ${DS.ally}`);
+    await add(c, n, 'ally', 'village', `assets/village-town/npc/${c}/sw-stand.webp`, DS.ally, `สูง ÷ 384 × ${DS.ally}`);
+  }
+  /* monsters: read the battle table straight from the game's source so this page never drifts from it */
+  try {
+    const src = await (await fetch('js/town-battle.js')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
+      const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, 1.6 * +sc * .8, `สูง ÷ สูงภาพ × 1.6 × ${sc} × 0.8`);
+    }
+  } catch (e) { console.warn('monsters not read', e) }
+}
+let ctx = 'battle', sel = 'hero', ghost = true, sorted = false;
+const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => e.ctx[c].units / ENTRIES[0].ctx[c].units * HERO_M;
+const visible = () => { const a = ENTRIES.filter(e => e.ctx[ctx]); return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
+function chip(e) { const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
+function render() {
+  $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
+  $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
+  $('bGhost').setAttribute('aria-pressed', ghost); $('bSort').setAttribute('aria-pressed', sorted);
+  const V = visible();
+  $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${e.id === sel}"><img alt="" src="${e.ctx[ctx].src}"><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m</small></span>${chip(e)}</button>`).join('');
+  $('list').querySelectorAll('.row').forEach(b => b.onclick = () => { sel = b.dataset.c; render() });
+  /* stage */
+  const st = $('stage'), H = 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))), ppm = (base - 20) / maxM, hu = heroU(), bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
+  st.style.width = W + 'px'; let h = '';
+  for (let m = 0; m <= Math.floor(maxM * 2) / 2; m += .5) h += `<div class="tick" style="top:${base - m * ppm}px"><span>${m.toFixed(1)} m</span></div>`;
+  h += `<div class="base" style="top:${base}px"></div>`;
+  const hc = ENTRIES[0].ctx[ctx];
+  V.forEach((e, i) => {
+    const c = e.ctx[ctx], cx = xs[i], px = metres(e) * ppm, k = px / c.m.H, w = c.m.w * k, hh = c.m.h * k, left = cx - ((c.m.x0 + c.m.x1) / 2) * k, top = base - (c.m.bottom + 1) * k;
+    if (ghost && e.id !== 'hero') { const gk = HERO_M * ppm / hc.m.H; h += `<img class="ghost" alt="" src="${hc.src}" style="width:${hc.m.w * gk}px;left:${cx - ((hc.m.x0 + hc.m.x1) / 2) * gk}px;top:${base - (hc.m.bottom + 1) * gk}px">` }
+    h += `<img class="ch${e.id === sel ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${c.src}" style="width:${w}px;height:${hh}px;left:${left}px;top:${top}px">`;
+    h += `<div class="nm" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${metres(e).toFixed(2)} m</i></div>`;
+  });
+  st.innerHTML = h;
+  st.querySelectorAll('.ch').forEach(i => i.onclick = () => { sel = i.dataset.c; render() });
+  $('note').textContent = ctx === 'battle' ? 'สนามรบ: ขนาดบนจอจริงของแต่ละตัว (สูง ÷ สูงภาพ × ขนาดที่เกมวาด) · ตัวเอก = 1.70 m เป็นไม้วัด · เงาเทา = ตัวเอกยืนเทียบ' : 'หมู่บ้าน: ใช้รูปหมู่บ้านของแต่ละตัว · ตอนนี้ใช้ตัวคูณวาดชุดเดียวกับสนามรบ (ค่าประมาณ — เฟส 3 จะต่อกับ cast scale จริงของหมู่บ้าน)';
+  inspect();
+}
+function inspect() {
+  const e = ENTRIES.find(x => x.id === sel), c = e.ctx[ctx], other = ctx === 'battle' ? 'village' : 'battle', o = e.ctx[other];
+  const row = (k, v) => `<dt>${k}</dt><dd>${v}</dd>`;
+  let cross = '';
+  if (o) { const a = metres(e), b = metres(e, other), d = a / b - 1; cross = row('ข้ามบริบท', `สนามรบ ${metres(e, 'battle').toFixed(2)} m · หมู่บ้าน ${metres(e, 'village').toFixed(2)} m <span class="chip ${Math.abs(d) < .06 ? 'ok' : Math.abs(d) < .12 ? 'warn' : 'bad'}">${d >= 0 ? '+' : ''}${Math.round(d * 100)}%</span>`) }
+  $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${e.kind}</span><dl>
+   ${row('ความสูงบนจอ', `${metres(e).toFixed(2)} m · ${c.units.toFixed(2)} UNIT`)}${row('เทียบตัวเอก', Math.round(metres(e) / HERO_M * 100) + '%')}${cross}
+   ${row('เงาในภาพ', `สูง ${c.m.H} px · หัว ${c.m.headW} px · ภาพ ${c.m.w}×${c.m.h}`)}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.src}</code>`)}</dl>
+  <p class="hint">เฟส 1 ดูอย่างเดียว · ถ้าตัวไหนเตี้ย/สูงผิดสัดส่วน จดไว้ แล้วปรับที่เฟส 2</p>`;
+}
+$('bGhost').onclick = () => { ghost = !ghost; render() }; $('bSort').onclick = () => { sorted = !sorted; render() };
+let ready = false; addEventListener('resize', () => ready && render());
+build().then(() => { ready = true; render() });
+</script></body></html>
