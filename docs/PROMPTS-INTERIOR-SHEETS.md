@@ -30,7 +30,7 @@
 | 5 | เตาและไฟ: เตาผิง 1×2 · เตาหลอม 2×2 · ทั่ง · ถังชุบ · เตาอบขนมปัง · เตาผิงมีหม้อ | โรงแรม · โรงตีเหล็ก · บ้านคนทำขนม |
 | 6 | งานฝีมือ: กี่ทอผ้า · ม้านั่งช่าง · กองฟืน · โต๊ะเขียนหนังสือ · ชั้นหนังสือ · ตาข่าย · เครื่องโม่ | บ้านชาวบ้านตามอาชีพ |
 | **7 ✅ ใช้ในเกมแล้ว (v98.31)** | วิหาร: แท่นบูชา · รูปปั้น · ม้านั่งยาวพร้อมพนัก (pew) · เชิงเทียนพื้น · เชิงเทียนยืน | วิหาร |
-| 8 | สถานพยาบาล: ครกบด · ขวดโหล · ชั้นสมุนไพร · ถาดยา · เก้าอี้หมอ · ผ้าพันแผลม้วน | สถานพยาบาล |
+| 8 (พรอมต์พร้อมแล้ว) | สถานพยาบาล: ครกบด · ขวดโหล · ชั้นสมุนไพร · ถาดยา · เก้าอี้หมอ · ผ้าพันแผลม้วน | สถานพยาบาล |
 | 9 | ตลาด: แผงขาย 4 สีผ้าหลังคา · กองผลไม้/ผัก · ตะกร้าผลผลิต · ป้ายราคา (ไม่มีตัวหนังสือ) | ตลาด |
 | 10 | สมาคม: กระดานรับงาน · ถ้วยรางวัล · เขากวางติดผนัง · ธงสมาคม · ดาบไขว้ติดผนัง · โต๊ะลงทะเบียน | สมาคมนักผจญภัย |
 | **11A ✅ ใช้ในเกมแล้ว (v98.32)** | ประตูและหน้าต่าง: ประตูเปิด · ประตูปิด · ประตูคู่ · ประตูโค้งหิน · หน้าต่างบานเปิด · หน้าต่างเล็กมีลูกกรง · หน้าต่างโค้งสูง · กระจกสี · หน้าต่างมีบานเกล็ด | ทุกห้อง |
@@ -314,3 +314,36 @@ Each piece is a complete cut-out fully inside its own cell. No text, no wall, no
 ```
 
 **ตรวจรับชีท 11B**: เหมือนชีทก่อน + ⑥ ไม่มีตัวหนังสือบนสันหนังสือ ป้ายบอร์ด ธง ⑦ ไฟคบไฟอยู่ในตัววัตถุ ⑧ ชั้นวางเห็นด้านบนและด้านซ้ายนิดหน่อย
+
+---
+
+## ชีท 8 · สถานพยาบาล (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `mortar-table` · `potion-table` · `herb-cabinet` · `drawer-cabinet` · `doctor-chair` · `bandage-basket` · `folding-screen` · `wash-stand` · `herb-drying-rack`
+
+ใช้แทน: ครก/โต๊ะยา (`mortar` `jars`) และของที่ยังเป็นโค้ดในสถานพยาบาล · เก็บไว้ใช้ในบ้านหมอ/บ้านสมุนไพรด้วย · ฉากกั้นยาว 2×1 พาดซ้ายบน→ขวาล่าง
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (a village healer's house): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people. Nothing on any piece is written on: bottles, jars and drawers carry no labels or letters.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of the folding screen runs from the upper-left to the lower-right of the image.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. The folding screen covers a 2x1-tile footprint (two diamonds joined along the upper-left to lower-right direction); every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): mortar table about 0.55, potion table about 0.5, tall herb cabinet about 1.0, drawer cabinet about 0.75, doctor's chair seat about 0.4 with the back to 0.8, bandage basket about 0.3, folding screen about 1.0, wash stand about 0.65, drying rack about 1.0.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (wood grain, glass highlights, linen weave, brass fittings, dried leaves, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: warm oak and honey-coloured wood, pale sage-green and cream linen, glass bottles in muted amber, green and blue, copper and brass fittings, white bandages, slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Mortar table, 1x1 tile: a sturdy oak work table with a heavy stone mortar and pestle, a small brass scale, a few loose dried leaves and a rolled bundle of herbs on the top.
+2. Potion table, 1x1 tile: a small round oak table with five or six glass bottles and flasks of coloured liquids (amber, green, pale blue), a tiny alcohol burner and a clay cup.
+3. Tall herb cabinet, 1x1 tile: an open-fronted oak cabinet about one tile-width high with three shelves of clay jars with cork stoppers, small linen sacks of dried herbs and a bundle of hanging leaves at the side.
+4. Apothecary drawer cabinet, 1x1 tile: a low oak chest of many small square drawers with brass pulls (blank, no labels), a shallow tray with a few jars on top.
+5. Doctor's chair, 1x1 tile: a sturdy oak armchair with a high back, a plain sage-green cushion on the seat and wooden armrests, empty.
+6. Bandage basket, smaller than a tile: a round wicker basket holding neat rolls of white linen bandages and a folded cloth, a small jar of salve on the rim.
+7. Folding screen, 2x1 tiles: a three-panel wooden room divider with cream linen panels and a simple painted green leaf border, standing slightly zig-zag, oak frame.
+8. Wash stand, 1x1 tile: a wooden stand with a ceramic basin and jug, a folded white towel hanging on a side bar, a small bar of soap.
+9. Herb drying rack, 1x1 tile: a freestanding wooden rack with two horizontal poles from which many bundles of dried herbs and flowers hang upside down.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 8**: เหมือนชีทก่อน + ⑥ ไม่มีตัวหนังสือบนขวด/โหล/ลิ้นชัก ⑦ ฉากกั้นกว้าง 2 ช่อง ⑧ ไม่มีสัญลักษณ์กากบาทแดงหรือรูปคน
