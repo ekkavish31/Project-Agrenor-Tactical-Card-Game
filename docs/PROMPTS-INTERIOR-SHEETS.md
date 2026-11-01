@@ -33,10 +33,11 @@
 | 8 | สถานพยาบาล: ครกบด · ขวดโหล · ชั้นสมุนไพร · ถาดยา · เก้าอี้หมอ · ผ้าพันแผลม้วน | สถานพยาบาล |
 | 9 | ตลาด: แผงขาย 4 สีผ้าหลังคา · กองผลไม้/ผัก · ตะกร้าผลผลิต · ป้ายราคา (ไม่มีตัวหนังสือ) | ตลาด |
 | 10 | สมาคม: กระดานรับงาน · ถ้วยรางวัล · เขากวางติดผนัง · ธงสมาคม · ดาบไขว้ติดผนัง · โต๊ะลงทะเบียน | สมาคมนักผจญภัย |
-| 11 | ของติดผนัง: หน้าต่าง (กลางวัน/กลางคืน) · หน้าต่างกระจกสี · ชั้นติดผนัง · กระดานข่าว · ธง | ทุกห้อง |
+| **11A (พรอมต์พร้อมแล้ว)** | ประตูและหน้าต่าง: ประตูเปิด · ประตูปิด · ประตูคู่ · ประตูโค้งหิน · หน้าต่างบานเปิด · หน้าต่างเล็กมีลูกกรง · หน้าต่างโค้งสูง · กระจกสี · หน้าต่างมีบานเกล็ด | ทุกห้อง |
+| 11B | ของแขวนผนัง: ชั้นผนัง (ขวด/หนังสือ) · กระดานข่าว · ธงยาว/สั้น · ดาบไขว้+โล่ · เขากวาง · คบไฟติดผนัง · กรอบภาพ | ทุกห้อง |
 | 12 | ของเล็กบนโต๊ะ: แก้ว · จาน · เทียน · หนังสือ · ขวด · หม้อ · ตะเกียง (ใช้วางบนเฟอร์นิเจอร์ได้) | ทุกห้อง |
 | 13 | ไร่: โรงนา · กระท่อม · เล้าไก่ · รางน้ำสัตว์ · บ่อน้ำ · หุ่นไล่กา · กองฟาง · รั้ว · ป้ายบอกทาง · กองปุ๋ย | ไร่ (กลางแจ้ง) |
-| 14 | พื้นและผนัง (เทกซ์เจอร์ต่อเนื่อง): พื้นไม้กระดาน · พื้นหิน · พื้นกระเบื้อง · ผนังปูนขาว · ผนังไม้ครึ่งปูน · ผนังหิน | ทุกห้อง |
+| 14 | พื้นและผนัง (เทกซ์เจอร์ต่อเนื่อง — แยกวิธีเจน เป็นภาพแบนต่อซ้ำได้ ไม่ใช่ชีทวัตถุ): พื้นไม้กระดาน · พื้นหิน · พื้นกระเบื้อง · ผนังปูนขาว · ผนังไม้ครึ่งปูน · ผนังหิน | ทุกห้อง |
 
 หลังเจน: ตัดทีละช่อง → ตรวจเส้นฐาน/สเกลให้ตรงกันทุกช่อง → ใส่ใน manifest → ต่อเข้า `js/interior.js` แทนโค้ดวาดเดิมทีละชนิด (ของที่ยังไม่มีภาพจะใช้โค้ดวาดเดิมต่อไป)
 
@@ -245,3 +246,37 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 ```
 
 **ตรวจรับชีท 7**: เหมือนชีทก่อน + ⑥ แท่นบูชากับม้านั่งกว้าง 3 ช่อง พาดซ้ายบน→ขวาล่าง ⑦ รูปปั้นสูงที่สุดในชีท ⑧ เปลวเทียน/ถ่านอยู่ในตัววัตถุ ไม่เรืองบนพื้นเขียว ⑨ ไม่มีตัวหนังสือบนหนังสือ/แผ่นทอง
+
+
+---
+
+## ชีท 11A · ประตูและหน้าต่าง (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `door-open` · `door-closed` · `door-double` · `door-arch` · `window-casement` · `window-barred` · `window-arched` · `window-stained` · `window-shuttered`
+
+**ต่างจากชีทอื่น**: ของชุดนี้ติด *ผนัง* ไม่ได้วางบนพื้น · วาดเฉพาะกรอบ/บานที่ฝังในผนัง ไม่วาดผนังรอบ ๆ · **ช่องเปิดและบานกระจกทุกบานใส่เขียว `#00FF00` ล้วน** (เกมจะลบให้โปร่งแล้วใส่ท้องฟ้า กลางวัน-กลางคืน แสงลอดเข้า ข้างหลังเอง) · วาดแบบติดผนังด้านซ้าย (หน้าผนังหันไป SE ล่างขวา เส้นขอบนอนลาดขึ้นทางขวา "/") เกมกลับภาพให้เองสำหรับผนังหลัง
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior: wall-mounted doors and windows. Exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people, no scenery. IMPORTANT: every doorway opening and every window pane (the see-through glass area) is filled with the SAME flat pure chroma-green #00FF00 as the background, so it can be removed later; never paint a sky, a landscape or a reflection in them. The only exception is cell 8 (stained glass), whose panes are painted in opaque jewel colours. The surrounding wall is NOT drawn: only the frame, the door leaf, the shutters, the sill and the lintel are drawn, so each piece looks like a cut-out that will be set into a wall by the game.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon. Each piece is a flat wall-mounted object seen on a wall surface that faces the lower-right (south-east) of the image: its horizontal edges therefore rise toward the right at exactly 1:2 (they go up one pixel for every two pixels moving right), its vertical edges stay perfectly vertical, and you see only the front face of the piece plus a thin slice of the wall's thickness (the reveal) on its left and underside, a few pixels deep. Orthographic: no perspective convergence, no fisheye, no vanishing points.
+
+SCALE: all pieces share one scale. One unit of wall width measures 34 pixels horizontally across the image (and rises 17 pixels over that run). Heights are real vertical pixels. In those units: a single door is 1 unit wide (34 px) and 78 px tall; the double door is 2 units wide (68 px) and 78 px tall; the arched stone door is 1 unit wide and 84 px tall including the arch; the casement window is 1.2 units wide (41 px) and 60 px tall; the barred window is 0.8 units wide (27 px) and 34 px tall; the tall arched window and the stained-glass window are each 1 unit wide (34 px) and 90 px tall; the shuttered window is 1.2 units wide (41 px) and 60 px tall for the glass part, with open shutters adding half a unit on each side. Draw each piece as large as fits in its cell while keeping these exact proportions between pieces (the whole sheet can be scaled up equally, but the pieces keep their relative sizes). Leave 10% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. The bottom of every door sits on the same baseline in its cell.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (wood grain, nail heads, iron straps, chiselled stone, lead cames, wear). Warm amber lighting from the upper-left front: top surfaces brightest, left-facing reveals lit, the underside of lintels and sills in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own light and shadow). Palette: warm oak and honey-coloured wood, dark walnut frames, wrought iron, pale warm limestone for the arch, slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Open doorway, 1 unit wide: a timber frame (posts, lintel, worn threshold stone), the opening filled with chroma green, the oak plank door leaf swung wide open inward and seen almost edge-on as a thick plank slab standing at the left jamb with two iron strap hinges.
+2. Closed plank door, 1 unit wide: vertical oak planks with two iron straps, a ring handle, a small iron lock plate, a timber frame with a plain lintel and threshold.
+3. Double door, 2 units wide: two closed oak leaves with iron studs and long strap hinges, a ring handle on each leaf, a heavy timber frame with a thick lintel and a stone threshold.
+4. Arched stone doorway, 1 unit wide: a rounded chiselled limestone arch with a keystone, a closed arched oak door banded with iron and studded, a worn stone step.
+5. Casement window: a wooden frame with a cross mullion making four panes, all panes chroma green, a projecting wooden sill below and a slim lintel above, a tiny iron latch.
+6. Small barred window: a short window in a thick frame with three vertical wrought-iron bars, the gaps between the bars chroma green, a stone sill (for a forge or storeroom).
+7. Tall arched window: a narrow window with a rounded top, a thin carved wooden frame and one thin mullion, lead-lined diamond panes, all panes chroma green, a small stone sill.
+8. Stained-glass window: the same tall arched shape as piece 7 in a pale stone frame, panes painted as opaque stained glass in muted jewel colours (deep blue, ruby, amber, forest green) with dark lead lines and a simple abstract flower-and-sun pattern, no letters, no figures.
+9. Shuttered window: a casement window (like piece 5, panes chroma green) with two wooden board shutters swung open flat against the wall on either side with iron hinges, and a small wooden window box beneath holding herbs and tiny flowers.
+
+Each piece is a complete cut-out fully inside its own cell. No text, no wall, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 11A**: เหมือนชีทก่อน + ⑥ ช่องเปิดประตูและบานกระจกเป็นเขียวล้วนเหมือนพื้นหลัง (ยกเว้นช่อง 8 กระจกสี) ⑦ ไม่มีผนังรอบ ๆ ⑧ เส้นนอนลาดขึ้นทางขวา (ถ้าลาดลงทางขวา เกมใช้ภาพกลับด้านได้ ไม่เป็นปัญหา) ⑨ ไม่มีตัวหนังสือหรือรูปคนบนกระจกสี
