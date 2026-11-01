@@ -28,7 +28,7 @@
 | **4 ✅ ใช้ในเกมแล้ว (v98.30)** | ห้องนอนและพรม: เตียง · เตียงผู้ป่วย · หีบปลายเตียง · พรมหลายขนาด (3×3 · 4×3 · ทางเดิน 1×7) | บ้าน · สถานพยาบาล · โรงแรม |
 | **5A ✅ ใช้ในเกมแล้ว (v98.28)** | โรงตีเหล็ก: เตาหลอม 2×2 · ทั่ง · ถังชุบ · เครื่องสูบลม · หินลับ · โต๊ะช่างพร้อมปากกาจับ · ถังถ่าน · กองแท่งเหล็ก · เตาไฟเปิด | โรงตีเหล็ก · บ้านช่างตีเหล็ก |
 | 5 | เตาและไฟ: เตาผิง 1×2 · เตาหลอม 2×2 · ทั่ง · ถังชุบ · เตาอบขนมปัง · เตาผิงมีหม้อ | โรงแรม · โรงตีเหล็ก · บ้านคนทำขนม |
-| 6 | งานฝีมือ: กี่ทอผ้า · ม้านั่งช่าง · กองฟืน · โต๊ะเขียนหนังสือ · ชั้นหนังสือ · ตาข่าย · เครื่องโม่ | บ้านชาวบ้านตามอาชีพ |
+| 6 (พรอมต์พร้อมแล้ว) | งานฝีมือ: กี่ทอผ้า · ม้านั่งช่าง · กองฟืน · โต๊ะเขียนหนังสือ · ชั้นหนังสือ · ตาข่าย · เครื่องโม่ | บ้านชาวบ้านตามอาชีพ |
 | **7 ✅ ใช้ในเกมแล้ว (v98.31)** | วิหาร: แท่นบูชา · รูปปั้น · ม้านั่งยาวพร้อมพนัก (pew) · เชิงเทียนพื้น · เชิงเทียนยืน | วิหาร |
 | **8 ✅ ใช้ในเกมแล้ว (v98.36)** | สถานพยาบาล: ครกบด · ขวดโหล · ชั้นสมุนไพร · ถาดยา · เก้าอี้หมอ · ผ้าพันแผลม้วน | สถานพยาบาล |
 | 9 (พรอมต์พร้อมแล้ว) | ตลาด: แผงขาย 4 สีผ้าหลังคา · กองผลไม้/ผัก · ตะกร้าผลผลิต · ป้ายราคา (ไม่มีตัวหนังสือ) | ตลาด |
@@ -413,3 +413,36 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 ```
 
 **ตรวจรับชีท 10**: เหมือนชีทก่อน + ⑥ ไม่มีตัวหนังสือบนป้ายประกาศ/สมุด/แผนที่ ไม่มีใบหน้าบนโปสเตอร์ ⑦ กระดานรับงาน โต๊ะลงทะเบียน ม้านั่งกว้าง 2 ช่อง ⑧ ธงมีแค่สัญลักษณ์ ไม่มีตัวหนังสือ
+
+---
+
+## ชีท 6 · งานฝีมือในบ้านชาวบ้าน (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `loom` · `bread-oven` · `carpenter-bench` · `log-pile` · `writing-desk` · `net-rack` · `millstone` · `spinning-wheel` · `cook-hearth`
+
+ใช้แทน: กี่ทอผ้า (`loom`) · เตาอบ (`oven`) · ม้านั่งช่าง (`bench` 2×1) · กองฟืน (`logs` 2×1) · โต๊ะเขียนหนังสือ (`desk`) · ตาข่าย · เครื่องโม่ (`mill`) · ขนแกะ (`wool`) · เตาผิงมีหม้อ ในบ้านชาวบ้านตามอาชีพ · ม้านั่งช่างกับกองฟืนยาว 2 ช่อง พาดซ้ายบน→ขวาล่าง
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (village craftspeople's homes and workshops): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people. Any fire or glow stays inside the object's own silhouette and never spills onto the green.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT (the working side) points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every elongated piece runs from the upper-left to the lower-right of the image.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. The carpenter's bench and the log pile each cover a 2x1-tile footprint (two diamonds joined along the upper-left to lower-right direction); the cooking hearth covers 1x2 tiles seen end-on along the same direction; every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): loom about 1.1, bread oven about 0.7, carpenter's bench about 0.5, log pile about 0.6, writing desk about 0.7, net rack about 1.0, millstone about 0.35, spinning wheel about 0.65, cooking hearth about 0.55.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (wood grain, woven thread, rope knots, brick and clay, split log ends, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows and its own firelight). Palette: warm oak and honey-coloured wood, dark walnut, natural undyed wool and linen, terracotta clay and soft grey stone, wrought iron, muted green, russet red and blue thread used sparingly, slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Weaving loom, 1x1 tile: a tall upright oak loom frame with a half-woven cloth in blue and cream stripes, a row of taut warp threads, a shuttle and a wooden beater bar, a small basket of thread balls at its foot.
+2. Bread oven, 1x1 tile: a domed clay-and-brick bread oven on a stone base with an arched mouth showing a few glowing embers, a long wooden peel leaning on it and two round loaves on a small shelf.
+3. Carpenter's bench, 2x1 tiles: a long heavy workbench with a vise at one end, a hand saw, a plane, a mallet, a few wood shavings, a plank clamped on top and a pile of cut boards underneath.
+4. Log pile, 2x1 tiles: a tidy stack of split firewood logs in a low wooden frame, the cut ends facing the lower-right, a chopping stump with an axe stuck in it at the near end.
+5. Writing desk, 1x1 tile: a small oak scribe's desk with a slanted top, a blank open ledger, an inkwell with quill, two blank scrolls, a lit candle in a brass holder and a small drawer (no writing).
+6. Net rack, 1x1 tile: a freestanding wooden frame hung with drying fishing nets, floats and a coil of rope, with a woven fish basket at its foot.
+7. Millstone, smaller than a tile: a hand quern, a round grey stone mill on a low wooden stand with a wooden handle, flour dusting the stone and a small sack of grain beside it.
+8. Spinning wheel, 1x1 tile: an oak spinning wheel with a large spoked wheel, treadle and a distaff wrapped with white wool, a basket of fluffy fleece beside it.
+9. Cooking hearth, 1x2 tiles: a low stone-and-brick cooking hearth with a hanging iron pot over a small fire, a trivet, a kettle, a ladle hanging on an iron hook and a short stack of logs beside it.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 6**: เหมือนชีทก่อน + ⑥ ม้านั่งช่างกับกองฟืนกว้าง 2 ช่อง ⑦ ไฟในเตาอบ/เตาผิงอยู่ในตัววัตถุ ไม่เรืองบนพื้นเขียว ⑧ ไม่มีตัวหนังสือบนสมุดและม้วนกระดาษ
