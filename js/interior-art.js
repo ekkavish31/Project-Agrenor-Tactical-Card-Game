@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 7, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 7, 8, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -571,5 +571,77 @@ window.INTERIOR_ART={
   "h": 348,
   "wall": [17, 343, 292, 277, 283.5],
   "ww": 0.9
+ },
+ "mortar-table": {
+  "src": "assets/interior/mortar-table.webp",
+  "w": 364,
+  "h": 367,
+  "fx": 182,
+  "fy": 276,
+  "k": 0.2
+ },
+ "potion-table": {
+  "src": "assets/interior/potion-table.webp",
+  "w": 255,
+  "h": 353,
+  "fx": 127,
+  "fy": 289,
+  "k": 0.19
+ },
+ "herb-cabinet": {
+  "src": "assets/interior/herb-cabinet.webp",
+  "w": 333,
+  "h": 421,
+  "fx": 166,
+  "fy": 338,
+  "k": 0.21
+ },
+ "drawer-cabinet": {
+  "src": "assets/interior/drawer-cabinet.webp",
+  "w": 344,
+  "h": 370,
+  "fx": 172,
+  "fy": 284,
+  "k": 0.2
+ },
+ "doctor-chair": {
+  "src": "assets/interior/doctor-chair.webp",
+  "w": 244,
+  "h": 369,
+  "fx": 122,
+  "fy": 315,
+  "k": 0.22
+ },
+ "bandage-basket": {
+  "src": "assets/interior/bandage-basket.webp",
+  "w": 267,
+  "h": 217,
+  "fx": 133,
+  "fy": 150,
+  "k": 0.17
+ },
+ "folding-screen": {
+  "src": "assets/interior/folding-screen.webp",
+  "w": 317,
+  "h": 379,
+  "fx": 158,
+  "fy": 316,
+  "k": 0.3
+ },
+ "wash-stand": {
+  "src": "assets/interior/wash-stand.webp",
+  "w": 243,
+  "h": 330,
+  "fx": 121,
+  "fy": 272,
+  "k": 0.2
+ },
+ "herb-drying-rack": {
+  "src": "assets/interior/herb-drying-rack.webp",
+  "w": 316,
+  "h": 372,
+  "fx": 158,
+  "fy": 302,
+  "k": 0.2
  }
 };
