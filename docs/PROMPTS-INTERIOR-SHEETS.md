@@ -25,7 +25,7 @@
 | **1 ✅ ใช้ในเกมแล้ว (v98.23)** | โต๊ะและที่นั่ง: โต๊ะกลม · โต๊ะเหลี่ยม · โต๊ะยาว · สตูล · เก้าอี้ · ม้านั่งยาว · สตูลบาร์ · โต๊ะข้าง · ถังไวน์ใช้เป็นโต๊ะ | โรงแรม · สมาคม · บ้าน · วิหาร |
 | **2 ✅ ใช้ในเกมแล้ว (v98.25)** | เคาน์เตอร์และเวที: เคาน์เตอร์บาร์ (ช่วงตรง · มุม · ปลาย) · เคาน์เตอร์ร้าน · เวทีเล็ก · บันได | โรงแรม · ร้าน · สถานพยาบาล · สมาคม |
 | **3 ✅ ใช้ในเกมแล้ว (v98.27)** | ของเก็บ: ลัง · ถัง · ถังเล็ก (keg) · ตะกร้า · หีบ · ตู้เตี้ย · ชั้นสูง (shelfbox) · ชั้นวางอาวุธ/เครื่องมือ | ทุกห้อง |
-| 4 | ห้องนอนและพรม: เตียง · เตียงผู้ป่วย · หีบปลายเตียง · พรมหลายขนาด (3×3 · 4×3 · ทางเดิน 1×7) | บ้าน · สถานพยาบาล · โรงแรม |
+| 4 (พรอมต์พร้อมแล้ว) | ห้องนอนและพรม: เตียง · เตียงผู้ป่วย · หีบปลายเตียง · พรมหลายขนาด (3×3 · 4×3 · ทางเดิน 1×7) | บ้าน · สถานพยาบาล · โรงแรม |
 | **5A ✅ ใช้ในเกมแล้ว (v98.28)** | โรงตีเหล็ก: เตาหลอม 2×2 · ทั่ง · ถังชุบ · เครื่องสูบลม · หินลับ · โต๊ะช่างพร้อมปากกาจับ · ถังถ่าน · กองแท่งเหล็ก · เตาไฟเปิด | โรงตีเหล็ก · บ้านช่างตีเหล็ก |
 | 5 | เตาและไฟ: เตาผิง 1×2 · เตาหลอม 2×2 · ทั่ง · ถังชุบ · เตาอบขนมปัง · เตาผิงมีหม้อ | โรงแรม · โรงตีเหล็ก · บ้านคนทำขนม |
 | 6 | งานฝีมือ: กี่ทอผ้า · ม้านั่งช่าง · กองฟืน · โต๊ะเขียนหนังสือ · ชั้นหนังสือ · ตาข่าย · เครื่องโม่ | บ้านชาวบ้านตามอาชีพ |
@@ -179,3 +179,36 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 ```
 
 **ตรวจรับชีท 5A**: เหมือนชีทก่อน + ⑥ เตาหลอมกว้าง 2 ช่อง (ใหญ่กว่าชิ้นอื่นชัดเจน) ⑦ ไฟอยู่แค่ในปากเตา/เตาเปิด ไม่เรืองออกไปบนพื้นเขียว ⑧ ทั่งว่างเปล่า ถังชุบน้ำนิ่ง
+
+---
+
+## ชีท 4 · ห้องนอนและพรม (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `bed-single` · `bed-double` · `bed-cot` · `footlocker` · `wardrobe` · `rug-3x3` · `rug-4x3` · `rug-runner` · `rug-round`
+
+ใช้แทน: เตียง (`bed`) ในบ้าน โรงแรม สถานพยาบาล · พรม (`rug`) ทุกห้อง · ตู้เสื้อผ้า/หีบปลายเตียงเป็นของใหม่ · **พรมวาดคนละสเกลกัน** (พรมกินพื้นที่หลายช่อง) เกมจะย่อรายชิ้นเอง
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (bedroom furniture and floor rugs): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people, nothing on the furniture except what is described.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT (foot end of a bed, door side of a wardrobe) points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every elongated piece runs from the upper-left to the lower-right of the image (the head of a bed is at the upper-left, the foot at the lower-right).
+
+SCALE: cells 1 to 5 (furniture): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. A bed is 1 tile wide and 2 tiles long (single, cot) or 2 tiles wide and 2 tiles long (double); the footlocker and wardrobe are 1x1 tile. The lowest ground-contact point of each piece is centred horizontally in its cell at about 78% of the cell height. Cells 6 to 9 (rugs): each rug is drawn lying perfectly flat on the floor, filling its cell as large as possible (the whole rug about 85% of the cell width, centred) so the rug's weave stays crisp; the game rescales rugs. Rug proportions on the floor grid: cell 6 is 3 tiles by 3 tiles, cell 7 is 4 tiles by 3 tiles, cell 8 is a narrow runner 1 tile by 4 tiles lying along the upper-left to lower-right direction, cell 9 is a circle about 3 tiles across (an ellipse twice as wide as tall in the image). Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall: bed frame top about 0.35 tile-widths, headboard about 0.65, wardrobe about 1.1, footlocker about 0.3.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (wood grain, woven wool, stitched linen, fringe, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. Rugs are lit evenly, with only a thin darker edge and a very slight thickness, no cast shadow. No cast shadow outside any object (the game draws its own shadows). Palette: warm oak and honey-coloured wood, dark walnut accents, cream and white linen, wool blankets in muted russet red, deep forest green and dusty blue, slightly desaturated so the pieces match the attached reference images and the previous sheets (same wood tone, same detail level, same outline weight).
+
+CONTENT, row by row, left to right:
+1. Single bed, 1x2 tiles: oak frame with a carved headboard at the upper-left end and a low footboard at the lower-right end, straw-coloured linen sheet, one plump pillow, a folded russet wool blanket across the foot.
+2. Double bed, 2x2 tiles: larger oak frame with a taller carved headboard, two pillows, a patterned forest-green quilt turned back at the top.
+3. Healer's cot, 1x2 tiles: a plain low wooden cot with simple legs, clean white linen sheet, a thin white pillow and a neatly folded white blanket, a faint red stitched cross-free border (no symbols, no text).
+4. Footlocker, 1x1 tile: a low wooden chest meant to sit at the foot of a bed, iron corner straps, flat lid with a folded blanket resting on top.
+5. Wardrobe, 1x1 tile: tall oak two-door wardrobe, slightly open right door showing dark inside with a hint of hanging cloth, carved cornice on top, iron handles.
+6. Woven wool rug, 3x3 tiles, flat: a square rug seen as a diamond, russet red field with a cream border and a simple geometric medallion, fringe on the two ends.
+7. Woven wool rug, 4x3 tiles, flat: a large rectangular rug seen as a diamond-shaped parallelogram (longer along the upper-left to lower-right direction), deep forest-green field with a gold and cream border and simple knotwork, fringe at both ends.
+8. Runner rug, 1x4 tiles, flat: a long narrow hall runner running from the upper-left to the lower-right of the image, dusty blue with a cream stripe border and fringe at the ends.
+9. Round rug, about 3 tiles across, flat: a round braided-rag rug drawn as a flat ellipse, concentric rings of cream, russet and brown.
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 4**: เหมือนชีทก่อน + ⑥ หัวเตียงอยู่ซ้ายบน ปลายเตียงอยู่ขวาล่าง ⑦ พรมแบนราบจริง (ไม่มีเงา ไม่มีขอบหนา) ⑧ ไม่มีสัญลักษณ์/ตัวหนังสือบนเตียงหมอ
