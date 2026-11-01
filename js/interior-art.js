@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 6, 7, 8, 9, 10, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 5B, 6, 7, 8, 9, 10, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -860,5 +860,80 @@ window.INTERIOR_ART={
   "fx": 205,
   "fy": 241,
   "k": 0.27
+ },
+ "fireplace-stone": {
+  "src": "assets/interior/fireplace-stone.webp",
+  "w": 317,
+  "h": 420,
+  "fx": 158,
+  "fy": 341,
+  "k": 0.31,
+  "longV": true
+ },
+ "fireplace-grand": {
+  "src": "assets/interior/fireplace-grand.webp",
+  "w": 448,
+  "h": 435,
+  "fx": 224,
+  "fy": 323,
+  "k": 0.29,
+  "longV": true
+ },
+ "fireplace-pot": {
+  "src": "assets/interior/fireplace-pot.webp",
+  "w": 317,
+  "h": 416,
+  "fx": 158,
+  "fy": 337,
+  "k": 0.31,
+  "longV": true
+ },
+ "stove-iron": {
+  "src": "assets/interior/stove-iron.webp",
+  "w": 224,
+  "h": 394,
+  "fx": 112,
+  "fy": 349,
+  "k": 0.24
+ },
+ "fire-tools": {
+  "src": "assets/interior/fire-tools.webp",
+  "w": 152,
+  "h": 343,
+  "fx": 76,
+  "fy": 320,
+  "k": 0.2
+ },
+ "log-basket": {
+  "src": "assets/interior/log-basket.webp",
+  "w": 260,
+  "h": 226,
+  "fx": 130,
+  "fy": 169,
+  "k": 0.18
+ },
+ "floor-lamp": {
+  "src": "assets/interior/floor-lamp.webp",
+  "w": 144,
+  "h": 382,
+  "fx": 72,
+  "fy": 353,
+  "k": 0.22
+ },
+ "table-lantern": {
+  "src": "assets/interior/table-lantern.webp",
+  "w": 133,
+  "h": 239,
+  "fx": 66,
+  "fy": 219,
+  "k": 0.2
+ },
+ "fire-pit": {
+  "src": "assets/interior/fire-pit.webp",
+  "w": 341,
+  "h": 325,
+  "fx": 170,
+  "fy": 250,
+  "k": 0.19
  }
 };
