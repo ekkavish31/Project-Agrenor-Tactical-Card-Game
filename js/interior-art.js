@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 6, 7, 8, 9, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 6, 7, 8, 9, 10, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -788,5 +788,77 @@ window.INTERIOR_ART={
   "fx": 96,
   "fy": 322,
   "k": 0.22
+ },
+ "quest-board": {
+  "src": "assets/interior/quest-board.webp",
+  "w": 405,
+  "h": 420,
+  "fx": 202,
+  "fy": 327,
+  "k": 0.27
+ },
+ "trophy-case": {
+  "src": "assets/interior/trophy-case.webp",
+  "w": 246,
+  "h": 408,
+  "fx": 123,
+  "fy": 349,
+  "k": 0.23
+ },
+ "reg-desk": {
+  "src": "assets/interior/reg-desk.webp",
+  "w": 417,
+  "h": 327,
+  "fx": 208,
+  "fy": 231,
+  "k": 0.27
+ },
+ "armor-stand": {
+  "src": "assets/interior/armor-stand.webp",
+  "w": 210,
+  "h": 417,
+  "fx": 105,
+  "fy": 371,
+  "k": 0.21
+ },
+ "weapon-barrel": {
+  "src": "assets/interior/weapon-barrel.webp",
+  "w": 207,
+  "h": 360,
+  "fx": 103,
+  "fy": 310,
+  "k": 0.2
+ },
+ "map-table": {
+  "src": "assets/interior/map-table.webp",
+  "w": 402,
+  "h": 324,
+  "fx": 201,
+  "fy": 228,
+  "k": 0.25
+ },
+ "training-dummy": {
+  "src": "assets/interior/training-dummy.webp",
+  "w": 231,
+  "h": 372,
+  "fx": 115,
+  "fy": 326,
+  "k": 0.2
+ },
+ "banner-stand": {
+  "src": "assets/interior/banner-stand.webp",
+  "w": 153,
+  "h": 405,
+  "fx": 76,
+  "fy": 374,
+  "k": 0.24
+ },
+ "gear-bench": {
+  "src": "assets/interior/gear-bench.webp",
+  "w": 411,
+  "h": 336,
+  "fx": 205,
+  "fy": 241,
+  "k": 0.27
  }
 };

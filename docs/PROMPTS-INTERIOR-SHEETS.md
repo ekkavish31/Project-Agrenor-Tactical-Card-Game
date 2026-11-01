@@ -32,10 +32,10 @@
 | **7 ✅ ใช้ในเกมแล้ว (v98.31)** | วิหาร: แท่นบูชา · รูปปั้น · ม้านั่งยาวพร้อมพนัก (pew) · เชิงเทียนพื้น · เชิงเทียนยืน | วิหาร |
 | **8 ✅ ใช้ในเกมแล้ว (v98.36)** | สถานพยาบาล: ครกบด · ขวดโหล · ชั้นสมุนไพร · ถาดยา · เก้าอี้หมอ · ผ้าพันแผลม้วน | สถานพยาบาล |
 | **9 ✅ ใช้ในเกมแล้ว (v98.39)** | ตลาด: แผงขาย 4 สีผ้าหลังคา · กองผลไม้/ผัก · ตะกร้าผลผลิต · ป้ายราคา (ไม่มีตัวหนังสือ) | ตลาด |
-| 10 (พรอมต์พร้อมแล้ว) | สมาคม: กระดานรับงาน · ถ้วยรางวัล · เขากวางติดผนัง · ธงสมาคม · ดาบไขว้ติดผนัง · โต๊ะลงทะเบียน | สมาคมนักผจญภัย |
+| **10 ✅ ใช้ในเกมแล้ว (v98.41)** | สมาคม: กระดานรับงาน · ถ้วยรางวัล · เขากวางติดผนัง · ธงสมาคม · ดาบไขว้ติดผนัง · โต๊ะลงทะเบียน | สมาคมนักผจญภัย |
 | **11A ✅ ใช้ในเกมแล้ว (v98.32)** | ประตูและหน้าต่าง: ประตูเปิด · ประตูปิด · ประตูคู่ · ประตูโค้งหิน · หน้าต่างบานเปิด · หน้าต่างเล็กมีลูกกรง · หน้าต่างโค้งสูง · กระจกสี · หน้าต่างมีบานเกล็ด | ทุกห้อง |
 | **11B ✅ ใช้ในเกมแล้ว (v98.33)** | ของแขวนผนัง: ชั้นผนัง (ขวด/หนังสือ) · กระดานข่าว · ธงยาว/สั้น · ดาบไขว้+โล่ · เขากวาง · คบไฟติดผนัง · กรอบภาพ | ทุกห้อง |
-| 12 | ของเล็กบนโต๊ะ: แก้ว · จาน · เทียน · หนังสือ · ขวด · หม้อ · ตะเกียง (ใช้วางบนเฟอร์นิเจอร์ได้) | ทุกห้อง |
+| 12 (พรอมต์พร้อมแล้ว) | ของเล็กบนโต๊ะและต้นไม้: แก้ว · จาน · เทียน · หนังสือ · ขวด · หม้อ · ตะเกียง (ใช้วางบนเฟอร์นิเจอร์ได้) | ทุกห้อง |
 | 13 | ไร่: โรงนา · กระท่อม · เล้าไก่ · รางน้ำสัตว์ · บ่อน้ำ · หุ่นไล่กา · กองฟาง · รั้ว · ป้ายบอกทาง · กองปุ๋ย | ไร่ (กลางแจ้ง) |
 | 14 | พื้นและผนัง (เทกซ์เจอร์ต่อเนื่อง — แยกวิธีเจน เป็นภาพแบนต่อซ้ำได้ ไม่ใช่ชีทวัตถุ): พื้นไม้กระดาน · พื้นหิน · พื้นกระเบื้อง · ผนังปูนขาว · ผนังไม้ครึ่งปูน · ผนังหิน | ทุกห้อง |
 
@@ -479,3 +479,36 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 ```
 
 **ตรวจรับชีท 5B**: เหมือนชีทก่อน + ⑥ เตาผิง 3 ช่องแรก **ยาวพาดล่างซ้าย→บนขวา** (หน้าเตาหันล่างขวา) ⑦ เตาผิงยิ่งใหญ่กว้างที่สุดในชีท ⑧ เปลวไฟอยู่ในตัววัตถุ ไม่เรืองบนพื้นเขียว
+
+---
+
+## ชีท 12 · ของเล็กบนโต๊ะและต้นไม้ (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `tankards` · `plate-food` · `stew-pot` · `candles-cluster` · `book-scrolls` · `wine-set` · `plant-large` · `plant-fern` · `flower-vase`
+
+ใช้แทน: ต้นไม้ในกระถาง (`plant` ที่ตอนนี้เป็นโค้ดวาด) · และเป็นของวางบนโต๊ะ/เคาน์เตอร์ใหม่ (ชิ้น 1–6 และ 9 เล็กมาก ให้วางซ้อนบนโต๊ะได้) · **ชิ้นเล็กวาดใหญ่เต็มช่องให้ชัด เกมย่อเอง**
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG interior (small table props and potted plants): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no floor tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people. Flames stay inside the object's own silhouette and never spill onto the green.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2.
+
+SCALE: pieces 1 to 6 and 9 are tiny tabletop props: draw each one LARGE, filling about 60% of its cell width, with its flat base (a small circle or square resting surface) centred horizontally at about 78% of the cell height. They will be shrunk a lot in the game, so keep their silhouettes bold and simple and their details readable at small size. Pieces 7 and 8 are floor-standing potted plants: they sit on a floor tile diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width, the pot centred at 78% of the cell height; the large plant is about 1.2 tile-widths tall and the fern about 0.7. Leave at least 10% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (pewter and glass highlights, glazed clay, leaf veins, wax, parchment, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: pewter and brass, glazed terracotta and cream ceramic, warm oak, leaf greens, muted red wine and amber ale, cream wax and parchment, slightly desaturated so the pieces match the attached reference images and the previous sheets (same outline weight, same detail level).
+
+CONTENT, row by row, left to right:
+1. Tankards: three chunky pewter and wooden beer tankards of different heights, one with foam running over the rim, grouped tightly on a small round wooden tray.
+2. Plate of food: a round pewter plate with a hunk of rustic bread, a wedge of cheese, two apples and a small knife.
+3. Stew pot: a squat iron pot with a lid slightly open and steam wisps (kept short), a ladle in it and two small wooden bowls of stew beside it on a wooden board.
+4. Candle cluster: three cream wax candles of different heights in a brass dish, melted wax drips, small steady flames (the only glow).
+5. Books and scrolls: a neat stack of three leather-bound books with a brass-cornered top book, a rolled parchment scroll tied with a ribbon leaning on it (no writing).
+6. Wine set: a glass wine bottle with a cork, a clay jug and two glazed goblets, one filled with deep red wine, on a small round tray.
+7. Large potted plant, floor-standing: a big glazed terracotta pot with a lush broad-leaved indoor plant (green leaves, a few lighter new leaves), about 1.2 tile-widths tall.
+8. Potted fern: a smaller cream-coloured ceramic pot with a bushy fern, about 0.7 tile-widths tall.
+9. Flower vase: a small blue-and-cream ceramic vase with a bouquet of wildflowers (daisies, lavender, poppies).
+
+Each piece is a complete object fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 12**: เหมือนชีทก่อน + ⑥ ชิ้นเล็กฐานแบนเรียบวางบนโต๊ะได้ ⑦ เปลวเทียนอยู่ในตัววัตถุ ⑧ ไม่มีตัวหนังสือบนหนังสือ/ม้วนกระดาษ ⑨ ต้นไม้ 2 ต้นสูงต่างกัน
