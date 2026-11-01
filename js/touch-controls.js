@@ -21,7 +21,13 @@
   const blocked = () => !visible() || !!doc.querySelector('dialog[open]') || (adapter?.paused?.() ?? false);
 
   /* ---- direction ---- */
+  /* The game is drawn in 2:1 isometric: its floor axes run at ±26.57° on screen, not ±45°. So "up-right" must travel along the up-right floor axis.
+     vec() = the raw stick / key direction with the vertical half squashed (45° in → 26.57° out), same length. rawVec() = the plain direction (radial menu, UI). */
   function vec() {
+    const r = rawVec(), m = Math.hypot(r.x, r.y); if (!m) return r;
+    const x = r.x, y = r.y * .5, k = m / (Math.hypot(x, y) || 1); return { x: x * k, y: y * k };
+  }
+  function rawVec() {
     if (blocked()) return { x: 0, y: 0 };
     if (stick.on && Math.hypot(stick.x, stick.y) > 0) return { x: stick.x, y: stick.y };
     if (Math.hypot(padV.x, padV.y) > .01) return { x: padV.x, y: padV.y };
@@ -121,7 +127,7 @@
     if (btn.down) {
       btn.t += dt;
       if (!btn.radial && btn.t >= HOLD && ctx?.options?.length > 1) openRadial();
-      if (btn.radial) { const v = vec(); pickDir(v.x, v.y) }
+      if (btn.radial) { const v = rawVec(); pickDir(v.x, v.y) }
     }
     cool = Math.max(0, cool - dt);
     if (visible() && !blocked() && moving()) { try { ctx = adapter.context?.() || null } catch (e) { } }   /* fresh while walking: a door is passed in a fraction of a second */
