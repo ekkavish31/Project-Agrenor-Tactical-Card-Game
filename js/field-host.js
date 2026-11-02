@@ -209,16 +209,16 @@ function paintGround() {
    [file, size in world px, 'h' = height or 'w' = width] */
 const PA = 'assets/', PROP_ART = {
   /* trees are ×2 (v97.01): a 2×2-cell block each */
-  tree: { forest: [['tactics/tree', 248, 'h'], ['village-town/nature/broadleaf', 248, 'h'], ['village-town/nature/old-oak', 240, 'h'], ['village-town/nature/tree-round', 208, 'h']],
-    _: [['tactics/tree', 256, 'h'], ['village-town/nature/broadleaf', 256, 'h'], ['village-town/nature/tree-round', 216, 'h'], ['village-town/nature/tree-round-2', 200, 'h'], ['village-town/nature/tree-blossom', 236, 'h']] },
-  pine: { snow: [['village-town/edge/snow-pine-m', 264, 'h'], ['village-town/edge/snow-pine-l', 280, 'h']], _: [['tactics/props/pine', 280, 'h'], ['village-town/nature/tree-conifer', 256, 'h']] },
+  tree: { forest: [['tactics/tree', 248, 'h'], ['village-town/nature/broadleaf', 248, 'h'], ['village-town/nature/old-oak', 240, 'h'], ['village-town/nature/tree-round', 208, 'h'], ['village-town/nature/w1-oak-tree', 248, 'h']],
+    _: [['tactics/tree', 256, 'h'], ['village-town/nature/broadleaf', 256, 'h'], ['village-town/nature/tree-round', 216, 'h'], ['village-town/nature/tree-round-2', 200, 'h'], ['village-town/nature/tree-blossom', 236, 'h'], ['village-town/nature/w1-autumn-tree', 236, 'h']] },
+  pine: { snow: [['village-town/edge/snow-pine-m', 264, 'h'], ['village-town/edge/snow-pine-l', 280, 'h'], ['village-town/nature/w1-snow-pine', 272, 'h']], _: [['tactics/props/pine', 280, 'h'], ['village-town/nature/tree-conifer', 256, 'h'], ['village-town/nature/w1-fir-tree', 268, 'h']] },
   rock: { snow: [['village-town/edge/snow-rock-m', 54, 'w'], ['village-town/edge/snow-rock-s', 44, 'w']], hills: [['tactics/rock', 54, 'w'], ['tactics/props/standstone', 64, 'h'], ['village-town/nature/rock-cluster', 56, 'w']],
     sand: [['tactics/rock', 52, 'w'], ['tactics/props/standstone', 62, 'h']], forest: [['tactics/props/mossrock', 54, 'w'], ['village-town/nature/rock-cluster', 56, 'w'], ['tactics/decor/mushrooms', 46, 'w'], ['tactics/props/log', 56, 'w'], ['tactics/stump', 46, 'w']],
     swamp: [['tactics/props/mossrock', 52, 'w'], ['village-town/edge/coast-rocks-s', 56, 'w'], ['tactics/props/log', 54, 'w'], ['tactics/stump', 44, 'w']], _: [['tactics/rock', 52, 'w'], ['tactics/props/mossrock', 52, 'w'], ['village-town/nature/rock-cluster', 56, 'w']] },
   boulder: { snow: [['village-town/edge/snow-rock-l', 66, 'w']], _: [['tactics/rock', 64, 'w'], ['tactics/props/mossrock', 64, 'w']] },
-  bush: { snow: [['village-town/edge/frozen-bush', 46, 'w']], _: [['village-town/nature/bush-small', 46, 'w'], ['tactics/props/bush', 52, 'w']] },
+  bush: { snow: [['village-town/edge/frozen-bush', 46, 'w']], _: [['village-town/nature/bush-small', 46, 'w'], ['tactics/props/bush', 52, 'w'], ['village-town/nature/w1-bush-flowers', 54, 'w']] },
   pillar: { _: [['tactics/pillar', 112, 'h']] },
-  deadtree: { _: [['tactics/props/deadtree', 236, 'h'], ['tactics/props/deadtree', 208, 'h']] },
+  deadtree: { _: [['village-town/nature/w1-dead-tree', 236, 'h'], ['village-town/nature/w1-swamp-willow', 236, 'h'], ['tactics/props/deadtree', 208, 'h']] },
   cactus: { _: [['tactics/props/cactus', 72, 'h']] }   // deadtree / cactus pictures are planned (docs/ART-TODO.md): code drawing until they exist
 };
 const PIMG = {};

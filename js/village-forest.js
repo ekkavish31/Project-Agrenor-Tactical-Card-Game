@@ -8,8 +8,8 @@
    objects() feeds the depth-sorted draw list of village-town.html, like TownBiome.objects(). */
 (function (root) {
   'use strict';
-  const TREES = [['broadleaf', 230, 5], ['old-oak', 250, 3], ['tree-round', 190, 4], ['tree-round-2', 175, 3], ['pine', 215, 4], ['tree-conifer', 200, 3], ['tree-blossom', 185, .35]];
-  const UNDER = [['bush-small', 74, 5], ['rock-cluster', 66, 2], ['tall-grass', 64, 3]];
+  const TREES = [['broadleaf', 230, 5], ['old-oak', 250, 3], ['tree-round', 190, 4], ['tree-round-2', 175, 3], ['pine', 215, 4], ['tree-conifer', 200, 3], ['tree-blossom', 185, .35], ['w1-oak-tree', 235, 3], ['w1-oak-grove', 250, 1.5], ['w1-fir-tree', 215, 2], ['w1-autumn-tree', 215, .8]];
+  const UNDER = [['bush-small', 74, 5], ['rock-cluster', 66, 2], ['tall-grass', 64, 3], ['w1-bush-flowers', 80, 3]];
   const img = {}; for (const [n] of [...TREES, ...UNDER]) { const im = new Image(); im.onload = () => { try { terrainDirty = true } catch (e) { } }; im.src = 'assets/village-town/nature/' + n + '.webp'; img[n] = im }
   const SECT = 48, MARGIN = 230, CORRIDOR = 190;
   let rim = null, items = null, mid = null, roadsAt = null;

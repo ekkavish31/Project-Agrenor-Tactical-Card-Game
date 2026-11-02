@@ -652,7 +652,7 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 
 ---
 
-## ชีท W1 · ต้นไม้และพืช (แมพผจญภัย) (3×3 = 9 ช่อง)
+## ชีท W1 ✅ ใช้ในเกมแล้ว (v98.53) · ต้นไม้และพืช (แมพผจญภัย) (3×3 = 9 ช่อง)
 
 ลำดับช่อง → ชื่อไฟล์: `oak-tree` · `oak-grove` · `pine-tree` · `snow-pine` · `dead-tree` · `swamp-willow` · `autumn-tree` · `bush-cluster` · `reeds`
 
