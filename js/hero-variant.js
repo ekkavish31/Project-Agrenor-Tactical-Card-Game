@@ -9,10 +9,12 @@
   const KEY = 'projectA.heroVariant', DIRS = ['SW', 'SE', 'NW', 'NE'];
   const dir = (f, d) => `assets/characters/${f}/idle-${d.toLowerCase()}.webp`;
   const VARIANTS = {
-    default: { name: 'นักผจญภัย', sub: 'ต้นแบบเดิมของเกม', preview: null },
+    male: { name: 'นักผจญภัยชาย', sub: 'ผมสีเกาลัด · ผ้าคลุมเขียว (ตัวเริ่มต้น)', idle: Object.fromEntries(DIRS.map(d => [d, dir('hero-male', d)])) },
+    classic: { name: 'ตัวเดิม (เก็บไว้)', sub: 'ต้นแบบเก่าของเกม', preview: null, hidden: true },
     female: { name: 'นักผจญภัยหญิง', sub: 'ผมหางม้า · ผ้าคลุมเขียว', idle: Object.fromEntries(DIRS.map(d => [d, dir('hero-female', d)])) }
   };
-  const get = () => { try { const v = localStorage.getItem(KEY); return VARIANTS[v] ? v : 'default' } catch (e) { return 'default' } };
+  const DEFAULT = 'male';   /* v98.71 · the new male hero replaced the original art as the starting look; the old one stays as the hidden variant `classic` */
+  const get = () => { try { const v = localStorage.getItem(KEY); return VARIANTS[v] ? v : DEFAULT } catch (e) { return DEFAULT } };
   const T = () => (typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES : null);
   const original = {};   // the untouched idle picture per direction (for the picker preview)
   function apply(id) {
@@ -36,5 +38,5 @@
   }
   const previewOf = id => VARIANTS[id].idle?.SW || original.SW || (T() && T().directions.SW.idle.src);
   apply(get());
-  root.HeroVariant = { VARIANTS, get, set, apply, previewOf, DIRS };
+  root.HeroVariant = { VARIANTS, DEFAULT, get, set, apply, previewOf, DIRS };
 })(globalThis);
