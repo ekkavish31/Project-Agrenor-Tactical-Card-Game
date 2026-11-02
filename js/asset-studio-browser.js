@@ -24,9 +24,19 @@
   }}
   const heroIds=new Set(active.filter(a=>C.owner(a,meta).id==='hero').map(a=>a.id));return raw.filter(c=>(!/(?:walk|run)/i.test(c.action)||!c.frames.some(f=>heroIds.has(f.assetId))||c.id.startsWith('runtime:hero:walk:'))&&(!runtime.tactics?._studioCreatedDirections?.has(c.view)||c.action==='walk'));
  }
- function rebuild(){state.model=C.build(M,clipsFor(M),meta);return state.model}
+ /* v98.76 · with the male / female look open, the hero shows only that look: the registered still pictures of the original hero are hidden */
+ const lookOnly=entities=>{const classic=window.StudioVariants?.active==='classic',byId=new Map((M.assets||[]).map(a=>[a.id,a]));
+  for(const e of entities)if(e.id==='hero'){
+   if(!classic)e.clips=e.clips.filter(c=>!String(c.id).startsWith('static:'));
+   else{e.clips=e.clips.filter(c=>!(String(c.id).startsWith('static:')&&c.frames.some(f=>byId.get(f.assetId)?.variant)));e.assets=(e.assets||[]).filter(a=>!a.variant)}}   /* the male / female pictures stay out of the original hero's lists */
+  return entities};
+ /* The catalog only attaches a clip to a character through its registered pictures, so the files a look uses are registered once (category tactics-hero, tagged with the look). */
+ function registerLookAssets(id,t){const have=new Set((M.assets||[]).map(a=>a.file)),files=new Set();
+  for(const D of Object.values(t?.directions||{}))for(const pose of ['idle','walk','windup','strike','guard','hit','down'])for(const f of [...(D[pose+'Frames']||[]),...(pose==='walk'?D.walk||[]:[]),D[pose]].filter(Boolean))if(f.src&&!/^data:|^blob:/.test(f.src))files.add(f.src);
+  for(const file of files)if(!have.has(file))M.assets.push({id:'look-'+id+'-'+file.replace(/^assets\//,'').replace(/\.[a-z]+$/i,'').replace(/[^a-z0-9]+/gi,'-'),file,category:'tactics-hero',status:'final',size:[384,384],transparent:true,view:'',pose:'',variant:id,studioOwner:{id:'hero',name:'ตัวหลัก · Hero',group:'characters'}})}
+ function rebuild(){state.model=lookOnly(C.build(M,clipsFor(M),meta));return state.model}
  // Share one catalog between matrix and the detailed reviewer, including static assets.
- R.catalog=function(manifest){return C.build(manifest,clipsFor(manifest),meta).flatMap(e=>e.clips)};
+ R.catalog=function(manifest){return lookOnly(C.build(manifest,clipsFor(manifest),meta)).flatMap(e=>e.clips)};
  function entity(){return state.model.find(e=>e.id===state.entity)}
  function reviewStatus(c){
   let status='unreviewed';try{let store=JSON.parse(localStorage.getItem('asset-animation-reviews-v1')||'{}'),r=store[R.signature(c)];r=r||M.studioReviews?.[R.signature(c)];status=Object.values(r?.frames||{}).some(f=>f.flagged)?'needsfix':r?.status||status}catch{}
@@ -54,7 +64,20 @@
   $('entitySearch').oninput=e=>{let caret=e.target.selectionStart;state.entityQuery=e.target.value;renderNav();$('entitySearch').focus();$('entitySearch').setSelectionRange(caret,caret)};
   $('cats').querySelectorAll('[data-entity]').forEach(b=>b.onclick=()=>{state.entity=b.dataset.entity;sel=null;selected=null;document.body.classList.remove('detail-open');render();$('gridWrap').scrollTop=0});hydrate($('cats'));
  }
- function renderEntity(){let e=entity();$('filters').innerHTML='';state.entries=[];previewObserver.disconnect();viewed.clear();
+ /* v98.76 · hero looks (ตัวเดิม / ชาย / หญิง): the open look's edits sit at the top level of the manifest, see js/studio-variants.js */
+ let pristine=null;
+ function setLook(id){const V=window.StudioVariants;if(!V||id===V.active)return;
+  if(hasWork()&&!confirm('มีเฟรมที่ยังรอใช้อยู่ ถ้าเปลี่ยนรูปลักษณ์ตอนนี้ งานที่ค้างอาจปนกับตัวใหม่ · เปลี่ยนต่อไหม?'))return;
+  if(!V.switchTo(M,id))return;
+  if(!pristine&&runtime.tactics)pristine=JSON.parse(JSON.stringify(runtime.tactics));
+  if(pristine){const t=JSON.parse(JSON.stringify(pristine));window.StudioWalks?.apply(t,{});   /* creates the base snapshots the rebase needs */
+   if(id!=='classic'&&window.HeroVariant){HeroVariant.defaultsTo(t,id);HeroVariant.rebase(t)}
+   runtime.tactics=t;if(id!=='classic')registerLookAssets(id,t)}
+  imageCache.clear();state.generation++;rebuild();render();try{detail()}catch(e){}toast('กำลังแก้: '+V.LOOKS.find(l=>l[0]===id)[1])}
+ function lookBar(e){const V=window.StudioVariants,box=$('filters');if(!V||e?.id!=='hero')return;
+  box.innerHTML='<div class="look-bar" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0"><b style="font-size:12px">รูปลักษณ์ตัวเอก</b>'+V.LOOKS.map(([id,name])=>`<button data-look="${id}" class="${V.active===id?'on':''}" style="padding:4px 10px;border-radius:14px;border:1px solid #b9a56a;background:${V.active===id?'#e8c766':'#fff8e4'};cursor:pointer">${name}</button>`).join('')+'<small style="color:#6b7963;flex-basis:100%">แต่ละแบบเก็บชุดเดิน/ท่าแยกกัน · ตัวเดิมคือชุดเก่าของเกม · ชาย/หญิงคือตัวที่ใช้อยู่ในเกมตอนนี้</small></div>';
+  box.querySelectorAll('[data-look]').forEach(b=>b.onclick=()=>setLook(b.dataset.look))}
+ function renderEntity(){let e=entity();$('filters').innerHTML='';lookBar(e);state.entries=[];previewObserver.disconnect();viewed.clear();
   if(!e){$('grid').innerHTML='<div class="entity-empty">เลือกตัวหรือวัตถุทางซ้าย<p>ถ้าไม่มีรายการ ลองเชื่อมโฟลเดอร์เกมหรือเปลี่ยนหมวด</p></div>';return}
   let clips=e.clips.filter(visible),matrixClips=clips.filter(c=>c.kind!=='static'||c.view!=='—'&&/idle|walk|windup|strike|guard|hit|down/.test(c.action));
   let views=dirs.filter(d=>matrixClips.some(c=>c.view===d));for(let c of matrixClips)if(!views.includes(c.view))views.push(c.view);
@@ -115,7 +138,7 @@
    let tactics=await optional(h,'js/tactics-sprites.js',s=>C.jsonAssignment(s,'TACTICS_SPRITES'));
    let enemySource=await optional(h,'js/tactics-core.js',s=>s),nextMeta=enemySource?C.enemyMetadata(enemySource):{};
    if(hero&&!hero.clips)throw new Error('animation-data ไม่มี clips');
-   clearCaches();dir=h;savedHandle=h;scanned=paths;manifestJsonPath=info.json;manifestJsPath=info.js;for(let k of Object.keys(M))delete M[k];Object.assign(M,info.m);runtime={hero,tactics};meta=nextMeta;
+   clearCaches();dir=h;savedHandle=h;scanned=paths;manifestJsonPath=info.json;manifestJsPath=info.js;for(let k of Object.keys(M))delete M[k];Object.assign(M,info.m);runtime={hero,tactics};meta=nextMeta;window.StudioVariants?.reset();pristine=tactics?JSON.parse(JSON.stringify(tactics)):null;
    sel=null;selected=null;source=null;result=null;CS=null;sessionStorage.removeItem('asset-batch-sel');for(let id of ['selNone'])$(id)?.click();
    // Keep unregistered image files accessible, without adding them to the game manifest.
    await idbSet('dir',h);resetClock();render();detail();toast('เชื่อม '+h.name+' แล้ว · '+paths.size+' ภาพ');

@@ -24,10 +24,13 @@
   const get = () => { try { const v = localStorage.getItem(KEY); return VARIANTS[v] ? v : DEFAULT } catch (e) { return DEFAULT } };
   const T = () => (typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES : null);
   const original = {};   // the untouched idle picture per direction (for the picker preview)
-  function apply(id) {
-    const t = T(), v = VARIANTS[id]; if (!t) return false;
-    for (const d of DIRS) { const D = t.directions[d]; if (D?.idle && !original[d]) original[d] = D.idle.src }
-    if (!v?.idle) return true;
+  const POSES = ['idle', 'windup', 'strike', 'guard', 'hit', 'down'];
+  const clone = x => JSON.parse(JSON.stringify(x));
+  /* v98.76 · what Asset Studio edits per look (one bucket each, same shape as the top level of the manifest) — see js/studio-variants.js */
+  const STUDIO_KEYS = ['studioWalks', 'studioWalkMirrors', 'studioWalkHistory', 'studioPoses', 'studioPoseMirrors', 'studioPoseHistory'];
+  /* The look's default pictures on any sprite table (the game's own, or a copy the studio is previewing). */
+  function defaultsTo(t, id) {
+    const v = VARIANTS[id]; if (!t || !v?.idle) return false;
     for (const d of DIRS) {
       const D = t.directions[d]; if (!D || !v.idle[d]) continue;
       const e = { ...D.idle, src: v.idle[d], flipImage: false, mirrored: false };
@@ -39,6 +42,22 @@
     }
     return true;
   }
+  /* Make the look's pictures the starting point for StudioWalks.apply (which otherwise rebuilds from the original hero's sprites). */
+  function rebase(t) {
+    if (!t?._studioBaseWalks || !t._studioBasePoses) return false;
+    for (const d of DIRS) { const D = t.directions[d]; if (!D) continue; t._studioBaseWalks[d] = clone(D.walk || []); t._studioBasePoses[d] = clone(Object.fromEntries(POSES.filter(k => D[k]).map(k => [k, D[k]]))) }
+    return true;
+  }
+  function apply(id) {
+    const t = T(); if (!t) return false;
+    for (const d of DIRS) { const D = t.directions[d]; if (D?.idle && !original[d]) original[d] = D.idle.src }
+    if (!VARIANTS[id]?.idle) return true;
+    defaultsTo(t, id);
+    /* edits made in Asset Studio for this look (manifest.heroVariants[id]) sit on top of the defaults; none yet → nothing changes */
+    const b = root.ASSET_MANIFEST?.heroVariants?.[id];
+    if (b && root.StudioWalks && rebase(t)) root.StudioWalks.apply(t, { assets: root.ASSET_MANIFEST.assets, ...Object.fromEntries(STUDIO_KEYS.filter(k => b[k]).map(k => [k, b[k]])) });
+    return true;
+  }
   function set(id) {
     if (!VARIANTS[id]) return false;
     try { localStorage.setItem(KEY, id) } catch (e) { }
@@ -46,6 +65,6 @@
     return true;
   }
   const previewOf = id => VARIANTS[id].idle?.SW || original.SW || (T() && T().directions.SW.idle.src);
-  apply(get());
-  root.HeroVariant = { VARIANTS, DEFAULT, get, set, apply, previewOf, DIRS };
+  if (!root.__HERO_VARIANT_NO_AUTO) apply(get());
+  root.HeroVariant = { VARIANTS, DEFAULT, get, set, apply, defaultsTo, rebase, previewOf, DIRS, STUDIO_KEYS };
 })(globalThis);
