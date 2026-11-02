@@ -1033,3 +1033,34 @@ Every cell is a full-bleed seamless square texture. No objects, no text, no grou
 ```
 
 **ตรวจรับชีท B2**: ① ทุกช่องเต็มสี่เหลี่ยม ไม่มีเขียว ② ไม่มีเงาหรือแสงไล่ ③ วางต่อกัน 2×2 แล้วขอบเนียน ④ รอยแตกลาวาไม่เรืองจัดเกินไป
+
+---
+
+## ชีทตัวละครในสนามต่อสู้ C1 · เพื่อนร่วมทีม (ทีละคน · 6 คอลัมน์ × 2 แถว = 12 ช่อง)
+
+เริ่มจาก **บรัม** (ต้นแบบ) แล้วสลับคำบรรยายตัวละครเป็น เคียร์ · ลูน่า · มิล ตามลำดับ · แนบรูปอ้างอิง **ตัวเอก** (`assets/hero.webp` และท่าในสนามที่มีอยู่แล้ว) เพื่อให้สไตล์ชิบิเท่ากัน · ชื่อไฟล์ที่ตัดแล้ว: `tactics/<ชื่อ>_<ทิศ>_<ท่า>.webp` เช่น `bram_se_idle`
+
+ท่า ซ้าย→ขวา: **idle · windup · strike · guard · hit · down** · แถว 1 = หันล่างขวา (SE) · แถว 2 = หันบนขวา (NE มองจากด้านหลัง) · ทิศซ้ายเกมกลับภาพเอง
+
+```
+A GAME SPRITE ATLAS for a 2.5D grid-battle RPG: exactly 6 columns × 2 rows of equal square cells (12 cells), one pose of the SAME character per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels. The character is the companion BRAM: a stocky young warrior with a war hammer and a round wooden shield, sturdy brown leather armour over a green tunic, steel shoulder plate, short dark hair, friendly determined face, chibi-style proportions (head about one third of the body height) exactly matching the attached hero reference in drawing style, outline weight, level of detail and scale.
+
+CAMERA (identical for every cell): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the character; orthographic, vertical lines stay vertical. ROW 1: the character faces the lower-right (south-east): you see the face, the front of the body and the left side. ROW 2: the character faces the upper-right (north-east), seen from behind: you see the back of the head, the back of the armour and the cape/pack, and the left side.
+
+SCALE: the character, standing, is about 62% of the cell height and about 36% of the cell width; the feet (ground-contact point, between the two feet) are centred horizontally at about 82% of the cell height, the same baseline in all twelve cells. Leave at least 6% empty margin; nothing touches the cell edges. The character must keep exactly the same size, proportions, colours, armour details and hair in all twelve cells.
+
+POSES, columns left to right:
+1. idle: standing relaxed, hammer resting on the right shoulder, shield on the left arm at his side.
+2. windup: hammer raised high behind the head with both feet planted wide, body leaning back, shield pulled in.
+3. strike: mid-swing, hammer smashing down in front, body lunging forward, a small motion smear on the hammer head (painted, not a glow outside the silhouette).
+4. guard: crouched slightly behind the raised round shield held in front, hammer low behind, braced stance.
+5. hit: recoiling backward from a blow, head thrown back, eyes shut tight, weapon loose, one foot lifting.
+6. down: knocked down, lying on the ground on his back (row 1) or on his front (row 2), limbs relaxed, shield beside him; this pose is wide and low, about 70% of the cell width and 28% of its height, resting on the same baseline.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich readable leather, steel and cloth detail. Warm amber lighting from the upper-left front: tops and left sides lit, right sides in gentle shadow, a thin warm rim light on the upper edges. No cast shadow (the game draws its own). Palette: warm brown leather, olive-green tunic, steel grey, muted red scarf accent, slightly desaturated to match the hero reference.
+
+Each pose is a complete character fully inside its own cell. No text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท C1**: ① ตัวเดียวกันทั้ง 12 ช่อง ขนาด สี เกราะเท่ากัน ② แถว 1 เห็นหน้า แถว 2 เห็นหลัง ③ ฐานเท้าอยู่ระดับเดียวกัน (ท่า down ราบกับพื้นเดียวกัน) ④ สไตล์ตรงกับตัวเอก
+**สลับตัวละคร**: เคียร์ = นักดาบผอมสูงเสื้อคลุมสั้น ถือดาบเดี่ยว · ลูน่า = นักเวทหญิงฮู้ดสีม่วง ถือไม้เท้า (ท่า strike = ปล่อยเวท ท่า windup = ยกไม้เท้า) · มิล = นักดาบเด็กตัวเล็กผ้าพันคอใหญ่ ถือดาบสั้น (ตัวเล็กกว่าคนอื่น ประมาณ 52% ของความสูงช่อง)

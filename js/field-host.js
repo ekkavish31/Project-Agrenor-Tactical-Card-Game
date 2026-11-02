@@ -44,12 +44,12 @@ const FIELD = (function () {
   const rnd = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 };
   /* share of cells: small blocking prop (1×1), big trees (share of the field COVERED by 2×2 trees), slow ground, cover */
   const MIX = {
-    forest: { block: .04, big: .08, props: ['rock', 'rock', 'bush'], bigProps: ['tree'], slow: .06, cover: .16, slowMat: 'mud', coverMat: 'moss' },
-    grass: { block: .03, big: .03, props: ['rock', 'bush'], bigProps: ['tree'], slow: .03, cover: .16, slowMat: 'mud', coverMat: 'clover' },
-    hills: { block: .10, big: 0, props: ['rock', 'rock', 'boulder'], bigProps: [], slow: .12, cover: .07, slowMat: 'sand', coverMat: 'moss' },
-    swamp: { block: .09, big: .04, props: ['pool'], bigProps: ['deadtree'], slow: .22, cover: .12, slowMat: 'mud', coverMat: 'moss' },
-    snow: { block: .03, big: .05, props: ['rock'], bigProps: ['pine'], slow: .2, cover: .05, slowMat: 'snow', coverMat: 'moss' },
-    sand: { block: .06, big: 0, props: ['rock', 'cactus'], bigProps: [], slow: .12, cover: .06, slowMat: 'sand', coverMat: 'clover' }
+    forest: { block: .04, big: .08, props: ['rock', 'rock', 'bush', 'tent', 'barricade'], bigProps: ['tree', 'tree', 'fallentree', 'wagon'], slow: .06, cover: .16, slowMat: 'mud', coverMat: 'moss' },
+    grass: { block: .03, big: .03, props: ['rock', 'bush', 'barricade', 'bones'], bigProps: ['tree', 'tree', 'wagon', 'fallentree'], slow: .03, cover: .16, slowMat: 'mud', coverMat: 'clover' },
+    hills: { block: .10, big: .03, props: ['rock', 'rock', 'boulder', 'bones'], bigProps: ['brokenwall', 'wagon'], slow: .12, cover: .07, slowMat: 'sand', coverMat: 'moss' },
+    swamp: { block: .09, big: .04, props: ['pool', 'bones'], bigProps: ['deadtree', 'fallentree'], slow: .22, cover: .12, slowMat: 'mud', coverMat: 'moss' },
+    snow: { block: .03, big: .05, props: ['rock', 'iceblock', 'iceblock', 'tent'], bigProps: ['pine', 'pine', 'wagon'], slow: .2, cover: .05, slowMat: 'snow', coverMat: 'moss' },
+    sand: { block: .06, big: .02, props: ['rock', 'cactus', 'cactus', 'bones'], bigProps: ['wagon', 'brokenwall'], slow: .12, cover: .06, slowMat: 'sand', coverMat: 'clover' }
   }[biome];
   /* v97.01: the field is 1.7× wider than the ?r the host asks for (r 7 → R 12 = 25×25 instead of 15×15; r 5 → R 9) */
   const R = Math.max(6, Math.min(13, Math.round((+FQ.get('r') || 7) * 1.7))), cells = new Map(), key = (u, v) => u + ',' + v;
@@ -217,9 +217,11 @@ const PA = 'assets/', PROP_ART = {
     swamp: [['tactics/props/mossrock', 52, 'w'], ['village-town/edge/coast-rocks-s', 56, 'w'], ['tactics/props/log', 54, 'w'], ['tactics/stump', 44, 'w']], _: [['tactics/rock', 52, 'w'], ['tactics/props/mossrock', 52, 'w'], ['village-town/nature/rock-cluster', 56, 'w']] },
   boulder: { snow: [['village-town/edge/snow-rock-l', 66, 'w']], _: [['tactics/rock', 64, 'w'], ['tactics/props/mossrock', 64, 'w']] },
   bush: { snow: [['village-town/edge/frozen-bush', 46, 'w']], _: [['village-town/nature/bush-small', 46, 'w'], ['tactics/props/bush', 52, 'w'], ['village-town/nature/w1-bush-flowers', 54, 'w']] },
-  pillar: { _: [['tactics/pillar', 112, 'h']] },
+  pillar: { _: [['tactics/props/b1-ruined-pillar', 124, 'h'], ['tactics/pillar', 112, 'h']] },
+  wagon: { _: [['tactics/props/b1-wrecked-wagon', 190, 'w']] }, fallentree: { _: [['tactics/props/b1-fallen-tree', 200, 'w']] }, brokenwall: { _: [['tactics/props/b1-broken-wall', 190, 'w']] },
+  tent: { _: [['tactics/props/b1-tent-ruin', 84, 'w']] }, bones: { _: [['tactics/props/b1-bone-pile', 80, 'w']] }, iceblock: { _: [['tactics/props/b1-ice-block', 70, 'w']] }, barricade: { _: [['tactics/props/b1-barricade', 82, 'w']] },
   deadtree: { _: [['village-town/nature/w1-dead-tree', 236, 'h'], ['village-town/nature/w1-swamp-willow', 236, 'h'], ['tactics/props/deadtree', 208, 'h']] },
-  cactus: { _: [['tactics/props/cactus', 72, 'h']] }   // deadtree / cactus pictures are planned (docs/ART-TODO.md): code drawing until they exist
+  cactus: { _: [['tactics/props/b1-cactus', 84, 'h'], ['tactics/props/cactus', 72, 'h']] }   // deadtree / cactus pictures are planned (docs/ART-TODO.md): code drawing until they exist
 };
 const PIMG = {};
 function propImg(f) {
@@ -246,6 +248,7 @@ function prop(ctx, kind, u, v, s, now, big) {
 }
 /* the code drawings (no picture yet, or still loading) */
 function propCode(ctx, kind, u, v, s, now, p, sw) {
+  if (['wagon', 'fallentree', 'brokenwall'].includes(kind)) kind = 'boulder'; else if (['tent', 'bones', 'iceblock', 'barricade'].includes(kind)) kind = 'rock';
   const shadow = (rx, ry) => { ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(p.x + 4, p.y + 2, rx, ry, 0, 0, 7); ctx.fill() };
   if (kind === 'tree' || kind === 'pine' || kind === 'deadtree') {
     const h = 64 + s * 26; shadow(20, 8);
