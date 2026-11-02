@@ -1376,6 +1376,30 @@ window.INTERIOR_ART={
   "fx": 135,
   "fy": 290,
   "k": 0.29
+ },
+ "farm-tree-oak": {
+  "src": "assets/village-town/nature/w1-oak-tree.webp",
+  "w": 329,
+  "h": 352,
+  "fx": 164,
+  "fy": 332,
+  "k": 0.33
+ },
+ "farm-tree-fir": {
+  "src": "assets/village-town/nature/w1-fir-tree.webp",
+  "w": 232,
+  "h": 383,
+  "fx": 116,
+  "fy": 369,
+  "k": 0.4
+ },
+ "farm-tree-grove": {
+  "src": "assets/village-town/nature/w1-oak-grove.webp",
+  "w": 424,
+  "h": 352,
+  "fx": 212,
+  "fy": 327,
+  "k": 0.3
  }
 };
 
@@ -1389,5 +1413,6 @@ window.INTERIOR_TEX={
  "wall-plaster": "assets/interior/tex-wall-plaster.webp",
  "wall-timber": "assets/interior/tex-wall-timber.webp",
  "wall-stone": "assets/interior/tex-wall-stone.webp",
- "wall-wood": "assets/interior/tex-wall-wood.webp"
+ "wall-wood": "assets/interior/tex-wall-wood.webp",
+ "floor-grass": "assets/village-town/grass.webp"
 };

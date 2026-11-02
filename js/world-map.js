@@ -328,6 +328,9 @@
       const lmk = h.enc.landmark;
       if (h.enc.type === 'battle') continue;   // v95.16: no battle marks — an ambush can happen on any step
       const bob = Math.sin(now * .004 + h.c) * 2, x = p.x, y = p.y - 6 + bob;
+      { const nm = { hamlet: 'village', tower: 'watchtower', outpost: 'watchtower', ruins: 'ruins', camp: 'frost-camp', shrine: 'standing-stones' }[h.enc.type], im = nm && LMIMG[nm], m = nm && LM[nm];
+        if (im && im.complete && im.naturalWidth) { const pul = (Math.sin(now * .003 + h.c * 2) + 1) / 2, kk = HW * 1.25 / m[4], gr = g.createRadialGradient(p.x, p.y, 4, p.x, p.y, HW * .75); g.save(); g.globalCompositeOperation = 'lighter'; gr.addColorStop(0, 'rgba(255,220,140,0)'); gr.addColorStop(.7, `rgba(255,220,140,${.12 + pul * .1})`); gr.addColorStop(1, 'rgba(255,220,140,0)'); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, HW * .75, 0, 7); g.fill(); g.restore();
+          g.save(); g.translate(p.x, p.y + bob * .4); g.scale(kk, kk); g.drawImage(im, -m[2], -m[3]); g.restore(); if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11); continue } }
       g.save(); g.fillStyle = lmk ? 'rgba(70,50,20,.85)' : 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, lmk ? 14 : 12, 0, 7); g.fill(); g.strokeStyle = lmk ? '#ffd27a' : '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
       g.font = '13px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
       if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11);
