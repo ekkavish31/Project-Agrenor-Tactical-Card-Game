@@ -1232,6 +1232,78 @@ window.INTERIOR_ART={
   "fx": 129,
   "fy": 230,
   "k": 0.16
+ },
+ "weapon-display-b": {
+  "src": "assets/interior/weapon-display-b.webp",
+  "w": 389,
+  "h": 385,
+  "fx": 194,
+  "fy": 295,
+  "k": 0.2679
+ },
+ "armor-display-b": {
+  "src": "assets/interior/armor-display-b.webp",
+  "w": 243,
+  "h": 373,
+  "fx": 121,
+  "fy": 319,
+  "k": 0.2291
+ },
+ "potion-display-b": {
+  "src": "assets/interior/potion-display-b.webp",
+  "w": 280,
+  "h": 310,
+  "fx": 140,
+  "fy": 245,
+  "k": 0.2164
+ },
+ "jewel-case-b": {
+  "src": "assets/interior/jewel-case-b.webp",
+  "w": 348,
+  "h": 323,
+  "fx": 174,
+  "fy": 243,
+  "k": 0.2543
+ },
+ "tool-stand-b": {
+  "src": "assets/interior/tool-stand-b.webp",
+  "w": 321,
+  "h": 394,
+  "fx": 160,
+  "fy": 323,
+  "k": 0.2056
+ },
+ "cloth-shelf-b": {
+  "src": "assets/interior/cloth-shelf-b.webp",
+  "w": 373,
+  "h": 400,
+  "fx": 186,
+  "fy": 314,
+  "k": 0.2838
+ },
+ "rug-barrel-b": {
+  "src": "assets/interior/rug-barrel-b.webp",
+  "w": 336,
+  "h": 390,
+  "fx": 168,
+  "fy": 316,
+  "k": 0.1875
+ },
+ "pack-rack-b": {
+  "src": "assets/interior/pack-rack-b.webp",
+  "w": 311,
+  "h": 388,
+  "fx": 155,
+  "fy": 319,
+  "k": 0.1988
+ },
+ "till-scale-b": {
+  "src": "assets/interior/till-scale-b.webp",
+  "w": 270,
+  "h": 293,
+  "fx": 135,
+  "fy": 234,
+  "k": 0.1535
  }
 };
 
