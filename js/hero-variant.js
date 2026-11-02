@@ -11,7 +11,9 @@
   const VARIANTS = {
     male: { name: 'นักผจญภัยชาย', sub: 'ผมสีเกาลัด · ผ้าคลุมเขียว (ตัวเริ่มต้น)', idle: Object.fromEntries(DIRS.map(d => [d, dir('hero-male', d)])) },
     classic: { name: 'ตัวเดิม (เก็บไว้)', sub: 'ต้นแบบเก่าของเกม', preview: null, hidden: true },
-    female: { name: 'นักผจญภัยหญิง', sub: 'ผมหางม้า · ผ้าคลุมเขียว', idle: Object.fromEntries(DIRS.map(d => [d, dir('hero-female', d)])) }
+    female: { name: 'นักผจญภัยหญิง', sub: 'ผมหางม้า · ผ้าคลุมเขียว', idle: Object.fromEntries(DIRS.map(d => [d, dir('hero-female', d)])),
+      /* v98.72 · real walk cycle: 12 frames facing SW; SE is the same frames mirrored. NW / NE (back views) still use the standing picture until their sheets exist */
+      walk: { SW: { frames: Array.from({ length: 12 }, (_, i) => `assets/characters/hero-female/walk-sw-${String(i + 1).padStart(2, '0')}.webp`), ms: 75 }, SE: { mirrorOf: 'SW' } } }
   };
   const DEFAULT = 'male';   /* v98.71 · the new male hero replaced the original art as the starting look; the old one stays as the hidden variant `classic` */
   const get = () => { try { const v = localStorage.getItem(KEY); return VARIANTS[v] ? v : DEFAULT } catch (e) { return DEFAULT } };
@@ -25,7 +27,9 @@
       const D = t.directions[d]; if (!D || !v.idle[d]) continue;
       const e = { ...D.idle, src: v.idle[d], flipImage: false, mirrored: false };
       D.idle = e; D.idleFrames = [e];
-      D.walk = [{ ...e, ms: 150 }, { ...e, ms: 150 }]; delete D['walk-left']; delete D['walk-right'];
+      const W = v.walk?.[d], WS = W?.mirrorOf ? v.walk[W.mirrorOf] : W;   /* a real walk cycle for this direction (or the mirror of another) */
+      D.walk = WS ? WS.frames.map(src => ({ ...e, src, ms: WS.ms || 90, flipImage: !!W.mirrorOf })) : [{ ...e, ms: 150 }, { ...e, ms: 150 }];
+      delete D['walk-left']; delete D['walk-right'];
       for (const p of ['windup', 'strike', 'guard', 'hit', 'down']) if (D[p]) D[p] = { ...D[p], src: v.idle[d], flipImage: false, mirrored: false };
     }
     return true;
