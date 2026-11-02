@@ -685,7 +685,7 @@ Each piece is a complete object fully inside its own cell. No people, no animals
 
 ---
 
-## ชีท W2 · เนิน ภูเขา และหิน (แมพผจญภัย) (3×3 = 9 ช่อง)
+## ชีท W2 ✅ ใช้ในเกมแล้ว (v98.51) · เนิน ภูเขา และหิน (แมพผจญภัย) (3×3 = 9 ช่อง)
 
 ลำดับช่อง → ชื่อไฟล์: `hill-small` · `hill-large` · `mountain` · `mountain-snow` · `mountain-range` · `boulders` · `ice-spires` · `mesa-cliff` · `marsh-mound`
 
