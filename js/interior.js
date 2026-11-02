@@ -323,7 +323,7 @@
   const CROP_COL = { lettuce: '#7ec850', carrot: '#4f9a3a', potato: '#5a8a3a', wheat: '#c9b04a', tomato: '#3f8a3a', strawberry: '#4a9a4a', pumpkin: '#4a8a3a', herb: '#3e9a5a', cabbage: '#6aa86a' };
   let farmCache = null, farmAt = 0;
   function farmG() { const now = performance.now(); if (!farmCache || now - farmAt > 500) { farmAt = now; const fp = farmPlot(S); farmCache = fp && window.Garden ? window.Garden.of(fp) : null } return farmCache }
-  const CROP_PIC = { lettuce: 1, carrot: 1, potato: 1 }, CROP_FX = {"lettuce-1": 110, "lettuce-2": 114, "lettuce-3": 118, "lettuce-4": 147, "carrot-1": 110, "carrot-2": 114, "carrot-3": 131, "carrot-4": 167, "potato-1": 110, "potato-2": 117, "potato-3": 135, "potato-4": 156}, CROP_IMG = {};
+  const CROP_PIC = { lettuce: 1, carrot: 1, potato: 1, wheat: 1, tomato: 1, strawberry: 1 }, CROP_FX = { "wheat-1": 112, "wheat-2": 118, "wheat-3": 122, "wheat-4": 147, "tomato-1": 112, "tomato-2": 117, "tomato-3": 127, "tomato-4": 136, "strawberry-1": 112, "strawberry-2": 119, "strawberry-3": 142, "strawberry-4": 151, "lettuce-1": 110, "lettuce-2": 114, "lettuce-3": 118, "lettuce-4": 147, "carrot-1": 110, "carrot-2": 114, "carrot-3": 131, "carrot-4": 167, "potato-1": 110, "potato-2": 117, "potato-3": 135, "potato-4": 156}, CROP_IMG = {};
   function cropPic(crop, stage, x, y) {
     if (!CROP_PIC[crop]) return false; const n = crop + '-' + stage, im = CROP_IMG[n] || (CROP_IMG[n] = Object.assign(new Image(), { src: 'assets/crops/' + n + '.webp' }));
     if (!im.complete || !im.naturalWidth) return false; const k = .19; g.drawImage(im, x - CROP_FX[n] * k, y - (im.naturalHeight - 30) * k, im.naturalWidth * k, im.naturalHeight * k); return true
