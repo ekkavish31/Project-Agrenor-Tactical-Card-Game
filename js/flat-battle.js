@@ -271,6 +271,7 @@
       if (u === hero(st)) { beginHeroTurn(st); steps.push({ type: 'turn', unit: u }); return steps }
       st.turn = 'monster'; st.cur = u; steps.push({ type: 'turn', unit: u }); if (u.side === 'hero') u.guard = 0;
       if (u.side === 'hero' && u.control && !u.autoCtl && !u.stun && st.cards) { beginAllyTurn(st, u); steps.push({ type: 'control', unit: u }); return steps }   /* v97.15 · the player commands this one */
+      if (u.side === 'monster' && evolveCheck(st, u, steps)) { st.cur = null; continue }   /* v98.58 · evolution eats the turn */
       steps.push(...aiAct(st, u)); st.cur = null; checkOutcome(st);
     }
     return steps;
@@ -493,11 +494,38 @@
   function setOrder(st, id, order) { const a = st.units.find(u => u.id === id && u.side === 'hero' && u !== hero(st)); if (a && ['charge', 'follow', 'guard'].includes(order)) a.order = order; return a }
   /* companions act at the end of the player phase (before endTurn) */
   function alliesTurn(st) { const steps = []; if (st.outcome || st.turn !== 'hero') return steps; for (const a of allies(st)) { if (!alive(a)) continue; steps.push(...aiAct(st, a)); if (st.outcome) break } return steps }
+  /* ---------- v98.58 · evolution (วิวัฒน์) — a monster that carries `u.evo` (the next form, built by the host from its monster table) may evolve
+     in the middle of the fight. The odds and triggers are HIDDEN from the player: a little each round from round 2 · wounded (≤ 50 % HP) ·
+     packmates already fallen · the hero close to death. Once per monster, never a boss, at most 2 per battle. The change eats that monster's turn.
+     u.evo = { kind, name, hp, atk, move, iq, shove, el, fly } → the unit becomes the next form with its stats (HP keeps at least 70 % of the new max). */
+  function evoChance(st, u) {
+    let p = 0; const h = hero(st);
+    if ((st.turns || 1) >= 2) p += .04;
+    if (u.hp <= u.maxHp * .5) p += .16;
+    p += Math.min(.24, .12 * monsters(st).filter(x => x !== u && !alive(x)).length);
+    if (h && h.hp <= h.maxHp * .35) p += .05;
+    return Math.min(.6, p);
+  }
+  function evolveNow(st, u, steps) {
+    const e = u.evo, from = { kind: u.kind, name: u.name, hp: u.hp, maxHp: u.maxHp, atk: u.atk };
+    const frac = u.maxHp ? u.hp / u.maxHp : 1;
+    u.kind = e.kind; u.name = '✦ ' + e.name; u.maxHp = e.hp; u.hp = Math.min(e.hp, Math.max(Math.round(e.hp * .7), Math.round(e.hp * frac)));
+    u.atk = e.atk; u.move = e.move; u.iq = Math.max(u.iq || 0, e.iq || 0); u.shove = !!e.shove; u.el = e.el; u.fly = !!e.fly;
+    u.evolved = true; u.evo = null; st.evoCount = (st.evoCount || 0) + 1; u.sts = {};
+    st.log.push(from.name + ' วิวัฒน์เป็น ' + e.name + '!');
+    steps.push({ unit: u, type: 'evolve', from, to: { kind: e.kind, name: e.name, hp: u.hp, maxHp: u.maxHp, atk: u.atk } });
+    return true;
+  }
+  function evolveCheck(st, u, steps, rnd) {
+    if (!u.evo || u.evolved || u.boss || u.side !== 'monster' || (st.evoCount || 0) >= 2) return false;
+    if ((rnd ? rnd() : Math.random()) >= evoChance(st, u)) return false;
+    return evolveNow(st, u, steps);
+  }
   /* the enemy phase: every living monster acts in turn, then the player phase starts. Returns the steps (for animation). */
   function monsterTurn(st) {
     const steps = [];
     if (st.outcome || st.turn !== 'monster') return steps;
-    for (const m of monsters(st)) { if (!alive(m)) continue; if (m.sts && tickStatus(st, m, steps)) { steps.push({ unit: m, type: 'sleep' }); continue } if (!alive(m) || st.outcome) { if (st.outcome) break; continue } st.cur = m; steps.push(...aiAct(st, m)); if (st.outcome) break }
+    for (const m of monsters(st)) { if (!alive(m)) continue; if (m.sts && tickStatus(st, m, steps)) { steps.push({ unit: m, type: 'sleep' }); continue } if (!alive(m) || st.outcome) { if (st.outcome) break; continue } st.cur = m; if (evolveCheck(st, m, steps)) continue; steps.push(...aiAct(st, m)); if (st.outcome) break }
     st.cur = null;
     if (!st.outcome) endTurn(st);
     return steps;
@@ -682,6 +710,6 @@
     if (!free(st, nu, nv, t) || lv(st, nu, nv) - lv(st, t.u, t.v) > 1) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -40,6 +40,8 @@
     /* v95.00: the training-ground scarecrow (does not move or hit back) */
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
+  /* v98.58 · evolution (วิวัฒน์): the next form of a monster, fought mid-battle (rules + hidden odds: js/flat-battle.js evolveCheck). Data only — add a pair to give another monster a next form. */
+  const EVOLVE = { wolf: 'shadowWolf', frostWolf: 'yeti', snowKobold: 'yeti', kobold: 'golem' };
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
   const NIGHT = Q.get('night') === '1', ATKX = +Q.get('atk') || 1, HST = Q.get('hst') != null ? Math.max(0, Math.min(100, +Q.get('hst'))) : 100;
   const EMBED = Q.get('embed') === '1', TITLE = Q.get('title') || '', HHP = +Q.get('hhp') || 0, HMAX = +Q.get('hmax') || 60, HPRO = (() => { try { return JSON.parse(Q.get('hero') || 'null') || {} } catch (e) { return {} } })();   /* v95.00: js/progression.js battleHero() — power, spell, crit, armor, stMax, st */
@@ -110,7 +112,7 @@
           const d = Math.hypot(u - o.u, v - o.v) + Math.random() * .6; if (d < bd) { bd = d; best = { u, v } } } }
       if (best) taken.add(best.u + ',' + best.v); return best };
     const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
+    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); const N = !boss && EVOLVE[g.kind] && MON[EVOLVE[g.kind]], evo = N ? { kind: EVOLVE[g.kind], name: N.name, hp: Math.round(N.hp * g.mult), atk: Math.round(N.atk * ATKX), move: N.move, iq: N.iq || 0, shove: !!N.shove, el: N.el, fly: !!N.fly } : null; return { ...at, evo, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
     /* v97.22: battle objective from the world map (?obj=survive:5 | escape | defend:4 | leader) */
     const objective = (() => { const [type, n] = (Q.get('obj') || '').split(':');
       if (type === 'survive') return { type, turns: Math.max(2, +n || 5) };
@@ -672,8 +674,67 @@
     g.fillStyle = 'rgba(250,242,220,.96)'; g.strokeStyle = '#5a3e18'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, 26, 11); g.fill(); g.stroke(); g.beginPath(); g.moveTo(q.x - 6, y + 26); g.lineTo(q.x, y + 34); g.lineTo(q.x + 6, y + 26); g.fill();
     g.fillStyle = '#3a2810'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(sayB.text, q.x, y + 13.5); g.restore();
   }
+  /* ---------- v98.58 · evolution cut-in — Dragon-Ball-style power-up: the ground cracks and shakes, rocks and gold sparks rise, the screen darkens,
+     lightning crawls over the body, a white-gold flash, the NEXT form appears wrapped in a flame aura (kept while it lives) ---------- */
+  let bolts = [];
+  function evoSparks(u, n, o = {}) {
+    const p = project(u.vu, u.vv);
+    for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, r = UNIT * (o.r ?? .5) * Math.random();
+      parts.push({ x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r * .45, vx: (Math.random() - .5) * 40, vy: -(120 + Math.random() * (o.up ?? 260)), t0: now(), life: 500 + Math.random() * 500, col: Math.random() < .6 ? '255,214,90' : '255,250,200', size: 2 + Math.random() * 3, spark: Math.random() < .6, float: true }) }
+    if (o.rocks) for (let i = 0; i < o.rocks; i++) { const a = (Math.random() - .5) * 2.4; parts.push({ x: p.x + a * UNIT * .7, y: p.y, vx: a * 14, vy: -(90 + Math.random() * 150), t0: now(), life: 700 + Math.random() * 400, col: '150,130,100', size: 3 + Math.random() * 4, float: true }) }
+  }
+  function evoBolts(u, n) {
+    const p = project(u.vu, u.vv), cy = p.y - UNIT * .7;
+    for (let k = 0; k < n; k++) { const pts = [], a0 = Math.random() * 6.28; let x = p.x + Math.cos(a0) * UNIT * .25, y = cy + Math.sin(a0) * UNIT * .5;
+      for (let i = 0; i < 6; i++) { pts.push([x, y]); x += (Math.random() - .5) * UNIT * .45; y += (Math.random() - .5) * UNIT * .55 }
+      bolts.push({ pts, t0: now(), life: 160 + Math.random() * 120 }) }
+  }
+  function boltDraw(g, t) {
+    bolts = bolts.filter(b => t - b.t0 < b.life); if (!bolts.length) return;
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = g.lineJoin = 'round';
+    for (const b of bolts) { const a = 1 - (t - b.t0) / b.life; for (const [w, c] of [[6, `rgba(255,200,60,${a * .35})`], [2.2, `rgba(255,255,230,${a})`]]) { g.strokeStyle = c; g.lineWidth = w; g.beginPath(); b.pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke() } }
+    g.restore();
+  }
+  /* the persistent aura behind an evolved monster: a golden glow + licking flames */
+  function evoAura(g, u, p, h, t) {
+    if (!u.evolved || u.hp <= 0) return;
+    const cx = p.x, by = p.y, k = h / UNIT, pulse = .85 + .15 * Math.sin(t * .008 + u.id.length);
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const gr = g.createRadialGradient(cx, by - h * .45, 0, cx, by - h * .45, h * .9); gr.addColorStop(0, `rgba(255,214,90,${.34 * pulse})`); gr.addColorStop(.6, `rgba(255,150,30,${.14 * pulse})`); gr.addColorStop(1, 'rgba(255,120,0,0)');
+    g.fillStyle = gr; g.beginPath(); g.ellipse(cx, by - h * .45, h * .62, h * .85, 0, 0, 7); g.fill();
+    for (let i = 0; i < 7; i++) { const ph = t * .006 + i * 1.9, fx = cx + (i - 3) * h * .1, fh = h * (.45 + .25 * Math.abs(Math.sin(ph))) * (1 - Math.abs(i - 3) * .12);
+      const fg = g.createLinearGradient(fx, by, fx, by - fh); fg.addColorStop(0, 'rgba(255,230,120,.55)'); fg.addColorStop(1, 'rgba(255,140,20,0)');
+      g.fillStyle = fg; g.beginPath(); g.moveTo(fx - h * .07, by); g.quadraticCurveTo(fx + Math.sin(ph) * h * .08, by - fh * .6, fx, by - fh); g.quadraticCurveTo(fx + h * .06 + Math.sin(ph) * h * .05, by - fh * .5, fx + h * .07, by); g.fill() }
+    g.restore();
+    if (Math.random() < .12) evoSparks(u, 1, { r: .5, up: 160 });
+  }
+  async function playEvolve(s) {
+    const u = s.unit; actUnit = u; u.pose = 'idle'; u.evoCharge = now();
+    hint('…ตัวนี้ผิดปกติ');
+    sfx('swing', .4);
+    // ① gather power: shake grows, dark vignette, sparks and rocks rise, the ground glows
+    screenFlash('0,0,0', .5, 1700);
+    for (let i = 0; i < 9; i++) {
+      const k = i / 8; shake(5 + 13 * k, 260); evoSparks(u, 4 + i * 2, { rocks: i > 2 ? 2 : 0 });
+      if (i % 2 === 0) glows.push({ u: u.vu, v: u.vv, col: '255,200,60', r: UNIT * (1 + k * 1.6), t0: now(), dur: 520 });
+      if (i > 3) evoBolts(u, 2); if (i === 5) { floatText(u, '!!', '#ffe27a', false, true); sfx('swing', .6) }
+      await wait(150);
+    }
+    // ② the burst: white-gold flash, the NEXT form appears
+    screenFlash('255,248,210', 1, 700); shake(30, 700); sfx('swing', 1);
+    evoSparks(u, 70, { r: 1.1, up: 480, rocks: 14 }); evoBolts(u, 9);
+    for (const r of [1.6, 2.6, 3.8]) glows.push({ u: u.vu, v: u.vv, col: '255,220,100', r: UNIT * r, t0: now(), dur: 900 });
+    u.evoShow = null; u.shown = u.hp; u.flashUntil = now() + 500; hudSync();
+    await wait(260);
+    banner('วิวัฒน์!  ' + s.to.name, 'crit');
+    floatText(u, s.to.name + ' ATK ' + s.to.atk, '#ffd25a', false, true);
+    for (let i = 0; i < 4; i++) { evoSparks(u, 18, { r: .8, up: 380 }); evoBolts(u, 3); shake(10, 200); await wait(170) }
+    hint('⚠ ' + s.to.name + ' วิวัฒน์แล้ว! พลังเพิ่มขึ้นมาก');
+    await wait(500);
+  }
   async function playSteps(steps) { try { await playSteps0(steps) } finally { talkCheck() } }
   async function playSteps0(steps) {
+    for (const s of steps) if (s.type === 'evolve') s.unit.evoShow = s.from.kind;   /* v98.58: keep showing the old form until the flash */
     for (const s of steps) {
       if (st.outcome && s.type !== 'attack') continue;
       if (s.type === 'control') continue;
@@ -682,6 +743,7 @@
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
       else if (s.type === 'stun') { floatText(s.unit, 'FROZEN — SKIP', '#bfe8ff', true); await wait(420) }
       else if (s.type === 'dot') { const S = FB.STATUS[s.kind] || {}; s.unit.hitUntil = now() + 300; floatText(s.unit, (S.icon || '') + ' −' + s.damage, s.kind === 'burn' ? '#ffb070' : '#b6e07a'); s.unit.shown = s.unit.hp; hudSync(); if (s.unit.hp <= 0) s.unit.deadAt = now() + 300; await wait(420) }
+      else if (s.type === 'evolve') await playEvolve(s)
       else if (s.type === 'phase') { actUnit = s.unit; banner('ENRAGED!', 'crit'); screenFlash('255,90,58', .35, 420); shake(16, 520); floatText(s.unit, 'คลั่ง! ATK ↑', '#ff8a6a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,90,60', r: UNIT * 1.8, t0: now(), dur: 900 }); await wait(800) }
       else if (s.type === 'charge') { floatText(s.unit, '⚠ กำลังรวบรวมพลัง', '#ffd25a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,210,90', r: UNIT * 1.5, t0: now(), dur: 1100 }); hint('⚠ ' + s.unit.name + ' จะใช้ท่าใหญ่ในตาหน้า · กระจายตัว หรือถอยออกจากระยะ'); await wait(700) }
       else if (s.type === 'bossSkill') { const a = s.unit, tg = s.hits[0]?.target || a; banner(s.name, 'crit');
@@ -1090,14 +1152,16 @@
   function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
   function drawMonster(g, u, t) {
     const p0 = project(u.vu, u.vv), v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
-    const T = MON[u.kind] || MT, kind = MON[u.kind] ? u.kind : MK, bs = u.boss ? 1.25 : 1;
+    const sk = u.evoShow || u.kind, T = MON[sk] || MT, kind = MON[sk] ? sk : MK, bs = u.boss ? 1.25 : 1;   /* v98.58: evoShow = the old form until the flash */
     const af = window.MonsterArt?.frame(kind, u.dir, v, u.hp, t, 'fb-' + u.id);
     /* v97.26 · B3: fliers hover half a cell up and bob; their shadow stays on the ground, smaller as they rise */
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
     shadow(g, p0, UNIT * .26 * T.scale * bs * (lift ? .7 - lift / UNIT * .3 : 1));
     if (af) {
       const h = UNIT * 1.6 * Math.max(.8, T.scale) * bs * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
-      g.save(); g.translate(p.x, p.y); if (af.flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .55;
+      evoAura(g, u, p, h, t);
+      const ec = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? 1 + .06 * Math.sin(t * .05) : 1, ex = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? Math.sin(t * .09) * 3 : 0;
+      g.save(); g.translate(p.x + ex, p.y); g.scale(ec, ec); if (af.flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .55;
       const ai = u.variant || u.leader ? window.JobLook?.tint(af.image, JobLook.VARIANT[u.variant || 'elite']) || af.image : af.image;   /* v97.26 · J6 */
       g.drawImage(ai, af.sx, af.sy, af.sw, af.sh, -w * pv[0], -h * pv[1], w, h);
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; for (let k = 0; k < 2; k++) g.drawImage(af.image, af.sx, af.sy, af.sw, af.sh, -w * pv[0], -h * pv[1], w, h) }
@@ -1106,6 +1170,7 @@
     }
     const back = ['NE', 'NW'].includes(u.dir), i = im('assets/enemies/' + T.img + (back ? '-back' : '') + '.webp') || im('assets/enemies/' + T.img + '.webp'); if (!i) return;
     const h = UNIT * 1.6 * T.scale * bs * .8, w = h * i.naturalWidth / i.naturalHeight;
+    evoAura(g, u, p, h, t);
     g.save(); g.translate(p.x + ((u.hitUntil || 0) > t ? Math.sin(t * .08) * 4 : 0), p.y); if (['SE', 'NE'].includes(u.dir)) g.scale(-1, 1); if (u.hp <= 0) { g.rotate(Math.PI * .4); g.globalAlpha = .5 }
     g.drawImage(u.variant || u.leader ? window.JobLook?.tint(i, JobLook.VARIANT[u.variant || 'elite']) || i : i, -w / 2, -h, w, h); g.restore(); bar(g, p, p.y - h, u.shown / u.maxHp, '#e2705f');
   }
@@ -1169,7 +1234,7 @@
     for (const u of st.units) { if (u.hp <= 0) continue; const ic = [u.leader ? '👑' : '', ...Object.keys(u.sts || {}).map(k => FB.STATUS[k]?.icon), u.stun ? '❄' : '', u.slowed ? '⚡' : ''].filter(Boolean); if (!ic.length) continue;
       const q = project(u.vu, u.vv), y = q.y - UNIT * 1.95 + Math.sin(t * .004) * 2, w = ic.length * 18 + 6; g.fillStyle = 'rgba(10,14,20,.7)'; g.beginPath(); g.roundRect?.(q.x - w / 2, y - 14, w, 20, 9); g.fill(); ic.forEach((x, k) => g.fillText(x, q.x - w / 2 + 12 + k * 18, y + 1)) }
     g.restore();
-    fxDraw(g, t); partDraw(g, t);
+    fxDraw(g, t); partDraw(g, t); boltDraw(g, t);
     if (CINE) { speedDraw(g, t); atmosphere(g, t0); flashDraw(g) }
     texts = texts.filter(x => t - x.t0 < 1300);
     for (const x of texts) {
