@@ -748,3 +748,36 @@ Each piece is a complete object fully inside its own cell. No people, no animals
 ```
 
 **ตรวจรับชีท W3**: ① พื้นเขียวล้วน ไม่มีเงา ② ทุกชิ้นหันหน้าตรง ไม่เอียงทแยง ③ เมืองมีกำแพงใหญ่ที่สุดในชีท ④ ไม่มีคนและสัตว์ (ถ้ำมีแค่กระดูก) ⑤ ควันออกจากปล่องเท่านั้น
+
+---
+
+## ชีท W4 · ไทล์ป่าและพื้นที่ธรรมชาติ (แมพผจญภัย · แบบเดียวกับ W2/W3)
+
+ลำดับช่อง → ชื่อไฟล์: `grassland` · `flower-meadow` · `forest-light` · `forest-dark` · `pine-forest` · `snow-forest` · `autumn-forest` · `swamp` · `sand-dunes`
+
+**เหตุผล**: ต้นไม้เดี่ยวมุมตรงหน้า (W1) เล็กเกินบนแผนที่ ไทล์หกเหลี่ยมที่มีป่าทั้งช่องในภาพเดียว (ไอโซเมตริก เหมือนเนิน W2 และจุดสนใจ W3) จะดูสวยและกลืนกันกว่า · เกมวางเป็นไทล์ตามชนิดพื้นที่ สุ่มกลับด้านซ้ายขวาเพื่อไม่ให้ซ้ำ
+
+```
+A GAME SPRITE ATLAS of terrain tiles for the overland adventure map of a 2.5D fantasy RPG: exactly 3 columns × 3 rows of equal square cells (9 cells), one isometric hexagonal terrain tile per cell, each tile centred in its cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people, no animals, no buildings, no roads, no rivers.
+
+CAMERA (identical for every tile): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down. Orthographic: vertical edges stay vertical, no perspective convergence. Each tile is a regular hexagon with a vertex pointing up (pointy-top), seen in this isometric view so it appears as a flattened hexagon about 1.15 times as wide as it is tall. The ground has NO thickness, NO side walls and NO outline: it is a flat painted surface whose edge fades softly into the green, so neighbouring tiles can be laid side by side and blend. Nothing may stick out past the hexagon edge except the very tops of the tallest trees, which may rise above the upper edge.
+
+SCALE: every hexagon is exactly the same size and fills about 86% of the cell width, centred in the cell. Relative sizes: a tree on any tile is about 22% of the tile width tall (small, like a view from afar), so a forest tile holds around 12 to 16 trees in a loose natural scattering, never in rows. Tiles must not look cut out: the ground colour is continuous to the hexagon edge.
+
+STYLE: refined hand-painted fantasy RPG map art, NOT pixel art, matching the attached terrain and landmark tiles (same outline weight: thin soft dark-brown outlines on objects only, never on the tile edge; same level of detail, same soft warm daylight from the upper-left, tops and left sides lit). No cast shadow outside the tile. Palette: muted sage and olive greens, deep conifer green, warm tan sand, snow white with pale blue shadows, dark mud and teal water, autumn orange and amber, gently desaturated so tiles of different types sit together on one painted map.
+
+CONTENT, row by row, left to right:
+1. Grassland: an open meadow of short sage-green grass with subtle lighter and darker patches, a few tufts and two tiny grey stones, no trees.
+2. Flower meadow: the same grass with many small white, yellow, purple and pink wildflowers scattered in drifts and a few taller grass clumps, no trees.
+3. Light broadleaf forest: about twelve round-crowned oak and birch trees of varied sizes loosely scattered over mid-green grass with small bushes between them.
+4. Dark dense forest: about sixteen tall broadleaf and fir trees packed close with overlapping crowns, deep green with shadowed undergrowth and fallen logs between them.
+5. Pine forest: about fourteen tall dark-green conifers of varied heights scattered over a ground of brown needles and moss with a few grey rocks.
+6. Snow forest: about twelve snow-laden pines over a white snow-covered ground with pale blue shadows, small snow drifts and a few bare shrubs.
+7. Autumn forest: about twelve round-crowned trees in orange, amber, red and yellow leaves over a ground covered with fallen leaves and some green grass.
+8. Swamp: dark muddy ground with patches of teal water and algae, clumps of reeds and cattails, lily pads, three drooping willows and two dead trees.
+9. Sand dunes: warm tan sand with soft rippled dunes, scattered dry grass tufts, a few smooth stones and two small palm trees.
+
+Each tile is a complete hexagon fully inside its own cell. No text, no scenery outside the hexagon, no opaque background.
+```
+
+**ตรวจรับชีท W4**: ① ไทล์หกเหลี่ยมเท่ากันทุกช่อง พื้นเขียวล้วนรอบนอก ② ขอบไทล์ไม่มีเส้นขอบและไม่มีความหนา ③ ต้นไม้เล็ก กระจายธรรมชาติ ไม่เรียงแถว ④ ไม่มีสิ่งก่อสร้าง ถนน แม่น้ำ
