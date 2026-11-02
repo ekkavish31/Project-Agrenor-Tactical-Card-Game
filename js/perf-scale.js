@@ -9,17 +9,28 @@
    Turn it off:  localStorage.setItem('projectA.autoRes','0')   ·  see what it did:  RENDER_LOG  (in the browser console) */
 (function () {
   'use strict';
-  if (/[?&](edit|battle|perf)=1/.test(location.search)) return;   // ?perf=1 = the speed check: measure at full quality
+  if (/[?&](edit|perf)=1/.test(location.search)) return;   // ?perf=1 = the speed check: measure at full quality
+  const BATTLE = /[?&]battle=1/.test(location.search);   // the embedded battle: only the start step below (no live changes while fighting)
   try { if (window.parent !== window && /[?&]perf=1/.test(parent.location.search)) return } catch (e) { }
   try { localStorage.removeItem('projectA.renderStep') } catch (e) { }   // old versions remembered a step; forget it
   try { if (localStorage.getItem('projectA.autoRes') === '0') return } catch (e) { }
   const real = window.devicePixelRatio || 1, STEPS = [1, .75, .6, .5];
-  let step = 0;
+  /* v98.77 · tablets / phones start at a resolution their screen can afford instead of 100 %: a 2× tablet screen means a 4–6 million pixel canvas that is
+     redrawn through several full-screen passes every frame (measured: ~4 fps in a headless 1180×820 @2× page). Budget ≈ 1.8 million pixels; computers keep 100 % as before. */
+  const coarse = (() => { try { return matchMedia('(pointer:coarse)').matches } catch (e) { return false } })();
+  const startStep = () => { if (!coarse) return 0; const px = (innerWidth || screen.width || 1024) * (innerHeight || screen.height || 768); for (let i = 0; i < STEPS.length; i++) if (px * Math.pow(real * STEPS[i], 2) <= 1.8e6) return i; return STEPS.length - 1 };
+  let step = startStep();
+  document.addEventListener('DOMContentLoaded', () => { try { document.documentElement.classList.toggle('perf-lite', step >= 2) } catch (e) { } });
   try { Object.defineProperty(window, 'devicePixelRatio', { configurable: true, get: () => real * STEPS[step] }) } catch (e) { return }
   window.RENDER_STEP = () => step;
+  /* v98.77 · at 60 % or lower the decorative HD-2D layers are switched off too (js/hd2d.js: bloom, blurred top/bottom bars, light rays, dust):
+     each costs a full-screen blur or an animated layer every frame, which a slow screen cannot spare. They come back when the picture climbs back above 60 %. */
+  const lite = () => document.documentElement.classList.toggle('perf-lite', step >= 2);
+  try { const st = document.createElement('style'); st.textContent = '.perf-lite .hd2d .tilt,.perf-lite .hd2d i,.perf-lite .hd2d .rays{display:none!important}'; document.head.appendChild(st) } catch (e) { }
   window.RENDER_LOG = [];
   function set(n, why) {
     window.RENDER_LOG.push([Math.round(performance.now()), step, n, why]); step = n;
+    lite();
     window.applyRenderScale?.();
     try { console.info('[ความละเอียดอัตโนมัติ] ขั้น ' + n + ' (' + Math.round(STEPS[n] * 100) + '%) · ' + why) } catch (e) { }
   }
@@ -31,16 +42,20 @@
     requestAnimationFrame(frame);
     const dt = t - last; last = t;
     if (document.hidden || dt <= 0) { reset(); return }
-    if (dt > 250) { reset(); return }                                    // a hitch (tab switch, big task): this stretch tells nothing about speed
     const now = performance.now(), drawn = window.__townDrawnAt || 0;
     if (!drawn || now - drawn < 6000 || now < coolUntil) { dts = []; return }   // still opening / just repainted / just changed step
-    dts.push(dt); if (dts.length < 45) return;
-    const avg = dts.reduce((a, b) => a + b, 0) / dts.length; dts = [];
-    if (avg > 48 && step < STEPS.length - 1) {                           // under ~21 fps, twice in a row
-      fast = 0; if (++slow >= 2) { slow = 0; noClimb[step] = now + 45000; set(step + 1, 'ช้า ~' + Math.round(1000 / avg) + ' fps'); coolUntil = now + 4000 }
-    } else if (avg < 26 && step > 0) {                                   // over ~38 fps, twice in a row
-      slow = 0; if (++fast >= 2 && now > noClimb[step - 1]) { fast = 0; set(step - 1, 'เร็ว ~' + Math.round(1000 / avg) + ' fps'); coolUntil = now + 4000 }
+    /* v98.77 · the MEDIAN of 30 frames, not the average of 45 with a reset on any frame over 250 ms: a single hitch no longer counts (the median ignores it)
+       but a machine that is slow on every frame now does (it used to throw all its samples away and never lower the picture) */
+    dts.push(Math.min(dt, 1000)); if (dts.length < 30) return;
+    const med = dts.slice().sort((a, b) => a - b)[15]; dts = [];
+    if (med > 48 && step < STEPS.length - 1) {                           // under ~21 fps
+      fast = 0;
+      if (med > 110 || ++slow >= 2) {                                    // under ~9 fps: lower at once · otherwise twice in a row
+        const jump = med > 200 ? 2 : 1, to = Math.min(STEPS.length - 1, step + jump); slow = 0; noClimb[step] = now + 45000; set(to, 'ช้า ~' + Math.round(1000 / med) + ' fps'); coolUntil = now + (med > 110 ? 2000 : 4000)
+      }
+    } else if (med < 26 && step > 0) {                                   // over ~38 fps, twice in a row
+      slow = 0; if (++fast >= 2 && now > noClimb[step - 1]) { fast = 0; set(step - 1, 'เร็ว ~' + Math.round(1000 / med) + ' fps'); coolUntil = now + 4000 }
     } else { slow = 0; fast = 0 }
   }
-  requestAnimationFrame(t => { last = t; requestAnimationFrame(frame) });
+  if (!BATTLE) requestAnimationFrame(t => { last = t; requestAnimationFrame(frame) });
 })();

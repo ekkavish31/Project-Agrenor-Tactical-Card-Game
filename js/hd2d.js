@@ -29,7 +29,7 @@ function attach(canvas,o={}){if(!canvas||canvas._hd2dOverlay)return;canvas._hd2d
 // bloom: ¼-size copy, keep only bright parts, blur, add back with 'screen'
 let small=null;
 let bloomAt=0,bloomCost=0,bloomFor=null;
-function bloom(ctx,canvas,strength=.32,force=false){if(!opt.bloom||!canvas.width)return;const w=Math.max(1,canvas.width>>2),h=Math.max(1,canvas.height>>2);if(!small){small=document.createElement('canvas')}const resized=small.width!==w||small.height!==h;if(resized){small.width=w;small.height=h}
+function bloom(ctx,canvas,strength=.32,force=false){if(!opt.bloom||!canvas.width||document.documentElement.classList.contains('perf-lite'))return;const w=Math.max(1,canvas.width>>2),h=Math.max(1,canvas.height>>2);if(!small){small=document.createElement('canvas')}const resized=small.width!==w||small.height!==h;if(resized){small.width=w;small.height=h}
  /* v98.13 · the glow is a soft blur: rebuild it at most every max(140 ms, 6× its own cost), and just re-draw the last one in between */
  const now=performance.now();if(force||resized||canvas!==bloomFor||!bloomAt||now-bloomAt>Math.max(140,bloomCost*6)){bloomFor=canvas;const q=small.getContext('2d');q.globalCompositeOperation='copy';q.filter='brightness(.75) contrast(2.6) saturate(1.2) blur(2px)';q.drawImage(canvas,0,0,w,h);q.filter='none';q.globalCompositeOperation='source-over';bloomAt=performance.now();bloomCost=bloomAt-now}
 
