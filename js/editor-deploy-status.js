@@ -14,7 +14,7 @@
  function parseVillageLayout(s){try{const i=s.indexOf('window.VillageDefaultLayout='),a=s.indexOf('{',i),b=s.indexOf('\n};',a);return i<0||a<0||b<0?null:JSON.parse(s.slice(a,b+2))}catch(e){return null}}
  let remoteSettings=null,conflicts=[];
  function conflictSig(){return hash(conflicts.map(k=>k+'|'+localStorage.getItem(k)+'|'+remoteSettings[k]).join('|'))}
- function drawConflict(){if(!remoteSettings){bar.hidden=true;return}conflicts=Object.keys(remoteSettings).filter(k=>localStorage.getItem(k)!==null&&localStorage.getItem(k)!==remoteSettings[k]);if(!conflicts.length){bar.hidden=true;return}
+ function drawConflict(){bar.hidden=true;return;/* v98.55: replaced by js/layout-sync.js (covers the whole village layout + backups) */if(!remoteSettings){bar.hidden=true;return}conflicts=Object.keys(remoteSettings).filter(k=>localStorage.getItem(k)!==null&&localStorage.getItem(k)!==remoteSettings[k]);if(!conflicts.length){bar.hidden=true;return}
   const sig=conflictSig();if(sessionStorage.getItem('editor-conflict-dismissed')===sig){bar.hidden=true;return}
   bar.hidden=false;bar.textContent='!';bar.title='⚠ ค่าในเครื่องต่างจากบนเว็บ ('+conflicts.length+' ค่า) · คลิกเพื่อเลือกดึงค่าล่าสุด (เขียนทับค่าในเครื่อง) หรือเก็บของฉันไว้';
   bar.onclick=()=>{if(!confirm('ค่าในเครื่องต่างจากบนเว็บ ('+conflicts.length+' ค่า)\n\nตกลง = ดึงค่าล่าสุดจากเว็บ (เขียนทับค่าที่แก้ไว้ในเครื่อง)\nยกเลิก = เก็บของฉันไว้ (ซ่อนป้ายนี้ในเซสชันนี้)')){sessionStorage.setItem('editor-conflict-dismissed',sig);bar.hidden=true;return}
