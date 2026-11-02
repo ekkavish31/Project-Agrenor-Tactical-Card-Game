@@ -58,7 +58,7 @@ const GATE_AREA=['mine','frost','forest','coast','ruins','swamp'],gateImg={};
 /* v98.20 · the six themed adventure-gate pictures are no longer loaded: the two town gates are drawn by code */
 function gateSprite(g,pa,pb,im,flip){const mx=(pa.x+pb.x)/2,my=(pa.y+pb.y)/2,w=(Math.abs(pb.x-pa.x)+90)*1.3,h=w*im.naturalHeight/im.naturalWidth;g.save();g.translate(mx,my+10);if(flip)g.scale(-1,1);root.TownArt.draw(g,im,null,[-w/2,-h*.9,w,h],null);g.restore()}
 function gateObjects(){const out=[];V().getExits().forEach((e,i)=>{if(e.off)return;const axis=gateAxis(e),span=1.9,A=axis==='v'?{u:e.u,v:e.v-span}:{u:e.u-span,v:e.v},B=axis==='v'?{u:e.u,v:e.v+span}:{u:e.u+span,v:e.v},pa=V().project(A.u,A.v),pb=V().project(B.u,B.v),pc=V().project(e.u,e.v);
-  out.push({i,x:pc.x,y:Math.max(pa.y,pb.y)+420,draw:g=>gate(g,pa,pb,pc,'ประตูเมือง')})   /* +420: drawn in front of the border forest */});return out}
+  out.push({i,x:pc.x,y:Math.max(pa.y,pb.y)+420,draw:g=>{g.__gateK=i;gate(g,pa,pb,pc,'ประตูเมือง')}})   /* +420: drawn in front of the border forest */});return out}
 /* v98.20 · the town gate, drawn by code: two stone towers with battlements, a timber lintel under a red tiled roof (same tiles as the village), a hanging name board,
    a pennant and a lantern. pa/pb = foot of the left/right tower on screen (the gate spans the road), pc = the middle of the opening. */
 function tower(g,p,h,w=38,c=['#d6cbad','#a99d7e','#e4dbc0']){
@@ -70,7 +70,13 @@ function tower(g,p,h,w=38,c=['#d6cbad','#a99d7e','#e4dbc0']){
    for(let t=(r%2?.25:.55);t<1;t+=.5){const x=A.x+(Z.x-A.x)*t,yy=A.y+(Z.y-A.y)*t-y;g.beginPath();g.moveTo(x,yy);g.lineTo(x,yy+13);g.stroke()}}}}
  g.fillStyle=c[2];g.beginPath();g.moveTo(L.x,L.y-h);g.lineTo(B.x,B.y-h);g.lineTo(R.x,R.y-h);g.lineTo(F.x,F.y-h);g.closePath();g.fill();g.strokeStyle='rgba(70,60,44,.5)';g.stroke()}
 function shade(hex,k){const n=parseInt(hex.slice(1),16),f=v=>Math.max(0,Math.min(255,Math.round(v*(1+k))));return '#'+[(n>>16)&255,(n>>8)&255,n&255].map(f).map(v=>v.toString(16).padStart(2,'0')).join('')}
+const GATE_SPR=['v1-town-gate-stone','v1-town-gate-timber'],gateSprImg={};
+function gateSpr(k){const n=GATE_SPR[k%2];let im=gateSprImg[n];if(!im){im=gateSprImg[n]=new Image();im.src='assets/village-town/decor/'+n+'.webp'}return im.complete&&im.naturalWidth?im:null}
 function gate(g,pa,pb,pc,name){if(pa.x>pb.x)[pa,pb]=[pb,pa];
+ /* v98.63 · hand-painted town gates (sheet V1): stone gate for the first open exit, timber-and-stone for the second; drawn across the road, mirrored when the road runs the other way */
+ { const im=gateSpr(name==='ประตูเมือง'&&g.__gateK||0); if(im){const w=(Math.abs(pb.x-pa.x))*1.7+40,h=w*im.naturalHeight/im.naturalWidth,flip=pb.y<pa.y;
+   g.fillStyle='rgba(0,0,0,.22)';g.beginPath();g.ellipse(pc.x,pc.y+4,w*.42,w*.1,0,0,Math.PI*2);g.fill();
+   g.save();g.translate(pc.x,pc.y+w*.1);if(flip)g.scale(-1,1);g.drawImage(im,-w/2,-h,w,h);g.restore();return}}
  const H=150,t=performance.now(),back=pa.y<pb.y?pa:pb,front=back===pa?pb:pa;
  // ground shadow of the whole gate
  g.fillStyle='rgba(0,0,0,.22)';g.beginPath();g.ellipse(pc.x,pc.y+4,Math.abs(pb.x-pa.x)/2+30,16,0,0,Math.PI*2);g.fill();
