@@ -30,6 +30,10 @@
   const ZONE_RECIPES = {
     fangBlade: { name: 'ดาบเขี้ยวหมาป่า', kind: 'sword', level: 2, cost: { iron: 2, coal: 1, wood: 1 }, goods: { wolfFang: 2 }, sell: 70, xp: 30, star: 2, zone: 'ป่า · ทุ่งหญ้า (หมาป่า)' },
     crystalHammer: { name: 'ค้อนผลึกแร่', kind: 'hammer', level: 3, cost: { iron: 3, coal: 2 }, goods: { crystalShard: 2 }, sell: 95, xp: 40, star: 2, zone: 'เนินเขา · บึง (โคโบลด์ สไลม์ โกเล็ม)' },
+    /* v98.66 · chaos weapons: they need several chaos items from EVOLVED monsters (js/chaos.js) */
+    chaosFang: { name: 'เขี้ยวโกลาหล', kind: 'sword', level: 3, cost: { iron: 3, coal: 2 }, goods: { chaosShardDark: 4, wolfFang: 2 }, sell: 190, xp: 70, star: 3, zone: 'ได้จากมอนวิวัฒน์สายราตรี (หมาป่าเงา)' },
+    chaosMaul: { name: 'ค้อนแก่นโกลาหล', kind: 'hammer', level: 4, cost: { iron: 4, coal: 3 }, goods: { chaosCoreEarth: 2, chaosShardEarth: 3, crystalShard: 2 }, sell: 260, xp: 90, star: 3, zone: 'ได้จากมอนวิวัฒน์สายผืนดิน (โกเล็ม)' },
+    rimeChaosBlade: { name: 'ดาบน้ำค้างโกลาหล', kind: 'sword', level: 4, cost: { iron: 3, coal: 2, wood: 1 }, goods: { chaosCoreIce: 2, chaosShardIce: 3, frostFur: 1 }, sell: 250, xp: 90, star: 3, zone: 'ได้จากมอนวิวัฒน์สายน้ำแข็ง (เยติ)' },
     frostBlade: { name: 'ดาบน้ำค้างแข็ง', kind: 'sword', level: 4, cost: { iron: 3, coal: 2, wood: 1 }, goods: { frostFur: 1, pearl: 1 }, sell: 130, xp: 55, star: 3, zone: 'ทุ่งหิมะ + หาดทราย' }
   };
 
@@ -160,7 +164,7 @@
   setInterval(() => {
     const q = s?.village?.levelUnlocks; if (showing || !q?.length || busyNow() || !root.StarterKit?.unlock) return;
     const next = q.shift(); showing = true; try { save() } catch (e) { }
-    const J = next.level === 'job' && JOBS[next.job];   /* v97.18: a job level teaches its card */
-    Promise.resolve(root.StarterKit.unlock(next.cards, J ? { kicker: 'อาชีพ ' + J.icon + ' ' + J.name, title: 'ทักษะประจำอาชีพ', text: 'เรียนแล้วติดตัว ใช้ได้แม้เปลี่ยนอาชีพ' } : { kicker: 'เลเวลอัป · Lv.' + next.level, title: 'การ์ดใหม่จากประสบการณ์', text: 'HP สูงสุด ' + heroMaxHp(next.level) + ' · แรงสูงสุด ' + heroMaxStamina(next.level) })).finally(() => { showing = false });
+    const CH = next.level === 'chaos', J = next.level === 'job' && JOBS[next.job];   /* v97.18: a job level teaches its card */
+    Promise.resolve(root.StarterKit.unlock(next.cards, CH ? { kicker: '✷ แก่นโกลาหล · Grat', title: 'การ์ดธาตุโกลาหล', text: 'สะสมแก่นจากมอนวิวัฒน์ครบตามกำหนด · ความโกลาหลตอบรับคุณ' } : J ? { kicker: 'อาชีพ ' + J.icon + ' ' + J.name, title: 'ทักษะประจำอาชีพ', text: 'เรียนแล้วติดตัว ใช้ได้แม้เปลี่ยนอาชีพ' } : { kicker: 'เลเวลอัป · Lv.' + next.level, title: 'การ์ดใหม่จากประสบการณ์', text: 'HP สูงสุด ' + heroMaxHp(next.level) + ' · แรงสูงสุด ' + heroMaxStamina(next.level) })).finally(() => { showing = false });
   }, 1500);
 })(typeof globalThis !== 'undefined' ? globalThis : this);

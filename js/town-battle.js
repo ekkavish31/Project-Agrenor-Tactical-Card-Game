@@ -41,7 +41,7 @@
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
   /* v98.58 · evolution (วิวัฒน์): the next form of a monster, fought mid-battle (rules + hidden odds: js/flat-battle.js evolveCheck). Data only — add a pair to give another monster a next form. */
-  const EVOLVE = { wolf: 'shadowWolf', frostWolf: 'yeti', snowKobold: 'yeti', kobold: 'golem' };
+  const EVOLVE = { wolf: ['shadowWolf', 1], frostWolf: ['yeti', 2], snowKobold: ['yeti', 2], kobold: ['golem', 2] };   /* [next form, tier: 1 → elite · 2 → mini-boss · 3 → boss] — the tier decides the chaos item it leaves (js/chaos.js) */
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
   const NIGHT = Q.get('night') === '1', ATKX = +Q.get('atk') || 1, HST = Q.get('hst') != null ? Math.max(0, Math.min(100, +Q.get('hst'))) : 100;
   const EMBED = Q.get('embed') === '1', TITLE = Q.get('title') || '', HHP = +Q.get('hhp') || 0, HMAX = +Q.get('hmax') || 60, HPRO = (() => { try { return JSON.parse(Q.get('hero') || 'null') || {} } catch (e) { return {} } })();   /* v95.00: js/progression.js battleHero() — power, spell, crit, armor, stMax, st */
@@ -112,7 +112,7 @@
           const d = Math.hypot(u - o.u, v - o.v) + Math.random() * .6; if (d < bd) { bd = d; best = { u, v } } } }
       if (best) taken.add(best.u + ',' + best.v); return best };
     const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); const N = !boss && EVOLVE[g.kind] && MON[EVOLVE[g.kind]], evo = N ? { kind: EVOLVE[g.kind], name: N.name, hp: Math.round(N.hp * g.mult), atk: Math.round(N.atk * ATKX), move: N.move, iq: N.iq || 0, shove: !!N.shove, el: N.el, fly: !!N.fly } : null; return { ...at, evo, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
+    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); const EV = EVOLVE[g.kind], N = !boss && EV && MON[EV[0]], evo = N ? { kind: EV[0], tier: EV[1], line: N.el, name: N.name, hp: Math.round(N.hp * g.mult), atk: Math.round(N.atk * ATKX), move: N.move, iq: N.iq || 0, shove: !!N.shove, el: N.el, fly: !!N.fly } : null; return { ...at, evo, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
     /* v97.22: battle objective from the world map (?obj=survive:5 | escape | defend:4 | leader) */
     const objective = (() => { const [type, n] = (Q.get('obj') || '').split(':');
       if (type === 'survive') return { type, turns: Math.max(2, +n || 5) };
@@ -285,7 +285,7 @@
   /* ---------- card faces (old CardStudio design) ---------- */
   const cardKey = (group, id) => (group === 'movement' ? 'm-' : 'a-') + id;
   /* cards that have no picture yet borrow a close one */
-  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell' };
+  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell', chaosBolt: 'spell', chaosRend: 'quake', chaosWard: 'guard' };
   function faceHTML(group, id, mini) {
     const html = window.CardStudio?.renderCard(cardKey(group, id), { mini, fallbackArt: 'assets/cards/tactic-' + (ART_SUB[id] || id) + '.webp' });
     if (html) return html;
@@ -773,7 +773,7 @@
   }
   /* embedded in the world map: hand the result back (also automatically a moment after the end) */
   let reported = false;
-  function report(outcome) { if (reported || !EMBED) return; reported = true; try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })) }, '*') } catch (e) { } }
+  function report(outcome) { if (reported || !EMBED) return; reported = true; try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
   function finish() {
     if (st.outcome === 'win') { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'win') }
     if (EMBED) { const b = hud?.querySelector('#fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }

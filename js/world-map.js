@@ -524,10 +524,13 @@
   const DROPS = { bat: ['batWing'], gull: ['driftwood'], wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'] };
   const LAND = { forest: ['herb', 'wood'], grass: ['herb'], hills: ['iron', 'coal'], swamp: ['swampHerb'], snow: ['frostFur'], sand: ['pearl', 'driftwood'] };
   const MATS = ['iron', 'coal', 'wood', 'food'];
-  function dropLoot(foe, biome, dang, boss) {
+  function dropLoot(foe, biome, dang, boss, evolved) {
     const g = WS.game(), v = g.village, bag = v.bag ||= {}, got = {}, add = k => { got[k] = (got[k] || 0) + 1; if (MATS.includes(k)) v.materials[k] = (v.materials[k] || 0) + 1; else bag[k] = (bag[k] || 0) + 1 };
     const pool = [...(DROPS[foe] || []), ...(LAND[biome] || [])], n = (boss ? 3 : 1) + (Math.random() < .35 + dang * .3 ? 1 : 0);
     for (let i = 0; i < n && pool.length; i++) add(pool[Math.floor(Math.random() * pool.length)]);
+    /* v98.66 · evolved monsters that fell: a guaranteed chaos item by tier + lineage, and their ordinary drops at half the chance (js/chaos.js) */
+    const ek = (evolved || []).filter(e => e.dead);
+    if (ek.length && window.Chaos) { const d = Chaos.dropFor(ek); for (const [id, n] of Object.entries(d.items)) for (let i = 0; i < n; i++) add(id); for (const kind of d.half) for (const k of Chaos.halfRolls(DROPS[kind])) add(k); const unl = Chaos.note(g, d.items); for (const id of unl) log('✷ ความโกลาหลตอบรับ · ได้การ์ดธาตุ Grat: ' + (window.TacticsDecks?.COMBAT?.[id]?.name || id)) }
     if (boss) add('relic'); WS.commit();
     const G = window.ADVENTURE_DATA?.GOODS || {}, MN = { iron: 'เหล็ก', coal: 'ถ่าน', wood: 'ไม้', food: 'เสบียง' };
     return Object.entries(got).map(([k, c]) => (G[k]?.name || MN[k] || k) + ' ×' + c).join(' · ');
@@ -930,7 +933,7 @@
     let TM = {}; try { const T = window.Titles; if (T) { const g0 = WS.game(), got = T.battle(g0, { outcome: res.outcome, foe, boss: !!o.boss, elite, night, kills: res.kills || 0, hp0, hp1: S.hp, maxHp: S.maxHp, party: fighters.length, allyDown: (res.party || []).filter(r => r.hp <= 0).length }); TM = T.mods(g0); for (const d of got) { log('🏅 ได้รับฉายา «' + d.name + '» (' + T.TIERS[d.tier].name + ')'); toast('🏅 ฉายาใหม่ «' + d.name + '»'); if (d.tier >= 3) T.reveal(d) } if (got.length) WS.commit() } } catch (e) { }
     if (res.outcome === 'win') {
       S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (1 + (TM.gold || 0)) * (OBJ_GOLD[obj.split(':')[0]] || 1) * DIFF.gold); S.gold += gold; S.hp = Math.max(1, S.hp);
-      const loot = dropLoot(foe, here.biome, dang, o.boss);
+      const loot = dropLoot(foe, here.biome, dang, o.boss, res.evolved);
       { const hp = window.Offices?.perk(S, 'hunter') || 0; if (hp) { S.food += hp; log('➶ พรานหลวงได้เสบียง +' + hp) } }   /* v97.57 · office perk */
       /* v94.06 F2: experience — the hero and the companions who fought */
       let jobRes = null; const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];

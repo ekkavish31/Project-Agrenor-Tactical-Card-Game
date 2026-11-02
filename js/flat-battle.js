@@ -58,7 +58,7 @@
   const CRIT = { hero: .15, ally: .12, monster: .08, mult: 1.5 };
   const CRYSTALS = 2, STAMINA_PER_DISCARD = 10, HAND = { movement: 4, combat: 6 };
   /* v95.00 · the hero's growth in card battles: weapon cards add h.power (level, weapon, strength), element cards add h.spell (knowledge) */
-  const SPELL_CARDS = new Set(['spell', 'thunder', 'frost', 'flame', 'gust', 'tide', 'pull', 'quake', 'rockfall']);
+  const SPELL_CARDS = new Set(['spell', 'thunder', 'frost', 'flame', 'gust', 'tide', 'pull', 'quake', 'rockfall', 'chaosBolt', 'chaosRend']);
   const cardBonus = (h, id) => Math.max(0, SPELL_CARDS.has(id) ? h.spell || 0 : h.power || 0) + (h.meleePlus && CARD[id] && CARD[id].range === 1 && !CARD[id].self ? h.meleePlus : 0);
   const jobMult = (h, id) => SPELL_CARDS.has(id) ? h.spellMult || 1 : 1;   /* v97.18: mage */
   const crystals = st => Math.max(0, (st.crystalMax || CRYSTALS) - (st.spent || 0));
@@ -93,6 +93,8 @@
     tide: { range: 2, dmg: 10, st: 10, push: 1, fx: 'water' }, formation: { range: 1, dmg: 14, st: 12, guardAfter: 6, fx: 'sword' }, wall: { self: true, guard: 14, st: 6, fx: 'shield' },
     /* v94 height cards (numbers from tactics-core) */
     rockfall: { range: 3, dmg: 8, perLevel: 6, high: 1, slow: 1, st: 10, fx: 'earth' }, perch: { self: true, guard: 6, perch: 2, st: 6, fx: 'shield' }, climb: { self: true, climb: 1, st: 6, fx: 'wind' },
+    /* v98.66 · Grat (chaos) cards, unlocked by chaos items from evolved monsters (js/chaos.js) */
+    chaosBolt: { range: 4, dmg: 16, st: 14, fx: 'arcane' }, chaosRend: { range: 1, dmg: 14, st: 16, fx: 'arcane', aoe: 'splash' }, chaosWard: { self: true, guard: 12, st: 8, fx: 'shield' },
     rest: { self: true, restore: 30, st: 0, fx: 'heal' }, mend: { self: true, heal: 16, st: 10, fx: 'heal' }
   };
   const hero = st => st.units[0];
@@ -129,7 +131,7 @@
   /* ---------- Kaelam elements (v94.02, js/elements.js): the attack's element vs the target's element ---------- */
   const EW = () => root.ElementWheel || (typeof require === 'function' ? require('./elements.js') : null);
   const WEAPON_EL = { bow: 'wind', axe: 'earth', tome: 'light', sword: 'fire', hammer: 'earth', staff: 'fusion', unarmed: 'earth', knife: 'wind', spear: 'wind', rapier: 'water' };
-  const CARD_EL = { thunder: 'lightning', frost: 'ice', flame: 'fire', gust: 'wind', quake: 'earth', aimed: 'light', spell: 'fusion', tide: 'water', push: 'earth', pull: 'wind', rockfall: 'earth', whirl: 'wind' };
+  const CARD_EL = { thunder: 'lightning', frost: 'ice', flame: 'fire', gust: 'wind', quake: 'earth', aimed: 'light', spell: 'fusion', tide: 'water', push: 'earth', pull: 'wind', rockfall: 'earth', whirl: 'wind', chaosBolt: 'chaos', chaosRend: 'chaos', chaosWard: 'chaos' };
   const FX_EL = { fire: 'fire', ice: 'ice', lightning: 'lightning', wind: 'wind', earth: 'earth', holy: 'light', heal: 'light', water: 'water', arcane: 'fusion' };
   const cardEl = (id, h) => CARD_EL[id] || WEAPON_EL[h.weapon] || 'earth';
   function elOf(u) { return u.el || null }
@@ -200,7 +202,7 @@
      burn 🔥 / poison ☠: HP lost at the start of the unit's own turn · sleep 💤: skips its turns, a hit wakes it · silence 🔇: no element
      cards or skills · weak ⬇: hits ×0.75 · freeze and shock reuse the old stun (skip a turn) and slow (−2 move). */
   const STATUS = { burn: { name: 'ไหม้', icon: '🔥', dot: 4, turns: 2 }, poison: { name: 'พิษ', icon: '☠', dot: 3, turns: 3 }, sleep: { name: 'หลับ', icon: '💤', turns: 2 }, silence: { name: 'ใบ้', icon: '🔇', turns: 2 }, weak: { name: 'อ่อนแรง', icon: '⬇', turns: 2 }, freeze: { name: 'แข็ง', icon: '❄' }, shock: { name: 'ชา', icon: '⚡' } };
-  const CARD_STATUS = { flame: ['burn', .5], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3] };
+  const CARD_STATUS = { flame: ['burn', .5], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3], chaosBolt: ['weak', .5], chaosRend: ['silence', .4] };
   const MON_STATUS = { slime: ['poison', .3], wolf: ['poison', .2], bat: ['sleep', .2], shadowWolf: ['sleep', .2], golem: ['weak', .3], frostWolf: ['freeze', .2], yeti: ['freeze', .25], frostQueen: ['freeze', .35], snowKobold: ['silence', .2], kobold: ['silence', .15], bandit: ['weak', .15] };
   function inflict(st, t, k, chance = 1, notes) {
     if (!st.cards || !alive(t) || !STATUS[k] || (st.rng || Math.random)() >= chance) return null;
@@ -511,7 +513,7 @@
     const frac = u.maxHp ? u.hp / u.maxHp : 1;
     u.kind = e.kind; u.name = '✦ ' + e.name; u.maxHp = e.hp; u.hp = Math.min(e.hp, Math.max(Math.round(e.hp * .7), Math.round(e.hp * frac)));
     u.atk = e.atk; u.move = e.move; u.iq = Math.max(u.iq || 0, e.iq || 0); u.shove = !!e.shove; u.el = e.el; u.fly = !!e.fly;
-    u.evolved = true; u.evo = null; st.evoCount = (st.evoCount || 0) + 1; u.sts = {};
+    u.evolved = true; u.evoTier = e.tier || 1; u.evoLine = e.line || e.el; u.evo = null; st.evoCount = (st.evoCount || 0) + 1; u.sts = {};
     st.log.push(from.name + ' วิวัฒน์เป็น ' + e.name + '!');
     steps.push({ unit: u, type: 'evolve', from, to: { kind: e.kind, name: e.name, hp: u.hp, maxHp: u.maxHp, atk: u.atk } });
     return true;

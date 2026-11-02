@@ -33,6 +33,7 @@ const GOODS={
  boneCharm:{name:'เครื่องรางกระดูก',element:'dark',rarity:'common',use:'ขาย',price:13,text:'ของขลังจากซากวิหาร'},
  soulGem:{name:'อัญมณีวิญญาณ',element:'chaos',rarity:'good',use:'ขาย',price:38,text:'แสงสีม่วงวนอยู่ข้างใน'},
  relic:{name:'ตราประทับหัวหน้า',element:'chaos',rarity:'rare',use:'เควส',price:60,text:'หลักฐานการปราบหัวหน้าพื้นที่'}};
+if(window.Chaos)Object.assign(GOODS,window.Chaos.GOODS);/* v98.66 · แก่นโกลาหลจากมอนวิวัฒน์ (js/chaos.js) */
 // ---------- event cards: use from the bag → a story modal with choices → card disappears ----------
 const EVENT_CARDS={
  treasureMap:{name:'แผนที่สมบัติเก่า',element:'earth',rarity:'good',kind:'สมบัติ',area:'ทุกที่',minutes:20,text:'ตามรอยแผนที่ไปหาของที่ซ่อนไว้'},
