@@ -663,9 +663,10 @@
 
  function charScale(k) {
   const all = +data.cast.all || 1;
-  if (k === 'hero') return all * (castOf('hero')?.s ?? 1);
+  const adj = id => window.CharScaleAdjust?.factor('village', id) || 1;   /* v98.65 · ⚖ scale-lineup adjustments */
+  if (k === 'hero') return all * (castOf('hero')?.s ?? 1) * adj('hero');
   if (k === 'npc') return all * (castOf('npc')?.s ?? 1);
-  if (k.startsWith('npc:')) return all * (castOf(k)?.s ?? 1) * (castOf('npc')?.s ?? 1);
+  if (k.startsWith('npc:')) return all * (castOf(k)?.s ?? 1) * (castOf('npc')?.s ?? 1) * adj(k);
   return all
  }
  // draws the swapped image (feet on p, visible height ≈ h); returns false when the character keeps its own art

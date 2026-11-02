@@ -29,17 +29,19 @@ main{display:grid;grid-template-columns:230px 1fr 270px;gap:12px;padding:12px 16
 .hint{color:var(--muted);font-size:12px;margin:6px 0 0}
 dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:8px 0;font-size:13px}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}
 code{font-size:12px}
+.adj{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0}.adj>span{width:92px;color:var(--muted);font-size:12px}.adj input[type=number]{width:54px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:3px}.adj small{flex-basis:100%;color:var(--muted);font-size:11px}.adj button{padding:3px 8px}button.primary{background:var(--gold);color:#1d1608;border-color:#e6c47c}button:disabled{opacity:.45;cursor:default}#viewCtl{font-size:12px}#viewCtl input,#viewCtl select{font:inherit}
 </style></head><body>
-<header><h1>⚖ Scale Lineup <small>เฟส 1 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ดูและวัดอย่างเดียว (ยังไม่แก้ค่าใด ๆ)</small></h1>
+<header><h1>⚖ Scale Lineup <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
 <span id="tabs"></span> <span id="ctxBtns"></span><span class="grow"></span>
-<button id="bGhost" aria-pressed="true" title="เงาตัวเอกซ้อนหลังทุกตัว">เงาตัวเอก</button>
+<span id="viewCtl"></span> <button id="bGhost" aria-pressed="true" title="เงาตัวเอกซ้อนหลังทุกตัว">เงาตัวเอก</button>
 <button id="bSort" aria-pressed="false" title="เรียงตามความสูง">เรียงตามความสูง</button></header>
 <main>
 <section class="card"><b id="listTitle">ตัวละคร</b><div id="list" role="list"></div></section>
 <section class="card"><div id="stageWrap"><div id="stage"></div></div>
 <p class="hint" id="note"></p></section>
-<aside class="card" id="insp"></aside>
+<aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
+<script src="js/character-scale-adjust-data.js?v=98.67"></script><script src="js/character-scale-adjust.js?v=98.67"></script><script src="js/github-push.js?v=97.93"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -48,7 +50,7 @@ code{font-size:12px}
      ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
-const HERO_M = 1.70, DS = { hero: 1.6, ally: 1.45 };
+let HERO_M = 1.70; const DS = { hero: 1.6, ally: 1.45 };
 const HERO_SRC = 'assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-01.webp';
 const ALLIES = { bram: 'บรัม', luna: 'ลูน่า', kier: 'เคียร์' };
 const $ = id => document.getElementById(id);
@@ -113,7 +115,16 @@ async function build() {
 }
 let ctx = 'battle', sel = 'hero', ghost = true, sorted = false;
 const isW = e => !!e.group;
-const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / ENTRIES.find(x => x.id === 'hero').ctx[c].units * HERO_M;
+/* v98.65 · ⚖ phase 2: size adjustments. ADJ = the draft being edited (starts as the committed js/character-scale-adjust-data.js, or the unsaved draft kept in this browser). */
+const DRAFT_KEY = 'projectA.scaleAdjustDraft', SAVED = JSON.parse(JSON.stringify(window.CHARACTER_SCALE_ADJUST || { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }));
+let ADJ; try { ADJ = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null') } catch (e) { }
+ADJ = ADJ || JSON.parse(JSON.stringify(SAVED)); ADJ.global = ADJ.global || {}; ADJ.scene = ADJ.scene || {}; for (const k of ['battle', 'village', 'world']) ADJ.scene[k] = ADJ.scene[k] || {};
+const eff = (e, c = ctx) => isW(e) ? 1 : CharScaleAdjust.factor(c, e.id, ADJ), gOf = id => ADJ.global[id] ?? 1, sOf = (c, id) => ADJ.scene[c]?.[id] ?? 1;
+const dirty = () => JSON.stringify(clean(ADJ)) !== JSON.stringify(clean(SAVED));
+function clean(a) { const o = { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }; for (const [k, v] of Object.entries(a.global || {})) if (Math.abs(v - 1) > .0005) o.global[k] = +v.toFixed(4); for (const c of ['battle', 'village', 'world']) for (const [k, v] of Object.entries(a.scene?.[c] || {})) if (Math.abs(v - 1) > .0005) o.scene[c][k] = +v.toFixed(4); return o }
+const persistDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(clean(ADJ))) } catch (e) { } };
+let STEP = .5, ZOOM = 1, ALPHA = 1, SHADOW = false, FOOT = false, GUIDES = false, DIR = 'SW', POSE = 'idle';
+const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / ENTRIES.find(x => x.id === 'hero').ctx[c].units * HERO_M * eff(e, c);
 const heroE = () => ENTRIES.find(e => e.id === 'hero');
 /* world tabs: the hero stands first as the yardstick, then the pieces of that tab */
 const visible = () => { const a = tab === 'char' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx]) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
@@ -131,21 +142,25 @@ function render() {
   $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${e.id === sel}"><img alt="" src="${e.ctx[ctx].src}"><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m</small></span>${chip(e)}</button>`).join('');
   $('list').querySelectorAll('.row').forEach(b => b.onclick = () => { sel = b.dataset.c; render() });
   /* stage */
-  const st = $('stage'), H = 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))), ppm = (base - 20) / maxM, bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
+  const st = $('stage'), H = 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))) / ZOOM, ppm = (base - 20) / maxM * ZOOM, bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
   st.style.width = W + 'px'; let h = '';
-  for (let m = 0; m <= Math.floor(maxM * 2) / 2; m += .5) h += `<div class="tick" style="top:${base - m * ppm}px"><span>${m.toFixed(1)} m</span></div>`;
+  for (let m = 0; m <= maxM + 1e-6; m += STEP) h += `<div class="tick" style="top:${base - m * ppm}px"><span>${m.toFixed(1)} m</span></div>`;
   h += `<div class="base" style="top:${base}px"></div>`;
+  if (GUIDES) for (const [t, f] of [['หัว', 1], ['ตา', .93], ['ไหล่', .82], ['เอว', .58], ['เข่า', .28]]) h += `<div class="tick" style="top:${base - HERO_M * f * ppm}px;border-color:#c9893a"><span style="left:auto;right:4px;color:#c9893a">${t}</span></div>`;
   const hc = heroE().ctx[ctx];
   V.forEach((e, i) => {
     const c = e.ctx[ctx], cx = xs[i], px = metres(e) * ppm, k = px / c.m.H, w = c.m.w * k, hh = c.m.h * k, left = cx - ((c.m.x0 + c.m.x1) / 2) * k, top = base - (c.m.bottom + 1) * k;
     if (ghost && e.id !== 'hero') { const gk = HERO_M * ppm / hc.m.H; h += `<img class="ghost" alt="" src="${hc.src}" style="width:${hc.m.w * gk}px;left:${cx - ((hc.m.x0 + hc.m.x1) / 2) * gk}px;top:${base - (hc.m.bottom + 1) * gk}px">` }
-    h += `<img class="ch${e.id === sel ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${c.src}" style="width:${w}px;height:${hh}px;left:${left}px;top:${top}px">`;
-    h += `<div class="nm" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m</i></div>`;
+    const src = e.kind === 'ally' && ctx === 'battle' && (DIR !== 'SW' || POSE !== 'idle') ? `assets/tactics/${e.id}_${DIR.toLowerCase()}_${POSE}.webp` : c.src;
+    if (SHADOW) h += `<div style="position:absolute;left:${cx - w * .22}px;top:${base - 5}px;width:${w * .44}px;height:10px;border-radius:50%;background:rgba(0,0,0,.28)"></div>`;
+    if (FOOT) h += `<div style="position:absolute;left:${cx}px;top:${base - 18 * ZOOM}px;height:${18 * ZOOM}px;border-left:1px solid #c0392b"></div>`;
+    h += `<img class="ch${e.id === sel ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${src}" style="width:${w}px;height:${hh}px;left:${left}px;top:${top}px;opacity:${e.id === 'hero' ? 1 : ALPHA}">`;
+    h += `<div class="nm" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m${!isW(e) && Math.abs(eff(e) - 1) > .0005 ? ' · ' + Math.round(eff(e) * 100) + '%' : ''}</i></div>`;
   });
   st.innerHTML = h;
   st.querySelectorAll('.ch').forEach(i => i.onclick = () => { sel = i.dataset.c; render() });
   $('note').textContent = tab !== 'char' ? 'ไม้บรรทัดหมู่บ้าน: 1 m = ความสูงตัวเอกในหมู่บ้าน ÷ 1.70 (≈ 55 px) · ช่องพื้น 1 ช่อง ≈ 0.57 m · ตัวเอกยืนเป็นไม้วัดทางซ้าย + เงาเทาซ้อนหลัง · ชิป พอดี/เล็กไป/ใหญ่ไป เทียบกับช่วงเป้าหมายของแต่ละชนิด (แก้ช่วงได้ใน WORLD)' : ctx === 'battle' ? 'สนามรบ: ขนาดบนจอจริงของแต่ละตัว (สูง ÷ สูงภาพ × ขนาดที่เกมวาด) · ตัวเอก = 1.70 m เป็นไม้วัด · เงาเทา = ตัวเอกยืนเทียบ' : 'หมู่บ้าน: ใช้รูปหมู่บ้านของแต่ละตัว · ตอนนี้ใช้ตัวคูณวาดชุดเดียวกับสนามรบ (ค่าประมาณ — เฟส 3 จะต่อกับ cast scale จริงของหมู่บ้าน)';
-  inspect();
+  inspect(); controls();
 }
 function inspect() {
   const e = ENTRIES.find(x => x.id === sel), c = e.ctx[ctx];
@@ -158,9 +173,57 @@ function inspect() {
   $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${e.kind}</span><dl>
    ${row('ความสูงบนจอ', `${metres(e).toFixed(2)} m · ${c.units.toFixed(2)} UNIT`)}${row('เทียบตัวเอก', Math.round(metres(e) / HERO_M * 100) + '%')}${cross}
    ${row('เงาในภาพ', `สูง ${c.m.H} px · หัว ${c.m.headW} px · ภาพ ${c.m.w}×${c.m.h}`)}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.src}</code>`)}</dl>
-  <p class="hint">เฟส 1 ดูอย่างเดียว · ถ้าตัวไหนเตี้ย/สูงผิดสัดส่วน จดไว้ แล้วปรับที่เฟส 2</p>`;
+  <p class="hint">ปรับขนาดที่แผง ⚖ ด้านล่าง</p>`;
+}
+function viewCtl() {
+  const sel2 = (id, opts, val) => `<select id="${id}">${opts.map(([v, t]) => `<option value="${v}"${String(v) === String(val) ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+  $('viewCtl').innerHTML = `ขีด ${sel2('vStep', [[.5, '0.5 m'], [.25, '0.25 m'], [.1, '0.1 m']], STEP)} ซูม ${sel2('vZoom', [[.5, '50%'], [.75, '75%'], [1, '100%'], [1.5, '150%'], [2, '200%'], [3, '300%']], ZOOM)} ความชัด <input id="vAlpha" type="range" min="15" max="100" value="${Math.round(ALPHA * 100)}" style="width:70px"> ตัวเอก=1.70m <input id="vHero" type="number" step="0.01" min="1" max="2.5" value="${HERO_M}" style="width:58px">
+   <button id="vShadow" aria-pressed="${SHADOW}">เงา</button><button id="vFoot" aria-pressed="${FOOT}">เส้นเท้า</button><button id="vGuides" aria-pressed="${GUIDES}">เส้นไกด์ตัวเอก</button>`;
+  const $$ = id => document.getElementById(id);
+  $$('vStep').onchange = e => { STEP = +e.target.value; render() }; $$('vZoom').onchange = e => { ZOOM = +e.target.value; render() };
+  $$('vAlpha').oninput = e => { ALPHA = +e.target.value / 100; render() }; $$('vHero').onchange = e => { HERO_M = Math.min(2.5, Math.max(1, +e.target.value || 1.7)); render() };
+  $$('vShadow').onclick = () => { SHADOW = !SHADOW; render() }; $$('vFoot').onclick = () => { FOOT = !FOOT; render() }; $$('vGuides').onclick = () => { GUIDES = !GUIDES; render() };
+}
+const GROUPS = [['one', 'เฉพาะตัวนี้'], ['ally', 'เพื่อนทั้งหมด (บรัม ลูน่า เคียร์)'], ['monster', 'มอนสเตอร์ทั้งหมด'], ['all', 'ทุกตัวยกเว้นตัวเอก']];
+let SCOPE = 'one';
+const inScope = e => SCOPE === 'one' ? e.id === sel : SCOPE === 'ally' ? e.kind === 'ally' : SCOPE === 'monster' ? e.kind === 'monster' : e.kind !== 'hero';
+function bump(field, delta) {   /* field: 'g' or a scene name; delta = percentage points added (multiplicative on the factor) */
+  for (const e of ENTRIES.filter(x => !isW(x) && inScope(x))) {
+    const cur = field === 'g' ? gOf(e.id) : sOf(field, e.id), nv = Math.min(2, Math.max(.4, Math.round((cur * 100 + delta)) / 100));
+    if (field === 'g') ADJ.global[e.id] = nv; else ADJ.scene[field][e.id] = nv;
+  }
+  persistDraft(); render();
+}
+function controls() {
+  const box = $('ctl'), e = ENTRIES.find(x => x.id === sel);
+  if (tab !== 'char' || !e || isW(e)) { box.innerHTML = '<p class="hint">ตัวปรับขนาดใช้กับแท็บ "ตัวละคร"</p>'; return }
+  const pct = v => Math.round(v * 100), row = (label, field, note) => `<div class="adj"><span>${label}</span><button data-b="${field}:-5">−5</button><button data-b="${field}:-1">−1</button><input type="number" min="40" max="200" value="${pct(field === 'g' ? gOf(e.id) : sOf(field, e.id))}" data-f="${field}"><button data-b="${field}:1">+1</button><button data-b="${field}:5">+5</button>${note ? `<small>${note}</small>` : ''}</div>`;
+  const dim = e.id === 'hero' ? 'ตัวเอกคือไม้วัด: ปรับแล้วตัวอื่นเทียบตามความสูงเดิม' : '';
+  const dirs = e.kind === 'ally' && ctx === 'battle' ? `<div class="adj"><span>ดูท่า/ทิศ</span><select id="cDir">${['SW', 'SE', 'NE', 'NW'].map(d => `<option${d === DIR ? ' selected' : ''}>${d}</option>`).join('')}</select><select id="cPose">${['idle', 'windup', 'strike', 'guard', 'hit', 'down'].map(d => `<option${d === POSE ? ' selected' : ''}>${d}</option>`).join('')}</select><small>ทุกท่าใช้ตัวคูณเดียวกันของตัวนี้</small></div>` : '';
+  box.innerHTML = `<hr><b>⚖ ปรับขนาด · ${e.name}</b>
+   <div class="adj"><span>ขอบเขต</span><select id="cScope">${GROUPS.map(([v, t]) => `<option value="${v}"${v === SCOPE ? ' selected' : ''}>${t}</option>`).join('')}</select></div>
+   ${row('ทุกฉาก %', 'g', 'ใช้ทุกฉากพร้อมกัน (สัดส่วนระหว่างตัวละคร)')}${row('สนามรบ %', 'battle', '')}${row('หมู่บ้าน %', 'village', '')}${row('แผนที่ผจญภัย %', 'world', 'เตรียมไว้ · ยังไม่ผูกกับแผนที่')}
+   ${dirs}${dim ? `<p class="hint">${dim}</p>` : ''}
+   <p class="hint">ขนาดสุดท้ายในฉาก = ทุกฉาก % × ฉากนั้น % · ใช้กับ <b>ทุกเฟรม</b> ของตัวนี้ (ยืน เดิน ฟาด ตั้งรับ ล้ม ทุกทิศ) ตัวคูณเดียว</p>
+   <div class="adj"><button id="cReset">รีเซ็ตตัวนี้</button><button id="cRevert"${dirty() ? '' : ' disabled'}>ย้อนกลับที่บันทึกไว้</button><button id="cSave" class="primary"${dirty() ? '' : ' disabled'}>บันทึกเข้าเกม</button></div><p class="hint" id="cMsg">${dirty() ? '● ยังไม่ได้บันทึก (ร่างเก็บในเบราว์เซอร์นี้)' : 'ตรงกับที่บันทึกในเกมแล้ว'}</p>`;
+  const $$ = id => document.getElementById(id);
+  $$('cScope').onchange = ev => { SCOPE = ev.target.value; controls() };
+  box.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { const [f, d] = b.dataset.b.split(':'); bump(f, +d) });
+  box.querySelectorAll('input[data-f]').forEach(inp => inp.onchange = () => { const f = inp.dataset.f, cur = f === 'g' ? gOf(e.id) : sOf(f, e.id); bump(f, Math.round(+inp.value || 100) - Math.round(cur * 100)) });
+  if ($$('cDir')) { $$('cDir').onchange = ev => { DIR = ev.target.value; render() }; $$('cPose').onchange = ev => { POSE = ev.target.value; render() } }
+  $$('cReset').onclick = () => { for (const x of ENTRIES.filter(q => !isW(q) && inScope(q))) { delete ADJ.global[x.id]; for (const c of ['battle', 'village', 'world']) delete ADJ.scene[c][x.id] } persistDraft(); render() };
+  $$('cRevert').onclick = () => { ADJ = JSON.parse(JSON.stringify(SAVED)); persistDraft(); render() };
+  $$('cSave').onclick = saveToRepo;
+}
+async function saveToRepo() {
+  const msg = document.getElementById('cMsg'), G = window.GitHubPush;
+  if (!G || !G.enabled()) { msg.textContent = 'ยังไม่ได้ใส่ token ของ GitHub ในเบราว์เซอร์นี้ (เปิดตั้งค่าจาก Asset Studio ก่อน) · ร่างยังเก็บไว้ในเบราว์เซอร์'; return }
+  const data = clean(ADJ), text = `/* v98.65 · per-character size adjustments written by scale-lineup.html (⚖ ปรับสเกล → บันทึกเข้าเกม). Do not hand-edit unless you know what you are doing.\n   global[id] = one factor for the character in EVERY scene · scene[ctx][id] = an extra factor for one scene (battle · village · world) → final size = global × scene\n   ids: hero · bram · luna · kier · m:<monster key> · village NPC ids */\nwindow.CHARACTER_SCALE_ADJUST = ${JSON.stringify(data)};\n`;
+  msg.textContent = 'กำลังบันทึก…';
+  try { await G.commit('Scale Lineup: ปรับขนาดตัวละคร', async () => [{ path: 'js/character-scale-adjust-data.js', content: text }]); Object.assign(SAVED, JSON.parse(JSON.stringify(data))); SAVED.global = data.global; SAVED.scene = data.scene; persistDraft(); render(); document.getElementById('cMsg').textContent = '✔ บันทึกเข้าเกมแล้ว (ใช้ได้หลังเว็บอัปเดต 1–2 นาที)' }
+  catch (err) { msg.textContent = 'บันทึกไม่สำเร็จ: ' + err.message }
 }
 $('bGhost').onclick = () => { ghost = !ghost; render() }; $('bSort').onclick = () => { sorted = !sorted; render() };
 let ready = false; addEventListener('resize', () => ready && render());
-build().then(() => { ready = true; render() });
+build().then(() => { ready = true; viewCtl(); render() });
 </script></body></html>
