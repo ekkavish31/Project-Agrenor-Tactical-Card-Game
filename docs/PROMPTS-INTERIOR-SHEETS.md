@@ -967,3 +967,69 @@ Each piece is a complete object fully inside its own cell. No people, no animals
 ```
 
 **ตรวจรับชีท B1**: ① ชิ้น 1–3 กว้างสุด (2×2) ② ไม่มีสัตว์/คน ③ ไฟและน้ำแข็งไม่เรืองออกบนพื้นเขียว
+
+---
+
+## ชีทหมู่บ้าน V2 · ขอบหมู่บ้าน กำแพง รั้ว ผา (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `wall-stone-a` · `wall-stone-b` · `wall-stone-corner` · `palisade-a` · `palisade-b` · `palisade-corner` · `cliff-a` · `cliff-b` · `cliff-corner`
+
+ใช้: ขอบหมู่บ้านเฟิร์นเวลที่ตอนนี้ใช้ป่าทึบแทน (คุณสั่งไว้ 30 ต.ค.) · **a = ชิ้นตรงพาดซ้ายบน→ขวาล่าง (↘) · b = ชิ้นตรงพาดซ้ายล่าง→ขวาบน (↗) · corner = ชิ้นมุม** · ทุกชิ้นต้อง**ต่อกันได้เป็นแนวยาว** (ปลายทั้งสองข้างตรงกันพอดี)
+
+```
+A GAME SPRITE ATLAS for the outdoor village map of a 2.5D fantasy RPG: exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated modular border piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people and no animals.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall.
+
+SCALE: one floor tile = a diamond whose width is 28% of the cell width and whose height is 14% of the cell width. Every straight piece (a and b) is a 3x1-tile section of border: piece "a" runs from the upper-left to the lower-right of the image (its footprint is three diamonds joined along that direction); piece "b" runs from the lower-left to the upper-right (its footprint is three diamonds joined along that opposite direction). Both ends of every straight piece are cut perfectly flat and identical, with the same height and the same profile, so that copies placed end to end form one continuous unbroken wall or fence. Corner pieces cover a 1x1 tile at the meeting point of an a-run and a b-run, with the two arms each extending one half tile outward. The lowest ground-contact point of the footprint centre is at about 78% of the cell height. Leave at least 6% empty margin around every piece. A standing adult would be about 1.3 tile-widths tall (use this to judge proportions): the stone wall is about 1.1 tall with battlement bumps, the palisade about 1.4 tall, the cliff about 1.6 tall.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art, matching the attached village building references (same outline weight, same detail level, same warm medieval look). Crisp clean edges with thin soft dark-brown outlines. Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself. Palette: warm grey fieldstone with moss and ivy, honey-brown sharpened logs bound with rope, earthy tan and grey rock with grass tufts on top, slightly desaturated.
+
+CONTENT, row by row, left to right:
+1. Stone wall segment "a": a solid grey fieldstone wall with a flat capstone top and a few battlement merlons, moss and ivy patches, running upper-left to lower-right, flat identical ends.
+2. Stone wall segment "b": the same wall design running lower-left to upper-right (a true mirror of piece 1 so they join), flat identical ends.
+3. Stone wall corner: the two wall arms meeting at a square corner post that is slightly taller, with a pointed stone cap.
+4. Palisade segment "a": a fence of tall upright sharpened logs of slightly varied heights bound with two rope lashings and a horizontal cross beam, running upper-left to lower-right, flat identical ends.
+5. Palisade segment "b": the mirrored palisade running lower-left to upper-right.
+6. Palisade corner: the two palisade arms meeting at a taller corner post with an iron-banded cap.
+7. Cliff segment "a": a natural rock cliff face about 1.6 tiles tall with layered tan and grey strata, a grassy top edge with tufts and a few roots, base rubble, running upper-left to lower-right, flat identical ends.
+8. Cliff segment "b": the mirrored cliff running lower-left to upper-right.
+9. Cliff corner: the two cliff arms meeting in a rounded outcrop corner with a few pine saplings on top.
+
+Each piece is a complete modular object fully inside its own cell. No people, no animals, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท V2**: ① ชิ้น a กับ b เป็นภาพสะท้อนกันและปลายตัดตรงเหมือนกัน ② ชิ้นมุมสูงกว่าชิ้นตรงเล็กน้อย ③ ไม่มีสัตว์ คน ตัวหนังสือ
+
+---
+
+## ชีทสนามต่อสู้ B2 · เทกซ์เจอร์พื้นสนามต่อ (3×3 = 9 ช่อง · ต่อซ้ำได้ แบบเดียวกับชีท 14)
+
+ลำดับช่อง → ชื่อไฟล์: `tex-wood-bridge` · `tex-brick-wall` · `tex-slab` · `tex-mud` · `tex-sand-dune` · `tex-snow` · `tex-lava-rock` · `tex-moss-stone` · `tex-ice`
+
+ใช้: พื้นสะพาน/อิฐกำแพง/แผ่นหินปูของสนามที่ยังเป็นโค้ด (`terrain-diorama-wood/brick/slab`) และพื้นผิวพิเศษของสนามหนองน้ำ ทะเลทราย หิมะ ภูเขาไฟ · **เทกซ์เจอร์เต็มช่อง ไม่มีพื้นเขียว** (เหมือนชีท 14)
+
+```
+A TEXTURE ATLAS for a 2.5D fantasy RPG battlefield: exactly 3 columns × 3 rows of equal square cells (9 cells). Every cell is COMPLETELY FILLED edge to edge with its own seamless, tileable material texture; there is no background, no green, no gap, no border, no frame, no grid line, no margin between cells. No text, no objects, no people, no shadows, no perspective, no lighting gradient, no vignette, no baked highlights from a light source: the lighting is perfectly flat and even so that the texture repeats without visible seams or brightness changes. Each texture must tile seamlessly: its left edge continues into its right edge, and its top edge continues into its bottom edge. Do not place any unique feature (a single stain, a single crack, a single footprint) near the middle: keep the pattern evenly distributed so repetition is not obvious.
+
+CAMERA: every texture is seen perfectly flat from directly above (a flat top-down orthographic map of the surface, no perspective), except cell 2 (brick wall), which is seen perfectly flat from directly in front with horizontal courses exactly horizontal.
+
+SCALE: the whole cell shows an area 2 game tiles wide and 2 game tiles tall. Wooden bridge planks are about 0.3 tile wide and run along one direction with staggered joints and visible iron nails; bricks are about 0.5 tile long and 0.25 tile tall; stone slabs are about 0.8 tile square; other materials are evenly detailed at the same level.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art and NOT photographic. Soft clean edges with thin soft dark-brown joint lines, rich readable material detail, matching the previous floor-and-wall texture sheet (same outline weight, same level of detail, muted so the textures sit behind characters without competing with them). Palette: weathered grey-brown oak, warm red-brown brick with cream mortar, pale grey stone slabs, dark wet mud brown, warm tan sand with fine ripples, white snow with faint pale blue shading, near-black volcanic rock with a few dull glowing orange cracks (kept subtle), mossy dark-green-grey stone, pale translucent blue ice with fine white cracks.
+
+CONTENT, row by row, left to right:
+1. Wood bridge: grey-brown weathered planks running along one direction, iron nail heads, mild gaps showing darkness, worn edges.
+2. Brick wall: red-brown bricks in running bond with cream mortar, small chips and soot stains spread evenly.
+3. Stone slab floor: pale grey square slabs with thin dark joints and subtle chips.
+4. Mud: dark wet brown mud with shallow puddle glints, a few small pebbles and straw bits.
+5. Sand dunes: warm tan sand with fine wind ripples, no large features.
+6. Snow: clean white snow with soft pale-blue hollows and tiny sparkles, no footprints.
+7. Lava rock: near-black cooled lava rock with fine dull orange glowing cracks, evenly distributed.
+8. Moss stone: dark grey stone covered with patches of deep green moss and damp sheen.
+9. Ice: pale translucent blue ice with fine white crack lines and tiny trapped bubbles.
+
+Every cell is a full-bleed seamless square texture. No objects, no text, no ground plane, no scenery.
+```
+
+**ตรวจรับชีท B2**: ① ทุกช่องเต็มสี่เหลี่ยม ไม่มีเขียว ② ไม่มีเงาหรือแสงไล่ ③ วางต่อกัน 2×2 แล้วขอบเนียน ④ รอยแตกลาวาไม่เรืองจัดเกินไป
