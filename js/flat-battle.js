@@ -502,18 +502,18 @@
      u.evo = { kind, name, hp, atk, move, iq, shove, el, fly } → the unit becomes the next form with its stats (HP keeps at least 70 % of the new max). */
   function evoChance(st, u) {
     let p = 0; const h = hero(st);
-    if ((st.turns || 1) >= 2) p += .04;
-    if (u.hp <= u.maxHp * .5) p += .16;
-    p += Math.min(.24, .12 * monsters(st).filter(x => x !== u && !alive(x)).length);
-    if (h && h.hp <= h.maxHp * .35) p += .05;
-    return Math.min(.6, p);
+    if ((st.turns || 1) >= 2) p += .012;
+    if (u.hp <= u.maxHp * .5) p += .05;
+    p += Math.min(.1, .035 * monsters(st).filter(x => x !== u && !alive(x)).length);
+    if (h && h.hp <= h.maxHp * .35) p += .03;
+    return Math.min(.25, p);
   }
   function evolveNow(st, u, steps) {
     const e = u.evo, from = { kind: u.kind, name: u.name, hp: u.hp, maxHp: u.maxHp, atk: u.atk };
     const frac = u.maxHp ? u.hp / u.maxHp : 1;
     u.kind = e.kind; u.name = '✦ ' + e.name; u.maxHp = e.hp; u.hp = Math.min(e.hp, Math.max(Math.round(e.hp * .7), Math.round(e.hp * frac)));
     u.atk = e.atk; u.move = e.move; u.iq = Math.max(u.iq || 0, e.iq || 0); u.shove = !!e.shove; u.el = e.el; u.fly = !!e.fly;
-    u.evolved = true; u.evoTier = e.tier || 1; u.evoLine = e.line || e.el; u.evo = null; st.evoCount = (st.evoCount || 0) + 1; u.sts = {};
+    u.evolved = true; u.evoFrom = from.kind; u.evoTier = e.tier || 1; u.evoLine = e.line || e.el; u.evo = null; st.evoCount = (st.evoCount || 0) + 1; u.sts = {};
     st.log.push(from.name + ' วิวัฒน์เป็น ' + e.name + '!');
     steps.push({ unit: u, type: 'evolve', from, to: { kind: e.kind, name: e.name, hp: u.hp, maxHp: u.maxHp, atk: u.atk } });
     return true;

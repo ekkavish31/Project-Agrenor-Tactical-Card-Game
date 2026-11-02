@@ -31,9 +31,9 @@
     fangBlade: { name: 'ดาบเขี้ยวหมาป่า', kind: 'sword', level: 2, cost: { iron: 2, coal: 1, wood: 1 }, goods: { wolfFang: 2 }, sell: 70, xp: 30, star: 2, zone: 'ป่า · ทุ่งหญ้า (หมาป่า)' },
     crystalHammer: { name: 'ค้อนผลึกแร่', kind: 'hammer', level: 3, cost: { iron: 3, coal: 2 }, goods: { crystalShard: 2 }, sell: 95, xp: 40, star: 2, zone: 'เนินเขา · บึง (โคโบลด์ สไลม์ โกเล็ม)' },
     /* v98.66 · chaos weapons: they need several chaos items from EVOLVED monsters (js/chaos.js) */
-    chaosFang: { name: 'เขี้ยวโกลาหล', kind: 'sword', level: 3, cost: { iron: 3, coal: 2 }, goods: { chaosShardDark: 4, wolfFang: 2 }, sell: 190, xp: 70, star: 3, zone: 'ได้จากมอนวิวัฒน์สายราตรี (หมาป่าเงา)' },
-    chaosMaul: { name: 'ค้อนแก่นโกลาหล', kind: 'hammer', level: 4, cost: { iron: 4, coal: 3 }, goods: { chaosCoreEarth: 2, chaosShardEarth: 3, crystalShard: 2 }, sell: 260, xp: 90, star: 3, zone: 'ได้จากมอนวิวัฒน์สายผืนดิน (โกเล็ม)' },
-    rimeChaosBlade: { name: 'ดาบน้ำค้างโกลาหล', kind: 'sword', level: 4, cost: { iron: 3, coal: 2, wood: 1 }, goods: { chaosCoreIce: 2, chaosShardIce: 3, frostFur: 1 }, sell: 250, xp: 90, star: 3, zone: 'ได้จากมอนวิวัฒน์สายน้ำแข็ง (เยติ)' },
+    chaosFang: { chaos: 'dark', name: 'เขี้ยวโกลาหล', kind: 'sword', level: 3, cost: { iron: 3, coal: 2 }, goods: { chaosShardDark: 4, wolfFang: 2 }, sell: 190, xp: 70, star: 3, zone: 'ได้จากมอนวิวัฒน์สายราตรี (หมาป่าเงา)' },
+    chaosMaul: { chaos: 'earth', name: 'ค้อนแก่นโกลาหล', kind: 'hammer', level: 4, cost: { iron: 4, coal: 3 }, goods: { chaosCoreEarth: 2, chaosShardEarth: 3, crystalShard: 2 }, sell: 260, xp: 90, star: 3, zone: 'ได้จากมอนวิวัฒน์สายผืนดิน (โกเล็ม)' },
+    rimeChaosBlade: { chaos: 'ice', name: 'ดาบน้ำค้างโกลาหล', kind: 'sword', level: 4, cost: { iron: 3, coal: 2, wood: 1 }, goods: { chaosCoreIce: 2, chaosShardIce: 3, frostFur: 1 }, sell: 250, xp: 90, star: 3, zone: 'ได้จากมอนวิวัฒน์สายน้ำแข็ง (เยติ)' },
     frostBlade: { name: 'ดาบน้ำค้างแข็ง', kind: 'sword', level: 4, cost: { iron: 3, coal: 2, wood: 1 }, goods: { frostFur: 1, pearl: 1 }, sell: 130, xp: 55, star: 3, zone: 'ทุ่งหิมะ + หาดทราย' }
   };
 
@@ -115,6 +115,7 @@
     const armor = Math.floor((lv - 1) / 3), stMax = (g.maxStamina || heroMaxStamina(lv)) + 4 * stat(g, 'endurance');
     const J = jobCombat(g).mods;   /* v97.18: the job's stat changes */
     const TM = root.Titles?.mods(g) || {};   /* v98.41: equipped titles (js/titles.js) */
+    { const AM = root.Chaos?.affixMods(w?.affix) || {}; for (const k of Object.keys(AM)) TM[k] = (TM[k] || 0) + AM[k] }   /* v98.66 · the weapon's chaos affix (js/chaos.js) */
     return { power: power + (J.power || 0) + (TM.power || 0), spell: spell + (J.spell || 0) + (TM.spell || 0), crit: Math.min(.35, .02 * stat(g, 'precision') + (J.crit || 0) + (TM.crit || 0)), armor: Math.max(0, armor + (J.armor || 0) + (TM.armor || 0)), stMax: stMax + (TM.st || 0), level: lv, weapon: wb, atk: BASE_ATK + power + (J.power || 0) + (TM.power || 0), def: BASE_DEF + armor + (TM.armor || 0), hpMod: (J.hp || 0) + (TM.hp || 0) };
   }
   /* the hero as sent into a battle frame: combat profile + the stamina to start with (tired heroes start lower) */

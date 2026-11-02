@@ -45,6 +45,29 @@
     for (const u of UNLOCKS) if (c.total >= u.at && !c.cards.includes(u.id)) { c.cards.push(u.id); out.push(u.id); (g.village.levelUnlocks ||= []).push({ level: 'chaos', cards: [{ group: 'combat', id: u.id, n: 1 }] }) }
     return out;
   }
-  const api = { LINES, TIER, GOODS, UNLOCKS, itemId, dropFor, halfRolls, note, st };
+  /* ---------- weapon affixes (ลักษณะพิเศษ): a chaos weapon rolls ONE when it is forged — the possibilities of its lineage, plus a rare perfect one ----------
+     fx keys are the ones Progression.heroCombat adds up: power · spell · crit · armor · st (battle stamina) · hp (battle HP) */
+  const AFFIX = {
+    dark: [{ id: 'shadowFang', name: 'เขี้ยวเงา', fx: { crit: .06 } }, { id: 'duskMist', name: 'หมอกทมิฬ', fx: { spell: 2, crit: .02 } }, { id: 'bloodthirst', name: 'กระหายเลือด', fx: { power: 2 } }],
+    earth: [{ id: 'stoneSet', name: 'หินตรึง', fx: { armor: 2 } }, { id: 'quakeForce', name: 'แรงสะเทือน', fx: { power: 2 } }, { id: 'unshaken', name: 'แก่นไม่สั่นคลอน', fx: { hp: 14 } }],
+    ice: [{ id: 'hoarDew', name: 'น้ำค้างแข็ง', fx: { spell: 3 } }, { id: 'coldWind', name: 'ลมหนาวเยือก', fx: { armor: 1, crit: .03 } }, { id: 'clearCrystal', name: 'ผลึกใส', fx: { st: 12, crit: .02 } }]
+  };
+  const PERFECT = { id: 'perfect', name: 'โกลาหลสมบูรณ์', fx: { power: 2, spell: 2, crit: .04 }, rare: true };
+  /* roll one affix for a weapon of this lineage; 12 % chance of the perfect one */
+  function rollAffix(line, rnd = Math.random) {
+    if (rnd() < .12) return { id: PERFECT.id, line, name: PERFECT.name, rare: true };
+    const pool = AFFIX[line] || AFFIX.dark, a = pool[Math.min(pool.length - 1, Math.floor(rnd() * pool.length))]; return { id: a.id, line, name: a.name };
+  }
+  function affixDef(a) { if (!a) return null; return a.id === PERFECT.id ? PERFECT : (AFFIX[a.line] || []).find(x => x.id === a.id) || null }
+  const affixMods = a => affixDef(a)?.fx || {};
+  const affixText = a => { const d = affixDef(a); return d ? '✷ ' + d.name + ' — ' + Object.entries(d.fx).map(([k, v]) => ({ power: 'การ์ดอาวุธ', spell: 'การ์ดธาตุ', crit: 'คริติคอล', armor: 'เกราะ', st: 'แรงสนามรบ', hp: 'HP ในสนามรบ' }[k]) + ' +' + (k === 'crit' ? Math.round(v * 100) + '%' : v)).join(' · ') : '' };
+  /* the field notes (สมุดบันทึกวิวัฒน์): every evolution you have witnessed, by pair */
+  function seen(g, list) {
+    const c = st(g); c.seen ||= {}; let fresh = 0;
+    for (const e of list || []) { if (!e.kind) continue; const k = (e.from || '?') + '>' + e.kind; if (!c.seen[k]) { c.seen[k] = { from: e.from || '?', to: e.kind, n: 0, kills: 0, tier: e.tier || 1, line: e.line }; fresh++ } c.seen[k].n++; if (e.dead) c.seen[k].kills++ }
+    return fresh;
+  }
+  const NAMES = { wolf: 'หมาป่า', shadowWolf: 'หมาป่าเงา', frostWolf: 'จ่าฝูงน้ำแข็ง', yeti: 'เยติ', snowKobold: 'โคโบลด์หิมะ', kobold: 'โคโบลด์ขุดแร่', golem: 'โกเล็มหิน' };
+  const api = { NAMES, seen, LINES, TIER, GOODS, UNLOCKS, AFFIX, PERFECT, itemId, dropFor, halfRolls, note, st, rollAffix, affixMods, affixText };
   root.Chaos = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

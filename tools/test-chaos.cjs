@@ -45,4 +45,26 @@ test('the three Grat cards exist as rules, elements and deck entries', () => {
   const D = require(path.join(__dirname, '..', 'js', 'tactics-decks.js')); const T = D.COMBAT || (D.TacticsDecks && D.TacticsDecks.COMBAT);
   for (const id of C.UNLOCKS.map(u => u.id)) assert.ok(T[id]?.name, id + ' name');
 });
+
+test('weapon affixes: one rolled per chaos weapon from its lineage; 12% perfect; mods reach heroCombat', () => {
+  assert.equal(C.rollAffix('dark', () => 0).id, 'perfect');
+  const picks = new Set(); for (let i = 0; i < 300; i++) { const a = C.rollAffix('earth', () => .5 + (i % 3) * .15 - 0.0); picks.add(a.id) }
+  const dist = {}; for (let i = 0; i < 20000; i++) { const a = C.rollAffix('ice'); dist[a.id] = (dist[a.id] || 0) + 1 }
+  assert.ok(dist.perfect > 20000 * .10 && dist.perfect < 20000 * .14, 'perfect ' + dist.perfect);
+  for (const l of Object.keys(C.LINES)) for (const a of C.AFFIX[l]) { assert.ok(Object.keys(a.fx).length && Object.keys(a.fx).every(k => ['power', 'spell', 'crit', 'armor', 'st', 'hp'].includes(k))); assert.match(C.affixText({ id: a.id, line: l }), /✷/) }
+  const s = g(); s.inventory = [{ id: 1, kind: 'sword', recipe: 'chaosFang', quality: 3, affix: { id: 'bloodthirst', line: 'dark', name: 'x' } }]; s.equipped = 1; P.sync(s);
+  const base = P.heroCombat({ ...g(), inventory: [{ id: 1, kind: 'sword', recipe: 'chaosFang', quality: 3 }], equipped: 1 }, P.ZONE_RECIPES);
+  const withA = P.heroCombat(s, P.ZONE_RECIPES); assert.equal(withA.power, base.power + 2);
+  s.inventory[0].affix = { id: 'duskMist', line: 'dark' }; const w2 = P.heroCombat(s, P.ZONE_RECIPES); assert.equal(w2.spell, base.spell + 2); assert.ok(Math.abs(w2.crit - (base.crit + .02)) < 1e-9);
+  for (const id of ['chaosFang', 'chaosMaul', 'rimeChaosBlade']) assert.ok(C.AFFIX[P.ZONE_RECIPES[id].chaos], id + ' has a lineage');
+});
+test('field notes: seen pairs counted, kills tracked, new pairs reported', () => {
+  const s = g(); assert.equal(C.seen(s, [{ from: 'wolf', kind: 'shadowWolf', tier: 1, line: 'dark', dead: true }, { from: 'wolf', kind: 'shadowWolf', tier: 1, line: 'dark', dead: false }]), 1);
+  assert.equal(C.seen(s, [{ from: 'kobold', kind: 'golem', tier: 2, line: 'earth', dead: true }]), 1); assert.equal(C.seen(s, [{ from: 'wolf', kind: 'shadowWolf', dead: true }]), 0);
+  const r = s.village.chaos.seen['wolf>shadowWolf']; assert.equal(r.n, 3); assert.equal(r.kills, 2);
+});
+test('titles for evolution exist (hidden until earned)', () => {
+  const T = require(path.join(__dirname, '..', 'js', 'titles.js')); const s = g(); T.note(s, 'evolve', 5); T.check(s); assert.ok(s.village.titles.earned.witness);
+  T.note(s, 'evolveKill', 10); T.check(s); assert.ok(s.village.titles.earned.chaosHunter); s.village.chaos = { total: 15 }; T.check(s); assert.ok(s.village.titles.earned.gratChosen);
+});
 console.log(`chaos: ${n} tests passed`);

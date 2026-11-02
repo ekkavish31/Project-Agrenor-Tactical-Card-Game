@@ -9,12 +9,12 @@ test('no evolution without a next form, for bosses, or on round 1 untouched', ()
   st = mk([{ boss: true }]); assert.equal(B.evolveCheck(st, B.monsters(st)[0], [], () => 0), false);
   st = mk([{}]); assert.equal(B.evoChance(st, B.monsters(st)[0]), 0);   // round 1, healthy, nobody fallen: nothing yet
 });
-test('odds grow with rounds, wounds and fallen packmates (hidden triggers), capped at 60%', () => {
+test('odds grow with rounds, wounds and fallen packmates (hidden triggers), capped at 25%', () => {
   const st = mk([{}, {}]); const u = B.monsters(st)[0]; st.turns = 2; const base = B.evoChance(st, u);
-  assert.ok(base > 0 && base < .1);
-  u.hp = 10; const hurt = B.evoChance(st, u); assert.ok(hurt > base + .1);
+  assert.ok(base > 0 && base < .03);
+  u.hp = 10; const hurt = B.evoChance(st, u); assert.ok(hurt > base + .04);
   B.monsters(st)[1].hp = 0; const pack = B.evoChance(st, u); assert.ok(pack > hurt);
-  B.hero(st).hp = 5; assert.ok(B.evoChance(st, u) <= .6);
+  B.hero(st).hp = 5; assert.ok(B.evoChance(st, u) <= .25);
 });
 test('evolving swaps the form: new stats, HP keeps ≥70% of the new max, flagged, one step', () => {
   const st = mk([{ hp: 8 }]); st.turns = 3; const u = B.monsters(st)[0], steps = [];

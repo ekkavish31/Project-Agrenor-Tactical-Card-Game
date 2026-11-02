@@ -55,13 +55,16 @@
     T('polymath', 'ร้อยศาสตร์', 4, { spell: 3, power: 2, xp: .06 }, 'เชี่ยวชาญหลายเส้นทางพร้อมกัน', (g) => jobsAt(g, 3) >= 4),
     T('bulwark', 'ป้อมปราการเดินได้', 4, { armor: 3, hp: 25 }, 'หนึ่งร้อยครั้งที่ไม่เสียเพื่อนแม้แต่คนเดียว', (g, t) => t.allySafe >= 100),
     /* ── ระดับ 5 ลับ ── */
+    T('witness', 'ผู้เห็นการบิดเบี้ยว', 2, { crit: .02, spell: 1 }, 'เห็นสัตว์ร้ายวิวัฒน์ต่อหน้าต่อตา หลายครั้งจนไม่ตกใจแล้ว', (g, t) => (t.evolve || 0) >= 5),
+    T('chaosHunter', 'นักล่าผู้ถูกโกลาหลมอง', 3, { power: 1, hp: 8 }, 'ล้มสัตว์ร้ายที่วิวัฒน์ไปสิบตัว', (g, t) => (t.evolveKill || 0) >= 10),
+    T('gratChosen', 'ผู้ที่โกลาหลตอบรับ', 4, { spell: 3, crit: .03, armor: 1 }, 'แก่นโกลาหลสะสมจนผลึกในกายสั่นพ้อง', (g) => (g.village?.chaos?.total || 0) >= 15),
     T('stubborn', 'คนไม่ยอมแพ้', 5, { power: 1, hp: 10 }, 'ล้มมาแล้วนับครั้งไม่ถ้วน แต่ยังลุกขึ้นทุกครั้ง', (g, t) => t.lose >= 15 && t.win >= 15),
     T('phoenix', 'ฟื้นจากเถ้า', 5, { hp: 20, armor: 1, xp: .05 }, 'แพ้ติดกันสามครั้ง แล้วกลับมาชนะติดกันห้าครั้ง', (g, t) => !!t.phoenix),
     T('coward', 'ผู้หนีอย่างมีศิลป์', 5, { st: 15, armor: 1 }, 'หนีรอดมาสิบครั้ง — บางทีนั่นคือความฉลาด', (g, t) => t.flee >= 10),
     T('ancient', 'ผู้อยู่มานาน', 5, { hp: 15, st: 15 }, 'หนึ่งร้อยวันผ่านไปแล้ว', (g) => num(g.day) >= 100),
     T('chosen', 'ผู้ถูกเลือก', 5, { power: 2, spell: 2, crit: .03, armor: 2, hp: 20, st: 10, xp: .05 }, 'สะสมฉายาไว้มากพอจะทำให้โลกหันมามอง', (g, t, earned) => Object.keys(earned).length >= 20)
   ];
-  const ICON = {"rookie": "🗡", "wolfbane": "🐺", "bandithunter": "🏹", "wayfarer": "👣", "survivor": "🩹", "seasoned": "⛰", "pennywise": "🪙", "veteran": "🛡", "nightwalker": "🌙", "unscathed": "✨", "closecall": "⚡", "lonewolf": "🐾", "packhunter": "🏔", "scholar": "📖", "craftsman": "🔨", "guardian": "🤝", "bosskiller": "👑", "streak10": "🔥", "eliteslayer": "🥀", "shadowless": "🌫", "ironwill": "⛓", "grown": "🌳", "adept": "🔮", "merchantking": "💰", "legend": "🏆", "undying": "♾", "polymath": "☯", "bulwark": "🏰", "stubborn": "💢", "phoenix": "🔥", "coward": "🍃", "ancient": "⏳", "chosen": "👁"};
+  const ICON = {"rookie": "🗡", "wolfbane": "🐺", "bandithunter": "🏹", "wayfarer": "👣", "survivor": "🩹", "seasoned": "⛰", "pennywise": "🪙", "veteran": "🛡", "nightwalker": "🌙", "unscathed": "✨", "closecall": "⚡", "lonewolf": "🐾", "packhunter": "🏔", "scholar": "📖", "craftsman": "🔨", "guardian": "🤝", "bosskiller": "👑", "streak10": "🔥", "eliteslayer": "🥀", "shadowless": "🌫", "ironwill": "⛓", "grown": "🌳", "adept": "🔮", "merchantking": "💰", "legend": "🏆", "undying": "♾", "polymath": "☯", "bulwark": "🏰", "stubborn": "💢", "phoenix": "🔥", "coward": "🍃", "ancient": "⏳", "chosen": "👁", "witness": "👀", "chaosHunter": "✷", "gratChosen": "🌀"};
   const BY = Object.fromEntries(LIST.map(x => [x.id, x]));
 
   const st = g => { const v = (g.village ||= {}); const o = (v.titles ||= {}); o.tally ||= {}; o.earned ||= {}; o.equipped ||= []; return o };
