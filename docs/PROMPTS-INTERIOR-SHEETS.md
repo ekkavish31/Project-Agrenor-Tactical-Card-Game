@@ -718,7 +718,7 @@ Each piece is a complete object fully inside its own cell. No people, no animals
 
 ---
 
-## ชีท W3 · จุดสนใจและที่ตั้งถิ่นฐาน (แมพผจญภัย) (3×3 = 9 ช่อง)
+## ชีท W3 ✅ ใช้ในเกมแล้ว (v98.52) · จุดสนใจและที่ตั้งถิ่นฐาน (แมพผจญภัย) (3×3 = 9 ช่อง)
 
 ลำดับช่อง → ชื่อไฟล์: `village` · `town` · `harbor` · `watchtower` · `ruins` · `mine` · `den` · `frost-camp` · `standing-stones`
 

@@ -267,7 +267,7 @@
     g.fillStyle = gr; g.beginPath(); g.moveTo(p.x - 10, p.y - 260); g.lineTo(p.x + 10, p.y - 260); g.lineTo(p.x + 22, p.y); g.lineTo(p.x - 22, p.y); g.closePath(); g.fill();
     for (let k = 0; k < 2; k++) { const e = ((now * .0006 + k * .5) % 1); g.strokeStyle = `rgba(${col},${(1 - e) * .7})`; g.lineWidth = 2; g.beginPath(); g.ellipse(p.x, p.y + 4, 14 + e * 30, (14 + e * 30) * .45, 0, 0, 7); g.stroke() }
     g.restore();
-    poiIcon(g, d, p.x, p.y + 6, 1);
+    if (!(LMIMG[lmName(d)] && LMIMG[lmName(d)].complete && LMIMG[lmName(d)].naturalWidth)) poiIcon(g, d, p.x, p.y + 6, 1);
     label(g, (S.done[d.id] ? '✔ ' : '') + d.name, p.x, p.y + 30, S.done[d.id] ? '#bfffd0' : '#ffe2a8');
   }
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
@@ -303,7 +303,7 @@
     for (const k in world.tiles) {
       const h = world.tiles[k]; if (!isKnown(k)) continue;
       const p = center(h.c, h.r);
-      if (h.poi && h.poi.id !== 'home' && S.done[h.poi.id] && h.poi.id !== S.dest) { poiIcon(g, h.poi, p.x, p.y + 6, .8); label(g, '✔ ' + h.poi.name, p.x, p.y + 28, '#bfffd0', 11) }
+      if (h.poi && h.poi.id !== 'home' && S.done[h.poi.id] && h.poi.id !== S.dest) { if (!(LMIMG[lmName(h.poi)] && LMIMG[lmName(h.poi)].complete)) poiIcon(g, h.poi, p.x, p.y + 6, .8); label(g, '✔ ' + h.poi.name, p.x, p.y + 28, '#bfffd0', 11) }
       if (!h.enc || S.cleared[k] || h.enc.type === 'trap') continue;
       const lmk = h.enc.landmark;
       if (h.enc.type === 'battle') continue;   // v95.16: no battle marks — an ambush can happen on any step
@@ -318,6 +318,32 @@
       g.save(); g.fillStyle = 'rgba(40,60,90,.88)'; g.beginPath(); g.arc(p.x - 16, y, 11, 0, 7); g.fill(); g.strokeStyle = '#cfe6ff'; g.lineWidth = 1.5; g.stroke(); g.font = '12px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('🧳', p.x - 16, y + 1); g.restore(); label(g, tv.p.name, p.x - 16, y + 22, '#cfe6ff', 10) }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
     for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) { const q = center(tw.c, tw.r); label(g, tw.name, q.x, q.y + 32, '#d8f0ff', 12) }
+  }
+  /* v98.52 · landmarks (sheet W3): hand-painted hex tiles for the village, towns and destinations, standing out with a pulsing halo, rising sparkles, a gentle breathing scale and a pop when the hero is near.
+     LM[name] = [w, h, centre x, centre y, hex width] of the picture; they are drawn live (not baked) so they can move. */
+  const LM = {"village": [369, 377, 184, 188, 358], "town": [384, 410, 192, 213, 373], "harbor": [368, 381, 184, 190, 357], "watchtower": [361, 387, 180, 207, 350], "ruins": [376, 365, 188, 182, 365], "mine": [365, 366, 182, 182, 354], "den": [365, 360, 182, 180, 354], "frost-camp": [372, 364, 186, 182, 361], "standing-stones": [368, 358, 184, 178, 357]}, LMIMG = {};
+  for (const n in LM) { const im = LMIMG[n] = new Image(); im.src = 'assets/world/' + n + '.webp' }
+  const LM_COL = { village: '255,214,120', town: '140,200,255', harbor: '120,220,255', mine: '255,190,110', den: '255,120,100', 'frost-camp': '190,230,255', ruins: '190,255,190', watchtower: '255,200,120', 'standing-stones': '210,170,255' };
+  const lmName = (poi, tw) => poi.id === 'home' ? 'village' : tw ? (tw.icon === 'city' ? 'town' : tw.side === 'lake' || tw.side === 'coast' ? 'harbor' : 'village') : ({ mine: 'mine', ruin: 'ruins' }[poi.icon] || (poi.id === 'frost' ? 'frost-camp' : 'den'));
+  function drawLandmark(now, c, r, name, done, label2) {
+    const im = LMIMG[name], m = LM[name]; if (!im || !im.complete || !im.naturalWidth) return false;
+    const p = center(c, r), near = G.dist(S.pos, { c, r }) <= 2, breathe = 1 + Math.sin(now * .002 + c * 1.7) * .012, pop = near ? 1.1 : 1;
+    const k = HW * 1.75 / m[4] * breathe * pop, col = done ? '150,255,180' : LM_COL[name] || '255,214,120', pulse = (Math.sin(now * .003 + r) + 1) / 2;
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const rad = HW * (1.2 + pulse * .15 + (near ? .15 : 0)), gr = g.createRadialGradient(p.x, p.y, rad * .25, p.x, p.y, rad); gr.addColorStop(0, `rgba(${col},${.0})`); gr.addColorStop(.7, `rgba(${col},${.16 + pulse * .1})`); gr.addColorStop(1, `rgba(${col},0)`);
+    g.fillStyle = gr; g.beginPath(); g.ellipse(p.x, p.y, rad, rad * .9, 0, 0, 7); g.fill(); g.restore();
+    g.save(); g.translate(p.x, p.y); g.scale(k, k); g.shadowColor = `rgba(${col},${near ? .8 : .45})`; g.shadowBlur = near ? 16 : 8; g.drawImage(im, -m[2], -m[3]); g.restore();
+    g.save(); g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 4; i++) { const e = ((now * .00028 + i * .25 + c * .13) % 1), sx = p.x + Math.sin(i * 2.4 + c) * HW * .6, sy = p.y + R * .4 - e * R * 3, a = Math.sin(e * Math.PI) * .9, sz = 1.6 + (i % 2); g.fillStyle = `rgba(255,248,220,${a})`; g.beginPath(); g.moveTo(sx, sy - sz * 2); g.lineTo(sx + sz * .6, sy); g.lineTo(sx, sy + sz * 2); g.lineTo(sx - sz * .6, sy); g.closePath(); g.fill(); g.beginPath(); g.moveTo(sx - sz * 2, sy); g.lineTo(sx, sy + sz * .6); g.lineTo(sx + sz * 2, sy); g.lineTo(sx, sy - sz * .6); g.closePath(); g.fill() }
+    g.restore();
+    if (done) { g.save(); g.font = '700 13px system-ui,sans-serif'; g.textAlign = 'center'; g.fillStyle = '#bfffd0'; g.strokeStyle = 'rgba(10,25,15,.9)'; g.lineWidth = 3; g.strokeText('✔', p.x + HW * .36, p.y - R * .62); g.fillText('✔', p.x + HW * .36, p.y - R * .62); g.restore() }
+    return true;
+  }
+  function drawLandmarks(now) {
+    if (!world) return;
+    const hp = world.home; if (isKnown(K(hp.c, hp.r))) drawLandmark(now, hp.c, hp.r, 'village', false);
+    for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) drawLandmark(now, tw.c, tw.r, lmName({ id: 'town:' + tw.id }, tw), false);
+    for (const d of world.dests || []) if (isKnown(K(d.c, d.r)) || S.done[d.id]) drawLandmark(now, d.c, d.r, lmName(d), !!S.done[d.id]);
   }
   function drawTrail() {
     if (S.trail.length < 2) return; g.save(); g.setLineDash([2, 7]); g.lineCap = 'round'; g.strokeStyle = 'rgba(255,226,150,.9)'; g.lineWidth = 3;
@@ -357,7 +383,7 @@
     g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#07080c'; g.fillRect(0, 0, cv.width, cv.height);
     g.setTransform(dpr * cam.z, 0, 0, dpr * cam.z, dpr * (W / 2 - cam.x * cam.z), dpr * (H / 2 - cam.y * cam.z));
     if (terr) g.drawImage(terr, 0, 0, WW, WH);
-    drawTrail(); drawMarks(now); drawHover(); drawToken(now); drawTalk(now);
+    drawLandmarks(now); drawTrail(); drawMarks(now); drawHover(); drawToken(now); drawTalk(now);
     drawFog(now); drawBeacon(now);
     drawSky(); drawCompass();
   }
