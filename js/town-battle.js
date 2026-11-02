@@ -130,7 +130,7 @@
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
     for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
-    for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir }
+    for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir; { const o = u.side === 'monster' ? FB.hero(st) : FB.monster(st), du = o.u - u.u, dv = o.v - u.v; u.frontDir = du >= dv ? 'SE' : 'SW'; u.idle0 = { u: u.u, v: u.v, face: u.face } } }
     /* v97.08 · same-named enemies get a number (โจรป่า 1, โจรป่า 2 …) so the queue, the list and the log tell them apart */
     { const n = {}, k = {}; for (const u of FB.monsters(st)) n[u.name] = (n[u.name] || 0) + 1; for (const u of FB.monsters(st)) if (n[u.name] > 1) { k[u.name] = (k[u.name] || 0) + 1; u.label = u.name + ' ' + k[u.name] } for (const u of FB.monsters(st)) if (u.label) { u.name = u.label; delete u.label } }
     pend = null; walks = [];
@@ -1214,7 +1214,9 @@
     /* a host page (battle-field.html) can hand in standing props so trees/rocks and units overlap by depth */
     /* v96: a host with view depth (battle-field.html) sorts by depth so cells in front of a unit can be drawn over it */
     const extras = window.TownBattleExtras?.() || [], DEP = window.FieldDepth, order = [...st.units.map(u => ({ unit: u, y: project(u.vu, u.vv).y, d: DEP ? DEP(u.vu, u.vv) : 0 })), ...extras].sort(DEP ? (a, b) => (a.d ?? 0) - (b.d ?? 0) : (a, b) => a.y - b.y);
-    const drawUnit = u => { const ld = u.dir; if (window.viewDir) u.dir = viewDir(ld); try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), frozenMark(g, u, t)) } finally { u.dir = ld } };
+    /* v98.71 · until a unit moves, acts or is turned (u.face changes), it shows SW/SE (toward the camera) so the player sees who is there; the rules still use u.face */
+    const frontShown = u => { const i = u.idle0; if (!i) return false; if (u.walking || (u.pose && u.pose !== 'idle') || u.u !== i.u || u.v !== i.v || u.face !== i.face || u.hp <= 0) { u.idle0 = null; return false } return true };
+    const drawUnit = u => { const ld = u.dir; if (frontShown(u)) u.dir = u.frontDir; if (window.viewDir) u.dir = viewDir(u.dir); try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), frozenMark(g, u, t)) } finally { u.dir = ld } };
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
