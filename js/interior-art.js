@@ -1018,3 +1018,15 @@ window.INTERIOR_ART={
   "noShadow": true
  }
 };
+/* v98.44 · seamless floor / wall textures (sheet 14): one picture shows 2×2 game tiles; floors are seen from above, walls from the front */
+window.INTERIOR_TEX={
+ "floor-wood": "assets/interior/tex-floor-wood.webp",
+ "floor-wood-dark": "assets/interior/tex-floor-wood-dark.webp",
+ "floor-stone": "assets/interior/tex-floor-stone.webp",
+ "floor-tile": "assets/interior/tex-floor-tile.webp",
+ "floor-dirt": "assets/interior/tex-floor-dirt.webp",
+ "wall-plaster": "assets/interior/tex-wall-plaster.webp",
+ "wall-timber": "assets/interior/tex-wall-timber.webp",
+ "wall-stone": "assets/interior/tex-wall-stone.webp",
+ "wall-wood": "assets/interior/tex-wall-wood.webp"
+};

@@ -202,6 +202,15 @@
   const FLOOR = { grass: ['#6f9a4a', '#668f44', '#78a352'], wood: ['#8a6440', '#7c5a38', '#946c46'], stone: ['#8a8680', '#7e7a74', '#96928a'], tile: ['#c9c2b0', '#bdb6a4', '#d4ccba'] };
   const WALL = { fence: ['#8a6440', '#7a5634'], plaster: ['#e8dcc0', '#d9ccae'], timber: ['#e2d4b4', '#cbbd9c'], stone: ['#a8a296', '#968f84'] };
   const WALL_H = 120;
+  /* sheet 14: seamless floor / wall pictures (one picture = 2×2 tiles); the code-drawn colours stay as the fallback while they load */
+  const TEXSRC = window.INTERIOR_TEX || {}, texImgs = {}, texPat = {};
+  function texPattern(name) {
+    const src = name && TEXSRC[name]; if (!src) return null;
+    const im = texImgs[name] || (texImgs[name] = Object.assign(new Image(), { src })); if (!im.complete || !im.naturalWidth) return null;
+    if (!texPat[name]) { const p = g.createPattern(im, 'repeat'); if (!p) return null; p.setTransform(new DOMMatrix().scale(2 / im.naturalWidth, 2 / im.naturalHeight)); texPat[name] = p }
+    return texPat[name];
+  }
+  const clipPoly = pts => { g.beginPath(); pts.forEach((p, k) => k ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)); g.closePath(); g.clip() };
   function poly(pts, fillStyle, stroke) { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)); g.closePath(); if (fillStyle) { g.fillStyle = fillStyle; g.fill() } if (stroke) { g.strokeStyle = stroke; g.lineWidth = 1; g.stroke() } }
   const up = (p, h) => ({ x: p.x, y: p.y - h });
   /* an iso box: (u,v) back corner, w along u, d along v, height h */
@@ -210,8 +219,9 @@
     poly([b, c, up(c, h), up(b, h)], side1); poly([e, c, up(c, h), up(e, h)], side2); poly([up(a, h), up(b, h), up(c, h), up(e, h)], top);
   }
   function drawFloor(t) {
-    const pal = FLOOR[R.floor];
-    for (let u = 0; u < R.W; u++) for (let v = 0; v < R.D; v++) {
+    const pal = FLOOR[R.floor], ftex = texPattern({ wood: 'floor-wood', stone: 'floor-stone', tile: 'floor-tile' }[R.floor]);
+    if (ftex) { const o0 = P(0, 0); g.save(); clipPoly([o0, P(R.W, 0), P(R.W, R.D), P(0, R.D)]); g.transform(HW, HH, -HW, HH, o0.x, o0.y); g.fillStyle = ftex; g.fillRect(0, 0, R.W, R.D); g.restore() }
+    else for (let u = 0; u < R.W; u++) for (let v = 0; v < R.D; v++) {
       const a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), e = P(u, v + 1);
       poly([a, b, c, e], pal[(u * 7 + v * 3) % 3]);
       if (R.floor === 'wood') { g.strokeStyle = 'rgba(40,25,10,.25)'; g.lineWidth = 1; g.beginPath(); g.moveTo((a.x + e.x) / 2, (a.y + e.y) / 2); g.lineTo((b.x + c.x) / 2, (b.y + c.y) / 2); g.stroke() }
@@ -235,8 +245,15 @@
     /* back wall along v = 0 (u 0..W), left wall along u = 0 (v 0..D) */
     const o = P(0, 0), bR = P(R.W, 0), bL = P(0, R.D);
     poly([o, bR, up(bR, WALL_H), up(o, WALL_H)], pal[0]); poly([o, bL, up(bL, WALL_H), up(o, WALL_H)], pal[1]);
-    if (R.wall === 'timber') { g.strokeStyle = '#5a3a1e'; g.lineWidth = 6; for (let u = 0; u <= R.W; u += 3) { const p = P(u, 0); g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x, p.y - WALL_H); g.stroke() } for (let v = 0; v <= R.D; v += 3) { const p = P(0, v); g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x, p.y - WALL_H); g.stroke() } g.beginPath(); g.moveTo(o.x, o.y - WALL_H * .55); g.lineTo(bR.x, bR.y - WALL_H * .55); g.moveTo(o.x, o.y - WALL_H * .55); g.lineTo(bL.x, bL.y - WALL_H * .55); g.stroke() }
-    if (R.wall === 'stone') { g.strokeStyle = 'rgba(60,55,50,.35)'; g.lineWidth = 1; for (let k = 1; k < 8; k++) { const y = WALL_H * k / 8; g.beginPath(); g.moveTo(o.x, o.y - y); g.lineTo(bR.x, bR.y - y); g.moveTo(o.x, o.y - y); g.lineTo(bL.x, bL.y - y); g.stroke() } }
+    const wtex = texPattern({ plaster: 'wall-plaster', timber: 'wall-timber', stone: 'wall-stone' }[R.wall]);
+    if (wtex) {
+      const top = up(o, WALL_H);
+      g.save(); clipPoly([o, bR, up(bR, WALL_H), up(o, WALL_H)]); g.transform(HW, HH, 0, WALL_H / 2, top.x, top.y); g.fillStyle = wtex; g.fillRect(0, 0, R.W, 2); g.restore();
+      g.save(); clipPoly([o, bL, up(bL, WALL_H), up(o, WALL_H)]); g.transform(-HW, HH, 0, WALL_H / 2, top.x, top.y); g.fillStyle = wtex; g.fillRect(0, 0, R.D, 2); g.restore();
+      poly([o, bL, up(bL, WALL_H), up(o, WALL_H)], 'rgba(40,25,10,.2)');
+    }
+    if (R.wall === 'timber' && !wtex) { g.strokeStyle = '#5a3a1e'; g.lineWidth = 6; for (let u = 0; u <= R.W; u += 3) { const p = P(u, 0); g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x, p.y - WALL_H); g.stroke() } for (let v = 0; v <= R.D; v += 3) { const p = P(0, v); g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x, p.y - WALL_H); g.stroke() } g.beginPath(); g.moveTo(o.x, o.y - WALL_H * .55); g.lineTo(bR.x, bR.y - WALL_H * .55); g.moveTo(o.x, o.y - WALL_H * .55); g.lineTo(bL.x, bL.y - WALL_H * .55); g.stroke() }
+    if (R.wall === 'stone' && !wtex) { g.strokeStyle = 'rgba(60,55,50,.35)'; g.lineWidth = 1; for (let k = 1; k < 8; k++) { const y = WALL_H * k / 8; g.beginPath(); g.moveTo(o.x, o.y - y); g.lineTo(bR.x, bR.y - y); g.moveTo(o.x, o.y - y); g.lineTo(bL.x, bL.y - y); g.stroke() } }
     /* skirting */
     g.strokeStyle = 'rgba(50,30,15,.6)'; g.lineWidth = 4; g.beginPath(); g.moveTo(bL.x, bL.y - 3); g.lineTo(o.x, o.y - 3); g.lineTo(bR.x, bR.y - 3); g.stroke();
     /* top rim */
