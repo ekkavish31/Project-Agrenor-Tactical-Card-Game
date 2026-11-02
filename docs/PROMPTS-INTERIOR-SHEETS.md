@@ -781,3 +781,38 @@ Each tile is a complete hexagon fully inside its own cell. No text, no scenery o
 ```
 
 **ตรวจรับชีท W4**: ① ไทล์หกเหลี่ยมเท่ากันทุกช่อง พื้นเขียวล้วนรอบนอก ② ขอบไทล์ไม่มีเส้นขอบและไม่มีความหนา ③ ต้นไม้เล็ก กระจายธรรมชาติ ไม่เรียงแถว ④ ไม่มีสิ่งก่อสร้าง ถนน แม่น้ำ
+
+---
+
+## ชีท 13A · ของในไร่ (3×3 = 9 ช่อง · แผนที่ย่อยไร่)
+
+ลำดับช่อง → ชื่อไฟล์: `barn` · `scarecrow` · `compost` · `water-trough` · `hay-bale` · `farm-sign` · `chicken-coop` · `beehives` · `farm-well`
+
+ใช้แทน: ของในไร่ที่ยังวาดด้วยโค้ด/อีโมจิ (`barn` 2×2, `scarecrow`, `compost`, `trough`, `hay`, `signpost`, `coop`, บ่อน้ำ) · มุมกล้อง isometric 2:1 เหมือนแมพย่อย (ชีท 1–17) · หันหน้าไปล่างขวา
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG farm plot (outdoor): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people and no animals. Smoke stays inside or directly above the object.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT points to the lower-right (south-east) of the image, so you see its top or roof, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every elongated piece runs from the upper-left to the lower-right of the image.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width. The barn covers a 2x2-tile footprint (a diamond 62% of the cell width wide) and is the largest piece; the water trough and the hay bale each cover 2x1 and 1x1 respectively as described; every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 78% of the cell height, the same baseline in all nine cells. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. A standing adult would be about 1.25 tile-widths tall (use this to judge proportions): barn about 1.5 to the roof ridge, scarecrow about 1.3, compost about 0.4, trough about 0.35, hay bale about 0.45, farm sign about 0.9, coop about 0.7, beehives about 0.5, well about 0.9.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (weathered planks, thatch, straw, moss, rope, wear). Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: warm weathered oak, red-brown barn paint with cream trim, golden straw, mossy stone, muted green, slightly desaturated so the pieces match the attached reference images, the village buildings and the previous sheets (same outline weight, same detail level, same wood tone).
+
+CONTENT, row by row, left to right:
+1. Barn, 2x2 tiles: a red-brown timber barn with a steep gabled shingle roof, a big double door on the front-right face with a cross brace, a small hayloft hatch above it, cream trim and a weathervane on the ridge.
+2. Scarecrow: a straw-stuffed scarecrow on a wooden cross-pole in a patched shirt, a floppy hat, rope belt and a few crows' feathers hanging off the arms (no birds drawn).
+3. Compost heap: a low woody bin of rough planks filled with a mound of dark composting leaves, vegetable scraps and straw, a pitchfork stuck in the top.
+4. Water trough, 2x1 tiles: a long rustic oak trough on short legs filled with clear water, a small wooden bucket at one end.
+5. Hay bale: a stack of three rectangular golden hay bales tied with twine, a few loose straws and a wooden pitchfork leaning against it.
+6. Farm sign: a tall wooden signpost with two blank hanging plank signs (one arrow-shaped), a small rooster-shaped weathervane carved on top, a coil of rope and a stone at the base (no writing).
+7. Chicken coop: a small peaked wooden hen house on short legs with a ramp, a nesting-box flap, a tiny round window, a wire-fenced run in front and a few straw nest bundles (no chickens).
+8. Beehives: three round straw-skep beehives on a low wooden bench with a few flowers around, bees only as tiny dots near the entrances.
+9. Farm well: a round stone well with a little peaked wooden roof, a crank with a rope and a wooden bucket, moss on the stones.
+
+Each piece is a complete object fully inside its own cell. No people, no animals, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 13A**: ① ทุกชิ้นหันหน้าขวาล่าง พื้นเขียวล้วน ② โรงนากว้าง 2 ช่อง ใหญ่สุดในชีท ③ รางน้ำพาดซ้ายบน→ขวาล่าง ④ ไม่มีสัตว์/นกจริงในภาพ ไม่มีตัวหนังสือบนป้าย
+
+**ชีทไร่ที่ตามมา**: 13B ต้นผัก 9 ชนิด × 4 ระยะ (4 ชีท ชีทละ 2–3 ชนิด) · 13C สัตว์ 4 ชนิด (ไก่ แพะ แกะ วัว) × 4 ทิศ × ยืน/เดิน 2 เฟรม
