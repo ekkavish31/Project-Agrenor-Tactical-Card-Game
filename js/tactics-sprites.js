@@ -576,7 +576,8 @@ const TACTICS_SPRITES = {
       },
       "walk": [
         {
-          "src": "assets/tactics/hero_ne_walk_01.webp",
+          "src": "assets/tactics/hero_ne_walk_f01.webp",
+          "ms": 90,
           "right": [
             0.75,
             0.65
@@ -591,7 +592,8 @@ const TACTICS_SPRITES = {
           "mirrored": false
         },
         {
-          "src": "assets/tactics/hero_ne_walk_02.webp",
+          "src": "assets/tactics/hero_ne_walk_f02.webp",
+          "ms": 90,
           "right": [
             0.75,
             0.65
@@ -606,7 +608,8 @@ const TACTICS_SPRITES = {
           "mirrored": false
         },
         {
-          "src": "assets/tactics/hero_ne_walk_03.webp",
+          "src": "assets/tactics/hero_ne_walk_f03.webp",
+          "ms": 90,
           "right": [
             0.75,
             0.65
@@ -621,46 +624,145 @@ const TACTICS_SPRITES = {
           "mirrored": false
         },
         {
-          "src": "assets/tactics/hero_ne_walk_04.webp",
+          "src": "assets/tactics/hero_ne_walk_f04.webp",
+          "ms": 90,
           "right": [
-            0.74,
-            0.58
+            0.75,
+            0.65
           ],
           "left": [
             0.56,
-            0.57
-          ],
-          "rotation": 30,
-          "rightBehind": true,
-          "leftBehind": true,
-          "mirrored": false
-        },
-        {
-          "src": "assets/tactics/hero_ne_walk_05.webp",
-          "right": [
-            0.74,
             0.59
           ],
-          "left": [
-            0.56,
-            0.57
-          ],
-          "rotation": 30,
+          "rotation": 15,
           "rightBehind": true,
           "leftBehind": true,
           "mirrored": false
         },
         {
-          "src": "assets/tactics/hero_ne_walk_06.webp",
+          "src": "assets/tactics/hero_ne_walk_f05.webp",
+          "ms": 90,
           "right": [
-            0.71,
-            0.56
+            0.75,
+            0.65
           ],
           "left": [
             0.56,
-            0.57
+            0.59
           ],
-          "rotation": 30,
+          "rotation": 15,
+          "rightBehind": true,
+          "leftBehind": true,
+          "mirrored": false
+        },
+        {
+          "src": "assets/tactics/hero_ne_walk_f06.webp",
+          "ms": 90,
+          "right": [
+            0.75,
+            0.65
+          ],
+          "left": [
+            0.56,
+            0.59
+          ],
+          "rotation": 15,
+          "rightBehind": true,
+          "leftBehind": true,
+          "mirrored": false
+        },
+        {
+          "src": "assets/tactics/hero_ne_walk_f07.webp",
+          "ms": 90,
+          "right": [
+            0.75,
+            0.65
+          ],
+          "left": [
+            0.56,
+            0.59
+          ],
+          "rotation": 15,
+          "rightBehind": true,
+          "leftBehind": true,
+          "mirrored": false
+        },
+        {
+          "src": "assets/tactics/hero_ne_walk_f08.webp",
+          "ms": 90,
+          "right": [
+            0.75,
+            0.65
+          ],
+          "left": [
+            0.56,
+            0.59
+          ],
+          "rotation": 15,
+          "rightBehind": true,
+          "leftBehind": true,
+          "mirrored": false
+        },
+        {
+          "src": "assets/tactics/hero_ne_walk_f09.webp",
+          "ms": 90,
+          "right": [
+            0.75,
+            0.65
+          ],
+          "left": [
+            0.56,
+            0.59
+          ],
+          "rotation": 15,
+          "rightBehind": true,
+          "leftBehind": true,
+          "mirrored": false
+        },
+        {
+          "src": "assets/tactics/hero_ne_walk_f10.webp",
+          "ms": 90,
+          "right": [
+            0.75,
+            0.65
+          ],
+          "left": [
+            0.56,
+            0.59
+          ],
+          "rotation": 15,
+          "rightBehind": true,
+          "leftBehind": true,
+          "mirrored": false
+        },
+        {
+          "src": "assets/tactics/hero_ne_walk_f11.webp",
+          "ms": 90,
+          "right": [
+            0.75,
+            0.65
+          ],
+          "left": [
+            0.56,
+            0.59
+          ],
+          "rotation": 15,
+          "rightBehind": true,
+          "leftBehind": true,
+          "mirrored": false
+        },
+        {
+          "src": "assets/tactics/hero_ne_walk_f12.webp",
+          "ms": 90,
+          "right": [
+            0.75,
+            0.65
+          ],
+          "left": [
+            0.56,
+            0.59
+          ],
+          "rotation": 15,
           "rightBehind": true,
           "leftBehind": true,
           "mirrored": false
