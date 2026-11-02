@@ -1304,6 +1304,78 @@ window.INTERIOR_ART={
   "fx": 135,
   "fy": 234,
   "k": 0.1535
+ },
+ "barn": {
+  "src": "assets/interior/barn.webp",
+  "w": 420,
+  "h": 418,
+  "fx": 210,
+  "fy": 334,
+  "k": 0.58
+ },
+ "scarecrow": {
+  "src": "assets/interior/scarecrow.webp",
+  "w": 247,
+  "h": 299,
+  "fx": 123,
+  "fy": 284,
+  "k": 0.24
+ },
+ "compost": {
+  "src": "assets/interior/compost.webp",
+  "w": 369,
+  "h": 318,
+  "fx": 184,
+  "fy": 226,
+  "k": 0.2
+ },
+ "water-trough": {
+  "src": "assets/interior/water-trough.webp",
+  "w": 368,
+  "h": 239,
+  "fx": 184,
+  "fy": 158,
+  "k": 0.2
+ },
+ "hay-bale": {
+  "src": "assets/interior/hay-bale.webp",
+  "w": 337,
+  "h": 265,
+  "fx": 168,
+  "fy": 198,
+  "k": 0.17
+ },
+ "farm-sign": {
+  "src": "assets/interior/farm-sign.webp",
+  "w": 241,
+  "h": 338,
+  "fx": 120,
+  "fy": 319,
+  "k": 0.27
+ },
+ "chicken-coop": {
+  "src": "assets/interior/chicken-coop.webp",
+  "w": 373,
+  "h": 332,
+  "fx": 186,
+  "fy": 257,
+  "k": 0.32
+ },
+ "beehives": {
+  "src": "assets/interior/beehives.webp",
+  "w": 382,
+  "h": 278,
+  "fx": 191,
+  "fy": 202,
+  "k": 0.2
+ },
+ "farm-well": {
+  "src": "assets/interior/farm-well.webp",
+  "w": 270,
+  "h": 349,
+  "fx": 135,
+  "fy": 290,
+  "k": 0.29
  }
 };
 

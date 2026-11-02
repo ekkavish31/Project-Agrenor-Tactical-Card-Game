@@ -784,7 +784,7 @@ Each tile is a complete hexagon fully inside its own cell. No text, no scenery o
 
 ---
 
-## ชีท 13A · ของในไร่ (3×3 = 9 ช่อง · แผนที่ย่อยไร่)
+## ชีท 13A ✅ ใช้ในเกมแล้ว (v98.58) · ของในไร่ (3×3 = 9 ช่อง · แผนที่ย่อยไร่)
 
 ลำดับช่อง → ชื่อไฟล์: `barn` · `scarecrow` · `compost` · `water-trough` · `hay-bale` · `farm-sign` · `chicken-coop` · `beehives` · `farm-well`
 
@@ -816,3 +816,38 @@ Each piece is a complete object fully inside its own cell. No people, no animals
 **ตรวจรับชีท 13A**: ① ทุกชิ้นหันหน้าขวาล่าง พื้นเขียวล้วน ② โรงนากว้าง 2 ช่อง ใหญ่สุดในชีท ③ รางน้ำพาดซ้ายบน→ขวาล่าง ④ ไม่มีสัตว์/นกจริงในภาพ ไม่มีตัวหนังสือบนป้าย
 
 **ชีทไร่ที่ตามมา**: 13B ต้นผัก 9 ชนิด × 4 ระยะ (4 ชีท ชีทละ 2–3 ชนิด) · 13C สัตว์ 4 ชนิด (ไก่ แพะ แกะ วัว) × 4 ทิศ × ยืน/เดิน 2 เฟรม
+
+---
+
+## ชีท 13B · ต้นผัก 4 ระยะ (4 คอลัมน์ × 3 แถว = 12 ช่อง · แผนที่ย่อยไร่)
+
+เกมมีผัก 9 ชนิด แบ่งเป็น 3 ชีท ชีทละ 3 ชนิด (แถวละ 1 ชนิด) · แต่ละแถวเรียงระยะ **ซ้าย→ขวา: ① ต้นกล้า ② โต ③ ใกล้สุก ④ สุก**
+
+| ชีท | แถว 1 | แถว 2 | แถว 3 |
+|---|---|---|---|
+| **13B-1** | ผักกาด | แครอท | มันฝรั่ง |
+| 13B-2 | ข้าวสาลี | มะเขือเทศ | สตรอว์เบอร์รี |
+| 13B-3 | ฟักทอง | สมุนไพร | กะหล่ำ |
+
+ลำดับช่อง 13B-1 → ชื่อไฟล์: `lettuce-1..4` · `carrot-1..4` · `potato-1..4` · วางบนช่องดินไถ 1×1 (เกมวาดดินเอง) ภาพมีแค่ต้นพืชกับกองดินเล็ก ๆ ที่โคน
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG farm: exactly 4 columns × 3 rows of equal square cells (12 cells), one isolated crop plant per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people, no animals, no tools.
+
+CAMERA (identical for every plant): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the plant. Orthographic: vertical edges stay vertical, no perspective convergence. Each plant is a single crop plant growing from a small low mound of dark tilled soil (the mound is a flat oval about 40% of the cell width wide), seen from the front-right.
+
+SCALE: a farm tile is a diamond whose width is 31% of the cell width and whose height is 15.5% of the cell width; the soil mound sits inside such a diamond with its centre at the cell centre horizontally and at about 76% of the cell height, the same baseline in all twelve cells. ROWS are different crops and COLUMNS are growth stages. Growth must be clearly readable at small size: stage 1 is a tiny seedling about 8% of the cell height; stage 2 is a young plant about 22% tall; stage 3 is a nearly full-grown plant about 38% tall with the fruit or root still small or green; stage 4 is the ripe harvest-ready plant about 46% tall with the fruit, root top or grain clearly mature and coloured. Leave at least 8% empty margin around every plant; nothing touches the cell edges or overlaps a neighbouring cell.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable leaf and soil detail. Soft warm daylight from the upper-left front: tops and left sides lit, right sides in gentle shadow, a thin warm rim light on the upper edges. No cast shadow outside the plant and soil (the game draws its own). Palette: fresh leaf greens, rich dark-brown soil, and each crop's natural colours at its ripe stage, slightly desaturated so the plants match the attached reference images (the barn, scarecrow and farm sheet) and sit naturally on grass-green farm tiles.
+
+CONTENT, row by row (stage 1, 2, 3, 4 from left to right in every row):
+Row 1 - Lettuce: a tiny two-leaf sprout; a small rosette of light green leaves; a fuller loose head of frilly green leaves; a large round ripe lettuce head with ruffled outer leaves and a pale heart.
+Row 2 - Carrot: a tiny feathery sprout; a small tuft of fine green fern leaves; a fuller tuft of fern leaves with a hint of orange shoulder at the soil; a full lush fern top with a thick bright orange carrot shoulder pushing out of the soil.
+Row 3 - Potato: a tiny two-leaf sprout; a small bush of dark green compound leaves; a fuller leafy bush with a few small white flowers; a yellowing slightly wilted bush with two brown-skinned potatoes half-dug out of the soil beside it.
+
+Each plant is a complete object fully inside its own cell. No text, no ground except the small soil mound, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท 13B**: ① ทุกช่องมีกองดินเล็กขนาดเท่ากัน ตำแหน่งเดียวกัน ② ระยะ 1→4 สูงขึ้นเห็นชัด ③ ผักแต่ละแถวเป็นชนิดเดียวกัน ④ ไม่มีสัตว์ ไม่มีตัวหนังสือ
+
+หลังได้ภาพ ผมจะตัดเป็น `crops/<ชนิด>-<ระยะ>.webp` แล้วต่อเข้าฟังก์ชันวาดดอกผลเดิม (ที่ตอนนี้ใช้ไอคอนอีโมจิ)
