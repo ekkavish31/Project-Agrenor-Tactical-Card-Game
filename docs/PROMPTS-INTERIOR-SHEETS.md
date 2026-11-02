@@ -644,3 +644,107 @@ Each piece is a complete object fully inside its own cell. No people, no text, n
 ```
 
 **ตรวจรับชีท 17**: เหมือนชีทก่อน + ① ทุกชิ้นหันหน้าขวาล่าง พื้นเขียวล้วน ② ไม่มีตัวหนังสือบนฉลากขวดยา ③ ชั้นผ้ากับตู้แสดงอาวุธกว้าง 2 ช่อง ④ ใบมีดอาวุธเห็นชัด
+
+
+---
+
+# ชุดแมพผจญภัย (ชีท W1–W3)
+
+---
+
+## ชีท W1 · ต้นไม้และพืช (แมพผจญภัย) (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `oak-tree` · `oak-grove` · `pine-tree` · `snow-pine` · `dead-tree` · `swamp-willow` · `autumn-tree` · `bush-cluster` · `reeds`
+
+ใช้ใน: ป่า · หิมะ · หนองน้ำ · ทุ่งหญ้า บนแผนที่ผจญภัย · **มุมกล้อง: มองจากด้านหน้า ยกกล้อง ~35° ไม่หมุนทแยง** (ต่างจากแมพย่อยที่เป็นไอโซเมตริก 2:1) เพราะแผนที่ผจญภัยเป็นพื้นมองจากบนและวัตถุตั้งบนพื้น
+
+```
+A GAME SPRITE ATLAS for the overland adventure map of a 2.5D fantasy RPG (a sheet of trees and plants): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people and no animals. Flames, smoke and glows stay inside or directly above the object and never spill onto the green.
+
+CAMERA (identical for every piece): the classic fantasy overland-map view. The map ground is painted flat from above, and every object stands on it seen from the FRONT, from a camera about 35 degrees above the horizon, with NO diagonal rotation: the object's front faces straight toward the viewer (down the image), vertical edges are perfectly vertical, and you see the front face plus a little of the top. Orthographic: no perspective convergence, no fisheye. Each piece's ground-contact point is its bottom-centre, centred horizontally in its cell and sitting at about 80% of the cell height (the same baseline in all nine cells).
+
+SCALE: One map hex is about 100 units wide. A single oak is about 38 units tall and 30 wide; the oak grove (three trees) about 50 units tall and 70 wide; the pine about 50 tall and 22 wide; the snow pine about 50 tall and 24 wide; the dead tree about 42 tall; the swamp willow about 44 tall and 40 wide; the autumn tree about 38 tall; the bush cluster about 18 tall and 40 wide; the reeds about 24 tall and 26 wide. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. Relative sizes between the pieces matter more than absolute sizes: the game rescales the whole sheet.
+
+STYLE: refined hand-painted fantasy RPG map art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (bark, layered leaves and needles, snow clumps, moss, wear). Soft warm daylight from the upper-left front: tops and left sides lit, right sides in gentle shadow, a thin warm rim light on the upper edges. No cast shadow outside the object itself (the game draws its own soft shadows). Palette: leaf greens, deep conifer green, snow white, bare grey-brown wood, mossy olive, warm autumn orange and amber, gently desaturated so the pieces sit naturally on a muted painted ground of sage green, tan, grey and snow white, and match the attached reference images (same outline weight, same detail level).
+
+CONTENT, row by row, left to right:
+1. Oak tree: a single round-crowned broadleaf tree with a thick trunk and layered clumps of mid-green leaves, a few lighter leaves catching the light.
+2. Oak grove: three oaks of different sizes grouped close together, overlapping crowns, the largest in the middle.
+3. Pine tree: a tall conical dark-green conifer with drooping layered boughs and a slim brown trunk.
+4. Snow pine: the same conifer shape covered in thick white snow on every bough, a little dark green showing between, a snowy base.
+5. Dead tree: a gnarled leafless grey-brown tree with twisting bare branches and a split trunk, a few fallen twigs at its base.
+6. Swamp willow: a drooping willow with long trailing curtains of grey-green leaves and hanging moss, thick knotted roots rising from a small patch of dark mud.
+7. Autumn tree: a round-crowned broadleaf tree in warm orange, amber and red leaves with a few leaves falling nearby.
+8. Bush cluster: a low cluster of three leafy shrubs of different greens with tiny pale flowers and a few red berries.
+9. Reeds: a clump of tall green reeds and cattails with brown seed heads, two lily pads at the base on a small patch of dark water.
+
+Each piece is a complete object fully inside its own cell. No people, no animals, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท W1**: ① พื้นเขียวล้วน ไม่มีเงา ② ทุกชิ้นหันหน้าตรง ไม่เอียงทแยง ③ ต้นไม้สูงกว่าพุ่มไม้ชัดเจน ④ ไม่มีสัตว์ ไม่มีคน
+
+---
+
+## ชีท W2 · เนิน ภูเขา และหิน (แมพผจญภัย) (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `hill-small` · `hill-large` · `mountain` · `mountain-snow` · `mountain-range` · `boulders` · `ice-spires` · `mesa-cliff` · `marsh-mound`
+
+ใช้ใน: เนินเขา · ภูเขา · หิมะ · หนองน้ำ บนแผนที่ผจญภัย · **มุมกล้อง: มองจากด้านหน้า ยกกล้อง ~35° ไม่หมุนทแยง** (ต่างจากแมพย่อยที่เป็นไอโซเมตริก 2:1) เพราะแผนที่ผจญภัยเป็นพื้นมองจากบนและวัตถุตั้งบนพื้น
+
+```
+A GAME SPRITE ATLAS for the overland adventure map of a 2.5D fantasy RPG (hills, mountains and rock formations): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people and no animals. Flames, smoke and glows stay inside or directly above the object and never spill onto the green.
+
+CAMERA (identical for every piece): the classic fantasy overland-map view. The map ground is painted flat from above, and every object stands on it seen from the FRONT, from a camera about 35 degrees above the horizon, with NO diagonal rotation: the object's front faces straight toward the viewer (down the image), vertical edges are perfectly vertical, and you see the front face plus a little of the top. Orthographic: no perspective convergence, no fisheye. Each piece's ground-contact point is its bottom-centre, centred horizontally in its cell and sitting at about 80% of the cell height (the same baseline in all nine cells).
+
+SCALE: One map hex is about 100 units wide. The small hill is about 22 units tall and 55 wide; the large hill about 38 tall and 80 wide; the single mountain about 70 tall and 70 wide; the snowy mountain about 80 tall and 70 wide; the mountain range (three peaks) about 80 tall and 100 wide, the widest piece; the boulders about 24 tall and 50 wide; the ice spires about 45 tall and 50 wide; the mesa cliff about 40 tall and 70 wide; the marsh mound about 18 tall and 50 wide. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. Relative sizes between the pieces matter more than absolute sizes: the game rescales the whole sheet.
+
+STYLE: refined hand-painted fantasy RPG map art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (layered rock strata, moss, grass tufts, snow drifts, ice facets, wear). Soft warm daylight from the upper-left front: tops and left sides lit, right sides in gentle shadow, a thin warm rim light on the upper edges. No cast shadow outside the object itself (the game draws its own soft shadows). Palette: sage and olive grass, warm tan rock, cool grey granite, snow white with pale blue shadows, ice blue, red sandstone, dark mud brown, gently desaturated so the pieces sit naturally on a muted painted ground of sage green, tan, grey and snow white, and match the attached reference images (same outline weight, same detail level).
+
+CONTENT, row by row, left to right:
+1. Small hill: a low rounded grassy mound with a few tufts, a small grey rock and a faint footpath on its flank.
+2. Large hill: a broad rounded hill with grass on top and a rocky outcrop of layered tan stone breaking out of its side.
+3. Mountain: a single steep grey granite peak with sharp faceted faces, a few tufts of pine at its foot and a bare rocky summit.
+4. Snowy mountain: a tall steep peak with a white snow cap down to its middle, grey rock showing below, long blue-shadowed snow chutes.
+5. Mountain range: three peaks of different heights joined at the base, the tallest in the middle with a snow cap, the two outer ones bare grey, a few dark pines along the foot.
+6. Boulders: a cluster of five rounded grey boulders of different sizes with moss patches and small grass tufts between them.
+7. Ice spires: a cluster of jagged pale blue-white ice crystals of different heights with frosty glints and a snow-dusted base.
+8. Mesa cliff: a flat-topped red-tan sandstone butte with horizontal strata, a few scrubby bushes on top and rubble at its foot.
+9. Marsh mound: a low mud-brown mound half sunk in dark water, patches of moss and algae, two half-submerged dead logs.
+
+Each piece is a complete object fully inside its own cell. No people, no animals, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท W2**: ① พื้นเขียวล้วน ไม่มีเงา ② ทุกชิ้นหันหน้าตรง ③ เทือกเขากว้างที่สุดในชีท ④ ยอดหิมะมีเงาน้ำเงินอ่อน ไม่ใช่ขาวล้วน
+
+---
+
+## ชีท W3 · จุดสนใจและที่ตั้งถิ่นฐาน (แมพผจญภัย) (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `village` · `town` · `harbor` · `watchtower` · `ruins` · `mine` · `den` · `frost-camp` · `standing-stones`
+
+ใช้ใน: หมู่บ้าน เมือง ท่าเรือ ซากปรักหักพัง เหมือง ถ้ำ ค่ายหิมะ บนแผนที่ผจญภัย · **มุมกล้อง: มองจากด้านหน้า ยกกล้อง ~35° ไม่หมุนทแยง** (ต่างจากแมพย่อยที่เป็นไอโซเมตริก 2:1) เพราะแผนที่ผจญภัยเป็นพื้นมองจากบนและวัตถุตั้งบนพื้น
+
+```
+A GAME SPRITE ATLAS for the overland adventure map of a 2.5D fantasy RPG (settlements and points of interest): exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people and no animals. Flames, smoke and glows stay inside or directly above the object and never spill onto the green.
+
+CAMERA (identical for every piece): the classic fantasy overland-map view. The map ground is painted flat from above, and every object stands on it seen from the FRONT, from a camera about 35 degrees above the horizon, with NO diagonal rotation: the object's front faces straight toward the viewer (down the image), vertical edges are perfectly vertical, and you see the front face plus a little of the top. Orthographic: no perspective convergence, no fisheye. Each piece's ground-contact point is its bottom-centre, centred horizontally in its cell and sitting at about 80% of the cell height (the same baseline in all nine cells).
+
+SCALE: One map hex is about 100 units wide. The village is about 38 units tall and 70 wide; the walled town about 55 tall and 90 wide, the largest piece; the harbor about 40 tall and 85 wide; the watchtower about 55 tall and 40 wide; the ruins about 36 tall and 70 wide; the mine entrance about 34 tall and 60 wide; the den about 34 tall and 60 wide; the frost camp about 30 tall and 65 wide; the standing stones about 28 tall and 60 wide. Houses are about 14 units tall, so people (never drawn) would be about 5. Leave at least 8% empty margin around every piece; nothing touches the cell edges or overlaps a neighbouring cell. Relative sizes between the pieces matter more than absolute sizes: the game rescales the whole sheet.
+
+STYLE: refined hand-painted fantasy RPG map art, NOT pixel art. Crisp clean edges with thin soft dark-brown outlines, rich but readable material detail (thatch, timber framing, stone blocks, moss, rope, canvas, wear). Soft warm daylight from the upper-left front: tops and left sides lit, right sides in gentle shadow, a thin warm rim light on the upper edges. No cast shadow outside the object itself (the game draws its own soft shadows). Palette: warm thatch and terracotta roofs, cream plaster, grey stone, dark oak timber, canvas white and red, snow white, muted green moss, gently desaturated so the pieces sit naturally on a muted painted ground of sage green, tan, grey and snow white, and match the attached reference images (same outline weight, same detail level).
+
+CONTENT, row by row, left to right:
+1. Village: a cluster of four small timber-framed cottages with thatched and tiled roofs, a stone well, a small fenced garden and a thin curl of chimney smoke.
+2. Walled town: a compact town ringed by a crenellated grey stone wall with two corner towers and a wooden gate, tiled roofs and a tall keep with a blue pennant rising inside.
+3. Harbor town: a few weathered houses on stilts and a wooden jetty reaching into a small patch of blue water with two moored rowing boats and a stack of crates.
+4. Watchtower: a tall round grey stone watchtower with a wooden lookout platform and a red banner, a low palisade of sharpened logs at its base.
+5. Ruins: a broken grey stone arch, two crumbling wall sections and fallen blocks overgrown with ivy and moss, a dark empty doorway.
+6. Mine entrance: a timber-framed tunnel mouth cut into a rocky hillside, a wooden ore cart on short rails in front, a lantern on a post and piles of grey rubble.
+7. Monster den: a dark cave mouth in a mossy rock face ringed with scattered bones, claw marks on the stone and a few dead branches (no animals drawn).
+8. Frost camp: three small canvas tents half-covered in snow around a dead fire pit with a ring of stones, a wooden signpost and sled with packs, no people.
+9. Standing stones: a circle of seven tall weathered grey megaliths with a flat altar stone in the middle, moss and lichen on the stones, a few wildflowers at their feet.
+
+Each piece is a complete object fully inside its own cell. No people, no animals, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท W3**: ① พื้นเขียวล้วน ไม่มีเงา ② ทุกชิ้นหันหน้าตรง ไม่เอียงทแยง ③ เมืองมีกำแพงใหญ่ที่สุดในชีท ④ ไม่มีคนและสัตว์ (ถ้ำมีแค่กระดูก) ⑤ ควันออกจากปล่องเท่านั้น
