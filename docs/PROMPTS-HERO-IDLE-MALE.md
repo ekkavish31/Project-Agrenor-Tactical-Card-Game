@@ -1,7 +1,7 @@
 # พรอมต์ท่ายืน ตัวเอกชาย (ตัวหลัก) · 4 ทิศ ตามองศากล้องของเกม
 
 อ้างอิงหน้าตาจากตัวเอกปัจจุบัน (`assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-01.webp`) · สไตล์ตาม `docs/STYLE-GUIDE.md`
-แนบภาพอ้างอิงไปกับทุกคำขอ: ตัวเอกปัจจุบัน (ท่ายืน SW) + `assets/adventurer-sword-idle.webp`
+แนบภาพอ้างอิงไปกับทุกคำขอ: ตัวเอกปัจจุบัน (ท่ายืน SW — ใช้เป็นแบบโครงร่าง/ท่าทาง แต่ให้สีและสีหน้าสดใสกว่าตามพรอมต์) + `assets/adventurer-sword-idle.webp`
 
 ## กติกากล้อง (ต้องตรงกับเกม)
 - เกมเป็นไอโซเมตริก 2:1 → กล้องมองลงมาประมาณ **30° จากแนวระนาบ** (พื้นสี่เหลี่ยมถูกบีบเหลือครึ่งหนึ่งของความสูง) เห็นหัวและไหล่จากด้านบนเล็กน้อย ไม่ใช่มุมระดับสายตา ไม่ใช่มุมมองจากบนตรง ๆ
@@ -21,10 +21,12 @@
 - **มือว่างทั้งสองข้าง ไม่ถือของ ไม่มีดาบ/โล่** (เกมวาดอาวุธติดให้เอง) · ห้ามมีดาบสะพายหลังหรือคาดเอวชิ้นใหญ่ที่บังท่า
 - แสงอุ่นสีอำพันจากบนซ้าย · เงาใต้ตัวนุ่มฝั่งล่างขวา (ในตัวละคร ไม่ใช่เงาพื้น) · ลายเส้นสะอาด cel-shaded
 
-## พรอมต์หลัก (วางครั้งเดียว ใช้กับทุกทิศ)
+## พรอมต์หลัก (วางครั้งเดียว ใช้กับทุกทิศ) · เวอร์ชันสดใส
 ```
-Full-body character sprite of the young male main hero of a cozy fantasy tactics RPG, semi-chibi anime proportions (about 3.5 heads tall), clean line art, cel-shaded with soft warm amber lighting from the upper left, painterly game-sprite quality. He is an adventurer in his late teens: messy short dark-brown spiky hair that falls over his eyes, a dark-brown hooded scarf-cloak wrapped around his neck and shoulders with a long tattered tail at the back bearing a small pale triangular rune mark, a worn brown leather chest harness with straps and pouches, tan under-shirt with rolled sleeves, brown leather bracers and fingerless gloves, dark trousers, brown leather knee wraps and sturdy brown boots, and a rolled bedroll on a small leather backpack. Muted earthy palette (browns, olive-grey, tan) — no neon colors. Pose: relaxed standing idle, weight slightly on one leg, shoulders loose, both arms hanging naturally at his sides, both HANDS EMPTY (no sword, no shield, no weapon anywhere). Isometric 2:1 game camera: viewed from about 30 degrees above the horizon, slightly from above. Single character, centered, feet at the bottom center of the frame, whole body visible with a small margin. Solid pure green #00FF00 background, no ground, no cast shadow, no text, no frame, no watermark. 384x384.
+Full-body character sprite of the young male main hero of a cozy fantasy tactics RPG, semi-chibi anime proportions (about 3.5 heads tall), clean line art, cel-shaded with soft warm golden lighting from the upper left, polished painterly game-sprite quality. He looks bright, cheerful and full of energy: a friendly confident face with big clear bright eyes (warm hazel-brown with a small highlight) fully visible, a gentle open smile, healthy warm skin tone, short tousled chestnut-brown hair with warm caramel highlights swept up and to the side so the eyes and forehead are clearly visible (not covering the face). He is an adventurer in his late teens wearing a vibrant forest-green hooded scarf-cloak with warm golden-yellow trim, its long tail at the back with a small cream triangular rune mark; a cream-white linen shirt with rolled sleeves, a clean tan leather chest harness with brass buckles and small pouches, light-brown leather bracers and fingerless gloves, warm grey-brown trousers, light-brown knee wraps and sturdy honey-brown boots, and a small tan backpack with a rolled warm-red bedroll. Fresh, saturated but natural palette (forest green, cream, honey-brown, warm gold, a touch of warm red) — no neon, no dull muddy greys. Pose: relaxed upright idle with a light, ready, confident stance, weight slightly on one leg, chest open, shoulders loose, both arms hanging naturally at his sides, both HANDS EMPTY (no sword, no shield, no weapon anywhere). Isometric 2:1 game camera: viewed from about 30 degrees above the horizon, slightly from above. Single character, centered, feet at the bottom center of the frame, whole body visible with a small margin. Solid pure green #00FF00 background, no ground, no cast shadow, no text, no frame, no watermark. 384x384.
 ```
+> **หมายเหตุสีผ้าคลุม:** ระบบอาชีพของเกมเปลี่ยนสีชุดโดยหมุนสีจาก "ผ้าคลุมสีเขียว" ของตัวเอก (ดู `look` ใน `js/progression.js`) → ผ้าคลุมเขียวสดช่วยให้สีอาชีพออกมาสวย ถ้าอยากเปลี่ยนเป็นสีอื่นแจ้งผม จะได้ปรับตัวหมุนสีตาม
+> **ทิศหันหลัง (NW/NE):** เห็นหน้าไม่ได้ ความสดใสมาจากสีผ้าคลุม ผมที่มีไฮไลต์ และท่ายืนผึ่งผาย — ไม่ต้องเพิ่มรอยยิ้มในพรอมต์ของทิศหลัง
 
 ## ต่อท้ายตามทิศ (ใส่หลังพรอมต์หลัก)
 
@@ -50,7 +52,7 @@ Facing the upper-right of the screen (away from the camera, to the right): a thr
 
 ## ข้อห้าม (Negative prompt / เพิ่มถ้าเครื่องมือรองรับ)
 ```
-sword, weapon, shield, staff, bow, holding item, front-facing straight on, side profile, top-down view, eye-level camera, perspective distortion, realistic 3D render, photo, extra limbs, extra fingers, text, logo, watermark, frame, ground, cast shadow, gradient background, neon colors, multiple characters, cropped feet, cropped head
+dark gloomy mood, dull muddy colors, hair covering the eyes, sad or blank expression, sword, weapon, shield, staff, bow, holding item, front-facing straight on, side profile, top-down view, eye-level camera, perspective distortion, realistic 3D render, photo, extra limbs, extra fingers, text, logo, watermark, frame, ground, cast shadow, gradient background, neon colors, multiple characters, cropped feet, cropped head
 ```
 
 ## ขั้นตอนที่แนะนำ
