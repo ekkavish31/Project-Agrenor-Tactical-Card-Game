@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 5B, 6, 7, 8, 9, 10, 12, 15, 16, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 5B, 6, 7, 8, 9, 10, 12, 15, 16, 17, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -1160,6 +1160,78 @@ window.INTERIOR_ART={
   "fx": 170,
   "fy": 272,
   "k": 0.2
+ },
+ "weapon-display": {
+  "src": "assets/interior/weapon-display.webp",
+  "w": 386,
+  "h": 377,
+  "fx": 193,
+  "fy": 288,
+  "k": 0.27
+ },
+ "armor-display": {
+  "src": "assets/interior/armor-display.webp",
+  "w": 253,
+  "h": 375,
+  "fx": 126,
+  "fy": 319,
+  "k": 0.22
+ },
+ "potion-display": {
+  "src": "assets/interior/potion-display.webp",
+  "w": 303,
+  "h": 305,
+  "fx": 151,
+  "fy": 235,
+  "k": 0.2
+ },
+ "jewel-case": {
+  "src": "assets/interior/jewel-case.webp",
+  "w": 354,
+  "h": 310,
+  "fx": 177,
+  "fy": 229,
+  "k": 0.25
+ },
+ "tool-stand": {
+  "src": "assets/interior/tool-stand.webp",
+  "w": 300,
+  "h": 382,
+  "fx": 150,
+  "fy": 316,
+  "k": 0.22
+ },
+ "cloth-shelf": {
+  "src": "assets/interior/cloth-shelf.webp",
+  "w": 392,
+  "h": 384,
+  "fx": 196,
+  "fy": 294,
+  "k": 0.27
+ },
+ "rug-barrel": {
+  "src": "assets/interior/rug-barrel.webp",
+  "w": 315,
+  "h": 374,
+  "fx": 157,
+  "fy": 305,
+  "k": 0.2
+ },
+ "pack-rack": {
+  "src": "assets/interior/pack-rack.webp",
+  "w": 281,
+  "h": 397,
+  "fx": 140,
+  "fy": 335,
+  "k": 0.22
+ },
+ "till-scale": {
+  "src": "assets/interior/till-scale.webp",
+  "w": 259,
+  "h": 287,
+  "fx": 129,
+  "fy": 230,
+  "k": 0.16
  }
 };
 
