@@ -886,3 +886,84 @@ Each piece is a complete object fully inside its own cell. No people, no animals
 **ตรวจรับชีท V1**: ① ประตู 2 บานกว้างเกือบเต็มช่อง ช่องเปิดเป็นเขียวล้วน (ตัวละครเดินผ่านได้) ② ประตูหินใหญ่และสวยที่สุดในชีท ③ ไม่มีตัวหนังสือบนป้ายและประกาศ ④ ผ้าและเชือกราวตากผ้าไม่ทึบจนบังช่องว่างเขียว
 
 **หลังได้ภาพ**: ผมจะเปลี่ยนประตูเมืองจากโค้ดเป็นภาพ (พาดตามแกนถนน กลับภาพเองเมื่อสลับแกน) และวางของตกแต่งใหม่ในหมู่บ้านผ่านระบบ Asset Studio เดิมเพื่อให้ย้ายได้
+
+---
+
+## ชีทสัตว์ในไร่ A · ไก่ + แพะ (3 คอลัมน์ × 4 แถว = 12 ช่อง)
+
+ท่า ซ้าย→ขวา ในแต่ละแถว: **ยืน · เดินก้าว A · เดินก้าว B** · แถว 1–2 = ไก่ (แถว 1 หันล่างขวา SE · แถว 2 หันบนขวา NE) · แถว 3–4 = แพะ (แถว 3 SE · แถว 4 NE) · เกมกลับภาพให้เองสำหรับทิศล่างซ้าย/บนซ้าย · ชื่อไฟล์: `chicken-se-stand/walk1/walk2` · `chicken-ne-…` · `goat-se-…` · `goat-ne-…`
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG farm: exactly 3 columns × 4 rows of equal square cells (12 cells), one isolated farm animal pose per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people.
+
+CAMERA (identical for every pose): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the animal. Orthographic: vertical edges stay vertical, no perspective convergence. ROWS 1 and 3: the animal faces the lower-right (south-east): you see its head and front at the lower-right and its left flank. ROWS 2 and 4: the animal faces the upper-right (north-east) and walks away from the camera: you see its back, its tail and its left flank.
+
+SCALE: a farm tile is a diamond 31% of the cell width wide and 15.5% tall. A chicken stands about 0.55 tile-widths tall and 0.5 wide. A goat stands about 0.9 tile-widths tall and 1.1 long. The animal's feet (lowest ground-contact point, centre of its body footprint) are centred horizontally in the cell at about 80% of the cell height, the same baseline in every cell. Leave at least 8% empty margin; nothing touches the cell edges. POSES: column 1 is standing still, head up, relaxed; column 2 is a walking step with the near-side legs forward; column 3 is the opposite walking step with the far-side legs forward. The body must keep exactly the same size, colours and markings in all three poses of a row (only the legs, head bob and tail change), so the three poses make a smooth walk loop.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art, matching the attached farm sheet (barn, scarecrow, hay) and crop sheets: crisp clean edges with thin soft dark-brown outlines, rich readable fur, feather and wool detail. Warm amber lighting from the upper-left front: tops and left sides lit, right sides in gentle shadow. No cast shadow (the game draws its own). Palette: natural farm animal colours, slightly desaturated.
+
+CONTENT:
+Rows 1 and 2 - ไก่: a plump brown hen with a red comb and wattle, yellow beak and legs, cream-and-russet feathers, a fanned tail.
+Rows 3 and 4 - แพะ: a white-and-tan goat with short curved horns, a small beard, floppy ears, slim legs and a short upright tail.
+
+Each pose is a complete animal fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับ**: ① ตัวเดียวกันทั้ง 3 ท่า ขนาดและลายเท่ากัน ② แถว SE เห็นหน้า แถว NE เห็นหลัง ③ ฐานเท้าอยู่ระดับเดียวกันทุกช่อง ④ พื้นเขียวล้วน ไม่มีเงา
+
+---
+
+## ชีทสัตว์ในไร่ B · แกะ + วัว (3 คอลัมน์ × 4 แถว = 12 ช่อง)
+
+ท่า ซ้าย→ขวา ในแต่ละแถว: **ยืน · เดินก้าว A · เดินก้าว B** · แถว 1–2 = แกะ (แถว 1 หันล่างขวา SE · แถว 2 หันบนขวา NE) · แถว 3–4 = วัว (แถว 3 SE · แถว 4 NE) · เกมกลับภาพให้เองสำหรับทิศล่างซ้าย/บนซ้าย · ชื่อไฟล์: `sheep-se-stand/walk1/walk2` · `sheep-ne-…` · `cow-se-…` · `cow-ne-…`
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG farm: exactly 3 columns × 4 rows of equal square cells (12 cells), one isolated farm animal pose per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people.
+
+CAMERA (identical for every pose): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the animal. Orthographic: vertical edges stay vertical, no perspective convergence. ROWS 1 and 3: the animal faces the lower-right (south-east): you see its head and front at the lower-right and its left flank. ROWS 2 and 4: the animal faces the upper-right (north-east) and walks away from the camera: you see its back, its tail and its left flank.
+
+SCALE: a farm tile is a diamond 31% of the cell width wide and 15.5% tall. A sheep stands about 0.85 tile-widths tall and 1.0 long. A cow stands about 1.3 tile-widths tall and 1.8 long, the largest animal. The animal's feet (lowest ground-contact point, centre of its body footprint) are centred horizontally in the cell at about 80% of the cell height, the same baseline in every cell. Leave at least 8% empty margin; nothing touches the cell edges. POSES: column 1 is standing still, head up, relaxed; column 2 is a walking step with the near-side legs forward; column 3 is the opposite walking step with the far-side legs forward. The body must keep exactly the same size, colours and markings in all three poses of a row (only the legs, head bob and tail change), so the three poses make a smooth walk loop.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art, matching the attached farm sheet (barn, scarecrow, hay) and crop sheets: crisp clean edges with thin soft dark-brown outlines, rich readable fur, feather and wool detail. Warm amber lighting from the upper-left front: tops and left sides lit, right sides in gentle shadow. No cast shadow (the game draws its own). Palette: natural farm animal colours, slightly desaturated.
+
+CONTENT:
+Rows 1 and 2 - แกะ: a round fluffy cream-white sheep with thick curly wool, a dark grey face and legs, small ears, a short tail.
+Rows 3 and 4 - วัว: a large brown-and-white spotted dairy cow with short horns, a pink nose, a swishing tail and a full udder, sturdy legs.
+
+Each pose is a complete animal fully inside its own cell. No people, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับ**: ① ตัวเดียวกันทั้ง 3 ท่า ขนาดและลายเท่ากัน ② แถว SE เห็นหน้า แถว NE เห็นหลัง ③ ฐานเท้าอยู่ระดับเดียวกันทุกช่อง ④ พื้นเขียวล้วน ไม่มีเงา
+
+---
+
+## ชีทสนามต่อสู้ B1 · สิ่งกีดขวางกลางสนาม (3×3 = 9 ช่อง)
+
+ลำดับช่อง → ชื่อไฟล์: `wrecked-wagon` · `fallen-tree` · `broken-wall` · `tent-ruin` · `bone-pile` · `ruined-pillar` · `cactus` · `ice-block` · `barricade`
+
+ใช้: สิ่งกีดขวาง 2×2 / 1×1 ในสนามต่อสู้ทุกพื้นที่ (ตอนนี้มีแค่ต้นไม้ หิน พุ่มไม้ ทำให้ทุกสนามหน้าตาคล้ายกัน) · `cactus` แทนภาพที่ยังไม่มี · มุมกล้อง isometric 2:1 เหมือนแมพย่อย
+
+```
+A GAME SPRITE ATLAS for a 2.5D fantasy RPG battlefield: exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated obstacle prop per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no labels, no people, no animals, no live creatures. Flames stay inside the object.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye. Every piece is seen from the front-right: its front points to the lower-right (south-east) of the image, so you see its top, its left-hand side and its right-hand side. Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall.
+
+SCALE (same in every cell): one floor tile = a diamond 31% of the cell width wide and 15.5% tall. Pieces 1 to 3 each cover a 2x2-tile footprint (a diamond 62% of the cell width wide) and are the largest pieces; every other piece covers 1x1 tile. The lowest ground-contact point of each piece is centred horizontally in its cell at about 78% of the cell height. Leave at least 8% empty margin; nothing touches the cell edges. A standing adult would be about 1.25 tile-widths tall: wagon about 1.0, fallen tree about 0.7, broken wall about 1.1, tent ruin about 0.8, bone pile about 0.45, ruined pillar about 1.4, cactus about 1.1, ice block about 0.9, barricade about 0.6.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art, matching the attached battlefield props and village references (same outline weight, same detail level). Crisp clean edges with thin soft dark-brown outlines. Warm amber lighting from the upper-left front. No cast shadow outside the object. Palette: weathered oak, torn canvas, grey stone, bleached bone, sage-green cactus, pale blue ice, iron, slightly desaturated.
+
+CONTENT, row by row, left to right:
+1. Wrecked wagon, 2x2 tiles: a broken wooden merchant wagon tipped on its side with one wheel snapped off, split planks, a torn canvas cover, spilled crates and sacks.
+2. Fallen tree, 2x2 tiles: a huge fallen tree trunk with a broken stump base, torn roots in the air, snapped branches and scattered leaves, moss on the bark.
+3. Broken wall, 2x2 tiles: a crumbled stone wall with a jagged top, a gap half-filled with rubble, ivy and fallen blocks.
+4. Ruined tent: a collapsed canvas tent half-fallen on its poles, a rope, a cold fire pit ring beside it.
+5. Bone pile: a heap of large bleached bones with a big ribcage arch and a skull of a long-dead beast, dry grass tufts.
+6. Ruined pillar: a broken fluted stone column, snapped at the top, wrapped with ivy, a fallen drum of the column at its foot.
+7. Cactus: a tall sage-green saguaro-style cactus with two arms, small pink flowers and fine spines.
+8. Ice block: a chunky translucent pale-blue ice crystal cluster with a snow-dusted base and bright facets.
+9. Barricade: a low wooden barricade of sharpened stakes and crossed logs tied with rope and a few sandbags.
+
+Each piece is a complete object fully inside its own cell. No people, no animals, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท B1**: ① ชิ้น 1–3 กว้างสุด (2×2) ② ไม่มีสัตว์/คน ③ ไฟและน้ำแข็งไม่เรืองออกบนพื้นเขียว
