@@ -851,3 +851,38 @@ Each plant is a complete object fully inside its own cell. No text, no ground ex
 **ตรวจรับชีท 13B**: ① ทุกช่องมีกองดินเล็กขนาดเท่ากัน ตำแหน่งเดียวกัน ② ระยะ 1→4 สูงขึ้นเห็นชัด ③ ผักแต่ละแถวเป็นชนิดเดียวกัน ④ ไม่มีสัตว์ ไม่มีตัวหนังสือ
 
 หลังได้ภาพ ผมจะตัดเป็น `crops/<ชนิด>-<ระยะ>.webp` แล้วต่อเข้าฟังก์ชันวาดดอกผลเดิม (ที่ตอนนี้ใช้ไอคอนอีโมจิ)
+
+---
+
+## ชีทหมู่บ้าน V1 · ประตูเมือง + ของตกแต่งถนน (3×3 = 9 ช่อง · หมู่บ้านนอกอาคาร)
+
+ลำดับช่อง → ชื่อไฟล์: `town-gate-stone` · `town-gate-timber` · `rowboat` · `veg-stand` · `laundry-line` · `chopping-block` · `rain-barrel` · `notice-board` · `wheelbarrow`
+
+ใช้: ประตูเมือง SW และ NE (ตอนนี้วาดด้วยโค้ด · ประตูผจญภัยสีเถาวัลย์ที่มีอยู่ `gate-forest/coast` เป็นแนวธรรมชาติ ไม่เข้ากับประตูเมืองหิน) · ที่เหลือเป็นของตกแต่งใหม่ริมถนนและบ้าน (ของเดิมที่มีแล้ว: ม้านั่ง รถเข็น กองฟาง โคมถนน บ่อน้ำ กองฟืน เสาธง ป้ายบอกทาง) · มุมกล้อง isometric 2:1 เหมือนอาคารหมู่บ้าน หันหน้าไปล่างขวา · เกมกลับภาพให้เองเมื่อประตูพาดอีกแกน
+
+```
+A GAME SPRITE ATLAS for the outdoor village map of a 2.5D fantasy RPG: exactly 3 columns × 3 rows of equal square cells (9 cells), one isolated piece per cell, on a perfectly flat pure chroma-green #00FF00 background in every cell (no gradient, no texture, no vignette, no ground tile, no shadow or glow on the background). No visible cell borders or grid lines, no text, no letters, no labels, no people and no animals. Flames and glows stay inside the object. Everything that is see-through (the gate openings, the gaps between the laundry line and the ground) shows the same flat chroma green.
+
+CAMERA (identical for every piece): 2:1 isometric (dimetric) game camera, elevated 30 degrees above the horizon, looking diagonally down at the object. Orthographic: all vertical edges stay perfectly vertical, parallel edges stay parallel, no perspective convergence, no fisheye, no vanishing points. Every piece is seen from the front-right: its FRONT points to the lower-right (south-east) of the image, so you see its top, its left-hand visible side (facing lower-left) and its right-hand visible side (facing lower-right). Horizontal edges slope at exactly 1:2. The floor footprint of one grid tile is a diamond twice as wide as it is tall. The long side of every elongated piece (gates, boat, laundry line) runs from the upper-left to the lower-right of the image.
+
+SCALE (same in every cell): one floor tile = a diamond whose width is 28% of the cell width and whose height is 14% of the cell width. The two gates are the largest pieces: each spans a road 4 tiles wide, so the gate footprint is 4x1 tiles (four diamonds joined along the upper-left to lower-right direction, about 100% of the cell width at the footprint; make the gate itself fill nearly the whole cell width) and the gate stands about 3.2 tile-widths tall at the roof. The rowboat covers 3x1 tiles; the laundry line 3x1; every other piece covers 1x1 tile or less. The lowest ground-contact point of each piece is centred horizontally in its cell and sits at about 82% of the cell height, the same baseline in all nine cells. Leave at least 5% empty margin around every piece. A standing adult would be about 1.3 tile-widths tall (use this to judge proportions): rowboat about 0.5 high, vegetable stand about 1.3 with its awning, laundry line poles about 1.4, chopping block about 0.45, rain barrel about 0.7, notice board about 1.3, wheelbarrow about 0.5.
+
+STYLE: refined hand-painted fantasy RPG game art, NOT pixel art, matching the attached village building references exactly (same outline weight, same detail level, same warm timber-framed medieval town look: terracotta roof tiles, cream plaster, grey stone, dark oak). Crisp clean edges with thin soft dark-brown outlines. Warm amber lighting from the upper-left front: top surfaces brightest, the left visible side lit, the right visible side in mid shadow, a thin warm rim light on the top edges. No cast shadow outside the object itself (the game draws its own shadows). Palette: warm grey fieldstone, cream plaster, terracotta red roof tiles, honey and dark-walnut wood, wrought iron, faded blue and cream cloth, slightly desaturated.
+
+CONTENT, row by row, left to right:
+1. Stone town gate, 4x1 tiles: two chunky square grey stone towers with battlements joined by a heavy timber lintel under a red tiled roof, a wide arched opening between them (opening filled with chroma green), iron-studded open wooden doors folded back against the tower sides, a hanging blank wooden name board under the lintel, a blue-and-cream pennant on each tower, a lit iron lantern on one tower, low stone wall stubs on both outer sides.
+2. Timber-and-stone gate, 4x1 tiles: a lighter village gate with two stone pillars with timber caps carrying a thick carved oak beam, a small peaked shingle roof over the centre, a swinging blank signboard, two iron lanterns, hedge-and-fence stubs on both sides (opening filled with chroma green).
+3. Rowboat: a small wooden rowboat pulled up on its side-keel at an angle, two oars laid across it, a coil of rope and a net heaped inside, 3x1 tiles, no water.
+4. Vegetable stand: a small wooden market stall with a slanted cream-and-blue striped cloth awning, crates and baskets of cabbages, carrots, turnips and apples, a blank hanging slate, 1x1 tile.
+5. Laundry line: two slim wooden poles about three tiles apart with a rope between them hung with white sheets, a blue shirt and a red cloth, a woven basket at one pole, 3x1 tiles, the space under the cloth shows chroma green.
+6. Chopping block: a thick oak log stump with an axe stuck in it, scattered wood chips and a few split logs leaning beside it.
+7. Rain barrel: an oak barrel with iron hoops under a short roof gutter spout, a wooden lid half open, a small wooden ladle hanging on its rim.
+8. Notice board: a freestanding oak frame on two posts with a small shingle roof, holding several blank pinned parchment notices and a faded blank poster, a lantern hook (no writing at all).
+9. Wheelbarrow: a wooden wheelbarrow with an iron-rimmed wheel, half full of hay and a few turnips, a pitchfork leaning against its handle.
+
+Each piece is a complete object fully inside its own cell. No people, no animals, no text, no ground, no scenery, no opaque background.
+```
+
+**ตรวจรับชีท V1**: ① ประตู 2 บานกว้างเกือบเต็มช่อง ช่องเปิดเป็นเขียวล้วน (ตัวละครเดินผ่านได้) ② ประตูหินใหญ่และสวยที่สุดในชีท ③ ไม่มีตัวหนังสือบนป้ายและประกาศ ④ ผ้าและเชือกราวตากผ้าไม่ทึบจนบังช่องว่างเขียว
+
+**หลังได้ภาพ**: ผมจะเปลี่ยนประตูเมืองจากโค้ดเป็นภาพ (พาดตามแกนถนน กลับภาพเองเมื่อสลับแกน) และวางของตกแต่งใหม่ในหมู่บ้านผ่านระบบ Asset Studio เดิมเพื่อให้ย้ายได้
