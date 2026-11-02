@@ -323,6 +323,11 @@
   const CROP_COL = { lettuce: '#7ec850', carrot: '#4f9a3a', potato: '#5a8a3a', wheat: '#c9b04a', tomato: '#3f8a3a', strawberry: '#4a9a4a', pumpkin: '#4a8a3a', herb: '#3e9a5a', cabbage: '#6aa86a' };
   let farmCache = null, farmAt = 0;
   function farmG() { const now = performance.now(); if (!farmCache || now - farmAt > 500) { farmAt = now; const fp = farmPlot(S); farmCache = fp && window.Garden ? window.Garden.of(fp) : null } return farmCache }
+  const CROP_PIC = { lettuce: 1, carrot: 1, potato: 1 }, CROP_FX = {"lettuce-1": 110, "lettuce-2": 114, "lettuce-3": 118, "lettuce-4": 147, "carrot-1": 110, "carrot-2": 114, "carrot-3": 131, "carrot-4": 167, "potato-1": 110, "potato-2": 117, "potato-3": 135, "potato-4": 156}, CROP_IMG = {};
+  function cropPic(crop, stage, x, y) {
+    if (!CROP_PIC[crop]) return false; const n = crop + '-' + stage, im = CROP_IMG[n] || (CROP_IMG[n] = Object.assign(new Image(), { src: 'assets/crops/' + n + '.webp' }));
+    if (!im.complete || !im.naturalWidth) return false; const k = .19; g.drawImage(im, x - CROP_FX[n] * k, y - (im.naturalHeight - 30) * k, im.naturalWidth * k, im.naturalHeight * k); return true
+  }
   function drawFarmItem(i, t) {
     const c = P(i.u + .5, i.v + .5), G = farmG(), today = window.WorldState?.game?.()?.day || 1;
     if (i.k === 'ftile') {   /* ground of a field tile: overgrown grass, cleared grass, tilled soil (dark when wet) */
@@ -341,6 +346,7 @@
       if (k === 'stump') { g.fillStyle = '#6a4424'; g.fillRect(c.x - 10, y - 14, 20, 12); g.fillStyle = '#b08a5a'; g.beginPath(); g.ellipse(c.x, y - 14, 10, 5, 0, 0, 7); g.fill(); g.strokeStyle = '#8a6a3a'; g.beginPath(); g.ellipse(c.x, y - 14, 5, 2.5, 0, 0, 7); g.stroke(); return }
       if (!p) return; const C = window.Garden.CROPS[p.crop], wet = p.w === today || window.Garden.rain(today) || G?.have.channel;
       if (p.dead) { g.strokeStyle = '#7a5a2a'; g.lineWidth = 2; for (const dx of [-8, 0, 8]) { g.beginPath(); g.moveTo(c.x + dx, y); g.lineTo(c.x + dx + 4, y - 10); g.stroke() } return }
+      { const f0 = Math.min(1, p.g / C.days), st = p.ripe ? 4 : f0 < .25 ? 1 : f0 < .6 ? 2 : 3; if (cropPic(p.crop, st, c.x, y)) { if (!wet) { g.font = '10px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.fillStyle = '#9ad'; g.fillText('💧', c.x + 14, y - 16) } return } }
       const f = Math.min(1, p.g / C.days), sway = Math.sin(t * .002 + i.idx) * 1.5, col = CROP_COL[p.crop] || '#5a9a3a';
       if (p.ripe) { g.font = '24px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillStyle = 'rgba(255,230,120,.35)'; g.beginPath(); g.ellipse(c.x, y - 10, 16, 10, 0, 0, 7); g.fill(); g.fillStyle = '#fff'; g.fillText(C.icon, c.x + sway, y - 2); return }
       const h = 5 + f * 20, leaves = f < .25 ? 2 : f < .6 ? 3 : 5;
