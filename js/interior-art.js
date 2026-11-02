@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 5B, 6, 7, 8, 9, 10, 12, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 5B, 6, 7, 8, 9, 10, 12, 15, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -1016,8 +1016,81 @@ window.INTERIOR_ART={
   "fy": 312,
   "k": 0.1,
   "noShadow": true
+ },
+ "roast-spit": {
+  "src": "assets/interior/roast-spit.webp",
+  "w": 357,
+  "h": 336,
+  "fx": 178,
+  "fy": 265,
+  "k": 0.2
+ },
+ "kitchen-table": {
+  "src": "assets/interior/kitchen-table.webp",
+  "w": 438,
+  "h": 363,
+  "fx": 219,
+  "fy": 262,
+  "k": 0.25
+ },
+ "barrel-rack": {
+  "src": "assets/interior/barrel-rack.webp",
+  "w": 364,
+  "h": 410,
+  "fx": 182,
+  "fy": 326,
+  "k": 0.27
+ },
+ "wine-rack": {
+  "src": "assets/interior/wine-rack.webp",
+  "w": 224,
+  "h": 409,
+  "fx": 112,
+  "fy": 360,
+  "k": 0.22
+ },
+ "lute-stand": {
+  "src": "assets/interior/lute-stand.webp",
+  "w": 256,
+  "h": 372,
+  "fx": 128,
+  "fy": 321,
+  "k": 0.2
+ },
+ "drum-stool": {
+  "src": "assets/interior/drum-stool.webp",
+  "w": 212,
+  "h": 276,
+  "fx": 106,
+  "fy": 234,
+  "k": 0.16
+ },
+ "game-table": {
+  "src": "assets/interior/game-table.webp",
+  "w": 445,
+  "h": 349,
+  "fx": 222,
+  "fy": 247,
+  "k": 0.25
+ },
+ "pot-rack": {
+  "src": "assets/interior/pot-rack.webp",
+  "w": 303,
+  "h": 392,
+  "fx": 151,
+  "fy": 331,
+  "k": 0.21
+ },
+ "mead-cask": {
+  "src": "assets/interior/mead-cask.webp",
+  "w": 293,
+  "h": 327,
+  "fx": 146,
+  "fy": 268,
+  "k": 0.18
  }
 };
+
 /* v98.44 · seamless floor / wall textures (sheet 14): one picture shows 2×2 game tiles; floors are seen from above, walls from the front */
 window.INTERIOR_TEX={
  "floor-wood": "assets/interior/tex-floor-wood.webp",
