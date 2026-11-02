@@ -14,13 +14,13 @@ test('default is the male hero; classic leaves the original sprites untouched', 
 });
 test('female: idle picture replaced in all 4 directions, hand anchors kept, no flipping', () => {
   const g = load('female'), T = g.TACTICS_SPRITES;
-  for (const d of ['SW', 'SE', 'NW', 'NE']) { const D = T.directions[d]; assert.equal(D.idle.src, `assets/characters/hero-female/idle-${d.toLowerCase()}.webp`); assert.equal(D.idle.flipImage, false); assert.ok(Array.isArray(D.idle.right) && Array.isArray(D.idle.left), d + ' anchors'); assert.equal(D.idleFrames.length, 1); assert.equal(D.walk.length, d === 'SW' || d === 'SE' ? 12 : 2); assert.equal(D['walk-left'], undefined); assert.equal(D.strike.src, D.idle.src) }
+  for (const d of ['SW', 'SE', 'NW', 'NE']) { const D = T.directions[d]; assert.equal(D.idle.src, `assets/characters/hero-female/idle-${d.toLowerCase()}.webp`); assert.equal(D.idle.flipImage, false); assert.ok(Array.isArray(D.idle.right) && Array.isArray(D.idle.left), d + ' anchors'); assert.equal(D.idleFrames.length, 1); assert.equal(D.walk.length, 12); assert.equal(D['walk-left'], undefined); assert.equal(D.strike.src, D.idle.src) }
   for (const d of ['sw', 'se', 'nw', 'ne']) assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'characters', 'hero-female', `idle-${d}.webp`)), d + ' file exists');
 });
 test('female walk cycle: 12 real frames for SW, mirrored for SE, files exist', () => {
   const T = load('female').TACTICS_SPRITES.directions;
   assert.ok(T.SW.walk.every(f => /walk-sw-\d\d\.webp$/.test(f.src) && f.flipImage === false)); assert.ok(T.SE.walk.every(f => /walk-sw-\d\d\.webp$/.test(f.src) && f.flipImage === true));
-  for (const f of T.SW.walk) assert.ok(fs.existsSync(path.join(__dirname, '..', f.src)), f.src); assert.ok(T.NW.walk.every(f => /idle-nw/.test(f.src)));
+  for (const f of T.SW.walk) assert.ok(fs.existsSync(path.join(__dirname, '..', f.src)), f.src); 
 });
 test('male walk cycle: 12 real frames for SE and NE, SW / NW are the same frames mirrored, files exist', () => {
   const T = load('male').TACTICS_SPRITES.directions;
@@ -29,6 +29,10 @@ test('male walk cycle: 12 real frames for SE and NE, SW / NW are the same frames
     assert.ok(T[d].walk.every(f => new RegExp('hero-male/walk-' + src + '-\\d\\d\\.webp$').test(f.src) && f.flipImage === flip), d);
     for (const f of T[d].walk) assert.ok(fs.existsSync(path.join(__dirname, '..', f.src)), f.src)
   }
+});
+test('female back-view walk: NE 12 real frames, NW mirrored, files exist', () => {
+  const T = load('female').TACTICS_SPRITES.directions;
+  for (const [d, flip] of [['NE', false], ['NW', true]]) { assert.equal(T[d].walk.length, 12, d); assert.ok(T[d].walk.every(f => /hero-female\/walk-ne-\d\d\.webp$/.test(f.src) && f.flipImage === flip), d); for (const f of T[d].walk) assert.ok(fs.existsSync(path.join(__dirname, '..', f.src)), f.src) }
 });
 test('unknown value falls back to default; set() validates', () => { const g = load('nonsense'); assert.equal(g.HeroVariant.get(), 'male'); assert.equal(g.HeroVariant.set('nope'), false); assert.equal(g.HeroVariant.set('female'), true); assert.equal(g.HeroVariant.get(), 'female') });
 console.log(`hero-variant: ${n} tests passed`);

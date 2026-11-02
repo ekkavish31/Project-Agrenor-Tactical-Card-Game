@@ -15,8 +15,10 @@
       walk: { SE: { frames: walkFrames('hero-male', 'se'), ms: 75 }, SW: { mirrorOf: 'SE' }, NE: { frames: walkFrames('hero-male', 'ne'), ms: 75 }, NW: { mirrorOf: 'NE' } } },
     classic: { name: 'ตัวเดิม (เก็บไว้)', sub: 'ต้นแบบเก่าของเกม', preview: null, hidden: true },
     female: { name: 'นักผจญภัยหญิง', sub: 'ผมหางม้า · ผ้าคลุมเขียว', idle: Object.fromEntries(DIRS.map(d => [d, dir('hero-female', d)])),
-      /* v98.72 · real walk cycle: 12 frames facing SW; SE is the same frames mirrored. NW / NE (back views) still use the standing picture until their sheets exist */
-      walk: { SW: { frames: Array.from({ length: 12 }, (_, i) => `assets/characters/hero-female/walk-sw-${String(i + 1).padStart(2, '0')}.webp`), ms: 75 }, SE: { mirrorOf: 'SW' } } }
+      /* v98.72 · real walk cycle: 12 frames facing SW; SE is the same frames mirrored */
+      walk: { SW: { frames: Array.from({ length: 12 }, (_, i) => `assets/characters/hero-female/walk-sw-${String(i + 1).padStart(2, '0')}.webp`), ms: 75 }, SE: { mirrorOf: 'SW' },
+        /* v98.75 · back views: NE 12 frames (from the v98.72 sheet, rescaled to match SW), NW = NE mirrored */
+        NE: { frames: walkFrames('hero-female', 'ne'), ms: 75 }, NW: { mirrorOf: 'NE' } } }
   };
   const DEFAULT = 'male';   /* v98.71 · the new male hero replaced the original art as the starting look; the old one stays as the hidden variant `classic` */
   const get = () => { try { const v = localStorage.getItem(KEY); return VARIANTS[v] ? v : DEFAULT } catch (e) { return DEFAULT } };
