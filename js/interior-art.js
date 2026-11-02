@@ -1,4 +1,4 @@
-/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 5B, 6, 7, 8, 9, 10, 12, 15, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
+/* v98.23 · hand-painted interior sprites (docs/PROMPTS-INTERIOR-SHEETS.md · sheets 1–5A, 5B, 6, 7, 8, 9, 10, 12, 15, 16, 11A and 11B (wall = [bottom-left x,y, bottom-right x,y, height] of a wall piece; ww = its width in wall tiles) (quad = a rug's top / right / left corners in the picture: the rug is stretched onto its floor rectangle)). One entry per cut-out picture:
    w,h = picture size · fx,fy = the centre of the object's floor footprint inside the picture · k = game px per picture px (the picture is drawn at this scale on the room grid, 1 tile = 68×34).
    interior.js draws a sprite for an item kind when its picture is loaded and falls back to the code-drawn shape otherwise. Facing: SE (the game mirrors it for SW). */
 window.INTERIOR_ART={
@@ -1088,6 +1088,78 @@ window.INTERIOR_ART={
   "fx": 146,
   "fy": 268,
   "k": 0.18
+ },
+ "big-bookcase": {
+  "src": "assets/interior/big-bookcase.webp",
+  "w": 358,
+  "h": 421,
+  "fx": 179,
+  "fy": 342,
+  "k": 0.3
+ },
+ "reading-chair": {
+  "src": "assets/interior/reading-chair.webp",
+  "w": 240,
+  "h": 327,
+  "fx": 120,
+  "fy": 269,
+  "k": 0.22
+ },
+ "globe-stand": {
+  "src": "assets/interior/globe-stand.webp",
+  "w": 248,
+  "h": 343,
+  "fx": 124,
+  "fy": 293,
+  "k": 0.2
+ },
+ "telescope": {
+  "src": "assets/interior/telescope.webp",
+  "w": 253,
+  "h": 387,
+  "fx": 126,
+  "fy": 357,
+  "k": 0.2
+ },
+ "alchemy-table": {
+  "src": "assets/interior/alchemy-table.webp",
+  "w": 417,
+  "h": 383,
+  "fx": 208,
+  "fy": 287,
+  "k": 0.25
+ },
+ "scroll-rack": {
+  "src": "assets/interior/scroll-rack.webp",
+  "w": 227,
+  "h": 371,
+  "fx": 113,
+  "fy": 321,
+  "k": 0.22
+ },
+ "astrolabe-table": {
+  "src": "assets/interior/astrolabe-table.webp",
+  "w": 291,
+  "h": 369,
+  "fx": 145,
+  "fy": 311,
+  "k": 0.2
+ },
+ "specimen-cabinet": {
+  "src": "assets/interior/specimen-cabinet.webp",
+  "w": 238,
+  "h": 404,
+  "fx": 119,
+  "fy": 347,
+  "k": 0.22
+ },
+ "armchair-set": {
+  "src": "assets/interior/armchair-set.webp",
+  "w": 340,
+  "h": 340,
+  "fx": 170,
+  "fy": 272,
+  "k": 0.2
  }
 };
 
