@@ -751,7 +751,7 @@ Each piece is a complete object fully inside its own cell. No people, no animals
 
 ---
 
-## ชีท W4 · ไทล์ป่าและพื้นที่ธรรมชาติ (แมพผจญภัย · แบบเดียวกับ W2/W3)
+## ชีท W4 ✅ ใช้ในเกมแล้ว (v98.55) · ไทล์ป่าและพื้นที่ธรรมชาติ (แมพผจญภัย · แบบเดียวกับ W2/W3)
 
 ลำดับช่อง → ชื่อไฟล์: `grassland` · `flower-meadow` · `forest-light` · `forest-dark` · `pine-forest` · `snow-forest` · `autumn-forest` · `swamp` · `sand-dunes`
 

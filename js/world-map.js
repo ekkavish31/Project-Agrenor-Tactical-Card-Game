@@ -89,13 +89,27 @@
   const WART = {}, WART_NAMES = ['hill-small', 'hill-large', 'mountain', 'mountain-snow', 'mountain-range', 'boulders', 'ice-spires', 'mesa-cliff', 'marsh-mound'];
   const wart = n => { const im = WART[n]; return im && im.complete && im.naturalWidth ? im : null };
   for (const n of WART_NAMES) { const im = WART[n] = new Image(); im.onload = () => { if (WART_NAMES.every(k => wart(k)) && !WART.repainted) { WART.repainted = true; if (terr) { try { paint(); paintFog?.() } catch (e) { } } } }; im.src = 'assets/world/' + n + '.webp' }
+  /* v98.53 · whole-hex ground tiles (sheet W4): the picture is feathered at its hexagon edge so neighbouring tiles melt into one painted map; skipped on road / river / settlement hexes so those stay visible */
+  const TILE_NAMES = ['grassland', 'flower-meadow', 'forest-light', 'forest-dark', 'pine-forest', 'snow-forest', 'autumn-forest', 'swamp', 'sand-dunes'], TILEC = {};
+  for (const n of TILE_NAMES) { const im = new Image(); im.onload = () => { try { const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0);
+      x.globalCompositeOperation = 'destination-in'; x.filter = 'blur(7px)'; x.fillStyle = '#fff'; const i = 9; x.beginPath(); x.moveTo(w / 2, i); x.lineTo(w - i, h * .25 + i * .3); x.lineTo(w - i, h * .75 - i * .3); x.lineTo(w / 2, h - i); x.lineTo(i, h * .75 - i * .3); x.lineTo(i, h * .25 + i * .3); x.closePath(); x.fill(); TILEC[n] = c;
+    } catch (e) { } }; im.src = 'assets/world/tile-' + n + '.webp' }
+  /* drawn live (full-resolution pictures, only while zoomed in and only the hexes in view) instead of baked into the half-size terrain picture, where their detail would turn to mush */
+  let TILELIST = [];
+  function wtile(t, n, p, flip) { TILELIST.push({ n, x: p.x, y: p.y, flip }); return false }
+  function drawTiles() {
+    if (cam.z < .3 || !TILELIST.length) return; const a = Math.min(1, (cam.z - .3) / .18), vx0 = cam.x - W / 2 / cam.z - 60, vx1 = cam.x + W / 2 / cam.z + 60, vy0 = cam.y - H / 2 / cam.z - 60, vy1 = cam.y + H / 2 / cam.z + 60;
+    g.save(); g.globalAlpha = a;
+    for (const q of TILELIST) { if (q.x < vx0 || q.x > vx1 || q.y < vy0 || q.y > vy1) continue; const c = TILEC[q.n]; if (!c) continue; const w = HW * 1.2, h = w * c.height / c.width; g.save(); g.translate(q.x, q.y + 1); if (q.flip) g.scale(-1, 1); g.drawImage(c, -w / 2, -h / 2, w, h); g.restore() }
+    g.restore();
+  }
   function wsprite(t, n, x, y, wd, a = 1) { const im = wart(n); if (!im) return false; const s = wd / im.naturalWidth, h = im.naturalHeight * s; t.save(); t.globalAlpha = a; t.fillStyle = 'rgba(0,0,0,.14)'; t.beginPath(); t.ellipse(x, y - 2, wd * .36, wd * .1, 0, 0, 7); t.fill(); t.drawImage(im, x - wd / 2, y - h, wd, h); t.restore(); return true }
   function paint() {
     /* v95.22: the real Nor'Chorthal map is big — paint it at half resolution (it is drawn scaled up) */
     const TS = world.real ? .4 : 1;
     terr = document.createElement('canvas'); terr.width = Math.ceil(WW * TS); terr.height = Math.ceil(WH * TS); const t = terr.getContext('2d'), rnd = G.rng(world.seed ^ 0xabc); t.scale(TS, TS);
     t.fillStyle = '#2a2f2a'; t.fillRect(0, 0, WW, WH);
-    const all = Object.values(world.tiles);
+    const all = Object.values(world.tiles); TILELIST = [];
     /* v97.94 · the world painted without the hex grid (the user chose free walking on a painted map): every hex is an irregular blob a bit larger
        than the hex, drawn in a shuffled order, so the land types run into each other like a painted map; the hexes stay underneath for the rules */
     const blob = (x, y, rad, seedv) => { t.beginPath(); for (let i = 0; i <= 10; i++) { const a = i / 10 * Math.PI * 2, k = rad * (.86 + .3 * Math.abs(Math.sin(seedv * 7.1 + i * 2.3))); i ? t.lineTo(x + Math.cos(a) * k, y + Math.sin(a) * k * .92) : t.moveTo(x + Math.cos(a) * k, y + Math.sin(a) * k * .92) } t.closePath() };
@@ -127,7 +141,13 @@
     /* decorations, sorted top→bottom so they overlap correctly */
     for (const h of all.sort((a, b) => a.r - b.r || a.c - b.c)) {
       const p = center(h.c, h.r);
-      if (h.biome === 'forest') for (let i = 0; i < 5; i++) tree(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .4) * R * .9, 9 + rnd() * 5, rnd);
+      const free = !h.road && !h.river && !h.poi, fl = rnd() < .5, pick = rnd();
+      if (free && h.biome === 'forest' && wtile(t, pick < .07 ? 'autumn-forest' : pick < .52 ? 'forest-light' : pick < .66 ? 'forest-dark' : 'pine-forest', p, fl)) { }
+      else if (free && h.biome === 'grass' && pick < .3 && wtile(t, pick < .13 ? 'flower-meadow' : 'grassland', p, fl)) { }
+      else if (free && h.biome === 'swamp' && wtile(t, 'swamp', p, fl)) { }
+      else if (free && h.biome === 'sand' && wtile(t, 'sand-dunes', p, fl)) { }
+      else if (free && h.biome === 'snow' && pick < .4 && wtile(t, 'snow-forest', p, fl)) { }
+      else if (h.biome === 'forest') for (let i = 0; i < 5; i++) tree(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .4) * R * .9, 9 + rnd() * 5, rnd);
       else if (h.biome === 'snow' && rnd() < .14 && wsprite(t, 'ice-spires', p.x + (rnd() - .5) * 8, p.y + R * .5, HW * .9)) { }
       else if (h.biome === 'snow' && rnd() < .35) tree(t, p.x + (rnd() - .5) * 20, p.y + (rnd() - .5) * 18, 9, rnd, true);
       else if (h.biome === 'hills' && wsprite(t, rnd() < .5 ? 'hill-large' : 'hill-small', p.x + (rnd() - .5) * 8, p.y + R * .5, HW * (1 + rnd() * .1))) { }
@@ -383,7 +403,7 @@
     g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#07080c'; g.fillRect(0, 0, cv.width, cv.height);
     g.setTransform(dpr * cam.z, 0, 0, dpr * cam.z, dpr * (W / 2 - cam.x * cam.z), dpr * (H / 2 - cam.y * cam.z));
     if (terr) g.drawImage(terr, 0, 0, WW, WH);
-    drawLandmarks(now); drawTrail(); drawMarks(now); drawHover(); drawToken(now); drawTalk(now);
+    drawTiles(); drawLandmarks(now); drawTrail(); drawMarks(now); drawHover(); drawToken(now); drawTalk(now);
     drawFog(now); drawBeacon(now);
     drawSky(); drawCompass();
   }
