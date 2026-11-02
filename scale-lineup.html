@@ -30,12 +30,12 @@ main{display:grid;grid-template-columns:230px 1fr 270px;gap:12px;padding:12px 16
 dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:8px 0;font-size:13px}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}
 code{font-size:12px}
 </style></head><body>
-<header><h1>⚖ Scale Lineup <small>เฟส 1 · ดูและวัดอย่างเดียว (ยังไม่แก้ค่าใด ๆ)</small></h1>
-<span id="ctxBtns"></span><span class="grow"></span>
+<header><h1>⚖ Scale Lineup <small>เฟส 1 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ดูและวัดอย่างเดียว (ยังไม่แก้ค่าใด ๆ)</small></h1>
+<span id="tabs"></span> <span id="ctxBtns"></span><span class="grow"></span>
 <button id="bGhost" aria-pressed="true" title="เงาตัวเอกซ้อนหลังทุกตัว">เงาตัวเอก</button>
 <button id="bSort" aria-pressed="false" title="เรียงตามความสูง">เรียงตามความสูง</button></header>
 <main>
-<section class="card"><b>ตัวละคร</b><div id="list" role="list"></div></section>
+<section class="card"><b id="listTitle">ตัวละคร</b><div id="list" role="list"></div></section>
 <section class="card"><div id="stageWrap"><div id="stage"></div></div>
 <p class="hint" id="note"></p></section>
 <aside class="card" id="insp"></aside>
@@ -63,6 +63,28 @@ function measure(img) {
   for (let y = y0; y < y0 + Math.max(1, Math.floor(H * .2)); y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 40) { if (x < lo) lo = x; if (x > hi) hi = x }
   return { w, h, top: y0, bottom: y1, H, x0, x1, headW: hi - lo + 1 };
 }
+/* v98.46 · buildings / decor / nature: drawn size = what the village code draws (px). 1 m = hero's drawn height ÷ 1.70 (village hero 93.6 px → 55.06 px/m; one ground cell edge ≈ 31 px ≈ 0.57 m).
+   Where the game has no fixed width (most decor is placed by the layout editor) the picture's own pixel size is used and the row says so.
+   ref = believable silhouette height range in metres (design target, edit freely). */
+const PXM_V = 93.6 / HERO_M, V = 'assets/village-town/';
+const WORLD = {
+  building: { name: 'อาคาร', ref: [5, 12], items: [
+    ['home', 'บ้านตัวเอก', V + 'player-house.webp', { w: 560 }], ['house-02', 'บ้านชาวบ้าน 2', V + 'buildings/house-02.webp', { w: 430 }], ['house-03', 'บ้านชาวบ้าน 3', V + 'buildings/house-03.webp', { w: 430 }],
+    ['inn', 'โรงแรม', V + 'inn.webp', { w: 780 }], ['healer', 'สถานพยาบาล', V + 'healer.webp', { w: 840 }], ['shop', 'ร้านของทั่วไป', V + 'shop.webp', { w: 720 }], ['market', 'ตลาด', V + 'market.webp', { w: 740 }],
+    ['temple', 'วิหาร', V + 'temple.webp', { w: 660 }], ['forge', 'โรงตีเหล็ก', V + 'forge.webp', { w: 800 }], ['fountain', 'น้ำพุกลางลาน', V + 'fountain.webp', { w: 400 }, [2, 5]]] },
+  prop: { name: 'ของประดับ', ref: [.4, 2], items: [
+    ['bench', 'ม้านั่ง', V + 'decor/bench.webp', { w: 110 }, [.7, 1.3]], ['lamp-post', 'เสาตะเกียง', V + 'decor/lamp-post.webp', { h: 150 }, [2.5, 3.8]], ['market-stall-red', 'แผงตลาด (แดง)', V + 'decor/market-stall-red.webp', {}, [2.2, 3.2]], ['market-stall-blue', 'แผงตลาด (น้ำเงิน)', V + 'decor/market-stall-blue.webp', {}, [2.2, 3.2]],
+    ['banner-pole', 'เสาธง', V + 'decor/banner-pole.webp', {}, [3.5, 5]], ['woodpile', 'กองฟืน', V + 'decor/woodpile.webp', {}, [.7, 1.3]], ['signpost', 'ป้ายบอกทาง', V + 'decor/signpost.webp', {}, [1.8, 2.6]], ['well', 'บ่อน้ำ', V + 'decor/well.webp', {}, [1.2, 2.2]],
+    ['cart', 'เกวียน', V + 'decor/cart.webp', {}, [1.2, 2]], ['hay', 'กองฟาง', V + 'decor/hay.webp', {}, [.8, 1.6]], ['flower-box', 'กระถางดอกไม้', V + 'decor/flower-box.webp', {}, [.3, .8]], ['flower-bed', 'แปลงดอกไม้', V + 'decor/flower-bed.webp', {}, [.3, .8]],
+    ['fence-picket', 'รั้วไม้', V + 'decor/fence-picket.webp', {}, [.8, 1.3]], ['stone-wall-low', 'กำแพงหินเตี้ย', V + 'decor/stone-wall-low.webp', {}, [.6, 1.2]], ['hedge-row', 'พุ่มรั้ว', V + 'decor/hedge-row.webp', {}, [.8, 1.5]],
+    ['gate-forest', 'ประตูป่า', V + 'decor/gate-forest.webp', {}, [3.5, 6]], ['gate-mine', 'ประตูเหมือง', V + 'decor/gate-mine.webp', {}, [3.5, 6]], ['gate-frost', 'ประตูหิมะ', V + 'decor/gate-frost.webp', {}, [3.5, 6]]] },
+  nature: { name: 'ธรรมชาติ', ref: [.4, 10], items: [
+    ['broadleaf', 'ต้นใบกว้าง', V + 'nature/broadleaf.webp', { w: 230 }, [3.5, 10]], ['old-oak', 'โอ๊กเก่า', V + 'nature/old-oak.webp', { w: 250 }, [3.5, 10]], ['tree-round', 'ต้นไม้กลม', V + 'nature/tree-round.webp', { w: 190 }, [3.5, 10]], ['tree-round-2', 'ต้นไม้กลม 2', V + 'nature/tree-round-2.webp', { w: 175 }, [3.5, 10]],
+    ['pine', 'สน', V + 'nature/pine.webp', { w: 215 }, [3.5, 10]], ['tree-conifer', 'ต้นสนใบ', V + 'nature/tree-conifer.webp', { w: 200 }, [3.5, 10]], ['tree-blossom', 'ต้นดอกไม้', V + 'nature/tree-blossom.webp', { w: 185 }, [3, 9]],
+    ['bush-small', 'พุ่มไม้เล็ก', V + 'nature/bush-small.webp', { w: 74 }, [.6, 1.6]], ['rock-cluster', 'กลุ่มหิน', V + 'nature/rock-cluster.webp', { w: 66 }, [.4, 1.4]], ['tall-grass', 'หญ้าสูง', V + 'nature/tall-grass.webp', { w: 64 }, [.3, .9]]] }
+};
+const TABS = [['char', 'ตัวละคร'], ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
+let tab = 'char';
 const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
 async function build() {
   const add = async (id, name, kind, ctx, src, factor, formula) => {
@@ -70,6 +92,11 @@ async function build() {
     let e = ENTRIES.find(x => x.id === id); if (!e) ENTRIES.push(e = { id, name, kind, ctx: {} });
     e.ctx[ctx] = { img, m, src, units: m.H / (kind === 'monster' ? m.h : 384) * factor, factor, formula };
   };
+  for (const [grp, G] of Object.entries(WORLD)) for (const [id, name, src, dr, ref] of G.items) {
+    const img = await load(src); if (!img) continue; const m = measure(img); if (!m) continue;
+    const px = dr.w ? m.H / m.w * dr.w : dr.h ? m.H / m.h * dr.h : m.H, how = dr.w ? `สูง ÷ กว้างภาพ × ${dr.w} px (ความกว้างที่เกมวาด)` : dr.h ? `สูง ÷ สูงภาพ × ${dr.h} px (ความสูงที่เกมวาด)` : 'ขนาดไฟล์จริง (เกมนี้ไม่ได้ตรึงขนาดไว้ · ปรับในโปรแกรมแก้ไขแผนที่)';
+    ENTRIES.push({ id: grp + ':' + id, name, kind: grp, group: grp, ref: ref || G.ref, fixed: !!(dr.w || dr.h), ctx: { village: { img, m, src, units: px, px, formula: how } } });
+  }
   await add('hero', 'ตัวเอก', 'hero', 'battle', HERO_SRC, DS.hero, `${'สูง'} ÷ 384 × ${DS.hero}`);
   await add('hero', 'ตัวเอก', 'hero', 'village', HERO_SRC, DS.hero, `${'สูง'} ÷ 384 × ${DS.hero}`);
   for (const [c, n] of Object.entries(ALLIES)) {
@@ -85,10 +112,18 @@ async function build() {
   } catch (e) { console.warn('monsters not read', e) }
 }
 let ctx = 'battle', sel = 'hero', ghost = true, sorted = false;
-const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => e.ctx[c].units / ENTRIES[0].ctx[c].units * HERO_M;
-const visible = () => { const a = ENTRIES.filter(e => e.ctx[ctx]); return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
-function chip(e) { const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
+const isW = e => !!e.group;
+const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / ENTRIES.find(x => x.id === 'hero').ctx[c].units * HERO_M;
+const heroE = () => ENTRIES.find(e => e.id === 'hero');
+/* world tabs: the hero stands first as the yardstick, then the pieces of that tab */
+const visible = () => { const a = tab === 'char' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx]) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
+const rangeOf = e => { if (!e.fixed) return ['', 'ไม่มีค่าตรึง']; const m = metres(e); return m < e.ref[0] ? ['warn', 'เล็กไป'] : m > e.ref[1] ? ['warn', 'ใหญ่ไป'] : ['ok', 'พอดี'] };
+function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
 function render() {
+  if (tab !== 'char') ctx = 'village';
+  $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k}">${t}</button>`).join(' ');
+  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' ? 'hero' : (visible()[1]?.id || 'hero'); render() });
+  $('ctxBtns').style.display = tab === 'char' ? '' : 'none'; $('listTitle').textContent = TABS.find(t => t[0] === tab)[1];
   $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
   $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
   $('bGhost').setAttribute('aria-pressed', ghost); $('bSort').setAttribute('aria-pressed', sorted);
@@ -96,24 +131,27 @@ function render() {
   $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${e.id === sel}"><img alt="" src="${e.ctx[ctx].src}"><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m</small></span>${chip(e)}</button>`).join('');
   $('list').querySelectorAll('.row').forEach(b => b.onclick = () => { sel = b.dataset.c; render() });
   /* stage */
-  const st = $('stage'), H = 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))), ppm = (base - 20) / maxM, hu = heroU(), bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
+  const st = $('stage'), H = 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))), ppm = (base - 20) / maxM, bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
   st.style.width = W + 'px'; let h = '';
   for (let m = 0; m <= Math.floor(maxM * 2) / 2; m += .5) h += `<div class="tick" style="top:${base - m * ppm}px"><span>${m.toFixed(1)} m</span></div>`;
   h += `<div class="base" style="top:${base}px"></div>`;
-  const hc = ENTRIES[0].ctx[ctx];
+  const hc = heroE().ctx[ctx];
   V.forEach((e, i) => {
     const c = e.ctx[ctx], cx = xs[i], px = metres(e) * ppm, k = px / c.m.H, w = c.m.w * k, hh = c.m.h * k, left = cx - ((c.m.x0 + c.m.x1) / 2) * k, top = base - (c.m.bottom + 1) * k;
     if (ghost && e.id !== 'hero') { const gk = HERO_M * ppm / hc.m.H; h += `<img class="ghost" alt="" src="${hc.src}" style="width:${hc.m.w * gk}px;left:${cx - ((hc.m.x0 + hc.m.x1) / 2) * gk}px;top:${base - (hc.m.bottom + 1) * gk}px">` }
     h += `<img class="ch${e.id === sel ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${c.src}" style="width:${w}px;height:${hh}px;left:${left}px;top:${top}px">`;
-    h += `<div class="nm" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${metres(e).toFixed(2)} m</i></div>`;
+    h += `<div class="nm" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m</i></div>`;
   });
   st.innerHTML = h;
   st.querySelectorAll('.ch').forEach(i => i.onclick = () => { sel = i.dataset.c; render() });
-  $('note').textContent = ctx === 'battle' ? 'สนามรบ: ขนาดบนจอจริงของแต่ละตัว (สูง ÷ สูงภาพ × ขนาดที่เกมวาด) · ตัวเอก = 1.70 m เป็นไม้วัด · เงาเทา = ตัวเอกยืนเทียบ' : 'หมู่บ้าน: ใช้รูปหมู่บ้านของแต่ละตัว · ตอนนี้ใช้ตัวคูณวาดชุดเดียวกับสนามรบ (ค่าประมาณ — เฟส 3 จะต่อกับ cast scale จริงของหมู่บ้าน)';
+  $('note').textContent = tab !== 'char' ? 'ไม้บรรทัดหมู่บ้าน: 1 m = ความสูงตัวเอกในหมู่บ้าน ÷ 1.70 (≈ 55 px) · ช่องพื้น 1 ช่อง ≈ 0.57 m · ตัวเอกยืนเป็นไม้วัดทางซ้าย + เงาเทาซ้อนหลัง · ชิป พอดี/เล็กไป/ใหญ่ไป เทียบกับช่วงเป้าหมายของแต่ละชนิด (แก้ช่วงได้ใน WORLD)' : ctx === 'battle' ? 'สนามรบ: ขนาดบนจอจริงของแต่ละตัว (สูง ÷ สูงภาพ × ขนาดที่เกมวาด) · ตัวเอก = 1.70 m เป็นไม้วัด · เงาเทา = ตัวเอกยืนเทียบ' : 'หมู่บ้าน: ใช้รูปหมู่บ้านของแต่ละตัว · ตอนนี้ใช้ตัวคูณวาดชุดเดียวกับสนามรบ (ค่าประมาณ — เฟส 3 จะต่อกับ cast scale จริงของหมู่บ้าน)';
   inspect();
 }
 function inspect() {
-  const e = ENTRIES.find(x => x.id === sel), c = e.ctx[ctx], other = ctx === 'battle' ? 'village' : 'battle', o = e.ctx[other];
+  const e = ENTRIES.find(x => x.id === sel), c = e.ctx[ctx];
+  if (isW(e)) { const row = (k, v) => `<dt>${k}</dt><dd>${v}</dd>`, mh = metres(e), mw = (c.m.x1 - c.m.x0 + 1) * mh / c.m.H, [k, t] = rangeOf(e);
+    $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${WORLD[e.group].name}</span><dl>${row('สูงบนจอ', `${mh.toFixed(2)} m · ${Math.round(c.px)} px`)}${row('กว้าง', mw.toFixed(2) + ' m')}${row('เทียบตัวเอก', (mh / HERO_M).toFixed(1) + ' เท่า')}${row('ช่วงเป้าหมาย', `${e.ref[0]}–${e.ref[1]} m <span class="chip ${k}">${t}</span>`)}${row('ที่มาขนาด', e.fixed ? 'ค่าที่โค้ดเกมวาดจริง' : 'ประมาณ (ไม่มีค่าตรึง)')}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.src}</code>`)}</dl><p class="hint">เฟส 1 ดูอย่างเดียว · ชิ้นที่ไม่พอดีให้ไปปรับสเกลในโปรแกรมแก้ไขแผนที่ (เฟส 2 จะลากปรับที่นี่ได้)</p>`; return }
+  const other = ctx === 'battle' ? 'village' : 'battle', o = e.ctx[other];
   const row = (k, v) => `<dt>${k}</dt><dd>${v}</dd>`;
   let cross = '';
   if (o) { const a = metres(e), b = metres(e, other), d = a / b - 1; cross = row('ข้ามบริบท', `สนามรบ ${metres(e, 'battle').toFixed(2)} m · หมู่บ้าน ${metres(e, 'village').toFixed(2)} m <span class="chip ${Math.abs(d) < .06 ? 'ok' : Math.abs(d) < .12 ? 'warn' : 'bad'}">${d >= 0 ? '+' : ''}${Math.round(d * 100)}%</span>`) }
