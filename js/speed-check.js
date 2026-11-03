@@ -6,10 +6,12 @@
   'use strict';
   /* the real game runs this page inside index.html's frame: ?perf=1 on the outer address counts too */
   const ON = /[?&]perf=1/.test(location.search) || (() => { try { return window.parent !== window && /[?&]perf=1/.test(parent.location.search) } catch (e) { return false } })();
-  if (!ON) return;
+  /* v98.98 · also started on demand by the "📊 วัดประสิทธิภาพ" button in Settings: SpeedCheck.start() (no ?perf=1 needed) */
   const VER = (() => { try { return new URL(document.currentScript.src).searchParams.get('v') } catch (e) { return null } })();   // the ?v= of this file = the game version that shipped it
   const lt = [];
-  try { new PerformanceObserver(l => { for (const e of l.getEntries()) lt.push([e.startTime, e.duration]) }).observe({ type: 'longtask', buffered: true }) } catch (e) { }
+  const watch = () => { try { new PerformanceObserver(l => { for (const e of l.getEntries()) lt.push([e.startTime, e.duration]) }).observe({ type: 'longtask', buffered: true }) } catch (e) { } };
+  if (ON) watch();
+  let running = false;
   const wait = ms => new Promise(r => setTimeout(r, ms));
   let panel;
   function show(txt, done) {
@@ -18,7 +20,8 @@
     if (done) {
       const b = document.createElement('button'); b.textContent = '📋 คัดลอกผล'; b.style.cssText = 'margin-top:8px;padding:6px 12px;border-radius:8px;border:1px solid #8a6a2a;background:#e8c46a;cursor:pointer;font:inherit;color:#3a2a14';
       b.onclick = async () => { try { await navigator.clipboard.writeText(txt); b.textContent = 'คัดลอกแล้ว ✓' } catch (e) { const r = document.createRange(); r.selectNodeContents(pre); getSelection().removeAllRanges(); getSelection().addRange(r); b.textContent = 'เลือกข้อความแล้ว · กด Ctrl+C' } };
-      panel.append(b)
+      panel.append(b);
+      const x = document.createElement('button'); x.textContent = '✕ ปิด'; x.style.cssText = b.style.cssText + ';margin-left:8px'; x.onclick = () => { panel.remove(); panel = null }; panel.append(x)
     }
   }
   const px = () => ({ w: Math.max(2, Math.round(innerWidth * (window.devicePixelRatio || 1))), h: Math.max(2, Math.round(innerHeight * (window.devicePixelRatio || 1))) });
@@ -46,15 +49,18 @@
       const wrap = (o, n, label) => { const f = o && o[n]; if (typeof f !== 'function') return; o[n] = function (...a) { const t = performance.now(); try { return f.apply(this, a) } finally { T[label] = (T[label] || 0) + performance.now() - t } }; undo.push(() => { o[n] = f }) };
       wrap(window, 'drawSorted', 'วาดวัตถุ'); wrap(window, 'edgeFade', 'ขอบจาง'); wrap(window.TownMood, 'grade', 'โทนสี/แสง'); wrap(window.HD2D, 'bloom', 'แสงฟุ้ง'); wrap(window.TownPaint, 'draw', 'พื้นที่ทาสี');
       let n = 0, hidden = false; const t0 = performance.now();
-      const f = () => { n++; if (document.hidden) hidden = true; if (performance.now() - t0 > ms) { undo.forEach(u => u()); res({ n, hidden, T, secs: (performance.now() - t0) / 1000 }) } else requestAnimationFrame(f) };
+      const dts = []; let last = 0;   // v98.98 · every frame time, to see stutter (min fps / 1% worst) and not only the average
+      const f = now => { n++; if (last) dts.push(now - last); last = now; if (document.hidden) hidden = true; if (performance.now() - t0 > ms) { undo.forEach(u => u()); res({ n, hidden, T, dts, secs: (performance.now() - t0) / 1000 }) } else requestAnimationFrame(f) };
       requestAnimationFrame(f);
     });
   }
-  async function main() {
+  async function main(manual) {
+    if (running) return; running = true; if (manual) watch();
     // wait until the village has been painted and nothing heavy has run for 3 s (or 60 s at most)
     const t0 = performance.now();
     for (; ;) {
       const big = lt.filter(x => x[1] > 300), lastEnd = big.length ? Math.max(...big.map(x => x[0] + x[1])) : 0, d = window.__townDrawnAt || 0, now = performance.now();
+      if (manual && (!('__townDrawnAt' in window) || d) && now - t0 > 600) break;   // started from Settings: the game is already running, no need to wait for it to open
       if (d && (now - Math.max(d, lastEnd) > 3000 || now - t0 > 90000)) break;   // never measure before the village has really been shown (it can sit hidden behind the title screen)
       show(d ? '⏱ ตรวจความเร็ว… รอให้เกมเปิดเสร็จ (' + Math.round(now / 1000) + ' วิ)\nอย่าสลับแท็บและอย่าขยับกล้องจนกว่าจะขึ้นว่า "เสร็จ"' : '⏱ ตรวจความเร็ว… รอเข้าหมู่บ้าน\nถ้ายังอยู่หน้าเมนูแรก กด "เล่นต่อ" หรือ "เริ่มเกมใหม่" ก่อน'); await wait(500);
     }
@@ -62,6 +68,7 @@
     const b2 = median([bench2d(), bench2d(), bench2d()]); const gl = benchGL(); const glMs = gl ? median([benchGL().ms, gl.ms, benchGL().ms]) : null;
     const S = await sample(5000);
     const big = lt.filter(x => x[1] > 300), blocked = big.reduce((a, x) => a + x[1], 0) / 1000, lastEnd = (big.length ? Math.max(...big.map(x => x[0] + x[1])) : 0) / 1000, drawn = (window.__townDrawnAt || 0) / 1000;
+    const dts = S.dts.slice().sort((a, b) => a - b), pct = q => dts.length ? dts[Math.min(dts.length - 1, Math.floor(dts.length * q))] : 0, worst = pct(0.99), jank = dts.filter(x => x > 50).length;
     const fps = S.n / S.secs, soft = gl ? /swiftshader|llvmpipe|software|basic render|microsoft basic/i.test(gl.renderer) : true;
     const parts = Object.entries(S.T).map(([k, v]) => [k, v / S.n]).sort((a, b) => b[1] - a[1]);
     const real = window.RENDER_STEP ? 'ขั้นความละเอียด ' + window.RENDER_STEP() : 'ความละเอียดเต็ม';
@@ -72,6 +79,7 @@
     else if (glMs != null && b2 > 4 && b2 > glMs * 3) hints.push('✔ เอฟเฟกต์เต็มจอบน Canvas 2D ช้ากว่า WebGL มาก → ชั้นเอฟเฟกต์ WebGL น่าจะคุ้ม');
     else hints.push('○ เอฟเฟกต์เต็มจอบน Canvas 2D เร็วพอ → WebGL ไม่น่าจำเป็น');
     if (blocked > 6) hints.push('⚠ เกมค้างตอนเปิดนาน (' + blocked.toFixed(1) + ' วิ) → ควรอบพื้นหมู่บ้านล่วงหน้า (ไม่เกี่ยวกับ WebGL)');
+    if (jank > dts.length * 0.05) hints.push('⚠ เฟรมกระตุกบ่อย (' + jank + ' เฟรมช้ากว่า 50 ms) → ดูรายการ "ใช้เวลาต่อเฟรม" ว่าขั้นไหนกินเวลาที่สุด');
     if (fps < 30) hints.push('⚠ ตอนเล่นต่ำกว่า 30 fps'); else if (fps >= 55) hints.push('✔ ตอนเล่นลื่น (≥55 fps)');
     const txt = [
       '== ตรวจความเร็ว · เกม ' + 'v' + (VER || '?') + ' · ' + new Date().toLocaleString('th-TH') + ' ==',
@@ -82,13 +90,24 @@
       '',
       'เปิดเกม: วาดพื้นเสร็จที่ ' + drawn.toFixed(1) + ' วิ · เกมค้างรวม ' + blocked.toFixed(1) + ' วิ (' + big.length + ' ช่วง) · งานหนักสุดท้ายจบที่ ' + lastEnd.toFixed(1) + ' วิ',
       'ตอนเล่น: ' + fps.toFixed(1) + ' fps (' + (1000 / fps).toFixed(0) + ' ms ต่อเฟรม)',
+      'ความกระตุก: เฟรมช้าสุด ' + (dts.length ? dts[dts.length - 1].toFixed(0) : '—') + ' ms · 1% ที่แย่สุด ≥ ' + worst.toFixed(0) + ' ms (≈' + (worst ? (1000 / worst).toFixed(0) : '—') + ' fps) · มัธยฐาน ' + pct(0.5).toFixed(1) + ' ms · เฟรมกระตุก (>50 ms) ' + jank + ' จาก ' + dts.length,
+      'ฉาก: ' + scene() + ' · ' + extra(),
       'ใช้เวลาต่อเฟรม (ms): ' + (parts.length ? parts.map(([k, v]) => k + ' ' + v.toFixed(1)).join(' · ') : '—'),
       'เอฟเฟกต์เต็มจอ 1 ชั้น: Canvas 2D ' + b2.toFixed(1) + ' ms · WebGL ' + (glMs == null ? '—' : glMs.toFixed(1) + ' ms'),
       '',
       'ข้อสังเกตอัตโนมัติ:', ...hints.map(h => ' ' + h),
       '', '✅ เสร็จ'
     ].join('\n');
-    show(txt, true); try { console.log(txt) } catch (e) { }
+    show(txt, true); running = false; try { console.log(txt) } catch (e) { }
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', main); else main();
+  function scene() { const p = location.pathname.split('/').pop() || 'index.html'; let s = p; try { if (window.TacticsCore || document.getElementById('tacticsLayer')?.classList.contains('fullbattle')) s += ' (มีฉากต่อสู้)' } catch (e) { } return s }
+  function extra() {   // render settings that decide the cost of a frame
+    const o = [], cv = [...document.querySelectorAll('canvas')].filter(c => c.width > 300).slice(0, 3).map(c => c.width + '×' + c.height);
+    o.push('perf-lite ' + (document.documentElement.classList.contains('perf-lite') || document.body.classList.contains('perf-lite') ? 'เปิด' : 'ปิด')); if (cv.length) o.push('แคนวาส ' + cv.join(', '));
+    try { if (performance.memory) o.push('หน่วยความจำ JS ' + (performance.memory.usedJSHeapSize / 1048576).toFixed(0) + '/' + (performance.memory.jsHeapSizeLimit / 1048576).toFixed(0) + ' MB') } catch (e) { }
+    try { if (window.RENDER_LOG) o.push('ปรับความละเอียด: ' + JSON.stringify(window.RENDER_LOG).slice(0, 160)) } catch (e) { }
+    return o.join(' · ');
+  }
+  window.SpeedCheck = { start: () => { running = false; return main(true) }, running: () => running };
+  if (ON) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => main(false)); else main(false) }
 })();
