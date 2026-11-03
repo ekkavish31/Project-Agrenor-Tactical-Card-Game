@@ -17,7 +17,7 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   console.log('ok report:\n' + txt.split('\n').slice(0, 8).join('\n'));
   // v98.100 · live HUD is visible and Ctrl+Shift+P toggles it
   const hud = () => Promise.all(p.frames().map(f => f.evaluate(() => !!window.SpeedCheck && SpeedCheck.hudOn()).catch(() => false))).then(a => a.some(Boolean));
-  assert.ok(await hud(), 'live fps HUD must be on after the check');
+  assert.ok(await hud(), 'live fps HUD must be on after the check'); { const bx = await Promise.all(p.frames().map(f => f.evaluate(() => { const c = [...document.querySelectorAll('canvas')].find(x => x.width === 240 && x.height === 96); if (!c) return null; const r = c.getBoundingClientRect(); return [r.width, r.height, r.left > innerWidth / 2] }).catch(() => null))); const b = bx.find(Boolean); assert.deepEqual(b, [240, 96, true], 'HUD size/position ' + b) }
   await p.keyboard.press('Control+Shift+P'); await p.waitForTimeout(800); assert.ok(!(await hud()), 'Ctrl+Shift+P closes the finished check');
   await p.keyboard.press('Control+Shift+P'); await p.waitForTimeout(1500); assert.ok(await hud(), 'Ctrl+Shift+P starts the check + HUD'); console.log('ok hotkey + live HUD');
   assert.deepEqual(errs, [], errs.join('|')); console.log('perf button e2e: all cases passed'); await browser.close(); server.close();

@@ -16,7 +16,7 @@
   let hud = null, hudOn = false;
   function hudStart() {
     if (hudOn) return; hudOn = true;
-    const c = document.createElement('canvas'); c.width = 240; c.height = 96; c.style.cssText = 'position:fixed;right:12px;top:12px;z-index:99999;border-radius:10px;background:#000b;border:1px solid #b8943f;pointer-events:none'; document.body.append(c); hud = c;
+    const c = document.createElement('canvas'); c.width = 240; c.height = 96; c.style.cssText = 'position:fixed;right:12px;bottom:12px;left:auto;top:auto;width:240px;height:96px;max-width:240px;max-height:96px;z-index:99999;border-radius:10px;background:#000b;border:1px solid #b8943f;pointer-events:none'; document.body.append(c); hud = c;
     const g = c.getContext('2d'), N = 120, dts = []; let last = 0, acc = 0, cnt = 0, shown = 0, worst = 0, tt = 0;
     const loop = now => {
       if (!hudOn) { c.remove(); hud = null; return }
@@ -34,7 +34,7 @@
   const wait = ms => new Promise(r => setTimeout(r, ms));
   let panel;
   function show(txt, done) {
-    if (!panel) { panel = document.createElement('div'); panel.style.cssText = 'position:fixed;left:12px;top:12px;z-index:99999;max-width:min(600px,94vw);max-height:92vh;overflow:auto;padding:12px 14px;border-radius:12px;background:#f3e6c6;color:#3a2a14;border:2px solid #b8943f;box-shadow:0 8px 24px #0006;font:13px/1.55 "Mali","Noto Sans Thai",system-ui,sans-serif'; document.body.append(panel) }
+    if (!panel) { panel = document.createElement('div'); panel.style.cssText = 'position:fixed;right:12px;left:auto;top:12px;z-index:99999;max-width:min(600px,94vw);max-height:92vh;overflow:auto;padding:12px 14px;border-radius:12px;background:#f3e6c6;color:#3a2a14;border:2px solid #b8943f;box-shadow:0 8px 24px #0006;font:13px/1.55 "Mali","Noto Sans Thai",system-ui,sans-serif'; document.body.append(panel) }
     panel.innerHTML = ''; const pre = document.createElement('pre'); pre.style.cssText = 'margin:0;white-space:pre-wrap;font:inherit'; pre.textContent = txt; panel.append(pre);
     if (done) {
       const b = document.createElement('button'); b.textContent = '📋 คัดลอกผล'; b.style.cssText = 'margin-top:8px;padding:6px 12px;border-radius:8px;border:1px solid #8a6a2a;background:#e8c46a;cursor:pointer;font:inherit;color:#3a2a14';
