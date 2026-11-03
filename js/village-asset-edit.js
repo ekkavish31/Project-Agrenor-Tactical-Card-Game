@@ -3054,7 +3054,7 @@
      // v86: compare the layout itself (not the timestamp line) so an unchanged layout is not re-pushed
      if((old||'').replace(/^\/\/.*\n/,'')!==body.replace(/^\/\/.*\n/,''))files.push({path:'js/village-layout-v67.js',content:body});
      // everything else the village editor keeps outside the layout snapshot → js/game-settings.js
-     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1'],vals={};
+     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1'],vals={};
      for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
      const text=await head.read('js/game-settings.js')||'',settings=GitHubPush.parseSettings(text)||{};
      if(Object.entries(vals).some(([k,v])=>settings[k]!==v)){Object.assign(settings,vals);files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
