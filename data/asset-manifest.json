@@ -67838,7 +67838,7 @@
    "id": "tactics-ren-se-idle",
    "file": "assets/village-town/npc/ren/se-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -67847,13 +67847,14 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม ren",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0hdiuy"
   },
   {
    "id": "tactics-ren-nw-idle",
    "file": "assets/village-town/npc/ren/nw-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -67862,7 +67863,8 @@
    "view": "NW",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม ren",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0hdlsq"
   },
   {
    "id": "tactics-ren-sw-walk-1",
@@ -68020,7 +68022,7 @@
    "id": "tactics-sigrid-se-idle",
    "file": "assets/village-town/npc/sigrid/se-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -68029,13 +68031,14 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม sigrid",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0hdqcb"
   },
   {
    "id": "tactics-sigrid-nw-idle",
    "file": "assets/village-town/npc/sigrid/nw-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -68044,7 +68047,8 @@
    "view": "NW",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม sigrid",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0hdszh"
   },
   {
    "id": "tactics-sigrid-sw-walk-1",
@@ -68110,7 +68114,7 @@
    "id": "tactics-orla-se-idle",
    "file": "assets/village-town/npc/orla/se-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -68119,13 +68123,14 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม orla",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0hd6lz"
   },
   {
    "id": "tactics-orla-nw-idle",
    "file": "assets/village-town/npc/orla/nw-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -68134,7 +68139,8 @@
    "view": "NW",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม orla",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0hddnz"
   },
   {
    "id": "tactics-orla-sw-walk-1",
@@ -68200,7 +68206,7 @@
    "id": "tactics-olwen-se-idle",
    "file": "assets/village-town/npc/olwen/se-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -68209,13 +68215,14 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม olwen",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0hcvfp"
   },
   {
    "id": "tactics-olwen-nw-idle",
    "file": "assets/village-town/npc/olwen/nw-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -68224,7 +68231,8 @@
    "view": "NW",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม olwen",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0hcyhj"
   },
   {
    "id": "tactics-olwen-sw-walk-1",
@@ -71990,6 +71998,118 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-03T09:19:57.833Z"
+  },
+  "[\"allywalk:nadia:NE\",\"NE\",true,[[\"studio-ally-nadia-ne-walk-mw0h8mqf-1\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-01.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-2\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-02.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-3\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-03.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-4\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-04.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-5\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-05.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-6\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-06.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-7\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-07.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-8\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-08.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-9\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-09.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-10\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-10.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-11\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-11.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8mqf-12\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-12.png\",0,\"mw0h8mqf\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:20:01.672Z"
+  },
+  "[\"tactics-olwen-sw-idle\",\"SW\",true,[[\"tactics-olwen-sw-idle\",\"assets/village-town/npc/olwen/sw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:25.805Z"
+  },
+  "[\"tactics-olwen-se-idle\",\"SE\",true,[[\"tactics-olwen-se-idle\",\"assets/village-town/npc/olwen/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-olwen-se-idle\",\"SE\",true,[[\"tactics-olwen-se-idle\",\"assets/village-town/npc/olwen/se-stand.webp\",0,\"mw0hcvfp\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:19.838Z"
+  },
+  "[\"tactics-olwen-ne-idle\",\"NE\",true,[[\"tactics-olwen-ne-idle\",\"assets/village-town/npc/olwen/ne-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:27.662Z"
+  },
+  "[\"tactics-olwen-nw-idle\",\"NW\",true,[[\"tactics-olwen-nw-idle\",\"assets/village-town/npc/olwen/nw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-olwen-nw-idle\",\"NW\",true,[[\"tactics-olwen-nw-idle\",\"assets/village-town/npc/olwen/nw-stand.webp\",0,\"mw0hcyhj\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:23.042Z"
+  },
+  "[\"tactics-orla-sw-idle\",\"SW\",true,[[\"tactics-orla-sw-idle\",\"assets/village-town/npc/orla/sw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:36.296Z"
+  },
+  "[\"tactics-orla-se-idle\",\"SE\",true,[[\"tactics-orla-se-idle\",\"assets/village-town/npc/orla/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-orla-se-idle\",\"SE\",true,[[\"tactics-orla-se-idle\",\"assets/village-town/npc/orla/se-stand.webp\",0,\"mw0hd6lz\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:33.590Z"
+  },
+  "[\"tactics-orla-ne-idle\",\"NE\",true,[[\"tactics-orla-ne-idle\",\"assets/village-town/npc/orla/ne-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:39.192Z"
+  },
+  "[\"tactics-orla-nw-idle\",\"NW\",true,[[\"tactics-orla-nw-idle\",\"assets/village-town/npc/orla/nw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-orla-nw-idle\",\"NW\",true,[[\"tactics-orla-nw-idle\",\"assets/village-town/npc/orla/nw-stand.webp\",0,\"mw0hddnz\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:42.724Z"
+  },
+  "[\"tactics-ren-sw-idle\",\"SW\",true,[[\"tactics-ren-sw-idle\",\"assets/village-town/npc/ren/sw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:47.939Z"
+  },
+  "[\"tactics-ren-se-idle\",\"SE\",true,[[\"tactics-ren-se-idle\",\"assets/village-town/npc/ren/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-ren-se-idle\",\"SE\",true,[[\"tactics-ren-se-idle\",\"assets/village-town/npc/ren/se-stand.webp\",0,\"mw0hdiuy\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:49.457Z"
+  },
+  "[\"tactics-ren-ne-idle\",\"NE\",true,[[\"tactics-ren-ne-idle\",\"assets/village-town/npc/ren/ne-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:52.031Z"
+  },
+  "[\"tactics-ren-nw-idle\",\"NW\",true,[[\"tactics-ren-nw-idle\",\"assets/village-town/npc/ren/nw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-ren-nw-idle\",\"NW\",true,[[\"tactics-ren-nw-idle\",\"assets/village-town/npc/ren/nw-stand.webp\",0,\"mw0hdlsq\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:53.275Z"
+  },
+  "[\"tactics-sigrid-sw-idle\",\"SW\",true,[[\"tactics-sigrid-sw-idle\",\"assets/village-town/npc/sigrid/sw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:57.882Z"
+  },
+  "[\"tactics-sigrid-se-idle\",\"SE\",true,[[\"tactics-sigrid-se-idle\",\"assets/village-town/npc/sigrid/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-sigrid-se-idle\",\"SE\",true,[[\"tactics-sigrid-se-idle\",\"assets/village-town/npc/sigrid/se-stand.webp\",0,\"mw0hdqcb\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:23:59.138Z"
+  },
+  "[\"tactics-sigrid-ne-idle\",\"NE\",true,[[\"tactics-sigrid-ne-idle\",\"assets/village-town/npc/sigrid/ne-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:24:01.197Z"
+  },
+  "[\"tactics-sigrid-nw-idle\",\"NW\",true,[[\"tactics-sigrid-nw-idle\",\"assets/village-town/npc/sigrid/nw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
   }
  },
  "studioClipHistory": {
@@ -72380,6 +72500,54 @@
   "static:tactics-nadia-nw-idle": [
    {
     "at": "2026-11-03T09:11:35.071Z",
+    "entries": []
+   }
+  ],
+  "static:tactics-olwen-se-idle": [
+   {
+    "at": "2026-11-03T09:23:19.748Z",
+    "entries": []
+   }
+  ],
+  "static:tactics-olwen-nw-idle": [
+   {
+    "at": "2026-11-03T09:23:22.935Z",
+    "entries": []
+   }
+  ],
+  "static:tactics-orla-se-idle": [
+   {
+    "at": "2026-11-03T09:23:33.485Z",
+    "entries": []
+   }
+  ],
+  "static:tactics-orla-nw-idle": [
+   {
+    "at": "2026-11-03T09:23:42.615Z",
+    "entries": []
+   }
+  ],
+  "static:tactics-ren-se-idle": [
+   {
+    "at": "2026-11-03T09:23:49.338Z",
+    "entries": []
+   }
+  ],
+  "static:tactics-ren-nw-idle": [
+   {
+    "at": "2026-11-03T09:23:53.168Z",
+    "entries": []
+   }
+  ],
+  "static:tactics-sigrid-se-idle": [
+   {
+    "at": "2026-11-03T09:23:59.039Z",
+    "entries": []
+   }
+  ],
+  "static:tactics-sigrid-nw-idle": [
+   {
+    "at": "2026-11-03T09:24:02.485Z",
     "entries": []
    }
   ]
