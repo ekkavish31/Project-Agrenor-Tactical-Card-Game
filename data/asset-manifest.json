@@ -9566,8 +9566,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "mvvihj13",
+   "artRevision": "mw02nwy3",
    "history": [
+    {
+     "file": "assets/_versions/unified/mw02nwy3/tactics-bram-sw-idle.png",
+     "at": "2026-11-03T02:31:59.968Z",
+     "stamp": "mw02nwy3",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    },
     {
      "file": "assets/_versions/unified/mvvihj13/tactics-bram-sw-idle.png",
      "at": "2026-10-30T21:56:04.991Z",
@@ -60739,8 +60746,9 @@
    "approvedAt": "2026-10-30T21:56:05.072Z"
   },
   "[\"tactics-bram-se-idle\",\"SE\",true,[[\"tactics-bram-se-idle\",\"assets/tactics/bram_se_idle.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T02:32:06.370Z"
   },
   "[\"tactics-bram-se-idle\",\"SE\",true,[[\"tactics-bram-se-idle\",\"assets/tactics/bram_se_idle.webp\",0,\"mvvj3vkm\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "unreviewed",
@@ -60748,12 +60756,14 @@
    "approvedAt": "2026-10-30T22:13:27.764Z"
   },
   "[\"tactics-bram-nw-idle\",\"NW\",true,[[\"tactics-bram-nw-idle\",\"assets/tactics/bram_nw_idle.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T02:32:03.227Z"
   },
   "[\"tactics-bram-ne-idle\",\"NE\",true,[[\"tactics-bram-ne-idle\",\"assets/tactics/bram_ne_idle.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T02:32:04.786Z"
   },
   "[\"tactics-bram-ne-idle\",\"NE\",true,[[\"tactics-bram-ne-idle\",\"assets/tactics/bram_ne_idle.webp\",0,\"mvvj5f86\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -61467,10 +61477,55 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-03T01:57:08.189Z"
+  },
+  "[\"tactics-bram-sw-idle\",\"SW\",true,[[\"tactics-bram-sw-idle\",\"assets/tactics/bram_sw_idle.webp\",0,\"mw02nwy3\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T02:32:00.102Z"
   }
  },
  "studioClipHistory": {
   "static:tactics-bram-sw-idle": [
+   {
+    "at": "2026-11-03T02:31:59.968Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-bram-sw-idle",
+       "file": "assets/tactics/bram_sw_idle.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
+       "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+       "artRevision": "mvvihj13",
+       "history": [
+        {
+         "file": "assets/_versions/unified/mvvihj13/tactics-bram-sw-idle.png",
+         "at": "2026-10-30T21:56:04.991Z",
+         "stamp": "mvvihj13",
+         "status": "final",
+         "note": "ก่อนแก้ใน modal"
+        },
+        {
+         "file": "assets/_versions/unified/mvvih2p6/tactics-bram-sw-idle.png",
+         "at": "2026-10-30T21:55:43.828Z",
+         "stamp": "mvvih2p6",
+         "status": "final",
+         "note": "ก่อนแก้ใน modal"
+        }
+       ]
+      },
+      "archive": "assets/_versions/unified/mw02nwy3/tactics-bram-sw-idle.png"
+     }
+    ]
+   },
    {
     "at": "2026-10-30T21:56:04.991Z",
     "entries": [
