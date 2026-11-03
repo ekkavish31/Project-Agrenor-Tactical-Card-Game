@@ -27,14 +27,14 @@
  /* v98.76 · with the male / female look open, the hero shows only that look: the registered still pictures of the original hero are hidden */
  const lookOnly=entities=>{const classic=window.StudioVariants?.active==='classic',byId=new Map((M.assets||[]).map(a=>[a.id,a]));
   for(const e of entities)if(e.id==='hero'){
-   if(!classic)e.clips=e.clips.filter(c=>!String(c.id).startsWith('static:'));
+   if(!classic){e.clips=e.clips.filter(c=>!String(c.id).startsWith('static:'));e.assets=(e.assets||[]).filter(a=>a.variant===window.StudioVariants.active)}   /* v98.77 · only the open look's own pictures, none of the original hero's */
    else{e.clips=e.clips.filter(c=>!(String(c.id).startsWith('static:')&&c.frames.some(f=>byId.get(f.assetId)?.variant)));e.assets=(e.assets||[]).filter(a=>!a.variant)}}   /* the male / female pictures stay out of the original hero's lists */
   return entities};
  /* The catalog only attaches a clip to a character through its registered pictures, so the files a look uses are registered once (category tactics-hero, tagged with the look). */
  function registerLookAssets(id,t){const have=new Set((M.assets||[]).map(a=>a.file)),files=new Set();
   for(const D of Object.values(t?.directions||{}))for(const pose of ['idle','walk','windup','strike','guard','hit','down'])for(const f of [...(D[pose+'Frames']||[]),...(pose==='walk'?D.walk||[]:[]),D[pose]].filter(Boolean))if(f.src&&!/^data:|^blob:/.test(f.src))files.add(f.src);
   for(const file of files)if(!have.has(file))M.assets.push({id:'look-'+id+'-'+file.replace(/^assets\//,'').replace(/\.[a-z]+$/i,'').replace(/[^a-z0-9]+/gi,'-'),file,category:'tactics-hero',status:'final',size:[384,384],transparent:true,view:'',pose:'',variant:id,studioOwner:{id:'hero',name:'ตัวหลัก · Hero',group:'characters'}})}
- function rebuild(){state.model=lookOnly(C.build(M,clipsFor(M),meta));return state.model}
+ function rebuild(){if(window.StudioVariants?.active==='classic'&&runtime.tactics&&(M.assets||[]).length)enterLook('male');state.model=lookOnly(C.build(M,clipsFor(M),meta));return state.model}
  // Share one catalog between matrix and the detailed reviewer, including static assets.
  R.catalog=function(manifest){return lookOnly(C.build(manifest,clipsFor(manifest),meta)).flatMap(e=>e.clips)};
  function entity(){return state.model.find(e=>e.id===state.entity)}
@@ -58,7 +58,7 @@
  function renderNav(){let search=state.entityQuery.toLowerCase(),all=state.model.filter(e=>e.group===state.group),ee=all.filter(e=>(e.name+' '+e.id).toLowerCase().includes(search));
   const ANIM=['characters','monsters','bosses'],subs=ANIM.includes(state.group)?'<div class="subtabs">'+[['characters','ตัวละคร'],['monsters','มอนสเตอร์'],['bosses','มินิบอส / บอส']].map(([g,n])=>`<button data-sub="${g}" class="${g===state.group?'on':''}">${n}</button>`).join('')+'</div>':'';
   $('cats').innerHTML=subs+`<h4>${esc(C.groups[state.group])} · ${all.length}</h4><input id="entitySearch" type="search" placeholder="ค้นหาตัว / วัตถุ" aria-label="ค้นหาในหมวด" value="${esc(state.entityQuery)}">`+ee.map(e=>{
-   let a=(e.id==='hero'?e.assets.find(a=>a.id==='tactics-hero-se-idle'):null)||e.assets.find(a=>/^(card-|enemy-|ally-)/.test(a.id)&&!a.animation)||e.assets.find(a=>!a.animation)||e.assets[0];
+   let a=(e.id==='hero'?e.assets.find(a=>a.variant&&/idle-sw\.webp$/.test(a.file))||e.assets.find(a=>a.id==='tactics-hero-se-idle'):null)||e.assets.find(a=>/^(card-|enemy-|ally-)/.test(a.id)&&!a.animation)||e.assets.find(a=>!a.animation)||e.assets[0];
    return `<button data-entity="${esc(e.id)}" class="${e.id===state.entity?'on':''}">${a?.file?imgTag(a.file):''}<span class="nav-copy"><b>${esc(e.name)}</b><small>${e.clips.filter(c=>c.kind!=='static').length} ชุดท่า · ${e.assets.length} ไฟล์${e.rank==='boss'?' · บอส':e.rank==='miniboss'?' · มินิบอส':''}</small></span></button>`}).join('')+(ee.length?'':'<p class="muted">ไม่พบรายการ</p>');
   $('cats').querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>gotoGroup(b.dataset.sub));
   $('entitySearch').oninput=e=>{let caret=e.target.selectionStart;state.entityQuery=e.target.value;renderNav();$('entitySearch').focus();$('entitySearch').setSelectionRange(caret,caret)};
@@ -66,16 +66,18 @@
  }
  /* v98.76 · hero looks (ตัวเดิม / ชาย / หญิง): the open look's edits sit at the top level of the manifest, see js/studio-variants.js */
  let pristine=null;
- function setLook(id){const V=window.StudioVariants;if(!V||id===V.active)return;
-  if(hasWork()&&!confirm('มีเฟรมที่ยังรอใช้อยู่ ถ้าเปลี่ยนรูปลักษณ์ตอนนี้ งานที่ค้างอาจปนกับตัวใหม่ · เปลี่ยนต่อไหม?'))return;
-  if(!V.switchTo(M,id))return;
+ function enterLook(id){const V=window.StudioVariants;if(!V||id===V.active||!V.switchTo(M,id))return false;
   if(!pristine&&runtime.tactics)pristine=JSON.parse(JSON.stringify(runtime.tactics));
   if(pristine){const t=JSON.parse(JSON.stringify(pristine));window.StudioWalks?.apply(t,{});   /* creates the base snapshots the rebase needs */
    if(id!=='classic'&&window.HeroVariant){HeroVariant.defaultsTo(t,id);HeroVariant.rebase(t)}
    runtime.tactics=t;if(id!=='classic')registerLookAssets(id,t)}
-  imageCache.clear();state.generation++;rebuild();render();try{detail()}catch(e){}toast('กำลังแก้: '+V.LOOKS.find(l=>l[0]===id)[1])}
+  imageCache.clear();state.generation++;return true}
+ function setLook(id){const V=window.StudioVariants;if(!V||id===V.active)return;
+  if(hasWork()&&!confirm('มีเฟรมที่ยังรอใช้อยู่ ถ้าเปลี่ยนรูปลักษณ์ตอนนี้ งานที่ค้างอาจปนกับตัวใหม่ · เปลี่ยนต่อไหม?'))return;
+  if(!enterLook(id))return;
+  rebuild();render();try{detail()}catch(e){}toast('กำลังแก้: '+V.LOOKS.find(l=>l[0]===id)[1])}
  function lookBar(e){const V=window.StudioVariants,box=$('filters');if(!V||e?.id!=='hero')return;
-  box.innerHTML='<div class="look-bar" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0"><b style="font-size:12px">รูปลักษณ์ตัวเอก</b>'+V.LOOKS.map(([id,name])=>`<button data-look="${id}" class="${V.active===id?'on':''}" style="padding:4px 10px;border-radius:14px;border:1px solid #b9a56a;background:${V.active===id?'#e8c766':'#fff8e4'};cursor:pointer">${name}</button>`).join('')+'<small style="color:#6b7963;flex-basis:100%">แต่ละแบบเก็บชุดเดิน/ท่าแยกกัน · ตัวเดิมคือชุดเก่าของเกม · ชาย/หญิงคือตัวที่ใช้อยู่ในเกมตอนนี้</small></div>';
+  box.innerHTML='<div class="look-bar" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0"><b style="font-size:12px">รูปลักษณ์ตัวเอก</b>'+V.LOOKS.map(([id,name])=>`<button data-look="${id}" class="${V.active===id?'on':''}" style="padding:4px 10px;border-radius:14px;border:1px solid #b9a56a;background:${V.active===id?'#e8c766':'#fff8e4'};cursor:pointer">${name}</button>`).join('')+'<small style="color:#6b7963;flex-basis:100%">แต่ละแบบเก็บชุดเดิน/ท่าแยกกัน · ชาย/หญิงคือตัวที่ใช้อยู่ในเกมตอนนี้</small></div>';
   box.querySelectorAll('[data-look]').forEach(b=>b.onclick=()=>setLook(b.dataset.look))}
  function renderEntity(){let e=entity();$('filters').innerHTML='';lookBar(e);state.entries=[];previewObserver.disconnect();viewed.clear();
   if(!e){$('grid').innerHTML='<div class="entity-empty">เลือกตัวหรือวัตถุทางซ้าย<p>ถ้าไม่มีรายการ ลองเชื่อมโฟลเดอร์เกมหรือเปลี่ยนหมวด</p></div>';return}

@@ -6,13 +6,15 @@
 (function (root) {
   'use strict';
   const KEYS = ['studioWalks', 'studioWalkMirrors', 'studioWalkHistory', 'studioPoses', 'studioPoseMirrors', 'studioPoseHistory'];
-  const LOOKS = [['classic', 'ตัวเดิม'], ['male', 'ชาย'], ['female', 'หญิง']];
+  /* v98.77 · the original hero ('classic') is no longer offered in the studio (the user: remove it). Its data stays in the top level of the manifest — the game still keeps it as the hidden look `classic` —
+     but the studio opens on `male` and only lists male / female. */
+  const LOOKS = [['male', 'ชาย'], ['female', 'หญิง']];
   let active = 'classic';
   const pick = M => Object.fromEntries(KEYS.filter(k => M[k] && Object.keys(M[k]).length).map(k => [k, M[k]]));
   const hasData = b => b && Object.keys(b).length > 0;
   function load(M, id) { for (const k of KEYS) delete M[k]; const b = M.heroVariants?.[id]; if (b) { Object.assign(M, b); delete M.heroVariants[id] } }
   function switchTo(M, id) {
-    if (!LOOKS.some(l => l[0] === id) || id === active) return false;
+    if ((!LOOKS.some(l => l[0] === id) && id !== 'classic') || id === active) return false;
     M.heroVariants ||= {}; M.heroVariants[active] = pick(M); load(M, id); active = id; return true;
   }
   /* A copy of the manifest in the game's shape. Does not change M. */

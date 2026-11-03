@@ -55195,6 +55195,1446 @@
     "group": "characters"
    },
    "artRevision": "mvvjf26d-mdg1"
+  },
+  {
+   "id": "look-male-characters-hero-male-idle-ne",
+   "file": "assets/characters/hero-male/idle-ne.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · idle facing NE"
+  },
+  {
+   "id": "look-male-characters-hero-male-idle-nw",
+   "file": "assets/characters/hero-male/idle-nw.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · idle facing NW"
+  },
+  {
+   "id": "look-male-characters-hero-male-idle-se",
+   "file": "assets/characters/hero-male/idle-se.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · idle facing SE"
+  },
+  {
+   "id": "look-male-characters-hero-male-idle-sw",
+   "file": "assets/characters/hero-male/idle-sw.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · idle facing SW"
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-01",
+   "file": "assets/characters/hero-male/walk-ne-01.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 1",
+   "clip": "male.walk.ne",
+   "frame": 1
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-02",
+   "file": "assets/characters/hero-male/walk-ne-02.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 2",
+   "clip": "male.walk.ne",
+   "frame": 2
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-03",
+   "file": "assets/characters/hero-male/walk-ne-03.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 3",
+   "clip": "male.walk.ne",
+   "frame": 3
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-04",
+   "file": "assets/characters/hero-male/walk-ne-04.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 4",
+   "clip": "male.walk.ne",
+   "frame": 4
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-05",
+   "file": "assets/characters/hero-male/walk-ne-05.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 5",
+   "clip": "male.walk.ne",
+   "frame": 5
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-06",
+   "file": "assets/characters/hero-male/walk-ne-06.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 6",
+   "clip": "male.walk.ne",
+   "frame": 6
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-07",
+   "file": "assets/characters/hero-male/walk-ne-07.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 7",
+   "clip": "male.walk.ne",
+   "frame": 7
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-08",
+   "file": "assets/characters/hero-male/walk-ne-08.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 8",
+   "clip": "male.walk.ne",
+   "frame": 8
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-09",
+   "file": "assets/characters/hero-male/walk-ne-09.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 9",
+   "clip": "male.walk.ne",
+   "frame": 9
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-10",
+   "file": "assets/characters/hero-male/walk-ne-10.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 10",
+   "clip": "male.walk.ne",
+   "frame": 10
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-11",
+   "file": "assets/characters/hero-male/walk-ne-11.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 11",
+   "clip": "male.walk.ne",
+   "frame": 11
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-12",
+   "file": "assets/characters/hero-male/walk-ne-12.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing NE · frame 12",
+   "clip": "male.walk.ne",
+   "frame": 12
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-01",
+   "file": "assets/characters/hero-male/walk-se-01.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 1",
+   "clip": "male.walk.se",
+   "frame": 1
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-02",
+   "file": "assets/characters/hero-male/walk-se-02.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 2",
+   "clip": "male.walk.se",
+   "frame": 2
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-03",
+   "file": "assets/characters/hero-male/walk-se-03.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 3",
+   "clip": "male.walk.se",
+   "frame": 3
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-04",
+   "file": "assets/characters/hero-male/walk-se-04.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 4",
+   "clip": "male.walk.se",
+   "frame": 4
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-05",
+   "file": "assets/characters/hero-male/walk-se-05.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 5",
+   "clip": "male.walk.se",
+   "frame": 5
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-06",
+   "file": "assets/characters/hero-male/walk-se-06.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 6",
+   "clip": "male.walk.se",
+   "frame": 6
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-07",
+   "file": "assets/characters/hero-male/walk-se-07.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 7",
+   "clip": "male.walk.se",
+   "frame": 7
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-08",
+   "file": "assets/characters/hero-male/walk-se-08.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 8",
+   "clip": "male.walk.se",
+   "frame": 8
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-09",
+   "file": "assets/characters/hero-male/walk-se-09.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 9",
+   "clip": "male.walk.se",
+   "frame": 9
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-10",
+   "file": "assets/characters/hero-male/walk-se-10.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 10",
+   "clip": "male.walk.se",
+   "frame": 10
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-11",
+   "file": "assets/characters/hero-male/walk-se-11.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 11",
+   "clip": "male.walk.se",
+   "frame": 11
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-12",
+   "file": "assets/characters/hero-male/walk-se-12.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "male hero · walk facing SE · frame 12",
+   "clip": "male.walk.se",
+   "frame": 12
+  },
+  {
+   "id": "look-female-characters-hero-female-idle-ne",
+   "file": "assets/characters/hero-female/idle-ne.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · idle facing NE"
+  },
+  {
+   "id": "look-female-characters-hero-female-idle-nw",
+   "file": "assets/characters/hero-female/idle-nw.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · idle facing NW"
+  },
+  {
+   "id": "look-female-characters-hero-female-idle-se",
+   "file": "assets/characters/hero-female/idle-se.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · idle facing SE"
+  },
+  {
+   "id": "look-female-characters-hero-female-idle-sw",
+   "file": "assets/characters/hero-female/idle-sw.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · idle facing SW"
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-01",
+   "file": "assets/characters/hero-female/walk-ne-01.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 1",
+   "clip": "female.walk.ne",
+   "frame": 1
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-02",
+   "file": "assets/characters/hero-female/walk-ne-02.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 2",
+   "clip": "female.walk.ne",
+   "frame": 2
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-03",
+   "file": "assets/characters/hero-female/walk-ne-03.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 3",
+   "clip": "female.walk.ne",
+   "frame": 3
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-04",
+   "file": "assets/characters/hero-female/walk-ne-04.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 4",
+   "clip": "female.walk.ne",
+   "frame": 4
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-05",
+   "file": "assets/characters/hero-female/walk-ne-05.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 5",
+   "clip": "female.walk.ne",
+   "frame": 5
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-06",
+   "file": "assets/characters/hero-female/walk-ne-06.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 6",
+   "clip": "female.walk.ne",
+   "frame": 6
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-07",
+   "file": "assets/characters/hero-female/walk-ne-07.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 7",
+   "clip": "female.walk.ne",
+   "frame": 7
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-08",
+   "file": "assets/characters/hero-female/walk-ne-08.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 8",
+   "clip": "female.walk.ne",
+   "frame": 8
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-09",
+   "file": "assets/characters/hero-female/walk-ne-09.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 9",
+   "clip": "female.walk.ne",
+   "frame": 9
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-10",
+   "file": "assets/characters/hero-female/walk-ne-10.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 10",
+   "clip": "female.walk.ne",
+   "frame": 10
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-11",
+   "file": "assets/characters/hero-female/walk-ne-11.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 11",
+   "clip": "female.walk.ne",
+   "frame": 11
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-ne-12",
+   "file": "assets/characters/hero-female/walk-ne-12.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing NE · frame 12",
+   "clip": "female.walk.ne",
+   "frame": 12
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-01",
+   "file": "assets/characters/hero-female/walk-sw-01.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 1",
+   "clip": "female.walk.sw",
+   "frame": 1
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-02",
+   "file": "assets/characters/hero-female/walk-sw-02.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 2",
+   "clip": "female.walk.sw",
+   "frame": 2
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-03",
+   "file": "assets/characters/hero-female/walk-sw-03.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 3",
+   "clip": "female.walk.sw",
+   "frame": 3
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-04",
+   "file": "assets/characters/hero-female/walk-sw-04.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 4",
+   "clip": "female.walk.sw",
+   "frame": 4
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-05",
+   "file": "assets/characters/hero-female/walk-sw-05.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 5",
+   "clip": "female.walk.sw",
+   "frame": 5
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-06",
+   "file": "assets/characters/hero-female/walk-sw-06.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 6",
+   "clip": "female.walk.sw",
+   "frame": 6
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-07",
+   "file": "assets/characters/hero-female/walk-sw-07.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 7",
+   "clip": "female.walk.sw",
+   "frame": 7
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-08",
+   "file": "assets/characters/hero-female/walk-sw-08.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 8",
+   "clip": "female.walk.sw",
+   "frame": 8
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-09",
+   "file": "assets/characters/hero-female/walk-sw-09.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 9",
+   "clip": "female.walk.sw",
+   "frame": 9
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-10",
+   "file": "assets/characters/hero-female/walk-sw-10.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 10",
+   "clip": "female.walk.sw",
+   "frame": 10
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-11",
+   "file": "assets/characters/hero-female/walk-sw-11.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 11",
+   "clip": "female.walk.sw",
+   "frame": 11
+  },
+  {
+   "id": "look-female-characters-hero-female-walk-sw-12",
+   "file": "assets/characters/hero-female/walk-sw-12.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "variant": "female",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "subject": "female hero · walk facing SW · frame 12",
+   "clip": "female.walk.sw",
+   "frame": 12
   }
  ],
  "studioWalks": {
