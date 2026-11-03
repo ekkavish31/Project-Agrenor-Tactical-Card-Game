@@ -96,8 +96,10 @@
     if (tag) { staged.clear(); await persist(); try { sessionStorage.removeItem(TREE_KEY) } catch (e) {} ready = null; await open(true); notify() }
     return tag;
   }
+  /* v98.82 · take back some staged writes (never-pushed drafts that a newer save replaced) — touches nothing that is already in the repo */
+  async function drop(paths) { let n = 0; for (const p of paths) if (staged.has(p) && staged.get(p) !== null) { staged.delete(p); n++ } if (n) { await persist(); notify() } return n }
   async function discard() { staged.clear(); await persist(); notify() }
   /* the editor shell pushed (or dropped) the staged files for us */
   async function afterExternal() { staged.clear(); try { sessionStorage.removeItem(TREE_KEY) } catch (e) {} ready = null; await open(true); notify() }
-  root.RepoDir = { open, pushStaged, discard, afterExternal, count: () => staged.size, paths: () => [...staged.keys()], onChange: f => listeners.push(f) };
+  root.RepoDir = { open, pushStaged, drop, discard, afterExternal, count: () => staged.size, paths: () => [...staged.keys()], onChange: f => listeners.push(f) };
 })(globalThis);

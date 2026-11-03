@@ -76,12 +76,20 @@
  function syncStatuses(){let paths=new Set(Object.entries(M.studioWalks||{}).filter(([d])=>!M.studioWalkMirrors?.[d]).flatMap(([,c])=>c.frames.map(f=>M.assets.find(a=>a.id===f.assetId)?.file||f.src)));for(let a of M.assets)if(a.studioImportedWalk)a.status=paths.has(a.file)?'final':'unused';
   let posePaths=new Set(Object.entries(M.studioPoses||{}).flatMap(([pose,dirs])=>Object.entries(dirs||{}).filter(([d])=>!M.studioPoseMirrors?.[pose]?.[d]).flatMap(([,c])=>(c?.frames||[]).map(f=>M.assets.find(a=>a.id===f.assetId)?.file||f.src))));for(let a of M.assets)if(a.studioImportedPose)a.status=posePaths.has(a.file)?'final':'unused'}
  function setBusy(value){saving=value;B.state.busy=value;(editHost||dialog).querySelectorAll('button,input,select').forEach(e=>e.disabled=value);connButton()}
+ /* v98.82 · every save writes a NEW folder with all its frames (kept for the history/restore buttons). A save that replaces a set whose files were
+    never pushed (still staged) would leave that draft as dead weight in the push list: 12 frames per save, piling up (14 → 26 → 38 …).
+    So when the set being replaced lives only in the staged list, drop its files, its manifest entries and its history entry. Anything already in the repo stays restorable. */
+ function pruneUnpushed(oldConfig,history){
+  if(!dir||!window.RepoDir||!oldConfig?.frames?.length)return 0;const staged=new Set(RepoDir.paths());
+  const files=oldConfig.frames.map(f=>M.assets.find(a=>a.id===f.assetId)?.file||f.src);if(!files.every(f=>staged.has(f)))return 0;
+  RepoDir.drop(files);const ids=new Set(oldConfig.frames.map(f=>f.assetId));for(let i=M.assets.length-1;i>=0;i--)if(ids.has(M.assets[i].id))M.assets.splice(i,1);
+  if(history?.length)history.shift();return files.length}
  async function commit(config,newAssets=[],blobs=[],links=null,direction=el('dir').value){
   let before=copy(M),created=[];setBusy(true);
   try{await Q;if(saveT){clearTimeout(saveT);saveT=null;await saveManifest()}
    if(dir)for(let {path,blob}of blobs)await queue(()=>writeFile(path,blob));
    M.studioWalks||={};M.studioWalkHistory||={};M.studioWalkHistory[direction]||=[];M.studioWalkHistory[direction].unshift({at:new Date().toISOString(),config:copy(M.studioWalks[direction]||null),mirrors:Object.fromEntries([direction,opposite[direction]].filter(Boolean).map(d=>[d,M.studioWalkMirrors?.[d]||null])),frames:B.getRuntime().tactics?.directions?.[direction]?.walk?.length||M.studioWalks[direction]?.frames.length||0});M.studioWalkHistory[direction]=M.studioWalkHistory[direction].slice(0,12);
-   if(config)M.studioWalks[direction]=config;else delete M.studioWalks[direction];M.studioWalkMirrors||={};if(links?.mirrors){for(let [d,source]of Object.entries(links.mirrors)){if(source)M.studioWalkMirrors[d]=source;else delete M.studioWalkMirrors[d]}}else{delete M.studioWalkMirrors[direction];let target=opposite[direction];if(el('mirror').checked&&target)M.studioWalkMirrors[target]=direction;else if(M.studioWalkMirrors[target]===direction)delete M.studioWalkMirrors[target]}M.assets.push(...newAssets);syncStatuses();
+   if(config)M.studioWalks[direction]=config;else delete M.studioWalks[direction];M.studioWalkMirrors||={};if(links?.mirrors){for(let [d,source]of Object.entries(links.mirrors)){if(source)M.studioWalkMirrors[d]=source;else delete M.studioWalkMirrors[d]}}else{delete M.studioWalkMirrors[direction];let target=opposite[direction];if(el('mirror').checked&&target)M.studioWalkMirrors[target]=direction;else if(M.studioWalkMirrors[target]===direction)delete M.studioWalkMirrors[target]}M.assets.push(...newAssets);if(config&&blobs.length)pruneUnpushed(M.studioWalkHistory[direction][0]?.config,M.studioWalkHistory[direction]);syncStatuses();
    if(!dir){for(let [i,item]of blobs.entries()){let a=newAssets[i],url=URL.createObjectURL(item.blob);pending.set(a.id,{blob:item.blob,url,status:'final'});created.push(a.id)}
     // A metadata-only restore must still be exportable through the existing ZIP button.
     if(!blobs.length){let path='assets/_versions/studio-walk-restore-'+Date.now()+'.json';window.AnimationReviewExtraFiles.set(path,new Blob([JSON.stringify(config)],{type:'application/json'}))}
@@ -107,7 +115,7 @@
    if(dir)for(let {path,blob}of blobs)await queue(()=>writeFile(path,blob));
    M.studioPoses||={};M.studioPoses[action]||={};M.studioPoseMirrors||={};M.studioPoseMirrors[action]||={};M.studioPoseHistory||={};const hk=action+':'+direction;(M.studioPoseHistory[hk]||=[]).unshift({at:new Date().toISOString(),config:copy(M.studioPoses[action][direction]||null),mirror:M.studioPoseMirrors[action][direction]||null});M.studioPoseHistory[hk]=M.studioPoseHistory[hk].slice(0,12);
    if(mirror){for(const[t,src]of Object.entries(mirror)){if(src)M.studioPoseMirrors[action][t]=src;else delete M.studioPoseMirrors[action][t]}}else{if(config)M.studioPoses[action][direction]=config;delete M.studioPoseMirrors[action][direction]}
-   M.assets.push(...newAssets);syncStatuses();window.StudioWalks?.apply(B.getRuntime().tactics,M);
+   M.assets.push(...newAssets);if(config&&blobs.length)pruneUnpushed(M.studioPoseHistory[hk][0]?.config,M.studioPoseHistory[hk]);syncStatuses();window.StudioWalks?.apply(B.getRuntime().tactics,M);
    if(!dir){for(let [i,item]of blobs.entries()){let a=newAssets[i],url=URL.createObjectURL(item.blob);pending.set(a.id,{blob:item.blob,url,status:'final'});created.push(a.id)}await exportZip('patch',targetClip?.id||(action+'-'+direction))}else await saveManifest();
    dirty=false;B.invalidate();drawUI();savedOk=true;window.StudioUnifiedReview?.committed();message((dir?'บันทึก ':'ส่งแล้ว · ')+action+' '+direction+(mirror?' · ตั้งค่ากลับด้านแล้ว':' · '+(config?.frames.length||0)+' เฟรม'));toast(action+' '+direction+' บันทึกแล้ว');
   }catch(e){for(let k of Object.keys(M))delete M[k];Object.assign(M,before);for(let id of created){URL.revokeObjectURL(pending.get(id).url);pending.delete(id)}window.StudioWalks?.apply(B.getRuntime().tactics,M);message('บันทึกไม่สำเร็จ: '+e.message)}finally{setBusy(false);drawUI()}}
