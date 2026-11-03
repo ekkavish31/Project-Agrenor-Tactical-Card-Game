@@ -6,7 +6,7 @@
  let meta=window.STUDIO_ENEMIES||{},runtime={tactics:typeof TACTICS_SPRITES==='undefined'?null:TACTICS_SPRITES,hero:typeof HERO_ANIMATIONS==='undefined'?null:HERO_ANIMATIONS};
  const nativeCatalog=R.catalog,imageCache=new Map();let motionChannel=null,motionSignature='',motionTicket=0;try{motionChannel=new BroadcastChannel('project-a-hero-motion')}catch{}
  function publishMotion(){
-  if(!motionChannel||!dir||!runtime.tactics)return;const data=HeroMotion.snapshot(runtime.tactics),sig=JSON.stringify(data);if(sig===motionSignature)return;motionSignature=sig;const ticket=++motionTicket;
+  if(!motionChannel||!dir||!runtime.tactics)return;const data=JSON.parse(JSON.stringify(HeroMotion.snapshot(runtime.tactics))),sig=JSON.stringify(data);   /* v98.81 · a COPY: snapshot() shares the walk frame objects with the live sprites, and the loop below rewrites their src into data URLs — that broke the walk row after every open/close of the frame editor */if(sig===motionSignature)return;motionSignature=sig;const ticket=++motionTicket;
   (async()=>{const paths=[...new Set(Object.values(data.directions).flatMap(d=>d.walk.map(f=>f.src)))],resolved=new Map();for(const path of paths){const src=await srcOf(path);if(!src)continue;try{const blob=await (await fetch(src)).blob(),url=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob)});resolved.set(path,url)}catch{resolved.set(path,path)}}if(ticket!==motionTicket)return;for(const d of Object.values(data.directions))for(const f of d.walk)f.src=resolved.get(f.src)||f.src;motionChannel.postMessage({kind:'hero-walk',data})})().catch(()=>{motionSignature=''});
  }
 
