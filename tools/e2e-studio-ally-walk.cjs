@@ -23,5 +23,17 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   assert.equal(await p.evaluate(() => StudioUnifiedReview.isOpen()), false, 'modal must close');
   assert.ok(await p.evaluate(() => RepoDir.count()) > 0, 'files must be staged');
   console.log('ok Kier SW walk saved: 1 ->', c1.n, 'frames');
+  // v98.104 · copy the opposite direction mirrored: SW (12 frames) -> SE (1-frame placeholder) must work and save
+  await p.evaluate(id => StudioUnifiedReview.open(id), c1.id); await p.waitForTimeout(3000);
+  await p.click('#wi-mir-to'); await p.waitForTimeout(3500);
+  assert.equal(await p.evaluate(() => StudioUnifiedReview.current ? StudioUnifiedReview.current().id : document.getElementById('ur-title')?.textContent), await p.evaluate(() => document.getElementById('ur-title')?.textContent), 'sanity');
+  assert.match(await p.evaluate(() => document.getElementById('ur-title').textContent), /SE/, 'editor switched to the SE clip');
+  assert.equal(await p.evaluate(() => StudioWalkImport.getState().frames), 12, 'SE editor now holds the 12 mirrored frames');
+  console.log('title', await p.evaluate(() => [document.getElementById('ur-title').textContent, document.getElementById('ur-status')?.textContent, StudioWalkImport.getClip().id, StudioWalkImport.getClip().frames.length]));
+  console.log('pre-save', await p.evaluate(() => [StudioWalkImport.isAllyWalk(), StudioWalkImport.getClip()?.id, StudioWalkImport.getState().saving, document.getElementById('wi-save').disabled]));
+  await p.click('#wi-save'); await p.waitForTimeout(6000);
+  console.log('msg:', await p.evaluate(() => [document.getElementById('wi-message')?.textContent, document.getElementById('ur-status')?.textContent, JSON.stringify(Object.keys(ASSET_MANIFEST.studioAllyWalks.kier))]));
+  const se = await p.evaluate(() => StudioBrowser.state.model.find(x => x.id === 'ally:kier').clips.filter(c => c.action === 'walk').map(c => c.view + ':' + c.frames.length).join());
+  assert.match(se, /SE:12/, 'SE walk saved with 12 frames: ' + se); console.log('ok mirrored copy to the opposite direction:', se);
   assert.deepEqual(errs, [], errs.join('|')); console.log('ally walk e2e: all cases passed'); await browser.close(); server.close();
 })().catch(e => { console.error('FAIL', e.message); process.exit(1) });
