@@ -32,6 +32,12 @@
    let frames=c.frames.map(f=>{let a=files.get(f.src);return {assetId:a.id,file:f.src,cell:0,crop:null,ms:f.ms||120,flip:!!f.flipImage,pivot:c.anchor||a.anchor||a.pivot||[.5,1],size:c.canvas||a.size||[384,384],renderHeight:a.renderHeight||1,revision:a.artRevision||''}});
    raw.push({id:'clip:'+key,canonical:key,entity:'hero-town',label:'ตัวหลัก',action:key,view:/walk|sword|hammer|unarmed/.test(key)?'E':'FRONT',loop:!!c.loop,kind:'files',frames});
   }}
+  /* v98.102 · an ally's saved walk set (manifest.studioAllyWalks) replaces the one-frame placeholder clip of that direction */
+  for(const[key,views]of Object.entries(manifest.studioAllyWalks||{}))for(const[view,cfg]of Object.entries(views||{})){
+   if(!cfg?.frames?.length)continue;
+   const byAsset=new Map((manifest.assets||[]).map(a=>[a.id,a])),fr=cfg.frames.map(f=>{const a=byAsset.get(f.assetId);return {assetId:f.assetId,file:a?.file||f.src,cell:0,crop:null,ms:f.ms||80,flip:false,pivot:cfg.anchor||[.5,.9375],renderHeight:a?.renderHeight||1,revision:a?.artRevision||'',size:cfg.canvas||[384,384]}});
+   raw.push({id:'allywalk:'+key+':'+view,canonical:'allywalk:'+key+':'+view,action:'walk',view,loop:cfg.loop!==false,kind:'files',frames:fr});   /* the catalog then skips the one-frame placeholder of that direction */
+  }
   const heroIds=new Set(active.filter(a=>C.owner(a,meta).id==='hero').map(a=>a.id));return raw.filter(c=>(!/(?:walk|run)/i.test(c.action)||!c.frames.some(f=>heroIds.has(f.assetId))||c.id.startsWith('runtime:hero:walk:'))&&(!runtime.tactics?._studioCreatedDirections?.has(c.view)||c.action==='walk'));
  }
  /* v98.76 · with the male / female look open, the hero shows only that look: the registered still pictures of the original hero are hidden */
