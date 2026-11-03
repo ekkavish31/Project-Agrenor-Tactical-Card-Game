@@ -14,6 +14,9 @@
  const dirs=['SW','NW','NE','SE','FRONT','TOP','—'];   /* v97.65: characters use the four diagonal views only (S/W/N/E dropped) */
  const pretty=a=>names[a]||a.replace(/^daily\./,'ชีวิตประจำวัน · ').replace(/^sword\./,'ดาบ · ').replace(/^hammer\./,'ค้อน · ').replace(/^unarmed\./,'มือเปล่า · ');
  function clipsFor(manifest){
+  /* v98.88 · self-heal: whether a look's saved idle/walk pictures are 'final' or 'unused' is DERIVED from what the looks use (StudioVariants.syncStatuses). A manifest saved/pushed by an older build can carry stale 'unused' marks —
+     the walk row then vanished until something re-synced it. Re-derive on every build so the rows can never depend on a stored mark. */
+  try{window.StudioVariants?.syncStatuses(manifest)}catch(e){}
   window.StudioWalks?.apply(runtime.tactics,manifest);
   let raw=nativeCatalog(manifest,runtime),active=(manifest.assets||[]).filter(a=>a.status!=='unused'),files=new Map(active.map(a=>[a.file,a]));
   // Runtime sequences preserve repeated ready/recovery frames and their actual timings.
