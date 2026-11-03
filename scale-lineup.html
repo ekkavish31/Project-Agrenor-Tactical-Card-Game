@@ -51,13 +51,16 @@ code{font-size:12px}
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
 let HERO_M = 1.70; const DS = { hero: 1.6, ally: 1.45 };
-const HERO_SRC = 'assets/tactics/imported/idle-sw-mvvj7g9i-q3jb/frame-01.webp';
-const ALLIES = { bram: 'บรัม', luna: 'ลูน่า', kier: 'เคียร์' };
+/* v98.95 · inside Asset Studio (⚖ Scale Lineup tab) this page reads the studio's CURRENT pictures (StudioBrowser.lineup) and follows its Animation selection; alone it falls back to the files */
+const ST = (() => { try { return window.parent !== window && parent.StudioBrowser && parent.StudioBrowser.lineup ? parent.StudioBrowser : null } catch (e) { return null } })();
+const HERO_SRC = 'assets/characters/hero-male/idle-sw.webp';
+const ALLIES = { bram: 'บรัม', luna: 'ลูน่า', kier: 'เคียร์', mil: 'มิล', ren: 'เรน', nadia: 'นาเดีย', sigrid: 'ซิกริด', orla: 'ออร์ลา', olwen: 'โอลเวน' };
+const PICK = {};   // character id → { clip, index }: a frame chosen from the Animation clips (studio only)
 const $ = id => document.getElementById(id);
 const load = src => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src });
-function measure(img) {
+function measure(img, flip) {
   const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h;
-  const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0); const d = g.getImageData(0, 0, w, h).data;
+  const g = c.getContext('2d', { willReadFrequently: true }); if (flip) { g.translate(w, 0); g.scale(-1, 1) } g.drawImage(img, 0, 0); const d = g.getImageData(0, 0, w, h).data;
   let y0 = h, y1 = -1, x0 = w, x1 = -1;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 40) { if (y < y0) y0 = y; if (y > y1) y1 = y; if (x < x0) x0 = x; if (x > x1) x1 = x }
   if (y1 < 0) return null;
@@ -88,6 +91,23 @@ const WORLD = {
 const TABS = [['char', 'ตัวละคร'], ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
 let tab = 'char';
 const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
+const RANK = { hero: 0, ally: 1, monster: 2 };
+/* one picture per character (the standing SW picture, or the frame picked from the Animation clips) — the SAME entry for 'battle' and 'village', so both views always agree */
+async function addChar(id, name, kind, pic, factor) {
+  const url = pic.url || pic.src, img = await load(url); if (!img) return; const m = measure(img, pic.flip); if (!m) return;
+  const C = { img, m, src: url, url, file: pic.file || pic.src, flip: !!pic.flip, label: pic.label || '', units: m.H / 384 * factor, factor, formula: `สูง ÷ 384 × ${factor}` };
+  let e = ENTRIES.find(x => x.id === id); if (!e) ENTRIES.push(e = { id, name, kind, ctx: {} });
+  e.name = name; e.ctx.battle = e.ctx.village = C;
+}
+async function buildChars() {
+  const list = ST ? ST.lineup.entities().map(e => ({ id: e.id === 'hero' ? 'hero' : e.id.replace(/^ally:/, ''), sid: e.id, name: e.name })) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
+  for (const c of list) {
+    const pic = ST ? await ST.lineup.picture(c.sid, 'SW', PICK[c.id]?.clip, PICK[c.id]?.index) : { src: c.id === 'hero' ? HERO_SRC : `assets/village-town/npc/${c.id}/sw-stand.webp` };
+    if (!pic) continue; await addChar(c.id, c.id === 'hero' ? 'ตัวเอก' : (ALLIES[c.id] || c.name), c.id === 'hero' ? 'hero' : 'ally', pic, c.id === 'hero' ? DS.hero : DS.ally);
+  }
+  const have = new Set(list.map(c => c.id)); for (let i = ENTRIES.length - 1; i >= 0; i--) if ((ENTRIES[i].kind === 'hero' || ENTRIES[i].kind === 'ally') && !have.has(ENTRIES[i].id)) ENTRIES.splice(i, 1);
+  ENTRIES.sort((a, b) => (RANK[a.kind] ?? 3) - (RANK[b.kind] ?? 3));
+}
 async function build() {
   const add = async (id, name, kind, ctx, src, factor, formula) => {
     const img = await load(src); if (!img) return; const m = measure(img); if (!m) return;
@@ -99,12 +119,7 @@ async function build() {
     const px = dr.w ? m.H / m.w * dr.w : dr.h ? m.H / m.h * dr.h : m.H, how = dr.w ? `สูง ÷ กว้างภาพ × ${dr.w} px (ความกว้างที่เกมวาด)` : dr.h ? `สูง ÷ สูงภาพ × ${dr.h} px (ความสูงที่เกมวาด)` : 'ขนาดไฟล์จริง (เกมนี้ไม่ได้ตรึงขนาดไว้ · ปรับในโปรแกรมแก้ไขแผนที่)';
     ENTRIES.push({ id: grp + ':' + id, name, kind: grp, group: grp, ref: ref || G.ref, fixed: !!(dr.w || dr.h), ctx: { village: { img, m, src, units: px, px, formula: how } } });
   }
-  await add('hero', 'ตัวเอก', 'hero', 'battle', HERO_SRC, DS.hero, `${'สูง'} ÷ 384 × ${DS.hero}`);
-  await add('hero', 'ตัวเอก', 'hero', 'village', HERO_SRC, DS.hero, `${'สูง'} ÷ 384 × ${DS.hero}`);
-  for (const [c, n] of Object.entries(ALLIES)) {
-    await add(c, n, 'ally', 'battle', `assets/tactics/${c}_sw_idle.webp`, DS.ally, `สูง ÷ 384 × ${DS.ally}`);
-    await add(c, n, 'ally', 'village', `assets/village-town/npc/${c}/sw-stand.webp`, DS.ally, `สูง ÷ 384 × ${DS.ally}`);
-  }
+  await buildChars();
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
     const src = await (await fetch('js/town-battle.js')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
@@ -119,10 +134,10 @@ const isW = e => !!e.group;
 const DRAFT_KEY = 'projectA.scaleAdjustDraft', SAVED = JSON.parse(JSON.stringify(window.CHARACTER_SCALE_ADJUST || { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }));
 let ADJ; try { ADJ = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null') } catch (e) { }
 ADJ = ADJ || JSON.parse(JSON.stringify(SAVED)); ADJ.global = ADJ.global || {}; ADJ.scene = ADJ.scene || {}; for (const k of ['battle', 'village', 'world']) ADJ.scene[k] = ADJ.scene[k] || {};
-const eff = (e, c = ctx) => isW(e) ? 1 : CharScaleAdjust.factor(c, e.id, ADJ), gOf = id => ADJ.global[id] ?? 1, sOf = (c, id) => ADJ.scene[c]?.[id] ?? 1;
+const eff = e => isW(e) ? 1 : CharScaleAdjust.factor('main', e.id, { global: ADJ.global, scene: {} }), gOf = id => ADJ.global[id] ?? 1, sOf = (c, id) => ADJ.scene[c]?.[id] ?? 1;
 const dirty = () => JSON.stringify(clean(ADJ)) !== JSON.stringify(clean(SAVED));
 function clean(a) { const o = { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }; for (const [k, v] of Object.entries(a.global || {})) if (Math.abs(v - 1) > .0005) o.global[k] = +v.toFixed(4); for (const c of ['battle', 'village', 'world']) for (const [k, v] of Object.entries(a.scene?.[c] || {})) if (Math.abs(v - 1) > .0005) o.scene[c][k] = +v.toFixed(4); return o }
-const persistDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(clean(ADJ))) } catch (e) { } };
+const persistDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(clean(ADJ))) } catch (e) { } if (ST) try { parent.dispatchEvent(new CustomEvent('studio-scale-changed')) } catch (e) { } };
 let STEP = .5, ZOOM = 1, ALPHA = 1, SHADOW = false, FOOT = false, GUIDES = false, DIR = 'SW', POSE = 'idle';
 const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / ENTRIES.find(x => x.id === 'hero').ctx[c].units * HERO_M * eff(e, c);
 const heroE = () => ENTRIES.find(e => e.id === 'hero');
@@ -130,17 +145,19 @@ const heroE = () => ENTRIES.find(e => e.id === 'hero');
 const visible = () => { const a = tab === 'char' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx]) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
 const rangeOf = e => { if (!e.fixed) return ['', 'ไม่มีค่าตรึง']; const m = metres(e); return m < e.ref[0] ? ['warn', 'เล็กไป'] : m > e.ref[1] ? ['warn', 'ใหญ่ไป'] : ['ok', 'พอดี'] };
 function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
+/* choosing a character here also selects it in the studio's Animation tab */
+function pickSel(id) { sel = id; if (ST) { const sid = id === 'hero' ? 'hero' : id.startsWith('m:') ? 'enemy:' + id.slice(2) : 'ally:' + id; try { ST.lineup.select(sid) } catch (e) { } } render() }
 function render() {
-  if (tab !== 'char') ctx = 'village';
+  ctx = tab === 'char' ? 'battle' : 'village';
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k}">${t}</button>`).join(' ');
   $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' ? 'hero' : (visible()[1]?.id || 'hero'); render() });
-  $('ctxBtns').style.display = tab === 'char' ? '' : 'none'; $('listTitle').textContent = TABS.find(t => t[0] === tab)[1];
+  $('ctxBtns').style.display = 'none';   /* v98.95 · one set of proportions for every scene; the % per scene is done in each scene later */ $('listTitle').textContent = TABS.find(t => t[0] === tab)[1];
   $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
   $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
   $('bGhost').setAttribute('aria-pressed', ghost); $('bSort').setAttribute('aria-pressed', sorted);
   const V = visible();
-  $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${e.id === sel}"><img alt="" src="${e.ctx[ctx].src}"><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m</small></span>${chip(e)}</button>`).join('');
-  $('list').querySelectorAll('.row').forEach(b => b.onclick = () => { sel = b.dataset.c; render() });
+  $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${e.id === sel}"><img alt="" src="${e.ctx[ctx].url || e.ctx[ctx].src}"${e.ctx[ctx].flip ? ' style="transform:scaleX(-1)"' : ''}><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m</small></span>${chip(e)}</button>`).join('');
+  $('list').querySelectorAll('.row').forEach(b => b.onclick = () => pickSel(b.dataset.c));
   /* stage */
   const st = $('stage'), H = 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))) / ZOOM, ppm = (base - 20) / maxM * ZOOM, bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
   st.style.width = W + 'px'; let h = '';
@@ -150,29 +167,29 @@ function render() {
   const hc = heroE().ctx[ctx];
   V.forEach((e, i) => {
     const c = e.ctx[ctx], cx = xs[i], px = metres(e) * ppm, k = px / c.m.H, w = c.m.w * k, hh = c.m.h * k, left = cx - ((c.m.x0 + c.m.x1) / 2) * k, top = base - (c.m.bottom + 1) * k;
-    if (ghost && e.id !== 'hero') { const gk = HERO_M * ppm / hc.m.H; h += `<img class="ghost" alt="" src="${hc.src}" style="width:${hc.m.w * gk}px;left:${cx - ((hc.m.x0 + hc.m.x1) / 2) * gk}px;top:${base - (hc.m.bottom + 1) * gk}px">` }
-    const src = e.kind === 'ally' && ctx === 'battle' && (DIR !== 'SW' || POSE !== 'idle') ? `assets/tactics/${e.id}_${DIR.toLowerCase()}_${POSE}.webp` : c.src;
+    if (ghost && e.id !== 'hero') { const gk = HERO_M * ppm / hc.m.H; h += `<img class="ghost" alt="" src="${hc.url || hc.src}" style="${hc.flip ? 'transform:scaleX(-1);' : ''}width:${hc.m.w * gk}px;left:${cx - ((hc.m.x0 + hc.m.x1) / 2) * gk}px;top:${base - (hc.m.bottom + 1) * gk}px">` }
+    const src = c.url || c.src, fl = c.flip ? 'transform:scaleX(-1);' : '';
     if (SHADOW) h += `<div style="position:absolute;left:${cx - w * .22}px;top:${base - 5}px;width:${w * .44}px;height:10px;border-radius:50%;background:rgba(0,0,0,.28)"></div>`;
     if (FOOT) h += `<div style="position:absolute;left:${cx}px;top:${base - 18 * ZOOM}px;height:${18 * ZOOM}px;border-left:1px solid #c0392b"></div>`;
-    h += `<img class="ch${e.id === sel ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${src}" style="width:${w}px;height:${hh}px;left:${left}px;top:${top}px;opacity:${e.id === 'hero' ? 1 : ALPHA}">`;
+    h += `<img class="ch${e.id === sel ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${src}" style="${fl}width:${w}px;height:${hh}px;left:${left}px;top:${top}px;opacity:${e.id === 'hero' ? 1 : ALPHA}">`;
     h += `<div class="nm" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m${!isW(e) && Math.abs(eff(e) - 1) > .0005 ? ' · ' + Math.round(eff(e) * 100) + '%' : ''}</i></div>`;
   });
   st.innerHTML = h;
-  st.querySelectorAll('.ch').forEach(i => i.onclick = () => { sel = i.dataset.c; render() });
-  $('note').textContent = tab !== 'char' ? 'ไม้บรรทัดหมู่บ้าน: 1 m = ความสูงตัวเอกในหมู่บ้าน ÷ 1.70 (≈ 55 px) · ช่องพื้น 1 ช่อง ≈ 0.57 m · ตัวเอกยืนเป็นไม้วัดทางซ้าย + เงาเทาซ้อนหลัง · ชิป พอดี/เล็กไป/ใหญ่ไป เทียบกับช่วงเป้าหมายของแต่ละชนิด (แก้ช่วงได้ใน WORLD)' : ctx === 'battle' ? 'สนามรบ: ขนาดบนจอจริงของแต่ละตัว (สูง ÷ สูงภาพ × ขนาดที่เกมวาด) · ตัวเอก = 1.70 m เป็นไม้วัด · เงาเทา = ตัวเอกยืนเทียบ' : 'หมู่บ้าน: ใช้รูปหมู่บ้านของแต่ละตัว · ตอนนี้ใช้ตัวคูณวาดชุดเดียวกับสนามรบ (ค่าประมาณ — เฟส 3 จะต่อกับ cast scale จริงของหมู่บ้าน)';
+  st.querySelectorAll('.ch').forEach(i => i.onclick = () => pickSel(i.dataset.c));
+  $('note').textContent = tab !== 'char' ? 'ไม้บรรทัดหมู่บ้าน: 1 m = ความสูงตัวเอกในหมู่บ้าน ÷ 1.70 (≈ 55 px) · ช่องพื้น 1 ช่อง ≈ 0.57 m · ตัวเอกยืนเป็นไม้วัดทางซ้าย + เงาเทาซ้อนหลัง · ชิป พอดี/เล็กไป/ใหญ่ไป เทียบกับช่วงเป้าหมายของแต่ละชนิด (แก้ช่วงได้ใน WORLD)' : 'เทียบกันเอง: ตัวเอก = 1.70 m เป็นไม้วัด · ภาพมาจากเฟรมปัจจุบันของแท็บ Animation (ท่ายืน SW หรือเฟรมที่เลือก) · ทุกฉากใช้สัดส่วนชุดเดียวกัน · การเทียบ % ต่อฉากทำแยกในแต่ละฉากภายหลัง';
   inspect(); controls();
 }
 function inspect() {
   const e = ENTRIES.find(x => x.id === sel), c = e.ctx[ctx];
   if (isW(e)) { const row = (k, v) => `<dt>${k}</dt><dd>${v}</dd>`, mh = metres(e), mw = (c.m.x1 - c.m.x0 + 1) * mh / c.m.H, [k, t] = rangeOf(e);
-    $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${WORLD[e.group].name}</span><dl>${row('สูงบนจอ', `${mh.toFixed(2)} m · ${Math.round(c.px)} px`)}${row('กว้าง', mw.toFixed(2) + ' m')}${row('เทียบตัวเอก', (mh / HERO_M).toFixed(1) + ' เท่า')}${row('ช่วงเป้าหมาย', `${e.ref[0]}–${e.ref[1]} m <span class="chip ${k}">${t}</span>`)}${row('ที่มาขนาด', e.fixed ? 'ค่าที่โค้ดเกมวาดจริง' : 'ประมาณ (ไม่มีค่าตรึง)')}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.src}</code>`)}</dl><p class="hint">เฟส 1 ดูอย่างเดียว · ชิ้นที่ไม่พอดีให้ไปปรับสเกลในโปรแกรมแก้ไขแผนที่ (เฟส 2 จะลากปรับที่นี่ได้)</p>`; return }
+    $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${WORLD[e.group].name}</span><dl>${row('สูงบนจอ', `${mh.toFixed(2)} m · ${Math.round(c.px)} px`)}${row('กว้าง', mw.toFixed(2) + ' m')}${row('เทียบตัวเอก', (mh / HERO_M).toFixed(1) + ' เท่า')}${row('ช่วงเป้าหมาย', `${e.ref[0]}–${e.ref[1]} m <span class="chip ${k}">${t}</span>`)}${row('ที่มาขนาด', e.fixed ? 'ค่าที่โค้ดเกมวาดจริง' : 'ประมาณ (ไม่มีค่าตรึง)')}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.file || c.src}</code>`)}</dl><p class="hint">เฟส 1 ดูอย่างเดียว · ชิ้นที่ไม่พอดีให้ไปปรับสเกลในโปรแกรมแก้ไขแผนที่ (เฟส 2 จะลากปรับที่นี่ได้)</p>`; return }
   const other = ctx === 'battle' ? 'village' : 'battle', o = e.ctx[other];
   const row = (k, v) => `<dt>${k}</dt><dd>${v}</dd>`;
   let cross = '';
-  if (o) { const a = metres(e), b = metres(e, other), d = a / b - 1; cross = row('ข้ามบริบท', `สนามรบ ${metres(e, 'battle').toFixed(2)} m · หมู่บ้าน ${metres(e, 'village').toFixed(2)} m <span class="chip ${Math.abs(d) < .06 ? 'ok' : Math.abs(d) < .12 ? 'warn' : 'bad'}">${d >= 0 ? '+' : ''}${Math.round(d * 100)}%</span>`) }
+  if (false) { const a = metres(e), b = metres(e, other), d = a / b - 1; cross = row('ข้ามบริบท', `สนามรบ ${metres(e, 'battle').toFixed(2)} m · หมู่บ้าน ${metres(e, 'village').toFixed(2)} m <span class="chip ${Math.abs(d) < .06 ? 'ok' : Math.abs(d) < .12 ? 'warn' : 'bad'}">${d >= 0 ? '+' : ''}${Math.round(d * 100)}%</span>`) }
   $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${e.kind}</span><dl>
    ${row('ความสูงบนจอ', `${metres(e).toFixed(2)} m · ${c.units.toFixed(2)} UNIT`)}${row('เทียบตัวเอก', Math.round(metres(e) / HERO_M * 100) + '%')}${cross}
-   ${row('เงาในภาพ', `สูง ${c.m.H} px · หัว ${c.m.headW} px · ภาพ ${c.m.w}×${c.m.h}`)}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.src}</code>`)}</dl>
+   ${row('เงาในภาพ', `สูง ${c.m.H} px · หัว ${c.m.headW} px · ภาพ ${c.m.w}×${c.m.h}`)}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.file || c.src}</code>`)}</dl>
   <p class="hint">ปรับขนาดที่แผง ⚖ ด้านล่าง</p>`;
 }
 function viewCtl() {
@@ -184,7 +201,7 @@ function viewCtl() {
   $$('vAlpha').oninput = e => { ALPHA = +e.target.value / 100; render() }; $$('vHero').onchange = e => { HERO_M = Math.min(2.5, Math.max(1, +e.target.value || 1.7)); render() };
   $$('vShadow').onclick = () => { SHADOW = !SHADOW; render() }; $$('vFoot').onclick = () => { FOOT = !FOOT; render() }; $$('vGuides').onclick = () => { GUIDES = !GUIDES; render() };
 }
-const GROUPS = [['one', 'เฉพาะตัวนี้'], ['ally', 'เพื่อนทั้งหมด (บรัม ลูน่า เคียร์)'], ['monster', 'มอนสเตอร์ทั้งหมด'], ['all', 'ทุกตัวยกเว้นตัวเอก']];
+const GROUPS = [['one', 'เฉพาะตัวนี้'], ['ally', 'เพื่อนทั้งหมด'], ['monster', 'มอนสเตอร์ทั้งหมด'], ['all', 'ทุกตัวยกเว้นตัวเอก']];
 let SCOPE = 'one';
 const inScope = e => SCOPE === 'one' ? e.id === sel : SCOPE === 'ally' ? e.kind === 'ally' : SCOPE === 'monster' ? e.kind === 'monster' : e.kind !== 'hero';
 function bump(field, delta) {   /* field: 'g' or a scene name; delta = percentage points added (multiplicative on the factor) */
@@ -199,18 +216,24 @@ function controls() {
   if (tab !== 'char' || !e || isW(e)) { box.innerHTML = '<p class="hint">ตัวปรับขนาดใช้กับแท็บ "ตัวละคร"</p>'; return }
   const pct = v => Math.round(v * 100), row = (label, field, note) => `<div class="adj"><span>${label}</span><button data-b="${field}:-5">−5</button><button data-b="${field}:-1">−1</button><input type="number" min="40" max="200" value="${pct(field === 'g' ? gOf(e.id) : sOf(field, e.id))}" data-f="${field}"><button data-b="${field}:1">+1</button><button data-b="${field}:5">+5</button>${note ? `<small>${note}</small>` : ''}</div>`;
   const dim = e.id === 'hero' ? 'ตัวเอกคือไม้วัด: ปรับแล้วตัวอื่นเทียบตามความสูงเดิม' : '';
-  const dirs = e.kind === 'ally' && ctx === 'battle' ? `<div class="adj"><span>ดูท่า/ทิศ</span><select id="cDir">${['SW', 'SE', 'NE', 'NW'].map(d => `<option${d === DIR ? ' selected' : ''}>${d}</option>`).join('')}</select><select id="cPose">${['idle', 'windup', 'strike', 'guard', 'hit', 'down'].map(d => `<option${d === POSE ? ' selected' : ''}>${d}</option>`).join('')}</select><small>ทุกท่าใช้ตัวคูณเดียวกันของตัวนี้</small></div>` : '';
+  /* studio only: compare ANY frame of this character from the Animation clips */
+  const pickerHtml = () => { if (!ST || !(e.kind === 'hero' || e.kind === 'ally')) return ''; const sid = e.id === 'hero' ? 'hero' : 'ally:' + e.id, en = ST.lineup.entities().find(x => x.id === sid); if (!en) return '';
+    const p = PICK[e.id] || {}, clips = en.clips.filter(c => ['SW', 'SE', 'NW', 'NE'].includes(c.view)), cur = clips.find(c => c.id === p.clip), c0 = e.ctx[ctx];
+    return `<div class="adj"><span>เฟรมที่เทียบ</span><select id="cClip"><option value="">ท่ายืนมาตรฐาน (SW)</option>${clips.map(c => `<option value="${c.id}"${c.id === p.clip ? ' selected' : ''}>${c.action} · ${c.view} (${c.n} เฟรม)</option>`).join('')}</select>${cur && cur.n > 1 ? `<input id="cFrame" type="range" min="0" max="${cur.n - 1}" value="${p.index || 0}" style="width:100%">` : ''}<small>${c0.label || ''}</small></div>` };
+  const dirs = pickerHtml();
   box.innerHTML = `<hr><b>⚖ ปรับขนาด · ${e.name}</b>
    <div class="adj"><span>ขอบเขต</span><select id="cScope">${GROUPS.map(([v, t]) => `<option value="${v}"${v === SCOPE ? ' selected' : ''}>${t}</option>`).join('')}</select></div>
-   ${row('ทุกฉาก %', 'g', 'ใช้ทุกฉากพร้อมกัน (สัดส่วนระหว่างตัวละคร)')}${row('สนามรบ %', 'battle', '')}${row('หมู่บ้าน %', 'village', '')}${row('แผนที่ผจญภัย %', 'world', 'เตรียมไว้ · ยังไม่ผูกกับแผนที่')}
+   ${row('ขนาด %', 'g', 'สัดส่วนเทียบตัวอื่น · ชุดเดียวทุกฉาก')}
    ${dirs}${dim ? `<p class="hint">${dim}</p>` : ''}
-   <p class="hint">ขนาดสุดท้ายในฉาก = ทุกฉาก % × ฉากนั้น % · ใช้กับ <b>ทุกเฟรม</b> ของตัวนี้ (ยืน เดิน ฟาด ตั้งรับ ล้ม ทุกทิศ) ตัวคูณเดียว</p>
+   <p class="hint">ขนาดนี้ใช้กับ <b>ทุกเฟรม</b> ของตัวนี้ (ยืน เดิน ฟาด ตั้งรับ ล้ม ทุกทิศ) ตัวคูณเดียว · การเทียบ % ต่อฉากทำแยกในแต่ละฉากภายหลัง</p>
    <div class="adj"><button id="cReset">รีเซ็ตตัวนี้</button><button id="cRevert"${dirty() ? '' : ' disabled'}>ย้อนกลับที่บันทึกไว้</button><button id="cSave" class="primary"${dirty() ? '' : ' disabled'}>บันทึกเข้าเกม</button></div><p class="hint" id="cMsg">${dirty() ? '● ยังไม่ได้บันทึก (ร่างเก็บในเบราว์เซอร์นี้)' : 'ตรงกับที่บันทึกในเกมแล้ว'}</p>`;
   const $$ = id => document.getElementById(id);
   $$('cScope').onchange = ev => { SCOPE = ev.target.value; controls() };
   box.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { const [f, d] = b.dataset.b.split(':'); bump(f, +d) });
   box.querySelectorAll('input[data-f]').forEach(inp => inp.onchange = () => { const f = inp.dataset.f, cur = f === 'g' ? gOf(e.id) : sOf(f, e.id); bump(f, Math.round(+inp.value || 100) - Math.round(cur * 100)) });
-  if ($$('cDir')) { $$('cDir').onchange = ev => { DIR = ev.target.value; render() }; $$('cPose').onchange = ev => { POSE = ev.target.value; render() } }
+  const again = async () => { await buildChars(); render() };
+  if ($$('cClip')) $$('cClip').onchange = ev => { if (ev.target.value) PICK[e.id] = { clip: ev.target.value, index: 0 }; else delete PICK[e.id]; again() };
+  if ($$('cFrame')) $$('cFrame').oninput = ev => { PICK[e.id].index = +ev.target.value; clearTimeout($$('cFrame')._t); $$('cFrame')._t = setTimeout(again, 120) };
   $$('cReset').onclick = () => { for (const x of ENTRIES.filter(q => !isW(q) && inScope(q))) { delete ADJ.global[x.id]; for (const c of ['battle', 'village', 'world']) delete ADJ.scene[c][x.id] } persistDraft(); render() };
   $$('cRevert').onclick = () => { ADJ = JSON.parse(JSON.stringify(SAVED)); persistDraft(); render() };
   $$('cSave').onclick = saveToRepo;
@@ -225,5 +248,13 @@ async function saveToRepo() {
 }
 $('bGhost').onclick = () => { ghost = !ghost; render() }; $('bSort').onclick = () => { sorted = !sorted; render() };
 let ready = false; addEventListener('resize', () => ready && render());
-build().then(() => { ready = true; viewCtl(); render() });
+function wireStudio() {   /* inside Asset Studio: follow the Animation tab */
+  if (!ST) return; let timer = 0;
+  const refresh = () => { clearTimeout(timer); timer = setTimeout(async () => { if (!ready) return; await buildChars(); render() }, 350) };
+  const toId = id => id === 'hero' ? 'hero' : id.startsWith('ally:') ? id.slice(5) : id.startsWith('enemy:') ? 'm:' + id.slice(6) : id;
+  const onSel = ev => { const id = toId(ev.detail && ev.detail.id || ''); if (id !== sel && ENTRIES.some(x => x.id === id)) { sel = id; render() } };
+  parent.addEventListener('studio-frames-changed', refresh); parent.addEventListener('studio-select', onSel);
+  addEventListener('pagehide', () => { parent.removeEventListener('studio-frames-changed', refresh); parent.removeEventListener('studio-select', onSel) });
+}
+build().then(() => { ready = true; viewCtl(); render(); wireStudio() });
 </script></body></html>

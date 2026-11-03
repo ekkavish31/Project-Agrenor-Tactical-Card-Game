@@ -96,7 +96,7 @@
   $('cats').querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>gotoGroup(b.dataset.sub));
   $('entitySearch').oninput=e=>{let caret=e.target.selectionStart;state.entityQuery=e.target.value;renderNav();$('entitySearch').focus();$('entitySearch').setSelectionRange(caret,caret)};
   fillBusts();
-  $('cats').querySelectorAll('[data-entity]').forEach(b=>b.onclick=()=>{state.entity=b.dataset.entity;sel=null;selected=null;document.body.classList.remove('detail-open');render();$('gridWrap').scrollTop=0});hydrate($('cats'));
+  $('cats').querySelectorAll('[data-entity]').forEach(b=>b.onclick=()=>{state.entity=b.dataset.entity;emit('studio-select',{id:b.dataset.entity});sel=null;selected=null;document.body.classList.remove('detail-open');render();$('gridWrap').scrollTop=0});hydrate($('cats'));
  }
  /* v98.76 · hero looks (ตัวเดิม / ชาย / หญิง): the open look's edits sit at the top level of the manifest, see js/studio-variants.js */
  let pristine=null;
@@ -109,7 +109,10 @@
  function setLook(id){const V=window.StudioVariants;if(!V||id===V.active)return;
   if(hasWork()&&!confirm('มีเฟรมที่ยังรอใช้อยู่ ถ้าเปลี่ยนรูปลักษณ์ตอนนี้ งานที่ค้างอาจปนกับตัวใหม่ · เปลี่ยนต่อไหม?'))return;
   if(!enterLook(id))return;
-  rebuild();render();try{detail()}catch(e){}toast('กำลังแก้: '+V.LOOKS.find(l=>l[0]===id)[1])}
+  rebuild();render();try{detail()}catch(e){}emit('studio-frames-changed');toast('กำลังแก้: '+V.LOOKS.find(l=>l[0]===id)[1])}
+ /* v98.95 · the size factor set in the ⚖ Scale Lineup tab (draft kept in this browser, else the saved one) */
+ function sizeBadge(e){try{const key=e.id==='hero'?'hero':e.id.startsWith('ally:')?e.id.slice(5):null;if(!key)return '';let d=null;try{d=JSON.parse(localStorage.getItem('projectA.scaleAdjustDraft')||'null')}catch(x){}
+  const g=window.CharScaleAdjust?window.CharScaleAdjust.factor('main',key,d||window.CHARACTER_SCALE_ADJUST):1;return Math.abs(g-1)>.0005?` <small class="entity-tag" title="ตั้งไว้ในแท็บ ⚖ Scale Lineup">ขนาดในเกม ${Math.round(g*100)}%</small>`:''}catch(x){return ''}}
  function lookBar(e){const V=window.StudioVariants,box=$('filters');if(!V||e?.id!=='hero')return;
   box.innerHTML='<div class="look-bar" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0"><b style="font-size:12px">รูปลักษณ์ตัวเอก</b>'+V.LOOKS.map(([id,name])=>`<button data-look="${id}" class="${V.active===id?'on':''}" style="padding:4px 10px;border-radius:14px;border:1px solid #b9a56a;background:${V.active===id?'#e8c766':'#fff8e4'};cursor:pointer">${name}</button>`).join('')+'<small style="color:#6b7963;flex-basis:100%">แต่ละแบบเก็บชุดเดิน/ท่าแยกกัน · ชาย/หญิงคือตัวที่ใช้อยู่ในเกมตอนนี้</small></div>';
   box.querySelectorAll('[data-look]').forEach(b=>b.onclick=()=>setLook(b.dataset.look))}
@@ -124,7 +127,7 @@
   if(e.group==='characters'){const std=['idle','walk','windup','strike','guard','hit','down'];for(const a of std)if(!actions.includes(a))actions.push(a);actions.sort((a,b)=>{const r=x=>actionOrder.includes(x)?actionOrder.indexOf(x):x.startsWith('daily.')?40:/review/.test(x)?100:30;return r(a)-r(b)||a.localeCompare(b)})}
   function allPassed(action){let required=M.studioRequiredDirections?.[e.id]?.[action]||(e.group==='objects'?[...new Set(e.clips.filter(c=>c.action===action).map(c=>c.view))]:dirs.slice(0,4));return required.length>0&&required.every(view=>{let sets=e.clips.filter(c=>c.action===action&&c.view===view);return sets.length>0&&sets.every(c=>!missing(c)&&reviewStatus(c)==='approved')})}let cells=[],matrix=actions.length?`<div class="matrix-wrap"><table class="anim-matrix"><thead><tr><th>ท่า / ทิศ</th>${views.map(d=>`<th>${esc(d==='FRONT'?'หน้าตรง':d==='TOP'?'มุมบน':d)}</th>`).join('')}</tr></thead><tbody>${actions.map(action=>`<tr class="${allPassed(action)?'set-approved':''}"><th>${esc(pretty(action))}${allPassed(action)?'<small class="set-approved-label">ผ่านครบทุกทิศ</small>':''}</th>${views.map(view=>{let cc=matrixClips.filter(c=>c.action===action&&c.view===view);return `<td>${cc.length?cc.map(c=>{let n=cells.push(c)-1,status=reviewStatus(c),fps=1000*c.frames.length/R.duration(c),mirrored=c.frames.some(f=>f.flip);return `<button class="clip-cell ${status==='approved'&&!missing(c)?'approved':''}" data-clip-index="${n}" title="เปิดตรวจ ${esc(c.action+' '+c.view)}"><canvas width="224" height="214"></canvas><small>${c.frames.length} เฟรม · ${fps.toFixed(1)} FPS${mirrored?' · กลับภาพ':''}</small><span class="clip-status ${status==='needsfix'?'bad':status==='approved'?'good':''}">${c.frames.every(f=>['missing','planned'].includes(byId(f.assetId)?.status))?'ยังไม่มีภาพ · เติมได้':missing(c)?'ไฟล์ขาด':status==='approved'?'ผ่าน':status==='needsfix'?'ต้องแก้':'รอตรวจ'}</span></button>`}).join(''):'<span class="missing-cell">ยังไม่มี · เติมทีหลังได้</span>'}</td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="entity-empty">มีเฉพาะภาพนิ่ง ยังไม่มีชุดแอนิเมชัน</div>';
   let aa=e.assets.filter(a=>!query||(a.id+' '+a.file+' '+a.subject).toLowerCase().includes(query));
-  $('grid').innerHTML=`<div class="entity-title"><div><span class="entity-tag">${esc(C.groups[e.group])}</span><h2>${esc(e.name)}</h2><p>${e.assets.length} ไฟล์ · ${e.clips.filter(c=>c.kind!=='static').length} ชุดท่า · กดช่องเพื่อดูเฟรมทั้งหมด</p></div><div class="row"><button id="auditAssets">ตรวจไฟล์ขาด</button></div></div><div class="entity-controls"><button id="matrixPlay">${state.playing?'หยุดพรีวิว':'เล่นพรีวิว'}</button><button id="matrixReset">เริ่มพร้อมกัน</button><button id="scaleCheck" title="วัดความกว้างหัวของทุกท่า เทียบมาตรฐานของตัวละคร">⚖ ตรวจสเกล</button><span class="grp-scale" title="ย่อ/ขยายตัวภาพทุกท่าทุกทิศ รอบจุดยืน · บันทึกทีละชุดแบบปกติ (กู้ชุดก่อนหน้าได้)">สเกลกลุ่ม <select id="gsWho"><option value="one">ตัวนี้ทั้งตัว</option><option value="all">ทุกตัวในหมวดนี้</option></select><button data-gs="-5">−5</button><button data-gs="-1">−1</button><b id="gsVal">0%</b><button data-gs="1">+1</button><button data-gs="5">+5</button><button id="gsApply" disabled>ใช้</button></span><label>ความเร็ว <select id="matrixSpeed">${[.25,.5,.75,1,1.5,2].map(v=>`<option ${state.speed===v?'selected':''} value="${v}">${v}×</option>`).join('')}</select></label><span class="muted">ทุกช่องใช้เวลาเดียวกัน · เลื่อนตารางเพื่อดูทิศอื่น</span></div>${matrix}<h3 class="section-title">ภาพและไฟล์ของ ${esc(e.name)}</h3><p class="inventory-note">ภาพประกอบ ชีท และเฟรมต้นฉบับ · กดเพื่อเปลี่ยนภาพหรือดูประวัติ</p><div class="asset-cards">${aa.map(a=>`<div class="tile" data-id="${esc(a.id)}" tabindex="0" role="button">${thumbOf(a)}<b>${esc(a.id)}</b><small>${esc(a.file)}</small><span class="badge s-${a.status}">${esc(SHORT[a.status]||a.status)}</span></div>`).join('')}</div>`;
+  $('grid').innerHTML=`<div class="entity-title"><div><span class="entity-tag">${esc(C.groups[e.group])}</span><h2>${esc(e.name)}${sizeBadge(e)}</h2><p>${e.assets.length} ไฟล์ · ${e.clips.filter(c=>c.kind!=='static').length} ชุดท่า · กดช่องเพื่อดูเฟรมทั้งหมด</p></div><div class="row"><button id="auditAssets">ตรวจไฟล์ขาด</button></div></div><div class="entity-controls"><button id="matrixPlay">${state.playing?'หยุดพรีวิว':'เล่นพรีวิว'}</button><button id="matrixReset">เริ่มพร้อมกัน</button><button id="scaleCheck" title="วัดความกว้างหัวของทุกท่า เทียบมาตรฐานของตัวละคร">⚖ ตรวจสเกล</button><span class="grp-scale" title="ย่อ/ขยายตัวภาพทุกท่าทุกทิศ รอบจุดยืน · บันทึกทีละชุดแบบปกติ (กู้ชุดก่อนหน้าได้)">สเกลกลุ่ม <select id="gsWho"><option value="one">ตัวนี้ทั้งตัว</option><option value="all">ทุกตัวในหมวดนี้</option></select><button data-gs="-5">−5</button><button data-gs="-1">−1</button><b id="gsVal">0%</b><button data-gs="1">+1</button><button data-gs="5">+5</button><button id="gsApply" disabled>ใช้</button></span><label>ความเร็ว <select id="matrixSpeed">${[.25,.5,.75,1,1.5,2].map(v=>`<option ${state.speed===v?'selected':''} value="${v}">${v}×</option>`).join('')}</select></label><span class="muted">ทุกช่องใช้เวลาเดียวกัน · เลื่อนตารางเพื่อดูทิศอื่น</span></div>${matrix}<h3 class="section-title">ภาพและไฟล์ของ ${esc(e.name)}</h3><p class="inventory-note">ภาพประกอบ ชีท และเฟรมต้นฉบับ · กดเพื่อเปลี่ยนภาพหรือดูประวัติ</p><div class="asset-cards">${aa.map(a=>`<div class="tile" data-id="${esc(a.id)}" tabindex="0" role="button">${thumbOf(a)}<b>${esc(a.id)}</b><small>${esc(a.file)}</small><span class="badge s-${a.status}">${esc(SHORT[a.status]||a.status)}</span></div>`).join('')}</div>`;
   $('grid').querySelectorAll('[data-clip-index]').forEach(b=>{let c=cells[+b.dataset.clipIndex],canvas=b.querySelector('canvas');state.entries.push({clip:c,canvas,images:null,frame:-1});previewObserver.observe(canvas);b.onclick=()=>window.AssetAnimationReview.open(c.id)});
   $('grid').querySelectorAll('.tile[data-id]').forEach(b=>{b.onclick=()=>openSlot(b.dataset.id);b.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();b.click()}}});
   $('matrixPlay').onclick=()=>{if(state.playing){state.pausedAt=(performance.now()-state.epoch)*state.speed;state.playing=false}else{state.epoch=performance.now()-(state.pausedAt||0)/state.speed;state.playing=true}$('matrixPlay').textContent=state.playing?'หยุดพรีวิว':'เล่นพรีวิว'};
@@ -179,7 +182,7 @@
    clearCaches();dir=h;savedHandle=h;scanned=paths;manifestJsonPath=info.json;manifestJsPath=info.js;for(let k of Object.keys(M))delete M[k];Object.assign(M,info.m);runtime={hero,tactics};meta=nextMeta;window.StudioVariants?.reset();pristine=tactics?JSON.parse(JSON.stringify(tactics)):null;
    sel=null;selected=null;source=null;result=null;CS=null;sessionStorage.removeItem('asset-batch-sel');for(let id of ['selNone'])$(id)?.click();
    // Keep unregistered image files accessible, without adding them to the game manifest.
-   await idbSet('dir',h);resetClock();render();detail();toast('เชื่อม '+h.name+' แล้ว · '+paths.size+' ภาพ');
+   await idbSet('dir',h);resetClock();render();detail();emit('studio-frames-changed');toast('เชื่อม '+h.name+' แล้ว · '+paths.size+' ภาพ');
   }catch(e){if(e.name!=='AbortError'){console.error(e);toast('เชื่อมไม่ได้: '+e.message)}}finally{state.busy=false;connButton()}
  };
  connButton=function(){let b=$('conn');b.textContent=state.busy?'กำลังโหลด…':dir?'📦 GitHub':'📦 กำลังเชื่อม…';b.className=dir?'ok':'';b.disabled=state.busy;$('changeFolder').disabled=state.busy;$('rescan').disabled=state.busy||!dir;$('folderName').textContent='ไฟล์จาก GitHub · งานที่แก้เก็บในเบราว์เซอร์นี้จนกด Push';b.title='ไฟล์ปัจจุบันจาก GitHub · การเปลี่ยนภาพถูกเก็บไว้ก่อน แล้วกด Push เพื่อส่งขึ้น';};
@@ -233,7 +236,29 @@
   $('looseQ').oninput=ev=>{const c=ev.target.selectionStart;state.looseQ=ev.target.value;renderEntity();$('looseQ').focus();$('looseQ').setSelectionRange(c,c)};hydrate($('grid'))};
  // Refresh matrix review badges when the reviewer closes.
  $('animation-review')?.addEventListener('close',()=>{imageCache.clear();render()});
- window.StudioBrowser={loadImage:im,state,location:a=>{let o=C.owner(a,meta);return C.groups[o.group]+' › '+o.name},connect,getRuntime:()=>runtime,getMetadata:()=>meta,readManifest,rebuild,hasWork,invalidate:()=>{imageCache.clear();bust=Date.now();resetClock();render();publishMotion()}};
+ /* v98.95 · ⚖ Scale Lineup bridge. The lineup page (a frame of this page) reads the CURRENT pictures — look edits, unpushed frames, group-scale results — and follows the Animation selection. */
+ const emit=(name,detail)=>{try{window.dispatchEvent(new CustomEvent(name,{detail}))}catch(e){}};
+ /* the standing picture facing `view` (SW | SE) of a character: [file, mirrored] candidates, best first (same sources as the bust thumbnails) */
+ function standingOf(id,view){
+  const opp=view==='SW'?'SE':'SW';
+  if(id==='hero'){const D=runtime.tactics?.directions||{},a=D[view]?.idle,b=D[opp]?.idle,o=[];if(a?.src)o.push([a.src,!!a.flipImage]);if(b?.src)o.push([b.src,!b.flipImage]);return o}
+  const k=id.replace(/^ally:/,''),v=view.toLowerCase(),w=opp.toLowerCase();
+  return [[`assets/village-town/npc/${k}/${v}-stand.webp`,false],[`assets/village-town/npc/${k}/${w}-stand.webp`,true],[`assets/tactics/${k}_${v}_idle.webp`,false],[`assets/tactics/${k}_${w}_idle.webp`,true]];
+ }
+ const lineup={
+  /* the characters of the Animation tab (same list): id, name, and the clips that have frames */
+  entities(){return state.model.filter(e=>e.group==='characters').map(e=>({id:e.id,name:e.name,clips:e.clips.filter(c=>c.frames?.length).map(c=>({id:c.id,action:c.action,view:c.view,n:c.frames.length}))}))},
+  /* a picture of that character: a chosen clip frame, or the standing picture. → {url,file,flip,label} or null */
+  async picture(id,view,clipId,index){
+   const e=state.model.find(x=>x.id===id);if(!e)return null;
+   if(clipId){const c=e.clips.find(x=>x.id===clipId),f=c?.frames?.[Math.max(0,Math.min(c.frames.length-1,index|0))];if(f){const img=await im(f.file);if(img)return {url:img.src,file:f.file,flip:!!f.flip,label:`${c.action} · ${c.view} · เฟรม ${(index|0)+1}/${c.frames.length}`}}}
+   for(const [file,flip] of standingOf(id,view||'SW')){if(dir&&scanned&&!hasFile(file))continue;const img=await im(file);if(img)return {url:img.src,file,flip,label:'ท่ายืน '+(view||'SW')}}
+   return null;
+  },
+  /* the lineup selected a character → show it in the Animation tab */
+  select(id){const e=state.model.find(x=>x.id===id);if(!e||state.entity===id)return;state.group=e.group;state.entity=id;try{render()}catch(x){}}
+ };
+ window.StudioBrowser={loadImage:im,state,location:a=>{let o=C.owner(a,meta);return C.groups[o.group]+' › '+o.name},connect,getRuntime:()=>runtime,getMetadata:()=>meta,readManifest,rebuild,hasWork,invalidate:()=>{imageCache.clear();bust=Date.now();resetClock();render();publishMotion();emit('studio-frames-changed')},lineup,rerender:()=>render()};
  render();detail();requestAnimationFrame(tick);
  (async()=>{try{await connect(null)}catch(e){console.error(e)}})();
 })();
