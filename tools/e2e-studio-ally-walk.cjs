@@ -25,10 +25,17 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   console.log('ok Bram NW walk saved: 1 ->', c1.n, 'frames');
   // v98.104 · copy the opposite direction mirrored: NW (12 frames) -> NE (1-frame placeholder) must work and save
   await p.evaluate(id => StudioUnifiedReview.open(id), c1.id); await p.waitForTimeout(3000);
+  // per-frame values must travel with the mirrored copy: time, X shift (mirrored), Y shift, size %
+  await p.evaluate(() => { const set = (sel, i, v) => { const el = document.querySelectorAll(sel)[i]; el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })) }; set('[data-time]', 0, 137); set('[data-x]', 0, 12); set('[data-y]', 0, -7); set('[data-size]', 0, 90); set('[data-time]', 3, 55); set('[data-x]', 3, -9) });
+  await p.waitForTimeout(500);
+  const before = await p.evaluate(() => StudioWalkImport.getFrames().map(f => [f.ms, f.dx, f.dy, Math.round((f.scale || 1) * 100)]));
+  assert.deepEqual(before[0], [137, 12, -7, 90], 'source values were set: ' + JSON.stringify(before[0]));
   await p.click('#wi-mir-to'); await p.waitForTimeout(3500);
   assert.equal(await p.evaluate(() => StudioUnifiedReview.current ? StudioUnifiedReview.current().id : document.getElementById('ur-title')?.textContent), await p.evaluate(() => document.getElementById('ur-title')?.textContent), 'sanity');
   assert.match(await p.evaluate(() => document.getElementById('ur-title').textContent), /NE/, 'editor switched to the NE clip');
   assert.equal(await p.evaluate(() => StudioWalkImport.getState().frames), 12, 'NE editor now holds the 12 mirrored frames');
+  const after = await p.evaluate(() => StudioWalkImport.getFrames().map(f => [f.ms, f.dx, f.dy, Math.round((f.scale || 1) * 100)]));
+  assert.deepEqual(after[0], [137, -12, -7, 90], 'frame 1: time kept, X mirrored, Y + size kept: ' + JSON.stringify(after[0])); assert.deepEqual(after[3], [55, 9, 0, 100], 'frame 4: ' + JSON.stringify(after[3])); console.log('ok per-frame values copied with the mirror', JSON.stringify(after[0]), JSON.stringify(after[3]));
   console.log('title', await p.evaluate(() => [document.getElementById('ur-title').textContent, document.getElementById('ur-status')?.textContent, StudioWalkImport.getClip().id, StudioWalkImport.getClip().frames.length]));
   console.log('pre-save', await p.evaluate(() => [StudioWalkImport.isAllyWalk(), StudioWalkImport.getClip()?.id, StudioWalkImport.getState().saving, document.getElementById('wi-save').disabled]));
   await p.click('#wi-save'); await p.waitForTimeout(6000);

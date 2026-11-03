@@ -290,14 +290,24 @@
   el('ghost-src').onchange=()=>ghostRefresh();el('dir').addEventListener('change',()=>ghostInit());
   el('al-center').onclick=()=>{if(!anchor)return;let ax=el('al-x').checked,ay=el('al-y').checked;if(!ax&&!ay){message('เลือกแนวนอนหรือแนวตั้งอย่างน้อยหนึ่งแบบ');return}let ff=frames();if(!ff.length)return;keepUndo();let dx=ax?192-Math.round(anchor.x):0,dy=ay?192-Math.round(anchor.y):0,n=0;for(let f of ff){let nx=clampN(f.dx+dx),ny=clampN(f.dy+dy);if(nx!==f.dx||ny!==f.dy){f.dx=nx;f.dy=ny;n++}outputCache.delete(f.key)}anchor.x+=dx;anchor.y+=dy;finishAlign(n,'ย้ายจุดที่เลือกไปกึ่งกลางผืนแล้ว (ย้ายทั้งชุด '+dx+', '+dy+' px)')};
  })();
- window.StudioWalkImport={_output:()=>frames().map(output),open,mount,loadCurrent,save:opts=>save(opts),setScale(v){el('scale').value=v;el('scale').dispatchEvent(new Event('input'));outputCache.clear();drawUI()},clipped:()=>checkClipping(),getClip:()=>targetClip,getFrames:()=>frames().map(f=>({key:f.key,ms:f.ms,canvas:output(f)})),setLoop(v){looping=v;},setTarget(c){targetClip=copy(c);el('dir').value=c.view},isAllyWalk:()=>!!allyWalk(),
+ window.StudioWalkImport={_output:()=>frames().map(output),open,mount,loadCurrent,save:opts=>save(opts),setScale(v){el('scale').value=v;el('scale').dispatchEvent(new Event('input'));outputCache.clear();drawUI()},clipped:()=>checkClipping(),getClip:()=>targetClip,getFrames:()=>frames().map(f=>({key:f.key,ms:f.ms,canvas:output(f),dx:f.dx,dy:f.dy,scale:f.scale,baseScale:f.baseScale,w:f.w,h:f.h,raw:f.raw})),
+  /* v98.114 · the shared size / shift of the whole set (copied mirrored together with the per-frame values) */
+  getGlobals:()=>({scale:number(el('scale').value,.5,1.5,1),x:number(el('x').value,-384,384,0),y:number(el('y').value,-384,384,0),axis:el('axis')?.value||'both'}),
+  setGlobals(g){if(!g)return;el('scale').value=g.scale;el('x').value=-g.x;el('y').value=g.y;if(g.axis&&el('axis'))el('axis').value=g.axis},setLoop(v){looping=v;},setTarget(c){targetClip=copy(c);el('dir').value=c.view},isAllyWalk:()=>!!allyWalk(),
   applyMirror(sources){let ff=frames();
    /* v98.104 · an ally's walk has no fixed frame count (its placeholder holds 1 empty frame): copying the opposite direction rebuilds the frame list with as many frames as the source */
    if(sources.length!==ff.length){if(!allyWalk())throw new Error('จำนวนเฟรมไม่เท่ากัน ('+sources.length+' กับ '+ff.length+')');
     const cv=document.createElement('canvas');cv.width=sources.length*384;cv.height=384;const sheet={id:++serial,name:'ลอกกลับด้านจากทิศตรงข้าม',image:cv,cols:sources.length,rows:1,smart:false,fromGame:true,cells:[]};
     order=order.filter(k=>!all().some(f=>f.key===k));sheets=[sheet];
     sources.forEach((s,i)=>{const raw=document.createElement('canvas');raw.width=raw.height=384;const orig=document.createElement('canvas');orig.width=orig.height=384;const f={key:sheet.id+':'+i,sheet:sheet.id,index:i,raw,originalRaw:orig,w:384,h:384,ms:number(el('ms').value,20,5000,80),dx:0,dy:0,scale:1,baseScale:1,erases:[],eraseRedo:[],empty:false};sheet.cells.push(f);order.push(f.key)});
-    ff=frames()}const flipRect=r=>[384-r[0]-r[2],r[1],r[2],r[3]];
+    ff=frames()}
+   /* v98.114 · copy mirrored WITH the per-frame values: time (ms), X/Y shift and size %. A source that carries its raw picture (the one being edited) is mirrored as a picture and its
+      shift is mirrored too (X → −X); a source taken from the game has only baked pixels, so just the time is copied. */
+   if(sources.some(s=>s.raw)){ff.forEach((f,i)=>{const s=sources[i];if(!s||!s.raw)return;const w=s.w||s.raw.width,h=s.h||s.raw.height,c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.translate(w,0);g.scale(-1,1);g.drawImage(s.raw,0,0);
+     f.raw.width=w;f.raw.height=h;f.raw.getContext('2d').clearRect(0,0,w,h);f.raw.getContext('2d').drawImage(c,0,0);f.w=w;f.h=h;f.originalRaw.width=w;f.originalRaw.height=h;f.originalRaw.getContext('2d').drawImage(c,0,0);
+     f.dx=-(s.dx||0);f.dy=s.dy||0;f.scale=s.scale??1;f.baseScale=s.baseScale;if(s.baseScale===undefined)delete f.baseScale;f.erases=[];f.eraseRedo=[];f.editedSource=f.raw.toDataURL();if(s.ms)f.ms=s.ms;outputCache.delete(f.key)});
+    dirty=true;outputCache.clear();drawUI();return}
+   ff.forEach((f,i)=>{if(sources[i]?.ms)f.ms=sources[i].ms});const flipRect=r=>[384-r[0]-r[2],r[1],r[2],r[3]];
    ff.forEach((f,i)=>{let s=sources[i],g=f.raw.getContext('2d');f.raw.width=f.raw.height=384;f.w=f.h=384;g.clearRect(0,0,384,384);g.save();
     if(s.rect){let lr=f.sourceFrame?.loadRect,d=lr?(f.sourceFrame.flip?flipRect(lr):lr):s.rect;g.translate(d[0]+d[2],d[1]);g.scale(-1,1);g.drawImage(s.canvas,...s.rect,0,0,d[2],d[3])}else{g.translate(384,0);g.scale(-1,1);g.drawImage(s.canvas,0,0,384,384)}g.restore();
     f.originalRaw.width=f.originalRaw.height=384;f.originalRaw.getContext('2d').drawImage(f.raw,0,0);f.dx=f.dy=0;f.scale=1;f.baseScale=1;f.erases=[];f.eraseRedo=[];f.editedSource=f.raw.toDataURL();outputCache.delete(f.key)});
