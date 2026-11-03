@@ -66,6 +66,10 @@
     return new Promise(res => {
       const T = {}, undo = [];
       const wrap = (o, n, label) => { const f = o && o[n]; if (typeof f !== 'function') return; o[n] = function (...a) { const t = performance.now(); try { return f.apply(this, a) } finally { T[label] = (T[label] || 0) + performance.now() - t } }; undo.push(() => { o[n] = f }) };
+      /* v98.103 · inside drawSorted: time every object's own draw() (grouped by kind / id) so we can tell sorting+grouping from real drawing, and which things are expensive */
+      const D = {}, N = { frames: 0, objs: 0 }, kindOf = it => (it.building || it.isBuilding ? 'อาคาร' : it.mobile ? 'ตัวละคร/NPC' : it.kind || it.type || 'อื่นๆ') + (it.id ? ':' + String(it.id).slice(0, 14) : '');
+      const ds = window.drawSorted; if (typeof ds === 'function') { window.drawSorted = function (objects, ...r) { N.frames++; const arr = Array.isArray(objects) ? objects : [...objects]; N.objs += arr.length; const back = []; for (const it of arr) { if (it && typeof it.draw === 'function' && !Object.prototype.hasOwnProperty.call(it, '__d0')) { const f = it.draw, k = kindOf(it); try { it.__d0 = f; it.draw = function (...a) { const t = performance.now(); try { return f.apply(this, a) } finally { const e = D[k] || (D[k] = [0, 0]); e[0] += performance.now() - t; e[1]++ } }; back.push(it) } catch (e) { } } } try { return ds.call(this, arr, ...r) } finally { for (const it of back) { try { it.draw = it.__d0; delete it.__d0 } catch (e) { } } } }; undo.push(() => { window.drawSorted = ds }) }
+      T.__D = D; T.__N = N;
       wrap(window, 'drawSorted', 'วาดวัตถุ'); wrap(window, 'edgeFade', 'ขอบจาง'); wrap(window.TownMood, 'grade', 'โทนสี/แสง'); wrap(window.HD2D, 'bloom', 'แสงฟุ้ง'); wrap(window.TownPaint, 'draw', 'พื้นที่ทาสี');
       let n = 0, hidden = false; const t0 = performance.now();
       const dts = []; let last = 0;   // v98.98 · every frame time, to see stutter (min fps / 1% worst) and not only the average
@@ -89,6 +93,7 @@
     const big = lt.filter(x => x[1] > 300), blocked = big.reduce((a, x) => a + x[1], 0) / 1000, lastEnd = (big.length ? Math.max(...big.map(x => x[0] + x[1])) : 0) / 1000, drawn = (window.__townDrawnAt || 0) / 1000;
     const dts = S.dts.slice().sort((a, b) => a - b), pct = q => dts.length ? dts[Math.min(dts.length - 1, Math.floor(dts.length * q))] : 0, worst = pct(0.99), jank = dts.filter(x => x > 50).length;
     const fps = S.n / S.secs, soft = gl ? /swiftshader|llvmpipe|software|basic render|microsoft basic/i.test(gl.renderer) : true;
+    const D = S.T.__D || {}, NN = S.T.__N || {}; delete S.T.__D; delete S.T.__N;
     const parts = Object.entries(S.T).map(([k, v]) => [k, v / S.n]).sort((a, b) => b[1] - a[1]);
     const real = window.RENDER_STEP ? 'ขั้นความละเอียด ' + window.RENDER_STEP() : 'ความละเอียดเต็ม';
     const hints = [];
@@ -111,6 +116,7 @@
       'ตอนเล่น: ' + fps.toFixed(1) + ' fps (' + (1000 / fps).toFixed(0) + ' ms ต่อเฟรม)',
       'ความกระตุก: เฟรมช้าสุด ' + (dts.length ? dts[dts.length - 1].toFixed(0) : '—') + ' ms · 1% ที่แย่สุด ≥ ' + worst.toFixed(0) + ' ms (≈' + (worst ? (1000 / worst).toFixed(0) : '—') + ' fps) · มัธยฐาน ' + pct(0.5).toFixed(1) + ' ms · เฟรมกระตุก (>50 ms) ' + jank + ' จาก ' + dts.length,
       'ฉาก: ' + scene() + ' · ' + extra(),
+      (() => { const rows = Object.entries(D).map(([k, v]) => [k, v[0] / S.n, v[1] / S.n]).sort((a, b) => b[1] - a[1]), sum = rows.reduce((a, r) => a + r[1], 0), tot = (S.T['วาดวัตถุ'] || 0) / S.n; return 'ใน drawSorted: ทั้งหมด ' + tot.toFixed(1) + ' ms/เฟรม · วาดจริง (draw ของแต่ละชิ้น) ' + sum.toFixed(1) + ' ms · จัดกลุ่ม/เรียง/อื่นๆ ' + (tot - sum).toFixed(1) + ' ms · วัตถุที่ส่งมา ~' + (NN.frames ? Math.round(NN.objs / NN.frames) : '?') + ' ชิ้น/เฟรม\n   แพงสุด: ' + (rows.slice(0, 8).map(r => r[0] + ' ' + r[1].toFixed(1) + 'ms (' + r[2].toFixed(0) + ' ชิ้น)').join(' · ') || '—') })(),
       'ใช้เวลาต่อเฟรม (ms): ' + (parts.length ? parts.map(([k, v]) => k + ' ' + v.toFixed(1)).join(' · ') : '—'),
       'เอฟเฟกต์เต็มจอ 1 ชั้น: Canvas 2D ' + b2.toFixed(1) + ' ms · WebGL ' + (glMs == null ? '—' : glMs.toFixed(1) + ' ms'),
       '',
