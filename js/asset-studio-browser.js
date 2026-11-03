@@ -66,7 +66,7 @@
  }
  /* v98.76 · hero looks (ตัวเดิม / ชาย / หญิง): the open look's edits sit at the top level of the manifest, see js/studio-variants.js */
  let pristine=null;
- function enterLook(id){const V=window.StudioVariants;if(!V||id===V.active||!V.switchTo(M,id))return false;
+ function enterLook(id){const V=window.StudioVariants;if(!V||id===V.active||!V.switchTo(M,id))return false;V.syncStatuses?.(M);   /* v98.83 */
   if(!pristine&&runtime.tactics)pristine=JSON.parse(JSON.stringify(runtime.tactics));
   if(pristine){const t=JSON.parse(JSON.stringify(pristine));window.StudioWalks?.apply(t,{});   /* creates the base snapshots the rebase needs */
    if(id!=='classic'&&window.HeroVariant){HeroVariant.defaultsTo(t,id);HeroVariant.rebase(t)}
@@ -150,7 +150,7 @@
  $('conn').onclick=()=>connect(null);$('rescan').onclick=async()=>{await RepoDir.open(true);connect(null)};
  $('stagedPush').onclick=async()=>{try{if(hasWork()){alert('ยังมีภาพที่รอใช้อยู่ — กดใช้ภาพก่อน แล้วค่อย Push');return}await flush();const t=await RepoDir.pushStaged('Asset Studio: update images ('+RepoDir.count()+' files)');if(t)toast('push แล้ว · '+t)}catch(e){console.error(e);toast('push ไม่สำเร็จ: '+e.message)}};
  $('stagedDrop').onclick=async()=>{if(confirm('ทิ้งงานที่ยังไม่ push ทั้งหมด ('+RepoDir.count()+' ไฟล์)? โหลดหน้าใหม่หลังทิ้ง')){await RepoDir.discard();location.reload()}};
- window.addEventListener('message',e=>{if(e.origin!==location.origin)return;if(e.data?.repoStagedPushed){RepoDir.afterExternal().then(()=>connect(null))}else if(e.data?.repoStagedDiscarded)location.reload()});
+ window.addEventListener('message',e=>{if(e.origin!==location.origin)return;if(e.data?.repoStagedPushed){const keep=window.StudioVariants?.active;RepoDir.afterExternal().then(()=>connect(null)).then(()=>{if(keep&&keep!=='classic'&&window.StudioVariants&&keep!==window.StudioVariants.active)setLook(keep)})}   /* v98.83 · stay on the same look after a push */else if(e.data?.repoStagedDiscarded)location.reload()});
  if(window.parent!==window){const st=document.createElement('style');st.textContent='#stagedPush,#stagedDrop{display:none!important}';document.head.append(st)} // inside the editor shell the push button lives in the top bar
  RepoDir.onChange(n=>{$('stagedPush').textContent='⬆ Push ที่แก้ ('+n+')';$('stagedPush').disabled=!n;$('stagedDrop').hidden=!n});
  // Show orphan files as a single selectable Objects entry; never silently delete or classify them as monsters.

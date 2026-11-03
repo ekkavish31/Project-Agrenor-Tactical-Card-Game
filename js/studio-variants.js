@@ -17,6 +17,18 @@
     if ((!LOOKS.some(l => l[0] === id) && id !== 'classic') || id === active) return false;
     M.heroVariants ||= {}; M.heroVariants[active] = pick(M); load(M, id); active = id; return true;
   }
+  /* v98.83 · pictures a look saved in the studio (studioImportedWalk / studioImportedPose) are 'final' while ANY look still uses them.
+     Before, a picture was only 'final' for the look whose data sat at the top level — so every other look's saved idle / walk pictures read as
+     'unused' and their rows vanished from the editor (after a push, or after switching look). */
+  function referenced(M) {
+    const files = new Set(), byId = new Map((M.assets || []).map(a => [a.id, a.file])), ref = f => byId.get(f.assetId) || f.src;
+    const scan = b => {
+      for (const [d, c] of Object.entries(b.studioWalks || {})) if (!b.studioWalkMirrors?.[d]) for (const f of c?.frames || []) files.add(ref(f));
+      for (const [pose, dirs] of Object.entries(b.studioPoses || {})) for (const [d, c] of Object.entries(dirs || {})) if (!b.studioPoseMirrors?.[pose]?.[d]) for (const f of c?.frames || []) files.add(ref(f));
+    };
+    scan(M); for (const b of Object.values(M.heroVariants || {})) scan(b); return files;
+  }
+  function syncStatuses(M) { const files = referenced(M); for (const a of M.assets || []) if (a.studioImportedWalk || a.studioImportedPose) a.status = files.has(a.file) ? 'final' : 'unused' }
   /* A copy of the manifest in the game's shape. Does not change M. */
   function canonical(M) {
     if (!M || (active === 'classic' && !M.heroVariants)) return M;
@@ -29,5 +41,5 @@
   }
   /* After a manifest is (re)loaded from disk it is in the game's shape again → the original hero is open. */
   const reset = () => { active = 'classic' };
-  root.StudioVariants = { LOOKS, KEYS, get active() { return active }, switchTo, canonical, reset };
+  root.StudioVariants = { syncStatuses, referenced, LOOKS, KEYS, get active() { return active }, switchTo, canonical, reset };
 })(globalThis);
