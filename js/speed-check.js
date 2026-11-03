@@ -72,6 +72,12 @@
       T.__D = D; T.__N = N;
       wrap(window, 'drawSorted', 'วาดวัตถุ'); wrap(window, 'edgeFade', 'ขอบจาง'); wrap(window.TownMood, 'grade', 'โทนสี/แสง'); wrap(window.HD2D, 'bloom', 'แสงฟุ้ง'); wrap(window.TownPaint, 'draw', 'พื้นที่ทาสี');
       let n = 0, hidden = false; const t0 = performance.now();
+      /* v98.104 · whole-frame anatomy: JS time of every requestAnimationFrame callback, Chrome's long-animation-frame entries (script / style+layout / render share, top scripts)
+         and the CSS effects on screen — to see where the ~80 ms of a frame goes when the draw steps above only add up to a few ms */
+      const raf0 = window.requestAnimationFrame, cbT = { sum: 0, n: 0 }; let loaf = [], po = null;
+      window.requestAnimationFrame = function (cb) { return raf0.call(window, function (ts) { const t0 = performance.now(); try { return cb(ts) } finally { cbT.sum += performance.now() - t0; cbT.n++ } }) }; undo.push(() => { window.requestAnimationFrame = raf0 });
+      try { po = new PerformanceObserver(l => { for (const e of l.getEntries()) loaf.push(e) }); po.observe({ type: 'long-animation-frame', buffered: false }); undo.push(() => { try { po.disconnect() } catch (e) { } }) } catch (e) { }
+      T.__A = { cbT, loaf: () => loaf };
       const dts = []; let last = 0;   // v98.98 · every frame time, to see stutter (min fps / 1% worst) and not only the average
       const f = now => { n++; if (last) dts.push(now - last); last = now; if (document.hidden) hidden = true; if (performance.now() - t0 > ms) { undo.forEach(u => u()); res({ n, hidden, T, dts, secs: (performance.now() - t0) / 1000 }) } else requestAnimationFrame(f) };
       requestAnimationFrame(f);
@@ -93,7 +99,19 @@
     const big = lt.filter(x => x[1] > 300), blocked = big.reduce((a, x) => a + x[1], 0) / 1000, lastEnd = (big.length ? Math.max(...big.map(x => x[0] + x[1])) : 0) / 1000, drawn = (window.__townDrawnAt || 0) / 1000;
     const dts = S.dts.slice().sort((a, b) => a - b), pct = q => dts.length ? dts[Math.min(dts.length - 1, Math.floor(dts.length * q))] : 0, worst = pct(0.99), jank = dts.filter(x => x > 50).length;
     const fps = S.n / S.secs, soft = gl ? /swiftshader|llvmpipe|software|basic render|microsoft basic/i.test(gl.renderer) : true;
-    const D = S.T.__D || {}, NN = S.T.__N || {}; delete S.T.__D; delete S.T.__N;
+    const D = S.T.__D || {}, NN = S.T.__N || {}, AN = S.T.__A; delete S.T.__D; delete S.T.__N; delete S.T.__A;
+    const anatomy = (() => {
+      const L = AN ? AN.loaf() : [], cb = AN ? AN.cbT : { sum: 0, n: 0 }, avg = f => L.length ? L.reduce((a, e) => a + f(e), 0) / L.length : 0, o = [];
+      o.push('JS ใน requestAnimationFrame ทุกตัวรวมกัน: ' + (cb.n ? (cb.sum / S.n).toFixed(1) : '—') + ' ms/เฟรม (เฟรมจริง ' + (1000 / (S.n / S.secs)).toFixed(0) + ' ms)');
+      if (L.length) {
+        o.push('long-animation-frame ' + L.length + ' ครั้ง: นานเฉลี่ย ' + avg(e => e.duration).toFixed(0) + ' ms · สคริปต์ ' + avg(e => (e.scripts || []).reduce((a, s) => a + s.duration, 0)).toFixed(0) + ' ms · เริ่มเรนเดอร์หลัง ' + avg(e => e.renderStart ? e.renderStart - e.startTime : 0).toFixed(0) + ' ms · สไตล์+เลย์เอาต์ ' + avg(e => e.styleAndLayoutStart ? e.startTime + e.duration - e.styleAndLayoutStart : 0).toFixed(0) + ' ms · บล็อก ' + avg(e => e.blockingDuration || 0).toFixed(0) + ' ms');
+        const bySrc = new Map(); for (const e of L) for (const s of e.scripts || []) { const k = (s.invoker || s.type || '?') + ' ' + String(s.sourceURL || '').split('/').pop().split('?')[0] + ':' + (s.sourceFunctionName || ''); const r = bySrc.get(k) || [0, 0, 0]; r[0] += s.duration; r[1]++; r[2] += s.forcedStyleAndLayoutDuration || 0; bySrc.set(k, r) }
+        const top = [...bySrc].sort((a, b) => b[1][0] - a[1][0]).slice(0, 6).map(([k, v]) => k + ' ' + (v[0] / L.length).toFixed(1) + 'ms' + (v[2] ? ' (บังคับเลย์เอาต์ ' + (v[2] / L.length).toFixed(1) + ')' : '')); if (top.length) o.push('   สคริปต์หนักสุด/เฟรมยาว: ' + top.join(' · '))
+      } else o.push('long-animation-frame: ไม่มีข้อมูล (เบราว์เซอร์ไม่รองรับ หรือไม่มีเฟรมยาว)');
+      const fx = []; let n = 0; for (const el of document.querySelectorAll('*')) { if (++n > 4000) break; const cs = getComputedStyle(el), r = el.getBoundingClientRect(); if (r.width < 40 || r.height < 40 || r.bottom < 0 || r.top > innerHeight) continue; const f = []; if (cs.backdropFilter && cs.backdropFilter !== 'none') f.push('backdrop-filter'); if (cs.filter && cs.filter !== 'none') f.push('filter:' + cs.filter.slice(0, 24)); if (cs.mixBlendMode && cs.mixBlendMode !== 'normal') f.push('blend:' + cs.mixBlendMode); if (f.length) fx.push((el.id ? '#' + el.id : el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.split(' ')[0] : '')) + ' ' + Math.round(r.width) + '×' + Math.round(r.height) + ' ' + f.join('+')) }
+      o.push('เอฟเฟกต์ CSS บนจอ (ที่คอมโพสิตด้วย GPU): ' + (fx.length ? fx.slice(0, 8).join(' · ') + (fx.length > 8 ? ' … รวม ' + fx.length : '') : 'ไม่มี'));
+      return o.join('\n');
+    })();
     const parts = Object.entries(S.T).map(([k, v]) => [k, v / S.n]).sort((a, b) => b[1] - a[1]);
     const real = window.RENDER_STEP ? 'ขั้นความละเอียด ' + window.RENDER_STEP() : 'ความละเอียดเต็ม';
     const hints = [];
@@ -117,6 +135,7 @@
       'ความกระตุก: เฟรมช้าสุด ' + (dts.length ? dts[dts.length - 1].toFixed(0) : '—') + ' ms · 1% ที่แย่สุด ≥ ' + worst.toFixed(0) + ' ms (≈' + (worst ? (1000 / worst).toFixed(0) : '—') + ' fps) · มัธยฐาน ' + pct(0.5).toFixed(1) + ' ms · เฟรมกระตุก (>50 ms) ' + jank + ' จาก ' + dts.length,
       'ฉาก: ' + scene() + ' · ' + extra(),
       (() => { const rows = Object.entries(D).map(([k, v]) => [k, v[0] / S.n, v[1] / S.n]).sort((a, b) => b[1] - a[1]), sum = rows.reduce((a, r) => a + r[1], 0), tot = (S.T['วาดวัตถุ'] || 0) / S.n; return 'ใน drawSorted: ทั้งหมด ' + tot.toFixed(1) + ' ms/เฟรม · วาดจริง (draw ของแต่ละชิ้น) ' + sum.toFixed(1) + ' ms · จัดกลุ่ม/เรียง/อื่นๆ ' + (tot - sum).toFixed(1) + ' ms · วัตถุที่ส่งมา ~' + (NN.frames ? Math.round(NN.objs / NN.frames) : '?') + ' ชิ้น/เฟรม\n   แพงสุด: ' + (rows.slice(0, 8).map(r => r[0] + ' ' + r[1].toFixed(1) + 'ms (' + r[2].toFixed(0) + ' ชิ้น)').join(' · ') || '—') })(),
+      anatomy,
       'ใช้เวลาต่อเฟรม (ms): ' + (parts.length ? parts.map(([k, v]) => k + ' ' + v.toFixed(1)).join(' · ') : '—'),
       'เอฟเฟกต์เต็มจอ 1 ชั้น: Canvas 2D ' + b2.toFixed(1) + ' ms · WebGL ' + (glMs == null ? '—' : glMs.toFixed(1) + ' ms'),
       '',
