@@ -9216,7 +9216,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "mw0vmq71",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw0vmq71/tactics-luna-se-windup.png",
+     "at": "2026-11-03T16:02:53.421Z",
+     "stamp": "mw0vmq71",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    }
+   ]
   },
   {
    "id": "tactics-luna-sw-windup",
@@ -9232,7 +9241,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "mw0vmm1z",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw0vmm1z/tactics-luna-sw-windup.png",
+     "at": "2026-11-03T16:02:48.063Z",
+     "stamp": "mw0vmm1z",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    }
+   ]
   },
   {
    "id": "tactics-luna-se-strike",
@@ -9264,7 +9282,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "mw0vms6b",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw0vms6b/tactics-luna-sw-strike.png",
+     "at": "2026-11-03T16:02:56.006Z",
+     "stamp": "mw0vms6b",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    }
+   ]
   },
   {
    "id": "tactics-luna-se-guard",
@@ -9426,7 +9453,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "mw0vmp2q",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw0vmp2q/tactics-luna-ne-windup.png",
+     "at": "2026-11-03T16:02:51.995Z",
+     "stamp": "mw0vmp2q",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    }
+   ]
   },
   {
    "id": "tactics-luna-nw-windup",
@@ -9442,7 +9478,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "mw0vmnpf",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw0vmnpf/tactics-luna-nw-windup.png",
+     "at": "2026-11-03T16:02:50.203Z",
+     "stamp": "mw0vmnpf",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    }
+   ]
   },
   {
    "id": "tactics-luna-ne-strike",
@@ -74002,9 +74047,8 @@
    "approvedAt": "2026-11-03T01:27:54.385Z"
   },
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mw00diqt-0esu-1\",\"assets/tactics/imported/idle-sw-mw00diqt-0esu/frame-01.png\",0,\"mw00diqt-0esu\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
-   "frames": {},
-   "approvedAt": "2026-11-03T01:27:55.791Z"
+   "status": "unreviewed",
+   "frames": {}
   },
   "[\"tactics.walk.sw\",\"SW\",true,[[\"studio-hero-sw-walk-mw00h9rg-qpf0-1\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-01.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-2\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-02.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-3\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-03.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-4\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-04.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-5\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-05.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-6\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-06.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-7\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-07.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-8\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-08.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-9\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-09.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-10\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-10.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-11\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-11.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00h9rg-qpf0-12\",\"assets/tactics/imported/walk-sw-mw00h9rg-qpf0/frame-12.png\",0,\"mw00h9rg-qpf0\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -74070,14 +74114,12 @@
    "approvedAt": "2026-11-03T01:33:11.354Z"
   },
   "[\"tactics.walk.se\",\"SE\",true,[[\"studio-hero-sw-walk-mw00knyx-goi8-1\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-01.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-2\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-02.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-3\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-03.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-4\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-04.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-5\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-05.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-6\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-06.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-7\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-07.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-8\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-08.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-9\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-09.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-10\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-10.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-11\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-11.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-12\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-12.png\",0,\"mw00knyx-goi8\",null,100,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
-   "frames": {},
-   "approvedAt": "2026-11-03T01:33:29.946Z"
+   "status": "unreviewed",
+   "frames": {}
   },
   "[\"tactics.walk.sw\",\"SW\",true,[[\"studio-hero-sw-walk-mw00knyx-goi8-1\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-01.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-2\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-02.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-3\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-03.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-4\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-04.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-5\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-05.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-6\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-06.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-7\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-07.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-8\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-08.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-9\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-09.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-10\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-10.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-11\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-11.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mw00knyx-goi8-12\",\"assets/tactics/imported/walk-sw-mw00knyx-goi8/frame-12.png\",0,\"mw00knyx-goi8\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
-   "frames": {},
-   "approvedAt": "2026-11-03T01:33:29.946Z"
+   "status": "unreviewed",
+   "frames": {}
   },
   "[\"tactics.idle.nw\",\"NW\",true,[[\"studio-hero-ne-idle-mw00tua4-kbbk-1\",\"assets/tactics/imported/idle-ne-mw00tua4-kbbk/frame-01.png\",0,\"mw00tua4-kbbk\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -74341,9 +74383,8 @@
    "frames": {}
   },
   "[\"tactics-kier-sw-idle\",\"SW\",true,[[\"tactics-kier-sw-idle\",\"assets/tactics/kier_sw_idle.webp\",0,\"mw03xrxs\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
-   "frames": {},
-   "approvedAt": "2026-11-03T03:07:39.949Z"
+   "status": "unreviewed",
+   "frames": {}
   },
   "[\"tactics-kier-se-idle\",\"SE\",true,[[\"tactics-kier-se-idle\",\"assets/tactics/kier_se_idle.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "unreviewed",
@@ -74454,9 +74495,8 @@
    "approvedAt": "2026-11-03T06:49:44.651Z"
   },
   "[\"allywalk:kier:SW\",\"SW\",true,[[\"studio-ally-kier-sw-walk-mw0bvj3l-1\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-01.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-2\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-02.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-3\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-03.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-4\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-04.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-5\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-05.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-6\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-06.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-7\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-07.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-8\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-08.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-9\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-09.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-10\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-10.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-11\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-11.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-sw-walk-mw0bvj3l-12\",\"assets/tactics/imported/ally-kier-walk-sw-mw0bvj3l/frame-12.png\",0,\"mw0bvj3l\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
-   "frames": {},
-   "approvedAt": "2026-11-03T06:49:52.510Z"
+   "status": "unreviewed",
+   "frames": {}
   },
   "[\"allywalk:kier:NE\",\"NE\",true,[[\"studio-ally-kier-ne-walk-mw0bv2kl-1\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-01.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-2\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-02.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-3\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-03.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-4\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-04.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-5\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-05.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-6\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-06.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-7\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-07.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-8\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-08.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-9\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-09.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-10\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-10.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-11\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-11.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bv2kl-12\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bv2kl/frame-12.png\",0,\"mw0bv2kl\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
@@ -74900,6 +74940,127 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-03T15:38:07.045Z"
+  },
+  "[\"tactics-luna-sw-windup\",\"SW\",true,[[\"tactics-luna-sw-windup\",\"assets/tactics/luna_sw_windup.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:02:46.598Z"
+  },
+  "[\"tactics-luna-sw-windup\",\"SW\",true,[[\"tactics-luna-sw-windup\",\"assets/tactics/luna_sw_windup.webp\",0,\"mw0vmm1z\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:02:48.190Z"
+  },
+  "[\"tactics-luna-nw-windup\",\"NW\",true,[[\"tactics-luna-nw-windup\",\"assets/tactics/luna_nw_windup.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-luna-nw-windup\",\"NW\",true,[[\"tactics-luna-nw-windup\",\"assets/tactics/luna_nw_windup.webp\",0,\"mw0vmnpf\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:02:50.329Z"
+  },
+  "[\"tactics-luna-ne-windup\",\"NE\",true,[[\"tactics-luna-ne-windup\",\"assets/tactics/luna_ne_windup.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-luna-ne-windup\",\"NE\",true,[[\"tactics-luna-ne-windup\",\"assets/tactics/luna_ne_windup.webp\",0,\"mw0vmp2q\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:02:52.115Z"
+  },
+  "[\"tactics-luna-se-windup\",\"SE\",true,[[\"tactics-luna-se-windup\",\"assets/tactics/luna_se_windup.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-luna-se-windup\",\"SE\",true,[[\"tactics-luna-se-windup\",\"assets/tactics/luna_se_windup.webp\",0,\"mw0vmq71\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:02:53.545Z"
+  },
+  "[\"tactics-luna-sw-strike\",\"SW\",true,[[\"tactics-luna-sw-strike\",\"assets/tactics/luna_sw_strike.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-luna-sw-strike\",\"SW\",true,[[\"tactics-luna-sw-strike\",\"assets/tactics/luna_sw_strike.webp\",0,\"mw0vms6b\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:02:56.137Z"
+  },
+  "[\"tactics-luna-nw-strike\",\"NW\",true,[[\"tactics-luna-nw-strike\",\"assets/tactics/luna_nw_strike.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:02:58.858Z"
+  },
+  "[\"tactics-luna-sw-guard\",\"SW\",true,[[\"tactics-luna-sw-guard\",\"assets/tactics/luna_sw_guard.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:00.815Z"
+  },
+  "[\"tactics-luna-nw-hit\",\"NW\",true,[[\"tactics-luna-nw-hit\",\"assets/tactics/luna_nw_hit.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:02.134Z"
+  },
+  "[\"tactics-luna-nw-guard\",\"NW\",true,[[\"tactics-luna-nw-guard\",\"assets/tactics/luna_nw_guard.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:03.650Z"
+  },
+  "[\"tactics-luna-ne-guard\",\"NE\",true,[[\"tactics-luna-ne-guard\",\"assets/tactics/luna_ne_guard.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:05.019Z"
+  },
+  "[\"tactics-luna-ne-strike\",\"NE\",true,[[\"tactics-luna-ne-strike\",\"assets/tactics/luna_ne_strike.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:06.352Z"
+  },
+  "[\"tactics-luna-se-strike\",\"SE\",true,[[\"tactics-luna-se-strike\",\"assets/tactics/luna_se_strike.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:07.858Z"
+  },
+  "[\"tactics-luna-se-guard\",\"SE\",true,[[\"tactics-luna-se-guard\",\"assets/tactics/luna_se_guard.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:09.183Z"
+  },
+  "[\"tactics-luna-se-hit\",\"SE\",true,[[\"tactics-luna-se-hit\",\"assets/tactics/luna_se_hit.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:10.599Z"
+  },
+  "[\"tactics-luna-ne-hit\",\"NE\",true,[[\"tactics-luna-ne-hit\",\"assets/tactics/luna_ne_hit.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:11.962Z"
+  },
+  "[\"tactics-luna-sw-down\",\"SW\",true,[[\"tactics-luna-sw-down\",\"assets/tactics/luna_sw_down.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:15.189Z"
+  },
+  "[\"tactics-luna-sw-hit\",\"SW\",true,[[\"tactics-luna-sw-hit\",\"assets/tactics/luna_sw_hit.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:16.892Z"
+  },
+  "[\"tactics-luna-nw-down\",\"NW\",true,[[\"tactics-luna-nw-down\",\"assets/tactics/luna_nw_down.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:18.635Z"
+  },
+  "[\"tactics-luna-ne-down\",\"NE\",true,[[\"tactics-luna-ne-down\",\"assets/tactics/luna_ne_down.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:20.224Z"
+  },
+  "[\"tactics-luna-se-down\",\"SE\",true,[[\"tactics-luna-se-down\",\"assets/tactics/luna_se_down.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T16:03:21.741Z"
   }
  },
  "studioClipHistory": {
@@ -75610,9 +75771,499 @@
     "at": "2026-11-03T09:24:02.485Z",
     "entries": []
    }
+  ],
+  "static:tactics-luna-sw-windup": [
+   {
+    "at": "2026-11-03T16:02:48.063Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-luna-sw-windup",
+       "file": "assets/tactics/luna_sw_windup.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-windup",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+       "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+       "artRevision": "v16"
+      },
+      "archive": "assets/_versions/unified/mw0vmm1z/tactics-luna-sw-windup.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-luna-nw-windup": [
+   {
+    "at": "2026-11-03T16:02:50.203Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-luna-nw-windup",
+       "file": "assets/tactics/luna_nw_windup.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+       "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+       "artRevision": "v16"
+      },
+      "archive": "assets/_versions/unified/mw0vmnpf/tactics-luna-nw-windup.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-luna-ne-windup": [
+   {
+    "at": "2026-11-03T16:02:51.995Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-luna-ne-windup",
+       "file": "assets/tactics/luna_ne_windup.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+       "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+       "artRevision": "v16"
+      },
+      "archive": "assets/_versions/unified/mw0vmp2q/tactics-luna-ne-windup.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-luna-se-windup": [
+   {
+    "at": "2026-11-03T16:02:53.421Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-luna-se-windup",
+       "file": "assets/tactics/luna_se_windup.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+       "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+       "artRevision": "v16"
+      },
+      "archive": "assets/_versions/unified/mw0vmq71/tactics-luna-se-windup.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-luna-sw-strike": [
+   {
+    "at": "2026-11-03T16:02:56.006Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-luna-sw-strike",
+       "file": "assets/tactics/luna_sw_strike.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-strike",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
+       "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
+       "artRevision": "v16"
+      },
+      "archive": "assets/_versions/unified/mw0vms6b/tactics-luna-sw-strike.png"
+     }
+    ]
+   }
   ]
  },
  "heroVariants": {
+  "male": {
+   "studioWalks": {
+    "SW": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-03T01:50:10.277Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-1",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-01.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-2",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-02.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-3",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-03.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-4",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-04.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-5",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-05.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-6",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-06.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-7",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-07.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-8",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-08.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-9",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-09.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-10",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-10.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-11",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-11.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-12",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-12.png",
+       "ms": 100
+      }
+     ]
+    },
+    "SE": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-03T01:52:10.272Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-1",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-01.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-2",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-02.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-3",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-03.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-4",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-04.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-5",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-05.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-6",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-06.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-7",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-07.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-8",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-08.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-9",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-09.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-10",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-10.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-11",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-11.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-12",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-12.png",
+       "ms": 100
+      }
+     ]
+    },
+    "NW": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-03T01:52:43.292Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-1",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-01.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-2",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-02.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-3",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-03.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-4",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-04.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-5",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-05.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-6",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-06.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-7",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-07.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-8",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-08.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-9",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-09.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-10",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-10.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-11",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-11.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-12",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-12.png",
+       "ms": 100
+      }
+     ]
+    }
+   },
+   "studioWalkMirrors": {
+    "SW": "SE",
+    "NE": "NW"
+   },
+   "studioWalkHistory": {
+    "SW": [
+     {
+      "at": "2026-11-03T01:49:31.214Z",
+      "config": null,
+      "mirrors": {
+       "SW": null,
+       "SE": null
+      },
+      "frames": 12
+     }
+    ],
+    "SE": [
+     {
+      "at": "2026-11-03T01:50:38.105Z",
+      "config": null,
+      "mirrors": {
+       "SE": null,
+       "SW": "SE"
+      },
+      "frames": 12
+     }
+    ],
+    "NW": [
+     {
+      "at": "2026-11-03T01:52:39.517Z",
+      "config": null,
+      "mirrors": {
+       "NW": null,
+       "NE": null
+      },
+      "frames": 12
+     }
+    ]
+   },
+   "studioPoses": {
+    "idle": {
+     "SW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-03T01:47:45.008Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-sw-idle-mw0130fk-486y-1",
+        "src": "assets/tactics/imported/idle-sw-mw0130fk-486y/frame-01.png",
+        "ms": 120
+       }
+      ]
+     },
+     "NW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-03T01:48:09.148Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-nw-idle-mw013j24-b205-1",
+        "src": "assets/tactics/imported/idle-nw-mw013j24-b205/frame-01.png",
+        "ms": 120
+       }
+      ]
+     },
+     "NE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-03T01:48:14.083Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-ne-idle-mw013mv7-0b5q-1",
+        "src": "assets/tactics/imported/idle-ne-mw013mv7-0b5q/frame-01.png",
+        "ms": 120
+       }
+      ]
+     }
+    }
+   },
+   "studioPoseMirrors": {
+    "idle": {
+     "NW": "NE"
+    }
+   },
+   "studioPoseHistory": {
+    "idle:SW": [
+     {
+      "at": "2026-11-03T01:47:45.057Z",
+      "config": null,
+      "mirror": null
+     }
+    ],
+    "idle:NW": [
+     {
+      "at": "2026-11-03T01:48:09.190Z",
+      "config": null,
+      "mirror": null
+     }
+    ],
+    "idle:NE": [
+     {
+      "at": "2026-11-03T01:48:14.108Z",
+      "config": null,
+      "mirror": null
+     }
+    ]
+   }
+  },
   "female": {
    "studioWalks": {
     "SW": {
@@ -76300,366 +76951,6 @@
     "idle:SW": [
      {
       "at": "2026-11-03T01:27:55.706Z",
-      "config": null,
-      "mirror": null
-     }
-    ]
-   }
-  },
-  "male": {
-   "studioWalks": {
-    "SW": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-03T01:50:10.277Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-1",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-01.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-2",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-02.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-3",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-03.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-4",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-04.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-5",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-05.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-6",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-06.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-7",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-07.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-8",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-08.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-9",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-09.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-10",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-10.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-11",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-11.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-12",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-12.png",
-       "ms": 100
-      }
-     ]
-    },
-    "SE": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-03T01:52:10.272Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-1",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-01.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-2",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-02.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-3",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-03.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-4",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-04.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-5",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-05.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-6",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-06.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-7",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-07.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-8",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-08.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-9",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-09.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-10",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-10.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-11",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-11.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-12",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-12.png",
-       "ms": 100
-      }
-     ]
-    },
-    "NW": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-03T01:52:43.292Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-1",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-01.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-2",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-02.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-3",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-03.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-4",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-04.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-5",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-05.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-6",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-06.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-7",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-07.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-8",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-08.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-9",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-09.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-10",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-10.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-11",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-11.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-12",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-12.png",
-       "ms": 100
-      }
-     ]
-    }
-   },
-   "studioWalkMirrors": {
-    "SW": "SE",
-    "NE": "NW"
-   },
-   "studioWalkHistory": {
-    "SW": [
-     {
-      "at": "2026-11-03T01:49:31.214Z",
-      "config": null,
-      "mirrors": {
-       "SW": null,
-       "SE": null
-      },
-      "frames": 12
-     }
-    ],
-    "SE": [
-     {
-      "at": "2026-11-03T01:50:38.105Z",
-      "config": null,
-      "mirrors": {
-       "SE": null,
-       "SW": "SE"
-      },
-      "frames": 12
-     }
-    ],
-    "NW": [
-     {
-      "at": "2026-11-03T01:52:39.517Z",
-      "config": null,
-      "mirrors": {
-       "NW": null,
-       "NE": null
-      },
-      "frames": 12
-     }
-    ]
-   },
-   "studioPoses": {
-    "idle": {
-     "SW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-03T01:47:45.008Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-sw-idle-mw0130fk-486y-1",
-        "src": "assets/tactics/imported/idle-sw-mw0130fk-486y/frame-01.png",
-        "ms": 120
-       }
-      ]
-     },
-     "NW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-03T01:48:09.148Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-nw-idle-mw013j24-b205-1",
-        "src": "assets/tactics/imported/idle-nw-mw013j24-b205/frame-01.png",
-        "ms": 120
-       }
-      ]
-     },
-     "NE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-03T01:48:14.083Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-ne-idle-mw013mv7-0b5q-1",
-        "src": "assets/tactics/imported/idle-ne-mw013mv7-0b5q/frame-01.png",
-        "ms": 120
-       }
-      ]
-     }
-    }
-   },
-   "studioPoseMirrors": {
-    "idle": {
-     "NW": "NE"
-    }
-   },
-   "studioPoseHistory": {
-    "idle:SW": [
-     {
-      "at": "2026-11-03T01:47:45.057Z",
-      "config": null,
-      "mirror": null
-     }
-    ],
-    "idle:NW": [
-     {
-      "at": "2026-11-03T01:48:09.190Z",
-      "config": null,
-      "mirror": null
-     }
-    ],
-    "idle:NE": [
-     {
-      "at": "2026-11-03T01:48:14.108Z",
       "config": null,
       "mirror": null
      }
