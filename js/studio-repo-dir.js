@@ -19,6 +19,13 @@
   async function idbSet(k, v) { try { const db = await idb(); await new Promise(r => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = r; t.onerror = r }) } catch (e) {} }
   let bc = null; try { bc = new BroadcastChannel('project-a-staged') } catch (e) {}
   const persist = async () => { await idbSet('repo-staged', [...staged.entries()]); try { bc && bc.postMessage(staged.size) } catch (e) {} };
+  /* v98.96 · RECENTLY PUSHED files. After a push the staged list is emptied and the studio re-reads the repo — but the web copy (GitHub Pages / raw) is the OLD one for a few minutes,
+     so the work just pushed seemed to vanish, and the next save was built on the old data and pushed over it. A pushed file is now remembered (IndexedDB 'repo-recent', 1 hour)
+     and read instead of the web copy until the web copy has the same size (= it caught up). The editor shell (editor.html) writes the same key when IT pushes. */
+  const RECENT_TTL = 60 * 60 * 1000, recent = new Map();   // path -> { b: Blob | null (= removed), at }
+  async function loadRecent() { recent.clear(); const r = await idbGet('repo-recent'); if (Array.isArray(r)) for (const [p, b, at] of r) if (Date.now() - at < RECENT_TTL) recent.set(p, { b, at }) }
+  const persistRecent = () => idbSet('repo-recent', [...recent].map(([p, v]) => [p, v.b, v.at]));
+  async function remember(entries) { await loadRecent(); const at = Date.now(); for (const [p, b] of entries) recent.set(p, { b, at }); await persistRecent() }
 
   async function loadTree(force) {
     if (!force) { try { const c = JSON.parse(sessionStorage.getItem(TREE_KEY) || 'null'); if (c && Date.now() - c.t < 6e5) return new Set(c.list) } catch (e) {} }
@@ -38,12 +45,12 @@
     try { sessionStorage.setItem(TREE_KEY, JSON.stringify({ t: Date.now(), list })) } catch (e) {}
     return new Set(list);
   }
-  const has = p => staged.has(p) ? staged.get(p) !== null : tree.has(p);
+  const has = p => staged.has(p) ? staged.get(p) !== null : recent.has(p) ? recent.get(p).b !== null : tree.has(p);
   const childrenOf = prefix => {
     const out = new Map();
     const add = p => { if (!p.startsWith(prefix)) return; const rest = p.slice(prefix.length), i = rest.indexOf('/'); if (i < 0) out.set(rest, 'file'); else out.set(rest.slice(0, i), 'directory') };
-    tree.forEach(p => { if (!(staged.has(p) && staged.get(p) === null)) add(p) });
-    staged.forEach((v, p) => { if (v) add(p) });
+    tree.forEach(p => { if (!(staged.has(p) && staged.get(p) === null) && !(recent.has(p) && recent.get(p).b === null)) add(p) });
+    staged.forEach((v, p) => { if (v) add(p) }); recent.forEach((v, p) => { if (v.b && !staged.has(p)) add(p) });
     return out;
   };
 
@@ -54,6 +61,11 @@
       async getFile() {
         const s = staged.get(path);
         if (s) return new File([s], name, { type: s.type });
+        const rc = recent.get(path);
+        if (rc && rc.b) {
+          try { const r = await fetch(rel(path), { cache: 'no-cache' }); if (r.ok) { const b = await r.blob(); if (b.size === rc.b.size) { recent.delete(path); persistRecent(); return new File([b], name, { type: b.type }) } } } catch (e) {}
+          return new File([rc.b], name, { type: rc.b.type });
+        }
         for (const u of [rel(path), raw(path)]) { try { const r = await fetch(u, { cache: 'no-cache' }); if (r.ok) { const b = await r.blob(); return new File([b], name, { type: b.type }) } } catch (e) {} }
         throw nf(path);
       },
@@ -68,7 +80,7 @@
     return {
       kind: 'directory', name,
       async queryPermission() { return 'granted' }, async requestPermission() { return 'granted' },
-      async getDirectoryHandle(n, o) { const p = prefix + n + '/'; if (!(o && o.create) && ![...tree, ...[...staged].filter(([, v]) => v).map(([k]) => k)].some(f => f.startsWith(p))) throw nf(p); return dirHandle(p) },
+      async getDirectoryHandle(n, o) { const p = prefix + n + '/'; if (!(o && o.create) && ![...tree, ...[...staged].filter(([, v]) => v).map(([k]) => k), ...[...recent].filter(([, v]) => v.b).map(([k]) => k)].some(f => f.startsWith(p))) throw nf(p); return dirHandle(p) },
       async getFileHandle(n, o) { const p = prefix + n; if (!has(p) && !(o && o.create)) throw nf(p); return fileHandle(p) },
       async removeEntry(n) { const p = prefix + n; if (!has(p)) throw nf(p); staged.set(p, null); await persist(); notify() },
       async *entries() { for (const [n, k] of childrenOf(prefix)) yield [n, k === 'file' ? fileHandle(prefix + n) : dirHandle(prefix + n + '/')] },
@@ -78,7 +90,7 @@
   }
   async function open(force) {
     if (!ready || force) ready = (async () => {
-      tree = await loadTree(force);
+      tree = await loadTree(force); await loadRecent();
       if (!staged.size) { const s = await idbGet('repo-staged'); if (Array.isArray(s)) s.forEach(([p, b]) => staged.set(p, b)) }
       return dirHandle('')
     })();
@@ -93,7 +105,7 @@
       for (const [path, b] of staged) files.push(b ? { path, content: b } : { path, remove: true });
       return files;
     });
-    if (tag) { staged.clear(); await persist(); try { sessionStorage.removeItem(TREE_KEY) } catch (e) {} ready = null; await open(true); notify() }
+    if (tag) { await remember([...staged]); staged.clear(); await persist(); try { sessionStorage.removeItem(TREE_KEY) } catch (e) {} ready = null; await open(true); notify() }
     return tag;
   }
   /* v98.82 · take back some staged writes (never-pushed drafts that a newer save replaced) — touches nothing that is already in the repo */
@@ -101,5 +113,5 @@
   async function discard() { staged.clear(); await persist(); notify() }
   /* the editor shell pushed (or dropped) the staged files for us */
   async function afterExternal() { staged.clear(); try { sessionStorage.removeItem(TREE_KEY) } catch (e) {} ready = null; await open(true); notify() }
-  root.RepoDir = { open, pushStaged, drop, discard, afterExternal, count: () => staged.size, paths: () => [...staged.keys()], onChange: f => listeners.push(f) };
+  root.RepoDir = { open, pushStaged, drop, discard, afterExternal, remember, recentPaths: () => [...recent.keys()], count: () => staged.size, paths: () => [...staged.keys()], onChange: f => listeners.push(f) };
 })(globalThis);

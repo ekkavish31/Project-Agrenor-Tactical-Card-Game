@@ -85,3 +85,5 @@ main{grid-template-columns:238px minmax(0,1fr);position:relative}nav{border-righ
 #animation-review.ur-v2 .ur-dock #wi-mirror-row{justify-content:flex-start}
 /* v98.90 · character list busts (upper half of the SE standing picture) */
 nav button img.bust{width:43px;height:43px;object-fit:cover;border-radius:8px;background:#f1ead8;flex:none}
+/* v98.96 · review panel: only the pass / not-pass toggle is shown */
+#animation-review .ur-review-tools [hidden]{display:none!important}#animation-review .ur-review-tools button[aria-pressed=true]{background:#2f6a4a;color:#fff;border-color:#2f6a4a}#animation-review .ur-review-tools #ur-reject[aria-pressed=true]{background:#a8402f;border-color:#a8402f}

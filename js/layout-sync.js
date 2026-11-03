@@ -18,7 +18,8 @@
   const hash = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619); return (h >>> 0).toString(36) };
   const grab = (t, name) => { try { const i = t.indexOf(name + '='), a = t.indexOf('{', i), b = t.lastIndexOf('};'); return i < 0 || a < 0 || b < 0 ? null : JSON.parse(t.slice(a, b + 1)) } catch (e) { return null } };
   const fetchText = async f => { const r = await fetch(new URL(f, location.href).href + '?cb=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw Error(r.status); return r.text() };
-  const worse = ['ok', 'newer', 'unpushed', 'both'];
+  const worse = ['ok', 'newer', 'unpushed', 'both'], listeners = [];
+  const notify = () => listeners.forEach(f => { try { f() } catch (e) { } });
   const units = {
     layout: { name: 'ผังหมู่บ้าน', st: null, keys: [STORE, POS], local: null, rem: null, L: null, R: null, take: null },
     settings: { name: 'ค่าตั้งค่า (ไอคอน เส้นทาง NPC สถานที่ แผนที่ย่อย ฯลฯ)', st: null, keys: [], local: null, rem: null, L: null, R: null, take: null }
@@ -45,6 +46,8 @@
   const overall = () => Object.values(units).reduce((a, u) => u.st && worse.indexOf(u.st) > worse.indexOf(a) ? u.st : a, 'ok');
   const TXT = { ok: ['✓ ตรงกับบนเว็บ', '#2f7d3a'], newer: ['⬇ มีข้อมูลใหม่บนเว็บ', '#2a6fb0'], unpushed: ['⚠ มีงานในเครื่องที่ยังไม่ push', '#b0701a'], both: ['❗ เครื่องนี้และเว็บต่างกัน', '#a8402f'] };
   function draw() {
+    notify();
+    if (inEditor) return;   /* v98.96 · inside editor.html the state is shown on the top-bar ⬆ รอ Push button instead */
     if (!pill) {
       pill = document.createElement('button'); pill.id = 'layoutSync'; pill.type = 'button';
       pill.style.cssText = 'position:fixed;left:10px;bottom:56px;z-index:60;font:700 12px system-ui,sans-serif;color:#fff;border:0;border-radius:999px;padding:5px 12px;cursor:pointer;box-shadow:0 2px 8px #0006';
@@ -87,5 +90,9 @@
   }
   const go = () => { setTimeout(check, 3500); setInterval(check, 60000); addEventListener('focus', check); document.addEventListener('visibilitychange', () => { if (!document.hidden) check() }) };
   document.body ? go() : addEventListener('DOMContentLoaded', go);
-  root.LayoutSync = { check, state: () => overall(), units: () => units, backup, takeWeb, restore };
+  /* what the top-bar button shows: units with edits not pushed yet (unpushed / both) and units where the web is newer */
+  const pending = () => Object.values(units).filter(u => u.st === 'unpushed' || u.st === 'both').length;
+  const newer = () => Object.values(units).filter(u => u.st === 'newer' || u.st === 'both').length;
+  const describe = () => Object.values(units).filter(u => u.st && u.st !== 'ok').map(u => u.name + ': ' + TXT[u.st][0]);
+  root.LayoutSync = { check, state: () => overall(), units: () => units, backup, takeWeb, restore, open, pending, newer, describe, refresh: draw, onChange: f => listeners.push(f) };
 })(globalThis);
