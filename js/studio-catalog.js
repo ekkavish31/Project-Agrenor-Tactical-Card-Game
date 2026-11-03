@@ -229,7 +229,7 @@
    key=Object.keys(meta).find(k=>meta[k].art===base)||aliases[base.slice(6)]||camel(base.replace(/^enemy-/,''));
   }else if(/^char-scarecrow/.test(id))key='dummy';
   if(key){let m=meta[key]||{};return {id:'enemy:'+key,name:m.name||key,group:['miniboss','boss'].includes(m.rank)?'bosses':'monsters',rank:m.rank||'normal'}}
-  let ally=id.match(/^(?:ally-|card-u-)([a-z]+)$/)||id.match(/^tactics-(luna|bram|kier|mil)-/);
+  let ally=id.match(/^(?:ally-|card-u-)([a-z]+)$/)||id.match(/^tactics-(luna|bram|kier|mil|ren|nadia|sigrid|orla|olwen)-/);
   if(ally)return {id:'ally:'+ally[1],name:ally[1][0].toUpperCase()+ally[1].slice(1),group:'characters'};
   if(['hero-frames','tactics-hero','village-idle','characters'].includes(cat)||id==='card-hero')return {id:'hero',name:'ตัวหลัก · Hero',group:'characters'};
   if(['scenes','village-map'].includes(cat))return {id:'illust:'+id,name:a.studioName||id,group:'illust'}; // v91.37: big scene / cutscene pictures

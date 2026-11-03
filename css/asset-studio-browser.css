@@ -83,3 +83,5 @@ main{grid-template-columns:238px minmax(0,1fr);position:relative}nav{border-righ
 #animation-review.ur-v2 .ur-dock .ur-review-tools #ur-note{grid-column:1/-1}
 #animation-review.ur-v2 .ur-dock .ur-review-tools button{font-size:12px}
 #animation-review.ur-v2 .ur-dock #wi-mirror-row{justify-content:flex-start}
+/* v98.90 · character list busts (upper half of the SE standing picture) */
+nav button img.bust{width:43px;height:43px;object-fit:cover;border-radius:8px;background:#f1ead8;flex:none}

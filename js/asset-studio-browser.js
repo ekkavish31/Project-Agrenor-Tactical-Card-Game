@@ -13,7 +13,14 @@
  const names={idle:'ยืน / หายใจ',walk:'เดิน',run:'วิ่ง',windup:'เตรียมโจมตี',strike:'โจมตี',attack:'โจมตี',guard:'ป้องกัน',hit:'ถูกโจมตี',down:'ล้ม / ตาย',cast:'ร่ายเวท',special:'ท่าพิเศษ'};
  const dirs=['SW','NW','NE','SE','FRONT','TOP','—'];   /* v97.65: characters use the four diagonal views only (S/W/N/E dropped) */
  const pretty=a=>names[a]||a.replace(/^daily\./,'ชีวิตประจำวัน · ').replace(/^sword\./,'ดาบ · ').replace(/^hammer\./,'ค้อน · ').replace(/^unarmed\./,'มือเปล่า · ');
+ /* v98.90 · the recruits (js/village-life.js) have standing pictures in assets/village-town/npc/<name>/ that the manifest never listed, so the studio showed no entry for them.
+    List them as ally entities (same category / id pattern as Bram, Luna, Kier: tactics-<name>-<dir>-idle); only pictures that exist in the folder are added. */
+ const RECRUITS=['ren','nadia','sigrid','orla','olwen'];
+ function registerRecruits(manifest){if(!manifest?.assets)return;const have=new Set(manifest.assets.map(a=>a.id));
+  for(const k of RECRUITS)for(const d of ['sw','ne']){const id=`tactics-${k}-${d}-idle`,file=`assets/village-town/npc/${k}/${d}-stand.webp`;
+   if(have.has(id)||(dir&&scanned&&!hasFile(file)))continue;manifest.assets.push({id,file,category:'allies',status:'final',size:[384,384],transparent:true,view:d.toUpperCase(),pose:'idle'});have.add(id)}}
  function clipsFor(manifest){
+  try{registerRecruits(manifest)}catch(e){}
   /* v98.88 · self-heal: whether a look's saved idle/walk pictures are 'final' or 'unused' is DERIVED from what the looks use (StudioVariants.syncStatuses). A manifest saved/pushed by an older build can carry stale 'unused' marks —
      the walk row then vanished until something re-synced it. Re-derive on every build so the rows can never depend on a stored mark. */
   try{window.StudioVariants?.syncStatuses(manifest)}catch(e){}
@@ -58,13 +65,37 @@
   for(let p of state.entries){if(!viewed.has(p.canvas)||!p.images)continue;let i=R.frameAt(p.clip,elapsed,true);if(p.frame!==i){p.frame=i;draw(p.canvas,p.images[i],p.clip.frames[i])}}
  }
  function resetClock(){state.epoch=performance.now();state.pausedAt=0;for(let p of state.entries)p.frame=-1}
+ /* v98.90 · character list thumbnails: the UPPER HALF of the standing picture facing SE (a bust), cut from the picture's own outline.
+    SE source per entity: the hero → the open look's SE idle (runtime) · others → village stand SE, else village stand SW mirrored, else the battle idle. */
+ const bustCache=new Map();
+ function bustCandidates(id){
+  if(id==='hero'){const s=runtime.tactics?.directions?.SE?.idle;return s?.src?[[s.src,!!s.flipImage]]:[]}
+  const k=id.replace(/^ally:/,'');return [[`assets/village-town/npc/${k}/se-stand.webp`,false],[`assets/village-town/npc/${k}/sw-stand.webp`,true],[`assets/tactics/${k}_se_idle.webp`,false],[`assets/tactics/${k}_sw_idle.webp`,true]];
+ }
+ async function bustOf(file,flip){
+  const key=state.generation+'|'+file+'|'+flip;if(bustCache.has(key))return bustCache.get(key);
+  const p=(async()=>{const image=await im(file);if(!image)return null;const W=image.naturalWidth,H=image.naturalHeight,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d',{willReadFrequently:true});
+   if(flip){g.translate(W,0);g.scale(-1,1)}g.drawImage(image,0,0);let d;try{d=g.getImageData(0,0,W,H).data}catch(e){return null}
+   let x0=W,x1=0,y0=H,y1=0;for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(d[(y*W+x)*4+3]>40){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+   if(x1<=x0||y1<=y0)return null;const fh=y1-y0+1,side=Math.round(Math.max(fh*.5,Math.min(x1-x0+1,fh*.62))),sx=Math.round((x0+x1)/2-side/2),sy=y0-Math.round(fh*.02);
+   const o=document.createElement('canvas');o.width=o.height=96;const q=o.getContext('2d');q.imageSmoothingQuality='high';q.drawImage(c,sx,sy,side,side,0,0,96,96);return o.toDataURL('image/webp',.92)})();
+  bustCache.set(key,p);return p;
+ }
+ async function fillBusts(){
+  const gen=state.generation;for(const img of $('cats').querySelectorAll('img[data-bust]')){
+   let url=null;for(const [file,flip] of bustCandidates(img.dataset.bust)){if(dir&&scanned&&!hasFile(file))continue;url=await bustOf(file,flip);if(url)break}
+   if(gen!==state.generation||!img.isConnected)continue;
+   if(url)img.src=url;else if(img.dataset.fallback){img.dataset.p=img.dataset.fallback;hydrate($('cats'))}
+  }
+ }
  function renderNav(){let search=state.entityQuery.toLowerCase(),all=state.model.filter(e=>e.group===state.group),ee=all.filter(e=>(e.name+' '+e.id).toLowerCase().includes(search));
   const ANIM=['characters','monsters','bosses'],subs=ANIM.includes(state.group)?'<div class="subtabs">'+[['characters','ตัวละคร'],['monsters','มอนสเตอร์'],['bosses','มินิบอส / บอส']].map(([g,n])=>`<button data-sub="${g}" class="${g===state.group?'on':''}">${n}</button>`).join('')+'</div>':'';
   $('cats').innerHTML=subs+`<h4>${esc(C.groups[state.group])} · ${all.length}</h4><input id="entitySearch" type="search" placeholder="ค้นหาตัว / วัตถุ" aria-label="ค้นหาในหมวด" value="${esc(state.entityQuery)}">`+ee.map(e=>{
    let a=(e.id==='hero'?e.assets.find(a=>a.variant&&/idle-sw\.webp$/.test(a.file))||e.assets.find(a=>a.id==='tactics-hero-se-idle'):null)||e.assets.find(a=>/^(card-|enemy-|ally-)/.test(a.id)&&!a.animation)||e.assets.find(a=>!a.animation)||e.assets[0];
-   return `<button data-entity="${esc(e.id)}" class="${e.id===state.entity?'on':''}">${a?.file?imgTag(a.file):''}<span class="nav-copy"><b>${esc(e.name)}</b><small>${e.clips.filter(c=>c.kind!=='static').length} ชุดท่า · ${e.assets.length} ไฟล์${e.rank==='boss'?' · บอส':e.rank==='miniboss'?' · มินิบอส':''}</small></span></button>`}).join('')+(ee.length?'':'<p class="muted">ไม่พบรายการ</p>');
+   return `<button data-entity="${esc(e.id)}" class="${e.id===state.entity?'on':''}">${e.group==='characters'?`<img class="bust" data-bust="${esc(e.id)}" data-fallback="${esc(a?.file||'')}" alt="">`:a?.file?imgTag(a.file):''}<span class="nav-copy"><b>${esc(e.name)}</b><small>${e.clips.filter(c=>c.kind!=='static').length} ชุดท่า · ${e.assets.length} ไฟล์${e.rank==='boss'?' · บอส':e.rank==='miniboss'?' · มินิบอส':''}</small></span></button>`}).join('')+(ee.length?'':'<p class="muted">ไม่พบรายการ</p>');
   $('cats').querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>gotoGroup(b.dataset.sub));
   $('entitySearch').oninput=e=>{let caret=e.target.selectionStart;state.entityQuery=e.target.value;renderNav();$('entitySearch').focus();$('entitySearch').setSelectionRange(caret,caret)};
+  fillBusts();
   $('cats').querySelectorAll('[data-entity]').forEach(b=>b.onclick=()=>{state.entity=b.dataset.entity;sel=null;selected=null;document.body.classList.remove('detail-open');render();$('gridWrap').scrollTop=0});hydrate($('cats'));
  }
  /* v98.76 · hero looks (ตัวเดิม / ชาย / หญิง): the open look's edits sit at the top level of the manifest, see js/studio-variants.js */

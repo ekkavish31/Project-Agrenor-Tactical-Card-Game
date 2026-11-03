@@ -13,6 +13,10 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const rows = () => p.evaluate(() => { const e = StudioBrowser.state.model.find(x => x.id === 'hero'), r = {}; for (const c of e.clips) (r[c.action] ||= {})[c.view] = c.frames.length; return { look: StudioVariants.active, r } });
   const ok = async (label) => { const { look, r } = await rows(); for (const a of ['idle', 'walk']) for (const d of ['SW', 'SE', 'NW', 'NE']) assert.ok(r[a]?.[d] > 0, `${label}: ${look} ${a} ${d} row is missing`); console.log('ok', label, look, 'walk frames', JSON.stringify(r.walk)) };
   await ok('A fresh load');
+  // v98.90 · the character list: every character (hero, Bram, Kier, Luna, Mil + the five recruits) has an entry and a bust thumbnail (upper half of the SE standing picture)
+  const list = await p.evaluate(() => ({ ents: StudioBrowser.state.model.filter(e => e.group === 'characters').map(e => e.id), busts: [...document.querySelectorAll('img.bust')].map(i => [i.dataset.bust, i.src.startsWith('data:')]) }));
+  for (const id of ['hero', 'ally:bram', 'ally:kier', 'ally:luna', 'ally:mil', 'ally:ren', 'ally:nadia', 'ally:sigrid', 'ally:orla', 'ally:olwen']) { assert.ok(list.ents.includes(id), 'character list is missing ' + id); assert.ok(list.busts.some(([k, ok]) => k === id && ok), 'no bust thumbnail for ' + id) }
+  console.log('ok character list + busts', list.ents.length, 'characters');
   await p.evaluate(() => { window.__id = StudioBrowser.state.model.find(x => x.id === 'hero').clips.find(c => c.action === 'walk' && c.view === 'SW').id; StudioUnifiedReview.open(window.__id) }); await p.waitForTimeout(3000);
   await p.keyboard.press('Escape'); await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close())); await p.waitForTimeout(1500); await ok('B after opening/closing the frame editor');
   for (const l of ['female', 'male']) { await p.click(`[data-look="${l}"]`); await p.waitForTimeout(3000); await ok('C switch to ' + l) }
