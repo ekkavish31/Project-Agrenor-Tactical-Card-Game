@@ -67833,6 +67833,2402 @@
     "group": "characters"
    },
    "artRevision": "mw0feubp"
+  },
+  {
+   "id": "tactics-ren-se-idle",
+   "file": "assets/village-town/npc/ren/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม ren",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+  },
+  {
+   "id": "tactics-ren-nw-idle",
+   "file": "assets/village-town/npc/ren/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม ren",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+  },
+  {
+   "id": "tactics-ren-sw-walk-1",
+   "file": "assets/tactics/ren_sw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Ren",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-ren-nw-walk-1",
+   "file": "assets/tactics/ren_nw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Ren",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-ren-ne-walk-1",
+   "file": "assets/tactics/ren_ne_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Ren",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-ren-se-walk-1",
+   "file": "assets/tactics/ren_se_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Ren",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-nadia-se-idle",
+   "file": "assets/village-town/npc/nadia/se-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม nadia",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0gxg2d"
+  },
+  {
+   "id": "tactics-nadia-nw-idle",
+   "file": "assets/village-town/npc/nadia/nw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม nadia",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
+   "artRevision": "mw0gxsai"
+  },
+  {
+   "id": "tactics-nadia-sw-walk-1",
+   "file": "assets/tactics/nadia_sw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Nadia",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-nadia-nw-walk-1",
+   "file": "assets/tactics/nadia_nw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Nadia",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-nadia-ne-walk-1",
+   "file": "assets/tactics/nadia_ne_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Nadia",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-nadia-se-walk-1",
+   "file": "assets/tactics/nadia_se_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Nadia",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-sigrid-se-idle",
+   "file": "assets/village-town/npc/sigrid/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม sigrid",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+  },
+  {
+   "id": "tactics-sigrid-nw-idle",
+   "file": "assets/village-town/npc/sigrid/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม sigrid",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+  },
+  {
+   "id": "tactics-sigrid-sw-walk-1",
+   "file": "assets/tactics/sigrid_sw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Sigrid",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-sigrid-nw-walk-1",
+   "file": "assets/tactics/sigrid_nw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Sigrid",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-sigrid-ne-walk-1",
+   "file": "assets/tactics/sigrid_ne_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Sigrid",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-sigrid-se-walk-1",
+   "file": "assets/tactics/sigrid_se_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Sigrid",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-orla-se-idle",
+   "file": "assets/village-town/npc/orla/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม orla",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+  },
+  {
+   "id": "tactics-orla-nw-idle",
+   "file": "assets/village-town/npc/orla/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม orla",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+  },
+  {
+   "id": "tactics-orla-sw-walk-1",
+   "file": "assets/tactics/orla_sw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Orla",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-orla-nw-walk-1",
+   "file": "assets/tactics/orla_nw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Orla",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-orla-ne-walk-1",
+   "file": "assets/tactics/orla_ne_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Orla",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-orla-se-walk-1",
+   "file": "assets/tactics/orla_se_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Orla",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-olwen-se-idle",
+   "file": "assets/village-town/npc/olwen/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม olwen",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+  },
+  {
+   "id": "tactics-olwen-nw-idle",
+   "file": "assets/village-town/npc/olwen/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "เพื่อนร่วมทีม olwen",
+   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ"
+  },
+  {
+   "id": "tactics-olwen-sw-walk-1",
+   "file": "assets/tactics/olwen_sw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Olwen",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-olwen-nw-walk-1",
+   "file": "assets/tactics/olwen_nw_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Olwen",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-olwen-ne-walk-1",
+   "file": "assets/tactics/olwen_ne_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Olwen",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "tactics-olwen-se-walk-1",
+   "file": "assets/tactics/olwen_se_walk_01.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "เพื่อนร่วมทีม Olwen",
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-1",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-2",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-3",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-4",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-5",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-6",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-7",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-8",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-9",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-10",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-11",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-sw-walk-mw0h1tab-12",
+   "file": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1tab"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-1",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-2",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-3",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-4",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-5",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-6",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-7",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-8",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-9",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-10",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-11",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-se-walk-mw0h1vuo-12",
+   "file": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h1vuo"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-1",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-2",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-3",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-4",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-5",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-6",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-7",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-8",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-9",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-10",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-11",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8elb-12",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8elb"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-1",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-2",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-3",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-4",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-5",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-6",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-7",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-8",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-9",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-10",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-11",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8i0e-12",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8i0e"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-1",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-2",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-3",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-4",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-5",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-6",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-7",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-8",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-9",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-10",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-11",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-nw-walk-mw0h8jt4-12",
+   "file": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8jt4"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-1",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-2",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-3",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-4",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-5",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-6",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-7",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-8",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-9",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-10",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-11",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
+  },
+  {
+   "id": "studio-ally-nadia-ne-walk-mw0h8mqf-12",
+   "file": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:nadia",
+    "name": "Nadia",
+    "group": "characters"
+   },
+   "artRevision": "mw0h8mqf"
   }
  ],
  "studioReviews": {
@@ -69084,7 +71480,7 @@
    "approvedAt": "2026-11-03T01:47:13.832Z"
   },
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mw0130fk-486y-1\",\"assets/tactics/imported/idle-sw-mw0130fk-486y/frame-01.png\",0,\"mw0130fk-486y\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
    "approvedAt": "2026-11-03T01:47:45.119Z"
   },
@@ -69498,6 +71894,102 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-03T08:28:48.072Z"
+  },
+  "[\"allywalk:luna:NE\",\"NE\",true,[[\"studio-ally-luna-ne-walk-mw0feubp-1\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-01.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-2\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-02.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-3\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-03.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-4\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-04.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-5\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-05.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-6\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-06.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-7\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-07.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-8\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-08.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-9\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-09.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-10\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-10.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-11\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-11.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0feubp-12\",\"assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-12.png\",0,\"mw0feubp\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T08:28:52.318Z"
+  },
+  "[\"tactics-nadia-sw-idle\",\"SW\",true,[[\"tactics-nadia-sw-idle\",\"assets/village-town/npc/nadia/sw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:11:39.818Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mw0gt083-iz51-1\",\"assets/tactics/imported/idle-sw-mw0gt083-iz51/frame-01.png\",0,\"mw0gt083-iz51\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:07:52.180Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mw0gt083-iz51-1\",\"assets/tactics/imported/idle-sw-mw0gt083-iz51/frame-01.png\",0,\"mw0gt083-iz51\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:07:52.180Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mw0gt32y-42yl-1\",\"assets/tactics/imported/idle-sw-mw0gt32y-42yl/frame-01.png\",0,\"mw0gt32y-42yl\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:07:55.928Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mw0gt32y-42yl-1\",\"assets/tactics/imported/idle-sw-mw0gt32y-42yl/frame-01.png\",0,\"mw0gt32y-42yl\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:07:55.928Z"
+  },
+  "[\"tactics-nadia-se-idle\",\"SE\",true,[[\"tactics-nadia-se-idle\",\"assets/village-town/npc/nadia/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-nadia-se-idle\",\"SE\",true,[[\"tactics-nadia-se-idle\",\"assets/village-town/npc/nadia/se-stand.webp\",0,\"mw0gxg2d\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:11:19.557Z"
+  },
+  "[\"tactics-nadia-ne-idle\",\"NE\",true,[[\"tactics-nadia-ne-idle\",\"assets/village-town/npc/nadia/ne-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:11:37.697Z"
+  },
+  "[\"tactics-nadia-nw-idle\",\"NW\",true,[[\"tactics-nadia-nw-idle\",\"assets/village-town/npc/nadia/nw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-nadia-nw-idle\",\"NW\",true,[[\"tactics-nadia-nw-idle\",\"assets/village-town/npc/nadia/nw-stand.webp\",0,\"mw0gxsai\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:11:35.180Z"
+  },
+  "[\"tactics-nadia-sw-walk-1\",\"SW\",true,[[\"tactics-nadia-sw-walk-1\",\"assets/tactics/nadia_sw_walk_01.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:14:43.407Z"
+  },
+  "[\"allywalk:nadia:SW\",\"SW\",true,[[\"studio-ally-nadia-sw-walk-mw0h1tab-1\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-01.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-2\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-02.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-3\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-03.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-4\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-04.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-5\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-05.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-6\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-06.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-7\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-07.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-8\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-08.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-9\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-09.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-10\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-10.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-11\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-11.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-sw-walk-mw0h1tab-12\",\"assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-12.png\",0,\"mw0h1tab\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:14:51.082Z"
+  },
+  "[\"tactics-nadia-se-walk-1\",\"SE\",true,[[\"tactics-nadia-se-walk-1\",\"assets/tactics/nadia_se_walk_01.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:14:46.716Z"
+  },
+  "[\"allywalk:nadia:SE\",\"SE\",true,[[\"studio-ally-nadia-se-walk-mw0h1vuo-1\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-01.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-2\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-02.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-3\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-03.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-4\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-04.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-5\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-05.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-6\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-06.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-7\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-07.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-8\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-08.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-9\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-09.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-10\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-10.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-11\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-11.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-se-walk-mw0h1vuo-12\",\"assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-12.png\",0,\"mw0h1vuo\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:14:48.733Z"
+  },
+  "[\"tactics-nadia-ne-walk-1\",\"NE\",true,[[\"tactics-nadia-ne-walk-1\",\"assets/tactics/nadia_ne_walk_01.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:19:51.052Z"
+  },
+  "[\"allywalk:nadia:NE\",\"NE\",true,[[\"studio-ally-nadia-ne-walk-mw0h8elb-1\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-01.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-2\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-02.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-3\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-03.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-4\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-04.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-5\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-05.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-6\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-06.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-7\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-07.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-8\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-08.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-9\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-09.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-10\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-10.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-11\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-11.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-ne-walk-mw0h8elb-12\",\"assets/tactics/imported/ally-nadia-walk-ne-mw0h8elb/frame-12.png\",0,\"mw0h8elb\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-nadia-nw-walk-1\",\"NW\",true,[[\"tactics-nadia-nw-walk-1\",\"assets/tactics/nadia_nw_walk_01.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:19:55.493Z"
+  },
+  "[\"allywalk:nadia:NW\",\"NW\",true,[[\"studio-ally-nadia-nw-walk-mw0h8i0e-1\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-01.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-2\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-02.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-3\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-03.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-4\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-04.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-5\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-05.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-6\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-06.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-7\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-07.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-8\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-08.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-9\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-09.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-10\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-10.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-11\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-11.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8i0e-12\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8i0e/frame-12.png\",0,\"mw0h8i0e\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:nadia:NW\",\"NW\",true,[[\"studio-ally-nadia-nw-walk-mw0h8jt4-1\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-01.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-2\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-02.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-3\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-03.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-4\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-04.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-5\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-05.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-6\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-06.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-7\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-07.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-8\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-08.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-9\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-09.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-10\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-10.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-11\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-11.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-nadia-nw-walk-mw0h8jt4-12\",\"assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-12.png\",0,\"mw0h8jt4\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T09:19:57.833Z"
   }
  },
  "studioClipHistory": {
@@ -69877,6 +72369,18 @@
       "archive": "assets/_versions/unified/mw07i47g/tactics-bram-se-idle.png"
      }
     ]
+   }
+  ],
+  "static:tactics-nadia-se-idle": [
+   {
+    "at": "2026-11-03T09:11:19.471Z",
+    "entries": []
+   }
+  ],
+  "static:tactics-nadia-nw-idle": [
+   {
+    "at": "2026-11-03T09:11:35.071Z",
+    "entries": []
    }
   ]
  },
@@ -71535,6 +74039,308 @@
      {
       "assetId": "studio-ally-luna-nw-walk-mw0feosu-12",
       "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-12.png",
+      "ms": 100
+     }
+    ]
+   }
+  },
+  "nadia": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-03T09:14:42.947Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-1",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-2",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-3",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-4",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-5",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-6",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-7",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-8",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-9",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-10",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-11",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-sw-walk-mw0h1tab-12",
+      "src": "assets/tactics/imported/ally-nadia-walk-sw-mw0h1tab/frame-12.png",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-03T09:14:46.272Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-1",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-2",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-3",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-4",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-5",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-6",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-7",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-8",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-9",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-10",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-11",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-se-walk-mw0h1vuo-12",
+      "src": "assets/tactics/imported/ally-nadia-walk-se-mw0h1vuo/frame-12.png",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-03T09:20:01.047Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-1",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-2",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-3",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-4",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-5",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-6",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-7",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-8",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-9",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-10",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-11",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-ne-walk-mw0h8mqf-12",
+      "src": "assets/tactics/imported/ally-nadia-walk-ne-mw0h8mqf/frame-12.png",
+      "ms": 100
+     }
+    ]
+   },
+   "NW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-03T09:19:57.256Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-1",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-2",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-3",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-4",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-5",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-6",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-7",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-8",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-9",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-10",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-11",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-nadia-nw-walk-mw0h8jt4-12",
+      "src": "assets/tactics/imported/ally-nadia-walk-nw-mw0h8jt4/frame-12.png",
       "ms": 100
      }
     ]
