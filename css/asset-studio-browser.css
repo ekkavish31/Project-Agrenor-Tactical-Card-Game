@@ -70,7 +70,7 @@ main{grid-template-columns:238px minmax(0,1fr);position:relative}nav{border-righ
 #animation-review.ur-v2 .ur-tab>details>summary{display:none}
 #animation-review.ur-v2 .ur-tab>.wi-align{margin:0}
 #animation-review.ur-v2 .wi-footer{flex:none;margin-top:8px}
-#animation-review.ur-v2 #wi-eraser:not([hidden]){position:fixed;inset:4vh 8vw;z-index:50;overflow:auto;background:#f7f5ee;border:1px solid #c7a35a;border-radius:14px;padding:14px;box-shadow:0 20px 60px #0007}
+#animation-review.ur-v2 #wi-eraser:not([hidden]){position:fixed;inset:4vh 8vw;width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;box-sizing:border-box;z-index:50;overflow:auto;background:#f7f5ee;border:1px solid #c7a35a;border-radius:14px;padding:14px;box-shadow:0 20px 60px #0007}
 @media (max-width:1050px){#animation-review.ur-v2{overflow:auto}#animation-review.ur-v2 .wi-top{grid-template-columns:1fr!important}#animation-review.ur-v2 .wi-settings{max-height:70vh!important}}
 #animation-review.ur-v2 #ur-editor .wi-top{position:static;max-height:none;padding:0;border:0;background:none}
 #animation-review.ur-v2 #ur-editor .wi-top>.ur-left{max-height:none;padding:0 2px 0 0}
@@ -87,3 +87,5 @@ main{grid-template-columns:238px minmax(0,1fr);position:relative}nav{border-righ
 nav button img.bust{width:43px;height:43px;object-fit:cover;border-radius:8px;background:#f1ead8;flex:none}
 /* v98.96 · review panel: only the pass / not-pass toggle is shown */
 #animation-review .ur-review-tools [hidden]{display:none!important}#animation-review .ur-review-tools button[aria-pressed=true]{background:#2f6a4a;color:#fff;border-color:#2f6a4a}#animation-review .ur-review-tools #ur-reject[aria-pressed=true]{background:#a8402f;border-color:#a8402f}
+/* v98.117 · the eraser panel is exactly the box inset 4vh 8vw (it was as wide as the whole window, so its "เสร็จแล้ว" button sat off screen) and its picture area uses the space that is left */
+#animation-review.ur-v2 #wi-eraser:not([hidden]) #wie-scroll{max-height:calc(92vh - 190px)}

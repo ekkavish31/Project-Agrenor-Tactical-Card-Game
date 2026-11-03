@@ -28,5 +28,10 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   { const s0 = await state(); if (/^ผ่าน/.test(s0.t)) { await p.click('#ur-approve'); await p.waitForTimeout(700) } else if (/^ไม่ผ่าน/.test(s0.t)) { await p.click('#ur-reject'); await p.waitForTimeout(700) } assert.equal((await state()).t, 'รอตรวจ', 'start the toggle test from รอตรวจ') }
   const seq = []; for (const [btn, want] of [['#ur-approve', 'ผ่านการตรวจแล้ว'], ['#ur-approve', 'รอตรวจ'], ['#ur-reject', 'ไม่ผ่าน (ต้องแก้)'], ['#ur-reject', 'รอตรวจ'], ['#ur-reject', 'ไม่ผ่าน (ต้องแก้)'], ['#ur-approve', 'ผ่านการตรวจแล้ว']]) { await p.click(btn); await p.waitForTimeout(700); const s = await state(); assert.equal(s.t, want, btn + ' -> ' + JSON.stringify(s)); seq.push(s.t) }
   console.log('ok pass / not-pass toggle:', seq.join(' → '));
+  // v98.117 · the eraser panel must fit the window: its "เสร็จแล้ว" button reachable, and pressing it closes the panel
+  await p.evaluate(() => document.querySelector('[data-erase]').click()); await p.waitForTimeout(1200);
+  const er = await p.evaluate(() => { const e = document.getElementById('wi-eraser'), r = e.getBoundingClientRect(), c = document.getElementById('wie-close').getBoundingClientRect(); return { open: !e.hidden, right: r.right, bottom: r.bottom, closeRight: c.right, vw: innerWidth, vh: innerHeight } });
+  assert.ok(er.open && er.right <= er.vw + 1 && er.bottom <= er.vh + 1 && er.closeRight <= er.vw, 'eraser panel inside the window: ' + JSON.stringify(er));
+  await p.click('#wie-close'); await p.waitForTimeout(600); assert.equal(await p.evaluate(() => document.getElementById('wi-eraser').hidden), true, 'the เสร็จแล้ว button closes the eraser'); console.log('ok eraser panel fits the window');
   assert.deepEqual(errs.filter(x => !/404/.test(x)), [], 'page errors: ' + errs.join(' | ')); console.log('ui cleanup e2e: all cases passed'); await browser.close(); server.close();
 })().catch(e => { console.error('FAIL', e.message); process.exit(1) });
