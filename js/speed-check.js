@@ -12,6 +12,25 @@
   const watch = () => { try { new PerformanceObserver(l => { for (const e of l.getEntries()) lt.push([e.startTime, e.duration]) }).observe({ type: 'longtask', buffered: true }) } catch (e) { } };
   if (ON) watch();
   let running = false;
+  /* v98.100 · live fps HUD: number + frame-time graph (bars: green ≤ 33 ms = 30 fps, amber ≤ 50 ms, red slower), drawn every frame while the check runs and until it is closed */
+  let hud = null, hudOn = false;
+  function hudStart() {
+    if (hudOn) return; hudOn = true;
+    const c = document.createElement('canvas'); c.width = 240; c.height = 96; c.style.cssText = 'position:fixed;right:12px;top:12px;z-index:99999;border-radius:10px;background:#000b;border:1px solid #b8943f;pointer-events:none'; document.body.append(c); hud = c;
+    const g = c.getContext('2d'), N = 120, dts = []; let last = 0, acc = 0, cnt = 0, shown = 0, worst = 0, tt = 0;
+    const loop = now => {
+      if (!hudOn) { c.remove(); hud = null; return }
+      if (last) { const d = now - last; dts.push(d); if (dts.length > N) dts.shift(); acc += d; cnt++; worst = Math.max(worst, d); if (acc >= 500) { shown = cnt * 1000 / acc; tt = worst; acc = cnt = worst = 0 } } last = now;
+      g.clearRect(0, 0, 240, 96); const gy = ms => 96 - Math.min(ms, 66) / 66 * 62 - 2;
+      dts.forEach((d, i) => { g.fillStyle = d <= 34 ? '#5fd38a' : d <= 50 ? '#e8b64a' : '#e5584a'; const y = gy(d); g.fillRect(i * 2, y, 1.6, 96 - 2 - y) });
+      g.strokeStyle = '#fff6'; g.setLineDash([3, 3]); g.beginPath(); const y30 = gy(33.3), y60 = gy(16.7); g.moveTo(0, y30); g.lineTo(240, y30); g.moveTo(0, y60); g.lineTo(240, y60); g.stroke(); g.setLineDash([]);
+      g.fillStyle = '#fff9'; g.font = '9px system-ui'; g.fillText('30', 2, y30 - 2); g.fillText('60', 2, y60 - 2);
+      g.fillStyle = shown >= 55 ? '#5fd38a' : shown >= 30 ? '#e8b64a' : '#e5584a'; g.font = 'bold 22px system-ui'; g.fillText(shown ? shown.toFixed(0) + ' fps' : '… fps', 22, 24); g.fillStyle = '#fffc'; g.font = '11px system-ui'; g.fillText('ช้าสุด ' + tt.toFixed(0) + ' ms', 120, 22);
+      requestAnimationFrame(loop)
+    };
+    requestAnimationFrame(loop)
+  }
+  const hudStop = () => { hudOn = false };
   const wait = ms => new Promise(r => setTimeout(r, ms));
   let panel;
   function show(txt, done) {
@@ -21,7 +40,7 @@
       const b = document.createElement('button'); b.textContent = '📋 คัดลอกผล'; b.style.cssText = 'margin-top:8px;padding:6px 12px;border-radius:8px;border:1px solid #8a6a2a;background:#e8c46a;cursor:pointer;font:inherit;color:#3a2a14';
       b.onclick = async () => { try { await navigator.clipboard.writeText(txt); b.textContent = 'คัดลอกแล้ว ✓' } catch (e) { const r = document.createRange(); r.selectNodeContents(pre); getSelection().removeAllRanges(); getSelection().addRange(r); b.textContent = 'เลือกข้อความแล้ว · กด Ctrl+C' } };
       panel.append(b);
-      const x = document.createElement('button'); x.textContent = '✕ ปิด'; x.style.cssText = b.style.cssText + ';margin-left:8px'; x.onclick = () => { panel.remove(); panel = null }; panel.append(x)
+      const x = document.createElement('button'); x.textContent = '✕ ปิด'; x.style.cssText = b.style.cssText + ';margin-left:8px'; x.onclick = () => { panel.remove(); panel = null; hudStop() }; panel.append(x)
     }
   }
   const px = () => ({ w: Math.max(2, Math.round(innerWidth * (window.devicePixelRatio || 1))), h: Math.max(2, Math.round(innerHeight * (window.devicePixelRatio || 1))) });
@@ -55,7 +74,7 @@
     });
   }
   async function main(manual) {
-    if (running) return; running = true; if (manual) watch();
+    if (running) return; running = true; if (manual) { watch(); hudStart() }
     // wait until the village has been painted and nothing heavy has run for 3 s (or 60 s at most)
     const t0 = performance.now();
     for (; ;) {
@@ -108,6 +127,13 @@
     try { if (window.RENDER_LOG) o.push('ปรับความละเอียด: ' + JSON.stringify(window.RENDER_LOG).slice(0, 160)) } catch (e) { }
     return o.join(' · ');
   }
-  window.SpeedCheck = { start: () => { running = false; return main(true) }, running: () => running };
+  window.SpeedCheck = { start: () => { running = false; return main(true) }, running: () => running, hudOn: () => hudOn, stop: () => { if (panel) { panel.remove(); panel = null } hudStop() } };
+  /* Ctrl+Shift+P anywhere in the game: start the check (press again after it finishes to close). The outer page hands it to the visible game frame (the village runs in one). */
+  addEventListener('keydown', e => {
+    if (!(e.ctrlKey && e.shiftKey && (e.key === 'P' || e.key === 'p' || e.code === 'KeyP'))) return; e.preventDefault();
+    if (window.parent !== window) return window.SpeedCheck.running() ? 0 : (window.SpeedCheck.hudOn() ? window.SpeedCheck.stop() : window.SpeedCheck.start());
+    let t = null; for (const f of document.querySelectorAll('iframe')) { try { if (f.contentWindow.SpeedCheck && f.offsetParent !== null && f.getBoundingClientRect().width > 200) t = f.contentWindow } catch (x) { } }
+    t = t || window; if (t.SpeedCheck.running()) return; t.SpeedCheck.hudOn() ? t.SpeedCheck.stop() : t.SpeedCheck.start()
+  }, true);
   if (ON) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => main(false)); else main(false) }
 })();

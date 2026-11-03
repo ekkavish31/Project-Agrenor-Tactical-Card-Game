@@ -15,5 +15,10 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const txt = (await Promise.all(p.frames().map(f => f.evaluate(() => [...document.querySelectorAll('pre')].map(d => d.textContent).find(t => /เสร็จ/.test(t)) || '').catch(() => '')))).find(Boolean) || '';   // the report appears in the visible game frame (the village)
   assert.match(txt, /ความกระตุก:/); assert.match(txt, /ตอนเล่น: [\d.]+ fps/); assert.match(txt, /ฉาก:/); assert.ok((await Promise.all(p.frames().map(f => f.locator('text=📋 คัดลอกผล').count().catch(() => 0)))).some(n => n >= 1), 'copy button');
   console.log('ok report:\n' + txt.split('\n').slice(0, 8).join('\n'));
+  // v98.100 · live HUD is visible and Ctrl+Shift+P toggles it
+  const hud = () => Promise.all(p.frames().map(f => f.evaluate(() => !!window.SpeedCheck && SpeedCheck.hudOn()).catch(() => false))).then(a => a.some(Boolean));
+  assert.ok(await hud(), 'live fps HUD must be on after the check');
+  await p.keyboard.press('Control+Shift+P'); await p.waitForTimeout(800); assert.ok(!(await hud()), 'Ctrl+Shift+P closes the finished check');
+  await p.keyboard.press('Control+Shift+P'); await p.waitForTimeout(1500); assert.ok(await hud(), 'Ctrl+Shift+P starts the check + HUD'); console.log('ok hotkey + live HUD');
   assert.deepEqual(errs, [], errs.join('|')); console.log('perf button e2e: all cases passed'); await browser.close(); server.close();
 })().catch(e => { console.error('FAIL', e.message); process.exit(1) });
