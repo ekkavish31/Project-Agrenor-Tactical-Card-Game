@@ -9,6 +9,7 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const server = await serve(), base = 'http://localhost:' + server.address().port + '/', browser = await chromium.launch(), p = await (await browser.newContext({ viewport: { width: 1300, height: 850 } })).newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('dialog', d => d.accept());
   await p.goto(base + 'village-town.html?edit=1'); await p.waitForTimeout(6000);
+  await p.evaluate(() => WalkSpeed.reset());   // main may carry pushed speeds (game-settings.js): start from the built-in ones
   const def = await p.evaluate(() => ({ r: WalkSpeed.heroMs(true), g: WalkSpeed.heroMs(false), n: TownNPC.roster.map(n => [n.id, WalkSpeed.npcMs(n), n.speed * 0.57]) }));
   assert.ok(Math.abs(def.r - 8.8 * 0.57) < 1e-9 && Math.abs(def.g - 7.4 * 0.57) < 1e-9, 'hero defaults unchanged'); for (const [id, a, b] of def.n) assert.ok(Math.abs(a - b) < 1e-9, 'npc default ' + id);
   await p.evaluate(() => document.getElementById('walkSpeedBtn').click()); await p.waitForTimeout(500);

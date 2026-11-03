@@ -100,6 +100,14 @@
     const dts = S.dts.slice().sort((a, b) => a - b), pct = q => dts.length ? dts[Math.min(dts.length - 1, Math.floor(dts.length * q))] : 0, worst = pct(0.99), jank = dts.filter(x => x > 50).length;
     /* v98.104 · experiments: the same fps with the CSS effects hidden, to see whether the compositor (not our JS) is the limit */
     const fxEls = []; { let n = 0; for (const el of document.querySelectorAll('*')) { if (++n > 4000) break; const cs = getComputedStyle(el), r = el.getBoundingClientRect(); if (r.width < 40 || r.height < 40 || r.bottom < 0 || r.top > innerHeight) continue; if ((cs.backdropFilter && cs.backdropFilter !== 'none') || (cs.mixBlendMode && cs.mixBlendMode !== 'normal') || (cs.filter && cs.filter !== 'none' && r.width > 300)) fxEls.push(el) } }
+    /* v98.109 · function-level profile: for 3 s every non-native global function (and the functions of global objects such as TownArt / HD2D / VillageAssetEdit) is timed (inclusive). No profiler API is needed. */
+    const prof = await (async () => {
+      const R = new Map(), undo = [], skip = new Set(['requestAnimationFrame', 'cancelAnimationFrame', 'setTimeout', 'setInterval', 'clearTimeout', 'clearInterval', 'show', 'sample', 'main', 'bench2d', 'benchGL', 'wrapAll']);
+      const ok = f => { try { if (typeof f !== 'function') return false; const s = Function.prototype.toString.call(f); if (/\[native code\]/.test(s) || /^class\b/.test(s)) return false; if (f.prototype && Object.getOwnPropertyNames(f.prototype).length > 1) return false; return true } catch (e) { return false } };
+      const wrapOne = (o, k, label) => { try { const d = Object.getOwnPropertyDescriptor(o, k); if (!d || !d.writable || !d.configurable && !d.writable) return; const f = d.value; if (!ok(f)) return; const w = function (...a) { const t0 = performance.now(); try { return f.apply(this, a) } finally { const e = R.get(label) || R.set(label, [0, 0]).get(label); e[0] += performance.now() - t0; e[1]++ } }; Object.defineProperty(w, 'name', { value: f.name }); o[k] = w; undo.push(() => { o[k] = f }) } catch (e) { } };
+      let n = 0; for (const k of Object.getOwnPropertyNames(window)) { if (n > 3000) break; if (skip.has(k) || /^(webkit|on)/.test(k)) continue; let v; try { v = window[k] } catch (e) { continue } if (typeof v === 'function') { if (ok(v) && !/^[A-Z]/.test(k)) { wrapOne(window, k, k); n++ } } else if (v && typeof v === 'object' && /^[A-Z][A-Za-z0-9]+$/.test(k) && v !== window && !(v instanceof Node) && !(v instanceof Event)) { let keys = []; try { keys = Object.keys(v) } catch (e) { } for (const m of keys.slice(0, 80)) { wrapOne(v, m, k + '.' + m); n++ } } }
+      const S3 = await sample(3000); undo.forEach(u => u()); return { R, n: S3.n, wrapped: n }
+    })();
     let expTxt = 'ทดลอง: ';
     if (fxEls.length) { const old = fxEls.map(e => e.style.visibility); fxEls.forEach(e => e.style.visibility = 'hidden'); show('⏱ ทดลองปิดเอฟเฟกต์ CSS… (2 วิ)'); await wait(300); const E1 = await sample(2500); fxEls.forEach((e, i) => e.style.visibility = old[i]); expTxt += 'ซ่อนเอฟเฟกต์ CSS ' + fxEls.length + ' ชิ้น → ' + (E1.n / E1.secs).toFixed(1) + ' fps (ปกติ ' + (S.n / S.secs).toFixed(1) + ')' } else expTxt += 'ไม่มีเอฟเฟกต์ CSS ให้ซ่อน';
     const fps = S.n / S.secs, soft = gl ? /swiftshader|llvmpipe|software|basic render|microsoft basic/i.test(gl.renderer) : true;
@@ -141,6 +149,7 @@
       (() => { const rows = Object.entries(D).map(([k, v]) => [k, v[0] / S.n, v[1] / S.n]).sort((a, b) => b[1] - a[1]), sum = rows.reduce((a, r) => a + r[1], 0), tot = (S.T['วาดวัตถุ'] || 0) / S.n; return 'ใน drawSorted: ทั้งหมด ' + tot.toFixed(1) + ' ms/เฟรม · วาดจริง (draw ของแต่ละชิ้น) ' + sum.toFixed(1) + ' ms · จัดกลุ่ม/เรียง/อื่นๆ ' + (tot - sum).toFixed(1) + ' ms · วัตถุที่ส่งมา ~' + (NN.frames ? Math.round(NN.objs / NN.frames) : '?') + ' ชิ้น/เฟรม\n   แพงสุด: ' + (rows.slice(0, 8).map(r => r[0] + ' ' + r[1].toFixed(1) + 'ms (' + r[2].toFixed(0) + ' ชิ้น)').join(' · ') || '—') })(),
       anatomy,
       expTxt,
+      'ฟังก์ชันหนักสุด (รวมที่เรียกในนั้น · ms/เฟรม · ครั้ง/เฟรม · วัด 3 วิ แยกจากรอบแรก เลขรวมจะสูงกว่าปกติเล็กน้อย): ' + ([...prof.R].sort((a, b) => b[1][0] - a[1][0]).slice(0, 16).map(([k, v]) => k + ' ' + (v[0] / prof.n).toFixed(1) + ' (' + (v[1] / prof.n).toFixed(1) + '×)').join(' · ') || '—'),
       'ใช้เวลาต่อเฟรม (ms): ' + (parts.length ? parts.map(([k, v]) => k + ' ' + v.toFixed(1)).join(' · ') : '—'),
       'เอฟเฟกต์เต็มจอ 1 ชั้น: Canvas 2D ' + b2.toFixed(1) + ' ms · WebGL ' + (glMs == null ? '—' : glMs.toFixed(1) + ' ms'),
       '',

@@ -11,8 +11,9 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   assert.ok(await p.evaluate(() => typeof openSettings === 'function' && !!window.SpeedCheck && typeof GameSettings.perf === 'function'), 'settings.perf / SpeedCheck missing');
   await p.evaluate(() => openSettings()); await p.waitForTimeout(500);
   const btn = p.locator('text=📊 วัดประสิทธิภาพ'); assert.equal(await btn.count(), 1, 'button must be in Settings');
-  await btn.evaluate(b => b.click()); await p.waitForTimeout(12000);
-  const txt = (await Promise.all(p.frames().map(f => f.evaluate(() => [...document.querySelectorAll('pre')].map(d => d.textContent).find(t => /เสร็จ/.test(t)) || '').catch(() => '')))).find(Boolean) || '';   // the report appears in the visible game frame (the village)
+  await btn.evaluate(b => b.click());
+  const grab = async () => (await Promise.all(p.frames().map(f => f.evaluate(() => [...document.querySelectorAll('pre')].map(d => d.textContent).find(t => /เสร็จ/.test(t)) || '').catch(() => '')))).find(Boolean) || '';   // the report appears in the visible game frame (the village);
+  let txt = ''; for (let i = 0; i < 45 && !txt; i++) { await p.waitForTimeout(2000); txt = await grab() }   // the check now takes ~25 s (sample + CSS experiment + function profile)
   assert.match(txt, /ความกระตุก:/); assert.match(txt, /ตอนเล่น: [\d.]+ fps/); assert.match(txt, /ฉาก:/); assert.ok((await Promise.all(p.frames().map(f => f.locator('text=📋 คัดลอกผล').count().catch(() => 0)))).some(n => n >= 1), 'copy button');
   console.log('ok report:\n' + txt.split('\n').slice(0, 8).join('\n'));
   // v98.100 · live HUD is visible and Ctrl+Shift+P toggles it
