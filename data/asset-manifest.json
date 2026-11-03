@@ -61417,6 +61417,56 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-03T01:52:39.741Z"
+  },
+  "[\"tactics.walk.nw\",\"NW\",true,[[\"studio-hero-nw-walk-mw019el8-0r1d-1\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-01.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-2\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-02.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-3\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-03.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-4\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-04.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-5\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-05.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-6\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-06.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-7\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-07.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-8\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-08.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-9\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-09.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-10\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-10.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-11\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-11.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-12\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-12.png\",0,\"mw019el8-0r1d\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T01:52:43.940Z"
+  },
+  "[\"tactics.walk.ne\",\"NE\",true,[[\"studio-hero-nw-walk-mw019el8-0r1d-1\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-01.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-2\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-02.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-3\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-03.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-4\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-04.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-5\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-05.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-6\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-06.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-7\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-07.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-8\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-08.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-9\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-09.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-10\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-10.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-11\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-11.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mw019el8-0r1d-12\",\"assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-12.png\",0,\"mw019el8-0r1d\",null,100,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T01:52:43.940Z"
+  },
+  "[\"tactics.windup.sw\",\"SW\",false,[[\"look-female-characters-hero-female-idle-sw\",\"assets/characters/hero-female/idle-sw.webp\",0,\"\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T02:05:24.640Z"
+  },
+  "[\"tactics.windup.nw\",\"NW\",false,[[\"look-female-characters-hero-female-idle-nw\",\"assets/characters/hero-female/idle-nw.webp\",0,\"\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T01:56:59.872Z"
+  },
+  "[\"tactics.windup.ne\",\"NE\",false,[[\"look-female-characters-hero-female-idle-ne\",\"assets/characters/hero-female/idle-ne.webp\",0,\"\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T01:57:01.154Z"
+  },
+  "[\"tactics.windup.se\",\"SE\",false,[[\"look-female-characters-hero-female-idle-se\",\"assets/characters/hero-female/idle-se.webp\",0,\"\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T01:57:02.257Z"
+  },
+  "[\"tactics.strike.sw\",\"SW\",false,[[\"look-female-characters-hero-female-idle-sw\",\"assets/characters/hero-female/idle-sw.webp\",0,\"\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T01:57:03.847Z"
+  },
+  "[\"tactics.strike.nw\",\"NW\",false,[[\"look-female-characters-hero-female-idle-nw\",\"assets/characters/hero-female/idle-nw.webp\",0,\"\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T01:57:05.100Z"
+  },
+  "[\"tactics.strike.ne\",\"NE\",false,[[\"look-female-characters-hero-female-idle-ne\",\"assets/characters/hero-female/idle-ne.webp\",0,\"\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T01:57:06.503Z"
+  },
+  "[\"tactics.strike.se\",\"SE\",false,[[\"look-female-characters-hero-female-idle-se\",\"assets/characters/hero-female/idle-se.webp\",0,\"\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T01:57:08.189Z"
   }
  },
  "studioClipHistory": {
@@ -61481,6 +61531,366 @@
   ]
  },
  "heroVariants": {
+  "male": {
+   "studioWalks": {
+    "SW": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-03T01:50:10.277Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-1",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-01.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-2",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-02.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-3",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-03.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-4",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-04.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-5",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-05.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-6",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-06.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-7",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-07.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-8",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-08.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-9",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-09.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-10",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-10.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-11",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-11.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-12",
+       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-12.png",
+       "ms": 100
+      }
+     ]
+    },
+    "SE": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-03T01:52:10.272Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-1",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-01.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-2",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-02.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-3",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-03.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-4",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-04.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-5",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-05.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-6",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-06.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-7",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-07.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-8",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-08.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-9",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-09.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-10",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-10.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-11",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-11.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mw018p40-1qzh-12",
+       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-12.png",
+       "ms": 100
+      }
+     ]
+    },
+    "NW": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-03T01:52:43.292Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-1",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-01.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-2",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-02.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-3",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-03.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-4",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-04.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-5",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-05.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-6",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-06.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-7",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-07.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-8",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-08.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-9",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-09.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-10",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-10.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-11",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-11.png",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-12",
+       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-12.png",
+       "ms": 100
+      }
+     ]
+    }
+   },
+   "studioWalkMirrors": {
+    "SW": "SE",
+    "NE": "NW"
+   },
+   "studioWalkHistory": {
+    "SW": [
+     {
+      "at": "2026-11-03T01:49:31.214Z",
+      "config": null,
+      "mirrors": {
+       "SW": null,
+       "SE": null
+      },
+      "frames": 12
+     }
+    ],
+    "SE": [
+     {
+      "at": "2026-11-03T01:50:38.105Z",
+      "config": null,
+      "mirrors": {
+       "SE": null,
+       "SW": "SE"
+      },
+      "frames": 12
+     }
+    ],
+    "NW": [
+     {
+      "at": "2026-11-03T01:52:39.517Z",
+      "config": null,
+      "mirrors": {
+       "NW": null,
+       "NE": null
+      },
+      "frames": 12
+     }
+    ]
+   },
+   "studioPoses": {
+    "idle": {
+     "SW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-03T01:47:45.008Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-sw-idle-mw0130fk-486y-1",
+        "src": "assets/tactics/imported/idle-sw-mw0130fk-486y/frame-01.png",
+        "ms": 120
+       }
+      ]
+     },
+     "NW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-03T01:48:09.148Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-nw-idle-mw013j24-b205-1",
+        "src": "assets/tactics/imported/idle-nw-mw013j24-b205/frame-01.png",
+        "ms": 120
+       }
+      ]
+     },
+     "NE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-03T01:48:14.083Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-ne-idle-mw013mv7-0b5q-1",
+        "src": "assets/tactics/imported/idle-ne-mw013mv7-0b5q/frame-01.png",
+        "ms": 120
+       }
+      ]
+     }
+    }
+   },
+   "studioPoseMirrors": {
+    "idle": {
+     "NW": "NE"
+    }
+   },
+   "studioPoseHistory": {
+    "idle:SW": [
+     {
+      "at": "2026-11-03T01:47:45.057Z",
+      "config": null,
+      "mirror": null
+     }
+    ],
+    "idle:NW": [
+     {
+      "at": "2026-11-03T01:48:09.190Z",
+      "config": null,
+      "mirror": null
+     }
+    ],
+    "idle:NE": [
+     {
+      "at": "2026-11-03T01:48:14.108Z",
+      "config": null,
+      "mirror": null
+     }
+    ]
+   }
+  },
   "female": {
    "studioWalks": {
     "SW": {
@@ -62167,366 +62577,6 @@
     "idle:SW": [
      {
       "at": "2026-11-03T01:27:55.706Z",
-      "config": null,
-      "mirror": null
-     }
-    ]
-   }
-  },
-  "male": {
-   "studioWalks": {
-    "SW": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-03T01:50:10.277Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-1",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-01.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-2",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-02.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-3",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-03.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-4",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-04.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-5",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-05.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-6",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-06.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-7",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-07.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-8",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-08.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-9",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-09.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-10",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-10.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-11",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-11.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mw0164it-yhyf-12",
-       "src": "assets/tactics/imported/walk-sw-mw0164it-yhyf/frame-12.png",
-       "ms": 100
-      }
-     ]
-    },
-    "SE": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-03T01:52:10.272Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-1",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-01.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-2",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-02.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-3",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-03.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-4",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-04.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-5",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-05.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-6",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-06.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-7",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-07.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-8",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-08.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-9",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-09.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-10",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-10.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-11",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-11.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mw018p40-1qzh-12",
-       "src": "assets/tactics/imported/walk-se-mw018p40-1qzh/frame-12.png",
-       "ms": 100
-      }
-     ]
-    },
-    "NW": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-03T01:52:43.292Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-1",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-01.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-2",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-02.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-3",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-03.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-4",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-04.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-5",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-05.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-6",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-06.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-7",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-07.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-8",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-08.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-9",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-09.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-10",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-10.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-11",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-11.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-12",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-12.png",
-       "ms": 100
-      }
-     ]
-    }
-   },
-   "studioWalkMirrors": {
-    "SW": "SE",
-    "NE": "NW"
-   },
-   "studioWalkHistory": {
-    "SW": [
-     {
-      "at": "2026-11-03T01:49:31.214Z",
-      "config": null,
-      "mirrors": {
-       "SW": null,
-       "SE": null
-      },
-      "frames": 12
-     }
-    ],
-    "SE": [
-     {
-      "at": "2026-11-03T01:50:38.105Z",
-      "config": null,
-      "mirrors": {
-       "SE": null,
-       "SW": "SE"
-      },
-      "frames": 12
-     }
-    ],
-    "NW": [
-     {
-      "at": "2026-11-03T01:52:39.517Z",
-      "config": null,
-      "mirrors": {
-       "NW": null,
-       "NE": null
-      },
-      "frames": 12
-     }
-    ]
-   },
-   "studioPoses": {
-    "idle": {
-     "SW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-03T01:47:45.008Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-sw-idle-mw0130fk-486y-1",
-        "src": "assets/tactics/imported/idle-sw-mw0130fk-486y/frame-01.png",
-        "ms": 120
-       }
-      ]
-     },
-     "NW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-03T01:48:09.148Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-nw-idle-mw013j24-b205-1",
-        "src": "assets/tactics/imported/idle-nw-mw013j24-b205/frame-01.png",
-        "ms": 120
-       }
-      ]
-     },
-     "NE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-03T01:48:14.083Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-ne-idle-mw013mv7-0b5q-1",
-        "src": "assets/tactics/imported/idle-ne-mw013mv7-0b5q/frame-01.png",
-        "ms": 120
-       }
-      ]
-     }
-    }
-   },
-   "studioPoseMirrors": {
-    "idle": {
-     "NW": "NE"
-    }
-   },
-   "studioPoseHistory": {
-    "idle:SW": [
-     {
-      "at": "2026-11-03T01:47:45.057Z",
-      "config": null,
-      "mirror": null
-     }
-    ],
-    "idle:NW": [
-     {
-      "at": "2026-11-03T01:48:09.190Z",
-      "config": null,
-      "mirror": null
-     }
-    ],
-    "idle:NE": [
-     {
-      "at": "2026-11-03T01:48:14.108Z",
       "config": null,
       "mirror": null
      }
