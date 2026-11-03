@@ -1,4 +1,4 @@
-// v98.102 · importing a walk set (12 frames) into an ally's one-frame walk placeholder (Kier SW) must save, close the modal and update the list.
+// v98.102 · importing a walk set (12 frames) into an ally's one-frame walk placeholder (Bram NW) must save, close the modal and update the list.
 // Run: node tools/e2e-studio-ally-walk.cjs   (needs Playwright + Chromium; serves the repo itself)
 const http = require('node:http'), fs = require('node:fs'), path = require('node:path'), os = require('node:os'), assert = require('node:assert/strict');
 const { chromium } = require('playwright');
@@ -11,7 +11,7 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const server = await serve(), base = 'http://localhost:' + server.address().port + '/', browser = await chromium.launch(), p = await (await browser.newContext({ viewport: { width: 1700, height: 950 } })).newPage();
   p.on('dialog', d => d.accept()); const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto(base + 'asset-studio.html'); await p.waitForTimeout(2000); await p.click('#conn'); await p.waitForTimeout(9000); await p.click('text=Animation'); await p.waitForTimeout(2500);
-  const clipOf = () => p.evaluate(() => { const e = StudioBrowser.state.model.find(x => x.id === 'ally:kier'); const c = e.clips.find(c => c.action === 'walk' && c.view === 'SW'); return { id: c.id, n: c.frames.length } });
+  const clipOf = () => p.evaluate(() => { const e = StudioBrowser.state.model.find(x => x.id === 'ally:bram'); const c = e.clips.find(c => c.action === 'walk' && c.view === 'NW'); return { id: c.id, n: c.frames.length } });
   const c0 = await clipOf(); assert.equal(c0.n, 1, 'precondition: placeholder has 1 frame');
   await p.evaluate(id => StudioUnifiedReview.open(id), c0.id); await p.waitForTimeout(3000); await p.setInputFiles('#wi-files', sheet); await p.waitForTimeout(3500);
   // axis mode: 'กว้างอย่างเดียว' changes the width of the output only
@@ -22,18 +22,18 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const c1 = await clipOf(); assert.equal(c1.n, 12, 'the list must now hold the 12-frame walk: ' + JSON.stringify(c1));
   assert.equal(await p.evaluate(() => StudioUnifiedReview.isOpen()), false, 'modal must close');
   assert.ok(await p.evaluate(() => RepoDir.count()) > 0, 'files must be staged');
-  console.log('ok Kier SW walk saved: 1 ->', c1.n, 'frames');
-  // v98.104 · copy the opposite direction mirrored: SW (12 frames) -> SE (1-frame placeholder) must work and save
+  console.log('ok Bram NW walk saved: 1 ->', c1.n, 'frames');
+  // v98.104 · copy the opposite direction mirrored: NW (12 frames) -> NE (1-frame placeholder) must work and save
   await p.evaluate(id => StudioUnifiedReview.open(id), c1.id); await p.waitForTimeout(3000);
   await p.click('#wi-mir-to'); await p.waitForTimeout(3500);
   assert.equal(await p.evaluate(() => StudioUnifiedReview.current ? StudioUnifiedReview.current().id : document.getElementById('ur-title')?.textContent), await p.evaluate(() => document.getElementById('ur-title')?.textContent), 'sanity');
-  assert.match(await p.evaluate(() => document.getElementById('ur-title').textContent), /SE/, 'editor switched to the SE clip');
-  assert.equal(await p.evaluate(() => StudioWalkImport.getState().frames), 12, 'SE editor now holds the 12 mirrored frames');
+  assert.match(await p.evaluate(() => document.getElementById('ur-title').textContent), /NE/, 'editor switched to the NE clip');
+  assert.equal(await p.evaluate(() => StudioWalkImport.getState().frames), 12, 'NE editor now holds the 12 mirrored frames');
   console.log('title', await p.evaluate(() => [document.getElementById('ur-title').textContent, document.getElementById('ur-status')?.textContent, StudioWalkImport.getClip().id, StudioWalkImport.getClip().frames.length]));
   console.log('pre-save', await p.evaluate(() => [StudioWalkImport.isAllyWalk(), StudioWalkImport.getClip()?.id, StudioWalkImport.getState().saving, document.getElementById('wi-save').disabled]));
   await p.click('#wi-save'); await p.waitForTimeout(6000);
   console.log('msg:', await p.evaluate(() => [document.getElementById('wi-message')?.textContent, document.getElementById('ur-status')?.textContent, JSON.stringify(Object.keys(ASSET_MANIFEST.studioAllyWalks.kier))]));
-  const se = await p.evaluate(() => StudioBrowser.state.model.find(x => x.id === 'ally:kier').clips.filter(c => c.action === 'walk').map(c => c.view + ':' + c.frames.length).join());
-  assert.match(se, /SE:12/, 'SE walk saved with 12 frames: ' + se); console.log('ok mirrored copy to the opposite direction:', se);
+  const se = await p.evaluate(() => StudioBrowser.state.model.find(x => x.id === 'ally:bram').clips.filter(c => c.action === 'walk').map(c => c.view + ':' + c.frames.length).join());
+  assert.match(se, /NE:12/, 'NE walk saved with 12 frames: ' + se); console.log('ok mirrored copy to the opposite direction:', se);
   assert.deepEqual(errs, [], errs.join('|')); console.log('ally walk e2e: all cases passed'); await browser.close(); server.close();
 })().catch(e => { console.error('FAIL', e.message); process.exit(1) });

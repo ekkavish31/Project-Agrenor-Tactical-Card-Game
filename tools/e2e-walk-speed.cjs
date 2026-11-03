@@ -13,9 +13,10 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   assert.ok(Math.abs(def.r - 8.8 * 0.57) < 1e-9 && Math.abs(def.g - 7.4 * 0.57) < 1e-9, 'hero defaults unchanged'); for (const [id, a, b] of def.n) assert.ok(Math.abs(a - b) < 1e-9, 'npc default ' + id);
   await p.evaluate(() => document.getElementById('walkSpeedBtn').click()); await p.waitForTimeout(500);
   assert.ok(await p.evaluate(() => document.getElementById('walkSpeedDialog').open), 'dialog opens');
-  await p.fill('input[data-id="hero:road"]', '2'); await p.fill('input[data-id="npc:' + def.n[0][0] + '"]', '0.3'); await p.fill('input[data-all]', '2');
-  const now = await p.evaluate(id => ({ road: WalkSpeed.heroCells(true), npc: WalkSpeed.npcCells(TownNPC.roster[0]), other: WalkSpeed.npcCells(TownNPC.roster[1]), base: TownNPC.roster[1].speed, ls: localStorage.getItem('walk-speed-v1') }), def.n[0][0]);
-  assert.ok(Math.abs(now.road - 2 / 0.57) < 1e-6, 'hero uses 2 m/s'); assert.ok(Math.abs(now.npc - 0.3 / 0.57) < 1e-6, 'npc uses 0.3 m/s'); assert.ok(Math.abs(now.other - now.base * 2) < 1e-9, 'others use the x2 multiplier'); assert.match(now.ls, /"road":2/);
+  await p.fill('input[data-id="hero:road"]', '2'); await p.fill('input[data-all]', '1.2'); await p.fill('input[data-mul="' + def.n[0][0] + '"]', '0.5');
+  const now = await p.evaluate(() => ({ road: WalkSpeed.heroCells(true), a: WalkSpeed.npcCells(TownNPC.roster[0]), b: WalkSpeed.npcCells(TownNPC.roster[1]), ls: localStorage.getItem('walk-speed-v1') }));
+  assert.ok(Math.abs(now.road - 2 / 0.57) < 1e-6, 'hero uses 2 m/s'); assert.ok(Math.abs(now.b - 1.2 / 0.57) < 1e-6, 'everyone uses the base 1.2 m/s'); assert.ok(Math.abs(now.a - 0.6 / 0.57) < 1e-6, 'one villager = base x 0.5'); assert.match(now.ls, /"npcBase":1.2/);
+  assert.match(await p.evaluate(id => document.querySelector('[data-ms="' + id + '"]').textContent, def.n[0][0]), /0\.60/, 'shows the resulting m/s');
   await p.click('[data-reset="hero:road"]'); await p.waitForTimeout(300);
   assert.ok(Math.abs(await p.evaluate(() => WalkSpeed.heroMs(true)) - def.r) < 1e-9, 'reset restores the game speed');
   // the hero really moves with the changed speed: walk 1 s with a slow setting, then compare with the default
