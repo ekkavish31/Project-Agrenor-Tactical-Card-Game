@@ -81,8 +81,8 @@ function snap(p){const v=V();for(let r=0;r<=6;r+=.5)for(let a=0;a<8;a++){const q
 function update(dt){if(!npcs&&!init())return;const v=V(),h=v.getHero();
  for(const n of npcs){n.alpha+=((n.inside?0:1)-n.alpha)*Math.min(1,dt*5);
   if(n.inside&&n!==talking){n.path=[];n.wait-=dt;if(n.wait<=0){n.inside=null;n.wait=.6}continue}
-  if(n===talking){const du=h.u-n.u,dv=h.v-n.v;n.face=faceOf(du,dv);continue}
-  if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*(root.WalkSpeed?WalkSpeed.npcCells(n):n.speed);n.face=faceOf(du,dv);if(len<=st){n.u=b.u;n.v=b.v;n.path.shift();if(!n.path.length&&n.enter){n.inside=n.enter;n.enter=null;n.wait=7+Math.random()*12}else if(!n.path.length)n.wait=n.pause?n.pause[0]+Math.random()*(n.pause[1]-n.pause[0]):3+Math.random()*5}else{n.u+=du/len*st;n.v+=dv/len*st}continue}
+  if(n===talking){const du=h.u-n.u,dv=h.v-n.v;n.face=root.WalkSpeed?WalkSpeed.dir.face(n,du,dv):faceOf(du,dv);continue}
+  if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*(root.WalkSpeed?WalkSpeed.npcCells(n):n.speed);n.face=root.WalkSpeed?WalkSpeed.dir.face(n,du,dv):faceOf(du,dv);if(len<=st){n.u=b.u;n.v=b.v;n.path.shift();if(!n.path.length&&n.enter){n.inside=n.enter;n.enter=null;n.wait=7+Math.random()*12}else if(!n.path.length)n.wait=n.pause?n.pause[0]+Math.random()*(n.pause[1]-n.pause[0]):3+Math.random()*5}else{n.u+=du/len*st;n.v+=dv/len*st}continue}
   if(n.fixed||!n.stops.length)continue;n.wait-=dt;if(n.wait>0)continue;
   const seq=[...n.stops,n.home];n.stop=(n.stop+1)%seq.length;const tgt=target(seq[n.stop]);if(!tgt){n.wait=4;continue}
   // stand near, not exactly on, the door so villagers do not pile up
@@ -115,9 +115,9 @@ function lifeInit(){const v=V();if(!v)return false;const hour=clockHour();lifeSa
 function lifeUpdate(dt){if(!npcs&&!lifeInit())return;const v=V(),h=v.getHero(),hour=clockHour(),now=performance.now();
  if(now>lifeSaveAt){lifeSaveAt=now+2000;lifeSave=LIFE.save();const done=MIND()?.tick?.(lifeSave);if(done?.length){LIFE.writeSave(lifeSave)}}
  for(const n of npcs){n.alpha+=((n.inside||n.hidden?0:1)-n.alpha)*Math.min(1,dt*5);
-  if(n===talking){const du=h.u-n.u,dv=h.v-n.v;n.face=faceOf(du,dv);continue}
+  if(n===talking){const du=h.u-n.u,dv=h.v-n.v;n.face=root.WalkSpeed?WalkSpeed.dir.face(n,du,dv):faceOf(du,dv);continue}
   const want=desire(n,hour);if(want!==n.goal){lifeGo(n,want);continue}
-  if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*(root.WalkSpeed?WalkSpeed.npcCells(n):n.speed);n.face=faceOf(du,dv);
+  if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*(root.WalkSpeed?WalkSpeed.npcCells(n):n.speed);n.face=root.WalkSpeed?WalkSpeed.dir.face(n,du,dv):faceOf(du,dv);
    if(len<=st){n.u=b.u;n.v=b.v;n.path.shift();if(!n.path.length){if(n.enter){n.inside=n.enter;n.enter=null}else if(n.leaveTown)n.hidden=true;n.wait=3+Math.random()*6}}else{n.u+=du/len*st;n.v+=dv/len*st}continue}
   if(n.goal==='square'&&!n.inside&&!n.hidden){n.wait-=dt;if(n.wait<=0){const q=nearSquare();if(q)n.path=v.findPath({u:n.u,v:n.v},q);n.wait=4+Math.random()*8}}}
  /* v94.03 · two villagers standing close together near the hero now and then talk to each other out loud (same scenes as indoors) */

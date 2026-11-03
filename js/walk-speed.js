@@ -26,6 +26,31 @@
     reload: () => { cfg = load() },
     raw: () => JSON.parse(JSON.stringify(cfg))
   };
+  /* ---- walking direction → which walk animation (4 diagonal sets exist: NE SE SW NW) ----
+     The heading is read in the village's own 8 directions (angle of (du−dv , du+dv): E 0° · SE 45° · S 90° · SW 135° · W 180° · NW 225° · N 270° · NE 315°).
+     A straight heading (N S E W) takes the zone ±card° around its axis (card 22.5 = eight equal sectors, 0 = four quadrants), the rest is the diagonal in between.
+     map: which animation each of the 8 headings uses (default: N→NE · S→SE · W→SW · E→SE). hys: degrees the old heading is kept past its edge, so the picture does not flicker on a boundary. */
+  const ANG = { E: 0, SE: 45, S: 90, SW: 135, W: 180, NW: 225, N: 270, NE: 315 }, ORDER = ['E', 'SE', 'S', 'SW', 'W', 'NW', 'N', 'NE'];
+  const DEF_DIR = { map: { N: 'NE', S: 'SE', W: 'SW', E: 'SE', NE: 'NE', SE: 'SE', SW: 'SW', NW: 'NW' }, card: 22.5, hys: 6 };
+  const dcfg = () => { const d = cfg.dir || {}; return { map: { ...DEF_DIR.map, ...(d.map || {}) }, card: typeof d.card === 'number' ? Math.max(0, Math.min(45, d.card)) : DEF_DIR.card, hys: typeof d.hys === 'number' ? Math.max(0, Math.min(20, d.hys)) : DEF_DIR.hys } };
+  const diff = (a, b) => { const d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d };
+  const centre = k => ANG[k], half = (k, card) => k.length === 1 ? card : 45 - card;
+  function raw8(du, dv, prev) {
+    const c = dcfg(), a = ((Math.atan2((du + dv) * 28, (du - dv) * 28) * 180 / Math.PI) % 360 + 360) % 360;
+    if (prev && ANG[prev] != null && diff(a, centre(prev)) <= half(prev, c.card) + c.hys) return prev;
+    let best = ORDER[0], bd = 1e9;
+    for (const k of ORDER.filter(k => k.length === 1)) { const d = diff(a, centre(k)); if (d <= c.card && d < bd) { best = k; bd = d } }
+    if (bd === 1e9) for (const k of ORDER.filter(k => k.length === 2)) { const d = diff(a, centre(k)); if (d < bd) { best = k; bd = d } }
+    return best;
+  }
+  const animOf = r => dcfg().map[r] || 'SE';
+  api.dir = {
+    DEF: DEF_DIR, ORDER, ANG, config: dcfg, raw8, anim: animOf,
+    /* hero / villager: remembers the raw heading on the object (o.raw8) and returns the animation direction */
+    face: (o, du, dv) => { o.raw8 = raw8(du, dv, o.raw8); return animOf(o.raw8) },
+    set: (patch) => { cfg.dir = { ...(cfg.dir || {}), ...patch }; if (patch.map) cfg.dir.map = { ...(cfg.dir.map || {}), ...patch.map }; save() },
+    reset: () => { delete cfg.dir; save() }
+  };
   root.WalkSpeed = api;
   root.addEventListener && root.addEventListener('storage', e => { if (e.key === KEY) cfg = load() });
 })(window);

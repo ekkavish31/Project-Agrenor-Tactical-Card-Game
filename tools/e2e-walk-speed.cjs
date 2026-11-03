@@ -19,6 +19,14 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   assert.match(await p.evaluate(id => document.querySelector('[data-ms="' + id + '"]').textContent, def.n[0][0]), /0\.60/, 'shows the resulting m/s');
   await p.click('[data-reset="hero:road"]'); await p.waitForTimeout(300);
   assert.ok(Math.abs(await p.evaluate(() => WalkSpeed.heroMs(true)) - def.r) < 1e-9, 'reset restores the game speed');
+  // v98.108 · walking direction -> animation: N->NE, S->SE, W->SW, E->SE, thresholds + hysteresis
+  const dirs = await p.evaluate(() => { const D = WalkSpeed.dir, hd = deg => { const a = deg * Math.PI / 180, x = Math.cos(a), y = Math.sin(a); return [(x + y) / 56, (y - x) / 56] }, A = deg => D.anim(D.raw8(...hd(deg), null)); WalkSpeed.dir.reset();
+    const o = {}; for (const [k, deg] of Object.entries({ E: 0, SE: 45, S: 90, SW: 135, W: 180, NW: 225, N: 270, NE: 315 })) o[k] = A(deg);
+    const t = { n40: A(40), n20: A(20), n25: A(25) }; D.set({ card: 0 }); t.card0_20 = A(20); t.card0_80 = A(80); D.set({ card: 22.5 });
+    const obj = {}; D.face(obj, ...hd(115)); const first = D.anim(obj.raw8); const second = D.face(obj, ...hd(110)); const third = D.face(obj, ...hd(106)); D.reset(); return { o, t, hys: [first, second, third] } });
+  assert.deepEqual(dirs.o, { E: 'SE', SE: 'SE', S: 'SE', SW: 'SW', W: 'SW', NW: 'NW', N: 'NE', NE: 'NE' }, 'default map: ' + JSON.stringify(dirs.o)); assert.equal(dirs.t.card0_80, 'SE'); assert.equal(dirs.t.card0_20, 'SE'); console.log('ok direction map', JSON.stringify(dirs.o), 'hysteresis keeps', dirs.hys.join('>'));
+  await p.evaluate(() => document.getElementById('walkSpeedBtn').click()); await p.waitForTimeout(300); await p.selectOption('select[data-dir="N"]', 'NW');
+  assert.equal(await p.evaluate(() => WalkSpeed.dir.anim('N')), 'NW', 'dropdown changes the map'); await p.evaluate(() => WalkSpeed.dir.reset());
   // the hero really moves with the changed speed: walk 1 s with a slow setting, then compare with the default
   assert.deepEqual(errs, [], errs.join('|')); console.log('walk speed e2e: all cases passed'); await browser.close(); server.close();
 })().catch(e => { console.error('FAIL', e.message); process.exit(1) });
