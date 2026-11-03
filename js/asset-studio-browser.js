@@ -18,7 +18,12 @@
  const RECRUITS=['ren','nadia','sigrid','orla','olwen'];
  function registerRecruits(manifest){if(!manifest?.assets)return;const have=new Set(manifest.assets.map(a=>a.id));
   for(const k of RECRUITS)for(const d of ['sw','ne']){const id=`tactics-${k}-${d}-idle`,file=`assets/village-town/npc/${k}/${d}-stand.webp`;
-   if(have.has(id)||(dir&&scanned&&!hasFile(file)))continue;manifest.assets.push({id,file,category:'allies',status:'final',size:[384,384],transparent:true,view:d.toUpperCase(),pose:'idle'});have.add(id)}}
+   if(have.has(id)||(dir&&scanned&&!hasFile(file)))continue;manifest.assets.push({id,file,category:'allies',status:'final',size:[384,384],transparent:true,view:d.toUpperCase(),pose:'idle'});have.add(id)}
+  /* v98.115 · the other two directions (SE, NW) of the standing pose and the 4 walk placeholders: empty slots (status 'missing', like Kier's / Mil's) so every direction has a clip and
+     "ลอกกลับด้าน" from the opposite direction is offered everywhere — filling one saves a new picture for it */
+  for(const k of RECRUITS){const nm=k[0].toUpperCase()+k.slice(1);
+   for(const d of ['se','nw']){const id=`tactics-${k}-${d}-idle`;if(have.has(id))continue;manifest.assets.push({id,file:`assets/village-town/npc/${k}/${d}-stand.webp`,category:'allies',status:'missing',size:[384,384],transparent:true,view:d.toUpperCase(),pose:'idle',usedIn:`เพื่อนร่วมทีม ${k}`,note:'ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ'});have.add(id)}
+   for(const d of ['sw','nw','ne','se']){const id=`tactics-${k}-${d}-walk-1`;if(have.has(id))continue;manifest.assets.push({id,file:`assets/tactics/${k}_${d}_walk_01.webp`,category:'allies',status:'missing',size:[384,384],transparent:true,view:d.toUpperCase(),pose:'walk',usedIn:`เพื่อนร่วมทีม ${nm}`,note:'ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้'});have.add(id)}}}
  function clipsFor(manifest){
   try{registerRecruits(manifest)}catch(e){}
   /* v98.88 · self-heal: whether a look's saved idle/walk pictures are 'final' or 'unused' is DERIVED from what the looks use (StudioVariants.syncStatuses). A manifest saved/pushed by an older build can carry stale 'unused' marks —
