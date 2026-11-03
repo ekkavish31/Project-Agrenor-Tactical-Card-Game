@@ -122,7 +122,12 @@
       gx.fillStyle = '#ffe9a8'; gx.fillText(label, x, y - s * 1.6 - 12 * k) }
     gx.restore();
   }
-  function targets() {
+  /* v98.111 · targets() asks Interactables.all(), whose village provider asks targets() again … a loop that only ended when the stack overflowed (the error was swallowed):
+     ~4,260 calls / ~100,000 door() calls EVERY frame while a quest step was active. A call made from inside targets() now gets [] (that inner list only decided which
+     entries are quest markers, and the outer call does that itself). */
+  let inTargets = false;
+  function targets() { if (inTargets) return []; inTargets = true; try { return targets0() } finally { inTargets = false } }
+  function targets0() {
     const out = []; if (!T) return out;
     for (const id of T.place || []) { const o = loc(id); if (o) { const p = placePoint(o); out.push({ ...p, label: T.label || o.name, o }) } }
     for (const id of T.npc || []) {
