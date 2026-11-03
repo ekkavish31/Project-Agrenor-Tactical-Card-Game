@@ -65241,6 +65241,2598 @@
     "group": "characters"
    },
    "artRevision": "mw0bw6pn"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-1",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-2",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-3",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-4",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-5",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-6",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-7",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-8",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-9",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-10",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-11",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7b5a-12",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7b5a"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-1",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-2",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-3",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-4",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-5",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-6",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-7",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-8",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-9",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-10",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-11",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0c7joz-12",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0c7joz"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-1",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-2",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-3",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-4",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-5",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-6",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-7",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-8",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-9",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-10",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-11",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-sw-walk-mw0fb6wd-12",
+   "file": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb6wd"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-1",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-2",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-3",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-4",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-5",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-6",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-7",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-8",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-9",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-10",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-11",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fb9u2-12",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fb9u2"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-1",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-2",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-3",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-4",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-5",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-6",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-7",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-8",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-9",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-10",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-11",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-se-walk-mw0fbrig-12",
+   "file": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fbrig"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-1",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-2",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-3",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-4",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-5",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-6",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-7",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-8",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-9",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-10",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-11",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0fdpa5-12",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0fdpa5"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-1",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-2",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-3",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-4",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-5",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-6",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-7",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-8",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-9",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-10",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-11",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-nw-walk-mw0feosu-12",
+   "file": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feosu"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-1",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-2",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-3",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-4",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-5",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-6",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-7",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-8",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-9",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-10",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-11",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
+  },
+  {
+   "id": "studio-ally-luna-ne-walk-mw0feubp-12",
+   "file": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:luna",
+    "name": "Luna",
+    "group": "characters"
+   },
+   "artRevision": "mw0feubp"
   }
  ],
  "studioReviews": {
@@ -66754,8 +69346,9 @@
    "approvedAt": "2026-11-03T04:49:57.198Z"
   },
   "[\"tactics-luna-sw-walk-1\",\"SW\",true,[[\"tactics-luna-sw-walk-1\",\"assets/tactics/luna_sw_walk_01.webp\",0,\"mw02uuq4\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T06:59:01.742Z"
   },
   "[\"tactics-bram-nw-idle\",\"NW\",true,[[\"tactics-bram-nw-idle\",\"assets/tactics/bram_nw_idle.webp\",0,\"mw07hrwp\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -66852,6 +69445,59 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-03T06:50:17.233Z"
+  },
+  "[\"allywalk:kier:NE\",\"NE\",true,[[\"studio-ally-kier-ne-walk-mw0bw6pn-1\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-01.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-2\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-02.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-3\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-03.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-4\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-04.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-5\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-05.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-6\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-06.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-7\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-07.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-8\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-08.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-9\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-09.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-10\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-10.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-11\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-11.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-ne-walk-mw0bw6pn-12\",\"assets/tactics/imported/ally-kier-walk-ne-mw0bw6pn/frame-12.png\",0,\"mw0bw6pn\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T06:50:23.277Z"
+  },
+  "[\"allywalk:luna:SW\",\"SW\",true,[[\"studio-ally-luna-sw-walk-mw0c7b5a-1\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-01.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-2\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-02.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-3\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-03.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-4\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-04.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-5\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-05.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-6\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-06.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-7\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-07.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-8\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-08.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-9\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-09.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-10\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-10.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-11\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-11.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7b5a-12\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7b5a/frame-12.png\",0,\"mw0c7b5a\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:luna:SW\",\"SW\",true,[[\"studio-ally-luna-sw-walk-mw0c7joz-1\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-01.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-2\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-02.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-3\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-03.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-4\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-04.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-5\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-05.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-6\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-06.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-7\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-07.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-8\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-08.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-9\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-09.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-10\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-10.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-11\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-11.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0c7joz-12\",\"assets/tactics/imported/ally-luna-walk-sw-mw0c7joz/frame-12.png\",0,\"mw0c7joz\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "approvedAt": "2026-11-03T06:59:12.948Z"
+  },
+  "[\"allywalk:luna:SW\",\"SW\",true,[[\"studio-ally-luna-sw-walk-mw0fb6wd-1\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-01.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-2\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-02.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-3\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-03.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-4\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-04.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-5\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-05.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-6\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-06.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-7\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-07.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-8\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-08.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-9\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-09.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-10\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-10.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-11\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-11.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw0fb6wd-12\",\"assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-12.png\",0,\"mw0fb6wd\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T08:26:01.883Z"
+  },
+  "[\"tactics-luna-se-walk-1\",\"SE\",true,[[\"tactics-luna-se-walk-1\",\"assets/tactics/luna_se_walk_01.webp\",0,\"mw02uuq4\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T08:26:05.649Z"
+  },
+  "[\"allywalk:luna:SE\",\"SE\",true,[[\"studio-ally-luna-se-walk-mw0fb9u2-1\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-01.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-2\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-02.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-3\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-03.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-4\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-04.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-5\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-05.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-6\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-06.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-7\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-07.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-8\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-08.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-9\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-09.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-10\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-10.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-11\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-11.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fb9u2-12\",\"assets/tactics/imported/ally-luna-walk-se-mw0fb9u2/frame-12.png\",0,\"mw0fb9u2\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:luna:SE\",\"SE\",true,[[\"studio-ally-luna-se-walk-mw0fbrig-1\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-01.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-2\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-02.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-3\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-03.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-4\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-04.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-5\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-05.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-6\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-06.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-7\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-07.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-8\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-08.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-9\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-09.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-10\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-10.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-11\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-11.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw0fbrig-12\",\"assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-12.png\",0,\"mw0fbrig\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T08:26:28.646Z"
+  },
+  "[\"tactics-luna-ne-walk-1\",\"NE\",true,[[\"tactics-luna-ne-walk-1\",\"assets/tactics/luna_ne_walk_01.webp\",0,\"mw02uuq4\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T08:27:59.103Z"
+  },
+  "[\"allywalk:luna:NE\",\"NE\",true,[[\"studio-ally-luna-ne-walk-mw0fdpa5-1\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-01.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-2\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-02.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-3\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-03.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-4\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-04.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-5\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-05.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-6\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-06.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-7\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-07.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-8\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-08.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-9\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-09.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-10\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-10.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-11\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-11.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw0fdpa5-12\",\"assets/tactics/imported/ally-luna-walk-ne-mw0fdpa5/frame-12.png\",0,\"mw0fdpa5\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T08:28:50.381Z"
+  },
+  "[\"tactics-luna-nw-walk-1\",\"NW\",true,[[\"tactics-luna-nw-walk-1\",\"assets/tactics/luna_nw_walk_01.webp\",0,\"mw02uuq4\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T08:28:45.170Z"
+  },
+  "[\"allywalk:luna:NW\",\"NW\",true,[[\"studio-ally-luna-nw-walk-mw0feosu-1\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-01.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-2\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-02.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-3\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-03.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-4\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-04.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-5\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-05.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-6\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-06.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-7\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-07.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-8\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-08.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-9\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-09.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-10\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-10.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-11\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-11.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw0feosu-12\",\"assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-12.png\",0,\"mw0feosu\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T08:28:48.072Z"
   }
  },
  "studioClipHistory": {
@@ -68587,6 +71233,308 @@
      {
       "assetId": "studio-ally-kier-nw-walk-mw0bw245-12",
       "src": "assets/tactics/imported/ally-kier-walk-nw-mw0bw245/frame-12.png",
+      "ms": 100
+     }
+    ]
+   }
+  },
+  "luna": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-03T08:26:01.261Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-1",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-2",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-3",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-4",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-5",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-6",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-7",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-8",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-9",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-10",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-11",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-sw-walk-mw0fb6wd-12",
+      "src": "assets/tactics/imported/ally-luna-walk-sw-mw0fb6wd/frame-12.png",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-03T08:26:27.976Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-1",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-2",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-3",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-4",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-5",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-6",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-7",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-8",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-9",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-10",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-11",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-se-walk-mw0fbrig-12",
+      "src": "assets/tactics/imported/ally-luna-walk-se-mw0fbrig/frame-12.png",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-03T08:28:51.589Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-1",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-2",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-3",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-4",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-5",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-6",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-7",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-8",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-9",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-10",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-11",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-ne-walk-mw0feubp-12",
+      "src": "assets/tactics/imported/ally-luna-walk-ne-mw0feubp/frame-12.png",
+      "ms": 100
+     }
+    ]
+   },
+   "NW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-03T08:28:44.430Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-1",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-2",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-3",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-4",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-5",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-6",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-7",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-8",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-9",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-10",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-11",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-luna-nw-walk-mw0feosu-12",
+      "src": "assets/tactics/imported/ally-luna-walk-nw-mw0feosu/frame-12.png",
       "ms": 100
      }
     ]
