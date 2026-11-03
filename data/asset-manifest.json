@@ -9986,7 +9986,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "mw03xwh7",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw03xwh7/tactics-kier-se-idle.png",
+     "at": "2026-11-03T03:07:45.607Z",
+     "stamp": "mw03xwh7",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    }
+   ]
   },
   {
    "id": "tactics-kier-se-windup",
@@ -10082,7 +10091,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "mw03zghw",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw03zghw/tactics-kier-ne-idle.png",
+     "at": "2026-11-03T03:08:58.173Z",
+     "stamp": "mw03zghw",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    }
+   ]
   },
   {
    "id": "tactics-kier-ne-windup",
@@ -60088,7 +60106,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "mw03xrxs",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw03xrxs/tactics-kier-sw-idle.png",
+     "at": "2026-11-03T03:07:39.785Z",
+     "stamp": "mw03xrxs",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    }
+   ]
   },
   {
    "id": "tactics-kier-sw-windup",
@@ -60184,7 +60211,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "mw03zb9w",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw03zb9w/tactics-kier-nw-idle.png",
+     "at": "2026-11-03T03:08:51.476Z",
+     "stamp": "mw03zb9w",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    }
+   ]
   },
   {
    "id": "tactics-kier-nw-windup",
@@ -60829,6 +60865,136 @@
    "clip": "tactics.walk.se",
    "frame": 1,
    "frames": 1
+  },
+  {
+   "id": "tactics-ren-sw-idle",
+   "file": "assets/village-town/npc/ren/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle"
+  },
+  {
+   "id": "tactics-ren-ne-idle",
+   "file": "assets/village-town/npc/ren/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle"
+  },
+  {
+   "id": "tactics-nadia-sw-idle",
+   "file": "assets/village-town/npc/nadia/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle"
+  },
+  {
+   "id": "tactics-nadia-ne-idle",
+   "file": "assets/village-town/npc/nadia/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle"
+  },
+  {
+   "id": "tactics-sigrid-sw-idle",
+   "file": "assets/village-town/npc/sigrid/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle"
+  },
+  {
+   "id": "tactics-sigrid-ne-idle",
+   "file": "assets/village-town/npc/sigrid/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle"
+  },
+  {
+   "id": "tactics-orla-sw-idle",
+   "file": "assets/village-town/npc/orla/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle"
+  },
+  {
+   "id": "tactics-orla-ne-idle",
+   "file": "assets/village-town/npc/orla/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle"
+  },
+  {
+   "id": "tactics-olwen-sw-idle",
+   "file": "assets/village-town/npc/olwen/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle"
+  },
+  {
+   "id": "tactics-olwen-ne-idle",
+   "file": "assets/village-town/npc/olwen/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle"
   }
  ],
  "studioReviews": {
@@ -62298,6 +62464,46 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-03T02:37:29.784Z"
+  },
+  "[\"tactics-luna-ne-idle\",\"NE\",true,[[\"tactics-luna-ne-idle\",\"assets/tactics/luna_ne_idle.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-luna-ne-idle\",\"NE\",true,[[\"tactics-luna-ne-idle\",\"assets/tactics/luna_ne_idle.webp\",0,\"mw02v1gy\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T02:37:32.567Z"
+  },
+  "[\"tactics-bram-sw-walk-1\",\"SW\",true,[[\"tactics-bram-sw-walk-1\",\"assets/tactics/bram_sw_walk_01.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-kier-sw-idle\",\"SW\",true,[[\"tactics-kier-sw-idle\",\"assets/tactics/kier_sw_idle.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-kier-sw-idle\",\"SW\",true,[[\"tactics-kier-sw-idle\",\"assets/tactics/kier_sw_idle.webp\",0,\"mw03xrxs\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T03:07:39.949Z"
+  },
+  "[\"tactics-kier-se-idle\",\"SE\",true,[[\"tactics-kier-se-idle\",\"assets/tactics/kier_se_idle.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-kier-se-idle\",\"SE\",true,[[\"tactics-kier-se-idle\",\"assets/tactics/kier_se_idle.webp\",0,\"mw03xwh7\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T03:07:45.719Z"
+  },
+  "[\"tactics-kier-nw-idle\",\"NW\",true,[[\"tactics-kier-nw-idle\",\"assets/tactics/kier_nw_idle.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-kier-nw-idle\",\"NW\",true,[[\"tactics-kier-nw-idle\",\"assets/tactics/kier_nw_idle.webp\",0,\"mw03zb9w\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-03T03:08:51.590Z"
   }
  },
  "studioClipHistory": {
@@ -62460,6 +62666,110 @@
        "artRevision": "v16"
       },
       "archive": "assets/_versions/unified/mw02v1gy/tactics-luna-ne-idle.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-kier-sw-idle": [
+   {
+    "at": "2026-11-03T03:07:39.785Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-kier-sw-idle",
+       "file": "assets/tactics/kier_sw_idle.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Kier, a lean young swordsman with a short cape, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
+       "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+       "artRevision": "v16"
+      },
+      "archive": "assets/_versions/unified/mw03xrxs/tactics-kier-sw-idle.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-kier-se-idle": [
+   {
+    "at": "2026-11-03T03:07:45.607Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-kier-se-idle",
+       "file": "assets/tactics/kier_se_idle.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Kier, a lean young swordsman with a short cape, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
+       "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+       "artRevision": "v16"
+      },
+      "archive": "assets/_versions/unified/mw03xwh7/tactics-kier-se-idle.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-kier-nw-idle": [
+   {
+    "at": "2026-11-03T03:08:51.476Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-kier-nw-idle",
+       "file": "assets/tactics/kier_nw_idle.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Kier, a lean young swordsman with a short cape, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
+       "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+       "artRevision": "v16"
+      },
+      "archive": "assets/_versions/unified/mw03zb9w/tactics-kier-nw-idle.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-kier-ne-idle": [
+   {
+    "at": "2026-11-03T03:08:58.173Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-kier-ne-idle",
+       "file": "assets/tactics/kier_ne_idle.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Kier, a lean young swordsman with a short cape, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
+       "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
+       "artRevision": "v16"
+      },
+      "archive": "assets/_versions/unified/mw03zghw/tactics-kier-ne-idle.png"
      }
     ]
    }
