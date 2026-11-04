@@ -37,7 +37,7 @@
  function setSharp(on,amt){sharpOn=!!on;if(amt!=null&&amt>=0&&amt<=2)sharpAmt=amt;try{localStorage.setItem('project-a-sharp',sharpOn?'1':'0');localStorage.setItem('project-a-sharp-amt',String(sharpAmt))}catch(e){}if(amt!=null)sharpCacheReset();document.dispatchEvent(new CustomEvent('town-sharp-change',{detail:{on:sharpOn,amt:sharpAmt}}))}
  function sharpCacheReset(){sharpCache=new WeakMap()}
  /* v98.19 · the place that covers the hero is drawn into a scratch canvas, a soft round hole (an aura around the hero) is erased from it, then it is painted: only that part of the picture turns see-through */
- let holeCv=null;const AURA=92;
+ let holeCv=null;const AURA=46;   /* v98.123 · was 92: the see-through window around the hero is half the size */
  function holeDraw(g,im,crop,rect,hole){const [x,y,w,h]=rect,t=g.getTransform(),s=Math.min(2,Math.max(.5,Math.hypot(t.a,t.b))),cw=Math.max(1,Math.ceil(w*s)),ch=Math.max(1,Math.ceil(h*s));
   if(!holeCv)holeCv=document.createElement('canvas');if(holeCv.width!==cw||holeCv.height!==ch){holeCv.width=cw;holeCv.height=ch}
   const q=holeCv.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,cw,ch);q.imageSmoothingEnabled=true;q.imageSmoothingQuality='high';
