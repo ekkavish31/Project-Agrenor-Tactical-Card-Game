@@ -30,6 +30,14 @@ main{display:grid;grid-template-columns:230px 1fr 270px;gap:12px;padding:12px 16
 dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:8px 0;font-size:13px}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}
 code{font-size:12px}
 .adj{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0}.adj>span{width:92px;color:var(--muted);font-size:12px}.adj input[type=number]{width:54px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:3px}.adj small{flex-basis:100%;color:var(--muted);font-size:11px}.adj button{padding:3px 8px}button.primary{background:var(--gold);color:#1d1608;border-color:#e6c47c}button:disabled{opacity:.45;cursor:default}#viewCtl{font-size:12px}#viewCtl input,#viewCtl select{font:inherit}
+
+.fig{position:relative;flex:none}.fig img{position:absolute;max-width:none}.fig .ln{position:absolute;left:-4px;right:-4px;height:0;border-top:2px solid}
+.figs{position:relative;display:flex;gap:14px;align-items:flex-start;padding:6px 6px 0;overflow-x:auto}.figs .std{position:absolute;left:0;right:0;border-top:1px dashed}
+.figcap{font-size:11px;text-align:center;margin-top:6px;white-space:nowrap;cursor:pointer}.figcap.sel{font-weight:700}
+.rt{border-collapse:collapse;width:100%;font-size:12px;margin-top:10px}.rt th,.rt td{border-bottom:1px solid var(--line);padding:3px 6px;text-align:right;white-space:nowrap}.rt th:first-child,.rt td:first-child{text-align:left}.rt tr.sel{background:#c9a45a33}.rt tr{cursor:pointer}
+.banner{padding:7px 10px;border-radius:8px;border:1px solid var(--line);margin:4px 0 8px}.banner.ok{border-color:var(--ok)}.banner.warn{border-color:var(--warn)}.banner.bad{border-color:var(--bad)}
+.stdctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px;margin:4px 0}.stdctl input{width:54px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:2px 4px}
+.lgd i{display:inline-block;width:18px;border-top:2px solid;vertical-align:middle;margin:0 3px 0 8px}
 </style></head><body>
 <header><h1>⚖ Scale Lineup <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
 <span id="tabs"></span> <span id="ctxBtns"></span><span class="grow"></span>
@@ -41,7 +49,7 @@ code{font-size:12px}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/character-scale-adjust-data.js?v=98.67"></script><script src="js/character-scale-adjust.js?v=98.67"></script><script src="js/github-push.js?v=97.93"></script>
+<script src="js/character-scale-adjust-data.js?v=98.67"></script><script src="js/character-scale-adjust.js?v=98.67"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -88,7 +96,7 @@ const WORLD = {
     ['pine', 'สน', V + 'nature/pine.webp', { w: 215 }, [3.5, 10]], ['tree-conifer', 'ต้นสนใบ', V + 'nature/tree-conifer.webp', { w: 200 }, [3.5, 10]], ['tree-blossom', 'ต้นดอกไม้', V + 'nature/tree-blossom.webp', { w: 185 }, [3, 9]],
     ['bush-small', 'พุ่มไม้เล็ก', V + 'nature/bush-small.webp', { w: 74 }, [.6, 1.6]], ['rock-cluster', 'กลุ่มหิน', V + 'nature/rock-cluster.webp', { w: 66 }, [.4, 1.4]], ['tall-grass', 'หญ้าสูง', V + 'nature/tall-grass.webp', { w: 64 }, [.3, .9]]] }
 };
-const TABS = [['char', 'ตัวละคร'], ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
+const TABS = [['char', 'ตัวละคร'], ['ratio', '📐 สัดส่วน'], ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
 let tab = 'char';
 const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
 const RANK = { hero: 0, ally: 1, monster: 2 };
@@ -142,15 +150,15 @@ let STEP = .5, ZOOM = 1, ALPHA = 1, SHADOW = false, FOOT = false, GUIDES = false
 const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / ENTRIES.find(x => x.id === 'hero').ctx[c].units * HERO_M * eff(e, c);
 const heroE = () => ENTRIES.find(e => e.id === 'hero');
 /* world tabs: the hero stands first as the yardstick, then the pieces of that tab */
-const visible = () => { const a = tab === 'char' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx]) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
+const visible = () => { const a = tab === 'ratio' ? ENTRIES.filter(e => (e.kind === 'hero' || e.kind === 'ally') && e.ctx[ctx]) : tab === 'char' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx]) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
 const rangeOf = e => { if (!e.fixed) return ['', 'ไม่มีค่าตรึง']; const m = metres(e); return m < e.ref[0] ? ['warn', 'เล็กไป'] : m > e.ref[1] ? ['warn', 'ใหญ่ไป'] : ['ok', 'พอดี'] };
 function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
 /* choosing a character here also selects it in the studio's Animation tab */
 function pickSel(id) { sel = id; if (ST) { const sid = id === 'hero' ? 'hero' : id.startsWith('m:') ? 'enemy:' + id.slice(2) : 'ally:' + id; try { ST.lineup.select(sid) } catch (e) { } } render() }
 function render() {
-  ctx = tab === 'char' ? 'battle' : 'village';
+  ctx = tab === 'char' || tab === 'ratio' ? 'battle' : 'village';
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k}">${t}</button>`).join(' ');
-  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' ? 'hero' : (visible()[1]?.id || 'hero'); render() });
+  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' || tab === 'ratio' ? 'hero' : (visible()[1]?.id || 'hero'); render() });
   $('ctxBtns').style.display = 'none';   /* v98.95 · one set of proportions for every scene; the % per scene is done in each scene later */ $('listTitle').textContent = TABS.find(t => t[0] === tab)[1];
   $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
   $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
@@ -158,9 +166,10 @@ function render() {
   const V = visible();
   $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${e.id === sel}"><img alt="" src="${e.ctx[ctx].url || e.ctx[ctx].src}"${e.ctx[ctx].flip ? ' style="transform:scaleX(-1)"' : ''}><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m</small></span>${chip(e)}</button>`).join('');
   $('list').querySelectorAll('.row').forEach(b => b.onclick = () => pickSel(b.dataset.c));
+  if (tab === 'ratio') { renderRatio(V); inspect(); controls(); return }
   /* stage */
   const st = $('stage'), H = 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))) / ZOOM, ppm = (base - 20) / maxM * ZOOM, bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
-  st.style.width = W + 'px'; let h = '';
+  st.style.height = ''; st.style.width = W + 'px'; let h = '';
   for (let m = 0; m <= maxM + 1e-6; m += STEP) h += `<div class="tick" style="top:${base - m * ppm}px"><span>${m.toFixed(1)} m</span></div>`;
   h += `<div class="base" style="top:${base}px"></div>`;
   if (GUIDES) for (const [t, f] of [['หัว', 1], ['ตา', .93], ['ไหล่', .82], ['เอว', .58], ['เข่า', .28]]) h += `<div class="tick" style="top:${base - HERO_M * f * ppm}px;border-color:#c9893a"><span style="left:auto;right:4px;color:#c9893a">${t}</span></div>`;
@@ -179,7 +188,77 @@ function render() {
   $('note').textContent = tab !== 'char' ? 'ไม้บรรทัดหมู่บ้าน: 1 m = ความสูงตัวเอกในหมู่บ้าน ÷ 1.70 (≈ 55 px) · ช่องพื้น 1 ช่อง ≈ 0.57 m · ตัวเอกยืนเป็นไม้วัดทางซ้าย + เงาเทาซ้อนหลัง · ชิป พอดี/เล็กไป/ใหญ่ไป เทียบกับช่วงเป้าหมายของแต่ละชนิด (แก้ช่วงได้ใน WORLD)' : 'เทียบกันเอง: ตัวเอก = 1.70 m เป็นไม้วัด · ภาพมาจากเฟรมปัจจุบันของแท็บ Animation (ท่ายืน SW หรือเฟรมที่เลือก) · ทุกฉากใช้สัดส่วนชุดเดียวกัน · การเทียบ % ต่อฉากทำแยกในแต่ละฉากภายหลัง';
   inspect(); controls();
 }
+/* ================= 📐 สัดส่วน · head : body ratio tool (js/proportion-tool.js) ================= */
+const PT = window.ProportionTool; let MARKS = PT.store.load(), STDV = { head: PT.STD.head * 100, tol: PT.STD.tol * 100 };
+const COL = { chin: '#d62d2d', shoulder: '#1f6fd0', hip: '#2a9a3a' }, LBL = { chin: 'คาง (ล่างหัว)', shoulder: 'ไหล่', hip: 'ขาหนีบ (ลำตัว|ขา)' };
+const sigOf = c => (c.file || c.src) + '|' + c.m.H;
+function alphaOf(c) {
+  const s = sigOf(c); if (c._al && c._al.sig === s) return c._al;
+  const cv = document.createElement('canvas'); cv.width = c.img.naturalWidth; cv.height = c.img.naturalHeight; const g = cv.getContext('2d', { willReadFrequently: true });
+  if (c.flip) { g.translate(cv.width, 0); g.scale(-1, 1) } g.drawImage(c.img, 0, 0); return c._al = { sig: s, d: g.getImageData(0, 0, cv.width, cv.height).data, w: cv.width, h: cv.height };
+}
+function ratioOf(e) {
+  const c = e.ctx.battle, sv = MARKS[e.id], marks = sv && sv.sig === sigOf(c) ? { chin: sv.chin, shoulder: sv.shoulder, hip: sv.hip } : null;
+  const r = PT.analyze(alphaOf(c), c.m, marks); r.manual = !!marks; return r;
+}
+const STDOBJ = () => ({ head: STDV.head / 100, tol: STDV.tol / 100 });
+function ratioRows(V) { const R = V.map(e => ({ e, r: ratioOf(e) })), med = PT.median(R.map(x => x.r.head)); R.forEach(x => x.v = PT.verdict(x.r, STDOBJ(), med)); return { R, med } }
+const LV = { ok: ['ok', '✔ ตรงมาตรฐาน'], warn: ['warn', '⚠ เฉียด'], bad: ['bad', '✘ ไม่ตรง'] };
+function reportText(R, med) {
+  return ['== สัดส่วนหัว:ตัว · Scale Lineup ==', 'มาตรฐาน: หัว ' + STDV.head + '% ± ' + STDV.tol + '% ของความสูง (≈ ' + (100 / STDV.head).toFixed(2) + ' หัว) · ค่ากลางทีม ' + (med * 100).toFixed(1) + '%', ...R.map(x => x.e.name.padEnd(8) + ' สูง ' + x.r.H + 'px · ' + x.r.heads.toFixed(2) + ' หัว (หัว ' + (x.r.head * 100).toFixed(1) + '%) · หัว/ไหล่ ' + x.r.headToShoulder.toFixed(2) + '× · ลำตัว ' + (x.r.torso * 100).toFixed(0) + '% · ขา ' + (x.r.legs * 100).toFixed(0) + '% · ' + LV[x.v.level][1] + (x.r.manual ? ' (ปรับมือ)' : ' (ประมาณอัตโนมัติ)') + (x.v.notes.length ? ' — ' + x.v.notes.join(', ') : ''))].join('\n');
+}
+let _rt = 0; const reRatio = () => { cancelAnimationFrame(_rt); _rt = requestAnimationFrame(() => { if (tab === 'ratio') renderRatio(visible()) }) };
+function renderRatio(V) {
+  const { R, med } = ratioRows(V), FH = 300, bad = R.filter(x => x.v.level === 'bad').length, warn = R.filter(x => x.v.level === 'warn').length, ok = R.length - bad - warn;
+  const st = $('stage'); st.style.height = 'auto'; st.style.width = 'auto';
+  const lvl = bad ? 'bad' : warn ? 'warn' : 'ok';
+  let h = `<div class="banner ${lvl}"><b>${ok === R.length ? '✔ ทั้งทีมเป็นกึ่ง SD สัดส่วนเดียวกัน' : `ตรงมาตรฐาน ${ok}/${R.length} ตัว`}</b> · ค่ากลางของทีม: หัว ${(med * 100).toFixed(1)}% ของตัว (≈ ${(1 / med).toFixed(2)} หัว)${bad || warn ? ' · ' + R.filter(x => x.v.level !== 'ok').map(x => x.e.name).join(', ') + ' ยังไม่ตรง' : ''}</div>
+   <div class="stdctl">มาตรฐาน: หัว ≈ <input type="number" id="sHead" min="15" max="60" step="0.5" value="${STDV.head}">% ± <input type="number" id="sTol" min="1" max="15" step="0.5" value="${STDV.tol}">% ของความสูง (2.7–3 หัว ≈ 33–37% · ในพรอมต์ใช้ 38%)
+    <span class="lgd"><i style="border-color:${COL.chin}"></i>คาง<i style="border-color:${COL.shoulder}"></i>ไหล่<i style="border-color:${COL.hip}"></i>ขาหนีบ<i style="border-color:#2a7"></i>มาตรฐาน<i style="border-color:#c9893a"></i>ค่ากลางทีม</span></div>`;
+  h += `<div class="figs" style="height:${FH + 54}px">`;
+  h += `<div class="std" style="top:${6 + STDV.head / 100 * FH}px;border-color:#2a7" title="คางตามมาตรฐาน"></div><div class="std" style="top:${6 + med * FH}px;border-color:#c9893a" title="ค่ากลางของทีม"></div>`;
+  for (const { e, r, v } of R) {
+    const c = e.ctx.battle, k = FH / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, fl = c.flip ? 'transform:scaleX(-1);' : '';
+    h += `<div data-c="${e.id}"><div class="fig" style="width:${fw}px;height:${FH}px"><img alt="" src="${c.url || c.src}" style="${fl}width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
+    for (const n of ['chin', 'shoulder', 'hip']) h += `<div class="ln" style="top:${r.marks[n] * FH}px;border-color:${COL[n]}"></div>`;
+    h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}" data-c="${e.id}">${e.name}<br><span class="chip ${LV[v.level][0]}">${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(0)}%</span></div></div>`;
+  }
+  h += `</div><table class="rt"><tr><th>ตัวละคร</th><th>สูง px</th><th>หัว %</th><th>จำนวนหัว</th><th title="ความกว้างหัว ÷ ความกว้างช่วงไหล่ (รวมแขน)">หัว/ไหล่</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
+  for (const { e, r, v } of R) h += `<tr data-c="${e.id}" class="${e.id === sel ? 'sel' : ''}"><td>${e.name}${r.manual ? '' : ' <small title="ประมาณจากภาพอัตโนมัติ · ลากเส้นในแผงขวาเพื่อปรับ">~</small>'}</td><td>${r.H}</td><td>${(r.head * 100).toFixed(1)}</td><td>${r.heads.toFixed(2)}</td><td>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'}</td><td>${(r.torso * 100).toFixed(0)}</td><td>${(r.legs * 100).toFixed(0)}</td><td><span class="chip ${LV[v.level][0]}" title="${v.notes.join(' · ')}">${LV[v.level][1]}</span></td></tr>`;
+  h += `</table><p class="hint">เส้นแดง/น้ำเงิน/เขียว = คาง/ไหล่/ขาหนีบ ที่ประมาณจากภาพ (ตัวที่มี ~ ยังไม่ได้ยืนยัน) · ทุกตัวถูกย่อ/ขยายให้สูงเท่ากัน เพื่อเทียบสัดส่วนล้วนๆ — ถ้าเป็นกึ่ง SD เท่ากัน เส้นแดงของทุกตัวควรอยู่ใกล้เส้นมาตรฐานสีเขียว · เลือกตัวแล้วลากเส้นที่แผงขวาให้ตรงกับคางจริง</p><div class="adj"><button id="rCopy">📋 คัดลอกรายงาน</button></div>`;
+  st.innerHTML = h;
+  st.querySelectorAll('[data-c]').forEach(n => n.onclick = () => pickSel(n.dataset.c));
+  $('sHead').onchange = ev => { STDV.head = Math.min(60, Math.max(15, +ev.target.value || 38)); renderRatio(visible()) }; $('sTol').onchange = ev => { STDV.tol = Math.min(15, Math.max(1, +ev.target.value || 4)); renderRatio(visible()) };
+  $('rCopy').onclick = async ev => { const tx = reportText(R, med); try { await navigator.clipboard.writeText(tx); ev.target.textContent = 'คัดลอกแล้ว ✓' } catch (er) { prompt('คัดลอกข้อความนี้', tx) } };
+  $('note').textContent = 'สัดส่วนอ่านจากภาพ SW ของแต่ละตัว (หรือเฟรมที่เลือกในแท็บ Animation) · ไม่เกี่ยวกับสเกลในเกม';
+}
+function inspectRatio() {
+  const e = ENTRIES.find(x => x.id === sel); if (!e || isW(e) || !e.ctx.battle) { $('insp').innerHTML = ''; return }
+  const c = e.ctx.battle, r = ratioOf(e), med = PT.median(visible().map(x => ratioOf(x).head)), v = PT.verdict(r, STDOBJ(), med), CH = 300, CW = 250;
+  $('insp').innerHTML = `<b>${e.name}</b> <span class="chip ${LV[v.level][0]}">${LV[v.level][1]}</span>
+   <canvas id="pcv" width="${CW}" height="${CH + 20}" style="width:${CW}px;height:${CH + 20}px;max-width:100%;touch-action:none;cursor:ns-resize;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
+   <p class="hint">ลากเส้นสี (คาง = ล่างหัว · ไหล่ · ขาหนีบ) ให้ตรงกับภาพ ${r.manual ? '' : '· ตอนนี้เป็นค่าประมาณอัตโนมัติ'}</p>
+   <dl><dt>จำนวนหัว</dt><dd><b>${r.heads.toFixed(2)}</b> หัว (หัว ${(r.head * 100).toFixed(1)}% ของตัว)</dd><dt>หัว / ไหล่</dt><dd>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'} (หัวกว้าง ${r.headW}px · ไหล่ ${r.shoulderW}px)</dd><dt>ลำตัว / ขา</dt><dd>${(r.torso * 100).toFixed(0)}% / ${(r.legs * 100).toFixed(0)}%</dd><dt>ผล</dt><dd>${v.notes.length ? v.notes.join('<br>') : 'ตรงมาตรฐาน'}</dd></dl>
+   <div class="adj"><span>คาง %</span><input type="number" id="mChin" min="5" max="70" step="0.5" value="${(r.marks.chin * 100).toFixed(1)}"><span style="width:50px">ไหล่ %</span><input type="number" id="mSh" min="5" max="85" step="0.5" value="${(r.marks.shoulder * 100).toFixed(1)}"></div>
+   <div class="adj"><span>ขาหนีบ %</span><input type="number" id="mHip" min="30" max="90" step="0.5" value="${(r.marks.hip * 100).toFixed(1)}"></div>
+   <div class="adj"><button id="mAuto">ประมาณอัตโนมัติ</button><button id="mPush">⬆ Push เส้นที่ปรับ</button></div><p class="hint" id="mMsg"></p>`;
+  const cv = document.getElementById('pcv'), g = cv.getContext('2d'), k = CH / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, ox = (CW - fw) / 2, oy = 10;
+  const marks = { ...r.marks }, draw = () => {
+    g.clearRect(0, 0, CW, CH + 20); g.save(); if (c.flip) { g.translate(CW, 0); g.scale(-1, 1) } g.drawImage(c.img, (c.flip ? CW - ox - fw : ox) - c.m.x0 * k, oy - c.m.top * k, c.m.w * k, c.m.h * k); g.restore();
+    for (const n of ['chin', 'shoulder', 'hip']) { const y = oy + marks[n] * CH; g.strokeStyle = COL[n]; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(CW, y); g.stroke(); g.fillStyle = COL[n]; g.font = '11px sans-serif'; g.fillText(LBL[n], 4, y - 3) }
+  }; draw();
+  const commit = (final) => { const sv = { chin: +marks.chin.toFixed(4), shoulder: +marks.shoulder.toFixed(4), hip: +marks.hip.toFixed(4), sig: sigOf(c) }; MARKS[e.id] = sv; PT.store.save(MARKS); if (final) { renderRatio(visible()); inspectRatio() } else reRatio() };
+  let drag = null; const yOf = ev => { const b = cv.getBoundingClientRect(); return (ev.clientY - b.top) * (CH + 20) / b.height };
+  cv.onpointerdown = ev => { const y = yOf(ev); let best = null, bd = 14; for (const n of ['chin', 'shoulder', 'hip']) { const d = Math.abs(oy + marks[n] * CH - y); if (d < bd) { bd = d; best = n } } if (best) { drag = best; cv.setPointerCapture(ev.pointerId) } };
+  cv.onpointermove = ev => { if (!drag) return; let f = Math.min(.95, Math.max(.04, (yOf(ev) - oy) / CH)); if (drag === 'chin') f = Math.min(f, marks.hip - .08); if (drag === 'hip') f = Math.max(f, marks.chin + .08); marks[drag] = f; if (drag === 'chin' && marks.shoulder < f) marks.shoulder = f + .02; draw(); commit(false) };
+  cv.onpointerup = () => { if (drag) { drag = null; commit(true) } };
+  const num = (id, key) => document.getElementById(id).onchange = ev => { marks[key] = Math.min(.95, Math.max(.04, (+ev.target.value || 0) / 100)); commit(true) };
+  num('mChin', 'chin'); num('mSh', 'shoulder'); num('mHip', 'hip');
+  document.getElementById('mAuto').onclick = () => { delete MARKS[e.id]; PT.store.save(MARKS); renderRatio(visible()); inspectRatio() };
+  document.getElementById('mPush').onclick = async () => { const m = document.getElementById('mMsg'), G = window.GitHubPush; if (!G || !G.enabled()) { m.textContent = 'ยังไม่ได้ใส่ token ของ GitHub ในเบราว์เซอร์นี้ (เปิดตั้งค่าจาก Asset Studio ก่อน)'; return } m.textContent = 'กำลัง push…'; try { const sha = await G.pushSettings([PT.store.KEY], 'สัดส่วนตัวละคร (เส้นคาง/ไหล่/ขาหนีบ)'); m.textContent = sha ? 'push แล้ว · ' + sha : 'ไม่มีอะไรต้อง push' } catch (er) { m.textContent = 'push ไม่สำเร็จ: ' + er.message } };
+}
 function inspect() {
+  if (tab === 'ratio') { inspectRatio(); return }
   const e = ENTRIES.find(x => x.id === sel), c = e.ctx[ctx];
   if (isW(e)) { const row = (k, v) => `<dt>${k}</dt><dd>${v}</dd>`, mh = metres(e), mw = (c.m.x1 - c.m.x0 + 1) * mh / c.m.H, [k, t] = rangeOf(e);
     $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${WORLD[e.group].name}</span><dl>${row('สูงบนจอ', `${mh.toFixed(2)} m · ${Math.round(c.px)} px`)}${row('กว้าง', mw.toFixed(2) + ' m')}${row('เทียบตัวเอก', (mh / HERO_M).toFixed(1) + ' เท่า')}${row('ช่วงเป้าหมาย', `${e.ref[0]}–${e.ref[1]} m <span class="chip ${k}">${t}</span>`)}${row('ที่มาขนาด', e.fixed ? 'ค่าที่โค้ดเกมวาดจริง' : 'ประมาณ (ไม่มีค่าตรึง)')}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.file || c.src}</code>`)}</dl><p class="hint">เฟส 1 ดูอย่างเดียว · ชิ้นที่ไม่พอดีให้ไปปรับสเกลในโปรแกรมแก้ไขแผนที่ (เฟส 2 จะลากปรับที่นี่ได้)</p>`; return }
@@ -213,6 +292,7 @@ function bump(field, delta) {   /* field: 'g' or a scene name; delta = percentag
 }
 function controls() {
   const box = $('ctl'), e = ENTRIES.find(x => x.id === sel);
+  if (tab === 'ratio') { box.innerHTML = ''; return }
   if (tab !== 'char' || !e || isW(e)) { box.innerHTML = '<p class="hint">ตัวปรับขนาดใช้กับแท็บ "ตัวละคร"</p>'; return }
   const pct = v => Math.round(v * 100), row = (label, field, note) => `<div class="adj"><span>${label}</span><button data-b="${field}:-5">−5</button><button data-b="${field}:-1">−1</button><input type="number" min="40" max="200" value="${pct(field === 'g' ? gOf(e.id) : sOf(field, e.id))}" data-f="${field}"><button data-b="${field}:1">+1</button><button data-b="${field}:5">+5</button>${note ? `<small>${note}</small>` : ''}</div>`;
   const dim = e.id === 'hero' ? 'ตัวเอกคือไม้วัด: ปรับแล้วตัวอื่นเทียบตามความสูงเดิม' : '';
