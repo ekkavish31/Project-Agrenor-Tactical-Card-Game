@@ -27,9 +27,10 @@
      (384×384, feet at y=372). v97.59: a direction without its own pictures uses the opposite one mirrored (SE←SW, NW←NE and back), so two directions are enough ·
      walk frames: 12 = a full 12-picture cycle (per-direction counts in wn; a direction with fewer pictures than its mirror uses the mirror's, flipped) · 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 1 = contact, stand, contact, stand · 0 = the standing picture with a bob.
      Falls back to the code-drawn figure until a standing picture has loaded. */
-  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 2, wn: { sw: 12, ne: 12 } }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1, wn: { sw: 13, ne: 13 } }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } },
+  /* v98.126 · new cast pictures (standing SW/NE + one walking picture SW/NE each, SE/NW = mirrored files): bram / luna / the recruits use walk 1 (contact, stand, contact, stand) */
+  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } },
     /* v98.86 · recruits (front view = SW; NE is the front picture mirrored for now, replace ne-stand.webp when the back view exists). No walk frames yet: the standing picture bobs. */
-    ren: { dirs: ['sw', 'ne'], walk: 0 }, nadia: { dirs: ['sw', 'ne'], walk: 0 }, sigrid: { dirs: ['sw', 'ne'], walk: 0 }, orla: { dirs: ['sw', 'ne'], walk: 0 }, olwen: { dirs: ['sw', 'ne'], walk: 0 } }, dn = (info, d) => (info.wn && info.wn[d] != null ? info.wn[d] : info.walk), SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
+    ren: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, nadia: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, sigrid: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, orla: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, olwen: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 } }, dn = (info, d) => (info.wn && info.wn[d] != null ? info.wn[d] : info.walk), SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
   function sprites(name) {
     let S = SPR[name]; if (S) return S; S = SPR[name] = {}; const info = SPR_INFO[name]; if (!info || typeof Image === 'undefined') return S;
     for (const d of info.dirs) for (const k of ['stand', ...Array.from({ length: dn(info, d) }, (_, n) => 'walk' + (n + 1))]) { const im = new Image(); im.src = 'assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp'; S[d + '-' + k] = im }

@@ -49,7 +49,7 @@ code{font-size:12px}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/character-scale-adjust-data.js?v=98.67"></script><script src="js/character-scale-adjust.js?v=98.67"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
+<script src="js/character-scale-adjust-data.js?v=98.126"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -61,7 +61,7 @@ code{font-size:12px}
 let HERO_M = 1.70; const DS = { hero: 1.6, ally: 1.45 };
 /* v98.95 · inside Asset Studio (⚖ Scale Lineup tab) this page reads the studio's CURRENT pictures (StudioBrowser.lineup) and follows its Animation selection; alone it falls back to the files */
 const ST = (() => { try { return window.parent !== window && parent.StudioBrowser && parent.StudioBrowser.lineup ? parent.StudioBrowser : null } catch (e) { return null } })();
-const HERO_SRC = 'assets/characters/hero-male/idle-sw.webp';
+const HERO_SRC = 'assets/tactics/imported/idle-sw-mwcast2-m/frame-01.png';   /* v98.126 · the new standing hero (male look) */
 const ALLIES = { bram: 'บรัม', luna: 'ลูน่า', kier: 'เคียร์', mil: 'มิล', ren: 'เรน', nadia: 'นาเดีย', sigrid: 'ซิกริด', orla: 'ออร์ลา', olwen: 'โอลเวน' };
 const PICK = {};   // character id → { clip, index }: a frame chosen from the Animation clips (studio only)
 const $ = id => document.getElementById(id);
