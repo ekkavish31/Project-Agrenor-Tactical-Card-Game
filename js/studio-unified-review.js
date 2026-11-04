@@ -120,7 +120,26 @@
  q('ai').onclick=async()=>{if(!clip||E.hasDrafts()){status('บันทึกชุดที่แก้ก่อนส่งคำขอ เพื่อให้หมายเลขเฟรมและข้อมูลเกมตรงกัน');return}try{let req=R.request(clip,entries().frames||{});if(!req.targets.length){status('ทำเครื่องหมายเฟรมที่ต้องแก้และใส่หมายเหตุก่อน');return}let files=[],enc=new TextEncoder(),needed=new Set(req.targets.flatMap(t=>[t.frame,...t.referenceFrames]));for(let n of needed){let f=clip.frames[n-1],im=await image(f.file),c=document.createElement('canvas');c.width=f.size[0];c.height=f.size[1];let g=c.getContext('2d');if(f.crop)g.drawImage(im,...f.crop,0,0,c.width,c.height);else g.drawImage(im,0,0,c.width,c.height);let b=await new Promise(r=>c.toBlob(r));files.push({name:'frames/frame-'+String(n).padStart(2,'0')+'.png',data:new Uint8Array(await b.arrayBuffer())})}let prompt='Repair only the marked original game animation frames. Preserve identity, pose, dimensions and all parts not mentioned in request.json. Stored frames are NOT mirrored for preview. '+req.targets.map(t=>'Frame '+t.frame+': '+t.note).join(' | ');files.push({name:'request.json',data:enc.encode(JSON.stringify(req,null,2))},{name:'prompt.txt',data:enc.encode(prompt)});let u=URL.createObjectURL(zip(files)),a=document.createElement('a');a.href=u;a.download=R.safe(clip.label+'-'+clip.action+'-'+clip.view)+'-AI-repair.zip';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);status('ส่งออกภาพต้นฉบับและคำขอแก้เฉพาะเฟรมแล้ว')}catch(e){status('ส่งออกคำขอไม่ได้: '+e.message)}};
  migrateReviews();B.invalidate();
  function preApprove(){if(!clip)return;let fresh=allClips().find(c=>c.id===clip.id);if(fresh)clip=copy(fresh);let r=entries();r.status='approved';r.approvedAt=new Date().toISOString();r.frames={};shareReview();persist()};
- const api=window.StudioUnifiedReview={batchScale,preApprove,mirrorLinked,oppositeClip,copyMirror,open,close,status,changed,committed,history,isOpen:()=>d.open,get speed(){return speed},get onion(){return onion},getState:()=>({clip:clip?.id,loading,...E.getState()}),reset:()=>{token++;loading=false;clip=null;E.clear();comparisonImages=[];if(d.open)d.close()}};
+ /* v98.128 · many sets at once (Animation grid → ☑ เลือกหลายช่อง) */
+ async function setVerdictMany(ids,v){const want=new Set(ids),at=new Date().toISOString();let n=0;
+  for(const c of allClips()){if(!want.has(c.id))continue;const r=entries(c);
+   if(v==='approved'){for(const f of c.frames){const a=byId(f.assetId);if(a?.qaStatus==='needs-fix'){a.qaStatus='approved';a.qaApprovedAt=at}}r.approvedAt=at}else delete r.approvedAt;
+   if(v==='unreviewed')for(const f of c.frames){const a=byId(f.assetId);if(a?.qaStatus==='needs-fix')delete a.qaStatus}
+   r.status=v;r.frames={};shareReview(c);n++}
+  persist();if(dir)await saveManifest();B.invalidate();return n}
+ async function removeFile(p){const parts=p.split('/');let h=dir;for(let i=0;i<parts.length-1;i++)h=await h.getDirectoryHandle(parts[i]);await h.removeEntry(parts[parts.length-1]);try{forget(p);scanned?.delete?.(p)}catch(e){}}
+ /* delete the pictures of the chosen sets: an imported hero set → its saved config (the picture falls back to the game's original), an ally walk set → removed,
+    a single picture → the file is deleted and the slot becomes empty (status missing, 'เติมได้') */
+ async function deleteMany(ids){if(!dir)throw new Error('ต้องเชื่อมโฟลเดอร์เกม / GitHub ก่อน (ปุ่มด้านบน)');const want=new Set(ids),out={sets:0,files:0,failed:[]};
+  const unlink=(links,view)=>{if(!links)return;delete links[view];for(const k of Object.keys(links))if(links[k]===view)delete links[k]};
+  for(const c of allClips()){if(!want.has(c.id))continue;let m;
+   try{
+    if((m=/^runtime:hero:([^:]+):([^:]+)$/.exec(c.id))){const [,act,view]=m;if(act==='walk'){if(M.studioWalks)delete M.studioWalks[view];unlink(M.studioWalkMirrors,view)}else{if(M.studioPoses?.[act])delete M.studioPoses[act][view];unlink(M.studioPoseMirrors?.[act],view)}out.sets++;continue}
+    if((m=/^allywalk:([a-z]+):([A-Z]+)$/.exec(c.id))){if(M.studioAllyWalks?.[m[1]])delete M.studioAllyWalks[m[1]][m[2]];out.sets++;continue}
+    for(const f of c.frames){const a=byId(f.assetId);if(!a||a.status==='missing')continue;try{await removeFile(a.file);out.files++}catch(e){if(e?.name!=='NotFoundError')throw e}a.status='missing';a.artRevision=Date.now().toString(36)}out.sets++
+   }catch(e){out.failed.push(c.label+' '+c.action+' '+c.view+': '+e.message)}}
+  try{window.StudioVariants?.syncStatuses?.(M)}catch(e){}await saveManifest();B.invalidate();return out}
+ const api=window.StudioUnifiedReview={setVerdictMany,deleteMany,batchScale,preApprove,mirrorLinked,oppositeClip,copyMirror,open,close,status,changed,committed,history,isOpen:()=>d.open,get speed(){return speed},get onion(){return onion},getState:()=>({clip:clip?.id,loading,...E.getState()}),reset:()=>{token++;loading=false;clip=null;E.clear();comparisonImages=[];if(d.open)d.close()}};
  window.AssetAnimationReview={...api,refresh:target=>switchClip(target||clip?.id),hasDrafts:()=>E.hasDrafts(),exportSheet:()=>document.getElementById('wi-sheet-export').click(),exportGif,getState:()=>({clip:clip?.id,loading,...E.getState()})};
  document.getElementById('animationReviewButton').onclick=()=>open();
 })();
