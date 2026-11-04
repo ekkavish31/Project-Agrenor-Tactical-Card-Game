@@ -28,7 +28,7 @@
      walk frames: 12 = a full 12-picture cycle (per-direction counts in wn; a direction with fewer pictures than its mirror uses the mirror's, flipped) · 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 1 = contact, stand, contact, stand · 0 = the standing picture with a bob.
      Falls back to the code-drawn figure until a standing picture has loaded. */
   /* v98.126 · new cast pictures (standing SW/NE + one walking picture SW/NE each, SE/NW = mirrored files): bram / luna / the recruits use walk 1 (contact, stand, contact, stand) */
-  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } },
+  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1, wn: { sw: 12 } }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } },
     /* v98.86 · recruits (front view = SW; NE is the front picture mirrored for now, replace ne-stand.webp when the back view exists). No walk frames yet: the standing picture bobs. */
     ren: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, nadia: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, sigrid: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, orla: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, olwen: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 } }, dn = (info, d) => (info.wn && info.wn[d] != null ? info.wn[d] : info.walk), SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
   function sprites(name) {
