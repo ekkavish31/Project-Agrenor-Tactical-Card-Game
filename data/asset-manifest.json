@@ -9166,7 +9166,7 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "mw02uuq4",
+   "artRevision": "mwcast",
    "history": [
     {
      "file": "assets/_versions/unified/mw02uuq4/tactics-luna-se-idle.png",
@@ -9191,7 +9191,7 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "mw02upyt",
+   "artRevision": "mwcast",
    "history": [
     {
      "file": "assets/_versions/unified/mw02upyt/tactics-luna-sw-idle.png",
@@ -9631,7 +9631,7 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "mw07i47g",
+   "artRevision": "mwcast",
    "history": [
     {
      "file": "assets/_versions/unified/mw07i47g/tactics-bram-se-idle.png",
@@ -9656,7 +9656,7 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "mw0uci7h",
+   "artRevision": "mwcast",
    "history": [
     {
      "file": "assets/_versions/unified/mw0uci7h/tactics-bram-sw-idle.png",
@@ -10310,7 +10310,7 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Mil, a small cheerful junior swordsman with a big scarf, grid-battle sprite facing down-right (SE), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม mil ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-mil-se-windup",
@@ -60708,7 +60708,7 @@
    "id": "tactics-mil-sw-idle",
    "file": "assets/tactics/mil_sw_idle.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -60717,8 +60717,7 @@
    "subject": "Mil, a small cheerful junior swordsman with a big scarf, grid-battle sprite facing down-left (SW), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle",
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Mil, a small cheerful junior swordsman with a big scarf, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม mil ในสนาม",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ใส่ไฟล์ตามชื่อนี้ได้เลย",
-   "artRevision": "v16"
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-mil-sw-windup",
@@ -60991,7 +60990,8 @@
    ],
    "transparent": true,
    "view": "SW",
-   "pose": "idle"
+   "pose": "idle",
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-ren-ne-idle",
@@ -61017,7 +61017,8 @@
    ],
    "transparent": true,
    "view": "SW",
-   "pose": "idle"
+   "pose": "idle",
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-nadia-ne-idle",
@@ -61043,7 +61044,8 @@
    ],
    "transparent": true,
    "view": "SW",
-   "pose": "idle"
+   "pose": "idle",
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-sigrid-ne-idle",
@@ -61069,7 +61071,8 @@
    ],
    "transparent": true,
    "view": "SW",
-   "pose": "idle"
+   "pose": "idle",
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-orla-ne-idle",
@@ -61095,7 +61098,8 @@
    ],
    "transparent": true,
    "view": "SW",
-   "pose": "idle"
+   "pose": "idle",
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-olwen-ne-idle",
@@ -67927,8 +67931,7 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม ren",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
-   "artRevision": "mw0hdiuy"
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-ren-nw-idle",
@@ -68019,8 +68022,7 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม nadia",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
-   "artRevision": "mw0gxg2d"
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-nadia-nw-idle",
@@ -68111,8 +68113,7 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม sigrid",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
-   "artRevision": "mw0hdqcb"
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-sigrid-nw-idle",
@@ -68203,8 +68204,7 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม orla",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
-   "artRevision": "mw0hd6lz"
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-orla-nw-idle",
@@ -68295,8 +68295,7 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม olwen",
-   "note": "ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ",
-   "artRevision": "mw0hcvfp"
+   "artRevision": "mwcast"
   },
   {
    "id": "tactics-olwen-nw-idle",
@@ -72909,6 +72908,60 @@
     "group": "characters"
    },
    "artRevision": "mw0ul38v"
+  },
+  {
+   "id": "studio-hero-sw-idle-mwcast-m-1",
+   "file": "assets/tactics/imported/idle-sw-mwcast-m/frame-01.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "frame": 1,
+   "frames": 1,
+   "ms": 120,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedPose": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwcast-m"
+  },
+  {
+   "id": "studio-hero-sw-idle-mwcast-f-1",
+   "file": "assets/tactics/imported/idle-sw-mwcast-f/frame-01.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "frame": 1,
+   "frames": 1,
+   "ms": 120,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedPose": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwcast-f"
   }
  ],
  "studioReviews": {
@@ -75061,6 +75114,106 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-03T16:03:21.741Z"
+  },
+  "[\"tactics-ren-sw-idle\",\"SW\",true,[[\"tactics-ren-sw-idle\",\"assets/village-town/npc/ren/sw-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-ren-se-idle\",\"SE\",true,[[\"tactics-ren-se-idle\",\"assets/village-town/npc/ren/se-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-nadia-sw-idle\",\"SW\",true,[[\"tactics-nadia-sw-idle\",\"assets/village-town/npc/nadia/sw-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-nadia-se-idle\",\"SE\",true,[[\"tactics-nadia-se-idle\",\"assets/village-town/npc/nadia/se-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-sigrid-sw-idle\",\"SW\",true,[[\"tactics-sigrid-sw-idle\",\"assets/village-town/npc/sigrid/sw-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-sigrid-se-idle\",\"SE\",true,[[\"tactics-sigrid-se-idle\",\"assets/village-town/npc/sigrid/se-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-orla-sw-idle\",\"SW\",true,[[\"tactics-orla-sw-idle\",\"assets/village-town/npc/orla/sw-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-orla-se-idle\",\"SE\",true,[[\"tactics-orla-se-idle\",\"assets/village-town/npc/orla/se-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-olwen-sw-idle\",\"SW\",true,[[\"tactics-olwen-sw-idle\",\"assets/village-town/npc/olwen/sw-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-olwen-se-idle\",\"SE\",true,[[\"tactics-olwen-se-idle\",\"assets/village-town/npc/olwen/se-stand.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-bram-sw-idle\",\"SW\",true,[[\"tactics-bram-sw-idle\",\"assets/tactics/bram_sw_idle.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-bram-se-idle\",\"SE\",true,[[\"tactics-bram-se-idle\",\"assets/tactics/bram_se_idle.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-luna-sw-idle\",\"SW\",true,[[\"tactics-luna-sw-idle\",\"assets/tactics/luna_sw_idle.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-luna-se-idle\",\"SE\",true,[[\"tactics-luna-se-idle\",\"assets/tactics/luna_se_idle.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-mil-sw-idle\",\"SW\",true,[[\"tactics-mil-sw-idle\",\"assets/tactics/mil_sw_idle.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics-mil-se-idle\",\"SE\",true,[[\"tactics-mil-se-idle\",\"assets/tactics/mil_se_idle.webp\",0,\"mwcast\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwcast-m-1\",\"assets/tactics/imported/idle-sw-mwcast-m/frame-01.png\",0,\"mwcast-m\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mwcast-m-1\",\"assets/tactics/imported/idle-sw-mwcast-m/frame-01.png\",0,\"mwcast-m\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwcast-f-1\",\"assets/tactics/imported/idle-sw-mwcast-f/frame-01.png\",0,\"mwcast-f\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mwcast-f-1\",\"assets/tactics/imported/idle-sw-mwcast-f/frame-01.png\",0,\"mwcast-f\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T04:04:44.122Z"
   }
  },
  "studioClipHistory": {
@@ -76184,11 +76337,11 @@
        0.9375
       ],
       "loop": true,
-      "createdAt": "2026-11-03T01:47:45.008Z",
+      "createdAt": "2026-11-04T04:04:01.415Z",
       "frames": [
        {
-        "assetId": "studio-hero-sw-idle-mw0130fk-486y-1",
-        "src": "assets/tactics/imported/idle-sw-mw0130fk-486y/frame-01.png",
+        "assetId": "studio-hero-sw-idle-mwcast-m-1",
+        "src": "assets/tactics/imported/idle-sw-mwcast-m/frame-01.png",
         "ms": 120
        }
       ]
@@ -76237,7 +76390,8 @@
    },
    "studioPoseMirrors": {
     "idle": {
-     "NW": "NE"
+     "NW": "NE",
+     "SE": "SW"
     }
    },
    "studioPoseHistory": {
@@ -76885,26 +77039,6 @@
        }
       ]
      },
-     "SE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-03T01:27:54.274Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-se-idle-mw00dhnm-z2q3-1",
-        "src": "assets/tactics/imported/idle-se-mw00dhnm-z2q3/frame-01.png",
-        "ms": 120
-       }
-      ]
-     },
      "SW": {
       "version": 1,
       "canvas": [
@@ -76916,11 +77050,11 @@
        0.9375
       ],
       "loop": true,
-      "createdAt": "2026-11-03T01:27:55.685Z",
+      "createdAt": "2026-11-04T04:04:01.416Z",
       "frames": [
        {
-        "assetId": "studio-hero-sw-idle-mw00diqt-0esu-1",
-        "src": "assets/tactics/imported/idle-sw-mw00diqt-0esu/frame-01.png",
+        "assetId": "studio-hero-sw-idle-mwcast-f-1",
+        "src": "assets/tactics/imported/idle-sw-mwcast-f/frame-01.png",
         "ms": 120
        }
       ]
@@ -76929,7 +77063,8 @@
    },
    "studioPoseMirrors": {
     "idle": {
-     "NW": "NE"
+     "NW": "NE",
+     "SE": "SW"
     },
     "windup": {}
    },
