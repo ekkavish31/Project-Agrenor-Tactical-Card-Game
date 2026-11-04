@@ -56828,7 +56828,7 @@
    "id": "studio-hero-ne-idle-mw00dg50-gqr7-1",
    "file": "assets/tactics/imported/idle-ne-mw00dg50-gqr7/frame-01.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -56855,7 +56855,7 @@
    "id": "studio-hero-se-idle-mw00dhnm-z2q3-1",
    "file": "assets/tactics/imported/idle-se-mw00dhnm-z2q3/frame-01.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -56882,7 +56882,7 @@
    "id": "studio-hero-sw-idle-mw00diqt-0esu-1",
    "file": "assets/tactics/imported/idle-sw-mw00diqt-0esu/frame-01.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -59177,7 +59177,7 @@
    "id": "studio-hero-sw-idle-mw0130fk-486y-1",
    "file": "assets/tactics/imported/idle-sw-mw0130fk-486y/frame-01.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -59231,7 +59231,7 @@
    "id": "studio-hero-ne-idle-mw013mv7-0b5q-1",
    "file": "assets/tactics/imported/idle-ne-mw013mv7-0b5q/frame-01.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -72936,7 +72936,7 @@
    "id": "studio-hero-sw-idle-mwcast-m-1",
    "file": "assets/tactics/imported/idle-sw-mwcast-m/frame-01.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -72963,7 +72963,7 @@
    "id": "studio-hero-sw-idle-mwcast-f-1",
    "file": "assets/tactics/imported/idle-sw-mwcast-f/frame-01.png",
    "category": "tactics-hero",
-   "status": "final",
+   "status": "unused",
    "size": [
     384,
     384
@@ -75900,7 +75900,7 @@
    "approvedAt": "2026-11-03T15:33:38.588Z"
   },
   "[\"tactics-bram-sw-windup\",\"SW\",true,[[\"tactics-bram-sw-windup\",\"assets/tactics/bram_sw_windup.webp\",0,\"v16\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
    "approvedAt": "2026-11-03T15:37:31.831Z"
   },
@@ -76209,6 +76209,206 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-04T04:04:44.122Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwcast2-m-1\",\"assets/tactics/imported/idle-sw-mwcast2-m/frame-01.png\",0,\"mwcast2-m\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:49:37.814Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mwcast2-m-1\",\"assets/tactics/imported/idle-sw-mwcast2-m/frame-01.png\",0,\"mwcast2-m\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:49:37.814Z"
+  },
+  "[\"tactics.idle.nw\",\"NW\",true,[[\"studio-hero-ne-idle-mwcast2-m-1\",\"assets/tactics/imported/idle-ne-mwcast2-m/frame-01.png\",0,\"mwcast2-m\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:49:44.437Z"
+  },
+  "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-ne-idle-mwcast2-m-1\",\"assets/tactics/imported/idle-ne-mwcast2-m/frame-01.png\",0,\"mwcast2-m\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:49:44.437Z"
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwcast2-f-1\",\"assets/tactics/imported/idle-sw-mwcast2-f/frame-01.png\",0,\"mwcast2-f\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:49:52.946Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mwcast2-f-1\",\"assets/tactics/imported/idle-sw-mwcast2-f/frame-01.png\",0,\"mwcast2-f\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:49:52.946Z"
+  },
+  "[\"tactics.idle.nw\",\"NW\",true,[[\"studio-hero-ne-idle-mwcast2-f-1\",\"assets/tactics/imported/idle-ne-mwcast2-f/frame-01.png\",0,\"mwcast2-f\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:49:54.397Z"
+  },
+  "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-ne-idle-mwcast2-f-1\",\"assets/tactics/imported/idle-ne-mwcast2-f/frame-01.png\",0,\"mwcast2-f\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:49:54.397Z"
+  },
+  "[\"tactics-bram-sw-idle\",\"SW\",true,[[\"tactics-bram-sw-idle\",\"assets/tactics/bram_sw_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:00.056Z"
+  },
+  "[\"tactics-bram-nw-idle\",\"NW\",true,[[\"tactics-bram-nw-idle\",\"assets/tactics/bram_nw_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:02.441Z"
+  },
+  "[\"tactics-bram-ne-idle\",\"NE\",true,[[\"tactics-bram-ne-idle\",\"assets/tactics/bram_ne_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:04.321Z"
+  },
+  "[\"tactics-bram-se-idle\",\"SE\",true,[[\"tactics-bram-se-idle\",\"assets/tactics/bram_se_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:05.940Z"
+  },
+  "[\"tactics-luna-sw-idle\",\"SW\",true,[[\"tactics-luna-sw-idle\",\"assets/tactics/luna_sw_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:31.627Z"
+  },
+  "[\"tactics-luna-nw-idle\",\"NW\",true,[[\"tactics-luna-nw-idle\",\"assets/tactics/luna_nw_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:33.431Z"
+  },
+  "[\"tactics-luna-ne-idle\",\"NE\",true,[[\"tactics-luna-ne-idle\",\"assets/tactics/luna_ne_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:35.053Z"
+  },
+  "[\"tactics-luna-se-idle\",\"SE\",true,[[\"tactics-luna-se-idle\",\"assets/tactics/luna_se_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:36.506Z"
+  },
+  "[\"tactics-mil-sw-idle\",\"SW\",true,[[\"tactics-mil-sw-idle\",\"assets/tactics/mil_sw_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:39.953Z"
+  },
+  "[\"tactics-mil-nw-idle\",\"NW\",true,[[\"tactics-mil-nw-idle\",\"assets/tactics/mil_nw_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:41.315Z"
+  },
+  "[\"tactics-mil-ne-idle\",\"NE\",true,[[\"tactics-mil-ne-idle\",\"assets/tactics/mil_ne_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:42.502Z"
+  },
+  "[\"tactics-mil-se-idle\",\"SE\",true,[[\"tactics-mil-se-idle\",\"assets/tactics/mil_se_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:44.044Z"
+  },
+  "[\"tactics-nadia-sw-idle\",\"SW\",true,[[\"tactics-nadia-sw-idle\",\"assets/village-town/npc/nadia/sw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:46.945Z"
+  },
+  "[\"tactics-nadia-nw-idle\",\"NW\",true,[[\"tactics-nadia-nw-idle\",\"assets/village-town/npc/nadia/nw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:48.278Z"
+  },
+  "[\"tactics-nadia-ne-idle\",\"NE\",true,[[\"tactics-nadia-ne-idle\",\"assets/village-town/npc/nadia/ne-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:49.535Z"
+  },
+  "[\"tactics-nadia-se-idle\",\"SE\",true,[[\"tactics-nadia-se-idle\",\"assets/village-town/npc/nadia/se-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:51.104Z"
+  },
+  "[\"tactics-olwen-sw-idle\",\"SW\",true,[[\"tactics-olwen-sw-idle\",\"assets/village-town/npc/olwen/sw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:54.125Z"
+  },
+  "[\"tactics-olwen-nw-idle\",\"NW\",true,[[\"tactics-olwen-nw-idle\",\"assets/village-town/npc/olwen/nw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:55.512Z"
+  },
+  "[\"tactics-olwen-ne-idle\",\"NE\",true,[[\"tactics-olwen-ne-idle\",\"assets/village-town/npc/olwen/ne-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:56.944Z"
+  },
+  "[\"tactics-olwen-se-idle\",\"SE\",true,[[\"tactics-olwen-se-idle\",\"assets/village-town/npc/olwen/se-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:50:58.338Z"
+  },
+  "[\"tactics-orla-sw-idle\",\"SW\",true,[[\"tactics-orla-sw-idle\",\"assets/village-town/npc/orla/sw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:01.227Z"
+  },
+  "[\"tactics-orla-nw-idle\",\"NW\",true,[[\"tactics-orla-nw-idle\",\"assets/village-town/npc/orla/nw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:02.418Z"
+  },
+  "[\"tactics-orla-ne-idle\",\"NE\",true,[[\"tactics-orla-ne-idle\",\"assets/village-town/npc/orla/ne-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:03.993Z"
+  },
+  "[\"tactics-orla-se-idle\",\"SE\",true,[[\"tactics-orla-se-idle\",\"assets/village-town/npc/orla/se-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:05.380Z"
+  },
+  "[\"tactics-ren-sw-idle\",\"SW\",true,[[\"tactics-ren-sw-idle\",\"assets/village-town/npc/ren/sw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:08.080Z"
+  },
+  "[\"tactics-ren-nw-idle\",\"NW\",true,[[\"tactics-ren-nw-idle\",\"assets/village-town/npc/ren/nw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:09.422Z"
+  },
+  "[\"tactics-ren-ne-idle\",\"NE\",true,[[\"tactics-ren-ne-idle\",\"assets/village-town/npc/ren/ne-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:11.247Z"
+  },
+  "[\"tactics-ren-se-idle\",\"SE\",true,[[\"tactics-ren-se-idle\",\"assets/village-town/npc/ren/se-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:12.804Z"
+  },
+  "[\"tactics-sigrid-sw-idle\",\"SW\",true,[[\"tactics-sigrid-sw-idle\",\"assets/village-town/npc/sigrid/sw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:16.346Z"
+  },
+  "[\"tactics-sigrid-nw-idle\",\"NW\",true,[[\"tactics-sigrid-nw-idle\",\"assets/village-town/npc/sigrid/nw-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:17.645Z"
+  },
+  "[\"tactics-sigrid-ne-idle\",\"NE\",true,[[\"tactics-sigrid-ne-idle\",\"assets/village-town/npc/sigrid/ne-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:19.160Z"
+  },
+  "[\"tactics-sigrid-se-idle\",\"SE\",true,[[\"tactics-sigrid-se-idle\",\"assets/village-town/npc/sigrid/se-stand.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-04T11:51:20.885Z"
   }
  },
  "studioClipHistory": {
