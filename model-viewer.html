@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ดูโมเดล 3D</title>
+<link rel="stylesheet" href="css/town-font.css">
+<style>
+:root{--bg:#f4f1e8;--panel:#fffdf6ee;--ink:#2a2418;--muted:#7a6e55;--line:#d6cdb4;--gold:#c9a45a}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1a14;--panel:#26231aee;--ink:#f1ead6;--muted:#a89c7e;--line:#433d2c}}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px VillageThai,"Noto Sans Thai",system-ui,sans-serif;overflow:hidden}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}
+.bar{position:fixed;left:12px;top:12px;right:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:760px}
+.bar b{margin-right:6px}.bar small{color:var(--muted);flex-basis:100%}
+button,a.btn{font:inherit;color:inherit;background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer;text-decoration:none}
+button[aria-pressed=true]{background:var(--gold);color:#1d1608;border-color:#e6c47c}
+#msg{position:fixed;inset:0;display:grid;place-items:center;color:var(--muted);pointer-events:none}
+</style></head><body>
+<canvas id="cv"></canvas>
+<div class="bar"><b id="title">🏨 โรงแรมเขากวางทอง</b>
+<button id="bDay" aria-pressed="true">☀ กลางวัน</button><button id="bNight" aria-pressed="false">🌙 กลางคืน</button>
+<button id="bGame">มุมกล้องเกม</button><button id="bSpin" aria-pressed="false">หมุนอัตโนมัติ</button>
+<a class="btn" id="dl" download>⬇ ไฟล์ .glb</a>
+<small>ลากเพื่อหมุน · ล้อเมาส์/สองนิ้วเพื่อซูม · คลิกขวาลากหรือ Shift+ลากเพื่อเลื่อน · โมเดล low-poly สร้างด้วยโค้ด (tools/models/inn-model.mjs)</small></div>
+<div id="msg">กำลังโหลดโมเดล…</div>
+<script src="js/vendor/three-glb.js?v=91.43"></script>
+<script>
+'use strict';
+/* v98.134 · model viewer: loads assets/models/<m>.glb (?m=inn) with the bundled three.js, a small orbit camera, day / night lighting. */
+const { THREE, GLTFLoader } = window.THREE3, Q = new URLSearchParams(location.search), NAME = (Q.get('m') || 'inn').replace(/[^\w-]/g, ''), SRC = `assets/models/${NAME}.glb`;
+const TITLES = { inn: '🏨 โรงแรมเขากวางทอง' }; document.getElementById('title').textContent = TITLES[NAME] || NAME; document.getElementById('dl').href = SRC;
+const cv = document.getElementById('cv'), R = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+R.setPixelRatio(Math.min(2, devicePixelRatio)); R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(35, 1, .1, 400);
+const hemi = new THREE.HemisphereLight(0xfff2d8, 0x5a6a3a, 1.1), sun = new THREE.DirectionalLight(0xffe2b0, 2.4);
+sun.position.set(-14, 22, 16); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 80 }); sun.shadow.bias = -.0005;
+scene.add(hemi, sun);
+const grass = new THREE.Mesh(new THREE.CircleGeometry(60, 48), new THREE.MeshStandardMaterial({ color: 0x6f9a4a, roughness: 1 })); grass.rotation.x = -Math.PI / 2; grass.position.y = -.12; grass.receiveShadow = true; scene.add(grass);
+/* orbit camera: yaw / pitch / distance around a target */
+const orb = { yaw: Math.PI / 4, pitch: .52, dist: 34, tx: 0, ty: 2.5, tz: 1 }, GAME = { yaw: Math.PI / 4, pitch: Math.atan(.5), dist: 34 };
+function placeCam() { const c = Math.cos(orb.pitch); cam.position.set(orb.tx + Math.sin(orb.yaw) * c * orb.dist, orb.ty + Math.sin(orb.pitch) * orb.dist, orb.tz + Math.cos(orb.yaw) * c * orb.dist); cam.lookAt(orb.tx, orb.ty, orb.tz) }
+let drag = null; const pts = new Map();
+cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); drag = { x: e.clientX, y: e.clientY, pan: e.button === 2 || e.shiftKey }; spin = false; setSpin() });
+cv.addEventListener('pointermove', e => {
+  if (!drag) return; const prev = pts.get(e.pointerId); if (!prev) return;
+  if (pts.size === 2) { const [a, b] = [...pts.values()], d0 = Math.hypot(a.x - b.x, a.y - b.y); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); const [c, d] = [...pts.values()], d1 = Math.hypot(c.x - d.x, c.y - d.y); orb.dist = Math.min(90, Math.max(8, orb.dist * d0 / (d1 || 1))); return }
+  const dx = e.clientX - prev.x, dy = e.clientY - prev.y; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (drag.pan) { const s = orb.dist * .0016, cy = Math.cos(orb.yaw), sy = Math.sin(orb.yaw); orb.tx -= (dx * cy) * s; orb.tz -= (-dx * sy) * s; orb.ty += dy * s }
+  else { orb.yaw -= dx * .006; orb.pitch = Math.min(1.45, Math.max(.05, orb.pitch + dy * .005)) }
+});
+const up = e => { pts.delete(e.pointerId); if (!pts.size) drag = null }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+cv.addEventListener('contextmenu', e => e.preventDefault());
+cv.addEventListener('wheel', e => { e.preventDefault(); orb.dist = Math.min(90, Math.max(8, orb.dist * (e.deltaY > 0 ? 1.1 : .9))) }, { passive: false });
+let spin = false; const setSpin = () => document.getElementById('bSpin').setAttribute('aria-pressed', spin);
+document.getElementById('bSpin').onclick = () => { spin = !spin; setSpin() };
+document.getElementById('bGame').onclick = () => Object.assign(orb, GAME, { tx: 0, ty: 2.5, tz: 1 });
+/* day / night: the model's "glow-*" materials and "lamp-*" point lights */
+let model = null;
+function setNight(n) {
+  document.getElementById('bDay').setAttribute('aria-pressed', !n); document.getElementById('bNight').setAttribute('aria-pressed', n);
+  scene.background = new THREE.Color(n ? 0x141a2c : 0xcfe0ea); scene.fog = new THREE.Fog(scene.background, 60, 140);
+  hemi.intensity = n ? .25 : 1.1; hemi.color.set(n ? 0x6a7cb0 : 0xfff2d8); sun.intensity = n ? .35 : 2.4; sun.color.set(n ? 0x8fa6d8 : 0xffe2b0);
+  model?.traverse(o => { if (o.isMesh && /^glow-/.test(o.material.name)) o.material.emissiveIntensity = n ? 1.6 : .25; if (o.isPointLight) o.intensity = n ? 6 : 0 });
+}
+document.getElementById('bDay').onclick = () => setNight(false); document.getElementById('bNight').onclick = () => setNight(true);
+new GLTFLoader().load(SRC, g => {
+  model = g.scene; model.traverse(o => { if (o.isMesh) { o.castShadow = o.receiveShadow = true; if (o.material) o.material.flatShading = true } }); scene.add(model);
+  document.getElementById('msg').remove(); setNight(false);
+}, undefined, err => { document.getElementById('msg').textContent = 'โหลดโมเดลไม่ได้: ' + SRC });
+function resize() { R.setSize(innerWidth, innerHeight, false); cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix() }
+addEventListener('resize', resize); resize();
+let last = performance.now();
+R.setAnimationLoop(t => { const dt = (t - last) / 1000; last = t; if (spin) orb.yaw += dt * .25; placeCam(); R.render(scene, cam) });
+</script></body></html>
