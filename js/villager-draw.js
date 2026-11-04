@@ -31,22 +31,32 @@
   const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1, wn: { sw: 12 } }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } },
     /* v98.86 · recruits (front view = SW; NE is the front picture mirrored for now, replace ne-stand.webp when the back view exists). No walk frames yet: the standing picture bobs. */
     ren: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, nadia: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, sigrid: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, orla: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, olwen: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 } }, dn = (info, d) => (info.wn && info.wn[d] != null ? info.wn[d] : info.walk), SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
+  /* v98.131 · ONE source with the editor: the walk sets saved in Asset Studio (ASSET_MANIFEST.studioAllyWalks[name][DIR], frames + ms) and the standing pictures of the
+     studio slots (tactics-<name>-<dir>-idle) are what the village / battle draw. The files under assets/village-town/npc/<name>/ are only the fallback for what the studio has not got. */
   function sprites(name) {
-    let S = SPR[name]; if (S) return S; S = SPR[name] = {}; const info = SPR_INFO[name]; if (!info || typeof Image === 'undefined') return S;
-    for (const d of info.dirs) for (const k of ['stand', ...Array.from({ length: dn(info, d) }, (_, n) => 'walk' + (n + 1))]) { const im = new Image(); im.src = 'assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp'; S[d + '-' + k] = im }
-    return S;
+    let S = SPR[name]; if (S) return S; S = SPR[name] = {}; const base = SPR_INFO[name]; if (!base || typeof Image === 'undefined') return S;
+    const M = root.ASSET_MANIFEST || {}, W = (M.studioAllyWalks || {})[name] || {}, A = new Map((M.assets || []).map(a => [a.id, a])), info = { ...base, wn: { ...(base.wn || {}) } }, ms = {};
+    const load = src => { const im = new Image(); im.src = src; return im };
+    for (const d of ['sw', 'se', 'ne', 'nw']) {
+      const a = A.get('tactics-' + name + '-' + d + '-idle'), w = W[d.toUpperCase()];
+      if (a && a.status === 'final' && a.file) S[d + '-stand'] = load(a.file + (a.artRevision ? '?r=' + a.artRevision : ''));
+      if (w && w.frames && w.frames.length) { w.frames.forEach((f, i) => { S[d + '-walk' + (i + 1)] = load(A.get(f.assetId)?.file || f.src) }); info.wn[d] = w.frames.length; ms[d] = w.frames[0].ms || 100 }
+    }
+    for (const d of base.dirs) for (const k of ['stand', ...Array.from({ length: dn(base, d) }, (_, n) => 'walk' + (n + 1))]) if (!S[d + '-' + k] && !(k !== 'stand' && info.wn[d] != null && ms[d])) S[d + '-' + k] = load('assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp');
+    S.info = info; S.ms = ms; return S;
   }
   const ready = im => im && im.complete && im.naturalWidth > 0;
   function pic(S, d, k) { const own = S[d + '-' + k]; if (ready(own)) return { im: own, flip: false }; const m = S[MIR[d] + '-' + k]; return ready(m) ? { im: m, flip: true } : null }
   function spriteDraw(g, L, x, y, t, o) {
-    const S = sprites(L.sprite), info = SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
+    const S = sprites(L.sprite), info = S.info || SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
     let P = pic(S, d, 'stand'), full = false; if (!P) return false;
     const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330;
     let wn = dn(info, d), wsrc = d, wflip = false; if (dn(info, MIR[d]) > wn) { wn = dn(info, MIR[d]); wsrc = MIR[d]; wflip = true }
-    if (walking && act === '' && wn) { const p = t * .012 + ph, N = wn >= 4 ? wn : 4, f = ((Math.round(p / (Math.PI * 2 / N)) % N) + N) % N, key = wn >= 4 ? 'walk' + (f + 1) : wn === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, wsrc, key); if (W) { P = wflip ? { im: W.im, flip: !W.flip } : W; full = wn >= 8 } }
-    const bob = walking ? Math.abs(Math.sin(t * .012 + ph)) * (full ? .6 : 4) * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
+    let procKey = null; if (walking && act === '' && wn) { const p = t * .012 + ph, N = wn >= 4 ? wn : 4, f = S.ms && S.ms[wsrc] && wn >= 4 ? Math.floor((t + ph * 1000) / S.ms[wsrc]) % wn : ((Math.round(p / (Math.PI * 2 / N)) % N) + N) % N; procKey = 'allywalk:' + L.sprite + ':' + wsrc.toUpperCase(); const _u = 0, key = wn >= 4 ? 'walk' + (f + 1) : wn === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, wsrc, key); if (W) { P = wflip ? { im: W.im, flip: !W.flip } : W; full = wn >= 8 } }
+    const proc = procKey && root.ProcMotion && root.ProcMotion.raw && root.ProcMotion.raw(procKey);   /* the studio's ขยับในเกม setting of that walk set (e.g. bob 0.3 / 0.6) replaces the built-in bob */
+    const bob = proc ? 0 : walking ? Math.abs(Math.sin(t * .012 + ph)) * (full ? .6 : 4) * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
     g.save(); g.fillStyle = 'rgba(20,20,20,.32)'; g.beginPath(); g.ellipse(x, y, 15 * s, 6 * s, 0, 0, 7); g.fill(); g.restore();
-    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -372 * k, 384 * k, 384 * k); g.restore();
+    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (proc) { try { root.ProcMotion.apply(g, procKey, { frames: wn, pose: 'walk' }, t, 384 * k * .9, L.sprite) } catch (e) { } } if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -372 * k, 384 * k, 384 * k); g.restore();
     fx(g, act, x, y, s, t, ph);
     return true;
   }
@@ -95,5 +105,5 @@
     g.restore();
     fx(g, act, x, y, s, t, ph);
   }
-  root.VillagerDraw = draw;
+  root.VillagerDraw = draw; draw.sprites = sprites;   /* v98.131 · for tests / tools: the pictures a sprite set really uses */
 })(globalThis);
