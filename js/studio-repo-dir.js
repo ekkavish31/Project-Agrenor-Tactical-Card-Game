@@ -27,6 +27,18 @@
   const persistRecent = () => idbSet('repo-recent', [...recent].map(([p, v]) => [p, v.b, v.at]));
   async function remember(entries) { await loadRecent(); const at = Date.now(); for (const [p, b] of entries) recent.set(p, { b, at }); await persistRecent() }
 
+  /* v98.130 · the remembered copy must not outlive a NEWER push by someone else (another browser, the editor shell, a commit from Claude):
+     it was kept for an hour whenever the web copy had a different size — also when the web copy was different because it was newer — so the studio kept showing
+     an old manifest and the next save would have overwritten the newer work. Now the branch's current git blob of that file is asked from GitHub (no Pages delay):
+     same as the remembered copy → keep it until the web catches up · different → forget it and read the branch's blob directly. */
+  const apiH = () => { const tok = root.GitHubPush?.config?.().token, h = { Accept: 'application/vnd.github+json' }; if (tok) h.Authorization = 'Bearer ' + tok; return h };
+  const shaCache = new Map();
+  async function freshSha(path) { const c = shaCache.get(path); if (c && Date.now() - c.t < 20000) return c.sha;
+    try { const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + path.split('/').map(encodeURIComponent).join('/') + '?ref=main', { headers: apiH(), cache: 'no-store' }); if (!r.ok) return null; const j = await r.json(); if (!j || !j.sha) return null; shaCache.set(path, { sha: j.sha, t: Date.now() }); return j.sha } catch (e) { return null } }
+  async function gitSha(blob) { const b = new Uint8Array(await blob.arrayBuffer()), h = new TextEncoder().encode('blob ' + b.length + '\0'), all = new Uint8Array(h.length + b.length); all.set(h); all.set(b, h.length);
+    const d = await crypto.subtle.digest('SHA-1', all); return [...new Uint8Array(d)].map(x => x.toString(16).padStart(2, '0')).join('') }
+  async function apiBlob(sha) { try { const r = await fetch('https://api.github.com/repos/' + REPO + '/git/blobs/' + sha, { headers: { ...apiH(), Accept: 'application/vnd.github.raw' }, cache: 'no-store' }); return r.ok ? await r.blob() : null } catch (e) { return null } }
+
   async function loadTree(force) {
     if (!force) { try { const c = JSON.parse(sessionStorage.getItem(TREE_KEY) || 'null'); if (c && Date.now() - c.t < 6e5) return new Set(c.list) } catch (e) {} }
     let list = null;
@@ -63,8 +75,13 @@
         if (s) return new File([s], name, { type: s.type });
         const rc = recent.get(path);
         if (rc && rc.b) {
+          const fresh = await freshSha(path);
+          if (fresh && fresh !== await gitSha(rc.b)) {   /* the branch moved past what this browser pushed: forget the remembered copy, read the branch's own blob */
+            recent.delete(path); persistRecent(); const b = await apiBlob(fresh); if (b) return new File([b], name, { type: /\.json$/i.test(path) ? 'application/json' : /\.js$/i.test(path) ? 'text/javascript' : b.type });
+          } else {
           try { const r = await fetch(rel(path), { cache: 'no-cache' }); if (r.ok) { const b = await r.blob(); if (b.size === rc.b.size) { recent.delete(path); persistRecent(); return new File([b], name, { type: b.type }) } } } catch (e) {}
           return new File([rc.b], name, { type: rc.b.type });
+          }
         }
         for (const u of [rel(path), raw(path)]) { try { const r = await fetch(u, { cache: 'no-cache' }); if (r.ok) { const b = await r.blob(); return new File([b], name, { type: b.type }) } } catch (e) {} }
         throw nf(path);
@@ -113,5 +130,5 @@
   async function discard() { staged.clear(); await persist(); notify() }
   /* the editor shell pushed (or dropped) the staged files for us */
   async function afterExternal() { staged.clear(); try { sessionStorage.removeItem(TREE_KEY) } catch (e) {} ready = null; await open(true); notify() }
-  root.RepoDir = { open, pushStaged, drop, discard, afterExternal, remember, recentPaths: () => [...recent.keys()], count: () => staged.size, paths: () => [...staged.keys()], onChange: f => listeners.push(f) };
+  root.RepoDir = { open, pushStaged, drop, discard, afterExternal, remember, recentPaths: () => [...recent.keys()], _gitSha: gitSha, _recentSha: async p => { const v = recent.get(p); return v && v.b ? gitSha(v.b) : null }, count: () => staged.size, paths: () => [...staged.keys()], onChange: f => listeners.push(f) };
 })(globalThis);
