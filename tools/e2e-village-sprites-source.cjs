@@ -9,7 +9,7 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const server = await serve(), base = 'http://localhost:' + server.address().port + '/', browser = await chromium.launch(), p = await browser.newPage({ viewport: { width: 1300, height: 800 } }); const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto(base + 'village-town.html'); await p.waitForTimeout(12000);
   const r = await p.evaluate(async () => { const out = {}, W = ASSET_MANIFEST.studioAllyWalks || {};
-    for (const k of ['ren', 'nadia', 'sigrid', 'orla', 'bram']) { const S = VillagerDraw.sprites(k); out[k] = {};
+    for (const k of ['ren', 'nadia', 'sigrid', 'orla', 'olwen', 'luna', 'bram']) { const S = VillagerDraw.sprites(k); out[k] = {};
       for (const d of ['sw', 'se', 'ne', 'nw']) { const cfg = W[k]?.[d.toUpperCase()]; if (!cfg) continue; const im = S[d + '-walk' + cfg.frames.length];
         for (let i = 0; i < 50 && !(im.complete && im.naturalWidth); i++) await new Promise(res => setTimeout(res, 100));   // the .webp try fails first, then the .png loads
         out[k][d] = { want: cfg.frames.length, got: S.info.wn[d], ms: S.ms[d], wantMs: cfg.frames[0].ms, loaded: im.naturalWidth > 0, same: im.src.replace(/\.(png|webp)(\?.*)?$/, '').endsWith(cfg.frames[cfg.frames.length - 1].src.replace(/\.(png|webp)$/, '')) } } }
