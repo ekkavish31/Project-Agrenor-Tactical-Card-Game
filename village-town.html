@@ -404,7 +404,15 @@ function drawSorted(objects){/* v98.13 · skip what is far outside the screen (�
  for(const G of groups.values())list.push({y:G.anchor??Math.min(...G.members.map(m=>m.y)),G});
  list.sort((a,b)=>a.y-b.y);
  const slots=[],sets=[];list.forEach((e,i)=>{if(e.G){slots.push(i);sets.push(e)}});sets.sort((a,b)=>(lay(a.G.id).pz-lay(b.G.id).pz)||a.y-b.y);slots.forEach((s,k)=>list[s]=sets[k]);
- for(const e of list){if(e.it){e.it.draw(g);continue}const bz=lay(e.G.id).z;e.G.members.map(m=>({m,z:m.isBuilding||m.building?bz:(m.z||0)})).sort((a,b)=>a.z-b.z||a.m.y-b.m.y).forEach(x=>x.m.draw(g))}}
+ /* v98.123 · a place and its parts are ONE piece. Layers (z) order the PARTS among themselves, but a walker standing in the piece is placed by its GRID depth (screen y), not by a layer:
+    every overlapping part that is behind it is drawn before it, every part in front of it after it. The parts keep their own order (z, y); only the few parts in front of the walker that the layers
+    would have drawn too early are moved to just after it. Before, a part with a higher layer than the walker's was drawn over it even when it stood behind it. */
+ for(const e of list){if(e.it){e.it.draw(g);continue}const bz=lay(e.G.id).z,ms=e.G.members.map(m=>({m,z:m.isBuilding||m.building?bz:(m.z||0)})),mv=ms.filter(x=>x.m.mobile||x.m.npc).sort((a,b)=>a.m.y-b.m.y);
+  let seq=ms.filter(x=>!(x.m.mobile||x.m.npc)).sort((a,b)=>a.z-b.z||a.m.y-b.m.y);
+  for(const a of mv){const near=s=>s.m.x==null||a.m.x==null||Math.abs(s.m.x-a.m.x)<160;let lastB=-1;seq.forEach((s,i)=>{if(near(s)&&s.m.y<=a.m.y)lastB=i});
+   const ins=lastB+1,moved=seq.slice(0,ins).filter(s=>near(s)&&s.m.y>a.m.y),mset=new Set(moved);seq=[...seq.slice(0,ins).filter(s=>!mset.has(s)),a,...moved,...seq.slice(ins)]}
+  /* movers that were not placed relative to anything keep the old order (z, y) */
+  seq.forEach(x=>x.m.draw(g))}}
 const WS={heroCells:r=>window.WalkSpeed?WalkSpeed.heroCells(r):(r?8.8:7.4)};   /* v98.99 · speeds come from js/walk-speed.js (editable in m/s) */
 function draw(t){if(document.hidden||!townActive){last=t;requestAnimationFrame(draw);return}if(window.TownUX?.idleSkip?.(t)){requestAnimationFrame(draw);return}time=t;const dt=Math.min(.1,(t-last)/1000||0);last=t;if(!EDIT_PAGE&&!window.TownBattle?.active?.())window.WorldState?.tick(dt);/* v94: the one game clock runs while you walk the village */if(path.length&&!editing){const b=path[0],du=b.u-hero.u,dv=b.v-hero.v,len=Math.hypot(du,dv),step=dt*(WS.heroCells(roadAt(hero.u,hero.v)||(window.TownPaint?.walk(project(hero.u,hero.v).x,project(hero.u,hero.v).y)>0)));/* v97.46 · roads are a little quicker than open ground */if(len<=step){hero.u=b.u;hero.v=b.v;path.shift();if(!path.length)arrive()}else{hero.u+=du/len*step;hero.v+=dv/len*step;hero.dir=hero.dir8=window.WalkSpeed?WalkSpeed.dir.face(hero,du,dv):spriteDir(facing8(du,dv),hero.dir)}}
  window.joyWalk?.(dt);window.TownUX?.update(dt,t);window.TownBattle?.pre?.();g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);g.fillStyle='#2c3d2e';g.fillRect(0,0,W,H);g.translate(W/2+pan.x,H/2+pan.y);g.scale(scale*zoom,scale*zoom);g.translate(-WORLD_W/2,-WORLD_H/2);if(backdrop)g.drawImage(backdrop,-WORLD_W*.45,-WORLD_H*.45,WORLD_W*1.9,WORLD_H*1.9);
