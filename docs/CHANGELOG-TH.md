@@ -3799,3 +3799,14 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 ## v98.138 — ท่าเดิน 12 เฟรม: โอลเวน SW / SE (กลับด้าน) · ตัวเอกหญิง NE / NW (กลับด้าน)
 - 12 เฟรมแรก (ตัดเฟรม 13) · ลบพื้นหลังที่ติดมาในชีทโอลเวน (ก้อนเทา/น้ำตาลข้างตัวเกือบทุกเฟรม) · 100 ms/เฟรม · เด้งตามก้าว แรง 0.3 เร็ว 0.6 · เข้าทั้ง editor และเกม
 - ตอนนี้ท่าเดิน 12 เฟรมครบ 4 ทิศทุกตัวที่มีภาพชุดใหม่: ตัวเอกชาย/หญิง บรัม มิล เรน นาเดีย ซิกริด ออร์ลา โอลเวน ลูน่า
+
+## v98.139 — 5 พ.ย. 2026 · Combat Impact Core
+- เพิ่มภาพ RGBA `assets/fx/impact/core-atlas.webp` 4 ระดับ Light / Heavy / Critical / Finisher; ใช้ภาพ stamp ขยาย/จางกับ particle เดิม ไม่ใช่ชุดภาพวาดแยกเฟรม
+- เชื่อม `town-battle.js` ที่จังหวะ impact ของผู้เล่น/เพื่อน/ศัตรู ลด glow และแทน burst/white screen flash ที่ซ้ำ เมื่อภาพใหม่โหลดพร้อม; รักษาเสียงและกติกาเดิม
+- รองรับ event โจมตีของ Tactical รุ่นเก่า; วาดตัวเลขดาเมจหลัง VFX และเริ่ม stamp หลัง hit-stop เพื่อไม่ให้หมดอายุก่อนแสดง
+- Reduced Motion ลดการเคลื่อนไหวของ stamp และปิด cinematic ของสนามใหม่; low quality ไม่เพิ่มอนุภาคเสริม
+- โหลดภาพไม่สำเร็จใช้ระบบเดิม; `impact=original` ใช้เปรียบเทียบ; เพิ่ม `vfx-preview.html` พร้อมความเร็ว 0.5/1/2 เท่าและตัวเลือกลดการเคลื่อนไหว
+- ขยับ cache version ของสคริปต์ที่แก้และ dynamic battle loader; ไม่แก้ asset manifest, layout, animation ตัวละคร, ข้อมูลเซฟ หรือสูตรต่อสู้
+- ตรวจ syntax JS ทั้งชุดและ `tools/test-*.cjs` ทั้งชุด รวม test-impact-core: tier priority, fallback, anchor, ขอบเวลา, reduced motion และ low-quality budget
+- รวม main ล่าสุด `fed24c4` ซึ่งเพิ่ม SVG Impact ในระหว่างทำงาน: เก็บ SVG ทั้ง 4 เป็น fallback/โหมด `impact=vector`, รักษา `impact=0` และ API `impactEnabled`; รวม hook ให้ปล่อย impact เพียงครั้งเดียว
+- ข้อจำกัด: ยังไม่ได้ตรวจการเล่นบนแท็บเล็ตจริง; local browser smoke test ถูกบล็อกเพราะติดตั้ง Chromium ไม่สำเร็จ

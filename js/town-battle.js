@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.137-impact';
+  const V = '98.139';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
@@ -45,7 +45,7 @@
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
   const NIGHT = Q.get('night') === '1', ATKX = +Q.get('atk') || 1, HST = Q.get('hst') != null ? Math.max(0, Math.min(100, +Q.get('hst'))) : 100;
   const EMBED = Q.get('embed') === '1', TITLE = Q.get('title') || '', HHP = +Q.get('hhp') || 0, HMAX = +Q.get('hmax') || 60, HPRO = (() => { try { return JSON.parse(Q.get('hero') || 'null') || {} } catch (e) { return {} } })();   /* v95.00: js/progression.js battleHero() — power, spell, crit, armor, stMax, st */
-  const CINE = Q.get('cine') !== '0', OLDPOSE = Q.get('oldposes') === '1', HPX = +Q.get('hp') || 1.6;
+  const CINE = Q.get('cine') !== '0' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches, OLDPOSE = Q.get('oldposes') === '1', HPX = +Q.get('hp') || 1.6;
   /* v92.15 melee: companions (old roster, old pictures assets/tactics/<key>_<se|ne>_<pose>.webp) and monster groups
      ?party=bram:54:54,luna:44:44 (key:hp:max) · ?ms=wolf*1.5,wolf*1.5,bandit*1.4 (kind*hp multiplier) */
   const ALLY = {
@@ -578,18 +578,18 @@
   function impact(u, kind, o = {}) {
     if (typeof o === 'boolean') o = { big: o };
     const big = o.big || o.crit || o.kill, col = FXCOL[kind] || '255,230,170';
+    const offensive = !!o.from && kind !== 'heal' && kind !== 'shield' && kind !== 'parry';
+    const enhanced = offensive && window.BattleVFX?.impactReady();
+    if (enhanced) { const tier = BattleVFX.impactTier(o); fx('impactCore', u, o.from, { tier, duration: BattleVFX.impactSpec(tier).duration, reducedMotion: !CINE }) }
     u.flashUntil = now() + (big ? 190 : 120);
-    glows.push({ u: u.vu, v: u.vv, col, r: UNIT * (big ? 1.8 : 1.2), t0: now(), dur: big ? 620 : 420 });
+    glows.push({ u: u.vu, v: u.vv, col, r: UNIT * (enhanced ? .65 : big ? 1.8 : 1.2), t0: now(), dur: big ? 620 : 420 });
     if (o.sound !== false) hitSound(kind, { big, crit: o.crit, kill: o.kill });
     if (kind === 'heal' || kind === 'shield' && !o.from) return;
-    const tier=o.kill?'finisher':o.crit?'critical':o.big?'heavy':'light';
-    const enhanced=!!window.BattleVFX?.impactReady?.(tier);
-    if(enhanced)effects.push({kind:'impactCore',tier,to:{x:u.vu,y:u.vv},start:now(),duration:{light:280,heavy:380,critical:470,finisher:610}[tier]});
-    burst(u, col, enhanced?(big?12:6):(big?30:16), o.from, big);
-    if (o.from) knock(u, o.from, big ? 16 : 9);
+    if (!enhanced && CINE) burst(u, col, big ? 30 : 16, o.from, big);
+    if (o.from && CINE) knock(u, o.from, big ? 16 : 9);
     if (!CINE) return;
     zoomPunch(big ? .24 : .12); lines(u, big ? 460 : 280);
-    if (big) screenFlash('255,255,255', o.crit || o.kill ? .6 : .35, 150);
+    if (big && !enhanced) screenFlash('255,255,255', o.crit || o.kill ? .6 : .35, 150);
   }
   let glows = [], parts = [], speed = [], flashes = [];
   function burst(u, col, n, from, big) {
@@ -953,8 +953,8 @@
 
   /* ---------- effects (old BattleVFX images; code fallback = a ring) ---------- */
   function fx(kind, to, from, o = {}) {
-    const dur = kind === 'heal' || kind === 'shield' ? 900 : 650;
-    effects.push({ kind, seed: (Math.random() * 1e6) | 0, scale: o.scale || 1, color: o.color, to: { x: to.vu, y: to.vv }, from: from && from !== to ? { x: from.vu, y: from.vv } : null, start: now(), duration: dur });
+    const dur = o.duration || (kind === 'heal' || kind === 'shield' ? 900 : 650);
+    effects.push({ kind, tier: o.tier, reducedMotion: o.reducedMotion, seed: (Math.random() * 1e6) | 0, scale: o.scale || 1, color: o.color, to: { x: to.vu, y: to.vv }, from: from && from !== to ? { x: from.vu, y: from.vv } : null, start: now(), duration: dur });
     return dur;
   }
   /* v94.03 · code-drawn effects for the height cards: rocks raining down, climb chevrons, the perch banner, landing dust, the dive streak */

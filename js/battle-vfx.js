@@ -15,6 +15,30 @@ function burst(g,e,n,x,y,spread,size,t,name='hit'){for(let i=0;i<n;i++){const an
 function travel(g,e,t,a,p,cw,split,name,size,lift=.45){if(!e.from||(Math.abs(a.x-p.x)+Math.abs(a.y-p.y))<4)return clamp(t);if(t>=split)return (t-split)/(1-split);const k=t/split,ay=a.y-cw*.75,py=p.y-cw*.6;
  for(let i=5;i>=0;i--){const kk=Math.max(0,k-i*.035),x=a.x+(p.x-a.x)*kk,y=ay+(py-ay)*kk-Math.sin(kk*Math.PI)*cw*lift;stamp(g,'particle/'+(i?'glow':name),x,y,size*(i?1-i*.13:1),{alpha:i?.55-i*.08:1,rot:k*8})}return -1}
 const chest=(p,cw)=>p.y-cw*.65;
+// One painted atlas, four centered cells. Animation uses the battle clock, not timers.
+const IMPACT={light:{cell:0,size:1.3,duration:300},heavy:{cell:1,size:1.45,duration:380},critical:{cell:2,size:1.6,duration:420},finisher:{cell:3,size:1.85,duration:500}};
+let impactMode;try{impactMode=new URLSearchParams(root.location?.search||'').get('impact')}catch(_){}
+function enhanced(){return impactMode!=='original'&&impactMode!=='0'}
+function reduced(){return root.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false}
+function impactTier(o={}){return o.kill?'finisher':o.crit?'critical':o.big?'heavy':'light'}
+// Preserve the concurrently added SVG pack as a lightweight fallback and comparison mode.
+const impactImgs={};
+function impactImage(tier){if(!IMPACT[tier])tier='light';let im=impactImgs[tier];if(!im){im=new Image();im.decoding='async';im.src=SRC?new URL('../assets/fx/impact/'+tier+'.svg',SRC).href:'assets/fx/impact/'+tier+'.svg';impactImgs[tier]=im}return im.complete&&im.naturalWidth?im:null}
+function impactReady(tier='light'){return enhanced()&&!!((impactMode!=='vector'&&I('impact/core-atlas'))||impactImage(tier))}
+Object.keys(IMPACT).forEach(impactImage);
+function drawImpact(g,e,t,p,a,cw){
+ if(!enhanced())return false;const atlas=impactMode!=='vector'&&I('impact/core-atlas'),im=atlas||impactImage(e.tier);if(!im)return false;
+ const spec=IMPACT[e.tier]||IMPACT.light,rm=reduced()||e.reducedMotion;
+ const k=clamp(t),size=cw*spec.size*(rm?.85:.72+.28*pop(k,.18)+.16*k),w=im.naturalWidth/2,h=im.naturalHeight/2;
+ g.save();g.globalAlpha*=rm?.6*(1-k):fade(k,.12);g.globalCompositeOperation=atlas?'source-over':'lighter';
+ g.translate(p.x,chest(p,cw));
+ if(atlas)g.drawImage(im,(spec.cell%2)*w,Math.floor(spec.cell/2)*h,w,h,-size/2,-size/2,size,size);else g.drawImage(im,-size/2,-size/2,size,size);g.restore();
+ if(!rm&&root.BattlePolish?.quality!=='low'&&e.tier!=='light'){
+  burst(g,e,e.tier==='finisher'?8:4,p.x,chest(p,cw),cw*.7,cw*.17,k,'sparkle');
+ }
+ return true;
+}
+I('impact/core-atlas');
 const KIND={
  sword(g,e,t,p,a,cw){const W=cw*(e.scale||1),dir=a.x<=p.x?1:-1,s=back(pop(t,.32));if(!stamp(g,'skill/slash',p.x,chest(p,cw),W*2.1*(.7+.3*s),{flip:dir<0,rot:dir*(-.25+.35*pop(t,.3)),alpha:fade(t,.45)}))return false;if(t>.12&&t<.6)stamp(g,'particle/hit',p.x,chest(p,cw),W*1.1*(1-pop(t-.12,.48)),{alpha:1-pop(t-.12,.48)});return true},
  knife(g,e,t,p,a,cw){const W=cw*(e.scale||1);for(let k=0;k<2;k++){const tt=clamp((t-k*.28)*2);if(!tt)continue;if(!stamp(g,'skill/cross',p.x+(k?W*.18:-W*.1),chest(p,cw)+(k?W*.12:-W*.06),W*(k?1.05:1.35)*back(pop(tt,.35)),{rot:(R(e,k)-.5)*.6,alpha:fade(tt,.4)}))return false}burst(g,e,6,p.x,chest(p,cw),W*.7,W*.25,pop(t,1),'star');return true},
@@ -40,18 +64,7 @@ const KIND={
  earth(g,e,t,p,a,cw){const W=cw*(e.scale||1),s=back(pop(t,.3));if(!stamp(g,'skill/earth',p.x,p.y+cw*.15,W*2.1,{ay:.88,sy:s,alpha:fade(t,.6),blend:'source-over'}))return false;stamp(g,'skill/shockwave',p.x,p.y,W*(1+t),{sy:.45,alpha:.6*(1-t)});return true},
  holy(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!stamp(g,'skill/holy',p.x,p.y+cw*.15,W*2.2,{ay:.88,sx:.6+.4*pop(t,.25),alpha:fade(t,.5)}))return false;burst(g,e,8,p.x,chest(p,cw),W,W*.3,t,'sparkle');return true},
  dark(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.45,'mote',W*.5,.4);if(k<0)return !!I('particle/mote');return stamp(g,'skill/dark',p.x,chest(p,cw),W*1.9*(.6+.4*back(pop(k,.35))),{rot:k*2,alpha:fade(k,.5),blend:'source-over'})}};
-
-// Combat Impact Core: four transparent vector stamps. Old skill and particle VFX stay untouched.
-// Query ?impact=0 disables enhanced hits for before/after review.
-const IMPACT_TIERS=['light','heavy','critical','finisher'],impactImgs={};
-const impactEnabled=()=>!/(?:^|[?&])impact=0(?:&|$)/.test(root.location?.search||'');
-function impactImage(tier){if(!IMPACT_TIERS.includes(tier))tier='light';let im=impactImgs[tier];if(!im){im=new Image();im.decoding='async';im.src=SRC?new URL('../assets/fx/impact/'+tier+'.svg',SRC).href:'assets/fx/impact/'+tier+'.svg';impactImgs[tier]=im}return im.complete&&im.naturalWidth?im:null}
-function impactReady(tier){return impactEnabled()&&!!impactImage(tier)}
-function impactCore(g,e,t,p,camera){if(!impactEnabled())return false;const tier=IMPACT_TIERS.includes(e.tier)?e.tier:'light',im=impactImage(tier);if(!im)return false;
- const scale={light:.9,heavy:1.12,critical:1.32,finisher:1.55}[tier],rise={light:.06,heavy:.09,critical:.12,finisher:.18}[tier],k=Math.max(0,Math.min(1,t)),fade=Math.pow(1-k,1.5),pop=Math.min(1,k/.22),w=camera.w*2.05*scale*(.68+.48*pop+rise*k);
- g.save();g.globalCompositeOperation='lighter';g.globalAlpha*=fade;g.translate(p.x,p.y-camera.w*.65);g.rotate((tier==='critical'?-1:1)*k*.12);g.drawImage(im,-w/2,-w/2,w,w);g.restore();return true}
-IMPACT_TIERS.forEach(impactImage);
-function draw(e,t,p,a,g,camera){if(e.kind==='impactCore')return impactCore(g,e,t,p,camera);const f=KIND[e.kind];if(!f)return false;try{return !!f(g,e,t,p,a||p,camera.w)}catch(err){return false}}
+function draw(e,t,p,a,g,camera){if(e.kind==='impactCore'){try{return drawImpact(g,e,t,p,a||p,camera.w)}catch(_){return false}}const f=KIND[e.kind];if(!f)return false;try{return !!f(g,e,t,p,a||p,camera.w)}catch(err){return false}}
 // ---------- weather: sprites instead of dots. Returns false (code fallback) until the images are loaded. ----------
 function weather(g,r,now,kind,low){const W=r.width,H=r.height;
  if(kind==='rain'){if(!I('particle/rain'))return false;const n=low?24:60;for(let i=0;i<n;i++){const x=(i*117.31+now*.13)%W,y=(i*83.7+now*.5)%H;stamp(g,'particle/rain',x,y,26+(i%3)*6,{alpha:.45,blend:'source-over'})}return true}
@@ -60,5 +73,5 @@ function weather(g,r,now,kind,low){const W=r.width,H=r.height;
  if(kind==='mist'){if(!I('particle/mist'))return false;const n=low?3:7;for(let i=0;i<n;i++){const s=W*(.35+.15*(i%3)),x=((i*331+now*.008*(1+i%2))%(W+s))-s/2,y=H*(.25+.6*((i*0.37)%1));stamp(g,'particle/mist',x,y,s,{alpha:.16,blend:'source-over',sy:.55})}return true}
  if(kind==='breeze'){if(!I('particle/leaf'))return false;const n=low?6:14;for(let i=0;i<n;i++){const x=(i*117.31+now*.05)%W,y=(i*83.7+now*.02+Math.sin(now*.002+i)*20)%H;stamp(g,'particle/leaf',x,y,12+(i%3)*3,{alpha:.55,blend:'source-over',rot:now*.002+i})}return true}
  return false}
-root.BattleVFX={draw,weather,stamp,impactReady,impactEnabled,ready:()=>SKILL.every(n=>I('skill/'+n))};
+root.BattleVFX={draw,weather,stamp,impactTier,impactReady,impactEnabled:enhanced,impactSpec:t=>IMPACT[t]||IMPACT.light,setImpactMode:m=>{impactMode=m},reducedMotion:reduced,ready:()=>SKILL.every(n=>I('skill/'+n))};
 })(globalThis);
