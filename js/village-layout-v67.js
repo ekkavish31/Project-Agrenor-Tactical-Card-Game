@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-11-03T05:06:38.217Z.
+// Village default layout — saved from the in-game editor 2026-11-05T06:15:38.227Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -1808,7 +1808,7 @@ window.VillageDefaultLayout={
       "facing": "SE",
       "flipArt": true,
       "fp": {
-        "u0": 20.5,
+        "u0": 28,
         "u1": 2,
         "v0": 17,
         "v1": -0.5
@@ -2983,6 +2983,84 @@ window.VillageDefaultLayout={
         "f": true,
         "du": -0.8,
         "dv": -1.8
+      },
+      "add:mw356jgu61f": {
+        "du": -25.5,
+        "dv": 1.5,
+        "grp": "g:mw3578muia5",
+        "z": 1
+      },
+      "add:mw356ua514m": {
+        "du": 1.7,
+        "dv": -0.8,
+        "grp": "g:mw3578muia5",
+        "z": 1
+      },
+      "add:mw357pkoem4b": {
+        "du": 4,
+        "dv": -1,
+        "z": 1
+      },
+      "add:mw358l1uuub2": {
+        "grp": "g:mw358oe9fkq",
+        "du": -2.5,
+        "dv": -7.5,
+        "f": true
+      },
+      "add:mw358l1uh4rm": {
+        "grp": "g:mw358oe9fkq",
+        "f": true,
+        "du": -5,
+        "dv": -5
+      },
+      "add:mw358l1u65rw": {
+        "grp": "g:mw358oe9fkq",
+        "du": -7.5,
+        "dv": -2.5,
+        "f": true
+      },
+      "add:mw359kau7mtg": {
+        "f": true,
+        "grp": "g:mw359kaurqq",
+        "du": -1,
+        "dv": -8.5
+      },
+      "add:mw359kaue903": {
+        "f": true,
+        "grp": "g:mw359kaurqq",
+        "du": -1,
+        "dv": -8.5
+      },
+      "add:mw359kauklvd": {
+        "f": true,
+        "grp": "g:mw359kaurqq",
+        "du": -1,
+        "dv": -8.5
+      },
+      "add:mw35aa8vs19": {
+        "du": -24.5,
+        "dv": -1,
+        "s": 0.53
+      },
+      "add:mw35b33qtw2": {
+        "du": -23,
+        "dv": -2
+      },
+      "add:mw35cfsttzt": {
+        "du": -23,
+        "dv": -3.5,
+        "s": 1.72
+      },
+      "add:mw35ct40qhz": {
+        "du": -21.5,
+        "dv": 0.5,
+        "s": 0.64
+      },
+      "add:mw35eiddietn": {
+        "s": 0.64,
+        "du": -0.5,
+        "dv": -1.5,
+        "z": -6
       }
     },
     "added": [
@@ -3328,6 +3406,104 @@ window.VillageDefaultLayout={
         "du": 5.8,
         "dv": 2.8,
         "kind": "decor:hedge-row"
+      },
+      {
+        "id": "add:mw356jgu61f",
+        "owner": "custom-mvq8veu1",
+        "du": 0,
+        "dv": -1.5,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mw356ua514m",
+        "owner": "custom-mvq8veu1",
+        "du": -24.7,
+        "dv": 0.8,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mw357pkoem4b",
+        "owner": "custom-mvq8veu1",
+        "du": -24.5,
+        "dv": 1,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mw358l1uuub2",
+        "owner": "custom-mvq8veu1",
+        "du": -24.5,
+        "dv": 1,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mw358l1uh4rm",
+        "owner": "custom-mvq8veu1",
+        "du": -22,
+        "dv": 1,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mw358l1u65rw",
+        "owner": "custom-mvq8veu1",
+        "du": -19.5,
+        "dv": 1,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mw359kau7mtg",
+        "owner": "custom-mvq8veu1",
+        "du": -26,
+        "dv": -5.5,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mw359kaue903",
+        "owner": "custom-mvq8veu1",
+        "du": -26,
+        "dv": -3,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mw359kauklvd",
+        "owner": "custom-mvq8veu1",
+        "du": -26,
+        "dv": -0.5,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mw35aa8vs19",
+        "owner": "custom-mvq8veu1",
+        "du": 0,
+        "dv": -1.5,
+        "kind": "decor:pond-lilies"
+      },
+      {
+        "id": "add:mw35b33qtw2",
+        "owner": "custom-mvq8veu1",
+        "du": 0,
+        "dv": -1.5,
+        "kind": "prop:4"
+      },
+      {
+        "id": "add:mw35cfsttzt",
+        "owner": "custom-mvq8veu1",
+        "du": 0,
+        "dv": -1.5,
+        "kind": "repoasset:assets/tactics/tree.webp"
+      },
+      {
+        "id": "add:mw35ct40qhz",
+        "owner": "custom-mvq8veu1",
+        "du": 0,
+        "dv": -1.5,
+        "kind": "repoasset:assets/tactics/props/bush.webp"
+      },
+      {
+        "id": "add:mw35eiddietn",
+        "owner": "custom-mvq8veu1",
+        "du": -20.5,
+        "dv": -0.5,
+        "kind": "repoasset:assets/tactics/props/bush.webp"
       }
     ],
     "buildings": {
@@ -3507,6 +3683,26 @@ window.VillageDefaultLayout={
         }
       }
     },
+    "lib": [
+      {
+        "id": "lib:mw357g4p",
+        "name": "Stonewallx2",
+        "recs": [
+          {
+            "kind": "decor:stone-wall-low",
+            "du": 1,
+            "dv": 0,
+            "g": "g:mw3578muia5"
+          },
+          {
+            "kind": "decor:stone-wall-low",
+            "du": -1.5,
+            "dv": 0,
+            "g": "g:mw3578muia5"
+          }
+        ]
+      }
+    ],
     "assets": [
       {
         "id": "adventurer-guild",
