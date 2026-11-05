@@ -56,20 +56,20 @@ const FIELD = (function () {
   const S = Math.min(6, Math.round(R * .45)), OPEN = 2;   // where each side gathers (town-battle reads window.FieldGap = S)
   for (let u = -R; u <= R; u++) for (let v = -R; v <= R; v++) {
     const x = rnd(); let k = 'normal', prop = null;
-    if (x < MIX.block) { k = 'blocked'; prop = MIX.props[Math.floor(rnd() * MIX.props.length)] }
-    else if (x < MIX.block + MIX.slow) k = 'slow'; else if (x < MIX.block + MIX.slow + MIX.cover) k = 'cover';
+    if (x < MIX.block * .45) { k = 'blocked'; prop = MIX.props[Math.floor(rnd() * MIX.props.length)] }
+    else if (x < MIX.block * .45 + MIX.slow) k = 'slow'; else if (x < MIX.block * .45 + MIX.slow + MIX.cover * .5) k = 'cover';
     cells.set(key(u, v), { u, v, k, prop, seed: rnd() });
   }
   /* boss dressing: pillars (ruin), rails + rocks (mine), bones (den) on the rim */
   const poi = FQ.get('poi');
-  if (poi) for (const c of cells.values()) if ((Math.abs(c.u) === R || Math.abs(c.v) === R) && rnd() < .35) { c.k = 'blocked'; c.prop = poi === 'ruin' ? 'pillar' : poi === 'mine' ? 'boulder' : 'deadtree' }
+  if (poi) for (const c of cells.values()) if ((Math.abs(c.u) === R || Math.abs(c.v) === R) && rnd() < .16) { c.k = 'blocked'; c.prop = poi === 'ruin' ? 'pillar' : poi === 'mine' ? 'boulder' : 'deadtree' }
   /* keep the two start corners open and carve a lane between them so the fight can always happen */
   const starts = [[-S, S], [S, -S]];   // each side's gathering area stays open
   for (const [su, sv] of starts) for (let du = -OPEN; du <= OPEN; du++) for (let dv = -OPEN; dv <= OPEN; dv++) { const c = cells.get(key(su + du, sv + dv)); if (c && c.k === 'blocked') { c.k = 'normal'; c.prop = null } }
   /* v97.01 · big trees: 2×2 blocks of blocked cells with a free cell all around them (so they never wall the field off) */
   const bigKinds = MIX.bigProps || [];
   if (bigKinds.length && MIX.big) {
-    const want = Math.round(MIX.big * (2 * R + 1) * (2 * R + 1) / 4), nearStart = (u, v) => starts.some(([a, b]) => Math.abs(u - a) <= OPEN + 2 && Math.abs(v - b) <= OPEN + 2);
+    const want = Math.round(MIX.big * .45 * (2 * R + 1) * (2 * R + 1) / 4), nearStart = (u, v) => starts.some(([a, b]) => Math.abs(u - a) <= OPEN + 2 && Math.abs(v - b) <= OPEN + 2);
     for (let t = 0, made = 0; t < want * 40 && made < want; t++) {
       const u = -R + ((rnd() * 2 * R) | 0), v = -R + ((rnd() * 2 * R) | 0); let ok = true;
       for (let du = -1; du <= 2 && ok; du++) for (let dv = -1; dv <= 2 && ok; dv++) { const c = cells.get(key(u + du, v + dv)); if (!c) continue; const inner = du >= 0 && du <= 1 && dv >= 0 && dv <= 1; if (inner ? (c.k !== 'normal' || nearStart(c.u, c.v)) : c.k === 'blocked') ok = false }
@@ -85,7 +85,7 @@ const FIELD = (function () {
     for (const cs of gr.values()) if (cs.some(c => c.k !== 'blocked')) for (const c of cs) { if (c.k === 'blocked') c.k = 'normal'; c.prop = null; c.big = null } }
   /* scenery beyond the field (never part of the fight) */
   const outer = [];
-  for (let u = -R - 7; u <= R + 7; u++) for (let v = -R - 7; v <= R + 7; v++) { if (Math.abs(u) <= R && Math.abs(v) <= R) continue; const x = rnd(); outer.push({ u, v, prop: x < .3 ? MIX.props[Math.floor(rnd() * MIX.props.length)] : x < .45 ? 'tuft' : null, seed: rnd() }) }
+  for (let u = -R - 7; u <= R + 7; u++) for (let v = -R - 7; v <= R + 7; v++) { if (Math.abs(u) <= R && Math.abs(v) <= R) continue; const x = rnd(); outer.push({ u, v, prop: x < .12 ? MIX.props[Math.floor(rnd() * MIX.props.length)] : x < .20 ? 'tuft' : null, seed: rnd() }) }
   return { biome, R, S, cells, outer, MIX, rnd, key, night: FQ.get('night') === '1' };
 })();
 /* v95.19: repaint the ground once the painted terrain textures have loaded */
@@ -208,6 +208,7 @@ function paintGround() {
    cactus and dead trees have no picture yet, so they (and any picture still loading) fall back to the code drawing below.
    [file, size in world px, 'h' = height or 'w' = width] */
 const PA = 'assets/', PROP_ART = {
+  tuft: { _: [['tactics/props/wildflower-tuft', 36, 'w']] },
   /* trees are ×2 (v97.01): a 2×2-cell block each */
   tree: { forest: [['tactics/tree', 248, 'h'], ['village-town/nature/broadleaf', 248, 'h'], ['village-town/nature/old-oak', 240, 'h'], ['village-town/nature/tree-round', 208, 'h'], ['village-town/nature/w1-oak-tree', 248, 'h']],
     _: [['tactics/tree', 256, 'h'], ['village-town/nature/broadleaf', 256, 'h'], ['village-town/nature/tree-round', 216, 'h'], ['village-town/nature/tree-round-2', 200, 'h'], ['village-town/nature/tree-blossom', 236, 'h'], ['village-town/nature/w1-autumn-tree', 236, 'h']] },

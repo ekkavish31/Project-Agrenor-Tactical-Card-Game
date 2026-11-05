@@ -410,7 +410,7 @@
     out.push(it);
     continue
    }
-   let key = owner + ':' + rel.u.toFixed(1) + ',' + rel.v.toFixed(1);
+   let key = it.frontageKey || owner + ':' + rel.u.toFixed(1) + ',' + rel.v.toFixed(1);
    seen[key] = (seen[key] || 0) + 1;
    if (seen[key] > 1) key += '#' + seen[key];
    const n0 = frame.length, e = entry(key, owner, it.x, it.y, it.draw, it, nameLabel(it.name) || labelOf(it.draw));

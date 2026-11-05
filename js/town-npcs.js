@@ -12,11 +12,11 @@
 (function(root){'use strict';
 const V=()=>root.Village25D;
 const ROSTER=[
- {id:'may',name:'ป้าเมย์',role:'คนทำขนมปัง',home:'npc0',stops:['market','square','inn'],look:{coat:'#c98a4b',apron:'#f1e6cc',hair:'#6b4426',hat:'scarf',hatCol:'#e8d6b0'},
+ {id:'may',name:'ป้าเมย์',role:'คนทำขนมปัง',home:'npc0',stops:['market','square','inn'],look:{sprite:'may',coat:'#c98a4b',apron:'#f1e6cc',hair:'#6b4426',hat:'scarf',hatCol:'#e8d6b0'},
   lines:{morning:['อรุณสวัสดิ์ {name}! ขนมปังเพิ่งออกจากเตา ยังอุ่นอยู่เลย','ก่อนออกเดินทางไกล อย่าลืมพกเสบียงติดตัวนะ ท้องว่างสู้ใครไม่ได้หรอก'],day:['ตลาดวันนี้คึกคักจัง พ่อค้าจากชายฝั่งเอาปลาเค็มมาขายด้วย','ได้ยินว่าเจ้าไปฝึกที่โรงตีเหล็กบ่อย ๆ … ระวังกล้ามขึ้นจนใส่เสื้อไม่ได้นะ'],evening:['ตะวันจะตกแล้ว รีบกลับบ้านเถอะ กลางคืนหมาป่าจากป่าตะวันออกชอบเดินมาใกล้รั้ว']}},
- {id:'tom',name:'ลุงทอม',role:'ช่างไม้',home:'npc1',stops:['forge','inn','square'],look:{coat:'#7a5a3a',apron:'#a07a4a',hair:'#8a8a86',hat:'cap',hatCol:'#5a4632'},
+ {id:'tom',name:'ลุงทอม',role:'ช่างไม้',home:'npc1',stops:['forge','inn','square'],look:{sprite:'tom',coat:'#7a5a3a',apron:'#a07a4a',hair:'#8a8a86',hat:'cap',hatCol:'#5a4632'},
   lines:{morning:['ประตูทางตะวันออกโยกเยกอีกแล้ว … ลุงต้องไปซ่อมก่อนพวกหมาป่าจะมาลองดัน'],day:['ไม้ที่ดีที่สุดอยู่ในป่าตะวันออก แต่ลึกเข้าไปมีต้นไม้เฒ่าที่ขยับได้ … ลุงไม่ไปแถวนั้นหรอก','ถ้าจะสู้ ยึดที่สูงไว้ก่อน — ฟันจากข้างบนแรงกว่าฟันขึ้นไปเยอะ ลุงเห็นมากับตา'],evening:['ลุงจะแวะโรงแรมดื่มสักแก้ว เจ้ายังเด็กเกินไปสำหรับเหล้าของที่นั่นนะ']}},
- {id:'lin',name:'คุณยายลิน',role:'คนเฒ่าเล่านิทาน',home:'npc2',speed:.55,stops:['temple','square'],look:{coat:'#6f6a8f',apron:null,hair:'#e6e2da',hat:'hood',hatCol:'#57506f'},
+ {id:'lin',name:'คุณยายลิน',role:'คนเฒ่าเล่านิทาน',home:'npc2',speed:.55,stops:['temple','square'],look:{sprite:'lin',coat:'#6f6a8f',apron:null,hair:'#e6e2da',hat:'hood',hatCol:'#57506f'},
   lines:{morning:['ยายตื่นเช้ากว่าไก่ทุกวัน … มาเถอะ นั่งฟังนิทานสักเรื่องไหม'],day:['นานมาแล้ว แผ่นดินนี้เคยเป็นของเผ่าพันธุ์โบราณ พวกเขาสร้างวิหารใหญ่ไว้ทางตะวันตกเฉียงใต้ แล้วก็หายไปหมด','ซากวิหารพวกนั้นยังมีแสงวิญญาณลอยวนอยู่ … บางคนว่ามีบางอย่างรออยู่ข้างใน'],evening:['เด็กสมัยนี้อยากออกไปดูโลกกันหมด … ยายไม่ห้ามหรอก แค่กลับมาเล่าให้ยายฟังด้วยก็พอ']}},
  {id:'brothers',name:'เคน',role:'คนตัดไม้',home:'npc3',stops:['east','forge','market'],look:{coat:'#4f6b3a',apron:'#7a5a3a',hair:'#3a2a1a',hat:'none'},
   lines:{morning:['วันนี้ข้ากับน้องจะไปตัดไม้ริมป่า … ถ้าได้ยินเสียงหอนก็ช่วยวิ่งมาด้วยนะ'],day:['ป่าตะวันออกมีหมาป่าเป็นฝูง ตัวจ่าฝูงตัวใหญ่ผิดปกติ','ได้ขวานใหม่จากโรงตีเหล็กมา คมจนตัดลมได้ ฮ่า ๆ'],evening:['ข้าว่าป่าช่วงนี้แปลก ๆ ต้นไม้บางต้นเหมือนมันหันตามเรา…']}},
@@ -34,7 +34,7 @@ const ROSTER=[
   lines:{morning:['ไปเก็บสมุนไพรริมบึงมา … ถ้าเจ็บหนัก กลับไปนอนพักที่บ้านก่อน อย่าฝืน'],day:['สถานพยาบาลยังไม่พร้อมเปิด ยาหลายตัวยังขาดอยู่','สมุนไพรจากป่าใช้ทำยาได้ ถ้าเจอก็เก็บกลับมานะ'],evening:['ยามค่ำ สมุนไพรบางชนิดเรืองแสงได้ … อย่าไปเด็ดเล่นล่ะ']}},
  {id:'pim',name:'พิม',role:'เด็กในหมู่บ้าน',home:'npc5',speed:1.35,stops:['square','market','square','inn'],pause:[1.5,3],small:true,look:{coat:'#d97a3a',apron:null,hair:'#5a3a1a',hat:'none'},
   lines:{morning:['พี่ {name}! โตขึ้นหนูจะเป็นนักผจญภัยเหมือนพี่!'],day:['พี่เคยสู้กับหมาป่าไหม? ตัวใหญ่เท่าบ้านหรือเปล่า?','ครูมิราบอกว่าห้ามไปเล่นแถวประตูหมู่บ้าน … แต่หนูแอบไปบ่อย ๆ'],evening:['แม่เรียกกลับบ้านแล้ว! พรุ่งนี้เล่นกันใหม่นะพี่']}},
- {id:'guard',name:'ยามรอน',role:'ยามประตูตะวันออก',home:'east',fixed:true,stops:[],look:{coat:'#5a5a6a',apron:null,hair:'#3a3a3a',hat:'helm',hatCol:'#9a9aa8'},
+ {id:'guard',name:'ยามรอน',role:'ยามประตูตะวันออก',home:'east',fixed:true,stops:[],look:{sprite:'guard',coat:'#5a5a6a',apron:null,hair:'#3a3a3a',hat:'helm',hatCol:'#9a9aa8'},
   lines:{morning:['ประตูตะวันออกเปิดแล้ว ถ้าจะออกไป ข้าแค่ขอให้กลับมาครบสามสิบสองนะ'],day:['ทางออกแต่ละทางมีอันตรายต่างกัน — ป่า เหมือง บึง ชายฝั่ง หิมะ ซากวิหาร เลือกให้ดีล่ะ','ถ้าเรี่ยวแรงต่ำ อย่าเพิ่งออกไป พักให้เต็มก่อน'],evening:['เลยหกโมงเย็นแล้ว ข้าไม่แนะนำให้ออกไปตอนนี้']}}];
 const LIFE=root.VillageLife,MIND=()=>root.Mind;
 if(LIFE){ROSTER.length=0;for(const p of Object.values(LIFE.P))ROSTER.push({id:p.id,name:p.name,role:p.role,home:LIFE.homeOf(p)||'inn',stops:[],look:p.look||{},small:!!p.look?.small,speed:p.age>75?.6:p.age<13?1.3:1,life:p})}

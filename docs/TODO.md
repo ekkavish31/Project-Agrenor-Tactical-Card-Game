@@ -290,6 +290,8 @@
 
 ## 6. P2 · Brushup ที่เหลือ
 
+- [x] ทางเดินและของประจำโรงตีเหล็ก ตลาด โรงแรม (v98.152)
+
 - [x] Combat Impact Core (v98.139): ภาพโปร่งใส Light / Heavy / Critical / Finisher ใช้ร่วมกับ VFX เดิม, fallback, reduced motion, หน้า `vfx-preview.html` เทียบ Original / Enhanced
 
 **สนามรบแผนที่โลก**

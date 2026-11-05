@@ -535,6 +535,12 @@
     await show.done(); busy = false; refresh();
     if (st.outcome) finish();
   }
+  async function chargeAttack(unit, duration = 560) {
+    unit.pose = 'windup';
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) glows.push({ u: unit.vu, v: unit.vv, col: '255,210,110', r: UNIT * 1.2, charge: true, t0: now(), dur: duration });
+    await wait(reduced ? Math.min(220, duration) : duration);
+  }
   async function heroAction(r) {
     const h = FB.hero(st), m = r.target || FB.monster(st);
     if (r.self) {
@@ -545,7 +551,7 @@
     const last = !FB.monsters(st).some(u => u.hp > 0), kill = last, heavy = r.big > 1 || r.hits.reduce((a, x) => a + x.damage, 0) >= 20;
     await cinematic(h, m, async () => {
       if (r.leap) { const from = { vu: h.vu, vv: h.vv }; h.pose = 'windup'; await wait(160); await leapAnim(h, r.leap.to); fx('diveTrail', m, from); shake(9, 260) }
-      h.dir = dirTo(h, m); h.pose = 'windup'; if (cine) { cine.z += .18; cine.speed = 4 } await wait(heavy ? 420 : 280);
+      h.dir = dirTo(h, m); h.pose = 'windup'; if (cine) { cine.z += .18; cine.speed = 4 } if (heavy) await chargeAttack(h); else await wait(280);
       h.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(h, m) * (heavy ? 2.2 : 1.3)); lines(m, 220);
       const dur = r.card === 'rockfall' ? (fx('rockfall', m), 700) : fx(r.fx, m, h, { scale: r.big, color: r.fx === 'arcane' ? '#b49ae8' : '#7cc5db' });
       await wait(Math.min(320, dur * .45));
@@ -620,7 +626,7 @@
     const tw = isMon ? M?.timing?.(a.kind, a.dir, 'windup') : null, ts = isMon ? M?.timing?.(a.kind, a.dir, 'strike') : null;
     const isHero = t === FB.hero(st), down = t.hp <= 0, guarded = s.notes.some(n => n.startsWith('ป้องกัน')), full = isHero || s.crit || down || a.boss;
     await cinematic(a, t, async () => {
-      a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } await wait(isMon ? Math.min(full ? 900 : 520, tw?.duration || 380) : (full ? 300 : 200));
+      a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } if (a.boss || s.damage >= 20) await chargeAttack(a, Math.max(560, Math.min(900, tw?.duration || 0))); else await wait(isMon ? Math.min(full ? 900 : 520, tw?.duration || 380) : (full ? 300 : 200));
       a.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * 1.4); lines(t, 200) } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
       if (s.evaded) { const o = { u: t.vu, v: t.vv }; t.vu += (t.vu - a.vu) * .35; t.vv += (t.vv - a.vv) * .35; fx('wind', t, a, {}); sfx('swing'); floatText(t, 'MISS', '#bfe8ff', false, true); await wait(420); t.vu = o.u; t.vv = o.v; a.pose = 'idle'; return }
       fx(guarded ? 'parry' : fxk, t, a, { color: isMon ? '#ffb36a' : '#9fd4ff' }); impact(t, guarded ? 'parry' : fxk, { big: s.crit || s.damage >= 12, crit: s.crit, kill: down && (isHero || !FB.monsters(st).some(u => u.hp > 0)), from: a });
@@ -653,7 +659,7 @@
     } else {
       const t = r.target, last = !FB.monsters(st).some(u => u.hp > 0);
       await cinematic(a, t, async () => {
-        a.dir = dirTo(a, t); a.pose = 'windup'; if (cine) { cine.z += .15; cine.speed = 4 } await wait(300); a.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(a, t) * 1.6); lines(t, 220);
+        a.dir = dirTo(a, t); a.pose = 'windup'; if (cine) { cine.z += .15; cine.speed = 4 } await chargeAttack(a); a.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(a, t) * 1.6); lines(t, 220);
         fx(r.fx, t, a, { scale: 1.2, color: '#9fd4ff' }); await wait(200);
         for (const [n, x] of r.hits.entries()) {
           const tu = x.target, down = tu.hp <= 0 && !r.hits.slice(n + 1).some(y => y.target === tu);
@@ -752,7 +758,7 @@
       else if (s.type === 'phase') { actUnit = s.unit; banner('ENRAGED!', 'crit'); screenFlash('255,90,58', .35, 420); shake(16, 520); floatText(s.unit, 'คลั่ง! ATK ↑', '#ff8a6a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,90,60', r: UNIT * 1.8, t0: now(), dur: 900 }); await wait(800) }
       else if (s.type === 'charge') { floatText(s.unit, '⚠ กำลังรวบรวมพลัง', '#ffd25a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,210,90', r: UNIT * 1.5, t0: now(), dur: 1100 }); hint('⚠ ' + s.unit.name + ' จะใช้ท่าใหญ่ในตาหน้า · กระจายตัว หรือถอยออกจากระยะ'); await wait(700) }
       else if (s.type === 'bossSkill') { const a = s.unit, tg = s.hits[0]?.target || a; banner(s.name, 'crit');
-        await cinematic(a, tg, async () => { a.pose = 'windup'; await wait(320); a.pose = 'strike'; sfx('swing'); shake(18, 520); screenFlash(s.fx === 'ice' ? '191,232,255' : '255,207,138', .3, 300);
+        await cinematic(a, tg, async () => { await chargeAttack(a, 680); a.pose = 'strike'; sfx('swing'); shake(18, 520); screenFlash(s.fx === 'ice' ? '191,232,255' : '255,207,138', .3, 300);
           for (const h of s.hits) { fx(s.fx === 'ice' ? 'ice' : 'earth', h.target, a, { scale: 1.2 }); impact(h.target, s.fx === 'ice' ? 'ice' : 'blunt', { big: true, from: a }); h.target.hitUntil = now() + 440; floatText(h.target, '−' + h.damage, '#ffd27a', false, true); h.target.shown = h.target.hp; if (h.target.hp <= 0) h.target.deadAt = now() + 380; hudSync(); await wait(180) }
           await wait(380); a.pose = 'idle' }, { z: 1.5 }) }
       else if (s.type === 'sleep') { floatText(s.unit, '💤 SLEEP — SKIP', '#c8c0ff', true); await wait(420) }
@@ -1271,7 +1277,7 @@
   function glowDraw(g, t) {
     glows = glows.filter(x => t - x.t0 < x.dur);
     for (const x of glows) {
-      const p = project(x.u, x.v), a = 1 - (t - x.t0) / x.dur, r = x.r * (.7 + .5 * (1 - a));
+      const progress = (t - x.t0) / x.dur, p = project(x.u, x.v), a = x.charge ? .15 + progress * .85 : 1 - progress, r = x.r * (x.charge ? 1.3 - progress * .65 : .7 + .5 * progress);
       g.save(); g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(p.x, p.y - UNIT * .2, 0, p.x, p.y - UNIT * .2, r);
       gr.addColorStop(0, `rgba(${x.col},${.55 * a})`); gr.addColorStop(1, `rgba(${x.col},0)`); g.fillStyle = gr; g.beginPath(); g.ellipse(p.x, p.y - UNIT * .2, Math.max(0, r), Math.max(0, r * .55), 0, 0, 7); g.fill(); g.restore();
     }
