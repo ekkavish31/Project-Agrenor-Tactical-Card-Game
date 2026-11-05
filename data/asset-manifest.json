@@ -83029,6 +83029,1626 @@
     "group": "characters"
    },
    "artRevision": "mwwalk12d"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-1",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-2",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-3",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-4",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-5",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-6",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-7",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-8",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-9",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-10",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-11",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-ne-walk-mwwalk12e-12",
+   "file": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-1",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-2",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-3",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-4",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-5",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-6",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-7",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-8",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-9",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-10",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-11",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-bram-nw-walk-mwwalk12e-12",
+   "file": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:bram",
+    "name": "Bram",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-1",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-2",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-3",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-4",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-5",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-6",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-7",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-8",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-9",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-10",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-11",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-ne-walk-mwwalk12e-12",
+   "file": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-1",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-2",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-3",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-4",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-5",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-6",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-7",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-8",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-9",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-10",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-11",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-ally-mil-nw-walk-mwwalk12e-12",
+   "file": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:mil",
+    "name": "Mil",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-1",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-01.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-2",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-02.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-3",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-03.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-4",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-04.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-5",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-05.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-6",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-06.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-7",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-07.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-8",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-08.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-9",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-09.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-10",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-10.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-11",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-11.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12e-m-12",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-12.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12e-m"
   }
  ],
  "studioReviews": {
@@ -86401,7 +88021,7 @@
       }
      ]
     },
-    "NW": {
+    "NE": {
      "version": 1,
      "canvas": [
       384,
@@ -86412,74 +88032,74 @@
       0.9375
      ],
      "loop": true,
-     "createdAt": "2026-11-03T01:52:43.292Z",
+     "createdAt": "2026-11-05T01:29:52.716Z",
      "frames": [
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-1",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-01.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-1",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-01.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-2",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-02.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-2",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-02.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-3",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-03.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-3",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-03.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-4",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-04.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-4",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-04.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-5",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-05.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-5",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-05.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-6",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-06.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-6",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-06.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-7",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-07.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-7",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-07.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-8",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-08.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-8",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-08.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-9",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-09.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-9",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-09.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-10",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-10.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-10",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-10.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-11",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-11.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-11",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-11.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-nw-walk-mw019el8-0r1d-12",
-       "src": "assets/tactics/imported/walk-nw-mw019el8-0r1d/frame-12.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12e-m-12",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-12.png",
        "ms": 100
       }
      ]
     }
    },
    "studioWalkMirrors": {
-    "NE": "NW",
-    "SE": "SW"
+    "SE": "SW",
+    "NW": "NE"
    },
    "studioWalkHistory": {
     "SW": [
@@ -88334,12 +89954,67 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-04T09:56:34.107Z",
+    "createdAt": "2026-11-05T01:29:52.716Z",
     "frames": [
      {
-      "assetId": "studio-ally-bram-nw-walk-mwcast2-1",
-      "src": "assets/tactics/imported/ally-bram-walk-nw-mwcast2/frame-01.png",
-      "ms": 160
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-1",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-2",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-3",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-4",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-5",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-6",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-7",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-8",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-9",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-10",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-11",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-nw-walk-mwwalk12e-12",
+      "src": "assets/tactics/imported/ally-bram-walk-nw-mwwalk12e/frame-12.png",
+      "ms": 100
      }
     ]
    },
@@ -88354,12 +90029,67 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-04T09:56:34.107Z",
+    "createdAt": "2026-11-05T01:29:52.716Z",
     "frames": [
      {
-      "assetId": "studio-ally-bram-ne-walk-mwcast2-1",
-      "src": "assets/tactics/imported/ally-bram-walk-ne-mwcast2/frame-01.png",
-      "ms": 160
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-1",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-2",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-3",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-4",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-5",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-6",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-7",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-8",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-9",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-10",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-11",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-bram-ne-walk-mwwalk12e-12",
+      "src": "assets/tactics/imported/ally-bram-walk-ne-mwwalk12e/frame-12.png",
+      "ms": 100
      }
     ]
    }
@@ -89624,12 +91354,67 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-04T09:56:34.107Z",
+    "createdAt": "2026-11-05T01:29:52.716Z",
     "frames": [
      {
-      "assetId": "studio-ally-mil-ne-walk-mwcast2-1",
-      "src": "assets/tactics/imported/ally-mil-walk-ne-mwcast2/frame-01.png",
-      "ms": 160
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-1",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-2",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-3",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-4",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-5",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-6",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-7",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-8",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-9",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-10",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-11",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-ne-walk-mwwalk12e-12",
+      "src": "assets/tactics/imported/ally-mil-walk-ne-mwwalk12e/frame-12.png",
+      "ms": 100
      }
     ]
    },
@@ -89644,12 +91429,67 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-04T09:56:34.107Z",
+    "createdAt": "2026-11-05T01:29:52.716Z",
     "frames": [
      {
-      "assetId": "studio-ally-mil-nw-walk-mwcast2-1",
-      "src": "assets/tactics/imported/ally-mil-walk-nw-mwcast2/frame-01.png",
-      "ms": 160
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-1",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-2",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-3",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-4",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-5",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-6",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-7",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-8",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-9",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-10",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-11",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mil-nw-walk-mwwalk12e-12",
+      "src": "assets/tactics/imported/ally-mil-walk-nw-mwwalk12e/frame-12.png",
+      "ms": 100
      }
     ]
    }
