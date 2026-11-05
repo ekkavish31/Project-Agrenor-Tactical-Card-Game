@@ -84649,6 +84649,978 @@
     "group": "characters"
    },
    "artRevision": "mwwalk12e-m"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-1",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-2",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-3",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-4",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-5",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-6",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-7",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-8",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-9",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-10",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-11",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-sw-walk-mwwalk12f-12",
+   "file": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-1",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-2",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-3",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-4",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-5",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-6",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-7",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-8",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-9",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-10",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-11",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-ally-olwen-se-walk-mwwalk12f-12",
+   "file": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:olwen",
+    "name": "Olwen",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-1",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-01.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-2",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-02.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-3",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-03.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-4",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-04.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-5",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-05.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-6",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-06.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-7",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-07.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-8",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-08.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-9",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-09.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-10",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-10.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-11",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-11.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
+  },
+  {
+   "id": "studio-hero-ne-walk-mwwalk12f-f-12",
+   "file": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-12.png",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioImportedWalk": true,
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   },
+   "artRevision": "mwwalk12f-f"
   }
  ],
  "studioReviews": {
@@ -88287,81 +89259,6 @@
       }
      ]
     },
-    "NW": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-03T01:31:38.158Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-1",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-01.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-2",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-02.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-3",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-03.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-4",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-04.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-5",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-05.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-6",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-06.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-7",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-07.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-8",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-08.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-9",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-09.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-10",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-10.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-11",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-11.png",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mw00iaem-3zy2-12",
-       "src": "assets/tactics/imported/walk-nw-mw00iaem-3zy2/frame-12.png",
-       "ms": 100
-      }
-     ]
-    },
     "NE": {
      "version": 1,
      "canvas": [
@@ -88373,66 +89270,66 @@
       0.9375
      ],
      "loop": true,
-     "createdAt": "2026-11-03T01:33:10.707Z",
+     "createdAt": "2026-11-05T01:39:49.420Z",
      "frames": [
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-1",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-01.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-1",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-01.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-2",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-02.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-2",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-02.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-3",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-03.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-3",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-03.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-4",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-04.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-4",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-04.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-5",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-05.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-5",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-05.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-6",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-06.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-6",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-06.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-7",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-07.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-7",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-07.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-8",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-08.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-8",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-08.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-9",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-09.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-9",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-09.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-10",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-10.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-10",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-10.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-11",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-11.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-11",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-11.png",
        "ms": 100
       },
       {
-       "assetId": "studio-hero-ne-walk-mw00k9tf-efuy-12",
-       "src": "assets/tactics/imported/walk-ne-mw00k9tf-efuy/frame-12.png",
+       "assetId": "studio-hero-ne-walk-mwwalk12f-f-12",
+       "src": "assets/tactics/imported/walk-ne-mwwalk12f-f/frame-12.png",
        "ms": 100
       }
      ]
@@ -91012,12 +91909,67 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-04T09:56:34.107Z",
+    "createdAt": "2026-11-05T01:39:49.420Z",
     "frames": [
      {
-      "assetId": "studio-ally-olwen-sw-walk-mwcast2-1",
-      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwcast2/frame-01.png",
-      "ms": 160
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-1",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-2",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-3",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-4",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-5",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-6",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-7",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-8",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-9",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-10",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-11",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-sw-walk-mwwalk12f-12",
+      "src": "assets/tactics/imported/ally-olwen-walk-sw-mwwalk12f/frame-12.png",
+      "ms": 100
      }
     ]
    },
@@ -91032,12 +91984,67 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-04T09:56:34.107Z",
+    "createdAt": "2026-11-05T01:39:49.420Z",
     "frames": [
      {
-      "assetId": "studio-ally-olwen-se-walk-mwcast2-1",
-      "src": "assets/tactics/imported/ally-olwen-walk-se-mwcast2/frame-01.png",
-      "ms": 160
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-1",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-01.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-2",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-02.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-3",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-03.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-4",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-04.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-5",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-05.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-6",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-06.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-7",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-07.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-8",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-08.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-9",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-09.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-10",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-10.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-11",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-11.png",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-olwen-se-walk-mwwalk12f-12",
+      "src": "assets/tactics/imported/ally-olwen-walk-se-mwwalk12f/frame-12.png",
+      "ms": 100
      }
     ]
    },
