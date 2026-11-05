@@ -662,11 +662,12 @@
  };
 
  function charScale(k) {
-  const all = +data.cast.all || 1;
+  /* v98.139 · ONE multiplier for the whole cast of this map (js/map-scale.js); how big characters are compared with each other = ⚖ Scale Lineup. The old per-NPC / "NPC ทุกตัว" / hero sizes are no longer used. */
+  const all = window.MapScale ? MapScale.get('village') : (+data.cast.all || 1);
   const adj = id => window.CharScaleAdjust?.factor('village', id) || 1;   /* v98.65 · ⚖ scale-lineup adjustments */
-  if (k === 'hero') return all * (castOf('hero')?.s ?? 1) * adj('hero');
-  if (k === 'npc') return all * (castOf('npc')?.s ?? 1);
-  if (k.startsWith('npc:')) return all * (castOf(k)?.s ?? 1) * (castOf('npc')?.s ?? 1) * adj(k);
+  if (k === 'hero') return all * adj('hero');
+  if (k.startsWith('npc:')) return all * adj(k);
+  if (k === 'npc') return all;
   return all
  }
  // draws the swapped image (feet on p, visible height ≈ h); returns false when the character keeps its own art
@@ -2121,14 +2122,14 @@
   if (selChar && !list.some(c => c.k === selChar)) selChar = null;
   const thumbOf = c => castOf(c.k)?.img || (c.k === 'hero' && typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES.directions?.SE?.idle?.src || '' : '');
   let html = `<div class="body"><h3>👤 ตัวละครในหมู่บ้าน</h3><p class="sub">ค่าในหน้านี้ใช้เฉพาะแผนที่หมู่บ้าน · คลิกตัวละครบนแผนที่ (ตอนนี้หยุดยืนนิ่ง) หรือเลือกจากรายการ</p>
-  ${slider('all','ทั้งแผนที่',+data.cast.all||1,.4,2.5,.05,pct)}${slider('npc','NPC ทุกตัว',castOf('npc')?.s??1,.4,2.5,.05,pct)}
+  ${slider('all','ขนาดตัวละครทั้งแผนที่',window.MapScale?MapScale.get('village'):(+data.cast.all||1),.4,2.5,.05,pct)}
   <div class="items">${list.map(c=>`<button data-c="${c.k}" class="${c.k===selChar?'on':''}"><span class="mini">${thumbOf(c)?`<img src="${thumbOf(c)}">`:'🧑'}</span><span style="flex:1">${c.name}${c.role?` <small>· ${c.role}</small>`:''}</span><small>${castOf(c.k)?.img?'เปลี่ยนภาพ':''}${castOf(c.k)?.s&&castOf(c.k).s!==1?' '+pct(castOf(c.k).s):''}</small></button>`).join('')}</div>`;
   if (selChar) {
    const c = castOf(selChar) || {},
     name = list.find(x => x.k === selChar).name,
     art = CAST_ART.find(a => a.id === c.img);
    html += `<hr><b class="sec">${name}</b><div class="art"><span class="th">${thumbOf({k:selChar})?`<img src="${thumbOf({k:selChar})}">`:'ภาพเดิม (วาดด้วยโค้ด)'}</span><div><div class="row" style="margin:0 0 6px"><button id="cSwap">เปลี่ยนภาพ…</button></div>${c.img?`<button id="cOrig">ใช้ภาพเดิม</button><p class="sub" style="margin:6px 0 0">${art?.label||''}</p>`:''}</div></div>
-   ${slider('s','ขนาดตัวนี้',c.s??1,.3,3,.05,pct)}${c.img?`<label class="chk"><input type="checkbox" id="cFlip" ${c.flip?'checked':''}> กลับด้านภาพ</label>`:''}
+   ${c.img?`<label class="chk"><input type="checkbox" id="cFlip" ${c.flip?'checked':''}> กลับด้านภาพ</label>`:''}
    <div class="row"><button id="cReset">ค่าเริ่มต้นของตัวนี้</button></div>`
   }
   panel.innerHTML = html + '</div>';
@@ -2138,9 +2139,7 @@
   });
   const cs = k => data.cast[k] && typeof data.cast[k] === 'object' ? data.cast[k] : (data.cast[k] = {});
   bindSliders((k, v) => {
-   if (k === 'all') data.cast.all = v;
-   else if (k === 'npc') cs('npc').s = v;
-   else cs(selChar).s = v
+   if (k === 'all') { if (window.MapScale) MapScale.set('village', null, v); data.cast.all = v }
   }, () => {
    tidyCast();
    render()
@@ -3054,7 +3053,7 @@
      // v86: compare the layout itself (not the timestamp line) so an unchanged layout is not re-pushed
      if((old||'').replace(/^\/\/.*\n/,'')!==body.replace(/^\/\/.*\n/,''))files.push({path:'js/village-layout-v67.js',content:body});
      // everything else the village editor keeps outside the layout snapshot → js/game-settings.js
-     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1'],vals={};
+     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1'],vals={};
      for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
      const text=await head.read('js/game-settings.js')||'',settings=GitHubPush.parseSettings(text)||{};
      if(Object.entries(vals).some(([k,v])=>settings[k]!==v)){Object.assign(settings,vals);files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
