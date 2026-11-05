@@ -78,10 +78,18 @@
  function resetClock(){state.epoch=performance.now();state.pausedAt=0;for(let p of state.entries)p.frame=-1}
  /* v98.90 · character list thumbnails: the UPPER HALF of the standing picture facing SE (a bust), cut from the picture's own outline.
     SE source per entity: the hero → the open look's SE idle (runtime) · others → village stand SE, else village stand SW mirrored, else the battle idle. */
+
+ /* v98.142 · ONE source for "the standing picture of a character": the idle clip of the Animation grid (state.model — what the studio shows and what the game plays),
+    this direction first, then the opposite direction mirrored. The old fixed file names are only a last resort for what the grid does not have. */
+ function studioStand(id,view){
+  const e=state.model.find(x=>x.id===id);if(!e)return [];const opp={SW:'SE',SE:'SW',NE:'NW',NW:'NE'}[view],out=[];
+  const pick=(v,flip)=>{const c=e.clips.find(c=>c.action==='idle'&&c.view===v&&c.frames?.length);if(!c)return;const f=c.frames[0],a=byId(f.assetId);if(a?.status==='missing')return;if(f.file)out.push([f.file,!!f.flip!==flip])};
+  pick(view,false);if(opp)pick(opp,true);return out;
+ }
  const bustCache=new Map();
  function bustCandidates(id){
   if(id==='hero'){const s=runtime.tactics?.directions?.SE?.idle;return s?.src?[[s.src,!!s.flipImage]]:[]}
-  const k=id.replace(/^ally:/,'');return [[`assets/village-town/npc/${k}/se-stand.webp`,false],[`assets/village-town/npc/${k}/sw-stand.webp`,true],[`assets/tactics/${k}_se_idle.webp`,false],[`assets/tactics/${k}_sw_idle.webp`,true]];
+  const k=id.replace(/^ally:/,'');return [...studioStand(id,'SE'),[`assets/village-town/npc/${k}/se-stand.webp`,false],[`assets/village-town/npc/${k}/sw-stand.webp`,true],[`assets/tactics/${k}_se_idle.webp`,false],[`assets/tactics/${k}_sw_idle.webp`,true]];
  }
  async function bustOf(file,flip){
   const key=state.generation+'|'+file+'|'+flip;if(bustCache.has(key))return bustCache.get(key);
@@ -254,7 +262,7 @@
   const opp=view==='SW'?'SE':'SW';
   if(id==='hero'){const D=runtime.tactics?.directions||{},a=D[view]?.idle,b=D[opp]?.idle,o=[];if(a?.src)o.push([a.src,!!a.flipImage]);if(b?.src)o.push([b.src,!b.flipImage]);return o}
   const k=id.replace(/^ally:/,''),v=view.toLowerCase(),w=opp.toLowerCase();
-  return [[`assets/village-town/npc/${k}/${v}-stand.webp`,false],[`assets/village-town/npc/${k}/${w}-stand.webp`,true],[`assets/tactics/${k}_${v}_idle.webp`,false],[`assets/tactics/${k}_${w}_idle.webp`,true]];
+  return [...studioStand(id,view),[`assets/village-town/npc/${k}/${v}-stand.webp`,false],[`assets/village-town/npc/${k}/${w}-stand.webp`,true],[`assets/tactics/${k}_${v}_idle.webp`,false],[`assets/tactics/${k}_${w}_idle.webp`,true]];
  }
  const lineup={
   /* the characters of the Animation tab (same list): id, name, and the clips that have frames */
