@@ -286,10 +286,14 @@
    g.restore()
   };
   if (ov.grp) grpYNow.set(ov.grp, Math.max(grpYNow.get(ov.grp) ?? -1e9, E.y));
+  /* v98.146 · the part's footprint on the grid (กรอบพื้น) and its name: depth order against walkers uses the footprint (js/depth-style.js), tall / low decides if it may fade */
+  const fc = inv(E.x, E.y), fz = { w: ov.fw ?? .5, h: ov.fh ?? .5 };
   const it = {
    x: E.x,
    y: (ov.grp && grpYPrev.get(ov.grp) != null ? grpYPrev.get(ov.grp) : E.y) + (ov.layer || 0),
    z: ov.z || 0,
+   fp: { u0: fc.u - fz.w / 2, u1: fc.u + fz.w / 2, v0: fc.v - fz.h / 2, v1: fc.v + fz.h / 2 },
+   label: label || '',
    place: loc(owner) ? owner : null,
    draw: gg => {
     if (lit(key, owner)) stamp('ring', inner);
@@ -3053,7 +3057,7 @@
      // v86: compare the layout itself (not the timestamp line) so an unchanged layout is not re-pushed
      if((old||'').replace(/^\/\/.*\n/,'')!==body.replace(/^\/\/.*\n/,''))files.push({path:'js/village-layout-v67.js',content:body});
      // everything else the village editor keeps outside the layout snapshot → js/game-settings.js
-     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1'],vals={};
+     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1','depth-style-v1'],vals={};
      for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
      const text=await head.read('js/game-settings.js')||'',settings=GitHubPush.parseSettings(text)||{};
      if(Object.entries(vals).some(([k,v])=>settings[k]!==v)){Object.assign(settings,vals);files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
