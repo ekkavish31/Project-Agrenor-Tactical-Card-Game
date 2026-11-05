@@ -582,7 +582,10 @@
     glows.push({ u: u.vu, v: u.vv, col, r: UNIT * (big ? 1.8 : 1.2), t0: now(), dur: big ? 620 : 420 });
     if (o.sound !== false) hitSound(kind, { big, crit: o.crit, kill: o.kill });
     if (kind === 'heal' || kind === 'shield' && !o.from) return;
-    burst(u, col, big ? 30 : 16, o.from, big);
+    const tier=o.kill?'finisher':o.crit?'critical':o.big?'heavy':'light';
+    const enhanced=!!window.BattleVFX?.impactReady?.(tier);
+    if(enhanced)effects.push({kind:'impactCore',tier,to:{x:u.vu,y:u.vv},start:now(),duration:{light:280,heavy:380,critical:470,finisher:610}[tier]});
+    burst(u, col, enhanced?(big?12:6):(big?30:16), o.from, big);
     if (o.from) knock(u, o.from, big ? 16 : 9);
     if (!CINE) return;
     zoomPunch(big ? .24 : .12); lines(u, big ? 460 : 280);
