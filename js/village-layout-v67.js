@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-11-05T06:15:38.227Z.
+// Village default layout — saved from the in-game editor 2026-11-05T06:18:27.560Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -2999,7 +2999,7 @@ window.VillageDefaultLayout={
       "add:mw357pkoem4b": {
         "du": 4,
         "dv": -1,
-        "z": 1
+        "z": 2
       },
       "add:mw358l1uuub2": {
         "grp": "g:mw358oe9fkq",
@@ -3039,28 +3039,31 @@ window.VillageDefaultLayout={
       },
       "add:mw35aa8vs19": {
         "du": -24.5,
-        "dv": -1,
+        "dv": -0.5,
         "s": 0.53
       },
       "add:mw35b33qtw2": {
-        "du": -23,
-        "dv": -2
+        "du": -22.5,
+        "dv": -1.5,
+        "s": 1.38,
+        "z": 1
       },
       "add:mw35cfsttzt": {
-        "du": -23,
-        "dv": -3.5,
-        "s": 1.72
+        "du": -22,
+        "dv": -3,
+        "s": 2.06
       },
       "add:mw35ct40qhz": {
         "du": -21.5,
         "dv": 0.5,
-        "s": 0.64
+        "s": 0.64,
+        "z": 2
       },
       "add:mw35eiddietn": {
         "s": 0.64,
         "du": -0.5,
         "dv": -1.5,
-        "z": -6
+        "z": 1
       }
     },
     "added": [
