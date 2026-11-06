@@ -9,3 +9,7 @@ Artwork is raster painted illustration. Paired gallery/departure paintings are s
 Village loading is deferred until the story exits, with a timeout fallback; hidden title-mode village rendering remains disabled. Save/progression and twin companion systems are unchanged.
 
 Validation: JS syntax and diff whitespace; Chromium maker-to-story transition, seven gallery cards, representative timeline scenes, skip/automatic exit, deferred village release and absence of page script errors.
+
+## Tunnel motion revision
+
+The gallery now uses seven distinct 3D entry/hold/exit paths, a long readable hold, per-scene rim glow, twelve distant painted cards, eighteen light particles and separate moving light/fog layers. Seven echo cards converge toward the returning deck. Card-entry light and the final doorway flash retain the existing 41-second timeline. Native animation tracks drive transforms/opacity; JavaScript advances the progress indicator and changes the palette at scene boundaries. Optional synthesized stereo cues are muted initially and enabled through a user gesture. Recorded ambience/music is not included. Papercraft remains an isolated experiment and is not used by this opening.
