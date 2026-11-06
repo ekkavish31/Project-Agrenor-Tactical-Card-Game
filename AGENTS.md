@@ -7,3 +7,5 @@
 - Keep remaining tasks and cross-session handoff in `docs/TODO.md`; record completed changes in `docs/CHANGELOG-TH.md`. Documentation describing future tools does not mean those tools are implemented.
 - Follow version, cache, save ownership and validation rules in `docs/TODO.md`. Documentation-only changes do not need runtime script or asset changes.
 - Respond to the user in Thai.
+
+- Current-era lore update (2026-11-07): read `docs/lore/CURRENT-ERA-CANON.md` and `docs/lore/GAME-LORE-REVISION-BRIEF.md` plus TODO section 11 before lore, story, card, or World Event work. Complete Canon Part A is the latest approved current-era canon; Part B is a game baseline and Part C defines limits. The Revision Brief contains proposals and a pending stone-object retcon; do not promote them to canon. These documents are stored for later work at the user's request: do not begin that implementation until requested. Preserve mystery/reveal boundaries and produce the dependency/impact review specified in the brief before code changes.

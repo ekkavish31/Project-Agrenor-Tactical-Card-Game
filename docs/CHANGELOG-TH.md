@@ -3861,3 +3861,11 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - เพิ่มคิว WE0–WE6 และเกณฑ์ผ่าน โดยคง U6 ไว้ในสถานะ pending และแยก proposal / canon / readiness
 - เพิ่ม AGENTS.md ให้ AI เซสชันใหม่อ่านแผนและ lore ก่อนทำ World Event; แพตช์นี้เปลี่ยนเอกสารเท่านั้น ยังไม่เพิ่ม registry, validator, Event Atlas หรือ scheduler ลงเกม
 - ตรวจขอบเขตเทียบ HEAD v98.165 และเอกสารแนบ; ไม่มีการเปลี่ยน runtime จึงไม่รันเทสต์เกม
+
+
+## v98.165 · รับเก็บ Canon ยุคปัจจุบันและ Revision Brief — 7 พ.ย. 2026
+
+- เก็บไฟล์ Word ต้นฉบับสองไฟล์ใน docs/lore/source และฉบับข้อความที่อ่านจาก repo ได้ใน CURRENT-ERA-CANON.md / GAME-LORE-REVISION-BRIEF.md พร้อม SHA-256 ต้นฉบับ
+- ระบุส่วน A = approved canon, ส่วน B = baseline และส่วน C = ข้อจำกัด แยก Revision Brief/Retcon Candidate ที่ยังต้องตรวจและพิจารณา
+- เพิ่มจุดอ่านต่อใน AGENTS, GAME-ERA, source README และคิวรอเรียกทำ LC1–LC3 ใน TODO หมวด 11
+- เอกสารเท่านั้น ยังไม่แก้ runtime/เซฟ/บทสนทนา/การ์ด ไม่ปลดพัก U6 และไม่รันเทสต์เกม
