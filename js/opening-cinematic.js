@@ -12,7 +12,7 @@
     brand.querySelector('p').textContent = 'หนึ่งจุดเริ่มต้น · เส้นทางนับไม่ถ้วน';
     title.classList.add('ag-title');
     const replay = document.createElement('button');
-    replay.className = 'ag-replay'; replay.textContent = 'ดูโลโก้ผู้สร้างอีกครั้ง';
+    replay.className = 'ag-replay'; replay.textContent = 'ดูบทเปิดอีกครั้ง';
     main.append(replay);
     const opening = document.createElement('section');
     opening.className = 'ag-opening'; opening.hidden = true;

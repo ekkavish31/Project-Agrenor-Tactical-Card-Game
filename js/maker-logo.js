@@ -21,8 +21,9 @@
     function finish() {
       if(finished)return;finished=true;cancelAnimationFrame(raf);clearTimeout(timeout);
       window.removeEventListener('message',message);reduced.removeEventListener('change',motion);
-      overlay.remove();window.dispatchEvent(new Event('maker-intro-finished'));main.inert=inertBefore;title.classList.remove('ag-playing');cleanup=null;
+      overlay.remove();main.inert=inertBefore;title.classList.remove('ag-playing');cleanup=null;
       (main.querySelector('[data-act="continue"]:not([disabled])')||main.querySelector('[data-act="new"]'))?.focus({preventScroll:true});
+      if(window.GameIntro)window.GameIntro.play(title);else window.dispatchEvent(new Event('maker-intro-finished'));
     }
     function message(e){if(e.source===frame.contentWindow&&e.origin===location.origin&&e.data?.type==='maker-skip')finish();}
     function motion(){if(reduced.matches)finish();}
