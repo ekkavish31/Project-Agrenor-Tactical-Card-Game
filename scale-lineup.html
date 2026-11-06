@@ -262,13 +262,41 @@ function inspectRatio() {
 /* ================= 🗺 ขนาดต่อแผนที่ · ONE multiplier per map (js/map-scale.js) ================= */
 const BIOMES = { forest: 'ป่า', grass: 'ทุ่งหญ้า', hills: 'เนินเขา', swamp: 'บึง', snow: 'ทุ่งหิมะ', sand: 'หาดทราย' };
 const PLACE_NAMES = { market: 'ตลาด', forge: 'โรงตีเหล็ก', home: 'บ้าน' };
-const INTERIORS = { inn: 'โรงแรมเขากวางทอง', healer: 'บ้านหมอยา', shop: 'ร้านค้า', market: 'ตลาด', temple: 'วิหาร', forge: 'โรงตีเหล็ก', farm: 'ไร่' };
+const INTERIOR_NAMES = {
+  inn: 'โรงแรมเขากวางทอง', healer: 'บ้านหมอยา', shop: 'ร้านค้า', market: 'ตลาด', temple: 'วิหาร', forge: 'โรงตีเหล็ก', farm: 'ไร่',
+  guild: 'สมาคมนักผจญภัย', square: 'ลานน้ำพุ', home: 'บ้านของเรา',
+  npc0: 'บ้านป้าเมย์', npc1: 'บ้านลุงทอม', npc2: 'บ้านคุณยายลิน', npc3: 'บ้านพี่น้องคนตัดไม้', npc4: 'บ้านนายพรานเบิร์ก',
+  npc5: 'บ้านคุณครูมิรา', npc6: 'บ้านชาวประมงโจ', npc7: 'บ้านคนเลี้ยงแกะ', npc8: 'บ้านช่างทอผ้าเอลลา', npc9: 'บ้านหมอยาสมุนไพร',
+  npc10: 'บ้านผู้ใหญ่บ้านโอเรน', npc11: 'บ้านช่างตีเหล็กกัส', npc12: 'บ้านยามดอร์ก', npc13: 'บ้านชาวนาฮิลดา', npc14: 'บ้านโม่แป้งของบริน', npc15: 'บ้านเคียร์'
+};
 function placeList() { const o = { ...PLACE_NAMES }; try { const s = JSON.parse(localStorage.getItem('place-maps-v1') || '{}'); for (const [k, v] of Object.entries(s)) if (v && typeof v === 'object') o[k] = v.name || o[k] || k } catch (e) { } return o }
+function interiorList() {
+  const o = Object.assign(Object.create(null), INTERIOR_NAMES);
+  const add = entries => {
+    if (!entries || typeof entries !== 'object') return;
+    if (Array.isArray(entries)) {
+      for (const v of entries) if (v && typeof v === 'object' && typeof v.id === 'string') o[v.id] = v.name || o[v.id] || v.id;
+      return;
+    }
+    for (const [k, v] of Object.entries(entries)) {
+      if (!k || k === '__proto__') continue;
+      const name = typeof v === 'string' ? v : v && typeof v === 'object' ? v.name : '';
+      o[k] = name || o[k] || k;
+    }
+  };
+  add(window.VillageDefaultLayout?.places);
+  try { add(JSON.parse(localStorage.getItem('project-a-village-main-v1') || '{}')) } catch (e) { }
+  try { add(JSON.parse(localStorage.getItem('project-a-village-custom-places-v1') || '[]')) } catch (e) { }
+  try { add(JSON.parse(localStorage.getItem('place-maps-v1') || '{}')) } catch (e) { }
+  add(window.MapScale?.raw?.().interior);
+  return o;
+}
+const mapText = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function mapRows() {
   const MS = window.MapScale, rows = [['village', null, '🏡 หมู่บ้าน', 'ตัวเอก + ชาวบ้าน + เพื่อนที่เดินในหมู่บ้าน'], ['world', null, '🌍 แผนที่โลก', 'ตัวเอกบนแผนที่โลก']];
   for (const [k, n] of Object.entries(BIOMES)) rows.push(['battle', k, '⚔ สนามรบ · ' + n, 'ตัวเอก เพื่อน มอนสเตอร์ ทุกตัวในสนาม']);
   for (const [k, n] of Object.entries(placeList())) rows.push(['place', k, '🏠 แผนที่ย่อย · ' + n, MS.has('place', k) ? 'ตั้งเอง' : 'ยังไม่ตั้ง = ตามหมู่บ้าน']);
-  for (const [k, n] of Object.entries(INTERIORS)) rows.push(['interior', k, '🚪 ภายในอาคาร · ' + n, 'ตัวเอก + ชาวบ้าน + เพื่อนในห้อง (ตัวเอกคูณค่าปรับของตัวเอกด้วย)']);
+  for (const [k, n] of Object.entries(interiorList())) rows.push(['interior', k, '🚪 ภายในอาคาร · ' + mapText(n), MS.has('interior', k) ? 'ตั้งเอง' : 'ค่าเริ่มต้น 100%']);
   return rows;
 }
 function renderMaps() {

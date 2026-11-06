@@ -9,13 +9,15 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const server = await serve(), base = 'http://localhost:' + server.address().port + '/', browser = await chromium.launch(), errs = [];
   const capture = async k => { const ctx = await browser.newContext({ viewport: { width: 1500, height: 900 } }); await ctx.addInitScript(v => { try { localStorage.setItem('map-char-scale-v1', JSON.stringify({ interior: { inn: v } })) } catch (e) { } }, k);
     const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message)); await p.goto(base + 'place-interior.html?place=inn'); await p.waitForTimeout(2500);
-    const r = await p.evaluate(async () => { const sc = [], sizes = [], sh = []; const vd = window.VillagerDraw, o = vd; window.VillagerDraw = Object.assign(function (g, L, x, y, t, op) { if (op && op.scale) sc.push(op.scale); return o.apply(this, arguments) }, o);
+    const r = await p.evaluate(async () => { const sc = [], sizes = [], sh = [], factorCalls = []; const factor = CharScaleAdjust.factor; CharScaleAdjust.factor = function (ctx, id) { factorCalls.push({ ctx, id }); return factor(ctx, id) };
+      const vd = window.VillagerDraw, o = vd; window.VillagerDraw = Object.assign(function (g, L, x, y, t, op) { if (op && op.scale) sc.push(op.scale); return o.apply(this, arguments) }, o);
       const pa = ProcMotion.apply; ProcMotion.apply = function (g, key, info, t, s, id) { sizes.push(s); return pa.apply(this, arguments) }; const so = o.shadow; o.shadow = function (g, x, y, s) { sh.push(s); return so.apply(this, arguments) };
-      await new Promise(r => setTimeout(r, 1500)); return { sc: sc.length ? Math.max(...sc) : null, scMin: sc.length ? Math.min(...sc) : null, hero: sizes.length ? Math.max(...sizes) : null, shadow: sh.length ? sh[0] : null, n: sc.length } });
+      await new Promise(r => setTimeout(r, 1500)); return { sc: sc.length ? Math.max(...sc) : null, scMin: sc.length ? Math.min(...sc) : null, hero: sizes.length ? Math.max(...sizes) : null, shadow: sh.length ? sh[0] : null, n: sc.length, factorCalls } });
     await ctx.close(); return r };
   const a = await capture(1), b = await capture(1.5);
   console.log('inn at 100 %:', JSON.stringify(a), '· at 150 %:', JSON.stringify(b));
   assert.ok(a.n > 0, 'villagers are drawn in the inn'); assert.ok(Math.abs(b.sc / a.sc - 1.5) < 0.02, 'villagers follow the room multiplier: ' + a.sc + ' → ' + b.sc);
+  assert.ok(a.factorCalls.some(c => c.ctx === 'village' && c.id === 'hero') && a.factorCalls.some(c => c.ctx === 'village' && c.id !== 'hero'), 'hero and individual room characters read their Scale Lineup factors');
   if (a.hero) assert.ok(Math.abs(b.hero / a.hero - 1.5) < 0.02, 'hero follows the room multiplier: ' + a.hero + ' → ' + b.hero);
   if (a.shadow) assert.ok(Math.abs(b.shadow / a.shadow - 1.5) < 0.02, 'hero shadow follows it too');
   assert.deepEqual(errs, [], errs.join('|')); console.log('interior scale e2e: all cases passed'); await browser.close(); server.close();

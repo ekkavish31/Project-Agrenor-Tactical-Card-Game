@@ -9,9 +9,13 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const server = await serve(), base = 'http://localhost:' + server.address().port + '/', browser = await chromium.launch(), ctx = await browser.newContext({ viewport: { width: 1500, height: 900 } }), errs = [];
   const page = async url => { const p = await ctx.newPage(); p.on('pageerror', e => errs.push(url + ': ' + e.message)); p.on('dialog', d => d.accept()); await p.goto(base + url); return p };
   // 1 the editor tab: one number per map
-  let p = await page('scale-lineup.html'); await p.waitForTimeout(3500); await p.click('[data-t="maps"]'); await p.waitForTimeout(800);
+  let p = await page('scale-lineup.html'); await p.waitForTimeout(3500);
+  await p.evaluate(() => localStorage.setItem('place-maps-v1', JSON.stringify({ 'custom-interior-test': { name: 'ห้องทดสอบ', sub: 'ภายในอาคาร' } })));
+  await p.evaluate(() => localStorage.setItem('project-a-village-custom-places-v1', JSON.stringify([{ id: 'custom-village-test', name: 'สถานที่ทดสอบ' }])));
+  await p.click('[data-t="maps"]'); await p.waitForTimeout(800);
   const rows = await p.evaluate(() => [...document.querySelectorAll('#mapTbl tr')].slice(1).map(tr => tr.children[0].textContent));
   assert.ok(rows.some(r => /หมู่บ้าน/.test(r)) && rows.some(r => /แผนที่โลก/.test(r)) && rows.filter(r => /สนามรบ/.test(r)).length === 6 && rows.some(r => /ตลาด/.test(r)), 'a row for every kind of map: ' + rows.join(' | '));
+  assert.ok(rows.some(r => /ภายในอาคาร.*สมาคมนักผจญภัย/.test(r)) && rows.some(r => /ภายในอาคาร.*บ้านเคียร์/.test(r)) && rows.some(r => /ภายในอาคาร.*ห้องทดสอบ/.test(r)) && rows.some(r => /ภายในอาคาร.*สถานที่ทดสอบ/.test(r)), 'all built-in and custom interior scenes are configurable: ' + rows.filter(r => /ภายในอาคาร/.test(r)).join(' | '));
   const col = await p.evaluate(() => document.querySelectorAll('#mapTbl tr:nth-child(2) input[type=number]').length); assert.equal(col, 1, 'exactly ONE number per map');
   await p.evaluate(() => { const i = document.querySelector('#mapTbl tr:nth-child(2) input[type=number]'); i.value = 120; i.dispatchEvent(new Event('change', { bubbles: true })) });   // village 120 %
   await p.evaluate(() => { const r = [...document.querySelectorAll('#mapTbl tr')].find(tr => /ป่า/.test(tr.children[0].textContent)); const i = r.querySelector('input[type=number]'); i.value = 150; i.dispatchEvent(new Event('change', { bubbles: true })) });   // battle forest 150 %
