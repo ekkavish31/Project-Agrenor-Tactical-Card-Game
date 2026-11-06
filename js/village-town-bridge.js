@@ -4,14 +4,15 @@
 (function(){'use strict';
 const host=document.createElement('section');host.id='villageTownLayer';host.setAttribute('aria-label','หมู่บ้าน');host.style.cssText='position:fixed;inset:0;z-index:200;background:#718568';
 function makeFrame(title,src){const f=document.createElement('iframe');f.title=title;f.style.cssText='width:100%;height:100%;border:0';f.allow='fullscreen';if(src)f.src=src;host.appendChild(f);return f}
-const frame=makeFrame('หมู่บ้าน 2.5D','village-town.html?v=97.17'),marketFrame=makeFrame('สถานที่ 2.5D');let placeId='',placeAct='';marketFrame.hidden=true;document.body.appendChild(host);
+const deferTown=!!window.TitleScreen?.active&&!window.TitleScreen?.newGame&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+const frame=makeFrame('หมู่บ้าน 2.5D',deferTown?'':'village-town.html?v=97.17'),marketFrame=makeFrame('สถานที่ 2.5D');let placeId='',placeAct='';marketFrame.hidden=true;document.body.appendChild(host);
 const back=document.createElement('button');back.id='townReturn';back.textContent='← กลับแผนที่หมู่บ้าน';back.style.cssText='position:fixed;left:20px;top:78px;z-index:201;padding:10px 16px;border-radius:10px;background:#213b2df0;color:#fff0c7;border:1px solid #b6c48e';back.hidden=true;back.onclick=()=>openTown();document.body.append(back);
 let ready=false,marketReady=false,initialized=false,lastStamp='',lastMotion='',inside=false,marketOpen=false,lastVisible='';
 function post(f,data){f.contentWindow?.postMessage({source:'project-a-game',...data},'*')}
 function send(data){if(ready)post(frame,data)}
 function stateData(){return{location:s.village.location,name:heroName(),day:s.day,minutes:s.minutes,hp:s.hp,stamina:s.stamina,coins:s.village.coins,message:s.log,exits:Object.entries(window.ADVENTURE_DATA.AREAS).map(([id,a])=>({id,name:a.name,exit:a.exit})),actions:placeActions().map(a=>({id:a.id,name:a.name,cost:a.cost,effect:a.effect,reason:a.reason||''}))}}
 function modalOpen(){return !!document.querySelector('dialog[open]')}
-function activeHide(){return inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden}
+function activeHide(){return !!window.TitleScreen?.active||inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden}
 function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden;frame.hidden=marketOpen;marketFrame.hidden=!marketOpen;
  const vis=JSON.stringify([!host.hidden,marketOpen,ready,marketReady,modalOpen()]);if(vis!==lastVisible){lastVisible=vis;send({type:'visibility',visible:!host.hidden&&!marketOpen&&!modalOpen()});if(marketReady)post(marketFrame,{type:'visibility',visible:!host.hidden&&marketOpen&&!modalOpen()})}
  const data=stateData(),stamp=JSON.stringify(data);if(stamp!==lastStamp){lastStamp=stamp;send({type:'state',data});if(marketReady)post(marketFrame,{type:'state',data})}
@@ -54,5 +55,6 @@ window.VillageTown={open:openTown,frame,marketFrame,host,sync,expedition,openWor
 new MutationObserver(()=>{const hide=activeHide();if(host.hidden!==hide||lastVisible!==JSON.stringify([!hide,marketOpen,ready,marketReady,modalOpen()]))sync()}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
 setInterval(()=>{if(!document.hidden)sync()},800);
 try{const channel=new BroadcastChannel('project-a-hero-motion');channel.onmessage=e=>{if(e.data?.kind!=='hero-walk'||!e.data.data?.directions)return;for(const[d,p]of Object.entries(e.data.data.directions)){if(!TACTICS_SPRITES.directions[d])TACTICS_SPRITES.directions[d]={};TACTICS_SPRITES.directions[d].walk=p.walk}lastMotion='';sync()}}catch{}
+if(deferTown){let loaded=false;const loadTown=()=>{if(loaded)return;loaded=true;clearTimeout(fallback);window.removeEventListener('maker-intro-finished',loadTown);if(!frame.getAttribute('src'))frame.src='village-town.html?v=97.17';};const fallback=setTimeout(loadTown,16000);window.addEventListener('maker-intro-finished',loadTown,{once:true});}
 sync();
 })();
