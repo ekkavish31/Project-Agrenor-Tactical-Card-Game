@@ -15,7 +15,12 @@
     frame.style.cssText='width:100%;height:100%;border:0;display:block;background:#fafafa;visibility:hidden';
     const skip = document.createElement('button'); skip.textContent='ข้าม · Esc';
     skip.style.cssText='position:absolute;right:20px;bottom:20px;padding:9px 16px;border:1px solid #12304b55;border-radius:5px;background:#ffffffdc;color:#12304b;font:14px system-ui;cursor:pointer';
-    let raf=0, timeout=0, finished=false;
+    const sound = document.createElement('button'); sound.textContent='เปิดเสียง';
+    sound.setAttribute('aria-label','เปิดเพลงและเสียงเอฟเฟกต์');
+    sound.style.cssText='position:absolute;right:112px;bottom:20px;padding:9px 16px;border:1px solid #12304b55;border-radius:5px;background:#ffffffdc;color:#12304b;font:14px system-ui;cursor:pointer';
+    sound.onclick=()=>{window.GameBGM?.unlock();sound.textContent='เสียงเปิดแล้ว';sound.disabled=true;};
+    const cues=[[1240,'bell'],[1360,'bell'],[1940,'sparkle'],[2700,'applause']];
+    let raf=0, timeout=0, finished=false, nextCue=0;
     const inertBefore=main.inert;
     main.inert=true; title.classList.add('ag-playing');
     function finish() {
@@ -31,11 +36,12 @@
       if(finished)return;
       if(!title.isConnected){finish();return;}
       const time=frame.contentWindow?.logoPreview?.time||0;
+      while(nextCue<cues.length&&time>=cues[nextCue][0])window.GameBGM?.playIntroSfx?.(cues[nextCue++][1]);
       overlay.style.opacity=String(Math.max(0,Math.min(1,(4000-time)/500)));
       if(time>=4000)finish();else raf=requestAnimationFrame(tick);
     }
     skip.onclick=finish;
-    overlay.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();finish();}else if(e.key==='Tab'){e.preventDefault();skip.focus();}});
+    overlay.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();finish();}else if(e.key==='Tab'){e.preventDefault();const controls=[sound,skip],index=controls.indexOf(document.activeElement);controls[(index+(e.shiftKey?-1:1)+2)%2].focus();}});
     window.addEventListener('message',message);reduced.addEventListener('change',motion);
     frame.onload=async()=>{
       try {
@@ -49,13 +55,13 @@
         await frame.contentWindow.logoPreview.ready;
         if(finished)return;
         frame.contentWindow.logoPreview.seek(0);
-        clearTimeout(timeout);frame.style.visibility='visible';
+        nextCue=0;clearTimeout(timeout);frame.style.visibility='visible';
         frame.contentDocument.getElementById('play').click();raf=requestAnimationFrame(tick);
       }catch{finish();}
     };
     frame.onerror=finish;cleanup=finish;
     frame.src='assets/maker/aetheryn-logo.html?embed=1&v=2';
-    overlay.append(frame,skip);title.append(overlay);skip.focus({preventScroll:true});
+    overlay.append(frame,sound,skip);title.append(overlay);skip.focus({preventScroll:true});
     timeout=setTimeout(finish,12000);
   }};
 })();

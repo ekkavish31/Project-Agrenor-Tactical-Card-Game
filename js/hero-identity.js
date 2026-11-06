@@ -8,7 +8,7 @@ function leaderKey(){return (typeof s!=='undefined'&&s.village?.leader&&PLAYABLE
 function heroName(){let n=typeof s!=='undefined'&&s.village?.heroName;return (n&&String(n).trim())||PLAYABLE[leaderKey()].defaultName}
 function askHeroName(first){if(typeof s==='undefined'||!s.village)return;let cur=s.village.heroName||'';let n=prompt(first?'ตั้งชื่อตัวเอกของคุณ (เปลี่ยนภายหลังได้โดยคลิกชื่อหรือรูปตัวเอก)':'เปลี่ยนชื่อตัวเอก',cur||'');
  if(n===null){if(first&&!s.village.heroName){s.village.heroName=PLAYABLE.hero.defaultName;save()}return}n=n.trim().slice(0,16);if(!n)return;s.village.heroName=n;save();if(typeof render==='function')render();syncHeroName()}
-function syncHeroName(){document.querySelectorAll('[data-hero-name]').forEach(el=>{if(el.textContent!==heroName())el.textContent=heroName()});document.title=heroName()+' · Project A'}
+function syncHeroName(){document.querySelectorAll('[data-hero-name]').forEach(el=>{if(el.textContent!==heroName())el.textContent=heroName()});document.title=window.TitleScreen?.active?'Agrenor: Paths Unwritten':heroName()+' · Agrenor: Paths Unwritten'}
 window.HeroIdentity={PLAYABLE,leaderKey,heroName,askHeroName,syncHeroName};
 document.addEventListener('click',e=>{if(e.target.closest('[data-hero-name],.hero-face,#heroFace'))askHeroName(false)});
 window.addEventListener('load',()=>{setTimeout(()=>{syncHeroName();let ed=/[?&]editor=/.test(location.search);if(!ed&&!window.TitleScreen?.active&&typeof s!=='undefined'&&s.village&&!s.village.heroName&&!navigator.webdriver)askHeroName(true)},600)});
