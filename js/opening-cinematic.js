@@ -12,7 +12,7 @@
     brand.querySelector('p').textContent = 'หนึ่งจุดเริ่มต้น · เส้นทางนับไม่ถ้วน';
     title.classList.add('ag-title');
     const replay = document.createElement('button');
-    replay.className = 'ag-replay'; replay.textContent = 'ดูบทเปิดอีกครั้ง';
+    replay.className = 'ag-replay'; replay.textContent = 'ดูโลโก้ผู้สร้างอีกครั้ง';
     main.append(replay);
     const opening = document.createElement('section');
     opening.className = 'ag-opening'; opening.hidden = true;
@@ -105,10 +105,10 @@
     const motionChange=()=>{if(reduced.matches) finish();};
     reduced.addEventListener('change',motionChange);
     new MutationObserver((_,observer)=>{if(!title.isConnected){cancelAnimationFrame(frame);audio?.close().catch(()=>{});reduced.removeEventListener('change',motionChange);document.removeEventListener('visibilitychange',visibilityChange);observer.disconnect();}}).observe(document.body,{childList:true});
-    replay.onclick=play;
+    replay.onclick=()=>window.MakerLogo?.play(title);
     // Decode in parallel; the vignette remains skippable while images load.
     for(const src of ['assets/intro/heroes-dawn.png','assets/intro/world-dawn.png']) {const image=new Image();image.src=src;}
-    play();
+    window.MakerLogo?.play(title);
   }
   if(document.readyState!=='complete' && !document.getElementById('titleScreen')) document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();
