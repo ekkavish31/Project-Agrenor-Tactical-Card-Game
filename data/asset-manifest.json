@@ -99796,6 +99796,654 @@
     "group": "characters"
    },
    "artRevision": "mw4etob7"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-1",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-2",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-3",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-4",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-5",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-6",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-7",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-8",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-9",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-10",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-11",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-sw-walk-mw4fgmyj-12",
+   "file": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgmyj"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-1",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-2",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-3",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-4",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-5",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-6",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-7",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-8",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-9",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-10",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-11",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "studio-ally-sigrid-se-walk-mw4fgu81-12",
+   "file": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "mw4fgu81"
   }
  ],
  "studioReviews": {
@@ -102430,7 +103078,7 @@
    "approvedAt": "2026-11-05T01:23:58.600Z"
   },
   "[\"allywalk:sigrid:SE\",\"SE\",true,[[\"studio-ally-sigrid-se-walk-mwwalk12b-1\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-01.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-2\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-02.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-3\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-03.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-4\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-04.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-5\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-05.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-6\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-06.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-7\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-07.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-8\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-08.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-9\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-09.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-10\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-10.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-11\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-11.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mwwalk12b-12\",\"assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-12.png\",0,\"mwwalk12b\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "needsfix",
+   "status": "unreviewed",
    "frames": {}
   },
   "[\"allywalk:sigrid:NE\",\"NE\",true,[[\"studio-ally-sigrid-ne-walk-mwwalk12c-1\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-01.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-2\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-02.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-3\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-03.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-4\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-04.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-5\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-05.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-6\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-06.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-7\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-07.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-8\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-08.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-9\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-09.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-10\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-10.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-11\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-11.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-ne-walk-mwwalk12c-12\",\"assets/tactics/imported/ally-sigrid-walk-ne-mwwalk12c/frame-12.png\",0,\"mwwalk12c\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
@@ -103000,6 +103648,16 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-06T03:23:23.588Z"
+  },
+  "[\"allywalk:kier:NW\",\"NW\",true,[[\"studio-ally-kier-nw-walk-mw4etob7-1\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-01.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-2\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-02.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-3\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-03.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-4\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-04.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-5\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-05.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-6\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-06.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-7\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-07.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-8\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-08.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-9\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-09.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-10\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-10.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-11\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-11.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-kier-nw-walk-mw4etob7-12\",\"assets/tactics/imported/ally-kier-walk-nw-mw4etob7/frame-12.png\",0,\"mw4etob7\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T03:23:29.684Z"
+  },
+  "[\"allywalk:sigrid:SW\",\"SW\",true,[[\"studio-ally-sigrid-sw-walk-mw4fgmyj-1\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-01.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-2\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-02.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-3\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-03.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-4\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-04.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-5\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-05.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-6\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-06.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-7\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-07.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-8\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-08.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-9\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-09.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-10\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-10.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-11\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-11.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-sw-walk-mw4fgmyj-12\",\"assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-12.png\",0,\"mw4fgmyj\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T03:41:20.912Z"
   }
  },
  "studioClipHistory": {
@@ -107411,66 +108069,66 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-04T12:52:56.929Z",
+    "createdAt": "2026-11-06T03:41:20.059Z",
     "frames": [
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-1",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-01.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-1",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-01.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-2",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-02.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-2",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-02.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-3",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-03.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-3",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-03.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-4",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-04.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-4",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-04.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-5",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-05.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-5",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-05.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-6",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-06.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-6",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-06.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-7",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-07.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-7",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-07.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-8",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-08.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-8",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-08.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-9",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-09.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-9",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-09.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-10",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-10.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-10",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-10.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-11",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-11.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-11",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-11.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-sw-walk-mwwalk12b-12",
-      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mwwalk12b/frame-12.png",
+      "assetId": "studio-ally-sigrid-sw-walk-mw4fgmyj-12",
+      "src": "assets/tactics/imported/ally-sigrid-walk-sw-mw4fgmyj/frame-12.png",
       "ms": 100
      }
     ]
@@ -107486,66 +108144,66 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-04T12:52:56.929Z",
+    "createdAt": "2026-11-06T03:41:29.473Z",
     "frames": [
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-1",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-01.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-1",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-01.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-2",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-02.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-2",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-02.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-3",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-03.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-3",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-03.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-4",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-04.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-4",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-04.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-5",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-05.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-5",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-05.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-6",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-06.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-6",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-06.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-7",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-07.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-7",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-07.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-8",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-08.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-8",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-08.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-9",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-09.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-9",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-09.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-10",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-10.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-10",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-10.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-11",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-11.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-11",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-11.png",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-sigrid-se-walk-mwwalk12b-12",
-      "src": "assets/tactics/imported/ally-sigrid-walk-se-mwwalk12b/frame-12.png",
+      "assetId": "studio-ally-sigrid-se-walk-mw4fgu81-12",
+      "src": "assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-12.png",
       "ms": 100
      }
     ]
