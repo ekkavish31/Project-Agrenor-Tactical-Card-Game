@@ -1,0 +1,60 @@
+/* Original painted opening art, references supplied by the creator. */
+#titleScreen.ag-title .ts-bg{background-image:url('../assets/intro/heroes-dawn.png');filter:none;background-position:center;animation:ag-menu-drift 30s ease-in-out infinite alternate}
+#titleScreen.ag-title .ts-veil{background:linear-gradient(90deg,#071219f5 0%,#071219d9 25%,#07121966 50%,#0712190a 75%),linear-gradient(0deg,#071219bd,transparent 35%)}
+#titleScreen.ag-title .ts-main{align-self:flex-start;margin-left:7vw;align-items:flex-start;gap:28px;max-width:86vw}
+#titleScreen.ag-title .ts-brand{text-align:left}
+#titleScreen.ag-title .ts-brand h1{font-size:clamp(42px,6.5vw,90px);letter-spacing:.09em;font-weight:400}
+#titleScreen.ag-title .ts-brand p{font-size:clamp(12px,1.3vw,17px);letter-spacing:.04em}
+#titleScreen.ag-title .ts-menu{width:min(310px,80vw)}
+#titleScreen.ag-title .ts-menu button{border-radius:0;border-width:0 0 1px;background:linear-gradient(90deg,#13262d99,transparent);padding:9px 20px 9px 36px}
+#titleScreen.ag-title .ts-menu button span{font-weight:400;font-size:21px}
+#titleScreen .ag-replay{border:0;border-bottom:1px solid #cbb58166;border-radius:0;background:none;color:#e5d5ae;font:12px/2 inherit;padding:2px 0;cursor:pointer}
+#titleScreen .ag-replay:focus-visible,#titleScreen .ag-controls button:focus-visible{outline:2px solid #ffe6a9;outline-offset:5px}
+#titleScreen .ag-opening[hidden]{display:none!important}
+#titleScreen .ag-opening{position:absolute;inset:0;z-index:10;background:#060f16;color:#f6ebcf;overflow:hidden;isolation:isolate}
+.ag-opening *{box-sizing:border-box}
+.ag-world{position:absolute;inset:-3%;background:url('../assets/intro/world-dawn.png') center/cover;opacity:.08;transform:scale(1.25);transition:opacity 3s,transform 7s cubic-bezier(.2,.6,.2,1)}
+.ag-haze{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,#e6be6118,transparent 65%),linear-gradient(0deg,#040c15eb,transparent 60%,#040c1566);z-index:1}
+.ag-orbit{position:absolute;width:65vmin;aspect-ratio:1;left:50%;top:44%;transform:translate(-50%,-50%) rotate(45deg);border:1px solid #d6b87533;box-shadow:0 0 90px #c99a4020,inset 0 0 70px #c99a4010;transition:transform 8s,opacity 2s}
+.ag-orbit:after{content:'';position:absolute;inset:10%;border:1px solid #d6b87520}
+.ag-cards{position:absolute;inset:0;z-index:2;perspective:1200px}
+.ag-card{position:absolute;left:50%;top:43%;width:clamp(180px,24vw,330px);height:min(54vh,440px);border:1px solid #e0be7d;padding:7px;background:#172126;box-shadow:0 20px 65px #000a,0 0 0 4px #b8995533;overflow:hidden;border-radius:7px;transition:transform 2s cubic-bezier(.22,.65,.2,1),opacity 1.3s,filter 1.3s}
+.ag-card:after{content:'';position:absolute;inset:11px;border:1px solid #ffe2a166;pointer-events:none}
+.ag-card img{width:100%;height:100%;object-fit:cover;object-position:54% center;display:block}
+.ag-card-no{position:absolute;top:22px;left:22px;font:9px/1.5 Georgia,serif;letter-spacing:.16em;color:#fff1ca;text-shadow:0 1px 6px #000;background:#0c1a2299;padding:4px 6px}
+.ag-card-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,#06111af5 40%);padding:55px 12px 24px;text-align:center;font-size:clamp(17px,2vw,25px);color:#f4e2b6}
+.ag-card-label small{display:block;font-size:11px;letter-spacing:.08em;margin-top:5px;color:#d1c6ac}
+.ag-origin{transform:translate(-50%,-50%) rotate(-4deg);animation:ag-arrive 2.2s ease backwards}
+.ag-path{width:clamp(105px,17vw,240px);height:min(45vh,340px);opacity:0;transform:translate(-50%,-50%) scale(.65) rotateY(80deg)}
+.ag-caption{position:absolute;z-index:4;bottom:9%;left:5%;right:5%;text-align:center;text-shadow:0 2px 18px #000}
+.ag-chapter{font:10px/1.5 Georgia,serif;letter-spacing:.3em;color:#d8bc7d}
+.ag-caption p{font-size:clamp(17px,2.2vw,28px);margin:12px 0 0;font-weight:300;color:#fff1d5}
+.ag-controls{position:absolute;z-index:6;top:25px;left:28px;right:28px;display:flex;justify-content:space-between;gap:16px}
+#titleScreen .ag-controls button{border:1px solid #e2c48455;border-radius:2px;background:#071219b3;color:#f4e2b6;padding:9px 13px;font:12px/1.5 system-ui;cursor:pointer;backdrop-filter:blur(8px)}
+.ag-skip span{margin-left:18px;font:9px Georgia,serif;letter-spacing:.1em;opacity:.6}
+.ag-progress{position:absolute;bottom:0;left:0;right:0;height:2px;background:#e8cf8022;z-index:7}
+.ag-progress i{display:block;width:100%;height:100%;background:#ebcb85;transform-origin:left;transform:scaleX(0);box-shadow:0 0 12px #e8c57d}
+.ag-reveal{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;justify-content:center;align-items:center;opacity:0;transform:translateY(18px);transition:opacity 2s,transform 2s;text-shadow:0 4px 30px #000;text-align:center}
+.ag-reveal>span{font:10px Georgia,serif;letter-spacing:.35em;color:#e4cd93}
+.ag-reveal h2{font:400 clamp(40px,9vw,124px)/1.2 Georgia,serif;letter-spacing:.12em;margin:22px 0;color:#fff0bf}
+.ag-reveal p{font-size:clamp(15px,2vw,23px);color:#fff0d5}
+.ag-dust{position:absolute;inset:0;z-index:3;pointer-events:none}
+.ag-dust i{position:absolute;left:var(--x);bottom:-5%;width:3px;height:3px;border-radius:50%;background:#f4d893;box-shadow:0 0 9px #e8bd67;animation:ag-dust 8s var(--delay) linear infinite}
+.ag-opening[data-stage="1"] .ag-origin{transform:translate(-50%,-50%) scale(.57);opacity:.18;filter:blur(3px)}
+.ag-opening[data-stage="1"] .ag-path{opacity:1;transform:translate(calc(-50% + var(--x)),-50%) rotate(var(--r))}
+.ag-opening[data-stage="2"] .ag-world,.ag-opening[data-stage="3"] .ag-world,.ag-opening[data-stage="4"] .ag-world{opacity:1;transform:scale(1)}
+.ag-opening[data-stage="2"] .ag-card,.ag-opening[data-stage="3"] .ag-card,.ag-opening[data-stage="4"] .ag-card{opacity:0;transform:translate(calc(-50% + var(--x,0vw)*1.4),-55%) scale(.35) rotate(var(--r,0deg))}
+.ag-opening[data-stage="2"] .ag-orbit,.ag-opening[data-stage="3"] .ag-orbit,.ag-opening[data-stage="4"] .ag-orbit{transform:translate(-50%,-50%) rotate(160deg) scale(3);opacity:0}
+.ag-opening[data-stage="4"] .ag-reveal{opacity:1;transform:none}
+.ag-opening[data-stage="4"] .ag-world{filter:brightness(.65)}
+#titleScreen.ag-playing .ts-foot,#titleScreen.ag-playing>.ts-motes{visibility:hidden}
+@keyframes ag-arrive{from{opacity:0;transform:translate(-50%,-40%) rotateY(-35deg) rotate(-8deg) scale(.7)}to{opacity:1;transform:translate(-50%,-50%) rotate(-4deg)}}
+@keyframes ag-dust{0%{opacity:0;transform:translate(0,0)}20%{opacity:.7}80%{opacity:.4}100%{opacity:0;transform:translate(50px,-100vh)}}
+@keyframes ag-menu-drift{to{transform:scale(1.05) translate(-.5%,0)}}
+@media(max-width:600px){.ag-card{height:43vh;width:58vw;top:42%}.ag-path{width:23vw;height:33vh}.ag-path .ag-card-no{display:none}.ag-path .ag-card-label{font-size:13px;padding:40px 3px 18px}.ag-path .ag-card-label small{font-size:9px;letter-spacing:0}.ag-controls{top:18px;left:16px;right:16px}.ag-caption{bottom:13%}.ag-chapter{font-size:8px;letter-spacing:.17em}#titleScreen.ag-title .ts-bg{background-position:61% center}#titleScreen.ag-title .ts-main{margin-left:6vw}#titleScreen.ag-title .ts-brand h1{font-size:40px}#titleScreen.ag-title .ts-main{gap:18px}}
+@media(max-height:520px){.ag-caption{bottom:7%}.ag-caption p{margin-top:4px}.ag-controls{top:12px}.ag-card{height:52vh}#titleScreen.ag-title .ts-main{gap:8px}#titleScreen.ag-title .ts-brand h1{font-size:42px;margin:5px 0}#titleScreen.ag-title .ts-menu{gap:2px}#titleScreen.ag-title .ts-menu button{padding-top:5px;padding-bottom:5px}#titleScreen.ag-title .ts-foot{bottom:5px}}
+@media(prefers-reduced-motion:reduce){#titleScreen.ag-title .ts-bg,.ag-origin,.ag-dust i{animation:none}.ag-opening *{transition:none!important}}
+
+.ag-hero-art{position:absolute;inset:7px;background:#101e25 url('../assets/intro/heroes-dawn.png') center 25%/contain no-repeat}
+.ag-origin{width:clamp(260px,40vw,560px)}
+@media(max-width:600px){.ag-origin{width:78vw;height:40vh}.ag-hero-art{background-position:center 20%}}
