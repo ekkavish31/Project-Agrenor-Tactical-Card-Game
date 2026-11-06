@@ -47,6 +47,8 @@
   }
   const ready = im => im && im.complete && im.naturalWidth > 0;
   function pic(S, d, k) { const own = S[d + '-' + k]; if (ready(own)) return { im: own, flip: false }; const m = S[MIR[d] + '-' + k]; return ready(m) ? { im: m, flip: true } : null }
+  /* v98.152 · ONE shadow for every walker (village, battle-in-village, interiors): a soft wide oval + a darker contact core right under the feet, both sized by the character's scale */
+  function contactShadow(g, x, y, s) { g.save(); g.fillStyle = 'rgba(20,16,10,.17)'; g.beginPath(); g.ellipse(x, y, 19 * s, 7.6 * s, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(20,16,10,.34)'; g.beginPath(); g.ellipse(x, y, 11 * s, 4.2 * s, 0, 0, 7); g.fill(); g.restore() }
   function spriteDraw(g, L, x, y, t, o) {
     const S = sprites(L.sprite), info = S.info || SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
     let P = pic(S, d, 'stand'), full = false; if (!P) return false;
@@ -55,7 +57,7 @@
     let procKey = null; if (walking && act === '' && wn) { const p = t * .012 + ph, N = wn >= 4 ? wn : 4, f = S.ms && S.ms[wsrc] && wn >= 4 ? Math.floor((t + ph * 1000) / S.ms[wsrc]) % wn : ((Math.round(p / (Math.PI * 2 / N)) % N) + N) % N; procKey = 'allywalk:' + L.sprite + ':' + wsrc.toUpperCase(); const _u = 0, key = wn >= 4 ? 'walk' + (f + 1) : wn === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, wsrc, key); if (W) { P = wflip ? { im: W.im, flip: !W.flip } : W; full = wn >= 8 } }
     const proc = procKey && root.ProcMotion && root.ProcMotion.raw && root.ProcMotion.raw(procKey);   /* the studio's ขยับในเกม setting of that walk set (e.g. bob 0.3 / 0.6) replaces the built-in bob */
     const bob = proc ? 0 : walking ? Math.abs(Math.sin(t * .012 + ph)) * (full ? .6 : 4) * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
-    g.save(); g.fillStyle = 'rgba(20,20,20,.32)'; g.beginPath(); g.ellipse(x, y, 15 * s, 6 * s, 0, 0, 7); g.fill(); g.restore();
+    contactShadow(g, x, y, s);
     g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (proc) { try { root.ProcMotion.apply(g, procKey, { frames: wn, pose: 'walk' }, t, 384 * k * .9, L.sprite) } catch (e) { } } if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -372 * k, 384 * k, 384 * k); g.restore();
     fx(g, act, x, y, s, t, ph);
     return true;
@@ -65,7 +67,7 @@
     const face = o.face || 'SE', back = face === 'NE' || face === 'NW', flip = face === 'SW' || face === 'NW', ph = o.phase || 0, walking = !!o.walking;
     const s = (o.scale || 1) * (L.small ? .72 : L.tall ? 1.1 : 1), act = o.act || '';
     const bob = walking ? Math.abs(Math.sin(t * .012 + ph)) * 4 * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
-    g.save(); g.fillStyle = 'rgba(20,20,20,.32)'; g.beginPath(); g.ellipse(x, y, 15 * s, 6 * s, 0, 0, 7); g.fill(); g.restore();
+    contactShadow(g, x, y, s);
     g.save(); g.translate(x, y - bob); if (flip) g.scale(-1, 1);
     const skin = L.skin || '#ecc6a0';
     if (act === 'sit') g.translate(0, 8 * s);
@@ -105,5 +107,5 @@
     g.restore();
     fx(g, act, x, y, s, t, ph);
   }
-  root.VillagerDraw = draw; draw.sprites = sprites;   /* v98.131 · for tests / tools: the pictures a sprite set really uses */
+  root.VillagerDraw = draw; draw.sprites = sprites; draw.shadow = contactShadow;   /* v98.131 · for tests / tools: the pictures a sprite set really uses */
 })(globalThis);

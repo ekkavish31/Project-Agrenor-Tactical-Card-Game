@@ -49,7 +49,7 @@ code{font-size:12px}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=98.140"></script><script src="js/map-scale.js?v=98.141"></script><script src="js/character-scale-adjust-data.js?v=98.126"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
+<script src="js/village-layout-v67.js?v=98.140"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/character-scale-adjust-data.js?v=98.126"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -262,11 +262,13 @@ function inspectRatio() {
 /* ================= 🗺 ขนาดต่อแผนที่ · ONE multiplier per map (js/map-scale.js) ================= */
 const BIOMES = { forest: 'ป่า', grass: 'ทุ่งหญ้า', hills: 'เนินเขา', swamp: 'บึง', snow: 'ทุ่งหิมะ', sand: 'หาดทราย' };
 const PLACE_NAMES = { market: 'ตลาด', forge: 'โรงตีเหล็ก', home: 'บ้าน' };
+const INTERIORS = { inn: 'โรงแรมเขากวางทอง', healer: 'บ้านหมอยา', shop: 'ร้านค้า', market: 'ตลาด', temple: 'วิหาร', forge: 'โรงตีเหล็ก', farm: 'ไร่' };
 function placeList() { const o = { ...PLACE_NAMES }; try { const s = JSON.parse(localStorage.getItem('place-maps-v1') || '{}'); for (const [k, v] of Object.entries(s)) if (v && typeof v === 'object') o[k] = v.name || o[k] || k } catch (e) { } return o }
 function mapRows() {
   const MS = window.MapScale, rows = [['village', null, '🏡 หมู่บ้าน', 'ตัวเอก + ชาวบ้าน + เพื่อนที่เดินในหมู่บ้าน'], ['world', null, '🌍 แผนที่โลก', 'ตัวเอกบนแผนที่โลก']];
   for (const [k, n] of Object.entries(BIOMES)) rows.push(['battle', k, '⚔ สนามรบ · ' + n, 'ตัวเอก เพื่อน มอนสเตอร์ ทุกตัวในสนาม']);
   for (const [k, n] of Object.entries(placeList())) rows.push(['place', k, '🏠 แผนที่ย่อย · ' + n, MS.has('place', k) ? 'ตั้งเอง' : 'ยังไม่ตั้ง = ตามหมู่บ้าน']);
+  for (const [k, n] of Object.entries(INTERIORS)) rows.push(['interior', k, '🚪 ภายในอาคาร · ' + n, 'ตัวเอก + ชาวบ้าน + เพื่อนในห้อง (ตัวเอกคูณค่าปรับของตัวเอกด้วย)']);
   return rows;
 }
 function renderMaps() {
@@ -277,7 +279,7 @@ function renderMaps() {
    <table class="rt" id="mapTbl"><tr><th>แผนที่</th><th>ขนาดตัวละครทั้งหมด %</th><th></th><th>หมายเหตุ</th></tr>${rows.map(([kind, id, name, note], i) => { const v = Math.round(MS.get(kind, id) * 100), own = MS.has(kind, id) || kind === 'village' || kind === 'world';
      return `<tr><td>${name}</td><td style="text-align:left"><button data-i="${i}" data-d="-5">−5</button> <button data-i="${i}" data-d="-1">−1</button> <input type="number" data-i="${i}" min="20" max="400" step="1" value="${v}" style="width:64px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:2px 4px"> <button data-i="${i}" data-d="1">+1</button> <button data-i="${i}" data-d="5">+5</button></td><td><button data-i="${i}" data-r="1" title="กลับค่าเริ่มต้น"${own ? '' : ' disabled'}>↺</button></td><td style="text-align:left;white-space:normal"><small>${note}</small></td></tr>` }).join('')}</table>
    <div class="adj"><button id="mapPush">⬆ Push ขนาดต่อแผนที่</button><button id="mapReset">↺ คืนทุกแผนที่เป็นค่าเริ่มต้น</button></div><p class="hint" id="mapMsg"></p>
-   <p class="hint">เก็บในเบราว์เซอร์นี้ทันที (เกมอ่านค่าสด) · ⬆ Push ส่งขึ้น repo ไปกับ js/game-settings.js · ใช้กับ: หมู่บ้าน (ตัวเอก ชาวบ้าน เพื่อน), แผนที่ย่อย (ตัวเอก), สนามรบแยกตามพื้นที่ (ทุกตัว), แผนที่โลก (ตัวเอก) · ค่าตั้งแยกรายตัวเดิมในหมู่บ้าน ("NPC ทุกตัว" / ขนาดรายตัว) เลิกใช้แล้ว</p>`;
+   <p class="hint">เก็บในเบราว์เซอร์นี้ทันที (เกมอ่านค่าสด) · ⬆ Push ส่งขึ้น repo ไปกับ js/game-settings.js · ใช้กับ: หมู่บ้าน (ตัวเอก ชาวบ้าน เพื่อน), แผนที่ย่อย (ตัวเอก), ภายในอาคาร (ทุกคนในห้อง), สนามรบแยกตามพื้นที่ (ทุกตัว), แผนที่โลก (ตัวเอก) · ค่าตั้งแยกรายตัวเดิมในหมู่บ้าน ("NPC ทุกตัว" / ขนาดรายตัว) เลิกใช้แล้ว</p>`;
   const set = (i, pct) => { const [kind, id] = rows[i]; MS.set(kind, id, Math.max(20, Math.min(400, Math.round(pct))) / 100) };
   st.querySelectorAll('button[data-d]').forEach(b => b.onclick = () => { const [kind, id] = rows[+b.dataset.i]; set(+b.dataset.i, MS.get(kind, id) * 100 + +b.dataset.d); renderMaps() });
   st.querySelectorAll('input[data-i]').forEach(inp => inp.onchange = () => { set(+inp.dataset.i, +inp.value || 100); renderMaps() });
