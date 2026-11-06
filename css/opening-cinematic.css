@@ -1,9 +1,9 @@
 /* Original painted opening art, references supplied by the creator. */
-#titleScreen.ag-title .ts-bg{background-image:url('../assets/intro/heroes-dawn.png');filter:none;background-position:center;animation:ag-menu-drift 30s ease-in-out infinite alternate}
+#titleScreen.ag-title .ts-bg{background-image:url('../assets/intro/heroes-dawn.png');filter:none;background-size:auto 135%;background-position:17% center;animation:ag-menu-drift 30s ease-in-out infinite alternate}
 #titleScreen.ag-title .ts-veil{background:linear-gradient(90deg,#071219f5 0%,#071219d9 25%,#07121966 50%,#0712190a 75%),linear-gradient(0deg,#071219bd,transparent 35%)}
 #titleScreen.ag-title .ts-main{align-self:flex-start;margin-left:7vw;align-items:flex-start;gap:28px;max-width:86vw}
 #titleScreen.ag-title .ts-brand{text-align:left}
-#titleScreen.ag-title .ts-brand h1{font-size:clamp(42px,6.5vw,90px);letter-spacing:.09em;font-weight:400}
+#titleScreen.ag-title .ts-brand h1{font-family:'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;font-size:clamp(42px,6.5vw,90px);letter-spacing:.14em;font-weight:400}
 #titleScreen.ag-title .ts-brand p{font-size:clamp(12px,1.3vw,17px);letter-spacing:.04em}
 #titleScreen.ag-title .ts-menu{width:min(310px,80vw)}
 #titleScreen.ag-title .ts-menu button{border-radius:0;border-width:0 0 1px;background:linear-gradient(90deg,#13262d99,transparent);padding:9px 20px 9px 36px}
@@ -51,7 +51,7 @@
 @keyframes ag-arrive{from{opacity:0;transform:translate(-50%,-40%) rotateY(-35deg) rotate(-8deg) scale(.7)}to{opacity:1;transform:translate(-50%,-50%) rotate(-4deg)}}
 @keyframes ag-dust{0%{opacity:0;transform:translate(0,0)}20%{opacity:.7}80%{opacity:.4}100%{opacity:0;transform:translate(50px,-100vh)}}
 @keyframes ag-menu-drift{to{transform:scale(1.05) translate(-.5%,0)}}
-@media(max-width:600px){.ag-card{height:43vh;width:58vw;top:42%}.ag-path{width:23vw;height:33vh}.ag-path .ag-card-no{display:none}.ag-path .ag-card-label{font-size:13px;padding:40px 3px 18px}.ag-path .ag-card-label small{font-size:9px;letter-spacing:0}.ag-controls{top:18px;left:16px;right:16px}.ag-caption{bottom:13%}.ag-chapter{font-size:8px;letter-spacing:.17em}#titleScreen.ag-title .ts-bg{background-position:61% center}#titleScreen.ag-title .ts-main{margin-left:6vw}#titleScreen.ag-title .ts-brand h1{font-size:40px}#titleScreen.ag-title .ts-main{gap:18px}}
+@media(max-width:600px){.ag-card{height:43vh;width:58vw;top:42%}.ag-path{width:23vw;height:33vh}.ag-path .ag-card-no{display:none}.ag-path .ag-card-label{font-size:13px;padding:40px 3px 18px}.ag-path .ag-card-label small{font-size:9px;letter-spacing:0}.ag-controls{top:18px;left:16px;right:16px}.ag-caption{bottom:13%}.ag-chapter{font-size:8px;letter-spacing:.17em}#titleScreen.ag-title .ts-bg{background-size:cover;background-position:61% center}#titleScreen.ag-title .ts-main{margin-left:6vw}#titleScreen.ag-title .ts-brand h1{font-size:40px}#titleScreen.ag-title .ts-main{gap:18px}}
 @media(max-height:520px){.ag-caption{bottom:7%}.ag-caption p{margin-top:4px}.ag-controls{top:12px}.ag-card{height:52vh}#titleScreen.ag-title .ts-main{gap:8px}#titleScreen.ag-title .ts-brand h1{font-size:42px;margin:5px 0}#titleScreen.ag-title .ts-menu{gap:2px}#titleScreen.ag-title .ts-menu button{padding-top:5px;padding-bottom:5px}#titleScreen.ag-title .ts-foot{bottom:5px}}
 @media(prefers-reduced-motion:reduce){#titleScreen.ag-title .ts-bg,.ag-origin,.ag-dust i{animation:none}.ag-opening *{transition:none!important}}
 
