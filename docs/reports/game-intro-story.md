@@ -19,3 +19,9 @@ The gallery now uses seven distinct 3D entry/hold/exit paths, a long readable ho
 Removed the second gift pose from playback and preload; the original gift painting now holds and zooms toward its card deck. The return shot uses that same painting. Doorway light expands from the door, reaches opaque white, then hides the painted scenes while fading away to the real menu beneath it. Background tunnel cards now show decorative backs rather than recycled scene artwork. War smoke, divine glow, dragon eye light and breath use existing raster particle textures and are clipped inside their painting; they inherit the gallery transform. The smoke/breath is an atmospheric overlay, not a newly animated dragon fire-breath action. Offline preview embeds these textures too.
 
 Chromium validation includes absence of the second gift node, 13 attached effect layers, full-opacity white during menu reveal and successful automatic menu handoff.
+
+
+## Approved painted tunnel integration
+The 26-second painted tunnel study now runs at 20/26 of its original duration: exactly 20 seconds from 10.8s to 30.8s, including the return to the card deck. Seven paintings originate at the light opening (82%, 33%), spread along distinct routes, and remain sharp. Only the painted background has a masked 5px blur at its upper and lower edges. The earlier geometric tunnel, decorative card backs and picture effects are no longer instantiated. The doorway sequence follows and the intro ends at 36.3s (excluding the maker logo).
+
+Build downloadable previews with `python3 tools/build-painted-tunnel.py` and `python3 tools/build-full-intro.py`. Browser validation covers maker-to-story playback, seven gallery panels, 20-second tunnel timing, background-only blur, deferred village loading, white doorway transition, and menu release without script errors.
