@@ -61313,7 +61313,23 @@
    "transparent": true,
    "view": "SW",
    "pose": "idle",
-   "artRevision": "mwcast2"
+   "artRevision": "mw4fxf1j",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw4fxf1j/tactics-sigrid-sw-idle.png",
+     "at": "2026-11-06T03:54:23.128Z",
+     "stamp": "mw4fxf1j",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    },
+    {
+     "file": "assets/_versions/tactics-sigrid-sw-idle/mw4fwvp9-0i69.webp",
+     "at": "2026-11-06T03:53:58.060Z",
+     "stamp": "mw4fwvp9-0i69",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-sigrid-ne-idle",
@@ -68382,7 +68398,23 @@
    "view": "SE",
    "pose": "idle",
    "usedIn": "เพื่อนร่วมทีม sigrid",
-   "artRevision": "mwcast2"
+   "artRevision": "mw4fxa65",
+   "history": [
+    {
+     "file": "assets/_versions/unified/mw4fxa65/tactics-sigrid-se-idle.png",
+     "at": "2026-11-06T03:54:16.902Z",
+     "stamp": "mw4fxa65",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    },
+    {
+     "file": "assets/_versions/tactics-sigrid-se-idle/mw4fwvp9-0i69.webp",
+     "at": "2026-11-06T03:53:58.134Z",
+     "stamp": "mw4fwvp9-0i69",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-sigrid-nw-idle",
@@ -100444,6 +100476,196 @@
     "group": "characters"
    },
    "artRevision": "mw4fgu81"
+  },
+  {
+   "id": "tactics-sigrid-sw-windup",
+   "file": "assets/tactics/sigrid_sw_windup.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "windup",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
+  },
+  {
+   "id": "tactics-sigrid-se-windup",
+   "file": "assets/tactics/sigrid_se_windup.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "windup",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
+  },
+  {
+   "id": "tactics-sigrid-sw-strike",
+   "file": "assets/tactics/sigrid_sw_strike.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "strike",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
+  },
+  {
+   "id": "tactics-sigrid-se-strike",
+   "file": "assets/tactics/sigrid_se_strike.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "strike",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
+  },
+  {
+   "id": "tactics-sigrid-sw-guard",
+   "file": "assets/tactics/sigrid_sw_guard.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "guard",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
+  },
+  {
+   "id": "tactics-sigrid-se-guard",
+   "file": "assets/tactics/sigrid_se_guard.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "guard",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
+  },
+  {
+   "id": "tactics-sigrid-sw-hit",
+   "file": "assets/tactics/sigrid_sw_hit.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "hit",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
+  },
+  {
+   "id": "tactics-sigrid-se-hit",
+   "file": "assets/tactics/sigrid_se_hit.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "hit",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
+  },
+  {
+   "id": "tactics-sigrid-sw-down",
+   "file": "assets/tactics/sigrid_sw_down.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "down",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
+  },
+  {
+   "id": "tactics-sigrid-se-down",
+   "file": "assets/tactics/sigrid_se_down.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "down",
+   "studioOwner": {
+    "id": "ally:sigrid",
+    "name": "Sigrid",
+    "group": "characters"
+   },
+   "artRevision": "20261106-105358"
   }
  ],
  "studioReviews": {
@@ -103658,6 +103880,20 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-06T03:41:20.912Z"
+  },
+  "[\"allywalk:sigrid:SE\",\"SE\",true,[[\"studio-ally-sigrid-se-walk-mw4fgu81-1\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-01.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-2\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-02.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-3\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-03.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-4\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-04.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-5\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-05.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-6\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-06.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-7\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-07.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-8\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-08.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-9\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-09.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-10\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-10.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-11\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-11.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-sigrid-se-walk-mw4fgu81-12\",\"assets/tactics/imported/ally-sigrid-walk-se-mw4fgu81/frame-12.png\",0,\"mw4fgu81\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T03:41:30.340Z"
+  },
+  "[\"tactics-sigrid-se-idle\",\"SE\",true,[[\"tactics-sigrid-se-idle\",\"assets/village-town/npc/sigrid/se-stand.webp\",0,\"20261106-105358\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-sigrid-se-idle\",\"SE\",true,[[\"tactics-sigrid-se-idle\",\"assets/village-town/npc/sigrid/se-stand.webp\",0,\"mw4fxa65\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T03:54:17.136Z"
   }
  },
  "studioClipHistory": {
@@ -104578,6 +104814,38 @@
   ],
   "static:tactics-sigrid-se-idle": [
    {
+    "at": "2026-11-06T03:54:16.902Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-sigrid-se-idle",
+       "file": "assets/village-town/npc/sigrid/se-stand.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "view": "SE",
+       "pose": "idle",
+       "usedIn": "เพื่อนร่วมทีม sigrid",
+       "artRevision": "20261106-105358",
+       "history": [
+        {
+         "file": "assets/_versions/tactics-sigrid-se-idle/mw4fwvp9-0i69.webp",
+         "at": "2026-11-06T03:53:58.134Z",
+         "stamp": "mw4fwvp9-0i69",
+         "status": "final",
+         "note": "นำเข้าชีท"
+        }
+       ]
+      },
+      "archive": "assets/_versions/unified/mw4fxa65/tactics-sigrid-se-idle.png"
+     }
+    ]
+   },
+   {
     "at": "2026-11-03T09:23:59.039Z",
     "entries": []
    }
@@ -105340,6 +105608,39 @@
        "artRevision": "v16"
       },
       "archive": "assets/_versions/unified/mw323l97/tactics-kier-nw-down.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-sigrid-sw-idle": [
+   {
+    "at": "2026-11-06T03:54:23.128Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-sigrid-sw-idle",
+       "file": "assets/village-town/npc/sigrid/sw-stand.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "view": "SW",
+       "pose": "idle",
+       "artRevision": "20261106-105358",
+       "history": [
+        {
+         "file": "assets/_versions/tactics-sigrid-sw-idle/mw4fwvp9-0i69.webp",
+         "at": "2026-11-06T03:53:58.060Z",
+         "stamp": "mw4fwvp9-0i69",
+         "status": "final",
+         "note": "นำเข้าชีท"
+        }
+       ]
+      },
+      "archive": "assets/_versions/unified/mw4fxf1j/tactics-sigrid-sw-idle.png"
      }
     ]
    }
