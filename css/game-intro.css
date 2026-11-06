@@ -16,3 +16,17 @@
 @media(max-width:600px){#storyIntro .si-window{width:90vw;height:67.5vw;left:5vw;top:calc((100% - 67.5vw)/2)}#storyIntro .si-skip,#storyIntro .si-sound{font-size:12px;padding:8px 10px;bottom:18px}}
 
 #storyIntro .si-return-card{position:absolute;left:42%;top:36%;width:16%;height:21%;border:2px solid #e4cb8d;opacity:0;box-shadow:0 0 18px #d9b56f88;background-repeat:no-repeat;will-change:transform,opacity}
+
+/* Gate light reaches white before revealing the menu beneath the overlay. */
+#storyIntro #si-gift{transform-origin:50% 44%}
+#storyIntro .si-flash{inset:auto;left:64%;top:42%;width:140vmax;height:140vmax;margin:-70vmax;background:radial-gradient(ellipse,#fff 0%,#fff 44%,#fff9e7dd 55%,transparent 70%);transform-origin:center;z-index:3}
+#storyIntro.si-menu-reveal{background:transparent}
+#storyIntro.si-menu-reveal .si-shot,#storyIntro.si-menu-reveal .si-tunnel,#storyIntro.si-menu-reveal .si-window,#storyIntro.si-menu-reveal .si-return-card{visibility:hidden}
+#storyIntro .si-depth{background:repeating-linear-gradient(45deg,#cdb27122 0 1px,transparent 1px 13px),linear-gradient(135deg,#102e3c,#293446 50%,#10232d);border:3px double #c8ab6c88}
+#storyIntro .si-depth:after{content:'';position:absolute;inset:18%;border:1px solid #d1b46c77;transform:rotate(45deg)}
+#storyIntro .si-paint{position:relative;overflow:hidden}
+#storyIntro .si-picture-fx{display:block;position:absolute;pointer-events:none;background-repeat:no-repeat;background-size:100% 100%;mix-blend-mode:screen;opacity:0;will-change:transform,opacity}
+#storyIntro .si-smoke{width:30%;height:40%;background-image:url('../assets/fx/particle/smoke.webp');filter:brightness(.5) sepia(.3);mix-blend-mode:normal}
+#storyIntro .si-aura{width:32%;height:62%;background-image:url('../assets/fx/particle/glow.webp');filter:sepia(1) saturate(.5);}
+#storyIntro .si-eye{width:4%;height:5%;background-image:url('../assets/fx/particle/glow.webp');filter:sepia(1) saturate(7)}
+#storyIntro .si-breath{width:10%;height:20%;background-image:url('../assets/fx/particle/smoke.webp');filter:sepia(1) saturate(3)}

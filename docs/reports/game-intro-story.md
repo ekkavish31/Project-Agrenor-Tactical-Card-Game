@@ -13,3 +13,9 @@ Validation: JS syntax and diff whitespace; Chromium maker-to-story transition, s
 ## Tunnel motion revision
 
 The gallery now uses seven distinct 3D entry/hold/exit paths, a long readable hold, per-scene rim glow, twelve distant painted cards, eighteen light particles and separate moving light/fog layers. Seven echo cards converge toward the returning deck. Card-entry light and the final doorway flash retain the existing 41-second timeline. Native animation tracks drive transforms/opacity; JavaScript advances the progress indicator and changes the palette at scene boundaries. Optional synthesized stereo cues are muted initially and enabled through a user gesture. Recorded ambience/music is not included. Papercraft remains an isolated experiment and is not used by this opening.
+
+## Single gift shot and doorway reveal
+
+Removed the second gift pose from playback and preload; the original gift painting now holds and zooms toward its card deck. The return shot uses that same painting. Doorway light expands from the door, reaches opaque white, then hides the painted scenes while fading away to the real menu beneath it. Background tunnel cards now show decorative backs rather than recycled scene artwork. War smoke, divine glow, dragon eye light and breath use existing raster particle textures and are clipped inside their painting; they inherit the gallery transform. The smoke/breath is an atmospheric overlay, not a newly animated dragon fire-breath action. Offline preview embeds these textures too.
+
+Chromium validation includes absence of the second gift node, 13 attached effect layers, full-opacity white during menu reveal and successful automatic menu handoff.
