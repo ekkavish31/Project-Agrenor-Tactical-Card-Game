@@ -7,7 +7,7 @@
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const main = title.querySelector('.ts-main');
     const brand = title.querySelector('.ts-brand');
-    brand.querySelector('h1').textContent = 'AGRENOR';
+    brand.querySelector('h1').textContent = 'Agrenor: Paths Unwritten';
     brand.querySelector('.ts-kicker').textContent = 'EVERY SMALL BEGINNING';
     brand.querySelector('p').textContent = 'หนึ่งจุดเริ่มต้น · เส้นทางนับไม่ถ้วน';
     title.classList.add('ag-title');
@@ -30,7 +30,7 @@
       <div class="ag-origin ag-card"><div class="ag-hero-art"></div><span class="ag-card-no">00 / THE BEGINNING</span><div class="ag-card-label">จุดเริ่มต้นเล็ก ๆ<small>เรื่องราวที่ยังไม่ได้เขียน</small></div></div></div>
       <div class="ag-dust" aria-hidden="true">${Array.from({length:16},(_,i)=>`<i style="--x:${(i*17)%100}%;--delay:${i*-.7}s"></i>`).join('')}</div>
       <div class="ag-caption"><span class="ag-chapter"></span><p aria-live="polite"></p></div>
-      <div class="ag-reveal"><span>A WORLD OF POSSIBILITIES</span><h2>AGRENOR</h2><p>เรื่องราวของเจ้า… จะเป็นเช่นไร</p></div>
+      <div class="ag-reveal"><span>A WORLD OF POSSIBILITIES</span><h2>Agrenor: Paths Unwritten</h2><p>เรื่องราวของเจ้า… จะเป็นเช่นไร</p></div>
       <div class="ag-controls"><button class="ag-sound" aria-pressed="false">เสียง: ปิด</button><button class="ag-skip">ข้ามบทเปิด <span>ESC ↗</span></button></div><div class="ag-progress"><i></i></div>`;
     title.append(opening);
     let frame = 0, elapsed = 0, last = 0, stage = -1, active = false, sound = false, audio;

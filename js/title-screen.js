@@ -84,7 +84,7 @@ const byCategory=(...cats)=>manifest().filter(a=>cats.includes(a.category)).map(
 const uniq=list=>[...new Set(list.filter(Boolean))];
 function heroFrames(){const t=root.TACTICS_SPRITES;if(!t?.directions)return[];const out=[];for(const p of Object.values(t.directions))for(const f of Object.values(p).flat())if(f?.src)out.push(f.src);return out}
 const VILLAGE=['grass','paving','soil','meadow-details','garden-pond','props','fountain','player-house','inn','guild','healer','shop','market','temple','forge'].map(f=>'assets/village-town/'+f+'.png').concat(['broadleaf','pine','old-oak'].map(f=>'assets/village-town/nature/'+f+'.webp'));
-function villageSet(){return uniq([...VILLAGE,...heroFrames(),'assets/hero.webp','assets/home.webp','assets/market.webp','assets/workshop.webp',...['bag','upgrade','map','develop'].map(k=>'assets/ui-'+k+'.webp'),'assets/audio/bgm/bgm-village-01.mp3'])}
+function villageSet(){return uniq([...VILLAGE,...heroFrames(),'assets/hero.webp','assets/home.webp','assets/market.webp','assets/workshop.webp',...['bag','upgrade','map','develop'].map(k=>'assets/ui-'+k+'.webp'),'assets/audio/bgm/bgm-village-festival-01.mp3'])}
 // what a battle draws the moment it opens (measured: hero/ally frames, weapons, props, hand cards) — the loader waits for these
 function battleCore(){return uniq(byCategory('tactics-hero','tactics-equipment','tactics-props','tactic-cards','allies','battle-scenery'))}
 // the rest of the battle art — fetched quietly in the background after the village is up
@@ -143,7 +143,7 @@ function checkGitHub(el){const box=el.querySelector('.ts-gh'),repo=root.GAME_VER
   const num=x=>{const m=String(x).match(/(\d+)(?:\.(\d+))?/);return m?+m[1]*10000+(+m[2]||0):0},same=!v||num(v)<=num(VERSION);box.textContent=same?(v&&num(v)===num(VERSION)?`· ล่าสุดแล้ว (${sha})`:`· GitHub ${v||'—'} (${sha})`)+` · อัปเดต ${when}`:`· มีเวอร์ชันใหม่ ${v} (${sha}) — กด Ctrl+F5 เพื่อโหลดใหม่`;box.classList.toggle('ts-gh-new',!same);box.title=msg.split('\n')[0]}).catch(()=>{box.textContent=''})}
 function buildTitle(){const el=document.createElement('div');el.id='titleScreen';el.className='ts';
  el.innerHTML=`<div class="ts-bg"></div><div class="ts-veil"></div><div class="ts-motes" aria-hidden="true">${'<i></i>'.repeat(18)}</div>
- <div class="ts-main"><div class="ts-brand"><span class="ts-kicker">AGRENOR · TACTICAL CARD ADVENTURE</span><h1>Project A</h1><p>ไพ่และการผจญภัย</p></div>
+ <div class="ts-main"><div class="ts-brand"><span class="ts-kicker">AGRENOR · TACTICAL CARD ADVENTURE</span><h1>Agrenor: Paths Unwritten</h1><p>ไพ่และการผจญภัย</p></div>
  <nav class="ts-menu" aria-label="เมนูหลัก">
   <button data-act="new"><span>New Game</span><small>เริ่มเกมใหม่</small></button>
   <button data-act="continue" ${hasSave?'':'disabled hidden'}><span>Continue</span><small>${hasSave?saveSummary():'ยังไม่มีเซฟ'}</small></button>
