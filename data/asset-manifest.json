@@ -9220,8 +9220,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "mw0vmq71",
+   "artRevision": "20261106-133227",
    "history": [
+    {
+     "file": "assets/_versions/tactics-luna-se-windup/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:41.912Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/unified/mw0vmq71/tactics-luna-se-windup.png",
      "at": "2026-11-03T16:02:53.421Z",
@@ -9245,8 +9252,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "mw0vmm1z",
+   "artRevision": "20261106-133227",
    "history": [
+    {
+     "file": "assets/_versions/tactics-luna-sw-windup/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:41.877Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/unified/mw0vmm1z/tactics-luna-sw-windup.png",
      "at": "2026-11-03T16:02:48.063Z",
@@ -9270,7 +9284,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "20261106-133227",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-se-strike/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:42.029Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-sw-strike",
@@ -9286,8 +9309,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "mw0vms6b",
+   "artRevision": "20261106-133227",
    "history": [
+    {
+     "file": "assets/_versions/tactics-luna-sw-strike/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:41.961Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/unified/mw0vms6b/tactics-luna-sw-strike.png",
      "at": "2026-11-03T16:02:56.006Z",
@@ -9311,7 +9341,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "20261106-133227",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-se-guard/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:42.139Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-sw-guard",
@@ -9327,7 +9366,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "20261106-133227",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-sw-guard/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:42.075Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-se-hit",
@@ -9343,7 +9391,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "20261106-133227",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-se-hit/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:42.233Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-sw-hit",
@@ -9359,7 +9416,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "20261106-133227",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-sw-hit/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:42.182Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-se-down",
@@ -9375,7 +9441,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-right (SE), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "20261106-133227",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-se-down/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:42.325Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-sw-down",
@@ -9391,7 +9466,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing down-left (SW), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "20261106-133227",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-sw-down/mw4ljq4h-v3p5.webp",
+     "at": "2026-11-06T06:31:42.277Z",
+     "stamp": "mw4ljq4h-v3p5",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-ne-idle",
@@ -9407,8 +9491,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "mwcast2",
+   "artRevision": "20261106-133213",
    "history": [
+    {
+     "file": "assets/_versions/tactics-luna-ne-idle/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:12.969Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/unified/mw02v1gy/tactics-luna-ne-idle.png",
      "at": "2026-11-03T02:37:32.482Z",
@@ -9434,8 +9525,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"idle\" (standing ready), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "mwcast2",
+   "artRevision": "20261106-133213",
    "history": [
+    {
+     "file": "assets/_versions/tactics-luna-nw-idle/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:13.040Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/unified/mw02uzaw/tactics-luna-nw-idle.png",
      "at": "2026-11-03T02:37:29.688Z",
@@ -9461,8 +9559,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "mw0vmp2q",
+   "artRevision": "20261106-133213",
    "history": [
+    {
+     "file": "assets/_versions/tactics-luna-ne-windup/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:13.116Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/unified/mw0vmp2q/tactics-luna-ne-windup.png",
      "at": "2026-11-03T16:02:51.995Z",
@@ -9486,8 +9591,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "mw0vmnpf",
+   "artRevision": "20261106-133213",
    "history": [
+    {
+     "file": "assets/_versions/tactics-luna-nw-windup/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:13.234Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/unified/mw0vmnpf/tactics-luna-nw-windup.png",
      "at": "2026-11-03T16:02:50.203Z",
@@ -9511,7 +9623,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "20261106-133213",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-ne-strike/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:13.317Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-nw-strike",
@@ -9527,7 +9648,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"strike\" (mid-strike, arm fully extended), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-strike. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "20261106-133213",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-nw-strike/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:13.603Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-ne-guard",
@@ -9543,7 +9673,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "20261106-133213",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-ne-guard/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:13.709Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-nw-guard",
@@ -9559,7 +9698,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"guard\" (guarding, braced), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-guard. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "20261106-133213",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-nw-guard/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:13.824Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-ne-hit",
@@ -9575,7 +9723,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "20261106-133213",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-ne-hit/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:13.926Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-nw-hit",
@@ -9591,7 +9748,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"hit\" (recoiling from a hit), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-hit. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "20261106-133214",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-nw-hit/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:14.053Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-ne-down",
@@ -9607,7 +9773,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-right (NE, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "v16"
+   "artRevision": "20261106-133214",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-ne-down/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:14.188Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-luna-nw-down",
@@ -9623,7 +9798,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Luna, a young female mage with a violet hood, grid-battle sprite facing up-left (NW, back view), pose \"down\" (knocked down on the ground), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-nw-down. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม luna ในสนาม",
    "note": "ภาพกลับด้านจาก NE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "v16"
+   "artRevision": "20261106-133214",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-luna-nw-down/mw4lke3k-07cw.webp",
+     "at": "2026-11-06T06:32:14.357Z",
+     "stamp": "mw4lke3k-07cw",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-bram-se-idle",
@@ -105404,7 +105588,7 @@
   "[\"tactics-luna-sw-idle\",\"SW\",true,[[\"tactics-luna-sw-idle\",\"assets/tactics/luna_sw_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-04T11:50:31.627Z"
+   "approvedAt": "2026-11-06T06:32:49.856Z"
   },
   "[\"tactics-luna-nw-idle\",\"NW\",true,[[\"tactics-luna-nw-idle\",\"assets/tactics/luna_nw_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -105419,7 +105603,7 @@
   "[\"tactics-luna-se-idle\",\"SE\",true,[[\"tactics-luna-se-idle\",\"assets/tactics/luna_se_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-04T11:50:36.506Z"
+   "approvedAt": "2026-11-06T06:32:49.856Z"
   },
   "[\"tactics-mil-sw-idle\",\"SW\",true,[[\"tactics-mil-sw-idle\",\"assets/tactics/mil_sw_idle.webp\",0,\"mwcast2\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -105927,12 +106111,12 @@
   "[\"allywalk:luna:SW\",\"SW\",true,[[\"studio-ally-luna-sw-walk-mw2xcjy3-1\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-01.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-2\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-02.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-3\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-03.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-4\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-04.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-5\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-05.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-6\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-06.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-7\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-07.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-8\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-08.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-9\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-09.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-10\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-10.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-11\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-11.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-sw-walk-mw2xcjy3-12\",\"assets/tactics/imported/ally-luna-walk-sw-mw2xcjy3/frame-12.png\",0,\"mw2xcjy3\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-05T02:26:31.210Z"
+   "approvedAt": "2026-11-06T06:32:49.856Z"
   },
   "[\"allywalk:luna:SE\",\"SE\",true,[[\"studio-ally-luna-se-walk-mw2xcorg-1\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-01.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-2\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-02.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-3\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-03.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-4\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-04.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-5\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-05.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-6\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-06.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-7\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-07.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-8\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-08.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-9\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-09.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-10\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-10.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-11\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-11.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-se-walk-mw2xcorg-12\",\"assets/tactics/imported/ally-luna-walk-se-mw2xcorg/frame-12.png\",0,\"mw2xcorg\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-05T02:26:37.523Z"
+   "approvedAt": "2026-11-06T06:32:49.856Z"
   },
   "[\"allywalk:luna:NW\",\"NW\",true,[[\"studio-ally-luna-nw-walk-mw2xcrmb-1\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-01.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-2\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-02.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-3\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-03.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-4\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-04.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-5\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-05.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-6\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-06.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-7\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-07.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-8\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-08.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-9\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-09.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-10\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-10.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-11\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-11.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xcrmb-12\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xcrmb/frame-12.png\",0,\"mw2xcrmb\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
@@ -105942,12 +106126,12 @@
   "[\"allywalk:luna:NE\",\"NE\",true,[[\"studio-ally-luna-ne-walk-mw2xcv5u-1\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-01.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-2\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-02.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-3\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-03.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-4\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-04.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-5\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-05.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-6\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-06.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-7\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-07.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-8\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-08.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-9\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-09.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-10\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-10.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-11\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-11.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-ne-walk-mw2xcv5u-12\",\"assets/tactics/imported/ally-luna-walk-ne-mw2xcv5u/frame-12.png\",0,\"mw2xcv5u\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-05T02:26:46.493Z"
+   "approvedAt": "2026-11-06T06:32:49.856Z"
   },
   "[\"allywalk:luna:NW\",\"NW\",true,[[\"studio-ally-luna-nw-walk-mw2xd2ow-1\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-01.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-2\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-02.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-3\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-03.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-4\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-04.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-5\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-05.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-6\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-06.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-7\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-07.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-8\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-08.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-9\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-09.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-10\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-10.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-11\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-11.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-luna-nw-walk-mw2xd2ow-12\",\"assets/tactics/imported/ally-luna-walk-nw-mw2xd2ow/frame-12.png\",0,\"mw2xd2ow\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-05T02:26:55.636Z"
+   "approvedAt": "2026-11-06T06:32:49.856Z"
   },
   "[\"allywalk:mil:SW\",\"SW\",true,[[\"studio-ally-mil-sw-walk-mwwalk12-1\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-01.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-2\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-02.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-3\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-03.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-4\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-04.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-5\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-05.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-6\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-06.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-7\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-07.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-8\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-08.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-9\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-09.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-10\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-10.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-11\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-11.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mil-sw-walk-mwwalk12-12\",\"assets/tactics/imported/ally-mil-walk-sw-mwwalk12/frame-12.png\",0,\"mwwalk12\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
@@ -106934,6 +107118,116 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-06T06:27:14.162Z"
+  },
+  "[\"tactics-luna-se-windup\",\"SE\",true,[[\"tactics-luna-se-windup\",\"assets/tactics/luna_se_windup.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-sw-windup\",\"SW\",true,[[\"tactics-luna-sw-windup\",\"assets/tactics/luna_sw_windup.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-se-strike\",\"SE\",true,[[\"tactics-luna-se-strike\",\"assets/tactics/luna_se_strike.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-sw-strike\",\"SW\",true,[[\"tactics-luna-sw-strike\",\"assets/tactics/luna_sw_strike.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-se-guard\",\"SE\",true,[[\"tactics-luna-se-guard\",\"assets/tactics/luna_se_guard.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-sw-guard\",\"SW\",true,[[\"tactics-luna-sw-guard\",\"assets/tactics/luna_sw_guard.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-se-hit\",\"SE\",true,[[\"tactics-luna-se-hit\",\"assets/tactics/luna_se_hit.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-sw-hit\",\"SW\",true,[[\"tactics-luna-sw-hit\",\"assets/tactics/luna_sw_hit.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-se-down\",\"SE\",true,[[\"tactics-luna-se-down\",\"assets/tactics/luna_se_down.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-sw-down\",\"SW\",true,[[\"tactics-luna-sw-down\",\"assets/tactics/luna_sw_down.webp\",0,\"20261106-133227\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-ne-idle\",\"NE\",true,[[\"tactics-luna-ne-idle\",\"assets/tactics/luna_ne_idle.webp\",0,\"20261106-133213\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-nw-idle\",\"NW\",true,[[\"tactics-luna-nw-idle\",\"assets/tactics/luna_nw_idle.webp\",0,\"20261106-133213\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-ne-windup\",\"NE\",true,[[\"tactics-luna-ne-windup\",\"assets/tactics/luna_ne_windup.webp\",0,\"20261106-133213\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-nw-windup\",\"NW\",true,[[\"tactics-luna-nw-windup\",\"assets/tactics/luna_nw_windup.webp\",0,\"20261106-133213\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-ne-strike\",\"NE\",true,[[\"tactics-luna-ne-strike\",\"assets/tactics/luna_ne_strike.webp\",0,\"20261106-133213\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-nw-strike\",\"NW\",true,[[\"tactics-luna-nw-strike\",\"assets/tactics/luna_nw_strike.webp\",0,\"20261106-133213\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-ne-guard\",\"NE\",true,[[\"tactics-luna-ne-guard\",\"assets/tactics/luna_ne_guard.webp\",0,\"20261106-133213\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-nw-guard\",\"NW\",true,[[\"tactics-luna-nw-guard\",\"assets/tactics/luna_nw_guard.webp\",0,\"20261106-133213\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-ne-hit\",\"NE\",true,[[\"tactics-luna-ne-hit\",\"assets/tactics/luna_ne_hit.webp\",0,\"20261106-133213\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-nw-hit\",\"NW\",true,[[\"tactics-luna-nw-hit\",\"assets/tactics/luna_nw_hit.webp\",0,\"20261106-133214\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-ne-down\",\"NE\",true,[[\"tactics-luna-ne-down\",\"assets/tactics/luna_ne_down.webp\",0,\"20261106-133214\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
+  },
+  "[\"tactics-luna-nw-down\",\"NW\",true,[[\"tactics-luna-nw-down\",\"assets/tactics/luna_nw_down.webp\",0,\"20261106-133214\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-06T06:32:49.856Z"
   }
  },
  "studioClipHistory": {
