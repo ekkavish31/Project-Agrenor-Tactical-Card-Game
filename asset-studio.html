@@ -71,6 +71,11 @@ dialog{border:2px solid var(--line);border-radius:12px;background:var(--paper);c
 #picker .pb{padding:8px 14px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
 .back{font-size:12px;margin-bottom:6px}
 .empty{grid-column:1/-1;padding:30px;text-align:center;opacity:.7}
+.bulk-delete-bar{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px;padding:8px;border:1px solid #b99b64;border-radius:8px;background:#f3e5c7}
+.bulk-delete-bar small{flex-basis:100%;opacity:.75}
+.itile.bulk-selected{border-color:#a8402f;box-shadow:0 0 0 3px #a8402f44}
+.bulk-check{position:absolute;z-index:2;right:8px;top:8px;width:23px;height:23px;margin:0;accent-color:#a8402f;cursor:pointer}
+.bulk-ineligible{position:absolute;right:8px;top:8px;font-size:15px;opacity:.55}
 
 .loose-bar{display:flex;gap:12px;align-items:center;margin:8px 0}.loose-bar input{flex:1;max-width:340px}
 .loose-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}.loose-chips button{font-size:12px;padding:4px 9px;border-radius:999px}.loose-chips button.on{background:#c9a45a;color:#1d1608;border-color:#e6c47c}.loose-chips i,.loose-sec summary i{font-style:normal;opacity:.7;font-size:11px;margin-left:3px}
@@ -120,7 +125,7 @@ const ZONES=[
  {id:'ui',name:'🖥 UI & ไอคอน',cats:['ui','ui-packs','elements','cursors','textures']}];
 {let known=new Set(ZONES.flatMap(z=>z.cats)),extra=[...new Set(M.assets.map(a=>a.category))].filter(c=>!known.has(c));if(extra.length)ZONES.push({id:'other',name:'📦 อื่น ๆ',cats:extra})}
 const zoneOf=cat=>ZONES.find(z=>z.cats.includes(cat))||ZONES[ZONES.length-1];
-let tab='slots',zone='all',sub='all',filter='all',query='',sel=null,lkind='all',selected=null;
+let tab='slots',zone='all',sub='all',filter='all',query='',sel=null,lkind='all',selected=null,bulkDeleteMode=false,bulkDeleteSelected=new Set();
 const exportedFiles=window.StudioExportedFiles=new Map();
 const pending=new Map(); // id -> {blob,url,status,canvas}  (only when no folder is connected)
 let dir=null,scanned=null;
@@ -235,6 +240,59 @@ function setStamps(clip){let m=new Map();for(let f of clipFrames(clip))for(let h
 function setTile(clip){let fr=clipFrames(clip),a=fr[0],st=[...new Set(fr.map(f=>f.status))],on=sel?.t==='set'&&sel.clip===clip,nv=setStamps(clip).length;
  return `<div class="stile ${on?'sel':''}" data-clip="${esc(clip)}">${thumbOf(a,`<span class="stack">🎞 ${fr.length} เฟรม${nv?' · 🕘 '+nv:''}</span>`)}<b>ชุดท่า ${esc(clip)}</b><small>${esc(where(a).replace(/ · เฟรม.*$/,''))}</small><div class="badges">${st.map(s=>`<span class="badge s-${s}">${SHORT[s]||s}</span>`).join('')}</div></div>`}
 function libFiltered(kinds){return library().filter(x=>kinds.includes(x.kind)&&(lkind==='all'||x.kind===lkind)&&(!query||(x.path+' '+(x.slot?x.slot.id+' '+where(x.slot):'')+' '+(x.label||'')).toLowerCase().includes(query)))}
+const bulkDeletable=x=>['version','retired','loose'].includes(x.kind)&&/^assets\/(?!.*(?:^|\/)\.\.(?:\/|$))[^\\]+$/.test(x.path||'');
+function bulkDeleteBar(items){
+ const choices=new Set(items.filter(bulkDeletable).map(x=>x.path)),selected=bulkDeleteSelected.size;
+ return `<div class="bulk-delete-bar"><button type="button" id="bulkDeleteToggle" aria-pressed="${bulkDeleteMode}">${bulkDeleteMode?'☑ เลือกหลายภาพ: เปิด':'☐ เลือกหลายภาพ'}</button>${bulkDeleteMode?`<b>เลือก ${selected} ภาพ</b><button type="button" id="bulkSelectVisible" ${choices.size?'':'disabled'}>เลือกที่แสดง (${choices.size})</button><button type="button" id="bulkClear">ล้างที่เลือก</button><button type="button" id="bulkDelete" class="danger" ${selected?'':'disabled'}>🗑 ลบที่เลือก (${selected})</button><small>เลือกได้เฉพาะภาพเวอร์ชันเก่า ภาพชุดเลิกใช้ และไฟล์นอกรายการ · ภาพที่ยังใช้งานอยู่เลือกไม่ได้ · รายการลบจะเข้าคิว GitHub จนกด Push · ไฟล์นอกรายการอาจถูกเรียกจากโค้ดโดยตรง</small>`:''}</div>`;
+}
+function bindBulkDelete(items){
+ const toggle=$('bulkDeleteToggle'),all=$('bulkSelectVisible'),clear=$('bulkClear'),del=$('bulkDelete');
+ if(toggle)toggle.onclick=()=>{bulkDeleteMode=!bulkDeleteMode;if(!bulkDeleteMode)bulkDeleteSelected.clear();render()};
+ if(all)all.onclick=()=>{items.filter(bulkDeletable).forEach(x=>bulkDeleteSelected.add(x.path));render()};
+ if(clear)clear.onclick=()=>{bulkDeleteSelected.clear();render()};
+ if(del)del.onclick=()=>deleteLibrarySelection();
+ const byPath=new Map(items.filter(bulkDeletable).map(x=>[x.path,x]));
+ $('grid').querySelectorAll('.itile[data-k]').forEach(tile=>{
+  const path=tile.dataset.k,x=byPath.get(path);
+  if(!bulkDeleteMode){tile.onclick=()=>openImg(path);return}
+  if(!x){const mark=document.createElement('span');mark.className='bulk-ineligible';mark.title='ภาพที่ยังใช้งานอยู่หรือไม่ใช่ไฟล์ใน repo เลือกลบเป็นชุดไม่ได้';mark.textContent='🔒';tile.append(mark);tile.onclick=()=>toast('ภาพที่ยังใช้งานอยู่หรือไฟล์ที่ไม่ใช่ของ repo เลือกลบเป็นชุดไม่ได้');return}
+  tile.classList.toggle('bulk-selected',bulkDeleteSelected.has(path));
+  const check=document.createElement('input');check.type='checkbox';check.className='bulk-check';check.checked=bulkDeleteSelected.has(path);check.setAttribute('aria-label','เลือก '+path);check.onclick=e=>e.stopPropagation();check.onchange=()=>{check.checked?bulkDeleteSelected.add(path):bulkDeleteSelected.delete(path);render()};tile.prepend(check);
+  tile.onclick=()=>{bulkDeleteSelected.has(path)?bulkDeleteSelected.delete(path):bulkDeleteSelected.add(path);render()};
+ });
+}
+async function deleteLibrarySelection(){
+ if(!dir)return needFolder();
+ const byPath=new Map(library().filter(bulkDeletable).map(x=>[x.path,x])),items=[...bulkDeleteSelected].map(p=>byPath.get(p)).filter(Boolean);
+ if(!items.length){bulkDeleteSelected.clear();render();return}
+ const versionItems=items.filter(x=>x.kind==='version'&&x.slot?.history?.some(h=>h.file===x.path));
+ const versionPaths=new Set(versionItems.map(x=>x.path)),versionBySlot=new Map();
+ for(const x of versionItems){if(!versionBySlot.has(x.slot.id))versionBySlot.set(x.slot.id,new Set());versionBySlot.get(x.slot.id).add(x.path)}
+ const retired=items.filter(x=>x.kind==='retired'&&x.slot?.status==='unused'&&x.slot.file===x.path);
+ const retiredIds=new Set(retired.map(x=>x.slot.id));
+ const loose=items.filter(x=>x.kind==='loose'&&!M.assets.some(a=>a.file===x.path||(a.history||[]).some(h=>h.file===x.path)));
+ const isVersionSelected=x=>versionBySlot.get(x.slot?.id)?.has(x.path);
+ const stale=items.filter(x=>!isVersionSelected(x)&&!retired.some(r=>r.path===x.path)&&!loose.some(l=>l.path===x.path));
+ const candidates=new Set([...versionPaths,...loose.map(x=>x.path)]);
+ const removedSlots=M.assets.filter(a=>retiredIds.has(a.id));
+ for(const a of removedSlots){if(a.file)candidates.add(a.file);for(const h of a.history||[])if(h.file)candidates.add(h.file)}
+ if(!candidates.size&&!removedSlots.length){toast('รายการที่เลือกเปลี่ยนไปแล้ว · รีเฟรชคลังก่อน');bulkDeleteSelected.clear();render();return}
+ const backup=JSON.parse(JSON.stringify(M)),removedHistory=removedSlots.flatMap(a=>(a.history||[]).map(h=>h.file));
+ M.assets=M.assets.filter(a=>!retiredIds.has(a.id));
+ for(const a of M.assets){const selected=versionBySlot.get(a.id);if(!selected||!a.history?.some(h=>selected.has(h.file)))continue;removedHistory.push(...a.history.filter(h=>selected.has(h.file)).map(h=>h.file));a.history=a.history.filter(h=>!selected.has(h.file));if(!a.history.length)delete a.history}
+ const referenced=new Set(M.assets.flatMap(a=>[a.file,...(a.history||[]).map(h=>h.file)].filter(Boolean)));
+ const remove=[...candidates].filter(p=>!referenced.has(p));
+ const prompt=`ลบภาพที่เลือก ${items.length} รายการ?\n\nไฟล์ที่จะเข้าคิวลบ (${remove.length}):\n${remove.length?remove.join('\n'):'ไม่มี — ไฟล์ยังถูกอ้างถึงจาก Asset อื่น'}\n\n• ไฟล์ที่ Asset อื่นยังอ้างถึงจะไม่ถูกลบ\n${items.some(x=>x.kind==='loose')?'• ไฟล์นอกรายการอาจถูกเรียกใช้ตรงจากโค้ด ซึ่งตรวจอัตโนมัติไม่ได้\\n':''}• การลบจะเข้าคิว GitHub ในเบราว์เซอร์นี้ ยังไม่เปลี่ยน repo จนกด Push\n• จะตัด ${retiredIds.size} ช่องที่เลิกใช้ และ ${new Set(removedHistory.filter(Boolean)).size} ประวัติเก่าออกจาก manifest`;
+ if(!confirm(prompt)){Object.assign(M,backup);return}
+ try{
+  if(retiredIds.size||removedHistory.length)await saveManifest();
+ }catch(e){for(const k of Object.keys(M))delete M[k];Object.assign(M,backup);alert('อัปเดต manifest ไม่สำเร็จ จึงยังไม่จัดคิวลบไฟล์: '+(e.message||e));return}
+ const failed=[];let deleted=0;
+ for(const path of remove){try{await queue(()=>removeFile(path));deleted++}catch(e){if(e.name==='NotFoundError'){scanned?.delete(path);deleted++}else failed.push({path,error:e.message||String(e)})}}
+ bulkDeleteSelected.clear();bulkDeleteMode=false;sel=null;render();detail();
+ toast(`จัดคิวลบ ${deleted} ไฟล์ · เอาออกจากรายการ ${retiredIds.size} Asset / ${new Set(removedHistory.filter(Boolean)).size} เวอร์ชัน${stale.length?` · ข้ามรายการเก่า ${stale.length}`:''}${failed.length?` · ล้มเหลว ${failed.length}: ${failed[0].path}`:' · ยังไม่ Push'}`);
+ if(failed.length)alert('ลบไฟล์บางรายการไม่สำเร็จ:\n'+failed.map(x=>x.path+' — '+x.error).join('\n')+'\n\nรายการที่เหลือยังอยู่ใน repo');
+}
 function imgTile(x){let on=sel?.t==='img'&&sel.key===x.key,s=x.slot;
  let title=x.kind==='cardstudio'?x.label:s?s.id:x.path.split('/').pop(),info=x.kind==='version'?(x.h?fmtAt(x.h.at):'ไฟล์เวอร์ชัน'):x.kind==='cardstudio'?'อัปโหลดในการ์ด':s?where(s):x.path;
  return `<div class="itile ${on?'sel':''}" data-k="${esc(x.key)}"><div class="thumb">${imgTag(x.path)}</div><b title="${esc(title)}">${esc(title)}</b><small title="${esc(info)}">${esc(info)}</small><div class="badges"><span class="badge k-${x.kind}">${KIND[x.kind]}</span></div></div>`}
@@ -242,16 +300,16 @@ function renderLibrary(){let all=library(),c={};for(let x of all)c[x.kind]=(c[x.
  let kinds=['active','version','retired','loose','cardstudio'];
  $('cats').innerHTML='<h4>ประเภทภาพ</h4>'+navBtn(lkind==='all','data-k="all"','ทุกภาพ',all.length)+kinds.filter(k=>c[k]||k==='loose').map(k=>navBtn(lkind===k,`data-k="${k}"`,KIND[k],c[k]||0)).join('')+(dir?'':'<p class="muted">เชื่อมโฟลเดอร์เกมเพื่อเห็นไฟล์ "นอกรายการ" (ไฟล์ที่มีในโฟลเดอร์แต่ไม่ได้อยู่ในรายการช่อง)</p>');
  $('cats').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{lkind=b.dataset.k;render()});
- $('filters').innerHTML='<span class="muted">คลิกภาพ → <b>ใช้กับช่อง…</b> เพื่อเอาไปใส่จุดที่ต้องการ</span>';
+ $('filters').innerHTML='<span class="muted">คลิกภาพ → <b>ใช้กับช่อง…</b> เพื่อเอาไปใส่จุดที่ต้องการ</span>'+bulkDeleteBar(libFiltered(kinds));
  let items=libFiltered(kinds),out='',last=null;
  for(let x of items){let g=x.slot?crumb(x.slot):x.kind==='cardstudio'?'Card Studio':'ไฟล์นอกรายการ';if(g!==last){last=g;out+=`<div class="ghead">${esc(g)}</div>`}out+=imgTile(x)}
  $('grid').innerHTML=out||'<div class="empty">ไม่มีภาพในหมวดนี้</div>';
- $('grid').querySelectorAll('.itile').forEach(t=>t.onclick=()=>openImg(t.dataset.k))}
+ bindBulkDelete(items)}
 function renderRetired(){let all=library().filter(x=>x.kind==='version'||x.kind==='retired');
  let nv=all.filter(x=>x.kind==='version').length,nr=all.length-nv;
  $('cats').innerHTML='<h4>ภาพที่เลิกใช้</h4>'+navBtn(lkind==='all'||!['version','retired'].includes(lkind),'data-k="all"','ทั้งหมด',all.length)+navBtn(lkind==='version','data-k="version"','ภาพที่ถูกแทนที่',nv)+navBtn(lkind==='retired','data-k="retired"','ชุดท่าที่เกมไม่ใช้แล้ว',nr)+'<p class="muted">ภาพที่ถูกแทนที่เก็บอยู่ใน assets/_versions/ — กู้กลับได้ทุกเมื่อ หรือลบถาวรเพื่อลดขนาดเกม</p>';
  $('cats').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{lkind=b.dataset.k;render()});
- $('filters').innerHTML='';
+ $('filters').innerHTML=bulkDeleteBar(libFiltered(['version','retired']));
  let k=['version','retired'].includes(lkind)?[lkind]:['version','retired'],items=libFiltered(k),out='';
  let vers=items.filter(x=>x.kind==='version');
  if(vers.length){out+=`<div class="ghead">ภาพที่ถูกแทนที่ <small>${vers.length} ภาพ · เรียงตามช่อง ใหม่สุดก่อน</small></div>`;let by=new Map();for(let x of vers){let id=x.slot?.id||'?';if(!by.has(id))by.set(id,[]);by.get(id).push(x)}
@@ -261,7 +319,7 @@ function renderRetired(){let all=library().filter(x=>x.kind==='version'||x.kind=
   for(let [g,xs] of by){out+=`<div class="ghead">เลิกใช้: ${esc(g)} <small>${xs.length} ภาพ · ${esc(xs[0].slot.note||'')}</small></div>`+xs.map(imgTile).join('')}}
  if(!vers.length&&k.includes('version')&&!query)out=`<div class="empty" style="grid-column:1/-1">ยังไม่มีภาพที่ถูกแทนที่ — ตั้งแต่นี้ไป ทุกครั้งที่เปลี่ยนภาพในช่อง ภาพเดิมจะมาอยู่ที่นี่</div>`+out;
  $('grid').innerHTML=out||'<div class="empty">ไม่มีภาพ</div>';
- $('grid').querySelectorAll('.itile').forEach(t=>t.onclick=()=>openImg(t.dataset.k))}
+ bindBulkDelete(items)}
 // ---------- navigation ----------
 function openSlot(id){sel={t:'slot',id};selected=id;markSel();detail()}
 function openSet(clip){sel={t:'set',clip};selected=clipFrames(clip)[0]?.id;markSel();detail()}
