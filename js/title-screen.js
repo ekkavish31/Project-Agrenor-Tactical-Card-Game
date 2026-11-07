@@ -200,7 +200,7 @@ function tab(id){const box=title.querySelector('.ts-extra-body');title.querySele
 /* ---------- prologue ---------- */
 let page=-1,art=null;
 function artPlayer(st){if(art)return art;const c=st.querySelector('.ts-story-art');if(!c||!root.SceneArt)return null;art=root.SceneArt.create(c);return art}
-function story(){busyTitle=true;const st=title.querySelector('.ts-story');st.hidden=false;title.classList.add('ts-in-story');page=-1;busyTitle=false;
+function story(){busyTitle=true;const st=title.querySelector('.ts-story');layersOf(st).forEach(o=>o.remove());curImg=null;st.hidden=false;title.classList.add('ts-in-story');page=-1;busyTitle=false;
  st.onclick=e=>{if(e.target.closest('.ts-skip,.ts-name'))return;next()};
  st.onkeydown=e=>{if(e.target.closest('.ts-name'))return;if(e.key==='Enter'||e.key===' '){e.preventDefault();next()}else if(e.key==='Escape'){e.preventDefault();storyEnd()}};
  st.tabIndex=-1;st.focus();next()}
@@ -214,8 +214,25 @@ function pauseAfter(w){if(/^\s+$/.test(w))return PACE.space;let p=Math.min(PACE.
 /* v98.179 · prologue pages use the shared DialogueFX typer (rapid typing + voice, split at sentence ends if a page would overflow) instead of the per-word CSS fade */
 let TS=null;
 function reveal(box,text){TS?.stop();box.innerHTML='';box.classList.add('ts-all');TS=root.DialogueFX.create(box,{maxLines:7,voice:null});TS.load([String(text)]);TS.start()}
+/* v98.187 · New Game pictures are stacked layers (one per page). A new layer plays a mood transition (fx-* in css/title-screen.css) over the previous one;
+   when it finishes the old layers go. A page without a picture shows the "Waiting for Pic" board. The old SceneArt path is kept for the legacy prologue and the BRIDGE page. */
+let curImg=null;
+const layersOf=st=>[...st.querySelectorAll('.ts-story-layer')];
+function placeholderHTML(label){return '<div class="ts-wait"><b>Waiting for Pic</b><small>'+esc(label||'')+'</small></div>'}
 function showPage(p){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text'),bg=st.querySelector('.ts-story-bg'),pa=artPlayer(st);
- if(pa&&p.art&&pa.show(p.art)){bg.style.backgroundImage='none';bg.classList.remove('ts-pan')}else if(p.bg){bg.classList.remove('ts-pan');void bg.offsetWidth;bg.style.backgroundImage=`url("${p.bg}")`;bg.classList.add('ts-pan')}
+ if(p.bg||p.placeholder){
+  const key=p.placeholder?'wait:'+(p.prologueId||''):p.bg,same=key===curImg&&layersOf(st).length;
+  if(same){st.classList.remove('ts-glow');if(p.fx==='glow'&&!reduced){void st.offsetWidth;st.classList.add('ts-glow')}}
+  else{
+   pa?.stop?.();bg.style.backgroundImage='none';bg.classList.remove('ts-pan');
+   const old=layersOf(st),L=document.createElement('div'),fx=reduced?'none':(p.fx&&p.fx!=='same'&&p.fx!=='glow'?p.fx:'fade');
+   L.className='ts-story-layer fx-'+fx+(p.placeholder?' ts-layer-wait':'');
+   if(p.placeholder)L.innerHTML=placeholderHTML(p.label);else L.style.backgroundImage='url("'+p.bg+'")';
+   st.querySelector('.ts-story-veil').before(L);curImg=key;
+   const done=()=>{if(!L.isConnected)return;old.forEach(o=>o.remove());L.classList.add('fx-done')};
+   L.addEventListener('animationend',e=>{if(e.target===L&&/^fx-/.test(e.animationName))done()});setTimeout(done,fx==='none'?0:3200);
+  }
+ }else if(pa&&p.art&&pa.show(p.art)){layersOf(st).forEach(o=>o.remove());curImg=null;bg.style.backgroundImage='none';bg.classList.remove('ts-pan')}
  reveal(box,p.text)}
 function next(){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text');
  if(TS&&TS.finish())return;if(TS&&TS.hasMore()){TS.nextPage();return}// 1st press completes the typing, then each further press shows the next page of a long passage

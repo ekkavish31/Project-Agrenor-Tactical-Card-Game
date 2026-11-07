@@ -114,3 +114,68 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #titleScreen .ts-story-text.ts-all .ts-w{animation:none;opacity:1}
 @keyframes ts-word{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:none}}
 #titleScreen .ts-story-text{font-size:clamp(18px,2.3vw,25px);line-height:1.9;letter-spacing:.01em}
+
+/* v98.187 · New Game picture layers + mood transitions. --b = the resting look of a picture (same as .ts-story-bg). */
+#titleScreen .ts-story{perspective:1400px}
+#titleScreen .ts-story-layer{--b:brightness(.55) saturate(.85);position:absolute;inset:-3%;background:center/cover no-repeat;filter:var(--b);will-change:transform,opacity,filter}
+#titleScreen .ts-story-layer.fx-done{animation:ts-slow 18s ease-in-out infinite alternate}
+@keyframes ts-slow{from{transform:scale(1)}to{transform:scale(1.045) translate(-.6%,-.4%)}}
+#titleScreen .ts-story-layer:not(.fx-done){animation-duration:2s;animation-timing-function:cubic-bezier(.2,.7,.2,1);animation-fill-mode:both}
+/* fade — default */
+#titleScreen .ts-story-layer.fx-fade:not(.fx-done){animation-name:fx-fade;animation-duration:1.4s}
+@keyframes fx-fade{from{opacity:0}to{opacity:1}}
+/* bloom — golden light swells (W01 the world, Elukhor) */
+#titleScreen .ts-story-layer.fx-bloom:not(.fx-done){animation-name:fx-bloom;animation-duration:2.6s}
+@keyframes fx-bloom{0%{opacity:0;transform:scale(1.18);filter:brightness(2.6) saturate(.5) sepia(.5)}45%{opacity:1}100%{opacity:1;transform:scale(1);filter:var(--b)}}
+/* frost — cold, desaturated, settles downward (north snowlands) */
+#titleScreen .ts-story-layer.fx-frost:not(.fx-done){animation-name:fx-frost;animation-duration:2.2s}
+@keyframes fx-frost{0%{opacity:0;transform:translateY(-3%);filter:brightness(1.1) saturate(0) hue-rotate(-25deg)}100%{opacity:1;transform:none;filter:var(--b)}}
+/* wave — slides in from the sea side with a gentle sway (western isles) */
+#titleScreen .ts-story-layer.fx-wave:not(.fx-done){animation-name:fx-wave;animation-duration:2.4s}
+@keyframes fx-wave{0%{opacity:0;transform:translateX(7%) rotate(.8deg)}60%{transform:translateX(-1%) rotate(-.3deg)}100%{opacity:1;transform:none}}
+/* ember — heat flicker (southern fire lands) */
+#titleScreen .ts-story-layer.fx-ember:not(.fx-done){animation-name:fx-ember;animation-duration:2.2s;animation-timing-function:linear}
+@keyframes fx-ember{0%{opacity:0;filter:brightness(.3) sepia(1) saturate(3)}18%{opacity:1;filter:brightness(1.3) sepia(.6) saturate(2)}32%{filter:brightness(.6) sepia(.8) saturate(2)}52%{filter:brightness(1) sepia(.4) saturate(1.4)}72%{filter:brightness(.7) sepia(.2)}100%{opacity:1;filter:var(--b)}}
+/* mist — comes out of blur and darkness (the great forest) */
+#titleScreen .ts-story-layer.fx-mist:not(.fx-done){animation-name:fx-mist;animation-duration:2.8s}
+@keyframes fx-mist{0%{opacity:0;transform:scale(1.07);filter:blur(22px) brightness(.25)}100%{opacity:1;transform:scale(1);filter:var(--b)}}
+/* iris — a circle opens on a secret (legend of the ancient cities) */
+#titleScreen .ts-story-layer.fx-iris:not(.fx-done){animation-name:fx-iris;animation-duration:2.4s}
+@keyframes fx-iris{0%{clip-path:circle(0% at 50% 52%);transform:scale(1.15)}100%{clip-path:circle(78% at 50% 52%);transform:scale(1)}}
+/* focus — pulls focus on something half remembered (inscriptions) */
+#titleScreen .ts-story-layer.fx-focus:not(.fx-done){animation-name:fx-focus;animation-duration:2.6s}
+@keyframes fx-focus{0%{opacity:0;transform:scale(1.12);filter:blur(14px) brightness(.9) sepia(.5)}100%{opacity:1;transform:scale(1);filter:var(--b)}}
+/* wipe — a curtain pulled across (many peoples) */
+#titleScreen .ts-story-layer.fx-wipe:not(.fx-done){animation-name:fx-wipe;animation-duration:1.7s}
+@keyframes fx-wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+/* rise — the camera lifts over the valley (Nor'Chorthal) */
+#titleScreen .ts-story-layer.fx-rise:not(.fx-done){animation-name:fx-rise;animation-duration:2.8s}
+@keyframes fx-rise{0%{opacity:0;transform:translateY(9%) scale(1.14)}50%{opacity:1}100%{opacity:1;transform:none}}
+/* drift — the view travels along the road (cities & roads, the road to Fernvale) */
+#titleScreen .ts-story-layer.fx-drift:not(.fx-done){animation-name:fx-drift;animation-duration:2.6s}
+@keyframes fx-drift{0%{opacity:0;transform:translateX(-6%) scale(1.12)}40%{opacity:1}100%{opacity:1;transform:none}}
+/* pulse — two blue-white flashes, a circuit waking (magic cards) */
+#titleScreen .ts-story-layer.fx-pulse:not(.fx-done){animation-name:fx-pulse;animation-duration:1.9s;animation-timing-function:ease-out}
+@keyframes fx-pulse{0%{opacity:0;filter:brightness(3) hue-rotate(35deg) saturate(.4)}15%{opacity:1;filter:brightness(2.4) hue-rotate(30deg)}30%{filter:brightness(.7)}48%{filter:brightness(1.9) hue-rotate(20deg)}100%{opacity:1;filter:var(--b)}}
+/* page — a page of an old book turns (the history people are taught) */
+#titleScreen .ts-story-layer.fx-page:not(.fx-done){animation-name:fx-page;animation-duration:1.9s;transform-origin:0 50%}
+@keyframes fx-page{0%{opacity:0;transform:rotateY(-78deg);filter:sepia(1) brightness(.4)}55%{opacity:1}100%{opacity:1;transform:none;filter:var(--b)}}
+/* darklift — out of darkness (the dangers of the road) */
+#titleScreen .ts-story-layer.fx-darklift:not(.fx-done){animation-name:fx-darklift;animation-duration:2.6s}
+@keyframes fx-darklift{0%{opacity:0;filter:brightness(.05) contrast(1.5)}100%{opacity:1;filter:var(--b)}}
+/* warm — firelight swells (stories told around the fire) */
+#titleScreen .ts-story-layer.fx-warm:not(.fx-done){animation-name:fx-warm;animation-duration:2.4s;animation-timing-function:ease-in-out}
+@keyframes fx-warm{0%{opacity:0;transform:scale(1.05);filter:brightness(.3) sepia(.7)}30%{opacity:1;filter:brightness(.8) sepia(.4)}48%{filter:brightness(.6) sepia(.4)}100%{opacity:1;transform:none;filter:var(--b)}}
+/* sunrise — light climbs from below (Fernvale morning) */
+#titleScreen .ts-story-layer.fx-sunrise:not(.fx-done){animation-name:fx-sunrise;animation-duration:2.8s}
+@keyframes fx-sunrise{0%{opacity:0;transform:translateY(7%);filter:brightness(2.2) saturate(.4)}50%{opacity:1}100%{opacity:1;transform:none;filter:var(--b)}}
+/* glow — the same picture, a soft golden pulse over it (last page: "your story begins here") */
+#titleScreen .ts-story.ts-glow::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 60% 55% at 50% 35%,#ffe9a8d0,#ffd77a40 55%,transparent 80%);animation:ts-glow 2.6s ease-out both}
+@keyframes ts-glow{0%{opacity:0}30%{opacity:.85}100%{opacity:0}}
+/* Waiting for Pic — the board shown while a page's picture still has to be created */
+#titleScreen .ts-layer-wait{filter:none;background:radial-gradient(ellipse at 50% 40%,#1a2433,#0a0f17 75%);display:grid;place-items:center}
+#titleScreen .ts-wait{display:flex;flex-direction:column;align-items:center;gap:8px;padding:24px 40px;border:2px dashed #8da2c066;border-radius:14px;color:#9fb2cf;text-align:center;transform:translateY(-8%)}
+#titleScreen .ts-wait b{font:700 clamp(20px,3vw,34px)/1.2 system-ui,AgThai,sans-serif;letter-spacing:.1em}
+#titleScreen .ts-wait small{font:500 clamp(12px,1.3vw,16px)/1.4 AgThai,system-ui,sans-serif;letter-spacing:.06em;opacity:.8}
+@media(prefers-reduced-motion:reduce){#titleScreen .ts-story-layer,#titleScreen .ts-story-layer.fx-done,#titleScreen .ts-story.ts-glow::after{animation:none!important}}
+#titleScreen .ts-story-text{text-wrap:balance}

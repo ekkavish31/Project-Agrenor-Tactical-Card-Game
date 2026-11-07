@@ -1,30 +1,72 @@
 # Agrenor — New Game Prologue Kit v1
-> Status: **kit integrated / 13 illustration slots awaiting artwork**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
+> Status: **kit v2 merged / 18 pages · 9 art slots enabled · W01–W06 and W10 show a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
 > Current source of truth: `docs/lore/CURRENT-ERA-CANON.md` (approved section A), and game baseline/constraints.
 
 ## Playback wiring
 - `index.html` loads `js/new-game-prologue-kit.js` before `js/title-screen.js`.
 - `title-screen.js` reads `NewGamePrologueKit.pages` for the New Game storybook only. Legacy prose remains in source as fallback.
-- Existing `SceneArt` draws temporary backgrounds with no missing files or white blank frames.
+- Pages without an approved picture show the "Waiting for Pic" board (v98.187); `SceneArt` is only used by the legacy prologue and the BRIDGE page.
 - After 13 pages, the existing hero-name form, the `BRIDGE` page, the `enter(true)` loading sequence, and Fernvale gameplay/first mother scene remain unchanged.
 - Opening Intro (`js/game-intro.js`, `assets/intro/agrenor-intro.mp4`) and Title Menu are not modified.
 
-## World storyboard / ready-to-fill image list
-| ID | Story | Image filename | Image status | Existing temporary SceneArt |
+## World storyboard v2 (merged with the old SceneArt prologue) — 18 pages
+> 7 พ.ย. 2026: ผสาน Kit v1 (13 หน้า) กับบทเดิมที่ใช้ SceneArt ที่ปลอดภัยต่อ Canon แล้ว ได้ 18 หน้า · หน้าที่ขึ้น "ร่วม" ใช้ภาพของหน้าก่อนหน้า (ไม่ต้องวาดเพิ่ม)
+
+| # | ID | Story | Image file (assets/new-game-prologue/images/) | Status |
 |---|---|---|---|---|
-| W01 | โลก Agrenor | `assets/new-game-prologue/images/world-panorama.webp` | TODO | `realmsWide` |
-| W02 | ดินแดนเหนือ | `assets/new-game-prologue/images/northern-snowlands.webp` | TODO | `realms` |
-| W03 | หมู่เกาะตะวันตก | `assets/new-game-prologue/images/western-archipelago.webp` | TODO | `realms` |
-| W04 | ดินแดนใต้ | `assets/new-game-prologue/images/southern-firelands.webp` | TODO | `realms` |
-| W05 | มหาพงไพรตะวันออก | `assets/new-game-prologue/images/eastern-great-forest.webp` | TODO | `deepwood` |
-| W06 | ผู้คนหลายอารยธรรม | `assets/new-game-prologue/images/civilizations.webp` | TODO | `towns` |
-| W07 | Nor’Chorthal | `assets/new-game-prologue/images/norchorthal-valley.webp` | TODO | `riverCity` |
-| W08 | ความรุ่งเรืองของมนุษย์ | `assets/new-game-prologue/images/human-civilization.webp` | TODO | `towns` |
-| W09 | ศาสตร์การ์ดเวท | `assets/new-game-prologue/images/card-crafting.webp` | TODO | `study` |
-| W10 | การ์ดในชีวิตและการเดินทาง | `assets/new-game-prologue/images/traveler-card.webp` | TODO | `journey` |
-| W11 | เรื่องเล่าของนักเดินทาง | `assets/new-game-prologue/images/travelers-stories.webp` | TODO | `roadOut` |
-| W12 | ถนนสู่ Fernvale | `assets/new-game-prologue/images/road-to-fernvale.webp` | TODO | `roadOut` |
-| W13 | Fernvale | `assets/new-game-prologue/images/fernvale-morning.webp` | TODO | `fernvale` |
+| 1 | W01 | โลก Agrenor + ดวงทอง | `world-panorama.webp` | TODO |
+| 2 | W02 | ดินแดนเหนือ | `northern-snowlands.webp` | TODO |
+| 3 | W03 | หมู่เกาะตะวันตก | `western-archipelago.webp` | TODO |
+| 4 | W04 | ดินแดนใต้ | `southern-firelands.webp` | TODO |
+| 5 | W05 | มหาพงไพรตะวันออก | `eastern-great-forest.webp` | TODO |
+| 6 | W05a | เรื่องเล่าจากป่าลึก (บทเดิม · นครแสง/นครมืด) | `ancient-ruins-forest.webp` | **ใช้แล้ว** |
+| 7 | W05b | อดีตที่เหลือเพียงร่องรอย (บทเดิมเรียบเรียงตาม Canon B · ภาพสลักสามร่าง) | `ancient-relief.webp` | **ใช้แล้ว** |
+| 8 | W06 | ผู้คนหลายอารยธรรม | `civilizations.webp` | TODO |
+| 9 | W07 | Nor’Chorthal | `norchorthal-valley.webp` | **ใช้แล้ว** |
+| 10 | W08 | ความรุ่งเรืองของมนุษย์ | `human-civilization.webp` | **ใช้แล้ว** |
+| 11 | W09 | ศาสตร์การ์ดเวท | `card-crafting.webp` | **ใช้แล้ว** |
+| 12 | W09a | "ว่ากันว่า" จอมเวทมนุษย์คิดค้นการ์ด (Canon A §4.1/§8) | `card-inventor-book.webp` | **ใช้แล้ว** |
+| 13 | W10 | มนุษย์อ่อนแอกว่าเผ่าอื่น การ์ดช่วยให้เดินทางไกล | `traveler-card.webp` | TODO (ภาพต้องไม่เห็นหน้า) |
+| 14 | W11 | เรื่องเล่าของนักเดินทาง | `travelers-stories.webp` | **ใช้แล้ว** |
+| 15 | W11a | เหตุผลของนักเดินทาง (บทเดิม) | ใช้ภาพ W11 ร่วม | — |
+| 16 | W12 | ถนนสู่ Fernvale | `road-to-fernvale.webp` | **ใช้แล้ว** |
+| 17 | W13 | Fernvale | `fernvale-morning.webp` | **ใช้แล้ว** |
+| 18 | W13a | เช้าวันหนึ่ง "เรื่องราวของเจ้า… ก็เริ่มต้นที่นี่" (บทเดิม) | ใช้ภาพ W13 ร่วม | — |
+
+ภาพที่ผู้ใช้ส่งแล้วไม่ได้ใช้: ภาพช่างไม้ตอกแผงขาย (เห็นผู้ชายมีเครา อาจถูกมองเป็นตัวเอก), ภาพแผ่นหินใต้รากไม้ (ตัดเมื่อรวม W05b/W05c), ภาพการ์ดดึงน้ำจากไห (สำรอง) · ภาพทุกใบส่งมา 1672×941 (ไม่ใช่ 1920×1080) แสดงผลแบบ cover ได้ ผู้ใช้ยอมรับแล้ว
+
+
+### การเปลี่ยนภาพ (ลูกเล่นตามอารมณ์เรื่อง · v98.187)
+ทุกหน้ามี `fx` ใน `js/new-game-prologue-kit.js` (CSS `.fx-*` ใน `css/title-screen.css`) ภาพใหม่เข้าซ้อนบนภาพเดิมแล้วภาพเก่าถูกถอด · หน้าที่ใช้ภาพเดิมซ้ำไม่เปลี่ยนภาพ · `prefers-reduced-motion` = ตัดเป็นภาพทันที
+
+| หน้า | fx | อารมณ์ |
+|---|---|---|
+| W01 | `bloom` | แสงทองค่อยๆ เอ่อสว่าง (ดวงทอง) |
+| W02 | `frost` | ซีดเย็น ไหลลงมา (ดินแดนหิมะ) |
+| W03 | `wave` | เลื่อนเข้าแบบโยกเบาๆ (ทะเล หมู่เกาะ) |
+| W04 | `ember` | ไฟกะพริบวูบวาบ (แดนภูเขาไฟ) |
+| W05 | `mist` | ผุดจากหมอกมืดเบลอ (มหาพงไพร) |
+| W05a | `iris` | วงกลมเปิดออก (นครในตำนาน) |
+| W05b | `focus` | ดึงโฟกัสจากภาพเลือน (จารึก ความทรงจำ) |
+| W06 | `wipe` | ม่านรูดผ่านจากซ้าย (ผู้คนหลายเผ่า) |
+| W07 | `rise` | กล้องยกขึ้นเหนือหุบเขา (Nor’Chorthal) |
+| W08, W12 | `drift` | มุมมองเลื่อนไปตามถนน (เมือง/ถนน) |
+| W09 | `pulse` | แฟลชฟ้าขาวสองครั้ง วงจรตื่น (การ์ดเวท) |
+| W09a | `page` | พลิกหน้าหนังสือเก่า (ประวัติศาสตร์ที่เล่าเรียน) |
+| W10 | `darklift` | โผล่จากความมืด (อันตรายระหว่างทาง) |
+| W11 | `warm` | แสงไฟเตาอุ่นขึ้น (เล่าเรื่องรอบกองไฟ) |
+| W13 | `sunrise` | แสงไล่ขึ้นจากด้านล่าง (เช้าที่ Fernvale) |
+| W11a, W13a | `same` / `glow` | ใช้ภาพเดิม · W13a มีแสงทองวาบเบาๆ ตอนประโยคปิด |
+
+### หน้าที่ยังไม่มีภาพ
+W01–W06 และ W10 แสดงกระดานโล่งพร้อมข้อความ "Waiting for Pic" และรหัส/ชื่อหน้า (เช่น `W01 · โลก Agrenor`) แทน SceneArt เพื่อให้เห็นชัดว่ายังต้องเจน · เมื่อได้ภาพ ใส่ไฟล์ตามชื่อในตาราง แล้วเพิ่มรหัสใน `APPROVED_IMAGES`
+
+### บทที่ไม่นำกลับมาจากบทเดิม
+6 หน้าแรกของบทเดิม (บรรพชนออกจากป่า ผลึกกลางอก ร่างกายกลายพันธุ์) ชนกับข้อกำหนดบทนำ ("ไม่เผยต้นทางผู้คน ไม่แสดงการกลายพันธุ์/ผลึกธาตุ") ยังเก็บเป็น `LEGACY_PROLOGUE` (fallback) ใน `title-screen.js` · ฉากวิหาร/บูชาต้นไม้ ผู้ใช้สั่งตัดแล้ว
+
+### คำยืนยันของผู้สร้าง (7 พ.ย. 2026 · ยังไม่ได้ย้ายเข้า Canon ส่วน A)
+- มนุษย์อ่อนแอกว่าเผ่าพันธุ์อื่น (ไม่ระบุเผ่าหรือตัวเลข) การ์ดเวทจึงเป็นเครื่องมือที่ช่วยให้มนุษย์ก้าวข้ามอันตรายระหว่างทางและเดินทางไกลได้มากขึ้น · ใช้ในหน้า W10 · ถ้าจะยกเป็น Canon ให้ผู้ใช้สั่งแก้ `CURRENT-ERA-CANON.md` เอง
+- ภาพสลักสามร่างบนซาก (W05b) ตั้งใจสื่อถึงสามมหาเทพ โดยไม่มีข้อความยืนยัน เทพไม่ปรากฏกาย
 
 ## Production specification
 - Each illustration: 1920×1080 landscape 16:9, warm painterly fantasy / anime-JRPG style, consistent light and restrained motion, no words, labels or watermark baked into the artwork.
@@ -48,7 +90,7 @@
 - The tutorial chain `docs/STORY-INTRO.md` after entering Fernvale remains intact; do not rewrite save/quest logic under this artwork kit.
 
 ## Acceptance checks when images arrive
-- New Game starts with W01 and advances W01…W13 in order, without missing-image flash or jitter.
+- New Game starts with W01 and advances through all 18 pages in order, without missing-image flash or jitter.
 - Escape/skip, name entry, transition to mother's cutscene and game remain functional.
 - Continue does NOT show this prologue.
 - The Opening Intro video/music and Title Menu are unchanged.

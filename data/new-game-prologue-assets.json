@@ -1,169 +1,232 @@
 {
-  "kit": "new-game-prologue-v1",
-  "status": "scaffold-only",
-  "repoBase": "assets/new-game-prologue/images/",
-  "worldPages": [
-    {
-      "id": "W01",
-      "title": "โลก Agrenor",
-      "filename": "world-panorama.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "realmsWide",
-      "brief": "แผนภาพโลกกว้าง แสง Elukhor ผ่านเมฆ; ไม่มีป้ายชื่อหรือแผนที่ที่เผยพิกัด"
-    },
-    {
-      "id": "W02",
-      "title": "ดินแดนเหนือ",
-      "filename": "northern-snowlands.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "realms",
-      "brief": "ทุ่งหิมะ ขุนเขา สิ่งมีชีวิตเขตหนาว"
-    },
-    {
-      "id": "W03",
-      "title": "หมู่เกาะตะวันตก",
-      "filename": "western-archipelago.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "realms",
-      "brief": "หมู่เกาะ เรือใบ เมืองท่า อย่ากำหนดชื่อเมืองใหม่"
-    },
-    {
-      "id": "W04",
-      "title": "ดินแดนใต้",
-      "filename": "southern-firelands.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "realms",
-      "brief": "หุบเขาภูเขาไฟ ภูมิประเทศมีความร้อน"
-    },
-    {
-      "id": "W05",
-      "title": "มหาพงไพรตะวันออก",
-      "filename": "eastern-great-forest.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "deepwood",
-      "brief": "ผืนป่ามหึมา ยอดไม้ ซากโบราณที่ไม่เปิดเผยความลับ"
-    },
-    {
-      "id": "W06",
-      "title": "ผู้คนหลายอารยธรรม",
-      "filename": "civilizations.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "towns",
-      "brief": "ชุมชนต่างวัฒนธรรม ไม่วาดให้ทุกเผ่ารวมอยู่ในเมืองเดียวโดยไร้เหตุผล"
-    },
-    {
-      "id": "W07",
-      "title": "Nor’Chorthal",
-      "filename": "norchorthal-valley.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "riverCity",
-      "brief": "แม่น้ำ ไร่นา เมืองหลายขนาด แนวเขาห่างไกล"
-    },
-    {
-      "id": "W08",
-      "title": "ความรุ่งเรืองของมนุษย์",
-      "filename": "human-civilization.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "towns",
-      "brief": "ถนน คาราวาน ช่างฝีมือ ตลาด เมืองมนุษย์"
-    },
-    {
-      "id": "W09",
-      "title": "ศาสตร์การ์ดเวท",
-      "filename": "card-crafting.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "study",
-      "brief": "มือช่างจารึกวงจรบนการ์ด ไม่แสดงต้นแบบโบราณหรือ Vaelari"
-    },
-    {
-      "id": "W10",
-      "title": "การ์ดในชีวิตและการเดินทาง",
-      "filename": "traveler-card.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "journey",
-      "brief": "คาราวานใช้การ์ดเวทป้องกันภัย พลังมาจากผู้ใช้ ไม่ใช่การ์ดสร้างพลังเอง"
-    },
-    {
-      "id": "W11",
-      "title": "เรื่องเล่าของนักเดินทาง",
-      "filename": "travelers-stories.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "roadOut",
-      "brief": "นักเดินทางและเส้นทางหลายภูมิประเทศ เชื่อมภาพต่อเนื่อง"
-    },
-    {
-      "id": "W12",
-      "title": "ถนนสู่ Fernvale",
-      "filename": "road-to-fernvale.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "roadOut",
-      "brief": "ถนนชนบทต่อเนื่องจากภาพก่อนหน้า ค่อยเห็นหมู่บ้านไกล ๆ"
-    },
-    {
-      "id": "W13",
-      "title": "Fernvale",
-      "filename": "fernvale-morning.webp",
-      "size": "1920x1080",
-      "source": "TO_CREATE",
-      "enabled": false,
-      "sceneArtFallback": "fernvale",
-      "brief": "หมู่บ้านยามเช้า ลานฝึกทางซ้าย ป่าด้านหลัง เชื่อมฉากบ้าน/แม่เดิม"
-    }
-  ],
-  "existingFlow": [
-    {
-      "id": "F01",
-      "description": "title-story hero name and bridge",
-      "source": "js/title-screen.js",
-      "status": "EXISTING"
-    },
-    {
-      "id": "F02",
-      "description": "mother wake and first Fernvale quests",
-      "source": "js/story-data.js + js/story-quests.js",
-      "status": "EXISTING"
-    },
-    {
-      "id": "F03",
-      "description": "gift/paths paintings",
-      "source": "assets/intro/story/",
-      "status": "REFERENCE ONLY — opening video art; do not silently reuse as New Game scenes"
-    },
-    {
-      "id": "G01",
-      "description": "enter live Fernvale gameplay",
-      "source": "js/title-screen.js enter(true)",
-      "status": "EXISTING"
-    }
-  ],
-  "rules": [
-    "Maker Logo, assets/intro/agrenor-intro.mp4 and Title Menu are unrelated and must stay unchanged.",
-    "No new unknown city names or ancient card origin revelations.",
-    "Only enable image IDs after tested files are committed. The kit uses code-rendered SceneArt as fallback.",
-    "No changes to save format, tutorial quest progress or game rules."
-  ]
+ "kit": "new-game-prologue-v2-merged",
+ "status": "images partially supplied: 9 art slots enabled; W01-W06 and W10 show the \"Waiting for Pic\" board",
+ "repoBase": "assets/new-game-prologue/images/",
+ "worldPages": [
+  {
+   "id": "W01",
+   "title": "โลก Agrenor",
+   "enabled": false,
+   "filename": "world-panorama.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "TO_CREATE",
+   "brief": "แผนภาพโลกกว้าง แสง Elukhor ผ่านเมฆ; ไม่มีป้ายชื่อหรือแผนที่ที่เผยพิกัด",
+   "transitionFx": "bloom"
+  },
+  {
+   "id": "W02",
+   "title": "ดินแดนเหนือ",
+   "enabled": false,
+   "filename": "northern-snowlands.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "TO_CREATE",
+   "brief": "ทุ่งหิมะ ขุนเขา สิ่งมีชีวิตเขตหนาว",
+   "transitionFx": "frost"
+  },
+  {
+   "id": "W03",
+   "title": "หมู่เกาะตะวันตก",
+   "enabled": false,
+   "filename": "western-archipelago.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "TO_CREATE",
+   "brief": "หมู่เกาะ เรือใบ เมืองท่า อย่ากำหนดชื่อเมืองใหม่",
+   "transitionFx": "wave"
+  },
+  {
+   "id": "W04",
+   "title": "ดินแดนใต้",
+   "enabled": false,
+   "filename": "southern-firelands.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "TO_CREATE",
+   "brief": "หุบเขาภูเขาไฟ ภูมิประเทศมีความร้อน",
+   "transitionFx": "ember"
+  },
+  {
+   "id": "W05",
+   "title": "มหาพงไพรตะวันออก",
+   "enabled": false,
+   "filename": "eastern-great-forest.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "TO_CREATE",
+   "brief": "ผืนป่ามหึมา ยอดไม้ ซากโบราณที่ไม่เปิดเผยความลับ",
+   "transitionFx": "mist"
+  },
+  {
+   "id": "W05a",
+   "title": "เรื่องเล่าจากป่าลึก",
+   "enabled": true,
+   "filename": "ancient-ruins-forest.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "SUPPLIED",
+   "brief": "ซากนครโบราณกลางป่า ไม่มีผู้คน (ภาพ 22 ผู้ใช้ส่งมา)",
+   "origin": "legacy prologue: journal",
+   "transitionFx": "iris"
+  },
+  {
+   "id": "W05b",
+   "title": "อดีตที่เหลือเพียงร่องรอย",
+   "enabled": true,
+   "filename": "ancient-relief.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "SUPPLIED",
+   "brief": "ภาพสลักสามร่างบนผนังซาก (ภาพ 13) ผู้ใช้ตั้งใจให้สื่อสามมหาเทพโดยไม่มีข้อความยืนยัน ภาพ 19 (แผ่นหินใต้รากไม้) ไม่ใช้",
+   "origin": "legacy prologue: dig + ancient, rewritten to Canon B",
+   "transitionFx": "focus"
+  },
+  {
+   "id": "W06",
+   "title": "ผู้คนหลายอารยธรรม",
+   "enabled": false,
+   "filename": "civilizations.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "TO_CREATE",
+   "brief": "ชุมชนต่างวัฒนธรรม ไม่วาดให้ทุกเผ่ารวมอยู่ในเมืองเดียวโดยไร้เหตุผล",
+   "transitionFx": "wipe"
+  },
+  {
+   "id": "W07",
+   "title": "Nor’Chorthal",
+   "enabled": true,
+   "filename": "norchorthal-valley.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "SUPPLIED",
+   "brief": "แม่น้ำ ไร่นา เมืองหลายขนาด แนวเขาห่างไกล",
+   "transitionFx": "rise"
+  },
+  {
+   "id": "W08",
+   "title": "ความรุ่งเรืองของมนุษย์",
+   "enabled": true,
+   "filename": "human-civilization.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "SUPPLIED",
+   "brief": "ถนน คาราวาน ช่างฝีมือ ตลาด เมืองมนุษย์",
+   "transitionFx": "drift"
+  },
+  {
+   "id": "W09",
+   "title": "ศาสตร์การ์ดเวท",
+   "enabled": true,
+   "filename": "card-crafting.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "SUPPLIED",
+   "brief": "มือช่างจารึกวงจรบนการ์ด ไม่แสดงต้นแบบโบราณหรือ Vaelari",
+   "transitionFx": "pulse"
+  },
+  {
+   "id": "W09a",
+   "title": "ประวัติศาสตร์ที่เล่าเรียนกัน",
+   "enabled": true,
+   "filename": "card-inventor-book.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "SUPPLIED",
+   "brief": "ภาพในหนังสือเก่า นักเวทมนุษย์เขียนวงจรลงการ์ด (ภาพ 24) ไม่เห็นหน้า ไม่ระบุชื่อ",
+   "origin": "NEW (Canon A 4.1 / 8: what humans are taught)",
+   "transitionFx": "page"
+  },
+  {
+   "id": "W10",
+   "title": "การ์ดกับการเดินทางของมนุษย์",
+   "enabled": false,
+   "filename": "traveler-card.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "TO_CREATE",
+   "brief": "นักเดินทางมนุษย์กลางคืนหรือในที่เปลี่ยว ใช้การ์ดเรืองแสงข้ามอันตราย; เห็นแค่เงา/มือ ไม่เห็นหน้า (ตัวเอกเลือกเพศเอง)",
+   "transitionFx": "darklift"
+  },
+  {
+   "id": "W11",
+   "title": "เรื่องเล่าของนักเดินทาง",
+   "enabled": true,
+   "filename": "travelers-stories.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "SUPPLIED",
+   "brief": "นักเดินทางและเส้นทางหลายภูมิประเทศ เชื่อมภาพต่อเนื่อง",
+   "transitionFx": "warm"
+  },
+  {
+   "id": "W11a",
+   "title": "เหตุผลของนักเดินทาง",
+   "enabled": true,
+   "sharesImageOf": "W11",
+   "origin": "legacy prologue: roadOut",
+   "transitionFx": "same"
+  },
+  {
+   "id": "W12",
+   "title": "ถนนสู่ Fernvale",
+   "enabled": true,
+   "filename": "road-to-fernvale.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "SUPPLIED",
+   "brief": "ถนนชนบทต่อเนื่องจากภาพก่อนหน้า ค่อยเห็นหมู่บ้านไกล ๆ",
+   "transitionFx": "drift"
+  },
+  {
+   "id": "W13",
+   "title": "Fernvale",
+   "enabled": true,
+   "filename": "fernvale-morning.webp",
+   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
+   "source": "SUPPLIED",
+   "brief": "หมู่บ้านยามเช้า ลานฝึกทางซ้าย ป่าด้านหลัง เชื่อมฉากบ้าน/แม่เดิม",
+   "transitionFx": "sunrise"
+  },
+  {
+   "id": "W13a",
+   "title": "เช้าวันหนึ่ง",
+   "enabled": true,
+   "sharesImageOf": "W13",
+   "origin": "legacy prologue: dawn (+ the golden light of page 1)",
+   "transitionFx": "glow"
+  }
+ ],
+ "existingFlow": [
+  {
+   "id": "F01",
+   "description": "title-story hero name and bridge",
+   "source": "js/title-screen.js",
+   "status": "EXISTING"
+  },
+  {
+   "id": "F02",
+   "description": "mother wake and first Fernvale quests",
+   "source": "js/story-data.js + js/story-quests.js",
+   "status": "EXISTING"
+  },
+  {
+   "id": "F03",
+   "description": "gift/paths paintings",
+   "source": "assets/intro/story/",
+   "status": "REFERENCE ONLY — opening video art; do not silently reuse as New Game scenes"
+  },
+  {
+   "id": "G01",
+   "description": "enter live Fernvale gameplay",
+   "source": "js/title-screen.js enter(true)",
+   "status": "EXISTING"
+  }
+ ],
+ "rules": [
+  "Maker Logo, assets/intro/agrenor-intro.mp4 and Title Menu are unrelated and must stay unchanged.",
+  "No new unknown city names or ancient card origin revelations.",
+  "No changes to save format, tutorial quest progress or game rules.",
+  "A page without an approved image shows a plain \"Waiting for Pic\" board (js/title-screen.js showPage), not SceneArt. SceneArt is kept only for the legacy prologue and the BRIDGE page."
+ ],
+ "unusedSupplied": [
+  {
+   "file": "supplied image 19: fallen carved slab under tree roots",
+   "note": "dropped when W05b/W05c were merged"
+  },
+  {
+   "file": "supplied image 16: carpenter building a stall",
+   "note": "adult bearded man could read as the hero; not used"
+  },
+  {
+   "file": "supplied image 18: card pulling water from a jar",
+   "note": "spare"
+  }
+ ]
 }
