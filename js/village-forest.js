@@ -10,7 +10,7 @@
   'use strict';
   const TREES = [['broadleaf', 230, 5], ['old-oak', 250, 3], ['tree-round', 190, 4], ['tree-round-2', 175, 3], ['pine', 215, 4], ['tree-conifer', 200, 3], ['tree-blossom', 185, .35], ['w1-oak-tree', 235, 3], ['w1-oak-grove', 250, 1.5], ['w1-fir-tree', 215, 2], ['w1-autumn-tree', 215, .8]];
   const UNDER = [['bush-small', 74, 5], ['rock-cluster', 66, 2], ['tall-grass', 64, 3], ['w1-bush-flowers', 80, 3]];
-  const img = {}; for (const [n] of [...TREES, ...UNDER]) { const im = new Image(); im.onload = () => { try { terrainDirty = true } catch (e) { } }; im.src = 'assets/village-town/nature/' + n + '.webp'; img[n] = im }
+  let imgTimer = 0; const img = {}; for (const [n] of [...TREES, ...UNDER]) { const im = new Image(); im.onload = () => { clearTimeout(imgTimer); imgTimer = setTimeout(() => { try { terrainDirty = true } catch (e) { } }, 500) };   /* v98.241 · one ground repaint after the last tree picture arrives, not one per picture (each repaint is 0.1–2 s) */ im.src = 'assets/village-town/nature/' + n + '.webp'; img[n] = im }
   const SECT = 48, MARGIN = 230, CORRIDOR = 190;
   let rim = null, items = null, mid = null, roadsAt = null;
   const rng = s => () => { s = Math.imul(s ^ s >>> 15, 2246822507) + 0x9e3779b9 | 0; return ((s >>> 0) % 100000) / 100000 };
