@@ -4,7 +4,7 @@
 #titleScreen.ag-title{background:#cfe3f5;--ag-ink:#1b2b47;--ag-ink2:#44546f;--ag-gold:#b98d3f;
   /* v98.175 · title block sits in the middle of the scene; --ag-menu-r keeps its centre clear of the (full-size) menu column on narrow screens */
   --ag-logo-w:clamp(300px,min(52vw,82vh),900px);--ag-menu-r:calc(2.6vw + clamp(250px,28vw,430px))}
-#titleScreen.ag-title .ts-bg{inset:0;background:url('../assets/intro/menu-bg.webp?v=2') center/cover no-repeat;filter:none;animation:none;transform:none}
+#titleScreen.ag-title .ts-bg{inset:0;background:url('../assets/intro/menu-bg.webp?v=3') center/cover no-repeat;filter:none;animation:none;transform:none}
 #titleScreen.ag-title .ts-veil{background:
   radial-gradient(ellipse 34% 34% at 50% 31%,#ffffff8c 0%,#ffffff4d 52%,transparent 80%),
   linear-gradient(90deg,#ffffffc2 0%,#ffffff94 16%,#ffffff4d 32%,transparent 50%),
@@ -34,7 +34,7 @@
 #titleScreen.ag-title .ts-menu button[data-act="extra"]{--ag-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='5.500' y='3.500' width='13' height='17' rx='2' fill='none' stroke='black' stroke-width='1.700'/%3E%3Cpath d='M9 8.500h6M9 12h6M9 15.500h3.500' stroke='black' stroke-width='1.600' stroke-linecap='round'/%3E%3C/svg%3E")}
 #titleScreen.ag-title .ag-replay{position:absolute;left:clamp(16px,3.4vw,60px);bottom:clamp(36px,5.6vh,60px);pointer-events:auto}
 #titleScreen.ag-title .ts-foot{color:var(--ag-ink2);text-shadow:0 0 6px #fff,0 0 12px #ffffffc0}
-#titleScreen.ag-title .ag-horizon{position:absolute;right:clamp(14px,2.4vw,40px);bottom:clamp(34px,5.4vh,58px);font:italic 500 clamp(14px,1.6vw,24px)/1 Georgia,serif;letter-spacing:.04em;color:#f6efdc;text-shadow:0 1px 6px #1b2b47e0,0 0 14px #1b2b47a6;pointer-events:none}
+#titleScreen.ag-title .ag-horizon{position:absolute;right:clamp(14px,2.4vw,40px);bottom:clamp(34px,5.4vh,58px);font:italic 500 clamp(14px,1.6vw,24px)/1 Georgia,serif;letter-spacing:.04em;color:#f6efdc;text-shadow:0 1px 2px #1b2b47,0 0 6px #1b2b47e6,0 0 16px #1b2b47b0;pointer-events:none}
 #titleScreen.ag-intro-pending .ts-bg,#titleScreen.ag-intro-pending .ts-veil,#titleScreen.ag-intro-pending .ts-motes{opacity:0}
 #titleScreen.ag-intro-pending .ts-main,#titleScreen.ag-intro-pending .ts-foot{visibility:hidden!important}
 /* Reveal after the cutscene: scene first, then the shadow, then the title (big → small), then the menu. */
