@@ -38,7 +38,7 @@ const SLOTS=[
     },
     {
       "id": "W04",
-      "fx": "ember",
+      "fx": "heat",
       "pos": "50% 30%",
       "title": "ดินแดนใต้",
       "art": "realms",

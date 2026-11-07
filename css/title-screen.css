@@ -200,3 +200,7 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #titleScreen .ts-name .ts-g .ts-gframe.portrait img{width:128px;height:auto;top:-4px}
 #titleScreen .ts-name .ts-g[data-g=female] .ts-gframe.portrait img{width:112px;left:-2px;top:2px}
 #titleScreen .ts-name .ts-g[data-g=male] .ts-gframe.portrait img{left:-30px;top:-8px}
+
+/* heat — warm light blooms in and the picture settles from a slight zoom; never dips dark (the old "ember" flicker looked like a power cut) */
+#titleScreen .ts-story-layer.fx-heat:not(.fx-done){animation-name:fx-heat;animation-duration:2.4s}
+@keyframes fx-heat{0%{opacity:0;transform:scale(1.07);filter:brightness(1.5) sepia(.55) saturate(1.6) blur(5px)}60%{opacity:1}100%{opacity:1;transform:none;filter:var(--b)}}
