@@ -155,7 +155,7 @@
         const sp = spans[i++]; if (!sp) return;
         void sp.offsetWidth; sp.style.opacity = '1'; sp.style.filter = 'blur(0)';
         if (i >= spans.length) { timer = setTimeout(() => { typing = false; o.onPageDone && o.onPageDone(false); }, 950); return; }
-        timer = setTimeout(next, 420 + Math.min(520, units[i - 1].trim().length * 8));   // short gap: the next sentence starts while the last is still settling
+        timer = setTimeout(next, 840 + Math.min(1040, units[i - 1].trim().length * 16));   // short gap: the next sentence starts while the last is still settling
       };
       next();
     }
