@@ -24,7 +24,9 @@
     }
     return trail[0];
   }
+  let lastT = 0;
   function objects(hero, dt, t, o) {
+    if (dt == null) { dt = Math.min(.08, Math.max(0, (t - (lastT || t)) / 1000)); lastT = t }   /* pages without their own dt (interior) */
     if (!o.show) { trail = []; pos = null; return [] }
     const a0 = o.project(0, 0), a1 = o.project(1, 0), gap = o.size ? Math.max(1.2, o.size / Math.max(1, Math.hypot(a1.x - a0.x, a1.y - a0.y))) : GAP;   // one body length behind, whatever the page's map scale
     const last = trail[trail.length - 1];
@@ -37,9 +39,9 @@
     if (step > 1e-4) dir = o.face(nu - pos.u, nv - pos.v, dir);
     pos.u = nu; pos.v = nv;
     moving = step / Math.max(dt, 1e-3) > .35 ? 1 : (moving > 0 ? moving - dt * 6 : 0);   // short grace so it does not flicker between walk and idle
-    const m = build(); if (!m || !root.TownArt) return [];
+    const m = build(); if (!m || (!root.TownArt && !o.drawFn)) return [];
     const p = o.project(pos.u, pos.v);
-    return [{ x: p.x, y: p.y, mobile: true, z: 0, draw: () => { o.ellipse(p.x, p.y, 16.9 * o.scale, 7.8 * o.scale, '#182b2877'); root.TownArt.hero(o.g, p, dir, t, moving > 0, o.size, dir, m) } }];
+    return [{ x: p.x, y: p.y, uv: pos.u + pos.v, mobile: true, z: 0, draw: () => { if (o.drawFn) return o.drawFn(p, dir, moving > 0, m); o.ellipse(p.x, p.y, 16.9 * o.scale, 7.8 * o.scale, '#182b2877'); root.TownArt.hero(o.g, p, dir, t, moving > 0, o.size, dir, m) } }];
   }
   root.HeroFollower = { objects, reset() { trail = []; pos = null } };
 })(globalThis);

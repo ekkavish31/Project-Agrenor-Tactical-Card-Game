@@ -523,6 +523,8 @@
     for (const i of R.items) if (i.onTop) list.push({ y: i.u + i.v + 1.05, f: () => drawItem(i, t) });
     for (const a of people.values()) list.push({ y: a.vu + a.vv, f: () => drawPerson(a, t) });
     list.push({ y: hero.vu + hero.vv, f: () => drawHero(t) });
+    /* v98.233 · the other hero (the sibling) follows one body length behind */
+    for (const o of window.HeroFollower?.objects({ u: hero.vu, v: hero.vv }, null, t, { show: true, project: P, size: 104 * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), face: (du, dv, pd) => faceOf(du, dv) || pd, drawFn: (p, dir, walking, mot) => { g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * IK(), 6 * IK(), 0, 0, 7); g.fill(); return drawHeroMotion(t, p, 104 * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), dir, walking, mot) } }) || []) list.push({ y: o.uv, f: o.draw });
     list.sort((a, b) => a.y - b.y); for (const x of list) x.f();
     /* lights + night */
     const day = daylight();
@@ -551,18 +553,19 @@
   /* v98.19 · the hero is drawn with the same motion data as the village and the battle (4 directions, the 12-frame walk, mirrored sets, procedural bob) instead of 3 hard-coded south-east frames flipped for the other sides */
   const MOTION = (() => { try { return window.HeroMotion && typeof TACTICS_SPRITES !== 'undefined' ? HeroMotion.snapshot(TACTICS_SPRITES) : null } catch (e) { return null } })();
   const motionPics = new Map(), motionPic = src => { let im = motionPics.get(src); if (!im) { im = new Image(); im.src = src; motionPics.set(src, im) } return im };
-  function drawHeroMotion(t, p, s) {
-    if (!MOTION) return false;
-    let f = null; try { f = HeroMotion.frame(MOTION, hero.face, t, hero.walking) } catch (e) { }
+  function drawHeroMotion(t, p, s, faceArg, walkArg, motArg) {
+    const MOT = motArg || MOTION, face0 = faceArg || hero.face, walk0 = motArg ? walkArg : hero.walking;
+    if (!MOT) return false;
+    let f = null; try { f = HeroMotion.frame(MOT, face0, t, walk0) } catch (e) { }
     if (!f || !f.src) return false;
     const im0 = motionPic(f.src); if (!im0.complete || !im0.naturalWidth) return false;
-    const a = MOTION.anchor || [.5, .9375], im = LOOK ? JobLook.pic(im0, f.src, LOOK) : im0, face = hero.face, walking = hero.walking;
+    const a = MOT.anchor || [.5, .9375], im = LOOK && !motArg ? JobLook.pic(im0, f.src, LOOK) : im0, face = face0, walking = walk0;
     g.save(); g.translate(p.x, p.y + 3);
-    try { window.ProcMotion?.apply(g, 'tactics.' + (walking ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: walking ? (MOTION.directions?.[face]?.walk?.length || 1) : 1, pose: walking ? 'walk' : 'idle' }, t, s, 'town-hero') } catch (e) { }
+    try { window.ProcMotion?.apply(g, 'tactics.' + (walking ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: walking ? (MOT.directions?.[face]?.walk?.length || 1) : 1, pose: walking ? 'walk' : 'idle' }, t, s, 'town-hero') } catch (e) { }
     if (f.flipImage) g.scale(-1, 1);
-    if (LOOK) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, false);
+    if (LOOK && !motArg) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, false);
     g.drawImage(im, -s * a[0], -s * a[1], s, s);
-    if (LOOK) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, true);
+    if (LOOK && !motArg) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, true);
     g.restore(); return true;
   }
   function drawHero(t) {
