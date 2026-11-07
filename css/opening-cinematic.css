@@ -80,7 +80,7 @@
 #agGate{position:absolute;inset:0;z-index:40;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,2.4vh,26px);cursor:pointer;opacity:1;transition:opacity .45s ease-out;-webkit-tap-highlight-color:transparent;outline:0}
 #agGate.out{opacity:0;pointer-events:none}
 #agGate .ag-gate-msg{color:#f6ead0;opacity:.45;font:400 clamp(13px,1.5vw,18px)/1.4 AgThai,system-ui,sans-serif;letter-spacing:.12em;padding-left:.12em;user-select:none;text-align:center}
-#agGate .ag-gate-bar{width:min(260px,52vw);height:2px;background:#f6ead02e;overflow:hidden;transition:opacity .4s}
+#agGate .ag-gate-bar{width:min(300px,64vw);height:2px;background:#f6ead02e;overflow:hidden;transition:opacity .4s}
 #agGate .ag-gate-bar i{display:block;height:100%;background:#e8c987;transform-origin:left center;transform:scaleX(0);transition:transform .25s ease-out}
 #agGate.ready .ag-gate-bar{opacity:0}
 #agGate.ready .ag-gate-msg{animation:ag-gate-pulse 2.4s ease-in-out infinite}

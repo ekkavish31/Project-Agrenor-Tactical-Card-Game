@@ -1,0 +1,29 @@
+/* v98.184 · "Mip", the loading mascot. One shared, CSS-only component used by every loading screen (start gate, game loading, village loading, battle prep).
+   The sheet faces LEFT; walking right is the same sprite mirrored (scaleX(-1)). Sprite sheet: assets/ui/mip-sheet.webp = 6 cells (0 = standing, 1-5 = run cycle).
+   Usage: <div class="mip-track"><div class="mip-go"><div class="mip-flip"><div class="mip-run"><i></i></div><div class="mip-idle"><i></i></div></div></div></div>
+   (or MipLoader.html() in js/mip-loader.js). Size/length: --ms (sprite size) and --mw (track width). Add .mip-still to stop walking (e.g. when loading is done). */
+.mip-track{--ms:clamp(84px,13vh,124px);--mw:min(340px,74vw);--md:calc(var(--mw) - var(--ms));position:relative;width:var(--mw);height:var(--ms);flex:none;pointer-events:none;user-select:none}
+.mip-go{position:absolute;left:0;bottom:0;width:var(--ms);height:var(--ms);animation:mip-travel 6.4s linear infinite;will-change:transform}
+.mip-flip{position:absolute;inset:0;animation:mip-turn 6.4s step-end infinite}
+.mip-run,.mip-idle{position:absolute;inset:0;overflow:hidden}
+.mip-run i,.mip-idle i{position:absolute;top:0;height:100%;width:calc(var(--ms)*6);background:url('../assets/ui/mip-sheet.webp?v=1') 0 0/100% 100% no-repeat}
+.mip-idle i{left:0}
+.mip-run i{left:calc(var(--ms)*-1);animation:mip-frames .5s steps(5,end) infinite}
+.mip-run{animation:mip-run-vis 6.4s step-end infinite}
+.mip-idle{animation:mip-idle-vis 6.4s step-end infinite}
+/* 6.4 s loop: walk right 2.8 s · stand 0.4 s · turn · walk left 2.8 s · stand 0.4 s · turn */
+@keyframes mip-travel{0%{transform:translateX(0)}43.75%{transform:translateX(var(--md))}50%{transform:translateX(var(--md))}93.75%{transform:translateX(0)}100%{transform:translateX(0)}}
+@keyframes mip-turn{0%{transform:scaleX(-1)}50%{transform:scaleX(1)}}
+@keyframes mip-frames{from{transform:translateX(0)}to{transform:translateX(calc(var(--ms)*-5))}}
+@keyframes mip-run-vis{0%{opacity:1}43.75%{opacity:0}50%{opacity:1}93.75%{opacity:0}100%{opacity:0}}
+@keyframes mip-idle-vis{0%{opacity:0}43.75%{opacity:1}50%{opacity:0}93.75%{opacity:1}100%{opacity:1}}
+/* finished waiting: Mip stops in the middle and bounces in place */
+.mip-track.mip-still .mip-go{animation:none;transform:translateX(calc(var(--md)/2))}
+.mip-track.mip-still .mip-flip{animation:none;transform:none}
+.mip-track.mip-still .mip-run{animation:none;opacity:0}
+.mip-track.mip-still .mip-idle{animation:mip-hop 1.4s ease-in-out infinite;opacity:1}
+@keyframes mip-hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-9%)}60%{transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+  .mip-go,.mip-flip,.mip-run,.mip-run i,.mip-idle,.mip-track.mip-still .mip-idle{animation:none!important}
+  .mip-go{transform:translateX(calc(var(--md)/2))}.mip-run{opacity:0}.mip-idle{opacity:1}
+}

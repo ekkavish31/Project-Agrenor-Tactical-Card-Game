@@ -919,7 +919,7 @@
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
     document.body.append(fr);
-    const wait1 = document.createElement('div'); wait1.className = 'wm-toast'; wait1.style.animation = 'none'; wait1.style.top = '62%'; wait1.textContent = 'กำลังเตรียมสนามรบ…'; setTimeout(() => { if (wait1.isConnected === false && !fr.classList.contains('on')) document.body.append(wait1) }, 1400);
+    const wait1 = document.createElement('div'); wait1.className = 'wm-toast'; wait1.style.animation = 'none'; wait1.style.top = '62%'; wait1.style.cssText += ';display:flex;align-items:center;gap:12px;padding:8px 22px 8px 14px;border-radius:22px'; wait1.innerHTML = (window.MipLoader ? MipLoader.html({ size: '56px', width: '150px' }) : '') + '<span>กำลังเตรียมสนามรบ…</span>'; setTimeout(() => { if (wait1.isConnected === false && !fr.classList.contains('on')) document.body.append(wait1) }, 1400);
     await readyP; wait1.remove(); fr.classList.add('on'); document.querySelectorAll('.wm-enc').forEach(e => setTimeout(() => e.remove(), 350));
     const res = await resP;
     fr.classList.remove('on'); await wait(380); fr.remove();

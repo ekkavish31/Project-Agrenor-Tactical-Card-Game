@@ -66,8 +66,9 @@
       const msg = document.createElement('span'); msg.className = 'ag-gate-msg'; msg.textContent = 'กำลังเตรียมเกม… 0%';
       const bar = document.createElement('div'); bar.className = 'ag-gate-bar';
       const fill = document.createElement('i'); bar.append(fill);
+      const mip = window.MipLoader ? MipLoader.mount(gate, { size: 'clamp(80px,13vh,120px)', width: 'min(300px,64vw)' }) : null;   // Mip runs left/right while everything loads
       gate.append(msg, bar); title.append(gate);
-      return { gate, msg, fill };
+      return { gate, msg, fill, mip };
     }
 
     /* Everything the menu itself needs: background + logo images decoded, the Wizzta font. */
@@ -163,6 +164,7 @@
         ready = true;
         gate.msg.textContent = matchMedia('(pointer:coarse)').matches ? 'แตะหน้าจอเพื่อเริ่ม' : 'กดปุ่มใดก็ได้เพื่อเริ่ม';
         gate.gate.classList.add('ready');
+        window.MipLoader?.still(gate.mip, true);   // loading done: Mip stops in the middle and hops while waiting for the key
         go();
       });
     }
