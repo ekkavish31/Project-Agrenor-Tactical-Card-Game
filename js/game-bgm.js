@@ -1,49 +1,41 @@
 /* Normalized scene playlists. Settings use the existing music volume control. */
 (function(root){'use strict';
  const P=root.BattlePolish,base='assets/audio/bgm/',lists={intro:['bgm-intro-adventure-01.mp3'],home:['bgm-home-01.mp3'],village:['bgm-village-festival-01.mp3'],forge:['bgm-forge-01.mp3','bgm-forge-02.mp3'],mine:['bgm-battle-mine-01.mp3'],frost:['bgm-battle-frost-01.mp3'],'frost-boss':['bgm-battle-frost-boss-01.mp3'],victory:['bgm-victory-01.mp3']},trackGain={intro:.52,village:.86};
- let unlocked=false,current=null,fade=[],generation=0,activeKey='none',lastTick=performance.now(),error='',sfxError='',indices={},fxContext=null;
- function select(c){if(c.hidden)return 'none';if(c.title)return 'intro';if(c.battle){const b=c.battle;if(b.outcome==='win'&&c.resultShown)return 'victory';if(b.outcome==='lose')return 'none';const m=b.map||{},snow=m.variant==='frost'||m.theme==='frost'||b.encounter?.area==='frost';if(snow){const boss=(b.units||[]).some(u=>u.side==='enemy'&&['miniboss','boss'].includes(root.TacticsCore?.ENEMY_TYPES[u.kind]?.rank));return boss?'frost-boss':'frost'}if(m.theme==='mine'||m.theme==='cave')return 'mine';return 'procedural'}if(c.adventure)return 'procedural';if(c.scene==='town'||c.scene==='market-interior')return 'village';return c.place==='forge'?'forge':c.place==='home'?'home':'village'}
+ let unlocked=false,current=null,fade=[],generation=0,activeKey='none',lastTick=performance.now(),error='',sfxError='',indices={},fxContext=null,fxAutoplayTried=false,pendingIntroSfx=[];
+ function select(c){if(c.hidden)return 'none';if(c.title)return document.getElementById('makerIntro')?'none':'intro';if(c.battle){const b=c.battle;if(b.outcome==='win'&&c.resultShown)return 'victory';if(b.outcome==='lose')return 'none';const m=b.map||{},snow=m.variant==='frost'||m.theme==='frost'||b.encounter?.area==='frost';if(snow){const boss=(b.units||[]).some(u=>u.side==='enemy'&&['miniboss','boss'].includes(root.TacticsCore?.ENEMY_TYPES[u.kind]?.rank));return boss?'frost-boss':'frost'}if(m.theme==='mine'||m.theme==='cave')return 'mine';return 'procedural'}if(c.adventure)return 'procedural';if(c.scene==='town'||c.scene==='market-interior')return 'village';return c.place==='forge'?'forge':c.place==='home'?'home':'village'}
  function context(){const layer=document.getElementById('tacticsLayer');return{hidden:document.hidden,title:!!root.TitleScreen?.active,battle:layer&&!layer.hidden?root.TacticsLab?.getState():null,resultShown:!document.getElementById('resultOverlay')?.hidden,adventure:root.Adventure?.state(),scene:root.VillageTown?.getScene(),place:document.body.dataset.place}}
+ function showAudioNotice(text='หากไม่ได้ยินเสียง แตะหรือกดปุ่มใดก็ได้เพื่อเปิดเสียง'){const title=document.getElementById('titleScreen');if(!title)return;let notice=title.querySelector('.ag-audio-notice');if(!notice){notice=document.createElement('div');notice.className='ag-audio-notice';notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');title.append(notice)}notice.textContent=text}
+ function clearAudioNotice(){document.querySelector('#titleScreen .ag-audio-notice')?.remove()}
  function remove(entry){entry.audio.pause();entry.audio.removeAttribute('src');entry.audio.load()}
- function start(key,index=indices[key]||0){const token=++generation;activeKey=key;if(current){fade.push(current);current=null}if(!lists[key]||!unlocked)return;
-  const audio=new Audio(base+lists[key][index]);audio.preload='auto';audio.loop=lists[key].length===1&&key!=='victory';audio.volume=0;const entry=current={audio,key,index,gain:0,started:false};
-  audio.onended=()=>{if(current!==entry||token!==generation||key==='victory')return;indices[key]=(index+1)%lists[key].length;start(key,indices[key])};audio.onerror=()=>{error='โหลดเพลงไม่ได้: '+lists[key][index]};
-  audio.play().then(()=>{if(token!==generation){audio.pause();return}entry.started=true;error=''}).catch(e=>{if(token===generation){error=e.message;unlocked=false}});
+ function flushIntroSfx(){if(!pendingIntroSfx.length)return;if(!document.getElementById('makerIntro')){pendingIntroSfx=[];return}const now=performance.now(),ready=pendingIntroSfx.filter(cue=>now-cue.time<500);pendingIntroSfx=[];ready.forEach(cue=>playIntroSfx(cue.kind))}
+ function resumeIntroFx(){const Context=root.AudioContext||root.webkitAudioContext;if(!Context){sfxError='Web Audio is not supported';showAudioNotice('เบราว์เซอร์นี้ไม่รองรับเสียงเอฟเฟกต์โลโก้');return}try{if(!fxContext||fxContext.state==='closed')fxContext=new Context();if(fxContext.state==='running'){flushIntroSfx();clearAudioNotice();return}showAudioNotice();fxContext.resume().then(()=>{sfxError='';flushIntroSfx();clearAudioNotice()}).catch(e=>{sfxError=e.message;showAudioNotice()})}catch(e){sfxError=e.message;showAudioNotice()}}
+ function start(key,index=indices[key]||0){const token=++generation;activeKey=key;if(current){if(key==='none'||key==='intro')remove(current);else fade.push(current);current=null}if(key==='none'||key==='intro'){fade.forEach(remove);fade=[]}if(!lists[key]||(!unlocked&&key!=='intro'))return;
+  const src=base+lists[key][index]+(key==='intro'?'?v=98.168':'');const audio=new Audio(src);audio.preload='auto';audio.loop=lists[key].length===1&&key!=='victory';audio.volume=0;const entry=current={audio,key,index,gain:0,started:false};
+  audio.onended=()=>{if(current!==entry||token!==generation||key==='victory')return;if(key==='intro'){audio.currentTime=0;audio.play().then(()=>{entry.started=true;error=''}).catch(e=>{error=e.message;showAudioNotice()});return}indices[key]=(index+1)%lists[key].length;start(key,indices[key])};audio.onerror=()=>{error='โหลดเพลงไม่ได้: '+lists[key][index];if(key==='intro')showAudioNotice('โหลดเพลงประกอบไม่สำเร็จ')};
+  audio.play().then(()=>{if(token!==generation){audio.pause();return}entry.started=true;error='';if(fxContext?.state==='running')clearAudioNotice()}).catch(e=>{if(token===generation){error=e.message;if(key!=='intro')unlocked=false;showAudioNotice()}});
  }
- function tick(){const now=performance.now(),dt=Math.min(.2,(now-lastTick)/1000);lastTick=now;const key=select(context());if(key!=='intro'&&fxContext?.state==='running')fxContext.suspend().catch(e=>{sfxError=e.message});if(P)P.bgmManaged=key!=='procedural';if(key!==activeKey)start(key);else if(unlocked&&lists[key]&&!current)start(key);
-  const volume=Math.max(0,Math.min(1,Number(P?.musicVolume)||0));if(current){current.gain=Math.min(1,current.gain+dt/1.1);current.audio.volume=volume*current.gain*(trackGain[current.key]||1);if(!unlocked)current.audio.pause()}
+ function tick(){const now=performance.now(),dt=Math.min(.2,(now-lastTick)/1000);lastTick=now;const key=select(context()),makerLogo=!!document.getElementById('makerIntro');if((key==='intro'||makerLogo)&&!fxAutoplayTried){fxAutoplayTried=true;resumeIntroFx()}else if(key!=='intro'&&!makerLogo&&fxContext?.state==='running')fxContext.suspend().catch(e=>{sfxError=e.message});if(P)P.bgmManaged=key!=='procedural';if(key!==activeKey)start(key);else if((unlocked||key==='intro')&&lists[key]&&!current)start(key);
+  const volume=Math.max(0,Math.min(1,Number(P?.musicVolume)||0));if(current){current.gain=Math.min(1,current.gain+dt/1.1);current.audio.volume=volume*current.gain*(trackGain[current.key]||1);if(!unlocked&&current.key!=='intro')current.audio.pause()}
   fade=fade.filter(e=>{e.gain=Math.max(0,e.gain-dt/.75);e.audio.volume=volume*e.gain*(trackGain[e.key]||1);if(!e.gain){remove(e);return false}return true});
  }
  function playIntroSfx(kind){
-  if(!unlocked||document.hidden||!fxContext||fxContext.state!=='running')return false;
+  if(document.hidden)return false;
+  if(!fxContext||fxContext.state!=='running'){if(document.getElementById('makerIntro'))pendingIntroSfx.push({kind,time:performance.now()});return false}
   const volume=Math.max(0,Math.min(1,Number(P?.volume)||0));if(!volume)return false;
   const now=fxContext.currentTime;
   try{
    const tone=(frequency,start,duration,level,type='sine')=>{const osc=fxContext.createOscillator(),gain=fxContext.createGain();osc.type=type;osc.frequency.setValueAtTime(frequency,start);gain.gain.setValueAtTime(.0001,start);gain.gain.linearRampToValueAtTime(level*volume,start+.012);gain.gain.exponentialRampToValueAtTime(.0001,start+duration);osc.connect(gain).connect(fxContext.destination);osc.start(start);osc.stop(start+duration+.01)};
-   if(kind==='bell'){
-    tone(880,now,.55,.075);tone(1320,now+.015,.42,.035);tone(1760,now+.03,.3,.018);
-   }else if(kind==='sparkle'){
-    tone(1568,now,.3,.07);tone(2093,now+.07,.28,.06);tone(2637,now+.14,.26,.04);
-   }else if(kind==='applause'){
-    const duration=.95,buffer=fxContext.createBuffer(1,Math.ceil(fxContext.sampleRate*duration),fxContext.sampleRate),data=buffer.getChannelData(0);
-    for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
-    const source=fxContext.createBufferSource(),filter=fxContext.createBiquadFilter(),gain=fxContext.createGain();
-    source.buffer=buffer;filter.type='bandpass';filter.frequency.value=1450;filter.Q.value=.75;
-    for(let i=0;i<11;i++){const start=now+.018+i*.075+Math.random()*.025;gain.gain.setValueAtTime(.0001,start);gain.gain.linearRampToValueAtTime((.12+Math.random()*.03)*volume,start+.006);gain.gain.exponentialRampToValueAtTime(.0001,start+.065)}
-    source.connect(filter).connect(gain).connect(fxContext.destination);source.start(now);source.stop(now+duration);
-   }else return false;
+   if(kind==='bell'){tone(880,now,.55,.075);tone(1320,now+.015,.42,.035);tone(1760,now+.03,.3,.018)}
+   else if(kind==='sparkle'){tone(1568,now,.3,.07);tone(2093,now+.07,.28,.06);tone(2637,now+.14,.26,.04)}
+   else if(kind==='applause'){const duration=.95,buffer=fxContext.createBuffer(1,Math.ceil(fxContext.sampleRate*duration),fxContext.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;const source=fxContext.createBufferSource(),filter=fxContext.createBiquadFilter(),gain=fxContext.createGain();source.buffer=buffer;filter.type='bandpass';filter.frequency.value=1450;filter.Q.value=.75;for(let i=0;i<11;i++){const start=now+.018+i*.075+Math.random()*.025;gain.gain.setValueAtTime(.0001,start);gain.gain.linearRampToValueAtTime((.12+Math.random()*.03)*volume,start+.006);gain.gain.exponentialRampToValueAtTime(.0001,start+.065)}source.connect(filter).connect(gain).connect(fxContext.destination);source.start(now);source.stop(now+duration)}
+   else return false;
    sfxError='';return true;
   }catch(e){sfxError=e.message;return false}
  }
- function unlock(){
-  if(!unlocked){unlocked=true;if(current&&!current.started){remove(current);current=null}tick()}
-  if(select(context())!=='intro')return;
-  const Context=root.AudioContext||root.webkitAudioContext;
-  if(Context)try{if(!fxContext||fxContext.state==='closed')fxContext=new Context();if(fxContext.state!=='running')fxContext.resume().catch(e=>{sfxError=e.message})}catch(e){sfxError=e.message}
- }
+ function unlock(){if(!unlocked){unlocked=true;if(current&&!current.started){remove(current);current=null}tick()}if(select(context())==='intro'||document.getElementById('makerIntro'))resumeIntroFx()}
  document.addEventListener('pointerdown',unlock,{capture:true});document.addEventListener('keydown',unlock,{capture:true});
  root.addEventListener('message',e=>{const town=root.VillageTown;if(!town||![town.frame.contentWindow,town.marketFrame.contentWindow].includes(e.source))return;if(e.data?.type==='input')unlock()});
- document.addEventListener('visibilitychange',()=>{if(document.hidden){generation++;if(current){remove(current);current=null}fade.forEach(remove);fade=[];activeKey='none';fxContext?.suspend().catch(e=>{sfxError=e.message})}else{if(select(context())==='intro')fxContext?.resume().catch(e=>{sfxError=e.message});tick()}});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){generation++;if(current){remove(current);current=null}fade.forEach(remove);fade=[];activeKey='none';pendingIntroSfx=[];fxContext?.suspend().catch(e=>{sfxError=e.message})}else{if(select(context())==='intro'||document.getElementById('makerIntro'))resumeIntroFx();tick()}});
  if(P){P.bgmManaged=true;const old=P.audioDiagnostics;P.audioDiagnostics=()=>({...old?.(),track:activeKey,file:current?.audio.src||null,playlistIndex:current?.index??0,playing:!!current&&!current.audio.paused,musicVolume:P.musicVolume,error,sfxError})}
  root.GameBGM={select,refresh:tick,unlock,playIntroSfx,playlists:lists,diagnostics:()=>({key:activeKey,index:current?.index,playing:!!current&&!current.audio.paused,error,sfxError}),nextForgeTrack:()=>{if(activeKey!=='forge')return;indices.forge=((current?.index||0)+1)%2;start('forge',indices.forge)}};
  setInterval(tick,100);tick();

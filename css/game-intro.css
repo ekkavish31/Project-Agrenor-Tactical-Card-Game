@@ -11,9 +11,7 @@
 #storyIntro .si-window{padding:7px;background:linear-gradient(140deg,#fff0bd,#98703c 35%,#d5b97a 55%,#674927);box-shadow:0 0 32px color-mix(in srgb,var(--scene-glow) 42%,transparent),0 24px 70px #000a;border-radius:3px}
 #storyIntro .si-window:after{content:'';position:absolute;inset:3px;border:1px solid #fff2ca66;pointer-events:none}
 #storyIntro .si-decklight{position:absolute;left:40%;top:28%;width:30%;height:35%;background:radial-gradient(ellipse,#fff9dccc,transparent 65%);opacity:0;pointer-events:none}
-#storyIntro .si-sound{position:absolute;left:20px;bottom:24px;z-index:4;padding:10px 14px;font:14px system-ui;background:#101921b8;color:#f6ead0;border:1px solid #d9bd7c88;border-radius:5px;cursor:pointer}
-#storyIntro .si-sound:focus-visible{outline:2px solid #ffdc98;outline-offset:3px}
-@media(max-width:600px){#storyIntro .si-window{width:90vw;height:67.5vw;left:5vw;top:calc((100% - 67.5vw)/2)}#storyIntro .si-skip,#storyIntro .si-sound{font-size:12px;padding:8px 10px;bottom:18px}}
+@media(max-width:600px){#storyIntro .si-window{width:90vw;height:67.5vw;left:5vw;top:calc((100% - 67.5vw)/2)}#storyIntro .si-skip{font-size:12px;padding:8px 10px;bottom:18px}}
 
 #storyIntro .si-return-card{position:absolute;left:42%;top:36%;width:16%;height:21%;border:2px solid #e4cb8d;opacity:0;box-shadow:0 0 18px #d9b56f88;background-repeat:no-repeat;will-change:transform,opacity}
 
