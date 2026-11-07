@@ -5,7 +5,9 @@
 const host=document.createElement('section');host.id='villageTownLayer';host.setAttribute('aria-label','หมู่บ้าน');host.style.cssText='position:fixed;inset:0;z-index:200;background:#718568';
 function makeFrame(title,src){const f=document.createElement('iframe');f.title=title;f.style.cssText='width:100%;height:100%;border:0';f.allow='fullscreen';if(src)f.src=src;host.appendChild(f);return f}
 const deferTown=!!window.TitleScreen?.active&&!window.TitleScreen?.newGame&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
-const frame=makeFrame('หมู่บ้าน 2.5D',deferTown?'':'village-town.html?v=97.17'),marketFrame=makeFrame('สถานที่ 2.5D');let placeId='',placeAct='';marketFrame.hidden=true;document.body.appendChild(host);
+/* v98.181 · iframe pages are addressed with the GAME version, not a fixed number: a fixed ?v let browsers keep an old village-town.html (HTTP cache) after a release, so new scripts/fixes in it never arrived */
+const GV=(()=>{try{return (window.GAME_VERSION||{}).v||''}catch{return ''}})();
+const frame=makeFrame('หมู่บ้าน 2.5D',deferTown?'':'village-town.html?v='+(GV||'97.17')),marketFrame=makeFrame('สถานที่ 2.5D');let placeId='',placeAct='';marketFrame.hidden=true;document.body.appendChild(host);
 const back=document.createElement('button');back.id='townReturn';back.textContent='← กลับแผนที่หมู่บ้าน';back.style.cssText='position:fixed;left:20px;top:78px;z-index:201;padding:10px 16px;border-radius:10px;background:#213b2df0;color:#fff0c7;border:1px solid #b6c48e';back.hidden=true;back.onclick=()=>openTown();document.body.append(back);
 let ready=false,marketReady=false,initialized=false,lastStamp='',lastMotion='',inside=false,marketOpen=false,lastVisible='';
 function post(f,data){f.contentWindow?.postMessage({source:'project-a-game',...data},'*')}
@@ -19,7 +21,7 @@ function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'|
  const motion=HeroMotion.snapshot(TACTICS_SPRITES),sig=JSON.stringify(motion);if(sig!==lastMotion){lastMotion=sig;send({type:'motion',data:motion});if(marketReady)post(marketFrame,{type:'motion',data:motion})}
 }
 function openTown(){if(busy||s.mode==='battle')return;inside=false;marketOpen=false;if($('panel').open)$('panel').close();send({type:'return'});sync();send({type:'focus'})}
-function enterPlace(id,map,interior){const sub=interior?'in:'+id:map||id;placeAct=id;inside=false;marketOpen=true;if(placeId!==sub){placeId=sub;marketReady=false;marketFrame.src=interior?'place-interior.html?embed=1&v=95.01&place='+encodeURIComponent(id)+'&name='+encodeURIComponent(interior):'village-place.html?v=95.01&place='+encodeURIComponent(sub)+(map?'&kind='+id:'')}else if(marketReady){post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)})}lastStamp='';sync()}
+function enterPlace(id,map,interior){const sub=interior?'in:'+id:map||id;placeAct=id;inside=false;marketOpen=true;if(placeId!==sub){placeId=sub;marketReady=false;marketFrame.src=interior?'place-interior.html?embed=1&v='+(GV||'95.01')+'&place='+encodeURIComponent(id)+'&name='+encodeURIComponent(interior):'village-place.html?v='+(GV||'95.01')+'&place='+encodeURIComponent(sub)+(map?'&kind='+id:'')}else if(marketReady){post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)})}lastStamp='';sync()}
 renderMap=function(edit){openTown();if(edit)send({type:'edit'})};window.openMapEditor=function(){renderMap(true)};
 villageTravel=function(id){if(['home','forge','market'].includes(id)){openTown();send({type:'walk',id})}};
 const oldRender=render;render=function(){const r=oldRender.apply(this,arguments);sync();return r};
@@ -55,6 +57,6 @@ window.VillageTown={open:openTown,frame,marketFrame,host,sync,expedition,openWor
 new MutationObserver(()=>{const hide=activeHide();if(host.hidden!==hide||lastVisible!==JSON.stringify([!hide,marketOpen,ready,marketReady,modalOpen()]))sync()}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
 setInterval(()=>{if(!document.hidden)sync()},800);
 try{const channel=new BroadcastChannel('project-a-hero-motion');channel.onmessage=e=>{if(e.data?.kind!=='hero-walk'||!e.data.data?.directions)return;for(const[d,p]of Object.entries(e.data.data.directions)){if(!TACTICS_SPRITES.directions[d])TACTICS_SPRITES.directions[d]={};TACTICS_SPRITES.directions[d].walk=p.walk}lastMotion='';sync()}}catch{}
-if(deferTown){let loaded=false;const loadTown=()=>{if(loaded)return;loaded=true;clearTimeout(fallback);window.removeEventListener('maker-intro-finished',loadTown);if(!frame.getAttribute('src'))frame.src='village-town.html?v=97.17';};const fallback=setTimeout(loadTown,65000);window.addEventListener('maker-intro-finished',loadTown,{once:true});}
+if(deferTown){let loaded=false;const loadTown=()=>{if(loaded)return;loaded=true;clearTimeout(fallback);window.removeEventListener('maker-intro-finished',loadTown);if(!frame.getAttribute('src'))frame.src='village-town.html?v='+(GV||'97.17');};const fallback=setTimeout(loadTown,65000);window.addEventListener('maker-intro-finished',loadTown,{once:true});}
 sync();
 })();

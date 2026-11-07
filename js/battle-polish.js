@@ -1,6 +1,8 @@
 /* v27 procedural battle audio: no downloads or external audio assets. */
-(function(){'use strict';let ac,master;const P=window.BattlePolish={volume:.65,musicVolume:.3,ambient:true,shake:true,quality:'standard',surface:'slope',backdrop:'soft'};
+(function(){'use strict';let ac,master;const P=window.BattlePolish={volume:.65,musicVolume:.24,ambient:true,shake:true,quality:'standard',surface:'slope',backdrop:'soft'};
 try{Object.assign(P,JSON.parse(localStorage.getItem('project-a-battle-polish')||'{}'))}catch(e){}
+/* v98.181 · BGM default lowered by 20% (0.30 → 0.24). A saved value that is still the old default moves with it (once); a value the player picked is kept. */
+try{if(!localStorage.getItem('project-a-bgm-v24')){localStorage.setItem('project-a-bgm-v24','1');if(Math.abs((P.musicVolume??.3)-.3)<1e-6){P.musicVolume=.24;const raw=JSON.parse(localStorage.getItem('project-a-battle-polish')||'null');if(raw){raw.musicVolume=.24;localStorage.setItem('project-a-battle-polish',JSON.stringify(raw))}}}}catch(e){}
 function context(){if(!ac){let A=window.AudioContext||window.webkitAudioContext;if(A){ac=new A();master=ac.createDynamicsCompressor();master.threshold.value=-12;master.knee.value=12;master.ratio.value=6;master.attack.value=.003;master.release.value=.16;master.connect(ac.destination)}}if(ac?.state==='suspended')ac.resume().catch(()=>{});return ac}
 document.addEventListener('pointerdown',context,{once:true});document.addEventListener('keydown',context,{once:true});
 // v58: recorded sound effects (assets/audio/sfx), decoded once and played through the same volume setting

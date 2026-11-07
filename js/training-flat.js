@@ -20,7 +20,7 @@
     const heroQ = root.Progression ? '&' + Progression.battleParam(g, Progression.recipes) : '';
     const fr = document.createElement('iframe'); fr.id = 'trainBattle'; fr.title = 'ลานฝึกหุ่นฟาง';
     fr.style.cssText = 'position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
-    fr.src = 'village-town.html?battle=1&embed=1&r=5&ms=' + encodeURIComponent('dummy*1,dummy*1,dummy*1') + '&party=' + encodeURIComponent(party) + '&hhp=' + (g.hp || 60) + '&hmax=' + (g.maxHp || 60) + heroQ + '&title=' + encodeURIComponent('ลานฝึก ·');
+    fr.src = 'village-town.html?v=' + (window.GAME_VERSION?.v || '') + '&battle=1&embed=1&r=5&ms=' + encodeURIComponent('dummy*1,dummy*1,dummy*1') + '&party=' + encodeURIComponent(party) + '&hhp=' + (g.hp || 60) + '&hmax=' + (g.maxHp || 60) + heroQ + '&title=' + encodeURIComponent('ลานฝึก ·');
     try { if ($('panel').open) $('panel').close() } catch (e) { }
     const done = e => {
       if (e.source !== fr.contentWindow || e.data?.type !== 'agrenor-battle') return;

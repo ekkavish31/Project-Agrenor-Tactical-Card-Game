@@ -60,6 +60,8 @@
     timerId = setInterval(() => { if (document.hidden || performance.now() > activeUntil) { clearInterval(timerId); timerId = 0; return; } blip(); }, 58);
   }
   const hush = () => { activeUntil = 0; };
+  /* create + resume the AudioContext inside the first key/tap of this page (Safari / mobile only allow that inside a gesture) */
+  for (const ev of ['pointerdown', 'keydown', 'touchend']) document.addEventListener(ev, () => { audio(); }, { capture: true, passive: true });
 
   /* ---------------- sentences & pages ---------------- */
   /* → [{t, nl}] : sentences of one text (nl = it starts after a line break inside the text) */
@@ -82,7 +84,7 @@
 
   function create(el, opts) {
     const o = Object.assign({ maxLines: 4, voice: null, speed: 1, onPageStart: null, onPageDone: null }, opts || {});
-    let pages = [], pi = -1, segs = [], j = 0, shown = '', ei = 0, timer = 0, typing = false, probe = null, limit = 0;
+    let pages = [], pi = -1, segs = [], spans = [], j = 0, shown = '', ei = 0, timer = 0, typing = false, probe = null, limit = 0;
 
     function dropProbe() { probe?.remove(); probe = null; }
     function makeProbe() {
@@ -131,14 +133,17 @@
     function runPage() {
       clearTimeout(timer);
       const pg = pages[pi]; if (!pg) return;
-      segs = words(pg.text); j = 0; shown = ''; ei = 0; typing = true; voice = voiceFor(o.voice);
+      segs = words(pg.text); j = 0; shown = ''; ei = 0; typing = true; voice = voiceFor(o.voice); spans = [];
       el.textContent = '';
       o.onPageStart && o.onPageStart(pg.text, pi);
       if (reduced() || o.instant) { el.textContent = pg.text; typing = false; o.onPageDone && o.onPageDone(false); return; }
+      /* v98.181 · stable layout: the whole page is placed first (hidden), then each word is switched on in the spot it will keep — centred text no longer
+         grows outwards from the middle; the first word already sits where it will end up and the rest extends behind it */
+      for (const sg of segs) { const sp = document.createElement('span'); sp.textContent = sg; sp.style.visibility = 'hidden'; el.appendChild(sp); spans.push(sp); }
       tick();
     }
     function tick() {
-      const seg = segs[j++]; shown += seg; el.textContent = shown;
+      const seg = segs[j++]; shown += seg; spans[j - 1].style.visibility = 'visible';
       if (j >= segs.length) { typing = false; hush(); o.onPageDone && o.onPageDone(false); return; }
       const pg = pages[pi], t = seg.trim();
       let d = isSpace(seg) ? (/\n/.test(seg) ? 380 : 46) : Math.max(22, Math.min(105, seg.length * 16));
