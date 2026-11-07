@@ -12,7 +12,7 @@
   /* a set lists its faces as an array (file = <set>-<face>.webp) or as an object {face: file suffix} (v98.201: mom, six painted poses: talk · calm · happy · worry · sad · angry) */
   const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   /* v98.204 · the hero's painted set follows the chosen look (HeroVariant): hero-<look>-<pose>.webp. Only looks that have a sheet are listed; the other keeps the code-drawn bust */
-  const HERO_SETS = { female: ['hero-female', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
+  const HERO_SETS = { male: ['hero-male', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }], female: ['hero-female', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   const heroSet = () => { try { return HERO_SETS[root.HeroVariant?.get?.() || 'male'] || null } catch (e) { return null } };
   /* looks for the code-drawn busts (same palette as the villagers in js/village-life.js) */
   const LOOK = {
