@@ -33,11 +33,12 @@
       };
       frame.onerror = () => done(false);
     });
-    frame.src='assets/maker/aetheryn-logo.html?embed=1&v=7';
+    frame.src='assets/maker/aetheryn-logo.html?embed=1&v=8';
     overlay.append(frame, skip); title.append(overlay);
     return state;
   }
   window.MakerLogo = {
+    beforeOutro: null,
     prepare(title) {
       if (!title?.isConnected || reducedQuery()) return Promise.resolve(false);
       if (!pre || pre.title !== title || !pre.overlay.isConnected) pre = build(title);
@@ -49,17 +50,25 @@
     if (reduced.matches) return;
     const st = pre && pre.title === title && pre.overlay.isConnected ? pre : build(title);
     pre = null;
-    const { overlay, frame } = st;
+    const { overlay, frame, skip } = st;
     overlay.id='makerIntro'; overlay.style.opacity='1'; overlay.style.pointerEvents='';
     const main = title.querySelector('.ts-main');
-    let raf=0, timeout=0, finished=false,cueIndex=0;
+    let raf=0, timeout=0, holdTimer=0, finished=false,cueIndex=0;
     const soundCues=[[1240,'bell'],[1360,'bell'],[1940,'sparkle'],[2700,'applause']];
     const inertBefore=main.inert;
     main.inert=true; title.classList.add('ag-playing');
-    function finish() {
-      if(finished)return;finished=true;cancelAnimationFrame(raf);clearTimeout(timeout);
+    /* v98.173 · after the 4 s animation the final frame stays for 2 s (while the video finishes buffering, max +3 s), then finish(true)
+       keeps the logo underneath so the video overlay can fade in over it; Esc/X still skips at once (finish()). */
+    function hold(){
+      if(holdTimer||finished)return;
+      const gate=Promise.resolve(window.MakerLogo?.beforeOutro?.()).catch(()=>{});
+      holdTimer=setTimeout(()=>{Promise.race([gate,new Promise(r=>setTimeout(r,3000))]).then(()=>finish(true))},2000);
+    }
+    function finish(natural) {
+      if(finished)return;finished=true;cancelAnimationFrame(raf);clearTimeout(timeout);clearTimeout(holdTimer);
       window.removeEventListener('message',message);document.removeEventListener('keydown',keydown,true);reduced.removeEventListener('change',motion);
-      overlay.remove();window.dispatchEvent(new Event('maker-intro-finished'));main.inert=inertBefore;title.classList.remove('ag-playing');cleanup=null;
+      if(natural===true){overlay.removeAttribute('id');skip.style.opacity='0';setTimeout(()=>overlay.remove(),1500);}else overlay.remove();
+      window.dispatchEvent(new Event('maker-intro-finished'));main.inert=inertBefore;title.classList.remove('ag-playing');cleanup=null;
       (main.querySelector('[data-act="continue"]:not([disabled])')||main.querySelector('[data-act="new"]'))?.focus({preventScroll:true});
     }
     function message(e){if(e.source===frame.contentWindow&&e.origin===location.origin&&e.data?.type==='maker-skip')finish();}
@@ -70,8 +79,7 @@
       if(!title.isConnected){finish();return;}
       const time=frame.contentWindow?.logoPreview?.time||0;
       while(cueIndex<soundCues.length&&time>=soundCues[cueIndex][0])window.GameBGM?.playIntroSfx(soundCues[cueIndex++][1]);
-      overlay.style.opacity=String(Math.max(0,Math.min(1,(4000-time)/500)));
-      if(time>=4000)finish();else raf=requestAnimationFrame(tick);
+      if(time>=4000)hold();else raf=requestAnimationFrame(tick);
     }
     document.addEventListener('keydown',keydown,true);window.addEventListener('message',message);reduced.addEventListener('change',motion);
     st.ready.then(ok=>{

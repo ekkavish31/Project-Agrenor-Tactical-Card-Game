@@ -14,12 +14,15 @@
     const h1 = brand.querySelector('h1');
     h1.textContent = '';
     const logo = document.createElement('img');
-    logo.className = 'ag-logo'; logo.src = 'assets/intro/agrenor-logo.webp'; logo.alt = 'Agrenor: Paths Unwritten'; logo.draggable = false;
+    logo.className = 'ag-logo'; logo.src = 'assets/intro/agrenor-logo.webp?v=2'; logo.alt = 'Agrenor: Paths Unwritten'; logo.draggable = false;
     h1.append(logo);
     brand.querySelector('p').remove();
-    kicker.textContent = 'EVERY SMALL BEGINNING';
+    kicker.textContent = 'EVERY SMALL BEGINNING\nCAN CHANGE A GREATER WORLD';
     brand.append(kicker);
     title.classList.add('ag-title');
+    const horizon = document.createElement('div');
+    horizon.className = 'ag-horizon'; horizon.setAttribute('aria-hidden', 'true'); horizon.textContent = 'To New Horizons';
+    main.append(horizon);
 
     const replay = document.createElement('button');
     replay.className = 'ag-replay';
@@ -44,17 +47,16 @@
     function runOpening(current) {
       if (playback !== current || !title.isConnected) return;
       window.addEventListener('maker-intro-finished', () => {
-        // Logo gone: make sure the video has buffered (hold on black for at most 3 s), then play it.
-        Promise.race([Promise.resolve(window.GameIntro?.prepare?.()).catch(() => {}), wait(3000)]).then(() => {
-          requestAnimationFrame(() => {
-            if (playback !== current || !title.isConnected) return;
-            window.addEventListener('maker-intro-finished', () => {
-              if (playback === current) title.classList.remove('ag-intro-pending');
-            }, { once: true });
-            window.GameIntro?.play(title);
-          });
+        // Logo held its last frame for 2 s (MakerLogo.beforeOutro waited for the video buffer); the video now fades in over it.
+        requestAnimationFrame(() => {
+          if (playback !== current || !title.isConnected) return;
+          window.addEventListener('maker-intro-finished', () => {
+            if (playback === current) title.classList.remove('ag-intro-pending');
+          }, { once: true });
+          window.GameIntro?.play(title);
         });
       }, { once: true });
+      if (window.MakerLogo) window.MakerLogo.beforeOutro = () => window.GameIntro?.prepare?.();
       window.MakerLogo?.play(title);
       window.GameBGM?.unlock?.(); // inside the key/tap handler: resume the logo's Web Audio context right away
     }
