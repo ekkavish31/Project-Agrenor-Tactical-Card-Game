@@ -13,6 +13,8 @@
   const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   /* v98.204 · the hero's painted set follows the chosen look (HeroVariant): hero-<look>-<pose>.webp. Only looks that have a sheet are listed; the other keeps the code-drawn bust */
   const HERO_SETS = { male: ['hero-male', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }], female: ['hero-female', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
+  /* v98.206 · which way a painted set faces as drawn (checked on every pose: hero male/female all look LEFT, mom all looks RIGHT). A speaker on the left of the stage must face right, one on the right must face left, so the picture is mirrored when its native facing is wrong for its side. */
+  const FACING = { hilda: 'left', mom: 'right', 'hero-male': 'left', 'hero-female': 'left' };
   const heroSet = () => { try { return HERO_SETS[root.HeroVariant?.get?.() || 'male'] || null } catch (e) { return null } };
   /* looks for the code-drawn busts (same palette as the villagers in js/village-life.js) */
   const LOOK = {
@@ -109,7 +111,7 @@
   .cs-actor.in{opacity:1}.cs-actor.in.L,.cs-actor.in.R{transform:translateX(0) scale(.94)}
   .cs-actor.on{filter:none;z-index:2}.cs-actor.on.L,.cs-actor.on.R{transform:translateX(0) scale(1)}
   .cs-actor .art{position:relative;height:100%;width:100%;display:flex;align-items:flex-end;justify-content:center;animation:csBreath 3.6s ease-in-out infinite}
-  .cs-actor.L .art>img,.cs-actor.L .art>canvas{transform:scaleX(-1)}
+  .cs-actor.L .art>canvas,.cs-actor .art>img[data-flip="1"]{transform:scaleX(-1)}
   .cs-actor .art>img,.cs-actor .art>canvas{max-height:100%;max-width:100%;object-fit:contain;filter:drop-shadow(0 0 2px rgba(0,0,0,.6)) drop-shadow(0 18px 28px rgba(0,0,0,.55))}
   .cs-actor .art>canvas{height:92%;width:auto}
   .cs-actor.talk .art{animation:csTalk .32s ease-in-out infinite alternate}
@@ -165,6 +167,7 @@
       const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral), src = 'assets/portraits/' + P[0] + '-' + f + '.webp';
       if (!cur.el || cur.el.tagName !== 'IMG') { art.innerHTML = ''; cur.el = new Image(); cur.el.alt = ''; art.append(cur.el) }
       cur.el.src = src;
+      cur.el.dataset.flip = ((FACING[P[0]] || 'left') === (side === 'L' ? 'left' : 'right')) ? '1' : '0';
     } else {
       if (!cur.el || cur.el.tagName !== 'CANVAS') { art.innerHTML = ''; cur.el = document.createElement('canvas'); cur.el.width = 300; cur.el.height = 420; art.append(cur.el) }
       drawBust(cur.el, cur.look, face, false);
