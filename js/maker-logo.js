@@ -1,20 +1,57 @@
-/* Approved creator-supplied logo artwork and timing, isolated from game CSS. */
+/* Approved creator-supplied logo artwork and timing, isolated from game CSS.
+   v98.172: prepare(title) builds the overlay + iframe hidden (opacity 0, no #makerIntro id) and decodes the artwork while the black
+   "press any key" gate is showing; play(title) then only seeks to 0 and starts the clock, so nothing loads after the key press. */
 (() => {
-  let cleanup = null;
-  window.MakerLogo = { play(title) {
-    if (!title?.isConnected || cleanup) return;
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-    if (reduced.matches) return;
-    const main = title.querySelector('.ts-main');
+  let cleanup = null, pre = null;
+  const reducedQuery = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function build(title) {
     const overlay = document.createElement('section');
     overlay.setAttribute('role','dialog'); overlay.setAttribute('aria-modal','true');
-    overlay.setAttribute('aria-label','Aetheryn Studio'); overlay.id='makerIntro';
-    overlay.style.cssText='position:absolute;inset:0;z-index:20;background:#fafafa;opacity:1';
+    overlay.setAttribute('aria-label','Aetheryn Studio');
+    overlay.style.cssText='position:absolute;inset:0;z-index:20;background:#fafafa;opacity:0;pointer-events:none';
     const frame = document.createElement('iframe');
     frame.title='Aetheryn Studio · โลโก้ผู้สร้าง';
     frame.style.cssText='width:100%;height:100%;border:0;display:block;background:#fafafa;visibility:hidden';
     const skip = document.createElement('div'); skip.textContent='กด Esc หรือ X เพื่อข้าม';
     skip.style.cssText='position:absolute;right:20px;bottom:18px;color:#12304b99;font:13px/1.4 system-ui,sans-serif;letter-spacing:.04em;pointer-events:none;user-select:none';
+    const state = { title, overlay, frame, skip, ready: null };
+    state.ready = new Promise(resolve => {
+      const giveUp = setTimeout(() => resolve(false), 12000);
+      const done = ok => { clearTimeout(giveUp); resolve(ok); };
+      frame.onload = async () => {
+        try {
+          const doc = frame.contentDocument;
+          if (doc.URL === 'about:blank') return;
+          // Decode the supplied embedded layers before the four-second clock can start.
+          const images = [...doc.querySelectorAll('svg image')].map(el => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = el.getAttribute('href'); }));
+          await Promise.race([Promise.all(images), new Promise(r => setTimeout(r, 3000))]);
+          if (!frame.contentWindow.logoPreview) return done(false);
+          await frame.contentWindow.logoPreview.ready;
+          frame.contentWindow.logoPreview.seek(0);
+          done(true);
+        } catch { done(false); }
+      };
+      frame.onerror = () => done(false);
+    });
+    frame.src='assets/maker/aetheryn-logo.html?embed=1&v=7';
+    overlay.append(frame, skip); title.append(overlay);
+    return state;
+  }
+  window.MakerLogo = {
+    prepare(title) {
+      if (!title?.isConnected || reducedQuery()) return Promise.resolve(false);
+      if (!pre || pre.title !== title || !pre.overlay.isConnected) pre = build(title);
+      return pre.ready;
+    },
+    play(title) {
+    if (!title?.isConnected || cleanup) return;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    if (reduced.matches) return;
+    const st = pre && pre.title === title && pre.overlay.isConnected ? pre : build(title);
+    pre = null;
+    const { overlay, frame } = st;
+    overlay.id='makerIntro'; overlay.style.opacity='1'; overlay.style.pointerEvents='';
+    const main = title.querySelector('.ts-main');
     let raf=0, timeout=0, finished=false,cueIndex=0;
     const soundCues=[[1240,'bell'],[1360,'bell'],[1940,'sparkle'],[2700,'applause']];
     const inertBefore=main.inert;
@@ -37,25 +74,16 @@
       if(time>=4000)finish();else raf=requestAnimationFrame(tick);
     }
     document.addEventListener('keydown',keydown,true);window.addEventListener('message',message);reduced.addEventListener('change',motion);
-    frame.onload=async()=>{
-      try {
-        const doc=frame.contentDocument;
-        if(doc.URL==='about:blank')return;
-        // Decode the supplied embedded layers before starting the four-second clock.
-        const images=[...doc.querySelectorAll('svg image')].map(el=>new Promise(resolve=>{const im=new Image();im.onload=im.onerror=resolve;im.src=el.getAttribute('href');}));
-        await Promise.race([Promise.all(images),new Promise(r=>setTimeout(r,3000))]);
-        if(finished)return;
-        if(!frame.contentWindow.logoPreview){finish();return;}
-        await frame.contentWindow.logoPreview.ready;
-        if(finished)return;
+    st.ready.then(ok=>{
+      if(finished)return;
+      if(!ok||!frame.contentWindow?.logoPreview){finish();return;}
+      try{
         frame.contentWindow.logoPreview.seek(0);
         clearTimeout(timeout);frame.style.visibility='visible';
         frame.contentDocument.getElementById('play').click();raf=requestAnimationFrame(tick);
       }catch{finish();}
-    };
-    frame.onerror=finish;cleanup=finish;
-    frame.src='assets/maker/aetheryn-logo.html?embed=1&v=6';
-    overlay.append(frame,skip);title.append(overlay);
+    });
+    cleanup=finish;
     timeout=setTimeout(finish,12000);
-  }};
+  } };
 })();

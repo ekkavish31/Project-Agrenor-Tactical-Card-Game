@@ -53,3 +53,11 @@
 @media(prefers-reduced-motion:reduce){
   #titleScreen.ag-reveal .ts-bg,#titleScreen.ag-reveal .ts-veil,#titleScreen.ag-reveal .ts-brand *,#titleScreen.ag-reveal .ts-brand::before,#titleScreen.ag-reveal .ts-menu,#titleScreen.ag-reveal .ag-replay,#titleScreen.ag-reveal .ts-foot{animation:none}
 }
+
+/* v98.172 · black "press any key" gate shown before the maker logo (also the user gesture that unlocks audio) */
+#agGate{position:absolute;inset:0;z-index:40;background:#000;display:grid;place-items:center;cursor:pointer;opacity:1;transition:opacity .45s ease-out;-webkit-tap-highlight-color:transparent;outline:0}
+#agGate.out{opacity:0;pointer-events:none}
+#agGate .ag-gate-msg{color:#f6ead0;opacity:.45;font:400 clamp(13px,1.5vw,18px)/1.4 system-ui,sans-serif;letter-spacing:.32em;padding-left:.32em;text-transform:uppercase;user-select:none;text-align:center}
+#agGate.ready .ag-gate-msg{animation:ag-gate-pulse 2.4s ease-in-out infinite}
+@keyframes ag-gate-pulse{0%,100%{opacity:.3}50%{opacity:.85}}
+@media(prefers-reduced-motion:reduce){#agGate.ready .ag-gate-msg{animation:none;opacity:.8}}

@@ -8,7 +8,7 @@ function prepare(){if(ready)return ready;
   const done=()=>resolve(),timer=setTimeout(done,8000);v.addEventListener('canplay',()=>{clearTimeout(timer);done()},{once:true});
   v.addEventListener('error',()=>{clearTimeout(timer);video=null;done()},{once:true});v.load()});
  return ready}
-window.GameIntro={prepare,play(title){if(active||!title?.isConnected)return;
+window.GameIntro={prepare,ready:()=>!!video&&video.readyState>=3,play(title){if(active||!title?.isConnected)return;
  const release=()=>window.dispatchEvent(new Event('maker-intro-finished'));
  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!video){release();return}
  active=true;const main=title.querySelector('.ts-main'),v=video,el=document.createElement('section');
