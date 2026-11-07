@@ -63,10 +63,17 @@
     return items.filter(q => img[q.n]?.complete && img[q.n].naturalWidth).map(q => ({ x: q.x, y: q.y, draw: g => { const im = img[q.n], h = q.w * im.naturalHeight / im.naturalWidth; g.save(); g.translate(q.x, q.y); if (q.flip) g.scale(-1, 1); TownArt.draw(g, im, null, [-q.w / 2, -h * .93, q.w, h], null); g.restore() } }));
   }
   /* walking: the forest belt is closed (only the exit corridors lead out) */
-  const memo = new Map();
+  /* v98.199 · walking asks "is this forest?" for thousands of points per click (A* + line-of-sight samples at 1/48 cell). The old cache was keyed by the exact
+     float pair as a string, so the fine samples never hit it and forestAt() (road distance, exit corridors, biome, paint) ran each time: 60 % of a path search.
+     Now the answer is stored per 8 px world cell in a typed array (looked up by integer index) and forestAt() is evaluated once at the cell centre. */
+  const CELL = 8; let grid = null, GW = 0, GH = 0;
   function blocks(u, v) {
-    const k = u + ',' + v; let b = memo.get(k); if (b !== undefined) return b;
-    const p = project(u, v); b = forestAt(p.x, p.y); if (memo.size > 200000) memo.clear(); memo.set(k, b); return b;
+    const p = project(u, v), W = WORLD_W, H = WORLD_H;
+    if (!(p.x >= 0 && p.y >= 0 && p.x < W && p.y < H)) return forestAt(p.x, p.y);
+    if (!grid || GW !== (W / CELL | 0) + 1 || GH !== (H / CELL | 0) + 1) { GW = (W / CELL | 0) + 1; GH = (H / CELL | 0) + 1; grid = new Uint8Array(GW * GH) }
+    const cx = p.x / CELL | 0, cy = p.y / CELL | 0, i = cy * GW + cx; let b = grid[i];
+    if (!b) { b = forestAt(cx * CELL + CELL / 2, cy * CELL + CELL / 2) ? 2 : 1; grid[i] = b }
+    return b === 2;
   }
-  root.VillageForest = { objects, blocks, forestAt, reset: () => { rim = null; items = null; memo.clear() }, get count() { return items?.length || 0 } };
+  root.VillageForest = { objects, blocks, forestAt, reset: () => { rim = null; items = null; grid = null }, get count() { return items?.length || 0 } };
 })(window);
