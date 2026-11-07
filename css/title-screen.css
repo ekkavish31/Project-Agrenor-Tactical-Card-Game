@@ -197,4 +197,6 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #titleScreen .ts-name .ts-g:hover{transform:translateY(-2px);border-color:#ffe6a9}
 #titleScreen .ts-name .ts-g.on{border-color:#ffd978;background:linear-gradient(#3a2c12e6,#1d2a44e6);color:#ffe8a6;box-shadow:0 0 0 2px #ffd97855}
 #titleScreen .ts-name .ts-g:focus-visible{outline:3px solid #ffe8a6;outline-offset:2px}
-#titleScreen .ts-name .ts-g .ts-gframe.portrait img{width:150%;height:auto;left:-25%;top:-6%}
+#titleScreen .ts-name .ts-g .ts-gframe.portrait img{width:128px;height:auto;top:-4px}
+#titleScreen .ts-name .ts-g[data-g=female] .ts-gframe.portrait img{width:112px;left:-2px;top:2px}
+#titleScreen .ts-name .ts-g[data-g=male] .ts-gframe.portrait img{left:-30px;top:-8px}
