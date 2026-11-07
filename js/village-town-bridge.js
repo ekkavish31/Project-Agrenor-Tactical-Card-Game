@@ -55,6 +55,6 @@ window.VillageTown={open:openTown,frame,marketFrame,host,sync,expedition,openWor
 new MutationObserver(()=>{const hide=activeHide();if(host.hidden!==hide||lastVisible!==JSON.stringify([!hide,marketOpen,ready,marketReady,modalOpen()]))sync()}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
 setInterval(()=>{if(!document.hidden)sync()},800);
 try{const channel=new BroadcastChannel('project-a-hero-motion');channel.onmessage=e=>{if(e.data?.kind!=='hero-walk'||!e.data.data?.directions)return;for(const[d,p]of Object.entries(e.data.data.directions)){if(!TACTICS_SPRITES.directions[d])TACTICS_SPRITES.directions[d]={};TACTICS_SPRITES.directions[d].walk=p.walk}lastMotion='';sync()}}catch{}
-if(deferTown){let loaded=false;const loadTown=()=>{if(loaded)return;loaded=true;clearTimeout(fallback);window.removeEventListener('maker-intro-finished',loadTown);if(!frame.getAttribute('src'))frame.src='village-town.html?v=97.17';};const fallback=setTimeout(loadTown,16000);window.addEventListener('maker-intro-finished',loadTown,{once:true});}
+if(deferTown){let loaded=false;const loadTown=()=>{if(loaded)return;loaded=true;clearTimeout(fallback);window.removeEventListener('maker-intro-finished',loadTown);if(!frame.getAttribute('src'))frame.src='village-town.html?v=97.17';};const fallback=setTimeout(loadTown,65000);window.addEventListener('maker-intro-finished',loadTown,{once:true});}
 sync();
 })();
