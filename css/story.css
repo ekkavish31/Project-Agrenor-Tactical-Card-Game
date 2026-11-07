@@ -210,3 +210,7 @@ body.cs-open #smithWip{display:none}
 .cs-portrait.cs-face{background:radial-gradient(#fff4d2,#cdb583)}
 .cs-portrait.cs-face img{width:185%;height:auto;max-width:none;position:relative;left:-42%;top:-3%;object-fit:initial;object-position:initial;align-self:start}
 @media (max-width:640px){.cs-portrait{width:68px;height:68px;border-radius:13px}}
+/* v98.236 · the speaker's face frame is gone (the half-body portraits on stage already show who talks); the name is 150% bigger */
+.cs-portrait{display:none!important}
+.cs-name{font-size:22.5px;margin-bottom:6px}
+@media (max-width:640px){.cs-name{font-size:19px}}
