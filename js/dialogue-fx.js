@@ -137,10 +137,27 @@
       el.textContent = '';
       o.onPageStart && o.onPageStart(pg.text, pi);
       if (reduced() || o.instant) { el.textContent = pg.text; typing = false; o.onPageDone && o.onPageDone(false); return; }
+      if (o.fade) { runFade(pg); return; }
       /* v98.181 · stable layout: the whole page is placed first (hidden), then each word is switched on in the spot it will keep — centred text no longer
          grows outwards from the middle; the first word already sits where it will end up and the rest extends behind it */
       for (const sg of segs) { const sp = document.createElement('span'); sp.textContent = sg; sp.style.visibility = 'hidden'; el.appendChild(sp); spans.push(sp); }
       tick();
+    }
+    /* v98.234 · opts.fade (prologue narration): no word-by-word typing — each sentence fades in whole, one after another, overlapping a little so it stays gentle and short.
+       The page is laid out first (invisible), so nothing shifts while it appears. No blip voice in this mode. */
+    function runFade(pg) {
+      const units = []; let prev = 0;
+      for (const e of pg.ends) { units.push(pg.text.slice(prev, e)); prev = e; }
+      if (prev < pg.text.length) units.push(pg.text.slice(prev));
+      spans = units.map(u => { const sp = document.createElement('span'); sp.textContent = u; sp.style.cssText = 'opacity:0;filter:blur(4px);transition:opacity 1s ease,filter 1s ease'; el.appendChild(sp); return sp; });
+      let i = 0;
+      const next = () => {
+        const sp = spans[i++]; if (!sp) return;
+        void sp.offsetWidth; sp.style.opacity = '1'; sp.style.filter = 'blur(0)';
+        if (i >= spans.length) { timer = setTimeout(() => { typing = false; o.onPageDone && o.onPageDone(false); }, 950); return; }
+        timer = setTimeout(next, 420 + Math.min(520, units[i - 1].trim().length * 8));   // short gap: the next sentence starts while the last is still settling
+      };
+      next();
     }
     function tick() {
       const seg = segs[j++]; shown += seg; spans[j - 1].style.visibility = 'visible';

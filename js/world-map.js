@@ -253,18 +253,24 @@
   /* v98.19 · the hero token uses the same walk data as the village and the battle (12-frame walk, procedural bob) — facing left/right = SW/SE */
   const MOTION = (() => { try { return window.HeroMotion && typeof TACTICS_SPRITES !== 'undefined' ? HeroMotion.snapshot(TACTICS_SPRITES) : null } catch (e) { return null } })();
   const motionPics = new Map(), motionPic = src => { let im = motionPics.get(src); if (!im) { im = new Image(); im.src = src; motionPics.set(src, im) } return im };
-  function drawTokenMotion(now, s) {
-    if (!MOTION) return false;
-    const face = token.face < 0 ? 'SW' : 'SE'; let f = null; try { f = HeroMotion.frame(MOTION, face, now, token.walking) } catch (e) { }
+  function drawTokenMotion(now, s, at, faceArg, walkArg, motArg) {
+    const MOT = motArg || MOTION, T = at || token, walk0 = motArg ? walkArg : token.walking;
+    if (!MOT) return false;
+    const face = faceArg || (token.face < 0 ? 'SW' : 'SE'); let f = null; try { f = HeroMotion.frame(MOT, face, now, walk0) } catch (e) { }
     if (!f || !f.src) return false; const im0 = motionPic(f.src); if (!im0.complete || !im0.naturalWidth) return false;
-    const a = MOTION.anchor || [.5, .9375], im = LOOK ? JobLook.pic(im0, f.src, LOOK) : im0, ap = { x: 0, y: 0 };
-    g.save(); g.translate(token.x, token.y + 4);
-    try { window.ProcMotion?.apply(g, 'tactics.' + (token.walking ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: token.walking ? (MOTION.directions?.[face]?.walk?.length || 1) : 1, pose: token.walking ? 'walk' : 'idle' }, now, s, 'town-hero') } catch (e) { }
+    const a = MOT.anchor || [.5, .9375], im = LOOK && !motArg ? JobLook.pic(im0, f.src, LOOK) : im0, ap = { x: 0, y: 0 };
+    g.save(); g.translate(T.x, T.y + 4);
+    try { window.ProcMotion?.apply(g, 'tactics.' + (walk0 ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: walk0 ? (MOT.directions?.[face]?.walk?.length || 1) : 1, pose: walk0 ? 'walk' : 'idle' }, now, s, 'town-hero') } catch (e) { }
     if (f.flipImage) g.scale(-1, 1);
-    if (LOOK) JobLook.aura(g, LOOK, ap, s, now, false);
+    if (LOOK && !motArg) JobLook.aura(g, LOOK, ap, s, now, false);
     g.drawImage(im, -s * a[0], -s * a[1], s, s);
-    if (LOOK) JobLook.aura(g, LOOK, ap, s, now, true);
+    if (LOOK && !motArg) JobLook.aura(g, LOOK, ap, s, now, true);
     g.restore(); return true;
+  }
+  /* v98.233 · the other hero (the sibling) walks one body length behind the party token */
+  function drawFollower(now) {
+    const sz = 76 * (window.MapScale ? MapScale.get('world') : 1);
+    for (const o of window.HeroFollower?.objects({ u: token.x, v: token.y }, null, now, { show: true, project: (u, v) => ({ x: u, y: v }), size: sz * .9, face: (du, dv, pd) => du < -.01 ? 'SW' : du > .01 ? 'SE' : pd, drawFn: (p, dir, walking, mot) => { g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(p.x, p.y + 2, 14, 5, 0, 0, 7); g.fill(); return drawTokenMotion(now, sz, p, dir === 'SW' || dir === 'NW' ? 'SW' : 'SE', walking, mot) } }) || []) o.draw();
   }
   function drawToken(now) {
     const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 76 * (window.MapScale ? MapScale.get('world') : 1);   /* v98.139 · one multiplier for the world map */
@@ -406,7 +412,7 @@
     g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#07080c'; g.fillRect(0, 0, cv.width, cv.height);
     g.setTransform(dpr * cam.z, 0, 0, dpr * cam.z, dpr * (W / 2 - cam.x * cam.z), dpr * (H / 2 - cam.y * cam.z));
     if (terr) g.drawImage(terr, 0, 0, WW, WH);
-    drawTiles(); drawLandmarks(now); drawTrail(); drawMarks(now); drawHover(); drawToken(now); drawTalk(now);
+    drawTiles(); drawLandmarks(now); drawTrail(); drawMarks(now); drawHover(); drawFollower(now); drawToken(now); drawTalk(now);
     drawFog(now); drawBeacon(now);
     drawSky(); drawCompass();
   }

@@ -28,12 +28,12 @@
   function objects(hero, dt, t, o) {
     if (dt == null) { dt = Math.min(.08, Math.max(0, (t - (lastT || t)) / 1000)); lastT = t }   /* pages without their own dt (interior) */
     if (!o.show) { trail = []; pos = null; return [] }
-    const a0 = o.project(0, 0), a1 = o.project(1, 0), gap = o.size ? Math.max(1.2, o.size / Math.max(1, Math.hypot(a1.x - a0.x, a1.y - a0.y))) : GAP;   // one body length behind, whatever the page's map scale
+    const a0 = o.project(0, 0), a1 = o.project(1, 0), dpc = Math.max(1e-6, Math.hypot(a1.x - a0.x, a1.y - a0.y)), gap = o.size ? o.size / dpc : GAP, jump = 110 / dpc, minStep = 2 / dpc;   // dpc = screen px per map unit   // one body length behind, whatever the page's map scale
     const last = trail[trail.length - 1];
-    if (!last || Math.hypot(hero.u - last.u, hero.v - last.v) > MAXJUMP) { trail = [{ u: hero.u, v: hero.v }]; pos = null }
-    else if (Math.hypot(hero.u - last.u, hero.v - last.v) >= .06) trail.push({ u: hero.u, v: hero.v });
+    if (!last || Math.hypot(hero.u - last.u, hero.v - last.v) > jump) { trail = [{ u: hero.u, v: hero.v }]; pos = null }
+    else if (Math.hypot(hero.u - last.u, hero.v - last.v) >= minStep) trail.push({ u: hero.u, v: hero.v });
     let len = 0; for (let i = trail.length - 1; i > 0; i--) { len += Math.hypot(trail[i].u - trail[i - 1].u, trail[i].v - trail[i - 1].v); if (len > gap + 2) { trail = trail.slice(i - 1); break } }
-    if (!pos) { const tg = trail.length > 1 ? target(gap) : { u: hero.u - .7, v: hero.v - .7 }; pos = { u: tg.u, v: tg.v } }
+    if (!pos) { const tg = trail.length > 1 ? target(gap) : { u: hero.u - 22 / dpc, v: hero.v - 22 / dpc }; pos = { u: tg.u, v: tg.v } }
     const tg = trail.length > 1 ? target(gap) : pos, du = tg.u - pos.u, dv = tg.v - pos.v, dist = Math.hypot(du, dv), k = Math.min(1, dt * 14);
     const nu = pos.u + du * k, nv = pos.v + dv * k, step = Math.hypot(nu - pos.u, nv - pos.v);
     if (step > 1e-4) dir = o.face(nu - pos.u, nv - pos.v, dir);
