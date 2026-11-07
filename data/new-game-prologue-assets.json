@@ -1,0 +1,169 @@
+{
+  "kit": "new-game-prologue-v1",
+  "status": "scaffold-only",
+  "repoBase": "assets/new-game-prologue/images/",
+  "worldPages": [
+    {
+      "id": "W01",
+      "title": "โลก Agrenor",
+      "filename": "world-panorama.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "realmsWide",
+      "brief": "แผนภาพโลกกว้าง แสง Elukhor ผ่านเมฆ; ไม่มีป้ายชื่อหรือแผนที่ที่เผยพิกัด"
+    },
+    {
+      "id": "W02",
+      "title": "ดินแดนเหนือ",
+      "filename": "northern-snowlands.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "realms",
+      "brief": "ทุ่งหิมะ ขุนเขา สิ่งมีชีวิตเขตหนาว"
+    },
+    {
+      "id": "W03",
+      "title": "หมู่เกาะตะวันตก",
+      "filename": "western-archipelago.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "realms",
+      "brief": "หมู่เกาะ เรือใบ เมืองท่า อย่ากำหนดชื่อเมืองใหม่"
+    },
+    {
+      "id": "W04",
+      "title": "ดินแดนใต้",
+      "filename": "southern-firelands.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "realms",
+      "brief": "หุบเขาภูเขาไฟ ภูมิประเทศมีความร้อน"
+    },
+    {
+      "id": "W05",
+      "title": "มหาพงไพรตะวันออก",
+      "filename": "eastern-great-forest.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "deepwood",
+      "brief": "ผืนป่ามหึมา ยอดไม้ ซากโบราณที่ไม่เปิดเผยความลับ"
+    },
+    {
+      "id": "W06",
+      "title": "ผู้คนหลายอารยธรรม",
+      "filename": "civilizations.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "towns",
+      "brief": "ชุมชนต่างวัฒนธรรม ไม่วาดให้ทุกเผ่ารวมอยู่ในเมืองเดียวโดยไร้เหตุผล"
+    },
+    {
+      "id": "W07",
+      "title": "Nor’Chorthal",
+      "filename": "norchorthal-valley.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "riverCity",
+      "brief": "แม่น้ำ ไร่นา เมืองหลายขนาด แนวเขาห่างไกล"
+    },
+    {
+      "id": "W08",
+      "title": "ความรุ่งเรืองของมนุษย์",
+      "filename": "human-civilization.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "towns",
+      "brief": "ถนน คาราวาน ช่างฝีมือ ตลาด เมืองมนุษย์"
+    },
+    {
+      "id": "W09",
+      "title": "ศาสตร์การ์ดเวท",
+      "filename": "card-crafting.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "study",
+      "brief": "มือช่างจารึกวงจรบนการ์ด ไม่แสดงต้นแบบโบราณหรือ Vaelari"
+    },
+    {
+      "id": "W10",
+      "title": "การ์ดในชีวิตและการเดินทาง",
+      "filename": "traveler-card.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "journey",
+      "brief": "คาราวานใช้การ์ดเวทป้องกันภัย พลังมาจากผู้ใช้ ไม่ใช่การ์ดสร้างพลังเอง"
+    },
+    {
+      "id": "W11",
+      "title": "เรื่องเล่าของนักเดินทาง",
+      "filename": "travelers-stories.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "roadOut",
+      "brief": "นักเดินทางและเส้นทางหลายภูมิประเทศ เชื่อมภาพต่อเนื่อง"
+    },
+    {
+      "id": "W12",
+      "title": "ถนนสู่ Fernvale",
+      "filename": "road-to-fernvale.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "roadOut",
+      "brief": "ถนนชนบทต่อเนื่องจากภาพก่อนหน้า ค่อยเห็นหมู่บ้านไกล ๆ"
+    },
+    {
+      "id": "W13",
+      "title": "Fernvale",
+      "filename": "fernvale-morning.webp",
+      "size": "1920x1080",
+      "source": "TO_CREATE",
+      "enabled": false,
+      "sceneArtFallback": "fernvale",
+      "brief": "หมู่บ้านยามเช้า ลานฝึกทางซ้าย ป่าด้านหลัง เชื่อมฉากบ้าน/แม่เดิม"
+    }
+  ],
+  "existingFlow": [
+    {
+      "id": "F01",
+      "description": "title-story hero name and bridge",
+      "source": "js/title-screen.js",
+      "status": "EXISTING"
+    },
+    {
+      "id": "F02",
+      "description": "mother wake and first Fernvale quests",
+      "source": "js/story-data.js + js/story-quests.js",
+      "status": "EXISTING"
+    },
+    {
+      "id": "F03",
+      "description": "gift/paths paintings",
+      "source": "assets/intro/story/",
+      "status": "REFERENCE ONLY — opening video art; do not silently reuse as New Game scenes"
+    },
+    {
+      "id": "G01",
+      "description": "enter live Fernvale gameplay",
+      "source": "js/title-screen.js enter(true)",
+      "status": "EXISTING"
+    }
+  ],
+  "rules": [
+    "Maker Logo, assets/intro/agrenor-intro.mp4 and Title Menu are unrelated and must stay unchanged.",
+    "No new unknown city names or ancient card origin revelations.",
+    "Only enable image IDs after tested files are committed. The kit uses code-rendered SceneArt as fallback.",
+    "No changes to save format, tutorial quest progress or game rules."
+  ]
+}

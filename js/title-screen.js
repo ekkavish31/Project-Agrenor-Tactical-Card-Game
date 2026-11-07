@@ -8,7 +8,7 @@
 (function(root){'use strict';
 /* v95.05: told like a picture book — each page is a picture (js/scene-art.js · art:'…') with one or two gentle lines that appear word by word.
    The ancient people are never named; Elukhor is the familiar golden light; nights have the purple moon. bg = fallback image only. */
-const PROLOGUE=[// v95.09: the creator's script (v2, sections ก–ช) — no map with names, no reveal of where people came from, no god appears
+const LEGACY_PROLOGUE=[// v95.09: the creator's script (v2, sections ก–ช) — no map with names, no reveal of where people came from, no god appears
  {art:'ruins',text:'มีนิทานเก่าเรื่องหนึ่ง ที่บางเผ่ายังเล่าสืบกันมา\nว่าครั้งหนึ่ง โลกใบนี้เคยเป็นของผู้คนที่เก่าแก่ยิ่งกว่าใคร'},
  {art:'deepwood',text:'พวกเขาอาศัยอยู่ในป่าลึก ที่แสงจันทร์แทบส่องไม่ถึง\nจนวันหนึ่ง ก็พากันเดินออกมา'},
  {art:'journey',text:'พวกเขาเดินทางออกไปทั่วผืนพิภพ ข้ามขุนเขา ล่องตามสายน้ำ\nบ้างตามหาผืนดินที่ตอบรับความเชื่อของตน บ้างพบหนทางใหม่ระหว่างทาง'},
@@ -27,7 +27,8 @@ const PROLOGUE=[// v95.09: the creator's script (v2, sections ก–ช) — no 
  {art:'roadOut',text:'บ้างมาแสวงหาความมั่งคั่ง บ้างมาตามหาสิ่งที่สูญหาย\nและบ้าง… เพียงต้องการเริ่มต้นใหม่'},
  {art:'fernvale',text:'ริมเส้นทางสู่เมืองใหญ่ มีหมู่บ้านเล็ก ๆ แห่งหนึ่ง\nที่นครลึกลับและอารยธรรมที่สาบสูญ เป็นเพียงเรื่องเล่าจากแดนไกล'},
  {art:'dawn',text:'เช้าวันหนึ่งเริ่มต้นขึ้น เช่นเดียวกับวันอื่น\nและเรื่องราวของเจ้า… ก็เริ่มต้นที่นี่'}
-];
+]; 
+const PROLOGUE=root.NewGamePrologueKit?.pages||LEGACY_PROLOGUE;
 /* after the name: one more page that walks into the village chapter, then the game starts (js/story-data.js 'opening') */
 const BRIDGE={art:'dawn',text:'{hero}…\nเช้าวันแรกก่อนงานเทศกาลเก็บเกี่ยว'};
 const HOWTO=[
