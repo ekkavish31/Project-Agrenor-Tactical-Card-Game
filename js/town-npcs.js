@@ -156,13 +156,16 @@ function talk(n){talking=n;try{if(parent!==window)parent.Story?.talked?.(n.id)}c
  box.querySelector('b').textContent=n.name+(MIND()?.npc?' · '+TIER.filter(t=>(MIND().npc(n.id).aff||0)>=t[0]).at(-1)[1]:'');box.querySelector('[data-ask]').hidden=!MIND()?.ask;box.querySelector('small').textContent=String(n.role).replace(/\{name\}/g,name);box.hidden=false;const c=box.querySelector('canvas'),q=c.getContext('2d');q.clearRect(0,0,120,140);q.save();q.scale(1.25,1.25);drawVillager(q,{...n,small:false,look:{...n.look,small:false}},{x:48,y:108},0,false,'SE');q.restore();show()}
 let extra=0,lineKind='';
 /* ▶ at the end of a line: they may have more to say (up to two more lines from the mind) */
-function more(){if(!LIFE||!MIND()||extra<=0||!talking)return false;extra--;const S=LIFE.save(),r=MIND().talk(talking.id,{period:root.VillageClock?.period(clockHour())||period(),place:'outside',save:S});LIFE.writeSave(S);if(!r.text||r.text===lines[li])return false;lines.push(r.text);li++;show();return true}
-function show(){const p=box.querySelector('p'),s=[...(lines[li]||'')];clearInterval(typing);let i=0;p.textContent='';typing=setInterval(()=>{i+=2;p.textContent=s.slice(0,i).join('');if(i>=s.length){clearInterval(typing);typing=null}},22);box.querySelector('[data-next]').textContent=li<lines.length-1||extra>0?'▶ ถัดไป':'✓ จบ'}
-function next(){if(typing){clearInterval(typing);typing=null;box.querySelector('p').textContent=lines[li];return}if(li<lines.length-1){li++;show()}else if(!more())close()}
-function close(){box.hidden=true;clearInterval(typing);typing=null;if(talking)talking.wait=1.5;talking=null}
+function more(){if(!LIFE||!MIND()||extra<=0||!talking)return false;extra--;const S=LIFE.save(),r=MIND().talk(talking.id,{period:root.VillageClock?.period(clockHour())||period(),place:'outside',save:S});LIFE.writeSave(S);if(!r.text||lines.includes(r.text))return false;lines.push(r.text);TT.add([r.text]);TT.nextPage();btn();return true}
+/* v98.179 · all of the villager's lines are one passage typed by DialogueFX (rapid + voice, pages split at sentence ends; a full page waits for ▶ / Space) */
+let TT=null;
+function btn(){box.querySelector('[data-next]').textContent=(TT&&TT.hasMore())||extra>0?'▶ ถัดไป':'✓ จบ'}
+function show(){TT?.stop();TT=root.DialogueFX.create(box.querySelector('p'),{maxLines:4,voice:talking?.id||null,onPageDone:btn});TT.load(lines);TT.start();btn()}
+function next(){if(TT&&TT.finish())return;if(TT&&TT.hasMore()){TT.nextPage();btn();return}if(!more())close()}
+function close(){box.hidden=true;clearInterval(typing);typing=null;TT?.stop();TT=null;if(talking)talking.wait=1.5;talking=null}
 box.querySelector('[data-next]').onclick=next;
 /* v97.36 · "ถามเรื่อง" on the village map too: each press asks the next topic (news → people → the road) through Mind.ask; the name shows the relationship tier */
-let askN=0;box.querySelector('[data-ask]').onclick=()=>{if(!talking||!MIND()?.ask)return;const tp=['news','people','road'][askN++%3],t=MIND().ask(talking.id,tp);MIND().save?.();if(!t)return;if(typing){clearInterval(typing);typing=null}lines.push(t.replace(/\{name\}/g,heroName()));li=lines.length-1;show()};
+let askN=0;box.querySelector('[data-ask]').onclick=()=>{if(!talking||!MIND()?.ask)return;const tp=['news','people','road'][askN++%3],t=MIND().ask(talking.id,tp);MIND().save?.();if(!t)return;const tx=t.replace(/\{name\}/g,heroName());TT?.finish();lines.push(tx);TT.add([tx]);TT.nextPage();btn()};
 const TIER=[[-99,'ไม่ไว้ใจ'],[-1,'คนแปลกหน้า'],[1,'คนรู้จัก ♡'],[3,'คุ้นเคย ♥'],[6,'เพื่อน ♥♥'],[9,'เพื่อนรัก 💛']];box.querySelector('[data-close]').onclick=close;
 document.addEventListener('keydown',e=>{if(box.hidden)return;if(e.key==='Escape'){e.stopImmediatePropagation();close()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();next()}},true);
 // clicks on a villager are taken before the town's own walk/enter handling

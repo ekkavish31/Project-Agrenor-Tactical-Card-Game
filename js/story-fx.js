@@ -68,29 +68,29 @@ function flash(color){const f=$('.cs-flash');f.style.background=color||'#fff';f.
 function burst(opt={}){const r=el.getBoundingClientRect(),x=(opt.x??.5)*r.width,y=(opt.y??.45)*r.height;parts.burst(x,y,opt);if(opt.ring!==false){const ring=$('.cs-ring');ring.style.left=x+'px';ring.style.top=y+'px';ring.style.setProperty('--ring',opt.ringColor||'rgba(255,214,140,.9)');ring.classList.remove('on');void ring.offsetWidth;ring.classList.add('on')}}
 
 /* ---------------- text ---------------- */
-let typing=null,full='';
+let T=null,full='';   /* v98.179 · T = DialogueFX typer of the text box: pages split at sentence boundaries, rapid typing + voice blips */
 /* v97.10 · console cutscene controls: AUTO (next line by itself after a reading pause · remembered), hold ⏩ / Ctrl to fast-forward,
    ☰ บันทึก / L = backlog of the lines shown in this scene */
 let history=[],autoT=0,autoOn=(()=>{try{return localStorage.getItem('projectA.csAuto')==='1'}catch{return false}})(),curNext=null,ffT=0;
 function autoNext(){clearTimeout(autoT);if(!autoOn||!curNext)return;autoT=setTimeout(()=>{if(autoOn&&curNext&&$('.cs-log')?.hidden!==false)curNext()},1400+Math.min(2600,[...full].length*38))}
-function setAuto(on){autoOn=on;try{localStorage.setItem('projectA.csAuto',on?'1':'0')}catch{}$('.cs-auto-btn')?.classList.toggle('on',on);if(on&&!typing)autoNext();else if(!on)clearTimeout(autoT)}
+function setAuto(on){autoOn=on;try{localStorage.setItem('projectA.csAuto',on?'1':'0')}catch{}$('.cs-auto-btn')?.classList.toggle('on',on);if(on&&!(T&&T.busy()))autoNext();else if(!on)clearTimeout(autoT)}
 function ff(on){clearInterval(ffT);$('.cs-ff-btn')?.classList.toggle('on',!!on);if(!on||!curNext)return;ffT=setInterval(()=>{if(!curNext){clearInterval(ffT);return}if(!finishTyping())curNext()},110)}
 function logToggle(force){const L=$('.cs-log');if(!L)return false;const open=force??L.hidden;L.hidden=!open;if(open){clearTimeout(autoT);L.querySelector('.cs-log-list').innerHTML=history.map(h=>`<p>${h.name?`<b>${esc(h.name)}</b> `:''}${esc(h.text).replace(/\n/g,'<br>')}</p>`).join('');const li=L.querySelector('.cs-log-list');li.scrollTop=li.scrollHeight}else autoNext();return true}
 const SEG=(()=>{try{return new Intl.Segmenter('th',{granularity:'word'})}catch{return null}})();
 function speaker(who){const S=Cutscene.speakers[who]||{};const name=typeof S.name==='function'?S.name():S.name;return {name:name??(who==='hero'?heroName():who||''),portrait:typeof S.portrait==='function'?S.portrait():S.portrait,color:S.color||'#6b5a3a',look:S.look,bust:S.bust}}
-function showLine(line){const box=$('.cs-box'),sp=speaker(line.who);box.hidden=false;clearTimeout(autoT);history.push({name:line.who?sp.name:'',text:fill(line.text)});box.classList.toggle('cs-narr',!line.who);
+function showLine(group){const line=group[0],box=$('.cs-box'),sp=speaker(line.who);box.hidden=false;clearTimeout(autoT);for(const g of group)history.push({name:g.who?sp.name:'',text:fill(g.text)});box.classList.toggle('cs-narr',!line.who);
  /* v95.20: half-body portraits left/right with faces, emotes, glow and moods (js/story-actors.js) */
  const hint=root.StoryActors?.line(el,line,sp)||{};if(hint.shake)shake(false);if(hint.flash)flash(hint.flash);
  $('.cs-name').textContent=line.who?sp.name:'';const pt=$('.cs-portrait');pt.hidden=!line.who;
  if(line.who){if(sp.portrait)pt.innerHTML=`<img src="${esc(sp.portrait)}" alt="">`;else{pt.innerHTML=`<span>${esc([...sp.name][0]||'?')}</span>`;pt.style.setProperty('--pc',sp.color)}}
  box.classList.remove('cs-in');void box.offsetWidth;box.classList.add('cs-in');
- full=fill(line.text);const t=$('.cs-text');clearTimeout(typing);typing=null;if(reduced()){t.textContent=full;autoNext();return}
- /* v95.05: word by word (Thai word breaks), never letter by letter */
- /* v95.07: fast inside a phrase, a beat at each space, longer after … ? ! and line breaks */
- const words=SEG?[...SEG.segment(full)].map(x=>x.segment):full.split(/(\s+)/);let i=0;t.textContent='';
- const gap=w=>/\n/.test(w)?600:/^\s+$/.test(w)?320:Math.min(150,45+[...w].length*12)+(/(…|\.\.\.)$/.test(w)?500:/[?!]$/.test(w)?380:0);
- const step=()=>{i++;t.textContent=words.slice(0,i).join('');if(i>=words.length){typing=null;root.StoryActors?.talk(false);autoNext();return}typing=setTimeout(step,gap(words[i-1]))};root.StoryActors?.talk(!!line.who);typing=setTimeout(step,60)}
-function finishTyping(){if(!typing)return false;clearTimeout(typing);typing=null;root.StoryActors?.talk(false);$('.cs-text').textContent=full;return true}
+ const t=$('.cs-text');T?.stop();
+ /* v98.179: the consecutive lines of one speaker are one passage: rapid typing + a voice, split into pages only at sentence ends; a full page waits for the player */
+ T=root.DialogueFX.create(t,{maxLines:innerHeight<520?3:4,voice:line.who||null,
+  onPageStart:txt=>{full=txt;clearTimeout(autoT);root.StoryActors?.talk(!!line.who)},
+  onPageDone:skipped=>{root.StoryActors?.talk(false);box.classList.toggle('cs-more',!!T?.hasMore());if(!skipped)autoNext()}});
+ T.load(group.map(g=>fill(g.text)));T.start()}
+function finishTyping(){return !!T&&T.finish()}
 
 /* ---------------- play ---------------- */
 async function showCard(card){const c=$('.cs-card');c.querySelector('small').textContent=fill(card.kicker||'');c.querySelector('h2').textContent=fill(card.title||'');c.hidden=false;c.classList.remove('cs-in');void c.offsetWidth;c.classList.add('cs-in');await wait(reduced()?900:2300);c.classList.add('cs-out');await wait(reduced()?0:500);c.hidden=true;c.classList.remove('cs-out')}
@@ -101,14 +101,14 @@ function play(scene){if(!scene)return Promise.resolve();if(playing)return playin
   el.hidden=false;root.StoryActors?.begin(el);document.body.classList.add('cs-open');parts.size();parts.start();
   setArt(scene.art);setBg(scene.bg,scene.pan,true);setLook({tint:scene.tint||'',fx:scene.fx||[]});$('.cs-box').hidden=true;
   requestAnimationFrame(()=>el.classList.add('cs-live'));
-  const end=async()=>{if(done)return;done=true;finishTyping();el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();setArt(null);root.StoryActors?.end();document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
+  const end=async()=>{if(done)return;done=true;T?.stop();T=null;el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();setArt(null);root.StoryActors?.end();document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
    const st=$('.cs-stage');st.dataset.tint='';st.className='cs-stage';el.querySelectorAll('.cs-bg').forEach(b=>{b.dataset.src='';b.style.backgroundImage=''});
    el.onclick=null;document.removeEventListener('keydown',key,true);document.removeEventListener('keyup',keyUp,true);curNext=null;ff(false);clearTimeout(autoT);playing=null;resolve()};
   /* v98.16 · "ข้ามฉาก" skips only to the next part of a scene (a line marked seg:true) — e.g. the opening narration → the talk with mum; the last part ends the scene */
-  const skip=()=>{if(done)return;let j=-1;for(let k=i+1;k<lines.length;k++)if(lines[k].seg){j=k;break}if(j<0){end();return}if(busy)return;finishTyping();clearTimeout(autoT);i=j-1;next()};
-  const next=async()=>{if(done||busy)return;if(finishTyping())return;i++;if(i>=lines.length)return end();const line=lines[i];applyLine(line);
+  const skip=()=>{if(done)return;let j=-1;for(let k=i+1;k<lines.length;k++)if(lines[k].seg){j=k;break}if(j<0){end();return}if(busy)return;T?.stop();T=null;clearTimeout(autoT);i=j-1;next()};
+  const next=async()=>{if(done||busy)return;if(finishTyping())return;if(T&&T.hasMore()){T.nextPage();return}i++;if(i>=lines.length)return end();const line=lines[i];applyLine(line);
    if(line.wait){busy=true;$('.cs-box').hidden=true;await wait(reduced()?150:line.wait);busy=false;if(!line.text)return next()}
-   if(line.text)showLine(line);else next()};
+   if(line.text){const group=[line],plain=l=>l&&l.text&&!(l.bg||l.art||l.pan||l.tint!=null||l.fx||l.flash||l.shake||l.burst||l.wait||l.seg||l.card);while(plain(line)&&plain(lines[i+1])&&(lines[i+1].who||'')===(line.who||''))group.push(lines[++i]);showLine(group)}else next()};
   const key=e=>{if(el.hidden)return;const logOpen=!$('.cs-log').hidden;
    if(e.key==='Control'){if(!e.repeat)ff(true);return}
    if(e.key==='l'||e.key==='L'){e.preventDefault();e.stopPropagation();logToggle();return}

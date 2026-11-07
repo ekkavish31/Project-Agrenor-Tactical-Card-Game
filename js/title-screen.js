@@ -210,16 +210,16 @@ let revealUntil=0;
 /* v95.07 · pacing: words inside a phrase run quickly; a space (Thai phrase/sentence break) holds a beat, "…" and ?/! hold longer, a new line longest */
 const PACE={word:.05,perChar:.012,maxWord:.16,space:.38,ellipsis:.6,mark:.45,line:.7};
 function pauseAfter(w){if(/^\s+$/.test(w))return PACE.space;let p=Math.min(PACE.maxWord,PACE.word+[...w].length*PACE.perChar);if(/(…|\.\.\.)$/.test(w))p+=PACE.ellipsis;else if(/[?!]$/.test(w))p+=PACE.mark;return p}
-function reveal(box,text){const lines=String(text).split('\n');let d=.25,html='';
- for(const [li,line] of lines.entries()){if(li)d+=PACE.line;html+='<span class="ts-ln">'+wordsOf(line).map(w=>{const h=`<span class="ts-w" style="animation-delay:${d.toFixed(2)}s">${esc(w)}</span>`;d+=pauseAfter(w);return h}).join('')+'</span>'}
- box.innerHTML=html;box.classList.remove('ts-all');revealUntil=performance.now()+d*1000+600;if(reduced)box.classList.add('ts-all')}
+/* v98.179 · prologue pages use the shared DialogueFX typer (rapid typing + voice, split at sentence ends if a page would overflow) instead of the per-word CSS fade */
+let TS=null;
+function reveal(box,text){TS?.stop();box.innerHTML='';box.classList.add('ts-all');TS=root.DialogueFX.create(box,{maxLines:7,voice:null});TS.load([String(text)]);TS.start()}
 function showPage(p){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text'),bg=st.querySelector('.ts-story-bg'),pa=artPlayer(st);
  if(pa&&p.art&&pa.show(p.art)){bg.style.backgroundImage='none';bg.classList.remove('ts-pan')}else if(p.bg){bg.classList.remove('ts-pan');void bg.offsetWidth;bg.style.backgroundImage=`url("${p.bg}")`;bg.classList.add('ts-pan')}
  reveal(box,p.text)}
 function next(){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text');
- if(performance.now()<revealUntil&&!box.classList.contains('ts-all')){box.classList.add('ts-all');revealUntil=0;return}// first press shows the whole page
+ if(TS&&TS.finish())return;if(TS&&TS.hasMore()){TS.nextPage();return}// 1st press completes the typing, then each further press shows the next page of a long passage
  page++;if(page>=PROLOGUE.length){storyEnd();return}showPage(PROLOGUE[page])}
-function storyEnd(){const st=title.querySelector('.ts-story'),f=st.querySelector('.ts-name');st.querySelector('.ts-story-text').textContent='';st.querySelector('.ts-story-hint').hidden=true;st.querySelector('.ts-skip').hidden=true;f.hidden=false;
+function storyEnd(){TS?.stop();TS=null;const st=title.querySelector('.ts-story'),f=st.querySelector('.ts-name');st.querySelector('.ts-story-text').textContent='';st.querySelector('.ts-story-hint').hidden=true;st.querySelector('.ts-skip').hidden=true;f.hidden=false;
  const input=f.elements.hero;input.value=game()?.village?.heroName||'';setTimeout(()=>input.focus(),30);
  f.onsubmit=async e=>{e.preventDefault();const n=input.value.trim().slice(0,16)||'นักผจญภัย';if(game()?.village){game().village.heroName=n;doSave()}root.HeroIdentity?.syncHeroName?.();
   f.hidden=true;showPage({...BRIDGE,text:BRIDGE.text.replace('{hero}',n)});st.onclick=null;st.onkeydown=null;await wait(reduced?600:4200);enter(true)}}
