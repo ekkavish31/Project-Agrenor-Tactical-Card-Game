@@ -18,6 +18,13 @@ function activeHide(){return !!window.TitleScreen?.active||inside||s.mode==='bat
 /* v98.198 · keyboard focus follows the visible frame: after entering/leaving a place the iframe that is now on screen was never focused (the key presses went to the hidden one or the parent), so WASD/arrows did nothing until the player clicked */
 let lastFocusKey='';
 function focusActive(force){if(host.hidden||modalOpen())return;const f=marketOpen?marketFrame:frame;try{if(document.activeElement&&document.activeElement!==document.body&&document.activeElement!==f)document.activeElement.blur?.();f.contentWindow?.focus()}catch{}}
+/* v98.240 · safety net for the scene change: if a key press still lands on the page itself (focus was never moved into the iframe that is on screen, or was lost when it reloaded) it is handed to that iframe and the iframe is focused — no click on the screen needed */
+for(const type of ['keydown','keyup'])document.addEventListener(type,e=>{
+ if(!e.isTrusted||host.hidden||modalOpen()||e.defaultPrevented)return;
+ const tg=e.target;if(tg&&tg!==document.body&&tg!==document.documentElement)return;
+ const f=marketOpen?marketFrame:frame,w=f?.contentWindow;if(!w||f.hidden)return;
+ try{focusActive();w.document.dispatchEvent(new w.KeyboardEvent(type,{key:e.key,code:e.code,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,repeat:e.repeat,bubbles:true,cancelable:true}));e.preventDefault();e.stopPropagation()}catch{}
+},true);
 function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden;frame.hidden=marketOpen;marketFrame.hidden=!marketOpen;
  {const fk=JSON.stringify([!host.hidden,marketOpen,placeId,ready,marketReady,modalOpen()]);if(fk!==lastFocusKey){lastFocusKey=fk;setTimeout(focusActive,0);setTimeout(focusActive,250)}}
  const vis=JSON.stringify([!host.hidden,marketOpen,ready,marketReady,modalOpen()]);if(vis!==lastVisible){lastVisible=vis;send({type:'visibility',visible:!host.hidden&&!marketOpen&&!modalOpen()});if(marketReady)post(marketFrame,{type:'visibility',visible:!host.hidden&&marketOpen&&!modalOpen()})}

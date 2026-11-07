@@ -47,7 +47,7 @@
   }q.globalCompositeOperation='source-over';
   g.drawImage(holeCv,0,0,cw,ch,x,y,w,h)}
  function draw(g,im,crop,rect,hero){if(!im?.complete||!im.naturalWidth)return;let alpha=1,hole=null;const [x,y,w,h]=rect;
-  if(hero&&!(root.DepthStyle&&['solid','silhouette'].includes(root.DepthStyle.get().tall))){const m=mask(im),src=crop||[0,0,im.naturalWidth,im.naturalHeight],inv=g.getTransform().inverse();
+  if(hero&&heroScreen&&(heroPainted||extraScreens.length)&&!(root.DepthStyle&&['solid','silhouette'].includes(root.DepthStyle.get().tall))){const m=mask(im),src=crop||[0,0,im.naturalWidth,im.naturalHeight],inv=g.getTransform().inverse();
    /* v98.226 · the lead hero AND the follower each get their own see-through window */
    for(const sc of [heroPainted?heroScreen:null,...extraScreens]){if(!sc)continue;const p=sc.matrixTransform(inv);if(p.y>=y+h*.98)continue;for(const lift of [12,30,48]){const px=p.x,py=p.y-lift;if(px<x||px>x+w||py<y||py>y+h)continue;let opaque=true;if(m){const sx=(src[0]+(px-x)/w*src[2])/im.naturalWidth,sy=(src[1]+(py-y)/h*src[3])/im.naturalHeight,ix=Math.floor(sx*m.w),iy=Math.floor(sy*m.h);opaque=(m.data[(iy*m.w+ix)*4+3]||0)>45}if(opaque){(hole||(hole=[])).push({x:p.x,y:p.y-44});break}}}}
   g.save();g.globalAlpha*=alpha;if(hole){holeDraw(g,im,crop,rect,hole);g.restore();return alpha}if(im._townHovered)outline(g,im,crop,rect,3);if(crop)g.drawImage(im,...crop,...rect);else{if(cur&&cur.px)g.imageSmoothingEnabled=false;const bs=blendFor(im)||im;g.drawImage(sharpFor(g,bs,w)||lodFor(g,bs,w)||bs,...rect)}g.restore();return alpha;
