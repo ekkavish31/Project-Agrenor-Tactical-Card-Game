@@ -62,7 +62,7 @@
   const ALLY_OWN = { bram: ['se', 'sw', 'ne', 'nw'], luna: ['se', 'sw', 'ne', 'nw'], kier: ['se', 'sw', 'ne', 'nw'] };   /* v97.65: allies that have their own picture for every diagonal (the rest are mirrored in code) */
   const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv, ctl] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1), control: key !== 'sib' && (ctl === '1' || Q.get('ctl') === '1') } : null }).filter(Boolean);
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
-  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null;
+  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null;
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -139,7 +139,9 @@
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
   }
-  function refresh() { if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null; allyBar(); hudSync(); handSync() }
+  function refresh() { if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null;
+    /* v98.244 · second layer: where the farthest move card in hand would take you */
+    farInfo = st.turn === 'hero' ? FB.farMove?.(st) || null : null; farMap = farInfo ? FB.reach(st, FB.actor(st), st.mp + farInfo.move) : null; allyBar(); hudSync(); handSync() }
   /* ---------- camera director ----------
      cam = world point at the screen centre + zoom. Normal: frame both fighters (shifted right/up so the HUD and the hand don't cover them).
      Cinematic: push in on attacker + target. Shake and roll kick are added on top. */
@@ -276,8 +278,8 @@
   #fbCoach button{padding:6px 12px;border-radius:9px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:700 13px inherit;font-family:inherit;cursor:pointer;white-space:nowrap}#fbCoach button.x{background:none;border:none;padding:4px 6px;color:#8a6a3a}
   #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px AgThai,system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
   #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
-  #fbFace [data-f]{position:fixed;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid #f3e9c9aa;background:#1b302ae6;color:#f3e9c9;font:22px AgThai,system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:0 4px 12px #0008;transition:transform .12s,background .12s}
-  #fbFace [data-f] span{display:inline-block}#fbFace [data-f].on{background:#c9893a;border-color:#ffe2a8;transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
+  #fbFace [data-f]{position:fixed;width:58px;height:58px;margin:-29px 0 0 -29px;padding:0;border:0;background:none;color:#f3e9c9;font:22px AgThai,system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:0 4px 12px #0008;transition:transform .12s,background .12s}
+  #fbFace [data-f] span{display:inline-block}#fbFace [data-f] img{width:100%;height:100%;display:block;filter:drop-shadow(0 3px 6px #000a) brightness(.78) saturate(.8);transition:filter .12s}#fbFace [data-f].on img{filter:drop-shadow(0 0 10px #ffd978) brightness(1.12)}#fbFace [data-f].on{transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
   #fbFace .bar{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}#fbFace .bar button{padding:8px 16px;border-radius:10px;border:1px solid #b9c48a88;background:#1b302af2;color:#f3e9c9;font:600 14px AgThai,system-ui,"Noto Sans Thai",sans-serif;cursor:pointer}#fbFace .bar .ok{background:#c9893a;border-color:#ffe2a8}#fbFace .bar small{opacity:.7;font-weight:400}
   #fbPause{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px)}#fbPause .box{display:flex;flex-direction:column;gap:8px;min-width:280px;max-width:92vw;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f3e9c9;font:14px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 16px 40px #000a}
   #fbPause b{font-size:18px}#fbPause small{color:#cdbb92}#fbPause button{padding:9px 14px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:inherit;text-align:left;cursor:pointer}#fbPause button:hover:not(:disabled){background:#2d4a40}#fbPause button.warn{border-color:#e2705f88;color:#ffc2b4}#fbPause button:disabled{opacity:.45}#fbPause .keys{font-size:12.5px;line-height:1.7;color:#d8caa0;padding:6px 4px}#fbPause .opt{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#d8caa0;padding:4px}#fbPause .opt[hidden]{display:none}#fbPause .opt label{display:flex;align-items:center;justify-content:space-between;gap:10px}#fbPause .opt label:has(input[type=checkbox]){justify-content:flex-start}
@@ -925,6 +927,7 @@
   }
   async function walkTo(to) {
     const p = FB.autoWalk(st, to); if (p.reason) { flash(p.reason); return }
+    if (p.moveCard != null && farInfo && farMap?.has(to.u + ',' + to.v)) p.moveCard = farInfo.index;   /* v98.244 · beyond the free walk: play the card the yellow layer showed (the farthest one), not the smallest that would do */
     if (p.moveCard != null) { const b = handBtn('movement', st.deck.movement.hand[p.moveCard].uid); if (!b) return; await cardClick(b) }
     await heroMove(to);
   }
@@ -944,7 +947,7 @@
       const h = unit || FB.hero(st), f0 = h.face, d0 = h.dir, c = screenOf(h), box = document.createElement('div'); box.id = 'fbFace';
       const btns = FACES.map(([f, du, dv]) => { const p = screenOf({ vu: h.vu + du * .95, vv: h.vv + dv * .95 }); return { f, x: p.x, y: p.y, ang: Math.atan2(p.y - c.y, p.x - c.x) } });
       box.innerHTML = `<div class="tip">หันหน้าไปทางไหน? <small>ศัตรูตีจากด้านหลัง ×1.2 · ด้านข้าง ×1.1</small></div>` +
-        btns.map(b => `<button data-f="${b.f}" style="left:${b.x}px;top:${b.y}px" title="หันไปทางนี้แล้วจบเทิร์น"><span style="transform:rotate(${(b.ang * 180 / Math.PI).toFixed(0)}deg)">➜</span></button>`).join('') +
+        btns.map(b => `<button data-f="${b.f}" style="left:${b.x}px;top:${b.y}px" title="หันไปทางนี้แล้วจบเทิร์น"><img src="assets/icons/pack/arrow.webp" alt="" draggable="false" style="transform:rotate(${(b.ang * 180 / Math.PI + 45).toFixed(0)}deg)"></button>`).join('') +
         `<div class="bar"><button class="ok">✓ จบเทิร์น <small>Enter</small></button><button class="no">ยกเลิก <small>Esc</small></button></div>`;
       document.body.append(box); facing = box;
       const set = f => { h.face = f; h.dir = f; box.querySelectorAll('[data-f]').forEach(b => b.classList.toggle('on', b.dataset.f === f)) };
@@ -1060,7 +1063,7 @@
     const S = actState(u, t), P = floatPos(S, t), h = size * (W.scale || .63), w = h * W.size[0] / W.size[1], x = cx + S.fs * size * P.x, y = top + size * P.y;
     g.save();
     if (P.glow > 0) { const r = size * .22, gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(255,230,170,${.45 * P.glow})`); gr.addColorStop(1, 'rgba(255,200,120,0)'); g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.globalCompositeOperation = 'source-over' }
-    g.translate(x, y); g.rotate(S.fs * P.a * Math.PI / 180); g.drawImage(i, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore();
+    g.translate(x, y); g.rotate(S.fs * (['NE', 'NW'].includes(u.dir) && P.a > 0 ? P.a * .4 : P.a) * Math.PI / 180); g.drawImage(i, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore();
   }
   function actionTrail(g, u, t, wkey, cx, top, size, gy, cyN) {
     if (!wkey) return; const S = actState(u, t), { act, e, fs } = S; if (!['strike', 'guard'].includes(act)) return;
@@ -1076,15 +1079,17 @@
         const gr = g.createRadialGradient(x, y, 0, x, y, size * .2); gr.addColorStop(0, `rgba(${col},${.7 * (1 - k)})`); gr.addColorStop(1, `rgba(${col},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x, y, size * .2, 0, 7); g.fill();
       } else {
         g.save(); g.translate(cx, cy); g.scale(fs, 1);
+        /* v98.244 · the swing is aimed along the way the attacker really faces on the grid (SE/SW = down-screen, NE/NW = up-screen): ph = that direction's screen angle in the mirrored frame */
+        const ph = ['NE', 'NW'].includes(u.dir) ? -.46 : .46; g.rotate(ph);
         if (kind === 'pierce') { const len = size * .5 * aEase(e / 100); [[2.5, .5], [6, .35], [12, .2]].forEach(([wd, al]) => { g.strokeStyle = `rgba(${col},${al * fade})`; g.lineWidth = wd; g.beginPath(); g.moveTo(size * .08, size * .06); g.lineTo(size * .08 + len, size * .06); g.stroke() }) }
         else {
-          const th0 = -2.5, th1 = .9, hd = th0 + (th1 - th0) * aEase(e / 110), tl = Math.max(th0, hd - 1.5), N = 16, wd = kind === 'blunt' ? 16 : 9;
+          const th0 = -2.4, th1 = .45, hd = th0 + (th1 - th0) * aEase(e / 110), tl = Math.max(th0, hd - 1.5), N = 16, wd = kind === 'blunt' ? 16 : 9;
           for (let j = 0; j < N; j++) { const a0 = tl + (hd - tl) * j / N, a1 = tl + (hd - tl) * (j + 1) / N, q = (j + 1) / N;
             for (const [wm, am, c] of [[2.2, .22, col], [1, .55, col], [.35, .95, '255,255,245']]) { g.strokeStyle = `rgba(${c},${am * q * fade})`; g.lineWidth = wd * wm * q; g.beginPath(); g.arc(0, 0, R, a0, a1 + .03); g.stroke() } }
         }
         g.restore();
         if (e > 70 && e < 260) {
-          const k = (e - 70) / 190, ix = cx + fs * R * Math.cos(.9), iy = cy + R * Math.sin(.9), r = size * (.1 + .12 * k), gr = g.createRadialGradient(ix, iy, 0, ix, iy, r);
+          const k = (e - 70) / 190, ix = cx + fs * R * Math.cos(.45 + (['NE', 'NW'].includes(u.dir) ? -.46 : .46)), iy = cy + R * Math.sin(.45 + (['NE', 'NW'].includes(u.dir) ? -.46 : .46)), r = size * (.1 + .12 * k), gr = g.createRadialGradient(ix, iy, 0, ix, iy, r);
           gr.addColorStop(0, `rgba(255,250,225,${.8 * (1 - k)})`); gr.addColorStop(1, 'rgba(255,190,110,0)'); g.fillStyle = gr; g.beginPath(); g.arc(ix, iy, r, 0, 7); g.fill();
           if (kind === 'blunt') { g.strokeStyle = `rgba(255,220,170,${.55 * (1 - k)})`; g.lineWidth = 3; g.beginPath(); g.ellipse(cx + fs * size * .3, gy, size * (.08 + .3 * k), size * (.03 + .1 * k), 0, 0, 7); g.stroke() }
         }
@@ -1207,6 +1212,7 @@
       const col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k]; if (col) { g.fillStyle = col; g.fill() }
       g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke();
     }
+    if (farMap && !busy) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }   /* yellow = needs the farthest move card */
     if (reachMap && !busy) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
     /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
     if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); poly(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
