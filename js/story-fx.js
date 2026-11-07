@@ -10,9 +10,9 @@ const reduced=()=>root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const heroName=()=>{try{return (typeof s!=='undefined'&&s.village?.heroName)||'นักผจญภัย'}catch{return 'นักผจญภัย'}};
 const sibName=()=>{try{return (typeof s!=='undefined'&&s.village?.siblingName)||'น้อง'}catch{return 'น้อง'}};
-/* v98.230 · {hero} lead's name · {sib} the other hero (younger sibling) · {polite} ครับ / ค่ะ by the lead's look */
+/* v98.230 · {hero} lead's name · {sib} the other hero · {sibrel} พี่ชาย (when you play the sister) / น้องสาว (when you play the brother) · {polite} ครับ / ค่ะ by the lead's look */
 const polite=()=>{try{return root.HeroVariant?.get?.()==='female'?'ค่ะ':'ครับ'}catch{return 'ครับ'}};
-const fill=t=>String(t??'').replace(/\{hero\}/g,heroName()).replace(/\{sib\}/g,sibName()).replace(/\{polite\}/g,polite());
+const fill=t=>String(t??'').replace(/\{hero\}/g,heroName()).replace(/\{sib\}/g,sibName()).replace(/\{sibrel\}/g,root.HeroVariant?.get?.()==='female'?'พี่ชาย':'น้องสาว').replace(/\{polite\}/g,polite());
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* ---------------- particles ---------------- */

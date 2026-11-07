@@ -28,3 +28,5 @@
 | `Agrenor_Area_Coordinates_v10a__*.csv` | พิกัดพื้นที่ (Spatial_Records, Area_Summary, Lore_Notes, Data_Dictionary, Governance) |
 
 ต้นฉบับ: ไฟล์ที่ผู้สร้างเกมส่งมา 30 ต.ค. 2026
+
+> 8 พ.ย. 2026: `docs/lore/CURRENT-ERA-CANON.md` ถูกแก้ตามผู้ใช้ให้ตัวเอกเป็นพี่ชาย+น้องสาว (ทีมขั้นต่ำสองคน) ไฟล์ .docx ต้นฉบับในโฟลเดอร์นี้ **ยังไม่ได้แก้** จึงต่างจากฉบับข้อความ
