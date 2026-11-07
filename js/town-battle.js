@@ -1009,6 +1009,12 @@
     const set = A.directions[u.dir] || A.directions.SE, name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
     if (name === 'walk') return window.HeroMotion?.frame(A, u.dir, t, true) || set.idle;
     if (name === 'idle') return window.HeroMotion?.frame(A, u.dir, t, false) || set.idle;
+    /* v98.243 · the poses saved in the editor (windup / strike / guard / hit / down, per direction — set[pose+'Frames']) are played from the moment the pose starts and held on the last frame;
+       only a pose the editor has no pictures for falls back to the still idle frame moved by poseMotion() */
+    if (u._lp !== name) { u._lp = name; u._pt = t }
+    const ed = set[name + 'Frames'];
+    if (!OLDPOSE && ed?.length) { u._edPose = ed.length > 1; const e = t - (u._pt || t), total = ed.reduce((n, f) => n + (Number(f.ms) || 110), 0); return e >= total ? ed.at(-1) : (window.StudioWalks?.frame(ed, e) || ed[0]) }
+    u._edPose = false;
     if (!OLDPOSE) return set.idleFrames?.[0] || set.idle;                 // action poses: still frame of the new outfit, moved by poseMotion()
     const fr = set[name + 'Frames']; if (fr?.length) return name === 'down' ? fr.at(-1) : (window.StudioWalks?.frame(fr, t) || fr[0]);
     return set[name] || set.idle;
@@ -1018,7 +1024,7 @@
     const name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
     if (u._lp !== name) { u._lp = name; u._pt = t }
     const e = t - (u._pt || t), fs = ['SE', 'NE'].includes(u.dir) ? 1 : -1, ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3), m = { dx: 0, dy: 0, rot: 0, sx: 1, sy: 1, wpn: 0 };
-    if (OLDPOSE) return m;
+    if (OLDPOSE || u._edPose) return m;   /* a multi-frame editor pose carries its own motion; a single picture still gets the lean / lunge */
     if (name === 'windup') { const k = ease(e / 200); Object.assign(m, { dx: -fs * 7 * k, rot: -fs * .15 * k, sx: 1 + .03 * k, sy: 1 - .05 * k, wpn: -fs * 75 * k }) }
     else if (name === 'strike') { const k = ease(e / 90), d = 1 - ease((e - 220) / 320); Object.assign(m, { dx: fs * 18 * k * d, dy: -2 * k * d, rot: fs * .17 * k * d, sx: 1 - .03 * k * d, sy: 1 + .05 * k * d, wpn: fs * (-75 + 170 * k) * d }) }
     else if (name === 'hit') { const k = Math.exp(-e / 170); Object.assign(m, { dx: -fs * 9 * k, rot: -fs * .13 * k, sy: 1 - .04 * k }) }
