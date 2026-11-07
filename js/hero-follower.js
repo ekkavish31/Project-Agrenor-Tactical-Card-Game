@@ -15,8 +15,8 @@
     } catch (e) { motion = null; motionFor = id }
     return motion;
   }
-  function target() {            // the point GAP cells back along the trail (the last trail point is the lead itself)
-    let need = GAP;
+  function target(gap) {         // the point `gap` cells back along the trail (the last trail point is the lead itself)
+    let need = gap;
     for (let i = trail.length - 1; i > 0; i--) {
       const a = trail[i], b = trail[i - 1], d = Math.hypot(a.u - b.u, a.v - b.v);
       if (d >= need) { const k = need / d; return { u: a.u + (b.u - a.u) * k, v: a.v + (b.v - a.v) * k } }
@@ -26,12 +26,13 @@
   }
   function objects(hero, dt, t, o) {
     if (!o.show) { trail = []; pos = null; return [] }
+    const a0 = o.project(0, 0), a1 = o.project(1, 0), gap = o.size ? Math.max(1.2, o.size / Math.max(1, Math.hypot(a1.x - a0.x, a1.y - a0.y))) : GAP;   // one body length behind, whatever the page's map scale
     const last = trail[trail.length - 1];
     if (!last || Math.hypot(hero.u - last.u, hero.v - last.v) > MAXJUMP) { trail = [{ u: hero.u, v: hero.v }]; pos = null }
     else if (Math.hypot(hero.u - last.u, hero.v - last.v) >= .06) trail.push({ u: hero.u, v: hero.v });
-    let len = 0; for (let i = trail.length - 1; i > 0; i--) { len += Math.hypot(trail[i].u - trail[i - 1].u, trail[i].v - trail[i - 1].v); if (len > GAP + 2) { trail = trail.slice(i - 1); break } }
-    if (!pos) { const tg = trail.length > 1 ? target() : { u: hero.u - .7, v: hero.v - .7 }; pos = { u: tg.u, v: tg.v } }
-    const tg = trail.length > 1 ? target() : pos, du = tg.u - pos.u, dv = tg.v - pos.v, dist = Math.hypot(du, dv), k = Math.min(1, dt * 14);
+    let len = 0; for (let i = trail.length - 1; i > 0; i--) { len += Math.hypot(trail[i].u - trail[i - 1].u, trail[i].v - trail[i - 1].v); if (len > gap + 2) { trail = trail.slice(i - 1); break } }
+    if (!pos) { const tg = trail.length > 1 ? target(gap) : { u: hero.u - .7, v: hero.v - .7 }; pos = { u: tg.u, v: tg.v } }
+    const tg = trail.length > 1 ? target(gap) : pos, du = tg.u - pos.u, dv = tg.v - pos.v, dist = Math.hypot(du, dv), k = Math.min(1, dt * 14);
     const nu = pos.u + du * k, nv = pos.v + dv * k, step = Math.hypot(nu - pos.u, nv - pos.v);
     if (step > 1e-4) dir = o.face(nu - pos.u, nv - pos.v, dir);
     pos.u = nu; pos.v = nv;
