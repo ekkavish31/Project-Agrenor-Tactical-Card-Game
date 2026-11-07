@@ -246,8 +246,8 @@ function storyEnd(){TS?.stop();TS=null;const st=title.querySelector('.ts-story')
 const fonts=()=>[()=>loadFont('VillageThai','assets/village-town/noto-sans-thai-thai-400-normal.woff2'),()=>document.fonts?.ready];
 const pageLoaded=()=>document.readyState==='complete'?Promise.resolve():Promise.race([new Promise(r=>root.addEventListener('load',r,{once:true})),wait(15000)]);
 const settle=()=>new Promise(r=>{let n=0;const f=()=>++n>=12?r():requestAnimationFrame(f);requestAnimationFrame(f)});   // a few quiet frames after the heavy work
-let storyReady=false;
-async function prepareStory(){title.classList.add('ts-quick');
+let storyReady=false,preparing=false;
+async function prepareStory(){if(preparing)return;preparing=true;title.classList.add('ts-quick');
  await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(12000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900});
  storyReady=true;story()}
 

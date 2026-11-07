@@ -41,7 +41,7 @@
     const hint = document.createElement('div');
     hint.className = 'ag-skiphint'; hint.setAttribute('aria-hidden', 'true'); hint.textContent = 'กดปุ่มใดก็ได้เพื่อข้าม';
     main.append(hint);
-    let revealTimer = 0, swallowUntil = 0;
+    let revealTimer = 0, swallowUntil = 0, swallowKeyup = '';
     new MutationObserver(() => {
       const on = title.classList.contains('ag-reveal');
       if (on && !revealTimer) { title.classList.remove('ag-reveal-skip', 'ag-reveal-done'); revealTimer = setTimeout(() => title.classList.add('ag-reveal-done'), 5900); }
@@ -53,9 +53,13 @@
       if (e.type === 'keydown' && (e.repeat || MODIFIER_KEYS.has(e.key))) return;
       e.preventDefault(); e.stopPropagation();
       swallowUntil = performance.now() + 700;
+      if (e.type === 'keydown') swallowKeyup = e.code;   // the key that skipped must not "press" the focused menu button when it is released, however long it was held
       title.classList.add('ag-reveal-skip');
     };
-    const swallow = e => { if (performance.now() < swallowUntil) { e.preventDefault(); e.stopPropagation(); } };
+    const swallow = e => {
+      if (e.type === 'keyup' && swallowKeyup && e.code === swallowKeyup) { swallowKeyup = ''; e.preventDefault(); e.stopPropagation(); return; }
+      if (performance.now() < swallowUntil) { e.preventDefault(); e.stopPropagation(); }
+    };
     document.addEventListener('keydown', skipReveal, true);
     document.addEventListener('pointerdown', skipReveal, true);
     for (const t of ['click', 'keyup']) document.addEventListener(t, swallow, true);
