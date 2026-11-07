@@ -33,7 +33,7 @@
       };
       frame.onerror = () => done(false);
     });
-    frame.src='assets/maker/aetheryn-logo.html?embed=1&v=8';
+    frame.src='assets/maker/aetheryn-logo.html?embed=1&v=10';
     overlay.append(frame, skip); title.append(overlay);
     return state;
   }
@@ -57,12 +57,12 @@
     const soundCues=[[1240,'bell'],[1360,'bell'],[1940,'sparkle'],[2700,'applause']];
     const inertBefore=main.inert;
     main.inert=true; title.classList.add('ag-playing');
-    /* v98.173 · after the 4 s animation the final frame stays for 2 s (while the video finishes buffering, max +3 s), then finish(true)
+    /* v98.173 · after the 4 s animation the final frame stays for 1 s (while the video finishes buffering, max +3 s), then finish(true)
        keeps the logo underneath so the video overlay can fade in over it; Esc/X still skips at once (finish()). */
     function hold(){
       if(holdTimer||finished)return;
       const gate=Promise.resolve(window.MakerLogo?.beforeOutro?.()).catch(()=>{});
-      holdTimer=setTimeout(()=>{Promise.race([gate,new Promise(r=>setTimeout(r,3000))]).then(()=>finish(true))},2000);
+      holdTimer=setTimeout(()=>{Promise.race([gate,new Promise(r=>setTimeout(r,3000))]).then(()=>finish(true))},1000);
     }
     function finish(natural) {
       if(finished)return;finished=true;cancelAnimationFrame(raf);clearTimeout(timeout);clearTimeout(holdTimer);
