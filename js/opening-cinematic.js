@@ -9,9 +9,12 @@
     const main = title.querySelector('.ts-main');
     if (!brand || !main) return;
 
+    // Title block, big to small: Agrenor, Paths Unwritten, then the tagline.
+    const kicker = brand.querySelector('.ts-kicker');
     brand.querySelector('h1').textContent = 'Agrenor';
-    brand.querySelector('.ts-kicker').textContent = 'EVERY SMALL BEGINNING';
-    brand.querySelector('p').textContent = ':Paths Unwritten';
+    brand.querySelector('p').textContent = 'Paths Unwritten';
+    kicker.textContent = 'EVERY SMALL BEGINNING';
+    brand.append(kicker);
     title.classList.add('ag-title');
 
     const replay = document.createElement('button');
@@ -27,6 +30,7 @@
       }
 
       const currentPlayback = ++playback;
+      title.classList.remove('ag-reveal');
       title.classList.add('ag-intro-pending');
       Promise.resolve(window.GameIntro?.prepare?.()).then(() => {
         if (playback !== currentPlayback || !title.isConnected) return;
