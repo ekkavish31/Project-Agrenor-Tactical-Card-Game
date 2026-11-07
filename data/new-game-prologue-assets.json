@@ -1,6 +1,6 @@
 {
  "kit": "new-game-prologue-v2-merged",
- "status": "images partially supplied: 15 art slots enabled; only W06 shows the \"Waiting for Pic\" board",
+ "status": "all art slots enabled (16 pictures for 18 pages; W11a and W13a share pictures)",
  "repoBase": "assets/new-game-prologue/images/",
  "worldPages": [
   {
@@ -78,10 +78,10 @@
   {
    "id": "W06",
    "title": "ผู้คนหลายอารยธรรม",
-   "enabled": false,
+   "enabled": true,
    "filename": "civilizations.webp",
-   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
-   "source": "TO_CREATE",
+   "size": "1536x1024 (3:2, cover, position 50% 35%)",
+   "source": "SUPPLIED",
    "brief": "ชุมชนต่างวัฒนธรรม ไม่วาดให้ทุกเผ่ารวมอยู่ในเมืองเดียวโดยไร้เหตุผล",
    "transitionFx": "wipe"
   },

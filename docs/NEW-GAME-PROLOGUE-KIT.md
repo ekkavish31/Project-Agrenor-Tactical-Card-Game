@@ -1,5 +1,5 @@
 # Agrenor — New Game Prologue Kit v1
-> Status: **kit v2 merged / 18 pages · 15 art slots enabled · only W06 shows a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
+> Status: **kit v2 merged / 18 pages · every art slot has a picture**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
 > Current source of truth: `docs/lore/CURRENT-ERA-CANON.md` (approved section A), and game baseline/constraints.
 
 ## Playback wiring
@@ -21,7 +21,7 @@
 | 5 | W05 | มหาพงไพรตะวันออก | `eastern-great-forest.webp` | **ใช้แล้ว** ภาพ 1536×1024 คมชัด (แทนภาพ 452×301) · ป่าเต็มหมอก แสงทองยามเย็น ยังไม่มีต้นไม้ยักษ์เด่น |
 | 6 | W05a | เรื่องเล่าจากป่าลึก (บทเดิม · นครแสง/นครมืด) | `ancient-ruins-forest.webp` | **ใช้แล้ว** |
 | 7 | W05b | อดีตที่เหลือเพียงร่องรอย (บทเดิมเรียบเรียงตาม Canon B · ภาพสลักสามร่าง) | `ancient-relief.webp` | **ใช้แล้ว** |
-| 8 | W06 | ผู้คนหลายอารยธรรม | `civilizations.webp` | TODO |
+| 8 | W06 | ผู้คนหลายอารยธรรม | `civilizations.webp` | **ใช้แล้ว** (ห้าชุมชนต่างภูมิประเทศคั่นด้วยเส้นแสงสีรุ้ง: เมืองปราสาทหน้าผา หมู่บ้านบนน้ำ ค่ายเต็นท์ทุ่งหญ้า หมู่บ้านป่าสน เมืองหินแดงทะเลทราย · ไม่ระบุชื่อ) |
 | 9 | W07 | Nor’Chorthal | `norchorthal-valley.webp` | **ใช้แล้ว** |
 | 10 | W08 | ความรุ่งเรืองของมนุษย์ | `human-civilization.webp` | **ใช้แล้ว** |
 | 11 | W09 | ศาสตร์การ์ดเวท | `card-crafting.webp` | **ใช้แล้ว** |
@@ -59,7 +59,7 @@
 | W11a, W13a | `same` / `glow` | ใช้ภาพเดิม · W13a มีแสงทองวาบเบาๆ ตอนประโยคปิด |
 
 ### หน้าที่ยังไม่มีภาพ
-W01–W06 และ W10 แสดงกระดานโล่งพร้อมข้อความ "Waiting for Pic" และรหัส/ชื่อหน้า (เช่น `W01 · โลก Agrenor`) แทน SceneArt เพื่อให้เห็นชัดว่ายังต้องเจน · เมื่อได้ภาพ ใส่ไฟล์ตามชื่อในตาราง แล้วเพิ่มรหัสใน `APPROVED_IMAGES`
+ตอนนี้ครบทุกหน้า (16 ภาพสำหรับ 18 หน้า) · ถ้าเพิ่มหน้าใหม่ที่ยังไม่มีภาพ ระบบจะแสดงกระดาน "Waiting for Pic" พร้อมรหัสและชื่อหน้าโดยอัตโนมัติ
 
 ### บทที่ไม่นำกลับมาจากบทเดิม
 6 หน้าแรกของบทเดิม (บรรพชนออกจากป่า ผลึกกลางอก ร่างกายกลายพันธุ์) ชนกับข้อกำหนดบทนำ ("ไม่เผยต้นทางผู้คน ไม่แสดงการกลายพันธุ์/ผลึกธาตุ") ยังเก็บเป็น `LEGACY_PROLOGUE` (fallback) ใน `title-screen.js` · ฉากวิหาร/บูชาต้นไม้ ผู้ใช้สั่งตัดแล้ว

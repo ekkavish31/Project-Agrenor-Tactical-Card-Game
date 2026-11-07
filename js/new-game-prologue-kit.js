@@ -6,7 +6,7 @@
 const BASE='assets/new-game-prologue/images/';
 // Future art workflow: after a reviewed WebP has been committed, add its ID to APPROVED_IMAGES.
 // Disabled by default; the existing SceneArt canvas provides a continuous illustrated fallback.
-const APPROVED_IMAGES=new Set(['W01','W02','W03','W04','W05','W05a','W05b','W07','W08','W09','W09a','W10','W11','W12','W13']); // images committed in assets/new-game-prologue/images (1 slot still needs art: W06)
+const APPROVED_IMAGES=new Set(['W01','W02','W03','W04','W05','W05a','W05b','W06','W07','W08','W09','W09a','W10','W11','W12','W13']); // images committed in assets/new-game-prologue/images (all art slots have a picture)
 const SLOTS=[
     {
       "id": "W01",
@@ -79,6 +79,7 @@ const SLOTS=[
     {
       "id": "W06",
       "fx": "wipe",
+      "pos": "50% 35%",
       "title": "ผู้คนหลายอารยธรรม",
       "art": "towns",
       "text": "แต่โลกไม่เคยหยุดรอ บนดินแดนอันแตกต่าง ผู้คนหลายเผ่าพันธุ์สร้างบ้านเมือง\nความเชื่อ ภาษา และวิถีชีวิตของตนเองขึ้นมา",
