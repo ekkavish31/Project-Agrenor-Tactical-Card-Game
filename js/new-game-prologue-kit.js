@@ -6,7 +6,7 @@
 const BASE='assets/new-game-prologue/images/';
 // Future art workflow: after a reviewed WebP has been committed, add its ID to APPROVED_IMAGES.
 // Disabled by default; the existing SceneArt canvas provides a continuous illustrated fallback.
-const APPROVED_IMAGES=new Set(['W01','W02','W03','W05','W05a','W05b','W07','W08','W09','W09a','W11','W12','W13']); // images committed in assets/new-game-prologue/images (3 slots still need art: W04 W06 W10)
+const APPROVED_IMAGES=new Set(['W01','W02','W03','W04','W05','W05a','W05b','W07','W08','W09','W09a','W11','W12','W13']); // images committed in assets/new-game-prologue/images (2 slots still need art: W06 W10)
 const SLOTS=[
     {
       "id": "W01",
@@ -39,6 +39,7 @@ const SLOTS=[
     {
       "id": "W04",
       "fx": "ember",
+      "pos": "50% 30%",
       "title": "ดินแดนใต้",
       "art": "realms",
       "text": "ทางใต้ เปลวไฟและขุนเขาหล่อหลอมภูมิประเทศอีกแบบหนึ่ง\nแม้ผืนดินจะแตกต่าง ชีวิตก็ยังค้นหาหนทางของตน",

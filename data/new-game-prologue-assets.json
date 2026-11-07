@@ -1,6 +1,6 @@
 {
  "kit": "new-game-prologue-v2-merged",
- "status": "images partially supplied: 13 art slots enabled; W04, W06 and W10 show the \"Waiting for Pic\" board",
+ "status": "images partially supplied: 14 art slots enabled; W06 and W10 show the \"Waiting for Pic\" board",
  "repoBase": "assets/new-game-prologue/images/",
  "worldPages": [
   {
@@ -36,10 +36,10 @@
   {
    "id": "W04",
    "title": "ดินแดนใต้",
-   "enabled": false,
+   "enabled": true,
    "filename": "southern-firelands.webp",
-   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
-   "source": "TO_CREATE",
+   "size": "1536x1024 (3:2, cover, position 50% 30%)",
+   "source": "SUPPLIED",
    "brief": "หุบเขาภูเขาไฟ ภูมิประเทศมีความร้อน",
    "transitionFx": "ember"
   },

@@ -1,5 +1,5 @@
 # Agrenor — New Game Prologue Kit v1
-> Status: **kit v2 merged / 18 pages · 13 art slots enabled · W04, W06 and W10 show a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
+> Status: **kit v2 merged / 18 pages · 14 art slots enabled · W06 and W10 show a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
 > Current source of truth: `docs/lore/CURRENT-ERA-CANON.md` (approved section A), and game baseline/constraints.
 
 ## Playback wiring
@@ -17,7 +17,7 @@
 | 1 | W01 | โลก Agrenor + ดวงทอง | `world-panorama.webp` | **ใช้แล้ว** ภาพโลกมุมสูงเห็นความโค้งของดาว 1536×1024 (แทนภาพ 452×301 เดิม) · ทิศตรง Canon: เหนือหิมะ ตะวันตกหมู่เกาะ ใต้ภูเขาไฟ ตะวันออกป่าใหญ่หลังแนวเขา แม่น้ำไหลลงใต้ผ่านทะเลสาบกลาง · มีดวงทองมุมซ้ายบน |
 | 2 | W02 | ดินแดนเหนือ | `northern-snowlands.webp` | **ใช้แล้ว** (มีสัตว์ตัวใหญ่ 3 ตัวเดินบนสันเขา เป็นเงาเล็กๆ ไม่ระบุชนิด) |
 | 3 | W03 | หมู่เกาะตะวันตก | `western-archipelago.webp` | **ใช้แล้ว** (เมืองท่า ประภาคาร เรือใบ · สถาปัตย์/เรือมีกลิ่นตะวันออก ไม่ระบุชื่อเมืองหรือชนชาติ) |
-| 4 | W04 | ดินแดนใต้ | `southern-firelands.webp` | TODO |
+| 4 | W04 | ดินแดนใต้ | `southern-firelands.webp` | **ใช้แล้ว** (ภูเขาไฟ ลาวา บ่อน้ำพุร้อน พุ่มแดง คาราวานม้าเป็นเงา) |
 | 5 | W05 | มหาพงไพรตะวันออก | `eastern-great-forest.webp` | **ใช้แล้ว** ภาพ 1536×1024 คมชัด (แทนภาพ 452×301) · ป่าเต็มหมอก แสงทองยามเย็น ยังไม่มีต้นไม้ยักษ์เด่น |
 | 6 | W05a | เรื่องเล่าจากป่าลึก (บทเดิม · นครแสง/นครมืด) | `ancient-ruins-forest.webp` | **ใช้แล้ว** |
 | 7 | W05b | อดีตที่เหลือเพียงร่องรอย (บทเดิมเรียบเรียงตาม Canon B · ภาพสลักสามร่าง) | `ancient-relief.webp` | **ใช้แล้ว** |
