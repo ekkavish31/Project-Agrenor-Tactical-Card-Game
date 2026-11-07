@@ -11,6 +11,9 @@
   /* painted portrait sets: speaker → [set, faces] */
   /* a set lists its faces as an array (file = <set>-<face>.webp) or as an object {face: file suffix} (v98.201: mom, six painted poses: talk · calm · happy · worry · sad · angry) */
   const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
+  /* v98.204 · the hero's painted set follows the chosen look (HeroVariant): hero-<look>-<pose>.webp. Only looks that have a sheet are listed; the other keeps the code-drawn bust */
+  const HERO_SETS = { female: ['hero-female', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
+  const heroSet = () => { try { return HERO_SETS[root.HeroVariant?.get?.() || 'male'] || null } catch (e) { return null } };
   /* looks for the code-drawn busts (same palette as the villagers in js/village-life.js) */
   const LOOK = {
     hero: { coat: '#4a5a7a', hair: '#3a2a1e', hat: 'none', cape: '#7a3a2a', eye: '#5a3a1a' },
@@ -153,7 +156,7 @@
     return recent.lastIndexOf(slots.L.who) < recent.lastIndexOf(slots.R.who) ? 'L' : 'R';   // replace whoever spoke least recently
   }
   function setArt(side, who, sp, face) {
-    const st = stands[side], art = st.querySelector('.art'), P = PAINTED[sp?.bust || who];
+    const st = stands[side], art = st.querySelector('.art'), P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : null);
     let cur = slots[side];
     if (!cur || cur.who !== who) { art.innerHTML = ''; cur = slots[side] = { who, face: null, el: null, look: lookOf(who, sp) }; st.classList.remove('in'); void st.offsetWidth; requestAnimationFrame(() => st.classList.add('in')) }
     if (cur.face === face && cur.el) return cur;
