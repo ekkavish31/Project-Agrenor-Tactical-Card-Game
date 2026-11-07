@@ -38,5 +38,5 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;render(redu
 const ready=Promise.all(animations.map(a=>a.ready)).then(()=>{render(reduced?3000:0);document.documentElement.classList.add('logo-ready');if(!reduced && !document.documentElement.classList.contains('embedded'))resume();});
 window.logoPreview={ready,seek:t=>{stop();setCompare(false);render(t)},get time(){return time}};
 
-if(document.documentElement.classList.contains('embedded'))document.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();parent.postMessage({type:'maker-skip'},location.origin)}});
+if(document.documentElement.classList.contains('embedded'))document.addEventListener('keydown',e=>{if(!e.repeat&&(e.key==='Escape'||e.key==='x'||e.key==='X')){e.preventDefault();parent.postMessage({type:'maker-skip'},location.origin)}});
 </script></html>
