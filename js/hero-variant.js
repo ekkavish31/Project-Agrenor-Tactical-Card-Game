@@ -48,15 +48,25 @@
     for (const d of DIRS) { const D = t.directions[d]; if (!D) continue; t._studioBaseWalks[d] = clone(D.walk || []); t._studioBasePoses[d] = clone(Object.fromEntries(POSES.filter(k => D[k]).map(k => [k, D[k]]))) }
     return true;
   }
+  /* The whole look on any sprite table: its default pictures, then what Asset Studio saved for it (manifest.heroVariants[id]) on top — the studio is the one source of truth. */
+  function applyTo(t, id) {
+    if (!t || !VARIANTS[id]?.idle) return false;
+    defaultsTo(t, id);
+    const b = root.ASSET_MANIFEST?.heroVariants?.[id];
+    if (b && root.StudioWalks) { rebase(t); root.StudioWalks.apply(t, { assets: root.ASSET_MANIFEST.assets, ...Object.fromEntries(STUDIO_KEYS.filter(k => b[k]).map(k => [k, b[k]])) }); }
+    return true;
+  }
+  /* v98.237 · HeroMotion snapshot of a look that is NOT the one in the game's table (the sibling that follows / fights): same pipeline as apply(), on a copy */
+  const motions = {};
+  function motionFor(id) {
+    if (id in motions) return motions[id];
+    try { const c = JSON.parse(JSON.stringify(T())); applyTo(c, id); return (motions[id] = root.HeroMotion.snapshot(c)) } catch (e) { return (motions[id] = null) }
+  }
   function apply(id) {
     const t = T(); if (!t) return false;
     for (const d of DIRS) { const D = t.directions[d]; if (D?.idle && !original[d]) original[d] = D.idle.src }
     if (!VARIANTS[id]?.idle) return true;
-    defaultsTo(t, id);
-    /* edits made in Asset Studio for this look (manifest.heroVariants[id]) sit on top of the defaults; none yet → nothing changes */
-    const b = root.ASSET_MANIFEST?.heroVariants?.[id];
-    if (b && root.StudioWalks && rebase(t)) root.StudioWalks.apply(t, { assets: root.ASSET_MANIFEST.assets, ...Object.fromEntries(STUDIO_KEYS.filter(k => b[k]).map(k => [k, b[k]])) });
-    return true;
+    return applyTo(t, id);
   }
   function set(id) {
     if (!VARIANTS[id]) return false;
@@ -66,5 +76,5 @@
   }
   const previewOf = id => VARIANTS[id].idle?.SW || original.SW || (T() && T().directions.SW.idle.src);
   if (!root.__HERO_VARIANT_NO_AUTO) apply(get());
-  root.HeroVariant = { VARIANTS, DEFAULT, get, set, apply, defaultsTo, rebase, previewOf, DIRS, STUDIO_KEYS };
+  root.HeroVariant = { VARIANTS, DEFAULT, get, set, apply, applyTo, motionFor, defaultsTo, rebase, previewOf, DIRS, STUDIO_KEYS };
 })(globalThis);

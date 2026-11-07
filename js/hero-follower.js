@@ -8,11 +8,7 @@
   const other = () => { try { return root.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } };
   function build() {
     const id = other(); if (motion && motionFor === id) return motion;
-    try {
-      const copy = JSON.parse(JSON.stringify(TACTICS_SPRITES));
-      root.HeroVariant.defaultsTo(copy, id);
-      motion = root.HeroMotion.snapshot(copy); motionFor = id;
-    } catch (e) { motion = null; motionFor = id }
+    motion = root.HeroVariant?.motionFor?.(id) || null; motionFor = id;
     return motion;
   }
   function target(gap) {         // the point `gap` cells back along the trail (the last trail point is the lead itself)
@@ -28,7 +24,7 @@
   function objects(hero, dt, t, o) {
     if (dt == null) { dt = Math.min(.08, Math.max(0, (t - (lastT || t)) / 1000)); lastT = t }   /* pages without their own dt (interior) */
     if (!o.show) { trail = []; pos = null; return [] }
-    const a0 = o.project(0, 0), a1 = o.project(1, 0), dpc = Math.max(1e-6, Math.hypot(a1.x - a0.x, a1.y - a0.y)), gap = o.size ? o.size / dpc : GAP, jump = 110 / dpc, minStep = 2 / dpc;   // dpc = screen px per map unit   // one body length behind, whatever the page's map scale
+    const a0 = o.project(0, 0), a1 = o.project(1, 0), dpc = Math.max(1e-6, Math.hypot(a1.x - a0.x, a1.y - a0.y)), gap = o.size ? o.size * .5 / dpc : GAP * .5, jump = 110 / dpc, minStep = 2 / dpc;   // dpc = screen px per map unit   // one body length behind, whatever the page's map scale
     const last = trail[trail.length - 1];
     if (!last || Math.hypot(hero.u - last.u, hero.v - last.v) > jump) { trail = [{ u: hero.u, v: hero.v }]; pos = null }
     else if (Math.hypot(hero.u - last.u, hero.v - last.v) >= minStep) trail.push({ u: hero.u, v: hero.v });
