@@ -69,3 +69,18 @@ A lone human traveler seen from far behind and slightly below, small against the
 1. เซฟเป็น WebP ตามชื่อไฟล์ข้างหัวข้อ ไว้ที่ `assets/new-game-prologue/images/`
 2. เพิ่มรหัสหน้า (`W01`, `W02`, … `W10`) ใน `APPROVED_IMAGES` ที่ `js/new-game-prologue-kit.js`
 3. หน้าที่ได้ภาพแล้วจะเลิกขึ้น "Waiting for Pic" และใช้ลูกเล่นเปลี่ยนภาพของหน้านั้นอัตโนมัติ
+
+
+---
+
+## ภาพเพิ่มเติม (8 พ.ย. 2026)
+
+### ห้องนอนตัวเอก (ฉากเปิดเกมตอนแม่ปลุก) → `hero-bedroom.webp`
+ใช้ที่ฉาก `opening` ใน `js/story-data.js` (วางไฟล์แล้วหน้า "Waiting for Pic" จะหายเอง ไม่ต้องแก้โค้ด)
+```
+Interior of a small humble village bedroom in the early morning, wide landscape view: a single wooden bed with a rumpled green wool blanket and a pillow, a small wooden window with open shutters letting in warm golden morning light and a few light rays across the plank floor, a worn wooden table with a candle stub, a hook on the wall by the door holding an old short knife in a plain leather sheath (the father's knife), a patched travel cloak and a satchel hanging on a peg, a small chest at the foot of the bed, plain whitewashed timber-and-plaster walls, a rag rug, dust motes floating in the sunbeam, a glimpse of a rooster and a bakery chimney with smoke through the window far outside. Cozy, lived-in, quiet morning; no people in the room. Painterly high-fantasy illustration in the style of a Japanese JRPG key visual, warm golden-hour palette, soft volumetric light rays, visible painterly brush texture, highly detailed, cinematic wide composition, 16:9 landscape, 1920x1080, clean lower third kept calm and slightly darker for dialogue box space, no text, no letters, no watermark, no logo, no UI, no signature
+```
+Negative: `text, letters, watermark, signature, logo, UI, frame, people, modern objects, guns, chibi, blurry, low resolution, oversaturated neon`
+
+### ภาพสนทนาตัวเอก ชาย / หญิง
+ส่งชีท 6 ท่า (เหมือนชีทของแม่) แนบเป็นไฟล์ → จะถูกตัดเป็น `assets/portraits/hero-male-*.webp` / `hero-female-*.webp` และใช้ทั้งในฉากสนทนาและกรอบเลือกเพศบนหน้าตั้งชื่อ

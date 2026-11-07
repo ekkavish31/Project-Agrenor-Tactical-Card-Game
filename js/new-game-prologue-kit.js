@@ -6,7 +6,7 @@
 const BASE='assets/new-game-prologue/images/';
 // Future art workflow: after a reviewed WebP has been committed, add its ID to APPROVED_IMAGES.
 // Disabled by default; the existing SceneArt canvas provides a continuous illustrated fallback.
-const APPROVED_IMAGES=new Set(['W01','W02','W03','W04','W05','W05a','W05b','W06','W07','W08','W09','W09a','W10','W11','W12','W13']); // images committed in assets/new-game-prologue/images (all art slots have a picture)
+const APPROVED_IMAGES=new Set(['W01','W02','W03','W04','W05','W05a','W05b','W06','W07','W08','W09','W09a','W10','W11','W12','W13','W13a']); // images committed in assets/new-game-prologue/images (all art slots have a picture)
 const SLOTS=[
     {
       "id": "W01",
@@ -29,7 +29,7 @@ const SLOTS=[
     },
     {
       "id": "W03",
-      "fx": "wave",
+      "fx": "tide",
       "title": "หมู่เกาะตะวันตก",
       "art": "realms",
       "text": "ทางตะวันตก ท้องทะเลโอบล้อมหมู่เกาะน้อยใหญ่\nเป็นเส้นทางของเรือ ผู้คน และเรื่องเล่าจากฝั่งไกล",
@@ -155,9 +155,9 @@ const SLOTS=[
       "fx": "drift",
       "title": "ถนนสู่ Fernvale",
       "art": "roadOut",
-      "text": "และนักเดินทางไม่น้อย ก็เคยผ่านถนนสายหนึ่ง\nที่แยกจากเส้นทางใหญ่ มุ่งสู่หมู่บ้านเล็ก ๆ ริมป่า",
-      "file": "road-to-fernvale",
-      "brief": "ถนนชนบทต่อเนื่องจากภาพก่อนหน้า ค่อยเห็นหมู่บ้านไกล ๆ"
+      "text": "และนักเดินทางไม่น้อย ก็เคยผ่านถนนสายหนึ่ง\nที่แยกจากเส้นทางใหญ่ มุ่งสู่หมู่บ้านหนึ่ง แถบชานเมืองใหญ่",
+      "brief": "ถนนชนบทต่อเนื่องจากภาพก่อนหน้า ค่อยเห็นหมู่บ้านไกล ๆ",
+      "share": "W08"
     },
     {
       "id": "W13",
@@ -165,17 +165,17 @@ const SLOTS=[
       "title": "Fernvale",
       "art": "fernvale",
       "text": "Fernvale... หมู่บ้านที่ชีวิตดำเนินไปอย่างเรียบง่าย ริมเส้นทางสู่เมืองใหญ่\nที่นี่ นครลึกลับและอารยธรรมที่สาบสูญ เป็นเพียงเรื่องเล่าจากแดนไกล",
-      "file": "fernvale-morning",
+      "file": "fernvale-square",
       "brief": "หมู่บ้านยามเช้า ลานฝึกทางซ้าย ป่าด้านหลัง เชื่อมฉากบ้าน/แม่เดิม"
     },
     {
       "id": "W13a",
-      "fx": "glow",
+      "fx": "fade",
       "title": "เช้าวันหนึ่ง",
       "art": "dawn",
-      "share": "W13",
       "origin": "legacy prologue: dawn (+ the golden light of page 1)",
-      "text": "เช้าวันหนึ่งเริ่มต้นขึ้น เช่นเดียวกับวันอื่น ดวงทองลอยค้างอบอุ่นเหนือหลังคาบ้าน\nและเรื่องราวของเจ้า… ก็เริ่มต้นที่นี่"
+      "text": "เช้าวันหนึ่งเริ่มต้นขึ้น เช่นเดียวกับวันอื่น ดวงทองลอยค้างอบอุ่นเหนือหลังคาบ้าน\nและเรื่องราวของเจ้า… ก็เริ่มต้นที่นี่",
+      "file": "hero-house"
     }
   ];
 const byId=Object.fromEntries(SLOTS.map(s=>[s.id,s]));

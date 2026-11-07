@@ -63,7 +63,7 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #titleScreen .ts-story-bg{position:absolute;inset:-3%;background:center/cover no-repeat;filter:brightness(.55) saturate(.85)}
 #titleScreen .ts-story-bg.ts-pan{animation:ts-pan 12s ease-out both}
 @keyframes ts-pan{from{opacity:0;transform:scale(1.08)}12%{opacity:1}to{opacity:1;transform:scale(1)}}
-#titleScreen .ts-story-veil{position:absolute;inset:0;background:linear-gradient(#0000 35%,#000d 82%)}
+#titleScreen .ts-story-veil{position:absolute;inset:0;background:linear-gradient(#0000 52%,#0006 74%,#000b 100%)}
 #titleScreen .ts-story-text{position:relative;width:min(760px,calc(100vw - 48px));min-height:5.4em;margin-bottom:96px;font:400 clamp(17px,2.1vw,22px)/1.8 AgThai,Georgia,'Noto Serif Thai',serif;color:#fbf0d6;text-shadow:0 2px 10px #000;white-space:pre-line;text-align:center}
 #titleScreen .ts-story-text.ts-line{animation:ts-fade .5s ease both}
 @keyframes ts-fade{from{opacity:0}to{opacity:1}}
@@ -117,7 +117,7 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 
 /* v98.187 · New Game picture layers + mood transitions. --b = the resting look of a picture (same as .ts-story-bg). */
 #titleScreen .ts-story{perspective:1400px}
-#titleScreen .ts-story-layer{--b:brightness(.55) saturate(.85);position:absolute;inset:-3%;background:center/cover no-repeat;filter:var(--b);will-change:transform,opacity,filter}
+#titleScreen .ts-story-layer{--b:brightness(.9) saturate(1);position:absolute;inset:-3%;background:center/cover no-repeat;filter:var(--b);will-change:transform,opacity,filter}
 #titleScreen .ts-story-layer.fx-done{animation:ts-slow 18s ease-in-out infinite alternate}
 @keyframes ts-slow{from{transform:scale(1)}to{transform:scale(1.045) translate(-.6%,-.4%)}}
 #titleScreen .ts-story-layer:not(.fx-done){animation-duration:2s;animation-timing-function:cubic-bezier(.2,.7,.2,1);animation-fill-mode:both}
@@ -179,3 +179,22 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #titleScreen .ts-wait small{font:500 clamp(12px,1.3vw,16px)/1.4 AgThai,system-ui,sans-serif;letter-spacing:.06em;opacity:.8}
 @media(prefers-reduced-motion:reduce){#titleScreen .ts-story-layer,#titleScreen .ts-story-layer.fx-done,#titleScreen .ts-story.ts-glow::after{animation:none!important}}
 #titleScreen .ts-story-text{text-wrap:balance}
+
+/* v98.201 · brighter pictures (the old 55 % dimming made every prologue image look dark); the text stays readable through the bottom gradient + a stronger text shadow */
+#titleScreen .ts-story-text{text-shadow:0 1px 3px #000,0 2px 14px #000d,0 0 28px #000a}
+/* menu stays hidden behind the loading screen until the first picture is ready (no flash of the menu background) */
+#titleScreen.ts-story-pre{background:#000}
+#titleScreen.ts-story-pre .ts-bg,#titleScreen.ts-story-pre .ts-veil,#titleScreen.ts-story-pre .ts-motes,#titleScreen.ts-story-pre .ts-main,#titleScreen.ts-story-pre .ts-foot,#titleScreen.ts-story-pre .ag-replay{visibility:hidden!important}
+/* tide — a calm cross-dissolve with a slow settle (no sideways move or rotation: the old "wave" shook) */
+#titleScreen .ts-story-layer.fx-tide:not(.fx-done){animation-name:fx-tide;animation-duration:2.2s}
+@keyframes fx-tide{0%{opacity:0;transform:scale(1.06);filter:blur(10px) brightness(1.1)}100%{opacity:1;transform:none;filter:var(--b)}}
+/* gender choice on the name form */
+#titleScreen .ts-name .ts-gender{display:flex;justify-content:center;gap:14px;margin:4px 0 14px}
+#titleScreen .ts-name .ts-g{width:100px;padding:8px 6px 7px;border-radius:12px;border:2px solid #d9b46b55;background:#0d1424b8;color:#d8c9a4;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font:600 14px AgThai,system-ui,sans-serif;transition:border-color .15s,transform .15s,background .15s}
+#titleScreen .ts-name .ts-g .ts-gframe{position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;background:radial-gradient(#fff4d2,#d9c08a);border:2px solid #8a6a3a}
+/* the sprite is 384×384 with the head at x 120–264, y 80–224: show that square (scale .5) */
+#titleScreen .ts-name .ts-g .ts-gframe img{position:absolute;max-width:none;width:192px;height:192px;left:-60px;top:-40px;pointer-events:none;image-rendering:auto}
+#titleScreen .ts-name .ts-g:hover{transform:translateY(-2px);border-color:#ffe6a9}
+#titleScreen .ts-name .ts-g.on{border-color:#ffd978;background:linear-gradient(#3a2c12e6,#1d2a44e6);color:#ffe8a6;box-shadow:0 0 0 2px #ffd97855}
+#titleScreen .ts-name .ts-g:focus-visible{outline:3px solid #ffe8a6;outline-offset:2px}
+#titleScreen .ts-name .ts-g .ts-gframe.portrait img{width:150%;height:auto;left:-25%;top:-6%}

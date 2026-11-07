@@ -58,9 +58,14 @@ const $=sel=>el.querySelector(sel);
 /* v95.02 · scene/line `art:'dawn'|'orb'|…` → an animated scene drawn in code (js/scene-art.js) instead of a background image */
 let art=null;
 function setArt(name){const c=$('.cs-art');if(!name||!root.SceneArt?.has(name)){if(!c.hidden){c.hidden=true;art?.stop()}return false}c.hidden=false;art||=root.SceneArt.create(c);art.size();art.show(name);return true}
-function setBg(src,pan,instant){const a=$('.cs-bg:not(.cs-bg-next)'),b=$('.cs-bg-next');if(!src)return;const cur=a.dataset.src;if(cur===src&&!pan)return;
- if(instant||!cur){a.style.backgroundImage=`url("${src}")`;a.dataset.src=src;a.className='cs-bg'+(pan&&!reduced()?' cs-pan-'+pan:'');return}
- b.style.backgroundImage=`url("${src}")`;b.dataset.src=src;b.className='cs-bg cs-bg-next cs-show'+(pan&&!reduced()?' cs-pan-'+pan:'');
+/* v98.201 · a background picture that does not exist yet (e.g. the hero's bedroom, still to be painted) shows the "Waiting for Pic" board instead of a broken/empty scene */
+const WAIT_LABELS={'hero-bedroom':'ห้องนอนตัวเอก'},bgMissing=new Set(),bgProbed=new Set();
+const waitUrl=src=>{const n=(src.split('/').pop()||'').replace(/\.\w+$/,''),l=WAIT_LABELS[n]||n;return 'url("data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'><defs><radialGradient id='g' cx='50%' cy='40%' r='75%'><stop offset='0' stop-color='#1a2433'/><stop offset='1' stop-color='#0a0f17'/></radialGradient></defs><rect width='1600' height='900' fill='url(#g)'/><rect x='560' y='300' width='480' height='170' rx='16' fill='none' stroke='#8da2c0' stroke-opacity='.45' stroke-width='3' stroke-dasharray='14 10'/><text x='800' y='392' text-anchor='middle' font-family='system-ui,sans-serif' font-size='46' font-weight='700' fill='#9fb2cf' letter-spacing='3'>Waiting for Pic</text><text x='800' y='440' text-anchor='middle' font-family='sans-serif' font-size='24' fill='#9fb2cf' fill-opacity='.8'>${l}</text></svg>`)+'")'};
+const bgUrl=src=>bgMissing.has(src)?waitUrl(src):`url("${src}")`;
+function probeBg(src){if(!/^assets\/new-game-prologue\//.test(src)||bgProbed.has(src))return;bgProbed.add(src);const im=new Image();im.onerror=()=>{bgMissing.add(src);for(const e of document.querySelectorAll('.cs-bg'))if(e.dataset.src===src)e.style.backgroundImage=waitUrl(src)};im.src=src}
+function setBg(src,pan,instant){const a=$('.cs-bg:not(.cs-bg-next)'),b=$('.cs-bg-next');if(!src)return;probeBg(src);const cur=a.dataset.src;if(cur===src&&!pan)return;
+ if(instant||!cur){a.style.backgroundImage=bgUrl(src);a.dataset.src=src;a.className='cs-bg'+(pan&&!reduced()?' cs-pan-'+pan:'');return}
+ b.style.backgroundImage=bgUrl(src);b.dataset.src=src;b.className='cs-bg cs-bg-next cs-show'+(pan&&!reduced()?' cs-pan-'+pan:'');
  setTimeout(()=>{a.style.backgroundImage=b.style.backgroundImage;a.dataset.src=src;a.className='cs-bg'+(pan&&!reduced()?' cs-pan-'+pan:'');b.className='cs-bg cs-bg-next'},reduced()?0:900)}
 function setLook(o){if(o.tint!=null)$('.cs-stage').dataset.tint=o.tint||'';const fx=o.fx||[];$('.cs-stage').classList.toggle('fx-rays',fx.includes('rays'));$('.cs-stage').classList.toggle('fx-orb',fx.includes('orb'));$('.cs-stage').classList.toggle('fx-mist',fx.includes('mist'));parts.set(fx)}
 function shake(strong){if(reduced())return;const st=$('.cs-stage');st.classList.remove('cs-shake','cs-shake-big');void st.offsetWidth;st.classList.add(strong?'cs-shake-big':'cs-shake')}

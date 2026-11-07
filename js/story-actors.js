@@ -9,7 +9,8 @@
 (function (root) {
   'use strict';
   /* painted portrait sets: speaker → [set, faces] */
-  const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']] };
+  /* a set lists its faces as an array (file = <set>-<face>.webp) or as an object {face: file suffix} (v98.201: mom, six painted poses: talk · calm · happy · worry · sad · angry) */
+  const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   /* looks for the code-drawn busts (same palette as the villagers in js/village-life.js) */
   const LOOK = {
     hero: { coat: '#4a5a7a', hair: '#3a2a1e', hat: 'none', cape: '#7a3a2a', eye: '#5a3a1a' },
@@ -158,7 +159,7 @@
     if (cur.face === face && cur.el) return cur;
     cur.face = face;
     if (P) {
-      const f = P[1].includes(face) ? face : face === 'sad' || face === 'think' ? 'neutral' : 'neutral', src = 'assets/portraits/' + P[0] + '-' + f + '.webp';
+      const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral), src = 'assets/portraits/' + P[0] + '-' + f + '.webp';
       if (!cur.el || cur.el.tagName !== 'IMG') { art.innerHTML = ''; cur.el = new Image(); cur.el.alt = ''; art.append(cur.el) }
       cur.el.src = src;
     } else {
