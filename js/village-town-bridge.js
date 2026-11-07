@@ -15,7 +15,11 @@ function send(data){if(ready)post(frame,data)}
 function stateData(){return{location:s.village.location,name:heroName(),day:s.day,minutes:s.minutes,hp:s.hp,stamina:s.stamina,coins:s.village.coins,message:s.log,exits:Object.entries(window.ADVENTURE_DATA.AREAS).map(([id,a])=>({id,name:a.name,exit:a.exit})),actions:placeActions().map(a=>({id:a.id,name:a.name,cost:a.cost,effect:a.effect,reason:a.reason||''}))}}
 function modalOpen(){return !!document.querySelector('dialog[open]')}
 function activeHide(){return !!window.TitleScreen?.active||inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden}
+/* v98.198 · keyboard focus follows the visible frame: after entering/leaving a place the iframe that is now on screen was never focused (the key presses went to the hidden one or the parent), so WASD/arrows did nothing until the player clicked */
+let lastFocusKey='';
+function focusActive(force){if(host.hidden||modalOpen())return;const f=marketOpen?marketFrame:frame;try{if(document.activeElement&&document.activeElement!==document.body&&document.activeElement!==f)document.activeElement.blur?.();f.contentWindow?.focus()}catch{}}
 function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden;frame.hidden=marketOpen;marketFrame.hidden=!marketOpen;
+ {const fk=JSON.stringify([!host.hidden,marketOpen,placeId,ready,marketReady,modalOpen()]);if(fk!==lastFocusKey){lastFocusKey=fk;setTimeout(focusActive,0);setTimeout(focusActive,250)}}
  const vis=JSON.stringify([!host.hidden,marketOpen,ready,marketReady,modalOpen()]);if(vis!==lastVisible){lastVisible=vis;send({type:'visibility',visible:!host.hidden&&!marketOpen&&!modalOpen()});if(marketReady)post(marketFrame,{type:'visibility',visible:!host.hidden&&marketOpen&&!modalOpen()})}
  const data=stateData(),stamp=JSON.stringify(data);if(stamp!==lastStamp){lastStamp=stamp;send({type:'state',data});if(marketReady)post(marketFrame,{type:'state',data})}
  const motion=HeroMotion.snapshot(TACTICS_SPRITES),sig=JSON.stringify(motion);if(sig!==lastMotion){lastMotion=sig;send({type:'motion',data:motion});if(marketReady)post(marketFrame,{type:'motion',data:motion})}

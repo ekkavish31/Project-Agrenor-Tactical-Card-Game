@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
-<script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><style>
+<script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/key-layout.js?v=1"></script><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
 button,select,input{font:inherit;background:#233a2ef0;color:#fff0c7;border:1px solid #cad6a77a;border-radius:9px;padding:8px 12px;cursor:pointer}button:hover{background:#4b6040}button:disabled{opacity:.45;cursor:default}
 header{position:fixed;left:22px;top:20px;pointer-events:none;text-shadow:0 2px 8px #193524}h1{margin:0 0 5px;font-size:23px}header small{color:#fff1c4}
 #hud{position:fixed;top:88px;left:22px;background:#233a2ee8;border:1px solid #cad6a770;border-radius:9px;padding:8px 12px;pointer-events:none;font-size:12px}
+.toolbar button{width:54px;height:54px;padding:0;display:grid;place-items:center;background:#1d2d27d8;border:1px solid #b9c48f88;border-radius:12px;cursor:pointer;transition:transform .12s,border-color .12s}.toolbar button img{width:44px;height:44px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 2px 3px #0008)}.toolbar button:hover,.toolbar button:focus-visible{transform:translateY(-2px);border-color:#ffe6a9;outline:none}@media(max-width:700px){.toolbar button{width:44px;height:44px}.toolbar button img{width:36px;height:36px}}
 .toolbar{position:fixed;right:22px;top:22px;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:60%}
 nav{position:fixed;left:22px;bottom:76px;display:flex;gap:6px;flex-wrap:wrap;max-width:70%}nav button small{display:block;font-size:10px;color:#d8d0b0}
 #status{position:fixed;left:22px;bottom:22px;background:#233a2ee8;border:1px solid #cad6a770;padding:10px 14px;border-radius:9px;max-width:calc(100% - 44px);pointer-events:none;font-size:12px}
@@ -15,7 +16,7 @@ nav{position:fixed;left:22px;bottom:76px;display:flex;gap:6px;flex-wrap:wrap;max
 </style>
 <canvas id="world" aria-label="แผนที่สถานที่ คลิกจุดทำงานเพื่อเดินไปใช้"></canvas>
 <header><h1 id="title">สถานที่</h1><small id="subtitle">เดินไปที่จุดทำงานเพื่อใช้บริการ</small></header><div id="hud"></div>
-<div class="toolbar"><button data-menu="bag">กระเป๋า</button><button data-menu="character">ตัวละคร</button><button data-menu="settings">ตั้งค่า</button><button id="focus">หาตัวละคร</button><button id="fit">ดูทั้งหมด</button><button id="editBtn">✎ จัดแผนที่</button><button id="leave">← กลับหมู่บ้าน</button></div>
+<div class="toolbar"><button data-menu="bag" title="กระเป๋า" aria-label="กระเป๋า"><img src="assets/icons/menu/bag.webp" alt="" draggable="false"></button><button data-menu="character" title="ตัวละคร" aria-label="ตัวละคร"><img src="assets/icons/menu/stats.webp" alt="" draggable="false"></button><button data-menu="settings" title="ตั้งค่า" aria-label="ตั้งค่า"><img src="assets/icons/menu/settings.webp" alt="" draggable="false"></button><button id="focus" title="หาตัวละคร" aria-label="หาตัวละคร"><img src="assets/icons/menu/party.webp" alt="" draggable="false"></button><button id="fit" title="ดูทั้งหมด" aria-label="ดูทั้งหมด"><img src="assets/icons/menu/map.webp" alt="" draggable="false"></button><button id="editBtn" title="จัดแผนที่" aria-label="จัดแผนที่"><img src="assets/icons/menu/quest.webp" alt="" draggable="false"></button><button id="leave" title="กลับหมู่บ้าน" aria-label="กลับหมู่บ้าน"><img src="assets/icons/menu/village.webp" alt="" draggable="false"></button></div>
 <nav id="shortcuts" aria-label="จุดทำงาน" hidden></nav><style>#shortcuts{display:none!important}</style>
 <div id="status" role="status">คลิกจุดทำงานเพื่อเดินไปใช้ · ลากเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม</div>
 <section id="pick" hidden></section><section id="edit" hidden></section>
@@ -280,8 +281,8 @@ const DEFAULTS = {
     du: 1.8,
     dv: 1
    },
-   art: 'code:bed',
-   width: 150
+   art: 'int:bed-double',
+   width: 215
   }, {
    id: 'chest',
    name: 'หีบเก็บของ',
@@ -294,8 +295,8 @@ const DEFAULTS = {
     du: 0,
     dv: 1.5
    },
-   art: 'code:chest',
-   width: 90
+   art: 'int:offering-box',
+   width: 110
   }, {
    id: 'table',
    name: 'โต๊ะจัดสำรับ',
@@ -308,8 +309,8 @@ const DEFAULTS = {
     du: -1.7,
     dv: 0
    },
-   art: 'code:table',
-   width: 120
+   art: 'int:table-square',
+   width: 130
   }, {
    id: 'hearth',
    name: 'เตาผิง',
@@ -322,19 +323,33 @@ const DEFAULTS = {
     du: 0,
     dv: 1.6
    },
-   art: 'code:hearth',
-   width: 130
+   art: 'int:fireplace-stone',
+   width: 150
   }],
   props: [{
-   art: 'decor:flower-box',
+   art: 'int:flower-vase',
    u: 3.8,
    v: -3.8,
-   s: .8
+   width: 80,
+   s: 1
   }, {
-   art: 'code:crate',
+   art: 'int:crate-stack',
    u: -4.6,
    v: 2.6,
-   s: .8
+   width: 95,
+   s: 1
+  }, {
+   art: 'int:plant-fern',
+   u: -4.7,
+   v: -3.6,
+   width: 95,
+   s: 1
+  }, {
+   art: 'int:stool',
+   u: 1.4,
+   v: .8,
+   width: 62,
+   s: 1
   }]
  }
 };
@@ -564,7 +579,7 @@ const ART_LIST = [
  ['vt:fountain.png', 'น้ำพุ'],
  ...['bench', 'woodpile', 'hay', 'cart', 'well', 'signpost', 'banner-pole', 'flower-box', 'flower-bed', 'market-stall-red', 'market-stall-blue', 'stepping-stones', 'pond-lilies', 'fence-picket', 'stone-wall-low', 'hedge-row'].map(n => ['decor:' + n, n])
 ];
-const imgOf = a => a.startsWith('vt:') ? TownArt.image('assets/village-town/' + a.slice(3)) : a.startsWith('decor:') ? TownArt.image('assets/village-town/decor/' + a.slice(6) + '.png') : a.startsWith('img:') ? TownArt.image(a.slice(4)) : null;
+const imgOf = a => a.startsWith('vt:') ? TownArt.image('assets/village-town/' + a.slice(3)) : a.startsWith('decor:') ? TownArt.image('assets/village-town/decor/' + a.slice(6) + '.png') : a.startsWith('img:') ? TownArt.image(a.slice(4)) : a.startsWith('int:') ? TownArt.image('assets/interior/' + a.slice(4) + '.webp') : null;
 
 function box(u, v, w, d, h, top, left, right) {
  const P = (a, b, z) => project(u + a, v + b, z),
@@ -714,8 +729,8 @@ function drawArt(a, u, v, width, s = 1, flip = false, t = 0, hp = null) {
   g.translate(p.x * 2, 0);
   g.scale(-1, 1)
  }
- if (a.startsWith('decor:')) {
-  g.fillStyle = '#00000028';
+ if (a.startsWith('decor:') || a.startsWith('int:')) {
+  g.fillStyle = '#00000030';
   g.beginPath();
   g.ellipse(p.x, p.y, w * .36, w * .11, 0, 0, 7);
   g.fill()
@@ -763,7 +778,18 @@ function drawFloor() {
  t.beginPath();
  pts.forEach((p, i) => t[i ? 'lineTo' : 'moveTo'](p.x, p.y));
  t.closePath();
- if (F.tex === 'plank') {
+ const floorTex = F.tex === 'plank' ? TownArt.image('assets/interior/tex-floor-wood.webp') : null;
+ if (floorTex && floorTex.complete && floorTex.naturalWidth) {
+  /* v98.198 · real wood floor texture (assets/interior) laid on the isometric grid: one 418px tile = 4 x 4 grid cells */
+  const k = 4 / floorTex.naturalWidth;
+  t.save();
+  t.clip();
+  t.transform(k * S, k * S / 2, -k * S, k * S / 2, 1100, 700);
+  t.fillStyle = t.createPattern(floorTex, 'repeat');
+  t.fillRect(-(F.w + 2) / k, -(F.d + 2) / k, (F.w * 2 + 4) / k, (F.d * 2 + 6) / k);
+  t.restore()
+ } else if (F.tex === 'plank') {
+  if (floorTex && !floorTex.complete) floorTex.addEventListener('load', () => { try { drawFloor() } catch (e) {} }, { once: true });
   t.save();
   t.clip();
   t.fillStyle = '#9a7046';
@@ -810,7 +836,8 @@ function walls() {
  if (!F.walls) return;
  const h = 120,
   P = (u, v, z) => project(u, v, z),
-  face = (a, b, c1) => {
+  wallTex = TownArt.image('assets/interior/tex-wall-timber.webp'),
+  face = (a, b, c1, shade) => {
    g.beginPath();
    g.moveTo(a.x, a.y);
    g.lineTo(b.x, b.y);
@@ -819,13 +846,33 @@ function walls() {
    g.closePath();
    g.fillStyle = c1;
    g.fill();
+   if (wallTex && wallTex.complete && wallTex.naturalWidth) {
+    /* v98.198 · timber wall picture mapped onto the wall plane (2 grid cells per tile, one tile tall) */
+    const tw = wallTex.naturalWidth, dx = (b.x - a.x) / (2 * tw), dy = (b.y - a.y) / (2 * tw);
+    g.save();
+    g.clip();
+    g.transform(dx, dy, 0, h / tw, a.x, a.y - h);
+    g.fillStyle = g.createPattern(wallTex, 'repeat');
+    g.fillRect(-tw * 6, 0, tw * 12 + Math.abs(b.x - a.x) * 2, tw);
+    g.restore();
+    g.save();
+    g.beginPath();
+    g.moveTo(a.x, a.y);
+    g.lineTo(b.x, b.y);
+    g.lineTo(b.x, b.y - h);
+    g.lineTo(a.x, a.y - h);
+    g.closePath();
+    g.fillStyle = shade;
+    g.fill();
+    g.restore()
+   }
    g.strokeStyle = '#5b4330';
    g.lineWidth = 2;
    g.stroke()
   };
  const base = KIND === 'forge' ? ['#857a6c', '#73695d'] : ['#dccdb0', '#cbbb9c'];
- face(P(-F.w, -F.d), P(F.w, -F.d), base[0]);
- face(P(-F.w, F.d + 1), P(-F.w, -F.d), base[1]);
+ face(P(-F.w, -F.d), P(F.w, -F.d), base[0], '#00000000');
+ face(P(-F.w, F.d + 1), P(-F.w, -F.d), base[1], '#00000040');
  g.strokeStyle = '#6b4a2e';
  g.lineWidth = 6;
  for (let k = -F.w; k <= F.w; k += 2.5) {
