@@ -38,14 +38,22 @@
  function sharpCacheReset(){sharpCache=new WeakMap()}
  /* v98.19 · the place that covers the hero is drawn into a scratch canvas, a soft round hole (an aura around the hero) is erased from it, then it is painted: only that part of the picture turns see-through */
  let extraScreens=[],holeCv=null;const AURA=46;   /* v98.123 · was 92: the see-through window around the hero is half the size */
- function holeDraw(g,im,crop,rect,holes){const [x,y,w,h]=rect,t=g.getTransform(),s=Math.min(2,Math.max(.5,Math.hypot(t.a,t.b))),cw=Math.max(1,Math.ceil(w*s)),ch=Math.max(1,Math.ceil(h*s));
-  if(!holeCv)holeCv=document.createElement('canvas');if(holeCv.width!==cw||holeCv.height!==ch){holeCv.width=cw;holeCv.height=ch}
-  const q=holeCv.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,cw,ch);q.imageSmoothingEnabled=true;q.imageSmoothingQuality='high';
-  if(crop)q.drawImage(im,...crop,0,0,cw,ch);else q.drawImage(blendFor(im)||im,0,0,cw,ch);
-  for(const hole of holes){  const hx=(hole.x-x)*s,hy=(hole.y-y)*s,R=AURA*s;q.save();q.translate(hx,hy);q.scale(.85,1.15);const gr=q.createRadialGradient(0,0,R*.3,0,0,R);const keep=Math.max(0,Math.min(1,root.DepthStyle?root.DepthStyle.get().alpha:0)),er=1-keep;gr.addColorStop(0,'rgba(0,0,0,'+er+')');gr.addColorStop(.6,'rgba(0,0,0,'+(er*.75)+')');gr.addColorStop(1,'rgba(0,0,0,0)');   /* v98.146 · the covering building keeps ~35 % opacity in the window (js/depth-style.js) instead of being erased */
-  q.globalCompositeOperation='destination-out';q.fillStyle=gr;q.fillRect(-R,-R,R*2,R*2);q.restore();
-  }q.globalCompositeOperation='source-over';
-  g.drawImage(holeCv,0,0,cw,ch,x,y,w,h)}
+ /* v98.241 · the see-through window is cut only where it is: the picture is drawn whole EXCEPT the small box around each window (clip, even-odd), and only that box goes through a scratch canvas with the soft erase.
+    Before, the whole picture (a big building / the fountain = up to 2× its size) was copied into a scratch canvas every frame for every covering picture — with two characters (lead + follower) that was the frame-rate drop at the plaza. */
+ function holeDraw(g,im,crop,rect,holes){const [x,y,w,h]=rect,t=g.getTransform(),s=Math.min(2,Math.max(.5,Math.hypot(t.a,t.b))),RX=AURA*.85,RY=AURA*1.15,src=crop?im:(blendFor(im)||im),iw=crop?crop[2]:(src.naturalWidth||src.width),ih=crop?crop[3]:(src.naturalHeight||src.height),ix=crop?crop[0]:0,iy=crop?crop[1]:0;
+  const boxes=[];for(const hole of holes){let b={x0:Math.max(x,hole.x-RX),y0:Math.max(y,hole.y-RY),x1:Math.min(x+w,hole.x+RX),y1:Math.min(y+h,hole.y+RY),hs:[hole]};if(b.x1>b.x0&&b.y1>b.y0)boxes.push(b)}
+  for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){const a=boxes[i],c=boxes[j];if(a.x0<c.x1&&c.x0<a.x1&&a.y0<c.y1&&c.y0<a.y1){a.x0=Math.min(a.x0,c.x0);a.y0=Math.min(a.y0,c.y0);a.x1=Math.max(a.x1,c.x1);a.y1=Math.max(a.y1,c.y1);a.hs.push(...c.hs);boxes.splice(j,1);j=i}}   // overlapping windows share one box
+  const draw0=()=>{if(crop)g.drawImage(im,...crop,...rect);else g.drawImage(src,...rect)};
+  if(!boxes.length){draw0();return}
+  g.save();g.beginPath();g.rect(x,y,w,h);for(const b of boxes)g.rect(b.x0+1,b.y0+1,Math.max(0,b.x1-b.x0-2),Math.max(0,b.y1-b.y0-2));g.clip('evenodd');draw0();g.restore();
+  const keep=Math.max(0,Math.min(1,root.DepthStyle?root.DepthStyle.get().alpha:0)),er=1-keep;
+  if(!holeCv)holeCv=document.createElement('canvas');
+  for(const b of boxes){const bw=b.x1-b.x0,bh=b.y1-b.y0,cw=Math.max(1,Math.ceil(bw*s)),ch=Math.max(1,Math.ceil(bh*s));
+   if(holeCv.width!==cw||holeCv.height!==ch){holeCv.width=cw;holeCv.height=ch}
+   const q=holeCv.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,cw,ch);q.imageSmoothingEnabled=true;q.imageSmoothingQuality='high';
+   q.drawImage(src,ix+(b.x0-x)/w*iw,iy+(b.y0-y)/h*ih,bw/w*iw,bh/h*ih,0,0,cw,ch);
+   for(const hole of b.hs){const hx=(hole.x-b.x0)*s,hy=(hole.y-b.y0)*s,R=AURA*s;q.save();q.translate(hx,hy);q.scale(.85,1.15);const gr=q.createRadialGradient(0,0,R*.3,0,0,R);gr.addColorStop(0,'rgba(0,0,0,'+er+')');gr.addColorStop(.6,'rgba(0,0,0,'+(er*.75)+')');gr.addColorStop(1,'rgba(0,0,0,0)');q.globalCompositeOperation='destination-out';q.fillStyle=gr;q.fillRect(-R,-R,R*2,R*2);q.restore()}
+   q.globalCompositeOperation='source-over';g.drawImage(holeCv,0,0,cw,ch,b.x0,b.y0,bw,bh)}}
  function draw(g,im,crop,rect,hero){if(!im?.complete||!im.naturalWidth)return;let alpha=1,hole=null;const [x,y,w,h]=rect;
   if(hero&&heroScreen&&(heroPainted||extraScreens.length)&&!(root.DepthStyle&&['solid','silhouette'].includes(root.DepthStyle.get().tall))){const m=mask(im),src=crop||[0,0,im.naturalWidth,im.naturalHeight],inv=g.getTransform().inverse();
    /* v98.226 · the lead hero AND the follower each get their own see-through window */
