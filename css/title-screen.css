@@ -204,3 +204,7 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 /* heat — warm light blooms in and the picture settles from a slight zoom; never dips dark (the old "ember" flicker looked like a power cut) */
 #titleScreen .ts-story-layer.fx-heat:not(.fx-done){animation-name:fx-heat;animation-duration:2.4s}
 @keyframes fx-heat{0%{opacity:0;transform:scale(1.07);filter:brightness(1.5) sepia(.55) saturate(1.6) blur(5px)}60%{opacity:1}100%{opacity:1;transform:none;filter:var(--b)}}
+
+/* v98.216 · prologue narration text is twice as big (was 18–25 px → 36–50 px). The box is wider and taller so a page still holds a whole sentence or two; longer passages split into more pages at sentence ends (DialogueFX). */
+#titleScreen .ts-story-text{width:min(1240px,calc(100vw - 48px));font-size:clamp(34px,4.4vw,50px);line-height:1.55;letter-spacing:.005em;margin-bottom:clamp(60px,9vh,96px);min-height:3.2em}
+@media(max-width:700px){#titleScreen .ts-story-text{font-size:clamp(26px,6.4vw,34px);line-height:1.5}}

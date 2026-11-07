@@ -214,7 +214,7 @@ const PACE={word:.05,perChar:.012,maxWord:.16,space:.38,ellipsis:.6,mark:.45,lin
 function pauseAfter(w){if(/^\s+$/.test(w))return PACE.space;let p=Math.min(PACE.maxWord,PACE.word+[...w].length*PACE.perChar);if(/(…|\.\.\.)$/.test(w))p+=PACE.ellipsis;else if(/[?!]$/.test(w))p+=PACE.mark;return p}
 /* v98.179 · prologue pages use the shared DialogueFX typer (rapid typing + voice, split at sentence ends if a page would overflow) instead of the per-word CSS fade */
 let TS=null;
-function reveal(box,text){TS?.stop();box.innerHTML='';box.classList.add('ts-all');TS=root.DialogueFX.create(box,{maxLines:7,voice:null});TS.load([String(text)]);TS.start()}
+function reveal(box,text){TS?.stop();box.innerHTML='';box.classList.add('ts-all');const cs=getComputedStyle(box),lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.55,lines=Math.max(3,Math.min(8,Math.floor(innerHeight*.58/lh)));TS=root.DialogueFX.create(box,{maxLines:lines,voice:null});TS.load([String(text)]);TS.start()}
 /* v98.187 · New Game pictures are stacked layers (one per page). A new layer plays a mood transition (fx-* in css/title-screen.css) over the previous one;
    when it finishes the old layers go. A page without a picture shows the "Waiting for Pic" board. The old SceneArt path is kept for the legacy prologue and the BRIDGE page. */
 let curImg=null;
@@ -237,7 +237,7 @@ function showPage(p){const st=title.querySelector('.ts-story'),box=st.querySelec
  reveal(box,p.text)}
 let prologueDone=false;   /* v98.201 · once the name form is up (skip button or last page) clicks / keys must NOT advance the prologue any more */
 function next(){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text');
- if(prologueDone)return;if(TS&&TS.finish())return;if(TS&&TS.hasMore()){TS.nextPage();return}// 1st press completes the typing, then each further press shows the next page of a long passage
+ if(prologueDone)return;if(TS)TS.finish();if(TS&&TS.hasMore()){TS.nextPage();return}/* v98.216 · a press never waits for the typing: it cuts it and goes straight on to the next page / scene */ // press shows the next page of a long passage
  page++;if(page>=PROLOGUE.length){storyEnd();return}showPage(PROLOGUE[page])}
 function storyEnd(){if(prologueDone)return;prologueDone=true;TS?.stop();TS=null;const st=title.querySelector('.ts-story'),f=st.querySelector('.ts-name');st.querySelector('.ts-story-text').textContent='';st.querySelector('.ts-story-hint').hidden=true;st.querySelector('.ts-skip').hidden=true;f.hidden=false;
  const input=f.elements.hero;input.value=game()?.village?.heroName||'';setTimeout(()=>input.focus(),30);
