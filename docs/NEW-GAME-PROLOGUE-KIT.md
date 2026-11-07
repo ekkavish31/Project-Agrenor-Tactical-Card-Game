@@ -1,5 +1,5 @@
 # Agrenor — New Game Prologue Kit v1
-> Status: **kit v2 merged / 18 pages · 14 art slots enabled · W06 and W10 show a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
+> Status: **kit v2 merged / 18 pages · 15 art slots enabled · only W06 shows a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
 > Current source of truth: `docs/lore/CURRENT-ERA-CANON.md` (approved section A), and game baseline/constraints.
 
 ## Playback wiring
@@ -26,7 +26,7 @@
 | 10 | W08 | ความรุ่งเรืองของมนุษย์ | `human-civilization.webp` | **ใช้แล้ว** |
 | 11 | W09 | ศาสตร์การ์ดเวท | `card-crafting.webp` | **ใช้แล้ว** |
 | 12 | W09a | "ว่ากันว่า" จอมเวทมนุษย์คิดค้นการ์ด (Canon A §4.1/§8) | `card-inventor-book.webp` | **ใช้แล้ว** |
-| 13 | W10 | มนุษย์อ่อนแอกว่าเผ่าอื่น การ์ดช่วยให้เดินทางไกล | `traveler-card.webp` | TODO (ภาพต้องไม่เห็นหน้า) |
+| 13 | W10 | มนุษย์อ่อนแอกว่าเผ่าอื่น การ์ดช่วยให้เดินทางไกล | `traveler-card.webp` | **ใช้แล้ว** (นักเดินทางสวมฮู้ดเห็นด้านหลัง ยกการ์ดเรืองแสงสร้างโดมแสงกันเงาหมาป่า จันทร์ม่วง มีซากสะพานโค้งและปราสาทไกลๆ ไม่ระบุชื่อ) |
 | 14 | W11 | เรื่องเล่าของนักเดินทาง | `travelers-stories.webp` | **ใช้แล้ว** |
 | 15 | W11a | เหตุผลของนักเดินทาง (บทเดิม) | ใช้ภาพ W11 ร่วม | — |
 | 16 | W12 | ถนนสู่ Fernvale (ภาพลานน้ำพุเตรียมงานเทศกาล) | `road-to-fernvale.webp` | **ใช้แล้ว** |

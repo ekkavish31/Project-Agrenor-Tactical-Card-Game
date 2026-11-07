@@ -1,6 +1,6 @@
 {
  "kit": "new-game-prologue-v2-merged",
- "status": "images partially supplied: 14 art slots enabled; W06 and W10 show the \"Waiting for Pic\" board",
+ "status": "images partially supplied: 15 art slots enabled; only W06 shows the \"Waiting for Pic\" board",
  "repoBase": "assets/new-game-prologue/images/",
  "worldPages": [
   {
@@ -129,10 +129,10 @@
   {
    "id": "W10",
    "title": "การ์ดกับการเดินทางของมนุษย์",
-   "enabled": false,
+   "enabled": true,
    "filename": "traveler-card.webp",
-   "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
-   "source": "TO_CREATE",
+   "size": "1920x1080 (supplied 1672x941, cover)",
+   "source": "SUPPLIED",
    "brief": "นักเดินทางมนุษย์กลางคืนหรือในที่เปลี่ยว ใช้การ์ดเรืองแสงข้ามอันตราย; เห็นแค่เงา/มือ ไม่เห็นหน้า (ตัวเอกเลือกเพศเอง)",
    "transitionFx": "darklift"
   },
