@@ -1,5 +1,5 @@
 # Agrenor — New Game Prologue Kit v1
-> Status: **kit v2 merged / 18 pages · 11 art slots enabled (W01 low-res) · W03–W06 and W10 show a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
+> Status: **kit v2 merged / 18 pages · 11 art slots enabled · W03–W06 and W10 show a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
 > Current source of truth: `docs/lore/CURRENT-ERA-CANON.md` (approved section A), and game baseline/constraints.
 
 ## Playback wiring
@@ -14,7 +14,7 @@
 
 | # | ID | Story | Image file (assets/new-game-prologue/images/) | Status |
 |---|---|---|---|---|
-| 1 | W01 | โลก Agrenor + ดวงทอง | `world-panorama.webp` | **ใช้แล้ว (ชั่วคราว)** ภาพต้นฉบับ 452×301 ขยายเป็น 1920 กว้าง · ทิศตรง Canon: เหนือหิมะ ตะวันตกหมู่เกาะ ใต้ภูเขาไฟ ตะวันออกป่าใหญ่หลังแนวเขา แม่น้ำไหลลงใต้ผ่านทะเลสาบกลาง · ไม่มีดวงทองในภาพ (ลูกเล่น bloom ให้แสงทองแทน) · ควรเจนใหม่ 1920×1080 |
+| 1 | W01 | โลก Agrenor + ดวงทอง | `world-panorama.webp` | **ใช้แล้ว** ภาพโลกมุมสูงเห็นความโค้งของดาว 1536×1024 (แทนภาพ 452×301 เดิม) · ทิศตรง Canon: เหนือหิมะ ตะวันตกหมู่เกาะ ใต้ภูเขาไฟ ตะวันออกป่าใหญ่หลังแนวเขา แม่น้ำไหลลงใต้ผ่านทะเลสาบกลาง · มีดวงทองมุมซ้ายบน |
 | 2 | W02 | ดินแดนเหนือ | `northern-snowlands.webp` | **ใช้แล้ว** (มีสัตว์ตัวใหญ่ 3 ตัวเดินบนสันเขา เป็นเงาเล็กๆ ไม่ระบุชนิด) |
 | 3 | W03 | หมู่เกาะตะวันตก | `western-archipelago.webp` | TODO |
 | 4 | W04 | ดินแดนใต้ | `southern-firelands.webp` | TODO |

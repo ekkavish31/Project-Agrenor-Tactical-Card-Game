@@ -227,7 +227,7 @@ function showPage(p){const st=title.querySelector('.ts-story'),box=st.querySelec
    pa?.stop?.();bg.style.backgroundImage='none';bg.classList.remove('ts-pan');
    const old=layersOf(st),L=document.createElement('div'),fx=reduced?'none':(p.fx&&p.fx!=='same'&&p.fx!=='glow'?p.fx:'fade');
    L.className='ts-story-layer fx-'+fx+(p.placeholder?' ts-layer-wait':'');
-   if(p.placeholder)L.innerHTML=placeholderHTML(p.label);else L.style.backgroundImage='url("'+p.bg+'")';
+   if(p.placeholder)L.innerHTML=placeholderHTML(p.label);else{L.style.backgroundImage='url("'+p.bg+'")';if(p.pos)L.style.backgroundPosition=p.pos}
    st.querySelector('.ts-story-veil').before(L);curImg=key;
    const done=()=>{if(!L.isConnected)return;old.forEach(o=>o.remove());L.classList.add('fx-done')};
    L.addEventListener('animationend',e=>{if(e.target===L&&/^fx-/.test(e.animationName))done()});setTimeout(done,fx==='none'?0:3200);

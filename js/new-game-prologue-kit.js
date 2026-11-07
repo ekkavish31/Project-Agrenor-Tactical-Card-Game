@@ -6,11 +6,12 @@
 const BASE='assets/new-game-prologue/images/';
 // Future art workflow: after a reviewed WebP has been committed, add its ID to APPROVED_IMAGES.
 // Disabled by default; the existing SceneArt canvas provides a continuous illustrated fallback.
-const APPROVED_IMAGES=new Set(['W01','W02','W05a','W05b','W07','W08','W09','W09a','W11','W12','W13']); // images committed in assets/new-game-prologue/images (5 slots still need art: W03 W04 W05 W06 W10; W01 is a low-res 452x301 upscale)
+const APPROVED_IMAGES=new Set(['W01','W02','W05a','W05b','W07','W08','W09','W09a','W11','W12','W13']); // images committed in assets/new-game-prologue/images (5 slots still need art: W03 W04 W05 W06 W10)
 const SLOTS=[
     {
       "id": "W01",
       "fx": "bloom",
+      "pos": "50% 0%",
       "title": "โลก Agrenor",
       "art": "realmsWide",
       "text": "โลกแห่ง Agrenor... ผืนพิภพอันกว้างใหญ่ ที่ดวงทองลอยค้างส่องแสงอบอุ่นเหนือขุนเขาและสายน้ำ\nและยังมีเรื่องราวอีกมากมาย ที่ไม่มีใครรู้จักทั้งหมด",
@@ -178,6 +179,6 @@ const byId=Object.fromEntries(SLOTS.map(s=>[s.id,s]));
 // "share": the page reuses the picture of another slot (nothing extra to paint); until that picture is approved it falls back to its own SceneArt key
 // Pages with no approved picture show a plain "Waiting for Pic" board (not SceneArt) so it is obvious which pictures are still to be created.
 // "fx" = the mood transition used when this page's picture comes in (js/title-screen.js showPage · css/title-screen.css .fx-*).
-const pages=SLOTS.map(s=>{const src=byId[s.share]||s,ok=APPROVED_IMAGES.has(src.id);return{art:null,bg:ok?BASE+src.file+'.webp':null,placeholder:!ok,fx:s.fx||'fade',label:s.id+' · '+s.title,text:s.text,prologueId:s.id}});
+const pages=SLOTS.map(s=>{const src=byId[s.share]||s,ok=APPROVED_IMAGES.has(src.id);return{art:null,bg:ok?BASE+src.file+'.webp':null,placeholder:!ok,fx:s.fx||'fade',pos:s.pos||'',label:s.id+' · '+s.title,text:s.text,prologueId:s.id}});
 root.NewGamePrologueKit={version:2,pages,slots:SLOTS,approved:[...APPROVED_IMAGES],base:BASE};
 })(globalThis);

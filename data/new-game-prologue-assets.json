@@ -1,6 +1,6 @@
 {
  "kit": "new-game-prologue-v2-merged",
- "status": "images partially supplied: 11 art slots enabled (W01 is a low-res upscale); W03-W06 and W10 show the \"Waiting for Pic\" board",
+ "status": "images partially supplied: 11 art slots enabled; W03-W06 and W10 show the \"Waiting for Pic\" board",
  "repoBase": "assets/new-game-prologue/images/",
  "worldPages": [
   {
@@ -8,8 +8,8 @@
    "title": "โลก Agrenor",
    "enabled": true,
    "filename": "world-panorama.webp",
-   "size": "1920x1278 (3:2, shown with cover)",
-   "source": "SUPPLIED (452x301, upscaled to 1920 wide; replace when a 1920x1080 version exists)",
+   "size": "1536x1024 (3:2, shown with cover)",
+   "source": "SUPPLIED (1536x1024, replaces the earlier 452x301 draft)",
    "brief": "แผนภาพโลกกว้าง แสง Elukhor ผ่านเมฆ; ไม่มีป้ายชื่อหรือแผนที่ที่เผยพิกัด",
    "transitionFx": "bloom"
   },
