@@ -1,6 +1,6 @@
 {
  "kit": "new-game-prologue-v2-merged",
- "status": "images partially supplied: 13 art slots enabled (W05 is a low-res upscale); W04, W06 and W10 show the \"Waiting for Pic\" board",
+ "status": "images partially supplied: 13 art slots enabled; W04, W06 and W10 show the \"Waiting for Pic\" board",
  "repoBase": "assets/new-game-prologue/images/",
  "worldPages": [
   {
@@ -48,8 +48,8 @@
    "title": "มหาพงไพรตะวันออก",
    "enabled": true,
    "filename": "eastern-great-forest.webp",
-   "size": "1920x1279 (3:2, shown with cover)",
-   "source": "SUPPLIED (452x301, upscaled to 1920 wide; replace when a 1920x1080 version exists)",
+   "size": "1536x1024 (3:2, cover, position 50% 20%)",
+   "source": "SUPPLIED (1536x1024, replaces the 452x301 draft)",
    "brief": "ผืนป่ามหึมา ยอดไม้ ซากโบราณที่ไม่เปิดเผยความลับ",
    "transitionFx": "mist"
   },

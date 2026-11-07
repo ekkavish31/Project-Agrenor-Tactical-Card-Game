@@ -6,7 +6,7 @@
 const BASE='assets/new-game-prologue/images/';
 // Future art workflow: after a reviewed WebP has been committed, add its ID to APPROVED_IMAGES.
 // Disabled by default; the existing SceneArt canvas provides a continuous illustrated fallback.
-const APPROVED_IMAGES=new Set(['W01','W02','W03','W05','W05a','W05b','W07','W08','W09','W09a','W11','W12','W13']); // images committed in assets/new-game-prologue/images (3 slots still need art: W04 W06 W10; W05 is a low-res 452x301 upscale)
+const APPROVED_IMAGES=new Set(['W01','W02','W03','W05','W05a','W05b','W07','W08','W09','W09a','W11','W12','W13']); // images committed in assets/new-game-prologue/images (3 slots still need art: W04 W06 W10)
 const SLOTS=[
     {
       "id": "W01",
@@ -48,6 +48,7 @@ const SLOTS=[
     {
       "id": "W05",
       "fx": "mist",
+      "pos": "50% 20%",
       "title": "มหาพงไพรตะวันออก",
       "art": "deepwood",
       "text": "ส่วนทางตะวันออก มหาพงไพรทอดตัวไกลเกินขอบแผนที่\nภายใต้ร่มไม้ยังมีเรื่องราวที่โลกภายนอกไม่อาจยืนยัน",
