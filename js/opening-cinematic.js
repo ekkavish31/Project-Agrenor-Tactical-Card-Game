@@ -11,8 +11,12 @@
 
     // Title block, big to small: Agrenor, Paths Unwritten, then the tagline.
     const kicker = brand.querySelector('.ts-kicker');
-    brand.querySelector('h1').textContent = 'Agrenor';
-    brand.querySelector('p').textContent = 'Paths Unwritten';
+    const h1 = brand.querySelector('h1');
+    h1.textContent = '';
+    const logo = document.createElement('img');
+    logo.className = 'ag-logo'; logo.src = 'assets/intro/agrenor-logo.webp'; logo.alt = 'Agrenor: Paths Unwritten'; logo.draggable = false;
+    h1.append(logo);
+    brand.querySelector('p').remove();
     kicker.textContent = 'EVERY SMALL BEGINNING';
     brand.append(kicker);
     title.classList.add('ag-title');
