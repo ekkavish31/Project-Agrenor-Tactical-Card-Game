@@ -10,7 +10,7 @@ const ROSTER={
 const MAX_LV=10,xpNeed=lv=>lv*80;
 function list(){if(!Array.isArray(s.village.party))s.village.party=[];return s.village.party.filter(c=>ROSTER[c.key]||FALLBACK[c.key])}
 // recruits who joined in the inn but have no old training-battle sprite: fight as a sword/axe/bow fighter
-const FALLBACK={sigrid:{name:'ซิกริด',role:'ทหารรับจ้าง',weapon:'axe',shield:false,hp:60},ren:{name:'เรน',role:'นักธนู',weapon:'bow',shield:false,hp:40},olwen:{name:'โอลเวน',role:'จอมเวท',weapon:'staff',shield:false,hp:36},nadia:{name:'นาเดีย',role:'นักย่องเบา',weapon:'knife',shield:false,hp:42},orla:{name:'ซิสเตอร์ออร์ลา',role:'นักบวช',weapon:'tome',shield:false,hp:40},berg:{name:'นายพรานเบิร์ก',role:'นายพราน',weapon:'bow',shield:false,hp:50}};
+const FALLBACK={sib:{name:'น้อง',role:'พี่น้องของตัวเอก',weapon:'sword',shield:false,hp:50},sigrid:{name:'ซิกริด',role:'ทหารรับจ้าง',weapon:'axe',shield:false,hp:60},ren:{name:'เรน',role:'นักธนู',weapon:'bow',shield:false,hp:40},olwen:{name:'โอลเวน',role:'จอมเวท',weapon:'staff',shield:false,hp:36},nadia:{name:'นาเดีย',role:'นักย่องเบา',weapon:'knife',shield:false,hp:42},orla:{name:'ซิสเตอร์ออร์ลา',role:'นักบวช',weapon:'tome',shield:false,hp:40},berg:{name:'นายพรานเบิร์ก',role:'นายพราน',weapon:'bow',shield:false,hp:50}};
 // v13: companions can carry a weapon you forged (moved out of your bag while equipped)
 const CAN_EQUIP={luna:['staff','tome'],bram:['hammer','axe','sword'],kier:['sword','rapier','spear','axe'],mil:['sword','knife','rapier','bow']};
 function gearBonus(g){return g?g.quality*2+(g.recipe==='tempered'?3:0):0}

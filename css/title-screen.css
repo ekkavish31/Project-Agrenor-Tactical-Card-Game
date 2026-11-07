@@ -218,3 +218,16 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 /* v98.230 · loading screen waiting for a key press before the prologue */
 #gameLoading.gl-gate .gl-tip{font-size:18px;font-weight:700;color:#ffe8a6;animation:glGate 1.3s ease-in-out infinite}
 @keyframes glGate{0%,100%{opacity:.55}50%{opacity:1}}
+/* v98.235 · name form: the two heroes' half-body dialogue portraits face each other (the picker); the name fields sit below, outside the picker */
+#titleScreen .ts-name{width:min(700px,calc(100vw - 24px))}
+#titleScreen .ts-name .ts-gender{gap:0;justify-content:center;align-items:flex-end;margin:2px 0 8px}
+#titleScreen .ts-name .ts-g{width:min(300px,46vw);height:min(300px,40vh);padding:0 6px 8px;position:relative;overflow:hidden;justify-content:flex-end;gap:2px;background:radial-gradient(ellipse at 50% 85%,#3a4a70aa,#0d1424b8 70%)}
+#titleScreen .ts-name .ts-g .ts-gframe{position:absolute;inset:0 0 54px 0;width:auto;height:auto;border:0;border-radius:0;background:none;overflow:hidden}
+#titleScreen .ts-name .ts-g .ts-gframe img,#titleScreen .ts-name .ts-g .ts-gframe.portrait img{position:absolute;left:50%;top:0;width:auto!important;height:100%!important;max-width:none;transform:translateX(-50%);object-fit:contain;filter:brightness(.62) saturate(.75);transition:filter .25s}
+#titleScreen .ts-name .ts-g[data-g=female] .ts-gframe img{transform:translateX(-50%) scaleX(-1)}   /* the left hero looks right, the right one looks left: they face each other */
+#titleScreen .ts-name .ts-g.on .ts-gframe img{filter:none}
+#titleScreen .ts-name .ts-g b,#titleScreen .ts-name .ts-g small{position:relative;text-shadow:0 1px 4px #000}
+#titleScreen .ts-name .ts-g[data-g=female]{border-radius:14px 0 0 14px}#titleScreen .ts-name .ts-g[data-g=male]{border-radius:0 14px 14px 0}
+#titleScreen .ts-name .ts-names{display:flex;gap:14px;justify-content:center;margin:0 0 4px}
+#titleScreen .ts-name .ts-nm{flex:1;max-width:300px;display:flex;flex-direction:column;gap:4px;text-align:left;font:600 13px AgThai,system-ui,sans-serif;color:#d8c9a4}
+#titleScreen .ts-name .ts-nm input{text-align:center}

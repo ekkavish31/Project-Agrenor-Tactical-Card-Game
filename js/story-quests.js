@@ -19,9 +19,10 @@ const late=()=>(G()?.minutes||0)>=1140;
 /* v94: journeys happen on the world map (the old area maps are archived), companions are recruited in the inn */
 const onWorld=()=>!!root.VillageTown?.onWorld?.();
 /* v95.14: Kier walks the first expedition with you only — he joins (or is already in the party), and leaves again when you are home. He can be recruited normally afterwards. */
-function markTemp(){try{const L=root.VillageLife,S=L.save(),had=L.inParty(S,'kier');if(!had&&S.party.length+S.bench.length===0&&L.join(S,'kier')){L.writeSave(S);toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)')}else if(had)toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)');if(L.inParty(L.save(),'kier')){V().story.tempAlly='kier';doSave()}}catch(e){}}
+function markTemp(){try{const L=root.VillageLife,S=L.save(),had=L.inParty(S,'kier');if(!had&&[...S.party,...S.bench].filter(m=>m.key!=='sib').length===0&&L.join(S,'kier')){L.writeSave(S);toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)')}else if(had)toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)');if(L.inParty(L.save(),'kier')){V().story.tempAlly='kier';doSave()}}catch(e){}}
 function leaveTemp(){try{const st=V()?.story;if(!st?.tempAlly)return;const k=st.tempAlly,S=root.VillageLife.save();S.party=S.party.filter(p=>p.key!==k);S.bench=S.bench.filter(p=>p.key!==k);root.VillageLife.writeSave(S);st.tempAlly=null;doSave();toast('เคียร์ขอกลับไปช่วยที่บ้านก่อน · ชวนเขาใหม่ได้ที่โรงแรม','good')}catch(e){}}
-const partySize=()=>(V()?.party||[]).length+(V()?.bench||[]).length;
+/* v98.234 · the sibling is always in the party, so it does not count as a recruited companion */
+const partySize=()=>[...(V()?.party||[]),...(V()?.bench||[])].filter(m=>m.key!=='sib').length;
 
 /* ---------- helpers that call existing game actions ---------- */
 function spend(energy,minutes,fatigue){try{return spendActivity(energy,minutes,fatigue)}catch{return ''}}
@@ -207,7 +208,7 @@ const OLD_IDS=['wake','goats','pumpkin','stall','sleep1','cave','caveBack','lant
 const OLD_TO={pumpkin:'seeds',stall:'tom',cave:'guard',lanterns:'gus',prep:'saf'};
 function migrate(st){if(!st||st.v>=2)return st;const old=OLD_IDS[st.i];if(old){const id=OLD_TO[old]||old,i=byId(id);if(i>=0){st.i=i;if(OLD_TO[old])delete st.data[old]}}else if(st.i>=OLD_IDS.length)st.i=STEPS.length;st.v=2;doSave();return st}
 function story(){const v=V();if(!v)return null;return migrate(v.story||null)}
-function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!(v.party||[]).length&&!v.adventure}
+function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!(v.party||[]).filter(m=>m.key!=='sib').length&&!v.adventure}
 function init(){const v=V();if(!v||v.story)return;v.story={v:2,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
 function cur(){const st=story();return st&&st.mode==='active'?STEPS[st.i]:null}
 function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step.id]}

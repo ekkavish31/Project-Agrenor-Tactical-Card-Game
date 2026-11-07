@@ -4,7 +4,7 @@
 (function(root){'use strict';
 const B={home:'assets/home.webp',market:'assets/market.webp',work:'assets/workshop.webp',anvil:'assets/forge.webp',camp:'assets/camp.webp',
  forest:'assets/scenes/area-forest.webp',mine:'assets/scenes/area-mine.webp',ruins:'assets/scenes/area-ruins.webp'};
-const ally=()=>{try{const c=(s.village.party||[])[0];const R=root.Companions?.ROSTER?.[c?.key];return c&&R?{name:R.name,portrait:'assets/cards/portraits/u-'+c.key+'.webp'}:null}catch{return null}};
+const ally=()=>{try{const c=(s.village.party||[]).find(x=>x.key!=='sib');const R=root.Companions?.ROSTER?.[c?.key];return c&&R?{name:R.name,portrait:'assets/cards/portraits/u-'+c.key+'.webp'}:null}catch{return null}};
 const SPEAKERS={
  hero:{name:()=>{try{return s.village.heroName||'นักผจญภัย'}catch{return 'นักผจญภัย'}},portrait:'assets/cards/portraits/u-hero.webp'},
  sib:{name:()=>{try{return s.village.siblingName||'น้อง'}catch{return 'น้อง'}},color:'#5a6a8a'},   /* v98.230 · the other hero: elder BROTHER (male look) / younger SISTER (female look) — same name/portrait logic as hero, see story-actors sibSet */

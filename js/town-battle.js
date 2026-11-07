@@ -1141,6 +1141,11 @@
   /* monster: old MonsterArt clips (idle/walk/windup/strike/hit/down, SE/NE + mirror); static picture until the clip loads */
   /* companions: the old per-character pictures (<key>_<se|ne>_<idle|windup|strike|hit|guard|down>.webp), SW/NW mirrored, moved with poseMotion */
   function drawAlly(g, u, t) {
+    if (u.key === 'sib') {   /* v98.234 · the other hero: the painted idle of the look the player did NOT choose (one still per direction) */
+      const look = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } })(), p = project(u.vu, u.vv), i = im(`assets/characters/hero-${look}/idle-${u.dir.toLowerCase()}.webp`);
+      shadow(g, p, UNIT * .24); if (!i) return; const size = UNIT * 1.45 * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1), pm = poseMotion(u, t);
+      g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (u.hp <= 0) g.globalAlpha *= .5; g.drawImage(i, -size / 2, -size * .94, size, size);
+      if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size) } g.restore(); if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0'); return }
     const p = project(u.vu, u.vv), back = ['NE', 'NW'].includes(u.dir), flip = ['SW', 'NW'].includes(u.dir), pose = u.hp <= 0 ? 'down' : u.walking ? 'idle' : (['windup', 'strike', 'hit', 'guard'].includes(u.pose) ? u.pose : 'idle');
     if (!ALLY_ART.includes(u.key) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
       if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT / 56 * .78 * 1.065 * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1));   /* v98.126 · ×1.065 = same 1.45-UNIT canvas as bram/luna/mil, × the ⚖ size */ if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }

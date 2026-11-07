@@ -58,6 +58,10 @@
     if (!Number.isFinite(g.hp)) g.hp = MAX_HP; if (!Number.isFinite(g.fatigue)) g.fatigue = 0;
     v.coins ??= 80; v.materials ||= {}; v.materials.food ??= 0; v.bag ||= {};
     v.party ||= []; v.bench ||= []; v.recruit ||= {}; v.battles ??= 0; v.kills ??= 0;
+    /* v98.234 · minimum team of two: the other hero (พี่ชาย/น้องสาว) is always in the travelling party (new saves and old ones) */
+    { const nm = v.siblingName || 'น้อง'; let m = v.party.find(x => x.key === 'sib') || v.bench.find(x => x.key === 'sib');
+      if (!m) { m = { key: 'sib', name: nm, hp: 50, max: 50, order: 'charge', locked: true }; v.party.unshift(m) }
+      else { m.name = nm; m.locked = true; if (!v.party.includes(m)) { v.bench = v.bench.filter(x => x !== m); v.party.unshift(m) } } }
     if (!v.worldMerged) merge(g);
   }
   // before v94 the world map / inn kept their own gold, potions, party and clock; fold them into the game once

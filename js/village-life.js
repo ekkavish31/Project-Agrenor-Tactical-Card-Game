@@ -259,7 +259,9 @@
     nadia: { name: 'นาเดีย', hp: 42, atk: 13, move: 5, range: 1, fx: 'knife' },
     orla: { name: 'ซิสเตอร์ออร์ลา', hp: 40, atk: 7, move: 3, range: 3, fx: 'holy', healer: true },
     berg: { name: 'นายพรานเบิร์ก', hp: 50, atk: 13, move: 4, range: 4, fx: 'arrow' },
-    mil: { name: 'มิล', hp: 42, atk: 10, move: 5, range: 1, fx: 'knife' }
+    mil: { name: 'มิล', hp: 42, atk: 10, move: 5, range: 1, fx: 'knife' },
+    /* v98.234 · the other hero (พี่ชาย / น้องสาว): always in the party from the start (min. team of two). Numbers are placeholders to balance. */
+    sib: { get name() { try { return window.WorldState?.game()?.village?.siblingName || 'น้อง' } catch (e) { return 'น้อง' } }, hp: 50, atk: 11, move: 4, range: 1, fx: 'sword' }
   };
 
   /* ---------- party store (v94): gold, potions, hero HP and the party live in the game save (js/world-state.js);
