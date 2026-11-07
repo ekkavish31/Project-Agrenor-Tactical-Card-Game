@@ -12,8 +12,8 @@
 #titleScreen.ag-title .ts-brand{position:absolute;left:clamp(14px,3.2vw,56px);top:clamp(12px,3.5vh,44px);transform:none;width:max-content;max-width:96vw;display:flex;flex-direction:column;align-items:center;text-align:center}
 #titleScreen.ag-title .ts-brand::before{content:'';position:absolute;z-index:-1;inset:-10% -10%;background:radial-gradient(ellipse 50% 52% at 50% 50%,#ffffff80 0%,#ffffff40 52%,transparent 82%);pointer-events:none}
 #titleScreen.ag-title .ts-brand h1,#titleScreen.ag-title .ts-brand p{font-family:Wizzta,serif;text-transform:none;white-space:nowrap;max-width:none}
-#titleScreen.ag-title .ts-brand h1{margin:0;font-size:0;line-height:0}
-#titleScreen.ag-title .ag-logo{display:block;width:clamp(260px,min(46vw,80vh),780px);height:auto;filter:drop-shadow(0 1px 2px #1b2b4733) drop-shadow(0 0 16px #ffffffb8);user-select:none;-webkit-user-drag:none}
+#titleScreen.ag-title .ts-brand h1{margin:0;font-size:0;line-height:0;filter:none;text-shadow:none}
+#titleScreen.ag-title .ag-logo{display:block;width:clamp(260px,min(46vw,80vh),780px);height:auto;filter:drop-shadow(0 0 14px #ffffffb0);user-select:none;-webkit-user-drag:none}
 #titleScreen.ag-title .ts-brand .ts-kicker{margin-top:clamp(6px,1.2vh,16px);white-space:pre-line;text-align:center;font:600 clamp(11px,1.3vw,21px)/1.55 Georgia,'Times New Roman',serif;letter-spacing:.26em;padding-left:.26em;color:var(--ag-ink);opacity:1;text-shadow:0 0 6px #fff,0 0 14px #ffffffd0,0 1px 0 #fff}
 #titleScreen.ag-title .ts-menu{position:absolute;left:clamp(12px,2.6vw,44px);bottom:clamp(64px,14vh,190px);width:clamp(250px,28vw,430px);gap:2px;pointer-events:auto}
 #titleScreen.ag-title .ts-menu button{isolation:isolate;border:0;border-radius:0;color:var(--ag-ink);background:linear-gradient(90deg,#1b2b4759,transparent 82%) left bottom/100% 1px no-repeat;padding:10px 18px 11px clamp(58px,5.6vw,84px);min-height:clamp(46px,7.4vh,72px);justify-content:center;transform:none;transition:color .18s,background-color .18s}
