@@ -174,6 +174,8 @@
     }
     return cur;
   }
+  /* v98.222 · the face picture for the dialogue box: the speaker's painted portrait (current mood) when they have a set, else null */
+  function facePic(who, sp, face) { const P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : null); if (!P) return null; const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral); return 'assets/portraits/' + P[0] + '-' + f + '.webp' }
   function emote(side, ch) { const st = stands[side]; st.querySelector('.cs-emote')?.remove(); if (!ch) return; const e = document.createElement('div'); e.className = 'cs-emote'; e.textContent = ch; st.append(e); setTimeout(() => e.remove(), 1700) }
   function fx(side, cls) { const st = stands[side]; st.classList.remove('fx-shock', 'fx-hop', 'fx-jump', 'fx-shake', 'fx-sag'); void st.offsetWidth; if (cls) for (const c of cls) st.classList.add(c) }
 
@@ -204,5 +206,5 @@
       if (on) { let open = false; typingFlap = setInterval(() => { open = !open; drawBust(cur.el, cur.look, cur.face, open) }, 130) } else drawBust(cur.el, cur.look, cur.face, false);
     }
   }
-  root.StoryActors = { begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
+  root.StoryActors = { facePic, begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
 })(typeof window !== 'undefined' ? window : globalThis);

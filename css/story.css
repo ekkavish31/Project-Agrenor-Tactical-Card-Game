@@ -205,3 +205,8 @@ body.cs-open #smithWip{display:none}
 .sw-bar i b{box-shadow:0 0 0 rgba(255,200,100,0);transition:width .45s,box-shadow .4s}#smithWip.sw-hit .sw-bar.shape i b,#smithWip.sw-heatup .sw-bar.heat i b{box-shadow:0 0 12px rgba(255,210,120,.95)}
 @media (prefers-reduced-motion:reduce){.sw-float,.sw-ring,.sw-banner,.sw-steam{animation-duration:.01s}}
 #smithWip.sw-docked{width:188px}#smithWip.sw-docked .sw-next{display:none}
+/* v98.222 · speaker face: rounded square, larger, cropped to the face of the painted dialogue portrait */
+.cs-portrait{width:100px;height:100px;border-radius:18px}
+.cs-portrait.cs-face{background:radial-gradient(#fff4d2,#cdb583)}
+.cs-portrait.cs-face img{width:185%;height:auto;max-width:none;position:relative;left:-42%;top:-3%;object-fit:initial;object-position:initial;align-self:start}
+@media (max-width:640px){.cs-portrait{width:68px;height:68px;border-radius:13px}}

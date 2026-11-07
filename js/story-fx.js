@@ -87,7 +87,7 @@ function showLine(group){const line=group[0],box=$('.cs-box'),sp=speaker(line.wh
  /* v95.20: half-body portraits left/right with faces, emotes, glow and moods (js/story-actors.js) */
  const hint=root.StoryActors?.line(el,line,sp)||{};if(hint.shake)shake(false);if(hint.flash)flash(hint.flash);
  $('.cs-name').textContent=line.who?sp.name:'';const pt=$('.cs-portrait');pt.hidden=!line.who;
- if(line.who){if(sp.portrait)pt.innerHTML=`<img src="${esc(sp.portrait)}" alt="">`;else{pt.innerHTML=`<span>${esc([...sp.name][0]||'?')}</span>`;pt.style.setProperty('--pc',sp.color)}}
+ pt.classList.remove('cs-face');if(line.who){const fp=root.StoryActors?.facePic?.(line.who,sp,root.StoryActors.faceOf(line));if(fp){pt.classList.add('cs-face');pt.innerHTML=`<img src="${esc(fp)}" alt="">`;pt.style.setProperty('--pc',sp.color)}else if(sp.portrait)pt.innerHTML=`<img src="${esc(sp.portrait)}" alt="">`;else{pt.innerHTML=`<span>${esc([...sp.name][0]||'?')}</span>`;pt.style.setProperty('--pc',sp.color)}}
  box.classList.remove('cs-in');void box.offsetWidth;box.classList.add('cs-in');
  const t=$('.cs-text');T?.stop();
  /* v98.179: the consecutive lines of one speaker are one passage: rapid typing + a voice, split into pages only at sentence ends; a full page waits for the player */
