@@ -4153,3 +4153,7 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 # v98.220 — 8 พฤศจิกายน 2026
 
 - **Prologue W13 (Fernvale…)**: เปลี่ยนภาพ `fernvale-square.webp` เป็นภาพมุมสูงหมู่บ้าน Fernvale มีลานน้ำพุกลางและทุ่งเนิน
+
+# v98.221 — 8 พฤศจิกายน 2026
+
+- **ฉากสนทนา (Cutscene)**: ยกเลิกฉากหลังแบบ vector (SceneArt `orb`) ในบทเปิดเรื่อง (`opening`) และฉากจบ (`finale`) ใช้ภาพ `assets/market.webp` แทน ตอนนี้ไม่มีฉากสนทนาไหนใช้ `art:` แล้ว (SceneArt ยังใช้เฉพาะหน้า Prologue เดิมใน title-screen.js)
