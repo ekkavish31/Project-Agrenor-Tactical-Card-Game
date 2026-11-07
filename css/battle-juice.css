@@ -29,7 +29,7 @@
 #tacticsLayer .v53-walk .tactic-card.selected{border-color:var(--bj-gold)!important;box-shadow:0 0 0 2px #f0c56066,0 0 16px #f0c560aa}
 #tacticsLayer .v53-walk .tactic-card.selected::after{content:'🔒';position:absolute;top:-9px;right:-7px;font-size:15px;filter:drop-shadow(0 1px 2px #000)}
 #tacticsLayer .v53-walk .tactic-card.bj-will{transform:translateY(-8px);border-color:#9fe3ff!important;box-shadow:0 0 18px #5fc8ffcc}
-#tacticsLayer .v53-walk .bj-tip{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);white-space:nowrap;padding:4px 10px;border-radius:8px;background:#0e1626ee;border:1px solid #5fb8e8;color:#dff4ff;font:600 12px system-ui,sans-serif;pointer-events:none}
+#tacticsLayer .v53-walk .bj-tip{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);white-space:nowrap;padding:4px 10px;border-radius:8px;background:#0e1626ee;border:1px solid #5fb8e8;color:#dff4ff;font:600 12px AgThai,system-ui,sans-serif;pointer-events:none}
 #tacticsLayer .v53-walk .bj-tip[hidden]{display:none}
 @keyframes bj-rise{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
 
@@ -39,7 +39,7 @@
 #tacticsLayer.fullbattle #tacticsHand.v36-fan[data-show=cards] .item-group{display:flex!important}
 #tacticsLayer.fullbattle #tacticsHand.v36-fan .move-group{display:none!important}
 #tacticsHand .v53-filter{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
-#tacticsHand .v53-filter button{padding:4px 10px!important;border-radius:999px!important;border:1px solid #d9b46b66!important;background:#0d1424!important;color:#d8c9a4!important;font:600 12px system-ui,sans-serif!important;cursor:pointer;min-width:0!important;width:auto!important;height:auto!important}
+#tacticsHand .v53-filter button{padding:4px 10px!important;border-radius:999px!important;border:1px solid #d9b46b66!important;background:#0d1424!important;color:#d8c9a4!important;font:600 12px AgThai,system-ui,sans-serif!important;cursor:pointer;min-width:0!important;width:auto!important;height:auto!important}
 #tacticsHand .v53-filter button.on{background:linear-gradient(#f0c560,#c9901f)!important;color:#2a1a05!important;border-color:#7a4b06!important}
 #tacticsHand[data-filter=attack] [data-kind]:not([data-kind=attack]),#tacticsHand[data-filter=skill] [data-kind]:not([data-kind=skill]),#tacticsHand[data-filter=item] [data-kind]:not([data-kind=item]),#tacticsHand[data-filter=react] [data-kind]:not([data-kind=react]){display:none!important}
 #tacticsHand[data-filter=attack] .item-group,#tacticsHand[data-filter=skill] .item-group,#tacticsHand[data-filter=react] .item-group,#tacticsHand[data-filter=item] .combat-group{display:none!important}
@@ -54,7 +54,7 @@
 @keyframes bj-pick{30%{transform:translateY(-18px) scale(1.12);filter:brightness(1.4)}}
 
 /* flying walk card */
-.bj-flycard{position:fixed;z-index:3000;display:grid;place-items:center;padding:4px;border-radius:9px;border:2px solid #9fe3ff;background:radial-gradient(#2f6fa8,#14304f);color:#eaf8ff;font:700 12px system-ui,sans-serif;text-align:center;box-shadow:0 0 20px #5fc8ff;pointer-events:none}
+.bj-flycard{position:fixed;z-index:3000;display:grid;place-items:center;padding:4px;border-radius:9px;border:2px solid #9fe3ff;background:radial-gradient(#2f6fa8,#14304f);color:#eaf8ff;font:700 12px AgThai,system-ui,sans-serif;text-align:center;box-shadow:0 0 20px #5fc8ff;pointer-events:none}
 
 /* particles */
 .bj-p{position:fixed;z-index:3001;pointer-events:none}
@@ -85,18 +85,18 @@
 #tacticsLayer .bi.in .bi-bar{height:11%}
 #tacticsLayer .bi-text{position:absolute;left:7%;bottom:15%;max-width:min(640px,80%);color:#fbf0d6;text-shadow:0 2px 12px #000,0 0 2px #000;opacity:0;transform:translateX(-24px);transition:opacity .5s ease .15s,transform .5s ease .15s}
 #tacticsLayer .bi.in .bi-text{opacity:1;transform:none}
-#tacticsLayer .bi-text small{font:600 11px system-ui,sans-serif;letter-spacing:.32em;color:#e8c374}
-#tacticsLayer .bi-text h2{margin:6px 0 8px;font:700 clamp(30px,4.4vw,52px)/1.1 Georgia,serif;color:#ffe8a6}
+#tacticsLayer .bi-text small{font:600 11px AgThai,system-ui,sans-serif;letter-spacing:.32em;color:#e8c374}
+#tacticsLayer .bi-text h2{margin:6px 0 8px;font:700 clamp(30px,4.4vw,52px)/1.1 AgThai,Georgia,serif;color:#ffe8a6}
 #tacticsLayer .bi-text h2::after{content:'';display:block;width:0;height:2px;margin-top:8px;background:linear-gradient(90deg,#e8c374,#e8c37400);transition:width .7s ease .3s}
 #tacticsLayer .bi.in .bi-text h2::after{width:70%}
-#tacticsLayer .bi-text p{min-height:1.6em;margin:0 0 14px;font:400 clamp(15px,1.6vw,19px)/1.6 Georgia,serif}
+#tacticsLayer .bi-text p{min-height:1.6em;margin:0 0 14px;font:400 clamp(15px,1.6vw,19px)/1.6 AgThai,Georgia,serif}
 #tacticsLayer .bi-text ul{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
-#tacticsLayer .bi-text li{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:#0d1424cc;border:1px solid #d9b46b88;font:600 13px system-ui,sans-serif;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s}
+#tacticsLayer .bi-text li{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:#0d1424cc;border:1px solid #d9b46b88;font:600 13px AgThai,system-ui,sans-serif;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s}
 #tacticsLayer .bi-text li i{font-style:normal;color:#ffe8a6}
 #tacticsLayer .bi.facts li{opacity:1;transform:none}
 #tacticsLayer .bi.facts li:nth-child(2){transition-delay:.08s}#tacticsLayer .bi.facts li:nth-child(3){transition-delay:.16s}#tacticsLayer .bi.facts li:nth-child(4){transition-delay:.24s}
 #tacticsLayer .bi.out{background:transparent;transition:background .6s}
 #tacticsLayer .bi.out .bi-img{filter:blur(14px) saturate(.6);opacity:0}
 #tacticsLayer .bi.out .bi-text,#tacticsLayer .bi.out .bi-bar,#tacticsLayer .bi.out .bi-skip{opacity:0;transition:opacity .35s}
-#tacticsLayer .bi-skip{position:absolute;right:20px;top:calc(11% + 12px);padding:6px 14px!important;border-radius:8px!important;border:1px solid #d9b46b88!important;background:#0d1424cc!important;color:#fbf0d6!important;font:600 13px system-ui,sans-serif!important;cursor:pointer;width:auto!important;height:auto!important}
+#tacticsLayer .bi-skip{position:absolute;right:20px;top:calc(11% + 12px);padding:6px 14px!important;border-radius:8px!important;border:1px solid #d9b46b88!important;background:#0d1424cc!important;color:#fbf0d6!important;font:600 13px AgThai,system-ui,sans-serif!important;cursor:pointer;width:auto!important;height:auto!important}
 @media (prefers-reduced-motion:reduce){#tacticsLayer .bi-img,#tacticsLayer .bi-bar,#tacticsLayer .bi-text,#tacticsLayer .bi-text li{transition:none!important}}

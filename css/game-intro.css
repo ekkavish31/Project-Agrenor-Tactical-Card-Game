@@ -1,7 +1,7 @@
 /* Opening cutscene overlay (video). Black stage; fades out to reveal the menu underneath. */
 #storyIntro{position:absolute;inset:0;z-index:21;overflow:hidden;background:#000;opacity:1;transition:opacity 1.4s ease-in}
 #storyIntro video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:block}
-#storyIntro .si-hint{position:absolute;right:20px;bottom:18px;z-index:2;pointer-events:none;user-select:none;color:#f6ead0b8;font:13px/1.4 system-ui,sans-serif;letter-spacing:.04em;text-shadow:0 1px 4px #000}
+#storyIntro .si-hint{position:absolute;right:20px;bottom:18px;z-index:2;pointer-events:none;user-select:none;color:#f6ead0b8;font:13px/1.4 AgThai,system-ui,sans-serif;letter-spacing:.04em;text-shadow:0 1px 4px #000}
 #storyIntro.si-in{opacity:0;transition:none}
 #storyIntro.si-fadein{transition:opacity 1s ease-in-out}
 #storyIntro.si-out{opacity:0;pointer-events:none}

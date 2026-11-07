@@ -62,7 +62,7 @@
     ctx = opts && opts.preset ? opts : null;
     if (win) { win.style.display = 'block'; applyCtx && applyCtx(); return }
     const st = document.createElement('style');
-    st.textContent = `#arWin{position:fixed;left:14px;top:96px;z-index:30;width:430px;max-height:calc(100dvh - 120px);overflow:auto;background:#172a23f2;color:#eef2dc;border:1px solid #6f8b5b;border-radius:12px;padding:12px 14px;box-shadow:0 10px 40px #0009;font:13px/1.45 system-ui,sans-serif}
+    st.textContent = `#arWin{position:fixed;left:14px;top:96px;z-index:30;width:430px;max-height:calc(100dvh - 120px);overflow:auto;background:#172a23f2;color:#eef2dc;border:1px solid #6f8b5b;border-radius:12px;padding:12px 14px;box-shadow:0 10px 40px #0009;font:13px/1.45 AgThai,system-ui,sans-serif}
 #arWin h3{margin:0 0 6px;font-size:15px;color:#fff0c7;display:flex;justify-content:space-between;align-items:center}#arWin label{display:block;margin:7px 0 2px;color:#b9c9b0;font-size:12px}
 #arWin input,#arWin select,#arWin textarea{width:100%;box-sizing:border-box;background:#0f1d18;color:#eef2dc;border:1px solid #4d6656;border-radius:7px;padding:6px 8px;font:inherit}#arWin textarea{height:150px;font-size:11.5px;line-height:1.35}
 #arWin button{background:#2c4a3c;color:#eef2dc;border:1px solid #6f8b5b;border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit}#arWin button.pri{background:#d9b66b;color:#2a2113;border-color:#d9b66b;font-weight:600}#arWin button:disabled{opacity:.45;cursor:default}

@@ -24,8 +24,8 @@
       g.clearRect(0, 0, 240, 96); const gy = ms => 96 - Math.min(ms, 66) / 66 * 62 - 2;
       dts.forEach((d, i) => { g.fillStyle = d <= 34 ? '#5fd38a' : d <= 50 ? '#e8b64a' : '#e5584a'; const y = gy(d); g.fillRect(i * 2, y, 1.6, 96 - 2 - y) });
       g.strokeStyle = '#fff6'; g.setLineDash([3, 3]); g.beginPath(); const y30 = gy(33.3), y60 = gy(16.7); g.moveTo(0, y30); g.lineTo(240, y30); g.moveTo(0, y60); g.lineTo(240, y60); g.stroke(); g.setLineDash([]);
-      g.fillStyle = '#fff9'; g.font = '9px system-ui'; g.fillText('30', 2, y30 - 2); g.fillText('60', 2, y60 - 2);
-      g.fillStyle = shown >= 55 ? '#5fd38a' : shown >= 30 ? '#e8b64a' : '#e5584a'; g.font = 'bold 22px system-ui'; g.fillText(shown ? shown.toFixed(0) + ' fps' : '… fps', 22, 24); g.fillStyle = '#fffc'; g.font = '11px system-ui'; g.fillText('ช้าสุด ' + tt.toFixed(0) + ' ms', 120, 22);
+      g.fillStyle = '#fff9'; g.font = '9px AgThai,system-ui'; g.fillText('30', 2, y30 - 2); g.fillText('60', 2, y60 - 2);
+      g.fillStyle = shown >= 55 ? '#5fd38a' : shown >= 30 ? '#e8b64a' : '#e5584a'; g.font = 'bold 22px AgThai,system-ui'; g.fillText(shown ? shown.toFixed(0) + ' fps' : '… fps', 22, 24); g.fillStyle = '#fffc'; g.font = '11px AgThai,system-ui'; g.fillText('ช้าสุด ' + tt.toFixed(0) + ' ms', 120, 22);
       requestAnimationFrame(loop)
     };
     requestAnimationFrame(loop)
@@ -34,7 +34,7 @@
   const wait = ms => new Promise(r => setTimeout(r, ms));
   let panel;
   function show(txt, done) {
-    if (!panel) { panel = document.createElement('div'); panel.style.cssText = 'position:fixed;right:12px;left:auto;top:12px;z-index:99999;max-width:min(600px,94vw);max-height:92vh;overflow:auto;padding:12px 14px;border-radius:12px;background:#f3e6c6;color:#3a2a14;border:2px solid #b8943f;box-shadow:0 8px 24px #0006;font:13px/1.55 "Mali","Noto Sans Thai",system-ui,sans-serif'; document.body.append(panel) }
+    if (!panel) { panel = document.createElement('div'); panel.style.cssText = 'position:fixed;right:12px;left:auto;top:12px;z-index:99999;max-width:min(600px,94vw);max-height:92vh;overflow:auto;padding:12px 14px;border-radius:12px;background:#f3e6c6;color:#3a2a14;border:2px solid #b8943f;box-shadow:0 8px 24px #0006;font:13px/1.55 AgThai,"Mali","Noto Sans Thai",system-ui,sans-serif'; document.body.append(panel) }
     panel.innerHTML = ''; const pre = document.createElement('pre'); pre.style.cssText = 'margin:0;white-space:pre-wrap;font:inherit'; pre.textContent = txt; panel.append(pre);
     if (done) {
       const b = document.createElement('button'); b.textContent = '📋 คัดลอกผล'; b.style.cssText = 'margin-top:8px;padding:6px 12px;border-radius:8px;border:1px solid #8a6a2a;background:#e8c46a;cursor:pointer;font:inherit;color:#3a2a14';

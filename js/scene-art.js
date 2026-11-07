@@ -543,7 +543,7 @@
     // bed (the hero still under the blanket, breathing), table, door, the knife on the wall
     const bx = w * .1, by = h * .62; g.fillStyle = '#5a3a24'; g.fillRect(bx, by, w * .3, h * .14); g.fillStyle = '#8a5a4a'; g.fillRect(bx + 8, by - 12, w * .3 - 16, 20);
     const br = 1 + Math.sin(t * 1.6) * .04; g.fillStyle = '#6a7a9a'; g.beginPath(); g.ellipse(bx + w * .17, by - 6, w * .12, 18 * br, 0, Math.PI, 0); g.fill(); g.fillStyle = '#d8b090'; g.beginPath(); g.arc(bx + 26, by - 12, 11, 0, TAU); g.fill();
-    if (Math.sin(t * .9) > .7) { g.fillStyle = 'rgba(255,255,255,.7)'; g.font = '700 16px system-ui'; g.fillText('z', bx + 40, by - 34 - (t * 20 % 20)) }
+    if (Math.sin(t * .9) > .7) { g.fillStyle = 'rgba(255,255,255,.7)'; g.font = '700 16px AgThai,system-ui'; g.fillText('z', bx + 40, by - 34 - (t * 20 % 20)) }
     g.fillStyle = '#4a3020'; g.fillRect(w * .48, h * .58, w * .12, 8); g.fillRect(w * .49, h * .58, 6, h * .16); g.fillRect(w * .58, h * .58, 6, h * .16);
     g.fillStyle = '#c8b090'; g.beginPath(); g.arc(w * .52, h * .57, 7, 0, TAU); g.fill(); smoke(g, w * .52, h * .55, t, .5, 3, [240, 240, 240]);
     const dx = w * .86, dy = h * .3; g.fillStyle = '#2a1a10'; g.fillRect(dx, dy, w * .1, h * .44); g.fillStyle = '#c8a050'; g.beginPath(); g.arc(dx + 10, dy + h * .23, 3, 0, TAU); g.fill();

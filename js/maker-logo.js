@@ -13,7 +13,7 @@
     frame.title='Aetheryn Studio · โลโก้ผู้สร้าง';
     frame.style.cssText='width:100%;height:100%;border:0;display:block;background:#fafafa;visibility:hidden';
     const skip = document.createElement('div'); skip.textContent='กด Esc หรือ X เพื่อข้าม';
-    skip.style.cssText='position:absolute;right:20px;bottom:18px;color:#12304b99;font:13px/1.4 system-ui,sans-serif;letter-spacing:.04em;pointer-events:none;user-select:none';
+    skip.style.cssText='position:absolute;right:20px;bottom:18px;color:#12304b99;font:13px/1.4 AgThai,system-ui,sans-serif;letter-spacing:.04em;pointer-events:none;user-select:none';
     const state = { title, overlay, frame, skip, ready: null };
     state.ready = new Promise(resolve => {
       const giveUp = setTimeout(() => resolve(false), 12000);

@@ -164,7 +164,7 @@
   #tc .stick{position:absolute;left:max(22px,env(safe-area-inset-left));bottom:max(22px,env(safe-area-inset-bottom));width:150px;height:150px;border-radius:50%;pointer-events:auto;touch-action:none;
     background:radial-gradient(circle at 50% 45%,#1d3128d9,#0f1b15d9 70%);box-shadow:0 0 0 3px #d8b46a,0 0 0 5px #3a2a14,0 8px 20px #000a,inset 0 0 22px #000a}
   #tc .stick::before{content:"";position:absolute;inset:14px;border-radius:50%;border:1px dashed #f1dca055}
-  #tc .stick i{position:absolute;color:#f1dca0aa;font:700 13px system-ui;font-style:normal}
+  #tc .stick i{position:absolute;color:#f1dca0aa;font:700 13px AgThai,system-ui;font-style:normal}
   #tc .stick i:nth-child(1){left:50%;top:5px;transform:translateX(-50%)}#tc .stick i:nth-child(2){left:50%;bottom:5px;transform:translateX(-50%)}#tc .stick i:nth-child(3){top:50%;left:7px;transform:translateY(-50%)}#tc .stick i:nth-child(4){top:50%;right:7px;transform:translateY(-50%)}
   #tc .knob{position:absolute;left:50%;top:50%;width:66px;height:66px;margin:-33px 0 0 -33px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#f3d48a,#c9953a 60%,#8a5f1d);box-shadow:0 0 0 2px #3a2a14,0 6px 12px #000b,inset 0 2px 0 #fff6;transition:transform .08s}
   #tc .stick.on .knob{transition:none}

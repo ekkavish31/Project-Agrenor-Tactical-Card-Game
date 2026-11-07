@@ -74,7 +74,7 @@ function create(o){
 function ui(P,host){
  const st=JSON.parse(localStorage.getItem('project-a-ground-brush')||'null')||{mat:'road-cobble',size:70,hard:.35,flow:.55,erase:false,shape:'cell'};if(!st.shape)st.shape='round';P.ui.shape=st.shape;
  const keep=()=>{try{localStorage.setItem('project-a-ground-brush',JSON.stringify(st))}catch(e){}};
- const css=document.createElement('style');css.textContent=`#gpPanel{position:fixed;left:14px;top:108px;z-index:14;width:300px;max-height:calc(100dvh - 126px);overflow:auto;background:#1b302af5;border:1px solid #b9c48f;border-radius:12px;color:#f3ead0;font:13px system-ui,"Noto Sans Thai",sans-serif;padding:10px 12px;box-shadow:0 10px 30px #0007}
+ const css=document.createElement('style');css.textContent=`#gpPanel{position:fixed;left:14px;top:108px;z-index:14;width:300px;max-height:calc(100dvh - 126px);overflow:auto;background:#1b302af5;border:1px solid #b9c48f;border-radius:12px;color:#f3ead0;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;padding:10px 12px;box-shadow:0 10px 30px #0007}
 #gpPanel h3{margin:0 0 4px;font-size:15px;color:#fff0c7}#gpPanel .sub{margin:2px 0 8px;color:#c8c4a8;font-size:12px;line-height:1.45}#gpPanel .tools{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px}
 #gpPanel button{background:#2a4438;color:#f3ead0;border:1px solid #4d6656;border-radius:8px;padding:6px;font:inherit;cursor:pointer}#gpPanel button.on{background:#e5c06b;color:#1b302a;border-color:#fff0c7}
 #gpPanel .mats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}#gpPanel .mats button{padding:3px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;line-height:1.15}#gpPanel .mats canvas{width:52px;height:30px;border-radius:5px;display:block}

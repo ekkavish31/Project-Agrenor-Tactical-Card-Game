@@ -1960,7 +1960,7 @@
 #assetEdit .items{display:grid;gap:3px;max-height:280px;overflow:auto}#assetEdit .items button{display:flex;align-items:center;gap:8px;text-align:left}#assetEdit .items button.on{border-color:#9ff3f5;background:#24443d}#assetEdit .mini{width:44px;height:36px;flex:none;display:grid;place-items:center;background:#132621;border-radius:6px;overflow:hidden}#assetEdit .mini canvas,#assetEdit .mini img{max-width:44px;max-height:36px}#assetEdit .items small{color:#c9d2b8}
 #assetEdit .places{display:grid;grid-template-columns:1fr 1fr;gap:4px}#assetEdit .places button{text-align:left}
 #assetEdit.ae-shake{animation:aeShake .35s}@keyframes aeShake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-#aePicker{width:min(940px,96vw);max-width:96vw;max-height:86vh;padding:0;border:1px solid #b9c48f;border-radius:14px;background:#1b302a;color:#f3ead0;font:13px system-ui,"Noto Sans Thai",sans-serif}#aePicker::backdrop{background:#071c17aa}
+#aePicker{width:min(940px,96vw);max-width:96vw;max-height:86vh;padding:0;border:1px solid #b9c48f;border-radius:14px;background:#1b302a;color:#f3ead0;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif}#aePicker::backdrop{background:#071c17aa}
 #aePicker .pk-head{display:flex;gap:8px;align-items:center;padding:12px;border-bottom:1px solid #4d6656;position:static}#aePicker .pk-head input[type=search]{flex:1;min-width:0}#aePicker .pk-head b{flex:none;white-space:nowrap;font-size:15px;color:#fff0c7}#aePicker button{width:auto!important;margin:0!important}#aePicker input{padding:6px 10px;border-radius:8px;border:1px solid #7f9170;background:#132621;color:inherit}
 #aePicker .pk-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px}#aePicker .pk-tabs button.on{background:#e5c06b;color:#1b302a}#aePicker .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:12px;overflow:auto;max-height:62vh}
 #aePicker .grid button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px;border-radius:10px;background:#132621;border:1px solid #4d6656;color:inherit;cursor:pointer}#aePicker .grid button:hover{border-color:#e5c06b}#aePicker .grid button.cur{border-color:#9ff3f5;box-shadow:0 0 0 2px #9ff3f555}
@@ -2883,7 +2883,7 @@
    for (const [iu, iv] of cells) { gg.beginPath(); [[iu, iv], [iu + 1, iv], [iu + 1, iv + 1], [iu, iv + 1]].forEach(([x, y], i) => { const c = canonical(o, a.u + x / 2, a.v + y / 2), s2 = project(c.u, c.v); gg[i ? 'lineTo' : 'moveTo'](s2.x, s2.y) }); gg.closePath(); gg.fill(); gg.stroke() }
    const lays = drag?.type === 'cells' ? drag.layers : (o.court?.layers || {}), zz = o.court?.z || 0;
    if (courtLayer || Object.keys(lays).length || zz) {
-    gg.font = 'bold ' + 11 / z + 'px system-ui'; gg.textAlign = 'center'; gg.textBaseline = 'middle';
+    gg.font = 'bold ' + 11 / z + 'px AgThai,system-ui'; gg.textAlign = 'center'; gg.textBaseline = 'middle';
     for (const [iu, iv] of cells) {
      const val = lays[iu + ',' + iv] ?? zz;
      if (!courtLayer && val === zz && !(iu + ',' + iv in lays)) continue;

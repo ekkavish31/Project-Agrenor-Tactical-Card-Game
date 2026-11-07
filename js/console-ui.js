@@ -137,7 +137,7 @@
     if (ax < -.55) state[14] = true; if (ax > .55) state[15] = true; if (ay < -.55) state[12] = true; if (ay > .55) state[13] = true;
     for (const i in PAD) { if (state[i] && !held[i]) { held[i] = true; repeatAt[i] = now + 380; press(PAD[i]) } else if (state[i] && i >= 12 && now > repeatAt[i]) { repeatAt[i] = now + 130; press(PAD[i]) } else if (!state[i]) held[i] = false }
   }
-  addEventListener('gamepadconnected', () => { try { const d = document.createElement('div'); d.textContent = '🎮 เชื่อมต่อจอยแล้ว · A ยืนยัน · B ยกเลิก · Start เมนู'; d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;padding:8px 16px;border-radius:999px;background:#14231ff2;color:#f3e9c9;border:1px solid #b9c48a88;font:600 13px system-ui,"Noto Sans Thai",sans-serif;pointer-events:none'; document.body.append(d); setTimeout(() => d.remove(), 3200) } catch (e) { } });
+  addEventListener('gamepadconnected', () => { try { const d = document.createElement('div'); d.textContent = '🎮 เชื่อมต่อจอยแล้ว · A ยืนยัน · B ยกเลิก · Start เมนู'; d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;padding:8px 16px;border-radius:999px;background:#14231ff2;color:#f3e9c9;border:1px solid #b9c48a88;font:600 13px AgThai,system-ui,"Noto Sans Thai",sans-serif;pointer-events:none'; document.body.append(d); setTimeout(() => d.remove(), 3200) } catch (e) { } });
   requestAnimationFrame(poll);
 
   window.ConsoleUI = { sfx: SFX, moveFocus, villageMenu, slotMenu, saveSlot, loadSlot, slotInfo };

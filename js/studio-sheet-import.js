@@ -77,7 +77,7 @@
   const slotLabel = k => { const [a, v] = k.split('|'); return (ACTIONS.find(x => x[0] === a)?.[1] || a) + ' · ' + v };
   function css() {
     if ($('shImpCss')) return; const s = document.createElement('style'); s.id = 'shImpCss'; s.textContent = `
-    #sheetImport{width:min(1200px,96vw);max-height:94vh;overflow:auto;border-radius:14px;border:1px solid #c8b77f;padding:14px 16px;background:#f7f5ee;color:#2a2418;font:13px system-ui,"Noto Sans Thai",sans-serif}
+    #sheetImport{width:min(1200px,96vw);max-height:94vh;overflow:auto;border-radius:14px;border:1px solid #c8b77f;padding:14px 16px;background:#f7f5ee;color:#2a2418;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif}
     #sheetImport::backdrop{background:#14231cba}#sheetImport h2{margin:0 0 4px}#sheetImport .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
     #sheetImport button,#sheetImport select,#sheetImport input{font:inherit}#sheetImport input[type=number]{width:58px}
     #shPrev{max-width:100%;border:1px solid #b8a870;border-radius:8px;background:repeating-conic-gradient(#e8e2d0 0 25%,#fffdf6 0 50%) 0/16px 16px;display:block}
@@ -119,7 +119,7 @@
     cells = rects.map(r => ({ rect: r, trim: cropTrim(src, r), target: '', mirror: false })).filter(c => c.trim);
     $('shInfo').textContent = `${sheet.name} · ${src.width}×${src.height} · ${cells.length} ช่อง${bgDone ? ' · ลบพื้นหลังแล้ว' : ''}`;
     const pv = $('shPrev'); pv.hidden = false; const k = Math.min(1, 1100 / src.width, 340 / src.height); pv.width = Math.round(src.width * k); pv.height = Math.round(src.height * k); const g = pv.getContext('2d'); g.clearRect(0, 0, pv.width, pv.height); g.drawImage(src, 0, 0, pv.width, pv.height);
-    g.lineWidth = 2; g.font = 'bold 14px system-ui'; cells.forEach((c, i) => { g.strokeStyle = '#2f6fd0'; g.strokeRect(c.rect.x * k, c.rect.y * k, c.rect.w * k, c.rect.h * k); g.fillStyle = '#2f6fd0'; g.fillText(String(i + 1), c.rect.x * k + 4, c.rect.y * k + 16) });
+    g.lineWidth = 2; g.font = 'bold 14px AgThai,system-ui'; cells.forEach((c, i) => { g.strokeStyle = '#2f6fd0'; g.strokeRect(c.rect.x * k, c.rect.y * k, c.rect.w * k, c.rect.h * k); g.fillStyle = '#2f6fd0'; g.fillText(String(i + 1), c.rect.x * k + 4, c.rect.y * k + 16) });
     $('shAssign').hidden = false; drawCells(); msg(cells.length ? '' : 'ตัดไม่ได้ชิ้นไหนเลย — ลองเปลี่ยนวิธีตัดหรือปิด "ลบพื้นหลัง"');
   }
   function fill() { const view = $('shView').value, seq = PRESETS[$('shPreset').value], m = $('shMirrorAll').checked; cells.forEach(c => { c.target = ''; c.mirror = false }); cells.slice(0, seq.length).forEach((c, i) => { c.target = seq[i] + '|' + view; c.mirror = m }); drawCells() }

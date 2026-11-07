@@ -366,7 +366,7 @@ const DIRS4 = ['SE', 'SW', 'NW', 'NE'];
 window.viewDir = d => { const i = DIRS4.indexOf(d); return i < 0 ? d : DIRS4[(i + ROT) & 3] };
 const ui = document.createElement('div'); ui.id = 'fieldUi'; ui.innerHTML = `<style>
 #fieldUi{position:fixed;right:12px;top:12px;z-index:39;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:8px;font:13px VillageThai,system-ui,sans-serif;color:#f3e9c9;pointer-events:none}
-#fieldUi .turn{display:flex;gap:6px;pointer-events:auto}#fieldUi button{width:38px;height:38px;border-radius:50%;border:1px solid #b9c48a88;background:#1b302ae6;color:#f3e9c9;font:18px system-ui;cursor:pointer}
+#fieldUi .turn{display:flex;gap:6px;pointer-events:auto}#fieldUi button{width:38px;height:38px;border-radius:50%;border:1px solid #b9c48a88;background:#1b302ae6;color:#f3e9c9;font:18px AgThai,system-ui;cursor:pointer}
 #fieldUi button:hover{background:#2d4a40}#fieldUi .unit{display:none;gap:10px;align-items:center;min-width:250px;padding:8px 12px 8px 8px;border-radius:12px;background:linear-gradient(90deg,#14231ff2,#1b302ae6);border:1px solid #b9c48a55;box-shadow:0 6px 18px #0008}
 #fieldUi canvas{width:72px;height:72px;border-radius:10px;border:2px solid #d8c890;background:#0b120f}#fieldUi .unit.foe canvas{border-color:#e2705f}#fieldUi b{font-size:15px}#fieldUi small{color:#cdd7bf}
 #fieldUi .cell{display:none;padding:5px 10px;border-radius:9px;background:#14231fe6;border:1px solid #b9c48a44;font-size:12.5px;color:#e6dcc0}

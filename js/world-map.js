@@ -319,7 +319,7 @@
   /* v97.84 · the target's own picture stands over its wanted mark */
   const bountyImgs = {}, bountyPic = b => { const src = Bounties.picOf(b); let im = bountyImgs[src]; if (!im) { im = bountyImgs[src] = new Image(); im.src = src } return im.complete && im.naturalWidth ? im : null };
   function drawMarks(now) {
-    if (window.Estates) for (const p of Estates.list(S)) { if (!p.at.startsWith('tile:')) continue; const [c, r] = p.at.slice(5).split(',').map(Number), q = center(c, r); g.save(); g.font = '18px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(p.kind ? Estates.KINDS[p.kind].icon : '🚩', q.x + 14, q.y - 14); if (p.kind === 'farm' && p.garden && window.Garden) { const st = Garden.status(p.garden); if (st.ripe || st.thirsty) { g.font = '11px system-ui,"Segoe UI Emoji",sans-serif'; g.fillText((st.ripe ? '🧺' : '') + (st.thirsty ? '💧' : ''), q.x + 14, q.y - 30) } }   /* v97.86 · what the farm needs */ g.restore() }   /* v97.49 · your plots */
+    if (window.Estates) for (const p of Estates.list(S)) { if (!p.at.startsWith('tile:')) continue; const [c, r] = p.at.slice(5).split(',').map(Number), q = center(c, r); g.save(); g.font = '18px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(p.kind ? Estates.KINDS[p.kind].icon : '🚩', q.x + 14, q.y - 14); if (p.kind === 'farm' && p.garden && window.Garden) { const st = Garden.status(p.garden); if (st.ripe || st.thirsty) { g.font = '11px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.fillText((st.ripe ? '🧺' : '') + (st.thirsty ? '💧' : ''), q.x + 14, q.y - 30) } }   /* v97.86 · what the farm needs */ g.restore() }   /* v97.49 · your plots */
     for (const k in world.tiles) {
       const h = world.tiles[k]; if (!isKnown(k)) continue;
       const p = center(h.c, h.r);
@@ -332,13 +332,13 @@
         if (im && im.complete && im.naturalWidth) { const pul = (Math.sin(now * .003 + h.c * 2) + 1) / 2, kk = HW * 1.25 / m[4], gr = g.createRadialGradient(p.x, p.y, 4, p.x, p.y, HW * .75); g.save(); g.globalCompositeOperation = 'lighter'; gr.addColorStop(0, 'rgba(255,220,140,0)'); gr.addColorStop(.7, `rgba(255,220,140,${.12 + pul * .1})`); gr.addColorStop(1, 'rgba(255,220,140,0)'); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, HW * .75, 0, 7); g.fill(); g.restore();
           g.save(); g.translate(p.x, p.y + bob * .4); g.scale(kk, kk); g.drawImage(im, -m[2], -m[3]); g.restore(); if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11); continue } }
       g.save(); g.fillStyle = lmk ? 'rgba(70,50,20,.85)' : 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, lmk ? 14 : 12, 0, 7); g.fill(); g.strokeStyle = lmk ? '#ffd27a' : '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
-      g.font = '13px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
+      g.font = '13px AgThai,system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
       if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11);
     }
     if (window.Bounties) for (const b of Bounties.active(S)) { if (b.state !== 'open' || b.c == null || !isKnown(b.c + ',' + b.r)) continue; const p = center(b.c, b.r), y = p.y - 8 + Math.sin(now * .005 + b.c) * 2;   /* v97.73 · wanted */
-      g.save(); g.fillStyle = 'rgba(140,25,20,.9)'; g.beginPath(); g.arc(p.x, y, 14, 0, 7); g.fill(); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); g.font = '15px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('☠', p.x, y + 1); { const im = bountyPic(b); if (im) { const h = 46, w = h * im.naturalWidth / im.naturalHeight; g.drawImage(im, p.x - w / 2, y - 14 - h, w, h) } } g.restore(); label(g, b.name, p.x, y + 26, '#ffb0a0', 11) }
+      g.save(); g.fillStyle = 'rgba(140,25,20,.9)'; g.beginPath(); g.arc(p.x, y, 14, 0, 7); g.fill(); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); g.font = '15px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('☠', p.x, y + 1); { const im = bountyPic(b); if (im) { const h = 46, w = h * im.naturalWidth / im.naturalHeight; g.drawImage(im, p.x - w / 2, y - 14 - h, w, h) } } g.restore(); label(g, b.name, p.x, y + 26, '#ffb0a0', 11) }
     for (const tv of travellers()) { if (!isKnown(tv.c + ',' + tv.r)) continue; const p = center(tv.c, tv.r), y = p.y - 6 + Math.sin(now * .006 + tv.c) * 1.5;   /* v97.90 · W2 */
-      g.save(); g.fillStyle = 'rgba(40,60,90,.88)'; g.beginPath(); g.arc(p.x - 16, y, 11, 0, 7); g.fill(); g.strokeStyle = '#cfe6ff'; g.lineWidth = 1.5; g.stroke(); g.font = '12px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('🧳', p.x - 16, y + 1); g.restore(); label(g, tv.p.name, p.x - 16, y + 22, '#cfe6ff', 10) }
+      g.save(); g.fillStyle = 'rgba(40,60,90,.88)'; g.beginPath(); g.arc(p.x - 16, y, 11, 0, 7); g.fill(); g.strokeStyle = '#cfe6ff'; g.lineWidth = 1.5; g.stroke(); g.font = '12px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('🧳', p.x - 16, y + 1); g.restore(); label(g, tv.p.name, p.x - 16, y + 22, '#cfe6ff', 10) }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
     for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) { const q = center(tw.c, tw.r); label(g, tw.name, q.x, q.y + 32, '#d8f0ff', 12) }
   }
@@ -359,7 +359,7 @@
     g.save(); g.globalCompositeOperation = 'lighter';
     for (let i = 0; i < 4; i++) { const e = ((now * .00028 + i * .25 + c * .13) % 1), sx = p.x + Math.sin(i * 2.4 + c) * HW * .6, sy = p.y + R * .4 - e * R * 3, a = Math.sin(e * Math.PI) * .9, sz = 1.6 + (i % 2); g.fillStyle = `rgba(255,248,220,${a})`; g.beginPath(); g.moveTo(sx, sy - sz * 2); g.lineTo(sx + sz * .6, sy); g.lineTo(sx, sy + sz * 2); g.lineTo(sx - sz * .6, sy); g.closePath(); g.fill(); g.beginPath(); g.moveTo(sx - sz * 2, sy); g.lineTo(sx, sy + sz * .6); g.lineTo(sx + sz * 2, sy); g.lineTo(sx, sy - sz * .6); g.closePath(); g.fill() }
     g.restore();
-    if (done) { g.save(); g.font = '700 13px system-ui,sans-serif'; g.textAlign = 'center'; g.fillStyle = '#bfffd0'; g.strokeStyle = 'rgba(10,25,15,.9)'; g.lineWidth = 3; g.strokeText('✔', p.x + HW * .36, p.y - R * .62); g.fillText('✔', p.x + HW * .36, p.y - R * .62); g.restore() }
+    if (done) { g.save(); g.font = '700 13px AgThai,system-ui,sans-serif'; g.textAlign = 'center'; g.fillStyle = '#bfffd0'; g.strokeStyle = 'rgba(10,25,15,.9)'; g.lineWidth = 3; g.strokeText('✔', p.x + HW * .36, p.y - R * .62); g.fillText('✔', p.x + HW * .36, p.y - R * .62); g.restore() }
     return true;
   }
   function drawLandmarks(now) {
@@ -447,7 +447,7 @@
   @keyframes wmFade{from{opacity:0}}
   .wm-enc{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
   .wm-enc i{position:absolute;left:-10%;width:120%;height:12.5%;background:#07080c;transform:translateX(-110%) skewX(-20deg);animation:wmShard .5s cubic-bezier(.7,0,.3,1) forwards}
-  .wm-enc b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(2.2);font:italic 900 64px system-ui,sans-serif;color:#fff3b0;letter-spacing:3px;text-shadow:0 0 22px #ff6a2a,0 6px 0 #7a2400;opacity:0;animation:wmEncT .9s .25s forwards}
+  .wm-enc b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(2.2);font:italic 900 64px AgThai,system-ui,sans-serif;color:#fff3b0;letter-spacing:3px;text-shadow:0 0 22px #ff6a2a,0 6px 0 #7a2400;opacity:0;animation:wmEncT .9s .25s forwards}
   @keyframes wmShard{to{transform:translateX(0) skewX(-20deg)}}@keyframes wmEncT{20%{opacity:1;transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.9)}}
   .wm-area{position:fixed;inset:0;z-index:15;background:#07080c;animation:wmFade .3s}.wm-area canvas{position:absolute;inset:0;cursor:pointer}
   .wm-area header{position:absolute;left:12px;right:12px;top:10px;display:flex;align-items:center;gap:12px;padding:8px 12px;background:#20190fe6;border:1px solid #8a6a3a;border-radius:10px;color:#f3e6c6;font-family:VillageThai,system-ui,sans-serif}
@@ -812,7 +812,7 @@
           gA.restore();
           if (!seen.has(KK(c, r))) { gA.save(); gA.translate(p.x, p.y); gA.scale(sc, sc); hexPath(gA, 0, 0, RAD + 1); gA.fillStyle = 'rgba(5,6,10,.88)'; gA.fill(); gA.restore() }
         }
-        for (const k in spots) { if (!seen.has(k)) continue; const s = spots[k], p = ctr(s.c, s.r), bob = Math.sin(now * .004 + s.c) * 3 * sc; gA.save(); gA.fillStyle = s.kind === 'foe' || s.kind === 'lair' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; gA.beginPath(); gA.arc(p.x, p.y - 8 * sc + bob, 15 * sc, 0, 7); gA.fill(); gA.font = `${18 * sc}px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif`; gA.textAlign = 'center'; gA.textBaseline = 'middle'; gA.fillText(ICON[s.kind], p.x, p.y - 7 * sc + bob); gA.restore() }
+        for (const k in spots) { if (!seen.has(k)) continue; const s = spots[k], p = ctr(s.c, s.r), bob = Math.sin(now * .004 + s.c) * 3 * sc; gA.save(); gA.fillStyle = s.kind === 'foe' || s.kind === 'lair' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; gA.beginPath(); gA.arc(p.x, p.y - 8 * sc + bob, 15 * sc, 0, 7); gA.fill(); gA.font = `${18 * sc}px AgThai,system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif`; gA.textAlign = 'center'; gA.textBaseline = 'middle'; gA.fillText(ICON[s.kind], p.x, p.y - 7 * sc + bob); gA.restore() }
         const pe = ctr(entry.c, entry.r); gA.save(); gA.font = `700 ${12 * sc}px VillageThai,system-ui`; gA.fillStyle = '#e8d8a8'; gA.textAlign = 'center'; gA.fillText('ทางเข้า', pe.x, pe.y + 26 * sc); gA.restore();
         const pp = ctr(pos.c, pos.r), im = heroImgs[Math.floor(now / 160) % 4]; if (im.complete && im.naturalWidth) { const h = 70 * sc, w = h * im.naturalWidth / im.naturalHeight; gA.drawImage(im, pp.x - w / 2, pp.y - h + 10 * sc, w, h) } else { gA.fillStyle = '#ffd36a'; gA.beginPath(); gA.arc(pp.x, pp.y - 10, 8, 0, 7); gA.fill() }
         requestAnimationFrame(frame);
@@ -967,7 +967,7 @@
     if (!document.getElementById('wmResCss')) { const s = document.createElement('style'); s.id = 'wmResCss'; s.textContent = `
       .wm-res{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#1d2a1fcc,#05080de8);animation:wmResIn .35s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
       .wm-res .box{width:min(560px,92vw);padding:22px 24px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c;text-align:center}
-      .wm-res .ttl{font:900 40px/1 Georgia,serif;letter-spacing:.12em;color:#9a5a12;text-shadow:0 2px 0 #fff8,0 0 24px #ffcf6a;animation:wmResT .6s cubic-bezier(.2,1.6,.4,1) both}
+      .wm-res .ttl{font:900 40px/1 AgThai,Georgia,serif;letter-spacing:.12em;color:#9a5a12;text-shadow:0 2px 0 #fff8,0 0 24px #ffcf6a;animation:wmResT .6s cubic-bezier(.2,1.6,.4,1) both}
       .wm-res .sub{margin:6px 0 12px;color:#6a5030;font-size:14px}
       .wm-res .loot{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px}.wm-res .loot span{padding:5px 10px;border-radius:999px;background:#fff7;border:1px solid #b08a4a66;font-size:13.5px;animation:wmResPop .4s cubic-bezier(.2,1.6,.4,1) both}
       .wm-res .m{display:grid;grid-template-columns:92px 54px 1fr 74px;gap:8px;align-items:center;text-align:left;margin:7px 0;font-size:14px}.wm-res .m b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

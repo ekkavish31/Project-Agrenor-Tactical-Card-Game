@@ -67,7 +67,7 @@
  function visible(c){if(!query)return true;return (c.action+' '+pretty(c.action)+' '+c.view+' '+c.frames.map(f=>f.assetId+' '+f.file).join(' ')).toLowerCase().includes(query)}
  function missing(c){return c.frames.some(f=>dir&&scanned?!hasFile(f.file):['missing','planned','code'].includes(byId(f.assetId)?.status))}
  async function im(file){let key=state.generation+'|'+file;if(!imageCache.has(key)){let generation=state.generation;imageCache.set(key,(async()=>{let src=await srcOf(file);if(generation!==state.generation||!src)return null;return new Promise(resolve=>{let i=new Image();i.onload=()=>resolve(i);i.onerror=()=>resolve(null);i.src=src})})())}return imageCache.get(key)}
- function draw(canvas,image,f){let g=canvas.getContext('2d'),W=canvas.width,H=canvas.height;g.clearRect(0,0,W,H);if(!image){g.fillStyle='#956147';g.font='13px sans-serif';g.textAlign='center';g.fillText('ไม่พบภาพ',W/2,H/2);return}
+ function draw(canvas,image,f){let g=canvas.getContext('2d'),W=canvas.width,H=canvas.height;g.clearRect(0,0,W,H);if(!image){g.fillStyle='#956147';g.font='13px AgThai,sans-serif';g.textAlign='center';g.fillText('ไม่พบภาพ',W/2,H/2);return}
   let h=H*.79*(f.renderHeight||1),w=h*f.size[0]/f.size[1];if(w>W*.94){h*=W*.94/w;w=W*.94}g.save();g.translate(W/2,H*.91);if(f.flip)g.scale(-1,1);if(f.crop)g.drawImage(image,...f.crop,-w*f.pivot[0],-h*f.pivot[1],w,h);else g.drawImage(image,-w*f.pivot[0],-h*f.pivot[1],w,h);g.restore();
  }
  async function loadPreviews(){let gen=state.generation,items=state.entries;for(let entry of items){entry.images=await Promise.all(entry.clip.frames.map(f=>im(f.file)));if(gen!==state.generation||state.entries!==items)return;draw(entry.canvas,entry.images[0],entry.clip.frames[0])}}

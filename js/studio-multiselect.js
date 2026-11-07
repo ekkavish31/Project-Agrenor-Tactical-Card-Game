@@ -7,7 +7,7 @@
   let on = false, busy = false; const picked = new Set();
   const st = document.createElement('style'); st.textContent = `
   #grid.ms-mode [data-clip-index]{cursor:copy}#grid [data-clip-index].ms-on{outline:3px solid #2f6fd0;outline-offset:-3px;position:relative}
-  #grid [data-clip-index].ms-on::after{content:"✔";position:absolute;top:6px;left:8px;background:#2f6fd0;color:#fff;border-radius:6px;font:700 12px system-ui;padding:1px 5px}
+  #grid [data-clip-index].ms-on::after{content:"✔";position:absolute;top:6px;left:8px;background:#2f6fd0;color:#fff;border-radius:6px;font:700 12px AgThai,system-ui;padding:1px 5px}
   #grid.ms-mode .anim-matrix th{cursor:pointer}#grid.ms-mode .anim-matrix th:hover{text-decoration:underline}
   .ms-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0;padding:6px 8px;border:1px solid #9db4dd;border-radius:10px;background:#eef3fb}
   .ms-bar b{margin-right:4px}.ms-bar button{font:inherit}.ms-bar .danger{color:#a8402f;border-color:#a8402f}.ms-bar small{color:#5a6a80}`;

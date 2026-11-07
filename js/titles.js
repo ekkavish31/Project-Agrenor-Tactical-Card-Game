@@ -150,7 +150,7 @@ button.tcard{cursor:pointer}button.tcard:hover:not(:disabled){transform:translat
 .tcard.lock{background:repeating-linear-gradient(45deg,#1b1812 0 8px,#211d15 8px 16px);filter:saturate(.5)}.tcard.lock .em{background:#2c261b;box-shadow:inset 0 0 0 2px #fff2;font-size:28px;opacity:.7}.tcard.lock b{opacity:.6}
 @keyframes tcShine{to{background-position:-150% 0}}@keyframes tcFlame{to{box-shadow:0 0 0 2px var(--c),0 0 0 4px #0008,0 0 22px #ff4a2a99}}
 .tcReveal{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#000b;opacity:0;transition:opacity .3s}.tcReveal.on{opacity:1}
-.tcReveal .tcard{width:min(62vw,250px);transform:rotateY(90deg) scale(.7);animation:tcFlip .7s .15s cubic-bezier(.2,1.3,.4,1) forwards}.tcReveal p{color:#ffe6a8;text-align:center;margin:12px 0 0;font:600 14px system-ui,sans-serif}
+.tcReveal .tcard{width:min(62vw,250px);transform:rotateY(90deg) scale(.7);animation:tcFlip .7s .15s cubic-bezier(.2,1.3,.4,1) forwards}.tcReveal p{color:#ffe6a8;text-align:center;margin:12px 0 0;font:600 14px AgThai,system-ui,sans-serif}
 @keyframes tcFlip{to{transform:rotateY(0) scale(1)}}`;
   function css() { if (typeof document === 'undefined' || document.getElementById('tcardCss')) return; const e = document.createElement('style'); e.id = 'tcardCss'; e.textContent = CSS; document.head.append(e) }
   /* r = a row of Titles.view(). Locked rows show a blank card back — no name, no bonus. extra: {button, onclick} */

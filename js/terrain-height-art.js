@@ -60,7 +60,7 @@
       const tint = opts.tint ? opts.tint(i) : null;
       poly(g, top, (opts.roads && m.flat[i]) ? pal.road : (tint || pal.top[Math.min(pal.top.length - 1, Math.floor(lv / ST))]), opts.grid ? pal.line : null);
       if (m.blocked[i]) poly(g, top, 'rgba(60,110,170,.55)', null);
-      if (opts.numbers && lv) { const c = P(m, ou, ov, u + .5, v + .5, lv); g.fillStyle = 'rgba(0,0,0,.55)'; g.font = '10px sans-serif'; g.textAlign = 'center'; g.fillText(String(lv / ST), c.x, c.y + 3); }
+      if (opts.numbers && lv) { const c = P(m, ou, ov, u + .5, v + .5, lv); g.fillStyle = 'rgba(0,0,0,.55)'; g.font = '10px AgThai,sans-serif'; g.textAlign = 'center'; g.fillText(String(lv / ST), c.x, c.y + 3); }
     }
     if (opts.mark) {
       const { u, v } = opts.mark, lv = L(m, u - ou, v - ov);

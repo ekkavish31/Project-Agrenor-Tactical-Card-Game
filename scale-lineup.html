@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Scale Lineup · เทียบสเกลตัวละคร</title>
-<link rel="stylesheet" href="css/town-font.css">
+<link rel="stylesheet" href="css/thai-font.css?v=1"><link rel="stylesheet" href="css/town-font.css">
 <style>
 :root{--bg:#f4f1e8;--panel:#fffdf6;--ink:#2a2418;--muted:#7a6e55;--line:#d6cdb4;--gold:#c9a45a;--ok:#2f7d3a;--warn:#b0701a;--bad:#a8402f;--ruler:#8a7a52}
 @media(prefers-color-scheme:dark){:root{--bg:#1c1a14;--panel:#26231a;--ink:#f1ead6;--muted:#a89c7e;--line:#433d2c;--ruler:#bfae7c}}
@@ -247,7 +247,7 @@ function inspectRatio() {
   const cv = document.getElementById('pcv'), g = cv.getContext('2d'), k = CH / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, ox = (CW - fw) / 2, oy = 10;
   const marks = { ...r.marks }, draw = () => {
     g.clearRect(0, 0, CW, CH + 20); g.save(); if (c.flip) { g.translate(CW, 0); g.scale(-1, 1) } g.drawImage(c.img, (c.flip ? CW - ox - fw : ox) - c.m.x0 * k, oy - c.m.top * k, c.m.w * k, c.m.h * k); g.restore();
-    for (const n of ['chin', 'shoulder', 'hip']) { const y = oy + marks[n] * CH; g.strokeStyle = COL[n]; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(CW, y); g.stroke(); g.fillStyle = COL[n]; g.font = '11px sans-serif'; g.fillText(LBL[n], 4, y - 3) }
+    for (const n of ['chin', 'shoulder', 'hip']) { const y = oy + marks[n] * CH; g.strokeStyle = COL[n]; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(CW, y); g.stroke(); g.fillStyle = COL[n]; g.font = '11px AgThai,sans-serif'; g.fillText(LBL[n], 4, y - 3) }
   }; draw();
   const commit = (final) => { const sv = { chin: +marks.chin.toFixed(4), shoulder: +marks.shoulder.toFixed(4), hip: +marks.hip.toFixed(4), sig: sigOf(c) }; MARKS[e.id] = sv; PT.store.save(MARKS); if (final) { renderRatio(visible()); inspectRatio() } else reRatio() };
   let drag = null; const yOf = ev => { const b = cv.getBoundingClientRect(); return (ev.clientY - b.top) * (CH + 20) / b.height };

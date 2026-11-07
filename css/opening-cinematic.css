@@ -1,4 +1,4 @@
-@font-face{font-family:Wizzta;src:url('../assets/fonts/wizzta.ttf') format('truetype');font-display:swap}
+@font-face{font-family:Wizzta,AgThai;src:url('../assets/fonts/wizzta.ttf') format('truetype');font-display:swap}
 /* Title menu after the cutscene (v98.173 layout): painted valley as the scene, a white frosted haze on the left for the menu,
    logo + tagline top-left, quote top-right. Text is dark navy on the haze; the selected item is a navy, gold-edged ribbon. */
 #titleScreen.ag-title{background:#cfe3f5;--ag-ink:#1b2b47;--ag-ink2:#44546f;--ag-gold:#b98d3f;
@@ -13,14 +13,16 @@
 #titleScreen.ag-title .ts-main{position:absolute;inset:0;z-index:3;display:block;width:auto;max-width:none;margin:0;gap:0;animation:none;pointer-events:none}
 #titleScreen.ag-title .ts-brand{position:absolute;left:max(50%,calc(var(--ag-menu-r) + var(--ag-logo-w)/2 + 16px));top:31%;transform:translate(-50%,-50%);width:max-content;max-width:96vw;display:flex;flex-direction:column;align-items:center;text-align:center}
 #titleScreen.ag-title .ts-brand::before{content:'';position:absolute;z-index:-1;inset:-12% -10% -8%;background:radial-gradient(ellipse 52% 54% at 50% 52%,#ffffffa0 0%,#ffffff5c 52%,transparent 84%);pointer-events:none}
-#titleScreen.ag-title .ts-brand h1,#titleScreen.ag-title .ts-brand p{font-family:Wizzta,serif;text-transform:none;white-space:nowrap;max-width:none}
+#titleScreen.ag-title .ts-brand h1,#titleScreen.ag-title .ts-brand p{font-family:Wizzta,AgThai,serif;text-transform:none;white-space:nowrap;max-width:none}
 #titleScreen.ag-title .ts-brand h1{margin:0;font-size:0;line-height:0;filter:none;text-shadow:none}
 #titleScreen.ag-title .ag-logo{display:block;width:var(--ag-logo-w);height:auto;filter:drop-shadow(0 0 14px #ffffffb0);user-select:none;-webkit-user-drag:none}
-#titleScreen.ag-title .ts-brand .ts-kicker{margin-top:clamp(6px,1.2vh,16px);white-space:pre-line;text-align:center;font:600 clamp(11px,1.3vw,21px)/1.55 Georgia,'Times New Roman',serif;letter-spacing:.26em;padding-left:.26em;color:var(--ag-ink);opacity:1;text-shadow:0 0 3px #fff,0 0 7px #fff,0 0 15px #ffffffe6,0 0 28px #ffffffb0}
+#titleScreen.ag-title .ts-brand .ts-kicker{position:relative;isolation:isolate;margin-top:clamp(6px,1.2vh,16px);white-space:pre-line;text-align:center;font:700 clamp(11px,1.3vw,21px)/1.55 AgThai,Georgia,'Times New Roman',serif;letter-spacing:.26em;padding-left:.26em;color:#12203a;opacity:1;text-shadow:0 0 3px #fff,0 0 8px #ffffffd0}
+/* frosted-white haze behind the tagline so it stays readable over the busy cliffs/river */
+#titleScreen.ag-title .ts-brand .ts-kicker::before{content:'';position:absolute;z-index:-1;inset:-.9em -3.2em;background:radial-gradient(ellipse 50% 52% at 50% 50%,#fffffff2 0%,#ffffffd9 42%,#ffffff8c 72%,#ffffff00 100%);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);-webkit-mask-image:radial-gradient(ellipse 50% 52% at 50% 50%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 50% 50%,#000 55%,transparent 100%)}
 #titleScreen.ag-title .ts-menu{position:absolute;left:clamp(12px,2.6vw,44px);bottom:clamp(64px,14vh,190px);width:clamp(250px,28vw,430px);gap:2px;pointer-events:auto}
 #titleScreen.ag-title .ts-menu button{isolation:isolate;border:0;border-radius:0;color:var(--ag-ink);background:linear-gradient(90deg,#1b2b4759,transparent 82%) left bottom/100% 1px no-repeat;padding:10px 18px 11px clamp(58px,5.6vw,84px);min-height:clamp(46px,7.4vh,72px);justify-content:center;transform:none;transition:color .18s,background-color .18s}
-#titleScreen.ag-title .ts-menu button span{font:600 clamp(17px,1.65vw,26px)/1.15 Georgia,'Times New Roman',serif;letter-spacing:.02em}
-#titleScreen.ag-title .ts-menu button small{font:400 clamp(11px,1vw,15px)/1.3 system-ui,sans-serif;color:var(--ag-ink2)}
+#titleScreen.ag-title .ts-menu button span{font:600 clamp(17px,1.65vw,26px)/1.15 AgThai,Georgia,'Times New Roman',serif;letter-spacing:.02em}
+#titleScreen.ag-title .ts-menu button small{font:400 clamp(11px,1vw,15px)/1.3 AgThai,system-ui,sans-serif;color:var(--ag-ink2)}
 #titleScreen.ag-title .ts-menu button::before{content:'';position:absolute;left:clamp(24px,2.5vw,38px);top:50%;width:clamp(24px,2.3vw,34px);height:clamp(24px,2.3vw,34px);margin:calc(clamp(24px,2.3vw,34px)/-2) 0 0;border:0;transform:none;opacity:.88;background:currentColor;-webkit-mask:var(--ag-icon) center/contain no-repeat;mask:var(--ag-icon) center/contain no-repeat}
 #titleScreen.ag-title .ts-menu button::after{content:'';position:absolute;inset:1.5px;z-index:-1;background:linear-gradient(90deg,#1c3558f2,#27456fdb);clip-path:polygon(0 50%,15px 0,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,15px 100%);opacity:0}
 #titleScreen.ag-title .ts-menu button:not(:disabled):hover,#titleScreen.ag-title .ts-menu button:not(:disabled):focus{outline:none;color:#f6ecd0;background:linear-gradient(90deg,#e3c07a,#b98d3f);clip-path:polygon(0 50%,16px 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,16px 100%);text-shadow:none;transform:none}
@@ -34,7 +36,7 @@
 #titleScreen.ag-title .ts-menu button[data-act="extra"]{--ag-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='5.500' y='3.500' width='13' height='17' rx='2' fill='none' stroke='black' stroke-width='1.700'/%3E%3Cpath d='M9 8.500h6M9 12h6M9 15.500h3.500' stroke='black' stroke-width='1.600' stroke-linecap='round'/%3E%3C/svg%3E")}
 #titleScreen.ag-title .ag-replay{position:absolute;left:clamp(16px,3.4vw,60px);bottom:clamp(36px,5.6vh,60px);pointer-events:auto}
 #titleScreen.ag-title .ts-foot{color:var(--ag-ink2);text-shadow:0 0 6px #fff,0 0 12px #ffffffc0}
-#titleScreen.ag-title .ag-horizon{position:absolute;right:clamp(14px,2.4vw,40px);bottom:clamp(34px,5.4vh,58px);font:italic 500 clamp(14px,1.6vw,24px)/1 Georgia,serif;letter-spacing:.04em;color:#f6efdc;text-shadow:0 1px 2px #1b2b47,0 0 6px #1b2b47e6,0 0 16px #1b2b47b0;pointer-events:none}
+#titleScreen.ag-title .ag-horizon{position:absolute;right:clamp(14px,2.4vw,40px);bottom:clamp(34px,5.4vh,58px);font:italic 500 clamp(14px,1.6vw,24px)/1 AgThai,Georgia,serif;letter-spacing:.04em;color:#f6efdc;text-shadow:0 1px 2px #1b2b47,0 0 6px #1b2b47e6,0 0 16px #1b2b47b0;pointer-events:none}
 #titleScreen.ag-intro-pending .ts-bg,#titleScreen.ag-intro-pending .ts-veil,#titleScreen.ag-intro-pending .ts-motes{opacity:0}
 #titleScreen.ag-intro-pending .ts-main,#titleScreen.ag-intro-pending .ts-foot{visibility:hidden!important}
 /* Reveal after the cutscene: scene first, then the shadow, then the title (big → small), then the menu. */
@@ -49,9 +51,11 @@
 @keyframes ag-bg-in{from{opacity:0;transform:scale(1.045)}to{opacity:1;transform:none}}
 @keyframes ag-fade{from{opacity:0}to{opacity:1}}
 @keyframes ag-rise{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
-#titleScreen .ag-audio-notice{position:absolute;z-index:25;right:112px;bottom:18px;max-width:min(360px,70vw);padding:7px 11px;border:1px solid #d5c29366;background:#171c1de8;color:#eee3c5;font:12px/1.5 system-ui,sans-serif;text-align:center}
-#titleScreen .ag-replay{border:0;border-bottom:1px solid #1b2b4766;border-radius:0;background:none;color:#1b2b47;text-shadow:0 0 6px #fff;font:12px/2 inherit;padding:2px 0;cursor:pointer}
-#titleScreen .ag-replay:focus-visible{outline:2px solid #ffe6a9;outline-offset:5px}
+#titleScreen .ag-audio-notice{position:absolute;z-index:25;right:112px;bottom:18px;max-width:min(360px,70vw);padding:7px 11px;border:1px solid #d5c29366;background:#171c1de8;color:#eee3c5;font:12px/1.5 AgThai,system-ui,sans-serif;text-align:center}
+/* "watch the opening again": fixed size and padding (the old `font:12px/2 inherit` was invalid, so the button fell back to the browser's big bold default and the text touched the border) */
+#titleScreen.ag-title .ag-replay{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;margin:0;border:0;border-bottom:1px solid #1b2b4780;border-radius:3px;outline:0;background:#ffffffb8;color:#1b2b47;text-shadow:none;font:600 13px/1.2 AgThai,system-ui,sans-serif;letter-spacing:.02em;padding:8px 16px 7px;cursor:pointer;-webkit-appearance:none;appearance:none;white-space:nowrap}
+#titleScreen.ag-title .ag-replay:hover{background:#ffffffe6;border-bottom-color:#b98d3f}
+#titleScreen.ag-title .ag-replay:focus-visible{outline:2px solid #b98d3f;outline-offset:3px}
 @media(max-width:700px){
   #titleScreen.ag-title{--ag-logo-w:min(80vw,460px);--ag-menu-r:0px}
   #titleScreen.ag-title .ts-menu{width:min(290px,78vw);bottom:max(70px,11vh)}
@@ -75,7 +79,7 @@
 /* v98.172 · black "press any key" gate shown before the maker logo (also the user gesture that unlocks audio) */
 #agGate{position:absolute;inset:0;z-index:40;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,2.4vh,26px);cursor:pointer;opacity:1;transition:opacity .45s ease-out;-webkit-tap-highlight-color:transparent;outline:0}
 #agGate.out{opacity:0;pointer-events:none}
-#agGate .ag-gate-msg{color:#f6ead0;opacity:.45;font:400 clamp(13px,1.5vw,18px)/1.4 system-ui,sans-serif;letter-spacing:.12em;padding-left:.12em;user-select:none;text-align:center}
+#agGate .ag-gate-msg{color:#f6ead0;opacity:.45;font:400 clamp(13px,1.5vw,18px)/1.4 AgThai,system-ui,sans-serif;letter-spacing:.12em;padding-left:.12em;user-select:none;text-align:center}
 #agGate .ag-gate-bar{width:min(260px,52vw);height:2px;background:#f6ead02e;overflow:hidden;transition:opacity .4s}
 #agGate .ag-gate-bar i{display:block;height:100%;background:#e8c987;transform-origin:left center;transform:scaleX(0);transition:transform .25s ease-out}
 #agGate.ready .ag-gate-bar{opacity:0}

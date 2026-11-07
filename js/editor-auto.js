@@ -110,7 +110,7 @@
   function open() {
     if (win) { win.style.display = win.style.display === 'none' ? 'block' : 'none'; return }
     const st = document.createElement('style');
-    st.textContent = `#auWin{position:fixed;left:14px;top:96px;z-index:30;width:400px;max-height:calc(100dvh - 120px);overflow:auto;background:#172a23f2;color:#eef2dc;border:1px solid #6f8b5b;border-radius:12px;padding:12px 14px;box-shadow:0 10px 40px #0009;font:13px/1.45 system-ui,sans-serif}
+    st.textContent = `#auWin{position:fixed;left:14px;top:96px;z-index:30;width:400px;max-height:calc(100dvh - 120px);overflow:auto;background:#172a23f2;color:#eef2dc;border:1px solid #6f8b5b;border-radius:12px;padding:12px 14px;box-shadow:0 10px 40px #0009;font:13px/1.45 AgThai,system-ui,sans-serif}
 #auWin h3{margin:0 0 6px;font-size:15px;color:#fff0c7;display:flex;justify-content:space-between;align-items:center}#auWin button,#auWin select{background:#2c4a3c;color:#eef2dc;border:1px solid #6f8b5b;border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit}
 #auWin .tool{border:1px solid #3e5a4a;border-radius:9px;padding:8px;margin:8px 0}#auWin .tool b{display:block;color:#f2d98a}#auWin .tool small{display:block;color:#a9baa0;margin:2px 0 6px}#auWin .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 #auLog{white-space:pre-wrap;font-size:12px;color:#d6e2c8;min-height:20px}#auLog div{padding:2px 0;border-bottom:1px dashed #3e5a4a}#auLog button{padding:1px 7px;font-size:11px;margin-left:6px}`;

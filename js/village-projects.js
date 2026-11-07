@@ -30,7 +30,7 @@
     if (document.getElementById('vpCss')) return; const st = document.createElement('style'); st.id = 'vpCss';
     st.textContent = `#vpUI{position:fixed;inset:0;z-index:2050;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px);font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
     #vpUI .box{width:min(860px,96vw);max-height:92vh;overflow:auto;padding:18px 20px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c}
-    #vpUI h2{margin:0 0 4px;font:800 24px Georgia,"Noto Sans Thai",serif;color:#5a3a10}#vpUI .sub{margin:0 0 14px;color:#6a5030;font-size:13.5px}
+    #vpUI h2{margin:0 0 4px;font:800 24px AgThai,Georgia,"Noto Sans Thai",serif;color:#5a3a10}#vpUI .sub{margin:0 0 14px;color:#6a5030;font-size:13.5px}
     #vpUI .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
     #vpUI .p{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:12px;background:#fff8;border:2px solid #b08a4a55}#vpUI .p.done{border-color:#5a9a4a;background:#eef6e0cc}
     #vpUI .p b{font-size:16px}#vpUI .p small{color:#7a6040;font-size:12.5px}#vpUI .p .ef{font-size:13px;line-height:1.5}

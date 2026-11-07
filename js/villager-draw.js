@@ -20,8 +20,8 @@
     g.restore();
   }
   function fx(g, act, x, y, s, t, ph) {
-    if (act === 'sleep') { g.save(); g.fillStyle = '#f2f2ff'; g.font = `700 ${12 * s}px system-ui`; const k = (t * .001 + ph) % 1; g.globalAlpha = 1 - k; g.fillText('z', x + 12 * s, y - 80 * s - k * 16); g.restore() }
-    if (act === 'play') { g.save(); g.fillStyle = '#ffe9a0'; g.font = `700 ${13 * s}px system-ui`; for (let i = 0; i < 2; i++) { const k = (t * .0007 + ph + i * .5) % 1; g.globalAlpha = 1 - k; g.fillText('♪', x + (10 + i * 6) * s + Math.sin(k * 6) * 6, y - 70 * s - k * 30) } g.restore() }
+    if (act === 'sleep') { g.save(); g.fillStyle = '#f2f2ff'; g.font = `700 ${12 * s}px AgThai,system-ui`; const k = (t * .001 + ph) % 1; g.globalAlpha = 1 - k; g.fillText('z', x + 12 * s, y - 80 * s - k * 16); g.restore() }
+    if (act === 'play') { g.save(); g.fillStyle = '#ffe9a0'; g.font = `700 ${13 * s}px AgThai,system-ui`; for (let i = 0; i < 2; i++) { const k = (t * .0007 + ph + i * .5) % 1; g.globalAlpha = 1 - k; g.fillText('♪', x + (10 + i * 6) * s + Math.sin(k * 6) * 6, y - 70 * s - k * 30) } g.restore() }
   }
   /* v97.37 · picture-based people. look.sprite = 'bram' → assets/village-town/npc/bram/<se|sw|ne|nw>-<stand|walk1..walk4>.webp
      (384×384, feet at y=372). v97.59: a direction without its own pictures uses the opposite one mirrored (SE←SW, NW←NE and back), so two directions are enough ·

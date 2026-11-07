@@ -81,7 +81,7 @@
   }
   /* embedded (world map): a black veil until the arena is ready, then tell the parent */
   let veil0 = null;
-  if (EMBED) { veil0 = document.createElement('div'); veil0.style.cssText = 'position:fixed;inset:0;z-index:100;background:#07080c;display:flex;align-items:center;justify-content:center;color:#ffe2a8;font:italic 800 22px system-ui,sans-serif;letter-spacing:3px;transition:opacity .4s'; veil0.textContent = 'PREPARING BATTLE…'; addEventListener('DOMContentLoaded', () => document.body.append(veil0)) }
+  if (EMBED) { veil0 = document.createElement('div'); veil0.style.cssText = 'position:fixed;inset:0;z-index:100;background:#07080c;display:flex;align-items:center;justify-content:center;color:#ffe2a8;font:italic 800 22px AgThai,system-ui,sans-serif;letter-spacing:3px;transition:opacity .4s'; veil0.textContent = 'PREPARING BATTLE…'; addEventListener('DOMContentLoaded', () => document.body.append(veil0)) }
   function arenaReady() { if (veil0) { veil0.style.opacity = '0'; setTimeout(() => veil0?.remove(), 450) } if (EMBED) try { parent.postMessage({ type: 'agrenor-battle-ready', warm: Q.get('warm') === '1' }, '*') } catch (e) { } }
   boot();
 
@@ -204,9 +204,9 @@
   const css = document.createElement('style'); css.textContent = `
   #status,#help,#credit,.toolbar,#menuBtn,.town-icon-row,#townPreview{display:none!important}
   ${EMBED ? '.floatBtn,#townTools,#hudTop,.town-hud,.townux-top{display:none!important}' : ''}
-  #fbHud{position:fixed;left:14px;top:14px;z-index:40;width:260px;background:#1b302af2;border:1px solid #b9c48a66;border-radius:12px;padding:10px 12px;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 30px #0008}
+  #fbHud{position:fixed;left:14px;top:14px;z-index:40;width:260px;background:#1b302af2;border:1px solid #b9c48a66;border-radius:12px;padding:10px 12px;color:#f3e9c9;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 30px #0008}
   #fbHud button{font:inherit;background:#c9893a;color:#fff;border:0;border-radius:7px;padding:6px 9px;cursor:pointer}#fbHud button:disabled{opacity:.4;cursor:default}
-  #fbQueue{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:38;display:flex;gap:4px;align-items:center;pointer-events:none;font:11px system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
+  #fbQueue{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:38;display:flex;gap:4px;align-items:center;pointer-events:none;font:11px AgThai,system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
   #fbQueue .qc{position:relative;width:54px;padding:3px 2px 6px;text-align:center;border-radius:8px;background:#14231fdd;border:1px solid #b9c48a55;overflow:hidden}#fbQueue .qc .ic{display:block;font-size:16px;line-height:18px}#fbQueue .qc b{display:block;font-weight:600;white-space:nowrap;overflow:hidden}
   #fbQueue .qc i{position:absolute;left:0;bottom:0;height:3px;background:#6fd18a}#fbQueue .qc.foe{border-color:#e2705f88}#fbQueue .qc.foe i{background:#e2705f}#fbQueue .qc.ally{border-color:#8fd0b0aa}
   #fbQueue .qc.on{width:66px;border:2px solid #ffd25a;background:#2a3a1fee;transform:scale(1.05)}#fbQueue .arr{color:#ffd25a;font-size:18px;margin:0 2px}
@@ -218,10 +218,10 @@
   #fbHud{max-height:calc(100vh - 210px);overflow:auto}
   #fbHud .gem{display:inline-block;width:14px;height:14px;margin-right:3px;transform:rotate(45deg) scale(.8);border-radius:3px;background:#3b4c55;border:1px solid #8fb7c9}
   #fbHud .gem.on{background:radial-gradient(circle at 35% 35%,#e6fbff,#56c8f5 55%,#1b6b99);box-shadow:0 0 8px #6fd6ff}
-  #fbHand{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:41;display:flex;align-items:flex-end;gap:10px;padding:8px 12px 6px;border-radius:16px;background:linear-gradient(#0000,#0b1512cc 35%);max-width:calc(100vw - 16px);font:12px system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
+  #fbHand{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:41;display:flex;align-items:flex-end;gap:10px;padding:8px 12px 6px;border-radius:16px;background:linear-gradient(#0000,#0b1512cc 35%);max-width:calc(100vw - 16px);font:12px AgThai,system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
   #fbHand .row{display:flex;gap:6px;align-items:flex-end}#fbHand .sep{width:1px;align-self:stretch;background:#ffffff33;margin:0 2px}
   #fbHand .lbl{position:absolute;left:0;right:0;top:-17px;text-align:center;font-size:11px;color:#cdbb8f;white-space:nowrap}
-  .fb-el{position:absolute;z-index:3;top:-8px;right:-6px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 13px system-ui;box-shadow:0 2px 6px #000a}.fb-el.adv{background:#3fbf6a;color:#fff}.fb-el.dis{background:#c9503f;color:#fff}
+  .fb-el{position:absolute;z-index:3;top:-8px;right:-6px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 13px AgThai,system-ui;box-shadow:0 2px 6px #000a}.fb-el.adv{background:#3fbf6a;color:#fff}.fb-el.dis{background:#c9503f;color:#fff}
   .fb-card{position:relative;width:84px;padding:0;border:0;background:none;cursor:pointer;transition:transform .16s,filter .16s;border-radius:9px}
   .fb-card .face{width:84px;aspect-ratio:750/1101;border-radius:8px;overflow:hidden;box-shadow:0 4px 10px #0008;background:#2a2a2a}
   .fb-card .face .gcard{width:100%}.fb-card .face>.fb-fallback{display:flex;flex-direction:column;height:100%;align-items:center;justify-content:center;color:#fff;font-size:11px}
@@ -230,19 +230,19 @@
   .fb-card:hover{transform:translateY(-10px)}
   .fb-card.off{filter:grayscale(.75) brightness(.7)}.fb-card.off:hover{transform:translateY(-4px)}
   .fb-card.new .face{box-shadow:0 0 0 2px #ffe08a,0 0 16px 4px #ffd25a}
-  .fb-card.new::after{content:'ใหม่';position:absolute;top:-8px;right:-6px;background:#ffd25a;color:#2a1c00;font:700 10px system-ui;padding:1px 6px;border-radius:999px;box-shadow:0 2px 6px #0007}
+  .fb-card.new::after{content:'ใหม่';position:absolute;top:-8px;right:-6px;background:#ffd25a;color:#2a1c00;font:700 10px AgThai,system-ui;padding:1px 6px;border-radius:999px;box-shadow:0 2px 6px #0007}
   .fb-card.picked{transform:translateY(-14px)}.fb-card.picked .face{box-shadow:0 0 0 3px #ff6a55,0 0 14px #ff6a55}
-  .fb-card.picked::before{content:'✕';position:absolute;z-index:2;top:30%;left:50%;transform:translateX(-50%);font:700 30px system-ui;color:#ff6a55;text-shadow:0 2px 6px #000}
+  .fb-card.picked::before{content:'✕';position:absolute;z-index:2;top:30%;left:50%;transform:translateX(-50%);font:700 30px AgThai,system-ui;color:#ff6a55;text-shadow:0 2px 6px #000}
   #fbHand.discarding .fb-card:not(.picked){filter:none}
   .fb-pile{position:relative;width:56px;height:82px;border-radius:8px;background:repeating-linear-gradient(45deg,#3c2b4a,#3c2b4a 6px,#46335a 6px,#46335a 12px);border:2px solid #c7a96a;box-shadow:3px 3px 0 #2a2131,6px 6px 0 #1e1824;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:700;color:#f6e7c1;text-shadow:0 1px 2px #000}
   .fb-pile.discard{background:#2a2622;border-style:dashed;box-shadow:none}.fb-pile small{font-weight:400;font-size:10px;opacity:.85}
-  #fbBar{position:fixed;left:50%;bottom:190px;transform:translateX(-50%);z-index:42;background:#2b1712f2;border:1px solid #ff8a6a88;border-radius:10px;padding:8px 12px;color:#ffe9dc;font:13px system-ui,"Noto Sans Thai",sans-serif;display:flex;gap:8px;align-items:center;box-shadow:0 6px 20px #0008}
+  #fbBar{position:fixed;left:50%;bottom:190px;transform:translateX(-50%);z-index:42;background:#2b1712f2;border:1px solid #ff8a6a88;border-radius:10px;padding:8px 12px;color:#ffe9dc;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;display:flex;gap:8px;align-items:center;box-shadow:0 6px 20px #0008}
   #fbBar button{font:inherit;border:0;border-radius:7px;padding:6px 10px;cursor:pointer;background:#d25a3c;color:#fff}#fbBar button.ghost{background:#5a4a44}#fbBar button:disabled{opacity:.45}
   .fb-show{position:fixed;z-index:43;width:210px;pointer-events:none;filter:drop-shadow(0 16px 26px rgba(0,0,0,.6));transition:opacity .2s}
   .fb-show .face{position:relative;border-radius:14px;overflow:hidden}.fb-show .face .gcard{width:100%}
   .fb-show.play{animation:fbIn .42s cubic-bezier(.2,1.5,.4,1) both}.fb-show.play .face{box-shadow:0 0 0 3px var(--tone),0 0 30px 6px var(--tone)}
   .fb-show.play .face::after{content:'';position:absolute;inset:-40%;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);transform:translateX(-70%);animation:fbSweep .7s ease-out .12s both}
-  .fb-show .say{margin-top:6px;padding:5px 9px;border-radius:8px;background:#101a17ee;color:#f6e7c1;font:12px system-ui,"Noto Sans Thai",sans-serif;text-align:center}
+  .fb-show .say{margin-top:6px;padding:5px 9px;border-radius:8px;background:#101a17ee;color:#f6e7c1;font:12px AgThai,system-ui,"Noto Sans Thai",sans-serif;text-align:center}
   .fb-show .say b{color:#ffd25a}
   .fb-show.out{animation:fbOut .45s cubic-bezier(.5,0,.75,0) forwards}
   @keyframes fbIn{0%{opacity:0;transform:translateY(30px) scale(.45) rotateY(80deg)}60%{opacity:1}100%{opacity:1;transform:none}}
@@ -250,7 +250,7 @@
   @keyframes fbSweep{to{transform:translateX(70%)}}
   .fb-fly{position:fixed;z-index:44;pointer-events:none;width:84px;transition:transform .45s cubic-bezier(.3,.8,.3,1),opacity .45s}
   .fb-fly .face{width:84px;aspect-ratio:750/1101;border-radius:8px;overflow:hidden}.fb-fly .face .gcard{width:100%}
-  .fb-toast{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:45;padding:8px 18px;border-radius:999px;background:#101a17ee;color:#ffe9a8;font:700 16px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 6px 20px #0008;animation:fbToast 1.6s ease forwards;pointer-events:none}
+  .fb-toast{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:45;padding:8px 18px;border-radius:999px;background:#101a17ee;color:#ffe9a8;font:700 16px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 6px 20px #0008;animation:fbToast 1.6s ease forwards;pointer-events:none}
   @keyframes fbToast{0%{opacity:0;transform:translate(-50%,10px)}15%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
   .fb-lb{position:fixed;left:0;right:0;height:0;background:#000;z-index:39;transition:height .32s cubic-bezier(.3,.8,.3,1);pointer-events:none}
   #fbLbTop{top:0}#fbLbBot{bottom:0}.fb-lb.on{height:9vh}
@@ -258,28 +258,28 @@
   #fbHand,#fbHud{transition:transform .3s,opacity .3s}
   #world{transform-origin:50% 50%;transition:none}
   .fb-banner{position:fixed;left:50%;top:30%;z-index:46;pointer-events:none;transform:translate(-50%,-50%)}
-  .fb-banner span{display:block;font:italic 900 64px/1 system-ui,"Noto Sans Thai",sans-serif;letter-spacing:2px;color:#fff3b0;-webkit-text-stroke:3px #5a1a00;text-shadow:0 0 18px #ff9a2a,0 6px 0 #7a2400,0 10px 24px #000a;animation:fbBan 1.1s cubic-bezier(.2,1.4,.4,1) forwards}
+  .fb-banner span{display:block;font:italic 900 64px/1 AgThai,system-ui,"Noto Sans Thai",sans-serif;letter-spacing:2px;color:#fff3b0;-webkit-text-stroke:3px #5a1a00;text-shadow:0 0 18px #ff9a2a,0 6px 0 #7a2400,0 10px 24px #000a;animation:fbBan 1.1s cubic-bezier(.2,1.4,.4,1) forwards}
   .fb-banner.crit span{color:#ffe14d;transform:skewX(-12deg)}
-  .fb-banner.win span{font:italic 900 76px/1.1 system-ui,"Noto Sans Thai",sans-serif;letter-spacing:0;-webkit-text-stroke:0;color:#ffe9a8;text-shadow:0 0 22px #ff9a2a,0 4px 0 #7a2400,0 0 3px #5a1a00,0 10px 26px #000c;animation:fbBanWin 2.6s ease forwards}
+  .fb-banner.win span{font:italic 900 76px/1.1 AgThai,system-ui,"Noto Sans Thai",sans-serif;letter-spacing:0;-webkit-text-stroke:0;color:#ffe9a8;text-shadow:0 0 22px #ff9a2a,0 4px 0 #7a2400,0 0 3px #5a1a00,0 10px 26px #000c;animation:fbBanWin 2.6s ease forwards}
   @keyframes fbBan{0%{opacity:0;transform:translateX(-120px) skewX(-18deg) scale(1.6)}18%{opacity:1;transform:translateX(0) skewX(-12deg) scale(1)}75%{opacity:1;transform:translateX(12px) skewX(-12deg)}100%{opacity:0;transform:translateX(160px) skewX(-18deg) scale(.9)}}
   @keyframes fbBanWin{0%{opacity:0;transform:scale(2.4)}12%{opacity:1;transform:scale(1);filter:none}85%{opacity:1}100%{opacity:0;transform:scale(1.05)}}
   @media (max-width:820px){.fb-banner span{font-size:40px}.fb-banner.win span{font-size:48px}}
   .fb-card.auto{transform:translateY(-12px)}.fb-card.auto .face{box-shadow:0 0 0 3px #ffd25a,0 0 18px 4px #ffd25a}
   #fbIntro{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:48;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 34px;pointer-events:none;color:#f6ecd6;text-align:center;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif;animation:fbIntroIn .5s cubic-bezier(.2,1.3,.4,1) both;background:linear-gradient(90deg,transparent,#0b1410e0 18%,#0b1410e0 82%,transparent);min-width:min(620px,92vw)}
-  #fbIntro small{letter-spacing:.3em;color:#cdbb92;font-size:12px}#fbIntro b{font:900 34px/1.15 Georgia,"Noto Sans Thai",serif;color:#ffe2a8;text-shadow:0 2px 0 #000,0 0 22px #ffb34a88}#fbIntro span{font-size:14px;color:#e9dcbc}
+  #fbIntro small{letter-spacing:.3em;color:#cdbb92;font-size:12px}#fbIntro b{font:900 34px/1.15 AgThai,Georgia,"Noto Sans Thai",serif;color:#ffe2a8;text-shadow:0 2px 0 #000,0 0 22px #ffb34a88}#fbIntro span{font-size:14px;color:#e9dcbc}
   #fbIntro.out{animation:fbIntroOut .5s ease both}@keyframes fbIntroIn{from{opacity:0;transform:translate(-50%,-50%) scale(1.3)}}@keyframes fbIntroOut{to{opacity:0;transform:translate(-50%,-60%)}}
-  #fbAlly{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:45;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:94vw;padding:10px 14px;border-radius:14px;background:#14231ff2;border:1px solid #ffd25a88;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 10px 26px #000a}
+  #fbAlly{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:45;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:94vw;padding:10px 14px;border-radius:14px;background:#14231ff2;border:1px solid #ffd25a88;color:#f3e9c9;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 10px 26px #000a}
   #fbAlly b{font-size:16px;color:#ffe2a8}#fbAlly small{color:#cdbb92}#fbAlly button{padding:8px 12px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:600 13px inherit;font-family:inherit;cursor:pointer}#fbAlly button:disabled{opacity:.45;cursor:default}#fbAlly button.ok{background:#c9893a;border-color:#ffe2a8}
   body.fb-ally #fbHand{opacity:.25;pointer-events:none;transform:translate(-50%,60px)}
-  #fbCoach{position:fixed;left:50%;top:104px;transform:translateX(-50%);z-index:46;display:flex;gap:10px;align-items:center;max-width:min(760px,94vw);padding:9px 12px 9px 16px;border-radius:12px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;border:2px solid #b08a4a;box-shadow:0 10px 26px #0009;font:14px system-ui,"Noto Sans Thai",sans-serif}
+  #fbCoach{position:fixed;left:50%;top:104px;transform:translateX(-50%);z-index:46;display:flex;gap:10px;align-items:center;max-width:min(760px,94vw);padding:9px 12px 9px 16px;border-radius:12px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;border:2px solid #b08a4a;box-shadow:0 10px 26px #0009;font:14px AgThai,system-ui,"Noto Sans Thai",sans-serif}
   #fbCoach.on{animation:fbCoachIn .35s ease both}@keyframes fbCoachIn{from{opacity:0;transform:translate(-50%,-10px)}}#fbCoach small{white-space:nowrap;color:#8a6a3a;font-weight:700}#fbCoach span{flex:1;min-width:0;line-height:1.5}
   #fbCoach button{padding:6px 12px;border-radius:9px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:700 13px inherit;font-family:inherit;cursor:pointer;white-space:nowrap}#fbCoach button.x{background:none;border:none;padding:4px 6px;color:#8a6a3a}
-  #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
-  #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
-  #fbFace [data-f]{position:fixed;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid #f3e9c9aa;background:#1b302ae6;color:#f3e9c9;font:22px system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:0 4px 12px #0008;transition:transform .12s,background .12s}
+  #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px AgThai,system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
+  #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
+  #fbFace [data-f]{position:fixed;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid #f3e9c9aa;background:#1b302ae6;color:#f3e9c9;font:22px AgThai,system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:0 4px 12px #0008;transition:transform .12s,background .12s}
   #fbFace [data-f] span{display:inline-block}#fbFace [data-f].on{background:#c9893a;border-color:#ffe2a8;transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
-  #fbFace .bar{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}#fbFace .bar button{padding:8px 16px;border-radius:10px;border:1px solid #b9c48a88;background:#1b302af2;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif;cursor:pointer}#fbFace .bar .ok{background:#c9893a;border-color:#ffe2a8}#fbFace .bar small{opacity:.7;font-weight:400}
-  #fbPause{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px)}#fbPause .box{display:flex;flex-direction:column;gap:8px;min-width:280px;max-width:92vw;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f3e9c9;font:14px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 16px 40px #000a}
+  #fbFace .bar{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}#fbFace .bar button{padding:8px 16px;border-radius:10px;border:1px solid #b9c48a88;background:#1b302af2;color:#f3e9c9;font:600 14px AgThai,system-ui,"Noto Sans Thai",sans-serif;cursor:pointer}#fbFace .bar .ok{background:#c9893a;border-color:#ffe2a8}#fbFace .bar small{opacity:.7;font-weight:400}
+  #fbPause{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px)}#fbPause .box{display:flex;flex-direction:column;gap:8px;min-width:280px;max-width:92vw;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f3e9c9;font:14px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 16px 40px #000a}
   #fbPause b{font-size:18px}#fbPause small{color:#cdbb92}#fbPause button{padding:9px 14px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:inherit;text-align:left;cursor:pointer}#fbPause button:hover:not(:disabled){background:#2d4a40}#fbPause button.warn{border-color:#e2705f88;color:#ffc2b4}#fbPause button:disabled{opacity:.45}#fbPause .keys{font-size:12.5px;line-height:1.7;color:#d8caa0;padding:6px 4px}#fbPause .opt{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#d8caa0;padding:4px}#fbPause .opt[hidden]{display:none}#fbPause .opt label{display:flex;align-items:center;justify-content:space-between;gap:10px}#fbPause .opt label:has(input[type=checkbox]){justify-content:flex-start}
   @media (max-width:820px){#fbHud{width:200px;padding:7px 9px;font-size:12px}#fbHud .help{display:none}#fbHand{overflow-x:auto;justify-content:flex-start}.fb-card,.fb-card .face,.fb-fly,.fb-fly .face{width:58px}.fb-pile{width:40px;height:58px}#fbHand{gap:5px;padding:6px}.fb-card .fb-tag{font-size:9px}#fbBar{bottom:130px}}`;
   document.head.append(css);
@@ -1108,7 +1108,7 @@
   function jobEmblem(g, u, p, top) {
     const L = u.look; if (!L?.icon) return; const x = p.x - 32, y = top - 7;
     g.save(); g.fillStyle = L.col || '#888'; g.strokeStyle = '#1a140c'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, 8.5, 0, 7); g.fill(); g.stroke();
-    g.fillStyle = '#fff8e8'; g.font = '700 11px system-ui,"Segoe UI Symbol",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(L.icon, x, y + .5); g.restore();
+    g.fillStyle = '#fff8e8'; g.font = '700 11px AgThai,system-ui,"Segoe UI Symbol",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(L.icon, x, y + .5); g.restore();
   }
   function drawHero(g, u, t) {
     const A = sprites(), p = project(u.vu, u.vv), f = heroFrame(u, t); if (!A || !f) return;
@@ -1160,7 +1160,7 @@
       if (!OLDPOSE && A && wk && u.hp > 0 && FLOATPOSE.includes(actState(u, t).act)) { g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * .94, size); actionTrail(g, u, t, wk, 0, -size * .94, size, 0, .56); g.restore() } }
     if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
   }
-  function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
+  function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px AgThai,system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
   function drawMonster(g, u, t) {
     const p0 = project(u.vu, u.vv), v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
     const sk = u.evoShow || u.kind, T = MON[sk] || MT, kind = MON[sk] ? sk : MK, bs = u.boss ? 1.25 : 1;   /* v98.58: evoShow = the old form until the flash */
@@ -1199,13 +1199,13 @@
     if (reachMap && !busy) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
     /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
     if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); poly(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
-      const p = project(c.u + .5, c.v + .5); g.font = '16px system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(esc_ ? '⇲' : '🚩', p.x, p.y + 5 - 3 * pul) }
+      const p = project(c.u + .5, c.v + .5); g.font = '16px AgThai,system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(esc_ ? '⇲' : '🚩', p.x, p.y + 5 - 3 * pul) }
     /* v94.02 · height of every cell you can reach (1–3; 0 = ground) */
-    if (reachMap && !busy && window.FieldHeight) { g.font = '700 11px system-ui'; g.textAlign = 'center'; for (const e of reachMap.values()) { const L = FB.lv(st, e.u, e.v); if (!L) continue; const p = project(e.u + .5, e.v + .5); g.fillStyle = 'rgba(10,20,40,.75)'; g.beginPath(); g.arc(p.x, p.y, 8, 0, 7); g.fill(); g.fillStyle = '#cfe4ff'; g.fillText('▲' + L, p.x, p.y + 4) } }
-    if (pushShow && !busy) { poly(g, pushShow.u, pushShow.v); g.fillStyle = pushShow.stuck ? 'rgba(160,160,160,.35)' : pushShow.dmg ? 'rgba(255,60,40,.45)' : 'rgba(255,200,80,.35)'; g.fill(); const p = project(pushShow.u + .5, pushShow.v + .5); g.font = '800 13px system-ui'; g.textAlign = 'center'; g.fillStyle = '#000a'; g.fillRect(p.x - 48, p.y - 30, 96, 18); g.fillStyle = pushShow.dmg ? '#ffb0a0' : '#ffe2a8'; g.fillText(pushShow.stuck ? 'ผลักไม่ได้' : pushShow.dmg ? 'ตก ' + pushShow.drop + ' ระดับ −' + pushShow.dmg : 'ไม่ตก', p.x, p.y - 17) }
+    if (reachMap && !busy && window.FieldHeight) { g.font = '700 11px AgThai,system-ui'; g.textAlign = 'center'; for (const e of reachMap.values()) { const L = FB.lv(st, e.u, e.v); if (!L) continue; const p = project(e.u + .5, e.v + .5); g.fillStyle = 'rgba(10,20,40,.75)'; g.beginPath(); g.arc(p.x, p.y, 8, 0, 7); g.fill(); g.fillStyle = '#cfe4ff'; g.fillText('▲' + L, p.x, p.y + 4) } }
+    if (pushShow && !busy) { poly(g, pushShow.u, pushShow.v); g.fillStyle = pushShow.stuck ? 'rgba(160,160,160,.35)' : pushShow.dmg ? 'rgba(255,60,40,.45)' : 'rgba(255,200,80,.35)'; g.fill(); const p = project(pushShow.u + .5, pushShow.v + .5); g.font = '800 13px AgThai,system-ui'; g.textAlign = 'center'; g.fillStyle = '#000a'; g.fillRect(p.x - 48, p.y - 30, 96, 18); g.fillStyle = pushShow.dmg ? '#ffb0a0' : '#ffe2a8'; g.fillText(pushShow.stuck ? 'ผลักไม่ได้' : pushShow.dmg ? 'ตก ' + pushShow.drop + ' ระดับ −' + pushShow.dmg : 'ไม่ตก', p.x, p.y - 17) }
     const h = FB.hero(st), tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
     /* hovering a combat card: its reach around the hero in red */
-    if (dmgShow && !busy && dmgShow.target.hp > 0) { const q = project(dmgShow.target.vu, dmgShow.target.vv), txt = '−' + dmgShow.total + (dmgShow.kill ? ' ☠' : ''); g.save(); g.font = '900 24px system-ui,"Noto Sans Thai",sans-serif'; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = dmgShow.kill ? '#ffe14d' : '#ffd0a0'; const y = q.y - UNIT * 1.75 - 4 * Math.sin(now() * .006); g.strokeText(txt, q.x, y); g.fillText(txt, q.x, y); g.restore() }
+    if (dmgShow && !busy && dmgShow.target.hp > 0) { const q = project(dmgShow.target.vu, dmgShow.target.vv), txt = '−' + dmgShow.total + (dmgShow.kill ? ' ☠' : ''); g.save(); g.font = '900 24px AgThai,system-ui,"Noto Sans Thai",sans-serif'; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = dmgShow.kill ? '#ffe14d' : '#ffd0a0'; const y = q.y - UNIT * 1.75 - 4 * Math.sin(now() * .006); g.strokeText(txt, q.x, y); g.fillText(txt, q.x, y); g.restore() }
     if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }
     /* enemies some playable card can reach: red; the chosen target: gold */
     if (!busy && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range + (FB.cardRule(c.id).range > 1 ? h.rangePlus || 0 : 0) : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
@@ -1243,7 +1243,7 @@
       g.restore() }
     drawSay(g);
     /* v97.19 · status icons above the head (sleep, burn, poison, silence, weak, frozen, slowed) */
-    g.save(); g.font = '15px system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center';
+    g.save(); g.font = '15px AgThai,system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center';
     for (const u of st.units) { if (u.hp <= 0) continue; const ic = [u.leader ? '👑' : '', ...Object.keys(u.sts || {}).map(k => FB.STATUS[k]?.icon), u.stun ? '❄' : '', u.slowed ? '⚡' : ''].filter(Boolean); if (!ic.length) continue;
       const q = project(u.vu, u.vv), y = q.y - UNIT * 1.95 + Math.sin(t * .004) * 2, w = ic.length * 18 + 6; g.fillStyle = 'rgba(10,14,20,.7)'; g.beginPath(); g.roundRect?.(q.x - w / 2, y - 14, w, 20, 9); g.fill(); ic.forEach((x, k) => g.fillText(x, q.x - w / 2 + 12 + k * 18, y + 1)) }
     g.restore();
@@ -1253,7 +1253,7 @@
     for (const x of texts) {
       const p = project(x.u, x.v), e = (t - x.t0), a = e / 1300, pop = x.small ? 1 : e < 140 ? 1 + .9 * (1 - e / 140) : 1 + .08 * Math.max(0, 1 - (e - 140) / 200);
       const base = x.small ? 14 : x.big ? 30 : 23, y = p.y - UNIT * 1.6 - (x.small ? 18 : 0) + (x.dy || 0) - Math.min(1, e / 260) * 26 - a * 18;
-      g.save(); g.globalAlpha = a < .7 ? 1 : 1 - (a - .7) / .3; g.font = `900 ${Math.round(base * pop)}px system-ui,"Noto Sans Thai",sans-serif`; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = x.small ? 4 : 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = x.col; g.strokeText(x.txt, p.x + (x.dx || 0), y); g.fillText(x.txt, p.x + (x.dx || 0), y); g.restore();
+      g.save(); g.globalAlpha = a < .7 ? 1 : 1 - (a - .7) / .3; g.font = `900 ${Math.round(base * pop)}px AgThai,system-ui,"Noto Sans Thai",sans-serif`; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = x.small ? 4 : 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = x.col; g.strokeText(x.txt, p.x + (x.dx || 0), y); g.fillText(x.txt, p.x + (x.dx || 0), y); g.restore();
     }
   }
   /* ---------- HD-2D light (code-drawn) ----------

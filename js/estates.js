@@ -92,7 +92,7 @@
             ${btn('drop:' + p.id, '✕ ทิ้งที่ดิน')}</div>
             ${p.kind ? `<small style="color:#7a6040">${esc(KINDS[p.kind].desc)}</small>` : ''}</div>` }).join('');
         d.innerHTML = `<div style="width:min(640px,96vw);max-height:92vh;overflow:auto;padding:16px 18px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c">
-          <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button><h2 style="margin:0 0 4px;font:800 22px Georgia,'Noto Sans Thai',serif">🏡 ที่ดิน · ${esc(label)}</h2>
+          <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button><h2 style="margin:0 0 4px;font:800 22px AgThai,Georgia,'Noto Sans Thai',serif">🏡 ที่ดิน · ${esc(label)}</h2>
           <p style="margin:0 0 6px;font-size:13px;color:#6a5030">${town ? 'เช่าที่ในเมือง สัปดาห์ละ ' + rent + ' 💰 · ค้างเกินสองสัปดาห์ เมืองยึดคืน · ปลอดภัยจากการบุก' : 'จับจองฟรี ไม่มีค่าเช่า · แต่สัตว์ร้ายและโจรป่าบุกได้ทุกวัน สร้างรั้วลดโอกาส'} · มีที่ดิน ${list(S).length}/${MAX_PLOTS} แปลง · 💰 ${S.gold}</p>
           ${note ? `<p style="margin:6px 0;padding:6px 10px;border-radius:8px;background:#fff9;font-size:13px">${note}</p>` : ''}
           ${rows || '<p style="font-size:13px">ยังไม่มีที่ดินที่นี่</p>'}

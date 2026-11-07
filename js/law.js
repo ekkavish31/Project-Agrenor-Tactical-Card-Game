@@ -36,7 +36,7 @@
       d.style.cssText = 'position:fixed;inset:0;z-index:2200;display:grid;place-items:center;background:#05080dd9;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif';
       const b = (a, l, dis) => `<button data-a="${a}" ${dis ? 'disabled' : ''} style="margin:4px;padding:8px 14px;border-radius:9px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:700 13.5px inherit;font-family:inherit;cursor:pointer;${dis ? 'opacity:.45' : ''}">${l}</button>`;
       d.innerHTML = `<div style="width:min(520px,94vw);padding:18px 20px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c">
-        <h2 style="margin:0 0 6px;font:800 22px Georgia,'Noto Sans Thai',serif">🛡 ยามจับได้!</h2><p style="margin:0 0 10px;font-size:14px;line-height:1.6">${text || ''}</p>
+        <h2 style="margin:0 0 6px;font:800 22px AgThai,Georgia,'Noto Sans Thai',serif">🛡 ยามจับได้!</h2><p style="margin:0 0 10px;font-size:14px;line-height:1.6">${text || ''}</p>
         <p style="margin:0 0 10px;font-size:13px;color:#6a5030">ค่าปรับ ${c} 💰 · มี ${S.gold || 0} 💰</p>
         ${b('pay', '💰 จ่ายค่าปรับ ' + c, (S.gold || 0) < c)}${b('jail', '⛓ ยอมติดคุก 1 คืน')}${b('run', '🏃 หนี (ถูกหมายจับ)')}</div>`;
       document.body.append(d);

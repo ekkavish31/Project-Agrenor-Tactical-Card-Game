@@ -194,7 +194,7 @@
     if (document.getElementById('gdCss')) return; const st = document.createElement('style'); st.id = 'gdCss';
     st.textContent = `#gdUI{position:fixed;inset:0;z-index:2180;display:grid;place-items:center;background:#05080dcc;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
     #gdUI .box{width:min(820px,97vw);max-height:94vh;overflow:auto;padding:16px 18px;border-radius:16px;background:linear-gradient(#eef0d2,#d9d6a6);color:#2f2a12;box-shadow:0 24px 60px #000c}
-    #gdUI h2{margin:0;font:800 23px Georgia,"Noto Sans Thai",serif;color:#3d4a12}#gdUI .sub{font-size:13px;color:#5a5a2a;margin:2px 0 8px}
+    #gdUI h2{margin:0;font:800 23px AgThai,Georgia,"Noto Sans Thai",serif;color:#3d4a12}#gdUI .sub{font-size:13px;color:#5a5a2a;margin:2px 0 8px}
     #gdUI .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:8px}
     #gdUI .pl{position:relative;padding:8px;border-radius:12px;background:#8a6a3c;border:3px solid #5e4524;color:#fff;min-height:118px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
     #gdUI .pl.wet{background:#5e4a2c}#gdUI .pl.ripe{border-color:#e8c440;box-shadow:0 0 0 2px #e8c44088}#gdUI .pl .ic{font-size:34px;line-height:1.1}#gdUI .pl small{font-size:11.5px;opacity:.95}

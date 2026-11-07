@@ -2,7 +2,7 @@
 (function(){'use strict';
  const script=document.currentScript,base=new URL('./',script.src),repo='ekkavish31/Project-Agrenor-Tactical-Card-Game';
  const $=id=>document.getElementById(id),status=$('deployStatus'),bar=$('editorConflict');
- const style=document.createElement('style');style.textContent='#editorConflict{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#ffd84d;color:#37280f;font:700 15px system-ui;cursor:pointer;border:1px solid #b8932f;flex:none}#editorConflict[hidden]{display:none}';document.head.append(style);if(status&&bar)status.after(bar);
+ const style=document.createElement('style');style.textContent='#editorConflict{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#ffd84d;color:#37280f;font:700 15px AgThai,system-ui;cursor:pointer;border:1px solid #b8932f;flex:none}#editorConflict[hidden]{display:none}';document.head.append(style);if(status&&bar)status.after(bar);
  const versionOf=t=>(t.match(/v:\s*'?(v\d+(?:\.\d+)?)/)||[])[1]||'ไม่ทราบ';
  const tuple=v=>(String(v).match(/v?(\d+)(?:\.(\d+))?/)||[]).slice(1).map(Number);
  const newer=(a,b)=>{const x=tuple(a),y=tuple(b);return(x[0]||0)>(y[0]||0)||((x[0]||0)===(y[0]||0)&&(x[1]||0)>(y[1]||0))};

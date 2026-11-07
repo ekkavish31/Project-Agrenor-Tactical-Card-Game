@@ -6,12 +6,13 @@ const SRC='assets/intro/agrenor-intro.mp4?v=1';let active=false,video=null,ready
 /* v98.175 · the whole video is downloaded (with progress) while the black start gate is up and played from a blob URL, so nothing streams
    during the logo/cutscene. If the download is too slow the gate calls fallback(): the download is aborted and the video streams as before. */
 async function download(){
+ const hit=await window.AgMediaCache?.get(SRC);if(hit){const b=await hit.blob();if(b.size>1e6){if(onProg)onProg(1);return b}}
  const res=await fetch(SRC,{signal:aborter.signal});if(!res.ok)throw new Error('HTTP '+res.status);
  const total=+res.headers.get('content-length')||0,reader=res.body&&res.body.getReader();
- if(!reader)return res.blob();
+ if(!reader){const b=await res.blob();window.AgMediaCache?.put(SRC,b,'video/mp4');return b}
  const chunks=[];let got=0;
  for(;;){const {done,value}=await reader.read();if(done)break;chunks.push(value);got+=value.length;if(total&&onProg)onProg(Math.min(.99,got/total))}
- return new Blob(chunks,{type:'video/mp4'})}
+ const blob=new Blob(chunks,{type:'video/mp4'});window.AgMediaCache?.put(SRC,blob,'video/mp4');return blob}
 function prepare(cb){if(cb)onProg=cb;if(ready)return ready;
  ready=new Promise(resolve=>{aborter=new AbortController();
   const open=src=>{const v=document.createElement('video');v.preload='auto';v.muted=true;v.defaultMuted=true;v.setAttribute('muted','');v.playsInline=true;v.setAttribute('playsinline','');v.disablePictureInPicture=true;v.src=src;video=v;

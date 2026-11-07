@@ -124,7 +124,7 @@
   @keyframes csShakeA{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
   .cs-actor.fx-sag .art{animation:csSag 1.2s ease-out forwards}
   @keyframes csSag{to{transform:translateY(10px) scale(.985)}}
-  .cs-emote{position:absolute;top:6%;left:58%;font-size:clamp(34px,5.4vh,56px);line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6));animation:csEmote 1.6s ease-out forwards;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
+  .cs-emote{position:absolute;top:6%;left:58%;font-size:clamp(34px,5.4vh,56px);line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6));animation:csEmote 1.6s ease-out forwards;font-family:AgThai,"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
   .cs-actor.L .cs-emote{left:26%}
   @keyframes csEmote{0%{opacity:0;transform:translateY(16px) scale(.4)}18%{opacity:1;transform:translateY(-4px) scale(1.15)}30%{transform:translateY(0) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
   .cs-mood{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .6s ease}

@@ -50,7 +50,7 @@
     if (inEditor) return;   /* v98.96 · inside editor.html the state is shown on the top-bar ⬆ รอ Push button instead */
     if (!pill) {
       pill = document.createElement('button'); pill.id = 'layoutSync'; pill.type = 'button';
-      pill.style.cssText = 'position:fixed;left:10px;bottom:56px;z-index:60;font:700 12px system-ui,sans-serif;color:#fff;border:0;border-radius:999px;padding:5px 12px;cursor:pointer;box-shadow:0 2px 8px #0006';
+      pill.style.cssText = 'position:fixed;left:10px;bottom:56px;z-index:60;font:700 12px AgThai,system-ui,sans-serif;color:#fff;border:0;border-radius:999px;padding:5px 12px;cursor:pointer;box-shadow:0 2px 8px #0006';
       pill.onclick = open; document.body.append(pill);
     }
     const s = overall(), [t, c] = TXT[s]; pill.textContent = t; pill.style.background = c; pill.style.opacity = s === 'ok' ? '.55' : '1';
@@ -80,7 +80,7 @@
     both: 'ทั้งเครื่องนี้และเว็บเปลี่ยนไม่เหมือนกัน (หรือไม่รู้ว่าอันไหนใหม่กว่า) · ถ้าดึงจากเว็บ งานที่ยังไม่ push ในเครื่องนี้จะถูกแทนที่ (สำรองให้ก่อน กู้คืนได้)'
   };
   function open() {
-    if (!dlg) { dlg = document.createElement('dialog'); dlg.style.cssText = 'max-width:460px;border:1px solid #b9ae93;border-radius:10px;padding:16px;background:#fffdf6;color:#2a2418;font:14px system-ui,sans-serif'; document.body.append(dlg) }
+    if (!dlg) { dlg = document.createElement('dialog'); dlg.style.cssText = 'max-width:460px;border:1px solid #b9ae93;border-radius:10px;padding:16px;background:#fffdf6;color:#2a2418;font:14px AgThai,system-ui,sans-serif'; document.body.append(dlg) }
     const hasBk = backups().length;
     dlg.innerHTML = `<b>ข้อมูลในเครื่องนี้ vs เว็บ</b>` + Object.entries(units).filter(([, u]) => u.st).map(([id, u]) => `<div style="margin:12px 0;padding:8px 10px;border-left:4px solid ${TXT[u.st][1]};background:#0000000a"><b>${u.name}</b> · ${TXT[u.st][0]}<div style="margin:4px 0 6px;font-size:13px">${MSG[u.st]}</div>${u.st !== 'ok' ? `<button data-take="${id}" style="padding:5px 10px">⬇ ใช้ของเว็บ (สำรองก่อน)</button>` : ''}</div>`).join('')
       + `<div style="display:flex;gap:8px;flex-wrap:wrap">${hasBk ? '<button id="lsRestore" style="padding:6px 12px">↩ กู้คืนชุดสำรองล่าสุด</button>' : ''}<button id="lsClose" style="padding:6px 12px">ปิด</button></div><p style="color:#7a6e55;font-size:12px;margin:10px 0 0">สำรองไว้ ${hasBk} ชุด (เก็บ 3 ชุดล่าสุด) · ตรวจทุก 1 นาทีและเมื่อกลับมาที่แท็บนี้ · เว็บอาจช้ากว่า GitHub 1–2 นาทีหลัง push</p>`;

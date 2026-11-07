@@ -47,7 +47,7 @@
     if (document.getElementById('fcCss')) return; const st = document.createElement('style'); st.id = 'fcCss';
     st.textContent = `#fcUI{position:fixed;inset:0;z-index:2050;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px);font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
     #fcUI .box{width:min(720px,96vw);max-height:92vh;overflow:auto;padding:18px 20px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c}
-    #fcUI h2{margin:0 0 4px;font:800 24px Georgia,"Noto Sans Thai",serif;color:#5a3a10}#fcUI .sub{margin:0 0 12px;color:#6a5030;font-size:13.5px}
+    #fcUI h2{margin:0 0 4px;font:800 24px AgThai,Georgia,"Noto Sans Thai",serif;color:#5a3a10}#fcUI .sub{margin:0 0 12px;color:#6a5030;font-size:13.5px}
     #fcUI .f{display:grid;grid-template-columns:40px 1fr 90px;gap:10px;align-items:center;padding:10px;border-radius:12px;background:#fff8;border:2px solid #b08a4a44;margin-bottom:8px}
     #fcUI .ic{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:#fff;border:2px solid #1a140c}
     #fcUI .bar{height:10px;border-radius:6px;background:#0002;position:relative;overflow:hidden;margin-top:4px}#fcUI .bar i{position:absolute;top:0;bottom:0}#fcUI .bar b{position:absolute;left:50%;top:0;bottom:0;width:2px;background:#0005}

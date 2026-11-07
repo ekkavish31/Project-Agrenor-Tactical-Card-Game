@@ -14,7 +14,8 @@
  /* v98.175 · the intro track is kept as an in-memory blob URL, so it starts the instant the logo ends instead of re-downloading while the 47 MB video is
     still loading (that made the music start seconds after the video). prime() is called inside the first key press/tap: it plays the element silently once
     so Safari/mobile (which only allow play() on an element a gesture has touched) let the same element start later without a gesture. */
- function preloadIntro(){if(introUrl)return Promise.resolve(true);return fetch(base+lists.intro[0]+'?v=98.175').then(r=>r.ok?r.blob():Promise.reject(new Error(r.status))).then(b=>{introUrl=URL.createObjectURL(new Blob([b],{type:'audio/mpeg'}));return true},e=>{error=e.message||String(e);return false})}
+ function preloadIntro(){if(introUrl)return Promise.resolve(true);const url=base+lists.intro[0]+'?v=98.175',cache=root.AgMediaCache;
+  return (cache?cache.get(url):Promise.resolve(null)).then(hit=>hit?hit.blob():fetch(url).then(r=>r.ok?r.blob():Promise.reject(new Error(r.status))).then(b=>{cache?.put(url,b,'audio/mpeg');return b})).then(b=>{introUrl=URL.createObjectURL(new Blob([b],{type:'audio/mpeg'}));return true},e=>{error=e.message||String(e);return false})}
  function prime(){if(primed||current?.key==='intro')return;const a=new Audio(srcOf('intro',0));a.preload='auto';a.volume=0;primed=a;const r=a.play();if(r&&r.then)r.then(()=>{if(primed===a){a.pause();try{a.currentTime=0}catch{}}},()=>{if(primed===a)primed=null})}
  function takePrimed(){const a=primed;primed=null;try{a.pause();a.currentTime=0}catch{}return a}
  function start(key,index=indices[key]||0){const token=++generation;activeKey=key;if(current){if(key==='none'||key==='intro')remove(current);else fade.push(current);current=null}if(key==='none'||key==='intro'){fade.forEach(remove);fade=[]}if(!lists[key]||(!unlocked&&key!=='intro'))return;
