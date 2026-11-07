@@ -2,13 +2,26 @@
    js/game-bgm.js the moment the maker logo is gone, so it runs together with this (muted) video and carries on into the menu.
    Skip: Esc or X key (text hint only, no buttons). When the video ends — or is skipped — the menu is revealed (class ag-reveal). */
 (()=>{'use strict';
-const SRC='assets/intro/agrenor-intro.mp4?v=1';let active=false,video=null,ready=null;
-function prepare(){if(ready)return ready;
- ready=new Promise(resolve=>{const v=document.createElement('video');v.preload='auto';v.muted=true;v.defaultMuted=true;v.setAttribute('muted','');v.playsInline=true;v.setAttribute('playsinline','');v.disablePictureInPicture=true;v.src=SRC;video=v;
-  const done=()=>resolve(),timer=setTimeout(done,8000);v.addEventListener('canplay',()=>{clearTimeout(timer);done()},{once:true});
-  v.addEventListener('error',()=>{clearTimeout(timer);video=null;done()},{once:true});v.load()});
+const SRC='assets/intro/agrenor-intro.mp4?v=1';let active=false,video=null,ready=null,blobUrl=null,aborter=null,onProg=null;
+/* v98.175 · the whole video is downloaded (with progress) while the black start gate is up and played from a blob URL, so nothing streams
+   during the logo/cutscene. If the download is too slow the gate calls fallback(): the download is aborted and the video streams as before. */
+async function download(){
+ const res=await fetch(SRC,{signal:aborter.signal});if(!res.ok)throw new Error('HTTP '+res.status);
+ const total=+res.headers.get('content-length')||0,reader=res.body&&res.body.getReader();
+ if(!reader)return res.blob();
+ const chunks=[];let got=0;
+ for(;;){const {done,value}=await reader.read();if(done)break;chunks.push(value);got+=value.length;if(total&&onProg)onProg(Math.min(.99,got/total))}
+ return new Blob(chunks,{type:'video/mp4'})}
+function prepare(cb){if(cb)onProg=cb;if(ready)return ready;
+ ready=new Promise(resolve=>{aborter=new AbortController();
+  const open=src=>{const v=document.createElement('video');v.preload='auto';v.muted=true;v.defaultMuted=true;v.setAttribute('muted','');v.playsInline=true;v.setAttribute('playsinline','');v.disablePictureInPicture=true;v.src=src;video=v;
+   const timer=setTimeout(resolve,8000);v.addEventListener('canplay',()=>{clearTimeout(timer);if(onProg)onProg(1);resolve()},{once:true});
+   v.addEventListener('error',()=>{clearTimeout(timer);video=null;resolve()},{once:true});v.load()};
+  if(blobUrl){open(blobUrl);return}
+  download().then(blob=>{blobUrl=URL.createObjectURL(blob);open(blobUrl)},()=>open(SRC))});
  return ready}
-window.GameIntro={prepare,ready:()=>!!video&&video.readyState>=3,play(title){if(active||!title?.isConnected)return;
+function fallback(){try{aborter&&aborter.abort()}catch{}}
+window.GameIntro={prepare,fallback,ready:()=>!!video&&video.readyState>=3,play(title){if(active||!title?.isConnected)return;
  const release=()=>window.dispatchEvent(new Event('maker-intro-finished'));
  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!video){release();return}
  active=true;const main=title.querySelector('.ts-main'),v=video,el=document.createElement('section');
