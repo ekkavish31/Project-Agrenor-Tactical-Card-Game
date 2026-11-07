@@ -96,7 +96,7 @@ const WORLD = {
     ['pine', 'สน', V + 'nature/pine.webp', { w: 215 }, [3.5, 10]], ['tree-conifer', 'ต้นสนใบ', V + 'nature/tree-conifer.webp', { w: 200 }, [3.5, 10]], ['tree-blossom', 'ต้นดอกไม้', V + 'nature/tree-blossom.webp', { w: 185 }, [3, 9]],
     ['bush-small', 'พุ่มไม้เล็ก', V + 'nature/bush-small.webp', { w: 74 }, [.6, 1.6]], ['rock-cluster', 'กลุ่มหิน', V + 'nature/rock-cluster.webp', { w: 66 }, [.4, 1.4]], ['tall-grass', 'หญ้าสูง', V + 'nature/tall-grass.webp', { w: 64 }, [.3, .9]]] }
 };
-const TABS = [['char', 'ตัวละคร'], ['ratio', '📐 สัดส่วน'], ['maps', '🗺 ขนาดต่อแผนที่'], ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
+const TABS = [['char', 'ตัวละคร'], ['ratio', '📐 สัดส่วน'], ['field', '⚔ สนามรบ · Grid จริง'], ['maps', '🗺 ขนาดต่อแผนที่'], ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
 let tab = 'char';
 const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
 const RANK = { hero: 0, ally: 1, monster: 2 };
@@ -150,16 +150,16 @@ let STEP = .5, ZOOM = 1, ALPHA = 1, SHADOW = false, FOOT = false, GUIDES = false
 const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / ENTRIES.find(x => x.id === 'hero').ctx[c].units * HERO_M * eff(e, c);
 const heroE = () => ENTRIES.find(e => e.id === 'hero');
 /* world tabs: the hero stands first as the yardstick, then the pieces of that tab */
-const visible = () => { const a = tab === 'ratio' ? ENTRIES.filter(e => (e.kind === 'hero' || e.kind === 'ally') && e.ctx[ctx]) : tab === 'char' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx]) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
+const visible = () => { const a = tab === 'ratio' ? ENTRIES.filter(e => (e.kind === 'hero' || e.kind === 'ally') && e.ctx[ctx]) : tab === 'char' || tab === 'field' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx]) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
 const rangeOf = e => { if (!e.fixed) return ['', 'ไม่มีค่าตรึง']; const m = metres(e); return m < e.ref[0] ? ['warn', 'เล็กไป'] : m > e.ref[1] ? ['warn', 'ใหญ่ไป'] : ['ok', 'พอดี'] };
 function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
 /* choosing a character here also selects it in the studio's Animation tab */
 function pickSel(id) { sel = id; if (ST) { const sid = id === 'hero' ? 'hero' : id.startsWith('m:') ? 'enemy:' + id.slice(2) : 'ally:' + id; try { ST.lineup.select(sid) } catch (e) { } } render() }
 function render() {
   if (!ENTRIES.some(e => e.id === 'hero' && e.ctx.battle)) { $('stage').innerHTML = '<p class="hint">ยังไม่พบภาพท่ายืนของตัวเอก (SW) — ตัวเอกคือไม้วัดของหน้านี้ · ตรวจว่าไฟล์ภาพถูก push แล้ว หรือกด รีเฟรช</p>'; $('list').innerHTML = ''; $('insp').innerHTML = ''; return }
-  ctx = tab === 'char' || tab === 'ratio' ? 'battle' : 'village';
+  ctx = tab === 'char' || tab === 'ratio' || tab === 'field' ? 'battle' : 'village';
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k}">${t}</button>`).join(' ');
-  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' || tab === 'ratio' ? 'hero' : (visible()[1]?.id || 'hero'); render() });
+  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' || tab === 'ratio' || tab === 'field' ? 'hero' : (visible()[1]?.id || 'hero'); render() });
   $('ctxBtns').style.display = 'none';   /* v98.95 · one set of proportions for every scene; the % per scene is done in each scene later */ $('listTitle').textContent = TABS.find(t => t[0] === tab)[1];
   $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
   $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
@@ -169,6 +169,7 @@ function render() {
   $('list').querySelectorAll('.row').forEach(b => b.onclick = () => pickSel(b.dataset.c));
   if (tab === 'ratio') { renderRatio(V); inspect(); controls(); return }
   if (tab === 'maps') { renderMaps(); return }
+  if (tab === 'field') { renderField(V); inspect(); controls(); return }
   /* stage */
   const st = $('stage'), H = 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))) / ZOOM, ppm = (base - 20) / maxM * ZOOM, bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
   st.style.height = ''; st.style.width = W + 'px'; let h = '';
@@ -189,6 +190,33 @@ function render() {
   st.querySelectorAll('.ch').forEach(i => i.onclick = () => pickSel(i.dataset.c));
   $('note').textContent = tab !== 'char' ? 'ไม้บรรทัดหมู่บ้าน: 1 m = ความสูงตัวเอกในหมู่บ้าน ÷ 1.70 (≈ 55 px) · ช่องพื้น 1 ช่อง ≈ 0.57 m · ตัวเอกยืนเป็นไม้วัดทางซ้าย + เงาเทาซ้อนหลัง · ชิป พอดี/เล็กไป/ใหญ่ไป เทียบกับช่วงเป้าหมายของแต่ละชนิด (แก้ช่วงได้ใน WORLD)' : 'เทียบกันเอง: ตัวเอก = 1.70 m เป็นไม้วัด · ภาพมาจากเฟรมปัจจุบันของแท็บ Animation (ท่ายืน SW หรือเฟรมที่เลือก) · ทุกฉากใช้สัดส่วนชุดเดียวกัน · การเทียบ % ต่อฉากทำแยกในแต่ละฉากภายหลัง';
   inspect(); controls();
+}
+/* ================= ⚔ สนามรบ · Grid จริง (v98.244) =================
+   The characters stand on cells of the REAL battle grid: one cell = a diamond UNIT wide × UNIT/2 tall (UNIT = 56 × 1.5 = 84 px at the game's 100 % zoom), feet on the cell centre,
+   each picture drawn at the same on-screen height the battle uses (ctx.battle.units × UNIT × the map's size %). Nothing is saved here. */
+let FIELD_ZOOM = 1, FIELD_MAPK = 1;
+function renderField(V) {
+  const UNIT = 84, st = $("stage"), z = ZOOM, cw = UNIT * z, ch = cw / 2, s0 = 4, maxPx = Math.max(...V.map(e => e.ctx.battle.units)) * UNIT * z, baseY = maxPx + 56;
+  st.style.height = ''; st.style.width = '';
+  const W = Math.max(st.parentElement.clientWidth - 8, (V.length + 1.5) * cw + 40), H = baseY + 4.5 * ch + 70;
+  st.innerHTML = '<canvas id="fieldCv"></canvas>'; const cv = $('fieldCv'), dpr = devicePixelRatio || 1; cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const g = cv.getContext('2d'); g.scale(dpr, dpr); g.fillStyle = '#26352b'; g.fillRect(0, 0, W, H);
+  /* iso grid like the battle map: cell (a,b) centre = ((a-b)·cw/2, (a+b-s0)·ch/2 + baseY); the characters stand on row a+b = s0, one per cell along it */
+  const ox = 30 + cw / 2, P = (a, b) => ({ x: ox + (a - b) * cw / 2, y: baseY + (a + b - s0) * ch / 2 });
+  g.lineWidth = 1; g.strokeStyle = 'rgba(255,255,255,.24)';
+  for (let sRow = s0 - 3; sRow <= s0 + 3; sRow++) for (let a = -V.length - 8; a <= V.length * 2 + 12; a++) { const c = P(a, sRow - a); if (c.x < -cw || c.x > W + cw) continue; g.beginPath(); g.moveTo(c.x, c.y - ch / 2); g.lineTo(c.x + cw / 2, c.y); g.lineTo(c.x, c.y + ch / 2); g.lineTo(c.x - cw / 2, c.y); g.closePath(); g.fillStyle = (a + sRow) % 2 ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.06)'; g.fill(); g.stroke() }
+  /* characters in a row, one per cell; the hero's silhouette height is the reference line */
+  const hc = heroE().ctx.battle, heroPx = hc.units * UNIT * z;
+  const items = V.map((e, i) => { const c = e.ctx.battle, k = c.units * UNIT * z / c.m.H, cell = P(i + s0 / 2, s0 / 2 - i); return { e, c, k, cell } });
+  for (const { e, c, k, cell } of items) {
+    const wdt = c.m.w * k, hgt = c.m.h * k, left = cell.x - ((c.m.x0 + c.m.x1) / 2) * k, top = cell.y - (c.m.bottom + 1) * k;
+    g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(cell.x, cell.y, cw * .22, ch * .22, 0, 0, 7); g.fill();
+    g.save(); if (c.flip) { g.translate(cell.x * 2, 0); g.scale(-1, 1); g.drawImage(c.img, 2 * cell.x - left - wdt, top, wdt, hgt) } else g.drawImage(c.img, left, top, wdt, hgt); g.restore();
+    g.fillStyle = e.id === sel ? '#ffe2a8' : '#e9e1cf'; g.font = '600 12px system-ui'; g.textAlign = 'center'; g.fillText(e.name, cell.x, cell.y + ch / 2 + 16); g.fillStyle = '#b9c48a'; g.font = '11px system-ui'; g.fillText((c.units).toFixed(2) + ' ช่อง สูง', cell.x, cell.y + ch / 2 + 30);
+  }
+  g.strokeStyle = 'rgba(240,190,90,.75)'; g.setLineDash([6, 5]); const y0 = items[0].cell.y - heroPx; g.beginPath(); g.moveTo(20, y0); g.lineTo(W - 20, y0); g.stroke(); g.setLineDash([]); g.fillStyle = '#f0be5a'; g.font = '11px system-ui'; g.textAlign = 'left'; g.fillText('ความสูงตัวเอก (ตัวเทียบ)', 24, y0 - 5);
+  cv.onclick = ev => { const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; let best = null, bd = 1e9; for (const it of items) { const d = Math.hypot(x - it.cell.x, y - (it.cell.y - it.c.units * UNIT * z / 2)); if (d < bd) { bd = d; best = it } } if (best && bd < 120) pickSel(best.e.id) };
+  $('note').textContent = '⚔ สนามรบ · 1 ช่อง = เพชรกว้าง ' + UNIT + ' px × สูง ' + (UNIT / 2) + ' px (ซูม ' + Math.round(z * 100) + '%) · ตัวละครยืนกลางช่องตามขนาดจริงที่เกมวาด · เส้นประส้ม = ความสูงตัวเอก · คลิกตัวละครเพื่อเลือก';
 }
 /* ================= 📐 สัดส่วน · head : body ratio tool (js/proportion-tool.js) ================= */
 const PT = window.ProportionTool; let MARKS = PT.store.load(), STDV = { head: PT.STD.head * 100, tol: PT.STD.tol * 100 };
