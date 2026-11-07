@@ -86,3 +86,8 @@
 #agGate.ready .ag-gate-msg{animation:ag-gate-pulse 2.4s ease-in-out infinite}
 @keyframes ag-gate-pulse{0%,100%{opacity:.3}50%{opacity:.85}}
 @media(prefers-reduced-motion:reduce){#agGate.ready .ag-gate-msg{animation:none;opacity:.8}}
+
+/* v98.180 · skip the menu reveal: any press jumps every animated part to its final state */
+#titleScreen.ag-reveal-skip .ts-bg,#titleScreen.ag-reveal-skip .ts-veil,#titleScreen.ag-reveal-skip .ts-brand::before,#titleScreen.ag-reveal-skip .ts-brand h1,#titleScreen.ag-reveal-skip .ts-brand .ts-kicker,#titleScreen.ag-reveal-skip .ts-menu,#titleScreen.ag-reveal-skip .ag-replay,#titleScreen.ag-reveal-skip .ts-foot,#titleScreen.ag-reveal-skip .ag-horizon{animation:none!important}
+#titleScreen .ag-skiphint{position:absolute;left:50%;bottom:clamp(44px,7vh,70px);transform:translateX(-50%);padding:5px 14px;border-radius:999px;background:#ffffffb3;color:#1b2b47;font:600 12px/1.3 AgThai,system-ui,sans-serif;letter-spacing:.04em;opacity:0;pointer-events:none;transition:opacity .4s}
+#titleScreen.ag-reveal:not(.ag-reveal-skip):not(.ag-reveal-done) .ag-skiphint{opacity:.85}

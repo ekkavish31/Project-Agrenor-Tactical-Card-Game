@@ -36,6 +36,30 @@
     const MODIFIER_KEYS = new Set(['Shift', 'Control', 'Alt', 'AltGraph', 'Meta', 'OS', 'CapsLock', 'NumLock', 'ScrollLock', 'Fn', 'FnLock', 'ContextMenu']);
     let playback = 0;
 
+    /* v98.180 · the menu's reveal animation (~5.6 s) can be skipped: any key / click / tap makes everything appear at once. That first press is swallowed
+       (it must not hit a menu button that is still invisible). */
+    const hint = document.createElement('div');
+    hint.className = 'ag-skiphint'; hint.setAttribute('aria-hidden', 'true'); hint.textContent = 'กดปุ่มใดก็ได้เพื่อข้าม';
+    main.append(hint);
+    let revealTimer = 0, swallowUntil = 0;
+    new MutationObserver(() => {
+      const on = title.classList.contains('ag-reveal');
+      if (on && !revealTimer) { title.classList.remove('ag-reveal-skip', 'ag-reveal-done'); revealTimer = setTimeout(() => title.classList.add('ag-reveal-done'), 5900); }
+      else if (!on && revealTimer) { clearTimeout(revealTimer); revealTimer = 0; title.classList.remove('ag-reveal-skip', 'ag-reveal-done'); }
+    }).observe(title, { attributes: true, attributeFilter: ['class'] });
+    const revealing = () => title.classList.contains('ag-reveal') && !title.classList.contains('ag-reveal-skip') && !title.classList.contains('ag-reveal-done');
+    const skipReveal = e => {
+      if (!revealing()) return;
+      if (e.type === 'keydown' && (e.repeat || MODIFIER_KEYS.has(e.key))) return;
+      e.preventDefault(); e.stopPropagation();
+      swallowUntil = performance.now() + 700;
+      title.classList.add('ag-reveal-skip');
+    };
+    const swallow = e => { if (performance.now() < swallowUntil) { e.preventDefault(); e.stopPropagation(); } };
+    document.addEventListener('keydown', skipReveal, true);
+    document.addEventListener('pointerdown', skipReveal, true);
+    for (const t of ['click', 'keyup']) document.addEventListener(t, swallow, true);
+
     function showGate() {
       const gate = document.createElement('div');
       gate.id = 'agGate'; gate.setAttribute('role', 'button'); gate.tabIndex = 0;
