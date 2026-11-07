@@ -1,5 +1,5 @@
 # Agrenor — New Game Prologue Kit v1
-> Status: **kit v2 merged / 18 pages · 9 art slots enabled · W01–W06 and W10 show a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
+> Status: **kit v2 merged / 18 pages · 10 art slots enabled · W01, W03–W06 and W10 show a "Waiting for Pic" board until their art arrives**. This is **New Game** after clicking the menu, NOT the maker logo/title-opening video.
 > Current source of truth: `docs/lore/CURRENT-ERA-CANON.md` (approved section A), and game baseline/constraints.
 
 ## Playback wiring
@@ -15,7 +15,7 @@
 | # | ID | Story | Image file (assets/new-game-prologue/images/) | Status |
 |---|---|---|---|---|
 | 1 | W01 | โลก Agrenor + ดวงทอง | `world-panorama.webp` | TODO |
-| 2 | W02 | ดินแดนเหนือ | `northern-snowlands.webp` | TODO |
+| 2 | W02 | ดินแดนเหนือ | `northern-snowlands.webp` | **ใช้แล้ว** (มีสัตว์ตัวใหญ่ 3 ตัวเดินบนสันเขา เป็นเงาเล็กๆ ไม่ระบุชนิด) |
 | 3 | W03 | หมู่เกาะตะวันตก | `western-archipelago.webp` | TODO |
 | 4 | W04 | ดินแดนใต้ | `southern-firelands.webp` | TODO |
 | 5 | W05 | มหาพงไพรตะวันออก | `eastern-great-forest.webp` | TODO |

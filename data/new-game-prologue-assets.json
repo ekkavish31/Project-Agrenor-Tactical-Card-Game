@@ -1,6 +1,6 @@
 {
  "kit": "new-game-prologue-v2-merged",
- "status": "images partially supplied: 9 art slots enabled; W01-W06 and W10 show the \"Waiting for Pic\" board",
+ "status": "images partially supplied: 10 art slots enabled; W01, W03-W06 and W10 show the \"Waiting for Pic\" board",
  "repoBase": "assets/new-game-prologue/images/",
  "worldPages": [
   {
@@ -16,10 +16,10 @@
   {
    "id": "W02",
    "title": "ดินแดนเหนือ",
-   "enabled": false,
+   "enabled": true,
    "filename": "northern-snowlands.webp",
    "size": "1920x1080 (supplied 1672x941, shown with background-size:cover)",
-   "source": "TO_CREATE",
+   "source": "SUPPLIED",
    "brief": "ทุ่งหิมะ ขุนเขา สิ่งมีชีวิตเขตหนาว",
    "transitionFx": "frost"
   },
