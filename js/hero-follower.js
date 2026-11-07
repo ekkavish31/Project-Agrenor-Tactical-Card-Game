@@ -3,7 +3,7 @@
    API: HeroFollower.objects(hero, dt, t, o) → [drawable] for the village's depth-sorted list.   o = {project, ellipse, face(du,dv,prevDir), size, show}  */
 (function (root) {
   'use strict';
-  const GAP = 2.1, MAXJUMP = 3.5;
+  const GAP = 3.0, MAXJUMP = 3.5;
   let trail = [], pos = null, dir = 'SE', motion = null, motionFor = '', moving = 0;
   const other = () => { try { return root.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } };
   function build() {
