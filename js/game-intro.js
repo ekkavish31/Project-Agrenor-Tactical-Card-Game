@@ -2,7 +2,7 @@
    js/game-bgm.js the moment the maker logo is gone, so it runs together with this (muted) video and carries on into the menu.
    Skip: Esc or X key (text hint only, no buttons). When the video ends — or is skipped — the menu is revealed (class ag-reveal). */
 (()=>{'use strict';
-const SRC='assets/intro/agrenor-intro.mp4?v=1';let active=false,video=null,ready=null,blobUrl=null,aborter=null,onProg=null;
+const SRC='assets/intro/agrenor-intro.mp4?v=2';let active=false,video=null,ready=null,blobUrl=null,aborter=null,onProg=null;
 /* v98.175 · the whole video is downloaded (with progress) while the black start gate is up and played from a blob URL, so nothing streams
    during the logo/cutscene. If the download is too slow the gate calls fallback(): the download is aborted and the video streams as before. */
 async function download(){
