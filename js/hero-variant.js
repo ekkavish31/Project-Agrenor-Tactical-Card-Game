@@ -57,10 +57,15 @@
     return true;
   }
   /* v98.237 · HeroMotion snapshot of a look that is NOT the one in the game's table (the sibling that follows / fights): same pipeline as apply(), on a copy */
-  const motions = {};
+  const tables = {}, motions = {};
+  /* the whole sprite table of a look (idle, walk, poses — everything the studio saved for it), as a copy: the sibling is drawn with the lead's own drawing code on this table */
+  function tableFor(id) {
+    if (id in tables) return tables[id];
+    try { const c = JSON.parse(JSON.stringify(T())); applyTo(c, id); return (tables[id] = c) } catch (e) { return (tables[id] = null) }
+  }
   function motionFor(id) {
     if (id in motions) return motions[id];
-    try { const c = JSON.parse(JSON.stringify(T())); applyTo(c, id); return (motions[id] = root.HeroMotion.snapshot(c)) } catch (e) { return (motions[id] = null) }
+    const c = tableFor(id); try { return (motions[id] = c ? root.HeroMotion.snapshot(c) : null) } catch (e) { return (motions[id] = null) }
   }
   function apply(id) {
     const t = T(); if (!t) return false;
@@ -76,5 +81,5 @@
   }
   const previewOf = id => VARIANTS[id].idle?.SW || original.SW || (T() && T().directions.SW.idle.src);
   if (!root.__HERO_VARIANT_NO_AUTO) apply(get());
-  root.HeroVariant = { VARIANTS, DEFAULT, get, set, apply, applyTo, motionFor, defaultsTo, rebase, previewOf, DIRS, STUDIO_KEYS };
+  root.HeroVariant = { VARIANTS, DEFAULT, get, set, apply, applyTo, motionFor, tableFor, defaultsTo, rebase, previewOf, DIRS, STUDIO_KEYS };
 })(globalThis);

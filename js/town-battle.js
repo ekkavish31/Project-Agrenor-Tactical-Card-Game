@@ -1002,7 +1002,8 @@
   function bar(g, p, top, frac, col) { const bw = 46, bx = p.x - bw / 2, by = top - 8; g.fillStyle = '#000a'; g.fillRect(bx - 1, by - 1, bw + 2, 7); g.fillStyle = col; g.fillRect(bx, by, bw * Math.max(0, frac), 5) }
   /* hero: the old TACTICS_SPRITES poses (idle/walk/windup/strike/guard/hit/down) per direction, weapon drawn at the pose's hand anchor */
   /* TACTICS_SPRITES is a top-level const (not a window property) */
-  function sprites() { return typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES : null }
+  let SPR_TABLE = null;   /* set while the sibling is drawn */
+  function sprites() { return SPR_TABLE || (typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES : null) }
   function heroFrame(u, t) {
     const A = sprites(); if (!A) return null;
     const set = A.directions[u.dir] || A.directions.SE, name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
@@ -1141,11 +1142,10 @@
   /* monster: old MonsterArt clips (idle/walk/windup/strike/hit/down, SE/NE + mirror); static picture until the clip loads */
   /* companions: the old per-character pictures (<key>_<se|ne>_<idle|windup|strike|hit|guard|down>.webp), SW/NW mirrored, moved with poseMotion */
   function drawAlly(g, u, t) {
-    if (u.key === 'sib') {   /* v98.234 · the other hero: the painted idle of the look the player did NOT choose (one still per direction) */
-      const look = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } })(), p = project(u.vu, u.vv), mot = window.HeroVariant?.motionFor?.(look), fr = mot && window.HeroMotion ? HeroMotion.frame(mot, u.dir, 0, false) : null, i = im(fr?.src || `assets/characters/hero-${look}/idle-${u.dir.toLowerCase()}.webp`), flipS = !!fr?.flipImage;
-      shadow(g, p, UNIT * .24); if (!i) return; const size = UNIT * 1.45 * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1), pm = poseMotion(u, t);
-      g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (flipS) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5; g.drawImage(i, -size / 2, -size * .94, size, size);
-      if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size) } g.restore(); if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0'); return }
+    if (u.key === 'sib') {   /* v98.237 · the other hero is drawn by the lead's own routine (drawHero) on the sprite table of its look, so every picture the studio saved for it is used */
+      const look = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } })(), tab = window.HeroVariant?.tableFor?.(look);
+      if (tab) { SPR_TABLE = tab; try { drawHero(g, u, t) } finally { SPR_TABLE = null } return }
+    }
     const p = project(u.vu, u.vv), back = ['NE', 'NW'].includes(u.dir), flip = ['SW', 'NW'].includes(u.dir), pose = u.hp <= 0 ? 'down' : u.walking ? 'idle' : (['windup', 'strike', 'hit', 'guard'].includes(u.pose) ? u.pose : 'idle');
     if (!ALLY_ART.includes(u.key) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
       if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT / 56 * .78 * 1.065 * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1));   /* v98.126 · ×1.065 = same 1.45-UNIT canvas as bram/luna/mil, × the ⚖ size */ if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
