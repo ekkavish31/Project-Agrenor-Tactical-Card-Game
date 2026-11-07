@@ -1,0 +1,44 @@
+/* v98.225 · the hero you did NOT choose walks behind you everywhere in the village (male ↔ female). It follows the exact path the lead walked
+   (a breadcrumb trail, GAP cells behind), faces the way it moves, and uses the other look's own walk frames (HeroVariant.defaultsTo on a copy of the sprite table).
+   API: HeroFollower.objects(hero, dt, t, o) → [drawable] for the village's depth-sorted list.   o = {project, ellipse, face(du,dv,prevDir), size, show}  */
+(function (root) {
+  'use strict';
+  const GAP = 2.1, MAXJUMP = 3.5;
+  let trail = [], pos = null, dir = 'SE', motion = null, motionFor = '', moving = 0;
+  const other = () => { try { return root.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } };
+  function build() {
+    const id = other(); if (motion && motionFor === id) return motion;
+    try {
+      const copy = JSON.parse(JSON.stringify(TACTICS_SPRITES));
+      root.HeroVariant.defaultsTo(copy, id);
+      motion = root.HeroMotion.snapshot(copy); motionFor = id;
+    } catch (e) { motion = null; motionFor = id }
+    return motion;
+  }
+  function target() {            // the point GAP cells back along the trail (the last trail point is the lead itself)
+    let need = GAP;
+    for (let i = trail.length - 1; i > 0; i--) {
+      const a = trail[i], b = trail[i - 1], d = Math.hypot(a.u - b.u, a.v - b.v);
+      if (d >= need) { const k = need / d; return { u: a.u + (b.u - a.u) * k, v: a.v + (b.v - a.v) * k } }
+      need -= d;
+    }
+    return trail[0];
+  }
+  function objects(hero, dt, t, o) {
+    if (!o.show) { trail = []; pos = null; return [] }
+    const last = trail[trail.length - 1];
+    if (!last || Math.hypot(hero.u - last.u, hero.v - last.v) > MAXJUMP) { trail = [{ u: hero.u, v: hero.v }]; pos = null }
+    else if (Math.hypot(hero.u - last.u, hero.v - last.v) >= .06) trail.push({ u: hero.u, v: hero.v });
+    let len = 0; for (let i = trail.length - 1; i > 0; i--) { len += Math.hypot(trail[i].u - trail[i - 1].u, trail[i].v - trail[i - 1].v); if (len > GAP + 2) { trail = trail.slice(i - 1); break } }
+    if (!pos) { const tg = trail.length > 1 ? target() : { u: hero.u - .7, v: hero.v - .7 }; pos = { u: tg.u, v: tg.v } }
+    const tg = trail.length > 1 ? target() : pos, du = tg.u - pos.u, dv = tg.v - pos.v, dist = Math.hypot(du, dv), k = Math.min(1, dt * 14);
+    const nu = pos.u + du * k, nv = pos.v + dv * k, step = Math.hypot(nu - pos.u, nv - pos.v);
+    if (step > 1e-4) dir = o.face(nu - pos.u, nv - pos.v, dir);
+    pos.u = nu; pos.v = nv;
+    moving = step / Math.max(dt, 1e-3) > .35 ? 1 : (moving > 0 ? moving - dt * 6 : 0);   // short grace so it does not flicker between walk and idle
+    const m = build(); if (!m || !root.TownArt) return [];
+    const p = o.project(pos.u, pos.v);
+    return [{ x: p.x, y: p.y, mobile: true, z: 0, draw: () => { o.ellipse(p.x, p.y, 16.9 * o.scale, 7.8 * o.scale, '#182b2877'); root.TownArt.hero(o.g, p, dir, t, moving > 0, o.size, dir, m) } }];
+  }
+  root.HeroFollower = { objects, reset() { trail = []; pos = null } };
+})(globalThis);
