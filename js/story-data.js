@@ -7,6 +7,7 @@ const B={home:'assets/home.webp',market:'assets/market.webp',work:'assets/worksh
 const ally=()=>{try{const c=(s.village.party||[])[0];const R=root.Companions?.ROSTER?.[c?.key];return c&&R?{name:R.name,portrait:'assets/cards/portraits/u-'+c.key+'.webp'}:null}catch{return null}};
 const SPEAKERS={
  hero:{name:()=>{try{return s.village.heroName||'นักผจญภัย'}catch{return 'นักผจญภัย'}},portrait:'assets/cards/portraits/u-hero.webp'},
+ sib:{name:()=>{try{return s.village.siblingName||'น้อง'}catch{return 'น้อง'}},color:'#5a6a8a'},   /* v98.230 · the other hero (younger sibling of the lead) — same name/portrait logic as hero, see story-actors sibSet */
  mom:{name:'แม่',color:'#8a4b5c'},
  elder:{name:'ผู้ใหญ่บ้านโอเรน',color:'#56683a'},
  pip:{name:'ปิ๊บ · เด็กเลี้ยงแพะ',color:'#6f8f36'},
@@ -32,10 +33,10 @@ const SCENES={
   {who:'mom',text:'เอามีดของพ่อติดตัวไปด้วยนะ ยามดอร์กบอกว่าเห็นรอยหมาป่าใกล้รั้ว'},
   {who:'hero',text:'ข้าแค่ไปตลาด ไม่ได้ไปรบนะแม่'},
   {who:'mom',text:'…พ่อเจ้าก็พูดแบบนี้ทุกครั้ง'},
-  {who:'hero',text:'…ครับ ข้าจะพกไป'},
+  {who:'hero',text:'…{polite} ข้าจะพกไป'},
   {bg:B.market,tint:'dawn',fx:['motes'],text:'พอก้าวออกจากบ้าน Elukhor ลอยค้างอยู่เหนือขอบฟ้าทางตะวันออก ส่องแสงอุ่นลงมาทั่วลุ่มน้ำ'},
   {who:'mom',text:'ดวงทองมาค้างทางตะวันออกแต่เช้า วันนี้ร้อนแน่ อย่าลืมดื่มน้ำล่ะ'},
-  {who:'hero',text:'ครับ ๆ ข้าไปละ!'},
+  {who:'hero',text:'{polite} ๆ ข้าไปละ!'},
   {text:'เฟิร์นเวลยังเป็นเฟิร์นเวลเหมือนทุกปี… อย่างน้อยก็ในเช้าวันนั้น'}]},
  elderMeet:{bg:B.market,pan:'in',tint:'day',fx:['motes','dust'],lines:[
   {who:'elder',text:'มาแล้วรึ {hero} ดีเลย ข้ามีงานให้เพียบ'},
@@ -60,7 +61,7 @@ const SCENES={
   {text:'เป้าหมาย: เก็บแผ่นไม้ 2 แผ่นหน้าบ้านเคน แล้วซ่อมแผงหน้าตลาด'}]},
  stallDone:{bg:B.market,tint:'day',fx:['dust','motes'],lines:[
   {shake:true,burst:{x:.5,y:.7,hue:35,n:50,speed:3,ring:false},text:'ตอก! ตอก! ตอก!'},
-  {who:'tom',text:'ฝีมือไม่เลวนี่ไอ้หนู แผงนี้ตั้งได้อีกสิบปี'},
+  {who:'tom',text:'ฝีมือไม่เลวนี่ เจ้าหนู แผงนี้ตั้งได้อีกสิบปี'},
   {who:'tom',text:'โอ๊ย... ขาข้า ข้าตกบันไดเมื่อวาน งานโคมไฟเทศกาลคงต้องฝากเจ้าแล้วล่ะ'},
   {text:'วันนี้ทำได้แค่นี้ก่อน กลับบ้านไปนอน พรุ่งนี้ค่อยว่ากันใหม่'}]},
  day2:{card:{kicker:'วันที่ 2',title:'ทำของ และหาคน'},bg:B.home,pan:'in',tint:'dawn',fx:['rays','motes'],lines:[

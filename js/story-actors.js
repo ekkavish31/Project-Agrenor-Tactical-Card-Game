@@ -16,6 +16,8 @@
   /* v98.206 · which way a painted set faces as drawn (checked on every pose: hero male/female all look LEFT, mom all looks RIGHT). A speaker on the left of the stage must face right, one on the right must face left, so the picture is mirrored when its native facing is wrong for its side. */
   const FACING = { hilda: 'left', mom: 'right', 'hero-male': 'left', 'hero-female': 'left' };
   const heroSet = () => { try { return HERO_SETS[root.HeroVariant?.get?.() || 'male'] || null } catch (e) { return null } };
+  /* v98.230 · 'sib' = the other hero (the lead's younger sibling): the painted set of the look the player did NOT choose */
+  const sibSet = () => { try { return HERO_SETS[(root.HeroVariant?.get?.() || 'male') === 'female' ? 'male' : 'female'] || null } catch (e) { return null } };
   /* looks for the code-drawn busts (same palette as the villagers in js/village-life.js) */
   const LOOK = {
     hero: { coat: '#4a5a7a', hair: '#3a2a1e', hat: 'none', cape: '#7a3a2a', eye: '#5a3a1a' },
@@ -154,11 +156,13 @@
     if (slots.L?.who === who) return 'L'; if (slots.R?.who === who) return 'R';
     if (who === 'hero') return 'L';
     if (!slots.R) return 'R'; if (!slots.L) return 'L';
-    if (slots.L.who === 'hero') return 'R';
-    return recent.lastIndexOf(slots.L.who) < recent.lastIndexOf(slots.R.who) ? 'L' : 'R';   // replace whoever spoke least recently
+    /* v98.230 · someone new joins the talk: their picture is slid in on the LISTENER's side (opposite the last speaker); the lead hero is never the one pushed out */
+    let side = speakerSide === 'L' ? 'R' : speakerSide === 'R' ? 'L' : (recent.lastIndexOf(slots.L.who) < recent.lastIndexOf(slots.R.who) ? 'L' : 'R');
+    if (slots[side]?.who === 'hero') side = side === 'L' ? 'R' : 'L';
+    return side;
   }
   function setArt(side, who, sp, face) {
-    const st = stands[side], art = st.querySelector('.art'), P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : null);
+    const st = stands[side], art = st.querySelector('.art'), P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : who === 'sib' ? sibSet() : null);
     let cur = slots[side];
     if (!cur || cur.who !== who) { art.innerHTML = ''; cur = slots[side] = { who, face: null, el: null, look: lookOf(who, sp) }; st.classList.remove('in'); void st.offsetWidth; requestAnimationFrame(() => st.classList.add('in')) }
     if (cur.face === face && cur.el) return cur;
@@ -175,7 +179,7 @@
     return cur;
   }
   /* v98.222 · the face picture for the dialogue box: the speaker's painted portrait (current mood) when they have a set, else null */
-  function facePic(who, sp, face) { const P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : null); if (!P) return null; const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral); return 'assets/portraits/' + P[0] + '-' + f + '.webp' }
+  function facePic(who, sp, face) { const P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : who === 'sib' ? sibSet() : null); if (!P) return null; const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral); return 'assets/portraits/' + P[0] + '-' + f + '.webp' }
   function emote(side, ch) { const st = stands[side]; st.querySelector('.cs-emote')?.remove(); if (!ch) return; const e = document.createElement('div'); e.className = 'cs-emote'; e.textContent = ch; st.append(e); setTimeout(() => e.remove(), 1700) }
   function fx(side, cls) { const st = stands[side]; st.classList.remove('fx-shock', 'fx-hop', 'fx-jump', 'fx-shake', 'fx-sag'); void st.offsetWidth; if (cls) for (const c of cls) st.classList.add(c) }
 

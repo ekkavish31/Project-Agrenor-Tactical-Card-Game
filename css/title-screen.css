@@ -208,3 +208,13 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 /* v98.216 · prologue narration text is twice as big (was 18–25 px → 36–50 px). The box is wider and taller so a page still holds a whole sentence or two; longer passages split into more pages at sentence ends (DialogueFX). */
 #titleScreen .ts-story-text{width:min(1240px,calc(100vw - 48px));font-size:clamp(34px,4.4vw,50px);line-height:1.55;letter-spacing:.005em;margin-bottom:clamp(60px,9vh,96px);min-height:3.2em}
 @media(max-width:700px){#titleScreen .ts-story-text{font-size:clamp(26px,6.4vw,34px);line-height:1.5}}
+/* v98.230 · name both heroes: two cards, each with its own name field; the highlighted card is the one you play */
+#titleScreen .ts-name{width:min(560px,calc(100vw - 32px))}
+#titleScreen .ts-name .ts-gender{gap:16px;align-items:stretch}
+#titleScreen .ts-name .ts-g{width:min(230px,44vw);padding:10px 10px 9px;gap:6px;cursor:pointer}
+#titleScreen .ts-name .ts-g input{margin-top:2px;padding:8px 10px;font-size:16px;text-align:center}
+#titleScreen .ts-name .ts-g small{font:600 12px AgThai,system-ui,sans-serif;color:#d8c9a4;min-height:1.2em}
+#titleScreen .ts-name .ts-g.on small{color:#ffe8a6}
+/* v98.230 · loading screen waiting for a key press before the prologue */
+#gameLoading.gl-gate .gl-tip{font-size:18px;font-weight:700;color:#ffe8a6;animation:glGate 1.3s ease-in-out infinite}
+@keyframes glGate{0%,100%{opacity:.55}50%{opacity:1}}
