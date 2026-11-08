@@ -211,7 +211,7 @@
   #fbQueue{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:38;display:flex;gap:4px;align-items:center;pointer-events:none;font:11px AgThai,system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
   #fbQueue .qc{position:relative;width:54px;padding:3px 2px 6px;text-align:center;border-radius:8px;background:#14231fdd;border:1px solid #b9c48a55;overflow:hidden}#fbQueue .qc .ic{display:block;font-size:16px;line-height:18px}#fbQueue .qc b{display:block;font-weight:600;white-space:nowrap;overflow:hidden}
   #fbQueue .qc i{position:absolute;left:0;bottom:0;height:3px;background:#6fd18a}#fbQueue .qc.foe{border-color:#e2705f88}#fbQueue .qc.foe i{background:#e2705f}#fbQueue .qc.ally{border-color:#8fd0b0aa}
-  #fbQueue .qc.on{width:66px;border:2px solid #ffd25a;background:#2a3a1fee;transform:scale(1.05)}#fbQueue .arr{color:#ffd25a;font-size:18px;margin:0 2px}
+  #fbQueue .qc .fc{display:block;width:42px;height:42px;margin:0 auto 2px;border-radius:9px;background-color:#1a2b26;background-repeat:no-repeat;border:1px solid #d8b46a}#fbQueue .qc.foe .fc{border-color:#cfd8e6}#fbQueue .qc .ic{position:absolute;top:2px;right:3px;font-size:11px;line-height:11px;text-shadow:0 1px 2px #000}#fbQueue .qc.foe{border-color:#cfd8e6aa}#fbQueue .qc.hero,#fbQueue .qc.ally{border-color:#e6c36eaa}#fbQueue .qc.on{width:66px;border:2px solid #ffd25a;background:#2a3a1fee;transform:scale(1.05)}#fbQueue .arr{color:#ffd25a;font-size:18px;margin:0 2px}
   #fbHud #fbAuto.on{background:#2f8a5a}
   #fbHud .bar{height:7px;background:#0006;border-radius:4px;overflow:hidden;margin:2px 0 6px;position:relative}#fbHud .bar i{display:block;height:100%;transition:width .35s}
   #fbHud .arow{margin:3px 0 5px}#fbHud .arow.down{opacity:.45}#fbHud .ord{display:flex;gap:3px;margin-top:2px}#fbHud .ord button{padding:2px 6px;font-size:12px;background:#33463e;border-radius:6px}#fbHud .ord button.on{background:#5d8a6e;box-shadow:inset 0 0 0 1px #bfe8c8}#fbHud .ord button.sk{flex:1;background:#6b4e9a;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -368,7 +368,13 @@
     if (st.outcome) { q.innerHTML = ''; return }
     const list = FB.queue(st, 9), act = actUnit && actUnit.hp > 0 ? actUnit : list[0], rest = list.filter(u => u !== act).slice(0, 8), chip = (u, on) => {
       const E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, u.hp / u.maxHp * 100)), side = u.side === 'monster' ? 'foe' : u === FB.hero(st) ? 'hero' : 'ally';
-      return `<div class="qc ${side} ${on ? 'on' : ''}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="ic">${E ? E.icon : esc((u.name || '?')[0])}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%"></i></div>` };
+      const lookNow = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })(), otherLook = lookNow === 'female' ? 'male' : 'female',
+        face = u.side === 'monster' ? { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' }
+          : u === FB.hero(st) ? { src: `assets/portraits/hero-${lookNow}-neutral.webp`, pos: '50% 4%', size: '230%' }
+          : u.key === 'sib' ? { src: `assets/portraits/hero-${otherLook}-neutral.webp`, pos: '50% 4%', size: '230%' }
+          : { src: `assets/cards/portraits/u-${u.key}.webp`, pos: '50% 22%', size: '165%' };
+      /* v98.251 · the queue shows each fighter's face (cropped from their portrait); the element icon is a small badge */
+      return `<div class="qc ${side} ${on ? 'on' : ''}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="fc" style="background-image:url('${face.src}'),none;background-position:${face.pos};background-size:${face.size}"></span><span class="ic">${E ? E.icon : ''}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%"></i></div>` };
     q.innerHTML = chip(act, true) + '<span class="arr">›</span>' + rest.map(u => chip(u, false)).join('');
   }
   /* ---------- hand ---------- */
@@ -1007,8 +1013,10 @@
   /* TACTICS_SPRITES is a top-level const (not a window property) */
   let SPR_TABLE = null;   /* set while the sibling is drawn */
   function sprites() { return SPR_TABLE || (typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES : null) }
+  /* v98.251 · every picture of a sprite table (idle / walk / poses, all directions) is requested once, so no frame is missing while the hero walks */
+  function preloadSprites(T) { if (!T || T._pre) return; try { Object.defineProperty(T, '_pre', { value: true, enumerable: false }) } catch (e) { T._pre = 1 } for (const d of Object.values(T.directions || {})) for (const v of Object.values(d)) for (const f of (Array.isArray(v) ? v : [v])) if (f && f.src) im(f.src) }
   function heroFrame(u, t) {
-    const A = sprites(); if (!A) return null;
+    const A = sprites(); if (!A) return null; preloadSprites(A);
     const set = A.directions[u.dir] || A.directions.SE, name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
     if (name === 'walk') return window.HeroMotion?.frame(A, u.dir, t, true) || set.idle;
     if (name === 'idle') return window.HeroMotion?.frame(A, u.dir, t, false) || set.idle;
@@ -1027,6 +1035,7 @@
     const name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
     if (u._lp !== name) { u._lp = name; u._pt = t }
     const e = t - (u._pt || t), fs = ['SE', 'NE'].includes(u.dir) ? 1 : -1, ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3), m = { dx: 0, dy: 0, rot: 0, sx: 1, sy: 1, wpn: 0 };
+    if (name === 'idle' && u.hp > 0 && !OLDPOSE) { const k = Math.sin(t * .0032 + (u.id?.length || 0) * 1.3) * .012; m.sy = 1 + k; m.sx = 1 - k * .5 }   /* v98.251 · a slow breath so a one-picture idle is not frozen */
     if (OLDPOSE || u._edPose) return m;   /* a multi-frame editor pose carries its own motion; a single picture still gets the lean / lunge */
     if (name === 'windup') { const k = ease(e / 200); Object.assign(m, { dx: -fs * 7 * k, rot: -fs * .15 * k, sx: 1 + .03 * k, sy: 1 - .05 * k, wpn: -fs * 75 * k }) }
     else if (name === 'strike') { const k = ease(e / 90), d = 1 - ease((e - 220) / 320); Object.assign(m, { dx: fs * 18 * k * d, dy: -2 * k * d, rot: fs * .17 * k * d, sx: 1 - .03 * k * d, sy: 1 + .05 * k * d, wpn: fs * (-75 + 170 * k) * d }) }
@@ -1124,7 +1133,8 @@
   }
   function drawHero(g, u, t) {
     const A = sprites(), p = project(u.vu, u.vv), f = heroFrame(u, t); if (!A || !f) return;
-    const size = UNIT * 1.6 * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1], i = jobPic(im(f.src), f.src, u.look);
+    const size = UNIT * 1.6 * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1];
+    let i = jobPic(im(f.src), f.src, u.look); if (i) u._lastPic = i; else i = u._lastPic || null;   /* a frame that has not arrived yet shows the last one instead of nothing */
     let ox = 0; if (u.pose === 'hit') ox = Math.sin(t * .07) * 3;
     const pm = poseMotion(u, t);
     shadow(g, p, UNIT * .26); g.save(); g.translate(ox, -(u.lift || 0)); if (u.hp <= 0) g.globalAlpha *= .6;
@@ -1253,6 +1263,12 @@
     }
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
     for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }
+    /* v98.251 · a spinning crystal over the head of whoever's turn it is (like the Sims plumbob): gold for the team (ring + crystal), silver for monsters — pictures: assets/fx/plumbob-ally|foe.webp (12-frame turn, 80×104) */
+    if (!st.outcome) { const au = actUnit && actUnit.hp > 0 ? actUnit : FB.queue(st, 1)[0];
+      if (au && au.hp > 0 && !(au.deadAt && t > au.deadAt)) { const foe = au.side === 'monster', pic = im('assets/fx/plumbob-' + (foe ? 'foe' : 'ally') + '.webp');
+        if (pic) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, pw = UNIT * .7, ph = pw * 104 / 80, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + bob;
+          g.save(); g.globalCompositeOperation = 'lighter'; const gl = g.createRadialGradient(cx, cy, 0, cx, cy, pw * .9); gl.addColorStop(0, foe ? 'rgba(215,228,245,.38)' : 'rgba(255,205,90,.4)'); gl.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gl; g.beginPath(); g.arc(cx, cy, pw * .9, 0, 7); g.fill(); g.restore();
+          g.drawImage(pic, (Math.floor(t / 85) % 12) * 80, 0, 80, 104, cx - pw / 2, cy - ph / 2, pw, ph) } } }
     /* v97.32 · B13: at night the hero and companions carry lanterns — a warm flickering glow at hip height that lights the ground around them */
     if (NIGHT) { g.save(); g.globalCompositeOperation = 'lighter'; for (const u of FB.allies(st).concat(h)) { if (u.hp <= 0) continue; const q = project(u.vu, u.vv), fl = .85 + .15 * Math.sin(t * .013 + u.id.length) * Math.sin(t * .007), x = q.x + UNIT * .22, y = q.y - UNIT * .55;
       let gr = g.createRadialGradient(q.x, q.y, 0, q.x, q.y, UNIT * 1.6); gr.addColorStop(0, `rgba(255,170,80,${.32 * fl})`); gr.addColorStop(1, 'rgba(255,170,80,0)'); g.fillStyle = gr; g.beginPath(); g.ellipse(q.x, q.y, UNIT * 1.6, UNIT * .8, 0, 0, 7); g.fill();
