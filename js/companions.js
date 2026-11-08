@@ -17,6 +17,7 @@ function gearBonus(g){return g?g.quality*2+(g.recipe==='tempered'?3:0):0}
 function gearName(g){return g?(typeof RECIPES!=='undefined'&&RECIPES[g.recipe||g.kind]?.name||g.kind)+' ★'+g.quality:''}
 function stats(c){let r=ROSTER[c.key]||FALLBACK[c.key],lv=c.level||1,g=c.gear&&(CAN_EQUIP[c.key]||[]).includes(c.gear.kind)?c.gear:null;return {key:c.key,name:r.name,weapon:g?g.kind:r.weapon,shield:r.shield,maxHp:r.hp+(lv-1)*6,bonus:(lv-1)*2+gearBonus(g),level:lv,gear:g?gearName(g):''}}
 window.Companions={ROSTER,CAN_EQUIP,gearName,
+ info:key=>ROSTER[key]||FALLBACK[key]||null,   /* v98.274 · the deck builder used ROSTER only, so recruits such as the sibling (FALLBACK) never appeared in 'จัดสำรับ' */
  party(){return list().slice(0,4).map(stats)},
  reward(st){let out=[];for(let c of list().slice(0,4)){let r=ROSTER[c.key]||FALLBACK[c.key],u=st.units.find(x=>x.key===c.key),xp=u&&u.hp>0?50:35,before=c.level||1;c.xp=(c.xp||0)+xp;c.level=before;while(c.level<MAX_LV&&c.xp>=xpNeed(c.level)){c.xp-=xpNeed(c.level);c.level++}out.push({name:r.name,xp,level:c.level,levelUp:c.level>before})}save();return out}};
 })();

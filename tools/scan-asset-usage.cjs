@@ -20,6 +20,15 @@ const SCENES = [
   ['ฉากต่อสู้ในสนาม', 'battle-field.html?battle=1&embed=1&r=5&biome=grass&ms=' + encodeURIComponent('wolf*1.2,bandit*1.2') + '&party=' + encodeURIComponent('luna:44:44:charge:1,kier:50:50:charge:1'), 9000],
   ['ต่อสู้กลางหมู่บ้าน', 'village-town.html?battle=1&embed=1&r=5&ms=' + encodeURIComponent('wolf*1.2') + '&party=' + encodeURIComponent('bram:54:54:charge:1,mil:50:50:charge:1'), 9000],
 ];
+/* v98.274 · wider coverage: every sub-map / interior (same list as tools/check-places.cjs), every battle biome, every monster kind (+ as boss) */
+(function widen() {
+  const vt = fs.readFileSync(path.join(ROOT, 'village-town.html'), 'utf8'), ids = new Map();
+  for (const m of vt.matchAll(/\[\s*'([a-z0-9-]+)'\s*,\s*'([^']+)'\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,/g)) ids.set(m[1], m[2]);
+  for (const [id, name] of ids) if (id !== 'square') { SCENES.push(['ภายใน ' + name, 'place-interior.html?place=' + id, 3500]); SCENES.push(['แมพย่อย ' + name, 'village-place.html?place=' + id, 3500]) }
+  const mons = [...fs.readFileSync(path.join(ROOT, 'js/town-battle.js'), 'utf8').matchAll(/^\s*(\w+):\s*\{\s*name:\s*'[^']+'.*?img:/gm)].map(m => m[1]);
+  for (const b of ['grass', 'forest', 'hills', 'swamp', 'snow', 'sand']) SCENES.push(['สู้ที่ไบโอม ' + b, 'battle-field.html?battle=1&embed=1&r=5&biome=' + b + '&ms=' + encodeURIComponent(mons.slice(0, 3).map(k => k + '*1.2').join(',')) + '&party=' + encodeURIComponent('luna:44:44:charge:1,kier:50:50:charge:1'), 6000]);
+  for (let i = 0; i < mons.length; i += 3) SCENES.push(['สู้กับมอนสเตอร์ ' + mons.slice(i, i + 3).join('/'), 'battle-field.html?battle=1&embed=1&r=5&biome=grass&title=' + encodeURIComponent(i % 2 ? 'บอส' : '') + '&ms=' + encodeURIComponent(mons.slice(i, i + 3).map(k => k + '*1.2').join(',')) + '&party=' + encodeURIComponent('bram:54:54:charge:1,mil:50:50:charge:1'), 6000]);
+})();
 /* script/page → what it does for a person (code references are described this way) */
 const PLACE = {
   'title-screen': 'หน้าเมนู/เริ่มเกม', 'new-game-prologue-kit': 'บทนำเริ่มเกมใหม่', 'opening-cinematic': 'วิดีโอเปิดเกม', 'game-intro': 'วิดีโอเปิดเกม', 'maker-logo': 'โลโก้ผู้ทำ',
