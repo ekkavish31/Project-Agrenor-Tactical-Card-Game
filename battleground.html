@@ -45,11 +45,11 @@ body.real #realFrame{display:block}body.real #realBar{display:flex}body.real #ba
  <button data-tool="erase"><b>🧽</b><span>ลบ</span><kbd>4</kbd></button><button data-tool="spawnAllies"><b>🟢</b><span>จุดเกิดเรา</span></button><button data-tool="spawnEnemies"><b>🔴</b><span>จุดเกิดศัตรู</span></button><button data-tool="spawnErase"><b>⌫</b><span>ลบจุดเกิด</span></button><i></i>
  <button id="undo" title="Ctrl+Z"><b>↶</b><span>ย้อน</span></button><button id="redo" title="Ctrl+Shift+Z"><b>↷</b><span>ทำซ้ำ</span></button>
  <button id="rotL" title="หมุนมุมมอง ["><b>⟲</b><span>หมุน</span></button><button id="rotR" title="หมุนมุมมอง ]"><b>⟳</b><span>หมุน</span></button><i></i>
- <button id="real" title="ดูฉากต่อสู้จริงของเกม: พื้นผิว ของวาง และตัวละครบนฉาก"><b>🎬</b><span>ฉากจริง</span></button><button id="try"><b>▶</b><span>ลองเล่น</span><kbd>T</kbd></button><button id="pushBtn" class="pp"><b>⬆</b><span>push</span></button>
+ <button id="real" title="เปิดฉากต่อสู้จริงของเกมในโหมดแก้ไข: ซูม เลื่อน ย้ายตัวละครและของ แล้วบันทึก"><b>🎬</b><span>แก้บนฉากจริง</span></button><button id="pushBtn" class="pp"><b>⬆</b><span>push</span></button>
 </div>
 <div id="cat"></div>
 <iframe id="realFrame" title="ฉากต่อสู้จริง"></iframe>
-<div id="realBar"><button id="realBack">← กลับไปแก้ชิ้น</button><label class="muted">พื้นที่ <select id="realBiome"></select></label><label class="muted">Seed <input type="number" id="realSeed"></label><button id="realDice" title="สุ่มฉากใหม่">🎲</button><label class="muted">ศัตรู <select id="realFoes"></select></label><label class="muted">ทีม <select id="realParty"></select></label><button id="realUi" title="โชว์/ซ่อนหน้าต่างของเกม (HUD)">HUD</button></div>
+<div id="realBar"><button id="realBack">← กลับไปแก้ชิ้น</button><label class="muted">พื้นที่ <select id="realBiome"></select></label><label class="muted">Seed <input type="number" id="realSeed"></label><button id="realDice" title="สุ่มฉากใหม่">🎲</button><label class="muted">ศัตรู <select id="realFoes"></select></label><label class="muted">ทีม <select id="realParty"></select></label></div>
 <aside id="side">
  <h3>⚔ สนามต่อสู้</h3>
  <p class="muted" style="margin:0">วาดชิ้นภูมิประเทศ (ความสูง พื้น ของ) แล้วตัวสุ่มแผนที่จะหยิบไปวางในสนามสุ่มของพื้นที่ที่เลือก · คลิกขวา = ทำกลับ (ลด / คืนหญ้า / เอาของออก) · ลากที่ว่าง = เลื่อนมุมมอง · หัวแปรงสี่เหลี่ยมตามแนว Iso 2.5D แสดงขอบเขตด้วยเส้นประ · ล้อ = ซูม · B = ขนาดแปรง</p>
@@ -220,7 +220,7 @@ load();if(!localStorage.getItem(KEY))save();renderSide();renderCat();renderTileP
  fill($('realBiome'),BIOMES);fill($('realFoes'),FOES);fill($('realParty'),PARTY);
  let hud=false,frame=$('realFrame');
  function url(){const seed=+$('realSeed').value||1,f=FOES[$('realFoes').value][1],p=PARTY[$('realParty').value][1];
-  return 'battle-field.html?battle=1&embed=1&r=7&night=0&biome='+$('realBiome').value+'&seed='+seed+(f?'&ms='+encodeURIComponent(f):'')+'&party='+encodeURIComponent(p)}
+  return 'battle-field.html?battle=1&embed=1&edit=1&warm=1&cine=0&r=7&night=0&biome='+$('realBiome').value+'&seed='+seed+(f?'&ms='+encodeURIComponent(f):'')+'&party='+encodeURIComponent(p)}
  function hideUi(){try{const d=frame.contentDocument;if(!d)return;let st=d.getElementById('realViewCss');if(!st){st=d.createElement('style');st.id='realViewCss';d.head.append(st)}
   st.textContent=hud?'':'#fbHand,#fbActions,#fbHud,#fbQueue,#fieldUi,#fbInspect,.fb-banner,#fbTip,.fb-tip,#fbHint{display:none!important}'}catch(e){}}
  function dismissTips(){let n=0;const t=setInterval(()=>{try{const d=frame.contentDocument;for(const b of d.querySelectorAll('button'))if(/เข้าใจแล้ว|ข้าม/.test(b.textContent))b.click()}catch(e){}if(++n>14)clearInterval(t)},600)}
@@ -229,7 +229,7 @@ load();if(!localStorage.getItem(KEY))save();renderSide();renderCat();renderTileP
  $('realBack').onclick=()=>{document.body.classList.remove('real');frame.src='about:blank'};
  for(const id of ['realBiome','realFoes','realParty','realSeed'])$(id).onchange=load;
  $('realDice').onclick=()=>{$('realSeed').value=Math.floor(Math.random()*9e5)+1e5;load()};
- $('realUi').onclick=()=>{hud=!hud;$('realUi').classList.toggle('on',hud);hideUi()};
+ 
 })();
 </script>
 </body>

@@ -416,7 +416,8 @@ function panel(now) {
 function resize() { W = innerWidth; H = innerHeight; cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio); cv.style.width = W + 'px'; cv.style.height = H + 'px'; scale = Math.max(.7, Math.min(1.4, Math.min(W / 900, H / 620))) }
 addEventListener('resize', resize); resize();
 function frame(t) {
-  requestAnimationFrame(frame);
+  window.__feDirtyGround = () => { groundCanvas = null };   // BG Editor: repaint the ground (blocked-cell tint) after a prop moved
+requestAnimationFrame(frame);
   if (!groundCanvas) paintGround();
   window.TownBattle?.pre?.();
   const dio = window.FieldDiorama && window.FieldHeight;
@@ -432,6 +433,7 @@ function frame(t) {
   for (const p of props) { if (p[0] === 'pool') prop(g, ...p, t) }
   for (const p of props) { if (p[0] !== 'pool') prop(g, ...p, t) }
   window.TownBattle?.draw?.(g, t);
+  window.FieldEdit?.draw?.(g, t);   // v98.276 · BG Editor overlay (only exists with ?edit=1)
   g.setTransform(1, 0, 0, 1, 0, 0); if (dio) FieldDiorama.grade(g, cv.width, cv.height, FIELD.biome, FIELD.night);
   if (FIELD.night) { g.fillStyle = 'rgba(10,18,55,.42)'; g.fillRect(0, 0, cv.width, cv.height) }
   panel(t);
