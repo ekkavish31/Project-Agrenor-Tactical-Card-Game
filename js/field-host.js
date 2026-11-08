@@ -30,6 +30,9 @@ function projectFlat(u, v) { const r = rotUV(u, v); return { x: OXc + (r.u - r.v
 function invFlat(x, y) { const a = (x - OXc) / HWc, b = (y - OYc) / HHc; return unrotUV((a + b) / 2, (b - a) / 2) }
 /* depth for painter's order in view space (bigger = nearer the viewer) */
 window.FieldDepth = (u, v) => { const r = rotUV(u, v); return r.u + r.v };
+/* v98.284 · the same turned coordinates, and a prop's footprint in them (box rule of js/depth-style.js: in front when beyond the front edge on either axis) */
+window.FieldRot = (u, v) => rotUV(u, v);
+const propFp = (c, big) => { const s = big ? 2 : 1, a = rotUV(c.u, c.v), b = rotUV(c.u + s, c.v + s); return { u0: Math.min(a.u, b.u), u1: Math.max(a.u, b.u), v0: Math.min(a.v, b.v), v1: Math.max(a.v, b.v) } };
 /* lifted by the ground height; between two walkable cells the lift eases across the edge so a walk up a step reads as a step, not a teleport */
 function project(u, v) { const p = projectFlat(u, v); return window.FieldHeight ? { x: p.x, y: p.y - FieldHeight.liftAt(u, v) } : p }
 function inv(x, y) { if (window.FieldHeight) { const c = FieldHeight.hit(x, y, window.TownBattle?.reach?.()); if (c) return { u: c.u + .5, v: c.v + .5 } } return invFlat(x, y) }
@@ -316,7 +319,7 @@ function occluders(ents) {
 window.TownBattleExtras = () => {
   const out = [], ents = [], D = window.FieldDepth;
   const props = [];
-  for (const c of FIELD.cells.values()) if (c.prop && c.prop !== 'pool') { const bg = !!c.big, o = bg ? 1 : .5, p = project(c.u + o, c.v + o), d = D(c.u + o, c.v + o) + .01, b = propBox(c.prop, c.seed, bg), e = { d, x0: p.x - b.w / 2, x1: p.x + b.w / 2, y0: p.y - b.h, foot: p.y }; e.cell = c; out.push({ y: p.y, d, draw: (ctx, t) => { const a = c._fa ?? 1; if (a > .99) return prop(ctx, c.prop, c.u, c.v, c.seed, t, bg); ctx.save(); ctx.globalAlpha = a; prop(ctx, c.prop, c.u, c.v, c.seed, t, bg); ctx.restore() } }); ents.push(e); props.push(e) }
+  for (const c of FIELD.cells.values()) if (c.prop && c.prop !== 'pool') { const bg = !!c.big, o = bg ? 1 : .5, p = project(c.u + o, c.v + o), d = D(c.u + o, c.v + o) + .01, b = propBox(c.prop, c.seed, bg), e = { d, x0: p.x - b.w / 2, x1: p.x + b.w / 2, y0: p.y - b.h, foot: p.y }; e.cell = c; out.push({ y: p.y, d, fp: propFp(c, bg), box: { x0: e.x0, x1: e.x1, y0: e.y0, foot: e.foot }, label: c.prop, draw: (ctx, t) => { const a = c._fa ?? 1; if (a > .99) return prop(ctx, c.prop, c.u, c.v, c.seed, t, bg); ctx.save(); ctx.globalAlpha = a; prop(ctx, c.prop, c.u, c.v, c.seed, t, bg); ctx.restore() } }); ents.push(e); props.push(e) }
   /* v97.01: tall grass is sorted with everyone else (it used to be drawn last, over units and trees standing behind it) */
   for (const c of FIELD.cells.values()) if (c.k === 'cover') out.push({ d: D(c.u + .5, c.v + .5) + .005, draw: (ctx, t) => cover(ctx, c, t) });
   const st = window.TownBattle?.state?.(); if (st) for (const u of st.units) { u._occ = false; u._occT = false; if (u.hp <= 0 && u.deadAt) continue; const p = project(u.vu, u.vv), h = 128 * (u.boss ? 1.3 : 1), e = { unit: u, d: D(u.vu, u.vv), x0: p.x - 38, x1: p.x + 38, y0: p.y - h, foot: p.y };
