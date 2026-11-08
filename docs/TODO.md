@@ -528,3 +528,4 @@
 **ฉากเก่า (ปุ่มกด) ที่ค้างอยู่ — v98.258**
 - [ ] ตัดโค้ดฉาก forge/market/home แบบปุ่มกดใน index.html (`location-actions.js`, `interface-v02.js`, `journey-*.js`, `village-core.js`, `smith-wip.js`, `paper-cards.js` …) หลังตรวจว่าเกมจริง (title → village iframe) ไม่พึ่ง `s.village.location`; แล้วย้ายรูปที่เหลือ (`workshop/home/market/forge/water/...webp`, `scene-*` ใน manifest) ที่เหลือแต่ฉากเก่าอ้างถึง
 - [ ] การตรวจ "ใช้งานอยู่" ต้องอิงรูปที่โหลดจริงจากหน้าเกมจริง (Playwright บันทึก request) ไม่รวม index.html ฉากเก่า
+- [ ] (v98.259) ถอดฉากเก่าต่อ: สคริปต์เหล่านี้ผูกเป็นทอด ถอดเดี่ยวไม่ได้ ต้องทำเป็นชุดพร้อมกัน: `location-actions` · `interface-v02` · `journey-core/ui` · `paper-cards` · `card-drag` · `developer` · `editor` (ตัวอื่นเรียก `placeActions`, `entityCardMarkup`, `freshness`, `setDevMode`, `fitHand` ฯลฯ) — วิธีที่ปลอดภัย: เขียนเทสต์เล่นจริง title→หมู่บ้าน→เข้าสถานที่→สู้ แล้วถอดทั้งชุดทีเดียว

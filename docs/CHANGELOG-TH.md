@@ -4339,3 +4339,8 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - **ตัดทางเข้า editor → ฉากแมพย่อยเก่า (ปุ่มกด)**: ลบปุ่ม "ลองเล่น" และ "เครื่องมือเดิม" ใน Battleground, ลบโหมด `?editor=battle|dev|map` ใน `js/editor-mode.js` และ hook ชิ้นบังคับใน `tactics-core.js` (เหลือโหมด `cards` และ `menu` ที่ยังใช้จริง)
 - **วัดการใช้งานจริง**: เปิด village-town / village-place / place-interior / world-map / battle-field ด้วยเบราว์เซอร์แล้วบันทึกรูปที่ถูกโหลด (ไม่ใช่สแกนข้อความโค้ด) พบว่า index.html โหลดรูปฉากเก่าตอนเปิดหน้า ทำให้ดูเหมือนทุกรูป "ถูกใช้"
 - **ย้ายรูปที่ไม่มีหน้าไหนใช้ 17 ไฟล์** ไป `archive/old-scene/assets/` (action-*, ui-edit/editor/forge/fullscreen/rest/smelt/upgrade/water, adventurer-hammer-*, adventurer-sword-attack) และตั้งสถานะ `unused` ใน manifest — ย้ายกลับได้ด้วย `git mv`
+
+# v98.259 — 8 พฤศจิกายน 2026
+
+- ถอด `js/developer-layers.js` (ตัวแก้เลเยอร์ฉากโรงตีเก่า ไม่มีโค้ดอื่นเรียก) ไป `archive/old-scene/js/` · ตรวจ `index.html`, `?editor=cards`, `?editor=menu` ไม่มี error และ `check-places` ผ่าน 75 รายการ
+- ทดสอบถอดสคริปต์ฉากเก่าอื่นทีละตัว: `location-actions`, `interface-v02`, `journey-core/ui`, `paper-cards`, `card-drag`, `developer`, `editor` ถอดเดี่ยวไม่ได้ (ตัวอื่นเรียกฟังก์ชันของมัน → ReferenceError) · `smith-wip` ต้องเก็บ เพราะ `village-place.html` รับข้อความ wip-fx จากมัน
