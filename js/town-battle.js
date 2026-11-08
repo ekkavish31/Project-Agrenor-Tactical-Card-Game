@@ -62,7 +62,7 @@
   const ALLY_OWN = { bram: ['se', 'sw', 'ne', 'nw'], luna: ['se', 'sw', 'ne', 'nw'], kier: ['se', 'sw', 'ne', 'nw'] };   /* v97.65: allies that have their own picture for every diagonal (the rest are mirrored in code) */
   const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv, ctl] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1), control: key !== 'sib' && (ctl === '1' || Q.get('ctl') === '1') } : null }).filter(Boolean);
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
-  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null;
+  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null;
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -143,6 +143,7 @@
   }
   function refresh() { if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null;
     /* v98.244 · second layer: where the farthest move card in hand would take you */
+    if (inspectU && (inspectU.hp <= 0 || !st.units.includes(inspectU))) inspectU = null; inspectMap = inspectU && !st.outcome ? FB.reach(st, inspectU, inspectU.move || 4) : null; inspectSync();
     farInfo = st.turn === 'hero' ? FB.farMove?.(st) || null : null; farMap = farInfo ? FB.reach(st, FB.actor(st), st.mp + farInfo.move) : null; allyBar(); hudSync(); handSync() }
   /* ---------- camera director ----------
      cam = world point at the screen centre + zoom. Normal: frame both fighters (shifted right/up so the HUD and the hand don't cover them).
@@ -150,9 +151,15 @@
   const cam = { x: 0, y: 0, z: 1.05, set: false }, kick = { shake: 0, shakeT: 0, shakeDur: 1, roll: 0 };
   let cine = null, lastPre = 0, light = 0, ox = 120;            // light: 0 normal … 1 full spotlight
   function frameTarget() {
+    if (inspectU && inspectU.hp > 0 && !cine) { const p = project(inspectU.vu, inspectU.vv); return { x: p.x, y: p.y - UNIT * .5, z: 1.2 } }   /* v98.253 · a unit picked in the queue is centred and closer */
     if (cine) { const a = project(cine.a.vu, cine.a.vv), b = project(cine.b.vu, cine.b.vv); return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - UNIT * .75, z: cine.z } }
     const pts = st.units.filter(u => u.hp > 0 || u.side === 'hero').map(u => project(u.vu, u.vv)), xs = pts.map(p => p.x), ys = pts.map(p => p.y);
-    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), dx = x1 - x0 + UNIT * 3, dy = y1 - y0 + UNIT * 3;
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    /* v98.253 · the zoom must not change when the view is turned: the fit uses the WORST extent over the four camera turns (a 90° turn maps the basis (a,b) to (b,−a)) */
+    let ex = x1 - x0, ey = y1 - y0;
+    try { const o = project(0, 0), a = project(1, 0), b = project(0, 1), A = { x: a.x - o.x, y: a.y - o.y }, B = { x: b.x - o.x, y: b.y - o.y }, us = st.units.filter(u => u.hp > 0 || u.side === 'hero');
+      if (us.length) for (const [p, q] of [[A, B], [B, { x: -A.x, y: -A.y }], [{ x: -A.x, y: -A.y }, { x: -B.x, y: -B.y }], [{ x: -B.x, y: -B.y }, A]]) { const X = us.map(u => u.vu * p.x + u.vv * q.x), Y = us.map(u => u.vu * p.y + u.vv * q.y); ex = Math.max(ex, Math.max(...X) - Math.min(...X)); ey = Math.max(ey, Math.max(...Y) - Math.min(...Y)) } } catch (e) { }
+    const dx = ex + UNIT * 3, dy = ey + UNIT * 3;
     const narrow = W < 820, z = Math.max(narrow ? .4 : .6, Math.min(1.35, Math.min((W - (narrow ? 20 : 330)) / (dx * scale), (H - (narrow ? 330 : 240)) / (dy * scale))));
     return { x: (x0 + x1) / 2, y: (y0 + y1) / 2 - UNIT * .5, z };
   }
@@ -230,6 +237,13 @@
   #fbHud .gemi{width:24px;height:24px;margin-right:2px;vertical-align:-7px;filter:drop-shadow(0 0 4px #6fd6ff66)}
   #fbHud .ord button{background:none!important;border:6px solid transparent;border-image:url(assets/ui/battle-btn.webp) 14 fill/6px stretch;padding:0 6px;color:#fff3d2}#fbHud .ord button.on,#fbHud .ord button.sk{border-image-source:url(assets/ui/battle-btn-hot.webp);color:#2a1a05}
   #fbHud .mini{padding:0 2px}
+  #fbQueue .qc{pointer-events:auto;cursor:pointer}#fbQueue .qc.look{box-shadow:0 0 0 2px #cfd8e6,0 0 12px #cfd8e6aa}
+  #fbInspect{position:fixed;right:14px;top:112px;width:250px;z-index:41;box-sizing:border-box;padding:0;border:26px solid transparent;border-image:url(assets/ui/battle-panel.webp) 40 fill/26px stretch;color:#f3e9c9;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;filter:drop-shadow(0 8px 14px #000a)}
+  #fbInspect .x{position:absolute;right:-18px;top:-18px;width:26px;height:26px;border:0;background:url(assets/ui/battle-controls-v34.webp) no-repeat;background-size:400% 200%;background-position:66.666% 0;transform:rotate(45deg) scale(.9);cursor:pointer}
+  #fbInspect .top{display:flex;gap:10px;align-items:center}#fbInspect .fc{flex:none;width:58px;height:58px;border-radius:9px;background-repeat:no-repeat;background-color:#1a2b26;border:2px solid #d8b46a}#fbInspect.foe .fc{border-color:#cfd8e6}
+  #fbInspect .top>div{flex:1;min-width:0}#fbInspect b{display:block}#fbInspect small{color:#cdbf98;font-size:11px}
+  #fbInspect .bar{height:12px;box-sizing:border-box;border:4px solid transparent;border-image:url(assets/ui/battle-bar.webp) 8 fill/4px stretch;margin:3px 0}#fbInspect .bar i{display:block;height:100%;background:url(assets/ui/bar-green.webp) !important;background-size:auto 100%!important;border-radius:3px}#fbInspect.foe .bar i{background:url(assets/ui/bar-red.webp) !important}
+  #fbInspect .st{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin-top:6px;font-size:12px}#fbInspect .st b{display:inline;color:#ffe2a8}#fbInspect .iq{display:block;margin-top:4px}#fbInspect .nx{display:block;margin-top:4px;color:#9fb0a0}
   #fbActions{position:fixed;left:50%;bottom:148px;transform:translateX(-50%);z-index:41;display:flex;gap:4px;align-items:center;font:700 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}
   #fbActions button{display:flex;align-items:center;gap:6px;min-height:44px;box-sizing:border-box;padding:0;border:12px solid transparent;border-width:11px 16px;border-image:url(assets/ui/battle-btn.webp) 14 fill/11px 16px stretch;background:none;border-radius:0;color:#fff3d2;font:inherit;text-shadow:0 1px 2px #000;cursor:pointer;filter:drop-shadow(0 3px 4px #000a);white-space:nowrap}
   #fbActions button:hover:not(:disabled),#fbActions #fbAuto.on{border-image-source:url(assets/ui/battle-btn-hot.webp);color:#2a1a05;text-shadow:none}#fbActions button:disabled{opacity:.45;cursor:default;filter:grayscale(.7) drop-shadow(0 3px 4px #000a)}
@@ -388,18 +402,37 @@
   }
 
   /* v97 · FFT turn queue (top centre): who acts next, the acting unit highlighted, with its HP */
+  /* v98.253 · the face picture of a fighter (queue chips + inspect card) */
+  function faceFor(u) {
+    const lookNow = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })(), otherLook = lookNow === 'female' ? 'male' : 'female';
+    return u.side === 'monster' ? { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' }
+      : u === FB.hero(st) ? { src: `assets/portraits/hero-${lookNow}-neutral.webp`, pos: '50% 4%', size: '230%' }
+      : u.key === 'sib' ? { src: `assets/portraits/hero-${otherLook}-neutral.webp`, pos: '50% 4%', size: '230%' }
+      : { src: `assets/cards/portraits/u-${u.key}.webp`, pos: '50% 22%', size: '165%' };
+  }
+  /* click a chip of the queue: the camera goes to that fighter, a small detail card opens, a grey crystal turns over its head and its cells for the NEXT turn are shown; click again / Esc / ✕ to close */
+  function setInspect(u) { inspectU = (!u || u === inspectU || u.hp <= 0) ? null : u; userCam = false; cam.set = true; refresh(); queueSync() }
+  function inspectSync() {
+    let d = document.getElementById('fbInspect');
+    if (!inspectU) { d?.remove(); return }
+    const u = inspectU, f = faceFor(u), E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, (u.shown ?? u.hp) / u.maxHp * 100)), foe = u.side === 'monster';
+    const IQ2 = ['ดุร้าย · พุ่งใส่ตัวใกล้สุด', 'เจ้าเล่ห์ · ล่าตัวอ่อนแอ', 'ชำนาญยุทธวิธี · เล็งตัวซัพพอต', 'จอมวางแผน · ใช้ตัวบังพวกอ่อนแอ'];
+    if (!d) { d = document.createElement('div'); d.id = 'fbInspect'; document.body.append(d) }
+    d.className = foe ? 'foe' : 'ally';
+    d.innerHTML = `<button class="x" aria-label="ปิด" title="ปิด (Esc)"></button><div class="top"><span class="fc" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}"></span><div><b>${esc(u.name)}</b><small>${E ? E.icon + ' ' : ''}${u.level ? 'Lv.' + u.level : ''}</small><div class="bar"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><small>${Math.round(u.shown ?? u.hp)}/${u.maxHp} HP</small></div></div>
+      <div class="st"><span>เดิน <b>${u.move || '-'}</b></span><span>ระยะ <b>${u.range ?? '-'}</b></span><span>โจมตี <b>${u.atk ?? '-'}</b></span><span>ป้องกัน <b>${(u.def ?? u.armor) || 0}</b></span></div>${foe ? `<small class="iq">${esc(IQ2[u.iq | 0] || '')}</small>` : ''}<small class="nx">ช่องที่เดินได้ตาต่อไปแสดงบนสนาม</small>`;
+    d.querySelector('.x').onclick = () => setInspect(null);
+  }
+  addEventListener('keydown', e => { if (e.key === 'Escape' && inspectU) { e.preventDefault(); e.stopImmediatePropagation(); setInspect(null) } }, true);
   function queueSync() {
     const q = document.getElementById('fbQueue'); if (!q || !st) return;
+    if (!q._wired) { q._wired = true; q.addEventListener('click', e => { const c = e.target.closest('.qc'); if (!c) return; const u = st.units.find(x => x.id === c.dataset.id); if (u) setInspect(u) }) }
     if (st.outcome) { q.innerHTML = ''; return }
     const list = FB.queue(st, 9), act = actUnit && actUnit.hp > 0 ? actUnit : list[0], rest = list.filter(u => u !== act).slice(0, 8), chip = (u, on) => {
       const E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, u.hp / u.maxHp * 100)), side = u.side === 'monster' ? 'foe' : u === FB.hero(st) ? 'hero' : 'ally';
-      const lookNow = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })(), otherLook = lookNow === 'female' ? 'male' : 'female',
-        face = u.side === 'monster' ? { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' }
-          : u === FB.hero(st) ? { src: `assets/portraits/hero-${lookNow}-neutral.webp`, pos: '50% 4%', size: '230%' }
-          : u.key === 'sib' ? { src: `assets/portraits/hero-${otherLook}-neutral.webp`, pos: '50% 4%', size: '230%' }
-          : { src: `assets/cards/portraits/u-${u.key}.webp`, pos: '50% 22%', size: '165%' };
+      const face = faceFor(u);
       /* v98.251 · the queue shows each fighter's face (cropped from their portrait); the element icon is a small badge */
-      return `<div class="qc ${side} ${on ? 'on' : ''}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="fc" style="background-image:url('${face.src}'),none;background-position:${face.pos};background-size:${face.size}"></span><span class="ic">${E ? E.icon : ''}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%"></i></div>` };
+      return `<div class="qc ${side} ${on ? 'on' : ''} ${inspectU === u ? 'look' : ''}" data-id="${u.id}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="fc" style="background-image:url('${face.src}'),none;background-position:${face.pos};background-size:${face.size}"></span><span class="ic">${E ? E.icon : ''}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%"></i></div>` };
     q.innerHTML = chip(act, true) + '<span class="arr">›</span>' + rest.map(u => chip(u, false)).join('');
   }
   /* ---------- hand ---------- */
@@ -1247,6 +1280,7 @@
       const col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k]; if (col) { g.fillStyle = col; g.fill() }
       g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke();
     }
+    if (inspectMap && !busy) { const foeI = inspectU.side === 'monster'; for (const e of inspectMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = foeI ? 'rgba(236,96,72,.30)' : 'rgba(150,200,255,.28)'; g.fill(); g.strokeStyle = foeI ? 'rgba(255,170,150,.9)' : 'rgba(200,225,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.stroke(); g.setLineDash([]) } }   /* next-turn cells of the picked fighter */
     if (farMap && !busy) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }   /* yellow = needs the farthest move card */
     if (reachMap && !busy) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
     /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
@@ -1294,6 +1328,9 @@
         if (pic) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, pw = UNIT * .7, ph = pw * 104 / 80, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + bob;
           g.save(); g.globalCompositeOperation = 'lighter'; const gl = g.createRadialGradient(cx, cy, 0, cx, cy, pw * .9); gl.addColorStop(0, foe ? 'rgba(215,228,245,.38)' : 'rgba(255,205,90,.4)'); gl.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gl; g.beginPath(); g.arc(cx, cy, pw * .9, 0, 7); g.fill(); g.restore();
           g.drawImage(pic, (Math.floor(t / 85) % 12) * 80, 0, 80, 104, cx - pw / 2, cy - ph / 2, pw, ph) } } }
+    /* v98.253 · grey crystal (no ring) over the fighter picked in the queue */
+    if (inspectU && inspectU.hp > 0) { const pic = im('assets/fx/plumbob-view.webp'); if (pic) { const q = project(inspectU.vu, inspectU.vv), ko = kbOff(inspectU, t), big = inspectU.side === 'monster' ? (MON[inspectU.evoShow || inspectU.kind]?.scale || 1) : 1, pw = UNIT * .36, ph = pw * 96 / 64, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + Math.sin(t * .0042 + 1) * UNIT * .05 - (actUnit === inspectU ? UNIT * .55 : 0);
+      g.drawImage(pic, (Math.floor(t / 85) % 12) * 64, 0, 64, 96, q.x + ko.x - pw / 2, cy - ph / 2, pw, ph) } }
     /* v97.32 · B13: at night the hero and companions carry lanterns — a warm flickering glow at hip height that lights the ground around them */
     if (NIGHT) { g.save(); g.globalCompositeOperation = 'lighter'; for (const u of FB.allies(st).concat(h)) { if (u.hp <= 0) continue; const q = project(u.vu, u.vv), fl = .85 + .15 * Math.sin(t * .013 + u.id.length) * Math.sin(t * .007), x = q.x + UNIT * .22, y = q.y - UNIT * .55;
       let gr = g.createRadialGradient(q.x, q.y, 0, q.x, q.y, UNIT * 1.6); gr.addColorStop(0, `rgba(255,170,80,${.32 * fl})`); gr.addColorStop(1, 'rgba(255,170,80,0)'); g.fillStyle = gr; g.beginPath(); g.ellipse(q.x, q.y, UNIT * 1.6, UNIT * .8, 0, 0, 7); g.fill();
