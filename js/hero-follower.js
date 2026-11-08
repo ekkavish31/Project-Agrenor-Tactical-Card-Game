@@ -37,7 +37,7 @@
     moving = step / Math.max(dt, 1e-3) > .35 ? 1 : (moving > 0 ? moving - dt * 6 : 0);   // short grace so it does not flicker between walk and idle
     const m = build(); if (!m || (!root.TownArt && !o.drawFn)) return [];
     const p = o.project(pos.u, pos.v);
-    return [{ x: p.x, y: p.y, uv: pos.u + pos.v, mobile: true, z: 0, draw: () => { if (o.drawFn) return o.drawFn(p, dir, moving > 0, m); o.ellipse(p.x, p.y, 16.9 * o.scale, 7.8 * o.scale, '#182b2877'); root.TownArt.hero(o.g, p, dir, t, moving > 0, o.size, dir, m) } }];
+    return [{ x: p.x, y: p.y, uv: pos.u + pos.v, mobile: true, z: o.layer ? (o.layer(pos.u, pos.v) || 0) : 0, draw: () => { if (o.drawFn) return o.drawFn(p, dir, moving > 0, m); o.ellipse(p.x, p.y, 16.9 * o.scale, 7.8 * o.scale, '#182b2877'); root.TownArt.hero(o.g, p, dir, t, moving > 0, o.size, dir, m) } }];
   }
   root.HeroFollower = { objects, reset() { trail = []; pos = null } };
 })(globalThis);
