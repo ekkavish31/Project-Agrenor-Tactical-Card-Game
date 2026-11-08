@@ -84,6 +84,8 @@
   if (EMBED) { veil0 = document.createElement('div'); veil0.style.cssText = 'position:fixed;inset:0;z-index:100;background:#07080c;display:flex;align-items:center;justify-content:center;color:#ffe2a8;font:italic 800 22px AgThai,system-ui,sans-serif;letter-spacing:3px;transition:opacity .4s'; veil0.textContent = 'PREPARING BATTLE…'; addEventListener('DOMContentLoaded', () => document.body.append(veil0)) }
   function arenaReady() { if (veil0) { veil0.style.opacity = '0'; setTimeout(() => veil0?.remove(), 450) } if (EMBED) try { parent.postMessage({ type: 'agrenor-battle-ready', warm: Q.get('warm') === '1' }, '*') } catch (e) { } }
   boot();
+  /* v98.252 · while a fight is on screen the story tracker of the main page is hidden (body.fb-open) */
+  try { if (window.top !== window) { const tb = window.top.document.body; tb.classList.add('fb-open'); addEventListener('pagehide', () => tb.classList.remove('fb-open')) } } catch (e) { }
 
   /* ---------- arena ---------- */
   function build() {
@@ -216,6 +218,25 @@
   #fbHud .bar{height:7px;background:#0006;border-radius:4px;overflow:hidden;margin:2px 0 6px;position:relative}#fbHud .bar i{display:block;height:100%;transition:width .35s}
   #fbHud .arow{margin:3px 0 5px}#fbHud .arow.down{opacity:.45}#fbHud .ord{display:flex;gap:3px;margin-top:2px}#fbHud .ord button{padding:2px 6px;font-size:12px;background:#33463e;border-radius:6px}#fbHud .ord button.on{background:#5d8a6e;box-shadow:inset 0 0 0 1px #bfe8c8}#fbHud .ord button.sk{flex:1;background:#6b4e9a;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #fbHud .grp{margin:6px 0 2px;color:#bba57f;font-size:11px;border-top:1px solid #ffffff1a;padding-top:4px}#fbHud .grp small{opacity:.7}
+  /* v98.252 · battle info window + action row made of pictures (assets/ui/battle-*.webp, bar-*.webp, gem-*.webp; icons from assets/icons/pack) */
+  #fbHud{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;border-style:solid!important;border-width:30px!important;border-image:url(assets/ui/battle-panel.webp) 40 fill/30px stretch!important;padding:0!important;width:300px;left:6px;top:6px;filter:drop-shadow(0 8px 14px #000a)}
+  #fbHud .hd{display:flex;align-items:center;gap:6px}#fbHud .hd b{flex:1}
+  #fbHud .bi{width:20px;height:20px;vertical-align:-5px;margin-right:4px}
+  #fbHud #fbMin{width:30px;height:30px;padding:0;border-radius:0;background:url(assets/ui/battle-controls-v34.webp) no-repeat;background-size:400% 200%;background-position:33.333% 100%;filter:drop-shadow(0 2px 3px #000a)}#fbHud.min #fbMin{background-position:0 100%}
+  #fbHud.min #fbGoal,#fbHud.min #fbLog,#fbHud.min .help,#fbHud.min #fbUnits .grp,#fbHud.min #fbUnits .arow,#fbHud.min #fbUnits .mini{display:none}
+  #fbHud .bar{height:14px;box-sizing:border-box;background:none;border:4px solid transparent;border-image:url(assets/ui/battle-bar.webp) 8 fill/4px stretch;overflow:visible;margin:3px 0 7px}
+  #fbHud .bar i,#fbHud .mini i{background-color:transparent!important;background-image:url(assets/ui/bar-green.webp)!important;background-size:auto 100%;border-radius:3px}
+  #fbHud .bar i[style*="e8c34a"]{background-image:url(assets/ui/bar-yellow.webp)!important}#fbHud .bar i[style*="e2705f"],#fbHud .mini i[style*="e2705f"]{background-image:url(assets/ui/bar-red.webp)!important}#fbHud .bar i[style*="9cc8ff"]{background-image:url(assets/ui/bar-blue.webp)!important}
+  #fbHud .gemi{width:24px;height:24px;margin-right:2px;vertical-align:-7px;filter:drop-shadow(0 0 4px #6fd6ff66)}
+  #fbHud .ord button{background:none!important;border:6px solid transparent;border-image:url(assets/ui/battle-btn.webp) 14 fill/6px stretch;padding:0 6px;color:#fff3d2}#fbHud .ord button.on,#fbHud .ord button.sk{border-image-source:url(assets/ui/battle-btn-hot.webp);color:#2a1a05}
+  #fbHud .mini{padding:0 2px}
+  #fbActions{position:fixed;left:50%;bottom:148px;transform:translateX(-50%);z-index:41;display:flex;gap:4px;align-items:center;font:700 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}
+  #fbActions button{display:flex;align-items:center;gap:6px;min-height:44px;box-sizing:border-box;padding:0;border:12px solid transparent;border-width:11px 16px;border-image:url(assets/ui/battle-btn.webp) 14 fill/11px 16px stretch;background:none;border-radius:0;color:#fff3d2;font:inherit;text-shadow:0 1px 2px #000;cursor:pointer;filter:drop-shadow(0 3px 4px #000a);white-space:nowrap}
+  #fbActions button:hover:not(:disabled),#fbActions #fbAuto.on{border-image-source:url(assets/ui/battle-btn-hot.webp);color:#2a1a05;text-shadow:none}#fbActions button:disabled{opacity:.45;cursor:default;filter:grayscale(.7) drop-shadow(0 3px 4px #000a)}
+  #fbActions #fbBack{border-image-source:url(assets/ui/battle-btn-warn.webp)}#fbActions .bi{width:22px;height:22px}
+  #fbActions #fbMenu.ico{width:48px;min-width:48px;height:48px;border:0;border-image:none;background:url(assets/ui/battle-controls-v34.webp) no-repeat;background-size:400% 200%;background-position:100% 0}
+  body.fb-cine #fbActions{opacity:.35}body.fb-ally #fbActions{opacity:.25;pointer-events:none}
+  @media (max-width:760px){#fbActions{bottom:118px;flex-wrap:wrap;justify-content:center;max-width:94vw}#fbHud{width:250px}}
   #fbHud .mini{position:relative;display:flex;justify-content:space-between;font-size:11.5px;padding:2px 5px 4px;margin:2px 0;border-radius:6px;background:#0003;cursor:default;overflow:hidden}#fbHud .mini i{position:absolute;left:0;bottom:0;height:3px}#fbHud .mini.down{opacity:.4}#fbHud .mini.tgt{outline:2px solid #ffd25a}#fbHud .mini[data-id^=monster]{cursor:pointer}
   #fbHud{max-height:calc(100vh - 210px);overflow:auto}
   #fbHud .gem{display:inline-block;width:14px;height:14px;margin-right:3px;transform:rotate(45deg) scale(.8);border-radius:3px;background:#3b4c55;border:1px solid #8fb7c9}
@@ -317,8 +338,8 @@
   const turnGoal = () => st.obj?.turns ? '/' + st.obj.turns : '';
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
-    d.innerHTML = `<b style="color:#f6d79b">⚔ สนามรบ · ไพ่</b><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space">จบเทิร์น</button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)">↶ ย้อนเดิน</button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)">⚡ Auto</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button><button id="fbMenu" title="เมนู (Esc)">☰</button>${EMBED ? '<button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : ''}</div>
+    d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbDis"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ทิ้งไพ่ฟื้นแรง</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '<button id="fbBack" hidden><img class="bi" src="assets/icons/pack/arrow.webp" alt="" draggable="false"><span>กลับแผนที่โลก</span></button>' : ''}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
       <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรู = ดูการ์ดที่ดีที่สุด · คลิกซ้ำ = โจมตี<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง) · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
     document.body.append(d); hud = d;
@@ -328,7 +349,11 @@
     d.querySelector('#fbDis').onclick = () => setDiscard(!discardMode);
     d.querySelector('#fbUndo').onclick = () => undoWalk();
     d.querySelector('#fbMenu').onclick = () => pauseMenu();
-    if (EMBED) d.querySelector('#fbBack').onclick = () => report(st.outcome);
+    /* v98.252 · the action buttons live in their own row above the cards; the info window can be folded */
+    { const row = d.querySelector('#fbEnd').parentElement, acts = document.createElement('div'); acts.id = 'fbActions'; while (row.firstChild) acts.append(row.firstChild); row.remove(); document.body.append(acts);
+      const min = d.querySelector('#fbMin'), apply = m => { d.classList.toggle('min', m); try { localStorage.setItem('projectA.fbHudMin', m ? '1' : '0') } catch (e) { } };
+      let was = false; try { was = localStorage.getItem('projectA.fbHudMin') === '1' } catch (e) { } apply(was); min.onclick = () => apply(!d.classList.contains('min')) }
+    if (EMBED) document.getElementById('fbBack').onclick = () => report(st.outcome);
   }
   function hudSync() {
     if (!hud || !st) return;
@@ -349,16 +374,16 @@
     hud.querySelectorAll('#fbUnits [data-skill]').forEach(e => e.onclick = () => allySkillAct(e.dataset.skill));
     hud.querySelectorAll('#fbUnits [data-ctl]').forEach(e => e.onclick = () => { const u = st.units.find(x => x.id === e.dataset.ctl); if (!u) return; u.autoCtl = !u.autoCtl; floatText(u, u.autoCtl ? 'AI' : 'MANUAL', '#bfe8ff', true); hudSync() });
     hud.querySelectorAll('#fbUnits .mini[data-id^="monster"]').forEach(e => e.onclick = () => { if (st.turn === 'hero' && !busy) { FB.setTarget(st, e.dataset.id); hudSync(); handSync() } });
-    hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? '🏆 ชนะ!' : '💀 แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns}${turnGoal()} · ตาคุณ · แต้มเดิน ${st.mp}` : st.turn === 'ally' && st.cur ? `เทิร์น ${st.turns}${turnGoal()} · ตาของ ${st.cur.name} · เดิน ${st.mp}` : `เทิร์น ${st.turns}${turnGoal()} · ตาศัตรู…`;
-    hud.querySelector('#fbTurn').title = goalLine(); hud.querySelector('#fbGoal').textContent = '🎯 ' + FB.objText(st);
+    hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? 'ชนะ!' : 'แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns}${turnGoal()} · ตาคุณ · แต้มเดิน ${st.mp}` : st.turn === 'ally' && st.cur ? `เทิร์น ${st.turns}${turnGoal()} · ตาของ ${st.cur.name} · เดิน ${st.mp}` : `เทิร์น ${st.turns}${turnGoal()} · ตาศัตรู…`;
+    hud.querySelector('#fbTurn').title = goalLine(); hud.querySelector('#fbGoal').innerHTML = '<img class="bi" src="assets/icons/pack/target.webp" alt="" draggable="false">' + esc(FB.objText(st));
     const left = FB.crystals(st), max = st.crystalMax;
-    hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<span class="gem ${i < left ? 'on' : ''}"></span>`).join('');
-    hud.querySelector('#fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
-    hud.querySelector('#fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || !walks.length;
-    { const a = hud.querySelector('#fbAuto'); a.classList.toggle('on', auto); a.textContent = auto ? '⏸ หยุด Auto' : '⚡ Auto' }
+    hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<img class="gemi" src="assets/ui/gem-${i < left ? 'on' : 'off'}.webp" alt="" draggable="false">`).join('');
+    document.getElementById('fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
+    document.getElementById('fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || !walks.length;
+    { const a = document.getElementById('fbAuto'); a.classList.toggle('on', auto); a.querySelector('span').textContent = auto ? 'หยุด Auto' : 'Auto' }
     queueSync();
-    hud.querySelector('#fbDis').disabled = busy || !!st.outcome || st.turn !== 'hero' || (!left && !discardMode);
-    hud.querySelector('#fbDis').textContent = discardMode ? 'ยกเลิกการทิ้ง' : '♻ ทิ้งไพ่ฟื้นแรง';
+    document.getElementById('fbDis').disabled = busy || !!st.outcome || st.turn !== 'hero' || (!left && !discardMode);
+    document.getElementById('fbDis').querySelector('span').textContent = discardMode ? 'ยกเลิกการทิ้ง' : 'ทิ้งไพ่ฟื้นแรง';
     hud.querySelector('#fbLog').innerHTML = st.log.slice(-6).reverse().map(x => '<div>' + esc(x) + '</div>').join('');
   }
 
@@ -795,7 +820,7 @@
   function report(outcome) { if (reported || !EMBED) return; reported = true; try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
   function finish() {
     if (st.outcome === 'win') { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'win') }
-    if (EMBED) { const b = hud?.querySelector('#fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
+    if (EMBED) { const b = document.getElementById('fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
   function flash(msg) { texts.push({ u: FB.hero(st).vu, v: FB.hero(st).vv, txt: msg, col: '#f6d79b', t0: now(), small: true }) }
   function floatText(unit, txt, col, small, big) { const t = now(), stack = texts.filter(x => x.unit === unit && t - x.t0 < 450).length; texts.push({ unit, u: unit.vu, v: unit.vv, txt, col, t0: t, small, big, dx: (Math.random() - .5) * 18, dy: -stack * 22 }) }   // texts on the same unit stack upward
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }

@@ -214,3 +214,6 @@ body.cs-open #smithWip{display:none}
 .cs-portrait{display:none!important}
 .cs-name{font-size:22.5px;margin-bottom:6px}
 @media (max-width:640px){.cs-name{font-size:19px}}
+
+/* v98.252 · no quest window over a battle */
+body.fb-open #storyTracker{display:none!important}
