@@ -4388,3 +4388,7 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 # v98.268 — 8 พฤศจิกายน 2026
 
 - วัดการพึ่งพาของโค้ดฉากเก่าใน index.html ด้วย coverage จริง + ถอดทั้งชุดทดลอง: ได้ 4 จุดที่เกมจริงยังเรียกใช้ (placeActions / entityCardMarkup / actionDetails / sharedCardBack) จึงยังไม่ลบ · บันทึกแผนลบที่ปลอดภัยไว้ใน TODO · ไม่มีการเปลี่ยนโค้ดเกม
+
+# v98.269 — 8 พฤศจิกายน 2026
+
+- ลบรายการสถานะ "เลิกใช้" ที่ไฟล์หายไปแล้วและไม่มีใครอ้างถึงออกจาก manifest (`js/asset-manifest.js` 117 รายการ · `data/asset-manifest.json` 100 รายการ) · ตรวจแล้ว: Asset Studio/Manager โหลดได้ หน้าเกมไม่มี error เทสต์ manifest-merge และ studio-variants ผ่าน
