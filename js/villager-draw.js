@@ -46,19 +46,23 @@
     S.info = info; S.ms = ms; return S;
   }
   const ready = im => im && im.complete && im.naturalWidth > 0;
+  /* v98.261 · feet on the ground + size as the ⚖ Scale Lineup shows it. (1) the picture's own lowest opaque row is put on the ground (Luna's pictures end at y=360, not 372, so she floated);
+     (2) allies are drawn at 1.45/1.6 of the hero's canvas (93.6 px), the same rule the lineup uses for metres — before, they were 1.04× the hero's canvas, so Luna stood taller than the hero. */
+  const FOOT = new WeakMap(), LINEUP_ALLY = new Set(['bram', 'luna', 'kier', 'mil', 'ren', 'nadia', 'sigrid', 'orla', 'olwen']), ALLY_K = 93.6 * 1.45 / 1.6 / (384 * 84 / 330);
+  function footOf(im) { let f = FOOT.get(im); if (f != null) return f; f = 372; try { const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, w, h).data; let y = h - 1; for (; y >= 0; y--) { let hit = false; for (let x = 0; x < w; x += 2) if (d[(y * w + x) * 4 + 3] > 40) { hit = true; break } if (hit) break } if (y > h * .5) f = (y + 1) * 384 / h } catch (e) { } FOOT.set(im, f); return f }
   function pic(S, d, k) { const own = S[d + '-' + k]; if (ready(own)) return { im: own, flip: false }; const m = S[MIR[d] + '-' + k]; return ready(m) ? { im: m, flip: true } : null }
   /* v98.152 · ONE shadow for every walker (village, battle-in-village, interiors): a soft wide oval + a darker contact core right under the feet, both sized by the character's scale */
   function contactShadow(g, x, y, s) { g.save(); g.fillStyle = 'rgba(20,16,10,.17)'; g.beginPath(); g.ellipse(x, y, 19 * s, 7.6 * s, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(20,16,10,.34)'; g.beginPath(); g.ellipse(x, y, 11 * s, 4.2 * s, 0, 0, 7); g.fill(); g.restore() }
   function spriteDraw(g, L, x, y, t, o) {
     const S = sprites(L.sprite), info = S.info || SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
     let P = pic(S, d, 'stand'), full = false; if (!P) return false;
-    const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330;
+    const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330 * (LINEUP_ALLY.has(L.sprite) ? ALLY_K : 1);
     let wn = dn(info, d), wsrc = d, wflip = false; if (dn(info, MIR[d]) > wn) { wn = dn(info, MIR[d]); wsrc = MIR[d]; wflip = true }
     let procKey = null; if (walking && act === '' && wn) { const p = t * .012 + ph, N = wn >= 4 ? wn : 4, f = S.ms && S.ms[wsrc] && wn >= 4 ? Math.floor((t + ph * 1000) / S.ms[wsrc]) % wn : ((Math.round(p / (Math.PI * 2 / N)) % N) + N) % N; procKey = 'allywalk:' + L.sprite + ':' + wsrc.toUpperCase(); const _u = 0, key = wn >= 4 ? 'walk' + (f + 1) : wn === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, wsrc, key); if (W) { P = wflip ? { im: W.im, flip: !W.flip } : W; full = wn >= 8 } }
     const proc = procKey && root.ProcMotion && root.ProcMotion.raw && root.ProcMotion.raw(procKey);   /* the studio's ขยับในเกม setting of that walk set (e.g. bob 0.3 / 0.6) replaces the built-in bob */
     const bob = proc ? 0 : walking ? Math.abs(Math.sin(t * .012 + ph)) * (full ? .6 : 4) * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
     contactShadow(g, x, y, s);
-    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (proc) { try { root.ProcMotion.apply(g, procKey, { frames: wn, pose: 'walk' }, t, 384 * k * .9, L.sprite) } catch (e) { } } if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -372 * k, 384 * k, 384 * k); g.restore();
+    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (proc) { try { root.ProcMotion.apply(g, procKey, { frames: wn, pose: 'walk' }, t, 384 * k * .9, L.sprite) } catch (e) { } } if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -footOf(P.im) * k, 384 * k, 384 * k); g.restore();
     fx(g, act, x, y, s, t, ph);
     return true;
   }
