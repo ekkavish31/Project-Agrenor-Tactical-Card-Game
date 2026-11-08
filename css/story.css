@@ -2,7 +2,7 @@
 .cs [hidden],#storyTracker [hidden]{display:none!important}
 .cs{position:fixed;inset:0;z-index:9500;overflow:hidden;background:#05060a;opacity:0;transition:opacity .45s ease;font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;color:#f6ecd6;cursor:pointer;user-select:none}
 .cs.cs-live{opacity:1}.cs.cs-leaving{opacity:0}
-.cs-stage{position:absolute;inset:0;overflow:hidden}
+.cut-stage{position:absolute;inset:0;overflow:hidden}
 .cs-bg{position:absolute;inset:-4%;background:#111 center/cover no-repeat;transform-origin:50% 50%}
 .cs-bg-next{opacity:0;transition:opacity .9s ease}.cs-bg-next.cs-show{opacity:1}
 .cs-pan-in{animation:csPanIn 22s ease-out forwards}.cs-pan-out{animation:csPanOut 22s ease-out forwards}
@@ -11,18 +11,18 @@
 @keyframes csPanL{from{transform:scale(1.1) translateX(2.5%)}to{transform:scale(1.1) translateX(-2.5%)}}@keyframes csPanR{from{transform:scale(1.1) translateX(-2.5%)}to{transform:scale(1.1) translateX(2.5%)}}
 /* tints: light of the moment */
 .cs-tint{position:absolute;inset:0;pointer-events:none;transition:background 1.6s ease,opacity 1.6s ease;mix-blend-mode:normal}
-.cs-stage[data-tint="dawn"] .cs-tint{background:linear-gradient(180deg,rgba(255,170,90,.32),rgba(255,214,150,.08) 55%,rgba(40,20,10,.25));animation:csDawn 6s ease-out both}
+.cut-stage[data-tint="dawn"] .cs-tint{background:linear-gradient(180deg,rgba(255,170,90,.32),rgba(255,214,150,.08) 55%,rgba(40,20,10,.25));animation:csDawn 6s ease-out both}
 @keyframes csDawn{from{opacity:0;filter:brightness(.4)}to{opacity:1}}
-.cs-stage[data-tint="dawn"] .cs-bg{filter:saturate(1.05) brightness(.92) sepia(.12)}
-.cs-stage[data-tint="day"] .cs-tint{background:linear-gradient(180deg,rgba(255,240,200,.12),transparent 60%)}
-.cs-stage[data-tint="warm"] .cs-tint{background:radial-gradient(ellipse at 50% 40%,rgba(255,190,110,.2),rgba(30,12,4,.45))}
-.cs-stage[data-tint="dusk"] .cs-tint{background:linear-gradient(180deg,rgba(150,60,90,.38),rgba(255,120,60,.22) 55%,rgba(20,8,20,.55))}
-.cs-stage[data-tint="dusk"] .cs-bg{filter:saturate(.9) brightness(.75) hue-rotate(-8deg)}
-.cs-stage[data-tint="night"] .cs-tint{background:linear-gradient(180deg,rgba(10,16,48,.72),rgba(24,30,70,.55) 60%,rgba(6,6,18,.8))}
-.cs-stage[data-tint="night"] .cs-bg{filter:saturate(.55) brightness(.55) hue-rotate(10deg)}
-.cs-stage[data-tint="cave"] .cs-tint{background:radial-gradient(ellipse at 50% 55%,rgba(150,80,255,.18),rgba(10,4,24,.72))}
-.cs-stage[data-tint="cave"] .cs-bg{filter:brightness(.7) saturate(1.1)}
-.cs-stage[data-tint="dark"] .cs-tint{background:rgba(0,0,0,.82)}
+.cut-stage[data-tint="dawn"] .cs-bg{filter:saturate(1.05) brightness(.92) sepia(.12)}
+.cut-stage[data-tint="day"] .cs-tint{background:linear-gradient(180deg,rgba(255,240,200,.12),transparent 60%)}
+.cut-stage[data-tint="warm"] .cs-tint{background:radial-gradient(ellipse at 50% 40%,rgba(255,190,110,.2),rgba(30,12,4,.45))}
+.cut-stage[data-tint="dusk"] .cs-tint{background:linear-gradient(180deg,rgba(150,60,90,.38),rgba(255,120,60,.22) 55%,rgba(20,8,20,.55))}
+.cut-stage[data-tint="dusk"] .cs-bg{filter:saturate(.9) brightness(.75) hue-rotate(-8deg)}
+.cut-stage[data-tint="night"] .cs-tint{background:linear-gradient(180deg,rgba(10,16,48,.72),rgba(24,30,70,.55) 60%,rgba(6,6,18,.8))}
+.cut-stage[data-tint="night"] .cs-bg{filter:saturate(.55) brightness(.55) hue-rotate(10deg)}
+.cut-stage[data-tint="cave"] .cs-tint{background:radial-gradient(ellipse at 50% 55%,rgba(150,80,255,.18),rgba(10,4,24,.72))}
+.cut-stage[data-tint="cave"] .cs-bg{filter:brightness(.7) saturate(1.1)}
+.cut-stage[data-tint="dark"] .cs-tint{background:rgba(0,0,0,.82)}
 /* god rays */
 .cs-rays{position:absolute;inset:-30%;opacity:0;pointer-events:none;transition:opacity 2s ease;mix-blend-mode:screen;
  background:repeating-conic-gradient(from 200deg at 78% 0%,rgba(255,226,160,.16) 0deg 3deg,transparent 3deg 9deg);-webkit-mask:radial-gradient(ellipse at 78% 0%,#000 0,transparent 70%);mask:radial-gradient(ellipse at 78% 0%,#000 0,transparent 70%);animation:csRays 18s ease-in-out infinite alternate}
@@ -49,7 +49,7 @@
 @keyframes csShake{0%,100%{transform:none}15%{transform:translate(-8px,4px)}30%{transform:translate(7px,-5px)}45%{transform:translate(-5px,-3px)}60%{transform:translate(5px,4px)}80%{transform:translate(-2px,1px)}}
 /* letterbox */
 .cs-bar{position:absolute;left:0;right:0;height:0;background:#000;z-index:2;transition:height .6s cubic-bezier(.2,.8,.2,1)}
-.cs-top{top:0}.cs-bottom{bottom:0}.cs-live .cs-bar{height:9vh}
+.cut-top{top:0}.cs-bottom{bottom:0}.cs-live .cs-bar{height:9vh}
 /* chapter card */
 .cs-card{position:absolute;inset:0;z-index:3;display:grid;place-content:center;text-align:center;pointer-events:none}
 .cs-card small{display:block;letter-spacing:.06em;font-size:clamp(11px,1.4vw,14px);color:#e8c98a;text-transform:uppercase;margin-bottom:.6em}
@@ -174,14 +174,14 @@ body.cs-open #smithWip{display:none}
 .cs-offer button:disabled,.cs-teach button:disabled{opacity:.5;cursor:default}
 .cs-teach{list-style:none;padding:0}.cs-teach li{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #ffffff1a}.cs-teach li button{margin-left:auto}
 /* v97.10 · cutscene tools: AUTO · hold to fast-forward · backlog */
-.cs-tools{position:absolute;top:calc(9vh + 12px);right:132px;z-index:5;display:flex;gap:6px}
-.cs-tools button{background:rgba(0,0,0,.45);color:#f6ecd6;border:1px solid rgba(246,236,214,.35);border-radius:999px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer;touch-action:none;user-select:none}
-.cs-tools button.on{background:rgba(201,137,58,.85);border-color:#ffe2a8}
+.cut-tools{position:absolute;top:calc(9vh + 12px);right:132px;z-index:5;display:flex;gap:6px}
+.cut-tools button{background:rgba(0,0,0,.45);color:#f6ecd6;border:1px solid rgba(246,236,214,.35);border-radius:999px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer;touch-action:none;user-select:none}
+.cut-tools button.on{background:rgba(201,137,58,.85);border-color:#ffe2a8}
 .cs-log{position:absolute;inset:0;z-index:8;display:grid;place-items:center;background:rgba(4,6,10,.72);backdrop-filter:blur(3px)}
 .cs-log-in{width:min(760px,92vw);max-height:76vh;display:flex;flex-direction:column;gap:8px;padding:18px 20px;border-radius:14px;background:rgba(18,22,30,.94);border:1px solid rgba(246,236,214,.25);cursor:default}
 .cs-log-in>b{font-size:16px;color:#f3d79b}.cs-log-in small{color:#a99a7c;text-align:right}
 .cs-log-list{overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:6px}.cs-log-list p{margin:0;line-height:1.6;color:#efe4cc;font-size:15px}.cs-log-list p b{color:#f3d79b;margin-right:4px}
-@media (max-width:640px){.cs-tools{top:calc(6vh + 8px);right:118px}.cs-tools button{padding:5px 9px;font-size:11px}}
+@media (max-width:640px){.cut-tools{top:calc(6vh + 8px);right:118px}.cut-tools button{padding:5px 9px;font-size:11px}}
 
 
 /* v98.20 · WIP juice + docking */

@@ -51,11 +51,11 @@ class Particles{
 /* ---------------- DOM ---------------- */
 let el=null,parts=null,playing=null;
 function build(){if(el)return el;el=document.createElement('div');el.id='cutscene';el.className='cs';el.hidden=true;el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','ฉากเนื้อเรื่อง');
- el.innerHTML=`<div class="cs-stage"><div class="cs-bg"></div><div class="cs-bg cs-bg-next"></div><canvas class="cs-art" hidden></canvas><div class="cs-tint"></div><div class="cs-rays"></div><div class="cs-orb"><i></i></div><div class="cs-mist"></div><canvas class="cs-canvas"></canvas><div class="cs-vignette"></div><div class="cs-flash"></div><div class="cs-ring"></div></div>
- <div class="cs-bar cs-top"></div><div class="cs-bar cs-bottom"></div>
+ el.innerHTML=`<div class="cut-stage"><div class="cs-bg"></div><div class="cs-bg cs-bg-next"></div><canvas class="cs-art" hidden></canvas><div class="cs-tint"></div><div class="cs-rays"></div><div class="cs-orb"><i></i></div><div class="cs-mist"></div><canvas class="cs-canvas"></canvas><div class="cs-vignette"></div><div class="cs-flash"></div><div class="cs-ring"></div></div>
+ <div class="cs-bar cut-top"></div><div class="cs-bar cs-bottom"></div>
  <div class="cs-card" hidden><small></small><h2></h2></div>
  <div class="cs-box" hidden><div class="cs-portrait"></div><div class="cs-talk"><b class="cs-name"></b><p class="cs-text"></p></div><span class="cs-next" aria-hidden="true">▼</span></div>
- <div class="cs-tools"><button type="button" class="cs-log-btn" title="ย้อนอ่านบทพูด (L)">☰ บันทึก</button><button type="button" class="cs-auto-btn" title="เล่นอัตโนมัติ (A)">▶ AUTO</button><button type="button" class="cs-ff-btn" title="กดค้างเพื่อเร่ง (หรือกด Ctrl ค้าง)">⏩ เร่ง</button></div><div class="cs-log" hidden><div class="cs-log-in"><b>บทพูดที่ผ่านมา</b><div class="cs-log-list"></div><small>L หรือ Esc ปิด</small></div></div>
+ <div class="cut-tools"><button type="button" class="cs-log-btn" title="ย้อนอ่านบทพูด (L)">☰ บันทึก</button><button type="button" class="cs-auto-btn" title="เล่นอัตโนมัติ (A)">▶ AUTO</button><button type="button" class="cs-ff-btn" title="กดค้างเพื่อเร่ง (หรือกด Ctrl ค้าง)">⏩ เร่ง</button></div><div class="cs-log" hidden><div class="cs-log-in"><b>บทพูดที่ผ่านมา</b><div class="cs-log-list"></div><small>L หรือ Esc ปิด</small></div></div>
  <button type="button" class="cs-skip">ข้ามฉาก ▸▸</button>`;
  document.body.appendChild(el);parts=new Particles(el.querySelector('.cs-canvas'));root.addEventListener('resize',()=>{if(!el.hidden)parts.size()});return el}
 const $=sel=>el.querySelector(sel);
@@ -71,8 +71,8 @@ function setBg(src,pan,instant){const a=$('.cs-bg:not(.cs-bg-next)'),b=$('.cs-bg
  if(instant||!cur){a.style.backgroundImage=bgUrl(src);a.dataset.src=src;a.className='cs-bg'+(pan&&!reduced()?' cs-pan-'+pan:'');return}
  b.style.backgroundImage=bgUrl(src);b.dataset.src=src;b.className='cs-bg cs-bg-next cs-show'+(pan&&!reduced()?' cs-pan-'+pan:'');
  setTimeout(()=>{a.style.backgroundImage=b.style.backgroundImage;a.dataset.src=src;a.className='cs-bg'+(pan&&!reduced()?' cs-pan-'+pan:'');b.className='cs-bg cs-bg-next'},reduced()?0:900)}
-function setLook(o){if(o.tint!=null)$('.cs-stage').dataset.tint=o.tint||'';const fx=o.fx||[];$('.cs-stage').classList.toggle('fx-rays',fx.includes('rays'));$('.cs-stage').classList.toggle('fx-orb',fx.includes('orb'));$('.cs-stage').classList.toggle('fx-mist',fx.includes('mist'));parts.set(fx)}
-function shake(strong){if(reduced())return;const st=$('.cs-stage');st.classList.remove('cs-shake','cs-shake-big');void st.offsetWidth;st.classList.add(strong?'cs-shake-big':'cs-shake')}
+function setLook(o){if(o.tint!=null)$('.cut-stage').dataset.tint=o.tint||'';const fx=o.fx||[];$('.cut-stage').classList.toggle('fx-rays',fx.includes('rays'));$('.cut-stage').classList.toggle('fx-orb',fx.includes('orb'));$('.cut-stage').classList.toggle('fx-mist',fx.includes('mist'));parts.set(fx)}
+function shake(strong){if(reduced())return;const st=$('.cut-stage');st.classList.remove('cs-shake','cs-shake-big');void st.offsetWidth;st.classList.add(strong?'cs-shake-big':'cs-shake')}
 function flash(color){const f=$('.cs-flash');f.style.background=color||'#fff';f.classList.remove('on');void f.offsetWidth;f.classList.add('on')}
 function burst(opt={}){const r=el.getBoundingClientRect(),x=(opt.x??.5)*r.width,y=(opt.y??.45)*r.height;parts.burst(x,y,opt);if(opt.ring!==false){const ring=$('.cs-ring');ring.style.left=x+'px';ring.style.top=y+'px';ring.style.setProperty('--ring',opt.ringColor||'rgba(255,214,140,.9)');ring.classList.remove('on');void ring.offsetWidth;ring.classList.add('on')}}
 
@@ -111,7 +111,7 @@ function play(scene){if(!scene)return Promise.resolve();if(playing)return playin
   setArt(scene.art);setBg(scene.bg,scene.pan,true);setLook({tint:scene.tint||'',fx:scene.fx||[]});$('.cs-box').hidden=true;
   requestAnimationFrame(()=>el.classList.add('cs-live'));
   const end=async()=>{if(done)return;done=true;T?.stop();T=null;el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();setArt(null);root.StoryActors?.end();document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
-   const st=$('.cs-stage');st.dataset.tint='';st.className='cs-stage';el.querySelectorAll('.cs-bg').forEach(b=>{b.dataset.src='';b.style.backgroundImage=''});
+   const st=$('.cut-stage');st.dataset.tint='';st.className='cut-stage';el.querySelectorAll('.cs-bg').forEach(b=>{b.dataset.src='';b.style.backgroundImage=''});
    el.onclick=null;document.removeEventListener('keydown',key,true);document.removeEventListener('keyup',keyUp,true);curNext=null;ff(false);clearTimeout(autoT);playing=null;resolve()};
   /* v98.16 · "ข้ามฉาก" skips only to the next part of a scene (a line marked seg:true) — e.g. the opening narration → the talk with mum; the last part ends the scene */
   const skip=()=>{if(done)return;let j=-1;for(let k=i+1;k<lines.length;k++)if(lines[k].seg){j=k;break}if(j<0){end();return}if(busy)return;T?.stop();T=null;clearTimeout(autoT);i=j-1;next()};

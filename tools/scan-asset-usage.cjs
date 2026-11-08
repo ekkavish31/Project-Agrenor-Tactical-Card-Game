@@ -64,7 +64,7 @@ function codeScan() {
     for (const r of refs) {
       if (usage.has(r)) { add(r, 'เขียนไว้ใน: ' + who); add(twin(r), 'เขียนไว้ใน: ' + who); continue }
       const dir = r.replace(/\/[^/]*$/, '/');   // folder prefix → names are built in code
-      if ((/\/$/.test(r) || !/\.[a-z0-9]+$/.test(r)) && r.replace(/\/$/, '').split('/').length >= 3) for (const f of files) if (f.startsWith(r.replace(/\/?$/, '/'))) add(f, 'อาจใช้: ' + who + ' ประกอบชื่อไฟล์เองจากโฟลเดอร์นี้');
+      if ((/\/$/.test(r) || !/\.[a-z0-9]+$/.test(r)) && (r.replace(/\/$/, '').split('/').length >= 3 || (/\/$/.test(r) && r !== 'assets/'))) for (const f of files) if (f.startsWith(r.replace(/\/?$/, '/'))) add(f, 'อาจใช้: ' + who + ' ประกอบชื่อไฟล์เองจากโฟลเดอร์นี้');
     }
     for (const m of s.t.matchAll(/['"`]([A-Za-z0-9_\-]+\.(?:webp|png))['"`]/g)) for (const f of byBase.get(m[1]) || []) add(f, 'เขียนไว้ใน: ' + who);
   }

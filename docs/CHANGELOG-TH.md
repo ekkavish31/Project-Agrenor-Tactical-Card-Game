@@ -4412,3 +4412,10 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 # v98.273 — 8 พฤศจิกายน 2026
 
 - **ไล่ทบทวน docs/TODO.md เทียบโค้ดจริง**: ติ๊กข้อที่ทำแล้ว/ถูกแทนที่พร้อมหลักฐาน — S1 smoke test (→ e2e-game-flow, ครึ่งทาง) · หาภาพที่ไม่มีใครใช้ (→ scan-asset-usage + Asset Manager) · B9 (→ B15) · B8 · A3 · A6 · A8 · A9 (ครึ่งทาง) · ข้อซ้ำ Battleground Editor (→ B10) และกฎทีมสองคน v98.231 (→ v98.235) · ปรับหัวไฟล์ให้ชี้ไปหน้า Progress · ตัวเลขรวมใน Progress ขยับจาก 38.1% เป็น 38.8%
+
+# v98.275 — 8 พฤศจิกายน 2026
+
+- **แก้หน้า Card Editor เละ**: สาเหตุ = ชื่อคลาส CSS ชนกัน — ระบบคัตซีน (`css/story.css`) กับโต๊ะออกแบบการ์ด (`css/card-studio.css`) ใช้ชื่อ `.cs-stage` `.cs-tools` `.cs-top` ซ้ำกัน คัตซีนทับให้เวทีของโต๊ะการ์ดกลายเป็นชั้นเต็มจอบังแถบบน/แท็บ/รายการ · เปลี่ยนชื่อฝั่งคัตซีนเป็น `.cut-stage` `.cut-tools` `.cut-top` (`story.css` + `story-fx.js`) ตรวจแล้วคัตซีนยังแสดงปกติและโต๊ะการ์ดกลับมาครบ (แถบบน แท็บ 4 กลุ่ม รายการ ฟอร์มขวา)
+- **ฉากเก่าโผล่ตอนโหลดหน้า editor**: ตัวซ่อนฉากเดิมอยู่ใน `editor-mode.js` (สคริปต์ที่ ~70 จาก ~100) บนเน็ตช้าเบราว์เซอร์วาดฉากเก่าก่อน · ย้ายตัวซ่อนไปเป็นสคริปต์เล็กใน `<head>` ของ `index.html` (ทำงานตั้งแต่ paint แรกเมื่อมี `?editor=`)
+- **เก็บ UI สนามกริดเก่าเข้า archive**: `tactics-ui.js` (132 KB) `battle-flow.js` `battle-juice.js` → `archive/old-scene/js/` (ไม่มีทางถูกเรียกแล้ว) · e2e 21/21 ผ่าน
+- ไม่ได้ทำเรื่องซ้อนกับ editor: ตัวสแกนการใช้งานรองรับ 8 ฉาก→ทุกสถานที่/ไบโอม/มอนสเตอร์ (`data/asset-usage.js` ครอบคลุมขึ้น เห็นโหลดจริง 895 ไฟล์) · `tools/test-card-coverage.cjs` · `tools/test-min-team.cjs` · `docs/BALANCE-REPORT-TH.md` · `docs/ASSET-UNLISTED-REPORT-TH.md` · แก้ deck builder ให้เห็นน้อง/ผู้ร่วมทีมทุกคน (`Companions.info`)
