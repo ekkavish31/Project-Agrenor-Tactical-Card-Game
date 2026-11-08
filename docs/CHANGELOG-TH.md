@@ -4452,3 +4452,8 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 # v98.281 — 8 พฤศจิกายน 2026
 
 - **ไอคอนสถานะของผู้ใช้ (16 ชิ้น)**: ต้นฉบับ `art-production/status-icons-4x4.webp` → `tools/build-status-icons.py` → `assets/ui/status/<ชื่อ>.webp` (128×128: poison burn freeze slow root guard magic regen disarm aim blocked no-target haste attack-up potion armor) · **ใช้แล้ว**: ไหม้=burn · พิษ=poison · แข็ง=freeze · ชา/ช้า=slow · อ่อนแรง=disarm · โล่กัน=guard — ทั้งในแผงทีม (ข้างชื่อ) และป้ายเหนือหัวตัวละครในสนาม (วาดเป็นภาพบนแคนวาส) · **ยังเป็นอีโมจิ**: หลับ 💤 และใบ้ 🔇 (ยังไม่มีภาพ) · **มีภาพแต่ยังไม่มีสถานะในเกม**: root (ติดราก) magic regen aim blocked no-target haste attack-up potion armor
+
+# v98.282 — 8 พฤศจิกายน 2026
+
+- **ภาพพื้นสนามของผู้ใช้ (วงใต้เท้า · กรอบช่อง · มุมเรืองแสง)**: ต้นฉบับ `art-production/ground-rings-frames-6x4.webp` → `tools/build-ground-art.py` → `assets/ui/ground/{ring-ally,ring-foe,cell-frames,cell-corners}.webp` (แถบ 6 เฟรม/6 สี) + `js/ground-art.js` (`GroundArt.ring/frame/corners` ปรับให้พอดีช่องกริดอ่านขนาดจาก `project()` — กว้างช่อง = 2 ครึ่งความกว้าง) · **ใช้แล้ว**: วงเขียวเรืองแสงใต้เท้าตัวที่ถึงตา (ฝั่งเรา) · วงแดง + กรอบแดงที่ศัตรูเป้าหมาย · กรอบเหลืองที่ช่องปลายทางการเดิน · มุมเรืองแสงตรงช่องที่เมาส์ชี้ · ใน BG Editor: กรอบเขียว/แดงตอนลากวาง กรอบเหลืองตอนเลือก มุมเรืองแสงตอนเมาส์ชี้ (ของ 2×2 ขยายเป็น 2 ช่อง) · กรอบเทา/ส้ม/ฟ้า ยังไม่ได้ใช้
+- **ลูกศรเลือกทิศหัน ใช้ภาพของผู้ใช้**: `tools/build-ground-art.py` ตัดเป็น `assets/ui/arrows/face-{ne,se,sw,nw}.webp` แทน `assets/icons/pack/arrow.webp` (ไม่ต้องหมุนภาพอีก ภาพชี้ทิศอยู่แล้ว) · ขนาดปุ่ม 72 px · ยังเคลื่อนเข้า-ออก 20% ตามแกนเดิม · แถบ ✓ ✕ ยกขึ้นไม่ให้ทับแถวปุ่มด้านล่าง

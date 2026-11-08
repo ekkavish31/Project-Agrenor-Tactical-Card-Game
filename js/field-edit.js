@@ -166,9 +166,15 @@
   window.FieldEdit = {
     active: true, ops: () => ops.slice(), save, push, build,
     draw(g, t) {
-      const ring = (u, v, big, col, fill) => { const cs = big ? [[u, v], [u + 2, v], [u + 2, v + 2], [u, v + 2]] : [[u, v], [u + 1, v], [u + 1, v + 1], [u, v + 1]]; g.beginPath(); cs.forEach(([a, b], i) => { const q = project(a, b); i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y) }); g.closePath(); if (fill) { g.fillStyle = fill; g.fill() } g.strokeStyle = col; g.lineWidth = 3; g.stroke() };
+      const G = window.GroundArt, cw = (u, v) => Math.abs(project(u + 1, v).x - project(u, v + 1).x);
+      const pic = (name, u, v, big) => { if (!G) return false; const k = big ? 2 : 1, p = project(u + .5 * k, v + .5 * k), w = cw(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) };   // v98.282 · the user's cell frames
+      const ring = (u, v, big, col, fill) => {
+        const name = col === '#6fe08a' ? 'green' : col === '#ff6a5a' ? 'red' : col === '#ffd34d' ? 'yellow' : 'grey';
+        if (fill) { /* soft fill under the frame */ const cs = big ? [[u, v], [u + 2, v], [u + 2, v + 2], [u, v + 2]] : [[u, v], [u + 1, v], [u + 1, v + 1], [u, v + 1]]; g.beginPath(); cs.forEach(([a, b], i) => { const q = project(a, b); i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y) }); g.closePath(); g.fillStyle = fill; g.fill() }
+        if (pic(name, u, v, big)) return;
+ const cs = big ? [[u, v], [u + 2, v], [u + 2, v + 2], [u, v + 2]] : [[u, v], [u + 1, v], [u + 1, v + 1], [u, v + 1]]; g.beginPath(); cs.forEach(([a, b], i) => { const q = project(a, b); i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y) }); g.closePath(); if (fill) { g.fillStyle = fill; g.fill() } g.strokeStyle = col; g.lineWidth = 3; g.stroke() };
       g.save();
-      if (hover && !drag) ring(hover.u, hover.v, false, 'rgba(255,255,255,.55)');
+      if (hover && !drag) { const p = project(hover.u + .5, hover.v + .5), w = cw(hover.u, hover.v) * 1.06; if (!(G && G.corners(g, p.x, p.y, w, w * .56, t))) ring(hover.u, hover.v, false, 'rgba(255,255,255,.55)') }
       if (sel?.unit) ring(sel.unit.u, sel.unit.v, false, '#ffd34d', 'rgba(255,211,77,.18)');
       if (sel?.prop) ring(sel.prop.u, sel.prop.v, sel.prop.big, '#ffd34d', 'rgba(255,211,77,.18)');
       if (drag?.to) { const big = drag.kind === 'prop' && drag.prop.big; ring(drag.to.u, drag.to.v, big, drag.to.ok ? '#6fe08a' : '#ff6a5a', drag.to.ok ? 'rgba(111,224,138,.28)' : 'rgba(255,106,90,.28)') }
