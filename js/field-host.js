@@ -380,10 +380,11 @@ const compass = document.createElement('div'); compass.id = 'fieldCompass';
 compass.innerHTML = `<style>#fieldCompass{position:fixed;right:14px;bottom:132px;z-index:39;display:flex;align-items:center;gap:2px;user-select:none}
 #fieldCompass .hudb{--s:60px}
 #fieldCompass .cmp{position:relative;width:112px;height:112px;filter:drop-shadow(0 4px 8px #000a)}#fieldCompass .cmp img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#fieldCompass .cmp .ro{transition:transform .55s cubic-bezier(.3,1.4,.5,1)}
+#fieldCompass .cmp .ro,#fieldCompass .cmp .nn,#fieldCompass .cmp .nn span{transition:transform .55s cubic-bezier(.3,1.4,.5,1)}
+#fieldCompass .cmp .nn{position:absolute;inset:0;pointer-events:none}#fieldCompass .cmp .nn span{position:absolute;left:50%;top:9%;width:20px;height:20px;margin-left:-10px;display:grid;place-items:center;font:700 15px/1 Georgia,'Times New Roman',serif;color:#ffe9a8;text-shadow:0 0 3px #000,0 0 3px #000,0 1px 2px #000}
 @media (max-width:820px){#fieldCompass{bottom:118px}#fieldCompass .hudb{--s:46px}#fieldCompass .cmp{width:84px;height:84px}}</style>
-<button class="hudb hudb-rot-left" data-d="-1" title="หมุนกล้องซ้าย (Q)" aria-label="หมุนกล้องซ้าย"></button><div class="cmp"><img class="fr" src="assets/ui/hud/compass-frame.webp" alt=""><img class="ro" src="assets/ui/hud/compass-rose.webp" alt=""></div><button class="hudb hudb-rot-right" data-d="1" title="หมุนกล้องขวา (E)" aria-label="หมุนกล้องขวา"></button>`;
-let roseTurn = ROT * 90; const syncRose = () => { const el = compass.querySelector('.ro'); if (!el) return; let target = ROT * 90; while (target - roseTurn > 180) target -= 360; while (target - roseTurn < -180) target += 360; roseTurn = target; el.style.transform = 'rotate(' + target + 'deg)' };
+<button class="hudb hudb-rot-left" data-d="-1" title="หมุนกล้องซ้าย (Q)" aria-label="หมุนกล้องซ้าย"></button><div class="cmp"><img class="fr" src="assets/ui/hud/compass-frame.webp" alt=""><img class="ro" src="assets/ui/hud/compass-rose.webp" alt=""><div class="nn"><span>N</span></div></div><button class="hudb hudb-rot-right" data-d="1" title="หมุนกล้องขวา (E)" aria-label="หมุนกล้องขวา"></button>`;
+let roseTurn = ROT * 90; const syncRose = () => { const el = compass.querySelector('.ro'); if (!el) return; let target = ROT * 90; while (target - roseTurn > 180) target -= 360; while (target - roseTurn < -180) target += 360; roseTurn = target; el.style.transform = 'rotate(' + target + 'deg)'; const nn = compass.querySelector('.nn'); if (nn) { nn.style.transform = 'rotate(' + target + 'deg)'; nn.firstChild.style.transform = 'rotate(' + -target + 'deg)' } };
 if (window.FieldHeight) { document.body.append(compass); syncRose() }
 const turnBy = d => { turnView(d); setTimeout(syncRose, 40); setTimeout(syncRose, 700) };
 compass.querySelectorAll('button').forEach(b => b.onclick = () => turnBy(+b.dataset.d));
