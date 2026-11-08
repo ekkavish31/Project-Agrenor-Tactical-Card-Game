@@ -29,6 +29,10 @@ details{margin:6px 0}summary{cursor:pointer;color:#fff0c7}table{width:100%;borde
 #warn{position:fixed;left:14px;bottom:86px;max-width:calc(100vw - 400px);background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--muted);z-index:8}
 #tileInfo{position:fixed;left:14px;top:14px;background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:5px 9px;color:var(--muted);z-index:8}#tileInfo:empty{display:none}
 #status{position:fixed;left:14px;bottom:14px;max-width:340px;background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:#e6d3a9;z-index:8}#status:empty{display:none}
+#realFrame{position:fixed;inset:0;width:100vw;height:100dvh;border:0;z-index:7;background:#0f1713;display:none}
+#realBar{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:12;display:none;gap:6px;align-items:center;background:#1b302af2;border:1px solid var(--edge);border-radius:12px;padding:6px 10px;box-shadow:0 6px 18px #0008}
+body.real #realFrame{display:block}body.real #realBar{display:flex}body.real #bar,body.real #cat,body.real #side,body.real #tileInfo,body.real #warn,body.real #cv{display:none!important}
+#realBar input[type=number]{width:96px}#realBar .muted{font-size:12px}
 </style>
 </head>
 <body>
@@ -41,9 +45,11 @@ details{margin:6px 0}summary{cursor:pointer;color:#fff0c7}table{width:100%;borde
  <button data-tool="erase"><b>🧽</b><span>ลบ</span><kbd>4</kbd></button><button data-tool="spawnAllies"><b>🟢</b><span>จุดเกิดเรา</span></button><button data-tool="spawnEnemies"><b>🔴</b><span>จุดเกิดศัตรู</span></button><button data-tool="spawnErase"><b>⌫</b><span>ลบจุดเกิด</span></button><i></i>
  <button id="undo" title="Ctrl+Z"><b>↶</b><span>ย้อน</span></button><button id="redo" title="Ctrl+Shift+Z"><b>↷</b><span>ทำซ้ำ</span></button>
  <button id="rotL" title="หมุนมุมมอง ["><b>⟲</b><span>หมุน</span></button><button id="rotR" title="หมุนมุมมอง ]"><b>⟳</b><span>หมุน</span></button><i></i>
- <button id="try"><b>▶</b><span>ลองเล่น</span><kbd>T</kbd></button><button id="pushBtn" class="pp"><b>⬆</b><span>push</span></button>
+ <button id="real" title="ดูฉากต่อสู้จริงของเกม: พื้นผิว ของวาง และตัวละครบนฉาก"><b>🎬</b><span>ฉากจริง</span></button><button id="try"><b>▶</b><span>ลองเล่น</span><kbd>T</kbd></button><button id="pushBtn" class="pp"><b>⬆</b><span>push</span></button>
 </div>
 <div id="cat"></div>
+<iframe id="realFrame" title="ฉากต่อสู้จริง"></iframe>
+<div id="realBar"><button id="realBack">← กลับไปแก้ชิ้น</button><label class="muted">พื้นที่ <select id="realBiome"></select></label><label class="muted">Seed <input type="number" id="realSeed"></label><button id="realDice" title="สุ่มฉากใหม่">🎲</button><label class="muted">ศัตรู <select id="realFoes"></select></label><label class="muted">ทีม <select id="realParty"></select></label><button id="realUi" title="โชว์/ซ่อนหน้าต่างของเกม (HUD)">HUD</button></div>
 <aside id="side">
  <h3>⚔ สนามต่อสู้</h3>
  <p class="muted" style="margin:0">วาดชิ้นภูมิประเทศ (ความสูง พื้น ของ) แล้วตัวสุ่มแผนที่จะหยิบไปวางในสนามสุ่มของพื้นที่ที่เลือก · คลิกขวา = ทำกลับ (ลด / คืนหญ้า / เอาของออก) · ลากที่ว่าง = เลื่อนมุมมอง · หัวแปรงสี่เหลี่ยมตามแนว Iso 2.5D แสดงขอบเขตด้วยเส้นประ · ล้อ = ซูม · B = ขนาดแปรง</p>
@@ -206,6 +212,28 @@ $('pushBtn').onclick=async()=>{save();if(!GitHubPush.config().token){GitHubPush.
 {const s=GitHubPush.settingsButton();s.innerHTML='<b>⚙</b><span>GitHub</span>';s.title='ตั้งค่า GitHub (token / repo)';$('bar').append(s)}
 
 load();if(!localStorage.getItem(KEY))save();renderSide();renderCat();renderTileProps();addEventListener('resize',fit);fit();
+
+/* ---------- v98.257 · 🎬 ฉากจริง: the REAL battle scene (battle-field.html — the renderer the game uses) with its real textures, props and units, inside the editor.
+   Honest note: that scene is generated from the biome + seed (js/field-host.js), it does NOT read the chunks drawn here yet (chunks feed the old grid-lab) — see docs/TODO.md §13. */
+(function(){
+ const BIOMES={grass:'ทุ่งหญ้า',forest:'ป่า',hills:'เนินเขา',swamp:'บึง',snow:'หิมะ',sand:'ทราย'};
+ const FOES={wolf:['หมาป่า + โจร','wolf*1.2,bandit*1.2'],pack:['ฝูงหมาป่า (3)','wolf*1.2,wolf*1.2,wolf*1.2'],ice:['เยติ + หมาป่าน้ำแข็ง','yeti*1.2,frostWolf*1.2,yeti*1.2'],mine:['โคโบลด์ + ค้างคาว + สไลม์','kobold*1.2,bat*1.2,slime*1.2'],none:['ไม่มีศัตรู (ดูฉากเฉยๆ)','']};
+ const PARTY={duo:['ตัวเอก + น้อง/พี่','sib:50:50:charge:1'],squad:['ตัวเอก + น้อง/พี่ + 3 เพื่อน','sib:50:50:charge:1,kier:50:50:charge:1,luna:50:50:charge:1,bram:50:50:charge:1'],all:['ทีมเต็ม 6 คน','sib:50:50:charge:1,kier:50:50:charge:1,mil:50:50:charge:1,sigrid:50:50:charge:1,ren:50:50:charge:1,nadia:50:50:charge:1']};
+ const fill=(el,o)=>el.innerHTML=Object.entries(o).map(([k,v])=>`<option value="${k}">${Array.isArray(v)?v[0]:v}</option>`).join('');
+ fill($('realBiome'),BIOMES);fill($('realFoes'),FOES);fill($('realParty'),PARTY);
+ let hud=false,frame=$('realFrame');
+ function url(){const seed=+$('realSeed').value||1,f=FOES[$('realFoes').value][1],p=PARTY[$('realParty').value][1];
+  return 'battle-field.html?battle=1&embed=1&r=7&night=0&biome='+$('realBiome').value+'&seed='+seed+(f?'&ms='+encodeURIComponent(f):'')+'&party='+encodeURIComponent(p)}
+ function hideUi(){try{const d=frame.contentDocument;if(!d)return;let st=d.getElementById('realViewCss');if(!st){st=d.createElement('style');st.id='realViewCss';d.head.append(st)}
+  st.textContent=hud?'':'#fbHand,#fbActions,#fbHud,#fbQueue,#fieldUi,#fbInspect,.fb-banner,#fbTip,.fb-tip,#fbHint{display:none!important}'}catch(e){}}
+ function dismissTips(){let n=0;const t=setInterval(()=>{try{const d=frame.contentDocument;for(const b of d.querySelectorAll('button'))if(/เข้าใจแล้ว|ข้าม/.test(b.textContent))b.click()}catch(e){}if(++n>14)clearInterval(t)},600)}
+ function load(){frame.src=url();frame.onload=()=>{hideUi();dismissTips()}}
+ $('real').onclick=()=>{if(!$('realSeed').value)$('realSeed').value=Math.floor(Math.random()*9e5)+1e5;document.body.classList.add('real');load()};
+ $('realBack').onclick=()=>{document.body.classList.remove('real');frame.src='about:blank'};
+ for(const id of ['realBiome','realFoes','realParty','realSeed'])$(id).onchange=load;
+ $('realDice').onclick=()=>{$('realSeed').value=Math.floor(Math.random()*9e5)+1e5;load()};
+ $('realUi').onclick=()=>{hud=!hud;$('realUi').classList.toggle('on',hud);hideUi()};
+})();
 </script>
 </body>
 </html>
