@@ -48,7 +48,8 @@
   const ready = im => im && im.complete && im.naturalWidth > 0;
   /* v98.261 · feet on the ground + size as the ⚖ Scale Lineup shows it. (1) the picture's own lowest opaque row is put on the ground (Luna's pictures end at y=360, not 372, so she floated);
      (2) allies are drawn at 1.45/1.6 of the hero's canvas (93.6 px), the same rule the lineup uses for metres — before, they were 1.04× the hero's canvas, so Luna stood taller than the hero. */
-  const FOOT = new WeakMap(), LINEUP_ALLY = new Set(['bram', 'luna', 'kier', 'mil', 'ren', 'nadia', 'sigrid', 'orla', 'olwen']), ALLY_K = 93.6 * 1.45 / 1.6 / (384 * 84 / 330);
+  const FOOT = new WeakMap(), LINEUP_ALLY = new Set(['bram', 'luna', 'kier', 'mil', 'ren', 'nadia', 'sigrid', 'orla', 'olwen']);
+  const allyK = () => { const D = root.CHARACTER_SCALE?.drawSize || {}; return 93.6 * (D.ally || 1.45) / (D.hero || 1.6) / (384 * 84 / 330) };   /* same numbers scale-lineup.html reads (CHARACTER_SCALE.drawSize) */
   function footOf(im) { let f = FOOT.get(im); if (f != null) return f; f = 372; try { const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, w, h).data; let y = h - 1; for (; y >= 0; y--) { let hit = false; for (let x = 0; x < w; x += 2) if (d[(y * w + x) * 4 + 3] > 40) { hit = true; break } if (hit) break } if (y > h * .5) f = (y + 1) * 384 / h } catch (e) { } FOOT.set(im, f); return f }
   function pic(S, d, k) { const own = S[d + '-' + k]; if (ready(own)) return { im: own, flip: false }; const m = S[MIR[d] + '-' + k]; return ready(m) ? { im: m, flip: true } : null }
   /* v98.152 · ONE shadow for every walker (village, battle-in-village, interiors): a soft wide oval + a darker contact core right under the feet, both sized by the character's scale */
@@ -56,7 +57,7 @@
   function spriteDraw(g, L, x, y, t, o) {
     const S = sprites(L.sprite), info = S.info || SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
     let P = pic(S, d, 'stand'), full = false; if (!P) return false;
-    const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330 * (LINEUP_ALLY.has(L.sprite) ? ALLY_K : 1);
+    const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330 * (LINEUP_ALLY.has(L.sprite) ? allyK() : 1);
     let wn = dn(info, d), wsrc = d, wflip = false; if (dn(info, MIR[d]) > wn) { wn = dn(info, MIR[d]); wsrc = MIR[d]; wflip = true }
     let procKey = null; if (walking && act === '' && wn) { const p = t * .012 + ph, N = wn >= 4 ? wn : 4, f = S.ms && S.ms[wsrc] && wn >= 4 ? Math.floor((t + ph * 1000) / S.ms[wsrc]) % wn : ((Math.round(p / (Math.PI * 2 / N)) % N) + N) % N; procKey = 'allywalk:' + L.sprite + ':' + wsrc.toUpperCase(); const _u = 0, key = wn >= 4 ? 'walk' + (f + 1) : wn === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, wsrc, key); if (W) { P = wflip ? { im: W.im, flip: !W.flip } : W; full = wn >= 8 } }
     const proc = procKey && root.ProcMotion && root.ProcMotion.raw && root.ProcMotion.raw(procKey);   /* the studio's ขยับในเกม setting of that walk set (e.g. bob 0.3 / 0.6) replaces the built-in bob */
