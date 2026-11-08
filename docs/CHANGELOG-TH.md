@@ -4384,3 +4384,7 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 # v98.267 — 8 พฤศจิกายน 2026
 
 - **manifest ตรงกับดิสก์ขึ้น**: แก้พาธ .png→.webp ที่ไฟล์จริงเป็น .webp แล้ว 1,737 ที่ ทั้ง `js/asset-manifest.js` และ `data/asset-manifest.json` (เกมเดิมพึ่ง webp-redirect) · เหลือ 204 รายการไฟล์หายจริงจดไว้ใน TODO
+
+# v98.268 — 8 พฤศจิกายน 2026
+
+- วัดการพึ่งพาของโค้ดฉากเก่าใน index.html ด้วย coverage จริง + ถอดทั้งชุดทดลอง: ได้ 4 จุดที่เกมจริงยังเรียกใช้ (placeActions / entityCardMarkup / actionDetails / sharedCardBack) จึงยังไม่ลบ · บันทึกแผนลบที่ปลอดภัยไว้ใน TODO · ไม่มีการเปลี่ยนโค้ดเกม
