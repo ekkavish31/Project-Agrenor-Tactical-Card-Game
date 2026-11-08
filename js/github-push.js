@@ -68,7 +68,7 @@ async function reviewBeforePush(message,files,head){
 
 /* v97.03 · every js/ file in a push gets the new version as its ?v= on every page that loads it (game-settings.js used to keep 82.14 / 82.15 / 86
    on different pages, so some pages ran a stale browser copy of the pushed settings). */
-const PAGES=['index.html','editor.html','village-town.html','village-place.html','place-interior.html','world-map.html','battle-field.html','battleground.html','asset-studio.html','object-asset-studio.html','tree-motion-demo.html'];
+const PAGES=['index.html','editor.html','village-town.html','village-place.html','place-interior.html','world-map.html','battle-field.html','battleground.html','progress.html','asset-studio.html','object-asset-studio.html','tree-motion-demo.html'];
 async function bumpScriptVersions(files,ver,read){const js=files.filter(f=>!f.remove&&/^js\/[^/]+\.js$/.test(f.path)).map(f=>f.path.slice(3).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));if(!ver||!js.length)return;
  const re=new RegExp('(js/(?:'+js.join('|')+')\\?v=)[\\d.]+','g');for(const p of PAGES){if(files.some(f=>f.path===p))continue;const t=await read(p);if(!t)continue;const n=t.replace(re,'$1'+ver.slice(1));if(n!==t)files.push({path:p,content:n})}}
 // build(head) → [{path, content}] where content is string | Uint8Array | Blob; head.read(path) reads files at that commit

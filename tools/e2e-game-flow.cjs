@@ -35,7 +35,7 @@ const results = []; const ok = (name, pass, note = '') => { results.push({ name,
   await watch('5a battle in the field (luna + kier vs wolf + golem)', async p => { await p.goto(BASE + 'battle-field.html?battle=1&embed=1&r=5&biome=grass&ms=' + q('wolf*1.2,golem*1') + '&party=' + q('luna:44:44:charge:1,kier:50:50:charge:1')); await p.waitForTimeout(8000); if (!(await p.evaluate(() => !!document.querySelector('canvas')))) throw new Error('no canvas') });
   await watch('5b battle in the village (boss golem)', async p => { await p.goto(BASE + 'village-town.html?battle=1&embed=1&r=5&title=' + q('บอส') + '&ms=' + q('golem*1.2') + '&party=' + q('bram:54:54:charge:1,mil:50:50:charge:1')); await p.waitForTimeout(8000) });
   /* 7 other pages */
-  const PAGES = ['village-town.html', 'village-place.html?place=market', 'village-place.html?place=forge', 'place-interior.html?place=inn', 'world-map.html', 'scale-lineup.html', 'asset-studio.html', 'asset-studio.html?tab=manager', 'object-asset-studio.html', 'battleground.html', 'editor.html', 'index.html?editor=cards', 'index.html?editor=menu'];
+  const PAGES = ['village-town.html', 'village-place.html?place=market', 'village-place.html?place=forge', 'place-interior.html?place=inn', 'world-map.html', 'scale-lineup.html', 'asset-studio.html', 'asset-studio.html?tab=manager', 'object-asset-studio.html', 'battleground.html', 'progress.html', 'editor.html', 'index.html?editor=cards', 'index.html?editor=menu'];
   for (const u of (QUICK ? PAGES.slice(0, 4) : PAGES)) await watch('7 opens: ' + u, async p => { await p.goto(BASE + u); await p.waitForTimeout(5000) });
   await b.close(); server.close();
   /* 6 sub-maps / interiors (own server) */

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quest Log · Progress</title>
+<link rel="stylesheet" href="css/town-font.css">
+<style>
+:root{--bg:#14121c;--bg2:#1d1a29;--panel:#2a2438;--panel2:#352d47;--ink:#f3e9d2;--muted:#b9ad93;--gold:#e8c15a;--gold2:#a9822f;--line:#4a3f63;--ok:#7fd17f;--warn:#e8a64a;--bad:#c8584a;--blue:#7fb0e0}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 ProjectThai,Tahoma,system-ui,sans-serif}
+body{background:radial-gradient(1200px 500px at 50% -10%,#2b2342 0,transparent 70%),repeating-linear-gradient(45deg,#16131f 0 14px,#181522 14px 28px)}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 16px 60px}
+/* pixel-ish frame: stepped corners made with box-shadow */
+.box{background:var(--panel);border:2px solid var(--gold2);box-shadow:0 0 0 2px #0008,inset 0 0 0 2px #0006,0 4px 0 #0007;border-radius:4px;padding:14px}
+.box h2{margin:0 0 8px;font-size:15px;color:var(--gold);letter-spacing:.5px}
+header.top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.logo{font-size:22px;font-weight:700;color:var(--gold);text-shadow:0 2px 0 #000a,0 0 18px #e8c15a55}.logo small{display:block;font-size:12px;color:var(--muted);font-weight:400;text-shadow:none}
+.ver{font-size:12px;color:var(--muted);text-align:right}
+/* hero card */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.lv{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;text-align:center;background:conic-gradient(var(--gold) calc(var(--p)*1%),#0006 0);position:relative;box-shadow:0 0 0 3px #0008,0 0 24px #e8c15a44}
+.lv::before{content:"";position:absolute;inset:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#4a3f63,#1d1a29);box-shadow:inset 0 0 0 2px var(--gold2)}
+.lv b{position:relative;font-size:30px;color:var(--gold);line-height:1}.lv span{position:relative;display:block;font-size:11px;color:var(--muted)}
+.rank{font-size:18px;font-weight:700}.rank small{color:var(--muted);font-weight:400;font-size:12px;display:block}
+.xp{position:relative;margin:30px 0 4px;height:22px;background:#0009;border:2px solid #000;border-radius:3px;overflow:visible;box-shadow:inset 0 0 0 1px var(--gold2)}
+.xp i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--gold) 0 14px,#c9a042 14px 16px);box-shadow:0 0 12px #e8c15a77}
+.xp em{position:absolute;top:-2px;bottom:-2px;width:0;border-left:3px dashed #ff8a7a}.xp em span{position:absolute;top:-22px;left:-34px;font-size:11px;color:#ff9a8a;white-space:nowrap;font-style:normal}
+.xpnum{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.chip{background:#0006;border:1px solid var(--line);border-radius:14px;padding:3px 11px;font-size:12px}.chip b{font-size:15px}
+.note{font-size:12px;color:var(--muted);margin:8px 0 0}
+/* world map */
+.map{position:relative;width:100%;overflow-x:auto}
+svg.map-svg{width:100%;min-width:760px;height:auto;display:block}
+.node{cursor:pointer}.node:focus{outline:none}
+.node .ring{fill:none;stroke-width:9;stroke-linecap:round}
+.node .disc{fill:#241f33;stroke:var(--gold2);stroke-width:3}
+.node.sel .disc{stroke:#fff;stroke-width:4;filter:drop-shadow(0 0 8px #fff8)}
+.node.done .disc{fill:#4a3a14;stroke:var(--gold)}
+.node.act .pulse{animation:pul 1.8s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes pul{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.9;transform:scale(1.12)}}
+.node text{font-family:inherit;text-anchor:middle;pointer-events:none}
+.node .ico{font-size:30px}.node .nm{font-size:13px;fill:var(--ink)}.node .pc{font-size:15px;font-weight:700;fill:var(--gold)}
+.road{fill:none;stroke:#0009;stroke-width:12;stroke-linecap:round}.road2{fill:none;stroke:#c9a26a;stroke-width:5;stroke-dasharray:2 12;stroke-linecap:round}
+/* quest log */
+.log{display:grid;grid-template-columns:1fr;gap:10px}
+.lh{display:flex;gap:12px;align-items:center}.lh .big{font-size:38px;line-height:1}.lh h3{margin:0;font-size:18px}.lh p{margin:0;color:var(--muted);font-size:12.5px}
+.bar{height:14px;background:#0009;border:2px solid #000;border-radius:3px;overflow:hidden}.bar i{display:block;height:100%}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button{font:inherit;color:var(--ink);background:var(--panel2);border:2px solid var(--line);border-radius:4px;padding:4px 12px;cursor:pointer}.tabs button.on{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px #e8c15a44}
+.q{display:grid;grid-template-columns:28px 1fr 130px;gap:10px;align-items:center;padding:8px 6px;border-bottom:1px dashed #4a3f6388}
+.q:last-child{border:0}.q .st{font-size:20px;text-align:center}.q .tt{line-height:1.35}.q small{color:var(--muted);font-size:11.5px}
+.q .stars{color:var(--gold);letter-spacing:1px;font-size:11px}.q.done .tt{color:#cdbf9a}.q .mini{height:9px;background:#0009;border-radius:2px;border:1px solid #000;overflow:hidden}.q .mini i{display:block;height:100%}
+.q .pp{font-size:11px;color:var(--muted);text-align:right}.est{color:var(--warn);font-size:10.5px;border:1px solid var(--warn);border-radius:8px;padding:0 5px;margin-left:5px}
+/* journey */
+svg.hist{width:100%;height:auto;display:block}
+.how{font-size:12px;color:var(--muted)}.how code{background:#0008;border:1px solid var(--line);border-radius:3px;padding:1px 6px;color:var(--gold)}
+.grid2{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}.hero{grid-template-columns:1fr;justify-items:center;text-align:center}.q{grid-template-columns:24px 1fr}.q .side{grid-column:2}}
+@media(prefers-reduced-motion:reduce){.node.act .pulse{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="logo">⚔ QUEST LOG<small>Agrenor: Paths Unwritten · บันทึกการเดินทางของการพัฒนาเกม</small></div><div class="ver" id="ver"></div></header>
+
+<section class="box hero" id="hero"></section>
+<section class="box" style="margin-top:14px"><h2>🗺 แผนที่การเดินทาง — แต่ละเมืองคือหนึ่งเฟส (กดเพื่อเปิดสมุดภารกิจ)</h2><div class="map"><svg class="map-svg" id="mapsvg" viewBox="0 0 1100 430" role="img" aria-label="แผนที่เฟส"></svg></div></section>
+
+<div class="grid2">
+  <section class="box log" id="log"></section>
+  <section class="box"><h2>📈 เส้นทางที่เดินมาแล้ว (ต่อเวอร์ชัน)</h2><div id="hist"></div><p class="note" id="histnote"></p></section>
+</div>
+<section class="box how" style="margin-top:14px"><h2>🔧 อัปเดตอย่างไร</h2>
+ ตัวเลขทั้งหมดคำนวณจาก <code>data/master-plan.json</code> (รายการภารกิจ + น้ำหนัก) ร่วมกับสถานะใน <code>docs/TODO.md</code> (<code>[x]</code> เสร็จ 100% · <code>[~]</code> ครึ่งทาง · <code>[ ]</code> ยังไม่ทำ) — ติ๊กใน TODO แล้วรัน <code>node tools/update-progress.cjs</code> ตัวเลขและกราฟจะขยับ ทุกครั้งที่ขยับเวอร์ชันจะมีจุดใหม่ในกราฟ · ป้าย <span class="est">ประเมิน</span> คือค่าประมาณที่ยังไม่มีบรรทัดใน TODO รองรับ
+ <br>ค่า % นี้วัด "งานที่ทำแล้วตามน้ำหนัก" ซึ่งคนละอย่างกับ "ความรู้สึกพร้อมเล่น" ที่คุณประเมิน — ธงสีแดงบนแถบ XP คือค่าที่คุณให้ไว้
+</section>
+</div>
+<script src="data/progress.js"></script>
+<script>
+(function(){
+'use strict';
+const P=window.PROGRESS, $=id=>document.getElementById(id), esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+if(!P){document.body.innerHTML='<p style="padding:20px">ไม่พบ data/progress.js — รัน <code>node tools/update-progress.cjs</code></p>';return}
+const RANKS=['ผู้เริ่มต้น','ลูกมือ','นักเดินทาง','นักผจญภัยฝึกหัด','นักผจญภัย','ผู้กล้า','อัศวินฝึกหัด','อัศวิน','ผู้พิทักษ์','วีรบุรุษ','ตำนาน'];
+const col=p=>p>=100?'#e8c15a':p>=60?'#7fd17f':p>=30?'#7fb0e0':p>0?'#b58aff':'#6a5f80';
+let sel=null,filter='open';
+const lvl=Math.floor(P.gameOverall/5)+1, rank=RANKS[Math.min(RANKS.length-1,Math.floor(P.gameOverall/10))];
+$('ver').innerHTML='เวอร์ชัน '+esc(P.generatedFor)+'<br>'+esc(P.date||'');
+/* hero */
+$('hero').innerHTML=`<div class="lv" style="--p:${P.gameOverall}"><div><b>${lvl}</b><span>LEVEL</span></div></div>
+<div><div class="rank">${rank}<small>ความคืบหน้าส่วนเกม (ไม่รวมเครื่องมือ) ${P.gameOverall}% · รวมเครื่องมือ ${P.overall}%</small></div>
+<div class="xp" aria-label="ความคืบหน้า ${P.gameOverall}%"><i style="width:${P.gameOverall}%"></i>${P.userRating?`<em style="left:${P.userRating.pct}%"><span>🚩 ผู้ใช้ประเมิน ${P.userRating.pct}%</span></em>`:''}</div>
+<div class="xpnum"><span>EXP ${P.gameOverall}/100</span><span>เลเวลถัดไปที่ ${Math.min(100,lvl*5)}%</span></div>
+<div class="chips"><span class="chip">✔ เสร็จ <b>${P.totals.done}</b></span><span class="chip">◐ ครึ่งทาง <b>${P.totals.partial}</b></span><span class="chip">○ ยังไม่ทำ <b>${P.totals.todo}</b></span><span class="chip">ภารกิจทั้งหมด <b>${P.totals.done+P.totals.partial+P.totals.todo}</b></span></div>
+${P.userRating?`<p class="note">🚩 ${esc(P.userRating.note||'')} (${esc(P.userRating.date)})</p>`:''}</div>`;
+/* map */
+const N=P.phases.length, pts=P.phases.map((p,i)=>{const x=80+i*(940/(N-1)),y=i%2?310:150+ (i%4===0?0:20);return {x,y}});
+function drawMap(){
+  let d='M'+pts.map(p=>p.x+' '+p.y).join(' S');
+  let path='';for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],mx=(a.x+b.x)/2;path+=(i?'':'M'+a.x+' '+a.y)+' C'+mx+' '+a.y+' '+mx+' '+b.y+' '+b.x+' '+b.y+' '}
+  let s=`<defs><radialGradient id="g" cx="50%" cy="40%"><stop offset="0" stop-color="#2d2745"/><stop offset="1" stop-color="#14121c"/></radialGradient></defs><rect x="0" y="0" width="1100" height="430" fill="url(#g)" rx="6"/>`;
+  for(let i=0;i<40;i++){s+=`<circle cx="${(i*277)%1100}" cy="${(i*131)%430}" r="${(i%3)+.6}" fill="#fff" opacity=".12"/>`}
+  s+=`<path class="road" d="${path}"/><path class="road2" d="${path}"/>`;
+  P.phases.forEach((p,i)=>{const {x,y}=pts[i],R=44,C=2*Math.PI*R,full=p.pct>=100,act=!full&&p.pct>0,off=C*(1-p.pct/100);
+    s+=`<g class="node ${full?'done':''} ${act?'act':''} ${sel===p.id?'sel':''}" data-id="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)} ${p.pct}%" transform="translate(${x},${y})">
+    ${act?`<circle class="pulse" r="${R+10}" fill="none" stroke="${p.color}" stroke-width="3"/>`:''}
+    <circle class="disc" r="${R}"/><circle class="ring" r="${R}" stroke="#000a" style="stroke-width:9"/>
+    <circle class="ring" r="${R}" stroke="${col(p.pct)}" stroke-dasharray="${C}" stroke-dashoffset="${off}" transform="rotate(-90)"/>
+    <text class="ico" y="10">${p.icon}</text><text class="pc" y="${R+22}">${p.pct}%</text><text class="nm" y="${R+40}">${esc(p.name.length>20?p.name.slice(0,19)+'…':p.name)}</text>${p.inGame?'':`<text class="nm" y="${R+55}" fill="#8a7fa8" font-size="11">เครื่องมือ</text>`}</g>`});
+  $('mapsvg').innerHTML=s;
+  $('mapsvg').querySelectorAll('.node').forEach(n=>{const go=()=>{sel=n.dataset.id;drawMap();drawLog()};n.onclick=go;n.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}}})
+}
+/* quest log */
+function drawLog(){
+  const p=P.phases.find(x=>x.id===sel)||P.phases[0];if(!sel)sel=p.id;
+  const items=p.items.filter(i=>filter==='all'||(filter==='open'?i.st!=='done':i.st==='done')).sort((a,b)=>({partial:0,todo:1,done:2}[a.st]-{partial:0,todo:1,done:2}[b.st])||b.w-a.w);
+  $('log').innerHTML=`<div class="lh"><div class="big">${p.icon}</div><div style="flex:1"><h3>${esc(p.name)} <small style="color:var(--gold)">${p.pct}%</small></h3><p>${esc(p.desc)}</p></div></div>
+  <div class="bar"><i style="width:${p.pct}%;background:${col(p.pct)}"></i></div>
+  <div class="note">เสร็จ ${p.counts.done} · ครึ่งทาง ${p.counts.partial} · ยังไม่ทำ ${p.counts.todo} · น้ำหนักรวม ${p.weight}</div>
+  <div class="tabs"><button data-f="open" class="${filter==='open'?'on':''}">ภารกิจที่เหลือ</button><button data-f="done" class="${filter==='done'?'on':''}">สำเร็จแล้ว</button><button data-f="all" class="${filter==='all'?'on':''}">ทั้งหมด</button></div>
+  <div>${items.map(i=>`<div class="q ${i.st}"><div class="st">${i.st==='done'?'✔':i.st==='partial'?'◐':'○'}</div><div class="tt">${esc(i.title)}${i.est?'<span class="est">ประเมิน</span>':''}<br><small>${esc(i.src)}</small></div><div class="side"><div class="stars" title="น้ำหนัก ${i.w}">${'★'.repeat(i.w)}</div><div class="mini"><i style="width:${i.pct}%;background:${col(i.pct)}"></i></div><div class="pp">${i.pct}%</div></div></div>`).join('')||'<p class="note">ไม่มีภารกิจในกลุ่มนี้</p>'}</div>`;
+  $('log').querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{filter=b.dataset.f;drawLog()})
+}
+/* history */
+function drawHist(){
+  const h=P.history||[],W=520,H=250,L=36,B=28,T=12,R=12;
+  const x=i=>L+(h.length>1?i*(W-L-R)/(h.length-1):(W-L-R)/2),y=v=>H-B-(v/100)*(H-B-T);
+  let s=`<svg class="hist" viewBox="0 0 ${W} ${H}" role="img" aria-label="กราฟความคืบหน้า">`;
+  for(const g of [0,25,50,75,100])s+=`<line x1="${L}" x2="${W-R}" y1="${y(g)}" y2="${y(g)}" stroke="#4a3f63" stroke-dasharray="3 5"/><text x="${L-6}" y="${y(g)+4}" text-anchor="end" font-size="10" fill="#b9ad93">${g}</text>`;
+  if(P.userRating)s+=`<line x1="${L}" x2="${W-R}" y1="${y(P.userRating.pct)}" y2="${y(P.userRating.pct)}" stroke="#ff8a7a" stroke-width="1.5" stroke-dasharray="6 4"/><text x="${W-R}" y="${y(P.userRating.pct)-4}" text-anchor="end" font-size="10" fill="#ff9a8a">🚩 ผู้ใช้ ${P.userRating.pct}%</text>`;
+  const line=k=>h.map((p,i)=>(i?'L':'M')+x(i)+' '+y(p[k])).join(' ');
+  s+=`<path d="${line('overall')}" fill="none" stroke="#7fb0e0" stroke-width="2.5"/><path d="${line('gameOverall')}" fill="none" stroke="#e8c15a" stroke-width="3"/>`;
+  h.forEach((p,i)=>{s+=`<circle cx="${x(i)}" cy="${y(p.gameOverall)}" r="4" fill="#e8c15a" stroke="#000"><title>${esc(p.v)} · ${p.gameOverall}%</title></circle>`;if(i%Math.ceil(h.length/6)===0||i===h.length-1)s+=`<text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="9.5" fill="#b9ad93">${esc(String(p.v).replace(/^v98\./,''))}</text>`});
+  s+=`</svg><div class="chips"><span class="chip" style="border-color:#e8c15a">━ ส่วนเกม ${P.gameOverall}%</span><span class="chip" style="border-color:#7fb0e0">━ รวมเครื่องมือ ${P.overall}%</span></div>`;
+  $('hist').innerHTML=s;
+  $('histnote').textContent=h.length>1?'เทียบจุดแรก ('+h[0].v+'): '+((h[h.length-1].gameOverall-h[0].gameOverall)>=0?'+':'')+(h[h.length-1].gameOverall-h[0].gameOverall).toFixed(1)+' จุดเปอร์เซ็นต์':'จุดเริ่มต้นของการวัด — กราฟจะยาวขึ้นทุกครั้งที่ปล่อยเวอร์ชันและรันตัวอัปเดต'
+}
+sel=(P.phases.filter(p=>p.pct<100).sort((a,b)=>b.pct-a.pct)[0]||P.phases[0]).id;
+drawMap();drawLog();drawHist();
+})();
+</script>
+</body>
+</html>
