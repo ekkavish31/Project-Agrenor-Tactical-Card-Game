@@ -9,7 +9,7 @@
   #grid.ms-mode [data-clip-index]{cursor:copy}#grid [data-clip-index].ms-on{outline:3px solid #2f6fd0;outline-offset:-3px;position:relative}
   #grid [data-clip-index].ms-on::after{content:"✔";position:absolute;top:6px;left:8px;background:#2f6fd0;color:#fff;border-radius:6px;font:700 12px AgThai,system-ui;padding:1px 5px}
   #grid.ms-mode .anim-matrix th{cursor:pointer}#grid.ms-mode .anim-matrix th:hover{text-decoration:underline}
-  .ms-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0;padding:6px 8px;border:1px solid #9db4dd;border-radius:10px;background:#eef3fb}
+  .ms-bar[hidden]{display:none}.ms-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0;padding:6px 8px;border:1px solid #9db4dd;border-radius:10px;background:#eef3fb}
   .ms-bar b{margin-right:4px}.ms-bar button{font:inherit}.ms-bar .danger{color:#a8402f;border-color:#a8402f}.ms-bar small{color:#5a6a80}`;
   document.head.append(st);
   const cellClip = b => { const cv = b.querySelector('canvas'), e = (B().state.entries || []).find(x => x.canvas === cv); return e && e.clip };
@@ -20,7 +20,7 @@
     for (const b of cells()) { const c = cellClip(b); b.classList.toggle('ms-on', on && !!c && picked.has(c.id)) }
     const n = picked.size, bar = grid.querySelector('.ms-bar'), btn = grid.querySelector('#msToggle');
     if (btn) { btn.textContent = on ? '☑ เลือกหลายช่อง: เปิด' : '☐ เลือกหลายช่อง'; btn.setAttribute('aria-pressed', on) }
-    if (bar) { bar.hidden = !on; bar.querySelector('.ms-n').textContent = n; bar.querySelectorAll('[data-act]').forEach(x => x.disabled = !n || busy) }
+    if (bar) { bar.hidden = !on; bar.querySelector('.ms-n').textContent = n; bar.querySelectorAll('[data-act]').forEach(x => { x.disabled = !n || busy; x.hidden = !n }); const hint = bar.querySelector('small'); if (hint) hint.hidden = !!n }
   }
   function inject() {
     const ctl = grid.querySelector('.entity-controls'); if (!ctl || ctl.querySelector('#msToggle')) return paint();

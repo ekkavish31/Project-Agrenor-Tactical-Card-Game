@@ -89,3 +89,6 @@ nav button img.bust{width:43px;height:43px;object-fit:cover;border-radius:8px;ba
 #animation-review .ur-review-tools [hidden]{display:none!important}#animation-review .ur-review-tools button[aria-pressed=true]{background:#2f6a4a;color:#fff;border-color:#2f6a4a}#animation-review .ur-review-tools #ur-reject[aria-pressed=true]{background:#a8402f;border-color:#a8402f}
 /* v98.117 · the eraser panel is exactly the box inset 4vh 8vw (it was as wide as the whole window, so its "เสร็จแล้ว" button sat off screen) and its picture area uses the space that is left */
 #animation-review.ur-v2 #wi-eraser:not([hidden]) #wie-scroll{max-height:calc(92vh - 190px)}
+
+/* v98.256 · a passed cell shows no pill (the row label says ผ่านครบทุกทิศ): only things that need attention are marked */
+.clip-status:empty{display:none}
