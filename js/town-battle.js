@@ -408,7 +408,8 @@
     return u.side === 'monster' ? { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' }
       : u === FB.hero(st) ? { src: `assets/portraits/hero-${lookNow}-neutral.webp`, pos: '50% 4%', size: '230%' }
       : u.key === 'sib' ? { src: `assets/portraits/hero-${otherLook}-neutral.webp`, pos: '50% 4%', size: '230%' }
-      : { src: `assets/cards/portraits/u-${u.key}.webp`, pos: '50% 22%', size: '165%' };
+      : ['kier', 'bram', 'luna', 'mil'].includes(u.key) ? { src: `assets/cards/portraits/u-${u.key}.webp`, pos: '50% 22%', size: '165%' }
+      : { src: `assets/village-town/npc/${u.key}/se-stand.webp`, pos: '50% 9%', size: '285%' };   /* recruits have no card portrait: the head of their standing picture */
   }
   /* click a chip of the queue: the camera goes to that fighter, a small detail card opens, a grey crystal turns over its head and its cells for the NEXT turn are shown; click again / Esc / ✕ to close */
   function setInspect(u) { inspectU = (!u || u === inspectU || u.hp <= 0) ? null : u; userCam = false; cam.set = true; refresh(); queueSync() }
@@ -1220,19 +1221,29 @@
   }
   /* monster: old MonsterArt clips (idle/walk/windup/strike/hit/down, SE/NE + mirror); static picture until the clip loads */
   /* companions: the old per-character pictures (<key>_<se|ne>_<idle|windup|strike|hit|guard|down>.webp), SW/NW mirrored, moved with poseMotion */
+  let _assetById = null;
+  function allyWalkPic(u, t) {
+    const M = window.ASSET_MANIFEST, c = M?.studioAllyWalks?.[u.key]?.[u.dir]; if (!c?.frames?.length) return null;
+    if (!_assetById) _assetById = new Map((M.assets || []).map(a => [a.id, a]));
+    const total = c.frames.reduce((n, f) => n + (Number(f.ms) || 100), 0); let e = ((t + (u.id?.length || 0) * 90) % total + total) % total, fr = c.frames[0];
+    for (const f of c.frames) { const ms = Number(f.ms) || 100; if (e < ms) { fr = f; break } e -= ms }
+    const src = _assetById.get(fr.assetId)?.file || fr.src; return im(src);
+  }
   function drawAlly(g, u, t) {
     if (u.key === 'sib') {   /* v98.237 · the other hero is drawn by the lead's own routine (drawHero) on the sprite table of its look, so every picture the studio saved for it is used */
       const look = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } })(), tab = window.HeroVariant?.tableFor?.(look);
       if (tab) { SPR_TABLE = tab; try { drawHero(g, u, t) } finally { SPR_TABLE = null } return }
     }
     const p = project(u.vu, u.vv), back = ['NE', 'NW'].includes(u.dir), flip = ['SW', 'NW'].includes(u.dir), pose = u.hp <= 0 ? 'down' : u.walking ? 'idle' : (['windup', 'strike', 'hit', 'guard'].includes(u.pose) ? u.pose : 'idle');
-    if (!ALLY_ART.includes(u.key) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
+    if (!ALLY_ART.includes(u.key) && !(pose !== 'idle' && !u.walking && (im(`assets/tactics/${u.key}_${u.dir.toLowerCase()}_${pose}.webp`) || im(`assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`))) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
       if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT / 56 * .78 * 1.065 * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1));   /* v98.126 · ×1.065 = same 1.45-UNIT canvas as bram/luna/mil, × the ⚖ size */ if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
       g.save(); if (u.hp <= 0) g.globalAlpha *= .5; g.translate(pm.dx * .6, pm.dy - (u.lift || 0)); VillagerDraw(g, look, p.x, p.y, t, { walking: u.walking, face: u.dir, scale: UNIT / 56 * .78, act: u.hp <= 0 ? 'sleep' : u.pose === 'strike' ? 'work' : '' });
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .5; VillagerDraw(g, look, p.x, p.y, t, { face: u.dir, scale: UNIT / 56 * .78 }) } g.restore(); if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
     /* v97.65: allies with their own SW/NW pictures (ALLY_OWN) use them as they are; everyone else mirrors SE/NE */
-    const own = (ALLY_OWN[u.key] || []).includes(u.dir.toLowerCase()), mirSrc = `assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`;
-    let i = own && im(`assets/tactics/${u.key}_${u.dir.toLowerCase()}_${pose}.webp`), useFlip = false;
+    /* v98.254 · the pictures the editor holds for this ally: its own picture for THIS direction first (all four exist in the manifest), the mirrored one only as a fallback; while walking, the 12-frame walk saved in the editor (studioAllyWalks) */
+    const mirSrc = `assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`;
+    let i = im(`assets/tactics/${u.key}_${u.dir.toLowerCase()}_${pose}.webp`), useFlip = false;
+    if (u.walking && u.hp > 0) { const wf = allyWalkPic(u, t); if (wf) i = wf }
     if (!i) { i = im(mirSrc) || im(`assets/tactics/${u.key}_se_idle.webp`); useFlip = flip }
     shadow(g, p, UNIT * .24);
     if (!i) return; const size = UNIT * 1.45 * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1), pm = poseMotion(u, t);
