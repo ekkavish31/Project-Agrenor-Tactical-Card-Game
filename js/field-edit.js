@@ -157,6 +157,11 @@
     $('feTurn').disabled = !u; $('feDup').disabled = !p; $('feDel').disabled = !p; $('feUndo').disabled = !ops.length; $('feRedo').disabled = !undone.length; $('feSave').textContent = dirty ? '💾 บันทึก BG ●' : '💾 บันทึก BG';
     hint.textContent = (performance.now() < noteT ? noteMsg + ' · ' : '') + 'ล้อเมาส์ = ซูม · ลากพื้นว่าง = เลื่อน · ลากของ/ตัวละคร = ย้าย · R หมุน · D ทำซ้ำ · Del ลบ · Ctrl+Z ย้อน · Ctrl+S บันทึก';
   }
+  /* camera buttons with the HUD object set (assets/ui/hud): zoom in / out, centre, fit the whole field */
+  { const z = document.createElement('div'); z.id = 'feZoom'; z.style.cssText = 'position:fixed;right:22px;bottom:262px;z-index:39;display:flex;flex-direction:column;gap:6px';
+    z.innerHTML = '<button class="hudb hudb-plus" title="ซูมเข้า" aria-label="ซูมเข้า" style="--s:48px"></button><button class="hudb hudb-minus" title="ซูมออก" aria-label="ซูมออก" style="--s:48px"></button><button class="hudb hudb-focus" title="จัดกึ่งกลางสนาม" aria-label="จัดกึ่งกลางสนาม" style="--s:48px"></button><button class="hudb hudb-expand" title="ดูทั้งสนาม" aria-label="ดูทั้งสนาม" style="--s:48px"></button>';
+    document.body.appendChild(z); const [zi, zo, zf, zx] = z.children, hold = () => cvs.dispatchEvent(new WheelEvent('wheel', { deltaY: 0 })), step = f => { hold(); zoom = Math.max(.45, Math.min(3.5, zoom * f)) };
+    zi.onclick = () => step(1.25); zo.onclick = () => step(.8); zf.onclick = () => { hold(); zoom = 1; pan.x = 0; pan.y = 0 }; zx.onclick = () => { hold(); zoom = .6; pan.x = 0; pan.y = 0 } }
   /* ---------- overlay drawn inside the world transform (called from field-host frame) ---------- */
   window.FieldEdit = {
     active: true, ops: () => ops.slice(), save, push, build,

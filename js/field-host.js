@@ -375,15 +375,14 @@ const ui = document.createElement('div'); ui.id = 'fieldUi'; ui.innerHTML = `<st
 <div class="unit"><canvas width="144" height="144"></canvas><div><b></b> <small class="side"></small><div class="hp"><i></i></div><small class="stats"></small></div></div>
 `;
 if (window.FieldHeight) document.body.append(ui);
-/* v98.252 · camera turn control, bottom right, all pictures: the two turn arrows come from assets/ui/battle-controls-v34.webp, the compass is assets/ui/battle-compass-frame|rose.webp and its rose turns with the view (N E S W) */
+/* v98.252 · camera turn control, bottom right, all pictures (v98.279: the user's HUD object set — assets/ui/hud/*, css/hud-art.css; was battle-controls-v34 + battle-compass-frame|rose.webp and its rose turns with the view (N E S W) */
 const compass = document.createElement('div'); compass.id = 'fieldCompass';
 compass.innerHTML = `<style>#fieldCompass{position:fixed;right:14px;bottom:132px;z-index:39;display:flex;align-items:center;gap:2px;user-select:none}
-#fieldCompass .rb{width:58px;height:58px;border:0;padding:0;background:url(assets/ui/battle-controls-v34.webp) no-repeat;background-size:400% 200%;cursor:pointer;filter:drop-shadow(0 3px 5px #000a);transition:transform .12s,filter .12s}
-#fieldCompass .rb.l{background-position:33.333% 0}#fieldCompass .rb.r{background-position:66.666% 0}#fieldCompass .rb:hover{transform:scale(1.1);filter:drop-shadow(0 0 8px #ffd978) brightness(1.1)}#fieldCompass .rb:active{transform:scale(.94)}
-#fieldCompass .cmp{position:relative;width:104px;height:104px;filter:drop-shadow(0 4px 8px #000a)}#fieldCompass .cmp img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#fieldCompass .cmp .ro{inset:12%;width:76%;height:76%;transition:transform .55s cubic-bezier(.3,1.4,.5,1)}
-@media (max-width:820px){#fieldCompass{bottom:118px}#fieldCompass .rb{width:44px;height:44px}#fieldCompass .cmp{width:78px;height:78px}}</style>
-<button class="rb l" data-d="-1" title="หมุนกล้องซ้าย (Q)" aria-label="หมุนกล้องซ้าย"></button><div class="cmp"><img class="fr" src="assets/ui/battle-compass-frame.webp" alt=""><img class="ro" src="assets/ui/battle-compass-rose.webp" alt=""></div><button class="rb r" data-d="1" title="หมุนกล้องขวา (E)" aria-label="หมุนกล้องขวา"></button>`;
+#fieldCompass .hudb{--s:60px}
+#fieldCompass .cmp{position:relative;width:112px;height:112px;filter:drop-shadow(0 4px 8px #000a)}#fieldCompass .cmp img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#fieldCompass .cmp .ro{transition:transform .55s cubic-bezier(.3,1.4,.5,1)}
+@media (max-width:820px){#fieldCompass{bottom:118px}#fieldCompass .hudb{--s:46px}#fieldCompass .cmp{width:84px;height:84px}}</style>
+<button class="hudb hudb-rot-left" data-d="-1" title="หมุนกล้องซ้าย (Q)" aria-label="หมุนกล้องซ้าย"></button><div class="cmp"><img class="fr" src="assets/ui/hud/compass-frame.webp" alt=""><img class="ro" src="assets/ui/hud/compass-rose.webp" alt=""></div><button class="hudb hudb-rot-right" data-d="1" title="หมุนกล้องขวา (E)" aria-label="หมุนกล้องขวา"></button>`;
 let roseTurn = ROT * 90; const syncRose = () => { const el = compass.querySelector('.ro'); if (!el) return; let target = ROT * 90; while (target - roseTurn > 180) target -= 360; while (target - roseTurn < -180) target += 360; roseTurn = target; el.style.transform = 'rotate(' + target + 'deg)' };
 if (window.FieldHeight) { document.body.append(compass); syncRose() }
 const turnBy = d => { turnView(d); setTimeout(syncRose, 40); setTimeout(syncRose, 700) };
