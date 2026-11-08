@@ -911,7 +911,11 @@
     /* a group: more monsters deeper in the fog, at night and in ambushes; the boss brings two of the local monsters */
     const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
     const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
-    for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }
+    /* v98.250 · a varied group: kinds not yet in the group come first, no kind appears more than twice, and now and then a wanderer from a neighbouring land joins (it used to be 60 % the leader's kind again) */
+    const roster = [...new Set(G.FOES[here.biome] || G.FOES.grass)], wander = ['bandit', 'wolf', 'bat', 'kobold', 'slime'].filter(k => !roster.includes(k)), used = { [foe]: 1 };
+    for (let i = 1; i < n; i++) { let cand = roster.slice(); if (wander.length && Math.random() < .3) cand = cand.concat(wander);
+      cand = cand.filter(k => (used[k] || 0) < 2); if (!cand.length) cand = roster.slice(); cand.sort((a, b) => ((used[a] || 0) - (used[b] || 0)) || (Math.random() - .5));
+      const k = cand[0]; used[k] = (used[k] || 0) + 1; group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
     const hp0 = S.hp;   /* v98.41 · for titles: was the win flawless / a close call */
     const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
