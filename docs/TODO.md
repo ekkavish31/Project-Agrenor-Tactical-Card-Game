@@ -530,3 +530,4 @@
 - [ ] การตรวจ "ใช้งานอยู่" ต้องอิงรูปที่โหลดจริงจากหน้าเกมจริง (Playwright บันทึก request) ไม่รวม index.html ฉากเก่า
 - [ ] (v98.259) ถอดฉากเก่าต่อ: สคริปต์เหล่านี้ผูกเป็นทอด ถอดเดี่ยวไม่ได้ ต้องทำเป็นชุดพร้อมกัน: `location-actions` · `interface-v02` · `journey-core/ui` · `paper-cards` · `card-drag` · `developer` · `editor` (ตัวอื่นเรียก `placeActions`, `entityCardMarkup`, `freshness`, `setDevMode`, `fitHand` ฯลฯ) — วิธีที่ปลอดภัย: เขียนเทสต์เล่นจริง title→หมู่บ้าน→เข้าสถานที่→สู้ แล้วถอดทั้งชุดทีเดียว
 - [ ] รวมค่า drawSize (hero 1.6 / ally 1.45) และขนาดพื้นที่ตัวเอกในหมู่บ้าน (93.6) ให้อยู่ที่เดียว: ตอนนี้ซ้ำใน `scale-lineup.html`, `js/character-scale.js`, `js/villager-draw.js`, `village-town.html`, `js/town-battle.js`
+- [ ] ขนาดมอนสเตอร์บนแผนที่โลก/ในหมู่บ้านนอกฉากต่อสู้ (ถ้ามีในอนาคต) และตัวละครของ editor ที่วาดเองนอก `VillagerDraw` ยังต้องผูกกับ ⚖ ด้วย — ตอนนี้ไม่มีฉากอื่นวาดมอนสเตอร์นอก town-battle

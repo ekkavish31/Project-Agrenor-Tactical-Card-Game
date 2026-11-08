@@ -74,13 +74,8 @@
     g.fillStyle = 'rgba(255,248,230,.96)'; g.strokeStyle = '#8a6a3a'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, h, 9); g.fill(); g.stroke();
     g.fillStyle = '#3a2a14'; g.textAlign = 'left'; lines.forEach((l, i) => g.fillText(l, x + 9, y + 18 + i * 17)); g.restore();
   }
-  /* v95.21 · villagers here are the same size as on the village map: the village editor's cast scales (all × npc × this one) */
-  let castCache = null, castAt = 0;
-  function castScale(k) {
-    const now = performance.now(); if (!castCache || now > castAt) { castAt = now + 2000; try { castCache = (JSON.parse(localStorage.getItem('project-a-village-editor-v67') || 'null')?.assets || root.VillageDefaultLayout?.assets || {}).cast || {} } catch (e) { castCache = {} } }
-    const C = castCache, o = x => (C[x] && typeof C[x] === 'object' ? C[x] : null), all = +C.all || 1;
-    return all * (o(k)?.s ?? 1) * (o('npc')?.s ?? 1);
-  }
+  /* v98.263 · ONE rule with the village: this sub-map's size multiplier (MapScale 'place') × the ⚖ Scale Lineup factor of that villager (the old per-NPC cast scales are gone) */
+  function castScale(k) { return (root.placeScale ? root.placeScale() : 1) * (root.CharScaleAdjust?.factor('village', k) || 1) }
   /* world point → talk to the villager under it. Returns true when a villager took the click. */
   /* v95.14 · talking needs you next to the villager: a click from afar walks the hero up first (ctx = {hero, go(u,v), stop()} from village-place.html) */
   const REACH = 1.6; let approach = null, CTX = null;
