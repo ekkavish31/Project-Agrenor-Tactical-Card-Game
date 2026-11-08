@@ -4,7 +4,8 @@
    DRAW.hero / .ally how big the 384-px canvas of a hero / team-mate picture is drawn in a battle, in grid units (UNIT); the ratio ally/hero is the base height difference
    MON.base × .k     battle size of a monster = base × its table scale × k, per picture height (town-battle.js MON table)
    VILLAGE_HERO_PX   canvas px of the hero on the village map at multiplier 1 (sub-maps and interiors follow it)
-   WORLD_HERO_PX     canvas px of the party token on the world map at multiplier 1 */
+   WORLD_HERO_PX     canvas px of the party token on the world map at multiplier 1
+   INTERIOR_*        the same two numbers for the inside of a building */
 (function (root) {
   'use strict';
   root.CharSize = Object.freeze({
@@ -13,6 +14,8 @@
     MON: Object.freeze({ base: 1.6, k: .8 }),
     VILLAGE_HERO_PX: 93.6,
     WORLD_HERO_PX: 76,
+    INTERIOR_HERO_PX: 104,          /* hero canvas px inside a room (place-interior.html) at multiplier 1 */
+    INTERIOR_NPC_SCALE: .95,        /* VillagerDraw scale of a person inside a room at multiplier 1 */
     FEET_Y: 360,                    /* every character picture is 384×384 with its feet (lowest opaque row) at y=360 — Asset Studio > Animation keeps it so */
     NPC_CANVAS_K: 384 * 84 / 330   /* canvas px of a VillagerDraw picture at scale 1 */
   });

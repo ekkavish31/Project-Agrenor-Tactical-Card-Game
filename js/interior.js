@@ -524,7 +524,7 @@
     for (const a of people.values()) list.push({ y: a.vu + a.vv, f: () => drawPerson(a, t) });
     list.push({ y: hero.vu + hero.vv, f: () => drawHero(t) });
     /* v98.233 · the other hero (the sibling) follows one body length behind */
-    for (const o of window.HeroFollower?.objects({ u: hero.vu, v: hero.vv }, null, t, { show: true, project: P, size: 104 * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), face: (du, dv, pd) => faceOf(du, dv) || pd, drawFn: (p, dir, walking, mot) => { g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * IK(), 6 * IK(), 0, 0, 7); g.fill(); return drawHeroMotion(t, p, 104 * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), dir, walking, mot) } }) || []) list.push({ y: o.uv, f: o.draw });
+    for (const o of window.HeroFollower?.objects({ u: hero.vu, v: hero.vv }, null, t, { show: true, project: P, size: CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), face: (du, dv, pd) => faceOf(du, dv) || pd, drawFn: (p, dir, walking, mot) => { g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * IK(), 6 * IK(), 0, 0, 7); g.fill(); return drawHeroMotion(t, p, CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), dir, walking, mot) } }) || []) list.push({ y: o.uv, f: o.draw });
     list.sort((a, b) => a.y - b.y); for (const x of list) x.f();
     /* lights + night */
     const day = daylight();
@@ -543,7 +543,7 @@
   function questNpc(id) { const n = performance.now(); if (n > qAt) { qAt = n + 500; try { qT = parent !== window ? parent.Story?.questTargets?.() : null } catch (e) { qT = null } } return !!qT?.npc?.includes(id) }
   function drawPerson(a, t) {
     const p = P(a.vu, a.vv); g.save(); g.globalAlpha = Math.max(0, Math.min(1, a.fade));
-    VillagerDraw(g, a.p.look || {}, p.x, p.y, t, { walking: a.walking, face: a.face, phase: a.phase, act: a.act, scale: .95 * IK() * (window.CharScaleAdjust?.factor('village', a.id) || 1) });   /* v98.152 · the room's ONE multiplier × ⚖ Scale Lineup */
+    VillagerDraw(g, a.p.look || {}, p.x, p.y, t, { walking: a.walking, face: a.face, phase: a.phase, act: a.act, scale: CharSize.INTERIOR_NPC_SCALE * IK() * (window.CharScaleAdjust?.factor('village', a.id) || 1) });   /* v98.152 · the room's ONE multiplier × ⚖ Scale Lineup */
     if (a.p.recruit && !L.inParty(S, a.id)) { g.font = '700 15px AgThai,system-ui'; g.textAlign = 'center'; g.fillStyle = '#ffd25a'; g.strokeStyle = '#2a1a0a'; g.lineWidth = 3; const y = p.y - 98 + Math.sin(t * .004) * 3; g.strokeText('★', p.x, y); g.fillText('★', p.x, y) }
     if (questNpc(a.id)) { const y = p.y - 122 + Math.sin(t * .006) * 5; g.shadowColor = 'rgba(255,200,60,.9)'; g.shadowBlur = 14; g.beginPath(); g.moveTo(p.x, y - 18); g.lineTo(p.x + 11, y); g.lineTo(p.x, y + 18); g.lineTo(p.x - 11, y); g.closePath(); g.fillStyle = '#ffd34d'; g.fill(); g.shadowBlur = 0; g.lineWidth = 2; g.strokeStyle = '#5a3a0a'; g.stroke() }
     if (a.p.benched) { g.font = '700 12px AgThai,system-ui'; g.textAlign = 'center'; g.fillStyle = '#9fe0b0'; g.fillText('ทีม', p.x, p.y - 96) }
@@ -570,7 +570,7 @@
   }
   function drawHero(t) {
     { const p0 = P(hero.vu, hero.vv), k = IK(); window.VillagerDraw?.shadow ? VillagerDraw.shadow(g, p0.x, p0.y, k * (window.CharScaleAdjust?.factor('village', 'hero') || 1)) : (g.fillStyle = 'rgba(0,0,0,.3)', g.beginPath(), g.ellipse(p0.x, p0.y, 15 * k, 6 * k, 0, 0, 7), g.fill()); if (drawHeroMotion(t, p0, 104 * k * (window.CharScaleAdjust?.factor('village', 'hero') || 1))) return }
-    const set = hero.walking ? walkImgs : heroImgs, im0 = set[Math.floor(t / (hero.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 104 * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), p = P(hero.vu, hero.vv);   /* (the shadow was drawn above) */
+    const set = hero.walking ? walkImgs : heroImgs, im0 = set[Math.floor(t / (hero.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), p = P(hero.vu, hero.vv);   /* (the shadow was drawn above) */
     if (LOOK) JobLook.aura(g, LOOK, { x: p.x, y: p.y + 3 }, s, t, false);
     if (im0.complete && im0.naturalWidth) { g.save(); g.translate(p.x, p.y + 3); if (hero.face === 'SW' || hero.face === 'NW') g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
     if (LOOK) JobLook.aura(g, LOOK, { x: p.x, y: p.y + 3 }, s, t, true);
