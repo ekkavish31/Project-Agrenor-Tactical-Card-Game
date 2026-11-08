@@ -1192,7 +1192,7 @@
   }
   function drawHero(g, u, t) {
     const A = sprites(), p = project(u.vu, u.vv), f = heroFrame(u, t); if (!A || !f) return;
-    const size = UNIT * 1.6 * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1];
+    const size = UNIT * CharSize.DRAW.hero * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1];
     let i = jobPic(im(f.src), f.src, u.look); if (i) u._lastPic = i; else i = u._lastPic || null;   /* a frame that has not arrived yet shows the last one instead of nothing */
     let ox = 0; if (u.pose === 'hit') ox = Math.sin(t * .07) * 3;
     const pm = poseMotion(u, t);
@@ -1236,7 +1236,7 @@
     }
     const p = project(u.vu, u.vv), back = ['NE', 'NW'].includes(u.dir), flip = ['SW', 'NW'].includes(u.dir), pose = u.hp <= 0 ? 'down' : u.walking ? 'idle' : (['windup', 'strike', 'hit', 'guard'].includes(u.pose) ? u.pose : 'idle');
     if (!ALLY_ART.includes(u.key) && !(pose !== 'idle' && !u.walking && (im(`assets/tactics/${u.key}_${u.dir.toLowerCase()}_${pose}.webp`) || im(`assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`))) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
-      if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT / 56 * .78 * 1.065 * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1));   /* v98.126 · ×1.065 = same 1.45-UNIT canvas as bram/luna/mil, × the ⚖ size */ if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
+      if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT * CharSize.DRAW.ally / CharSize.NPC_CANVAS_K * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1));   /* v98.126 · ×1.065 = same 1.45-UNIT canvas as bram/luna/mil, × the ⚖ size */ if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
       g.save(); if (u.hp <= 0) g.globalAlpha *= .5; g.translate(pm.dx * .6, pm.dy - (u.lift || 0)); VillagerDraw(g, look, p.x, p.y, t, { walking: u.walking, face: u.dir, scale: UNIT / 56 * .78, act: u.hp <= 0 ? 'sleep' : u.pose === 'strike' ? 'work' : '' });
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .5; VillagerDraw(g, look, p.x, p.y, t, { face: u.dir, scale: UNIT / 56 * .78 }) } g.restore(); if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
     /* v97.65: allies with their own SW/NW pictures (ALLY_OWN) use them as they are; everyone else mirrors SE/NE */
@@ -1246,7 +1246,7 @@
     if (u.walking && u.hp > 0) { const wf = allyWalkPic(u, t); if (wf) i = wf }
     if (!i) { i = im(mirSrc) || im(`assets/tactics/${u.key}_se_idle.webp`); useFlip = flip }
     shadow(g, p, UNIT * .24);
-    if (!i) return; const size = UNIT * 1.45 * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1), pm = poseMotion(u, t);
+    if (!i) return; const size = UNIT * CharSize.DRAW.ally * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1), pm = poseMotion(u, t);
     g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (useFlip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
     g.drawImage(i, -size / 2, -size * .94, size, size);
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
@@ -1264,7 +1264,7 @@
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
     shadow(g, p0, UNIT * .26 * T.scale * bs * (lift ? .7 - lift / UNIT * .3 : 1));
     if (af) {
-      const h = UNIT * 1.6 * Math.max(.8, T.scale) * bs * MAPK * (window.CharScaleAdjust?.factor('battle', 'm:' + kind) || 1) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
+      const h = UNIT * CharSize.MON.base * Math.max(.8, T.scale) * bs * MAPK * (window.CharScaleAdjust?.factor('battle', 'm:' + kind) || 1) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
       evoAura(g, u, p, h, t);
       const ec = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? 1 + .06 * Math.sin(t * .05) : 1, ex = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? Math.sin(t * .09) * 3 : 0;
       g.save(); g.translate(p.x + ex, p.y); g.scale(ec, ec); if (af.flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .55;
@@ -1275,7 +1275,7 @@
       bar(g, p, p.y - h * (af.barHeight || .85), u.shown / u.maxHp, '#e2705f'); return;
     }
     const back = ['NE', 'NW'].includes(u.dir), i = im('assets/enemies/' + T.img + (back ? '-back' : '') + '.webp') || im('assets/enemies/' + T.img + '.webp'); if (!i) return;
-    const h = UNIT * 1.6 * T.scale * bs * MAPK * (window.CharScaleAdjust?.factor('battle', 'm:' + kind) || 1) * .8, w = h * i.naturalWidth / i.naturalHeight;
+    const h = UNIT * CharSize.MON.base * T.scale * bs * MAPK * (window.CharScaleAdjust?.factor('battle', 'm:' + kind) || 1) * CharSize.MON.k, w = h * i.naturalWidth / i.naturalHeight;
     evoAura(g, u, p, h, t);
     g.save(); g.translate(p.x + ((u.hitUntil || 0) > t ? Math.sin(t * .08) * 4 : 0), p.y); if (['SE', 'NE'].includes(u.dir)) g.scale(-1, 1); if (u.hp <= 0) { g.rotate(Math.PI * .4); g.globalAlpha = .5 }
     g.drawImage(u.variant || u.leader ? window.JobLook?.tint(i, JobLook.VARIANT[u.variant || 'elite']) || i : i, -w / 2, -h, w, h); g.restore(); bar(g, p, p.y - h, u.shown / u.maxHp, '#e2705f');

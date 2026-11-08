@@ -8,7 +8,7 @@
 window.CHARACTER_SCALE = {
   "version": 1,
   "tolerance": 0.06,
-  "drawSize": { "hero": 1.6, "ally": 1.45 },
+  "drawSize": CharSize.DRAW,   /* v98.264 · js/char-size.js */
   "characters": {
     "hero": { "battle": { "SW": 112, "NW": 112, "NE": 112, "SE": 112 } },
     "bram": {

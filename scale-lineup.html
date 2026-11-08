@@ -48,7 +48,7 @@ code{font-size:12px}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=98.140"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/character-scale-adjust-data.js?v=98.126"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
+<script src="js/village-layout-v67.js?v=98.140"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/char-size.js?v=98.264"></script><script src="js/character-scale-adjust-data.js?v=98.126"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -57,7 +57,7 @@ code{font-size:12px}
      ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
-let HERO_M = 1.70; const DS = { hero: 1.6, ally: 1.45 };
+const HERO_M = CharSize.HERO_M, DS = CharSize.DRAW;   /* v98.264 · js/char-size.js */
 /* v98.95 · inside Asset Studio (⚖ Scale Lineup tab) this page reads the studio's CURRENT pictures (StudioBrowser.lineup) and follows its Animation selection; alone it falls back to the files */
 const ST = (() => { try { return window.parent !== window && parent.StudioBrowser && parent.StudioBrowser.lineup ? parent.StudioBrowser : null } catch (e) { return null } })();
 const HERO_SRC = 'assets/tactics/imported/idle-sw-mwcast2-m/frame-01.png';   /* v98.126 · the new standing hero (male look) */
@@ -78,7 +78,7 @@ function measure(img, flip) {
 /* v98.46 · buildings / decor / nature: drawn size = what the village code draws (px). 1 m = hero's drawn height ÷ 1.70 (village hero 93.6 px → 55.06 px/m; one ground cell edge ≈ 31 px ≈ 0.57 m).
    Where the game has no fixed width (most decor is placed by the layout editor) the picture's own pixel size is used and the row says so.
    ref = believable silhouette height range in metres (design target, edit freely). */
-const PXM_V = 93.6 / HERO_M, V = 'assets/village-town/';
+const PXM_V = CharSize.VILLAGE_HERO_PX / HERO_M, V = 'assets/village-town/';
 const WORLD = {
   building: { name: 'อาคาร', ref: [5, 12], items: [
     ['home', 'บ้านตัวเอก', V + 'player-house.webp', { w: 560 }], ['house-02', 'บ้านชาวบ้าน 2', V + 'buildings/house-02.webp', { w: 430 }], ['house-03', 'บ้านชาวบ้าน 3', V + 'buildings/house-03.webp', { w: 430 }],
@@ -131,7 +131,7 @@ async function build() {
   try {
     const src = await (await fetch('js/town-battle.js')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
-      const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, 1.6 * +sc * .8, `สูง ÷ สูงภาพ × 1.6 × ${sc} × 0.8`);
+      const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * +sc * CharSize.MON.k, `สูง ÷ สูงภาพ × 1.6 × ${sc} × 0.8`);
     }
   } catch (e) { console.warn('monsters not read', e) }
 }

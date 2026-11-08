@@ -2782,7 +2782,7 @@
  function drawRefChar(gg, t) {
   const o = loc(place.id);
   if (!o || o.id === 'square') return;
-  const p = refFeet(o), hs = charScale('hero'), tmp = g, H = 93.6 * hs;
+  const p = refFeet(o), hs = charScale('hero'), tmp = g, H = CharSize.VILLAGE_HERO_PX * hs;
   g = gg;
   try {
    ellipse(p.x, p.y, 16.9 * hs, 7.8 * hs, '#182b2877');

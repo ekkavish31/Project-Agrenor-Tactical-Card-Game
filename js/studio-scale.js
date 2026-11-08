@@ -2,7 +2,7 @@
 (function (root) {
   'use strict';
   const KEY = 'project-a-char-scale-v1', DIRS = ['SW', 'NW', 'NE', 'SE'], POSES = ['idle', 'walk', 'windup', 'strike', 'guard', 'hit', 'down'];
-  const cfg = () => root.CHARACTER_SCALE || { characters: {}, tolerance: .06, drawSize: { hero: 1.6, ally: 1.45 } };
+  const cfg = () => root.CHARACTER_SCALE || { characters: {}, tolerance: .06, drawSize: CharSize.DRAW };
   const over = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}') } catch { return {} } };
   function standard(ch, ctx, dir) {
     const o = over()?.[ch]?.[ctx]?.[dir]; if (o) return { v: o, src: 'ตั้งเองในเครื่อง' };
@@ -65,7 +65,7 @@
       html += `<h4>${g.label}</h4><table style="border-collapse:collapse;width:100%;text-align:center" border="1" cellpadding="4"><thead><tr><th>ท่า / ทิศ</th>${DIRS.map(d => `<th>${d}</th>`).join('')}</tr><tr style="background:#eef0e6"><th style="text-align:left">มาตรฐานหัว</th>${stdRow}</tr></thead><tbody>${rows}</tbody></table>`;
     }
     let heroH = null; if (who.ch !== 'hero') { try { const f = (root.StudioBrowser.getRuntime().tactics?.directions?.SW?.idleFrames?.[0] || root.StudioBrowser.getRuntime().tactics?.directions?.SW?.idle)?.src, im = f && await load(f), m = im && measure(im); heroH = m && m.height } catch { } }
-    const ds = cfg().drawSize || { hero: 1.6, ally: 1.45 }, mine = idleH.SW || idleH.SE;
+    const ds = cfg().drawSize || CharSize.DRAW, mine = idleH.SW || idleH.SE;
     const rel = who.ch !== 'hero' && heroH && mine ? `<p><b>ความสูงตัวบนจอ (ท่ายืน) เทียบฮีโร่:</b> ${Math.round(mine / 384 * ds.ally / (heroH / 384 * ds.hero) * 100)}% <small>(คำนวณจากภาพยืนทิศ SW × ขนาดที่เกมวาด · ปรับค่าสัมพัทธ์ได้ที่ js/character-scale.js)</small></p>` : '';
     document.getElementById('scProg').innerHTML = `วัดแล้ว ${n} ภาพ · <span style="background:#d9efd2;padding:0 6px">ตรงมาตรฐาน ±${Math.round(T * 100)}%</span> <span style="background:#fbe9b8;padding:0 6px">เบี่ยง ≤${Math.round(2 * T * 100)}%</span> <span style="background:#f4c7bf;padding:0 6px">เบี่ยงมาก</span> · ตัวเลข = หัวกว้างเทียบมาตรฐาน`;
     document.getElementById('scBody').innerHTML = html + rel;
