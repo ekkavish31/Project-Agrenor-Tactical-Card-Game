@@ -1333,12 +1333,11 @@
     }
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
     for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }
-    /* v98.251 · a spinning crystal over the head of whoever's turn it is (like the Sims plumbob): gold for the team (ring + crystal), silver for monsters — pictures: assets/fx/plumbob-ally|foe.webp (12-frame turn, 80×104) */
+    /* v98.278 · the turn crystal over the head of whoever's turn it is: the user's own 8-frame art (gold = team, silver = monsters) — assets/fx/plumbob-ally|foe.webp, 8 frames of 100×160 (source sheet: art-production/plumbob-crystal-sheet-8x2.webp). No code-drawn glow any more: the picture carries its own light. */
     if (!st.outcome) { const au = actUnit && actUnit.hp > 0 ? actUnit : FB.queue(st, 1)[0];
       if (au && au.hp > 0 && !(au.deadAt && t > au.deadAt)) { const foe = au.side === 'monster', pic = im('assets/fx/plumbob-' + (foe ? 'foe' : 'ally') + '.webp');
-        if (pic) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, pw = UNIT * .7, ph = pw * 104 / 80, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + bob;
-          g.save(); g.globalCompositeOperation = 'lighter'; const gl = g.createRadialGradient(cx, cy, 0, cx, cy, pw * .9); gl.addColorStop(0, foe ? 'rgba(215,228,245,.38)' : 'rgba(255,205,90,.4)'); gl.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gl; g.beginPath(); g.arc(cx, cy, pw * .9, 0, 7); g.fill(); g.restore();
-          g.drawImage(pic, (Math.floor(t / 85) % 12) * 80, 0, 80, 104, cx - pw / 2, cy - ph / 2, pw, ph) } } }
+        if (pic) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, ph = UNIT * .98, pw = ph * 100 / 160, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.78 * big + .1) + bob;
+          g.drawImage(pic, (Math.floor(t / 110) % 8) * 100, 0, 100, 160, cx - pw / 2, cy - ph / 2, pw, ph) } } }
     /* v98.253 · grey crystal (no ring) over the fighter picked in the queue */
     if (inspectU && inspectU.hp > 0) { const pic = im('assets/fx/plumbob-view.webp'); if (pic) { const q = project(inspectU.vu, inspectU.vv), ko = kbOff(inspectU, t), big = inspectU.side === 'monster' ? (MON[inspectU.evoShow || inspectU.kind]?.scale || 1) : 1, pw = UNIT * .36, ph = pw * 96 / 64, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + Math.sin(t * .0042 + 1) * UNIT * .05 - (actUnit === inspectU ? UNIT * .55 : 0);
       g.drawImage(pic, (Math.floor(t / 85) % 12) * 64, 0, 64, 96, q.x + ko.x - pw / 2, cy - ph / 2, pw, ph) } }
