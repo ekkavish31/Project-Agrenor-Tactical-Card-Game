@@ -40,5 +40,6 @@ const results = []; const ok = (name, pass, note = '') => { results.push({ name,
   await b.close(); server.close();
   /* 6 sub-maps / interiors (own server) */
   if (!QUICK) { const r = spawnSync('node', [path.join(__dirname, 'check-places.cjs'), '--browser'], { encoding: 'utf8', timeout: 280000 }); const tail = (r.stdout || '').trim().split('\n').pop(); ok('6 every place opens (check-places --browser)', r.status === 0, tail) }
+  if (!QUICK) { const r = spawnSync('node', [path.join(__dirname, 'test-field-edit.cjs')], { encoding: 'utf8', timeout: 200000 }); const tail = (r.stdout || '').trim().split('\n').pop(); ok('8 BG Editor: edit the real field, save a BG Asset, play it with ?bg', r.status === 0, tail) }
   const bad = results.filter(x => !x.pass); console.log('\n' + (bad.length ? '✗ ' + bad.length + ' failed' : '✓ all ' + results.length + ' checks passed')); process.exit(bad.length ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1) });

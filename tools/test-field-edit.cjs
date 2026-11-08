@@ -37,13 +37,26 @@ let bad = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); if (
   ok(await p.evaluate(() => FieldEdit.ops().length) === 1, 'undo removes the last edit');
   await p.keyboard.press('Control+y'); await p.waitForTimeout(100);
   ok(await p.evaluate(() => FieldEdit.ops().length) === 2, 'redo puts it back');
-  /* save → reload */
-  await p.evaluate(() => FieldEdit.save()); await p.reload(); await p.waitForTimeout(7000);
-  const again = await p.evaluate(() => { const u = TownBattle.state().units.find(x => x.id === 'ally1'); return { u: u.u, v: u.v, ops: FieldEdit.ops().length } });
-  ok(again.u === target.u && again.v === target.v && again.ops === 2, 'after reload the saved edits are back (' + again.ops + ' ops, fighter at ' + again.u + ',' + again.v + ')');
-  /* the same seed without edit mode is untouched */
+  /* save as a BG Asset (draft in this browser) → reload with ?bg → the same field comes back, also in play mode */
+  p.on('dialog', async d => { await d.accept(d.message().includes('รหัสไฟล์') ? 'test-bg' : 'ทดสอบ BG') });
+  const treeMoved = await p.evaluate(({ a, b }) => ({ oldFree: !FIELD.cells.get(FIELD.key(a.u, a.v)).big, newTree: !!FIELD.cells.get(FIELD.key(b.u, b.v))?.big }), { a: tree, b: treeDest });
+  await p.evaluate(() => FieldEdit.save()); await p.waitForTimeout(300);
+  const saved = await p.evaluate(() => { const a = BgField.getDraft('test-bg'); return a && { id: a.id, ops: a.ops.length, ally: a.spawns.ally.length, enemy: a.spawns.enemy.length, gen: a.gen, thumb: !!a.thumbData, seed: a.seed } });
+  ok(!!saved && saved.id === 'test-bg' && saved.ops === 1 && saved.ally >= 3 && saved.enemy >= 2 && /^[0-9a-f]{8}$/.test(saved.gen) && saved.thumb, 'BG Asset draft saved: ' + JSON.stringify(saved));
+  ok(/[?&]bg=test-bg/.test(p.url()), 'the page URL now carries ?bg=test-bg');
+  await p.reload(); await p.waitForTimeout(7000);
+  const again = await p.evaluate(({ a, b }) => { const u = TownBattle.state().units.find(x => x.id === 'ally1'); return { u: u.u, v: u.v, ops: FieldEdit.ops().length, newTree: !!FIELD.cells.get(FIELD.key(b.u, b.v))?.big, oldFree: !FIELD.cells.get(FIELD.key(a.u, a.v))?.big, drift: BgField.drift } }, { a: tree, b: treeDest });
+  ok(again.u === target.u && again.v === target.v && again.newTree && again.oldFree && again.ops === 1 && !again.drift, 'editor reopens the asset: fighter + tree where they were saved (' + JSON.stringify(again) + ')');
+  /* play mode: only ?bg (no seed, no edit) → the asset decides biome / seed / field */
+  await p.goto(BASE + 'battle-field.html?battle=1&embed=1&warm=1&cine=0&bg=test-bg&ms=' + q('wolf*1.2,bandit*1.2') + '&party=' + q('sib:50:50:charge:1,luna:44:44:charge:1')); await p.waitForTimeout(7000);
+  const play = await p.evaluate(({ b }) => { const u = TownBattle.state().units.find(x => x.id === 'ally1'); return { fe: !!window.FieldEdit, seed: new URLSearchParams(location.search).get('seed'), newTree: !!FIELD.cells.get(FIELD.key(b.u, b.v))?.big, u: u.u, v: u.v } }, { b: treeDest });
+  ok(!play.fe && play.seed === '4242' && play.newTree && play.u === target.u && play.v === target.v, 'play mode with ?bg=test-bg uses the saved field (seed ' + play.seed + ', tree moved, fighter at its spawn)');
+  /* a missing asset must not break the game */
+  await p.goto(BASE + 'battle-field.html?battle=1&embed=1&warm=1&cine=0&bg=nope&biome=grass&seed=7&ms=' + q('wolf*1.2') + '&party=' + q('sib:50:50:charge:1')); await p.waitForTimeout(5000);
+  ok(await p.evaluate(() => !!TownBattle.state()), 'an unknown ?bg falls back to the generator (battle still starts)');
+  /* same seed without edit and without bg is the plain game */
   await p.goto(URL.replace('&edit=1', '')); await p.waitForTimeout(6000);
-  const plain = await p.evaluate(() => ({ fe: !!window.FieldEdit, u: TownBattle.state().units.find(x => x.id === 'ally1') }));
+  const plain = await p.evaluate(() => ({ fe: !!window.FieldEdit }));
   ok(!plain.fe && !(await p.evaluate(() => !!document.getElementById('fePanel'))), 'without ?edit=1 there is no editor (the game page is unchanged)');
   ok(!er.length, 'no page errors' + (er.length ? ': ' + er.slice(0, 3).join(' | ') : ''));
   await b.close(); srv.close(); console.log(bad ? '\n✗ ' + bad + ' failed' : '\n✓ all passed'); process.exit(bad ? 1 : 0);
