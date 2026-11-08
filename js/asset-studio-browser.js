@@ -162,7 +162,7 @@
  }
  const legacyLibrary=renderLibrary,legacyRetired=renderRetired;
  render=function(){CS=null;rebuild();let inGroup=state.model.filter(e=>e.group===state.group);if(!inGroup.some(e=>e.id===state.entity))state.entity=inGroup[0]?.id||'';
-  document.querySelectorAll('[data-group]').forEach(b=>b.classList.toggle('on',b.dataset.group===state.group));$('animTab')?.classList.toggle('on',['characters','monsters','bosses'].includes(state.group));if(document.body.classList.contains('workshop-open')){document.querySelectorAll('[data-group]').forEach(b=>b.classList.remove('on'));$('animTab')?.classList.remove('on')}/* v98.16 · Workshop / 3D Frame cover the library: only their own tab stays lit */$('viewMode').value=tab;connButton();$('exportBtn').hidden=!pending.size&&!window.AnimationReviewExtraFiles?.size;$('exportBtn').textContent='ส่งออก ZIP ('+pending.size+')';
+  document.querySelectorAll('[data-group]').forEach(b=>b.classList.toggle('on',b.dataset.group===state.group));$('animTab')?.classList.toggle('on',['characters','monsters','bosses'].includes(state.group));if(document.body.classList.contains('workshop-open')){document.querySelectorAll('[data-group]').forEach(b=>b.classList.remove('on'));$('animTab')?.classList.remove('on')}/* v98.16 · Workshop / 3D Frame cover the library: only their own tab stays lit */connButton();$('exportBtn').hidden=!pending.size&&!window.AnimationReviewExtraFiles?.size;$('exportBtn').textContent='ส่งออก ZIP ('+pending.size+')';
   $('summary').textContent=`${state.model.length} ตัว / วัตถุ · ${M.assets.filter(isSlot).length} ช่อง${pending.size?' · รอส่งออก '+pending.size:''}`;
   if(tab==='slots'){renderNav();renderEntity()}else{state.entries=[];if(tab==='library')legacyLibrary();else legacyRetired();hydrate($('grid'))}
  };
@@ -172,7 +172,7 @@
  function gotoGroup(g){state.group=g;if(['characters','monsters','bosses'].includes(g))state.lastAnim=g;state.entityQuery='';tab='slots';query='';$('q').value='';sel=null;render();document.body.classList.remove('detail-open')}
  document.querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>gotoGroup(b.dataset.group));
  $('animTab')?.addEventListener('click',()=>gotoGroup(state.lastAnim||(['characters','monsters','bosses'].includes(state.group)?state.group:'characters')));
- $('viewMode').onchange=ev=>{tab=ev.target.value;sel=null;lkind='all';document.body.classList.remove('detail-open');render()};
+ 
  // Fold batch/request commands into one secondary tools menu.
  let tools=document.createElement('details');tools.id='extraTools';tools.innerHTML='<summary>เครื่องมือเพิ่มเติม</summary><div></div>';$('studioTools').append(tools);
  for(let id of ['selAll','selNone','batchBtn','importBtn','promptPack','animationReviewButton'])if($(id))tools.lastElementChild.append($(id));

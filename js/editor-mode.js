@@ -7,6 +7,7 @@ window.openEditor=()=>window.open('editor.html#cards','_blank');
 if(!mode)return;
 document.body.classList.add('editor-mode','editor-'+mode);
 window.EDITOR_MODE=mode;
+{const st=document.createElement('style');st.textContent='body.editor-mode #villageTownLayer,body.editor-mode .ambient,body.editor-mode .day-veil,body.editor-mode main>*:not(header){display:none!important}';document.head.appendChild(st)}   // v98.260: the old sub-map / village scene never shows behind an editor tool
 save=function(){};                                 // sandbox: play data is read but never written
 if(window.Adventure){let st=Adventure.state;Adventure.state=()=>null;void st}
 function boot(){try{
