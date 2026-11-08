@@ -225,6 +225,13 @@
   #fbQueue .qc{position:relative;width:54px;padding:3px 2px 6px;text-align:center;border-radius:8px;background:#14231fdd;border:1px solid #b9c48a55;overflow:hidden}#fbQueue .qc .ic{display:block;font-size:16px;line-height:18px}#fbQueue .qc b{display:block;font-weight:600;white-space:nowrap;overflow:hidden}
   #fbQueue .qc i{position:absolute;left:0;bottom:0;height:3px;background:#6fd18a}#fbQueue .qc.foe{border-color:#e2705f88}#fbQueue .qc.foe i{background:#e2705f}#fbQueue .qc.ally{border-color:#8fd0b0aa}
   #fbQueue .qc .fc{display:block;width:42px;height:42px;margin:0 auto 2px;border-radius:9px;background-color:#1a2b26;background-repeat:no-repeat;border:1px solid #d8b46a}#fbQueue .qc.foe .fc{border-color:#cfd8e6}#fbQueue .qc .ic{position:absolute;top:2px;right:3px;font-size:11px;line-height:11px;text-shadow:0 1px 2px #000}#fbQueue .qc.foe{border-color:#cfd8e6aa}#fbQueue .qc.hero,#fbQueue .qc.ally{border-color:#e6c36eaa}#fbQueue .qc.on{width:66px;border:2px solid #ffd25a;background:#2a3a1fee;transform:scale(1.05)}#fbQueue .arr{color:#ffd25a;font-size:18px;margin:0 2px}
+  /* v98.283 · CT queue chips = the user's portrait frames (assets/ui/frames): gold = team · grey iron = foes · blue = the one being inspected · gem frame = whose turn it is. The picture window and the name plate are placed by the frame's own geometry (frames.json) */
+  #fbQueue .qc{width:56px;height:64px;padding:0;border:0;border-radius:0;background:none;overflow:visible}#fbQueue .qc.on{width:72px;height:85px;border:0;background:none;transform:none}
+  #fbQueue .qc::after{content:"";position:absolute;inset:0;z-index:1;background:url(assets/ui/frames/portrait-gold.webp) center/100% 100% no-repeat;pointer-events:none}
+  #fbQueue .qc.foe::after{background-image:url(assets/ui/frames/portrait-grey.webp)}#fbQueue .qc.look::after{background-image:url(assets/ui/frames/portrait-blue.webp)}#fbQueue .qc.on::after{background-image:url(assets/ui/frames/portrait-gem.webp)}
+  #fbQueue .qc .fc{position:absolute;left:15.6%;top:14.1%;width:68.3%;height:61.5%;margin:0;border:0;border-radius:2px}#fbQueue .qc.on .fc{left:15.1%;top:16.1%;width:69.7%;height:60.1%}
+  #fbQueue .qc .ic{z-index:2;top:15%;right:17%}#fbQueue .qc b{position:absolute;left:8%;right:8%;bottom:5%;z-index:2;font-size:9.5px;line-height:11px;color:#f6e7c1;text-align:center;text-shadow:0 1px 2px #000}
+  #fbQueue .qc i{left:15.6%;bottom:25%;z-index:2;width:calc(var(--p) * .683%)!important;height:3px}#fbQueue .qc.on i{left:15.1%;width:calc(var(--p) * .697%)!important}#fbQueue .qc.look{box-shadow:none}
   #fbHud #fbAuto.on{background:#2f8a5a}
   #fbHud .bar{height:7px;background:#0006;border-radius:4px;overflow:hidden;margin:2px 0 6px;position:relative}#fbHud .bar i{display:block;height:100%;transition:width .35s}
   #fbHud .arow{margin:3px 0 5px}#fbHud .arow.down{opacity:.45}#fbHud .ord{display:flex;gap:3px;margin-top:2px}#fbHud .ord button{padding:2px 6px;font-size:12px;background:#33463e;border-radius:6px}#fbHud .ord button.on{background:#5d8a6e;box-shadow:inset 0 0 0 1px #bfe8c8}#fbHud .ord button.sk{flex:1;background:#6b4e9a;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -284,7 +291,7 @@
   .fb-show .face{position:relative;border-radius:14px;overflow:hidden}.fb-show .face .gcard{width:100%}
   .fb-show.play{animation:fbIn .42s cubic-bezier(.2,1.5,.4,1) both}.fb-show.play .face{box-shadow:0 0 0 3px var(--tone),0 0 30px 6px var(--tone)}
   .fb-show.play .face::after{content:'';position:absolute;inset:-40%;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);transform:translateX(-70%);animation:fbSweep .7s ease-out .12s both}
-  .fb-show .say{margin-top:6px;padding:5px 9px;border-radius:8px;background:#101a17ee;color:#f6e7c1;font:12px AgThai,system-ui,"Noto Sans Thai",sans-serif;text-align:center}
+  .fb-show .say{margin-top:4px;padding:15px 30px;border-radius:0;background:url(assets/ui/frames/plate-gold.webp) center/100% 100% no-repeat;color:#f6e7c1;font:12px AgThai,system-ui,"Noto Sans Thai",sans-serif;text-align:center}
   .fb-show .say b{color:#ffd25a}
   .fb-show.out{animation:fbOut .45s cubic-bezier(.5,0,.75,0) forwards}
   @keyframes fbIn{0%{opacity:0;transform:translateY(30px) scale(.45) rotateY(80deg)}60%{opacity:1}100%{opacity:1;transform:none}}
@@ -439,7 +446,7 @@
       const E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, u.hp / u.maxHp * 100)), side = u.side === 'monster' ? 'foe' : u === FB.hero(st) ? 'hero' : 'ally';
       const face = faceFor(u);
       /* v98.251 · the queue shows each fighter's face (cropped from their portrait); the element icon is a small badge */
-      return `<div class="qc ${side} ${on ? 'on' : ''} ${inspectU === u ? 'look' : ''}" data-id="${u.id}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="fc" style="background-image:url('${face.src}'),none;background-position:${face.pos};background-size:${face.size}"></span><span class="ic">${E ? E.icon : ''}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%"></i></div>` };
+      return `<div class="qc ${side} ${on ? 'on' : ''} ${inspectU === u ? 'look' : ''}" data-id="${u.id}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="fc" style="background-image:url('${face.src}'),none;background-position:${face.pos};background-size:${face.size}"></span><span class="ic">${E ? E.icon : ''}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%;--p:${pct}"></i></div>` };
     q.innerHTML = chip(act, true) + '<span class="arr">›</span>' + rest.map(u => chip(u, false)).join('');
   }
   /* ---------- hand ---------- */

@@ -371,7 +371,11 @@ const ui = document.createElement('div'); ui.id = 'fieldUi'; ui.innerHTML = `<st
 #fieldUi canvas{width:72px;height:72px;border-radius:10px;border:2px solid #d8c890;background:#0b120f}#fieldUi .unit.foe canvas{border-color:#e2705f}#fieldUi b{font-size:15px}#fieldUi small{color:#cdd7bf}
 #fieldUi .cell{display:none;padding:5px 10px;border-radius:9px;background:#14231fe6;border:1px solid #b9c48a44;font-size:12.5px;color:#e6dcc0}
 #fieldUi .hp{height:7px;border-radius:4px;background:#0008;overflow:hidden;margin:4px 0 3px}#fieldUi .hp i{display:block;height:100%;background:#6fd18a}#fieldUi .unit.foe .hp i{background:#e2705f}
-@media (max-width:820px){#fieldUi .unit{min-width:0}#fieldUi canvas{width:52px;height:52px}}</style>
+/* v98.283 · unit info card = the user's info frame (assets/ui/frames/info-ally|info-foe): live portrait in its window (7.9 % … 31 % across), text to the right */
+#fieldUi .unit{position:relative;display:none;width:350px;height:136px;min-width:0;padding:11px 16px 11px 34%;box-sizing:border-box;border:0;border-radius:0;background:url(assets/ui/frames/info-ally.webp) center/100% 100% no-repeat;box-shadow:none;filter:drop-shadow(0 6px 10px #000a)}#fieldUi .unit.foe{background-image:url(assets/ui/frames/info-foe.webp)}
+#fieldUi .unit canvas,#fieldUi .unit.foe canvas{position:absolute;left:7.9%;top:17.7%;width:23.1%;height:62.7%;border:0;border-radius:2px}
+#fieldUi .unit b{font-size:14px}#fieldUi .unit .stats{font-size:11.5px;line-height:1.3}
+@media (max-width:820px){#fieldUi .unit{width:290px;height:112px;padding:8px 12px 8px 34%}#fieldUi canvas{width:23.1%;height:62.7%}}</style>
 <div class="unit"><canvas width="144" height="144"></canvas><div><b></b> <small class="side"></small><div class="hp"><i></i></div><small class="stats"></small></div></div>
 `;
 if (window.FieldHeight) document.body.append(ui);
