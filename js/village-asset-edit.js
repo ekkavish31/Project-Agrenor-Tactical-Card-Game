@@ -287,13 +287,14 @@
   };
   if (ov.grp) grpYNow.set(ov.grp, Math.max(grpYNow.get(ov.grp) ?? -1e9, E.y));
   /* v98.146 · the part's footprint on the grid (กรอบพื้น) and its name: depth order against walkers uses the footprint (js/depth-style.js), tall / low decides if it may fade */
-  const fc = inv(E.x, E.y), fz = { w: ov.fw ?? .5, h: ov.fh ?? .5 };
+  const fc = inv(E.x, E.y), fz = { w: ov.sw ?? ov.fw ?? .5, h: ov.sh ?? ov.fh ?? .5 };   /* v98.286 · the ORDER footprint (sw/sh) is separate from the walk-block / spacing footprint (fw/fh); unset → same as fw/fh */
   const it = {
    x: E.x,
    y: (ov.grp && grpYPrev.get(ov.grp) != null ? grpYPrev.get(ov.grp) : E.y) + (ov.layer || 0),
    z: ov.z || 0,
    fp: { u0: fc.u - fz.w / 2, u1: fc.u + fz.w / 2, v0: fc.v - fz.h / 2, v1: fc.v + fz.h / 2 },
    label: label || '',
+   tall: ov.tall,
    place: loc(owner) ? owner : null,
    draw: gg => {
     if (lit(key, owner)) stamp('ring', inner);
@@ -1122,7 +1123,7 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, g: ov.grp }
+  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, g: ov.grp }
  }
  function addRecords(recs, owner, off) {
   const ids = [], gmap = {};
@@ -1131,7 +1132,7 @@
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    const G = window.VillageGrid, bs = baseOf(owner), sn = !G ? { du: r.du + off, dv: r.dv + off } : recs.length === 1 ? placeNewItem(owner, nid, r.du + off, r.dv + off) : G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, modeNow());
    data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh };
+   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall };
    if (r.g) data.edit[nid].grp = gmap[r.g] || (gmap[r.g] = newGid());
    clean(nid);
    ids.push(nid)
@@ -2521,7 +2522,7 @@
    for (const r of a.recs) {
     const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sn = window.VillageGrid.snapOffset({ u: base.u, v: base.v }, !!base.mirror, r.du, r.dv + +base.front.toFixed(2), modeNow());
     data.added.push({ id: nid, owner: place.id, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-    data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, grp: g };
+    data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, grp: g };
     clean(nid);
     ids.push(nid)
    }
@@ -2623,7 +2624,9 @@
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
-  ${nudgeHtml}<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.5">กว้าง −</button><button data-fz="fw,0.5">กว้าง +</button><button data-fz="fh,-0.5">ลึก −</button><button data-fz="fh,0.5">ลึก +</button></div>${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
+  ${nudgeHtml}<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.5">กว้าง −</button><button data-fz="fw,0.5">กว้าง +</button><button data-fz="fh,-0.5">ลึก −</button><button data-fz="fh,0.5">ลึก +</button></div>
+  <div class="row" style="align-items:center" title="กรอบที่ใช้ตัดสินว่าตัวละครอยู่หน้า/หลังชิ้นนี้ (แยกจากกรอบบล็อกเดิน) · ไม่ตั้ง = เท่ากรอบพื้น"><span>กรอบเรียงลำดับ ${ov.sw??ov.fw??.5}×${ov.sh??ov.fh??.5}</span><button data-sz="sw,-0.5">กว้าง −</button><button data-sz="sw,0.5">กว้าง +</button><button data-sz="sh,-0.5">ลึก −</button><button data-sz="sh,0.5">ลึก +</button>${(ov.sw!=null||ov.sh!=null)?'<button id="aeSzReset">= กรอบพื้น</button>':''}</div>
+  <div class="row" style="align-items:center" title="ชิ้นสูงจะโปร่งเมื่อบังตัวละคร ชิ้นเตี้ยบังเท้าได้ตามจริง · อัตโนมัติ = เดาจากชื่อ"><span>ความสูง</span><select id="aeTall"><option value="">อัตโนมัติ (จากชื่อ)</option><option value="tall"${ov.tall==='tall'?' selected':''}>สูง</option><option value="low"${ov.tall==='low'?' selected':''}>เตี้ย</option></select></div>${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
   <label class="chk" title="ใช้กรอบพื้นของชิ้นนี้เป็นกริดฟ้า: ตัวเอกและ NPC เดินผ่านไม่ได้ (ปรับขนาดด้วยปุ่ม กว้าง/ลึก ข้างบน)"><input type="checkbox" id="aeBlock" ${ov.block?'checked':''}> ▦ กริดฟ้า · เดินผ่านไม่ได้ ${ov.block?'('+itemSize(key).w+'×'+itemSize(key).h+' ช่อง)':''}</label>
   <div class="row"><button id="aeDel">ลบชิ้นนี้ (Delete)</button>${added?'':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชั่วคราว'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
@@ -2646,6 +2649,12 @@
    if (v === .5) delete o2[f]; else o2[f] = v;
    clean(key)
   }));
+  body.querySelectorAll('[data-sz]').forEach(b => b.onclick = once(() => {
+   const [f, d] = b.dataset.sz.split(','), o2 = ovOf(key), base = f === 'sw' ? (o2.sw ?? o2.fw ?? .5) : (o2.sh ?? o2.fh ?? .5), v = clampN(base + +d, .5, 12);
+   o2[f] = v; clean(key)
+  }));
+  act('#aeSzReset', once(() => { const o2 = ovOf(key); delete o2.sw; delete o2.sh; clean(key) }));
+  body.querySelector('#aeTall').onchange = e => once(() => { const o2 = ovOf(key); if (e.target.value) o2.tall = e.target.value; else delete o2.tall; clean(key) })();
   act('#aeDel', removeSelected);
   act('#aeReset', once(() => delete data.edit[key]));
   act('#aeDup', () => {

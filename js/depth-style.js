@@ -11,7 +11,7 @@
   let cache = null, stamp = null, DEBUG = /[?&]depth=1/.test(root.location?.search || '');
   const read = () => { let s = ''; try { s = root.localStorage.getItem(KEY) || '' } catch (e) { } if (s !== stamp) { stamp = s; try { cache = { ...DEF, ...(s ? JSON.parse(s) : {}) } } catch (e) { cache = { ...DEF } } } return cache };
   const LOW = /รั้ว|กำแพง|ขอบ|พุ่ม|ดอกไม้|ดอก|หญ้า|ก้อนหิน|หินก้อน|กอ|ไม้เตี้ย|fence|wall|bush|hedge|flower|grass|curb|kerb|rock|stone|low/i;
-  const isLow = it => LOW.test(String(it.label || it.name || ''));
+  const isLow = it => it.tall === 'low' ? true : it.tall === 'tall' ? false : LOW.test(String(it.label || it.name || ''));
   /* is the walker in front of this part? (true → draw the part BEFORE the walker). fp = {u0,u1,v0,v1}; wu/wv = walker feet on the grid */
   function walkerInFront(fp, wu, wv) {
     const fr = wu > fp.u1 || wv > fp.v1, bk = wu < fp.u0 || wv < fp.v0;
