@@ -18,13 +18,29 @@
  {
   "v": "v98.272",
   "date": "2026-11-08",
-  "overall": 38.1,
-  "gameOverall": 38.1,
+  "overall": 38.8,
+  "gameOverall": 38.8,
   "phases": {
    "foundation": 38.5,
    "story": 40.8,
    "village": 45.5,
-   "combat": 60.7,
+   "combat": 66.1,
+   "world": 27.9,
+   "systems": 34.8,
+   "art": 37,
+   "release": 15.6
+  }
+ },
+ {
+  "v": "v98.273",
+  "date": "2026-11-08",
+  "overall": 38.8,
+  "gameOverall": 38.8,
+  "phases": {
+   "foundation": 38.5,
+   "story": 40.8,
+   "village": 45.5,
+   "combat": 66.1,
    "world": 27.9,
    "systems": 34.8,
    "art": 37,
