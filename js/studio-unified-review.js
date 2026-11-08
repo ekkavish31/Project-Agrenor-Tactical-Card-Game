@@ -139,7 +139,7 @@
     for(const f of c.frames){const a=byId(f.assetId);if(!a||a.status==='missing')continue;try{await removeFile(a.file);out.files++}catch(e){if(e?.name!=='NotFoundError')throw e}a.status='missing';a.artRevision=Date.now().toString(36)}out.sets++
    }catch(e){out.failed.push(c.label+' '+c.action+' '+c.view+': '+e.message)}}
   try{window.StudioVariants?.syncStatuses?.(M)}catch(e){}await saveManifest();B.invalidate();return out}
- const api=window.StudioUnifiedReview={setVerdictMany,deleteMany,batchScale,preApprove,mirrorLinked,oppositeClip,copyMirror,open,close,status,changed,committed,history,isOpen:()=>d.open,get speed(){return speed},get onion(){return onion},getState:()=>({clip:clip?.id,loading,...E.getState()}),reset:()=>{token++;loading=false;clip=null;E.clear();comparisonImages=[];if(d.open)d.close()}};
+ const api=window.StudioUnifiedReview={allClips,setVerdictMany,deleteMany,batchScale,preApprove,mirrorLinked,oppositeClip,copyMirror,open,close,status,changed,committed,history,isOpen:()=>d.open,get speed(){return speed},get onion(){return onion},getState:()=>({clip:clip?.id,loading,...E.getState()}),reset:()=>{token++;loading=false;clip=null;E.clear();comparisonImages=[];if(d.open)d.close()}};
  window.AssetAnimationReview={...api,refresh:target=>switchClip(target||clip?.id),hasDrafts:()=>E.hasDrafts(),exportSheet:()=>document.getElementById('wi-sheet-export').click(),exportGif,getState:()=>({clip:clip?.id,loading,...E.getState()})};
  document.getElementById('animationReviewButton').onclick=()=>open();
 })();

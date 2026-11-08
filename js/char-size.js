@@ -13,6 +13,7 @@
     MON: Object.freeze({ base: 1.6, k: .8 }),
     VILLAGE_HERO_PX: 93.6,
     WORLD_HERO_PX: 76,
+    FEET_Y: 360,                    /* every character picture is 384×384 with its feet (lowest opaque row) at y=360 — Asset Studio > Animation keeps it so */
     NPC_CANVAS_K: 384 * 84 / 330   /* canvas px of a VillagerDraw picture at scale 1 */
   });
 })(globalThis);

@@ -1,16 +1,9 @@
 # รายงานผืนผ้าใบตัวละคร (สร้างโดย tools/check-character-feet.py)
 
-มาตรฐาน: 384×384 · เท้า (แถวพิกเซลล่างสุด) ที่ y=360 ±3 · ทั้งหมด 92 ภาพ · **ไม่ตรงมาตรฐาน 31 ภาพ**
+มาตรฐาน: 384×384 · เท้า (แถวพิกเซลล่างสุด) ที่ y=360 ±3 · ทั้งหมด 92 ภาพ · **ไม่ตรงมาตรฐาน 24 ภาพ**
 
 | ตัวละคร | ไฟล์ | ขนาดผืนผ้าใบ | เท้าที่ y | ความสูงตัว | ต้องเลื่อน (px) |
 |---|---|---|---|---|---|
-| kier (หมู่บ้าน) | `assets/village-town/npc/kier/ne-stand.webp` | 384×384 | 372 | 317 | -12 |
-| kier (หมู่บ้าน) | `assets/village-town/npc/kier/nw-stand.webp` | 384×384 | 372 | 317 | -12 |
-| kier (หมู่บ้าน) | `assets/village-town/npc/kier/se-stand.webp` | 384×384 | 372 | 320 | -12 |
-| kier (หมู่บ้าน) | `assets/village-town/npc/kier/sw-stand.webp` | 384×384 | 372 | 319 | -12 |
-| lin (หมู่บ้าน) | `assets/village-town/npc/lin/ne-stand.webp` | 384×384 | 368 | 263 | -8 |
-| lin (หมู่บ้าน) | `assets/village-town/npc/lin/sw-stand.webp` | 384×384 | 365 | 269 | -5 |
-| may (หมู่บ้าน) | `assets/village-town/npc/may/ne-stand.webp` | 384×384 | 366 | 281 | -6 |
 | ตัวเอก/ท่ายืน idle-ne-mvu9bv72-5r1m | `assets/tactics/imported/idle-ne-mvu9bv72-5r1m/frame-01.webp` | 384×384 | 374 | 311 | -14 |
 | ตัวเอก/ท่ายืน idle-ne-mvvgy110-r34e | `assets/tactics/imported/idle-ne-mvvgy110-r34e/frame-01.webp` | 384×384 | 374 | 311 | -14 |
 | ตัวเอก/ท่ายืน idle-ne-mvvhk2gr-340h | `assets/tactics/imported/idle-ne-mvvhk2gr-340h/frame-01.webp` | 384×384 | 374 | 311 | -14 |

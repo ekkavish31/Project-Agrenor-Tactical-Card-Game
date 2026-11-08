@@ -1169,7 +1169,7 @@
      with the floating weapon + swing trail. Characters that have their own battle pictures (ALLY_ART) keep using those. */
   const NPCW = { sword: 'sword', axe: 'axe', bow: 'bow', staff: 'staff', dagger: 'knife', hammer: 'hammer', book: 'tome' };
   function drawNpcSprite(g, u, t, p, look, pm, UNITv, A, scaleK) {
-    const sc = scaleK, size = 384 * sc * 84 / 330;   /* the 384 canvas of the picture as drawn by VillagerDraw (feet at y 372) */
+    const sc = scaleK, size = 384 * sc * 84 / 330;   /* the 384 canvas of the picture as drawn by VillagerDraw (feet at y 360) */
     g.save(); if (u.hp <= 0) g.globalAlpha *= .5;
     g.translate(p.x + pm.dx, p.y + pm.dy - (u.lift || 0)); g.rotate(pm.rot); g.scale(pm.sx, pm.sy);
     window.VillagerDraw(g, look, 0, 0, t, { walking: u.walking && u.hp > 0, face: u.dir, scale: sc });
@@ -1177,7 +1177,7 @@
     g.restore();
     const wk = NPCW[look.weapon];
     if (A && wk && u.hp > 0 && FLOATPOSE.includes(actState(u, t).act)) {
-      g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * 372 / 384, size); actionTrail(g, u, t, wk, 0, -size * 372 / 384, size, 0, .56); g.restore();
+      g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * CharSize.FEET_Y / 384, size); actionTrail(g, u, t, wk, 0, -size * CharSize.FEET_Y / 384, size, 0, .56); g.restore();
     }
   }
   /* ---------- v97.18 · the job's look on the same hero picture (docs/TODO.md "อาชีพและอาวุธ") ----------
@@ -1264,7 +1264,7 @@
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
     shadow(g, p0, UNIT * .26 * T.scale * bs * (lift ? .7 - lift / UNIT * .3 : 1));
     if (af) {
-      const h = UNIT * CharSize.MON.base * Math.max(.8, T.scale) * bs * MAPK * (window.CharScaleAdjust?.factor('battle', 'm:' + kind) || 1) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
+      const h = UNIT * CharSize.MON.base * bs * MAPK * (window.CharScaleAdjust?.factor('battle', 'm:' + kind) || 1) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
       evoAura(g, u, p, h, t);
       const ec = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? 1 + .06 * Math.sin(t * .05) : 1, ex = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? Math.sin(t * .09) * 3 : 0;
       g.save(); g.translate(p.x + ex, p.y); g.scale(ec, ec); if (af.flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .55;
@@ -1275,7 +1275,7 @@
       bar(g, p, p.y - h * (af.barHeight || .85), u.shown / u.maxHp, '#e2705f'); return;
     }
     const back = ['NE', 'NW'].includes(u.dir), i = im('assets/enemies/' + T.img + (back ? '-back' : '') + '.webp') || im('assets/enemies/' + T.img + '.webp'); if (!i) return;
-    const h = UNIT * CharSize.MON.base * T.scale * bs * MAPK * (window.CharScaleAdjust?.factor('battle', 'm:' + kind) || 1) * CharSize.MON.k, w = h * i.naturalWidth / i.naturalHeight;
+    const h = UNIT * CharSize.MON.base * bs * MAPK * (window.CharScaleAdjust?.factor('battle', 'm:' + kind) || 1) * CharSize.MON.k, w = h * i.naturalWidth / i.naturalHeight;
     evoAura(g, u, p, h, t);
     g.save(); g.translate(p.x + ((u.hitUntil || 0) > t ? Math.sin(t * .08) * 4 : 0), p.y); if (['SE', 'NE'].includes(u.dir)) g.scale(-1, 1); if (u.hp <= 0) { g.rotate(Math.PI * .4); g.globalAlpha = .5 }
     g.drawImage(u.variant || u.leader ? window.JobLook?.tint(i, JobLook.VARIANT[u.variant || 'elite']) || i : i, -w / 2, -h, w, h); g.restore(); bar(g, p, p.y - h, u.shown / u.maxHp, '#e2705f');

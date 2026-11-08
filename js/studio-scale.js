@@ -39,10 +39,22 @@
     }
     return out;
   }
+  /* v98.265 · the first frame of the standing clip is the reference (it is the picture ⚖ Scale Lineup measures); every other clip of the same character and direction is scaled so its first frame has the same HEAD width.
+     (head width, not height: crouching / lying / striking change the height but not the head) — uses the studio's own batchScale, so each clip is saved as a normal revision and can be restored. */
+  async function alignToIdle(who, out) {
+    const U = root.StudioUnifiedReview; if (!U?.allClips) { out.textContent = 'ยังไม่พร้อม'; return }
+    const id = who.ch === 'hero' ? 'hero' : 'ally:' + who.ch, clips = U.allClips().filter(c => (c.entity === id || (id === 'hero' && /^runtime:hero:/.test(c.id))) && c.frames?.length && !c.frames[0].crop), headOf = async c => { const im = await load(c.frames[0].file); const m = im && measure(im); return m && m.head };
+    const plan = []; for (const view of DIRS) { const ref = clips.find(c => c.view === view && c.action === 'idle'); if (!ref) continue; const rh = await headOf(ref); if (!rh) continue;
+      for (const c of clips) { if (c === ref || c.view !== view) continue; const h = await headOf(c); if (!h) continue; const pct = Math.round((rh / h - 1) * 100); if (Math.abs(pct) >= 2 && Math.abs(pct) <= 50) plan.push({ c, pct }) } }
+    if (!plan.length) { out.textContent = 'ทุกท่าหัวเท่าท่ายืนอยู่แล้ว (ต่างไม่ถึง 2%)'; return }
+    if (!confirm('ปรับสเกล ' + plan.length + ' ชุดท่า ให้หัวเท่าท่ายืน?\n\n' + plan.slice(0, 12).map(x => x.c.action + ' ' + x.c.view + ' ' + (x.pct > 0 ? '+' : '') + x.pct + '%').join('\n') + (plan.length > 12 ? '\n…' : '') + '\n\nบันทึกทีละชุด กู้ชุดก่อนหน้าได้')) return;
+    let done = 0; for (const { c, pct } of plan) { try { out.textContent = 'กำลังปรับ ' + (++done) + '/' + plan.length + ' · ' + c.action + ' ' + c.view; await U.batchScale([c.id], pct) } catch (e) { out.textContent = 'หยุดที่ ' + c.action + ' ' + c.view + ': ' + e.message; return } }
+    out.textContent = 'ปรับแล้ว ' + plan.length + ' ชุดท่า · เปิด ⚖ ตรวจสเกลใหม่เพื่อดูผล';
+  }
   async function openReport(entity) {
     const who = whoIs(entity); const dlg = document.getElementById('scaleReport') || (() => { const d = document.createElement('dialog'); d.id = 'scaleReport'; d.style.cssText = 'max-width:min(1100px,96vw);width:96vw;border:1px solid #b9ae93;border-radius:10px;padding:16px;background:#fffdf6;color:#233'; document.body.appendChild(d); return d })();
     if (!who) { dlg.innerHTML = '<h3>⚖ ตรวจสเกล</h3><p>ตอนนี้ตรวจได้เฉพาะตัวหลักและเพื่อนร่วมทีม (มอนสเตอร์ยังไม่รองรับ)</p><button onclick="this.closest(\'dialog\').close()">ปิด</button>'; dlg.showModal(); return }
-    dlg.innerHTML = `<h3>⚖ ตรวจสเกล · ${who.name}</h3><p id="scProg">กำลังวัด…</p><div id="scBody"></div><div class="row" style="margin-top:10px;display:flex;gap:8px"><button id="scCopy">คัดลอก JSON ที่ตั้งเองในเครื่อง</button><button onclick="this.closest('dialog').close()">ปิด</button></div>`;
+    dlg.innerHTML = `<h3>⚖ ตรวจสเกล · ${who.name}</h3><p id="scProg">กำลังวัด…</p><div id="scBody"></div><div class="row" style="margin-top:10px;display:flex;gap:8px"><button id="scCopy">คัดลอก JSON ที่ตั้งเองในเครื่อง</button><button id="scAlign" title="เทียบความกว้างหัวของเฟรมแรกของแต่ละท่า กับเฟรมแรกของท่ายืน (ทิศเดียวกัน) แล้วปรับสเกลทั้งชุดท่าให้เท่ากัน">⚖ จัดหัวทุกท่าให้เท่าท่ายืน</button><button onclick="this.closest('dialog').close()">ปิด</button></div>`;
     if (!dlg.open) dlg.showModal(); const T = cfg().tolerance || .06; let html = '', n = 0, total = 0; const groups = collect(who.ch);
     for (const g of groups) for (const pose in g.sets) for (const dir in g.sets[pose]) total += g.sets[pose][dir].length;
     let idleH = {};
@@ -69,6 +81,7 @@
     const rel = who.ch !== 'hero' && heroH && mine ? `<p><b>ความสูงตัวบนจอ (ท่ายืน) เทียบฮีโร่:</b> ${Math.round(mine / 384 * ds.ally / (heroH / 384 * ds.hero) * 100)}% <small>(คำนวณจากภาพยืนทิศ SW × ขนาดที่เกมวาด · ปรับค่าสัมพัทธ์ได้ที่ js/character-scale.js)</small></p>` : '';
     document.getElementById('scProg').innerHTML = `วัดแล้ว ${n} ภาพ · <span style="background:#d9efd2;padding:0 6px">ตรงมาตรฐาน ±${Math.round(T * 100)}%</span> <span style="background:#fbe9b8;padding:0 6px">เบี่ยง ≤${Math.round(2 * T * 100)}%</span> <span style="background:#f4c7bf;padding:0 6px">เบี่ยงมาก</span> · ตัวเลข = หัวกว้างเทียบมาตรฐาน`;
     document.getElementById('scBody').innerHTML = html + rel;
+    document.getElementById('scAlign').onclick = () => alignToIdle(who, document.getElementById('scProg'));
     document.getElementById('scCopy').onclick = async () => { const t = JSON.stringify(over(), null, 1); try { await navigator.clipboard.writeText(t) } catch { } document.getElementById('scProg').textContent = 'คัดลอกแล้ว (' + t.length + ' ตัวอักษร) ส่งให้ผมเพื่อใส่ใน js/character-scale.js ได้' };
   }
   root.StudioScale = { measure, standard, setStandard, whoIs, openReport, collect };

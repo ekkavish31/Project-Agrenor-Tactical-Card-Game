@@ -48,7 +48,7 @@ code{font-size:12px}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=98.140"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/char-size.js?v=98.264"></script><script src="js/character-scale-adjust-data.js?v=98.126"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
+<script src="js/village-layout-v67.js?v=98.140"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/char-size.js?v=98.265"></script><script src="js/character-scale-adjust-data.js?v=98.265"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -112,6 +112,9 @@ async function buildChars() {
     const pic = ST ? await ST.lineup.picture(c.sid, 'SW', PICK[c.id]?.clip, PICK[c.id]?.index) : { src: c.id === 'hero' ? HERO_SRC : `assets/village-town/npc/${c.id}/sw-stand.webp` };
     if (!pic) continue; await addChar(c.id, c.id === 'hero' ? 'ตัวเอก' : (ALLIES[c.id] || c.name), c.id === 'hero' ? 'hero' : 'ally', pic, c.id === 'hero' ? DS.hero : DS.ally);
   }
+  /* v98.265 · villagers drawn from pictures (VillagerDraw SPR_INFO) are in the lineup too, so every person is compared in one place */
+  const VILLAGERS = { may: 'เมย์', tom: 'ทอม', lin: 'ลิน', guard: 'ทหารยาม' };
+  for (const [id, name] of Object.entries(VILLAGERS)) { if (list.some(c => c.id === id)) continue; const pic = { src: `assets/village-town/npc/${id}/sw-stand.webp` }; await addChar(id, name, 'ally', pic, DS.ally); list.push({ id }) }
   const have = new Set(list.map(c => c.id)); for (let i = ENTRIES.length - 1; i >= 0; i--) if ((ENTRIES[i].kind === 'hero' || ENTRIES[i].kind === 'ally') && !have.has(ENTRIES[i].id)) ENTRIES.splice(i, 1);
   ENTRIES.sort((a, b) => (RANK[a.kind] ?? 3) - (RANK[b.kind] ?? 3));
 }
@@ -131,7 +134,7 @@ async function build() {
   try {
     const src = await (await fetch('js/town-battle.js')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
-      const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * +sc * CharSize.MON.k, `สูง ÷ สูงภาพ × 1.6 × ${sc} × 0.8`);
+      const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
     }
   } catch (e) { console.warn('monsters not read', e) }
 }
