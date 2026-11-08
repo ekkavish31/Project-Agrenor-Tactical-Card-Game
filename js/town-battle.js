@@ -62,6 +62,10 @@
   const ALLY_OWN = { bram: ['se', 'sw', 'ne', 'nw'], luna: ['se', 'sw', 'ne', 'nw'], kier: ['se', 'sw', 'ne', 'nw'] };   /* v97.65: allies that have their own picture for every diagonal (the rest are mirrored in code) */
   const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv, ctl] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1), control: key !== 'sib' && (ctl === '1' || Q.get('ctl') === '1') } : null }).filter(Boolean);
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
+  /* v98.281 · status icons = the user's picture set (assets/ui/status/<name>.webp, tools/build-status-icons.py); statuses with no picture yet (sleep 💤, silence 🔇) keep their emoji */
+  const STI = { burn: 'burn', poison: 'poison', freeze: 'freeze', stun: 'freeze', shock: 'slow', slowed: 'slow', weak: 'disarm' };
+  const stiSrc = k => STI[k] ? 'assets/ui/status/' + STI[k] + '.webp' : null;
+  const stiHtml = (k, title) => { const s = stiSrc(k); return s ? `<img class="sti" src="${s}" alt="" draggable="false"${title ? ` title="${title}"` : ''}>` : `<span${title ? ` title="${title}"` : ''}>${(FB.STATUS[k] || {}).icon || ''}</span>` };
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null;
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
   const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -273,6 +277,7 @@
   #fbHand.discarding .fb-card:not(.picked){filter:none}
   .fb-pile{position:relative;width:56px;height:82px;border-radius:8px;background:repeating-linear-gradient(45deg,#3c2b4a,#3c2b4a 6px,#46335a 6px,#46335a 12px);border:2px solid #c7a96a;box-shadow:3px 3px 0 #2a2131,6px 6px 0 #1e1824;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:700;color:#f6e7c1;text-shadow:0 1px 2px #000}
   .fb-pile.discard{background:#2a2622;border-style:dashed;box-shadow:none}.fb-pile small{font-weight:400;font-size:10px;opacity:.85}
+  .sti{width:16px;height:16px;vertical-align:-3px;display:inline-block}
   #fbBar{position:fixed;left:50%;bottom:190px;transform:translateX(-50%);z-index:42;background:#2b1712f2;border:1px solid #ff8a6a88;border-radius:10px;padding:8px 12px;color:#ffe9dc;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;display:flex;gap:8px;align-items:center;box-shadow:0 6px 20px #0008}
   #fbBar button{font:inherit;border:0;border-radius:7px;padding:6px 10px;cursor:pointer;background:#d25a3c;color:#fff}#fbBar button.ghost{background:#5a4a44}#fbBar button:disabled{opacity:.45}
   .fb-show{position:fixed;z-index:43;width:210px;pointer-events:none;filter:drop-shadow(0 16px 26px rgba(0,0,0,.6));transition:opacity .2s}
@@ -381,7 +386,7 @@
     const IQN = ['ดุร้าย · พุ่งใส่ตัวใกล้สุด', 'เจ้าเล่ห์ · ล่าตัวอ่อนแอ จบตัวที่ใกล้ตาย', 'ชำนาญยุทธวิธี · เล็งตัวซัพพอต หลบกลางวงล้อม ถอยหนีตอนใกล้ตาย', 'จอมวางแผน · ใช้ตัวบังพวกอ่อนแอ ถอยไปฟื้นตัว'];
     const mini = (u, col) => `<div class="mini ${u.hp <= 0 ? 'down' : ''} ${st.target === u.id ? 'tgt' : ''}" data-id="${u.id}" title="${u.side === 'monster' ? esc(IQN[u.iq | 0]) : ''}"><span>${esc(u.name)}${elb(u)}${lvb(u)}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:${col}"></i></div>`;
     hud.querySelector('#fbUnits').innerHTML =
-      `<div>${esc(h.name)}${Object.keys(h.sts || {}).map(k => ` <span title="${esc(FB.STATUS[k].name)} ${h.sts[k]} เทิร์น">${FB.STATUS[k].icon}</span>`).join('')} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff">🛡' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
+      `<div>${esc(h.name)}${Object.keys(h.sts || {}).map(k => ' ' + stiHtml(k, esc(FB.STATUS[k].name) + ' ' + h.sts[k] + ' เทิร์น')).join('')} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff"><img class="sti" src="assets/ui/status/guard.webp" alt="" draggable="false"> ' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
       `<div><small style="color:#bba57f">แรง (stamina)</small> <span style="float:right">${h.stamina}/100</span></div>${bar(h.stamina, 100, '#e8c34a')}` +
       (FB.allies(st).length ? '<div class="grp">ทีม <small>(สั่งการ · ท่าพิเศษใช้ 1 คริสตัล)</small></div>' + FB.allies(st).map(u => allyRow(u)).join('') : '') +
       '<div class="grp">ศัตรู <small>(คลิกเพื่อเล็งเป้า)</small></div>' + FB.monsters(st).map(u => mini(u, '#e2705f')).join('');
@@ -1350,8 +1355,8 @@
     drawSay(g);
     /* v97.19 · status icons above the head (sleep, burn, poison, silence, weak, frozen, slowed) */
     g.save(); g.font = '15px AgThai,system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center';
-    for (const u of st.units) { if (u.hp <= 0) continue; const ic = [u.leader ? '👑' : '', ...Object.keys(u.sts || {}).map(k => FB.STATUS[k]?.icon), u.stun ? '❄' : '', u.slowed ? '⚡' : ''].filter(Boolean); if (!ic.length) continue;
-      const q = project(u.vu, u.vv), y = q.y - UNIT * 1.95 + Math.sin(t * .004) * 2, w = ic.length * 18 + 6; g.fillStyle = 'rgba(10,14,20,.7)'; g.beginPath(); g.roundRect?.(q.x - w / 2, y - 14, w, 20, 9); g.fill(); ic.forEach((x, k) => g.fillText(x, q.x - w / 2 + 12 + k * 18, y + 1)) }
+    for (const u of st.units) { if (u.hp <= 0) continue; const ic = [u.leader ? '👑' : '', ...Object.keys(u.sts || {}).map(k => stiSrc(k) ? { k } : FB.STATUS[k]?.icon), u.stun ? { k: 'stun' } : '', u.slowed ? { k: 'slowed' } : ''].filter(Boolean); if (!ic.length) continue;
+      const q = project(u.vu, u.vv), y = q.y - UNIT * 1.95 + Math.sin(t * .004) * 2, w = ic.length * 18 + 6; g.fillStyle = 'rgba(10,14,20,.7)'; g.beginPath(); g.roundRect?.(q.x - w / 2, y - 14, w, 20, 9); g.fill(); ic.forEach((x, k) => { const cx = q.x - w / 2 + 12 + k * 18; if (typeof x === 'string') g.fillText(x, cx, y + 1); else { const pic = im(stiSrc(x.k)); if (pic) g.drawImage(pic, cx - 8, y - 9, 17, 17); else g.fillText('•', cx, y + 1) } }) }
     g.restore();
     fxDraw(g, t); partDraw(g, t); boltDraw(g, t);
     if (CINE) { speedDraw(g, t); atmosphere(g, t0); flashDraw(g) }

@@ -4448,3 +4448,7 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 # v98.280 — 8 พฤศจิกายน 2026
 
 - **เข็มทิศมีตัว N**: ตัว N วางตรงปลายเข็มด้านเหนือ หมุนตามเข็มไปกับมุมกล้อง (ตัวอักษรตั้งตรงเสมอ ไม่กลับหัว) ใช้การเลื่อนนุ่มเท่าเข็มเดิม
+
+# v98.281 — 8 พฤศจิกายน 2026
+
+- **ไอคอนสถานะของผู้ใช้ (16 ชิ้น)**: ต้นฉบับ `art-production/status-icons-4x4.webp` → `tools/build-status-icons.py` → `assets/ui/status/<ชื่อ>.webp` (128×128: poison burn freeze slow root guard magic regen disarm aim blocked no-target haste attack-up potion armor) · **ใช้แล้ว**: ไหม้=burn · พิษ=poison · แข็ง=freeze · ชา/ช้า=slow · อ่อนแรง=disarm · โล่กัน=guard — ทั้งในแผงทีม (ข้างชื่อ) และป้ายเหนือหัวตัวละครในสนาม (วาดเป็นภาพบนแคนวาส) · **ยังเป็นอีโมจิ**: หลับ 💤 และใบ้ 🔇 (ยังไม่มีภาพ) · **มีภาพแต่ยังไม่มีสถานะในเกม**: root (ติดราก) magic regen aim blocked no-target haste attack-up potion armor
