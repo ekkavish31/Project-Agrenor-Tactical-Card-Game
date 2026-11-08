@@ -120,7 +120,7 @@ function groundSettings(){try{const s=root.localStorage?.getItem('battleground-v
 const groundArea=(theme,mode)=>mode==='training'?'training':theme;
 const GROUND_BLOCK={tree:2,rock:1,pillar:2,crystal:1,cart:1,log:1,bush:1,mossrock:1};
 function stampGround(map,seed,theme,mode,clearance=[1,1]){const G=groundSettings();if(!G||!Array.isArray(G.chunks))return;const area=groundArea(theme,mode),A=G.areas?.[area]||{},rng=random(String(seed)+'|ground');
- let forced=null;try{if(root.EDITOR_MODE==='battle'){const id=root.localStorage.getItem('battleground-try');forced=G.chunks.find(c=>c.id===id)||null}}catch(e){}
+ const forced=null;
  if(!forced&&(clearance[0]>1||clearance[1]>1))return;// big bosses need 2-wide routes the stamp can't promise
  const pool=forced?[forced]:G.chunks.filter(c=>(c.areas||[]).includes(area)&&c.cells?.length);if(!pool.length||!forced&&rng()>=(Number.isFinite(A.chance)?A.chance:.5))return;
  let r=rng()*pool.reduce((n,c)=>n+(c.weight||1),0),ch=pool[0];for(const c of pool){r-=c.weight||1;if(r<0){ch=c;break}}

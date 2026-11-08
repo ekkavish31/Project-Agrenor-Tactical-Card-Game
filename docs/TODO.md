@@ -524,3 +524,7 @@
 - [x] เพื่อนร่วมทีมในสนามรบใช้เฟรมเดินจากเอดิเตอร์ + แก้ battle-field.html ไม่โหลด webp-redirect (v98.255) — ยังเหลือ: berg ไม่มีภาพ, ศัตรู (MonsterArt) ยังไม่ได้ตรวจเทียบกับเอดิเตอร์, `scale-lineup.html` กับ `vfx-preview.html` ก็ไม่โหลด webp-redirect
 - [ ] **Battleground Editor ไม่ได้ควบคุมฉากต่อสู้จริง**: ฉากจริง (`field-host.js`) สุ่มจากไบโอม+seed ส่วน "ชิ้น" ที่วาดในเอดิเตอร์ใช้กับ `tactics-core.js` (แล็บกริดเดิม) — ต้องตัดสินใจ: (ก) ทำให้ฉากจริงอ่านชิ้น (แปะความสูง/พื้น/ของ ลงใน FIELD + FieldHeight) หรือ (ข) เปลี่ยนเอดิเตอร์เป็น "จัดฉากจริง" (วาง prop/พื้น/จุดเกิดบนฉากจริงโดยตรง เก็บเป็น scene layout ต่อ seed/พื้นที่) แล้วเลิกใช้ชิ้น; v98.257 ทำได้แค่ดูฉากจริง (ปุ่ม 🎬)
 
+
+**ฉากเก่า (ปุ่มกด) ที่ค้างอยู่ — v98.258**
+- [ ] ตัดโค้ดฉาก forge/market/home แบบปุ่มกดใน index.html (`location-actions.js`, `interface-v02.js`, `journey-*.js`, `village-core.js`, `smith-wip.js`, `paper-cards.js` …) หลังตรวจว่าเกมจริง (title → village iframe) ไม่พึ่ง `s.village.location`; แล้วย้ายรูปที่เหลือ (`workshop/home/market/forge/water/...webp`, `scene-*` ใน manifest) ที่เหลือแต่ฉากเก่าอ้างถึง
+- [ ] การตรวจ "ใช้งานอยู่" ต้องอิงรูปที่โหลดจริงจากหน้าเกมจริง (Playwright บันทึก request) ไม่รวม index.html ฉากเก่า

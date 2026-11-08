@@ -4333,3 +4333,9 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 - **Battleground Editor: ปุ่ม 🎬 ฉากจริง**: แสดงฉากต่อสู้จริงของเกม (`battle-field.html`) ในเอดิเตอร์ พร้อมพื้นผิว ของวาง และตัวละครที่วางบนฉาก เลือกพื้นที่ (6 ไบโอม) seed (🎲 สุ่ม) ศัตรู และทีม (ตัวเอก+น้อง/พี่, +3 เพื่อน, เต็ม 6) ซ่อน HUD ของเกมไว้ (ปุ่ม HUD เปิดดูได้) หมุนกล้องได้
 - **ข้อเท็จจริงที่ต้องรู้**: ฉากจริงถูกสร้างสุ่มจากไบโอม+seed (`js/field-host.js`) และ **ไม่ได้อ่าน "ชิ้น" ที่วาดใน Battleground Editor เลย** (ชิ้นป้อนให้ `tactics-core.js` ของแล็บกริดเดิม) ชื่อ "สนามต่อสู้" ของเครื่องมือเดิมจึงไม่ตรงกับสิ่งที่มันควบคุม
+
+# v98.258 — 8 พฤศจิกายน 2026
+
+- **ตัดทางเข้า editor → ฉากแมพย่อยเก่า (ปุ่มกด)**: ลบปุ่ม "ลองเล่น" และ "เครื่องมือเดิม" ใน Battleground, ลบโหมด `?editor=battle|dev|map` ใน `js/editor-mode.js` และ hook ชิ้นบังคับใน `tactics-core.js` (เหลือโหมด `cards` และ `menu` ที่ยังใช้จริง)
+- **วัดการใช้งานจริง**: เปิด village-town / village-place / place-interior / world-map / battle-field ด้วยเบราว์เซอร์แล้วบันทึกรูปที่ถูกโหลด (ไม่ใช่สแกนข้อความโค้ด) พบว่า index.html โหลดรูปฉากเก่าตอนเปิดหน้า ทำให้ดูเหมือนทุกรูป "ถูกใช้"
+- **ย้ายรูปที่ไม่มีหน้าไหนใช้ 17 ไฟล์** ไป `archive/old-scene/assets/` (action-*, ui-edit/editor/forge/fullscreen/rest/smelt/upgrade/water, adventurer-hammer-*, adventurer-sword-attack) และตั้งสถานะ `unused` ใน manifest — ย้ายกลับได้ด้วย `git mv`
