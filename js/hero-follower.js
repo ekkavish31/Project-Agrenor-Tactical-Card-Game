@@ -29,8 +29,10 @@
     if (!last || Math.hypot(hero.u - last.u, hero.v - last.v) > jump) { trail = [{ u: hero.u, v: hero.v }]; pos = null }
     else if (Math.hypot(hero.u - last.u, hero.v - last.v) >= minStep) trail.push({ u: hero.u, v: hero.v });
     let len = 0; for (let i = trail.length - 1; i > 0; i--) { len += Math.hypot(trail[i].u - trail[i - 1].u, trail[i].v - trail[i - 1].v); if (len > gap + 2) { trail = trail.slice(i - 1); break } }
-    if (!pos) { const tg = trail.length > 1 ? target(gap) : { u: hero.u - 22 / dpc, v: hero.v - 22 / dpc }; pos = { u: tg.u, v: tg.v } }
-    const tg = trail.length > 1 ? target(gap) : pos, du = tg.u - pos.u, dv = tg.v - pos.v, dist = Math.hypot(du, dv), k = Math.min(1, dt * 14);
+    if (!pos) { const tg = trail.length > 1 ? target(gap) : { u: hero.u - 30 / dpc, v: hero.v + 10 / dpc }; pos = { u: tg.u, v: tg.v } }
+    let plen = 0; for (let i = trail.length - 1; i > 0; i--) plen += Math.hypot(trail[i].u - trail[i - 1].u, trail[i].v - trail[i - 1].v);
+    /* v98.288 · just arrived (left a place): the follower appears BESIDE the lead (lead drawn in front) and WAITS until the lead is one gap ahead, then follows the trail normally */
+    const tg = trail.length > 1 && plen >= gap ? target(gap) : pos, du = tg.u - pos.u, dv = tg.v - pos.v, dist = Math.hypot(du, dv), k = Math.min(1, dt * 14);
     const nu = pos.u + du * k, nv = pos.v + dv * k, step = Math.hypot(nu - pos.u, nv - pos.v);
     if (step > 1e-4) dir = o.face(nu - pos.u, nv - pos.v, dir);
     pos.u = nu; pos.v = nv;
