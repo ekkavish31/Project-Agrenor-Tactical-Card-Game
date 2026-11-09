@@ -191,7 +191,8 @@
       return;
     }
     const isPath = m.flat && m.flat[i] && !mt, timg = mt ? C.matTop[mt] : isPath ? C.path : C.top;
-    poly(g, t4); g.fillStyle = groundPattern(g, timg, avg); g.fill(); const tw = mt ? null : C.wash(isPath ? 'path' : 'top'); if (tw) { g.fillStyle = tw; g.fill() }
+    { const pat = groundPattern(g, timg, avg); poly(g, t4); g.fillStyle = pat; g.fill(); g.strokeStyle = pat; g.lineWidth = .9; g.lineJoin = 'round'; g.stroke() }   /* the same picture on the outline too: no hairline gaps between neighbouring cells */
+    const tw = mt ? null : C.wash(isPath ? 'path' : 'top'); if (tw) { g.fillStyle = tw; g.fill() }
     /* stairs: step edges across the slope (dark riser + lit nose) */
     const rd = m.ramp ? m.ramp[i] : 0;
     const simg = RAMP === 'wood' ? (C.matTop[2] || timg) : timg;
@@ -216,23 +217,22 @@
     for (const [du, dv, A, B, Cc, D] of [[-1, 0, 0, 3, 1, 2], [0, -1, 0, 1, 3, 2]]) {
       if (!inside(m, u + du, v + dv)) continue; const n = cz(m, (v + dv) * m.w + u + du), nl = Math.max(...n); if (nl <= avg + .5) continue;
       const from = { x: (t4[A].x + t4[B].x) / 2, y: (t4[A].y + t4[B].y) / 2 }, to = { x: (t4[Cc].x + t4[D].x) / 2, y: (t4[Cc].y + t4[D].y) / 2 };
-      const gr = g.createLinearGradient(from.x, from.y, to.x, to.y); gr.addColorStop(0, `rgba(10,8,20,${Math.min(.6, .1 * (nl - avg) + .15)})`); gr.addColorStop(.8, 'rgba(10,8,20,0)');
+      const gr = g.createLinearGradient(from.x, from.y, to.x, to.y); gr.addColorStop(0, `rgba(10,8,20,${Math.min(.3, .05 * (nl - avg) + .08)})`); gr.addColorStop(.85, 'rgba(10,8,20,0)');   /* v98.325 · softer ambient shade */
       poly(g, t4); g.fillStyle = gr; g.fill();
     }
     /* cast shadow: the sun is up and to the left (−u); tall ground up to 4 cells that way shades this top */
     let shade = 0; for (let k = 1; k <= 4; k++) { if (!inside(m, u - k, v)) break; const hz = Math.max(...cz(m, v * m.w + u - k)); if (hz > avg + k * ST * .9) shade = Math.max(shade, Math.min(.34, .1 + (hz - avg - k * ST * .9) * .05)) }
-    if (shade) { poly(g, t4); g.fillStyle = `rgba(12,10,30,${shade})`; g.fill() }
+    if (shade) {   /* v98.325 · cast shadow fades across the cell (strong on the side facing the tall ground) instead of a flat dark block per cell: neighbouring cells blend */
+      const a0 = { x: (t4[0].x + t4[3].x) / 2, y: (t4[0].y + t4[3].y) / 2 }, a1 = { x: (t4[1].x + t4[2].x) / 2, y: (t4[1].y + t4[2].y) / 2 }, sh = shade * .55, gs = g.createLinearGradient(a0.x, a0.y, a1.x, a1.y);
+      gs.addColorStop(0, `rgba(12,10,30,${sh})`); gs.addColorStop(1, `rgba(12,10,30,${sh * .45})`); poly(g, t4); g.fillStyle = gs; g.fill() }
     if (C.pools(i)) { poly(g, t4); g.fillStyle = 'rgba(40,90,120,.6)'; g.fill() }
-    /* fort tops: a lighter rim so walls read as built */
-    if (mt === 3 || mt === 4) { g.strokeStyle = 'rgba(255,250,235,.35)'; g.lineWidth = 1.5; poly(g, t4); g.stroke() }
+    /* v98.325 · no per-cell rim / outline any more: the stone and grass tops read as one smooth surface (the cliff lip already has its own highlight) */
     /* bridge rails on the sides that face water or the void */
     if (mt === 2) for (const [du, dv, A, B] of [[1, 0, 1, 2], [-1, 0, 0, 3], [0, 1, 3, 2], [0, -1, 0, 1]]) {
       const out = !inside(m, u + du, v + dv) || (m.water && m.water[(v + dv) * m.w + u + du]); if (!out) continue;
       const a = t4[A], b = t4[B]; g.strokeStyle = '#4a2f18'; g.lineWidth = 2; g.beginPath(); g.moveTo(a.x, a.y - 9); g.lineTo(b.x, b.y - 9); g.stroke();
       g.fillStyle = '#5a3a1e'; for (const t of [.1, .5, .9]) { const x = a.x + (b.x - a.x) * t, y = a.y + (b.y - a.y) * t; g.fillRect(x - 1.5, y - 11, 3, 11) }
     }
-    /* tactical grid: a faint line so cells read clearly */
-    poly(g, t4); g.strokeStyle = 'rgba(0,0,0,.1)'; g.lineWidth = 1; g.stroke();
   }
 
   function order(m) { const o = []; for (let v = 0; v < m.h; v++) for (let u = 0; u < m.w; u++) o.push(v * m.w + u); return o.sort((a, b) => ((a % m.w) + ((a / m.w) | 0)) - ((b % m.w) + ((b / m.w) | 0)) || (a % m.w) - (b % m.w)) }

@@ -248,7 +248,7 @@ function prop(ctx, kind, u, v, s, now, big) {
   const sp = propSpec(kind, s), im = sp && propImg(sp[0]), c = big ? .5 : 0, p = project(u + .5 + c, v + .5 + c), sw = Math.sin(now * .0012 + s * 9) * 1.5;
   if (im) {
     const b = propBox(kind, s, big), tall = b.h > 90, flip = s * 1000 % 2 < 1, rx = big ? Math.min(78, b.w * .3) : Math.min(30, b.w * .42);
-    ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(p.x + (big ? 10 : 5), p.y + 2, rx, rx * .4, 0, 0, 7); ctx.fill();
+    /* v98.325 · no ground shadow under props: it made trees, logs and barricades look like they float */
     ctx.save(); ctx.translate(p.x, p.y + 3); if (tall) ctx.transform(1, 0, sw * (big ? .003 : .006), 1, 0, 0); if (flip) ctx.scale(-1, 1);
     ctx.drawImage(im, -b.w / 2, -b.h * im.base, b.w, b.h); ctx.restore(); return;
   }
@@ -258,7 +258,7 @@ function prop(ctx, kind, u, v, s, now, big) {
 /* the code drawings (no picture yet, or still loading) */
 function propCode(ctx, kind, u, v, s, now, p, sw) {
   if (['wagon', 'fallentree', 'brokenwall'].includes(kind)) kind = 'boulder'; else if (['tent', 'bones', 'iceblock', 'barricade'].includes(kind)) kind = 'rock';
-  const shadow = (rx, ry) => { ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(p.x + 4, p.y + 2, rx, ry, 0, 0, 7); ctx.fill() };
+  const shadow = () => { };   /* v98.325 · props have no ground shadow */
   if (kind === 'tree' || kind === 'pine' || kind === 'deadtree') {
     const h = 64 + s * 26; shadow(20, 8);
     ctx.fillStyle = '#5a3d22'; ctx.fillRect(p.x - 3, p.y - h * .35, 6, h * .37);
@@ -310,6 +310,26 @@ function waterFx(ctx, now) {
 window.FieldCellPoly = window.FieldHeight ? (g, u, v) => { const F = FieldHeight, i = (v + F.R) * F.n + u + F.R, c = i >= 0 && i < F.n * F.n && u >= -F.R && u <= F.R ? TerrainHeight.corners(F.map, i) : [0, 0, 0, 0], PX = TerrainHeight.LEVEL_PX;
   const P = (x, y, z) => { const q = projectFlat(x, y); return { x: q.x, y: q.y - z * PX } }, q = [P(u, v, c[0]), P(u + 1, v, c[1]), P(u + 1, v + 1, c[2]), P(u, v + 1, c[3])];
   g.beginPath(); g.moveTo(q[0].x, q[0].y); for (let k = 1; k < 4; k++) g.lineTo(q[k].x, q[k].y); g.closePath() } : null;
+/* v98.325 · FieldOcc — ONE exact occlusion rule for everything drawn ON the ground (grid lines, cell tints, reach / range highlights, selection frames, editor rings), shared by the battle and the BG editor:
+   a cell's overlay is clipped away wherever a taller cell IN FRONT of it (greater view depth) covers it. FieldOcc.draw(g, u, v, fn) runs fn() with that clip applied. */
+const OCC = { frame: -1, built: -2, cells: new Map(), raised: [] };
+function occHull(pts) { pts.sort((a, b) => a.x - b.x || a.y - b.y); const cr = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x), lo = [], up = []; for (const q of pts) { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q) } for (let i = pts.length - 1; i >= 0; i--) { const q = pts[i]; while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q) } lo.pop(); up.pop(); return lo.concat(up) }
+function occBuild() {
+  const F = window.FieldHeight, T = window.TerrainHeight; OCC.cells.clear(); OCC.raised = []; OCC.built = OCC.frame; if (!F || !T || !F.map) return;
+  const PX = T.LEVEL_PX, n = F.n, Rr = F.R;
+  for (let v = -Rr; v <= Rr; v++) for (let u = -Rr; u <= Rr; u++) {
+    const c = T.corners(F.map, (v + Rr) * n + u + Rr), P = (x, y) => projectFlat(x, y), q = [P(u, v), P(u + 1, v), P(u + 1, v + 1), P(u, v + 1)], avg = (c[0] + c[1] + c[2] + c[3]) / 4, mx = Math.max(...c);
+    const top = q.map((a, k) => ({ x: a.x, y: a.y - c[k] * PX })), xs = top.map(a => a.x), ys = top.map(a => a.y), info = { u, v, d: window.FieldDepth(u + .5, v + .5), avg, mx, x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
+    OCC.cells.set(u + ',' + v, info);
+    if (mx > .05) { info.hull = occHull(top.concat(q.map(a => ({ x: a.x, y: a.y })))); OCC.raised.push(info) }   /* top face + the body down to the ground line */
+  }
+}
+function occOf(u, v) {
+  if (OCC.built !== OCC.frame) occBuild();
+  const me = OCC.cells.get(u + ',' + v); if (!me) return [];
+  const out = []; for (const n of OCC.raised) { if (n.d <= me.d + .4 || n.avg <= me.avg + .2 || n.x1 < me.x0 || n.x0 > me.x1 || n.y1 < me.y0 || n.y0 > me.y1) continue; out.push(n.hull) } return out;
+}
+window.FieldOcc = { draw(g, u, v, fn) { const hs = occOf(u, v); if (!hs.length) return fn(); g.save(); for (const h of hs) { g.beginPath(); g.rect(-1e5, -1e5, 2e5, 2e5); g.moveTo(h[0].x, h[0].y); for (let i = 1; i < h.length; i++) g.lineTo(h[i].x, h[i].y); g.closePath(); g.clip('evenodd') } try { return fn() } finally { g.restore() } }, hidden: (u, v) => occOf(u, v).length > 0 };
 /* entities that can hide behind higher cells in front of them: units (from town-battle) and standing props */
 function occluders(ents) {
   const F = window.FieldHeight, out = []; if (!F || !window.FieldDiorama) return out;
@@ -433,6 +453,7 @@ function panel(now) {
 function resize() { W = innerWidth; H = innerHeight; cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio); cv.style.width = W + 'px'; cv.style.height = H + 'px'; scale = Math.max(.7, Math.min(1.4, Math.min(W / 900, H / 620))) }
 addEventListener('resize', resize); resize();
 function frame(t) {
+  OCC.frame++;
   window.__feDirtyGround = () => { groundCanvas = null };   // BG Editor: repaint the ground (blocked-cell tint) after a prop moved
 requestAnimationFrame(frame);
   if (TURN) stepTurn(performance.now());

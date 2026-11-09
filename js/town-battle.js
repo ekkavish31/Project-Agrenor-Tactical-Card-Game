@@ -1336,7 +1336,7 @@
   /* v98.324 · selection frames / hover corners sit on the ground: when taller ground stands in front of their cell they are mostly hidden (faint), they no longer glow through a cliff */
   const SEL_OUTLINE = !/[?&]selglow=0/.test(location.search);
   let HID_ALL = null; const behind = (u, v) => !!HID_ALL && HID_ALL.has(u + ',' + v);
-  function cellFrame(g, name, u, v, k = 1) { const dim = behind(u, v); if (dim) { g.save(); g.globalAlpha *= .28 } try { return cellFrame0(g, name, u, v, k) } finally { if (dim) g.restore() } }
+  function cellFrame(g, name, u, v, k = 1) { let r = false; const f = () => { r = cellFrame0(g, name, u, v, k) }; window.FieldOcc ? FieldOcc.draw(g, u, v, f) : f(); return r }
   function cellFrame0(g, name, u, v, k = 1) { if (CODE_ART) { const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return GroundArtCode.frame(g, name, p.x, p.y, w, w * .56, performance.now()) } const G = window.GroundArt; if (!G) return false; const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) }
   function footRing(g, unit, foe, t) { if (CODE_ART) { const p = project(unit.vu, unit.vv); GroundArtCode.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t, RING_STYLE); return true } const G = window.GroundArt; if (!G) return false; const p = project(unit.vu, unit.vv); return G.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t) }
   function draw(g, t0) {
@@ -1346,15 +1346,15 @@
     step(t);
     g.save();
     HID_ALL = gridHidden(cells); const hid = GRID ? HID_ALL : null;   /* v98.312 · grid lines only where nothing taller stands in front (no lines through cliffs / behind high ground) */
+    const OV = (u, v, fn) => window.FieldOcc ? FieldOcc.draw(g, u, v, fn) : fn();   /* v98.325 · every ground overlay is clipped by taller ground in front (js/field-host.js FieldOcc) */
     for (const [key, k] of cells) {
-      const [u, v] = key.split(',').map(Number); poly(g, u, v);
-      const col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k]; if (col) { g.fillStyle = col; g.fill() }
-      if (!GRID || hid.has(key)) continue;
-      g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke();
+      const [u, v] = key.split(',').map(Number), col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k], lines = GRID && !hid.has(key);
+      if (!col && !lines) continue;
+      OV(u, v, () => { poly(g, u, v); if (col) { g.fillStyle = col; g.fill() } if (lines) { g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke() } });
     }
-    if (inspectMap && !busy && !EDIT) { const foeI = inspectU.side === 'monster'; for (const e of inspectMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = foeI ? 'rgba(236,96,72,.30)' : 'rgba(150,200,255,.28)'; g.fill(); g.strokeStyle = foeI ? 'rgba(255,170,150,.9)' : 'rgba(200,225,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.stroke(); g.setLineDash([]) } }   /* next-turn cells of the picked fighter */
-    if (farMap && !busy && !EDIT) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }   /* yellow = needs the farthest move card */
-    if (reachMap && !busy && !EDIT) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
+    if (inspectMap && !busy && !EDIT) { const foeI = inspectU.side === 'monster'; for (const e of inspectMap.values()) { if (e.cost === 0) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = foeI ? 'rgba(236,96,72,.30)' : 'rgba(150,200,255,.28)'; g.fill(); g.strokeStyle = foeI ? 'rgba(255,170,150,.9)' : 'rgba(200,225,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.stroke(); g.setLineDash([]) }) } }   /* next-turn cells of the picked fighter */
+    if (farMap && !busy && !EDIT) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }) }   /* yellow = needs the farthest move card */
+    if (reachMap && !busy && !EDIT) for (const e of reachMap.values()) { if (e.cost === 0) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }) }
     /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
     if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); poly(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
       const p = project(c.u + .5, c.v + .5); g.font = '16px AgThai,system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(esc_ ? '⇲' : '🚩', p.x, p.y + 5 - 3 * pul) }
@@ -1364,7 +1364,7 @@
     const h = FB.hero(st), tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
     /* hovering a combat card: its reach around the hero in red */
     if (dmgShow && !busy && dmgShow.target.hp > 0) { const q = project(dmgShow.target.vu, dmgShow.target.vv), txt = '−' + dmgShow.total + (dmgShow.kill ? ' ☠' : ''); g.save(); g.font = '900 24px AgThai,system-ui,"Noto Sans Thai",sans-serif'; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = dmgShow.kill ? '#ffe14d' : '#ffd0a0'; const y = q.y - UNIT * 1.75 - 4 * Math.sin(now() * .006); g.strokeText(txt, q.x, y); g.fillText(txt, q.x, y); g.restore() }
-    if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }
+    if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; OV(u, v, () => { poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }) }
     /* enemies some playable card can reach: red; the chosen target: gold */
     if (!busy && !EDIT && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range + (FB.cardRule(c.id).range > 1 ? h.rangePlus || 0 : 0) : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
     if (tg) { if (!(cellFrame(g, 'red', tg.u, tg.v) && footRing(g, tg, true, t))) { poly(g, tg.u, tg.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3.5; g.setLineDash([6, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
@@ -1377,7 +1377,7 @@
     if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { if (!footRing(g, st.cur, false, t)) { poly(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() } }
     if (pendAlly?.to && !busy) { poly(g, pendAlly.to.u, pendAlly.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pendAlly.to.u, pendAlly.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
     if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pend.to.u, pend.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
-    if (!EDIT && typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; const dim = behind(hoverCell.u, hoverCell.v); if (dim) { g.save(); g.globalAlpha *= .28 } G?.corners(g, p.x, p.y, w, w * .56, t); if (dim) g.restore() }   /* v98.282 · glowing corners on the cell under the mouse */
+    if (!EDIT && typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; OV(hoverCell.u, hoverCell.v, () => G?.corners(g, p.x, p.y, w, w * .56, t)) }   /* v98.282 · glowing corners on the cell under the mouse */
     g.restore();
     if (CINE) spotlight(g, cine ? [cine.a, cine.b] : st.units.filter(u => u.hp > 0));
     glowDraw(g, t);
