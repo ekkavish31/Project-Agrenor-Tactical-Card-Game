@@ -195,6 +195,16 @@
     try { if (kind === 'slash') P.sample('slash', s); else if (kind === 'swing') P.swing('sword'); else if (kind === 'step') P.footstep('stone'); else if (kind === 'victory') P.victory(true); else if (kind === 'lose') P.victory(false); else P.sound(kind, s) } catch (e) { }
   }
   try { window.Sfx?.preload(['mg-cast', 'mg-magic', 'mg-heal', 'mg-lightning', 'mg-fire', 'mg-earth', 'mg-shield', 'victory', 'defeat', 'hit-glass', 'hit-metal', 'hit-metal-light', 'draw-knife', 'knife', 'hit-wood-heavy', 'hit-plate', 'hit-metal-heavy', 'hit-punch', 'hit-soft', 'cloth', 'step-stone', 'hit-generic', 'chop', 'hit-punch-heavy']) } catch (e) { }
+  /* v98.304 · ONE size for a monster: the ⚖ Scale Lineup measures the STATIC picture (figure height ÷ picture height). The animation frames are different pictures (other canvas, the figure fills more of it), so each monster's frames are scaled by
+     (figure fill of the static picture) ÷ (figure fill of its first idle frame) × MON.k-style base — measured once per monster from the pixels, then every frame (walk, strike, down …) uses the same factor. Without this the animated bandit stood ~1.4× taller than the lineup says. */
+  const fillCache = new Map();
+  function fillOf(img, sx, sy, sw, sh) { try { const W = Math.min(128, sw), H = Math.max(1, Math.round(sh * W / sw)), c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, sx, sy, sw, sh, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data; let top = -1, bot = -1; for (let y = 0; y < H; y++) { let any = false; for (let xx = 0; xx < W; xx++) if (d[(y * W + xx) * 4 + 3] > 24) { any = true; break } if (any) { if (top < 0) top = y; bot = y } } return top < 0 ? 0 : (bot - top + 1) / H } catch (e) { return 0 } }
+  function monNorm(kind, T) {
+    if (fillCache.has(kind)) return fillCache.get(kind); const stat = im('assets/enemies/' + (T?.img || kind) + '.webp'); const af0 = window.MonsterArt?.frame(kind, 'SW', 0, 1, 0, 'norm-' + kind);
+    if (!stat || !af0 || !af0.image || !af0.image.complete || !stat.complete) return 1;   /* not loaded yet: draw at 1 now, measure on a later frame */
+    const fs = fillOf(stat, 0, 0, stat.naturalWidth, stat.naturalHeight), fa = fillOf(af0.image, af0.sx, af0.sy, af0.sw, af0.sh), k = fs > .1 && fa > .1 ? Math.max(.5, Math.min(1.6, fs / fa)) : 1;
+    fillCache.set(kind, k); return k;
+  }
   function hitSound(fx, o = {}) { sfx(SFXK[fx] || 'sword', o.big ? .85 : .6); if (o.crit || o.kill) { sfx('critical', .8); sfx('hammer', .55) } else if (o.big) sfx('hammer', .35) }
   function shake(px, ms) { if (!CINE || window.BattlePolish?.shake === false) return; kick.shake = Math.max(kick.shake, px); kick.shakeT = performance.now(); kick.shakeDur = ms }
   function roll(deg) { if (CINE) kick.roll += deg }
@@ -1273,13 +1283,13 @@
   function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px AgThai,system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
   function drawMonster(g, u, t) {
     const p0 = project(u.vu, u.vv), v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
-    const sk = u.evoShow || u.kind, T = MON[sk] || MT, kind = MON[sk] ? sk : MK, mid = (u.boss ? 'mb:' : 'm:') + kind;   /* v98.58: evoShow = the old form until the flash */
+    const sk = u.evoShow || u.kind, T = MON[sk] || MT, kind = MON[sk] ? sk : MK, mid = 'm:' + kind, bossK = u.boss ? CharSize.BOSS_K : 1;   /* v98.58: evoShow = the old form until the flash */
     const af = window.MonsterArt?.frame(kind, u.dir, v, u.hp, t, 'fb-' + u.id);
     /* v97.26 · B3: fliers hover half a cell up and bob; their shadow stays on the ground, smaller as they rise */
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
     shadow(g, p0, UNIT * .26 * T.scale * (lift ? .7 - lift / UNIT * .3 : 1));
     if (af) {
-      const h = UNIT * CharSize.MON.base * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
+      const h = UNIT * CharSize.MON.base * CharSize.MON.k * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * bossK * monNorm(kind, T) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
       evoAura(g, u, p, h, t);
       const ec = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? 1 + .06 * Math.sin(t * .05) : 1, ex = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? Math.sin(t * .09) * 3 : 0;
       g.save(); g.translate(p.x + ex, p.y); g.scale(ec, ec); if (af.flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .55;
@@ -1290,7 +1300,7 @@
       bar(g, p, p.y - h * (af.barHeight || .85), u.shown / u.maxHp, '#e2705f'); return;
     }
     const back = ['NE', 'NW'].includes(u.dir), i = im('assets/enemies/' + T.img + (back ? '-back' : '') + '.webp') || im('assets/enemies/' + T.img + '.webp'); if (!i) return;
-    const h = UNIT * CharSize.MON.base * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * CharSize.MON.k, w = h * i.naturalWidth / i.naturalHeight;
+    const h = UNIT * CharSize.MON.base * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * bossK * CharSize.MON.k, w = h * i.naturalWidth / i.naturalHeight;
     evoAura(g, u, p, h, t);
     g.save(); g.translate(p.x + ((u.hitUntil || 0) > t ? Math.sin(t * .08) * 4 : 0), p.y); if (['SE', 'NE'].includes(u.dir)) g.scale(-1, 1); if (u.hp <= 0) { g.rotate(Math.PI * .4); g.globalAlpha = .5 }
     g.drawImage(u.variant || u.leader ? window.JobLook?.tint(i, JobLook.VARIANT[u.variant || 'elite']) || i : i, -w / 2, -h, w, h); g.restore(); bar(g, p, p.y - h, u.shown / u.maxHp, '#e2705f');
