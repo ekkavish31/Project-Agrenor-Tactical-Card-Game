@@ -136,7 +136,7 @@
     sched: [[9, 17, 'market'], [17, 24, 'inn', 'table'], [0, 1, 'inn', 'table']],
     lines: { day: ['เมืองใหญ่วุ่นวายจะตาย ที่นี่สงบกว่าเยอะ'], evening: ['มีคนกลับจากซากเมืองพร้อมผลึกที่ไม่มีใครเคยเห็น … ข้าเห็นกับตา!'] }, about: ['ข้าเดินทางผ่านมาสามสิบเมืองแล้ว Fernvale เป็นที่เดียวที่ขนมปังอร่อยขนาดนี้'] });
 
-  add('oren', { name: 'ผู้ใหญ่บ้านโอเรน', role: 'ผู้ใหญ่บ้าน', age: 63, look: { coat: '#56683a', hair: '#cfcfcf', hat: 'none', beard: '#dcdcdc', cape: '#3a4a2a', weapon: 'book', tall: true },
+  add('oren', { name: 'ผู้ใหญ่บ้านโอเรน', role: 'ผู้ใหญ่บ้าน', age: 63, look: { sprite: 'oren', coat: '#56683a', hair: '#cfcfcf', hat: 'none', beard: '#dcdcdc', cape: '#3a4a2a', weapon: 'book', tall: true },
     trait: 'สุขุม ห่วงหมู่บ้านมากกว่าตัวเอง พูดน้อยแต่ทุกคำมีน้ำหนัก', story: 'เป็นคนเก็บจานหินที่มีเส้นแสงไว้ และเป็นคนแรกที่เห็นว่ามันตอบสนองต่อ {name}', likes: 'ความสงบ, ชาร้อน', sched: [[6, 10, 'temple', 'pew'], [10, 17, 'square'], [17, 21, 'inn', 'table']],
     lines: { morning: ['เช้านี้ดวงทองลอยต่ำ ชาวบ้านจะได้ทำงานกันเต็มที่'], day: ['หมู่บ้านเล็ก ๆ อย่างเรา อยู่รอดได้เพราะช่วยกัน'], evening: ['ข่าวจากเมืองใหญ่ช่วงนี้ไม่ค่อยดี … ข้าห่วงว่ามันจะลามมาถึงที่นี่'] }, about: ['ข้าเป็นผู้ใหญ่บ้านมาสิบห้าปี ไม่เคยมีปีไหนที่ข่าวลือเยอะเท่าปีนี้'] });
   add('mother', { family: true, name: 'แม่', role: 'แม่ของ {name}', age: 47, look: { sprite: 'mother', coat: '#8a4b5c', apron: '#efe2c8', hair: '#5a3a22', hat: 'scarf', hatCol: '#c9a07a', longHair: true }, home: 'home',
