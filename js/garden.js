@@ -74,18 +74,21 @@
     if (!G) return []; const out = [];
     for (let d = G.last; d < now; d++) {
       const wet = rain(d) || !!G.have.channel, sz = season(d)[0];
+      const cf = root.FarmCrew ? root.FarmCrew.dayFactor(G, game() || {}, { away: id => root.VillageMind?.away?.(id) }) : null;   /* v98.296 · the crew's share of the day's work (null = nobody is hired, you do it by hand) */
       for (let i = 0; i < G.plots.length; i++) {
         const p = G.plots[i]; if (!p || p.dead || p.ripe) continue; const C = CROPS[p.crop];
         if (p.g < 1 && !G.have.scarecrow && hash('crow:' + d + ':' + i) < .08) { G.plots[i] = null; out.push('🐦 กาจิกต้นกล้า' + C.name + 'แปลงที่ ' + (i + 1) + ' หายไป'); continue }
+        if (cf != null && !wet && p.w !== d && hash('crew:' + d + ':' + i) < cf) p.w = d;   /* the crew waters it */
         if (wet || p.w === d) { p.g += C.seasons.includes(sz) ? 1 : .5; p.dry = 0; if (p.g >= C.days) { p.ripe = true; out.push(C.icon + ' ' + C.name + 'แปลงที่ ' + (i + 1) + ' สุกแล้ว') } }
         else { p.dry = (p.dry || 0) + 1; p.perfect = false; if (p.dry >= 3) { p.dead = true; out.push('🥀 ' + C.name + 'แปลงที่ ' + (i + 1) + ' เหี่ยวตายเพราะขาดน้ำ') } }
       }
+      if (cf != null) for (let i = 0; i < G.plots.length; i++) { const p = G.plots[i]; if (p?.ripe && hash('crewh:' + d + ':' + i) < cf) { const n = harvest(G, i); if (n) out.push('🧺 ทีมดูแลเก็บ' + CROPS[p.crop].name + 'แล้ว ' + n + ' ผล') } }
       for (const a of G.animals) {
         const A = ANIMALS[a.kind]; let fed = false;
         if (G.hay > 0) { G.hay--; fed = true } else if ((G.basket.wheat || 0) > 0) { G.basket.wheat--; if (!G.basket.wheat) delete G.basket.wheat; fed = true }
         if (!fed) { a.mood = Math.max(0, (a.mood ?? 5) - 2); if (!a.hungry) out.push('🌾 ' + A.icon + ' ' + a.name + ' หิว ไม่มีฟางให้กิน'); a.hungry = true; continue }
         a.hungry = false; a.mood = Math.min(10, (a.mood ?? 5) + (a.pat === d ? 1 : 0));
-        if ((d - a.day0) % A.every === 0 && d > a.day0) { const n = A.n + (a.mood >= 7 ? 1 : 0); G.basket[A.product] = (G.basket[A.product] || 0) + n }
+        if ((d - a.day0) % A.every === 0 && d > a.day0) { let n = A.n + (a.mood >= 7 ? 1 : 0); if (cf != null) n = Math.floor(n * cf + hash('crewa:' + d + ':' + a.name)); G.basket[A.product] = (G.basket[A.product] || 0) + n }
       }
       for (let i = 0; i < (G.ground?.length || 0); i++) if (G.ground[i] === 'grass' && hash('weed:' + d + ':' + i) < .015) G.ground[i] = 'weed';   /* v97.83 · weeds creep back */
       if (G.have.compost && d - G.compostDay >= 3) { G.fert++; G.compostDay = d; out.push('🟫 กองปุ๋ยหมักพร้อมใช้ +1 ถุง') }
@@ -204,6 +207,23 @@
     #gdUI .x{float:right;background:none;border:0;font-size:20px}`;
     document.head.append(st);
   }
+  /* v98.296 · the farm crew (js/farm-crew.js): who looks after the farm when you are away, and the share of the work that gets done */
+  const HIRABLE = ['hilda', 'shep', 'ken', 'tom', 'joe', 'may', 'bryn', 'vera', 'tess'];
+  function crewHtml(G) {
+    const FC = root.FarmCrew, g = game(); if (!FC || !g) return ''; const L = root.VillageLife?.P || {}, v = g.village || {};
+    const W = FC.workload(G), M = FC.manpower(G, g, {}), pct = W > 0 ? Math.round(Math.min(1, M / W) * 100) : 100, nm = id => L[id]?.name || id;
+    const crew = (G.crew || []).map(h => `<span style="display:inline-flex;gap:6px;align-items:center;margin:3px 6px 3px 0;padding:3px 8px;border-radius:8px;background:#fff8">${h.kind === 'mother' || h.id === 'mother' ? '👩' : h.kind === 'friend' ? '🧑‍🤝‍🧑' : '💼'} ${nm(h.id)}${h.kind === 'hired' ? ' · ' + h.wage + '💰/วัน' : ''}${FC.available(g, h, {}) ? '' : ' (ไม่ว่าง)'}<button data-a="crew:rm~${h.id}">✕</button></span>`).join('');
+    const bench = (v.bench || []).filter(m => m.key !== 'sib' && !FC.has(G, m.key)).map(m => `<button data-a="crew:add~${m.key}~friend">🧑‍🤝‍🧑 ${m.name}</button>`).join('');
+    const hire = HIRABLE.filter(id => L[id] && !FC.has(G, id)).map(id => `<button data-a="crew:add~${id}~hired">💼 ${nm(id)} ${FC.wage(id, L[id].role)}💰</button>`).join('');
+    return `<div class="note"><b>👥 ผู้ดูแลไร่</b> <small>ภาระงาน ${W.toFixed(1)} · กำลังคน ${M.toFixed(1)} → ทำงานได้ ${pct}% (คนไม่พอ ผลผลิตลดตามสัดส่วน) · ทำงานเฉพาะตอนเล่น</small><div>${crew || '<small>ยังไม่มี — คุณดูแลไร่เอง</small>'}</div>
+      <div class="row">${FC.has(G, 'mother') ? '' : '<button data-a="crew:add~mother~mother">👩 ฝากแม่</button>'}${bench}${hire}</div></div>`;
+  }
+  function crewAct(G, v) {
+    const FC = root.FarmCrew, [op, id, kind] = v.split('~'), L = root.VillageLife?.P || {}; if (!FC) return '';
+    if (op === 'rm') { FC.remove(G, id); commit(); return '👋 เอาออกจากทีมดูแลแล้ว' }
+    const m = (game()?.village?.bench || []).find(x => x.key === id);
+    const r = FC.add(G, { id, kind, role: L[id]?.role || '' }); commit(); return r || '✔ เพิ่มผู้ดูแลแล้ว · เริ่มทำงานตั้งแต่วันถัดไป';
+  }
   function open(G, opts = {}) {
     if (!G) return; css(); document.getElementById('gdUI')?.remove();
     const d = document.createElement('div'); d.id = 'gdUI'; let pick = Number.isInteger(opts.pick) && !G.plots[opts.pick] ? opts.pick : null, note = tick(G).join('<br>');
@@ -227,6 +247,7 @@
         <div class="note"><b>🐾 คอกสัตว์</b> ${G.animals.length}/${G.have.barn ? PEN[1] : PEN[0]} ตัว · ฟาง ${G.hay} มัด (กินตัวละ 1 มัดต่อวัน · หมดแล้วใช้ข้าวสาลีในตะกร้า)
           <div class="row">${G.animals.map(a => `<span title="อารมณ์ ${a.mood}/10" style="padding:3px 8px;border-radius:8px;background:#fff8">${ANIMALS[a.kind].icon} ${a.name} ${a.hungry ? '😣' : a.mood >= 7 ? '😊' : '🙂'}${a.pat === now ? ' 🤚' : ''}</span>`).join('') || '<small>ยังไม่มีสัตว์</small>'}</div>
           <div class="row">${G.animals.length ? '<button data-a="pat">🤚 ลูบหัวทุกตัว</button>' : ''}<button data-a="hay">🌾 ซื้อฟาง ${HAY.n} มัด · ${HAY.cost} 💰</button>${Object.entries(ANIMALS).map(([k, A]) => `<button data-a="animal:${k}" title="ให้${PRODUCTS[A.product].name} ${A.n}${A.every > 1 ? ' ทุก ' + A.every + ' วัน' : ' ต่อวัน'}">${A.icon} ซื้อ${A.name} · ${A.cost} 💰</button>`).join('')}${G.have.barn ? '' : `<button data-a="barn">🏚 สร้างโรงนา (เลี้ยงได้ ${PEN[1]} ตัว) · ${BARN_COST} 💰</button>`}</div></div>
+        ${crewHtml(G)}
         <div class="note"><b>🔨 ปรับปรุงไร่</b><div class="row">${!G.ground && nxt < SIZES.length ? `<button data-a="up:size">➕ ขยายเป็น ${SIZES[nxt]} แปลง · ${SIZE_COST[nxt]} 💰</button>` : ''}${Object.entries(ITEMS).map(([k, I]) => G.have[k] ? `<small>✔ ${I.icon} ${I.name}</small>` : `<button data-a="up:${k}" title="${I.text}">${I.icon} ${I.name} · ${I.cost} 💰</button>`).join('')}</div>
         <small>ถางหิน ตอไม้ กิ่งไม้ และวัชพืชในฉากไร่ แล้วไถดินก่อนปลูก · รดน้ำทุกวัน (ฝนตกรดให้เอง) · แห้ง 3 วันติดต้นจะตาย · ใส่ปุ๋ยและไม่ขาดน้ำเลยได้ดาวเพิ่ม ผลผลิตมากขึ้น · ปลูกนอกฤดูไม่ได้ ถ้าเปลี่ยนฤดูกลางทางจะโตช้าลงครึ่งหนึ่ง</small></div></div>`;
     };
@@ -239,6 +260,7 @@
       else if (a === 'water') water(G, i); else if (a === 'waterall') note = '💧 รดน้ำ ' + waterAll(G) + ' แปลง';
       else if (a === 'fert') note = fertilise(G, i) || '🟫 ใส่ปุ๋ยแล้ว';
       else if (a === 'harvest') note = '🧺 เก็บได้ ' + harvest(G, i) + ' ผล'; else if (a === 'harvestall') note = '🧺 เก็บได้ทั้งหมด ' + harvestAll(G) + ' ผล';
+      else if (a === 'crew') note = crewAct(G, b.dataset.a.slice(5));
       else if (a === 'clear') clear(G, i);
       else if (a === 'cook') note = '🍲 ได้เสบียง +' + cook(G); else if (a === 'sell') note = '💰 ขายได้ ' + sell(G) + ' 💰';
       else if (a === 'up') note = upgrade(G, v) || '🔨 ปรับปรุงไร่เรียบร้อยแล้ว';
