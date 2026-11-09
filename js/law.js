@@ -24,7 +24,7 @@
     return { caught: true, fine: f.fine };
   }
   function pay(S, id) { const f = file(S, id), c = f.fine + (f.wanted ? 30 : 0); if ((S.gold || 0) < c) return false; S.gold -= c; f.fine = 0; f.wanted = false; return true }
-  function jail(S, id) { const f = file(S, id); f.fine = 0; f.wanted = false; f.heat = Math.max(0, f.heat - 1); S.fatigue = Math.min(100, (S.fatigue || 0) + 30); return true }   /* the caller passes a day */
+  function jail(S, id) { const f = file(S, id); f.fine = 0; f.wanted = false; f.heat = Math.max(0, f.heat - 1);  return true }   /* the caller passes a day */
   function run(S, id) { const f = file(S, id); f.wanted = true; f.heat = Math.min(5, f.heat + 2); root.Factions?.add(RULER(id), -15, 'หนีการจับกุมที่' + NAME(id)) }
   function service(S, id) { const f = file(S, id); if (f.heat) f.heat--; return f.heat }   /* good deeds (guild contracts) */
   const owed = (S, id) => { const f = file(S, id); return f.fine + (f.wanted ? 30 : 0) };

@@ -55,7 +55,7 @@
     if (!g) return;
     const v = g.village ||= {};
     if (!Number.isFinite(g.day)) g.day = 1; if (!Number.isFinite(g.minutes)) g.minutes = 480;
-    if (!Number.isFinite(g.hp)) g.hp = MAX_HP; if (!Number.isFinite(g.fatigue)) g.fatigue = 0;
+    if (!Number.isFinite(g.hp)) g.hp = MAX_HP; g.fatigue = 0;   /* v98.294 · fatigue is switched off (old saves are read, the value is dropped) */
     v.coins ??= 80; v.materials ||= {}; v.materials.food ??= 0; v.bag ||= {};
     v.party ||= []; v.bench ||= []; v.recruit ||= {}; v.battles ??= 0; v.kills ??= 0;
     /* v98.234 · minimum team of two: the other hero (พี่ชาย/น้องสาว) is always in the travelling party (new saves and old ones) */
@@ -123,7 +123,7 @@
     def('food', () => V().materials.food || 0, x => { V().materials.food = Math.max(0, x) });
     def('hp', () => G().hp, x => { G().hp = Math.max(0, Math.round(x)) });
     def('maxHp', () => G().maxHp || MAX_HP, () => { });
-    def('fatigue', () => G().fatigue || 0, x => { G().fatigue = Math.max(0, Math.min(100, Math.round(x))) });
+    def('fatigue', () => 0, x => { G().fatigue = 0 });   /* v98.294 · switched off */
     def('party', () => V().party, x => { V().party = x });
     def('bench', () => V().bench, x => { V().bench = x });
     def('recruit', () => V().recruit, x => { V().recruit = x });

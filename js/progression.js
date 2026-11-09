@@ -122,7 +122,7 @@
   function battleHero(g, recipes) {
     const c = heroCombat(g, recipes);
     const j = jobCombat(g);   /* v97.18: job id, passive and look go into the battle (the arena page does not load this file) */
-    return { power: c.power, spell: c.spell, crit: c.crit, armor: c.armor, stMax: c.stMax, st: Math.max(20, Math.round(c.stMax - (g.fatigue || 0) * .6)), hpMod: c.hpMod, job: j.id, jobLv: j.lv, ...j.pass, look: j.look ? { ...j.look, icon: j.icon, col: j.col, name: j.name } : null };
+    return { power: c.power, spell: c.spell, crit: c.crit, armor: c.armor, stMax: c.stMax, st: Math.max(20, Math.round(c.stMax)), hpMod: c.hpMod, job: j.id, jobLv: j.lv, ...j.pass, look: j.look ? { ...j.look, icon: j.icon, col: j.col, name: j.name } : null };
   }
   const battleParam = (g, recipes) => 'hero=' + encodeURIComponent(JSON.stringify(battleHero(g, recipes)));
   /* missing materials for a recipe (materials in v.materials, goods in v.bag) — '' when enough */

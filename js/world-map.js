@@ -470,7 +470,7 @@
     hud.innerHTML = `<h1>🗺 Agrenor</h1><div class="sub">${window.WorldState?.season ? WorldState.season(S.day)[2] + ' ' : ''}วันที่ ${S.day} · ${icon} ${String(hh).padStart(2, '0')}:${mm} · ${esc(G.BIOME[t.biome].name)}${t.poi ? ' · ' + esc(t.poi.name) : ''}</div>
       <div class="row"><span>HP</span><span>${S.hp}/${S.maxHp}</span></div><div class="bar"><i style="width:${S.hp / S.maxHp * 100}%;background:#6fd18a"></i></div>
       <div class="row" style="flex-wrap:wrap;gap:4px">${S.party.map(p => `<span title="${esc(p.name)}" style="font-size:11px;background:#0004;border-radius:5px;padding:1px 5px;${p.hp < p.max * .3 ? 'color:#ff9a7a' : ''}">${esc(p.name)} ${p.hp}/${p.max}</span>`).join('')}</div>
-      <div class="row"><span>ความเหนื่อย</span><span style="color:${S.fatigue >= 80 ? '#ff8a6a' : '#e8d8a8'}">${S.fatigue}%${S.fatigue >= 80 ? ' ⚠' : ''}</span></div><div class="bar"><i style="width:${S.fatigue}%;background:${S.fatigue >= 80 ? '#e2705f' : '#c9a24a'}"></i></div>
+      
       <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>${(() => { const bs = window.Bounties?.active(S) || []; if (!bs.length) return ''; const won = bs.filter(b => b.state === 'slain').length, open = bs.length - won; const near = bs.filter(b => b.state === 'open' && b.c != null).map(b => ({ b, d: G.dist(S.pos, b) })).sort((a, b) => a.d - b.d)[0];   /* v97.84 · which way to the nearest one */
         const dir = near ? (() => { const dx = near.b.c - S.pos.c, dy = near.b.r - S.pos.r; if (!dx && !dy) return 'ตรงนี้'; const a = Math.atan2(dy, dx), k = Math.round(a / (Math.PI / 4)) & 7; return ['ตะวันออก', 'ตะวันออกเฉียงใต้', 'ใต้', 'ตะวันตกเฉียงใต้', 'ตะวันตก', 'ตะวันตกเฉียงเหนือ', 'เหนือ', 'ตะวันออกเฉียงเหนือ'][k] })() : '';
         return `<div class="row" style="color:#ffb0a0"><span>☠ ค่าหัว${open ? ' ' + open + ' ใบ' : ''}</span><span>${won ? '✔ รอรับรางวัล ' + won : 'เหลือ ' + Math.max(0, Math.min(...bs.filter(b => b.state === 'open').map(b => b.until)) - S.day) + ' วัน'}</span></div>${near && !won ? `<div style="color:#ffb0a0;font-size:11.5px">ใกล้สุด ${esc(near.b.name)} · ทาง${dir} ${world.real ? near.d * 12 + ' กม.' : near.d + ' ช่อง'}</div>` : ''}` })()}
@@ -654,9 +654,9 @@
     S.prev = { ...S.pos }; S.pos = { c: to.c, r: to.r }; S.steps++; const k = K(to.c, to.r); if (S.trail.at(-1) !== k) S.trail.push(k); if (S.trail.length > 200) S.trail.shift();
     const wasNight = nightness() > .6;
     passTime(cost + (wasNight ? 1 : 0));                                              // walking in the dark is slower
-    S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * (wasNight ? 1.5 : 1) * (VP('road') ? .8 : 1)));   /* v97.35 · R3 projects */
+       /* v97.35 · R3 projects */
     /* v95.26 · the heights are cold: walking there tires you faster and eats more */
-    if (world.real && (t.biome === 'snow' || t.biome === 'highland')) { const cold = t.biome === 'snow' ? 1 : .5; S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * cold)); S.trek = (S.trek || 0) + cost * cold; if (S.coldDay !== S.day) { S.coldDay = S.day; log('ลมหนาวบนที่สูง เหนื่อยเร็วและหิวไว'); toast('❄ หนาวจัด: เหนื่อยเร็วขึ้น กินเสบียงมากขึ้น') } }
+    if (world.real && (t.biome === 'snow' || t.biome === 'highland')) { const cold = t.biome === 'snow' ? 1 : .5;  S.trek = (S.trek || 0) + cost * cold; if (S.coldDay !== S.day) { S.coldDay = S.day; log('ลมหนาวบนที่สูง เหนื่อยเร็วและหิวไว'); toast('❄ หนาวจัด: เหนื่อยเร็วขึ้น กินเสบียงมากขึ้น') } }
     /* v95.23: on the real map a hex is ~12 km — a ration lasts 12 hours of walking, not one hex */
     let eat = !t.road && !t.poi; if (world.real) { S.trek = (S.trek || 0) + cost; eat = S.trek >= 12; if (eat) S.trek -= 12 }
     if (eat) { if (S.food > 0) S.food--; else { S.hp = Math.max(1, S.hp - 5); log('เสบียงหมด! หิวโหย −5 HP'); toast('เสบียงหมด −5 HP') } }
@@ -686,7 +686,7 @@
   async function nightEvent(t) {
     const d = destOf(), r = Math.random();
     if (r < .4 && d && !S.done[d.id]) { const p = G.path(world, t, d); if (p) p.slice(0, 5).forEach(x => S.known[K(x.c, x.r)] = 1); fogDirty = true; log('ดวงไฟวิญญาณนำทาง'); ev('night:wisp', { biome: t.biome }); await modal(`<h2>✧ ดวงไฟวิญญาณ</h2><p>แสงสีฟ้าลอยวนอยู่กลางความมืด แล้วค่อย ๆ ล่องไปทางหนึ่ง… หมอกตามทางนั้นจางลงชั่วครู่</p>`); return true }
-    if (r < .75) { S.fatigue = Math.min(100, S.fatigue + 15); log('เสียงหอนทั้งคืน เหนื่อยขึ้น'); await modal(`<h2>🐺 เสียงหอนในความมืด</h2><p>เสียงหอนรอบทิศทำให้ต้องเดินระวังตัวทุกฝีก้าว ความเหนื่อย +15</p>`); return true }
+    if (r < .75) { log('เสียงหอนทั้งคืน ไม่ค่อยได้หลับ'); await modal(`<h2>🐺 เสียงหอนในความมืด</h2><p>เสียงหอนรอบทิศทำให้ต้องเดินระวังตัวทุกฝีก้าว ความเหนื่อย +15</p>`); return true }
     const gold = Math.round(20 + Math.random() * 30); S.gold += gold; log('พบของมีค่าใต้แสงจันทร์ +' + gold); await modal(`<h2>🌙 ประกายใต้แสงจันทร์</h2><p>มีบางอย่างสะท้อนแสงจันทร์อยู่ในพงหญ้า — ถุงเหรียญของนักเดินทาง <b>+${gold} 💰</b></p>`); return true;
   }
   function passTime(h) { S.hour += h; let nd = false; while (S.hour >= 24) { S.hour -= 24; S.day++; nd = true; log('— วันที่ ' + S.day + ' —') } if (nd && window.Estates) for (const m of Estates.tickAll(S)) { log(m); toast(m) } if (nd && window.Offices) for (const m of Offices.settle(S)) { log(m); toast(m) } if (nd && window.Settlements?.councilSettle) for (const m of Settlements.councilSettle()) { log(m); toast(m) } if (nd && window.Bounties) for (const m of Bounties.expire(S)) { log(m); toast(m) } }

@@ -25,7 +25,7 @@
     const done = e => {
       if (e.source !== fr.contentWindow || e.data?.type !== 'agrenor-battle') return;
       removeEventListener('message', done); fr.remove();
-      const r = e.data; g.minutes = Math.min(1200, (g.minutes || 0) + MINUTES); g.fatigue = Math.min(100, (g.fatigue || 0) + FATIGUE);
+      const r = e.data; g.minutes = Math.min(1200, (g.minutes || 0) + MINUTES); 
       for (const x of r.party || []) { const p = (v.party || []).find(q => q.key === x.key); if (p && x.order) p.order = x.order }
       const day = g.day, T = v.training ||= {}; if (T.day !== day) { T.day = day; T.xp = 0 }
       const xp = Math.max(0, Math.min(XP_DAY - T.xp, XP_EACH * (r.kills || 0))); T.xp += xp;

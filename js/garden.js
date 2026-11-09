@@ -128,8 +128,8 @@
   /* v97.86 · fishing at the farm pond: half an hour and a little fatigue a cast; most casts catch a pond fish, a few a golden carp */
   function fish(G, rng = Math.random) { if (fatigue() >= TIRED || !work(2)) return { why: 'เหนื่อยเกินไปแล้ว พักก่อนเถอะ' }; try { root.WorldState?.advance?.(30) } catch (e) { } const r = rng(); const k = r < .05 ? 'koi' : r < .6 ? 'fish' : null; if (k) G.basket[k] = (G.basket[k] || 0) + 1; commit(); return { k } }
   /* v97.83 · clearing and tilling · returns '' or why not */
-  const fatigue = () => game()?.fatigue || 0;
-  function work(n) { const g = game(); if ((g.fatigue || 0) + n > 100) return false; g.fatigue = Math.min(100, (g.fatigue || 0) + n); return true }
+  const fatigue = () => 0;   /* v98.294 · fatigue is switched off */
+  function work(n) { return true }   /* v98.294 · digging, clearing and fishing no longer tire anyone */
   function clearTile(G, i) {
     const k = G.ground?.[i], D = DEBRIS[k]; if (!D) return 'ตรงนี้ไม่มีอะไรต้องถาง';
     if (fatigue() >= TIRED || !work(D.fat)) return 'เหนื่อยเกินไปแล้ว พักก่อนเถอะ';
@@ -221,7 +221,7 @@
         <p class="sub">${si} ${sn} วันที่ ${seasonDay(now)}/28 · วันนี้${rain(now) ? '🌧 ฝนตก รดน้ำให้แล้ว' : '☀ ฟ้าโปร่ง'}${G.have.channel ? ' · 🚿 รางน้ำรดให้ทุกวัน' : ''} · ฮิลดาว่าพรุ่งนี้${tomorrow ? 'ฝนน่าจะตก' : 'แดดออก'} · 💰 ${g.village.coins || 0} · ปุ๋ย ${G.fert} ถุง</p>
         ${note ? `<div class="note">${note}</div>` : ''}
         <div class="row"><button data-a="waterall">💧 รดน้ำทุกแปลง</button><button data-a="harvestall">🧺 เก็บทุกแปลงที่สุก</button></div>
-        ${seeds}${(() => { const c = fieldCount(G); return `<p class="sub">แปลงที่ไถแล้ว ${c.soil} · ปลูกอยู่ ${c.planted} · ยังต้องถาง ${c.debris} ช่อง · ความเหนื่อย ${fatigue()}% (ถางและไถในฉากไร่)</p>` })()}<div class="grid">${G.plots.map((p, i) => G.ground && G.ground[i] !== 'soil' ? '' : plot(p, i)).join('')}</div>
+        ${seeds}${(() => { const c = fieldCount(G); return `<p class="sub">แปลงที่ไถแล้ว ${c.soil} · ปลูกอยู่ ${c.planted} · ยังต้องถาง ${c.debris} ช่อง</p>` })()}<div class="grid">${G.plots.map((p, i) => G.ground && G.ground[i] !== 'soil' ? '' : plot(p, i)).join('')}</div>
         <div class="note"><b>🧺 ตะกร้า</b> ${basket.length ? basket.map(([k, n]) => (GOODS[k]?.icon || '') + ' ' + (GOODS[k]?.name || k) + ' ×' + n).join(' · ') : 'ว่าง'}${basket.length ? `<div class="row"><button data-a="cook">🍲 ทำเป็นเสบียง (+${basket.reduce((a, [k, n]) => a + (GOODS[k]?.food || 0) * n, 0)})</button><button data-a="sell">💰 ส่งขายตลาด (+${basket.reduce((a, [k, n]) => a + (GOODS[k]?.sell || 0) * n, 0)})</button><button data-a="bag" title="เอาไปวางขายในร้านของเราเองได้ ราคาตั้งเอง">🎒 เก็บเข้ากระเป๋า (ไว้วางขายในร้านของเรา)</button></div>` : ''}</div>
         <div class="note"><b>🧀 แปรรูปในกระท่อม</b> <small>ใช้ของในตะกร้า ได้ของที่ขายแพงขึ้นหรือทำเสบียงได้มากขึ้น</small><div class="row">${Object.entries(MADE).map(([k, M]) => `<button data-a="make:${k}" ${canMake(G, k) ? '' : 'disabled'} title="ขาย ${M.sell} 💰${M.food ? ' · เสบียง ' + M.food : ''}">${M.icon} ${M.name} ← ${Object.entries(M.from).map(([x, n]) => GOODS[x].icon + '×' + n).join(' ')}</button>`).join('')}</div></div>
         <div class="note"><b>🐾 คอกสัตว์</b> ${G.animals.length}/${G.have.barn ? PEN[1] : PEN[0]} ตัว · ฟาง ${G.hay} มัด (กินตัวละ 1 มัดต่อวัน · หมดแล้วใช้ข้าวสาลีในตะกร้า)

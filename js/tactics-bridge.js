@@ -39,10 +39,10 @@ window.TACTICS_BRIDGE={
 // Each finished enemy turn costs game time and a little freshness.
 const baseNextTurn=TacticsCore.nextTurn;
 TacticsCore.onActor=(st,u)=>{if(st.phase==='player')window.BattleItems?.draw();window.FFTHud?.reset()};
-TacticsCore.nextTurn=function(st){baseNextTurn(st);if(!session||!TACTICS_BRIDGE.visible())return;s.minutes=Math.min(1200,s.minutes+MIN_PER_TURN);s.fatigue=Math.min(100,s.fatigue+FATIGUE_PER_TURN);st.hero.stamina=Math.min(st.hero.stamina,cap());syncBack(st);$id('tacticsClock').textContent=clockText();
+TacticsCore.nextTurn=function(st){baseNextTurn(st);if(!session||!TACTICS_BRIDGE.visible())return;s.minutes=Math.min(1200,s.minutes+MIN_PER_TURN);st.hero.stamina=Math.min(st.hero.stamina,cap());syncBack(st);$id('tacticsClock').textContent=clockText();
  if(s.minutes>=1200&&!st.outcome){st.outcome='lose';st.phase='done';s.log='หมดเวลา 20:00 ระหว่างการต่อสู้';setTimeout(()=>{alert('หมดเวลา 20:00 แล้ว จบการต่อสู้');closeTactical(true)},50)}};
 
-function trainingBlock(){return s.village?.location!=='forge'?'ต้องอยู่โรงตีเหล็ก':s.hp<=0?'HP หมด กินอาหารหรือกลับบ้านนอนก่อน':s.minutes>=1180?'ใกล้ 20:00 แล้ว เวลาไม่พอฝึก':s.fatigue>=95?'ความสดชื่นต่ำเกินไป พักก่อน':''}
+function trainingBlock(){return s.village?.location!=='forge'?'ต้องอยู่โรงตีเหล็ก':s.hp<=0?'HP หมด กินอาหารหรือกลับบ้านนอนก่อน':s.minutes>=1180?'ใกล้ 20:00 แล้ว เวลาไม่พอฝึก':''}
 // opts.expedition = encounter key (east / north) — started from the village map.
 function openTactical(opts={}){if(busy||devActive||session)return;if(!opts.expedition&&!opts.adventure){let why=trainingBlock();if(why){$('message').textContent='ยังฝึกไม่ได้: '+why;return}if(s.hp<25&&!confirm('HP เหลือ '+s.hp+'/60 เริ่มฝึกต่อหรือไม่?'))return}
  closeCardFocus?.();$('panel').open&&$('panel').close();

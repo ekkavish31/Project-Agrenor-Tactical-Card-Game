@@ -893,7 +893,7 @@ function walls() {
 }
 
 /* ---------- loop ---------- */
-/* v98.293 · the hero against props that have an order footprint: move him after every prop he stands in front of, before every prop he stands behind (same rule as the village's fixOrder) */
+/* v98.294 · the hero against props that have an order footprint: move him after every prop he stands in front of, before every prop he stands behind (same rule as the village's fixOrder) */
 function fixOrderPlace(list) {
  if (!window.DepthStyle || /[?&]depthfix=0/.test(location.search)) return;
  const ih = list.findIndex(e => e.o && e.o.hero); if (ih < 0) return; const w = list[ih].o;
@@ -903,7 +903,7 @@ function fixOrderPlace(list) {
  if (after > ih) { const [r] = list.splice(ih, 1); list.splice(after, 0, r) }
  else if (back < ih) { const [r] = list.splice(ih, 1); list.splice(back, 0, r) }
 }
-let cvLeft = 0, cvTop = 0;   /* v98.293 · where the canvas starts on the page (0,0 normally; the docked editor layout insets it) */
+let cvLeft = 0, cvTop = 0;   /* v98.294 · where the canvas starts on the page (0,0 normally; the docked editor layout insets it) */
 function resize() {
  if (document.body.classList.contains('edDock')) { const r = cv.getBoundingClientRect(); W = r.width; H = r.height; cvLeft = r.left; cvTop = r.top } else { W = innerWidth; H = innerHeight; cvLeft = cvTop = 0 }
  cv.width = Math.round(W * devicePixelRatio);
@@ -1019,7 +1019,7 @@ function draw(t) {
    draw: () => { if (window.Interactables?.isActive('st:' + i)) stationOutline(s); drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp) }
   })
  });
- /* v98.293 · composite props (same `cmp` id): one shared footprint = union box, member boxes kept as .parts */
+ /* v98.294 · composite props (same `cmp` id): one shared footprint = union box, member boxes kept as .parts */
  const cmpFp = new Map();
  for (const o of M.props) if (o.cmp) { const b = { u0: o.u - (o.sw ?? .5) / 2, u1: o.u + (o.sw ?? .5) / 2, v0: o.v - (o.sh ?? .5) / 2, v1: o.v + (o.sh ?? .5) / 2 }; let U = cmpFp.get(o.cmp); if (!U) cmpFp.set(o.cmp, U = { ...b, parts: [] }); else { U.u0 = Math.min(U.u0, b.u0); U.u1 = Math.max(U.u1, b.u1); U.v0 = Math.min(U.v0, b.v0); U.v1 = Math.max(U.v1, b.v1) } U.parts.push(b) }
  M.props.forEach((o, i) => {
@@ -1034,7 +1034,7 @@ function draw(t) {
    set: o.owner || null,
    z: o.z || 0,
    rect: artRect(o.art, o.u, o.v, o.width || 110, o.s || 1), label: o.art, tall: o.tall,
-   /* v98.293 · opt-in ORDER footprint (set in the 🔍 detail window): the hero is drawn in front of / behind this prop by the same rule as the village (DepthStyle) */
+   /* v98.294 · opt-in ORDER footprint (set in the 🔍 detail window): the hero is drawn in front of / behind this prop by the same rule as the village (DepthStyle) */
    fp: cmpFp.get(o.cmp) || (o.sw != null || o.sh != null || o.cmp ? { u0: o.u - (o.sw ?? .5) / 2, u1: o.u + (o.sw ?? .5) / 2, v0: o.v - (o.sh ?? .5) / 2, v1: o.v + (o.sh ?? .5) / 2 } : null),
    tag: {
     type: 'prop',
@@ -1062,13 +1062,13 @@ function draw(t) {
  for (const o of objects) { if (o.set && M.stations.some(s => s.id === o.set)) { let G = sets.get(o.set); if (!G) sets.set(o.set, G = { m: [], y: null }); G.m.push(o); if (o.isStation) G.y = o.y } else list.push({ y: o.y, o }) }
  for (const G of sets.values()) {
   const fps = G.m.map(x => x.fp).filter(Boolean);
-  if (fps.length) G.fp = { u0: Math.min(...fps.map(f => f.u0)), u1: Math.max(...fps.map(f => f.u1)), v0: Math.min(...fps.map(f => f.v0)), v1: Math.max(...fps.map(f => f.v1)), parts: fps };   /* v98.293 · a work station set is ONE piece for the order rule: union of its members' footprints */
+  if (fps.length) G.fp = { u0: Math.min(...fps.map(f => f.u0)), u1: Math.max(...fps.map(f => f.u1)), v0: Math.min(...fps.map(f => f.v0)), v1: Math.max(...fps.map(f => f.v1)), parts: fps };   /* v98.294 · a work station set is ONE piece for the order rule: union of its members' footprints */
   list.push({ y: G.y ?? Math.min(...G.m.map(x => x.y)), G });
  }
  const put = o => window.PlaceBuild ? PlaceBuild.drawObj(o) : o.draw();
 list.sort((a, b) => a.y - b.y);
  fixOrderPlace(list);
- /* v98.293 · a TALL prop with an order footprint that the hero stands BEHIND turns see-through around him (DepthStyle: fade + silhouette), low ones (fence, bush…) cover naturally */
+ /* v98.294 · a TALL prop with an order footprint that the hero stands BEHIND turns see-through around him (DepthStyle: fade + silhouette), low ones (fence, bush…) cover naturally */
  const hi = list.findIndex(e => e.o && e.o.hero), hobj = hi >= 0 ? list[hi].o : null, heroH = CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K;
  list.forEach((e, i) => {
   if (hobj && window.DepthStyle && i > hi && e.o && e.o.fp && e.o.rect && !DepthStyle.walkerInFront(e.o.fp, hobj.wu, hobj.wv)) {
@@ -1583,4 +1583,4 @@ window.TouchControls?.attach({
  act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
  buttons: [{ id: 'bag', icon: 'bag', title: 'กระเป๋า', run: () => send('menu', { id: 'bag' }) }, { id: 'menu', icon: 'settings', title: 'เมนู', run: () => send('menu', { id: 'settings' }) }, ...(KIND === 'forge' ? [{ id: 'wip', icon: 'forge', title: 'ซ่อน/แสดงการ์ดงาน', run: () => send('wip-toggle') }] : [])]
 });
-</script><script src="js/place-build.js?v=98.293"></script><script src="js/depth-style.js?v=98.292"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=98.293"></script><script src="js/world-state.js?v=98.235"></script><script src="js/villager-draw.js?v=98.265"></script><script src="js/village-life.js?v=98.235"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=98.263"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+</script><script src="js/place-build.js?v=98.293"></script><script src="js/depth-style.js?v=98.292"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=98.293"></script><script src="js/world-state.js?v=98.294"></script><script src="js/villager-draw.js?v=98.265"></script><script src="js/village-life.js?v=98.235"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=98.263"></script><script src="js/editor-tools.js?v=91.77"></script></html>

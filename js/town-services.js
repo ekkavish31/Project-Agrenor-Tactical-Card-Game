@@ -45,7 +45,7 @@
     if (key === 'bounty') return { lines: [], panel: 'bounty' };
     if (key === 'ferry') { ctx.passTime?.(3); return { lines: ['⛵ ล่องเรือข้ามทะเลสาบสามชั่วโมง ลมเย็นสบาย'], goto: id === 'willowshore' ? 'lakenhold' : 'willowshore' } }
     if (key === 'mine') {
-      ctx.passTime?.(4); S.fatigue = Math.min(100, (S.fatigue || 0) + 20); S.gold += 12; out.push('⛏ ทำงานกะหนึ่ง ได้ค่าแรง 12 💰 · เหนื่อย +20');
+      ctx.passTime?.(4);  S.gold += 12; out.push('⛏ ทำงานกะหนึ่ง ได้ค่าแรง 12 💰');
       const room = () => (ST()?.cargoMax(S) || 12) - (ST()?.load(S) || 0); S.cargo ||= {};
       const ore = Math.min(2, Math.max(0, room())); if (ore) { S.cargo.ore = (S.cargo.ore || 0) + ore; out.push('🪨 หัวหน้าเหมืองแบ่งแร่ให้ ' + ore + ' ก้อน (ใส่เกวียน)') }
       if (r() < .3 && room() > 0) { S.cargo.crystal = (S.cargo.crystal || 0) + 1; out.push('💎 ขุดเจอผลึกเรืองแสงเล็ก ๆ หนึ่งก้อน') }

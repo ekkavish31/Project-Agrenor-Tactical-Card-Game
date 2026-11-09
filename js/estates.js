@@ -13,7 +13,7 @@
 (function (root) {
   'use strict';
   const KINDS = {
-    house: { name: 'บ้านพัก', icon: '🏠', cost: 120, desc: 'นอนพักฟรี · HP และความเหนื่อยหายหมด' },
+    house: { name: 'บ้านพัก', icon: '🏠', cost: 120, desc: 'นอนพักฟรี · HP หายหมด' },
     shop: { name: 'ร้านสาขา', icon: '🏪', cost: 200, desc: 'ขายของเองทุกวัน · เก็บเงินได้สูงสุด 7 วัน' },
     farm: { name: 'ไร่และคอกสัตว์', icon: '🌾', cost: 150, desc: 'ได้เสบียงทุกวัน · เก็บได้สูงสุด 14 ห่อ' }
   };
