@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.139';
+  const V = '98.331';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -40,10 +40,16 @@
     frostQueen: { name: 'ราชินีน้ำแข็ง', hp: 120, iq: 3, move: 3, atk: 16, scale: 1.25, fx: 'ice', img: 'frost-queen', range: 3, el: 'ice' },
     shadowWolf: { name: 'หมาป่าเงา', hp: 44, iq: 2, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' , el: 'dark' },
     /* v95.00: the training-ground scarecrow (does not move or hit back) */
+    /* v98.331 · prologue tutorials (docs/TODO.md §14): drawn by code (js/code-monsters.js) until real pictures exist — add assets/enemies/<img>.webp and drop `code: true` to replace.
+       goat = Pip's goat (light counter-attacks) · pumpkin = the harvest pumpkin (stands still; 2–3 hits; pops into a pumpkin to collect) · pumpkinBoss = the one that evolves (event, never random) · pest = crop pest (one hit) */
+    goat: { name: 'แพะของปิ๊บ', hp: 24, iq: 1, move: 4, atk: 3, scale: .8, fx: 'blunt', code: true, el: 'earth' },
+    pumpkin: { name: 'ฟักทองในไร่', hp: 30, iq: 0, move: 0, atk: 0, scale: .75, fx: 'blunt', code: true, passive: true, loot: true, evoGroup: 'pumpkin', el: 'earth' },
+    pumpkinBoss: { name: 'บอสฟักทอง', hp: 70, iq: 1, move: 2, atk: 6, scale: 1.05, fx: 'blunt', code: true, range: 3, el: 'earth' },
+    pest: { name: 'ด้วงกินใบ', hp: 4, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', code: true, el: 'wind' },
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
   /* v98.58 · evolution (วิวัฒน์): the next form of a monster, fought mid-battle (rules + hidden odds: js/flat-battle.js evolveCheck). Data only — add a pair to give another monster a next form. */
-  const EVOLVE = { wolf: ['shadowWolf', 1], frostWolf: ['yeti', 2], snowKobold: ['yeti', 2], kobold: ['golem', 2] };   /* [next form, tier: 1 → elite · 2 → mini-boss · 3 → boss] — the tier decides the chaos item it leaves (js/chaos.js) */
+  const EVOLVE = { pumpkin: ['pumpkinBoss', 3], wolf: ['shadowWolf', 1], frostWolf: ['yeti', 2], snowKobold: ['yeti', 2], kobold: ['golem', 2] };   /* [next form, tier: 1 → elite · 2 → mini-boss · 3 → boss] — the tier decides the chaos item it leaves (js/chaos.js) */
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
   const NIGHT = Q.get('night') === '1', ATKX = +Q.get('atk') || 1, HST = Q.get('hst') != null ? Math.max(0, Math.min(100, +Q.get('hst'))) : 100;
   const EMBED = Q.get('embed') === '1', TITLE = Q.get('title') || '', HHP = +Q.get('hhp') || 0, HMAX = +Q.get('hmax') || 60, HPRO = (() => { try { return JSON.parse(Q.get('hero') || 'null') || {} } catch (e) { return {} } })();   /* v95.00: js/progression.js battleHero() — power, spell, crit, armor, stMax, st */
@@ -78,7 +84,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk' };
+    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'hit', 'down']);
@@ -120,7 +126,7 @@
           const d = Math.hypot(u - o.u, v - o.v) + Math.random() * .6; if (d < bd) { bd = d; best = { u, v } } } }
       if (best) taken.add(best.u + ',' + best.v); return best };
     const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms, (T.scale || 1) >= 1.3 ? 4 : (T.scale || 1) >= 1.0 ? 3 : 2) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); const EV = EVOLVE[g.kind], N = !boss && EV && MON[EV[0]], evo = N ? { kind: EV[0], tier: EV[1], line: N.el, name: N.name, hp: Math.round(N.hp * g.mult), atk: Math.round(N.atk * ATKX), move: N.move, iq: N.iq || 0, shove: !!N.shove, el: N.el, fly: !!N.fly } : null; return { ...at, evo, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
+    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms, (T.scale || 1) >= 1.3 ? 4 : (T.scale || 1) >= 1.0 ? 3 : 2) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); const EV = EVOLVE[g.kind], N = !boss && EV && MON[EV[0]], evo = N ? { kind: EV[0], tier: EV[1], line: N.el, name: N.name, hp: Math.round(N.hp * g.mult), atk: Math.round(N.atk * ATKX), move: N.move, iq: N.iq || 0, shove: !!N.shove, el: N.el, fly: !!N.fly, passive: !!N.passive, range: N.range || 1 } : null; return { ...at, evo, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evoGroup: T.evoGroup || null } }).filter(Boolean);
     /* v97.22: battle objective from the world map (?obj=survive:5 | escape | defend:4 | leader) */
     const objective = (() => { const [type, n] = (Q.get('obj') || '').split(':');
       if (type === 'survive') return { type, turns: Math.max(2, +n || 5) };
@@ -141,6 +147,7 @@
     for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir; { const o = u.side === 'monster' ? FB.hero(st) : FB.monster(st), du = o.u - u.u, dv = o.v - u.v; u.frontDir = du >= dv ? 'SE' : 'SW'; u.idle0 = { u: u.u, v: u.v, face: u.face } } }
     /* v97.08 · same-named enemies get a number (โจรป่า 1, โจรป่า 2 …) so the queue, the list and the log tell them apart */
     { const n = {}, k = {}; for (const u of FB.monsters(st)) n[u.name] = (n[u.name] || 0) + 1; for (const u of FB.monsters(st)) if (n[u.name] > 1) { k[u.name] = (k[u.name] || 0) + 1; u.label = u.name + ' ' + k[u.name] } for (const u of FB.monsters(st)) if (u.label) { u.name = u.label; delete u.label } }
+    if (Q.get('imm') === '1') for (const u of st.units) if (u.side === 'hero' && (u.id === 'hero' || u.key === 'sib')) u.immortal = true;   /* v98.331 · prologue tutorials: HP can drop, never below 1 */
     pend = null; walks = [];
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
@@ -431,7 +438,7 @@
   /* v98.253 · the face picture of a fighter (queue chips + inspect card) */
   function faceFor(u) {
     const lookNow = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })(), otherLook = lookNow === 'female' ? 'male' : 'female';
-    return u.side === 'monster' ? { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' }
+    return u.side === 'monster' ? (MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' })
       : u === FB.hero(st) ? { src: `assets/portraits/hero-${lookNow}-neutral.webp`, pos: '50% 4%', size: '230%' }
       : u.key === 'sib' ? { src: `assets/portraits/hero-${otherLook}-neutral.webp`, pos: '50% 4%', size: '230%' }
       : ['kier', 'bram', 'luna', 'mil'].includes(u.key) ? { src: `assets/cards/portraits/u-${u.key}.webp`, pos: '50% 22%', size: '165%' }
@@ -900,6 +907,17 @@
       { t: 'ไอคอนข้างชื่อศัตรูคือธาตุ · ธาตุชนะทาง ×1.3 แพ้ทาง ×0.7 · Esc → ◈ ตารางธาตุ' },
       { t: 'เพื่อนที่แผงซ้าย: ⚔ บุก · 👣 ตาม · 🛡 ยึด · ✦ ท่าพิเศษใช้ 1 คริสตัล' },
       { t: 'การ์ดตอบโต้/ก้าวหลบ ใช้ก่อนจบเทิร์น แล้วจะทำงานเองตอนศัตรูตีเข้ามา' }],
+    /* v98.331 · the first two real fights (prologue quests): Pip's goats teach WALKING / DISTANCE / FACING · the pumpkin patch teaches ATTACKING / TARGETS / ELEMENTS */
+    goat: [
+      { t: 'ตอนนี้ตาคุณ — คลิกช่องว่างเพื่อเดินเข้าใกล้แพะ (เกมเลือกไพ่เดินให้เอง) · เดินพลาดกด Z ย้อนได้', done: () => coachState.moved },
+      { t: 'แพะวิ่งหนีและขวิดสวนเบาๆ ได้ — ต้อนให้ชิดก่อนค่อยตี · คลิกแพะ 1 ครั้งดูไพ่โจมตีกับดาเมจ คลิกซ้ำเพื่อโจมตี', done: () => st.acted },
+      { t: 'ลูกศรใต้ตัวคือทิศที่หัน · ตีจากด้านหลังแรงขึ้น ×1.2 · กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า', done: () => st.turns > coachState.t0 },
+      { t: 'ตัวเอกทั้งสองยังไม่ล้มในเควสนี้ (เลือดลดได้แต่ไม่ต่ำกว่า 1) — ลองเดิน ตี และหันหน้าให้คล่องจนจับแพะครบ' }],
+    pumpkin: [
+      { t: 'ฟักทองในไร่ยืนนิ่งและไม่ตีกลับ — คลิกเลือกฟักทอง 1 ลูก (ดูไพ่โจมตีกับดาเมจ) แล้วคลิกซ้ำเพื่อโจมตี · ลูกหนึ่งรับตีราว 2–3 ครั้ง', done: () => st.acted },
+      { t: 'ด้วงกินใบตัวเล็กตีทีเดียวตาย — กำจัดก่อนจะกัดกวนคุณ · ตีฟักทองจนล้ม มันจะเด้งเป็นฟักทองให้เก็บ' },
+      { t: 'ระวัง! ถ้าฟักทองลูกหนึ่งเริ่มสั่น มันอาจวิวัฒน์ — บอสฟักทองใช้เถาวัลย์ระยะไกลพันธนาการ (เดินไม่ได้ 1 เทิร์น) และตีระยะใกล้เบาๆ' },
+      { t: 'ใช้ไพ่ธาตุที่ชนะทาง (ไอคอนข้างชื่อศัตรู) และตีจากด้านหลัง ×1.2 · ไม่ต้องกลัว — ตัวเอกเลือดไม่ต่ำกว่า 1' }],
     expedition: [
       { t: 'แรงหมด? กด ♻ ทิ้งไพ่ฟื้นแรง เลือกไพ่ที่ไม่ใช้ แลกเป็นแรง (ใช้ 1 คริสตัล)' },
       { t: 'หญ้าสูง/มอสคือกำบัง โดนตี −30% · ถอยไปยืนตอนเลือดน้อย' },
@@ -962,7 +980,7 @@
     const canAct = !busy && st.turn === 'hero' && !st.outcome;
     d.innerHTML = `<div class="box"><b>หยุดเกม</b><small>${esc(goalLine())}</small>
       <button data-a="resume">▶ เล่นต่อ</button><button data-a="el">◈ ตารางธาตุ</button><button data-a="keys">⌨ ปุ่มควบคุม</button><button data-a="opt">⚙ เสียงและภาพ</button>
-      ${EMBED ? `<button data-a="flee" class="warn" ${canAct ? '' : 'disabled'}>🏃 หนีจากการต่อสู้</button>` : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
+      ${EMBED && Q.get('noflee') !== '1' ? `<button data-a="flee" class="warn" ${canAct ? '' : 'disabled'}>🏃 หนีจากการต่อสู้</button>` : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
       <div class="keys" hidden>คลิกศัตรู · Tab = เลือกเป้าและดูการ์ดที่ดีที่สุด<br>คลิกซ้ำ · Enter = โจมตีตามที่แสดง<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง)<br>1–9 = ใช้ไพ่ต่อสู้ใบนั้น · Z / Backspace = ย้อนเดิน<br>Space = จบเทิร์น แล้วเลือกทิศด้วยลูกศร · A = Auto<br>Q / E = หมุนกล้อง · Esc = เมนูนี้</div>
       <div class="opt" hidden>${(() => { const P = window.BattlePolish || {}; return `<label>🔊 เสียงเอฟเฟกต์ <input type="range" min="0" max="1" step=".05" data-o="volume" value="${P.volume ?? .65}"></label><label>🎵 เพลง <input type="range" min="0" max="1" step=".05" data-o="musicVolume" value="${P.musicVolume ?? .3}"></label><label><input type="checkbox" data-o="shake" ${P.shake === false ? '' : 'checked'}> จอสั่นตอนโดนตี</label>` })()}</div></div>`;
     document.body.append(d);
@@ -1308,6 +1326,16 @@
   function drawMonster(g, u, t) {
     const p0 = project(u.vu, u.vv), v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
     const sk = u.evoShow || u.kind, T = MON[sk] || MT, kind = MON[sk] ? sk : MK, mid = 'm:' + kind;   /* v98.320 · ONE size per species in the ⚖ Scale Lineup — a boss is the same picture, so it uses the same row (no separate boss row, no hidden multiplier) */   /* v98.58: evoShow = the old form until the flash */
+    if (T.code && window.CodeMonsters?.has(kind)) {   /* v98.331 · code-drawn unit */
+      const lift0 = 0, h = UNIT * 1.3 * (T.scale || 1) * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1), hitMs = (u.hitUntil || 0) > t ? 420 - ((u.hitUntil || 0) - t) : null, atk = u.pose === 'strike' || u.pose === 'windup';
+      shadow(g, p0, UNIT * .26 * (T.scale || 1));
+      if (u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt) { CodeMonsters.drawLoot(g, { x: p0.x, y: p0.y, h, t: t - u.deadAt }); return }   /* the pumpkin pops into a pumpkin to collect */
+      evoAura(g, u, { x: p0.x, y: p0.y - lift0 }, h, t);
+      g.save(); g.translate(p0.x + (hitMs != null ? Math.sin(t * .08) * 3 : 0), p0.y); if (['SW', 'NW'].includes(u.dir)) g.scale(-1, 1);
+      CodeMonsters.draw(g, kind, { x: 0, y: 0, h, dir: u.dir, t, hp: u.hp, hit: atk ? t % 420 : hitMs, walking: !!u.walking, pose: atk ? 'attack' : u.pose, vine: atk && kind === 'pumpkinBoss', seed: u.id.length * 1.7 + (u.id.charCodeAt(u.id.length - 1) || 0), evoFlash: !!(u.evoCharge && t - u.evoCharge < 1800) });
+      if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .6; CodeMonsters.draw(g, kind, { x: 0, y: 0, h, dir: u.dir, t, hp: u.hp, hit: null, walking: false, pose: 'idle', seed: 0 }) }
+      g.restore(); if (u.hp > 0) bar(g, p0, p0.y - h * 1.02, u.shown / u.maxHp, '#e2705f'); return;
+    }
     const af = window.MonsterArt?.frame(kind, u.dir, v, u.hp, t, 'fb-' + u.id);
     /* v97.26 · B3: fliers hover half a cell up and bob; their shadow stays on the ground, smaller as they rise */
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
@@ -1392,7 +1420,7 @@
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
-      if (u.deadAt && t > u.deadAt) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
+      if (u.deadAt && t > u.deadAt && !MON[u.kind]?.loot) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
       const isSel = u.hp > 0 && u === selUnit && !u.deadAt; if (isSel && SEL_OUTLINE) { g.shadowColor = '#fff'; g.shadowBlur = 6 * (devicePixelRatio || 1) }   /* v98.324 · the selected character: thin white edge + soft aura */
       drawUnit(u); g.restore();
     }
