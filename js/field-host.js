@@ -93,6 +93,7 @@ const FIELD = (function () {
 })();
 /* v95.19: repaint the ground once the painted terrain textures have loaded */
 window.FieldDiorama?.ready?.().then(ok => { if (ok) groundCanvas = null });
+window.FieldRepaint = () => { groundCanvas = null };
 window.FieldR = FIELD.R; window.FieldGap = FIELD.S;
 /* ---------- heights (v94 · v96 half levels) ---------- */
 window.FieldHeight = (function () {
@@ -181,6 +182,7 @@ function paintGround() {
   const t = groundCanvas.getContext('2d'); t.translate(-x0, -y0);
   const pal = GROUND[F.biome];
   if (window.FieldHeight && window.FieldDiorama) {   /* v95.18 · the field as a floating diorama */
+    FieldDiorama.ramp?.(window.__rampStyle || window.BgField?.current?.rampStyle || (() => { try { return localStorage.getItem('project-a-ramp') } catch (e) { } })() || 'auto');
     FieldDiorama.paint(t, FieldHeight.view, { biome: F.biome, poi: FQ.get('poi') });
     /* v97.01: slow ground (mud / snow drift / sand) is the painted ground texture; the old colour + dabs only while it loads */
     const SLOWTEX = { mud: 'mud', snow: 'snowd', sand: 'sandc' }[F.MIX.slowMat];
@@ -337,18 +339,21 @@ let fadeGround = null, fadeAt = 0, fadeT = 0;
    The sense of the turn is measured, not assumed: a cell's screen position before and after the swap tells which way is continuous.
    Reduced motion keeps the plain swap. */
 let turning = false;
+/* v98.314 · the cell at the middle of the screen stays at the middle of the screen when the view turns */
+function centreCell() { const k = scale * zoom, c = invFlat(-pan.x / k + WORLD_W / 2, -pan.y / k + WORLD_H / 2); return { u: c.u, v: c.v } }
+function recentre(c) { const k = scale * zoom, p = projectFlat(c.u, c.v); pan.x = -(p.x - WORLD_W / 2) * k; pan.y = -(p.y - WORLD_H / 2) * k }
 function turnView(d) {
   if (!window.FieldHeight || turning) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || !cv.animate) return turnNow(d);
-  const cs = [...FIELD.cells.values()], cu = cs.reduce((a, c) => a + c.u, 0) / cs.length + .5, cvv = cs.reduce((a, c) => a + c.v, 0) / cs.length + .5;
+  const cc = centreCell(), cu = cc.u, cvv = cc.v;   /* turn around the cell in the middle of the screen */
   const k = scale * zoom, rect = cv.getBoundingClientRect();
-  const frame = () => { const c = projectFlat(cu, cvv), a = projectFlat(cu + 1, cvv), b = projectFlat(cu, cvv + 1); return { cx: (c.x - WORLD_W / 2) * k + W / 2 + pan.x, cy: (c.y - WORLD_H / 2) * k + H / 2 + pan.y, P: [(a.x - c.x) * k, (a.y - c.y) * k, (b.x - c.x) * k, (b.y - c.y) * k], probe: projectFlat(cu + 3, cvv + 1) } };
+  const frame = () => { const c = projectFlat(cu, cvv), a = projectFlat(cu + 1, cvv), b = projectFlat(cu, cvv + 1); return { cx: (c.x - WORLD_W / 2) * k + W / 2 + pan.x, cy: (c.y - WORLD_H / 2) * k + H / 2 + pan.y, P: [(a.x - c.x) * k, (a.y - c.y) * k, (b.x - c.x) * k, (b.y - c.y) * k], q: (() => { const q = projectFlat(cu + 3, cvv + 1); return { x: (q.x - c.x) * k, y: (q.y - c.y) * k } })() } };
   const M = (P, th) => { const [ux, uy, vx, vy] = P, det = ux * vy - vx * uy, i00 = vy / det, i01 = -vx / det, i10 = -uy / det, i11 = ux / det, c = Math.cos(th), s = Math.sin(th);
     const r00 = c * i00 - s * i10, r01 = c * i01 - s * i11, r10 = s * i00 + c * i10, r11 = s * i01 + c * i11;   // R·P⁻¹
     return [ux * r00 + vx * r10, uy * r00 + vy * r10, ux * r01 + vx * r11, uy * r01 + vy * r11] };   // P·R·P⁻¹ → [a b c d] of matrix(a,b,c,d,0,0)
-  const before = frame(); ROT = (ROT + d + 4) & 3; const after = frame(); ROT = (ROT - d + 4) & 3;
+  const before = frame(); ROT = (ROT + d + 4) & 3; const pan0 = { x: pan.x, y: pan.y }; recentre(cc); const after = frame(); pan.x = pan0.x; pan.y = pan0.y; ROT = (ROT - d + 4) & 3;
   /* which sense of turn carries the old view onto the new one */
-  const q0 = { x: (before.probe.x - WORLD_W / 2) * k + W / 2 + pan.x - before.cx, y: (before.probe.y - WORLD_H / 2) * k + H / 2 + pan.y - before.cy }, q1 = { x: (after.probe.x - WORLD_W / 2) * k + W / 2 + pan.x - after.cx, y: (after.probe.y - WORLD_H / 2) * k + H / 2 + pan.y - after.cy };
+  const q0 = before.q, q1 = after.q;
   const err = sg => { const m = M(before.P, sg * Math.PI / 2); return Math.hypot(m[0] * q0.x + m[2] * q0.y - q1.x, m[1] * q0.x + m[3] * q0.y - q1.y) }, sg = err(1) <= err(-1) ? 1 : -1;
   const keys = (P, from, to, cx, cy) => Array.from({ length: 13 }, (_, i) => { const th = (from + (to - from) * i / 12) * Math.PI / 180, m = M(P, th), sh = 1 - .06 * Math.sin(Math.abs(th) * 2);
     return { transformOrigin: `${(cx - rect.left).toFixed(1)}px ${(cy - rect.top).toFixed(1)}px`, transform: `matrix(${(m[0] * sh).toFixed(4)},${(m[1] * sh).toFixed(4)},${(m[2] * sh).toFixed(4)},${(m[3] * sh).toFixed(4)},0,0)`, filter: `brightness(${(1 - .08 * Math.sin(Math.abs(th) * 2)).toFixed(3)})` } });
@@ -361,7 +366,7 @@ function turnView(d) {
 }
 function turnNow(d) {
   fadeGround = groundCanvas; fadeAt = performance.now();
-  ROT = (ROT + d + 4) & 3; try { localStorage.setItem('projectA.fieldRot', ROT) } catch (e) { }
+  const cc = centreCell(); ROT = (ROT + d + 4) & 3; recentre(cc); try { localStorage.setItem('projectA.fieldRot', ROT) } catch (e) { }
   FieldHeight.setView(); groundCanvas = null; for (const u of window.TownBattle?.state?.()?.units || []) u._occ = false;
 }
 /* units face by their walk direction in the field (SE = +u …); on screen that direction turns with the camera */

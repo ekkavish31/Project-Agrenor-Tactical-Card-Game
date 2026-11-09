@@ -194,7 +194,8 @@
     poly(g, t4); g.fillStyle = groundPattern(g, timg, avg); g.fill(); const tw = mt ? null : C.wash(isPath ? 'path' : 'top'); if (tw) { g.fillStyle = tw; g.fill() }
     /* stairs: step edges across the slope (dark riser + lit nose) */
     const rd = m.ramp ? m.ramp[i] : 0;
-    if (rd && m.stair && m.stair[i] && [1, 3, 4].includes(m.mat ? m.mat[i] : 0)) {   /* v98.313 · steps only on stone / cobble / slab; natural ground stays a plain slope */
+    const simg = RAMP === 'wood' ? (C.matTop[2] || timg) : timg;
+    if (rd && RAMP !== 'slope' && (RAMP === 'steps' || RAMP === 'wood' || (m.stair && m.stair[i] && [1, 3, 4].includes(m.mat ? m.mat[i] : 0)))) {   /* v98.313 · steps only on stone / cobble / slab; natural ground stays a plain slope */
       const lowE = { 1: [0, 3], 2: [1, 2], 3: [0, 1], 4: [3, 2] }[rd], highE = { 1: [1, 2], 2: [0, 3], 3: [3, 2], 4: [0, 1] }[rd];
       /* v98.313 · real steps: N flat treads (lit) with a vertical riser (dark, lit nose) between them, instead of scribbled lines on the slope */
       const N = 4, cu = [u, u + 1, u + 1, u], cv = [v, v, v + 1, v + 1], A = lowE[0], B = lowE[1], A1 = highE[0], B1 = highE[1], zl = (c[A] + c[B]) / 2, zh = (c[A1] + c[B1]) / 2;
@@ -202,9 +203,9 @@
       for (let k = 0; k < N; k++) {
         const s0 = k / N, s1 = (k + 1) / N, zt = zS(k + 1), zp = zS(k);
         const riser = [at(A, A1, s0, zp), at(B, B1, s0, zp), at(B, B1, s0, zt), at(A, A1, s0, zt)];
-        poly(g, riser); g.fillStyle = groundPattern(g, timg, zp); g.fill(); poly(g, riser); g.fillStyle = 'rgba(8,6,14,.5)'; g.fill();
+        poly(g, riser); g.fillStyle = groundPattern(g, simg, zp); g.fill(); poly(g, riser); g.fillStyle = 'rgba(8,6,14,.5)'; g.fill();
         const tread = [at(A, A1, s0, zt), at(B, B1, s0, zt), at(B, B1, s1, zt), at(A, A1, s1, zt)];
-        poly(g, tread); g.fillStyle = groundPattern(g, timg, zt); g.fill(); poly(g, tread); g.fillStyle = 'rgba(255,246,220,.12)'; g.fill();
+        poly(g, tread); g.fillStyle = groundPattern(g, simg, zt); g.fill(); poly(g, tread); g.fillStyle = 'rgba(255,246,220,.12)'; g.fill();
         g.strokeStyle = 'rgba(255,245,215,.4)'; g.lineWidth = 1; g.beginPath(); g.moveTo(tread[0].x, tread[0].y); g.lineTo(tread[1].x, tread[1].y); g.stroke();
       }
     }
@@ -350,5 +351,7 @@
     return out;
   }
 
-  root.FieldDiorama = { paint, tile, sky, grade, pattern, landforms, structures, rotate, materials, ready, walkOK, areas, BASE, WATER };
+  let RAMP = 'auto';   /* v98.314 · what a ramp looks like: auto (steps on stone / cobble, plain slope on natural ground) · slope · steps (stone) · wood (plank steps) */
+  const ramp = v => { if (v) RAMP = v; return RAMP };
+  root.FieldDiorama = { ramp, paint, tile, sky, grade, pattern, landforms, structures, rotate, materials, ready, walkOK, areas, BASE, WATER };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

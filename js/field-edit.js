@@ -100,7 +100,7 @@
     try { const c = document.createElement('canvas'), w = 384, h = Math.round(w * cvs.height / cvs.width); c.width = w; c.height = h; c.getContext('2d').drawImage(cvs, 0, 0, w, h); return c.toDataURL('image/webp', .8) } catch (e) { return null }
   }
   function build() {
-    return { format: 'bg-asset', v: 1, id: curId, name: curMeta.name, biome: FIELD.biome, r: +(Q.get('r') || 7), seed: +Q.get('seed'), poi: Q.get('poi') || '', night: FIELD.night ? 1 : 0, tags: curMeta.tags,
+    return { format: 'bg-asset', v: 1, id: curId, name: curMeta.name, biome: FIELD.biome, r: +(Q.get('r') || 7), seed: +Q.get('seed'), poi: Q.get('poi') || '', night: FIELD.night ? 1 : 0, rampStyle: window.__rampStyle || B.current?.rampStyle || 'auto', tags: curMeta.tags,
       gen: window.__bgGen, ops: ops.filter(o => o.t !== 'unit'), spawns: B.spawnsNow(), thumb: 'data/battlefields/' + curId + '.webp', savedAt: new Date().toISOString() };
   }
   function ask() {
@@ -146,8 +146,10 @@
   panel.innerHTML = `<div class="fe-h"><b>🛠 แก้สนาม</b><button id="feToggle" title="ย่อ / ขยายแผงซ้าย">◀</button></div>
 <details open><summary>👤 ที่เลือก</summary><div id="feInfo"></div><div class="fe-row"><button id="feTurn" title="R">↻ หมุนทิศ</button><button id="feDup" title="D">⧉ ทำซ้ำ</button><button id="feDel" title="Del">🗑 ลบ</button></div><button id="feAnim" title="เปิดตัวแก้อนิเมชันของตัวละครนี้ (จากหน้า Animation) ข้างๆ">🎞 แก้อนิเมชันตัวนี้</button></details>
 <details open><summary>＋ เพิ่มของลงสนาม</summary><select id="feAdd" title="เลือกของ แล้วคลิกช่องบนสนาม"><option value="">＋ เพิ่มของ…</option></select></details>
+<details open><summary>⛰ ทางลาด</summary><select id="feRamp" title="หน้าตาทางลาดทั้งสนาม"><option value="auto">อัตโนมัติ (หิน/ปูน = บันได · ธรรมชาติ = ลาด)</option><option value="slope">ทางลาดเรียบทั้งหมด</option><option value="steps">บันไดหินทุกทางลาด</option><option value="wood">บันไดไม้ทุกทางลาด</option></select></details>
 <details open><summary>💾 บันทึก / คลัง</summary><div class="fe-row"><button id="feUndo" title="Ctrl+Z">↶ ย้อน</button><button id="feRedo" title="Ctrl+Y">↷ ทำซ้ำ</button></div><button id="feSave" title="Ctrl+S">💾 บันทึก BG</button><button id="fePush" title="ส่งไฟล์ BG Asset + ภาพย่อ ขึ้น GitHub">⬆ ส่งขึ้นเกม</button><select id="feLib" title="คลัง BG Asset"><option value="">📂 คลัง BG Asset…</option><option value="__new">＋ สนามใหม่ (สุ่ม)</option></select><button id="feReset">ล้างการแก้</button></details>`;
   document.body.appendChild(panel);
+  { const rs = panel.querySelector('#feRamp'); rs.value = window.__rampStyle || B.current?.rampStyle || 'auto'; rs.onchange = () => { window.__rampStyle = rs.value; window.FieldRepaint?.() } }   /* v98.314 · ramp look is part of the BG asset */
   const hint = document.createElement('div'); hint.id = 'feHint'; document.body.appendChild(hint);
   const $ = id => document.getElementById(id);
   for (const [k, big] of PROP_KINDS()) { const o = document.createElement('option'); o.value = k + '|' + (big ? 1 : 0); o.textContent = k + (big ? ' (2×2)' : ''); $('feAdd').appendChild(o) }
