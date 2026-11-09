@@ -13,10 +13,13 @@
   document.documentElement.classList.add('fe-on');
   const style = document.createElement('style');
   style.textContent = `.fe-on [id^=fb],.fe-on .fb-show,.fe-on #fbBar{display:none!important}
-#fePanel{position:fixed;left:50%;top:88px;transform:translateX(-50%);z-index:80;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;max-width:96vw;padding:8px 10px;background:#241d15ee;border:1px solid #c9893a;border-radius:12px;font:13px AgThai,ProjectThai,system-ui,sans-serif;color:#f3e7cf;box-shadow:0 6px 24px #0008}
-#fePanel button,#fePanel select{font:inherit;color:#f3e7cf;background:#3a2f22;border:1px solid #6a5434;border-radius:8px;padding:5px 10px;cursor:pointer}
+#fePanel{position:fixed;left:10px;top:var(--rail-top,240px);width:236px;max-height:calc(100dvh - var(--rail-top,240px) - 14px);overflow:auto;z-index:80;display:flex;flex-direction:column;gap:4px;padding:8px 10px;background:#241d15ee;border:1px solid #c9893a;border-radius:12px;font:13px AgThai,ProjectThai,system-ui,sans-serif;color:#f3e7cf;box-shadow:0 6px 24px #0008}
+#fePanel button,#fePanel select{font:inherit;color:#f3e7cf;background:#3a2f22;border:1px solid #6a5434;border-radius:8px;padding:5px 10px;cursor:pointer}#fePanel select{width:100%}
 #fePanel button:hover:not(:disabled){background:#4a3a28;border-color:#e0b050}#fePanel button:disabled{opacity:.4;cursor:default}
-#fePanel .sep{width:1px;height:22px;background:#6a5434}#feInfo{min-width:150px;max-width:300px;color:#e6d3a9}#feHint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:80;background:#241d15d0;border:1px solid #6a5434;border-radius:10px;padding:6px 12px;font:12px AgThai,ProjectThai,system-ui,sans-serif;color:#cdbb92;max-width:94vw;text-align:center}`;
+#fePanel .fe-h{display:flex;justify-content:space-between;align-items:center;gap:6px}#fePanel details{border-top:1px solid #6a543488;padding-top:3px}#fePanel summary{cursor:pointer;font-weight:700;color:#f0c46a;padding:3px 0}
+#fePanel .fe-row{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0}#fePanel .fe-row button{flex:1}#fePanel details>button,#fePanel details>select{display:block;width:100%;margin:4px 0}
+#fePanel.min{width:auto}#fePanel.min details{display:none}#fePanel.min .fe-h b{display:none}
+#fePanel .sep{width:1px;height:22px;background:#6a5434}#feInfo{color:#e6d3a9;font-size:12.5px;line-height:1.4;margin:2px 0 4px}#feHint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:80;background:#241d15d0;border:1px solid #6a5434;border-radius:10px;padding:6px 12px;font:12px AgThai,ProjectThai,system-ui,sans-serif;color:#cdbb92;max-width:94vw;text-align:center}`;
   document.head.appendChild(style);
 
   /* ---------- the field's own data (shared core: js/bg-field.js) ---------- */
@@ -140,25 +143,29 @@
 
   /* ---------- panel ---------- */
   const panel = document.createElement('div'); panel.id = 'fePanel';
-  panel.innerHTML = `<span id="feInfo"></span><span class="sep"></span><button id="feTurn" title="R">↻ หมุนทิศ</button><button id="feDup" title="D">⧉ ทำซ้ำ</button><button id="feDel" title="Del">🗑 ลบ</button><span class="sep"></span>
-<select id="feAdd" title="เลือกของ แล้วคลิกช่องบนสนาม"><option value="">＋ เพิ่มของ…</option></select><span class="sep"></span><button id="feUndo" title="Ctrl+Z">↶</button><button id="feRedo" title="Ctrl+Y">↷</button><button id="feSave" title="Ctrl+S">💾 บันทึก BG</button><button id="fePush" title="ส่งไฟล์ BG Asset + ภาพย่อ ขึ้น GitHub">⬆ ส่งขึ้นเกม</button><span class="sep"></span><select id="feLib" title="คลัง BG Asset"><option value="">📂 คลัง BG Asset…</option><option value="__new">＋ สนามใหม่ (สุ่ม)</option></select><button id="feReset">ล้างการแก้</button>`;
+  panel.innerHTML = `<div class="fe-h"><b>🛠 แก้สนาม</b><button id="feToggle" title="ย่อ / ขยายแผงซ้าย">◀</button></div>
+<details open><summary>👤 ที่เลือก</summary><div id="feInfo"></div><div class="fe-row"><button id="feTurn" title="R">↻ หมุนทิศ</button><button id="feDup" title="D">⧉ ทำซ้ำ</button><button id="feDel" title="Del">🗑 ลบ</button></div><button id="feAnim" title="เปิดตัวแก้อนิเมชันของตัวละครนี้ (จากหน้า Animation) ข้างๆ">🎞 แก้อนิเมชันตัวนี้</button></details>
+<details open><summary>＋ เพิ่มของลงสนาม</summary><select id="feAdd" title="เลือกของ แล้วคลิกช่องบนสนาม"><option value="">＋ เพิ่มของ…</option></select></details>
+<details open><summary>💾 บันทึก / คลัง</summary><div class="fe-row"><button id="feUndo" title="Ctrl+Z">↶ ย้อน</button><button id="feRedo" title="Ctrl+Y">↷ ทำซ้ำ</button></div><button id="feSave" title="Ctrl+S">💾 บันทึก BG</button><button id="fePush" title="ส่งไฟล์ BG Asset + ภาพย่อ ขึ้น GitHub">⬆ ส่งขึ้นเกม</button><select id="feLib" title="คลัง BG Asset"><option value="">📂 คลัง BG Asset…</option><option value="__new">＋ สนามใหม่ (สุ่ม)</option></select><button id="feReset">ล้างการแก้</button></details>`;
   document.body.appendChild(panel);
   const hint = document.createElement('div'); hint.id = 'feHint'; document.body.appendChild(hint);
   const $ = id => document.getElementById(id);
   for (const [k, big] of PROP_KINDS()) { const o = document.createElement('option'); o.value = k + '|' + (big ? 1 : 0); o.textContent = k + (big ? ' (2×2)' : ''); $('feAdd').appendChild(o) }
   $('feAdd').onchange = e => { const [k, b] = e.target.value.split('|'); adding = k ? { kind: k, big: b === '1' } : null; sync() };
-  $('feTurn').onclick = turnUnit; $('feDup').onclick = dupProp; $('feDel').onclick = delSel; $('feUndo').onclick = undo; $('feRedo').onclick = redo; $('feSave').onclick = save; $('fePush').onclick = push; $('feReset').onclick = reset;
+  $('feTurn').onclick = turnUnit; $('feDup').onclick = dupProp; $('feDel').onclick = delSel; $('feToggle').onclick = () => { panel.classList.toggle('min'); $('feToggle').textContent = panel.classList.contains('min') ? '▶' : '◀' };
+  $('feAnim').onclick = () => { const u = sel?.unit; if (!u) return; try { parent.postMessage({ type: 'fe-open-anim', key: String(u.key || u.kind || u.id || ''), name: u.name || u.key || u.kind || '' }, '*') } catch (e) { note('เปิดตัวแก้อนิเมชันไม่ได้ (ต้องเปิดจากหน้า BG editor)') } };
+  $('feUndo').onclick = undo; $('feRedo').onclick = redo; $('feSave').onclick = save; $('fePush').onclick = push; $('feReset').onclick = reset;
   { const ix = B.fetchIndex(); for (const a of ix) { const o = document.createElement('option'); o.value = a.id; o.textContent = (a.draft ? '✎ ' : '') + (a.name || a.id) + ' · ' + a.biome; $('feLib').appendChild(o) } $('feLib').value = curId && ix.some(a => a.id === curId) ? curId : ''; $('feLib').onchange = e => { const v = e.target.value; if (v) openAsset(v === '__new' ? '' : v) } }
   let noteT = 0, noteMsg = '';
   function note(m) { noteMsg = m; noteT = performance.now() + 4000; sync() }
   function sync() {
     const u = sel?.unit, p = sel?.prop;
     $('feInfo').textContent = adding ? 'โหมดวาง: ' + adding.kind + ' — คลิกช่องที่ต้องการ (Esc ยกเลิก)' : u ? 'ตัวละคร: ' + (u.name || u.key || u.kind || u.id) + ' · ช่อง ' + u.u + ',' + u.v + ' · ' + u.dir : p ? 'ของ: ' + p.kind + (p.big ? ' (2×2)' : '') + ' · ช่อง ' + p.u + ',' + p.v : 'ยังไม่ได้เลือก — คลิกตัวละครหรือของบนสนาม';
-    $('feTurn').disabled = !u; $('feDup').disabled = !p; $('feDel').disabled = !p; $('feUndo').disabled = !ops.length; $('feRedo').disabled = !undone.length; $('feSave').textContent = dirty ? '💾 บันทึก BG ●' : '💾 บันทึก BG';
+    $('feAnim').disabled = !u; $('feTurn').disabled = !u; $('feDup').disabled = !p; $('feDel').disabled = !p; $('feUndo').disabled = !ops.length; $('feRedo').disabled = !undone.length; $('feSave').textContent = dirty ? '💾 บันทึก BG ●' : '💾 บันทึก BG';
     hint.textContent = (performance.now() < noteT ? noteMsg + ' · ' : '') + 'ล้อเมาส์ = ซูม · ลากพื้นว่าง = เลื่อน · ลากของ/ตัวละคร = ย้าย · R หมุน · D ทำซ้ำ · Del ลบ · Ctrl+Z ย้อน · Ctrl+S บันทึก';
   }
   /* camera buttons with the HUD object set (assets/ui/hud): zoom in / out, centre, fit the whole field */
-  { const z = document.createElement('div'); z.id = 'feZoom'; z.style.cssText = 'position:fixed;right:22px;bottom:262px;z-index:39;display:flex;flex-direction:column;gap:6px';
+  { const z = document.createElement('div'); z.id = 'feZoom'; z.style.cssText = 'position:fixed;right:14px;bottom:112px;z-index:39;display:flex;flex-direction:column;gap:6px;transform:scale(.8);transform-origin:100% 100%';
     z.innerHTML = '<button class="hudb hudb-plus" title="ซูมเข้า" aria-label="ซูมเข้า" style="--s:48px"></button><button class="hudb hudb-minus" title="ซูมออก" aria-label="ซูมออก" style="--s:48px"></button><button class="hudb hudb-focus" title="จัดกึ่งกลางสนาม" aria-label="จัดกึ่งกลางสนาม" style="--s:48px"></button><button class="hudb hudb-expand" title="ดูทั้งสนาม" aria-label="ดูทั้งสนาม" style="--s:48px"></button>';
     document.body.appendChild(z); const [zi, zo, zf, zx] = z.children, hold = () => cvs.dispatchEvent(new WheelEvent('wheel', { deltaY: 0 })), step = f => { hold(); zoom = Math.max(.45, Math.min(3.5, zoom * f)) };
     zi.onclick = () => step(1.25); zo.onclick = () => step(.8); zf.onclick = () => { hold(); zoom = 1; pan.x = 0; pan.y = 0 }; zx.onclick = () => { hold(); zoom = .6; pan.x = 0; pan.y = 0 } }
@@ -166,8 +173,8 @@
   window.FieldEdit = {
     active: true, ops: () => ops.slice(), save, push, build,
     draw(g, t) {
-      const G = window.GroundArt, cw = (u, v) => Math.abs(project(u + 1, v).x - project(u, v + 1).x);
-      const pic = (name, u, v, big) => { if (!G) return false; const k = big ? 2 : 1, p = project(u + .5 * k, v + .5 * k), w = cw(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) };   // v98.282 · the user's cell frames
+      const G = window.GroundArtCode && GroundArtCode.enabled() ? window.GroundArtCode : window.GroundArt, cw = (u, v) => Math.abs(project(u + 1, v).x - project(u, v + 1).x);   /* v98.309 · the same code-drawn art as the battle */
+      const pic = (name, u, v, big) => { if (!G) return false; const k = big ? 2 : 1, p = project(u + .5 * k, v + .5 * k), w = cw(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56, t) };   // v98.282 · the user's cell frames
       const ring = (u, v, big, col, fill) => {
         const name = col === '#6fe08a' ? 'green' : col === '#ff6a5a' ? 'red' : col === '#ffd34d' ? 'yellow' : 'grey';
         if (fill) { /* soft fill under the frame */ const cs = big ? [[u, v], [u + 2, v], [u + 2, v + 2], [u, v + 2]] : [[u, v], [u + 1, v], [u + 1, v + 1], [u, v + 1]]; g.beginPath(); cs.forEach(([a, b], i) => { const q = project(a, b); i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y) }); g.closePath(); g.fillStyle = fill; g.fill() }

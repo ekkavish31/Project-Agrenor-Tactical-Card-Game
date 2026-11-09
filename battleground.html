@@ -30,8 +30,13 @@ details{margin:6px 0}summary{cursor:pointer;color:#fff0c7}table{width:100%;borde
 #tileInfo{position:fixed;left:14px;top:14px;background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:5px 9px;color:var(--muted);z-index:8}#tileInfo:empty{display:none}
 #status{position:fixed;left:14px;bottom:14px;max-width:340px;background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:#e6d3a9;z-index:8}#status:empty{display:none}
 #realFrame{position:fixed;inset:0;width:100vw;height:100dvh;border:0;z-index:7;background:#0f1713;display:none}
-#realBar{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:12;display:none;gap:6px;align-items:center;background:#1b302af2;border:1px solid var(--edge);border-radius:12px;padding:6px 10px;box-shadow:0 6px 18px #0008}
+#realBar{position:fixed;left:10px;top:12px;width:236px;z-index:12;display:none;flex-direction:column;gap:4px;background:#1b302af2;border:1px solid var(--edge);border-radius:12px;padding:8px 10px;box-shadow:0 6px 18px #0008}
 body.real #realFrame{display:block}body.real #realBar{display:flex}body.real #bar,body.real #cat,body.real #side,body.real #tileInfo,body.real #warn,body.real #cv{display:none!important}
+#realBar .rb-h{display:flex;gap:6px;justify-content:space-between}#realBar details{border-top:1px solid #4d665688;padding-top:3px}#realBar summary{cursor:pointer;font-weight:700;color:#f4dc9f;padding:3px 0}
+#realBar label{display:grid;gap:3px;margin:5px 0;font-size:12px}#realBar select{width:100%}#realBar .rb-seed{display:flex;gap:5px}#realBar .rb-seed input{flex:1;width:auto}
+#realBar.min{width:auto}#realBar.min details,#realBar.min #realBack{display:none}
+#animDrawer{position:fixed;right:0;top:0;bottom:0;width:min(940px,72vw);z-index:30;display:none;flex-direction:column;background:#1b302a;border-left:2px solid var(--edge);box-shadow:-10px 0 30px #000a}#animDrawer.on{display:flex}
+#animDrawer .ad-h{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid #4d6656}#animDrawer iframe{flex:1;border:0;background:#fffdf5}
 #realBar input[type=number]{width:96px}#realBar .muted{font-size:12px}
 </style>
 </head>
@@ -49,7 +54,10 @@ body.real #realFrame{display:block}body.real #realBar{display:flex}body.real #ba
 </div>
 <div id="cat"></div>
 <iframe id="realFrame" title="ฉากต่อสู้จริง"></iframe>
-<div id="realBar"><button id="realBack">← กลับไปแก้ชิ้น</button><label class="muted">พื้นที่ <select id="realBiome"></select></label><label class="muted">Seed <input type="number" id="realSeed"></label><button id="realDice" title="สุ่มฉากใหม่">🎲</button><label class="muted">ศัตรู <select id="realFoes"></select></label><label class="muted">ทีม <select id="realParty"></select></label></div>
+<div id="realBar"><div class="rb-h"><button id="realBack">← กลับไปแก้ชิ้น</button><button id="railToggle" title="ย่อ / ขยายแผงซ้าย">◀</button></div>
+<details open><summary>🗺 สนาม</summary><label>พื้นที่ <select id="realBiome"></select></label><label>Seed <span class="rb-seed"><input type="number" id="realSeed"><button id="realDice" title="สุ่มฉากใหม่">🎲</button></span></label></details>
+<details open><summary>⚔ ฝ่ายต่อสู้</summary><label>ศัตรู <select id="realFoes"></select></label><label>ทีม <select id="realParty"></select></label></details></div>
+<div id="animDrawer"><div class="ad-h"><b id="adTitle">🎞 แก้อนิเมชัน</b><button id="adClose">✕ ปิด</button></div><iframe id="adFrame" title="ตัวแก้อนิเมชัน"></iframe></div>
 <aside id="side">
  <h3>⚔ สนามต่อสู้</h3>
  <p class="muted" style="margin:0">วาดชิ้นภูมิประเทศ (ความสูง พื้น ของ) แล้วตัวสุ่มแผนที่จะหยิบไปวางในสนามสุ่มของพื้นที่ที่เลือก · คลิกขวา = ทำกลับ (ลด / คืนหญ้า / เอาของออก) · ลากที่ว่าง = เลื่อนมุมมอง · หัวแปรงสี่เหลี่ยมตามแนว Iso 2.5D แสดงขอบเขตด้วยเส้นประ · ล้อ = ซูม · B = ขนาดแปรง</p>
@@ -227,6 +235,14 @@ load();if(!localStorage.getItem(KEY))save();renderSide();renderCat();renderTileP
  function load(){frame.src=url();frame.onload=()=>{hideUi();dismissTips()}}
  $('real').onclick=()=>{if(!$('realSeed').value)$('realSeed').value=Math.floor(Math.random()*9e5)+1e5;document.body.classList.add('real');load()};
  $('realBack').onclick=()=>{document.body.classList.remove('real');frame.src='about:blank'};
+/* v98.309 · left rail: the top part (this page) and the inner part (js/field-edit.js, inside the frame) stack on the left; the inner one learns where to start through --rail-top */
+function railTop(){try{const r=$('realBar').getBoundingClientRect();frame.contentDocument?.documentElement.style.setProperty('--rail-top',Math.round(r.bottom+10)+'px')}catch(e){}}
+$('railToggle').onclick=()=>{$('realBar').classList.toggle('min');$('railToggle').textContent=$('realBar').classList.contains('min')?'▶':'◀';railTop()};
+$('realBar').querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>setTimeout(railTop,0)));
+frame.addEventListener('load',()=>{railTop();setTimeout(railTop,600);setTimeout(railTop,2500)});addEventListener('resize',railTop);
+/* click a character in the scene → 🎞 แก้อนิเมชันตัวนี้ : Asset Studio's animation tab opens in a drawer on the right; closing it offers to reload the scene so the new frames show */
+addEventListener('message',e=>{if(e.source!==frame.contentWindow||!e.data||e.data.type!=='fe-open-anim')return;$('adTitle').textContent='🎞 แก้อนิเมชัน · '+(e.data.name||e.data.key);$('adFrame').src='asset-studio.html?anim='+encodeURIComponent(e.data.key)+'&embed=1&x='+Date.now();$('animDrawer').classList.add('on')});
+$('adClose').onclick=()=>{$('animDrawer').classList.remove('on');$('adFrame').src='about:blank';if(confirm('โหลดฉากใหม่เพื่อให้เห็นอนิเมชันที่เพิ่งแก้?\n(การแก้ในสนามที่ยังไม่ได้กด 💾 บันทึก BG จะหาย — กด “ยกเลิก” แล้วบันทึกก่อนได้)'))load()};
  for(const id of ['realBiome','realFoes','realParty','realSeed'])$(id).onchange=load;
  $('realDice').onclick=()=>{$('realSeed').value=Math.floor(Math.random()*9e5)+1e5;load()};
  

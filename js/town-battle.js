@@ -1308,7 +1308,7 @@
   /* v98.282 · the user's ground pictures (js/ground-art.js): ring under the active / targeted fighter, frame on a cell, glowing corners on the hovered cell — all fitted to the grid cell (width = 2 half-widths, read from project()) */
   const cellW = (u, v) => Math.abs(project(u + 1, v).x - project(u, v + 1).x);
   /* v98.308 · the ground art (cell frames, foot rings, hover corners, turn crystals) is drawn by code (js/ground-art-code.js) — smooth, bright, one source for the battle AND the BG editor. ?gart=pic or localStorage project-a-gart=pic brings the old picture sets back. */
-  const CODE_ART = !!window.GroundArtCode && Q.get('gart') !== 'pic' && (() => { try { return localStorage.getItem('project-a-gart') !== 'pic' } catch (e) { return true } })(), RING_STYLE = (() => { try { return +localStorage.getItem('project-a-gart-ring') || 1 } catch (e) { return 1 } })();
+  const CODE_ART = !!window.GroundArtCode && GroundArtCode.enabled(), RING_STYLE = window.GroundArtCode ? GroundArtCode.ringStyle() : 1;
   function cellFrame(g, name, u, v, k = 1) { if (CODE_ART) { const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return GroundArtCode.frame(g, name, p.x, p.y, w, w * .56, performance.now()) } const G = window.GroundArt; if (!G) return false; const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) }
   function footRing(g, unit, foe, t) { if (CODE_ART) { const p = project(unit.vu, unit.vv); GroundArtCode.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t, RING_STYLE); return true } const G = window.GroundArt; if (!G) return false; const p = project(unit.vu, unit.vv); return G.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t) }
   function draw(g, t0) {

@@ -93,5 +93,8 @@
     pts.forEach(([px, py], i) => { const [a, b] = dirs[i]; for (const [wd, al] of [[Math.max(5, w * .07), .14], [Math.max(3, w * .04), .3], [Math.max(1.4, w * .016), 1]]) { g.strokeStyle = `rgba(255,236,160,${al * (.7 + .3 * e)})`; g.lineWidth = wd; g.beginPath(); g.moveTo(px + a[0] * L * .7, py + a[1] * L * .35); g.lineTo(px, py); g.lineTo(px + b[0] * L * .7, py + b[1] * L * .35); g.stroke() } });
     g.restore();
   }
-  root.GroundArtCode = { crystal, ring, frame, corners, COL: Object.keys(COL) };
+  /* ONE switch for everything that draws these (battle, BG editor): ?gart=pic or localStorage project-a-gart = pic → the old picture sets */
+  const enabled = () => { try { if (new URLSearchParams(root.location?.search || '').get('gart') === 'pic') return false; return root.localStorage.getItem('project-a-gart') !== 'pic' } catch (e) { return true } };
+  const ringStyle = () => { try { return +root.localStorage.getItem('project-a-gart-ring') || 1 } catch (e) { return 1 } };
+  root.GroundArtCode = { crystal, ring, frame, corners, enabled, ringStyle, COL: Object.keys(COL) };
 })(typeof window !== 'undefined' ? window : globalThis);

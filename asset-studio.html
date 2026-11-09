@@ -529,7 +529,9 @@ render();detail();
  $('workshopTab').onclick=()=>{if(document.body.classList.contains('workshop-open')){hideWorkshop();return}showWorkshop()};
  document.querySelectorAll('#studioTabs [data-group],#animTab').forEach(b=>b.addEventListener('click',hideWorkshop));
  /* v91.58 · Workshop is the first page; ?tab=illust opens the library instead */
- if(!/[?&]tab=(illust|library)/.test(location.search))showWorkshop();
+ if(!/[?&]tab=(illust|library)/.test(location.search)&&!/[?&]anim=/.test(location.search))showWorkshop();
+ /* v98.309 · ?anim=<entity> (from the BG editor): open the Animation tab on that character's idle clip */
+ {const ent=new URLSearchParams(location.search).get('anim');if(ent){let n=0;const key=(ent==='sib'?'hero':ent).toLowerCase(),find=()=>[...document.querySelectorAll('[data-entity]')].find(x=>x.dataset.entity.toLowerCase()===key||x.dataset.entity.toLowerCase().includes(key));const iv=setInterval(()=>{n++;try{const tab=document.getElementById('animTab');if(!tab||!window.StudioUnifiedReview?.allClips?.().length){if(n>60)clearInterval(iv);return}clearInterval(iv);tab.click();setTimeout(()=>{for(const g of ['monsters','bosses','characters']){const b=document.querySelector('.subtabs [data-sub="'+g+'"]');if(!b)continue;b.click();const e=find();if(e){e.click();return}}},500)}catch(e){}},400)}}
  window.addEventListener('message',async e=>{if((e.source!==$('workshopFrame').contentWindow)||!e.data||typeof e.data.type!=='string')return;
   if(e.data.type==='asset-workshop:ready'){workshopReady=true;if(document.body.classList.contains('workshop-open')){const a=byId(workshopAssetId||selected);if(a&&isSlot(a)&&hasImage(a))sendAssetToWorkshop(a)}}
   if(e.data.type==='asset-workshop:delete-file'){const path=String(e.data.path||'');(async()=>{let ok=false,msg='';try{if(!/^assets\/[\w\/.\-]+$/.test(path))throw Error('พาธไม่ถูกต้อง');msg=await deleteByPath(path);ok=true;toast(msg+' · รอกด “Push ที่แก้”');render();detail()}catch(err){msg=err.message||String(err);toast('ลบไม่สำเร็จ: '+msg)}try{$('workshopFrame').contentWindow.postMessage({type:'asset-workshop:deleted',path,ok,msg},location.origin)}catch(_){}})();return}
