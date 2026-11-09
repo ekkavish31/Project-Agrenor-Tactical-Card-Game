@@ -21,7 +21,7 @@
   }
 
   function crystal(g, cx, cy, ph, t, kind = 'ally') {
-    const K = KIND[kind] || KIND.ally, r = ph * .25, a0 = t * .0013, tilt = .22, N = 6, yTop = cy - ph * .5, yS1 = cy - ph * .2, yS2 = cy + ph * .16, yBot = cy + ph * .5;
+    const K = KIND[kind] || KIND.ally, r = ph * .175, a0 = t * .0013, tilt = .22, N = 6, yTop = cy - ph * .5, yS1 = cy - ph * .2, yS2 = cy + ph * .16, yBot = cy + ph * .5;
     const ring = yy => Array.from({ length: N }, (_, k) => { const a = a0 + k * Math.PI * 2 / N; return { x: cx + Math.cos(a) * r, y: yy + Math.sin(a) * r * tilt, z: Math.sin(a), a } });
     const R1 = ring(yS1), R2 = ring(yS2);
     g.save();
