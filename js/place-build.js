@@ -1234,7 +1234,7 @@ const PB_ART = (() => {
    const i = sel[0],
     o = M.props[i];
    body.innerHTML = `<div class="row" style="margin-top:0"><button id="pBack">← ของประดับทั้งหมด</button></div><b class="sec">${propName(o)}</b>
-   <div class="art"><span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button></div></div>
+   <div class="art"><span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button> <button id="pDetail">🔍 แก้ละเอียด…</button></div></div>
    ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${zRow('pz1','ชั้นของชิ้นนี้',o.z||0,o.owner?'ในจุดทำงานนี้ · จุดทำงาน = '+(stOf(o.owner)?.z||0):'ของประดับทั่วไป (ไม่อยู่ในชุดจุดทำงาน)')}
    <label class="chk"><input type="checkbox" id="pFlip" ${o.f?'checked':''}> กลับด้าน</label>${groupHtml(1)}
    <div class="row"><button id="pDup">ทำสำเนา</button><button id="pDel">ลบ (Delete)</button></div><div class="row"><button id="pSavePrefab">บันทึกเป็นชุด</button><button id="pUsePrefab">วางชุดที่บันทึก</button></div><p class="sub">ลากบนแผนที่เพื่อย้าย · ลูกศร = ขยับทีละ ¼ ช่อง · R หมุน · F กลับด้าน</p>`;
@@ -1243,6 +1243,7 @@ const PB_ART = (() => {
     place.sel = [];
     render()
    });
+   act('#pDetail', () => window.PieceDetail?.open(i));
    act('#pSwap', () => openArtPicker('เปลี่ยนภาพ', o.art, a => once(() => o.art = a)()));
    body.querySelector('#pFlip').onchange = e => once(() => o.f = e.target.checked || undefined)();
    act('#pDup', once(() => {
@@ -1320,6 +1321,14 @@ const PB_ART = (() => {
   overlay,
   drawHero: PB_ART.drawHero,
   render,
+  /* v98.292 · bridge for js/piece-detail.js: a prop of this sub-map (key = index in M.props) */
+  detail: {
+   caps: { rot: false, slant: false, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
+   item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
+   ov: key => M.props[+key] || {},
+   edit(key, fn, cp) { const o = M.props[+key]; if (!o) return; if (cp) checkpoint(); fn(o); for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === false) delete o[k]; dirty = true; save(); render() },
+   drawTo(q, E, ov) { const main = g; g = q; try { q.save(); const p0 = project(0, 0); q.translate(-p0.x, -p0.y); drawArt(ov.art, 0, 0, ov.width || 110, ov.s || 1, ov.f, 0, null); q.restore() } catch (e) { } finally { g = main } }
+  },
   enter,
   leave: () => leave(true),
   state: () => ({

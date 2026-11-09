@@ -14,11 +14,15 @@
   const isLow = it => it.tall === 'low' ? true : it.tall === 'tall' ? false : LOW.test(String(it.label || it.name || ''));
   /* is the walker in front of this part? (true → draw the part BEFORE the walker). fp = {u0,u1,v0,v1}; wu/wv = walker feet on the grid */
   function walkerInFront(fp, wu, wv) {
+    if (fp.parts && fp.parts.length > 1) fp = nearestPart(fp, wu, wv);   /* v98.292 · a composite piece (fence of several parts, an L/U shape): judge against its NEAREST box */
     const fr = wu > fp.u1 || wv > fp.v1, bk = wu < fp.u0 || wv < fp.v0;
     if (fr && !bk) return true; if (bk && !fr) return false;
     return (wu + wv) > (fp.u0 + fp.u1 + fp.v0 + fp.v1) / 2;
   }
-  const dist = (fp, wu, wv) => { const du = Math.max(fp.u0 - wu, 0, wu - fp.u1), dv = Math.max(fp.v0 - wv, 0, wv - fp.v1); return Math.hypot(du, dv) };
+  const d0 = (fp, wu, wv) => Math.hypot(Math.max(fp.u0 - wu, 0, wu - fp.u1), Math.max(fp.v0 - wv, 0, wv - fp.v1));
+  const nearestPart = (fp, wu, wv) => { let b = fp.parts[0], bd = Infinity; for (const p of fp.parts) { const d = d0(p, wu, wv); if (d < bd) { bd = d; b = p } } return b };
+  const dist = (fp, wu, wv) => { if (fp.parts && fp.parts.length > 1) return d0(nearestPart(fp, wu, wv), wu, wv); return dist1(fp, wu, wv) };
+  const dist1 = (fp, wu, wv) => { const du = Math.max(fp.u0 - wu, 0, wu - fp.u1), dv = Math.max(fp.v0 - wv, 0, wv - fp.v1); return Math.hypot(du, dv) };
   const api = {
     KEY, DEF, isLow, walkerInFront, dist,
     get: () => ({ ...read() }),

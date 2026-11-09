@@ -9,7 +9,7 @@
   'use strict';
   const Z = 1.9, CW = 620, CH = 500, CX = 310, CY = 330, S = 28 * Z, T = 14 * Z;
   let dlg = null, key = null, walker = { u: 0, v: 1.6 }, cv = null, drag = false;
-  const D = () => window.VillageAssetEdit?.detail, DS = () => window.DepthStyle;
+  const D = () => window.PlaceBuild?.detail || window.VillageAssetEdit?.detail, DS = () => window.DepthStyle;
   const P = (u, v) => ({ x: CX + (u - v) * S, y: CY + (u + v) * T });
   const inv = (x, y) => { const a = (x - CX) / S, b = (y - CY) / T; return { u: (a + b) / 2, v: (b - a) / 2 } };
 
@@ -50,6 +50,7 @@
     q.fillText('● จุดยึด · ลากตัวละครเพื่อทดสอบ', 10, CH - 10);
     const st = dlg.querySelector('#pdState'); if (st) st.innerHTML = `ตัวละครอยู่ <b>${front ? 'หน้า' : 'หลัง'}</b>ชิ้นนี้ → ${front ? 'ตัวละครถูกวาดทับชิ้น' : (low ? 'ชิ้นเตี้ย: บังเท้าตามจริง' : 'ชิ้นสูง: ' + ({ both: 'โปร่ง + เงาตัวละคร', fade: 'โปร่ง', silhouette: 'เงาตัวละคร', solid: 'ทึบ' }[set.tall]))} · ชิ้นนี้นับเป็น <b>${low ? 'เตี้ย' : 'สูง'}</b>${ov.tall ? ' (ตั้งเอง)' : ' (เดาจากชื่อ)'}`;
   }
+  const caps = () => D()?.caps || {};
   const pct = v => Math.round(v * 100);
   function html(E, ov) {
     const row = (id, label, v, mn, mx, st, fmt) => `<label class="pdr"><span>${label}</span><input type="range" id="${id}" min="${mn}" max="${mx}" step="${st}" value="${v}"><b id="${id}V">${fmt(v)}</b></label>`;
@@ -57,10 +58,10 @@
     const sw = ov.sw ?? ov.fw ?? .5, sh = ov.sh ?? ov.fh ?? .5;
     return `<div class="pdhead"><b>🔍 ${E.label || 'ชิ้นส่วน'}</b><button id="pdClose">✕ ปิด</button></div>
 <div class="pdbody"><canvas id="pdCv" width="${CW}" height="${CH}"></canvas><div class="pdside">
-<h4>รูปร่าง</h4>${row('pdS', 'ขนาด', pct(ov.s ?? 1), 30, 250, 1, v => v + '%')}${row('pdR', 'หมุน', ov.r || 0, -180, 180, 1, v => v + '°')}${row('pdIx', 'เฉียง ↗↙', pct(ov.ix ?? 1), 50, 200, 1, v => v + '%')}${row('pdIy', 'เฉียง ↖↘', pct(ov.iy ?? 1), 50, 200, 1, v => v + '%')}
+<h4>รูปร่าง</h4>${row('pdS', 'ขนาด', pct(ov.s ?? 1), 30, 250, 1, v => v + '%')}${caps().rot === false ? '' : row('pdR', 'หมุน', ov.r || 0, -180, 180, 1, v => v + '°')}${caps().slant === false ? '' : row('pdIx', 'เฉียง ↗↙', pct(ov.ix ?? 1), 50, 200, 1, v => v + '%') + row('pdIy', 'เฉียง ↖↘', pct(ov.iy ?? 1), 50, 200, 1, v => v + '%')}
 <label class="pdc"><input type="checkbox" id="pdF" ${ov.f ? 'checked' : ''}> กลับด้านซ้าย-ขวา</label>
 <h4>กรอบพื้น</h4>${step('sw', '🟦 เรียงลำดับ กว้าง', sw)}${step('sh', '🟦 เรียงลำดับ ลึก', sh)}${(ov.sw != null || ov.sh != null) ? '<button id="pdSzReset">= กรอบบล็อกเดิน</button>' : ''}
-<label class="pdc"><input type="checkbox" id="pdB" ${ov.block ? 'checked' : ''}> 🟥 บล็อกเดิน (ใช้กรอบด้านล่าง)</label>${step('fw', '🟥 บล็อก กว้าง', ov.fw ?? .5)}${step('fh', '🟥 บล็อก ลึก', ov.fh ?? .5)}
+${caps().block === false ? '' : `<label class="pdc"><input type="checkbox" id="pdB" ${ov.block ? 'checked' : ''}> 🟥 บล็อกเดิน (ใช้กรอบด้านล่าง)</label>${step('fw', '🟥 บล็อก กว้าง', ov.fw ?? .5)}${step('fh', '🟥 บล็อก ลึก', ov.fh ?? .5)}`}${caps().note ? `<p class="pdst">${caps().note}</p>` : ''}
 <h4>การบัง</h4><label class="pdc">ความสูง <select id="pdT"><option value="">อัตโนมัติ (จากชื่อ)</option><option value="tall"${ov.tall === 'tall' ? ' selected' : ''}>สูง</option><option value="low"${ov.tall === 'low' ? ' selected' : ''}>เตี้ย</option></select></label>
 <p id="pdState" class="pdst"></p></div></div>`;
   }
@@ -84,10 +85,11 @@
     const ed = (fn, cp) => { D().edit(key, fn, cp); paint(); readouts() };
     const readouts = () => { const o = D().ov(key); for (const f of ['sw', 'sh', 'fw', 'fh']) { const e = dlg.querySelector('#pd_' + f + 'V'); if (e) e.textContent = f === 'sw' ? (o.sw ?? o.fw ?? .5) : f === 'sh' ? (o.sh ?? o.fh ?? .5) : (o[f] ?? .5) } };
     const rng = (id, fn, fmt) => { const e = dlg.querySelector('#' + id), v = dlg.querySelector('#' + id + 'V'); e.onpointerdown = () => D().edit(key, () => { }, true); e.oninput = () => { v.textContent = fmt(+e.value); ed(o => fn(o, +e.value)) } };
-    rng('pdS', (o, v) => { o.s = v / 100 }, v => v + '%'); rng('pdR', (o, v) => { o.r = v }, v => v + '°');
-    rng('pdIx', (o, v) => { o.ix = v / 100 }, v => v + '%'); rng('pdIy', (o, v) => { o.iy = v / 100 }, v => v + '%');
+    rng('pdS', (o, v) => { o.s = v / 100 }, v => v + '%');
+    if (dlg.querySelector('#pdR')) rng('pdR', (o, v) => { o.r = v }, v => v + '°');
+    if (dlg.querySelector('#pdIx')) { rng('pdIx', (o, v) => { o.ix = v / 100 }, v => v + '%'); rng('pdIy', (o, v) => { o.iy = v / 100 }, v => v + '%') }
     dlg.querySelector('#pdF').onchange = e => ed(o => { if (e.target.checked) o.f = true; else delete o.f }, true);
-    dlg.querySelector('#pdB').onchange = e => ed(o => { if (e.target.checked) o.block = true; else delete o.block }, true);
+    if (dlg.querySelector('#pdB')) dlg.querySelector('#pdB').onchange = e => ed(o => { if (e.target.checked) o.block = true; else delete o.block }, true);
     dlg.querySelector('#pdT').onchange = e => ed(o => { if (e.target.value) o.tall = e.target.value; else delete o.tall }, true);
     dlg.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { const [f, d] = b.dataset.st.split(','); ed(o => { const base = f === 'sw' ? (o.sw ?? o.fw ?? .5) : f === 'sh' ? (o.sh ?? o.fh ?? .5) : (o[f] ?? .5); const v = Math.max(.5, Math.min(12, base + +d)); if ((f === 'fw' || f === 'fh') && v === .5) delete o[f]; else o[f] = v }, true) });
     dlg.querySelector('#pdSzReset')?.addEventListener('click', () => { ed(o => { delete o.sw; delete o.sh }, true); build() });

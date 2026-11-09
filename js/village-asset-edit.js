@@ -292,7 +292,16 @@
    x: E.x,
    y: (ov.grp && grpYPrev.get(ov.grp) != null ? grpYPrev.get(ov.grp) : E.y) + (ov.layer || 0),
    z: ov.z || 0,
-   fp: { u0: fc.u - fz.w / 2, u1: fc.u + fz.w / 2, v0: fc.v - fz.h / 2, v1: fc.v + fz.h / 2 },
+   fp: (() => {
+    const own = { u0: fc.u - fz.w / 2, u1: fc.u + fz.w / 2, v0: fc.v - fz.h / 2, v1: fc.v + fz.h / 2 };
+    if (!ov.cmp || !ov.grp) return own;
+    /* v98.292 · COMPOSITE: every member of the group shares ONE footprint = the union box of all member boxes (+ the member boxes themselves as .parts, for L / U shapes) */
+    let U = grpFpNow.get(ov.grp);
+    if (!U) grpFpNow.set(ov.grp, U = { u0: own.u0, u1: own.u1, v0: own.v0, v1: own.v1, parts: [] });
+    else { U.u0 = Math.min(U.u0, own.u0); U.u1 = Math.max(U.u1, own.u1); U.v0 = Math.min(U.v0, own.v0); U.v1 = Math.max(U.v1, own.v1) }
+    U.parts.push(own);
+    return grpFpPrev.get(ov.grp) || U
+   })(),
    label: label || '',
    tall: ov.tall,
    place: loc(owner) ? owner : null,
@@ -377,13 +386,15 @@
   const m = t.match(/decor\('([\w-]+)'|dec\('([\w-]+)'/);
   return m ? (DECOR_W[m[1] || m[2]]?.[0] || 'ของประดับ') : 'ของประดับ'
  };
- let grpYPrev = new Map(), grpYNow = new Map(), fixedFence = new Map();
+ let grpYPrev = new Map(), grpYNow = new Map(), fixedFence = new Map(), grpFpPrev = new Map(), grpFpNow = new Map();
  const baseEstate = estateObjects;
  estateObjects = function() {
   frame = [];
   fixedFence = new Map();
   grpYPrev = grpYNow;
   grpYNow = new Map();
+  grpFpPrev = grpFpNow;
+  grpFpNow = new Map();
   stableDefaults = true;
   let list;
   try { list = baseEstate() } finally { stableDefaults = false }
@@ -1124,7 +1135,7 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, g: ov.grp }
+  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
  }
  function addRecords(recs, owner, off) {
   const ids = [], gmap = {};
@@ -1133,7 +1144,7 @@
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    const G = window.VillageGrid, bs = baseOf(owner), sn = !G ? { du: r.du + off, dv: r.dv + off } : recs.length === 1 ? placeNewItem(owner, nid, r.du + off, r.dv + off) : G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, modeNow());
    data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall };
+   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
    if (r.g) data.edit[nid].grp = gmap[r.g] || (gmap[r.g] = newGid());
    clean(nid);
    ids.push(nid)
@@ -1206,7 +1217,42 @@
  }
  const groupHtml = n => `<b class="sec">จัดการ${n > 1 ? 'ทั้งกลุ่ม' : ''}</b><div class="row"><button id="gUp" title="PageUp">＋ ชั้น (+1)</button><button id="gDown" title="PageDown">－ ชั้น (−1)</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div>
   <div class="row"><button id="gRotL" title="หมุนทั้งกลุ่ม -15°">หมุน −15°</button><button id="gRotR" title="หมุนทั้งกลุ่ม +15°">หมุน +15°</button><button id="gIxDn" title="ปรับแกน ↗↙ ลดลง">แกน ↗↙ −</button><button id="gIxUp" title="ปรับแกน ↗↙ เพิ่มขึ้น">แกน ↗↙ +</button></div>
-  <div class="row"><button id="gIyDn" title="ปรับแกน ↖↘ ลดลง">แกน ↖↘ −</button><button id="gIyUp" title="ปรับแกน ↖↘ เพิ่มขึ้น">แกน ↖↘ +</button><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gFlip" title="กลับซ้าย–ขวาทั้งกลุ่ม">⇋ กลับซ้าย–ขวา</button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
+  <div class="row"><button id="gIyDn" title="ปรับแกน ↖↘ ลดลง">แกน ↖↘ −</button><button id="gIyUp" title="ปรับแกน ↖↘ เพิ่มขึ้น">แกน ↖↘ +</button><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gFlip" title="กลับซ้าย–ขวาทั้งกลุ่ม">⇋ กลับซ้าย–ขวา</button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>
+  <b class="sec" title="รั้ว/กำแพงหลายท่อนที่ต่อกัน: ให้ทั้งกลุ่มใช้กรอบเรียงลำดับร่วมกันเป็นชิ้นเดียว (กรอบรวม + กรอบของแต่ละท่อนสำหรับรูป L/U)">ชิ้นประกอบ</b>
+  <div class="row"><button id="cmpToggle">▣ กรอบรวมของกลุ่ม: เปิด/ปิด</button></div>
+  <div class="row" style="align-items:center"><span>เรียงซ้ำ ×</span><input id="cmpN" type="number" value="4" min="2" max="40" style="width:46px"><select id="cmpAx"><option value="u">↘ แกน u</option><option value="v">↙ แกน v</option></select><span>ห่าง</span><input id="cmpStep" type="number" step="0.5" min="0.5" style="width:52px" placeholder="อัตโนมัติ"><button id="cmpRep">เรียง</button></div>`;
+/* v98.292 · COMPOSITE pieces: a group can share ONE order footprint (cmp); a piece can be repeated along an axis into such a group (fences, walls) */
+ function groupMembers() {
+  const gs = new Set((place?.keys || []).map(k => data.edit[k]?.grp).filter(Boolean));
+  const ks = new Set(place?.keys || []);
+  for (const E of frame) if (E.ov?.grp && gs.has(E.ov.grp)) ks.add(E.key);
+  return [...ks]
+ }
+ function toggleComposite() {
+  const sel = place?.keys || [], mem = groupMembers();
+  if (sel.length < 2 && mem.length < 2) return flashStatus('เลือกหลายชิ้นก่อน (หรือใช้ “เรียงซ้ำ” กับชิ้นเดียว)');
+  once(() => {
+   const on = !mem.some(k => data.edit[k]?.cmp);
+   let gid = mem.map(k => data.edit[k]?.grp).find(Boolean) || newGid();
+   for (const k of mem) { const o = ovOf(k); o.grp = gid; if (on) o.cmp = true; else delete o.cmp; clean(k) }
+   flashStatus(on ? 'ตั้งเป็นชิ้นประกอบแล้ว · ทั้งกลุ่มใช้กรอบเรียงลำดับร่วมกัน' : 'ยกเลิกกรอบรวมแล้ว')
+  })()
+ }
+ function repeatPiece() {
+  const k = place?.keys?.[0], r = k && recordOf(k);
+  if (!r) return flashStatus('เลือกชิ้นที่มีภาพแบบเลือกได้ก่อน (ชิ้นเดียว)');
+  const n = Math.max(2, Math.min(40, +panel.querySelector('#cmpN').value || 4)), ax = panel.querySelector('#cmpAx').value;
+  const ov = data.edit[k] || {}, len = ax === 'u' ? (ov.sw ?? ov.fw ?? .5) : (ov.sh ?? ov.fh ?? .5);
+  const step = +panel.querySelector('#cmpStep').value || len;
+  once(() => {
+   const recs = []; for (let i = 1; i < n; i++) recs.push({ ...r, g: 'rep', cmp: true, du: r.du + (ax === 'u' ? step * i : 0), dv: r.dv + (ax === 'v' ? step * i : 0) });
+   const ids = addRecords(recs, place.id, 0);
+   const gid = data.edit[ids[0]]?.grp; if (!gid) return;
+   const o0 = ovOf(k); o0.grp = gid; o0.cmp = true; clean(k);
+   place.keys = [k, ...ids];
+   flashStatus('เรียงซ้ำ ' + n + ' ท่อนเป็นชิ้นประกอบแล้ว (ปรับ “ห่าง” ให้เท่าความยาวท่อนถ้ามีช่องว่าง)')
+  })()
+ }
  function bindGroup() {
   act('#gUp', () => groupStep('layer', 1));
   act('#gDown', () => groupStep('layer', -1));
@@ -1219,6 +1265,8 @@
   act('#gIyDn', () => groupStep('iy', -1));
   act('#gIyUp', () => groupStep('iy', 1));
   act('#gDup', dupGroup);
+  act('#cmpToggle', toggleComposite);
+  act('#cmpRep', repeatPiece);
   act('#gFlip', flipGroup);
   act('#gCopy', copyGroup);
   act('#gPaste', pasteGroup)
@@ -2524,7 +2572,7 @@
    for (const r of a.recs) {
     const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sn = window.VillageGrid.snapOffset({ u: base.u, v: base.v }, !!base.mirror, r.du, r.dv + +base.front.toFixed(2), modeNow());
     data.added.push({ id: nid, owner: place.id, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-    data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, grp: g };
+    data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
     clean(nid);
     ids.push(nid)
    }
