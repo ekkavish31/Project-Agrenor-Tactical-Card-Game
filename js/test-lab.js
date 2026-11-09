@@ -42,7 +42,7 @@
   function open() {
     if (box) { box.hidden = false; return } we = !!editing;
     box = document.createElement('div'); box.id = 'testLab';
-    box.style.cssText = 'position:fixed;left:12px;bottom:64px;z-index:10040;width:262px;background:#1d3028f5;color:#f7e8c5;border:1px solid #a5b68a;border-radius:12px;padding:10px 12px;font:12.5px AgThai,system-ui,sans-serif;box-shadow:0 8px 28px #0007';
+    box.style.cssText = 'position:fixed;left:calc(var(--dl,0px) + 12px);bottom:16px;z-index:10040;width:262px;background:#1d3028f5;color:#f7e8c5;border:1px solid #a5b68a;border-radius:12px;padding:10px 12px;font:12.5px AgThai,system-ui,sans-serif;box-shadow:0 8px 28px #0007';
     const s = DS().get();
     box.innerHTML = `<b style="font-size:14px">🧪 ห้องทดสอบ</b><span id="labClose" style="float:right;cursor:pointer">✕ ปิด</span>
 <div style="display:grid;gap:5px;margin:8px 0"><button id="labWalk">🚶 เดินรอบชิ้นที่เลือก</button><button id="labFront">📍 วางตัวละครหน้าชิ้น</button><button id="labStop">⏹ หยุดเดิน</button>
