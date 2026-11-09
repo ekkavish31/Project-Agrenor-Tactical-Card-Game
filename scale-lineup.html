@@ -169,7 +169,9 @@ const visible = () => { const a = tab === 'ratio' ? ENTRIES.filter(e => (e.kind 
 const rangeOf = e => { if (!e.fixed) return ['', 'ไม่มีค่าตรึง']; const m = metres(e); return m < e.ref[0] ? ['warn', 'เล็กไป'] : m > e.ref[1] ? ['warn', 'ใหญ่ไป'] : ['ok', 'พอดี'] };
 function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
 /* choosing a character here also selects it in the studio's Animation tab */
-function pickSel(id) { sel = id; if (ST) { const sid = id === 'hero' ? 'hero' : id.startsWith('m:') ? 'enemy:' + id.slice(2) : 'ally:' + id; try { ST.lineup.select(sid) } catch (e) { } } render() }
+/* v98.328 · multi-select: tick several characters, then ONE set of −5 −1 +1 +5 buttons resizes them all (each from its own current value) */
+let MULTI = false; const PICKED = new Set(); const isSel = id => MULTI ? PICKED.has(id) : id === sel;
+function pickSel(id) { if (MULTI) { PICKED.has(id) ? PICKED.delete(id) : PICKED.add(id); sel = id; viewCtl(); render(); return } sel = id; if (ST) { const sid = id === 'hero' ? 'hero' : id.startsWith('m:') ? 'enemy:' + id.slice(2) : 'ally:' + id; try { ST.lineup.select(sid) } catch (e) { } } render() }
 function render() {
   if (!ENTRIES.some(e => e.id === 'hero' && e.ctx.battle)) { $('stage').innerHTML = '<p class="hint">ยังไม่พบภาพท่ายืนของตัวเอก (SW) — ตัวเอกคือไม้วัดของหน้านี้ · ตรวจว่าไฟล์ภาพถูก push แล้ว หรือกด รีเฟรช</p>'; $('list').innerHTML = ''; $('insp').innerHTML = ''; return }
   ctx = tab === 'char' || tab === 'ratio' || tab === 'field' ? 'battle' : 'village';
@@ -179,7 +181,7 @@ function render() {
   $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
   $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
   const V = visible();
-  $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${e.id === sel}"><img alt="" src="${e.ctx[ctx].url || e.ctx[ctx].src}"${e.ctx[ctx].flip ? ' style="transform:scaleX(-1)"' : ''}><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m${e.unwired ? ' · ⏳ ยังไม่ต่อเกม' : ''}</small></span>${chip(e)}</button>`).join('');
+  $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${isSel(e.id)}">${MULTI ? `<b style="width:18px">${PICKED.has(e.id) ? '☑' : '☐'}</b>` : ''}<img alt="" src="${e.ctx[ctx].url || e.ctx[ctx].src}"${e.ctx[ctx].flip ? ' style="transform:scaleX(-1)"' : ''}><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m${e.unwired ? ' · ⏳ ยังไม่ต่อเกม' : ''}</small></span>${chip(e)}</button>`).join('');
   $('list').querySelectorAll('.row').forEach(b => b.onclick = () => pickSel(b.dataset.c));
   if (tab === 'ratio') { renderRatio(V); inspect(); controls(); return }
   if (tab === 'maps') { renderMaps(); return }
@@ -197,7 +199,7 @@ function render() {
     const src = c.url || c.src, fl = c.flip ? 'transform:scaleX(-1);' : '';
     if (SHADOW) h += `<div style="position:absolute;left:${cx - w * .22}px;top:${base - 5}px;width:${w * .44}px;height:10px;border-radius:50%;background:rgba(0,0,0,.28)"></div>`;
     if (FOOT) h += `<div style="position:absolute;left:${cx}px;top:${base - 18 * ZOOM}px;height:${18 * ZOOM}px;border-left:1px solid #c0392b"></div>`;
-    h += `<img class="ch${e.id === sel ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${src}" style="${fl}width:${w}px;height:${hh}px;left:${left}px;top:${top}px;opacity:${e.id === 'hero' ? 1 : ALPHA}">`;
+    h += `<img class="ch${isSel(e.id) ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${src}" style="${fl}width:${w}px;height:${hh}px;left:${left}px;top:${top}px;opacity:${e.id === 'hero' ? 1 : ALPHA}">`;
     h += `<div class="nm" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m${!isW(e) && Math.abs(eff(e) - 1) > .0005 ? ' · ' + Math.round(eff(e) * 100) + '%' : ''}</i></div>`;
   });
   st.innerHTML = h;
@@ -226,7 +228,7 @@ function renderField(V) {
     const wdt = c.m.w * k, hgt = c.m.h * k, left = cell.x - ((c.m.x0 + c.m.x1) / 2) * k, top = cell.y - (c.m.bottom + 1) * k;
     g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(cell.x, cell.y, cw * .22, ch * .22, 0, 0, 7); g.fill();
     g.save(); if (c.flip) { g.translate(cell.x * 2, 0); g.scale(-1, 1); g.drawImage(c.img, 2 * cell.x - left - wdt, top, wdt, hgt) } else g.drawImage(c.img, left, top, wdt, hgt); g.restore();
-    g.fillStyle = e.id === sel ? '#ffe2a8' : '#e9e1cf'; g.font = '600 12px system-ui'; g.textAlign = 'center'; g.fillText(e.name, cell.x, cell.y + ch / 2 + 16); g.fillStyle = '#b9c48a'; g.font = '11px system-ui'; g.fillText(U(e).toFixed(2) + ' ช่อง สูง', cell.x, cell.y + ch / 2 + 30);
+    g.fillStyle = isSel(e.id) ? '#ffe2a8' : '#e9e1cf'; g.font = '600 12px system-ui'; g.textAlign = 'center'; g.fillText(e.name, cell.x, cell.y + ch / 2 + 16); g.fillStyle = '#b9c48a'; g.font = '11px system-ui'; g.fillText(U(e).toFixed(2) + ' ช่อง สูง', cell.x, cell.y + ch / 2 + 30);
   }
   g.strokeStyle = 'rgba(240,190,90,.75)'; g.setLineDash([6, 5]); const y0 = items[0].cell.y - heroPx; g.beginPath(); g.moveTo(20, y0); g.lineTo(W - 20, y0); g.stroke(); g.setLineDash([]); g.fillStyle = '#f0be5a'; g.font = '11px system-ui'; g.textAlign = 'left'; g.fillText('ความสูงตัวเอก (ตัวเทียบ)', 24, y0 - 5);
   cv.onclick = ev => { const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; let best = null, bd = 1e9; for (const it of items) { const d = Math.hypot(x - it.cell.x, y - (it.cell.y - U(it.e) * UNIT * z / 2)); if (d < bd) { bd = d; best = it } } if (best && bd < 120) pickSel(best.e.id) };
@@ -409,6 +411,7 @@ function viewCtl() {
   let h = '';
   if (!world) h += `<div class="tg"><small>แสดงหมวด (ใช้กับทุกแท็บ)</small><div class="tr">${CATS.map(([k, t, tip]) => `<button data-f="${k}" aria-pressed="${FILTER[k]}" title="${tip}">${t}</button>`).join('')}</div></div>`;
   if (!world && FILTER.mon && tab !== 'ratio') h += `<div class="tg"><small>มอนสเตอร์ · แยกชนิด</small><div class="tr">${MGROUPS.map(([k, t]) => `<button data-sf="${k}" aria-pressed="${SUBF[k]}">${t}</button>`).join('')}<button data-sf="wired" aria-pressed="${SUBF.wired}" title="ตัวที่สนามรบใช้อยู่แล้ว (ตาราง MON)">✔ ใช้ในเกมแล้ว</button><button data-sf="unwired" aria-pressed="${SUBF.unwired}" title="มีภาพ/อนิเมชันใน asset แล้ว แต่ยังไม่ได้ต่อเข้าสนามรบ — ปรับขนาดเก็บไว้ล่วงหน้าได้">⏳ ยังไม่ต่อเกม</button></div></div>`;
+  if (tab === 'char' || tab === 'field') { const nv = visible().filter(e => PICKED.has(e.id)).length; h += `<div class="tg"><small>ปรับหลายตัวพร้อมกัน</small><div class="tr"><button id="bMulti" aria-pressed="${MULTI}" title="เปิดแล้วคลิกตัวละครเพื่อติ๊กเลือก จากนั้นปุ่ม −5 −1 +1 +5 ที่แผงขวาจะปรับทุกตัวที่เลือก">☑ เลือกหลายตัว</button>${MULTI ? `<button id="bPickAll" title="ติ๊กทุกตัวที่เห็นอยู่ (ตามตัวกรอง)">เลือกทั้งหมดที่เห็น</button><button id="bPickNone">ล้าง</button><span class="zv">เลือกแล้ว ${nv} ตัว</span>` : ''}</div></div>` }
   if (tab !== 'maps') h += `<div class="tg"><small>จัดเรียง</small><div class="tr"><button id="bSort" aria-pressed="${sorted}" title="เรียงจากสูงสุดไปต่ำสุด แทนลำดับปกติ">↕ เรียงตามความสูง</button></div></div>`;
   if (zoomTab) h += `<div class="tg"><small>ซูม</small><div class="tr"><button class="sq" id="zOut" title="ซูมออก">−</button><span class="zv">${Math.round(ZOOM * 100)}%</span><button class="sq" id="zIn" title="ซูมเข้า">+</button></div></div>`;
   if (stageTab) h += `<div class="tg"><small>ตัวช่วยดู</small><div class="tr"><button id="vGhost" aria-pressed="${ghost}" title="เงาจางของตัวเอกซ้อนหลังทุกตัว ไว้เทียบความสูง">👤 เงาตัวเอก</button><button id="vShadow" aria-pressed="${SHADOW}" title="วงเงาใต้เท้า">◔ เงาพื้น</button><button id="vFoot" aria-pressed="${FOOT}" title="ขีดแนวตั้งที่จุดเท้า">┃ จุดเท้า</button><button id="vGuides" aria-pressed="${GUIDES}" title="เส้นนอนบอกระดับ หัว/ตา/ไหล่/เอว/เข่า ของตัวเอก">≡ เส้นระดับตัวเอก</button></div></div>`;
@@ -416,6 +419,9 @@ function viewCtl() {
   $('toolbar').innerHTML = h; const el = id => document.getElementById(id), re = () => { viewCtl(); render() };
   $('toolbar').querySelectorAll('[data-f]').forEach(b => b.onclick = () => { const k = b.dataset.f, on = Object.values({ ...FILTER, [k]: !FILTER[k] }).some(Boolean); if (!on) return; FILTER[k] = !FILTER[k]; try { localStorage.setItem(FKEY, JSON.stringify(FILTER)) } catch (e) { } const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id; re() });
   $('toolbar').querySelectorAll('[data-sf]').forEach(b => b.onclick = () => { const k = b.dataset.sf; SUBF[k] = !SUBF[k]; try { localStorage.setItem(SUBKEY, JSON.stringify(SUBF)) } catch (e) { } const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id; re() });
+  if (el('bMulti')) el('bMulti').onclick = () => { MULTI = !MULTI; if (MULTI && !PICKED.size && sel && sel !== 'hero') PICKED.add(sel); re() };
+  if (el('bPickAll')) el('bPickAll').onclick = () => { for (const e of visible()) PICKED.add(e.id); re() };
+  if (el('bPickNone')) el('bPickNone').onclick = () => { PICKED.clear(); re() };
   if (el('bSort')) el('bSort').onclick = () => { sorted = !sorted; re() };
   if (el('zOut')) el('zOut').onclick = () => { ZOOM = ZS[Math.max(0, zi - 1)]; re() };
   if (el('zIn')) el('zIn').onclick = () => { ZOOM = ZS[Math.min(ZS.length - 1, zi + 1)]; re() };
@@ -424,7 +430,7 @@ function viewCtl() {
 }
 const GROUPS = [['one', 'เฉพาะตัวนี้'], ['ally', 'เพื่อนทั้งหมด'], ['monster', 'มอนสเตอร์ทั้งหมด'], ['all', 'ทุกตัวยกเว้นตัวเอก']];
 let SCOPE = 'one';
-const inScope = e => SCOPE === 'one' ? e.id === sel : SCOPE === 'ally' ? e.kind === 'ally' : SCOPE === 'monster' ? e.kind === 'monster' : e.kind !== 'hero';
+const inScope = e => MULTI ? (PICKED.has(e.id) && passF(e)) : SCOPE === 'one' ? e.id === sel : SCOPE === 'ally' ? e.kind === 'ally' : SCOPE === 'monster' ? e.kind === 'monster' : e.kind !== 'hero';
 function bump(field, delta) {   /* field: 'g' or a scene name; delta = percentage points added (multiplicative on the factor) */
   for (const e of ENTRIES.filter(x => !isW(x) && inScope(x))) {
     const cur = field === 'g' ? gOf(e.id) : sOf(field, e.id), nv = Math.min(2, Math.max(.4, Math.round((cur * 100 + delta)) / 100));
@@ -435,7 +441,7 @@ function bump(field, delta) {   /* field: 'g' or a scene name; delta = percentag
 function controls() {
   const box = $('ctl'), e = ENTRIES.find(x => x.id === sel);
   if (tab === 'ratio' || tab === 'maps') { box.innerHTML = ''; return }
-  if (tab !== 'char' || !e || isW(e)) { box.innerHTML = '<p class="hint">ตัวปรับขนาดใช้กับแท็บ "ตัวละคร"</p>'; return }
+  if ((tab !== 'char' && tab !== 'field') || !e || isW(e)) { box.innerHTML = '<p class="hint">ตัวปรับขนาดใช้กับแท็บ "ตัวละคร"</p>'; return }
   const pct = v => Math.round(v * 100), row = (label, field, note) => `<div class="adj"><span>${label}</span><button data-b="${field}:-5">−5</button><button data-b="${field}:-1">−1</button><input type="number" min="40" max="200" value="${pct(field === 'g' ? gOf(e.id) : sOf(field, e.id))}" data-f="${field}"><button data-b="${field}:1">+1</button><button data-b="${field}:5">+5</button>${note ? `<small>${note}</small>` : ''}</div>`;
   const dim = e.id === 'hero' ? 'ตัวเอกคือไม้วัด: ปรับแล้วตัวอื่นเทียบตามความสูงเดิม' : '';
   /* studio only: compare ANY frame of this character from the Animation clips */
@@ -443,14 +449,15 @@ function controls() {
     const p = PICK[e.id] || {}, clips = en.clips.filter(c => ['SW', 'SE', 'NW', 'NE'].includes(c.view)), cur = clips.find(c => c.id === p.clip), c0 = e.ctx[ctx];
     return `<div class="adj"><span>เฟรมที่เทียบ</span><select id="cClip"><option value="">ท่ายืนมาตรฐาน (SW)</option>${clips.map(c => `<option value="${c.id}"${c.id === p.clip ? ' selected' : ''}>${c.action} · ${c.view} (${c.n} เฟรม)</option>`).join('')}</select>${cur && cur.n > 1 ? `<input id="cFrame" type="range" min="0" max="${cur.n - 1}" value="${p.index || 0}" style="width:100%">` : ''}<small>${c0.label || ''}</small></div>` };
   const dirs = pickerHtml();
-  box.innerHTML = `<hr><b>⚖ ปรับขนาด · ${e.name}</b>
-   <div class="adj"><span>ขอบเขต</span><select id="cScope">${GROUPS.map(([v, t]) => `<option value="${v}"${v === SCOPE ? ' selected' : ''}>${t}</option>`).join('')}</select></div>
+  const nSel = ENTRIES.filter(x => !isW(x) && inScope(x)).length;
+  box.innerHTML = `<hr><b>⚖ ปรับขนาด · ${MULTI ? nSel + ' ตัวที่เลือก' : e.name}</b>
+   ${MULTI ? `<p class="hint">☑ โหมดเลือกหลายตัว: ปุ่ม −5 −1 +1 +5 และ "รีเซ็ต" ใช้กับ <b>${nSel} ตัวที่ติ๊กไว้</b> (แต่ละตัวเพิ่ม/ลดจากค่าของตัวเอง) · ติ๊กเพิ่ม/เอาออกได้โดยคลิกตัวละครในรายการหรือบนเวที</p>` : `<div class="adj"><span>ขอบเขต</span><select id="cScope">${GROUPS.map(([v, t]) => `<option value="${v}"${v === SCOPE ? ' selected' : ''}>${t}</option>`).join('')}</select></div>`}
    ${row('ขนาด %', 'g', 'สัดส่วนเทียบตัวอื่น · ชุดเดียวทุกฉาก')}
    ${dirs}${dim ? `<p class="hint">${dim}</p>` : ''}
    <p class="hint">ขนาดนี้ใช้กับ <b>ทุกเฟรม</b> ของตัวนี้ (ยืน เดิน ฟาด ตั้งรับ ล้ม ทุกทิศ) ตัวคูณเดียว · การเทียบ % ต่อฉากทำแยกในแต่ละฉากภายหลัง</p>
    <div class="adj"><button id="cReset">รีเซ็ตตัวนี้</button><button id="cRevert"${dirty() ? '' : ' disabled'}>ย้อนกลับที่บันทึกไว้</button><button id="cSave" class="primary"${dirty() ? '' : ' disabled'}>บันทึกเข้าเกม</button></div><p class="hint" id="cMsg">${dirty() ? '● ยังไม่ได้บันทึก (ร่างเก็บในเบราว์เซอร์นี้)' : 'ตรงกับที่บันทึกในเกมแล้ว'}</p>`;
   const $$ = id => document.getElementById(id);
-  $$('cScope').onchange = ev => { SCOPE = ev.target.value; controls() };
+  if ($$('cScope')) $$('cScope').onchange = ev => { SCOPE = ev.target.value; controls() };
   box.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { const [f, d] = b.dataset.b.split(':'); bump(f, +d) });
   box.querySelectorAll('input[data-f]').forEach(inp => inp.onchange = () => { const f = inp.dataset.f, cur = f === 'g' ? gOf(e.id) : sOf(f, e.id); bump(f, Math.round(+inp.value || 100) - Math.round(cur * 100)) });
   const again = async () => { await buildChars(); render() };
