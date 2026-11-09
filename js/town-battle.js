@@ -1307,8 +1307,10 @@
   }
   /* v98.282 · the user's ground pictures (js/ground-art.js): ring under the active / targeted fighter, frame on a cell, glowing corners on the hovered cell — all fitted to the grid cell (width = 2 half-widths, read from project()) */
   const cellW = (u, v) => Math.abs(project(u + 1, v).x - project(u, v + 1).x);
-  function cellFrame(g, name, u, v, k = 1) { const G = window.GroundArt; if (!G) return false; const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) }
-  function footRing(g, unit, foe, t) { const G = window.GroundArt; if (!G) return false; const p = project(unit.vu, unit.vv); return G.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t) }
+  /* v98.308 · the ground art (cell frames, foot rings, hover corners, turn crystals) is drawn by code (js/ground-art-code.js) — smooth, bright, one source for the battle AND the BG editor. ?gart=pic or localStorage project-a-gart=pic brings the old picture sets back. */
+  const CODE_ART = !!window.GroundArtCode && Q.get('gart') !== 'pic' && (() => { try { return localStorage.getItem('project-a-gart') !== 'pic' } catch (e) { return true } })(), RING_STYLE = (() => { try { return +localStorage.getItem('project-a-gart-ring') || 1 } catch (e) { return 1 } })();
+  function cellFrame(g, name, u, v, k = 1) { if (CODE_ART) { const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return GroundArtCode.frame(g, name, p.x, p.y, w, w * .56, performance.now()) } const G = window.GroundArt; if (!G) return false; const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) }
+  function footRing(g, unit, foe, t) { if (CODE_ART) { const p = project(unit.vu, unit.vv); GroundArtCode.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t, RING_STYLE); return true } const G = window.GroundArt; if (!G) return false; const p = project(unit.vu, unit.vv); return G.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t) }
   function draw(g, t0) {
     if (!ready || typeof locations === 'undefined' || !locations.length) return;
     const t = now();
@@ -1345,7 +1347,7 @@
     if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { if (!footRing(g, st.cur, false, t)) { poly(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() } }
     if (pendAlly?.to && !busy) { poly(g, pendAlly.to.u, pendAlly.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pendAlly.to.u, pendAlly.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
     if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pend.to.u, pend.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
-    if (typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; G?.corners(g, p.x, p.y, w, w * .56, t) }   /* v98.282 · glowing corners on the cell under the mouse */
+    if (typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; G?.corners(g, p.x, p.y, w, w * .56, t) }   /* v98.282 · glowing corners on the cell under the mouse */
     g.restore();
     if (CINE) spotlight(g, cine ? [cine.a, cine.b] : st.units.filter(u => u.hp > 0));
     glowDraw(g, t);
@@ -1367,11 +1369,11 @@
     /* v98.278 · the turn crystal over the head of whoever's turn it is: the user's own 8-frame art (gold = team, silver = monsters) — assets/fx/plumbob-ally|foe.webp, 8 frames of 100×160 (source sheet: art-production/plumbob-crystal-sheet-8x2.webp). No code-drawn glow any more: the picture carries its own light. */
     if (!st.outcome) { const au = actUnit && actUnit.hp > 0 ? actUnit : FB.queue(st, 1)[0];
       if (au && au.hp > 0 && !(au.deadAt && t > au.deadAt)) { const foe = au.side === 'monster', pic = im('assets/fx/plumbob-' + (foe ? 'foe' : 'ally') + '.webp');
-        if (pic) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, ph = UNIT * .98, pw = ph * 100 / 160, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.78 * big + .1) + bob;
-          g.drawImage(pic, (Math.floor(t / 110) % 8) * 100, 0, 100, 160, cx - pw / 2, cy - ph / 2, pw, ph) } } }
+        if (pic || CODE_ART) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, ph = UNIT * .98, pw = ph * 100 / 160, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.78 * big + .1) + bob;
+          if (CODE_ART) GroundArtCode.crystal(g, cx, cy, ph * .8, t, foe ? 'foe' : 'ally'); else g.drawImage(pic, (Math.floor(t / 110) % 8) * 100, 0, 100, 160, cx - pw / 2, cy - ph / 2, pw, ph) } } }
     /* v98.253 · grey crystal (no ring) over the fighter picked in the queue */
-    if (inspectU && inspectU.hp > 0) { const pic = im('assets/fx/plumbob-view.webp'); if (pic) { const q = project(inspectU.vu, inspectU.vv), ko = kbOff(inspectU, t), big = inspectU.side === 'monster' ? (MON[inspectU.evoShow || inspectU.kind]?.scale || 1) : 1, pw = UNIT * .36, ph = pw * 96 / 64, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + Math.sin(t * .0042 + 1) * UNIT * .05 - (actUnit === inspectU ? UNIT * .55 : 0);
-      g.drawImage(pic, (Math.floor(t / 85) % 12) * 64, 0, 64, 96, q.x + ko.x - pw / 2, cy - ph / 2, pw, ph) } }
+    if (inspectU && inspectU.hp > 0) { const pic = im('assets/fx/plumbob-view.webp'); if (pic || CODE_ART) { const q = project(inspectU.vu, inspectU.vv), ko = kbOff(inspectU, t), big = inspectU.side === 'monster' ? (MON[inspectU.evoShow || inspectU.kind]?.scale || 1) : 1, pw = UNIT * .36, ph = pw * 96 / 64, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + Math.sin(t * .0042 + 1) * UNIT * .05 - (actUnit === inspectU ? UNIT * .55 : 0);
+      if (CODE_ART) GroundArtCode.crystal(g, q.x + ko.x, cy, ph * .8, t, 'view'); else g.drawImage(pic, (Math.floor(t / 85) % 12) * 64, 0, 64, 96, q.x + ko.x - pw / 2, cy - ph / 2, pw, ph) } }
     /* v97.32 · B13: at night the hero and companions carry lanterns — a warm flickering glow at hip height that lights the ground around them */
     if (NIGHT) { g.save(); g.globalCompositeOperation = 'lighter'; for (const u of FB.allies(st).concat(h)) { if (u.hp <= 0) continue; const q = project(u.vu, u.vv), fl = .85 + .15 * Math.sin(t * .013 + u.id.length) * Math.sin(t * .007), x = q.x + UNIT * .22, y = q.y - UNIT * .55;
       let gr = g.createRadialGradient(q.x, q.y, 0, q.x, q.y, UNIT * 1.6); gr.addColorStop(0, `rgba(255,170,80,${.32 * fl})`); gr.addColorStop(1, 'rgba(255,170,80,0)'); g.fillStyle = gr; g.beginPath(); g.ellipse(q.x, q.y, UNIT * 1.6, UNIT * .8, 0, 0, 7); g.fill();
