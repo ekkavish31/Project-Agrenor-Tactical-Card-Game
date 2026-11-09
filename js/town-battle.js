@@ -1080,6 +1080,25 @@
 
   /* ---------- drawing ---------- */
   /* v94: a cell outline sits on its own raised top (battle-field heights); the village has none */
+  /* v98.312 · grid on/off (key G, remembered) + which cells are hidden behind taller ground in front of them */
+  let GRID = (() => { try { return localStorage.getItem('project-a-field-grid') !== '0' } catch (e) { return true } })();
+  addEventListener('keydown', e => { if (e.key.toLowerCase() !== 'g' || e.repeat || e.ctrlKey || e.metaKey || e.target.closest?.('input,textarea,select')) return; GRID = !GRID; try { localStorage.setItem('project-a-field-grid', GRID ? '1' : '0') } catch (_) { } });
+  function gridHidden(cells) {
+    const out = new Set(), FH = window.FieldHeight, DEP = window.FieldDepth; if (!FH?.lift || !DEP) return out;
+    const F = window.projectFlat || project, raised = [], all = [];
+    for (const key of cells.keys()) {
+      const [u, v] = key.split(',').map(Number), L = FH.lift(u, v), a = F(u, v), b = F(u + 1, v), c = F(u + 1, v + 1), d = F(u, v + 1), xs = [a.x, b.x, c.x, d.x], ys = [a.y, b.y, c.y, d.y];
+      const o = { key, d: DEP(u + .5, v + .5), L, cx: (Math.min(...xs) + Math.max(...xs)) / 2, cy: (Math.min(...ys) + Math.max(...ys)) / 2 - L, hw: (Math.max(...xs) - Math.min(...xs)) / 2, hh: (Math.max(...ys) - Math.min(...ys)) / 2 };
+      if (FH.map?.stair?.[(v + FH.R) * FH.n + u + FH.R]) out.add(key);   /* steps are drawn as treads + risers: no grid lines across them */
+      all.push(o); if (L > 2) raised.push(o);
+    }
+    for (const c of all) for (const n of raised) {
+      if (n === c || n.d <= c.d || n.L <= c.L + 2) continue;
+      const rise = n.L - c.L;   /* the taller cell's body hangs from its top down to the level of c */
+      for (let i = 0; i <= 4; i++) { const sy = rise * i / 4; if (Math.abs(c.cx - n.cx) / n.hw + Math.abs((c.cy - sy) - n.cy) / n.hh <= 1) { out.add(c.key); break } }
+    }
+    return out;
+  }
   function poly(g, u, v) { if (window.FieldCellPoly) return FieldCellPoly(g, u, v); const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, F = window.projectFlat || project, P = (x, y) => { const q = F(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }
   let last = 0;
   function step(t) {
@@ -1319,9 +1338,11 @@
     if (!st) { build(); hudMake(); handMake(); cam.set = false; focusCamera(true); arenaReady(); if (Q.get('warm') !== '1') startTurnShow(true) }
     step(t);
     g.save();
+    const hid = GRID ? gridHidden(cells) : null;   /* v98.312 · grid lines only where nothing taller stands in front (no lines through cliffs / behind high ground) */
     for (const [key, k] of cells) {
       const [u, v] = key.split(',').map(Number); poly(g, u, v);
       const col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k]; if (col) { g.fillStyle = col; g.fill() }
+      if (!GRID || hid.has(key)) continue;
       g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke();
     }
     if (inspectMap && !busy && !EDIT) { const foeI = inspectU.side === 'monster'; for (const e of inspectMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = foeI ? 'rgba(236,96,72,.30)' : 'rgba(150,200,255,.28)'; g.fill(); g.strokeStyle = foeI ? 'rgba(255,170,150,.9)' : 'rgba(200,225,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.stroke(); g.setLineDash([]) } }   /* next-turn cells of the picked fighter */

@@ -196,8 +196,17 @@
     const rd = m.ramp ? m.ramp[i] : 0;
     if (rd && m.stair && m.stair[i]) {
       const lowE = { 1: [0, 3], 2: [1, 2], 3: [0, 1], 4: [3, 2] }[rd], highE = { 1: [1, 2], 2: [0, 3], 3: [3, 2], 4: [0, 1] }[rd];
-      for (const s of [.25, .5, .75]) { const a = { x: t4[lowE[0]].x + (t4[highE[0]].x - t4[lowE[0]].x) * s, y: t4[lowE[0]].y + (t4[highE[0]].y - t4[lowE[0]].y) * s }, b = { x: t4[lowE[1]].x + (t4[highE[1]].x - t4[lowE[1]].x) * s, y: t4[lowE[1]].y + (t4[highE[1]].y - t4[lowE[1]].y) * s };
-        g.strokeStyle = 'rgba(0,0,0,.42)'; g.lineWidth = 2; g.beginPath(); g.moveTo(a.x, a.y + 1.5); g.lineTo(b.x, b.y + 1.5); g.stroke(); g.strokeStyle = 'rgba(255,245,215,.32)'; g.lineWidth = 1; g.beginPath(); g.moveTo(a.x, a.y - .5); g.lineTo(b.x, b.y - .5); g.stroke() }
+      /* v98.313 · real steps: N flat treads (lit) with a vertical riser (dark, lit nose) between them, instead of scribbled lines on the slope */
+      const N = 4, cu = [u, u + 1, u + 1, u], cv = [v, v, v + 1, v + 1], A = lowE[0], B = lowE[1], A1 = highE[0], B1 = highE[1], zl = (c[A] + c[B]) / 2, zh = (c[A1] + c[B1]) / 2;
+      const at = (j, j1, sv, z) => P(m, cu[j] + (cu[j1] - cu[j]) * sv, cv[j] + (cv[j1] - cv[j]) * sv, z), zS = k => zl + (zh - zl) * k / N;
+      for (let k = 0; k < N; k++) {
+        const s0 = k / N, s1 = (k + 1) / N, zt = zS(k + 1), zp = zS(k);
+        const riser = [at(A, A1, s0, zp), at(B, B1, s0, zp), at(B, B1, s0, zt), at(A, A1, s0, zt)];
+        poly(g, riser); g.fillStyle = groundPattern(g, timg, zp); g.fill(); poly(g, riser); g.fillStyle = 'rgba(8,6,14,.5)'; g.fill();
+        const tread = [at(A, A1, s0, zt), at(B, B1, s0, zt), at(B, B1, s1, zt), at(A, A1, s1, zt)];
+        poly(g, tread); g.fillStyle = groundPattern(g, timg, zt); g.fill(); poly(g, tread); g.fillStyle = 'rgba(255,246,220,.12)'; g.fill();
+        g.strokeStyle = 'rgba(255,245,215,.4)'; g.lineWidth = 1; g.beginPath(); g.moveTo(tread[0].x, tread[0].y); g.lineTo(tread[1].x, tread[1].y); g.stroke();
+      }
     }
     /* height light, slope light, a little cell-to-cell variation */
     const lift = avg / ST * .045 + (C.vary[i] - .5) * .05 + (RAMP_LIGHT[rd] || 0);
