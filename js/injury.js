@@ -66,6 +66,8 @@
     const c = CFG[lv], base = Math.min(c.cap, c.base + c.step * Math.max(0, days)) * (o.q ?? 1);
     return Math.max(0, Math.min(.98, base + (o.bonus || 0)));
   }
+  /* v98.332 · a scripted wound (story events): force(g, 'kier', 'leg', 'heavy') */
+  function force(g, id, part, lv = 'heavy') { const r = rec(g, id, true); r.parts[part] = { lv, days: 0 }; return { part, lv, name: PARTS[part] } }
   function admit(g, id, town) {
     const r = of(g, id); if (!r || !heavyParts(g, id).length) return { ok: false, why: 'ไม่มีบาดแผลหนัก' };
     const q = quality(town); r.bed = town; return { ok: true, cost: q.cost, town };
@@ -113,6 +115,6 @@
   /* readable one-liners for UIs: "แขน (หนัก) · ขา (เจ็บ)" */
   const describe = (g, id) => Object.keys(parts(g, id)).map(p => PARTS[p] + ' (' + (parts(g, id)[p].lv === 'heavy' ? 'หนัก' : 'เจ็บ') + ')').join(' · ');
 
-  root.Injury = { PARTS, CFG, RULES, roll, chance, admit, discharge, visit, dayFor, sync, of, parts, heavyParts, hurt, canFight, canWork, canTravel, canLead, leader, talkAllowed, describe, quality };
+  root.Injury = { PARTS, CFG, RULES, force, roll, chance, admit, discharge, visit, dayFor, sync, of, parts, heavyParts, hurt, canFight, canWork, canTravel, canLead, leader, talkAllowed, describe, quality };
   if (typeof module === 'object' && module.exports) module.exports = root.Injury;
 })(typeof window !== 'undefined' ? window : globalThis);

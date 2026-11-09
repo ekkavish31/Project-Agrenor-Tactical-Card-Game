@@ -117,6 +117,7 @@
     }[biome] || null;
     const m = M || materials('grass');
     if (poi === 'ruin') { m.path = ['cobble', { mortar: '#5a5448', stone: '#a8a294' }]; m.cliff = ['brick', { mortar: '#4a453c', stone: '#8f897a' }] }
+    if (poi === 'patch') { m.top = ['dirt', { base: '#6e5030', pebble: '#8a6c44' }]; m.path = ['dirt', { base: '#8a6c44', pebble: '#b09468' }] }   /* v98.332 · tilled garden soil */
     if (poi === 'mine') { m.path = ['dirt', { base: '#6a5a48', pebble: '#8a7a68' }] }
     m.cobble = ['cobble', { mortar: '#5a5448', stone: '#a8a294' }]; m.wood = ['wood', { base: '#8a6440' }]; m.brick = ['brick', { mortar: '#4a453c', stone: '#9a9282' }];
     m.slab = ['slab', { mortar: '#4e4a42', stone: biome === 'sand' ? '#c8b48c' : biome === 'snow' ? '#b8c0c8' : '#a39d8e', moss: biome === 'snow' ? '#e8eef4' : '#6a7a42' }];

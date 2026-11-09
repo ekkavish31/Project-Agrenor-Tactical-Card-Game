@@ -1,1 +1,17 @@
-{"format":"bg-asset-index","v":1,"assets":[]}
+{
+ "format": "bg-asset-index",
+ "v": 1,
+ "assets": [
+  {
+   "id": "pumpkin-patch",
+   "name": "สวนฟักทองฮิลดา (ฉากบทนำ)",
+   "biome": "grass",
+   "tags": {
+    "useInGame": false,
+    "quest": "pumpkin",
+    "pinned": true
+   },
+   "seed": 4102
+  }
+ ]
+}

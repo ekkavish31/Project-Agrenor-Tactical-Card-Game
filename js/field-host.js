@@ -68,6 +68,22 @@ const FIELD = (function () {
   }
   /* boss dressing: pillars (ruin), rails + rocks (mine), bones (den) on the rim */
   const poi = FQ.get('poi');
+  /* v98.332 · poi=patch: a pumpkin garden (the prologue pumpkin fight). A fence round the rim with a gap on each start side, big pumpkin plants in loose rows, hay bales,
+     a scarecrow in the middle — all code-drawn props (below) until real art exists. Same seed → same garden (the quest pins ?seed=4102). */
+  if (poi === 'patch') {
+    for (const c of cells.values()) { c.k = c.k === 'blocked' ? 'normal' : c.k; c.prop = null }
+    for (const c of cells.values()) {
+      const rim = Math.abs(c.u) === R || Math.abs(c.v) === R, gap = (Math.abs(c.u) <= 1 || Math.abs(c.v) <= 1);
+      if (rim && !gap) { c.k = 'blocked'; c.prop = 'fence'; continue }
+      if (Math.abs(c.u) > R - 1 || Math.abs(c.v) > R - 1) continue;
+      const row = (c.u + R) % 3 === 0 && Math.abs(c.v) < R - 2;   /* planting rows */
+      const x = rnd();
+      if (row && x < .34 && Math.abs(c.u) + Math.abs(c.v) > 3) { c.k = 'blocked'; c.prop = 'pumpkinPlant' }
+      else if (!row && x < .035) { c.k = 'blocked'; c.prop = 'hay' }
+      else if (row && c.k === 'normal') c.k = 'normal';
+    }
+    const sc = cells.get(key(0, 0)); if (sc) { sc.k = 'blocked'; sc.prop = 'scarecrow' }
+  } else
   if (poi) for (const c of cells.values()) if ((Math.abs(c.u) === R || Math.abs(c.v) === R) && rnd() < .16) { c.k = 'blocked'; c.prop = poi === 'ruin' ? 'pillar' : poi === 'mine' ? 'boulder' : 'deadtree' }
   /* keep the two start corners open and carve a lane between them so the fight can always happen */
   const starts = [[-S, S], [S, -S]];   // each side's gathering area stays open
@@ -106,14 +122,14 @@ window.FieldHeight = (function () {
   const SEV = { grass: .5, forest: .55, hills: .85, swamp: .25, snow: .75, sand: .4 };   // v95.18: battle fields are hillier than the world around them
   const fseed = 'field:' + (FQ.get('seed') || Math.floor(FIELD.rnd() * 1e9)) + ':' + FIELD.biome;
   const blocked = (lu, lv) => { const c = FIELD.cells.get(FIELD.key(lu - R, lv - R)); return !c || c.k === 'blocked' };
-  const map = T.forScene({ w: n, h: n, seed: fseed, biome: SEV[zone] ?? .5, blocked, entries: [{ u: R - S, v: R + S }, { u: R + S, v: R - S }] });
+  const map = T.forScene({ w: n, h: n, seed: fseed, biome: poi === 'patch' ? .08 : SEV[zone] ?? .5, blocked, entries: [{ u: R - S, v: R + S }, { u: R + S, v: R - S }] });
   map.origin = { u: -R, v: -R };                        // local lattice → field cells (−R … R)
   const cellAt = i => FIELD.cells.get(FIELD.key((i % n) - R, ((i / n) | 0) - R));
   if (window.FieldDiorama) {
     const near = (u, v) => [[R - S, R + S], [R + S, R - S]].some(([a, b]) => Math.abs(u - a) <= 3 && Math.abs(v - b) <= 3);
     const seed = [...fseed].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261) >>> 0;
     /* v95.18 high ground (v96: some plateaus are stone forts) · v96 rivers with bridges, broken walls, pools as real water */
-    FieldDiorama.landforms(map, { seed, keep: near, count: Math.round(({ hills: 3, snow: 3, grass: 2, forest: 2, sand: 2, swamp: 1 }[zone] || 2) * Math.min(2.5, n * n / 225)), fort: poi === 'ruin' ? .8 : { hills: .5, snow: .4, sand: .35 }[zone] ?? .2 });
+    FieldDiorama.landforms(map, { seed, keep: near, count: poi === 'patch' ? 0 : Math.round(({ hills: 3, snow: 3, grass: 2, forest: 2, sand: 2, swamp: 1 }[zone] || 2) * Math.min(2.5, n * n / 225)), fort: poi === 'ruin' ? .8 : { hills: .5, snow: .4, sand: .35 }[zone] ?? .2 });
     for (const i of map.stairs || []) { const c = cellAt(i); if (c && c.k === 'blocked') { c.k = 'normal'; c.prop = null } }
     const st = FieldDiorama.structures(map, { seed, keep: near, biome: FIELD.biome, poi, scale: Math.min(2.5, n * n / 225), pools: i => cellAt(i)?.prop === 'pool' });
     for (const i of st.clear) { const c = cellAt(i); if (c) { c.k = 'normal'; c.prop = null } }
@@ -242,7 +258,8 @@ function propImg(f) {
 function propSpec(kind, s) { const set = PROP_ART[kind]; if (!set) return null; const list = set[FIELD.biome] || set._; return list[Math.floor(s * 997) % list.length] || null }
 /* drawn size of a prop (for depth and occlusion boxes) */
 function propBox(kind, s, big) { const b = propBox0(kind, s, big); return { w: b.w * FK, h: b.h * FK } }
-function propBox0(kind, s, big) { const sp = propSpec(kind, s), im = sp && propImg(sp[0]); if (!im) return big ? { w: 104, h: 190 } : { w: 52, h: 95 }; const ar = im.naturalWidth / im.naturalHeight; return sp[2] === 'h' ? { w: sp[1] * ar, h: sp[1] } : { w: sp[1], h: sp[1] / ar } }
+const CODE_BOX = { pumpkinPlant: { w: 58, h: 46 }, hay: { w: 58, h: 44 }, fence: { w: 60, h: 46 }, scarecrow: { w: 46, h: 96 } };   /* v98.332 · code-drawn garden props */
+function propBox0(kind, s, big) { const sp = propSpec(kind, s), im = sp && propImg(sp[0]); if (CODE_BOX[kind]) return CODE_BOX[kind]; if (!im) return big ? { w: 104, h: 190 } : { w: 52, h: 95 }; const ar = im.naturalWidth / im.naturalHeight; return sp[2] === 'h' ? { w: sp[1] * ar, h: sp[1] } : { w: sp[1], h: sp[1] / ar } }
 /* props are drawn every frame so they can sway; painter's order by view depth together with the units */
 function prop(ctx, kind, u, v, s, now, big) {
   const sp = propSpec(kind, s), im = sp && propImg(sp[0]), c = big ? .5 : 0, p = project(u + .5 + c, v + .5 + c), sw = Math.sin(now * .0012 + s * 9) * 1.5;
@@ -275,6 +292,26 @@ function propCode(ctx, kind, u, v, s, now, p, sw) {
   else if (kind === 'cactus') { shadow(10, 4); ctx.fillStyle = '#5c8a46'; ctx.fillRect(p.x - 5, p.y - 40, 10, 40); ctx.fillRect(p.x - 15, p.y - 28, 6, 14); ctx.fillRect(p.x + 9, p.y - 32, 6, 16) }
   else if (kind === 'pool') { diamond(ctx, u, v, -4); const gr = ctx.createLinearGradient(p.x - 28, p.y - 14, p.x + 28, p.y + 14); gr.addColorStop(0, '#2f5866'); gr.addColorStop(1, '#3f6f7c'); ctx.fillStyle = gr; ctx.fill(); ctx.strokeStyle = `rgba(200,235,255,${.25 + .15 * Math.sin(now * .002 + s * 7)})`; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.ellipse(p.x + sw * 2, p.y, 10, 3, 0, 0, 7); ctx.stroke() }
   else if (kind === 'pillar') { shadow(14, 6); ctx.fillStyle = '#bdb5a5'; ctx.fillRect(p.x - 9, p.y - 70, 18, 70); ctx.fillStyle = '#a39b8b'; ctx.fillRect(p.x + 2, p.y - 70, 7, 70); ctx.fillStyle = '#cfc7b7'; ctx.fillRect(p.x - 13, p.y - 76, 26, 8); ctx.fillStyle = 'rgba(70,100,60,.6)'; ctx.fillRect(p.x - 9, p.y - 30, 6, 30) }
+  else if (kind === 'pumpkinPlant') {   /* v98.332 · a fat pumpkin on its vine with big leaves */
+    const k = 0.9 + s * .25, cx = p.x, cy = p.y;
+    ctx.strokeStyle = '#3f6a2a'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(cx - 24 * k, cy + 2); ctx.quadraticCurveTo(cx - 8, cy - 6 + sw * .3, cx + 4, cy - 10 * k); ctx.stroke();
+    for (const [dx, dy, r, a] of [[-22, -3, 9, -.4], [22, -4, 10, .5], [-6, -20, 8, -.8], [10, -22, 8, .6]]) { ctx.fillStyle = '#4c8434'; ctx.save(); ctx.translate(cx + dx * k + sw * .4, cy + dy * k); ctx.rotate(a); ctx.beginPath(); ctx.ellipse(0, 0, r * 1.2, r * .8, 0, 0, 7); ctx.fill(); ctx.strokeStyle = '#356a24'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-r, 0); ctx.lineTo(r, 0); ctx.stroke(); ctx.restore() }
+    const R2 = 17 * k; ctx.fillStyle = '#d8741c'; ctx.beginPath(); ctx.ellipse(cx, cy - R2 * .72, R2, R2 * .78, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#b25a10'; ctx.lineWidth = 1.6; for (const f of [-.55, -.18, .18, .55]) { ctx.beginPath(); ctx.ellipse(cx, cy - R2 * .72, R2 * Math.abs(f) + 1, R2 * .78, 0, -1.4, 1.4); ctx.stroke() }
+    ctx.fillStyle = 'rgba(255,230,160,.35)'; ctx.beginPath(); ctx.ellipse(cx - R2 * .35, cy - R2 * 1.05, R2 * .28, R2 * .16, -.5, 0, 7); ctx.fill();
+    ctx.fillStyle = '#5a7a2a'; ctx.fillRect(cx - 2, cy - R2 * 1.62, 4, 7)
+  } else if (kind === 'hay') {   /* hay bale */
+    const w = 24; ctx.fillStyle = '#c9a24a'; ctx.beginPath(); ctx.ellipse(p.x, p.y - 8, w, 14, 0, 0, 7); ctx.fill(); ctx.fillStyle = '#dcb95e'; ctx.fillRect(p.x - w, p.y - 22, w * 2, 16); ctx.beginPath(); ctx.ellipse(p.x, p.y - 22, w, 11, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#8a6a26'; ctx.lineWidth = 1.5; for (const dx of [-12, 0, 12]) { ctx.beginPath(); ctx.moveTo(p.x + dx, p.y - 30); ctx.lineTo(p.x + dx, p.y - 6); ctx.stroke() }
+  } else if (kind === 'fence') {   /* wooden fence: two posts and two rails */
+    ctx.fillStyle = '#7a5530'; ctx.fillRect(p.x - 26, p.y - 40, 6, 42); ctx.fillRect(p.x + 20, p.y - 40, 6, 42); ctx.fillStyle = '#946a3c'; ctx.fillRect(p.x - 26, p.y - 34, 52, 5); ctx.fillRect(p.x - 26, p.y - 18, 52, 5);
+    ctx.fillStyle = '#5c3f22'; ctx.fillRect(p.x - 26, p.y - 29, 52, 2); ctx.fillRect(p.x - 26, p.y - 13, 52, 2)
+  } else if (kind === 'scarecrow') {
+    ctx.strokeStyle = '#6a4a28'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y - 62); ctx.moveTo(p.x - 24, p.y - 46); ctx.lineTo(p.x + 24, p.y - 46); ctx.stroke();
+    ctx.fillStyle = '#9a4a3a'; ctx.beginPath(); ctx.moveTo(p.x - 12, p.y - 48); ctx.lineTo(p.x + 12, p.y - 48); ctx.lineTo(p.x + 8, p.y - 22 + sw * .3); ctx.lineTo(p.x - 8, p.y - 22 + sw * .3); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#e0c488'; ctx.beginPath(); ctx.arc(p.x, p.y - 62, 8, 0, 7); ctx.fill(); ctx.fillStyle = '#5a3a1c'; ctx.fillRect(p.x - 12, p.y - 70, 24, 4); ctx.fillRect(p.x - 7, p.y - 78, 14, 9);
+    ctx.fillStyle = '#2a1a0a'; ctx.fillRect(p.x - 4, p.y - 64, 2, 2); ctx.fillRect(p.x + 2, p.y - 64, 2, 2)
+  }
   else if (kind === 'tuft') { ctx.strokeStyle = 'rgba(40,70,30,.55)'; ctx.lineWidth = 1.5; for (let i = -1; i <= 1; i++) { ctx.beginPath(); ctx.moveTo(p.x + i * 4, p.y); ctx.lineTo(p.x + i * 5 + sw, p.y - 8); ctx.stroke() } }
 }
 /* tall grass / reeds in front of whoever stands there: painted clumps (v97.01), the old blades only while the picture loads */

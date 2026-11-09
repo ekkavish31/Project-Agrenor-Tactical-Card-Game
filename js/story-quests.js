@@ -20,9 +20,22 @@ const late=()=>(G()?.minutes||0)>=1140;
 const onWorld=()=>!!root.VillageTown?.onWorld?.();
 /* v95.14: Kier walks the first expedition with you only — he joins (or is already in the party), and leaves again when you are home. He can be recruited normally afterwards. */
 function markTemp(){try{const L=root.VillageLife,S=L.save(),had=L.inParty(S,'kier');if(!had&&[...S.party,...S.bench].filter(m=>m.key!=='sib').length===0&&L.join(S,'kier')){L.writeSave(S);toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)')}else if(had)toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)');if(L.inParty(L.save(),'kier')){V().story.tempAlly='kier';doSave()}}catch(e){}}
-function leaveTemp(){try{const st=V()?.story;if(!st?.tempAlly)return;const k=st.tempAlly,S=root.VillageLife.save();S.party=S.party.filter(p=>p.key!==k);S.bench=S.bench.filter(p=>p.key!==k);root.VillageLife.writeSave(S);st.tempAlly=null;doSave();toast('เคียร์ขอกลับไปช่วยที่บ้านก่อน · ชวนเขาใหม่ได้ที่โรงแรม','good')}catch(e){}}
+function leaveTemp(msg){try{const st=V()?.story;if(!st?.tempAlly)return;const k=st.tempAlly,S=root.VillageLife.save();S.party=S.party.filter(p=>p.key!==k);S.bench=S.bench.filter(p=>p.key!==k);root.VillageLife.writeSave(S);st.tempAlly=null;doSave();toast(msg||'เคียร์ขอกลับไปช่วยที่บ้านก่อน · ชวนเขาใหม่ได้ที่โรงแรม','good')}catch(e){}}
 /* v98.234 · the sibling is always in the party, so it does not count as a recruited companion */
 const partySize=()=>[...(V()?.party||[]),...(V()?.bench||[])].filter(m=>m.key!=='sib').length;
+
+/* ---------- v98.332 · before the first trip: the follower's sword, potions, a temporary friend, and the wound on the way home ----------
+   (story content is a PROPOSAL from the owner's brief, not promoted canon — see docs/TODO.md §15) */
+const kierRetired=()=>!!V()?.story?.kierHurt;
+const kierCase=()=>V()?.story?.tempAlly==='kier';
+const potionCount=()=>{try{return root.VillageLife.save().potions||0}catch{return 0}};
+/* the sword forged for the sibling: it leaves the bag and becomes the sibling's weapon (town-battle reads village.sibGear) */
+function giveSibSword(d){try{const g=G(),inv=g.inventory||[],it=inv.find(x=>x.id>=d.next&&x.kind==='sword');if(!it)return;
+ g.inventory=inv.filter(x=>x!==it);if(g.equipped===it.id){const k=g.inventory.find(x=>x.recipe==='oldKnife')||g.inventory[0];g.equipped=k?k.id:null}
+ V().sibGear={kind:'sword',quality:it.quality||1,recipe:it.recipe||'sword'};doSave();toast('⚔ น้องได้ดาบเหล็กเล่มใหม่แล้ว · ตัวเอกยังใช้มีดสั้นของพ่อ','good')}catch(e){}}
+/* the friend is hurt on the way home: a heavy leg wound (js/injury.js) and out of the team — the hospital step follows */
+function kierInjured(){try{const k=V().story.tempAlly||'kier',g=root.WorldState?.game?.()||G();root.Injury?.force(g,k,'leg','heavy');
+ leaveTemp('เคียร์บาดเจ็บที่ขาอย่างหนัก · ออกจากทีมไปพักฟื้น');V().story.kierHurt=true;doSave();try{root.WorldState?.commit?.()}catch{}}catch(e){}}
 
 /* ---------- helpers that call existing game actions ---------- */
 function spend(energy,minutes,fatigue){try{return spendActivity(energy,minutes,fatigue)}catch{return ''}}
@@ -82,6 +95,9 @@ const LESSON={
  hire:['เพื่อนร่วมทาง',['ชวนคนที่มี ★ ที่โรงแรมเข้าทีม (สูงสุด 4 คน)','ในสนาม: สั่ง ⚔ บุก · 👣 ตาม · 🛡 ยึด และท่าพิเศษ (ใช้ 1 คริสตัล)','เพื่อนถึง Lv.3 แล้วสั่งเองได้ในตาของเขา 🎮']],
  sell:['ขายของ',['ขายที่โต๊ะรับซื้อในตลาด หรือวางของใน "ร้านของเรา" แล้วตั้งราคา','ร้านขายต่อเองแม้ตัวเอกไม่อยู่ · ดูยอดในสมุดยอดขาย']],
  raid:['สู้อย่างนักวางแผน',['ยืนสูงกว่าเป้า ตีแรงขึ้น ~10% ต่อระดับ (▲ บนช่องคือความสูง)','ธาตุชนะทาง ×1.3 · แพ้ทาง ×0.7 · ดูตารางธาตุใน Esc','การ์ดตอบโต้/หลบ ใช้ก่อนจบเทิร์น ทำงานตอนศัตรูตี']],
+ sibSword:['อาวุธของน้อง',['ตัวเอกพกมีดสั้นของพ่อ · น้องยังมือเปล่า จึงต้องตีดาบเหล็กให้','ดาบที่ตีให้น้องจะถูกมอบให้เลย (ไม่เข้าชุดอาวุธของตัวเอก) · ยิ่งฝีมือดี ยิ่งแรง']],
+ potions:['ยาฟื้นฟู',['ยาใช้ได้ทั้งตอนเดินทางและกลางการต่อสู้ · ข้างนอกศัตรูแข็งและเยอะกว่าในหมู่บ้าน','ซื้อได้ที่ร้านค้า หมอยา และตลาด · ราคาขึ้นลงตามความสัมพันธ์กับหมู่บ้าน']],
+ hospital:['โรงพยาบาลและบาดแผล',['ตัวละครที่ล้มในสนามอาจได้แผล: เจ็บ (หายเองได้ทีละวัน) หรือ หนัก (หายได้เฉพาะเตียงโรงพยาบาล)','แผลหนักห้ามสู้ ทำงาน หรือเดินทางตามตำแหน่ง · เตียงคิดค่าพักต่อวัน','ที่บ้านหมอยามีปุ่ม 🏥 ห้องผู้ป่วย: รับเข้าพัก รับกลับ และเยี่ยมไข้วันละครั้ง (ความสนิท +1 และหายไวขึ้นเล็กน้อย)']],
  prep:['เตรียมตัวเดินทาง',['ซื้อเสบียงและยาก่อนออก · จัดสำรับที่ 🃏 สำรับ ให้เข้ากับสนาม']],
  expedition:['การเดินทางไกล',['ศัตรูซุ่มโจมตีได้ระหว่างทาง · ชนะแล้วได้ EXP เงิน และของ','แรงหมดในสนาม ใช้ ♻ ทิ้งไพ่แลกแรง · การ์ดปีน/กระโจนใช้ความสูงให้เป็นประโยชน์']],
  rest:['การผจญภัยของเจ้าเริ่มแล้ว',['จบบทนำแล้วเล่นได้อิสระ: บอร์ดเควส ร้านการ์ด ครูฝึก เมืองบนแผนที่โลก และบอสในตำนาน','เพื่อนเก่งขึ้นตามเลเวล · ไพ่ใหม่ได้จากเลเวล บอส ร้าน และครู']]
@@ -111,7 +127,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
   reward:()=>{V().story.seeds=true}}),
 {id:'pumpkin',tag:'real',title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
   spot:SPOT.ripe,progress:d=>Math.min(1,((d.got||0)+(waterDays()>=1?1:0))/4),targets:()=>({spots:wateredToday()?[]:[SPOT.plot]}),check:d=>(d.got||0)>=3&&waterDays()>=1,acts:[guideBtn],
-  onSpot:async d=>{const r=await questBattle(d,{title:'ฟักทองในไร่ ·',ms:'pumpkin*1,pumpkin*1,pumpkin*1,pest*1,pest*1,pest*1',tut:'pumpkin',seed:4102,r:6,biome:'grass'});
+  onSpot:async d=>{const r=await questBattle(d,{title:'ฟักทองในไร่ ·',ms:'pumpkin*1,pumpkin*1,pumpkin*1,pest*1,pest*1,pest*1',tut:'pumpkin',seed:4102,r:6,biome:'grass',poi:'patch',bg:'pumpkin-patch'});
    if(r==='win'){d.got=3;doSave();return {msg:'🎃 เก็บฟักทองสุกครบ 3 ลูกแล้ว!',consume:true}}return {msg:r==='busy'?'':'ฟักทองยังรอเก็บอยู่ · กลับไปเก็บต่อได้เลย',consume:false}}},
  talkStep({id:'tom',outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
  {id:'planks',tag:'real',title:'แผ่นไม้ของเคน',goal:'เก็บแผ่นไม้ 2 แผ่นที่กองไว้หน้าบ้านเคน',hint:'เดินไปแตะกองไม้ 🪵 · ได้ไม้เข้ากระเป๋าวัตถุดิบ',
@@ -151,14 +167,21 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
  talkStep({id:'plate',outro:'plate',title:'จานหินโบราณ',talk:'oren',goal:'นำจานหินไปให้ผู้ใหญ่บ้านโอเรนดู',hint:'หัวค่ำผู้ใหญ่บ้านนั่งที่โรงแรม สองทุ่มกลับบ้าน · '+HINT_WALK}),
  talkStep({id:'saf',chapter:'การเดินทางครั้งแรก · รังโจรป่า',outro:'safTalk',title:'ร้านยาของซาฟ',talk:'saf',goal:'แวะหาหมอยาซาฟก่อนออกเดินทาง',hint:'ซาฟอยู่ร้านยา 6 โมงเช้าถึง 6 โมงเย็น · '+HINT_WALK,
   reward:()=>{try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}}}),
+ {id:'sibSword',tag:'real',intro:'sibSwordIntro',outro:'sibSwordDone',title:'ดาบเหล็กของน้อง',goal:'ตีดาบเหล็ก 1 เล่มที่โรงตีเหล็ก ให้น้องใช้ในการเดินทาง',hint:'เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูปจนครบ 100 → ถังน้ำ: ชุบแข็ง · ดาบใช้เหล็ก 2 ถ่าน 1 ไม้ 1 ซื้อวัตถุดิบที่ตลาด · ตัวเอกพกมีดสั้นของพ่ออยู่แล้ว',
+  place:'forge',begin:d=>{d.next=G().nextId},check:d=>(G().inventory||[]).some(x=>x.id>=d.next&&x.kind==='sword'),acts:[guideBtn],reward:d=>giveSibSword(d)},
+ {id:'potions',tag:'real',outro:'potionsDone',title:'ซื้อยาก่อนออกเดินทาง',goal:'ซื้อยาอย่างน้อย 2 ขวดที่ร้านค้าของเวร่า',hint:'ร้านค้าเปิด 7 โมงเช้าถึงหนึ่งทุ่ม · เข้าไปในร้านแล้วกด "🧪 ซื้อยา" · ซื้อที่หมอยา/ตลาดก็นับ',
+  place:['shop','healer','market'],begin:d=>{d.p=potionCount()},progress:d=>Math.min(1,(potionCount()-(d.p||0))/2),check:d=>potionCount()-(d.p||0)>=2,acts:[guideBtn]},
  {id:'prep',tag:'real',title:'เตรียมตัวออกเดินทาง',goal:'ซื้อเสบียงอย่างน้อย 1 ชิ้นที่ตลาด',hint:'เดินไปที่โต๊ะซื้อวัตถุดิบในตลาด · เสบียงใช้กินฟื้นความสดชื่นระหว่างทาง · จัดสำรับได้ที่โต๊ะในบ้าน',
   place:'market',begin:d=>{d.food=mats().food||0},check:d=>(mats().food||0)>d.food,acts:[guideBtn]},
  {id:'expedition',tag:'real',intro:'departure',outro:'camp',title:'รังโจรป่า',goal:'ออกทางออกหมู่บ้าน ล้มศัตรูบนแผนที่โลกให้ได้ 3 ตัว',hint:'ผู้ใหญ่บ้านบอกทางไปจุดหมายแล้ว · เดินออกไปแล้วอาจถูกซุ่มโจมตีได้ทุกก้าว · พักแรมได้ทุกที่ · กลางคืนศัตรูดุร้ายขึ้น · HP ต่ำให้ดื่มยาหรือกลับก่อนก็ได้',
+  tick:d=>{const w=onWorld();if(w){d.wasW=true;if(!V().story.tempAlly&&!kierRetired())markTemp()}else if(d.wasW){d.wasW=false;if(V().story.tempAlly)leaveTemp('เคียร์กลับไปช่วยงานที่บ้านก่อน · ออกเดินทางอีกครั้งเขาจะตามไปด้วย')}},   /* v98.332 · the friend walks only the trip itself */
   exit:true,begin:d=>{d.base=V().kills||0;markTemp();try{root.WorldState?.addLead('den','ผู้ใหญ่บ้านโอเรน',true)}catch(e){}},progress:d=>Math.min(1,((V().kills||0)-(d.base||0))/3),check:d=>(V().kills||0)-(d.base||0)>=3,
   acts:[guideBtn],
   reward:()=>root.StarterKit?.unlock?.([{group:'movement',id:'sprint',n:2},{group:'combat',id:'climb',n:2},{group:'combat',id:'dive',n:1},{group:'combat',id:'evade',n:1},{group:'combat',id:'firstAid',n:1}],{kicker:'ของจากค่ายโจร',title:'ทักษะเอาตัวรอด',text:'ป่ามีเนินและหน้าผา · ปีนขึ้นที่สูงแล้วกระโจนฟาดลงมาแรงกว่าเดิม'})},
- {id:'return',tag:'real',outro:'home',title:'กลับบ้าน',reward:()=>leaveTemp(),goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะเดินต่อไปจนถึงจุดหมายก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!onWorld(),acts:[]},
- {id:'sellLoot',tag:'real',reward:()=>{addCoins(20);try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}toast('รางวัล: +20 เหรียญ · ยา 1 ขวด')},title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',place:'market',check:d=>d.sales>0,acts:[guideBtn]},
+ {id:'return',tag:'real',outro:()=>kierCase()?'kierHurt':'home',title:'กลับบ้าน',reward:()=>kierCase()?kierInjured():leaveTemp(),goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะเดินต่อไปจนถึงจุดหมายก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!onWorld(),acts:[]},
+ {id:'hospital',tag:'real',outro:'kierAdmitted',title:'ส่งเคียร์เข้าโรงพยาบาล',goal:'พาเคียร์ไปบ้านหมอยา เปิด 🏥 ห้องผู้ป่วย แล้วรับเข้าพักฟื้น',hint:'บ้านหมอยา (ซาฟ) เปิด 6 โมงเช้าถึง 6 โมงเย็น · เดินเข้าไปแล้วกดปุ่ม 🏥 ห้องผู้ป่วย → "รับเข้าพัก" ที่แถวของเคียร์ · เตียงคิดค่าพักต่อวัน',
+  place:'healer',skip:()=>!V().story.kierHurt,check:()=>!!root.Injury?.of?.(root.WorldState?.game?.()||G(),'kier')?.bed,acts:[guideBtn]},
+ {id:'sellLoot',tag:'real',intro:()=>V().story.kierHurt?'homeKier':null,reward:()=>{addCoins(20);try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}toast('รางวัล: +20 เหรียญ · ยา 1 ขวด')},title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',place:'market',check:d=>d.sales>0,acts:[guideBtn]},
  {id:'rest',tag:'real',outro:'finale',title:'พักฟื้น',goal:'กลับบ้านแล้วนอนพัก',hint:'ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก"',place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn],
   reward:async()=>{addCoins(30);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1},{group:'combat',id:'rockfall',n:1},{group:'combat',id:'perch',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
 const byId=id=>STEPS.findIndex(x=>x.id===id);
@@ -195,7 +218,7 @@ function questBattle(d,o){return new Promise(resolve=>{
  d.fighting=true;doSave();
  const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')+':'+(p.level||1)).join(',');
  const fr=document.createElement('iframe');fr.id='storyBattle';fr.title=o.title;fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
- fr.src='battle-field.html?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&imm=1&noflee=1&r='+(o.r||6)+'&biome='+(o.biome||'grass')+'&seed='+(o.seed||4100)+'&ms='+encodeURIComponent(o.ms)+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent(o.title||'')+'&tut='+(o.tut||'');
+ fr.src='battle-field.html?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&imm=1&noflee=1&r='+(o.r||6)+'&biome='+(o.biome||'grass')+'&seed='+(o.seed||4100)+(o.poi?'&poi='+o.poi:'')+(o.bg?'&bg='+o.bg:'')+'&ms='+encodeURIComponent(o.ms)+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent(o.title||'')+'&tut='+(o.tut||'');
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
   const win=r.outcome==='win';
@@ -225,10 +248,12 @@ function detectSale(){const now=snapshot(),p=prev;prev=now;if(!p)return false;if
 /* v95.01: steps were added (talk to the villager first), so a save from before keeps its place by step id */
 const OLD_IDS=['wake','goats','pumpkin','stall','sleep1','cave','caveBack','lanterns','craft','hire','sleep2','sell','contest','raid','plate','prep','expedition','return','sellLoot','rest'];
 const OLD_TO={pumpkin:'seeds',stall:'tom',cave:'guard',lanterns:'gus',prep:'saf'};
-function migrate(st){if(!st||st.v>=2)return st;const old=OLD_IDS[st.i];if(old){const id=OLD_TO[old]||old,i=byId(id);if(i>=0){st.i=i;if(OLD_TO[old])delete st.data[old]}}else if(st.i>=OLD_IDS.length)st.i=STEPS.length;st.v=2;doSave();return st}
+const V2_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','prep','expedition','return','sellLoot','rest'];
+function migrate(st){if(st&&st.v===2){const old=V2_IDS[st.i];if(old){const i=byId(old==='prep'?'sibSword':old);if(i>=0)st.i=i}else if(st.i>=V2_IDS.length)st.i=STEPS.length;st.v=3;doSave();return st}
+ if(!st||st.v>=2)return st;const old=OLD_IDS[st.i];if(old){const id=OLD_TO[old]||old,i=byId(id);if(i>=0){st.i=i;if(OLD_TO[old])delete st.data[old]}}else if(st.i>=OLD_IDS.length)st.i=STEPS.length;st.v=2;doSave();return st}
 function story(){const v=V();if(!v)return null;return migrate(v.story||null)}
 function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!(v.party||[]).filter(m=>m.key!=='sib').length&&!v.adventure}
-function init(){const v=V();if(!v||v.story)return;v.story={v:2,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
+function init(){const v=V();if(!v||v.story)return;v.story={v:3,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
 function cur(){const st=story();return st&&st.mode==='active'?STEPS[st.i]:null}
 function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step.id]}
 
@@ -255,22 +280,24 @@ async function act(a){const st=story();if(!st)return;
  if(a==='skipall'){const ok=root.GameDialog?await root.GameDialog.confirm('ข้ามบทนำทั้งหมด?\nจะไม่ได้รางวัลและฉากที่เหลือ (เปิดเล่นใหม่ได้จาก Story.reset() ในโหมดนักพัฒนา)'):confirm('ข้ามบทนำทั้งหมด?');if(!ok)return;st.mode='done';doSave();draw(true);return}
  if(a==='replay'){const sc=lastScene();if(sc)root.Cutscene.play(D().SCENES[sc]);return}
  const step=cur();const x=step?.acts?.[+a];if(x)await x.run(dataOf(step));draw(true)}
-function lastScene(){const st=story();for(let j=st.i;j>=0;j--){const s1=STEPS[j];if(j<st.i&&s1.outro)return s1.outro;if(s1.intro&&(j<st.i||st.data[s1.id]?.introSeen))return s1.intro}return null}
+function lastScene(){const st=story();for(let j=st.i;j>=0;j--){const s1=STEPS[j],o=typeof s1.outro==='function'?s1.outro():s1.outro,n=typeof s1.intro==='function'?s1.intro():s1.intro;if(j<st.i&&o)return o;if(n&&(j<st.i||st.data[s1.id]?.introSeen))return n}return null}
 
 /* ---------- loop ---------- */
 let busy=false;
 async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){draw();return}init();const st=story();
  const sale=detectSale();if(!st||st.mode!=='active'){draw();return}
  const step=STEPS[st.i];if(!step){st.mode='done';doSave();draw(true);return}const d=dataOf(step);
+ if(step.skip?.(d)){st.i++;doSave();draw(true);return}
  if(sale){d.sales=(d.sales||0)+1}
  if(step.id==='raid'&&d.fighting&&!document.getElementById('storyBattle')){d.fighting=false;doSave()}
  step.tick?.(d);
  if(root.Cutscene?.isPlaying()||tacticsOpen()||document.getElementById('storyBattle')){draw();return}
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
-  if(step.intro&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(D().SCENES[step.intro])}
+  const introId=typeof step.intro==='function'?step.intro():step.intro;
+  if(introId&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(D().SCENES[introId])}
   if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();await lessonCard(step.id)}
-  if(step.check(d)){d.done=true;if(step.outro)await root.Cutscene.play(D().SCENES[step.outro]);await step.reward?.(d);st.i++;doSave();doRender();
+  if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(D().SCENES[outroId]);await step.reward?.(d);st.i++;doSave();doRender();
    const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
 

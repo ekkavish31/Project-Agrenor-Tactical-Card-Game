@@ -36,4 +36,5 @@ g = mk(); I.roll(g, 'sib', { rng: seq(.01, .4, .01) }); I.admit(g, 'sib', 'fernv
 g = mk(); g.injuries = { hero: { parts: { arm: { lv: 'heavy' } } }, sib: { parts: { leg: { lv: 'heavy' } } } };
 eq(I.leader(g, ['hero', 'sib', 'bram', 'luna']), 'bram', 'both heroes heavy → the next friend leads'); eq(I.talkAllowed('bram'), false, 'a friend cannot talk / do quests'); eq(I.talkAllowed('sib'), true, 'the other hero can');
 eq(I.leader({ injuries: {} }, ['hero', 'sib']), 'hero', 'healthy: the chosen hero leads'); eq(I.describe(g, 'hero'), 'แขน (หนัก)', 'a readable line');
+g = mk(); I.force(g, 'kier', 'leg'); eq(I.canFight(g, 'kier'), false, 'a scripted heavy leg wound stops fighting'); eq(I.canTravel(g, 'kier'), false, 'and travelling'); eq(I.admit(g, 'kier', 'fernvale').ok, true, 'the scripted wound can be admitted to the village hospital');
 console.log('injury: ' + n + ' checks passed');
