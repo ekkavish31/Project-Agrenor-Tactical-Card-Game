@@ -48,7 +48,7 @@ code{font-size:12px}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=98.140"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/char-size.js?v=98.305"></script><script src="js/character-scale-adjust-data.js?v=98.305"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
+<script src="js/village-layout-v67.js?v=98.140"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/char-size.js?v=98.305"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -135,7 +135,6 @@ async function build() {
     const src = await (await fetch('js/town-battle.js')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
       const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
-      await add('mb:' + k, name + ' · บอส', 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k} (บอสตั้งขนาดเองที่แถวนี้ ไม่มีตัวคูณซ่อนในโค้ด)`);
     }
   } catch (e) { console.warn('monsters not read', e) }
 }
@@ -199,7 +198,7 @@ function render() {
    each picture drawn at the same on-screen height the battle uses (ctx.battle.units × UNIT × the map's size %). Nothing is saved here. */
 let FIELD_ZOOM = 1, FIELD_MAPK = 1;
 function renderField(V) {
-  const UNIT = 84, st = $("stage"), z = ZOOM, cw = UNIT * z, ch = cw / 2, s0 = 4, maxPx = Math.max(...V.map(e => e.ctx.battle.units)) * UNIT * z, baseY = maxPx + 56;
+  const UNIT = 84, st = $("stage"), z = ZOOM, cw = UNIT * z, ch = cw / 2, s0 = 4, U = e => e.ctx.battle.units * eff(e) /* v98.320 · the ⚖ size of each character (hero is the yardstick) */, maxPx = Math.max(...V.map(U)) * UNIT * z, baseY = maxPx + 56;
   st.style.height = ''; st.style.width = '';
   const W = Math.max(st.parentElement.clientWidth - 8, (V.length + 1.5) * cw + 40), H = baseY + 4.5 * ch + 70;
   st.innerHTML = '<canvas id="fieldCv"></canvas>'; const cv = $('fieldCv'), dpr = devicePixelRatio || 1; cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
@@ -209,16 +208,16 @@ function renderField(V) {
   g.lineWidth = 1; g.strokeStyle = 'rgba(255,255,255,.24)';
   for (let sRow = s0 - 3; sRow <= s0 + 3; sRow++) for (let a = -V.length - 8; a <= V.length * 2 + 12; a++) { const c = P(a, sRow - a); if (c.x < -cw || c.x > W + cw) continue; g.beginPath(); g.moveTo(c.x, c.y - ch / 2); g.lineTo(c.x + cw / 2, c.y); g.lineTo(c.x, c.y + ch / 2); g.lineTo(c.x - cw / 2, c.y); g.closePath(); g.fillStyle = (a + sRow) % 2 ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.06)'; g.fill(); g.stroke() }
   /* characters in a row, one per cell; the hero's silhouette height is the reference line */
-  const hc = heroE().ctx.battle, heroPx = hc.units * UNIT * z;
-  const items = V.map((e, i) => { const c = e.ctx.battle, k = c.units * UNIT * z / c.m.H, cell = P(i + s0 / 2, s0 / 2 - i); return { e, c, k, cell } });
+  const hc = heroE().ctx.battle, heroPx = U(heroE()) * UNIT * z;
+  const items = V.map((e, i) => { const c = e.ctx.battle, k = U(e) * UNIT * z / c.m.H, cell = P(i + s0 / 2, s0 / 2 - i); return { e, c, k, cell } });
   for (const { e, c, k, cell } of items) {
     const wdt = c.m.w * k, hgt = c.m.h * k, left = cell.x - ((c.m.x0 + c.m.x1) / 2) * k, top = cell.y - (c.m.bottom + 1) * k;
     g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(cell.x, cell.y, cw * .22, ch * .22, 0, 0, 7); g.fill();
     g.save(); if (c.flip) { g.translate(cell.x * 2, 0); g.scale(-1, 1); g.drawImage(c.img, 2 * cell.x - left - wdt, top, wdt, hgt) } else g.drawImage(c.img, left, top, wdt, hgt); g.restore();
-    g.fillStyle = e.id === sel ? '#ffe2a8' : '#e9e1cf'; g.font = '600 12px system-ui'; g.textAlign = 'center'; g.fillText(e.name, cell.x, cell.y + ch / 2 + 16); g.fillStyle = '#b9c48a'; g.font = '11px system-ui'; g.fillText((c.units).toFixed(2) + ' ช่อง สูง', cell.x, cell.y + ch / 2 + 30);
+    g.fillStyle = e.id === sel ? '#ffe2a8' : '#e9e1cf'; g.font = '600 12px system-ui'; g.textAlign = 'center'; g.fillText(e.name, cell.x, cell.y + ch / 2 + 16); g.fillStyle = '#b9c48a'; g.font = '11px system-ui'; g.fillText(U(e).toFixed(2) + ' ช่อง สูง', cell.x, cell.y + ch / 2 + 30);
   }
   g.strokeStyle = 'rgba(240,190,90,.75)'; g.setLineDash([6, 5]); const y0 = items[0].cell.y - heroPx; g.beginPath(); g.moveTo(20, y0); g.lineTo(W - 20, y0); g.stroke(); g.setLineDash([]); g.fillStyle = '#f0be5a'; g.font = '11px system-ui'; g.textAlign = 'left'; g.fillText('ความสูงตัวเอก (ตัวเทียบ)', 24, y0 - 5);
-  cv.onclick = ev => { const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; let best = null, bd = 1e9; for (const it of items) { const d = Math.hypot(x - it.cell.x, y - (it.cell.y - it.c.units * UNIT * z / 2)); if (d < bd) { bd = d; best = it } } if (best && bd < 120) pickSel(best.e.id) };
+  cv.onclick = ev => { const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; let best = null, bd = 1e9; for (const it of items) { const d = Math.hypot(x - it.cell.x, y - (it.cell.y - U(it.e) * UNIT * z / 2)); if (d < bd) { bd = d; best = it } } if (best && bd < 120) pickSel(best.e.id) };
   $('note').textContent = '⚔ สนามรบ · 1 ช่อง = เพชรกว้าง ' + UNIT + ' px × สูง ' + (UNIT / 2) + ' px (ซูม ' + Math.round(z * 100) + '%) · ตัวละครยืนกลางช่องตามขนาดจริงที่เกมวาด · เส้นประส้ม = ความสูงตัวเอก · คลิกตัวละครเพื่อเลือก';
 }
 /* ================= 📐 สัดส่วน · head : body ratio tool (js/proportion-tool.js) ================= */
@@ -242,28 +241,28 @@ function reportText(R, med) {
 }
 let _rt = 0; const reRatio = () => { cancelAnimationFrame(_rt); _rt = requestAnimationFrame(() => { if (tab === 'ratio') renderRatio(visible()) }) };
 function renderRatio(V) {
-  const { R, med } = ratioRows(V), FH = 300, bad = R.filter(x => x.v.level === 'bad').length, warn = R.filter(x => x.v.level === 'warn').length, ok = R.length - bad - warn;
+  const { R, med } = ratioRows(V), FH = 300, fhOf = e => FH * metres(e) / HERO_M, maxFH = Math.max(...V.map(fhOf)), bad = R.filter(x => x.v.level === 'bad').length, warn = R.filter(x => x.v.level === 'warn').length, ok = R.length - bad - warn;
   const st = $('stage'); st.style.height = 'auto'; st.style.width = 'auto';
   const lvl = bad ? 'bad' : warn ? 'warn' : 'ok';
   let h = `<div class="banner ${lvl}"><b>${ok === R.length ? '✔ ทั้งทีมเป็นกึ่ง SD สัดส่วนเดียวกัน' : `ตรงมาตรฐาน ${ok}/${R.length} ตัว`}</b> · ค่ากลางของทีม: หัว ${(med * 100).toFixed(1)}% ของตัว (≈ ${(1 / med).toFixed(2)} หัว)${bad || warn ? ' · ' + R.filter(x => x.v.level !== 'ok').map(x => x.e.name).join(', ') + ' ยังไม่ตรง' : ''}</div>
    <div class="stdctl">มาตรฐาน: หัว ≈ <input type="number" id="sHead" min="15" max="60" step="0.5" value="${STDV.head}">% ± <input type="number" id="sTol" min="1" max="15" step="0.5" value="${STDV.tol}">% ของความสูง (2.7–3 หัว ≈ 33–37% · ในพรอมต์ใช้ 38%)
     <span class="lgd"><i style="border-color:${COL.chin}"></i>คาง<i style="border-color:${COL.shoulder}"></i>ไหล่<i style="border-color:${COL.hip}"></i>ขาหนีบ<i style="border-color:#2a7"></i>มาตรฐาน<i style="border-color:#c9893a"></i>ค่ากลางทีม</span></div>`;
-  h += `<div class="figs" style="height:${FH + 54}px">`;
-  h += `<div class="std" style="top:${6 + STDV.head / 100 * FH}px;border-color:#2a7" title="คางตามมาตรฐาน"></div><div class="std" style="top:${6 + med * FH}px;border-color:#c9893a" title="ค่ากลางของทีม"></div>`;
+  h += `<div class="figs" style="height:${maxFH + 54}px;align-items:flex-end">`;
   for (const { e, r, v } of R) {
-    const c = e.ctx.battle, k = FH / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, fl = c.flip ? 'transform:scaleX(-1);' : '';
-    h += `<div data-c="${e.id}"><div class="fig" style="width:${fw}px;height:${FH}px"><img alt="" src="${c.url || c.src}" style="${fl}width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
-    for (const n of ['chin', 'shoulder', 'hip']) h += `<div class="ln" style="top:${r.marks[n] * FH}px;border-color:${COL[n]}"></div>`;
+    const c = e.ctx.battle, fh = fhOf(e), k = fh / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, fl = c.flip ? 'transform:scaleX(-1);' : '';
+    h += `<div data-c="${e.id}"><div class="fig" style="width:${fw}px;height:${fh}px"><img alt="" src="${c.url || c.src}" style="${fl}width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
+    h += `<div class="ln" style="top:${STDV.head / 100 * fh}px;border-color:#2a7;border-top-width:1px;border-top-style:dashed;opacity:.8"></div><div class="ln" style="top:${med * fh}px;border-color:#c9893a;border-top-width:1px;border-top-style:dashed;opacity:.8"></div>`;
+    for (const n of ['chin', 'shoulder', 'hip']) h += `<div class="ln" style="top:${r.marks[n] * fh}px;border-color:${COL[n]}"></div>`;
     h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}" data-c="${e.id}">${e.name}<br><span class="chip ${LV[v.level][0]}">${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(0)}%</span></div></div>`;
   }
   h += `</div><table class="rt"><tr><th>ตัวละคร</th><th>สูง px</th><th>หัว %</th><th>จำนวนหัว</th><th title="ความกว้างหัว ÷ ความกว้างช่วงไหล่ (รวมแขน)">หัว/ไหล่</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
   for (const { e, r, v } of R) h += `<tr data-c="${e.id}" class="${e.id === sel ? 'sel' : ''}"><td>${e.name}${r.manual ? '' : ' <small title="ประมาณจากภาพอัตโนมัติ · ลากเส้นในแผงขวาเพื่อปรับ">~</small>'}</td><td>${r.H}</td><td>${(r.head * 100).toFixed(1)}</td><td>${r.heads.toFixed(2)}</td><td>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'}</td><td>${(r.torso * 100).toFixed(0)}</td><td>${(r.legs * 100).toFixed(0)}</td><td><span class="chip ${LV[v.level][0]}" title="${v.notes.join(' · ')}">${LV[v.level][1]}</span></td></tr>`;
-  h += `</table><p class="hint">เส้นแดง/น้ำเงิน/เขียว = คาง/ไหล่/ขาหนีบ ที่ประมาณจากภาพ (ตัวที่มี ~ ยังไม่ได้ยืนยัน) · ทุกตัวถูกย่อ/ขยายให้สูงเท่ากัน เพื่อเทียบสัดส่วนล้วนๆ — ถ้าเป็นกึ่ง SD เท่ากัน เส้นแดงของทุกตัวควรอยู่ใกล้เส้นมาตรฐานสีเขียว · เลือกตัวแล้วลากเส้นที่แผงขวาให้ตรงกับคางจริง</p><div class="adj"><button id="rCopy">📋 คัดลอกรายงาน</button></div>`;
+  h += `</table><p class="hint">เส้นแดง/น้ำเงิน/เขียว = คาง/ไหล่/ขาหนีบ ที่ประมาณจากภาพ (ตัวที่มี ~ ยังไม่ได้ยืนยัน) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · เส้นเขียวประ = มาตรฐานของตัวนั้น · เส้นส้มประ = ค่ากลางทีม — ถ้าเป็นกึ่ง SD เท่ากัน เส้นแดงของทุกตัวควรอยู่ใกล้เส้นมาตรฐานสีเขียว · เลือกตัวแล้วลากเส้นที่แผงขวาให้ตรงกับคางจริง</p><div class="adj"><button id="rCopy">📋 คัดลอกรายงาน</button></div>`;
   st.innerHTML = h;
   st.querySelectorAll('[data-c]').forEach(n => n.onclick = () => pickSel(n.dataset.c));
   $('sHead').onchange = ev => { STDV.head = Math.min(60, Math.max(15, +ev.target.value || 38)); renderRatio(visible()) }; $('sTol').onchange = ev => { STDV.tol = Math.min(15, Math.max(1, +ev.target.value || 4)); renderRatio(visible()) };
   $('rCopy').onclick = async ev => { const tx = reportText(R, med); try { await navigator.clipboard.writeText(tx); ev.target.textContent = 'คัดลอกแล้ว ✓' } catch (er) { prompt('คัดลอกข้อความนี้', tx) } };
-  $('note').textContent = 'สัดส่วนอ่านจากภาพ SW ของแต่ละตัว (หรือเฟรมที่เลือกในแท็บ Animation) · ไม่เกี่ยวกับสเกลในเกม';
+  $('note').textContent = 'สัดส่วนอ่านจากภาพ SW ของแต่ละตัว (หรือเฟรมที่เลือกในแท็บ Animation) · ความสูงของแต่ละตัวอิงขนาดใน Scale Lineup เหมือนในเกม';
 }
 function inspectRatio() {
   const e = ENTRIES.find(x => x.id === sel); if (!e || isW(e) || !e.ctx.battle) { $('insp').innerHTML = ''; return }
@@ -330,13 +329,31 @@ function mapRows() {
   for (const [k, n] of Object.entries(interiorList())) rows.push(['interior', k, '🚪 ภายในอาคาร · ' + mapText(n), MS.has('interior', k) ? 'ตั้งเอง' : 'ค่าเริ่มต้น 100%']);
   return rows;
 }
+/* v98.320 · each map is a row of characters standing on THAT map's real grid cell, drawn at lineup size × the map's multiplier (the same numbers the game uses) */
+const MAP_GEOM = { battle: { cw: 84, label: 'ช่องสนามรบ 84×42 px' }, village: { cw: 56, label: 'ช่องหมู่บ้าน 56×28 px' }, place: { cw: 56, label: 'ช่องหมู่บ้าน 56×28 px' }, interior: { cw: 68, label: 'ช่องในอาคาร 68×34 px' }, world: { hex: 36, label: 'ช่องแผนที่โลก (เฮกซ์ R=36)' } };
+const pxPerUnit = kind => kind === 'battle' ? 84 : kind === 'world' ? CharSize.WORLD_HERO_PX / DS.hero : kind === 'interior' ? CharSize.INTERIOR_HERO_PX / DS.hero : CharSize.VILLAGE_HERO_PX / DS.hero;
+function mapCast(kind) { const base = ENTRIES.filter(e => !isW(e) && e.ctx.battle); return kind === 'battle' ? base : kind === 'world' ? base.filter(e => e.kind === 'hero' || e.kind === 'ally').slice(0, 6) : base.filter(e => e.kind !== 'monster') }
+function drawStrip(cv, kind, mult) {
+  const G = MAP_GEOM[kind], cast = mapCast(kind), ppu = pxPerUnit(kind) * mult, px = e => e.ctx.battle.units * eff(e) * ppu, dpr = devicePixelRatio || 1;
+  const cw = G.hex ? G.hex * Math.sqrt(3) : G.cw, ch = G.hex ? G.hex * 1.5 : cw / 2, maxPx = Math.max(...cast.map(px)), baseY = maxPx + 30, W = Math.max(520, (cast.length + 1) * cw + 40), H = baseY + 1.5 * ch + 34;
+  cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px'; const g = cv.getContext('2d'); g.scale(dpr, dpr); g.fillStyle = '#26352b'; g.fillRect(0, 0, W, H);
+  g.strokeStyle = 'rgba(255,255,255,.26)'; g.lineWidth = 1;
+  if (G.hex) { const R = G.hex; for (let r = -1; r <= 2; r++) for (let q = -1; q < W / cw + 1; q++) { const cx = 20 + q * cw + (r & 1 ? cw / 2 : 0), cy = baseY + r * R * 1.5; g.beginPath(); for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + i * Math.PI / 3; g[i ? 'lineTo' : 'moveTo'](cx + R * Math.cos(a), cy + R * Math.sin(a)) } g.closePath(); g.fillStyle = (q + r) % 2 ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.06)'; g.fill(); g.stroke() } }
+  else for (let row = -2; row <= 2; row++) for (let i = -1; i < W / cw + 2; i++) { const cx = 20 + cw / 2 + i * cw + (row & 1 ? cw / 2 : 0), cy = baseY + row * ch / 2; g.beginPath(); g.moveTo(cx, cy - ch / 2); g.lineTo(cx + cw / 2, cy); g.lineTo(cx, cy + ch / 2); g.lineTo(cx - cw / 2, cy); g.closePath(); g.fillStyle = (i + row) % 2 ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.06)'; g.fill(); g.stroke() }
+  const hero = cast.find(e => e.id === 'hero'), hp = hero ? px(hero) : 0;
+  cast.forEach((e, i) => { const c = e.ctx.battle, k = px(e) / c.m.H, x = 20 + cw / 2 + i * cw, y = baseY, w = c.m.w * k, h = c.m.h * k, left = x - ((c.m.x0 + c.m.x1) / 2) * k, top = y - (c.m.bottom + 1) * k;
+    g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(x, y, cw * .2, ch * .2, 0, 0, 7); g.fill();
+    g.save(); if (c.flip) { g.translate(x * 2, 0); g.scale(-1, 1); g.drawImage(c.img, 2 * x - left - w, top, w, h) } else g.drawImage(c.img, left, top, w, h); g.restore();
+    g.fillStyle = '#e9e1cf'; g.font = '600 11px system-ui'; g.textAlign = 'center'; g.fillText(e.name, x, y + ch / 2 + 15); });
+  if (hero) { g.strokeStyle = 'rgba(240,190,90,.75)'; g.setLineDash([6, 5]); g.beginPath(); g.moveTo(10, baseY - hp); g.lineTo(W - 10, baseY - hp); g.stroke(); g.setLineDash([]); g.fillStyle = '#f0be5a'; g.font = '10px system-ui'; g.textAlign = 'left'; g.fillText('ความสูงตัวเอก ' + (hp).toFixed(0) + ' px', 14, baseY - hp - 4) }
+}
 function renderMaps() {
   const MS = window.MapScale, st = $('stage'); st.style.height = 'auto'; st.style.width = 'auto'; ctx = 'battle';
   $('list').innerHTML = ''; $('insp').innerHTML = ''; $('ctl').innerHTML = '';
   const rows = mapRows();
-  st.innerHTML = `<div class="banner ok"><b>ตัวคูณเดียวต่อแผนที่</b> · ใช้กับ <b>ตัวละครทุกตัวบนแผนที่นั้นพร้อมกัน</b> · ตัวละครใหญ่/เล็กกว่ากันแค่ไหน ตั้งที่แท็บ "ตัวละคร" (ชุดเดียวทุกแผนที่) — แท็บนี้เปลี่ยนแค่ขนาดของ "ทั้งชุด" เทียบกับตึก พื้น และกริดของแผนที่นั้น</div>
-   <table class="rt" id="mapTbl"><tr><th>แผนที่</th><th>ขนาดตัวละครทั้งหมด %</th><th></th><th>หมายเหตุ</th></tr>${rows.map(([kind, id, name, note], i) => { const v = Math.round(MS.get(kind, id) * 100), own = MS.has(kind, id) || kind === 'village' || kind === 'world';
-     return `<tr><td>${name}</td><td style="text-align:left"><button data-i="${i}" data-d="-5">−5</button> <button data-i="${i}" data-d="-1">−1</button> <input type="number" data-i="${i}" min="20" max="400" step="1" value="${v}" style="width:64px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:2px 4px"> <button data-i="${i}" data-d="1">+1</button> <button data-i="${i}" data-d="5">+5</button></td><td><button data-i="${i}" data-r="1" title="กลับค่าเริ่มต้น"${own ? '' : ' disabled'}>↺</button></td><td style="text-align:left;white-space:normal"><small>${note}</small></td></tr>` }).join('')}</table>
+  st.innerHTML = `<div class="banner ok"><b>ตัวคูณเดียวต่อแผนที่</b> · ใช้กับ <b>ตัวละครทุกตัวบนแผนที่นั้นพร้อมกัน</b> · ตัวละครใหญ่/เล็กกว่ากันแค่ไหน ตั้งที่แท็บ "ตัวละคร" (ชุดเดียวทุกแผนที่ — แถวด้านล่างอิงค่านี้ทุกตัว) — แท็บนี้เปลี่ยนแค่ขนาดของ "ทั้งชุด" เทียบกับตึก พื้น และกริดของแผนที่นั้น</div>
+   ${rows.map(([kind, id, name, note], i) => { const v = Math.round(MS.get(kind, id) * 100), own = MS.has(kind, id) || kind === 'village' || kind === 'world', G = MAP_GEOM[kind];
+     return `<section class="mapcard" style="margin:12px 0;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--panel)"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><b>${name}</b><small>${note} · ${G.label}</small><span style="flex:1"></span><button data-i="${i}" data-d="-5">−5</button><button data-i="${i}" data-d="-1">−1</button><input type="number" data-i="${i}" min="20" max="400" step="1" value="${v}" style="width:64px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:2px 4px">%<button data-i="${i}" data-d="1">+1</button><button data-i="${i}" data-d="5">+5</button><button data-i="${i}" data-r="1" title="คืนค่าเริ่มต้น"${own ? '' : ' disabled'}>↺</button></div><div style="overflow-x:auto"><canvas class="mapcv" data-i="${i}"></canvas></div></section>` }).join('')}
    <div class="adj"><button id="mapPush">⬆ Push ขนาดต่อแผนที่</button><button id="mapReset">↺ คืนทุกแผนที่เป็นค่าเริ่มต้น</button></div><p class="hint" id="mapMsg"></p>
    <p class="hint">เก็บในเบราว์เซอร์นี้ทันที (เกมอ่านค่าสด) · ⬆ Push ส่งขึ้น repo ไปกับ js/game-settings.js · ใช้กับ: หมู่บ้าน (ตัวเอก ชาวบ้าน เพื่อน), แผนที่ย่อย (ตัวเอก), ภายในอาคาร (ทุกคนในห้อง), สนามรบแยกตามพื้นที่ (ทุกตัว), แผนที่โลก (ตัวเอก) · ค่าตั้งแยกรายตัวเดิมในหมู่บ้าน ("NPC ทุกตัว" / ขนาดรายตัว) เลิกใช้แล้ว</p>`;
   const set = (i, pct) => { const [kind, id] = rows[i]; MS.set(kind, id, Math.max(20, Math.min(400, Math.round(pct))) / 100) };
@@ -345,7 +362,8 @@ function renderMaps() {
   st.querySelectorAll('button[data-r]').forEach(b => b.onclick = () => { const [kind, id] = rows[+b.dataset.i]; MS.set(kind, id, null); renderMaps() });
   $('mapReset').onclick = () => { if (confirm('คืนขนาดตัวละครทุกแผนที่เป็นค่าเริ่มต้น?')) { MS.reset(); renderMaps() } };
   $('mapPush').onclick = async () => { const m = $('mapMsg'), G = window.GitHubPush; if (!G || !G.enabled()) { m.textContent = 'ยังไม่ได้ใส่ token ของ GitHub ในเบราว์เซอร์นี้ (เปิดตั้งค่าจาก Asset Studio ก่อน)'; return } m.textContent = 'กำลัง push…'; try { const sha = await G.pushSettings([MS.KEY], 'ขนาดตัวละครต่อแผนที่'); m.textContent = sha ? 'push แล้ว · ' + sha : 'ไม่มีอะไรต้อง push' } catch (er) { m.textContent = 'push ไม่สำเร็จ: ' + er.message } };
-  $('note').textContent = '';
+  st.querySelectorAll('canvas.mapcv').forEach(cv => { const [kind, id] = rows[+cv.dataset.i]; drawStrip(cv, kind, MS.get(kind, id)) });
+  $('note').textContent = 'แต่ละแถว = ตัวละครยืนบนช่องกริดจริงของแผนที่นั้น · ขนาดตัวละคร = ขนาดใน Scale Lineup × ตัวคูณของแผนที่ (ตัวเลขชุดเดียวกับที่เกมใช้) · เส้นประส้ม = ความสูงตัวเอก';
 }
 function inspect() {
   if (tab === 'maps') { return }
