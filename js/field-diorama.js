@@ -194,7 +194,7 @@
     poly(g, t4); g.fillStyle = groundPattern(g, timg, avg); g.fill(); const tw = mt ? null : C.wash(isPath ? 'path' : 'top'); if (tw) { g.fillStyle = tw; g.fill() }
     /* stairs: step edges across the slope (dark riser + lit nose) */
     const rd = m.ramp ? m.ramp[i] : 0;
-    if (rd && m.stair && m.stair[i]) {
+    if (rd && m.stair && m.stair[i] && [1, 3, 4].includes(m.mat ? m.mat[i] : 0)) {   /* v98.313 · steps only on stone / cobble / slab; natural ground stays a plain slope */
       const lowE = { 1: [0, 3], 2: [1, 2], 3: [0, 1], 4: [3, 2] }[rd], highE = { 1: [1, 2], 2: [0, 3], 3: [3, 2], 4: [0, 1] }[rd];
       /* v98.313 · real steps: N flat treads (lit) with a vertical riser (dark, lit nose) between them, instead of scribbled lines on the slope */
       const N = 4, cu = [u, u + 1, u + 1, u], cv = [v, v, v + 1, v + 1], A = lowE[0], B = lowE[1], A1 = highE[0], B1 = highE[1], zl = (c[A] + c[B]) / 2, zh = (c[A1] + c[B1]) / 2;

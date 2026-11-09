@@ -1082,14 +1082,17 @@
   /* v94: a cell outline sits on its own raised top (battle-field heights); the village has none */
   /* v98.312 · grid on/off (key G, remembered) + which cells are hidden behind taller ground in front of them */
   let GRID = (() => { try { return localStorage.getItem('project-a-field-grid') !== '0' } catch (e) { return true } })();
-  addEventListener('keydown', e => { if (e.key.toLowerCase() !== 'g' || e.repeat || e.ctrlKey || e.metaKey || e.target.closest?.('input,textarea,select')) return; GRID = !GRID; try { localStorage.setItem('project-a-field-grid', GRID ? '1' : '0') } catch (_) { } });
+  function gridSet(on) { GRID = on; try { localStorage.setItem('project-a-field-grid', on ? '1' : '0') } catch (_) { } const b = document.getElementById('gridBtn'); if (b) { b.classList.toggle('on', on); b.title = on ? 'ซ่อนลายกริด (G)' : 'แสดงลายกริด (G)' } }
+  if (ON) { const sx = document.createElement('style'); sx.textContent = '#gridBtn{position:fixed;right:228px;bottom:30px;z-index:60;width:44px;height:44px;border-radius:50%;border:2px solid #b89654;background:#1d2a22e6;color:#f3e7cf;font:22px/1 system-ui;cursor:pointer;box-shadow:0 3px 10px #0008;opacity:.75}#gridBtn.on{opacity:1;background:#3a5a3ae6;border-color:#e0c070}#gridBtn:hover{opacity:1}@media(max-width:700px){#gridBtn{right:12px;bottom:150px}}'; document.head.append(sx);
+    const gb = document.createElement('button'); gb.id = 'gridBtn'; gb.type = 'button'; gb.textContent = '▦'; gb.onclick = () => gridSet(!GRID); document.body.append(gb); gridSet(GRID) }
+  addEventListener('keydown', e => { if (e.key.toLowerCase() !== 'g' || e.repeat || e.ctrlKey || e.metaKey || e.target.closest?.('input,textarea,select')) return; gridSet(!GRID) });
   function gridHidden(cells) {
     const out = new Set(), FH = window.FieldHeight, DEP = window.FieldDepth; if (!FH?.lift || !DEP) return out;
     const F = window.projectFlat || project, raised = [], all = [];
     for (const key of cells.keys()) {
       const [u, v] = key.split(',').map(Number), L = FH.lift(u, v), a = F(u, v), b = F(u + 1, v), c = F(u + 1, v + 1), d = F(u, v + 1), xs = [a.x, b.x, c.x, d.x], ys = [a.y, b.y, c.y, d.y];
       const o = { key, d: DEP(u + .5, v + .5), L, cx: (Math.min(...xs) + Math.max(...xs)) / 2, cy: (Math.min(...ys) + Math.max(...ys)) / 2 - L, hw: (Math.max(...xs) - Math.min(...xs)) / 2, hh: (Math.max(...ys) - Math.min(...ys)) / 2 };
-      if (FH.map?.stair?.[(v + FH.R) * FH.n + u + FH.R]) out.add(key);   /* steps are drawn as treads + risers: no grid lines across them */
+      { const ix = (v + FH.R) * FH.n + u + FH.R; if (FH.map?.ramp?.[ix]) out.add(key) }   /* sloped cells: their skewed outline reads as noise */   /* steps are drawn as treads + risers: no grid lines across them */
       all.push(o); if (L > 2) raised.push(o);
     }
     for (const c of all) for (const n of raised) {
