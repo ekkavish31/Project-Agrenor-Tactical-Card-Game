@@ -2625,7 +2625,7 @@
    ov = data.edit[key] || {},
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
-  <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
+  <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
   ${nudgeHtml}${sec('place','① วาง · ขนาด · หมุน',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
 `,1)}${sec('img','② ภาพ · แกนเฉียง',`${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>`)}${sec('foot','③ พื้นและการชน',`<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.5">กว้าง −</button><button data-fz="fw,0.5">กว้าง +</button><button data-fz="fh,-0.5">ลึก −</button><button data-fz="fh,0.5">ลึก +</button></div>
@@ -2644,6 +2644,7 @@
    else ovOf(key).kind = k
   })()));
   act('#aeOrig', once(() => delete ovOf(key).kind));
+  act('#aeDetail', () => window.PieceDetail?.open(key));
   act('#aeHide', once(() => {
    if (ov.hide) delete ovOf(key).hide;
    else ovOf(key).hide = true
@@ -3113,6 +3114,22 @@
   itemKeys: owner => frame.filter(e => e.owner === owner && !e.hidden).map(e => e.key),
   select: ks => { if (place) { place.keys = [...ks]; place.tab = 'items'; render() } },
   pick: key => selectItem(key),
+  /* v98.291 · bridge for js/piece-detail.js (the detailed single-piece window) */
+  detail: {
+   item: key => frame.find(e => e.key === key) || null,
+   ov: key => data.edit[key] || {},
+   edit(key, fn, checkpoint) { if (checkpoint) UX.checkpoint(); fn(ovOf(key)); clean(key); UX.persist(); render() },
+   /* draws the piece, with its own edit (size, turn, flip, slant, swapped picture) but WITHOUT the map offset, at (0,0) of the context q */
+   drawTo(q, E, ov) {
+    const main = g, s = ov.s ?? 1, r = (ov.r || 0) * Math.PI / 180, ix = ov.ix ?? 1, iy = ov.iy ?? 1, k = ov.kind && KINDS[ov.kind] ? ov.kind : null;
+    g = q;
+    try {
+     q.save(); if (r) q.rotate(r); q.scale(ov.f ? -s : s, s); q.transform((ix + iy) / 2, (iy - ix) / 2, (iy - ix) / 2, (ix + iy) / 2, 0, 0); q.translate(-E.ax, -E.ay);
+     if (k) KINDS[k].draw({ x: E.ax, y: E.ay }); else E.base(q);
+     q.restore()
+    } catch (e) { } finally { g = main }
+   }
+  },
   itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner, hidden: E.hidden } : null },
   frameSig: () => JSON.stringify(data.frames),
   dropPlace,
