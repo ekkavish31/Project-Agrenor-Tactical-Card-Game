@@ -188,13 +188,13 @@
     return Math.max(120, Math.min(need, W / 2 - half - 12));
   }
   /* procedural battle audio from the old system (BattlePolish: synthesized + the recorded slash) */
-  const SFXK = { sword: 'slash', knife: 'knife', spear: 'spear', rapier: 'rapier', blunt: 'hammer', fire: 'magic', ice: 'ice', lightning: 'lightning', arcane: 'magic', wind: 'magic', earth: 'earth', heal: 'heal', shield: 'block', parry: 'block' };
+  const SFXK = { sword: 'slash', knife: 'knife', spear: 'spear', rapier: 'rapier', blunt: 'hammer', fire: 'fire', ice: 'ice', lightning: 'lightning', arcane: 'magic', wind: 'magic', earth: 'earth', heal: 'heal', shield: 'block', parry: 'block' };
   function sfx(kind, s = .6) {
     if (window.Sfx?.battle(kind, s)) return;   /* v98.297 · recorded Kenney sounds (CC0) first; the old synth is the fallback while a file is still loading */
     const P = window.BattlePolish; if (!P) return;
     try { if (kind === 'slash') P.sample('slash', s); else if (kind === 'swing') P.swing('sword'); else if (kind === 'step') P.footstep('stone'); else if (kind === 'victory') P.victory(true); else if (kind === 'lose') P.victory(false); else P.sound(kind, s) } catch (e) { }
   }
-  try { window.Sfx?.preload(['hit-metal', 'hit-metal-light', 'draw-knife', 'knife', 'hit-wood-heavy', 'hit-plate', 'hit-metal-heavy', 'hit-punch', 'hit-soft', 'cloth', 'step-stone', 'hit-generic', 'chop', 'hit-punch-heavy']) } catch (e) { }
+  try { window.Sfx?.preload(['mg-cast', 'mg-magic', 'mg-heal', 'mg-lightning', 'mg-fire', 'mg-earth', 'mg-shield', 'victory', 'defeat', 'hit-glass', 'hit-metal', 'hit-metal-light', 'draw-knife', 'knife', 'hit-wood-heavy', 'hit-plate', 'hit-metal-heavy', 'hit-punch', 'hit-soft', 'cloth', 'step-stone', 'hit-generic', 'chop', 'hit-punch-heavy']) } catch (e) { }
   function hitSound(fx, o = {}) { sfx(SFXK[fx] || 'sword', o.big ? .85 : .6); if (o.crit || o.kill) { sfx('critical', .8); sfx('hammer', .55) } else if (o.big) sfx('hammer', .35) }
   function shake(px, ms) { if (!CINE || window.BattlePolish?.shake === false) return; kick.shake = Math.max(kick.shake, px); kick.shakeT = performance.now(); kick.shakeDur = ms }
   function roll(deg) { if (CINE) kick.roll += deg }

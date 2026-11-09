@@ -5,5 +5,8 @@ Sound effects in this folder come from Kenney's CC0 packs (https://kenney.nl) �
   Interface Sounds    by Kenney (www.kenney.nl)       — mirror: github.com/Calinou/kenney-interface-sounds   (ui-*)
   RPG Audio           by Kenney (www.kenney.nl)       — mirror: github.com/Boyquotes/kenney-rpg-audio-for-godot (coins, door-*, book-*, cloth, latch, creak, pot, leather, chop, knife, draw-knife, belt)
   Impact Sounds       by Kenney (www.kenney.nl)       — mirror: github.com/Boyquotes/kenney-impact-sounds-for-godot (step-*, hit-*)
+  Sci-fi Sounds       by Kenney (www.kenney.nl)       — mirror: github.com/Boyquotes/kenney-sci-fi-sounds-for-godot (mg-fire, mg-earth, mg-boom, mg-magic, mg-slime, mg-shield)
+  Digital Audio       by Kenney (www.kenney.nl)       — mirror: github.com/Boyquotes/kenney-digital-audio-for-godot (mg-cast, mg-heal, mg-lightning, mg-debuff, mg-buff, level-up, item-get, notify, defeat)
+  Music Jingles       by Kenney (www.kenney.nl)       — mirror: github.com/Boyquotes/kenney-music-jingles-for-godot (victory, quest-done, fanfare)
 
 Converted to small mono mp3 files with tools/build-sfx.py (loudness-normalised, silence trimmed). The catalog and the code that plays them: js/sfx.js.

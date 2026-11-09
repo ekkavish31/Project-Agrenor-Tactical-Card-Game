@@ -6,11 +6,12 @@
      Calinou/kenney-interface-sounds  (Kenney Interface Sounds)  → prefix if/
      Boyquotes/kenney-rpg-audio-for-godot  (Kenney RPG Audio)    → prefix rpg/
      Boyquotes/kenney-impact-sounds-for-godot (Kenney Impact Sounds) → prefix imp/
+     Boyquotes/kenney-sci-fi-sounds-for-godot (Kenney Sci-fi Sounds) → sf/ · kenney-digital-audio-for-godot → dg/ · kenney-music-jingles-for-godot → jg/
    Each file is converted to a small mono mp3 (the game already ships mp3 — Safari plays no Ogg). The list below is the CURATED set the game uses (js/sfx.js catalog). """
 import subprocess, sys, os, glob
 ROOT = sys.argv[1] if len(sys.argv) > 1 else '/home/user'
 OUT = os.path.join(os.path.dirname(__file__), '..', 'assets', 'audio', 'sfx', 'kenney')
-PACK = {'ui': 'calinou/kenney-ui-audio', 'if': 'calinou/kenney-interface-sounds', 'rpg': 'boyquotes/kenney-rpg-audio-for-godot', 'imp': 'boyquotes/kenney-impact-sounds-for-godot'}
+PACK = {'ui': 'calinou/kenney-ui-audio', 'if': 'calinou/kenney-interface-sounds', 'rpg': 'boyquotes/kenney-rpg-audio-for-godot', 'imp': 'boyquotes/kenney-impact-sounds-for-godot', 'sf': 'boyquotes/kenney-sci-fi-sounds-for-godot', 'dg': 'boyquotes/kenney-digital-audio-for-godot', 'jg': 'boyquotes/kenney-music-jingles-for-godot'}
 def find(pack, name):
     for ext in ('ogg', 'wav'):
         hits = glob.glob(os.path.join(ROOT, PACK[pack], '**', name + '.' + ext), recursive=True)
@@ -75,6 +76,26 @@ add('hit-glass', 'imp', 'impact_glass_light_000', 'impact_glass_medium_000')
 add('hit-bell', 'imp', 'impact_bell_heavy_000')
 add('hit-mining', 'imp', 'impact_mining_000', 'impact_mining_002')
 add('hit-tin', 'imp', 'impact_tin_medium_000')
+# ── magic, elements, buffs (digital + sci-fi packs: no recorded spell sounds exist in the free Kenney sets, these are the closest) ──
+add('mg-cast', 'dg', 'phaser_up_1', 'phaser_up_3', 'phase_jump_2')
+add('mg-magic', 'sf', 'force_field_001', 'force_field_003', 'force_field_000')
+add('mg-heal', 'dg', 'power_up_5', 'power_up_8', 'power_up_2')
+add('mg-lightning', 'dg', 'zap_1', 'zap_2', 'zap_two_tone')
+add('mg-fire', 'sf', 'thruster_fire_000', 'thruster_fire_002', 'thruster_fire_004')
+add('mg-earth', 'sf', 'explosion_crunch_000', 'explosion_crunch_002', 'low_frequency_explosion_000')
+add('mg-boom', 'sf', 'low_frequency_explosion_001', 'explosion_crunch_004')
+add('mg-slime', 'sf', 'slime_000', 'slime_001')
+add('mg-shield', 'sf', 'force_field_002', 'force_field_004')
+add('mg-debuff', 'dg', 'phaser_down_1', 'phaser_down_3', 'zap_three_tone_down')
+add('mg-buff', 'dg', 'phaser_up_4', 'phaser_up_6', 'power_up_4')
+# ── events / jingles ──
+add('level-up', 'dg', 'power_up_10', 'power_up_12')
+add('item-get', 'dg', 'pep_sound_3', 'pep_sound_5')
+add('notify', 'dg', 'pep_sound_1', 'two_tone_1')
+add('defeat', 'dg', 'low_three_tone', 'high_down')
+add('victory', 'jg', 'jingles_pizzi_0', 'jingles_pizzi_3', 'jingles_pizzi_5')
+add('quest-done', 'jg', 'jingles_pizzi_8', 'jingles_steel_1')
+add('fanfare', 'jg', 'jingles_nes_0', 'jingles_hit_3')
 os.makedirs(OUT, exist_ok=True)
 missing = []; total = 0
 for out, (pack, name) in sorted(SET.items()):

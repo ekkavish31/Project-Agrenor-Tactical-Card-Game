@@ -653,6 +653,7 @@
   async function step(to) {
     const t = tile(to.c, to.r), cost = G.stepCost(t), from = center(S.pos.c, S.pos.r), dst = center(to.c, to.r);
     token.walking = true; token.face = dst.x >= from.x ? 1 : -1;
+    try { const b = t.biome, sf = b === 'snow' ? 'snow' : /hills|stone|ash|volcano|highland|ruins/.test(b) ? 'stone' : 'grass'; window.Sfx?.play('step-' + sf, { vol: .9 }) } catch (e) { }   /* v98.298 · a footstep per tile */
     const dur = 260 + cost * 90, t0 = performance.now();
     await new Promise(res => { const tick = () => { const e = Math.min(1, (performance.now() - t0) / dur); token.x = from.x + (dst.x - from.x) * e; token.y = from.y + (dst.y - from.y) * e; cam.tx = token.x; cam.ty = token.y; if (e < 1) requestAnimationFrame(tick); else res() }; tick() });
     token.walking = false;
@@ -949,7 +950,7 @@
     let TM = {}; try { const T = window.Titles; if (T) { const g0 = WS.game(); { const ev = res.evolved || []; if (ev.length) { T.note(g0, 'evolve', ev.length); const k = ev.filter(e => e.dead).length; if (k) T.note(g0, 'evolveKill', k); window.Chaos?.seen(g0, ev) } } const got = T.battle(g0, { outcome: res.outcome, foe, boss: !!o.boss, elite, night, kills: res.kills || 0, hp0, hp1: S.hp, maxHp: S.maxHp, party: fighters.length, allyDown: (res.party || []).filter(r => r.hp <= 0).length }); TM = T.mods(g0); for (const d of got) { log('🏅 ได้รับฉายา «' + d.name + '» (' + T.TIERS[d.tier].name + ')'); toast('🏅 ฉายาใหม่ «' + d.name + '»'); if (d.tier >= 3) T.reveal(d) } if (got.length) WS.commit() } } catch (e) { }
     if (res.outcome === 'win') {
       S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (1 + (TM.gold || 0)) * (OBJ_GOLD[obj.split(':')[0]] || 1) * DIFF.gold); S.gold += gold; S.hp = Math.max(1, S.hp);
-      const loot = dropLoot(foe, here.biome, dang, o.boss, res.evolved);
+      const loot = dropLoot(foe, here.biome, dang, o.boss, res.evolved); if (loot && (loot.length || Object.keys(loot).length)) window.Sfx?.play('item-get');
       { const hp = window.Offices?.perk(S, 'hunter') || 0; if (hp) { S.food += hp; log('➶ พรานหลวงได้เสบียง +' + hp) } }   /* v97.57 · office perk */
       /* v94.06 F2: experience — the hero and the companions who fought */
       let jobRes = null; const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
@@ -957,7 +958,7 @@
         const xp = Math.round(Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }) * (VP('drill') ? 1.15 : 1) * (1 + (TM.xp || 0))), ups = Progression.gainHero(WS.game(), xp);
         { const c = WS.game().village.character; Object.assign(members[0], { gain: xp, lv1: c.level, xp1: c.xp }) }
         log('✦ EXP +' + xp + (ups.length ? ' · เลเวลอัป! Lv.' + ups[ups.length - 1] + ' (HP สูงสุด ' + S.maxHp + ')' : ''));
-        if (ups.length) toast('LEVEL UP! Lv.' + ups[ups.length - 1]);
+        if (ups.length) { toast('LEVEL UP! Lv.' + ups[ups.length - 1]); window.Sfx?.play('level-up') }
         for (const p of fighters) { const m = S.party.find(x => x.key === p.key); if (!m) continue; const u = Progression.gainAlly(m, Math.round(xp * .8)); if (u.length) log(m.name + ' เลเวลอัป Lv.' + u[u.length - 1] + ' (HP ' + m.max + ')'); const mm = members.find(x => x.ref === m); if (mm) Object.assign(mm, { gain: Math.round(xp * .8), lv1: m.level, xp1: m.xp }) }
         jobRes = Progression.gainJob ? Progression.gainJob(WS.game(), Math.round(xp * .7)) : null;   /* v97.18: job points */
         WS.commit();
