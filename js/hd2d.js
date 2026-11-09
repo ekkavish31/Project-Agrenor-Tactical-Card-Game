@@ -14,6 +14,11 @@ const css=document.createElement('style');css.textContent=`
 .hd2d .tilt{position:absolute;left:0;right:0;-webkit-backdrop-filter:blur(var(--b,3px));backdrop-filter:blur(var(--b,3px))}
 .hd2d .tilt.top{top:0;height:18%;-webkit-mask-image:linear-gradient(#000 0%,rgba(0,0,0,.6) 45%,transparent 100%);mask-image:linear-gradient(#000 0%,rgba(0,0,0,.6) 45%,transparent 100%)}
 .hd2d .tilt.bottom{bottom:0;height:15%;-webkit-mask-image:linear-gradient(transparent 0%,rgba(0,0,0,.6) 55%,#000 100%);mask-image:linear-gradient(transparent 0%,rgba(0,0,0,.6) 55%,#000 100%)}
+/* v98.330 · while the hero is walking the village the blurred top / bottom bands (a backdrop-filter that re-blurs the moving picture every frame) and the dust motes rest, and the bloom is skipped
+   (measured while walking: ≈ 26 of ≈ 55 ms per frame). They fade back in a moment after the hero stops. */
+.hd2d .tilt{transition:opacity .3s ease}
+.hd2d-moving .hd2d .tilt{opacity:0;transition:opacity .18s ease}
+.hd2d-moving .hd2d i{visibility:hidden}
 .hd2d .rays{position:absolute;inset:-4% -3%;opacity:.5;background-size:100% 100%;background-repeat:no-repeat;will-change:transform,opacity;animation:hd2dRays 14s ease-in-out infinite alternate}
 @keyframes hd2dRays{from{transform:translateX(-30px);opacity:.38}to{transform:translateX(30px);opacity:.58}}
 .hd2d .vig{position:absolute;inset:0;background:radial-gradient(ellipse 75% 70% at 50% 48%,transparent 55%,rgba(12,10,8,.5) 100%)}
@@ -34,7 +39,7 @@ function attach(canvas,o={}){if(!canvas||canvas._hd2dOverlay)return;canvas._hd2d
 // bloom: ¼-size copy, keep only bright parts, blur, add back with 'screen'
 let small=null;
 let bloomAt=0,bloomCost=0,bloomFor=null;
-function bloom(ctx,canvas,strength=.32,force=false){if(!opt.bloom||!canvas.width||document.documentElement.classList.contains('perf-lite'))return;const w=Math.max(1,canvas.width>>2),h=Math.max(1,canvas.height>>2);if(!small){small=document.createElement('canvas')}const resized=small.width!==w||small.height!==h;if(resized){small.width=w;small.height=h}
+function bloom(ctx,canvas,strength=.32,force=false){if(!opt.bloom||!canvas.width||document.documentElement.classList.contains('perf-lite')||document.documentElement.classList.contains('hd2d-moving'))return;const w=Math.max(1,canvas.width>>2),h=Math.max(1,canvas.height>>2);if(!small){small=document.createElement('canvas')}const resized=small.width!==w||small.height!==h;if(resized){small.width=w;small.height=h}
  /* v98.13 · the glow is a soft blur: rebuild it at most every max(140 ms, 6× its own cost), and just re-draw the last one in between */
  const now=performance.now();if(force||resized||canvas!==bloomFor||!bloomAt||now-bloomAt>Math.max(140,bloomCost*6)){bloomFor=canvas;const q=small.getContext('2d');q.globalCompositeOperation='copy';q.filter='brightness(.75) contrast(2.6) saturate(1.2) blur(2px)';q.drawImage(canvas,0,0,w,h);q.filter='none';q.globalCompositeOperation='source-over';bloomAt=performance.now();bloomCost=bloomAt-now}
 

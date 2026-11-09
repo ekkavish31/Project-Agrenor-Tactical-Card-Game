@@ -6,8 +6,10 @@
  /* v98.01 · grass drawn at 120px per tile (420 → 190 in v97.99 → 120): its clovers and daisies were head-sized next to the houses */
  const SIZE={grass:120,paving:240,'ground/cobble.png':200,'ground/plaza-slabs.png':330,'ground/dirt-road.png':300};
  const files={grass:'grass.png',paving:'paving.png',soil:'soil.png',details:'meadow-details.png',pond:'garden-pond.png',materials:'market-materials.png',equipment:'market-equipment.png',orders:'market-orders.png',props:'props.png',fountain:'fountain.png'};
- function image(src){if(!images.has(src)){const im=new Image();im.onload=()=>listeners.forEach(f=>f());im.src=src;images.set(src,im)}return images.get(src)}
- function asset(id){return image('assets/village-town/'+(files[id]||id))}
+ /* v98.330 · only a ground / village-sheet picture (asset()) arriving late asks for the whole ground to be repainted (0.1–1.5 s). The hero's walk frames and other pictures fetched by image(src)
+    are drawn every frame anyway: before, each of them finishing its download (the first walk in a new direction!) froze the village for ~1.4 s. */
+ function image(src,notify){if(!images.has(src)){const im=new Image();if(notify)im.onload=()=>listeners.forEach(f=>f());im.src=src;images.set(src,im)}return images.get(src)}
+ function asset(id){return image('assets/village-town/'+(files[id]||id),true)}
  function pattern(g,id){const im=asset(id);if(!im.complete||!im.naturalWidth)return null;let cache=patterns.get(g);if(!cache)patterns.set(g,cache=new Map());if(!cache.has(id)){const c=document.createElement('canvas');c.width=c.height=SIZE[id]||420;c.getContext('2d').drawImage(im,0,0,c.width,c.height);const pattern=g.createPattern(c,'repeat');if(SIZE[id])pattern.setTransform(new DOMMatrix().rotate(45));cache.set(id,pattern)}return cache.get(id)}
  function mask(im){/* v98.78 · remember the mask on the image object: VillageAlpha.get splits the file name out of the address on every call, and this runs several times per picture per frame */
   const known=masks.get(im);if(known)return known;const pre=root.VillageAlpha?.get(im.src,im.naturalWidth,im.naturalHeight);if(pre){masks.set(im,pre);return pre}if(masks.has(im))return masks.get(im);let out=null;try{const c=document.createElement('canvas');c.width=256;c.height=Math.max(1,Math.round(256*im.naturalHeight/im.naturalWidth));const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0,c.width,c.height);out={w:c.width,h:c.height,data:g.getImageData(0,0,c.width,c.height).data}}catch{}masks.set(im,out);return out}
