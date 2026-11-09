@@ -340,20 +340,35 @@ function occluders(ents) {
   }
   return out;
 }
+/* v98.327 · a prop that stands in front of a unit stays solid — only a soft aura of transparency opens around the unit behind it */
+let HOLE_CV = null;
+function propAura(ctx, c, e, t, bg) {
+  const hs = c._holes, k = c._ha ?? 0;
+  if (!hs || k < .02) return prop(ctx, c.prop, c.u, c.v, c.seed, t, bg);
+  const m = 34, x0 = Math.floor(e.x0 - m), y0 = Math.floor(e.y0 - m), w = Math.ceil(e.x1 - e.x0 + 2 * m), h = Math.ceil(e.foot - e.y0 + 2 * m + 12), sc = Math.max(1, ctx.getTransform().a);
+  HOLE_CV = HOLE_CV || document.createElement('canvas'); const W2 = Math.ceil(w * sc), H2 = Math.ceil(h * sc); if (HOLE_CV.width < W2 || HOLE_CV.height < H2) { HOLE_CV.width = Math.max(HOLE_CV.width, W2); HOLE_CV.height = Math.max(HOLE_CV.height, H2) }
+  const o = HOLE_CV.getContext('2d'); o.setTransform(1, 0, 0, 1, 0, 0); o.globalCompositeOperation = 'source-over'; o.clearRect(0, 0, HOLE_CV.width, HOLE_CV.height); o.setTransform(sc, 0, 0, sc, -x0 * sc, -y0 * sc);
+  prop(o, c.prop, c.u, c.v, c.seed, t, bg);
+  o.globalCompositeOperation = 'destination-out';
+  for (const q of hs) { const gr = o.createRadialGradient(q.x, q.y, q.r * .35, q.x, q.y, q.r); gr.addColorStop(0, `rgba(0,0,0,${k})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); o.fillStyle = gr; o.fillRect(q.x - q.r, q.y - q.r, q.r * 2, q.r * 2) }
+  ctx.drawImage(HOLE_CV, 0, 0, W2, H2, x0, y0, W2 / sc, H2 / sc);
+}
 /* standing props inside the field are drawn by town-battle together with the units, sorted by depth (v96: view depth + occluders) */
 window.TownBattleExtras = () => {
   const out = [], ents = [], D = window.FieldDepth;
   const props = [];
-  for (const c of FIELD.cells.values()) if (c.prop && c.prop !== 'pool') { const bg = !!c.big, o = bg ? 1 : .5, p = project(c.u + o, c.v + o), d = D(c.u + o, c.v + o) + .01, b = propBox(c.prop, c.seed, bg), e = { d, x0: p.x - b.w / 2, x1: p.x + b.w / 2, y0: p.y - b.h, foot: p.y }; e.cell = c; out.push({ y: p.y, d, fp: propFp(c, bg), box: { x0: e.x0, x1: e.x1, y0: e.y0, foot: e.foot }, label: c.prop, draw: (ctx, t) => { const a = c._fa ?? 1; if (a > .99) return prop(ctx, c.prop, c.u, c.v, c.seed, t, bg); ctx.save(); ctx.globalAlpha = a; prop(ctx, c.prop, c.u, c.v, c.seed, t, bg); ctx.restore() } }); ents.push(e); props.push(e) }
+  for (const c of FIELD.cells.values()) if (c.prop && c.prop !== 'pool') { const bg = !!c.big, o = bg ? 1 : .5, p = project(c.u + o, c.v + o), d = D(c.u + o, c.v + o) + .01, b = propBox(c.prop, c.seed, bg), e = { d, x0: p.x - b.w / 2, x1: p.x + b.w / 2, y0: p.y - b.h, foot: p.y }; e.cell = c; out.push({ y: p.y, d, fp: propFp(c, bg), box: { x0: e.x0, x1: e.x1, y0: e.y0, foot: e.foot }, label: c.prop, draw: (ctx, t) => propAura(ctx, c, e, t, bg) }); ents.push(e); props.push(e) }
   /* v97.01: tall grass is sorted with everyone else (it used to be drawn last, over units and trees standing behind it) */
   for (const c of FIELD.cells.values()) if (c.k === 'cover') out.push({ d: D(c.u + .5, c.v + .5) + .005, draw: (ctx, t) => cover(ctx, c, t) });
   const st = window.TownBattle?.state?.(); if (st) for (const u of st.units) { u._occ = false; u._occT = false; if (u.hp <= 0 && u.deadAt) continue; const p = project(u.vu, u.vv), h = 128 * (u.boss ? 1.3 : 1), e = { unit: u, d: D(u.vu, u.vv), x0: p.x - 38, x1: p.x + 38, y0: p.y - h, foot: p.y };
-    ents.push(e); /* a big tree or rock in front of a unit also leaves its ghost visible */ if (props.some(q => q.d > e.d + .02 && q.x0 < e.x1 - 12 && q.x1 > e.x0 + 12 && q.y0 < e.foot - 30 && q.foot > e.y0 + 30)) u._occ = true }
+    ents.push(e) }   /* v98.327 · no see-through ghost of a unit any more: ground in front hides it, props open a soft aura around it */
   /* v97.08 · a tree / rock standing in front of a unit or of the cell under the pointer fades out (Triangle Strategy style), smoothly */
   const hv = hoverCell && (() => { const p = project(hoverCell.u + .5, hoverCell.v + .5); return { d: D(hoverCell.u + .5, hoverCell.v + .5), x: p.x, y: p.y } })(), us = ents.filter(e => e.unit), now = performance.now(), dt = Math.min(.1, (now - (fadeT || now)) / 1000); fadeT = now;
-  for (const q of props) { const hit = us.some(e => q.d > e.d + .02 && q.x0 < e.x1 - 10 && q.x1 > e.x0 + 10 && q.y0 < e.foot - 20 && q.foot > e.y0 + 30) || (hv && q.d > hv.d + .02 && hv.x > q.x0 && hv.x < q.x1 && hv.y > q.y0 && hv.y < q.foot);
-    const c = q.cell, goal = hit ? .32 : 1; c._fa = (c._fa ?? 1) + (goal - (c._fa ?? 1)) * Math.min(1, dt * 9) }
-  const occ = occluders(ents); if (st) for (const u of st.units) if (u._occT) u._occ = true; return out.concat(occ);
+  for (const q of props) {
+    const hs = []; for (const e of us) if (q.d > e.d + .02 && q.x0 < e.x1 - 10 && q.x1 > e.x0 + 10 && q.y0 < e.foot - 20 && q.foot > e.y0 + 30) hs.push({ x: (e.x0 + e.x1) / 2, y: e.foot - 52, r: 74 });
+    if (hv && q.d > hv.d + .02 && hv.x > q.x0 && hv.x < q.x1 && hv.y > q.y0 && hv.y < q.foot) hs.push({ x: hv.x, y: hv.y - 16, r: 56 });
+    const c = q.cell; if (hs.length) c._holes = hs; c._ha = (c._ha ?? 0) + ((hs.length ? 1 : 0) - (c._ha ?? 0)) * Math.min(1, dt * 9); if (!hs.length && c._ha < .02) c._holes = null }
+  const occ = occluders(ents); const eds = window.FieldEdit?.items ? window.FieldEdit.items() : []; return out.concat(occ, eds);   /* BG editor rings sort with the units and props (v98.327) */
 };
 let fadeGround = null, fadeAt = 0, fadeT = 0, fadeMat = null;
 /* v97.14 · FFT-style turn: the whole field rotates in the ground plane. A turn of the ground by θ is an affine map on screen,
@@ -482,7 +497,6 @@ requestAnimationFrame(frame);
   for (const p of props) { if (p[0] === 'pool') prop(g, ...p, t) }
   for (const p of props) { if (p[0] !== 'pool') prop(g, ...p, t) }
   window.TownBattle?.draw?.(g, t);
-  window.FieldEdit?.draw?.(g, t);   // v98.276 · BG Editor overlay (only exists with ?edit=1)
   g.setTransform(1, 0, 0, 1, 0, 0); if (dio) FieldDiorama.grade(g, cv.width, cv.height, FIELD.biome, FIELD.night);
   if (FIELD.night) { g.fillStyle = 'rgba(10,18,55,.42)'; g.fillRect(0, 0, cv.width, cv.height) }
   panel(t);

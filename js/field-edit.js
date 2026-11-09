@@ -187,7 +187,14 @@
   /* ---------- overlay drawn inside the world transform (called from field-host frame) ---------- */
   window.FieldEdit = {
     active: true, ops: () => ops.slice(), save, push, build,
-    draw(g, t) {
+    /* v98.327 · the editor's ground rings are items of the battle's depth-sorted list (units / props in front of a cell hide its ring) */
+    items() {
+      const D = window.FieldDepth, out = [], add = (u, v, big, which) => out.push({ d: D(u + (big ? 1 : .5), v + (big ? 1 : .5)) - .05, draw: (g, t) => window.FieldEdit.draw(g, t, which) });
+      if (hover && !drag) add(hover.u, hover.v, false, 'hover'); if (sel?.unit) add(sel.unit.u, sel.unit.v, false, 'selu'); if (sel?.prop) add(sel.prop.u, sel.prop.v, sel.prop.big, 'selp');
+      if (drag?.to) add(drag.to.u, drag.to.v, drag.kind === 'prop' && drag.prop.big, 'drag'); else if (adding && hover) add(hover.u, hover.v, adding.big, 'add');
+      return out;
+    },
+    draw(g, t, which) {
       const G = window.GroundArtCode && GroundArtCode.enabled() ? window.GroundArtCode : window.GroundArt, cw = (u, v) => Math.abs(project(u + 1, v).x - project(u, v + 1).x);   /* v98.309 · the same code-drawn art as the battle */
       const pic = (name, u, v, big) => { if (!G) return false; const k = big ? 2 : 1, p = project(u + .5 * k, v + .5 * k), w = cw(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56, t) };   // v98.282 · the user's cell frames
       const ring = (u, v, big, col, fill) => window.FieldOcc ? FieldOcc.draw(g, u, v, () => ringRaw(u, v, big, col, fill)) : ringRaw(u, v, big, col, fill);   /* v98.325 · the same exact occlusion as the battle (js/field-host.js FieldOcc) */
@@ -197,11 +204,11 @@
         if (pic(name, u, v, big)) return;
  const cs = big ? [[u, v], [u + 2, v], [u + 2, v + 2], [u, v + 2]] : [[u, v], [u + 1, v], [u + 1, v + 1], [u, v + 1]]; g.beginPath(); cs.forEach(([a, b], i) => { const q = project(a, b); i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y) }); g.closePath(); if (fill) { g.fillStyle = fill; g.fill() } g.strokeStyle = col; g.lineWidth = 3; g.stroke() };
       g.save();
-      if (hover && !drag) { const p = project(hover.u + .5, hover.v + .5), w = cw(hover.u, hover.v) * 1.06; let ok = false; const f = () => { ok = !!(G && G.corners(g, p.x, p.y, w, w * .56, t)) }; window.FieldOcc ? FieldOcc.draw(g, hover.u, hover.v, f) : f(); if (!ok) ring(hover.u, hover.v, false, 'rgba(255,255,255,.55)') }
-      if (sel?.unit) ring(sel.unit.u, sel.unit.v, false, '#ffd34d', 'rgba(255,211,77,.18)');
-      if (sel?.prop) ring(sel.prop.u, sel.prop.v, sel.prop.big, '#ffd34d', 'rgba(255,211,77,.18)');
-      if (drag?.to) { const big = drag.kind === 'prop' && drag.prop.big; ring(drag.to.u, drag.to.v, big, drag.to.ok ? '#6fe08a' : '#ff6a5a', drag.to.ok ? 'rgba(111,224,138,.28)' : 'rgba(255,106,90,.28)') }
-      else if (adding && hover) { const p = { kind: adding.kind, big: adding.big }, ok = canPut(p, hover.u, hover.v); ring(hover.u, hover.v, adding.big, ok ? '#6fe08a' : '#ff6a5a', ok ? 'rgba(111,224,138,.25)' : 'rgba(255,106,90,.25)') }
+      if (hover && !drag && (!which || which === 'hover')) { const p = project(hover.u + .5, hover.v + .5), w = cw(hover.u, hover.v) * 1.06; let ok = false; const f = () => { ok = !!(G && G.corners(g, p.x, p.y, w, w * .56, t)) }; window.FieldOcc ? FieldOcc.draw(g, hover.u, hover.v, f) : f(); if (!ok) ring(hover.u, hover.v, false, 'rgba(255,255,255,.55)') }
+      if (sel?.unit && (!which || which === 'selu')) ring(sel.unit.u, sel.unit.v, false, '#ffd34d', 'rgba(255,211,77,.18)');
+      if (sel?.prop && (!which || which === 'selp')) ring(sel.prop.u, sel.prop.v, sel.prop.big, '#ffd34d', 'rgba(255,211,77,.18)');
+      if (drag?.to && (!which || which === 'drag')) { const big = drag.kind === 'prop' && drag.prop.big; ring(drag.to.u, drag.to.v, big, drag.to.ok ? '#6fe08a' : '#ff6a5a', drag.to.ok ? 'rgba(111,224,138,.28)' : 'rgba(255,106,90,.28)') }
+      else if (adding && hover && (!which || which === 'add')) { const p = { kind: adding.kind, big: adding.big }, ok = canPut(p, hover.u, hover.v); ring(hover.u, hover.v, adding.big, ok ? '#6fe08a' : '#ff6a5a', ok ? 'rgba(111,224,138,.25)' : 'rgba(255,106,90,.25)') }
       g.restore();
     }
   };
