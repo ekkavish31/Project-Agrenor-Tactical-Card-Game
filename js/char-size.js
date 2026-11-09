@@ -12,7 +12,6 @@
     HERO_M: 1.70,
     DRAW: Object.freeze({ hero: 1.6, ally: 1.45 }),
     MON: Object.freeze({ base: 1.6, k: .8 }),
-    BOSS_K: 1.25,                   /* v98.304 · a BOSS is its monster's lineup size × this (1.70 m hero → a 1.7 m monster boss stands 2.1 m) — one number for the whole game, no per-monster boss rows */
     VILLAGE_HERO_PX: 93.6,
     WORLD_HERO_PX: 76,
     INTERIOR_HERO_PX: 104,          /* hero canvas px inside a room (place-interior.html) at multiplier 1 */

@@ -1,0 +1,29 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>เทียบเอฟเฟกต์พื้นสนาม — ภาพเดิม vs วาดด้วยโค้ด</title>
+<style>body{margin:0;background:#1c2a1f;color:#f3ead0;font:14px system-ui,sans-serif}header{padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}h1{font-size:17px;margin:0 12px 0 0}
+button{background:#2c4437;color:#f1e6c4;border:1px solid #6f8b5b;border-radius:8px;padding:6px 12px;cursor:pointer}button.on{background:#c9a45a;color:#1d1608}canvas{display:block;margin:0 auto 18px;max-width:100%;border:1px solid #4d6656;border-radius:10px}
+p{margin:4px 16px 10px;color:#cfe0b0}</style></head><body>
+<header><h1>🧪 เทียบเอฟเฟกต์พื้นสนาม</h1><span>สไตล์วงแหวน/ลูกปัด:</span><button data-s="1" class="on">1 · เส้นคู่ + แสงวิ่ง</button><button data-s="2">2 · เส้น + ลูกปัดโคจร</button><span style="flex:1"></span><span>ซ้าย = ภาพเดิม · ขวา = วาดด้วยโค้ด</span></header>
+<p>ภาพเดิมเป็นเฟรมต่อๆ กัน (6–12 เฟรม) ภาพที่เจนมามีแสงไม่เท่ากันเฟรมต่อเฟรมเลยดูสั่น · แบบโค้ดคำนวณจากเวลาแบบต่อเนื่อง ไม่มีเฟรมกระโดด</p>
+<canvas id="cv" width="1100" height="640"></canvas>
+<script src="js/ground-art.js"></script><script src="js/ground-art-code.js"></script>
+<script>
+const cv=document.getElementById('cv'),g=cv.getContext('2d');let style=1;document.querySelectorAll('button[data-s]').forEach(b=>b.onclick=()=>{style=+b.dataset.s;document.querySelectorAll('button[data-s]').forEach(x=>x.classList.toggle('on',x===b))});
+const IMG={};const im=s=>{let i=IMG[s];if(!i){i=IMG[s]=new Image();i.src=s}return i.complete&&i.naturalWidth?i:null};
+function bg(x0,w,h){g.fillStyle='#4f7a43';g.fillRect(x0,0,w,h);g.strokeStyle='rgba(255,255,255,.1)';g.lineWidth=1;for(let i=-8;i<18;i++){g.beginPath();g.moveTo(x0+i*60,0);g.lineTo(x0+i*60+h,h);g.moveTo(x0+i*60+h,0);g.lineTo(x0+i*60,h);g.stroke()}}
+function label(t,x,y){g.fillStyle='#fff3d8';g.font='bold 13px system-ui';g.fillText(t,x,y)}
+function oldCrystal(kind,cx,cy,ph,t){const pic=im('assets/fx/plumbob-'+kind+'.webp');if(!pic)return;const pw=ph*100/160;g.drawImage(pic,(Math.floor(t/110)%8)*100,0,100,160,cx-pw/2,cy-ph/2,pw,ph)}
+function frameLoop(t){g.clearRect(0,0,1100,640);const half=550;bg(0,half,640);bg(half,half,640);g.fillStyle='rgba(0,0,0,.35)';g.fillRect(half-1,0,2,640);
+ label('ภาพเดิม (เฟรมต่อเฟรม)',12,20);label('วาดด้วยโค้ด (ต่อเนื่อง)',half+12,20);
+ // row 1 crystals
+ [['ally','ทีม (ทอง)'],['foe','ศัตรู (เงิน)'],['view','ดูข้อมูล (เทา)']].forEach(([k,n],i)=>{const x=95+i*170;oldCrystal(k==='view'?'ally':k,x,110+Math.sin(t*.0042)*5,120,t);GroundArtCode.crystal(g,half+x,110+Math.sin(t*.0042)*5,120,t,k);label(n,x-34,185);label(n,half+x-34,185)});
+ // row 2 rings
+ [[false,'ทีม'],[true,'ศัตรู']].forEach(([foe,n],i)=>{const x=130+i*220,y=270;GroundArt.ring(g,foe,x,y,150,t);GroundArtCode.ring(g,foe,half+x,y,150,t,style);label(n,x-12,310);label(n,half+x-12,310)});
+ // row 3 frames
+ GroundArtCode.COL.forEach((c,i)=>{const x=70+(i%6)*88,y=385+Math.floor(i/6)*0,w=82,h=50;GroundArt.frame(g,c,x,y,w,h);GroundArtCode.frame(g,c,half+x,y,w,h,t)});label('กรอบช่อง 6 สี',12,425);label('กรอบช่อง 6 สี',half+12,425);
+ // row 4 corners + hover
+ {const x=140,y=520,w=130,h=80;GroundArt.frame(g,'blue',x,y,w,h);GroundArt.corners(g,x,y,w,h,t);GroundArtCode.frame(g,'blue',half+x,y,w,h,t);GroundArtCode.corners(g,half+x,y,w,h,t)}
+ {const x=360,y=520,w=130,h=80;GroundArt.frame(g,'green',x,y,w,h);GroundArt.ring(g,false,x,y+4,w*.8,t);GroundArtCode.frame(g,'green',half+x,y,w,h,t);GroundArtCode.ring(g,false,half+x,y+4,w*.8,t,style)}
+ label('ช่องที่ชี้ + มุมเรืองแสง',12,610);label('ช่องที่ชี้ + มุมเรืองแสง',half+12,610);
+ requestAnimationFrame(frameLoop)}
+requestAnimationFrame(frameLoop);
+</script></body></html>
