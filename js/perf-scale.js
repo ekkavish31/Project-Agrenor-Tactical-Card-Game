@@ -14,11 +14,15 @@
   try { if (window.parent !== window && /[?&]perf=1/.test(parent.location.search)) return } catch (e) { }
   try { localStorage.removeItem('projectA.renderStep') } catch (e) { }   // old versions remembered a step; forget it
   try { if (localStorage.getItem('projectA.autoRes') === '0') return } catch (e) { }
-  const real = window.devicePixelRatio || 1, STEPS = [1, .75, .6, .5, .4];   // v98.78: one more step down for very slow screens
+  /* v98.329 · a Retina / 4K screen (ratio 2–3) means 4–9× the pixels of an ordinary one for the same picture: the village drew a 4-million-pixel canvas through several full-screen passes
+     (measured: 49 ms a frame at ratio 1, 198 ms at 2, 412 ms at 3) and only stepped down after ~15–25 s of stutter, every visit. Now: a computer draws at most 1.5× per screen pixel and starts at a
+     step that keeps the canvas under ~2.6 million pixels (a tablet / phone keeps its own, lower, budget below). Still adaptive both ways afterwards. */
+  const coarse0 = (() => { try { return matchMedia('(pointer:coarse)').matches } catch (e) { return false } })();
+  const real = coarse0 ? (window.devicePixelRatio || 1) : Math.min(window.devicePixelRatio || 1, 1.5), STEPS = [1, .75, .6, .5, .4];   // v98.78: one more step down for very slow screens
   /* v98.77 · tablets / phones start at a resolution their screen can afford instead of 100 %: a 2× tablet screen means a 4–6 million pixel canvas that is
      redrawn through several full-screen passes every frame (measured: ~4 fps in a headless 1180×820 @2× page). Budget ≈ 1.2 million pixels (v98.78: was 1.8 — the user's tablet still stuttered for the ~25 s the automatic steps took to get there); computers keep 100 % as before. */
   const coarse = (() => { try { return matchMedia('(pointer:coarse)').matches } catch (e) { return false } })();
-  const startStep = () => { if (!coarse) return 0; const px = (innerWidth || screen.width || 1024) * (innerHeight || screen.height || 768); for (let i = 0; i < STEPS.length; i++) if (px * Math.pow(real * STEPS[i], 2) <= 1.2e6) return i; return STEPS.length - 1 };
+  const startStep = () => { const budget = coarse ? 1.2e6 : 2.6e6; const px = (innerWidth || screen.width || 1024) * (innerHeight || screen.height || 768); for (let i = 0; i < STEPS.length; i++) if (px * Math.pow(real * STEPS[i], 2) <= budget) return i; return STEPS.length - 1 };
   let step = startStep();
   document.addEventListener('DOMContentLoaded', () => { try { document.documentElement.classList.toggle('perf-lite', step >= 2) } catch (e) { } });
   try { Object.defineProperty(window, 'devicePixelRatio', { configurable: true, get: () => real * STEPS[step] }) } catch (e) { return }

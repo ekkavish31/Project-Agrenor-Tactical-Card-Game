@@ -19,7 +19,9 @@
    buildings: {},
    frames: {},
    cast: {},
-   lib: []
+   lib: [],
+   starterFrame: {},
+   starterKeys: {}
   },
   place = null,
   frame = [],
@@ -33,7 +35,9 @@
   frames: {},
   cast: {},
   lib: [],
-  assets: []
+  assets: [],
+  starterFrame: {},   /* v98.329 · the frame the starter items of each place were laid out from (frozen: editing the blue grid / outer frame later never moves them) */
+  starterKeys: {}     /* v98.329 · which starter items each place has (a piece that was never in this list does not pop up by itself) */
  });
 
  function set(v) {
@@ -49,6 +53,8 @@
    // v94: the new villager homes (npc10…npc15) start at the same size as the other village houses until edited
    for (let i = 10; i <= 15; i++) if (!data.buildings['npc' + i]) data.buildings['npc' + i] = { sx: 0.73, sy: 0.73 };
    if (v.frames && typeof v.frames === 'object') data.frames = copy(v.frames);
+   if (v.starterFrame && typeof v.starterFrame === 'object') data.starterFrame = copy(v.starterFrame);
+   if (v.starterKeys && typeof v.starterKeys === 'object') data.starterKeys = copy(v.starterKeys);
    window.VillageFence?.set(v.fence);
    if (Array.isArray(v.assets)) data.assets = v.assets.filter(a => a && /^[a-z0-9-]{2,40}$/.test(a.id) && typeof a.name === 'string').map(a => ({ id: a.id, name: a.name.slice(0, 40), w: Math.max(30, Math.min(900, +a.w || 120)), ...(a.bld ? { bld: 1 } : {}), ...(typeof a.file === 'string' && /^assets\/[\w\/.-]+$/.test(a.file) ? { file: a.file } : {}), ...(a.ov ? { ov: 1 } : {}), ...(a.fx > 0 && a.fx < 1 && a.fy > 0 && a.fy <= 1 ? { fx: +a.fx, fy: +a.fy } : {}) }));
    registerAssets();
@@ -70,6 +76,8 @@
   if (data.added.length) out.added = copy(data.added);
   if (Object.keys(data.buildings).length) out.buildings = copy(data.buildings);
   if (Object.keys(data.frames).length) out.frames = copy(data.frames);
+  if (Object.keys(data.starterFrame).length) out.starterFrame = copy(data.starterFrame);
+  if (Object.keys(data.starterKeys).length) out.starterKeys = copy(data.starterKeys);
   if (data.lib.length) out.lib = copy(data.lib);
   if (data.assets.length) out.assets = copy(data.assets);
   const fc = window.VillageFence?.get(); if (fc) out.fence = fc;
@@ -331,9 +339,11 @@
   return m ? (DECOR_W[m[1] || m[2]]?.[0] || 'ของประดับ') : 'ของประดับ'
  };
  let grpYPrev = new Map(), grpYNow = new Map(), fixedFence = new Map(), grpFpPrev = new Map(), grpFpNow = new Map();
+ let suppressedStarter = [];
  const baseEstate = estateObjects;
  estateObjects = function() {
   frame = [];
+  suppressedStarter = [];
   fixedFence = new Map();
   grpYPrev = grpYNow;
   grpYNow = new Map();
@@ -345,6 +355,25 @@
   const sq = locations.find(o => o.id === 'square'),
    out = [],
    seen = {};
+  /* v98.329 · pass 1: the key of every starter item (same rule as pass 2) → a per-place list that is remembered with the layout */
+  const gen = {}, pre = {};
+  for (const it of list) {
+   if (it.fixed) continue;
+   if (it.frontageKey) { if (it.owner?.id) (gen[it.owner.id] ||= []).push(it.frontageKey); continue }   /* shop-front pieces (anvil, crates, racks…) found by js/village-frontage.js: remembered too */
+   let owner, rel;
+   if (it.owner && it.rel) { owner = it.owner.id; rel = it.rel }
+   else if (sq && it.x != null) { const w = inv(it.x, it.y), c = center(sq); owner = 'square'; rel = { u: w.u - c.u, v: w.v - c.v } }
+   else continue;
+   let key = owner + ':' + rel.u.toFixed(1) + ',' + rel.v.toFixed(1);
+   pre[key] = (pre[key] || 0) + 1; if (pre[key] > 1) key += '#' + pre[key];
+   (gen[owner] ||= []).push(key);
+  }
+  for (const [owner, keys] of Object.entries(gen)) {
+   const rec = data.starterKeys[owner];
+   if (!rec) { data.starterKeys[owner] = keys.slice(); continue }
+   const hit = rec.filter(k => keys.includes(k)).length;
+   if (hit < rec.length * .5) data.starterKeys[owner] = keys.slice();   /* the whole place changed shape (new size / new look): accept the new set instead of hiding everything */
+  }
   for (const it of list) {
    let owner, rel;
    if (it.fixed) { // fence pieces: laid out by the fence system, not hand-placed
@@ -369,6 +398,7 @@
    let key = it.frontageKey || owner + ':' + rel.u.toFixed(1) + ',' + rel.v.toFixed(1);
    seen[key] = (seen[key] || 0) + 1;
    if (seen[key] > 1) key += '#' + seen[key];
+   if (data.starterKeys[owner] && !data.starterKeys[owner].includes(key) && !data.edit[key]) { suppressedStarter.push(key); continue }   /* v98.329 · a starter piece this place never had before does not pop up by itself */
    const n0 = frame.length, e = entry(key, owner, it.x, it.y, it.draw, it, nameLabel(it.name) || labelOf(it.draw));
    /* v97.07: a deleted item adds no frame entry — naming "the last entry" crashed the whole map when it was the first one (frame empty) and renamed the wrong item otherwise */
    if (frame.length > n0) frame[frame.length - 1].name = it.name || null;
@@ -520,7 +550,10 @@
    if (f && Number.isFinite(f[k])) e[k] = f[k];
   if (!FP) return e;
   o.fpAuto = { u0: Math.min(FP.MAX, Math.max(.5, up2(-e.left))), u1: Math.min(FP.MAX, Math.max(.5, up2(e.right))), v0: Math.min(FP.MAX, Math.max(.5, up2(-e.back))), v1: Math.min(FP.MAX, Math.max(.5, up2(e.front))) };
-  const fp = stableDefaults ? o.fpAuto : FP.fpOf(o); // v91.46: starter items are laid out from the AUTOMATIC frame so moving the blue footprint never moves/loses them
+  /* v98.329 · …and from a FROZEN copy of that automatic frame: editing the outer frame / blue grid later (or opening the layout on another computer that has other numbers) no longer moves the starter items, so their saved moves / deletions keep matching */
+  const sf = data.starterFrame || (data.starterFrame = {});
+  if (!sf[o.id]) sf[o.id] = { ...o.fpAuto };
+  const fp = stableDefaults ? sf[o.id] : FP.fpOf(o); // v91.46: starter items are laid out from the AUTOMATIC frame so moving the blue footprint never moves/loses them
   e.left = -fp.u0; e.right = fp.u1; e.back = -fp.v0; e.front = fp.v1;
   return e
  };
@@ -3059,6 +3092,9 @@
   },
   itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner, hidden: E.hidden } : null },
   frameSig: () => JSON.stringify(data.frames),
+  /* v98.329 · starter-item memory: VillageAssetEdit.starterInfo() shows what was held back · resetStarter(id?) forgets the frozen frame + list of one place (or all) so they are laid out again from the current numbers */
+  starterInfo: () => ({ held: suppressedStarter.slice(), places: Object.fromEntries(Object.entries(data.starterKeys).map(([k, v]) => [k, v.length])) }),
+  resetStarter: id => { if (id) { delete data.starterFrame[id]; delete data.starterKeys[id] } else { data.starterFrame = {}; data.starterKeys = {} } terrainDirty = true },
   dropPlace,
   openWorld,
   purgeOrphans,
