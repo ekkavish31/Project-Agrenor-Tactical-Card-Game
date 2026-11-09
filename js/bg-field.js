@@ -74,7 +74,7 @@
 
   /* ---------- assets: drafts in this browser, then the files ---------- */
   const LS = 'bgAsset:', LSI = 'bgAssets:index';
-  const draftIds = () => { try { return JSON.parse(localStorage.getItem(LSI) || '[]') } catch (e) { return [] } };
+  const draftIds = () => { try { return JSON.parse(localStorage.getItem(LSI) || '[]').filter(id => !String(id).startsWith('_')) } catch (e) { return [] } };   /* v98.326 · ids starting with _ are temporary (ทดลองสนาม) and stay out of the library */
   function saveDraft(a) { try { localStorage.setItem(LS + a.id, JSON.stringify(a)); const l = draftIds().filter(x => x !== a.id); l.push(a.id); localStorage.setItem(LSI, JSON.stringify(l)); return true } catch (e) { return false } }
   function getDraft(id) { try { return JSON.parse(localStorage.getItem(LS + id) || 'null') } catch (e) { return null } }
   function readSync(path) { try { const x = new XMLHttpRequest(); x.open('GET', path, false); x.send(); return x.status === 200 ? JSON.parse(x.responseText) : null } catch (e) { return null } }

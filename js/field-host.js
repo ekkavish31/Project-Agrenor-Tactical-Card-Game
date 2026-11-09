@@ -425,6 +425,13 @@ if (window.FieldHeight) { document.body.append(compass); syncRose() }
 const turnBy = d => { turnView(d); setTimeout(syncRose, 40); setTimeout(syncRose, 700) };
 compass.querySelectorAll('button').forEach(b => b.onclick = () => turnBy(+b.dataset.d));
 addEventListener('keydown', e => { if (e.target.closest?.('input,textarea') || e.repeat) return; const k = e.key.toLowerCase(); if (k === 'q') turnBy(-1); else if (k === 'e') turnBy(1) });
+/* v98.326 · ทดลองสนาม: this run came from the BG editor's test button — a small pill to go back to editing */
+if (FQ.get('testplay') === '1') {
+  const b = document.createElement('button'); b.type = 'button'; b.id = 'testBack'; b.textContent = '🧪 โหมดทดลองสนาม · ↩ กลับไปแก้สนาม';
+  b.style.cssText = 'position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:100000;padding:6px 14px;border-radius:999px;border:1px solid #7fd08f;background:#1d3a28f2;color:#f4fff5;font:600 13px AgThai,system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 14px #0008';
+  b.onclick = () => { let u = ''; try { u = sessionStorage.getItem('fe-test-return') || '' } catch (e) { } if (!u) { const q = new URLSearchParams(location.search); q.delete('testplay'); q.set('edit', '1'); u = location.pathname + '?' + q.toString() } location.href = u };
+  document.body.append(b);
+}
 let hoverCell = null; cv.addEventListener('pointermove', e => { const w = world(e), c = inv(w.x, w.y); hoverCell = { u: Math.floor(c.u), v: Math.floor(c.v) } }); cv.addEventListener('pointerleave', () => hoverCell = null);
 let panelAt = 0;
 function panel(now) {

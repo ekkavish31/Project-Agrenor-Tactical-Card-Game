@@ -16,7 +16,7 @@
 #fePanel{position:fixed;left:10px;top:var(--rail-top,240px);width:236px;max-height:calc(100dvh - var(--rail-top,240px) - 14px);overflow:auto;z-index:80;display:flex;flex-direction:column;gap:4px;padding:8px 10px;background:#241d15ee;border:1px solid #c9893a;border-radius:12px;font:13px AgThai,ProjectThai,system-ui,sans-serif;color:#f3e7cf;box-shadow:0 6px 24px #0008}
 #fePanel button,#fePanel select{font:inherit;color:#f3e7cf;background:#3a2f22;border:1px solid #6a5434;border-radius:8px;padding:5px 10px;cursor:pointer}#fePanel select{width:100%}
 #fePanel button:hover:not(:disabled){background:#4a3a28;border-color:#e0b050}#fePanel button:disabled{opacity:.4;cursor:default}
-#fePanel .fe-h{display:flex;justify-content:space-between;align-items:center;gap:6px}#fePanel details{border-top:1px solid #6a543488;padding-top:3px}#fePanel summary{cursor:pointer;font-weight:700;color:#f0c46a;padding:3px 0}
+#fePanel .fe-test{width:100%;margin:2px 0 6px;padding:8px 10px;font-weight:700;background:#2f6a3e;border-color:#7fd08f;color:#f4fff5}#fePanel .fe-test:hover:not(:disabled){background:#3b8250}#fePanel .fe-h{display:flex;justify-content:space-between;align-items:center;gap:6px}#fePanel details{border-top:1px solid #6a543488;padding-top:3px}#fePanel summary{cursor:pointer;font-weight:700;color:#f0c46a;padding:3px 0}
 #fePanel .fe-row{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0}#fePanel .fe-row button{flex:1}#fePanel details>button,#fePanel details>select{display:block;width:100%;margin:4px 0}
 #fePanel.min{width:auto}#fePanel.min details{display:none}#fePanel.min .fe-h b{display:none}
 #fePanel .sep{width:1px;height:22px;background:#6a5434}#feInfo{color:#e6d3a9;font-size:12.5px;line-height:1.4;margin:2px 0 4px}#feHint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:80;background:#241d15d0;border:1px solid #6a5434;border-radius:10px;padding:6px 12px;font:12px AgThai,ProjectThai,system-ui,sans-serif;color:#cdbb92;max-width:94vw;text-align:center}`;
@@ -96,6 +96,11 @@
   /* ---------- BG Asset: save (draft in this browser + thumbnail), library, push ---------- */
   const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
   let curId = Q.get('bg') || '', curMeta = B.current ? { name: B.current.name, tags: B.current.tags, asked: 1 } : { name: '', tags: { kind: 'random', difficulty: 1, useInGame: false } };
+  if (curId === '_test') {   /* back from ทดลองสนาม: the draft carries the edits, the identity (name / file id) is the one you had before */
+    let r = {}; try { r = JSON.parse(sessionStorage.getItem('fe-test-meta') || '{}') } catch (e) { }
+    curId = r.id || ''; curMeta = { name: r.name || '', tags: r.tags || curMeta.tags, asked: r.asked ? 1 : 0 };
+    if (!curId) { const q0 = new URLSearchParams(location.search); q0.delete('bg'); history.replaceState(null, '', '?' + q0.toString()) }
+  }
   function thumb() {   // a small picture of the real field as it looks right now (webp data URL)
     try { const c = document.createElement('canvas'), w = 384, h = Math.round(w * cvs.height / cvs.width); c.width = w; c.height = h; c.getContext('2d').drawImage(cvs, 0, 0, w, h); return c.toDataURL('image/webp', .8) } catch (e) { return null }
   }
@@ -144,6 +149,7 @@
   /* ---------- panel ---------- */
   const panel = document.createElement('div'); panel.id = 'fePanel';
   panel.innerHTML = `<div class="fe-h"><b>🛠 แก้สนาม</b><button id="feToggle" title="ย่อ / ขยายแผงซ้าย">◀</button></div>
+<button id="feTest" class="fe-test" title="เปิดสนามที่เห็นนี้เข้าเล่นจริงในระบบเกม (HUD การ์ด เทิร์น ครบทุกอย่าง) · กด ↩ บนหน้าจอเพื่อกลับมาแก้ต่อ">▶ ทดลองสนาม (เล่นจริง)</button>
 <details open><summary>👤 ที่เลือก</summary><div id="feInfo"></div><div class="fe-row"><button id="feTurn" title="R">↻ หมุนทิศ</button><button id="feDup" title="D">⧉ ทำซ้ำ</button><button id="feDel" title="Del">🗑 ลบ</button></div><button id="feAnim" title="เปิดตัวแก้อนิเมชันของตัวละครนี้ (จากหน้า Animation) ข้างๆ">🎞 แก้อนิเมชันตัวนี้</button></details>
 <details open><summary>＋ เพิ่มของลงสนาม</summary><select id="feAdd" title="เลือกของ แล้วคลิกช่องบนสนาม"><option value="">＋ เพิ่มของ…</option></select></details>
 <details open><summary>⛰ ทางลาด</summary><select id="feRamp" title="หน้าตาทางลาดทั้งสนาม"><option value="auto">อัตโนมัติ (หิน/ปูน = บันได · ธรรมชาติ = ลาด)</option><option value="slope">ทางลาดเรียบทั้งหมด</option><option value="steps">บันไดหินทุกทางลาด</option><option value="wood">บันไดไม้ทุกทางลาด</option></select></details>
@@ -156,6 +162,13 @@
   $('feAdd').onchange = e => { const [k, b] = e.target.value.split('|'); adding = k ? { kind: k, big: b === '1' } : null; sync() };
   $('feTurn').onclick = turnUnit; $('feDup').onclick = dupProp; $('feDel').onclick = delSel; $('feToggle').onclick = () => { panel.classList.toggle('min'); $('feToggle').textContent = panel.classList.contains('min') ? '▶' : '◀' };
   $('feAnim').onclick = () => { const u = sel?.unit; if (!u) return; try { parent.postMessage({ type: 'fe-open-anim', key: String(u.key || u.kind || u.id || ''), name: u.name || u.key || u.kind || '' }, '*') } catch (e) { note('เปิดตัวแก้อนิเมชันไม่ได้ (ต้องเปิดจากหน้า BG editor)') } };
+  /* v98.326 · ทดลองสนาม: save what you see as a temporary draft (_test), reopen the page WITHOUT ?edit=1 so the real game runs it (HUD, cards, turns, AI); a pill on the game page brings you back here */
+  $('feTest').onclick = () => {
+    const a = build(); a.id = '_test'; a.name = '(ทดลองสนาม)'; a.thumb = ''; if (!B.saveDraft(a)) return note('เปิดโหมดทดลองไม่ได้ (พื้นที่เบราว์เซอร์เต็ม?)');
+    const back = new URLSearchParams(location.search); back.set('bg', '_test');   /* coming back reopens the test draft: nothing you edited is lost */
+    try { sessionStorage.setItem('fe-test-return', location.pathname + '?' + back.toString()); sessionStorage.setItem('fe-test-meta', JSON.stringify({ id: curId, name: curMeta.name, tags: curMeta.tags, asked: curMeta.asked || 0 })) } catch (e) { }
+    const q = new URLSearchParams(location.search); q.delete('edit'); q.set('bg', '_test'); q.set('testplay', '1'); location.search = q.toString();
+  };
   $('feUndo').onclick = undo; $('feRedo').onclick = redo; $('feSave').onclick = save; $('fePush').onclick = push; $('feReset').onclick = reset;
   { const ix = B.fetchIndex(); for (const a of ix) { const o = document.createElement('option'); o.value = a.id; o.textContent = (a.draft ? '✎ ' : '') + (a.name || a.id) + ' · ' + a.biome; $('feLib').appendChild(o) } $('feLib').value = curId && ix.some(a => a.id === curId) ? curId : ''; $('feLib').onchange = e => { const v = e.target.value; if (v) openAsset(v === '__new' ? '' : v) } }
   let noteT = 0, noteMsg = '';
