@@ -56,6 +56,7 @@
     const v = g.village ||= {};
     if (!Number.isFinite(g.day)) g.day = 1; if (!Number.isFinite(g.minutes)) g.minutes = 480;
     if (!Number.isFinite(g.hp)) g.hp = MAX_HP; g.fatigue = 0;   /* v98.294 · fatigue is switched off (old saves are read, the value is dropped) */
+    if (root.Injury) { try { g.injuries ||= {}; root.Injury.sync(g) } catch (e) { } }   /* v98.295 · wounds heal day by day (js/injury.js) */
     v.coins ??= 80; v.materials ||= {}; v.materials.food ??= 0; v.bag ||= {};
     v.party ||= []; v.bench ||= []; v.recruit ||= {}; v.battles ??= 0; v.kills ??= 0;
     /* v98.234 · minimum team of two: the other hero (พี่ชาย/น้องสาว) is always in the travelling party (new saves and old ones) */

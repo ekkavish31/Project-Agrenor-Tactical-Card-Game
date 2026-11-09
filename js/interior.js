@@ -650,11 +650,12 @@
     const here = [...people.values()].filter(a => !a.leaving);
     const html = `<h1>${esc(NAME)}</h1><div class="sub">Fernvale · ${window.WorldState?.season ? window.WorldState.season(c.day)[2] + ' ' : ''}วันที่ ${c.day} · ${icon} ${CLK.label(c.hour)}</div>
       <div class="row"><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span><span>ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</span></div>
-      <div>${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}${KIND === 'farm' ? (() => { const G = farmG(), b = G ? window.Garden.badge(G) : ''; const Gd = window.Garden, c = G ? Gd.fieldCount(G) : null; return '<div style="font-size:12px;margin:2px 0">🌱 เมล็ดในมือ <select id="fmSeed"><option value="">— เลือกตอนปลูก —</option>' + Object.entries(Gd.CROPS).filter(([k]) => Gd.canPlant(k)).map(([k, C]) => `<option value="${k}" ${k === seedPick ? 'selected' : ''}>${C.icon} ${C.name} ${C.seed}💰</option>`).join('') + '</select></div>' + (c ? `<div style="font-size:12px">แปลงไถแล้ว ${c.soil} · ปลูก ${c.planted} · ต้องถาง ${c.debris}</div>` : '') + '<button id="fmOpen">🌾 จัดการไร่' + b + '</button><button id="fmWater">💧 รดน้ำทุกแปลง</button><button id="fmHarvest">🧺 เก็บทุกแปลงที่สุก</button>' })() : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
+      <div>${KIND === 'healer' ? '<button id="inWard">🏥 ห้องผู้ป่วย</button>' : ''}${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}${KIND === 'farm' ? (() => { const G = farmG(), b = G ? window.Garden.badge(G) : ''; const Gd = window.Garden, c = G ? Gd.fieldCount(G) : null; return '<div style="font-size:12px;margin:2px 0">🌱 เมล็ดในมือ <select id="fmSeed"><option value="">— เลือกตอนปลูก —</option>' + Object.entries(Gd.CROPS).filter(([k]) => Gd.canPlant(k)).map(([k, C]) => `<option value="${k}" ${k === seedPick ? 'selected' : ''}>${C.icon} ${C.name} ${C.seed}💰</option>`).join('') + '</select></div>' + (c ? `<div style="font-size:12px">แปลงไถแล้ว ${c.soil} · ปลูก ${c.planted} · ต้องถาง ${c.debris}</div>` : '') + '<button id="fmOpen">🌾 จัดการไร่' + b + '</button><button id="fmWater">💧 รดน้ำทุกแปลง</button><button id="fmHarvest">🧺 เก็บทุกแปลงที่สุก</button>' })() : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
       <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : fill(a.p.role))}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">${KIND === 'farm' ? 'คลิกช่องในไร่ = ถาง → ไถ → ปลูก → รดน้ำ → เก็บ · กระท่อม = จัดการไร่ · กล่องส่งขาย = ขายของในตะกร้า · คอก = ลูบหัวสัตว์ · บ่อน้ำ = ตกปลา · ประตูซ้าย = ออก' : 'คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก'}</div>`;
     if (html === hud._html) return; hud._html = html; hud.innerHTML = html;   // only rebuild when something changed (keeps clicks reliable)
     hud.querySelector('#inOut').onclick = () => walkTo(DOOR, leave);
+    if (hud.querySelector('#inWard')) hud.querySelector('#inWard').onclick = () => openWard();
     if (KIND === 'farm') {
       hud.querySelector('#fmOpen').onclick = () => openFarm();
       hud.querySelector('#fmSeed').onchange = e => { seedPick = e.target.value; hud._html = '' };
@@ -691,6 +692,24 @@
     if (msg === 'seed') return openFarm(i); if (msg) toast(msg);
   }
   if (KIND === 'farm') window.FarmScene = { go: (u, v) => walkTo({ u, v }), cell: (u, v) => screen(u + .5, v + .5), act: i => fieldAction(i), ship: () => shipAll(), pen: () => penAction(), seed: k => { seedPick = k }, screenOf: i => { const it = R.items.find(x => x.k === 'ftile' && x.idx === i); return it && screen(it.u + .5, it.v + .5) } };   /* for tests and tools */
+  /* v98.295 · the ward of the healer (js/injury.js): who is wounded, put a heavily wounded one in a bed (paid by the day), take them home, visit */
+  function openWard() {
+    const I = window.Injury, g = window.WorldState?.game?.(); if (!I || !g) return toast('ระบบบาดเจ็บยังไม่พร้อม');
+    close(); modalOpen = true; const TOWN = 'fernvale', q = I.quality(TOWN), v = g.village || {};
+    const people = [{ id: 'hero', name: heroName() }, { id: 'sib', name: v.siblingName || 'น้อง' }, ...[...(v.party || []), ...(v.bench || [])].filter(m => m.key !== 'sib').map(m => ({ id: m.key, name: m.name }))];
+    const day = CLK.read().day, rows = people.filter(p => I.hurt(g, p.id) || I.of(g, p.id)).map(p => {
+      const r = I.of(g, p.id), heavy = I.heavyParts(g, p.id).length > 0;
+      return `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin:8px 0;padding:6px 8px;background:#fff7e3;border-radius:8px"><span><b>${esc(p.name)}</b> · ${esc(I.describe(g, p.id))}${r.bed ? ' · 🛏 นอนพักอยู่' : ''}</span><span>${heavy && !r.bed ? `<button data-a="admit" data-id="${p.id}">ฝากรักษา ${q.cost}💰/วัน</button>` : ''}${r.bed ? `<button data-a="out" data-id="${p.id}">รับกลับ</button>` : ''}${r.bed && r.visitDay !== day ? `<button data-a="visit" data-id="${p.id}">เยี่ยม</button>` : ''}</span></div>`;
+    }).join('');
+    const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
+    bg.innerHTML = `<div class="in-dlg" style="grid-template-columns:1fr"><div><h2>🏥 ห้องผู้ป่วย</h2><p>บาดเจ็บหนักหายได้เฉพาะที่นี่ · เตียงเมืองเล็ก ${q.cost}💰/วัน · ยิ่งนอนนาน โอกาสหายยิ่งสูงขึ้นทุกเช้า</p>${rows || '<p>ตอนนี้ไม่มีใครบาดเจ็บ 🙂</p>'}<div class="acts"><button class="ghost" data-a="x">ออก</button></div></div></div>`;
+    document.body.append(bg); dlg = bg;
+    bg.onclick = e => { const b = e.target.closest('[data-a]'); if (e.target === bg || b?.dataset.a === 'x') return close(); if (!b) return; const id = b.dataset.id;
+      if (b.dataset.a === 'admit') { const r = I.admit(g, id, TOWN); toast(r.ok ? '🛏 รับเข้าพักฟื้นแล้ว · ' + r.cost + '💰/วัน' : r.why) }
+      else if (b.dataset.a === 'out') { I.discharge(g, id); toast('รับกลับบ้านแล้ว') }
+      else if (b.dataset.a === 'visit') { const r = I.visit(g, id, day); if (r.ok) { try { if (MIND && L.P[id]) { MIND.affect(id, r.rel); MIND.save() } } catch (e) { } toast('💛 เยี่ยมไข้ · ความสนิท +' + r.rel + ' · พรุ่งนี้หายง่ายขึ้นเล็กน้อย') } }
+      try { window.WorldState.commit?.() } catch (e) { } close(); openWard() };
+  }
   /* v97.84 · the cabin: the farm's book, or a bed to sleep off the day's clearing */
   function cabinMenu() {
     close(); modalOpen = true; const bg = document.createElement('div'); bg.className = 'in-dlg-bg';

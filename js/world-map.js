@@ -614,6 +614,11 @@
   const BOSS_NAME = { frostQueen: 'ราชินีน้ำแข็งแห่งศาลหิมะ', wolf: 'จ่าฝูงหมาป่า', golem: 'โกเล็มหิน', slime: 'สไลม์ยักษ์', bandit: 'หัวหน้าโจร', kobold: 'หัวหน้าโคโบลด์' };
   /* warm the browser cache with one hidden battle page so the first real fight opens quickly */
   function warm() { if (document.getElementById('wmWarm')) return; const f = document.createElement('iframe'); f.id = 'wmWarm'; f.style.cssText = 'position:fixed;width:2px;height:2px;left:-10px;top:-10px;opacity:0;pointer-events:none;border:0'; f.src = 'battle-field.html?battle=1&embed=1&warm=1'; document.body.append(f); const on = e => { if (e.data?.type === 'agrenor-battle-ready' && e.data.warm) { removeEventListener('message', on); setTimeout(() => f.remove(), 500) } }; addEventListener('message', on); setTimeout(() => f.remove(), 60000) }
+  /* v98.295 · a fallen character may be wounded (js/injury.js) — random part, light or heavy; heavy ones mend only in a hospital */
+  function woundRoll(key, name, outcome) {
+    const I = window.Injury; if (!I) return; const w = I.roll(WS.game(), key, { lose: outcome === 'lose' }); if (!w) return;
+    const t = name + ' ' + w.name + (w.lv === 'heavy' ? 'บาดเจ็บหนัก — ต้องไปพักฟื้นที่โรงพยาบาล' : 'บาดเจ็บ — พักสักพักจะหาย'); log('🩹 ' + t); toast('🩹 ' + t); WS.commit();
+  }
   async function chooseDest(id) {
     setTimeout(warm, 2500);
     S.dest = id; const d = destOf(); log('รับภารกิจ: ' + d.name); S.leftDay = S.day; ev('journey:start', { dest: d.id, destName: d.name }); save(); fogDirty = true; hudSync();
@@ -918,7 +923,7 @@
       const k = cand[0]; used[k] = (used[k] || 0) + 1; group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
     const hp0 = S.hp;   /* v98.41 · for titles: was the win flawless / a close call */
-    const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
+    const fighters = S.party.filter(p => p.hp > 0 && (!window.Injury || Injury.canFight(WS.game(), p.key))), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
     const tut = (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
     /* v97.22 · battle objectives: a night camp raid → hold the camp banner · an ambush → sometimes break out to the map edge
        · an elite group → bring down its leader · now and then: just hold out. The prologue and bosses always fight to the end. */
@@ -934,7 +939,8 @@
     const res = await resP;
     fr.classList.remove('on'); await wait(380); fr.remove();
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
-    for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ'); ev('party:ko', { who: p.key, whoName: p.name }) } } }
+    for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ'); ev('party:ko', { who: p.key, whoName: p.name }); woundRoll(p.key, p.name, res.outcome) } } }
+    if ((res.hp ?? 1) <= 0) woundRoll('hero', WS.heroName?.() || 'ตัวเอก', res.outcome);   /* v98.295 · the hero fell: maybe a wound too */
     { const ST = window.Settlements; if (ST && ST.load(S) && (res.outcome === 'lose' || res.outcome === 'flee')) { const lost = ST.loseCargo(S, ST.escorted(S) ? .1 : res.outcome === 'lose' ? .5 : .25); if (lost.length) { log('📦 สินค้าหายระหว่างหนี/พ่ายแพ้: ' + lost.join(' · ')); toast('📦 สินค้าหาย ' + lost.join(' · ')) } } }   /* v97.54 · T6 */
     if (fierce && res.outcome !== 'flee') ev('night:terror', { foe, biome: here.biome });
     if (!o.boss) ev(res.outcome === 'win' ? 'battle:win' : res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome });
