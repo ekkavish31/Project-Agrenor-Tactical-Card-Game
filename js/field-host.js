@@ -399,7 +399,8 @@ addEventListener('keydown', e => { if (e.target.closest?.('input,textarea') || e
 let hoverCell = null; cv.addEventListener('pointermove', e => { const w = world(e), c = inv(w.x, w.y); hoverCell = { u: Math.floor(c.u), v: Math.floor(c.v) } }); cv.addEventListener('pointerleave', () => hoverCell = null);
 let panelAt = 0;
 function panel(now) {
-  if (now - panelAt < 150 || !window.FieldHeight) return; panelAt = now;
+  if (now - panelAt < 150 || !window.FieldHeight) return;
+  if (new URLSearchParams(location.search).get('edit') === '1') { ui.querySelectorAll('.cell,.unit').forEach(x => x.style.display = 'none'); return }   /* v98.311 · BG editor: no game hover chips */ panelAt = now;
   const st = window.TownBattle?.state?.(), box = ui.querySelector('.unit'); if (!st) { box.style.display = 'none'; return }
   const alive = st.units.filter(u => u.hp > 0), u = (hoverCell && alive.find(x => x.u === hoverCell.u && x.v === hoverCell.v)) || (st.turn === 'ally' && st.cur && alive.includes(st.cur) && st.cur) || (st.target && alive.find(x => x.id === st.target)) || alive.find(x => x.id === 'hero') || alive[0];
   /* v97.08 · the cell under the pointer: height and ground type */

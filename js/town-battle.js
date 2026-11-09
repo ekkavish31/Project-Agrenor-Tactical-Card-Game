@@ -12,7 +12,7 @@
    them back) · procedural battle sounds (BattlePolish) · smaller arena (r 5), fighters start closer, monster HP ×1.6 (?hp=). */
 (function () {
   'use strict';
-  const Q = new URLSearchParams(location.search), ON = Q.get('battle') === '1';
+  const Q = new URLSearchParams(location.search), ON = Q.get('battle') === '1', EDIT = Q.get('edit') === '1';   /* v98.311 · EDIT = the BG editor owns the pointer + keys: the game's own walk / attack / hover cursor are OFF */
   if (!ON) {
     window.TownBattle = { active: () => false };
     /* v92.12: the way out of the village — a button to the world map (not in the editor) */
@@ -145,6 +145,7 @@
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
   }
+  if (EDIT) { const sx = document.createElement('style'); sx.textContent = '#fbBar,.fb-show,.fb-fly,.fb-banner,.fb-toast,#fbHand,#fbActions,#fbAlly,#fbHint,#fbIntro,#fbInspect,#fbQueue,#fbLbTop,#fbLbBot,#fbFace,#fbCoach,#fbHud,#fbPause,#menuBtn{display:none!important}'; document.head.append(sx) }   /* v98.311 · BG editor: no game HUD */
   function refresh() { if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null;
     /* v98.244 · second layer: where the farthest move card in hand would take you */
     if (inspectU && (inspectU.hp <= 0 || !st.units.includes(inspectU))) inspectU = null; inspectMap = inspectU && !st.outcome ? FB.reach(st, inspectU, inspectU.move || 4) : null; inspectSync();
@@ -769,7 +770,7 @@
   let actUnit = null, auto = false, autoRun = false;
   /* v97.28 · companions speak in battle (js/party-talk.js, their village voice): at the start, on a win, under 30 % HP and when they fall */
   let sayB = null;
-  function say(u, kind) { const t = u?.key && window.PartyTalk?.line(u.key, kind); if (t) sayB = { unit: u, text: t, t0: now(), until: now() + 2600 } }
+  function say(u, kind) { if (EDIT) return; const t = u?.key && window.PartyTalk?.line(u.key, kind); if (t) sayB = { unit: u, text: t, t0: now(), until: now() + 2600 } }
   function talkCheck() { for (const a of FB.allies(st)) { if (a.hp <= 0 && !a._saidDown) { a._saidDown = a._saidLow = true; say(a, 'down') } else if (a.hp > 0 && a.hp <= a.maxHp * .3 && !a._saidLow) { a._saidLow = true; say(a, 'low') } } }
   function drawSay(g) {
     if (!sayB || now() > sayB.until) return; const u = sayB.unit, q = project(u.vu, u.vv), a = Math.min(1, (sayB.until - now()) / 300, (now() - sayB.t0) / 150);
@@ -905,6 +906,7 @@
       { t: 'การ์ดปีนป่าย กระโจน หินถล่ม ใช้ความสูงให้ได้เปรียบ · ผลักศัตรูตกผาเสีย HP เพิ่ม' }]
   };
   function coach() {
+    if (EDIT) return;
     const list = TUT && COACH[TUT]; let d = document.getElementById('fbCoach');
     if (!list || !st || st.outcome || coachState.i >= list.length) { d?.remove(); return }
     const c = list[coachState.i]; if (c.done && c.done()) { coachState.i++; sfx('cast', .25); return coach() }
@@ -972,7 +974,7 @@
       else if (a === 'new') { const b = e.target.closest('button'); if (b.dataset.sure) { pauseMenu(); document.querySelectorAll('.fb-show,.fb-fly,#fbBar').forEach(x => x.remove()); build(); userCam = false; cam.set = false; startTurnShow(true) } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อเริ่มใหม่' } } };
   }
   addEventListener('keydown', e => {
-    if (!ON || !st || facing || e.target.closest?.('input,textarea') || e.repeat) return;
+    if (EDIT || !ON || !st || facing || e.target.closest?.('input,textarea') || e.repeat) return;
     if (e.key === 'Escape') { if (pauseEl) pauseMenu(); else if (pend) { pend = null; markAuto() } else if (!document.querySelector('dialog[open]')) pauseMenu(); return }
     if (pauseEl || busy || st.outcome) return;
     const k = e.key.toLowerCase();
@@ -1322,9 +1324,9 @@
       const col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k]; if (col) { g.fillStyle = col; g.fill() }
       g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke();
     }
-    if (inspectMap && !busy) { const foeI = inspectU.side === 'monster'; for (const e of inspectMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = foeI ? 'rgba(236,96,72,.30)' : 'rgba(150,200,255,.28)'; g.fill(); g.strokeStyle = foeI ? 'rgba(255,170,150,.9)' : 'rgba(200,225,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.stroke(); g.setLineDash([]) } }   /* next-turn cells of the picked fighter */
-    if (farMap && !busy) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }   /* yellow = needs the farthest move card */
-    if (reachMap && !busy) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
+    if (inspectMap && !busy && !EDIT) { const foeI = inspectU.side === 'monster'; for (const e of inspectMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = foeI ? 'rgba(236,96,72,.30)' : 'rgba(150,200,255,.28)'; g.fill(); g.strokeStyle = foeI ? 'rgba(255,170,150,.9)' : 'rgba(200,225,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.stroke(); g.setLineDash([]) } }   /* next-turn cells of the picked fighter */
+    if (farMap && !busy && !EDIT) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }   /* yellow = needs the farthest move card */
+    if (reachMap && !busy && !EDIT) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
     /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
     if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); poly(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
       const p = project(c.u + .5, c.v + .5); g.font = '16px AgThai,system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(esc_ ? '⇲' : '🚩', p.x, p.y + 5 - 3 * pul) }
@@ -1336,7 +1338,7 @@
     if (dmgShow && !busy && dmgShow.target.hp > 0) { const q = project(dmgShow.target.vu, dmgShow.target.vv), txt = '−' + dmgShow.total + (dmgShow.kill ? ' ☠' : ''); g.save(); g.font = '900 24px AgThai,system-ui,"Noto Sans Thai",sans-serif'; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = dmgShow.kill ? '#ffe14d' : '#ffd0a0'; const y = q.y - UNIT * 1.75 - 4 * Math.sin(now() * .006); g.strokeText(txt, q.x, y); g.fillText(txt, q.x, y); g.restore() }
     if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }
     /* enemies some playable card can reach: red; the chosen target: gold */
-    if (!busy && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range + (FB.cardRule(c.id).range > 1 ? h.rangePlus || 0 : 0) : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
+    if (!busy && !EDIT && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range + (FB.cardRule(c.id).range > 1 ? h.rangePlus || 0 : 0) : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
     if (tg) { if (!(cellFrame(g, 'red', tg.u, tg.v) && footRing(g, tg, true, t))) { poly(g, tg.u, tg.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3.5; g.setLineDash([6, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
     for (const a of FB.allies(st)) if (a.hp > 0) { poly(g, a.u, a.v); g.strokeStyle = 'rgba(127,200,160,.7)'; g.lineWidth = 1.5; g.stroke() }
     if (!(st.turn === 'hero' && !st.outcome && footRing(g, h, false, t))) { poly(g, h.u, h.v); g.strokeStyle = '#6fd18a'; g.lineWidth = 2; g.stroke() }
@@ -1347,7 +1349,7 @@
     if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { if (!footRing(g, st.cur, false, t)) { poly(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() } }
     if (pendAlly?.to && !busy) { poly(g, pendAlly.to.u, pendAlly.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pendAlly.to.u, pendAlly.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
     if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pend.to.u, pend.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
-    if (typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; G?.corners(g, p.x, p.y, w, w * .56, t) }   /* v98.282 · glowing corners on the cell under the mouse */
+    if (!EDIT && typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; G?.corners(g, p.x, p.y, w, w * .56, t) }   /* v98.282 · glowing corners on the cell under the mouse */
     g.restore();
     if (CINE) spotlight(g, cine ? [cine.a, cine.b] : st.units.filter(u => u.hp > 0));
     glowDraw(g, t);
@@ -1463,7 +1465,7 @@
   }
   /* the page's own pointerup is replaced by TownUX, so the battle listens for a plain click itself (no drag = click) */
   { let down = null; cv.addEventListener('pointerdown', e => { if (e.button === 0) down = { x: e.clientX, y: e.clientY } }, true);
-    cv.addEventListener('pointerup', e => { if (e.button !== 0 || !down) return; const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5; down = null; if (moved) userCam = true; else click(world(e)) }, true);
+    cv.addEventListener('pointerup', e => { if (e.button !== 0 || !down) return; const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5; down = null; if (moved) userCam = true; else if (!EDIT) click(world(e)) }, true);
     cv.addEventListener('wheel', () => { userCam = true }, true) }
   /* runs before the frame's camera transform: TownUX re-centres on the village hero every frame, so the arena has to win after it */
   function pre() { if (st && (!userCam || cine)) focusCamera(); else if (kick.roll) { kick.roll = 0; cv.style.transform = '' } }
