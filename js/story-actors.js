@@ -10,11 +10,11 @@
   'use strict';
   /* painted portrait sets: speaker → [set, faces] */
   /* a set lists its faces as an array (file = <set>-<face>.webp) or as an object {face: file suffix} (v98.201: mom, six painted poses: talk · calm · happy · worry · sad · angry) */
-  const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
+  const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], guard: ['guard', ['neutral', 'happy', 'angry', 'surprised']], lin: ['lin', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   /* v98.204 · the hero's painted set follows the chosen look (HeroVariant): hero-<look>-<pose>.webp. Only looks that have a sheet are listed; the other keeps the code-drawn bust */
   const HERO_SETS = { male: ['hero-male', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }], female: ['hero-female', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   /* v98.206 · which way a painted set faces as drawn (checked on every pose: hero male/female all look LEFT, mom all looks RIGHT). A speaker on the left of the stage must face right, one on the right must face left, so the picture is mirrored when its native facing is wrong for its side. */
-  const FACING = { hilda: 'left', mom: 'right', 'hero-male': 'left', 'hero-female': 'left' };
+  const FACING = { hilda: 'left', guard: 'left', lin: 'left', mom: 'right', 'hero-male': 'left', 'hero-female': 'left' };
   const heroSet = () => { try { return HERO_SETS[root.HeroVariant?.get?.() || 'male'] || null } catch (e) { return null } };
   /* v98.230 · 'sib' = the other hero (the lead's younger sibling): the painted set of the look the player did NOT choose */
   const sibSet = () => { try { return HERO_SETS[(root.HeroVariant?.get?.() || 'male') === 'female' ? 'male' : 'female'] || null } catch (e) { return null } };
@@ -27,6 +27,7 @@
     tom: { coat: '#7a5a3a', apron: '#a07a4a', hair: '#8a8a86', hat: 'cap', hatCol: '#5a4632', beard: '#9a9a96', age: 61 },
     grev: { coat: '#8a6a2a', hair: '#7a6a5a', hat: 'hat', hatCol: '#5a3a1a', beard: '#7a6a5a', cape: '#3a5a6a', age: 50 },
     guard: { coat: '#5a5a6a', hair: '#3a3a3a', hat: 'helm', hatCol: '#9a9aa8' },
+    lin: { coat: '#6f6a8f', hair: '#e6e2da', hat: 'hood', hatCol: '#57506f', age: 84 },
     gus: { coat: '#4a3a2a', apron: '#6a4a2a', hair: '#1a1a1a', beard: '#2a2a2a', big: true },
     saf: { coat: '#4a7a5a', apron: '#c9d6b0', hair: '#6a6a6a', hat: 'hood', hatCol: '#3a5a44', beard: '#7a7a7a', age: 58 },
     hilda: { coat: '#b8742a', apron: '#e8e0d0', hair: '#e2c36a', hat: 'straw', hatCol: '#d9be7a', longHair: true },
