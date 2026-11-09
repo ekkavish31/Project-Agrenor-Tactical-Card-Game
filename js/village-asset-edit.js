@@ -86,30 +86,14 @@
  }
 
  /* ---------- what can be placed / swapped in ---------- */
+ const { DECOR_W, NAMES, NAME_KIND, LABEL_HINT } = window.VillageAssetTables;   /* v98.293 · js/village-asset-tables.js */
  const KINDS = {};
  const kind = (id, label, group, draw) => KINDS[id] = {
   label,
   group,
   draw
  };
- const DECOR_W = {
-  'fence-picket': ['รั้วไม้', 110],
-  'stone-wall-low': ['กำแพงหินเตี้ย', 110],
-  'hedge-row': ['แนวพุ่มไม้', 120],
-  'flower-bed': ['แปลงดอกไม้', 118],
-  'flower-box': ['กระบะดอกไม้', 90],
-  'stepping-stones': ['หินทางเดิน', 130],
-  'pond-lilies': ['บ่อบัว', 220],
-  'bench': ['ม้านั่ง', 110],
-  'market-stall-red': ['แผงตลาดแดง', 230],
-  'market-stall-blue': ['แผงตลาดน้ำเงิน', 230],
-  'banner-pole': ['เสาธง', 75],
-  'woodpile': ['กองฟืน', 115],
-  'signpost': ['ป้ายบอกทาง', 70],
-  'well': ['บ่อน้ำ', 120],
-  'cart': ['เกวียน', 150],
-  'hay': ['กองฟาง', 95]
- };
+ /* v98.293 · DECOR_W now lives in js/village-asset-tables.js */
  for (const [n, [label, w]] of Object.entries(DECOR_W)) kind('decor:' + n, label, 'ของประดับ', p => decor(n, p, w, false));
  /* v91.5 · pictures the user added through "＋ เพิ่มภาพ Asset": saved in the layout (id, name, width) + the PNG under assets/village-town/decor/ */
  const bldName = {}; // names of the buildings added from pictures
@@ -334,51 +318,11 @@
   return out
  }
  // v81.4 · names come from what the item really is (estateObjects tags each item); NAME_KIND maps it to a placeable kind
- const NAMES = {
-  'border:hedge': 'แนวพุ่มไม้',
-  'border:flowers': 'แปลงดอกไม้ (ขอบ)',
-  'border:planter': 'กระถาง (ขอบ)',
-  'border:wood': 'รั้วไม้',
-  'border:stone': 'กำแพงหิน',
-  lamp: 'โคมไฟ',
-  bushflower: 'พุ่มดอกไม้',
-  pot: 'กระถาง',
-  statue: 'ของตั้งหน้าอาคาร',
-  table: 'โต๊ะ/ถัง',
-  crate: 'ลังไม้',
-  herb: 'สมุนไพร',
-  'flower:1': 'ดอกไม้ชุด 1',
-  'flower:2': 'ดอกไม้ชุด 2',
-  bush: 'พุ่มไม้'
- };
- const NAME_KIND = {
-  'border:hedge': 'decor:hedge-row',
-  'border:flowers': 'decor:flower-bed',
-  'border:planter': 'prop:3',
-  'border:wood': 'decor:fence-picket',
-  'border:stone': 'decor:stone-wall-low',
-  lamp: 'lamp',
-  bushflower: 'prop:2',
-  pot: 'prop:3',
-  statue: 'prop:4',
-  table: 'prop:5',
-  crate: 'prop:6',
-  herb: 'flowers:3',
-  'flower:1': 'flowers:1',
-  'flower:2': 'flowers:2',
-  bush: 'prop:2'
- };
+ /* v98.293 · NAMES now lives in js/village-asset-tables.js */
+ /* v98.293 · NAME_KIND now lives in js/village-asset-tables.js */
  const nameLabel = n => !n ? null : NAMES[n] || (n.startsWith('decor:') ? DECOR_W[n.slice(6)]?.[0] || n.slice(6) : null);
  const nameKind = n => !n ? null : NAME_KIND[n] || (n.startsWith('decor:') && KINDS[n] ? n : null);
- const LABEL_HINT = [
-  ['propSprite(7', 'ต้นไม้'],
-  ['lamp(', 'โคมไฟ'],
-  ["decor('bench'", 'ม้านั่ง'],
-  ['bush(', 'พุ่มไม้'],
-  ['TownArt.detail', 'ดอกไม้'],
-  ['propSprite(3', 'กระถาง'],
-  ['propSprite(6', 'ลังไม้']
- ];
+ /* v98.293 · LABEL_HINT now lives in js/village-asset-tables.js */
  const labelOf = fn => {
   const t = String(fn);
   for (const [k, l] of LABEL_HINT)
@@ -1597,58 +1541,9 @@
  function readUploaded(){try{return JSON.parse(localStorage.getItem(UPLOAD_KEY)||'[]').filter(x=>x&&x.id&&x.dataUrl)}catch(e){return[]}}
  function registerUploaded(rec){const im=new Image();im.onload=()=>{if(typeof render==='function')render()};im.src=rec.dataUrl;kind('upload:'+rec.id,rec.name||'ภาพอัปโหลด','อัปโหลด',p=>{if(im.complete&&im.naturalWidth){const w=rec.width||140,h=rec.height||110;g.drawImage(im,p.x-w/2,p.y-h,w,h)}})}
  readUploaded().forEach(registerUploaded);
- /* ---------- discover all repository image assets for the map picker ---------- */
- const REPO_ASSET_CACHE = 'project-a-village-repo-assets-v1';
- let repoAssetLoadStarted = false;
- function assetGroup(path) {
-  const p = path.toLowerCase();
-  if (/\b(building|house|inn|guild|shop|market|temple|forge|healer|player-house)\b/.test(p)) return 'อาคารจากคลังเกม';
-  if (/\b(tree|bush|flower|grass|plant|nature|forest|leaf|herb)\b/.test(p)) return 'ธรรมชาติจากคลังเกม';
-  if (/\b(rock|stone|ore|crystal|mine|mountain)\b/.test(p)) return 'หิน/แร่จากคลังเกม';
-  if (/\b(fence|wall|gate|road|path|floor|ground|tile|terrain)\b/.test(p)) return 'พื้น/ทาง/สิ่งก่อสร้าง';
-  if (/\b(prop|decor|furniture|bench|barrel|crate|sign|lamp|cart|well|pond|fountain)\b/.test(p)) return 'ของตกแต่งจากคลังเกม';
-  return 'Asset เกมอื่นๆ';
- }
- function registerRepoAsset(path) {
-  if (!path || !/\.(png|webp|jpe?g)$/i.test(path) || !path.startsWith('assets/')) return;
-  // Skip UI art, card faces, and sprite sheets: these are not standalone map objects.
-  if (/(^|\/)(ui|icons?|cards?|portraits?|faces|animations?|spritesheets?)(\/|[-_])/i.test(path)) return;
-  const id = 'repoasset:' + path;
-  if (KINDS[id]) return;
-  /* v91.62 · lazy: the image is only requested when it is first drawn (picker thumbnail / placed object) — not for every repo file at startup */
-  let file = null;
-  const url = 'https://raw.githubusercontent.com/ekkavish31/Project-Agrenor-Tactical-Card-Game/main/' + path.split('/').map(encodeURIComponent).join('/');
-  const name = path.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
-  kind(id, name, assetGroup(path), p => {
-   if (!file) { file = new Image(); file.crossOrigin = 'anonymous'; /* v91.82: raw.githubusercontent allows CORS → canvas stays readable so thumbnails can crop to the visible pixels */ file.onload = () => { clearTimeout(window.__repoThumbT); window.__repoThumbT = setTimeout(() => { thumbCache.clear(); if (typeof render === 'function') render(); }, 150); }; file.src = url; return; }
-   if (!file.complete || !file.naturalWidth) return;
-   const w = 130, h = w * file.naturalHeight / file.naturalWidth;
-   g.drawImage(file, p.x - w / 2, p.y - h, w, h);
-  });
- }
- async function loadRepositoryAssets() {
-  if (repoAssetLoadStarted) return;
-  repoAssetLoadStarted = true;
-  try {
-   // Cache the discovered paths locally; images themselves remain served by the public repository.
-   const saved = JSON.parse(localStorage.getItem(REPO_ASSET_CACHE) || '[]');
-   if (Array.isArray(saved) && saved.length) saved.forEach(registerRepoAsset);
-   const response = await fetch('https://api.github.com/repos/ekkavish31/Project-Agrenor-Tactical-Card-Game/git/trees/main?recursive=1', { headers: { Accept: 'application/vnd.github+json' } });
-   if (!response.ok) throw new Error('GitHub asset list unavailable');
-   const tree = await response.json();
-   if (!Array.isArray(tree.tree)) throw new Error('Invalid GitHub asset list');
-   const paths = tree.tree.filter(x => x.type === 'blob' && x.path.startsWith('assets/') && /\.(png|webp|jpe?g)$/i.test(x.path)).map(x => x.path);
-   paths.forEach(registerRepoAsset);
-   try { localStorage.setItem(REPO_ASSET_CACHE, JSON.stringify(paths)); } catch (_) {}
-   thumbCache.clear();
-   if (typeof render === 'function') render();
-  } catch (_) {
-   // Existing built-in assets and user-uploaded assets remain available offline.
-  }
- }
- loadRepositoryAssets();
  /* ---------- thumbnails (rendered from the real draw code) ---------- */
  const thumbCache = new Map();
+ window.VillageRepoAssets.init({ KINDS, kind, getG: () => g, thumbCache, render: () => { if (typeof render === 'function') render() } });   /* v98.293 · js/village-repo-assets.js */
  let thumbBox = null;
  /* v91.77 · drag handle of a sub-asset sits at the middle of its visible pixels (not at its ground anchor, which can be far from the art, e.g. a long fence) */
  const handleCache = new Map();
@@ -1999,23 +1894,7 @@
 
  /* ---------- panel ---------- */
  const css = document.createElement('style');
- css.textContent = `#assetEdit{position:fixed;right:14px;top:78px;z-index:9;width:340px;max-height:calc(100dvh - 96px);display:flex;flex-direction:column;background:#1b302af7;color:#f3ead0;border:1px solid #b9c48f;border-radius:12px;font-size:12px;box-shadow:0 10px 30px #0006}#assetEdit[hidden]{display:none}
-#assetEdit .head{padding:11px 12px 0}#assetEdit .body{overflow:auto;padding:10px 12px 12px;flex:1}#assetEdit h3{margin:0 0 3px;font-size:16px;color:#fff0c7}#assetEdit .sub{color:#c9d2b8;margin:0 0 8px;line-height:1.55}#assetEdit .chip{display:inline-block;background:#e5c06b;color:#1b302a;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:6px;vertical-align:2px}
-#assetEdit .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin:8px 0 0}#assetEdit .tabs button{padding:6px 2px;font-size:11px;border-radius:8px 8px 0 0;border-bottom:0;background:#132621}#assetEdit .tabs button.on{background:#e5c06b;color:#1b302a;border-color:#e5c06b}#assetEdit .tabs button:disabled{opacity:.35}
-#assetEdit details.aeSec{border-top:1px solid #4d665688;margin-top:6px;padding-top:2px}#assetEdit details.aeSec>summary{cursor:pointer;font-weight:700;color:#f4dc9f;padding:5px 0;list-style:none}#assetEdit details.aeSec>summary::-webkit-details-marker{display:none}#assetEdit details.aeSec>summary::after{content:' ▾';float:right;opacity:.6}#assetEdit details.aeSec:not([open])>summary::after{content:' ▸'}#assetEdit label{display:grid;grid-template-columns:96px 1fr 46px;gap:6px;align-items:center;margin:6px 0}#assetEdit label.chk{display:flex}#assetEdit label.sel{grid-template-columns:118px 1fr}#assetEdit input[type=range]{width:100%}#assetEdit select{width:100%;padding:5px;background:#132621;color:inherit;border:1px solid #7f9170;border-radius:6px}
-#assetEdit .row{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}#assetEdit button{padding:6px 9px;font-size:12px}#assetEdit hr{border:0;border-top:1px solid #4d6656;margin:10px 0}#assetEdit output{text-align:right;font-variant-numeric:tabular-nums}#assetEdit b.sec{display:block;margin:4px 0 2px;color:#fff0c7}
-#assetEdit .art{display:flex;gap:10px;align-items:center;background:#132621;border:1px solid #4d6656;border-radius:10px;padding:8px}#assetEdit .th{width:112px;height:92px;flex:none;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}#assetEdit .th img,#assetEdit .th canvas{max-width:104px;max-height:86px}
-#assetEdit [data-fp]{padding:5px 6px;min-width:0;font-size:11px}#assetEdit .nudge{display:grid;grid-template-columns:repeat(3,34px);gap:3px}#assetEdit .nudge button{padding:4px 0}
-#assetEdit .foot{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #4d6656;background:#16281f;border-radius:0 0 12px 12px}#assetEdit .foot button{flex:1;padding:9px;font-size:13px}#assetEdit .foot .reset{flex:none;padding:9px 10px}#assetEdit .ok{background:#4f7a3c;border-color:#b8d39a}#assetEdit .cancel{background:#5b3a30;border-color:#c49a8a}
-#assetEdit .items{display:grid;gap:3px;max-height:280px;overflow:auto}#assetEdit .items button{display:flex;align-items:center;gap:8px;text-align:left}#assetEdit .items button.on{border-color:#9ff3f5;background:#24443d}#assetEdit .mini{width:44px;height:36px;flex:none;display:grid;place-items:center;background:#132621;border-radius:6px;overflow:hidden}#assetEdit .mini canvas,#assetEdit .mini img{max-width:44px;max-height:36px}#assetEdit .items small{color:#c9d2b8}
-#assetEdit .places{display:grid;grid-template-columns:1fr 1fr;gap:4px}#assetEdit .places button{text-align:left}
-#assetEdit.ae-shake{animation:aeShake .35s}@keyframes aeShake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-#aePicker{width:min(940px,96vw);max-width:96vw;max-height:86vh;padding:0;border:1px solid #b9c48f;border-radius:14px;background:#1b302a;color:#f3ead0;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif}#aePicker::backdrop{background:#071c17aa}
-#aePicker .pk-head{display:flex;gap:8px;align-items:center;padding:12px;border-bottom:1px solid #4d6656;position:static}#aePicker .pk-head input[type=search]{flex:1;min-width:0}#aePicker .pk-head b{flex:none;white-space:nowrap;font-size:15px;color:#fff0c7}#aePicker button{width:auto!important;margin:0!important}#aePicker input{padding:6px 10px;border-radius:8px;border:1px solid #7f9170;background:#132621;color:inherit}
-#aePicker .pk-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px}#aePicker .pk-tabs button.on{background:#e5c06b;color:#1b302a}#aePicker .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:12px;overflow:auto;max-height:62vh}
-#aePicker .grid button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px;border-radius:10px;background:#132621;border:1px solid #4d6656;color:inherit;cursor:pointer}#aePicker .grid button:hover{border-color:#e5c06b}#aePicker .grid button.cur{border-color:#9ff3f5;box-shadow:0 0 0 2px #9ff3f555}
-#aePicker .th canvas{max-width:none;max-height:none;width:100%;height:100%}#aePicker .th{width:100%;aspect-ratio:200/164;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}#aePicker small{color:#9fb19a;font-size:10px}#aePicker button{font:inherit;background:#233a2e;color:inherit;border:1px solid #7f9170;border-radius:8px;padding:6px 10px;cursor:pointer}
-#townTools .gh{min-width:0!important}`;
+ css.textContent = window.VillageAssetCss;
  document.head.append(css);
  const panel = document.createElement('section');
  panel.id = 'assetEdit';
