@@ -8,6 +8,7 @@
   const pane = $('managerPane'), tabBtn = $('managerTab'); if (!pane || !tabBtn) return;
   const PAGE = 150;
   let q = '', status = 'none', folder = 'all', shown = PAGE, picked = new Set(), rows = null;
+  let mode = 'tiles'; try { mode = localStorage.getItem('project-a-manager-mode') || 'tiles' } catch (e) { }   /* v98.303 · tiles (default) or the table */
 
   const twin = p => /\.png$/.test(p) ? p.replace(/\.png$/, '.webp') : /\.webp$/.test(p) ? p.replace(/\.webp$/, '.png') : p;
   const usageOf = p => { const U = window.ASSET_USAGE || {}, k = p.replace(/^assets\//, ''); return U[k] || U[twin(p).replace(/^assets\//, '')] || [] };
@@ -42,27 +43,47 @@
     const all = rows, v = view(), cnt = k => all.filter(r => k === 'all' ? true : k === 'used' ? ['real', 'code'].includes(r.st) : k === 'unused' ? ['none', 'old'].includes(r.st) : r.st === k).length;
     const folders = [...new Set(all.map(r => r.folder))].sort();
     const chip = (k, n) => `<button class="mg-chip ${status === k ? 'on' : ''}" data-st="${k}">${n} <small>${cnt(k)}</small></button>`;
+    const pageRows = v.slice(0, shown), isUsed = r => ['real', 'code'].includes(r.st), kindOf = r => isUsed(r) ? 'used' : r.st === 'guess' ? 'guess' : 'unused';
+    const tiles = `<div class="mg-grid">${pageRows.map(r => `<div class="mg-tile ${kindOf(r)} ${picked.has(r.p) ? 'on' : ''}" data-p="${esc(r.p)}"><input type="checkbox" ${picked.has(r.p) ? 'checked' : ''}><div class="mg-th"><img data-p="${esc(r.p)}" alt=""></div><div class="mg-nm">${esc(r.p.split('/').pop())}</div></div>`).join('')}</div>`;
+    const table = `<table class="mg-table"><thead><tr><th></th><th>ภาพ</th><th>ไฟล์</th><th>ใช้ที่ไหน</th><th>สถานะ</th></tr></thead><tbody>${v.slice(0, shown).map(r => `<tr data-p="${esc(r.p)}" class="${picked.has(r.p) ? 'on' : ''}"><td><input type="checkbox" ${picked.has(r.p) ? 'checked' : ''}></td><td><div class="mg-th"><img data-p="${esc(r.p)}" alt=""></div></td><td class="mg-path">${esc(r.p.replace(/^assets\//, ''))}</td><td class="mg-w">${r.where.map(esc).join('<br>')}</td><td><span class="mg-badge" style="background:${LABEL[r.st][1]}">${LABEL[r.st][0]}</span></td></tr>`).join('')}</tbody></table>`;
     pane.innerHTML = `<style>
  #managerPane{padding:10px 16px 60px;font-size:13px}.mg-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;position:sticky;top:0;background:var(--panel);padding:6px 0;z-index:2}
  .mg-chip{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:4px 11px;cursor:pointer}.mg-chip.on{background:#c9a45a;color:#1d1608}.mg-chip small{opacity:.7}
  .mg-table{border-collapse:collapse;width:100%}.mg-table th{text-align:left;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line);padding:4px 6px;position:sticky;top:46px;background:var(--panel)}
  .mg-table td{border-bottom:1px solid var(--line);padding:5px 6px;vertical-align:middle}.mg-table tr.on{background:#c9a45a22}.mg-th{width:64px;height:64px;background:repeating-conic-gradient(#e6e1d2 0 25%,#f4f1e8 0 50%) 0 0/12px 12px;display:flex;align-items:center;justify-content:center;border-radius:6px;overflow:hidden}
  .mg-th img{max-width:100%;max-height:100%}.mg-path{font-family:ui-monospace,monospace;font-size:11.5px;word-break:break-all}.mg-w{line-height:1.45}.mg-badge{display:inline-block;border-radius:10px;padding:1px 8px;color:#fff;font-size:11.5px;white-space:nowrap}
+ .mg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+ .mg-tile{position:relative;border:3px solid #9ccf9a;border-radius:10px;background:#f3faf0;padding:6px 6px 5px;cursor:pointer;text-align:center;transition:transform .08s}.mg-tile:hover{transform:translateY(-2px)}
+ .mg-tile.unused{border-color:#b96a6a;background:#faeeee}.mg-tile.guess{border-color:#e0b25a;background:#fbf5e4}.mg-tile.on{outline:3px solid #3a5fa8;outline-offset:1px}
+ .mg-tile .mg-th{width:100%;height:92px;margin:0 auto}.mg-tile input{position:absolute;left:6px;top:6px;z-index:1}.mg-nm{font-size:11px;margin-top:4px;word-break:break-all;line-height:1.2;max-height:2.4em;overflow:hidden;color:#3a3326}
+ #mgTip{position:fixed;z-index:99999;max-width:360px;background:#2a2418f2;color:#fff3d8;border:1px solid #c9a45a;border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.5;pointer-events:none;box-shadow:0 6px 20px #0006;display:none}#mgTip b{color:#ffd98a}#mgTip .tp{font-family:ui-monospace,monospace;font-size:11.5px;word-break:break-all;color:#cfe3c4}
+ .mg-key{display:inline-flex;align-items:center;gap:5px;margin-left:6px;font-size:12px}.mg-key i{width:14px;height:14px;border-radius:4px;border:3px solid;display:inline-block}
  .mg-del{background:#a8402f;color:#fff;border:0;border-radius:8px;padding:6px 12px;cursor:pointer}.mg-del:disabled{opacity:.4;cursor:default}</style>
  <div class="mg-bar"><input type="search" id="mgQ" placeholder="ค้นหาชื่อไฟล์ หรือคำอธิบายการใช้งาน" value="${esc(q)}" style="min-width:220px">
- ${chip('unused', 'ไม่พบการใช้ / เก่า')}${chip('guess', 'อาจใช้')}${chip('used', 'ใช้อยู่')}${chip('all', 'ทั้งหมด')}
+ <button class="mg-chip ${mode === 'tiles' ? 'on' : ''}" data-mode="tiles">▦ ไทล์</button><button class="mg-chip ${mode === 'table' ? 'on' : ''}" data-mode="table">☰ ตาราง</button><span class="mg-key"><i style="border-color:#9ccf9a;background:#f3faf0"></i>ใช้อยู่ <i style="border-color:#b96a6a;background:#faeeee"></i>ไม่พบการใช้ <i style="border-color:#e0b25a;background:#fbf5e4"></i>อาจใช้</span> ${chip('unused', 'ไม่พบการใช้ / เก่า')}${chip('guess', 'อาจใช้')}${chip('used', 'ใช้อยู่')}${chip('all', 'ทั้งหมด')}
  <select id="mgF"><option value="all">ทุกโฟลเดอร์</option>${folders.map(f => `<option ${f === folder ? 'selected' : ''}>${esc(f)}</option>`).join('')}</select>
  <span class="grow" style="flex:1"></span><button id="mgAll">เลือกทั้งหมดที่เห็น (${Math.min(v.length, shown)})</button><button id="mgNone">ล้างที่เลือก</button><button class="mg-del" id="mgDel" ${picked.size ? '' : 'disabled'}>ลบที่เลือก (${picked.size})</button></div>
  <p class="muted" style="margin:0 0 8px">ไม่พบการใช้ ≠ ลบได้แน่นอนเสมอ: ชื่อไฟล์ที่เกมประกอบเอง (เช่น ตัวละครแต่ละเฟรม) อาจไม่ถูกจับ · รายการ "อาจใช้" ให้ดูภาพก่อนลบ · ลบแล้วต้องกด ⬆ Push ที่แก้ ถึงจะลบบน GitHub · ${v.length} จาก ${all.length} ไฟล์</p>
- <table class="mg-table"><thead><tr><th></th><th>ภาพ</th><th>ไฟล์</th><th>ใช้ที่ไหน</th><th>สถานะ</th></tr></thead><tbody>${v.slice(0, shown).map(r => `<tr data-p="${esc(r.p)}" class="${picked.has(r.p) ? 'on' : ''}"><td><input type="checkbox" ${picked.has(r.p) ? 'checked' : ''}></td><td><div class="mg-th"><img data-p="${esc(r.p)}" alt=""></div></td><td class="mg-path">${esc(r.p.replace(/^assets\//, ''))}</td><td class="mg-w">${r.where.map(esc).join('<br>')}</td><td><span class="mg-badge" style="background:${LABEL[r.st][1]}">${LABEL[r.st][0]}</span></td></tr>`).join('')}</tbody></table>
+ ${mode === 'tiles' ? tiles : table}
  ${v.length > shown ? `<p><button id="mgMore">แสดงเพิ่ม (${v.length - shown} ที่เหลือ)</button></p>` : ''}`;
     try { hydrate(pane) } catch (e) { pane.querySelectorAll('img[data-p]').forEach(i => i.src = i.dataset.p) }
-    pane.querySelectorAll('.mg-chip').forEach(b => b.onclick = () => { status = b.dataset.st; shown = PAGE; draw() });
+    pane.querySelectorAll('.mg-chip[data-st]').forEach(b => b.onclick = () => { status = b.dataset.st; shown = PAGE; draw() });
+    pane.querySelectorAll('.mg-chip[data-mode]').forEach(b => b.onclick = () => { mode = b.dataset.mode; try { localStorage.setItem('project-a-manager-mode', mode) } catch (e) { } draw() });
     $('mgQ').oninput = e => { q = e.target.value.trim().toLowerCase(); shown = PAGE; clearTimeout(draw._t); draw._t = setTimeout(() => { draw(); const i = $('mgQ'); i.focus(); i.setSelectionRange(i.value.length, i.value.length) }, 250) };
     $('mgF').onchange = e => { folder = e.target.value; shown = PAGE; draw() };
     $('mgAll').onclick = () => { v.slice(0, shown).forEach(r => picked.add(r.p)); draw() };
     $('mgNone').onclick = () => { picked.clear(); draw() };
     if ($('mgMore')) $('mgMore').onclick = () => { shown += PAGE; draw() };
+    /* tiles: click = select · hover = a tooltip with the file, where it is used and the status */
+    let tip = document.getElementById('mgTip'); if (!tip) { tip = document.createElement('div'); tip.id = 'mgTip'; document.body.append(tip) } tip.style.display = 'none';
+    const bar = () => { $('mgDel').disabled = !picked.size; $('mgDel').textContent = `ลบที่เลือก (${picked.size})` };
+    pane.querySelectorAll('.mg-tile').forEach(el => {
+      const p = el.dataset.p, r = rows.find(x => x.p === p), cb = el.querySelector('input'), t = () => { picked.has(p) ? picked.delete(p) : picked.add(p); el.classList.toggle('on', picked.has(p)); cb.checked = picked.has(p); bar() };
+      cb.onclick = e => { e.stopPropagation(); t() }; el.onclick = t;
+      const place = e => { const w = tip.offsetWidth, h = tip.offsetHeight; let x = e.clientX + 16, y = e.clientY + 16; if (x + w > innerWidth - 8) x = e.clientX - w - 12; if (y + h > innerHeight - 8) y = innerHeight - h - 8; tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px' };
+      el.onmouseenter = e => { if (!r) return; tip.innerHTML = `<div class="tp">${esc(p)}</div><div style="margin:3px 0"><span class="mg-badge" style="background:${LABEL[r.st][1]}">${LABEL[r.st][0]}</span> <small>โฟลเดอร์ ${esc(r.folder)}</small></div><div><b>ใช้ที่ไหน</b><br>${r.where.length ? r.where.map(esc).join('<br>') : 'ไม่พบว่ามีส่วนไหนของเกมเรียกใช้'}</div><small style="opacity:.75">คลิก = เลือก/ยกเลิกเพื่อลบ</small>`; tip.style.display = 'block'; place(e) };
+      el.onmousemove = place; el.onmouseleave = () => { tip.style.display = 'none' };
+    });
     pane.querySelectorAll('tbody tr').forEach(tr => { const p = tr.dataset.p, cb = tr.querySelector('input'); const t = () => { picked.has(p) ? picked.delete(p) : picked.add(p); tr.classList.toggle('on', picked.has(p)); cb.checked = picked.has(p); $('mgDel').disabled = !picked.size; $('mgDel').textContent = `ลบที่เลือก (${picked.size})` }; cb.onclick = e => { e.stopPropagation(); t() }; tr.onclick = t });
     $('mgDel').onclick = del;
   }
