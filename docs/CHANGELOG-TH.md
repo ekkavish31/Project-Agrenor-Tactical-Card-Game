@@ -4595,3 +4595,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 ## v98.311 · ลิ้นชักแก้อนิเมชันใน BG editor กว้างขึ้น
 - ลิ้นชัก (`battleground.html #animDrawer`) กว้างเดิม 940px ทำให้ Asset Studio ในนั้นสลับเป็นเลย์เอาต์คอลัมน์เดียว (ต่ำกว่า 1050px) พื้นที่เลื่อนซ้อนกันใช้ยาก → ขยายเป็น `min(1500px, 97vw)` ได้เลย์เอาต์สองคอลัมน์ (พรีวิว/เฟรมซ้าย · เครื่องมือขวา)
+
+## v98.312 · เอลลา (ช่างทอผ้า) ใส่ภาพ 4 ท่า
+- ภาพ NPC เอลลา: ยืน SW · เดิน (กลับด้านจากท่าเดินขวา) · ยืนหลัง NE · เดินหลัง NE → `assets/village-town/npc/ella/*.webp` (สเกลเดียวกับแม่ ตัวสูง ~288px เท้าที่ y=360) · ต้นฉบับ `assets/_versions/npc-sheets-v98.300/ella-4pose.webp` · ผูกใน `SPR_INFO`/`LINEUP_ALLY` (`villager-draw.js`) และ `look.sprite` (`village-life.js`)
