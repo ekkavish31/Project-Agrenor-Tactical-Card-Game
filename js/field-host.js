@@ -71,7 +71,7 @@ const FIELD = (function () {
   /* v98.332 · poi=patch: a pumpkin garden (the prologue pumpkin fight). A fence round the rim with a gap on each start side, big pumpkin plants in loose rows, hay bales,
      a scarecrow in the middle — all code-drawn props (below) until real art exists. Same seed → same garden (the quest pins ?seed=4102). */
   if (poi === 'patch') {
-    for (const c of cells.values()) { c.k = c.k === 'blocked' ? 'normal' : c.k; c.prop = null }
+    for (const c of cells.values()) { c.k = 'normal'; c.prop = null }   /* plain ground only: no mud / tall grass / random props */
     for (const c of cells.values()) {
       const rim = Math.abs(c.u) === R || Math.abs(c.v) === R, gap = (Math.abs(c.u) <= 1 || Math.abs(c.v) <= 1);
       if (rim && !gap) { c.k = 'blocked'; c.prop = 'fence'; continue }
@@ -123,6 +123,7 @@ window.FieldHeight = (function () {
   const fseed = 'field:' + (FQ.get('seed') || Math.floor(FIELD.rnd() * 1e9)) + ':' + FIELD.biome;
   const blocked = (lu, lv) => { const c = FIELD.cells.get(FIELD.key(lu - R, lv - R)); return !c || c.k === 'blocked' };
   const map = T.forScene({ w: n, h: n, seed: fseed, biome: poi === 'patch' ? .08 : SEV[zone] ?? .5, blocked, entries: [{ u: R - S, v: R + S }, { u: R + S, v: R - S }] });
+  if (poi === 'patch') { const bed = (lu, lv) => lu % 3 !== 2 && lu > 0 && lu < n - 1 && lv > 0 && lv < n - 1; for (let i = 0; i < n * n; i++) { map.levels[i] = 0; if (map.ramp) map.ramp[i] = 0; if (map.stair) map.stair[i] = 0; map.flat[i] = bed(i % n, (i / n) | 0) ? 1 : 0 } }   /* v98.332 · a dead-flat garden: soil beds (planting rows) between grass walkways, no random heights */
   map.origin = { u: -R, v: -R };                        // local lattice → field cells (−R … R)
   const cellAt = i => FIELD.cells.get(FIELD.key((i % n) - R, ((i / n) | 0) - R));
   if (window.FieldDiorama) {

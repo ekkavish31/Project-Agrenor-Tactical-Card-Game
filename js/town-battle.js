@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.332';
+  const V = '98.333';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -142,6 +142,7 @@
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
       hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
+    if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
     for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
@@ -915,7 +916,8 @@
       { t: 'ลูกศรใต้ตัวคือทิศที่หัน · ตีจากด้านหลังแรงขึ้น ×1.2 · กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า', done: () => st.turns > coachState.t0 },
       { t: 'ตัวเอกทั้งสองยังไม่ล้มในเควสนี้ (เลือดลดได้แต่ไม่ต่ำกว่า 1) — ลองเดิน ตี และหันหน้าให้คล่องจนจับแพะครบ' }],
     pumpkin: [
-      { t: 'ฟักทองในไร่ยืนนิ่งและไม่ตีกลับ — คลิกเลือกฟักทอง 1 ลูก (ดูไพ่โจมตีกับดาเมจ) แล้วคลิกซ้ำเพื่อโจมตี · ลูกหนึ่งรับตีราว 2–3 ครั้ง', done: () => st.acted },
+      { t: 'ฮิลด้าให้ยืมไพ่ธาตุ 2 ใบ (ติดมือทุกเทิร์น): 💧 คลื่นน้ำ ชนะผืนดิน (ฟักทอง) · ⚡ อัสนีบาต ชนะลม (ด้วง) — ครั้งแรกให้ลอง ⚡ อัสนีบาต ตีฟักทองก่อน (คลิกฟักทอง → คลิกไพ่)', done: () => st.loan?.force?.done },
+      { t: 'เห็นไหม? โดนผลึกดินกลบ ธาตุโกลาหลแพ้ผืนดิน ดาเมจเหลือ ×0.7 · จากนี้ใช้ 💧 คลื่นน้ำ ตีฟักทอง (×1.3) และ ⚡ ตีด้วง (×1.3) · ฟักทองลูกหนึ่งรับตีราว 2–3 ครั้ง', done: () => (st.log || []).filter(x => /ชนะ/.test(x)).length > 0 },
       { t: 'ด้วงกินใบตัวเล็กตีทีเดียวตาย — กำจัดก่อนจะกัดกวนคุณ · ตีฟักทองจนล้ม มันจะเด้งเป็นฟักทองให้เก็บ' },
       { t: 'ระวัง! ถ้าฟักทองลูกหนึ่งเริ่มสั่น มันอาจวิวัฒน์ — บอสฟักทองใช้เถาวัลย์ระยะไกลพันธนาการ (เดินไม่ได้ 1 เทิร์น) และตีระยะใกล้เบาๆ' },
       { t: 'ใช้ไพ่ธาตุที่ชนะทาง (ไอคอนข้างชื่อศัตรู) และตีจากด้านหลัง ×1.2 · ไม่ต้องกลัว — ตัวเอกเลือดไม่ต่ำกว่า 1' }],
@@ -1074,9 +1076,21 @@
   }
 
   /* ---------- effects (old BattleVFX images; code fallback = a ring) ---------- */
+  const KFX_MELEE = new Set(['sword', 'knife', 'spear', 'rapier', 'blunt', 'slash']), KFX_BURST = { fire: '#ff9a4a', ice: '#bfe8ff', water: '#6fb2ec', lightning: '#e4dcff', earth: '#d9b27a', wind: '#a8e6c8', arcane: '#d49af0', holy: '#f6e08a' };
+  const KIMG = {};   /* white sprites → tinted copies, cached by name+colour */
+  function kimg(name, col) {
+    const k = name + col; let c = KIMG[k]; if (c) return c.ok ? c : null; c = KIMG[k] = { ok: false };
+    const im = new Image(); im.onload = () => { const cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight; const q = cv.getContext('2d'); q.drawImage(im, 0, 0); q.globalCompositeOperation = 'source-in'; q.fillStyle = col; q.fillRect(0, 0, cv.width, cv.height); c.cv = cv; c.ok = true }; im.src = 'assets/fx/kenney/' + name + '.webp'; return null;
+  }
+  const kdraw = (g, name, col, x, y, w, rot, alpha) => { const c = kimg(name, col); if (!c || alpha <= 0) return; g.save(); g.globalAlpha = Math.min(1, alpha); g.translate(x, y); g.rotate(rot); g.drawImage(c.cv, -w / 2, -w / 2, w, w); g.restore() };
   function fx(kind, to, from, o = {}) {
     const dur = o.duration || (kind === 'heal' || kind === 'shield' ? 900 : 650);
     effects.push({ kind, tier: o.tier, reducedMotion: o.reducedMotion, seed: (Math.random() * 1e6) | 0, scale: o.scale || 1, color: o.color, to: { x: to.vu, y: to.vv }, from: from && from !== to ? { x: from.vu, y: from.vv } : null, start: now(), duration: dur });
+
+    /* v98.332 · free CC0 light / slash sprites (Kenney Particle Pack, assets/fx/kenney) on top of the old effects: a sweep for melee, a flare + star + ring for elements */
+    if (to && !o.noK) { const base = effects[effects.length - 1], col = KFX_BURST[kind];
+      if (KFX_MELEE.has(kind)) effects.push({ ...base, kind: 'kslash', color: '#fff0c0', duration: 380 });
+      else if (col) effects.push({ ...base, kind: 'kburst', color: col, duration: 560 }) }
     return dur;
   }
   /* v94.03 · code-drawn effects for the height cards: rocks raining down, climb chevrons, the perch banner, landing dust, the dive streak */
@@ -1087,6 +1101,14 @@
     fallDust(g, e, t, p) { for (let i = 0; i < 10; i++) { const a = i / 10 * 6.28, r = UNIT * (.2 + t * .9); g.globalAlpha = (1 - t) * .8; g.fillStyle = '#b8a888'; g.beginPath(); g.arc(p.x + Math.cos(a) * r, p.y + Math.sin(a) * r * .45 - t * 10, 5 + t * 6, 0, 7); g.fill() } },
     diveTrail(g, e, t, p, a) { g.globalAlpha = 1 - t; const gr = g.createLinearGradient(a.x, a.y - UNIT, p.x, p.y - UNIT * .5); gr.addColorStop(0, 'rgba(255,240,180,0)'); gr.addColorStop(1, 'rgba(255,220,120,.9)'); g.strokeStyle = gr; g.lineWidth = 10 * (1 - t) + 2; g.beginPath(); g.moveTo(a.x, a.y - UNIT * 1.4); g.quadraticCurveTo((a.x + p.x) / 2, Math.min(a.y, p.y) - UNIT * 2.4, p.x, p.y - UNIT * .5); g.stroke() }
   };
+  HEIGHT_FX.kslash = (g, e, t, p, a) => {
+    const names = ['slash_01', 'slash_02', 'slash_03', 'slash_04', 'scratch_01'], n = names[e.seed % names.length], ang = (e.from ? Math.atan2(p.y - a.y, p.x - a.x) : 0) + ((e.seed % 7) - 3) * .12 + (n === 'scratch_01' ? .6 : 0);
+    const w = UNIT * (n === 'scratch_01' ? 1.5 : 1.25) * (.7 + t * .5), al = t < .25 ? t * 4 : 1 - (t - .25) / .75; g.globalCompositeOperation = 'lighter';
+    kdraw(g, n, '#ffb35a', p.x, p.y - UNIT * .55, w * 1.15, ang, al * .55); kdraw(g, n, e.color, p.x, p.y - UNIT * .55, w, ang, al); kdraw(g, 'spark_05', '#fff6d8', p.x, p.y - UNIT * .55, UNIT * 1.1, 0, (1 - t) * .5 * (t < .5 ? 1 : .6)); };
+  HEIGHT_FX.kburst = (g, e, t, p, a) => {
+    const cy = p.y - UNIT * .55, al = t < .2 ? t * 5 : 1 - (t - .2) / .8; g.globalCompositeOperation = 'lighter';
+    kdraw(g, 'circle_05', e.color, p.x, cy, UNIT * (.6 + t * 1.3), 0, al * .7); kdraw(g, 'magic_03', e.color, p.x, cy, UNIT * (.5 + t * .7), t * 2.2, al * .85);
+    kdraw(g, 'flare_01', '#ffffff', p.x, cy, UNIT * (1.8 - t * .6), 0, al * .9); kdraw(g, 'star_04', '#fff6d8', p.x, cy, UNIT * (.4 + (1 - Math.abs(t - .3)) * .5), t * 1.4, al); if (e.kind === 'kburst' && e.color === '#e4dcff') kdraw(g, 'spark_05', '#e4dcff', p.x, cy - UNIT * .3, UNIT * 1.4, 0, al) };
   function fxDraw(g, now) {
     effects = effects.filter(e => now < e.start + e.duration);
     for (const e of effects) {
@@ -1561,6 +1583,6 @@
     return o;
   }
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') padOn = false }, true);
-  window.TownBattle = { shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing || discardMode), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
+  window.TownBattle = { fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing || discardMode), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
     act: { undo: undoWalk, attackPlan: id => st && FB.autoAttack(st, id), skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, discard: setDiscard, confirmDiscard: doDiscard }, busy: () => busy };
 })();

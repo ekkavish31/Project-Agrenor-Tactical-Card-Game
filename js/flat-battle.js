@@ -64,7 +64,7 @@
   const crystals = st => Math.max(0, (st.crystalMax || CRYSTALS) - (st.spent || 0));
   function cardEvent(st, type, group, cards) { if (cards.length) (st.deck.cardEvents ||= []).push({ type, group, cards: cards.map(c => ({ ...c })), seq: st.deck.cardSeq = (st.deck.cardSeq || 0) + 1 }) }
   /* take card `index` out of the hand into the discard pile (no refill — that waits for the next turn) */
-  function spend(st, group, index) { const p = st.deck[group], c = p.hand.splice(index, 1)[0]; p.discard.push({ ...c, used: false }); cardEvent(st, 'discard', group, [c]); return c }
+  function spend(st, group, index) { const p = st.deck[group], c = p.hand.splice(index, 1)[0]; if (!c.loan) p.discard.push({ ...c, used: false }); cardEvent(st, 'discard', group, [c]); return c }
   /* start of the hero's turn: refill both hands (reshuffling the discard pile when the draw pile runs out), crystals back to full */
   function refill(st) {
     const TD = deckLib(), drawn = [];
@@ -76,7 +76,17 @@
       }
       cardEvent(st, 'draw', group, got); drawn.push(...got.map(c => c.uid));
     }
+    ensureLoan(st, drawn);
     st.spent = 0; st.drawn = drawn; return drawn;
+  }
+  /* v98.332 · loaned cards (the pumpkin fight: Hilda lends two element cards): always in the combat hand at the start of every turn, never enter the discard pile */
+  function ensureLoan(st, drawn) {
+    const L = st.loan; if (!L) return; const p = st.deck.combat;
+    for (const id of L.cards) {
+      if (p.hand.some(c => c.id === id)) continue;
+      if (p.hand.length >= HAND.combat) { const k = p.hand.map(c => !c.loan).lastIndexOf(true); if (k >= 0) p.draw.push(p.hand.splice(k, 1)[0]) }
+      const c = { id, uid: 'loan-' + id + '-' + (L.n = (L.n || 0) + 1), used: false, loan: true }; p.hand.push(c); drawn.push(c.uid);
+    }
   }
   function deckLib() { return root.TacticsDecks || (typeof require === 'function' ? require('./tactics-decks.js') : null) }
   /* flat versions of the old combat cards: range in cells, raw damage, stamina cost (numbers from tactics-core cardInfo, sword) */
@@ -570,6 +580,7 @@
     const rule = CARD[c.id]; if (!rule) return TD.COMBAT[c.id].name + ' ยังไม่รองรับในสนามแบน';
     if (hero(st).sts?.silence && SPELL_CARDS.has(c.id)) return '🔇 ใบ้ ใช้การ์ดธาตุไม่ได้ (' + hero(st).sts.silence + ' เทิร์น)';
     if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้';
+    { const F = st.loan?.force, tg = F && !F.done && !rule.self ? pickTarget(st, rule) : null; if (tg && tg.kind === F.on && c.id !== F.card) return F.why }   /* v98.332 · Hilda's lesson: the first hit on a pumpkin must be the wrong element */
     const h = hero(st); if (h.stamina < rule.st) return 'แรงไม่พอ (ต้อง ' + rule.st + ')';
     if (!rule.self && !pickTarget(st, rule)) return rule.high && targets(st, h, reachOf(h, rule)).length ? 'ต้องยืนสูงกว่าเป้าอย่างน้อย 1 ระดับ' : rule.range === 1 && opponents(st, h).some(o => dist(h, o) <= 1) ? 'ต่างระดับเกินระยะประชิด' : 'ศัตรูอยู่นอกระยะ (' + reachOf(h, rule) + ' ช่อง)';
     return '';
@@ -603,7 +614,8 @@
     else { const hm = heightMult(st, h, t); if (hm !== 1) { mult *= hm; extra.push(heightNote(hm)) } }
     if (rule.perLevel) bonus += Math.round(rule.perLevel * Math.max(0, d0));
     if (rule.aoe === 'splash' && d0 >= 1) { mult *= 1.5; extra.push('ต่ำกว่า ×1.5') }
-    out.target = t; const sm = sideMult(st, h, t, extra);
+    out.target = t; { const F = st.loan?.force; if (F && !F.done && id === F.card && t.kind === F.on) F.done = true }
+    const sm = sideMult(st, h, t, extra);
     for (let i = 0; i < (rule.hits || 1); i++) {
       if (!alive(t)) break;
       const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), en = [], em = elMult(st, cardEl(id, h), t, en), r = hurt(st, t, (rule.dmg + bonus + cardBonus(h, id)) * mult * sm * em * jobMult(h, id) * weakMult(h) * (crit ? CRIT.mult : 1)); out.hits.push({ target: t, damage: r.damage, notes: [...extra, ...en, ...r.notes], crit });
@@ -737,6 +749,7 @@
     if (!free(st, nu, nv, t) || lv(st, nu, nv) - lv(st, t.u, t.v) > 1) return false;
     t.u = nu; t.v = nv; return true;
   }
-  const api = { farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const setLoan = (st, L) => { st.loan = L; if (st.cards) { const drawn = []; ensureLoan(st, drawn); st.drawn = [...(st.drawn || []), ...drawn] } };
+  const api = { setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

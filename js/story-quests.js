@@ -120,7 +120,7 @@ const STEPS=[
   hint:'ช่วงเช้าผู้ใหญ่บ้านอยู่ที่ตลาด · '+HINT_WALK}),
  {id:'goats',tag:'real',title:'แพะหนีออกจากคอก',goal:'ตามจับแพะของปิ๊บ 2 ตัวที่หนีไปทั่วหมู่บ้าน',hint:'คลิกที่แพะเพื่อวิ่งตาม · มันวิ่งหนีเมื่อเข้าใกล้ แต่วิ่งได้ไม่นานก็หอบ พอแตะตัวมัน จะเข้าสู่ฉากต่อสู้จับแพะ (ตัวเอกไม่ล้มในฉากนี้) · ลูกศรขอบจอชี้ไปทางแพะ',
   spot:SPOT.goats,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
-  onSpot:async d=>{const r=await questBattle(d,{title:'จับแพะของปิ๊บ ·',ms:'goat*1,goat*1',tut:'goat',seed:4101,r:6,biome:'grass'});
+  onSpot:async d=>{const r=await questBattle(d,{title:'จับแพะของปิ๊บ ·',ms:'goat*1,goat*1',tut:'goat',seed:4101,r:6,biome:'grass',page:'village-town.html'});
    if(r==='win'){d.got=2;return {msg:'🐐 จับแพะได้ครบ 2 ตัวแล้ว!',consume:true}}return {msg:r==='busy'?'':'แพะยังหนีอยู่ · กลับไปจับต่อได้เลย',consume:false}}},
  talkStep({id:'goatsBack',outro:'goatsDone',reward:()=>{addCoins(15);toast('รางวัล: +15 เหรียญ')},title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
 talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮิลดา',talk:'hilda',goal:'ไปหาฮิลดาชาวนา ถามว่าช่วยอะไรได้บ้าง',hint:'เช้าอยู่ที่ไร่ เที่ยงถึงบ่ายสามขายผักที่ตลาด · '+HINT_WALK,
@@ -218,7 +218,7 @@ function questBattle(d,o){return new Promise(resolve=>{
  d.fighting=true;doSave();
  const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')+':'+(p.level||1)).join(',');
  const fr=document.createElement('iframe');fr.id='storyBattle';fr.title=o.title;fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
- fr.src='battle-field.html?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&imm=1&noflee=1&r='+(o.r||6)+'&biome='+(o.biome||'grass')+'&seed='+(o.seed||4100)+(o.poi?'&poi='+o.poi:'')+(o.bg?'&bg='+o.bg:'')+'&ms='+encodeURIComponent(o.ms)+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent(o.title||'')+'&tut='+(o.tut||'');
+ fr.src=(o.page||'battle-field.html')+'?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&imm=1&noflee=1&r='+(o.r||6)+'&biome='+(o.biome||'grass')+'&seed='+(o.seed||4100)+(o.poi?'&poi='+o.poi:'')+(o.bg?'&bg='+o.bg:'')+'&ms='+encodeURIComponent(o.ms)+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent(o.title||'')+'&tut='+(o.tut||'');
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
   const win=r.outcome==='win';
