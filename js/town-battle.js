@@ -1333,7 +1333,11 @@
   const cellW = (u, v) => Math.abs(project(u + 1, v).x - project(u, v + 1).x);
   /* v98.308 · the ground art (cell frames, foot rings, hover corners, turn crystals) is drawn by code (js/ground-art-code.js) — smooth, bright, one source for the battle AND the BG editor. ?gart=pic or localStorage project-a-gart=pic brings the old picture sets back. */
   const CODE_ART = !!window.GroundArtCode && GroundArtCode.enabled(), RING_STYLE = window.GroundArtCode ? GroundArtCode.ringStyle() : 1;
-  function cellFrame(g, name, u, v, k = 1) { if (CODE_ART) { const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return GroundArtCode.frame(g, name, p.x, p.y, w, w * .56, performance.now()) } const G = window.GroundArt; if (!G) return false; const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) }
+  /* v98.324 · selection frames / hover corners sit on the ground: when taller ground stands in front of their cell they are mostly hidden (faint), they no longer glow through a cliff */
+  const SEL_OUTLINE = !/[?&]selglow=0/.test(location.search);
+  let HID_ALL = null; const behind = (u, v) => !!HID_ALL && HID_ALL.has(u + ',' + v);
+  function cellFrame(g, name, u, v, k = 1) { const dim = behind(u, v); if (dim) { g.save(); g.globalAlpha *= .28 } try { return cellFrame0(g, name, u, v, k) } finally { if (dim) g.restore() } }
+  function cellFrame0(g, name, u, v, k = 1) { if (CODE_ART) { const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return GroundArtCode.frame(g, name, p.x, p.y, w, w * .56, performance.now()) } const G = window.GroundArt; if (!G) return false; const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) }
   function footRing(g, unit, foe, t) { if (CODE_ART) { const p = project(unit.vu, unit.vv); GroundArtCode.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t, RING_STYLE); return true } const G = window.GroundArt; if (!G) return false; const p = project(unit.vu, unit.vv); return G.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t) }
   function draw(g, t0) {
     if (!ready || typeof locations === 'undefined' || !locations.length) return;
@@ -1341,7 +1345,7 @@
     if (!st) { build(); hudMake(); handMake(); cam.set = false; focusCamera(true); arenaReady(); if (Q.get('warm') !== '1') startTurnShow(true) }
     step(t);
     g.save();
-    const hid = GRID ? gridHidden(cells) : null;   /* v98.312 · grid lines only where nothing taller stands in front (no lines through cliffs / behind high ground) */
+    HID_ALL = gridHidden(cells); const hid = GRID ? HID_ALL : null;   /* v98.312 · grid lines only where nothing taller stands in front (no lines through cliffs / behind high ground) */
     for (const [key, k] of cells) {
       const [u, v] = key.split(',').map(Number); poly(g, u, v);
       const col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k]; if (col) { g.fillStyle = col; g.fill() }
@@ -1373,13 +1377,14 @@
     if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { if (!footRing(g, st.cur, false, t)) { poly(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() } }
     if (pendAlly?.to && !busy) { poly(g, pendAlly.to.u, pendAlly.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pendAlly.to.u, pendAlly.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
     if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pend.to.u, pend.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
-    if (!EDIT && typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; G?.corners(g, p.x, p.y, w, w * .56, t) }   /* v98.282 · glowing corners on the cell under the mouse */
+    if (!EDIT && typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; const dim = behind(hoverCell.u, hoverCell.v); if (dim) { g.save(); g.globalAlpha *= .28 } G?.corners(g, p.x, p.y, w, w * .56, t); if (dim) g.restore() }   /* v98.282 · glowing corners on the cell under the mouse */
     g.restore();
     if (CINE) spotlight(g, cine ? [cine.a, cine.b] : st.units.filter(u => u.hp > 0));
     glowDraw(g, t);
     /* a host page (battle-field.html) can hand in standing props so trees/rocks and units overlap by depth */
     /* v96: a host with view depth (battle-field.html) sorts by depth so cells in front of a unit can be drawn over it */
     const extras = window.TownBattleExtras?.() || [], DEP = window.FieldDepth, order = [...st.units.map(u => ({ unit: u, y: project(u.vu, u.vv).y, d: DEP ? DEP(u.vu, u.vv) : 0 })), ...extras].sort(DEP ? (a, b) => (a.d ?? 0) - (b.d ?? 0) : (a, b) => a.y - b.y);
+    const selUnit = inspectU || (st.turn === 'ally' && st.cur ? st.cur : st.turn === 'hero' ? h : null);
     window.__fieldOrder = order;   /* v98.284 · read by tools/check-field-occlusion.cjs */
     /* v98.71 · until a unit moves, acts or is turned (u.face changes), it shows SW/SE (toward the camera) so the player sees who is there; the rules still use u.face */
     const frontShown = u => { const i = u.idle0; if (!i) return false; if (u.walking || (u.pose && u.pose !== 'idle') || u.u !== i.u || u.v !== i.v || u.face !== i.face || u.hp <= 0) { u.idle0 = null; return false } return true };
@@ -1388,6 +1393,7 @@
       if (!it.unit) { it.draw(g, t); continue }
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
       if (u.deadAt && t > u.deadAt) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
+      const isSel = u.hp > 0 && u === selUnit && !u.deadAt; if (isSel && SEL_OUTLINE) { g.shadowColor = '#fff'; g.shadowBlur = 6 * (devicePixelRatio || 1) }   /* v98.324 · the selected character: thin white edge + soft aura */
       drawUnit(u); g.restore();
     }
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
