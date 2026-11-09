@@ -17,6 +17,7 @@ main{display:grid;grid-template-columns:230px 1fr 270px;gap:12px;padding:12px 16
 .row span{flex:1;min-width:0}.row b{display:block;font-size:13px}.row small{color:var(--muted)}
 .chip{font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
 .chip.ok{color:var(--ok)}.chip.warn{color:var(--warn)}.chip.bad{color:var(--bad)}
+#toolbar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:flex-end;padding:0 0 8px;margin-bottom:8px;border-bottom:1px solid var(--line)}#toolbar .tg{display:flex;flex-direction:column;gap:3px}#toolbar .tg>small{font-size:11px;color:var(--muted)}#toolbar .tr{display:flex;gap:4px;align-items:center;flex-wrap:wrap}#toolbar button{font:inherit;font-size:12.5px;padding:4px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:inherit;cursor:pointer}#toolbar button[aria-pressed=true]{background:#c9a55a;color:#2a1d08;border-color:#a8873b;font-weight:700}#toolbar button.sq{width:28px;padding:4px 0}#toolbar .zv{min-width:44px;text-align:center;font-size:12.5px}#toolbar select,#toolbar input[type=number]{font:inherit;font-size:12.5px;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:7px;padding:3px 4px}#toolbar details{font-size:12.5px}#toolbar summary{cursor:pointer;color:var(--muted)}#toolbar .setrow{display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap}
 #stageWrap{overflow-x:auto}#stage{position:relative;height:430px;min-width:100%}
 #stage .ch{position:absolute;pointer-events:auto;cursor:pointer}#stage .ch.sel{filter:drop-shadow(0 0 3px var(--gold))}
 #stage .ghost{position:absolute;opacity:.28;filter:grayscale(1) brightness(.4);pointer-events:none}
@@ -40,11 +41,10 @@ code{font-size:12px}
 </style></head><body>
 <header><h1>⚖ Scale Lineup <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
 <span id="tabs"></span> <span id="ctxBtns"></span><span class="grow"></span>
-<span id="viewCtl"></span> <button id="bGhost" aria-pressed="true" title="เงาตัวเอกซ้อนหลังทุกตัว">เงาตัวเอก</button>
-<button id="bSort" aria-pressed="false" title="เรียงตามความสูง">เรียงตามความสูง</button></header>
+<span class="grow"></span></header>
 <main>
 <section class="card"><b id="listTitle">ตัวละคร</b><div id="list" role="list"></div></section>
-<section class="card"><div id="stageWrap"><div id="stage"></div></div>
+<section class="card"><div id="toolbar"></div><div id="stageWrap"><div id="stage"></div></div>
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
@@ -113,7 +113,7 @@ async function buildChars() {
     if (!pic) continue; await addChar(c.id, c.id === 'hero' ? 'ตัวเอก' : (ALLIES[c.id] || c.name), c.id === 'hero' ? 'hero' : 'ally', pic, c.id === 'hero' ? DS.hero : DS.ally);
   }
   /* v98.265 · villagers drawn from pictures (VillagerDraw SPR_INFO) are in the lineup too, so every person is compared in one place */
-  const VILLAGERS = { may: 'เมย์', tom: 'ทอม', lin: 'ลิน', guard: 'ทหารยาม' };
+  const VILLAGERS = { may: 'ป้าเมย์', tom: 'ลุงทอม', lin: 'คุณยายลิน', guard: 'ทหารยาม', bryn: 'บริน', gus: 'กัส', hilda: 'ฮิลดา', marta: 'มาร์ธา', mira: 'ครูมิรา', saf: 'หมอยาซาฟ', mother: 'แม่', ella: 'เอลลา', joe: 'โจ', oren: 'ผู้ใหญ่บ้านโอเรน' };
   for (const [id, name] of Object.entries(VILLAGERS)) { if (list.some(c => c.id === id)) continue; const pic = { src: `assets/village-town/npc/${id}/sw-stand.webp` }; await addChar(id, name, 'ally', pic, DS.ally); list.push({ id }) }
   const have = new Set(list.map(c => c.id)); for (let i = ENTRIES.length - 1; i >= 0; i--) if ((ENTRIES[i].kind === 'hero' || ENTRIES[i].kind === 'ally') && !have.has(ENTRIES[i].id)) ENTRIES.splice(i, 1);
   ENTRIES.sort((a, b) => (RANK[a.kind] ?? 3) - (RANK[b.kind] ?? 3));
@@ -137,6 +137,19 @@ async function build() {
       const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
     }
   } catch (e) { console.warn('monsters not read', e) }
+  /* v98.322 · every other monster that has an animation set in the asset manifest (the battle only wires the MON table above) — measured from its first idle frame */
+  try {
+    const man = await (await fetch('data/asset-manifest.json')).json(), by = {};
+    for (const a of man.assets || []) if (a.category === 'enemy-animations' && a.enemy) (by[a.enemy] ||= []).push(a);
+    for (const [k, list] of Object.entries(by)) {
+      if (ENTRIES.some(x => x.id === 'm:' + k)) continue;
+      const a = list.find(x => x.pose === 'idle' && x.view === 'SE') || list.find(x => x.pose === 'idle') || list[0], im = await load(a.file); if (!im) continue;
+      const fw = a.frameSize?.[0] || im.naturalHeight, fh = a.frameSize?.[1] || im.naturalHeight, c = document.createElement('canvas'); c.width = fw; c.height = fh; c.getContext('2d').drawImage(im, 0, 0, fw, fh, 0, 0, fw, fh);
+      const name = (list.map(x => (x.subject || '').split(' · ')[0]).find(t => /[ก-๙]/.test(t))) || k;
+      await add('m:' + k, name, 'monster', 'battle', c.toDataURL('image/png'), CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k} (วัดจากเฟรมแรกของท่ายืน)`);
+      const e = ENTRIES.find(x => x.id === 'm:' + k); if (e) e.unwired = true;
+    }
+  } catch (e) { console.warn('extra monsters not read', e) }
 }
 let ctx = 'battle', sel = 'hero', ghost = true, sorted = false;
 const isW = e => !!e.group;
@@ -152,7 +165,7 @@ let STEP = .5, ZOOM = 1, ALPHA = 1, SHADOW = false, FOOT = false, GUIDES = false
 const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / ENTRIES.find(x => x.id === 'hero').ctx[c].units * HERO_M * eff(e, c);
 const heroE = () => ENTRIES.find(e => e.id === 'hero');
 /* world tabs: the hero stands first as the yardstick, then the pieces of that tab */
-const visible = () => { const a = tab === 'ratio' ? ENTRIES.filter(e => (e.kind === 'hero' || e.kind === 'ally') && e.ctx[ctx]) : tab === 'char' || tab === 'field' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx]) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
+const visible = () => { const a = tab === 'ratio' ? ENTRIES.filter(e => (e.kind === 'hero' || e.kind === 'ally') && e.ctx[ctx] && passF(e)) : tab === 'char' || tab === 'field' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx] && passF(e)) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
 const rangeOf = e => { if (!e.fixed) return ['', 'ไม่มีค่าตรึง']; const m = metres(e); return m < e.ref[0] ? ['warn', 'เล็กไป'] : m > e.ref[1] ? ['warn', 'ใหญ่ไป'] : ['ok', 'พอดี'] };
 function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
 /* choosing a character here also selects it in the studio's Animation tab */
@@ -161,13 +174,12 @@ function render() {
   if (!ENTRIES.some(e => e.id === 'hero' && e.ctx.battle)) { $('stage').innerHTML = '<p class="hint">ยังไม่พบภาพท่ายืนของตัวเอก (SW) — ตัวเอกคือไม้วัดของหน้านี้ · ตรวจว่าไฟล์ภาพถูก push แล้ว หรือกด รีเฟรช</p>'; $('list').innerHTML = ''; $('insp').innerHTML = ''; return }
   ctx = tab === 'char' || tab === 'ratio' || tab === 'field' ? 'battle' : 'village';
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k}">${t}</button>`).join(' ');
-  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' || tab === 'ratio' || tab === 'field' ? 'hero' : (visible()[1]?.id || 'hero'); render() });
+  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' || tab === 'ratio' || tab === 'field' ? (visible()[0]?.id || 'hero') : (visible()[1]?.id || 'hero'); viewCtl(); render() });
   $('ctxBtns').style.display = 'none';   /* v98.95 · one set of proportions for every scene; the % per scene is done in each scene later */ $('listTitle').textContent = TABS.find(t => t[0] === tab)[1];
   $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
   $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
-  $('bGhost').setAttribute('aria-pressed', ghost); $('bSort').setAttribute('aria-pressed', sorted);
   const V = visible();
-  $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${e.id === sel}"><img alt="" src="${e.ctx[ctx].url || e.ctx[ctx].src}"${e.ctx[ctx].flip ? ' style="transform:scaleX(-1)"' : ''}><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m</small></span>${chip(e)}</button>`).join('');
+  $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${e.id === sel}"><img alt="" src="${e.ctx[ctx].url || e.ctx[ctx].src}"${e.ctx[ctx].flip ? ' style="transform:scaleX(-1)"' : ''}><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m${e.unwired ? ' · ⏳ ยังไม่ต่อเกม' : ''}</small></span>${chip(e)}</button>`).join('');
   $('list').querySelectorAll('.row').forEach(b => b.onclick = () => pickSel(b.dataset.c));
   if (tab === 'ratio') { renderRatio(V); inspect(); controls(); return }
   if (tab === 'maps') { renderMaps(); return }
@@ -332,15 +344,15 @@ function mapRows() {
 /* v98.320 · each map is a row of characters standing on THAT map's real grid cell, drawn at lineup size × the map's multiplier (the same numbers the game uses) */
 const MAP_GEOM = { battle: { cw: 84, label: 'ช่องสนามรบ 84×42 px' }, village: { cw: 56, label: 'ช่องหมู่บ้าน 56×28 px' }, place: { cw: 56, label: 'ช่องหมู่บ้าน 56×28 px' }, interior: { cw: 68, label: 'ช่องในอาคาร 68×34 px' }, world: { hex: 36, label: 'ช่องแผนที่โลก (เฮกซ์ R=36)' } };
 const pxPerUnit = kind => kind === 'battle' ? 84 : kind === 'world' ? CharSize.WORLD_HERO_PX / DS.hero : kind === 'interior' ? CharSize.INTERIOR_HERO_PX / DS.hero : CharSize.VILLAGE_HERO_PX / DS.hero;
-function mapCast(kind) { const base = ENTRIES.filter(e => !isW(e) && e.ctx.battle); return kind === 'battle' ? base : kind === 'world' ? base.filter(e => e.kind === 'hero' || e.kind === 'ally').slice(0, 6) : base.filter(e => e.kind !== 'monster') }
+function mapCast(kind) { const base = ENTRIES.filter(e => !isW(e) && e.ctx.battle && passF(e)); return kind === 'battle' ? base : kind === 'world' ? base.filter(e => e.kind === 'hero' || e.kind === 'ally').slice(0, 6) : base.filter(e => e.kind !== 'monster') }
 function drawStrip(cv, kind, mult) {
   const G = MAP_GEOM[kind], cast = mapCast(kind), ppu = pxPerUnit(kind) * mult, px = e => e.ctx.battle.units * eff(e) * ppu, dpr = devicePixelRatio || 1;
-  const cw = G.hex ? G.hex * Math.sqrt(3) : G.cw, ch = G.hex ? G.hex * 1.5 : cw / 2, maxPx = Math.max(...cast.map(px)), baseY = maxPx + 30, W = Math.max(520, (cast.length + 1) * cw + 40), H = baseY + 1.5 * ch + 34;
+  const cw = G.hex ? G.hex * Math.sqrt(3) : G.cw, ch = G.hex ? G.hex * 1.5 : cw / 2, maxPx = Math.max(px(heroE()), ...cast.map(px)), baseY = maxPx + 30, W = Math.max(520, (cast.length + 1) * cw + 40), H = baseY + 1.5 * ch + 34;
   cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px'; const g = cv.getContext('2d'); g.scale(dpr, dpr); g.fillStyle = '#26352b'; g.fillRect(0, 0, W, H);
   g.strokeStyle = 'rgba(255,255,255,.26)'; g.lineWidth = 1;
   if (G.hex) { const R = G.hex; for (let r = -1; r <= 2; r++) for (let q = -1; q < W / cw + 1; q++) { const cx = 20 + q * cw + (r & 1 ? cw / 2 : 0), cy = baseY + r * R * 1.5; g.beginPath(); for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + i * Math.PI / 3; g[i ? 'lineTo' : 'moveTo'](cx + R * Math.cos(a), cy + R * Math.sin(a)) } g.closePath(); g.fillStyle = (q + r) % 2 ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.06)'; g.fill(); g.stroke() } }
   else for (let row = -2; row <= 2; row++) for (let i = -1; i < W / cw + 2; i++) { const cx = 20 + cw / 2 + i * cw + (row & 1 ? cw / 2 : 0), cy = baseY + row * ch / 2; g.beginPath(); g.moveTo(cx, cy - ch / 2); g.lineTo(cx + cw / 2, cy); g.lineTo(cx, cy + ch / 2); g.lineTo(cx - cw / 2, cy); g.closePath(); g.fillStyle = (i + row) % 2 ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.06)'; g.fill(); g.stroke() }
-  const hero = cast.find(e => e.id === 'hero'), hp = hero ? px(hero) : 0;
+  const hero = heroE(), hp = px(hero);
   cast.forEach((e, i) => { const c = e.ctx.battle, k = px(e) / c.m.H, x = 20 + cw / 2 + i * cw, y = baseY, w = c.m.w * k, h = c.m.h * k, left = x - ((c.m.x0 + c.m.x1) / 2) * k, top = y - (c.m.bottom + 1) * k;
     g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(x, y, cw * .2, ch * .2, 0, 0, 7); g.fill();
     g.save(); if (c.flip) { g.translate(x * 2, 0); g.scale(-1, 1); g.drawImage(c.img, 2 * x - left - w, top, w, h) } else g.drawImage(c.img, left, top, w, h); g.restore();
@@ -378,16 +390,37 @@ function inspect() {
   $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${e.kind}</span><dl>
    ${row('ความสูงบนจอ', `${metres(e).toFixed(2)} m · ${c.units.toFixed(2)} UNIT`)}${row('เทียบตัวเอก', Math.round(metres(e) / HERO_M * 100) + '%')}${cross}
    ${row('เงาในภาพ', `สูง ${c.m.H} px · หัว ${c.m.headW} px · ภาพ ${c.m.w}×${c.m.h}`)}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.file || c.src}</code>`)}</dl>
-  <p class="hint">ปรับขนาดที่แผง ⚖ ด้านล่าง</p>`;
+  <p class="hint">ปรับขนาดที่แผง ⚖ ด้านล่าง</p>${e.unwired ? '<p class="hint">⏳ มอนสเตอร์ตัวนี้มีภาพ/อนิเมชันใน asset แล้ว แต่ <b>ยังไม่ได้ต่อเข้าสนามรบ</b> (ไม่มีในตาราง MON) — ค่าที่ปรับจะถูกเก็บไว้และมีผลเมื่อเกมนำตัวนี้มาใช้</p>' : ''}`;
 }
+/* v98.322 · the view controls live ABOVE the stage (where you look), grouped and labelled; only the ones that matter for the open tab are shown */
+const FKEY = 'scale-lineup-filter-v1', CATS = [['char', '🧑 ตัวละคร', 'ตัวเอก + เพื่อนร่วมทีม'], ['npc', '🏘 NPC', 'ชาวบ้านและคนในเมือง'], ['mon', '👹 มอนสเตอร์ · บอส', 'ศัตรูทุกชนิด (บอสใช้แถวเดียวกับตัวธรรมดา)']];
+let FILTER = { char: true, npc: true, mon: true }; try { Object.assign(FILTER, JSON.parse(localStorage.getItem(FKEY) || '{}')) } catch (e) { }
+const NPC_IDS = new Set(['may', 'tom', 'lin', 'guard', 'bryn', 'gus', 'hilda', 'marta', 'mira', 'saf', 'mother', 'ella', 'joe', 'oren']);
+const catOf = e => e.kind === 'monster' ? 'mon' : (e.kind === 'hero' || !NPC_IDS.has(e.id)) ? 'char' : 'npc';
+const MGROUPS = [['beast', '🐺 สัตว์ร้าย', 'wolf alpha shadowWolf frostWolf iceWolf bat mireBat gull yeti bogHydra'], ['hum', '🗡 ฮิวมานอยด์', 'bandit poacher pirate captainHook corsair cultist bogHunter swampWitch kobold foreman snowKobold'], ['ele', '💧 สไลม์ · ธาตุ', 'slime bogSlime seaSlime frostSlime wisp frostQueen'], ['con', '🗿 โกเล็ม · หุ่น · พืช · ยักษ์', 'golem coralGolem crystalKing dummy straw archer captain treant mudTroll'], ['und', '💀 อมตะ · ปีศาจ', 'skeleton ghostKnight gargoyle voidKing'], ['oth', 'อื่นๆ', '']];
+const MGOF = {}; for (const [g, , ks] of MGROUPS) for (const k of ks.split(' ')) if (k) MGOF[k] = g;
+const SUBKEY = 'scale-lineup-subfilter-v1'; let SUBF = { beast: true, hum: true, ele: true, con: true, und: true, oth: true, wired: true, unwired: true }; try { Object.assign(SUBF, JSON.parse(localStorage.getItem(SUBKEY) || '{}')) } catch (e) { }
+const monGroup = e => MGOF[e.id.slice(2)] || 'oth';
+const passF = e => isW(e) || (FILTER[catOf(e)] && (e.kind !== 'monster' || (SUBF[monGroup(e)] && (e.unwired ? SUBF.unwired : SUBF.wired))));
 function viewCtl() {
   const sel2 = (id, opts, val) => `<select id="${id}">${opts.map(([v, t]) => `<option value="${v}"${String(v) === String(val) ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
-  $('viewCtl').innerHTML = `ขีด ${sel2('vStep', [[.5, '0.5 m'], [.25, '0.25 m'], [.1, '0.1 m']], STEP)} ซูม ${sel2('vZoom', [[.5, '50%'], [.75, '75%'], [1, '100%'], [1.5, '150%'], [2, '200%'], [3, '300%']], ZOOM)} ความชัด <input id="vAlpha" type="range" min="15" max="100" value="${Math.round(ALPHA * 100)}" style="width:70px"> ตัวเอก=1.70m <input id="vHero" type="number" step="0.01" min="1" max="2.5" value="${HERO_M}" style="width:58px">
-   <button id="vShadow" aria-pressed="${SHADOW}">เงา</button><button id="vFoot" aria-pressed="${FOOT}">เส้นเท้า</button><button id="vGuides" aria-pressed="${GUIDES}">เส้นไกด์ตัวเอก</button>`;
-  const $$ = id => document.getElementById(id);
-  $$('vStep').onchange = e => { STEP = +e.target.value; render() }; $$('vZoom').onchange = e => { ZOOM = +e.target.value; render() };
-  $$('vAlpha').oninput = e => { ALPHA = +e.target.value / 100; render() }; $$('vHero').onchange = e => { HERO_M = Math.min(2.5, Math.max(1, +e.target.value || 1.7)); render() };
-  $$('vShadow').onclick = () => { SHADOW = !SHADOW; render() }; $$('vFoot').onclick = () => { FOOT = !FOOT; render() }; $$('vGuides').onclick = () => { GUIDES = !GUIDES; render() };
+  const world = ['building', 'prop', 'nature'].includes(tab), stageTab = tab === 'char' || world, zoomTab = stageTab || tab === 'field';
+  const ZS = [.5, .75, 1, 1.5, 2, 3], zi = Math.max(0, ZS.findIndex(z => z >= ZOOM - 1e-6));
+  let h = '';
+  if (!world) h += `<div class="tg"><small>แสดงหมวด (ใช้กับทุกแท็บ)</small><div class="tr">${CATS.map(([k, t, tip]) => `<button data-f="${k}" aria-pressed="${FILTER[k]}" title="${tip}">${t}</button>`).join('')}</div></div>`;
+  if (!world && FILTER.mon && tab !== 'ratio') h += `<div class="tg"><small>มอนสเตอร์ · แยกชนิด</small><div class="tr">${MGROUPS.map(([k, t]) => `<button data-sf="${k}" aria-pressed="${SUBF[k]}">${t}</button>`).join('')}<button data-sf="wired" aria-pressed="${SUBF.wired}" title="ตัวที่สนามรบใช้อยู่แล้ว (ตาราง MON)">✔ ใช้ในเกมแล้ว</button><button data-sf="unwired" aria-pressed="${SUBF.unwired}" title="มีภาพ/อนิเมชันใน asset แล้ว แต่ยังไม่ได้ต่อเข้าสนามรบ — ปรับขนาดเก็บไว้ล่วงหน้าได้">⏳ ยังไม่ต่อเกม</button></div></div>`;
+  if (tab !== 'maps') h += `<div class="tg"><small>จัดเรียง</small><div class="tr"><button id="bSort" aria-pressed="${sorted}" title="เรียงจากสูงสุดไปต่ำสุด แทนลำดับปกติ">↕ เรียงตามความสูง</button></div></div>`;
+  if (zoomTab) h += `<div class="tg"><small>ซูม</small><div class="tr"><button class="sq" id="zOut" title="ซูมออก">−</button><span class="zv">${Math.round(ZOOM * 100)}%</span><button class="sq" id="zIn" title="ซูมเข้า">+</button></div></div>`;
+  if (stageTab) h += `<div class="tg"><small>ตัวช่วยดู</small><div class="tr"><button id="vGhost" aria-pressed="${ghost}" title="เงาจางของตัวเอกซ้อนหลังทุกตัว ไว้เทียบความสูง">👤 เงาตัวเอก</button><button id="vShadow" aria-pressed="${SHADOW}" title="วงเงาใต้เท้า">◔ เงาพื้น</button><button id="vFoot" aria-pressed="${FOOT}" title="ขีดแนวตั้งที่จุดเท้า">┃ จุดเท้า</button><button id="vGuides" aria-pressed="${GUIDES}" title="เส้นนอนบอกระดับ หัว/ตา/ไหล่/เอว/เข่า ของตัวเอก">≡ เส้นระดับตัวเอก</button></div></div>`;
+  if (stageTab) h += `<details><summary>⚙ ไม้วัด</summary><div class="setrow"><label>ขีดไม้บรรทัด ${sel2('vStep', [[.5, 'ทุก 0.5 m'], [.25, 'ทุก 0.25 m'], [.1, 'ทุก 0.1 m']], STEP)}</label><label>ความชัดตัวละครอื่น <input id="vAlpha" type="range" min="15" max="100" value="${Math.round(ALPHA * 100)}" style="width:90px"></label><label title="ความสูงตัวเอกที่ใช้เป็นไม้วัด (เมตร)">ตัวเอกสูง <input id="vHero" type="number" step="0.01" min="1" max="2.5" value="${HERO_M}" style="width:60px"> m</label></div></details>`;
+  $('toolbar').innerHTML = h; const el = id => document.getElementById(id), re = () => { viewCtl(); render() };
+  $('toolbar').querySelectorAll('[data-f]').forEach(b => b.onclick = () => { const k = b.dataset.f, on = Object.values({ ...FILTER, [k]: !FILTER[k] }).some(Boolean); if (!on) return; FILTER[k] = !FILTER[k]; try { localStorage.setItem(FKEY, JSON.stringify(FILTER)) } catch (e) { } const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id; re() });
+  $('toolbar').querySelectorAll('[data-sf]').forEach(b => b.onclick = () => { const k = b.dataset.sf; SUBF[k] = !SUBF[k]; try { localStorage.setItem(SUBKEY, JSON.stringify(SUBF)) } catch (e) { } const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id; re() });
+  if (el('bSort')) el('bSort').onclick = () => { sorted = !sorted; re() };
+  if (el('zOut')) el('zOut').onclick = () => { ZOOM = ZS[Math.max(0, zi - 1)]; re() };
+  if (el('zIn')) el('zIn').onclick = () => { ZOOM = ZS[Math.min(ZS.length - 1, zi + 1)]; re() };
+  if (el('vGhost')) { el('vGhost').onclick = () => { ghost = !ghost; re() }; el('vShadow').onclick = () => { SHADOW = !SHADOW; re() }; el('vFoot').onclick = () => { FOOT = !FOOT; re() }; el('vGuides').onclick = () => { GUIDES = !GUIDES; re() } }
+  if (el('vStep')) { el('vStep').onchange = e => { STEP = +e.target.value; render() }; el('vAlpha').oninput = e => { ALPHA = +e.target.value / 100; render() }; el('vHero').onchange = e => { HERO_M = Math.min(2.5, Math.max(1, +e.target.value || 1.7)); render() } }
 }
 const GROUPS = [['one', 'เฉพาะตัวนี้'], ['ally', 'เพื่อนทั้งหมด'], ['monster', 'มอนสเตอร์ทั้งหมด'], ['all', 'ทุกตัวยกเว้นตัวเอก']];
 let SCOPE = 'one';
@@ -435,7 +468,6 @@ async function saveToRepo() {
   try { await G.commit('Scale Lineup: ปรับขนาดตัวละคร', async () => [{ path: 'js/character-scale-adjust-data.js', content: text }]); Object.assign(SAVED, JSON.parse(JSON.stringify(data))); SAVED.global = data.global; SAVED.scene = data.scene; persistDraft(); render(); document.getElementById('cMsg').textContent = '✔ บันทึกเข้าเกมแล้ว (ใช้ได้หลังเว็บอัปเดต 1–2 นาที)' }
   catch (err) { msg.textContent = 'บันทึกไม่สำเร็จ: ' + err.message }
 }
-$('bGhost').onclick = () => { ghost = !ghost; render() }; $('bSort').onclick = () => { sorted = !sorted; render() };
 let ready = false; addEventListener('resize', () => ready && render());
 function wireStudio() {   /* inside Asset Studio: follow the Animation tab */
   if (!ST) return; let timer = 0;
