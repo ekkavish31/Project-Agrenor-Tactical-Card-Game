@@ -39,17 +39,17 @@
       const gr = g.createLinearGradient(0, y0, 0, y1); gr.addColorStop(0, rgba(hiC, 1)); gr.addColorStop(.55, rgba(mix(K.base, .1 * lit), 1)); gr.addColorStop(1, rgba(loC, 1));
       g.globalAlpha = back ? .5 : 1; g.fillStyle = gr; g.beginPath(); g.moveTo(p[0][0], p[0][1]); for (let i = 1; i < p.length; i++) g.lineTo(p[i][0], p[i][1]); g.closePath(); g.fill();
       if (!back) {                                                                  /* glassy streak + crisp edges */
-        const cxm = p.reduce((s, q) => s + q[0], 0) / p.length, sw = Math.abs(p[1][0] - p[0][0]) * .22;
-        g.globalCompositeOperation = 'lighter'; g.fillStyle = `rgba(255,255,255,${.22 * lit + .06})`; g.beginPath(); g.moveTo(cxm - sw, y0 + (y1 - y0) * .12); g.lineTo(cxm + sw * .3, y0 + (y1 - y0) * .12); g.lineTo(cxm + sw * .3 - sw * .6, y1 - (y1 - y0) * .2); g.lineTo(cxm - sw - sw * .4, y1 - (y1 - y0) * .2); g.closePath(); g.fill(); g.globalCompositeOperation = 'source-over';
-        g.strokeStyle = rgba(mix(K.base, .75), .35 + .5 * lit); g.lineWidth = Math.max(.7, ph * .012); g.stroke();
+        const xs = p.map(q => q[0]), xa = Math.min(...xs), xb = Math.max(...xs); g.save(); g.beginPath(); g.moveTo(p[0][0], p[0][1]); for (let i = 1; i < p.length; i++) g.lineTo(p[i][0], p[i][1]); g.closePath(); g.clip();
+        const sh = g.createLinearGradient(xa, y0, xb, y1); sh.addColorStop(0, `rgba(255,255,255,${.1 + .38 * lit})`); sh.addColorStop(.5, 'rgba(255,255,255,0)'); sh.addColorStop(1, 'rgba(0,0,0,.18)'); g.globalCompositeOperation = 'lighter'; g.fillStyle = sh; g.fillRect(xa - 2, y0 - 2, xb - xa + 4, y1 - y0 + 4); g.restore();
+        g.strokeStyle = rgba(mix(K.base, .75), .3 + .5 * lit); g.lineWidth = Math.max(.7, ph * .012); g.stroke();
       } else { g.strokeStyle = rgba(dark(K.base, .4), .5); g.lineWidth = .8; g.stroke() }
       g.globalAlpha = 1;
     }
     /* inner light (the crystal glows from inside) */
-    g.globalCompositeOperation = 'lighter'; bloom(g, cx, cy - ph * .02, ph * .26, [255, 244, 210], .55 + .15 * Math.sin(t * .005));
+    g.globalCompositeOperation = 'lighter'; bloom(g, cx, cy - ph * .02, ph * .22, [255, 240, 200], .4 + .12 * Math.sin(t * .005));
     /* the bright rim along the lit edge of the cap + twinkles */
     const hi = R1.reduce((p, q) => q.z > p.z ? q : p, R1[0]); g.strokeStyle = 'rgba(255,255,255,.85)'; g.lineWidth = Math.max(1, ph * .016); g.beginPath(); g.moveTo(cx, yTop + ph * .02); g.lineTo(hi.x, hi.y); g.lineTo(R2[R1.indexOf(hi)].x, R2[R1.indexOf(hi)].y); g.stroke();
-    for (let k = 0; k < 3; k++) { const tw = Math.max(0, Math.sin(t * .0055 + k * 2.1)); if (tw < .35) continue; const sx = cx + Math.cos(k * 2.4 + 1) * r * .6, sy = cy + Math.sin(k * 1.9) * ph * .28, s = ph * .1 * tw; g.strokeStyle = `rgba(255,255,255,${tw})`; g.lineWidth = 1.3; g.beginPath(); g.moveTo(sx - s, sy); g.lineTo(sx + s, sy); g.moveTo(sx, sy - s * 1.3); g.lineTo(sx, sy + s * 1.3); g.stroke() }
+    for (let k = 0; k < 3; k++) { const tw = Math.max(0, Math.sin(t * .0055 + k * 2.1)); if (tw < .5) continue; const sx = cx + Math.cos(k * 2.4 + 1) * r * 1.1, sy = cy + Math.sin(k * 1.9) * ph * .32, s = ph * .07 * tw; g.strokeStyle = `rgba(255,255,255,${tw})`; g.lineWidth = 1.3; g.beginPath(); g.moveTo(sx - s, sy); g.lineTo(sx + s, sy); g.moveTo(sx, sy - s * 1.3); g.lineTo(sx, sy + s * 1.3); g.stroke() }
     g.restore();
   }
 
@@ -62,9 +62,9 @@
     g.globalCompositeOperation = 'source-over';
     /* gold bezel: dark under-line, bright gold, then the neon line inside */
     g.strokeStyle = 'rgba(40,24,6,.85)'; g.lineWidth = w * .038; g.beginPath(); g.ellipse(0, w * .006, rx, ry, 0, 0, 7); g.stroke();
-    g.strokeStyle = goldGrad(g, -rx, -ry, rx, ry); g.lineWidth = w * .026; g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, 7); g.stroke();
-    g.strokeStyle = rgba(mix(c, .55), .95); g.lineWidth = w * .012; g.beginPath(); g.ellipse(0, 0, rx * .93, ry * .93, 0, 0, 7); g.stroke();
-    g.globalCompositeOperation = 'lighter'; g.strokeStyle = rgba(c, .75); g.lineWidth = w * .022; g.beginPath(); g.ellipse(0, 0, rx * .93, ry * .93, 0, 0, 7); g.stroke(); g.globalCompositeOperation = 'source-over';
+    g.strokeStyle = goldGrad(g, -rx, -ry, rx, ry); g.lineWidth = w * .018; g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, 7); g.stroke();
+    g.strokeStyle = rgba(mix(c, .25), 1); g.lineWidth = w * .02; g.beginPath(); g.ellipse(0, 0, rx * .925, ry * .925, 0, 0, 7); g.stroke();
+    g.globalCompositeOperation = 'lighter'; g.strokeStyle = rgba(c, .9); g.lineWidth = w * .03; g.beginPath(); g.ellipse(0, 0, rx * .93, ry * .93, 0, 0, 7); g.stroke(); g.globalCompositeOperation = 'source-over';
     if (style === 2) { g.globalCompositeOperation = 'lighter'; for (let k = 0; k < 4; k++) { const a = t * .0022 + k * Math.PI / 2, bx = Math.cos(a) * rx * .93, by = Math.sin(a) * ry * .93, s = w * .03; bloom(g, bx, by, s * 2.8, mix(c, .5), .95); g.fillStyle = '#fff'; g.beginPath(); g.arc(bx, by, s * .55, 0, 7); g.fill() } g.globalCompositeOperation = 'source-over' }
     else { g.globalCompositeOperation = 'lighter'; const a = t * .0026; for (let k = 0; k < 22; k++) { const aa = a - k * .075, al = (1 - k / 22); g.fillStyle = `rgba(255,255,255,${al * .9})`; g.beginPath(); g.arc(Math.cos(aa) * rx * .93, Math.sin(aa) * ry * .93, w * .017 * (1 - k / 30), 0, 7); g.fill() } bloom(g, Math.cos(a) * rx * .93, Math.sin(a) * ry * .93, w * .06, mix(c, .5), .8); g.globalCompositeOperation = 'source-over' }
     for (const [sx, sy, ph] of [[-rx, 0, 0], [rx, 0, 1.6], [0, -ry, 3.1], [0, ry, 4.7]]) stud(g, sx, sy, w * .036, t, ph);
@@ -75,13 +75,13 @@
     const c = COL[name]; if (!c) return false; const p = .5 + .5 * Math.sin(t * .0045 + (COL[name][0] % 7)), ix = w * .475, iy = h * .475;
     const path = k => { g.beginPath(); g.moveTo(x, y - iy * k); g.lineTo(x + ix * k, y); g.lineTo(x, y + iy * k); g.lineTo(x - ix * k, y); g.closePath() };
     g.save(); g.lineJoin = 'round';
-    const gr = g.createRadialGradient(x, y, h * .05, x, y, w * .5); gr.addColorStop(0, rgba(c, .06)); gr.addColorStop(.7, rgba(c, .16 + .06 * p)); gr.addColorStop(1, rgba(c, .3 + .08 * p)); path(1); g.fillStyle = gr; g.fill();
+    const gr = g.createRadialGradient(x, y, h * .05, x, y, w * .5); gr.addColorStop(0, rgba(c, .1)); gr.addColorStop(.7, rgba(c, .24 + .06 * p)); gr.addColorStop(1, rgba(c, .42 + .08 * p)); path(1); g.fillStyle = gr; g.fill();
     g.globalCompositeOperation = 'lighter'; for (const [k, a] of [[.1, .12], [.055, .22]]) { g.strokeStyle = rgba(c, a + .08 * p); g.lineWidth = Math.max(3, w * k); path(1); g.stroke() }
     g.globalCompositeOperation = 'source-over';
     g.strokeStyle = 'rgba(40,24,6,.8)'; g.lineWidth = Math.max(3, w * .036); path(1.012); g.stroke();
-    g.strokeStyle = goldGrad(g, x - ix, y - iy, x + ix, y + iy); g.lineWidth = Math.max(2, w * .024); path(1); g.stroke();
-    g.strokeStyle = rgba(mix(c, .5), .95); g.lineWidth = Math.max(1, w * .011); path(.9); g.stroke();
-    g.globalCompositeOperation = 'lighter'; g.strokeStyle = rgba(c, .65); g.lineWidth = Math.max(2, w * .02); path(.9); g.stroke(); g.globalCompositeOperation = 'source-over';
+    g.strokeStyle = goldGrad(g, x - ix, y - iy, x + ix, y + iy); g.lineWidth = Math.max(1.6, w * .017); path(1); g.stroke();
+    g.strokeStyle = rgba(mix(c, .2), 1); g.lineWidth = Math.max(1.6, w * .026); path(.9); g.stroke();
+    g.globalCompositeOperation = 'lighter'; g.strokeStyle = rgba(c, .85); g.lineWidth = Math.max(3, w * .04); path(.9); g.stroke(); g.globalCompositeOperation = 'source-over';
     for (const [sx, sy] of [[0, -iy], [ix, 0], [0, iy], [-ix, 0]]) stud(g, x + sx, y + sy, Math.max(3, w * .045), t, sx + sy);
     g.restore(); return true;
   }
