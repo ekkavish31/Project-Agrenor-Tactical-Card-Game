@@ -1,0 +1,9 @@
+Sound effects in this folder come from Kenney's CC0 packs (https://kenney.nl) — Creative Commons Zero 1.0
+(https://creativecommons.org/publicdomain/zero/1.0/): free for personal and commercial projects, credit not required (but nice).
+
+  UI SFX Set          by Kenney Vleugels (Kenney.nl)  — mirror: github.com/Calinou/kenney-ui-audio           (ui-hover, ui-mouseclick, ui-switch)
+  Interface Sounds    by Kenney (www.kenney.nl)       — mirror: github.com/Calinou/kenney-interface-sounds   (ui-*)
+  RPG Audio           by Kenney (www.kenney.nl)       — mirror: github.com/Boyquotes/kenney-rpg-audio-for-godot (coins, door-*, book-*, cloth, latch, creak, pot, leather, chop, knife, draw-knife, belt)
+  Impact Sounds       by Kenney (www.kenney.nl)       — mirror: github.com/Boyquotes/kenney-impact-sounds-for-godot (step-*, hit-*)
+
+Converted to small mono mp3 files with tools/build-sfx.py (loudness-normalised, silence trimmed). The catalog and the code that plays them: js/sfx.js.

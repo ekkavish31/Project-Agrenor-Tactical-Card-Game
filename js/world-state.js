@@ -119,7 +119,7 @@
   function bind(o) {
     const G = () => game(), V = () => game().village;
     const def = (k, get, set) => Object.defineProperty(o, k, { configurable: true, enumerable: false, get, set });
-    def('gold', () => V().coins, x => { V().coins = Math.max(0, Math.round(x)) });
+    def('gold', () => V().coins, x => { const o = V().coins; V().coins = Math.max(0, Math.round(x)); if (V().coins !== o && root.Sfx) root.Sfx.play('coins', { vol: .8 }) });   /* v98.297 · coins clink whenever the purse changes */
     def('potions', () => V().bag.potion || 0, x => { if (x > 0) V().bag.potion = x; else delete V().bag.potion });
     def('food', () => V().materials.food || 0, x => { V().materials.food = Math.max(0, x) });
     def('hp', () => G().hp, x => { G().hp = Math.max(0, Math.round(x)) });
