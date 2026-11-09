@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """v98.300 · cuts the painted NPC sheets (assets/_versions/npc-sheets-v98.300/) into the village's picture sets: assets/village-town/npc/<name>/<dir>-<pose>.webp (384×384, feet on y=359, centred).
-   Sheet A (5 people, left → right: may · tom · lin · guard · hilda): A-front-stand → sw-stand · A-walk-back → ne-stand (+ne-walk1)
-   Sheet B (5 people: marta · gus · mira · saf · bryn): B-back-stand → ne-stand · B-walk-front → sw-walk1 (+sw-stand: the front standing picture does not exist yet) · B-walk-back → ne-walk1
+   Sheet A (5 people, left → right: may · tom · lin · guard · hilda): A-front-stand → sw-stand · A-walk-front → sw-walk1 · A-walk-back → ne-walk1 (+ ne-stand: no back STANDING picture yet)
+   Sheet B (5 people: marta · gus · mira · saf · bryn): B-front-stand → sw-stand · B-back-stand → ne-stand · B-walk-front → sw-walk1 · B-walk-back → ne-walk1
    SE / NW are the SW / NE pictures mirrored by the engine.  Scale: ONE factor per sheet so heights keep their relation (A 0.52 = the old sprites' size; B 0.52×0.92 because that sheet was drawn ~9 % larger).
    python3 tools/build-npc-sprites.py"""
 import os
@@ -21,8 +21,10 @@ def put(name, pose, cell, sc):
     d = os.path.join(OUT, name); os.makedirs(d, exist_ok=True); can.save(os.path.join(d, pose + '.webp'), 'WEBP', quality=92, method=6); return h
 rep = {}
 for n, c in cells('A-front-stand.webp', A_NAMES).items(): rep[n] = [put(n, 'sw-stand', c, SC['A'])]
-for n, c in cells('A-walk-back.webp', A_NAMES).items(): rep[n].append(put(n, 'ne-stand', c, SC['A']))
-for n, c in cells('B-back-stand.webp', B_NAMES).items(): rep[n] = [put(n, 'ne-stand', c, SC['B'])]
-for n, c in cells('B-walk-front.webp', B_NAMES).items(): rep[n].append(put(n, 'sw-walk1', c, SC['B'])); put(n, 'sw-stand', c, SC['B'])
+for n, c in cells('A-walk-front.webp', A_NAMES).items(): rep[n].append(put(n, 'sw-walk1', c, SC['A']))
+for n, c in cells('A-walk-back.webp', A_NAMES).items(): rep[n].append(put(n, 'ne-walk1', c, SC['A'])); put(n, 'ne-stand', c, SC['A'])
+for n, c in cells('B-front-stand.webp', B_NAMES).items(): rep[n] = [put(n, 'sw-stand', c, SC['B'])]
+for n, c in cells('B-back-stand.webp', B_NAMES).items(): rep[n].append(put(n, 'ne-stand', c, SC['B']))
+for n, c in cells('B-walk-front.webp', B_NAMES).items(): rep[n].append(put(n, 'sw-walk1', c, SC['B']))
 for n, c in cells('B-walk-back.webp', B_NAMES).items(): rep[n].append(put(n, 'ne-walk1', c, SC['B']))
 for n, h in rep.items(): print(n, 'figure heights (px of 384):', h)
