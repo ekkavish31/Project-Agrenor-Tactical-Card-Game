@@ -26,13 +26,16 @@ let W = innerWidth, H = innerHeight, scale = 1, zoom = 1, pan = { x: 0, y: 0 };
 let ROT = 0; try { ROT = (+localStorage.getItem('projectA.fieldRot') || 0) & 3 } catch (e) { }
 function rotUV(u, v, t = ROT) { for (let k = 0; k < t; k++) { const a = 1 - v; v = u; u = a } return { u, v } }
 function unrotUV(u, v, t = ROT) { for (let k = 0; k < t; k++) { const a = v; v = 1 - u; u = a } return { u, v } }
-function projectFlat(u, v) { const r = rotUV(u, v); return { x: OXc + (r.u - r.v) * HWc, y: OYc + (r.u + r.v) * HHc } }
+/* v98.316 · while the view turns, TURN = { th, pu, pv }: every position is rotated by the angle th about the pivot (old-view coords) before it is projected, so sprites orbit upright while the ground (a flat picture) is turned with the matching matrix */
+let TURN = null;
+function rv(u, v) { const r = rotUV(u, v); if (!TURN) return r; const c = Math.cos(TURN.th), s = Math.sin(TURN.th), du = r.u - TURN.pu, dv = r.v - TURN.pv; return { u: TURN.pu + du * c - dv * s, v: TURN.pv + du * s + dv * c } }
+function projectFlat(u, v) { const r = rv(u, v); return { x: OXc + (r.u - r.v) * HWc, y: OYc + (r.u + r.v) * HHc } }
 function invFlat(x, y) { const a = (x - OXc) / HWc, b = (y - OYc) / HHc; return unrotUV((a + b) / 2, (b - a) / 2) }
 /* depth for painter's order in view space (bigger = nearer the viewer) */
-window.FieldDepth = (u, v) => { const r = rotUV(u, v); return r.u + r.v };
+window.FieldDepth = (u, v) => { const r = rv(u, v); return r.u + r.v };
 /* v98.284 · the same turned coordinates, and a prop's footprint in them (box rule of js/depth-style.js: in front when beyond the front edge on either axis) */
-window.FieldRot = (u, v) => rotUV(u, v);
-const propFp = (c, big) => { const s = big ? 2 : 1, a = rotUV(c.u, c.v), b = rotUV(c.u + s, c.v + s); return { u0: Math.min(a.u, b.u), u1: Math.max(a.u, b.u), v0: Math.min(a.v, b.v), v1: Math.max(a.v, b.v) } };
+window.FieldRot = (u, v) => rv(u, v);
+const propFp = (c, big) => { const s = big ? 2 : 1, a = rv(c.u, c.v), b = rv(c.u + s, c.v + s); return { u0: Math.min(a.u, b.u), u1: Math.max(a.u, b.u), v0: Math.min(a.v, b.v), v1: Math.max(a.v, b.v) } };
 /* lifted by the ground height; between two walkable cells the lift eases across the edge so a walk up a step reads as a step, not a teleport */
 function project(u, v) { const p = projectFlat(u, v); return window.FieldHeight ? { x: p.x, y: p.y - FieldHeight.liftAt(u, v) } : p }
 function inv(x, y) { if (window.FieldHeight) { const c = FieldHeight.hit(x, y, window.TownBattle?.reach?.()); if (c) return { u: c.u + .5, v: c.v + .5 } } return invFlat(x, y) }
@@ -332,7 +335,7 @@ window.TownBattleExtras = () => {
     const c = q.cell, goal = hit ? .32 : 1; c._fa = (c._fa ?? 1) + (goal - (c._fa ?? 1)) * Math.min(1, dt * 9) }
   const occ = occluders(ents); if (st) for (const u of st.units) if (u._occT) u._occ = true; return out.concat(occ);
 };
-let fadeGround = null, fadeAt = 0, fadeT = 0;
+let fadeGround = null, fadeAt = 0, fadeT = 0, fadeMat = null;
 /* v97.14 · FFT-style turn: the whole field rotates in the ground plane. A turn of the ground by θ is an affine map on screen,
    M(θ) = P·R(θ)·P⁻¹ (P = screen vectors of one lattice step along u and v), applied to the canvas with the Web Animations API
    around the field centre: the old view turns 45°, the view swaps at the midpoint, the new view turns the last 45° into place.
@@ -344,28 +347,29 @@ function centreCell() { const k = scale * zoom, c = invFlat(-pan.x / k + WORLD_W
 function recentre(c) { const k = scale * zoom, p = projectFlat(c.u, c.v); pan.x = -(p.x - WORLD_W / 2) * k; pan.y = -(p.y - WORLD_H / 2) * k }
 function turnView(d) {
   if (!window.FieldHeight || turning) return;
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !cv.animate) return turnNow(d);
-  const cc = centreCell(), cu = cc.u, cvv = cc.v;   /* turn around the cell in the middle of the screen */
-  const k = scale * zoom, rect = cv.getBoundingClientRect();
-  const frame = () => { const c = projectFlat(cu, cvv), a = projectFlat(cu + 1, cvv), b = projectFlat(cu, cvv + 1); return { cx: (c.x - WORLD_W / 2) * k + W / 2 + pan.x, cy: (c.y - WORLD_H / 2) * k + H / 2 + pan.y, P: [(a.x - c.x) * k, (a.y - c.y) * k, (b.x - c.x) * k, (b.y - c.y) * k], q: (() => { const q = projectFlat(cu + 3, cvv + 1); return { x: (q.x - c.x) * k, y: (q.y - c.y) * k } })() } };
-  const M = (P, th) => { const [ux, uy, vx, vy] = P, det = ux * vy - vx * uy, i00 = vy / det, i01 = -vx / det, i10 = -uy / det, i11 = ux / det, c = Math.cos(th), s = Math.sin(th);
-    const r00 = c * i00 - s * i10, r01 = c * i01 - s * i11, r10 = s * i00 + c * i10, r11 = s * i01 + c * i11;   // R·P⁻¹
-    return [ux * r00 + vx * r10, uy * r00 + vy * r10, ux * r01 + vx * r11, uy * r01 + vy * r11] };   // P·R·P⁻¹ → [a b c d] of matrix(a,b,c,d,0,0)
-  const before = frame(); ROT = (ROT + d + 4) & 3; const pan0 = { x: pan.x, y: pan.y }; recentre(cc); const after = frame(); pan.x = pan0.x; pan.y = pan0.y; ROT = (ROT - d + 4) & 3;
-  /* which sense of turn carries the old view onto the new one */
-  const q0 = before.q, q1 = after.q;
-  const err = sg => { const m = M(before.P, sg * Math.PI / 2); return Math.hypot(m[0] * q0.x + m[2] * q0.y - q1.x, m[1] * q0.x + m[3] * q0.y - q1.y) }, sg = err(1) <= err(-1) ? 1 : -1;
-  const keys = (P, from, to, cx, cy) => Array.from({ length: 13 }, (_, i) => { const th = (from + (to - from) * i / 12) * Math.PI / 180, m = M(P, th), sh = 1 - .06 * Math.sin(Math.abs(th) * 2);
-    return { transformOrigin: `${(cx - rect.left).toFixed(1)}px ${(cy - rect.top).toFixed(1)}px`, transform: `matrix(${(m[0] * sh).toFixed(4)},${(m[1] * sh).toFixed(4)},${(m[2] * sh).toFixed(4)},${(m[3] * sh).toFixed(4)},0,0)`, filter: `brightness(${(1 - .08 * Math.sin(Math.abs(th) * 2)).toFixed(3)})` } });
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return turnNow(d);
+  const cc = centreCell(), pv = rotUV(cc.u, cc.v);   /* pivot = the cell in the middle of the screen */
   turning = true; for (const u of window.TownBattle?.state?.()?.units || []) u._occ = false;
-  cv.animate(keys(before.P, 0, sg * 45, before.cx, before.cy), { duration: 230, easing: "cubic-bezier(.45,0,.9,.6)", fill: "forwards" }).onfinish = () => {
-    turnNow(d); fadeGround = null;
-    const a2 = cv.animate(keys(after.P, -sg * 45, 0, after.cx, after.cy), { duration: 300, easing: 'cubic-bezier(.1,.5,.25,1)' });
-    cv.getAnimations().forEach(x => { if (x !== a2) x.cancel() });
-    a2.onfinish = a2.oncancel = () => { turning = false } };
+  TURN = { th: 0, pu: pv.u, pv: pv.v, target: (d > 0 ? 1 : -1) * Math.PI / 2, t0: performance.now(), dur: 560, d, cc };
+}
+/* ground picture turned about the pivot: s' = sp + M (s − sp), M = A·R(th)·A⁻¹ (A = the iso map of one lattice step) */
+function turnMat(th, pu, pv) {
+  const A = [HWc, -HWc, HHc, HHc], det = A[0] * A[3] - A[1] * A[2], Ai = [A[3] / det, -A[1] / det, -A[2] / det, A[0] / det], c = Math.cos(th), s = Math.sin(th), R = [c, -s, s, c];
+  const mul = (X, Y) => [X[0] * Y[0] + X[1] * Y[2], X[0] * Y[1] + X[1] * Y[3], X[2] * Y[0] + X[3] * Y[2], X[2] * Y[1] + X[3] * Y[3]], M = mul(mul(A, R), Ai), sp = { x: OXc + (pu - pv) * HWc, y: OYc + (pu + pv) * HHc };
+  return [M[0], M[2], M[1], M[3], sp.x - (M[0] * sp.x + M[1] * sp.y), sp.y - (M[2] * sp.x + M[3] * sp.y)];   // canvas transform(a, b, c, d, e, f)
+}
+function stepTurn(now) {
+  const p = Math.min(1, (now - TURN.t0) / TURN.dur), e = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  TURN.th = TURN.target * e; if (p < 1) return;
+  const T = TURN, pOld = projectFlat(T.cc.u, T.cc.v); fadeMat = turnMat(T.th, T.pu, T.pv); fadeGround = groundCanvas; fadeAt = now; TURN = null;
+  ROT = (ROT + T.d + 4) & 3; try { localStorage.setItem('projectA.fieldRot', ROT) } catch (e) { }
+  FieldHeight.setView(); groundCanvas = null; for (const u of window.TownBattle?.state?.()?.units || []) u._occ = false;
+  const pNew = projectFlat(T.cc.u, T.cc.v), dx = pNew.x - pOld.x, dy = pNew.y - pOld.y, k = scale * zoom;   /* the new view is the turned one shifted by (dx, dy): shift pan / camera back so nothing jumps */
+  if (fadeMat) { fadeMat[4] += dx; fadeMat[5] += dy }
+  pan.x -= dx * k; pan.y -= dy * k; window.TownBattle?.shiftCam?.(dx, dy); turning = false;
 }
 function turnNow(d) {
-  fadeGround = groundCanvas; fadeAt = performance.now();
+  fadeGround = groundCanvas; fadeAt = performance.now(); fadeMat = null;
   const cc = centreCell(); ROT = (ROT + d + 4) & 3; recentre(cc); try { localStorage.setItem('projectA.fieldRot', ROT) } catch (e) { }
   FieldHeight.setView(); groundCanvas = null; for (const u of window.TownBattle?.state?.()?.units || []) u._occ = false;
 }
@@ -431,14 +435,18 @@ addEventListener('resize', resize); resize();
 function frame(t) {
   window.__feDirtyGround = () => { groundCanvas = null };   // BG Editor: repaint the ground (blocked-cell tint) after a prop moved
 requestAnimationFrame(frame);
+  if (TURN) stepTurn(performance.now());
   if (!groundCanvas) paintGround();
   window.TownBattle?.pre?.();
   const dio = window.FieldDiorama && window.FieldHeight;
   g.setTransform(1, 0, 0, 1, 0, 0); if (dio) FieldDiorama.sky(g, cv.width, cv.height, FIELD.biome, FIELD.night, FQ.get('poi')); else { g.fillStyle = FIELD.biome === 'snow' ? '#9aa8b5' : '#1a2016'; g.fillRect(0, 0, cv.width, cv.height) }
   const k = devicePixelRatio * scale * zoom; g.setTransform(k, 0, 0, k, devicePixelRatio * (W / 2 + pan.x) - WORLD_W / 2 * k, devicePixelRatio * (H / 2 + pan.y) - WORLD_H / 2 * k);
-  g.drawImage(groundCanvas, groundCanvas.ox, groundCanvas.oy);
-  if (fadeGround) { const a = 1 - (performance.now() - fadeAt) / 320; if (a <= 0) fadeGround = null; else { g.globalAlpha = a; g.drawImage(fadeGround, fadeGround.ox, fadeGround.oy); g.globalAlpha = 1 } }
-  if (dio) waterFx(g, t);
+  const tm = TURN ? turnMat(TURN.th, TURN.pu, TURN.pv) : null; if (tm) { g.save(); g.transform(...tm) }   /* the ground picture turns with the view; units and props below are placed (upright) with the same turn */
+  if (groundCanvas) g.drawImage(groundCanvas, groundCanvas.ox, groundCanvas.oy);
+  if (dio && tm) waterFx(g, t);
+  if (tm) g.restore();
+  if (fadeGround) { const a = 1 - (performance.now() - fadeAt) / 320; if (a <= 0) { fadeGround = null; fadeMat = null } else { g.save(); if (fadeMat) g.transform(...fadeMat); g.globalAlpha = a; g.drawImage(fadeGround, fadeGround.ox, fadeGround.oy); g.restore() } }
+  if (dio && !tm) waterFx(g, t);
   const props = [];
   if (!dio) for (const o of FIELD.outer) if (o.prop) props.push([o.prop, o.u, o.v, o.seed]);   // a floating field has no land beyond its edge
   if (!dio) for (const c of FIELD.cells.values()) if (c.prop === 'pool') props.push([c.prop, c.u, c.v, c.seed]);   // flat water stays on the ground (the diorama paints pools as real water)
