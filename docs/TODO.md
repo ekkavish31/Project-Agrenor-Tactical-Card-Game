@@ -665,3 +665,14 @@
 - ต้องมีบัญชี Cloudflare (ฟรี) และผู้ใช้เป็นคนเชื่อมรีโป/ใส่ token — ผมทำฝั่งรีโปให้ได้: `.assetsignore` (ตัด `dev/ docs/ tools/ art-production/` ฯลฯ) · `_headers` · เวิร์กโฟลว์ GitHub Actions (`wrangler pages deploy`) หรือใช้การเชื่อม Git ของ Cloudflare โดยไม่ต้องมีเวิร์กโฟลว์
 **ขั้นต่อไป (ถ้าผู้ใช้อนุมัติ):** (1) บีบ mp4 + ทดสอบ intro (2) เตรียม `.assetsignore` `_headers` (3) ผู้ใช้สร้างโปรเจกต์ Cloudflare เชื่อมรีโป (4) ทดสอบบน `*.pages.dev` ขนานกับ GitHub Pages (5) เพิ่มหน้าย้ายเซฟ (6) สลับลิงก์หลัก
 
+
+
+## 19. Asset แบบ local ระหว่างพัฒนา (10 พ.ย. 2026 · v98.365 · ทำแล้วรอบแรก)
+
+ตัดสินใจ: ตอนนี้เน้นพัฒนา ยังไม่เปิดให้ใครเล่น → ไม่ทำระบบดาวน์โหลด asset ลงเครื่องผู้เล่น และไม่ย้ายโฮสต์ (ดูหมวด 18)
+- เปิดเกมด้วย `node tools/dev-server.cjs --assets <โฟลเดอร์ asset ในเครื่อง>` (พอร์ตเริ่มต้น 8080 · `--port` เปลี่ยนได้)
+  - คำขอ `/assets/**` ค้นในโฟลเดอร์ local ก่อน ไม่มีค่อยใช้ `assets/` ใน repo · แยก `html/js/data` ไว้ใน repo ตามเดิม · origin เดียว ไม่มีปัญหา CORS/canvas
+  - โฟลเดอร์ชี้ได้ทั้งแบบ `<root>/assets/...` และชี้ที่ `assets` ตรง ๆ · ไม่ cache เลย (แก้ภาพแล้ว F5)
+  - บน localhost เกมไม่ลงทะเบียน `sw.js` และล้างแคชเก่าให้ (`js/game-version.js`)
+- ยังเก็บ `assets/` ไว้ใน repo (ไม่ได้ลบ) เพราะบน GitHub Pages ผู้เล่นต้องใช้ · สำเนา local: `cp -r assets /path/to/local-assets`
+- ค้าง: (1) ตัดสินใจเมื่อไรจะถอด `assets/` ออกจาก repo (ต้องมีที่โฮสต์ asset ก่อนเปิดให้คนเล่น → ดูหมวด 18) (2) สคริปต์ตรวจ manifest ↔ ไฟล์จริง และ contact sheet ต่อ entity ให้ AI/คน เห็นภาพรวม (3) ให้ Asset Studio เขียนลงโฟลเดอร์ local เดียวกับที่ dev-server ใช้ (ตอนนี้เลือกโฟลเดอร์เอง)
