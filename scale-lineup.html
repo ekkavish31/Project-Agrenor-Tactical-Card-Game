@@ -48,7 +48,7 @@ code{font-size:12px}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/char-size.js?v=98.305"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.372"></script><script src="js/char-size.js?v=98.305"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -336,16 +336,13 @@ function interiorList() {
   return o;
 }
 const mapText = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-function mapRows() {
-  const MS = window.MapScale, rows = [['village', null, '🏡 หมู่บ้าน', 'ตัวเอก + ชาวบ้าน + เพื่อนที่เดินในหมู่บ้าน'], ['world', null, '🌍 แผนที่โลก', 'ตัวเอกบนแผนที่โลก']];
-  for (const [k, n] of Object.entries(BIOMES)) rows.push(['battle', k, '⚔ สนามรบ · ' + n, 'ตัวเอก เพื่อน มอนสเตอร์ ทุกตัวในสนาม']);
-  for (const [k, n] of Object.entries(placeList())) rows.push(['place', k, '🏠 แผนที่ย่อย · ' + n, MS.has('place', k) ? 'ตั้งเอง' : 'ยังไม่ตั้ง = ตามหมู่บ้าน']);
-  for (const [k, n] of Object.entries(interiorList())) rows.push(['interior', k, '🚪 ภายในอาคาร · ' + mapText(n), MS.has('interior', k) ? 'ตั้งเอง' : 'ค่าเริ่มต้น 100%']);
-  return rows;
+function mapRows() {   /* v98.372 · four groups only (js/map-scale.js) */
+  return [['village', null, '🏡 ในเมือง / หมู่บ้าน', 'ตัวเอก + ชาวบ้าน + เพื่อนที่เดินในเมืองและหมู่บ้าน'], ['world', null, '🌍 แผนที่โลก', 'ตัวเอกบนแผนที่โลก'],
+    ['battle', null, '⚔ สนามรบ (ทุกที่)', 'ตัวเอก เพื่อน มอนสเตอร์ ทุกตัวในสนามรบทุกแห่ง (รวมสนามในเมือง)'], ['inside', null, '🚪 ภายในสถานที่ (ทุกที่)', 'ทุกคนในแผนที่ย่อยและห้องภายในของทุกสถานที่']];
 }
 /* v98.320 · each map is a row of characters standing on THAT map's real grid cell, drawn at lineup size × the map's multiplier (the same numbers the game uses) */
-const MAP_GEOM = { battle: { cw: 84, label: 'ช่องสนามรบ 84×42 px' }, village: { cw: 56, label: 'ช่องหมู่บ้าน 56×28 px' }, place: { cw: 56, label: 'ช่องหมู่บ้าน 56×28 px' }, interior: { cw: 68, label: 'ช่องในอาคาร 68×34 px' }, world: { hex: 36, label: 'ช่องแผนที่โลก (เฮกซ์ R=36)' } };
-const pxPerUnit = kind => kind === 'battle' ? 84 : kind === 'world' ? CharSize.WORLD_HERO_PX / DS.hero : kind === 'interior' ? CharSize.INTERIOR_HERO_PX / DS.hero : CharSize.VILLAGE_HERO_PX / DS.hero;
+const MAP_GEOM = { battle: { cw: 84, label: 'ช่องสนามรบ 84×42 px' }, village: { cw: 56, label: 'ช่องหมู่บ้าน 56×28 px' }, place: { cw: 56, label: 'ช่องหมู่บ้าน 56×28 px' }, interior: { cw: 68, label: 'ช่องในอาคาร 68×34 px' }, inside: { cw: 68, label: 'ช่องภายในสถานที่ 68×34 px (แผนที่ย่อยใช้ช่อง 56×28)' }, world: { hex: 36, label: 'ช่องแผนที่โลก (เฮกซ์ R=36)' } };
+const pxPerUnit = kind => kind === 'battle' ? 84 : kind === 'world' ? CharSize.WORLD_HERO_PX / DS.hero : kind === 'interior' || kind === 'inside' ? CharSize.INTERIOR_HERO_PX / DS.hero : CharSize.VILLAGE_HERO_PX / DS.hero;
 function mapCast(kind) { const base = ENTRIES.filter(e => !isW(e) && e.ctx.battle && passF(e)); return kind === 'battle' ? base : kind === 'world' ? base.filter(e => e.kind === 'hero' || e.kind === 'ally').slice(0, 6) : base.filter(e => e.kind !== 'monster') }
 function drawStrip(cv, kind, mult) {
   const G = MAP_GEOM[kind], cast = mapCast(kind), ppu = pxPerUnit(kind) * mult, px = e => e.ctx.battle.units * eff(e) * ppu, dpr = devicePixelRatio || 1;
@@ -365,11 +362,11 @@ function renderMaps() {
   const MS = window.MapScale, st = $('stage'); st.style.height = 'auto'; st.style.width = 'auto'; ctx = 'battle';
   $('list').innerHTML = ''; $('insp').innerHTML = ''; $('ctl').innerHTML = '';
   const rows = mapRows();
-  st.innerHTML = `<div class="banner ok"><b>ตัวคูณเดียวต่อแผนที่</b> · ใช้กับ <b>ตัวละครทุกตัวบนแผนที่นั้นพร้อมกัน</b> · ตัวละครใหญ่/เล็กกว่ากันแค่ไหน ตั้งที่แท็บ "ตัวละคร" (ชุดเดียวทุกแผนที่ — แถวด้านล่างอิงค่านี้ทุกตัว) — แท็บนี้เปลี่ยนแค่ขนาดของ "ทั้งชุด" เทียบกับตึก พื้น และกริดของแผนที่นั้น</div>
+  st.innerHTML = `<div class="banner ok"><b>ตัวคูณเดียวต่อกลุ่มแผนที่ (4 กลุ่ม)</b> · ใช้กับ <b>ตัวละครทุกตัวในกลุ่มนั้นพร้อมกัน</b> · ตัวละครใหญ่/เล็กกว่ากันแค่ไหน ตั้งที่แท็บ "ตัวละคร" (ชุดเดียวทุกแผนที่ — แถวด้านล่างอิงค่านี้ทุกตัว) — แท็บนี้เปลี่ยนแค่ขนาดของ "ทั้งชุด" เทียบกับตึก พื้น และกริดของแผนที่นั้น</div>
    ${rows.map(([kind, id, name, note], i) => { const v = Math.round(MS.get(kind, id) * 100), own = MS.has(kind, id) || kind === 'village' || kind === 'world', G = MAP_GEOM[kind];
      return `<section class="mapcard" style="margin:12px 0;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--panel)"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><b>${name}</b><small>${note} · ${G.label}</small><span style="flex:1"></span><button data-i="${i}" data-d="-5">−5</button><button data-i="${i}" data-d="-1">−1</button><input type="number" data-i="${i}" min="20" max="400" step="1" value="${v}" style="width:64px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:2px 4px">%<button data-i="${i}" data-d="1">+1</button><button data-i="${i}" data-d="5">+5</button><button data-i="${i}" data-r="1" title="คืนค่าเริ่มต้น"${own ? '' : ' disabled'}>↺</button></div><div style="overflow-x:auto"><canvas class="mapcv" data-i="${i}"></canvas></div></section>` }).join('')}
    <div class="adj"><button id="mapPush">⬆ Push ขนาดต่อแผนที่</button><button id="mapReset">↺ คืนทุกแผนที่เป็นค่าเริ่มต้น</button></div><p class="hint" id="mapMsg"></p>
-   <p class="hint">เก็บในเบราว์เซอร์นี้ทันที (เกมอ่านค่าสด) · ⬆ Push ส่งขึ้น repo ไปกับ js/game-settings.js · ใช้กับ: หมู่บ้าน (ตัวเอก ชาวบ้าน เพื่อน), แผนที่ย่อย (ตัวเอก), ภายในอาคาร (ทุกคนในห้อง), สนามรบแยกตามพื้นที่ (ทุกตัว), แผนที่โลก (ตัวเอก) · ค่าตั้งแยกรายตัวเดิมในหมู่บ้าน ("NPC ทุกตัว" / ขนาดรายตัว) เลิกใช้แล้ว</p>`;
+   <p class="hint">เก็บในเบราว์เซอร์นี้ทันที (เกมอ่านค่าสด) · ⬆ Push ส่งขึ้น repo ไปกับ js/game-settings.js · ใช้กับ: ในเมือง/หมู่บ้าน (ตัวเอก ชาวบ้าน เพื่อน), แผนที่โลก (ตัวเอก), สนามรบทุกที่ (ทุกตัว), ภายในสถานที่ทุกที่ (แผนที่ย่อยและห้อง) · ค่าแยกรายสถานที่/รายพื้นที่เดิมยังใช้อยู่จนกว่าจะตั้งค่ากลุ่ม แล้วจะถูกแทนที่ · ค่าตั้งแยกรายตัวเดิมในหมู่บ้าน ("NPC ทุกตัว" / ขนาดรายตัว) เลิกใช้แล้ว</p>`;
   const set = (i, pct) => { const [kind, id] = rows[i]; MS.set(kind, id, Math.max(20, Math.min(400, Math.round(pct))) / 100) };
   st.querySelectorAll('button[data-d]').forEach(b => b.onclick = () => { const [kind, id] = rows[+b.dataset.i]; set(+b.dataset.i, MS.get(kind, id) * 100 + +b.dataset.d); renderMaps() });
   st.querySelectorAll('input[data-i]').forEach(inp => inp.onchange = () => { set(+inp.dataset.i, +inp.value || 100); renderMaps() });
