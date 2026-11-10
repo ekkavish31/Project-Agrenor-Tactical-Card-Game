@@ -677,3 +677,11 @@
   - บน localhost เกมไม่ลงทะเบียน `sw.js` และล้างแคชเก่าให้ (`js/game-version.js`)
 - ยังเก็บ `assets/` ไว้ใน repo (ไม่ได้ลบ) เพราะบน GitHub Pages ผู้เล่นต้องใช้ · สำเนา local: `cp -r assets /path/to/local-assets`
 - ค้าง: (1) ตัดสินใจเมื่อไรจะถอด `assets/` ออกจาก repo (ต้องมีที่โฮสต์ asset ก่อนเปิดให้คนเล่น → ดูหมวด 18) (2) สคริปต์ตรวจ manifest ↔ ไฟล์จริง และ contact sheet ต่อ entity ให้ AI/คน เห็นภาพรวม (3) ให้ Asset Studio เขียนลงโฟลเดอร์ local เดียวกับที่ dev-server ใช้ (ตอนนี้เลือกโฟลเดอร์เอง)
+
+### 19.1 ทำงานสองเครื่อง (คอมสองเครื่อง ไม่รวมมือถือ · v98.366)
+- ทั้งสองเครื่อง `git clone` repo ไว้ (เช่น `D:\Work\Agrenor`) · GitHub เป็นศูนย์กลาง · เวอร์ชัน asset = commit เดียวกับโค้ด
+- **เริ่มงาน:** `node tools/work-start.cjs` (ดึงล่าสุด · ถ้ามีไฟล์ค้างในเครื่องจะเตือนให้ส่งก่อน)
+- **จบงาน:** `node tools/work-end.cjs ["ข้อความ"]` (บันทึก + รวมกับงานล่าสุด + push · ถ้าชนกันจะหยุดและไม่ลบอะไร)
+- อย่าเปิด Asset Studio พร้อมกันสองเครื่อง · `data/asset-manifest.json` เป็นจุดที่ชนง่ายสุด
+- ผู้ช่วยก็ push ขึ้น `main` ได้ → ก่อนแก้ใน Studio ให้รัน `work-start` เสมอ
+- ถ้า repo ใหญ่/clone ช้า: ดู Git LFS หรือแยก repo asset (หมวด 18)

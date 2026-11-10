@@ -4850,3 +4850,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - ยังไม่ถอด `assets/` ออกจาก repo (ดู docs/TODO.md §19)
 
 - (v98.365 ต่อ) `tools/dev-server.cjs` overlay ค่าที่ editor เก็บ (`/data/**`, `/js/asset-manifest.js`) จากโฟลเดอร์ local ด้วย เพื่อแก้สเกล/ตำแหน่งแล้ว F5 เห็นทันที
+
+## v98.366 · สคริปต์ทำงานสองเครื่อง
+- `tools/work-start.cjs` (ดึงงานล่าสุด) และ `tools/work-end.cjs` (บันทึก+รวม+push) · วิธีใช้ใน docs/TODO.md §19.1
