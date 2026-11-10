@@ -35,6 +35,8 @@
     return at;
   }
   function placePoint(o) {
+    /* v98.371 · the target crystal of a place stands at its ENTRANCE (where the hero walks in), not above the roof */
+    try { const e = root.TownUX?.entryPoint?.(o); if (e && isFinite(e.u + e.v)) { const q = project(e.u, e.v); return { x: q.x, y: q.y - 70 } } } catch (err) { }
     const lp = root.TownUX?.labelPoint?.(o); const x = lp ? lp.x : o.x * MX, y = (lp ? lp.y : o.y * MY);
     return { x, y: y - 70 };
   }
