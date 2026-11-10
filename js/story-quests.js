@@ -212,6 +212,16 @@ function hookActions(){if(typeof placeActions!=='function'||placeActions.storyHo
 /* ---------- v98.331 · tutorial fights inside the prologue quests (docs/TODO.md §14) ----------
    questBattle(d, {title, ms, tut, seed, r, biome}) → 'win' | 'out' | 'busy'. A full-screen battle in a frame over the game (battle-field.html), the two heroes are immortal
    (?imm=1 · HP never below 1) and cannot flee (?noflee=1), so the fight always ends in a win once it is played through. */
+/* v98.354 · ENCOUNTER CUT (Final Fantasy style): the village zooms + blurs, black bars whip across the screen and close, the fight loads BEHIND them (no half-loaded village / home flash),
+   then the bars open on the arena. battleCut() → {open()} ; the iframe sends 'agrenor-battle-ready' when the arena has been built. */
+function battleCut(){
+ if(!document.getElementById('qbCutCss')){const c=document.createElement('style');c.id='qbCutCss';c.textContent=`#qbCut{position:fixed;inset:0;z-index:960;pointer-events:all;overflow:hidden}#qbCut i{position:absolute;left:-12%;width:124%;height:10.2%;background:#05070b;transform:translateX(-112%) skewX(-18deg);transition:transform .42s cubic-bezier(.7,0,.25,1)}#qbCut i:nth-child(even){transform:translateX(112%) skewX(-18deg)}#qbCut.on i{transform:translateX(0) skewX(-18deg)}#qbCut.out i{transform:translateX(-112%) skewX(-18deg);transition-duration:.5s}#qbCut.out i:nth-child(even){transform:translateX(112%) skewX(-18deg)}#qbCut b{position:absolute;inset:0;background:radial-gradient(circle,#fff 0,#fff0 62%);opacity:0;transition:opacity .22s}#qbCut.flash b{opacity:.85}#qbCut u{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(2.4);opacity:0;font:italic 900 56px AgThai,system-ui,sans-serif;letter-spacing:.14em;color:#fff3b0;text-decoration:none;text-shadow:0 0 22px #ff6a1f;transition:all .35s .3s cubic-bezier(.2,1.5,.4,1)}#qbCut.on u{opacity:1;transform:translate(-50%,-50%) scale(1)}#qbCut.out u{opacity:0;transition:opacity .2s}.qb-zoom{transition:transform .5s cubic-bezier(.5,0,.9,.4),filter .5s!important;transform:scale(1.28)!important;filter:blur(5px) brightness(1.3)!important}`;document.head.append(c)}
+ const el=document.createElement('div');el.id='qbCut';el.innerHTML='<b></b>'+Array.from({length:10},(_,k)=>`<i style="top:${k*10}%"></i>`).join('')+'<u>ENCOUNTER!</u>';document.body.append(el);
+ const town=document.getElementById('villageTownLayer');town?.classList.add('qb-zoom');
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{el.classList.add('flash');setTimeout(()=>{el.classList.remove('flash');el.classList.add('on')},120)}));
+ const t0=performance.now();
+ return {open:()=>new Promise(res=>{const wait=Math.max(0,1050-(performance.now()-t0));setTimeout(()=>{town?.classList.remove('qb-zoom');el.classList.add('out');setTimeout(()=>{el.remove();res()},560)},wait)}),drop:()=>{town?.classList.remove('qb-zoom');el.remove()}}}
+function battleReady(fr){return new Promise(res=>{const on=e=>{if(e.source===fr.contentWindow&&e.data?.type==='agrenor-battle-ready'){removeEventListener('message',on);res()}};addEventListener('message',on);setTimeout(res,20000)})}
 function questBattle(d,o){return new Promise(resolve=>{
  if(d.fighting||onWorld()){resolve('busy');return}
  const g=G(),v=V();if((g.hp||0)<30)g.hp=Math.max(g.hp||0,40);
@@ -225,7 +235,7 @@ function questBattle(d,o){return new Promise(resolve=>{
   const win=r.outcome==='win';
   if(win){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);if(root.Progression){const xp=Progression.battleXp({dang:.25,kills:r.kills});gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}
   d.fighting=false;doSave();fr.remove();doRender();resolve(win?'win':'out')};
- addEventListener('message',done);document.body.appendChild(fr)})}
+ {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);document.body.appendChild(fr)})}
 
 /* ---------- raid battle (v94: the flat card battle drawn on the village square, in a frame over the game) ---------- */
 function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับหมู่บ้านก่อน');return}
@@ -239,7 +249,7 @@ function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับห�
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
   if(r.outcome==='win'){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);d.won=true;if(root.Progression){const xp=Progression.battleXp({dang:.4,kills:r.kills});gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}else toast(r.outcome==='lose'?'พ่ายแพ้... ตั้งหลักแล้วลองใหม่':'ถอยออกมา · โจรยังอยู่ในงาน','');
   d.fighting=false;doSave();fr.remove();doRender()};
- addEventListener('message',done);document.body.appendChild(fr)}
+ {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);document.body.appendChild(fr)}
 
 /* ---------- sales detector (coins up while an item or goods left the bag at the market) ---------- */
 let prev=null;

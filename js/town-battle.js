@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.340';
+  const V = '98.354';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -141,7 +141,7 @@
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
-      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
+      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', weapon: HPRO.weapon || 'knife', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
     if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
@@ -457,7 +457,7 @@
     hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<img class="gemi" src="assets/ui/gem-${i < left ? 'on' : 'off'}.webp" alt="" draggable="false">`).join('');
     document.getElementById('fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
     document.getElementById('fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || !walks.length;
-    { const a = document.getElementById('fbAuto'); a.classList.toggle('on', auto); a.querySelector('span').textContent = auto ? 'หยุด Auto' : 'Auto' }
+    { const a = document.getElementById('fbAuto'); a.disabled = noAuto(); a.title = noAuto() ? 'ปิดไว้ในบทฝึกต่อสู้' : ''; a.classList.toggle('on', auto); a.querySelector('span').textContent = auto ? 'หยุด Auto' : 'Auto' }
     queueSync();
     document.getElementById('fbDis').disabled = busy || !!st.outcome || st.turn !== 'hero' || (!left && !discardMode);
     document.getElementById('fbDis').querySelector('span').textContent = discardMode ? 'ยกเลิกการทิ้ง' : 'ทิ้งไพ่ฟื้นแรง';
@@ -624,7 +624,9 @@
     } finally { autoRun = false }
     if (auto && !busy && st.turn === 'hero' && !st.outcome) await endHeroTurn();
   }
-  function setAuto(on) { auto = on; hudSync(); if (on && !busy && st.turn === 'hero' && !st.outcome) autoTurn() }
+  /* v98.354 · the first two fights (goat, pumpkin) teach the battle system: no Auto, for the leader or for the friends */
+  const noAuto = () => ['goat', 'pumpkin'].includes(Q.get('tut')) || Q.get('noauto') === '1';
+  function setAuto(on) { if (on && noAuto()) { flash('บทฝึกต่อสู้ · ยังใช้ Auto ไม่ได้ ลองเล่นเองก่อน'); return } auto = on; hudSync(); if (on && !busy && st.turn === 'hero' && !st.outcome) autoTurn() }
 
   /* ---------- discard for stamina ---------- */
   function setDiscard(on) { discardMode = on && !busy && st.turn === 'hero' && !st.outcome && (FB.crystals(st) > 0); picked.clear(); hidePreview(); refresh() }
@@ -999,7 +1001,7 @@
     pendAlly = { id: m.id, ...p }; floatText(m, '≈ −' + p.est + (p.kill ? ' ☠' : ''), p.kill ? '#ffe14d' : '#ffd0a0', true); hint((p.to ? 'เดินเข้าไปแล้วตี' : 'ตี') + ' ' + m.name + ' · คลิกอีกครั้งเพื่อยืนยัน'); hudSync();
   }
   async function allySkillCtl() { const u = st.cur, r = FB.allySkillNow(st); if (!r.ok) { flash(r.reason); return } walks = []; busy = true; hudSync(); await playSkill(r); busy = false; refresh(); if (st.outcome) finish() }
-  async function allyAutoCtl() { const u = st.cur; u.autoCtl = true; busy = true; const s = FB.allyAuto(st); await playSteps(s); busy = false; await finishAlly(false) }
+  async function allyAutoCtl() { if (noAuto()) { flash('บทฝึกต่อสู้ · ยังใช้ Auto ไม่ได้'); return } const u = st.cur; u.autoCtl = true; busy = true; const s = FB.allyAuto(st); await playSteps(s); busy = false; await finishAlly(false) }
   async function endAllyTurn() { if (busy || st.turn !== 'ally' || facing) return; if (!(await pickFacing(st.cur))) return; await finishAlly(true) }
   async function finishAlly() { pendAlly = null; walks = []; busy = true; document.body.classList.remove('fb-ally'); const r = FB.endAllyTurn(st); refresh(); await playSteps(r.steps); actUnit = null; busy = false; await afterAI() }
   /* ---------- v97.08 · pause menu (Esc / ☰): restart, flee, element chart, controls — kept off the main HUD so they can't be hit by mistake ---------- */
@@ -1574,10 +1576,11 @@
   }
   /* the page's own pointerup is replaced by TownUX, so the battle listens for a plain click itself (no drag = click) */
   { let down = null; cv.addEventListener('pointerdown', e => { if (e.button === 0) down = { x: e.clientX, y: e.clientY } }, true);
-    cv.addEventListener('pointerup', e => { if (e.button !== 0 || !down) return; const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5; down = null; if (moved) userCam = true; else if (!EDIT) click(world(e)) }, true);
-    cv.addEventListener('wheel', () => { userCam = true }, true) }
+    cv.addEventListener('pointerup', e => { if (e.button !== 0 || !down) return; const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5; down = null; if (moved) { userCam = true; try { follow = false } catch (e) { } } else if (!EDIT) click(world(e)) }, true);
+    cv.addEventListener('wheel', () => { userCam = true; try { follow = false } catch (e) { } }, true) }
   /* runs before the frame's camera transform: TownUX re-centres on the village hero every frame, so the arena has to win after it */
-  function pre() { if (st && (!userCam || cine)) focusCamera(); else if (kick.roll) { kick.roll = 0; cv.style.transform = '' } }
+  function pre() { if (st && userCam) { try { follow = false } catch (e) { } }   /* v98.354 · zoom / drag: the village must not pull the camera back to the hero's house */
+    if (st && (!userCam || cine)) focusCamera(); else if (kick.roll) { kick.roll = 0; cv.style.transform = '' } }
 
   /* ---------- v98.21 · stick / gamepad / keys (js/touch-controls.js): a tile cursor on the grid ----------
      stick = move the cursor one tile every 150 ms along the floor axes · A = click that tile (walk / target / attack) · hold A = ring (attack the target · end turn · undo · auto)
