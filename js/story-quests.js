@@ -114,7 +114,15 @@ function lessonCard(id){const L=LESSON[id];if(!L)return Promise.resolve();
   d.querySelector('button').onclick=close;addEventListener('keydown',key,true);document.body.append(d);d.querySelector('button').focus()})}
 /* world map only when the prologue sends you out (or you are already out on a step) */
 const WORLD_STEPS=['cave','caveBack','expedition','return'];
-function lock(){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||WORLD_STEPS.includes(step.id))return '';return 'ทำเควสบทนำต่อก่อน: '+step.title+' — '+step.goal}
+function lock(){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||WORLD_STEPS.includes(step.id))return '';return 'ธุระตรงหน้ายังไม่เสร็จ — '+step.title+': '+step.goal+' · ยังไม่ใช่เวลาออกจากหมู่บ้าน'}
+/* v98.364 · during the prologue only the places the current step needs are open (home and the plaza always); the others answer with an in-story line.
+   A talk step opens the place where that villager is right now (shared daily schedule); anything unknown stays open rather than trapping the player. */
+function npcPlace(id){try{const L=root.VillageLife,p=L?.P?.[id];if(!p)return null;const h=L.VillageClock.read().hour;for(const [a,b,at] of p.sched||[])if(h>=a&&h<b)return at==='home'?(L.homeOf(p)||'inn'):at}catch{}return null}
+function placeLock(ids,name){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||WORLD_STEPS.includes(step.id)||step.id==='raid')return '';
+ const list=[].concat(ids).filter(Boolean),ok=new Set(['home','square']);for(const x of [].concat(step.place||[]))ok.add(x);
+ if(step.talk){const w=npcPlace(step.talk);if(!w)return '';ok.add(w)}
+ if(list.some(x=>ok.has(x)))return '';
+ return (name?'ตอนนี้ยังไม่มีธุระที่'+String(name).replace(/[<>&]/g,'')+' · ':'')+'ธุระตรงหน้าคือ "'+step.title+'" — '+step.goal+' · ไว้ค่อยแวะทีหลัง'}
 const STEPS=[
  talkStep({id:'wake',chapter:'วันที่ 1 · เตรียมงานเทศกาล',intro:'opening',outro:'elderMeet',title:'ไปหาผู้ใหญ่บ้าน',talk:'oren',goal:'เดินไปหาผู้ใหญ่บ้านโอเรน แล้วคลิกที่ตัวเพื่อคุย',
   hint:'ช่วงเช้าผู้ใหญ่บ้านอยู่ที่ตลาด · '+HINT_WALK}),
@@ -332,7 +340,7 @@ async function resumeFight(){const step=cur();if(!step)return false;const d=data
  d.fighting=false;d.resumeSrc=rec?rec.page+rec.search+'&resume=1':null;doSave();
  if(step.id==='raid'){startRaid(d);return true}
  if(step.onSpot){const r=await step.onSpot(d);doSave();if(r?.msg)toast(r.msg);return true}return false}
-root.Story={resumeFight,trackerInfo,openTracker,lock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

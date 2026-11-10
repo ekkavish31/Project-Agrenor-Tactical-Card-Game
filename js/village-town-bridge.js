@@ -40,6 +40,7 @@ const CORE=['market','forge','home'];
 function arrived(id,map,info={}){if(id.startsWith('exit:')){openWorld();return}if(busy||devActive||s.mode==='battle'){send({type:'place',id,ok:false,message:'รอให้กิจกรรมปัจจุบันเสร็จก่อน',actions:[]});return}
  // v94: the hero's own house (an editor place) is home; editor houses with an empty sub-map and every non-core place open the living interior
  if(info.name&&/บ้านของเรา|บ้านเรา/.test(info.name))id='home';
+ {const why=window.Story?.placeLock?.([id,info.placeId],info.name);if(why){villageDialog('ยังไม่ถึงเวลา','<p>'+why.replace(/[<>&]/g,'')+'</p>');send({type:'place',id,ok:false,message:'',actions:[]});return}}
  const real=info.placeId||id,emptyMap=map&&!(placeMaps()[map]?.stations||[]).length;
  if(!CORE.includes(id)||(info.custom&&emptyMap&&id!=='home')){if(id==='square'||real==='square'){send({type:'place',id,ok:false,message:'ลานกลางหมู่บ้าน',actions:[]});return}enterPlace(real,'',info.name||real);sync();return}
  if(!PLACES[id]){send({type:'place',id,ok:false,message:'สถานที่นี้เตรียมไว้ ยังไม่เปิดกิจกรรม',actions:[]});return}
@@ -59,7 +60,7 @@ window.addEventListener('message',e=>{const m=e.data;if(e.source===frame.content
  else if(m.type==='menu')menu(m.id);
  }});
 /* v94: the old area adventure (adventure.js node maps) is archived — leaving the village always opens the world map in the town frame */
-function openWorld(){if(busy||s.mode==='battle')return;/* v97.16: the prologue decides when the world map opens */const lock=window.Story?.lock?.();if(lock){villageDialog('ยังออกเดินทางไม่ได้','<p>'+lock.replace(/[<>&]/g,'')+'</p><p>จบบทนำแล้วจะออกผจญภัยได้อิสระ</p>');return}let reason=s.hp<20?'HP ต่ำกว่า 20 พักก่อน':'';{const IJ=window.Injury,G0=window.WorldState?.game?.()||s;if(!reason&&IJ&&(!IJ.canFight(G0,'hero')||!IJ.canTravel(G0,'hero')))reason='ตัวเอกบาดเจ็บหนัก ('+IJ.describe(G0,'hero')+') ต้องพักฟื้นที่โรงพยาบาลก่อน'}if(reason){villageDialog('ยังออกเดินทางไม่ได้','<p>'+reason+'</p>');return}if($('panel').open)$('panel').close();openTown();ready=false;frame.src='world-map.html';sync()}
+function openWorld(){if(busy||s.mode==='battle')return;/* v97.16: the prologue decides when the world map opens */const lock=window.Story?.lock?.();if(lock){villageDialog('ยังไม่ถึงเวลา','<p>'+lock.replace(/[<>&]/g,'')+'</p>');return}let reason=s.hp<20?'HP ต่ำกว่า 20 พักก่อน':'';{const IJ=window.Injury,G0=window.WorldState?.game?.()||s;if(!reason&&IJ&&(!IJ.canFight(G0,'hero')||!IJ.canTravel(G0,'hero')))reason='ตัวเอกบาดเจ็บหนัก ('+IJ.describe(G0,'hero')+') ต้องพักฟื้นที่โรงพยาบาลก่อน'}if(reason){villageDialog('ยังออกเดินทางไม่ได้','<p>'+reason+'</p>');return}if($('panel').open)$('panel').close();openTown();ready=false;frame.src='world-map.html';sync()}
 function openInterior(id,name){if(busy||s.mode==='battle')return;if($('panel').open)$('panel').close();openTown();enterPlace(id,'',name||id);sync()}
 function onWorld(){try{return /world-map\.html/.test(frame.contentWindow.location.pathname)}catch{return false}}
 function placeMaps(){try{return JSON.parse(localStorage.getItem('place-maps-v1')||'{}')}catch{return{}}}
