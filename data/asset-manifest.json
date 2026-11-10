@@ -101084,6 +101084,568 @@
     "group": "characters"
    },
    "artRevision": "20261106-134948"
+  },
+  {
+   "id": "enemy-anim-goat-se-idle",
+   "subject": "แพะของปิ๊บ · ยืน/หายใจ · SE",
+   "file": "assets/enemies/animations/goat/se-idle.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "idle",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.6668,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     650,
+     650
+    ],
+    "loop": true
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-se-walk",
+   "subject": "แพะของปิ๊บ · เดิน/วิ่ง · SE",
+   "file": "assets/enemies/animations/goat/se-walk.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "walk",
+   "view": "SE",
+   "size": [
+    2048,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.6668,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 4,
+    "rows": 1,
+    "frames": 4,
+    "timings": [
+     130,
+     130,
+     130,
+     130
+    ],
+    "loop": true
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-se-windup",
+   "subject": "แพะของปิ๊บ · เตรียมโจมตี (ก้มหัวขูดเท้า) · SE",
+   "file": "assets/enemies/animations/goat/se-windup.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "windup",
+   "view": "SE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.6668,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     450
+    ],
+    "loop": false
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-se-strike",
+   "subject": "แพะของปิ๊บ · พุ่งขวิด · SE",
+   "file": "assets/enemies/animations/goat/se-strike.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "strike",
+   "view": "SE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.6668,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     260
+    ],
+    "loop": false,
+    "impactMs": 80
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-se-hit",
+   "subject": "แพะของปิ๊บ · สะดุ้งเมื่อโดนโจมตี · SE",
+   "file": "assets/enemies/animations/goat/se-hit.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "hit",
+   "view": "SE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.6668,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     400
+    ],
+    "loop": false
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-se-down",
+   "subject": "แพะของปิ๊บ · ล้ม/ถูกจับได้ · SE",
+   "file": "assets/enemies/animations/goat/se-down.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "down",
+   "view": "SE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.6668,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     700
+    ],
+    "loop": false
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-ne-idle",
+   "subject": "แพะของปิ๊บ · ยืน/หายใจ · NE",
+   "file": "assets/enemies/animations/goat/ne-idle.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "idle",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.69805,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     650,
+     650
+    ],
+    "loop": true
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-ne-walk",
+   "subject": "แพะของปิ๊บ · เดิน/วิ่ง · NE",
+   "file": "assets/enemies/animations/goat/ne-walk.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "walk",
+   "view": "NE",
+   "size": [
+    2048,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.69805,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 4,
+    "rows": 1,
+    "frames": 4,
+    "timings": [
+     130,
+     130,
+     130,
+     130
+    ],
+    "loop": true
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-ne-windup",
+   "subject": "แพะของปิ๊บ · เตรียมโจมตี (ก้มหัวขูดเท้า) · NE",
+   "file": "assets/enemies/animations/goat/ne-windup.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "windup",
+   "view": "NE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.69805,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     450
+    ],
+    "loop": false
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-ne-strike",
+   "subject": "แพะของปิ๊บ · พุ่งขวิด · NE",
+   "file": "assets/enemies/animations/goat/ne-strike.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "strike",
+   "view": "NE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.69805,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     260
+    ],
+    "loop": false,
+    "impactMs": 80
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-ne-hit",
+   "subject": "แพะของปิ๊บ · สะดุ้งเมื่อโดนโจมตี · NE",
+   "file": "assets/enemies/animations/goat/ne-hit.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "hit",
+   "view": "NE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.69805,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     400
+    ],
+    "loop": false
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-anim-goat-ne-down",
+   "subject": "แพะของปิ๊บ · ล้ม/ถูกจับได้ · NE",
+   "file": "assets/enemies/animations/goat/ne-down.webp",
+   "category": "enemy-animations",
+   "status": "final",
+   "enemy": "goat",
+   "pose": "down",
+   "view": "NE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.69805,
+   "artRevision": "v1",
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     700
+    ],
+    "loop": false
+   },
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95
+   },
+   "reference": [
+    "assets/enemies/goat.webp",
+    "assets/enemies/goat-back.webp"
+   ],
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+  },
+  {
+   "id": "enemy-goat",
+   "file": "assets/enemies/goat.webp",
+   "category": "enemies",
+   "status": "final",
+   "subject": "แพะของปิ๊บ (ภาพนิ่ง)",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "enemy-goat-back",
+   "file": "assets/enemies/goat-back.webp",
+   "category": "enemies",
+   "status": "final",
+   "subject": "แพะของปิ๊บ (ด้านหลัง)",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
   }
  ],
  "studioReviews": {

@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.360';
+  const V = '98.361';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -42,7 +42,7 @@
     /* v95.00: the training-ground scarecrow (does not move or hit back) */
     /* v98.331 · prologue tutorials (docs/TODO.md §14): drawn by code (js/code-monsters.js) until real pictures exist — add assets/enemies/<img>.webp and drop `code: true` to replace.
        goat = Pip's goat (light counter-attacks) · pumpkin = the harvest pumpkin (stands still; 2–3 hits; pops into a pumpkin to collect) · pumpkinBoss = the one that evolves (event, never random) · pest = crop pest (one hit) */
-    goat: { name: 'แพะของปิ๊บ', hp: 24, iq: 1, move: 4, atk: 3, scale: .8, fx: 'blunt', code: true, el: 'earth' },
+    goat: { name: 'แพะของปิ๊บ', hp: 24, iq: 1, move: 4, atk: 3, scale: .8, fx: 'blunt', img: 'goat', el: 'earth' },   /* v98.361 · painted (assets/enemies/animations/goat) */
     pumpkin: { name: 'ฟักทองในไร่', hp: 30, iq: 0, move: 0, atk: 0, scale: .75, fx: 'blunt', code: true, passive: true, loot: true, evoGroup: 'pumpkin', el: 'earth' },
     pumpkinBoss: { name: 'บอสฟักทอง', hp: 70, iq: 1, move: 2, atk: 6, scale: 1.05, fx: 'blunt', code: true, range: 3, el: 'earth' },
     pest: { name: 'ด้วงกินใบ', hp: 4, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', code: true, el: 'wind' },
