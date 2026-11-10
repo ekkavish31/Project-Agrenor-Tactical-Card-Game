@@ -6,12 +6,15 @@
    Settings: localStorage 'projectA.hd2d' = {tilt,bloom,rays,dust}; toggles in the village ⚙ panel and battle settings.
    HD2D.attach(canvas,{battle}) adds the overlay right after the canvas; HD2D.bloom(ctx,canvas) runs at the end of a frame. */
 (function(root){'use strict';
-const KEY='projectA.hd2d',DEF={tilt:true,bloom:true,rays:true,dust:true};
+const KEY='projectA.hd2d',DEF={tilt:true,tiltBlur:false,bloom:true,rays:true,dust:true};
 let opt={...DEF};try{Object.assign(opt,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
 const overlays=new Set();
 const css=document.createElement('style');css.textContent=`
 .hd2d{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.hd2d .tilt{position:absolute;left:0;right:0;-webkit-backdrop-filter:blur(var(--b,3px));backdrop-filter:blur(var(--b,3px))}
+.hd2d .tilt{position:absolute;left:0;right:0}
+/* v98.339 · the live blur (backdrop-filter) re-blurs the whole canvas strip every frame: the speed check measured 41 → 58 fps with it hidden. Default is now a soft dark haze (no filter); the real blur is opt-in (option 'tiltBlur') */
+.hd2d .tilt.top:not(.blur){background:linear-gradient(rgba(12,22,16,.34),rgba(12,22,16,0))}.hd2d .tilt.bottom:not(.blur){background:linear-gradient(rgba(12,22,16,0),rgba(12,22,16,.34))}
+.hd2d .tilt.blur{-webkit-backdrop-filter:blur(var(--b,3px));backdrop-filter:blur(var(--b,3px))}
 .hd2d .tilt.top{top:0;height:18%;-webkit-mask-image:linear-gradient(#000 0%,rgba(0,0,0,.6) 45%,transparent 100%);mask-image:linear-gradient(#000 0%,rgba(0,0,0,.6) 45%,transparent 100%)}
 .hd2d .tilt.bottom{bottom:0;height:15%;-webkit-mask-image:linear-gradient(transparent 0%,rgba(0,0,0,.6) 55%,#000 100%);mask-image:linear-gradient(transparent 0%,rgba(0,0,0,.6) 55%,#000 100%)}
 /* v98.330 · while the hero is walking the village the blurred top / bottom bands (a backdrop-filter that re-blurs the moving picture every frame) and the dust motes rest, and the bloom is skipped
@@ -33,7 +36,7 @@ function raysTexture(){if(raysUrl)return raysUrl;try{const W=640,H=360,c=documen
  q.translate(W*.18,H*.08);q.rotate(25*Math.PI/180);const L=W*1.6;for(let x=-L;x<L;x+=96){const g=q.createLinearGradient(x,0,x+64,0);g.addColorStop(0,'rgba(255,226,168,0)');g.addColorStop(.5,'rgba(255,226,168,.42)');g.addColorStop(1,'rgba(255,226,168,0)');q.fillStyle=g;q.fillRect(x,-L,64,L*2)}
  q.setTransform(1,0,0,1,0,0);q.globalCompositeOperation='destination-in';const m=q.createRadialGradient(W*.18,H*.08,0,W*.18,H*.08,W*.62);m.addColorStop(0,'#000');m.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=m;q.fillRect(0,0,W,H);raysUrl=c.toDataURL('image/png')}catch(e){raysUrl=''}return raysUrl}
 function build(el,battle){el.innerHTML='';if(opt.rays&&!battle)el.insertAdjacentHTML('beforeend','<div class="rays" style="background-image:url('+raysTexture()+')"></div>');if(battle)el.insertAdjacentHTML('beforeend','<div class="vig"></div>');
- if(opt.tilt&&!battle)el.insertAdjacentHTML('beforeend',`<div class="tilt top" style="--b:${battle?2.5:3.5}px"></div><div class="tilt bottom" style="--b:${battle?2:3}px"></div>`);
+ if(opt.tilt&&!battle)el.insertAdjacentHTML('beforeend',`<div class="tilt top${opt.tiltBlur?' blur':''}" style="--b:${battle?2.5:3.5}px"></div><div class="tilt bottom${opt.tiltBlur?' blur':''}" style="--b:${battle?2:3}px"></div>`);
  if(opt.dust)for(let k=0;k<22;k++){const m=document.createElement('i');m.style.left=(Math.random()*70)+'%';m.style.top=(15+Math.random()*75)+'%';m.style.animationDuration=(9+Math.random()*10)+'s';m.style.animationDelay=(-Math.random()*18)+'s';m.style.transform=`scale(${.6+Math.random()*.8})`;el.appendChild(m)}}
 function attach(canvas,o={}){if(!canvas||canvas._hd2dOverlay)return;canvas._hd2dOverlay=true;const el=document.createElement('div');el.className='hd2d';el.dataset.battle=o.battle?'1':'';canvas.after(el);overlays.add(el);build(el,o.battle);return el}
 // bloom: ¼-size copy, keep only bright parts, blur, add back with 'screen'
@@ -45,7 +48,7 @@ function bloom(ctx,canvas,strength=.32,force=false){if(!opt.bloom||!canvas.width
 
  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='screen';ctx.globalAlpha=strength;ctx.imageSmoothingEnabled=true;ctx.drawImage(small,0,0,canvas.width,canvas.height);ctx.restore()}
 function set(k,v){opt[k]=!!v;try{localStorage.setItem(KEY,JSON.stringify(opt))}catch(e){}overlays.forEach(el=>build(el,el.dataset.battle==='1'));document.querySelectorAll('.hd2dOpts input').forEach(i=>i.checked=!!opt[i.dataset.k])}
-function controls(){const d=document.createElement('div');d.className='hd2dOpts';d.innerHTML='<b>สไตล์ HD-2D</b>'+[['tilt','เบลอบน-ล่าง'],['bloom','แสงฟุ้ง'],['rays','ลำแสง'],['dust','ฝุ่นในแสง']].map(([k,t])=>`<label><input type="checkbox" data-k="${k}" ${opt[k]?'checked':''}>${t}</label>`).join('');d.onchange=e=>{const i=e.target.closest('input');if(i)set(i.dataset.k,i.checked)};return d}
+function controls(){const d=document.createElement('div');d.className='hd2dOpts';d.innerHTML='<b>สไตล์ HD-2D</b>'+[['tilt','เงาจางบน-ล่าง'],['tiltBlur','เบลอจริง (กินเฟรม)'],['bloom','แสงฟุ้ง'],['rays','ลำแสง'],['dust','ฝุ่นในแสง']].map(([k,t])=>`<label><input type="checkbox" data-k="${k}" ${opt[k]?'checked':''}>${t}</label>`).join('');d.onchange=e=>{const i=e.target.closest('input');if(i)set(i.dataset.k,i.checked)};return d}
 root.addEventListener('storage',e=>{if(e.key===KEY){try{opt={...DEF,...JSON.parse(e.newValue||'{}')}}catch(x){}overlays.forEach(el=>build(el,el.dataset.battle==='1'))}});
 // battle: overlay on #battleCanvas and toggles in the battle settings dialog
 // battle bloom: runs right after a frame the battle actually drew (its clearRect marks the frame)
