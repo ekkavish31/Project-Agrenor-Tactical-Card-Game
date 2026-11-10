@@ -5,12 +5,17 @@
       shortcut: "ลำดับท่ามาตรฐาน" fills ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย (or with เดิน first) in reading order for one direction
    4. นำเข้า: a character with one picture per slot (Kier …) → that slot's picture is replaced (the old one archived, history kept) · missing slots are created ·
       walk sets → studioAllyWalks · the hero (the open look) → its saved poses / walk sets. Sizes are normalised like every other import (384 × 384, feet at y 360), one common scale for the whole sheet. */
+/* v98.363 · the same tool now works on MONSTERS and BOSSES (Asset Studio → Animation → มอนสเตอร์ / บอส): the pieces become the frames of the slots
+   enemy-anim-<kind>-<se|ne>-<pose> (cells of 512×512 in a row, feet at 0.95, ONE scale for the whole sheet) — SW / NW are mirrored by the game, so only SE and NE exist. */
 (function () {
   'use strict';
   const SIZE = 384, FEET = 360, BOX_W = 368, BOX_H = 346;
   const ACTIONS = [['idle', 'ยืน / หายใจ'], ['walk', 'เดิน'], ['windup', 'เตรียมโจมตี'], ['strike', 'โจมตี'], ['guard', 'ป้องกัน'], ['hit', 'โดนโจมตี'], ['down', 'ตาย / ล้ม']];
-  const VIEWS = ['SW', 'SE', 'NW', 'NE'], OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' };
-  const PRESETS = { std: ['idle', 'windup', 'strike', 'guard', 'hit', 'down'], walk: ['walk', 'idle', 'windup', 'strike', 'guard', 'hit', 'down'] };
+  const MON_ACTIONS = [['idle', 'ยืน / หายใจ'], ['walk', 'เดิน'], ['windup', 'เตรียมโจมตี'], ['strike', 'โจมตี'], ['hit', 'โดนโจมตี'], ['down', 'ล้ม / ตาย'], ['cast', 'ใช้ท่าพิเศษ / ยิงไกล'], ['loot', 'ของที่ทิ้ง'], ['run', 'วิ่ง'], ['pant', 'หอบ'], ['graze', 'กินหญ้า'], ['bleat', 'ร้อง'], ['sleep', 'นอน'], ['happy', 'ดีใจ']];
+  const MON_TIMING = { idle: [650, 'loop'], walk: [130, 'loop'], windup: [250, ''], strike: [135, ''], hit: [400, ''], down: [300, ''], cast: [250, ''], loot: [1000, 'loop'], run: [90, 'loop'], pant: [500, 'loop'], graze: [450, 'loop'], bleat: [350, ''], sleep: [900, 'loop'], happy: [200, ''] };
+  const isMon = e => !!e && (e.group === 'monsters' || e.group === 'bosses'), monKind = e => String(e.id).replace(/^enemy:/, '');
+  const VIEWS = ['SW', 'SE', 'NW', 'NE'], MON_VIEWS = ['SE', 'NE'], OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' };
+  const PRESETS = { std: ['idle', 'windup', 'strike', 'guard', 'hit', 'down'], walk: ['walk', 'idle', 'windup', 'strike', 'guard', 'hit', 'down'], mon4: ['windup', 'strike', 'hit', 'down'], mon6: ['idle', 'walk', 'windup', 'strike', 'hit', 'down'] };
   const $ = id => document.getElementById(id), esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const B = () => window.StudioBrowser, toast = m => { try { window.toast ? window.toast(m) : console.log(m) } catch (e) { } };
 
@@ -72,9 +77,11 @@
 
   /* ---------------- state + UI ---------------- */
   let sheet = null, cells = [], dlg = null, busy = false;   // cells: [{rect, trim, target:'idle|SW'|'', mirror:false}]
+  let monMode = false;
+  const actsNow = () => monMode ? MON_ACTIONS : ACTIONS, viewsNow = () => monMode ? MON_VIEWS : VIEWS;
   const entityNow = () => { const S = B()?.state; return S && S.model.find(e => e.id === S.entity) };
   const slotsOf = e => { const rows = ACTIONS.map(a => a[0]); return rows.flatMap(a => VIEWS.map(v => a + '|' + v)) };
-  const slotLabel = k => { const [a, v] = k.split('|'); return (ACTIONS.find(x => x[0] === a)?.[1] || a) + ' · ' + v };
+  const slotLabel = k => { const [a, v] = k.split('|'); return (actsNow().find(x => x[0] === a)?.[1] || a) + ' · ' + v };
   function css() {
     if ($('shImpCss')) return; const s = document.createElement('style'); s.id = 'shImpCss'; s.textContent = `
     #sheetImport{width:min(1200px,96vw);max-height:94vh;overflow:auto;border-radius:14px;border:1px solid #c8b77f;padding:14px 16px;background:#f7f5ee;color:#2a2418;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif}
@@ -97,7 +104,7 @@
      <div id="shInfo" style="color:#6b6247"></div><canvas id="shPrev" hidden></canvas>
      <div class="row" id="shAssign" hidden><b>ใส่ช่อง:</b>
       <label>ลำดับท่ามาตรฐาน <select id="shPreset"><option value="std">ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option><option value="walk">เดิน → ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option></select></label>
-      <label>ทิศ <select id="shView">${VIEWS.map(v => `<option>${v}</option>`).join('')}</select></label><button id="shFill">เติมตามลำดับ</button>
+      <label>ทิศ <select id="shView"></select></label><button id="shFill">เติมตามลำดับ</button>
       <label><input type="checkbox" id="shMirrorAll"> ↔ ใส่ทิศตรงข้ามกลับด้านทุกช่อง</label>
       <label>ms/เฟรม (ชุดเดิน/หลายเฟรม) <input type="number" id="shMs" min="20" max="2000" value="100"></label>
       <label title="ทุกช่องใช้สเกลเดียว (เท้าอยู่ล่างกลาง)"><input type="checkbox" id="shCommon" checked> สเกลเดียวทั้งชีท</label><button id="shClear">ล้างการเลือก</button></div>
@@ -124,7 +131,7 @@
   }
   function fill() { const view = $('shView').value, seq = PRESETS[$('shPreset').value], m = $('shMirrorAll').checked; cells.forEach(c => { c.target = ''; c.mirror = false }); cells.slice(0, seq.length).forEach((c, i) => { c.target = seq[i] + '|' + view; c.mirror = m }); drawCells() }
   function drawCells() {
-    const box = $('shCells'), opts = '<option value="">— ไม่นำเข้า —</option>' + ACTIONS.map(([a, n]) => `<optgroup label="${n}">${VIEWS.map(v => `<option value="${a}|${v}">${n} · ${v}</option>`).join('')}</optgroup>`).join('');
+    const box = $('shCells'), opts = '<option value="">— ไม่นำเข้า —</option>' + actsNow().map(([a, n]) => `<optgroup label="${n}">${viewsNow().map(v => `<option value="${a}|${v}">${n} · ${v}</option>`).join('')}</optgroup>`).join('');
     box.innerHTML = cells.map((c, i) => `<div class="shc${c.target ? ' on' : ''}" data-i="${i}"><b>ช่อง ${i + 1}</b> <small>${c.trim.width}×${c.trim.height}</small><canvas></canvas><select data-t>${opts}</select><label><input type="checkbox" data-m ${c.mirror ? 'checked' : ''}${c.target ? '' : ' disabled'}> ↔ ทิศตรงข้ามด้วย</label></div>`).join('');
     box.querySelectorAll('.shc').forEach(el => { const i = +el.dataset.i, c = cells[i], cv = el.querySelector('canvas'); cv.width = 240; cv.height = 240; const k = Math.min(230 / c.trim.width, 230 / c.trim.height); cv.getContext('2d').drawImage(c.trim, (240 - c.trim.width * k) / 2, 235 - c.trim.height * k, c.trim.width * k, c.trim.height * k);
       const sel = el.querySelector('[data-t]'); sel.value = c.target; sel.onchange = () => { c.target = sel.value; if (!c.target) c.mirror = false; drawCells() }; el.querySelector('[data-m]').onchange = e => { c.mirror = e.target.checked } });
@@ -139,6 +146,7 @@
     const chosen = cells.filter(c => c.target); if (!chosen.length) return; busy = true; $('shApply').disabled = true;
     try {
       /* one scale for the whole sheet (the tallest / widest piece fills the box) */
+      if (monMode) { await applyMonster(e, chosen); return }
       const common = $('shCommon').checked, all = common ? cells : null, kAll = common ? Math.min(BOX_W / Math.max(...all.map(c => c.trim.width)), BOX_H / Math.max(...all.map(c => c.trim.height))) : null;
       const kOf = c => kAll ?? Math.min(BOX_W / c.trim.width, BOX_H / c.trim.height), ms = Math.max(20, +$('shMs').value || 100);
       /* group: slot → pieces in reading order; mirrored pieces also feed the opposite slot */
@@ -176,12 +184,44 @@
     await applyToSlot(a, { canvas: frames[0] }, { status: 'final', stamp: st, note: 'นำเข้าชีท' }); return k + ' ' + slotLabel(action + '|' + view);
   }
 
+  /* ---------------- monsters / bosses ---------------- */
+  const MSZ = 512, MFEET = Math.round(512 * .95);
+  /* a piece on the 512 cell: scale k, hoof line on 0.95, centred on the body (opaque pixels), kept inside the cell */
+  function placeMon(trim, k) {
+    const w = Math.max(1, Math.round(trim.width * k)), h = Math.max(1, Math.round(trim.height * k)), o = document.createElement('canvas'); o.width = o.height = MSZ; const g = o.getContext('2d'); g.imageSmoothingQuality = 'high';
+    const s = document.createElement('canvas'); s.width = w; s.height = h; const q = s.getContext('2d', { willReadFrequently: true }); q.imageSmoothingQuality = 'high'; q.drawImage(trim, 0, 0, w, h);
+    const d = q.getImageData(0, 0, w, h).data; let sx = 0, n = 0; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 200) { sx += x; n++ }
+    const cx = n ? sx / n : w / 2; let x = Math.round(MSZ / 2 - cx); x = Math.max(2, Math.min(MSZ - w - 2, x)); g.drawImage(s, x, Math.max(0, MFEET - h)); return o;
+  }
+  const webp = cv => new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error('สร้าง WebP ไม่ได้')), 'image/webp', .92));
+  async function applyMonster(e, chosen) {
+    const kind = monKind(e), st = stamp(), ms = Math.max(20, +$('shMs').value || 0);
+    /* ONE scale for the whole sheet so the animal keeps its size from pose to pose (the common-scale box is the 512 cell minus a margin) */
+    const k = Math.min(488 / Math.max(...cells.map(c => c.trim.width)), 470 / Math.max(...cells.map(c => c.trim.height)));
+    const groups = new Map(); for (const c of chosen) { if (!groups.has(c.target)) groups.set(c.target, []); groups.get(c.target).push(placeMon(c.trim, k)) }
+    const out = [];
+    for (const [slot, frames] of groups) {
+      const [pose, view] = slot.split('|'), v = view.toLowerCase(), id = `enemy-anim-${kind}-${v}-${pose}`, n = frames.length, def = MON_TIMING[pose] || [200, ''];
+      let a = byId(id); const file = `assets/enemies/animations/${kind}/${v}-${pose}.webp`;
+      if (!a) { a = { id, subject: `${e.name} · ${slotLabel(slot)}`, file, category: 'enemy-animations', status: 'missing', enemy: kind, pose, view, transparent: true, pivot: [.5, .95], barHeight: .64, usedIn: 'สนามต่อสู้' }; M.assets.push(a) }
+      const sheetCv = document.createElement('canvas'); sheetCv.width = MSZ * n; sheetCv.height = MSZ; const g = sheetCv.getContext('2d'); frames.forEach((f, i) => g.drawImage(f, i * MSZ, 0));
+      const per = n > 1 && ms ? ms : def[0], old = a.animation || {}, timings = Array.from({ length: n }, (_, i) => old.timings?.length === n ? old.timings[i] : per);
+      a.size = [MSZ * n, MSZ]; a.frameSize = [MSZ, MSZ]; a.animation = { columns: n, rows: 1, frames: n, timings, loop: old.loop ?? def[1] === 'loop', ...(old.impactMs != null ? { impactMs: old.impactMs } : {}) };
+      a.file = a.file || file; delete a.note;
+      await applyToSlot(a, { canvas: sheetCv }, { status: 'final', stamp: st, note: 'นำเข้าชีท' }); out.push(slotLabel(slot) + ' ' + n + ' เฟรม');
+    }
+    await saveManifest(); B().invalidate(); msg('นำเข้าแล้ว ' + groups.size + ' ช่อง: ' + out.join(' · ') + ' — กด Push เพื่อส่งขึ้นเกม'); toast('นำเข้าชีท ' + groups.size + ' ช่อง');
+  }
+
   /* ---------------- hook into the grid ---------------- */
   function open() {
-    const e = entityNow(); if (!e || e.group !== 'characters') return toast('เลือกตัวละครก่อน (นำเข้าชีทใช้กับตัวละครเท่านั้น)');
-    build(); $('shWho').innerHTML = 'นำเข้าให้: <b>' + esc(e.name) + '</b>' + (e.id === 'hero' ? ' (รูปลักษณ์ที่เปิดอยู่)' : '') + ' · ชีทเดียวมีได้หลายท่า/หลายทิศ — แต่ละช่องเลือกปลายทางเองได้'; sheet = null; cells = []; $('shCut').hidden = $('shAssign').hidden = true; $('shPrev').hidden = true; $('shInfo').textContent = ''; $('shCells').innerHTML = ''; msg(''); $('shFile').value = ''; $('shApply').disabled = true; $('shApply').textContent = 'นำเข้า'; dlg.showModal();
+    const e = entityNow(); if (!e || (e.group !== 'characters' && !isMon(e))) return toast('เลือกตัวละคร มอนสเตอร์ หรือบอสก่อน');
+    monMode = isMon(e); build();
+    $('shPreset').innerHTML = monMode ? '<option value="mon4">เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม (4 ท่า เช่นชีทแพะ)</option><option value="mon6">ยืน → เดิน → เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม</option>' : '<option value="std">ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option><option value="walk">เดิน → ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option>';
+    $('shView').innerHTML = viewsNow().map(v => `<option>${v}</option>`).join(''); $('shMirrorAll').parentElement.hidden = monMode; $('shMirrorAll').checked = false;
+    $('shWho').innerHTML = monMode ? 'นำเข้าให้: <b>' + esc(e.name) + '</b> · ทิศ <b>SE</b> (หันหน้า) และ <b>NE</b> (หันหลัง) · SW/NW เกมพลิกให้เอง · ชิ้นหลายชิ้นที่เลือกปลายทางเดียวกัน = เฟรมของท่านั้นตามลำดับการอ่าน · เฟรม 512×512 เท้าที่ 0.95 สเกลเดียวทั้งชีท' : 'นำเข้าให้: <b>' + esc(e.name) + '</b>' + (e.id === 'hero' ? ' (รูปลักษณ์ที่เปิดอยู่)' : '') + ' · ชีทเดียวมีได้หลายท่า/หลายทิศ — แต่ละช่องเลือกปลายทางเองได้'; sheet = null; cells = []; $('shCut').hidden = $('shAssign').hidden = true; $('shPrev').hidden = true; $('shInfo').textContent = ''; $('shCells').innerHTML = ''; msg(''); $('shFile').value = ''; $('shApply').disabled = true; $('shApply').textContent = 'นำเข้า'; dlg.showModal();
   }
-  function inject() { const grid = $('grid'), ctl = grid && grid.querySelector('.entity-controls'); if (!ctl || ctl.querySelector('#shImpBtn')) return; const e = entityNow(); if (!e || e.group !== 'characters') return; const b = document.createElement('button'); b.id = 'shImpBtn'; b.type = 'button'; b.textContent = '🧩 นำเข้าชีท'; b.title = 'ตัดชีทเดียวเป็นหลายช่อง แล้วนำเข้าหลายท่า/หลายทิศพร้อมกัน'; b.onclick = open; ctl.prepend(b) }
-  window.StudioSheetImport = { open, removeBackground, gridRects, blobRects, cropTrim, place, _cells: () => cells, _state: () => ({ sheet }) };
+  function inject() { const grid = $('grid'), ctl = grid && grid.querySelector('.entity-controls'); if (!ctl || ctl.querySelector('#shImpBtn')) return; const e = entityNow(); if (!e || (e.group !== 'characters' && !isMon(e))) return; const b = document.createElement('button'); b.id = 'shImpBtn'; b.type = 'button'; b.textContent = '🧩 นำเข้าชีท'; b.title = 'ตัดชีทเดียวเป็นหลายช่อง แล้วนำเข้าหลายท่า/หลายทิศพร้อมกัน'; b.onclick = open; ctl.prepend(b) }
+  window.StudioSheetImport = { _mon: () => monMode, _entity: () => entityNow()?.id, open, removeBackground, gridRects, blobRects, cropTrim, place, placeMon, _cells: () => cells, _state: () => ({ sheet }) };
   const g = $('grid'); if (g) { new MutationObserver(inject).observe(g, { childList: true }); inject() }
 })();
