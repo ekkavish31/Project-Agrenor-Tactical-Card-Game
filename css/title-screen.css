@@ -234,3 +234,4 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 /* v98.247 · the loading screen's tip line has a fixed height, so swapping it for the bigger "press any key" text no longer changes the box height (the picture and bar used to jump) */
 #gameLoading .gl-tip{height:64px;line-height:28px;overflow:visible}
 #gameLoading.gl-gate .gl-tip{line-height:28px}
+#titleScreen .ts-name .ts-inw{position:relative;display:block}#titleScreen .ts-name .ts-inw input{padding-right:40px}#titleScreen .ts-name .ts-edit{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;border-radius:7px;border:1px solid #a88a58;background:#e4cf9c;color:#5a3a10;font:16px/1 system-ui;cursor:pointer}#titleScreen .ts-name .ts-edit:hover{background:#ffe8a6}

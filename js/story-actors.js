@@ -171,7 +171,7 @@
     if (P) {
       const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral), src = 'assets/portraits/' + P[0] + '-' + f + '.webp';
       if (!cur.el || cur.el.tagName !== 'IMG') { art.innerHTML = ''; cur.el = new Image(); cur.el.alt = ''; art.append(cur.el) }
-      cur.el.src = src;
+      if (!cur.el.src.endsWith(src)) { cur.el.style.opacity = '0'; cur.el.onload = () => { cur.el.style.transition = 'opacity .18s'; cur.el.style.opacity = '1' }; cur.el.src = src; if (cur.el.complete && cur.el.naturalWidth) cur.el.onload() }   /* v98.336 · the picture fades in once loaded (no empty stage with an emote floating over it) */
       cur.el.dataset.flip = ((FACING[P[0]] || 'left') === (side === 'L' ? 'left' : 'right')) ? '1' : '0';
     } else {
       if (!cur.el || cur.el.tagName !== 'CANVAS') { art.innerHTML = ''; cur.el = document.createElement('canvas'); cur.el.width = 300; cur.el.height = 420; art.append(cur.el) }
@@ -197,7 +197,8 @@
     stands[side].style.setProperty('--gl', { happy: 'rgba(255,214,140,.5)', angry: 'rgba(255,90,70,.45)', surprised: 'rgba(255,255,255,.5)', sad: 'rgba(120,170,255,.35)', think: 'rgba(200,180,255,.35)' }[face] || 'rgba(255,230,180,.32)');
     const m = moodOf(l, face); mood.className = 'cs-mood' + (m && m !== 'calm' ? ' ' + m : '');
     fx(side, face === 'surprised' ? ['fx-shock', 'fx-jump'] : face === 'angry' ? ['fx-shake'] : face === 'happy' && /!/.test(l.text || '') ? ['fx-hop'] : face === 'sad' ? ['fx-sag'] : null);
-    emote(side, l.emote === false ? null : l.emote || (face !== 'neutral' && (face !== 'happy' || /!|♪|ฮ่า/.test(l.text || '')) ? EMO[face] : null));
+    const em = l.emote === false ? null : l.emote || (face !== 'neutral' && (face !== 'happy' || /!|♪|ฮ่า/.test(l.text || '')) ? EMO[face] : null), pic = slots[side]?.el;
+    if (em && pic && pic.tagName === 'IMG' && !(pic.complete && pic.naturalWidth)) pic.addEventListener('load', () => { if (slots[side]?.el === pic) emote(side, em) }, { once: true }); else emote(side, em);   /* v98.336 · emote waits for the portrait */
     speakerSide = side;
     const strong = /!!|！！/.test(l.text || '') || face === 'angry' && /!/.test(l.text || '');
     return { shake: strong && !l.shake ? 'small' : null, flash: face === 'surprised' && !l.flash ? 'rgba(255,255,255,.35)' : null };
