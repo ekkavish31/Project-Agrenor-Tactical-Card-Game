@@ -1438,6 +1438,8 @@ function setup() {
  shortcuts();
  renderEdit()
 }
+/* v98.340 · temporary save (js/resume.js): where the hero stands */
+window.ResumeHook = { ready: () => true, get: () => ({ u: hero.u, v: hero.v, dir: hero.dir }), set: d => { if (!d) return; path = []; target = null; hero.u = d.u; hero.v = d.v; if (d.dir) hero.dir = d.dir } };
 window.addEventListener('message', e => {
  if (e.source !== parent || e.data?.source !== 'project-a-game') return;
  const m = e.data;

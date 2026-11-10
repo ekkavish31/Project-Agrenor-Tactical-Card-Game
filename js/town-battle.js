@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.333';
+  const V = '98.340';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -153,9 +153,37 @@
     pend = null; walks = [];
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
+    if (Q.get('resume') === '1') applyResume();
   }
   if (EDIT) { const sx = document.createElement('style'); sx.textContent = '#fbBar,.fb-show,.fb-fly,.fb-banner,.fb-toast,#fbHand,#fbActions,#fbAlly,#fbHint,#fbIntro,#fbInspect,#fbQueue,#fbLbTop,#fbLbBot,#fbFace,#fbCoach,#fbHud,#fbPause,#menuBtn{display:none!important}'; document.head.append(sx) }   /* v98.311 · BG editor: no game HUD */
-  function refresh() { if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null;
+  /* ---------- v98.340 · temporary save: the fight is snapshotted at every stable moment of the hero's turn and can be resumed exactly (js/resume.js) ----------
+     Only the state of the rules (st) is stored — a few KB of JSON; the field comes back from the same seed, the pictures from the same URL (+ &resume=1). */
+  const SNAP_KEY = 'projectA.battleSnap'; let snapT = 0;
+  function snapNow() {
+    if (!EMBED || !st || !FB || reported || st.outcome || busy || facing || st.turn !== 'hero') return;
+    try {
+      const raw = JSON.parse(JSON.stringify(st, (k, v) => (k[0] === '_' || k === 'arena' || k === 'drawn' || k === 'cur' || k === 'active') ? undefined : v));
+      if (raw.deck) delete raw.deck.cardEvents; raw.active = st.active && st.active.id;
+      const q = new URLSearchParams(location.search); if (window.FieldSeed) q.set('seed', String(window.FieldSeed)); q.delete('resume');
+      localStorage.setItem(SNAP_KEY, JSON.stringify({ t: Date.now(), page: location.pathname.split('/').pop(), search: '?' + q.toString(), coach: coachState.i, snap: raw }));
+    } catch (e) { }
+  }
+  function snapSoon() { if (!EMBED) return; clearTimeout(snapT); snapT = setTimeout(snapNow, 250) }
+  addEventListener('pagehide', snapNow); document.addEventListener('visibilitychange', () => { if (document.hidden) snapNow() });
+  function applyResume() {
+    try {
+      const rec = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null'); if (!rec?.snap) return false; const sn = rec.snap;
+      const cur = new Map(st.units.map(u => [u.id, u])), out = sn.units.map(su => { const c = cur.get(su.id); if (c) { Object.assign(c, su); return c } return su });
+      st.units.length = 0; st.units.push(...out);
+      for (const k of Object.keys(sn)) if (!['units', 'active', 'deck', 'arena', 'drawn', 'cur'].includes(k)) st[k] = sn[k];
+      if (sn.deck) Object.assign(st.deck, sn.deck);
+      st.active = st.units.find(u => u.id === sn.active) || st.units[0]; st.drawn = [];
+      for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.walking = false; if (['windup', 'strike', 'guard', 'hit'].includes(u.pose)) u.pose = 'idle' }
+      for (const g of ['movement', 'combat']) for (const c of st.deck[g]?.hand || []) seenUids.add(c.uid);
+      if (rec.coach) coachState.i = rec.coach; return true;
+    } catch (e) { return false }
+  }
+  function refresh() { snapSoon(); if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null;
     /* v98.244 · second layer: where the farthest move card in hand would take you */
     if (inspectU && (inspectU.hp <= 0 || !st.units.includes(inspectU))) inspectU = null; inspectMap = inspectU && !st.outcome ? FB.reach(st, inspectU, inspectU.move || 4) : null; inspectSync();
     farInfo = st.turn === 'hero' ? FB.farMove?.(st) || null : null; farMap = farInfo ? FB.reach(st, FB.actor(st), st.mp + farInfo.move) : null; allyBar(); hudSync(); handSync() }
@@ -886,7 +914,7 @@
   }
   /* embedded in the world map: hand the result back (also automatically a moment after the end) */
   let reported = false;
-  function report(outcome) { if (reported || !EMBED) return; reported = true; try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
+  function report(outcome) { if (reported || !EMBED) return; reported = true; try { localStorage.removeItem(SNAP_KEY) } catch (e) { } try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
   function finish() {
     if (st.outcome === 'win') { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'win') }
     if (EMBED) { const b = document.getElementById('fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }

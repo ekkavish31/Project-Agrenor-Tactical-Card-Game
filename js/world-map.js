@@ -900,44 +900,50 @@
     busy = true; hudSync();
     const here = tile(S.pos.c, S.pos.r), night = nightness() > .6;
     /* after dark: fierce night monsters (shadow wolves in open land, enraged ones elsewhere) */
-    let fierce = false; if (night && !o.boss && Math.random() < .45) { fierce = true; if (['forest', 'grass', 'snow'].includes(here.biome)) foe = 'shadowWolf' }
-    const elite = !o.boss && dang > .65 && Math.random() < .5, base = MON_HP[foe] || 34;
+    const RS = o.resume || null;   /* v98.340 · a fight resumed from the temporary save: the random parts come from the record */
+    let fierce = RS ? RS.fierce : false; if (!RS && night && !o.boss && Math.random() < .45) { fierce = true; if (['forest', 'grass', 'snow'].includes(here.biome)) foe = 'shadowWolf' }
+    const elite = RS ? RS.elite : !o.boss && dang > .65 && Math.random() < .5, base = MON_HP[foe] || 34;
     let mult = o.boss ? Math.round(130 / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
     if (foe === 'shadowWolf') mult = Math.round((1.1 + dang * .5) * 10) / 10;
     const fs = window.Progression ? Progression.foeScale(Progression.heroLevel(WS.game())) : { hp: 1, atk: 1 };   /* v95.00: monsters grow a little with the hero */
     /* v97.29 · the game's difficulty setting (⚙ ตั้งค่า · s.village.settings.difficulty — it only reached the old battles before) */
     const DIFF = ({ easy: { hp: .8, atk: .8, gold: .9 }, hard: { hp: 1.25, atk: 1.2, gold: 1.2 } })[(() => { try { return WS.game().village.settings?.difficulty } catch (e) { return '' } })()] || { hp: 1, atk: 1, gold: 1 };
-    mult = Math.round(mult * fs.hp * DIFF.hp * 10) / 10;
-    const atk = Math.round((fierce ? 1.3 : 1) * fs.atk * DIFF.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6));
+    mult = Math.round(mult * fs.hp * DIFF.hp * 10) / 10; if (RS) mult = RS.mult;
+    let atk = Math.round((fierce ? 1.3 : 1) * fs.atk * DIFF.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6)); if (o.resume) hst = o.resume.hst;
     chatter('fight', .6);
-    await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : fierce ? 'NIGHT TERROR!' : 'ENCOUNTER!');
+    if (RS) { atk = RS.atk }
+    if (!RS) await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : fierce ? 'NIGHT TERROR!' : 'ENCOUNTER!');
     const fr = document.createElement('iframe'); fr.id = 'wmBattle';
     const title = (o.boss ? 'บอส · ' : elite ? 'ยอดฝีมือ · ' : '') + (BOSS_NAME[foe] && o.boss ? BOSS_NAME[foe] : '');
     const poi = o.boss ? (destOf()?.id || '') : '';
     /* a group: more monsters deeper in the fog, at night and in ambushes; the boss brings two of the local monsters */
     const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
-    const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
+    const group = RS ? RS.group.slice() : [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
     /* v98.250 · a varied group: kinds not yet in the group come first, no kind appears more than twice, and now and then a wanderer from a neighbouring land joins (it used to be 60 % the leader's kind again) */
     const roster = [...new Set(G.FOES[here.biome] || G.FOES.grass)], wander = ['bandit', 'wolf', 'bat', 'kobold', 'slime'].filter(k => !roster.includes(k)), used = { [foe]: 1 };
-    for (let i = 1; i < n; i++) { let cand = roster.slice(); if (wander.length && Math.random() < .3) cand = cand.concat(wander);
+    for (let i = 1; !RS && i < n; i++) { let cand = roster.slice(); if (wander.length && Math.random() < .3) cand = cand.concat(wander);
       cand = cand.filter(k => (used[k] || 0) < 2); if (!cand.length) cand = roster.slice(); cand.sort((a, b) => ((used[a] || 0) - (used[b] || 0)) || (Math.random() - .5));
       const k = cand[0]; used[k] = (used[k] || 0) + 1; group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
     const hp0 = S.hp;   /* v98.41 · for titles: was the win flawless / a close call */
     const fighters = S.party.filter(p => p.hp > 0 && (!window.Injury || Injury.canFight(WS.game(), p.key))), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
-    const tut = (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
+    const tut = RS ? '' : (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
     /* v97.22 · battle objectives: a night camp raid → hold the camp banner · an ambush → sometimes break out to the map edge
        · an elite group → bring down its leader · now and then: just hold out. The prologue and bosses always fight to the end. */
-    const obj = tut || o.boss ? '' : o.camp ? 'defend:4' : o.ambush && Math.random() < .35 ? 'escape' : elite && n > 2 && Math.random() < .6 ? 'leader' : Math.random() < .15 ? 'survive:5' : '';
+    const obj = RS ? RS.obj : tut || o.boss ? '' : o.camp ? 'defend:4' : o.ambush && Math.random() < .35 ? 'escape' : elite && n > 2 && Math.random() < .6 ? 'leader' : Math.random() < .15 ? 'survive:5' : '';
     const OBJ_GOLD = { defend: 1.3, escape: .8, leader: 1.25, survive: 1.2 }, OBJ_NAME = { defend: 'ป้องกันค่าย', escape: 'ฝ่าวงล้อม', leader: 'ล้มหัวหน้า', survive: 'ยื้อไว้' };
     fr.src = `battle-field.html?battle=1&embed=1${tut}${obj ? '&obj=' + obj : ''}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
+    /* v98.340 · remember this fight (the temporary save re-opens it); a resumed one loads the same field from the snapshot's URL */
+    { const sn = (() => { try { return JSON.parse(localStorage.getItem('projectA.battleSnap') || 'null') } catch (e) { return null } })(), src0 = RS ? RS.src : fr.src;
+      if (!RS) { try { localStorage.removeItem('projectA.battleSnap') } catch (e) { } } else fr.src = (RS.snapOk && sn ? sn.page + sn.search : RS.src) + '&resume=1';
+      try { localStorage.setItem('projectA.wmFight', JSON.stringify({ foe, dang, o: { boss: o.boss, ambush: o.ambush, camp: o.camp }, elite, fierce, mult, atk, hst, title, poi, group, obj, src: src0 })) } catch (e) { } }
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
     document.body.append(fr);
     const wait1 = document.createElement('div'); wait1.className = 'wm-toast'; wait1.style.animation = 'none'; wait1.style.top = '62%'; wait1.style.cssText += ';display:flex;align-items:center;gap:12px;padding:8px 22px 8px 14px;border-radius:22px'; wait1.innerHTML = (window.MipLoader ? MipLoader.html({ size: '56px', width: '150px' }) : '') + '<span>กำลังเตรียมสนามรบ…</span>'; setTimeout(() => { if (wait1.isConnected === false && !fr.classList.contains('on')) document.body.append(wait1) }, 1400);
     await readyP; wait1.remove(); fr.classList.add('on'); document.querySelectorAll('.wm-enc').forEach(e => setTimeout(() => e.remove(), 350));
-    const res = await resP;
+    const res = await resP; try { localStorage.removeItem('projectA.wmFight'); localStorage.removeItem('projectA.battleSnap') } catch (e) { }
     fr.classList.remove('on'); await wait(380); fr.remove();
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
     for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ'); ev('party:ko', { who: p.key, whoName: p.name }); woundRoll(p.key, p.name, res.outcome) } } }
@@ -1041,6 +1047,9 @@
   { const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; cam.x = p.x; cam.y = p.y; cam.z = innerWidth < 700 ? .9 : 1.25 }
   try { if (window.Bounties) { for (const m of Bounties.expire(S)) log(m); Bounties.place(S, world, G); save() } } catch (e) { }   /* v97.73 · bounties get their hex */
   hudSync(); requestAnimationFrame(frame);
+  /* v98.340 · temporary save: the world map was left in the middle of a fight → open the same fight again at the saved moment (js/resume.js sets the flag) */
+  try { if (sessionStorage.getItem('projectA.wmResume') === '1') { sessionStorage.removeItem('projectA.wmResume'); const rec = JSON.parse(localStorage.getItem('projectA.wmFight') || 'null'), sn = JSON.parse(localStorage.getItem('projectA.battleSnap') || 'null');
+    if (rec) setTimeout(() => battle(rec.foe, rec.dang, { ...rec.o, resume: { ...rec, snapOk: !!sn } }), 1500) } } catch (e) { }
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
   window.WorldMap = { travellers: () => travellers().map(t => ({ id: t.p.id, name: t.p.name, c: t.c, r: t.r, dir: t.dir })), results, chatter, townVisit, landPanel, hudSync: () => hudSync(), area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();

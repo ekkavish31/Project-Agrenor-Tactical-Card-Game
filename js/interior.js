@@ -980,5 +980,7 @@
     act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
     buttons: []
   });
+  /* v98.340 · temporary save (js/resume.js): where the hero stands */
+  window.ResumeHook = { ready: () => true, get: () => ({ u: hero.vu, v: hero.vv, face: hero.face }), set: d => { if (!d) return; hero.vu = d.u; hero.vv = d.v; hero.u = Math.floor(d.u); hero.v = Math.floor(d.v); if (d.face) hero.face = d.face; hero.path = []; hero.then = null; hero.walking = false } };
   window.Interior = { people, hero, talk: id => { const a = people.get(id); if (a) talk(a) }, act: (id, w) => { const a = people.get(id); if (a) return act(a, w) }, room: R, kind: KIND, sync: () => { syncPeople(false); hudSync() } };
 })();

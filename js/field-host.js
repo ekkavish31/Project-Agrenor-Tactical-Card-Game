@@ -46,7 +46,7 @@ function center() { return { u: 0, v: 0 } }
 /* ---------- field generation ---------- */
 const FIELD = (function () {
   const biome = ['forest', 'grass', 'hills', 'swamp', 'snow', 'sand'].includes(FQ.get('biome')) ? FQ.get('biome') : 'grass';
-  let a = (+FQ.get('seed') || (Math.random() * 1e9) | 0) >>> 0;
+  let a = (+FQ.get('seed') || (Math.random() * 1e9) | 0) >>> 0; window.FieldSeed = a;   /* v98.340 · the battle snapshot (town-battle.js) keeps the seed so a resumed fight gets the same field */
   const rnd = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 };
   /* share of cells: small blocking prop (1×1), big trees (share of the field COVERED by 2×2 trees), slow ground, cover */
   const MIX = {

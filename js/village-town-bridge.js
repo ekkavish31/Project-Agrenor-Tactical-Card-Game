@@ -64,7 +64,10 @@ function openInterior(id,name){if(busy||s.mode==='battle')return;if($('panel').o
 function onWorld(){try{return /world-map\.html/.test(frame.contentWindow.location.pathname)}catch{return false}}
 function placeMaps(){try{return JSON.parse(localStorage.getItem('place-maps-v1')||'{}')}catch{return{}}}
 function chooseExpedition(){openWorld()}function expedition(){openWorld()}
-window.VillageTown={open:openTown,frame,marketFrame,host,sync,expedition,openWorld,openInterior,onWorld,getScene:()=>inside?s.village.location:marketOpen?'place:'+placeId:'town',enterPlace};
+/* v98.340 · temporary save (js/resume.js): re-open exactly the place frame / the world map that was on screen */
+function resumePlace(src){if(!src)return false;let u;try{u=new URL(src,location.href)}catch{return false}const pl=u.searchParams.get('place')||'',interior=/place-interior/.test(u.pathname);if(!pl)return false;placeAct=interior?pl:(u.searchParams.get('kind')||pl);inside=false;marketOpen=true;placeId=interior?'in:'+pl:pl;marketReady=false;marketFrame.src=u.pathname.split('/').pop()+u.search;sync();return true}
+function resumeWorld(){if(busy)return false;openTown();ready=false;frame.src='world-map.html';sync();return true}
+window.VillageTown={resumePlace,resumeWorld,isMarketReady:()=>marketReady,isTownReady:()=>ready,open:openTown,frame,marketFrame,host,sync,expedition,openWorld,openInterior,onWorld,getScene:()=>inside?s.village.location:marketOpen?'place:'+placeId:'town',enterPlace};
 new MutationObserver(()=>{const hide=activeHide();if(host.hidden!==hide||lastVisible!==JSON.stringify([!hide,marketOpen,ready,marketReady,modalOpen()]))sync()}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
 setInterval(()=>{if(!document.hidden)sync()},800);
 try{const channel=new BroadcastChannel('project-a-hero-motion');channel.onmessage=e=>{if(e.data?.kind!=='hero-walk'||!e.data.data?.directions)return;for(const[d,p]of Object.entries(e.data.data.directions)){if(!TACTICS_SPRITES.directions[d])TACTICS_SPRITES.directions[d]={};TACTICS_SPRITES.directions[d].walk=p.walk}lastMotion='';sync()}}catch{}

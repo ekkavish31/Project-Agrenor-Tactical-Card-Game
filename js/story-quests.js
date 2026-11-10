@@ -219,6 +219,7 @@ function questBattle(d,o){return new Promise(resolve=>{
  const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')+':'+(p.level||1)).join(',');
  const fr=document.createElement('iframe');fr.id='storyBattle';fr.title=o.title;fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
  fr.src=(o.page||'battle-field.html')+'?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&imm=1&noflee=1&r='+(o.r||6)+'&biome='+(o.biome||'grass')+'&seed='+(o.seed||4100)+(o.poi?'&poi='+o.poi:'')+(o.bg?'&bg='+o.bg:'')+'&ms='+encodeURIComponent(o.ms)+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent(o.title||'')+'&tut='+(o.tut||'');
+ if(d.resumeSrc){fr.src=d.resumeSrc;d.resumeSrc=null}else{try{localStorage.removeItem('projectA.battleSnap')}catch{}}   /* v98.340 · resumed from the temporary save: same field, same moment */
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
   const win=r.outcome==='win';
@@ -233,6 +234,7 @@ function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับห�
  const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')+':'+(p.level||1)).join(',');
  const fr=document.createElement('iframe');fr.id='storyBattle';fr.title='โจรป่าบุกงาน';fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
  fr.src='village-town.html?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&r=6&ms='+encodeURIComponent('bandit*1.2,wolf*1.1,bandit*1.2,wolf*1.1')+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent('คืนเทศกาล ·')+(d.tutDone?'':'&tut=raid');d.tutDone=true;
+ if(d.resumeSrc){fr.src=d.resumeSrc;d.resumeSrc=null}else{try{localStorage.removeItem('projectA.battleSnap')}catch{}}   /* v98.340 · resumed from the temporary save: same field, same moment */
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
   if(r.outcome==='win'){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);d.won=true;if(root.Progression){const xp=Progression.battleXp({dang:.4,kills:r.kills});gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}else toast(r.outcome==='lose'?'พ่ายแพ้... ตั้งหลักแล้วลองใหม่':'ถอยออกมา · โจรยังอยู่ในงาน','');
@@ -314,7 +316,13 @@ if(document.readyState!=='loading')setTimeout(boot,0);else document.addEventList
 function badgeSync(){try{const st=story();root.dispatchEvent(new CustomEvent('story-tracker',{detail:trackerInfo()}))}catch{}}
 function trackerInfo(){const st=story(),on=!!st&&st.mode!=='off'&&st.mode!=='offer'&&!!st.closed;return {closed:on,count:on?Math.max(1,st.unseen||0)+(st.mode==='active'?0:0):0,fresh:!!(on&&st.unseen),title:st&&st.mode==='active'?STEPS[st.i]?.title||'':'เบาะแสที่ได้'}}
 function openTracker(){const st=story();if(!st)return false;st.closed=false;st.unseen=0;doSave();draw(true);badgeSync();return true}
-root.Story={trackerInfo,openTracker,lock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+/* v98.340 · temporary save: re-open the story fight that was on screen when the game was closed (js/resume.js) */
+async function resumeFight(){const step=cur();if(!step)return false;const d=dataOf(step);if(!(d.fighting||(step.id==='raid'&&!d.won))||document.getElementById('storyBattle'))return false;
+ let rec=null;try{rec=JSON.parse(localStorage.getItem('projectA.battleSnap')||'null')}catch{}
+ d.fighting=false;d.resumeSrc=rec?rec.page+rec.search+'&resume=1':null;doSave();
+ if(step.id==='raid'){startRaid(d);return true}
+ if(step.onSpot){const r=await step.onSpot(d);doSave();if(r?.msg)toast(r.msg);return true}return false}
+root.Story={resumeFight,trackerInfo,openTracker,lock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},
