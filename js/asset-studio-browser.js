@@ -24,8 +24,16 @@
   for(const k of RECRUITS){const nm=k[0].toUpperCase()+k.slice(1);
    for(const d of ['se','nw']){const id=`tactics-${k}-${d}-idle`;if(have.has(id))continue;manifest.assets.push({id,file:`assets/village-town/npc/${k}/${d}-stand.webp`,category:'allies',status:'missing',size:[384,384],transparent:true,view:d.toUpperCase(),pose:'idle',usedIn:`เพื่อนร่วมทีม ${k}`,note:'ช่องว่าง: ยังไม่มีภาพ — ลอกกลับด้านจากทิศตรงข้าม หรือนำเข้าภาพ'});have.add(id)}
    for(const d of ['sw','nw','ne','se']){const id=`tactics-${k}-${d}-walk-1`;if(have.has(id))continue;manifest.assets.push({id,file:`assets/tactics/${k}_${d}_walk_01.webp`,category:'allies',status:'missing',size:[384,384],transparent:true,view:d.toUpperCase(),pose:'walk',usedIn:`เพื่อนร่วมทีม ${nm}`,note:'ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้'});have.add(id)}}}
+ /* v98.373 · the villagers (js/village-life.js) have standing + walking pictures in assets/village-town/npc/<id>/ that the manifest never listed: list them as NPC entities (group 'npcs'),
+    one slot per picture that exists in the folder (stand / walk1 in SW and NE) so each can be viewed and replaced like any other character. */
+ const VILLAGERS={may:'ป้าเมย์',tom:'ลุงทอม',lin:'คุณยายลิน',mira:'ครูมิรา',joe:'ชาวประมงโจ',ella:'ช่างทอผ้าเอลลา',oren:'ผู้ใหญ่บ้านโอเรน',gus:'ช่างตีเหล็กกัส',guard:'ยามดอร์ก',hilda:'ชาวนาฮิลดา',bryn:'บริน (โม่แป้ง)',marta:'มาร์ธา (เขากวางทอง)',saf:'หมอยาซาฟ',mother:'แม่'};
+ function registerVillagers(manifest){if(!manifest?.assets)return;const have=new Set(manifest.assets.map(a=>a.id));
+  for(const [k,name] of Object.entries(VILLAGERS))for(const d of ['sw','ne'])for(const [pose,file,label] of [['idle',`assets/village-town/npc/${k}/${d}-stand.webp`,'ยืน'],['walk',`assets/village-town/npc/${k}/${d}-walk1.webp`,'เดิน']]){
+   const id=`npc-${k}-${d}-${pose==='idle'?'stand':'walk1'}`;if(have.has(id)||(dir&&scanned&&!hasFile(file)))continue;
+   manifest.assets.push({id,file,category:'allies',status:'final',size:[384,384],transparent:true,view:d.toUpperCase(),pose,usedIn:`NPC ${name} · ${label}`,studioOwner:{id:'npc:'+k,name,group:'npcs'}});have.add(id)}}
  function clipsFor(manifest){
   try{registerRecruits(manifest)}catch(e){}
+  try{registerVillagers(manifest)}catch(e){}
   /* v98.88 · self-heal: whether a look's saved idle/walk pictures are 'final' or 'unused' is DERIVED from what the looks use (StudioVariants.syncStatuses). A manifest saved/pushed by an older build can carry stale 'unused' marks —
      the walk row then vanished until something re-synced it. Re-derive on every build so the rows can never depend on a stored mark. */
   try{window.StudioVariants?.syncStatuses(manifest)}catch(e){}
@@ -108,7 +116,7 @@
   }
  }
  function renderNav(){let search=state.entityQuery.toLowerCase(),all=state.model.filter(e=>e.group===state.group),ee=all.filter(e=>(e.name+' '+e.id).toLowerCase().includes(search));
-  const ANIM=['characters','monsters','bosses'],subs=ANIM.includes(state.group)?'<div class="subtabs">'+[['characters','ตัวละคร'],['monsters','มอนสเตอร์'],['bosses','มินิบอส / บอส']].map(([g,n])=>`<button data-sub="${g}" class="${g===state.group?'on':''}">${n}</button>`).join('')+'</div>':'';
+  const ANIM=['characters','npcs','monsters','bosses'],subs=ANIM.includes(state.group)?'<div class="subtabs">'+[['characters','ตัวละคร'],['npcs','NPC ชาวบ้าน'],['monsters','มอนสเตอร์'],['bosses','มินิบอส / บอส']].map(([g,n])=>`<button data-sub="${g}" class="${g===state.group?'on':''}">${n}</button>`).join('')+'</div>':'';
   $('cats').innerHTML=subs+`<h4>${esc(C.groups[state.group])} · ${all.length}</h4><input id="entitySearch" type="search" placeholder="ค้นหาตัว / วัตถุ" aria-label="ค้นหาในหมวด" value="${esc(state.entityQuery)}">`+ee.map(e=>{
    let a=(e.id==='hero'?e.assets.find(a=>a.variant&&/idle-sw\.webp$/.test(a.file))||e.assets.find(a=>a.id==='tactics-hero-se-idle'):null)||e.assets.find(a=>/^(card-|enemy-|ally-)/.test(a.id)&&!a.animation)||e.assets.find(a=>!a.animation)||e.assets[0];
    return `<button data-entity="${esc(e.id)}" class="${e.id===state.entity?'on':''}">${e.group==='characters'?`<img class="bust" data-bust="${esc(e.id)}" data-fallback="${esc(a?.file||'')}" alt="">`:a?.file?imgTag(a.file):''}<span class="nav-copy"><b>${esc(e.name)}</b><small>${e.clips.filter(c=>c.kind!=='static').length} ชุดท่า · ${e.assets.length} ไฟล์${e.rank==='boss'?' · บอส':e.rank==='miniboss'?' · มินิบอส':''}</small></span></button>`}).join('')+(ee.length?'':'<p class="muted">ไม่พบรายการ</p>');
@@ -163,16 +171,16 @@
  }
  const legacyLibrary=renderLibrary,legacyRetired=renderRetired;
  render=function(){CS=null;rebuild();let inGroup=state.model.filter(e=>e.group===state.group);if(!inGroup.some(e=>e.id===state.entity))state.entity=inGroup[0]?.id||'';
-  document.querySelectorAll('[data-group]').forEach(b=>b.classList.toggle('on',b.dataset.group===state.group));$('animTab')?.classList.toggle('on',['characters','monsters','bosses'].includes(state.group));if(document.body.classList.contains('workshop-open')){document.querySelectorAll('[data-group]').forEach(b=>b.classList.remove('on'));$('animTab')?.classList.remove('on')}/* v98.16 · Workshop / 3D Frame cover the library: only their own tab stays lit */connButton();$('exportBtn').hidden=!pending.size&&!window.AnimationReviewExtraFiles?.size;$('exportBtn').textContent='ส่งออก ZIP ('+pending.size+')';
+  document.querySelectorAll('[data-group]').forEach(b=>b.classList.toggle('on',b.dataset.group===state.group));$('animTab')?.classList.toggle('on',['characters','npcs','monsters','bosses'].includes(state.group));if(document.body.classList.contains('workshop-open')){document.querySelectorAll('[data-group]').forEach(b=>b.classList.remove('on'));$('animTab')?.classList.remove('on')}/* v98.16 · Workshop / 3D Frame cover the library: only their own tab stays lit */connButton();$('exportBtn').hidden=!pending.size&&!window.AnimationReviewExtraFiles?.size;$('exportBtn').textContent='ส่งออก ZIP ('+pending.size+')';
   $('summary').textContent=`${state.model.length} ตัว / วัตถุ · ${M.assets.filter(isSlot).length} ช่อง${pending.size?' · รอส่งออก '+pending.size:''}`;
   if(tab==='slots'){renderNav();renderEntity()}else{state.entries=[];if(tab==='library')legacyLibrary();else legacyRetired();hydrate($('grid'))}
  };
  list=function(){return tab==='slots'?(entity()?.assets||[]).filter(a=>matchQ(a)&&slotFilter(a)):[]};
  const originalDetail=detail;detail=function(){originalDetail();if(sel){document.body.classList.add('detail-open');let close=document.createElement('button');close.textContent='ปิด';close.className='detail-close';close.onclick=()=>{document.body.classList.remove('detail-open');sel=null;stopAnim()};$('detail').prepend(close)}else document.body.classList.remove('detail-open')};
  const oldGoSlot=goSlot;goSlot=function(a){let o=C.owner(a,meta);state.group=o.group;state.entity=o.id;oldGoSlot(a)};
- function gotoGroup(g){state.group=g;if(['characters','monsters','bosses'].includes(g))state.lastAnim=g;state.entityQuery='';tab='slots';query='';$('q').value='';sel=null;render();document.body.classList.remove('detail-open')}
+ function gotoGroup(g){state.group=g;if(['characters','npcs','monsters','bosses'].includes(g))state.lastAnim=g;state.entityQuery='';tab='slots';query='';$('q').value='';sel=null;render();document.body.classList.remove('detail-open')}
  document.querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>gotoGroup(b.dataset.group));
- $('animTab')?.addEventListener('click',()=>gotoGroup(state.lastAnim||(['characters','monsters','bosses'].includes(state.group)?state.group:'characters')));
+ $('animTab')?.addEventListener('click',()=>gotoGroup(state.lastAnim||(['characters','npcs','monsters','bosses'].includes(state.group)?state.group:'characters')));
  
  // Fold batch/request commands into one secondary tools menu.
  let tools=document.createElement('details');tools.id='extraTools';tools.innerHTML='<summary>เครื่องมือเพิ่มเติม</summary><div></div>';$('studioTools').append(tools);

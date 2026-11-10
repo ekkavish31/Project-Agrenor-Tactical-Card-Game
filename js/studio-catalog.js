@@ -198,7 +198,7 @@
     "rank": "boss"
   }
 };
- const groups={illust:'Illust',objects:'Objects',characters:'ตัวละคร',monsters:'มอนสเตอร์',bosses:'มินิบอส / บอส'};
+ const groups={illust:'Illust',objects:'Objects',characters:'ตัวละคร',npcs:'NPC ชาวบ้าน',monsters:'มอนสเตอร์',bosses:'มินิบอส / บอส'};
  const aliases={'straw-soldier':'straw','straw-archer':'archer','straw-captain':'captain','kobold-foreman':'foreman','pirate-captain':'captainHook'};
  const camel=s=>s.replace(/-([a-z])/g,(_,c)=>c.toUpperCase());
  function enemyMetadata(source){
