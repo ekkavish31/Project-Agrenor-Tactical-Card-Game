@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.359';
+  const V = '98.360';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1468,16 +1468,19 @@
   function cellFrame(g, name, u, v, k = 1) { let r = false; const f = () => { r = cellFrame0(g, name, u, v, k) }; window.FieldOcc ? FieldOcc.draw(g, u, v, f) : f(); return r }
   function cellFrame0(g, name, u, v, k = 1) { if (CODE_ART) { const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return GroundArtCode.frame(g, name, p.x, p.y, w, w * .56, performance.now()) } const G = window.GroundArt; if (!G) return false; const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) }
   function footRing(g, unit, foe, t) { if (CODE_ART) { const p = project(unit.vu, unit.vv); GroundArtCode.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t, RING_STYLE); return true } const G = window.GroundArt; if (!G) return false; const p = project(unit.vu, unit.vv); return G.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t) }
-  function draw(g, t0) {
+  /* v98.360 · draw(g, t, mode): the village page calls it twice per frame — 'ground' BEFORE its buildings/props are drawn (the grid, its colours and the markers lie on the ground, so every object stands over them
+     and the grid shows through only where the picture is transparent) and 'rest' after (units, effects, HUD overlays). battle-field.html calls it once with no mode (it clips the ground overlays itself, FieldOcc). */
+  function draw(g, t0, mode) {
     if (!ready || typeof locations === 'undefined' || !locations.length) return;
     const t = now();
-    if (!st) { build(); hudMake(); handMake(); cam.set = false; focusCamera(true); arenaReady(); if (Q.get('warm') !== '1') startTurnShow(true) }
-    step(t);
+    if (!st) { if (mode === 'rest') return; build(); hudMake(); handMake(); cam.set = false; focusCamera(true); arenaReady(); if (Q.get('warm') !== '1') startTurnShow(true) }
+    if (mode !== 'rest') step(t);
+    const h = FB.hero(st);
+    if (mode !== 'rest') {
     g.save();
     HID_ALL = gridHidden(cells); const hid = GRID ? HID_ALL : null;   /* v98.312 · grid lines only where nothing taller stands in front (no lines through cliffs / behind high ground) */
     const OV = (u, v, fn) => window.FieldOcc ? FieldOcc.draw(g, u, v, fn) : fn();   /* v98.325 · every ground overlay is clipped by taller ground in front (js/field-host.js FieldOcc) */
     for (const [key, k] of cells) {
-      if (k === 'blocked') continue;   /* v98.356 · grid lines / colours exist on the GROUND only: a cell with an object on it (tree, rock, bench, fountain …) shows nothing — the object covers it */
       const [u, v] = key.split(',').map(Number), col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k], lines = GRID && !hid.has(key);
       if (!col && !lines) continue;
       OV(u, v, () => { poly(g, u, v); if (col) { g.fillStyle = col; g.fill() } if (lines) { g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke() } });
@@ -1492,7 +1495,7 @@
     /* v94.02 · height of every cell you can reach (1–3; 0 = ground) */
     if (reachMap && !busy && window.FieldHeight) { g.font = '700 11px AgThai,system-ui'; g.textAlign = 'center'; for (const e of reachMap.values()) { const L = FB.lv(st, e.u, e.v); if (!L) continue; const p = project(e.u + .5, e.v + .5); g.fillStyle = 'rgba(10,20,40,.75)'; g.beginPath(); g.arc(p.x, p.y, 8, 0, 7); g.fill(); g.fillStyle = '#cfe4ff'; g.fillText('▲' + L, p.x, p.y + 4) } }
     if (pushShow && !busy) { poly(g, pushShow.u, pushShow.v); g.fillStyle = pushShow.stuck ? 'rgba(160,160,160,.35)' : pushShow.dmg ? 'rgba(255,60,40,.45)' : 'rgba(255,200,80,.35)'; g.fill(); const p = project(pushShow.u + .5, pushShow.v + .5); g.font = '800 13px AgThai,system-ui'; g.textAlign = 'center'; g.fillStyle = '#000a'; g.fillRect(p.x - 48, p.y - 30, 96, 18); g.fillStyle = pushShow.dmg ? '#ffb0a0' : '#ffe2a8'; g.fillText(pushShow.stuck ? 'ผลักไม่ได้' : pushShow.dmg ? 'ตก ' + pushShow.drop + ' ระดับ −' + pushShow.dmg : 'ไม่ตก', p.x, p.y - 17) }
-    const h = FB.hero(st), tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
+    const tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
     /* hovering a combat card: its reach around the hero in red */
     if (dmgShow && !busy && dmgShow.target.hp > 0) { const q = project(dmgShow.target.vu, dmgShow.target.vv), txt = '−' + dmgShow.total + (dmgShow.kill ? ' ☠' : ''); g.save(); g.font = '900 24px AgThai,system-ui,"Noto Sans Thai",sans-serif'; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = dmgShow.kill ? '#ffe14d' : '#ffd0a0'; const y = q.y - UNIT * 1.75 - 4 * Math.sin(now() * .006); g.strokeText(txt, q.x, y); g.fillText(txt, q.x, y); g.restore() }
     if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; OV(u, v, () => { poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }) }
@@ -1510,6 +1513,8 @@
     if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pend.to.u, pend.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
     if (!EDIT && typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; OV(hoverCell.u, hoverCell.v, () => G?.corners(g, p.x, p.y, w, w * .56, t)) }   /* v98.282 · glowing corners on the cell under the mouse */
     g.restore();
+    }   /* end of the ground pass */
+    if (mode === 'ground') return;
     if (CINE) spotlight(g, cine ? [cine.a, cine.b] : st.units.filter(u => u.hp > 0));
     glowDraw(g, t);
     /* a host page (battle-field.html) can hand in standing props so trees/rocks and units overlap by depth */
