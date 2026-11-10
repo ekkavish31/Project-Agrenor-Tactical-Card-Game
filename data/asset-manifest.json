@@ -103394,6 +103394,2792 @@
    ],
    "transparent": true,
    "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "look-male-characters-hero-male-idle-se",
+   "file": "assets/characters/hero-male/idle-se.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-01",
+   "file": "assets/characters/hero-male/walk-se-01.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-02",
+   "file": "assets/characters/hero-male/walk-se-02.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-03",
+   "file": "assets/characters/hero-male/walk-se-03.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-04",
+   "file": "assets/characters/hero-male/walk-se-04.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-05",
+   "file": "assets/characters/hero-male/walk-se-05.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-06",
+   "file": "assets/characters/hero-male/walk-se-06.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-07",
+   "file": "assets/characters/hero-male/walk-se-07.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-08",
+   "file": "assets/characters/hero-male/walk-se-08.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-09",
+   "file": "assets/characters/hero-male/walk-se-09.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-10",
+   "file": "assets/characters/hero-male/walk-se-10.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-11",
+   "file": "assets/characters/hero-male/walk-se-11.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-se-12",
+   "file": "assets/characters/hero-male/walk-se-12.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-idle-sw",
+   "file": "assets/characters/hero-male/idle-sw.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-idle-ne",
+   "file": "assets/characters/hero-male/idle-ne.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-01",
+   "file": "assets/characters/hero-male/walk-ne-01.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-02",
+   "file": "assets/characters/hero-male/walk-ne-02.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-03",
+   "file": "assets/characters/hero-male/walk-ne-03.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-04",
+   "file": "assets/characters/hero-male/walk-ne-04.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-05",
+   "file": "assets/characters/hero-male/walk-ne-05.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-06",
+   "file": "assets/characters/hero-male/walk-ne-06.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-07",
+   "file": "assets/characters/hero-male/walk-ne-07.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-08",
+   "file": "assets/characters/hero-male/walk-ne-08.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-09",
+   "file": "assets/characters/hero-male/walk-ne-09.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-10",
+   "file": "assets/characters/hero-male/walk-ne-10.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-11",
+   "file": "assets/characters/hero-male/walk-ne-11.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-walk-ne-12",
+   "file": "assets/characters/hero-male/walk-ne-12.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "look-male-characters-hero-male-idle-nw",
+   "file": "assets/characters/hero-male/idle-nw.webp",
+   "category": "tactics-hero",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "",
+   "pose": "",
+   "variant": "male",
+   "studioOwner": {
+    "id": "hero",
+    "name": "ตัวหลัก · Hero",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "npc-may-sw-stand",
+   "file": "assets/village-town/npc/may/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC ป้าเมย์ · ยืน",
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-may-sw-walk1",
+   "file": "assets/village-town/npc/may/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ป้าเมย์ · เดิน",
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-may-ne-stand",
+   "file": "assets/village-town/npc/may/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC ป้าเมย์ · ยืน",
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-may-ne-walk1",
+   "file": "assets/village-town/npc/may/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ป้าเมย์ · เดิน",
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-may-se-stand",
+   "file": "assets/village-town/npc/may/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC ป้าเมย์ · ยืน",
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-may-se-walk1",
+   "file": "assets/village-town/npc/may/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ป้าเมย์ · เดิน",
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-may-nw-stand",
+   "file": "assets/village-town/npc/may/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC ป้าเมย์ · ยืน",
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-may-nw-walk1",
+   "file": "assets/village-town/npc/may/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ป้าเมย์ · เดิน",
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-tom-sw-stand",
+   "file": "assets/village-town/npc/tom/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC ลุงทอม · ยืน",
+   "studioOwner": {
+    "id": "npc:tom",
+    "name": "ลุงทอม",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-tom-sw-walk1",
+   "file": "assets/village-town/npc/tom/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ลุงทอม · เดิน",
+   "studioOwner": {
+    "id": "npc:tom",
+    "name": "ลุงทอม",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-tom-ne-stand",
+   "file": "assets/village-town/npc/tom/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC ลุงทอม · ยืน",
+   "studioOwner": {
+    "id": "npc:tom",
+    "name": "ลุงทอม",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-tom-ne-walk1",
+   "file": "assets/village-town/npc/tom/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ลุงทอม · เดิน",
+   "studioOwner": {
+    "id": "npc:tom",
+    "name": "ลุงทอม",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-tom-se-stand",
+   "file": "assets/village-town/npc/tom/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC ลุงทอม · ยืน",
+   "studioOwner": {
+    "id": "npc:tom",
+    "name": "ลุงทอม",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-tom-se-walk1",
+   "file": "assets/village-town/npc/tom/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ลุงทอม · เดิน",
+   "studioOwner": {
+    "id": "npc:tom",
+    "name": "ลุงทอม",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-tom-nw-stand",
+   "file": "assets/village-town/npc/tom/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC ลุงทอม · ยืน",
+   "studioOwner": {
+    "id": "npc:tom",
+    "name": "ลุงทอม",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-tom-nw-walk1",
+   "file": "assets/village-town/npc/tom/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ลุงทอม · เดิน",
+   "studioOwner": {
+    "id": "npc:tom",
+    "name": "ลุงทอม",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-lin-sw-stand",
+   "file": "assets/village-town/npc/lin/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC คุณยายลิน · ยืน",
+   "studioOwner": {
+    "id": "npc:lin",
+    "name": "คุณยายลิน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-lin-sw-walk1",
+   "file": "assets/village-town/npc/lin/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC คุณยายลิน · เดิน",
+   "studioOwner": {
+    "id": "npc:lin",
+    "name": "คุณยายลิน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-lin-ne-stand",
+   "file": "assets/village-town/npc/lin/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC คุณยายลิน · ยืน",
+   "studioOwner": {
+    "id": "npc:lin",
+    "name": "คุณยายลิน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-lin-ne-walk1",
+   "file": "assets/village-town/npc/lin/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC คุณยายลิน · เดิน",
+   "studioOwner": {
+    "id": "npc:lin",
+    "name": "คุณยายลิน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-lin-se-stand",
+   "file": "assets/village-town/npc/lin/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC คุณยายลิน · ยืน",
+   "studioOwner": {
+    "id": "npc:lin",
+    "name": "คุณยายลิน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-lin-se-walk1",
+   "file": "assets/village-town/npc/lin/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC คุณยายลิน · เดิน",
+   "studioOwner": {
+    "id": "npc:lin",
+    "name": "คุณยายลิน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-lin-nw-stand",
+   "file": "assets/village-town/npc/lin/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC คุณยายลิน · ยืน",
+   "studioOwner": {
+    "id": "npc:lin",
+    "name": "คุณยายลิน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-lin-nw-walk1",
+   "file": "assets/village-town/npc/lin/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC คุณยายลิน · เดิน",
+   "studioOwner": {
+    "id": "npc:lin",
+    "name": "คุณยายลิน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mira-sw-stand",
+   "file": "assets/village-town/npc/mira/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC ครูมิรา · ยืน",
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mira-sw-walk1",
+   "file": "assets/village-town/npc/mira/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ครูมิรา · เดิน",
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mira-ne-stand",
+   "file": "assets/village-town/npc/mira/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC ครูมิรา · ยืน",
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mira-ne-walk1",
+   "file": "assets/village-town/npc/mira/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ครูมิรา · เดิน",
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mira-se-stand",
+   "file": "assets/village-town/npc/mira/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC ครูมิรา · ยืน",
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mira-se-walk1",
+   "file": "assets/village-town/npc/mira/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ครูมิรา · เดิน",
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mira-nw-stand",
+   "file": "assets/village-town/npc/mira/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC ครูมิรา · ยืน",
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mira-nw-walk1",
+   "file": "assets/village-town/npc/mira/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ครูมิรา · เดิน",
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-joe-sw-stand",
+   "file": "assets/village-town/npc/joe/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC ชาวประมงโจ · ยืน",
+   "studioOwner": {
+    "id": "npc:joe",
+    "name": "ชาวประมงโจ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-joe-sw-walk1",
+   "file": "assets/village-town/npc/joe/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ชาวประมงโจ · เดิน",
+   "studioOwner": {
+    "id": "npc:joe",
+    "name": "ชาวประมงโจ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-joe-ne-stand",
+   "file": "assets/village-town/npc/joe/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC ชาวประมงโจ · ยืน",
+   "studioOwner": {
+    "id": "npc:joe",
+    "name": "ชาวประมงโจ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-joe-ne-walk1",
+   "file": "assets/village-town/npc/joe/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ชาวประมงโจ · เดิน",
+   "studioOwner": {
+    "id": "npc:joe",
+    "name": "ชาวประมงโจ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-joe-se-stand",
+   "file": "assets/village-town/npc/joe/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC ชาวประมงโจ · ยืน",
+   "studioOwner": {
+    "id": "npc:joe",
+    "name": "ชาวประมงโจ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-joe-se-walk1",
+   "file": "assets/village-town/npc/joe/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ชาวประมงโจ · เดิน",
+   "studioOwner": {
+    "id": "npc:joe",
+    "name": "ชาวประมงโจ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-joe-nw-stand",
+   "file": "assets/village-town/npc/joe/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC ชาวประมงโจ · ยืน",
+   "studioOwner": {
+    "id": "npc:joe",
+    "name": "ชาวประมงโจ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-joe-nw-walk1",
+   "file": "assets/village-town/npc/joe/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ชาวประมงโจ · เดิน",
+   "studioOwner": {
+    "id": "npc:joe",
+    "name": "ชาวประมงโจ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-ella-sw-stand",
+   "file": "assets/village-town/npc/ella/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC ช่างทอผ้าเอลลา · ยืน",
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-ella-sw-walk1",
+   "file": "assets/village-town/npc/ella/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ช่างทอผ้าเอลลา · เดิน",
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-ella-ne-stand",
+   "file": "assets/village-town/npc/ella/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC ช่างทอผ้าเอลลา · ยืน",
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-ella-ne-walk1",
+   "file": "assets/village-town/npc/ella/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ช่างทอผ้าเอลลา · เดิน",
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-ella-se-stand",
+   "file": "assets/village-town/npc/ella/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC ช่างทอผ้าเอลลา · ยืน",
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-ella-se-walk1",
+   "file": "assets/village-town/npc/ella/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ช่างทอผ้าเอลลา · เดิน",
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-ella-nw-stand",
+   "file": "assets/village-town/npc/ella/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC ช่างทอผ้าเอลลา · ยืน",
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-ella-nw-walk1",
+   "file": "assets/village-town/npc/ella/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ช่างทอผ้าเอลลา · เดิน",
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-oren-sw-stand",
+   "file": "assets/village-town/npc/oren/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน · ยืน",
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-oren-sw-walk1",
+   "file": "assets/village-town/npc/oren/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน · เดิน",
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-oren-ne-stand",
+   "file": "assets/village-town/npc/oren/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน · ยืน",
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-oren-ne-walk1",
+   "file": "assets/village-town/npc/oren/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน · เดิน",
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-oren-se-stand",
+   "file": "assets/village-town/npc/oren/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน · ยืน",
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-oren-se-walk1",
+   "file": "assets/village-town/npc/oren/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน · เดิน",
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-oren-nw-stand",
+   "file": "assets/village-town/npc/oren/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน · ยืน",
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-oren-nw-walk1",
+   "file": "assets/village-town/npc/oren/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน · เดิน",
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-gus-sw-stand",
+   "file": "assets/village-town/npc/gus/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC ช่างตีเหล็กกัส · ยืน",
+   "studioOwner": {
+    "id": "npc:gus",
+    "name": "ช่างตีเหล็กกัส",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-gus-sw-walk1",
+   "file": "assets/village-town/npc/gus/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ช่างตีเหล็กกัส · เดิน",
+   "studioOwner": {
+    "id": "npc:gus",
+    "name": "ช่างตีเหล็กกัส",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-gus-ne-stand",
+   "file": "assets/village-town/npc/gus/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC ช่างตีเหล็กกัส · ยืน",
+   "studioOwner": {
+    "id": "npc:gus",
+    "name": "ช่างตีเหล็กกัส",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-gus-ne-walk1",
+   "file": "assets/village-town/npc/gus/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ช่างตีเหล็กกัส · เดิน",
+   "studioOwner": {
+    "id": "npc:gus",
+    "name": "ช่างตีเหล็กกัส",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-gus-se-stand",
+   "file": "assets/village-town/npc/gus/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC ช่างตีเหล็กกัส · ยืน",
+   "studioOwner": {
+    "id": "npc:gus",
+    "name": "ช่างตีเหล็กกัส",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-gus-se-walk1",
+   "file": "assets/village-town/npc/gus/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ช่างตีเหล็กกัส · เดิน",
+   "studioOwner": {
+    "id": "npc:gus",
+    "name": "ช่างตีเหล็กกัส",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-gus-nw-stand",
+   "file": "assets/village-town/npc/gus/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC ช่างตีเหล็กกัส · ยืน",
+   "studioOwner": {
+    "id": "npc:gus",
+    "name": "ช่างตีเหล็กกัส",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-gus-nw-walk1",
+   "file": "assets/village-town/npc/gus/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ช่างตีเหล็กกัส · เดิน",
+   "studioOwner": {
+    "id": "npc:gus",
+    "name": "ช่างตีเหล็กกัส",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-guard-sw-stand",
+   "file": "assets/village-town/npc/guard/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC ยามดอร์ก · ยืน",
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-guard-sw-walk1",
+   "file": "assets/village-town/npc/guard/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ยามดอร์ก · เดิน",
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-guard-ne-stand",
+   "file": "assets/village-town/npc/guard/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC ยามดอร์ก · ยืน",
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-guard-ne-walk1",
+   "file": "assets/village-town/npc/guard/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ยามดอร์ก · เดิน",
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-guard-se-stand",
+   "file": "assets/village-town/npc/guard/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC ยามดอร์ก · ยืน",
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-guard-se-walk1",
+   "file": "assets/village-town/npc/guard/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ยามดอร์ก · เดิน",
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-guard-nw-stand",
+   "file": "assets/village-town/npc/guard/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC ยามดอร์ก · ยืน",
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-guard-nw-walk1",
+   "file": "assets/village-town/npc/guard/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ยามดอร์ก · เดิน",
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-hilda-sw-stand",
+   "file": "assets/village-town/npc/hilda/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC ชาวนาฮิลดา · ยืน",
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-hilda-sw-walk1",
+   "file": "assets/village-town/npc/hilda/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ชาวนาฮิลดา · เดิน",
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-hilda-ne-stand",
+   "file": "assets/village-town/npc/hilda/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC ชาวนาฮิลดา · ยืน",
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-hilda-ne-walk1",
+   "file": "assets/village-town/npc/hilda/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ชาวนาฮิลดา · เดิน",
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-hilda-se-stand",
+   "file": "assets/village-town/npc/hilda/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC ชาวนาฮิลดา · ยืน",
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-hilda-se-walk1",
+   "file": "assets/village-town/npc/hilda/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ชาวนาฮิลดา · เดิน",
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-hilda-nw-stand",
+   "file": "assets/village-town/npc/hilda/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC ชาวนาฮิลดา · ยืน",
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-hilda-nw-walk1",
+   "file": "assets/village-town/npc/hilda/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC ชาวนาฮิลดา · เดิน",
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-bryn-sw-stand",
+   "file": "assets/village-town/npc/bryn/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC บริน (โม่แป้ง) · ยืน",
+   "studioOwner": {
+    "id": "npc:bryn",
+    "name": "บริน (โม่แป้ง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-bryn-sw-walk1",
+   "file": "assets/village-town/npc/bryn/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC บริน (โม่แป้ง) · เดิน",
+   "studioOwner": {
+    "id": "npc:bryn",
+    "name": "บริน (โม่แป้ง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-bryn-ne-stand",
+   "file": "assets/village-town/npc/bryn/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC บริน (โม่แป้ง) · ยืน",
+   "studioOwner": {
+    "id": "npc:bryn",
+    "name": "บริน (โม่แป้ง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-bryn-ne-walk1",
+   "file": "assets/village-town/npc/bryn/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC บริน (โม่แป้ง) · เดิน",
+   "studioOwner": {
+    "id": "npc:bryn",
+    "name": "บริน (โม่แป้ง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-bryn-se-stand",
+   "file": "assets/village-town/npc/bryn/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC บริน (โม่แป้ง) · ยืน",
+   "studioOwner": {
+    "id": "npc:bryn",
+    "name": "บริน (โม่แป้ง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-bryn-se-walk1",
+   "file": "assets/village-town/npc/bryn/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC บริน (โม่แป้ง) · เดิน",
+   "studioOwner": {
+    "id": "npc:bryn",
+    "name": "บริน (โม่แป้ง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-bryn-nw-stand",
+   "file": "assets/village-town/npc/bryn/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC บริน (โม่แป้ง) · ยืน",
+   "studioOwner": {
+    "id": "npc:bryn",
+    "name": "บริน (โม่แป้ง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-bryn-nw-walk1",
+   "file": "assets/village-town/npc/bryn/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC บริน (โม่แป้ง) · เดิน",
+   "studioOwner": {
+    "id": "npc:bryn",
+    "name": "บริน (โม่แป้ง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-marta-sw-stand",
+   "file": "assets/village-town/npc/marta/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC มาร์ธา (เขากวางทอง) · ยืน",
+   "studioOwner": {
+    "id": "npc:marta",
+    "name": "มาร์ธา (เขากวางทอง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-marta-sw-walk1",
+   "file": "assets/village-town/npc/marta/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC มาร์ธา (เขากวางทอง) · เดิน",
+   "studioOwner": {
+    "id": "npc:marta",
+    "name": "มาร์ธา (เขากวางทอง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-marta-ne-stand",
+   "file": "assets/village-town/npc/marta/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC มาร์ธา (เขากวางทอง) · ยืน",
+   "studioOwner": {
+    "id": "npc:marta",
+    "name": "มาร์ธา (เขากวางทอง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-marta-ne-walk1",
+   "file": "assets/village-town/npc/marta/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC มาร์ธา (เขากวางทอง) · เดิน",
+   "studioOwner": {
+    "id": "npc:marta",
+    "name": "มาร์ธา (เขากวางทอง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-marta-se-stand",
+   "file": "assets/village-town/npc/marta/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC มาร์ธา (เขากวางทอง) · ยืน",
+   "studioOwner": {
+    "id": "npc:marta",
+    "name": "มาร์ธา (เขากวางทอง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-marta-se-walk1",
+   "file": "assets/village-town/npc/marta/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC มาร์ธา (เขากวางทอง) · เดิน",
+   "studioOwner": {
+    "id": "npc:marta",
+    "name": "มาร์ธา (เขากวางทอง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-marta-nw-stand",
+   "file": "assets/village-town/npc/marta/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC มาร์ธา (เขากวางทอง) · ยืน",
+   "studioOwner": {
+    "id": "npc:marta",
+    "name": "มาร์ธา (เขากวางทอง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-marta-nw-walk1",
+   "file": "assets/village-town/npc/marta/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC มาร์ธา (เขากวางทอง) · เดิน",
+   "studioOwner": {
+    "id": "npc:marta",
+    "name": "มาร์ธา (เขากวางทอง)",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-saf-sw-stand",
+   "file": "assets/village-town/npc/saf/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC หมอยาซาฟ · ยืน",
+   "studioOwner": {
+    "id": "npc:saf",
+    "name": "หมอยาซาฟ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-saf-sw-walk1",
+   "file": "assets/village-town/npc/saf/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC หมอยาซาฟ · เดิน",
+   "studioOwner": {
+    "id": "npc:saf",
+    "name": "หมอยาซาฟ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-saf-ne-stand",
+   "file": "assets/village-town/npc/saf/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC หมอยาซาฟ · ยืน",
+   "studioOwner": {
+    "id": "npc:saf",
+    "name": "หมอยาซาฟ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-saf-ne-walk1",
+   "file": "assets/village-town/npc/saf/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC หมอยาซาฟ · เดิน",
+   "studioOwner": {
+    "id": "npc:saf",
+    "name": "หมอยาซาฟ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-saf-se-stand",
+   "file": "assets/village-town/npc/saf/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC หมอยาซาฟ · ยืน",
+   "studioOwner": {
+    "id": "npc:saf",
+    "name": "หมอยาซาฟ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-saf-se-walk1",
+   "file": "assets/village-town/npc/saf/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC หมอยาซาฟ · เดิน",
+   "studioOwner": {
+    "id": "npc:saf",
+    "name": "หมอยาซาฟ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-saf-nw-stand",
+   "file": "assets/village-town/npc/saf/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC หมอยาซาฟ · ยืน",
+   "studioOwner": {
+    "id": "npc:saf",
+    "name": "หมอยาซาฟ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-saf-nw-walk1",
+   "file": "assets/village-town/npc/saf/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC หมอยาซาฟ · เดิน",
+   "studioOwner": {
+    "id": "npc:saf",
+    "name": "หมอยาซาฟ",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mother-sw-stand",
+   "file": "assets/village-town/npc/mother/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "usedIn": "NPC แม่ · ยืน",
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mother-sw-walk1",
+   "file": "assets/village-town/npc/mother/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC แม่ · เดิน",
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mother-ne-stand",
+   "file": "assets/village-town/npc/mother/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "usedIn": "NPC แม่ · ยืน",
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mother-ne-walk1",
+   "file": "assets/village-town/npc/mother/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC แม่ · เดิน",
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mother-se-stand",
+   "file": "assets/village-town/npc/mother/se-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "usedIn": "NPC แม่ · ยืน",
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mother-se-walk1",
+   "file": "assets/village-town/npc/mother/se-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC แม่ · เดิน",
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mother-nw-stand",
+   "file": "assets/village-town/npc/mother/nw-stand.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "usedIn": "NPC แม่ · ยืน",
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "npc-mother-nw-walk1",
+   "file": "assets/village-town/npc/mother/nw-walk1.webp",
+   "category": "allies",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "usedIn": "NPC แม่ · เดิน",
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   }
+  },
+  {
+   "id": "iron-fence2",
+   "file": "assets/objects/iron-fence2.webp",
+   "category": "tactics-props",
+   "status": "final",
+   "size": [
+    817,
+    627
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: iron-fence2",
+   "prompt": "",
+   "pivot": [
+    0.45825998508865506,
+    0.8907947162886524
+   ],
+   "mapW": 310,
+   "artRevision": "20261110-224630",
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.45825998508865506,
+     0.8907947162886524
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1,
+     1
+    ],
+    "flipX": false
+   }
+  },
+  {
+   "id": "iron-fence4",
+   "file": "assets/objects/iron-fence4.webp",
+   "category": "tactics-props",
+   "status": "final",
+   "size": [
+    1455,
+    941
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: iron-fence4",
+   "prompt": "",
+   "pivot": [
+    0.42899575935266904,
+    0.9451056116071047
+   ],
+   "mapW": 553,
+   "artRevision": "20261110-224703",
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.42899575935266904,
+     0.9451056116071047
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1,
+     1
+    ],
+    "flipX": false
+   }
   }
  ],
  "studioReviews": {
