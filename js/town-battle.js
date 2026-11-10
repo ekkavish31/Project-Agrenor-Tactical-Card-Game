@@ -19,11 +19,13 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.361';
+  const V = '98.368';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
   const MAPK = window.MapScale ? MapScale.get('battle', Q.get('biome') || 'grass') : 1;
+  let FP = 1, OFF = .5;   /* v98.368 · footprint of one unit in lattice cells (2 in village fights, 1 on battle-field.html) and where its centre sits from its anchor cell */
+  const setFP = () => { FP = (Q.has('fp') ? +Q.get('fp') : window.FieldOcc ? 1 : 2) > 1 ? 2 : 1; OFF = FP / 2 };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
   const MON = {
     bandit: { name: 'โจรป่า', hp: 34, iq: 2, move: 3, atk: 8, scale: 1, fx: 'sword', img: 'bandit', shove: true , el: 'earth' },
@@ -99,6 +101,7 @@
 
   /* ---------- arena ---------- */
   function build() {
+    setFP();
     const sq = locations.find(o => o.id === 'square') || locations[0], c = center(sq);
     const r = window.FieldR || +Q.get('r') || (GROUP.length + PARTY.length > 2 ? 7 : 5), cu = Math.floor(+Q.get('u') || c.u), cv = Math.floor(+Q.get('v') || c.v);
     const b = { u0: cu - r, v0: cv - r, u1: cu + r, v1: cv + r }, list = [];
@@ -113,7 +116,8 @@
       else if (COVER.includes(m)) k = 'cover';
       cells.set(c.u + ',' + c.v, k);
     });
-    const spot = (cu0, cv0) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.hypot(u - cu0, v - cv0); if (d < bd) { bd = d; best = { u, v } } } return best };
+    const okA = (u, v) => { for (let i = 0; i < FP; i++) for (let j = 0; j < FP; j++) if ((cells.get((u + i) + ',' + (v + j)) || 'blocked') === 'blocked') return false; return true };   /* the whole footprint must stand on open ground */
+    const spot = (cu0, cv0) => { let best = null, bd = 1e9; for (const [key, k] of cells) { const [u0, v0] = key.split(',').map(Number); if (k === 'blocked' || !okA(u0, v0)) continue; const [u, v] = key.split(',').map(Number), d = Math.hypot(u - cu0, v - cv0); if (d < bd) { bd = d; best = { u, v } } } return best };
     const gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
@@ -121,8 +125,8 @@
        (spacing 2 by king-move distance); only when the area is too tight does it fall back to 1, then 0 */
     const near = (o, sp0 = 2) => {   /* v98.249 · sp0 = the spacing we try first (king-move cells); big monsters ask for more so their pictures do not pile onto each other */
       const pts = [...taken].map(k => k.split(',').map(Number)); let best = null;
-      for (let sp = sp0; sp >= 0 && !best; sp--) { let bd = 1e9;
-        for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number); if (pts.some(([a, b]) => Math.max(Math.abs(u - a), Math.abs(v - b)) < sp)) continue;
+      for (let sp = Math.max(sp0, FP); sp >= (FP > 1 ? FP : 0) && !best; sp--) { let bd = 1e9;
+        for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number); if (!okA(u, v)) continue; if (pts.some(([a, b]) => Math.max(Math.abs(u - a), Math.abs(v - b)) < sp)) continue;
           const d = Math.hypot(u - o.u, v - o.v) + Math.random() * .6; if (d < bd) { bd = d; best = { u, v } } } }
       if (best) taken.add(best.u + ',' + best.v); return best };
     const sibWeapon = () => { try { return Q.get('sibw') || window.top.s.village.sibGear?.kind || undefined } catch (e) { return Q.get('sibw') || undefined } };   /* v98.332 · the forged sword of the follower */
@@ -140,13 +144,13 @@
       return null })();
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
-    st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
+    st = FB.create({ fp: FP, bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
       hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', weapon: HPRO.weapon || 'knife', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
     if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
     for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
-    for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir; { const o = u.side === 'monster' ? FB.hero(st) : FB.monster(st), du = o.u - u.u, dv = o.v - u.v; u.frontDir = du >= dv ? 'SE' : 'SW'; u.idle0 = { u: u.u, v: u.v, face: u.face } } }
+    for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir; { const o = u.side === 'monster' ? FB.hero(st) : FB.monster(st), du = o.u - u.u, dv = o.v - u.v; u.frontDir = du >= dv ? 'SE' : 'SW'; u.idle0 = { u: u.u, v: u.v, face: u.face } } }
     /* v97.08 · same-named enemies get a number (โจรป่า 1, โจรป่า 2 …) so the queue, the list and the log tell them apart */
     { const n = {}, k = {}; for (const u of FB.monsters(st)) n[u.name] = (n[u.name] || 0) + 1; for (const u of FB.monsters(st)) if (n[u.name] > 1) { k[u.name] = (k[u.name] || 0) + 1; u.label = u.name + ' ' + k[u.name] } for (const u of FB.monsters(st)) if (u.label) { u.name = u.label; delete u.label } }
     if (Q.get('imm') === '1') for (const u of st.units) if (u.side === 'hero' && (u.id === 'hero' || u.key === 'sib')) u.immortal = true;   /* v98.331 · prologue tutorials: HP can drop, never below 1 */
@@ -194,7 +198,7 @@
       for (const k of Object.keys(sn)) if (!['units', 'active', 'deck', 'arena', 'drawn', 'cur'].includes(k)) st[k] = sn[k];
       if (sn.deck) Object.assign(st.deck, sn.deck);
       st.active = st.units.find(u => u.id === sn.active) || st.units[0]; st.drawn = [];
-      for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.walking = false; if (['windup', 'strike', 'guard', 'hit'].includes(u.pose)) u.pose = 'idle' }
+      for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.walking = false; if (['windup', 'strike', 'guard', 'hit'].includes(u.pose)) u.pose = 'idle' }
       for (const g of ['movement', 'combat']) for (const c of st.deck[g]?.hand || []) seenUids.add(c.uid);
       if (rec.coach) coachState.i = rec.coach; return true;
     } catch (e) { return false }
@@ -725,7 +729,7 @@
   function noteEn(notes) { return notes.map(n => n === 'คริติคอล' ? '' : n.startsWith('กำบัง') ? 'COVER −30%' : n.startsWith('ป้องกัน') ? 'GUARD ' + n.replace(/[^0-9−-]/g, '') : n).filter(Boolean).join(' · ') }
   /* dive: an arc through the air to the cell next to the target */
   function leapAnim(u, to) {
-    return new Promise(res => { const f = { u: u.vu, v: u.vv }, t1 = { u: to.u + .5, v: to.v + .5 }, t0 = performance.now(), dur = 380; u.dir = dirTo({ u: f.u, v: f.v }, { u: t1.u, v: t1.v });
+    return new Promise(res => { const f = { u: u.vu, v: u.vv }, t1 = { u: to.u + OFF, v: to.v + OFF }, t0 = performance.now(), dur = 380; u.dir = dirTo({ u: f.u, v: f.v }, { u: t1.u, v: t1.v });
       const tick = () => { const e = Math.min(1, (performance.now() - t0) / dur); u.vu = f.u + (t1.u - f.u) * e; u.vv = f.v + (t1.v - f.v) * e; u.lift = Math.sin(e * Math.PI) * 46; if (e < 1) requestAnimationFrame(tick); else { u.lift = 0; res() } }; tick() });
   }
   const dirSign = (a, b) => (project(b.vu, b.vv).x >= project(a.vu, a.vv).x ? 1 : -1);
@@ -914,7 +918,7 @@
       else if (s.type === 'heal') { s.unit.pose = 'strike'; fx('heal', s.target, s.unit, { color: '#7fe08a' }); impact(s.target, 'heal', false); s.target.flashUntil = 0; floatText(s.target, '+' + s.heal, '#7fe08a'); s.target.shown = s.target.hp; hudSync(); await wait(650); s.unit.pose = 'idle' }
       else if (s.type === 'hold') { s.unit.pose = 'guard'; setTimeout(() => { if (s.unit.pose === 'guard') s.unit.pose = 'idle' }, 700) }
     }
-    for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; if (u.face && u.hp > 0) u.dir = u.face }   /* v97.14: a unit that turned at the end (clever monsters) shows it */
+    for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; if (u.face && u.hp > 0) u.dir = u.face }   /* v97.14: a unit that turned at the end (clever monsters) shows it */
   }
   async function endHeroTurn() {
     if (busy || st.turn !== 'hero' || st.outcome || facing) return;
@@ -1005,9 +1009,12 @@
       ${sk ? `<button data-a="skill" ${st.acted || u.cd ? 'disabled' : ''} title="${esc(sk.name)}">✦ ${esc(sk.name)}${u.cd ? ' (' + u.cd + ')' : ''}</button>` : ''}
       <button data-a="undo" ${st.acted || !walks.length ? 'disabled' : ''}>↶ ย้อนเดิน</button><button data-a="auto" title="ให้ AI เล่นคนนี้แทน (สลับกลับได้ที่แผงซ้าย)">🤖 AI เล่นแทน</button><button data-a="end" class="ok">⏭ จบเทิร์น <small>Space</small></button>`;
   }
+  /* v98.368 · pointer → unit anchor: the nearest lattice corner (fp 2) or the cell under the pointer (fp 1); a unit's block is the cells u..u+FP-1 */
+  const anchorAt = g => FP > 1 ? { u: Math.round(g.u) - FP / 2, v: Math.round(g.v) - FP / 2 } : { u: Math.floor(g.u), v: Math.floor(g.v) };
+  const inBlock = (u, g) => g.u >= u.u && g.u < u.u + FP && g.v >= u.v && g.v < u.v + FP;
   function allyClick(wp) {
-    const g = inv(wp.x, wp.y), to = { u: Math.floor(g.u), v: Math.floor(g.v) };
-    const m = FB.monsters(st).find(u => u.hp > 0 && ((u.u === to.u && u.v === to.v) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
+    const g = inv(wp.x, wp.y), to = anchorAt(g);
+    const m = FB.monsters(st).find(u => u.hp > 0 && (inBlock(u, g) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
     if (m) return allyEnemy(m);
     pendAlly = null; heroMove(to);
   }
@@ -1058,8 +1065,8 @@
   function click(wp) {
     if (st && st.turn === 'ally' && !busy && !st.outcome && !facing) return allyClick(wp);
     if (!st || busy || st.outcome || st.turn !== 'hero' || discardMode || facing) return;
-    const g = inv(wp.x, wp.y), to = { u: Math.floor(g.u), v: Math.floor(g.v) };
-    const m = FB.monsters(st).find(u => u.hp > 0 && ((u.u === to.u && u.v === to.v) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
+    const g = inv(wp.x, wp.y), to = anchorAt(g);
+    const m = FB.monsters(st).find(u => u.hp > 0 && (inBlock(u, g) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
     closePick();
     if (m) { if (openAttackPick(m)) return; onEnemy(m); return }
     pend = null; markAuto(); if (openMovePick(to)) return; walkTo(to);
@@ -1092,7 +1099,7 @@
     const cnt = {}; for (const c of w.cards) cnt[c.id] = (cnt[c.id] || 0) + 1; const uniq = w.cards.filter((c, i) => w.cards.findIndex(x => x.id === c.id) === i);
     const rows = uniq.map((c, i) => ({ name: '👣 ' + cardName('movement', c.id) + (cnt[c.id] > 1 ? ' ×' + cnt[c.id] : ''), badge: 'เดิน +' + c.move, note: 'ใช้ ' + c.cost + ' แต้ม · แรง ' + c.stamina, best: i === 0,
       run: async () => { const b = handBtn('movement', c.uid); if (!b) return; await cardClick(b); await heroMove(to) } }));
-    showPick('ใช้ไพ่เดินใบไหน?', 'ถึงช่องนี้ได้ ' + rows.length + ' ใบ', rows, to.u + .5, to.v + .5); return true;
+    showPick('ใช้ไพ่เดินใบไหน?', 'ถึงช่องนี้ได้ ' + rows.length + ' ใบ', rows, to.u + OFF, to.v + OFF); return true;
   }
   /* ---------- v97.08 · one-click play: the game picks the card ----------
      click an enemy: it becomes the target and the best card for it shows (gold); click it again to play — walking next to it first
@@ -1127,7 +1134,7 @@
   function undoWalk() {
     if (busy || !st || (st.turn !== 'hero' && st.turn !== 'ally') || st.outcome) return;
     if (st.acted || !walks.length) { flash(st.acted ? 'โจมตีแล้ว ย้อนการเดินไม่ได้' : 'ยังไม่ได้เดิน'); return }
-    const w = walks.pop(), h = FB.actor(st); h.u = w.from.u; h.v = w.from.v; h.vu = h.u + .5; h.vv = h.v + .5; h.face = w.face; h.dir = w.dir; st.mp += w.cost;
+    const w = walks.pop(), h = FB.actor(st); h.u = w.from.u; h.v = w.from.v; h.vu = h.u + OFF; h.vv = h.v + OFF; h.face = w.face; h.dir = w.dir; st.mp += w.cost;
     pend = null; sfx('cast', .2); floatText(h, 'UNDO', '#bfe8ff', true); refresh();
   }
   /* ---------- v97.08 · FFT end of turn: pick where the hero faces (hits from behind ×1.2, from the side ×1.1) ---------- */
@@ -1221,7 +1228,9 @@
     }
     return out;
   }
-  function poly(g, u, v) { if (window.FieldCellPoly) return FieldCellPoly(g, u, v); const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, F = window.projectFlat || project, P = (x, y) => { const q = F(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }
+  function poly(g, u, v) { if (FP > 1) { u += (FP - 1) / 2; v += (FP - 1) / 2 } return polyC(g, u, v) }   /* overlays on anchors: a one-cell diamond centred on the unit's centre */
+  function polyF(g, u, v) { if (FP < 2) return polyC(g, u, v); const P = (x, y) => project(x, y), a = P(u, v), b = P(u + FP, v), c = P(u + FP, v + FP), d = P(u, v + FP); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }   /* the unit's whole footprint */
+  function polyC(g, u, v) { if (window.FieldCellPoly) return FieldCellPoly(g, u, v); const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, F = window.projectFlat || project, P = (x, y) => { const q = F(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }
   let last = 0;
   function step(t) {
     const dt = Math.min(.1, Math.max(0, t - last) / 1000 || 0); last = t;
@@ -1229,7 +1238,7 @@
     for (let k = anims.length - 1; k >= 0; k--) {
       const a = anims[k], u = a.unit, tgt = a.pts[a.i];
       if (!tgt) { anims.splice(k, 1); a.res(); continue }
-      const tu = tgt.u + .5, tv = tgt.v + .5, du = tu - u.vu, dv = tv - u.vv, len = Math.hypot(du, dv), sp = dt * a.speed;
+      const tu = tgt.u + OFF, tv = tgt.v + OFF, du = tu - u.vu, dv = tv - u.vv, len = Math.hypot(du, dv), sp = dt * a.speed;
       if (!a.slide) { u.walking = true; if (len > .01) u.dir = Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'SE' : 'NW') : (dv > 0 ? 'SW' : 'NE') }
       if (len <= sp) { u.vu = tu; u.vv = tv; a.i++; if (!a.slide) sfx('step', .3) } else { u.vu += du / len * sp; u.vv += dv / len * sp }
     }
@@ -1465,9 +1474,9 @@
   /* v98.324 · selection frames / hover corners sit on the ground: when taller ground stands in front of their cell they are mostly hidden (faint), they no longer glow through a cliff */
   const SEL_OUTLINE = !/[?&]selglow=0/.test(location.search);
   let HID_ALL = null; const behind = (u, v) => !!HID_ALL && HID_ALL.has(u + ',' + v);
-  function cellFrame(g, name, u, v, k = 1) { let r = false; const f = () => { r = cellFrame0(g, name, u, v, k) }; window.FieldOcc ? FieldOcc.draw(g, u, v, f) : f(); return r }
+  function cellFrame(g, name, u, v, k = FP) { let r = false; const f = () => { r = cellFrame0(g, name, u, v, k) }; window.FieldOcc ? FieldOcc.draw(g, u, v, f) : f(); return r }
   function cellFrame0(g, name, u, v, k = 1) { if (CODE_ART) { const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return GroundArtCode.frame(g, name, p.x, p.y, w, w * .56, performance.now()) } const G = window.GroundArt; if (!G) return false; const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) }
-  function footRing(g, unit, foe, t) { if (CODE_ART) { const p = project(unit.vu, unit.vv); GroundArtCode.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t, RING_STYLE); return true } const G = window.GroundArt; if (!G) return false; const p = project(unit.vu, unit.vv); return G.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98, t) }
+  function footRing(g, unit, foe, t) { if (CODE_ART) { const p = project(unit.vu, unit.vv); GroundArtCode.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98 * FP, t, RING_STYLE); return true } const G = window.GroundArt; if (!G) return false; const p = project(unit.vu, unit.vv); return G.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98 * FP, t) }
   /* v98.360 · draw(g, t, mode): the village page calls it twice per frame — 'ground' BEFORE its buildings/props are drawn (the grid, its colours and the markers lie on the ground, so every object stands over them
      and the grid shows through only where the picture is transparent) and 'rest' after (units, effects, HUD overlays). battle-field.html calls it once with no mode (it clips the ground overlays itself, FieldOcc). */
   function draw(g, t0, mode) {
@@ -1483,17 +1492,17 @@
     for (const [key, k] of cells) {
       const [u, v] = key.split(',').map(Number), col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k], lines = GRID && !hid.has(key);
       if (!col && !lines) continue;
-      OV(u, v, () => { poly(g, u, v); if (col) { g.fillStyle = col; g.fill() } if (lines) { g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke() } });
+      OV(u, v, () => { polyC(g, u, v); if (col) { g.fillStyle = col; g.fill() } if (lines) { g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke() } });
     }
     if (inspectMap && !busy && !EDIT) { const foeI = inspectU.side === 'monster'; for (const e of inspectMap.values()) { if (e.cost === 0) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = foeI ? 'rgba(236,96,72,.30)' : 'rgba(150,200,255,.28)'; g.fill(); g.strokeStyle = foeI ? 'rgba(255,170,150,.9)' : 'rgba(200,225,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.stroke(); g.setLineDash([]) }) } }   /* next-turn cells of the picked fighter */
     if (farMap && !busy && !EDIT) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }) }   /* yellow = needs the farthest move card */
     if (reachMap && !busy && !EDIT) for (const e of reachMap.values()) { if (e.cost === 0) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }) }
     /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
-    if (st.flee?.cells && !st.outcome) for (const c of st.flee.cells) { const pul = .5 + .5 * Math.sin(t * .005); OV(c.u, c.v, () => { poly(g, c.u, c.v); g.fillStyle = `rgba(90,190,255,${.26 + .2 * pul})`; g.fill(); g.strokeStyle = '#bfe8ff'; g.lineWidth = 2.5; g.stroke() }) }
-    if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); poly(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
+    if (st.flee?.cells && !st.outcome) for (const c of st.flee.cells) { const pul = .5 + .5 * Math.sin(t * .005); OV(c.u, c.v, () => { polyC(g, c.u, c.v); g.fillStyle = `rgba(90,190,255,${.26 + .2 * pul})`; g.fill(); g.strokeStyle = '#bfe8ff'; g.lineWidth = 2.5; g.stroke() }) }
+    if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); polyC(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
       const p = project(c.u + .5, c.v + .5); g.font = '16px AgThai,system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(esc_ ? '⇲' : '🚩', p.x, p.y + 5 - 3 * pul) }
     /* v94.02 · height of every cell you can reach (1–3; 0 = ground) */
-    if (reachMap && !busy && window.FieldHeight) { g.font = '700 11px AgThai,system-ui'; g.textAlign = 'center'; for (const e of reachMap.values()) { const L = FB.lv(st, e.u, e.v); if (!L) continue; const p = project(e.u + .5, e.v + .5); g.fillStyle = 'rgba(10,20,40,.75)'; g.beginPath(); g.arc(p.x, p.y, 8, 0, 7); g.fill(); g.fillStyle = '#cfe4ff'; g.fillText('▲' + L, p.x, p.y + 4) } }
+    if (reachMap && !busy && window.FieldHeight) { g.font = '700 11px AgThai,system-ui'; g.textAlign = 'center'; for (const e of reachMap.values()) { const L = FB.lv(st, e.u, e.v); if (!L) continue; const p = project(e.u + OFF, e.v + OFF); g.fillStyle = 'rgba(10,20,40,.75)'; g.beginPath(); g.arc(p.x, p.y, 8, 0, 7); g.fill(); g.fillStyle = '#cfe4ff'; g.fillText('▲' + L, p.x, p.y + 4) } }
     if (pushShow && !busy) { poly(g, pushShow.u, pushShow.v); g.fillStyle = pushShow.stuck ? 'rgba(160,160,160,.35)' : pushShow.dmg ? 'rgba(255,60,40,.45)' : 'rgba(255,200,80,.35)'; g.fill(); const p = project(pushShow.u + .5, pushShow.v + .5); g.font = '800 13px AgThai,system-ui'; g.textAlign = 'center'; g.fillStyle = '#000a'; g.fillRect(p.x - 48, p.y - 30, 96, 18); g.fillStyle = pushShow.dmg ? '#ffb0a0' : '#ffe2a8'; g.fillText(pushShow.stuck ? 'ผลักไม่ได้' : pushShow.dmg ? 'ตก ' + pushShow.drop + ' ระดับ −' + pushShow.dmg : 'ไม่ตก', p.x, p.y - 17) }
     const tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
     /* hovering a combat card: its reach around the hero in red */
@@ -1501,14 +1510,14 @@
     if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; OV(u, v, () => { poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }) }
     /* enemies some playable card can reach: red; the chosen target: gold */
     if (!busy && !EDIT && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range + (FB.cardRule(c.id).range > 1 ? h.rangePlus || 0 : 0) : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
-    if (tg) { if (!(cellFrame(g, 'red', tg.u, tg.v) && footRing(g, tg, true, t))) { poly(g, tg.u, tg.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3.5; g.setLineDash([6, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
-    for (const a of FB.allies(st)) if (a.hp > 0) { poly(g, a.u, a.v); g.strokeStyle = 'rgba(127,200,160,.7)'; g.lineWidth = 1.5; g.stroke() }
-    if (!(st.turn === 'hero' && !st.outcome && footRing(g, h, false, t))) { poly(g, h.u, h.v); g.strokeStyle = '#6fd18a'; g.lineWidth = 2; g.stroke() }
+    if (tg) { if (!(cellFrame(g, 'red', tg.u, tg.v) && footRing(g, tg, true, t))) { polyF(g, tg.u, tg.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3.5; g.setLineDash([6, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
+    for (const a of FB.allies(st)) if (a.hp > 0) { polyF(g, a.u, a.v); g.strokeStyle = 'rgba(127,200,160,.7)'; g.lineWidth = 1.5; g.stroke() }
+    if (!(st.turn === 'hero' && !st.outcome && footRing(g, h, false, t))) { polyF(g, h.u, h.v); g.strokeStyle = '#6fd18a'; g.lineWidth = 2; g.stroke() }
     if (padOn && padCur && !busy && st.turn === 'hero' && !st.outcome) { const pu = .55 + .45 * Math.sin(t * .008); poly(g, padCur.u, padCur.v); g.fillStyle = `rgba(255,255,255,${.12 + .1 * pu})`; g.fill(); g.strokeStyle = `rgba(255,255,255,${.7 + .3 * pu})`; g.lineWidth = 3; g.stroke() }   /* v98.21 · stick / pad cursor */
     /* v97.08 · where everyone faces: a small wedge on the ground in front of each unit (hits from behind ×1.2, side ×1.1) */
     for (const u of st.units) { const F = u.hp > 0 && FB.FACE_V[u.face]; if (!F) continue; const [fu, fv] = F, P = (a, b) => project(u.vu + fu * a - fv * b, u.vv + fv * a + fu * b), tip = P(.62, 0), l = P(.34, .17), r = P(.34, -.17);
       g.beginPath(); g.moveTo(tip.x, tip.y); g.lineTo(l.x, l.y); g.lineTo(r.x, r.y); g.closePath(); g.fillStyle = u.side === 'monster' ? 'rgba(255,120,95,.85)' : u === h ? 'rgba(130,230,150,.9)' : 'rgba(150,215,190,.8)'; g.fill(); g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 1; g.stroke() }
-    if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { if (!footRing(g, st.cur, false, t)) { poly(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() } }
+    if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { if (!footRing(g, st.cur, false, t)) { polyF(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() } }
     if (pendAlly?.to && !busy) { poly(g, pendAlly.to.u, pendAlly.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pendAlly.to.u, pendAlly.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
     if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pend.to.u, pend.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
     if (!EDIT && typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; OV(hoverCell.u, hoverCell.v, () => G?.corners(g, p.x, p.y, w, w * .56, t)) }   /* v98.282 · glowing corners on the cell under the mouse */
@@ -1633,7 +1642,7 @@
   /* the page's own pointerup is replaced by TownUX, so the battle listens for a plain click itself (no drag = click) */
   { let down = null; cv.addEventListener('pointerdown', e => { if (e.button === 0) down = { x: e.clientX, y: e.clientY } }, true);
     /* v98.358 · pointing at a character / monster: white edge + a short info window; clicking marks it with the grey crystal */
-    const unitAt = wp => { let best = null, by = -1e9; for (const u of st.units) { if (u.hp <= 0 || u.deadAt) continue; const g0 = inv(wp.x, wp.y), p = project(u.vu, u.vv); const same = Math.floor(g0.u) === u.u && Math.floor(g0.v) === u.v, box = Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5; if ((same || box) && p.y > by) { best = u; by = p.y } } return best };
+    const unitAt = wp => { let best = null, by = -1e9; for (const u of st.units) { if (u.hp <= 0 || u.deadAt) continue; const g0 = inv(wp.x, wp.y), p = project(u.vu, u.vv); const same = inBlock(u, g0), box = Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5; if ((same || box) && p.y > by) { best = u; by = p.y } } return best };
     cv.addEventListener('pointermove', e => { if (!st || e.pointerType === 'touch') return; const u = unitAt(world(e)); if (u !== hoverU) { hoverU = u; cv.style.cursor = u ? 'pointer' : ''; inspectSync() } });
     cv.addEventListener('pointerleave', () => { if (hoverU) { hoverU = null; inspectSync() } });
     cv.addEventListener('pointerdown', e => { if (e.button !== 0 || !st) return; const u = unitAt(world(e)); if (u && u !== pickU) { pickU = u; sfx('cast', .15); inspectSync() } else if (!u && pickU && !hoverU) { /* clicking the ground keeps the mark: it clears when that unit acts or falls */ } }, true);
@@ -1657,7 +1666,7 @@
     const nu = padCur.u + su, nv = padCur.v + sv; if (cells.has(nu + ',' + nv)) padCur = { u: nu, v: nv }; padOn = true;
   }
   const padEnemyAt = c => c && FB.monsters(st).find(u => u.hp > 0 && Math.floor(u.u) === c.u && Math.floor(u.v) === c.v);
-  function padConfirm() { if (!padReady()) return; if (!padCur) padCur = padHeroCell(); padOn = true; const p = project(padCur.u + .5, padCur.v + .5); click({ x: p.x, y: p.y - 4 }) }
+  function padConfirm() { if (!padReady()) return; if (!padCur) padCur = padHeroCell(); padOn = true; const p = project(padCur.u + OFF, padCur.v + OFF); click({ x: p.x, y: p.y - 4 }) }
   function padTarget(d) {
     if (!padReady()) return; const ms = FB.monsters(st).filter(m => m.hp > 0); if (!ms.length) return;
     const i = ms.findIndex(m => m.id === (pend?.id || st.target)), m = ms[i < 0 ? (d < 0 ? ms.length - 1 : 0) : (i + (d < 0 ? ms.length - 1 : 1)) % ms.length]; pend = null; padOn = true; padCur = { u: Math.floor(m.u), v: Math.floor(m.v) }; onEnemy(m);

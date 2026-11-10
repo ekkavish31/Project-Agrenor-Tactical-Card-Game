@@ -27,7 +27,9 @@
     blocked: { cost: Infinity, name: 'กีดขวาง' }
   };
   const key = (u, v) => u + ',' + v, DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-  const dist = (a, b) => Math.abs(a.u - b.u) + Math.abs(a.v - b.v);
+  /* v98.368 · footprint (st.fp = 2 in village fights, docs/TODO.md §17): a unit's (u,v) is the top-left cell of its fp×fp block; two blocks 'touch' at anchor distance fp,
+     so the gap-aware distance below keeps every range number meaning what it always did (touching = 1, one cell between = 2 …) */
+  const dist = (a, b) => { const f = Math.min(a.fp || 1, b.fp || 1), du = Math.abs(a.u - b.u), dv = Math.abs(a.v - b.v); return f > 1 ? Math.max(du - (f - 1), 0) + Math.max(dv - (f - 1), 0) : du + dv };
   const alive = u => !!u && u.hp > 0;
 
   function create(o) {
@@ -41,6 +43,7 @@
       ],
       turn: 'hero', turns: 1, mp: 0, acted: false, outcome: null, log: []
     };
+    if (o.fp > 1) { st.fp = o.fp | 0; for (const u of st.units) u.fp = st.fp }   /* v98.368 */
     st.mp = st.units[0].move; if (o.objective) st.obj = o.objective;
     if (o.ct) { st.ct = true;   /* the hero first, then his friends, then the foes */
       const r = o.rng || Math.random; for (const u of st.units) { u.speed = u.speed || (u.id === 'hero' ? 8 : 8); u.ct = u.id === 'hero' ? 100 : u.side === 'hero' ? 55 + Math.floor(r() * 40) : Math.floor(r() * u.speed * 5) } st.active = st.units[0] }
@@ -128,10 +131,14 @@
     else if (o?.type === 'escape' && o.cells?.some(c => c.u === hero(st).u && c.v === hero(st).v)) st.outcome = 'win';
     else if (st.flee?.cells?.some(c => c.u === hero(st).u && c.v === hero(st).v)) st.outcome = 'flee';   /* v98.357 · the ONLY way to leave a fight early: reach the marked flee area */
     return st.outcome }
-  const inside = (st, u, v) => u >= st.bounds.u0 && u <= st.bounds.u1 && v >= st.bounds.v0 && v <= st.bounds.v1;
-  function kind(st, u, v) { if (!inside(st, u, v)) return 'blocked'; const k = st.kindAt(u, v); return KINDS[k] ? k : 'normal' }
-  const cost = (st, u, v) => KINDS[kind(st, u, v)].cost;
-  function free(st, u, v, self) { return inside(st, u, v) && cost(st, u, v) < Infinity && !st.units.some(x => x !== self && alive(x) && x.u === u && x.v === v) }
+  const insideCell = (st, u, v) => u >= st.bounds.u0 && u <= st.bounds.u1 && v >= st.bounds.v0 && v <= st.bounds.v1;
+  /* an anchor is valid when the whole fp×fp block lies inside the arena */
+  const inside = (st, u, v) => { const f = st.fp || 1; return insideCell(st, u, v) && insideCell(st, u + f - 1, v + f - 1) };
+  function kind(st, u, v) { if (!insideCell(st, u, v)) return 'blocked'; const k = st.kindAt(u, v); return KINDS[k] ? k : 'normal' }
+  /* a block costs as much as its worst cell (any blocked cell blocks it) */
+  const cost = (st, u, v) => { const f = st.fp || 1; if (f < 2) return KINDS[kind(st, u, v)].cost; let c = 0; for (let i = 0; i < f; i++) for (let j = 0; j < f; j++) c = Math.max(c, KINDS[kind(st, u + i, v + j)].cost); return c };
+  const overlap = (st, x, u, v) => { const f = st.fp || 1; return Math.abs(x.u - u) < f && Math.abs(x.v - v) < f };
+  function free(st, u, v, self) { return inside(st, u, v) && cost(st, u, v) < Infinity && !st.units.some(x => x !== self && alive(x) && overlap(st, x, u, v)) }
   /* ---------- heights (v94) ---------- */
   const lv = (st, u, v) => (st.levelAt ? st.levelAt(u, v) || 0 : 0);
   /* may `unit` step from (fu,fv) onto (tu,tv)? (unit null = any walker without the climb card) */
@@ -768,6 +775,6 @@
     const cards = []; st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (!m || h.stamina < m.stamina) return; const e = reach(st, h, st.mp + m.move).get(key); if (e && e.cost > 0) cards.push({ index: i, uid: c.uid, id: c.id, name: m.name, move: m.move, stamina: m.stamina, cost: e.cost }) });
     return { cards };
   }
-  const api = { attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { free, inside, insideCell, cost, overlap, attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
