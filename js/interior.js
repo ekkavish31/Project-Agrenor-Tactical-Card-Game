@@ -488,19 +488,24 @@
     for (const [who, txt] of sc.lines) { const a = people.get(who); if (!a || a.leaving) break; const o = sc.lines.map(l => people.get(l[0])).find(x => x && x !== a); if (o) a.face = faceOf(o.u - a.u, o.v - a.v); a.bubble = { txt: fill(txt), until: performance.now() + 3400 }; await wait(3000) }
     scenePlaying = false;
   }
+  const ROOM_ZOOM = 1.3;   /* v98.379 · +30 % room zoom */
   function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
-    const w = (R.W + R.D) * HW, h = (R.W + R.D) * HH + WALL_H + 40; Z = Math.min(1.6, Math.max(.6, Math.min((W - (W < 760 ? 20 : 300)) / w, (H - 200) / h)));
+    const w = (R.W + R.D) * HW, h = (R.W + R.D) * HH + WALL_H + 40; Z = Math.min(1.6, Math.max(.6, Math.min((W - (W < 760 ? 20 : 300)) / w, (H - 200) / h))) * ROOM_ZOOM;   /* v98.379 · rooms are shown 30 % closer; the camera follows the hero (followCam) */
     const c = P(R.W / 2, R.D / 2); CX = (W < 760 ? W / 2 : W / 2 + 120) - c.x * Z; CY = H / 2 + 20 - c.y * Z + WALL_H * Z * .35;
-    if (KIND === 'farm') { Z = W < 760 ? .8 : 1.05; followCam(true) } }
+    if (KIND === 'farm') { Z = W < 760 ? .8 : 1.05 } followCam(true) }
   /* v97.83 · the farm is bigger than the screen: the camera follows the hero (snap on resize, glide otherwise) */
-  function followCam(snap) { const p = P(hero.vu, hero.vv), tx = (W < 760 ? W / 2 : W / 2 + 120) - p.x * Z, ty = H / 2 + 30 - p.y * Z; if (snap) { CX = tx; CY = ty } else { CX += (tx - CX) * .08; CY += (ty - CY) * .08 } }
+  function followCam(snap) { const p = P(hero.vu, hero.vv); let tx = (W < 760 ? W / 2 : W / 2 + 120) - p.x * Z, ty = H / 2 + 30 - p.y * Z;
+    if (KIND !== 'farm' && R) {   /* a room: follow the hero but never show empty space beyond the room (when the room is smaller than the screen it stays centred) */
+      const c = [P(0, 0), P(R.W, 0), P(0, R.D), P(R.W, R.D)], x0 = Math.min(...c.map(q => q.x)), x1 = Math.max(...c.map(q => q.x)), y0 = Math.min(...c.map(q => q.y)) - WALL_H, y1 = Math.max(...c.map(q => q.y)) + 30, L = W < 760 ? 10 : 300, Rr = W - 10;
+      const clamp = (v, lo, hi) => lo > hi ? (lo + hi) / 2 : Math.max(lo, Math.min(hi, v)); tx = clamp(tx, Rr - x1 * Z, L - x0 * Z); ty = clamp(ty, H - 10 - y1 * Z, 10 - y0 * Z) }
+    if (snap) { CX = tx; CY = ty } else { CX += (tx - CX) * .08; CY += (ty - CY) * .08 } }
   addEventListener('resize', resize);
   function frame(t) {
     requestAnimationFrame(frame);
     const dt = Math.min(.1, (t - last) / 1000 || .016); last = t;
     if (!document.hidden && shown) window.WorldState?.tick(dt);   // v94: the one game clock keeps running indoors
     if (t > syncAt) { syncAt = t + 1000; syncPeople(false); hudSync() }
-    if (KIND === 'farm') { if (t > (frame.herdAt || 0)) { frame.herdAt = t + 700; syncHerd() } stepHerd(dt); followCam(false) }
+    if (KIND === 'farm') { if (t > (frame.herdAt || 0)) { frame.herdAt = t + 700; syncHerd() } stepHerd(dt) } followCam(false)
     if (!(window.TouchControls?.moving?.() && !modalOpen && joyHero(dt))) stepActor(hero, dt, 3.6); if (!hero.path.length && hero.then) { const f = hero.then; hero.then = null; f() }
     for (const [id, a] of people) {
       stepActor(a, dt, 2.4);
