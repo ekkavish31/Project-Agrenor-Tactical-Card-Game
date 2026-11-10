@@ -101646,6 +101646,1754 @@
     512
    ],
    "transparent": true
+  },
+  {
+   "id": "enemy-anim-pumpkin-se-idle",
+   "subject": "ฟักทองในไร่ · ยืน/หายใจ · SE",
+   "file": "assets/enemies/animations/pumpkin/se-idle.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkin",
+   "pose": "idle",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     650,
+     650
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkin-se-hit",
+   "subject": "ฟักทองในไร่ · สะดุ้งเมื่อโดนโจมตี · SE",
+   "file": "assets/enemies/animations/pumpkin/se-hit.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkin",
+   "pose": "hit",
+   "view": "SE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     400
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkin-se-down",
+   "subject": "ฟักทองในไร่ · ล้ม · SE",
+   "file": "assets/enemies/animations/pumpkin/se-down.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkin",
+   "pose": "down",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     240,
+     360
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkin-se-loot",
+   "subject": "ฟักทองในไร่ · ผลฟักทองให้เก็บ (หลังล้ม) · SE",
+   "file": "assets/enemies/animations/pumpkin/se-loot.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkin",
+   "pose": "loot",
+   "view": "SE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     1000
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkin-ne-idle",
+   "subject": "ฟักทองในไร่ · ยืน/หายใจ · NE",
+   "file": "assets/enemies/animations/pumpkin/ne-idle.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkin",
+   "pose": "idle",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     650,
+     650
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkin-ne-hit",
+   "subject": "ฟักทองในไร่ · สะดุ้งเมื่อโดนโจมตี · NE",
+   "file": "assets/enemies/animations/pumpkin/ne-hit.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkin",
+   "pose": "hit",
+   "view": "NE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     400
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkin-ne-down",
+   "subject": "ฟักทองในไร่ · ล้ม · NE",
+   "file": "assets/enemies/animations/pumpkin/ne-down.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkin",
+   "pose": "down",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     240,
+     360
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkin-ne-loot",
+   "subject": "ฟักทองในไร่ · ผลฟักทองให้เก็บ (หลังล้ม) · NE",
+   "file": "assets/enemies/animations/pumpkin/ne-loot.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkin",
+   "pose": "loot",
+   "view": "NE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     1000
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-se-idle",
+   "subject": "บอสฟักทอง · ยืน/หายใจ · SE",
+   "file": "assets/enemies/animations/pumpkinBoss/se-idle.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "idle",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     650,
+     650
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-se-walk",
+   "subject": "บอสฟักทอง · เดิน · SE",
+   "file": "assets/enemies/animations/pumpkinBoss/se-walk.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "walk",
+   "view": "SE",
+   "size": [
+    2048,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 4,
+    "rows": 1,
+    "frames": 4,
+    "timings": [
+     130,
+     130,
+     130,
+     130
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-se-windup",
+   "subject": "บอสฟักทอง · เตรียมโจมตี · SE",
+   "file": "assets/enemies/animations/pumpkinBoss/se-windup.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "windup",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     260,
+     240
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-se-strike",
+   "subject": "บอสฟักทอง · โจมตี · SE",
+   "file": "assets/enemies/animations/pumpkinBoss/se-strike.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "strike",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     95,
+     175
+    ],
+    "loop": false,
+    "impactMs": 60
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-se-cast",
+   "subject": "บอสฟักทอง · ยิงเถาวัลย์พันธนาการ (ระยะไกล) · SE",
+   "file": "assets/enemies/animations/pumpkinBoss/se-cast.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "cast",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     200,
+     300
+    ],
+    "loop": false,
+    "impactMs": 150
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-se-hit",
+   "subject": "บอสฟักทอง · สะดุ้งเมื่อโดนโจมตี · SE",
+   "file": "assets/enemies/animations/pumpkinBoss/se-hit.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "hit",
+   "view": "SE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     400
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-se-down",
+   "subject": "บอสฟักทอง · ล้ม · SE",
+   "file": "assets/enemies/animations/pumpkinBoss/se-down.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "down",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     240,
+     360
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-ne-idle",
+   "subject": "บอสฟักทอง · ยืน/หายใจ · NE",
+   "file": "assets/enemies/animations/pumpkinBoss/ne-idle.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "idle",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     650,
+     650
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-ne-walk",
+   "subject": "บอสฟักทอง · เดิน · NE",
+   "file": "assets/enemies/animations/pumpkinBoss/ne-walk.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "walk",
+   "view": "NE",
+   "size": [
+    2048,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 4,
+    "rows": 1,
+    "frames": 4,
+    "timings": [
+     130,
+     130,
+     130,
+     130
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-ne-windup",
+   "subject": "บอสฟักทอง · เตรียมโจมตี · NE",
+   "file": "assets/enemies/animations/pumpkinBoss/ne-windup.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "windup",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     260,
+     240
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-ne-strike",
+   "subject": "บอสฟักทอง · โจมตี · NE",
+   "file": "assets/enemies/animations/pumpkinBoss/ne-strike.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "strike",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     95,
+     175
+    ],
+    "loop": false,
+    "impactMs": 60
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-ne-cast",
+   "subject": "บอสฟักทอง · ยิงเถาวัลย์พันธนาการ (ระยะไกล) · NE",
+   "file": "assets/enemies/animations/pumpkinBoss/ne-cast.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "cast",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     200,
+     300
+    ],
+    "loop": false,
+    "impactMs": 150
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-ne-hit",
+   "subject": "บอสฟักทอง · สะดุ้งเมื่อโดนโจมตี · NE",
+   "file": "assets/enemies/animations/pumpkinBoss/ne-hit.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "hit",
+   "view": "NE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     400
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pumpkinBoss-ne-down",
+   "subject": "บอสฟักทอง · ล้ม · NE",
+   "file": "assets/enemies/animations/pumpkinBoss/ne-down.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pumpkinBoss",
+   "pose": "down",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     240,
+     360
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-se-idle",
+   "subject": "ด้วงกินใบ · ยืน/หายใจ · SE",
+   "file": "assets/enemies/animations/pest/se-idle.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "idle",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     650,
+     650
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-se-walk",
+   "subject": "ด้วงกินใบ · เดิน · SE",
+   "file": "assets/enemies/animations/pest/se-walk.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "walk",
+   "view": "SE",
+   "size": [
+    2048,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 4,
+    "rows": 1,
+    "frames": 4,
+    "timings": [
+     130,
+     130,
+     130,
+     130
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-se-windup",
+   "subject": "ด้วงกินใบ · เตรียมโจมตี · SE",
+   "file": "assets/enemies/animations/pest/se-windup.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "windup",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     260,
+     240
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-se-strike",
+   "subject": "ด้วงกินใบ · โจมตี · SE",
+   "file": "assets/enemies/animations/pest/se-strike.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "strike",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     95,
+     175
+    ],
+    "loop": false,
+    "impactMs": 60
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-se-hit",
+   "subject": "ด้วงกินใบ · สะดุ้งเมื่อโดนโจมตี · SE",
+   "file": "assets/enemies/animations/pest/se-hit.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "hit",
+   "view": "SE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     400
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-se-down",
+   "subject": "ด้วงกินใบ · ล้ม · SE",
+   "file": "assets/enemies/animations/pest/se-down.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "down",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     240,
+     360
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-ne-idle",
+   "subject": "ด้วงกินใบ · ยืน/หายใจ · NE",
+   "file": "assets/enemies/animations/pest/ne-idle.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "idle",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     650,
+     650
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-ne-walk",
+   "subject": "ด้วงกินใบ · เดิน · NE",
+   "file": "assets/enemies/animations/pest/ne-walk.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "walk",
+   "view": "NE",
+   "size": [
+    2048,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 4,
+    "rows": 1,
+    "frames": 4,
+    "timings": [
+     130,
+     130,
+     130,
+     130
+    ],
+    "loop": true
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-ne-windup",
+   "subject": "ด้วงกินใบ · เตรียมโจมตี · NE",
+   "file": "assets/enemies/animations/pest/ne-windup.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "windup",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     260,
+     240
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-ne-strike",
+   "subject": "ด้วงกินใบ · โจมตี · NE",
+   "file": "assets/enemies/animations/pest/ne-strike.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "strike",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     95,
+     175
+    ],
+    "loop": false,
+    "impactMs": 60
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-ne-hit",
+   "subject": "ด้วงกินใบ · สะดุ้งเมื่อโดนโจมตี · NE",
+   "file": "assets/enemies/animations/pest/ne-hit.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "hit",
+   "view": "NE",
+   "size": [
+    512,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 1,
+    "rows": 1,
+    "frames": 1,
+    "timings": [
+     400
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-pest-ne-down",
+   "subject": "ด้วงกินใบ · ล้ม · NE",
+   "file": "assets/enemies/animations/pest/ne-down.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "pest",
+   "pose": "down",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     240,
+     360
+    ],
+    "loop": false
+   },
+   "usedIn": "สนามต่อสู้",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-se-run",
+   "subject": "แพะของปิ๊บ · วิ่งหนี (ไล่แพะ) · SE",
+   "file": "assets/enemies/animations/goat/se-run.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "run",
+   "view": "SE",
+   "size": [
+    2048,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 4,
+    "rows": 1,
+    "frames": 4,
+    "timings": [
+     90,
+     90,
+     90,
+     90
+    ],
+    "loop": true
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-se-pant",
+   "subject": "แพะของปิ๊บ · หอบเหนื่อย · SE",
+   "file": "assets/enemies/animations/goat/se-pant.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "pant",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     500,
+     500
+    ],
+    "loop": true
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-se-graze",
+   "subject": "แพะของปิ๊บ · ก้มกินหญ้า · SE",
+   "file": "assets/enemies/animations/goat/se-graze.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "graze",
+   "view": "SE",
+   "size": [
+    1536,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 3,
+    "rows": 1,
+    "frames": 3,
+    "timings": [
+     450,
+     450,
+     450
+    ],
+    "loop": true
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-se-bleat",
+   "subject": "แพะของปิ๊บ · ร้องเบะ · SE",
+   "file": "assets/enemies/animations/goat/se-bleat.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "bleat",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     300,
+     400
+    ],
+    "loop": false
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-se-sleep",
+   "subject": "แพะของปิ๊บ · นอนหลับ (ฟาร์ม) · SE",
+   "file": "assets/enemies/animations/goat/se-sleep.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "sleep",
+   "view": "SE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     900,
+     900
+    ],
+    "loop": true
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-se-happy",
+   "subject": "แพะของปิ๊บ · ดีใจเมื่อถูกลูบ (ฟาร์ม) · SE",
+   "file": "assets/enemies/animations/goat/se-happy.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "happy",
+   "view": "SE",
+   "size": [
+    1536,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 3,
+    "rows": 1,
+    "frames": 3,
+    "timings": [
+     160,
+     160,
+     260
+    ],
+    "loop": false
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-ne-run",
+   "subject": "แพะของปิ๊บ · วิ่งหนี (ไล่แพะ) · NE",
+   "file": "assets/enemies/animations/goat/ne-run.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "run",
+   "view": "NE",
+   "size": [
+    2048,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 4,
+    "rows": 1,
+    "frames": 4,
+    "timings": [
+     90,
+     90,
+     90,
+     90
+    ],
+    "loop": true
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-ne-pant",
+   "subject": "แพะของปิ๊บ · หอบเหนื่อย · NE",
+   "file": "assets/enemies/animations/goat/ne-pant.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "pant",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     500,
+     500
+    ],
+    "loop": true
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-ne-graze",
+   "subject": "แพะของปิ๊บ · ก้มกินหญ้า · NE",
+   "file": "assets/enemies/animations/goat/ne-graze.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "graze",
+   "view": "NE",
+   "size": [
+    1536,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 3,
+    "rows": 1,
+    "frames": 3,
+    "timings": [
+     450,
+     450,
+     450
+    ],
+    "loop": true
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-ne-bleat",
+   "subject": "แพะของปิ๊บ · ร้องเบะ · NE",
+   "file": "assets/enemies/animations/goat/ne-bleat.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "bleat",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     300,
+     400
+    ],
+    "loop": false
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-ne-sleep",
+   "subject": "แพะของปิ๊บ · นอนหลับ (ฟาร์ม) · NE",
+   "file": "assets/enemies/animations/goat/ne-sleep.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "sleep",
+   "view": "NE",
+   "size": [
+    1024,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 2,
+    "rows": 1,
+    "frames": 2,
+    "timings": [
+     900,
+     900
+    ],
+    "loop": true
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-anim-goat-ne-happy",
+   "subject": "แพะของปิ๊บ · ดีใจเมื่อถูกลูบ (ฟาร์ม) · NE",
+   "file": "assets/enemies/animations/goat/ne-happy.webp",
+   "category": "enemy-animations",
+   "status": "code",
+   "enemy": "goat",
+   "pose": "happy",
+   "view": "NE",
+   "size": [
+    1536,
+    512
+   ],
+   "frameSize": [
+    512,
+    512
+   ],
+   "transparent": true,
+   "pivot": [
+    0.5,
+    0.95
+   ],
+   "barHeight": 0.64,
+   "animation": {
+    "columns": 3,
+    "rows": 1,
+    "frames": 3,
+    "timings": [
+     160,
+     160,
+     260
+    ],
+    "loop": false
+   },
+   "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-pumpkin",
+   "subject": "ฟักทองในไร่ · ภาพนิ่งด้านหน้า",
+   "file": "assets/enemies/pumpkin.webp",
+   "category": "enemies",
+   "status": "code",
+   "size": [
+    512,
+    768
+   ],
+   "transparent": true,
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-pumpkin-back",
+   "subject": "ฟักทองในไร่ · ภาพนิ่งด้านหลัง",
+   "file": "assets/enemies/pumpkin-back.webp",
+   "category": "enemies",
+   "status": "code",
+   "size": [
+    512,
+    768
+   ],
+   "transparent": true,
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-pumpkinBoss",
+   "subject": "บอสฟักทอง · ภาพนิ่งด้านหน้า",
+   "file": "assets/enemies/pumpkinBoss.webp",
+   "category": "enemies",
+   "status": "code",
+   "size": [
+    512,
+    768
+   ],
+   "transparent": true,
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-pumpkinBoss-back",
+   "subject": "บอสฟักทอง · ภาพนิ่งด้านหลัง",
+   "file": "assets/enemies/pumpkinBoss-back.webp",
+   "category": "enemies",
+   "status": "code",
+   "size": [
+    512,
+    768
+   ],
+   "transparent": true,
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-pest",
+   "subject": "ด้วงกินใบ · ภาพนิ่งด้านหน้า",
+   "file": "assets/enemies/pest.webp",
+   "category": "enemies",
+   "status": "code",
+   "size": [
+    512,
+    768
+   ],
+   "transparent": true,
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+  },
+  {
+   "id": "enemy-pest-back",
+   "subject": "ด้วงกินใบ · ภาพนิ่งด้านหลัง",
+   "file": "assets/enemies/pest-back.webp",
+   "category": "enemies",
+   "status": "code",
+   "size": [
+    512,
+    768
+   ],
+   "transparent": true,
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   }
  ],
  "studioReviews": {
