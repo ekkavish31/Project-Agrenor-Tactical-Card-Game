@@ -85,7 +85,7 @@ const manifest=()=>root.ASSET_MANIFEST?.assets||[];
 const byCategory=(...cats)=>manifest().filter(a=>cats.includes(a.category)&&a.status!=='missing').map(a=>a.file);   /* v98.347 · empty slots ('missing': no picture yet) were fetched → a pile of 404s in the console */
 const uniq=list=>[...new Set(list.filter(Boolean))];
 function heroFrames(){const t=root.TACTICS_SPRITES;if(!t?.directions)return[];const out=[];for(const p of Object.values(t.directions))for(const f of Object.values(p).flat())if(f?.src)out.push(f.src);return out}
-const VILLAGE=['grass','paving','soil','meadow-details','garden-pond','props','fountain','player-house','inn','guild','healer','shop','market','temple','forge'].map(f=>'assets/village-town/'+f+'.png').concat(['broadleaf','pine','old-oak'].map(f=>'assets/village-town/nature/'+f+'.webp'));
+const VILLAGE=['grass','paving','soil','meadow-details','garden-pond','props','fountain','player-house','inn','healer','shop','market','temple','forge'].map(f=>'assets/village-town/'+f+'.png').concat(['broadleaf','pine','old-oak'].map(f=>'assets/village-town/nature/'+f+'.webp'));
 function villageSet(){return uniq([...VILLAGE,...heroFrames(),'assets/hero.webp','assets/home.webp','assets/market.webp','assets/workshop.webp',...['bag','upgrade','map','develop'].map(k=>'assets/ui-'+k+'.webp'),'assets/audio/bgm/bgm-village-festival-01.mp3'])}
 // what a battle draws the moment it opens (measured: hero/ally frames, weapons, props, hand cards) — the loader waits for these
 function battleCore(){return uniq(byCategory('tactics-hero','tactics-equipment','tactics-props','tactic-cards','allies','battle-scenery'))}

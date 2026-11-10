@@ -4772,3 +4772,8 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 ## v98.350 · ข้ามบทเปิดแล้วเฟรมหมู่บ้านต้องเริ่มโหลดด้วย
 - เฟรมหมู่บ้านรอเหตุการณ์ `maker-intro-finished` จึงจะเริ่มโหลด (หรือรอ 65 วิ) · ตอนข้ามบทเปิดเหตุการณ์นี้ไม่เกิด → ส่งเหตุการณ์เองหลังเมนูพร้อม
+
+## v98.351 · เก็บ 404 ในคอนโซล
+- ไฟล์ที่ manifest บอกว่ามีแต่ไม่มีจริง 17 รายการ → ตั้งสถานะ `missing` (ช่องว่างจริง) ใน `js/asset-manifest.js` + `data/asset-manifest.json` · 11 รายการที่เกมเรียกจริง (`ui-forge/water/smelt/rest/upgrade/editor/fullscreen` · `action-chest` · `adventurer-hammer-*/sword-attack`) → วางภาพชั่วคราว (ไอคอนเมนูเดิม) สถานะ `temp` จนกว่าจะมีภาพจริง
+- `title-screen.js`: ตัด `guild` ออกจากรายการโหลดล่วงหน้า (ไม่มีไฟล์ `village-town/guild.*`) · เพิ่ม `assets/favicon.webp` + `<link rel="icon">` ทุกหน้า (404 `favicon.ico`)
+- ตรวจด้วยการเปิดเกม → Continue → เข้าอาคารทั้ง 8 แห่ง ไม่พบ 404 เหลือ
