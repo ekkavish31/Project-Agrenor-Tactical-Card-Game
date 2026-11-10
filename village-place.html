@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
-<script src="js/img-gate.js?v=v98.343"></script><script src="js/sfx.js?v=98.298"></script><script src="js/key-layout.js?v=1"></script><script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><style>
+<script src="js/img-gate.js?v=v98.343"></script><script src="js/walk-speed.js?v=98.109"></script><script src="js/sfx.js?v=98.298"></script><script src="js/key-layout.js?v=1"></script><script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
 button,select,input{font:inherit;background:#233a2ef0;color:#fff0c7;border:1px solid #cad6a77a;border-radius:9px;padding:8px 12px;cursor:pointer}button:hover{background:#4b6040}button:disabled{opacity:.45;cursor:default}
@@ -964,7 +964,7 @@ function draw(t) {
    hero.v += dv / n * step;
    const dx = du - dv,
     dy = du + dv;
-   hero.dir = dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW')
+   hero.dir = window.WalkSpeed ? WalkSpeed.dir.face(hero, du, dv) : dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW')   /* v98.345 · the shared rule */
   }
  }
  window.joyPlaceWalk?.(dt);
@@ -1044,7 +1044,7 @@ function draw(t) {
   })
  });
  for (const f of fencePieces()) objects.push({ y: project(f.m.u, f.m.v).y, draw: () => drawFencePiece(f, hp) });
- objects.push(...(window.HeroFollower?.objects(hero, dt, t, { show: !editing, project, g, ellipse: (x, y, rx, ry, c) => { g.fillStyle = c; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill() }, face: (du, dv, pd) => { const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') }, size: CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K, scale: window.placeScale() * PLACE_CHAR_K }) || []));
+ objects.push(...(window.HeroFollower?.objects(hero, dt, t, { show: !editing, project, g, ellipse: (x, y, rx, ry, c) => { g.fillStyle = c; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill() }, face: (du, dv, pd) => { if (window.WalkSpeed) return WalkSpeed.dir.face(FOLLOW_FACE, du, dv); const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') }, size: CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K, scale: window.placeScale() * PLACE_CHAR_K }) || []));
  objects.push({
   y: hp.y, hero: true, wu: hero.u, wv: hero.v,
   draw: () => {
@@ -1439,6 +1439,7 @@ function setup() {
  renderEdit()
 }
 /* v98.340 · temporary save (js/resume.js): where the hero stands */
+const FOLLOW_FACE = {};
 window.ResumeHook = { ready: () => true, get: () => ({ u: hero.u, v: hero.v, dir: hero.dir }), set: d => { if (!d) return; path = []; target = null; hero.u = d.u; hero.v = d.v; if (d.dir) hero.dir = d.dir } };
 window.addEventListener('message', e => {
  if (e.source !== parent || e.data?.source !== 'project-a-game') return;
@@ -1577,7 +1578,7 @@ window.joyPlaceWalk = dt => {
  const sp = dt * 5.5 * Math.min(1, Math.hypot(v.x, v.y)), nu = hero.u + du * sp, nv = hero.v + dv * sp;
  path = []; target = null;
  if (!blocked(nu, nv)) { hero.u = nu; hero.v = nv } else if (!blocked(nu, hero.v)) hero.u = nu; else if (!blocked(hero.u, nv)) hero.v = nv;
- const dx = du - dv, dy = du + dv; hero.dir = dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW');
+ const dx = du - dv, dy = du + dv; hero.dir = window.WalkSpeed ? WalkSpeed.dir.face(hero, du, dv) : dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW');
 };
 window.TouchControls?.attach({
  paused: () => editing || !$('pick').hidden,

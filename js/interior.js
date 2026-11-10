@@ -192,11 +192,14 @@
   const heroImgs = [1, 2, 3, 4].map(i => { const im = new Image(); im.src = `assets/tactics/imported/idle-se-mvkft9t1-gv5z/frame-0${i}.webp`; return im });
   const walkImgs = [1, 2, 3].map(i => { const im = new Image(); im.src = `assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-0${i}.webp`; return im });
 
-  function faceOf(du, dv) { return Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'SE' : 'NW') : (dv > 0 ? 'SW' : 'NE') }
+  /* v98.345 · ONE walking-direction rule for everyone (js/walk-speed.js): N→NE · S→SE · W→SW · E→SE, diagonals as they are (the old test read the ground axes: walking W showed the back-facing NW picture = moonwalk).
+     `o` = the walker (remembers its raw heading so the picture does not flicker on a boundary) */
+  const FOLLOW_FACE = {};
+  function faceOf(du, dv, o) { if (window.WalkSpeed) return WalkSpeed.dir.face(o || {}, du, dv); const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') }
   function stepActor(a, dt, speed) {
     if (!a.path.length) { a.walking = false; return }
     const t = a.path[0], tu = t.u + .5, tv = t.v + .5, du = tu - a.vu, dv = tv - a.vv, d = Math.hypot(du, dv), sp = dt * speed;
-    if (d > .01) a.face = faceOf(du, dv);
+    if (d > .01) a.face = faceOf(du, dv, a);
     if (d <= sp) { a.vu = tu; a.vv = tv; a.u = t.u; a.v = t.v; a.path.shift(); if (!a.path.length) a.walking = false } else { a.vu += du / d * sp; a.vv += dv / d * sp; a.walking = true }
   }
 
@@ -524,7 +527,7 @@
     for (const a of people.values()) list.push({ y: a.vu + a.vv, f: () => drawPerson(a, t) });
     list.push({ y: hero.vu + hero.vv, f: () => drawHero(t) });
     /* v98.233 · the other hero (the sibling) follows one body length behind */
-    for (const o of window.HeroFollower?.objects({ u: hero.vu, v: hero.vv }, null, t, { show: true, project: P, size: CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), face: (du, dv, pd) => faceOf(du, dv) || pd, drawFn: (p, dir, walking, mot) => { g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * IK(), 6 * IK(), 0, 0, 7); g.fill(); return drawHeroMotion(t, p, CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), dir, walking, mot) } }) || []) list.push({ y: o.uv, f: o.draw });
+    for (const o of window.HeroFollower?.objects({ u: hero.vu, v: hero.vv }, null, t, { show: true, project: P, size: CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), face: (du, dv, pd) => faceOf(du, dv, FOLLOW_FACE) || pd, drawFn: (p, dir, walking, mot) => { g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * IK(), 6 * IK(), 0, 0, 7); g.fill(); return drawHeroMotion(t, p, CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), dir, walking, mot) } }) || []) list.push({ y: o.uv, f: o.draw });
     list.sort((a, b) => a.y - b.y); for (const x of list) x.f();
     /* lights + night */
     const day = daylight();
@@ -948,7 +951,7 @@
     const sp = dt * 3.6 * Math.min(1, Math.hypot(v.x, v.y)), ok = (a, b) => free(Math.floor(a), Math.floor(b));
     let nu = hero.vu + du * sp, nv = hero.vv + dv * sp;
     if (!ok(nu, nv)) { if (ok(nu, hero.vv)) nv = hero.vv; else if (ok(hero.vu, nv)) nu = hero.vu; else { nu = hero.vu; nv = hero.vv } }
-    hero.vu = nu; hero.vv = nv; hero.u = Math.floor(nu); hero.v = Math.floor(nv); hero.face = faceOf(du, dv); hero.walking = true; hero.path = []; hero.then = null; return true;
+    hero.vu = nu; hero.vv = nv; hero.u = Math.floor(nu); hero.v = Math.floor(nv); hero.face = faceOf(du, dv, hero); hero.walking = true; hero.path = []; hero.then = null; return true;
   }
   /* the same registry as the village (js/interactables.js): villagers in the room + the door. Hold the big button on a villager = choices. */
   /* hold the big button on a villager = a ring of what THIS person can do (the same actions as the talk panel's choice lists) */
