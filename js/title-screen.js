@@ -82,7 +82,7 @@ function load(item){if(typeof item==='function')return Promise.resolve().then(it
 const isCached=url=>loaded.has(url);
 
 const manifest=()=>root.ASSET_MANIFEST?.assets||[];
-const byCategory=(...cats)=>manifest().filter(a=>cats.includes(a.category)).map(a=>a.file);
+const byCategory=(...cats)=>manifest().filter(a=>cats.includes(a.category)&&a.status!=='missing').map(a=>a.file);   /* v98.347 · empty slots ('missing': no picture yet) were fetched → a pile of 404s in the console */
 const uniq=list=>[...new Set(list.filter(Boolean))];
 function heroFrames(){const t=root.TACTICS_SPRITES;if(!t?.directions)return[];const out=[];for(const p of Object.values(t.directions))for(const f of Object.values(p).flat())if(f?.src)out.push(f.src);return out}
 const VILLAGE=['grass','paving','soil','meadow-details','garden-pond','props','fountain','player-house','inn','guild','healer','shop','market','temple','forge'].map(f=>'assets/village-town/'+f+'.png').concat(['broadleaf','pine','old-oak'].map(f=>'assets/village-town/nature/'+f+'.webp'));
