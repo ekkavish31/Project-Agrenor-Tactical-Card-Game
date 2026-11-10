@@ -126,6 +126,7 @@
     else if (o?.type === 'leader' && !monsters(st).some(m => m.leader && alive(m))) st.outcome = 'win';
     else if ((o?.type === 'survive' || o?.type === 'defend') && st.turns > o.turns) st.outcome = 'win';
     else if (o?.type === 'escape' && o.cells?.some(c => c.u === hero(st).u && c.v === hero(st).v)) st.outcome = 'win';
+    else if (st.flee?.cells?.some(c => c.u === hero(st).u && c.v === hero(st).v)) st.outcome = 'flee';   /* v98.357 · the ONLY way to leave a fight early: reach the marked flee area */
     return st.outcome }
   const inside = (st, u, v) => u >= st.bounds.u0 && u <= st.bounds.u1 && v >= st.bounds.v0 && v <= st.bounds.v1;
   function kind(st, u, v) { if (!inside(st, u, v)) return 'blocked'; const k = st.kindAt(u, v); return KINDS[k] ? k : 'normal' }

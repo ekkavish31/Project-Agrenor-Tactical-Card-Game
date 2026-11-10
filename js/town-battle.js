@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.356';
+  const V = '98.357';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -153,9 +153,25 @@
     pend = null; walks = [];
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
-    if (Q.get('resume') === '1') applyResume();
+    if (Q.get('resume') === '1') applyResume(); else makeFlee();
   }
   if (EDIT) { const sx = document.createElement('style'); sx.textContent = '#fbBar,.fb-show,.fb-fly,.fb-banner,.fb-toast,#fbHand,#fbActions,#fbAlly,#fbHint,#fbIntro,#fbInspect,#fbQueue,#fbLbTop,#fbLbBot,#fbFace,#fbCoach,#fbHud,#fbPause,#menuBtn{display:none!important}'; document.head.append(sx) }   /* v98.311 · BG editor: no game HUD */
+  /* ---------- v98.357 · the way out of a fight ----------
+     No "back to the world map" button and no flee entry in the menu: a fight can be left early only by walking the hero onto the FLEE AREA (3 blue cells, away from the enemies).
+     None in the prologue fights (?tut=…), boss fights, escape-objective fights (they have their own exit) or when ?noflee=1. */
+  function makeFlee() {
+    try {
+      if (!EMBED || Q.get('tut') || Q.get('noflee') === '1' || st.obj?.type === 'escape' || /^บอส/.test(Q.get('title') || '')) return;
+      const h = FB.hero(st), ms = FB.monsters(st); if (!ms.length) return;
+      const mc = { u: ms.reduce((a, m) => a + m.u, 0) / ms.length, v: ms.reduce((a, m) => a + m.v, 0) / ms.length };
+      const free = (u, v) => cells.get(u + ',' + v) && cells.get(u + ',' + v) !== 'blocked' && !st.units.some(x => x.u === u && x.v === v);
+      let best = null, bs = -1e9;
+      for (const [key] of cells) { const [u, v] = key.split(',').map(Number); if (!free(u, v)) continue; const dh = Math.hypot(u - h.u, v - h.v), dm = Math.hypot(u - mc.u, v - mc.v); if (dh < 4 || dh > 8) continue; const sc = dm - dh * 1.2; if (sc > bs) { bs = sc; best = { u, v } } }
+      if (!best) return; const zone = [best];
+      for (const [du, dv] of [[1, 0], [0, 1], [-1, 0], [0, -1]]) { if (zone.length >= 3) break; const u = best.u + du, v = best.v + dv; if (free(u, v)) zone.push({ u, v }) }
+      st.flee = { cells: zone }; setTimeout(() => { try { toast('ทางหนี: ช่องสีฟ้า — เดินตัวเอกไปถึงจึงจะหนีการต่อสู้ได้') } catch (e) { } }, 2500);
+    } catch (e) { }
+  }
   /* ---------- v98.340 · temporary save: the fight is snapshotted at every stable moment of the hero's turn and can be resumed exactly (js/resume.js) ----------
      Only the state of the rules (st) is stored — a few KB of JSON; the field comes back from the same seed, the pictures from the same URL (+ &resume=1). */
   const SNAP_KEY = 'projectA.battleSnap'; let snapT = 0;
@@ -308,7 +324,7 @@
   #fbActions{position:fixed;left:50%;bottom:148px;transform:translateX(-50%);z-index:41;display:flex;gap:4px;align-items:center;font:700 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}
   #fbActions button{display:flex;align-items:center;gap:6px;min-height:44px;box-sizing:border-box;padding:0;border:12px solid transparent;border-width:11px 16px;border-image:url(assets/ui/battle-btn.webp) 14 fill/11px 16px stretch;background:none;border-radius:0;color:#fff3d2;font:inherit;text-shadow:0 1px 2px #000;cursor:pointer;filter:drop-shadow(0 3px 4px #000a);white-space:nowrap}
   #fbActions button:hover:not(:disabled),#fbActions #fbAuto.on{border-image-source:url(assets/ui/battle-btn-hot.webp);color:#2a1a05;text-shadow:none}#fbActions button:disabled{opacity:.45;cursor:default;filter:grayscale(.7) drop-shadow(0 3px 4px #000a)}
-  #fbActions #fbBack{border-image-source:url(assets/ui/battle-btn-warn.webp)}#fbActions .bi{width:22px;height:22px}
+  #fbActions #fbBack[hidden]{display:none!important}#fbActions #fbBack{border-image-source:url(assets/ui/battle-btn-warn.webp)}#fbActions .bi{width:22px;height:22px}
   #fbActions #fbMenu.ico{width:48px;min-width:48px;height:48px;border:0;border-image:none;background:url(assets/ui/battle-controls-v34.webp) no-repeat;background-size:400% 200%;background-position:100% 0}
   body.fb-cine #fbActions{opacity:.35}body.fb-ally #fbActions{opacity:.25;pointer-events:none}
   @media (max-width:760px){#fbActions{bottom:118px;flex-wrap:wrap;justify-content:center;max-width:94vw}#fbHud{width:250px}}
@@ -416,7 +432,7 @@
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
     d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbDis"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ทิ้งไพ่ฟื้นแรง</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '<button id="fbBack" hidden><img class="bi" src="assets/icons/pack/arrow.webp" alt="" draggable="false"><span>กลับแผนที่โลก</span></button>' : ''}</div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbDis"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ทิ้งไพ่ฟื้นแรง</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '<button id="fbBack" hidden><img class="bi" src="assets/icons/pack/arrow.webp" alt="" draggable="false"><span>ไปต่อ ▸</span></button>' : ''}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
       <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรู = ดูการ์ดที่ดีที่สุด · คลิกซ้ำ = โจมตี<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง) · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
     document.body.append(d); hud = d;
@@ -1013,7 +1029,7 @@
     const canAct = !busy && st.turn === 'hero' && !st.outcome;
     d.innerHTML = `<div class="box"><b>หยุดเกม</b><small>${esc(goalLine())}</small>
       <button data-a="resume">▶ เล่นต่อ</button><button data-a="el">◈ ตารางธาตุ</button><button data-a="keys">⌨ ปุ่มควบคุม</button><button data-a="opt">⚙ เสียงและภาพ</button>
-      ${EMBED && Q.get('noflee') !== '1' ? `<button data-a="flee" class="warn" ${canAct ? '' : 'disabled'}>🏃 หนีจากการต่อสู้</button>` : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
+      ${EMBED ? (st.flee ? '<p style="margin:6px 0;font-size:13px;color:#bfe8ff">🏃 หนีได้ที่ช่องสีฟ้า "ทางหนี" บนสนามเท่านั้น — พาตัวเอกเดินไปถึงช่องนั้น</p>' : '') : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
       <div class="keys" hidden>คลิกศัตรู · Tab = เลือกเป้าและดูการ์ดที่ดีที่สุด<br>คลิกซ้ำ · Enter = โจมตีตามที่แสดง<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง)<br>1–9 = ใช้ไพ่ต่อสู้ใบนั้น · Z / Backspace = ย้อนเดิน<br>Space = จบเทิร์น แล้วเลือกทิศด้วยลูกศร · A = Auto<br>Q / E = หมุนกล้อง · Esc = เมนูนี้</div>
       <div class="opt" hidden>${(() => { const P = window.BattlePolish || {}; return `<label>🔊 เสียงเอฟเฟกต์ <input type="range" min="0" max="1" step=".05" data-o="volume" value="${P.volume ?? .65}"></label><label>🎵 เพลง <input type="range" min="0" max="1" step=".05" data-o="musicVolume" value="${P.musicVolume ?? .3}"></label><label><input type="checkbox" data-o="shake" ${P.shake === false ? '' : 'checked'}> จอสั่นตอนโดนตี</label>` })()}</div></div>`;
     document.body.append(d);
@@ -1438,6 +1454,7 @@
     if (farMap && !busy && !EDIT) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }) }   /* yellow = needs the farthest move card */
     if (reachMap && !busy && !EDIT) for (const e of reachMap.values()) { if (e.cost === 0) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }) }
     /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
+    if (st.flee?.cells && !st.outcome) for (const c of st.flee.cells) { const pul = .5 + .5 * Math.sin(t * .005); OV(c.u, c.v, () => { poly(g, c.u, c.v); g.fillStyle = `rgba(90,190,255,${.26 + .2 * pul})`; g.fill(); g.strokeStyle = '#bfe8ff'; g.lineWidth = 2.5; g.stroke() }) }
     if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); poly(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
       const p = project(c.u + .5, c.v + .5); g.font = '16px AgThai,system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(esc_ ? '⇲' : '🚩', p.x, p.y + 5 - 3 * pul) }
     /* v94.02 · height of every cell you can reach (1–3; 0 = ground) */
