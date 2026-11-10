@@ -38,10 +38,15 @@
   const pic = k => { const p = pick(k); return p ? `<img src="assets/icons/menu/${p}.webp" alt="" draggable="false">` : svg(k) };
   const click = sel => { const b = typeof sel === 'string' ? store.querySelector(sel) || document.querySelector(sel) : sel; if (b) b.click(); return !!b };
   function farmHere() { try { return ((parent.WorldState || window.WorldState)?.world()?.estates || []).find(p => p.at === 'town:fernvale' && p.kind === 'farm') || null } catch (e) { return null } }
+  /* v98.337 · the closed quest window: a number on the 'วันนี้' icon, a ภารกิจ entry in its menu opens it again (Story lives in the parent page) */
+  const storyInfo = () => { try { return parent.Story?.trackerInfo?.() || { closed: false, count: 0 } } catch (e) { return { closed: false, count: 0 } } };
+  function badge() { const b = row.querySelector('[data-hud="today"] .hud-medal'); if (!b) return; const i = storyInfo(); let n = b.querySelector('.hud-badge'); if (!i.closed) { n?.remove(); return } if (!n) { n = document.createElement('i'); n.className = 'hud-badge'; b.append(n) } n.textContent = i.count || 1; n.classList.toggle('fresh', !!i.fresh) }
+  setInterval(badge, 800); try { parent.addEventListener('story-tracker', badge) } catch (e) { }
   const call = (name, fn = 'open') => { try { (parent[name] || window[name])?.[fn]?.() } catch (e) { } };
 
   const MENUS = {
     today: () => [
+      ...(storyInfo().closed ? [['activity', '📜 ภารกิจ' + (storyInfo().count ? ' (' + storyInfo().count + ')' : '') + ' · ' + storyInfo().title, () => { try { parent.Story.openTracker() } catch (e) { } badge() }]] : []),
       ['activity', 'กิจกรรมวันนี้', () => click('#activities')],
       ['journal', 'สมุดหมู่บ้าน', () => click('[data-game="journal"]')],
       ...(farmHere() ? [['farm', 'ไร่ของเรา', () => { const f = farmHere(); location.href = 'place-interior.html?place=farm&farm=' + encodeURIComponent(f.id) + '&name=' + encodeURIComponent('ไร่ · ' + f.name) + '&back=village-town.html' }]] : [])
@@ -98,5 +103,6 @@
   .hud-pop button{display:flex;align-items:center;gap:10px;padding:8px 12px;border:0;border-radius:9px;background:none;color:#f6e7bf;font:600 14px VillageThai,system-ui,sans-serif;text-align:left;cursor:pointer}
   .hud-pop button:hover,.hud-pop button:focus-visible{background:#2f4a3e;outline:none}.hud-pop svg{width:24px;height:24px;flex:none;color:#e8c46a}.hud-pop img{width:30px;height:30px;flex:none;object-fit:contain}
   @media (max-width:900px){.town-icon-row{gap:6px!important;top:8px!important;right:8px!important}.town-icon-row>.hud-ico{width:58px}.hud-medal{width:46px;height:46px}.hud-medal.has-img{width:50px;height:50px}.hud-medal svg{width:28px;height:28px}.hud-lbl{font-size:10px;padding:1px 6px}.town-icon-row>.hud-small{width:44px}.hud-small .hud-medal{width:36px;height:36px;margin-top:5px}}`;
+  css.textContent += `.hud-badge{position:absolute;right:-4px;top:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#d8402e;border:2px solid #fff3d2;color:#fff;font:800 12px/16px VillageThai,system-ui,sans-serif;text-align:center;font-style:normal;box-sizing:border-box;z-index:2}.hud-badge.fresh{animation:hudPulse 1.1s ease-in-out infinite}@keyframes hudPulse{50%{transform:scale(1.25)}}`;
   document.head.append(css);
 })();

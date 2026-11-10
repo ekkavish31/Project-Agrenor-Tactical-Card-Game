@@ -260,15 +260,17 @@ function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step
 /* ---------- tracker ---------- */
 let box=null;
 function tracker(){if(box)return box;box=document.createElement('aside');box.id='storyTracker';box.hidden=true;box.setAttribute('aria-live','polite');document.body.appendChild(box);
- box.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b){e.stopPropagation();act(b.dataset.act);return}if(e.target.closest('.stk-head')){const st=story();if(st){st.fold=!st.fold;doSave();draw(true)}}});return box}
+ box.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(e.target.closest('.stk-x')){e.stopPropagation();const st=story();if(st){st.closed=true;st.unseen=0;doSave();draw(true);badgeSync()}return}
+  if(b){e.stopPropagation();act(b.dataset.act);return}if(e.target.closest('.stk-head')){const st=story();if(st){st.fold=!st.fold;doSave();draw(true)}}});return box}
 let lastHtml='';
 function draw(force){const el=tracker(),st=story();if(!st||st.mode==='off'||root.TitleScreen?.active||document.querySelector('dialog[open],.ck-reveal,.mg')){el.hidden=true;return}
+ if(st.closed&&st.mode!=='offer'){el.hidden=true;badgeSync();return}   /* v98.337 · closed: only the badge on the 'วันนี้' icon remains */
  let html='';el.classList.toggle('stk-done',st.mode==='done');el.classList.toggle('stk-folded',!!st.fold);
  if(st.mode==='offer')html=`<div class="stk-head"><small>บทนำใหม่</small><b>เทศกาลเฟิร์นเวล</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div><div class="stk-body"><p class="stk-goal">เล่นบทนำ 3 วันของงานเทศกาล และการเดินทางครั้งแรก</p><p class="stk-hint">เหมาะกับเซฟใหม่ · เซฟเดิมเล่นได้ บางขั้นจะผ่านเองถ้าทำไว้แล้ว</p><div class="stk-acts"><button data-act="start" class="primary" type="button">▶ เล่นบทนำ</button><button data-act="off" type="button">ซ่อน</button></div></div>`;
- else if(st.mode==='done')html=`<div class="stk-head"><small>เล่นอิสระ</small><b>เบาะแสที่ได้</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div><div class="stk-body"><p class="stk-hint">• จานหินโบราณที่มีเส้นแสง<br>• จดหมายของ "G." ถึงเมืองใหญ่<br>• ผลึกม่วงจากเหมืองเก่าที่อุ่นเมื่อแตะ<br>• แผนที่สมบัติเก่าในกระเป๋า</p><p class="stk-hint">เส้นทางไปเมืองใหญ่ยังไม่เปิด (อยู่ในแผน)</p><div class="stk-acts"><button data-act="off" type="button">ซ่อนกล่องนี้</button></div></div>`;
+ else if(st.mode==='done')html=`<div class="stk-head"><small>เล่นอิสระ</small><b>เบาะแสที่ได้</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div><div class="stk-body"><p class="stk-hint">• จานหินโบราณที่มีเส้นแสง<br>• จดหมายของ "G." ถึงเมืองใหญ่<br>• ผลึกม่วงจากเหมืองเก่าที่อุ่นเมื่อแตะ<br>• แผนที่สมบัติเก่าในกระเป๋า</p><p class="stk-hint">เส้นทางไปเมืองใหญ่ยังไม่เปิด (อยู่ในแผน)</p><div class="stk-acts"><button data-act="off" type="button">ซ่อนกล่องนี้</button></div></div>`;
  else{const step=STEPS[st.i];if(!step){el.hidden=true;return}const d=dataOf(step),chap=chapterOf(st.i),acts=(step.acts||[]).filter(a=>!a.hide?.(d));
   const p=step.progress?.(d);const night=late()&&!/^sleep|^rest/.test(step.id)?'<p class="stk-hint">🌙 ดึกแล้ว กลับบ้านนอนแล้วทำต่อพรุ่งนี้ได้</p>':'';
-  html=`<div class="stk-head"><small>${esc(chap)}</small><b>${esc(step.title)}${step.tag==='temp'&&root.PROJECT_DEV?'<span class="stk-tag" title="ระบบชั่วคราว ระบบจริงอยู่ในแผน (แสดงเฉพาะเครื่องผู้สร้าง)">ชั่วคราว</span>':''}</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div>
+  html=`<div class="stk-head"><small>${esc(chap)}</small><b>${esc(step.title)}${step.tag==='temp'&&root.PROJECT_DEV?'<span class="stk-tag" title="ระบบชั่วคราว ระบบจริงอยู่ในแผน (แสดงเฉพาะเครื่องผู้สร้าง)">ชั่วคราว</span>':''}</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div>
   <div class="stk-body"><p class="stk-goal">◆ ${esc(step.goal)}</p>${p!=null?`<div class="stk-prog"><i style="width:${Math.round(p*100)}%"></i></div>`:''}${step.hint?`<p class="stk-hint">${esc(step.hint)}</p>`:''}${night}
   <div class="stk-acts">${acts.map((a,j)=>`<button type="button" data-act="${(step.acts||[]).indexOf(a)}" class="${a.primary?'primary':''}">${esc(a.label)}</button>`).join('')}</div>
   <div class="stk-acts"><button type="button" data-act="replay" title="ดูฉากล่าสุดอีกครั้ง">↺ ดูฉาก</button>${(()=>{try{return localStorage.getItem('projectA.dev')==='1'}catch(e){return false}})()?'<button type="button" data-act="skipall" title="ข้ามบทนำทั้งหมด">ข้ามบทนำ</button>':''}</div></div>`}
@@ -298,7 +300,7 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
   if(introId&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(D().SCENES[introId])}
   if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();await lessonCard(step.id)}
   if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(D().SCENES[outroId]);await step.reward?.(d);st.i++;doSave();doRender();
-   const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
+   const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
 
 function boot(){Object.assign(root.Cutscene.speakers,D().SPEAKERS);hookActions();
@@ -308,7 +310,11 @@ function boot(){Object.assign(root.Cutscene.speakers,D().SPEAKERS);hookActions()
  setInterval(()=>{tick().catch(e=>{busy=false;console.warn('[story]',e)})},700)}
 if(document.readyState!=='loading')setTimeout(boot,0);else document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0));
 
-root.Story={lock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+/* v98.337 · the quest window can be closed: the 'วันนี้' icon of the village HUD (js/town-hud.js) shows a number and a ภารกิจ entry that opens it again */
+function badgeSync(){try{const st=story();root.dispatchEvent(new CustomEvent('story-tracker',{detail:trackerInfo()}))}catch{}}
+function trackerInfo(){const st=story(),on=!!st&&st.mode!=='off'&&st.mode!=='offer'&&!!st.closed;return {closed:on,count:on?Math.max(1,st.unseen||0)+(st.mode==='active'?0:0):0,fresh:!!(on&&st.unseen),title:st&&st.mode==='active'?STEPS[st.i]?.title||'':'เบาะแสที่ได้'}}
+function openTracker(){const st=story();if(!st)return false;st.closed=false;st.unseen=0;doSave();draw(true);badgeSync();return true}
+root.Story={trackerInfo,openTracker,lock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

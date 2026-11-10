@@ -33,9 +33,11 @@
   const hudStop = () => { hudOn = false };
   const wait = ms => new Promise(r => setTimeout(r, ms));
   let panel;
-  function show(txt, done) {
+  function show(txt, done, bad) {
     if (!panel) { panel = document.createElement('div'); panel.style.cssText = 'position:fixed;right:12px;left:auto;top:12px;z-index:99999;max-width:min(600px,94vw);max-height:92vh;overflow:auto;padding:12px 14px;border-radius:12px;background:#f3e6c6;color:#3a2a14;border:2px solid #b8943f;box-shadow:0 8px 24px #0006;font:13px/1.55 AgThai,"Mali","Noto Sans Thai",system-ui,sans-serif'; document.body.append(panel) }
-    panel.innerHTML = ''; const pre = document.createElement('pre'); pre.style.cssText = 'margin:0;white-space:pre-wrap;font:inherit'; pre.textContent = txt; panel.append(pre);
+    panel.innerHTML = ''; const pre = document.createElement('div'); pre.style.cssText = 'margin:0;white-space:pre-wrap;font:inherit';
+    /* v98.337 · lines that show lag are red (bad = line prefixes found lagging, and every ⚠ hint) */
+    for (const line of txt.split('\n')) { const d = document.createElement('div'), t = line.trim(), red = (bad || []).some(k => t.startsWith(k)) || t.startsWith('⚠'); d.textContent = line || '\u00a0'; if (red) d.style.cssText = 'color:#b3261e;background:#fde4e0;border-left:4px solid #d8402e;padding:0 6px;margin:1px 0;font-weight:700'; pre.append(d) } panel.append(pre);
     if (done) {
       const b = document.createElement('button'); b.textContent = '📋 คัดลอกผล'; b.style.cssText = 'margin-top:8px;padding:6px 12px;border-radius:8px;border:1px solid #8a6a2a;background:#e8c46a;cursor:pointer;font:inherit;color:#3a2a14';
       b.onclick = async () => { try { await navigator.clipboard.writeText(txt); b.textContent = 'คัดลอกแล้ว ✓' } catch (e) { const r = document.createRange(); r.selectNodeContents(pre); getSelection().removeAllRanges(); getSelection().addRange(r); b.textContent = 'เลือกข้อความแล้ว · กด Ctrl+C' } };
@@ -136,7 +138,7 @@
     if (jank > dts.length * 0.05) hints.push('⚠ เฟรมกระตุกบ่อย (' + jank + ' เฟรมช้ากว่า 50 ms) → ดูรายการ "ใช้เวลาต่อเฟรม" ว่าขั้นไหนกินเวลาที่สุด');
     if (fps < 30) hints.push('⚠ ตอนเล่นต่ำกว่า 30 fps'); else if (fps >= 55) hints.push('✔ ตอนเล่นลื่น (≥55 fps)');
     const txt = [
-      '== ตรวจความเร็ว · เกม ' + 'v' + (VER || '?') + ' · ' + new Date().toLocaleString('th-TH') + ' ==',
+      '== ตรวจความเร็ว · เกม ' + ((window.GAME_VERSION && window.GAME_VERSION.v) || ('v' + (VER || '?'))) + ' · ' + new Date().toLocaleString('th-TH') + ' ==',
       'เบราว์เซอร์: ' + navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 150),
       'จอ: ' + screen.width + '×' + screen.height + ' · พื้นที่เกม ' + innerWidth + '×' + innerHeight + ' · อัตราพิกเซล ' + (window.devicePixelRatio || 1).toFixed(2) + ' (' + real + ')',
       'เครื่อง: ' + (navigator.hardwareConcurrency || '?') + ' คอร์ · RAM ~' + (navigator.deviceMemory || '?') + ' GB',
@@ -156,7 +158,14 @@
       'ข้อสังเกตอัตโนมัติ:', ...hints.map(h => ' ' + h),
       '', '✅ เสร็จ'
     ].join('\n');
-    show(txt, true); running = false; try { console.log(txt) } catch (e) { }
+    const bad = [], Lx = AN ? AN.loaf() : [], cbx = AN ? AN.cbT : { sum: 0, n: 0 };
+    if (blocked > 2) bad.push('เปิดเกม:');
+    if (fps < 45) bad.push('ตอนเล่น:');
+    if (worst >= 34 || jank > 0 || (dts.length && dts[dts.length - 1] > 100)) bad.push('ความกระตุก:');
+    if (Lx.length && Lx.reduce((a, e) => a + e.duration, 0) / Lx.length > 50) bad.push('long-animation-frame');
+    if (cbx.n && cbx.sum / S.n > 12) bad.push('JS ใน requestAnimationFrame');
+    if ((S.T['วาดวัตถุ'] || 0) / S.n > 8) bad.push('ใน drawSorted:');
+    show(txt, true, bad); running = false; try { console.log(txt) } catch (e) { }
   }
   function scene() { const p = location.pathname.split('/').pop() || 'index.html'; let s = p; try { if (window.TacticsCore || document.getElementById('tacticsLayer')?.classList.contains('fullbattle')) s += ' (มีฉากต่อสู้)' } catch (e) { } return s }
   function extra() {   // render settings that decide the cost of a frame

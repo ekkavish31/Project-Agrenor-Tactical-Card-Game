@@ -217,3 +217,4 @@ body.cs-open #smithWip{display:none}
 
 /* v98.252 · no quest window over a battle */
 body.fb-open #storyTracker{display:none!important}
+#storyTracker .stk-head .stk-x{all:unset;color:#e8c98a;font-size:13px;cursor:pointer;padding:0 5px;line-height:1;opacity:.75}#storyTracker .stk-head .stk-x:hover{opacity:1;color:#fff3d6}
