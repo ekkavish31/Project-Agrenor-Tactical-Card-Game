@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.357';
+  const V = '98.358';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -72,7 +72,7 @@
   const STI = { burn: 'burn', poison: 'poison', freeze: 'freeze', stun: 'freeze', shock: 'slow', slowed: 'slow', weak: 'disarm' };
   const stiSrc = k => STI[k] ? 'assets/ui/status/' + STI[k] + '.webp' : null;
   const stiHtml = (k, title) => { const s = stiSrc(k); return s ? `<img class="sti" src="${s}" alt="" draggable="false"${title ? ` title="${title}"` : ''}>` : `<span${title ? ` title="${title}"` : ''}>${(FB.STATUS[k] || {}).icon || ''}</span>` };
-  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null;
+  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null, hoverU = null, pickU = null;   /* v98.358 · hoverU: the unit under the pointer (white edge + info window) · pickU: the unit last clicked (grey crystal over its head) */
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -494,14 +494,15 @@
   function setInspect(u) { inspectU = (!u || u === inspectU || u.hp <= 0) ? null : u; userCam = false; cam.set = true; refresh(); queueSync() }
   function inspectSync() {
     let d = document.getElementById('fbInspect');
-    if (!inspectU) { d?.remove(); return }
-    const u = inspectU, f = faceFor(u), E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, (u.shown ?? u.hp) / u.maxHp * 100)), foe = u.side === 'monster';
+    const U = hoverU && hoverU.hp > 0 ? hoverU : inspectU;
+    if (!U) { d?.remove(); return }
+    const u = U, f = faceFor(u), E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, (u.shown ?? u.hp) / u.maxHp * 100)), foe = u.side === 'monster';
     const IQ2 = ['ดุร้าย · พุ่งใส่ตัวใกล้สุด', 'เจ้าเล่ห์ · ล่าตัวอ่อนแอ', 'ชำนาญยุทธวิธี · เล็งตัวซัพพอต', 'จอมวางแผน · ใช้ตัวบังพวกอ่อนแอ'];
     if (!d) { d = document.createElement('div'); d.id = 'fbInspect'; document.body.append(d) }
     d.className = foe ? 'foe' : 'ally';
     d.innerHTML = `<button class="x" aria-label="ปิด" title="ปิด (Esc)"></button><div class="top"><span class="fc" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}"></span><div><b>${esc(u.name)}</b><small>${E ? E.icon + ' ' : ''}${u.level ? 'Lv.' + u.level : ''}</small><div class="bar"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><small>${Math.round(u.shown ?? u.hp)}/${u.maxHp} HP</small></div></div>
-      <div class="st"><span>เดิน <b>${u.move || '-'}</b></span><span>ระยะ <b>${u.range ?? '-'}</b></span><span>โจมตี <b>${u.atk ?? '-'}</b></span><span>ป้องกัน <b>${(u.def ?? u.armor) || 0}</b></span></div>${foe ? `<small class="iq">${esc(IQ2[u.iq | 0] || '')}</small>` : ''}<small class="nx">ช่องที่เดินได้ตาต่อไปแสดงบนสนาม</small>`;
-    d.querySelector('.x').onclick = () => setInspect(null);
+      <div class="st"><span>เดิน <b>${u.move || '-'}</b></span><span>ระยะ <b>${u.range ?? '-'}</b></span><span>โจมตี <b>${u.atk ?? '-'}</b></span><span>ป้องกัน <b>${(u.def ?? u.armor) || 0}</b></span></div>${foe ? `<small class="iq">${esc(IQ2[u.iq | 0] || '')}</small>` : ''}<small class="nx">${U === inspectU ? 'ช่องที่เดินได้ตาต่อไปแสดงบนสนาม' : (U === pickU ? 'เลือกอยู่ (คริสตัลเทาเหนือหัว)' : 'ชี้อยู่ · คลิกเพื่อเลือก')}</small>`;
+    d.querySelector('.x').hidden = U !== inspectU; d.querySelector('.x').onclick = () => setInspect(null);
   }
   addEventListener('keydown', e => { if (e.key === 'Escape' && inspectU) { e.preventDefault(); e.stopImmediatePropagation(); setInspect(null) } }, true);
   function queueSync() {
@@ -1492,7 +1493,7 @@
       if (!it.unit) { it.draw(g, t); continue }
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
       if (u.deadAt && t > u.deadAt && !MON[u.kind]?.loot) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
-      const isSel = u.hp > 0 && u === selUnit && !u.deadAt; if (isSel && SEL_OUTLINE) { g.shadowColor = '#fff'; g.shadowBlur = 6 * (devicePixelRatio || 1) }   /* v98.324 · the selected character: thin white edge + soft aura */
+      const isSel = u.hp > 0 && (u === selUnit || u === hoverU || u === pickU) && !u.deadAt; if (isSel && SEL_OUTLINE) { g.shadowColor = '#fff'; g.shadowBlur = 6 * (devicePixelRatio || 1) }   /* v98.324 · the selected character: thin white edge + soft aura */
       drawUnit(u); g.restore();
     }
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
@@ -1503,7 +1504,8 @@
         if (pic || CODE_ART) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, ph = UNIT * .98, pw = ph * 100 / 160, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.78 * big + .1) + bob;
           if (CODE_ART) GroundArtCode.crystal(g, cx, cy, ph * .8, t, foe ? 'foe' : 'ally'); else g.drawImage(pic, (Math.floor(t / 110) % 8) * 100, 0, 100, 160, cx - pw / 2, cy - ph / 2, pw, ph) } } }
     /* v98.253 · grey crystal (no ring) over the fighter picked in the queue */
-    if (inspectU && inspectU.hp > 0) { const pic = im('assets/fx/plumbob-view.webp'); if (pic || CODE_ART) { const q = project(inspectU.vu, inspectU.vv), ko = kbOff(inspectU, t), big = inspectU.side === 'monster' ? (MON[inspectU.evoShow || inspectU.kind]?.scale || 1) : 1, pw = UNIT * .36, ph = pw * 96 / 64, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + Math.sin(t * .0042 + 1) * UNIT * .05 - (actUnit === inspectU ? UNIT * .55 : 0);
+    const crU = inspectU || pickU;
+    if (crU && crU.hp > 0) { const pic = im('assets/fx/plumbob-view.webp'); if (pic || CODE_ART) { const q = project(crU.vu, crU.vv), ko = kbOff(crU, t), big = crU.side === 'monster' ? (MON[crU.evoShow || crU.kind]?.scale || 1) : 1, pw = UNIT * .36, ph = pw * 96 / 64, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + Math.sin(t * .0042 + 1) * UNIT * .05 - (actUnit === crU ? UNIT * .55 : 0);
       if (CODE_ART) GroundArtCode.crystal(g, q.x + ko.x, cy, ph * .8, t, 'view'); else g.drawImage(pic, (Math.floor(t / 85) % 12) * 64, 0, 64, 96, q.x + ko.x - pw / 2, cy - ph / 2, pw, ph) } }
     /* v97.32 · B13: at night the hero and companions carry lanterns — a warm flickering glow at hip height that lights the ground around them */
     if (NIGHT) { g.save(); g.globalCompositeOperation = 'lighter'; for (const u of FB.allies(st).concat(h)) { if (u.hp <= 0) continue; const q = project(u.vu, u.vv), fl = .85 + .15 * Math.sin(t * .013 + u.id.length) * Math.sin(t * .007), x = q.x + UNIT * .22, y = q.y - UNIT * .55;
@@ -1594,6 +1596,11 @@
   }
   /* the page's own pointerup is replaced by TownUX, so the battle listens for a plain click itself (no drag = click) */
   { let down = null; cv.addEventListener('pointerdown', e => { if (e.button === 0) down = { x: e.clientX, y: e.clientY } }, true);
+    /* v98.358 · pointing at a character / monster: white edge + a short info window; clicking marks it with the grey crystal */
+    const unitAt = wp => { let best = null, by = -1e9; for (const u of st.units) { if (u.hp <= 0 || u.deadAt) continue; const g0 = inv(wp.x, wp.y), p = project(u.vu, u.vv); const same = Math.floor(g0.u) === u.u && Math.floor(g0.v) === u.v, box = Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5; if ((same || box) && p.y > by) { best = u; by = p.y } } return best };
+    cv.addEventListener('pointermove', e => { if (!st || e.pointerType === 'touch') return; const u = unitAt(world(e)); if (u !== hoverU) { hoverU = u; cv.style.cursor = u ? 'pointer' : ''; inspectSync() } });
+    cv.addEventListener('pointerleave', () => { if (hoverU) { hoverU = null; inspectSync() } });
+    cv.addEventListener('pointerdown', e => { if (e.button !== 0 || !st) return; const u = unitAt(world(e)); if (u && u !== pickU) { pickU = u; sfx('cast', .15); inspectSync() } else if (!u && pickU && !hoverU) { /* clicking the ground keeps the mark: it clears when that unit acts or falls */ } }, true);
     cv.addEventListener('pointerup', e => { if (e.button !== 0 || !down) return; const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5; down = null; if (moved) { userCam = true; try { follow = false } catch (e) { } } else if (!EDIT) click(world(e)) }, true);
     cv.addEventListener('wheel', () => { userCam = true; try { follow = false } catch (e) { } }, true) }
   /* runs before the frame's camera transform: TownUX re-centres on the village hero every frame, so the arena has to win after it */
