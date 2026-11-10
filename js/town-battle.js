@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.358';
+  const V = '98.359';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -199,7 +199,7 @@
       if (rec.coach) coachState.i = rec.coach; return true;
     } catch (e) { return false }
   }
-  function refresh() { snapSoon(); if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null;
+  function refresh() { if (pickEl && (busy || !st || st.turn !== 'hero' || st.outcome)) closePick(); snapSoon(); if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null;
     /* v98.244 · second layer: where the farthest move card in hand would take you */
     if (inspectU && (inspectU.hp <= 0 || !st.units.includes(inspectU))) inspectU = null; inspectMap = inspectU && !st.outcome ? FB.reach(st, inspectU, inspectU.move || 4) : null; inspectSync();
     farInfo = st.turn === 'hero' ? FB.farMove?.(st) || null : null; farMap = farInfo ? FB.reach(st, FB.actor(st), st.mp + farInfo.move) : null; allyBar(); hudSync(); handSync() }
@@ -434,7 +434,7 @@
     d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
       <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbDis"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ทิ้งไพ่ฟื้นแรง</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '<button id="fbBack" hidden><img class="bi" src="assets/icons/pack/arrow.webp" alt="" draggable="false"><span>ไปต่อ ▸</span></button>' : ''}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
-      <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรู = ดูการ์ดที่ดีที่สุด · คลิกซ้ำ = โจมตี<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง) · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
+      <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรูในระยะ = เลือกไพ่โจมตีจากแถวไพ่ข้างตัว (ไกลเกิน = เกมพาเดินเข้าไปให้)<br>คลิกช่องฟ้า/เหลือง = เลือกไพ่เดินจากแถวไพ่ · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
     document.body.append(d); hud = d;
     d.querySelector('#fbEnd').onclick = () => endHeroTurn();
     d.querySelector('#fbAuto').onclick = () => setAuto(!auto);
@@ -948,7 +948,7 @@
     cave: [
       { t: 'แถบบนสุดคือคิวเทิร์น · กรอบทองคือตัวที่ได้เล่นตอนนี้ — ตอนนี้ตาคุณ' },
       { t: 'คลิกช่องว่างเพื่อเดิน (เกมเลือกไพ่เดินให้เอง) · เดินพลาดกด Z หรือ ↶ ย้อนเดิน', done: () => coachState.moved },
-      { t: 'คลิกศัตรู 1 ครั้ง ดูการ์ดที่ดีที่สุดกับดาเมจ · คลิกซ้ำเพื่อโจมตี (ยังไม่ถึงระยะ เกมพาเดินเข้าไปให้)', done: () => st.acted },
+      { t: 'คลิกศัตรูที่อยู่ในระยะ → แถวไพ่โจมตีที่ใช้ได้ขึ้นข้างตัวมัน (เห็นดาเมจโดยประมาณ) แล้วเลือกใบที่จะตี (ยังไม่ถึงระยะ เกมพาเดินเข้าไปให้)', done: () => st.acted },
       { t: 'กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า — หันเข้าหาศัตรู เพราะโดนตีจากด้านหลังแรงขึ้น ×1.2', done: () => st.turns > coachState.t0 },
       { t: 'ลูกศรใต้ตัวบอกทิศที่แต่ละตัวหัน · อ้อมไปตีศัตรูจากด้านหลังได้ ×1.2 · ล้มศัตรูให้หมดเพื่อชนะ' }],
     raid: [
@@ -959,7 +959,7 @@
     /* v98.331 · the first two real fights (prologue quests): Pip's goats teach WALKING / DISTANCE / FACING · the pumpkin patch teaches ATTACKING / TARGETS / ELEMENTS */
     goat: [
       { t: 'ตอนนี้ตาคุณ — คลิกช่องว่างเพื่อเดินเข้าใกล้แพะ (เกมเลือกไพ่เดินให้เอง) · เดินพลาดกด Z ย้อนได้', done: () => coachState.moved },
-      { t: 'แพะวิ่งหนีและขวิดสวนเบาๆ ได้ — ต้อนให้ชิดก่อนค่อยตี · คลิกแพะ 1 ครั้งดูไพ่โจมตีกับดาเมจ คลิกซ้ำเพื่อโจมตี', done: () => st.acted },
+      { t: 'แพะวิ่งหนีและขวิดสวนเบาๆ ได้ — ต้อนให้ชิดก่อนค่อยตี · คลิกแพะ แล้วเลือกไพ่โจมตีจากแถวไพ่ที่ขึ้นข้างตัวมัน (มีดาเมจโดยประมาณให้ดู)', done: () => st.acted },
       { t: 'ลูกศรใต้ตัวคือทิศที่หัน · ตีจากด้านหลังแรงขึ้น ×1.2 · กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า', done: () => st.turns > coachState.t0 },
       { t: 'ตัวเอกทั้งสองยังไม่ล้มในเควสนี้ (เลือดลดได้แต่ไม่ต่ำกว่า 1) — ลองเดิน ตี และหันหน้าให้คล่องจนจับแพะครบ' }],
     pumpkin: [
@@ -1043,7 +1043,7 @@
   }
   addEventListener('keydown', e => {
     if (EDIT || !ON || !st || facing || e.target.closest?.('input,textarea') || e.repeat) return;
-    if (e.key === 'Escape') { if (pauseEl) pauseMenu(); else if (pend) { pend = null; markAuto() } else if (!document.querySelector('dialog[open]')) pauseMenu(); return }
+    if (e.key === 'Escape') { if (pickEl) closePick(); else if (pauseEl) pauseMenu(); else if (pend) { pend = null; markAuto() } else if (!document.querySelector('dialog[open]')) pauseMenu(); return }
     if (pauseEl || busy || st.outcome) return;
     const k = e.key.toLowerCase();
     if (st.turn === 'ally') { if (k === ' ') { e.preventDefault(); endAllyTurn() } else if (k === 'z' || k === 'backspace') { e.preventDefault(); undoWalk() } else if (k === 'enter' && pendAlly) { e.preventDefault(); const m = st.units.find(u => u.id === pendAlly.id); if (m) allyEnemy(m) } else if (k === 'tab') { e.preventDefault(); const ms = FB.monsters(st).filter(m => m.hp > 0); const i = ms.findIndex(m => m.id === pendAlly?.id); pendAlly = null; if (ms.length) allyEnemy(ms[(i + 1) % ms.length]) } return }
@@ -1060,8 +1060,39 @@
     if (!st || busy || st.outcome || st.turn !== 'hero' || discardMode || facing) return;
     const g = inv(wp.x, wp.y), to = { u: Math.floor(g.u), v: Math.floor(g.v) };
     const m = FB.monsters(st).find(u => u.hp > 0 && ((u.u === to.u && u.v === to.v) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
-    if (m) { onEnemy(m); return }
-    pend = null; markAuto(); walkTo(to);
+    closePick();
+    if (m) { if (openAttackPick(m)) return; onEnemy(m); return }
+    pend = null; markAuto(); if (openMovePick(to)) return; walkTo(to);
+  }
+  /* ---------- v98.359 · the card chooser ----------
+     Click a foe that one or more cards in hand can hit from where you stand → a column of those cards (damage preview, element, stamina) opens beside it: pick one to attack.
+     Click a cell you can reach → the move cards that would take you there open beside it: pick one, the hero walks. Out of reach → the old one-click planner (walk + attack). */
+  let pickEl = null;
+  function closePick() { pickEl?.remove(); pickEl = null }
+  function pickCss() { if (document.getElementById('fbPickCss')) return; const c = document.createElement('style'); c.id = 'fbPickCss'; c.textContent = `#fbPick{position:fixed;z-index:70;width:238px;display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:12px;background:linear-gradient(#2f2418f6,#1b140de6);border:1px solid #d8b46a;box-shadow:0 12px 30px #000a;font:13px VillageThai,system-ui,sans-serif;color:#f6e7bf;animation:fbPickIn .16s ease-out}@keyframes fbPickIn{from{opacity:0;transform:translateX(-8px)}}#fbPick h4{margin:0 0 2px;font:700 13px VillageThai,system-ui;color:#ffe2a8;display:flex;justify-content:space-between;gap:6px}#fbPick h4 i{font-style:normal;opacity:.7;font-weight:400;font-size:11px}#fbPick button.pk{display:grid;grid-template-columns:1fr auto;gap:1px 8px;text-align:left;padding:7px 9px;border-radius:8px;border:1px solid #8a6a2a;background:#3a2d1c;color:inherit;font:inherit;cursor:pointer}#fbPick button.pk:hover,#fbPick button.pk:focus-visible{background:#5a4528;border-color:#ffd88a;outline:0}#fbPick .pk b{font-weight:700}#fbPick .pk em{font-style:normal;color:#ffd0a0;font-weight:700}#fbPick .pk small{grid-column:1/-1;color:#c9b88f;font-size:11.5px}#fbPick .pk.best{border-color:#ffd25a}`; document.head.append(c) }
+  function scrOf(vu, vv) { const q = project(vu, vv), k = scale * zoom, r = cv.getBoundingClientRect(); return { x: r.left + (q.x - WORLD_W / 2) * k + W / 2 + pan.x, y: r.top + (q.y - WORLD_H / 2) * k + H / 2 + pan.y } }
+  function showPick(title, sub, rows, vu, vv) {
+    pickCss(); closePick(); const el = pickEl = document.createElement('div'); el.id = 'fbPick';
+    el.innerHTML = `<h4><span>${esc(title)}</span><i>${esc(sub)} · Esc ปิด</i></h4>` + rows.map((r, i) => `<button type="button" class="pk${i === 0 && r.best ? ' best' : ''}" data-i="${i}"><b>${esc(r.name)}</b><em>${esc(r.badge)}</em><small>${esc(r.note)}</small></button>`).join('');
+    document.body.append(el); const p = scrOf(vu, vv), w = 238, h = el.offsetHeight;
+    el.style.left = Math.max(8, Math.min(innerWidth - w - 8, p.x + 56)) + 'px'; el.style.top = Math.max(70, Math.min(innerHeight - h - 150, p.y - h / 2 - 30)) + 'px';
+    el.onclick = async e => { const b = e.target.closest('button.pk'); if (!b) return; const r = rows[+b.dataset.i]; closePick(); if (r?.run) await r.run() };
+    el.addEventListener('pointerdown', e => e.stopPropagation()); el.querySelector('button.pk')?.focus({ preventScroll: true });
+  }
+  function openAttackPick(m) {
+    const all = FB.attackOptions(st, m.id); if (!all.length) return false;
+    const cnt = {}; for (const o of all) cnt[o.id] = (cnt[o.id] || 0) + 1; const opts = all.filter((o, i) => all.findIndex(x => x.id === o.id) === i);   /* identical copies are listed once (×n) */
+    FB.setTarget(st, m.id); pickU = m; sfx('cast', .25); hudSync(); handSync(); pend = null; markAuto();
+    const rows = opts.map((o, i) => { const E = window.ElementWheel?.info(o.el); return { name: (E ? E.icon + ' ' : '') + cardName('combat', o.id) + (cnt[o.id] > 1 ? ' ×' + cnt[o.id] : ''), badge: '≈ −' + o.pv.total + (o.pv.kill ? ' ☠' : ''), note: (o.pv.hits > 1 ? o.pv.hits + ' ครั้ง · ' : '') + (o.pv.notes.length ? o.pv.notes.join(' · ') + ' · ' : '') + 'แรง ' + o.stamina, best: i === 0,
+      run: async () => { FB.setTarget(st, m.id); const b = handBtn('combat', o.uid); if (b) await cardClick(b) } } });
+    showPick('ใช้ไพ่ไหนโจมตี ' + m.name + '?', 'ไพ่ที่ใช้ได้ ' + rows.length + ' ใบ', rows, m.vu, m.vv); return true;
+  }
+  function openMovePick(to) {
+    const w = FB.walkOptions(st, to); if (w.reason || w.free || !w.cards.length) return false;
+    const cnt = {}; for (const c of w.cards) cnt[c.id] = (cnt[c.id] || 0) + 1; const uniq = w.cards.filter((c, i) => w.cards.findIndex(x => x.id === c.id) === i);
+    const rows = uniq.map((c, i) => ({ name: '👣 ' + cardName('movement', c.id) + (cnt[c.id] > 1 ? ' ×' + cnt[c.id] : ''), badge: 'เดิน +' + c.move, note: 'ใช้ ' + c.cost + ' แต้ม · แรง ' + c.stamina, best: i === 0,
+      run: async () => { const b = handBtn('movement', c.uid); if (!b) return; await cardClick(b); await heroMove(to) } }));
+    showPick('ใช้ไพ่เดินใบไหน?', 'ถึงช่องนี้ได้ ' + rows.length + ' ใบ', rows, to.u + .5, to.v + .5); return true;
   }
   /* ---------- v97.08 · one-click play: the game picks the card ----------
      click an enemy: it becomes the target and the best card for it shows (gold); click it again to play — walking next to it first

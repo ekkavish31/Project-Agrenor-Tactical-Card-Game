@@ -751,6 +751,23 @@
     t.u = nu; t.v = nv; return true;
   }
   const setLoan = (st, L) => { st.loan = L; if (st.cards) { const drawn = []; ensureLoan(st, drawn); st.drawn = [...(st.drawn || []), ...drawn] } };
-  const api = { setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  /* v98.359 · what can be played right now (for the card chooser next to a clicked target / cell):
+     attackOptions(st, id) → the attack cards in hand that reach this foe from where the hero stands, best damage first (with the damage preview)
+     walkOptions(st, to)   → { free } when the walking points already in hand reach the cell · else { cards:[move cards that would reach it] } */
+  function attackOptions(st, id) {
+    if (!st.cards || st.outcome || st.turn !== 'hero' || st.acted) return [];
+    const h = hero(st), keep = st.target, out = []; st.target = id;
+    st.deck.combat.hand.forEach((c, i) => { const r = CARD[c.id]; if (!r || r.self || combatBlock(st, i)) return; if (pickTarget(st, r)?.id !== id) return; const pv = preview(st, i); if (!pv || pv.self) return; out.push({ index: i, uid: c.uid, id: c.id, pv, stamina: r.st, el: cardEl(c.id, h) }) });
+    st.target = keep; return out.sort((a, b) => b.pv.total - a.pv.total);
+  }
+  function walkOptions(st, to) {
+    if (!st.cards || st.outcome || st.turn !== 'hero') return { reason: 'ไม่ใช่ตาคุณ' };
+    const h = hero(st), TD = deckLib(), key = to.u + ',' + to.v, free = st.mp > 0 ? reach(st, h, st.mp).get(key) : null;
+    if (free && free.cost > 0) return { free: true, cost: free.cost, cards: [] };
+    if (!crystals(st)) return { reason: 'คริสตัลหมดแล้วในเทิร์นนี้' };
+    const cards = []; st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (!m || h.stamina < m.stamina) return; const e = reach(st, h, st.mp + m.move).get(key); if (e && e.cost > 0) cards.push({ index: i, uid: c.uid, id: c.id, name: m.name, move: m.move, stamina: m.stamina, cost: e.cost }) });
+    return { cards };
+  }
+  const api = { attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
