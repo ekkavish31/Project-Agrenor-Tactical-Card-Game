@@ -91,3 +91,5 @@
 #titleScreen.ag-reveal-skip .ts-bg,#titleScreen.ag-reveal-skip .ts-veil,#titleScreen.ag-reveal-skip .ts-brand::before,#titleScreen.ag-reveal-skip .ts-brand h1,#titleScreen.ag-reveal-skip .ts-brand .ts-kicker,#titleScreen.ag-reveal-skip .ts-menu,#titleScreen.ag-reveal-skip .ag-replay,#titleScreen.ag-reveal-skip .ts-foot,#titleScreen.ag-reveal-skip .ag-horizon{animation:none!important}
 #titleScreen .ag-skiphint{position:absolute;left:50%;bottom:clamp(44px,7vh,70px);transform:translateX(-50%);padding:5px 14px;border-radius:999px;background:#ffffffb3;color:#1b2b47;font:600 12px/1.3 AgThai,system-ui,sans-serif;letter-spacing:.04em;opacity:0;pointer-events:none;transition:opacity .4s}
 #titleScreen.ag-reveal:not(.ag-reveal-skip):not(.ag-reveal-done) .ag-skiphint{opacity:.85}
+#titleScreen.ag-title .ag-replay.ag-skiptoggle{left:calc(clamp(16px,3.4vw,60px) + 176px);font-size:12px;opacity:.82}#titleScreen.ag-title .ag-replay.ag-skiptoggle:hover{opacity:1}
+@media (max-width:640px){#titleScreen.ag-title .ag-replay.ag-skiptoggle{left:clamp(16px,3.4vw,60px);bottom:64px}}

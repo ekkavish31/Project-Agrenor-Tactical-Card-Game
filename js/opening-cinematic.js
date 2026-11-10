@@ -174,7 +174,22 @@
     }
 
     replay.addEventListener('click', () => playOpening(false));
-    playOpening(true);
+
+    /* v98.348 · DEV SHORTCUT (nothing above is removed): the opening (black gate → logo → video → menu reveal) can be skipped so the game opens straight on the menu.
+       Default = skipped while the game is being developed. The little button next to "ดูบทเปิดอีกครั้ง" switches it (remembered in localStorage 'projectA.skipIntro');
+       ?intro=1 plays the opening once · ?intro=0 skips it once. "ดูบทเปิดอีกครั้ง" plays the whole opening whenever you want. */
+    const SKIP_KEY = 'projectA.skipIntro';
+    const skipOn = () => { const q = new URLSearchParams(location.search).get('intro'); if (q === '1') return false; if (q === '0') return true; try { return localStorage.getItem(SKIP_KEY) !== '0' } catch (e) { return true } };
+    const toggle = document.createElement('button');
+    toggle.className = 'ag-replay ag-skiptoggle'; toggle.type = 'button';
+    const paintToggle = () => { const on = (() => { try { return localStorage.getItem(SKIP_KEY) !== '0' } catch (e) { return true } })(); toggle.textContent = 'ข้ามบทเปิดตอนเข้าเกม: ' + (on ? 'เปิด' : 'ปิด'); toggle.title = on ? 'ตอนนี้เปิดเกมมาที่หน้าเมนูเลย · กดเพื่อกลับไปเล่นบทเปิดทุกครั้ง' : 'ตอนนี้เล่นบทเปิดทุกครั้ง · กดเพื่อข้าม (เหมาะตอนพัฒนา)' };
+    toggle.addEventListener('click', () => { let on = true; try { on = localStorage.getItem(SKIP_KEY) !== '0'; localStorage.setItem(SKIP_KEY, on ? '0' : '1') } catch (e) { } paintToggle() });
+    paintToggle(); main.append(toggle);
+    if (skipOn()) {
+      /* straight to the menu: the menu's own pictures + font first (so nothing pops in), the intro music file is fetched in the background; the first click/key unlocks sound as always */
+      Promise.race([preloadMenu().catch(() => {}), wait(3500)]).then(() => { if (title.isConnected) title.classList.remove('ag-intro-pending') });
+      try { window.GameBGM?.preloadIntro?.() } catch (e) { }
+    } else playOpening(true);
   }
 
   if (document.readyState !== 'complete' && !document.getElementById('titleScreen')) {
