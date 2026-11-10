@@ -48,7 +48,7 @@ code{font-size:12px}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.373"></script><script src="js/char-size.js?v=98.305"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.374"></script><script src="js/char-size.js?v=98.305"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -144,7 +144,10 @@ async function build() {
     for (const [k, list] of Object.entries(by)) {
       if (ENTRIES.some(x => x.id === 'm:' + k)) continue;
       const a = list.find(x => x.pose === 'idle' && x.view === 'SE') || list.find(x => x.pose === 'idle') || list[0], im = await load(a.file); if (!im) continue;
-      const fw = a.frameSize?.[0] || im.naturalHeight, fh = a.frameSize?.[1] || im.naturalHeight, c = document.createElement('canvas'); c.width = fw; c.height = fh; c.getContext('2d').drawImage(im, 0, 0, fw, fh, 0, 0, fw, fh);
+      /* v98.374 · sheets of 4×4 frames (assets/enemies/animations/v32/*.webp) have no frameSize: crop the FIRST frame (its region, else one grid cell) — the whole sheet was being drawn as one "character" */
+      const an = a.animation || {}, rg = an.regions?.[0], cw0 = an.columns ? im.naturalWidth / an.columns : 0, ch0 = an.rows ? im.naturalHeight / an.rows : 0,
+        box = a.frameSize ? [0, 0, a.frameSize[0], a.frameSize[1]] : rg ? [rg[0], rg[1], rg[2], rg[3]] : cw0 && ch0 && (an.frames > 1 || an.columns > 1) ? [0, 0, Math.round(cw0), Math.round(ch0)] : [0, 0, im.naturalHeight, im.naturalHeight],
+        fw = box[2], fh = box[3], c = document.createElement('canvas'); c.width = fw; c.height = fh; c.getContext('2d').drawImage(im, box[0], box[1], fw, fh, 0, 0, fw, fh);
       const name = (list.map(x => (x.subject || '').split(' · ')[0]).find(t => /[ก-๙]/.test(t))) || k;
       await add('m:' + k, name, 'monster', 'battle', c.toDataURL('image/png'), CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k} (วัดจากเฟรมแรกของท่ายืน)`);
       const e = ENTRIES.find(x => x.id === 'm:' + k); if (e) e.unwired = true;
@@ -336,7 +339,7 @@ function interiorList() {
   return o;
 }
 const mapText = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-function mapRows() {   /* v98.373 · four groups only (js/map-scale.js) */
+function mapRows() {   /* v98.374 · four groups only (js/map-scale.js) */
   return [['village', null, '🏡 ในเมือง / หมู่บ้าน', 'ตัวเอก + ชาวบ้าน + เพื่อนที่เดินในเมืองและหมู่บ้าน'], ['world', null, '🌍 แผนที่โลก', 'ตัวเอกบนแผนที่โลก'],
     ['battle', null, '⚔ สนามรบ (ทุกที่)', 'ตัวเอก เพื่อน มอนสเตอร์ ทุกตัวในสนามรบทุกแห่ง (รวมสนามในเมือง)'], ['inside', null, '🚪 ภายในสถานที่ (ทุกที่)', 'ทุกคนในแผนที่ย่อยและห้องภายในของทุกสถานที่']];
 }
