@@ -685,3 +685,10 @@
 - อย่าเปิด Asset Studio พร้อมกันสองเครื่อง · `data/asset-manifest.json` เป็นจุดที่ชนง่ายสุด
 - ผู้ช่วยก็ push ขึ้น `main` ได้ → ก่อนแก้ใน Studio ให้รัน `work-start` เสมอ
 - ถ้า repo ใหญ่/clone ช้า: ดู Git LFS หรือแยก repo asset (หมวด 18)
+
+### 19.2 รู้ว่า asset เครื่องไหนใหม่กว่า (v98.367 · `tools/asset-sync.cjs`)
+- **สมุดบัญชี** `data/asset-ledger.json` = ลายนิ้วมือ (sha1 · ขนาด · เวลาแก้) ของทุกไฟล์ใน `assets/**` + `data/asset-manifest.json` + `js/asset-manifest.js` · ไฟล์เล็ก ส่งผ่าน Git ได้ (ใช้ `work-start/work-end`) แม้ตัวไฟล์ภาพจะไม่ได้อยู่ใน Git
+- แต่ละเครื่องมี `.asset-base.json` (ไม่ส่งขึ้น Git) จำสภาพ ณ การซิงก์ครั้งล่าสุด → เทียบ 3 ทาง: **เครื่องนี้ใหม่กว่า / อีกเครื่องใหม่กว่า / ชนกัน / ไม่เคยซิงก์ (ใช้เวลาแก้ไฟล์เป็นคำใบ้)**
+- `node tools/asset-sync.cjs status [--root <โฟลเดอร์>]` ดูสถานะ · `publish` บันทึกสภาพเครื่องนี้ลงสมุดบัญชี (ปฏิเสธถ้าอีกเครื่องมีของใหม่กว่า/ชนกัน · `--force` ข้าม)
+- ลำดับ: เริ่มงาน `work-start` → `asset-sync status` → ทำงาน → `asset-sync publish` → `work-end`
+- **ยังไม่มี:** ตัวขนไฟล์ภาพข้ามเครื่อง (เลือกทาง: Git ตามเดิม / โฟลเดอร์ซิงก์ OneDrive-Drive-Dropbox / USB) · เครื่องมือนี้บอกว่า "ไฟล์ไหนต้องย้าย" เท่านั้น

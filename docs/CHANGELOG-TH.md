@@ -4853,3 +4853,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 ## v98.366 · สคริปต์ทำงานสองเครื่อง
 - `tools/work-start.cjs` (ดึงงานล่าสุด) และ `tools/work-end.cjs` (บันทึก+รวม+push) · วิธีใช้ใน docs/TODO.md §19.1
+
+## v98.367 · asset-sync: รู้ว่า asset เครื่องไหนใหม่กว่า
+- `tools/asset-sync.cjs status|publish` — สมุดบัญชี sha1 ของ asset (`data/asset-ledger.json`) เทียบ 3 ทางกับสภาพซิงก์ล่าสุดของแต่ละเครื่อง · ทดสอบจำลอง 2 เครื่อง: ตรงกัน / อีกเครื่องใหม่กว่า / ชนกัน ถูกต้อง
