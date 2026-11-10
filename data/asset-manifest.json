@@ -106180,6 +106180,41 @@
     ],
     "flipX": false
    }
+  },
+  {
+   "id": "iron-fence-cornerlong",
+   "file": "assets/objects/iron-fence-cornerlong.webp",
+   "category": "tactics-props",
+   "status": "final",
+   "size": [
+    699,
+    279
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: iron-fence-cornerlong",
+   "prompt": "",
+   "pivot": [
+    0.3771107904318624,
+    0.8136839569173467
+   ],
+   "mapW": 233,
+   "artRevision": "20261110-225517",
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.3771107904318624,
+     0.8136839569173467
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1,
+     1
+    ],
+    "flipX": false
+   }
   }
  ],
  "studioReviews": {
