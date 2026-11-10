@@ -187,7 +187,7 @@
     paintToggle(); main.append(toggle);
     if (skipOn()) {
       /* straight to the menu: the menu's own pictures + font first (so nothing pops in), the intro music file is fetched in the background; the first click/key unlocks sound as always */
-      Promise.race([preloadMenu().catch(() => {}), wait(3500)]).then(() => { if (title.isConnected) title.classList.remove('ag-intro-pending') });
+      Promise.race([preloadMenu().catch(() => {}), wait(3500)]).then(() => { if (title.isConnected) title.classList.remove('ag-intro-pending'); window.dispatchEvent(new Event('maker-intro-finished')) });   /* the village frame (village-town-bridge.js) waits for this event to start loading */
       try { window.GameBGM?.preloadIntro?.() } catch (e) { }
     } else playOpening(true);
   }
