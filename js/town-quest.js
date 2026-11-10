@@ -13,7 +13,7 @@
   const story = () => { try { return root.parent !== root ? root.parent.Story : null } catch (e) { return null } };
   const life = () => { try { return root.VillageLife || root.parent?.VillageLife } catch (e) { return null } };
   const objs = new Map();               // spot key → [{key,kind,u,v,i,...}]
-  let T = null, lastPoll = 0, lastT = 0, chaseAt = 0, pending = null, floats = [], down = null;
+  let chaseTo = null, T = null, lastPoll = 0, lastT = 0, chaseAt = 0, pending = null, floats = [], down = null;
   const ICON = { goat: '🐐', plank: '🪵', plot: '🌿', ripe: '🎃', stall: '🛠️', pumpkin: '🎃' };
 
   /* ---------- helpers ---------- */
@@ -108,7 +108,9 @@
       if (dist(hero, o) < reach && (o.flee || pending === o || !path.length)) use(o);
     }
     // chasing a goat: follow it as it moves
-    if (pending?.flee && now > chaseAt) { chaseAt = now + 450; const p = findPath(hero, { u: pending.u, v: pending.v }); if (p.length) path = p }
+    /* v98.355 · chasing a goat re-planned a full A* search twice a second for as long as the chase lasted (a visible stutter until the goat was caught). Now: re-plan only when the goat has moved ≥1.6 cells (or the path is used up),
+       at most every 0.8 s, and a clear straight line is just one step */
+    if (pending?.flee && now > chaseAt && (!path.length || !chaseTo || dist(chaseTo, pending) >= 1.6)) { chaseAt = now + 800; chaseTo = { u: pending.u, v: pending.v }; let p = []; try { if (dist(hero, pending) < 6 && typeof clearSegment === 'function' && clearSegment(hero, chaseTo, blocked)) p = [chaseTo] } catch (e) { } if (!p.length) p = findPath(hero, chaseTo); if (p.length) path = p }
   }
 
   /* ---------- drawing ---------- */

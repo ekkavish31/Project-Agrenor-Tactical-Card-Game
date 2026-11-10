@@ -148,7 +148,9 @@ function goTalk(n){if(box.hidden===false&&talking===n)return;if(gap(n)<=REACH){a
 function walkTo(n){const v=V();let p=[];try{p=v.findPath(v.getHero(),{u:n.u,v:n.v})}catch(e){}if(!p.length){const q=snap({u:n.u,v:n.v});if(q)try{p=v.findPath(v.getHero(),q)}catch(e){}}
  if(p.length){try{path=p}catch(e){}n.path=[];n.wait=Math.max(n.wait||0,1)}else{approach=null;const st=document.getElementById('status');if(st)st.textContent='เดินไปหา '+n.name+' ไม่ได้ในตอนนี้'}}
 function chase(now){if(!approach)return;const n=approach.n;if(n.inside||n.hidden||n.alpha<.3){approach=null;return}if(gap(n)<=REACH){approach=null;try{path=[]}catch(e){}talk(n);return}
- if(now>approach.next){approach.next=now+450;walkTo(n)}else{try{if(!path.length)walkTo(n)}catch(e){}}}
+ /* v98.355 · walking up to someone re-planned a full path search every 0.45 s (stutter until you arrived): now only when they moved ≥1.4 cells since the last plan, or the path ran out, at most every 0.9 s */
+ const moved=!approach.at||Math.hypot(n.u-approach.at.u,n.v-approach.at.v)>=1.4;
+ if(now>approach.next&&moved){approach.next=now+900;approach.at={u:n.u,v:n.v};walkTo(n)}else{try{if(!path.length&&now>approach.next){approach.next=now+900;walkTo(n)}}catch(e){}}}
 function period(){const m=root.gameState?.minutes??600;return m<12*60?'morning':m<17*60?'day':'evening'}
 function talk(n){talking=n;try{if(parent!==window)parent.Story?.talked?.(n.id)}catch(e){};n.path=[];n.say=null;const name=heroName();
  if(LIFE&&MIND()){const S=LIFE.save(),per=root.VillageClock?.period(clockHour())||period(),r=MIND().talk(n.id,{period:per,place:'outside',save:S});LIFE.writeSave(S);lines=[r.text];lineKind=r.kind;extra=r.kind==='small'||r.kind==='meet'?1:2}
