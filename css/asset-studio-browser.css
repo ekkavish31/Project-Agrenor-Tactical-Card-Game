@@ -92,3 +92,11 @@ nav button img.bust{width:43px;height:43px;object-fit:cover;border-radius:8px;ba
 
 /* v98.256 · a passed cell shows no pill (the row label says ผ่านครบทุกทิศ): only things that need attention are marked */
 .clip-status:empty{display:none}
+
+/* v98.376 · pick a tile (📌 ใส่ช่อง) → click an animation cell to fill it */
+.asset-cards .tile{position:relative}
+.arm-btn{position:absolute;left:8px;top:8px;padding:3px 8px;border-radius:12px;border:1px solid #b9a56a;background:#fff8e4;cursor:pointer;font:600 11px inherit;font-family:inherit;z-index:2}
+.arm-btn.on{background:#e8c766;border-color:#a8801f}
+.arm-bar{margin:10px 0;padding:8px 12px;border-radius:10px;background:#fff2c8;border:1px solid #d8b24a;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#grid.arming .clip-cell,#grid.arming .missing-cell{outline:2px dashed #d8a21a;outline-offset:-3px;cursor:pointer}
+#grid.arming .missing-cell{display:block;padding:18px 6px;background:#fff8e4}

@@ -15,7 +15,7 @@
   const MON_TIMING = { idle: [650, 'loop'], walk: [130, 'loop'], windup: [250, ''], strike: [135, ''], hit: [400, ''], down: [300, ''], cast: [250, ''], loot: [1000, 'loop'], run: [90, 'loop'], pant: [500, 'loop'], graze: [450, 'loop'], bleat: [350, ''], sleep: [900, 'loop'], happy: [200, ''] };
   const isMon = e => !!e && (e.group === 'monsters' || e.group === 'bosses'), monKind = e => String(e.id).replace(/^enemy:/, '');
   const VIEWS = ['SW', 'SE', 'NW', 'NE'], MON_VIEWS = ['SE', 'NE'], OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' };
-  const PRESETS = { std: ['idle', 'windup', 'strike', 'guard', 'hit', 'down'], walk: ['walk', 'idle', 'windup', 'strike', 'guard', 'hit', 'down'], mon4: ['windup', 'strike', 'hit', 'down'], mon6: ['idle', 'walk', 'windup', 'strike', 'hit', 'down'] };
+  const PRESETS = { npc2: ['idle', 'walk'], std: ['idle', 'windup', 'strike', 'guard', 'hit', 'down'], walk: ['walk', 'idle', 'windup', 'strike', 'guard', 'hit', 'down'], mon4: ['windup', 'strike', 'hit', 'down'], mon6: ['idle', 'walk', 'windup', 'strike', 'hit', 'down'] };
   const $ = id => document.getElementById(id), esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const B = () => window.StudioBrowser, toast = m => { try { window.toast ? window.toast(m) : console.log(m) } catch (e) { } };
 
@@ -77,8 +77,9 @@
 
   /* ---------------- state + UI ---------------- */
   let sheet = null, cells = [], dlg = null, busy = false;   // cells: [{rect, trim, target:'idle|SW'|'', mirror:false}]
-  let monMode = false;
-  const actsNow = () => monMode ? MON_ACTIONS : ACTIONS, viewsNow = () => monMode ? MON_VIEWS : VIEWS;
+  let monMode = false, npcMode = false;   /* v98.376 · npcMode: village NPCs (group 'npcs') — stand + walk in 4 directions */
+  const NPC_ACTIONS = [['idle', 'ยืน'], ['walk', 'เดิน (หลายเฟรม)']], isNpc = e => !!e && e.group === 'npcs';
+  const actsNow = () => monMode ? MON_ACTIONS : npcMode ? NPC_ACTIONS : ACTIONS, viewsNow = () => monMode ? MON_VIEWS : VIEWS;
   const entityNow = () => { const S = B()?.state; return S && S.model.find(e => e.id === S.entity) };
   const slotsOf = e => { const rows = ACTIONS.map(a => a[0]); return rows.flatMap(a => VIEWS.map(v => a + '|' + v)) };
   const slotLabel = k => { const [a, v] = k.split('|'); return (actsNow().find(x => x[0] === a)?.[1] || a) + ' · ' + v };
@@ -153,7 +154,7 @@
       const groups = new Map(), add = (slot, canvas) => { if (!groups.has(slot)) groups.set(slot, []); groups.get(slot).push(canvas) };
       for (const c of chosen) { const [a, v] = c.target.split('|'), walkLike = a === 'walk'; const cv = place(c.trim, kOf(c), walkLike || chosen.filter(x => x.target === c.target).length > 1); add(c.target, cv); if (c.mirror) add(a + '|' + OPP[v], flipped(cv)) }
       const out = []; const st = stamp();
-      for (const [slot, frames] of groups) { const [a, v] = slot.split('|'); out.push(e.id === 'hero' ? await writeHero(a, v, frames, ms, st) : await writeAlly(e, a, v, frames, ms, st)) }
+      for (const [slot, frames] of groups) { const [a, v] = slot.split('|'); out.push(e.id === 'hero' ? await writeHero(a, v, frames, ms, st) : npcMode ? await writeNpc(e, a, v, frames, ms, st) : await writeAlly(e, a, v, frames, ms, st)) }
       try { window.StudioVariants?.syncStatuses?.(M) } catch (x) { }
       await saveManifest(); B().invalidate(); msg('นำเข้าแล้ว ' + groups.size + ' ช่อง: ' + out.join(' · ') + ' — กด Push เพื่อส่งขึ้นเกม'); toast('นำเข้าชีท ' + groups.size + ' ช่อง');
     } catch (err) { msg('นำเข้าไม่สำเร็จ: ' + err.message); console.error(err) } finally { busy = false; drawCells() }
@@ -170,6 +171,17 @@
     if (walk) { M.studioWalks ||= {}; M.studioWalks[view] = cfg; if (M.studioWalkMirrors) { delete M.studioWalkMirrors[view]; for (const k of Object.keys(M.studioWalkMirrors)) if (M.studioWalkMirrors[k] === view && k !== OPP[view]) { /* keep links that point at this set */ } } }
     else { M.studioPoses ||= {}; M.studioPoses[action] ||= {}; M.studioPoses[action][view] = cfg; M.studioPoseMirrors ||= {}; M.studioPoseMirrors[action] ||= {}; delete M.studioPoseMirrors[action][view] }
     return 'ตัวหลัก ' + slotLabel(action + '|' + view) + ' ' + frames.length + ' เฟรม';
+  }
+  /* v98.376 · a village NPC: stand → <dir>-stand.webp · walk → <dir>-walk1..N.webp (assets/village-town/npc/<id>/); frames beyond N of an older walk set are retired */
+  async function writeNpc(e, action, view, frames, ms, st) {
+    const k = e.id.replace(/^npc:/, ''), d = view.toLowerCase(), own = { id: e.id, name: e.name, group: 'npcs' };
+    const slot = async (id, file, pose, frame, canvas) => { let a = byId(id); if (!a) { a = { id, file, category: 'allies', status: 'missing', size: [SIZE, SIZE], transparent: true, view, pose, usedIn: `NPC ${e.name}`, pivot: [.5, .9375], studioOwner: own }; if (frame) a.frame = frame; M.assets.push(a) } if (frame) a.ms = ms; await applyToSlot(a, { canvas }, { status: 'final', stamp: st, note: 'นำเข้าชีท' }) };
+    if (action === 'walk') {
+      for (let i = 0; i < frames.length; i++) await slot(`npc-${k}-${d}-walk${i + 1}`, `assets/village-town/npc/${k}/${d}-walk${i + 1}.webp`, 'walk', i + 1, frames[i]);
+      for (let i = frames.length + 1; i <= 12; i++) { const old = byId(`npc-${k}-${d}-walk${i}`); if (old) old.status = 'unused' }
+      return e.name + ' เดิน ' + view + ' ' + frames.length + ' เฟรม';
+    }
+    await slot(`npc-${k}-${d}-stand`, `assets/village-town/npc/${k}/${d}-stand.webp`, 'idle', 0, frames[0]); return e.name + ' ยืน ' + view;
   }
   async function writeAlly(e, action, view, frames, ms, st) {
     const k = e.id.replace(/^ally:/, ''), d = view.toLowerCase();
@@ -215,13 +227,13 @@
 
   /* ---------------- hook into the grid ---------------- */
   function open() {
-    const e = entityNow(); if (!e || (e.group !== 'characters' && !isMon(e))) return toast('เลือกตัวละคร มอนสเตอร์ หรือบอสก่อน');
-    monMode = isMon(e); build();
-    $('shPreset').innerHTML = monMode ? '<option value="mon4">เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม (4 ท่า เช่นชีทแพะ)</option><option value="mon6">ยืน → เดิน → เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม</option>' : '<option value="std">ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option><option value="walk">เดิน → ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option>';
+    const e = entityNow(); if (!e || (e.group !== 'characters' && !isMon(e) && !isNpc(e))) return toast('เลือกตัวละคร NPC มอนสเตอร์ หรือบอสก่อน');
+    monMode = isMon(e); npcMode = isNpc(e); build();
+    $('shPreset').innerHTML = npcMode ? '<option value="npc2">ยืน → เดิน (ชีท 1 ช่องยืน + หลายช่องเดิน)</option>' : monMode ? '<option value="mon4">เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม (4 ท่า เช่นชีทแพะ)</option><option value="mon6">ยืน → เดิน → เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม</option>' : '<option value="std">ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option><option value="walk">เดิน → ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option>';
     $('shView').innerHTML = viewsNow().map(v => `<option>${v}</option>`).join(''); $('shMirrorAll').parentElement.hidden = monMode; $('shMirrorAll').checked = false;
-    $('shWho').innerHTML = monMode ? 'นำเข้าให้: <b>' + esc(e.name) + '</b> · ทิศ <b>SE</b> (หันหน้า) และ <b>NE</b> (หันหลัง) · SW/NW เกมพลิกให้เอง · ชิ้นหลายชิ้นที่เลือกปลายทางเดียวกัน = เฟรมของท่านั้นตามลำดับการอ่าน · เฟรม 512×512 เท้าที่ 0.95 สเกลเดียวทั้งชีท' : 'นำเข้าให้: <b>' + esc(e.name) + '</b>' + (e.id === 'hero' ? ' (รูปลักษณ์ที่เปิดอยู่)' : '') + ' · ชีทเดียวมีได้หลายท่า/หลายทิศ — แต่ละช่องเลือกปลายทางเองได้'; sheet = null; cells = []; $('shCut').hidden = $('shAssign').hidden = true; $('shPrev').hidden = true; $('shInfo').textContent = ''; $('shCells').innerHTML = ''; msg(''); $('shFile').value = ''; $('shApply').disabled = true; $('shApply').textContent = 'นำเข้า'; dlg.showModal();
+    $('shWho').innerHTML = monMode ? 'นำเข้าให้: <b>' + esc(e.name) + '</b> · ทิศ <b>SE</b> (หันหน้า) และ <b>NE</b> (หันหลัง) · SW/NW เกมพลิกให้เอง · ชิ้นหลายชิ้นที่เลือกปลายทางเดียวกัน = เฟรมของท่านั้นตามลำดับการอ่าน · เฟรม 512×512 เท้าที่ 0.95 สเกลเดียวทั้งชีท' : 'นำเข้าให้: <b>' + esc(e.name) + '</b>' + (e.id === 'hero' ? ' (รูปลักษณ์ที่เปิดอยู่)' : '') + (npcMode ? ' · ยืนเก็บ 1 ภาพต่อทิศ · เดินเก็บเป็น walk1…N ต่อทิศ (เลือกหลายชิ้นปลายทางเดียวกัน = เฟรมเดิน)' : '') + ' · ชีทเดียวมีได้หลายท่า/หลายทิศ — แต่ละช่องเลือกปลายทางเองได้'; sheet = null; cells = []; $('shCut').hidden = $('shAssign').hidden = true; $('shPrev').hidden = true; $('shInfo').textContent = ''; $('shCells').innerHTML = ''; msg(''); $('shFile').value = ''; $('shApply').disabled = true; $('shApply').textContent = 'นำเข้า'; dlg.showModal();
   }
-  function inject() { const grid = $('grid'), ctl = grid && grid.querySelector('.entity-controls'); if (!ctl || ctl.querySelector('#shImpBtn')) return; const e = entityNow(); if (!e || (e.group !== 'characters' && !isMon(e))) return; const b = document.createElement('button'); b.id = 'shImpBtn'; b.type = 'button'; b.textContent = '🧩 นำเข้าชีท'; b.title = 'ตัดชีทเดียวเป็นหลายช่อง แล้วนำเข้าหลายท่า/หลายทิศพร้อมกัน'; b.onclick = open; ctl.prepend(b) }
-  window.StudioSheetImport = { _mon: () => monMode, _entity: () => entityNow()?.id, open, removeBackground, gridRects, blobRects, cropTrim, place, placeMon, _cells: () => cells, _state: () => ({ sheet }) };
+  function inject() { const grid = $('grid'), ctl = grid && grid.querySelector('.entity-controls'); if (!ctl || ctl.querySelector('#shImpBtn')) return; const e = entityNow(); if (!e || (e.group !== 'characters' && !isMon(e) && !isNpc(e))) return; const b = document.createElement('button'); b.id = 'shImpBtn'; b.type = 'button'; b.textContent = '🧩 นำเข้าชีท'; b.title = 'ตัดชีทเดียวเป็นหลายช่อง แล้วนำเข้าหลายท่า/หลายทิศพร้อมกัน'; b.onclick = open; ctl.prepend(b) }
+  window.StudioSheetImport = { _mon: () => monMode, _npc: () => npcMode, _entity: () => entityNow()?.id, open, removeBackground, gridRects, blobRects, cropTrim, place, placeMon, _cells: () => cells, _state: () => ({ sheet }) };
   const g = $('grid'); if (g) { new MutationObserver(inject).observe(g, { childList: true }); inject() }
 })();
