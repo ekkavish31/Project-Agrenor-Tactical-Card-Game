@@ -38,8 +38,12 @@
     const V = T(); try { s.village.location = 'home'; save() } catch (e) { }
     await until(() => V.isTownReady());
     V.enterPlace('home', ''); V.sync?.();
+    await until(() => V.isMarketReady()); await until(() => V.marketFrame.contentWindow.ResumeHook?.ready?.()); await sleep(500);
   }
-  async function apply() {
+  /* v98.352 · prepare() runs while the loading screen is still up (title-screen.js puts it in the loading list), so the player never sees the default scene first;
+     apply() is the same promise — the title-wait loop below only calls it when nothing did */
+  let job = null; const apply = () => job || (job = apply0());
+  async function apply0() {
     const V = T(), rec = rd(KEY), home = (() => { try { return sessionStorage.getItem(HOME) === '1' } catch (e) { return false } })();
     if (root.TitleScreen?.newGame) { try { localStorage.removeItem(KEY); sessionStorage.removeItem(HOME) } catch (e) { } return }
     if (home) { try { sessionStorage.removeItem(HOME); localStorage.removeItem(KEY) } catch (e) { } applied = true; await goHome(); return }
@@ -48,13 +52,13 @@
     if (rec.kind === 'story') { await until(() => root.Story?.state?.()); await sleep(800); if (!(await root.Story?.resumeFight?.())) return; return }
     if (rec.kind === 'world') { V.resumeWorld(); return }
     if (rec.kind === 'wmBattle') { try { sessionStorage.setItem('projectA.wmResume', '1') } catch (e) { } V.resumeWorld(); return }
-    if (rec.kind === 'town') { await until(() => V.frame.contentWindow.ResumeHook?.ready?.()); await sleep(400); try { V.frame.contentWindow.ResumeHook.set(rec.hero) } catch (e) { } return }
-    if (rec.kind === 'place') { if (!V.resumePlace(rec.src)) return; await until(() => V.isMarketReady()); await sleep(900); try { V.marketFrame.contentWindow.ResumeHook?.set?.(rec.hero) } catch (e) { } }
+    if (rec.kind === 'town') { await until(() => V.frame.contentWindow.ResumeHook?.ready?.()); await sleep(250); try { V.frame.contentWindow.ResumeHook.set(rec.hero) } catch (e) { } return }
+    if (rec.kind === 'place') { if (!V.resumePlace(rec.src)) return; await until(() => V.isMarketReady()); await until(() => V.marketFrame.contentWindow.ResumeHook?.ready?.()); await sleep(700); try { V.marketFrame.contentWindow.ResumeHook?.set?.(rec.hero) } catch (e) { } await sleep(250) }
   }
   /* wait until the player has left the title screen, then put them back */
   (async () => {
     await until(() => T() && root.TitleScreen && !root.TitleScreen.active, 24 * 3600e3);
     await sleep(600); try { await apply() } catch (e) { console.warn('[resume]', e); applied = true }
   })();
-  root.Resume = { peek: () => rd(KEY), clear: () => localStorage.removeItem(KEY), collect };
+  root.Resume = { prepare: apply, peek: () => rd(KEY), clear: () => localStorage.removeItem(KEY), collect };
 })(globalThis);

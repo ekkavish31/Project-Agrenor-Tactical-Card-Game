@@ -4,7 +4,7 @@
    arrived (a short quiet period after the last one, or 7 s at most). After the cover is gone it stops tracking. Pictures created later (e.g. a different hero frame) are not waited for. */
 (function (root) {
   'use strict';
-  if (root.__imgGate || /[?&](edit|nogate)=1/.test(location.search)) return; root.__imgGate = 1;
+  if (root.__imgGate || /[?&](edit|nogate)=1/.test(location.search)) return; root.__imgGate = 1; root.__imgGateOpen = true;
   const Orig = root.Image, list = []; let open = true;
   const W = function (w, h) { const im = new Orig(w, h); if (open) list.push(im); return im };
   W.prototype = Orig.prototype; root.Image = W;
@@ -16,7 +16,7 @@
     const now = performance.now(), loading = list.some(im => !im.complete);
     quiet = loading ? 0 : quiet + 1;
     if ((quiet >= 3 && now - t0 > 450 && list.length) || now - t0 > 7000 || (quiet >= 8 && now - t0 > 1500)) {   /* ≥3 quiet polls after at least one picture; 7 s at most */
-      open = false; list.length = 0; veil.style.opacity = '0'; setTimeout(() => veil.remove(), 400); return;
+      open = false; list.length = 0; veil.style.opacity = '0'; root.__imgGateOpen = false; setTimeout(() => veil.remove(), 400); return;
     }
     setTimeout(tick, 90);
   };

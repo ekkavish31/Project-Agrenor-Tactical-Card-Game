@@ -39,7 +39,9 @@
     moving = step / Math.max(dt, 1e-3) > .35 ? 1 : (moving > 0 ? moving - dt * 6 : 0);   // short grace so it does not flicker between walk and idle
     const m = build(); if (!m || (!root.TownArt && !o.drawFn)) return [];
     const p = o.project(pos.u, pos.v);
-    return [{ x: p.x, y: p.y, uv: pos.u + pos.v, mobile: true, z: o.layer ? (o.layer(pos.u, pos.v) || 0) : 0, draw: () => { if (o.drawFn) return o.drawFn(p, dir, moving > 0, m); o.ellipse(p.x, p.y, 16.9 * o.scale, 7.8 * o.scale, '#182b2877'); root.TownArt.hero(o.g, p, dir, t, moving > 0, o.size, dir, m) } }];
+    return [{ x: p.x, y: p.y, uv: pos.u + pos.v, mobile: true, z: o.layer ? (o.layer(pos.u, pos.v) || 0) : 0, draw: () => { const ph = moving > 0 ? cycleOf(m, dir) / 2 : 0; if (o.drawFn) return o.drawFn(p, dir, moving > 0, m, ph); o.ellipse(p.x, p.y, 16.9 * o.scale, 7.8 * o.scale, '#182b2877'); root.TownArt.hero(o.g, p, dir, t + ph, moving > 0, o.size, dir, m) } }];
   }
+  /* v98.352 · the follower's walk cycle runs HALF a cycle behind the leader's: both stepping with the same foot at the same instant looked mechanical */
+  function cycleOf(m, d) { try { const w = (m.directions[d] || m.directions.SE).walk || []; const sum = w.reduce((a, f) => a + (f.ms || 75), 0); return sum > 0 ? sum : 900 } catch (e) { return 900 } }
   root.HeroFollower = { objects, reset() { trail = []; pos = null } };
 })(globalThis);

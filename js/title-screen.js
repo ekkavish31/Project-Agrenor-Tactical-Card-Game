@@ -72,6 +72,9 @@ if(T.active)document.documentElement.classList.add('title-boot');
 let townReady=false;const townWaiters=[];
 root.addEventListener('message',e=>{if(e.data?.source==='project-a-town'&&e.data.type==='ready'){townReady=true;townWaiters.splice(0).forEach(f=>f())}});
 const whenTown=()=>townReady?Promise.resolve():new Promise(r=>townWaiters.push(r));
+/* v98.352 · 'ready' is sent before the ground is painted; the frame's own "preparing the village" cover (village-town.html #townLoading) goes away ~1.2 s after the first full draw.
+   The loading screen waits for the same moment, so that second cover never shows after it. */
+const whenTownDrawn=()=>whenTown().then(()=>new Promise(r=>{const t0=Date.now(),iv=setInterval(()=>{let ok=false;try{const w=root.VillageTown.frame.contentWindow;ok=!!w.__townDrawnAt&&w.performance.now()-w.__townDrawnAt>1250}catch{}if(ok||Date.now()-t0>14000){clearInterval(iv);r()}},120)}));
 
 /* ---------- loader: images, audio, fonts, custom promises ---------- */
 const loaded=new Map();// url → Promise
@@ -265,7 +268,8 @@ async function prepareStory(){if(preparing)return;preparing=true;title.classList
 
 /* ---------- into the game ---------- */
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}
- await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(10000)])]}],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
+ if(!isNew&&title)title.style.visibility='hidden';   /* v98.352 · the menu must not show again while the loading screen fades out */
+ await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
  /* v97.04 · New Game: the opening cutscene (mother wakes the hero) fades in over the last prologue page and the title goes away underneath it,
     so the village map never shows in between (the story loop only starts a cutscene once T.active is false) */
  if(isNew&&root.Story&&root.Cutscene){T.active=false;const t0=Date.now();while(!root.Cutscene.isPlaying()&&Date.now()-t0<4000)await wait(100);if(root.Cutscene.isPlaying())await wait(reduced?0:600)}

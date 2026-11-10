@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="th"><meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
-<script src="js/img-gate.js?v=v98.343"></script><script src="js/walk-speed.js?v=98.109"></script><script src="js/sfx.js?v=98.298"></script><script src="js/key-layout.js?v=1"></script><script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><style>
+<script src="js/img-gate.js?v=v98.352"></script><script src="js/walk-speed.js?v=98.109"></script><script src="js/sfx.js?v=98.298"></script><script src="js/key-layout.js?v=1"></script><script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
 button,select,input{font:inherit;background:#233a2ef0;color:#fff0c7;border:1px solid #cad6a77a;border-radius:9px;padding:8px 12px;cursor:pointer}button:hover{background:#4b6040}button:disabled{opacity:.45;cursor:default}
@@ -20,7 +20,7 @@ nav{position:fixed;left:22px;bottom:76px;display:flex;gap:6px;flex-wrap:wrap;max
 <nav id="shortcuts" aria-label="จุดทำงาน" hidden></nav><style>#shortcuts{display:none!important}</style>
 <div id="status" role="status">คลิกจุดทำงานเพื่อเดินไปใช้ · ลากเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม</div>
 <section id="pick" hidden></section><section id="edit" hidden></section>
-<script src="js/game-settings.js?v=98.150"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/char-size.js?v=98.305"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.263"></script><script src="js/asset-manifest.js?v=98.321"></script><script src="js/tactics-sprites.js?v=98.72"></script><script src="js/hero-variant.js?v=98.238"></script><script src="js/hero-motion.js"></script><script src="js/village-alpha-masks.js"></script><script src="js/hero-follower.js?v=98.288"></script><script src="js/town-art.js?v=v98.347"></script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=97.93"></script>
+<script src="js/game-settings.js?v=98.150"></script><script src="js/map-scale.js?v=98.160"></script><script src="js/char-size.js?v=98.305"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.263"></script><script src="js/asset-manifest.js?v=98.321"></script><script src="js/tactics-sprites.js?v=98.72"></script><script src="js/hero-variant.js?v=98.238"></script><script src="js/hero-motion.js"></script><script src="js/village-alpha-masks.js"></script><script src="js/hero-follower.js?v=v98.352"></script><script src="js/town-art.js?v=v98.352"></script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=97.93"></script>
 <script src="js/ground-paint.js?v=98.13"></script><script src="js/village-layout-v67.js?v=v98.329"></script><script>
 'use strict';
 /* v38m · One 2.5D sub-map engine for every place (market, forge, home). Layout = data (localStorage 'place-maps-v1',
@@ -1440,7 +1440,7 @@ function setup() {
 }
 /* v98.340 · temporary save (js/resume.js): where the hero stands */
 const FOLLOW_FACE = {};
-window.ResumeHook = { ready: () => true, get: () => ({ u: hero.u, v: hero.v, dir: hero.dir }), set: d => { if (!d) return; path = []; target = null; hero.u = d.u; hero.v = d.v; if (d.dir) hero.dir = d.dir } };
+window.ResumeHook = { ready: () => !window.__imgGateOpen, get: () => ({ u: hero.u, v: hero.v, dir: hero.dir }), set: d => { if (!d) return; path = []; target = null; hero.u = d.u; hero.v = d.v; if (d.dir) hero.dir = d.dir } };
 window.addEventListener('message', e => {
  if (e.source !== parent || e.data?.source !== 'project-a-game') return;
  const m = e.data;

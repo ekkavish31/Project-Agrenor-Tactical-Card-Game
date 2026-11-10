@@ -527,7 +527,7 @@
     for (const a of people.values()) list.push({ y: a.vu + a.vv, f: () => drawPerson(a, t) });
     list.push({ y: hero.vu + hero.vv, f: () => drawHero(t) });
     /* v98.233 · the other hero (the sibling) follows one body length behind */
-    for (const o of window.HeroFollower?.objects({ u: hero.vu, v: hero.vv }, null, t, { show: true, project: P, size: CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), face: (du, dv, pd) => faceOf(du, dv, FOLLOW_FACE) || pd, drawFn: (p, dir, walking, mot) => { g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * IK(), 6 * IK(), 0, 0, 7); g.fill(); return drawHeroMotion(t, p, CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), dir, walking, mot) } }) || []) list.push({ y: o.uv, f: o.draw });
+    for (const o of window.HeroFollower?.objects({ u: hero.vu, v: hero.vv }, null, t, { show: true, project: P, size: CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), face: (du, dv, pd) => faceOf(du, dv, FOLLOW_FACE) || pd, drawFn: (p, dir, walking, mot, ph) => { g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * IK(), 6 * IK(), 0, 0, 7); g.fill(); return drawHeroMotion(t + (ph || 0), p, CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), dir, walking, mot) } }) || []) list.push({ y: o.uv, f: o.draw });
     list.sort((a, b) => a.y - b.y); for (const x of list) x.f();
     /* lights + night */
     const day = daylight();
@@ -984,6 +984,6 @@
     buttons: []
   });
   /* v98.340 · temporary save (js/resume.js): where the hero stands */
-  window.ResumeHook = { ready: () => true, get: () => ({ u: hero.vu, v: hero.vv, face: hero.face }), set: d => { if (!d) return; hero.vu = d.u; hero.vv = d.v; hero.u = Math.floor(d.u); hero.v = Math.floor(d.v); if (d.face) hero.face = d.face; hero.path = []; hero.then = null; hero.walking = false } };
+  window.ResumeHook = { ready: () => !window.__imgGateOpen, get: () => ({ u: hero.vu, v: hero.vv, face: hero.face }), set: d => { if (!d) return; hero.vu = d.u; hero.vv = d.v; hero.u = Math.floor(d.u); hero.v = Math.floor(d.v); if (d.face) hero.face = d.face; hero.path = []; hero.then = null; hero.walking = false } };
   window.Interior = { people, hero, talk: id => { const a = people.get(id); if (a) talk(a) }, act: (id, w) => { const a = people.get(id); if (a) return act(a, w) }, room: R, kind: KIND, sync: () => { syncPeople(false); hudSync() } };
 })();
