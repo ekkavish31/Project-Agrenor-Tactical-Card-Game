@@ -4848,3 +4848,5 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - `tools/dev-server.cjs` — เซิร์ฟเวอร์ในเครื่อง: โค้ดจาก repo, `/assets/**` อ่านจากโฟลเดอร์ local ก่อน (`--assets <โฟลเดอร์>`) แล้วค่อยถอยไป `assets/` ใน repo · รองรับ Range (วิดีโอ/เสียง) · กัน path ออกนอกโฟลเดอร์ · ไม่ cache
 - บน localhost ไม่ใช้ service worker แคชภาพ (ล้างของเก่าให้) เพื่อให้แก้ภาพแล้วเห็นทันที
 - ยังไม่ถอด `assets/` ออกจาก repo (ดู docs/TODO.md §19)
+
+- (v98.365 ต่อ) `tools/dev-server.cjs` overlay ค่าที่ editor เก็บ (`/data/**`, `/js/asset-manifest.js`) จากโฟลเดอร์ local ด้วย เพื่อแก้สเกล/ตำแหน่งแล้ว F5 เห็นทันที

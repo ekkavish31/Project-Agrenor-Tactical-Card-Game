@@ -672,6 +672,7 @@
 ตัดสินใจ: ตอนนี้เน้นพัฒนา ยังไม่เปิดให้ใครเล่น → ไม่ทำระบบดาวน์โหลด asset ลงเครื่องผู้เล่น และไม่ย้ายโฮสต์ (ดูหมวด 18)
 - เปิดเกมด้วย `node tools/dev-server.cjs --assets <โฟลเดอร์ asset ในเครื่อง>` (พอร์ตเริ่มต้น 8080 · `--port` เปลี่ยนได้)
   - คำขอ `/assets/**` ค้นในโฟลเดอร์ local ก่อน ไม่มีค่อยใช้ `assets/` ใน repo · แยก `html/js/data` ไว้ใน repo ตามเดิม · origin เดียว ไม่มีปัญหา CORS/canvas
+  - ค่าที่ editor เก็บ (สเกล ตำแหน่ง manifest เลย์เอาต์) ก็ overlay ได้: `/data/**` และ `/js/asset-manifest.js` ค้นใน `<โฟลเดอร์>/data`, `<โฟลเดอร์>/js` ก่อน แล้วค่อยถอยไป repo · ต้องให้ Studio เขียนลงโฟลเดอร์นั้น (ตรวจว่า `saveManifest` เขียน path ใด)
   - โฟลเดอร์ชี้ได้ทั้งแบบ `<root>/assets/...` และชี้ที่ `assets` ตรง ๆ · ไม่ cache เลย (แก้ภาพแล้ว F5)
   - บน localhost เกมไม่ลงทะเบียน `sw.js` และล้างแคชเก่าให้ (`js/game-version.js`)
 - ยังเก็บ `assets/` ไว้ใน repo (ไม่ได้ลบ) เพราะบน GitHub Pages ผู้เล่นต้องใช้ · สำเนา local: `cp -r assets /path/to/local-assets`

@@ -17,6 +17,8 @@ function resolve(url) {
     const rel = p.slice('/assets/'.length);
     for (const f of [path.join(ASSETS, 'assets', rel), path.join(ASSETS, rel)]) if (inside(ASSETS, path.resolve(f)) && isFile(f)) return { f, src: 'local' };
   }
+  /* settings the editors save (scale, offsets, manifest, layouts): /data/** and /js/asset-manifest.js are overlaid from <root>/data and <root>/js too */
+  if (ASSETS && (p.startsWith('/data/') || p === '/js/asset-manifest.js')) for (const base of [ASSETS, path.dirname(ASSETS)]) { const f = path.join(base, p); if (inside(base, path.resolve(f)) && isFile(f) && (base === ASSETS || path.basename(ASSETS) === 'assets')) return { f, src: 'local' } }
   const f = path.join(ROOT, p); return inside(ROOT, path.resolve(f)) && isFile(f) ? { f, src: 'repo' } : null;
 }
 const stats = { local: 0, repo: 0, miss: 0 };
