@@ -101,7 +101,7 @@ function areaKinds(area){const e=root.ADVENTURE_DATA?.AREAS?.[area]?.enemies;ret
 /* ---------- loading screen ---------- */
 let screen=null;
 function loadingScreen(){if(screen)return screen;const el=document.createElement('div');el.id='gameLoading';el.className='gl';el.hidden=true;el.setAttribute('role','progressbar');el.setAttribute('aria-valuemin','0');el.setAttribute('aria-valuemax','100');
- el.innerHTML='<div class="gl-bg"></div><div class="gl-box"><span class="gl-kicker">LOADING</span><h2 class="gl-title"></h2>'+(root.MipLoader?root.MipLoader.html({width:'min(560px,calc(100vw - 40px))',size:'clamp(76px,11vh,108px)'}):'')+'<div class="gl-bar"><i></i></div><div class="gl-meta"><span class="gl-step"></span><b class="gl-pct">0%</b></div><p class="gl-tip"></p><button type="button" class="gl-skip" hidden>เข้าเกมเลย · โหลดส่วนที่เหลือเบื้องหลัง</button></div>';
+ el.innerHTML='<div class="gl-bg"></div><div class="gl-box"><span class="gl-kicker">LOADING</span><h2 class="gl-title"></h2>'+(root.MipLoader?root.MipLoader.html({width:'min(560px,calc(100vw - 40px))',size:'clamp(76px,11vh,108px)'}):'')+'<div class="gl-bar"><i></i></div><div class="gl-meta"><span class="gl-step"></span><b class="gl-pct">0%</b></div><p class="gl-tip"></p><button type="button" class="gl-skip" tabindex="-1" aria-hidden="true">เข้าเกมเลย · โหลดส่วนที่เหลือเบื้องหลัง</button></div>';
  document.body.appendChild(el);return screen=el}
 function setProgress(el,f,step){const pct=Math.round(f*100);el.querySelector('.gl-bar i').style.width=pct+'%';el.querySelector('.gl-pct').textContent=pct+'%';el.setAttribute('aria-valuenow',pct);if(step!=null)el.querySelector('.gl-step').textContent=step}
 /* run(title, groups[, {bg, minMs, quiet}]) — groups: [{label, items:[url|promise|fn]}]. quiet = only show if it takes >150ms */
@@ -113,8 +113,8 @@ async function runNow(title,groups,opt={}){const el=loadingScreen(),items=groups
  // a few at a time, in order, so the bar moves steadily and the first scene's files come first
  const queue=items.slice(),workers=Array.from({length:Math.min(6,queue.length)},async()=>{while(queue.length){const x=queue.shift();await load(x.it);done++;setProgress(el,done/total,x.label)}});
  // a slow connection never traps the player: after 7 s offer to continue while the rest keeps loading in the background
- let release;const early=new Promise(r=>release=r),later=setTimeout(()=>{const b=el.querySelector('.gl-skip');b.hidden=false;b.onclick=()=>release()},7000);
- await Promise.race([Promise.all(workers),early]);clearTimeout(timer);clearTimeout(later);el.querySelector('.gl-skip').hidden=true;
+ let release;const early=new Promise(r=>release=r),later=setTimeout(()=>{const b=el.querySelector('.gl-skip');b.classList.add('on');b.tabIndex=0;b.removeAttribute('aria-hidden');b.onclick=()=>release()},7000);
+ await Promise.race([Promise.all(workers),early]);clearTimeout(timer);clearTimeout(later);{const sk=el.querySelector('.gl-skip');sk.classList.remove('on');sk.tabIndex=-1;sk.setAttribute('aria-hidden','true')}
  if(shown){const left=(opt.minMs??0)-(performance.now()-start);if(left>0)await wait(left);setProgress(el,1,'พร้อมแล้ว');await wait(reduced?0:220);
   /* v98.230 · opt.gate: wait for any key / tap before leaving the loading screen — that press is also what unlocks the music (browsers only start sound after a gesture) */
   if(opt.gate){await wait(250);const tip=el.querySelector('.gl-tip');tip.textContent=opt.gate;el.classList.add('gl-gate');await new Promise(res=>{const ev=['keydown','pointerdown','touchend'],done=e=>{if(e.type==='keydown'&&(e.repeat||['Shift','Control','Alt','Meta','CapsLock'].includes(e.key)))return;ev.forEach(n=>document.removeEventListener(n,done,true));e.stopPropagation();res()};ev.forEach(n=>document.addEventListener(n,done,true))});el.classList.remove('gl-gate')}
