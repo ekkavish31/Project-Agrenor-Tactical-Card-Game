@@ -394,7 +394,9 @@ function occludeByBuildings(objects){for(const it of objects)if((it.mobile||it.n
  for(const it of objects){if(it.building||!(it.mobile||it.npc)||it.x==null||it.y==null||it.y>=1e8)continue;let lo=-Infinity,hi=Infinity;
   for(const o of locations){if(o.npc&&!estate(o))continue;const bl=bObj.get(o.id);if(!bl)continue;const r=window.TownUX?.art(o);if(!r||!r.w)continue;
    if(it.x+26<r.x||it.x-26>r.x+r.w||it.y<r.y||it.y-96>r.y+r.h)continue;/* pictures do not overlap */
-   const sd=placeSide(o,it.x,it.y);if(sd===1){(it.front||(it.front=new Set())).add(o.id);lo=Math.max(lo,Math.max(...bl.map(b=>b.y))+.1)}else if(sd===-1){hi=Math.min(hi,Math.min(...bl.map(b=>b.y))-.1)}}
+   /* v98.342 · a walker on a road cell at the place's doorway is IN FRONT of the place (walking up to / into it), never behind and see-through */
+   let sd=placeSide(o,it.x,it.y);if(sd!==1&&it.wu!=null&&roadCells.has(cellKey(Math.floor(it.wu),Math.floor(it.wv)))){const dr=door(o);if(Math.hypot(it.wu-dr.u,it.wv-dr.v)<=6)sd=1}
+   if(sd===1){(it.front||(it.front=new Set())).add(o.id);lo=Math.max(lo,Math.max(...bl.map(b=>b.y))+.1)}else if(sd===-1){hi=Math.min(hi,Math.min(...bl.map(b=>b.y))-.1)}}
   if(lo>-Infinity||hi<Infinity)it.y=lo<=hi?Math.min(Math.max(it.y,lo),hi):Math.max(it.y,lo)}
 for(const o of locations){const r=window.TownUX?.art(o);if(r?.im?.complete&&r.im.naturalWidth){r.mask=artMask(r.im);bs.push({o,r,key:o.y*MY})}}
  const pad=o=>({u:o.w+(o.npc?.7:1.1),v:o.d+(o.npc?.7:1.1)});
