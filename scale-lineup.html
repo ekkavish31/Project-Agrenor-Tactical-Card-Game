@@ -45,9 +45,10 @@ body.dock #stage{height:330px}body.dock .card{padding:8px}
 @media(max-width:900px){body.dock main{grid-template-columns:1fr}}
 body.world header h1 small{display:none}
 .rtBox{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--panel)}.rtBox summary{cursor:pointer}.rtBox[open] summary{margin-bottom:6px}
+#vpCtl .vp{display:inline-flex;gap:5px;align-items:center;font-size:12px;padding:2px 8px;border:1px solid var(--line);border-radius:9px;background:#fff8e4}#vpCtl button{padding:3px 8px}
 </style></head><body>
 <header><h1>⚖ Scale Lineup <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
-<span id="tabs"></span> <span id="ctxBtns"></span><span class="grow"></span>
+<span id="tabs"></span> <span id="ctxBtns"></span><span id="vpCtl"></span><span class="grow"></span>
 <span class="grow"></span></header>
 <main>
 <section class="card"><b id="listTitle">ตัวละคร</b><div id="list" role="list"></div></section>
@@ -69,7 +70,15 @@ const HERO_M = CharSize.HERO_M, DS = CharSize.DRAW;   /* v98.264 · js/char-size
 const ST = (() => { try { return window.parent !== window && parent.StudioBrowser && parent.StudioBrowser.lineup ? parent.StudioBrowser : null } catch (e) { return null } })();
 const HERO_SRC = 'assets/tactics/imported/idle-sw-mwcast2-m/frame-01.png';   /* v98.126 · the new standing hero (male look) */
 const ALLIES = { bram: 'บรัม', luna: 'ลูน่า', kier: 'เคียร์', mil: 'มิล', ren: 'เรน', nadia: 'นาเดีย', sigrid: 'ซิกริด', orla: 'ออร์ลา', olwen: 'โอลเวน' };
-const PICK = {};   // character id → { clip, index }: a frame chosen from the Animation clips (studio only)
+const PICK = {};
+/* v98.386 · ONE pose + direction for the whole row (studio): every character shows the same ท่า · ทิศ (frame #) so they compare like for like.
+   A character's own frame chosen in the 📏 inspector (PICK) still wins. Adjusting proportion writes THIS pose·direction and its OPPOSITE (SW↔SE · NW↔NE). */
+const VP = (() => { try { return { action: 'idle', view: 'SW', index: 0, ...JSON.parse(localStorage.getItem('lineup.vp') || '{}') } } catch (e) { return { action: 'idle', view: 'SW', index: 0 } } })();
+const OPPV = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, VP_ACT = [['idle', 'ยืน'], ['walk', 'เดิน'], ['windup', 'เตรียมโจมตี'], ['strike', 'โจมตี'], ['guard', 'ป้องกัน'], ['hit', 'โดนโจมตี'], ['down', 'ล้ม']];
+/* follow-up: which character·pose·direction has been checked as correct ('ok') or adjusted and waiting for a check ('adj') */
+const DONE_KEY = 'proportion-done-v1', DONE = (() => { try { return JSON.parse(localStorage.getItem(DONE_KEY) || '{}') || {} } catch (e) { return {} } })();
+const doneKey = (id, a = VP.action, v = VP.view) => id + '|' + a + '|' + v, saveDone = () => { try { localStorage.setItem(DONE_KEY, JSON.stringify(DONE)) } catch (e) { } };
+const doneOf = id => DONE[doneKey(id)] || '';   // character id → { clip, index }: a frame chosen from the Animation clips (studio only)
 const $ = id => document.getElementById(id);
 const load = src => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src });
 function measure(img, flip) {
@@ -115,14 +124,19 @@ const RANK = { hero: 0, ally: 1, monster: 2 };
 /* one picture per character (the standing SW picture, or the frame picked from the Animation clips) — the SAME entry for 'battle' and 'village', so both views always agree */
 async function addChar(id, name, kind, pic, factor) {
   const url = pic.url || pic.src, img = await load(url); if (!img) return; const m = measure(img, pic.flip); if (!m) return;
-  const C = { img, m, src: url, url, file: pic.file || pic.src, flip: !!pic.flip, label: pic.label || '', units: m.H / 384 * factor, factor, formula: `สูง ÷ 384 × ${factor}` };
+  const C = { img, m, src: url, url, file: pic.file || pic.src, flip: !!pic.flip, label: pic.label || '', vp: pic.vp || null, units: m.H / 384 * factor, factor, formula: `สูง ÷ 384 × ${factor}` };
   let e = ENTRIES.find(x => x.id === id); if (!e) ENTRIES.push(e = { id, name, kind, ctx: {} });
   e.name = name; e.ctx.battle = e.ctx.village = C;
 }
 async function buildChars() {
-  const list = ST ? ST.lineup.entities().map(e => ({ id: e.id === 'hero' ? 'hero' : e.id.replace(/^ally:/, ''), sid: e.id, name: e.name })) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
+  const list = ST ? ST.lineup.entities().map(e => ({ id: e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc):/, ''), sid: e.id, name: e.name, clips: e.clips })) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
   for (const c of list) {
-    const pic = ST ? await ST.lineup.picture(c.sid, 'SW', PICK[c.id]?.clip, PICK[c.id]?.index) : { src: c.id === 'hero' ? HERO_SRC : `assets/village-town/npc/${c.id}/sw-stand.webp` };
+    let pic, vp = null;
+    if (ST) { const own = PICK[c.id], clip = own ? null : (c.clips || []).find(x => x.action === VP.action && x.view === VP.view) || (VP.action === 'idle' ? null : (c.clips || []).find(x => x.action === VP.action && x.view === OPPV[VP.view]));
+      pic = await ST.lineup.picture(c.sid, VP.view, own?.clip || clip?.id, own ? own.index : Math.min(VP.index, (clip?.n || 1) - 1)); vp = { sid: c.sid, action: own ? 'pick' : VP.action, view: VP.view, index: own ? own.index : VP.index, clips: c.clips || [] };
+      if (!pic) pic = await ST.lineup.picture(c.sid, 'SW') }
+    else pic = { src: c.id === 'hero' ? HERO_SRC : `assets/village-town/npc/${c.id}/sw-stand.webp` };
+    if (pic) pic.vp = vp;
     if (!pic) continue; await addChar(c.id, c.id === 'hero' ? 'ตัวเอก' : (ALLIES[c.id] || c.name), c.id === 'hero' ? 'hero' : 'ally', pic, c.id === 'hero' ? DS.hero : DS.ally);
   }
   /* v98.265 · villagers drawn from pictures (VillagerDraw SPR_INFO) are in the lineup too, so every person is compared in one place */
@@ -191,6 +205,12 @@ function pickSel(id) { if (MULTI) { PICKED.has(id) ? PICKED.delete(id) : PICKED.
 function render() {
   if (!ENTRIES.some(e => e.id === 'hero' && e.ctx.battle)) { $('stage').innerHTML = '<p class="hint">ยังไม่พบภาพท่ายืนของตัวเอก (SW) — ตัวเอกคือไม้วัดของหน้านี้ · ตรวจว่าไฟล์ภาพถูก push แล้ว หรือกด รีเฟรช</p>'; $('list').innerHTML = ''; $('insp').innerHTML = ''; return }
   ctx = tab === 'char' || tab === 'ratio' || tab === 'field' ? 'battle' : 'village';
+  if (ST && ['char', 'ratio', 'field'].includes(tab)) {   /* v98.386 · ท่า · ทิศ · เฟรม for the whole row */
+    $('vpCtl').innerHTML = `<span class="vp">ท่า <select id="vpAct">${VP_ACT.map(([k, n]) => `<option value="${k}"${VP.action === k ? ' selected' : ''}>${n}</option>`).join('')}</select> ทิศ ${['SW', 'NW', 'NE', 'SE'].map(v => `<button data-vv="${v}" aria-pressed="${VP.view === v}">${v}</button>`).join('')} เฟรม <input id="vpIdx" type="number" min="1" max="24" value="${VP.index + 1}" style="width:48px"></span>`;
+    const again = async () => { try { localStorage.setItem('lineup.vp', JSON.stringify(VP)) } catch (e) { } await buildChars(); render() };
+    $('vpAct').onchange = ev => { VP.action = ev.target.value; VP.index = 0; again() }; $('vpIdx').onchange = ev => { VP.index = Math.max(0, (+ev.target.value || 1) - 1); again() };
+    $('vpCtl').querySelectorAll('[data-vv]').forEach(b => b.onclick = () => { VP.view = b.dataset.vv; again() });
+  } else $('vpCtl').innerHTML = '';
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k}">${t}</button>`).join(' ');
   $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' || tab === 'ratio' || tab === 'field' ? (visible()[0]?.id || 'hero') : (visible()[1]?.id || 'hero'); viewCtl(); render() });
   $('ctxBtns').style.display = 'none';   /* v98.95 · one set of proportions for every scene; the % per scene is done in each scene later */ $('listTitle').textContent = TABS.find(t => t[0] === tab)[1];
@@ -274,7 +294,8 @@ function renderRatio(V) {
   const { R, med } = ratioRows(V), FH = DOCK ? 250 : 300, fhOf = e => FH * metres(e) / HERO_M, maxFH = Math.max(...V.map(fhOf)), bad = R.filter(x => x.v.level === 'bad').length, warn = R.filter(x => x.v.level === 'warn').length, ok = R.length - bad - warn;
   const st = $('stage'); st.style.height = 'auto'; st.style.width = 'auto';
   const lvl = bad ? 'bad' : warn ? 'warn' : 'ok';
-  let h = `<div class="banner ${lvl}"><b>${ok === R.length ? '✔ ทั้งทีมเป็นกึ่ง SD สัดส่วนเดียวกัน' : `ตรงมาตรฐาน ${ok}/${R.length} ตัว`}</b> · ค่ากลางของทีม: หัว ${(med * 100).toFixed(1)}% ของตัว (≈ ${(1 / med).toFixed(2)} หัว)${bad || warn ? ' · ' + R.filter(x => x.v.level !== 'ok').map(x => x.e.name).join(', ') + ' ยังไม่ตรง' : ''}</div>
+  const nOk = R.filter(x => doneOf(x.e.id) === 'ok').length, nAdj = R.filter(x => doneOf(x.e.id) === 'adj').length;
+  let h = `${ST ? `<div class="banner ${nOk === R.length ? 'ok' : 'warn'}" style="margin-bottom:6px">✔ ตรวจแล้ว <b>${nOk}/${R.length}</b> ตัว · ✎ ปรับแล้วรอติ๊ก ${nAdj} · ท่า <b>${(VP_ACT.find(a => a[0] === VP.action) || [, VP.action])[1]}</b> ทิศ <b>${VP.view}</b>${VP.index ? ' เฟรม ' + (VP.index + 1) : ''}</div>` : ''}<div class="banner ${lvl}"><b>${ok === R.length ? '✔ ทั้งทีมเป็นกึ่ง SD สัดส่วนเดียวกัน' : `ตรงมาตรฐาน ${ok}/${R.length} ตัว`}</b> · ค่ากลางของทีม: หัว ${(med * 100).toFixed(1)}% ของตัว (≈ ${(1 / med).toFixed(2)} หัว)${bad || warn ? ' · ' + R.filter(x => x.v.level !== 'ok').map(x => x.e.name).join(', ') + ' ยังไม่ตรง' : ''}</div>
    <div class="stdctl">มาตรฐาน: หัว ≈ <input type="number" id="sHead" min="15" max="60" step="0.5" value="${STDV.head}">% ± <input type="number" id="sTol" min="1" max="15" step="0.5" value="${STDV.tol}">% ของความสูง (2.7–3 หัว ≈ 33–37% · ในพรอมต์ใช้ 38%)
     <span class="lgd"><i style="border-color:${COL.chin}"></i>คาง<i style="border-color:${COL.shoulder}"></i>ไหล่<i style="border-color:${COL.hip}"></i>ขาหนีบ<i style="border-color:#2a7"></i>มาตรฐาน<i style="border-color:#c9893a"></i>ค่ากลางทีม</span></div>`;
   h += `<div class="figs" style="height:${maxFH + 54}px;align-items:flex-end">`;
@@ -283,7 +304,7 @@ function renderRatio(V) {
     h += `<div data-c="${e.id}"><div class="fig" style="width:${fw}px;height:${fh}px"><img alt="" src="${c.url || c.src}" style="${fl}width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
     h += `<div class="ln" style="top:${STDV.head / 100 * fh}px;border-color:#2a7;border-top-width:1px;border-top-style:dashed;opacity:.8"></div><div class="ln" style="top:${med * fh}px;border-color:#c9893a;border-top-width:1px;border-top-style:dashed;opacity:.8"></div>`;
     for (const n of ['chin', 'shoulder', 'hip']) h += `<div class="ln" style="top:${r.marks[n] * fh}px;border-color:${COL[n]}"></div>`;
-    h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}" data-c="${e.id}">${e.name}<br><span class="chip ${LV[v.level][0]}">${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(0)}%</span></div></div>`;
+    h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}" data-c="${e.id}">${e.name}<br><span class="chip ${LV[v.level][0]}">${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(0)}%</span>${doneOf(e.id) === 'ok' ? ' <span class="chip ok" title="ติ๊กแล้วว่าปรับถูกต้อง (ท่า·ทิศนี้)">✔</span>' : doneOf(e.id) === 'adj' ? ' <span class="chip warn" title="ปรับแล้ว รอติ๊กยืนยัน">✎</span>' : ''}</div></div>`;
   }
   h += `</div><details class="rtBox"${(() => { try { return localStorage.getItem('lineup.rtOpen') === '1' ? ' open' : '' } catch (e) { return '' } })()}><summary><b>📋 ตารางเทียบทั้งทีม</b> <small>(${R.length} ตัว · ตรง ${ok} · เฉียด ${warn} · ไม่ตรง ${bad})</small></summary><table class="rt"><tr><th>ตัวละคร</th><th>สูง px</th><th>หัว %</th><th>จำนวนหัว</th><th title="ความกว้างหัว ÷ ความกว้างช่วงไหล่ (รวมแขน)">หัว/ไหล่</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
   for (const { e, r, v } of R) h += `<tr data-c="${e.id}" class="${e.id === sel ? 'sel' : ''}"><td>${e.name}${r.manual ? '' : ' <small title="ประมาณจากภาพอัตโนมัติ · ลากเส้นในแผงขวาเพื่อปรับ">~</small>'}</td><td>${r.H}</td><td>${(r.head * 100).toFixed(1)}</td><td>${r.heads.toFixed(2)}</td><td>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'}</td><td>${(r.torso * 100).toFixed(0)}</td><td>${(r.legs * 100).toFixed(0)}</td><td><span class="chip ${LV[v.level][0]}" title="${v.notes.join(' · ')}">${LV[v.level][1]}</span></td></tr>`;
@@ -303,7 +324,7 @@ function inspectRatio() {
    <dl><dt>จำนวนหัว</dt><dd><b>${r.heads.toFixed(2)}</b> หัว (หัว ${(r.head * 100).toFixed(1)}% ของตัว)</dd><dt>หัว / ไหล่</dt><dd>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'} (หัวกว้าง ${r.headW}px · ไหล่ ${r.shoulderW}px)</dd><dt>ลำตัว / ขา</dt><dd>${(r.torso * 100).toFixed(0)}% / ${(r.legs * 100).toFixed(0)}%</dd><dt>ผล</dt><dd>${v.notes.length ? v.notes.join('<br>') : 'ตรงมาตรฐาน'}</dd></dl>
    <div class="adj"><span>คาง %</span><input type="number" id="mChin" min="5" max="70" step="0.5" value="${(r.marks.chin * 100).toFixed(1)}"><span style="width:50px">ไหล่ %</span><input type="number" id="mSh" min="5" max="85" step="0.5" value="${(r.marks.shoulder * 100).toFixed(1)}"></div>
    <div class="adj"><span>ขาหนีบ %</span><input type="number" id="mHip" min="30" max="90" step="0.5" value="${(r.marks.hip * 100).toFixed(1)}"></div>
-   <div class="adj"><button id="mAuto">ประมาณอัตโนมัติ</button><button id="mPush">⬆ Push เส้นที่ปรับ</button></div><p class="hint" id="mMsg"></p>
+   <div class="adj"><label style="font-weight:600"><input type="checkbox" id="mDone" ${doneOf(e.id) === 'ok' ? 'checked' : ''}> ✔ ปรับถูกต้องแล้ว</label><small style="color:var(--muted)">${mapText(c.label || '')}${doneOf(e.id) === 'adj' ? ' · ปรับแล้ว รอติ๊ก' : ''}</small></div><div class="adj"><button id="mAuto">ประมาณอัตโนมัติ</button><button id="mPush">⬆ Push เส้นที่ปรับ</button></div><p class="hint" id="mMsg"></p>
    <details open id="adjBox" style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px"><summary><b>🛠 ปรับขนาดหัว / ลำตัว / ขา</b></summary>
     <p class="hint">ตัดภาพที่เส้น <b style="color:${COL.chin}">คาง</b> และ <b style="color:${COL.hip}">ขาหนีบ</b> เป็น 3 ส่วน ปรับแต่ละส่วนแล้วต่อกลับ (เท้าอยู่ที่เดิม) — ดูผลที่ภาพด้านขวาบนแผงนี้</p>
     <div class="adj"><label><input type="radio" name="adjMode" value="auto" checked> ออโต้ (หัว ≈ <b id="adjT">${STDV.head.toFixed(0)}</b>%)</label><label><input type="radio" name="adjMode" value="man"> แมนวล</label><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงความสูงรวม</label></div>
@@ -323,6 +344,7 @@ function inspectRatio() {
   cv.onpointerup = () => { if (drag) { drag = null; commit(true) } };
   const num = (id, key) => document.getElementById(id).onchange = ev => { marks[key] = Math.min(.95, Math.max(.04, (+ev.target.value || 0) / 100)); commit(true) };
   num('mChin', 'chin'); num('mSh', 'shoulder'); num('mHip', 'hip');
+  document.getElementById('mDone').onchange = ev => { const k = doneKey(e.id); if (ev.target.checked) DONE[k] = 'ok'; else delete DONE[k]; saveDone(); renderRatio(visible()); inspectRatio() };
   document.getElementById('mAuto').onclick = () => { delete MARKS[e.id]; PT.store.save(MARKS); renderRatio(visible()); inspectRatio() };
   document.getElementById('mPush').onclick = async () => { const m = document.getElementById('mMsg'), G = window.GitHubPush; if (!G || !G.enabled()) { m.textContent = 'ยังไม่ได้ใส่ token ของ GitHub ในเบราว์เซอร์นี้ (เปิดตั้งค่าจาก Asset Studio ก่อน)'; return } m.textContent = 'กำลัง push…'; try { const sha = await G.pushSettings([PT.store.KEY], 'สัดส่วนตัวละคร (เส้นคาง/ไหล่/ขาหนีบ)'); m.textContent = sha ? 'push แล้ว · ' + sha : 'ไม่มีอะไรต้อง push' } catch (er) { m.textContent = 'push ไม่สำเร็จ: ' + er.message } };
   /* ---- v98.380 · 🛠 ปรับสัดส่วน: head / torso / legs scaled on their own ---- */
@@ -368,9 +390,16 @@ function inspectRatio() {
     const outCanvas = () => { if (!last) return null; const o = document.createElement('canvas'); o.width = c.m.w; o.height = c.m.h; const og = o.getContext('2d'); if (c.flip) { og.translate(c.m.w, 0); og.scale(-1, 1) } og.drawImage(last.canvas, 0, 0); return o };   /* back to the file's own orientation */
     $a('adjPng').onclick = () => { const o = outCanvas(); if (!o) return; const a = document.createElement('a'); a.download = e.id.replace(/[^a-z0-9_-]+/gi, '-') + '-proportion.png'; a.href = o.toDataURL('image/png'); a.click() };
     const inStudio = window.parent !== window; $a('adjApply').disabled = !inStudio || !c.file; if (!inStudio) $a('adjApply').title = 'ใช้ได้เมื่อเปิดใน Asset Studio (แท็บ Scale Lineup)';
-    $a('adjApply').onclick = () => { const o = outCanvas(); if (!o || !c.file) return; if (c.flip && !confirm('ภาพนี้ถูกพลิกมาจากไฟล์ของอีกทิศ ' + c.file + ' — การเขียนทับจะเปลี่ยนไฟล์นั้น · ทำต่อ?')) return;
-      if (!confirm('เขียนทับภาพ ' + c.file + ' ด้วยภาพที่ปรับสัดส่วนแล้ว?\nภาพเดิมเก็บไว้ในประวัติของช่อง (กู้กลับได้) · ต้องเชื่อมโฟลเดอร์/GitHub ใน Asset Studio')) return;
-      window.parent.postMessage({ type: 'asset-lineup:apply', file: c.file, dataUrl: o.toDataURL('image/png'), note: 'ปรับสัดส่วน หัว/ลำตัว/ขา' }, location.origin); $a('adjMsg').textContent = 'ส่งให้ Asset Studio แล้ว — ดูข้อความมุมจอ' };
+    $a('adjApply').onclick = async () => { const o = outCanvas(); if (!o || !c.file) return;
+      /* v98.386 · the same pose in the OPPOSITE direction (SW↔SE · NW↔NE) gets the same settings, warped from its own picture */
+      let opp = null; const vp = c.vp; if (ST && vp && vp.action !== 'pick') { const ov = OPPV[vp.view], oc = vp.clips.find(x => x.action === vp.action && x.view === ov); try { const pic = await ST.lineup.picture(vp.sid, ov, oc?.id, oc ? Math.min(vp.index, oc.n - 1) : 0); if (pic && pic.file && pic.file !== c.file) opp = { ...pic, view: ov } } catch (err) { } }
+      if (c.flip && !confirm('ภาพนี้ถูกพลิกมาจากไฟล์ของอีกทิศ ' + c.file + ' — การเขียนทับจะเปลี่ยนไฟล์นั้น · ทำต่อ?')) return;
+      if (!confirm('เขียนทับด้วยภาพที่ปรับสัดส่วนแล้ว:\n• ' + c.file + (opp ? '\n• ' + opp.file + ' (ทิศตรงข้าม ' + opp.view + ' · ใช้ค่าเดียวกัน)' : '\n(ไม่พบภาพทิศตรงข้ามแยกไฟล์ — ปรับเฉพาะภาพนี้)') + '\n\nภาพเดิมเก็บไว้ในประวัติของช่อง (กู้กลับได้) · ต้องเชื่อมโฟลเดอร์/GitHub ใน Asset Studio')) return;
+      const post = (file, cv) => window.parent.postMessage({ type: 'asset-lineup:apply', file, dataUrl: cv.toDataURL('image/png'), note: 'ปรับสัดส่วน หัว/ลำตัว/ขา' }, location.origin);
+      let o2 = null; if (opp) { const img = await load(opp.url || opp.src), m2 = img && measure(img, opp.flip); if (m2) { const res = PA.warp(img, m2, marks, scaleNow(), { keepHeight: $a('adjKeep').checked, flip: opp.flip, mode: mem.seam, soft: mem.soft / 100, grow: Math.round(m2.H * .03) }); o2 = document.createElement('canvas'); o2.width = m2.w; o2.height = m2.h; const g2 = o2.getContext('2d'); if (opp.flip) { g2.translate(m2.w, 0); g2.scale(-1, 1) } g2.drawImage(res.canvas, 0, 0) } else opp = null }
+      post(c.file, o); if (o2) post(opp.file, o2); const n = o2 ? 2 : 1;   /* both are sent together: the studio reloads this row after saving */
+      const a0 = vp && vp.action !== 'pick' ? vp.action : VP.action, v0 = vp ? vp.view : VP.view; DONE[doneKey(e.id, a0, v0)] = DONE[doneKey(e.id, a0, v0)] === 'ok' ? 'ok' : 'adj'; if (opp) DONE[doneKey(e.id, a0, opp.view)] = DONE[doneKey(e.id, a0, opp.view)] === 'ok' ? 'ok' : 'adj'; saveDone();
+      $a('adjMsg').textContent = 'ส่งให้ Asset Studio แล้ว ' + n + ' ภาพ — ตรวจผลแล้วติ๊ก "✔ ปรับถูกต้องแล้ว"' };
     paintAdj = redraw; redraw();
   }
 }
