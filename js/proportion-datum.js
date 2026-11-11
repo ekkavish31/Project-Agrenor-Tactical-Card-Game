@@ -1,42 +1,49 @@
-/* v98.390 · DATUM points of a character picture (⚖ Scale Lineup → 📐 สัดส่วน → 📍 Datum).
-   LEVELS (heights, fraction of the picture height) are SHARED by every direction of the same pose & frame — the camera only turns the body around the
-   vertical axis, so the eyes, chin, neck, shoulders, chest, crotch and feet sit at the same height in SW / NW / NE / SE. A direction may keep its own
-   difference (rec.lv[dir]) — that IS the "this direction is drawn taller / shorter" finding.
-   POINTS (left/right: eyes, shoulder pivots, knees, feet; [x,y] fractions) belong to one direction; the opposite one (SW↔SE · NW↔NE) is mirrored until it is set.
-   Store: localStorage 'proportion-datum-v1' = { [character]: { [pose]: { [frame]: { levels:{…}, lv:{DIR:{…}}, pts:{DIR:{…}} } } } }
-   (pushed with the other editor settings → js/game-settings.js, so every browser loads it). */
+/* v98.391 · DATUM POINTS of a character picture (⚖ Scale Lineup → 📐 สัดส่วน → 📍 Datum).
+   Points only (a level line breaks as soon as a head or body tilts): eyes L/R · chin · shoulder pivots L/R · chest · crotch · knees L/R · feet L/R.
+   The face is measured as a DISTANCE (eye midpoint → chin), so a tilted head keeps its size.
+   Across directions: a direction without its own point gets a SUGGESTION — the opposite direction mirrored (SW↔SE · NW↔NE), else for the
+   centre-line points (chin · chest · crotch) the same HEIGHT as in another direction. Placing / dragging makes it the direction's own.
+   Store: localStorage 'proportion-datum-v1' = { [character]: { [pose]: { [frame]: { pts: { DIR: { key: [x, y] } } } } } }   (x, y = fractions of the picture)
+   Pushed with the editor settings (🛒 Cart → js/game-settings.js) so every browser loads it. */
 (function (root) {
   'use strict';
   const KEY = 'proportion-datum-v1';
-  const LEVELS = [['eye', 'ระดับตา', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['neck', 'ฐานคอ', '#e67e22'], ['shoulder', 'บ่า', '#1f6fd0'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['feet', 'ฐานเท้า', '#444']];
-  const POINTS = [['eyeL', 'ตาซ้าย', '#d63384'], ['eyeR', 'ตาขวา', '#d63384'], ['shL', 'หมุนไหล่ซ้าย', '#1f6fd0'], ['shR', 'หมุนไหล่ขวา', '#1f6fd0'], ['kneeL', 'เข่าซ้าย', '#2a9a3a'], ['kneeR', 'เข่าขวา', '#2a9a3a'], ['footL', 'เท้าซ้าย', '#444'], ['footR', 'เท้าขวา', '#444']];
+  const POINTS = [['eyeL', 'ตาซ้าย', '#d63384'], ['eyeR', 'ตาขวา', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'หมุนไหล่ซ้าย', '#1f6fd0'], ['shR', 'หมุนไหล่ขวา', '#1f6fd0'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่าซ้าย', '#2a9a3a'], ['kneeR', 'เข่าขวา', '#2a9a3a'], ['footL', 'เท้าซ้าย', '#444'], ['footR', 'เท้าขวา', '#444']];
+  const CENTRE = ['chin', 'chest', 'crotch'], DIRS = ['SW', 'NW', 'NE', 'SE'];
   const OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, SWAP = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', kneeL: 'kneeR', kneeR: 'kneeL', footL: 'footR', footR: 'footL' };
   const ls = root.localStorage;
-  const all = () => { try { return JSON.parse(ls.getItem(KEY) || '{}') || {} } catch (e) { return {} } };
+  /* v98.390 records had level lines: their chin / chest / crotch become centre points of SW */
+  function migrate(r) { if (!r || !r.levels) return r; const sw = (r.pts ||= {}).SW ||= {}; for (const k of CENTRE) if (r.levels[k] != null && !sw[k]) sw[k] = [.5, r.levels[k]]; delete r.levels; delete r.lv; return r }
+  const all = () => { try { const d = JSON.parse(ls.getItem(KEY) || '{}') || {}; for (const p of Object.values(d)) for (const f of Object.values(p || {})) for (const r of Object.values(f || {})) migrate(r); return d } catch (e) { return {} } };
   const saveAll = d => { try { ls.setItem(KEY, JSON.stringify(d)) } catch (e) { } };
   function get(id, pose, frame) { const d = all(); return d[id]?.[pose]?.[frame | 0] || null }
   function put(id, pose, frame, rec) { const d = all(); ((d[id] ||= {})[pose] ||= {})[frame | 0] = rec; saveAll(d) }
   function remove(id, pose, frame) { const d = all(); if (d[id]?.[pose]) { delete d[id][pose][frame | 0]; saveAll(d) } }
-  const levelsFor = (rec, dir) => rec ? { ...(rec.levels || {}), ...(rec.lv?.[dir] || {}) } : {};
-  function mirror(p) { const o = {}; for (const [k, v] of Object.entries(p || {})) o[SWAP[k] || k] = [1 - v[0], v[1]]; return o }
-  /* the points of a direction: its own, else the opposite direction mirrored (flag mirrored) */
-  function pointsFor(rec, dir) { if (!rec) return { pts: {}, mirrored: false }; const own = rec.pts?.[dir]; if (own && Object.keys(own).length) return { pts: own, mirrored: false }; const o = rec.pts?.[OPP[dir]]; return { pts: o ? mirror(o) : {}, mirrored: !!o } }
-  /* numbers in picture pixels (h = picture height, w = width). Head height from the FACE: skull top ≈ eye − (chin − eye), so hair / hats do not count */
+  /* the points of a direction: own ones, plus suggestions for the missing ones → { pts, own:Set, from:{key:'mirror'|'height'} } */
+  function pointsFor(rec, dir) {
+    const own = rec?.pts?.[dir] || {}, pts = { ...own }, from = {}, opp = rec?.pts?.[OPP[dir]] || {};
+    for (const [k, v] of Object.entries(opp)) { const m = SWAP[k] || k; if (!pts[m]) { pts[m] = [1 - v[0], v[1]]; from[m] = 'mirror' } }
+    const cx = () => { const xs = Object.values(pts).map(p => p[0]); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : .5 };
+    for (const k of CENTRE) if (!pts[k]) for (const d of DIRS) { const p = rec?.pts?.[d]?.[k]; if (p) { pts[k] = [cx(), p[1]]; from[k] = 'height'; break } }
+    return { pts, own: new Set(Object.keys(own)), from };
+  }
+  const mid = (a, b) => a && b ? [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] : null;
+  /* numbers in picture pixels (w × h). Head from the FACE: skull top ≈ eye midpoint − (chin − eye midpoint) → hair / hats do not count */
   function measure(rec, dir, w, h) {
-    const L = levelsFor(rec, dir), P = pointsFor(rec, dir).pts, y = k => L[k] != null ? L[k] * h : null, out = {};
-    const eye = y('eye'), chin = y('chin'), feet = y('feet');
-    if (eye != null && chin != null && chin > eye) { out.face = chin - eye; out.skullTop = eye - (chin - eye); out.headH = chin - out.skullTop; if (feet != null) { out.H = feet - out.skullTop; out.heads = out.H / out.headH; out.headFrac = out.headH / out.H } }
-    if (y('neck') != null && y('crotch') != null) out.torso = y('crotch') - y('neck');
-    if (y('crotch') != null && feet != null) out.legs = feet - y('crotch');
-    const dx = (a, b) => P[a] && P[b] ? Math.abs(P[a][0] - P[b][0]) * w : null;
-    out.eyeDist = dx('eyeL', 'eyeR'); out.shoulderW = dx('shL', 'shR');
-    const seg = (a, b) => P[a] && P[b] ? Math.hypot((P[a][0] - P[b][0]) * w, (P[a][1] - P[b][1]) * h) : null;
-    const cx = P.shL && P.shR ? (P.shL[0] + P.shR[0]) / 2 : .5, thigh = k => P[k] && L.crotch != null ? Math.hypot((P[k][0] - cx) * w, (P[k][1] - L.crotch) * h) : null;   /* from the crotch on the body's centre line */
-    out.thighL = thigh('kneeL'); out.thighR = thigh('kneeR'); out.shinL = seg('kneeL', 'footL'); out.shinR = seg('kneeR', 'footR');
+    const { pts: P } = pointsFor(rec, dir), out = {}, D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h) : null;
+    const eye = mid(P.eyeL, P.eyeR), feetY = P.footL && P.footR ? Math.max(P.footL[1], P.footR[1]) : (P.footL || P.footR)?.[1];
+    if (eye && P.chin) { out.face = D(eye, P.chin); const top = eye[1] * h - out.face * ((P.chin[1] - eye[1]) * h >= 0 ? 1 : -1); out.headH = out.face * 2; if (feetY != null) { out.H = feetY * h - (eye[1] * h - out.face); out.heads = out.H / out.headH; out.headFrac = out.headH / out.H } }
+    out.eyeDist = D(P.eyeL, P.eyeR); out.shoulderW = D(P.shL, P.shR);
+    const sh = mid(P.shL, P.shR); out.torso = D(sh || P.chest, P.crotch);
+    const leg = (k, f) => P[k] && P[f] && P.crotch ? D(P.crotch, P[k]) + D(P[k], P[f]) : P[f] && P.crotch ? D(P.crotch, P[f]) : null;
+    out.legL = leg('kneeL', 'footL'); out.legR = leg('kneeR', 'footR'); const ls_ = [out.legL, out.legR].filter(v => v != null); out.legs = ls_.length ? ls_.reduce((a, b) => a + b, 0) / ls_.length : null;
+    out.thighL = D(P.crotch, P.kneeL); out.thighR = D(P.crotch, P.kneeR); out.shinL = D(P.kneeL, P.footL); out.shinR = D(P.kneeR, P.footR);
     return out;
   }
-  /* proportion marks (fractions of the silhouette box m = {top,H}) for js/proportion-tool.js from the datum levels */
-  function marksFrom(rec, dir, m, h) { const L = levelsFor(rec, dir); if (L.chin == null || L.crotch == null) return null; const f = v => (v * h - m.top) / m.H; return { chin: f(L.chin), shoulder: f(L.shoulder ?? (L.chin + (L.crotch - L.chin) * .2)), hip: f(L.crotch) } }
-  const api = { KEY, LEVELS, POINTS, OPP, all, saveAll, get, put, remove, levelsFor, pointsFor, mirror, measure, marksFrom };
+  /* proportion marks (fractions of the silhouette box m = {top,H}) for js/proportion-tool.js: chin · shoulder (pivot mid) · hip (crotch) */
+  function marksFrom(rec, dir, m, h) { const { pts: P } = pointsFor(rec, dir); if (!P.chin || !P.crotch) return null; const f = y => (y * h - m.top) / m.H, sh = mid(P.shL, P.shR); return { chin: f(P.chin[1]), shoulder: f(sh ? sh[1] : P.chin[1] + (P.crotch[1] - P.chin[1]) * .2), hip: f(P.crotch[1]) } }
+  /* how far each direction's own centre points sit from the first direction that has them (fraction of the picture height) */
+  function heightGaps(rec) { const out = []; for (const k of CENTRE) { const has = DIRS.filter(d => rec?.pts?.[d]?.[k]); if (has.length < 2) continue; const y0 = rec.pts[has[0]][k][1]; for (const d of has.slice(1)) { const dy = rec.pts[d][k][1] - y0; if (Math.abs(dy) > .004) out.push({ dir: d, key: k, ref: has[0], dy }) } } return out }
+  const api = { KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

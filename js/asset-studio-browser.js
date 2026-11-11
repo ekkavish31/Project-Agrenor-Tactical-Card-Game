@@ -120,7 +120,7 @@
   }
  }
  /* v98.383 · the Scale Lineup row sits at the top of the Animation tab (scale-lineup.html?dock=1): size · proportion · real grid · per map, for the character picked here or in the row */
- function dockSync(on){const d=$('lineupDock');if(!d)return;document.body.classList.toggle('anim-mode',!!on);if(!on)return;const f=$('lineupDockFrame');if(f&&!f.src&&!d.classList.contains('min'))f.src='scale-lineup.html?studio=1&dock=1&v=98.390'}
+ function dockSync(on){const d=$('lineupDock');if(!d)return;document.body.classList.toggle('anim-mode',!!on);if(!on)return;const f=$('lineupDockFrame');if(f&&!f.src&&!d.classList.contains('min'))f.src='scale-lineup.html?studio=1&dock=1&v=98.391'}
  (()=>{const d=$('lineupDock'),b=$('dockToggle');if(!d||!b)return;let min=false;try{min=localStorage.getItem('studio.dockMin')==='1'}catch(e){}const set=v=>{min=v;d.classList.toggle('min',v);b.textContent=v?'แสดง ▾':'ย่อ ▴';try{localStorage.setItem('studio.dockMin',v?'1':'0')}catch(e){}if(!v)dockSync(document.body.classList.contains('anim-mode'))};set(min);b.onclick=()=>set(!min)})();
  function renderNav(){let search=state.entityQuery.toLowerCase(),all=state.model.filter(e=>e.group===state.group),ee=all.filter(e=>(e.name+' '+e.id).toLowerCase().includes(search));
   const ANIM=['characters','npcs','monsters','bosses'];dockSync(ANIM.includes(state.group));const subs=ANIM.includes(state.group)?'<div class="subtabs">'+[['characters','ตัวละคร'],['npcs','NPC ชาวบ้าน'],['monsters','มอนสเตอร์'],['bosses','มินิบอส / บอส']].map(([g,n])=>`<button data-sub="${g}" class="${g===state.group?'on':''}">${n}</button>`).join('')+'</div>':'';
