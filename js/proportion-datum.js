@@ -57,6 +57,11 @@
   function matchScales(tpl, tgt, sel = { head: true, torso: true, legs: true }) { if (!tpl || !tgt) return null; const r = k => tpl[k] / tgt[k], ks = ['head', 'torso', 'legs'].filter(k => sel[k]);
     if (!ks.length) return null; const base = sel.legs || ks.length === 3 ? r('legs') : ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tgt[k], 0) / ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tpl[k], 0);
     const out = { head: 1, torso: 1, legs: 1 }; for (const k of ks) out[k] = Math.max(.5, Math.min(2, sel.legs || ks.length === 3 ? r(k) / base : r(k) / (1 / base))); return out }
-  const api = { spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
+  /* v98.398 · THE STANDARD: the template character's spans, kept as numbers so it stays put even when that picture is edited later.
+     localStorage 'proportion-standard-v1' = { id, name, pose, dir, spans:{head,torso,legs}, at } (pushed with the datum) */
+  const STD_KEY = 'proportion-standard-v1';
+  const std = () => { try { const o = JSON.parse(ls.getItem(STD_KEY) || 'null'); return o && o.spans ? o : null } catch (e) { return null } };
+  const setStd = o => { try { o ? ls.setItem(STD_KEY, JSON.stringify(o)) : ls.removeItem(STD_KEY) } catch (e) { } };
+  const api = { STD_KEY, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

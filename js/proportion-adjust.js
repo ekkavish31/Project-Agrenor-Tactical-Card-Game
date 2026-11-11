@@ -83,6 +83,8 @@
       wh[i] = wh[i] * (1 - k) + h * k; wt[i] = wt[i] * (1 - k) + t * k; wl[i] = wl[i] * (1 - k) + l * k }
     return [wh, wt, wl];
   }
+  /* v98.398 · where a point of the original picture (px, in the warp's own orientation) ends up after warp() — used to move the datum points with the picture */
+  function mapPoint(res, x, y) { const s = res.seg, t = res.T[y < s.head[1] ? 0 : y < s.torso[1] ? 1 : 2]; return [t.bx + (x - t.ax) * t.k, t.by + (y - t.ay) * t.k] }
   function warp(img, m, marks, scale, opt = {}) {
     const W = m.w, H = m.h, cv = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c };
     const src = cv(), sg = src.getContext('2d', { willReadFrequently: true }); if (opt.flip) { sg.translate(W, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0); sg.setTransform(1, 0, 0, 1, 0, 0);
@@ -113,8 +115,8 @@
       for (let Y = 1; Y < H - 1; Y++) for (let X = 1; X < W - 1; X++) { const p = Y * W + X, i = p * 4; if (src2[i + 3] < 20) continue; const amt = man != null ? man : Math.min(.9, Math.max(0, (KL[p] - 1) * 1.6)); if (amt < .01) continue;
         for (let c = 0; c < 3; c++) { let sum = 0, n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const q = ((Y + dy) * W + X + dx) * 4; if (src2[q + 3] < 20) continue; sum += src2[q + c]; n++ } const blur = n ? sum / n : src2[i + c]; o[i + c] = src2[i + c] + amt * (src2[i + c] - blur) } } }
     og.putImageData(od, 0, 0);
-    return { canvas: out, plan: P, seg, weights: WT, src };
+    return { canvas: out, plan: P, seg, weights: WT, src, T };
   }
-  const api = { segments, plan, render, warp, weightsOf, autoScale };
+  const api = { segments, plan, render, warp, weightsOf, autoScale, mapPoint };
   root.ProportionAdjust = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
