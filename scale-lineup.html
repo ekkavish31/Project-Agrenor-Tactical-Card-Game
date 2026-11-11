@@ -115,8 +115,8 @@ const WORLD = {
    ?dock=1  → the CHARACTER row at the top of the Animation tab (size · proportion · real grid · per map) — no list on the left (the studio's own list picks the character)
    ?world=1 → the ⚖ ขนาดโลก tab of the studio (buildings · decor · nature) */
 const QS = new URLSearchParams(location.search), DOCK = QS.get('dock') === '1', WORLD_ONLY = QS.get('world') === '1';
-const TABS_ALL = [['char', '📏 ขนาด'], ['ratio', '📐 สัดส่วน'], ['field', '⚔ สนามรบ · Grid จริง'], ['maps', '🗺 ขนาดต่อแผนที่'], ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
-const TABS = DOCK ? TABS_ALL.filter(t => ['char', 'ratio', 'field', 'maps'].includes(t[0])) : WORLD_ONLY ? TABS_ALL.filter(t => ['building', 'prop', 'nature'].includes(t[0])) : TABS_ALL;
+const TABS_ALL = [['char', '📏 ขนาด'], ['ratio', '📐 สัดส่วน'], ['maps', '🗺 บนแผนที่จริง'],   /* v98.389 · '⚔ สนามรบ · Grid จริง' merged in here: the สนามรบ row of this tab IS the real battle grid */ ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
+const TABS = DOCK ? TABS_ALL.filter(t => ['char', 'ratio', 'maps'].includes(t[0])) : WORLD_ONLY ? TABS_ALL.filter(t => ['building', 'prop', 'nature'].includes(t[0])) : TABS_ALL;
 let tab = TABS[0][0];
 if (DOCK) document.body.classList.add('dock'); if (WORLD_ONLY) document.body.classList.add('world');
 const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
@@ -205,7 +205,7 @@ function pickSel(id) { if (MULTI) { PICKED.has(id) ? PICKED.delete(id) : PICKED.
 function render() {
   if (!ENTRIES.some(e => e.id === 'hero' && e.ctx.battle)) { $('stage').innerHTML = '<p class="hint">ยังไม่พบภาพท่ายืนของตัวเอก (SW) — ตัวเอกคือไม้วัดของหน้านี้ · ตรวจว่าไฟล์ภาพถูก push แล้ว หรือกด รีเฟรช</p>'; $('list').innerHTML = ''; $('insp').innerHTML = ''; return }
   ctx = tab === 'char' || tab === 'ratio' || tab === 'field' ? 'battle' : 'village';
-  if (ST && ['char', 'ratio', 'field'].includes(tab)) {   /* v98.386 · ท่า · ทิศ · เฟรม for the whole row */
+  if (ST && ['char', 'ratio', 'maps'].includes(tab)) {   /* v98.386 · ท่า · ทิศ · เฟรม for the whole row */
     $('vpCtl').innerHTML = `<span class="vp">ท่า <select id="vpAct">${VP_ACT.map(([k, n]) => `<option value="${k}"${VP.action === k ? ' selected' : ''}>${n}</option>`).join('')}</select> ทิศ ${['SW', 'NW', 'NE', 'SE'].map(v => `<button data-vv="${v}" aria-pressed="${VP.view === v}">${v}</button>`).join('')} เฟรม <input id="vpIdx" type="number" min="1" max="24" value="${VP.index + 1}" style="width:48px"></span>`;
     const again = async () => { try { localStorage.setItem('lineup.vp', JSON.stringify(VP)) } catch (e) { } await buildChars(); render() };
     $('vpAct').onchange = ev => { VP.action = ev.target.value; VP.index = 0; again() }; $('vpIdx').onchange = ev => { VP.index = Math.max(0, (+ev.target.value || 1) - 1); again() };
