@@ -123,3 +123,11 @@ body.anim-mode #lineupDock{display:block}
 .missing-cell{height:190px}
 @media(max-width:1000px){.anim-matrix td{min-width:132px}.clip-cell canvas{width:118px;height:114px}.missing-cell{height:160px}}
 @media(max-width:650px){.anim-matrix td{min-width:110px}.clip-cell canvas{width:98px;height:96px}}
+/* v98.385 · compact head: name + tools on one row · files collapsed */
+.entity-head{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.entity-head .entity-title{margin:0;flex:0 1 auto}.entity-head .entity-title h2{font-size:22px;margin:2px 0}.entity-head .entity-title p{margin:0;font-size:12px}
+.entity-head .entity-controls{flex:1 1 520px;justify-content:flex-end;margin:0;gap:8px}
+.tb-group{padding:4px 7px}
+.files-box{margin-top:16px;border:1px solid var(--studio-line);border-radius:10px;padding:6px 12px;background:#fffdf7}
+.files-box>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;margin:2px 0}.files-box>summary::-webkit-details-marker{display:none}
+.files-box>summary::before{content:'▸';color:#6b7963}.files-box[open]>summary::before{content:'▾'}

@@ -59,6 +59,54 @@
     else x = (h.head / T - fixed) / moving;                      // body parts only (head is part of `fixed`): head ÷ total = T
     x = clamp(x, .5, 2); for (const k of Object.keys(h)) if (sel[k]) out[k] = x; return out;
   }
-  const api = { segments, plan, render, autoScale };
+
+  /* v98.385 · SEAMLESS re-proportioning: ONE continuous warp of the picture instead of three cut-and-stacked layers (no gaps, no stepped seams).
+     Each part (head · torso · legs) has a similarity transform (scale about the bottom of the part on its own centre line, moved to where the plan stacks it).
+     Every pixel blends those transforms by soft weights, so at the chin / waist the image bends smoothly from one scale to the next.
+       mode 'band'  → weights follow the cut lines with a soft transition (opt.soft = transition half-width, fraction of the height)
+       mode 'shape' → weights follow the SHAPE of each part (its own opaque pixels, grown/blurred by opt.grow px): the head scales as the head outline,
+                      a cape or weapon next to it follows the part it touches
+     The inverse map is solved per output pixel by a few Newton-like steps (smooth field → converges), then sampled bilinearly (premultiplied alpha). */
+  function boxBlur(a, w, h, r) { if (r < 1) return a; const t = new Float32Array(a.length), o = new Float32Array(a.length);
+    for (let y = 0; y < h; y++) { let s = 0; const row = y * w; for (let x = -r; x <= r; x++) s += a[row + Math.min(w - 1, Math.max(0, x))]; for (let x = 0; x < w; x++) { t[row + x] = s / (2 * r + 1); s += a[row + Math.min(w - 1, x + r + 1)] - a[row + Math.max(0, x - r)] } }
+    for (let x = 0; x < w; x++) { let s = 0; for (let y = -r; y <= r; y++) s += t[Math.min(h - 1, Math.max(0, y)) * w + x]; for (let y = 0; y < h; y++) { o[y * w + x] = s / (2 * r + 1); s += t[Math.min(h - 1, y + r + 1) * w + x] - t[Math.max(0, y - r) * w + x] } }
+    return o }
+  const ss = (a, b, x) => { const t = clamp((x - a) / ((b - a) || 1), 0, 1); return t * t * (3 - 2 * t) };
+  function weightsOf(d, W, H, seg, mode, soft, grow) {
+    const N = W * H, wh = new Float32Array(N), wt = new Float32Array(N), wl = new Float32Array(N), chin = seg.head[1], hip = seg.torso[1];
+    for (let y = 0; y < H; y++) { const h = 1 - ss(chin - soft, chin + soft, y), l = ss(hip - soft, hip + soft, y), t = Math.max(0, 1 - h - l); for (let x = 0; x < W; x++) { const i = y * W + x; wh[i] = h; wt[i] = t; wl[i] = l } }
+    if (mode !== 'shape') return [wh, wt, wl];
+    /* the shape of each part: its opaque pixels in its own rows, grown and softened so the weights fade out around the outline */
+    const mk = (a, b) => { const o = new Float32Array(N); for (let y = Math.max(0, a); y < Math.min(H, b); y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 40) o[y * W + x] = 1; return boxBlur(boxBlur(o, W, H, grow), W, H, Math.max(1, grow >> 1)) };
+    const mh = mk(seg.head[0], seg.head[1]), mt = mk(seg.torso[0], seg.torso[1]), ml = mk(seg.legs[0], seg.legs[1]);
+    for (let i = 0; i < N; i++) { const s0 = mh[i] + mt[i] + ml[i]; if (s0 < 1e-3) continue; const k = Math.min(1, s0 * 3), h = mh[i] / s0, t = mt[i] / s0, l = ml[i] / s0;   // near any part: its shape decides; far away: the band
+      wh[i] = wh[i] * (1 - k) + h * k; wt[i] = wt[i] * (1 - k) + t * k; wl[i] = wl[i] * (1 - k) + l * k }
+    return [wh, wt, wl];
+  }
+  function warp(img, m, marks, scale, opt = {}) {
+    const W = m.w, H = m.h, cv = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c };
+    const src = cv(), sg = src.getContext('2d', { willReadFrequently: true }); if (opt.flip) { sg.translate(W, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0); sg.setTransform(1, 0, 0, 1, 0, 0);
+    const d = sg.getImageData(0, 0, W, H).data, seg = segments(m, marks), P = plan(seg, scale, opt), K = ['head', 'torso', 'legs'];
+    const T = K.map(k => { const cx = centreX(d, W, seg[k][0], seg[k][1]); return { k: P.k[k], ax: cx, ay: seg[k][1], bx: cx, by: P[k][1] } });
+    const [wh, wt, wl] = weightsOf(d, W, H, seg, opt.mode || 'band', Math.max(2, (opt.soft ?? .06) * m.H), Math.max(1, Math.round(opt.grow ?? 10)));
+    const WT = [wh, wt, wl];
+    const fwd = (x, y) => { const xi = clamp(Math.round(x), 0, W - 1), yi = clamp(Math.round(y), 0, H - 1), i = yi * W + xi; let fx = 0, fy = 0, kk = 0, ws = 0;
+      for (let j = 0; j < 3; j++) { const w = WT[j][i]; if (!w) continue; const t = T[j]; fx += w * (t.bx + t.k * (x - t.ax)); fy += w * (t.by + t.k * (y - t.ay)); kk += w * t.k; ws += w }
+      return ws ? [fx / ws, fy / ws, kk / ws] : [x, y, 1] };
+    const out = cv(), og = out.getContext('2d'), od = og.createImageData(W, H), o = od.data;
+    const bL = P.head[1], bT = P.torso[1];
+    for (let Y = 0; Y < H; Y++) for (let X = 0; X < W; X++) {
+      const t = T[Y < bL ? 0 : Y < bT ? 1 : 2]; let x = t.ax + (X - t.bx) / t.k, y = t.ay + (Y - t.by) / t.k;   // first guess: that part's own inverse
+      for (let it = 0; it < 6; it++) { const [fx, fy, kk] = fwd(x, y); x += (X - fx) / kk; y += (Y - fy) / kk }
+      if (x < -1 || y < -1 || x > W || y > H) continue;
+      /* bilinear, premultiplied alpha */
+      const x0 = Math.floor(x), y0 = Math.floor(y), ax = x - x0, ay = y - y0; let r = 0, g = 0, b = 0, a = 0;
+      for (const [dx, dy, w] of [[0, 0, (1 - ax) * (1 - ay)], [1, 0, ax * (1 - ay)], [0, 1, (1 - ax) * ay], [1, 1, ax * ay]]) { const xx = x0 + dx, yy = y0 + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H || !w) continue; const i = (yy * W + xx) * 4, al = d[i + 3] / 255 * w; r += d[i] * al; g += d[i + 1] * al; b += d[i + 2] * al; a += al }
+      if (a <= .003) continue; const i = (Y * W + X) * 4; o[i] = r / a; o[i + 1] = g / a; o[i + 2] = b / a; o[i + 3] = Math.min(255, a * 255);
+    }
+    og.putImageData(od, 0, 0);
+    return { canvas: out, plan: P, seg, weights: WT, src };
+  }
+  const api = { segments, plan, render, warp, weightsOf, autoScale };
   root.ProportionAdjust = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

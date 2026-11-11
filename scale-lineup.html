@@ -44,6 +44,7 @@ body.dock main{grid-template-columns:minmax(0,1fr) 300px;max-width:none;padding:
 body.dock #stage{height:330px}body.dock .card{padding:8px}
 @media(max-width:900px){body.dock main{grid-template-columns:1fr}}
 body.world header h1 small{display:none}
+.rtBox{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--panel)}.rtBox summary{cursor:pointer}.rtBox[open] summary{margin-bottom:6px}
 </style></head><body>
 <header><h1>⚖ Scale Lineup <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
 <span id="tabs"></span> <span id="ctxBtns"></span><span class="grow"></span>
@@ -54,7 +55,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.380"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=97.93"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.385"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -284,10 +285,10 @@ function renderRatio(V) {
     for (const n of ['chin', 'shoulder', 'hip']) h += `<div class="ln" style="top:${r.marks[n] * fh}px;border-color:${COL[n]}"></div>`;
     h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}" data-c="${e.id}">${e.name}<br><span class="chip ${LV[v.level][0]}">${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(0)}%</span></div></div>`;
   }
-  h += `</div><table class="rt"><tr><th>ตัวละคร</th><th>สูง px</th><th>หัว %</th><th>จำนวนหัว</th><th title="ความกว้างหัว ÷ ความกว้างช่วงไหล่ (รวมแขน)">หัว/ไหล่</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
+  h += `</div><details class="rtBox"${(() => { try { return localStorage.getItem('lineup.rtOpen') === '1' ? ' open' : '' } catch (e) { return '' } })()}><summary><b>📋 ตารางเทียบทั้งทีม</b> <small>(${R.length} ตัว · ตรง ${ok} · เฉียด ${warn} · ไม่ตรง ${bad})</small></summary><table class="rt"><tr><th>ตัวละคร</th><th>สูง px</th><th>หัว %</th><th>จำนวนหัว</th><th title="ความกว้างหัว ÷ ความกว้างช่วงไหล่ (รวมแขน)">หัว/ไหล่</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
   for (const { e, r, v } of R) h += `<tr data-c="${e.id}" class="${e.id === sel ? 'sel' : ''}"><td>${e.name}${r.manual ? '' : ' <small title="ประมาณจากภาพอัตโนมัติ · ลากเส้นในแผงขวาเพื่อปรับ">~</small>'}</td><td>${r.H}</td><td>${(r.head * 100).toFixed(1)}</td><td>${r.heads.toFixed(2)}</td><td>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'}</td><td>${(r.torso * 100).toFixed(0)}</td><td>${(r.legs * 100).toFixed(0)}</td><td><span class="chip ${LV[v.level][0]}" title="${v.notes.join(' · ')}">${LV[v.level][1]}</span></td></tr>`;
-  h += `</table><p class="hint">เส้นแดง/น้ำเงิน/เขียว = คาง/ไหล่/ขาหนีบ ที่ประมาณจากภาพ (ตัวที่มี ~ ยังไม่ได้ยืนยัน) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · เส้นเขียวประ = มาตรฐานของตัวนั้น · เส้นส้มประ = ค่ากลางทีม — ถ้าเป็นกึ่ง SD เท่ากัน เส้นแดงของทุกตัวควรอยู่ใกล้เส้นมาตรฐานสีเขียว · เลือกตัวแล้วลากเส้นที่แผงขวาให้ตรงกับคางจริง</p><div class="adj"><button id="rCopy">📋 คัดลอกรายงาน</button></div>`;
-  st.innerHTML = h;
+  h += `</table></details><p class="hint">เส้นแดง/น้ำเงิน/เขียว = คาง/ไหล่/ขาหนีบ ที่ประมาณจากภาพ (ตัวที่มี ~ ยังไม่ได้ยืนยัน) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · เส้นเขียวประ = มาตรฐานของตัวนั้น · เส้นส้มประ = ค่ากลางทีม — ถ้าเป็นกึ่ง SD เท่ากัน เส้นแดงของทุกตัวควรอยู่ใกล้เส้นมาตรฐานสีเขียว · เลือกตัวแล้วลากเส้นที่แผงขวาให้ตรงกับคางจริง</p><div class="adj"><button id="rCopy">📋 คัดลอกรายงาน</button></div>`;
+  st.innerHTML = h; { const d = st.querySelector('.rtBox'); if (d) d.ontoggle = () => { try { localStorage.setItem('lineup.rtOpen', d.open ? '1' : '0') } catch (e) { } } }
   st.querySelectorAll('[data-c]').forEach(n => n.onclick = () => pickSel(n.dataset.c));
   $('sHead').onchange = ev => { STDV.head = Math.min(60, Math.max(15, +ev.target.value || 38)); renderRatio(visible()) }; $('sTol').onchange = ev => { STDV.tol = Math.min(15, Math.max(1, +ev.target.value || 4)); renderRatio(visible()) };
   $('rCopy').onclick = async ev => { const tx = reportText(R, med); try { await navigator.clipboard.writeText(tx); ev.target.textContent = 'คัดลอกแล้ว ✓' } catch (er) { prompt('คัดลอกข้อความนี้', tx) } };
@@ -295,30 +296,30 @@ function renderRatio(V) {
 }
 function inspectRatio() {
   const e = ENTRIES.find(x => x.id === sel); if (!e || isW(e) || !e.ctx.battle) { $('insp').innerHTML = ''; return }
-  const c = e.ctx.battle, r = ratioOf(e), med = PT.median(visible().map(x => ratioOf(x).head)), v = PT.verdict(r, STDOBJ(), med), CH = 300, CW = 250;
+  const c = e.ctx.battle, r = ratioOf(e), med = PT.median(visible().map(x => ratioOf(x).head)), v = PT.verdict(r, STDOBJ(), med), CH = 300, CW = 250, PW = 300, HALF = PW / 2;   /* v98.385 · one canvas: left = measure, right = adjusted */
   $('insp').innerHTML = `<b>${e.name}</b> <span class="chip ${LV[v.level][0]}">${LV[v.level][1]}</span>
-   <canvas id="pcv" width="${CW}" height="${CH + 20}" style="width:${CW}px;height:${CH + 20}px;max-width:100%;touch-action:none;cursor:ns-resize;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
-   <p class="hint">ลากเส้นสี (คาง = ล่างหัว · ไหล่ · ขาหนีบ) ให้ตรงกับภาพ ${r.manual ? '' : '· ตอนนี้เป็นค่าประมาณอัตโนมัติ'}</p>
+   <canvas id="pcv" width="${PW}" height="${CH + 20}" style="width:${PW}px;height:${CH + 20}px;max-width:100%;touch-action:none;cursor:ns-resize;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
+   <p class="hint"><b>ซ้าย</b> ภาพจริง — ลากเส้นสี (คาง · ไหล่ · ขาหนีบ) ให้ตรงภาพ กรอบประ = ส่วนที่จับ ${r.manual ? '' : '(ตอนนี้ประมาณอัตโนมัติ)'} · <b>ขวา</b> หลังปรับ — เส้นประเทา = จุดตัดเดิม · สี = หลังปรับ · เขียว = เป้าหมายหัว</p>
    <dl><dt>จำนวนหัว</dt><dd><b>${r.heads.toFixed(2)}</b> หัว (หัว ${(r.head * 100).toFixed(1)}% ของตัว)</dd><dt>หัว / ไหล่</dt><dd>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'} (หัวกว้าง ${r.headW}px · ไหล่ ${r.shoulderW}px)</dd><dt>ลำตัว / ขา</dt><dd>${(r.torso * 100).toFixed(0)}% / ${(r.legs * 100).toFixed(0)}%</dd><dt>ผล</dt><dd>${v.notes.length ? v.notes.join('<br>') : 'ตรงมาตรฐาน'}</dd></dl>
    <div class="adj"><span>คาง %</span><input type="number" id="mChin" min="5" max="70" step="0.5" value="${(r.marks.chin * 100).toFixed(1)}"><span style="width:50px">ไหล่ %</span><input type="number" id="mSh" min="5" max="85" step="0.5" value="${(r.marks.shoulder * 100).toFixed(1)}"></div>
    <div class="adj"><span>ขาหนีบ %</span><input type="number" id="mHip" min="30" max="90" step="0.5" value="${(r.marks.hip * 100).toFixed(1)}"></div>
    <div class="adj"><button id="mAuto">ประมาณอัตโนมัติ</button><button id="mPush">⬆ Push เส้นที่ปรับ</button></div><p class="hint" id="mMsg"></p>
    <details open id="adjBox" style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px"><summary><b>🛠 ปรับขนาดหัว / ลำตัว / ขา</b></summary>
-    <p class="hint">ตัดภาพที่เส้น <b style="color:${COL.chin}">คาง</b> และ <b style="color:${COL.hip}">ขาหนีบ</b> เป็น 3 ส่วน ปรับแต่ละส่วนแล้วต่อกลับ (เท้าอยู่ที่เดิม) · เส้นประเทา = ตำแหน่งเดิม · เส้นประสี = หลังปรับ · เขียวประ = เป้าหมายหัว</p>
+    <p class="hint">ตัดภาพที่เส้น <b style="color:${COL.chin}">คาง</b> และ <b style="color:${COL.hip}">ขาหนีบ</b> เป็น 3 ส่วน ปรับแต่ละส่วนแล้วต่อกลับ (เท้าอยู่ที่เดิม) — ดูผลที่ภาพด้านขวาบนแผงนี้</p>
     <div class="adj"><label><input type="radio" name="adjMode" value="auto" checked> ออโต้ (หัว ≈ <b id="adjT">${STDV.head.toFixed(0)}</b>%)</label><label><input type="radio" name="adjMode" value="man"> แมนวล</label><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงความสูงรวม</label></div>
+    <div class="adj" title="ครอบตามทรง = จับเฉพาะรูปทรงของหัว/ลำตัว/ขา แล้วบิดภาพต่อเนื่องชิ้นเดียว · แถบนุ่ม = จับเป็นแถบตามเส้นตัด แต่ต่อเนียน"><span>รอยต่อ</span><select id="adjSeam"><option value="shape">ครอบตามทรง</option><option value="band">แถบนุ่ม</option></select><span>นุ่ม</span><input type="range" id="adjSoft" min="2" max="20" step="1" value="7" style="width:80px"></div>
     ${[['head', 'หัว'], ['torso', 'ลำตัว'], ['legs', 'ขา']].map(([k, n]) => `<div class="adj" data-part="${k}" style="gap:3px;flex-wrap:nowrap"><label style="width:58px;white-space:nowrap"><input type="checkbox" class="adjSel" data-k="${k}" ${k === 'head' ? 'checked' : ''}> ${n}</label><button data-k="${k}" data-d="-5" style="padding:2px 5px">−5</button><button data-k="${k}" data-d="-1" style="padding:2px 5px">−1</button><input type="number" class="adjVal" data-k="${k}" min="50" max="200" step="1" value="100" style="width:46px">%<button data-k="${k}" data-d="1" style="padding:2px 5px">+1</button><button data-k="${k}" data-d="5" style="padding:2px 5px">+5</button></div>`).join('')}
-    <canvas id="acv" width="${CW}" height="${CH + 20}" style="width:${CW}px;height:${CH + 20}px;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
     <div class="hint" id="adjInfo"></div>
     <div class="adj"><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng">⬇ ส่งออก PNG</button><button id="adjApply" title="เขียนทับภาพต้นฉบับของช่องนี้ใน Asset Studio (เก็บภาพเดิมไว้ในประวัติ)">💾 ใช้กับช่องภาพนี้</button></div><p class="hint" id="adjMsg"></p></details>`;
-  const cv = document.getElementById('pcv'), g = cv.getContext('2d'), k = CH / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, ox = (CW - fw) / 2, oy = 10;
-  const marks = { ...r.marks }, draw = () => {
-    g.clearRect(0, 0, CW, CH + 20); g.save(); if (c.flip) { g.translate(CW, 0); g.scale(-1, 1) } g.drawImage(c.img, (c.flip ? CW - ox - fw : ox) - c.m.x0 * k, oy - c.m.top * k, c.m.w * k, c.m.h * k); g.restore();
-    for (const n of ['chin', 'shoulder', 'hip']) { const y = oy + marks[n] * CH; g.strokeStyle = COL[n]; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(CW, y); g.stroke(); g.fillStyle = COL[n]; g.font = '11px AgThai,sans-serif'; g.fillText(LBL[n], 4, y - 3) }
-  }; draw();
+  const cv = document.getElementById('pcv'), g = cv.getContext('2d'), k = CH / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, ox = (HALF - fw) / 2, oy = 10; let paintAdj = null;
+  const marks = { ...r.marks }, drawLeft = () => {
+    g.clearRect(0, 0, HALF, CH + 20); g.save(); g.beginPath(); g.rect(0, 0, HALF, CH + 20); g.clip(); if (c.flip) { g.translate(HALF, 0); g.scale(-1, 1) } g.drawImage(c.img, (c.flip ? HALF - ox - fw : ox) - c.m.x0 * k, oy - c.m.top * k, c.m.w * k, c.m.h * k); g.restore();
+    for (const n of ['chin', 'shoulder', 'hip']) { const y = oy + marks[n] * CH; g.strokeStyle = COL[n]; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(HALF, y); g.stroke(); g.fillStyle = COL[n]; g.font = '11px AgThai,sans-serif'; g.fillText(LBL[n], 4, y - 3) }
+  }, draw = () => { if (!paintAdj) return drawLeft(); drawLeft(); cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(() => paintAdj()) }; draw();
   const commit = (final) => { const sv = { chin: +marks.chin.toFixed(4), shoulder: +marks.shoulder.toFixed(4), hip: +marks.hip.toFixed(4), sig: sigOf(c) }; MARKS[e.id] = sv; PT.store.save(MARKS); if (final) { renderRatio(visible()); inspectRatio() } else reRatio() };
   let drag = null; const yOf = ev => { const b = cv.getBoundingClientRect(); return (ev.clientY - b.top) * (CH + 20) / b.height };
-  cv.onpointerdown = ev => { const y = yOf(ev); let best = null, bd = 14; for (const n of ['chin', 'shoulder', 'hip']) { const d = Math.abs(oy + marks[n] * CH - y); if (d < bd) { bd = d; best = n } } if (best) { drag = best; cv.setPointerCapture(ev.pointerId) } };
-  cv.onpointermove = ev => { if (!drag) return; let f = Math.min(.95, Math.max(.04, (yOf(ev) - oy) / CH)); if (drag === 'chin') f = Math.min(f, marks.hip - .08); if (drag === 'hip') f = Math.max(f, marks.chin + .08); marks[drag] = f; if (drag === 'chin' && marks.shoulder < f) marks.shoulder = f + .02; draw(); commit(false); window.__adjRedraw?.() };
+  cv.onpointerdown = ev => { { const b = cv.getBoundingClientRect(); if ((ev.clientX - b.left) * PW / b.width > HALF) return } const y = yOf(ev); let best = null, bd = 14; for (const n of ['chin', 'shoulder', 'hip']) { const d = Math.abs(oy + marks[n] * CH - y); if (d < bd) { bd = d; best = n } } if (best) { drag = best; cv.setPointerCapture(ev.pointerId) } };
+  cv.onpointermove = ev => { if (!drag) return; let f = Math.min(.95, Math.max(.04, (yOf(ev) - oy) / CH)); if (drag === 'chin') f = Math.min(f, marks.hip - .08); if (drag === 'hip') f = Math.max(f, marks.chin + .08); marks[drag] = f; if (drag === 'chin' && marks.shoulder < f) marks.shoulder = f + .02; draw(); commit(false) };
   cv.onpointerup = () => { if (drag) { drag = null; commit(true) } };
   const num = (id, key) => document.getElementById(id).onchange = ev => { marks[key] = Math.min(.95, Math.max(.04, (+ev.target.value || 0) / 100)); commit(true) };
   num('mChin', 'chin'); num('mSh', 'shoulder'); num('mHip', 'hip');
@@ -326,27 +327,31 @@ function inspectRatio() {
   document.getElementById('mPush').onclick = async () => { const m = document.getElementById('mMsg'), G = window.GitHubPush; if (!G || !G.enabled()) { m.textContent = 'ยังไม่ได้ใส่ token ของ GitHub ในเบราว์เซอร์นี้ (เปิดตั้งค่าจาก Asset Studio ก่อน)'; return } m.textContent = 'กำลัง push…'; try { const sha = await G.pushSettings([PT.store.KEY], 'สัดส่วนตัวละคร (เส้นคาง/ไหล่/ขาหนีบ)'); m.textContent = sha ? 'push แล้ว · ' + sha : 'ไม่มีอะไรต้อง push' } catch (er) { m.textContent = 'push ไม่สำเร็จ: ' + er.message } };
   /* ---- v98.380 · 🛠 ปรับสัดส่วน: head / torso / legs scaled on their own ---- */
   {
-    const mem = ((window.__adjMem ||= {})[e.id] ||= { A: { head: 100, torso: 100, legs: 100 }, mode: 'auto', sel: { head: true, torso: false, legs: false }, keep: true }), PA = window.ProportionAdjust, A = mem.A, $a = id => document.getElementById(id), acv = $a('acv'), ag = acv.getContext('2d');
+    const mem = ((window.__adjMem ||= {})[e.id] ||= { A: { head: 100, torso: 100, legs: 100 }, mode: 'auto', sel: { head: true, torso: false, legs: false }, keep: true, seam: 'shape', soft: 7 }), PA = window.ProportionAdjust, A = mem.A, $a = id => document.getElementById(id), ag = g;
     const sel = () => Object.fromEntries([...document.querySelectorAll('.adjSel')].map(b => [b.dataset.k, b.checked])), mode = () => document.querySelector('input[name=adjMode]:checked').value;
     const targetFrac = () => STDV.head / 100;
     const scaleNow = () => { const S = sel(); return { head: S.head ? A.head / 100 : 1, torso: S.torso ? A.torso / 100 : 1, legs: S.legs ? A.legs / 100 : 1 } };
     const autoFill = () => { const seg = PA.segments(c.m, marks), a = PA.autoScale(seg, sel(), targetFrac()); A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10; $a('adjMsg').textContent = a.note || '' };
     const sync = () => { document.querySelectorAll('.adjVal').forEach(i => { i.value = A[i.dataset.k]; i.disabled = !sel()[i.dataset.k] }) };
     let last = null;
-    document.querySelector(`input[name=adjMode][value=${mem.mode}]`).checked = true; $a('adjKeep').checked = mem.keep; document.querySelectorAll('.adjSel').forEach(b => b.checked = !!mem.sel[b.dataset.k]);
+    document.querySelector(`input[name=adjMode][value=${mem.mode}]`).checked = true; $a('adjKeep').checked = mem.keep; $a('adjSeam').value = mem.seam || 'shape'; $a('adjSoft').value = mem.soft || 7; document.querySelectorAll('.adjSel').forEach(b => b.checked = !!mem.sel[b.dataset.k]);
     const redraw = () => {
-      mem.mode = mode(); mem.sel = sel(); mem.keep = $a('adjKeep').checked;
+      mem.mode = mode(); mem.sel = sel(); mem.keep = $a('adjKeep').checked; mem.seam = $a('adjSeam').value; mem.soft = +$a('adjSoft').value;
       if (mode() === 'auto') autoFill(); sync();
-      const keep = $a('adjKeep').checked, sc = scaleNow(); last = PA.render(c.img, c.m, marks, sc, { keepHeight: keep, flip: c.flip });
-      const P = last.plan, seg = last.seg, m = c.m, k = CH / m.H, half = CW / 2, cxm = (m.x0 + m.x1) / 2;
-      ag.clearRect(0, 0, CW, CH + 20);
+      const keep = $a('adjKeep').checked, sc = scaleNow(); last = PA.warp(c.img, c.m, marks, sc, { keepHeight: keep, flip: c.flip, mode: mem.seam, soft: mem.soft / 100, grow: Math.round(c.m.H * .03) });   /* v98.385 · one continuous warp — no cut layers */
+      const P = last.plan, seg = last.seg, m = c.m, k = CH / m.H, half = HALF, cxm = (m.x0 + m.x1) / 2, CW = PW;
+      drawLeft(); ag.clearRect(HALF, 0, HALF, CH + 20);
       const place = (img, x0) => ag.drawImage(img, x0 + half / 2 - cxm * k, 10 - m.top * k, m.w * k, m.h * k);
       const Y = y => 10 + (y - m.top) * k;
       /* left: the picture as it is, with the three CAPTURED regions (dashed boxes) */
       const orig = document.createElement('canvas'); orig.width = m.w; orig.height = m.h; { const og = orig.getContext('2d'); if (c.flip) { og.translate(m.w, 0); og.scale(-1, 1) } og.drawImage(c.img, 0, 0) }
-      ag.save(); ag.beginPath(); ag.rect(0, 0, half, CH + 20); ag.clip(); place(orig, 0);
+      ag.save(); ag.beginPath(); ag.rect(0, 0, half, CH + 20); ag.clip();
       ag.setLineDash([5, 4]); ag.lineWidth = 1.3; const box = (a, b, col, t) => { ag.strokeStyle = col; ag.strokeRect(4, Y(a), half - 8, (b - a) * k); ag.fillStyle = col; ag.font = '10px AgThai,sans-serif'; ag.fillText(t, 8, Y(a) + 11) };
-      box(seg.head[0], seg.head[1], COL.chin, 'จับภาพ: หัว'); box(seg.torso[0], seg.torso[1], COL.shoulder, 'ลำตัว'); box(seg.legs[0], seg.legs[1], COL.hip, 'ขา'); ag.restore();
+      if (mem.seam === 'shape') {   /* the captured SHAPES: each part tinted by how strongly it follows that part */
+        const [wh, wt, wl] = last.weights, tint = document.createElement('canvas'); tint.width = m.w; tint.height = m.h; const tg = tint.getContext('2d'), id = tg.createImageData(m.w, m.h), q = id.data, sd = last.src.getContext('2d').getImageData(0, 0, m.w, m.h).data;
+        for (let i = 0; i < wh.length; i++) { if (sd[i * 4 + 3] < 40) continue; q[i * 4] = 230 * wh[i] + 40 * wt[i] + 40 * wl[i]; q[i * 4 + 1] = 50 * wh[i] + 110 * wt[i] + 170 * wl[i]; q[i * 4 + 2] = 50 * wh[i] + 220 * wt[i] + 70 * wl[i]; q[i * 4 + 3] = 95 }
+        tg.putImageData(id, 0, 0); ag.setLineDash([]); ag.drawImage(tint, half / 2 - cxm * k, 10 - m.top * k, m.w * k, m.h * k); ag.fillStyle = COL.chin; ag.font = '10px AgThai,sans-serif'; ag.fillText('จับตามทรง: หัว · ลำตัว · ขา', 6, 22)
+      } else { box(seg.head[0], seg.head[1], COL.chin, 'จับภาพ: หัว'); box(seg.torso[0], seg.torso[1], COL.shoulder, 'ลำตัว'); box(seg.legs[0], seg.legs[1], COL.hip, 'ขา') } ag.restore();
       /* right: the result, the old cut lines (grey dashes) and the new ones (coloured dashes) + the head target (green dashes) */
       ag.save(); ag.beginPath(); ag.rect(half, 0, half, CH + 20); ag.clip(); ag.globalAlpha = .22; place(orig, half); ag.globalAlpha = 1; place(last.canvas, half);
       ag.setLineDash([5, 4]); ag.lineWidth = 1.3; const hl = (y, col) => { ag.strokeStyle = col; ag.beginPath(); ag.moveTo(half, Y(y)); ag.lineTo(CW, Y(y)); ag.stroke() };
@@ -356,7 +361,7 @@ function inspectRatio() {
       const heads = 1 / P.headFrac;
       $a('adjInfo').innerHTML = `หลังปรับ: หัว <b>${(P.headFrac * 100).toFixed(1)}%</b> (${heads.toFixed(2)} หัว) · ลำตัว ${(P.torsoFrac * 100).toFixed(0)}% · ขา ${(P.legsFrac * 100).toFixed(0)}% <br><small>ก่อน: หัว ${(r.head * 100).toFixed(1)}% · ส่วนต่าง ${((P.headFrac - r.head) * 100 >= 0 ? '+' : '') + ((P.headFrac - r.head) * 100).toFixed(1)} จุด · ความสูงรวม ${keep ? 'คงเดิม' : (P.H1 / P.H0 * 100).toFixed(0) + '% ของเดิม'}</small>`;
     };
-    document.querySelectorAll('input[name=adjMode],.adjSel,#adjKeep').forEach(i => i.onchange = redraw);
+    document.querySelectorAll('input[name=adjMode],.adjSel,#adjKeep,#adjSeam').forEach(i => i.onchange = redraw); $a('adjSoft').oninput = () => { cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(redraw) };
     document.querySelectorAll('.adjVal').forEach(i => i.onchange = () => { document.querySelector('input[name=adjMode][value=man]').checked = true; A[i.dataset.k] = Math.max(50, Math.min(200, +i.value || 100)); redraw() });
     document.querySelectorAll('#adjBox button[data-d]').forEach(b => b.onclick = () => { document.querySelector('input[name=adjMode][value=man]').checked = true; const k = b.dataset.k; if (!sel()[k]) { document.querySelector(`.adjSel[data-k=${k}]`).checked = true } A[k] = Math.max(50, Math.min(200, A[k] + +b.dataset.d)); redraw() });
     $a('adjReset').onclick = () => { A.head = A.torso = A.legs = 100; document.querySelector('input[name=adjMode][value=man]').checked = true; redraw() };
@@ -366,8 +371,7 @@ function inspectRatio() {
     $a('adjApply').onclick = () => { const o = outCanvas(); if (!o || !c.file) return; if (c.flip && !confirm('ภาพนี้ถูกพลิกมาจากไฟล์ของอีกทิศ ' + c.file + ' — การเขียนทับจะเปลี่ยนไฟล์นั้น · ทำต่อ?')) return;
       if (!confirm('เขียนทับภาพ ' + c.file + ' ด้วยภาพที่ปรับสัดส่วนแล้ว?\nภาพเดิมเก็บไว้ในประวัติของช่อง (กู้กลับได้) · ต้องเชื่อมโฟลเดอร์/GitHub ใน Asset Studio')) return;
       window.parent.postMessage({ type: 'asset-lineup:apply', file: c.file, dataUrl: o.toDataURL('image/png'), note: 'ปรับสัดส่วน หัว/ลำตัว/ขา' }, location.origin); $a('adjMsg').textContent = 'ส่งให้ Asset Studio แล้ว — ดูข้อความมุมจอ' };
-    const baseCommit = commit; redraw();
-    window.__adjRedraw = redraw;
+    paintAdj = redraw; redraw();
   }
 }
 /* ================= 🗺 ขนาดต่อแผนที่ · ONE multiplier per map (js/map-scale.js) ================= */
