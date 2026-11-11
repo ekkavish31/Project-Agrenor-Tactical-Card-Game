@@ -585,6 +585,7 @@
   }
   function label(txt, x, y) { g.save(); g.font = '600 13px VillageThai,system-ui'; const w = g.measureText(txt).width + 14; g.fillStyle = 'rgba(20,14,8,.85)'; g.beginPath(); g.roundRect(x - w / 2, y - 18, w, 22, 8); g.fill(); g.fillStyle = '#ffe9b8'; g.textAlign = 'center'; g.fillText(txt, x, y - 3); g.restore() }
   function bubble(a, txt) {
+    if (window.NpcEmote) { const p = screen(a.vu, a.vv); NpcEmote.bubble(g, p.x, p.y - 100 * Z, txt, { emoji: a.bubble?.emo || (a.bubble && (a.bubble.emo = NpcEmote.pick(txt))), name: a.p?.name, minX: 6, maxX: W - 6, minY: 4, placed }); return }   /* v98.397 · bigger bubble + name + mood emoji */
     const p = screen(a.vu, a.vv); g.save(); g.font = '13px VillageThai,system-ui'; const maxW = 220, words = [...txt], lines = []; let cur = '';
     for (const ch of words) { if (g.measureText(cur + ch).width > maxW) { lines.push(cur); cur = ch } else cur += ch } if (cur) lines.push(cur);
     const w = Math.min(maxW, Math.max(...lines.map(l => g.measureText(l).width))) + 16, h = lines.length * 17 + 10; let x = Math.max(6, Math.min(W - w - 6, p.x - w / 2)), y = p.y - 100 * Z - h - 6;
@@ -642,7 +643,7 @@
   .in-dlg-bg{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;padding:16px;background:linear-gradient(#0000 40%,#000a)}
   .in-dlg{width:min(760px,100%);background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:110px 1fr;gap:14px;box-shadow:0 20px 60px #000c,inset 0 0 0 2px #8a6a3a}
   .in-dlg canvas{width:110px;height:130px;background:radial-gradient(#fff6dc,#d9c08a);border-radius:10px;border:2px solid #8a6a3a}
-  .in-dlg h2{margin:0;font-size:19px;color:#5a2e10}.in-dlg h2 .tier{font-size:12px;font-weight:600;color:#a0442a;background:#fff6;border-radius:999px;padding:1px 8px;margin-left:4px}.in-dlg .role{font-size:12px;color:#7a5a30}.in-dlg p{margin:8px 0;line-height:1.6;min-height:3em}.in-dlg .acts{display:flex;flex-wrap:wrap;gap:4px}
+  .in-dlg h2{margin:0;font-size:23px;color:#5a2e10}.in-dlg h2 .tier{font-size:12px;font-weight:600;color:#a0442a;background:#fff6;border-radius:999px;padding:1px 8px;margin-left:4px}.in-dlg .role{font-size:14px;color:#7a5a30}.in-dlg p{margin:10px 0;font-size:19px;line-height:1.7;min-height:3.4em}.in-dlg .acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}.in-dlg .acts button{margin:0;min-height:50px;padding:8px 12px;font-size:17px;font-weight:700;border-radius:12px;box-shadow:0 3px 0 #8a5a20;text-align:left;display:flex;align-items:center;gap:8px}.in-dlg .acts button:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #8a5a20}.in-dlg .acts button.ghost{box-shadow:0 3px 0 #2a2218;justify-content:center}.in-dlg .acts{counter-reset:k}.in-dlg .acts button{counter-increment:k}.in-dlg .acts button::after{content:counter(k);margin-left:auto;font:600 11px system-ui;opacity:.75;border:1px solid #fff8;border-radius:5px;padding:1px 5px}@media (max-width:760px){.in-dlg .acts button::after{display:none}.in-dlg .acts{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}.in-dlg p{font-size:17px}}
   .in-dlg .cond{font-size:12px;background:#fff7e3;border:1px dashed #b89a62;border-radius:8px;padding:6px 8px;margin:6px 0}
   .in-toast{position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:30;padding:9px 20px;border-radius:999px;background:#14100bee;color:#ffe2a8;font:700 16px VillageThai,system-ui;box-shadow:0 6px 20px #000a;animation:inT 2.2s forwards;pointer-events:none}
   @keyframes inT{0%{opacity:0;transform:translate(-50%,10px)}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
@@ -944,6 +945,8 @@
     el.querySelectorAll('.slot').forEach(s => s.onclick = () => { S = L.save(); const k = s.dataset.k; if (k === 'sib') return; if (s.dataset.w === 'party') { const i = S.party.findIndex(m => m.key === k); S.bench.push(...S.party.splice(i, 1)) } else { if (S.party.length >= L.MAX_ACTIVE) { toast('ทีมเต็มแล้ว (' + L.MAX_ACTIVE + ' คน)'); return } const i = S.bench.findIndex(m => m.key === k); S.party.push(...S.bench.splice(i, 1)) } L.writeSave(S); el.remove(); modalOpen = false; people.clear(); taken.clear(); syncPeople(true); hudSync(); partyPanel() });
     el.querySelector('#inPClose').onclick = () => { el.remove(); modalOpen = false };
   }
+  /* v98.397 · number keys press the conversation buttons (the number shows on each button) */
+  addEventListener('keydown', e => { if (!dlg || !/^[1-9]$/.test(e.key) || /INPUT|TEXTAREA|SELECT/.test(e.target?.tagName || '')) return; const b = dlg.querySelectorAll('.acts button')[+e.key - 1]; if (b && !b.disabled) { e.preventDefault(); b.click() } });
   addEventListener('keydown', e => { if (e.key === 'Escape') { close(); document.querySelector('.in-party')?.remove(); modalOpen = false } });
 
   /* ---------- start ---------- */
