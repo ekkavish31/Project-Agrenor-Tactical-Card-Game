@@ -12,6 +12,9 @@
   const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footL', 'ข้อเท้า ซ้ายภาพ', '#444'], ['footR', 'ข้อเท้า ขวาภาพ', '#444']];   /* the ANKLE joint (not the toe / sole): a joint stays the same point when the foot points, kicks or lies down */
   const CENTRE = ['chin', 'chest', 'crotch'], DIRS = ['SW', 'NW', 'NE', 'SE'];
   const OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, SWAP = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', kneeL: 'kneeR', kneeR: 'kneeL', footL: 'footR', footR: 'footL' };
+  /* v98.399 · SW/SE show the FRONT (mirror pair) · NW/NE show the BACK (mirror pair) — the two groups must never lend each other
+     data: a front proportion means nothing compared against a back one (cloak, hood, armour plates differ front/back). */
+  const GROUP = { SW: 'front', SE: 'front', NW: 'back', NE: 'back' };
   const ls = root.localStorage;
   /* v98.390 records had level lines: their chin / chest / crotch become centre points of SW */
   function migrate(r) { if (!r || !r.levels) return r; const sw = (r.pts ||= {}).SW ||= {}; for (const k of CENTRE) if (r.levels[k] != null && !sw[k]) sw[k] = [.5, r.levels[k]]; delete r.levels; delete r.lv; return r }
@@ -25,7 +28,8 @@
     const own = rec?.pts?.[dir] || {}, pts = { ...own }, from = {}, opp = rec?.pts?.[OPP[dir]] || {};
     for (const [k, v] of Object.entries(opp)) { const m = SWAP[k] || k; if (!pts[m]) { pts[m] = [1 - v[0], v[1]]; from[m] = 'mirror' } }
     const cx = () => { const xs = Object.values(pts).map(p => p[0]); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : .5 };
-    for (const k of CENTRE) if (!pts[k]) for (const d of DIRS) { const p = rec?.pts?.[d]?.[k]; if (p) { pts[k] = [cx(), p[1]]; from[k] = 'height'; break } }
+    /* v98.399 · a centre point's HEIGHT fallback stays inside the same front/back group — only the mirror partner (OPP[dir]) may lend one, never the other group */
+    for (const k of CENTRE) if (!pts[k] && opp[k]) { pts[k] = [cx(), opp[k][1]]; from[k] = 'height' }
     return { pts, own: new Set(Object.keys(own)), from };
   }
   const mid = (a, b) => a && b ? [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] : null;
@@ -58,10 +62,14 @@
     if (!ks.length) return null; const base = sel.legs || ks.length === 3 ? r('legs') : ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tgt[k], 0) / ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tpl[k], 0);
     const out = { head: 1, torso: 1, legs: 1 }; for (const k of ks) out[k] = Math.max(.5, Math.min(2, sel.legs || ks.length === 3 ? r(k) / base : r(k) / (1 / base))); return out }
   /* v98.398 · THE STANDARD: the template character's spans, kept as numbers so it stays put even when that picture is edited later.
-     localStorage 'proportion-standard-v1' = { id, name, pose, dir, spans:{head,torso,legs}, at } (pushed with the datum) */
+     v98.399 · one standard PER GROUP ('front' from SW/SE, 'back' from NW/NE) — a back view can never be matched against a front standard.
+     localStorage 'proportion-standard-v1' = { front: {id,name,pose,dir,spans:{head,torso,legs},at} | null, back: {...} | null } */
   const STD_KEY = 'proportion-standard-v1';
-  const std = () => { try { const o = JSON.parse(ls.getItem(STD_KEY) || 'null'); return o && o.spans ? o : null } catch (e) { return null } };
-  const setStd = o => { try { o ? ls.setItem(STD_KEY, JSON.stringify(o)) : ls.removeItem(STD_KEY) } catch (e) { } };
-  const api = { STD_KEY, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
+  const stdAll = () => { try { const o = JSON.parse(ls.getItem(STD_KEY) || 'null'); if (!o) return {};
+      if (o.spans && !o.front && !o.back) { const g = GROUP[o.dir] || 'front'; return { [g]: o } }   /* v98.398 single-standard record → migrate into its own group */
+      return o } catch (e) { return {} } };
+  const std = group => { const o = stdAll()[group]; return o && o.spans ? o : null };
+  const setStd = (group, o) => { try { const all = stdAll(); if (o) all[group] = o; else delete all[group]; ls.setItem(STD_KEY, JSON.stringify(all)) } catch (e) { } };
+  const api = { STD_KEY, GROUP, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

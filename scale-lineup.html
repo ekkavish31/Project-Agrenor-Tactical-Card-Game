@@ -29,6 +29,8 @@ main{display:grid;grid-template-columns:230px 1fr 270px;gap:12px;padding:12px 16
 .hint{color:var(--muted);font-size:12px;margin:6px 0 0}
 dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:8px 0;font-size:13px}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}
 code{font-size:12px}
+/* v98.399 · the picture pins to the top of the (scrolling) inspector panel, so it stays in view together with the controls below it instead of scrolling away */
+#insp .ipPin{position:sticky;top:0;z-index:2;background:var(--panel);padding-bottom:4px;margin-bottom:4px}
 .adj{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0}.adj>span{width:92px;color:var(--muted);font-size:12px}.adj input[type=number]{width:54px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:3px}.adj small{flex-basis:100%;color:var(--muted);font-size:11px}.adj button{padding:3px 8px}button.primary{background:var(--gold);color:#1d1608;border-color:#e6c47c}button:disabled{opacity:.45;cursor:default}#viewCtl{font-size:12px}#viewCtl input,#viewCtl select{font:inherit}
 
 .fig{position:relative;flex:none}.fig img{position:absolute;max-width:none}.fig .ln{position:absolute;left:-4px;right:-4px;height:0;border-top:2px solid}
@@ -56,7 +58,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.398"></script><script src="js/proportion-datum.js?v=v98.398"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.399"></script><script src="js/proportion-datum.js?v=v98.399"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -272,7 +274,7 @@ function renderField(V) {
   $('note').textContent = '⚔ สนามรบ · 1 ช่อง = เพชรกว้าง ' + UNIT + ' px × สูง ' + (UNIT / 2) + ' px (ซูม ' + Math.round(z * 100) + '%) · ตัวละครยืนกลางช่องตามขนาดจริงที่เกมวาด · เส้นประส้ม = ความสูงตัวเอก · คลิกตัวละครเพื่อเลือก';
 }
 /* ================= 📐 สัดส่วน · head : body ratio tool (js/proportion-tool.js) ================= */
-const PT = window.ProportionTool; let MARKS = PT.store.load(), STDV = { head: PT.STD.head * 100, tol: PT.STD.tol * 100 };
+const PT = window.ProportionTool; let STDV = { head: PT.STD.head * 100, tol: PT.STD.tol * 100 };
 const COL = { chin: '#d62d2d', shoulder: '#1f6fd0', hip: '#2a9a3a' }, LBL = { chin: 'คาง (ล่างหัว)', shoulder: 'ไหล่', hip: 'ขาหนีบ (ลำตัว|ขา)' };
 const sigOf = c => (c.file || c.src) + '|' + c.m.H;
 function alphaOf(c) {
@@ -282,11 +284,12 @@ function alphaOf(c) {
 }
 /* v98.390 · the pose · frame · direction a lineup picture shows (for its datum record) */
 const vpOf = c => { const v = c && c.vp; return { pose: v && v.action !== 'pick' ? v.action : VP.action, frame: v ? (v.index | 0) : (VP.index | 0), dir: v ? v.view : VP.view } };
+/* v98.399 · the line system is retired: chin/shoulder/hip can no longer be dragged or typed — they always come from the character's own
+   📍 Datum points (PD.marksFrom). Without datum this is only a rough silhouette guess (for the overview table); the 🛠 adjust panel itself
+   refuses to run until datum is placed, since it cuts the picture exactly at these lines. */
 function ratioOf(e) {
-  const c = e.ctx.battle, sv = MARKS[e.id]; let marks = sv && sv.sig === sigOf(c) ? { chin: sv.chin, shoulder: sv.shoulder, hip: sv.hip } : null;
-  const PD = window.ProportionDatum, q = vpOf(c), rec = PD && PD.get(e.id, q.pose, q.frame), dm = rec && PD.marksFrom(rec, q.dir, c.m, c.img.naturalHeight);
-  if (dm) marks = dm;   /* datum levels win over the silhouette guess */
-  const r = PT.analyze(alphaOf(c), c.m, marks); r.manual = !!marks;
+  const c = e.ctx.battle, PD = window.ProportionDatum, q = vpOf(c), rec = PD && PD.get(e.id, q.pose, q.frame), dm = rec && PD.marksFrom(rec, q.dir, c.m, c.img.naturalHeight);
+  const r = PT.analyze(alphaOf(c), c.m, dm || null); r.manual = !!dm;
   if (rec) { const ms = PD.measure(rec, q.dir, c.img.naturalWidth, c.img.naturalHeight); if (ms.headFrac) { r.head = ms.headFrac; r.heads = ms.heads; r.datum = ms } }   /* head from the FACE (eye → chin), hair does not count */
   return r;
 }
@@ -325,66 +328,65 @@ function renderRatio(V) {
     if (!next) { ev.target.textContent = 'ติ๊ก ✔ ครบทุกตัวแล้ว 🎉'; return } pickSel(next) };
   $('note').textContent = 'สัดส่วนอ่านจากภาพ SW ของแต่ละตัว (หรือเฟรมที่เลือกในแท็บ Animation) · ความสูงของแต่ละตัวอิงขนาดใน Scale Lineup เหมือนในเกม';
 }
+/* v98.399 · 🛠 ปรับสัดส่วน is now DATUM-ONLY: no draggable / typed chin·shoulder·hip lines, no silhouette auto-estimate feeding the
+   warp, no fixed "หัว ≈ 38%" auto-scale target. The cut points always come straight from the character's own 📍 Datum (chin, crotch)
+   for this exact pose/frame/direction, and the target scale always comes from comparing datum SPANS (head/torso/legs) against a
+   template — either the team standard (⭐) or another character. Without datum the panel is gated off; nothing to cut without it. */
 function inspectRatio() {
   const e = ENTRIES.find(x => x.id === sel); if (!e || isW(e) || !e.ctx.battle) { $('insp').innerHTML = ''; return }
-  const c = e.ctx.battle, r = ratioOf(e), med = PT.median(visible().map(x => ratioOf(x).head)), v = PT.verdict(r, STDOBJ(), med), CH = DOCK ? 400 : 300, CW = 250, PW = DOCK ? 560 : 300, HALF = PW / 2;   /* v98.385 · one canvas: left = measure, right = adjusted */
-  $('insp').innerHTML = `<b>${e.name}</b> <span class="chip ${LV[v.level][0]}">${LV[v.level][1]}</span>
-   <canvas id="pcv" width="${PW}" height="${CH + 20}" style="width:${PW}px;height:${CH + 20}px;max-width:100%;touch-action:none;cursor:ns-resize;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
-   <p class="hint"><b>ซ้าย</b> ภาพจริง — ลากเส้นสี (คาง · ไหล่ · ขาหนีบ) ให้ตรงภาพ กรอบประ = ส่วนที่จับ ${r.manual ? '' : '(ตอนนี้ประมาณอัตโนมัติ)'} · <b>ขวา</b> หลังปรับ — เส้นประเทา = จุดตัดเดิม · สี = หลังปรับ · เขียว = เป้าหมายหัว</p>
-   <dl><dt>จำนวนหัว</dt><dd><b>${r.heads.toFixed(2)}</b> หัว (หัว ${(r.head * 100).toFixed(1)}% ของตัว)</dd><dt>หัว / ไหล่</dt><dd>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'} (หัวกว้าง ${r.headW}px · ไหล่ ${r.shoulderW}px)</dd><dt>ลำตัว / ขา</dt><dd>${(r.torso * 100).toFixed(0)}% / ${(r.legs * 100).toFixed(0)}%</dd><dt>ผล</dt><dd>${v.notes.length ? v.notes.join('<br>') : 'ตรงมาตรฐาน'}</dd></dl>
-   <div class="adj"><span>คาง %</span><input type="number" id="mChin" min="5" max="70" step="0.5" value="${(r.marks.chin * 100).toFixed(1)}"><span style="width:50px">ไหล่ %</span><input type="number" id="mSh" min="5" max="85" step="0.5" value="${(r.marks.shoulder * 100).toFixed(1)}"></div>
-   <div class="adj"><span>ขาหนีบ %</span><input type="number" id="mHip" min="30" max="90" step="0.5" value="${(r.marks.hip * 100).toFixed(1)}"></div>
-   <div class="adj"><label style="font-weight:600"><input type="checkbox" id="mDone" ${doneOf(e.id) === 'ok' ? 'checked' : ''}> ✔ ปรับถูกต้องแล้ว</label><small style="color:var(--muted)">${mapText(c.label || '')}${doneOf(e.id) === 'adj' ? ' · ปรับแล้ว รอติ๊ก' : ''}</small></div><div class="adj"><button id="mDatum" title="วางจุด datum: ตา 2 · คาง · หมุนไหล่ 2 · อก · ขาหนีบ · เข่า 2 · เท้า 2 (ทิศตรงข้ามกลับด้านให้ · จุดแกนกลางใช้ความสูงร่วม)" style="font-weight:700">📍 Datum${r.datum ? ' ✔' : ''}</button><button id="mAuto">ประมาณอัตโนมัติ</button><button id="mPush">⬆ Push เส้นที่ปรับ</button></div>
+  const c = e.ctx.battle, r = ratioOf(e), med = PT.median(visible().map(x => ratioOf(x).head)), v = PT.verdict(r, STDOBJ(), med), CH = DOCK ? 400 : 300, PW = DOCK ? 560 : 300, HALF = PW / 2, hasDatum = !!r.datum;
+  $('insp').innerHTML = `<div class="ipPin"><b>${e.name}</b> <span class="chip ${LV[v.level][0]}">${LV[v.level][1]}</span>
+   <canvas id="pcv" width="${PW}" height="${CH + 20}" style="width:${PW}px;height:${CH + 20}px;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
+   <p class="hint">${hasDatum ? `<b style="color:${COL.chin}">คาง</b> / <b style="color:${COL.hip}">ขาหนีบ</b> อ่านตรงจาก 📍 Datum ของท่า/ทิศนี้ (ลากหรือพิมพ์เองไม่ได้แล้ว แก้ที่ Datum เท่านั้น) · <b>ขวา</b> = ผลหลังปรับ` : '⚠ ยังไม่ได้วาง 📍 Datum สำหรับท่า/ทิศนี้ — ตัวเลขด้านล่างเป็นการประมาณจากภาพคร่าว ๆ เท่านั้น ต้องวาง Datum ก่อนจึงจะปรับขนาดได้จริง'}</p></div>
+   <details><summary>รายละเอียดการวัด</summary><dl><dt>จำนวนหัว</dt><dd><b>${r.heads.toFixed(2)}</b> หัว (หัว ${(r.head * 100).toFixed(1)}% ของตัว)</dd><dt>หัว / ไหล่</dt><dd>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'} (หัวกว้าง ${r.headW}px · ไหล่ ${r.shoulderW}px)</dd><dt>ลำตัว / ขา</dt><dd>${(r.torso * 100).toFixed(0)}% / ${(r.legs * 100).toFixed(0)}%</dd><dt>ผล</dt><dd>${v.notes.length ? v.notes.join('<br>') : 'ตรงมาตรฐาน'}</dd></dl></details>
+   <div class="adj"><label style="font-weight:600"><input type="checkbox" id="mDone" ${doneOf(e.id) === 'ok' ? 'checked' : ''}> ✔ ปรับถูกต้องแล้ว</label><small style="color:var(--muted)">${mapText(c.label || '')}${doneOf(e.id) === 'adj' ? ' · ปรับแล้ว รอติ๊ก' : ''}</small></div>
+   <div class="adj"><button id="mDatum" title="วางจุด datum: ตา 2 · คาง · หมุนไหล่ 2 · อก · ขาหนีบ · เข่า 2 · เท้า 2 (ทิศตรงข้ามกลับด้านให้ · จุดแกนกลางใช้ความสูงร่วม)" style="font-weight:700">📍 Datum${hasDatum ? ' ✔' : ' (วางก่อนปรับขนาด)'}</button></div>
    <div class="adj" id="stdRow" title="ขั้นที่ 1: เลือกตัวนี้เป็นมาตรฐานกลางของทีม (ต้องมี 📍 Datum ครบก่อน) — ตัวอื่นจะเทียบสัดส่วนหัว/ลำตัว/ขา ตามตัวนี้โดยอัตโนมัติ"></div><p class="hint" id="mMsg"></p>
-   <details open id="adjBox" style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px"><summary><b>🛠 ปรับขนาดหัว / ลำตัว / ขา</b></summary>
-    <p class="hint">ตัดภาพที่เส้น <b style="color:${COL.chin}">คาง</b> และ <b style="color:${COL.hip}">ขาหนีบ</b> เป็น 3 ส่วน ปรับแต่ละส่วนแล้วต่อกลับ (เท้าอยู่ที่เดิม) — ดูผลที่ภาพด้านขวาบนแผงนี้</p>
-    <div class="adj"><label><input type="radio" name="adjMode" value="auto" checked> ออโต้ (หัว ≈ <b id="adjT">${STDV.head.toFixed(0)}</b>%)</label><label><input type="radio" name="adjMode" value="ref"> ตามต้นแบบ</label><label><input type="radio" name="adjMode" value="man"> แมนวล</label><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงความสูงรวม</label></div>
-    <div class="adj" title="ใช้สัดส่วน (หัว · ลำตัว · ขา) จาก datum ของตัวต้นแบบ กับ datum ของตัวนี้ · ออโต้ = โหมด ตามต้นแบบ · แมนวล = ใส่ค่าแนะนำแล้วปรับเอง"><span>ต้นแบบ</span><select id="adjRef"></select><button id="adjRefFill" type="button">ใส่ค่าแล้วปรับเอง</button></div>
+   ${hasDatum ? `<details open id="adjBox" style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px"><summary><b>🛠 ปรับขนาดหัว / ลำตัว / ขา</b></summary>
+    <p class="hint">ตัดภาพตรงจุด <b style="color:${COL.chin}">คาง</b> และ <b style="color:${COL.hip}">ขาหนีบ</b> จาก datum เป็น 3 ส่วน ปรับแต่ละส่วนแล้วต่อกลับ (เท้าอยู่ที่เดิม) — ดูผลที่ภาพด้านขวาบนแผงนี้</p>
+    <div class="adj"><label><input type="radio" name="adjMode" value="ref" checked> ตามต้นแบบ</label><label><input type="radio" name="adjMode" value="man"> แมนวล</label><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงความสูงรวม</label></div>
+    <div class="adj" title="ใช้สัดส่วน (หัว · ลำตัว · ขา) จาก datum ของตัวต้นแบบ กับ datum ของตัวนี้ · ตามต้นแบบ = คำนวณให้อัตโนมัติ · แมนวล = ใส่ค่าแนะนำแล้วปรับเอง"><span>ต้นแบบ</span><select id="adjRef"></select><button id="adjRefFill" type="button">ใส่ค่าแล้วปรับเอง</button></div>
     <div class="adj" title="ครอบตามทรง = จับเฉพาะรูปทรงของหัว/ลำตัว/ขา แล้วบิดภาพต่อเนื่องชิ้นเดียว · แถบนุ่ม = จับเป็นแถบตามเส้นตัด แต่ต่อเนียน"><span>รอยต่อ</span><select id="adjSeam"><option value="shape">ครอบตามทรง</option><option value="band">แถบนุ่ม</option></select><span>นุ่ม</span><input type="range" id="adjSoft" min="2" max="20" step="1" value="7" style="width:80px"></div>
     <div class="adj" title="ส่วนที่ขยาย: อัปสเกลแบบ bicubic แล้วเพิ่มความคมตามที่ขยาย (ออโต้) หรือกำหนดเอง"><span>ความคม</span><select id="adjSharpMode"><option value="auto">ออโต้ (ตามที่ขยาย)</option><option value="man">แมนวล</option></select><input type="range" id="adjSharp" min="0" max="150" step="5" value="60" style="width:110px"><b id="adjSharpV">60%</b></div>
     ${[['head', 'หัว'], ['torso', 'ลำตัว'], ['legs', 'ขา']].map(([k, n]) => `<div class="adj" data-part="${k}" style="gap:3px;flex-wrap:nowrap"><label style="width:58px;white-space:nowrap"><input type="checkbox" class="adjSel" data-k="${k}" ${k === 'head' ? 'checked' : ''}> ${n}</label><button data-k="${k}" data-d="-5" style="padding:2px 5px">−5</button><button data-k="${k}" data-d="-1" style="padding:2px 5px">−1</button><input type="number" class="adjVal" data-k="${k}" min="50" max="200" step="1" value="100" style="width:46px">%<button data-k="${k}" data-d="1" style="padding:2px 5px">+1</button><button data-k="${k}" data-d="5" style="padding:2px 5px">+5</button></div>`).join('')}
     <div class="hint" id="adjInfo"></div>
-    <div class="adj"><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng">⬇ ส่งออก PNG</button><button id="adjApply" title="เขียนทับภาพต้นฉบับของช่องนี้ใน Asset Studio (เก็บภาพเดิมไว้ในประวัติ)">💾 ใช้กับช่องภาพนี้</button></div><p class="hint" id="adjMsg"></p></details>`;
+    <div class="adj"><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng">⬇ ส่งออก PNG</button><button id="adjApply" title="เขียนทับภาพต้นฉบับของช่องนี้ใน Asset Studio (เก็บภาพเดิมไว้ในประวัติ)">💾 ใช้กับช่องภาพนี้</button></div><p class="hint" id="adjMsg"></p></details>`
+    : `<p class="hint" style="margin-top:8px;padding:8px;border:1px dashed var(--line);border-radius:8px">วาง 📍 Datum ให้ครบก่อน (ตา 2 · คาง · ขาหนีบ · เท้า 2) จึงจะปรับขนาดหัว/ลำตัว/ขาได้ — ระบบตัดภาพตรงจุดที่จิ้มไว้พอดี ไม่ต้องกะด้วยสายตาอีกต่อไป</p>`}`;
   const cv = document.getElementById('pcv'), g = cv.getContext('2d'), k = CH / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, ox = (HALF - fw) / 2, oy = 10; let paintAdj = null;
   const marks = { ...r.marks }, drawLeft = () => {
-    g.clearRect(0, 0, HALF, CH + 20); g.save(); g.beginPath(); g.rect(0, 0, HALF, CH + 20); g.clip(); if (c.flip) { g.translate(HALF, 0); g.scale(-1, 1) } g.drawImage(c.img, (c.flip ? HALF - ox - fw : ox) - c.m.x0 * k, oy - c.m.top * k, c.m.w * k, c.m.h * k); g.restore();
+    g.clearRect(0, 0, hasDatum ? HALF : PW, CH + 20); g.save(); g.beginPath(); g.rect(0, 0, hasDatum ? HALF : PW, CH + 20); g.clip(); if (c.flip) { g.translate(hasDatum ? HALF : PW, 0); g.scale(-1, 1) } g.drawImage(c.img, (c.flip ? (hasDatum ? HALF : PW) - ox - fw : ox) - c.m.x0 * k, oy - c.m.top * k, c.m.w * k, c.m.h * k); g.restore();
+    if (!hasDatum) return;   /* v98.399 · no datum → just show the picture, no guessed lines to imply they can be trusted or dragged */
     for (const n of ['chin', 'shoulder', 'hip']) { const y = oy + marks[n] * CH; g.strokeStyle = COL[n]; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(HALF, y); g.stroke(); g.fillStyle = COL[n]; g.font = '11px AgThai,sans-serif'; g.fillText(LBL[n], 4, y - 3) }
   }, draw = () => { if (!paintAdj) return drawLeft(); drawLeft(); cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(() => paintAdj()) }; draw();
-  const commit = (final) => { const sv = { chin: +marks.chin.toFixed(4), shoulder: +marks.shoulder.toFixed(4), hip: +marks.hip.toFixed(4), sig: sigOf(c) }; MARKS[e.id] = sv; PT.store.save(MARKS); if (final) { renderRatio(visible()); inspectRatio() } else reRatio() };
-  let drag = null; const yOf = ev => { const b = cv.getBoundingClientRect(); return (ev.clientY - b.top) * (CH + 20) / b.height };
-  cv.onpointerdown = ev => { { const b = cv.getBoundingClientRect(); if ((ev.clientX - b.left) * PW / b.width > HALF) return } const y = yOf(ev); let best = null, bd = 14; for (const n of ['chin', 'shoulder', 'hip']) { const d = Math.abs(oy + marks[n] * CH - y); if (d < bd) { bd = d; best = n } } if (best) { drag = best; cv.setPointerCapture(ev.pointerId) } };
-  cv.onpointermove = ev => { if (!drag) return; let f = Math.min(.95, Math.max(.04, (yOf(ev) - oy) / CH)); if (drag === 'chin') f = Math.min(f, marks.hip - .08); if (drag === 'hip') f = Math.max(f, marks.chin + .08); marks[drag] = f; if (drag === 'chin' && marks.shoulder < f) marks.shoulder = f + .02; draw(); commit(false) };
-  cv.onpointerup = () => { if (drag) { drag = null; commit(true) } };
-  const num = (id, key) => document.getElementById(id).onchange = ev => { marks[key] = Math.min(.95, Math.max(.04, (+ev.target.value || 0) / 100)); commit(true) };
-  num('mChin', 'chin'); num('mSh', 'shoulder'); num('mHip', 'hip');
   document.getElementById('mDone').onchange = ev => { const k = doneKey(e.id); if (ev.target.checked) DONE[k] = 'ok'; else delete DONE[k]; saveDone(); renderRatio(visible()); inspectRatio() };
   document.getElementById('mDatum').onclick = () => openDatum(e);
-  document.getElementById('mAuto').onclick = () => { delete MARKS[e.id]; PT.store.save(MARKS); renderRatio(visible()); inspectRatio() };
-  document.getElementById('mPush').onclick = async () => { const m = document.getElementById('mMsg'), G = window.GitHubPush; if (!G || !G.enabled()) { m.textContent = 'ยังไม่ได้ใส่ token ของ GitHub ในเบราว์เซอร์นี้ (เปิดตั้งค่าจาก Asset Studio ก่อน)'; return } m.textContent = 'กำลัง push…'; try { const sha = await G.pushSettings([PT.store.KEY], 'สัดส่วนตัวละคร (เส้นคาง/ไหล่/ขาหนีบ)'); m.textContent = sha ? 'push แล้ว · ' + sha : 'ไม่มีอะไรต้อง push' } catch (er) { m.textContent = 'push ไม่สำเร็จ: ' + er.message } };
+  if (!hasDatum) return;   /* v98.399 · the 🛠 adjust panel needs datum to cut the picture; nothing more to wire without it */
   /* ---- v98.380 · 🛠 ปรับสัดส่วน: head / torso / legs scaled on their own ---- */
   {
-    const mem = ((window.__adjMem ||= {})[e.id] ||= { A: { head: 100, torso: 100, legs: 100 }, mode: 'auto', sel: { head: true, torso: false, legs: false }, keep: true, seam: 'shape', soft: 7, sharpMode: 'auto', sharp: 60, ref: '', touched: false }), PA = window.ProportionAdjust, A = mem.A, $a = id => document.getElementById(id), ag = g;
+    /* v98.399 · หน้า (SW/SE) กับ หลัง (NW/NE) เทียบกันเองเท่านั้น ไม่ข้ามกลุ่มทิศ — ต้นแบบ/มาตรฐาน/ค่าที่จำไว้ (mem) จึงแยกคนละชุดตามกลุ่มทิศด้วย */
+    const PD = window.ProportionDatum, q = vpOf(c), GRP = PD.GROUP[q.dir] || 'front', GRP_TH = GRP === 'front' ? 'มุมหน้า (SW/SE)' : 'มุมหลัง (NW/NE)';
+    const mem = ((window.__adjMem ||= {})[e.id + ':' + GRP] ||= { A: { head: 100, torso: 100, legs: 100 }, mode: 'ref', sel: { head: true, torso: false, legs: false }, keep: true, seam: 'shape', soft: 7, sharpMode: 'auto', sharp: 60, ref: '', touched: false }), PA = window.ProportionAdjust, A = mem.A, $a = id => document.getElementById(id), ag = g;
     const sel = () => Object.fromEntries([...document.querySelectorAll('.adjSel')].map(b => [b.dataset.k, b.checked])), mode = () => document.querySelector('input[name=adjMode]:checked').value;
-    const targetFrac = () => STDV.head / 100;
     const scaleNow = () => { const S = sel(); return { head: S.head ? A.head / 100 : 1, torso: S.torso ? A.torso / 100 : 1, legs: S.legs ? A.legs / 100 : 1 } };
     /* v98.396 · TEMPLATE: the head · torso · legs spans of another character's datum, given to this one (both need eyes · chin · crotch · ankles)
-       v98.398 · "__std__" = the TEAM STANDARD set once (js/proportion-datum.js STD_KEY) — a fixed snapshot, so it stays put even if that character's own picture or datum is edited later */
-    const PD = window.ProportionDatum, q = vpOf(c), recOf = id => PD && (PD.get(id, q.pose, q.frame) || PD.get(id, 'idle', 0)), spOf = id => { const r0 = recOf(id); return r0 && (PD.spans(r0, q.dir) || PD.spans(r0, 'SW')) };
-    const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)), STD = PD?.std();
-    $a('adjRef').innerHTML = (STD ? `<option value="__std__">⭐ มาตรฐานทีม (${STD.name})</option>` : '') + (tplList.length ? tplList.map(x => `<option value="${x.id}"${mem.ref === x.id ? ' selected' : ''}>${x.name}${STD?.id === x.id ? ' ⭐' : ''}</option>`).join('') : (STD ? '' : '<option value="">— ยังไม่มีตัวที่วาง datum ครบ —</option>'));
+       v98.398 · "__std__" = the TEAM STANDARD set once (js/proportion-datum.js STD_KEY) — a fixed snapshot, so it stays put even if that character's own picture or datum is edited later
+       v98.399 · PD.spans(r0, q.dir) already pools only within q.dir's own front/back pair (js/proportion-datum.js) — no more cross-group 'SW' fallback here */
+    const recOf = id => PD && (PD.get(id, q.pose, q.frame) || PD.get(id, 'idle', 0)), spOf = id => { const r0 = recOf(id); return r0 && PD.spans(r0, q.dir) };
+    const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)), STD = PD?.std(GRP);
+    $a('adjRef').innerHTML = (STD ? `<option value="__std__">⭐ มาตรฐานทีม · ${GRP_TH} (${STD.name})</option>` : '') + (tplList.length ? tplList.map(x => `<option value="${x.id}"${mem.ref === x.id ? ' selected' : ''}>${x.name}${STD?.id === x.id ? ' ⭐' : ''}</option>`).join('') : (STD ? '' : '<option value="">— ยังไม่มีตัวที่วาง datum ครบใน ' + GRP_TH + ' —</option>'));
     $a('adjRef').value = (mem.ref && $a('adjRef').querySelector(`option[value="${mem.ref}"]`)) ? mem.ref : (STD ? '__std__' : (tplList[0]?.id || ''));
-    const refScales = () => { const tg = spOf(e.id); if (!tg) return { note: 'ตัวนี้ยังไม่มี datum ครบ (ตา · คาง · ขาหนีบ · ข้อเท้า) — กด 📍 Datum ก่อน' };
+    let tplSpans = null;   /* the template spans actually used last redraw() — read by the green target line */
+    const refScales = () => { const tg = spOf(e.id); if (!tg) return { note: `ตัวนี้ยังไม่มี datum ครบใน ${GRP_TH} (ตา · คาง · ขาหนีบ · ข้อเท้า) — กด 📍 Datum ก่อน` };
       const useStd = mem.ref === '__std__' && STD, tp = useStd ? STD.spans : mem.ref && spOf(mem.ref); if (!tp) return { note: 'เลือกตัวต้นแบบที่มี datum (หรือตั้งมาตรฐานทีมก่อน)' };
-      const s0 = PD.matchScales(tp, tg, sel()); if (!s0) return { note: 'เลือกส่วนที่จะปรับก่อน' }; const pc = o => `หัว ${(o.head * 100).toFixed(0)}% · ลำตัว ${(o.torso * 100).toFixed(0)}% · ขา ${(o.legs * 100).toFixed(0)}%`;
+      tplSpans = tp; const s0 = PD.matchScales(tp, tg, sel()); if (!s0) return { note: 'เลือกส่วนที่จะปรับก่อน' }; const pc = o => `หัว ${(o.head * 100).toFixed(0)}% · ลำตัว ${(o.torso * 100).toFixed(0)}% · ขา ${(o.legs * 100).toFixed(0)}%`;
       return { ...s0, note: `ต้นแบบ ${useStd ? STD.name + ' ⭐' : ENTRIES.find(x => x.id === mem.ref)?.name}: ${pc(tp)} · ตัวนี้: ${pc(tg)}` } };
-    /* v98.398 · ขั้นที่ 1: ตั้ง/แสดงมาตรฐานกลางของทีม — เก็บเป็นตัวเลขนิ่ง ไม่อิงภาพที่อาจถูกแก้ภายหลัง */
-    { const isStd = STD?.id === e.id, mySpans = spOf(e.id);
-      $a('stdRow').innerHTML = isStd ? `<b style="color:#1f9a4a">⭐ ตัวนี้คือมาตรฐานของทีม</b><small style="color:var(--muted)">(${STD.pose}/${STD.dir} · หัว ${(STD.spans.head * 100).toFixed(0)}% · ลำตัว ${(STD.spans.torso * 100).toFixed(0)}% · ขา ${(STD.spans.legs * 100).toFixed(0)}%)</small><button id="stdClear" type="button">ยกเลิกมาตรฐาน</button>`
-        : `<button id="stdSet" type="button" ${mySpans ? '' : 'disabled'} style="font-weight:700">⭐ ตั้งตัวนี้เป็นมาตรฐานทีม</button><small style="color:var(--muted)">${mySpans ? '' : '(ต้องวาง 📍 Datum ให้ครบก่อน: ตา 2 · คาง · ขาหนีบ · เท้า 2)'}${STD ? ' · ตอนนี้ตั้งเป็น ' + STD.name : ''}</small>`;
-      $a('stdSet')?.addEventListener('click', () => { const sp = spOf(e.id); if (!sp) return; PD.setStd({ id: e.id, name: e.name, pose: q.pose, dir: q.dir, spans: sp, at: Date.now() }); inspectRatio() });
-      $a('stdClear')?.addEventListener('click', () => { PD.setStd(null); inspectRatio() }); }
-    const autoFill = () => { if (mode() === 'ref') { const a = refScales(); if (a.head) { A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10 } $a('adjMsg').textContent = a.note || ''; return }
-      const seg = PA.segments(c.m, marks), a = PA.autoScale(seg, sel(), targetFrac()); A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10; $a('adjMsg').textContent = a.note || '' };
+    /* v98.398 · ขั้นที่ 1: ตั้ง/แสดงมาตรฐานกลางของทีม — เก็บเป็นตัวเลขนิ่ง ไม่อิงภาพที่อาจถูกแก้ภายหลัง · v98.399 แยกมาตรฐานคนละชุดสำหรับมุมหน้า/มุมหลัง */
+    { const isStd = STD?.id === e.id && STD?.dir === q.dir, mySpans = spOf(e.id);
+      $a('stdRow').innerHTML = isStd ? `<b style="color:#1f9a4a">⭐ ตัวนี้คือมาตรฐานของทีม (${GRP_TH})</b><small style="color:var(--muted)">(${STD.pose}/${STD.dir} · หัว ${(STD.spans.head * 100).toFixed(0)}% · ลำตัว ${(STD.spans.torso * 100).toFixed(0)}% · ขา ${(STD.spans.legs * 100).toFixed(0)}%)</small><button id="stdClear" type="button">ยกเลิกมาตรฐาน (${GRP_TH})</button>`
+        : `<button id="stdSet" type="button" ${mySpans ? '' : 'disabled'} style="font-weight:700">⭐ ตั้งตัวนี้เป็นมาตรฐานทีม (${GRP_TH})</button><small style="color:var(--muted)">${mySpans ? '' : '(ต้องวาง 📍 Datum ให้ครบก่อน: ตา 2 · คาง · ขาหนีบ · เท้า 2)'}${STD ? ' · ตอนนี้ตั้งเป็น ' + STD.name : ''}</small>`;
+      $a('stdSet')?.addEventListener('click', () => { const sp = spOf(e.id); if (!sp) return; PD.setStd(GRP, { id: e.id, name: e.name, pose: q.pose, dir: q.dir, spans: sp, at: Date.now() }); inspectRatio() });
+      $a('stdClear')?.addEventListener('click', () => { PD.setStd(GRP, null); inspectRatio() }); }
+    const autoFill = () => { if (mode() !== 'ref') return; const a = refScales(); if (a.head) { A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10 } document.getElementById('adjMsg').textContent = a.note || '' };
     const sync = () => { document.querySelectorAll('.adjVal').forEach(i => { i.value = A[i.dataset.k]; i.disabled = !sel()[i.dataset.k] }) };
     let last = null;
     /* v98.398 · until the user picks a mode themselves, follow the team standard automatically once one is set */
@@ -392,7 +394,7 @@ function inspectRatio() {
     document.querySelector(`input[name=adjMode][value=${mem.mode}]`).checked = true; $a('adjKeep').checked = mem.keep; $a('adjSeam').value = mem.seam || 'shape'; $a('adjSoft').value = mem.soft || 7; $a('adjSharpMode').value = mem.sharpMode || 'auto'; $a('adjSharp').value = mem.sharp ?? 60; document.querySelectorAll('.adjSel').forEach(b => b.checked = !!mem.sel[b.dataset.k]);
     const redraw = () => {
       mem.mode = mode(); mem.sel = sel(); mem.keep = $a('adjKeep').checked; mem.seam = $a('adjSeam').value; mem.soft = +$a('adjSoft').value; mem.sharpMode = $a('adjSharpMode').value; mem.sharp = +$a('adjSharp').value; $a('adjSharp').disabled = mem.sharpMode === 'auto'; $a('adjSharpV').textContent = mem.sharpMode === 'auto' ? 'ออโต้' : mem.sharp + '%';
-      mem.ref = $a('adjRef').value || mem.ref; if (mode() === 'auto' || mode() === 'ref') autoFill(); sync();
+      mem.ref = $a('adjRef').value || mem.ref; tplSpans = null; if (mode() === 'ref') autoFill(); sync();
       const keep = $a('adjKeep').checked, sc = scaleNow(); last = PA.warp(c.img, c.m, marks, sc, { keepHeight: keep, flip: c.flip, mode: mem.seam, soft: mem.soft / 100, grow: Math.round(c.m.H * .03), sharpen: mem.sharpMode === 'auto' ? 'auto' : mem.sharp / 100 });   /* v98.385 · one continuous warp — no cut layers */
       const P = last.plan, seg = last.seg, m = c.m, k = CH / m.H, half = HALF, cxm = (m.x0 + m.x1) / 2, CW = PW;
       drawLeft(); ag.clearRect(HALF, 0, HALF, CH + 20);
@@ -407,17 +409,17 @@ function inspectRatio() {
         for (let i = 0; i < wh.length; i++) { if (sd[i * 4 + 3] < 40) continue; q[i * 4] = 230 * wh[i] + 40 * wt[i] + 40 * wl[i]; q[i * 4 + 1] = 50 * wh[i] + 110 * wt[i] + 170 * wl[i]; q[i * 4 + 2] = 50 * wh[i] + 220 * wt[i] + 70 * wl[i]; q[i * 4 + 3] = 95 }
         tg.putImageData(id, 0, 0); ag.setLineDash([]); ag.drawImage(tint, half / 2 - cxm * k, 10 - m.top * k, m.w * k, m.h * k); ag.fillStyle = COL.chin; ag.font = '10px AgThai,sans-serif'; ag.fillText('จับตามทรง: หัว · ลำตัว · ขา', 6, 22)
       } else { box(seg.head[0], seg.head[1], COL.chin, 'จับภาพ: หัว'); box(seg.torso[0], seg.torso[1], COL.shoulder, 'ลำตัว'); box(seg.legs[0], seg.legs[1], COL.hip, 'ขา') } ag.restore();
-      /* right: the result, the old cut lines (grey dashes) and the new ones (coloured dashes) + the head target (green dashes) */
+      /* right: the result, the old cut lines (grey dashes) and the new ones (coloured dashes) + the TEMPLATE's own head % (green dashes, ref mode only — no more fixed "38%" target) */
       ag.save(); ag.beginPath(); ag.rect(half, 0, half, CH + 20); ag.clip(); ag.globalAlpha = .22; place(orig, half); ag.globalAlpha = 1; place(last.canvas, half);
       ag.setLineDash([5, 4]); ag.lineWidth = 1.3; const hl = (y, col) => { ag.strokeStyle = col; ag.beginPath(); ag.moveTo(half, Y(y)); ag.lineTo(CW, Y(y)); ag.stroke() };
       hl(seg.head[1], '#8a8a8a'); hl(seg.torso[1], '#8a8a8a'); hl(P.head[1], COL.chin); hl(P.torso[1], COL.hip);
-      hl(P.legs[1] - targetFrac() * P.H1, '#1f9a4a'); ag.fillStyle = '#1f9a4a'; ag.font = '10px AgThai,sans-serif'; ag.fillText('เป้าหมายหัว ' + (targetFrac() * 100).toFixed(0) + '%', half + 4, Y(P.legs[1] - targetFrac() * P.H1) - 3); ag.restore();
+      if (tplSpans) { const ty = P.legs[1] - tplSpans.head * P.H1; hl(ty, '#1f9a4a'); ag.fillStyle = '#1f9a4a'; ag.font = '10px AgThai,sans-serif'; ag.fillText('หัวต้นแบบ ' + (tplSpans.head * 100).toFixed(0) + '%', half + 4, Y(ty) - 3) } ag.restore();
       ag.setLineDash([]); ag.strokeStyle = '#999'; ag.beginPath(); ag.moveTo(half, 0); ag.lineTo(half, CH + 20); ag.stroke(); ag.fillStyle = '#555'; ag.font = '10px AgThai,sans-serif'; ag.fillText('ก่อน', 4, CH + 14); ag.fillText('หลัง', half + 4, CH + 14);
       const heads = 1 / P.headFrac;
       $a('adjInfo').innerHTML = `หลังปรับ: หัว <b>${(P.headFrac * 100).toFixed(1)}%</b> (${heads.toFixed(2)} หัว) · ลำตัว ${(P.torsoFrac * 100).toFixed(0)}% · ขา ${(P.legsFrac * 100).toFixed(0)}% <br><small>ก่อน: หัว ${(r.head * 100).toFixed(1)}% · ส่วนต่าง ${((P.headFrac - r.head) * 100 >= 0 ? '+' : '') + ((P.headFrac - r.head) * 100).toFixed(1)} จุด · ความสูงรวม ${keep ? 'คงเดิม' : (P.H1 / P.H0 * 100).toFixed(0) + '% ของเดิม'}</small>`;
     };
     document.querySelectorAll('input[name=adjMode],.adjSel,#adjKeep,#adjSeam,#adjSharpMode,#adjRef').forEach(i => i.onchange = () => { mem.touched = true; redraw() });
-    $a('adjRefFill').onclick = () => { mem.touched = true; mem.ref = $a('adjRef').value; const a = refScales(); $a('adjMsg').textContent = a.note || ''; if (!a.head) return; A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10; document.querySelector('input[name=adjMode][value=man]').checked = true; redraw() }; $a('adjSharp').oninput = () => { cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(redraw) }; $a('adjSoft').oninput = () => { cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(redraw) };
+    $a('adjRefFill').onclick = () => { mem.touched = true; mem.ref = $a('adjRef').value; const a = refScales(); document.getElementById('adjMsg').textContent = a.note || ''; if (!a.head) return; A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10; document.querySelector('input[name=adjMode][value=man]').checked = true; redraw() }; $a('adjSharp').oninput = () => { cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(redraw) }; $a('adjSoft').oninput = () => { cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(redraw) };
     document.querySelectorAll('.adjVal').forEach(i => i.onchange = () => { mem.touched = true; document.querySelector('input[name=adjMode][value=man]').checked = true; A[i.dataset.k] = Math.max(50, Math.min(200, +i.value || 100)); redraw() });
     document.querySelectorAll('#adjBox button[data-d]').forEach(b => b.onclick = () => { mem.touched = true; document.querySelector('input[name=adjMode][value=man]').checked = true; const k = b.dataset.k; if (!sel()[k]) { document.querySelector(`.adjSel[data-k=${k}]`).checked = true } A[k] = Math.max(50, Math.min(200, A[k] + +b.dataset.d)); redraw() });
     $a('adjReset').onclick = () => { mem.touched = true; A.head = A.torso = A.legs = 100; document.querySelector('input[name=adjMode][value=man]').checked = true; redraw() };
@@ -428,12 +430,12 @@ function inspectRatio() {
       /* v98.386 · the same pose in the OPPOSITE direction (SW↔SE · NW↔NE) gets the same settings, warped from its own picture */
       let opp = null; const vp = c.vp; if (ST && vp && vp.action !== 'pick') { const ov = OPPV[vp.view], oc = vp.clips.find(x => x.action === vp.action && x.view === ov); try { const pic = await ST.lineup.picture(vp.sid, ov, oc?.id, oc ? Math.min(vp.index, oc.n - 1) : 0); if (pic && pic.file && pic.file !== c.file) opp = { ...pic, view: ov } } catch (err) { } }
       if (c.flip && !confirm('ภาพนี้ถูกพลิกมาจากไฟล์ของอีกทิศ ' + c.file + ' — การเขียนทับจะเปลี่ยนไฟล์นั้น · ทำต่อ?')) return;
-      if (!confirm('เขียนทับด้วยภาพที่ปรับสัดส่วนแล้ว:\n• ' + c.file + (opp ? '\n• ' + opp.file + ' (ทิศตรงข้าม ' + opp.view + ' · ใช้ค่าเดียวกัน)' : '\n(ไม่พบภาพทิศตรงข้ามแยกไฟล์ — ปรับเฉพาะภาพนี้)') + '\n\nภาพเดิมเก็บไว้ในประวัติของช่อง (กู้กลับได้) · ต้องเชื่อมโฟลเดอร์/GitHub ใน Asset Studio')) return;
+      if (!confirm('เขียนทับด้วยภาพที่ปรับสัดส่วนแล้ว:\n• ' + c.file + (opp ? '\n• ' + opp.file + ' (ทิศตรงข้าม ' + opp.view + ' · ใช้ค่าเดียวกัน)' : '\n(ไม่พบภาพทิศตรงข้ามแยกไฟล์ — ปรับเฉพาะภาพนี้)') + '\n\n⚠ จุด 📍 Datum เดิมของภาพนี้จะไม่ตรงตำแหน่งอีกต่อไปหลังภาพถูกวาร์ป — วาง Datum ใหม่ถ้าจะวัดซ้ำ\n\nภาพเดิมเก็บไว้ในประวัติของช่อง (กู้กลับได้) · ต้องเชื่อมโฟลเดอร์/GitHub ใน Asset Studio')) return;
       const post = (file, cv) => window.parent.postMessage({ type: 'asset-lineup:apply', file, dataUrl: cv.toDataURL('image/png'), note: 'ปรับสัดส่วน หัว/ลำตัว/ขา' }, location.origin);
       let o2 = null; if (opp) { const img = await load(opp.url || opp.src), m2 = img && measure(img, opp.flip); if (m2) { const res = PA.warp(img, m2, marks, scaleNow(), { keepHeight: $a('adjKeep').checked, flip: opp.flip, mode: mem.seam, soft: mem.soft / 100, grow: Math.round(m2.H * .03), sharpen: mem.sharpMode === 'auto' ? 'auto' : mem.sharp / 100 }); o2 = document.createElement('canvas'); o2.width = m2.w; o2.height = m2.h; const g2 = o2.getContext('2d'); if (opp.flip) { g2.translate(m2.w, 0); g2.scale(-1, 1) } g2.drawImage(res.canvas, 0, 0) } else opp = null }
       post(c.file, o); if (o2) post(opp.file, o2); const n = o2 ? 2 : 1;   /* both are sent together: the studio reloads this row after saving */
       const a0 = vp && vp.action !== 'pick' ? vp.action : VP.action, v0 = vp ? vp.view : VP.view; DONE[doneKey(e.id, a0, v0)] = DONE[doneKey(e.id, a0, v0)] === 'ok' ? 'ok' : 'adj'; if (opp) DONE[doneKey(e.id, a0, opp.view)] = DONE[doneKey(e.id, a0, opp.view)] === 'ok' ? 'ok' : 'adj'; saveDone();
-      $a('adjMsg').textContent = 'ส่งให้ Asset Studio แล้ว ' + n + ' ภาพ — ตรวจผลแล้วติ๊ก "✔ ปรับถูกต้องแล้ว"' };
+      $a('adjMsg').textContent = 'ส่งให้ Asset Studio แล้ว ' + n + ' ภาพ — ตรวจผลแล้วติ๊ก "✔ ปรับถูกต้องแล้ว" (แล้ววาง 📍 Datum ใหม่ถ้าจะวัดซ้ำ)' };
     paintAdj = redraw; redraw();
   }
 }
@@ -463,7 +465,14 @@ async function openDatum(e) {
   const geo = () => { const s = Math.min(W / img.naturalWidth, H / img.naturalHeight); return { s, ox: (W - img.naturalWidth * s) / 2, oy: (H - img.naturalHeight * s) / 2, w: img.naturalWidth, h: img.naturalHeight } };
   const toPx = (fx, fy) => { const G = geo(); return [G.ox + fx * G.w * G.s, G.oy + fy * G.h * G.s] }, toF = (x, y) => { const G = geo(); return [(x - G.ox) / (G.w * G.s), (y - G.oy) / (G.h * G.s)] };
   const cur = () => PD.pointsFor(rec, dir), mine = () => (rec.pts[dir] ||= {});
-  const nextUnset = () => { const own = rec.pts[dir] || {}; return PD.POINTS.find(([k]) => !own[k])?.[0] || null };
+  /* v98.399 · auto-advance only moves FORWARD through the point list, per direction, and never stops on / returns to a point that
+     already has a suggestion (own OR mirrored/height-matched from another direction) — those count as "fine for now". Clicking a
+     point in the list on purpose still jumps selK there to fix it; the next auto-advance afterwards simply resumes from where it
+     was (it does not fall back to right after that point). */
+  const dirIdx = {}, filled = k => { const { own, from } = cur(); return own.has(k) || from[k] != null };
+  const nextUnset = () => { const i0 = dirIdx[dir] || 0;
+    for (let i = i0; i < PD.POINTS.length; i++) { if (!filled(PD.POINTS[i][0])) { dirIdx[dir] = i; return PD.POINTS[i][0] } }
+    dirIdx[dir] = PD.POINTS.length; return null };
   async function loadPic() {
     let pic = null; try { const cl = (c0.vp?.clips || []).find(x => x.action === pose && x.view === dir); pic = ST ? await ST.lineup.picture(c0.vp?.sid || ('ally:' + e.id), dir, pose === 'idle' && !cl ? null : cl?.id, cl ? Math.min(frame, cl.n - 1) : 0) : null } catch (er) { }
     if (!pic && dir === q0.dir) pic = { url: c0.url || c0.src, flip: c0.flip, label: c0.label };
@@ -500,8 +509,8 @@ async function openDatum(e) {
   $d('dtPrev').onclick = () => { const p = frame > 0 && PD.get(e.id, pose, frame - 1); if (!p) { $d('dtMsg').textContent = 'ไม่มีเฟรมก่อนหน้าที่วางไว้'; return } rec = JSON.parse(JSON.stringify(p)); rec.pts ||= {}; save(); draw() };
   $d('dtIdle').onclick = () => { const p = PD.get(e.id, 'idle', 0); if (!p) { $d('dtMsg').textContent = 'ยังไม่ได้วางท่ายืน'; return } rec = JSON.parse(JSON.stringify(p)); rec.pts ||= {}; save(); draw(); $d('dtMsg').textContent = 'คัดลอกจากท่ายืนแล้ว — ลากจุดให้ตรงท่านี้' };
   $d('dtClearPt').onclick = () => { if (selK && rec.pts[dir]) { delete rec.pts[dir][selK]; save(); draw() } };
-  $d('dtClearDir').onclick = () => { delete rec.pts[dir]; save(); selK = nextUnset(); draw() };
-  $d('dtClearAll').onclick = () => { if (!confirm('ล้าง datum ทั้งหมดของ ' + e.name + ' ท่านี้ เฟรมนี้ ทุกทิศ?')) return; rec = { pts: {} }; PD.remove(e.id, pose, frame); renderRatio(visible()); selK = nextUnset(); draw() };
+  $d('dtClearDir').onclick = () => { delete rec.pts[dir]; delete dirIdx[dir]; save(); selK = nextUnset(); draw() };
+  $d('dtClearAll').onclick = () => { if (!confirm('ล้าง datum ทั้งหมดของ ' + e.name + ' ท่านี้ เฟรมนี้ ทุกทิศ?')) return; rec = { pts: {} }; for (const k of Object.keys(dirIdx)) delete dirIdx[k]; PD.remove(e.id, pose, frame); renderRatio(visible()); selK = nextUnset(); draw() };
   $d('dtPush').onclick = async () => { const G = window.GitHubPush; if (!G) return; if (!G.config().token) return G.openSettings(); try { const t = await G.pushSettings([PD.KEY], 'Datum สัดส่วนตัวละคร'); $d('dtMsg').textContent = String(t || 'ใส่แล้ว') } catch (err) { $d('dtMsg').textContent = 'ไม่สำเร็จ: ' + err.message } };
   $d('dtExport').onclick = () => { const a = document.createElement('a'); a.download = 'proportion-datum.json'; a.href = URL.createObjectURL(new Blob([JSON.stringify(PD.all(), null, 1)], { type: 'application/json' })); a.click() };
   $d('dtImport').onclick = () => $d('dtFile').click();
@@ -611,7 +620,9 @@ function viewCtl() {
   const world = ['building', 'prop', 'nature'].includes(tab), stageTab = tab === 'char' || world, zoomTab = stageTab || tab === 'field';
   const ZS = [.5, .75, 1, 1.5, 2, 3], zi = Math.max(0, ZS.findIndex(z => z >= ZOOM - 1e-6));
   let h = '';
-  if (!world) h += `<div class="tg"><small>แสดงหมวด (ใช้กับทุกแท็บ)</small><div class="tr">${CATS.map(([k, t, tip]) => `<button data-f="${k}" aria-pressed="${FILTER[k]}" title="${tip}">${t}</button>`).join('')}</div></div>`;
+  /* v98.399 · docked inside Asset Studio: the left panel's own group tab (ตัวละคร/NPC/มอนสเตอร์/บอส) already filters which one thing you're editing —
+     a second "แสดงหมวด" row here duplicated the same categories, so it only shows standalone (follows the left panel instead when docked; see wireStudio()) */
+  if (!world && !DOCK) h += `<div class="tg"><small>แสดงหมวด (ใช้กับทุกแท็บ)</small><div class="tr">${CATS.map(([k, t, tip]) => `<button data-f="${k}" aria-pressed="${FILTER[k]}" title="${tip}">${t}</button>`).join('')}</div></div>`;
   if (!world && FILTER.mon && tab !== 'ratio') h += `<div class="tg"><small>มอนสเตอร์ · แยกชนิด</small><div class="tr">${MGROUPS.map(([k, t]) => `<button data-sf="${k}" aria-pressed="${SUBF[k]}">${t}</button>`).join('')}<button data-sf="wired" aria-pressed="${SUBF.wired}" title="ตัวที่สนามรบใช้อยู่แล้ว (ตาราง MON)">✔ ใช้ในเกมแล้ว</button><button data-sf="unwired" aria-pressed="${SUBF.unwired}" title="มีภาพ/อนิเมชันใน asset แล้ว แต่ยังไม่ได้ต่อเข้าสนามรบ — ปรับขนาดเก็บไว้ล่วงหน้าได้">⏳ ยังไม่ต่อเกม</button></div></div>`;
   if (tab === 'char' || tab === 'field') { const nv = visible().filter(e => PICKED.has(e.id)).length; h += `<div class="tg"><small>ปรับหลายตัวพร้อมกัน</small><div class="tr"><button id="bMulti" aria-pressed="${MULTI}" title="เปิดแล้วคลิกตัวละครเพื่อติ๊กเลือก จากนั้นปุ่ม −5 −1 +1 +5 ที่แผงขวาจะปรับทุกตัวที่เลือก">☑ เลือกหลายตัว</button>${MULTI ? `<button id="bPickAll" title="ติ๊กทุกตัวที่เห็นอยู่ (ตามตัวกรอง)">เลือกทั้งหมดที่เห็น</button><button id="bPickNone">ล้าง</button><span class="zv">เลือกแล้ว ${nv} ตัว</span>` : ''}</div></div>` }
   if (tab !== 'maps') h += `<div class="tg"><small>จัดเรียง</small><div class="tr"><button id="bSort" aria-pressed="${sorted}" title="เรียงจากสูงสุดไปต่ำสุด แทนลำดับปกติ">↕ เรียงตามความสูง</button></div></div>`;
@@ -678,13 +689,17 @@ async function saveToRepo() {
   catch (err) { msg.textContent = 'บันทึกไม่สำเร็จ: ' + err.message }
 }
 let ready = false; addEventListener('resize', () => ready && render());
+/* v98.399 · which FILTER chips (char/npc/mon) the left panel's group tab implies — keeps the dock's row in step with it instead of a second, overlapping filter */
+const GROUP_FILTER = { characters: { char: true, npc: false, mon: false }, npcs: { char: false, npc: true, mon: false }, monsters: { char: false, npc: false, mon: true }, bosses: { char: false, npc: false, mon: true } };
 function wireStudio() {   /* inside Asset Studio: follow the Animation tab */
   if (!ST) return; let timer = 0;
   const refresh = () => { clearTimeout(timer); timer = setTimeout(async () => { if (!ready) return; await buildChars(); render() }, 350) };
   const toId = id => id === 'hero' ? 'hero' : id.startsWith('ally:') ? id.slice(5) : id.startsWith('npc:') ? id.slice(4) : id.startsWith('enemy:') ? 'm:' + id.slice(6) : id;
   const onSel = ev => { const id = toId(ev.detail && ev.detail.id || ''); if (id !== sel && ENTRIES.some(x => x.id === id)) { sel = id; render() } };
-  parent.addEventListener('studio-frames-changed', refresh); parent.addEventListener('studio-select', onSel);
-  addEventListener('pagehide', () => { parent.removeEventListener('studio-frames-changed', refresh); parent.removeEventListener('studio-select', onSel) });
+  const onGroup = ev => { const gf = GROUP_FILTER[ev.detail?.group]; if (!gf) return; Object.assign(FILTER, gf); viewCtl(); render() };   /* no localStorage write here: this is on loan from the left panel, not the user's own saved filter */
+  parent.addEventListener('studio-frames-changed', refresh); parent.addEventListener('studio-select', onSel); parent.addEventListener('studio-group', onGroup);
+  try { const g0 = parent.StudioBrowser?.animGroup?.(); if (g0 && GROUP_FILTER[g0]) { Object.assign(FILTER, GROUP_FILTER[g0]); viewCtl(); render() } } catch (e) { }   /* the left panel's tab may already be set before this dock loads */
+  addEventListener('pagehide', () => { parent.removeEventListener('studio-frames-changed', refresh); parent.removeEventListener('studio-select', onSel); parent.removeEventListener('studio-group', onGroup) });
 }
 /* v98.392 · the Animation table opens the datum / proportion view of one cell (asset-studio-browser.js dockOpen) */
 /* v98.393 · docked: report the height the content needs (header + the strip column; the inspector scrolls on its own) so the studio sizes the row to fit — no empty band */
