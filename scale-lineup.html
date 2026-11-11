@@ -34,6 +34,7 @@ code{font-size:12px}
 .adj{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0}.adj>span{width:92px;color:var(--muted);font-size:12px}.adj input[type=number]{width:54px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:3px}.adj small{flex-basis:100%;color:var(--muted);font-size:11px}.adj button{padding:3px 8px}button.primary{background:var(--gold);color:#1d1608;border-color:#e6c47c}button:disabled{opacity:.45;cursor:default}#viewCtl{font-size:12px}#viewCtl input,#viewCtl select{font:inherit}
 
 .fig{position:relative;flex:none}.fig img{position:absolute;max-width:none}.fig .ln{position:absolute;left:-4px;right:-4px;height:0;border-top:2px solid}
+.fig .dpt{position:absolute;width:7px;height:7px;margin:-4px 0 0 -4px;border-radius:50%;border:1px solid #fff;box-shadow:0 0 0 1px #0004;pointer-events:none}   /* v98.400 · one 📍 Datum point, drawn where it was placed */
 .figs{position:relative;display:flex;gap:14px;align-items:flex-start;padding:6px 6px 0;overflow-x:auto}.figs .std{position:absolute;left:0;right:0;border-top:1px dashed}
 .figcap{font-size:11px;text-align:center;margin-top:6px;white-space:nowrap;cursor:pointer}.figcap.sel{font-weight:700}
 .rt{border-collapse:collapse;width:100%;font-size:12px;margin-top:10px}.rt th,.rt td{border-bottom:1px solid var(--line);padding:3px 6px;text-align:right;white-space:nowrap}.rt th:first-child,.rt td:first-child{text-align:left}.rt tr.sel{background:#c9a45a33}.rt tr{cursor:pointer}
@@ -58,7 +59,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.399"></script><script src="js/proportion-datum.js?v=v98.399"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.400"></script><script src="js/proportion-datum.js?v=v98.400"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -294,6 +295,9 @@ function ratioOf(e) {
   return r;
 }
 const STDOBJ = () => ({ head: STDV.head / 100, tol: STDV.tol / 100 });
+/* v98.400 · the actual 📍 Datum points of one character's picture, for drawing as dots instead of a measured line (which breaks on a tilted / different pose) */
+function datumPtsOf(e, c) { const PD = window.ProportionDatum; if (!PD) return []; const q = vpOf(c), rec = PD.get(e.id, q.pose, q.frame); if (!rec) return [];
+  const { pts, own } = PD.pointsFor(rec, q.dir); return PD.POINTS.map(([k, , col]) => pts[k] && { col, own: own.has(k), x: pts[k][0] * c.m.w, y: pts[k][1] * c.m.h }).filter(Boolean) }
 function ratioRows(V) { const R = V.map(e => ({ e, r: ratioOf(e) })), med = PT.median(R.map(x => x.r.head)); R.forEach(x => x.v = PT.verdict(x.r, STDOBJ(), med)); return { R, med } }
 const LV = { ok: ['ok', '✔ ตรงมาตรฐาน'], warn: ['warn', '⚠ เฉียด'], bad: ['bad', '✘ ไม่ตรง'] };
 function reportText(R, med) {
@@ -306,17 +310,19 @@ function renderRatio(V) {
   const lvl = bad ? 'bad' : warn ? 'warn' : 'ok';
   const nOk = R.filter(x => doneOf(x.e.id) === 'ok').length, nAdj = R.filter(x => doneOf(x.e.id) === 'adj').length;
   let h = `<div class="stdctl">มาตรฐาน: หัว ≈ <input type="number" id="sHead" min="15" max="60" step="0.5" value="${STDV.head}">% ± <input type="number" id="sTol" min="1" max="15" step="0.5" value="${STDV.tol}">% ของความสูง (2.7–3 หัว ≈ 33–37% · ในพรอมต์ใช้ 38%)
-    <span class="lgd"><i style="border-color:${COL.chin}"></i>คาง<i style="border-color:${COL.shoulder}"></i>ไหล่<i style="border-color:${COL.hip}"></i>ขาหนีบ<i style="border-color:#2a7"></i>มาตรฐาน<i style="border-color:#c9893a"></i>ค่ากลางทีม</span></div>`;
+    <span class="lgd">●จุด 📍 Datum ที่จิ้มไว้ (สีจางกว่า = ยืมค่าจากทิศอื่น)<i style="border-color:#2a7"></i>มาตรฐาน<i style="border-color:#c9893a"></i>ค่ากลางทีม</span></div>`;
   h += `<div class="figs" style="height:${maxFH + 54}px;align-items:flex-end">`;
   for (const { e, r, v } of R) {
     const c = e.ctx.battle, fh = fhOf(e), k = fh / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, fl = c.flip ? 'transform:scaleX(-1);' : '';
-    h += `<div data-c="${e.id}"><div class="fig" style="width:${fw}px;height:${fh}px"><img alt="" src="${c.url || c.src}" style="${fl}width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
+    /* v98.400 · the chin/shoulder/hip LINES are gone — they measured a level that a tilted head or a different pose simply does not have.
+       The actual 📍 Datum points are shown instead, each exactly where it was placed (flips with the picture, same as the big panel). */
+    const dots = datumPtsOf(e, c).map(p => `<span class="dpt" style="left:${-c.m.x0 * k + p.x * k}px;top:${-c.m.top * k + p.y * k}px;background:${p.col};opacity:${p.own ? 1 : .5}"></span>`).join('');
+    h += `<div data-c="${e.id}"><div class="fig" style="width:${fw}px;height:${fh}px"><div style="${fl}position:relative;width:100%;height:100%"><img alt="" src="${c.url || c.src}" style="position:absolute;width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">${dots}</div>`;
     h += `<div class="ln" style="top:${STDV.head / 100 * fh}px;border-color:#2a7;border-top-width:1px;border-top-style:dashed;opacity:.8"></div><div class="ln" style="top:${med * fh}px;border-color:#c9893a;border-top-width:1px;border-top-style:dashed;opacity:.8"></div>`;
-    for (const n of ['chin', 'shoulder', 'hip']) h += `<div class="ln" style="top:${r.marks[n] * fh}px;border-color:${COL[n]}"></div>`;
-    h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}" data-c="${e.id}">${e.name}<br><span class="chip ${LV[v.level][0]}">${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(0)}%</span>${doneOf(e.id) === 'ok' ? ' <span class="chip ok" title="ติ๊กแล้วว่าปรับถูกต้อง (ท่า·ทิศนี้)">✔</span>' : doneOf(e.id) === 'adj' ? ' <span class="chip warn" title="ปรับแล้ว รอติ๊กยืนยัน">✎</span>' : ''}</div></div>`;
+    h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}" data-c="${e.id}">${e.name}${r.datum ? ` <span class="chip ok" title="วาง 📍 Datum ครบแล้ว (ตา · คาง · ขาหนีบ · เท้า) — ตัวเลข ${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(0)}% ด้านล่างวัดจากจุดนี้โดยตรง ไม่ใช่ประมาณจากภาพ">📍✔</span>` : ''}<br><span class="chip ${LV[v.level][0]}">${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(0)}%${r.manual ? '' : ' <small title="ยังไม่ได้วาง 📍 Datum — ประมาณจากภาพคร่าว ๆ">~</small>'}</span>${doneOf(e.id) === 'ok' ? ' <span class="chip ok" title="ติ๊กแล้วว่าปรับถูกต้อง (ท่า·ทิศนี้)">✔</span>' : doneOf(e.id) === 'adj' ? ' <span class="chip warn" title="ปรับแล้ว รอติ๊กยืนยัน">✎</span>' : ''}</div></div>`;
   }
-  h += `</div><details class="rtBox"${(() => { try { return localStorage.getItem('lineup.rtOpen') === '1' ? ' open' : '' } catch (e) { return '' } })()}><summary><b>📋 ตารางเทียบทั้งทีม</b> <small>(${R.length} ตัว · ตรง ${ok} · เฉียด ${warn} · ไม่ตรง ${bad} · ค่ากลางหัว ${(med * 100).toFixed(1)}%${ST ? ` · ✔ ตรวจแล้ว ${nOk}/${R.length}${nAdj ? ' · ✎ รอติ๊ก ' + nAdj : ''}` : ''})</small> <span class="info" title="เส้นแดง/น้ำเงิน/เขียว = คาง/ไหล่/ขาหนีบ ที่ประมาณจากภาพ (ตัวที่มี ~ ยังไม่ได้ยืนยัน) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · เส้นเขียวประ = มาตรฐานของตัวนั้น · เส้นส้มประ = ค่ากลางทีม — ถ้าเป็นกึ่ง SD เท่ากัน เส้นแดงของทุกตัวควรอยู่ใกล้เส้นมาตรฐานสีเขียว · เลือกตัวแล้วลากเส้นที่แผงขวาให้ตรงกับคางจริง">ⓘ วิธีอ่านเส้น</span> <button id="rNext" type="button" title="ข้ามไปตัวถัดไปที่ยังไม่ติ๊ก ✔ (ไล่ปรับทีละตัวให้ครบทีม)" style="padding:2px 9px;font-size:12px;font-weight:700">⏭ ถัดไปที่ยังไม่เสร็จ</button> <button id="rCopy" type="button" style="padding:2px 9px;font-size:12px">📋 คัดลอกรายงาน</button></summary><table class="rt"><tr><th>ตัวละคร</th><th>สูง px</th><th>หัว %</th><th>จำนวนหัว</th><th title="ความกว้างหัว ÷ ความกว้างช่วงไหล่ (รวมแขน)">หัว/ไหล่</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
-  for (const { e, r, v } of R) h += `<tr data-c="${e.id}" class="${e.id === sel ? 'sel' : ''}"><td>${e.name}${r.manual ? '' : ' <small title="ประมาณจากภาพอัตโนมัติ · ลากเส้นในแผงขวาเพื่อปรับ">~</small>'}</td><td>${r.H}</td><td>${(r.head * 100).toFixed(1)}</td><td>${r.heads.toFixed(2)}</td><td>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'}</td><td>${(r.torso * 100).toFixed(0)}</td><td>${(r.legs * 100).toFixed(0)}</td><td><span class="chip ${LV[v.level][0]}" title="${v.notes.join(' · ')}">${LV[v.level][1]}</span></td></tr>`;
+  h += `</div><details class="rtBox"${(() => { try { return localStorage.getItem('lineup.rtOpen') === '1' ? ' open' : '' } catch (e) { return '' } })()}><summary><b>📋 ตารางเทียบทั้งทีม</b> <small>(${R.length} ตัว · ตรง ${ok} · เฉียด ${warn} · ไม่ตรง ${bad} · ค่ากลางหัว ${(med * 100).toFixed(1)}%${ST ? ` · ✔ ตรวจแล้ว ${nOk}/${R.length}${nAdj ? ' · ✎ รอติ๊ก ' + nAdj : ''}` : ''})</small> <span class="info" title="จุดสี = 📍 Datum ที่จิ้มไว้จริง (จางกว่า = ยืมจากทิศคู่ ยังไม่ได้จิ้มเอง) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · เส้นเขียวประ = มาตรฐาน · เส้นส้มประ = ค่ากลางทีม · เลือกตัวแล้ววาง/แก้ Datum ที่แผงขวา (ปุ่ม 📍 Datum)">ⓘ วิธีอ่าน</span> <button id="rNext" type="button" title="ข้ามไปตัวถัดไปที่ยังไม่ติ๊ก ✔ (ไล่ปรับทีละตัวให้ครบทีม)" style="padding:2px 9px;font-size:12px;font-weight:700">⏭ ถัดไปที่ยังไม่เสร็จ</button> <button id="rCopy" type="button" style="padding:2px 9px;font-size:12px">📋 คัดลอกรายงาน</button></summary><table class="rt"><tr><th>ตัวละคร</th><th>สูง px</th><th>หัว %</th><th>จำนวนหัว</th><th title="ความกว้างหัว ÷ ความกว้างช่วงไหล่ (รวมแขน)">หัว/ไหล่</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
+  for (const { e, r, v } of R) h += `<tr data-c="${e.id}" class="${e.id === sel ? 'sel' : ''}"><td>${e.name}${r.manual ? '' : ' <small title="ยังไม่ได้วาง 📍 Datum — ตัวเลขนี้ประมาณจากภาพคร่าว ๆ เท่านั้น">~</small>'}</td><td>${r.H}</td><td>${(r.head * 100).toFixed(1)}</td><td>${r.heads.toFixed(2)}</td><td>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'}</td><td>${(r.torso * 100).toFixed(0)}</td><td>${(r.legs * 100).toFixed(0)}</td><td><span class="chip ${LV[v.level][0]}" title="${v.notes.join(' · ')}">${LV[v.level][1]}</span></td></tr>`;
   h += `</table></details>`;
   st.innerHTML = h; { const d = st.querySelector('.rtBox'); if (d) d.ontoggle = () => { try { localStorage.setItem('lineup.rtOpen', d.open ? '1' : '0') } catch (e) { } } }
   st.querySelectorAll('[data-c]').forEach(n => n.onclick = () => pickSel(n.dataset.c));
@@ -335,6 +341,9 @@ function renderRatio(V) {
 function inspectRatio() {
   const e = ENTRIES.find(x => x.id === sel); if (!e || isW(e) || !e.ctx.battle) { $('insp').innerHTML = ''; return }
   const c = e.ctx.battle, r = ratioOf(e), med = PT.median(visible().map(x => ratioOf(x).head)), v = PT.verdict(r, STDOBJ(), med), CH = DOCK ? 400 : 300, PW = DOCK ? 560 : 300, HALF = PW / 2, hasDatum = !!r.datum;
+  /* v98.400 · no more measuring LINES across the picture — the actual 📍 Datum points (the same dots you placed) are drawn on the picture instead, both before and after */
+  const PDL = window.ProportionDatum, qL = vpOf(c), datumRec = hasDatum && PDL.get(e.id, qL.pose, qL.frame);
+  const datumPts = () => { if (!datumRec) return []; const { pts, own } = PDL.pointsFor(datumRec, qL.dir); return PDL.POINTS.map(([k, , col]) => pts[k] && { k, col, own: own.has(k), x: pts[k][0] * c.m.w, y: pts[k][1] * c.m.h } ).filter(Boolean) };
   $('insp').innerHTML = `<div class="ipPin"><b>${e.name}</b> <span class="chip ${LV[v.level][0]}">${LV[v.level][1]}</span>
    <canvas id="pcv" width="${PW}" height="${CH + 20}" style="width:${PW}px;height:${CH + 20}px;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
    <p class="hint">${hasDatum ? `<b style="color:${COL.chin}">คาง</b> / <b style="color:${COL.hip}">ขาหนีบ</b> อ่านตรงจาก 📍 Datum ของท่า/ทิศนี้ (ลากหรือพิมพ์เองไม่ได้แล้ว แก้ที่ Datum เท่านั้น) · <b>ขวา</b> = ผลหลังปรับ` : '⚠ ยังไม่ได้วาง 📍 Datum สำหรับท่า/ทิศนี้ — ตัวเลขด้านล่างเป็นการประมาณจากภาพคร่าว ๆ เท่านั้น ต้องวาง Datum ก่อนจึงจะปรับขนาดได้จริง'}</p></div>
@@ -353,10 +362,13 @@ function inspectRatio() {
     <div class="adj"><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng">⬇ ส่งออก PNG</button><button id="adjApply" title="เขียนทับภาพต้นฉบับของช่องนี้ใน Asset Studio (เก็บภาพเดิมไว้ในประวัติ)">💾 ใช้กับช่องภาพนี้</button></div><p class="hint" id="adjMsg"></p></details>`
     : `<p class="hint" style="margin-top:8px;padding:8px;border:1px dashed var(--line);border-radius:8px">วาง 📍 Datum ให้ครบก่อน (ตา 2 · คาง · ขาหนีบ · เท้า 2) จึงจะปรับขนาดหัว/ลำตัว/ขาได้ — ระบบตัดภาพตรงจุดที่จิ้มไว้พอดี ไม่ต้องกะด้วยสายตาอีกต่อไป</p>`}`;
   const cv = document.getElementById('pcv'), g = cv.getContext('2d'), k = CH / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, ox = (HALF - fw) / 2, oy = 10; let paintAdj = null;
-  const marks = { ...r.marks }, drawLeft = () => {
-    g.clearRect(0, 0, hasDatum ? HALF : PW, CH + 20); g.save(); g.beginPath(); g.rect(0, 0, hasDatum ? HALF : PW, CH + 20); g.clip(); if (c.flip) { g.translate(hasDatum ? HALF : PW, 0); g.scale(-1, 1) } g.drawImage(c.img, (c.flip ? (hasDatum ? HALF : PW) - ox - fw : ox) - c.m.x0 * k, oy - c.m.top * k, c.m.w * k, c.m.h * k); g.restore();
-    if (!hasDatum) return;   /* v98.399 · no datum → just show the picture, no guessed lines to imply they can be trusted or dragged */
-    for (const n of ['chin', 'shoulder', 'hip']) { const y = oy + marks[n] * CH; g.strokeStyle = COL[n]; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(HALF, y); g.stroke(); g.fillStyle = COL[n]; g.font = '11px AgThai,sans-serif'; g.fillText(LBL[n], 4, y - 3) }
+  const marks = { ...r.marks }, pw0 = hasDatum ? HALF : PW, dx0 = (c.flip ? pw0 - ox - fw : ox) - c.m.x0 * k, dy0 = oy - c.m.top * k;
+  /* a datum dot, drawn in whatever transform is already active (so it mirrors with the picture automatically when flipped) */
+  const dot = (g2, x, y, col, own) => { g2.globalAlpha = own ? 1 : .5; g2.fillStyle = col; g2.beginPath(); g2.arc(x, y, own ? 4 : 3, 0, 7); g2.fill(); g2.strokeStyle = '#fff'; g2.lineWidth = 1; g2.stroke(); g2.globalAlpha = 1 };
+  const drawLeft = () => {
+    g.clearRect(0, 0, pw0, CH + 20); g.save(); g.beginPath(); g.rect(0, 0, pw0, CH + 20); g.clip(); if (c.flip) { g.translate(pw0, 0); g.scale(-1, 1) } g.drawImage(c.img, dx0, dy0, c.m.w * k, c.m.h * k);
+    for (const p of datumPts()) dot(g, dx0 + p.x * k, dy0 + p.y * k, p.col, p.own);
+    g.restore();
   }, draw = () => { if (!paintAdj) return drawLeft(); drawLeft(); cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(() => paintAdj()) }; draw();
   document.getElementById('mDone').onchange = ev => { const k = doneKey(e.id); if (ev.target.checked) DONE[k] = 'ok'; else delete DONE[k]; saveDone(); renderRatio(visible()); inspectRatio() };
   document.getElementById('mDatum').onclick = () => openDatum(e);
@@ -409,11 +421,11 @@ function inspectRatio() {
         for (let i = 0; i < wh.length; i++) { if (sd[i * 4 + 3] < 40) continue; q[i * 4] = 230 * wh[i] + 40 * wt[i] + 40 * wl[i]; q[i * 4 + 1] = 50 * wh[i] + 110 * wt[i] + 170 * wl[i]; q[i * 4 + 2] = 50 * wh[i] + 220 * wt[i] + 70 * wl[i]; q[i * 4 + 3] = 95 }
         tg.putImageData(id, 0, 0); ag.setLineDash([]); ag.drawImage(tint, half / 2 - cxm * k, 10 - m.top * k, m.w * k, m.h * k); ag.fillStyle = COL.chin; ag.font = '10px AgThai,sans-serif'; ag.fillText('จับตามทรง: หัว · ลำตัว · ขา', 6, 22)
       } else { box(seg.head[0], seg.head[1], COL.chin, 'จับภาพ: หัว'); box(seg.torso[0], seg.torso[1], COL.shoulder, 'ลำตัว'); box(seg.legs[0], seg.legs[1], COL.hip, 'ขา') } ag.restore();
-      /* right: the result, the old cut lines (grey dashes) and the new ones (coloured dashes) + the TEMPLATE's own head % (green dashes, ref mode only — no more fixed "38%" target) */
+      /* right: the result, with the SAME datum dots moved to where they land after the warp (PA.mapPoint) — no measuring lines any more, v98.400 */
       ag.save(); ag.beginPath(); ag.rect(half, 0, half, CH + 20); ag.clip(); ag.globalAlpha = .22; place(orig, half); ag.globalAlpha = 1; place(last.canvas, half);
-      ag.setLineDash([5, 4]); ag.lineWidth = 1.3; const hl = (y, col) => { ag.strokeStyle = col; ag.beginPath(); ag.moveTo(half, Y(y)); ag.lineTo(CW, Y(y)); ag.stroke() };
-      hl(seg.head[1], '#8a8a8a'); hl(seg.torso[1], '#8a8a8a'); hl(P.head[1], COL.chin); hl(P.torso[1], COL.hip);
-      if (tplSpans) { const ty = P.legs[1] - tplSpans.head * P.H1; hl(ty, '#1f9a4a'); ag.fillStyle = '#1f9a4a'; ag.font = '10px AgThai,sans-serif'; ag.fillText('หัวต้นแบบ ' + (tplSpans.head * 100).toFixed(0) + '%', half + 4, Y(ty) - 3) } ag.restore();
+      const destX = half + half / 2 - cxm * k, destY = 10 - m.top * k;
+      for (const p of datumPts()) { const sx = c.flip ? m.w - p.x : p.x, [ox2, oy2] = PA.mapPoint(last, sx, p.y); dot(ag, destX + ox2 * k, destY + oy2 * k, p.col, p.own) }
+      ag.restore();
       ag.setLineDash([]); ag.strokeStyle = '#999'; ag.beginPath(); ag.moveTo(half, 0); ag.lineTo(half, CH + 20); ag.stroke(); ag.fillStyle = '#555'; ag.font = '10px AgThai,sans-serif'; ag.fillText('ก่อน', 4, CH + 14); ag.fillText('หลัง', half + 4, CH + 14);
       const heads = 1 / P.headFrac;
       $a('adjInfo').innerHTML = `หลังปรับ: หัว <b>${(P.headFrac * 100).toFixed(1)}%</b> (${heads.toFixed(2)} หัว) · ลำตัว ${(P.torsoFrac * 100).toFixed(0)}% · ขา ${(P.legsFrac * 100).toFixed(0)}% <br><small>ก่อน: หัว ${(r.head * 100).toFixed(1)}% · ส่วนต่าง ${((P.headFrac - r.head) * 100 >= 0 ? '+' : '') + ((P.headFrac - r.head) * 100).toFixed(1)} จุด · ความสูงรวม ${keep ? 'คงเดิม' : (P.H1 / P.H0 * 100).toFixed(0) + '% ของเดิม'}</small>`;
