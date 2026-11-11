@@ -38,6 +38,12 @@ code{font-size:12px}
 .banner{padding:7px 10px;border-radius:8px;border:1px solid var(--line);margin:4px 0 8px}.banner.ok{border-color:var(--ok)}.banner.warn{border-color:var(--warn)}.banner.bad{border-color:var(--bad)}
 .stdctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px;margin:4px 0}.stdctl input{width:54px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:2px 4px}
 .lgd i{display:inline-block;width:18px;border-top:2px solid;vertical-align:middle;margin:0 3px 0 8px}
+/* v98.383 · docked in the Animation tab: compact header, no left list, the strip and the inspector side by side */
+body.dock{background:#f7f5ee}body.dock header{padding:6px 10px;gap:6px;position:sticky;top:0;z-index:5}body.dock header h1{display:none}
+body.dock main{grid-template-columns:minmax(0,1fr) 300px;max-width:none;padding:8px 10px;gap:10px}body.dock main>section:first-child{display:none}
+body.dock #stage{height:330px}body.dock .card{padding:8px}
+@media(max-width:900px){body.dock main{grid-template-columns:1fr}}
+body.world header h1 small{display:none}
 </style></head><body>
 <header><h1>⚖ Scale Lineup <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
 <span id="tabs"></span> <span id="ctxBtns"></span><span class="grow"></span>
@@ -95,8 +101,14 @@ const WORLD = {
     ['pine', 'สน', V + 'nature/pine.webp', { w: 215 }, [3.5, 10]], ['tree-conifer', 'ต้นสนใบ', V + 'nature/tree-conifer.webp', { w: 200 }, [3.5, 10]], ['tree-blossom', 'ต้นดอกไม้', V + 'nature/tree-blossom.webp', { w: 185 }, [3, 9]],
     ['bush-small', 'พุ่มไม้เล็ก', V + 'nature/bush-small.webp', { w: 74 }, [.6, 1.6]], ['rock-cluster', 'กลุ่มหิน', V + 'nature/rock-cluster.webp', { w: 66 }, [.4, 1.4]], ['tall-grass', 'หญ้าสูง', V + 'nature/tall-grass.webp', { w: 64 }, [.3, .9]]] }
 };
-const TABS = [['char', 'ตัวละคร'], ['ratio', '📐 สัดส่วน'], ['field', '⚔ สนามรบ · Grid จริง'], ['maps', '🗺 ขนาดต่อแผนที่'], ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
-let tab = 'char';
+/* v98.383 · two embedded layouts inside Asset Studio:
+   ?dock=1  → the CHARACTER row at the top of the Animation tab (size · proportion · real grid · per map) — no list on the left (the studio's own list picks the character)
+   ?world=1 → the ⚖ ขนาดโลก tab of the studio (buildings · decor · nature) */
+const QS = new URLSearchParams(location.search), DOCK = QS.get('dock') === '1', WORLD_ONLY = QS.get('world') === '1';
+const TABS_ALL = [['char', '📏 ขนาด'], ['ratio', '📐 สัดส่วน'], ['field', '⚔ สนามรบ · Grid จริง'], ['maps', '🗺 ขนาดต่อแผนที่'], ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
+const TABS = DOCK ? TABS_ALL.filter(t => ['char', 'ratio', 'field', 'maps'].includes(t[0])) : WORLD_ONLY ? TABS_ALL.filter(t => ['building', 'prop', 'nature'].includes(t[0])) : TABS_ALL;
+let tab = TABS[0][0];
+if (DOCK) document.body.classList.add('dock'); if (WORLD_ONLY) document.body.classList.add('world');
 const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
 const RANK = { hero: 0, ally: 1, monster: 2 };
 /* one picture per character (the standing SW picture, or the frame picked from the Animation clips) — the SAME entry for 'battle' and 'village', so both views always agree */
@@ -190,7 +202,7 @@ function render() {
   if (tab === 'maps') { renderMaps(); return }
   if (tab === 'field') { renderField(V); inspect(); controls(); return }
   /* stage */
-  const st = $('stage'), H = 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))) / ZOOM, ppm = (base - 20) / maxM * ZOOM, bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
+  const st = $('stage'), H = DOCK ? 330 : 430, base = H - 40, maxM = Math.max(2.2, ...V.map(e => metres(e))) / ZOOM, ppm = (base - 20) / maxM * ZOOM, bw = e => Math.max(70, (e.ctx[ctx].m.x1 - e.ctx[ctx].m.x0) * metres(e) * ppm / e.ctx[ctx].m.H), xs = []; let acc = 24; for (const e of V) { xs.push(acc + bw(e) / 2); acc += bw(e) + 22 } const W = Math.max(st.parentElement.clientWidth, acc + 10);
   st.style.height = ''; st.style.width = W + 'px'; let h = '';
   for (let m = 0; m <= maxM + 1e-6; m += STEP) h += `<div class="tick" style="top:${base - m * ppm}px"><span>${m.toFixed(1)} m</span></div>`;
   h += `<div class="base" style="top:${base}px"></div>`;
@@ -258,7 +270,7 @@ function reportText(R, med) {
 }
 let _rt = 0; const reRatio = () => { cancelAnimationFrame(_rt); _rt = requestAnimationFrame(() => { if (tab === 'ratio') renderRatio(visible()) }) };
 function renderRatio(V) {
-  const { R, med } = ratioRows(V), FH = 300, fhOf = e => FH * metres(e) / HERO_M, maxFH = Math.max(...V.map(fhOf)), bad = R.filter(x => x.v.level === 'bad').length, warn = R.filter(x => x.v.level === 'warn').length, ok = R.length - bad - warn;
+  const { R, med } = ratioRows(V), FH = DOCK ? 250 : 300, fhOf = e => FH * metres(e) / HERO_M, maxFH = Math.max(...V.map(fhOf)), bad = R.filter(x => x.v.level === 'bad').length, warn = R.filter(x => x.v.level === 'warn').length, ok = R.length - bad - warn;
   const st = $('stage'); st.style.height = 'auto'; st.style.width = 'auto';
   const lvl = bad ? 'bad' : warn ? 'warn' : 'ok';
   let h = `<div class="banner ${lvl}"><b>${ok === R.length ? '✔ ทั้งทีมเป็นกึ่ง SD สัดส่วนเดียวกัน' : `ตรงมาตรฐาน ${ok}/${R.length} ตัว`}</b> · ค่ากลางของทีม: หัว ${(med * 100).toFixed(1)}% ของตัว (≈ ${(1 / med).toFixed(2)} หัว)${bad || warn ? ' · ' + R.filter(x => x.v.level !== 'ok').map(x => x.e.name).join(', ') + ' ยังไม่ตรง' : ''}</div>

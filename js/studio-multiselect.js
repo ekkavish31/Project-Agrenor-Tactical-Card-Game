@@ -24,7 +24,7 @@
   }
   function inject() {
     const ctl = grid.querySelector('.entity-controls'); if (!ctl || ctl.querySelector('#msToggle')) return paint();
-    const t = document.createElement('button'); t.id = 'msToggle'; t.type = 'button'; t.title = 'เลือกหลายช่องเพื่อยืนยัน / ยกเลิก / ลบ พร้อมกัน'; ctl.prepend(t);
+    const t = document.createElement('button'); t.id = 'msToggle'; t.type = 'button'; t.title = 'เลือกหลายช่องเพื่อยืนยัน / ยกเลิก / ลบ พร้อมกัน'; (ctl.querySelector('.tb-group[data-g=edit] .tb-items') || ctl).append(t);   /* v98.383 · in the แก้ภาพ group */
     t.onclick = () => { on = !on; if (!on) picked.clear(); paint() };
     const bar = document.createElement('div'); bar.className = 'ms-bar'; bar.hidden = true;
     bar.innerHTML = `<b>เลือกแล้ว <span class="ms-n">0</span> ชุด</b><button type="button" data-sel="all">ทั้งหมด</button><button type="button" data-sel="none">ล้าง</button>
