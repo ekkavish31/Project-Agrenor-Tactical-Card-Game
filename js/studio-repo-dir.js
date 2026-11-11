@@ -18,6 +18,8 @@
   async function idbGet(k) { try { const db = await idb(); return await new Promise(r => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(null) }) } catch (e) { return null } }
   async function idbSet(k, v) { try { const db = await idb(); await new Promise(r => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = r; t.onerror = r }) } catch (e) {} }
   let bc = null; try { bc = new BroadcastChannel('project-a-staged') } catch (e) {}
+  /* v98.387 · the 🛒 cart pushed or took files out of the staged set from another page / panel: follow it */
+  try { bc && (bc.onmessage = async ev => { const d = ev.data || {}; if (d.pushed) { try { await afterExternal() } catch (e) { } return } if (d.reload) { const s = await idbGet('repo-staged'); staged.clear(); if (Array.isArray(s)) s.forEach(([p, b]) => staged.set(p, b)); notify() } }) } catch (e) {}
   const persist = async () => { await idbSet('repo-staged', [...staged.entries()]); try { bc && bc.postMessage(staged.size) } catch (e) {} };
   /* v98.96 · RECENTLY PUSHED files. After a push the staged list is emptied and the studio re-reads the repo — but the web copy (GitHub Pages / raw) is the OLD one for a few minutes,
      so the work just pushed seemed to vanish, and the next save was built on the old data and pushed over it. A pushed file is now remembered (IndexedDB 'repo-recent', 1 hour)
@@ -133,6 +135,7 @@
   async function pushStaged(message) {
     const G = root.GitHubPush;
     if (!G) throw Error('ไม่พบระบบ GitHub Push (js/github-push.js)');
+    if (G.cart && G.cart.on()) { G.cart.open(); return null }   /* v98.387 · staged files ARE the cart: push from the 🛒 panel (one commit with every editor's work) */
     if (!staged.size) return null;
     const tag = await G.commit(message || 'Asset Studio: update images', async head => {
       try { if (head && head.read) { const tx = await head.read('data/asset-manifest.json'); if (tx) await rebaseStaged({ text: tx, sha: null }) } } catch (e) { console.warn('manifest rebase at push', e) }

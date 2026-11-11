@@ -4,7 +4,7 @@
    writes one commit and moves main forward; if someone pushed in between it rebuilds and tries again. */
 (function(){'use strict';
 const KEY='projectA.github',API='https://api.github.com';
-const defaults={owner:'ekkavish31',repo:'Project-Agrenor-Tactical-Card-Game',branch:'main',token:'',auto:true,review:false};
+const defaults={owner:'ekkavish31',repo:'Project-Agrenor-Tactical-Card-Game',branch:'main',token:'',auto:true,review:false,cart:true};
 function config(){try{return{...defaults,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){return{...defaults}}}
 function save(c){try{localStorage.setItem(KEY,JSON.stringify({...config(),...c}))}catch(e){}}
 const enabled=()=>{const c=config();return!!(c.token&&c.auto)};
@@ -72,7 +72,8 @@ const PAGES=['index.html','editor.html','village-town.html','village-place.html'
 async function bumpScriptVersions(files,ver,read){const js=files.filter(f=>!f.remove&&/^js\/[^/]+\.js$/.test(f.path)).map(f=>f.path.slice(3).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));if(!ver||!js.length)return;
  const re=new RegExp('(js/(?:'+js.join('|')+')\\?v=)[\\d.]+','g');for(const p of PAGES){if(files.some(f=>f.path===p))continue;const t=await read(p);if(!t)continue;const n=t.replace(re,'$1'+ver.slice(1));if(n!==t)files.push({path:p,content:n})}}
 // build(head) → [{path, content}] where content is string | Uint8Array | Blob; head.read(path) reads files at that commit
-async function commit(message,build,onStatus=()=>{}){const c=config();if(!c.token)throw new Error('ยังไม่ได้ตั้งค่า GitHub token');
+async function commit(message,build,onStatus=()=>{},opt={}){const c=config();if(!c.token)throw new Error('ยังไม่ได้ตั้งค่า GitHub token');
+ if(cartOn()&&!opt.now&&!FLUSH)return cartStage(message,build,onStatus);   /* v98.387 · 🛒 goes into the cart, pushed later in one commit */
  const ui=pushScreen(message.replace(/\s*\(.*\)$/,'')),say=(n,t)=>{ui.step(n,t);onStatus(t)};
  try{for(let attempt=1;attempt<=3;attempt++){say(0,'กำลังอ่านเวอร์ชันล่าสุดบน GitHub…');const ref=await json('/git/ref/heads/'+c.branch),head=ref.object.sha,base=await json('/git/commits/'+head);
   say(1,'กำลังเตรียมไฟล์และรวมกับงานล่าสุด…');let files=await build({sha:head,read:p=>readText(p,head)});if(files.length){say(1,'กำลังแปลงภาพ PNG เป็น WebP…');files=await webpFiles(files)}if(!files.length){ui.ok('');ui.note('ไม่มีอะไรเปลี่ยน · ไม่ต้อง push');onStatus('ไม่มีอะไรต้อง push');return null}
@@ -103,7 +104,7 @@ const SEED=`(function(){try{const SEEN='project-a-settings-seen',h=v=>{let x=216
 function parseSettings(text){if(!text)return{};const i=text.indexOf('window.GAME_SETTINGS=');if(i<0)return{};const start=text.indexOf('{',i),end=text.indexOf('\n};',start);return JSON.parse(text.slice(start,end+2))}
 function settingsFile(obj){return'// Permanent game settings — written by the editors (⬆ Push) · '+new Date().toISOString()+'\n// Defaults for every browser: a browser keeps a value it changed itself, otherwise it follows these.\nwindow.GAME_SETTINGS='+JSON.stringify(obj,null,1)+';\n'+SEED+'\n'}
 // keys: localStorage keys to publish · extra: [{path,content}] more files in the same commit
-async function pushSettings(keys,label,extra=[],onStatus){const vals={};for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
+async function pushSettings(keys,label,extra=[],onStatus){if(cartOn()&&!FLUSH){if(extra.length)await cartFiles(extra,null);await cartLog(label,extra.map(f=>f.path),keys);cartToast(label);cartNotify();onStatus&&onStatus('🛒 ใส่ Cart แล้ว');return '🛒 อยู่ใน Cart (ยังไม่ push)'}const vals={};for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
  const sha=await commit('Editor: '+label+' ('+Object.keys(vals).length+' ค่า'+(extra.length?' + '+extra.length+' ไฟล์':'')+')',async head=>{const cur=parseSettings(await head.read('js/game-settings.js'));Object.assign(cur,vals);return[...extra,...(Object.keys(vals).length?[{path:'js/game-settings.js',content:settingsFile(cur)}]:[])]},onStatus);
  try{const seen=JSON.parse(localStorage.getItem('project-a-settings-seen')||'{}');for(const[k,v]of Object.entries(vals))seen[k]=hashStr(v);localStorage.setItem('project-a-settings-seen',JSON.stringify(seen))}catch(e){}return sha}
 
@@ -115,17 +116,101 @@ function openSettings(after){afterSave=typeof after==='function'?after:null;if(!
  <label style="display:block;margin:6px 0">Repo <input id="ghRepo" style="width:100%;padding:6px" placeholder="owner/repo"></label><label style="display:block;margin:6px 0">Branch <input id="ghBranch" style="width:100%;padding:6px"></label>
  <label style="display:block;margin:6px 0">Token <input id="ghToken" type="password" style="width:100%;padding:6px" placeholder="github_pat_…" autocomplete="off"></label>
  <label style="display:flex;gap:6px;align-items:center;margin:8px 0"><input type="checkbox" id="ghAuto"> push อัตโนมัติเมื่อบันทึก (ปิด = ดาวน์โหลด ZIP แบบเดิม)</label>
+ <label style="display:flex;gap:6px;align-items:center;margin:8px 0"><input type="checkbox" id="ghCart"> 🛒 สะสมงานใน Cart ก่อน แล้ว push ทีเดียว (แนะนำ · ปิด = push ทันทีทุกครั้ง)</label>
  <label style="display:flex;gap:6px;align-items:center;margin:8px 0"><input type="checkbox" id="ghReview"> แสดงหน้าสรุปให้ยืนยันก่อน push (ปิด = ขึ้นหน้าโหลดทันที)</label>
  <p id="ghMsg" style="min-height:18px;color:#315d46;margin:6px 0"></p><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="margin-right:auto;align-self:center">สร้าง token</a><button id="ghForget">ลบ token</button><button id="ghTest">ทดสอบ</button><button id="ghSave">บันทึก</button><button id="ghClose">ปิด</button></div>`;
  document.body.append(dlg);const $=id=>dlg.querySelector('#'+id),msg=t=>$('ghMsg').textContent=t;
- const read=()=>{const[owner,repo]=$('ghRepo').value.trim().split('/');return{owner:owner||defaults.owner,repo:repo||defaults.repo,branch:$('ghBranch').value.trim()||'main',auto:$('ghAuto').checked,review:$('ghReview').checked,...($('ghToken').value.trim()?{token:$('ghToken').value.trim()}:{})}};
+ const read=()=>{const[owner,repo]=$('ghRepo').value.trim().split('/');return{owner:owner||defaults.owner,repo:repo||defaults.repo,branch:$('ghBranch').value.trim()||'main',auto:$('ghAuto').checked,review:$('ghReview').checked,cart:$('ghCart').checked,...($('ghToken').value.trim()?{token:$('ghToken').value.trim()}:{})}};
  $('ghSave').onclick=()=>{save(read());msg('บันทึกแล้ว');refreshBadges();if(afterSave&&config().token){const f=afterSave;afterSave=null;dlg.close();setTimeout(f,50)}};$('ghClose').onclick=()=>dlg.close();
  $('ghForget').onclick=()=>{save({token:''});$('ghToken').value='';msg('ลบ token จากเครื่องนี้แล้ว');refreshBadges()};
  $('ghTest').onclick=async()=>{save(read());msg('กำลังทดสอบ…');try{msg('ใช้ได้ · เขียน '+await test()+' ได้')}catch(e){msg('ใช้ไม่ได้: '+e.message)}refreshBadges()}}
- const c=config();dlg.querySelector('#ghRepo').value=c.owner+'/'+c.repo;dlg.querySelector('#ghBranch').value=c.branch;dlg.querySelector('#ghToken').value='';dlg.querySelector('#ghToken').placeholder=c.token?'มี token แล้ว (ใส่ใหม่เพื่อเปลี่ยน)':'github_pat_…';dlg.querySelector('#ghAuto').checked=c.auto;dlg.querySelector('#ghReview').checked=!!c.review;dlg.querySelector('#ghMsg').textContent='';dlg.showModal()}
+ const c=config();dlg.querySelector('#ghRepo').value=c.owner+'/'+c.repo;dlg.querySelector('#ghBranch').value=c.branch;dlg.querySelector('#ghToken').value='';dlg.querySelector('#ghToken').placeholder=c.token?'มี token แล้ว (ใส่ใหม่เพื่อเปลี่ยน)':'github_pat_…';dlg.querySelector('#ghAuto').checked=c.auto;dlg.querySelector('#ghReview').checked=!!c.review;dlg.querySelector('#ghCart').checked=c.cart!==false;dlg.querySelector('#ghMsg').textContent='';dlg.showModal()}
 const badges=new Set();
 function refreshBadges(){for(const b of badges)b.textContent=enabled()?'⬆ GitHub: เปิด':'⬆ GitHub: ปิด'}
 function settingsButton(cls=''){const b=document.createElement('button');b.type='button';b.className=cls;b.title='ตั้งค่า push ขึ้น GitHub';b.onclick=openSettings;badges.add(b);refreshBadges();return b}
 
-window.GitHubPush={config,save,enabled,test,commit,readText,applyAssetPatch,manifestFiles,openSettings,settingsButton,pushSettings,parseSettings,settingsFile};
+
+/* ---------- v98.387 · 🛒 PUSH CART ----------
+   Every editor's ⬆ Push now goes into ONE cart instead of committing at once; the change is already live in this browser (editors save locally,
+   pictures are previewed by js/staged-preview.js), and the cart is pushed as ONE commit when you are ready (it warns when it gets big).
+   The cart = three stores in IndexedDB 'asset-studio'/kv (shared by every page and tab):
+     repo-staged   files written by Asset Studio / Workshop (js/studio-repo-dir.js — unchanged)
+     cart-files    files from every other editor's commit()          [[path, Blob|null]]
+     cart-meta     { log:[{label,at,n,paths,keys,page}], keys:[settings keys → js/game-settings.js at push time] }
+   commit() run in this page also keeps its build function for the session, so at push time it is re-run against the newest main (proper merges);
+   after a reload the stored copy is used. Settings are always written from this browser's CURRENT values at push time. */
+let FLUSH=false;const BUILD=new Map();
+const cartOn=()=>config().cart!==false;
+const idbOpen=()=>new Promise((res,rej)=>{const r=indexedDB.open('asset-studio',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const idbGet=async k=>{try{const db=await idbOpen();return await new Promise(r=>{const q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}catch(e){return null}};
+const idbSet=async(k,v)=>{const db=await idbOpen();await new Promise(r=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=r;t.onerror=r})};
+let cartBc=null,stagedBc=null;try{cartBc=new BroadcastChannel('project-a-cart');stagedBc=new BroadcastChannel('project-a-staged')}catch(e){}
+const BIG={files:30,bytes:25e6};
+const toBlob=x=>x==null?null:x instanceof Blob?x:typeof x==='string'?new Blob([x],{type:'text/plain'}):new Blob([x]);
+async function cartFiles(files){const cur=new Map(await idbGet('cart-files')||[]);for(const f of files)cur.set(f.path,f.remove?null:toBlob(f.content));await idbSet('cart-files',[...cur])}
+async function cartLog(label,paths,keys){const m=await idbGet('cart-meta')||{log:[],keys:[]};m.log.push({label,at:Date.now(),n:paths.length,paths:paths.slice(0,30),keys:keys||[],page:location.pathname.split('/').pop()||''});if(m.log.length>300)m.log=m.log.slice(-300);for(const k of keys||[])if(!m.keys.includes(k))m.keys.push(k);await idbSet('cart-meta',m)}
+async function cartState(){const meta=await idbGet('cart-meta')||{log:[],keys:[]},files=await idbGet('cart-files')||[],st=await idbGet('repo-staged');return{meta,files,staged:Array.isArray(st)?st:[]}}
+async function cartSummary(){const s=await cartState(),all=new Map([...s.staged,...s.files]);let bytes=0;for(const b of all.values())bytes+=b?(b.size||0):0;const n=all.size+s.meta.keys.length;return{...s,all,n,bytes,big:all.size>=BIG.files||bytes>=BIG.bytes}}
+function cartNotify(){try{cartBc&&cartBc.postMessage('c')}catch(e){}try{cartUi()}catch(e){}}
+async function cartStage(message,build,onStatus){const c=config(),say=t=>{try{onStatus(t)}catch(e){}};say('🛒 กำลังเตรียมไฟล์ใส่ Cart…');
+ const ref=await json('/git/ref/heads/'+c.branch),head=ref.object.sha,files=await build({sha:head,read:p=>readText(p,head)});
+ if(!files||!files.length){say('ไม่มีอะไรเปลี่ยน');return null}
+ await cartFiles(files);await cartLog(message,files.map(f=>f.path),[]);BUILD.set(message+'#'+Date.now(),{fn:build});
+ if(files.some(f=>/asset-manifest\.json$/.test(f.path))&&!(await idbGet('repo-staged-base'))){try{const t=await readText('data/asset-manifest.json',head);if(t)await idbSet('repo-staged-base',{text:t,sha:head,at:Date.now()})}catch(e){}}
+ cartToast(message);cartNotify();say('🛒 ใส่ Cart แล้ว (ยังไม่ push)');return '🛒 อยู่ใน Cart (ยังไม่ push)'}
+async function cartPush(){const s=await cartSummary();if(!s.n)return null;if(!config().token){openSettings(()=>cartPush());return null}
+ const labels=[...new Set(s.meta.log.map(l=>l.label.replace(/\s*\(.*\)$/,'')))],staged=s.staged.length;
+ const msg='Cart: '+(labels.slice(0,4).join(' · ')||'Asset Studio')+(labels.length>4?' +'+(labels.length-4):'')+' ('+s.all.size+' ไฟล์'+(s.meta.keys.length?' · '+s.meta.keys.length+' ค่า':'')+')';
+ FLUSH=true;let tag=null;
+ try{tag=await commit(msg,async head=>{const m=new Map();let st=s.staged;
+   const MM=window.ManifestMerge||(()=>{try{return window.top.ManifestMerge}catch(e){return null}})();
+   if(MM&&head.read&&st.some(([p])=>/asset-manifest\.(json|js)$/.test(p))){try{const tx=await head.read('data/asset-manifest.json'),base=await idbGet('repo-staged-base');if(tx){const rb=await MM.rebase(st,tx,base&&base.text);if(rb.changed)st=rb.files}}catch(e){console.warn('cart manifest merge',e)}}
+   for(const[p,b]of st)m.set(p,b);for(const[p,b]of s.files)m.set(p,b);
+   for(const b of BUILD.values()){try{for(const f of await b.fn(head)||[])m.set(f.path,f.remove?null:f.content)}catch(e){console.warn('cart: re-run with newest main failed, using the stored copy',e)}}
+   const files=[];for(const[p,b]of m){if(b==null){files.push({path:p,remove:true});continue}files.push({path:p,content:b instanceof Blob&&/\.(js|json|html|css|md|txt|csv)$/i.test(p)?await b.text():b})}
+   if(s.meta.keys.length){const cur=parseSettings(await head.read('js/game-settings.js'));for(const k of s.meta.keys){const v=localStorage.getItem(k);if(v!==null)cur[k]=v}const sf={path:'js/game-settings.js',content:settingsFile(cur)},i=files.findIndex(f=>f.path==='js/game-settings.js');if(i>=0)files[i]=sf;else files.push(sf)}
+   return files},()=>{},{now:true});
+  if(tag){const at=Date.now(),old=await idbGet('repo-recent'),keep=(Array.isArray(old)?old:[]).filter(([p,,t])=>at-t<36e5&&!s.all.has(p));await idbSet('repo-recent',[...keep,...[...s.all].map(([p,b])=>[p,b,at])]);
+   try{const seen=JSON.parse(localStorage.getItem('project-a-settings-seen')||'{}');for(const k of s.meta.keys){const v=localStorage.getItem(k);if(v!==null)seen[k]=hashStr(v)}localStorage.setItem('project-a-settings-seen',JSON.stringify(seen))}catch(e){}
+   await idbSet('repo-staged',[]);await idbSet('repo-staged-base',null);await idbSet('cart-files',[]);await idbSet('cart-meta',{log:[],keys:[]});BUILD.clear();
+   try{stagedBc&&stagedBc.postMessage({pushed:true})}catch(e){}try{window.RepoDir?.afterExternal?.()}catch(e){}}
+ }finally{FLUSH=false;cartNotify()}return tag}
+async function cartDrop(paths,keys){const st=await idbGet('repo-staged'),cf=await idbGet('cart-files'),m=await idbGet('cart-meta')||{log:[],keys:[]};const P=new Set(paths||[]);
+ if(Array.isArray(st))await idbSet('repo-staged',st.filter(([p])=>!P.has(p)));if(Array.isArray(cf))await idbSet('cart-files',cf.filter(([p])=>!P.has(p)));if(keys)m.keys=m.keys.filter(k=>!keys.includes(k));await idbSet('cart-meta',m);
+ try{stagedBc&&stagedBc.postMessage({reload:true})}catch(e){}cartNotify()}
+async function cartClear(){const s=await cartSummary();await cartDrop([...s.all.keys()],s.meta.keys);await idbSet('cart-meta',{log:[],keys:[]});await idbSet('repo-staged-base',null);BUILD.clear();cartNotify()}
+/* --- UI: lives in the top window only (one button, one panel) --- */
+const topDoc=()=>{try{if(window.top!==window&&window.top.GitHubPush)return null}catch(e){}return document};
+const mb=b=>b>=1e6?(b/1e6).toFixed(1)+' MB':Math.max(1,Math.round(b/1e3))+' KB';
+let cartTimer=0;
+function cartUi(){clearTimeout(cartTimer);cartTimer=setTimeout(async()=>{const d=topDoc();if(!d||!d.body)return;const s=await cartSummary();
+ const shell=d.getElementById('stagedPush');   /* editor.html has its own top-bar button: it becomes the cart button */
+ let b=shell||d.getElementById('ghCartBtn');
+ if(!b){b=d.createElement('button');b.id='ghCartBtn';b.type='button';b.style.cssText='position:fixed;right:16px;bottom:16px;z-index:9000;font:700 13px AgThai,system-ui,"Noto Sans Thai",sans-serif;padding:9px 14px;border-radius:22px;border:1px solid #a06c27;background:#c9893a;color:#fff;box-shadow:0 6px 20px #0005;cursor:pointer';d.body.append(b)}
+ if(!shell||cartOn()){b.textContent='🛒 Cart ('+s.n+')'+(s.big?' · เยอะแล้ว ควร Push':'');b.title=s.n?s.all.size+' ไฟล์ ('+mb(s.bytes)+') · '+s.meta.keys.length+' ค่าตั้งค่า — กดเพื่อดู/Push':'Cart ว่าง';b.disabled=false;b.dataset.n=s.n;b.onclick=e=>{e.preventDefault();e.stopImmediatePropagation();cartOpen()};
+  if(!shell){b.hidden=!s.n;b.style.background=s.big?'#b5462e':'#c9893a'}else b.style.background=s.big?'#b5462e':''}},120)}
+try{cartBc&&(cartBc.onmessage=()=>cartUi())}catch(e){}try{stagedBc&&stagedBc.addEventListener('message',()=>cartUi())}catch(e){}
+function cartToast(label){const d=topDoc()||document;cartSummary().then(s=>{const t=d.createElement('div');t.style.cssText='position:fixed;right:16px;bottom:64px;z-index:9001;max-width:360px;padding:10px 14px;border-radius:10px;background:'+(s.big?'#5a1f14':'#1f1a13')+';color:#f6e7c8;border:1px solid #c9893a;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 24px #0006';
+ t.textContent='🛒 ใส่ Cart แล้ว: '+String(label).slice(0,70)+' · รวม '+s.n+' รายการ'+(s.big?' — เยอะแล้ว ('+s.all.size+' ไฟล์ · '+mb(s.bytes)+') ควรกด Push':'');(d.body||d.documentElement).append(t);setTimeout(()=>t.remove(),s.big?6000:3500)})}
+async function cartOpen(){const d=topDoc()||document,s=await cartSummary();d.getElementById('ghCart')?.remove();const dlg=d.createElement('dialog');dlg.id='ghCart';
+ dlg.style.cssText='width:min(620px,95vw);max-height:86vh;overflow:auto;border:1px solid #c9893a;border-radius:14px;padding:16px 18px;background:#f7f5ee;color:#292b25;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 22px 80px #0009';
+ const e=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]),src=p=>s.files.some(([q])=>q===p)?'editor':'Studio',t=at=>new Date(at).toLocaleString('th-TH',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});
+ const rows=[...s.all].map(([p,b])=>`<tr><td style="overflow-wrap:anywhere">${e(p)}</td><td>${b?mb(b.size||0):'ลบ'}</td><td>${src(p)}</td><td><button data-dp="${e(p)}" title="เอาออกจาก Cart (ไม่ push ไฟล์นี้)">✕</button></td></tr>`).join('');
+ dlg.innerHTML=`<style>#ghCart,#ghCart *{color:#292b25!important;font-family:AgThai,system-ui,"Noto Sans Thai",sans-serif}#ghCart summary{cursor:pointer;margin:6px 0}#ghCart summary:focus{outline:none}#ghCart button{background:#e9eddf!important;border:1px solid #b9b39c!important;border-radius:8px!important;padding:5px 11px!important;cursor:pointer;font-size:13px!important}#ghCart #ghCartPush{background:#c9893a!important;border-color:#a06c27!important;color:#fff!important;font-weight:700}#ghCart #ghCartPush *{color:#fff!important}#ghCart button[disabled]{opacity:.5;cursor:default}#ghCart td{padding:3px 4px;border-bottom:1px solid #e0dccb}#ghCart small{color:#62685b!important}</style><h2 style="margin:0 0 4px">🛒 Cart · ${s.n} รายการรอ Push</h2><p style="margin:0 0 10px;color:#62685b">${s.all.size} ไฟล์ · ${mb(s.bytes)} · ${s.meta.keys.length} ค่าตั้งค่า — งานทั้งหมดเห็นผลในเครื่องนี้แล้ว · กด Push ครั้งเดียวส่งขึ้นเกมเป็น commit เดียว</p>
+ ${s.big?`<p style="background:#f6dfd6;border:1px solid #c98a6f;border-radius:8px;padding:8px;margin:0 0 10px"><b>เยอะแล้ว</b> — ควร Push ตอนนี้ (ไฟล์ยิ่งเยอะ deploy ยิ่งช้า/เสี่ยงค้าง)</p>`:''}
+ ${s.all.size?`<details open><summary><b>ไฟล์ (${s.all.size})</b></summary><table style="width:100%;border-collapse:collapse;font-size:12px;margin:6px 0">${rows}</table></details>`:''}
+ ${s.meta.keys.length?`<details open><summary><b>การตั้งค่า (${s.meta.keys.length}) → js/game-settings.js</b> <small>(ใช้ค่าปัจจุบันของเครื่องนี้ตอน Push)</small></summary><p>${s.meta.keys.map(k=>`<span style="display:inline-flex;gap:4px;align-items:center;border:1px solid #cfc6aa;border-radius:12px;padding:1px 8px;margin:2px">${e(k)} <button data-dk="${e(k)}" style="padding:0 5px">✕</button></span>`).join('')}</p></details>`:''}
+ ${s.meta.log.length?`<details><summary><b>ใส่ Cart ล่าสุด (${s.meta.log.length})</b></summary><ol style="margin:6px 0;padding-left:18px">${s.meta.log.slice(-20).reverse().map(l=>`<li>${e(l.label)} <small style="color:#62685b">· ${t(l.at)} · ${l.n} ไฟล์${l.keys.length?' · '+l.keys.length+' ค่า':''} · ${e(l.page)}</small></li>`).join('')}</ol></details>`:''}
+ ${s.n?'':'<p>Cart ว่าง</p>'}
+ <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap"><button id="ghCartClear" style="margin-right:auto" ${s.n?'':'disabled'}>🗑 ทิ้งทั้งหมด</button><button id="ghCartClose">ปิด</button><button id="ghCartPush" ${s.n?'':'disabled'} style="background:#c9893a;color:#fff;border:1px solid #a06c27;border-radius:8px;padding:7px 16px;font-weight:700">⬆ Push ทั้งหมด</button></div>`;
+ (d.body||d.documentElement).append(dlg);const $=id=>dlg.querySelector('#'+id);
+ $('ghCartClose').onclick=()=>{dlg.close();dlg.remove()};
+ $('ghCartClear').onclick=async()=>{if(!confirm('ทิ้งงานทั้งหมดใน Cart ('+s.n+' รายการ)? ไฟล์ภาพที่ยังไม่ push จะหาย (ค่าตั้งค่าในเครื่องยังอยู่)'))return;await cartClear();dlg.close();dlg.remove()};
+ $('ghCartPush').onclick=async()=>{dlg.close();dlg.remove();try{const tag=await cartPush();if(tag)cartUi()}catch(err){alert('Push ไม่สำเร็จ: '+err.message+'\nงานยังอยู่ใน Cart ครบ')}};
+ dlg.querySelectorAll('[data-dp]').forEach(b=>b.onclick=async()=>{await cartDrop([b.dataset.dp]);dlg.close();dlg.remove();cartOpen()});
+ dlg.querySelectorAll('[data-dk]').forEach(b=>b.onclick=async()=>{await cartDrop([],[b.dataset.dk]);dlg.close();dlg.remove();cartOpen()});
+ dlg.showModal()}
+const cartApi={on:cartOn,open:cartOpen,push:cartPush,summary:cartSummary,drop:cartDrop,clear:cartClear,refresh:()=>cartUi()};
+if(document.readyState==='loading')addEventListener('DOMContentLoaded',()=>cartUi());else cartUi();
+window.GitHubPush={config,save,enabled,test,commit,readText,applyAssetPatch,manifestFiles,openSettings,settingsButton,pushSettings,parseSettings,settingsFile,cart:cartApi};
 })();

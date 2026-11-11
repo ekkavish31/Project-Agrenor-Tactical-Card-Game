@@ -33,8 +33,9 @@
   })
  }
  async function refresh() {
-  const s = await idbGet('repo-staged'), next = new Map();
-  if (Array.isArray(s)) for (const [p, b] of s) if (b && /^assets\//.test(p)) next.set(p, b);
+  const s0 = await idbGet('repo-staged'), cf = await idbGet('cart-files'), next = new Map();   /* v98.387 · + the 🛒 cart files of the other editors */
+  const s = [...(Array.isArray(s0) ? s0 : []), ...(Array.isArray(cf) ? cf : [])];
+  for (const [p, b] of s) if (b && /^assets\//.test(p)) next.set(p, b);
   const old = new Map(blobs);
   blobs.clear();
   for (const [p, b] of next) blobs.set(p, URL.createObjectURL(b));
@@ -55,5 +56,5 @@
  }
  window.StagedPreview = { refresh, paths: () => [...blobs.keys()] };
  refresh();
- try { new BroadcastChannel('project-a-staged').onmessage = () => refresh() } catch (e) {}
+ try { new BroadcastChannel('project-a-staged').onmessage = () => refresh(); new BroadcastChannel('project-a-cart').onmessage = () => refresh() } catch (e) {}
 })();
