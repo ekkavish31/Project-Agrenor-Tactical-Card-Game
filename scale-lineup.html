@@ -19,7 +19,7 @@ main{display:grid;grid-template-columns:230px 1fr 270px;gap:12px;padding:12px 16
 .chip.ok{color:var(--ok)}.chip.warn{color:var(--warn)}.chip.bad{color:var(--bad)}
 #toolbar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:flex-end;padding:0 0 8px;margin-bottom:8px;border-bottom:1px solid var(--line)}#toolbar .tg{display:flex;flex-direction:column;gap:3px}#toolbar .tg>small{font-size:11px;color:var(--muted)}#toolbar .tr{display:flex;gap:4px;align-items:center;flex-wrap:wrap}#toolbar button{font:inherit;font-size:12.5px;padding:4px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:inherit;cursor:pointer}#toolbar button[aria-pressed=true]{background:#c9a55a;color:#2a1d08;border-color:#a8873b;font-weight:700}#toolbar button.sq{width:28px;padding:4px 0}#toolbar .zv{min-width:44px;text-align:center;font-size:12.5px}#toolbar select,#toolbar input[type=number]{font:inherit;font-size:12.5px;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:7px;padding:3px 4px}#toolbar details{font-size:12.5px}#toolbar summary{cursor:pointer;color:var(--muted)}#toolbar .setrow{display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap}
 #stageWrap{overflow-x:auto}#stage{position:relative;height:430px;min-width:100%}
-#stage .ch{position:absolute;pointer-events:auto;cursor:pointer}#stage .ch.sel{filter:drop-shadow(0 0 3px var(--gold))}
+#stage{cursor:pointer}#stage .ch{position:absolute;pointer-events:none}#stage .nm.sel{border:2px solid #2f9a4a;border-radius:8px;padding:1px 6px;background:#effaf0;z-index:2}.figcap.sel{outline:2px solid #2f9a4a;outline-offset:1px;border-radius:8px;background:#effaf0}#stage .ch.sel{filter:drop-shadow(0 0 3px var(--gold))}
 #stage .ghost{position:absolute;opacity:.28;filter:grayscale(1) brightness(.4);pointer-events:none}
 #stage .tick{position:absolute;left:0;right:0;border-top:1px dashed var(--ruler);font-size:11px;color:var(--muted)}
 #stage .tick span{position:absolute;left:4px;top:-15px}
@@ -236,10 +236,11 @@ function render() {
     if (SHADOW) h += `<div style="position:absolute;left:${cx - w * .22}px;top:${base - 5}px;width:${w * .44}px;height:10px;border-radius:50%;background:rgba(0,0,0,.28)"></div>`;
     if (FOOT) h += `<div style="position:absolute;left:${cx}px;top:${base - 18 * ZOOM}px;height:${18 * ZOOM}px;border-left:1px solid #c0392b"></div>`;
     h += `<img class="ch${isSel(e.id) ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${src}" style="${fl}width:${w}px;height:${hh}px;left:${left}px;top:${top}px;opacity:${e.id === 'hero' ? 1 : ALPHA}">`;
-    h += `<div class="nm" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m${!isW(e) && Math.abs(eff(e) - 1) > .0005 ? ' · ' + Math.round(eff(e) * 100) + '%' : ''}</i></div>`;
+    h += `<div class="nm${isSel(e.id) ? ' sel' : ''}" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m${!isW(e) && Math.abs(eff(e) - 1) > .0005 ? ' · ' + Math.round(eff(e) * 100) + '%' : ''}</i></div>`;
   });
   st.innerHTML = h;
-  st.querySelectorAll('.ch').forEach(i => i.onclick = () => pickSel(i.dataset.c));
+  /* v98.388 · pick by the character's CENTRE line, not by its picture box (the transparent box of the next picture covered the right half → the hit looked shifted left) */
+  st.onclick = ev => { const r = st.getBoundingClientRect(), x = ev.clientX - r.left; let best = -1, bd = 1e9; xs.forEach((cx, i) => { const d = Math.abs(cx - x); if (d < bd) { bd = d; best = i } }); if (best >= 0 && bd <= bw(V[best]) / 2 + 12) pickSel(V[best].id) };
   $('note').textContent = tab !== 'char' ? 'ไม้บรรทัดหมู่บ้าน: 1 m = ความสูงตัวเอกในหมู่บ้าน ÷ 1.70 (≈ 55 px) · ช่องพื้น 1 ช่อง ≈ 0.57 m · ตัวเอกยืนเป็นไม้วัดทางซ้าย + เงาเทาซ้อนหลัง · ชิป พอดี/เล็กไป/ใหญ่ไป เทียบกับช่วงเป้าหมายของแต่ละชนิด (แก้ช่วงได้ใน WORLD)' : 'เทียบกันเอง: ตัวเอก = 1.70 m เป็นไม้วัด · ภาพมาจากเฟรมปัจจุบันของแท็บ Animation (ท่ายืน SW หรือเฟรมที่เลือก) · ทุกฉากใช้สัดส่วนชุดเดียวกัน · การเทียบ % ต่อฉากทำแยกในแต่ละฉากภายหลัง';
   inspect(); controls();
 }
