@@ -56,7 +56,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.385"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.385"></script><script src="js/proportion-datum.js?v=v98.390"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -280,9 +280,15 @@ function alphaOf(c) {
   const cv = document.createElement('canvas'); cv.width = c.img.naturalWidth; cv.height = c.img.naturalHeight; const g = cv.getContext('2d', { willReadFrequently: true });
   if (c.flip) { g.translate(cv.width, 0); g.scale(-1, 1) } g.drawImage(c.img, 0, 0); return c._al = { sig: s, d: g.getImageData(0, 0, cv.width, cv.height).data, w: cv.width, h: cv.height };
 }
+/* v98.390 · the pose · frame · direction a lineup picture shows (for its datum record) */
+const vpOf = c => { const v = c && c.vp; return { pose: v && v.action !== 'pick' ? v.action : VP.action, frame: v ? (v.index | 0) : (VP.index | 0), dir: v ? v.view : VP.view } };
 function ratioOf(e) {
-  const c = e.ctx.battle, sv = MARKS[e.id], marks = sv && sv.sig === sigOf(c) ? { chin: sv.chin, shoulder: sv.shoulder, hip: sv.hip } : null;
-  const r = PT.analyze(alphaOf(c), c.m, marks); r.manual = !!marks; return r;
+  const c = e.ctx.battle, sv = MARKS[e.id]; let marks = sv && sv.sig === sigOf(c) ? { chin: sv.chin, shoulder: sv.shoulder, hip: sv.hip } : null;
+  const PD = window.ProportionDatum, q = vpOf(c), rec = PD && PD.get(e.id, q.pose, q.frame), dm = rec && PD.marksFrom(rec, q.dir, c.m, c.img.naturalHeight);
+  if (dm) marks = dm;   /* datum levels win over the silhouette guess */
+  const r = PT.analyze(alphaOf(c), c.m, marks); r.manual = !!marks;
+  if (rec) { const ms = PD.measure(rec, q.dir, c.img.naturalWidth, c.img.naturalHeight); if (ms.headFrac) { r.head = ms.headFrac; r.heads = ms.heads; r.datum = ms } }   /* head from the FACE (eye → chin), hair does not count */
+  return r;
 }
 const STDOBJ = () => ({ head: STDV.head / 100, tol: STDV.tol / 100 });
 function ratioRows(V) { const R = V.map(e => ({ e, r: ratioOf(e) })), med = PT.median(R.map(x => x.r.head)); R.forEach(x => x.v = PT.verdict(x.r, STDOBJ(), med)); return { R, med } }
@@ -325,7 +331,7 @@ function inspectRatio() {
    <dl><dt>จำนวนหัว</dt><dd><b>${r.heads.toFixed(2)}</b> หัว (หัว ${(r.head * 100).toFixed(1)}% ของตัว)</dd><dt>หัว / ไหล่</dt><dd>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'} (หัวกว้าง ${r.headW}px · ไหล่ ${r.shoulderW}px)</dd><dt>ลำตัว / ขา</dt><dd>${(r.torso * 100).toFixed(0)}% / ${(r.legs * 100).toFixed(0)}%</dd><dt>ผล</dt><dd>${v.notes.length ? v.notes.join('<br>') : 'ตรงมาตรฐาน'}</dd></dl>
    <div class="adj"><span>คาง %</span><input type="number" id="mChin" min="5" max="70" step="0.5" value="${(r.marks.chin * 100).toFixed(1)}"><span style="width:50px">ไหล่ %</span><input type="number" id="mSh" min="5" max="85" step="0.5" value="${(r.marks.shoulder * 100).toFixed(1)}"></div>
    <div class="adj"><span>ขาหนีบ %</span><input type="number" id="mHip" min="30" max="90" step="0.5" value="${(r.marks.hip * 100).toFixed(1)}"></div>
-   <div class="adj"><label style="font-weight:600"><input type="checkbox" id="mDone" ${doneOf(e.id) === 'ok' ? 'checked' : ''}> ✔ ปรับถูกต้องแล้ว</label><small style="color:var(--muted)">${mapText(c.label || '')}${doneOf(e.id) === 'adj' ? ' · ปรับแล้ว รอติ๊ก' : ''}</small></div><div class="adj"><button id="mAuto">ประมาณอัตโนมัติ</button><button id="mPush">⬆ Push เส้นที่ปรับ</button></div><p class="hint" id="mMsg"></p>
+   <div class="adj"><label style="font-weight:600"><input type="checkbox" id="mDone" ${doneOf(e.id) === 'ok' ? 'checked' : ''}> ✔ ปรับถูกต้องแล้ว</label><small style="color:var(--muted)">${mapText(c.label || '')}${doneOf(e.id) === 'adj' ? ' · ปรับแล้ว รอติ๊ก' : ''}</small></div><div class="adj"><button id="mDatum" title="วางจุด datum: ระดับตา คาง ฐานคอ บ่า อก ขาหนีบ เท้า (ร่วมทุกทิศ) + ตา/ไหล่/เข่า/เท้า ซ้าย-ขวา (ต่อทิศ)" style="font-weight:700">📍 Datum${r.datum ? ' ✔' : ''}</button><button id="mAuto">ประมาณอัตโนมัติ</button><button id="mPush">⬆ Push เส้นที่ปรับ</button></div><p class="hint" id="mMsg"></p>
    <details open id="adjBox" style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px"><summary><b>🛠 ปรับขนาดหัว / ลำตัว / ขา</b></summary>
     <p class="hint">ตัดภาพที่เส้น <b style="color:${COL.chin}">คาง</b> และ <b style="color:${COL.hip}">ขาหนีบ</b> เป็น 3 ส่วน ปรับแต่ละส่วนแล้วต่อกลับ (เท้าอยู่ที่เดิม) — ดูผลที่ภาพด้านขวาบนแผงนี้</p>
     <div class="adj"><label><input type="radio" name="adjMode" value="auto" checked> ออโต้ (หัว ≈ <b id="adjT">${STDV.head.toFixed(0)}</b>%)</label><label><input type="radio" name="adjMode" value="man"> แมนวล</label><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงความสูงรวม</label></div>
@@ -346,6 +352,7 @@ function inspectRatio() {
   const num = (id, key) => document.getElementById(id).onchange = ev => { marks[key] = Math.min(.95, Math.max(.04, (+ev.target.value || 0) / 100)); commit(true) };
   num('mChin', 'chin'); num('mSh', 'shoulder'); num('mHip', 'hip');
   document.getElementById('mDone').onchange = ev => { const k = doneKey(e.id); if (ev.target.checked) DONE[k] = 'ok'; else delete DONE[k]; saveDone(); renderRatio(visible()); inspectRatio() };
+  document.getElementById('mDatum').onclick = () => openDatum(e);
   document.getElementById('mAuto').onclick = () => { delete MARKS[e.id]; PT.store.save(MARKS); renderRatio(visible()); inspectRatio() };
   document.getElementById('mPush').onclick = async () => { const m = document.getElementById('mMsg'), G = window.GitHubPush; if (!G || !G.enabled()) { m.textContent = 'ยังไม่ได้ใส่ token ของ GitHub ในเบราว์เซอร์นี้ (เปิดตั้งค่าจาก Asset Studio ก่อน)'; return } m.textContent = 'กำลัง push…'; try { const sha = await G.pushSettings([PT.store.KEY], 'สัดส่วนตัวละคร (เส้นคาง/ไหล่/ขาหนีบ)'); m.textContent = sha ? 'push แล้ว · ' + sha : 'ไม่มีอะไรต้อง push' } catch (er) { m.textContent = 'push ไม่สำเร็จ: ' + er.message } };
   /* ---- v98.380 · 🛠 ปรับสัดส่วน: head / torso / legs scaled on their own ---- */
@@ -403,6 +410,83 @@ function inspectRatio() {
       $a('adjMsg').textContent = 'ส่งให้ Asset Studio แล้ว ' + n + ' ภาพ — ตรวจผลแล้วติ๊ก "✔ ปรับถูกต้องแล้ว"' };
     paintAdj = redraw; redraw();
   }
+}
+
+/* ================= 📍 Datum editor (js/proportion-datum.js) ================= */
+async function openDatum(e) {
+  const PD = window.ProportionDatum; if (!PD) return; document.getElementById('dtm')?.remove();
+  const c0 = e.ctx.battle, q0 = vpOf(c0), DIRS = ['SW', 'NW', 'NE', 'SE'];
+  let dir = q0.dir, pose = q0.pose, frame = q0.frame, img = null, rec = PD.get(e.id, pose, frame) || { levels: {}, lv: {}, pts: {} }, selK = null, own = false, flip = false;
+  const dl = document.createElement('dialog'); dl.id = 'dtm';
+  dl.style.cssText = 'width:min(980px,97vw);max-height:94vh;overflow:auto;border:1px solid var(--gold);border-radius:14px;padding:12px 14px;background:var(--panel);color:var(--ink)';
+  const W = 420, H = 470;
+  dl.innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b style="font-size:16px">📍 Datum · ${e.name}</b><span id="dtWhat" class="chip"></span><span style="flex:1"></span>
+    ทิศ ${DIRS.map(d => `<button data-dd="${d}">${d}</button>`).join('')}<button id="dtClose">ปิด</button></div>
+   <div style="display:grid;grid-template-columns:${W}px 1fr;gap:12px;margin-top:8px">
+    <div><canvas id="dtCv" width="${W}" height="${H}" style="width:${W}px;height:${H}px;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px;touch-action:none;cursor:crosshair"></canvas>
+     <p class="hint">เลือก datum ทางขวา แล้วคลิกบนภาพเพื่อวาง (ไปตัวถัดไปเอง) · ลากเส้น/จุดที่วางแล้วเพื่อแก้ · ระดับ (เส้นนอน) ใช้ร่วมทุกทิศของท่านี้ · จุดซ้าย-ขวาเป็นของทิศนี้ (ทิศตรงข้ามกลับด้านให้จนกว่าจะวางเอง)</p></div>
+    <div><label style="display:flex;gap:6px;align-items:center;font-size:12px"><input type="checkbox" id="dtOwn"> ทิศนี้วาดสูง/ต่ำต่างจากร่วม → ลากเส้นแล้วบันทึกเป็น "ส่วนต่าง" ของทิศนี้</label>
+     <div id="dtList" style="display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;margin:8px 0"></div>
+     <div id="dtNum" class="hint" style="font-size:12px"></div>
+     <div class="adj" style="margin-top:8px"><button id="dtPrev" title="คัดลอกทั้งหมดจากเฟรมก่อนหน้าของท่านี้">⟵ คัดลอกเฟรมก่อน</button><button id="dtIdle" title="คัดลอกระดับจากท่ายืนเฟรมแรก">⟵ คัดลอกจากท่ายืน</button><button id="dtClearDir">ล้างจุดทิศนี้</button><button id="dtClearAll">ล้างทั้งท่า·เฟรมนี้</button></div>
+     <div class="adj"><button id="dtPush" style="font-weight:700">⬆ ใส่ Cart (Push)</button><button id="dtExport">⬇ ส่งออก JSON</button><button id="dtImport">⬆ นำเข้า JSON</button><input type="file" id="dtFile" accept="application/json" hidden></div>
+     <p class="hint" id="dtMsg">บันทึกในเบราว์เซอร์ทุกครั้งที่แก้ · ใส่ Cart แล้วกด Push = ทุกเครื่องโหลดได้</p></div></div>`;
+  document.body.append(dl); const $d = id => dl.querySelector('#' + id), cv = $d('dtCv'), g = cv.getContext('2d');
+  const save = () => { PD.put(e.id, pose, frame, rec); renderRatio(visible()) };
+  const geo = () => { const s = Math.min(W / img.naturalWidth, H / img.naturalHeight); return { s, ox: (W - img.naturalWidth * s) / 2, oy: (H - img.naturalHeight * s) / 2, w: img.naturalWidth, h: img.naturalHeight } };
+  const toPx = (fx, fy) => { const G = geo(); return [G.ox + fx * G.w * G.s, G.oy + fy * G.h * G.s] }, toF = (x, y) => { const G = geo(); return [(x - G.ox) / (G.w * G.s), (y - G.oy) / (G.h * G.s)] };
+  const lvls = () => PD.levelsFor(rec, dir), ptsNow = () => PD.pointsFor(rec, dir);
+  const nextUnset = () => { const L = lvls(), P = rec.pts?.[dir] || {}; return PD.LEVELS.find(([k]) => L[k] == null)?.[0] || PD.POINTS.find(([k]) => !P[k])?.[0] || null };
+  async function loadPic() {
+    let pic = null; try { const cl = (c0.vp?.clips || []).find(x => x.action === pose && x.view === dir); pic = ST ? await ST.lineup.picture(c0.vp?.sid || ('ally:' + e.id), dir, pose === 'idle' && !cl ? null : cl?.id, cl ? Math.min(frame, cl.n - 1) : 0) : null } catch (er) { }
+    if (!pic && dir === q0.dir) pic = { url: c0.url || c0.src, flip: c0.flip, label: c0.label };
+    img = pic ? await load(pic.url || pic.src) : null; flip = !!pic?.flip; $d('dtWhat').textContent = (pic?.label || 'ไม่พบภาพทิศนี้') + ' · เฟรม ' + (frame + 1);
+    dl.querySelectorAll('[data-dd]').forEach(b => b.setAttribute('aria-pressed', b.dataset.dd === dir)); selK = nextUnset(); draw() }
+  function draw() {
+    g.clearRect(0, 0, W, H); if (!img) { g.fillStyle = '#7a6e55'; g.font = '14px sans-serif'; g.fillText('ไม่มีภาพของทิศนี้', 20, 30); list(); return }
+    const G = geo(); g.save(); if (flip) { g.translate(W, 0); g.scale(-1, 1) } g.drawImage(img, flip ? W - G.ox - G.w * G.s : G.ox, G.oy, G.w * G.s, G.h * G.s); g.restore();
+    const L = lvls(), base = rec.levels || {};
+    for (const [k, n, col] of PD.LEVELS) { if (L[k] == null) continue; const y = toPx(0, L[k])[1], diff = rec.lv?.[dir]?.[k] != null;
+      if (diff && base[k] != null) { g.setLineDash([3, 3]); g.strokeStyle = '#999'; g.beginPath(); const y0 = toPx(0, base[k])[1]; g.moveTo(0, y0); g.lineTo(W, y0); g.stroke() }
+      g.setLineDash(selK === k ? [] : [7, 4]); g.lineWidth = selK === k ? 2.5 : 1.6; g.strokeStyle = col; g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); g.setLineDash([]);
+      g.fillStyle = col; g.font = '11px AgThai,sans-serif'; g.fillText(n + (diff ? ' (ต่างจากร่วม)' : ''), 4, y - 3) }
+    const { pts, mirrored } = ptsNow();
+    for (const [k, n, col] of PD.POINTS) { const p = pts[k]; if (!p) continue; const [x, y] = toPx(p[0], p[1]); g.globalAlpha = mirrored ? .55 : 1; g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, selK === k ? 7 : 5, 0, 7); g.fill(); g.stroke(); g.globalAlpha = 1; g.font = '10px AgThai,sans-serif'; g.fillStyle = '#222'; g.fillText(n.replace('หมุน', ''), x + 7, y - 6) }
+    if (mirrored) { g.fillStyle = '#7a6e55'; g.font = '11px AgThai,sans-serif'; g.fillText('จุดจางกลับด้านมาจาก ' + PD.OPP[dir] + ' — ลากหรือวางเพื่อใช้ของทิศนี้', 6, H - 8) }
+    list(); nums() }
+  function list() { const L = lvls(), P = rec.pts?.[dir] || {}, mir = ptsNow();
+    $d('dtList').innerHTML = [...PD.LEVELS.map(([k, n, col]) => [k, n, col, L[k] != null]), ...PD.POINTS.map(([k, n, col]) => [k, n, col, !!P[k], !P[k] && !!mir.pts[k]])].map(([k, n, col, ok, m]) => `<button data-dk="${k}" style="text-align:left;padding:3px 7px;${selK === k ? 'outline:2px solid ' + col + ';' : ''}"><span style="color:${col}">●</span> ${n} ${ok ? '✔' : m ? '<small>(กลับด้าน)</small>' : '<small>—</small>'}</button>`).join('');
+    $d('dtList').querySelectorAll('[data-dk]').forEach(b => b.onclick = () => { selK = b.dataset.dk; draw() }) }
+  function nums() { if (!img) return; const ms = PD.measure(rec, dir, img.naturalWidth, img.naturalHeight), f = v => v == null ? '—' : Math.round(v) + ' px';
+    const ref = PD.get(e.id, 'idle', 0), mr = ref && (pose !== 'idle' || frame) ? PD.measure(ref, dir, img.naturalWidth, img.naturalHeight) : null, dv = (a, b) => a && b ? ` <b style="color:${Math.abs(a / b - 1) > .05 ? 'var(--bad)' : 'var(--ok)'}">${a / b >= 1 ? '+' : ''}${((a / b - 1) * 100).toFixed(1)}%</b>` : '';
+    const devs = DIRS.filter(d => rec.lv?.[d] && Object.keys(rec.lv[d]).length).map(d => d + ': ' + Object.entries(rec.lv[d]).map(([k, v]) => (PD.LEVELS.find(x => x[0] === k)?.[1] || k) + ' ' + (((v - (rec.levels?.[k] ?? v)) * 100).toFixed(1)) + '%').join(', '));
+    $d('dtNum').innerHTML = `<b>ทิศ ${dir}</b> · หน้า (ตา→คาง) ${f(ms.face)}${dv(ms.face, mr?.face)} · หัว ${ms.heads ? ms.heads.toFixed(2) + ' หัว (' + (ms.headFrac * 100).toFixed(1) + '%)' : '—'}<br>ลำตัว ${f(ms.torso)} · ขา ${f(ms.legs)}${dv(ms.legs, mr?.legs)} · ไหล่กว้าง ${f(ms.shoulderW)}${dv(ms.shoulderW, mr?.shoulderW)} · ตาห่าง ${f(ms.eyeDist)}<br>ต้นขา ${f(ms.thighL)} / ${f(ms.thighR)} · หน้าแข้ง ${f(ms.shinL)} / ${f(ms.shinR)}${mr ? '<br><small>% = เทียบท่ายืนเฟรมแรกทิศเดียวกัน (เกิน ±5% = แดง)</small>' : ''}${devs.length ? '<br><b>ทิศที่วาดต่างจากระดับร่วม:</b> ' + devs.join(' · ') : ''}` }
+  const setLevel = (k, fy) => { if (own && dir) { (rec.lv[dir] ||= {})[k] = fy } else { rec.levels[k] = fy; if (rec.lv?.[dir]) delete rec.lv[dir][k] } };
+  let drag = null;
+  const posOf = ev => { const b = cv.getBoundingClientRect(); return [(ev.clientX - b.left) * W / b.width, (ev.clientY - b.top) * H / b.height] };
+  cv.onpointerdown = ev => { if (!img) return; const [x, y] = posOf(ev), { pts } = ptsNow(); let best = null, bd = 11;
+    for (const [k] of PD.POINTS) { const p = pts[k]; if (!p) continue; const [px, py] = toPx(p[0], p[1]), d = Math.hypot(px - x, py - y); if (d < bd) { bd = d; best = ['p', k] } }
+    if (!best && (!selK || PD.LEVELS.some(l => l[0] === selK))) { const L = lvls(); for (const [k] of PD.LEVELS) {   /* a line is grabbed only while a LEVEL is selected (a point is placed even right on the eye line) */ if (L[k] == null) continue; const d = Math.abs(toPx(0, L[k])[1] - y); if (d < 6 && d < bd) { bd = d; best = ['l', k] } } }
+    if (best) { drag = best; selK = best[1]; cv.setPointerCapture(ev.pointerId); return }
+    if (!selK) return; const [fx, fy] = toF(x, y);   /* place the selected datum */
+    if (PD.LEVELS.some(l => l[0] === selK)) setLevel(selK, fy); else { (rec.pts[dir] ||= {})[selK] = [fx, fy] }
+    selK = nextUnset() || selK; save(); draw() };
+  cv.onpointermove = ev => { if (!drag) return; const [x, y] = posOf(ev), [fx, fy] = toF(x, y);
+    if (drag[0] === 'l') setLevel(drag[1], fy); else { if (!rec.pts[dir] || !Object.keys(rec.pts[dir]).length) rec.pts[dir] = { ...ptsNow().pts }; rec.pts[dir][drag[1]] = [fx, fy] } draw() };
+  cv.onpointerup = () => { if (drag) { drag = null; save(); draw() } };
+  $d('dtOwn').onchange = ev => { own = ev.target.checked };
+  dl.querySelectorAll('[data-dd]').forEach(b => b.onclick = () => { dir = b.dataset.dd; own = false; $d('dtOwn').checked = false; loadPic() });
+  $d('dtClose').onclick = () => { dl.close(); dl.remove(); renderRatio(visible()); inspectRatio() };
+  $d('dtPrev').onclick = () => { const p = frame > 0 && PD.get(e.id, pose, frame - 1); if (!p) { $d('dtMsg').textContent = 'ไม่มีเฟรมก่อนหน้าที่วางไว้'; return } rec = JSON.parse(JSON.stringify(p)); save(); draw() };
+  $d('dtIdle').onclick = () => { const p = PD.get(e.id, 'idle', 0); if (!p) { $d('dtMsg').textContent = 'ยังไม่ได้วางท่ายืน'; return } rec.levels = { ...p.levels }; save(); draw() };
+  $d('dtClearDir').onclick = () => { if (rec.pts) delete rec.pts[dir]; if (rec.lv) delete rec.lv[dir]; save(); selK = nextUnset(); draw() };
+  $d('dtClearAll').onclick = () => { if (!confirm('ล้าง datum ทั้งหมดของ ' + e.name + ' ท่านี้ เฟรมนี้ ทุกทิศ?')) return; rec = { levels: {}, lv: {}, pts: {} }; PD.remove(e.id, pose, frame); renderRatio(visible()); selK = nextUnset(); draw() };
+  $d('dtPush').onclick = async () => { const G = window.GitHubPush; if (!G) return; if (!G.config().token) return G.openSettings(); try { const t = await G.pushSettings([PD.KEY], 'Datum สัดส่วนตัวละคร'); $d('dtMsg').textContent = String(t || 'ใส่แล้ว') } catch (err) { $d('dtMsg').textContent = 'ไม่สำเร็จ: ' + err.message } };
+  $d('dtExport').onclick = () => { const a = document.createElement('a'); a.download = 'proportion-datum.json'; a.href = URL.createObjectURL(new Blob([JSON.stringify(PD.all(), null, 1)], { type: 'application/json' })); a.click() };
+  $d('dtImport').onclick = () => $d('dtFile').click();
+  $d('dtFile').onchange = async ev => { try { const j = JSON.parse(await ev.target.files[0].text()); if (!j || typeof j !== 'object') throw Error('ไฟล์ไม่ใช่ datum'); if (!confirm('รวม datum จากไฟล์เข้ากับของเครื่องนี้? (ตัว·ท่า·เฟรมเดียวกัน = ใช้ของไฟล์)')) return; const d = PD.all(); for (const [id, ps] of Object.entries(j)) for (const [po, fr] of Object.entries(ps || {})) for (const [i, r] of Object.entries(fr || {})) ((d[id] ||= {})[po] ||= {})[i] = r; PD.saveAll(d); rec = PD.get(e.id, pose, frame) || rec; renderRatio(visible()); draw(); $d('dtMsg').textContent = 'นำเข้าแล้ว' } catch (err) { $d('dtMsg').textContent = 'นำเข้าไม่ได้: ' + err.message } };
+  rec.levels ||= {}; rec.lv ||= {}; rec.pts ||= {};
+  dl.showModal(); await loadPic();
 }
 /* ================= 🗺 ขนาดต่อแผนที่ · ONE multiplier per map (js/map-scale.js) ================= */
 const BIOMES = { forest: 'ป่า', grass: 'ทุ่งหญ้า', hills: 'เนินเขา', swamp: 'บึง', snow: 'ทุ่งหิมะ', sand: 'หาดทราย' };
