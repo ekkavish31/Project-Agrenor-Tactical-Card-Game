@@ -106,7 +106,7 @@ nav button img.bust{width:43px;height:43px;object-fit:cover;border-radius:8px;ba
 body.anim-mode #lineupDock{display:block}
 #lineupDock .dock-bar{display:flex;gap:8px;align-items:center;padding:6px 10px;background:#edf0e6;border-bottom:1px solid var(--studio-line)}
 #lineupDock .dock-bar small{color:#6b7963;font-size:11px}#lineupDock .grow{flex:1}
-#lineupDock .dock-body{height:610px;min-height:220px;max-height:88vh;resize:vertical;overflow:hidden}
+#lineupDock .dock-body{height:430px;min-height:220px;max-height:88vh;resize:vertical;overflow:hidden}
 #lineupDock.min .dock-body{display:none}#lineupDock.min .dock-bar{border-bottom:0}
 #lineupDockFrame{width:100%;height:100%;border:0;display:block}
 .entity-controls{gap:10px}

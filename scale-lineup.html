@@ -40,8 +40,8 @@ code{font-size:12px}
 .lgd i{display:inline-block;width:18px;border-top:2px solid;vertical-align:middle;margin:0 3px 0 8px}
 /* v98.383 · docked in the Animation tab: compact header, no left list, the strip and the inspector side by side */
 body.dock{background:#f7f5ee}body.dock header{padding:6px 10px;gap:6px;position:sticky;top:0;z-index:5}body.dock header h1{display:none}
-body.dock main{grid-template-columns:minmax(0,1fr) 300px;max-width:none;padding:8px 10px;gap:10px}body.dock main>section:first-child{display:none}
-body.dock #stage{height:330px}body.dock .card{padding:8px}
+body.dock main{grid-template-columns:minmax(0,1fr) 300px;max-width:none;padding:8px 10px;gap:10px;align-items:start}body.dock main>section:first-child{display:none}
+body.dock #stage{height:330px}body.dock #note{display:none}body.dock aside.card{position:sticky;top:46px;max-height:calc(100vh - 56px);overflow:auto}.info{font-size:11px;color:var(--muted);border-bottom:1px dotted var(--muted);cursor:help;margin-left:6px}body.dock .card{padding:8px}
 @media(max-width:900px){body.dock main{grid-template-columns:1fr}}
 body.world header h1 small{display:none}
 .rtBox{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--panel)}.rtBox summary{cursor:pointer}.rtBox[open] summary{margin-bottom:6px}
@@ -56,7 +56,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.385"></script><script src="js/proportion-datum.js?v=v98.392"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.385"></script><script src="js/proportion-datum.js?v=v98.393"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -313,13 +313,13 @@ function renderRatio(V) {
     for (const n of ['chin', 'shoulder', 'hip']) h += `<div class="ln" style="top:${r.marks[n] * fh}px;border-color:${COL[n]}"></div>`;
     h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}" data-c="${e.id}">${e.name}<br><span class="chip ${LV[v.level][0]}">${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(0)}%</span>${doneOf(e.id) === 'ok' ? ' <span class="chip ok" title="ติ๊กแล้วว่าปรับถูกต้อง (ท่า·ทิศนี้)">✔</span>' : doneOf(e.id) === 'adj' ? ' <span class="chip warn" title="ปรับแล้ว รอติ๊กยืนยัน">✎</span>' : ''}</div></div>`;
   }
-  h += `</div><details class="rtBox"${(() => { try { return localStorage.getItem('lineup.rtOpen') === '1' ? ' open' : '' } catch (e) { return '' } })()}><summary><b>📋 ตารางเทียบทั้งทีม</b> <small>(${R.length} ตัว · ตรง ${ok} · เฉียด ${warn} · ไม่ตรง ${bad})</small></summary><table class="rt"><tr><th>ตัวละคร</th><th>สูง px</th><th>หัว %</th><th>จำนวนหัว</th><th title="ความกว้างหัว ÷ ความกว้างช่วงไหล่ (รวมแขน)">หัว/ไหล่</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
+  h += `</div><details class="rtBox"${(() => { try { return localStorage.getItem('lineup.rtOpen') === '1' ? ' open' : '' } catch (e) { return '' } })()}><summary><b>📋 ตารางเทียบทั้งทีม</b> <small>(${R.length} ตัว · ตรง ${ok} · เฉียด ${warn} · ไม่ตรง ${bad})</small> <span class="info" title="เส้นแดง/น้ำเงิน/เขียว = คาง/ไหล่/ขาหนีบ ที่ประมาณจากภาพ (ตัวที่มี ~ ยังไม่ได้ยืนยัน) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · เส้นเขียวประ = มาตรฐานของตัวนั้น · เส้นส้มประ = ค่ากลางทีม — ถ้าเป็นกึ่ง SD เท่ากัน เส้นแดงของทุกตัวควรอยู่ใกล้เส้นมาตรฐานสีเขียว · เลือกตัวแล้วลากเส้นที่แผงขวาให้ตรงกับคางจริง">ⓘ วิธีอ่านเส้น</span> <button id="rCopy" type="button" style="padding:2px 9px;font-size:12px">📋 คัดลอกรายงาน</button></summary><table class="rt"><tr><th>ตัวละคร</th><th>สูง px</th><th>หัว %</th><th>จำนวนหัว</th><th title="ความกว้างหัว ÷ ความกว้างช่วงไหล่ (รวมแขน)">หัว/ไหล่</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
   for (const { e, r, v } of R) h += `<tr data-c="${e.id}" class="${e.id === sel ? 'sel' : ''}"><td>${e.name}${r.manual ? '' : ' <small title="ประมาณจากภาพอัตโนมัติ · ลากเส้นในแผงขวาเพื่อปรับ">~</small>'}</td><td>${r.H}</td><td>${(r.head * 100).toFixed(1)}</td><td>${r.heads.toFixed(2)}</td><td>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'}</td><td>${(r.torso * 100).toFixed(0)}</td><td>${(r.legs * 100).toFixed(0)}</td><td><span class="chip ${LV[v.level][0]}" title="${v.notes.join(' · ')}">${LV[v.level][1]}</span></td></tr>`;
-  h += `</table></details><p class="hint">เส้นแดง/น้ำเงิน/เขียว = คาง/ไหล่/ขาหนีบ ที่ประมาณจากภาพ (ตัวที่มี ~ ยังไม่ได้ยืนยัน) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · เส้นเขียวประ = มาตรฐานของตัวนั้น · เส้นส้มประ = ค่ากลางทีม — ถ้าเป็นกึ่ง SD เท่ากัน เส้นแดงของทุกตัวควรอยู่ใกล้เส้นมาตรฐานสีเขียว · เลือกตัวแล้วลากเส้นที่แผงขวาให้ตรงกับคางจริง</p><div class="adj"><button id="rCopy">📋 คัดลอกรายงาน</button></div>`;
+  h += `</table></details>`;
   st.innerHTML = h; { const d = st.querySelector('.rtBox'); if (d) d.ontoggle = () => { try { localStorage.setItem('lineup.rtOpen', d.open ? '1' : '0') } catch (e) { } } }
   st.querySelectorAll('[data-c]').forEach(n => n.onclick = () => pickSel(n.dataset.c));
   $('sHead').onchange = ev => { STDV.head = Math.min(60, Math.max(15, +ev.target.value || 38)); renderRatio(visible()) }; $('sTol').onchange = ev => { STDV.tol = Math.min(15, Math.max(1, +ev.target.value || 4)); renderRatio(visible()) };
-  $('rCopy').onclick = async ev => { const tx = reportText(R, med); try { await navigator.clipboard.writeText(tx); ev.target.textContent = 'คัดลอกแล้ว ✓' } catch (er) { prompt('คัดลอกข้อความนี้', tx) } };
+  $('rCopy').onclick = async ev => { ev.preventDefault(); ev.stopPropagation(); const tx = reportText(R, med); try { await navigator.clipboard.writeText(tx); ev.target.textContent = 'คัดลอกแล้ว ✓' } catch (er) { prompt('คัดลอกข้อความนี้', tx) } };
   $('note').textContent = 'สัดส่วนอ่านจากภาพ SW ของแต่ละตัว (หรือเฟรมที่เลือกในแท็บ Animation) · ความสูงของแต่ละตัวอิงขนาดใน Scale Lineup เหมือนในเกม';
 }
 function inspectRatio() {
@@ -661,6 +661,9 @@ function wireStudio() {   /* inside Asset Studio: follow the Animation tab */
   addEventListener('pagehide', () => { parent.removeEventListener('studio-frames-changed', refresh); parent.removeEventListener('studio-select', onSel) });
 }
 /* v98.392 · the Animation table opens the datum / proportion view of one cell (asset-studio-browser.js dockOpen) */
+/* v98.393 · docked: report the height the content needs (header + the strip column; the inspector scrolls on its own) so the studio sizes the row to fit — no empty band */
+if (DOCK) { const post = () => { try { const c = document.querySelector('main > section:nth-of-type(2)'), hd = document.querySelector('header'); parent.postMessage({ type: 'lineup-dock-h', h: Math.ceil((hd?.offsetHeight || 0) + (c?.scrollHeight || 0) + 22) }, location.origin) } catch (e) { } };
+  let t = 0; const later = () => { clearTimeout(t); t = setTimeout(post, 80) }; try { new ResizeObserver(later).observe(document.querySelector('main > section:nth-of-type(2)')) } catch (e) { } addEventListener('toggle', later, true); addEventListener('load', later) }
 window.dockGoto = async ({ id, action, view, frame = 0, open = 'ratio' }) => { VP.action = action; VP.view = view; VP.index = frame | 0; delete PICK[id]; try { localStorage.setItem('lineup.vp', JSON.stringify(VP)) } catch (e) { } tab = 'ratio'; await buildChars(); sel = id; viewCtl(); render(); const e = ENTRIES.find(x => x.id === id); if (e && open === 'datum') openDatum(e) };
 build().then(() => { ready = true; viewCtl(); render(); wireStudio(); window.__lineupReady = true });
 </script></body></html>
