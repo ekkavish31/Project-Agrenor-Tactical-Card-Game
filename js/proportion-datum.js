@@ -8,7 +8,8 @@
 (function (root) {
   'use strict';
   const KEY = 'proportion-datum-v1';
-  const POINTS = [['eyeL', 'ตาซ้าย', '#d63384'], ['eyeR', 'ตาขวา', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'หมุนไหล่ซ้าย', '#1f6fd0'], ['shR', 'หมุนไหล่ขวา', '#1f6fd0'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่าซ้าย', '#2a9a3a'], ['kneeR', 'เข่าขวา', '#2a9a3a'], ['footL', 'เท้าซ้าย', '#444'], ['footR', 'เท้าขวา', '#444']];
+  /* v98.392 · L / R = the LEFT / RIGHT SIDE OF THE PICTURE (as you look at it), not the character's own left hand: the same in every direction */
+  const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footL', 'เท้า ซ้ายภาพ', '#444'], ['footR', 'เท้า ขวาภาพ', '#444']];
   const CENTRE = ['chin', 'chest', 'crotch'], DIRS = ['SW', 'NW', 'NE', 'SE'];
   const OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, SWAP = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', kneeL: 'kneeR', kneeR: 'kneeL', footL: 'footR', footR: 'footL' };
   const ls = root.localStorage;
@@ -44,6 +45,9 @@
   function marksFrom(rec, dir, m, h) { const { pts: P } = pointsFor(rec, dir); if (!P.chin || !P.crotch) return null; const f = y => (y * h - m.top) / m.H, sh = mid(P.shL, P.shR); return { chin: f(P.chin[1]), shoulder: f(sh ? sh[1] : P.chin[1] + (P.crotch[1] - P.chin[1]) * .2), hip: f(P.crotch[1]) } }
   /* how far each direction's own centre points sit from the first direction that has them (fraction of the picture height) */
   function heightGaps(rec) { const out = []; for (const k of CENTRE) { const has = DIRS.filter(d => rec?.pts?.[d]?.[k]); if (has.length < 2) continue; const y0 = rec.pts[has[0]][k][1]; for (const d of has.slice(1)) { const dy = rec.pts[d][k][1] - y0; if (Math.abs(dy) > .004) out.push({ dir: d, key: k, ref: has[0], dy }) } } return out }
-  const api = { KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
+  /* one line of status for a character · pose · direction (frame 0): how many own points, face size vs the standing pose, for the Animation table badges */
+  function status(id, pose, dir, w = 384, h = 384) { const rec = get(id, pose, 0); if (!rec) return null; const own = Object.keys(rec.pts?.[dir] || {}).length, sug = Object.keys(pointsFor(rec, dir).pts).length;
+    const m = measure(rec, dir, w, h), ref = pose === 'idle' ? null : get(id, 'idle', 0), mr = ref && measure(ref, dir, w, h); return { own, sug, total: POINTS.length, face: m.face || null, faceDev: m.face && mr?.face ? m.face / mr.face - 1 : null, legDev: m.legs && mr?.legs ? m.legs / mr.legs - 1 : null, heads: m.heads || null } }
+  const api = { status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

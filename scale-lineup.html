@@ -56,7 +56,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.385"></script><script src="js/proportion-datum.js?v=v98.391"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=98.122"></script><script src="js/proportion-adjust.js?v=v98.385"></script><script src="js/proportion-datum.js?v=v98.392"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -451,7 +451,7 @@ async function openDatum(e) {
     const ln = (a, b, col) => { const A = P(a), B = P(b); if (!A || !B) return; g.strokeStyle = col; g.lineWidth = 1.4; g.setLineDash(own.has(a) && own.has(b) ? [] : [4, 3]); g.beginPath(); g.moveTo(A[0], A[1]); g.lineTo(B[0], B[1]); g.stroke(); g.setLineDash([]) };
     ln('eyeL', 'eyeR', '#d63384'); { const A = P('eyeL'), B = P('eyeR'), C = P('chin'); if (A && B && C) { g.strokeStyle = '#d62d2d'; g.setLineDash([4, 3]); g.beginPath(); g.moveTo((A[0] + B[0]) / 2, (A[1] + B[1]) / 2); g.lineTo(C[0], C[1]); g.stroke(); g.setLineDash([]) } }
     ln('shL', 'shR', '#1f6fd0'); ln('chest', 'crotch', '#6f42c1'); ln('crotch', 'kneeL', '#2a9a3a'); ln('crotch', 'kneeR', '#2a9a3a'); ln('kneeL', 'footL', '#2a9a3a'); ln('kneeR', 'footR', '#2a9a3a');
-    for (const [k, n, col] of PD.POINTS) { const p = P(k); if (!p) continue; const o = own.has(k); g.globalAlpha = o ? 1 : .45; g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.arc(p[0], p[1], selK === k ? 7 : 5, 0, 7); g.fill(); g.stroke(); g.globalAlpha = 1; if (selK === k) { g.strokeStyle = col; g.lineWidth = 1.5; g.beginPath(); g.arc(p[0], p[1], 11, 0, 7); g.stroke() } g.font = '10px AgThai,sans-serif'; g.fillStyle = '#222'; g.fillText(n.replace('หมุน', ''), p[0] + 8, p[1] - 6) }
+    for (const [k, n, col] of PD.POINTS) { const p = P(k); if (!p) continue; const o = own.has(k); g.globalAlpha = o ? 1 : .45; g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.arc(p[0], p[1], selK === k ? 7 : 5, 0, 7); g.fill(); g.stroke(); g.globalAlpha = 1; if (selK === k) { g.strokeStyle = col; g.lineWidth = 1.5; g.beginPath(); g.arc(p[0], p[1], 11, 0, 7); g.stroke() } g.font = '10px AgThai,sans-serif'; g.fillStyle = '#222'; g.fillText(n, p[0] + 8, p[1] - 6) }
     list(); nums() }
   function list() { const { own, from } = cur();
     $d('dtList').innerHTML = PD.POINTS.map(([k, n, col]) => `<button data-dk="${k}" style="text-align:left;padding:3px 7px;${selK === k ? 'outline:2px solid ' + col + ';' : ''}"><span style="color:${col}">●</span> ${n} ${own.has(k) ? '✔' : from[k] ? `<small>(${from[k] === 'mirror' ? 'กลับด้าน' : 'สูงตามทิศอื่น'})</small>` : '<small>—</small>'}</button>`).join('');
@@ -660,5 +660,7 @@ function wireStudio() {   /* inside Asset Studio: follow the Animation tab */
   parent.addEventListener('studio-frames-changed', refresh); parent.addEventListener('studio-select', onSel);
   addEventListener('pagehide', () => { parent.removeEventListener('studio-frames-changed', refresh); parent.removeEventListener('studio-select', onSel) });
 }
-build().then(() => { ready = true; viewCtl(); render(); wireStudio() });
+/* v98.392 · the Animation table opens the datum / proportion view of one cell (asset-studio-browser.js dockOpen) */
+window.dockGoto = async ({ id, action, view, frame = 0, open = 'ratio' }) => { VP.action = action; VP.view = view; VP.index = frame | 0; delete PICK[id]; try { localStorage.setItem('lineup.vp', JSON.stringify(VP)) } catch (e) { } tab = 'ratio'; await buildChars(); sel = id; viewCtl(); render(); const e = ENTRIES.find(x => x.id === id); if (e && open === 'datum') openDatum(e) };
+build().then(() => { ready = true; viewCtl(); render(); wireStudio(); window.__lineupReady = true });
 </script></body></html>
