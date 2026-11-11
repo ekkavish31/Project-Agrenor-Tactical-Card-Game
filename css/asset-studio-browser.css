@@ -134,4 +134,5 @@ body.anim-mode #lineupDock{display:block}
 /* v98.392 · datum status + shortcuts in the animation cells */
 .pd-row{display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:10px;line-height:1.4}
 .pd-act{border:1px solid #c9c2a4;border-radius:6px;padding:0 5px;background:#fff8e4;cursor:pointer}.pd-act:hover{background:#f3dfa0}
-.pd-ok{color:#2f7d3a}.pd-bad{color:#a8402f}.pd-none{color:#9a9a8a}
+.pd-ok{color:#2f7d3a}.pd-bad{color:#a8402f}
+.pd-warn{color:#b0701a}.pd-none{color:#9a9a8a}

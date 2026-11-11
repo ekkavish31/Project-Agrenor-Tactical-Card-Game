@@ -70,6 +70,34 @@
       return o } catch (e) { return {} } };
   const std = group => { const o = stdAll()[group]; return o && o.spans ? o : null };
   const setStd = (group, o) => { try { const all = stdAll(); if (o) all[group] = o; else delete all[group]; ls.setItem(STD_KEY, JSON.stringify(all)) } catch (e) { } };
-  const api = { STD_KEY, GROUP, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
+  /* v98.403 · DEPTH CHECK (แนวลึก): every pose of a character against that character's OWN standing pose (idle, frame 0, same direction).
+     Measures rigid segments one by one — bending a joint changes the angle between segments, never their length.
+     Step 1: the face (eye midpoint → chin) is the ruler → `scale` = how much bigger/smaller the whole frame was drawn.
+     Step 2: every other segment ÷ that scale, vs the same segment standing → what is left is a real proportion error.
+     A segment can look SHORTER than it is (pointing toward / away from the camera) but never LONGER: longer = wrong (✘ over 10 %),
+     shorter = only a hint to look (⚠ over 10 %). Shoulder width gets double tolerance (a slight body turn narrows it). Nothing is warped. */
+  const DEPTH_SEGS = [['torso', 'ลำตัว'], ['thighL', 'ต้นขา ซ้ายภาพ'], ['thighR', 'ต้นขา ขวาภาพ'], ['shinL', 'แข้ง ซ้ายภาพ'], ['shinR', 'แข้ง ขวาภาพ'], ['shoulderW', 'ไหล่กว้าง']];
+  function segLens(rec, dir, w, h) { const { pts: P } = pointsFor(rec, dir), D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h) : null, eye = mid(P.eyeL, P.eyeR), sh = mid(P.shL, P.shR);
+    return { face: D(eye, P.chin), torso: D(sh || P.chin, P.crotch), thighL: D(P.crotch, P.kneeL), thighR: D(P.crotch, P.kneeR), shinL: D(P.kneeL, P.footL), shinR: D(P.kneeR, P.footR), shoulderW: D(P.shL, P.shR) } }
+  function depth(id, pose, frame, dir, w = 384, h = 384) {
+    if (pose === 'idle' && (frame | 0) === 0) return { ref: true };
+    const rec = get(id, pose, frame | 0), ref = get(id, 'idle', 0); if (!rec) return null; if (!ref) return { noRef: true };
+    const a = segLens(rec, dir, w, h), b = segLens(ref, dir, w, h); if (!a.face || !b.face) return { noFace: true };
+    const scale = a.face / b.face, segs = []; let level = Math.abs(scale - 1) > .10 ? 'bad' : Math.abs(scale - 1) > .05 ? 'warn' : 'ok';
+    for (const [k, name] of DEPTH_SEGS) {
+      if (a[k] == null || b[k] == null) { segs.push({ k, name, dev: null, level: 'na' }); continue }
+      const dev = a[k] / b[k] / scale - 1, tol = k === 'shoulderW' ? 2 : 1; let lv = 'ok';
+      if (dev > .10 * tol) lv = 'bad'; else if (dev > .05 * tol || dev < -.10 * tol) lv = 'warn';
+      segs.push({ k, name, dev, level: lv }); if (lv === 'bad' || (lv === 'warn' && level === 'ok')) level = lv;
+    }
+    return { scale, segs, level };
+  }
+  /* one line for a tooltip / panel: "ขนาดเฟรม +10% ⚠ · ต้นขา ขวาภาพ +14% ✘ · …" (segments within ±5 % are left out unless `all`) */
+  function depthText(dp, all) { if (!dp) return 'ยังไม่มี datum ท่านี้'; if (dp.ref) return 'ท่ายืนเฟรมแรก = ค่าอ้างอิงแนวลึกของตัวนี้'; if (dp.noRef) return 'ยังไม่มี datum ท่ายืน (idle เฟรมแรก) ให้เทียบ'; if (dp.noFace) return 'ต้องมีตา 2 จุด + คาง ทั้งท่านี้และท่ายืน';
+    const ic = { ok: '✔', warn: '⚠', bad: '✘' }, pc = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(0) + '%', sd = dp.scale - 1;
+    const parts = [`ขนาดเฟรม ${pc(sd)}${Math.abs(sd) > .05 ? ' ' + (Math.abs(sd) > .10 ? ic.bad : ic.warn) : ''}`];
+    for (const s of dp.segs) { if (s.dev == null) { if (all) parts.push(s.name + ' —'); continue } if (all || s.level !== 'ok') parts.push(`${s.name} ${pc(s.dev)}${s.level !== 'ok' ? ' ' + ic[s.level] : ''}`) }
+    return parts.join(' · ') }
+  const api = { DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
