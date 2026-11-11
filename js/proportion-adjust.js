@@ -22,6 +22,9 @@
     const g = opt.keepHeight === false ? 1 : H0 / Hn;                    // whole-figure factor that restores the original height
     const H1 = Hn * g, bottom = seg.bottom, top = bottom - H1;
     const out = { g, H0, H1, head: [top, top + nh * g], torso: [top + nh * g, top + (nh + nt) * g], legs: [top + (nh + nt) * g, bottom], k: { head: (scale.head ?? 1) * g, torso: (scale.torso ?? 1) * g, legs: (scale.legs ?? 1) * g } };
+    /* v98.402 · shoulder width (scale.shoulder) widens/narrows the TORSO band sideways only — independent of how much it stretches vertically.
+       Left out (or equal to scale.torso), the torso stays exactly as wide as before: a uniform scale, same as every other part. */
+    out.kx = { head: out.k.head, torso: (scale.shoulder ?? scale.torso ?? 1) * g, legs: out.k.legs };
     out.headFrac = (nh * g) / H1; out.torsoFrac = (nt * g) / H1; out.legsFrac = (nl * g) / H1;
     return out;
   }
@@ -84,24 +87,26 @@
     return [wh, wt, wl];
   }
   /* v98.398 · where a point of the original picture (px, in the warp's own orientation) ends up after warp() — used to move the datum points with the picture */
-  function mapPoint(res, x, y) { const s = res.seg, t = res.T[y < s.head[1] ? 0 : y < s.torso[1] ? 1 : 2]; return [t.bx + (x - t.ax) * t.k, t.by + (y - t.ay) * t.k] }
+  function mapPoint(res, x, y) { const s = res.seg, t = res.T[y < s.head[1] ? 0 : y < s.torso[1] ? 1 : 2]; return [t.bx + (x - t.ax) * t.kx, t.by + (y - t.ay) * t.ky] }
   function warp(img, m, marks, scale, opt = {}) {
     const W = m.w, H = m.h, cv = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c };
     const src = cv(), sg = src.getContext('2d', { willReadFrequently: true }); if (opt.flip) { sg.translate(W, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0); sg.setTransform(1, 0, 0, 1, 0, 0);
     const d = sg.getImageData(0, 0, W, H).data, seg = segments(m, marks), P = plan(seg, scale, opt), K = ['head', 'torso', 'legs'];
-    const T = K.map(k => { const cx = centreX(d, W, seg[k][0], seg[k][1]); return { k: P.k[k], ax: cx, ay: seg[k][1], bx: cx, by: P[k][1] } });
+    /* v98.402 · kx/ky instead of one shared k, so scale.shoulder can widen/narrow the torso sideways without touching how tall it is */
+    const T = K.map(k => { const cx = centreX(d, W, seg[k][0], seg[k][1]); return { kx: P.kx[k], ky: P.k[k], ax: cx, ay: seg[k][1], bx: cx, by: P[k][1] } });
     const [wh, wt, wl] = weightsOf(d, W, H, seg, opt.mode || 'band', Math.max(2, (opt.soft ?? .06) * m.H), Math.max(1, Math.round(opt.grow ?? 10)));
     const WT = [wh, wt, wl];
-    const fwd = (x, y) => { const xi = clamp(Math.round(x), 0, W - 1), yi = clamp(Math.round(y), 0, H - 1), i = yi * W + xi; let fx = 0, fy = 0, kk = 0, ws = 0;
-      for (let j = 0; j < 3; j++) { const w = WT[j][i]; if (!w) continue; const t = T[j]; fx += w * (t.bx + t.k * (x - t.ax)); fy += w * (t.by + t.k * (y - t.ay)); kk += w * t.k; ws += w }
-      return ws ? [fx / ws, fy / ws, kk / ws] : [x, y, 1] };
+    const fwd = (x, y) => { const xi = clamp(Math.round(x), 0, W - 1), yi = clamp(Math.round(y), 0, H - 1), i = yi * W + xi; let fx = 0, fy = 0, kkx = 0, kky = 0, ws = 0;
+      for (let j = 0; j < 3; j++) { const w = WT[j][i]; if (!w) continue; const t = T[j]; fx += w * (t.bx + t.kx * (x - t.ax)); fy += w * (t.by + t.ky * (y - t.ay)); kkx += w * t.kx; kky += w * t.ky; ws += w }
+      return ws ? [fx / ws, fy / ws, kkx / ws, kky / ws] : [x, y, 1, 1] };
     const out = cv(), og = out.getContext('2d'), od = og.createImageData(W, H), o = od.data, KL = new Float32Array(W * H);
     const bL = P.head[1], bT = P.torso[1];
     /* v98.395 · UPSCALE quality: where a part is ENLARGED the picture is sampled bicubic (Catmull-Rom) instead of bilinear, then sharpened by how much it grew */
     const cr = t => { const a = Math.abs(t); return a < 1 ? 1.5 * a * a * a - 2.5 * a * a + 1 : a < 2 ? -.5 * a * a * a + 2.5 * a * a - 4 * a + 2 : 0 };
     for (let Y = 0; Y < H; Y++) for (let X = 0; X < W; X++) {
-      const t = T[Y < bL ? 0 : Y < bT ? 1 : 2]; let x = t.ax + (X - t.bx) / t.k, y = t.ay + (Y - t.by) / t.k, kl = t.k;   // first guess: that part's own inverse
-      for (let it = 0; it < 6; it++) { const [fx, fy, kk] = fwd(x, y); x += (X - fx) / kk; y += (Y - fy) / kk; kl = kk }
+      const t = T[Y < bL ? 0 : Y < bT ? 1 : 2]; let x = t.ax + (X - t.bx) / t.kx, y = t.ay + (Y - t.by) / t.ky, klx = t.kx, kly = t.ky;   // first guess: that part's own inverse
+      for (let it = 0; it < 6; it++) { const [fx, fy, kkx, kky] = fwd(x, y); x += (X - fx) / kkx; y += (Y - fy) / kky; klx = kkx; kly = kky }
+      const kl = Math.max(klx, kly);   // either axis growing is enough reason to upscale carefully and sharpen
       if (x < -1 || y < -1 || x > W || y > H) continue;
       const x0 = Math.floor(x), y0 = Math.floor(y), ax = x - x0, ay = y - y0; let r = 0, g = 0, b = 0, a = 0;
       if (kl > 1.02 && opt.cubic !== false) {   /* bicubic, premultiplied alpha */
