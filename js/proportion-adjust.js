@@ -93,17 +93,25 @@
     const fwd = (x, y) => { const xi = clamp(Math.round(x), 0, W - 1), yi = clamp(Math.round(y), 0, H - 1), i = yi * W + xi; let fx = 0, fy = 0, kk = 0, ws = 0;
       for (let j = 0; j < 3; j++) { const w = WT[j][i]; if (!w) continue; const t = T[j]; fx += w * (t.bx + t.k * (x - t.ax)); fy += w * (t.by + t.k * (y - t.ay)); kk += w * t.k; ws += w }
       return ws ? [fx / ws, fy / ws, kk / ws] : [x, y, 1] };
-    const out = cv(), og = out.getContext('2d'), od = og.createImageData(W, H), o = od.data;
+    const out = cv(), og = out.getContext('2d'), od = og.createImageData(W, H), o = od.data, KL = new Float32Array(W * H);
     const bL = P.head[1], bT = P.torso[1];
+    /* v98.395 · UPSCALE quality: where a part is ENLARGED the picture is sampled bicubic (Catmull-Rom) instead of bilinear, then sharpened by how much it grew */
+    const cr = t => { const a = Math.abs(t); return a < 1 ? 1.5 * a * a * a - 2.5 * a * a + 1 : a < 2 ? -.5 * a * a * a + 2.5 * a * a - 4 * a + 2 : 0 };
     for (let Y = 0; Y < H; Y++) for (let X = 0; X < W; X++) {
-      const t = T[Y < bL ? 0 : Y < bT ? 1 : 2]; let x = t.ax + (X - t.bx) / t.k, y = t.ay + (Y - t.by) / t.k;   // first guess: that part's own inverse
-      for (let it = 0; it < 6; it++) { const [fx, fy, kk] = fwd(x, y); x += (X - fx) / kk; y += (Y - fy) / kk }
+      const t = T[Y < bL ? 0 : Y < bT ? 1 : 2]; let x = t.ax + (X - t.bx) / t.k, y = t.ay + (Y - t.by) / t.k, kl = t.k;   // first guess: that part's own inverse
+      for (let it = 0; it < 6; it++) { const [fx, fy, kk] = fwd(x, y); x += (X - fx) / kk; y += (Y - fy) / kk; kl = kk }
       if (x < -1 || y < -1 || x > W || y > H) continue;
-      /* bilinear, premultiplied alpha */
       const x0 = Math.floor(x), y0 = Math.floor(y), ax = x - x0, ay = y - y0; let r = 0, g = 0, b = 0, a = 0;
-      for (const [dx, dy, w] of [[0, 0, (1 - ax) * (1 - ay)], [1, 0, ax * (1 - ay)], [0, 1, (1 - ax) * ay], [1, 1, ax * ay]]) { const xx = x0 + dx, yy = y0 + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H || !w) continue; const i = (yy * W + xx) * 4, al = d[i + 3] / 255 * w; r += d[i] * al; g += d[i + 1] * al; b += d[i + 2] * al; a += al }
-      if (a <= .003) continue; const i = (Y * W + X) * 4; o[i] = r / a; o[i + 1] = g / a; o[i + 2] = b / a; o[i + 3] = Math.min(255, a * 255);
+      if (kl > 1.02 && opt.cubic !== false) {   /* bicubic, premultiplied alpha */
+        for (let j = -1; j <= 2; j++) { const wy = cr(j - ay), yy = y0 + j; if (!wy || yy < 0 || yy >= H) continue; for (let i2 = -1; i2 <= 2; i2++) { const w = cr(i2 - ax) * wy, xx = x0 + i2; if (!w || xx < 0 || xx >= W) continue; const i = (yy * W + xx) * 4, al = d[i + 3] / 255 * w; r += d[i] * al; g += d[i + 1] * al; b += d[i + 2] * al; a += al } }
+      } else for (const [dx, dy, w] of [[0, 0, (1 - ax) * (1 - ay)], [1, 0, ax * (1 - ay)], [0, 1, (1 - ax) * ay], [1, 1, ax * ay]]) { const xx = x0 + dx, yy = y0 + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H || !w) continue; const i = (yy * W + xx) * 4, al = d[i + 3] / 255 * w; r += d[i] * al; g += d[i + 1] * al; b += d[i + 2] * al; a += al }   /* bilinear */
+      if (a <= .003) continue; const i = (Y * W + X) * 4; o[i] = r / a; o[i + 1] = g / a; o[i + 2] = b / a; o[i + 3] = Math.max(0, Math.min(255, a * 255)); KL[Y * W + X] = kl;
     }
+    /* SHARPEN: unsharp mask (3×3) · amount = opt.sharpen (manual 0…1.5) or 'auto' = (local growth − 1) × 1.6 (max .9) — only where the picture was enlarged */
+    const man = typeof opt.sharpen === 'number' ? Math.max(0, Math.min(1.5, opt.sharpen)) : null;
+    if (man !== 0) { const src2 = new Uint8ClampedArray(o);
+      for (let Y = 1; Y < H - 1; Y++) for (let X = 1; X < W - 1; X++) { const p = Y * W + X, i = p * 4; if (src2[i + 3] < 20) continue; const amt = man != null ? man : Math.min(.9, Math.max(0, (KL[p] - 1) * 1.6)); if (amt < .01) continue;
+        for (let c = 0; c < 3; c++) { let sum = 0, n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const q = ((Y + dy) * W + X + dx) * 4; if (src2[q + 3] < 20) continue; sum += src2[q + c]; n++ } const blur = n ? sum / n : src2[i + c]; o[i + c] = src2[i + c] + amt * (src2[i + c] - blur) } } }
     og.putImageData(od, 0, 0);
     return { canvas: out, plan: P, seg, weights: WT, src };
   }
