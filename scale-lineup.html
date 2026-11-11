@@ -186,7 +186,7 @@ function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class=
 /* choosing a character here also selects it in the studio's Animation tab */
 /* v98.328 · multi-select: tick several characters, then ONE set of −5 −1 +1 +5 buttons resizes them all (each from its own current value) */
 let MULTI = false; const PICKED = new Set(); const isSel = id => MULTI ? PICKED.has(id) : id === sel;
-function pickSel(id) { if (MULTI) { PICKED.has(id) ? PICKED.delete(id) : PICKED.add(id); sel = id; viewCtl(); render(); return } sel = id; if (ST) { const sid = id === 'hero' ? 'hero' : id.startsWith('m:') ? 'enemy:' + id.slice(2) : 'ally:' + id; try { ST.lineup.select(sid) } catch (e) { } } render() }
+function pickSel(id) { if (MULTI) { PICKED.has(id) ? PICKED.delete(id) : PICKED.add(id); sel = id; viewCtl(); render(); return } sel = id; if (ST) { const sid = id === 'hero' ? 'hero' : id.startsWith('m:') ? 'enemy:' + id.slice(2) : ['ally:' + id, 'npc:' + id].find(c => ST.state?.model?.some(e => e.id === c)) || 'ally:' + id;   /* v98.384 · villagers are npc:<id> in the studio */ try { ST.lineup.select(sid) } catch (e) { } } render() }
 function render() {
   if (!ENTRIES.some(e => e.id === 'hero' && e.ctx.battle)) { $('stage').innerHTML = '<p class="hint">ยังไม่พบภาพท่ายืนของตัวเอก (SW) — ตัวเอกคือไม้วัดของหน้านี้ · ตรวจว่าไฟล์ภาพถูก push แล้ว หรือกด รีเฟรช</p>'; $('list').innerHTML = ''; $('insp').innerHTML = ''; return }
   ctx = tab === 'char' || tab === 'ratio' || tab === 'field' ? 'battle' : 'village';
@@ -543,7 +543,7 @@ let ready = false; addEventListener('resize', () => ready && render());
 function wireStudio() {   /* inside Asset Studio: follow the Animation tab */
   if (!ST) return; let timer = 0;
   const refresh = () => { clearTimeout(timer); timer = setTimeout(async () => { if (!ready) return; await buildChars(); render() }, 350) };
-  const toId = id => id === 'hero' ? 'hero' : id.startsWith('ally:') ? id.slice(5) : id.startsWith('enemy:') ? 'm:' + id.slice(6) : id;
+  const toId = id => id === 'hero' ? 'hero' : id.startsWith('ally:') ? id.slice(5) : id.startsWith('npc:') ? id.slice(4) : id.startsWith('enemy:') ? 'm:' + id.slice(6) : id;
   const onSel = ev => { const id = toId(ev.detail && ev.detail.id || ''); if (id !== sel && ENTRIES.some(x => x.id === id)) { sel = id; render() } };
   parent.addEventListener('studio-frames-changed', refresh); parent.addEventListener('studio-select', onSel);
   addEventListener('pagehide', () => { parent.removeEventListener('studio-frames-changed', refresh); parent.removeEventListener('studio-select', onSel) });
