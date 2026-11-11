@@ -18,4 +18,11 @@ PD.put('t', 'guard', 0, { pts: { SW: { ...idle, kneeR: [.54, .74], footR: [.56, 
 { const d = PD.depth('t', 'guard', 0, 'SW'), th = d.segs.find(s => s.k === 'thighR'); assert.ok(th.dev < -.1 && th.level === 'warn', 'a much shorter segment is only a hint (could be foreshortening)') }
 assert.ok(PD.depth('u', 'walk', 0, 'SW') === null, 'no datum for this pose → null');
 PD.put('u', 'walk', 0, { pts: { SW: idle } }); assert.ok(PD.depth('u', 'walk', 0, 'SW').noRef, 'no standing pose to compare with');
+// v98.404 · master pose per character · per front/back group
+PD.put('m', 'walk', 0, { pts: { SW: idle, NW: idle } }); PD.put('m', 'strike', 0, { pts: { SW: { ...idle, kneeR: [.54, .80], footR: [.56, .95] }, NW: idle } });
+assert.ok(PD.depth('m', 'strike', 0, 'SW').noRef, 'default master = idle frame 1 (missing here)');
+PD.setMaster('m', 'front', { pose: 'walk', frame: 0 });
+assert.ok(PD.depth('m', 'walk', 0, 'SW').ref, 'walk is now the front master'); assert.equal(PD.depth('m', 'strike', 0, 'SW').level, 'bad', 'strike compared with walk');
+assert.ok(PD.depth('m', 'strike', 0, 'NW').noRef, 'the back group keeps its own master (still idle)');
+PD.setMaster('m', 'front', null); assert.ok(PD.depth('m', 'strike', 0, 'SW').noRef, 'reset → idle again'); assert.equal(PD.master('m', 'SW').set, false);
 console.log('proportion depth: all passed');

@@ -79,9 +79,18 @@
   const DEPTH_SEGS = [['torso', 'ลำตัว'], ['thighL', 'ต้นขา ซ้ายภาพ'], ['thighR', 'ต้นขา ขวาภาพ'], ['shinL', 'แข้ง ซ้ายภาพ'], ['shinR', 'แข้ง ขวาภาพ'], ['shoulderW', 'ไหล่กว้าง']];
   function segLens(rec, dir, w, h) { const { pts: P } = pointsFor(rec, dir), D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h) : null, eye = mid(P.eyeL, P.eyeR), sh = mid(P.shL, P.shR);
     return { face: D(eye, P.chin), torso: D(sh || P.chin, P.crotch), thighL: D(P.crotch, P.kneeL), thighR: D(P.crotch, P.kneeR), shinL: D(P.kneeL, P.footL), shinR: D(P.kneeR, P.footR), shoulderW: D(P.shL, P.shR) } }
+  /* v98.404 · the MASTER pose of a character, per front/back group: the pose every other pose of that character is compared with.
+     Default = standing (idle) frame 1. It must show every segment at full length (stand straight, nothing pointing at the camera) —
+     a shorter-looking master would make correct poses look "too long".
+     localStorage 'proportion-master-v1' = { [character]: { front: {pose, frame}, back: {pose, frame} } } (pushed with the datum) */
+  const MASTER_KEY = 'proportion-master-v1', MASTER0 = { pose: 'idle', frame: 0 };
+  const masterAll = () => { try { return JSON.parse(ls.getItem(MASTER_KEY) || '{}') || {} } catch (e) { return {} } };
+  function master(id, dir) { const m = masterAll()[id]?.[GROUP[dir] || 'front']; return m && m.pose ? { pose: m.pose, frame: m.frame | 0, set: true } : { ...MASTER0, set: false } }
+  function setMaster(id, group, m) { try { const all = masterAll(), o = all[id] ||= {}; if (m && !(m.pose === 'idle' && !(m.frame | 0))) o[group] = { pose: m.pose, frame: m.frame | 0 }; else delete o[group]; if (!Object.keys(o).length) delete all[id]; ls.setItem(MASTER_KEY, JSON.stringify(all)) } catch (e) { } }
   function depth(id, pose, frame, dir, w = 384, h = 384) {
-    if (pose === 'idle' && (frame | 0) === 0) return { ref: true };
-    const rec = get(id, pose, frame | 0), ref = get(id, 'idle', 0); if (!rec) return null; if (!ref) return { noRef: true };
+    const M = master(id, dir);
+    if (pose === M.pose && (frame | 0) === M.frame) return { ref: true, master: M };
+    const rec = get(id, pose, frame | 0), ref = get(id, M.pose, M.frame); if (!rec) return null; if (!ref) return { noRef: true, master: M };
     const a = segLens(rec, dir, w, h), b = segLens(ref, dir, w, h); if (!a.face || !b.face) return { noFace: true };
     const scale = a.face / b.face, segs = []; let level = Math.abs(scale - 1) > .10 ? 'bad' : Math.abs(scale - 1) > .05 ? 'warn' : 'ok';
     for (const [k, name] of DEPTH_SEGS) {
@@ -90,14 +99,15 @@
       if (dev > .10 * tol) lv = 'bad'; else if (dev > .05 * tol || dev < -.10 * tol) lv = 'warn';
       segs.push({ k, name, dev, level: lv }); if (lv === 'bad' || (lv === 'warn' && level === 'ok')) level = lv;
     }
-    return { scale, segs, level };
+    return { scale, segs, level, master: M };
   }
   /* one line for a tooltip / panel: "ขนาดเฟรม +10% ⚠ · ต้นขา ขวาภาพ +14% ✘ · …" (segments within ±5 % are left out unless `all`) */
-  function depthText(dp, all) { if (!dp) return 'ยังไม่มี datum ท่านี้'; if (dp.ref) return 'ท่ายืนเฟรมแรก = ค่าอ้างอิงแนวลึกของตัวนี้'; if (dp.noRef) return 'ยังไม่มี datum ท่ายืน (idle เฟรมแรก) ให้เทียบ'; if (dp.noFace) return 'ต้องมีตา 2 จุด + คาง ทั้งท่านี้และท่ายืน';
+  const masterName = M => M ? (M.pose === 'idle' ? 'ท่ายืน' : M.pose) + ' เฟรม ' + ((M.frame | 0) + 1) : 'ท่ายืน เฟรม 1';
+  function depthText(dp, all) { if (!dp) return 'ยังไม่มี datum ท่านี้'; if (dp.ref) return 'ท่านี้ = ท่าอ้างอิงแนวลึกของตัวนี้ (' + masterName(dp.master) + ')'; if (dp.noRef) return 'ยังไม่มี datum ท่าอ้างอิง (' + masterName(dp.master) + ') ให้เทียบ'; if (dp.noFace) return 'ต้องมีตา 2 จุด + คาง ทั้งท่านี้และท่ายืน';
     const ic = { ok: '✔', warn: '⚠', bad: '✘' }, pc = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(0) + '%', sd = dp.scale - 1;
     const parts = [`ขนาดเฟรม ${pc(sd)}${Math.abs(sd) > .05 ? ' ' + (Math.abs(sd) > .10 ? ic.bad : ic.warn) : ''}`];
     for (const s of dp.segs) { if (s.dev == null) { if (all) parts.push(s.name + ' —'); continue } if (all || s.level !== 'ok') parts.push(`${s.name} ${pc(s.dev)}${s.level !== 'ok' ? ' ' + ic[s.level] : ''}`) }
     return parts.join(' · ') }
-  const api = { DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
+  const api = { MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
