@@ -98571,13 +98571,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mw4kyto8-bdbh",
+   "artRevision": "20261112-162121",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-windup-mw4kyto8-bdbh-1/20261112-162121.webp",
+     "at": "2026-11-12T09:21:21.413Z",
+     "stamp": "20261112-162121",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-se-windup-mw4kyto8-bdbh-1",
@@ -98598,13 +98607,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mw4kyto8-bdbh",
+   "artRevision": "20261112-162121",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-se-windup-mw4kyto8-bdbh-1/20261112-162121.webp",
+     "at": "2026-11-12T09:21:21.493Z",
+     "stamp": "20261112-162121",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-strike-mw4kyto8-bdbh-1",
@@ -98841,13 +98859,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mw4kzabl-f96k",
+   "artRevision": "20261112-152316",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-windup-mw4kzabl-f96k-1/20261112-152316.webp",
+     "at": "2026-11-12T08:23:16.866Z",
+     "stamp": "20261112-152316",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-windup-mw4kzabl-f96k-1",
@@ -98868,13 +98895,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mw4kzabl-f96k",
+   "artRevision": "20261112-152316",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-nw-windup-mw4kzabl-f96k-1/20261112-152316.webp",
+     "at": "2026-11-12T08:23:16.835Z",
+     "stamp": "20261112-152316",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-strike-mw4kzabl-f96k-1",
