@@ -341,7 +341,7 @@ function renderRatio(V) {
   let h = `<div class="stdctl"><b>⭐ ตัวมาตรฐาน: ${standardText()}</b> · ยอมคลาดเคลื่อน ± <input type="number" id="sTol" min="1" max="15" step="0.5" value="${STDV.tol}"> จุดเปอร์เซ็นต์ <span class="lgd">สัดส่วนชุดเดียว: กะโหลก–คาง / คาง–ขาหนีบ / ขาหนีบ–ข้อเท้า · ไม่รวมผมและมือยก · ยังไม่มี Datum ครบ = รอข้อมูล</span></div>`;
   h += `<div class="figs" style="min-height:${maxFH + 92}px;align-items:flex-end">`;
   for (const { e, r, v } of R) {
-    const c = e.ctx.battle, fh = fhOf(e), k = fh / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, fl = c.flip ? 'transform:scaleX(-1);' : '';
+    const c = e.ctx.battle, bw = c.m.x1 - c.m.x0 + 1, fh0 = fhOf(e), k = Math.min(fh0 / c.m.H, fh0 * 1.1 / bw), fh = c.m.H * k, fw = bw * k, fl = c.flip ? 'transform:scaleX(-1);' : '';   /* v98.416 · a wide, low pose (lying down) is capped so it does not grow past the row */
     /* v98.401 · the chin/shoulder/hip LINES are gone for good (see v98.400) — but a dozen tiny dots over every thumbnail in this overview
        row turned out just as hard to read, so the row stays plain. The 📍 Datum points still show on the big panel below when you pick one. */
     h += `<div data-c="${e.id}"><div class="fig" style="width:${fw}px;height:${fh}px"><img alt="" src="${c.url || c.src}" style="${fl}position:absolute;width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
@@ -393,7 +393,8 @@ function inspectRatio() {
     <div class="adj"><button id="adjPreview" class="primary" title="แสดงผลใน After เท่านั้น ยังไม่เซฟและไม่เข้า Cart">👁 พรีวิว</button><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng">⬇ ส่งออก PNG</button><button id="adjApply" title="ใช้ภาพเดียวกับ After ที่พรีวิวแล้ว บันทึกเข้าช่องภาพและ Cart (เก็บต้นฉบับไว้ในประวัติ)">💾 บันทึกพรีวิวเข้า Cart</button></div><p class="hint" id="adjMsg"></p></details>`
     : `<p class="hint" style="margin-top:8px;padding:8px;border:1px dashed var(--line);border-radius:8px">วาง 📍 Datum ให้ครบก่อน (ตา 2 · คาง · ขาหนีบ · เท้า 2) จึงจะปรับขนาดหัว/ลำตัว/ขาได้ — ระบบตัดภาพตรงจุดที่จิ้มไว้พอดี ไม่ต้องกะด้วยสายตาอีกต่อไป</p>`}
    </div></div>`;
-  const cv = document.getElementById('pcv'), g = cv.getContext('2d'), k = CH / c.m.H, fw = (c.m.x1 - c.m.x0 + 1) * k, ox = (HALF - fw) / 2, oy = 10; let paintAdj = null;
+  /* v98.416 · fit the silhouette inside its box by BOTH height and width — fitting by height alone blew a lying-down pose (short and wide) up to many times the panel */
+  const bw = (c.m.x1 - c.m.x0 + 1), pw1 = hasDatum ? HALF : PW, cv = document.getElementById('pcv'), g = cv.getContext('2d'), k = Math.min(CH / c.m.H, (pw1 - 16) / bw), fw = bw * k, ox = (HALF - fw) / 2, oy = 10; let paintAdj = null;
   const marks = { ...r.marks }, pw0 = hasDatum ? HALF : PW, dx0 = (c.flip ? pw0 - ox - fw : ox) - c.m.x0 * k, dy0 = oy - c.m.top * k;
   /* a datum dot, drawn in whatever transform is already active (so it mirrors with the picture automatically when flipped) */
   const dot = (g2, x, y, col, own) => { g2.globalAlpha = own ? 1 : .5; g2.fillStyle = col; g2.beginPath(); g2.arc(x, y, own ? 4 : 3, 0, 7); g2.fill(); g2.strokeStyle = '#fff'; g2.lineWidth = 1; g2.stroke(); g2.globalAlpha = 1 };
