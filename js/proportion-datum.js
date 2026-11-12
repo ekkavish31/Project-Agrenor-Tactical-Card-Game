@@ -9,7 +9,8 @@
   'use strict';
   const KEY = 'proportion-datum-v1';
   /* v98.392 · L / R = the LEFT / RIGHT SIDE OF THE PICTURE (as you look at it), not the character's own left hand: the same in every direction */
-  const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['elbowL', 'ข้อศอก ซ้ายภาพ', '#c47715'], ['elbowR', 'ข้อศอก ขวาภาพ', '#c47715'], ['wristL', 'ข้อมือ ซ้ายภาพ', '#e79516'], ['wristR', 'ข้อมือ ขวาภาพ', '#e79516'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footL', 'ข้อเท้า ซ้ายภาพ', '#444'], ['footR', 'ข้อเท้า ขวาภาพ', '#444']];   /* the ANKLE joint (not the toe / sole): a joint stays the same point when the foot points, kicks or lies down */
+  /* v98.417 · the order the points are placed in (the editor walks this list): face → left arm → right arm → body → left leg → right leg */
+  const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['elbowL', 'ข้อศอก ซ้ายภาพ', '#c47715'], ['wristL', 'ข้อมือ ซ้ายภาพ', '#e79516'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['elbowR', 'ข้อศอก ขวาภาพ', '#c47715'], ['wristR', 'ข้อมือ ขวาภาพ', '#e79516'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['footL', 'ข้อเท้า ซ้ายภาพ', '#444'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footR', 'ข้อเท้า ขวาภาพ', '#444']];   /* the ANKLE joint (not the toe / sole): a joint stays the same point when the foot points, kicks or lies down */
   const CENTRE = ['chin', 'chest', 'crotch'], DIRS = ['SW', 'NW', 'NE', 'SE'];
   const OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, SWAP = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', elbowL: 'elbowR', elbowR: 'elbowL', wristL: 'wristR', wristR: 'wristL', kneeL: 'kneeR', kneeR: 'kneeL', footL: 'footR', footR: 'footL' };
   /* v98.399 · SW/SE show the FRONT (mirror pair) · NW/NE show the BACK (mirror pair) — the two groups must never lend each other
@@ -95,9 +96,9 @@
      Step 2: every other segment ÷ that scale, vs the same segment standing → what is left is a real proportion error.
      A segment can look SHORTER than it is (pointing toward / away from the camera) but never LONGER: longer = wrong (✘ over 10 %),
      shorter = only a hint to look (⚠ over 10 %). Shoulder width gets double tolerance (a slight body turn narrows it). Nothing is warped. */
-  const DEPTH_SEGS = [['torso', 'ลำตัว'], ['thighL', 'ต้นขา ซ้ายภาพ'], ['thighR', 'ต้นขา ขวาภาพ'], ['shinL', 'แข้ง ซ้ายภาพ'], ['shinR', 'แข้ง ขวาภาพ'], ['shoulderW', 'ไหล่กว้าง']];
+  const DEPTH_SEGS = [['torso', 'ลำตัว'], ['thighL', 'ต้นขา ซ้ายภาพ'], ['thighR', 'ต้นขา ขวาภาพ'], ['shinL', 'แข้ง ซ้ายภาพ'], ['shinR', 'แข้ง ขวาภาพ'], ['upperArmL', 'ต้นแขน ซ้ายภาพ'], ['upperArmR', 'ต้นแขน ขวาภาพ'], ['foreArmL', 'ท่อนแขนล่าง ซ้ายภาพ'], ['foreArmR', 'ท่อนแขนล่าง ขวาภาพ'], ['shoulderW', 'ไหล่กว้าง']];   /* v98.417: arms count when elbow + wrist were placed on both pictures */
   function segLens(rec, dir, w, h) { const { pts: P } = pointsFor(rec, dir), D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h) : null, eye = mid(P.eyeL, P.eyeR), sh = mid(P.shL, P.shR);
-    return { face: D(eye, P.chin), torso: D(sh || P.chin, P.crotch), thighL: D(P.crotch, P.kneeL), thighR: D(P.crotch, P.kneeR), shinL: D(P.kneeL, P.footL), shinR: D(P.kneeR, P.footR), shoulderW: D(P.shL, P.shR) } }
+    return { face: D(eye, P.chin), torso: D(sh || P.chin, P.crotch), thighL: D(P.crotch, P.kneeL), thighR: D(P.crotch, P.kneeR), shinL: D(P.kneeL, P.footL), shinR: D(P.kneeR, P.footR), shoulderW: D(P.shL, P.shR), upperArmL: D(P.shL, P.elbowL), upperArmR: D(P.shR, P.elbowR), foreArmL: D(P.elbowL, P.wristL), foreArmR: D(P.elbowR, P.wristR) } }
   /* v98.404 · the MASTER pose of a character, per front/back group: the pose every other pose of that character is compared with.
      Default = standing (idle) frame 1. It must show every segment at full length (stand straight, nothing pointing at the camera) —
      a shorter-looking master would make correct poses look "too long".

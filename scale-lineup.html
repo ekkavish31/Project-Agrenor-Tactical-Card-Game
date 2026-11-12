@@ -85,7 +85,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.411"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.417"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -146,8 +146,10 @@ const WORLD = {
    ?dock=1  → the CHARACTER row at the top of the Animation tab (size · proportion · real grid · per map) — no list on the left (the studio's own list picks the character)
    ?world=1 → the ⚖ ขนาดโลก tab of the studio (buildings · decor · nature) */
 const QS = new URLSearchParams(location.search), DOCK = QS.get('dock') === '1', WORLD_ONLY = QS.get('world') === '1';
-const TABS_ALL = [['char', '📏 ขนาด'], ['ratio', '📐 สัดส่วน'], ['maps', '🗺 บนแผนที่จริง'],   /* v98.389 · '⚔ สนามรบ · Grid จริง' merged in here: the สนามรบ row of this tab IS the real battle grid */ ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
-const TABS = DOCK ? TABS_ALL.filter(t => ['char', 'ratio', 'maps'].includes(t[0])) : WORLD_ONLY ? TABS_ALL.filter(t => ['building', 'prop', 'nature'].includes(t[0])) : TABS_ALL;
+/* v98.417 · the separate '📏 ขนาด' tab is gone: its stage (real height ruler) is now the second VIEW of '📐 สัดส่วน' and its size-% box shows under both views.
+   Internally tab 'char' is still that ruler view (so the old code keeps working); it is simply not offered as a tab of its own. */
+const TABS_ALL = [['ratio', '📐 สัดส่วน'], ['maps', '🗺 บนแผนที่จริง'],   /* v98.389 · '⚔ สนามรบ · Grid จริง' merged in here: the สนามรบ row of this tab IS the real battle grid */ ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
+const TABS = DOCK ? TABS_ALL.filter(t => ['ratio', 'maps'].includes(t[0])) : WORLD_ONLY ? TABS_ALL.filter(t => ['building', 'prop', 'nature'].includes(t[0])) : TABS_ALL;
 let tab = TABS[0][0];
 if (DOCK) document.body.classList.add('dock'); if (WORLD_ONLY) document.body.classList.add('world');
 const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
@@ -226,7 +228,8 @@ let STEP = .5, ZOOM = 1, ALPHA = 1, SHADOW = false, FOOT = false, GUIDES = false
 const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / ENTRIES.find(x => x.id === 'hero').ctx[c].units * HERO_M * eff(e, c);
 const heroE = () => ENTRIES.find(e => e.id === 'hero');
 /* world tabs: the hero stands first as the yardstick, then the pieces of that tab */
-const visible = () => { const a = tab === 'ratio' ? ENTRIES.filter(e => (e.kind === 'hero' || e.kind === 'ally') && e.ctx[ctx] && passF(e)) : tab === 'char' || tab === 'field' ? ENTRIES.filter(e => !isW(e) && e.ctx[ctx] && passF(e)) : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
+const visible = () => { const base = () => ENTRIES.filter(e => !isW(e) && e.ctx[ctx] && passF(e)), human = () => { const h = base().filter(e => e.kind !== 'monster'); return h.length ? h : base() };   /* v98.417 · the proportion view leaves monsters out (no head : body to judge) unless monsters are all that the filter leaves */
+  const a = tab === 'ratio' ? human() : tab === 'char' || tab === 'field' ? base() : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
 const rangeOf = e => { if (!e.fixed) return ['', 'ไม่มีค่าตรึง']; const m = metres(e); return m < e.ref[0] ? ['warn', 'เล็กไป'] : m > e.ref[1] ? ['warn', 'ใหญ่ไป'] : ['ok', 'พอดี'] };
 function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
 /* choosing a character here also selects it in the studio's Animation tab */
@@ -243,9 +246,9 @@ function render() {
     $('vpAct').onchange = ev => { VP.action = ev.target.value; VP.index = 0; again() }; $('vpIdx').onchange = ev => { VP.index = Math.max(0, (+ev.target.value || 1) - 1); again() };
     $('vpCtl').querySelectorAll('[data-vv]').forEach(b => b.onclick = () => { VP.view = b.dataset.vv; again() });
   } else $('vpCtl').innerHTML = '';
-  $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k}">${t}</button>`).join(' ');
+  $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k || (k === 'ratio' && tab === 'char')}">${t}</button>`).join(' ');
   $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' || tab === 'ratio' || tab === 'field' ? (visible()[0]?.id || 'hero') : (visible()[1]?.id || 'hero'); viewCtl(); render() });
-  $('ctxBtns').style.display = 'none';   /* v98.95 · one set of proportions for every scene; the % per scene is done in each scene later */ $('listTitle').textContent = TABS.find(t => t[0] === tab)[1];
+  $('ctxBtns').style.display = 'none';   /* v98.95 · one set of proportions for every scene; the % per scene is done in each scene later */ $('listTitle').textContent = (TABS.find(t => t[0] === tab) || TABS[0])[1];
   $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
   $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
   const V = visible();
@@ -692,8 +695,9 @@ function viewCtl() {
   /* v98.399 · docked inside Asset Studio: the left panel's own group tab (ตัวละคร/NPC/มอนสเตอร์/บอส) already filters which one thing you're editing —
      a second "แสดงหมวด" row here duplicated the same categories, so it only shows standalone (follows the left panel instead when docked; see wireStudio()) */
   if (!world && !DOCK) h += `<div class="tg"><small>แสดงหมวด (ใช้กับทุกแท็บ)</small><div class="tr">${CATS.map(([k, t, tip]) => `<button data-f="${k}" aria-pressed="${FILTER[k]}" title="${tip}">${t}</button>`).join('')}</div></div>`;
-  if (!world && FILTER.mon && tab !== 'ratio') h += `<div class="tg"><small>มอนสเตอร์ · แยกชนิด</small><div class="tr">${MGROUPS.map(([k, t]) => `<button data-sf="${k}" aria-pressed="${SUBF[k]}">${t}</button>`).join('')}<button data-sf="wired" aria-pressed="${SUBF.wired}" title="ตัวที่สนามรบใช้อยู่แล้ว (ตาราง MON)">✔ ใช้ในเกมแล้ว</button><button data-sf="unwired" aria-pressed="${SUBF.unwired}" title="มีภาพ/อนิเมชันใน asset แล้ว แต่ยังไม่ได้ต่อเข้าสนามรบ — ปรับขนาดเก็บไว้ล่วงหน้าได้">⏳ ยังไม่ต่อเกม</button></div></div>`;
-  if (tab === 'char' || tab === 'field') { const nv = visible().filter(e => PICKED.has(e.id)).length; h += `<div class="tg"><small>ปรับหลายตัวพร้อมกัน</small><div class="tr"><button id="bMulti" aria-pressed="${MULTI}" title="เปิดแล้วคลิกตัวละครเพื่อติ๊กเลือก จากนั้นปุ่ม −5 −1 +1 +5 ที่แผงขวาจะปรับทุกตัวที่เลือก">☑ เลือกหลายตัว</button>${MULTI ? `<button id="bPickAll" title="ติ๊กทุกตัวที่เห็นอยู่ (ตามตัวกรอง)">เลือกทั้งหมดที่เห็น</button><button id="bPickNone">ล้าง</button><span class="zv">เลือกแล้ว ${nv} ตัว</span>` : ''}</div></div>` }
+  if (!world && FILTER.mon) h += `<div class="tg"><small>มอนสเตอร์ · แยกชนิด</small><div class="tr">${MGROUPS.map(([k, t]) => `<button data-sf="${k}" aria-pressed="${SUBF[k]}">${t}</button>`).join('')}<button data-sf="wired" aria-pressed="${SUBF.wired}" title="ตัวที่สนามรบใช้อยู่แล้ว (ตาราง MON)">✔ ใช้ในเกมแล้ว</button><button data-sf="unwired" aria-pressed="${SUBF.unwired}" title="มีภาพ/อนิเมชันใน asset แล้ว แต่ยังไม่ได้ต่อเข้าสนามรบ — ปรับขนาดเก็บไว้ล่วงหน้าได้">⏳ ยังไม่ต่อเกม</button></div></div>`;
+  if (tab === 'char' || tab === 'ratio' || tab === 'field') { const nv = visible().filter(e => PICKED.has(e.id)).length; h += `<div class="tg"><small>ปรับหลายตัวพร้อมกัน</small><div class="tr"><button id="bMulti" aria-pressed="${MULTI}" title="เปิดแล้วคลิกตัวละครเพื่อติ๊กเลือก จากนั้นปุ่ม −5 −1 +1 +5 ที่แผงขวาจะปรับทุกตัวที่เลือก">☑ เลือกหลายตัว</button>${MULTI ? `<button id="bPickAll" title="ติ๊กทุกตัวที่เห็นอยู่ (ตามตัวกรอง)">เลือกทั้งหมดที่เห็น</button><button id="bPickNone">ล้าง</button><span class="zv">เลือกแล้ว ${nv} ตัว</span>` : ''}</div></div>` }
+  if (tab === 'ratio' || tab === 'char') h = `<div class="tg"><small>มุมมอง</small><div class="tr"><button id="vwCmp" aria-pressed="${tab === 'ratio'}" title="เทียบสัดส่วนหัว/ลำตัว/ขา ด้วยจุด Datum + ปรับขนาดภาพ">📐 เทียบสัดส่วน</button><button id="vwRul" aria-pressed="${tab === 'char'}" title="ยืนเทียบความสูงจริงบนไม้บรรทัด (เมตร) · ซูม · เงาตัวเอก · เส้นนำสายตา">📏 ไม้วัดความสูงจริง</button></div></div>` + h;
   if (tab !== 'maps') h += `<div class="tg"><small>จัดเรียง</small><div class="tr"><button id="bSort" aria-pressed="${sorted}" title="เรียงจากสูงสุดไปต่ำสุด แทนลำดับปกติ">↕ เรียงตามความสูง</button></div></div>`;
   if (zoomTab) h += `<div class="tg"><small>ซูม</small><div class="tr"><button class="sq" id="zOut" title="ซูมออก">−</button><span class="zv">${Math.round(ZOOM * 100)}%</span><button class="sq" id="zIn" title="ซูมเข้า">+</button></div></div>`;
   if (stageTab) h += `<div class="tg"><small>ตัวช่วยดู</small><div class="tr"><button id="vGhost" aria-pressed="${ghost}" title="เงาจางของตัวเอกซ้อนหลังทุกตัว ไว้เทียบความสูง">👤 เงาตัวเอก</button><button id="vShadow" aria-pressed="${SHADOW}" title="วงเงาใต้เท้า">◔ เงาพื้น</button><button id="vFoot" aria-pressed="${FOOT}" title="ขีดแนวตั้งที่จุดเท้า">┃ จุดเท้า</button><button id="vGuides" aria-pressed="${GUIDES}" title="เส้นนอนบอกระดับ หัว/ตา/ไหล่/เอว/เข่า ของตัวเอก">≡ เส้นระดับตัวเอก</button></div></div>`;
@@ -701,6 +705,7 @@ function viewCtl() {
   $('toolbar').innerHTML = h; const el = id => document.getElementById(id), re = () => { viewCtl(); render() };
   $('toolbar').querySelectorAll('[data-f]').forEach(b => b.onclick = () => { const k = b.dataset.f, on = Object.values({ ...FILTER, [k]: !FILTER[k] }).some(Boolean); if (!on) return; FILTER[k] = !FILTER[k]; try { localStorage.setItem(FKEY, JSON.stringify(FILTER)) } catch (e) { } const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id; re() });
   $('toolbar').querySelectorAll('[data-sf]').forEach(b => b.onclick = () => { const k = b.dataset.sf; SUBF[k] = !SUBF[k]; try { localStorage.setItem(SUBKEY, JSON.stringify(SUBF)) } catch (e) { } const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id; re() });
+  if (el('vwCmp')) { el('vwCmp').onclick = () => { tab = 'ratio'; re() }; el('vwRul').onclick = () => { tab = 'char'; re() } }
   if (el('bMulti')) el('bMulti').onclick = () => { MULTI = !MULTI; if (MULTI && !PICKED.size && sel && sel !== 'hero') PICKED.add(sel); re() };
   if (el('bPickAll')) el('bPickAll').onclick = () => { for (const e of visible()) PICKED.add(e.id); re() };
   if (el('bPickNone')) el('bPickNone').onclick = () => { PICKED.clear(); re() };
@@ -722,8 +727,8 @@ function bump(field, delta) {   /* field: 'g' or a scene name; delta = percentag
 }
 function controls() {
   const box = $('ctl'), e = ENTRIES.find(x => x.id === sel);
-  if (tab === 'ratio' || tab === 'maps') { box.innerHTML = ''; return }
-  if ((tab !== 'char' && tab !== 'field') || !e || isW(e)) { box.innerHTML = '<p class="hint">ตัวปรับขนาดใช้กับแท็บ "ตัวละคร"</p>'; return }
+  if (tab === 'maps') { box.innerHTML = ''; return }
+  if ((tab !== 'char' && tab !== 'ratio' && tab !== 'field') || !e || isW(e)) { box.innerHTML = '<p class="hint">ตัวปรับขนาดใช้กับแท็บ "สัดส่วน"</p>'; return }
   const pct = v => Math.round(v * 100), row = (label, field, note) => `<div class="adj"><span>${label}</span><button data-b="${field}:-5">−5</button><button data-b="${field}:-1">−1</button><input type="number" min="40" max="200" value="${pct(field === 'g' ? gOf(e.id) : sOf(field, e.id))}" data-f="${field}"><button data-b="${field}:1">+1</button><button data-b="${field}:5">+5</button>${note ? `<small>${note}</small>` : ''}</div>`;
   const dim = e.id === 'hero' ? 'ตัวเอกคือไม้วัด: ปรับแล้วตัวอื่นเทียบตามความสูงเดิม' : '';
   /* studio only: compare ANY frame of this character from the Animation clips */

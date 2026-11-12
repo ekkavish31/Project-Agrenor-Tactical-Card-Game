@@ -13,7 +13,7 @@ assert.equal(PD.depth('t', 'walk', 0, 'SW').level, 'ok', 'a bent knee with the s
 PD.put('t', 'strike', 0, { pts: { SW: { ...idle, kneeR: [.54, .80], footR: [.56, .95] } } });
 { const d = PD.depth('t', 'strike', 0, 'SW'); assert.equal(d.level, 'bad'); assert.equal(d.segs.find(s => s.k === 'thighR').level, 'bad', 'a longer thigh is an error') }
 PD.put('t', 'hit', 0, { pts: { SW: grow(idle, 1.08) } });
-{ const d = PD.depth('t', 'hit', 0, 'SW'); assert.ok(Math.abs(d.scale - 1.08) < .01, 'whole frame drawn 8% bigger → scale'); assert.ok(d.segs.every(s => s.level === 'ok'), 'but no segment is out of proportion'); assert.equal(d.level, 'warn') }
+{ const d = PD.depth('t', 'hit', 0, 'SW'); assert.ok(Math.abs(d.scale - 1.08) < .01, 'whole frame drawn 8% bigger → scale'); assert.ok(d.segs.every(s => s.level === 'ok' || s.level === 'na'), 'but no segment is out of proportion'); assert.equal(d.level, 'warn') }
 PD.put('t', 'guard', 0, { pts: { SW: { ...idle, kneeR: [.54, .74], footR: [.56, .86] } } });
 { const d = PD.depth('t', 'guard', 0, 'SW'), th = d.segs.find(s => s.k === 'thighR'); assert.ok(th.dev < -.1 && th.level === 'warn', 'a much shorter segment is only a hint (could be foreshortening)') }
 assert.ok(PD.depth('u', 'walk', 0, 'SW') === null, 'no datum for this pose → null');
@@ -25,4 +25,9 @@ PD.setMaster('m', 'front', { pose: 'walk', frame: 0 });
 assert.ok(PD.depth('m', 'walk', 0, 'SW').ref, 'walk is now the front master'); assert.equal(PD.depth('m', 'strike', 0, 'SW').level, 'bad', 'strike compared with walk');
 assert.ok(PD.depth('m', 'strike', 0, 'NW').noRef, 'the back group keeps its own master (still idle)');
 PD.setMaster('m', 'front', null); assert.ok(PD.depth('m', 'strike', 0, 'SW').noRef, 'reset → idle again'); assert.equal(PD.master('m', 'SW').set, false);
+// arms: elbow + wrist on both pictures → upper arm / forearm are checked like the legs (a bent elbow passes, a longer forearm fails)
+{ const arm = { shL: [.38, .36], elbowL: [.33, .48], wristL: [.31, .6], shR: [.62, .36], elbowR: [.67, .48], wristR: [.69, .6] }, base = { ...idle, ...arm };
+  PD.put('a', 'idle', 0, { pts: { SW: base } }); PD.put('a', 'walk', 0, { pts: { SW: { ...base, wristL: [.2, .55] } } });   // forearm L: length .122 → .148 (+21 %)
+  const d = PD.depth('a', 'walk', 0, 'SW'); assert.ok(d.segs.find(s => s.k === 'foreArmL').dev > .1, 'a longer forearm is seen'); assert.equal(d.segs.find(s => s.k === 'upperArmL').level, 'ok');
+  assert.equal(PD.depth('t', 'walk', 0, 'SW').segs.find(s => s.k === 'foreArmL').level, 'na', 'no arm points → arms are skipped, not failed') }
 console.log('proportion depth: all passed');
