@@ -1585,7 +1585,9 @@
  readUploaded().forEach(registerUploaded);
  /* ---------- thumbnails (rendered from the real draw code) ---------- */
  const thumbCache = new Map();
- window.VillageRepoAssets.init({ KINDS, kind, getG: () => g, thumbCache, render: () => { if (typeof render === 'function') render() } });   /* v98.293 · js/village-repo-assets.js */
+ window.VillageRepoAssets.init({ KINDS, kind, getG: () => g, thumbCache, decorW: DECOR_W, render: () => { if (typeof render === 'function') render() } });
+ /* v98.430 · a catalogue picture finished loading → refresh its tile if the picker is open */
+ document.addEventListener('village-kind-ready', ev => { const b = picker?.open && [...picker.querySelectorAll('[data-id]')].find(x => x.dataset.id === ev.detail); if (b) putThumb(b.querySelector('.th'), kindThumb(ev.detail)) });   /* v98.293 · js/village-repo-assets.js */
  let thumbBox = null;
  /* v91.77 · drag handle of a sub-asset sits at the middle of its visible pixels (not at its ground anchor, which can be far from the art, e.g. a long fence) */
  const handleCache = new Map();
@@ -1725,11 +1727,11 @@
    picker.id = 'aePicker';
    document.body.append(picker)
   }
-  const groups = [...new Set(Object.values(KINDS).map(k => k.group))];
+  const groups = [...new Set(Object.values(KINDS).filter(k => !k.hidden).map(k => k.group))];   /* v98.430 · hidden = legacy kinds kept only so old pieces still draw */
   let tab = 'ทั้งหมด',
    q = '';
   const draw = () => {
-   const list = Object.entries(KINDS).filter(([id, k]) => (tab === 'ทั้งหมด' || k.group === tab) && (!q || k.label.includes(q) || id.includes(q)));
+   const list = Object.entries(KINDS).filter(([id, k]) => !k.hidden && (tab === 'ทั้งหมด' || k.group === tab) && (!q || k.label.includes(q) || id.includes(q)));
    picker.innerHTML = `<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid" style="grid-template-columns:repeat(5,1fr)">${list.map(([id,k])=>`<button data-id="${id}" class="${id===current?'cur':''}"><span class="th"></span><span>${k.label}</span><small>${k.group}</small></button>`).join('')||'<p>ไม่พบ</p>'}</div>`;
    /* v91.75 · thumbnails render lazily: only the tiles scrolled into view, a few per frame (was: every kind at once → long freeze) */
    const io = new IntersectionObserver(es => {

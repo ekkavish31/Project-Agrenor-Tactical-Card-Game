@@ -131,7 +131,7 @@
     const mean = ks => { const v = ks.map(k => per[k]).filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null };
     const pxg = { torso: per.torso ?? null, armUp: mean(['upperArmL', 'upperArmR']), armLow: mean(['foreArmL', 'foreArmR']), thigh: mean(['thighL', 'thighR']), shin: mean(['shinL', 'shinR']) }, frac = {};
     for (const [k] of GIRTH_GROUPS) frac[k] = pxg[k] == null ? null : pxg[k] / M.lengths.total;
-    /* v98.429 · also ÷ FACE (eye midpoint → chin): the same ruler the depth check uses — it does not change when a pose crouches,
+    /* v98.430 · also ÷ FACE (eye midpoint → chin): the same ruler the depth check uses — it does not change when a pose crouches,
        so thickness can be compared between two poses of ONE character (÷ height would make a crouch look thick) */
     const eye = mid(P.eyeL, P.eyeR), face = eye && P.chin ? Math.hypot((eye[0] - P.chin[0]) * w, (eye[1] - P.chin[1]) * h) : null, perFace = {};
     for (const [k] of GIRTH_GROUPS) perFace[k] = pxg[k] == null || !face ? null : pxg[k] / face;
@@ -142,7 +142,7 @@
   /* the face length and skull-top→ankle height of a datum record, without a picture (to turn a stored ÷height girth into ÷face) */
   function rulers(rec, dir, w = 384, h = 384) { const { pts: P } = pointsFor(rec, dir), eye = mid(P.eyeL, P.eyeR), M = metrics(rec, dir, w, h);
     return { face: eye && P.chin ? Math.hypot((eye[0] - P.chin[0]) * w, (eye[1] - P.chin[1]) * h) : null, total: M.lengths?.total || null } }
-  /* v98.429 · girth measured on a picture is remembered per character · pose · frame · direction, so another pose can use it as a
+  /* v98.430 · girth measured on a picture is remembered per character · pose · frame · direction, so another pose can use it as a
      template without that picture being open. localStorage 'proportion-girth-v1' = { "id|pose|frame|dir": { perFace, frac, at } } (derived — recomputed whenever the picture is shown) */
   const GIRTH_KEY = 'proportion-girth-v1', gKey = (id, pose, frame, dir) => [id, pose, frame | 0, dir].join('|');
   const girthAll = () => { try { return JSON.parse(ls.getItem(GIRTH_KEY) || '{}') || {} } catch (e) { return {} } };

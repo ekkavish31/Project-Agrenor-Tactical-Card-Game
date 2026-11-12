@@ -87,7 +87,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.429"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.430"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -431,10 +431,10 @@ function inspectRatio() {
        build (child, stout, etc.) and should keep its own torso/legs. */
     const mem = ((window.__adjMem ||= {})[e.id + ':' + GRP] ||= { A: { head: 100, torso: 100, legs: 100, wTorso: 100, wLegs: 100 }, mode: 'ref', sel: { head: true, torso: true, legs: true, wTorso: true, wLegs: true }, keep: true, seam: 'shape', soft: 7, sharpMode: 'auto', sharp: 60, ref: '', touched: false }), PA = window.ProportionAdjust, A = mem.A, $a = id => document.getElementById(id), ag = g;
     const sel = () => Object.fromEntries([...document.querySelectorAll('.adjSel')].map(b => [b.dataset.k, b.checked])), mode = () => document.querySelector('input[name=adjMode]:checked').value;
-    A.wTorso ??= 100; A.wLegs ??= 100; mem.sel.wTorso ??= true; mem.sel.wLegs ??= true;   /* v98.429 · thickness rows work like the size rows (tick = adjust it) */
+    A.wTorso ??= 100; A.wLegs ??= 100; mem.sel.wTorso ??= true; mem.sel.wLegs ??= true;   /* v98.430 · thickness rows work like the size rows (tick = adjust it) */
     const scaleNow = () => { const S = sel(); return { head: S.head ? A.head / 100 : 1, torso: S.torso ? A.torso / 100 : 1, legs: S.legs ? A.legs / 100 : 1, wTorso: S.wTorso ? A.wTorso / 100 : 1, wLegs: S.wLegs ? A.wLegs / 100 : 1 } };
     /* v98.426 · THICKNESS: girth of this picture (and of the template) from the silhouette, see PD.girth */
-    /* v98.429 · the measurement is remembered (PD.girthPut) so this pose can later be a template for another pose without its picture open */
+    /* v98.430 · the measurement is remembered (PD.girthPut) so this pose can later be a template for another pose without its picture open */
     let ownG; const ownGirth = () => { if (ownG !== undefined) return ownG; try { ownG = PD.girth(datumRec, q.dir, alphaOf(c)); PD.girthPut?.(e.id, q.pose, q.frame, q.dir, ownG) } catch (err) { ownG = null } return ownG };
     const refGirth = () => { try { if (mem.ref === '__std__' && STD) return STD.girth || null; if (mem.ref === '__master__') return masterGirth(); const x = mem.ref && ENTRIES.find(y => y.id === mem.ref), r1 = x && recOf(x.id); return x && r1 ? PD.girth(r1, q.dir, alphaOf(x.ctx.battle))?.frac || null : null } catch (err) { return null } };
     /* v98.396 · TEMPLATE: the head · torso · legs spans of another character's datum, given to this one (both need eyes · chin · crotch · ankles)
@@ -444,7 +444,7 @@ function inspectRatio() {
     const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)), STD = PD?.std(GRP, q.pose);
     /* v98.426 · the character's OWN ⚓ depth-reference pose (chosen in the Datum editor) is also offered as a template — its spans only (no girth: that pose's picture is not the one on screen) */
     const MST = PD?.master ? PD.master(e.id, q.dir) : null, mRec = MST && MST.set && !(MST.pose === q.pose && (MST.frame | 0) === (q.frame | 0)) ? PD.get(e.id, MST.pose, MST.frame) : null, mSpans = mRec ? PD.spans(mRec, q.dir) : null, MST_NAME = mSpans ? `⚓ ท่าอ้างอิงแนวลึกของตัวนี้ · ${PD.masterName(MST)}` : '';   /* v98.426 · only the standard of this very pose */
-    /* v98.429 · thickness of the ⚓ master pose, compared through the FACE (eye→chin), which a crouch does not change — then expressed as this
+    /* v98.430 · thickness of the ⚓ master pose, compared through the FACE (eye→chin), which a crouch does not change — then expressed as this
        picture's ÷height numbers so the table, the auto widths and the check work unchanged. Source, first found: the measurement remembered
        when that pose was shown · the standard of that pose when it is this character · the master picture itself, loaded from Asset Studio. */
     let mLoading = false;
