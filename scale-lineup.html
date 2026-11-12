@@ -87,7 +87,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.436"></script><script src="js/proportion-rulers.js?v=v98.436"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.437"></script><script src="js/proportion-rulers.js?v=v98.437"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -412,7 +412,7 @@ function inspectRatio() {
   const marks = { ...r.marks }, pw0 = hasDatum ? HALF : PW, dx0 = (c.flip ? pw0 - ox - fw : ox) - c.m.x0 * k, dy0 = oy - c.m.top * k;
   /* a datum dot, drawn in whatever transform is already active (so it mirrors with the picture automatically when flipped) */
   const dot = (g2, x, y, col, own) => { g2.globalAlpha = own ? 1 : .5; g2.fillStyle = col; g2.beginPath(); g2.arc(x, y, own ? 4 : 3, 0, 7); g2.fill(); g2.strokeStyle = '#fff'; g2.lineWidth = 1; g2.stroke(); g2.globalAlpha = 1 };
-  let beforeX = null;   /* v98.436 · where the Before picture sits on the canvas (for the drag rulers) */
+  let beforeX = null;   /* v98.437 · where the Before picture sits on the canvas (for the drag rulers) */
   let rulerLines = null;   /* v98.434 · measuring lines of the 📏 ruler on this picture [x1,y1,x2,y2] in picture px */
   const drawRuler = (g0, left, top, k) => { if (!rulerLines) return; g0.save(); g0.lineWidth = 2; g0.strokeStyle = '#ffd400'; g0.fillStyle = '#ffd400'; g0.setLineDash([]); for (const [x1, y1, x2, y2] of rulerLines) { g0.beginPath(); g0.moveTo(left + x1 * k, top + y1 * k); g0.lineTo(left + x2 * k, top + y2 * k); g0.stroke(); for (const [x, y] of [[x1, y1], [x2, y2]]) g0.fillRect(left + x * k - 1.5, top + y * k - 4, 3, 8) } g0.restore() };
   const original = document.createElement('canvas'); original.width = c.m.w; original.height = c.m.h;
@@ -528,7 +528,7 @@ function inspectRatio() {
     if (!mem.touched && RSD) { mem.mode = 'ref'; mem.ref = '__std__'; $a('adjRef').value = '__std__' } else if (!mem.touched && mSpans) { mem.mode = 'ref'; mem.ref = '__master__'; $a('adjRef').value = '__master__' }
     $a('adjMethod').value = mem.method; document.querySelector(`input[name=adjMode][value=${mem.mode}]`).checked = true; $a('adjKeep').checked = mem.keep; $a('adjSeam').value = mem.seam || 'shape'; $a('adjSoft').value = mem.soft || 7; $a('adjSharpMode').value = mem.sharpMode || 'auto'; $a('adjSharp').value = mem.sharp ?? 60; document.querySelectorAll('.adjSel').forEach(b => b.checked = !!mem.sel[b.dataset.k]);
 
-    /* v98.436 · 📏 USER-DRAWN RULERS: pick an emoji, drag a line on the Before picture (endpoints draggable). The size is stored as a ratio (÷ face, or ÷ height for the head),
+    /* v98.437 · 📏 USER-DRAWN RULERS: pick an emoji, drag a line on the Before picture (endpoints draggable). The size is stored as a ratio (÷ face, or ÷ height for the head),
        so the BASE keeps its own numbers and this picture is compared with them → ×1.30 per ruler → ✅ puts the mean per part into the sliders (manual mode). */
     const RR = window.ProportionRulers, rlcv = $a('rlcv'), rlg = rlcv && rlcv.getContext('2d'); let rlSel = null, rlDrag = null;
     const rlUnits = () => { const { pts: P } = PD.pointsFor(datumRec, q.dir), md = (a, b) => a && b ? [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] : null, D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * c.m.w, (a[1] - b[1]) * c.m.h) : null, eye = md(P.eyeL, P.eyeR), ft = md(P.footL, P.footR); return { face: D(eye, P.chin), height: D(eye, ft) } };

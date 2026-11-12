@@ -1,4 +1,4 @@
-/* v98.436 · USER-DRAWN RULERS (ไม้บรรทัดลากเอง) — measure a part on the BASE (ตัวต้น) and on the TARGET, compare, then adjust.
+/* v98.437 · USER-DRAWN RULERS (ไม้บรรทัดลากเอง) — measure a part on the BASE (ตัวต้น) and on the TARGET, compare, then adjust.
    A ruler = a name + two points dragged on the picture (fractions of the picture). Its size is stored as a RATIO to a body unit that does not
    change with the picture size: the face (eye midpoint → chin) for body parts, the datum height (eyes → feet) for the head width.
    So the base stores its numbers once; the target is compared with them without loading the base picture.

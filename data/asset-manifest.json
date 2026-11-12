@@ -175,51 +175,6 @@
    "usedIn": "ปุ่มกิจกรรม"
   },
   {
-   "id": "char-adventurer-hammer-attack",
-   "file": "assets/adventurer-hammer-attack.webp",
-   "category": "characters",
-   "status": "temp",
-   "size": [
-    900,
-    900
-   ],
-   "transparent": true,
-   "subject": "adventurer hammer attack",
-   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: adventurer hammer attack. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-   "usedIn": "ตัวละครในฉาก/การ์ด",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
-  },
-  {
-   "id": "char-adventurer-hammer-idle",
-   "file": "assets/adventurer-hammer-idle.webp",
-   "category": "characters",
-   "status": "temp",
-   "size": [
-    900,
-    900
-   ],
-   "transparent": true,
-   "subject": "adventurer hammer idle",
-   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: adventurer hammer idle. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-   "usedIn": "ตัวละครในฉาก/การ์ด",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
-  },
-  {
-   "id": "char-adventurer-sword-attack",
-   "file": "assets/adventurer-sword-attack.webp",
-   "category": "characters",
-   "status": "temp",
-   "size": [
-    900,
-    900
-   ],
-   "transparent": true,
-   "subject": "adventurer sword attack",
-   "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: adventurer sword attack. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-   "usedIn": "ตัวละครในฉาก/การ์ด",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
-  },
-  {
    "id": "char-adventurer-sword-idle",
    "file": "assets/adventurer-sword-idle.webp",
    "category": "characters",
@@ -475,20 +430,6 @@
    "artRevision": "art-continuation"
   },
   {
-   "id": "char-scarecrow-left",
-   "file": "assets/scarecrow-left.webp",
-   "category": "characters",
-   "status": "final",
-   "size": [
-    600,
-    900
-   ],
-   "transparent": true,
-   "subject": "scarecrow left",
-   "prompt": "Clean cel-shaded fantasy game enemy sprite matching the scarecrow reference style, full body, feet at the bottom centre, facing down-left (3/4 view), nothing cropped. Subject: scarecrow left. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-   "usedIn": "ตัวละครในฉาก/การ์ด"
-  },
-  {
    "id": "char-scarecrow",
    "file": "assets/scarecrow.webp",
    "category": "characters",
@@ -573,51 +514,6 @@
    "usedIn": "ปุ่มเมนูด้านบน"
   },
   {
-   "id": "ui-editor",
-   "file": "assets/ui-editor.webp",
-   "category": "ui",
-   "status": "temp",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "editor icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: editor icon.",
-   "usedIn": "ปุ่มเมนูด้านบน",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
-  },
-  {
-   "id": "ui-forge",
-   "file": "assets/ui-forge.webp",
-   "category": "ui",
-   "status": "temp",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "forge icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: forge icon.",
-   "usedIn": "ปุ่มเมนูด้านบน",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
-  },
-  {
-   "id": "ui-fullscreen",
-   "file": "assets/ui-fullscreen.webp",
-   "category": "ui",
-   "status": "temp",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "fullscreen icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: fullscreen icon.",
-   "usedIn": "ปุ่มเมนูด้านบน",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
-  },
-  {
    "id": "ui-map",
    "file": "assets/ui-map.webp",
    "category": "ui",
@@ -630,80 +526,6 @@
    "subject": "map icon",
    "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: map icon.",
    "usedIn": "ปุ่มเมนูด้านบน"
-  },
-  {
-   "id": "ui-motion",
-   "file": "assets/ui-motion.webp",
-   "category": "ui",
-   "status": "final",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "motion icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: motion icon.",
-   "usedIn": "ปุ่มเมนูด้านบน"
-  },
-  {
-   "id": "ui-rest",
-   "file": "assets/ui-rest.webp",
-   "category": "ui",
-   "status": "temp",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "rest icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: rest icon.",
-   "usedIn": "ปุ่มเมนูด้านบน",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
-  },
-  {
-   "id": "ui-smelt",
-   "file": "assets/ui-smelt.webp",
-   "category": "ui",
-   "status": "temp",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "smelt icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: smelt icon.",
-   "usedIn": "ปุ่มเมนูด้านบน",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
-  },
-  {
-   "id": "ui-upgrade",
-   "file": "assets/ui-upgrade.webp",
-   "category": "ui",
-   "status": "temp",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "upgrade icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: upgrade icon.",
-   "usedIn": "ปุ่มเมนูด้านบน",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
-  },
-  {
-   "id": "ui-water",
-   "file": "assets/ui-water.webp",
-   "category": "ui",
-   "status": "temp",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "water icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: water icon.",
-   "usedIn": "ปุ่มเมนูด้านบน",
-   "note": "ภาพชั่วคราว: ใช้ไอคอนเมนูแทนจนกว่าจะมีภาพจริง"
   },
   {
    "id": "card-water-ball",
@@ -846,20 +668,6 @@
    "subject": "fantasy pointer cursor",
    "prompt": "Clean cel-shaded fantasy game sprite matching the reference art style, full object visible, centred, nothing cropped. Subject: fantasy pointer cursor. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เคอร์เซอร์เมาส์"
-  },
-  {
-   "id": "cursor-fantasy-source",
-   "file": "assets/cursor-fantasy-source.png",
-   "category": "cursors",
-   "status": "final",
-   "size": [
-    1254,
-    1254
-   ],
-   "transparent": true,
-   "subject": "fantasy pointer cursor",
-   "prompt": "Clean cel-shaded fantasy game sprite matching the reference art style, full object visible, centred, nothing cropped. Subject: fantasy pointer cursor. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
-   "usedIn": "ไฟล์ต้นฉบับ (ไม่ได้ใช้ในเกม)"
   },
   {
    "id": "cursor-fantasy",
@@ -109999,90 +109807,6 @@
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "ageScaleBaked": true,
    "mirroredFrom": "npc-pip-ne-walk1"
-  },
-  {
-   "id": "action-auto",
-   "file": "assets/action-auto.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    900
-   ],
-   "transparent": false,
-   "subject": "a mechanical hammer over a glowing ingot, furnace and quenching bucket",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a mechanical hammer over a glowing ingot, furnace and quenching bucket.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
-   "id": "action-buy",
-   "file": "assets/action-buy.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    600
-   ],
-   "transparent": false,
-   "subject": "a market stall counter with ingots, coal and food for sale",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a market stall counter with ingots, coal and food for sale.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
-   "id": "action-cancel",
-   "file": "assets/action-cancel.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    900
-   ],
-   "transparent": false,
-   "subject": "tongs setting an unfinished iron blank into a salvage tray, spent ash behind",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: tongs setting an unfinished iron blank into a salvage tray, spent ash behind.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
-   "id": "action-recipes",
-   "file": "assets/action-recipes.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    600
-   ],
-   "transparent": false,
-   "subject": "an open blacksmith recipe book with sword and hammer diagrams",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: an open blacksmith recipe book with sword and hammer diagrams.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
-   "id": "action-sell",
-   "file": "assets/action-sell.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    600
-   ],
-   "transparent": false,
-   "subject": "a merchant weighing a finished sword against coins",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a merchant weighing a finished sword against coins.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
-   "id": "ui-edit",
-   "file": "assets/ui-edit.webp",
-   "category": "ui",
-   "status": "missing",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "edit icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: edit icon.",
-   "usedIn": "ปุ่มเมนูด้านบน"
   }
  ],
  "studioReviews": {
@@ -123737,5 +123461,27 @@
     "mirror": null
    }
   ]
- }
+ },
+ "retired": [
+  "assets/action-auto.webp",
+  "assets/action-buy.webp",
+  "assets/action-cancel.webp",
+  "assets/action-recipes.webp",
+  "assets/action-sell.webp",
+  "assets/adventurer-hammer-attack.webp",
+  "assets/adventurer-hammer-idle.webp",
+  "assets/adventurer-sword-attack.webp",
+  "assets/battle-loot-v32.webp",
+  "assets/cursor-fantasy-source.png",
+  "assets/scarecrow-left.webp",
+  "assets/ui-edit.webp",
+  "assets/ui-editor.webp",
+  "assets/ui-forge.webp",
+  "assets/ui-fullscreen.webp",
+  "assets/ui-motion.webp",
+  "assets/ui-rest.webp",
+  "assets/ui-smelt.webp",
+  "assets/ui-upgrade.webp",
+  "assets/ui-water.webp"
+ ]
 }

@@ -17,4 +17,6 @@ for (const f of ['js/asset-manifest.js', 'data/asset-manifest.json']) {
   if (FIX && n) fs.writeFileSync(path.join(ROOT, f), t);
   console.log(f + ': ' + n + ' wrong extension' + (FIX && n ? ' (fixed)' : '') + ' · ' + gone.size + ' file(s) missing under both names');
 }
-const bad = (FIX ? 0 : drift); console.log(bad ? '✗ run with --fix' : '✓ no extension drift'); process.exit(bad ? 1 : 0);
+/* v98.437 · a RETIRED picture (manifest.retired) must not be listed again — an old staged Cart can bring it back */
+let back = 0; { const o = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/asset-manifest.json'), 'utf8')), R = new Set(o.retired || []); for (const a of o.assets || []) if (R.has(a.file)) { back++; console.log('✗ retired but listed again: ' + a.file) } }
+const bad = (FIX ? 0 : drift) + back; console.log(bad ? (back ? '✗ retired pictures are listed again' : '✗ run with --fix') : '✓ no extension drift · no retired picture listed'); process.exit(bad ? 1 : 0);
