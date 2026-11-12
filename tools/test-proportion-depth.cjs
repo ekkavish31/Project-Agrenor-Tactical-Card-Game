@@ -65,4 +65,13 @@ console.log('proportion depth: all passed');
   const g = PD.girth(rec, 'SW', { d, w: W, h: H }); assert.ok(Math.abs(g.face - 32) < 1e-9, 'face = eye midpoint → chin in px'); assert.ok(Math.abs(g.perFace.torso - g.px.torso / 32) < 1e-9, 'perFace = px ÷ face');
   const r = PD.rulers(rec, 'SW', W, H); assert.ok(Math.abs(r.face - g.face) < 1e-9 && Math.abs(r.total - g.total) < 1e-9, 'rulers without a picture match');
   PD.girthPut('gx', 'windup', 0, 'SW', g); assert.deepEqual(PD.girthGet('gx', 'windup', 0, 'SW').perFace, g.perFace, 'remembered per character · pose · frame · direction'); assert.equal(PD.girthGet('gx', 'windup', 0, 'SE'), null) }
+// v98.431 · thickness ruler: one cut at one spot, ratio = width ÷ face
+{ const W = 200, H = 400, d = new Uint8ClampedArray(W * H * 4), box = (x0, y0, x1, y1) => { for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) d[(y * W + x) * 4 + 3] = 255 };
+  box(70, 100, 130, 240); box(76, 240, 98, 380); box(102, 240, 124, 380);
+  const P = { eyeL: [.45, .17], eyeR: [.55, .17], chin: [.5, .25], shL: [.30, .275], shR: [.70, .275], crotch: [.5, .6], kneeL: [.435, .8], kneeR: [.565, .8], footL: [.435, .95], footR: [.565, .95] };
+  const r = PD.rule({ pts: { SW: P } }, 'SW', { d, w: W, h: H }, 'shin', .5);
+  assert.ok(r && Math.abs(r.w - 22) < 3 && r.sides === 2, 'shin ruler ≈ 22 px, both legs: ' + r?.w); assert.ok(Math.abs(r.ratio - r.w / 32) < 1e-9, 'ratio = width ÷ face (32 px)');
+  assert.equal(r.level, 'ok'); assert.equal(r.lines.length, 2, 'one measuring line per leg');
+  const scaled = new Uint8ClampedArray(W * H * 4), r2 = PD.rule({ pts: { SW: P } }, 'SW', { d: scaled, w: W, h: H }, 'shin', .5); assert.equal(r2, null, 'empty picture → null');
+  assert.equal(PD.rule({ pts: { SW: P } }, 'SW', { d, w: W, h: H }, 'nope', .5), null, 'unknown bone group → null') }
 console.log('proportion girth: passed');

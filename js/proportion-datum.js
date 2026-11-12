@@ -108,7 +108,7 @@
      alpha = { d: RGBA bytes, w, h } of the picture the datum points belong to (already flipped the way the points are). Returns null when the datum is too thin.
      result: { total, px:{torso,armUp,armLow,thigh,shin}, frac:{…same}, per:{ torso, upperArmL, … } } (a missing value = not measurable on this picture) */
   const GIRTH_GROUPS = [['torso', 'ลำตัว'], ['armUp', 'ต้นแขน'], ['armLow', 'ท่อนแขนล่าง'], ['thigh', 'ต้นขา'], ['shin', 'แข้ง']];
-  function girth(rec, dir, alpha) {
+  function girth(rec, dir, alpha, ts = [.3, .4, .5, .6, .7]) {
     if (!rec || !alpha || !alpha.d) return null; const { w, h, d } = alpha, M = metrics(rec, dir, w, h); if (!M.lengths) return null;
     const { pts: P } = pointsFor(rec, dir), px = k => P[k] ? [P[k][0] * w, P[k][1] * h] : null, sh = mid(P.shL, P.shR) || P.chin, bones = {};
     const HW = { torso: .2, upperArm: .11, foreArm: .09, thigh: .12, shin: .09 };   /* rough half-thickness ÷ bone length, only used to decide where one bone's territory ends and the neighbour's starts */
@@ -117,32 +117,43 @@
     for (const s of ['L', 'R']) { add('upperArm' + s, px('sh' + s), px('elbow' + s), 'arm' + s); add('foreArm' + s, px('elbow' + s), px('wrist' + s), 'arm' + s); add('thigh' + s, px('crotch'), px('knee' + s), 'leg' + s); add('shin' + s, px('knee' + s), px('foot' + s), 'leg' + s) }
     const segD = (x, y, A, B) => { const dx = B[0] - A[0], dy = B[1] - A[1], l2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((x - A[0]) * dx + (y - A[1]) * dy) / l2)); return Math.hypot(x - A[0] - t * dx, y - A[1] - t * dy) };
     const solid = (x, y) => { const xi = Math.round(x), yi = Math.round(y); return xi >= 0 && yi >= 0 && xi < w && yi < h && d[(yi * w + xi) * 4 + 3] > 40 };
-    const reach = M.lengths.total * .6, per = {};
+    const reach = M.lengths.total * .6, per = {}, spread = {}, lines = {};
     for (const [name, bn] of Object.entries(bones)) {
       const len = Math.hypot(bn.b[0] - bn.a[0], bn.b[1] - bn.a[1]); if (len < 4) continue;
       const ux = (bn.b[0] - bn.a[0]) / len, uy = (bn.b[1] - bn.a[1]) / len, nx = -uy, ny = ux, others = Object.entries(bones).filter(([o, ob]) => o !== name && ob.chain !== bn.chain).map(([, ob]) => ob), vals = [];
-      for (const t of [.3, .4, .5, .6, .7]) {
+      for (const t of ts) {
         const cx = bn.a[0] + (bn.b[0] - bn.a[0]) * t, cy = bn.a[1] + (bn.b[1] - bn.a[1]) * t; if (!solid(cx, cy)) continue;
         const ray = sg => { let r = 0; for (; r < reach; r += .5) { const x = cx + sg * nx * r, y = cy + sg * ny * r; if (!solid(x, y)) return { r, blocked: false }; if (r > 1 && others.some(ob => segD(x, y, ob.a, ob.b) - ob.hw < segD(x, y, bn.a, bn.b) - bn.hw)) return { r, blocked: true } } return { r, blocked: true } };
         const l = ray(1), r = ray(-1); vals.push(l.blocked && !r.blocked ? 2 * r.r : r.blocked && !l.blocked ? 2 * l.r : l.r + r.r);   /* one free side → doubled · otherwise the sum (a side that ends at a neighbour's territory is a good edge estimate too) */
       }
-      if (vals.length >= 2) { vals.sort((a, b) => a - b); per[name] = vals[vals.length >> 1] }
+      if (vals.length >= 2) { vals.sort((a, b) => a - b); per[name] = vals[vals.length >> 1]; spread[name] = (vals[vals.length - 1] - vals[0]) / per[name]   /* v98.431 · how much the samples disagree */
+        const tm = ts[ts.length >> 1], mx = bn.a[0] + (bn.b[0] - bn.a[0]) * tm, my = bn.a[1] + (bn.b[1] - bn.a[1]) * tm; lines[name] = [mx - nx * per[name] / 2, my - ny * per[name] / 2, mx + nx * per[name] / 2, my + ny * per[name] / 2] }
     }
     const mean = ks => { const v = ks.map(k => per[k]).filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null };
     const pxg = { torso: per.torso ?? null, armUp: mean(['upperArmL', 'upperArmR']), armLow: mean(['foreArmL', 'foreArmR']), thigh: mean(['thighL', 'thighR']), shin: mean(['shinL', 'shinR']) }, frac = {};
     for (const [k] of GIRTH_GROUPS) frac[k] = pxg[k] == null ? null : pxg[k] / M.lengths.total;
-    /* v98.430 · also ÷ FACE (eye midpoint → chin): the same ruler the depth check uses — it does not change when a pose crouches,
+    /* v98.431 · also ÷ FACE (eye midpoint → chin): the same ruler the depth check uses — it does not change when a pose crouches,
        so thickness can be compared between two poses of ONE character (÷ height would make a crouch look thick) */
     const eye = mid(P.eyeL, P.eyeR), face = eye && P.chin ? Math.hypot((eye[0] - P.chin[0]) * w, (eye[1] - P.chin[1]) * h) : null, perFace = {};
     for (const [k] of GIRTH_GROUPS) perFace[k] = pxg[k] == null || !face ? null : pxg[k] / face;
-    return { total: M.lengths.total, face, px: pxg, frac, perFace, per };
+    return { total: M.lengths.total, face, px: pxg, frac, perFace, per, spread, lines };
+  }
+  /* v98.431 · THICKNESS RULER (ไม้บรรทัดความหนา): ONE cut across one bone group at one spot (t = 0…1 along the bone), measured against the face
+     (eye → chin). Both sides (L/R) are averaged; three casts next to each other (t ± .05) give a confidence. The same bone + t is measured on every
+     picture, so  ratio = width ÷ face  can be compared between poses without using any height.  group: shin · thigh · torso · armUp · armLow */
+  const RULER_BONES = { shin: ['shinL', 'shinR'], thigh: ['thighL', 'thighR'], torso: ['torso'], armUp: ['upperArmL', 'upperArmR'], armLow: ['foreArmL', 'foreArmR'] };
+  function rule(rec, dir, alpha, group, t = .5) {
+    const g = girth(rec, dir, alpha, [Math.max(.05, t - .05), t, Math.min(.95, t + .05)]), names = RULER_BONES[group]; if (!g || !g.face || !names) return null;
+    const vals = names.map(n => g.per[n]).filter(v => v != null); if (!vals.length) return null; const w = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const sp = Math.max(...names.map(n => g.spread[n] ?? 0), vals.length > 1 ? Math.abs(vals[0] - vals[1]) / w : 0);
+    return { group, t, w, face: g.face, ratio: w / g.face, sides: vals.length, spread: sp, level: sp <= .12 ? 'ok' : sp <= .25 ? 'warn' : 'bad', lines: names.map(n => g.lines[n]).filter(Boolean), perFace: g.perFace }
   }
   /* the multiplier that gives THIS picture the standard's thickness: standard fraction ÷ own fraction (null when either is unknown) */
   const girthRatio = (own, ref, k) => own?.frac?.[k] && ref?.[k] ? ref[k] / own.frac[k] : null;
   /* the face length and skull-top→ankle height of a datum record, without a picture (to turn a stored ÷height girth into ÷face) */
   function rulers(rec, dir, w = 384, h = 384) { const { pts: P } = pointsFor(rec, dir), eye = mid(P.eyeL, P.eyeR), M = metrics(rec, dir, w, h);
     return { face: eye && P.chin ? Math.hypot((eye[0] - P.chin[0]) * w, (eye[1] - P.chin[1]) * h) : null, total: M.lengths?.total || null } }
-  /* v98.430 · girth measured on a picture is remembered per character · pose · frame · direction, so another pose can use it as a
+  /* v98.431 · girth measured on a picture is remembered per character · pose · frame · direction, so another pose can use it as a
      template without that picture being open. localStorage 'proportion-girth-v1' = { "id|pose|frame|dir": { perFace, frac, at } } (derived — recomputed whenever the picture is shown) */
   const GIRTH_KEY = 'proportion-girth-v1', gKey = (id, pose, frame, dir) => [id, pose, frame | 0, dir].join('|');
   const girthAll = () => { try { return JSON.parse(ls.getItem(GIRTH_KEY) || '{}') || {} } catch (e) { return {} } };
@@ -188,6 +199,6 @@
     for (const s of dp.segs) { if (s.dev == null) { if (all) parts.push(s.name + ' —'); continue } if (all || s.level !== 'ok') parts.push(`${s.name} ${pc(s.dev)}${s.level !== 'ok' ? ' ' + ic[s.level] : ''}`) }
     return parts.join(' · ') }
   const pixelPoints = (rec, dir, w, h) => Object.fromEntries(Object.entries(pointsFor(rec, dir).pts).map(([k, p]) => [k, [p[0] * w, p[1] * h]]));
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, straightness, girth, girthRatio, GIRTH_GROUPS, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

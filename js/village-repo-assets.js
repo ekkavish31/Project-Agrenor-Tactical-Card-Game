@@ -1,6 +1,6 @@
 /* v98.293 · finds every image asset of the repository and registers it as a placeable kind (split out of js/village-asset-edit.js).
    VillageRepoAssets.init({ KINDS, kind, getG, thumbCache, render, decorW }) — getG() returns the CURRENT canvas context (it is swapped while thumbnails render).
-   v98.430 · the picker now comes from the LOCAL catalogue js/placeable-art.js (tools/build-placeable-art.cjs): every furniture / workshop /
+   v98.431 · the picker now comes from the LOCAL catalogue js/placeable-art.js (tools/build-placeable-art.cjs): every furniture / workshop /
    town / nature / coast / snow / battlefield / crop picture with a Thai name, a group and a real starting width, loaded from this
    repository's own files (works offline, no GitHub API). Kind id = 'pic:<src>'. Town decoration that already has a 'decor:<name>' kind
    (DECOR_W) is not listed twice.
