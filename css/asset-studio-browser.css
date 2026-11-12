@@ -136,3 +136,6 @@ body.anim-mode #lineupDock{display:block}
 .pd-act{border:1px solid #c9c2a4;border-radius:6px;padding:0 5px;background:#fff8e4;cursor:pointer}.pd-act:hover{background:#f3dfa0}
 .pd-ok{color:#2f7d3a}.pd-bad{color:#a8402f}
 .pd-warn{color:#b0701a}.pd-none{color:#9a9a8a}
+
+/* v98.415 · drag a cell onto another to swap the two sets */
+.clip-cell[draggable=true]{cursor:grab}.clip-cell.dragging{opacity:.45}.clip-cell.drop-ok{outline:3px dashed #2f9a4a;outline-offset:-2px;background:#e3f6e4}
