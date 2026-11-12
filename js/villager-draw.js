@@ -28,7 +28,8 @@
      walk frames: 12 = a full 12-picture cycle (per-direction counts in wn; a direction with fewer pictures than its mirror uses the mirror's, flipped) · 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 1 = contact, stand, contact, stand · 0 = the standing picture with a bob.
      Falls back to the code-drawn figure until a standing picture has loaded. */
   /* v98.126 · new cast pictures (standing SW/NE + one walking picture SW/NE each, SE/NW = mirrored files): bram / luna / the recruits use walk 1 (contact, stand, contact, stand) */
-  const SPR_INFO = { oren: { dirs: ['sw', 'ne'], walk: 1 }, joe: { dirs: ['sw', 'ne'], walk: 1 }, ella: { dirs: ['sw', 'ne'], walk: 1 }, mother: { dirs: ['sw', 'ne'], walk: 1 }, hilda: { dirs: ['sw', 'ne'], walk: 1 }, marta: { dirs: ['sw', 'ne'], walk: 1 }, gus: { dirs: ['sw', 'ne'], walk: 1 }, mira: { dirs: ['sw', 'ne'], walk: 1 }, saf: { dirs: ['sw', 'ne'], walk: 1 }, bryn: { dirs: ['sw', 'ne'], walk: 1 },   /* v98.300 · painted people: front/back pictures (npc sheets, tools/build-npc-sprites.py) */
+  const SPR_INFO = { finn: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, berg: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, ken: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, shep: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, vera: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 },
+    oren: { dirs: ['sw', 'ne'], walk: 1 }, joe: { dirs: ['sw', 'ne'], walk: 1 }, ella: { dirs: ['sw', 'ne'], walk: 1 }, mother: { dirs: ['sw', 'ne'], walk: 1 }, hilda: { dirs: ['sw', 'ne'], walk: 1 }, marta: { dirs: ['sw', 'ne'], walk: 1 }, gus: { dirs: ['sw', 'ne'], walk: 1 }, mira: { dirs: ['sw', 'ne'], walk: 1 }, saf: { dirs: ['sw', 'ne'], walk: 1 }, bryn: { dirs: ['sw', 'ne'], walk: 1 },   /* v98.300 · painted people: front/back pictures (npc sheets, tools/build-npc-sprites.py) */
     may: { dirs: ['sw', 'ne'], walk: 1 }, tom: { dirs: ['sw', 'ne'], walk: 1 }, lin: { dirs: ['sw', 'ne'], walk: 1 }, guard: { dirs: ['sw', 'ne'], walk: 1 }, bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1, wn: { sw: 12 } }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } },
     /* v98.86 · recruits (front view = SW; NE is the front picture mirrored for now, replace ne-stand.webp when the back view exists). No walk frames yet: the standing picture bobs. */
     ren: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, nadia: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, sigrid: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, orla: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, olwen: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 } }, dn = (info, d) => (info.wn && info.wn[d] != null ? info.wn[d] : info.walk), SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
@@ -39,7 +40,7 @@
     const M = root.ASSET_MANIFEST || {}, W = (M.studioAllyWalks || {})[name] || {}, A = new Map((M.assets || []).map(a => [a.id, a])), info = { ...base, wn: { ...(base.wn || {}) } }, ms = {};
     const load = src => { const im = new Image(); im.src = src; return im };
     for (const d of ['sw', 'se', 'ne', 'nw']) {
-      const a = A.get('tactics-' + name + '-' + d + '-idle'), w = W[d.toUpperCase()];
+      const a = A.get('tactics-' + name + '-' + d + '-idle') || A.get('npc-' + name + '-' + d + '-stand'), w = W[d.toUpperCase()];
       if (a && a.status === 'final' && a.file) S[d + '-stand'] = load(a.file + (a.artRevision ? '?r=' + a.artRevision : ''));
       if (w && w.frames && w.frames.length) { w.frames.forEach((f, i) => { S[d + '-walk' + (i + 1)] = load(A.get(f.assetId)?.file || f.src) }); info.wn[d] = w.frames.length; ms[d] = w.frames[0].ms || 100 }
     }
@@ -49,7 +50,7 @@
   const ready = im => im && im.complete && im.naturalWidth > 0;
   /* v98.261 · feet on the ground + size as the ⚖ Scale Lineup shows it. (1) the picture's own lowest opaque row is put on the ground (Luna's pictures end at y=360, not 372, so she floated);
      (2) allies are drawn at 1.45/1.6 of the hero's canvas (93.6 px), the same rule the lineup uses for metres — before, they were 1.04× the hero's canvas, so Luna stood taller than the hero. */
-  const LINEUP_ALLY = new Set(['bram', 'luna', 'kier', 'mil', 'ren', 'nadia', 'sigrid', 'orla', 'olwen', 'may', 'tom', 'lin', 'guard', 'oren', 'joe', 'ella', 'mother', 'hilda', 'marta', 'gus', 'mira', 'saf', 'bryn']);   /* every picture-based person is sized by the lineup rule */
+  const LINEUP_ALLY = new Set(['finn', 'berg', 'ken', 'shep', 'vera', 'bram', 'luna', 'kier', 'mil', 'ren', 'nadia', 'sigrid', 'orla', 'olwen', 'may', 'tom', 'lin', 'guard', 'oren', 'joe', 'ella', 'mother', 'hilda', 'marta', 'gus', 'mira', 'saf', 'bryn']);   /* every picture-based person is sized by the lineup rule */
   const allyK = () => CharSize.VILLAGE_HERO_PX * CharSize.DRAW.ally / CharSize.DRAW.hero / CharSize.NPC_CANVAS_K;   /* v98.264 · numbers live in js/char-size.js */
   function pic(S, d, k) { const own = S[d + '-' + k]; if (ready(own)) return { im: own, flip: false }; const m = S[MIR[d] + '-' + k]; return ready(m) ? { im: m, flip: true } : null }
   /* v98.152 · ONE shadow for every walker (village, battle-in-village, interiors): a soft wide oval + a darker contact core right under the feet, both sized by the character's scale */
