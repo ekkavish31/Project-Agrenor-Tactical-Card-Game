@@ -85,14 +85,18 @@
     };
   }
 
-  /* ok / warn / bad against the standard and (optional) the median head fraction of the cast */
-  function verdict(r, std, med) {
-    std = Object.assign({}, STD, std || {}); const notes = []; let level = 'ok'; const up = l => { if (l === 'bad' || (l === 'warn' && level === 'ok')) level = l };
-    const d = r.head - std.head;
-    if (Math.abs(d) > std.tol * 2) { up('bad'); notes.push(d < 0 ? 'หัวเล็กเกินไป (' + (r.head * 100).toFixed(0) + '% ของตัว)' : 'หัวโตเกินไป (' + (r.head * 100).toFixed(0) + '% ของตัว)') }
-    else if (Math.abs(d) > std.tol) { up('warn'); notes.push(d < 0 ? 'หัวค่อนข้างเล็ก' : 'หัวค่อนข้างโต') }
-    if (r.headToShoulder && r.headToShoulder < std.minHeadShoulder) { up('warn'); notes.push('หัวแคบกว่าช่วงไหล่+แขน (' + r.headToShoulder.toFixed(2) + '×) — กึ่ง SD หัวควรกว้างกว่า') }
-    if (med != null && Math.abs(r.head - med) > std.castTol) { up('warn'); notes.push('ต่างจากค่ากลางของทีม ' + (((r.head - med) * 100) > 0 ? '+' : '') + ((r.head - med) * 100).toFixed(0) + ' จุด') }
+  /* v98.411 · one judgment path: canonical datum proportions vs the chosen standard.
+     The cast median is descriptive only and is never an input to this decision. */
+  function verdict(r, std) {
+    if (!std || std.missing) return { level: 'pending', notes: ['ตั้งตัวมาตรฐานของทีมก่อน จึงจะตัดสินได้'] };
+    if (!r.manual) return { level: 'pending', notes: ['ยังไม่มี Datum ครบ จึงยังไม่ตัดสินเทียบมาตรฐาน'] };
+    let level = 'ok'; const notes = [];
+    for (const [k, label] of [['head', 'หัว'], ['torso', 'ลำตัว'], ['legs', 'ขา']]) {
+      if (!Number.isFinite(r[k]) || !Number.isFinite(std[k])) continue;
+      const delta = r[k] - std[k], d = Math.abs(delta), tol = std.tol ?? .04;
+      if (d > tol * 2) level = 'bad'; else if (d > tol && level === 'ok') level = 'warn';
+      if (d > tol) notes.push(label + ' ต่างจากตัวมาตรฐาน ' + (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + ' จุด');
+    }
     return { level, notes };
   }
   const median = a => { const s = a.filter(x => isFinite(x)).sort((x, y) => x - y); return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : null };

@@ -9,9 +9,9 @@
   'use strict';
   const KEY = 'proportion-datum-v1';
   /* v98.392 · L / R = the LEFT / RIGHT SIDE OF THE PICTURE (as you look at it), not the character's own left hand: the same in every direction */
-  const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footL', 'ข้อเท้า ซ้ายภาพ', '#444'], ['footR', 'ข้อเท้า ขวาภาพ', '#444']];   /* the ANKLE joint (not the toe / sole): a joint stays the same point when the foot points, kicks or lies down */
+  const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['elbowL', 'ข้อศอก ซ้ายภาพ', '#c47715'], ['elbowR', 'ข้อศอก ขวาภาพ', '#c47715'], ['wristL', 'ข้อมือ ซ้ายภาพ', '#e79516'], ['wristR', 'ข้อมือ ขวาภาพ', '#e79516'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footL', 'ข้อเท้า ซ้ายภาพ', '#444'], ['footR', 'ข้อเท้า ขวาภาพ', '#444']];   /* the ANKLE joint (not the toe / sole): a joint stays the same point when the foot points, kicks or lies down */
   const CENTRE = ['chin', 'chest', 'crotch'], DIRS = ['SW', 'NW', 'NE', 'SE'];
-  const OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, SWAP = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', kneeL: 'kneeR', kneeR: 'kneeL', footL: 'footR', footR: 'footL' };
+  const OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, SWAP = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', elbowL: 'elbowR', elbowR: 'elbowL', wristL: 'wristR', wristR: 'wristL', kneeL: 'kneeR', kneeR: 'kneeL', footL: 'footR', footR: 'footL' };
   /* v98.399 · SW/SE show the FRONT (mirror pair) · NW/NE show the BACK (mirror pair) — the two groups must never lend each other
      data: a front proportion means nothing compared against a back one (cloak, hood, armour plates differ front/back). */
   const GROUP = { SW: 'front', SE: 'front', NW: 'back', NE: 'back' };
@@ -43,10 +43,16 @@
     const leg = (k, f) => P[k] && P[f] && P.crotch ? D(P.crotch, P[k]) + D(P[k], P[f]) : P[f] && P.crotch ? D(P.crotch, P[f]) : null;
     out.legL = leg('kneeL', 'footL'); out.legR = leg('kneeR', 'footR'); const ls_ = [out.legL, out.legR].filter(v => v != null); out.legs = ls_.length ? ls_.reduce((a, b) => a + b, 0) / ls_.length : null;
     out.thighL = D(P.crotch, P.kneeL); out.thighR = D(P.crotch, P.kneeR); out.shinL = D(P.kneeL, P.footL); out.shinR = D(P.kneeR, P.footR);
+    const body = metrics(rec, dir, w, h); out.body = body; out.headFrac = body.proportions?.head; out.heads = body.heads; out.headH = body.lengths?.head; out.H = body.lengths?.total;
     return out;
   }
   /* proportion marks (fractions of the silhouette box m = {top,H}) for js/proportion-tool.js: chin · shoulder (pivot mid) · hip (crotch) */
-  function marksFrom(rec, dir, m, h) { const { pts: P } = pointsFor(rec, dir); if (!P.chin || !P.crotch) return null; const f = y => (y * h - m.top) / m.H, sh = mid(P.shL, P.shR); return { chin: f(P.chin[1]), shoulder: f(sh ? sh[1] : P.chin[1] + (P.crotch[1] - P.chin[1]) * .2), hip: f(P.crotch[1]) } }
+  function marksFrom(rec, dir, m, h) {
+    const { pts: P } = pointsFor(rec, dir); if (!P.chin || !P.crotch) return null;
+    const f = y => (y * h - m.top) / m.H, sh = mid(P.shL, P.shR), body = metrics(rec, dir, m.w || h, h);
+    return { chin: f(P.chin[1]), shoulder: f(sh ? sh[1] : P.chin[1] + (P.crotch[1] - P.chin[1]) * .2), hip: f(P.crotch[1]), ...(body.proportions ? { headTop: f(body.top), ankle: f(body.bottom) } : {}) };
+  }
+
   /* how far each direction's own centre points sit from the first direction that has them (fraction of the picture height) */
   function heightGaps(rec) { const out = []; for (const k of CENTRE) { const has = DIRS.filter(d => rec?.pts?.[d]?.[k]); if (has.length < 2) continue; const y0 = rec.pts[has[0]][k][1]; for (const d of has.slice(1)) { const dy = rec.pts[d][k][1] - y0; if (Math.abs(dy) > .004) out.push({ dir: d, key: k, ref: has[0], dy }) } } return out }
   /* one line of status for a character · pose · direction (frame 0): how many own points, face size vs the standing pose, for the Animation table badges */
@@ -54,9 +60,22 @@
     const m = measure(rec, dir, w, h), ref = pose === 'idle' ? null : get(id, 'idle', 0), mr = ref && measure(ref, dir, w, h); return { own, sug, total: POINTS.length, face: m.face || null, faceDev: m.face && mr?.face ? m.face / mr.face - 1 : null, legDev: m.legs && mr?.legs ? m.legs / mr.legs - 1 : null, heads: m.heads || null } }
   /* v98.396 · the three vertical spans the proportion tool scales, from the datum points: HEAD (skull top → chin, skull top ≈ eyes − (chin − eyes)) ·
      TORSO (chin → crotch) · LEGS (crotch → lower ankle). Fractions of their sum → compare a TEMPLATE character with a TARGET one. */
-  function spans(rec, dir) { const { pts: P } = pointsFor(rec, dir), eye = mid(P.eyeL, P.eyeR); if (!eye || !P.chin || !P.crotch || !(P.footL || P.footR)) return null;
-    const feet = Math.max(P.footL ? P.footL[1] : -1, P.footR ? P.footR[1] : -1), A = 2 * (P.chin[1] - eye[1]), B = P.crotch[1] - P.chin[1], C = feet - P.crotch[1], T = A + B + C;
-    return A > 0 && B > 0 && C > 0 ? { head: A / T, torso: B / T, legs: C / T } : null }
+  /* One body-ratio contract, shared by table, standard, datum readout and preview.
+     The projected vertical stack is skull-top→chin→crotch→lower ankle.
+     Hair, raised hands and the soles are excluded. Euclidean bone lengths below
+     are labelled px and are never substituted into these percentages. */
+  function metrics(rec, dir, w = 384, h = 384) {
+    const { pts: P } = pointsFor(rec, dir), eye = mid(P.eyeL, P.eyeR), D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h) : null;
+    const out = { method: 'datum-body-v1', proportions: null, arms: {} };
+    for (const side of ['L', 'R']) { const upper = D(P['sh' + side], P['elbow' + side]), lower = D(P['elbow' + side], P['wrist' + side]); out.arms[side] = { upper, lower, total: upper != null && lower != null ? upper + lower : null } }
+    if (!eye || !P.chin || !P.crotch || !(P.footL || P.footR)) return out;
+    const feet = Math.max(P.footL ? P.footL[1] : -1, P.footR ? P.footR[1] : -1), top = 2 * eye[1] - P.chin[1];
+    const A = (P.chin[1] - top) * h, B = (P.crotch[1] - P.chin[1]) * h, C = (feet - P.crotch[1]) * h, total = A + B + C;
+    if (!(A > 0 && B > 0 && C > 0)) return out;
+    out.top = top; out.bottom = feet; out.lengths = { head: A, torso: B, legs: C, total }; out.proportions = { head: A / total, torso: B / total, legs: C / total }; out.heads = total / A;
+    return out;
+  }
+  const spans = (rec, dir) => metrics(rec, dir).proportions;
   /* scales (head · torso · legs, legs = 1) that give the TARGET the template's spans · only the selected parts move (the others keep 1) */
   function matchScales(tpl, tgt, sel = { head: true, torso: true, legs: true }) { if (!tpl || !tgt) return null; const r = k => tpl[k] / tgt[k], ks = ['head', 'torso', 'legs'].filter(k => sel[k]);
     if (!ks.length) return null; const base = sel.legs || ks.length === 3 ? r('legs') : ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tgt[k], 0) / ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tpl[k], 0);
@@ -108,6 +127,7 @@
     const parts = [`ขนาดเฟรม ${pc(sd)}${Math.abs(sd) > .05 ? ' ' + (Math.abs(sd) > .10 ? ic.bad : ic.warn) : ''}`];
     for (const s of dp.segs) { if (s.dev == null) { if (all) parts.push(s.name + ' —'); continue } if (all || s.level !== 'ok') parts.push(`${s.name} ${pc(s.dev)}${s.level !== 'ok' ? ' ' + ic[s.level] : ''}`) }
     return parts.join(' · ') }
-  const api = { MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
+  const pixelPoints = (rec, dir, w, h) => Object.fromEntries(Object.entries(pointsFor(rec, dir).pts).map(([k, p]) => [k, [p[0] * w, p[1] * h]]));
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

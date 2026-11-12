@@ -12,7 +12,7 @@
   'use strict';
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   function segments(m, marks) {
-    const H = m.H, y0 = m.top, c = Math.round(y0 + clamp(marks.chin, .04, .9) * H), h = Math.round(y0 + clamp(marks.hip, .2, .95) * H), y1 = m.top + H;
+    const H = m.H, top = m.top, y0 = Math.round(top + (marks.headTop ?? 0) * H), c = Math.round(top + clamp(marks.chin, .04, .9) * H), h = Math.round(top + clamp(marks.hip, .2, .95) * H), y1 = Math.round(top + (marks.ankle ?? 1) * H);
     const chin = clamp(c, y0 + 2, y1 - 6), hip = clamp(h, chin + 2, y1 - 2);
     return { head: [y0, chin], torso: [chin, hip], legs: [hip, y1], top: y0, bottom: y1 };
   }
@@ -86,16 +86,35 @@
       wh[i] = wh[i] * (1 - k) + h * k; wt[i] = wt[i] * (1 - k) + t * k; wl[i] = wl[i] * (1 - k) + l * k }
     return [wh, wt, wl];
   }
+  /* v98.411 · Arms follow the torso through shoulder→elbow→wrist, even above
+     the chin. No hand positions are guessed when datum is missing. */
+  function protectArms(WT, W, H, points) {
+    if (!points) return WT;
+    const dist = (x, y, A, B) => { const dx = B[0] - A[0], dy = B[1] - A[1], t = clamp(((x - A[0]) * dx + (y - A[1]) * dy) / (dx * dx + dy * dy || 1), 0, 1); return Math.hypot(x - A[0] - dx * t, y - A[1] - dy * t) };
+    const eye = points.eyeL && points.eyeR ? [(points.eyeL[0] + points.eyeR[0]) / 2, (points.eyeL[1] + points.eyeR[1]) / 2] : null;
+    const face = eye && points.chin ? Math.hypot(eye[0] - points.chin[0], eye[1] - points.chin[1]) : H * .08, radius = Math.max(4, face * .55);
+    const headTop = eye && points.chin ? [2 * eye[0] - points.chin[0], 2 * eye[1] - points.chin[1]] : null;
+    const chains = ['L', 'R'].flatMap(side => { const shoulder = points['sh' + side], wrist = points['wrist' + side], elbow = points['elbow' + side]; if (!shoulder || !wrist) return []; const prev = elbow || shoulder, len = Math.hypot(wrist[0] - prev[0], wrist[1] - prev[1]) || 1, end = [wrist[0] + (wrist[0] - prev[0]) / len * face * .7, wrist[1] + (wrist[1] - prev[1]) / len * face * .7]; return [[shoulder, ...(elbow ? [elbow] : []), wrist, end]] });
+    if (!chains.length) return WT;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      let da = Infinity; for (const chain of chains) for (let j = 1; j < chain.length; j++) da = Math.min(da, dist(x, y, chain[j - 1], chain[j]));
+      if (da > radius * 1.6) continue;
+      // Nearest anatomical chain wins when a raised hand is beside the face.
+      if (headTop && dist(x, y, headTop, points.chin) / Math.max(1, face) < da / radius) continue;
+      const a = 1 - ss(radius * .75, radius * 1.6, da), i = y * W + x;
+      WT[0][i] *= 1 - a; WT[2][i] *= 1 - a; WT[1][i] = 1 - WT[0][i] - WT[2][i];
+    }
+    return WT;
+  }
   /* v98.398 · where a point of the original picture (px, in the warp's own orientation) ends up after warp() — used to move the datum points with the picture */
-  function mapPoint(res, x, y) { const s = res.seg, t = res.T[y < s.head[1] ? 0 : y < s.torso[1] ? 1 : 2]; return [t.bx + (x - t.ax) * t.kx, t.by + (y - t.ay) * t.ky] }
+  function mapPoint(res, x, y) { if (res.forward) return res.forward(x, y).slice(0, 2); const s = res.seg, t = res.T[y < s.head[1] ? 0 : y < s.torso[1] ? 1 : 2]; return [t.bx + (x - t.ax) * t.kx, t.by + (y - t.ay) * t.ky] }
   function warp(img, m, marks, scale, opt = {}) {
     const W = m.w, H = m.h, cv = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c };
     const src = cv(), sg = src.getContext('2d', { willReadFrequently: true }); if (opt.flip) { sg.translate(W, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0); sg.setTransform(1, 0, 0, 1, 0, 0);
     const d = sg.getImageData(0, 0, W, H).data, seg = segments(m, marks), P = plan(seg, scale, opt), K = ['head', 'torso', 'legs'];
     /* v98.402 · kx/ky instead of one shared k, so scale.shoulder can widen/narrow the torso sideways without touching how tall it is */
-    const T = K.map(k => { const cx = centreX(d, W, seg[k][0], seg[k][1]); return { kx: P.kx[k], ky: P.k[k], ax: cx, ay: seg[k][1], bx: cx, by: P[k][1] } });
-    const [wh, wt, wl] = weightsOf(d, W, H, seg, opt.mode || 'band', Math.max(2, (opt.soft ?? .06) * m.H), Math.max(1, Math.round(opt.grow ?? 10)));
-    const WT = [wh, wt, wl];
+    const WT = protectArms(weightsOf(d, W, H, seg, opt.mode || 'band', Math.max(2, (opt.soft ?? .06) * m.H), Math.max(1, Math.round(opt.grow ?? 10))), W, H, opt.points);
+    const T = K.map((k, j) => { let cx = centreX(d, W, seg[k][0], seg[k][1]); if (k === 'head' && opt.points) { let sx = 0, n = 0; for (let i = 0; i < W * H; i++) { const a = WT[j][i] * d[i * 4 + 3]; sx += (i % W) * a; n += a } if (n) cx = sx / n } return { kx: P.kx[k], ky: P.k[k], ax: cx, ay: seg[k][1], bx: cx, by: P[k][1] } });
     const fwd = (x, y) => { const xi = clamp(Math.round(x), 0, W - 1), yi = clamp(Math.round(y), 0, H - 1), i = yi * W + xi; let fx = 0, fy = 0, kkx = 0, kky = 0, ws = 0;
       for (let j = 0; j < 3; j++) { const w = WT[j][i]; if (!w) continue; const t = T[j]; fx += w * (t.bx + t.kx * (x - t.ax)); fy += w * (t.by + t.ky * (y - t.ay)); kkx += w * t.kx; kky += w * t.ky; ws += w }
       return ws ? [fx / ws, fy / ws, kkx / ws, kky / ws] : [x, y, 1, 1] };
@@ -120,8 +139,8 @@
       for (let Y = 1; Y < H - 1; Y++) for (let X = 1; X < W - 1; X++) { const p = Y * W + X, i = p * 4; if (src2[i + 3] < 20) continue; const amt = man != null ? man : Math.min(.9, Math.max(0, (KL[p] - 1) * 1.6)); if (amt < .01) continue;
         for (let c = 0; c < 3; c++) { let sum = 0, n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const q = ((Y + dy) * W + X + dx) * 4; if (src2[q + 3] < 20) continue; sum += src2[q + c]; n++ } const blur = n ? sum / n : src2[i + c]; o[i + c] = src2[i + c] + amt * (src2[i + c] - blur) } } }
     og.putImageData(od, 0, 0);
-    return { canvas: out, plan: P, seg, weights: WT, src, T };
+    return { canvas: out, plan: P, seg, weights: WT, src, T, forward: fwd };
   }
-  const api = { segments, plan, render, warp, weightsOf, autoScale, mapPoint };
+  const api = { segments, plan, render, warp, weightsOf, protectArms, autoScale, mapPoint };
   root.ProportionAdjust = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
