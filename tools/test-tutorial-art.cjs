@@ -22,7 +22,15 @@ for (const id of cardIds) { const a = manifest.assets.find(a => a.id === 'tactic
       const state = a.pose === 'walk' ? { walking: true } : a.pose === 'hit' ? { hitUntil: 100 } : { pose: a.pose };
       const dir = a.view, f = s.MonsterArt.frame(kind, dir, state, a.pose === 'down' ? 0 : 1, 0, a.id);
       assert(f && f.image.complete, a.id); assert.equal(f.clipId, a.id);
-      assert.equal(f.sw, a.size[0]); assert.equal(f.sh, a.size[1]);
+      assert.equal(f.sw, a.frameSize[0]); assert.equal(f.sh, a.frameSize[1]);
+      if (a.artRevision === 'v98.438') {
+        assert.equal(f.frames, 4, a.id);
+        const laterState = a.pose === 'hit' ? { ...state, hitUntil: 10000 } : state;
+        const later = s.MonsterArt.frame(kind, dir, laterState, 1, 400, a.id);
+        assert(later.frame > 0, a.id + ' must advance beyond the still frame');
+        assert.equal(later.sw, 384); assert.equal(later.sh, 384);
+        assert(later.sx > 0 && later.sx + later.sw <= a.size[0], a.id + ' atlas bounds');
+      }
       const mirrored = s.MonsterArt.frame(kind, dir === 'SE' ? 'SW' : 'NW', state, a.pose === 'down' ? 0 : 1, 0, a.id + '-mirror');
       assert.equal(mirrored.clipId, f.clipId); assert.equal(mirrored.flip, !f.flip);
       assert(f.pivot[1] > .8 && f.pivot[1] < 1); count++;

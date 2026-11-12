@@ -101523,14 +101523,14 @@
   {
    "id": "enemy-anim-pumpkin-se-idle",
    "subject": "ฟักทองในไร่ · ยืน/หายใจ · SE",
-   "file": "assets/enemies/animations/pumpkin/se-idle.webp",
+   "file": "assets/enemies/animations/pumpkin/se-idle-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pumpkin",
    "pose": "idle",
    "view": "SE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -101544,36 +101544,42 @@
    ],
    "barHeight": 0.655,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     650
+     180,
+     145,
+     180,
+     145
     ],
     "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.752351,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.897196
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pumpkin-se-hit",
    "subject": "ฟักทองในไร่ · สะดุ้งเมื่อโดนโจมตี · SE",
-   "file": "assets/enemies/animations/pumpkin/se-hit.webp",
+   "file": "assets/enemies/animations/pumpkin/se-hit-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pumpkin",
    "pose": "hit",
    "view": "SE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -101587,24 +101593,30 @@
    ],
    "barHeight": 0.655,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     90,
+     90,
+     90,
+     90
     ],
     "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.752351,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.897196
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pumpkin-se-down",
@@ -101695,14 +101707,14 @@
   {
    "id": "enemy-anim-pumpkin-ne-idle",
    "subject": "ฟักทองในไร่ · ยืน/หายใจ · NE",
-   "file": "assets/enemies/animations/pumpkin/ne-idle.webp",
+   "file": "assets/enemies/animations/pumpkin/ne-idle-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pumpkin",
    "pose": "idle",
    "view": "NE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -101716,36 +101728,42 @@
    ],
    "barHeight": 0.655,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     650
+     180,
+     145,
+     180,
+     145
     ],
     "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.752351,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.897196
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pumpkin-ne-hit",
    "subject": "ฟักทองในไร่ · สะดุ้งเมื่อโดนโจมตี · NE",
-   "file": "assets/enemies/animations/pumpkin/ne-hit.webp",
+   "file": "assets/enemies/animations/pumpkin/ne-hit-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pumpkin",
    "pose": "hit",
    "view": "NE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -101759,24 +101777,30 @@
    ],
    "barHeight": 0.655,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     90,
+     90,
+     90,
+     90
     ],
     "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.752351,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.897196
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pumpkin-ne-down",
@@ -102469,14 +102493,14 @@
   {
    "id": "enemy-anim-pest-se-idle",
    "subject": "ด้วงกินใบ · ยืน/หายใจ · SE",
-   "file": "assets/enemies/animations/pest/se-idle.webp",
+   "file": "assets/enemies/animations/pest/se-idle-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pest",
    "pose": "idle",
    "view": "SE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -102490,36 +102514,42 @@
    ],
    "barHeight": 0.4727083333333333,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     650
+     180,
+     145,
+     180,
+     145
     ],
     "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.622711,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.873846
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pest-se-walk",
    "subject": "ด้วงกินใบ · เดิน · SE",
-   "file": "assets/enemies/animations/pest/se-walk.webp",
+   "file": "assets/enemies/animations/pest/se-walk-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pest",
    "pose": "walk",
    "view": "SE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -102533,24 +102563,30 @@
    ],
    "barHeight": 0.4727083333333333,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     90,
+     90,
+     90,
+     90
     ],
     "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.622711,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.873846
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pest-se-windup",
@@ -102598,14 +102634,14 @@
   {
    "id": "enemy-anim-pest-se-strike",
    "subject": "ด้วงกินใบ · โจมตี · SE",
-   "file": "assets/enemies/animations/pest/se-strike.webp",
+   "file": "assets/enemies/animations/pest/se-strike-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pest",
    "pose": "strike",
    "view": "SE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -102619,24 +102655,30 @@
    ],
    "barHeight": 0.4727083333333333,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     80,
+     70,
+     70,
+     140
     ],
-    "impactMs": 180,
+    "impactMs": 150,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.622711,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.873846
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pest-se-hit",
@@ -102727,14 +102769,14 @@
   {
    "id": "enemy-anim-pest-ne-idle",
    "subject": "ด้วงกินใบ · ยืน/หายใจ · NE",
-   "file": "assets/enemies/animations/pest/ne-idle.webp",
+   "file": "assets/enemies/animations/pest/ne-idle-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pest",
    "pose": "idle",
    "view": "NE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -102748,36 +102790,42 @@
    ],
    "barHeight": 0.4727083333333333,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     650
+     180,
+     145,
+     180,
+     145
     ],
     "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.622711,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.873846
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pest-ne-walk",
    "subject": "ด้วงกินใบ · เดิน · NE",
-   "file": "assets/enemies/animations/pest/ne-walk.webp",
+   "file": "assets/enemies/animations/pest/ne-walk-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pest",
    "pose": "walk",
    "view": "NE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -102791,24 +102839,30 @@
    ],
    "barHeight": 0.4727083333333333,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     90,
+     90,
+     90,
+     90
     ],
     "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.622711,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.873846
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pest-ne-windup",
@@ -102856,14 +102910,14 @@
   {
    "id": "enemy-anim-pest-ne-strike",
    "subject": "ด้วงกินใบ · โจมตี · NE",
-   "file": "assets/enemies/animations/pest/ne-strike.webp",
+   "file": "assets/enemies/animations/pest/ne-strike-v98-438.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pest",
    "pose": "strike",
    "view": "NE",
    "size": [
-    384,
+    1536,
     384
    ],
    "frameSize": [
@@ -102877,24 +102931,30 @@
    ],
    "barHeight": 0.4727083333333333,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     80,
+     70,
+     70,
+     140
     ],
-    "impactMs": 180,
+    "impactMs": 150,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "เฟรมวาดเพิ่ม 4 เฟรม/ท่า มุม SE/NE; SW/NW กลับด้านโดย MonsterArt; สเกลเดียวต่อชนิด เทียบภาพเดิม ฐาน y=360; คงท่าอื่นเดิม",
+   "artRevision": "v98.438",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.622711,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+    "baseline": 0.9375,
+    "motionSourceScale": 0.873846
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pest-ne-hit",
