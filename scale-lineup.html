@@ -87,7 +87,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.424"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.425"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -109,10 +109,12 @@ const OPPV = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, VP_ACT = [['idle', 'ย
 /* follow-up: which character·pose·direction has been checked as correct ('ok') or adjusted and waiting for a check ('adj') */
 const DONE_KEY = 'proportion-done-v1', DONE = (() => { try { return JSON.parse(localStorage.getItem(DONE_KEY) || '{}') || {} } catch (e) { return {} } })();
 const doneKey = (id, a = VP.action, v = VP.view) => id + '|' + a + '|' + v, saveDone = () => { try { localStorage.setItem(DONE_KEY, JSON.stringify(DONE)) } catch (e) { } };
-const doneOf = id => DONE[doneKey(id)] || '';
-/* v98.424 · always four slots for the current pose, in the order SW · NW · NE · SE: ticked direction = solid green disc with a white ✓, not ticked yet = green ring on white, no ✓ */
+/* v98.425 · the two directions of a mirror pair (SW↔SE, NW↔NE) are copies of each other, so a tick on one counts for both (older single ticks too) */
+const doneAt = (id, a, v) => DONE[doneKey(id, a, v)] === 'ok' || DONE[doneKey(id, a, OPPV[v])] === 'ok';
+const doneOf = id => DONE[doneKey(id)] || (doneAt(id, VP.action, VP.view) ? 'ok' : '');
+/* v98.425 · always four slots for the current pose, in the order SW · NW · NE · SE: ticked direction = solid green disc with a white ✓, not ticked yet = green ring on white, no ✓ */
 const VERIFY_DIRS = ['SW', 'NW', 'NE', 'SE'];
-const verifiedMark = id => `<span class="verify-mark" role="group" aria-label="สถานะตรวจของท่านี้ ทิศ SW NW NE SE">${VERIFY_DIRS.map(d => { const ok = DONE[doneKey(id, VP.action, d)] === 'ok'; return `<span class="vdot${ok ? ' on' : ''}${d === VP.view ? ' cur' : ''}" role="img" aria-label="${d} ${ok ? 'ตรวจแล้ว' : 'ยังไม่ตรวจ'}" title="${d} · ${ok ? 'ตรวจแล้ว' : 'ยังไม่ตรวจ'}">${ok ? '✓' : ''}</span>` }).join('')}</span>`;
+const verifiedMark = id => `<span class="verify-mark" role="group" aria-label="สถานะตรวจของท่านี้ ทิศ SW NW NE SE">${VERIFY_DIRS.map(d => { const ok = doneAt(id, VP.action, d); return `<span class="vdot${ok ? ' on' : ''}${d === VP.view ? ' cur' : ''}" role="img" aria-label="${d} ${ok ? 'ตรวจแล้ว' : 'ยังไม่ตรวจ'}" title="${d} · ${ok ? 'ตรวจแล้ว' : 'ยังไม่ตรวจ'}">${ok ? '✓' : ''}</span>` }).join('')}</span>`;
    // character id → { clip, index }: a frame chosen from the Animation clips (studio only)
 const $ = id => document.getElementById(id);
 const load = src => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src });
@@ -196,7 +198,7 @@ async function build() {
   await buildChars();
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.424')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const src = await (await fetch('js/town-battle.js?v=v98.425')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
       const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
     }
@@ -331,7 +333,7 @@ function ratioOf(e) {
   r.manual = !!r.datum; return r;
 }
 const vpPose = () => VP.action && VP.action !== 'pick' ? VP.action : 'idle';
-const teamStandard = () => window.ProportionDatum?.std(window.ProportionDatum.GROUP[VP.view] || 'front', vpPose());   /* v98.424 · the standard of THIS pose */
+const teamStandard = () => window.ProportionDatum?.std(window.ProportionDatum.GROUP[VP.view] || 'front', vpPose());   /* v98.425 · the standard of THIS pose */
 const STDOBJ = () => { const std = teamStandard(); return std ? { team: true, ...std.spans, tol: STDV.tol / 100 } : { team: true, missing: true } };
 const standardText = () => { const std = teamStandard(); return std ? `${std.name} · ${std.pose}/${std.dir} · หัว ${(std.spans.head * 100).toFixed(1)}% · ลำตัว ${(std.spans.torso * 100).toFixed(1)}% · ขา ${(std.spans.legs * 100).toFixed(1)}%` : `ยังไม่ได้ตั้งตัวมาตรฐานของท่า ${vpPose()}`; };
 const medianText = med => { const std = teamStandard(), d = std && med != null ? (med - std.spans.head) * 100 : null; return `ค่ากลางหัวทีม (Datum ครบ) ${med == null ? '—' : (med * 100).toFixed(1) + '%'}${d == null ? '' : ` · ต่างจากมาตรฐาน ${d >= 0 ? '+' : ''}${d.toFixed(1)} จุด`} (ข้อมูลประกอบ ไม่ใช้ตัดสิน)`; };
@@ -415,7 +417,7 @@ function inspectRatio() {
     g.clearRect(0, 0, pw0, CH + 20); g.save(); g.beginPath(); g.rect(0, 0, pw0, CH + 20); g.clip(); g.drawImage(original, left, top, c.m.w * k, c.m.h * k);
     for (const p of datumPts()) dot(g, left + p.x * k, top + p.y * k, p.col, p.own); g.restore();
   }, draw = () => { if (!paintAdj) return drawLeft(); drawLeft(); cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(() => paintAdj()) }; draw();
-  document.getElementById('mDone').onchange = ev => { const k = doneKey(e.id); if (ev.target.checked) DONE[k] = 'ok'; else delete DONE[k]; saveDone(); renderRatio(visible()); inspectRatio() };
+  document.getElementById('mDone').onchange = ev => { for (const k of [doneKey(e.id), doneKey(e.id, VP.action, OPPV[VP.view])]) { if (ev.target.checked) DONE[k] = 'ok'; else delete DONE[k] } saveDone(); renderRatio(visible()); inspectRatio() };
   document.getElementById('mDatum').onclick = () => openDatum(e);
   /* v98.403 · แนวลึก for this pose (vs this character's own standing pose) — a check only, the 🛠 panel below is for matching OTHER characters */
   { const dp = PDL?.depth ? PDL.depth(e.id, qL.pose, qL.frame, qL.dir, c.m.w, c.m.h) : null, el = document.getElementById('depthRow'), col = { ok: 'var(--ok)', warn: 'var(--warn)', bad: 'var(--bad)' };
@@ -432,14 +434,14 @@ function inspectRatio() {
     const sel = () => Object.fromEntries([...document.querySelectorAll('.adjSel')].map(b => [b.dataset.k, b.checked])), mode = () => document.querySelector('input[name=adjMode]:checked').value;
     A.wTorso ??= 100; A.wLegs ??= 100; mem.girthAuto ??= true;
     const scaleNow = () => { const S = sel(); return { head: S.head ? A.head / 100 : 1, torso: S.torso ? A.torso / 100 : 1, legs: S.legs ? A.legs / 100 : 1, wTorso: A.wTorso / 100, wLegs: A.wLegs / 100 } };
-    /* v98.424 · THICKNESS: girth of this picture (and of the template) from the silhouette, see PD.girth */
+    /* v98.425 · THICKNESS: girth of this picture (and of the template) from the silhouette, see PD.girth */
     const ownGirth = () => { try { return PD.girth(datumRec, q.dir, alphaOf(c)) } catch (err) { return null } };
     const refGirth = () => { try { if (mem.ref === '__std__' && STD) return STD.girth || null; const x = mem.ref && ENTRIES.find(y => y.id === mem.ref), r1 = x && recOf(x.id); return x && r1 ? PD.girth(r1, q.dir, alphaOf(x.ctx.battle))?.frac || null : null } catch (err) { return null } };
     /* v98.396 · TEMPLATE: the head · torso · legs spans of another character's datum, given to this one (both need eyes · chin · crotch · ankles)
        v98.398 · "__std__" = the TEAM STANDARD set once (js/proportion-datum.js STD_KEY) — a fixed snapshot, so it stays put even if that character's own picture or datum is edited later
        v98.399 · PD.spans(r0, q.dir) already pools only within q.dir's own front/back pair (js/proportion-datum.js) — no more cross-group 'SW' fallback here */
     const recOf = id => PD && (PD.get(id, q.pose, q.frame) || PD.get(id, 'idle', 0)), spOf = id => { const r0 = recOf(id); return r0 && PD.spans(r0, q.dir) };
-    const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)), STD = PD?.std(GRP, q.pose);   /* v98.424 · only the standard of this very pose */
+    const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)), STD = PD?.std(GRP, q.pose);   /* v98.425 · only the standard of this very pose */
     $a('adjRef').innerHTML = (STD ? `<option value="__std__">⭐ มาตรฐานทีม · ${GRP_TH} (${STD.name})</option>` : '') + (tplList.length ? tplList.map(x => `<option value="${x.id}"${mem.ref === x.id ? ' selected' : ''}>${x.name}${STD?.id === x.id ? ' ⭐' : ''}</option>`).join('') : (STD ? '' : '<option value="">— ยังไม่มีตัวที่วาง datum ครบใน ' + GRP_TH + ' —</option>'));
     $a('adjRef').value = (mem.ref && $a('adjRef').querySelector(`option[value="${mem.ref}"]`)) ? mem.ref : (STD ? '__std__' : (tplList[0]?.id || ''));
     let tplSpans = null;   /* the template spans actually used last redraw() — read by the green target line */
