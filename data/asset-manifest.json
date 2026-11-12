@@ -8309,8 +8309,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "mw31mejn",
+   "artRevision": "20261112-132932",
    "history": [
+    {
+     "file": "assets/_versions/tactics-kier-se-windup/20261112-132931.webp",
+     "at": "2026-11-12T06:29:32.086Z",
+     "stamp": "20261112-132931",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/unified/mw31mejn/tactics-kier-se-windup.png",
      "at": "2026-11-05T04:26:08.423Z",
@@ -8623,7 +8630,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Mil, a small cheerful junior swordsman with a big scarf, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม mil ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "20261106-132322"
+   "artRevision": "20261112-132607",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-mil-se-windup/20261112-132401.webp",
+     "at": "2026-11-12T06:24:01.162Z",
+     "stamp": "20261112-132401",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "tactics-mil-se-strike",
@@ -57063,8 +57079,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Kier, a lean young swordsman with a short cape, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม kier ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "mw31m9t3",
+   "artRevision": "20261112-132932",
    "history": [
+    {
+     "file": "assets/_versions/tactics-kier-sw-windup/20261112-132931.webp",
+     "at": "2026-11-12T06:29:32.012Z",
+     "stamp": "20261112-132931",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/unified/mw31m9t3/tactics-kier-sw-windup.png",
      "at": "2026-11-05T04:26:02.198Z",
@@ -57671,7 +57694,16 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Mil, a small cheerful junior swordsman with a big scarf, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม mil ในสนาม",
    "note": "ช่องว่าง: ยังไม่มีภาพ — ใส่ไฟล์ตามชื่อนี้ได้เลย",
-   "artRevision": "20261106-132322"
+   "artRevision": "20261112-132607",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-mil-sw-windup/20261112-132401.webp",
+     "at": "2026-11-12T06:24:01.126Z",
+     "stamp": "20261112-132401",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "tactics-mil-sw-strike",
