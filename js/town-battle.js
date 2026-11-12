@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.407';
+  const V = '98.418';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -45,9 +45,9 @@
     /* v98.331 · prologue tutorials (docs/TODO.md §14): drawn by code (js/code-monsters.js) until real pictures exist — add assets/enemies/<img>.webp and drop `code: true` to replace.
        goat = Pip's goat (light counter-attacks) · pumpkin = the harvest pumpkin (stands still; 2–3 hits; pops into a pumpkin to collect) · pumpkinBoss = the one that evolves (event, never random) · pest = crop pest (one hit) */
     goat: { name: 'แพะของปิ๊บ', hp: 24, iq: 1, move: 4, atk: 3, scale: .8, fx: 'blunt', img: 'goat', el: 'earth' },   /* v98.361 · painted (assets/enemies/animations/goat) */
-    pumpkin: { name: 'ฟักทองในไร่', hp: 30, iq: 0, move: 0, atk: 0, scale: .75, fx: 'blunt', code: true, passive: true, loot: true, evoGroup: 'pumpkin', el: 'earth' },
-    pumpkinBoss: { name: 'บอสฟักทอง', hp: 70, iq: 1, move: 2, atk: 6, scale: 1.05, fx: 'blunt', code: true, range: 3, el: 'earth' },
-    pest: { name: 'ด้วงกินใบ', hp: 4, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', code: true, el: 'wind' },
+    pumpkin: { name: 'ฟักทองในไร่', hp: 30, iq: 0, move: 0, atk: 0, scale: .75, fx: 'blunt', img: 'pumpkin', passive: true, loot: true, evoGroup: 'pumpkin', el: 'earth' },
+    pumpkinBoss: { name: 'บอสฟักทอง', hp: 70, iq: 1, move: 2, atk: 6, scale: 1.05, fx: 'blunt', img: 'pumpkinBoss', range: 3, el: 'earth' },
+    pest: { name: 'ด้วงกินใบ', hp: 4, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', img: 'pest', el: 'wind' },
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
   /* v98.58 · evolution (วิวัฒน์): the next form of a monster, fought mid-battle (rules + hidden odds: js/flat-battle.js evolveCheck). Data only — add a pair to give another monster a next form. */
@@ -89,7 +89,7 @@
     const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
-    window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'hit', 'down']);
+    window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
   }
   /* embedded (world map): a black veil until the arena is ready, then tell the parent */
   let veil0 = null;
@@ -198,7 +198,7 @@
       for (const k of Object.keys(sn)) if (!['units', 'active', 'deck', 'arena', 'drawn', 'cur'].includes(k)) st[k] = sn[k];
       if (sn.deck) Object.assign(st.deck, sn.deck);
       st.active = st.units.find(u => u.id === sn.active) || st.units[0]; st.drawn = [];
-      for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.walking = false; if (['windup', 'strike', 'guard', 'hit'].includes(u.pose)) u.pose = 'idle' }
+      for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.walking = false; if (['windup', 'strike', 'cast', 'guard', 'hit'].includes(u.pose)) u.pose = 'idle' }
       for (const g of ['movement', 'combat']) for (const c of st.deck[g]?.hand || []) seenUids.add(c.uid);
       if (rec.coach) coachState.i = rec.coach; return true;
     } catch (e) { return false }
@@ -776,11 +776,12 @@
      a quick push-in without bars otherwise so a big fight keeps moving */
   async function unitAttack(a, t, s) {
     a.dir = dirTo(a, t); const M = window.MonsterArt, isMon = a.side === 'monster', fxk = isMon ? (MON[a.kind]?.fx || 'sword') : (a.fx || 'sword');
-    const tw = isMon ? M?.timing?.(a.kind, a.dir, 'windup') : null, ts = isMon ? M?.timing?.(a.kind, a.dir, 'strike') : null;
+    const strikePose = isMon && a.kind === 'pumpkinBoss' && FB.dist(a, t) > 1 ? 'cast' : 'strike';
+    const tw = isMon ? M?.timing?.(a.kind, a.dir, 'windup') : null, ts = isMon ? M?.timing?.(a.kind, a.dir, strikePose) : null;
     const isHero = t === FB.hero(st), down = t.hp <= 0, guarded = s.notes.some(n => n.startsWith('ป้องกัน')), full = isHero || s.crit || down || a.boss;
     await cinematic(a, t, async () => {
       a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } if (a.boss || s.damage >= 20) await chargeAttack(a, Math.max(560, Math.min(900, tw?.duration || 0))); else await wait(isMon ? Math.min(full ? 900 : 520, tw?.duration || 380) : (full ? 300 : 200));
-      a.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * 1.4); lines(t, 200) } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
+      a.pose = strikePose; sfx('swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * 1.4); lines(t, 200) } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
       if (s.evaded) { const o = { u: t.vu, v: t.vv }; t.vu += (t.vu - a.vu) * .35; t.vv += (t.vv - a.vv) * .35; fx('wind', t, a, {}); sfx('swing'); floatText(t, 'MISS', '#bfe8ff', false, true); await wait(420); t.vu = o.u; t.vv = o.v; a.pose = 'idle'; return }
       fx(guarded ? 'parry' : fxk, t, a, { color: isMon ? '#ffb36a' : '#9fd4ff' }); impact(t, guarded ? 'parry' : fxk, { big: s.crit || s.damage >= 12, crit: s.crit, kill: down && (isHero || !FB.monsters(st).some(u => u.hp > 0)), from: a });
       if (s.crit) banner('CRITICAL!', 'crit'); if (isHero && s.damage && CINE) screenFlash('255,30,20', s.crit || down ? .38 : .22, 320);
@@ -1446,7 +1447,9 @@
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .6; CodeMonsters.draw(g, kind, { x: 0, y: 0, h, dir: u.dir, t, hp: u.hp, hit: null, walking: false, pose: 'idle', seed: 0 }) }
       g.restore(); if (u.hp > 0) bar(g, p0, p0.y - h * 1.02, u.shown / u.maxHp, '#e2705f'); return;
     }
-    const af = window.MonsterArt?.frame(kind, u.dir, v, u.hp, t, 'fb-' + u.id);
+    // A harvested pumpkin keeps its real loot pose after defeat; it is not a living unit.
+    const isLoot = u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt;
+    const af = window.MonsterArt?.frame(kind, u.dir, isLoot ? { pose: 'loot' } : v, isLoot ? 1 : u.hp, t, 'fb-' + u.id);
     /* v97.26 · B3: fliers hover half a cell up and bob; their shadow stays on the ground, smaller as they rise */
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
     shadow(g, p0, UNIT * .26 * T.scale * (lift ? .7 - lift / UNIT * .3 : 1));
@@ -1454,12 +1457,12 @@
       const h = UNIT * CharSize.MON.base * CharSize.MON.k * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * monNorm(kind, T) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
       evoAura(g, u, p, h, t);
       const ec = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? 1 + .06 * Math.sin(t * .05) : 1, ex = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? Math.sin(t * .09) * 3 : 0;
-      g.save(); g.translate(p.x + ex, p.y); g.scale(ec, ec); if (af.flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .55;
+      g.save(); g.translate(p.x + ex, p.y); g.scale(ec, ec); if (af.flip) g.scale(-1, 1); if (u.hp <= 0 && !isLoot) g.globalAlpha *= .55;
       const ai = u.variant || u.leader ? window.JobLook?.tint(af.image, JobLook.VARIANT[u.variant || 'elite']) || af.image : af.image;   /* v97.26 · J6 */
       g.drawImage(ai, af.sx, af.sy, af.sw, af.sh, -w * pv[0], -h * pv[1], w, h);
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; for (let k = 0; k < 2; k++) g.drawImage(af.image, af.sx, af.sy, af.sw, af.sh, -w * pv[0], -h * pv[1], w, h) }
       g.restore();
-      bar(g, p, p.y - h * (af.barHeight || .85), u.shown / u.maxHp, '#e2705f'); return;
+      if (u.hp > 0) bar(g, p, p.y - h * (af.barHeight || .85), u.shown / u.maxHp, '#e2705f'); return;
     }
     const back = ['NE', 'NW'].includes(u.dir), i = im('assets/enemies/' + T.img + (back ? '-back' : '') + '.webp') || im('assets/enemies/' + T.img + '.webp'); if (!i) return;
     const h = UNIT * CharSize.MON.base * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * CharSize.MON.k, w = h * i.naturalWidth / i.naturalHeight;
