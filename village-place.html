@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="th"><meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
+<html lang="th"><meta charset="utf-8"><script src="js/piece-geometry.js?v=v98.408"></script><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
 <script src="js/img-gate.js?v=v98.352"></script><script src="js/walk-speed.js?v=98.109"></script><script src="js/sfx.js?v=98.298"></script><script src="js/key-layout.js?v=1"></script><script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=v98.387"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
@@ -708,7 +708,12 @@ function codeArt(kind, u, v, s, t) {
  }
 }
 
-function drawArt(a, u, v, width, s = 1, flip = false, t = 0, hp = null) {
+function drawArt(a, u, v, width, s = 1, flip = false, t = 0, hp = null, geometry = null) {
+ if (geometry && window.PieceGeometry) {
+  const anchor = project(u, v); g.save();
+  try { g.translate(anchor.x, anchor.y); PieceGeometry.apply(g, geometry); g.translate(-anchor.x, -anchor.y); drawArt(a, u, v, width, s, flip, t, hp) } finally { g.restore() }
+  return
+ }
  if (a.startsWith('code:')) {
   g.save();
   if (flip) {
@@ -1021,26 +1026,26 @@ function draw(t) {
  });
  /* v98.309 · composite props (same `cmp` id): one shared footprint = union box, member boxes kept as .parts */
  const cmpFp = new Map();
- for (const o of M.props) if (o.cmp) { const b = { u0: o.u - (o.sw ?? .5) / 2, u1: o.u + (o.sw ?? .5) / 2, v0: o.v - (o.sh ?? .5) / 2, v1: o.v + (o.sh ?? .5) / 2 }; let U = cmpFp.get(o.cmp); if (!U) cmpFp.set(o.cmp, U = { ...b, parts: [] }); else { U.u0 = Math.min(U.u0, b.u0); U.u1 = Math.max(U.u1, b.u1); U.v0 = Math.min(U.v0, b.v0); U.v1 = Math.max(U.v1, b.v1) } U.parts.push(b) }
+ for (const o of M.props) if (o.cmp) { const b = PieceGeometry.footprint(o, o.u, o.v); let U = cmpFp.get(o.cmp); if (!U) cmpFp.set(o.cmp, U = { ...b, parts: [] }); else { U.u0 = Math.min(U.u0, b.u0); U.u1 = Math.max(U.u1, b.u1); U.v0 = Math.min(U.v0, b.v0); U.v1 = Math.max(U.v1, b.v1) } U.parts.push(b) }
  M.props.forEach((o, i) => {
   const p = project(o.u, o.v);
   hits.push({
    type: 'prop',
    i,
-   r: artRect(o.art, o.u, o.v, o.width || 110, o.s || 1)
+   r: PieceGeometry.rect(artRect(o.art, o.u, o.v, o.width || 110, o.s || 1), project(o.u, o.v), o)
   });
   objects.push({
    y: p.y + (o.layer || 0),
    set: o.owner || null,
    z: o.z || 0,
-   rect: artRect(o.art, o.u, o.v, o.width || 110, o.s || 1), label: o.art, tall: o.tall,
+   rect: PieceGeometry.rect(artRect(o.art, o.u, o.v, o.width || 110, o.s || 1), project(o.u, o.v), o), label: o.art, tall: o.tall,
    /* v98.309 · opt-in ORDER footprint (set in the 🔍 detail window): the hero is drawn in front of / behind this prop by the same rule as the village (DepthStyle) */
-   fp: cmpFp.get(o.cmp) || (o.sw != null || o.sh != null || o.cmp ? { u0: o.u - (o.sw ?? .5) / 2, u1: o.u + (o.sw ?? .5) / 2, v0: o.v - (o.sh ?? .5) / 2, v1: o.v + (o.sh ?? .5) / 2 } : null),
+   fp: cmpFp.get(o.cmp) || (o.sw != null || o.sh != null || o.orderU || o.orderV || o.cmp ? PieceGeometry.footprint(o, o.u, o.v) : null),
    tag: {
     type: 'prop',
     i
    },
-   draw: () => drawArt(o.art, o.u, o.v, o.width || 110, o.s || 1, o.f, t, hp)
+   draw: () => drawArt(o.art, o.u, o.v, o.width || 110, o.s || 1, o.f, t, hp, o)
   })
  });
  for (const f of fencePieces()) objects.push({ y: project(f.m.u, f.m.v).y, draw: () => drawFencePiece(f, hp) });
@@ -1586,4 +1591,4 @@ window.TouchControls?.attach({
  act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
  buttons: [{ id: 'bag', icon: 'bag', title: 'กระเป๋า', run: () => send('menu', { id: 'bag' }) }, { id: 'menu', icon: 'settings', title: 'เมนู', run: () => send('menu', { id: 'settings' }) }, ...(KIND === 'forge' ? [{ id: 'wip', icon: 'forge', title: 'ซ่อน/แสดงการ์ดงาน', run: () => send('wip-toggle') }] : [])]
 });
-</script><script src="js/place-build.js?v=98.293"></script><script src="js/depth-style.js?v=98.292"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=98.293"></script><script src="js/injury.js?v=v98.332"></script><script src="js/world-state.js?v=98.297"></script><script src="js/villager-draw.js?v=v98.319"></script><script src="js/village-life.js?v=v98.319"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=98.263"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+</script><script src="js/place-build.js?v=v98.408"></script><script src="js/depth-style.js?v=98.292"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=v98.408"></script><script src="js/injury.js?v=v98.332"></script><script src="js/world-state.js?v=98.297"></script><script src="js/villager-draw.js?v=v98.319"></script><script src="js/village-life.js?v=v98.319"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=98.263"></script><script src="js/editor-tools.js?v=91.77"></script></html>

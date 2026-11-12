@@ -262,10 +262,11 @@
    ix = ov.ix ?? 1, iy = ov.iy ?? 1,
    ia = (ix + iy) / 2, ib = (iy - ix) / 2, ic = (iy - ix) / 2, id = (ix + iy) / 2,
    k = ov.kind && KINDS[ov.kind] ? ov.kind : null,
-   plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !k;
+   plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !k && !ov.pm && !ov.artX && !ov.artY;
   const inner = plain ? draw : gg => {
    g.save();
    g.translate(E.x, E.y);
+   window.PieceGeometry.apply(g, ov);
    if (r) g.rotate(r);
    g.scale(f ? -s : s, s);
    g.transform(ia, ib, ic, id, 0, 0);
@@ -279,13 +280,13 @@
   };
   if (ov.grp) grpYNow.set(ov.grp, Math.max(grpYNow.get(ov.grp) ?? -1e9, E.y));
   /* v98.146 · the part's footprint on the grid (กรอบพื้น) and its name: depth order against walkers uses the footprint (js/depth-style.js), tall / low decides if it may fade */
-  const fc = inv(E.x, E.y), fz = { w: ov.sw ?? ov.fw ?? .5, h: ov.sh ?? ov.fh ?? .5 };   /* v98.286 · the ORDER footprint (sw/sh) is separate from the walk-block / spacing footprint (fw/fh); unset → same as fw/fh */
+  const fc = inv(E.x, E.y);   /* v98.286 · the ORDER footprint (sw/sh) is separate from the walk-block / spacing footprint (fw/fh); unset → same as fw/fh */
   const it = {
    x: E.x,
    y: (ov.grp && grpYPrev.get(ov.grp) != null ? grpYPrev.get(ov.grp) : E.y) + (ov.layer || 0),
    z: ov.z || 0,
    fp: (() => {
-    const own = { u0: fc.u - fz.w / 2, u1: fc.u + fz.w / 2, v0: fc.v - fz.h / 2, v1: fc.v + fz.h / 2 };
+    const own = window.PieceGeometry.footprint(ov, fc.u, fc.v);
     if (!ov.cmp || !ov.grp) return own;
     /* v98.292 · COMPOSITE: every member of the group shares ONE footprint = the union box of all member boxes (+ the member boxes themselves as .parts, for L / U shapes) */
     let U = grpFpNow.get(ov.grp);
@@ -1002,11 +1003,12 @@
  /* v97.47 · a first guess of the blocking frame (cells) from the item's name; adjusted with กว้าง/ลึก ± */
  function guessBlock(label) { const t = String(label || ''); return /ต้นไม้|ต้นโอ๊ก|ต้นสน|tree|oak|pine/i.test(t) ? [1, 1] : /เกวียน|รถ|cart|wagon/i.test(t) ? [1.5, 1] : /บ่อ|well|น้ำพุ|รูปปั้น|statue/i.test(t) ? [1.5, 1.5] : /โคม|lamp|ถัง|barrel|ลัง|crate|ป้าย|sign/i.test(t) ? [.5, .5] : /หิน|rock/i.test(t) ? [1, 1] : [1, 1] }
  let blockList = [];
- function rebuildBlocks() { blockList = frame.filter(e => e.ov?.block && !e.hidden).map(e => { const z = itemSize(e.key), c = inv(e.x, e.y); return { u0: c.u - z.w / 2, u1: c.u + z.w / 2, v0: c.v - z.h / 2, v1: c.v + z.h / 2 } }) }
+ function rebuildBlocks() { blockList = frame.filter(e => e.ov?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.ov, c.u, c.v, true) }) }
  const blockedAt = (u, v) => { for (const r of blockList) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
  function itemRectAt(k, c) {
   const z = itemSize(k);
-  return window.VillageGrid.rectFromCells(c.u - z.w / 2, c.v - z.h / 2, z.w, z.h)
+  const ov = data.edit[k] || {};
+  return window.VillageGrid.rectFromCells(c.u + (ov.blockU || 0) - z.w / 2, c.v + (ov.blockV || 0) - z.h / 2, z.w, z.h)
  }
  function siblingRects(owner, exceptKeys) {
   const G = window.VillageGrid;
@@ -1112,7 +1114,7 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
+  return { ...window.PieceGeometry.extra(ov), kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
  }
  function addRecords(recs, owner, off) {
   const ids = [], gmap = {};
@@ -1121,7 +1123,7 @@
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    const G = window.VillageGrid, bs = baseOf(owner), sn = !G ? { du: r.du + off, dv: r.dv + off } : recs.length === 1 ? placeNewItem(owner, nid, r.du + off, r.dv + off) : G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, modeNow());
    data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
+   data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
    if (r.g) data.edit[nid].grp = gmap[r.g] || (gmap[r.g] = newGid());
    clean(nid);
    ids.push(nid)
@@ -1155,6 +1157,13 @@
    ov.du = +((ov.du || 0) + delta.du).toFixed(3);
    ov.dv = +((ov.dv || 0) + delta.dv).toFixed(3);
    ov.f = !ov.f;
+   if (ov.r) ov.r = -ov.r;
+   if (ov.artX) ov.artX = -ov.artX;
+   if (ov.pm) ov.pm = [ov.pm[0], -ov.pm[1], -ov.pm[2], ov.pm[3]];
+   [ov.orderU, ov.orderV] = [ov.orderV, ov.orderU];
+   [ov.blockU, ov.blockV] = [ov.blockV, ov.blockU];
+   [ov.sw, ov.sh] = [ov.sh, ov.sw];
+   [ov.fw, ov.fh] = [ov.fh, ov.fw];
    clean(E.key)
   }
   UX.persist();
@@ -2484,7 +2493,7 @@
    for (const r of a.recs) {
     const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sn = window.VillageGrid.snapOffset({ u: base.u, v: base.v }, !!base.mirror, r.du, r.dv + +base.front.toFixed(2), modeNow());
     data.added.push({ id: nid, owner: place.id, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-    data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
+    data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
     clean(nid);
     ids.push(nid)
    }
@@ -3084,7 +3093,7 @@
     const main = g, s = ov.s ?? 1, r = (ov.r || 0) * Math.PI / 180, ix = ov.ix ?? 1, iy = ov.iy ?? 1, k = ov.kind && KINDS[ov.kind] ? ov.kind : null;
     g = q;
     try {
-     q.save(); if (r) q.rotate(r); q.scale(ov.f ? -s : s, s); q.transform((ix + iy) / 2, (iy - ix) / 2, (iy - ix) / 2, (ix + iy) / 2, 0, 0); q.translate(-E.ax, -E.ay);
+     q.save(); window.PieceGeometry.apply(q, ov); if (r) q.rotate(r); q.scale(ov.f ? -s : s, s); q.transform((ix + iy) / 2, (iy - ix) / 2, (iy - ix) / 2, (ix + iy) / 2, 0, 0); q.translate(-E.ax, -E.ay);
      if (k) KINDS[k].draw({ x: E.ax, y: E.ay }); else E.base(q);
      q.restore()
     } catch (e) { } finally { g = main }

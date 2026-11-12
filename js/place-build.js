@@ -1333,7 +1333,7 @@ const PB_ART = (() => {
    item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
    ov: key => M.props[+key] || {},
    edit(key, fn, cp) { const o = M.props[+key]; if (!o) return; if (cp) checkpoint(); fn(o); for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === false) delete o[k]; dirty = true; save(); render() },
-   drawTo(q, E, ov) { const main = g; g = q; try { q.save(); const p0 = project(0, 0); q.translate(-p0.x, -p0.y); drawArt(ov.art, 0, 0, ov.width || 110, ov.s || 1, ov.f, 0, null); q.restore() } catch (e) { } finally { g = main } }
+   drawTo(q, E, ov) { const main = g; g = q; try { q.save(); const p0 = project(0, 0); q.translate(-p0.x, -p0.y); drawArt(ov.art, 0, 0, ov.width || 110, ov.s || 1, ov.f, 0, null, ov); q.restore() } catch (e) { } finally { g = main } }
   },
   enter,
   leave: () => leave(true),
