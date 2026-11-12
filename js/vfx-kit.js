@@ -1,7 +1,7 @@
 /* v98.405 VFX Kit — battle effects drawn entirely in code (soft glowing fantasy): layered additive light, particles, shapes that move every frame.
    Same call as BattleVFX.draw(e, t, p, a, g, camera):  e = { kind, seed, scale, color, tier }, t = 0..1, p = target feet, a = attacker feet, camera.w = one cell.
    Kinds: sword knife blunt spear rapier arrow shield parry · fire ice lightning wind water earth holy dark arcane heal · impact (tier light/heavy/critical/finisher) · death
-   OFF by default in the game: js/battle-vfx.js hands a kind over only when VfxKit.enabled() (localStorage 'vfx-kit' = '1', or ?vfx=new; ?vfx=old forces the old pictures).
+   OFF by default in the game: js/battle-vfx.js hands a kind over only when VfxKit.uses(kind) — chosen per effect in the editor (✨ VFX tab), see the end of this file.
    Preview of everything, old next to new: vfx-kit-preview.html */
 (function (root) {
   'use strict';
@@ -144,8 +144,16 @@
     g.save(); g.translate(p.x, py); g.rotate(an); add(g, () => { for (const [w, cc, o] of [[W * .2, c, .35], [W * .09, C.white, .95]]) { const gr = g.createLinearGradient(-L, 0, W * .25, 0); gr.addColorStop(0, `rgba(${cc},0)`); gr.addColorStop(.75, `rgba(${cc},${o * al})`); gr.addColorStop(1, `rgba(${C.white},${al})`); g.fillStyle = gr; g.beginPath(); g.moveTo(-L * k, -w * .5); g.lineTo(W * .3 * k, 0); g.lineTo(-L * k, w * .5); g.closePath(); g.fill() } }); g.restore();
     add(g, () => { const kk = seg(t, .22, 1); glow(g, p.x, py, W * .7 * bell(seg(t, .15, .6)), C.white, .7); ring(g, p.x, py, W * .7 * eo(kk), W * .7 * eo(kk), W * .04 * (1 - kk), c, 1 - kk); star4(g, p.x, py, W * .6 * (1 - kk), C.white, 1 - kk, an); sparks(g, e, 9, p.x, py, W * .9, W * .03, kk, c, { a0: an - .9, arc: 1.8, grav: W * .2 }) }); return true }
 
+  /* v98.406 · which effects the game draws with this kit — chosen one by one (editor → ✨ VFX):
+     localStorage 'vfx-kit-kinds' = { [kind]: 'new' | 'old' } ('impact' = all four hit weights); a kind not listed follows the old all-or-nothing switch 'vfx-kit' = '1'.
+     ?vfx=new / ?vfx=old on the page URL overrides everything (for a quick look). Pushed with the editor settings so every player gets the same choice. */
+  const KEY = 'vfx-kit-kinds', nameOf = k => k === 'impactCore' ? 'impact' : k;
   let mode; try { mode = new URLSearchParams(root.location?.search || '').get('vfx') } catch (_) { }
-  const enabled = () => { if (mode === 'old' || mode === '0') return false; if (mode === 'new' || mode === '1') return true; try { return root.localStorage?.getItem('vfx-kit') === '1' } catch (_) { return false } };
-  function draw(e, t, p, a, g, camera) { const f = FX[e.kind === 'impactCore' ? 'impact' : e.kind]; if (!f) return false; g.save(); try { return !!f(g, e, clamp(t), p, a || p, camera.w) } catch (err) { return false } finally { g.restore() } }
-  root.VfxKit = { draw, has: k => !!FX[k === 'impactCore' ? 'impact' : k], kinds: Object.keys(FX), enabled, setEnabled: v => { try { v ? root.localStorage.setItem('vfx-kit', '1') : root.localStorage.removeItem('vfx-kit') } catch (_) { } } };
+  let cache = null, cacheAt = 0;
+  const choices = () => { const now = Date.now(); if (cache && now - cacheAt < 1500) return cache; cacheAt = now; try { cache = JSON.parse(root.localStorage?.getItem(KEY) || '{}') || {} } catch (_) { cache = {} } try { cache.__all = root.localStorage?.getItem('vfx-kit') === '1' } catch (_) { } return cache };
+  const uses = k => { k = nameOf(k); if (!FX[k]) return false; if (mode === 'old' || mode === '0') return false; if (mode === 'new' || mode === '1') return true; const c = choices(); return c[k] ? c[k] === 'new' : !!c.__all };
+  const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = v === 'new' ? 'new' : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
+  const enabled = () => Object.keys(FX).some(uses);
+  function draw(e, t, p, a, g, camera) { const f = FX[nameOf(e.kind)]; if (!f) return false; g.save(); try { return !!f(g, e, clamp(t), p, a || p, camera.w) } catch (err) { return false } finally { g.restore() } }
+  root.VfxKit = { KEY, draw, has: k => !!FX[nameOf(k)], kinds: Object.keys(FX), uses, setChoice, enabled, setEnabled: v => { for (const k of Object.keys(FX)) setChoice(k, v ? 'new' : 'old') } };
 })(globalThis);

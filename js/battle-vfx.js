@@ -24,7 +24,7 @@ function impactTier(o={}){return o.kill?'finisher':o.crit?'critical':o.big?'heav
 // Preserve the concurrently added SVG pack as a lightweight fallback and comparison mode.
 const impactImgs={};
 function impactImage(tier){if(!IMPACT[tier])tier='light';let im=impactImgs[tier];if(!im){im=new Image();im.decoding='async';im.src=SRC?new URL('../assets/fx/impact/'+tier+'.svg',SRC).href:'assets/fx/impact/'+tier+'.svg';impactImgs[tier]=im}return im.complete&&im.naturalWidth?im:null}
-function impactReady(tier='light'){if(root.VfxKit?.enabled())return enhanced();return enhanced()&&!!((impactMode!=='vector'&&I('impact/core-atlas'))||impactImage(tier))}
+function impactReady(tier='light'){if(root.VfxKit?.uses('impact'))return enhanced();return enhanced()&&!!((impactMode!=='vector'&&I('impact/core-atlas'))||impactImage(tier))}
 Object.keys(IMPACT).forEach(impactImage);
 function drawImpact(g,e,t,p,a,cw){
  if(!enhanced())return false;const atlas=impactMode!=='vector'&&I('impact/core-atlas'),im=atlas||impactImage(e.tier);if(!im)return false;
@@ -65,7 +65,7 @@ const KIND={
  holy(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!stamp(g,'skill/holy',p.x,p.y+cw*.15,W*2.2,{ay:.88,sx:.6+.4*pop(t,.25),alpha:fade(t,.5)}))return false;burst(g,e,8,p.x,chest(p,cw),W,W*.3,t,'sparkle');return true},
  dark(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.45,'mote',W*.5,.4);if(k<0)return !!I('particle/mote');return stamp(g,'skill/dark',p.x,chest(p,cw),W*1.9*(.6+.4*back(pop(k,.35))),{rot:k*2,alpha:fade(k,.5),blend:'source-over'})}};
 /* v98.405 · the code-drawn VFX Kit (js/vfx-kit.js) takes a kind over when it is switched on (off by default — see vfx-kit-preview.html); drawOld = always the painted stamps */
-function draw(e,t,p,a,g,camera){const K=root.VfxKit;if(K&&K.enabled()&&K.has(e.kind)){const ok=K.draw(e,t,p,a,g,camera);if(ok)return true}return drawOld(e,t,p,a,g,camera)}
+function draw(e,t,p,a,g,camera){const K=root.VfxKit;if(K&&K.uses(e.kind)){const ok=K.draw(e,t,p,a,g,camera);if(ok)return true}return drawOld(e,t,p,a,g,camera)}
 function drawOld(e,t,p,a,g,camera){if(e.kind==='impactCore'){try{return drawImpact(g,e,t,p,a||p,camera.w)}catch(_){return false}}const f=KIND[e.kind];if(!f)return false;try{return !!f(g,e,t,p,a||p,camera.w)}catch(err){return false}}
 // ---------- weather: sprites instead of dots. Returns false (code fallback) until the images are loaded. ----------
 function weather(g,r,now,kind,low){const W=r.width,H=r.height;
