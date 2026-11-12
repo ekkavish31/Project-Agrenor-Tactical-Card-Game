@@ -108343,6 +108343,716 @@
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
    "mirroredFrom": "npc-pip-ne-stand",
    "ageScaleBaked": true
+  },
+  {
+   "id": "npc-finn-sw-walk1",
+   "file": "assets/village-town/npc/finn/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC ฟินน์ · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:finn",
+    "name": "ฟินน์",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-finn-se-walk1",
+   "file": "assets/village-town/npc/finn/se-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC ฟินน์ · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:finn",
+    "name": "ฟินน์",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-finn-sw-walk1"
+  },
+  {
+   "id": "npc-berg-sw-walk1",
+   "file": "assets/village-town/npc/berg/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-berg-se-walk1",
+   "file": "assets/village-town/npc/berg/se-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-berg-sw-walk1"
+  },
+  {
+   "id": "npc-ken-sw-walk1",
+   "file": "assets/village-town/npc/ken/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เคน · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:ken",
+    "name": "เคน",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-ken-se-walk1",
+   "file": "assets/village-town/npc/ken/se-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เคน · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:ken",
+    "name": "เคน",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-ken-sw-walk1"
+  },
+  {
+   "id": "npc-shep-sw-walk1",
+   "file": "assets/village-town/npc/shep/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC ปิแอร์ · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:shep",
+    "name": "ปิแอร์",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-shep-se-walk1",
+   "file": "assets/village-town/npc/shep/se-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC ปิแอร์ · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:shep",
+    "name": "ปิแอร์",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-shep-sw-walk1"
+  },
+  {
+   "id": "npc-vera-sw-walk1",
+   "file": "assets/village-town/npc/vera/sw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เวร่า · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:vera",
+    "name": "เวร่า",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-vera-se-walk1",
+   "file": "assets/village-town/npc/vera/se-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เวร่า · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:vera",
+    "name": "เวร่า",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-vera-sw-walk1"
+  },
+  {
+   "id": "npc-finn-ne-walk1",
+   "file": "assets/village-town/npc/finn/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC ฟินน์ · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:finn",
+    "name": "ฟินน์",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-finn-nw-walk1",
+   "file": "assets/village-town/npc/finn/nw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC ฟินน์ · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:finn",
+    "name": "ฟินน์",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-finn-ne-walk1"
+  },
+  {
+   "id": "npc-berg-ne-walk1",
+   "file": "assets/village-town/npc/berg/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-berg-nw-walk1",
+   "file": "assets/village-town/npc/berg/nw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-berg-ne-walk1"
+  },
+  {
+   "id": "npc-ken-ne-walk1",
+   "file": "assets/village-town/npc/ken/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เคน · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:ken",
+    "name": "เคน",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-ken-nw-walk1",
+   "file": "assets/village-town/npc/ken/nw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เคน · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:ken",
+    "name": "เคน",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-ken-ne-walk1"
+  },
+  {
+   "id": "npc-shep-ne-walk1",
+   "file": "assets/village-town/npc/shep/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC ปิแอร์ · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:shep",
+    "name": "ปิแอร์",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-shep-nw-walk1",
+   "file": "assets/village-town/npc/shep/nw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC ปิแอร์ · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:shep",
+    "name": "ปิแอร์",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-shep-ne-walk1"
+  },
+  {
+   "id": "npc-vera-ne-walk1",
+   "file": "assets/village-town/npc/vera/ne-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เวร่า · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:vera",
+    "name": "เวร่า",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+  },
+  {
+   "id": "npc-vera-nw-walk1",
+   "file": "assets/village-town/npc/vera/nw-walk1.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.432",
+   "usedIn": "NPC เวร่า · เดินก้าวสั้น",
+   "studioOwner": {
+    "id": "npc:vera",
+    "name": "เวร่า",
+    "group": "npcs"
+   },
+   "sourceLibraryFile": "libfile_88c553453d688191be7be8e62600d31f",
+   "normalization": {
+    "commonScale": 0.9125,
+    "standingScale": 0.9125,
+    "referenceSheetWidth": 1983,
+    "sourceSheetWidth": 1983,
+    "baseline": 360,
+    "sharedAcross": "standing and short-step poses, both views"
+   },
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "mirroredFrom": "npc-vera-ne-walk1"
   }
  ],
  "studioReviews": {

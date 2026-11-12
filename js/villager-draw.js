@@ -29,7 +29,7 @@
      Falls back to the code-drawn figure until a standing picture has loaded. */
   /* v98.126 · new cast pictures (standing SW/NE + one walking picture SW/NE each, SE/NW = mirrored files): bram / luna / the recruits use walk 1 (contact, stand, contact, stand) */
   const SPR_INFO = { mil: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, graven: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, tess: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, ash: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, pell: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, hugo: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, pim: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0, ageScaleBaked: true }, pip: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0, ageScaleBaked: true },
-    finn: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, berg: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, ken: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, shep: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, vera: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 },
+    finn: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, berg: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, ken: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, shep: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, vera: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 },
     oren: { dirs: ['sw', 'ne'], walk: 1 }, joe: { dirs: ['sw', 'ne'], walk: 1 }, ella: { dirs: ['sw', 'ne'], walk: 1 }, mother: { dirs: ['sw', 'ne'], walk: 1 }, hilda: { dirs: ['sw', 'ne'], walk: 1 }, marta: { dirs: ['sw', 'ne'], walk: 1 }, gus: { dirs: ['sw', 'ne'], walk: 1 }, mira: { dirs: ['sw', 'ne'], walk: 1 }, saf: { dirs: ['sw', 'ne'], walk: 1 }, bryn: { dirs: ['sw', 'ne'], walk: 1 },   /* v98.300 · painted people: front/back pictures (npc sheets, tools/build-npc-sprites.py) */
     may: { dirs: ['sw', 'ne'], walk: 1 }, tom: { dirs: ['sw', 'ne'], walk: 1 }, lin: { dirs: ['sw', 'ne'], walk: 1 }, guard: { dirs: ['sw', 'ne'], walk: 1 }, bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1, wn: { sw: 12 } }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } },
     /* v98.86 · recruits (front view = SW; NE is the front picture mirrored for now, replace ne-stand.webp when the back view exists). No walk frames yet: the standing picture bobs. */
@@ -44,6 +44,10 @@
       const a = A.get('tactics-' + name + '-' + d + '-idle') || A.get('npc-' + name + '-' + d + '-stand'), w = W[d.toUpperCase()];
       if (a && a.status === 'final' && a.file) S[d + '-stand'] = load(a.file + (a.artRevision ? '?r=' + a.artRevision : ''));
       if (w && w.frames && w.frames.length) { w.frames.forEach((f, i) => { S[d + '-walk' + (i + 1)] = load(A.get(f.assetId)?.file || f.src) }); info.wn[d] = w.frames.length; ms[d] = w.frames[0].ms || 100 }
+      else {
+        const step = A.get('npc-' + name + '-' + d + '-walk1');
+        if (step?.status === 'final' && step.file) { S[d + '-walk1'] = load(step.file + (step.artRevision ? '?r=' + step.artRevision : '')); info.wn[d] = 1 }
+      }
     }
     for (const d of base.dirs) for (const k of ['stand', ...Array.from({ length: dn(base, d) }, (_, n) => 'walk' + (n + 1))]) if (!S[d + '-' + k] && !(k !== 'stand' && info.wn[d] != null && ms[d])) S[d + '-' + k] = load('assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp');
     S.info = info; S.ms = ms; return S;
