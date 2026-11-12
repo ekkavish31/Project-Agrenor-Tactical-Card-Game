@@ -41,3 +41,22 @@ PD.setMaster('m', 'front', null); assert.ok(PD.depth('m', 'strike', 0, 'SW').noR
   const crouch = { ...idle, kneeL: [.32, .66], footL: [.36, .78], kneeR: [.68, .66], footR: [.64, .78] }; assert.ok(PD.straightness({ pts: { SW: crouch } }, 'SW') < .85, 'knees bent / legs spread → well under 1');
   assert.equal(PD.straightness({ pts: { SW: { ...idle, kneeL: null, kneeR: null } } }, 'SW'), null, 'no knee points → cannot tell') }
 console.log('proportion depth: all passed');
+// v98.420 · GIRTH: thickness from the silhouette, perpendicular to each bone; a side blocked by a neighbour bone is replaced by the free side doubled
+{ const W = 200, H = 400, d = new Uint8ClampedArray(W * H * 4), box = (x0, y0, x1, y1) => { for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) d[(y * W + x) * 4 + 3] = 255 };
+  box(80, 60, 120, 100);                // head 40 wide
+  box(70, 100, 130, 240);               // torso 60 wide (shoulders y=110 … crotch y=240)
+  box(50, 110, 70, 230); box(130, 110, 150, 230);   // arms 20 wide, hanging against the torso (no gap)
+  box(76, 240, 98, 380); box(102, 240, 124, 380);   // legs 22 wide with a 4 px gap
+  const P = { eyeL: [.45, .17], eyeR: [.55, .17], chin: [.5, .25], shL: [.30, .275], shR: [.70, .275], elbowL: [.30, .43], elbowR: [.70, .43], wristL: [.30, .57], wristR: [.70, .57], crotch: [.5, .6], kneeL: [.435, .8], kneeR: [.565, .8], footL: [.435, .95], footR: [.565, .95] };
+  const g = PD.girth({ pts: { SW: P } }, 'SW', { d, w: W, h: H });
+  assert.ok(g && Math.abs(g.px.torso - 60) < 4, 'torso width ≈ 60 (arms against it do not eat into it): ' + g?.px.torso);
+  assert.ok(Math.abs(g.px.armUp - 20) < 3, 'arm 20 wide (inner side blocked by torso → free side doubled): ' + g.px.armUp);
+  assert.ok(Math.abs(g.px.thigh - 22) < 3 && Math.abs(g.px.shin - 22) < 3, 'legs 22 wide though they nearly touch');
+  assert.ok(Math.abs(g.frac.torso - g.px.torso / g.total) < 1e-9, 'fraction of the skull-top → ankle height');
+  const bare = new Uint8ClampedArray(d), fat = new Uint8ClampedArray(d), clear = (a, x0, x1) => { for (let y = 100; y < 240; y++) for (let x = x0; x < x1; x++) a[(y * W + x) * 4 + 3] = 0 };
+  clear(bare, 40, 70); clear(bare, 130, 160); clear(fat, 40, 160); for (let y = 100; y < 240; y++) for (let x = 60; x < 140; x++) fat[(y * W + x) * 4 + 3] = 255;   // torso 60 → 80 wide, arms gone
+  const { elbowL, elbowR, wristL, wristR, ...noArms } = P, g1 = PD.girth({ pts: { SW: noArms } }, 'SW', { d: bare, w: W, h: H }), g2 = PD.girth({ pts: { SW: noArms } }, 'SW', { d: fat, w: W, h: H });
+  assert.ok(Math.abs(g1.px.torso - 60) < 4 && Math.abs(g2.px.torso - 80) < 4, 'a stouter torso measures wider: ' + g1.px.torso + ' → ' + g2.px.torso);
+  assert.ok(Math.abs(PD.girthRatio(g1, g2.frac, 'torso') - g2.frac.torso / g1.frac.torso) < 1e-9, 'ratio = standard ÷ own');
+  assert.equal(PD.girth({ pts: { SW: { eyeL: [.4, .2] } } }, 'SW', { d, w: W, h: H }), null, 'too few points → null') }
+console.log('proportion girth: passed');

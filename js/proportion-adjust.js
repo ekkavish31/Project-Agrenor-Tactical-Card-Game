@@ -24,7 +24,9 @@
     const out = { g, H0, H1, head: [top, top + nh * g], torso: [top + nh * g, top + (nh + nt) * g], legs: [top + (nh + nt) * g, bottom], k: { head: (scale.head ?? 1) * g, torso: (scale.torso ?? 1) * g, legs: (scale.legs ?? 1) * g } };
     /* v98.402 · shoulder width (scale.shoulder) widens/narrows the TORSO band sideways only — independent of how much it stretches vertically.
        Left out (or equal to scale.torso), the torso stays exactly as wide as before: a uniform scale, same as every other part. */
-    out.kx = { head: out.k.head, torso: (scale.shoulder ?? scale.torso ?? 1) * g, legs: out.k.legs };
+    /* v98.420 · scale.wTorso / scale.wLegs: THICKNESS multipliers on top of that (1 = as before) — the band is stretched sideways only, its height is untouched.
+       The arms live in the torso band, so they get thicker/thinner with it. */
+    out.kx = { head: out.k.head, torso: (scale.shoulder ?? scale.torso ?? 1) * g * (scale.wTorso ?? 1), legs: out.k.legs * (scale.wLegs ?? 1) };
     out.headFrac = (nh * g) / H1; out.torsoFrac = (nt * g) / H1; out.legsFrac = (nl * g) / H1;
     return out;
   }
