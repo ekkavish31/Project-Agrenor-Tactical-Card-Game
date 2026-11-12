@@ -87,7 +87,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.433"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.434"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -411,7 +411,7 @@ function inspectRatio() {
   const marks = { ...r.marks }, pw0 = hasDatum ? HALF : PW, dx0 = (c.flip ? pw0 - ox - fw : ox) - c.m.x0 * k, dy0 = oy - c.m.top * k;
   /* a datum dot, drawn in whatever transform is already active (so it mirrors with the picture automatically when flipped) */
   const dot = (g2, x, y, col, own) => { g2.globalAlpha = own ? 1 : .5; g2.fillStyle = col; g2.beginPath(); g2.arc(x, y, own ? 4 : 3, 0, 7); g2.fill(); g2.strokeStyle = '#fff'; g2.lineWidth = 1; g2.stroke(); g2.globalAlpha = 1 };
-  let rulerLines = null;   /* v98.433 · measuring lines of the 📏 ruler on this picture [x1,y1,x2,y2] in picture px */
+  let rulerLines = null;   /* v98.434 · measuring lines of the 📏 ruler on this picture [x1,y1,x2,y2] in picture px */
   const drawRuler = (g0, left, top, k) => { if (!rulerLines) return; g0.save(); g0.lineWidth = 2; g0.strokeStyle = '#ffd400'; g0.fillStyle = '#ffd400'; g0.setLineDash([]); for (const [x1, y1, x2, y2] of rulerLines) { g0.beginPath(); g0.moveTo(left + x1 * k, top + y1 * k); g0.lineTo(left + x2 * k, top + y2 * k); g0.stroke(); for (const [x, y] of [[x1, y1], [x2, y2]]) g0.fillRect(left + x * k - 1.5, top + y * k - 4, 3, 8) } g0.restore() };
   const original = document.createElement('canvas'); original.width = c.m.w; original.height = c.m.h;
   { const og = original.getContext('2d'); if (c.flip) { og.translate(c.m.w, 0); og.scale(-1, 1) } og.drawImage(c.img, 0, 0) }
@@ -435,29 +435,29 @@ function inspectRatio() {
        build (child, stout, etc.) and should keep its own torso/legs. */
     const mem = ((window.__adjMem ||= {})[e.id + ':' + GRP] ||= { method: 'ruler', A: { head: 100, torso: 100, legs: 100, wTorso: 100, wLegs: 100 }, mode: 'ref', sel: { head: true, torso: true, legs: true, wTorso: true, wLegs: true }, keep: true, seam: 'shape', soft: 7, sharpMode: 'auto', sharp: 60, ref: '', touched: false }), PA = window.ProportionAdjust, A = mem.A, $a = id => document.getElementById(id), ag = g;
     const sel = () => Object.fromEntries([...document.querySelectorAll('.adjSel')].map(b => [b.dataset.k, b.checked])), mode = () => document.querySelector('input[name=adjMode]:checked').value;
-    mem.method ??= 'ruler'; A.wTorso ??= 100; A.wLegs ??= 100; mem.sel.wTorso ??= true; mem.sel.wLegs ??= true;   /* v98.433 · thickness rows work like the size rows (tick = adjust it) */
+    mem.method ??= 'ruler'; A.wTorso ??= 100; A.wLegs ??= 100; mem.sel.wTorso ??= true; mem.sel.wLegs ??= true;   /* v98.434 · thickness rows work like the size rows (tick = adjust it) */
     const scaleNow = () => { const S = sel(); return { head: S.head ? A.head / 100 : 1, torso: S.torso ? A.torso / 100 : 1, legs: S.legs ? A.legs / 100 : 1, wTorso: S.wTorso ? A.wTorso / 100 : 1, wLegs: S.wLegs ? A.wLegs / 100 : 1 } };
     /* v98.426 · THICKNESS: girth of this picture (and of the template) from the silhouette, see PD.girth */
-    /* v98.433 · the measurement is remembered (PD.girthPut) so this pose can later be a template for another pose without its picture open */
+    /* v98.434 · the measurement is remembered (PD.girthPut) so this pose can later be a template for another pose without its picture open */
     let ownG; const ownGirth = () => { if (ownG !== undefined) return ownG; try { ownG = PD.girth(datumRec, q.dir, alphaOf(c)); PD.girthPut?.(e.id, q.pose, q.frame, q.dir, ownG) } catch (err) { ownG = null } return ownG };
-    /* v98.433 · template thickness of every part, ÷ FACE (not ÷ height) — see refRule / refParts below */
+    /* v98.434 · template thickness of every part, ÷ FACE (not ÷ height) — see refRule / refParts below */
     const refGirth = () => { try { if (mem.ref === '__std__') return RSD?.s.girthFace || null; if (mem.ref === '__master__') return masterParts(); const x = mem.ref && ENTRIES.find(y => y.id === mem.ref), r1 = x && recOf(x.id); return x && r1 ? PD.girth(r1, q.dir, alphaOf(x.ctx.battle))?.perFace || null : null } catch (err) { return null } };
     /* v98.396 · TEMPLATE: the head · torso · legs spans of another character's datum, given to this one (both need eyes · chin · crotch · ankles)
        v98.398 · "__std__" = the TEAM STANDARD set once (js/proportion-datum.js STD_KEY) — a fixed snapshot, so it stays put even if that character's own picture or datum is edited later
        v98.399 · PD.spans(r0, q.dir) already pools only within q.dir's own front/back pair (js/proportion-datum.js) — no more cross-group 'SW' fallback here */
     const recOf = id => PD && (PD.get(id, q.pose, q.frame) || PD.get(id, 'idle', 0)), spOf = id => { const r0 = recOf(id); return r0 && PD.spans(r0, q.dir) };
     const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)), STD = PD?.std(GRP, q.pose);
-    /* v98.433 · 📏 ruler of the standard: this pose's own standard first, else the standard of ANOTHER pose is lent (idle first) with a note */
+    /* v98.434 · 📏 ruler of the standard: this pose's own standard first, else the standard of ANOTHER pose is lent (idle first) with a note */
     const RSD = (() => { if (STD?.ruler) return { s: STD, from: null }; for (const p of ['idle', ...PD.stdPoses(GRP)]) { const s0 = p !== q.pose && PD.std(GRP, p); if (s0?.ruler) return { s: s0, from: p } }
       if (STD?.girthFace) return { s: STD, from: null };
-      /* v98.433 · nothing in this front/back group: lend the OTHER group's ruler (leg width ÷ face length does not change when the character turns round) — flagged, and the front↔back check is shown */
+      /* v98.434 · nothing in this front/back group: lend the OTHER group's ruler (leg width ÷ face length does not change when the character turns round) — flagged, and the front↔back check is shown */
       const OG = GRP === 'front' ? 'back' : 'front'; for (const p of ['idle', ...PD.stdPoses(OG)]) { const s0 = PD.std(OG, p); if (s0?.ruler) return { s: s0, from: p, cross: true } }
       return STD ? { s: STD, from: null } : null })();
     const lendTxt = RSD?.from ? (RSD.cross ? `มุม${GRP === 'front' ? 'หลัง' : 'หน้า'} ท่า ${RSD.from}` : `ท่า ${RSD.from}`) : '';
     const RSPEC = RSD?.s.ruler ? { group: RSD.s.ruler.bone, t: RSD.s.ruler.t } : { group: 'shin', t: .5 }, BONE_TH = { shin: 'แข้ง', thigh: 'ต้นขา', torso: 'ลำตัว', armUp: 'ต้นแขน', armLow: 'ท่อนแขนล่าง' };
     /* v98.426 · the character's OWN ⚓ depth-reference pose (chosen in the Datum editor) is also offered as a template — its spans only (no girth: that pose's picture is not the one on screen) */
     const MST = PD?.master ? PD.master(e.id, q.dir) : null, mRec = MST && MST.set && !(MST.pose === q.pose && (MST.frame | 0) === (q.frame | 0)) ? PD.get(e.id, MST.pose, MST.frame) : null, mSpans = mRec ? PD.spans(mRec, q.dir) : null, MST_NAME = mSpans ? `⚓ ท่าอ้างอิงแนวลึกของตัวนี้ · ${PD.masterName(MST)}` : '';   /* v98.426 · only the standard of this very pose */
-    /* v98.433 · thickness of the ⚓ master pose, compared through the FACE (eye→chin), which a crouch does not change — then expressed as this
+    /* v98.434 · thickness of the ⚓ master pose, compared through the FACE (eye→chin), which a crouch does not change — then expressed as this
        picture's ÷height numbers so the table, the auto widths and the check work unchanged. Source, first found: the measurement remembered
        when that pose was shown · the standard of that pose when it is this character · the master picture itself, loaded from Asset Studio. */
     let mLoading = false;
@@ -475,7 +475,7 @@ function inspectRatio() {
       } catch (err) { } finally { mLoading = false } };
     $a('adjRef').innerHTML = (RSD ? `<option value="__std__">⭐ มาตรฐานทีม · ${GRP_TH} (${RSD.s.name})${RSD.from ? ' · ยืมไม้บรรทัดจาก' + lendTxt : ''}</option>` : '') + (mSpans ? `<option value="__master__">${MST_NAME}</option>` : '') + (tplList.length ? tplList.map(x => `<option value="${x.id}"${mem.ref === x.id ? ' selected' : ''}>${x.name}${STD?.id === x.id ? ' ⭐' : ''}</option>`).join('') : (RSD ? '' : (RSD || mSpans ? '' : '<option value="">— ยังไม่มีตัวที่วาง datum ครบใน ' + GRP_TH + ' —</option>')));
     $a('adjRef').value = (mem.ref && $a('adjRef').querySelector(`option[value="${mem.ref}"]`)) ? mem.ref : (RSD ? '__std__' : mSpans ? '__master__' : (tplList[0]?.id || ''));
-    /* v98.433 · 📏 THE RULER: one cut across one bone, ratio = width ÷ face · own picture vs template */
+    /* v98.434 · 📏 THE RULER: one cut across one bone, ratio = width ÷ face · own picture vs template */
     let ownR; const ownRule = () => { if (ownR !== undefined) return ownR; try { ownR = PD.rule(datumRec, q.dir, alphaOf(c), RSPEC.group, RSPEC.t) } catch (err) { ownR = null } return ownR };
     const refRule = () => { try {
       if (mem.ref === '__std__') { const r0 = RSD?.s.ruler?.ratio ?? RSD?.s.girthFace?.[RSPEC.group]; return r0 ? { ratio: r0, label: RSD.s.name + ' ⭐' + (RSD.from ? ' (ยืมจาก' + lendTxt + ')' : '') } : null }
@@ -611,7 +611,7 @@ async function openDatum(e) {
      already has a suggestion (own OR mirrored/height-matched from another direction) — those count as "fine for now". Clicking a
      point in the list on purpose still jumps selK there to fix it; the next auto-advance afterwards simply resumes from where it
      was (it does not fall back to right after that point). */
-  /* v98.433 · back view: chin / eyes suggested from the FRONT (PD.suggestHead) — drawn as faint rings, placed only when the user asks */
+  /* v98.434 · back view: chin / eyes suggested from the FRONT (PD.suggestHead) — drawn as faint rings, placed only when the user asks */
   const headSug = () => { const { own, from } = cur(), sg = PD.suggestHead?.(rec, dir); if (!sg) return null; const keys = ['eyeL', 'eyeR', 'chin'].filter(k => !own.has(k) && !from[k]); return keys.length ? { sg, keys } : null };
   const dirIdx = {}, filled = k => { const { own, from } = cur(); return own.has(k) || from[k] != null };
   const nextUnset = () => { const i0 = dirIdx[dir] || 0;

@@ -30,7 +30,7 @@ const Q = new URLSearchParams(location.search),
  PLACE = /^[a-z0-9_-]{1,40}$/i.test(Q.get('place') || '') ? Q.get('place') : 'market',
  KEY = 'place-maps-v1';
 /* v91.42 · a sub-map can be any id (made by ＋ สถานที่ใหม่ → แมพย่อยใหม่); KIND = which built-in service set (market/forge/home) its stations may use */
-/* v98.433 · placeable-picture catalogue (js/placeable-art.js) — needed before the map is loaded (withArt) */
+/* v98.434 · placeable-picture catalogue (js/placeable-art.js) — needed before the map is loaded (withArt) */
 const PA_ITEMS = (window.PLACEABLE_ART?.items || []), PA_BY = Object.fromEntries(PA_ITEMS.map(i => [i.sub, i]));
 const CODE_SWAP = { 'code:furnace': 'int:furnace', 'code:anvil': 'int:anvil', 'code:tub': 'int:quench', 'code:board': 'int:writing-desk', 'code:crate': 'int:crate', 'code:lamp': 'decor:lamp-post', 'code:table': 'int:table-square', 'code:bed': 'int:bed-double', 'code:chest': 'int:trunk', 'code:hearth': 'int:fireplace-stone', 'code:shelf': 'int:shelf-store' };
 let SAVED_MAP = null;
@@ -564,7 +564,7 @@ function route(from, to) {
 }
 
 /* ---------- art: real images or code-drawn placeholders ---------- */
-/* v98.433 · every placeable picture of the repository comes from js/placeable-art.js (Thai names + groups + starting width);
+/* v98.434 · every placeable picture of the repository comes from js/placeable-art.js (Thai names + groups + starting width);
    the code-drawn shapes stay at the end of the list (tab "วาดด้วยโค้ด (ชั่วคราว)") for maps that still want them */
 const ART_LIST = [
  ...PA_ITEMS.map(i => [i.sub, i.n]),
@@ -582,7 +582,7 @@ const ART_LIST = [
 ];
 /* starting width of a newly placed piece: the catalogue's sub-map width, else the old defaults */
 const artWidth = (a, fallback) => PA_BY[a]?.sw || (a.startsWith('vt:') ? 400 : fallback || 110);
-/* v98.433 · built-in maps first drawn with code shapes get the real pictures (once — artV 2 marks a map as done, so a code shape
+/* v98.434 · built-in maps first drawn with code shapes get the real pictures (once — artV 2 marks a map as done, so a code shape
    picked again later from the picker stays). Stations keep at least their old width; loose pieces take the catalogue width. */
 function withArt(m) {
  if (!m || m.artV >= 2) return m;
@@ -1365,7 +1365,7 @@ function putThumb(slot, a, w) {
   }, 700)
  }
 }
-const ART_GROUP = a => a.startsWith('code:') ? 'วาดด้วยโค้ด (ชั่วคราว)' : PA_BY[a]?.g || (a.startsWith('vt:') ? 'อาคาร (ภาพทั้งหลัง)' : 'ของประดับ');   /* v98.433 · catalogue groups */
+const ART_GROUP = a => a.startsWith('code:') ? 'วาดด้วยโค้ด (ชั่วคราว)' : PA_BY[a]?.g || (a.startsWith('vt:') ? 'อาคาร (ภาพทั้งหลัง)' : 'ของประดับ');   /* v98.434 · catalogue groups */
 
 function openArtPicker(title, cur, onPick) {
  let d = document.getElementById('artPick');
@@ -1374,7 +1374,7 @@ function openArtPicker(title, cur, onPick) {
   d.id = 'artPick';
   document.body.append(d)
  }
- /* v98.433 · opens on the tab of the current picture (เปลี่ยนภาพ) or of this kind of map (forge → โรงตีเหล็ก …) */
+ /* v98.434 · opens on the tab of the current picture (เปลี่ยนภาพ) or of this kind of map (forge → โรงตีเหล็ก …) */
  const KIND_TAB = { forge: 'โรงตีเหล็ก/งานช่าง', market: 'ร้านค้า/ตลาด', home: 'บ้าน: โต๊ะ/ที่นั่ง/ตู้' };
  let tab = cur ? ART_GROUP(cur) : KIND_TAB[KIND] || 'ทั้งหมด',
   q = '';

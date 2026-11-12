@@ -132,48 +132,6 @@
  "greenScreen": "Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
  "assets": [
   {
-   "id": "action-auto",
-   "file": "assets/action-auto.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    900
-   ],
-   "transparent": false,
-   "subject": "a mechanical hammer over a glowing ingot, furnace and quenching bucket",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a mechanical hammer over a glowing ingot, furnace and quenching bucket.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
-   "id": "action-buy",
-   "file": "assets/action-buy.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    600
-   ],
-   "transparent": false,
-   "subject": "a market stall counter with ingots, coal and food for sale",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a market stall counter with ingots, coal and food for sale.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
-   "id": "action-cancel",
-   "file": "assets/action-cancel.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    900
-   ],
-   "transparent": false,
-   "subject": "tongs setting an unfinished iron blank into a salvage tray, spent ash behind",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: tongs setting an unfinished iron blank into a salvage tray, spent ash behind.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
    "id": "action-chest",
    "file": "assets/action-chest.webp",
    "category": "actions",
@@ -214,34 +172,6 @@
    "transparent": false,
    "subject": "a village notice board with pinned order slips",
    "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a village notice board with pinned order slips.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
-   "id": "action-recipes",
-   "file": "assets/action-recipes.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    600
-   ],
-   "transparent": false,
-   "subject": "an open blacksmith recipe book with sword and hammer diagrams",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: an open blacksmith recipe book with sword and hammer diagrams.",
-   "usedIn": "ปุ่มกิจกรรม"
-  },
-  {
-   "id": "action-sell",
-   "file": "assets/action-sell.webp",
-   "category": "actions",
-   "status": "missing",
-   "size": [
-    900,
-    600
-   ],
-   "transparent": false,
-   "subject": "a merchant weighing a finished sword against coins",
-   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a merchant weighing a finished sword against coins.",
    "usedIn": "ปุ่มกิจกรรม"
   },
   {
@@ -640,20 +570,6 @@
    "transparent": false,
    "subject": "develop icon",
    "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: develop icon.",
-   "usedIn": "ปุ่มเมนูด้านบน"
-  },
-  {
-   "id": "ui-edit",
-   "file": "assets/ui-edit.webp",
-   "category": "ui",
-   "status": "missing",
-   "size": [
-    384,
-    384
-   ],
-   "transparent": false,
-   "subject": "edit icon",
-   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: edit icon.",
    "usedIn": "ปุ่มเมนูด้านบน"
   },
   {

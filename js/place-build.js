@@ -1009,7 +1009,7 @@ const PB_ART = (() => {
      dv: 1.6
     },
     art: a,
-    width: typeof artWidth === 'function' ? artWidth(a, 120) : a.startsWith('vt:') ? 400 : 120   /* v98.433 · catalogue width */
+    width: typeof artWidth === 'function' ? artWidth(a, 120) : a.startsWith('vt:') ? 400 : 120   /* v98.434 · catalogue width */
    });
    save();
    enter({
@@ -1172,7 +1172,7 @@ const PB_ART = (() => {
   <hr><div class="row"><button id="aDel">ลบจุดทำงานนี้</button></div>`;
   thumbInto(body.querySelector('#aTh'), s.art, s.width || 120);
   bindZ('sz', d => { s.z = Math.max(-20, Math.min(20, (s.z || 0) + d)); if (!s.z) delete s.z });
-  act('#aSwap', () => openArtPicker('เปลี่ยนภาพ ' + s.name, s.art, a => once(() => { if (/^code:/.test(s.art || '') && !/^code:/.test(a) && typeof artWidth === 'function') s.width = Math.max(+s.width || 0, artWidth(a)); s.art = a })()));   /* v98.433 · code shape → picture: start at the picture's own width */
+  act('#aSwap', () => openArtPicker('เปลี่ยนภาพ ' + s.name, s.art, a => once(() => { if (/^code:/.test(s.art || '') && !/^code:/.test(a) && typeof artWidth === 'function') s.width = Math.max(+s.width || 0, artWidth(a)); s.art = a })()));   /* v98.434 · code shape → picture: start at the picture's own width */
   body.querySelector('#aFlip').onchange = e => once(() => s.f = e.target.checked || undefined)();
   act('#aDel', () => {
    if (M.stations.length <= 1) {
@@ -1302,7 +1302,7 @@ const PB_ART = (() => {
     u: q4(at.u),
     v: q4(at.v),
     s: 1,
-    ...(typeof artWidth === 'function' && artWidth(a) !== 110 ? { width: artWidth(a) } : {}),   /* v98.433 · the picture's own starting width (110 = the old default, left out) */
+    ...(typeof artWidth === 'function' && artWidth(a) !== 110 ? { width: artWidth(a) } : {}),   /* v98.434 · the picture's own starting width (110 = the old default, left out) */
     ...(owner ? {
      owner
     } : {})

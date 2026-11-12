@@ -126,19 +126,19 @@
         const ray = sg => { let r = 0; for (; r < reach; r += .5) { const x = cx + sg * nx * r, y = cy + sg * ny * r; if (!solid(x, y)) return { r, blocked: false }; if (r > 1 && others.some(ob => segD(x, y, ob.a, ob.b) - ob.hw < segD(x, y, bn.a, bn.b) - bn.hw)) return { r, blocked: true } } return { r, blocked: true } };
         const l = ray(1), r = ray(-1); vals.push(l.blocked && !r.blocked ? 2 * r.r : r.blocked && !l.blocked ? 2 * l.r : l.r + r.r);   /* one free side → doubled · otherwise the sum (a side that ends at a neighbour's territory is a good edge estimate too) */
       }
-      if (vals.length >= 2) { vals.sort((a, b) => a - b); per[name] = vals[vals.length >> 1]; spread[name] = (vals[vals.length - 1] - vals[0]) / per[name]   /* v98.433 · how much the samples disagree */
+      if (vals.length >= 2) { vals.sort((a, b) => a - b); per[name] = vals[vals.length >> 1]; spread[name] = (vals[vals.length - 1] - vals[0]) / per[name]   /* v98.434 · how much the samples disagree */
         const tm = ts[ts.length >> 1], mx = bn.a[0] + (bn.b[0] - bn.a[0]) * tm, my = bn.a[1] + (bn.b[1] - bn.a[1]) * tm; lines[name] = [mx - nx * per[name] / 2, my - ny * per[name] / 2, mx + nx * per[name] / 2, my + ny * per[name] / 2] }
     }
     const mean = ks => { const v = ks.map(k => per[k]).filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null };
     const pxg = { torso: per.torso ?? null, armUp: mean(['upperArmL', 'upperArmR']), armLow: mean(['foreArmL', 'foreArmR']), thigh: mean(['thighL', 'thighR']), shin: mean(['shinL', 'shinR']) }, frac = {};
     for (const [k] of GIRTH_GROUPS) frac[k] = pxg[k] == null ? null : pxg[k] / M.lengths.total;
-    /* v98.433 · also ÷ FACE (eye midpoint → chin): the same ruler the depth check uses — it does not change when a pose crouches,
+    /* v98.434 · also ÷ FACE (eye midpoint → chin): the same ruler the depth check uses — it does not change when a pose crouches,
        so thickness can be compared between two poses of ONE character (÷ height would make a crouch look thick) */
     const eye = mid(P.eyeL, P.eyeR), face = eye && P.chin ? Math.hypot((eye[0] - P.chin[0]) * w, (eye[1] - P.chin[1]) * h) : null, perFace = {};
     for (const [k] of GIRTH_GROUPS) perFace[k] = pxg[k] == null || !face ? null : pxg[k] / face;
     return { total: M.lengths.total, face, px: pxg, frac, perFace, per, spread, lines };
   }
-  /* v98.433 · THICKNESS RULER (ไม้บรรทัดความหนา): ONE cut across one bone group at one spot (t = 0…1 along the bone), measured against the face
+  /* v98.434 · THICKNESS RULER (ไม้บรรทัดความหนา): ONE cut across one bone group at one spot (t = 0…1 along the bone), measured against the face
      (eye → chin). Both sides (L/R) are averaged; three casts next to each other (t ± .05) give a confidence. The same bone + t is measured on every
      picture, so  ratio = width ÷ face  can be compared between poses without using any height.  group: shin · thigh · torso · armUp · armLow */
   const RULER_BONES = { shin: ['shinL', 'shinR'], thigh: ['thighL', 'thighR'], torso: ['torso'], armUp: ['upperArmL', 'upperArmR'], armLow: ['foreArmL', 'foreArmR'] };
@@ -153,14 +153,14 @@
   /* the face length and skull-top→ankle height of a datum record, without a picture (to turn a stored ÷height girth into ÷face) */
   function rulers(rec, dir, w = 384, h = 384) { const { pts: P } = pointsFor(rec, dir), eye = mid(P.eyeL, P.eyeR), M = metrics(rec, dir, w, h);
     return { face: eye && P.chin ? Math.hypot((eye[0] - P.chin[0]) * w, (eye[1] - P.chin[1]) * h) : null, total: M.lengths?.total || null } }
-  /* v98.433 · girth measured on a picture is remembered per character · pose · frame · direction, so another pose can use it as a
+  /* v98.434 · girth measured on a picture is remembered per character · pose · frame · direction, so another pose can use it as a
      template without that picture being open. localStorage 'proportion-girth-v1' = { "id|pose|frame|dir": { perFace, frac, at } } (derived — recomputed whenever the picture is shown) */
   const GIRTH_KEY = 'proportion-girth-v1', gKey = (id, pose, frame, dir) => [id, pose, frame | 0, dir].join('|');
   const girthAll = () => { try { return JSON.parse(ls.getItem(GIRTH_KEY) || '{}') || {} } catch (e) { return {} } };
   const girthGet = (id, pose, frame, dir) => girthAll()[gKey(id, pose, frame, dir)] || null;
   function girthPut(id, pose, frame, dir, g) { if (!g || !g.perFace) return; try { const all = girthAll(), k = gKey(id, pose, frame, dir), o = { perFace: g.perFace, frac: g.frac, at: Date.now() }, old = all[k];
       if (old && JSON.stringify(old.perFace) === JSON.stringify(o.perFace)) return; all[k] = o; ls.setItem(GIRTH_KEY, JSON.stringify(all)) } catch (e) { } }
-  /* v98.433 · BACK VIEW HEAD from the FRONT (the neck looks longer from behind — the chin hides it in front — so eyes / chin of a back view are a guess).
+  /* v98.434 · BACK VIEW HEAD from the FRONT (the neck looks longer from behind — the chin hides it in front — so eyes / chin of a back view are a guess).
      The shoulder line and the crotch are seen from both sides, so they are the ruler: in the FRONT view of the same pose, how far the chin sits above the
      shoulder line and how long the face is, both in torso lengths (shoulder mid → crotch) — then laid onto the back view the same way. Returns a SUGGESTION
      ({chin, eyeL, eyeR}) for the datum editor; it is never part of pointsFor() / metrics(), so a back proportion still comes only from points the user confirmed. */
