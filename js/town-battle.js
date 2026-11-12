@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.397';
+  const V = '98.405';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -86,7 +86,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX' };
+    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'hit', 'down']);

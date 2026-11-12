@@ -24,7 +24,7 @@ function impactTier(o={}){return o.kill?'finisher':o.crit?'critical':o.big?'heav
 // Preserve the concurrently added SVG pack as a lightweight fallback and comparison mode.
 const impactImgs={};
 function impactImage(tier){if(!IMPACT[tier])tier='light';let im=impactImgs[tier];if(!im){im=new Image();im.decoding='async';im.src=SRC?new URL('../assets/fx/impact/'+tier+'.svg',SRC).href:'assets/fx/impact/'+tier+'.svg';impactImgs[tier]=im}return im.complete&&im.naturalWidth?im:null}
-function impactReady(tier='light'){return enhanced()&&!!((impactMode!=='vector'&&I('impact/core-atlas'))||impactImage(tier))}
+function impactReady(tier='light'){if(root.VfxKit?.enabled())return enhanced();return enhanced()&&!!((impactMode!=='vector'&&I('impact/core-atlas'))||impactImage(tier))}
 Object.keys(IMPACT).forEach(impactImage);
 function drawImpact(g,e,t,p,a,cw){
  if(!enhanced())return false;const atlas=impactMode!=='vector'&&I('impact/core-atlas'),im=atlas||impactImage(e.tier);if(!im)return false;
@@ -64,7 +64,9 @@ const KIND={
  earth(g,e,t,p,a,cw){const W=cw*(e.scale||1),s=back(pop(t,.3));if(!stamp(g,'skill/earth',p.x,p.y+cw*.15,W*2.1,{ay:.88,sy:s,alpha:fade(t,.6),blend:'source-over'}))return false;stamp(g,'skill/shockwave',p.x,p.y,W*(1+t),{sy:.45,alpha:.6*(1-t)});return true},
  holy(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!stamp(g,'skill/holy',p.x,p.y+cw*.15,W*2.2,{ay:.88,sx:.6+.4*pop(t,.25),alpha:fade(t,.5)}))return false;burst(g,e,8,p.x,chest(p,cw),W,W*.3,t,'sparkle');return true},
  dark(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.45,'mote',W*.5,.4);if(k<0)return !!I('particle/mote');return stamp(g,'skill/dark',p.x,chest(p,cw),W*1.9*(.6+.4*back(pop(k,.35))),{rot:k*2,alpha:fade(k,.5),blend:'source-over'})}};
-function draw(e,t,p,a,g,camera){if(e.kind==='impactCore'){try{return drawImpact(g,e,t,p,a||p,camera.w)}catch(_){return false}}const f=KIND[e.kind];if(!f)return false;try{return !!f(g,e,t,p,a||p,camera.w)}catch(err){return false}}
+/* v98.405 · the code-drawn VFX Kit (js/vfx-kit.js) takes a kind over when it is switched on (off by default — see vfx-kit-preview.html); drawOld = always the painted stamps */
+function draw(e,t,p,a,g,camera){const K=root.VfxKit;if(K&&K.enabled()&&K.has(e.kind)){const ok=K.draw(e,t,p,a,g,camera);if(ok)return true}return drawOld(e,t,p,a,g,camera)}
+function drawOld(e,t,p,a,g,camera){if(e.kind==='impactCore'){try{return drawImpact(g,e,t,p,a||p,camera.w)}catch(_){return false}}const f=KIND[e.kind];if(!f)return false;try{return !!f(g,e,t,p,a||p,camera.w)}catch(err){return false}}
 // ---------- weather: sprites instead of dots. Returns false (code fallback) until the images are loaded. ----------
 function weather(g,r,now,kind,low){const W=r.width,H=r.height;
  if(kind==='rain'){if(!I('particle/rain'))return false;const n=low?24:60;for(let i=0;i<n;i++){const x=(i*117.31+now*.13)%W,y=(i*83.7+now*.5)%H;stamp(g,'particle/rain',x,y,26+(i%3)*6,{alpha:.45,blend:'source-over'})}return true}
@@ -73,5 +75,5 @@ function weather(g,r,now,kind,low){const W=r.width,H=r.height;
  if(kind==='mist'){if(!I('particle/mist'))return false;const n=low?3:7;for(let i=0;i<n;i++){const s=W*(.35+.15*(i%3)),x=((i*331+now*.008*(1+i%2))%(W+s))-s/2,y=H*(.25+.6*((i*0.37)%1));stamp(g,'particle/mist',x,y,s,{alpha:.16,blend:'source-over',sy:.55})}return true}
  if(kind==='breeze'){if(!I('particle/leaf'))return false;const n=low?6:14;for(let i=0;i<n;i++){const x=(i*117.31+now*.05)%W,y=(i*83.7+now*.02+Math.sin(now*.002+i)*20)%H;stamp(g,'particle/leaf',x,y,12+(i%3)*3,{alpha:.55,blend:'source-over',rot:now*.002+i})}return true}
  return false}
-root.BattleVFX={draw,weather,stamp,impactTier,impactReady,impactEnabled:enhanced,impactSpec:t=>IMPACT[t]||IMPACT.light,setImpactMode:m=>{impactMode=m},reducedMotion:reduced,ready:()=>SKILL.every(n=>I('skill/'+n))};
+root.BattleVFX={draw,drawOld,weather,stamp,impactTier,impactReady,impactEnabled:enhanced,impactSpec:t=>IMPACT[t]||IMPACT.light,setImpactMode:m=>{impactMode=m},reducedMotion:reduced,ready:()=>SKILL.every(n=>I('skill/'+n))};
 })(globalThis);

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VFX Preview · เทียบเอฟเฟกต์เดิมกับใหม่</title>
+<link rel="stylesheet" href="css/thai-font.css?v=1"><link rel="stylesheet" href="css/town-font.css">
+<style>
+:root{--bg:#14171d;--panel:#1d222b;--ink:#e9e4d6;--muted:#9a937f;--line:#343b48;--gold:#c9a45a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px VillageThai,"Noto Sans Thai",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:10px 16px;background:#1a1e26f2;border-bottom:1px solid var(--line)}
+h1{font-size:17px;margin:0}h2{font-size:15px;margin:22px 16px 8px;color:var(--gold)}header label{display:flex;gap:6px;align-items:center}
+.sw{padding:6px 12px;border:1px solid var(--gold);border-radius:10px;background:#2a2416;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;padding:0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.card b{font-size:14px}.card small{color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.pair.one{grid-template-columns:1fr}
+.pair figure{margin:0}.pair figcaption{font-size:11px;color:var(--muted);text-align:center;margin-top:2px}
+canvas{display:block;width:100%;border-radius:8px;background:#20281f}
+p.note{margin:6px 16px;color:var(--muted);max-width:900px}
+</style></head><body>
+<header><h1>✨ VFX Preview</h1>
+ <label class="sw"><input type="checkbox" id="useNew"> ใช้ VFX ใหม่ในเกม (สนามรบ)</label>
+ <label>ความเร็ว <select id="speed"><option value="1">ปกติ</option><option value=".5">ช้า ½</option><option value=".25">ช้า ¼</option></select></label>
+ <label><input type="checkbox" id="showOld" checked> แสดงของเดิมเทียบ</label>
+</header>
+<p class="note">ซ้าย = ของเดิม (ภาพวาดแปะ) · ขวา = ของใหม่ (วาดด้วยโค้ด เคลื่อนไหวทุกเฟรม) · ตัวสีเทา = ผู้โจมตี · ตัวสีน้ำตาล = เป้าหมาย — ในเกมยังใช้ของเดิมจนกว่าจะติ๊ก "ใช้ VFX ใหม่ในเกม" ด้านบน (จำไว้ในเบราว์เซอร์นี้) หรือเปิดเกมด้วย <code>?vfx=new</code></p>
+<h2>อาวุธ</h2><div class="grid" id="gWeapon"></div>
+<h2>ธาตุและเวท</h2><div class="grid" id="gMagic"></div>
+<h2>แรงกระแทกตอนโดนตี / ล้ม</h2><div class="grid" id="gHit"></div>
+<h2>สถานะบนตัว (ใช้ในเกมอยู่แล้ว)</h2><div class="grid" id="gStatus"></div>
+<script src="js/battle-vfx.js?v=v98.405"></script><script src="js/vfx-kit.js?v=v98.405"></script><script src="js/status-fx.js?v=v98.405"></script>
+<script>
+const W = 300, H = 200, CW = 78, A = { x: 62, y: 158 }, P = { x: 222, y: 158 };
+const NAMES = { sword: 'ดาบ ฟัน', knife: 'มีด ฟันไขว้', blunt: 'ค้อน/กระบอง ทุบ', spear: 'หอก แทง', rapier: 'เรเปียร์ แทงเร็ว', arrow: 'ธนู', shield: 'โล่ ป้องกัน', parry: 'ปัดป้อง',
+  fire: 'ไฟ', ice: 'น้ำแข็ง', lightning: 'สายฟ้า', wind: 'ลม', water: 'น้ำ', earth: 'ดิน', holy: 'แสงศักดิ์สิทธิ์', dark: 'ความมืด', arcane: 'เวทอาร์เคน', heal: 'ฮีล',
+  burn: 'ไหม้', poison: 'พิษ', sleep: 'หลับ', freeze: 'แข็ง', shock: 'ชา', weak: 'อ่อนแรง', silence: 'ใบ้', bind: 'เถาวัลย์' };
+const DUR = { sword: 620, knife: 620, blunt: 760, spear: 640, rapier: 560, arrow: 720, shield: 900, parry: 620, fire: 1150, ice: 1150, lightning: 820, wind: 1050, water: 1100, earth: 950, holy: 1150, dark: 1200, arcane: 1150, heal: 1150 };
+const cards = [];
+function person(g, x, y, col, lean = 0) { g.fillStyle = 'rgba(0,0,0,.28)'; g.beginPath(); g.ellipse(x, y, 20, 7, 0, 0, 7); g.fill(); g.fillStyle = col; g.beginPath(); g.roundRect(x - 13 + lean, y - 62, 26, 62, 10); g.fill(); g.beginPath(); g.arc(x + lean, y - 74, 14, 0, 7); g.fill() }
+function scene(g, both = true) { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#1b2330'); gr.addColorStop(.62, '#27342a'); gr.addColorStop(1, '#31412f'); g.fillStyle = gr; g.fillRect(0, 0, W, H); if (both) person(g, A.x, A.y, '#7b8794'); person(g, P.x, P.y, '#8a6a5a') }
+function mk(host, title, sub, draws) {   /* draws = [[caption, fn(g, t, now)], …] */
+  const el = document.createElement('div'); el.className = 'card'; el.innerHTML = `<b>${title}</b> <small>${sub || ''}</small><div class="pair${draws.length < 2 ? ' one' : ''}">${draws.map(d => `<figure><canvas width="${W * 2}" height="${H * 2}"></canvas><figcaption>${d[0]}</figcaption></figure>`).join('')}</div>`;
+  host.append(el); const cvs = [...el.querySelectorAll('canvas')]; cards.push({ el, cvs, draws }); return el }
+const fxCard = (host, kind, extra = {}, title) => { const dur = extra.dur || DUR[kind] || 700, e = { kind, seed: 7, color: '#ff8a5a', ...extra };
+  const run = fn => (g, now) => { const cyc = dur + 520, t = ((now % cyc) / dur); scene(g); if (t <= 1) fn({ ...e, seed: 7 + Math.floor(now / cyc) }, t, g) };
+  const d = [['ใหม่', run((ev, t, g) => VfxKit.draw(ev, t, P, A, g, { w: CW, h: CW / 2 }))]];
+  if (extra.old !== false) d.unshift(['เดิม', run((ev, t, g) => { const ok = BattleVFX.drawOld(ev.kind === 'impact' ? { ...ev, kind: 'impactCore' } : ev, t, P, A, g, { w: CW, h: CW / 2 }); if (!ok) { g.fillStyle = '#9a937f'; g.font = '12px sans-serif'; g.fillText('(ภาพเดิมยังโหลดไม่เสร็จ/ไม่มี)', 60, 24) } })]);
+  const c = mk(host, title || NAMES[kind] || kind, kind + (extra.tier ? ' · ' + extra.tier : ''), d); c.dataset.old = extra.old === false ? '0' : '1' };
+for (const k of ['sword', 'knife', 'blunt', 'spear', 'rapier', 'arrow', 'shield', 'parry']) fxCard(gWeapon, k);
+for (const k of ['fire', 'ice', 'lightning', 'wind', 'water', 'earth', 'holy', 'dark', 'arcane']) fxCard(gMagic, k);
+fxCard(gMagic, 'heal', { color: '#7fe0a0' });
+fxCard(gMagic, 'heal', { color: '#ffe08a' }, 'ฮีล (แสงทอง)');
+for (const [tier, n] of [['light', 'โดนตีเบา'], ['heavy', 'โดนตีหนัก'], ['critical', 'คริติคอล'], ['finisher', 'ปิดฉาก']]) fxCard(gHit, 'impact', { tier, dur: 520 }, n);
+fxCard(gHit, 'death', { dur: 1300, old: false }, 'ล้ม · วิญญาณลอยขึ้น (ใหม่ ยังไม่ต่อเข้าเกม)');
+/* status: the same two layers the battle draws — behind the fighter, then in front */
+for (const k of StatusFX.kinds) { const u = { id: 'pv-' + k, hp: 1, sts: k === 'freeze' || k === 'shock' ? null : { [k]: 9 }, stun: k === 'freeze' ? 1 : 0, slowed: k === 'shock' ? 1 : 0 };
+  mk(gStatus, NAMES[k] || k, k, [['ในเกม', (g, now) => { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#1b2330'); gr.addColorStop(.62, '#27342a'); gr.addColorStop(1, '#31412f'); g.fillStyle = gr; g.fillRect(0, 0, W, H); const x = W / 2, y = 164; StatusFX.back(g, u, x, y, 104, now + 5000); person(g, x, y, '#8a6a5a'); StatusFX.front(g, u, x, y, 104, now + 5000) }]]) }
+let speed = 1, clock = 0, last = performance.now();
+function frame(now) { clock += (now - last) * speed; last = now;
+  for (const c of cards) { const r = c.el.getBoundingClientRect(); if (r.bottom < -50 || r.top > innerHeight + 50) continue; c.cvs.forEach((cv, i) => { if (cv.offsetParent === null) return; const g = cv.getContext('2d'); g.setTransform(2, 0, 0, 2, 0, 0); try { c.draws[i][1](g, clock) } catch (e) { } }) }
+  requestAnimationFrame(frame) }
+requestAnimationFrame(frame);
+const useNew = document.getElementById('useNew'); useNew.checked = (() => { try { return localStorage.getItem('vfx-kit') === '1' } catch (e) { return false } })(); useNew.onchange = () => VfxKit.setEnabled(useNew.checked);
+document.getElementById('speed').onchange = e => { speed = +e.target.value };
+document.getElementById('showOld').onchange = e => { for (const c of cards) if (c.el.dataset.old === '1') { const f = c.el.querySelector('figure'); f.style.display = e.target.checked ? '' : 'none'; c.el.querySelector('.pair').classList.toggle('one', !e.target.checked) } };
+</script></body></html>
