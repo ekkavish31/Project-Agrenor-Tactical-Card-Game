@@ -10,7 +10,7 @@ class Image {
 const context = { console, Image, ASSET_MANIFEST: manifest };
 context.globalThis = context; vm.createContext(context);
 for (const file of ['js/char-size.js', 'js/village-life.js', 'js/villager-draw.js']) vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context, { filename: file });
-const names = ['finn', 'berg', 'ken', 'shep', 'vera'];
+const names = ['finn', 'berg', 'ken', 'shep', 'vera', 'graven', 'tess', 'ash', 'pell', 'hugo', 'pim', 'pip'];
 let count = 0;
 for (const key of names) {
   const person = context.VillageLife.P[key]; assert.equal(person.look.sprite, key);
@@ -21,11 +21,23 @@ for (const key of names) {
     assert(draws[0][0].srcValue.includes('/' + key + '/' + direction.toLowerCase() + '-stand.webp'));
     const entry = manifest.assets.find(a => a.id === `npc-${key}-${direction.toLowerCase()}-stand`);
     assert.equal(entry.status, 'final'); assert.equal(entry.studioOwner.id, 'npc:' + key);
+    if (key === 'pim' || key === 'pip') {
+      assert.equal(person.look.small, true, 'retain the age flag for the code fallback');
+      assert.equal(entry.ageScaleBaked, true, 'the real image already contains a smaller child');
+    }
     const scale = draws[0][3] / 384;
     assert(Math.abs(draws[0][2] + context.CharSize.FEET_Y * scale) < .001, 'same foot anchor as other villagers');
     assert(Math.abs(draws[0][3] - context.CharSize.VILLAGE_HERO_PX * context.CharSize.DRAW.ally / context.CharSize.DRAW.hero) < .001, 'same lineup sizing rule');
     count++;
   }
 }
-assert.equal(loaded.length, 20, 'only 20 existing stand files, no fictional walk frames');
-console.log('PASS: ' + count + ' village render cases, 20 real files, 5 NPC identities, four views and shared feet/lineup sizing');
+assert.equal(loaded.length, names.length * 4, 'only real stand files, no fictional walk frames');
+const standFiles = loaded.length;
+assert.equal(context.VillageLife.P.mil.look.sprite, 'mil');
+for (const face of ['SW', 'SE', 'NE', 'NW']) {
+  const draws = [], g = new Proxy({}, { get: (_, method) => method === 'drawImage' ? (...args) => draws.push(args) : () => {} });
+  context.VillagerDraw(g, context.VillageLife.P.mil.look, 100, 100, 0, { face });
+  assert.equal(draws.length, 1, 'Mil uses the existing picture rather than a code person');
+  assert(draws[0][0].srcValue.includes('mil'));
+}
+console.log('PASS: ' + count + ' village render cases, ' + standFiles + ' real stand files, ' + names.length + ' NPC identities, four views and shared feet/lineup sizing; children are not shrunk twice; existing Mil linked in 4 views');

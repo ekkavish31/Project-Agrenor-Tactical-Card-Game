@@ -28,7 +28,8 @@
      walk frames: 12 = a full 12-picture cycle (per-direction counts in wn; a direction with fewer pictures than its mirror uses the mirror's, flipped) · 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 1 = contact, stand, contact, stand · 0 = the standing picture with a bob.
      Falls back to the code-drawn figure until a standing picture has loaded. */
   /* v98.126 · new cast pictures (standing SW/NE + one walking picture SW/NE each, SE/NW = mirrored files): bram / luna / the recruits use walk 1 (contact, stand, contact, stand) */
-  const SPR_INFO = { finn: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, berg: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, ken: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, shep: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, vera: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 },
+  const SPR_INFO = { mil: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, graven: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, tess: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, ash: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, pell: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, hugo: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, pim: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0, ageScaleBaked: true }, pip: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0, ageScaleBaked: true },
+    finn: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, berg: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, ken: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, shep: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, vera: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 },
     oren: { dirs: ['sw', 'ne'], walk: 1 }, joe: { dirs: ['sw', 'ne'], walk: 1 }, ella: { dirs: ['sw', 'ne'], walk: 1 }, mother: { dirs: ['sw', 'ne'], walk: 1 }, hilda: { dirs: ['sw', 'ne'], walk: 1 }, marta: { dirs: ['sw', 'ne'], walk: 1 }, gus: { dirs: ['sw', 'ne'], walk: 1 }, mira: { dirs: ['sw', 'ne'], walk: 1 }, saf: { dirs: ['sw', 'ne'], walk: 1 }, bryn: { dirs: ['sw', 'ne'], walk: 1 },   /* v98.300 · painted people: front/back pictures (npc sheets, tools/build-npc-sprites.py) */
     may: { dirs: ['sw', 'ne'], walk: 1 }, tom: { dirs: ['sw', 'ne'], walk: 1 }, lin: { dirs: ['sw', 'ne'], walk: 1 }, guard: { dirs: ['sw', 'ne'], walk: 1 }, bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1, wn: { sw: 12 } }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } },
     /* v98.86 · recruits (front view = SW; NE is the front picture mirrored for now, replace ne-stand.webp when the back view exists). No walk frames yet: the standing picture bobs. */
@@ -50,7 +51,7 @@
   const ready = im => im && im.complete && im.naturalWidth > 0;
   /* v98.261 · feet on the ground + size as the ⚖ Scale Lineup shows it. (1) the picture's own lowest opaque row is put on the ground (Luna's pictures end at y=360, not 372, so she floated);
      (2) allies are drawn at 1.45/1.6 of the hero's canvas (93.6 px), the same rule the lineup uses for metres — before, they were 1.04× the hero's canvas, so Luna stood taller than the hero. */
-  const LINEUP_ALLY = new Set(['finn', 'berg', 'ken', 'shep', 'vera', 'bram', 'luna', 'kier', 'mil', 'ren', 'nadia', 'sigrid', 'orla', 'olwen', 'may', 'tom', 'lin', 'guard', 'oren', 'joe', 'ella', 'mother', 'hilda', 'marta', 'gus', 'mira', 'saf', 'bryn']);   /* every picture-based person is sized by the lineup rule */
+  const LINEUP_ALLY = new Set(['graven', 'tess', 'ash', 'pell', 'hugo', 'pim', 'pip', 'finn', 'berg', 'ken', 'shep', 'vera', 'bram', 'luna', 'kier', 'mil', 'ren', 'nadia', 'sigrid', 'orla', 'olwen', 'may', 'tom', 'lin', 'guard', 'oren', 'joe', 'ella', 'mother', 'hilda', 'marta', 'gus', 'mira', 'saf', 'bryn']);   /* every picture-based person is sized by the lineup rule */
   const allyK = () => CharSize.VILLAGE_HERO_PX * CharSize.DRAW.ally / CharSize.DRAW.hero / CharSize.NPC_CANVAS_K;   /* v98.264 · numbers live in js/char-size.js */
   function pic(S, d, k) { const own = S[d + '-' + k]; if (ready(own)) return { im: own, flip: false }; const m = S[MIR[d] + '-' + k]; return ready(m) ? { im: m, flip: true } : null }
   /* v98.152 · ONE shadow for every walker (village, battle-in-village, interiors): a soft wide oval + a darker contact core right under the feet, both sized by the character's scale */
@@ -58,12 +59,14 @@
   function spriteDraw(g, L, x, y, t, o) {
     const S = sprites(L.sprite), info = S.info || SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
     let P = pic(S, d, 'stand'), full = false; if (!P) return false;
-    const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330 * (LINEUP_ALLY.has(L.sprite) ? allyK() : 1);
+    // Pim/Pip are smaller in the image itself, matching the lineup. L.small
+    // remains for the code fallback, but must not shrink these pictures again.
+    const s = (o.scale || 1) * (L.small && !info.ageScaleBaked ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330 * (LINEUP_ALLY.has(L.sprite) ? allyK() : 1);
     let wn = dn(info, d), wsrc = d, wflip = false; if (dn(info, MIR[d]) > wn) { wn = dn(info, MIR[d]); wsrc = MIR[d]; wflip = true }
     let procKey = null; if (walking && act === '' && wn) { const p = t * .012 + ph, N = wn >= 4 ? wn : 4, f = S.ms && S.ms[wsrc] && wn >= 4 ? Math.floor((t + ph * 1000) / S.ms[wsrc]) % wn : ((Math.round(p / (Math.PI * 2 / N)) % N) + N) % N; procKey = 'allywalk:' + L.sprite + ':' + wsrc.toUpperCase(); const _u = 0, key = wn >= 4 ? 'walk' + (f + 1) : wn === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, wsrc, key); if (W) { P = wflip ? { im: W.im, flip: !W.flip } : W; full = wn >= 8 } }
     const proc = procKey && root.ProcMotion && root.ProcMotion.raw && root.ProcMotion.raw(procKey);   /* the studio's ขยับในเกม setting of that walk set (e.g. bob 0.3 / 0.6) replaces the built-in bob */
     const bob = proc ? 0 : walking ? Math.abs(Math.sin(t * .012 + ph)) * (full ? .6 : 4) * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
-    contactShadow(g, x, y, s);
+    contactShadow(g, x, y, s * (info.ageScaleBaked ? .72 : 1));
     g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (proc) { try { root.ProcMotion.apply(g, procKey, { frames: wn, pose: 'walk' }, t, 384 * k * .9, L.sprite) } catch (e) { } } if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -CharSize.FEET_Y * k, 384 * k, 384 * k); g.restore();
     fx(g, act, x, y, s, t, ph);
     return true;

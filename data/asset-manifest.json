@@ -107417,6 +107417,896 @@
    "artRevision": "v98.418",
    "usedIn": "ภาพประกอบการ์ดสนามตาราง",
    "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
+  },
+  {
+   "id": "npc-graven-sw-stand",
+   "file": "assets/village-town/npc/graven/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เกรเวน · ยืน",
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-graven-se-stand",
+   "file": "assets/village-town/npc/graven/se-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เกรเวน · ยืน",
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-graven-sw-stand"
+  },
+  {
+   "id": "npc-tess-sw-stand",
+   "file": "assets/village-town/npc/tess/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เทส · ยืน",
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-tess-se-stand",
+   "file": "assets/village-town/npc/tess/se-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เทส · ยืน",
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-tess-sw-stand"
+  },
+  {
+   "id": "npc-ash-sw-stand",
+   "file": "assets/village-town/npc/ash/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC แอช · ยืน",
+   "studioOwner": {
+    "id": "npc:ash",
+    "name": "แอช",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-ash-se-stand",
+   "file": "assets/village-town/npc/ash/se-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC แอช · ยืน",
+   "studioOwner": {
+    "id": "npc:ash",
+    "name": "แอช",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-ash-sw-stand"
+  },
+  {
+   "id": "npc-pell-sw-stand",
+   "file": "assets/village-town/npc/pell/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เพลล์ · ยืน",
+   "studioOwner": {
+    "id": "npc:pell",
+    "name": "เพลล์",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-pell-se-stand",
+   "file": "assets/village-town/npc/pell/se-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เพลล์ · ยืน",
+   "studioOwner": {
+    "id": "npc:pell",
+    "name": "เพลล์",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-pell-sw-stand"
+  },
+  {
+   "id": "npc-hugo-sw-stand",
+   "file": "assets/village-town/npc/hugo/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC ฮิวโก้ · ยืน",
+   "studioOwner": {
+    "id": "npc:hugo",
+    "name": "ฮิวโก้",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-hugo-se-stand",
+   "file": "assets/village-town/npc/hugo/se-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC ฮิวโก้ · ยืน",
+   "studioOwner": {
+    "id": "npc:hugo",
+    "name": "ฮิวโก้",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-hugo-sw-stand"
+  },
+  {
+   "id": "npc-graven-ne-stand",
+   "file": "assets/village-town/npc/graven/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เกรเวน · ยืน",
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-graven-nw-stand",
+   "file": "assets/village-town/npc/graven/nw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เกรเวน · ยืน",
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-graven-ne-stand"
+  },
+  {
+   "id": "npc-tess-ne-stand",
+   "file": "assets/village-town/npc/tess/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เทส · ยืน",
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-tess-nw-stand",
+   "file": "assets/village-town/npc/tess/nw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เทส · ยืน",
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-tess-ne-stand"
+  },
+  {
+   "id": "npc-ash-ne-stand",
+   "file": "assets/village-town/npc/ash/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC แอช · ยืน",
+   "studioOwner": {
+    "id": "npc:ash",
+    "name": "แอช",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-ash-nw-stand",
+   "file": "assets/village-town/npc/ash/nw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC แอช · ยืน",
+   "studioOwner": {
+    "id": "npc:ash",
+    "name": "แอช",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-ash-ne-stand"
+  },
+  {
+   "id": "npc-pell-ne-stand",
+   "file": "assets/village-town/npc/pell/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เพลล์ · ยืน",
+   "studioOwner": {
+    "id": "npc:pell",
+    "name": "เพลล์",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-pell-nw-stand",
+   "file": "assets/village-town/npc/pell/nw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC เพลล์ · ยืน",
+   "studioOwner": {
+    "id": "npc:pell",
+    "name": "เพลล์",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-pell-ne-stand"
+  },
+  {
+   "id": "npc-hugo-ne-stand",
+   "file": "assets/village-town/npc/hugo/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC ฮิวโก้ · ยืน",
+   "studioOwner": {
+    "id": "npc:hugo",
+    "name": "ฮิวโก้",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+  },
+  {
+   "id": "npc-hugo-nw-stand",
+   "file": "assets/village-town/npc/hugo/nw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC ฮิวโก้ · ยืน",
+   "studioOwner": {
+    "id": "npc:hugo",
+    "name": "ฮิวโก้",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.8295454545454546,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-hugo-ne-stand"
+  },
+  {
+   "id": "npc-pim-sw-stand",
+   "file": "assets/village-town/npc/pim/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC พิม · ยืน",
+   "studioOwner": {
+    "id": "npc:pim",
+    "name": "พิม",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.42513863216266173,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_e37cec500b1c819181e6c7347e9bc492",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "ageScaleBaked": true
+  },
+  {
+   "id": "npc-pim-se-stand",
+   "file": "assets/village-town/npc/pim/se-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC พิม · ยืน",
+   "studioOwner": {
+    "id": "npc:pim",
+    "name": "พิม",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.42513863216266173,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_e37cec500b1c819181e6c7347e9bc492",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-pim-sw-stand",
+   "ageScaleBaked": true
+  },
+  {
+   "id": "npc-pip-sw-stand",
+   "file": "assets/village-town/npc/pip/sw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC ปิ๊บ · ยืน",
+   "studioOwner": {
+    "id": "npc:pip",
+    "name": "ปิ๊บ",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.42513863216266173,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_e37cec500b1c819181e6c7347e9bc492",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "ageScaleBaked": true
+  },
+  {
+   "id": "npc-pip-se-stand",
+   "file": "assets/village-town/npc/pip/se-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC ปิ๊บ · ยืน",
+   "studioOwner": {
+    "id": "npc:pip",
+    "name": "ปิ๊บ",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.42513863216266173,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_e37cec500b1c819181e6c7347e9bc492",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-pip-sw-stand",
+   "ageScaleBaked": true
+  },
+  {
+   "id": "npc-pim-ne-stand",
+   "file": "assets/village-town/npc/pim/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC พิม · ยืน",
+   "studioOwner": {
+    "id": "npc:pim",
+    "name": "พิม",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.42513863216266173,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_e37cec500b1c819181e6c7347e9bc492",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "ageScaleBaked": true
+  },
+  {
+   "id": "npc-pim-nw-stand",
+   "file": "assets/village-town/npc/pim/nw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC พิม · ยืน",
+   "studioOwner": {
+    "id": "npc:pim",
+    "name": "พิม",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.42513863216266173,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_e37cec500b1c819181e6c7347e9bc492",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-pim-ne-stand",
+   "ageScaleBaked": true
+  },
+  {
+   "id": "npc-pip-ne-stand",
+   "file": "assets/village-town/npc/pip/ne-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC ปิ๊บ · ยืน",
+   "studioOwner": {
+    "id": "npc:pip",
+    "name": "ปิ๊บ",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.42513863216266173,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_e37cec500b1c819181e6c7347e9bc492",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "ageScaleBaked": true
+  },
+  {
+   "id": "npc-pip-nw-stand",
+   "file": "assets/village-town/npc/pip/nw-stand.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "v98.423",
+   "usedIn": "NPC ปิ๊บ · ยืน",
+   "studioOwner": {
+    "id": "npc:pip",
+    "name": "ปิ๊บ",
+    "group": "npcs"
+   },
+   "normalization": {
+    "commonScale": 0.42513863216266173,
+    "baseline": 360,
+    "sharedAcross": "whole sheet, both views"
+   },
+   "sourceLibraryFile": "libfile_e37cec500b1c819181e6c7347e9bc492",
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "mirroredFrom": "npc-pip-ne-stand",
+   "ageScaleBaked": true
   }
  ],
  "studioReviews": {
