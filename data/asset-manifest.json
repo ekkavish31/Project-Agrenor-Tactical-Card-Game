@@ -7702,8 +7702,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "20261106-132531",
+   "artRevision": "20261112-102707",
    "history": [
+    {
+     "file": "assets/_versions/tactics-bram-se-windup/20261112-102707.webp",
+     "at": "2026-11-12T03:27:07.717Z",
+     "stamp": "20261112-102707",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-bram-se-windup/mw4lbrzn-9gnm.webp",
      "at": "2026-11-06T06:25:31.156Z",
@@ -7727,8 +7734,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Bram, a stocky young warrior with sturdy leather armour, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-sw-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม bram ในสนาม",
    "note": "ภาพกลับด้านจาก SE (v97.65) · วาดทิศนี้จริงแล้วให้แทนไฟล์นี้ได้",
-   "artRevision": "20261106-132531",
+   "artRevision": "20261112-102707",
    "history": [
+    {
+     "file": "assets/_versions/tactics-bram-sw-windup/20261112-102707.webp",
+     "at": "2026-11-12T03:27:07.760Z",
+     "stamp": "20261112-102707",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-bram-sw-windup/mw4lbrzn-9gnm.webp",
      "at": "2026-11-06T06:25:31.052Z",
