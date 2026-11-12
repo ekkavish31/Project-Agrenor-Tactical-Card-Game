@@ -98487,7 +98487,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261112-162121",
+   "artRevision": "20261112-193156",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -98495,6 +98495,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-windup-mw4kyto8-bdbh-1/20261112-193103.webp",
+     "at": "2026-11-12T12:31:03.145Z",
+     "stamp": "20261112-193103",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-sw-windup-mw4kyto8-bdbh-1/20261112-162121.webp",
      "at": "2026-11-12T09:21:21.413Z",
@@ -98523,7 +98530,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261112-162121",
+   "artRevision": "20261112-193156",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -98531,6 +98538,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-se-windup-mw4kyto8-bdbh-1/20261112-193103.webp",
+     "at": "2026-11-12T12:31:03.208Z",
+     "stamp": "20261112-193103",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-se-windup-mw4kyto8-bdbh-1/20261112-162121.webp",
      "at": "2026-11-12T09:21:21.493Z",
@@ -98775,7 +98789,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261112-152316",
+   "artRevision": "20261112-193044",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -98783,6 +98797,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-windup-mw4kzabl-f96k-1/20261112-193044.webp",
+     "at": "2026-11-12T12:30:44.613Z",
+     "stamp": "20261112-193044",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-windup-mw4kzabl-f96k-1/20261112-152316.webp",
      "at": "2026-11-12T08:23:16.866Z",
@@ -98811,7 +98832,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261112-152316",
+   "artRevision": "20261112-193044",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -98819,6 +98840,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-nw-windup-mw4kzabl-f96k-1/20261112-193044.webp",
+     "at": "2026-11-12T12:30:44.568Z",
+     "stamp": "20261112-193044",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-nw-windup-mw4kzabl-f96k-1/20261112-152316.webp",
      "at": "2026-11-12T08:23:16.835Z",
@@ -109971,6 +109999,90 @@
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "ageScaleBaked": true,
    "mirroredFrom": "npc-pip-ne-walk1"
+  },
+  {
+   "id": "action-auto",
+   "file": "assets/action-auto.webp",
+   "category": "actions",
+   "status": "missing",
+   "size": [
+    900,
+    900
+   ],
+   "transparent": false,
+   "subject": "a mechanical hammer over a glowing ingot, furnace and quenching bucket",
+   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a mechanical hammer over a glowing ingot, furnace and quenching bucket.",
+   "usedIn": "ปุ่มกิจกรรม"
+  },
+  {
+   "id": "action-buy",
+   "file": "assets/action-buy.webp",
+   "category": "actions",
+   "status": "missing",
+   "size": [
+    900,
+    600
+   ],
+   "transparent": false,
+   "subject": "a market stall counter with ingots, coal and food for sale",
+   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a market stall counter with ingots, coal and food for sale.",
+   "usedIn": "ปุ่มกิจกรรม"
+  },
+  {
+   "id": "action-cancel",
+   "file": "assets/action-cancel.webp",
+   "category": "actions",
+   "status": "missing",
+   "size": [
+    900,
+    900
+   ],
+   "transparent": false,
+   "subject": "tongs setting an unfinished iron blank into a salvage tray, spent ash behind",
+   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: tongs setting an unfinished iron blank into a salvage tray, spent ash behind.",
+   "usedIn": "ปุ่มกิจกรรม"
+  },
+  {
+   "id": "action-recipes",
+   "file": "assets/action-recipes.webp",
+   "category": "actions",
+   "status": "missing",
+   "size": [
+    900,
+    600
+   ],
+   "transparent": false,
+   "subject": "an open blacksmith recipe book with sword and hammer diagrams",
+   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: an open blacksmith recipe book with sword and hammer diagrams.",
+   "usedIn": "ปุ่มกิจกรรม"
+  },
+  {
+   "id": "action-sell",
+   "file": "assets/action-sell.webp",
+   "category": "actions",
+   "status": "missing",
+   "size": [
+    900,
+    600
+   ],
+   "transparent": false,
+   "subject": "a merchant weighing a finished sword against coins",
+   "prompt": "Square fantasy RPG action illustration, warm amber forge lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: a merchant weighing a finished sword against coins.",
+   "usedIn": "ปุ่มกิจกรรม"
+  },
+  {
+   "id": "ui-edit",
+   "file": "assets/ui-edit.webp",
+   "category": "ui",
+   "status": "missing",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": false,
+   "subject": "edit icon",
+   "prompt": "Square game UI button illustration, one large central object, hand-painted fantasy RPG, dark forest-green background, warm amber lighting, aged brass, readable at 48px, no people, no text, no outer border. Subject: edit icon.",
+   "usedIn": "ปุ่มเมนูด้านบน"
   }
  ],
  "studioReviews": {
