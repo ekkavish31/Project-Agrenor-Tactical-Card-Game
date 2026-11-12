@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.406';
+  const V = '98.407';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1173,7 +1173,7 @@
     effects.push({ kind, tier: o.tier, reducedMotion: o.reducedMotion, seed: (Math.random() * 1e6) | 0, scale: o.scale || 1, color: o.color, to: { x: to.vu, y: to.vv }, from: from && from !== to ? { x: from.vu, y: from.vv } : null, start: now(), duration: dur });
 
     /* v98.332 · free CC0 light / slash sprites (Kenney Particle Pack, assets/fx/kenney) on top of the old effects: a sweep for melee, a flare + star + ring for elements */
-    if (to && !o.noK) { const base = effects[effects.length - 1], col = KFX_BURST[kind];
+    if (to && !o.noK && !window.VfxKit?.uses(kind)) { const base = effects[effects.length - 1], col = KFX_BURST[kind];   /* v98.407 · the code-drawn kit is complete on its own: no sprite overlay on top of it */
       if (KFX_MELEE.has(kind)) effects.push({ ...base, kind: 'kslash', color: '#fff0c0', duration: 380 });
       else if (col) effects.push({ ...base, kind: 'kburst', color: col, duration: 560 }) }
     return dur;
@@ -1541,6 +1541,7 @@
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
+      if (u.deadAt && t > u.deadAt && !u._deathFx && window.VfxKit?.uses('death')) { u._deathFx = 1; fx('death', u, null, { duration: 1300, noK: true, scale: u.side === 'monster' ? (MON[u.evoShow || u.kind]?.scale || 1) : 1 }) }   /* v98.407 · light leaves the fallen fighter (js/vfx-kit.js) */
       if (u.deadAt && t > u.deadAt && !MON[u.kind]?.loot) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
       const isSel = u.hp > 0 && (u === selUnit || u === hoverU || u === pickU) && !u.deadAt; if (isSel && SEL_OUTLINE) { g.shadowColor = '#fff'; g.shadowBlur = 6 * (devicePixelRatio || 1) }   /* v98.324 · the selected character: thin white edge + soft aura */
       drawUnit(u); g.restore();
