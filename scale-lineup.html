@@ -51,9 +51,18 @@ body.ratio-layout:not(.dock) aside.card{max-height:calc(100vh - 110px);overflow:
 body.ratio-layout.dock main{grid-template-columns:1fr;grid-template-areas:"stage" "insp"}
 body.ratio-layout.dock main>section:nth-of-type(2){grid-area:stage}body.ratio-layout.dock main>aside{grid-area:insp}
 @media(max-width:900px){body.ratio-layout main{grid-template-columns:1fr!important;grid-template-areas:"stage" "insp"!important}body.ratio-layout main>section:first-child{display:none}}
-#insp .ipGrid{display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
-@media(min-width:620px){#insp .ipGrid{grid-template-columns:min(380px,42%) 1fr}}
-#insp .ipCtl{min-width:0}
+/* v98.410 · reserve a compact control column; the before/after image gets the remaining space.
+   Query the inspector's available width, including when it is embedded in Studio. */
+#insp{container:lineup-inspector / inline-size}
+#insp .ipGrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}
+#insp .ipPin{min-width:0;width:100%;max-width:840px}
+#insp #pcv{display:block;width:100%;height:auto;max-width:100%}
+#insp .ipCtl{min-width:0;width:100%;max-width:360px;overflow-wrap:anywhere}
+#insp .ipCtl .adj>span{width:64px}
+#insp .ipCtl select{min-width:0;max-width:100%}
+#insp .ipCtl button{white-space:normal}
+#insp #adjRef{flex:1 1 200px;max-width:calc(100% - 68px)}
+@container lineup-inspector (min-width:760px){#insp .ipGrid{grid-template-columns:minmax(0,1fr) 360px}}
 @media(max-width:900px){body.dock main{grid-template-columns:1fr}}
 body.world header h1 small{display:none}
 .rtBox{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--panel)}.rtBox summary{cursor:pointer}.rtBox[open] summary{margin-bottom:6px}
@@ -350,7 +359,7 @@ function inspectRatio() {
   const PDL = window.ProportionDatum, qL = vpOf(c), datumRec = hasDatum && PDL.get(e.id, qL.pose, qL.frame);
   const datumPts = () => { if (!datumRec) return []; const { pts, own } = PDL.pointsFor(datumRec, qL.dir); return PDL.POINTS.map(([k, , col]) => pts[k] && { k, col, own: own.has(k), x: pts[k][0] * c.m.w, y: pts[k][1] * c.m.h } ).filter(Boolean) };
   $('insp').innerHTML = `<div class="ipGrid"><div class="ipPin"><b>${e.name}</b> <span class="chip ${LV[v.level][0]}">${LV[v.level][1]}</span>
-   <canvas id="pcv" width="${PW}" height="${CH + 20}" style="width:${PW}px;height:${CH + 20}px;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
+   <canvas id="pcv" width="${PW}" height="${CH + 20}" style="width:100%;height:auto;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
    <p class="hint">${hasDatum ? `<b style="color:${COL.chin}">คาง</b> / <b style="color:${COL.hip}">ขาหนีบ</b> อ่านตรงจาก 📍 Datum ของท่า/ทิศนี้ (ลากหรือพิมพ์เองไม่ได้แล้ว แก้ที่ Datum เท่านั้น) · <b>ขวา</b> = ผลหลังปรับ` : '⚠ ยังไม่ได้วาง 📍 Datum สำหรับท่า/ทิศนี้ — ตัวเลขด้านล่างเป็นการประมาณจากภาพคร่าว ๆ เท่านั้น ต้องวาง Datum ก่อนจึงจะปรับขนาดได้จริง'}</p></div>
    <div class="ipCtl">
    <details><summary>รายละเอียดการวัด</summary><dl><dt>จำนวนหัว</dt><dd><b>${r.heads.toFixed(2)}</b> หัว (หัว ${(r.head * 100).toFixed(1)}% ของตัว)</dd><dt>หัว / ไหล่</dt><dd>${r.headToShoulder ? r.headToShoulder.toFixed(2) + '×' : '—'} (หัวกว้าง ${r.headW}px · ไหล่ ${r.shoulderW}px)</dd><dt>ลำตัว / ขา</dt><dd>${(r.torso * 100).toFixed(0)}% / ${(r.legs * 100).toFixed(0)}%</dd><dt>ผล</dt><dd>${v.notes.length ? v.notes.join('<br>') : 'ตรงมาตรฐาน'}</dd></dl></details>
@@ -362,7 +371,7 @@ function inspectRatio() {
     <p class="hint">ตัดภาพตรงจุด <b style="color:${COL.chin}">คาง</b> และ <b style="color:${COL.hip}">ขาหนีบ</b> จาก datum เป็น 3 ส่วน ปรับแต่ละส่วนแล้วต่อกลับ (เท้าอยู่ที่เดิม) — ดูผลที่ภาพด้านขวาบนแผงนี้</p>
     <div class="adj"><label><input type="radio" name="adjMode" value="ref" checked> ตามต้นแบบ</label><label><input type="radio" name="adjMode" value="man"> แมนวล</label><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงความสูงรวม</label></div>
     <div class="adj" title="ใช้สัดส่วน (หัว · ลำตัว · ขา) จาก datum ของตัวต้นแบบ กับ datum ของตัวนี้ · ตามต้นแบบ = คำนวณให้อัตโนมัติ · แมนวล = ใส่ค่าแนะนำแล้วปรับเอง"><span>ต้นแบบ</span><select id="adjRef"></select><button id="adjRefFill" type="button">ใส่ค่าแล้วปรับเอง</button></div>
-    <div class="adj" title="ครอบตามทรง = จับเฉพาะรูปทรงของหัว/ลำตัว/ขา แล้วบิดภาพต่อเนื่องชิ้นเดียว · แถบนุ่ม = จับเป็นแถบตามเส้นตัด แต่ต่อเนียน"><span>รอยต่อ</span><select id="adjSeam"><option value="shape">ครอบตามทรง</option><option value="band">แถบนุ่ม</option></select><span>นุ่ม</span><input type="range" id="adjSoft" min="2" max="20" step="1" value="7" style="width:80px"></div>
+    <div class="adj" title="ครอบตามทรง = จับเฉพาะรูปทรงของหัว/ลำตัว/ขา แล้วบิดภาพต่อเนื่องชิ้นเดียว · แถบนุ่ม = จับเป็นแถบตามเส้นตัด แต่ต่อเนียน"><span>รอยต่อ</span><select id="adjSeam"><option value="shape">ครอบตามทรง</option><option value="band">แถบนุ่ม</option></select><span style="width:auto">นุ่ม</span><input type="range" id="adjSoft" min="2" max="20" step="1" value="7" style="width:80px"></div>
     <div class="adj" title="ส่วนที่ขยาย: อัปสเกลแบบ bicubic แล้วเพิ่มความคมตามที่ขยาย (ออโต้) หรือกำหนดเอง"><span>ความคม</span><select id="adjSharpMode"><option value="auto">ออโต้ (ตามที่ขยาย)</option><option value="man">แมนวล</option></select><input type="range" id="adjSharp" min="0" max="150" step="5" value="60" style="width:110px"><b id="adjSharpV">60%</b></div>
     ${[['head', 'หัว'], ['torso', 'ลำตัว'], ['legs', 'ขา']].map(([k, n]) => `<div class="adj" data-part="${k}" style="gap:3px;flex-wrap:nowrap"><label style="width:58px;white-space:nowrap"><input type="checkbox" class="adjSel" data-k="${k}" ${k === 'head' ? 'checked' : ''}> ${n}</label><button data-k="${k}" data-d="-5" style="padding:2px 5px">−5</button><button data-k="${k}" data-d="-1" style="padding:2px 5px">−1</button><input type="number" class="adjVal" data-k="${k}" min="50" max="200" step="1" value="100" style="width:46px">%<button data-k="${k}" data-d="1" style="padding:2px 5px">+1</button><button data-k="${k}" data-d="5" style="padding:2px 5px">+5</button></div>`).join('')}
     <div class="hint" id="adjInfo"></div>
