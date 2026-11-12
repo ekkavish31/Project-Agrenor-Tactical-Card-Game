@@ -106,7 +106,7 @@ const gh=document.getElementById('ghSlot'),grow=h.querySelector('.grow');h.inser
 <li>ภาพที่ไม่มีเจ้าของอยู่ใน Objects → ไฟล์ยังไม่จัดหมวด ไม่ลบภาพต้นฉบับอัตโนมัติ</li></ol>
 <button onclick="this.closest('dialog').close()">ปิด</button></dialog>
 <div class="toast" id="toast"></div>
-<script src="js/asset-manifest.js?v=v98.425"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/studio-variants.js?v=98.85"></script>
+<script src="js/asset-manifest.js?v=v98.426"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/studio-variants.js?v=98.85"></script>
 <script>
 'use strict';
 // Asset Studio v17 — slots (where the game shows art) vs images (files in the library).
@@ -129,7 +129,7 @@ let tab='slots',zone='all',sub='all',filter='all',query='',sel=null,lkind='all',
 const exportedFiles=window.StudioExportedFiles=new Map();
 const pending=new Map(); // id -> {blob,url,status,canvas}  (only when no folder is connected)
 let dir=null,scanned=null;
-let manifestJsonPath='data/asset-manifest.json',manifestJsPath='js/asset-manifest.js?v=v98.425';
+let manifestJsonPath='data/asset-manifest.json',manifestJsPath='js/asset-manifest.js?v=v98.426';
 function toast(t){let e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
 function byId(id){return M.assets.find(a=>a.id===id)}
 const isSlot=a=>a.status!=='unused';
