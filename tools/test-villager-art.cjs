@@ -11,7 +11,7 @@ const context = { console, Image, ASSET_MANIFEST: manifest };
 context.globalThis = context; vm.createContext(context);
 for (const file of ['js/char-size.js', 'js/village-life.js', 'js/villager-draw.js']) vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context, { filename: file });
 const names = ['finn', 'berg', 'ken', 'shep', 'vera', 'graven', 'tess', 'ash', 'pell', 'hugo', 'pim', 'pip'];
-const walkers = new Set(['finn', 'berg', 'ken', 'shep', 'vera']);
+const walkers = new Set(names);
 let count = 0;
 for (const key of names) {
   const person = context.VillageLife.P[key]; assert.equal(person.look.sprite, key);
