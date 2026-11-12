@@ -1586,7 +1586,7 @@
  /* ---------- thumbnails (rendered from the real draw code) ---------- */
  const thumbCache = new Map();
  window.VillageRepoAssets.init({ KINDS, kind, getG: () => g, thumbCache, decorW: DECOR_W, render: () => { if (typeof render === 'function') render() } });
- /* v98.431 · a catalogue picture finished loading → refresh its tile if the picker is open */
+ /* v98.433 · a catalogue picture finished loading → refresh its tile if the picker is open */
  document.addEventListener('village-kind-ready', ev => { const b = picker?.open && [...picker.querySelectorAll('[data-id]')].find(x => x.dataset.id === ev.detail); if (b) putThumb(b.querySelector('.th'), kindThumb(ev.detail)) });   /* v98.293 · js/village-repo-assets.js */
  let thumbBox = null;
  /* v91.77 · drag handle of a sub-asset sits at the middle of its visible pixels (not at its ground anchor, which can be far from the art, e.g. a long fence) */
@@ -1727,7 +1727,7 @@
    picker.id = 'aePicker';
    document.body.append(picker)
   }
-  const groups = [...new Set(Object.values(KINDS).filter(k => !k.hidden).map(k => k.group))];   /* v98.431 · hidden = legacy kinds kept only so old pieces still draw */
+  const groups = [...new Set(Object.values(KINDS).filter(k => !k.hidden).map(k => k.group))];   /* v98.433 · hidden = legacy kinds kept only so old pieces still draw */
   let tab = 'ทั้งหมด',
    q = '';
   const draw = () => {

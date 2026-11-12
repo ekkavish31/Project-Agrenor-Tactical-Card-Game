@@ -74,4 +74,16 @@ console.log('proportion depth: all passed');
   assert.equal(r.level, 'ok'); assert.equal(r.lines.length, 2, 'one measuring line per leg');
   const scaled = new Uint8ClampedArray(W * H * 4), r2 = PD.rule({ pts: { SW: P } }, 'SW', { d: scaled, w: W, h: H }, 'shin', .5); assert.equal(r2, null, 'empty picture → null');
   assert.equal(PD.rule({ pts: { SW: P } }, 'SW', { d, w: W, h: H }, 'nope', .5), null, 'unknown bone group → null') }
+// v98.432 · back-view head suggested from the front (shoulder line + crotch as the ruler) and front↔back consistency
+{ const front = { eyeL: [.45, .17], eyeR: [.55, .17], chin: [.5, .25], shL: [.3, .3], shR: [.7, .3], crotch: [.5, .6], kneeL: [.44, .8], kneeR: [.56, .8], footL: [.44, .95], footR: [.56, .95] };
+  // the back picture is drawn 20 % bigger and lower, with NO eye / chin placed
+  const k = 1.2, back = { shL: [.5 - .2 * k, .35], shR: [.5 + .2 * k, .35], crotch: [.5, .35 + .3 * k], kneeL: [.5 - .06 * k, .35 + .5 * k], kneeR: [.5 + .06 * k, .35 + .5 * k], footL: [.5 - .06 * k, .35 + .65 * k], footR: [.5 + .06 * k, .35 + .65 * k] };
+  const rec = { pts: { SW: front, NW: back } }, sg = PD.suggestHead(rec, 'NW');
+  assert.ok(sg && sg.from === 'SW', 'a suggestion for the back view'); const near = (a, b) => Math.abs(a - b) < 1e-9;
+  assert.ok(near(sg.chin[1], .35 - (.3 - .25) / .3 * (.3 * k)), 'chin: same number of torso lengths above the shoulder line'); assert.ok(near(sg.chin[0], .5), 'centred on the shoulders');
+  assert.ok(near(sg.chin[1] - sg.eyeL[1], .08 / .3 * .3 * k), 'face length in torso lengths is kept'); assert.ok(near(sg.eyeR[0] - sg.eyeL[0], .1 * k), 'eye spacing scales with the shoulder width');
+  assert.equal(PD.suggestHead(rec, 'SW'), null, 'front views never get a suggestion'); assert.equal(PD.suggestHead({ pts: { NW: back } }, 'NW'), null, 'no front view → nothing');
+  assert.ok(!PD.pointsFor(rec, 'NW').pts.chin, 'a suggestion is NOT part of the back view points (only confirmed ones are)');
+  const own = { ...back, eyeL: sg.eyeL, eyeR: sg.eyeR, chin: sg.chin }, vc = PD.viewCheck({ pts: { SW: front, NW: own } }, 'NW'); assert.ok(vc && Math.abs(vc.dev) < .01 && vc.level === 'ok', 'consistent front/back → ok: ' + vc?.dev);
+  const off = PD.viewCheck({ pts: { SW: front, NW: { ...own, chin: [sg.chin[0], sg.chin[1] + .05] } } }, 'NW'); assert.ok(off.dev > .1 && off.level !== 'ok', 'a chin placed too low is flagged') }
 console.log('proportion girth: passed');
