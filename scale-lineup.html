@@ -85,7 +85,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.417"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.419"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -192,7 +192,7 @@ async function build() {
   await buildChars();
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.418')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const src = await (await fetch('js/town-battle.js?v=v98.419')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
       const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
     }
@@ -326,9 +326,10 @@ function ratioOf(e) {
   if (rec) { const ms = PD.measure(rec, q.dir, c.img.naturalWidth, c.img.naturalHeight); if (ms.headFrac) { const spans = PD.spans(rec, q.dir); r.head = spans?.head ?? ms.headFrac; r.heads = 1 / r.head; if (spans) { r.torso = spans.torso; r.legs = spans.legs } r.datum = ms; r.H = Math.round(ms.body.lengths.total) } }   /* head from the FACE (eye → chin), hair does not count */
   r.manual = !!r.datum; return r;
 }
-const teamStandard = () => window.ProportionDatum?.std(window.ProportionDatum.GROUP[VP.view] || 'front');
+const vpPose = () => VP.action && VP.action !== 'pick' ? VP.action : 'idle';
+const teamStandard = () => window.ProportionDatum?.std(window.ProportionDatum.GROUP[VP.view] || 'front', vpPose());   /* v98.419 · the standard of THIS pose */
 const STDOBJ = () => { const std = teamStandard(); return std ? { team: true, ...std.spans, tol: STDV.tol / 100 } : { team: true, missing: true } };
-const standardText = () => { const std = teamStandard(); return std ? `${std.name} · ${std.pose}/${std.dir} · หัว ${(std.spans.head * 100).toFixed(1)}% · ลำตัว ${(std.spans.torso * 100).toFixed(1)}% · ขา ${(std.spans.legs * 100).toFixed(1)}%` : 'ยังไม่ได้ตั้งตัวมาตรฐาน'; };
+const standardText = () => { const std = teamStandard(); return std ? `${std.name} · ${std.pose}/${std.dir} · หัว ${(std.spans.head * 100).toFixed(1)}% · ลำตัว ${(std.spans.torso * 100).toFixed(1)}% · ขา ${(std.spans.legs * 100).toFixed(1)}%` : `ยังไม่ได้ตั้งตัวมาตรฐานของท่า ${vpPose()}`; };
 const medianText = med => { const std = teamStandard(), d = std && med != null ? (med - std.spans.head) * 100 : null; return `ค่ากลางหัวทีม (Datum ครบ) ${med == null ? '—' : (med * 100).toFixed(1) + '%'}${d == null ? '' : ` · ต่างจากมาตรฐาน ${d >= 0 ? '+' : ''}${d.toFixed(1)} จุด`} (ข้อมูลประกอบ ไม่ใช้ตัดสิน)`; };
 function ratioRows(V) { const R = V.map(e => ({ e, r: ratioOf(e) })), med = PT.median(R.filter(x => x.r.manual).map(x => x.r.head)); R.forEach(x => x.v = PT.verdict(x.r, STDOBJ())); return { R, med } }
 const LV = { ok: ['ok', '✔ ตรงมาตรฐาน'], warn: ['warn', '⚠ เฉียด'], bad: ['bad', '✘ ไม่ตรง'], pending: ['warn', '— รอข้อมูล'] };
@@ -428,7 +429,7 @@ function inspectRatio() {
        v98.398 · "__std__" = the TEAM STANDARD set once (js/proportion-datum.js STD_KEY) — a fixed snapshot, so it stays put even if that character's own picture or datum is edited later
        v98.399 · PD.spans(r0, q.dir) already pools only within q.dir's own front/back pair (js/proportion-datum.js) — no more cross-group 'SW' fallback here */
     const recOf = id => PD && (PD.get(id, q.pose, q.frame) || PD.get(id, 'idle', 0)), spOf = id => { const r0 = recOf(id); return r0 && PD.spans(r0, q.dir) };
-    const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)), STD = PD?.std(GRP);
+    const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)), STD = PD?.std(GRP, q.pose);   /* v98.419 · only the standard of this very pose */
     $a('adjRef').innerHTML = (STD ? `<option value="__std__">⭐ มาตรฐานทีม · ${GRP_TH} (${STD.name})</option>` : '') + (tplList.length ? tplList.map(x => `<option value="${x.id}"${mem.ref === x.id ? ' selected' : ''}>${x.name}${STD?.id === x.id ? ' ⭐' : ''}</option>`).join('') : (STD ? '' : '<option value="">— ยังไม่มีตัวที่วาง datum ครบใน ' + GRP_TH + ' —</option>'));
     $a('adjRef').value = (mem.ref && $a('adjRef').querySelector(`option[value="${mem.ref}"]`)) ? mem.ref : (STD ? '__std__' : (tplList[0]?.id || ''));
     let tplSpans = null;   /* the template spans actually used last redraw() — read by the green target line */
@@ -438,10 +439,12 @@ function inspectRatio() {
       return { ...s0, note: `ต้นแบบ ${useStd ? STD.name + ' ⭐' : ENTRIES.find(x => x.id === mem.ref)?.name}: ${pc(tp)} · ตัวนี้: ${pc(tg)}` } };
     /* v98.398 · ขั้นที่ 1: ตั้ง/แสดงมาตรฐานกลางของทีม — เก็บเป็นตัวเลขนิ่ง ไม่อิงภาพที่อาจถูกแก้ภายหลัง · v98.399 แยกมาตรฐานคนละชุดสำหรับมุมหน้า/มุมหลัง */
     { const isStd = STD?.id === e.id && STD?.dir === q.dir, mySpans = spOf(e.id);
-      $a('stdRow').innerHTML = isStd ? `<b style="color:#1f9a4a">⭐ ตัวนี้คือมาตรฐานของทีม (${GRP_TH})</b><small style="color:var(--muted)">(${STD.pose}/${STD.dir} · หัว ${(STD.spans.head * 100).toFixed(1)}% · ลำตัว ${(STD.spans.torso * 100).toFixed(1)}% · ขา ${(STD.spans.legs * 100).toFixed(1)}%)</small><button id="stdClear" type="button">ยกเลิกมาตรฐาน (${GRP_TH})</button>`
-        : `<button id="stdSet" type="button" ${mySpans ? '' : 'disabled'} style="font-weight:700">⭐ ตั้งตัวนี้เป็นมาตรฐานทีม (${GRP_TH})</button><small style="color:var(--muted)">${mySpans ? '' : '(ต้องวาง 📍 Datum ให้ครบก่อน: ตา 2 · คาง · ขาหนีบ · เท้า 2)'}${STD ? ' · ตอนนี้ตั้งเป็น ' + STD.name : ''}</small>`;
-      $a('stdSet')?.addEventListener('click', () => { const sp = spOf(e.id); if (!sp) return; PD.setStd(GRP, { method: 'datum-body-v1', id: e.id, name: e.name, pose: q.pose, dir: q.dir, spans: sp, at: Date.now() }); inspectRatio() });
-      $a('stdClear')?.addEventListener('click', () => { PD.setStd(GRP, null); inspectRatio() }); }
+      $a('stdRow').innerHTML = isStd ? `<b style="color:#1f9a4a">⭐ ตัวนี้คือมาตรฐานของท่า ${q.pose} · ${GRP_TH}</b><small style="color:var(--muted)">(${STD.pose}/${STD.dir} · หัว ${(STD.spans.head * 100).toFixed(1)}% · ลำตัว ${(STD.spans.torso * 100).toFixed(1)}% · ขา ${(STD.spans.legs * 100).toFixed(1)}%)</small><button id="stdClear" type="button">ยกเลิกมาตรฐานท่า ${q.pose}</button>`
+        : `<button id="stdSet" type="button" ${mySpans ? '' : 'disabled'} style="font-weight:700">⭐ ตั้งตัวนี้เป็นมาตรฐานของท่า ${q.pose} · ${GRP_TH}</button><small style="color:var(--muted)">${mySpans ? '' : '(ต้องวาง 📍 Datum ให้ครบก่อน: ตา 2 · คาง · ขาหนีบ · เท้า 2)'}${STD ? ' · ตอนนี้ตั้งเป็น ' + STD.name : ' · ท่า ' + q.pose + ' ยังไม่มีมาตรฐาน' + (PD.stdPoses(GRP).length ? ' (มีของท่า: ' + PD.stdPoses(GRP).join(', ') + ' — ใช้กับท่านั้นเท่านั้น)' : '')}</small>`;
+      $a('stdSet')?.addEventListener('click', () => { const sp = spOf(e.id); if (!sp) return; const r0 = recOf(e.id), st = r0 && PD.straightness(r0, q.dir, c.m.w, c.m.h);
+        if (st != null && st < .92 && !confirm(`ท่า ${q.pose} นี้ขาไม่เหยียดตรง (ระยะขาหนีบ→ข้อเท้า เหลือ ${(st * 100).toFixed(0)}% ของความยาวขาจริง — เข่างอ/ขากาง)\nตัวเลขหัว:ลำตัว:ขา ของท่านี้จะผิดเพี้ยนไปจากท่ายืนปกติ\n\nมาตรฐานนี้ใช้กับท่า ${q.pose} ของตัวอื่นเท่านั้น (ไม่ใช้กับท่าอื่น)\nตั้งเป็นมาตรฐานของท่า ${q.pose} ต่อไหม?`)) return;
+        PD.setStd(GRP, q.pose, { method: 'datum-body-v1', id: e.id, name: e.name, pose: q.pose, dir: q.dir, spans: sp, at: Date.now() }); inspectRatio() });
+      $a('stdClear')?.addEventListener('click', () => { PD.setStd(GRP, q.pose, null); inspectRatio() }); }
     const autoFill = () => { if (mode() !== 'ref') return; const a = refScales(); if (a.head) { A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10 } document.getElementById('adjMsg').textContent = a.note || '' };
     const sync = () => { document.querySelectorAll('.adjVal').forEach(i => { i.value = A[i.dataset.k]; i.disabled = !sel()[i.dataset.k] }) };
     let last = null, lastConfig = null, previewReady = false;

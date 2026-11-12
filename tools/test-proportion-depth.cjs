@@ -30,4 +30,14 @@ PD.setMaster('m', 'front', null); assert.ok(PD.depth('m', 'strike', 0, 'SW').noR
   PD.put('a', 'idle', 0, { pts: { SW: base } }); PD.put('a', 'walk', 0, { pts: { SW: { ...base, wristL: [.2, .55] } } });   // forearm L: length .122 → .148 (+21 %)
   const d = PD.depth('a', 'walk', 0, 'SW'); assert.ok(d.segs.find(s => s.k === 'foreArmL').dev > .1, 'a longer forearm is seen'); assert.equal(d.segs.find(s => s.k === 'upperArmL').level, 'ok');
   assert.equal(PD.depth('t', 'walk', 0, 'SW').segs.find(s => s.k === 'foreArmL').level, 'na', 'no arm points → arms are skipped, not failed') }
+// v98.418 · standard per pose (+ migration from the old per-group record) and the straight-legs check
+{ const sp = { head: .2, torso: .4, legs: .4 };
+  localStorage.setItem(PD.STD_KEY, JSON.stringify({ front: { id: 'x', name: 'X', pose: 'windup', dir: 'SW', spans: sp, at: 1 } }));   // v98.399 shape
+  assert.equal(PD.std('front', 'windup').name, 'X', 'old per-group standard moves under its own pose'); assert.equal(PD.std('front', 'idle'), null, 'a windup standard is NOT the idle standard');
+  PD.setStd('front', 'idle', { id: 'y', name: 'Y', pose: 'idle', dir: 'SW', spans: sp, at: 2 }); assert.deepEqual(PD.stdPoses('front').sort(), ['idle', 'windup']);
+  PD.setStd('front', 'windup', null); assert.equal(PD.std('front', 'windup'), null); assert.equal(PD.std('front', 'idle').name, 'Y');
+  assert.equal(PD.std('back', 'idle'), null, 'back group has its own') }
+{ const S = PD.straightness({ pts: { SW: idle } }, 'SW'); assert.ok(S > .95, 'standing straight ≈ 1 (' + S + ')');
+  const crouch = { ...idle, kneeL: [.32, .66], footL: [.36, .78], kneeR: [.68, .66], footR: [.64, .78] }; assert.ok(PD.straightness({ pts: { SW: crouch } }, 'SW') < .85, 'knees bent / legs spread → well under 1');
+  assert.equal(PD.straightness({ pts: { SW: { ...idle, kneeL: null, kneeR: null } } }, 'SW'), null, 'no knee points → cannot tell') }
 console.log('proportion depth: all passed');

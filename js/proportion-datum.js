@@ -82,14 +82,24 @@
     if (!ks.length) return null; const base = sel.legs || ks.length === 3 ? r('legs') : ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tgt[k], 0) / ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tpl[k], 0);
     const out = { head: 1, torso: 1, legs: 1 }; for (const k of ks) out[k] = Math.max(.5, Math.min(2, sel.legs || ks.length === 3 ? r(k) / base : r(k) / (1 / base))); return out }
   /* v98.398 · THE STANDARD: the template character's spans, kept as numbers so it stays put even when that picture is edited later.
-     v98.399 · one standard PER GROUP ('front' from SW/SE, 'back' from NW/NE) — a back view can never be matched against a front standard.
-     localStorage 'proportion-standard-v1' = { front: {id,name,pose,dir,spans:{head,torso,legs},at} | null, back: {...} | null } */
+     v98.399 · one standard per GROUP ('front' from SW/SE, 'back' from NW/NE) — a back view can never be matched against a front standard.
+     v98.419 · …and per POSE: head ÷ body is not the same in every pose (a crouch shortens the body, so the head looks bigger), so a standing
+     picture may only be matched to a STANDING standard, a windup to a windup standard. No standard for the pose = nothing to match to.
+     localStorage 'proportion-standard-v1' = { front: { [pose]: {id,name,pose,dir,spans:{head,torso,legs},at} }, back: { … } } */
   const STD_KEY = 'proportion-standard-v1';
   const stdAll = () => { try { const o = JSON.parse(ls.getItem(STD_KEY) || 'null'); if (!o) return {};
-      if (o.spans && !o.front && !o.back) { const g = GROUP[o.dir] || 'front'; return { [g]: o } }   /* v98.398 single-standard record → migrate into its own group */
-      return o } catch (e) { return {} } };
-  const std = group => { const o = stdAll()[group]; return o && o.spans ? o : null };
-  const setStd = (group, o) => { try { const all = stdAll(); if (o) all[group] = o; else delete all[group]; ls.setItem(STD_KEY, JSON.stringify(all)) } catch (e) { } };
+      const out = {}, put = (g, v) => { if (v && v.spans) (out[g] ||= {})[v.pose || 'idle'] = v };
+      if (o.spans && !o.front && !o.back) { put(GROUP[o.dir] || 'front', o); return out }   /* v98.398 single record */
+      for (const g of ['front', 'back']) { const v = o[g]; if (!v) continue; if (v.spans) put(g, v); else for (const pv of Object.values(v)) put(g, pv) }   /* v98.399 per group → per pose */
+      return out } catch (e) { return {} } };
+  const std = (group, pose = 'idle') => { const o = stdAll()[group]?.[pose]; return o && o.spans ? o : null };
+  const stdPoses = group => Object.keys(stdAll()[group] || {});
+  const setStd = (group, pose, o) => { try { const all = stdAll(); if (o) (all[group] ||= {})[pose] = o; else if (all[group]) { delete all[group][pose]; if (!Object.keys(all[group]).length) delete all[group] } ls.setItem(STD_KEY, JSON.stringify(all)) } catch (e) { } };
+  /* how straight the legs stand: vertical crotch → lowest ankle ÷ the bone length of the leg (thigh + shin, mean of the sides that have a knee).
+     ≈ 1 standing straight · lower when the knees are bent or the legs spread — such a pose makes a poor STANDARD (null = no knee points to tell) */
+  function straightness(rec, dir, w = 384, h = 384) { const { pts: P } = pointsFor(rec, dir), D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h) : null, legs = [];
+    for (const s of ['L', 'R']) { const t = D(P.crotch, P['knee' + s]), c = D(P['knee' + s], P['foot' + s]); if (t != null && c != null) legs.push(t + c) }
+    const feet = Math.max(P.footL ? P.footL[1] : -1, P.footR ? P.footR[1] : -1); if (!legs.length || !P.crotch || feet < 0) return null; return Math.min(1.2, (feet - P.crotch[1]) * h / (legs.reduce((a, b) => a + b, 0) / legs.length)) }
   /* v98.403 · DEPTH CHECK (แนวลึก): every pose of a character against that character's OWN standing pose (idle, frame 0, same direction).
      Measures rigid segments one by one — bending a joint changes the angle between segments, never their length.
      Step 1: the face (eye midpoint → chin) is the ruler → `scale` = how much bigger/smaller the whole frame was drawn.
@@ -129,6 +139,6 @@
     for (const s of dp.segs) { if (s.dev == null) { if (all) parts.push(s.name + ' —'); continue } if (all || s.level !== 'ok') parts.push(`${s.name} ${pc(s.dev)}${s.level !== 'ok' ? ' ' + ic[s.level] : ''}`) }
     return parts.join(' · ') }
   const pixelPoints = (rec, dir, w, h) => Object.fromEntries(Object.entries(pointsFor(rec, dir).pts).map(([k, p]) => [k, [p[0] * w, p[1] * h]]));
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, setStd, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, straightness, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
