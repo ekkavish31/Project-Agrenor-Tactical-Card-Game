@@ -15,7 +15,7 @@ const cardIds = ['thunder', 'backstab', 'dive', 'tide', 'formation', 'counter', 
 for (const id of cardIds) { const a = manifest.assets.find(a => a.id === 'tactic-card-' + id); assert.equal(a.status, 'final'); assert(fs.existsSync(path.join(root, a.file))); }
 (async () => {
   let count = 0;
-  for (const kind of ['pumpkin', 'pumpkinBoss', 'pest']) {
+  for (const kind of ['pumpkin', 'pumpkinBoss', 'pest', 'goat']) {
     await s.MonsterArt.prepare(kind);
     const clips = manifest.assets.filter(a => a.enemy === kind && a.status === 'final');
     for (const a of clips) {
@@ -23,12 +23,12 @@ for (const id of cardIds) { const a = manifest.assets.find(a => a.id === 'tactic
       const dir = a.view, f = s.MonsterArt.frame(kind, dir, state, a.pose === 'down' ? 0 : 1, 0, a.id);
       assert(f && f.image.complete, a.id); assert.equal(f.clipId, a.id);
       assert.equal(f.sw, a.frameSize[0]); assert.equal(f.sh, a.frameSize[1]);
-      if (a.artRevision === 'v98.438') {
+      if (['v98.438', 'v98.439'].includes(a.artRevision) && a.animation.frames === 4) {
         assert.equal(f.frames, 4, a.id);
         const laterState = a.pose === 'hit' ? { ...state, hitUntil: 10000 } : state;
         const later = s.MonsterArt.frame(kind, dir, laterState, 1, 400, a.id);
         assert(later.frame > 0, a.id + ' must advance beyond the still frame');
-        assert.equal(later.sw, 384); assert.equal(later.sh, 384);
+        assert.equal(later.sw, a.frameSize[0]); assert.equal(later.sh, a.frameSize[1]);
         assert(later.sx > 0 && later.sx + later.sw <= a.size[0], a.id + ' atlas bounds');
       }
       const mirrored = s.MonsterArt.frame(kind, dir === 'SE' ? 'SW' : 'NW', state, a.pose === 'down' ? 0 : 1, 0, a.id + '-mirror');

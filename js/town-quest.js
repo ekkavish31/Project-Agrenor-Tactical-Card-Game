@@ -154,13 +154,23 @@
     if (o.kind === 'plot') { gx.fillStyle = '#6a4a2a'; gx.beginPath(); gx.ellipse(p.x, p.y, 30, 14, 0, 0, 7); gx.fill(); gx.strokeStyle = '#4a3218'; gx.lineWidth = 2; gx.stroke() }
     if (!o.flee || pending === o) { gx.strokeStyle = 'rgba(255,214,90,' + (.45 + Math.sin(t * .006) * .3) + ')'; gx.lineWidth = 2.5; gx.beginPath(); gx.ellipse(p.x, p.y, 24, 11, 0, 0, 7); gx.stroke() }
     gx.font = '34px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif'; gx.textAlign = 'center';
-    gx.translate(p.x, p.y - 6 - hop); { const right = o.flee && o.dir && o.dir.du - o.dir.dv > 0; if (o.kind === 'goat' ? !right : right) gx.scale(-1, 1) }   /* the emoji faces left, the drawn goat right */
+    gx.translate(p.x, p.y - 6 - hop); { const right = o.flee && o.dir && o.dir.du - o.dir.dv > 0; if (o.kind !== 'goat' && right) gx.scale(-1, 1) }
     if (o.kind === 'goat') goat(gx, o, t); else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
     if (o.flee && o.mode === 'rest') { gx.save(); gx.font = `700 ${12}px AgThai,system-ui`; gx.fillStyle = '#e8f4ff'; gx.textAlign = 'center'; gx.fillText('หอบ…', p.x, p.y - 46); gx.restore() }
   }
   /* v97.14 · the goat is drawn (solid colours with a dark outline) instead of the pale 🐐 emoji that washed out on the light cobbles:
      brown coat, cream belly and beard, dark horns and hooves; legs run in 4 frames, the head dips to graze when it rests */
   function goat(gx, o, t) {
+    /* v98.439 · chase states use the existing authored goat extras. Remember
+       facing while resting; MonsterArt owns SW/NW mirroring (never flip twice). */
+    if (o.dir) o.artFace = o.dir.du + o.dir.dv < 0 ? (o.dir.du - o.dir.dv > 0 ? 'NE' : 'NW') : (o.dir.du - o.dir.dv > 0 ? 'SE' : 'SW');
+    const pose = o.mode === 'run' ? 'run' : o.mode === 'rest' ? 'pant' : 'graze';
+    const art = root.MonsterArt?.frame('goat', o.artFace || 'SE', { pose }, 1, t, 'quest-goat-' + o.key + '-' + o.i);
+    if (art) {
+      const h = 52, w = h * art.sw / art.sh, pv = art.pivot || [.5, .95];
+      gx.save(); if (art.flip) gx.scale(-1, 1);
+      gx.drawImage(art.image, art.sx, art.sy, art.sw, art.sh, -w * pv[0], -h * pv[1], w, h); gx.restore(); return;
+    }
     const run = o.mode === 'run', f = run ? Math.floor(t * .02 + o.phase) % 4 : 0, sw = [0, 4, 0, -4][f], graze = !run && o.mode !== 'rest' ? Math.max(0, Math.sin(t * .0016 + o.phase)) : 0, pant = o.mode === 'rest' ? Math.sin(t * .02) * 1.2 : 0;
     const coat = o.coat || (o.coat = ['#7a5232', '#5e4a3a', '#8a6a48', '#4a3a30'][Math.abs(Math.round(o.phase * 7)) % 4]);
     gx.lineJoin = 'round'; gx.lineCap = 'round'; gx.strokeStyle = '#1e140c'; gx.lineWidth = 2;

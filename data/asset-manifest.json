@@ -101891,14 +101891,14 @@
   {
    "id": "enemy-anim-pumpkinBoss-se-idle",
    "subject": "บอสฟักทอง · ยืน/หายใจ · SE",
-   "file": "assets/enemies/animations/pumpkinBoss/se-idle.webp",
+   "file": "assets/enemies/animations/pumpkinBoss/se-idle-v98-439.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pumpkinBoss",
    "pose": "idle",
    "view": "SE",
    "size": [
-    512,
+    2048,
     288
    ],
    "frameSize": [
@@ -101912,36 +101912,42 @@
    ],
    "barHeight": 0.8426417233560091,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     650
+     180,
+     145,
+     180,
+     145
     ],
-    "impactMs": 180,
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "บอสฟักทอง idle/walk 4 เฟรมวาดจริงต่อท่า เทียบสเกลภาพเดิม สเกลร่วมสองมุม; SW/NW กลับด้านด้วย MonsterArt",
+   "artRevision": "v98.439",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.995918,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+    "baseline": 0.9166666666666666,
+    "motionSourceScale": 1.082969
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-walk",
    "subject": "บอสฟักทอง · เดิน · SE",
-   "file": "assets/enemies/animations/pumpkinBoss/se-walk.webp",
+   "file": "assets/enemies/animations/pumpkinBoss/se-walk-v98-439.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pumpkinBoss",
    "pose": "walk",
    "view": "SE",
    "size": [
-    512,
+    2048,
     288
    ],
    "frameSize": [
@@ -101955,24 +101961,30 @@
    ],
    "barHeight": 0.8426417233560091,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     90,
+     90,
+     90,
+     90
     ],
-    "impactMs": 180,
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "บอสฟักทอง idle/walk 4 เฟรมวาดจริงต่อท่า เทียบสเกลภาพเดิม สเกลร่วมสองมุม; SW/NW กลับด้านด้วย MonsterArt",
+   "artRevision": "v98.439",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.995918,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+    "baseline": 0.9166666666666666,
+    "motionSourceScale": 1.082969
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-windup",
@@ -102192,14 +102204,14 @@
   {
    "id": "enemy-anim-pumpkinBoss-ne-idle",
    "subject": "บอสฟักทอง · ยืน/หายใจ · NE",
-   "file": "assets/enemies/animations/pumpkinBoss/ne-idle.webp",
+   "file": "assets/enemies/animations/pumpkinBoss/ne-idle-v98-439.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pumpkinBoss",
    "pose": "idle",
    "view": "NE",
    "size": [
-    512,
+    2048,
     288
    ],
    "frameSize": [
@@ -102213,36 +102225,42 @@
    ],
    "barHeight": 0.8426417233560091,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     650
+     180,
+     145,
+     180,
+     145
     ],
-    "impactMs": 180,
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "บอสฟักทอง idle/walk 4 เฟรมวาดจริงต่อท่า เทียบสเกลภาพเดิม สเกลร่วมสองมุม; SW/NW กลับด้านด้วย MonsterArt",
+   "artRevision": "v98.439",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.995918,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+    "baseline": 0.9166666666666666,
+    "motionSourceScale": 1.082969
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-walk",
    "subject": "บอสฟักทอง · เดิน · NE",
-   "file": "assets/enemies/animations/pumpkinBoss/ne-walk.webp",
+   "file": "assets/enemies/animations/pumpkinBoss/ne-walk-v98-439.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "pumpkinBoss",
    "pose": "walk",
    "view": "NE",
    "size": [
-    512,
+    2048,
     288
    ],
    "frameSize": [
@@ -102256,24 +102274,30 @@
    ],
    "barHeight": 0.8426417233560091,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     90,
+     90,
+     90,
+     90
     ],
-    "impactMs": 180,
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
+   "note": "บอสฟักทอง idle/walk 4 เฟรมวาดจริงต่อท่า เทียบสเกลภาพเดิม สเกลร่วมสองมุม; SW/NW กลับด้านด้วย MonsterArt",
+   "artRevision": "v98.439",
    "renderHeight": 1,
    "normalization": {
     "commonScale": 0.995918,
     "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+    "baseline": 0.9166666666666666,
+    "motionSourceScale": 1.082969
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-windup",
@@ -103045,14 +103069,14 @@
   {
    "id": "enemy-anim-goat-se-run",
    "subject": "แพะของปิ๊บ · วิ่งหนี (ไล่แพะ) · SE",
-   "file": "assets/enemies/animations/goat/se-run.webp",
+   "file": "assets/enemies/animations/goat/se-run-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "run",
    "view": "SE",
    "size": [
-    2048,
+    512,
     512
    ],
    "frameSize": [
@@ -103064,33 +103088,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 4,
+    "columns": 1,
     "rows": 1,
-    "frames": 4,
+    "frames": 1,
     "timings": [
-     90,
-     90,
-     90,
-     90
+     650
     ],
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-se-pant",
    "subject": "แพะของปิ๊บ · หอบเหนื่อย · SE",
-   "file": "assets/enemies/animations/goat/se-pant.webp",
+   "file": "assets/enemies/animations/goat/se-pant-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "pant",
    "view": "SE",
    "size": [
-    1024,
+    512,
     512
    ],
    "frameSize": [
@@ -103102,31 +103134,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 2,
+    "columns": 1,
     "rows": 1,
-    "frames": 2,
+    "frames": 1,
     "timings": [
-     500,
-     500
+     650
     ],
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-se-graze",
    "subject": "แพะของปิ๊บ · ก้มกินหญ้า · SE",
-   "file": "assets/enemies/animations/goat/se-graze.webp",
+   "file": "assets/enemies/animations/goat/se-graze-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "graze",
    "view": "SE",
    "size": [
-    1536,
+    512,
     512
    ],
    "frameSize": [
@@ -103138,32 +103180,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 3,
+    "columns": 1,
     "rows": 1,
-    "frames": 3,
+    "frames": 1,
     "timings": [
-     450,
-     450,
-     450
+     650
     ],
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-se-bleat",
    "subject": "แพะของปิ๊บ · ร้องเบะ · SE",
-   "file": "assets/enemies/animations/goat/se-bleat.webp",
+   "file": "assets/enemies/animations/goat/se-bleat-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "bleat",
    "view": "SE",
    "size": [
-    1024,
+    512,
     512
    ],
    "frameSize": [
@@ -103175,31 +103226,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 2,
+    "columns": 1,
     "rows": 1,
-    "frames": 2,
+    "frames": 1,
     "timings": [
-     300,
-     400
+     650
     ],
-    "loop": false
+    "loop": false,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-se-sleep",
    "subject": "แพะของปิ๊บ · นอนหลับ (ฟาร์ม) · SE",
-   "file": "assets/enemies/animations/goat/se-sleep.webp",
+   "file": "assets/enemies/animations/goat/se-sleep-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "sleep",
    "view": "SE",
    "size": [
-    1024,
+    512,
     512
    ],
    "frameSize": [
@@ -103211,31 +103272,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 2,
+    "columns": 1,
     "rows": 1,
-    "frames": 2,
+    "frames": 1,
     "timings": [
-     900,
-     900
+     650
     ],
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-se-happy",
    "subject": "แพะของปิ๊บ · ดีใจเมื่อถูกลูบ (ฟาร์ม) · SE",
-   "file": "assets/enemies/animations/goat/se-happy.webp",
+   "file": "assets/enemies/animations/goat/se-happy-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "happy",
    "view": "SE",
    "size": [
-    1536,
+    512,
     512
    ],
    "frameSize": [
@@ -103247,32 +103318,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 3,
+    "columns": 1,
     "rows": 1,
-    "frames": 3,
+    "frames": 1,
     "timings": [
-     160,
-     160,
-     260
+     650
     ],
-    "loop": false
+    "loop": false,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-ne-run",
    "subject": "แพะของปิ๊บ · วิ่งหนี (ไล่แพะ) · NE",
-   "file": "assets/enemies/animations/goat/ne-run.webp",
+   "file": "assets/enemies/animations/goat/ne-run-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "run",
    "view": "NE",
    "size": [
-    2048,
+    512,
     512
    ],
    "frameSize": [
@@ -103284,33 +103364,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 4,
+    "columns": 1,
     "rows": 1,
-    "frames": 4,
+    "frames": 1,
     "timings": [
-     90,
-     90,
-     90,
-     90
+     650
     ],
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-ne-pant",
    "subject": "แพะของปิ๊บ · หอบเหนื่อย · NE",
-   "file": "assets/enemies/animations/goat/ne-pant.webp",
+   "file": "assets/enemies/animations/goat/ne-pant-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "pant",
    "view": "NE",
    "size": [
-    1024,
+    512,
     512
    ],
    "frameSize": [
@@ -103322,31 +103410,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 2,
+    "columns": 1,
     "rows": 1,
-    "frames": 2,
+    "frames": 1,
     "timings": [
-     500,
-     500
+     650
     ],
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-ne-graze",
    "subject": "แพะของปิ๊บ · ก้มกินหญ้า · NE",
-   "file": "assets/enemies/animations/goat/ne-graze.webp",
+   "file": "assets/enemies/animations/goat/ne-graze-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "graze",
    "view": "NE",
    "size": [
-    1536,
+    512,
     512
    ],
    "frameSize": [
@@ -103358,32 +103456,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 3,
+    "columns": 1,
     "rows": 1,
-    "frames": 3,
+    "frames": 1,
     "timings": [
-     450,
-     450,
-     450
+     650
     ],
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-ne-bleat",
    "subject": "แพะของปิ๊บ · ร้องเบะ · NE",
-   "file": "assets/enemies/animations/goat/ne-bleat.webp",
+   "file": "assets/enemies/animations/goat/ne-bleat-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "bleat",
    "view": "NE",
    "size": [
-    1024,
+    512,
     512
    ],
    "frameSize": [
@@ -103395,31 +103502,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 2,
+    "columns": 1,
     "rows": 1,
-    "frames": 2,
+    "frames": 1,
     "timings": [
-     300,
-     400
+     650
     ],
-    "loop": false
+    "loop": false,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-ne-sleep",
    "subject": "แพะของปิ๊บ · นอนหลับ (ฟาร์ม) · NE",
-   "file": "assets/enemies/animations/goat/ne-sleep.webp",
+   "file": "assets/enemies/animations/goat/ne-sleep-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "sleep",
    "view": "NE",
    "size": [
-    1024,
+    512,
     512
    ],
    "frameSize": [
@@ -103431,31 +103548,41 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 2,
+    "columns": 1,
     "rows": 1,
-    "frames": 2,
+    "frames": 1,
     "timings": [
-     900,
-     900
+     650
     ],
-    "loop": true
+    "loop": true,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-anim-goat-ne-happy",
    "subject": "แพะของปิ๊บ · ดีใจเมื่อถูกลูบ (ฟาร์ม) · NE",
-   "file": "assets/enemies/animations/goat/ne-happy.webp",
+   "file": "assets/enemies/animations/goat/ne-happy-v98-439.webp",
    "category": "enemy-animations",
-   "status": "code",
+   "status": "final",
    "enemy": "goat",
    "pose": "happy",
    "view": "NE",
    "size": [
-    1536,
+    512,
     512
    ],
    "frameSize": [
@@ -103467,20 +103594,29 @@
     0.5,
     0.95
    ],
-   "barHeight": 0.64,
+   "barHeight": 0.6668,
    "animation": {
-    "columns": 3,
+    "columns": 1,
     "rows": 1,
-    "frames": 3,
+    "frames": 1,
     "timings": [
-     160,
-     160,
-     260
+     650
     ],
-    "loop": false
+    "loop": false,
+    "impactMs": 180
    },
    "usedIn": "แมพหมู่บ้าน (ไล่แพะ) / ฟาร์ม",
-   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
+   "note": "ชีตแพะเดิม 12 พ.ย. ท่าละภาพ ไม่อ้างว่าเป็นวงจรหลายเฟรม; คง 6 ท่าพื้นฐานเดิม",
+   "renderHeight": 1,
+   "artRevision": "v98.439",
+   "normalization": {
+    "commonScale": 1.386,
+    "sharedAcross": "all poses and both views per species",
+    "baseline": 0.95,
+    "motionSourceScale": 1.15
+   },
+   "qaStatus": "reviewed-static",
+   "qaCheckedAt": "2026-11-13"
   },
   {
    "id": "enemy-pumpkin",
