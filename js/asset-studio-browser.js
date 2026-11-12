@@ -176,10 +176,8 @@
  let dragClip=null;
  const ownSet=(e,c)=>(e.group==='characters'||e.group==='npcs')&&c.frames.length>0&&c.frames.every(f=>!f.flip&&!f.crop&&byId(f.assetId)?.file);
  function swapMeta(e,A,B,n,stA,stB){const lid=lidOf(e),PD=window.ProportionDatum;
-  if(PD){const d=PD.all(),R0=(d[lid]||={}),slot=(act,i,mk)=>{const P=(R0[act]||=(mk?{}:undefined));if(!P)return null;return P[i]||(mk?(P[i]={pts:{}}):null)};
-   for(let i=0;i<n;i++){const ra=slot(A.action,i,false),rb=slot(B.action,i,false),pa=ra?.pts?.[A.view],pb=rb?.pts?.[B.view];if(!pa&&!pb)continue;
-    const put=(act,view,pts)=>{if(pts){const r=slot(act,i,true);(r.pts||={})[view]=pts}else{const r=slot(act,i,false);if(r?.pts)delete r.pts[view]}};put(A.action,A.view,pb);put(B.action,B.view,pa)}
-   for(const act of Object.keys(R0)){const P=R0[act];if(!P){delete R0[act];continue}for(const i of Object.keys(P))if(!Object.keys(P[i]?.pts||{}).length&&Object.keys(P[i]||{}).length<=1)delete P[i];if(!Object.keys(P).length)delete R0[act]}PD.saveAll(d)}
+  if(PD){const d=PD.all();PD.swapPts(d,lid,A.action,A.view,B.action,B.view,n);PD.saveAll(d)}
+  try{window.ProportionRulers?.swap(lid,A.action,A.view,B.action,B.view)}catch(x){}   /* v98.436 · drawn rulers travel with the picture */
   try{const K='proportion-done-v1',D=JSON.parse(localStorage.getItem(K)||'{}')||{},ka=lid+'|'+A.action+'|'+A.view,kb=lid+'|'+B.action+'|'+B.view,va=D[ka],vb=D[kb];if(vb)D[ka]=vb;else delete D[ka];if(va)D[kb]=va;else delete D[kb];localStorage.setItem(K,JSON.stringify(D))}catch(x){}
   try{const K='asset-animation-reviews-v1',S=JSON.parse(localStorage.getItem(K)||'{}')||{},now=c=>entity()?.clips.find(x=>x.id===c.id),nA=now(A),nB=now(B);if(nA)S[R.signature(nA)]={status:stB==='needsfix'?'unreviewed':stB,frames:{}};if(nB)S[R.signature(nB)]={status:stA==='needsfix'?'unreviewed':stA,frames:{}};localStorage.setItem(K,JSON.stringify(S))}catch(x){}}
  async function swapClips(e,A,B){if(typeof dir==='undefined'||!dir)return needFolder();

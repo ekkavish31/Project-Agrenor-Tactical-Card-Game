@@ -217,6 +217,19 @@
     for (const s of dp.segs) { if (s.dev == null) { if (all) parts.push(s.name + ' —'); continue } if (all || s.level !== 'ok') parts.push(`${s.name} ${pc(s.dev)}${s.level !== 'ok' ? ' ' + ic[s.level] : ''}`) }
     return parts.join(' · ') }
   const pixelPoints = (rec, dir, w, h) => Object.fromEntries(Object.entries(pointsFor(rec, dir).pts).map(([k, p]) => [k, [p[0] * w, p[1] * h]]));
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, pointsFor, measure, marksFrom, heightGaps };
+  /* v98.436 · drag-swap of two animation cells (Asset Studio): the datum points of the first n frames of (poseA · viewA) and (poseB · viewB) trade places
+     with their pictures; a side that has none ends with none. Mutates and returns the all() object (caller saves) — pure so tools/test-proportion-swap.cjs can test it */
+  function swapPts(d, id, poseA, viewA, poseB, viewB, n) {
+    const R0 = (d[id] ||= {}), slot = (pose, i, mk) => { const P = (R0[pose] ||= (mk ? {} : undefined)); if (!P) return null; return P[i] || (mk ? (P[i] = { pts: {} }) : null) };
+    for (let i = 0; i < n; i++) {
+      const ra = slot(poseA, i, false), rb = slot(poseB, i, false), pa = ra?.pts?.[viewA], pb = rb?.pts?.[viewB]; if (!pa && !pb) continue;
+      const put = (pose, view, pts) => { if (pts) { const r = slot(pose, i, true); (r.pts ||= {})[view] = pts } else { const r = slot(pose, i, false); if (r?.pts) delete r.pts[view] } };
+      put(poseA, viewA, pb); put(poseB, viewB, pa);
+    }
+    for (const pose of Object.keys(R0)) { const P = R0[pose]; if (!P) { delete R0[pose]; continue } for (const i of Object.keys(P)) if (!Object.keys(P[i]?.pts || {}).length && Object.keys(P[i] || {}).length <= 1) delete P[i]; if (!Object.keys(P).length) delete R0[pose] }
+    if (!Object.keys(R0).length) delete d[id];
+    return d;
+  }
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

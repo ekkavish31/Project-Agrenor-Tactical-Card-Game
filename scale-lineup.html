@@ -87,7 +87,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.434"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.436"></script><script src="js/proportion-rulers.js?v=v98.436"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -382,7 +382,7 @@ function inspectRatio() {
   const datumPts = () => { if (!datumRec) return []; const { pts, own } = PDL.pointsFor(datumRec, qL.dir); return PDL.POINTS.map(([k, , col]) => pts[k] && { k, col, own: own.has(k), x: pts[k][0] * c.m.w, y: pts[k][1] * c.m.h } ).filter(Boolean) };
   $('insp').innerHTML = `<div class="ipGrid"><div class="ipPin"><b>${e.name}</b> ${verifiedMark(e.id)} <span class="chip ${LV[v.level][0]}">${LV[v.level][1]}</span>
    ${hasDatum ? '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-weight:700;padding:6px 0"><span>Before · ต้นฉบับ</span><span>After · พรีวิว</span></div>' : ''}
-   <canvas id="pcv" width="${PW}" height="${CH + 20}" style="width:100%;height:auto;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
+   <div style="position:relative"><canvas id="pcv" width="${PW}" height="${CH + 20}" style="width:100%;height:auto;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>${hasDatum ? `<canvas id="rlcv" width="${PW}" height="${CH + 20}" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;touch-action:none;cursor:crosshair"></canvas>` : ''}</div>
    <p id="adjPreviewState" class="hint" role="status"></p>${hasDatum ? '<div id="adjZones"></div>' : ''}
    <p class="hint">${hasDatum ? `<b style="color:${COL.chin}">คาง</b> / <b style="color:${COL.hip}">ขาหนีบ</b> อ่านตรงจาก 📍 Datum ของท่า/ทิศนี้ (ลากหรือพิมพ์เองไม่ได้แล้ว แก้ที่ Datum เท่านั้น) · <b>ขวา</b> = ผลหลังปรับ` : '⚠ ยังไม่ได้วาง 📍 Datum สำหรับท่า/ทิศนี้ — ตัวเลขด้านล่างเป็นการประมาณจากภาพคร่าว ๆ เท่านั้น ต้องวาง Datum ก่อนจึงจะปรับขนาดได้จริง'}</p></div>
    <div class="ipCtl">
@@ -391,19 +391,20 @@ function inspectRatio() {
    <div class="adj"><button id="mDatum" title="วางจุด datum: ตา 2 · คาง · ไหล่ 2 · ข้อศอก 2 · ข้อมือ 2 · อก · ขาหนีบ · เข่า 2 · ข้อเท้า 2 (ทิศตรงข้ามกลับด้านให้ · จุดแกนกลางใช้ความสูงร่วม)" style="font-weight:700">📍 Datum${hasDatum ? ' ✔' : ' (วางก่อนปรับขนาด)'}</button></div>
    <div class="hint" id="depthRow"></div>
    <div class="adj" id="stdRow" title="ขั้นที่ 1: เลือกตัวนี้เป็นมาตรฐานกลางของทีม (ต้องมี 📍 Datum ครบก่อน) — ตัวอื่นจะเทียบสัดส่วนหัว/ลำตัว/ขา ตามตัวนี้โดยอัตโนมัติ"></div><p class="hint" id="mMsg"></p>
-   ${hasDatum ? `<details open id="adjBox" style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px"><summary><b>🛠 ปรับขนาดหัว / ลำตัว / ขา</b></summary>
-    <p class="hint">ใช้ Datum กำหนดสัดส่วน และโซนกำหนดพิกเซลที่ตามแต่ละส่วน วาร์ปผิวต่อเนื่องพร้อมขยายกรอบเมื่อจำเป็น — ตรวจ/แก้โซนสีได้ใต้ภาพ</p>
-    <div class="adj"><label><input type="radio" name="adjMode" value="ref" checked> ตามต้นแบบ</label><label><input type="radio" name="adjMode" value="man"> แมนวล</label><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงสูงหัว–ข้อเท้า</label></div>
-    <div class="adj" title="ใช้สัดส่วน (หัว · ลำตัว · ขา) จาก datum ของตัวต้นแบบ กับ datum ของตัวนี้ · ตามต้นแบบ = คำนวณให้อัตโนมัติ · แมนวล = ใส่ค่าแนะนำแล้วปรับเอง"><span>ต้นแบบ</span><select id="adjRef"></select><button id="adjRefFill" type="button">ใส่ค่าแล้วปรับเอง</button></div>
-    <div class="adj" title="📏 ไม้บรรทัดความหนา = วัดความหนาตั้งฉากกับกระดูกที่จุดเดียวกันทั้งตัวต้นแบบและตัวนี้ เทียบกับความยาวหน้า (ตา→คาง) แล้วให้ตัวขยาย/ย่อตามผลเทียบกับหัว — ไม่ใช้ความสูง จึงเทียบข้ามท่าย่อ/ก้มได้ · สัดส่วนเดิม = เทียบเปอร์เซ็นต์ หัว:ลำตัว:ขา (ท่าเดียวกันเท่านั้น)"><span>วิธีเทียบ</span><select id="adjMethod"><option value="ruler">📏 ไม้บรรทัดความหนา (ข้ามท่าได้)</option><option value="span">สัดส่วน หัว:ลำตัว:ขา (ท่าเดียวกัน)</option></select></div>
+   ${hasDatum ? `<details open id="adjBox" style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px"><summary title="ใช้ Datum กำหนดสัดส่วน · โซนสีกำหนดพิกเซลที่ตามแต่ละส่วน · วาร์ปต่อเนื่องและขยายกรอบเมื่อจำเป็น · แก้โซนได้ใต้ภาพ"><b>🛠 ปรับขนาด</b></summary>
+    
+    <div class="adj"><label title="ตามต้นแบบ · คำนวณให้อัตโนมัติ"><input type="radio" name="adjMode" value="ref" checked> 🎯</label><label title="แมนวล · ปรับเอง"><input type="radio" name="adjMode" value="man"> ✋</label><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงสูงหัว–ข้อเท้า</label></div>
+    <div class="adj" title="ใช้สัดส่วน (หัว · ลำตัว · ขา) จาก datum ของตัวต้นแบบ กับ datum ของตัวนี้ · ตามต้นแบบ = คำนวณให้อัตโนมัติ · แมนวล = ใส่ค่าแนะนำแล้วปรับเอง"><span title="ต้นแบบ">⭐</span><select id="adjRef"></select><button id="adjRefFill" type="button" title="ใส่ค่าจากต้นแบบแล้วปรับเอง">✋ ใส่ค่า</button></div>
+    <div class="adj" title="📏 ไม้บรรทัดความหนา = วัดความหนาตั้งฉากกับกระดูกที่จุดเดียวกันทั้งตัวต้นแบบและตัวนี้ เทียบกับความยาวหน้า (ตา→คาง) แล้วให้ตัวขยาย/ย่อตามผลเทียบกับหัว — ไม่ใช้ความสูง จึงเทียบข้ามท่าย่อ/ก้มได้ · สัดส่วนเดิม = เทียบเปอร์เซ็นต์ หัว:ลำตัว:ขา (ท่าเดียวกันเท่านั้น)"><span title="วิธีเทียบ">⚖️</span><select id="adjMethod"><option value="ruler">📏 ไม้บรรทัดความหนา (ข้ามท่าได้)</option><option value="span">สัดส่วน หัว:ลำตัว:ขา (ท่าเดียวกัน)</option></select></div>
     <div class="hint" id="adjRuler"></div>
-    <div class="adj" title="ครอบตามทรง = จับเฉพาะรูปทรงของหัว/ลำตัว/ขา แล้วบิดภาพต่อเนื่องชิ้นเดียว · แถบนุ่ม = จับเป็นแถบตามเส้นตัด แต่ต่อเนียน"><span>รอยต่อ</span><select id="adjSeam"><option value="shape">ครอบตามทรง</option><option value="band">แถบนุ่ม</option></select><span style="width:auto">นุ่ม</span><input type="range" id="adjSoft" min="2" max="20" step="1" value="7" style="width:80px"></div>
-    <div class="adj" title="ส่วนที่ขยาย: อัปสเกลแบบ bicubic แล้วเพิ่มความคมตามที่ขยาย (ออโต้) หรือกำหนดเอง"><span>ความคม</span><select id="adjSharpMode"><option value="auto">ออโต้ (ตามที่ขยาย)</option><option value="man">แมนวล</option></select><input type="range" id="adjSharp" min="0" max="150" step="5" value="60" style="width:110px"><b id="adjSharpV">60%</b></div>
-    <p class="hint">ตัวคูณขนาด: 100% = ขนาดส่วนเดิม · สัดส่วนหัว/ตัวจริงดูที่ After (ยังไม่บันทึก)</p>
+    <div class="adj" id="rlRow" style="gap:3px;flex-wrap:wrap"></div>
+    <div class="adj" title="ครอบตามทรง = จับเฉพาะรูปทรงของหัว/ลำตัว/ขา แล้วบิดภาพต่อเนื่องชิ้นเดียว · แถบนุ่ม = จับเป็นแถบตามเส้นตัด แต่ต่อเนียน"><span title="รอยต่อ">🧵</span><select id="adjSeam"><option value="shape">ครอบตามทรง</option><option value="band">แถบนุ่ม</option></select><span style="width:auto">นุ่ม</span><input type="range" id="adjSoft" min="2" max="20" step="1" value="7" style="width:80px"></div>
+    <div class="adj" title="ส่วนที่ขยาย: อัปสเกลแบบ bicubic แล้วเพิ่มความคมตามที่ขยาย (ออโต้) หรือกำหนดเอง"><span title="ความคม">🔪</span><select id="adjSharpMode"><option value="auto">ออโต้ (ตามที่ขยาย)</option><option value="man">แมนวล</option></select><input type="range" id="adjSharp" min="0" max="150" step="5" value="60" style="width:110px"><b id="adjSharpV">60%</b></div>
+    
     ${[['head', 'หัว', ''], ['torso', 'ลำตัว', ''], ['legs', 'ขา', ''], ['wTorso', 'หนา·ลำตัว', 'ความหนาลำตัว (แขนอยู่ในแถบลำตัว จึงหนา/ลีบตามไปด้วย) · ยืด/หดแนวข้างเท่านั้น ความสูงไม่เปลี่ยน · วัดจากเงาภาพตั้งฉากกับกระดูกตาม datum'], ['wLegs', 'หนา·ขา', 'ความหนาขา · ยืด/หดแนวข้างเท่านั้น ความสูงไม่เปลี่ยน · วัดจากเงาภาพตั้งฉากกับกระดูกตาม datum']].map(([k, n, tip]) => `<div class="adj" data-part="${k}" style="gap:3px;flex-wrap:nowrap"${tip ? ` title="${tip}"` : ''}><label style="flex:0 0 88px;white-space:nowrap"><input type="checkbox" class="adjSel" data-k="${k}" ${k === 'head' ? 'checked' : ''}> ${n}</label><button data-k="${k}" data-d="-5" style="padding:2px 5px">−5</button><button data-k="${k}" data-d="-1" style="padding:2px 5px">−1</button><input type="number" class="adjVal" data-k="${k}" min="50" max="200" step="1" value="100" style="width:46px">%<button data-k="${k}" data-d="1" style="padding:2px 5px">+1</button><button data-k="${k}" data-d="5" style="padding:2px 5px">+5</button></div>`).join('')}
     <div class="hint" id="adjGirth"></div>
     <div class="hint" id="adjInfo"></div><p class="hint" id="adjArmInfo"></p>
-    <div class="adj"><button id="adjPreview" class="primary" title="แสดงผลใน After เท่านั้น ยังไม่เซฟและไม่เข้า Cart">👁 พรีวิว</button><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng">⬇ ส่งออก PNG</button><button id="adjApply" title="ใช้ภาพเดียวกับ After ที่พรีวิวแล้ว บันทึกเข้าช่องภาพและ Cart (เก็บต้นฉบับไว้ในประวัติ)">💾 บันทึกพรีวิวเข้า Cart</button></div><p class="hint" id="adjMsg"></p></details>`
+    <div class="adj"><button id="adjPreview" class="primary" title="แสดงผลใน After เท่านั้น ยังไม่เซฟและไม่เข้า Cart">👁 พรีวิว</button><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng" title="ส่งออก PNG">⬇ PNG</button><button id="adjApply" title="ใช้ภาพเดียวกับ After ที่พรีวิวแล้ว บันทึกเข้าช่องภาพและ Cart (เก็บต้นฉบับไว้ในประวัติ)">💾 Cart</button></div><p class="hint" id="adjMsg"></p></details>`
     : `<p class="hint" style="margin-top:8px;padding:8px;border:1px dashed var(--line);border-radius:8px">วาง 📍 Datum ให้ครบก่อน (ตา 2 · คาง · ขาหนีบ · เท้า 2) จึงจะปรับขนาดหัว/ลำตัว/ขาได้ — ระบบตัดภาพตรงจุดที่จิ้มไว้พอดี ไม่ต้องกะด้วยสายตาอีกต่อไป</p>`}
    </div></div>`;
   /* v98.416 · fit the silhouette inside its box by BOTH height and width — fitting by height alone blew a lying-down pose (short and wide) up to many times the panel */
@@ -411,6 +412,7 @@ function inspectRatio() {
   const marks = { ...r.marks }, pw0 = hasDatum ? HALF : PW, dx0 = (c.flip ? pw0 - ox - fw : ox) - c.m.x0 * k, dy0 = oy - c.m.top * k;
   /* a datum dot, drawn in whatever transform is already active (so it mirrors with the picture automatically when flipped) */
   const dot = (g2, x, y, col, own) => { g2.globalAlpha = own ? 1 : .5; g2.fillStyle = col; g2.beginPath(); g2.arc(x, y, own ? 4 : 3, 0, 7); g2.fill(); g2.strokeStyle = '#fff'; g2.lineWidth = 1; g2.stroke(); g2.globalAlpha = 1 };
+  let beforeX = null;   /* v98.436 · where the Before picture sits on the canvas (for the drag rulers) */
   let rulerLines = null;   /* v98.434 · measuring lines of the 📏 ruler on this picture [x1,y1,x2,y2] in picture px */
   const drawRuler = (g0, left, top, k) => { if (!rulerLines) return; g0.save(); g0.lineWidth = 2; g0.strokeStyle = '#ffd400'; g0.fillStyle = '#ffd400'; g0.setLineDash([]); for (const [x1, y1, x2, y2] of rulerLines) { g0.beginPath(); g0.moveTo(left + x1 * k, top + y1 * k); g0.lineTo(left + x2 * k, top + y2 * k); g0.stroke(); for (const [x, y] of [[x1, y1], [x2, y2]]) g0.fillRect(left + x * k - 1.5, top + y * k - 4, 3, 8) } g0.restore() };
   const original = document.createElement('canvas'); original.width = c.m.w; original.height = c.m.h;
@@ -525,6 +527,38 @@ function inspectRatio() {
     /* v98.398 · until the user picks a mode themselves, follow the team standard automatically once one is set */
     if (!mem.touched && RSD) { mem.mode = 'ref'; mem.ref = '__std__'; $a('adjRef').value = '__std__' } else if (!mem.touched && mSpans) { mem.mode = 'ref'; mem.ref = '__master__'; $a('adjRef').value = '__master__' }
     $a('adjMethod').value = mem.method; document.querySelector(`input[name=adjMode][value=${mem.mode}]`).checked = true; $a('adjKeep').checked = mem.keep; $a('adjSeam').value = mem.seam || 'shape'; $a('adjSoft').value = mem.soft || 7; $a('adjSharpMode').value = mem.sharpMode || 'auto'; $a('adjSharp').value = mem.sharp ?? 60; document.querySelectorAll('.adjSel').forEach(b => b.checked = !!mem.sel[b.dataset.k]);
+
+    /* v98.436 · 📏 USER-DRAWN RULERS: pick an emoji, drag a line on the Before picture (endpoints draggable). The size is stored as a ratio (÷ face, or ÷ height for the head),
+       so the BASE keeps its own numbers and this picture is compared with them → ×1.30 per ruler → ✅ puts the mean per part into the sliders (manual mode). */
+    const RR = window.ProportionRulers, rlcv = $a('rlcv'), rlg = rlcv && rlcv.getContext('2d'); let rlSel = null, rlDrag = null;
+    const rlUnits = () => { const { pts: P } = PD.pointsFor(datumRec, q.dir), md = (a, b) => a && b ? [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] : null, D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * c.m.w, (a[1] - b[1]) * c.m.h) : null, eye = md(P.eyeL, P.eyeR), ft = md(P.footL, P.footR); return { face: D(eye, P.chin), height: D(eye, ft) } };
+    const rlBase = () => { let id, pose, dir = q.dir, name;
+      if (mem.ref === '__std__' && STD) { id = STD.id; pose = STD.pose; dir = STD.dir; name = STD.name } else if (mem.ref === '__master__' && mRec) { id = e.id; pose = MST.pose; name = MST_NAME } else if (mem.ref && mem.ref !== '__std__' && mem.ref !== '__master__') { id = mem.ref; pose = q.pose; name = ENTRIES.find(x => x.id === mem.ref)?.name } else return null;
+      return { id, pose, dir, name, map: RR.list(id, pose, dir) } };
+    const rlPaint = () => { if (!rlg) return; rlg.clearRect(0, 0, rlcv.width, rlcv.height); if (!beforeX) return; const own = { ...RR.list(e.id, q.pose, q.dir) }; if (rlDrag && rlSel) own[rlSel] = { a: rlDrag.a, b: rlDrag.b };
+      const X = f => [beforeX.left + f[0] * c.m.w * beforeX.k, beforeX.top + f[1] * c.m.h * beforeX.k];
+      for (const [k, o] of Object.entries(own)) { const [x1, y1] = X(o.a), [x2, y2] = X(o.b), on = k === rlSel; rlg.lineWidth = on ? 3 : 2; rlg.strokeStyle = on ? '#ffd400' : '#00b7d4'; rlg.beginPath(); rlg.moveTo(x1, y1); rlg.lineTo(x2, y2); rlg.stroke();
+        for (const [x, y] of [[x1, y1], [x2, y2]]) { rlg.fillStyle = on ? '#ffd400' : '#00b7d4'; rlg.beginPath(); rlg.arc(x, y, on ? 5 : 3.5, 0, 7); rlg.fill(); rlg.strokeStyle = '#fff'; rlg.lineWidth = 1; rlg.stroke() }
+        rlg.font = '14px sans-serif'; rlg.fillText(RR.byKey(k)?.e || '', (x1 + x2) / 2 + 6, (y1 + y2) / 2) } };
+    const rlRender = () => { const own = RR.list(e.id, q.pose, q.dir), b = rlBase(), pl = RR.plan(own, b?.map), qs = Object.fromEntries(pl.rows.map(r => [r.k, r])), col = { ok: 'var(--ok)', warn: 'var(--warn)', bad: 'var(--bad)' };
+      $a('rlRow').innerHTML = '<b title="ไม้บรรทัดลากเอง: เลือกอีโมจิ แล้วลากเส้นบนภาพ ก่อน (ลากปลายเส้นเพื่อแก้) · วัดทั้งตัวต้นและตัวนี้ แล้วกด ✅">📏</b>' + RR.PRESETS.map(p => { const o = own[p.k], bm = b?.map?.[p.k], r = qs[p.k];
+        return `<button type="button" data-rl="${p.k}" title="${p.n}${o ? ' · วัดแล้ว' : ' · ยังไม่วัด'}${b ? (bm ? ' · ตัวต้นวัดแล้ว' : ' · ตัวต้นยังไม่วัด (' + (b.name || '') + ')') : ''}" style="${rlSel === p.k ? 'outline:2px solid #ffd400;' : ''}${o ? 'font-weight:700' : 'opacity:.6'}">${p.e}${r ? `<span style="color:${col[r.level]}"> ${RR.fmt(r.q)}</span>` : o ? '✔' : ''}${b && !bm ? '⭐?' : ''}</button>` }).join('')
+        + `<button type="button" id="rlDel" title="ลบเส้นที่เลือก" ${rlSel && own[rlSel] ? '' : 'disabled'}>🗑</button><button type="button" id="rlUse" class="primary" title="ใส่ค่าเฉลี่ยต่อส่วน (หัว/ลำตัว/ขา) ลงตัวปรับ แล้วพรีวิว" ${Object.keys(pl.parts).length ? '' : 'disabled'}>✅</button>`;
+      if (rlcv) { rlcv.style.pointerEvents = rlSel ? 'auto' : 'none' } };
+    if (rlcv) { const pt = ev => { const r = rlcv.getBoundingClientRect(); return [(ev.clientX - r.left) * rlcv.width / r.width, (ev.clientY - r.top) * rlcv.height / r.height] }, fr = p => [Math.max(0, Math.min(1, (p[0] - beforeX.left) / (c.m.w * beforeX.k))), Math.max(0, Math.min(1, (p[1] - beforeX.top) / (c.m.h * beforeX.k)))];
+      rlcv.onpointerdown = ev => { if (!rlSel || !beforeX) return; const p = pt(ev); if (p[0] > HALF) return; const o = RR.list(e.id, q.pose, q.dir)[rlSel], X = f => [beforeX.left + f[0] * c.m.w * beforeX.k, beforeX.top + f[1] * c.m.h * beforeX.k], d = f => Math.hypot(X(f)[0] - p[0], X(f)[1] - p[1]); let w = null;
+        if (o) { if (d(o.a) < 14) w = 'a'; else if (d(o.b) < 14) w = 'b' } if (w) rlDrag = { a: o.a.slice(), b: o.b.slice(), which: w }; else { const f = fr(p); rlDrag = { a: f, b: f.slice(), which: 'b' } }
+        rlcv.setPointerCapture(ev.pointerId); rlPaint() };
+      rlcv.onpointermove = ev => { if (!rlDrag) return; rlDrag[rlDrag.which] = fr(pt(ev)); rlPaint() };
+      rlcv.onpointerup = ev => { if (!rlDrag) return; const d = rlDrag; rlDrag = null; const pr = RR.byKey(rlSel), len = RR.dist(d.a, d.b, c.m.w, c.m.h), unit = rlUnits()[pr.unit];
+        if (len < 4) { rlPaint(); return } if (!unit) { $a('adjMsg').textContent = '📍 ต้องวาง Datum ตา · คาง' + (pr.unit === 'height' ? ' · เท้า' : '') + ' ของท่า/ทิศนี้ก่อน จึงวัดไม้บรรทัดได้'; rlPaint(); return }
+        RR.put(e.id, q.pose, q.dir, rlSel, RR.make(rlSel, d.a, d.b, c.m.w, c.m.h, unit)); rlRender(); rlPaint() } }
+    $a('rlRow').onclick = ev => { const b = ev.target.closest('button'); if (!b || b.disabled) return;
+      if (b.dataset.rl) { rlSel = rlSel === b.dataset.rl ? null : b.dataset.rl; rlRender(); rlPaint(); return }
+      if (b.id === 'rlDel') { RR.remove(e.id, q.pose, q.dir, rlSel); rlRender(); rlPaint(); return }
+      if (b.id === 'rlUse') { const pl = RR.plan(RR.list(e.id, q.pose, q.dir), rlBase()?.map), S = sel(), got = []; for (const part of ['head', 'torso', 'legs']) if (pl.parts[part] != null && S[part]) { A[part] = Math.round(pl.parts[part] * 1000) / 10; got.push(part) }
+        if ((pl.parts.torso != null || pl.parts.legs != null) && pl.parts.head == null && S.head) A.head = 100;   /* body rulers are ÷ face → relative to the head, same as the 📏 thickness method */
+        mem.touched = true; document.querySelector('input[name=adjMode][value=man]').checked = true; $a('adjMsg').textContent = '✅ ใส่ค่าจากไม้บรรทัดลงตัวปรับแล้ว (แมนวล) · ' + got.map(x => x + ' ×' + (A[x] / 100).toFixed(2)).join(' · '); redraw() } };
     const redraw = () => {
       mem.mode = mode(); mem.sel = sel(); mem.keep = $a('adjKeep').checked; mem.seam = $a('adjSeam').value; mem.soft = +$a('adjSoft').value; mem.sharpMode = $a('adjSharpMode').value; mem.sharp = +$a('adjSharp').value; $a('adjSharp').disabled = mem.sharpMode === 'auto'; $a('adjSharpV').textContent = mem.sharpMode === 'auto' ? 'ออโต้' : mem.sharp + '%';
       mem.method = $a('adjMethod').value; mem.ref = $a('adjRef').value || mem.ref; tplSpans = null; if (mode() === 'ref') autoFill(); sync(); renderRuler();
@@ -537,7 +571,7 @@ function inspectRatio() {
       const k = Math.min(CH / Math.max(m.H, y1 - y0 + 1), (half - 12) / Math.max(1, x1 - x0 + 1)), cxm = (x0 + x1) / 2;
       ag.clearRect(0, 0, PW, CH + 20);
       const paintPanel = (image, x, dx, dy, after) => {
-        const left = x + half / 2 - cxm * k + dx * k, top = 10 - y0 * k + dy * k;
+        const left = x + half / 2 - cxm * k + dx * k, top = 10 - y0 * k + dy * k; if (!after) beforeX = { left, top, k };
         ag.save(); ag.beginPath(); ag.rect(x, 0, half, CH + 20); ag.clip(); ag.drawImage(image, left, top, image.width * k, image.height * k);
         if (zoneEditor?.show) { const overlay = PA.zoneCanvas(last, after); ag.drawImage(overlay, left, top, overlay.width * k, overlay.height * k) }
         for (const p of datumPts()) { const pp = after ? PA.mapPoint(last, p.x, p.y) : [p.x, p.y]; dot(ag, left + pp[0] * k, top + pp[1] * k, p.col, p.own) } if (!after) drawRuler(ag, left, top, k); ag.restore();
@@ -555,7 +589,7 @@ function inspectRatio() {
         $a('adjGirth').innerHTML = og ? `<b>ความหนา</b> (เท่าของความยาวหน้า ตา→คาง · วัดจากเงาภาพ)<table style="border-collapse:collapse;font-size:12px;margin:2px 0"><tr style="color:var(--muted)"><td></td><td>ก่อน</td><td>หลัง</td><td>ต้นแบบ</td><td>หลังเทียบต้นแบบ</td></tr>${rows}</table>${rg ? (mem.ref === '__master__' ? '<small>ต้นแบบ = ท่าอ้างอิงของตัวนี้ · เทียบผ่านความยาวหน้า (ตา→คาง) เพราะท่าย่อ/ก้มทำให้ความสูงเปลี่ยน แต่หน้าไม่เปลี่ยน</small>' : '') : mem.ref === '__master__' ? '<small>ยังไม่มีค่าความหนาของท่าอ้างอิง' + (ST ? ' — กำลังวัดจากภาพ…' : ' — เปิดท่านั้นให้เห็นสักครั้ง ระบบจะจำค่าไว้') + '</small>' : '<small>ยังไม่มีค่าความหนาของต้นแบบ (ตัวมาตรฐานเก่าต้องกดตั้งใหม่)</small>'}` : '<small>วัดความหนาไม่ได้ — datum ยังไม่ครบ (ไหล่ · ข้อศอก · ข้อมือ · เข่า · ข้อเท้า)</small>' }
       const arms = ['L', 'R'].filter(side => sourcePoints['wrist' + side] && sourcePoints['sh' + side]), elbows = arms.filter(side => sourcePoints['elbow' + side]);
       $a('adjArmInfo').textContent = arms.length ? `แยกแขนจากหัว ${arms.length}/2 ข้าง · แขนอิงลำตัว${elbows.length < arms.length ? ' · ท่างอแขนควรวางข้อศอกเพิ่ม' : ''}` : '⚠ ยังไม่มี Datum ข้อมือ: ท่ายกแขนให้วางไหล่–ข้อศอก–ข้อมือก่อนปรับหัว';
-      previewReady = true; previewButtons(true);
+      previewReady = true; previewButtons(true); rlRender(); rlPaint();
       $a('adjPreviewState').textContent = 'After แสดงผลปรับแล้ว · ยังไม่บันทึกและยังไม่เข้า Cart' + ((last.canvas.width !== m.w || last.canvas.height !== m.h) ? ` · ขยายกรอบ ${last.canvas.width}×${last.canvas.height} px เพื่อเก็บภาพครบ` : '') + (last.folds ? ' · ⚠ มีบริเวณบิดทับกัน ลองแก้โซนหรือลดสเกล' : '');
 
     };
