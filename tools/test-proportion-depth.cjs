@@ -59,4 +59,10 @@ console.log('proportion depth: all passed');
   assert.ok(Math.abs(g1.px.torso - 60) < 4 && Math.abs(g2.px.torso - 80) < 4, 'a stouter torso measures wider: ' + g1.px.torso + ' → ' + g2.px.torso);
   assert.ok(Math.abs(PD.girthRatio(g1, g2.frac, 'torso') - g2.frac.torso / g1.frac.torso) < 1e-9, 'ratio = standard ÷ own');
   assert.equal(PD.girth({ pts: { SW: { eyeL: [.4, .2] } } }, 'SW', { d, w: W, h: H }), null, 'too few points → null') }
+// v98.429 · ÷face numbers (pose-independent ruler) + remembered measurements + rulers of a bare datum record
+{ const W = 200, H = 400, d = new Uint8ClampedArray(W * H * 4); for (let y = 100; y < 240; y++) for (let x = 70; x < 130; x++) d[(y * W + x) * 4 + 3] = 255;
+  const P = { eyeL: [.45, .17], eyeR: [.55, .17], chin: [.5, .25], shL: [.30, .275], shR: [.70, .275], crotch: [.5, .6], footL: [.435, .95], footR: [.565, .95] }, rec = { pts: { SW: P } };
+  const g = PD.girth(rec, 'SW', { d, w: W, h: H }); assert.ok(Math.abs(g.face - 32) < 1e-9, 'face = eye midpoint → chin in px'); assert.ok(Math.abs(g.perFace.torso - g.px.torso / 32) < 1e-9, 'perFace = px ÷ face');
+  const r = PD.rulers(rec, 'SW', W, H); assert.ok(Math.abs(r.face - g.face) < 1e-9 && Math.abs(r.total - g.total) < 1e-9, 'rulers without a picture match');
+  PD.girthPut('gx', 'windup', 0, 'SW', g); assert.deepEqual(PD.girthGet('gx', 'windup', 0, 'SW').perFace, g.perFace, 'remembered per character · pose · frame · direction'); assert.equal(PD.girthGet('gx', 'windup', 0, 'SE'), null) }
 console.log('proportion girth: passed');
