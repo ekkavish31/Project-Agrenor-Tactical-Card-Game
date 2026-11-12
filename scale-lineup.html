@@ -30,6 +30,7 @@ main{display:grid;grid-template-columns:230px 1fr 270px;gap:12px;padding:12px 16
 dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:8px 0;font-size:13px}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}
 code{font-size:12px}
 /* v98.399 · the picture pins to the top of the (scrolling) inspector panel, so it stays in view together with the controls below it instead of scrolling away */
+#insp .ipPin:has(#adjZones details[open]){position:static}
 #insp .ipPin{position:sticky;top:0;z-index:2;background:var(--panel);padding-bottom:4px;margin-bottom:4px}
 .adj{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0}.adj>span{width:92px;color:var(--muted);font-size:12px}.adj input[type=number]{width:54px;font:inherit;background:var(--panel);color:inherit;border:1px solid var(--line);border-radius:6px;padding:3px}.adj small{flex-basis:100%;color:var(--muted);font-size:11px}.adj button{padding:3px 8px}button.primary{background:var(--gold);color:#1d1608;border-color:#e6c47c}button:disabled{opacity:.45;cursor:default}#viewCtl{font-size:12px}#viewCtl input,#viewCtl select{font:inherit}
 
@@ -61,6 +62,7 @@ body.ratio-layout.dock main>section:nth-of-type(2){grid-area:stage}body.ratio-la
    Query the inspector's available width, including when it is embedded in Studio. */
 #insp{container:lineup-inspector / inline-size}
 #insp .ipGrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}
+#insp .ipPin:has(#adjZones details[open]){position:static}
 #insp .ipPin{min-width:0;width:100%;max-width:840px}
 #insp #pcv{display:block;width:100%;height:auto;max-width:100%}
 #insp .ipCtl{min-width:0;width:100%;max-width:360px;overflow-wrap:anywhere}
@@ -83,7 +85,7 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.411"></script><script src="js/proportion-datum.js?v=v98.411"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.413"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.411"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -371,7 +373,7 @@ function inspectRatio() {
   $('insp').innerHTML = `<div class="ipGrid"><div class="ipPin"><b>${e.name}</b> ${verifiedMark(e.id)} <span class="chip ${LV[v.level][0]}">${LV[v.level][1]}</span>
    ${hasDatum ? '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-weight:700;padding:6px 0"><span>Before · ต้นฉบับ</span><span>After · พรีวิว</span></div>' : ''}
    <canvas id="pcv" width="${PW}" height="${CH + 20}" style="width:100%;height:auto;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px"></canvas>
-   <p id="adjPreviewState" class="hint" role="status"></p>
+   <p id="adjPreviewState" class="hint" role="status"></p>${hasDatum ? '<div id="adjZones"></div>' : ''}
    <p class="hint">${hasDatum ? `<b style="color:${COL.chin}">คาง</b> / <b style="color:${COL.hip}">ขาหนีบ</b> อ่านตรงจาก 📍 Datum ของท่า/ทิศนี้ (ลากหรือพิมพ์เองไม่ได้แล้ว แก้ที่ Datum เท่านั้น) · <b>ขวา</b> = ผลหลังปรับ` : '⚠ ยังไม่ได้วาง 📍 Datum สำหรับท่า/ทิศนี้ — ตัวเลขด้านล่างเป็นการประมาณจากภาพคร่าว ๆ เท่านั้น ต้องวาง Datum ก่อนจึงจะปรับขนาดได้จริง'}</p></div>
    <div class="ipCtl">
    <details><summary>รายละเอียดการวัด</summary>${r.manual ? `<dl><dt>จำนวนหัว</dt><dd><b>${r.heads.toFixed(2)}</b> หัว (หัว ${(r.head * 100).toFixed(1)}% ของตัว)</dd><dt>ลำตัว / ขา</dt><dd>${(r.torso * 100).toFixed(1)}% / ${(r.legs * 100).toFixed(1)}%</dd><dt>ผล</dt><dd>${v.notes.length ? v.notes.join('<br>') : 'ตรงมาตรฐาน'}</dd></dl>` : '<p class="hint">รอ Datum ครบก่อนแสดงสัดส่วน ไม่ใช้การเดาจากขอบภาพ</p>'}</details>
@@ -380,7 +382,7 @@ function inspectRatio() {
    <div class="hint" id="depthRow"></div>
    <div class="adj" id="stdRow" title="ขั้นที่ 1: เลือกตัวนี้เป็นมาตรฐานกลางของทีม (ต้องมี 📍 Datum ครบก่อน) — ตัวอื่นจะเทียบสัดส่วนหัว/ลำตัว/ขา ตามตัวนี้โดยอัตโนมัติ"></div><p class="hint" id="mMsg"></p>
    ${hasDatum ? `<details open id="adjBox" style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px"><summary><b>🛠 ปรับขนาดหัว / ลำตัว / ขา</b></summary>
-    <p class="hint">ตัดภาพตรงจุด <b style="color:${COL.chin}">คาง</b> และ <b style="color:${COL.hip}">ขาหนีบ</b> จาก datum เป็น 3 ส่วน ปรับแต่ละส่วนแล้วต่อกลับ (เท้าอยู่ที่เดิม) — ดูผลที่ภาพด้านขวาบนแผงนี้</p>
+    <p class="hint">ใช้ Datum กำหนดสัดส่วน และโซนกำหนดพิกเซลที่ตามแต่ละส่วน วาร์ปผิวต่อเนื่องพร้อมขยายกรอบเมื่อจำเป็น — ตรวจ/แก้โซนสีได้ใต้ภาพ</p>
     <div class="adj"><label><input type="radio" name="adjMode" value="ref" checked> ตามต้นแบบ</label><label><input type="radio" name="adjMode" value="man"> แมนวล</label><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงสูงหัว–ข้อเท้า</label></div>
     <div class="adj" title="ใช้สัดส่วน (หัว · ลำตัว · ขา) จาก datum ของตัวต้นแบบ กับ datum ของตัวนี้ · ตามต้นแบบ = คำนวณให้อัตโนมัติ · แมนวล = ใส่ค่าแนะนำแล้วปรับเอง"><span>ต้นแบบ</span><select id="adjRef"></select><button id="adjRefFill" type="button">ใส่ค่าแล้วปรับเอง</button></div>
     <div class="adj" title="ครอบตามทรง = จับเฉพาะรูปทรงของหัว/ลำตัว/ขา แล้วบิดภาพต่อเนื่องชิ้นเดียว · แถบนุ่ม = จับเป็นแถบตามเส้นตัด แต่ต่อเนียน"><span>รอยต่อ</span><select id="adjSeam"><option value="shape">ครอบตามทรง</option><option value="band">แถบนุ่ม</option></select><span style="width:auto">นุ่ม</span><input type="range" id="adjSoft" min="2" max="20" step="1" value="7" style="width:80px"></div>
@@ -439,6 +441,7 @@ function inspectRatio() {
     const autoFill = () => { if (mode() !== 'ref') return; const a = refScales(); if (a.head) { A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10 } document.getElementById('adjMsg').textContent = a.note || '' };
     const sync = () => { document.querySelectorAll('.adjVal').forEach(i => { i.value = A[i.dataset.k]; i.disabled = !sel()[i.dataset.k] }) };
     let last = null, lastConfig = null, previewReady = false;
+    const zoneEditor = window.ProportionZones?.mount($a('adjZones'), PA, JSON.stringify([e.id, q.pose, q.frame, q.dir, c.file || c.label]), () => schedulePreview());
     const inStudio = window.parent !== window;
     const previewButtons = ready => { $a('adjApply').disabled = !ready || !inStudio || !c.file; $a('adjPng').disabled = !ready; };
     const schedulePreview = () => { previewReady = false; previewButtons(false); $a('adjPreviewState').textContent = 'กำลังเตรียมพรีวิว · ยังไม่บันทึก'; cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(() => { if (cv.isConnected) redraw() }); };
@@ -450,17 +453,19 @@ function inspectRatio() {
       mem.ref = $a('adjRef').value || mem.ref; tplSpans = null; if (mode() === 'ref') autoFill(); sync();
       previewReady = false; previewButtons(false);
       const keep = $a('adjKeep').checked, sc = scaleNow(), sourcePoints = PD.pixelPoints(datumRec, q.dir, c.m.w, c.m.h);
-      const options = { keepHeight: keep, flip: c.flip, mode: mem.seam, soft: mem.soft / 100, grow: Math.round(c.m.H * .03), sharpen: mem.sharpMode === 'auto' ? 'auto' : mem.sharp / 100, points: sourcePoints };
-      try { last = PA.warp(c.img, c.m, marks, sc, options) } catch (error) { last = null; $a('adjPreviewState').textContent = 'พรีวิวไม่สำเร็จ: ' + error.message; return } lastConfig = { scale: { ...sc }, options: { ...options } };   /* v98.385 · one continuous warp — no cut layers */
-      const P = last.plan, seg = last.seg, m = c.m, k = CH / m.H, half = HALF, cxm = (m.x0 + m.x1) / 2, CW = PW;
-      drawLeft(); ag.clearRect(HALF, 0, HALF, CH + 20);
-      const place = (img, x0) => ag.drawImage(img, x0 + half / 2 - cxm * k, 10 - m.top * k, m.w * k, m.h * k);
-      const Y = y => 10 + (y - m.top) * k;
-      /* right: the result, with the SAME datum dots moved to where they land after the warp (PA.mapPoint) — no measuring lines any more, v98.400 */
-      ag.save(); ag.beginPath(); ag.rect(half, 0, half, CH + 20); ag.clip(); ag.globalAlpha = 1; place(last.canvas, half);
-      const destX = half + half / 2 - cxm * k, destY = 10 - m.top * k;
-      for (const p of datumPts()) { const [ox2, oy2] = PA.mapPoint(last, p.x, p.y); dot(ag, destX + ox2 * k, destY + oy2 * k, p.col, p.own) }
-      ag.restore();
+      const options = { keepHeight: keep, flip: c.flip, mode: mem.seam, soft: mem.soft / 100, grow: Math.round(c.m.H * .03), sharpen: mem.sharpMode === 'auto' ? 'auto' : mem.sharp / 100, points: sourcePoints, zoneEdits: zoneEditor?.edits?.slice() };
+      try { last = PA.warp(c.img, c.m, marks, sc, options) } catch (error) { last = null; $a('adjPreviewState').textContent = 'พรีวิวไม่สำเร็จ: ' + error.message; return } if (zoneEditor) { const hadEdits = !!options.zoneEdits; zoneEditor.update(last); if (!hadEdits && zoneEditor.edits) { options.zoneEdits = zoneEditor.edits.slice(); last = PA.warp(c.img, c.m, marks, sc, options); zoneEditor.update(last) } } lastConfig = { scale: { ...sc }, options: { ...options } };   /* v98.385 · one continuous warp — no cut layers */
+      const P = last.plan, seg = last.seg, m = c.m, half = HALF;
+      const off = last.offset || [0, 0], x0 = Math.min(m.x0, -off[0]), x1 = Math.max(m.x1, last.canvas.width - off[0]), y0 = Math.min(m.top, -off[1]), y1 = Math.max(m.bottom, last.canvas.height - off[1]);
+      const k = Math.min(CH / Math.max(m.H, y1 - y0 + 1), (half - 12) / Math.max(1, x1 - x0 + 1)), cxm = (x0 + x1) / 2;
+      ag.clearRect(0, 0, PW, CH + 20);
+      const paintPanel = (image, x, dx, dy, after) => {
+        const left = x + half / 2 - cxm * k + dx * k, top = 10 - y0 * k + dy * k;
+        ag.save(); ag.beginPath(); ag.rect(x, 0, half, CH + 20); ag.clip(); ag.drawImage(image, left, top, image.width * k, image.height * k);
+        if (zoneEditor?.show) { const overlay = PA.zoneCanvas(last, after); ag.drawImage(overlay, left, top, overlay.width * k, overlay.height * k) }
+        for (const p of datumPts()) { const pp = after ? PA.mapPoint(last, p.x, p.y) : [p.x, p.y]; dot(ag, left + pp[0] * k, top + pp[1] * k, p.col, p.own) } ag.restore();
+      };
+      paintPanel(original, 0, 0, 0, false); paintPanel(last.canvas, half, -off[0], -off[1], true);
       ag.setLineDash([]); ag.strokeStyle = '#999'; ag.beginPath(); ag.moveTo(half, 0); ag.lineTo(half, CH + 20); ag.stroke(); ag.fillStyle = '#555'; ag.font = '10px AgThai,sans-serif'; ag.fillText('ก่อน', 4, CH + 14); ag.fillText('หลัง', half + 4, CH + 14);
       const moved = Object.fromEntries(Object.entries(sourcePoints).map(([key, [x, y]]) => { const p = PA.mapPoint(last, x, y); return [key, [p[0] / m.w, p[1] / m.h]] }));
       const actual = PD.spans({ pts: { [q.dir]: moved } }, q.dir);
@@ -468,7 +473,7 @@ function inspectRatio() {
       const arms = ['L', 'R'].filter(side => sourcePoints['wrist' + side] && sourcePoints['sh' + side]), elbows = arms.filter(side => sourcePoints['elbow' + side]);
       $a('adjArmInfo').textContent = arms.length ? `แยกแขนจากหัว ${arms.length}/2 ข้าง · แขนอิงลำตัว${elbows.length < arms.length ? ' · ท่างอแขนควรวางข้อศอกเพิ่ม' : ''}` : '⚠ ยังไม่มี Datum ข้อมือ: ท่ายกแขนให้วางไหล่–ข้อศอก–ข้อมือก่อนปรับหัว';
       previewReady = true; previewButtons(true);
-      $a('adjPreviewState').textContent = 'After แสดงผลปรับแล้ว · ยังไม่บันทึกและยังไม่เข้า Cart';
+      $a('adjPreviewState').textContent = 'After แสดงผลปรับแล้ว · ยังไม่บันทึกและยังไม่เข้า Cart' + ((last.canvas.width !== m.w || last.canvas.height !== m.h) ? ` · ขยายกรอบ ${last.canvas.width}×${last.canvas.height} px เพื่อเก็บภาพครบ` : '') + (last.folds ? ' · ⚠ มีบริเวณบิดทับกัน ลองแก้โซนหรือลดสเกล' : '');
 
     };
     document.querySelectorAll('input[name=adjMode],.adjSel,#adjKeep,#adjSeam,#adjSharpMode,#adjRef').forEach(i => i.onchange = () => { mem.touched = true; schedulePreview() });
@@ -477,16 +482,16 @@ function inspectRatio() {
     $a('adjPreview').onclick = () => { cancelAnimationFrame(window.__adjRaf); if (mode() === 'man') document.querySelectorAll('.adjVal').forEach(i => { A[i.dataset.k] = Math.max(50, Math.min(200, +i.value || 100)) }); redraw() };
     document.querySelectorAll('#adjBox button[data-d]').forEach(b => b.onclick = () => { mem.touched = true; document.querySelector('input[name=adjMode][value=man]').checked = true; const k = b.dataset.k; if (!sel()[k]) { document.querySelector(`.adjSel[data-k=${k}]`).checked = true } A[k] = Math.max(50, Math.min(200, A[k] + +b.dataset.d)); redraw() });
     $a('adjReset').onclick = () => { mem.touched = true; A.head = A.torso = A.legs = 100; document.querySelector('input[name=adjMode][value=man]').checked = true; redraw() };
-    const outCanvas = () => { if (!last || !previewReady) return null; const o = document.createElement('canvas'); o.width = c.m.w; o.height = c.m.h; const og = o.getContext('2d'); if (c.flip) { og.translate(c.m.w, 0); og.scale(-1, 1) } og.drawImage(last.canvas, 0, 0); return o };   /* back to the file's own orientation */
+    const outCanvas = () => { if (!last || !previewReady) return null; const o = document.createElement('canvas'); o.width = last.canvas.width; o.height = last.canvas.height; const og = o.getContext('2d'); if (c.flip) { og.translate(o.width, 0); og.scale(-1, 1) } og.drawImage(last.canvas, 0, 0); return o };   /* back to the file's own orientation */
     $a('adjPng').onclick = () => { const o = outCanvas(); if (!o) return; const a = document.createElement('a'); a.download = e.id.replace(/[^a-z0-9_-]+/gi, '-') + '-proportion.png'; a.href = o.toDataURL('image/png'); a.click() };
     previewButtons(previewReady); if (!inStudio) $a('adjApply').title = 'ใช้ได้เมื่อเปิดใน Asset Studio (แท็บ Scale Lineup)';
     $a('adjApply').onclick = async () => { const o = outCanvas(); if (!o || !c.file) return; const config = { scale: { ...lastConfig.scale }, options: { ...lastConfig.options } };
       /* v98.386 · the same pose in the OPPOSITE direction (SW↔SE · NW↔NE) gets the same settings, warped from its own picture */
       let opp = null; const vp = c.vp; if (ST && vp && vp.action !== 'pick') { const ov = OPPV[vp.view], oc = vp.clips.find(x => x.action === vp.action && x.view === ov); try { const pic = await ST.lineup.picture(vp.sid, ov, oc?.id, oc ? Math.min(vp.index, oc.n - 1) : 0); if (pic && pic.file && pic.file !== c.file) opp = { ...pic, view: ov } } catch (err) { } }
       if (c.flip && !confirm('ภาพนี้ถูกพลิกมาจากไฟล์ของอีกทิศ ' + c.file + ' — การเขียนทับจะเปลี่ยนไฟล์นั้น · ทำต่อ?')) return;
-      if (!confirm('เขียนทับด้วยภาพที่ปรับสัดส่วนแล้ว:\n• ' + c.file + (opp ? '\n• ' + opp.file + ' (ทิศตรงข้าม ' + opp.view + ' · ใช้ค่าเดียวกัน)' : '\n(ไม่พบภาพทิศตรงข้ามแยกไฟล์ — ปรับเฉพาะภาพนี้)') + '\n\n⚠ จุด 📍 Datum เดิมของภาพนี้จะไม่ตรงตำแหน่งอีกต่อไปหลังภาพถูกวาร์ป — วาง Datum ใหม่ถ้าจะวัดซ้ำ\n\nภาพเดิมเก็บไว้ในประวัติของช่อง (กู้กลับได้) · ต้องเชื่อมโฟลเดอร์/GitHub ใน Asset Studio')) return;
+      if (!confirm('เขียนทับด้วยภาพที่ปรับสัดส่วนแล้ว:\n• ' + c.file + (opp ? '\n• ' + opp.file + ' (ทิศตรงข้าม ' + opp.view + ' · สเกลเดียวกัน / โซนอัตโนมัติของภาพนั้น)' : '\n(ไม่พบภาพทิศตรงข้ามแยกไฟล์ — ปรับเฉพาะภาพนี้)') + '\n\n⚠ จุด 📍 Datum เดิมของภาพนี้จะไม่ตรงตำแหน่งอีกต่อไปหลังภาพถูกวาร์ป — วาง Datum ใหม่ถ้าจะวัดซ้ำ\n\nภาพเดิมเก็บไว้ในประวัติของช่อง (กู้กลับได้) · ต้องเชื่อมโฟลเดอร์/GitHub ใน Asset Studio')) return;
       const post = (file, cv) => window.parent.postMessage({ type: 'asset-lineup:apply', file, dataUrl: cv.toDataURL('image/png'), note: 'ปรับสัดส่วน หัว/ลำตัว/ขา' }, location.origin);
-      let o2 = null; if (opp) { const img = await load(opp.url || opp.src), m2 = img && measure(img, opp.flip); if (m2) { const otherMarks = PD.marksFrom(datumRec, opp.view, m2, m2.h) || marks, otherPoints = PD.pixelPoints(datumRec, opp.view, m2.w, m2.h); const res = PA.warp(img, m2, otherMarks, config.scale, { ...config.options, flip: opp.flip, points: otherPoints, grow: Math.round(m2.H * .03) }); o2 = document.createElement('canvas'); o2.width = m2.w; o2.height = m2.h; const g2 = o2.getContext('2d'); if (opp.flip) { g2.translate(m2.w, 0); g2.scale(-1, 1) } g2.drawImage(res.canvas, 0, 0) } else opp = null }
+      let o2 = null; if (opp) { const img = await load(opp.url || opp.src), m2 = img && measure(img, opp.flip); if (m2) { const otherMarks = PD.marksFrom(datumRec, opp.view, m2, m2.h) || marks, otherPoints = PD.pixelPoints(datumRec, opp.view, m2.w, m2.h); const res = PA.warp(img, m2, otherMarks, config.scale, { ...config.options, zoneEdits: null, flip: opp.flip, points: otherPoints, grow: Math.round(m2.H * .03) }); o2 = document.createElement('canvas'); o2.width = res.canvas.width; o2.height = res.canvas.height; const g2 = o2.getContext('2d'); if (opp.flip) { g2.translate(o2.width, 0); g2.scale(-1, 1) } g2.drawImage(res.canvas, 0, 0) } else opp = null }
       post(c.file, o); if (o2) post(opp.file, o2); const n = o2 ? 2 : 1;   /* both are sent together: the studio reloads this row after saving */
       const a0 = vp && vp.action !== 'pick' ? vp.action : VP.action, v0 = vp ? vp.view : VP.view; DONE[doneKey(e.id, a0, v0)] = 'adj'; if (opp) DONE[doneKey(e.id, a0, opp.view)] = 'adj'; saveDone();
       $a('adjMsg').textContent = 'ส่งให้ Asset Studio แล้ว ' + n + ' ภาพ — ตรวจผลแล้วติ๊ก "✔ ปรับถูกต้องแล้ว" (แล้ววาง 📍 Datum ใหม่ถ้าจะวัดซ้ำ)' };

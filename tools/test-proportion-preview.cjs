@@ -1,7 +1,8 @@
 // Canonical datum ratios, raised-arm protection, and actual preview→Cart flow.
 'use strict';
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const store = {}; global.localStorage = { getItem: k => store[k] ?? null, setItem: (k, v) => { store[k] = v } };
+const store = {}; global.localStorage = { getItem: k => store[k] ?? null, setItem: (k, v) => { store[k] = v }, removeItem: k => { delete store[k] } };
+require('../js/proportion-zones.js');
 const PD = require('../js/proportion-datum.js'), PA = require('../js/proportion-adjust.js'), PT = require('../js/proportion-tool.js');
 const W = 220, H = 230, points = { eyeL: [100, 50], eyeR: [110, 50], chin: [105, 70], shL: [80, 90], shR: [130, 90], elbowL: [40, 60], wristL: [30, 20], elbowR: [150, 110], wristR: [155, 140], chest: [105, 100], crotch: [105, 140], kneeL: [90, 170], kneeR: [120, 170], footL: [90, 200], footR: [120, 200] };
 const rec = { pts: { SW: Object.fromEntries(Object.entries(points).map(([k, p]) => [k, [p[0] / W, p[1] / H]])) } };
@@ -54,7 +55,7 @@ assert(Buffer.from(g.getImageData(0, 0, W, H).data).equals(beforePixels), 'warp 
 PD.put('kier', 'windup', 0, rec); PD.setStd('front', { id: 'hero', name: 'Hero', pose: 'idle', dir: 'SW', spans: { head: .22, torso: .44, legs: .34 } });
 let lastResult; const wrappedPA = { ...PA, warp(...args) { return lastResult = PA.warp(...args) } };
 const c = { img, m, flip: false, file: 'synthetic-kier.png', label: 'windup SW', vp: { action: 'windup', view: 'SW', index: 0, sid: 'ally:kier', clips: [] } }, entry = { id: 'kier', name: 'Kier', ctx: { battle: c } };
-const window = { ProportionDatum: PD, ProportionAdjust: wrappedPA, parent: { postMessage: x => messages.push(x) } };
+const window = { ProportionZones: global.ProportionZones, ProportionDatum: PD, ProportionAdjust: wrappedPA, parent: { postMessage: x => messages.push(x) } };
 const globals = { $: id => document.getElementById(id), window, document, ENTRIES: [entry], sel: 'kier', isW: () => false, ratioOf: () => ({ ...spans, heads: 1 / spans.head, datum: measured, manual: true, marks, headW: 40, shoulderW: 50, headToShoulder: .8 }), PT, visible: () => [entry], STDOBJ: () => standard, LV: { ok: ['ok', 'ok'], warn: ['warn', 'warn'], bad: ['bad', 'bad'], pending: ['warn', 'pending'] }, DOCK: true, vpOf: () => ({ pose: 'windup', dir: 'SW', frame: 0 }), verifiedMark: () => '', doneOf: () => '', mapText: x => x, COL: { chin: '#f00', hip: '#0f0', shoulder: '#00f' }, renderRatio() {}, openDatum() {}, OPPV: { SW: 'SE' }, ST: null, VP: { action: 'windup', view: 'SW' }, DONE: {}, doneKey: id => id + '|windup|SW', saveDone() {}, confirm: () => true, location: { origin: 'http://test.local' }, requestAnimationFrame: fn => { const id = ++rafId; raf.set(id, fn); return id }, cancelAnimationFrame: id => raf.delete(id) };
 const source = fs.readFileSync(require('node:path').join(__dirname, '../scale-lineup.html'), 'utf8'), start = source.indexOf('function inspectRatio()'), end = source.indexOf('/* ================= 📍 Datum editor', start); vm.createContext(globals); vm.runInContext(source.slice(start, end) + '\ninspectRatio();', globals);
 const $ = id => document.getElementById(id), flush = () => { for (let i = 0; raf.size && i < 10; i++) { const q = [...raf.values()]; raf.clear(); q.forEach(fn => fn()) } };
@@ -66,6 +67,12 @@ const $ = id => document.getElementById(id), flush = () => { for (let i = 0; raf
   assert.equal(messages.length, 0); assert.equal($('adjApply').disabled, false); assert(!Buffer.from(uiCanvas.getContext('2d').getImageData(uiCanvas.width / 2, 0, uiCanvas.width / 2, uiCanvas.height).data).equals(initialAfter), 'After actually changes on input before any save'); assert($('adjPreviewState').textContent.includes('ยังไม่เข้า Cart'));
   assert(Buffer.from(uiCanvas.getContext('2d').getImageData(0, 0, uiCanvas.width / 2, uiCanvas.height).data).equals(beforeLeft), 'Before stays byte-identical when parameters change');
   $('adjPreview').onclick(); assert.equal(messages.length, 0, 'explicit Preview never adds a Cart item');
+  const z = $('zoneCanvas'); z.getBoundingClientRect = () => ({left:0,top:0,width:W,height:H}); z.setPointerCapture = () => {};
+  $('zoneEdit').checked = true; $('zonePart').value = '1'; $('zoneSize').value = '20';
+  z.onpointerdown({clientX:30,clientY:20,button:0,pointerId:1,preventDefault(){}}); z.onpointermove({clientX:35,clientY:25,preventDefault(){}}); z.onpointerup(); flush();
+  assert.equal(lastResult.labels[20 * W + 30], 1); assert($('zoneState').textContent.includes('แก้ด้วยมือ')); assert(Object.keys(store).some(k => k.startsWith('proportion-zones-v1:')));
+  $('zoneUndo').onclick(); flush(); assert.equal(lastResult.labels[20 * W + 30], 4);
+  $('zoneShow').checked = false; $('zoneShow').onchange(); flush(); assert.equal(messages.length, 0);
   const expected = Buffer.from(lastResult.canvas.getContext('2d').getImageData(0, 0, W, H).data); await $('adjApply').onclick(); assert.equal(messages.length, 1);
   const decoded = await native.loadImage(messages[0].dataUrl), out = native.createCanvas(W, H); out.getContext('2d').drawImage(decoded, 0, 0); assert(Buffer.from(out.getContext('2d').getImageData(0, 0, W, H).data).equals(expected), 'Cart PNG is exactly the raster already previewed');
   console.log('PASS real raster: wrist protection, pristine Before, live After, preview isolation and exact preview→Cart PNG');

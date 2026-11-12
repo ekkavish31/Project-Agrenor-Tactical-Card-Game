@@ -5071,3 +5071,11 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - เมื่อบันทึกภาพใหม่ สถานะตรวจแล้วของทิศที่เปลี่ยนกลับเป็นรอตรวจ ต้องตรวจใหม่ก่อนขึ้น verify mark
 
 - Validation: ทุก JS และ inline script ที่แก้ผ่าน syntax · tools/test-*.cjs ผ่าน 41/44 ไฟล์ อีก 3 รายการเป็น test-hero-variant เดิมกับ 2 รายการที่เปิดเบราว์เซอร์ไม่ได้ · test-proportion-preview ทดสอบ raster จริง: Before ไม่เปลี่ยน, After เปลี่ยนก่อน save, PNG เข้า Cart ตรงพรีวิว, ยกข้อมือไม่ตาม head scale, fit ใกล้มาตรฐานจริง, และ median ไม่กระทบ judge · ยังไม่ได้ตรวจ layout/interaction ด้วยเบราว์เซอร์จริง
+
+
+## v98.413 · 12 พ.ย. 2026 — โซนสีแก้ด้วยมือและวาร์ปไม่ตัดขอบ
+- Before/After แสดงโซนหัว ลำตัว ส่วนล่าง แขนซ้าย/ขวาภาพ จาก mask ที่ใช้ปรับภาพจริง สีไม่ติด PNG
+- พู่กันแก้ส่วน/ขอบเขต ลบกลับ auto, undo 20 จังหวะ, คืน auto ทั้งหมด, ซูม 100–300%; เก็บ mask แยก character/pose/frame/direction/file/size พร้อม fingerprint ภาพในเบราว์เซอร์ ยังไม่ sync ผ่าน Cart
+- forward mesh ต่อเนื่อง 2px แทน inverse iteration ที่อาจทิ้งรอยขาด ขยายกรอบเผื่อขอบภาพ/bicubic, mapPoint รวม offset, Preview/PNG/Cart ใช้ภาพเต็มเดียวกัน; ขยายรัศมีป้องกันแขน/มือไม่ให้ตามหัวผิดส่วน
+- แจ้งเมื่อโซนบิดทับกันให้แก้โซน/ลดสเกล; ทิศตรงข้ามใช้สเกลเดียวกันแต่ mask อัตโนมัติของภาพนั้น
+- กู้โค้ดจากบันทึกรอบก่อนหลัง workspace reset; รัน raster/DOM tests ซ้ำก่อน push
