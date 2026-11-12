@@ -8630,8 +8630,15 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Mil, a small cheerful junior swordsman with a big scarf, grid-battle sprite facing down-right (SE), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-se-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม mil ในสนาม",
    "note": "ใช้ภาพฮีโร่ท่าเดียวกันเป็นภาพอ้างอิงท่าทาง (ตำแหน่งมือต้องตรง อาวุธจะติดที่มือ) · SW/NW เกมกลับภาพให้เอง",
-   "artRevision": "20261112-132607",
+   "artRevision": "20261112-145209",
    "history": [
+    {
+     "file": "assets/_versions/tactics-mil-se-windup/20261112-145207.webp",
+     "at": "2026-11-12T07:52:08.974Z",
+     "stamp": "20261112-145207",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-mil-se-windup/20261112-132401.webp",
      "at": "2026-11-12T06:24:01.162Z",
@@ -57694,8 +57701,22 @@
    "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Mil, a small cheerful junior swordsman with a big scarf, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
    "usedIn": "เพื่อนร่วมทีม mil ในสนาม",
    "note": "ช่องว่าง: ยังไม่มีภาพ — ใส่ไฟล์ตามชื่อนี้ได้เลย",
-   "artRevision": "20261112-132607",
+   "artRevision": "mwd9ea9c",
    "history": [
+    {
+     "file": "assets/_versions/unified/mwd9ea9c/tactics-mil-sw-windup.png",
+     "at": "2026-11-12T08:01:28.306Z",
+     "stamp": "mwd9ea9c",
+     "status": "final",
+     "note": "ก่อนแก้ใน modal"
+    },
+    {
+     "file": "assets/_versions/tactics-mil-sw-windup/20261112-145207.webp",
+     "at": "2026-11-12T07:52:07.882Z",
+     "stamp": "20261112-145207",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-mil-sw-windup/20261112-132401.webp",
      "at": "2026-11-12T06:24:01.126Z",
@@ -100958,7 +100979,16 @@
     "name": "Nadia",
     "group": "characters"
    },
-   "artRevision": "20261106-134948"
+   "artRevision": "20261112-145054",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-nadia-sw-windup/20261112-144900.webp",
+     "at": "2026-11-12T07:49:00.973Z",
+     "stamp": "20261112-144900",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "tactics-nadia-se-windup",
@@ -100977,7 +101007,16 @@
     "name": "Nadia",
     "group": "characters"
    },
-   "artRevision": "20261106-134948"
+   "artRevision": "20261112-145054",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-nadia-se-windup/20261112-144900.webp",
+     "at": "2026-11-12T07:49:01.005Z",
+     "stamp": "20261112-144900",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "tactics-nadia-sw-strike",
@@ -101698,1462 +101737,1230 @@
    "subject": "ฟักทองในไร่ · ยืน/หายใจ · SE",
    "file": "assets/enemies/animations/pumpkin/se-idle.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkin",
    "pose": "idle",
    "view": "SE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.655,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     650,
      650
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.752351,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkin-se-hit",
    "subject": "ฟักทองในไร่ · สะดุ้งเมื่อโดนโจมตี · SE",
    "file": "assets/enemies/animations/pumpkin/se-hit.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkin",
    "pose": "hit",
    "view": "SE",
    "size": [
-    384,
-    384
+    512,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.655,
+   "barHeight": 0.64,
    "animation": {
     "columns": 1,
     "rows": 1,
     "frames": 1,
     "timings": [
-     360
+     400
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.752351,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkin-se-down",
    "subject": "ฟักทองในไร่ · ล้ม · SE",
    "file": "assets/enemies/animations/pumpkin/se-down.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkin",
    "pose": "down",
    "view": "SE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.655,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     240,
      360
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.752351,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkin-se-loot",
    "subject": "ฟักทองในไร่ · ผลฟักทองให้เก็บ (หลังล้ม) · SE",
    "file": "assets/enemies/animations/pumpkin/se-loot.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkin",
    "pose": "loot",
    "view": "SE",
    "size": [
-    384,
-    384
+    512,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.655,
+   "barHeight": 0.64,
    "animation": {
     "columns": 1,
     "rows": 1,
     "frames": 1,
     "timings": [
-     360
+     1000
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.752351,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkin-ne-idle",
    "subject": "ฟักทองในไร่ · ยืน/หายใจ · NE",
    "file": "assets/enemies/animations/pumpkin/ne-idle.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkin",
    "pose": "idle",
    "view": "NE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.655,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     650,
      650
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.752351,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkin-ne-hit",
    "subject": "ฟักทองในไร่ · สะดุ้งเมื่อโดนโจมตี · NE",
    "file": "assets/enemies/animations/pumpkin/ne-hit.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkin",
    "pose": "hit",
    "view": "NE",
    "size": [
-    384,
-    384
+    512,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.655,
+   "barHeight": 0.64,
    "animation": {
     "columns": 1,
     "rows": 1,
     "frames": 1,
     "timings": [
-     360
+     400
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.752351,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkin-ne-down",
    "subject": "ฟักทองในไร่ · ล้ม · NE",
    "file": "assets/enemies/animations/pumpkin/ne-down.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkin",
    "pose": "down",
    "view": "NE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.655,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     240,
      360
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.752351,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkin-ne-loot",
    "subject": "ฟักทองในไร่ · ผลฟักทองให้เก็บ (หลังล้ม) · NE",
    "file": "assets/enemies/animations/pumpkin/ne-loot.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkin",
    "pose": "loot",
    "view": "NE",
    "size": [
-    384,
-    384
+    512,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.655,
+   "barHeight": 0.64,
    "animation": {
     "columns": 1,
     "rows": 1,
     "frames": 1,
     "timings": [
-     360
+     1000
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.752351,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-idle",
    "subject": "บอสฟักทอง · ยืน/หายใจ · SE",
    "file": "assets/enemies/animations/pumpkinBoss/se-idle.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "idle",
    "view": "SE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     650,
      650
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-walk",
    "subject": "บอสฟักทอง · เดิน · SE",
    "file": "assets/enemies/animations/pumpkinBoss/se-walk.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "walk",
    "view": "SE",
    "size": [
-    512,
-    288
+    2048,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     130,
+     130,
+     130,
+     130
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-windup",
    "subject": "บอสฟักทอง · เตรียมโจมตี · SE",
    "file": "assets/enemies/animations/pumpkinBoss/se-windup.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "windup",
    "view": "SE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     260,
+     240
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-strike",
    "subject": "บอสฟักทอง · โจมตี · SE",
    "file": "assets/enemies/animations/pumpkinBoss/se-strike.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "strike",
    "view": "SE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     95,
+     175
     ],
-    "impactMs": 180,
-    "loop": false
+    "loop": false,
+    "impactMs": 60
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-cast",
    "subject": "บอสฟักทอง · ยิงเถาวัลย์พันธนาการ (ระยะไกล) · SE",
    "file": "assets/enemies/animations/pumpkinBoss/se-cast.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "cast",
    "view": "SE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     200,
+     300
     ],
-    "impactMs": 180,
-    "loop": false
+    "loop": false,
+    "impactMs": 150
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-hit",
    "subject": "บอสฟักทอง · สะดุ้งเมื่อโดนโจมตี · SE",
    "file": "assets/enemies/animations/pumpkinBoss/se-hit.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "hit",
    "view": "SE",
    "size": [
     512,
-    288
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
     "columns": 1,
     "rows": 1,
     "frames": 1,
     "timings": [
-     360
+     400
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-down",
    "subject": "บอสฟักทอง · ล้ม · SE",
    "file": "assets/enemies/animations/pumpkinBoss/se-down.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "down",
    "view": "SE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     240,
      360
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-idle",
    "subject": "บอสฟักทอง · ยืน/หายใจ · NE",
    "file": "assets/enemies/animations/pumpkinBoss/ne-idle.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "idle",
    "view": "NE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     650,
      650
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-walk",
    "subject": "บอสฟักทอง · เดิน · NE",
    "file": "assets/enemies/animations/pumpkinBoss/ne-walk.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "walk",
    "view": "NE",
    "size": [
-    512,
-    288
+    2048,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     130,
+     130,
+     130,
+     130
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-windup",
    "subject": "บอสฟักทอง · เตรียมโจมตี · NE",
    "file": "assets/enemies/animations/pumpkinBoss/ne-windup.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "windup",
    "view": "NE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     260,
+     240
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-strike",
    "subject": "บอสฟักทอง · โจมตี · NE",
    "file": "assets/enemies/animations/pumpkinBoss/ne-strike.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "strike",
    "view": "NE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     95,
+     175
     ],
-    "impactMs": 180,
-    "loop": false
+    "loop": false,
+    "impactMs": 60
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-cast",
    "subject": "บอสฟักทอง · ยิงเถาวัลย์พันธนาการ (ระยะไกล) · NE",
    "file": "assets/enemies/animations/pumpkinBoss/ne-cast.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "cast",
    "view": "NE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     200,
+     300
     ],
-    "impactMs": 180,
-    "loop": false
+    "loop": false,
+    "impactMs": 150
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-hit",
    "subject": "บอสฟักทอง · สะดุ้งเมื่อโดนโจมตี · NE",
    "file": "assets/enemies/animations/pumpkinBoss/ne-hit.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "hit",
    "view": "NE",
    "size": [
     512,
-    288
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
     "columns": 1,
     "rows": 1,
     "frames": 1,
     "timings": [
-     360
+     400
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-down",
    "subject": "บอสฟักทอง · ล้ม · NE",
    "file": "assets/enemies/animations/pumpkinBoss/ne-down.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pumpkinBoss",
    "pose": "down",
    "view": "NE",
    "size": [
-    512,
-    288
+    1024,
+    512
    ],
    "frameSize": [
     512,
-    288
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9166666666666666
+    0.95
    ],
-   "barHeight": 0.8426417233560091,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     240,
      360
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.995918,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9166666666666666
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-se-idle",
    "subject": "ด้วงกินใบ · ยืน/หายใจ · SE",
    "file": "assets/enemies/animations/pest/se-idle.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "idle",
    "view": "SE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     650,
      650
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-se-walk",
    "subject": "ด้วงกินใบ · เดิน · SE",
    "file": "assets/enemies/animations/pest/se-walk.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "walk",
    "view": "SE",
    "size": [
-    384,
-    384
+    2048,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     130,
+     130,
+     130,
+     130
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-se-windup",
    "subject": "ด้วงกินใบ · เตรียมโจมตี · SE",
    "file": "assets/enemies/animations/pest/se-windup.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "windup",
    "view": "SE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     260,
+     240
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-se-strike",
    "subject": "ด้วงกินใบ · โจมตี · SE",
    "file": "assets/enemies/animations/pest/se-strike.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "strike",
    "view": "SE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     95,
+     175
     ],
-    "impactMs": 180,
-    "loop": false
+    "loop": false,
+    "impactMs": 60
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-se-hit",
    "subject": "ด้วงกินใบ · สะดุ้งเมื่อโดนโจมตี · SE",
    "file": "assets/enemies/animations/pest/se-hit.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "hit",
    "view": "SE",
    "size": [
-    384,
-    384
+    512,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
     "columns": 1,
     "rows": 1,
     "frames": 1,
     "timings": [
-     360
+     400
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-se-down",
    "subject": "ด้วงกินใบ · ล้ม · SE",
    "file": "assets/enemies/animations/pest/se-down.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "down",
    "view": "SE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     240,
      360
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-ne-idle",
    "subject": "ด้วงกินใบ · ยืน/หายใจ · NE",
    "file": "assets/enemies/animations/pest/ne-idle.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "idle",
    "view": "NE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     650,
      650
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-ne-walk",
    "subject": "ด้วงกินใบ · เดิน · NE",
    "file": "assets/enemies/animations/pest/ne-walk.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "walk",
    "view": "NE",
    "size": [
-    384,
-    384
+    2048,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 4,
     "rows": 1,
-    "frames": 1,
+    "frames": 4,
     "timings": [
-     360
+     130,
+     130,
+     130,
+     130
     ],
-    "impactMs": 180,
     "loop": true
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-ne-windup",
    "subject": "ด้วงกินใบ · เตรียมโจมตี · NE",
    "file": "assets/enemies/animations/pest/ne-windup.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "windup",
    "view": "NE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     260,
+     240
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-ne-strike",
    "subject": "ด้วงกินใบ · โจมตี · NE",
    "file": "assets/enemies/animations/pest/ne-strike.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "strike",
    "view": "NE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
-     360
+     95,
+     175
     ],
-    "impactMs": 180,
-    "loop": false
+    "loop": false,
+    "impactMs": 60
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-ne-hit",
    "subject": "ด้วงกินใบ · สะดุ้งเมื่อโดนโจมตี · NE",
    "file": "assets/enemies/animations/pest/ne-hit.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "hit",
    "view": "NE",
    "size": [
-    384,
-    384
+    512,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
     "columns": 1,
     "rows": 1,
     "frames": 1,
     "timings": [
-     360
+     400
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-pest-ne-down",
    "subject": "ด้วงกินใบ · ล้ม · NE",
    "file": "assets/enemies/animations/pest/ne-down.webp",
    "category": "enemy-animations",
-   "status": "final",
+   "status": "code",
    "enemy": "pest",
    "pose": "down",
    "view": "NE",
    "size": [
-    384,
-    384
+    1024,
+    512
    ],
    "frameSize": [
-    384,
-    384
+    512,
+    512
    ],
    "transparent": true,
    "pivot": [
     0.5,
-    0.9375
+    0.95
    ],
-   "barHeight": 0.4727083333333333,
+   "barHeight": 0.64,
    "animation": {
-    "columns": 1,
+    "columns": 2,
     "rows": 1,
-    "frames": 1,
+    "frames": 2,
     "timings": [
+     240,
      360
     ],
-    "impactMs": 180,
     "loop": false
    },
    "usedIn": "สนามต่อสู้",
-   "note": "ภาพท่าหลักจากชีต 12 พ.ย. 2026; 1 เฟรมต่อท่า ยังไม่มีเฟรมแทรก; สเกลร่วมทุกท่า/สองมุม ท่าล้มไม่ขยายเต็มกรอบ",
-   "artRevision": "v98.418",
-   "renderHeight": 1,
-   "normalization": {
-    "commonScale": 0.622711,
-    "sharedAcross": "all poses and both views per species",
-    "baseline": 0.9375
-   }
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-anim-goat-se-run",
@@ -103600,108 +103407,78 @@
    "subject": "ฟักทองในไร่ · ภาพนิ่งด้านหน้า",
    "file": "assets/enemies/pumpkin.webp",
    "category": "enemies",
-   "status": "final",
+   "status": "code",
    "size": [
-    384,
-    384
+    512,
+    768
    ],
    "transparent": true,
-   "note": "ภาพนิ่งจากท่า idle ใช้สเกลและจุดยึดเดียวกับท่าต่อสู้",
-   "artRevision": "v98.418",
-   "pivot": [
-    0.5,
-    0.9375
-   ]
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-pumpkin-back",
    "subject": "ฟักทองในไร่ · ภาพนิ่งด้านหลัง",
    "file": "assets/enemies/pumpkin-back.webp",
    "category": "enemies",
-   "status": "final",
+   "status": "code",
    "size": [
-    384,
-    384
+    512,
+    768
    ],
    "transparent": true,
-   "note": "ภาพนิ่งจากท่า idle ใช้สเกลและจุดยึดเดียวกับท่าต่อสู้",
-   "artRevision": "v98.418",
-   "pivot": [
-    0.5,
-    0.9375
-   ]
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-pumpkinBoss",
    "subject": "บอสฟักทอง · ภาพนิ่งด้านหน้า",
    "file": "assets/enemies/pumpkinBoss.webp",
    "category": "enemies",
-   "status": "final",
+   "status": "code",
    "size": [
     512,
-    288
+    768
    ],
    "transparent": true,
-   "note": "ภาพนิ่งจากท่า idle ใช้สเกลและจุดยึดเดียวกับท่าต่อสู้",
-   "artRevision": "v98.418",
-   "pivot": [
-    0.5,
-    0.9166666666666666
-   ]
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-pumpkinBoss-back",
    "subject": "บอสฟักทอง · ภาพนิ่งด้านหลัง",
    "file": "assets/enemies/pumpkinBoss-back.webp",
    "category": "enemies",
-   "status": "final",
+   "status": "code",
    "size": [
     512,
-    288
+    768
    ],
    "transparent": true,
-   "note": "ภาพนิ่งจากท่า idle ใช้สเกลและจุดยึดเดียวกับท่าต่อสู้",
-   "artRevision": "v98.418",
-   "pivot": [
-    0.5,
-    0.9166666666666666
-   ]
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-pest",
    "subject": "ด้วงกินใบ · ภาพนิ่งด้านหน้า",
    "file": "assets/enemies/pest.webp",
    "category": "enemies",
-   "status": "final",
+   "status": "code",
    "size": [
-    384,
-    384
+    512,
+    768
    ],
    "transparent": true,
-   "note": "ภาพนิ่งจากท่า idle ใช้สเกลและจุดยึดเดียวกับท่าต่อสู้",
-   "artRevision": "v98.418",
-   "pivot": [
-    0.5,
-    0.9375
-   ]
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "enemy-pest-back",
    "subject": "ด้วงกินใบ · ภาพนิ่งด้านหลัง",
    "file": "assets/enemies/pest-back.webp",
    "category": "enemies",
-   "status": "final",
+   "status": "code",
    "size": [
-    384,
-    384
+    512,
+    768
    ],
    "transparent": true,
-   "note": "ภาพนิ่งจากท่า idle ใช้สเกลและจุดยึดเดียวกับท่าต่อสู้",
-   "artRevision": "v98.418",
-   "pivot": [
-    0.5,
-    0.9375
-   ]
+   "note": "ช่องรอภาพ: ตอนนี้วาดด้วยโค้ดชั่วคราว (js/code-monsters.js) · อัปโหลดไฟล์ใน Asset Studio แล้วตั้งสถานะ \"ภาพจริง\" เกมจะใช้ภาพแทนโค้ดทันที"
   },
   {
    "id": "look-male-characters-hero-male-idle-se",
@@ -106523,231 +106300,6 @@
     ],
     "flipX": false
    }
-  },
-  {
-   "id": "tactic-card-thunder",
-   "file": "assets/cards/tactic-thunder.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    312
-   ],
-   "transparent": false,
-   "subject": "อัสนีบาต",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-backstab",
-   "file": "assets/cards/tactic-backstab.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    333,
-    312
-   ],
-   "transparent": false,
-   "subject": "แทงข้างหลัง",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-dive",
-   "file": "assets/cards/tactic-dive.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    312
-   ],
-   "transparent": false,
-   "subject": "กระโจนฟาด",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-tide",
-   "file": "assets/cards/tactic-tide.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    311
-   ],
-   "transparent": false,
-   "subject": "คลื่นซัด",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-formation",
-   "file": "assets/cards/tactic-formation.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    333,
-    311
-   ],
-   "transparent": false,
-   "subject": "จู่โจมประสาน",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-counter",
-   "file": "assets/cards/tactic-counter.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    311
-   ],
-   "transparent": false,
-   "subject": "ท่าสวนกลับ",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-evade",
-   "file": "assets/cards/tactic-evade.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    312
-   ],
-   "transparent": false,
-   "subject": "ก้าวหลบ",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-firstAid",
-   "file": "assets/cards/tactic-firstAid.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    333,
-    312
-   ],
-   "transparent": false,
-   "subject": "ยาฉุกเฉิน",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-ambush",
-   "file": "assets/cards/tactic-ambush.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    312
-   ],
-   "transparent": false,
-   "subject": "ซุ่มโจมตี",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-rockfall",
-   "file": "assets/cards/tactic-rockfall.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    311
-   ],
-   "transparent": false,
-   "subject": "หินถล่ม",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-perch",
-   "file": "assets/cards/tactic-perch.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    333,
-    311
-   ],
-   "transparent": false,
-   "subject": "ยึดที่สูง",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-climb",
-   "file": "assets/cards/tactic-climb.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    311
-   ],
-   "transparent": false,
-   "subject": "ปีนป่าย",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-chaosBolt",
-   "file": "assets/cards/tactic-chaosBolt.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    312
-   ],
-   "transparent": false,
-   "subject": "ประกายโกลาหล",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-chaosRend",
-   "file": "assets/cards/tactic-chaosRend.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    333,
-    312
-   ],
-   "transparent": false,
-   "subject": "ฉีกกระแสโกลาหล",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
-  },
-  {
-   "id": "tactic-card-chaosWard",
-   "file": "assets/cards/tactic-chaosWard.webp",
-   "category": "tactic-cards",
-   "status": "final",
-   "size": [
-    332,
-    312
-   ],
-   "transparent": false,
-   "subject": "ผนึกโกลาหล",
-   "artRevision": "v98.418",
-   "usedIn": "ภาพประกอบการ์ดสนามตาราง",
-   "note": "ภาพจริงจากชีต 15 ใบ 12 พ.ย. 2026; เก็บขนาดพิกเซลจริง ไม่ขยายไฟล์"
   }
  ],
  "studioReviews": {
@@ -108969,12 +108521,12 @@
    "approvedAt": "2026-11-04T04:04:44.122Z"
   },
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwcast2-m-1\",\"assets/tactics/imported/idle-sw-mwcast2-m/frame-01.png\",0,\"mwcast2-m\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
    "approvedAt": "2026-11-05T01:23:58.600Z"
   },
   "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mwcast2-m-1\",\"assets/tactics/imported/idle-sw-mwcast2-m/frame-01.png\",0,\"mwcast2-m\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
    "approvedAt": "2026-11-05T01:23:58.600Z"
   },
@@ -111101,6 +110653,28 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-06T06:49:53.544Z"
+  },
+  "[\"enemy-anim-bandit-se-idle\",\"SW\",true,[[\"enemy-anim-bandit-se-idle\",\"assets/enemies/animations/bandit/se-idle.webp\",0,\"v22\",[0,0,512,512],650,true,[0.5,0.95],[512,512],1],[\"enemy-anim-bandit-se-idle\",\"assets/enemies/animations/bandit/se-idle.webp\",1,\"v22\",[512,0,512,512],650,true,[0.5,0.95],[512,512],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"enemy-anim-bandit-se-idle\",\"SW\",true,[[\"enemy-anim-bandit-se-idle\",\"assets/enemies/animations/bandit/se-idle.webp\",0,\"mw8y27pu\",[0,0,512,512],650,true,[0.5,0.95],[512,512],1],[\"enemy-anim-bandit-se-idle\",\"assets/enemies/animations/bandit/se-idle.webp\",1,\"mw8y27pu\",[512,0,512,512],650,true,[0.5,0.95],[512,512],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "approvedAt": "2026-11-09T07:33:04.903Z"
+  },
+  "[\"enemy-anim-bandit-se-idle\",\"SW\",true,[[\"enemy-anim-bandit-se-idle\",\"assets/enemies/animations/bandit/se-idle.webp\",0,\"mw8y2ryc\",[0,0,512,512],650,true,[0.5,0.95],[512,512],1],[\"enemy-anim-bandit-se-idle\",\"assets/enemies/animations/bandit/se-idle.webp\",1,\"mw8y2ryc\",[512,0,512,512],650,true,[0.5,0.95],[512,512],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-09T07:33:31.147Z"
+  },
+  "[\"enemy-anim-goat-se-walk\",\"SW\",true,[[\"enemy-anim-goat-se-walk\",\"assets/enemies/animations/goat/se-walk.webp\",0,\"v1\",[0,0,512,512],130,true,[0.5,0.95],[512,512],1],[\"enemy-anim-goat-se-walk\",\"assets/enemies/animations/goat/se-walk.webp\",1,\"v1\",[512,0,512,512],130,true,[0.5,0.95],[512,512],1],[\"enemy-anim-goat-se-walk\",\"assets/enemies/animations/goat/se-walk.webp\",2,\"v1\",[1024,0,512,512],130,true,[0.5,0.95],[512,512],1],[\"enemy-anim-goat-se-walk\",\"assets/enemies/animations/goat/se-walk.webp\",3,\"v1\",[1536,0,512,512],130,true,[0.5,0.95],[512,512],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-mil-sw-windup\",\"SW\",true,[[\"tactics-mil-sw-windup\",\"assets/tactics/mil_sw_windup.webp\",0,\"20261112-145207\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
   }
  },
  "studioClipHistory": {
@@ -113294,6 +112868,48 @@
        ]
       },
       "archive": "assets/_versions/unified/mw4gu6fd/tactics-sigrid-ne-idle.png"
+     }
+    ]
+   }
+  ],
+  "static:tactics-mil-sw-windup": [
+   {
+    "at": "2026-11-12T08:01:28.306Z",
+    "entries": [
+     {
+      "asset": {
+       "id": "tactics-mil-sw-windup",
+       "file": "assets/tactics/mil_sw_windup.webp",
+       "category": "allies",
+       "status": "final",
+       "size": [
+        384,
+        384
+       ],
+       "transparent": true,
+       "subject": "Mil, a small cheerful junior swordsman with a big scarf, grid-battle sprite facing down-left (SW), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup",
+       "prompt": "Same chibi/SD anime adventurer boy as the reference image (brown messy hair, amber eyes, white shirt, brown vest, green cape), full body, clean cel-shaded game sprite, consistent proportions and scale with the reference, feet at the bottom centre, nothing cropped. Subject: Mil, a small cheerful junior swordsman with a big scarf, grid-battle sprite facing up-right (NE, back view), pose \"windup\" (winding up an attack), empty hands (weapons are attached by the game), same size, framing and pose as the hero sheet tactics-hero-ne-windup. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+       "usedIn": "เพื่อนร่วมทีม mil ในสนาม",
+       "note": "ช่องว่าง: ยังไม่มีภาพ — ใส่ไฟล์ตามชื่อนี้ได้เลย",
+       "artRevision": "20261112-145207",
+       "history": [
+        {
+         "file": "assets/_versions/tactics-mil-sw-windup/20261112-145207.webp",
+         "at": "2026-11-12T07:52:07.882Z",
+         "stamp": "20261112-145207",
+         "status": "final",
+         "note": "ก่อนใส่ภาพใหม่"
+        },
+        {
+         "file": "assets/_versions/tactics-mil-sw-windup/20261112-132401.webp",
+         "at": "2026-11-12T06:24:01.126Z",
+         "stamp": "20261112-132401",
+         "status": "final",
+         "note": "ก่อนใส่ภาพใหม่"
+        }
+       ]
+      },
+      "archive": "assets/_versions/unified/mwd9ea9c/tactics-mil-sw-windup.png"
      }
     ]
    }
