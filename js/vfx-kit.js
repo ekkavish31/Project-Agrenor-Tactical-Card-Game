@@ -36,8 +36,8 @@
 
   /* ---------- the effects ---------- */
   const FX = {
-    sword(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), dir = a.x <= p.x ? 1 : -1, cy = chest(p, cw), sw = eo(seg(t, 0, .34)), al = 1 - seg(t, .32, .8), a0 = dir > 0 ? -2.3 : -.85, a1 = a0 + dir * 2.5 * sw;
-      add(g, () => { crescent(g, p.x - dir * W * .25, cy + W * .1, W * .78, a0, a1, W * .2, C.white, C.steel, al); crescent(g, p.x - dir * W * .25, cy + W * .1, W * .7, a0, a1, W * .42, C.steel, C.gold, al * .45);
+    sword(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), dir = a.x <= p.x ? 1 : -1, cy = chest(p, cw), sw = eo(seg(t, 0, .34)), al = 1 - seg(t, .32, .8), a0 = dir > 0 ? Math.PI + 2.3 : -2.3, a1 = a0 - dir * 2.5 * sw;
+      add(g, () => { crescent(g, p.x + dir * W * .25, cy + W * .1, W * .78, a0, a1, W * .2, C.white, C.steel, al); crescent(g, p.x + dir * W * .25, cy + W * .1, W * .7, a0, a1, W * .42, C.steel, C.gold, al * .45);
         const hx = p.x, k = seg(t, .22, 1); glow(g, hx, cy, W * .85 * bell(seg(t, .16, .55)), C.white, .55); if (k > 0) { sparks(g, e, 10, hx, cy, W * .95, W * .035, k, C.gold, { a0: dir > 0 ? -1.2 : Math.PI - 1.2, arc: 2.4, grav: W * .25 }); star4(g, hx, cy, W * .55 * (1 - k), C.white, 1 - k, k) } }); return true },
     knife(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), cy = chest(p, cw);
       add(g, () => { for (let i = 0; i < 2; i++) { const tt = seg(t, i * .2, i * .2 + .5); if (!tt) continue; const an = (i ? .9 : -.9) + (R(e, i) - .5) * .3, len = W * .95, sw = eo(seg(tt, 0, .45)), al = 1 - seg(tt, .4, 1), cx = Math.cos(an), sy = Math.sin(an);
