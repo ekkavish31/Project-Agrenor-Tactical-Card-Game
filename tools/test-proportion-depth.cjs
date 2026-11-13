@@ -130,4 +130,10 @@ assert.ok(Math.abs(PD.headFactor(1.9, 1.7) * PD.thickFactor(1.9, 1.7) - 1.9 / 1.
   assert.equal(PD.headUnit({ pts: { SW: { ...base, crown: [.5, .05] } } }, 'SW', 100, 100).src, 'crown'); assert.equal(PD.headUnit({ pts: { SW: base } }, 'SW', 100, 100).src, 'estimate'); assert.equal(PD.headUnit({ pts: { SW: { chin: [.5, .3] } } }, 'SW'), null);
   assert.ok(PD.POINTS[3][0] === 'crown' && PD.OPTIONAL.includes('crown') && PD.CENTRE.includes('crown'), 'crown follows the chin · optional · centre point');
   const tilt = { pts: { SW: { ...base, crown: [.62, .05] } } }, flat = { pts: { SW: { ...base, crown: [.5, .05] } } }; assert.ok(PD.headUnit(tilt, 'SW', 100, 100).px > PD.headUnit(flat, 'SW', 100, 100).px, 'a tilted head is measured as a distance') }
+// v98.452 · hand-measured thickness: two clicked points across one bone ÷ head height
+{ const P = { eyeL: [.45, .2], eyeR: [.55, .2], chin: [.5, .26], crown: [.5, .05], wdA: [.40, .7], wdB: [.46, .7] };
+  const wd = PD.widthOf({ pts: { SW: P } }, 'SW', 100, 100); assert.ok(wd && Math.abs(wd.px - 6) < 1e-9 && Math.abs(wd.ratio - 6 / 21) < 1e-9 && wd.own && wd.headSrc === 'crown', 'width 6 px ÷ head 21 px');
+  const mir = PD.widthOf({ pts: { SW: P } }, 'SE', 100, 100); assert.ok(mir === null || !mir.own, 'the opposite direction only borrows (not own)');
+  assert.equal(PD.widthOf({ pts: { SW: { ...P, wdB: undefined } } }, 'SW'), null, 'one point is not a width'); assert.equal(PD.widthOf({ pts: { SW: { wdA: [.4, .7], wdB: [.5, .7] } } }, 'SW'), null, 'no head → no unit');
+  assert.ok(PD.pixelPoints({ pts: { SW: P } }, 'SW', 100, 100).wdA, 'the width points travel with the other points when a picture is warped') }
 console.log('proportion girth: passed');

@@ -79,6 +79,11 @@
     return out;
   }
   const spans = (rec, dir) => metrics(rec, dir).proportions;
+  /* v98.452 · THICKNESS by hand: the player clicks TWO points across one bone (rec.pts[dir].wdA / wdB — extra datum points, so a warp moves them with the picture).
+     ratio = distance ÷ head height (crown → chin). A direction without its own pair borrows the mirrored pair of the opposite direction. null = no pair. */
+  const WIDTH_KEYS = ['wdA', 'wdB'];
+  function widthOf(rec, dir, w = 384, h = 384) { const { pts: P, own } = pointsFor(rec, dir), a = P.wdA, b = P.wdB, u = headUnit(rec, dir, w, h); if (!a || !b || !u) return null;
+    const px = Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h); return { px, ratio: px / u.px, headSrc: u.src, own: own.has('wdA') && own.has('wdB'), lines: [[a[0] * w, a[1] * h, b[0] * w, b[1] * h]] } }
   /* v98.451 · how far above the eyes this character's placed crowns sit, in eye→chin lengths (average of every picture that has crown + eyes + chin; the guide ellipse uses it) */
   function crownRatio(id, w = 384, h = 384) { const out = []; try { const d = all()[id] || {}; for (const f of Object.values(d)) for (const r of Object.values(f || {})) for (const dir of DIRS) { const P = r?.pts?.[dir]; if (!P?.crown || !P.chin || !P.eyeL || !P.eyeR) continue; const e = mid(P.eyeL, P.eyeR), D = (a, b) => Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h), F = D(e, P.chin); if (F > 2 && P.chin[1] > e[1]) out.push(D(P.crown, e) / F) } } catch (err) { }
     return out.length ? { k: out.reduce((a, b) => a + b, 0) / out.length, n: out.length } : null }
@@ -306,6 +311,6 @@
     if (!Object.keys(R0).length) delete d[id];
     return d;
   }
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, headUnit, crownRatio, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, headUnit, crownRatio, widthOf, WIDTH_KEYS, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
