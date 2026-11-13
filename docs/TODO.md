@@ -798,7 +798,7 @@
 - [x] ตัดรายการภาพปุ่มเก่าที่ไม่มีไฟล์ 6 รายการออกจาก manifest (ไม่ต้องเจน)
 - [x] (v98.437) เทสต์ครอบทุกกิจกรรม `tools/test-station-actions.cjs` (--write/--compare) · ถอด editor/developer/card-drag/interface-v02 + CSS 7 ไฟล์ + ภาพ 14 ไฟล์ · manifest `retired` กัน Cart เก่า
 - [x] (v98.440) รอบ 2: `render()` ไม่วาดเปลือกเก่า · ถอดการต่อสู้ในหน้า + tactics-bridge + hud-v03 + CSS 3 ไฟล์ · คีย์ 1–8 ไม่สั่งกิจกรรม · ยังเหลือ DOM เปลือกใน index.html (ลบได้เมื่อไม่มีฟังก์ชันไหนเขียนถึง — `$('hand')` `$('world')` `$('roster')` ยังถูกอ้างในฟังก์ชันแผง/คิดผลบางตัว)
-- [ ] รอบ 3: รวม `location-actions` + `journey-ui` (+ `journey-core`) เป็น `js/station-actions.js` และย้ายตัวเลขงานจาก `cards-data`/`defs` (C1) — เป็นการจัดไฟล์ ไม่เปลี่ยนกติกา · ใช้ `test-station-actions --compare`
+- [x] (v98.441) รอบ 3: `location-actions` + `journey-ui` → `js/station-actions.js` · ยังเหลือ C1 (ตัวเลขงานโรงตียังอ่านจาก `cards-data`/`defs`) และ `journey-core` (freshness/autoSmithStep — ใช้ทั้งเกม)
 - [ ] ขั้น 2 ถอดเปลือก index.html + สคริปต์เก่า 14 ตัว → archive/old-scene · ย้ายภาพที่เหลือแต่เปลือกเก่า
 - [ ] ขั้น 3 ตรวจ check-places --browser · e2e · สแกน asset-usage ใหม่
 - ⚠ อย่าสั่งเจนภาพ "ปุ่มกิจกรรม" ใหม่ ก่อนมีผู้ใช้ยืนยันว่าปุ่มนั้นอยู่ในเกมปัจจุบัน

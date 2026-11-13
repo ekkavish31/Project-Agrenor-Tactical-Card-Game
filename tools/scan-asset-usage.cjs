@@ -39,7 +39,8 @@ const PLACE = {
   'village-asset-edit': 'ตัวแก้ไขหมู่บ้าน', 'village-layout-v67': 'ผังหมู่บ้าน', 'scale-lineup': 'หน้าเทียบสเกล', 'asset-studio': 'Asset Studio', 'nav-icons': 'ปุ่มเมนู', 'game-bgm': 'เพลง', 'town-hud': 'แถบสถานะหมู่บ้าน',
   'hero-variant': 'ตัวเอก', 'hero-motion': 'ตัวเอก', 'hero-follower': 'น้อง/พี่ที่เดินตาม', 'monster-animation': 'มอนสเตอร์', 'scene-art': 'ภาพฉากเล่าเรื่อง', 'battle-vfx': 'เอฟเฟกต์ต่อสู้',
 };
-const OLD_JS = new Set(['location-actions', 'interface-v02', 'journey-ui', 'journey-core', 'paper-cards', 'card-drag', 'developer', 'editor', 'hud-v03', 'collection-v03', 'layout-v08', 'village-core', 'village-ui']);
+/* v98.441 · the old button scene's drawing code is archived (archive/old-scene/js); what is left in js/ is used by the game, so every script counts */
+const OLD_JS = new Set([]);
 
 const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name).slice(ROOT.length + 1)]);
 const files = walk(path.join(ROOT, 'assets')).sort();

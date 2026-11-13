@@ -5240,3 +5240,7 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - **ถอดการต่อสู้ในหน้าแบบเก่า:** ลากไพ่/ใช้ไพ่/ประกาย/เดินเข้าหาหุ่น (`useCard` `burst` `moveHero` `selectCard` `flipCard` `renderHand` ฯลฯ) ภาพนักผจญภัยถืออาวุธ การ์ดโฟกัส และ `tactics-bridge.js` ทั้งไฟล์ (TacticsLab ถูกเก็บไปตั้งแต่ v98.275) · ปุ่ม/คำสั่ง "ฝึก" ทุกทางเปิดลานฝึกจริง (`training-flat.js`) · เซฟที่ค้างโหมดต่อสู้ในหน้าถูกพากลับโรงตี (save-migrate ขั้น 16)
 - ถอด `hud-v03.js` + CSS `tactics` `combat-ui` `location-actions` + `<aside id="devPanel">` · ทั้งหมดอยู่ใน `archive/old-scene/`
 - เหลือ (ตั้งใจ): `location-actions`/`journey-ui`/`journey-core`/`village-core`/`village-ui` คือกติกากิจกรรมและแผงเมนูที่ใช้จริง · DOM เปลือกใน `index.html` ยังอยู่เพราะ `#panel`/`#reward`/`#tacticsLayer` ถูกอ้างจากระบบจริงและบางฟังก์ชันที่เหลือ
+
+## v98.441 · 13 พ.ย. 2026 — รวมกิจกรรมจุดทำงานเป็นไฟล์เดียว `js/station-actions.js`
+- ส่วนที่เกมยังใช้ของ `location-actions.js` + `journey-ui.js` (รายการกิจกรรมต่อสถานที่ · `runPlaceAction` · พัก/กินข้าว · ทำอัตโนมัติ/ยกเลิกงาน · ข้อความความสดชื่น) รวมเป็น `js/station-actions.js` (≈10 KB) ไฟล์เดิมย้ายไป `archive/old-scene/js/` · กติกาเท่าเดิม (`test-station-actions --compare` ผ่าน 25 ขั้น) · e2e ผ่าน
+- `tools/scan-asset-usage.cjs`: เลิกรายการ "สคริปต์ฉากเก่าไม่นับ" — ที่เหลือใน js/ ใช้งานจริงทั้งหมด ภาพที่สคริปต์เหล่านี้อ้างจึงนับว่าใช้อยู่
