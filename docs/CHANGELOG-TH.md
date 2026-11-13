@@ -5279,3 +5279,10 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - Cart ทิ้งทั้งหมดใช้ dialog ยืนยันใน top layer เหนือ Cart และ await ผลโดยตรง เลิกใช้ confirm/replay ของเกม
 - ล้างไฟล์/ค่ารอส่ง/ประวัติ Cart/base manifest ใน transaction เดียว แจ้ง error หากเขียนไม่ได้ และล้าง build callbacks ของหน้าอื่นด้วย BroadcastChannel; ค่าตั้งค่า localStorage ยังคงเดิม
 - ตรวจ JavaScript และ inline scripts ผ่าน; test-cart-clear ผ่าน (Cancel/Esc/Confirm, transaction failure, cross-frame invalidation); ชุด test-*.cjs รวม 48/54 ผ่าน อีก 6 ชุดติดข้อจำกัด/ปัญหาเดิมตาม v98.445; Chromium เปิดไม่ได้และ cloud browser ต่อ local server ไม่ได้ จึงยังไม่มี screenshot ยืนยัน
+
+
+## v98.447 · 13 พ.ย. 2026
+- วัดเว็บจริง v98.446 พบเต็มจอ outer สูง 936px แต่ dock-body/iframe สูง 0px เพราะ body.anim-mode #lineupDock ชนะ selector mode จนกลับเป็น display:block
+- เปลี่ยน mode เป็น grid พร้อม selector ที่ชนะกฎเดิม จัด bar และพื้นที่ iframe แยกชัดเจน แก้โหมดยุบ/แสดงทั้งโซนให้ไม่ค้างความสูง
+- เพิ่ม loading จำนวนภาพ / error พร้อมลองใหม่ จำกัดรอภาพ 15 วินาที และ dock ไม่รอภาพอาคาร/ธรรมชาติที่ไม่ได้ใช้ แสดง cast ก่อนโหลด monster จบ
+- Syntax JS/inline ผ่าน; test-*.cjs รอบรวม 47/54 (garden ล้มแบบสุ่มแล้วรันซ้ำผ่าน 90 checks); อีก 6 ชุดติดปัญหาเดิมตาม v98.446

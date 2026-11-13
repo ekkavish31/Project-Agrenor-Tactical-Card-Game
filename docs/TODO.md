@@ -160,6 +160,8 @@
 
 ## 3. ทำแล้ว (สรุปสั้น · รายละเอียดอยู่ใน CHANGELOG)
 
+- [x] v98.447 แก้ blank Scale Lineup: CSS mode ต้องชนะ body.anim-mode เดิม วัดจากเว็บจริงพบ iframe สูง 0px; ใช้ grid จัดความสูง เพิ่ม loading/error/retry และแสดง cast ก่อนโหลด monster จบ
+
 - [x] v98.446 แก้ Cart ทิ้งทั้งหมด: ยืนยันเหนือ Cart รอผลจริง ล้าง IndexedDB transaction เดียวและ build callbacks ทุกเฟรม; แก้ iframe Scale Lineup เต็มจอ/โหมดยุบสูงเพียง 150px
 
 - [x] v98.445 Scale Lineup: เต็มจอเฉพาะโซน · ยุบแถวตัวละครเพื่อคืนพื้นที่แก้ไข · จัด Before/After กับ controls ให้พอดีพื้นที่จอ

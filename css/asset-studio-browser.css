@@ -140,15 +140,13 @@ body.anim-mode #lineupDock{display:block}
 /* v98.415 · drag a cell onto another to swap the two sets */
 .clip-cell[draggable=true]{cursor:grab}.clip-cell.dragging{opacity:.45}.clip-cell.drop-ok{outline:3px dashed #2f9a4a;outline-offset:-2px;background:#e3f6e4}
 
-/* v98.445 · keep the editor inside the available workspace. */
-#lineupDock.edit-fit{display:flex;flex-direction:column;margin-bottom:0}
-#lineupDock.edit-fit .dock-body{flex:1;min-height:0;max-height:none;resize:none;height:auto!important}
-#lineupDock.lineup-fullscreen{position:fixed;inset:0;z-index:1000;margin:0;border-radius:0;display:flex;flex-direction:column;height:100dvh!important}
-#lineupDock.lineup-fullscreen .dock-body{display:block;flex:1;height:auto!important;min-height:0;max-height:none;resize:none}
-#lineupDock.lineup-fullscreen .dock-bar{flex:none;flex-wrap:wrap}
-@media(max-width:1000px){#lineupDock .dock-bar small{display:none}}
-
-/* v98.446 · an iframe's percentage height cannot resolve against an auto-height flex item.
-   Pin it to a positioned body with a definite flex allocation instead of its 150px intrinsic height. */
-#lineupDock.edit-fit .dock-body,#lineupDock.lineup-fullscreen .dock-body{position:relative;flex:1 1 0;overflow:hidden}
+/* v98.447 · mode selectors must outrank body.anim-mode #lineupDock {display:block}.
+   Grid gives the absolute iframe a real remaining-height track in both modes. */
+body.anim-mode #lineupDock.edit-fit,body.anim-mode #lineupDock.lineup-fullscreen{display:grid;grid-template-rows:auto minmax(0,1fr);margin-bottom:0}
+#lineupDock.lineup-fullscreen{position:fixed;inset:0;z-index:1000;margin:0;border-radius:0;height:100dvh!important}
+#lineupDock.edit-fit .dock-body,#lineupDock.lineup-fullscreen .dock-body{position:relative;height:auto!important;min-height:0;max-height:none;resize:none;overflow:hidden}
 #lineupDock.edit-fit #lineupDockFrame,#lineupDock.lineup-fullscreen #lineupDockFrame{position:absolute;inset:0;width:100%;height:100%}
+#lineupDock.lineup-fullscreen .dock-bar{flex-wrap:wrap}
+#lineupDock.min:not(.lineup-fullscreen){height:auto!important;display:block}
+#lineupDock.min:not(.lineup-fullscreen) .dock-body{display:none}
+@media(max-width:1000px){#lineupDock .dock-bar small{display:none}}
