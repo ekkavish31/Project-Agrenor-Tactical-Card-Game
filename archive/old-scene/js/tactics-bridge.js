@@ -79,4 +79,3 @@ document.addEventListener('click',e=>{if(e.target.closest?.('#tacticsLayer .tact
 window.openTactical=openTactical;window.closeTactical=closeTactical;
 })();
 // Keep the quest pill just under the location title (it used to cover long titles).
-(function(){const fit=()=>{let w=document.getElementById('world'),t=document.getElementById('placeTitle');if(!w||!t)return;let top=t.getBoundingClientRect().bottom-w.getBoundingClientRect().top+6;if(top>10)w.style.setProperty('--quest-top',Math.round(top)+'px')};const base=render;render=function(){base();fit()};window.addEventListener('resize',fit);fit()})();

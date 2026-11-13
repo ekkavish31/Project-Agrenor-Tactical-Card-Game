@@ -1,20 +1,17 @@
 /* v95.00 · Training ground on the same card battle as the world map (js/flat-battle.js via town-battle).
    Before this the scarecrow training used the old tactics engine (tactics-core / tactics-ui), so what the player practised was
    not how real fights work. Now: three scarecrows that never hit back, your deck, your companions, heights of the village square.
-   • Costs 30 minutes and a little freshness; needs to be at the forge (trainingBlock in js/tactics-bridge.js).
+   • Costs 30 minutes and a little freshness; (the forge-only check lived inside the closure of the archived js/tactics-bridge.js and was never reachable from here, so training opens anywhere — unchanged).
    • Gives hero XP through js/progression.js — 6 per scarecrow, at most 36 a day (so training helps early but cannot replace
      adventure); companions who trained get 80 %.
    The old engine is still loaded for the archived expedition/adventure paths only (TODO C3). */
 (function (root) {
   'use strict';
-  if (typeof s === 'undefined' || typeof openTactical !== 'function') return;
+  if (typeof s === 'undefined') return;
   const XP_EACH = 6, XP_DAY = 36, MINUTES = 30, FATIGUE = 6;
-  const baseOpen = openTactical;
   function toast(msg) { try { root.PlayerShop?.toast?.(msg) } catch (e) { } try { $('message').textContent = msg } catch (e) { } }
   function open() {
     if (document.getElementById('trainBattle')) return;
-    const why = typeof trainingBlock === 'function' ? trainingBlock() : '';
-    if (why) { toast('ยังฝึกไม่ได้: ' + why); return }
     const g = s, v = s.village;
     const party = (v.party || []).filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1)).join(',');
     const heroQ = root.Progression ? '&' + Progression.battleParam(g, Progression.recipes) : '';
@@ -37,6 +34,10 @@
     addEventListener('message', done); document.body.appendChild(fr);
   }
   /* training only — the archived expedition / adventure calls keep the old engine */
-  openTactical = function (opts = {}) { if (opts.expedition || opts.adventure) return baseOpen.apply(this, arguments); open() };
+  /* v98.440 · the old grid-battle bridge (js/tactics-bridge.js: TacticsLab, expedition, #tacticsLayer) is archived — training is the only battle opened from here */
+  root.openTactical = function () { open() };
+  /* the scarecrow / "ฝึก" buttons of the old scene went through changeMode('battle') into an in-page battle: send them to the real training battle instead */
+  root.toggleTraining = function () { open() };
+  if (typeof root.changeMode === 'function') { const baseMode = root.changeMode; root.changeMode = function (m) { if (m === 'battle') return open(); return baseMode.apply(this, arguments) } }
   root.TrainingFlat = { open, XP_EACH, XP_DAY };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

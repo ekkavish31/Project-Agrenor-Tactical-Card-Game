@@ -797,8 +797,8 @@
 ## 27. ถอดระบบปุ่มกดเก่า (12 พ.ย. 2026 · v98.434 · รอผู้ใช้อนุมัติขั้น 1) — ดู docs/LEGACY-BUTTON-SYSTEM-TH.md
 - [x] ตัดรายการภาพปุ่มเก่าที่ไม่มีไฟล์ 6 รายการออกจาก manifest (ไม่ต้องเจน)
 - [x] (v98.437) เทสต์ครอบทุกกิจกรรม `tools/test-station-actions.cjs` (--write/--compare) · ถอด editor/developer/card-drag/interface-v02 + CSS 7 ไฟล์ + ภาพ 14 ไฟล์ · manifest `retired` กัน Cart เก่า
-- [ ] รอบ 2: เปลือก `index.html` (`<main>` สถานี มือไพ่ แท่นกิจกรรม roster) ยังถูก `render()` วาดทุกครั้งทั้งที่ซ่อนอยู่ — ตัด wrapper `render` ใน `location-actions` `journey-ui` `village-ui` `layout-v08` `hud-v03` `paper-cards` ทีละตัว แล้วลบ DOM ที่ไม่มีใครเขียน · ใช้ `test-station-actions --compare` + e2e ทุกครั้ง
-- [ ] รอบ 3: ย้าย `placeActions`/`runPlaceAction` + ตัวเลขงาน (`cards-data`/`defs`) ไป `js/station-actions.js` (แก้ C1) · กิ่งต่อสู้ในหน้า (`s.mode==='battle'`: `adventureSprite` `performWeaponStrike` `useCard`) ตรวจว่ายังเข้าได้ไหมก่อนถอด
+- [x] (v98.440) รอบ 2: `render()` ไม่วาดเปลือกเก่า · ถอดการต่อสู้ในหน้า + tactics-bridge + hud-v03 + CSS 3 ไฟล์ · คีย์ 1–8 ไม่สั่งกิจกรรม · ยังเหลือ DOM เปลือกใน index.html (ลบได้เมื่อไม่มีฟังก์ชันไหนเขียนถึง — `$('hand')` `$('world')` `$('roster')` ยังถูกอ้างในฟังก์ชันแผง/คิดผลบางตัว)
+- [ ] รอบ 3: รวม `location-actions` + `journey-ui` (+ `journey-core`) เป็น `js/station-actions.js` และย้ายตัวเลขงานจาก `cards-data`/`defs` (C1) — เป็นการจัดไฟล์ ไม่เปลี่ยนกติกา · ใช้ `test-station-actions --compare`
 - [ ] ขั้น 2 ถอดเปลือก index.html + สคริปต์เก่า 14 ตัว → archive/old-scene · ย้ายภาพที่เหลือแต่เปลือกเก่า
 - [ ] ขั้น 3 ตรวจ check-places --browser · e2e · สแกน asset-usage ใหม่
 - ⚠ อย่าสั่งเจนภาพ "ปุ่มกิจกรรม" ใหม่ ก่อนมีผู้ใช้ยืนยันว่าปุ่มนั้นอยู่ในเกมปัจจุบัน

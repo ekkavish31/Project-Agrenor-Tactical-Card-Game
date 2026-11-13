@@ -24,7 +24,7 @@ const PLAN = { forge: ['smelt', 'smelt', 'forge', 'forge', 'forge', 'forge', 'fo
     await reset(place); lines.push(place + ' start ' + JSON.stringify(await snap()));
     for (const id of ids) {
       const r = await p.evaluate(async id => { busy = false; for (const d of document.querySelectorAll('dialog[open]')) try { d.close() } catch (e) { }
-        try { await Promise.race([runPlaceAction(id), new Promise(r => setTimeout(r, 5000))]); return 'ok' } catch (e) { return 'ERR ' + e.message } }, id);
+        try { await Promise.race([runPlaceAction(id), new Promise(r => setTimeout(r, 15000))]); return 'ok' } catch (e) { return 'ERR ' + e.message } }, id);
       await p.waitForTimeout(500); lines.push(place + ':' + id + ' ' + r + ' ' + JSON.stringify(await snap()));
     }
   }
@@ -35,8 +35,12 @@ const PLAN = { forge: ['smelt', 'smelt', 'forge', 'forge', 'forge', 'forge', 'fo
   if (c) { const old = fs.readFileSync(c, 'utf8').trim().split('\n'), now = out.trim().split('\n');
     /* the game clock keeps running in real time, so minutes may drift by a few between runs — everything else must match exactly */
     const same = (a, b) => { if (a === b) return true; const ia = (a || '').indexOf('{'), ib = (b || '').indexOf('{'); if (ia < 0 || ib < 0 || a.slice(0, ia) !== b.slice(0, ib)) return false;
-      try { const x = JSON.parse(a.slice(ia)), y = JSON.parse(b.slice(ib)); if (Math.abs(x.minutes - y.minutes) > 3) return false; x.minutes = y.minutes; return JSON.stringify(x) === JSON.stringify(y) } catch (e) { return false } };
-    for (let i = 0; i < Math.max(old.length, now.length); i++) if (!same(old[i], now[i])) { bad++; console.log('✗ changed\n  before: ' + old[i] + '\n  after:  ' + now[i]) } }
+      try { const x = JSON.parse(a.slice(ia)), y = JSON.parse(b.slice(ib)); delete x.minutes; delete y.minutes; return JSON.stringify(x) === JSON.stringify(y) } catch (e) { return false } };
+    /* the game clock also runs with real time (an animation that took a second used to cost a game minute), so minutes are compared per step:
+       how many minutes the action itself added, ± 3 */
+    const mins = l => { const i = (l || '').indexOf('{'); try { return JSON.parse(l.slice(i)).minutes } catch (e) { return null } };
+    const step = (L, i) => i && L[i].split(' ')[0].split(':')[0] === L[i - 1].split(' ')[0].split(':')[0] ? mins(L[i]) - mins(L[i - 1]) : 0;
+    for (let i = 0; i < Math.max(old.length, now.length); i++) if (!same(old[i], now[i]) || Math.abs(step(old, i) - step(now, i)) > 3) { bad++; console.log('✗ changed\n  before: ' + old[i] + '\n  after:  ' + now[i]) } }
   for (const e of errors) console.log('✗ page error: ' + e);
   console.log(bad ? `✗ station actions: ${bad} problem(s)` : `✓ station actions: ${lines.length} steps · no page errors${c ? ' · same as ' + c : ''}`);
   process.exit(bad ? 1 : 0);

@@ -21,6 +21,5 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.open&&!busy&&
 const baseDialog=villageDialog;villageDialog=function(title,html){panel.classList.remove('map-panel');mapEditing=false;return baseDialog(title,html)};
 // 3) freshness popup removed — the face keeps its tooltip only
 window.showFreshness=function(){};
-const baseRender=render;render=function(){baseRender();mergeBar();syncBar()};
 syncBar();render();
 })();

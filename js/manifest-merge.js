@@ -37,7 +37,7 @@
       if (k === 'assets') { out.assets = mergeAssets(base && base.assets, mine.assets, theirs.assets, hasBase); continue }
       const v = mergeVal(base ? base[k] : undefined, mine[k], theirs[k], hasBase); if (v !== undefined) out[k] = v;
     }
-    /* v98.437 · RETIRED pictures (manifest.retired = [file paths]) never come back: an old staged copy made before they were retired
+    /* v98.440 · RETIRED pictures (manifest.retired = [file paths]) never come back: an old staged copy made before they were retired
        would otherwise bring them back through the union above (it happened with the old button-system pictures in v98.435) */
     const retired = [...new Set([...((theirs || {}).retired || []), ...((mine || {}).retired || [])])];
     if (retired.length) { const R = new Set(retired); out.retired = retired; if (Array.isArray(out.assets)) out.assets = out.assets.filter(a => !R.has(a.file)) }
