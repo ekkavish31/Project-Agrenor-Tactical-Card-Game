@@ -140,7 +140,7 @@ const VP = (() => { try { return { action: 'idle', view: 'SW', index: 0, ...JSON
 const OPPV = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, VP_ACT = [['idle', 'ยืน'], ['walk', 'เดิน'], ['windup', 'เตรียมโจมตี'], ['strike', 'โจมตี'], ['guard', 'ป้องกัน'], ['hit', 'โดนโจมตี'], ['down', 'ล้ม']];
 /* follow-up: which character·pose·direction has been checked as correct ('ok') or adjusted and waiting for a check ('adj') */
 const DONE_KEY = 'proportion-done-v1', DONE = (() => { try { return JSON.parse(localStorage.getItem(DONE_KEY) || '{}') || {} } catch (e) { return {} } })();
-const doneKey = (id, a = VP.action, v = VP.view) => id + '|' + a + '|' + v, saveDone = () => { try { localStorage.setItem(DONE_KEY, JSON.stringify(DONE)) } catch (e) { } };
+const doneKey = (id, a = VP.action, v = VP.view) => AK(id) + '|' + a + '|' + v, saveDone = () => { try { localStorage.setItem(DONE_KEY, JSON.stringify(DONE)) } catch (e) { } };
 /* v98.426 · the two directions of a mirror pair (SW↔SE, NW↔NE) are copies of each other, so a tick on one counts for both (older single ticks too) */
 const doneAt = (id, a, v) => DONE[doneKey(id, a, v)] === 'ok' || DONE[doneKey(id, a, OPPV[v])] === 'ok';
 const doneOf = id => DONE[doneKey(id)] || (doneAt(id, VP.action, VP.view) ? 'ok' : '');
@@ -211,6 +211,12 @@ async function addChar(id, name, kind, pic, factor) {
 /* v98.457 · the standing picture of a hero look: the imported cast pictures that exist in the repo (SE = SW mirrored · NW = NE mirrored) */
 const lookPic = (look, view) => { const k = look === 'female' ? 'f' : 'm', back = view === 'NW' || view === 'NE', mir = view === 'SE' || view === 'NW'; return { src: `assets/tactics/imported/idle-${back ? 'ne' : 'sw'}-mwcast2-${k}/frame-01.webp`, flip: mir } };
 const heroLook = () => { try { const l = ST?.lineup?.look?.(); return l === 'female' ? 'female' : 'male' } catch (e) { return 'male' } };   /* which look the studio has open (the game's default is male) */
+/* v98.458 · a hero look is a PERSON, not "whichever look the studio has open": the open look is the entry `hero`, the other one `hero-<look>`, and they swap names every time you
+   pick the other card. Everything that must be remembered per person (size adjustment · ✔ marks) is therefore keyed by the LOOK: male = `hero` (what the game has always used), female = `hero-female`.
+   The male look is also the fixed yardstick (1.70 m) and always stands first, so choosing a card never moves anyone or changes anyone's height. */
+const lookOfId = id => id === 'hero' ? heroLook() : id === 'hero-male' ? 'male' : id === 'hero-female' ? 'female' : null;
+const AK = id => { const l = lookOfId(id); return l ? (l === 'female' ? 'hero-female' : 'hero') : id };
+const isRefId = id => lookOfId(id) === 'male';
 const GROUPOF = {};   /* id → the studio's group (characters / npcs) so the lineup filter matches the left panel */
 async function buildChars() {
   const list = ST ? ST.lineup.entities().map(e => { const id = e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc):/, ''); if (e.group) GROUPOF[id] = e.group; return { id, sid: e.id, name: e.name, clips: e.clips } }) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
@@ -230,7 +236,7 @@ async function buildChars() {
   for (const [id, name] of Object.entries(VILLAGERS)) { if (list.some(c => c.id === id)) continue; const pic = { src: `assets/village-town/npc/${id}/sw-stand.webp` }; await addChar(id, name, 'ally', pic, DS.ally); list.push({ id }) }
   const have = new Set(list.map(c => c.id)); for (let i = ENTRIES.length - 1; i >= 0; i--) if ((ENTRIES[i].kind === 'hero' || ENTRIES[i].kind === 'ally') && !have.has(ENTRIES[i].id)) ENTRIES.splice(i, 1);
   ENTRIES.sort((a, b) => (RANK[a.kind] ?? 3) - (RANK[b.kind] ?? 3));
-  { const k = ENTRIES.findIndex(e => e.id.startsWith('hero-')); if (k > 1 && ENTRIES[0].id === 'hero') ENTRIES.splice(1, 0, ...ENTRIES.splice(k, 1)) }   /* v98.457 · the two hero looks stand side by side at the front */
+  { const mi = ENTRIES.findIndex(e => lookOfId(e.id) === 'male'), fi = ENTRIES.findIndex(e => lookOfId(e.id) === 'female'); if (mi >= 0 && fi >= 0) { const male = ENTRIES[mi], female = ENTRIES[fi]; ENTRIES.splice(Math.max(mi, fi), 1); ENTRIES.splice(Math.min(mi, fi), 1); ENTRIES.unshift(male, female) } }   /* v98.457/458 · the two hero looks stand side by side at the front: male first, female second — always */
 }
 async function build() {
   const add = async (id, name, kind, ctx, src, factor, formula) => {
@@ -275,18 +281,19 @@ const isW = e => !!e.group;
 const DRAFT_KEY = 'projectA.scaleAdjustDraft', SAVED = JSON.parse(JSON.stringify(window.CHARACTER_SCALE_ADJUST || { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }));
 let ADJ; try { ADJ = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null') } catch (e) { }
 ADJ = ADJ || JSON.parse(JSON.stringify(SAVED)); ADJ.global = ADJ.global || {}; ADJ.scene = ADJ.scene || {}; for (const k of ['battle', 'village', 'world']) ADJ.scene[k] = ADJ.scene[k] || {};
-const eff = e => isW(e) ? 1 : CharScaleAdjust.factor('main', e.id, { global: ADJ.global, scene: {} }), gOf = id => ADJ.global[id] ?? 1, sOf = (c, id) => ADJ.scene[c]?.[id] ?? 1;
+const eff = e => isW(e) ? 1 : CharScaleAdjust.factor('main', AK(e.id), { global: ADJ.global, scene: {} }), gOf = id => ADJ.global[AK(id)] ?? 1, sOf = (c, id) => ADJ.scene[c]?.[AK(id)] ?? 1;
 const dirty = () => JSON.stringify(clean(ADJ)) !== JSON.stringify(clean(SAVED));
 function clean(a) { const o = { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }; for (const [k, v] of Object.entries(a.global || {})) if (Math.abs(v - 1) > .0005) o.global[k] = +v.toFixed(4); for (const c of ['battle', 'village', 'world']) for (const [k, v] of Object.entries(a.scene?.[c] || {})) if (Math.abs(v - 1) > .0005) o.scene[c][k] = +v.toFixed(4); return o }
 const persistDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(clean(ADJ))) } catch (e) { } if (ST) try { parent.dispatchEvent(new CustomEvent('studio-scale-changed')) } catch (e) { } };
 let STEP = .5, ZOOM = 1, ALPHA = 1, SHADOW = false, FOOT = false, GUIDES = false, DIR = 'SW', POSE = 'idle';
-const heroU = () => ENTRIES.find(e => e.id === 'hero').ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / ENTRIES.find(x => x.id === 'hero').ctx[c].units * HERO_M * eff(e, c);
-const heroE = () => ENTRIES.find(e => e.id === 'hero');
+const refE = () => ENTRIES.find(e => lookOfId(e.id) === 'male') || ENTRIES.find(e => e.id === 'hero');   /* v98.458 · the yardstick is the MALE look, whichever look the studio has open */
+const heroU = () => refE().ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / refE().ctx[c].units * HERO_M * eff(e, c);
+const heroE = refE;
 /* world tabs: the hero stands first as the yardstick, then the pieces of that tab */
 const visible = () => { const base = () => ENTRIES.filter(e => !isW(e) && e.ctx[ctx] && passF(e)), human = () => { const h = base().filter(e => e.kind !== 'monster'); return h.length ? h : base() };   /* v98.417 · the proportion view leaves monsters out (no head : body to judge) unless monsters are all that the filter leaves */
   const a = tab === 'ratio' ? human() : tab === 'char' || tab === 'field' ? base() : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
 const rangeOf = e => { if (!e.fixed) return ['', 'ไม่มีค่าตรึง']; const m = metres(e); return m < e.ref[0] ? ['warn', 'เล็กไป'] : m > e.ref[1] ? ['warn', 'ใหญ่ไป'] : ['ok', 'พอดี'] };
-function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return e.id === 'hero' ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
+function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return isRefId(e.id) ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
 /* choosing a character here also selects it in the studio's Animation tab */
 /* v98.328 · multi-select: tick several characters, then ONE set of −5 −1 +1 +5 buttons resizes them all (each from its own current value) */
 let MULTI = false; const PICKED = new Set(); const isSel = id => MULTI ? PICKED.has(id) : id === sel;
@@ -321,7 +328,7 @@ function render() {
   const hc = heroE().ctx[ctx];
   V.forEach((e, i) => {
     const c = e.ctx[ctx], cx = xs[i], px = metres(e) * ppm, k = px / c.m.H, w = c.m.w * k, hh = c.m.h * k, left = cx - ((c.m.x0 + c.m.x1) / 2) * k, top = base - (c.m.bottom + 1) * k;
-    if (ghost && e.id !== 'hero') { const gk = HERO_M * ppm / hc.m.H; h += `<img class="ghost" alt="" src="${hc.url || hc.src}" style="${hc.flip ? 'transform:scaleX(-1);' : ''}width:${hc.m.w * gk}px;left:${cx - ((hc.m.x0 + hc.m.x1) / 2) * gk}px;top:${base - (hc.m.bottom + 1) * gk}px">` }
+    if (ghost && !isRefId(e.id)) { const gk = HERO_M * ppm / hc.m.H; h += `<img class="ghost" alt="" src="${hc.url || hc.src}" style="${hc.flip ? 'transform:scaleX(-1);' : ''}width:${hc.m.w * gk}px;left:${cx - ((hc.m.x0 + hc.m.x1) / 2) * gk}px;top:${base - (hc.m.bottom + 1) * gk}px">` }
     const src = c.url || c.src, fl = c.flip ? 'transform:scaleX(-1);' : '';
     if (SHADOW) h += `<div style="position:absolute;left:${cx - w * .22}px;top:${base - 5}px;width:${w * .44}px;height:10px;border-radius:50%;background:rgba(0,0,0,.28)"></div>`;
     if (FOOT) h += `<div style="position:absolute;left:${cx}px;top:${base - 18 * ZOOM}px;height:${18 * ZOOM}px;border-left:1px solid #c0392b"></div>`;
@@ -1017,7 +1024,7 @@ const inScope = e => MULTI ? (PICKED.has(e.id) && passF(e)) : SCOPE === 'one' ? 
 function bump(field, delta) {   /* field: 'g' or a scene name; delta = percentage points added (multiplicative on the factor) */
   for (const e of ENTRIES.filter(x => !isW(x) && inScope(x))) {
     const cur = field === 'g' ? gOf(e.id) : sOf(field, e.id), nv = Math.min(2, Math.max(.4, Math.round((cur * 100 + delta)) / 100));
-    if (field === 'g') ADJ.global[e.id] = nv; else ADJ.scene[field][e.id] = nv;
+    if (field === 'g') ADJ.global[AK(e.id)] = nv; else ADJ.scene[field][AK(e.id)] = nv;
   }
   persistDraft(); render();
 }
@@ -1026,7 +1033,7 @@ function controls() {
   if (tab === 'maps') { box.innerHTML = ''; return }
   if ((tab !== 'char' && tab !== 'ratio' && tab !== 'field') || !e || isW(e)) { box.innerHTML = '<p class="hint">ตัวปรับขนาดใช้กับแท็บ "สัดส่วน"</p>'; return }
   const pct = v => Math.round(v * 100), row = (label, field, note) => `<div class="adj"><span>${label}</span><button data-b="${field}:-5">−5</button><button data-b="${field}:-1">−1</button><input type="number" min="40" max="200" value="${pct(field === 'g' ? gOf(e.id) : sOf(field, e.id))}" data-f="${field}"><button data-b="${field}:1">+1</button><button data-b="${field}:5">+5</button>${note ? `<small>${note}</small>` : ''}</div>`;
-  const dim = e.id === 'hero' ? 'ตัวเอกคือไม้วัด: ปรับแล้วตัวอื่นเทียบตามความสูงเดิม' : '';
+  const dim = isRefId(e.id) ? 'ตัวเอก (ชาย) คือไม้วัด: ปรับแล้วตัวอื่นเทียบตามความสูงเดิม' : '';
   /* studio only: compare ANY frame of this character from the Animation clips */
   const pickerHtml = () => { if (!ST || !(e.kind === 'hero' || e.kind === 'ally')) return ''; const sid = e.id === 'hero' ? 'hero' : 'ally:' + e.id, en = ST.lineup.entities().find(x => x.id === sid); if (!en) return '';
     const p = PICK[e.id] || {}, clips = en.clips.filter(c => ['SW', 'SE', 'NW', 'NE'].includes(c.view)), cur = clips.find(c => c.id === p.clip), c0 = e.ctx[ctx];
@@ -1046,7 +1053,7 @@ function controls() {
   const again = async () => { await buildChars(); render() };
   if ($$('cClip')) $$('cClip').onchange = ev => { if (ev.target.value) PICK[e.id] = { clip: ev.target.value, index: 0 }; else delete PICK[e.id]; again() };
   if ($$('cFrame')) $$('cFrame').oninput = ev => { PICK[e.id].index = +ev.target.value; clearTimeout($$('cFrame')._t); $$('cFrame')._t = setTimeout(again, 120) };
-  $$('cReset').onclick = () => { for (const x of ENTRIES.filter(q => !isW(q) && inScope(q))) { delete ADJ.global[x.id]; for (const c of ['battle', 'village', 'world']) delete ADJ.scene[c][x.id] } persistDraft(); render() };
+  $$('cReset').onclick = () => { for (const x of ENTRIES.filter(q => !isW(q) && inScope(q))) { delete ADJ.global[AK(x.id)]; for (const c of ['battle', 'village', 'world']) delete ADJ.scene[c][AK(x.id)] } persistDraft(); render() };
   $$('cRevert').onclick = () => { ADJ = JSON.parse(JSON.stringify(SAVED)); persistDraft(); render() };
   $$('cSave').onclick = saveToRepo;
 }
