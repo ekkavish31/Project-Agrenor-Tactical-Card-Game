@@ -1370,7 +1370,7 @@
   }
   function drawHero(g, u, t) {
     const A = sprites(), p = project(u.vu, u.vv), f = heroFrame(u, t); if (!A || !f) return;
-    const size = UNIT * CharSize.DRAW.hero * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1];
+    const size = UNIT * CharSize.DRAW.hero * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1) * (window.CharScaleAdjust?.poseFactor('hero', u.pose) || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1];
     let i = jobPic(im(f.src), f.src, u.look); if (i) u._lastPic = i; else i = u._lastPic || null;   /* a frame that has not arrived yet shows the last one instead of nothing */
     let ox = 0; if (u.pose === 'hit') ox = Math.sin(t * .07) * 3;
     const pm = poseMotion(u, t);
@@ -1424,7 +1424,7 @@
     if (u.walking && u.hp > 0) { const wf = allyWalkPic(u, t); if (wf) i = wf }
     if (!i) { i = im(mirSrc) || im(`assets/tactics/${u.key}_se_idle.webp`); useFlip = flip }
     shadow(g, p, UNIT * .24);
-    if (!i) return; const size = UNIT * CharSize.DRAW.ally * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1), pm = poseMotion(u, t);
+    if (!i) return; const size = UNIT * CharSize.DRAW.ally * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1) * (window.CharScaleAdjust?.poseFactor(u.key, pose) || 1), pm = poseMotion(u, t);
     g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (useFlip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
     g.drawImage(i, -size / 2, -size * .94, size, size);
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
