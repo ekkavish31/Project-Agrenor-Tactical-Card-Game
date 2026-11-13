@@ -240,10 +240,10 @@ async function buildChars() {
   { const mi = ENTRIES.findIndex(e => lookOfId(e.id) === 'male'), fi = ENTRIES.findIndex(e => lookOfId(e.id) === 'female'); if (mi >= 0 && fi >= 0) { const male = ENTRIES[mi], female = ENTRIES[fi]; ENTRIES.splice(Math.max(mi, fi), 1); ENTRIES.splice(Math.min(mi, fi), 1); ENTRIES.unshift(male, female) } }   /* v98.457/458 · the two hero looks stand side by side at the front: male first, female second — always */
 }
 async function build() {
-  const add = async (id, name, kind, ctx, src, factor, formula) => {
+  const add = async (id, name, kind, ctx, src, factor, formula, file) => {
     const img = await load(src); if (!img) return; const m = measure(img); if (!m) return;
     let e = ENTRIES.find(x => x.id === id); if (!e) ENTRIES.push(e = { id, name, kind, ctx: {} });
-    e.ctx[ctx] = { img, m, src, units: m.H / (kind === 'monster' ? m.h : 384) * factor, factor, formula };
+    e.ctx[ctx] = { img, m, src, file, units: m.H / (kind === 'monster' ? m.h : 384) * factor, factor, formula };
   };
   for (const [grp, G] of Object.entries(DOCK ? {} : WORLD)) for (const [id, name, src, dr, ref] of G.items) {
     const img = await load(src); if (!img) continue; const m = measure(img); if (!m) continue;
@@ -268,10 +268,10 @@ async function build() {
       const a = list.find(x => x.pose === 'idle' && x.view === 'SE') || list.find(x => x.pose === 'idle') || list[0], im = await load(a.file); if (!im) continue;
       /* v98.380 · sheets of 4×4 frames (assets/enemies/animations/v32/*.webp) have no frameSize: crop the FIRST frame (its region, else one grid cell) — the whole sheet was being drawn as one "character" */
       const an = a.animation || {}, rg = an.regions?.[0], cw0 = an.columns ? im.naturalWidth / an.columns : 0, ch0 = an.rows ? im.naturalHeight / an.rows : 0,
-        box = a.frameSize ? [0, 0, a.frameSize[0], a.frameSize[1]] : rg ? [rg[0], rg[1], rg[2], rg[3]] : cw0 && ch0 && (an.frames > 1 || an.columns > 1) ? [0, 0, Math.round(cw0), Math.round(ch0)] : [0, 0, im.naturalHeight, im.naturalHeight],
+        box = rg ? [rg[0], rg[1], rg[2], rg[3]] : cw0 && ch0 && (an.frames > 1 || an.columns > 1 || an.rows > 1) ? [0, 0, Math.round(cw0), Math.round(ch0)] : a.frameSize ? [0, 0, a.frameSize[0], a.frameSize[1]] : [0, 0, im.naturalHeight, im.naturalHeight],   /* v98.464 · ONE picture: the region of the first frame, else one grid cell — a stale frameSize (straw / archer / captain / kobold / foreman) used to crop several figures at once */
         fw = box[2], fh = box[3], c = document.createElement('canvas'); c.width = fw; c.height = fh; c.getContext('2d').drawImage(im, box[0], box[1], fw, fh, 0, 0, fw, fh);
       const name = (list.map(x => (x.subject || '').split(' · ')[0]).find(t => /[ก-๙]/.test(t))) || k;
-      await add('m:' + k, name, 'monster', 'battle', c.toDataURL('image/png'), CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k} (วัดจากเฟรมแรกของท่ายืน)`);
+      await add('m:' + k, name, 'monster', 'battle', c.toDataURL('image/png'), CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k} (วัดจากเฟรมแรกของท่ายืน)`, a.file + ' · ตัดเฟรมแรก ' + fw + '×' + fh + ' px');
       const e = ENTRIES.find(x => x.id === 'm:' + k); if (e) e.unwired = true;
     }
   } catch (e) { console.warn('extra monsters not read', e) }
@@ -1037,14 +1037,14 @@ function inspect() {
   if (tab === 'ratio') { inspectRatio(); return }
   const e = ENTRIES.find(x => x.id === sel), c = e.ctx[ctx];
   if (isW(e)) { const row = (k, v) => `<dt>${k}</dt><dd>${v}</dd>`, mh = metres(e), mw = (c.m.x1 - c.m.x0 + 1) * mh / c.m.H, [k, t] = rangeOf(e);
-    $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${WORLD[e.group].name}</span><dl>${row('สูงบนจอ', `${mh.toFixed(2)} m · ${Math.round(c.px)} px`)}${row('กว้าง', mw.toFixed(2) + ' m')}${row('เทียบตัวเอก', (mh / HERO_M).toFixed(1) + ' เท่า')}${row('ช่วงเป้าหมาย', `${e.ref[0]}–${e.ref[1]} m <span class="chip ${k}">${t}</span>`)}${row('ที่มาขนาด', e.fixed ? 'ค่าที่โค้ดเกมวาดจริง' : 'ประมาณ (ไม่มีค่าตรึง)')}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.file || c.src}</code>`)}</dl><p class="hint">เฟส 1 ดูอย่างเดียว · ชิ้นที่ไม่พอดีให้ไปปรับสเกลในโปรแกรมแก้ไขแผนที่ (เฟส 2 จะลากปรับที่นี่ได้)</p>`; return }
+    $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${WORLD[e.group].name}</span><dl>${row('สูงบนจอ', `${mh.toFixed(2)} m · ${Math.round(c.px)} px`)}${row('กว้าง', mw.toFixed(2) + ' m')}${row('เทียบตัวเอก', (mh / HERO_M).toFixed(1) + ' เท่า')}${row('ช่วงเป้าหมาย', `${e.ref[0]}–${e.ref[1]} m <span class="chip ${k}">${t}</span>`)}${row('ที่มาขนาด', e.fixed ? 'ค่าที่โค้ดเกมวาดจริง' : 'ประมาณ (ไม่มีค่าตรึง)')}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${/^data:/.test(c.file || c.src || '') ? '(ภาพตัดจากชีต)' : String(c.file || c.src).slice(0, 160)}</code>`)}</dl><p class="hint">เฟส 1 ดูอย่างเดียว · ชิ้นที่ไม่พอดีให้ไปปรับสเกลในโปรแกรมแก้ไขแผนที่ (เฟส 2 จะลากปรับที่นี่ได้)</p>`; return }
   const other = ctx === 'battle' ? 'village' : 'battle', o = e.ctx[other];
   const row = (k, v) => `<dt>${k}</dt><dd>${v}</dd>`;
   let cross = '';
   if (false) { const a = metres(e), b = metres(e, other), d = a / b - 1; cross = row('ข้ามบริบท', `สนามรบ ${metres(e, 'battle').toFixed(2)} m · หมู่บ้าน ${metres(e, 'village').toFixed(2)} m <span class="chip ${Math.abs(d) < .06 ? 'ok' : Math.abs(d) < .12 ? 'warn' : 'bad'}">${d >= 0 ? '+' : ''}${Math.round(d * 100)}%</span>`) }
   $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${e.kind}</span><dl>
    ${row('ความสูงบนจอ', `${metres(e).toFixed(2)} m · ${c.units.toFixed(2)} UNIT`)}${row('เทียบตัวเอก', Math.round(metres(e) / HERO_M * 100) + '%')}${cross}
-   ${row('เงาในภาพ', `สูง ${c.m.H} px · หัว ${c.m.headW} px · ภาพ ${c.m.w}×${c.m.h}`)}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${c.file || c.src}</code>`)}</dl>
+   ${row('เงาในภาพ', `สูง ${c.m.H} px · หัว ${c.m.headW} px · ภาพ ${c.m.w}×${c.m.h}`)}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${/^data:/.test(c.file || c.src || '') ? '(ภาพตัดจากชีต)' : String(c.file || c.src).slice(0, 160)}</code>`)}</dl>
   <p class="hint">ปรับขนาดที่แผง ⚖ ด้านล่าง</p>${e.unwired ? '<p class="hint">⏳ มอนสเตอร์ตัวนี้มีภาพ/อนิเมชันใน asset แล้ว แต่ <b>ยังไม่ได้ต่อเข้าสนามรบ</b> (ไม่มีในตาราง MON) — ค่าที่ปรับจะถูกเก็บไว้และมีผลเมื่อเกมนำตัวนี้มาใช้</p>' : ''}`;
 }
 /* v98.322 · the view controls live ABOVE the stage (where you look), grouped and labelled; only the ones that matter for the open tab are shown */
