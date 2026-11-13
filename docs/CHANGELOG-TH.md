@@ -5244,3 +5244,8 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 ## v98.441 · 13 พ.ย. 2026 — รวมกิจกรรมจุดทำงานเป็นไฟล์เดียว `js/station-actions.js`
 - ส่วนที่เกมยังใช้ของ `location-actions.js` + `journey-ui.js` (รายการกิจกรรมต่อสถานที่ · `runPlaceAction` · พัก/กินข้าว · ทำอัตโนมัติ/ยกเลิกงาน · ข้อความความสดชื่น) รวมเป็น `js/station-actions.js` (≈10 KB) ไฟล์เดิมย้ายไป `archive/old-scene/js/` · กติกาเท่าเดิม (`test-station-actions --compare` ผ่าน 25 ขั้น) · e2e ผ่าน
 - `tools/scan-asset-usage.cjs`: เลิกรายการ "สคริปต์ฉากเก่าไม่นับ" — ที่เหลือใน js/ ใช้งานจริงทั้งหมด ภาพที่สคริปต์เหล่านี้อ้างจึงนับว่าใช้อยู่
+
+## v98.442 · 13 พ.ย. 2026 — Cart เก่าทับ manifest ไม่ได้อีก
+- `js/manifest-merge.js`: เมื่อไม่รู้ว่า Cart ถูกทำจาก manifest ฉบับไหน (ไม่มี base) และรายการเดียวกันต่างกันทั้งสองฝั่ง → เก็บฝั่งที่ "ไปไกลกว่า" (final > temp > code > planned/unused > missing) ถ้าเท่ากันเก็บ `artRevision`/`updatedAt` ที่ใหม่กว่า — Cart ที่ค้างในเบราว์เซอร์จึงทำให้ภาพ final กลับเป็นโค้ด/ชั่วคราวไม่ได้ (เคยเกิด v98.421 หาย 55 ช่อง) · ร่วมกับ `retired` จาก v98.437
+- โหลด `manifest-merge.js` ในทุกหน้าที่กด Cart ได้ (index · village-town · village-place · scale-lineup · battleground · vfx-kit-preview) — เดิมมีแค่ asset-studio/editor หน้าอื่นจึง push manifest ทั้งฉบับโดยไม่รวม
+- เทสต์ `tools/test-manifest-merge.cjs` เพิ่ม 2 กรณี

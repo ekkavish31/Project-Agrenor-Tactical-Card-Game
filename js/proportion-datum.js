@@ -217,7 +217,7 @@
     for (const s of dp.segs) { if (s.dev == null) { if (all) parts.push(s.name + ' —'); continue } if (all || s.level !== 'ok') parts.push(`${s.name} ${pc(s.dev)}${s.level !== 'ok' ? ' ' + ic[s.level] : ''}`) }
     return parts.join(' · ') }
   const pixelPoints = (rec, dir, w, h) => Object.fromEntries(Object.entries(pointsFor(rec, dir).pts).map(([k, p]) => [k, [p[0] * w, p[1] * h]]));
-  /* v98.441 · drag-swap of two animation cells (Asset Studio): the datum points of the first n frames of (poseA · viewA) and (poseB · viewB) trade places
+  /* v98.442 · drag-swap of two animation cells (Asset Studio): the datum points of the first n frames of (poseA · viewA) and (poseB · viewB) trade places
      with their pictures; a side that has none ends with none. Mutates and returns the all() object (caller saves) — pure so tools/test-proportion-swap.cjs can test it */
   function swapPts(d, id, poseA, viewA, poseB, viewB, n) {
     const R0 = (d[id] ||= {}), slot = (pose, i, mk) => { const P = (R0[pose] ||= (mk ? {} : undefined)); if (!P) return null; return P[i] || (mk ? (P[i] = { pts: {} }) : null) };

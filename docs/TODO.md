@@ -166,7 +166,7 @@
 - [x] v98.439 นำชีทท่าเสริมแพะเดิม 12 ภาพ run/pant/graze/bleat/sleep/happy ทั้ง SE/NE เข้าเกม โดยคง idle/walk/windup/strike/hit/down เดิม; เชื่อมไล่แพะใช้ run/pant/graze ตามสถานะ อีก 3 ท่าพร้อมเรียกผ่าน MonsterArt ยังไม่ได้เพิ่มเหตุการณ์ใหม่
 - [x] v98.439 บอสฟักทอง idle/walk 4 เฟรม/ท่า ทั้ง SE/NE รวม 16 เฟรม; ท่าอื่นคงเดิม
 
-- [ ] ป้องกัน Cart ที่อิง manifest เก่าทับภาพ final/รายการใหม่บน main: v98.422 พบ Cart v98.421 ทำทะเบียน tutorial/card v98.418 หายหรือกลับเป็น code ทั้งที่ไฟล์ยังอยู่; คืน 55 ช่องแล้ว ต้องแก้ merge/save ของ Cart เพิ่มในงานถัดไป
+- [x] (v98.437 + v98.442 · `retired` กันภาพที่เลิกใช้กลับมา · merge ไม่มี base เลือกฝั่งที่ก้าวหน้ากว่า final>temp>code>missing แล้ว artRevision ใหม่กว่า · โหลด `manifest-merge.js` ในทุกหน้าที่มี Cart) ป้องกัน Cart ที่อิง manifest เก่าทับภาพ final/รายการใหม่บน main: v98.422 พบ Cart v98.421 ทำทะเบียน tutorial/card v98.418 หายหรือกลับเป็น code ทั้งที่ไฟล์ยังอยู่; คืน 55 ช่องแล้ว ต้องแก้ merge/save ของ Cart เพิ่มในงานถัดไป
 
 - [x] v98.418 นำภาพฟักทอง/บอสฟักทอง/ด้วง 34 ท่าหลัก + ภาพนิ่งสองมุม + portraits และภาพการ์ด 15 ใบเข้าเกม แทนเส้นทาง code; SW/NW กลับจาก SE/NE, สเกลร่วมทุกท่ารวมท่าล้ม, แยก loot และ cast ของบอส ใช้ 1 เฟรมต่อท่า (ยังไม่ใช่วงจรแอนิเมชันเต็ม) · แพะมีภาพจริงอยู่แล้ว ไม่เจน/เขียนทับ
 - [x] v98.422 นำฟินน์/เบิร์ก/เคน/ปิแอร์/เวร่าเข้าเกม: ท่ายืน SW/NE + SE/NW กลับด้าน รวม 20 ไฟล์ ผูก look.sprite ของ NPC เดิมและทะเบียน Asset Studio; สเกลเดียวทั้งชีต เท้า y=360 · ยังไม่มีภาพก้าวขา ใช้ท่ายืนขยับเบาระหว่างเดิน
@@ -555,7 +555,7 @@
 
 
 **ฉากเก่า (ปุ่มกด) ที่ค้างอยู่ — v98.258**
-- [ ] ตัดโค้ดฉาก forge/market/home แบบปุ่มกดใน index.html (`location-actions.js`, `interface-v02.js`, `journey-*.js`, `village-core.js`, `smith-wip.js`, `paper-cards.js` …) หลังตรวจว่าเกมจริง (title → village iframe) ไม่พึ่ง `s.village.location`; แล้วย้ายรูปที่เหลือ (`workshop/home/market/forge/water/...webp`, `scene-*` ใน manifest) ที่เหลือแต่ฉากเก่าอ้างถึง
+- [x] (v98.437–v98.441 · ดู TODO 27) ตัดโค้ดฉาก forge/market/home แบบปุ่มกดใน index.html (`location-actions.js`, `interface-v02.js`, `journey-*.js`, `village-core.js`, `smith-wip.js`, `paper-cards.js` …) หลังตรวจว่าเกมจริง (title → village iframe) ไม่พึ่ง `s.village.location`; แล้วย้ายรูปที่เหลือ (`workshop/home/market/forge/water/...webp`, `scene-*` ใน manifest) ที่เหลือแต่ฉากเก่าอ้างถึง
 - [x] การตรวจ "ใช้งานอยู่" อิงรูปที่โหลดจริงจากหน้าเกมจริง = `tools/scan-asset-usage.cjs` → `data/asset-usage.js` (v98.260) · ขยายให้ครอบคลุมฉากมากกว่า 8 ฉากได้
 - [~] (v98.259→v98.268) ถอดฉากเก่าต่อ — วัดแล้ว: **สคริปต์ชุดนี้ไม่ใช่ฉากเก่าล้วน มีตรรกะที่เกมจริงยังใช้ปนอยู่** · `village-town-bridge.js` เรียก `placeActions()` (journey-ui) บอกหมู่บ้านว่าสถานที่นี้ทำอะไรได้ · `village-ui.js` เรียก `entityCardMarkup` (paper-cards) · `interface-v02.js` เรียก `actionDetails` · `ui.js` เรียก `sharedCardBack` · ถอดทั้งชุดแล้วเกิด ReferenceError 4 จุดนี้ · ทางที่ปลอดภัย: (1) ย้ายฟังก์ชันที่ยังใช้ 4 ตัวนี้ + ที่พวกมันเรียกต่อ ไปไว้ไฟล์เล็กไฟล์เดียว (2) แล้วค่อยลบส่วนวาดฉากเก่า (`location-actions` dock, `card-drag`, `hand-cards`, สถานี `stationArtwork`, `developer`, `editor.js`) · เทสต์ที่ใช้ยืนยัน: `node tools/check-places.cjs --browser` (149 รายการ) + เปิด `index.html?skipTitle=1` ต้องไม่มี pageerror · coverage ตอนเล่น (บูต เปิดกระเป๋า/สำรับ/ตั้งค่า ลานฝึก) ไม่เรียก `editor.js`, `card-drag.js`, `tactics-core.js` (ตาราง 110 ฟังก์ชัน), `tactics-ui.js` เลย
 - [x] รวมค่า drawSize / 93.6 ให้อยู่ที่เดียว = `js/char-size.js` (v98.264) · เหลือ `js/interior.js` (104 × IK) ที่ยังมีตัวเลขของตัวเองสำหรับตัวเอกในห้อง

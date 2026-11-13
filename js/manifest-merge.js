@@ -20,11 +20,15 @@
     if (hasBase) { if (same(b, m)) return t; if (same(b, t)) return m }
     return m;
   }
+  const RANK = { missing: 0, planned: 1, unused: 1, code: 2, temp: 3, final: 4 };   /* how far along a picture is */
   function mergeAssets(b, m, t, hasBase) {
     const B = new Map((b || []).map(a => [a.id, a])), Mm = new Map((m || []).map(a => [a.id, a])), out = [], seen = new Set();
     const pick = (id, mm, tt) => { const bb = B.get(id);
       if (mm && tt) { if (same(mm, tt)) return mm; if (hasBase && bb) { if (same(bb, mm)) return tt; if (same(bb, tt)) return mm }
-        if (!hasBase && mm.status === 'missing' && tt.status !== 'missing') return tt; return mm }
+        if (!hasBase) {   /* v98.442 · no base: we cannot tell who changed what — keep the one that is further along, so an old staged copy cannot turn a finished picture back into code / temp (v98.421 lost 55 tutorial/card rows that way) */
+          const r = x => RANK[x.status] ?? 2, rm = r(mm), rt = r(tt); if (rt !== rm) return rt > rm ? tt : mm;
+          const v = x => String(x.artRevision || x.updatedAt || x.createdAt || ''); if (v(tt) > v(mm)) return tt }
+        return mm }
       if (mm) return hasBase && bb && same(bb, mm) ? null : mm;   // they removed it, I did not touch it
       return hasBase && bb && same(bb, tt) ? null : tt };         // I removed it, they did not touch it
     for (const tt of t || []) { const a = pick(tt.id, Mm.get(tt.id), tt); seen.add(tt.id); if (a) out.push(a) }
@@ -37,7 +41,7 @@
       if (k === 'assets') { out.assets = mergeAssets(base && base.assets, mine.assets, theirs.assets, hasBase); continue }
       const v = mergeVal(base ? base[k] : undefined, mine[k], theirs[k], hasBase); if (v !== undefined) out[k] = v;
     }
-    /* v98.441 · RETIRED pictures (manifest.retired = [file paths]) never come back: an old staged copy made before they were retired
+    /* v98.442 · RETIRED pictures (manifest.retired = [file paths]) never come back: an old staged copy made before they were retired
        would otherwise bring them back through the union above (it happened with the old button-system pictures in v98.435) */
     const retired = [...new Set([...((theirs || {}).retired || []), ...((mine || {}).retired || [])])];
     if (retired.length) { const R = new Set(retired); out.retired = retired; if (Array.isArray(out.assets)) out.assets = out.assets.filter(a => !R.has(a.file)) }
