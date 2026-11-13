@@ -77,13 +77,36 @@ body.ratio-layout.dock main>section:nth-of-type(2){grid-area:stage}body.ratio-la
 body.world header h1 small{display:none}
 .rtBox{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--panel)}.rtBox summary{cursor:pointer}.rtBox[open] summary{margin-bottom:6px}
 #vpCtl .vp{display:inline-flex;gap:5px;align-items:center;font-size:12px;padding:2px 8px;border:1px solid var(--line);border-radius:9px;background:#fff8e4}#vpCtl button{padding:3px 8px}
+/* v98.445 · collapsed overview frees the viewport for editing, without scaling the UI. */
+body.lineup-collapsed{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+body.lineup-collapsed header{flex:none;position:static}
+body.lineup-collapsed main{flex:1;min-height:0;width:100%;max-width:none;grid-template-columns:1fr!important;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"stage" "insp"!important;align-items:stretch}
+body.lineup-collapsed main>section:first-child{display:none}
+body.lineup-collapsed #lineupOverview{grid-area:stage;padding:4px 8px}
+body.lineup-collapsed #stageWrap,body.lineup-collapsed #note{display:none}
+body.lineup-collapsed #toolbar{margin:0;padding:0;border:0;gap:4px 10px}
+body.lineup-collapsed main>aside.card{grid-area:insp;position:static;max-height:none;min-height:0;overflow:auto}
+body.lineup-collapsed #insp .ipPin{position:static;max-width:none}
+body.lineup-collapsed #insp .ipPin>div:has(>#pcv){width:min(100%,calc((100dvh - 265px)*1.3333));margin:auto}
+body.lineup-collapsed #insp .ipCtl{max-width:none}
+body.lineup-collapsed #insp .ipGrid{grid-template-columns:minmax(180px,1fr) minmax(650px,2fr);gap:12px}
+body.lineup-collapsed #insp .ipCtl .adj{margin:4px 0}
+body.lineup-collapsed #insp #adjBox{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px}
+body.lineup-collapsed #insp #adjBox:not([open]){display:block}
+body.lineup-collapsed #insp #adjBox>summary,body.lineup-collapsed #insp #adjBox>.hint,body.lineup-collapsed #insp #adjBox>p,body.lineup-collapsed #insp #adjBox>.adj:last-of-type{grid-column:1/-1}
+body.lineup-collapsed #insp #adjBox .adj{min-width:0}
+body.lineup-collapsed #insp #adjRef{max-width:100%;flex-basis:120px}
+body.dock #lineupFullscreen,body.world #lineupCollapse{display:none}
+body.lineup-expanded{position:fixed;inset:0;overflow:auto;z-index:1000}
+@media(max-width:900px){body.lineup-collapsed #insp #adjBox{display:block}body.lineup-collapsed #insp .ipGrid{grid-template-columns:minmax(180px,1fr) minmax(350px,1fr)}}
+@media(max-width:650px){body.lineup-collapsed #insp .ipGrid{grid-template-columns:1fr}body.lineup-collapsed #insp .ipPin>div:has(>#pcv){width:min(100%,320px)}}
 </style></head><body>
 <header><h1>⚖ Scale Lineup <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
 <span id="tabs"></span> <span id="ctxBtns"></span><span id="vpCtl"></span><span class="grow"></span>
-<span class="grow"></span></header>
+<button id="lineupCollapse" type="button" aria-expanded="true" aria-controls="lineupOverview">ยุบแถว Lineup ▴</button><button id="lineupFullscreen" type="button" aria-pressed="false">⛶ เต็มจอ</button></header>
 <main>
 <section class="card"><b id="listTitle">ตัวละคร</b><div id="list" role="list"></div></section>
-<section class="card"><div id="toolbar"></div><div id="stageWrap"><div id="stage"></div></div>
+<section class="card" id="lineupOverview"><div id="toolbar"></div><div id="stageWrap"><div id="stage"></div></div>
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
@@ -921,6 +944,14 @@ async function saveToRepo() {
   try { await G.commit('Scale Lineup: ปรับขนาดตัวละคร', async () => [{ path: 'js/character-scale-adjust-data.js', content: text }]); Object.assign(SAVED, JSON.parse(JSON.stringify(data))); SAVED.global = data.global; SAVED.scene = data.scene; persistDraft(); render(); document.getElementById('cMsg').textContent = '✔ บันทึกเข้าเกมแล้ว (ใช้ได้หลังเว็บอัปเดต 1–2 นาที)' }
   catch (err) { msg.textContent = 'บันทึกไม่สำเร็จ: ' + err.message }
 }
+/* v98.445 · toggling the overview does not rebuild the inspector or reset edits. */
+const collapseButton=$('lineupCollapse');
+function setLineupCollapsed(on){document.body.classList.toggle('lineup-collapsed',on);collapseButton.textContent=on?'แสดงแถว Lineup ▾':'ยุบแถว Lineup ▴';collapseButton.setAttribute('aria-expanded',String(!on));try{localStorage.setItem('lineup.collapsed',on?'1':'0')}catch(_){}if(DOCK)parent.postMessage({type:'lineup-edit-fit',collapsed:on},location.origin)}
+collapseButton.onclick=()=>setLineupCollapsed(!document.body.classList.contains('lineup-collapsed'));
+try{if(!WORLD_ONLY)setLineupCollapsed(localStorage.getItem('lineup.collapsed')==='1')}catch(_){}
+$('lineupFullscreen').onclick=async()=>{if(document.fullscreenElement){await document.exitFullscreen();return}if(document.body.classList.contains('lineup-expanded')){exitLineupFullscreen();return}document.body.classList.add('lineup-expanded');$('lineupFullscreen').setAttribute('aria-pressed','true');$('lineupFullscreen').textContent='⛶ ออกเต็มจอ';try{await document.documentElement.requestFullscreen()}catch(_){} };
+function exitLineupFullscreen(){document.body.classList.remove('lineup-expanded');$('lineupFullscreen').setAttribute('aria-pressed','false');$('lineupFullscreen').textContent='⛶ เต็มจอ'}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)exitLineupFullscreen()});addEventListener('keydown',ev=>{if(ev.key==='Escape')exitLineupFullscreen()});
 let ready = false; addEventListener('resize', () => ready && render());
 /* v98.399 · which FILTER chips (char/npc/mon) the left panel's group tab implies — keeps the dock's row in step with it instead of a second, overlapping filter */
 const GROUP_FILTER = { characters: { char: true, npc: false, mon: false }, npcs: { char: false, npc: true, mon: false }, monsters: { char: false, npc: false, mon: true }, bosses: { char: false, npc: false, mon: true } };

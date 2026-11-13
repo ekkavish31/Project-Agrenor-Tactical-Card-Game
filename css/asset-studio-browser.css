@@ -139,3 +139,11 @@ body.anim-mode #lineupDock{display:block}
 
 /* v98.415 · drag a cell onto another to swap the two sets */
 .clip-cell[draggable=true]{cursor:grab}.clip-cell.dragging{opacity:.45}.clip-cell.drop-ok{outline:3px dashed #2f9a4a;outline-offset:-2px;background:#e3f6e4}
+
+/* v98.445 · keep the editor inside the available workspace. */
+#lineupDock.edit-fit{display:flex;flex-direction:column;margin-bottom:0}
+#lineupDock.edit-fit .dock-body{flex:1;min-height:0;max-height:none;resize:none;height:auto!important}
+#lineupDock.lineup-fullscreen{position:fixed;inset:0;z-index:1000;margin:0;border-radius:0;display:flex;flex-direction:column;height:100dvh!important}
+#lineupDock.lineup-fullscreen .dock-body{display:block;flex:1;height:auto!important;min-height:0;max-height:none;resize:none}
+#lineupDock.lineup-fullscreen .dock-bar{flex:none;flex-wrap:wrap}
+@media(max-width:1000px){#lineupDock .dock-bar small{display:none}}

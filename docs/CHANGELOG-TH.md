@@ -5265,3 +5265,10 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - **รายชื่อมาจากข้อมูลเกม:** `tools/build-studio-people.cjs` → `js/studio-people.js` (เพื่อน = `ALLY_STATS` ใน village-life · NPC = ทุกคนใน village-life + โฟลเดอร์ `assets/village-town/npc/*`) แทนรายการ 14 ชื่อที่พิมพ์ไว้ใน asset-studio-browser — NPC คนใหม่ได้แถวครบ 4 ทิศ × ยืน/เดินเอง
 - เทสต์ `tools/test-studio-roster.cjs`: เพื่อนทุกคนอยู่ใต้ตัวละคร (ชื่อไทย ไม่ซ้ำ NPC) · ชาวบ้านทุกคนมี entity · มอนสเตอร์ทุกตัวใน town-battle อยู่ในแคตตาล็อกด้วยชื่อไทย · ล้มถ้า js/studio-people.js ล้าสมัย · แก้ `e2e-studio-lineup` ให้นับ NPC ในรายการเดียวกับ Scale Lineup
 - ผลในหน้า Animation: ตัวละคร 11 · NPC 25 · มอนสเตอร์ 31 · มินิบอส/บอส 13
+
+
+## v98.445 · 13 พ.ย. 2026
+- Scale Lineup เพิ่มปุ่มเต็มจอเฉพาะโซน ใช้ iframe เดิมและออกด้วย Esc ได้
+- เพิ่มยุบ/แสดงแถว Lineup แยกจากยุบทั้งโซน จำสถานะไว้ และคืนความสูงให้แผงแก้ไข
+- โหมดยุบจัดภาพ Before/After เคียง controls แบบสองคอลัมน์ ใช้พื้นที่จอที่เหลือ; หน้าจอแคบหรือเปิดรายละเอียดเพิ่มยังเลื่อนส่วนแก้ไขได้
+- ตรวจ syntax JavaScript ทุกไฟล์ผ่าน; test-*.cjs ผ่าน 47/53: 3 ชุดติดตั้ง browser ไม่พร้อม, 2 ชุดอ้างไฟล์ภาพที่ไม่มีใน checkout, proportion-preview ล้มเหมือน main เดิมเพราะ mock ไม่มี ProportionRulers; Chromium ที่มีถูกระบบปฏิเสธ socket จึงยังไม่ได้ยืนยัน layout ด้วยภาพหน้าจอ
