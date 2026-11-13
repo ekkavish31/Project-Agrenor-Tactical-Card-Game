@@ -466,7 +466,7 @@ function inspectRatio() {
     <div class="adj" title="ส่วนที่ขยาย: อัปสเกลแบบ bicubic แล้วเพิ่มความคมตามที่ขยาย (ออโต้) หรือกำหนดเอง"><span title="ความคม">🔪</span><select id="adjSharpMode"><option value="auto">ออโต้ (ตามที่ขยาย)</option><option value="man">แมนวล</option></select><input type="range" id="adjSharp" min="0" max="150" step="5" value="60" style="width:110px"><b id="adjSharpV">60%</b></div>
     </details>
     <details id="adjMore" style="margin:4px 0"><summary title="ข้อความอธิบายไม้บรรทัด เส้นโซน แขน">ℹ️ รายละเอียด</summary><div class="hint" id="adjRuler"></div><div class="hint" id="adjCut"></div><p class="hint" id="adjArmInfo"></p></details>
-    <div class="adj"><button id="adjPreview" class="primary" title="แสดงผลใน After เท่านั้น ยังไม่เซฟและไม่เข้า Cart">👁 พรีวิว</button><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng" title="ส่งออก PNG">⬇ PNG</button><button id="adjApply" title="ใช้ภาพเดียวกับ After ที่พรีวิวแล้ว บันทึกเข้าช่องภาพและ Cart (เก็บต้นฉบับไว้ในประวัติ)">💾 Cart</button></div><p class="hint" id="adjMsg"></p></details>`
+    <div class="adj"><button id="adjPreview" class="primary" title="แสดงผลใน After เท่านั้น ยังไม่เซฟและไม่เข้า Cart">👁 พรีวิว</button><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng" title="ส่งออก PNG">⬇ PNG</button><button id="adjApply" title="ใช้ภาพเดียวกับ After ที่พรีวิวแล้ว บันทึกเข้าช่องภาพและ Cart (เก็บต้นฉบับไว้ในประวัติ)">💾 Cart</button><button id="adjApplyAll" title="ใช้ค่าปรับเดียวกันนี้กับทุกเฟรมของท่านี้ (เช่น ท่าเดิน) รวมทิศตรงข้าม แล้วใส่ Cart ทีเดียว — แต่ละเฟรมใช้ Datum ของเฟรมนั้นเอง">💾 Cart ทุกเฟรม</button></div><p class="hint" id="adjMsg"></p></details>`
     : `<p class="hint" style="margin-top:8px;padding:8px;border:1px dashed var(--line);border-radius:8px">วาง 📍 Datum ให้ครบก่อน (ตา 2 · คาง · ไหล่ 2 · เส้นตัดขา) จึงจะปรับขนาดหัว/ลำตัว/ขาได้ — ระบบตัดภาพตรงจุดที่จิ้มไว้พอดี ไม่ต้องกะด้วยสายตาอีกต่อไป</p>`}
    </div></div>`;
   /* v98.416 · fit the silhouette inside its box by BOTH height and width — fitting by height alone blew a lying-down pose (short and wide) up to many times the panel */
@@ -625,7 +625,7 @@ function inspectRatio() {
     let last = null, lastConfig = null, previewReady = false;
     const zoneEditor = window.ProportionZones?.mount($a('adjZones'), PA, JSON.stringify([e.id, q.pose, q.frame, q.dir, c.file || c.label]), () => schedulePreview());
     const inStudio = window.parent !== window;
-    const previewButtons = ready => { $a('adjApply').disabled = !ready || !inStudio || !c.file; $a('adjPng').disabled = !ready; };
+    const previewButtons = ready => { $a('adjApply').disabled = !ready || !inStudio || !c.file; $a('adjPng').disabled = !ready; const ab = $a('adjApplyAll'); if (ab) ab.disabled = !ready || !inStudio || !c.file || !((c.vp?.clips || []).find(x => c.vp.action !== 'pick' && x.action === c.vp.action && x.view === c.vp.view)?.n > 1); };
     const schedulePreview = () => { previewReady = false; previewButtons(false); $a('adjPreviewState').textContent = 'กำลังเตรียมพรีวิว · ยังไม่บันทึก'; cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(() => { if (cv.isConnected) redraw() }); };
     /* v98.398 · until the user picks a mode themselves, follow the team standard automatically once one is set */
     if (!mem.touched && RSD) { mem.ref = '__std__'; $a('adjRef').value = '__std__' } else if (!mem.touched && mSpans) { mem.ref = '__master__'; $a('adjRef').value = '__master__' }
@@ -664,8 +664,8 @@ function inspectRatio() {
         mem.touched = true; document.querySelector('input[name=adjMode][value=man]').checked = true; $a('adjMsg').textContent = '✅ ใส่ค่าจากไม้บรรทัดลงตัวปรับแล้ว (แมนวล) · ' + got.map(x => x + ' ×' + (A[x] / 100).toFixed(2)).join(' · '); redraw() } };
     /* v98.444 · CUT LINES for the warp: zones follow the neck / hip lines (own, mirrored, learned or default) and the part rows are taken from the line middles.
        Without both lines (a point missing) the chin / crotch rows are used as before. */
-    const cutPack = (dirX, m, points, baseMarks) => { try {
-        const hint = PD.cutHint(e.id, PD.GROUP[dirX] || 'front', { pose: q.pose, frame: String(q.frame | 0), dir: dirX }), cs = PD.cutsFor(datumRec, dirX, hint, m.w, m.h);
+    const cutPack = (dirX, m, points, baseMarks, recX = datumRec, frX = q.frame) => { try {
+        const hint = PD.cutHint(e.id, PD.GROUP[dirX] || 'front', { pose: q.pose, frame: String(frX | 0), dir: dirX }), cs = PD.cutsFor(recX, dirX, hint, m.w, m.h);
         if (!cs.neck || !cs.hip || !points.eyeL || !points.eyeR) return { marks: baseMarks, cuts: null, info: cs };
         const px = ps => ps.map(p => [p[0] * m.w, p[1] * m.h]), mp = ps => [(ps[0][0] + ps.at(-1)[0]) / 2, (ps[0][1] + ps.at(-1)[1]) / 2], f = y => (y - m.top) / m.H, neck = px(cs.neck.pts), hip = px(cs.hip.pts);
         return { marks: { ...baseMarks, chin: f(mp(neck)[1]), hip: f(mp(hip)[1]) }, cuts: { neck, hip, head: [(points.eyeL[0] + points.eyeR[0]) / 2, (points.eyeL[1] + points.eyeR[1]) / 2] }, info: cs }
@@ -739,6 +739,28 @@ function inspectRatio() {
       post(c.file, o); if (o2) post(opp.file, o2); const n = o2 ? 2 : 1;   /* both are sent together: the studio reloads this row after saving */
       const a0 = vp && vp.action !== 'pick' ? vp.action : VP.action, v0 = vp ? vp.view : VP.view; DONE[doneKey(e.id, a0, v0)] = 'adj'; if (opp) DONE[doneKey(e.id, a0, opp.view)] = 'adj'; saveDone();
       $a('adjMsg').textContent = 'ส่งให้ Asset Studio แล้ว ' + n + ' ภาพ — ตรวจผลแล้วติ๊ก "✔ ปรับถูกต้องแล้ว" (แล้ววาง 📍 Datum ใหม่ถ้าจะวัดซ้ำ)' };
+    /* v98.460 · ONE click = every frame of this pose (and the opposite direction), same scale, each frame warped from its own picture + its own datum */
+    $a('adjApplyAll').onclick = async () => { const o = outCanvas(), vp = c.vp; if (!o || !lastConfig) return alert('ยังไม่มีภาพพรีวิว — กด 👁 พรีวิว ก่อน');
+      if (!vp || vp.action === 'pick') return alert('เลือกท่า (เช่น เดิน) จากแถบท่าของ Lineup ก่อน');
+      const config = { scale: { ...lastConfig.scale }, options: { ...lastConfig.options } }, jobs = [];
+      for (const v of [vp.view, OPPV[vp.view]]) { const cl = vp.clips.find(x => x.action === vp.action && x.view === v); if (cl) for (let f = 0; f < (cl.n || 1); f++) jobs.push({ v, cl, f }) }
+      if (jobs.length < 2) return alert('ท่านี้มีเฟรมเดียว — ใช้ 💾 Cart ปกติ');
+      if (!confirm('ปรับสัดส่วนทุกเฟรมของท่า "' + vp.action + '" ด้วยค่าเดียวกับพรีวิวนี้\n• ' + jobs.length + ' ภาพ (ทิศ ' + [...new Set(jobs.map(j => j.v))].join(' + ') + ')\n• แต่ละเฟรมวาร์ปจากภาพและ 📍 Datum ของเฟรมนั้นเอง (เฟรมที่ไม่มีจุดตา/คาง/ไหล่จะข้ามและแจ้ง)\n• ภาพเดิมเก็บในประวัติ · ใส่ Cart ทีเดียว\n\nทำต่อ?')) return;
+      const btn = $a('adjApplyAll'), items = [], skipped = [], soft = []; btn.disabled = true;
+      try { let i = 0; for (const { v, cl, f } of jobs) { i++; $a('adjMsg').textContent = 'กำลังเตรียม ' + i + '/' + jobs.length + '…'; await new Promise(r => setTimeout(r, 0));
+          const pic = await ST.lineup.picture(vp.sid, v, cl.id, f); if (!pic || !pic.file) { skipped.push(v + ' #' + (f + 1) + ' (ไม่มีภาพ)'); continue }
+          const img = await load(pic.url || pic.src), m2 = img && measure(img, pic.flip), rec = PD.get(e.id, vp.action, f); if (!m2) { skipped.push(v + ' #' + (f + 1) + ' (โหลดไม่ได้)'); continue }
+          const pts = rec && PD.pixelPoints(rec, v, m2.w, m2.h), mk = rec && PD.marksFrom(rec, v, m2, m2.h); if (!pts || !pts.eyeL || !pts.eyeR || !mk) { skipped.push(v + ' #' + (f + 1) + ' (ยังไม่มี Datum)'); continue }
+          const pk = cutPack(v, m2, pts, mk, rec, f); if (!pk.cuts) { skipped.push(v + ' #' + (f + 1) + ' (ไม่มีเส้นแบ่งโซน)'); continue } if (!(pk.info?.neck?.own && pk.info?.hip?.own)) soft.push(v + ' #' + (f + 1));
+          const res = PA.warp(img, m2, pk.marks, config.scale, { ...config.options, zoneEdits: null, flip: pic.flip, points: pts, cuts: pk.cuts, grow: Math.round(m2.H * .03) });
+          const oc = document.createElement('canvas'); oc.width = res.canvas.width; oc.height = res.canvas.height; const g = oc.getContext('2d'); if (pic.flip) { g.translate(oc.width, 0); g.scale(-1, 1) } g.drawImage(res.canvas, 0, 0);
+          if (!items.some(x => x.file === pic.file)) items.push({ file: pic.file, dataUrl: oc.toDataURL('image/png') }) }
+        if (!items.length) { $a('adjMsg').textContent = 'ไม่มีเฟรมที่ปรับได้: ' + skipped.join(' · '); return }
+        if (soft.length && !confirm('เฟรมเหล่านี้ยังไม่ได้ยืนยันเส้นแบ่งโซน (ใช้เส้นแนะนำ): ' + soft.join(', ') + '\n\nเขียนทับต่อไหม?')) { $a('adjMsg').textContent = 'ยกเลิก — ยืนยันเส้นใน 📍 Datum ของเฟรมเหล่านั้นก่อน'; return }
+        window.parent.postMessage({ type: 'asset-lineup:apply', items, note: 'ปรับสัดส่วน หัว/ลำตัว/ขา (ทุกเฟรม)' }, location.origin);
+        for (const v of new Set(jobs.map(j => j.v))) DONE[doneKey(e.id, vp.action, v)] = 'adj'; saveDone();
+        $a('adjMsg').textContent = 'ส่งให้ Asset Studio ' + items.length + ' ภาพแล้ว' + (skipped.length ? ' · ข้าม ' + skipped.length + ': ' + skipped.join(', ') : '') + ' — ตรวจผลก่อนกด Push (Cart)'
+      } catch (err) { $a('adjMsg').textContent = 'ไม่สำเร็จ: ' + err.message } finally { btn.disabled = false } };
     paintAdj = redraw; redraw();
   }
 }

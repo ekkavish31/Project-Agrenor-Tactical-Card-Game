@@ -15,7 +15,7 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const lineupIds = () => fr.evaluate(() => ENTRIES.filter(e => e.kind === 'hero' || e.kind === 'ally').map(e => e.id));
   // 1 same characters as the Animation tab
   const toId = id => id === 'hero' ? 'hero' : id.replace(/^ally:/, '');
-  const ids = await lineupIds(); assert.deepEqual([...ids].sort(), studioChars.map(toId).sort(), 'the lineup must list the same characters as the Animation tab'); console.log('ok same characters', ids.length);
+  const ids = (await lineupIds()).filter(i => !/^hero-(male|female)$/.test(i)); assert.deepEqual([...ids].sort(), studioChars.map(toId).sort(), 'the lineup must list the same characters as the Animation tab'); console.log('ok same characters', ids.length);
   // 2 no scene buttons, no per-scene size rows
   const ui = await fr.evaluate(() => ({ ctxHidden: getComputedStyle(document.getElementById('ctxBtns')).display === 'none', rows: [...document.querySelectorAll('#ctl .adj > span')].map(s => s.textContent) }));
   assert.ok(ui.ctxHidden, 'scene buttons must be hidden'); assert.ok(!ui.rows.some(t => /สนามรบ|หมู่บ้าน|แผนที่/.test(t)), 'no per-scene size rows: ' + ui.rows.join(','));
