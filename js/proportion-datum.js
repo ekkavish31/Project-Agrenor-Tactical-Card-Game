@@ -33,6 +33,8 @@
     const cx = () => { const xs = Object.values(pts).map(p => p[0]); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : .5 };
     /* v98.399 · a centre point's HEIGHT fallback stays inside the same front/back group — only the mirror partner (OPP[dir]) may lend one, never the other group */
     for (const k of CENTRE) if (!pts[k] && opp[k]) { pts[k] = [cx(), opp[k][1]]; from[k] = 'height' }
+    /* v98.456 · ⚙ AUTO DATUM: guesses made by the program (rec.auto[dir].pts) fill only what is still missing, last of all, and are never "own" — a suggestion the player has to confirm */
+    for (const [k, v] of Object.entries(rec?.auto?.[dir]?.pts || {})) if (!pts[k]) { pts[k] = v; from[k] = 'auto' }
     return { pts, own: new Set(Object.keys(own)), from };
   }
   const mid = (a, b) => a && b ? [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] : null;
@@ -79,11 +81,25 @@
     const top = P.crown ? P.crown[1] : 2 * eye[1] - P.chin[1];   /* v98.451 · the placed crown, else the old guess (eye − (chin − eye)) */
     const A = (P.chin[1] - top) * h, B = (crotchY - P.chin[1]) * h, C = (feet - crotchY) * h, total = A + B + C;
     if (!(A > 0 && B > 0 && C > 0)) return out;
-    out.headSrc = P.crown ? 'crown' : 'estimate'; out.top = top; out.bottom = feet; out.crotchY = crotchY; out.lengths = { head: A, torso: B, legs: C, total }; out.proportions = { head: A / total, torso: B / total, legs: C / total }; out.heads = total / A;
+    out.headSrc = P.crown && pointsFor(rec, dir).from.crown !== 'auto' ? 'crown' : 'estimate'; out.top = top; out.bottom = feet; out.crotchY = crotchY; out.lengths = { head: A, torso: B, legs: C, total }; out.proportions = { head: A / total, torso: B / total, legs: C / total }; out.heads = total / A;
     return out;
   }
   /* v98.454 · the points a player places now: eyes · chin · crown · shoulders — plus the arm points only for a raised-arm pose (armMode 'raised' = wrists, 'custom' = elbows + wrists).
      Crotch, knees and ankles are retired (the ✂ leg line and the floor replace them); old values stay in the record and are still used when present. */
+  /* ⚙ AUTO DATUM — a first guess from the silhouette box m = { w, h, top, bottom, H, x0, x1 } (measure() of the lineup). Priors are fractions of the box height, taken from
+     the points the player placed on Hero · Bram · Orla · Berg (standing, SW): crown ≈ .095 · eyes ≈ .175 · chin ≈ .247 · shoulders ≈ chin + .044 · half shoulder width ≈ .115 ·
+     leg line ≈ .60 · the head sits a little left of the box centre in SW (mirrored in SE). The floor is exact (lowest solid pixel). Errors of ±.02 H on the head are normal —
+     that is why every value is only a suggestion. */
+  const AUTO = { crown: .095, eye: .175, chin: .247, eyeSep: .06, shDy: .044, shHalf: .115, hip: .6, headDx: .07, neckDy: .012 };
+  function autoGuess(m, dir) {
+    if (!m || !(m.H > 20) || !(m.w > 0) || !(m.h > 0)) return null;
+    const H = m.H, cx = (m.x0 + m.x1) / 2, front = GROUP[dir] !== 'back', dx = front ? (dir === 'SE' || dir === 'NE' ? 1 : -1) * AUTO.headDx : 0, hx = cx + dx * H, shx = cx + dx * H * .5;
+    const X = v => +(v / m.w).toFixed(4), Y = t => +((m.top + t * H) / m.h).toFixed(4), P = (x, t) => [X(x), Y(t)], chinT = AUTO.chin, hipT = AUTO.hip;
+    const pts = { eyeL: P(hx - AUTO.eyeSep * H / 2, AUTO.eye), eyeR: P(hx + AUTO.eyeSep * H / 2, AUTO.eye), chin: P(hx, chinT), crown: P(hx, AUTO.crown), shL: P(shx - AUTO.shHalf * H, chinT + AUTO.shDy), shR: P(shx + AUTO.shHalf * H, chinT + AUTO.shDy) };
+    const cuts = { neck: [P(hx - .16 * H, chinT + AUTO.neckDy), P(hx + .16 * H, chinT + AUTO.neckDy)], hip: [P(cx - .22 * H, hipT), P(cx + .22 * H, hipT)] };
+    return { pts, cuts, floor: +((m.bottom + 1) / m.h).toFixed(4), at: Date.now() } }
+  /* store a guess in rec.auto[dir] (never over the player's own points / lines) and set the floor when it is missing */
+  function setAuto(rec, dir, g, m) { if (!rec || !g) return false; (rec.auto ||= {})[dir] = { pts: g.pts, cuts: g.cuts, at: g.at }; if (m) ensureFloor(rec, dir, m); return true }
   const REQUIRED = ['eyeL', 'eyeR', 'chin', 'shL', 'shR'], ARM_DEFAULT = { windup: 'raised', strike: 'raised' };
   const armMode = (rec, pose) => rec?.armMode || ARM_DEFAULT[pose] || 'none';
   const flowKeys = (rec, pose) => { const m = armMode(rec, pose); return ['eyeL', 'eyeR', 'chin', 'crown', 'shL', 'shR', ...(m === 'raised' ? ['wristL', 'wristR'] : m === 'custom' ? ['elbowL', 'wristL', 'elbowR', 'wristR'] : [])] };
@@ -100,8 +116,8 @@
     return out.length ? { k: out.reduce((a, b) => a + b, 0) / out.length, n: out.length } : null }
   /* v98.451 · THE head ruler: skull top → chin as a distance (a tilted head keeps its size). src 'crown' = measured from the placed crown point,
      'estimate' = 2 × eye→chin (only a guess; the head-size rules refuse to auto-fill from it). null when eyes / chin are missing */
-  function headUnit(rec, dir, w = 384, h = 384) { const { pts: P } = pointsFor(rec, dir), D = (a, b) => Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h), eye = mid(P.eyeL, P.eyeR);
-    if (P.crown && P.chin) return { px: D(P.crown, P.chin), src: 'crown' }; if (eye && P.chin) return { px: 2 * D(eye, P.chin), src: 'estimate' }; return null }
+  function headUnit(rec, dir, w = 384, h = 384) { const { pts: P, from } = pointsFor(rec, dir), D = (a, b) => Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h), eye = mid(P.eyeL, P.eyeR);
+    const autoCrown = from.crown === 'auto'; if (P.crown && P.chin && !autoCrown) return { px: D(P.crown, P.chin), src: 'crown' }; if (eye && P.chin) return { px: 2 * D(eye, P.chin), src: 'estimate' }; return null }
   /* scales (head · torso · legs, legs = 1) that give the TARGET the template's spans · only the selected parts move (the others keep 1) */
   function matchScales(tpl, tgt, sel = { head: true, torso: true, legs: true }) { if (!tpl || !tgt) return null; const r = k => tpl[k] / tgt[k], ks = ['head', 'torso', 'legs'].filter(k => sel[k]);
     if (!ks.length) return null; const base = sel.legs || ks.length === 3 ? r('legs') : ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tgt[k], 0) / ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tpl[k], 0);
@@ -216,7 +232,9 @@
     for (const k of ['neck', 'hip']) {
       if (own[k] && own[k].length >= 2) out[k] = { pts: own[k], own: true, from: 'own' };
       else if (opp[k] && opp[k].length >= 2) out[k] = { pts: opp[k].map(p => [1 - p[0], p[1]]).reverse(), own: false, from: 'mirror' };
-      else if (def[k]) out[k] = { pts: def[k], own: false, from: hint?.[k] ? 'learned' : 'default' } }
+      else if (def[k] && hint?.[k]) out[k] = { pts: def[k], own: false, from: 'learned' }
+      else if (rec?.auto?.[dir]?.cuts?.[k]?.length >= 2) out[k] = { pts: rec.auto[dir].cuts[k], own: false, from: 'auto' }
+      else if (def[k]) out[k] = { pts: def[k], own: false, from: 'default' } }
     return out }
   /* a confirmed line of another picture of the same character · same front/back group → how far below the chin (neck) / above the crotch (hip) and how long, in face / torso units */
   function cutHint(id, group, skip) {
@@ -324,6 +342,6 @@
     if (!Object.keys(R0).length) delete d[id];
     return d;
   }
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, REQUIRED, flowKeys, armMode, ensureFloor, headUnit, crownRatio, widthOf, WIDTH_KEYS, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, autoGuess, setAuto, AUTO, REQUIRED, flowKeys, armMode, ensureFloor, headUnit, crownRatio, widthOf, WIDTH_KEYS, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
