@@ -128,7 +128,7 @@
  (()=>{const b=$('lineupDock')?.querySelector('.dock-body');if(!b)return;try{const k=localStorage.getItem('studio.dockH');if(k)b.style.height=k+'px'}catch(x){}
   let down=false;b.addEventListener('pointerdown',ev=>{const r=b.getBoundingClientRect();down=ev.clientY>r.bottom-18&&ev.clientX>r.right-18});addEventListener('pointerup',()=>{if(!down)return;down=false;dockAuto=false;try{localStorage.setItem('studio.dockH',String(Math.round(b.getBoundingClientRect().height)))}catch(x){}const fit=$('dockFit');if(fit)fit.hidden=false});
   const bar=$('lineupDock').querySelector('.dock-bar'),fit=document.createElement('button');fit.id='dockFit';fit.type='button';fit.textContent='↕ พอดี';fit.title='ความสูงพอดีเนื้อหาอัตโนมัติ';fit.hidden=dockAuto;fit.onclick=()=>{dockAuto=true;dockLast=0;try{localStorage.removeItem('studio.dockH')}catch(x){}fit.hidden=true;try{$('lineupDockFrame').contentWindow.dispatchEvent(new Event('load'))}catch(x){}};bar.insertBefore(fit,$('dockToggle'))})();
- function dockSync(on){const d=$('lineupDock');if(!d)return;document.body.classList.toggle('anim-mode',!!on);if(!on)return;const f=$('lineupDockFrame');if(f&&!f.src&&!d.classList.contains('min'))f.src='scale-lineup.html?studio=1&dock=1&v=98.452'}
+ function dockSync(on){const d=$('lineupDock');if(!d)return;document.body.classList.toggle('anim-mode',!!on);if(!on)return;const f=$('lineupDockFrame');if(f&&!f.src&&!d.classList.contains('min'))f.src='scale-lineup.html?studio=1&dock=1&v=98.453'}
  (()=>{const d=$('lineupDock'),b=$('dockToggle');if(!d||!b)return;let min=false;try{min=localStorage.getItem('studio.dockMin')==='1'}catch(e){}const set=v=>{min=v;d.classList.toggle('min',v);b.textContent=v?'แสดง ▾':'ย่อ ▴';try{localStorage.setItem('studio.dockMin',v?'1':'0')}catch(e){}if(!v)dockSync(document.body.classList.contains('anim-mode'))};set(min);b.onclick=()=>set(!min)})();
  /* v98.445 · fullscreen keeps the same iframe and unsaved editor state. */
  (()=>{const d=$('lineupDock'),b=$('dockFullscreen'),f=$('lineupDockFrame');if(!d||!b)return;
@@ -142,13 +142,16 @@
  })();
  function renderNav(){let search=state.entityQuery.toLowerCase(),all=state.model.filter(e=>e.group===state.group),ee=all.filter(e=>(e.name+' '+e.id).toLowerCase().includes(search));
   const ANIM=['characters','npcs','monsters','bosses'];dockSync(ANIM.includes(state.group));if(ANIM.includes(state.group))emit('studio-group',{group:state.group});   /* v98.399 · tells the Scale Lineup dock which left-panel group tab is active, so it can follow it instead of keeping its own duplicate filter */const subs=ANIM.includes(state.group)?'<div class="subtabs">'+[['characters','ตัวละคร'],['npcs','NPC ชาวบ้าน'],['monsters','มอนสเตอร์'],['bosses','มินิบอส / บอส']].map(([g,n])=>`<button data-sub="${g}" class="${g===state.group?'on':''}">${n}</button>`).join('')+'</div>':'';
+  /* v98.452 · the hero comes first and its two looks (ชาย / หญิง) are two entries side by side instead of one that switches */
+  const V0=window.StudioVariants,heroAt=ee.findIndex(x=>x.id==='hero');if(heroAt>0)ee.unshift(...ee.splice(heroAt,1));
+  if(V0&&ee[0]?.id==='hero'){const h0=ee[0];ee.splice(0,1,...V0.LOOKS.map(([lk,nm])=>({...h0,look:lk,name:'ตัวหลัก · '+nm})))}
   $('cats').innerHTML=subs+`<h4>${esc(C.groups[state.group])} · ${all.length}</h4><input id="entitySearch" type="search" placeholder="ค้นหาตัว / วัตถุ" aria-label="ค้นหาในหมวด" value="${esc(state.entityQuery)}">`+ee.map(e=>{
    let a=(e.id==='hero'?e.assets.find(a=>a.variant&&/idle-sw\.webp$/.test(a.file))||e.assets.find(a=>a.id==='tactics-hero-se-idle'):null)||e.assets.find(a=>/^(card-|enemy-|ally-)/.test(a.id)&&!a.animation)||e.assets.find(a=>!a.animation)||e.assets[0];
-   return `<button data-entity="${esc(e.id)}" class="${e.id===state.entity?'on':''}">${e.group==='characters'||e.group==='npcs'?`<img class="bust" data-bust="${esc(e.id)}" data-fallback="${esc(a?.file||'')}" alt="">`:a?.file?imgTag(a.file):''}<span class="nav-copy"><b>${esc(e.name)}</b><small>${e.clips.filter(c=>c.kind!=='static').length} ชุดท่า · ${e.assets.length} ไฟล์${e.rank==='boss'?' · บอส':e.rank==='miniboss'?' · มินิบอส':''}</small></span></button>`}).join('')+(ee.length?'':'<p class="muted">ไม่พบรายการ</p>');
+   return `<button data-entity="${esc(e.id)}"${e.look?` data-look="${e.look}"`:''} class="${e.id===state.entity&&(!e.look||window.StudioVariants?.active===e.look||(window.StudioVariants?.active==='classic'&&e.look==='male'))?'on':''}">${e.look?`<img class="bust" src="${esc(window.HeroVariant?.VARIANTS?.[e.look]?.idle?.SW||`assets/characters/hero-${e.look}/idle-sw.webp`)}" alt="">`:e.group==='characters'||e.group==='npcs'?`<img class="bust" data-bust="${esc(e.id)}" data-fallback="${esc(a?.file||'')}" alt="">`:a?.file?imgTag(a.file):''}<span class="nav-copy"><b>${esc(e.name)}</b><small>${e.clips.filter(c=>c.kind!=='static').length} ชุดท่า · ${e.assets.length} ไฟล์${e.rank==='boss'?' · บอส':e.rank==='miniboss'?' · มินิบอส':''}</small></span></button>`}).join('')+(ee.length?'':'<p class="muted">ไม่พบรายการ</p>');
   $('cats').querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>gotoGroup(b.dataset.sub));
   $('entitySearch').oninput=e=>{let caret=e.target.selectionStart;state.entityQuery=e.target.value;renderNav();$('entitySearch').focus();$('entitySearch').setSelectionRange(caret,caret)};
   fillBusts();
-  $('cats').querySelectorAll('[data-entity]').forEach(b=>b.onclick=()=>{state.entity=b.dataset.entity;emit('studio-select',{id:b.dataset.entity});sel=null;selected=null;document.body.classList.remove('detail-open');render();$('gridWrap').scrollTop=0});hydrate($('cats'));
+  $('cats').querySelectorAll('[data-entity]').forEach(b=>b.onclick=()=>{if(b.dataset.look&&window.StudioVariants&&b.dataset.look!==window.StudioVariants.active){setLook(b.dataset.look);if(window.StudioVariants.active!==b.dataset.look)return}state.entity=b.dataset.entity;emit('studio-select',{id:b.dataset.entity});sel=null;selected=null;document.body.classList.remove('detail-open');render();$('gridWrap').scrollTop=0});hydrate($('cats'));
  }
  /* v98.76 · hero looks (ตัวเดิม / ชาย / หญิง): the open look's edits sit at the top level of the manifest, see js/studio-variants.js */
  let pristine=null;
@@ -353,6 +356,9 @@
   return [...studioStand(id,view),[`assets/village-town/npc/${k}/${v}-stand.webp`,false],[`assets/village-town/npc/${k}/${w}-stand.webp`,true],[`assets/tactics/${k}_${v}_idle.webp`,false],[`assets/tactics/${k}_${w}_idle.webp`,true]];
  }
  const lineup={
+  /* v98.452 · the hero's open look (male / female / classic) and a way to switch it from the Lineup */
+  look(){return window.StudioVariants?.active||'classic'},
+  setLook(id){setLook(id);return window.StudioVariants?.active===id},
   /* the characters of the Animation tab (same list): id, name, and the clips that have frames */
   entities(){return state.model.filter(e=>e.group==='characters'||e.group==='npcs').map(e=>({id:e.id,name:e.name,clips:e.clips.filter(c=>c.frames?.length).map(c=>({id:c.id,action:c.action,view:c.view,n:c.frames.length}))}))},
   /* a picture of that character: a chosen clip frame, or the standing picture. → {url,file,flip,label} or null */
