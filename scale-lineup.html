@@ -71,7 +71,7 @@ body.ratio-layout.dock main>section:nth-of-type(2){grid-area:stage}body.ratio-la
 #insp .ipCtl .adj>span{width:64px}
 #insp .ipCtl select{min-width:0;max-width:100%}
 #insp .ipCtl button{white-space:normal}
-#insp #adjRef{flex:1 1 200px;max-width:calc(100% - 68px)}
+#insp #adjRef{flex:1 1 160px;max-width:100%}#insp #adjRefKind{flex:0 0 auto}
 @container lineup-inspector (min-width:760px){#insp .ipGrid{grid-template-columns:minmax(0,1fr) 360px}}
 @media(max-width:900px){body.dock main{grid-template-columns:1fr}}
 body.world header h1 small{display:none}
@@ -460,7 +460,7 @@ function inspectRatio() {
     <div class="adj" id="rlRow" style="gap:3px;flex-wrap:wrap"></div>
     <details id="adjOpts" style="margin:4px 0"><summary id="adjOptsSum" title="ต้นแบบ · วิธีเทียบ · รอยต่อ · ความคม">⚙️ ตัวเลือก</summary>
     <div class="adj"><span hidden><input type="radio" name="adjMode" value="ref"><input type="radio" name="adjMode" value="man" checked></span><label title="ขยับเส้นคาง/ขาหนีบด้านบน = ปรับตำแหน่งที่จับภาพ"><input type="checkbox" id="adjKeep" checked> คงสูงหัว–ข้อเท้า</label></div>
-    <div class="adj" title="ใช้สัดส่วน (หัว · ลำตัว · ขา) จาก datum ของตัวต้นแบบ กับ datum ของตัวนี้ · ตามต้นแบบ = คำนวณให้อัตโนมัติ · แมนวล = ใส่ค่าแนะนำแล้วปรับเอง"><span title="ต้นแบบ">⭐</span><select id="adjRef"></select><button id="adjRefFill" type="button" title="ใส่ค่าจากต้นแบบแล้วปรับเอง">✋ ใส่ค่า</button></div>
+    <div class="adj" title="ใช้สัดส่วน (หัว · ลำตัว · ขา) จาก datum ของตัวต้นแบบ กับ datum ของตัวนี้ · ตามต้นแบบ = คำนวณให้อัตโนมัติ · แมนวล = ใส่ค่าแนะนำแล้วปรับเอง"><span title="ต้นแบบ">⭐</span><select id="adjRefKind" title="ชนิดต้นแบบ (เลือกได้ทีละแบบ): เชิงราบ = สัดส่วน หัว:ลำตัว:ขา ของท่า · เชิงลึก = ท่าอ้างอิงแนวลึก"><option value="flat">🧍 เชิงราบ</option><option value="depth">⚓ เชิงลึก</option></select><select id="adjRef"></select><button id="adjTplSave" type="button" title="บันทึกท่า/ตัวที่เปิดอยู่นี้เป็นต้นแบบ (เก็บได้หลายอัน)">💾 บันทึกต้นแบบ</button><button id="adjTplDel" type="button" title="ลบต้นแบบที่เลือกอยู่ (ลบได้เฉพาะที่บันทึกไว้)">🗑 ลบ</button><button id="adjRefFill" type="button" title="ใส่ค่าจากต้นแบบแล้วปรับเอง">✋ ใส่ค่า</button></div>
     <div class="adj" title="📏 ไม้บรรทัดความหนา = วัดความหนาตั้งฉากกับกระดูกที่จุดเดียวกันทั้งตัวต้นแบบและตัวนี้ เทียบกับความยาวหน้า (ตา→คาง) แล้วให้ตัวขยาย/ย่อตามผลเทียบกับหัว — ไม่ใช้ความสูง จึงเทียบข้ามท่าย่อ/ก้มได้ · สัดส่วนเดิม = เทียบเปอร์เซ็นต์ หัว:ลำตัว:ขา (ท่าเดียวกันเท่านั้น)"><span title="วิธีเทียบ">⚖️</span><select id="adjMethod"><option value="ruler">📏 ไม้บรรทัดความหนา (ข้ามท่าได้)</option><option value="span">สัดส่วน หัว:ลำตัว:ขา (ท่าเดียวกัน)</option></select></div>
     <div class="adj" title="ครอบตามทรง = จับเฉพาะรูปทรงของหัว/ลำตัว/ขา แล้วบิดภาพต่อเนื่องชิ้นเดียว · แถบนุ่ม = จับเป็นแถบตามเส้นตัด แต่ต่อเนียน"><span title="รอยต่อ">🧵</span><select id="adjSeam"><option value="shape">ครอบตามทรง</option><option value="band">แถบนุ่ม</option></select><span style="width:auto">นุ่ม</span><input type="range" id="adjSoft" min="2" max="20" step="1" value="7" style="width:80px"></div>
     <div class="adj" title="ส่วนที่ขยาย: อัปสเกลแบบ bicubic แล้วเพิ่มความคมตามที่ขยาย (ออโต้) หรือกำหนดเอง"><span title="ความคม">🔪</span><select id="adjSharpMode"><option value="auto">ออโต้ (ตามที่ขยาย)</option><option value="man">แมนวล</option></select><input type="range" id="adjSharp" min="0" max="150" step="5" value="60" style="width:110px"><b id="adjSharpV">60%</b></div>
@@ -512,24 +512,25 @@ function inspectRatio() {
        v98.398 · "__std__" = the TEAM STANDARD set once (js/proportion-datum.js STD_KEY) — a fixed snapshot, so it stays put even if that character's own picture or datum is edited later
        v98.399 · PD.spans(r0, q.dir) already pools only within q.dir's own front/back pair (js/proportion-datum.js) — no more cross-group 'SW' fallback here */
     const recOf = id => PD && (PD.get(id, q.pose, q.frame) || PD.get(id, 'idle', 0)), spOf = id => { const r0 = recOf(id); return r0 && PD.spans(r0, q.dir) };
-    const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)), STD = PD?.std(GRP, q.pose);
+    const tplList = ENTRIES.filter(x => x.id !== e.id && !isW(x) && spOf(x.id)); let STD = PD?.std(GRP, q.pose); const STD0 = STD;
     /* v98.434 · 📏 ruler of the standard: this pose's own standard first, else the standard of ANOTHER pose is lent (idle first) with a note */
-    const RSD = (() => { if (STD) return { s: STD, from: null }; for (const p of ['idle', ...PD.stdPoses(GRP)]) { const s0 = p !== q.pose && PD.std(GRP, p); if (s0?.ruler?.bone === 'manual') return { s: s0, from: p } }
+    const calcRSD = () => { if (STD) return { s: STD, from: null }; for (const p of ['idle', ...PD.stdPoses(GRP)]) { const s0 = p !== q.pose && PD.std(GRP, p); if (s0?.ruler?.bone === 'manual') return { s: s0, from: p } }
       if (STD?.girthFace) return { s: STD, from: null };
       /* v98.434 · nothing in this front/back group: lend the OTHER group's ruler (leg width ÷ face length does not change when the character turns round) — flagged, and the front↔back check is shown */
       const OG = GRP === 'front' ? 'back' : 'front'; for (const p of ['idle', ...PD.stdPoses(OG)]) { const s0 = PD.std(OG, p); if (s0?.ruler) return { s: s0, from: p, cross: true } }
-      return STD ? { s: STD, from: null } : null })();
+      return STD ? { s: STD, from: null } : null }; let RSD = calcRSD(); const RSD0 = RSD;
     const lendTxt = RSD?.from ? (RSD.cross ? `มุม${GRP === 'front' ? 'หลัง' : 'หน้า'} ท่า ${RSD.from}` : `ท่า ${RSD.from}`) : '';
     /* v98.452 · the thickness ruler is MEASURED BY HAND now: two clicked points across one bone (📍 Datum → 📏 วัดความหนาท่อนขา), on the template and on the target alike */
     const RSPEC = { group: 'manual', t: .5 }, BONE_TH = { manual: 'ท่อนขา (วัดเอง)' };
     /* v98.426 · the character's OWN ⚓ depth-reference pose (chosen in the Datum editor) is also offered as a template — its spans only (no girth: that pose's picture is not the one on screen) */
-    const MST = PD?.master ? PD.master(e.id, q.dir) : null, mRec = MST && MST.set && !(MST.pose === q.pose && (MST.frame | 0) === (q.frame | 0)) ? PD.get(e.id, MST.pose, MST.frame) : null, mSpans = mRec ? PD.spans(mRec, q.dir) : null, MST_NAME = mSpans ? `⚓ ท่าอ้างอิงแนวลึกของตัวนี้ · ${PD.masterName(MST)}` : '';   /* v98.426 · only the standard of this very pose */
+    let MST = PD?.master ? PD.master(e.id, q.dir) : null, mRec = MST && MST.set && !(MST.pose === q.pose && (MST.frame | 0) === (q.frame | 0)) ? PD.get(e.id, MST.pose, MST.frame) : null, mSpans = mRec ? PD.spans(mRec, q.dir) : null, MST_NAME = mSpans ? `⚓ ท่าอ้างอิงแนวลึกของตัวนี้ · ${PD.masterName(MST)}` : '';
+    const MST0 = MST, mRec0 = mRec, mSpans0 = mSpans, MST_NAME0 = MST_NAME; let TPLSEL = null;   /* v98.460 · saved templates swap STD / MST / mRec for the selected snapshot (applyRef) */   /* v98.426 · only the standard of this very pose */
     /* v98.434 · thickness of the ⚓ master pose, compared through the FACE (eye→chin), which a crouch does not change — then expressed as this
        picture's ÷height numbers so the table, the auto widths and the check work unchanged. Source, first found: the measurement remembered
        when that pose was shown · the standard of that pose when it is this character · the master picture itself, loaded from Asset Studio. */
     let mLoading = false;
     const masterParts = () => {
-      if (!mRec) return null; let pf = PD.girthGet?.(e.id, MST.pose, MST.frame, q.dir)?.perFace;
+      if (!mRec) return null; if (TPLSEL?.kind === 'depth') return TPLSEL.girthFace || null; let pf = PD.girthGet?.(e.id, MST.pose, MST.frame, q.dir)?.perFace;
       if (!pf) { const s0 = PD.std(GRP, MST.pose); if (s0?.id === e.id && s0.girthFace) pf = s0.girthFace }
       if (!pf) loadMasterGirth(); return pf || null;
     };
@@ -540,8 +541,20 @@ function inspectRatio() {
         const k2 = document.createElement('canvas'); k2.width = img.naturalWidth; k2.height = img.naturalHeight; const g2 = k2.getContext('2d', { willReadFrequently: true }); if (pic.flip) { g2.translate(k2.width, 0); g2.scale(-1, 1) } g2.drawImage(img, 0, 0);
         const gg = PD.girth(mRec, q.dir, { d: g2.getImageData(0, 0, k2.width, k2.height).data, w: k2.width, h: k2.height }); if (gg) { PD.girthPut(e.id, MST.pose, MST.frame, q.dir, gg); if (cv.isConnected) schedulePreview() }
       } catch (err) { } finally { mLoading = false } };
-    $a('adjRef').innerHTML = (RSD ? `<option value="__std__">⭐ มาตรฐานทีม · ${GRP_TH} (${RSD.s.name})${RSD.from ? ' · ยืมไม้บรรทัดจาก' + lendTxt : ''}</option>` : '') + (mSpans ? `<option value="__master__">${MST_NAME}</option>` : '') + (tplList.length ? tplList.map(x => `<option value="${x.id}"${mem.ref === x.id ? ' selected' : ''}>${x.name}${STD?.id === x.id ? ' ⭐' : ''}</option>`).join('') : (RSD ? '' : (RSD || mSpans ? '' : '<option value="">— ยังไม่มีตัวที่วาง datum ครบใน ' + GRP_TH + ' —</option>')));
-    $a('adjRef').value = (mem.ref && $a('adjRef').querySelector(`option[value="${mem.ref}"]`)) ? mem.ref : (RSD ? '__std__' : mSpans ? '__master__' : (tplList[0]?.id || ''));
+    const KIND_OF = v => v === '__master__' ? 'depth' : String(v).startsWith('tpl:') ? (PD.tplGet(v.slice(4))?.kind || 'flat') : 'flat';
+    const applyRef = v => { v = v || ''; const t = v.startsWith('tpl:') ? PD.tplGet(v.slice(4)) : null; TPLSEL = t; STD = STD0; MST = MST0; mRec = mRec0; mSpans = mSpans0; MST_NAME = MST_NAME0;
+      if (t && t.kind === 'flat') { STD = { ...t, method: 'datum-body-v1' }; mem.ref = '__std__' }
+      else if (t && t.kind === 'depth') { MST = { pose: t.pose, frame: 0, set: true }; mRec = t.rec; mSpans = PD.spans(t.rec, q.dir) || t.spans; MST_NAME = '⚓ ' + t.name; mem.ref = '__master__' }
+      else mem.ref = v;
+      RSD = calcRSD(); mem.refSel = v; mem.kind = t ? t.kind : KIND_OF(v); const dl = $a('adjTplDel'); if (dl) dl.disabled = !t };
+    /* v98.460 · the ⭐ box offers ONE kind at a time (เชิงราบ / เชิงลึก); saved templates of that kind (many, deletable) sit in the same list */
+    const buildRef = () => { const want = mem.refSel ?? mem.ref ?? '', kind = mem.kind || (want ? KIND_OF(want) : (RSD0 ? 'flat' : mSpans0 ? 'depth' : 'flat')), saved = PD.tplList(kind, GRP), sv = saved.map(t => `<option value="tpl:${t.id}">💾 ${String(t.name).replace(/</g, '&lt;')}</option>`).join('');
+      $a('adjRefKind').value = kind; mem.kind = kind;
+      let h = kind === 'flat' ? (RSD0 ? `<option value="__std__">⭐ มาตรฐานทีม · ${GRP_TH} (${RSD0.s.name})${RSD0.from ? ' · ยืมไม้บรรทัดจาก' + lendTxt : ''}</option>` : '') + sv + tplList.map(x => `<option value="${x.id}">${x.name}${STD0?.id === x.id ? ' ⭐' : ''}</option>`).join('')
+        : (mSpans0 ? `<option value="__master__">${MST_NAME0}</option>` : '') + sv;
+      if (!h) h = `<option value="">— ยังไม่มีต้นแบบ${kind === 'depth' ? 'เชิงลึก (ตั้งท่าอ้างอิงแนวลึกใน 📍 Datum หรือกด 💾 บันทึกต้นแบบ)' : 'เชิงราบ (วาง 📍 Datum ให้ครบแล้วกด 💾 บันทึกต้นแบบ)'} —</option>`;
+      $a('adjRef').innerHTML = h; const ok = want && [...$a('adjRef').options].some(o => o.value === want); $a('adjRef').value = ok ? want : ($a('adjRef').options[0]?.value || ''); applyRef($a('adjRef').value) };
+    buildRef();
     /* v98.434 · 📏 THE RULER: one cut across one bone, ratio = width ÷ face · own picture vs template */
     let ownR; const ownRule = () => { if (ownR !== undefined) return ownR; try { const wm = PD.widthOf(datumRec, q.dir, c.m.w, c.m.h); ownR = wm ? { group: 'manual', t: .5, w: wm.px, ratio: wm.ratio, headSrc: wm.headSrc, own: wm.own, level: wm.own ? 'ok' : 'warn', lines: wm.lines, spread: 0, sides: 1 } : null } catch (err) { ownR = null } return ownR };
     const refRule = () => { try {
@@ -578,9 +591,9 @@ function inspectRatio() {
       tplSpans = tp; const s0 = PD.matchScales(tp, tg, sel()); if (!s0) return { note: 'เลือกส่วนที่จะปรับก่อน' }; const pc = o => `หัว ${(o.head * 100).toFixed(1)}% · ลำตัว ${(o.torso * 100).toFixed(1)}% · ขา ${(o.legs * 100).toFixed(1)}%`;
       return { ...s0, note: `ต้นแบบ ${useStd ? STD.name + ' ⭐' : useMst ? MST_NAME : ENTRIES.find(x => x.id === mem.ref)?.name}: ${pc(tp)} · ตัวนี้: ${pc(tg)}${useMst && (PD.straightness(mRec, q.dir, c.m.w, c.m.h) ?? 1) < .92 ? ' · ⚠ ท่านี้ขาไม่เหยียด (ย่อ/กางขา) หัวจะดูใหญ่เมื่อใช้กับท่ายืน' : ''}` } };
     /* v98.398 · ขั้นที่ 1: ตั้ง/แสดงมาตรฐานกลางของทีม — เก็บเป็นตัวเลขนิ่ง ไม่อิงภาพที่อาจถูกแก้ภายหลัง · v98.399 แยกมาตรฐานคนละชุดสำหรับมุมหน้า/มุมหลัง */
-    { const isStd = STD?.id === e.id && STD?.dir === q.dir, mySpans = spOf(e.id);
-      $a('stdRow').innerHTML = isStd ? `<b style="color:#1f9a4a">⭐ ตัวนี้คือมาตรฐานของท่า ${q.pose} · ${GRP_TH}</b><small style="color:var(--muted)">(${STD.pose}/${STD.dir} · หัว ${(STD.spans.head * 100).toFixed(1)}% · ลำตัว ${(STD.spans.torso * 100).toFixed(1)}% · ขา ${(STD.spans.legs * 100).toFixed(1)}%)</small><button id="stdClear" type="button">ยกเลิกมาตรฐานท่า ${q.pose}</button> <small style="color:var(--muted)" title="ความหนาท่อนขาที่วัดเองเก็บไปกับมาตรฐานตอนกดตั้ง — วัดใหม่แล้วกดตั้งมาตรฐานอีกครั้ง">📏 ความหนาวัดเอง (ตั้งมาตรฐานใหม่เมื่อวัดใหม่)</small>`
-        : `<button id="stdSet" type="button" ${mySpans ? '' : 'disabled'} style="font-weight:700">⭐ ตั้งตัวนี้เป็นมาตรฐานของท่า ${q.pose} · ${GRP_TH}</button><small style="color:var(--muted)">${mySpans ? '' : '(ต้องวาง 📍 Datum ให้ครบก่อน: ตา 2 · คาง · ขาหนีบ · เท้า 2)'}${STD ? ' · ตอนนี้ตั้งเป็น ' + STD.name : ' · ท่า ' + q.pose + ' ยังไม่มีมาตรฐาน' + (PD.stdPoses(GRP).length ? ' (มีของท่า: ' + PD.stdPoses(GRP).join(', ') + ' — ใช้กับท่านั้นเท่านั้น)' : '')}</small>`;
+    { const isStd = STD0?.id === e.id && STD0?.dir === q.dir, mySpans = spOf(e.id);
+      $a('stdRow').innerHTML = isStd ? `<b style="color:#1f9a4a">⭐ ตัวนี้คือมาตรฐานของท่า ${q.pose} · ${GRP_TH}</b><small style="color:var(--muted)">(${STD0.pose}/${STD0.dir} · หัว ${(STD0.spans.head * 100).toFixed(1)}% · ลำตัว ${(STD0.spans.torso * 100).toFixed(1)}% · ขา ${(STD0.spans.legs * 100).toFixed(1)}%)</small><button id="stdClear" type="button">ยกเลิกมาตรฐานท่า ${q.pose}</button> <small style="color:var(--muted)" title="ความหนาท่อนขาที่วัดเองเก็บไปกับมาตรฐานตอนกดตั้ง — วัดใหม่แล้วกดตั้งมาตรฐานอีกครั้ง">📏 ความหนาวัดเอง (ตั้งมาตรฐานใหม่เมื่อวัดใหม่)</small>`
+        : `<button id="stdSet" type="button" ${mySpans ? '' : 'disabled'} style="font-weight:700">⭐ ตั้งตัวนี้เป็นมาตรฐานของท่า ${q.pose} · ${GRP_TH}</button><small style="color:var(--muted)">${mySpans ? '' : '(ต้องวาง 📍 Datum ให้ครบก่อน: ตา 2 · คาง · ขาหนีบ · เท้า 2)'}${STD0 ? ' · ตอนนี้ตั้งเป็น ' + STD0.name : ' · ท่า ' + q.pose + ' ยังไม่มีมาตรฐาน' + (PD.stdPoses(GRP).length ? ' (มีของท่า: ' + PD.stdPoses(GRP).join(', ') + ' — ใช้กับท่านั้นเท่านั้น)' : '')}</small>`;
       $a('stdSet')?.addEventListener('click', () => { const sp = spOf(e.id); if (!sp) return; const r0 = recOf(e.id), st = r0 && PD.straightness(r0, q.dir, c.m.w, c.m.h);
         if (st != null && st < .92 && !confirm(`ท่า ${q.pose} นี้ขาไม่เหยียดตรง (ระยะขาหนีบ→ข้อเท้า เหลือ ${(st * 100).toFixed(0)}% ของความยาวขาจริง — เข่างอ/ขากาง)\nตัวเลขหัว:ลำตัว:ขา ของท่านี้จะผิดเพี้ยนไปจากท่ายืนปกติ\n\nมาตรฐานนี้ใช้กับท่า ${q.pose} ของตัวอื่นเท่านั้น (ไม่ใช้กับท่าอื่น)\nตั้งเป็นมาตรฐานของท่า ${q.pose} ต่อไหม?`)) return;
         PD.setStd(GRP, q.pose, { method: 'datum-body-v1', id: e.id, name: e.name, pose: q.pose, dir: q.dir, spans: sp, girth: ownGirth()?.frac || null, girthFace: ownGirth()?.perFace || null, ruler: (rr => rr ? { bone: 'manual', t: .5, ratio: rr.ratio, w: rr.px, unit: 'head', headSrc: rr.headSrc, level: 'ok' } : null)(PD.widthOf(r0, q.dir, c.m.w, c.m.h)), at: Date.now() }); inspectRatio() });
@@ -589,7 +602,7 @@ function inspectRatio() {
     const ownSh = () => PD.shoulderRatio(datumRec, q.dir, c.m.w, c.m.h);
     /* the template picture's record + whether it is the SAME pose as this one (only then are sizes % and shoulder width comparable) */
     const tplInfo = () => { let rec = null, dir = q.dir, same = false, spans = null, label = '', cross = false;
-      if (mem.ref === '__std__' && RSD) { const s0 = RSD.s; rec = PD.get(s0.id, s0.pose, 0); dir = s0.dir || q.dir; same = !RSD.from; spans = s0.spans || null; label = s0.name; cross = s0.id !== e.id }
+      if (mem.ref === '__std__' && RSD) { const s0 = RSD.s; rec = s0.rec || PD.get(s0.id, s0.pose, 0); dir = s0.dir || q.dir; same = !RSD.from; spans = s0.spans || null; label = s0.name; cross = s0.id !== e.id }
       else if (mem.ref === '__master__' && mRec) { rec = mRec; label = MST_NAME; spans = mSpans || null }
       else { const x = mem.ref && ENTRIES.find(y => y.id === mem.ref); if (x) { const r1 = PD.get(x.id, q.pose, q.frame); rec = r1 || recOf(x.id); same = !!r1; spans = spOf(x.id); label = x.name; cross = x.id !== e.id } }
       return { rec, dir, same, cross, spans, shoulder: rec ? PD.shoulderRatio(rec, dir, 384, 384) : null, label } };
@@ -628,7 +641,7 @@ function inspectRatio() {
     const previewButtons = ready => { $a('adjApply').disabled = !ready || !inStudio || !c.file; $a('adjPng').disabled = !ready; const ab = $a('adjApplyAll'); if (ab) ab.disabled = !ready || !inStudio || !c.file || !((c.vp?.clips || []).find(x => c.vp.action !== 'pick' && x.action === c.vp.action && x.view === c.vp.view)?.n > 1); };
     const schedulePreview = () => { previewReady = false; previewButtons(false); $a('adjPreviewState').textContent = 'กำลังเตรียมพรีวิว · ยังไม่บันทึก'; cancelAnimationFrame(window.__adjRaf); window.__adjRaf = requestAnimationFrame(() => { if (cv.isConnected) redraw() }); };
     /* v98.398 · until the user picks a mode themselves, follow the team standard automatically once one is set */
-    if (!mem.touched && RSD) { mem.ref = '__std__'; $a('adjRef').value = '__std__' } else if (!mem.touched && mSpans) { mem.ref = '__master__'; $a('adjRef').value = '__master__' }
+    if (!mem.touched && !mem.refSel) { if (RSD0) { mem.kind = 'flat'; mem.refSel = '__std__'; buildRef() } else if (mSpans0) { mem.kind = 'depth'; mem.refSel = '__master__'; buildRef() } }
     $a('adjMethod').value = mem.method; document.querySelector(`input[name=adjMode][value=${mem.mode}]`).checked = true; $a('adjKeep').checked = mem.keep; $a('adjSeam').value = mem.seam || 'shape'; $a('adjSoft').value = mem.soft || 7; $a('adjSharpMode').value = mem.sharpMode || 'auto'; $a('adjSharp').value = mem.sharp ?? 60; document.querySelectorAll('.adjSel').forEach(b => b.checked = !!mem.sel[b.dataset.k]);
 
     /* v98.444 · 📏 USER-DRAWN RULERS: pick an emoji, drag a line on the Before picture (endpoints draggable). The size is stored as a ratio (÷ face, or ÷ height for the head),
@@ -672,7 +685,7 @@ function inspectRatio() {
       } catch (err) { return { marks: baseMarks, cuts: null } } };
     const redraw = () => {
       mem.mode = mode(); mem.sel = sel(); mem.keep = $a('adjKeep').checked; mem.seam = $a('adjSeam').value; mem.soft = +$a('adjSoft').value; mem.sharpMode = $a('adjSharpMode').value; mem.sharp = +$a('adjSharp').value; $a('adjSharp').disabled = mem.sharpMode === 'auto'; $a('adjSharpV').textContent = mem.sharpMode === 'auto' ? 'ออโต้' : mem.sharp + '%';
-      mem.method = $a('adjMethod').value; mem.ref = $a('adjRef').value || mem.ref; tplSpans = null; if (mode() === 'ref') autoFill(); sync(); renderRuler();
+      mem.method = $a('adjMethod').value; applyRef($a('adjRef').value || mem.refSel || mem.ref); tplSpans = null; if (mode() === 'ref') autoFill(); sync(); renderRuler();
       previewReady = false; previewButtons(false);
       const keep = $a('adjKeep').checked, sc = scaleNow(), sourcePoints = PD.pixelPoints(datumRec, q.dir, c.m.w, c.m.h);
       const options = { keepHeight: keep, flip: c.flip, mode: mem.seam, soft: mem.soft / 100, grow: Math.round(c.m.H * .03), sharpen: mem.sharpMode === 'auto' ? 'auto' : mem.sharp / 100, points: sourcePoints, zoneEdits: zoneEditor?.edits?.slice() };
@@ -707,7 +720,15 @@ function inspectRatio() {
 
     };
     document.querySelectorAll('input[name=adjMode],.adjSel,#adjKeep,#adjSeam,#adjSharpMode,#adjRef,#adjMethod').forEach(i => i.onchange = () => { mem.touched = true; schedulePreview() });
-    $a('adjRefFill').onclick = () => { mem.touched = true; mem.ref = $a('adjRef').value; const a = refScales(); document.getElementById('adjMsg').textContent = a.note || ''; if (!a.head) return; A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10; document.querySelector('input[name=adjMode][value=man]').checked = true; redraw() }; $a('adjSharp').oninput = schedulePreview; $a('adjSoft').oninput = schedulePreview;
+    $a('adjRefKind').onchange = () => { mem.touched = true; mem.kind = $a('adjRefKind').value; mem.refSel = ''; buildRef(); schedulePreview() };
+    $a('adjTplSave').onclick = () => { const kind = $a('adjRefKind').value, r0 = recOf(e.id), KT = kind === 'flat' ? 'เชิงราบ' : 'เชิงลึก';
+      const rec = kind === 'depth' && mRec0 ? mRec0 : r0, sp = rec && PD.spans(rec, q.dir); if (!rec || !sp) return alert('ต้องวาง 📍 Datum ให้ครบก่อน (ตา 2 · คาง · ขาหนีบ · เท้า 2) จึงจะบันทึกเป็นต้นแบบได้');
+      const pose = kind === 'depth' && mRec0 ? MST0.pose : q.pose, name = prompt('ตั้งชื่อต้นแบบ' + KT + ' (บันทึกไว้ใช้ซ้ำ ลบได้ภายหลัง)', `${e.name} · ${KT} · ${pose} · ${GRP_TH}`); if (!name) return;
+      const gf = kind === 'depth' && mRec0 ? (PD.girthGet?.(e.id, MST0.pose, MST0.frame, q.dir)?.perFace || null) : (ownGirth()?.perFace || null), rr = PD.widthOf(rec, q.dir, c.m.w, c.m.h);
+      const id = 't' + Date.now().toString(36); PD.tplPut({ id, kind, name: name.trim().slice(0, 60), group: GRP, pose, dir: q.dir, from: e.id, spans: sp, girthFace: gf, ruler: rr ? { bone: 'manual', t: .5, ratio: rr.ratio, w: rr.px, unit: 'head', headSrc: rr.headSrc, level: 'ok' } : null, rec: JSON.parse(JSON.stringify(rec)), at: Date.now() });
+      mem.touched = true; mem.kind = kind; mem.refSel = 'tpl:' + id; buildRef(); schedulePreview(); $a('adjMsg').textContent = '💾 บันทึกต้นแบบ' + KT + ' "' + name + '" แล้ว · เลือกใช้/ลบได้จากช่องต้นแบบ (กด 🛒 ใส่ Cart ทั้งหมด เพื่อส่งขึ้น GitHub)' };
+    $a('adjTplDel').onclick = () => { const v = $a('adjRef').value; if (!v.startsWith('tpl:')) return alert('ลบได้เฉพาะต้นแบบที่บันทึกไว้ (ขึ้นต้นด้วย 💾)'); const t = PD.tplGet(v.slice(4)); if (!t || !confirm('ลบต้นแบบ "' + t.name + '" ?')) return; PD.tplDel(t.id); mem.touched = true; mem.refSel = ''; buildRef(); schedulePreview() };
+    $a('adjRefFill').onclick = () => { mem.touched = true; applyRef($a('adjRef').value); const a = refScales(); document.getElementById('adjMsg').textContent = a.note || ''; if (!a.head) return; A.head = Math.round(a.head * 1000) / 10; A.torso = Math.round(a.torso * 1000) / 10; A.legs = Math.round(a.legs * 1000) / 10; document.querySelector('input[name=adjMode][value=man]').checked = true; redraw() }; $a('adjSharp').oninput = schedulePreview; $a('adjSoft').oninput = schedulePreview;
     document.querySelectorAll('.adjVal').forEach(i => { const change = final => { const value = +i.value; if (!final && (!i.value || value < 50 || value > 200)) { previewReady = false; previewButtons(false); return } mem.touched = true; document.querySelector('input[name=adjMode][value=man]').checked = true; A[i.dataset.k] = Math.max(50, Math.min(200, value || 100)); schedulePreview() }; i.oninput = () => change(false); i.onchange = () => change(true) });
     document.querySelectorAll('.rowFill').forEach(b => b.onclick = () => { mem.touched = true; const k = b.dataset.k; let note = '';
       if ((k === 'torso' || k === 'legs') && mem.method === 'ruler') { const a = refScales(); if (a[k]) A[k] = Math.round(a[k] * 1000) / 10; else note = a.note }   /* length = its own button (the ruler method itself only changes thickness) */
@@ -893,7 +914,7 @@ async function openDatum(e) {
   $d('dtPrev').onclick = () => { const p = frame > 0 && PD.get(e.id, pose, frame - 1); if (!p) { $d('dtMsg').textContent = 'ไม่มีเฟรมก่อนหน้าที่วางไว้'; return } rec = JSON.parse(JSON.stringify(p)); rec.pts ||= {}; save(); draw() };
   $d('dtClearDir').onclick = () => { delete rec.pts[dir]; if (rec.cuts) { delete rec.cuts[dir]; if (!Object.keys(rec.cuts).length) delete rec.cuts } delete dirIdx[dir]; delete gateDone[dir + 'neck']; delete gateDone[dir + 'hip']; save(); advance(); draw() };
   $d('dtClearAll').onclick = () => { if (!confirm('ล้าง datum ทั้งหมดของ ' + e.name + ' ท่านี้ เฟรมนี้ ทุกทิศ?')) return; rec = { pts: {} }; for (const k of Object.keys(dirIdx)) delete dirIdx[k]; PD.remove(e.id, pose, frame); renderRatio(visible()); for (const k of Object.keys(gateDone)) delete gateDone[k]; advance(); draw() };
-  $d('dtPush').onclick = async () => { const G = window.GitHubPush; if (!G) return; if (!G.config().token) return G.openSettings(); try { const t = await G.pushSettings([PD.KEY, PD.STD_KEY, PD.MASTER_KEY].filter(Boolean), 'Datum สัดส่วนตัวละคร + มาตรฐานทีม + ท่าอ้างอิงแนวลึก'); $d('dtMsg').textContent = String(t || 'ใส่แล้ว') } catch (err) { $d('dtMsg').textContent = 'ไม่สำเร็จ: ' + err.message } };
+  $d('dtPush').onclick = async () => { const G = window.GitHubPush; if (!G) return; if (!G.config().token) return G.openSettings(); try { const t = await G.pushSettings([PD.KEY, PD.STD_KEY, PD.MASTER_KEY, PD.TPL_KEY].filter(Boolean), 'Datum สัดส่วนตัวละคร + มาตรฐานทีม + ท่าอ้างอิงแนวลึก'); $d('dtMsg').textContent = String(t || 'ใส่แล้ว') } catch (err) { $d('dtMsg').textContent = 'ไม่สำเร็จ: ' + err.message } };
   $d('dtExport').onclick = () => { const a = document.createElement('a'); a.download = 'proportion-datum.json'; a.href = URL.createObjectURL(new Blob([JSON.stringify(PD.all(), null, 1)], { type: 'application/json' })); a.click() };
   $d('dtImport').onclick = () => $d('dtFile').click();
   $d('dtFile').onchange = async ev => { try { const j = JSON.parse(await ev.target.files[0].text()); if (!j || typeof j !== 'object') throw Error('ไฟล์ไม่ใช่ datum'); if (!confirm('รวม datum จากไฟล์เข้ากับของเครื่องนี้? (ตัว·ท่า·เฟรมเดียวกัน = ใช้ของไฟล์)')) return; const d = PD.all(); for (const [id, ps] of Object.entries(j)) for (const [po, fr] of Object.entries(ps || {})) for (const [i, r] of Object.entries(fr || {})) ((d[id] ||= {})[po] ||= {})[i] = r; PD.saveAll(d); rec = PD.get(e.id, pose, frame) || rec; rec.pts ||= {}; renderRatio(visible()); draw(); $d('dtMsg').textContent = 'นำเข้าแล้ว' } catch (err) { $d('dtMsg').textContent = 'นำเข้าไม่ได้: ' + err.message } };
@@ -1097,7 +1118,7 @@ $('cartAll').onclick = async () => {
   try {
     const data = clean(ADJ), text = `/* v98.65 · per-character size adjustments written by scale-lineup.html (⚖ ปรับสเกล → บันทึกเข้าเกม). Do not hand-edit unless you know what you are doing.\n   global[id] = one factor for the character in EVERY scene · scene[ctx][id] = an extra factor for one scene (battle · village · world) → final size = global × scene\n   ids: hero · bram · luna · kier · m:<monster key> · village NPC ids */\nwindow.CHARACTER_SCALE_ADJUST = ${JSON.stringify(data)};\n`;
     await G.commit('Scale Lineup: ปรับขนาดตัวละคร', async () => [{ path: 'js/character-scale-adjust-data.js', content: text }]); done.push('ค่าปรับสเกล');
-    await G.pushSettings([PD.KEY, PD.STD_KEY, PD.MASTER_KEY].filter(Boolean), 'Datum สัดส่วนตัวละคร + มาตรฐานทีม + ท่าอ้างอิงแนวลึก'); done.push('Datum');
+    await G.pushSettings([PD.KEY, PD.STD_KEY, PD.MASTER_KEY, PD.TPL_KEY].filter(Boolean), 'Datum สัดส่วนตัวละคร + มาตรฐานทีม + ท่าอ้างอิงแนวลึก'); done.push('Datum');
     Object.assign(SAVED, JSON.parse(JSON.stringify(data))); SAVED.global = data.global; SAVED.scene = data.scene; persistDraft(); render();
     alert('🛒 ใส่ Cart แล้ว: ' + done.join(' + ') + '\n\nรูปที่ปรับสัดส่วนแล้วต้องกด 💾 Cart ทีละรูป (อยู่ใน Cart แล้วถ้ากดไปก่อนหน้า)\nกดปุ่ม ⬆ Push (Cart) เพื่อ Push ทั้งหมดรวดเดียว')
   } catch (err) { alert('ใส่ Cart ไม่สำเร็จ' + (done.length ? ' (สำเร็จแล้ว: ' + done.join(', ') + ')' : '') + ': ' + err.message) }

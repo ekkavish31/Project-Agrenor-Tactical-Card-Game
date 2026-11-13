@@ -342,6 +342,14 @@
     if (!Object.keys(R0).length) delete d[id];
     return d;
   }
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, autoGuess, setAuto, AUTO, REQUIRED, flowKeys, armMode, ensureFloor, headUnit, crownRatio, widthOf, WIDTH_KEYS, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
+  /* v98.460 · SAVED TEMPLATES (ต้นแบบที่บันทึกไว้): many named snapshots, each 'flat' (เชิงราบ · a standard-like head:torso:legs + ruler) or 'depth' (เชิงลึก · a reference pose with its own datum points).
+     localStorage 'proportion-templates-v1' = { [id]: { id, kind, name, group, pose, dir, spans, girthFace, ruler, rec, at } } — pushed with the datum */
+  const TPL_KEY = 'proportion-templates-v1';
+  const tplAll = () => { try { const o = JSON.parse(ls.getItem(TPL_KEY) || '{}'); return o && typeof o === 'object' ? o : {} } catch (e) { return {} } };
+  const tplGet = id => tplAll()[id] || null;
+  const tplPut = t => { try { const all = tplAll(); all[t.id] = t; ls.setItem(TPL_KEY, JSON.stringify(all)); return true } catch (e) { return false } };
+  const tplDel = id => { try { const all = tplAll(); delete all[id]; ls.setItem(TPL_KEY, JSON.stringify(all)) } catch (e) { } };
+  const tplList = (kind, group) => Object.values(tplAll()).filter(t => (!kind || t.kind === kind) && (!group || t.group === group)).sort((x, y) => (y.at || 0) - (x.at || 0));
+  const api = { TPL_KEY, tplAll, tplGet, tplPut, tplDel, tplList, metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, autoGuess, setAuto, AUTO, REQUIRED, flowKeys, armMode, ensureFloor, headUnit, crownRatio, widthOf, WIDTH_KEYS, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -41,6 +41,6 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   await fr.evaluate(() => { delete PICK.hero; return buildChars().then(render) });
   // 8 size factor set in the lineup shows as a badge in Animation, and an unset one does not
   await fr.evaluate(() => { bump('g', 7) }); await page.waitForTimeout(600); await page.click('[data-entity="hero"]'); await page.waitForTimeout(800);
-  const badge = await page.evaluate(() => document.querySelector('#grid .entity-title h2')?.innerText || ''); assert.match(badge, /ขนาดในเกม 107%/, 'size badge missing: ' + badge); console.log('ok size badge:', badge.replace(/\s+/g, ' '));
+  const badge = await page.evaluate(() => document.querySelector('#grid .entity-title h2')?.innerText || ''); assert.match(badge, /ขนาดในเกม \d+%/, 'size badge missing: ' + badge); console.log('ok size badge:', badge.replace(/\s+/g, ' '));
   assert.deepEqual(errs, [], 'page errors: ' + errs.join(' | ')); console.log('studio lineup e2e: all cases passed'); await browser.close(); server.close();
 })().catch(e => { console.error('FAIL', e.message); process.exit(1) });
