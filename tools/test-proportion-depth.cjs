@@ -70,7 +70,8 @@ console.log('proportion depth: all passed');
   box(70, 100, 130, 240); box(76, 240, 98, 380); box(102, 240, 124, 380);
   const P = { eyeL: [.45, .17], eyeR: [.55, .17], chin: [.5, .25], shL: [.30, .275], shR: [.70, .275], crotch: [.5, .6], kneeL: [.435, .8], kneeR: [.565, .8], footL: [.435, .95], footR: [.565, .95] };
   const r = PD.rule({ pts: { SW: P } }, 'SW', { d, w: W, h: H }, 'shin', .5);
-  assert.ok(r && Math.abs(r.w - 22) < 3 && r.sides === 2, 'shin ruler ≈ 22 px, both legs: ' + r?.w); assert.ok(Math.abs(r.ratio - r.w / 32) < 1e-9, 'ratio = width ÷ face (32 px)');
+  assert.ok(r && Math.abs(r.w - 22) < 3 && r.sides === 2, 'shin ruler ≈ 22 px, both legs: ' + r?.w); assert.ok(Math.abs(r.face - 32) < 1e-9 && Math.abs(r.head - 64) < 1e-9 && r.headSrc === 'estimate', 'no crown → head = 2 × face (an estimate)'); assert.ok(Math.abs(r.ratio - r.w / 64) < 1e-9, 'ratio = width ÷ head (64 px)');
+  { const rc = PD.rule({ pts: { SW: { ...P, crown: [.5, .05] } } }, 'SW', { d, w: W, h: H }, 'shin', .5); assert.equal(rc.headSrc, 'crown'); assert.ok(Math.abs(rc.head - .2 * H) < 1e-6, 'crown → chin distance'); assert.ok(Math.abs(rc.ratio - rc.w / rc.head) < 1e-9) }
   assert.equal(r.level, 'ok'); assert.equal(r.lines.length, 2, 'one measuring line per leg');
   const scaled = new Uint8ClampedArray(W * H * 4), r2 = PD.rule({ pts: { SW: P } }, 'SW', { d: scaled, w: W, h: H }, 'shin', .5); assert.equal(r2, null, 'empty picture → null');
   assert.equal(PD.rule({ pts: { SW: P } }, 'SW', { d, w: W, h: H }, 'nope', .5), null, 'unknown bone group → null') }
@@ -118,7 +119,15 @@ assert.ok(Math.abs(PD.headFactor(1.9, 1.7) * PD.thickFactor(1.9, 1.7) - 1.9 / 1.
   PD.put('hg', 'guard', 0, { pts: { SW: stand } }); assert.equal(PD.heightGuide('hg', 'guard', 0, 'SW').level, 'warn', 'a guard as tall as standing is only a hint'); assert.equal(PD.heightGuide('hg', 'idle', 0, 'SW'), null); assert.equal(PD.heightGuide('hg', 'down', 0, 'SW'), null, 'no guide for a lying pose') }
 // v98.448 · shoulder width ÷ eye-chin (torso thickness from datum points) · height guide from a moved record
 { const rec = { pts: { SW: { eyeL: [.45, .1], eyeR: [.55, .1], chin: [.5, .2], shL: [.3, .24], shR: [.7, .24] } } };
-  const sr = PD.shoulderRatio(rec, 'SW'); assert.ok(sr > 3.3 && sr < 4.7, 'shoulders ' + sr + ' face lengths wide'); assert.equal(PD.shoulderRatio(null, 'SW'), null); assert.equal(PD.shoulderRatio({ pts: { SW: { chin: [.5, .2] } } }, 'SW'), null, 'incomplete points give nothing');
+  const sr = PD.shoulderRatio(rec, 'SW'); assert.ok(sr > 1.8 && sr < 2.2, 'shoulders ' + sr + ' head heights wide'); assert.equal(PD.shoulderRatio(null, 'SW'), null); assert.equal(PD.shoulderRatio({ pts: { SW: { chin: [.5, .2] } } }, 'SW'), null, 'incomplete points give nothing');
   const wide = JSON.parse(JSON.stringify(rec)); wide.pts.SW.shL = [.2, .24]; wide.pts.SW.shR = [.8, .24]; assert.ok(PD.shoulderRatio(wide, 'SW') > sr, 'wider shoulders → bigger ratio');
   assert.equal(typeof PD.heightGuideRec, 'function'); assert.equal(PD.heightGuideRec('hg', 'idle', rec, 'SW'), null, 'no guide for the standing pose itself') }
+// v98.451 · crown point (skull top): head height = crown → chin, no longer a guess from the eyes
+{ const base = { eyeL: [.45, .2], eyeR: [.55, .2], chin: [.5, .26], crotch: [.5, .6], footL: [.45, .95], footR: [.55, .95] };
+  const est = PD.metrics({ pts: { SW: base } }, 'SW', 100, 100), cr = PD.metrics({ pts: { SW: { ...base, crown: [.5, .05] } } }, 'SW', 100, 100);
+  assert.equal(est.headSrc, 'estimate'); assert.equal(cr.headSrc, 'crown'); assert.ok(Math.abs(est.lengths.head - 12) < 1e-6 && Math.abs(cr.lengths.head - 21) < 1e-6, 'head = chin − crown (21), not 2 × face (12)');
+  assert.ok(cr.heads < est.heads, 'a bigger head means fewer heads: ' + est.heads + ' → ' + cr.heads);
+  assert.equal(PD.headUnit({ pts: { SW: { ...base, crown: [.5, .05] } } }, 'SW', 100, 100).src, 'crown'); assert.equal(PD.headUnit({ pts: { SW: base } }, 'SW', 100, 100).src, 'estimate'); assert.equal(PD.headUnit({ pts: { SW: { chin: [.5, .3] } } }, 'SW'), null);
+  assert.ok(PD.POINTS[3][0] === 'crown' && PD.OPTIONAL.includes('crown') && PD.CENTRE.includes('crown'), 'crown follows the chin · optional · centre point');
+  const tilt = { pts: { SW: { ...base, crown: [.62, .05] } } }, flat = { pts: { SW: { ...base, crown: [.5, .05] } } }; assert.ok(PD.headUnit(tilt, 'SW', 100, 100).px > PD.headUnit(flat, 'SW', 100, 100).px, 'a tilted head is measured as a distance') }
 console.log('proportion girth: passed');

@@ -10,10 +10,10 @@
   const KEY = 'proportion-datum-v1';
   /* v98.392 · L / R = the LEFT / RIGHT SIDE OF THE PICTURE (as you look at it), not the character's own left hand: the same in every direction */
   /* v98.417 · the order the points are placed in (the editor walks this list): face → left arm → right arm → body → left leg → right leg */
-  const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['elbowL', 'ข้อศอก ซ้ายภาพ', '#c47715'], ['wristL', 'ข้อมือ ซ้ายภาพ', '#e79516'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['elbowR', 'ข้อศอก ขวาภาพ', '#c47715'], ['wristR', 'ข้อมือ ขวาภาพ', '#e79516'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['footL', 'ข้อเท้า ซ้ายภาพ', '#444'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footR', 'ข้อเท้า ขวาภาพ', '#444']];   /* the ANKLE joint (not the toe / sole): a joint stays the same point when the foot points, kicks or lies down */
-  const CENTRE = ['chin', 'chest', 'crotch'], DIRS = ['SW', 'NW', 'NE', 'SE'];
+  const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['crown', 'ยอดกะโหลก', '#8a4fff'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['elbowL', 'ข้อศอก ซ้ายภาพ', '#c47715'], ['wristL', 'ข้อมือ ซ้ายภาพ', '#e79516'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['elbowR', 'ข้อศอก ขวาภาพ', '#c47715'], ['wristR', 'ข้อมือ ขวาภาพ', '#e79516'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['footL', 'ข้อเท้า ซ้ายภาพ', '#444'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footR', 'ข้อเท้า ขวาภาพ', '#444']];   /* the ANKLE joint (not the toe / sole): a joint stays the same point when the foot points, kicks or lies down */
+  const CENTRE = ['chin', 'crown', 'chest', 'crotch'], DIRS = ['SW', 'NW', 'NE', 'SE'];
   /* v98.444 · points nothing needs any more: the editor's click order skips them and the counts leave them out (chest was only the fallback for the shoulder midpoint) */
-  const OPTIONAL = ['chest'];
+  const OPTIONAL = ['chest', 'crown'];   /* v98.451 · crown = the skull top (no hair / hat): optional so old records stay valid, but head-size rules need it */
   const OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, SWAP = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', elbowL: 'elbowR', elbowR: 'elbowL', wristL: 'wristR', wristR: 'wristL', kneeL: 'kneeR', kneeR: 'kneeL', footL: 'footR', footR: 'footL' };
   /* v98.399 · SW/SE show the FRONT (mirror pair) · NW/NE show the BACK (mirror pair) — the two groups must never lend each other
      data: a front proportion means nothing compared against a back one (cloak, hood, armour plates differ front/back). */
@@ -46,7 +46,7 @@
     const leg = (k, f) => P[k] && P[f] && P.crotch ? D(P.crotch, P[k]) + D(P[k], P[f]) : P[f] && P.crotch ? D(P.crotch, P[f]) : null;
     out.legL = leg('kneeL', 'footL'); out.legR = leg('kneeR', 'footR'); const ls_ = [out.legL, out.legR].filter(v => v != null); out.legs = ls_.length ? ls_.reduce((a, b) => a + b, 0) / ls_.length : null;
     out.thighL = D(P.crotch, P.kneeL); out.thighR = D(P.crotch, P.kneeR); out.shinL = D(P.kneeL, P.footL); out.shinR = D(P.kneeR, P.footR);
-    const body = metrics(rec, dir, w, h); out.body = body; out.headFrac = body.proportions?.head; out.heads = body.heads; out.headH = body.lengths?.head; out.H = body.lengths?.total;
+    const body = metrics(rec, dir, w, h); out.body = body; out.headFrac = body.proportions?.head; out.headSrc = body.headSrc; out.heads = body.heads; out.headH = body.lengths?.head; out.H = body.lengths?.total;
     return out;
   }
   /* proportion marks (fractions of the silhouette box m = {top,H}) for js/proportion-tool.js: chin · shoulder (pivot mid) · hip (crotch) */
@@ -72,13 +72,20 @@
     const out = { method: 'datum-body-v1', proportions: null, arms: {} };
     for (const side of ['L', 'R']) { const upper = D(P['sh' + side], P['elbow' + side]), lower = D(P['elbow' + side], P['wrist' + side]); out.arms[side] = { upper, lower, total: upper != null && lower != null ? upper + lower : null } }
     if (!eye || !P.chin || !P.crotch || !(P.footL || P.footR)) return out;
-    const feet = Math.max(P.footL ? P.footL[1] : -1, P.footR ? P.footR[1] : -1), top = 2 * eye[1] - P.chin[1];
+    const feet = Math.max(P.footL ? P.footL[1] : -1, P.footR ? P.footR[1] : -1), top = P.crown ? P.crown[1] : 2 * eye[1] - P.chin[1];   /* v98.451 · the placed crown, else the old guess (eye − (chin − eye)) */
     const A = (P.chin[1] - top) * h, B = (P.crotch[1] - P.chin[1]) * h, C = (feet - P.crotch[1]) * h, total = A + B + C;
     if (!(A > 0 && B > 0 && C > 0)) return out;
-    out.top = top; out.bottom = feet; out.lengths = { head: A, torso: B, legs: C, total }; out.proportions = { head: A / total, torso: B / total, legs: C / total }; out.heads = total / A;
+    out.headSrc = P.crown ? 'crown' : 'estimate'; out.top = top; out.bottom = feet; out.lengths = { head: A, torso: B, legs: C, total }; out.proportions = { head: A / total, torso: B / total, legs: C / total }; out.heads = total / A;
     return out;
   }
   const spans = (rec, dir) => metrics(rec, dir).proportions;
+  /* v98.451 · how far above the eyes this character's placed crowns sit, in eye→chin lengths (average of every picture that has crown + eyes + chin; the guide ellipse uses it) */
+  function crownRatio(id, w = 384, h = 384) { const out = []; try { const d = all()[id] || {}; for (const f of Object.values(d)) for (const r of Object.values(f || {})) for (const dir of DIRS) { const P = r?.pts?.[dir]; if (!P?.crown || !P.chin || !P.eyeL || !P.eyeR) continue; const e = mid(P.eyeL, P.eyeR), D = (a, b) => Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h), F = D(e, P.chin); if (F > 2 && P.chin[1] > e[1]) out.push(D(P.crown, e) / F) } } catch (err) { }
+    return out.length ? { k: out.reduce((a, b) => a + b, 0) / out.length, n: out.length } : null }
+  /* v98.451 · THE head ruler: skull top → chin as a distance (a tilted head keeps its size). src 'crown' = measured from the placed crown point,
+     'estimate' = 2 × eye→chin (only a guess; the head-size rules refuse to auto-fill from it). null when eyes / chin are missing */
+  function headUnit(rec, dir, w = 384, h = 384) { const { pts: P } = pointsFor(rec, dir), D = (a, b) => Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h), eye = mid(P.eyeL, P.eyeR);
+    if (P.crown && P.chin) return { px: D(P.crown, P.chin), src: 'crown' }; if (eye && P.chin) return { px: 2 * D(eye, P.chin), src: 'estimate' }; return null }
   /* scales (head · torso · legs, legs = 1) that give the TARGET the template's spans · only the selected parts move (the others keep 1) */
   function matchScales(tpl, tgt, sel = { head: true, torso: true, legs: true }) { if (!tpl || !tgt) return null; const r = k => tpl[k] / tgt[k], ks = ['head', 'torso', 'legs'].filter(k => sel[k]);
     if (!ks.length) return null; const base = sel.legs || ks.length === 3 ? r('legs') : ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tgt[k], 0) / ['head', 'torso', 'legs'].filter(k => !sel[k]).reduce((a, k) => a + tpl[k], 0);
@@ -138,17 +145,18 @@
        so thickness can be compared between two poses of ONE character (÷ height would make a crouch look thick) */
     const eye = mid(P.eyeL, P.eyeR), face = eye && P.chin ? Math.hypot((eye[0] - P.chin[0]) * w, (eye[1] - P.chin[1]) * h) : null, perFace = {};
     for (const [k] of GIRTH_GROUPS) perFace[k] = pxg[k] == null || !face ? null : pxg[k] / face;
-    return { total: M.lengths.total, face, px: pxg, frac, perFace, per, spread, lines };
+    const hu = headUnit(rec, dir, w, h);
+    return { total: M.lengths.total, face, head: hu?.px || null, headSrc: hu?.src || null, px: pxg, frac, perFace, per, spread, lines };
   }
   /* v98.434 · THICKNESS RULER (ไม้บรรทัดความหนา): ONE cut across one bone group at one spot (t = 0…1 along the bone), measured against the face
      (eye → chin). Both sides (L/R) are averaged; three casts next to each other (t ± .05) give a confidence. The same bone + t is measured on every
      picture, so  ratio = width ÷ face  can be compared between poses without using any height.  group: shin · thigh · torso · armUp · armLow */
   const RULER_BONES = { shin: ['shinL', 'shinR'], thigh: ['thighL', 'thighR'], torso: ['torso'], armUp: ['upperArmL', 'upperArmR'], armLow: ['foreArmL', 'foreArmR'] };
   function rule(rec, dir, alpha, group, t = .5) {
-    const g = girth(rec, dir, alpha, [Math.max(.05, t - .05), t, Math.min(.95, t + .05)]), names = RULER_BONES[group]; if (!g || !g.face || !names) return null;
+    const g = girth(rec, dir, alpha, [Math.max(.05, t - .05), t, Math.min(.95, t + .05)]), names = RULER_BONES[group]; if (!g || !g.head || !names) return null;
     const vals = names.map(n => g.per[n]).filter(v => v != null); if (!vals.length) return null; const w = vals.reduce((a, b) => a + b, 0) / vals.length;
     const sp = Math.max(...names.map(n => g.spread[n] ?? 0), vals.length > 1 ? Math.abs(vals[0] - vals[1]) / w : 0);
-    return { group, t, w, face: g.face, ratio: w / g.face, sides: vals.length, spread: sp, level: sp <= .12 ? 'ok' : sp <= .25 ? 'warn' : 'bad', lines: names.map(n => g.lines[n]).filter(Boolean), perFace: g.perFace }
+    return { group, t, w, face: g.face, head: g.head, headSrc: g.headSrc, unit: 'head', ratio: w / g.head, sides: vals.length, spread: sp, level: sp <= .12 ? 'ok' : sp <= .25 ? 'warn' : 'bad', lines: names.map(n => g.lines[n]).filter(Boolean), perFace: g.perFace }
   }
   /* the multiplier that gives THIS picture the standard's thickness: standard fraction ÷ own fraction (null when either is unknown) */
   const girthRatio = (own, ref, k) => own?.frac?.[k] && ref?.[k] ? ref[k] / own.frac[k] : null;
@@ -223,11 +231,11 @@
   /* the same for ANY record (e.g. the warped result's moved points): stack height ÷ face of `rec` against the character's standing pose */
   function heightGuideRec(id, pose, rec, dir, w = 384, h = 384) {
     const g = POSE_HEIGHT[pose]; if (!g || pose === 'idle' || !rec) return null; const ref = get(id, 'idle', 0); if (!ref) return null;
-    const a = metrics(rec, dir, w, h), b = metrics(ref, dir, w, h), fa = measure(rec, dir, w, h).face, fb = measure(ref, dir, w, h).face; if (!a.lengths || !b.lengths || !fa || !fb) return null;
+    const a = metrics(rec, dir, w, h), b = metrics(ref, dir, w, h), fa = headUnit(rec, dir, w, h)?.px, fb = headUnit(ref, dir, w, h)?.px; if (!a.lengths || !b.lengths || !fa || !fb) return null;
     const ratio = (a.lengths.total / fa) / (b.lengths.total / fb); return { ratio, guide: g, level: ratio >= g[0] - .03 && ratio <= g[1] + .03 ? 'ok' : ratio >= g[0] - .08 && ratio <= g[1] + .08 ? 'warn' : 'bad' } }
   const heightGuide = (id, pose, frame, dir, w = 384, h = 384) => heightGuideRec(id, pose, get(id, pose, frame | 0), dir, w, h);
   /* shoulder width ÷ face (both from datum POINTS, so clothes / cloaks / armour cannot change it) — the torso's width ruler · null when a point is missing */
-  function shoulderRatio(rec, dir, w = 384, h = 384) { const m = rec ? measure(rec, dir, w, h) : null; return m && m.shoulderW && m.face ? m.shoulderW / m.face : null }
+  function shoulderRatio(rec, dir, w = 384, h = 384) { const m = rec ? measure(rec, dir, w, h) : null, u = rec ? headUnit(rec, dir, w, h) : null; return m && m.shoulderW && u ? m.shoulderW / u.px : null }
   /* v98.434 · BACK VIEW HEAD from the FRONT (the neck looks longer from behind — the chin hides it in front — so eyes / chin of a back view are a guess).
      The shoulder line and the crotch are seen from both sides, so they are the ruler: in the FRONT view of the same pose, how far the chin sits above the
      shoulder line and how long the face is, both in torso lengths (shoulder mid → crotch) — then laid onto the back view the same way. Returns a SUGGESTION
@@ -298,6 +306,6 @@
     if (!Object.keys(R0).length) delete d[id];
     return d;
   }
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, headUnit, crownRatio, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
