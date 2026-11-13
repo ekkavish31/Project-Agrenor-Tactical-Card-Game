@@ -1,7 +1,7 @@
-/* v98.442 · WORK-STATION ACTIONS — what the stations of the sub-maps do (forge: หลอม/ตี/ชุบ/แบบงาน/อัตโนมัติ/ยกเลิก · market: ซื้อ/ขาย/ร้านเรา/ออร์เดอร์ ·
+/* v98.443 · WORK-STATION ACTIONS — what the stations of the sub-maps do (forge: หลอม/ตี/ชุบ/แบบงาน/อัตโนมัติ/ยกเลิก · market: ซื้อ/ขาย/ร้านเรา/ออร์เดอร์ ·
    home: นอน/หีบ/สำรับ/เตียง · พัก). village-place.html sends the station id → js/village-town-bridge.js → runPlaceAction(id) here.
    One file made of the two parts of the old button scene that the game still uses (js/location-actions.js + js/journey-ui.js, archived);
-   their dock / hand / scene drawing was removed in v98.437–v98.442. Rules unchanged: node tools/test-station-actions.cjs --compare <before>.
+   their dock / hand / scene drawing was removed in v98.437–v98.443. Rules unchanged: node tools/test-station-actions.cjs --compare <before>.
    The forge's numbers (stamina · minutes · heat) still come from js/cards-data.js `defs` (TODO C1). */
 /* ---- part 1 (was js/location-actions.js) ---- */
 // The bottom dock has one purpose at a time: daily actions OR the combat hand.

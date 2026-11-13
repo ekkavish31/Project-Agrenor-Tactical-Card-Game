@@ -77,13 +77,26 @@
     for (let x = 0; x < w; x++) { let s = 0; for (let y = -r; y <= r; y++) s += t[Math.min(h - 1, Math.max(0, y)) * w + x]; for (let y = 0; y < h; y++) { o[y * w + x] = s / (2 * r + 1); s += t[Math.min(h - 1, y + r + 1) * w + x] - t[Math.max(0, y - r) * w + x] } }
     return o }
   const ss = (a, b, x) => { const t = clamp((x - a) / ((b - a) || 1), 0, 1); return t * t * (3 - 2 * t) };
-  function weightsOf(d, W, H, seg, mode, soft, grow) {
-    const N = W * H, wh = new Float32Array(N), wt = new Float32Array(N), wl = new Float32Array(N), chin = seg.head[1], hip = seg.torso[1];
-    for (let y = 0; y < H; y++) { const h = 1 - ss(chin - soft, chin + soft, y), l = ss(hip - soft, hip + soft, y), t = Math.max(0, 1 - h - l); for (let x = 0; x < W; x++) { const i = y * W + x; wh[i] = h; wt[i] = t; wl[i] = l } }
+  /* v98.443 · CUT LINES: signed distance (px) of every pixel from a polyline (2+ points, the end segments extended): negative on the side of `head`, positive on the other */
+  function lineField(pts, head, W, H) {
+    const out = new Float32Array(W * H), segs = [];
+    for (let i = 1; i < pts.length; i++) { const A = pts[i - 1], B = pts[i], dx = B[0] - A[0], dy = B[1] - A[1], l2 = dx * dx + dy * dy || 1, l = Math.sqrt(l2); segs.push({ A, dx, dy, l2, l, first: i === 1, last: i === pts.length - 1 }) }
+    const cr = (g, x, y) => ((x - g.A[0]) * g.dy - (y - g.A[1]) * g.dx) / g.l; let sign = 1; { const g0 = segs[0]; let bd = Infinity, bg = g0; for (const g of segs) { let t = ((head[0] - g.A[0]) * g.dx + (head[1] - g.A[1]) * g.dy) / g.l2; if (!g.first) t = Math.max(0, t); if (!g.last) t = Math.min(1, t); const dd = Math.hypot(head[0] - g.A[0] - g.dx * t, head[1] - g.A[1] - g.dy * t); if (dd < bd) { bd = dd; bg = g } } sign = cr(bg, head[0], head[1]) > 0 ? -1 : 1 }
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { let best = null, bd = Infinity;
+      for (const g of segs) { let t = ((x - g.A[0]) * g.dx + (y - g.A[1]) * g.dy) / g.l2; if (!g.first) t = Math.max(0, t); if (!g.last) t = Math.min(1, t); const dd = Math.hypot(x - g.A[0] - g.dx * t, y - g.A[1] - g.dy * t); if (dd < bd) { bd = dd; best = g } }
+      out[y * W + x] = cr(best, x, y) * sign }
+    return out }
+  /* cuts = { neck: [[x,y]…], hip: [[x,y]…], head: [x,y] } in picture px — with them the zones follow the lines instead of the chin / hip ROWS */
+  function weightsOf(d, W, H, seg, mode, soft, grow, cuts) {
+    const N = W * H, wh = new Float32Array(N), wt = new Float32Array(N), wl = new Float32Array(N), chin = seg.head[1], hip = seg.torso[1], useCuts = !!(cuts && cuts.neck && cuts.hip && cuts.head);
+    let sdN = null, sdH = null;
+    if (useCuts) { sdN = lineField(cuts.neck, cuts.head, W, H); sdH = lineField(cuts.hip, cuts.head, W, H);
+      for (let i = 0; i < N; i++) { const h = 1 - ss(-soft, soft, sdN[i]), l = ss(-soft, soft, sdH[i]); wh[i] = h; wl[i] = l; wt[i] = Math.max(0, 1 - h - l) } }
+    else for (let y = 0; y < H; y++) { const h = 1 - ss(chin - soft, chin + soft, y), l = ss(hip - soft, hip + soft, y), t = Math.max(0, 1 - h - l); for (let x = 0; x < W; x++) { const i = y * W + x; wh[i] = h; wt[i] = t; wl[i] = l } }
     if (mode !== 'shape') return [wh, wt, wl];
     /* the shape of each part: its opaque pixels in its own rows, grown and softened so the weights fade out around the outline */
-    const mk = (a, b) => { const o = new Float32Array(N); for (let y = Math.max(0, a); y < Math.min(H, b); y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 40) o[y * W + x] = 1; return boxBlur(boxBlur(o, W, H, grow), W, H, Math.max(1, grow >> 1)) };
-    const mh = mk(seg.head[0], seg.head[1]), mt = mk(seg.torso[0], seg.torso[1]), ml = mk(seg.legs[0], seg.legs[1]);
+    const mk = (a, b, zone) => { const o = new Float32Array(N); for (let y = Math.max(0, a); y < Math.min(H, b); y++) for (let x = 0; x < W; x++) { const i = y * W + x; if (d[i * 4 + 3] > 40 && (!useCuts || (zone === 0 ? sdN[i] <= 0 : zone === 1 ? sdN[i] > 0 && sdH[i] <= 0 : sdH[i] > 0))) o[i] = 1 } return boxBlur(boxBlur(o, W, H, grow), W, H, Math.max(1, grow >> 1)) };
+    const rowsOf = k => useCuts ? [0, H] : seg[k], mh = mk(...rowsOf('head'), 0), mt = mk(...rowsOf('torso'), 1), ml = mk(...rowsOf('legs'), 2);
     for (let i = 0; i < N; i++) { const s0 = mh[i] + mt[i] + ml[i]; if (s0 < 1e-3) continue; const k = Math.min(1, s0 * 3), h = mh[i] / s0, t = mt[i] / s0, l = ml[i] / s0;   // near any part: its shape decides; far away: the band
       wh[i] = wh[i] * (1 - k) + h * k; wt[i] = wt[i] * (1 - k) + t * k; wl[i] = wl[i] * (1 - k) + l * k }
     return [wh, wt, wl];
@@ -112,7 +125,7 @@
   /* v98.413: labels in original image coordinates. Arms follow the torso. */
   const ZONES = [null, ['หัว', '#ec4899'], ['ลำตัว', '#3b82f6'], ['ส่วนล่าง / ขา', '#22c55e'], ['แขนซ้ายภาพ', '#f59e0b'], ['แขนขวาภาพ', '#a855f7']];
   function zoneWeights(d, W, H, seg, opt, height) {
-    const arms = new Uint8Array(W * H), wt = protectArms(weightsOf(d, W, H, seg, opt.mode || 'band', Math.max(2, (opt.soft ?? .06) * height), Math.max(1, Math.round(opt.grow ?? 10))), W, H, opt.points, arms), edits = opt.zoneEdits;
+    const arms = new Uint8Array(W * H), wt = protectArms(weightsOf(d, W, H, seg, opt.mode || 'band', Math.max(2, (opt.soft ?? .06) * height), Math.max(1, Math.round(opt.grow ?? 10)), opt.cuts), W, H, opt.points, arms), edits = opt.zoneEdits;
     if (edits && edits.length === W * H) {
       for (let i = 0; i < edits.length; i++) if (edits[i] >= 1 && edits[i] <= 5) { const j = edits[i] === 1 ? 0 : edits[i] === 3 ? 2 : 1; for (let c = 0; c < 3; c++) wt[c][i] = c === j ? 1 : 0; arms[i] = edits[i] >= 4 ? edits[i] : 0 }
       const r = Math.max(1, Math.round(Math.min(W, H) * .006)); for (let c = 0; c < 3; c++) wt[c] = boxBlur(wt[c], W, H, r);
@@ -172,6 +185,6 @@
     og.putImageData(od, 0, 0);
     return { canvas: out, plan: P, seg, weights: WT, labels: zones.labels, outputLabels, src, T, offset: [-minX, -minY], folds, forward: (x, y) => { const p = fwd(x, y); return [p[0] - minX, p[1] - minY, p[2], p[3]] } };
   }
-  const api = { segments, plan, render, warp, weightsOf, protectArms, autoScale, mapPoint, zoneWeights, zoneCanvas, paintZone, ZONES };
+  const api = { segments, plan, render, warp, weightsOf, lineField, protectArms, autoScale, mapPoint, zoneWeights, zoneCanvas, paintZone, ZONES };
   root.ProportionAdjust = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -12,6 +12,8 @@
   /* v98.417 · the order the points are placed in (the editor walks this list): face → left arm → right arm → body → left leg → right leg */
   const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['elbowL', 'ข้อศอก ซ้ายภาพ', '#c47715'], ['wristL', 'ข้อมือ ซ้ายภาพ', '#e79516'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['elbowR', 'ข้อศอก ขวาภาพ', '#c47715'], ['wristR', 'ข้อมือ ขวาภาพ', '#e79516'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['footL', 'ข้อเท้า ซ้ายภาพ', '#444'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footR', 'ข้อเท้า ขวาภาพ', '#444']];   /* the ANKLE joint (not the toe / sole): a joint stays the same point when the foot points, kicks or lies down */
   const CENTRE = ['chin', 'chest', 'crotch'], DIRS = ['SW', 'NW', 'NE', 'SE'];
+  /* v98.443 · points nothing needs any more: the editor's click order skips them and the counts leave them out (chest was only the fallback for the shoulder midpoint) */
+  const OPTIONAL = ['chest'];
   const OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, SWAP = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', elbowL: 'elbowR', elbowR: 'elbowL', wristL: 'wristR', wristR: 'wristL', kneeL: 'kneeR', kneeR: 'kneeL', footL: 'footR', footR: 'footL' };
   /* v98.399 · SW/SE show the FRONT (mirror pair) · NW/NE show the BACK (mirror pair) — the two groups must never lend each other
      data: a front proportion means nothing compared against a back one (cloak, hood, armour plates differ front/back). */
@@ -58,7 +60,7 @@
   function heightGaps(rec) { const out = []; for (const k of CENTRE) { const has = DIRS.filter(d => rec?.pts?.[d]?.[k]); if (has.length < 2) continue; const y0 = rec.pts[has[0]][k][1]; for (const d of has.slice(1)) { const dy = rec.pts[d][k][1] - y0; if (Math.abs(dy) > .004) out.push({ dir: d, key: k, ref: has[0], dy }) } } return out }
   /* one line of status for a character · pose · direction (frame 0): how many own points, face size vs the standing pose, for the Animation table badges */
   function status(id, pose, dir, w = 384, h = 384) { const rec = get(id, pose, 0); if (!rec) return null; const own = Object.keys(rec.pts?.[dir] || {}).length, sug = Object.keys(pointsFor(rec, dir).pts).length;
-    const m = measure(rec, dir, w, h), ref = pose === 'idle' ? null : get(id, 'idle', 0), mr = ref && measure(ref, dir, w, h); return { own, sug, total: POINTS.length, face: m.face || null, faceDev: m.face && mr?.face ? m.face / mr.face - 1 : null, legDev: m.legs && mr?.legs ? m.legs / mr.legs - 1 : null, heads: m.heads || null } }
+    const m = measure(rec, dir, w, h), ref = pose === 'idle' ? null : get(id, 'idle', 0), mr = ref && measure(ref, dir, w, h); return { own: Object.keys(rec.pts?.[dir] || {}).filter(k => !OPTIONAL.includes(k)).length, sug, total: POINTS.length - OPTIONAL.length, face: m.face || null, faceDev: m.face && mr?.face ? m.face / mr.face - 1 : null, legDev: m.legs && mr?.legs ? m.legs / mr.legs - 1 : null, heads: m.heads || null } }
   /* v98.396 · the three vertical spans the proportion tool scales, from the datum points: HEAD (skull top → chin, skull top ≈ eyes − (chin − eyes)) ·
      TORSO (chin → crotch) · LEGS (crotch → lower ankle). Fractions of their sum → compare a TEMPLATE character with a TARGET one. */
   /* One body-ratio contract, shared by table, standard, datum readout and preview.
@@ -160,6 +162,67 @@
   const girthGet = (id, pose, frame, dir) => girthAll()[gKey(id, pose, frame, dir)] || null;
   function girthPut(id, pose, frame, dir, g) { if (!g || !g.perFace) return; try { const all = girthAll(), k = gKey(id, pose, frame, dir), o = { perFace: g.perFace, frac: g.frac, at: Date.now() }, old = all[k];
       if (old && JSON.stringify(old.perFace) === JSON.stringify(o.perFace)) return; all[k] = o; ls.setItem(GIRTH_KEY, JSON.stringify(all)) } catch (e) { } }
+  /* v98.443 · CUT LINES: two lines per picture that say where the zones start — NECK (everything on the eyes' side is HEAD) and HIP (everything on
+     the far side from the head is LEGS; between them TORSO + arms). Points measure (chin / crotch stay the ruler of every number); lines only
+     decide which pixels belong to which part when the picture is re-proportioned, so a long neck, a hood, a skirt or a cape can no longer drag
+     the wrong pixels along. Each line is 2+ points (fractions of the picture), extended past its ends when the zone is computed.
+     rec.cuts[dir] = { neck: [[x,y],…], hip: [[x,y],…] } · a direction without its own line gets, in this order: the opposite direction's line mirrored (SW↔SE · NW↔NE) ·
+     a line placed like another confirmed line of the same character (learned in FACE units, so it follows a leaning head) · a default from the points. */
+  const dsub = (a, b) => [a[0] - b[0], a[1] - b[1]], dlen = a => Math.hypot(a[0], a[1]), dnorm = a => { const l = dlen(a) || 1; return [a[0] / l, a[1] / l] };
+  /* signed distance of p from the polyline (nearest segment, end segments extended): NEGATIVE on the side where `head` is, POSITIVE on the other side */
+  function sideOf(pts, p, head) {
+    if (!pts || pts.length < 2) return 0; let best = null;
+    for (let i = 1; i < pts.length; i++) { const A = pts[i - 1], B = pts[i], d = dsub(B, A), l2 = d[0] * d[0] + d[1] * d[1] || 1; let t = ((p[0] - A[0]) * d[0] + (p[1] - A[1]) * d[1]) / l2;
+      if (i > 1) t = Math.max(0, t); if (i < pts.length - 1) t = Math.min(1, t); const q = [A[0] + d[0] * t, A[1] + d[1] * t], dist = Math.hypot(p[0] - q[0], p[1] - q[1]);
+      if (!best || dist < best.dist) best = { dist, A, d, l: Math.sqrt(l2) } }
+    const cr = pp => ((pp[0] - best.A[0]) * best.d[1] - (pp[1] - best.A[1]) * best.d[0]) / best.l, sign = head && cr(head) > 0 ? -1 : 1; return cr(p) * sign }
+  const faceFrame = (P, w, h) => { const eye = mid(P.eyeL, P.eyeR); if (!eye || !P.chin) return null; const e = [eye[0] * w, eye[1] * h], c = [P.chin[0] * w, P.chin[1] * h], d = dsub(c, e), F = dlen(d); return F > 2 ? { e, c, u: dnorm(d), F } : null };
+  /* default lines from the points (px math, so a non-square picture stays right) */
+  function defaultCuts(P, w, h, hint) {
+    const out = {}, px = p => [p[0] * w, p[1] * h], back = p => [p[0] / w, p[1] / h], sh = mid(P.shL, P.shR), ff = faceFrame(P, w, h);
+    if (ff) { let off = hint?.neck?.off ?? .3; const half = hint?.neck?.half ?? .75;
+      if (sh) { const S = px(sh), dS = (S[0] - ff.c[0]) * ff.u[0] + (S[1] - ff.c[1]) * ff.u[1]; off = Math.min(off, Math.max(0, (dS - .15 * ff.F) / ff.F)) }   /* never below the shoulder line */
+      const C = [ff.c[0] + ff.u[0] * off * ff.F, ff.c[1] + ff.u[1] * off * ff.F], n = [-ff.u[1], ff.u[0]]; out.neck = [back([C[0] - n[0] * half * ff.F, C[1] - n[1] * half * ff.F]), back([C[0] + n[0] * half * ff.F, C[1] + n[1] * half * ff.F])] }
+    if (sh && P.crotch) { const S = px(sh), K = px(P.crotch), T = dlen(dsub(K, S)); if (T > 4) { const t = dnorm(dsub(K, S)), off = hint?.hip?.off ?? .1, sw = P.shL && P.shR ? Math.abs(P.shR[0] - P.shL[0]) * w : 0, half = Math.max(hint?.hip?.half != null ? hint.hip.half * T : 0, sw * .45, T * .28), n = [-t[1], t[0]], C = [K[0] - t[0] * off * T, K[1] - t[1] * off * T];
+        out.hip = [back([C[0] - n[0] * half, C[1] - n[1] * half]), back([C[0] + n[0] * half, C[1] + n[1] * half])] } }
+    return out }
+  /* the lines of a direction: { neck: { pts, own, from }, hip: { … } } (a line without enough points to place it is left out) */
+  function cutsFor(rec, dir, hint, w = 384, h = 384) {
+    const own = rec?.cuts?.[dir] || {}, opp = rec?.cuts?.[OPP[dir]] || {}, { pts: P } = pointsFor(rec, dir), def = defaultCuts(P, w, h, hint), out = {};
+    for (const k of ['neck', 'hip']) {
+      if (own[k] && own[k].length >= 2) out[k] = { pts: own[k], own: true, from: 'own' };
+      else if (opp[k] && opp[k].length >= 2) out[k] = { pts: opp[k].map(p => [1 - p[0], p[1]]).reverse(), own: false, from: 'mirror' };
+      else if (def[k]) out[k] = { pts: def[k], own: false, from: hint?.[k] ? 'learned' : 'default' } }
+    return out }
+  /* a confirmed line of another picture of the same character · same front/back group → how far below the chin (neck) / above the crotch (hip) and how long, in face / torso units */
+  function cutHint(id, group, skip) {
+    const hint = {}, d = all()[id]; if (!d) return hint;
+    for (const pose of ['idle', ...Object.keys(d)]) for (const [fr, rec] of Object.entries(d[pose] || {})) for (const dir of DIRS) {
+      if (GROUP[dir] !== group || (skip && skip.pose === pose && skip.frame == fr && skip.dir === dir)) continue; const c = rec?.cuts?.[dir]; if (!c) continue; const { pts: P } = pointsFor(rec, dir);
+      const ff = faceFrame(P, 384, 384), sh = mid(P.shL, P.shR), mp = a => [(a[0][0] + a.at(-1)[0]) / 2 * 384, (a[0][1] + a.at(-1)[1]) / 2 * 384], ln = a => Math.hypot((a[0][0] - a.at(-1)[0]) * 384, (a[0][1] - a.at(-1)[1]) * 384);
+      if (!hint.neck && c.neck?.length >= 2 && ff) { const m = mp(c.neck), off = ((m[0] - ff.c[0]) * ff.u[0] + (m[1] - ff.c[1]) * ff.u[1]) / ff.F, half = ln(c.neck) / 2 / ff.F; if (off > -.5 && off < 2 && half > .2) hint.neck = { off, half } }
+      if (!hint.hip && c.hip?.length >= 2 && sh && P.crotch) { const S = [sh[0] * 384, sh[1] * 384], K = [P.crotch[0] * 384, P.crotch[1] * 384], T = dlen(dsub(K, S)); if (T > 4) { const t = dnorm(dsub(K, S)), m = mp(c.hip), off = ((K[0] - m[0]) * t[0] + (K[1] - m[1]) * t[1]) / T, half = ln(c.hip) / 2 / T; if (off > -.3 && off < .8 && half > .1) hint.hip = { off, half } } }
+      if (hint.neck && hint.hip) return hint }
+    return hint }
+  function setCut(rec, dir, key, pts) { rec.cuts ||= {}; if (pts && pts.length >= 2) (rec.cuts[dir] ||= {})[key] = pts.map(p => [+p[0].toFixed(4), +p[1].toFixed(4)]); else if (rec.cuts[dir]) { delete rec.cuts[dir][key]; if (!Object.keys(rec.cuts[dir]).length) delete rec.cuts[dir] } if (!Object.keys(rec.cuts).length) delete rec.cuts }
+  /* the lines must keep the eyes AND the chin on the head side and the crotch on the leg side — [] = fine, else the problems in words */
+  function cutCheck(rec, dir) {
+    const c = cutsFor(rec, dir), { pts: P } = pointsFor(rec, dir), eye = mid(P.eyeL, P.eyeR), problems = [];
+    if (c.neck && eye && P.chin && sideOf(c.neck.pts, P.chin, eye) > 0) problems.push('คางอยู่ใต้เส้นตัดหัว');
+    if (c.hip && eye && P.crotch && sideOf(c.hip.pts, P.crotch, eye) < 0) problems.push('ขาหนีบอยู่ฝั่งหัวของเส้นเริ่มขา');
+    if (c.neck && c.hip && eye) { const hm = [(c.hip.pts[0][0] + c.hip.pts.at(-1)[0]) / 2, (c.hip.pts[0][1] + c.hip.pts.at(-1)[1]) / 2]; if (sideOf(c.neck.pts, hm, eye) < 0) problems.push('เส้นเริ่มขาอยู่เหนือเส้นตัดหัว') }
+    return problems }
+  /* v98.443 · HEAD SIZE vs BODY HEIGHT between two DIFFERENT characters (the player's decision: moderate): a taller character gets a slightly bigger head —
+     face ∝ height^0.35 (+12 % height → ≈ +4 % face), so a 190 cm figure looks taller instead of a scaled-up 170 cm one. A leg / arm is taken to grow with the
+     height, so the thickness ÷ face ratio of the template is multiplied by (hTarget ÷ hTemplate)^(1 − 0.35) for a first guess (thickness itself stays the player's eye). */
+  const HEAD_EXP = .35, headFactor = (hT, hR) => hT > 0 && hR > 0 ? Math.pow(hT / hR, HEAD_EXP) : 1, thickFactor = (hT, hR) => hT > 0 && hR > 0 ? Math.pow(hT / hR, 1 - HEAD_EXP) : 1;
+  /* HEIGHT GUIDE of a pose against the same character's standing pose (idle · frame 1 · same direction): stack height ÷ face, so it does not depend on the picture's size.
+     Only a guide — believable once head and thickness already match the template (the height changes with the pose by itself). Not for lying poses. */
+  const POSE_HEIGHT = { walk: [.97, 1.01], windup: [.80, .90], guard: [.90, .95], hit: [.90, .97], strike: [.88, 1.0] };
+  function heightGuide(id, pose, frame, dir, w = 384, h = 384) {
+    const g = POSE_HEIGHT[pose]; if (!g || (pose === 'idle')) return null; const rec = get(id, pose, frame | 0), ref = get(id, 'idle', 0); if (!rec || !ref) return null;
+    const a = metrics(rec, dir, w, h), b = metrics(ref, dir, w, h), fa = measure(rec, dir, w, h).face, fb = measure(ref, dir, w, h).face; if (!a.lengths || !b.lengths || !fa || !fb) return null;
+    const ratio = (a.lengths.total / fa) / (b.lengths.total / fb); return { ratio, guide: g, level: ratio >= g[0] - .03 && ratio <= g[1] + .03 ? 'ok' : ratio >= g[0] - .08 && ratio <= g[1] + .08 ? 'warn' : 'bad' } }
   /* v98.434 · BACK VIEW HEAD from the FRONT (the neck looks longer from behind — the chin hides it in front — so eyes / chin of a back view are a guess).
      The shoulder line and the crotch are seen from both sides, so they are the ruler: in the FRONT view of the same pose, how far the chin sits above the
      shoulder line and how long the face is, both in torso lengths (shoulder mid → crotch) — then laid onto the back view the same way. Returns a SUGGESTION
@@ -217,7 +280,7 @@
     for (const s of dp.segs) { if (s.dev == null) { if (all) parts.push(s.name + ' —'); continue } if (all || s.level !== 'ok') parts.push(`${s.name} ${pc(s.dev)}${s.level !== 'ok' ? ' ' + ic[s.level] : ''}`) }
     return parts.join(' · ') }
   const pixelPoints = (rec, dir, w, h) => Object.fromEntries(Object.entries(pointsFor(rec, dir).pts).map(([k, p]) => [k, [p[0] * w, p[1] * h]]));
-  /* v98.442 · drag-swap of two animation cells (Asset Studio): the datum points of the first n frames of (poseA · viewA) and (poseB · viewB) trade places
+  /* v98.443 · drag-swap of two animation cells (Asset Studio): the datum points of the first n frames of (poseA · viewA) and (poseB · viewB) trade places
      with their pictures; a side that has none ends with none. Mutates and returns the all() object (caller saves) — pure so tools/test-proportion-swap.cjs can test it */
   function swapPts(d, id, poseA, viewA, poseB, viewB, n) {
     const R0 = (d[id] ||= {}), slot = (pose, i, mk) => { const P = (R0[pose] ||= (mk ? {} : undefined)); if (!P) return null; return P[i] || (mk ? (P[i] = { pts: {} }) : null) };
@@ -230,6 +293,6 @@
     if (!Object.keys(R0).length) delete d[id];
     return d;
   }
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

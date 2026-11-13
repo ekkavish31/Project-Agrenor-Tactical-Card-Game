@@ -86,4 +86,34 @@ console.log('proportion depth: all passed');
   assert.ok(!PD.pointsFor(rec, 'NW').pts.chin, 'a suggestion is NOT part of the back view points (only confirmed ones are)');
   const own = { ...back, eyeL: sg.eyeL, eyeR: sg.eyeR, chin: sg.chin }, vc = PD.viewCheck({ pts: { SW: front, NW: own } }, 'NW'); assert.ok(vc && Math.abs(vc.dev) < .01 && vc.level === 'ok', 'consistent front/back → ok: ' + vc?.dev);
   const off = PD.viewCheck({ pts: { SW: front, NW: { ...own, chin: [sg.chin[0], sg.chin[1] + .05] } } }, 'NW'); assert.ok(off.dev > .1 && off.level !== 'ok', 'a chin placed too low is flagged') }
+// v98.443 · cut lines (neck / hip): defaults, sides, mirror, learned from a confirmed line, sanity check
+{ const P = { eyeL: [.45, .2], eyeR: [.55, .2], chin: [.5, .3], shL: [.35, .38], shR: [.65, .38], crotch: [.5, .65], kneeL: [.45, .8], kneeR: [.55, .8], footL: [.45, .95], footR: [.55, .95] };
+  const rec = { pts: { SW: P } }, c = PD.cutsFor(rec, 'SW');
+  assert.ok(c.neck && c.hip && c.neck.from === 'default' && !c.neck.own, 'both lines are suggested from the points');
+  const mid = ps => [(ps[0][0] + ps.at(-1)[0]) / 2, (ps[0][1] + ps.at(-1)[1]) / 2];
+  assert.ok(mid(c.neck.pts)[1] > P.chin[1] && mid(c.neck.pts)[1] < .38, 'the neck line sits between the chin and the shoulder line');
+  assert.ok(Math.abs(c.neck.pts[0][1] - c.neck.pts[1][1]) < 1e-9, 'a level head gets a level line');
+  assert.ok(mid(c.hip.pts)[1] < P.crotch[1] && mid(c.hip.pts)[1] > P.shL[1], 'the hip line sits above the crotch');
+  const eye = [.5, .2];
+  assert.ok(PD.sideOf(c.neck.pts, eye, eye) < 0 && PD.sideOf(c.neck.pts, P.crotch, eye) > 0 && PD.sideOf(c.hip.pts, P.crotch, eye) > 0 && PD.sideOf(c.hip.pts, P.chin, eye) < 0, 'head side negative · far side positive');
+  assert.deepEqual(PD.cutCheck(rec, 'SW'), [], 'default lines are consistent');
+  const bad = { pts: { SW: P }, cuts: { SW: { neck: [[.3, .25], [.7, .25]] } } }; assert.ok(PD.cutCheck(bad, 'SW').some(x => /คาง/.test(x)), 'a neck line above the chin is reported');
+  // a tilted head: the line follows the face axis
+  const tilt = { ...P, eyeL: [.43, .22], eyeR: [.53, .17], chin: [.52, .31] }; const ct = PD.cutsFor({ pts: { SW: tilt } }, 'SW'); assert.ok(Math.abs(ct.neck.pts[0][1] - ct.neck.pts[1][1]) > .005, 'a leaning head gets a leaning line');
+  // confirmed line → mirror to the other direction, and learned for other pictures of the same character
+  const conf = { pts: { SW: P }, cuts: { SW: { neck: [[.38, .33], [.62, .33]], hip: [[.38, .6], [.62, .6]] } } };
+  const mir = PD.cutsFor({ pts: { SW: P, SE: P }, cuts: conf.cuts }, 'SE'); assert.equal(mir.neck.from, 'mirror'); assert.deepEqual(mir.neck.pts, [[.38, .33], [.62, .33]], 'mirrored (and reversed) for the opposite direction');
+  PD.put('cuthero', 'idle', 0, conf); PD.put('cuthero', 'windup', 0, { pts: { SW: { ...P, chin: [.5, .4], eyeL: [.45, .3], eyeR: [.55, .3], crotch: [.5, .72] } } });
+  const hint = PD.cutHint('cuthero', 'front', { pose: 'windup', frame: 0, dir: 'SW' }); assert.ok(hint.neck && hint.hip, 'learned from the confirmed idle lines');
+  const lc = PD.cutsFor(PD.get('cuthero', 'windup', 0), 'SW', hint); assert.equal(lc.neck.from, 'learned'); assert.ok(mid(lc.neck.pts)[1] > .4, 'a head that is lower now gets a lower line');
+  const r2 = JSON.parse(JSON.stringify(conf)); PD.setCut(r2, 'SW', 'neck', null); assert.ok(!r2.cuts.SW.neck && r2.cuts.SW.hip, 'a line can be removed'); PD.setCut(r2, 'SW', 'hip', null); assert.ok(!r2.cuts, 'empty cuts are dropped');
+  assert.equal(PD.OPTIONAL[0], 'chest'); assert.equal(PD.status('cuthero', 'idle', 'SW').total, 14, 'the chest point is not required any more') }
+// v98.443 · head grows a little with height · pose height guide
+assert.ok(Math.abs(PD.headFactor(1.9, 1.7) - 1.0407) < .002, '+11.8 % height → about +4 % head'); assert.equal(PD.headFactor(1.7, 1.7), 1); assert.equal(PD.headFactor(0, 1.7), 1);
+assert.ok(Math.abs(PD.headFactor(1.9, 1.7) * PD.thickFactor(1.9, 1.7) - 1.9 / 1.7) < 1e-9, 'head × thickness factors multiply to the height ratio');
+{ const stand = { eyeL: [.45, .1], eyeR: [.55, .1], chin: [.5, .2], shL: [.35, .24], shR: [.65, .24], crotch: [.5, .55], kneeL: [.45, .75], kneeR: [.55, .75], footL: [.45, .95], footR: [.55, .95] };
+  const crouch = Object.fromEntries(Object.entries(stand).map(([k, [x, y]]) => [k, [x, y <= .2 ? y : .2 + (y - .2) * .8]]));   // same face, body below the chin 20 % shorter
+  PD.put('hg', 'idle', 0, { pts: { SW: stand } }); PD.put('hg', 'windup', 0, { pts: { SW: crouch } });
+  const hg = PD.heightGuide('hg', 'windup', 0, 'SW'); assert.ok(hg && hg.ratio > .8 && hg.ratio < .9 && hg.level === 'ok', 'a crouch at 85 % of the standing stack is inside the windup guide: ' + hg?.ratio);
+  PD.put('hg', 'guard', 0, { pts: { SW: stand } }); assert.equal(PD.heightGuide('hg', 'guard', 0, 'SW').level, 'warn', 'a guard as tall as standing is only a hint'); assert.equal(PD.heightGuide('hg', 'idle', 0, 'SW'), null); assert.equal(PD.heightGuide('hg', 'down', 0, 'SW'), null, 'no guide for a lying pose') }
 console.log('proportion girth: passed');
