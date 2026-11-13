@@ -215,7 +215,8 @@
   /* v98.444 · HEAD SIZE vs BODY HEIGHT between two DIFFERENT characters (the player's decision: moderate): a taller character gets a slightly bigger head —
      face ∝ height^0.35 (+12 % height → ≈ +4 % face), so a 190 cm figure looks taller instead of a scaled-up 170 cm one. A leg / arm is taken to grow with the
      height, so the thickness ÷ face ratio of the template is multiplied by (hTarget ÷ hTemplate)^(1 − 0.35) for a first guess (thickness itself stays the player's eye). */
-  const HEAD_EXP = .35, headFactor = (hT, hR) => hT > 0 && hR > 0 ? Math.pow(hT / hR, HEAD_EXP) : 1, thickFactor = (hT, hR) => hT > 0 && hR > 0 ? Math.pow(hT / hR, 1 - HEAD_EXP) : 1;
+  /* v98.448 · the head grows by ONE THIRD of the height gap (hT ÷ hR − 1) ÷ 3; the body thickness takes the rest so head × thickness = height ratio */
+  const HEAD_EXP = 1 / 3, headFactor = (hT, hR) => hT > 0 && hR > 0 ? 1 + (hT / hR - 1) / 3 : 1, thickFactor = (hT, hR) => hT > 0 && hR > 0 ? hT / hR / headFactor(hT, hR) : 1;
   /* HEIGHT GUIDE of a pose against the same character's standing pose (idle · frame 1 · same direction): stack height ÷ face, so it does not depend on the picture's size.
      Only a guide — believable once head and thickness already match the template (the height changes with the pose by itself). Not for lying poses. */
   const POSE_HEIGHT = { walk: [.97, 1.01], windup: [.80, .90], guard: [.90, .95], hit: [.90, .97], strike: [.88, 1.0] };

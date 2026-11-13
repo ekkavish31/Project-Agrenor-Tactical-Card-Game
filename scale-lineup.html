@@ -119,7 +119,7 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.448"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.449"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -527,6 +527,11 @@ function inspectRatio() {
     /* v98.444 · two DIFFERENT characters: a taller one gets a slightly bigger head (PD.headFactor, +12 % height ≈ +4 % head), so the thickness ÷ face expected from the template is multiplied by (hT ÷ hR)^0.65 */
     const heightFac = () => { let hNote = '', fac = 1; try { const refE = mem.ref === '__std__' ? ENTRIES.find(x => x.id === RSD?.s.id) : mem.ref === '__master__' ? null : ENTRIES.find(x => x.id === mem.ref);
         if (refE && refE.id !== e.id && !isW(refE) && !isW(e)) { const hT = metres(e), hR = metres(refE), tf = PD.thickFactor(hT, hR); if (isFinite(tf) && tf !== 1) { fac = tf; const hp = (PD.headFactor(hT, hR) - 1) * 100; hNote = ` · ความสูง ${hT.toFixed(2)} m เทียบ ${hR.toFixed(2)} m → หัวโตตามส่วน ${hp >= 0 ? '+' : ''}${hp.toFixed(0)}%` } } } catch (err) { } return { fac, hNote } };
+    /* v98.448 · head size rule: target eye→chin = template eye→chin × (1 + height gap ÷ 3), compared at on-screen size (both × metres ÷ sprite height). Returns the own-head scale in % (null = not comparable → 100) */
+    const headTarget = () => { try { const refE = mem.ref === '__std__' ? ENTRIES.find(x => x.id === RSD?.s.id) : mem.ref && mem.ref !== '__master__' ? ENTRIES.find(x => x.id === mem.ref) : null;
+        if (!refE || refE.id === e.id || isW(refE) || isW(e)) return null; const T = tplInfo(), mT = refE.ctx[ctx]?.m; if (!T.rec || !mT) return null;
+        const fT = PD.measure(T.rec, T.dir, mT.w, mT.h)?.face, fO = PD.measure(datumRec, q.dir, c.m.w, c.m.h)?.face; if (!fT || !fO) return null;
+        const hT = metres(e), hR = metres(refE), want = fT * metres(refE) / mT.H * PD.headFactor(hT, hR), own = fO * hT / c.m.H, v = want / own; return isFinite(v) ? { pct: Math.max(70, Math.min(140, Math.round(v * 100))), raw: v, gap: (hT / hR - 1) * 100 } : null } catch (err) { return null } };
     const rulerPlan = () => { const ow = ownRule(), rf = refRule(), at = `${BONE_TH[RSPEC.group]} ที่ ${Math.round(RSPEC.t * 100)}%`;
       if (!ow) return { note: `วัดไม้บรรทัด (${at}) ของตัวนี้ไม่ได้ — datum ไม่พอ หรือจุดนั้นไม่โดนเงาภาพ` };
       if (!rf) return { own: ow, note: `ต้นแบบนี้ยังไม่มีค่าไม้บรรทัด (${at})` + (mem.ref === '__std__' ? ' — ตั้งมาตรฐานใหม่อีกครั้ง' : mem.ref === '__master__' ? (ST ? ' — กำลังวัดจากภาพท่าอ้างอิง…' : ' — เปิดท่าอ้างอิงให้เห็นสักครั้ง ระบบจะจำค่าไว้') : '') };
@@ -561,7 +566,7 @@ function inspectRatio() {
       else { const x = mem.ref && ENTRIES.find(y => y.id === mem.ref); if (x) { const r1 = PD.get(x.id, q.pose, q.frame); rec = r1 || recOf(x.id); same = !!r1; spans = same ? spOf(x.id) : null; label = x.name } }
       return { rec, dir, same, spans, shoulder: rec ? PD.shoulderRatio(rec, dir, 384, 384) : null, label } };
     const sizeTargets = () => { let note = '', t = null;
-      if (mem.method === 'ruler') { const rp = rulerPlan(); if (rp.q) { t = { head: 100, torso: Math.round(rp.q * 100), legs: Math.round(rp.q * 100) }; note = rp.note } else note = rp.note + ' → ใช้สัดส่วนหัว:ลำตัว:ขาแทน' }
+      if (mem.method === 'ruler') { const rp = rulerPlan(); if (rp.q) { const ht = headTarget(), hs = ht ? ht.pct : 100, qq = Math.round(clampQ(rp.raw * hs / 100) * 100); t = { head: hs, torso: qq, legs: qq }; note = rp.note + (ht ? ` · 🙂 หัว ${hs}% (ความสูงต่าง ${ht.gap >= 0 ? '+' : ''}${ht.gap.toFixed(0)}% → หัวโต ⅓ ของส่วนต่าง · ตัดเฉพาะส่วนหัวตามเส้นคอ)` : '') } else note = rp.note + ' → ใช้สัดส่วนหัว:ลำตัว:ขาแทน' }
       if (!t) { const a = refScales(); if (a.head) t = { head: Math.round(a.head * 1000) / 10, torso: Math.round(a.torso * 1000) / 10, legs: Math.round(a.legs * 1000) / 10 }; note = (note ? note + ' · ' : '') + (a.note || '') }
       return { t, note } };
     /* thickness knobs: 🦵 from the ruler row (only when the ruler is a leg bone) · 💪 from the shoulder width (same pose only). The face is scaled by `head`, the band by its own scale → × head ÷ band */
