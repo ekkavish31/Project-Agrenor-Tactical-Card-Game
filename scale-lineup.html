@@ -112,7 +112,7 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 </script>
 <header><h1>⚖ Scale Lineup <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
 <span id="tabs"></span> <span id="ctxBtns"></span><span id="vpCtl"></span><span class="grow"></span>
-<button id="lineupCollapse" type="button" aria-expanded="true" aria-controls="lineupOverview">ยุบแถว Lineup ▴</button><button id="lineupFullscreen" type="button" aria-pressed="false">⛶ เต็มจอ</button></header>
+<button id="cartAll" type="button" title="ใส่ค่าปรับสเกลทั้งหมด + Datum เข้า Cart ในครั้งเดียว แล้วกด 🛒 Cart → Push ทั้งหมด">🛒 ใส่ Cart ทั้งหมด</button><button id="cartOpen" type="button" title="เปิด Cart เพื่อ Push">⬆ Push (Cart)</button><button id="lineupCollapse" type="button" aria-expanded="true" aria-controls="lineupOverview">ยุบแถว Lineup ▴</button><button id="lineupFullscreen" type="button" aria-pressed="false">⛶ เต็มจอ</button></header>
 <main>
 <section class="card"><b id="listTitle">ตัวละคร</b><div id="list" role="list"></div></section>
 <section class="card" id="lineupOverview"><div id="toolbar"></div><div id="stageWrap"><div id="stage"></div></div>
@@ -728,7 +728,7 @@ function inspectRatio() {
     const outCanvas = () => { if (!last || !previewReady) return null; const o = document.createElement('canvas'); o.width = last.canvas.width; o.height = last.canvas.height; const og = o.getContext('2d'); if (c.flip) { og.translate(o.width, 0); og.scale(-1, 1) } og.drawImage(last.canvas, 0, 0); return o };   /* back to the file's own orientation */
     $a('adjPng').onclick = () => { const o = outCanvas(); if (!o) return; const a = document.createElement('a'); a.download = e.id.replace(/[^a-z0-9_-]+/gi, '-') + '-proportion.png'; a.href = o.toDataURL('image/png'); a.click() };
     previewButtons(previewReady); if (!inStudio) $a('adjApply').title = 'ใช้ได้เมื่อเปิดใน Asset Studio (แท็บ Scale Lineup)';
-    $a('adjApply').onclick = async () => { const o = outCanvas(); if (!o || !c.file) return;
+    $a('adjApply').onclick = async () => { const o = outCanvas(); if (!o || !c.file) { alert(!c.file ? 'รูปนี้ไม่มีไฟล์ในโปรเจกต์ (ใส่ Cart ไม่ได้)' : 'ยังไม่มีภาพพรีวิว — กด 👁 พรีวิว ก่อน แล้วค่อยกด 💾 Cart'); return }
       { const cs0 = PD.cutsFor(datumRec, q.dir, PD.cutHint(e.id, GRP, { pose: q.pose, frame: String(q.frame | 0), dir: q.dir }), c.m.w, c.m.h); if (!(cs0.neck?.own && cs0.hip?.own)) { alert('ยังไม่ได้ยืนยันเส้นแบ่งโซนของภาพนี้\n\nเปิด 📍 Datum ของทิศนี้ → กด "✔ ใช้เส้นแนะนำ" (หรือจุดเส้นเอง ✂) แล้วตรวจว่าเส้นตัดหัวพ้นคาง/เส้นเริ่มขาอยู่ใต้เอว จากนั้นค่อยบันทึกเข้า Cart\n(พรีวิวใช้เส้นแนะนำได้ แต่การเขียนทับภาพต้องยืนยันก่อน)'); return } } const config = { scale: { ...lastConfig.scale }, options: { ...lastConfig.options } };
       /* v98.386 · the same pose in the OPPOSITE direction (SW↔SE · NW↔NE) gets the same settings, warped from its own picture */
       let opp = null; const vp = c.vp; if (ST && vp && vp.action !== 'pick') { const ov = OPPV[vp.view], oc = vp.clips.find(x => x.action === vp.action && x.view === ov); try { const pic = await ST.lineup.picture(vp.sid, ov, oc?.id, oc ? Math.min(vp.index, oc.n - 1) : 0); if (pic && pic.file && pic.file !== c.file) opp = { ...pic, view: ov } } catch (err) { } }
@@ -1066,6 +1066,21 @@ async function saveToRepo() {
   try { await G.commit('Scale Lineup: ปรับขนาดตัวละคร', async () => [{ path: 'js/character-scale-adjust-data.js', content: text }]); Object.assign(SAVED, JSON.parse(JSON.stringify(data))); SAVED.global = data.global; SAVED.scene = data.scene; persistDraft(); render(); document.getElementById('cMsg').textContent = '✔ บันทึกเข้าเกมแล้ว (ใช้ได้หลังเว็บอัปเดต 1–2 นาที)' }
   catch (err) { msg.textContent = 'บันทึกไม่สำเร็จ: ' + err.message }
 }
+/* v98.459 · one button puts EVERYTHING edited here into the 🛒 Cart: size adjustments + Datum (pictures are staged by 💾 Cart per picture) */
+$('cartOpen').onclick = () => { const G = window.GitHubPush; if (!G) return; try { (window.top.GitHubPush || G).cart.open() } catch (e) { G.cart.open() } };
+$('cartAll').onclick = async () => {
+  const G = window.GitHubPush, b = $('cartAll'); if (!G) return alert('ยังไม่พร้อม — โหลดหน้าใหม่แล้วลองอีกครั้ง');
+  if (!G.config().token) return G.openSettings();
+  b.disabled = true; const done = [];
+  try {
+    const data = clean(ADJ), text = `/* v98.65 · per-character size adjustments written by scale-lineup.html (⚖ ปรับสเกล → บันทึกเข้าเกม). Do not hand-edit unless you know what you are doing.\n   global[id] = one factor for the character in EVERY scene · scene[ctx][id] = an extra factor for one scene (battle · village · world) → final size = global × scene\n   ids: hero · bram · luna · kier · m:<monster key> · village NPC ids */\nwindow.CHARACTER_SCALE_ADJUST = ${JSON.stringify(data)};\n`;
+    await G.commit('Scale Lineup: ปรับขนาดตัวละคร', async () => [{ path: 'js/character-scale-adjust-data.js', content: text }]); done.push('ค่าปรับสเกล');
+    await G.pushSettings([PD.KEY, PD.STD_KEY, PD.MASTER_KEY].filter(Boolean), 'Datum สัดส่วนตัวละคร + มาตรฐานทีม + ท่าอ้างอิงแนวลึก'); done.push('Datum');
+    Object.assign(SAVED, JSON.parse(JSON.stringify(data))); SAVED.global = data.global; SAVED.scene = data.scene; persistDraft(); render();
+    alert('🛒 ใส่ Cart แล้ว: ' + done.join(' + ') + '\n\nรูปที่ปรับสัดส่วนแล้วต้องกด 💾 Cart ทีละรูป (อยู่ใน Cart แล้วถ้ากดไปก่อนหน้า)\nกดปุ่ม ⬆ Push (Cart) เพื่อ Push ทั้งหมดรวดเดียว')
+  } catch (err) { alert('ใส่ Cart ไม่สำเร็จ' + (done.length ? ' (สำเร็จแล้ว: ' + done.join(', ') + ')' : '') + ': ' + err.message) }
+  b.disabled = false
+};
 /* v98.445 · toggling the overview does not rebuild the inspector or reset edits. */
 const collapseButton=$('lineupCollapse');
 function setLineupCollapsed(on){document.body.classList.toggle('lineup-collapsed',on);collapseButton.textContent=on?'แสดงแถว Lineup ▾':'ยุบแถว Lineup ▴';collapseButton.setAttribute('aria-expanded',String(!on));try{localStorage.setItem('lineup.collapsed',on?'1':'0')}catch(_){}if(DOCK)parent.postMessage({type:'lineup-edit-fit',collapsed:on},location.origin)}
