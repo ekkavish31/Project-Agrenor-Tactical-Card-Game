@@ -147,3 +147,8 @@ body.anim-mode #lineupDock{display:block}
 #lineupDock.lineup-fullscreen .dock-body{display:block;flex:1;height:auto!important;min-height:0;max-height:none;resize:none}
 #lineupDock.lineup-fullscreen .dock-bar{flex:none;flex-wrap:wrap}
 @media(max-width:1000px){#lineupDock .dock-bar small{display:none}}
+
+/* v98.446 · an iframe's percentage height cannot resolve against an auto-height flex item.
+   Pin it to a positioned body with a definite flex allocation instead of its 150px intrinsic height. */
+#lineupDock.edit-fit .dock-body,#lineupDock.lineup-fullscreen .dock-body{position:relative;flex:1 1 0;overflow:hidden}
+#lineupDock.edit-fit #lineupDockFrame,#lineupDock.lineup-fullscreen #lineupDockFrame{position:absolute;inset:0;width:100%;height:100%}

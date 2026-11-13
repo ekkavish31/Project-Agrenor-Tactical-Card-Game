@@ -178,7 +178,15 @@ async function cartPush(){const s=await cartSummary();if(!s.n)return null;if(!co
 async function cartDrop(paths,keys){const st=await idbGet('repo-staged'),cf=await idbGet('cart-files'),m=await idbGet('cart-meta')||{log:[],keys:[]};const P=new Set(paths||[]);
  if(Array.isArray(st))await idbSet('repo-staged',st.filter(([p])=>!P.has(p)));if(Array.isArray(cf))await idbSet('cart-files',cf.filter(([p])=>!P.has(p)));if(keys)m.keys=m.keys.filter(k=>!keys.includes(k));await idbSet('cart-meta',m);
  try{stagedBc&&stagedBc.postMessage({reload:true})}catch(e){}cartNotify()}
-async function cartClear(){const s=await cartSummary();await cartDrop([...s.all.keys()],s.meta.keys);await idbSet('cart-meta',{log:[],keys:[]});await idbSet('repo-staged-base',null);BUILD.clear();cartNotify()}
+async function cartClear(){
+ /* v98.446 · commit one empty cart before notifying its readers. A failed write must not look successful. */
+ const db=await idbOpen();try{await new Promise((resolve,reject)=>{const t=db.transaction('kv','readwrite'),kv=t.objectStore('kv');kv.put([],'repo-staged');kv.put([],'cart-files');kv.put({log:[],keys:[]},'cart-meta');kv.put(null,'repo-staged-base');t.oncomplete=resolve;t.onerror=()=>reject(t.error||new Error('ล้าง Cart ไม่สำเร็จ'));t.onabort=()=>reject(t.error||new Error('ยกเลิกการล้าง Cart'))})}finally{db.close()}
+ BUILD.clear();
+ /* clear build callbacks in every loaded editor, including this tab's Studio frames */
+ try{cartBc&&cartBc.postMessage({cleared:true})}catch(e){}
+ try{stagedBc&&stagedBc.postMessage({reload:true})}catch(e){}
+ cartNotify()
+}
 /* --- UI: lives in the top window only (one button, one panel) --- */
 const topDoc=()=>{try{if(window.top!==window&&window.top.GitHubPush)return null}catch(e){}return document};
 const mb=b=>b>=1e6?(b/1e6).toFixed(1)+' MB':Math.max(1,Math.round(b/1e3))+' KB';
@@ -189,9 +197,18 @@ function cartUi(){clearTimeout(cartTimer);cartTimer=setTimeout(async()=>{const d
  if(!b){b=d.createElement('button');b.id='ghCartBtn';b.type='button';b.style.cssText='position:fixed;right:16px;bottom:16px;z-index:9000;font:700 13px AgThai,system-ui,"Noto Sans Thai",sans-serif;padding:9px 14px;border-radius:22px;border:1px solid #a06c27;background:#c9893a;color:#fff;box-shadow:0 6px 20px #0005;cursor:pointer';d.body.append(b)}
  if(!shell||cartOn()){b.textContent='🛒 Cart ('+s.n+')'+(s.big?' · เยอะแล้ว ควร Push':'');b.title=s.n?s.all.size+' ไฟล์ ('+mb(s.bytes)+') · '+s.meta.keys.length+' ค่าตั้งค่า — กดเพื่อดู/Push':'Cart ว่าง';b.disabled=false;b.dataset.n=s.n;b.onclick=e=>{e.preventDefault();e.stopImmediatePropagation();cartOpen()};
   if(!shell){b.hidden=!s.n;b.style.background=s.big?'#b5462e':'#c9893a'}else b.style.background=s.big?'#b5462e':''}},120)}
-try{cartBc&&(cartBc.onmessage=()=>cartUi())}catch(e){}try{stagedBc&&stagedBc.addEventListener('message',()=>cartUi())}catch(e){}
+try{cartBc&&(cartBc.onmessage=ev=>{if(ev.data?.cleared)BUILD.clear();cartUi()})}catch(e){}try{stagedBc&&stagedBc.addEventListener('message',()=>cartUi())}catch(e){}
 function cartToast(label){const d=topDoc()||document;cartSummary().then(s=>{const t=d.createElement('div');t.style.cssText='position:fixed;right:16px;bottom:64px;z-index:9001;max-width:360px;padding:10px 14px;border-radius:10px;background:'+(s.big?'#5a1f14':'#1f1a13')+';color:#f6e7c8;border:1px solid #c9893a;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 24px #0006';
  t.textContent='🛒 ใส่ Cart แล้ว: '+String(label).slice(0,70)+' · รวม '+s.n+' รายการ'+(s.big?' — เยอะแล้ว ('+s.all.size+' ไฟล์ · '+mb(s.bytes)+') ควรกด Push':'');(d.body||d.documentElement).append(t);setTimeout(()=>t.remove(),s.big?6000:3500)})}
+/* v98.446 · await a native top-layer dialog in the Cart's document, above the still-open Cart.
+   Do not use the game's synchronous confirm/replay shim: the asking click may live in another frame. */
+function cartConfirmClear(d,message){return new Promise(resolve=>{
+ const box=d.createElement('dialog');box.id='ghCartConfirm';box.setAttribute('aria-labelledby','ghCartConfirmTitle');box.style.cssText='width:min(440px,92vw);max-height:85vh;overflow:auto;border:1px solid #c9893a;border-radius:14px;padding:18px;background:#f7f5ee;color:#292b25;font:14px AgThai,system-ui,sans-serif;box-shadow:0 22px 80px #0009';
+ box.innerHTML='<h2 id="ghCartConfirmTitle" style="margin:0 0 10px;font-size:18px">ทิ้งทั้งหมดใน Cart?</h2><p style="white-space:pre-line"></p><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" data-cancel autofocus>ยกเลิก</button><button type="button" data-confirm>ยืนยันทิ้งทั้งหมด</button></div>';
+ box.querySelector('p').textContent=message;let done=false;const finish=ok=>{if(done)return;done=true;box.close();box.remove();resolve(ok)};
+ box.querySelector('[data-cancel]').onclick=()=>finish(false);box.querySelector('[data-confirm]').onclick=()=>finish(true);box.addEventListener('cancel',ev=>{ev.preventDefault();finish(false)});box.addEventListener('close',()=>finish(false));
+ (d.body||d.documentElement).append(box);box.showModal();box.querySelector('[data-cancel]').focus()
+})}
 async function cartOpen(){const d=topDoc()||document,s=await cartSummary();d.getElementById('ghCart')?.remove();const dlg=d.createElement('dialog');dlg.id='ghCart';
  dlg.style.cssText='width:min(620px,95vw);max-height:86vh;overflow:auto;border:1px solid #c9893a;border-radius:14px;padding:16px 18px;background:#f7f5ee;color:#292b25;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 22px 80px #0009';
  const e=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]),src=p=>s.files.some(([q])=>q===p)?'editor':'Studio',t=at=>new Date(at).toLocaleString('th-TH',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});
@@ -205,7 +222,7 @@ async function cartOpen(){const d=topDoc()||document,s=await cartSummary();d.get
  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap"><button id="ghCartClear" style="margin-right:auto" ${s.n?'':'disabled'}>🗑 ทิ้งทั้งหมด</button><button id="ghCartClose">ปิด</button><button id="ghCartPush" ${s.n?'':'disabled'} style="background:#c9893a;color:#fff;border:1px solid #a06c27;border-radius:8px;padding:7px 16px;font-weight:700">⬆ Push ทั้งหมด</button></div>`;
  (d.body||d.documentElement).append(dlg);const $=id=>dlg.querySelector('#'+id);
  $('ghCartClose').onclick=()=>{dlg.close();dlg.remove()};
- $('ghCartClear').onclick=async()=>{if(!confirm('ทิ้งงานทั้งหมดใน Cart ('+s.n+' รายการ)? ไฟล์ภาพที่ยังไม่ push จะหาย (ค่าตั้งค่าในเครื่องยังอยู่)'))return;await cartClear();dlg.close();dlg.remove()};
+ $('ghCartClear').onclick=async()=>{const btn=$('ghCartClear');if(btn.disabled)return;btn.disabled=true;try{if(!await cartConfirmClear(d,'ทิ้งงานทั้งหมด '+s.n+' รายการ?\nไฟล์ภาพที่ยังไม่ Push จะถูกนำออกจาก Cart · ค่าตั้งค่าในเครื่องยังอยู่'))return;await cartClear();dlg.close();dlg.remove();await cartOpen()}catch(err){let status=$('ghCartError');if(!status){status=d.createElement('p');status.id='ghCartError';status.setAttribute('role','alert');dlg.append(status)}status.textContent='ทิ้งไม่สำเร็จ: '+err.message}finally{btn.disabled=false}};
  $('ghCartPush').onclick=async()=>{dlg.close();dlg.remove();try{const tag=await cartPush();if(tag)cartUi()}catch(err){alert('Push ไม่สำเร็จ: '+err.message+'\nงานยังอยู่ใน Cart ครบ')}};
  dlg.querySelectorAll('[data-dp]').forEach(b=>b.onclick=async()=>{await cartDrop([b.dataset.dp]);dlg.close();dlg.remove();cartOpen()});
  dlg.querySelectorAll('[data-dk]').forEach(b=>b.onclick=async()=>{await cartDrop([],[b.dataset.dk]);dlg.close();dlg.remove();cartOpen()});

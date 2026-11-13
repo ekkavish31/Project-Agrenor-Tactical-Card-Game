@@ -5272,3 +5272,10 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - เพิ่มยุบ/แสดงแถว Lineup แยกจากยุบทั้งโซน จำสถานะไว้ และคืนความสูงให้แผงแก้ไข
 - โหมดยุบจัดภาพ Before/After เคียง controls แบบสองคอลัมน์ ใช้พื้นที่จอที่เหลือ; หน้าจอแคบหรือเปิดรายละเอียดเพิ่มยังเลื่อนส่วนแก้ไขได้
 - ตรวจ syntax JavaScript ทุกไฟล์ผ่าน; test-*.cjs ผ่าน 47/53: 3 ชุดติดตั้ง browser ไม่พร้อม, 2 ชุดอ้างไฟล์ภาพที่ไม่มีใน checkout, proportion-preview ล้มเหมือน main เดิมเพราะ mock ไม่มี ProportionRulers; Chromium ที่มีถูกระบบปฏิเสธ socket จึงยังไม่ได้ยืนยัน layout ด้วยภาพหน้าจอ
+
+
+## v98.446 · 13 พ.ย. 2026
+- แก้ Scale Lineup เต็มจอ/โหมดยุบ: ยึด iframe ใน flex body ที่มีขนาดจริง ไม่ปล่อยความสูง fallback 150px
+- Cart ทิ้งทั้งหมดใช้ dialog ยืนยันใน top layer เหนือ Cart และ await ผลโดยตรง เลิกใช้ confirm/replay ของเกม
+- ล้างไฟล์/ค่ารอส่ง/ประวัติ Cart/base manifest ใน transaction เดียว แจ้ง error หากเขียนไม่ได้ และล้าง build callbacks ของหน้าอื่นด้วย BroadcastChannel; ค่าตั้งค่า localStorage ยังคงเดิม
+- ตรวจ JavaScript และ inline scripts ผ่าน; test-cart-clear ผ่าน (Cancel/Esc/Confirm, transaction failure, cross-frame invalidation); ชุด test-*.cjs รวม 48/54 ผ่าน อีก 6 ชุดติดข้อจำกัด/ปัญหาเดิมตาม v98.445; Chromium เปิดไม่ได้และ cloud browser ต่อ local server ไม่ได้ จึงยังไม่มี screenshot ยืนยัน
