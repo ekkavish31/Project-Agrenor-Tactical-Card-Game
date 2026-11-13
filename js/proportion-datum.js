@@ -51,16 +51,16 @@
   }
   /* proportion marks (fractions of the silhouette box m = {top,H}) for js/proportion-tool.js: chin · shoulder (pivot mid) · hip (crotch) */
   function marksFrom(rec, dir, m, h) {
-    const { pts: P } = pointsFor(rec, dir); if (!P.chin || !P.crotch) return null;
-    const f = y => (y * h - m.top) / m.H, sh = mid(P.shL, P.shR), body = metrics(rec, dir, m.w || h, h);
-    return { chin: f(P.chin[1]), shoulder: f(sh ? sh[1] : P.chin[1] + (P.crotch[1] - P.chin[1]) * .2), hip: f(P.crotch[1]), ...(body.proportions ? { headTop: f(body.top), ankle: f(body.bottom) } : {}) };
+    const { pts: P } = pointsFor(rec, dir), body = metrics(rec, dir, m.w || h, h), cy = body.crotchY; if (!P.chin || cy == null) return null;
+    const f = y => (y * h - m.top) / m.H, sh = mid(P.shL, P.shR);
+    return { chin: f(P.chin[1]), shoulder: f(sh ? sh[1] : P.chin[1] + (cy - P.chin[1]) * .2), hip: f(cy), ...(body.proportions ? { headTop: f(body.top), ankle: f(body.bottom) } : {}) };
   }
 
   /* how far each direction's own centre points sit from the first direction that has them (fraction of the picture height) */
   function heightGaps(rec) { const out = []; for (const k of CENTRE) { const has = DIRS.filter(d => rec?.pts?.[d]?.[k]); if (has.length < 2) continue; const y0 = rec.pts[has[0]][k][1]; for (const d of has.slice(1)) { const dy = rec.pts[d][k][1] - y0; if (Math.abs(dy) > .004) out.push({ dir: d, key: k, ref: has[0], dy }) } } return out }
   /* one line of status for a character · pose · direction (frame 0): how many own points, face size vs the standing pose, for the Animation table badges */
   function status(id, pose, dir, w = 384, h = 384) { const rec = get(id, pose, 0); if (!rec) return null; const own = Object.keys(rec.pts?.[dir] || {}).length, sug = Object.keys(pointsFor(rec, dir).pts).length;
-    const m = measure(rec, dir, w, h), ref = pose === 'idle' ? null : get(id, 'idle', 0), mr = ref && measure(ref, dir, w, h); return { own: Object.keys(rec.pts?.[dir] || {}).filter(k => !OPTIONAL.includes(k)).length, sug, total: POINTS.length - OPTIONAL.length, face: m.face || null, faceDev: m.face && mr?.face ? m.face / mr.face - 1 : null, legDev: m.legs && mr?.legs ? m.legs / mr.legs - 1 : null, heads: m.heads || null } }
+    const m = measure(rec, dir, w, h), ref = pose === 'idle' ? null : get(id, 'idle', 0), mr = ref && measure(ref, dir, w, h); return { own: REQUIRED.filter(k => rec.pts?.[dir]?.[k]).length, sug, total: REQUIRED.length, face: m.face || null, faceDev: m.face && mr?.face ? m.face / mr.face - 1 : null, legDev: m.legs && mr?.legs ? m.legs / mr.legs - 1 : null, heads: m.heads || null } }
   /* v98.396 · the three vertical spans the proportion tool scales, from the datum points: HEAD (skull top → chin, skull top ≈ eyes − (chin − eyes)) ·
      TORSO (chin → crotch) · LEGS (crotch → lower ankle). Fractions of their sum → compare a TEMPLATE character with a TARGET one. */
   /* One body-ratio contract, shared by table, standard, datum readout and preview.
@@ -71,13 +71,24 @@
     const { pts: P } = pointsFor(rec, dir), eye = mid(P.eyeL, P.eyeR), D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * w, (a[1] - b[1]) * h) : null;
     const out = { method: 'datum-body-v1', proportions: null, arms: {} };
     for (const side of ['L', 'R']) { const upper = D(P['sh' + side], P['elbow' + side]), lower = D(P['elbow' + side], P['wrist' + side]); out.arms[side] = { upper, lower, total: upper != null && lower != null ? upper + lower : null } }
-    if (!eye || !P.chin || !P.crotch || !(P.footL || P.footR)) return out;
-    const feet = Math.max(P.footL ? P.footL[1] : -1, P.footR ? P.footR[1] : -1), top = P.crown ? P.crown[1] : 2 * eye[1] - P.chin[1];   /* v98.451 · the placed crown, else the old guess (eye − (chin − eye)) */
-    const A = (P.chin[1] - top) * h, B = (P.crotch[1] - P.chin[1]) * h, C = (feet - P.crotch[1]) * h, total = A + B + C;
+    /* v98.454 · the crotch / ankle points are retired: the torso→legs split is the middle of the ✂ leg line, the bottom is the floor (lowest solid pixel, stored as rec.floor[dir] when the picture was open).
+       Records that still carry the old crotch / ankle points keep using them. */
+    let crotchY = P.crotch ? P.crotch[1] : null; if (crotchY == null) { const hp = cutsFor(rec, dir)?.hip?.pts; if (hp?.length >= 2) crotchY = (hp[0][1] + hp.at(-1)[1]) / 2 }
+    const footY = Math.max(P.footL ? P.footL[1] : -1, P.footR ? P.footR[1] : -1), feet = footY >= 0 ? footY : (rec?.floor?.[dir] ?? -1);
+    if (!eye || !P.chin || crotchY == null || !(feet >= 0)) return out;
+    const top = P.crown ? P.crown[1] : 2 * eye[1] - P.chin[1];   /* v98.451 · the placed crown, else the old guess (eye − (chin − eye)) */
+    const A = (P.chin[1] - top) * h, B = (crotchY - P.chin[1]) * h, C = (feet - crotchY) * h, total = A + B + C;
     if (!(A > 0 && B > 0 && C > 0)) return out;
-    out.headSrc = P.crown ? 'crown' : 'estimate'; out.top = top; out.bottom = feet; out.lengths = { head: A, torso: B, legs: C, total }; out.proportions = { head: A / total, torso: B / total, legs: C / total }; out.heads = total / A;
+    out.headSrc = P.crown ? 'crown' : 'estimate'; out.top = top; out.bottom = feet; out.crotchY = crotchY; out.lengths = { head: A, torso: B, legs: C, total }; out.proportions = { head: A / total, torso: B / total, legs: C / total }; out.heads = total / A;
     return out;
   }
+  /* v98.454 · the points a player places now: eyes · chin · crown · shoulders — plus the arm points only for a raised-arm pose (armMode 'raised' = wrists, 'custom' = elbows + wrists).
+     Crotch, knees and ankles are retired (the ✂ leg line and the floor replace them); old values stay in the record and are still used when present. */
+  const REQUIRED = ['eyeL', 'eyeR', 'chin', 'shL', 'shR'], ARM_DEFAULT = { windup: 'raised', strike: 'raised' };
+  const armMode = (rec, pose) => rec?.armMode || ARM_DEFAULT[pose] || 'none';
+  const flowKeys = (rec, pose) => { const m = armMode(rec, pose); return ['eyeL', 'eyeR', 'chin', 'crown', 'shL', 'shR', ...(m === 'raised' ? ['wristL', 'wristR'] : m === 'custom' ? ['elbowL', 'wristL', 'elbowR', 'wristR'] : [])] };
+  /* the floor = lowest solid pixel of the picture (fraction of its height) — set once per direction from the picture, never over a value that is already there */
+  function ensureFloor(rec, dir, m) { if (!rec || !m || !(m.h > 0) || !(m.bottom >= 0)) return false; if (rec.floor?.[dir] != null) return false; (rec.floor ||= {})[dir] = +((m.bottom + 1) / m.h).toFixed(4); return true }
   const spans = (rec, dir) => metrics(rec, dir).proportions;
   /* v98.452 · THICKNESS by hand: the player clicks TWO points across one bone (rec.pts[dir].wdA / wdB — extra datum points, so a warp moves them with the picture).
      ratio = distance ÷ head height (crown → chin). A direction without its own pair borrows the mirrored pair of the opposite direction. null = no pair. */
@@ -313,6 +324,6 @@
     if (!Object.keys(R0).length) delete d[id];
     return d;
   }
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, headUnit, crownRatio, widthOf, WIDTH_KEYS, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, REQUIRED, flowKeys, armMode, ensureFloor, headUnit, crownRatio, widthOf, WIDTH_KEYS, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

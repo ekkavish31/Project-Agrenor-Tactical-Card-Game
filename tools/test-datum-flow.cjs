@@ -1,4 +1,4 @@
-/* v98.451 · node tools/test-datum-flow.cjs — the Datum editor walk: eyes → chin → crown (guide ellipse) → ✂ head line → shoulders … wrists → ✂ leg line → crotch,
+/* v98.451 · node tools/test-datum-flow.cjs — the Datum editor walk: eyes → chin → crown (guide ellipse) → ✂ head line → shoulders → ✂ leg line → 📏 thickness (arm points only for raised-arm poses),
    Esc skips a line, and the stray-speck filter of the silhouette box (Poacher must not be taller because of loose pixels). Starts its own static server. */
 'use strict';
 const http = require('http'), fs = require('fs'), path = require('path'), assert = require('assert');
@@ -17,9 +17,10 @@ const server = http.createServer((q, r) => { let p = decodeURIComponent(q.url.sp
   const steps = [['eyeL', .44, .2, 'eyeR'], ['eyeR', .56, .2, 'chin'], ['chin', .5, .27, 'crown'], ['crown', .5, .09, '- [CUT]']];
   assert.equal(await sel(), 'eyeL'); for (const [k, x, y, next] of steps) { await click(x, y); assert.equal(await sel(), next, 'after ' + k) }
   await click(.35, .29); await click(.65, .29); await p.keyboard.press('Enter'); await p.waitForTimeout(150); assert.equal(await sel(), 'shL', 'head line done → shoulders');
-  for (const [k, x, y, next] of [['shL', .33, .33, 'elbowL'], ['elbowL', .3, .45, 'wristL'], ['wristL', .28, .58, 'shR'], ['shR', .67, .33, 'elbowR'], ['elbowR', .7, .45, 'wristR'], ['wristR', .72, .58, '- [CUT]']]) { await click(x, y); assert.equal(await sel(), next, 'after ' + k) }
-  await click(.4, .55); await click(.6, .55); await p.keyboard.press('Enter'); await p.waitForTimeout(150); assert.equal(await sel(), 'crotch', 'leg line done → crotch');
+  for (const [k, x, y, next] of [['shL', .33, .33, 'shR'], ['shR', .67, .33, '- [CUT]']]) { await click(x, y); assert.equal(await sel(), next, 'after ' + k) }   /* v98.454 · idle: shoulders only, then the leg line */
+  await click(.4, .55); await click(.6, .55); await p.keyboard.press('Enter'); await p.waitForTimeout(150);
+  assert.ok(await p.evaluate(() => document.getElementById('dtMsg').textContent.includes('📏 คลิก 2 จุด')), 'after the leg line the thickness measurement starts'); await p.keyboard.press('Escape'); await p.waitForTimeout(150);
   const own = await p.evaluate(() => { const r = ProportionDatum.get('hero', VP.action, VP.index); return { crown: !!r?.pts?.SW?.crown, neck: r?.cuts?.SW?.neck?.length, hip: r?.cuts?.SW?.hip?.length } }); assert.ok(own.crown && own.neck === 2 && own.hip === 2, 'crown + both lines stored ' + JSON.stringify(own));
   await p.click('#dtClearDir'); await p.waitForTimeout(400); for (const [, x, y] of steps) await click(x, y); assert.equal(await sel(), '- [CUT]'); await p.keyboard.press('Escape'); await p.waitForTimeout(150); assert.equal(await sel(), 'shL', 'Esc skips the line');
-  await b.close(); server.close(); for (const e of errs) console.log('✗ page error: ' + e); if (errs.length) process.exit(1); console.log('✓ datum flow: crown → head line → … → leg line → crotch · specks ignored');
+  await b.close(); server.close(); for (const e of errs) console.log('✗ page error: ' + e); if (errs.length) process.exit(1); console.log('✓ datum flow: crown → head line → shoulders → leg line → thickness · specks ignored');
 })().catch(e => { console.log('✗', e.message); process.exit(1) });

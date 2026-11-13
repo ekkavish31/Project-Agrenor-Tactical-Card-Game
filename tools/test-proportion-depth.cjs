@@ -108,7 +108,7 @@ console.log('proportion depth: all passed');
   const hint = PD.cutHint('cuthero', 'front', { pose: 'windup', frame: 0, dir: 'SW' }); assert.ok(hint.neck && hint.hip, 'learned from the confirmed idle lines');
   const lc = PD.cutsFor(PD.get('cuthero', 'windup', 0), 'SW', hint); assert.equal(lc.neck.from, 'learned'); assert.ok(mid(lc.neck.pts)[1] > .4, 'a head that is lower now gets a lower line');
   const r2 = JSON.parse(JSON.stringify(conf)); PD.setCut(r2, 'SW', 'neck', null); assert.ok(!r2.cuts.SW.neck && r2.cuts.SW.hip, 'a line can be removed'); PD.setCut(r2, 'SW', 'hip', null); assert.ok(!r2.cuts, 'empty cuts are dropped');
-  assert.equal(PD.OPTIONAL[0], 'chest'); assert.equal(PD.status('cuthero', 'idle', 'SW').total, 14, 'the chest point is not required any more') }
+  assert.equal(PD.OPTIONAL[0], 'chest'); assert.equal(PD.status('cuthero', 'idle', 'SW').total, 5, 'only eyes · chin · shoulders are required now (crotch · knees · ankles retired)') }
 // v98.443 · head grows a little with height · pose height guide
 assert.ok(Math.abs(PD.headFactor(1.9, 1.7) - 1.0407) < .002, '+11.8 % height → about +4 % head'); assert.equal(PD.headFactor(1.7, 1.7), 1); assert.equal(PD.headFactor(0, 1.7), 1);
 assert.ok(Math.abs(PD.headFactor(1.9, 1.7) * PD.thickFactor(1.9, 1.7) - 1.9 / 1.7) < 1e-9, 'head × thickness factors multiply to the height ratio');
@@ -142,4 +142,15 @@ assert.ok(Math.abs(PD.headFactor(1.9, 1.7) * PD.thickFactor(1.9, 1.7) - 1.9 / 1.
   const above = { pts: { SW: P }, cuts: { SW: { hip: [[.3, .65], [.7, .65]] } } }; assert.ok(PD.cutCheck(above, 'SW').some(x => /ขาหนีบ/.test(x)), 'crotch above the leg line → warns');
   const onLine = { pts: { SW: P }, cuts: { SW: { hip: [[.3, .6], [.7, .6]] } } }; assert.ok(!PD.cutCheck(onLine, 'SW').some(x => /ขาหนีบ/.test(x)), 'crotch on the line → tolerated');
   const used = PD.cutsFor(above, 'SW'), fake = { ...used, hip: { ...used.hip, pts: [[.3, .5], [.7, .5]] } }; assert.ok(!PD.cutCheck(above, 'SW', fake).some(x => /ขาหนีบ/.test(x)), 'a precomputed set of lines is the one that is checked') }
+// v98.454 · no crotch / ankle points: the torso→legs split is the ✂ leg line, the bottom is the floor
+{ const P = { eyeL: [.45, .2], eyeR: [.55, .2], chin: [.5, .26], crown: [.5, .05], shL: [.35, .3], shR: [.65, .3] };
+  const none = PD.metrics({ pts: { SW: P } }, 'SW', 100, 100); assert.equal(none.proportions, null, 'no leg line and no floor → no proportions');
+  const withLine = { pts: { SW: P }, cuts: { SW: { hip: [[.3, .6], [.7, .6]] } } }; assert.equal(PD.metrics(withLine, 'SW', 100, 100).proportions, null, 'a leg line alone is not enough: the floor is missing');
+  const full = { ...withLine, floor: { SW: .96 } }, m = PD.metrics(full, 'SW', 100, 100); assert.ok(m.proportions && Math.abs(m.crotchY - .6) < 1e-9 && Math.abs(m.lengths.legs - 36) < 1e-6, 'legs = leg line → floor: ' + JSON.stringify(m.lengths));
+  assert.ok(Math.abs(m.lengths.torso - 34) < 1e-6 && Math.abs(m.lengths.head - 21) < 1e-6);
+  const old = { pts: { SW: { ...P, crotch: [.5, .62], footL: [.45, .95], footR: [.55, .95] } } }; assert.ok(Math.abs(PD.metrics(old, 'SW', 100, 100).lengths.legs - 33) < 1e-6, 'old records keep their crotch / ankle points');
+  const r = { pts: { SW: P } }; assert.ok(PD.ensureFloor(r, 'SW', { h: 400, bottom: 383 }) && Math.abs(r.floor.SW - .96) < 1e-9, 'the floor is the lowest solid pixel'); assert.equal(PD.ensureFloor(r, 'SW', { h: 400, bottom: 300 }), false, 'never over an existing value');
+  assert.deepEqual(PD.flowKeys({}, 'idle'), ['eyeL', 'eyeR', 'chin', 'crown', 'shL', 'shR']); assert.ok(PD.flowKeys({}, 'windup').includes('wristL') && !PD.flowKeys({}, 'windup').includes('elbowL'), 'windup / strike default to raised arms');
+  assert.ok(PD.flowKeys({ armMode: 'custom' }, 'idle').includes('elbowR') && !PD.flowKeys({ armMode: 'none' }, 'windup').includes('wristL'), 'the player can choose per picture');
+  assert.ok(PD.marksFrom(full, 'SW', { top: 0, H: 100, w: 100 }, 100), 'marks come from the leg line / floor') }
 console.log('proportion girth: passed');

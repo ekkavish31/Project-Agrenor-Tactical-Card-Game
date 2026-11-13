@@ -119,7 +119,7 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.454"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.455"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -373,7 +373,7 @@ const vpOf = c => { const v = c && c.vp; return { pose: v && v.action !== 'pick'
    📍 Datum points (PD.marksFrom). Without datum this is only a rough silhouette guess (for the overview table); the 🛠 adjust panel itself
    refuses to run until datum is placed, since it cuts the picture exactly at these lines. */
 function ratioOf(e) {
-  const c = e.ctx.battle, PD = window.ProportionDatum, q = vpOf(c), rec = PD && PD.get(e.id, q.pose, q.frame), dm = rec && PD.marksFrom(rec, q.dir, c.m, c.img.naturalHeight);
+  const c = e.ctx.battle, PD = window.ProportionDatum, q = vpOf(c), rec = PD && PD.get(e.id, q.pose, q.frame); if (rec && PD.ensureFloor(rec, q.dir, c.m)) PD.put(e.id, q.pose, q.frame, rec); const dm = rec && PD.marksFrom(rec, q.dir, c.m, c.img.naturalHeight);
   const r = PT.analyze(alphaOf(c), c.m, dm || null); r.manual = !!dm;
   if (rec) { const ms = PD.measure(rec, q.dir, c.img.naturalWidth, c.img.naturalHeight); if (ms.headFrac) { const spans = PD.spans(rec, q.dir); r.head = spans?.head ?? ms.headFrac; r.heads = 1 / r.head; if (spans) { r.torso = spans.torso; r.legs = spans.legs } r.datum = ms; r.H = Math.round(ms.body.lengths.total) } }   /* head from the FACE (eye → chin), hair does not count */
   r.manual = !!r.datum; return r;
@@ -434,7 +434,7 @@ function inspectRatio() {
    <div class="ipCtl">
    <details><summary>รายละเอียดการวัด</summary>${r.manual ? `<dl><dt>จำนวนหัว</dt><dd><b>${r.heads.toFixed(2)}</b> หัว (หัว ${(r.head * 100).toFixed(1)}% ของตัว)</dd><dt>ลำตัว / ขา</dt><dd>${(r.torso * 100).toFixed(1)}% / ${(r.legs * 100).toFixed(1)}%</dd><dt>ผล</dt><dd>${v.notes.length ? v.notes.join('<br>') : 'ตรงมาตรฐาน'}</dd></dl>` : '<p class="hint">รอ Datum ครบก่อนแสดงสัดส่วน ไม่ใช้การเดาจากขอบภาพ</p>'}</details>
    <div class="adj"><label style="font-weight:600"><input type="checkbox" id="mDone" ${doneOf(e.id) === 'ok' ? 'checked' : ''}> ✔ ปรับถูกต้องแล้ว</label><small style="color:var(--muted)">${mapText(c.label || '')}${doneOf(e.id) === 'adj' ? ' · ปรับแล้ว รอติ๊ก' : ''}</small></div>
-   <div class="adj"><button id="mDatum" title="วางจุด datum: ตา 2 · คาง · ไหล่ 2 · ข้อศอก 2 · ข้อมือ 2 · อก · ขาหนีบ · เข่า 2 · ข้อเท้า 2 (ทิศตรงข้ามกลับด้านให้ · จุดแกนกลางใช้ความสูงร่วม)" style="font-weight:700">📍 Datum${hasDatum ? ' ✔' : ' (วางก่อนปรับขนาด)'}</button></div>
+   <div class="adj"><button id="mDatum" title="วางจุด datum: ตา 2 · คาง · ยอดกะโหลก · ไหล่ 2 · (ข้อมือ ถ้ายกแขน) + เส้นตัดหัว/ตัดขา + ✂ วัดความหนา (ทิศตรงข้ามกลับด้านให้ · จุดแกนกลางใช้ความสูงร่วม)" style="font-weight:700">📍 Datum${hasDatum ? ' ✔' : ' (วางก่อนปรับขนาด)'}</button></div>
    <div class="hint" id="depthRow"></div>
    <div class="adj" id="stdRow" title="ขั้นที่ 1: เลือกตัวนี้เป็นมาตรฐานกลางของทีม (ต้องมี 📍 Datum ครบก่อน) — ตัวอื่นจะเทียบสัดส่วนหัว/ลำตัว/ขา ตามตัวนี้โดยอัตโนมัติ"></div><p class="hint" id="mMsg"></p>
    ${hasDatum ? `<details open id="adjBox" style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px"><summary title="ใช้ Datum กำหนดสัดส่วน · โซนสีกำหนดพิกเซลที่ตามแต่ละส่วน · วาร์ปต่อเนื่องและขยายกรอบเมื่อจำเป็น · แก้โซนได้ใต้ภาพ"><b>🛠 ปรับขนาด</b></summary>
@@ -456,7 +456,7 @@ function inspectRatio() {
     </details>
     <details id="adjMore" style="margin:4px 0"><summary title="ข้อความอธิบายไม้บรรทัด เส้นโซน แขน">ℹ️ รายละเอียด</summary><div class="hint" id="adjRuler"></div><div class="hint" id="adjCut"></div><p class="hint" id="adjArmInfo"></p></details>
     <div class="adj"><button id="adjPreview" class="primary" title="แสดงผลใน After เท่านั้น ยังไม่เซฟและไม่เข้า Cart">👁 พรีวิว</button><button id="adjReset">↺ รีเซ็ต</button><button id="adjPng" title="ส่งออก PNG">⬇ PNG</button><button id="adjApply" title="ใช้ภาพเดียวกับ After ที่พรีวิวแล้ว บันทึกเข้าช่องภาพและ Cart (เก็บต้นฉบับไว้ในประวัติ)">💾 Cart</button></div><p class="hint" id="adjMsg"></p></details>`
-    : `<p class="hint" style="margin-top:8px;padding:8px;border:1px dashed var(--line);border-radius:8px">วาง 📍 Datum ให้ครบก่อน (ตา 2 · คาง · ขาหนีบ · เท้า 2) จึงจะปรับขนาดหัว/ลำตัว/ขาได้ — ระบบตัดภาพตรงจุดที่จิ้มไว้พอดี ไม่ต้องกะด้วยสายตาอีกต่อไป</p>`}
+    : `<p class="hint" style="margin-top:8px;padding:8px;border:1px dashed var(--line);border-radius:8px">วาง 📍 Datum ให้ครบก่อน (ตา 2 · คาง · ไหล่ 2 · เส้นตัดขา) จึงจะปรับขนาดหัว/ลำตัว/ขาได้ — ระบบตัดภาพตรงจุดที่จิ้มไว้พอดี ไม่ต้องกะด้วยสายตาอีกต่อไป</p>`}
    </div></div>`;
   /* v98.416 · fit the silhouette inside its box by BOTH height and width — fitting by height alone blew a lying-down pose (short and wide) up to many times the panel */
   const bw = (c.m.x1 - c.m.x0 + 1), pw1 = hasDatum ? HALF : PW, cv = document.getElementById('pcv'), g = cv.getContext('2d'), k = Math.min(CH / c.m.H, (pw1 - 16) / bw), fw = bw * k, ox = (HALF - fw) / 2, oy = 10; let paintAdj = null;
@@ -561,7 +561,7 @@ function inspectRatio() {
       $a('adjRuler').innerHTML = `<b>📏 ไม้บรรทัด</b> ${rp.note}${rp.own ? ` <span style="color:${col}">· ความเชื่อมั่น ${{ ok: '✔ วัดเอง 2 จุด', warn: '⚠ กลับด้านจากทิศตรงข้าม — กด 📍 Datum → 📏 วัดเอง', bad: '' }[lv]}</span>` : ''}${RSD?.from ? ` <span style="color:var(--warn)">· ยืมไม้บรรทัดจาก${lendTxt} (ท่า ${q.pose} ${RSD.cross ? 'ในมุมนี้' : ''}ยังไม่มีของตัวเอง)</span>` : ''}${RSD?.cross ? (() => { const vc = PD.viewCheck(datumRec, q.dir, c.m.w, c.m.h), bad = false;
         return (bad ? ' <span style="color:var(--bad)">· ✘ ลำตัวแบน ความหนาเปลี่ยนตามมุม — ข้ามหน้า/หลังไม่ได้ ให้เปลี่ยนจุดวัดเป็นขา</span>' : '') + (vc ? ` <span style="color:${{ ok: 'var(--ok)', warn: 'var(--warn)', bad: 'var(--bad)' }[vc.level]}">· หน้า↔หลัง ${{ ok: '✔ จุดตา/คางสอดคล้องกัน', warn: '⚠ จุดตา/คางต่างกันเล็กน้อย', bad: '✘ จุดตา/คางด้านใดด้านหนึ่งคลาด (' + (vc.dev >= 0 ? '+' : '') + (vc.dev * 100).toFixed(0) + '%) — ตรวจ 📍 Datum' }[vc.level]}</span>` : ' <span style="color:var(--muted)">· ยังเช็กหน้า↔หลังไม่ได้ (ต้องมีเข่า/ข้อเท้าทั้งสองด้าน)</span>') })() : ''}${mem.method !== 'ruler' ? ' <small>(เลือกวิธีสัดส่วนเดิมอยู่ — ตัวเลขนี้แสดงเฉยๆ)</small>' : ''}`; };
     let tplSpans = null;   /* the template spans actually used last redraw() — read by the green target line */
-    const refScales = () => { const tg = spOf(e.id); if (!tg) return { note: `ตัวนี้ยังไม่มี datum ครบใน ${GRP_TH} (ตา · คาง · ขาหนีบ · ข้อเท้า) — กด 📍 Datum ก่อน` };
+    const refScales = () => { const tg = spOf(e.id); if (!tg) return { note: `ตัวนี้ยังไม่มี datum ครบใน ${GRP_TH} (ตา · คาง · เส้นตัดขา) — กด 📍 Datum ก่อน` };
       if (mem.ref === '__std__' && !STD) return { note: 'ท่า ' + q.pose + ' ไม่มีมาตรฐานสัดส่วน หัว:ลำตัว:ขา (มีแต่ไม้บรรทัดที่ยืมมา) — ใช้วิธี 📏 ไม้บรรทัดความหนา' };
       const useStd = mem.ref === '__std__' && STD, useMst = mem.ref === '__master__' && mSpans, tp = useStd ? STD.spans : useMst ? mSpans : mem.ref && spOf(mem.ref); if (!tp) return { note: 'เลือกตัวต้นแบบที่มี datum (หรือตั้งมาตรฐานทีมก่อน)' };
       tplSpans = tp; const s0 = PD.matchScales(tp, tg, sel()); if (!s0) return { note: 'เลือกส่วนที่จะปรับก่อน' }; const pc = o => `หัว ${(o.head * 100).toFixed(1)}% · ลำตัว ${(o.torso * 100).toFixed(1)}% · ขา ${(o.legs * 100).toFixed(1)}%`;
@@ -682,10 +682,13 @@ function inspectRatio() {
       paintPanel(original, 0, 0, 0, false); paintPanel(last.canvas, half, -off[0], -off[1], true);
       ag.setLineDash([]); ag.strokeStyle = '#999'; ag.beginPath(); ag.moveTo(half, 0); ag.lineTo(half, CH + 20); ag.stroke(); ag.fillStyle = '#555'; ag.font = '10px AgThai,sans-serif'; ag.fillText('ก่อน', 4, CH + 14); ag.fillText('หลัง', half + 4, CH + 14);
       const moved = Object.fromEntries(Object.entries(sourcePoints).map(([key, [x, y]]) => { const p = PA.mapPoint(last, x, y); return [key, [p[0] / m.w, p[1] / m.h]] }));
-      const actual = PD.spans({ pts: { [q.dir]: moved } }, q.dir);
+      /* v98.454 · the moved picture's own leg line and floor (the crotch / ankle points are retired, so the split and the bottom come from these) */
+      const mapFrac = ([x, y]) => { const pt = PA.mapPoint(last, x * m.w, y * m.h); return [pt[0] / m.w, pt[1] / m.h] }, csI = pk.info || {}, flr = datumRec?.floor?.[q.dir] ?? (m.bottom + 1) / m.h;
+      const movedRec0 = { pts: { [q.dir]: moved }, cuts: { [q.dir]: { ...(csI.neck ? { neck: csI.neck.pts.map(mapFrac) } : {}), ...(csI.hip ? { hip: csI.hip.pts.map(mapFrac) } : {}) } }, floor: { [q.dir]: mapFrac([.5, flr])[1] } };
+      const actual = PD.spans(movedRec0, q.dir);
       { let rule2 = null; try { const oc = last.canvas, ow = oc.width, oh = oc.height, od = oc.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, ow, oh).data, mv = Object.fromEntries(Object.entries(sourcePoints).map(([key, [x, y]]) => { const pt = PA.mapPoint(last, x, y); return [key, [pt[0] / ow, pt[1] / oh]] }));
           { const wm = PD.widthOf({ pts: { [q.dir]: mv } }, q.dir, ow, oh); rule2 = wm ? { ratio: wm.ratio, w: wm.px, level: 'ok' } : null } } catch (err) { rule2 = null }
-        const movedRec = { pts: { [q.dir]: moved } }; fillTable({ spans: actual, rule: rule2, sh: PD.shoulderRatio(movedRec, q.dir, m.w, m.h), height: PD.heightGuideRec(e.id, q.pose, movedRec, q.dir, m.w, m.h) }, pk.info) }
+        const movedRec = movedRec0; fillTable({ spans: actual, rule: rule2, sh: PD.shoulderRatio(movedRec, q.dir, m.w, m.h), height: PD.heightGuideRec(e.id, q.pose, movedRec, q.dir, m.w, m.h) }, pk.info) }
       const arms = ['L', 'R'].filter(side => sourcePoints['wrist' + side] && sourcePoints['sh' + side]), elbows = arms.filter(side => sourcePoints['elbow' + side]);
       $a('adjArmInfo').textContent = arms.length ? `แยกแขนจากหัว ${arms.length}/2 ข้าง · แขนอิงลำตัว${elbows.length < arms.length ? ' · ท่างอแขนควรวางข้อศอกเพิ่ม' : ''}` : '⚠ ยังไม่มี Datum ข้อมือ: ท่ายกแขนให้วางไหล่–ข้อศอก–ข้อมือก่อนปรับหัว';
       previewReady = true; previewButtons(true); rlRender(); rlPaint();
@@ -742,8 +745,9 @@ async function openDatum(e) {
     ทิศ ${DIRS.map(d => `<button data-dd="${d}">${d}</button>`).join('')}<button id="dtClose">ปิด</button></div>
    <div style="display:grid;grid-template-columns:${W}px minmax(0,1fr);gap:12px;margin-top:8px">
     <div><canvas id="dtCv" width="${W}" height="${H}" style="width:${W}px;height:${H}px;max-width:100%;background:repeating-conic-gradient(#e6e1d2 0 25%,#fffdf6 0 50%) 0/14px 14px;border:1px solid var(--line);border-radius:8px;touch-action:none;cursor:crosshair"></canvas>
-     <p class="hint">ท่ายกแขน: วางไหล่ → ข้อศอก → ข้อมือ เพื่อแยกแขนออกจากหัว (ซ้าย/ขวาตามด้านภาพ)</p><p class="hint">เลือกจุดทางขวา แล้วคลิกบนภาพเพื่อวาง (ไปจุดถัดไปเอง) · ลากจุดเพื่อแก้ · จุดจาง = ค่าแนะนำ (กลับด้านจากทิศตรงข้าม / ความสูงเดียวกับทิศอื่น) — ลากหรือวางทับเพื่อใช้ของทิศนี้</p></div>
+     <p class="hint">ท่ายกแขน: เลือก 'ท่าแขน' ด้านขวาเป็น ยกแขน แล้ววางข้อมือ เพื่อแยกแขนออกจากหัว (ซ้าย/ขวาตามด้านภาพ)</p><p class="hint">เลือกจุดทางขวา แล้วคลิกบนภาพเพื่อวาง (ไปจุดถัดไปเอง) · ลากจุดเพื่อแก้ · จุดจาง = ค่าแนะนำ (กลับด้านจากทิศตรงข้าม / ความสูงเดียวกับทิศอื่น) — ลากหรือวางทับเพื่อใช้ของทิศนี้</p></div>
     <div><div id="dtList" style="display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;margin:0 0 8px"></div>
+     <div class="adj" style="margin:0 0 6px"><label title="จุดแขนใช้เฉพาะท่าที่แขนยกสูงจนข้ามเส้นตัดหัว · ไม่ยกแขน = ไม่ต้องวางจุดแขน · ยกแขน = วางข้อมือ 2 จุด · กำหนดเอง = ข้อศอก + ข้อมือ">ท่าแขน <select id="dtArms"><option value="none">ไม่ยกแขน</option><option value="raised">ยกแขน (ข้อมือ)</option><option value="custom">กำหนดเอง (ศอก + มือ)</option></select></label></div>
      <div id="dtNum" class="hint" style="font-size:12px"></div><div class="adj" id="dtMaster" style="margin-top:4px"></div>
      <div class="adj" style="margin-top:8px"><button id="dtTake" title="ยืนยันจุดแนะนำทั้งหมดของทิศนี้เป็นของทิศนี้">✔ ใช้จุดแนะนำทั้งหมด</button><button id="dtHead" hidden title="มุมหลังเห็นคอยาวกว่าด้านหน้า (คางบังคอ) — วางคางและตาจากด้านหน้าของท่าเดียวกัน โดยใช้เส้นไหล่กับขาหนีบเป็นไม้บรรทัด แล้วลากแก้ได้">👤 วางคาง/ตาจากด้านหน้า</button><button id="dtPrev" title="คัดลอกทุกทิศจากเฟรมก่อนหน้าของท่านี้">⟵ คัดลอกเฟรมก่อน</button></div>
      <div class="adj" id="dtCutRow" style="margin-top:6px"><button id="dtNeck" title="กดแล้วคลิก 2 จุดขึ้นไปที่ต้นคอ/ส่วนล่างของหัว — ทุกอย่างบนฝั่งเดียวกับตาคือ \'หัว\' · ใช้ได้ทั้งด้านหน้าและด้านหลัง แม้คอด้านหลังจะยาวกว่า">✂ กำหนดส่วนหัวด้วยเส้น</button><button id="dtHip" title="กดแล้วคลิก 2 จุดขึ้นไปผ่านโคนขา (ใต้เข็มขัด เหนือง่ามขา) — ฝั่งตรงข้ามหัวคือ \'ขา\' · ระหว่างสองเส้นคือลำตัว+แขน">✂ กำหนดเส้นเริ่มขา</button><button id="dtWidth" title="คลิก 2 จุดขวางท่อนขาตรงจุดที่ไม่โดนเสื้อผ้า (เช่นกลางแข้ง) — ใช้เป็นความหนาของตัวนี้ เทียบกับความสูงหัว · ต้นแบบก็วัดแบบเดียวกัน">📏 วัดความหนาท่อนขา</button><button id="dtCutDone" hidden>✔ จบเส้น (Enter)</button><button id="dtCutOk" hidden title="ยืนยันเส้นแนะนำทั้งสองเส้นของทิศนี้เป็นของทิศนี้">✔ ใช้เส้นแนะนำ</button><button id="dtCutClear" hidden>ล้างเส้นทิศนี้</button></div>
@@ -770,20 +774,22 @@ async function openDatum(e) {
   const dirIdx = {}, filled = k => { const { own, from } = cur(); return own.has(k) || from[k] != null };
   /* v98.451 · the walk: eyes → chin → crown (guide ellipse) → ✂ head line → shoulders … wrists → ✂ leg line → crotch → knees → ankles.
      A line step only appears when this direction has no line yet (own, mirrored or learned ones are not forced) and can be skipped (Esc). */
-  const gateDone = {}, GATE = { shL: 'neck', crotch: 'hip' }, needLine = k => { const c = cutsNow()[k]; return !c || (!c.own && c.from === 'default') };
-  const nextUnset = () => { const i0 = dirIdx[dir] || 0;
-    for (let i = i0; i < PD.POINTS.length; i++) { const k = PD.POINTS[i][0], gt = GATE[k];
+  const gateDone = {}, GATE = { shL: 'neck' }, needLine = k => { const c = cutsNow()[k]; return !c || (!c.own && c.from === 'default') }, flow = () => PD.flowKeys(rec, pose);
+  const nextUnset = fromPlace => { const keys = flow(), i0 = Math.min(dirIdx[dir] || 0, keys.length);
+    for (let i = i0; i < keys.length; i++) { const k = keys[i], gt = GATE[k];
       if (gt && !gateDone[dir + gt] && !filled(k) && needLine(gt)) { dirIdx[dir] = i; return 'cut:' + gt }
       if ((!PD.OPTIONAL.includes(k) || k === 'crown') && !filled(k)) { dirIdx[dir] = i; return k } }
-    dirIdx[dir] = PD.POINTS.length; return null };
-  const advance = fromPlace => { const n = nextUnset(); if (n && n.startsWith('cut:')) startCut(n.slice(4)); else { selK = n || selK; if (!n && fromPlace && !widthSkip[dir] && !cur().own.has('wdA')) startWidth() } };
+    dirIdx[dir] = keys.length; if (fromPlace && !gateDone[dir + 'hip'] && needLine('hip')) return 'cut:hip'; return null };
+  const advance = fromPlace => { const n = nextUnset(fromPlace); if (n && n.startsWith('cut:')) startCut(n.slice(4)); else { selK = n || selK; if (!n && fromPlace && !widthSkip[dir] && !cur().own.has('wdA')) startWidth() } };
   const startWidth = () => { widthMode = true; widthN = 0; selK = null; $d('dtMsg').textContent = '📏 คลิก 2 จุดขวางท่อนขาตรงจุดที่ต้องการวัด (ที่ไม่โดนเสื้อผ้า เช่นกลางแข้ง) — Esc = ข้าม · ลากปลายเส้นเพื่อแก้ได้'; draw() };
   const startCut = k => { gateDone[dir + k] = true; cutMode = k; cutDraft = []; selK = null; cutUi(); draw(); $d('dtMsg').textContent = 'จุดเส้น' + CUT_NAME[k] + ' (≥ 2 จุด) แล้วกด ✔ จบเส้น / Enter — Esc = ข้ามเส้นนี้' };
   async function loadPic() {
     let pic = null; try { const cl = (c0.vp?.clips || []).find(x => x.action === pose && x.view === dir); pic = ST ? await ST.lineup.picture(c0.vp?.sid || ('ally:' + e.id), dir, pose === 'idle' && !cl ? null : cl?.id, cl ? Math.min(frame, cl.n - 1) : 0) : null } catch (er) { }
     if (!pic && dir === q0.dir) pic = { url: c0.url || c0.src, flip: c0.flip, label: c0.label };
     img = pic ? await load(pic.url || pic.src) : null; flip = !!pic?.flip; $d('dtWhat').textContent = (pic?.label || 'ไม่พบภาพทิศนี้') + ' · เฟรม ' + (frame + 1);
-    dl.querySelectorAll('[data-dd]').forEach(b => b.setAttribute('aria-pressed', b.dataset.dd === dir)); advance(); draw() }
+    dl.querySelectorAll('[data-dd]').forEach(b => b.setAttribute('aria-pressed', b.dataset.dd === dir));
+    if (img) { try { const mm = measure(img, flip); if (mm && PD.ensureFloor(rec, dir, mm) && Object.keys(rec.pts || {}).length) save() } catch (er) { } }   /* v98.454 · the floor = lowest solid pixel, remembered per direction */
+    $d('dtArms').value = PD.armMode(rec, pose); advance(); draw() }
   function draw() {
     g.clearRect(0, 0, W, H); if (!img) { g.fillStyle = '#7a6e55'; g.font = '14px sans-serif'; g.fillText('ไม่มีภาพของทิศนี้', 20, 30); list(); return }
     const G = geo(); g.save(); if (flip) { g.translate(W, 0); g.scale(-1, 1) } g.drawImage(img, flip ? W - G.ox - G.w * G.s : G.ox, G.oy, G.w * G.s, G.h * G.s); g.restore();
@@ -792,7 +798,7 @@ async function openDatum(e) {
     const ln = (a, b, col) => { const A = P(a), B = P(b); if (!A || !B) return; g.strokeStyle = col; g.lineWidth = 1.4; g.setLineDash(own.has(a) && own.has(b) ? [] : [4, 3]); g.beginPath(); g.moveTo(A[0], A[1]); g.lineTo(B[0], B[1]); g.stroke(); g.setLineDash([]) };
     ln('eyeL', 'eyeR', '#d63384'); { const A = P('eyeL'), B = P('eyeR'), C = P('chin'); if (A && B && C) { g.strokeStyle = '#d62d2d'; g.setLineDash([4, 3]); g.beginPath(); g.moveTo((A[0] + B[0]) / 2, (A[1] + B[1]) / 2); g.lineTo(C[0], C[1]); g.stroke(); g.setLineDash([]) } }
     ln('shL', 'shR', '#1f6fd0'); for (const side of ['L', 'R']) { ln('sh' + side, 'elbow' + side, '#c47715'); ln('elbow' + side, 'wrist' + side, '#e79516'); if (!cur().pts['elbow' + side]) ln('sh' + side, 'wrist' + side, '#e79516') } ln('chest', 'crotch', '#6f42c1'); ln('crotch', 'kneeL', '#2a9a3a'); ln('crotch', 'kneeR', '#2a9a3a'); ln('kneeL', 'footL', '#2a9a3a'); ln('kneeR', 'footR', '#2a9a3a');
-    for (const [k, n, col] of PD.POINTS) { const p = P(k); if (!p) continue; const o = own.has(k); g.globalAlpha = o ? 1 : .45; g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.arc(p[0], p[1], selK === k ? 7 : 5, 0, 7); g.fill(); g.stroke(); g.globalAlpha = 1; if (selK === k) { g.strokeStyle = col; g.lineWidth = 1.5; g.beginPath(); g.arc(p[0], p[1], 11, 0, 7); g.stroke() } g.font = '10px AgThai,sans-serif'; g.fillStyle = '#222'; g.fillText(n, p[0] + 8, p[1] - 6) }
+    for (const [k, n, col] of PD.POINTS.filter(x => flow().includes(x[0]))) { const p = P(k); if (!p) continue; const o = own.has(k); g.globalAlpha = o ? 1 : .45; g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.arc(p[0], p[1], selK === k ? 7 : 5, 0, 7); g.fill(); g.stroke(); g.globalAlpha = 1; if (selK === k) { g.strokeStyle = col; g.lineWidth = 1.5; g.beginPath(); g.arc(p[0], p[1], 11, 0, 7); g.stroke() } g.font = '10px AgThai,sans-serif'; g.fillStyle = '#222'; g.fillText(n, p[0] + 8, p[1] - 6) }
     { const A = pts.wdA && toPx(pts.wdA[0], pts.wdA[1]), B = pts.wdB && toPx(pts.wdB[0], pts.wdB[1]); if (A || B) { const o = own.has('wdA'); g.save(); g.strokeStyle = '#e07b00'; g.fillStyle = '#e07b00'; g.lineWidth = 2.4; g.globalAlpha = o ? 1 : .5; if (A && B) { g.beginPath(); g.moveTo(A[0], A[1]); g.lineTo(B[0], B[1]); g.stroke() }
         for (const a of [A, B]) if (a) { g.beginPath(); g.rect(a[0] - 4, a[1] - 4, 8, 8); g.fill() } if (A && B) { g.font = 'bold 10px AgThai,sans-serif'; g.fillText('📏 ความหนา' + (o ? '' : ' (กลับด้าน)'), Math.max(A[0], B[0]) + 8, (A[1] + B[1]) / 2) } g.restore() } }
     /* v98.451 · guide ellipse for the crown: eyes + chin + this character's learned eye→crown ratio (default 1 eye→chin above the eyes — only a floor, drag to the real skull top) */
@@ -808,7 +814,7 @@ async function openDatum(e) {
         if (cutMode && cutDraft.length) { g.save(); g.strokeStyle = CUT_COL[cutMode]; g.fillStyle = CUT_COL[cutMode]; g.lineWidth = 2.4; g.beginPath(); cutDraft.forEach((p, i) => { const a = toPx(p[0], p[1]); g[i ? 'lineTo' : 'moveTo'](a[0], a[1]) }); g.stroke(); for (const p of cutDraft) { const a = toPx(p[0], p[1]); g.beginPath(); g.rect(a[0] - 4, a[1] - 4, 8, 8); g.fill() } g.restore() } }
     list(); nums() }
   function list() { const { own, from } = cur(), hs0 = headSug();
-    $d('dtList').innerHTML = PD.POINTS.map(([k, n, col]) => `<button data-dk="${k}" style="text-align:left;padding:3px 7px;${selK === k ? 'outline:2px solid ' + col + ';' : ''}"><span style="color:${col}">●</span> ${n} ${own.has(k) ? '✔' : PD.OPTIONAL.includes(k) && !from[k] ? '<small>(' + (k === 'crown' ? 'ข้ามได้ · แนะนำ' : 'ไม่บังคับ') + ')</small>' : from[k] ? `<small>(${from[k] === 'mirror' ? 'กลับด้าน' : 'สูงตามทิศอื่น'})</small>` : (hs0 && hs0.keys.includes(k)) ? '<small>(แนะนำจากด้านหน้า ◌)</small>' : '<small>—</small>'}</button>`).join('');
+    $d('dtList').innerHTML = PD.POINTS.filter(x => flow().includes(x[0])).map(([k, n, col]) => `<button data-dk="${k}" style="text-align:left;padding:3px 7px;${selK === k ? 'outline:2px solid ' + col + ';' : ''}"><span style="color:${col}">●</span> ${n} ${own.has(k) ? '✔' : PD.OPTIONAL.includes(k) && !from[k] ? '<small>(' + (k === 'crown' ? 'ข้ามได้ · แนะนำ' : 'ไม่บังคับ') + ')</small>' : from[k] ? `<small>(${from[k] === 'mirror' ? 'กลับด้าน' : 'สูงตามทิศอื่น'})</small>` : (hs0 && hs0.keys.includes(k)) ? '<small>(แนะนำจากด้านหน้า ◌)</small>' : '<small>—</small>'}</button>`).join('');
     $d('dtHead').hidden = !hs0;
     $d('dtList').querySelectorAll('[data-dk]').forEach(b => b.onclick = () => { selK = b.dataset.dk; draw() }) }
   function nums() { if (!img) return; const ms = PD.measure(rec, dir, img.naturalWidth, img.naturalHeight), f = v => v == null ? '—' : Math.round(v) + ' px';
@@ -827,7 +833,7 @@ async function openDatum(e) {
       } }
   let drag = null;
   const posOf = ev => { const b = cv.getBoundingClientRect(); return [(ev.clientX - b.left) * W / b.width, (ev.clientY - b.top) * H / b.height] };
-  const cutEnd = (ok = true) => { if (cutMode && ok && cutDraft.length >= 2) { PD.setCut(rec, dir, cutMode, cutDraft); save(); $d('dtMsg').textContent = 'บันทึกเส้น' + CUT_NAME[cutMode] + ' ' + cutDraft.length + ' จุดแล้ว' } cutMode = null; cutDraft = []; advance(); cutUi(); draw() };
+  const cutEnd = (ok = true) => { if (cutMode && ok && cutDraft.length >= 2) { PD.setCut(rec, dir, cutMode, cutDraft); save(); $d('dtMsg').textContent = 'บันทึกเส้น' + CUT_NAME[cutMode] + ' ' + cutDraft.length + ' จุดแล้ว' } cutMode = null; cutDraft = []; advance(true); cutUi(); draw() };
   const cutUi = () => { $d('dtCutDone').hidden = !cutMode; $d('dtNeck').disabled = $d('dtHip').disabled = !!cutMode; const c = cutsNow(), sug = ['neck', 'hip'].filter(k => c[k] && !c[k].own), ownAny = !!(rec.cuts && rec.cuts[dir]); $d('dtCutOk').hidden = !!cutMode || !sug.length; $d('dtCutClear').hidden = !!cutMode || !ownAny;
     const pr = PD.cutCheck(rec, dir, c), st = k => !c[k] ? '— (ยังวางไม่ได้ ต้องมีจุดตา/คาง/ไหล่/ขาหนีบก่อน)' : c[k].own ? '✔ ยืนยันแล้ว' : { mirror: 'แนะนำ: กลับด้านจากทิศตรงข้าม', learned: 'แนะนำ: ตามเส้นที่ยืนยันไว้ในท่าอื่นของตัวนี้', default: 'แนะนำ: คำนวณจากจุด' }[c[k].from];
     $d('dtCutInfo').innerHTML = cutMode ? `<b style="color:${CUT_COL[cutMode]}">กำลังจุดเส้น${CUT_NAME[cutMode]}</b> · คลิกบนภาพตั้งแต่ 2 จุด (ต้นคอ/ส่วนล่างของหัว) แล้วกด ✔ จบเส้น หรือ Enter · Esc = ข้ามเส้นนี้ · ฝั่งเดียวกับตา = ส่วนหัว` : `<b>✂ เส้นแบ่งโซน</b> · ตัดหัว: ${st('neck')} · เริ่มขา: ${st('hip')}${pr.length ? ` <span style="color:var(--bad)">· ⚠ ${pr.join(' · ')}</span>` : ''}<br><small>เส้นไม่เปลี่ยนตัวเลขสัดส่วน — ใช้บอกว่าพิกเซลไหนเป็นหัว/ลำตัว/ขา ตอนบิดภาพ (ผม ฮู้ด ผ้า คอยาว จะไม่หลุดไปผิดส่วน)</small>` };
@@ -835,13 +841,14 @@ async function openDatum(e) {
     if (cutMode) { const [x0, y0] = posOf(ev); cutDraft.push(toF(x0, y0)); draw(); cutUi(); return }
     { const [x1, y1] = posOf(ev), own = rec.cuts?.[dir]; if (own) for (const k of ['neck', 'hip']) for (let i = 0; own[k] && i < own[k].length; i++) { const [px, py] = toPx(own[k][i][0], own[k][i][1]); if (Math.hypot(px - x1, py - y1) < 9) { cutDrag = { k, i }; cv.setPointerCapture(ev.pointerId); return } } }
     const [x, y] = posOf(ev), { pts } = cur(); let best = null, bd = 11;
-    for (const k of [...PD.POINTS.map(z => z[0]), ...PD.WIDTH_KEYS]) { const p = pts[k]; if (!p) continue; const [px, py] = toPx(p[0], p[1]), d = Math.hypot(px - x, py - y); if (d < bd) { bd = d; best = k } }
+    for (const k of [...flow(), ...PD.WIDTH_KEYS]) { const p = pts[k]; if (!p) continue; const [px, py] = toPx(p[0], p[1]), d = Math.hypot(px - x, py - y); if (d < bd) { bd = d; best = k } }
     if (best && (best === selK || (rec.pts[dir] || {})[selK] || !selK)) { drag = best; selK = best; cv.setPointerCapture(ev.pointerId); return }   /* grab a point (but a click near a SUGGESTED point while another one is pending places the pending one) */
     if (!selK) return; mine()[selK] = toF(x, y); advance(true); save(); draw() };
   cv.onpointermove = ev => { if (cutDrag) { const [x, y] = posOf(ev); rec.cuts[dir][cutDrag.k][cutDrag.i] = toF(x, y); draw(); return } if (!drag) return; const [x, y] = posOf(ev); mine()[drag] = toF(x, y); draw() };
   cv.onpointerup = () => { if (cutDrag) { cutDrag = null; save(); cutUi(); draw(); return } if (drag) { drag = null; advance(true); save(); draw() } };
   dl.querySelectorAll('[data-dd]').forEach(b => b.onclick = () => { dir = b.dataset.dd; loadPic() });
   $d('dtClose').onclick = () => { dl.close(); dl.remove(); renderRatio(visible()); inspectRatio() };
+  $d('dtArms').value = PD.armMode(rec, pose); $d('dtArms').onchange = () => { rec.armMode = $d('dtArms').value; delete dirIdx[dir]; save(); advance(); draw() };
   $d('dtWidth').onclick = () => startWidth(); $d('dtNeck').onclick = () => startCut('neck'); $d('dtHip').onclick = () => startCut('hip');
   $d('dtCutDone').onclick = () => { if (cutDraft.length < 2) { $d('dtMsg').textContent = 'ต้องจุดอย่างน้อย 2 จุด'; return } cutEnd(true) };
   $d('dtCutOk').onclick = () => { const c = cutsNow(); for (const k of ['neck', 'hip']) if (c[k] && !c[k].own) PD.setCut(rec, dir, k, c[k].pts); save(); $d('dtMsg').textContent = 'ยืนยันเส้นแนะนำแล้ว — ลากสี่เหลี่ยมที่ปลายเส้นเพื่อแก้ได้'; cutUi(); draw() };
