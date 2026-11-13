@@ -119,12 +119,12 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.458"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.466"></script><script src="js/character-scale-adjust.js?v=v98.466"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
    on-screen height (UNIT = one battle cell) = silhouette height ÷ picture height × the size the game draws the picture at:
-     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.444 drawHero · CHARACTER_SCALE.drawSize.hero)
+     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.466 drawHero · CHARACTER_SCALE.drawSize.hero)
      ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
@@ -254,7 +254,7 @@ async function build() {
   if(DOCK){viewCtl();render();}
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.444')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const src = await (await fetch('js/town-battle.js?v=v98.466')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
       const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
     }
@@ -281,11 +281,20 @@ const isW = e => !!e.group;
 /* v98.65 · ⚖ phase 2: size adjustments. ADJ = the draft being edited (starts as the committed js/character-scale-adjust-data.js, or the unsaved draft kept in this browser). */
 const DRAFT_KEY = 'projectA.scaleAdjustDraft', SAVED = JSON.parse(JSON.stringify(window.CHARACTER_SCALE_ADJUST || { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }));
 let ADJ; try { ADJ = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null') } catch (e) { }
+/* v98.466 · a draft remembers WHICH committed file it was made from. When the committed file changed since (pushed from another place), the draft is rebased:
+   the new committed values + only the edits this browser made on top of the old file. A draft without that record (made before v98.466) is set aside (kept as .bak), not applied. */
+{ const BASE_KEY = DRAFT_KEY + '.base', now = JSON.stringify(clean(SAVED)); let base = null; try { base = localStorage.getItem(BASE_KEY) } catch (e) { }
+  if (ADJ && base !== now) { try { localStorage.setItem(DRAFT_KEY + '.bak', JSON.stringify(ADJ)) } catch (e) { }
+    if (base) { const old = JSON.parse(base), next = JSON.parse(now), d = ADJ, put = (o, k, v, ov) => { if (Math.abs((v ?? 1) - (ov ?? 1)) > .0005) o[k] = v };
+      for (const [k, v] of Object.entries(d.global || {})) put(next.global, k, v, old.global?.[k]); for (const c of ['battle', 'village', 'world']) for (const [k, v] of Object.entries(d.scene?.[c] || {})) put((next.scene[c] ||= {}), k, v, old.scene?.[c]?.[k]);
+      ADJ = next } else ADJ = null
+    try { if (ADJ) localStorage.setItem(DRAFT_KEY, JSON.stringify(ADJ)); else localStorage.removeItem(DRAFT_KEY) } catch (e) { } }
+  try { localStorage.setItem(BASE_KEY, now) } catch (e) { } }
 ADJ = ADJ || JSON.parse(JSON.stringify(SAVED)); ADJ.pose = ADJ.pose || JSON.parse(JSON.stringify(SAVED.pose || {})); ADJ.global = ADJ.global || {}; ADJ.scene = ADJ.scene || {}; for (const k of ['battle', 'village', 'world']) ADJ.scene[k] = ADJ.scene[k] || {};
 const eff = e => isW(e) ? 1 : CharScaleAdjust.factor('main', AK(e.id), { global: ADJ.global, scene: {} }) * (ADJ.pose?.[AK(e.id)]?.[vpPose()] ?? 1),   /* v98.465 · × the crouching-pose factor of the pose on show */ gOf = id => ADJ.global[AK(id)] ?? 1, sOf = (c, id) => ADJ.scene[c]?.[AK(id)] ?? 1;
 const dirty = () => JSON.stringify(clean(ADJ)) !== JSON.stringify(clean(SAVED));
 function clean(a) { const o = { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }; { const pz = {}; for (const [id, mp] of Object.entries(a.pose || {})) for (const [po, v] of Object.entries(mp || {})) if (Math.abs(v - 1) > .0005) (pz[id] ||= {})[po] = +v.toFixed(4); if (Object.keys(pz).length) o.pose = pz }   /* v98.465 · per-pose factors (crouching poses are drawn lower) */ for (const [k, v] of Object.entries(a.global || {})) if (Math.abs(v - 1) > .0005) o.global[k] = +v.toFixed(4); for (const c of ['battle', 'village', 'world']) for (const [k, v] of Object.entries(a.scene?.[c] || {})) if (Math.abs(v - 1) > .0005) o.scene[c][k] = +v.toFixed(4); return o }
-const persistDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(clean(ADJ))) } catch (e) { } if (ST) try { parent.dispatchEvent(new CustomEvent('studio-scale-changed')) } catch (e) { } };
+const persistDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(clean(ADJ))); localStorage.setItem(DRAFT_KEY + '.base', JSON.stringify(clean(SAVED))) } catch (e) { } if (ST) try { parent.dispatchEvent(new CustomEvent('studio-scale-changed')) } catch (e) { } };
 let STEP = .5, ZOOM = 1, ALPHA = 1, SHADOW = false, FOOT = false, GUIDES = false, DIR = 'SW', POSE = 'idle';
 const refE = () => ENTRIES.find(e => lookOfId(e.id) === 'male') || ENTRIES.find(e => e.id === 'hero');   /* v98.458 · the yardstick is the MALE look, whichever look the studio has open */
 const heroU = () => refE().ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / refE().ctx[c].units * HERO_M * eff(e, c);
