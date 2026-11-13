@@ -119,7 +119,7 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.458"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -214,6 +214,7 @@ const heroLook = () => { try { const l = ST?.lineup?.look?.(); return l === 'fem
 /* v98.458 · a hero look is a PERSON, not "whichever look the studio has open": the open look is the entry `hero`, the other one `hero-<look>`, and they swap names every time you
    pick the other card. Everything that must be remembered per person (size adjustment · ✔ marks) is therefore keyed by the LOOK: male = `hero` (what the game has always used), female = `hero-female`.
    The male look is also the fixed yardstick (1.70 m) and always stands first, so choosing a card never moves anyone or changes anyone's height. */
+const LINEUP_BUILD = '98.458';
 const lookOfId = id => id === 'hero' ? heroLook() : id === 'hero-male' ? 'male' : id === 'hero-female' ? 'female' : null;
 const AK = id => { const l = lookOfId(id); return l ? (l === 'female' ? 'hero-female' : 'hero') : id };
 const isRefId = id => lookOfId(id) === 'male';
