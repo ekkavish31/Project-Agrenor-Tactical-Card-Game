@@ -15,6 +15,7 @@ console.log('proportion adjust: all passed');
   const a = PA.plan(seg, { head: 1, torso: 1, legs: 1 }), b = PA.plan(seg, { head: 1, torso: 1, legs: 1, wTorso: 1.2, wLegs: .8 });
   const eq = (x, y) => Math.abs(x - y) < 1e-9;
   if (!(eq(b.kx.torso, a.kx.torso * 1.2) && eq(b.kx.legs, a.kx.legs * .8) && eq(b.k.torso, a.k.torso) && eq(b.k.legs, a.k.legs) && eq(b.torso[1], a.torso[1]))) throw new Error('wTorso/wLegs must only change kx');
+  { const c = PA.plan(seg, { head: 1, torso: .7, legs: 1.3 }); if (!(eq(c.kx.torso, 1) && eq(c.kx.legs, 1) && c.k.torso !== 1)) throw new Error('size rows (torso/legs) must stretch vertically only — sideways scale is the thickness rows alone'); const d = PA.plan(seg, { head: 1, torso: .7, legs: 1.3, wTorso: 1.4, wLegs: .65 }); if (!(eq(d.kx.torso, 1.4) && eq(d.kx.legs, .65))) throw new Error('thickness rows must set the sideways scale directly') }
   console.log('proportion width multipliers: passed') }
 // v98.443 · zones from CUT LINES: level lines = the old chin / hip rows · a tilted line tilts the zone edge · head side decided by the reference point
 { const PA = require('../js/proportion-adjust.js'), W = 80, H = 120, d = new Uint8ClampedArray(W * H * 4).fill(255), seg = { head: [0, 40], torso: [40, 80], legs: [80, 120], top: 0, bottom: 120 };

@@ -26,7 +26,8 @@
        Left out (or equal to scale.torso), the torso stays exactly as wide as before: a uniform scale, same as every other part. */
     /* v98.420 · scale.wTorso / scale.wLegs: THICKNESS multipliers on top of that (1 = as before) — the band is stretched sideways only, its height is untouched.
        The arms live in the torso band, so they get thicker/thinner with it. */
-    out.kx = { head: out.k.head, torso: (scale.shoulder ?? scale.torso ?? 1) * g * (scale.wTorso ?? 1), legs: out.k.legs * (scale.wLegs ?? 1) };
+    /* v98.462 · SIZE rows and THICKNESS rows are separate axes: torso / legs scale (and the keep-height factor g) stretch VERTICALLY only; the sideways scale of the torso / leg band is wTorso / wLegs alone (1 = the original width). The head stays uniform. */
+    out.kx = { head: out.k.head, torso: (scale.shoulder ?? 1) * (scale.wTorso ?? 1), legs: scale.wLegs ?? 1 };
     out.headFrac = (nh * g) / H1; out.torsoFrac = (nt * g) / H1; out.legsFrac = (nl * g) / H1;
     return out;
   }
