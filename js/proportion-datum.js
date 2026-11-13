@@ -219,10 +219,14 @@
   /* HEIGHT GUIDE of a pose against the same character's standing pose (idle · frame 1 · same direction): stack height ÷ face, so it does not depend on the picture's size.
      Only a guide — believable once head and thickness already match the template (the height changes with the pose by itself). Not for lying poses. */
   const POSE_HEIGHT = { walk: [.97, 1.01], windup: [.80, .90], guard: [.90, .95], hit: [.90, .97], strike: [.88, 1.0] };
-  function heightGuide(id, pose, frame, dir, w = 384, h = 384) {
-    const g = POSE_HEIGHT[pose]; if (!g || (pose === 'idle')) return null; const rec = get(id, pose, frame | 0), ref = get(id, 'idle', 0); if (!rec || !ref) return null;
+  /* the same for ANY record (e.g. the warped result's moved points): stack height ÷ face of `rec` against the character's standing pose */
+  function heightGuideRec(id, pose, rec, dir, w = 384, h = 384) {
+    const g = POSE_HEIGHT[pose]; if (!g || pose === 'idle' || !rec) return null; const ref = get(id, 'idle', 0); if (!ref) return null;
     const a = metrics(rec, dir, w, h), b = metrics(ref, dir, w, h), fa = measure(rec, dir, w, h).face, fb = measure(ref, dir, w, h).face; if (!a.lengths || !b.lengths || !fa || !fb) return null;
     const ratio = (a.lengths.total / fa) / (b.lengths.total / fb); return { ratio, guide: g, level: ratio >= g[0] - .03 && ratio <= g[1] + .03 ? 'ok' : ratio >= g[0] - .08 && ratio <= g[1] + .08 ? 'warn' : 'bad' } }
+  const heightGuide = (id, pose, frame, dir, w = 384, h = 384) => heightGuideRec(id, pose, get(id, pose, frame | 0), dir, w, h);
+  /* shoulder width ÷ face (both from datum POINTS, so clothes / cloaks / armour cannot change it) — the torso's width ruler · null when a point is missing */
+  function shoulderRatio(rec, dir, w = 384, h = 384) { const m = rec ? measure(rec, dir, w, h) : null; return m && m.shoulderW && m.face ? m.shoulderW / m.face : null }
   /* v98.434 · BACK VIEW HEAD from the FRONT (the neck looks longer from behind — the chin hides it in front — so eyes / chin of a back view are a guess).
      The shoulder line and the crotch are seen from both sides, so they are the ruler: in the FRONT view of the same pose, how far the chin sits above the
      shoulder line and how long the face is, both in torso lengths (shoulder mid → crotch) — then laid onto the back view the same way. Returns a SUGGESTION
@@ -293,6 +297,6 @@
     if (!Object.keys(R0).length) delete d[id];
     return d;
   }
-  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
+  const api = { metrics, pixelPoints, MASTER_KEY, master, setMaster, masterName, DEPTH_SEGS, depth, depthText, STD_KEY, GROUP, std, stdPoses, setStd, HEAD_EXP, headFactor, thickFactor, POSE_HEIGHT, heightGuide, heightGuideRec, shoulderRatio, OPTIONAL, cutsFor, cutHint, setCut, cutCheck, sideOf, straightness, girth, girthRatio, GIRTH_GROUPS, rule, RULER_BONES, suggestHead, faceShin, viewCheck, rulers, GIRTH_KEY, girthGet, girthPut, spans, matchScales, status, KEY, POINTS, CENTRE, DIRS, OPP, all, saveAll, get, put, remove, swapPts, pointsFor, measure, marksFrom, heightGaps };
   root.ProportionDatum = api; if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

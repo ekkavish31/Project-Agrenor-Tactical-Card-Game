@@ -116,4 +116,9 @@ assert.ok(Math.abs(PD.headFactor(1.9, 1.7) * PD.thickFactor(1.9, 1.7) - 1.9 / 1.
   PD.put('hg', 'idle', 0, { pts: { SW: stand } }); PD.put('hg', 'windup', 0, { pts: { SW: crouch } });
   const hg = PD.heightGuide('hg', 'windup', 0, 'SW'); assert.ok(hg && hg.ratio > .8 && hg.ratio < .9 && hg.level === 'ok', 'a crouch at 85 % of the standing stack is inside the windup guide: ' + hg?.ratio);
   PD.put('hg', 'guard', 0, { pts: { SW: stand } }); assert.equal(PD.heightGuide('hg', 'guard', 0, 'SW').level, 'warn', 'a guard as tall as standing is only a hint'); assert.equal(PD.heightGuide('hg', 'idle', 0, 'SW'), null); assert.equal(PD.heightGuide('hg', 'down', 0, 'SW'), null, 'no guide for a lying pose') }
+// v98.448 · shoulder width ÷ eye-chin (torso thickness from datum points) · height guide from a moved record
+{ const rec = { pts: { SW: { eyeL: [.45, .1], eyeR: [.55, .1], chin: [.5, .2], shL: [.3, .24], shR: [.7, .24] } } };
+  const sr = PD.shoulderRatio(rec, 'SW'); assert.ok(sr > 3.3 && sr < 4.7, 'shoulders ' + sr + ' face lengths wide'); assert.equal(PD.shoulderRatio(null, 'SW'), null); assert.equal(PD.shoulderRatio({ pts: { SW: { chin: [.5, .2] } } }, 'SW'), null, 'incomplete points give nothing');
+  const wide = JSON.parse(JSON.stringify(rec)); wide.pts.SW.shL = [.2, .24]; wide.pts.SW.shR = [.8, .24]; assert.ok(PD.shoulderRatio(wide, 'SW') > sr, 'wider shoulders → bigger ratio');
+  assert.equal(typeof PD.heightGuideRec, 'function'); assert.equal(PD.heightGuideRec('hg', 'idle', rec, 'SW'), null, 'no guide for the standing pose itself') }
 console.log('proportion girth: passed');
