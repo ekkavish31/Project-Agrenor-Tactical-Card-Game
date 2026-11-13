@@ -136,4 +136,10 @@ assert.ok(Math.abs(PD.headFactor(1.9, 1.7) * PD.thickFactor(1.9, 1.7) - 1.9 / 1.
   const mir = PD.widthOf({ pts: { SW: P } }, 'SE', 100, 100); assert.ok(mir === null || !mir.own, 'the opposite direction only borrows (not own)');
   assert.equal(PD.widthOf({ pts: { SW: { ...P, wdB: undefined } } }, 'SW'), null, 'one point is not a width'); assert.equal(PD.widthOf({ pts: { SW: { wdA: [.4, .7], wdB: [.5, .7] } } }, 'SW'), null, 'no head → no unit');
   assert.ok(PD.pixelPoints({ pts: { SW: P } }, 'SW', 100, 100).wdA, 'the width points travel with the other points when a picture is warped') }
+// v98.454 · the cut-line check judges the lines in use, with a small tolerance
+{ const P = { eyeL: [.45, .2], eyeR: [.55, .2], chin: [.5, .26], crotch: [.5, .6], shL: [.35, .3], shR: [.65, .3] };
+  const own = { pts: { SW: P }, cuts: { SW: { hip: [[.3, .5], [.7, .5]] } } }; assert.ok(!PD.cutCheck(own, 'SW').some(x => /ขาหนีบ/.test(x)), 'crotch below the leg line → no warning');
+  const above = { pts: { SW: P }, cuts: { SW: { hip: [[.3, .65], [.7, .65]] } } }; assert.ok(PD.cutCheck(above, 'SW').some(x => /ขาหนีบ/.test(x)), 'crotch above the leg line → warns');
+  const onLine = { pts: { SW: P }, cuts: { SW: { hip: [[.3, .6], [.7, .6]] } } }; assert.ok(!PD.cutCheck(onLine, 'SW').some(x => /ขาหนีบ/.test(x)), 'crotch on the line → tolerated');
+  const used = PD.cutsFor(above, 'SW'), fake = { ...used, hip: { ...used.hip, pts: [[.3, .5], [.7, .5]] } }; assert.ok(!PD.cutCheck(above, 'SW', fake).some(x => /ขาหนีบ/.test(x)), 'a precomputed set of lines is the one that is checked') }
 console.log('proportion girth: passed');

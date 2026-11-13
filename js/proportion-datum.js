@@ -219,11 +219,13 @@
     return hint }
   function setCut(rec, dir, key, pts) { rec.cuts ||= {}; if (pts && pts.length >= 2) (rec.cuts[dir] ||= {})[key] = pts.map(p => [+p[0].toFixed(4), +p[1].toFixed(4)]); else if (rec.cuts[dir]) { delete rec.cuts[dir][key]; if (!Object.keys(rec.cuts[dir]).length) delete rec.cuts[dir] } if (!Object.keys(rec.cuts).length) delete rec.cuts }
   /* the lines must keep the eyes AND the chin on the head side and the crotch on the leg side — [] = fine, else the problems in words */
-  function cutCheck(rec, dir) {
-    const c = cutsFor(rec, dir), { pts: P } = pointsFor(rec, dir), eye = mid(P.eyeL, P.eyeR), problems = [];
-    if (c.neck && eye && P.chin && sideOf(c.neck.pts, P.chin, eye) > 0) problems.push('คางอยู่ใต้เส้นตัดหัว');
-    if (c.hip && eye && P.crotch && sideOf(c.hip.pts, P.crotch, eye) < 0) problems.push('ขาหนีบอยู่ฝั่งหัวของเส้นเริ่มขา');
-    if (c.neck && c.hip && eye) { const hm = [(c.hip.pts[0][0] + c.hip.pts.at(-1)[0]) / 2, (c.hip.pts[0][1] + c.hip.pts.at(-1)[1]) / 2]; if (sideOf(c.neck.pts, hm, eye) < 0) problems.push('เส้นเริ่มขาอยู่เหนือเส้นตัดหัว') }
+  /* v98.454 · `lines` = the lines actually in use (cutsFor with the same learned hint and picture size the editor / warp use) — before, the check re-derived
+     its own default lines and could warn about a line nobody was looking at. A point only counts as on the wrong side when it is clearly (> 0.5 % of the picture) past the line. */
+  function cutCheck(rec, dir, lines) {
+    const c = lines || cutsFor(rec, dir), { pts: P } = pointsFor(rec, dir), eye = mid(P.eyeL, P.eyeR), problems = [], TOL = .005;
+    if (c.neck && eye && P.chin && sideOf(c.neck.pts, P.chin, eye) > TOL) problems.push('คางอยู่ใต้เส้นตัดหัว');
+    if (c.hip && eye && P.crotch && sideOf(c.hip.pts, P.crotch, eye) < -TOL) problems.push('ขาหนีบอยู่เหนือเส้นเริ่มขา (ฝั่งหัว)');
+    if (c.neck && c.hip && eye) { const hm = [(c.hip.pts[0][0] + c.hip.pts.at(-1)[0]) / 2, (c.hip.pts[0][1] + c.hip.pts.at(-1)[1]) / 2]; if (sideOf(c.neck.pts, hm, eye) < -TOL) problems.push('เส้นเริ่มขาอยู่เหนือเส้นตัดหัว') }
     return problems }
   /* v98.444 · HEAD SIZE vs BODY HEIGHT between two DIFFERENT characters (the player's decision: moderate): a taller character gets a slightly bigger head —
      face ∝ height^0.35 (+12 % height → ≈ +4 % face), so a 190 cm figure looks taller instead of a scaled-up 170 cm one. A leg / arm is taken to grow with the
