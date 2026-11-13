@@ -77,7 +77,7 @@
     for (let x = 0; x < w; x++) { let s = 0; for (let y = -r; y <= r; y++) s += t[Math.min(h - 1, Math.max(0, y)) * w + x]; for (let y = 0; y < h; y++) { o[y * w + x] = s / (2 * r + 1); s += t[Math.min(h - 1, y + r + 1) * w + x] - t[Math.max(0, y - r) * w + x] } }
     return o }
   const ss = (a, b, x) => { const t = clamp((x - a) / ((b - a) || 1), 0, 1); return t * t * (3 - 2 * t) };
-  /* v98.443 · CUT LINES: signed distance (px) of every pixel from a polyline (2+ points, the end segments extended): negative on the side of `head`, positive on the other */
+  /* v98.444 · CUT LINES: signed distance (px) of every pixel from a polyline (2+ points, the end segments extended): negative on the side of `head`, positive on the other */
   function lineField(pts, head, W, H) {
     const out = new Float32Array(W * H), segs = [];
     for (let i = 1; i < pts.length; i++) { const A = pts[i - 1], B = pts[i], dx = B[0] - A[0], dy = B[1] - A[1], l2 = dx * dx + dy * dy || 1, l = Math.sqrt(l2); segs.push({ A, dx, dy, l2, l, first: i === 1, last: i === pts.length - 1 }) }

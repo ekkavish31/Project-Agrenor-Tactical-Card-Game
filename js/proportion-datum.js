@@ -12,7 +12,7 @@
   /* v98.417 · the order the points are placed in (the editor walks this list): face → left arm → right arm → body → left leg → right leg */
   const POINTS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['shL', 'ไหล่ ซ้ายภาพ', '#1f6fd0'], ['elbowL', 'ข้อศอก ซ้ายภาพ', '#c47715'], ['wristL', 'ข้อมือ ซ้ายภาพ', '#e79516'], ['shR', 'ไหล่ ขวาภาพ', '#1f6fd0'], ['elbowR', 'ข้อศอก ขวาภาพ', '#c47715'], ['wristR', 'ข้อมือ ขวาภาพ', '#e79516'], ['chest', 'อก', '#6f42c1'], ['crotch', 'ขาหนีบ', '#2a9a3a'], ['kneeL', 'เข่า ซ้ายภาพ', '#2a9a3a'], ['footL', 'ข้อเท้า ซ้ายภาพ', '#444'], ['kneeR', 'เข่า ขวาภาพ', '#2a9a3a'], ['footR', 'ข้อเท้า ขวาภาพ', '#444']];   /* the ANKLE joint (not the toe / sole): a joint stays the same point when the foot points, kicks or lies down */
   const CENTRE = ['chin', 'chest', 'crotch'], DIRS = ['SW', 'NW', 'NE', 'SE'];
-  /* v98.443 · points nothing needs any more: the editor's click order skips them and the counts leave them out (chest was only the fallback for the shoulder midpoint) */
+  /* v98.444 · points nothing needs any more: the editor's click order skips them and the counts leave them out (chest was only the fallback for the shoulder midpoint) */
   const OPTIONAL = ['chest'];
   const OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, SWAP = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', elbowL: 'elbowR', elbowR: 'elbowL', wristL: 'wristR', wristR: 'wristL', kneeL: 'kneeR', kneeR: 'kneeL', footL: 'footR', footR: 'footL' };
   /* v98.399 · SW/SE show the FRONT (mirror pair) · NW/NE show the BACK (mirror pair) — the two groups must never lend each other
@@ -162,7 +162,7 @@
   const girthGet = (id, pose, frame, dir) => girthAll()[gKey(id, pose, frame, dir)] || null;
   function girthPut(id, pose, frame, dir, g) { if (!g || !g.perFace) return; try { const all = girthAll(), k = gKey(id, pose, frame, dir), o = { perFace: g.perFace, frac: g.frac, at: Date.now() }, old = all[k];
       if (old && JSON.stringify(old.perFace) === JSON.stringify(o.perFace)) return; all[k] = o; ls.setItem(GIRTH_KEY, JSON.stringify(all)) } catch (e) { } }
-  /* v98.443 · CUT LINES: two lines per picture that say where the zones start — NECK (everything on the eyes' side is HEAD) and HIP (everything on
+  /* v98.444 · CUT LINES: two lines per picture that say where the zones start — NECK (everything on the eyes' side is HEAD) and HIP (everything on
      the far side from the head is LEGS; between them TORSO + arms). Points measure (chin / crotch stay the ruler of every number); lines only
      decide which pixels belong to which part when the picture is re-proportioned, so a long neck, a hood, a skirt or a cape can no longer drag
      the wrong pixels along. Each line is 2+ points (fractions of the picture), extended past its ends when the zone is computed.
@@ -212,7 +212,7 @@
     if (c.hip && eye && P.crotch && sideOf(c.hip.pts, P.crotch, eye) < 0) problems.push('ขาหนีบอยู่ฝั่งหัวของเส้นเริ่มขา');
     if (c.neck && c.hip && eye) { const hm = [(c.hip.pts[0][0] + c.hip.pts.at(-1)[0]) / 2, (c.hip.pts[0][1] + c.hip.pts.at(-1)[1]) / 2]; if (sideOf(c.neck.pts, hm, eye) < 0) problems.push('เส้นเริ่มขาอยู่เหนือเส้นตัดหัว') }
     return problems }
-  /* v98.443 · HEAD SIZE vs BODY HEIGHT between two DIFFERENT characters (the player's decision: moderate): a taller character gets a slightly bigger head —
+  /* v98.444 · HEAD SIZE vs BODY HEIGHT between two DIFFERENT characters (the player's decision: moderate): a taller character gets a slightly bigger head —
      face ∝ height^0.35 (+12 % height → ≈ +4 % face), so a 190 cm figure looks taller instead of a scaled-up 170 cm one. A leg / arm is taken to grow with the
      height, so the thickness ÷ face ratio of the template is multiplied by (hTarget ÷ hTemplate)^(1 − 0.35) for a first guess (thickness itself stays the player's eye). */
   const HEAD_EXP = .35, headFactor = (hT, hR) => hT > 0 && hR > 0 ? Math.pow(hT / hR, HEAD_EXP) : 1, thickFactor = (hT, hR) => hT > 0 && hR > 0 ? Math.pow(hT / hR, 1 - HEAD_EXP) : 1;
@@ -280,7 +280,7 @@
     for (const s of dp.segs) { if (s.dev == null) { if (all) parts.push(s.name + ' —'); continue } if (all || s.level !== 'ok') parts.push(`${s.name} ${pc(s.dev)}${s.level !== 'ok' ? ' ' + ic[s.level] : ''}`) }
     return parts.join(' · ') }
   const pixelPoints = (rec, dir, w, h) => Object.fromEntries(Object.entries(pointsFor(rec, dir).pts).map(([k, p]) => [k, [p[0] * w, p[1] * h]]));
-  /* v98.443 · drag-swap of two animation cells (Asset Studio): the datum points of the first n frames of (poseA · viewA) and (poseB · viewB) trade places
+  /* v98.444 · drag-swap of two animation cells (Asset Studio): the datum points of the first n frames of (poseA · viewA) and (poseB · viewB) trade places
      with their pictures; a side that has none ends with none. Mutates and returns the all() object (caller saves) — pure so tools/test-proportion-swap.cjs can test it */
   function swapPts(d, id, poseA, viewA, poseB, viewB, n) {
     const R0 = (d[id] ||= {}), slot = (pose, i, mk) => { const P = (R0[pose] ||= (mk ? {} : undefined)); if (!P) return null; return P[i] || (mk ? (P[i] = { pts: {} }) : null) };

@@ -26,7 +26,9 @@
    for(const d of ['sw','nw','ne','se']){const id=`tactics-${k}-${d}-walk-1`;if(have.has(id))continue;manifest.assets.push({id,file:`assets/tactics/${k}_${d}_walk_01.webp`,category:'allies',status:'missing',size:[384,384],transparent:true,view:d.toUpperCase(),pose:'walk',usedIn:`เพื่อนร่วมทีม ${nm}`,note:'ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้'});have.add(id)}}}
  /* v98.373 · the villagers (js/village-life.js) have standing + walking pictures in assets/village-town/npc/<id>/ that the manifest never listed: list them as NPC entities (group 'npcs'),
     one slot per picture that exists in the folder (stand / walk1 in SW and NE) so each can be viewed and replaced like any other character. */
- const VILLAGERS={may:'ป้าเมย์',tom:'ลุงทอม',lin:'คุณยายลิน',mira:'ครูมิรา',joe:'ชาวประมงโจ',ella:'ช่างทอผ้าเอลลา',oren:'ผู้ใหญ่บ้านโอเรน',gus:'ช่างตีเหล็กกัส',guard:'ยามดอร์ก',hilda:'ชาวนาฮิลดา',bryn:'บริน (โม่แป้ง)',marta:'มาร์ธา (เขากวางทอง)',saf:'หมอยาซาฟ',mother:'แม่'};
+ const VILLAGERS_OLD={may:'ป้าเมย์',tom:'ลุงทอม',lin:'คุณยายลิน',mira:'ครูมิรา',joe:'ชาวประมงโจ',ella:'ช่างทอผ้าเอลลา',oren:'ผู้ใหญ่บ้านโอเรน',gus:'ช่างตีเหล็กกัส',guard:'ยามดอร์ก',hilda:'ชาวนาฮิลดา',bryn:'บริน (โม่แป้ง)',marta:'มาร์ธา (เขากวางทอง)',saf:'หมอยาซาฟ',mother:'แม่'};
+ /* v98.444 · every NPC of the game (js/studio-people.js, generated from js/village-life.js) gets its 4 directions × stand / walk rows — not only the 14 that were typed in here */
+ const VILLAGERS=window.STUDIO_PEOPLE?.npcs||VILLAGERS_OLD;
  function registerVillagers(manifest){if(!manifest?.assets)return;const have=new Set(manifest.assets.map(a=>a.id));
   for(const [k,name] of Object.entries(VILLAGERS))for(const d of ['sw','ne','se','nw'])for(const [pose,file,label] of [['idle',`assets/village-town/npc/${k}/${d}-stand.webp`,'ยืน'],['walk',`assets/village-town/npc/${k}/${d}-walk1.webp`,'เดิน']]){
    const id=`npc-${k}-${d}-${pose==='idle'?'stand':'walk1'}`;if(have.has(id))continue;
@@ -126,7 +128,7 @@
  (()=>{const b=$('lineupDock')?.querySelector('.dock-body');if(!b)return;try{const k=localStorage.getItem('studio.dockH');if(k)b.style.height=k+'px'}catch(x){}
   let down=false;b.addEventListener('pointerdown',ev=>{const r=b.getBoundingClientRect();down=ev.clientY>r.bottom-18&&ev.clientX>r.right-18});addEventListener('pointerup',()=>{if(!down)return;down=false;dockAuto=false;try{localStorage.setItem('studio.dockH',String(Math.round(b.getBoundingClientRect().height)))}catch(x){}const fit=$('dockFit');if(fit)fit.hidden=false});
   const bar=$('lineupDock').querySelector('.dock-bar'),fit=document.createElement('button');fit.id='dockFit';fit.type='button';fit.textContent='↕ พอดี';fit.title='ความสูงพอดีเนื้อหาอัตโนมัติ';fit.hidden=dockAuto;fit.onclick=()=>{dockAuto=true;dockLast=0;try{localStorage.removeItem('studio.dockH')}catch(x){}fit.hidden=true;try{$('lineupDockFrame').contentWindow.dispatchEvent(new Event('load'))}catch(x){}};bar.insertBefore(fit,$('dockToggle'))})();
- function dockSync(on){const d=$('lineupDock');if(!d)return;document.body.classList.toggle('anim-mode',!!on);if(!on)return;const f=$('lineupDockFrame');if(f&&!f.src&&!d.classList.contains('min'))f.src='scale-lineup.html?studio=1&dock=1&v=98.443'}
+ function dockSync(on){const d=$('lineupDock');if(!d)return;document.body.classList.toggle('anim-mode',!!on);if(!on)return;const f=$('lineupDockFrame');if(f&&!f.src&&!d.classList.contains('min'))f.src='scale-lineup.html?studio=1&dock=1&v=98.444'}
  (()=>{const d=$('lineupDock'),b=$('dockToggle');if(!d||!b)return;let min=false;try{min=localStorage.getItem('studio.dockMin')==='1'}catch(e){}const set=v=>{min=v;d.classList.toggle('min',v);b.textContent=v?'แสดง ▾':'ย่อ ▴';try{localStorage.setItem('studio.dockMin',v?'1':'0')}catch(e){}if(!v)dockSync(document.body.classList.contains('anim-mode'))};set(min);b.onclick=()=>set(!min)})();
  function renderNav(){let search=state.entityQuery.toLowerCase(),all=state.model.filter(e=>e.group===state.group),ee=all.filter(e=>(e.name+' '+e.id).toLowerCase().includes(search));
   const ANIM=['characters','npcs','monsters','bosses'];dockSync(ANIM.includes(state.group));if(ANIM.includes(state.group))emit('studio-group',{group:state.group});   /* v98.399 · tells the Scale Lineup dock which left-panel group tab is active, so it can follow it instead of keeping its own duplicate filter */const subs=ANIM.includes(state.group)?'<div class="subtabs">'+[['characters','ตัวละคร'],['npcs','NPC ชาวบ้าน'],['monsters','มอนสเตอร์'],['bosses','มินิบอส / บอส']].map(([g,n])=>`<button data-sub="${g}" class="${g===state.group?'on':''}">${n}</button>`).join('')+'</div>':'';
@@ -177,7 +179,7 @@
  const ownSet=(e,c)=>(e.group==='characters'||e.group==='npcs')&&c.frames.length>0&&c.frames.every(f=>!f.flip&&!f.crop&&byId(f.assetId)?.file);
  function swapMeta(e,A,B,n,stA,stB){const lid=lidOf(e),PD=window.ProportionDatum;
   if(PD){const d=PD.all();PD.swapPts(d,lid,A.action,A.view,B.action,B.view,n);PD.saveAll(d)}
-  try{window.ProportionRulers?.swap(lid,A.action,A.view,B.action,B.view)}catch(x){}   /* v98.443 · drawn rulers travel with the picture */
+  try{window.ProportionRulers?.swap(lid,A.action,A.view,B.action,B.view)}catch(x){}   /* v98.444 · drawn rulers travel with the picture */
   try{const K='proportion-done-v1',D=JSON.parse(localStorage.getItem(K)||'{}')||{},ka=lid+'|'+A.action+'|'+A.view,kb=lid+'|'+B.action+'|'+B.view,va=D[ka],vb=D[kb];if(vb)D[ka]=vb;else delete D[ka];if(va)D[kb]=va;else delete D[kb];localStorage.setItem(K,JSON.stringify(D))}catch(x){}
   try{const K='asset-animation-reviews-v1',S=JSON.parse(localStorage.getItem(K)||'{}')||{},now=c=>entity()?.clips.find(x=>x.id===c.id),nA=now(A),nB=now(B);if(nA)S[R.signature(nA)]={status:stB==='needsfix'?'unreviewed':stB,frames:{}};if(nB)S[R.signature(nB)]={status:stA==='needsfix'?'unreviewed':stA,frames:{}};localStorage.setItem(K,JSON.stringify(S))}catch(x){}}
  async function swapClips(e,A,B){if(typeof dir==='undefined'||!dir)return needFolder();
@@ -273,7 +275,8 @@
    let tactics=await optional(h,'js/tactics-sprites.js',s=>C.jsonAssignment(s,'TACTICS_SPRITES'));
    let enemySource=await optional(h,'js/tactics-core.js',s=>s),nextMeta=enemySource?C.enemyMetadata(enemySource):{};
    if(hero&&!hero.clips)throw new Error('animation-data ไม่มี clips');
-   clearCaches();dir=h;savedHandle=h;scanned=paths;manifestJsonPath=info.json;manifestJsPath=info.js;for(let k of Object.keys(M))delete M[k];Object.assign(M,info.m);runtime={hero,tactics};meta=nextMeta;window.StudioVariants?.reset();pristine=tactics?JSON.parse(JSON.stringify(tactics)):null;
+   clearCaches();dir=h;savedHandle=h;scanned=paths;manifestJsonPath=info.json;manifestJsPath=info.js;for(let k of Object.keys(M))delete M[k];Object.assign(M,info.m);runtime={hero,tactics};meta={...(window.STUDIO_ENEMIES||{}),...nextMeta};   /* v98.444 · monsters the studio's own list knows but js/tactics-core.js has no `art:` line for (goat · pumpkin · pumpkin boss · pest · dummy) keep their Thai name and rank */
+   window.StudioVariants?.reset();pristine=tactics?JSON.parse(JSON.stringify(tactics)):null;
    sel=null;selected=null;source=null;result=null;CS=null;sessionStorage.removeItem('asset-batch-sel');for(let id of ['selNone'])$(id)?.click();
    // Keep unregistered image files accessible, without adding them to the game manifest.
    await idbSet('dir',h);resetClock();render();detail();emit('studio-frames-changed');toast('เชื่อม '+h.name+' แล้ว · '+paths.size+' ภาพ');

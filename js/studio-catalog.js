@@ -192,6 +192,31 @@
     "art": "enemy-gargoyle",
     "rank": "miniboss"
   },
+  "goat": {
+    "name": "แพะของปิ๊บ",
+    "art": "enemy-goat",
+    "rank": "normal"
+  },
+  "pumpkin": {
+    "name": "ฟักทองในไร่",
+    "art": "enemy-pumpkin",
+    "rank": "normal"
+  },
+  "pumpkinBoss": {
+    "name": "บอสฟักทอง",
+    "art": "enemy-pumpkinBoss",
+    "rank": "boss"
+  },
+  "pest": {
+    "name": "ด้วงกินใบ",
+    "art": "enemy-pest",
+    "rank": "normal"
+  },
+  "dummy": {
+    "name": "หุ่นฟาง",
+    "art": "enemy-dummy",
+    "rank": "normal"
+  },
   "voidKing": {
     "name": "ราชาแห่งความว่างเปล่า",
     "art": "enemy-void-king",
@@ -220,7 +245,8 @@
   throw new Error('ข้อมูล '+name+' ไม่ครบ');
  }
  function owner(a,meta={}){
-  if(a.studioOwner&&groups[a.studioOwner.group])return {...a.studioOwner};
+  /* v98.444 · a villager who is also a FRIEND with battle stats (e.g. Berg) lives with the friends ("ตัวละคร"), not under NPC — the roster is js/studio-people.js */
+  if(a.studioOwner&&groups[a.studioOwner.group]){const so={...a.studioOwner},k=so.id&&so.id.startsWith('npc:')?so.id.slice(4):null,A=root.STUDIO_PEOPLE?.allies;if(k&&A&&A[k])return {id:'ally:'+k,name:A[k],group:'characters'};return so}
   let id=a.id||'',cat=a.category||'',key=null;
   if(a.enemy)key=a.enemy;
   else if(id.startsWith('card-en-'))key=id.slice(8);
@@ -229,8 +255,8 @@
    key=Object.keys(meta).find(k=>meta[k].art===base)||aliases[base.slice(6)]||camel(base.replace(/^enemy-/,''));
   }else if(/^char-scarecrow/.test(id))key='dummy';
   if(key){let m=meta[key]||{};return {id:'enemy:'+key,name:m.name||key,group:['miniboss','boss'].includes(m.rank)?'bosses':'monsters',rank:m.rank||'normal'}}
-  let ally=id.match(/^(?:ally-|card-u-)([a-z]+)$/)||id.match(/^tactics-(luna|bram|kier|mil|ren|nadia|sigrid|orla|olwen)-/);
-  if(ally)return {id:'ally:'+ally[1],name:ally[1][0].toUpperCase()+ally[1].slice(1),group:'characters'};
+  let ally=id.match(/^(?:ally-|card-u-)([a-z]+)$/)||id.match(/^tactics-(luna|bram|kier|mil|ren|nadia|sigrid|orla|olwen|berg)-/);
+  if(ally)return {id:'ally:'+ally[1],name:root.STUDIO_PEOPLE?.allies?.[ally[1]]||ally[1][0].toUpperCase()+ally[1].slice(1),group:'characters'};
   if(['hero-frames','tactics-hero','village-idle','characters'].includes(cat)||id==='card-hero')return {id:'hero',name:'ตัวหลัก · Hero',group:'characters'};
   if(['scenes','village-map'].includes(cat))return {id:'illust:'+id,name:a.studioName||id,group:'illust'}; // v91.37: big scene / cutscene pictures
   let base=id.replace(/-views$/,'').replace(/^ground-anim-/,'ground-');

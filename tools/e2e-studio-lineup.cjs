@@ -9,7 +9,7 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   const server = await serve(), base = 'http://localhost:' + server.address().port + '/', browser = await chromium.launch(), page = await browser.newPage({ viewport: { width: 1700, height: 950 } });
   page.on('dialog', d => d.accept()); const errs = []; page.on('pageerror', e => errs.push(e.message));
   await page.goto(base + 'asset-studio.html'); await page.waitForTimeout(2000); await page.click('#conn'); await page.waitForTimeout(9000); await page.click('text=Animation'); await page.waitForTimeout(3000);
-  const studioChars = await page.evaluate(() => StudioBrowser.state.model.filter(e => e.group === 'characters').map(e => e.id));
+  const studioChars = await page.evaluate(() => StudioBrowser.state.model.filter(e => e.group === 'characters' || e.group === 'npcs').map(e => e.group === 'npcs' ? e.id.replace(/^npc:/, '') : e.id));   // v98.444 · the lineup lists the villagers as well as the friends
   await page.click('#lineupTab'); await page.waitForTimeout(9000);
   const fr = page.frames().find(f => /scale-lineup\.html/.test(f.url())); assert.ok(fr, 'the Scale Lineup frame did not open');
   const lineupIds = () => fr.evaluate(() => ENTRIES.filter(e => e.kind === 'hero' || e.kind === 'ally').map(e => e.id));

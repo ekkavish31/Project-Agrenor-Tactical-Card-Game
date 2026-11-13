@@ -16,8 +16,8 @@ equipmentCard=function(x){let html=villageEquipmentCard(x);return x.recipe==='te
 
 const oldCardMarkup=cardMarkup;
 cardMarkup=function(i,interactive=true){let html=oldCardMarkup(i,interactive);if(i<3&&s.mode!=='battle')html=html.replace(i===1?'ร้อน '+defs[i].threshold+'+ ได้โบนัส':i===2?'ชุบแข็ง / ช็อกเกราะร้อน':'หลอมและทำเกราะอ่อนตัว',i===0?'เผาเกราะ · ลด DEF':i===1?'โจมตี · โบนัสเกราะร้อน':'บอลน้ำ · ช็อกเกราะร้อน');return html};
-render=function(){ensureVillage();villageBaseRender();document.body.dataset.place=s.village.location};   /* v98.443: the hidden old scene is no longer drawn */
-/* v98.443 · a forge step (0 หลอม · 1 ตีขึ้นรูป · 2 ชุบแข็ง) — called by runPlaceAction when a station of the forge sub-map is pressed. The walk / spark
+render=function(){ensureVillage();villageBaseRender();document.body.dataset.place=s.village.location};   /* v98.444: the hidden old scene is no longer drawn */
+/* v98.444 · a forge step (0 หลอม · 1 ตีขึ้นรูป · 2 ชุบแข็ง) — called by runPlaceAction when a station of the forge sub-map is pressed. The walk / spark
    animation it used to play on the hidden old scene is gone (the sub-map plays its own: js/smith-wip.js) */
 function station(i){if(busy||s.mode==='battle')return;if(i===3){renderRestChoice();return}let result=smithAction(i);if(!result.ok){s.log=result.reason;render();return}render();if(result.event)showReward(result.event)}
 setRecipe=function(key){if(busy)return;if(chooseRecipe(key)){render();renderSmith()}else{s.log=s.village.work.started?'ทำชิ้นงานปัจจุบันให้เสร็จก่อนเปลี่ยนแบบ':'ระดับคราฟต์ยังไม่ถึง';render()}};

@@ -34,7 +34,7 @@
     addEventListener('message', done); document.body.appendChild(fr);
   }
   /* training only — the archived expedition / adventure calls keep the old engine */
-  /* v98.443 · the old grid-battle bridge (js/tactics-bridge.js: TacticsLab, expedition, #tacticsLayer) is archived — training is the only battle opened from here */
+  /* v98.444 · the old grid-battle bridge (js/tactics-bridge.js: TacticsLab, expedition, #tacticsLayer) is archived — training is the only battle opened from here */
   root.openTactical = function () { open() };
   /* the scarecrow / "ฝึก" buttons of the old scene went through changeMode('battle') into an in-page battle: send them to the real training battle instead */
   root.toggleTraining = function () { open() };

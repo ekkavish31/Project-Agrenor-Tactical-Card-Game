@@ -87,12 +87,12 @@ body.world header h1 small{display:none}
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/manifest-merge.js?v=v98.443"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.443"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.443"></script><script src="js/proportion-rulers.js?v=v98.443"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.380"></script><script src="js/character-scale-adjust-data.js?v=v98.322"></script><script src="js/character-scale-adjust.js?v=98.126"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.387"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.444"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
    on-screen height (UNIT = one battle cell) = silhouette height ÷ picture height × the size the game draws the picture at:
-     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.443 drawHero · CHARACTER_SCALE.drawSize.hero)
+     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.444 drawHero · CHARACTER_SCALE.drawSize.hero)
      ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
@@ -198,7 +198,7 @@ async function build() {
   await buildChars();
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.443')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const src = await (await fetch('js/town-battle.js?v=v98.444')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
       const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
     }
@@ -413,8 +413,8 @@ function inspectRatio() {
   const marks = { ...r.marks }, pw0 = hasDatum ? HALF : PW, dx0 = (c.flip ? pw0 - ox - fw : ox) - c.m.x0 * k, dy0 = oy - c.m.top * k;
   /* a datum dot, drawn in whatever transform is already active (so it mirrors with the picture automatically when flipped) */
   const dot = (g2, x, y, col, own) => { g2.globalAlpha = own ? 1 : .5; g2.fillStyle = col; g2.beginPath(); g2.arc(x, y, own ? 4 : 3, 0, 7); g2.fill(); g2.strokeStyle = '#fff'; g2.lineWidth = 1; g2.stroke(); g2.globalAlpha = 1 };
-  let beforeX = null;   /* v98.443 · where the Before picture sits on the canvas (for the drag rulers) */
-  let cutLinesPx = null; const CUT_PX = { neck: '#0a9aa8', hip: '#c0359b' };   /* v98.443 · [[points px, colour]…] of the two zone lines on the Before picture */
+  let beforeX = null;   /* v98.444 · where the Before picture sits on the canvas (for the drag rulers) */
+  let cutLinesPx = null; const CUT_PX = { neck: '#0a9aa8', hip: '#c0359b' };   /* v98.444 · [[points px, colour]…] of the two zone lines on the Before picture */
   let rulerLines = null;   /* v98.434 · measuring lines of the 📏 ruler on this picture [x1,y1,x2,y2] in picture px */
   const drawCuts = (g0, left, top, k) => { if (!cutLinesPx) return; g0.save(); g0.lineWidth = 1.6; g0.setLineDash([5, 4]); for (const [pts, col] of cutLinesPx) { g0.strokeStyle = col; g0.beginPath(); const a = pts[0], b = pts.at(-1), dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1, ex = dx / l * 14, ey = dy / l * 14; g0.moveTo(left + (a[0] - ex) * k, top + (a[1] - ey) * k); for (const p of pts) g0.lineTo(left + p[0] * k, top + p[1] * k); g0.lineTo(left + (b[0] + ex) * k, top + (b[1] + ey) * k); g0.stroke() } g0.restore() };
   const drawRuler = (g0, left, top, k) => { if (!rulerLines) return; g0.save(); g0.lineWidth = 2; g0.strokeStyle = '#ffd400'; g0.fillStyle = '#ffd400'; g0.setLineDash([]); for (const [x1, y1, x2, y2] of rulerLines) { g0.beginPath(); g0.moveTo(left + x1 * k, top + y1 * k); g0.lineTo(left + x2 * k, top + y2 * k); g0.stroke(); for (const [x, y] of [[x1, y1], [x2, y2]]) g0.fillRect(left + x * k - 1.5, top + y * k - 4, 3, 8) } g0.restore() };
@@ -490,7 +490,7 @@ function inspectRatio() {
     const rulerPlan = () => { const ow = ownRule(), rf = refRule(), at = `${BONE_TH[RSPEC.group]} ที่ ${Math.round(RSPEC.t * 100)}%`;
       if (!ow) return { note: `วัดไม้บรรทัด (${at}) ของตัวนี้ไม่ได้ — datum ไม่พอ หรือจุดนั้นไม่โดนเงาภาพ` };
       if (!rf) return { own: ow, note: `ต้นแบบนี้ยังไม่มีค่าไม้บรรทัด (${at})` + (mem.ref === '__std__' ? ' — ตั้งมาตรฐานใหม่อีกครั้ง' : mem.ref === '__master__' ? (ST ? ' — กำลังวัดจากภาพท่าอ้างอิง…' : ' — เปิดท่าอ้างอิงให้เห็นสักครั้ง ระบบจะจำค่าไว้') : '') };
-      /* v98.443 · two DIFFERENT characters: a taller one gets a slightly bigger head (PD.headFactor, +12 % height ≈ +4 % head), so the thickness ÷ face expected from the template is multiplied by (hT ÷ hR)^0.65 */
+      /* v98.444 · two DIFFERENT characters: a taller one gets a slightly bigger head (PD.headFactor, +12 % height ≈ +4 % head), so the thickness ÷ face expected from the template is multiplied by (hT ÷ hR)^0.65 */
       let hNote = '', fac = 1; try { const refE = mem.ref === '__std__' ? ENTRIES.find(x => x.id === RSD?.s.id) : mem.ref === '__master__' ? null : ENTRIES.find(x => x.id === mem.ref);
         if (refE && refE.id !== e.id && !isW(refE) && !isW(e)) { const hT = metres(e), hR = metres(refE), tf = PD.thickFactor(hT, hR); if (isFinite(tf) && tf !== 1) { fac = tf; hNote = ` · ความสูง ${hT.toFixed(2)} m เทียบ ${hR.toFixed(2)} m → หัวโตตามส่วน ${((PD.headFactor(hT, hR) - 1) * 100).toFixed(0) >= 0 ? '+' : ''}${((PD.headFactor(hT, hR) - 1) * 100).toFixed(0)}%` } } } catch (err) { }
       const raw = rf.ratio * fac / ow.ratio; return { own: ow, ref: rf, raw, q: clampQ(raw), at, note: `📏 ${at}: ต้นแบบ ${rf.ratio.toFixed(2)} หน้า (${rf.label}) · ตัวนี้ ${ow.ratio.toFixed(2)} หน้า (${ow.w.toFixed(0)} px)${hNote} → ตัวขยาย ${(raw * 100).toFixed(0)}% เมื่อเทียบกับหัว${raw !== clampQ(raw) ? ' (จำกัดที่ 70–140%)' : ''}${raw < .6 || raw > 1.7 ? ' · ⚠ ต่างกันมากผิดปกติ — น่าจะมีจุดวัดตกผิดที่ (ดูเส้นเหลืองบนภาพ) หรือ datum ท่อนนั้นหลุดจากตัว' : ''}` } };
@@ -535,7 +535,7 @@ function inspectRatio() {
     if (!mem.touched && RSD) { mem.mode = 'ref'; mem.ref = '__std__'; $a('adjRef').value = '__std__' } else if (!mem.touched && mSpans) { mem.mode = 'ref'; mem.ref = '__master__'; $a('adjRef').value = '__master__' }
     $a('adjMethod').value = mem.method; document.querySelector(`input[name=adjMode][value=${mem.mode}]`).checked = true; $a('adjKeep').checked = mem.keep; $a('adjSeam').value = mem.seam || 'shape'; $a('adjSoft').value = mem.soft || 7; $a('adjSharpMode').value = mem.sharpMode || 'auto'; $a('adjSharp').value = mem.sharp ?? 60; document.querySelectorAll('.adjSel').forEach(b => b.checked = !!mem.sel[b.dataset.k]);
 
-    /* v98.443 · 📏 USER-DRAWN RULERS: pick an emoji, drag a line on the Before picture (endpoints draggable). The size is stored as a ratio (÷ face, or ÷ height for the head),
+    /* v98.444 · 📏 USER-DRAWN RULERS: pick an emoji, drag a line on the Before picture (endpoints draggable). The size is stored as a ratio (÷ face, or ÷ height for the head),
        so the BASE keeps its own numbers and this picture is compared with them → ×1.30 per ruler → ✅ puts the mean per part into the sliders (manual mode). */
     const RR = window.ProportionRulers, rlcv = $a('rlcv'), rlg = rlcv && rlcv.getContext('2d'); let rlSel = null, rlDrag = null;
     const rlUnits = () => { const { pts: P } = PD.pointsFor(datumRec, q.dir), md = (a, b) => a && b ? [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] : null, D = (a, b) => a && b ? Math.hypot((a[0] - b[0]) * c.m.w, (a[1] - b[1]) * c.m.h) : null, eye = md(P.eyeL, P.eyeR), ft = md(P.footL, P.footR); return { face: D(eye, P.chin), height: D(eye, ft) } };
@@ -566,7 +566,7 @@ function inspectRatio() {
       if (b.id === 'rlUse') { const pl = RR.plan(RR.list(e.id, q.pose, q.dir), rlBase()?.map), S = sel(), got = []; for (const part of ['head', 'torso', 'legs']) if (pl.parts[part] != null && S[part]) { A[part] = Math.round(pl.parts[part] * 1000) / 10; got.push(part) }
         if ((pl.parts.torso != null || pl.parts.legs != null) && pl.parts.head == null && S.head) A.head = 100;   /* body rulers are ÷ face → relative to the head, same as the 📏 thickness method */
         mem.touched = true; document.querySelector('input[name=adjMode][value=man]').checked = true; $a('adjMsg').textContent = '✅ ใส่ค่าจากไม้บรรทัดลงตัวปรับแล้ว (แมนวล) · ' + got.map(x => x + ' ×' + (A[x] / 100).toFixed(2)).join(' · '); redraw() } };
-    /* v98.443 · CUT LINES for the warp: zones follow the neck / hip lines (own, mirrored, learned or default) and the part rows are taken from the line middles.
+    /* v98.444 · CUT LINES for the warp: zones follow the neck / hip lines (own, mirrored, learned or default) and the part rows are taken from the line middles.
        Without both lines (a point missing) the chin / crotch rows are used as before. */
     const cutPack = (dirX, m, points, baseMarks) => { try {
         const hint = PD.cutHint(e.id, PD.GROUP[dirX] || 'front', { pose: q.pose, frame: String(q.frame | 0), dir: dirX }), cs = PD.cutsFor(datumRec, dirX, hint, m.w, m.h);
@@ -668,7 +668,7 @@ async function openDatum(e) {
      was (it does not fall back to right after that point). */
   /* v98.434 · back view: chin / eyes suggested from the FRONT (PD.suggestHead) — drawn as faint rings, placed only when the user asks */
   const headSug = () => { const { own, from } = cur(), sg = PD.suggestHead?.(rec, dir); if (!sg) return null; const keys = ['eyeL', 'eyeR', 'chin'].filter(k => !own.has(k) && !from[k]); return keys.length ? { sg, keys } : null };
-  /* v98.443 · CUT LINES (✂): cutMode = 'neck' | 'hip' while the player is clicking the points of a new line; cutDraft = those points (fractions) */
+  /* v98.444 · CUT LINES (✂): cutMode = 'neck' | 'hip' while the player is clicking the points of a new line; cutDraft = those points (fractions) */
   let cutMode = null, cutDraft = [], cutDrag = null;
   const CUT_COL = { neck: '#0a9aa8', hip: '#c0359b' }, CUT_NAME = { neck: 'ตัดหัว', hip: 'เริ่มขา' };
   const hintOf = () => PD.cutHint(e.id, PD.GROUP[dir] || 'front', { pose, frame: String(frame | 0), dir });

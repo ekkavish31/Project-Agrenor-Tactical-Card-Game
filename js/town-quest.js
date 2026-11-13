@@ -161,7 +161,7 @@
   /* v97.14 · the goat is drawn (solid colours with a dark outline) instead of the pale 🐐 emoji that washed out on the light cobbles:
      brown coat, cream belly and beard, dark horns and hooves; legs run in 4 frames, the head dips to graze when it rests */
   function goat(gx, o, t) {
-    /* v98.443 · chase states use the existing authored goat extras. Remember
+    /* v98.444 · chase states use the existing authored goat extras. Remember
        facing while resting; MonsterArt owns SW/NW mirroring (never flip twice). */
     if (o.dir) o.artFace = o.dir.du + o.dir.dv < 0 ? (o.dir.du - o.dir.dv > 0 ? 'NE' : 'NW') : (o.dir.du - o.dir.dv > 0 ? 'SE' : 'SW');
     const pose = o.mode === 'run' ? 'run' : o.mode === 'rest' ? 'pant' : 'graze';
