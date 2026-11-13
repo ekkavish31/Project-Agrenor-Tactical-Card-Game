@@ -208,10 +208,12 @@ async function addChar(id, name, kind, pic, factor) {
   let e = ENTRIES.find(x => x.id === id); if (!e) ENTRIES.push(e = { id, name, kind, ctx: {} });
   e.name = name; e.ctx.battle = e.ctx.village = C;
 }
-const lookSrc = (look, view) => { try { const v = (ST ? parent : window).HeroVariant?.VARIANTS?.[look]?.idle?.[view]; if (v) return v } catch (e) { } return `assets/characters/hero-${look}/idle-${view.toLowerCase()}.webp` };   /* the standing picture of a hero look, from the game's own table */
+/* v98.457 · the standing picture of a hero look: the imported cast pictures that exist in the repo (SE = SW mirrored · NW = NE mirrored) */
+const lookPic = (look, view) => { const k = look === 'female' ? 'f' : 'm', back = view === 'NW' || view === 'NE', mir = view === 'SE' || view === 'NW'; return { src: `assets/tactics/imported/idle-${back ? 'ne' : 'sw'}-mwcast2-${k}/frame-01.webp`, flip: mir } };
 const heroLook = () => { try { const l = ST?.lineup?.look?.(); return l === 'female' ? 'female' : 'male' } catch (e) { return 'male' } };   /* which look the studio has open (the game's default is male) */
+const GROUPOF = {};   /* id → the studio's group (characters / npcs) so the lineup filter matches the left panel */
 async function buildChars() {
-  const list = ST ? ST.lineup.entities().map(e => ({ id: e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc):/, ''), sid: e.id, name: e.name, clips: e.clips })) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
+  const list = ST ? ST.lineup.entities().map(e => { const id = e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc):/, ''); if (e.group) GROUPOF[id] = e.group; return { id, sid: e.id, name: e.name, clips: e.clips } }) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
   for (const c of list) {
     let pic, vp = null;
     if (ST) { const own = PICK[c.id], clip = own ? null : (c.clips || []).find(x => x.action === VP.action && x.view === VP.view) || (VP.action === 'idle' ? null : (c.clips || []).find(x => x.action === VP.action && x.view === OPPV[VP.view]));
@@ -221,13 +223,14 @@ async function buildChars() {
     if (pic) pic.vp = vp;
     if (!pic) continue; await addChar(c.id, c.id === 'hero' ? 'ตัวหลัก · ' + (heroLook() === 'female' ? 'หญิง' : 'ชาย') : (ALLIES[c.id] || c.name), c.id === 'hero' ? 'hero' : 'ally', pic, c.id === 'hero' ? DS.hero : DS.ally);
     /* v98.452 · the hero's two looks side by side: the open look is `hero` (everything keeps working on it), the other look is its own entry `hero-<look>` (standing picture of that look) */
-    if (c.id === 'hero') { const other = heroLook() === 'female' ? 'male' : 'female', oid = 'hero-' + other; await addChar(oid, 'ตัวหลัก · ' + (other === 'female' ? 'หญิง' : 'ชาย'), 'ally', { src: lookSrc(other, VP.view || 'SW'), label: 'ท่ายืน ' + (VP.view || 'SW') }, DS.hero); list.push({ id: oid }) }
+    if (c.id === 'hero') { const other = heroLook() === 'female' ? 'male' : 'female', oid = 'hero-' + other; await addChar(oid, 'ตัวหลัก · ' + (other === 'female' ? 'หญิง' : 'ชาย'), 'ally', { ...lookPic(other, VP.view || 'SW'), label: 'ท่ายืน ' + (VP.view || 'SW') }, DS.hero); list.push({ id: oid }) }
   }
   /* v98.265 · villagers drawn from pictures (VillagerDraw SPR_INFO) are in the lineup too, so every person is compared in one place */
   const VILLAGERS = { may: 'ป้าเมย์', tom: 'ลุงทอม', lin: 'คุณยายลิน', guard: 'ทหารยาม', bryn: 'บริน', gus: 'กัส', hilda: 'ฮิลดา', marta: 'มาร์ธา', mira: 'ครูมิรา', saf: 'หมอยาซาฟ', mother: 'แม่', ella: 'เอลลา', joe: 'โจ', oren: 'ผู้ใหญ่บ้านโอเรน' };
   for (const [id, name] of Object.entries(VILLAGERS)) { if (list.some(c => c.id === id)) continue; const pic = { src: `assets/village-town/npc/${id}/sw-stand.webp` }; await addChar(id, name, 'ally', pic, DS.ally); list.push({ id }) }
   const have = new Set(list.map(c => c.id)); for (let i = ENTRIES.length - 1; i >= 0; i--) if ((ENTRIES[i].kind === 'hero' || ENTRIES[i].kind === 'ally') && !have.has(ENTRIES[i].id)) ENTRIES.splice(i, 1);
   ENTRIES.sort((a, b) => (RANK[a.kind] ?? 3) - (RANK[b.kind] ?? 3));
+  { const k = ENTRIES.findIndex(e => e.id.startsWith('hero-')); if (k > 1 && ENTRIES[0].id === 'hero') ENTRIES.splice(1, 0, ...ENTRIES.splice(k, 1)) }   /* v98.457 · the two hero looks stand side by side at the front */
 }
 async function build() {
   const add = async (id, name, kind, ctx, src, factor, formula) => {
@@ -958,7 +961,7 @@ function inspect() {
 const FKEY = 'scale-lineup-filter-v1', CATS = [['char', '🧑 ตัวละคร', 'ตัวเอก + เพื่อนร่วมทีม'], ['npc', '🏘 NPC', 'ชาวบ้านและคนในเมือง'], ['mon', '👹 มอนสเตอร์ · บอส', 'ศัตรูทุกชนิด (บอสใช้แถวเดียวกับตัวธรรมดา)']];
 let FILTER = { char: true, npc: true, mon: true }; try { Object.assign(FILTER, JSON.parse(localStorage.getItem(FKEY) || '{}')) } catch (e) { }
 const NPC_IDS = new Set(['may', 'tom', 'lin', 'guard', 'bryn', 'gus', 'hilda', 'marta', 'mira', 'saf', 'mother', 'ella', 'joe', 'oren']);
-const catOf = e => e.kind === 'monster' ? 'mon' : (e.kind === 'hero' || !NPC_IDS.has(e.id)) ? 'char' : 'npc';
+const catOf = e => e.kind === 'monster' ? 'mon' : (e.kind === 'hero' || e.id.startsWith('hero-')) ? 'char' : GROUPOF[e.id] ? (GROUPOF[e.id] === 'characters' ? 'char' : 'npc') : ST ? 'npc' : (ALLIES[e.id] || !NPC_IDS.has(e.id)) ? 'char' : 'npc';   /* v98.457 · inside the studio the left panel's own groups decide (anyone it does not list is a villager); standalone: friends = char */
 const MGROUPS = [['beast', '🐺 สัตว์ร้าย', 'wolf alpha shadowWolf frostWolf iceWolf bat mireBat gull yeti bogHydra'], ['hum', '🗡 ฮิวมานอยด์', 'bandit poacher pirate captainHook corsair cultist bogHunter swampWitch kobold foreman snowKobold'], ['ele', '💧 สไลม์ · ธาตุ', 'slime bogSlime seaSlime frostSlime wisp frostQueen'], ['con', '🗿 โกเล็ม · หุ่น · พืช · ยักษ์', 'golem coralGolem crystalKing dummy straw archer captain treant mudTroll'], ['und', '💀 อมตะ · ปีศาจ', 'skeleton ghostKnight gargoyle voidKing'], ['oth', 'อื่นๆ', '']];
 const MGOF = {}; for (const [g, , ks] of MGROUPS) for (const k of ks.split(' ')) if (k) MGOF[k] = g;
 const SUBKEY = 'scale-lineup-subfilter-v1'; let SUBF = { beast: true, hum: true, ele: true, con: true, und: true, oth: true, wired: true, unwired: true }; try { Object.assign(SUBF, JSON.parse(localStorage.getItem(SUBKEY) || '{}')) } catch (e) { }
