@@ -33,11 +33,15 @@
     thornwatch: [{ key: 'guide', label: '🧭 จ้างพรานนำทางสำรวจ', cost: 20, daily: true }, { key: 'tales', label: '🔥 ฟังเรื่องป่าใหญ่', cost: 0 }],
     vinehollow: [{ key: 'spring', label: '♨ แช่บ่อน้ำร้อน', cost: 8 }]
   };
+  const gm = ctx => { try { return (ctx && ctx.game && ctx.game()) || root.WorldState?.game?.() } catch (e) { return null } };
+  /* v98.485 · ปุ่มสถานที่ของเนื้อเรื่องหลัก (js/story-cast.js) ต่อท้ายปุ่มเดิม */
+  const storySvc = (S, id) => { const g = gm(); return root.StoryCast && g ? root.StoryCast.services(g, id) : [] };
   function list(S, id) {
-    return (SVC[id] || []).map(o => { const w = (o.why?.(S) || '') || (o.daily && used(S, id, o.key) ? 'วันนี้ใช้ไปแล้ว' : '') || (o.cost && (S.gold || 0) < o.cost ? 'เงินไม่พอ' : '');
+    return (SVC[id] || []).concat(storySvc(S, id)).map(o => { const w = (o.why?.(S) || '') || (o.daily && used(S, id, o.key) ? 'วันนี้ใช้ไปแล้ว' : '') || (o.cost && (S.gold || 0) < o.cost ? 'เงินไม่พอ' : '');
       return { key: o.key, label: o.label + (o.cost ? ' · ' + o.cost + ' 💰' : ''), disabled: !!w, title: w } });
   }
   function run(S, id, key, ctx = {}) {
+    if (key.startsWith('st:')) { const g = gm(), w0 = list(S, id).find(x => x.key === key); if (!g || !root.StoryCast || !w0) return { lines: [] }; if (w0.disabled) return { lines: [w0.title] }; const o0 = storySvc(S, id).find(x => x.key === key); if (o0?.cost) S.gold -= o0.cost; if (o0?.daily) use(S, id, key); return root.StoryCast.run(g, id, key, S, ctx) }
     const o = (SVC[id] || []).find(x => x.key === key); if (!o) return { lines: [] };
     const w = list(S, id).find(x => x.key === key); if (w.disabled) return { lines: [w.title] };
     if (o.cost) S.gold -= o.cost; if (o.daily) use(S, id, key);
