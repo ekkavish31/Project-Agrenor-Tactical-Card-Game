@@ -73,12 +73,28 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 #cwhy button{margin-top:6px;background:#2a2550;color:var(--ink);border:1px solid #6f64b8;border-radius:7px;padding:3px 10px;cursor:pointer;font:inherit;font-size:12px}
 .cbtn{margin:8px 0 2px;background:#2a2550;color:var(--ink);border:1px solid #9a8cff;border-radius:8px;padding:5px 12px;cursor:pointer;font:inherit;width:100%;text-align:left}
 .node .wh{position:absolute;right:6px;bottom:3px;font-size:10px;color:#cfc6ff}
+#tl{position:absolute;left:0;right:0;bottom:0;top:var(--bh,86px);padding-top:0;overflow:auto;display:none;padding:12px 12px 90px}
+#tl .wrap{position:relative;display:grid;gap:8px 10px;min-width:max-content}
+#tl svg{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.tl-h{position:sticky;top:0;z-index:3;background:#15131cf0;text-align:center;font-size:12px;color:#cfc9e6;padding:5px 4px;border-bottom:3px solid var(--line);cursor:pointer}
+.tl-h.cur{border-bottom-color:#ffd166;color:#fff}.tl-h.sel{border-bottom-color:#9a8cff;background:#2a2550}
+.tl-l{position:sticky;left:0;z-index:2;border-radius:10px;padding:8px 10px;font-weight:600;font-size:13px;display:flex;align-items:center;background:var(--lc);border:1.5px solid var(--lb);cursor:pointer}
+.tl-c{display:flex;flex-direction:column;gap:8px;padding:6px;min-height:40px;border-radius:10px;background:#ffffff05;position:relative;z-index:1}
+.tl-c .node{position:relative;width:auto;min-width:150px;max-width:200px}
+.tl-c .opts{margin-top:6px;border-top:1px dashed #ffb34788;padding-top:5px}
+.tl-c .opts i{display:block;font-style:normal;font-size:10.5px;color:#ffb347;margin-bottom:3px}
+.tl-c .opt{display:block;font-size:11.5px;line-height:1.3;padding:3px 7px;margin:3px 0;border-radius:7px;background:#1b2a2a;border:1px solid #3f7f7f;cursor:pointer;font-weight:400}
+.tl-c .opt[data-k=end]{background:#2e1d2a;border-color:#ff7fb0}.tl-c .opt[data-k=open]{border-style:dashed;border-color:var(--wait);background:#26192f}
+.tl-c .opt:hover{outline:1px solid #ffd166}
+#mode{display:flex;gap:0}#mode button{border-radius:0}#mode button:first-child{border-radius:7px 0 0 7px}#mode button:last-child{border-radius:0 7px 7px 0}
+#hint{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;z-index:5;background:#2a2550f2;border:1px solid #9a8cff;border-radius:10px;padding:6px 14px;font-size:12.5px;max-width:min(900px,92vw);display:none}
 #count{margin-left:auto;color:var(--mut);font-size:12px}
 @media(max-width:700px){#info{width:auto;left:12px}}
 </style>
 </head>
 <body>
 <div id="head"><div id="bar">
+ <div class="grp" id="mode"><button id="mTree" class="on">🌳 มุมมองกิ่ง</button><button id="mTl">🛤 เดินคู่ขนาน</button></div>
  <div class="grp"><button id="expAll">ขยายทั้งหมด</button><button id="colAll">ยุบเหลือเส้นหลัก</button><button id="fit">⤢ พอดีจอ</button></div>
  <div class="grp"><span>สถานะ</span><button data-f="ok" class="on">✅ ทำแล้ว</button><button data-f="wip" class="on">🟡 ทำบางส่วน</button><button data-f="todo" class="on">⚪ ยังไม่ทำ</button><button data-f="wait" class="on">🔒 รอเจ้าของเกม</button></div>
  <div class="grp"><button id="xl" class="on">เส้นเชื่อมข้ามเส้น</button><button id="onlyCh">เฉพาะจุดตัดสินใจ</button></div>
@@ -88,6 +104,8 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 <div id="stages"></div></div>
 <div id="view"><div id="world"><svg id="edges"></svg></div></div>
 <div id="info"><span class="x" id="ix">✕</span><div id="ib"></div></div>
+<div id="tl"></div>
+<div id="hint"></div>
 <div id="cast"><h4><span id="ct">👥 ตัวละครที่เกี่ยวข้อง</span><span class="x" id="cx">✕</span></h4><div class="cgrid" id="cg"></div><div id="cwhy"></div><p style="font-size:11px;color:var(--mut);margin:8px 0 0">กรอบทอง = ระบุไว้ใน Canon/Draft · กรอบน้ำเงิน = ข้อเสนอ (ยังไม่ใช่ Canon · ตรวจ NPC ก่อนใช้) · กรอบเทา = ยังไม่มีในเกม</p></div>
 <div id="legend">
  <span><i style="background:#9a8cff"></i>เส้นเรื่อง</span><span><i style="background:#ffb347;border-radius:8px"></i>⑂ จุดตัดสินใจ (แตกกิ่ง)</span><span><i style="background:#3f7f7f"></i>ผลของทางเลือก</span><span><i style="background:#ff7fb0"></i>★ ตอนจบ</span><span><i style="background:#4a86c9"></i>⚙ ระบบเกม</span><span><i style="border:1px dashed #c77dff"></i>🔒 ยังไม่ตัดสิน</span>
@@ -102,7 +120,7 @@ const ST={ok:'✅ ทำแล้วในเกม',wip:'🟡 ทำบาง�
 const SP=['S0 เล่าได้ตั้งแต่ต้น','S1 ช่วงต้น–กลาง','S2 กลางเกม','S3 ปลายเกม'];
 const byId={},parent={};(function w(n,p){byId[n.id]=n;if(p)parent[n.id]=p;n.c.forEach(k=>w(k,n))})(TREE,null);
 const all=Object.values(byId);
-let castSel=null,collapsed=new Set(),filt={ok:1,wip:1,todo:1,wait:1},showX=true,onlyChoice=false,sel=null,stageSel=null,q='',curStage=null;
+let mode='tree',castSel=null,collapsed=new Set(),filt={ok:1,wip:1,todo:1,wait:1},showX=true,onlyChoice=false,sel=null,stageSel=null,q='',curStage=null;
 /* ยุบตั้งต้น: แสดงถึงระดับ 2 (ชื่อเส้น + เหตุการณ์แรก) */
 function collapseDeep(d){collapsed=new Set();(function w(n,l){if(n.c.length&&l>=d)collapsed.add(n.id);n.c.forEach(k=>w(k,l+1))})(TREE,0)}
 collapseDeep(2);
@@ -123,7 +141,7 @@ function build(){
   world.querySelectorAll('.node,.elab,.xlab').forEach(x=>x.remove());els={};
   for(const n of all){
     const e=document.createElement('div');e.className='node';e.dataset.id=n.id;e.dataset.k=n.k;e.dataset.s=n.s;
-    e.innerHTML=`<i class="st"></i><b>${esc(n.t)}</b>${n.sp>=2?`<small>สปอยล์ S${n.sp}</small>`:''}${WHO[n.id]?`<span class="wh">👥${WHO[n.id].length}</span>`:''}`;
+    e.innerHTML=`<i class="st"></i><b>${esc(n.t)}</b>${n.sp>=2?`<small>สปอยล์ S${n.sp}</small>`:''}${n.k==='choice'?'<small style="color:#ffb347">เลือกได้ทางเดียว</small>':''}${WHO[n.id]?`<span class="wh">👥${WHO[n.id].length}</span>`:''}`;
     if(n.c.length){const t=document.createElement('span');t.className='tog';t.dataset.t=n.id;e.append(t)}
     e.onclick=ev=>{if(ev.target.dataset.t){toggle(n.id);return}select(n.id)};
     world.append(e);els[n.id]=e;
@@ -131,6 +149,7 @@ function build(){
 }
 function toggle(id){collapsed.has(id)?collapsed.delete(id):collapsed.add(id);layout()}
 function layout(){
+  if(mode==='tl'){renderTL();return}
   const vis=[];let rows={};
   /* วัดความสูง */
   const walk=(n,d)=>{vis.push([n,d]);for(const k of visibleKids(n))walk(k,d+1)};walk(TREE,0);
@@ -202,6 +221,36 @@ document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{const f=b.datase
 $('q').oninput=e=>{q=e.target.value.trim().toLowerCase();if(q)all.filter(matches).forEach(n=>{for(let p=parent[n.id];p;p=parent[p.id])collapsed.delete(p.id)});layout()};
 function sizeBar(){document.documentElement.style.setProperty('--bh',$('head').offsetHeight+'px')}
 addEventListener('resize',sizeBar);sizeBar();
+/* ---------- มุมมองเดินคู่ขนาน: แถว = เส้นเรื่อง (เดินพร้อมกันทุกเส้น) · คอลัมน์ = หมุดเรื่อง · ⑂ = เลือกได้ทางเดียว ---------- */
+const LANES=TREE.c,LC=['#3a2f6e','#1f4a5c','#5c2f2f','#4a4a1f','#1f5c3a','#4a2f5c','#5c3f1f'];
+const laneOf=n=>{let x=n;while(parent[x.id]&&parent[x.id]!==TREE)x=parent[x.id];return x};
+const isOpt=n=>{const p=parent[n.id];return p&&p!==TREE&&(p.k==='choice'||n.k==='outcome'||n.k==='end')};
+const optsOf=n=>n.c.filter(isOpt);
+function renderTL(){
+  const host=$('tl'),cols=[{id:'all',t:'ตลอดเกม'},...D.STAGES],ci=id=>Math.max(0,cols.findIndex(c=>c.id===(id||'all')));
+  const main=all.filter(n=>n!==TREE&&!LANES.includes(n)&&!isOpt(n)&&filt[n.s]&&(!onlyChoice||n.k==='choice'||n.k==='end')),cell={};
+  for(const n of main){const L=LANES.indexOf(laneOf(n)),k=L+'_'+ci(n.g);(cell[k]||=[]).push(n)}
+  let h=`<div class="wrap" style="grid-template-columns:150px repeat(${cols.length},minmax(190px,auto))"><div></div>`+cols.map(c=>`<div class="tl-h ${c.id===curStage?'cur':''} ${c.id===stageSel?'sel':''}" data-st="${c.id}">${esc(c.t)}${c.id===curStage?'<br><small style="color:#ffd166">● ตอนนี้ในเซฟ</small>':''}</div>`).join('');
+  LANES.forEach((ln,L)=>{h+=`<div class="tl-l" style="--lc:${LC[L%7]};--lb:${LC[L%7]}ff" data-id="${ln.id}">${esc(ln.t)}</div>`;
+    cols.forEach((c,C)=>{h+=`<div class="tl-c">`+(cell[L+'_'+C]||[]).map(n=>{const o=optsOf(n).filter(x=>filt[x.s]),dim=(stageSel&&n.g!==stageSel)||(q&&!matches(n))||(castSel&&!(WHO[n.id]||[]).some(w=>w[0]===castSel));
+      return `<div class="node ${n.id===sel?'sel':''} ${dim?'dim':''}" data-id="${n.id}" data-k="${n.k}" data-s="${n.s}"><i class="st"></i><b>${esc(n.t)}</b>${n.sp>=2?`<small>สปอยล์ S${n.sp}</small>`:''}${WHO[n.id]?`<span class="wh">👥${WHO[n.id].length}</span>`:''}${o.length?`<div class="opts"><i>${n.k==='choice'?'⑂ เลือกได้ทางเดียว':'↳ ผลที่ตามมา (ขึ้นกับการกระทำ)'}</i>${o.map(x=>`<span class="opt" data-id="${x.id}" data-k="${x.k}">${esc(x.lab||x.t)}</span>`).join('')}</div>`:''}</div>`}).join('')+`</div>`})});
+  h+=`<svg id="tlsvg"></svg></div>`;host.innerHTML=h;
+  host.onclick=e=>{const o=e.target.closest('.opt'),nd=e.target.closest('.node'),hd=e.target.closest('.tl-h'),lb=e.target.closest('.tl-l');
+    if(o){select(o.dataset.id);return}if(nd){select(nd.dataset.id);return}if(lb){select(lb.dataset.id);return}
+    if(hd){stageSel=stageSel===hd.dataset.st?null:hd.dataset.st;stBar.querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x.dataset.id===stageSel));renderTL()}};
+  /* เส้นลำดับในเส้นเดียวกัน (ทึบ) + เส้นข้ามเส้น (ประฟ้า) */
+  requestAnimationFrame(()=>{const w=host.querySelector('.wrap'),svg2=$('tlsvg');if(!w)return;const wr=w.getBoundingClientRect();svg2.setAttribute('width',w.scrollWidth);svg2.setAttribute('height',w.scrollHeight);
+    const rc=id=>{const e=w.querySelector(`.tl-c .node[data-id="${id}"]`);if(!e)return null;const b=e.getBoundingClientRect();return{l:b.left-wr.left,r:b.right-wr.left,t:b.top-wr.top,b:b.bottom-wr.top,cx:(b.left+b.right)/2-wr.left,cy:(b.top+b.bottom)/2-wr.top}};
+    const mainId=id=>{const n=byId[id];return n&&isOpt(n)?parent[id].id:id};let out='';
+    const arrow=(a,b,col,dash,w2)=>{if(!a||!b)return;let x1,y1,x2,y2,d;if(b.l>a.r-4){x1=a.r;y1=a.cy;x2=b.l;y2=b.cy;const m=(x1+x2)/2;d=`M${x1} ${y1}C${m} ${y1} ${m} ${y2} ${x2} ${y2}`}else{const down=b.cy>a.cy;x1=a.cx;y1=down?a.b:a.t;x2=b.cx;y2=down?b.t:b.b;const m=(y1+y2)/2;d=`M${x1} ${y1}C${x1} ${m} ${x2} ${m} ${x2} ${y2}`}
+      out+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w2}" ${dash?'stroke-dasharray="5 5"':''} opacity=".8"/>`};
+    for(const n of main){const p=parent[n.id];if(p&&p!==TREE&&!LANES.includes(p)&&!isOpt(n))arrow(rc(p.id),rc(n.id),'#8a7fe0',false,1.8)}
+    if(showX)for(const [a,b] of D.LINKS)arrow(rc(mainId(a)),rc(mainId(b)),'#7fd6ff',true,1.3);
+    svg2.innerHTML=out});
+  $('count').textContent=`มุมมองเดินคู่ขนาน · ${main.length} กล่องหลัก · ⑂ ${main.filter(n=>n.k==='choice').length} จุดตัดสินใจ`}
+function setMode(m){mode=m;$('mTree').classList.toggle('on',m==='tree');$('mTl').classList.toggle('on',m==='tl');$('view').style.display=m==='tree'?'':'none';$('tl').style.display=m==='tl'?'block':'none';$('stages').style.display=m==='tl'?'none':'';sizeBar();
+  const hn=$('hint');hn.style.display='block';hn.innerHTML=m==='tl'?'🛤 <b>ทุกเส้น (แถว) เดินไปพร้อมกัน</b> — ผู้เล่นไม่ต้องเลือกเส้นเดียว · เลือกเฉพาะที่กล่อง <b style="color:#ffb347">⑂ เลือกได้ทางเดียว</b> · ลูกศรทึบ = ลำดับในเส้นเดียวกัน · เส้นประฟ้า = เส้นหนึ่งส่งผลต่ออีกเส้น':'🌳 มุมมองกิ่ง: กิ่งส้ม ⑂ = เลือกทางเดียว · กิ่งอื่น = เหตุการณ์ที่เกิดต่อกัน (ไม่ต้องเลือก) · สลับเป็น "🛤 เดินคู่ขนาน" เพื่อดูว่าเส้นไหนเดินพร้อมกัน';clearTimeout(hn._t);hn._t=setTimeout(()=>hn.style.display='none',9000);layout();if(m==='tree')fit()}
+$('mTree').onclick=()=>setMode('tree');$('mTl').onclick=()=>setMode('tl');
 build();layout();fit();
 if(curStage)expandForStage(curStage),layout();
 window.StoryMap={openCast,select,toggle,layout,byId};
