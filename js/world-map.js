@@ -597,14 +597,20 @@
     const g = WS.game(), C = window.Crossroads; if (!C || !g) return;
     for (const m of C.expire(g, S)) { log(m); toast(m) }
     const e = C.pick(g, S, id); if (!e) return;
-    const why = c => c.ok?.(g, S) || '';
-    const v = await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who)}<p><small>${esc(e.cast || '')}</small></p><p>${esc(e.text)}</p><div style="clear:both"></div><p><small>ทุกทางเลือกมีราคา — ไม่มีถูกหรือผิด</small></p>`,
-      [...e.choices.map((c, i) => ({ label: c.label + (why(c) ? ' (' + why(c) + ')' : ''), value: i, disabled: !!why(c) })), { label: 'ยังไม่ตัดสินใจ', value: -1, ghost: true }]);
+    const lab = (c, i) => c.label + (C.hint(g, S, e, i) ? ' · ' + C.hint(g, S, e, i) : '') + (C.why(g, S, e, i) ? ' (' + C.why(g, S, e, i) + ')' : '');
+    const v = await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who)}<p><small>${esc(e.cast || '')}</small></p><p>${esc(e.text)}</p><div style="clear:both"></div><p><small>ทุกทางเลือกมีราคา — ⚔ = ต่อสู้จริง · 🎲 = ทอยตามสเตตัสของคุณ · 🎒 = ใช้ของจริง</small></p>`,
+      [...e.choices.map((c, i) => ({ label: lab(c, i), value: i, disabled: !!C.why(g, S, e, i) })), { label: 'ยังไม่ตัดสินใจ', value: -1, ghost: true }]);
     if (v == null || v < 0) return;
-    const r = C.resolve(g, S, e, v, { passTime });
-    if (r.blocked) { toast(r.lines[0]); return }
-    log(e.icon + ' ' + e.title + ' — ' + r.choice); WS.commit();
-    await modal(`<h2>${e.icon} ${esc(e.title)}</h2><p><b>${esc(r.choice)}</b></p>${r.lines.map(l => `<p>${esc(l)}</p>`).join('')}`);
+    const b = C.begin(g, S, e, v, { passTime });
+    if (b.blocked) { toast(b.lines[0]); return }
+    let lines = b.lines, outcome = null;
+    if (b.pending) {
+      await modal(`<h2>${e.icon} ${esc(e.title)}</h2><p><b>${esc(b.choice)}</b></p>${b.lines.map(l => `<p>${esc(l)}</p>`).join('')}<p><small>⚔ เข้าสู่การต่อสู้</small></p>`, [{ label: '⚔ สู้', value: true }]);
+      const sp = b.pending; outcome = await battle(sp.foe, sp.dang ?? .6, { n: sp.n, obj: sp.obj ?? '', ambush: true });
+      const r = C.settle(g, S, e, v, outcome === 'win' ? 'win' : outcome === 'flee' ? 'flee' : 'lose', { passTime }); lines = b.checkFailed ? [b.lines[0], ...r.lines] : r.lines;
+    }
+    log(e.icon + ' ' + e.title + ' — ' + (b.choice || '') + (outcome ? ' (' + ({ win: 'ชนะ', flee: 'หนี' })[outcome] + (outcome === 'win' || outcome === 'flee' ? '' : 'แพ้') + ')' : '')); WS.commit();
+    await modal(`<h2>${e.icon} ${esc(e.title)}</h2><p><b>${esc(b.choice || '')}</b></p>${lines.map(l => `<p>${esc(l)}</p>`).join('')}`);
   }
 
   window.WMCrossroads = crossroadsAt; window.WMFinale = finaleScene;   /* ใช้ทดสอบ/ดีบัก */
@@ -975,7 +981,7 @@
     const title = (o.boss ? 'บอส · ' : elite ? 'ยอดฝีมือ · ' : '') + (BOSS_NAME[foe] && o.boss ? BOSS_NAME[foe] : '');
     const poi = o.boss ? (destOf()?.id || '') : '';
     /* a group: more monsters deeper in the fog, at night and in ambushes; the boss brings two of the local monsters */
-    const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
+    const n = o.n ? o.n : o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
     const group = RS ? RS.group.slice() : [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
     /* v98.250 · a varied group: kinds not yet in the group come first, no kind appears more than twice, and now and then a wanderer from a neighbouring land joins (it used to be 60 % the leader's kind again) */
     const roster = [...new Set(o.roster || G.FOES[here.biome] || G.FOES.grass)], wander = o.roster ? [] : ['bandit', 'wolf', 'bat', 'kobold', 'slime'].filter(k => !roster.includes(k)), used = { [foe]: 1 };
@@ -988,7 +994,7 @@
     const tut = RS ? '' : (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
     /* v97.22 · battle objectives: a night camp raid → hold the camp banner · an ambush → sometimes break out to the map edge
        · an elite group → bring down its leader · now and then: just hold out. The prologue and bosses always fight to the end. */
-    const obj = RS ? RS.obj : tut || o.boss ? '' : o.camp ? 'defend:4' : o.ambush && Math.random() < .35 ? 'escape' : elite && n > 2 && Math.random() < .6 ? 'leader' : Math.random() < .15 ? 'survive:5' : '';
+    const obj = RS ? RS.obj : o.obj != null ? o.obj : tut || o.boss ? '' : o.camp ? 'defend:4' : o.ambush && Math.random() < .35 ? 'escape' : elite && n > 2 && Math.random() < .6 ? 'leader' : Math.random() < .15 ? 'survive:5' : '';
     const OBJ_GOLD = { defend: 1.3, escape: .8, leader: 1.25, survive: 1.2 }, OBJ_NAME = { defend: 'ป้องกันค่าย', escape: 'ฝ่าวงล้อม', leader: 'ล้มหัวหน้า', survive: 'ยื้อไว้' };
     fr.src = `battle-field.html?battle=1&embed=1${tut}${obj ? '&obj=' + obj : ''}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
     /* v98.340 · remember this fight (the temporary save re-opens it); a resumed one loads the same field from the snapshot's URL */

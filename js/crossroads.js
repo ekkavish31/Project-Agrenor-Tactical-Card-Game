@@ -187,6 +187,57 @@
         { label: '"แบ่งปันเฉพาะคนที่ไว้ใจได้"', run: c => { setf(c.g, 'lunaChoice', 'share'); bump(c.g, 'bond_luna'); bump(c.g, 'mineInfo'); rep('light', 1, 'แบ่งผลวิจัยกับผู้เฝ้าแสง'); lean(c.g, 'light'); return ['ลูน่าส่งสำเนาให้ผู้เฝ้าแสงที่ธอร์นวอตช์ ผู้เฝ้าตอบกลับด้วยทิศทางที่เธอไม่เคยเห็นในแผนที่', '✦ ได้ข้อมูลเรื่องเหมืองเพิ่ม'] } }
       ] }
   ];
+  /* ================= v98.490 · ผลของทางเลือก "ผ่านระบบเกมจริง" (ไม่ใช่แค่กดปุ่ม) =================
+     ทางเลือกหนึ่งมีได้ 3 แบบ (ใส่ใน MECH[อีเวนต์][ลำดับทางเลือก]) — ถ้าไม่มีใน MECH ก็เป็นข้อความธรรมดาเหมือนเดิม:
+       fight: เปิดการต่อสู้จริงในสนามรบแบบการ์ด (ศัตรู/จำนวน/เป้าหมาย: ป้องกันค่าย defend:N · ฝ่าวงล้อม escape · ล้มหัวหน้า leader) → win / lose / flee
+       check: ทอยตามสเตตัสของตัวเอก (strength/endurance/precision/knowledge + เลเวลหาร 2 + โบนัสสหายในทีม) เทียบ dc — โชว์โอกาสบนปุ่ม · พลาดแล้วอาจต้องสู้ (failFight)
+       need : ใช้ของจริง (วัตถุดิบหีบ/โรงตีเหล็ก materials · ของในกระเป๋า bag) — ไม่มีของ = กดไม่ได้
+     win/lose = 'run' (ใช้ผลเดิมของทางเลือก) หรือฟังก์ชัน c=>lines · ผลแพ้ต้องมีราคาที่เห็นได้ (ชื่อเสียง เงิน ของหาย Mip ดำขึ้น) ไม่ใช่แค่ข้อความ */
+  const STAT_NAME = { strength: 'พละกำลัง', endurance: 'ความทนทาน', precision: 'ความแม่นยำ', knowledge: 'ความรู้' };
+  const STAT_BONUS = { sigrid: { strength: 2 }, bram: { strength: 2, endurance: 1 }, kier: { precision: 2 }, luna: { knowledge: 2 } };
+  const MAT_NAME = { iron: 'เหล็ก', coal: 'ถ่าน', wood: 'ไม้', food: 'เสบียง' };
+  const itemName = k => AD()?.GOODS?.[k]?.name || AD()?.CONSUMABLES?.[k]?.name || k;
+  const statOf = (g, S, k) => { const c = g.village?.character || {}; let v = num(c.stats?.[k]) + Math.floor(num(c.level, 1) / 2); for (const [who, b] of Object.entries(STAT_BONUS)) if (inParty(S, who) && b[k]) v += b[k]; return v };
+  const chanceOf = (g, S, ck) => Math.max(10, Math.min(92, Math.round(50 + (statOf(g, S, ck.stat) - ck.dc) * 7)));
+  const bagOf = g => g.village?.bag || {}, matsOf = g => g.village?.materials || {};
+  function needWhy(g, S, nd) {
+    if (!nd) return ''; for (const [k, n] of Object.entries(nd.mat || {})) if (num(matsOf(g)[k]) < n) return 'ต้องมี' + MAT_NAME[k] + ' ' + n + ' (มี ' + num(matsOf(g)[k]) + ')';
+    for (const [k, n] of Object.entries(nd.item || {})) if (num(bagOf(g)[k]) < n) return 'ต้องมี' + itemName(k) + ' ' + n;
+    if (nd.any && !nd.any.some(k => num(bagOf(g)[k]) > 0)) return 'ต้องมี' + nd.any.map(itemName).join(' หรือ ') + ' (หาได้จากการล่า/ป่า)'; return '' }
+  function needTake(g, nd) { if (!nd) return; for (const [k, n] of Object.entries(nd.mat || {})) matsOf(g)[k] = num(matsOf(g)[k]) - n; for (const [k, n] of Object.entries(nd.item || {})) { bagOf(g)[k] -= n; if (bagOf(g)[k] <= 0) delete bagOf(g)[k] } if (nd.any) { const k = nd.any.find(x => num(bagOf(g)[x]) > 0); bagOf(g)[k]--; if (bagOf(g)[k] <= 0) delete bagOf(g)[k] } }
+  const needText = nd => [...Object.entries(nd.mat || {}).map(([k, n]) => MAT_NAME[k] + '×' + n), ...Object.entries(nd.item || {}).map(([k, n]) => itemName(k) + '×' + n), ...(nd.any ? [nd.any.map(itemName).join('/') + '×1'] : [])].join(' + ');
+  const F_ = (foe, n, dang, obj, intro, win, lose, flee) => ({ foe, n, dang, obj, intro, win, lose, flee });
+  const MECH = {
+    fugitive: {
+      0: { fight: F_('bandit', 3, .55, '', 'ทหารตามล่าบุกค้นโรงเตี๊ยมกลางดึก — เชลยตัวสั่นอยู่หลังคุณ ต้องปกป้องเขา', 'run', c => { rep('crown', 1, 'ปกป้องเชลยไม่สำเร็จ'); rep('village', -1, 'โรงเตี๊ยมถูกค้น'); return ['ทหารลากเชลยออกไปทั้งที่เขามองมาทางคุณ — โรงเตี๊ยมถูกค้นจนพังข้าวของ'] }) },
+      2: { check: { stat: 'precision', dc: 9, win: 'run', lose: c => { gold(c.S, -10); rep('crown', 1, 'ทหารสกัดกลางทาง'); return ['ทหารสกัดเรือกลางทาง คุณเสียค่าผ่านทาง 10 💰 และเชลยถูกจับตัวไป'] } } }
+    },
+    callup: { 2: { fight: F_('wolf', 3, .5, 'escape', 'หนุ่มวิ่งตามคุณเข้าป่า แต่ฝูงหมาป่าได้กลิ่นเลือดจากแผลเก่า — ต้องฝ่าไปให้พ้น', 'run', c => { rep('garrison', 1, 'ผู้ถูกเกณฑ์ถูกจับระหว่างหนี'); rep('village', -1, 'ผู้ถูกเกณฑ์ถูกจับระหว่างหนี'); return ['คุณพ้นมาได้ แต่หนุ่มหลงทางในป่า ทหารตรวจพบเขาในเช้าวันถัดมา'] }) } },
+    firstSick: {
+      0: { check: { stat: 'knowledge', dc: 8, win: c => { rep('village', 1, 'กักตัวผู้ติดเชื้อสำเร็จ'); lean(c.g, 'village'); return ['คุณจำวิธีเช็ดตัวด้วยสมุนไพรกับการแยกผ้าได้ — สามวันต่อมาอาการสงบลงเอง'] }, lose: c => { rep('village', -1, 'กักตัวผู้ติดเชื้อล้มเหลว'); return ['คุณไม่แน่ใจว่าอะไรได้ผล เขาเริ่มพึมพำเรื่องเสียงขุด ครอบครัวกลัวจนไม่กล้าเข้าใกล้ — ต้องหาทางอื่นแล้ว'] } } },
+      1: { need: { any: ['herb', 'swampHerb'] } }
+    },
+    mayaBroker: { 2: { fight: F_('bandit', 3, .8, 'leader', 'มือถุงมือดำไม่ได้มาคนเดียว — พวกเขาจะเอาถุงไปโดยไม่จ่ายถ้าคุณไม่ล้มหัวหน้า', 'run', c => { const id = takeMaya(c.g); if (id) rep('shadow', -1, 'ถูกปล้น ❖'); return ['คุณแพ้ พวกเขายึด ❖ ไปโดยไม่จ่ายสักเหรียญ' + (id ? ' — ' + (AD().GOODS[id]?.name || '') : '')] }) } },
+    corvinInvite: { 1: { check: { stat: 'precision', dc: 8, win: 'run', lose: c => { rep('supply', -2, 'ตบตาคอร์วินไม่แนบเนียน'); setf(c.g, 'corvinSuspect', true); return ['รอยยิ้มของคอร์วินหายไปครึ่งหนึ่ง "เจ้าเล่นละครไม่เก่งนัก" — เขาสั่งให้จดชื่อคุณไว้ในบัญชีอีกเล่มหนึ่ง'] } } } },
+    convoy: { 1: { check: { stat: 'precision', dc: 10, win: 'run', failFight: F_('bandit', 3, .7, 'escape', 'ผู้คุมขบวนเห็นเงาของคุณบนเนิน — พวกเขาหันม้ามา ต้องฝ่าออกไป', 'run', c => { rep('garrison', -1, 'ถูกจับได้ว่าสะกดรอยขบวน'); return ['คุณหลุดออกมาได้ แต่ผู้คุมจำหน้าคุณได้ — ด่านจะไม่ต้อนรับคุณเหมือนเดิม'] }) } } },
+    moonRite: { 1: { fight: F_('murk', 2, .7, 'defend:3', 'คืนจันทร์ม่วง สัตว์รอยหมองดมกลิ่น Mip เข้ามาในแสงเทียน — ต้องยืนระหว่างพวกมันกับเจ้าตัวเล็ก', c => { const m = MS().mip(c.g); m.dark = Math.max(0, num(m.dark) - 3); const id = AD()?.MAYA_OF?.murk; if (id) { c.g.village.bag ||= {}; c.g.village.bag[id] = num(c.g.village.bag[id]) + 1 } return ['คุณยืนคุ้ม Mip จนรุ่งเช้า สัตว์รอยหมองตัวสุดท้ายล้มลงข้างเทียน — ขนของ Mip ดูอ่อนลงเล็กน้อย', '✦ ได้ ' + (AD()?.GOODS?.[id]?.name || '❖')] }, c => { const m = MS().mip(c.g); m.dark = Math.min(100, num(m.dark) + 4); return ['พวกมันแตะตัว Mip ได้ก่อนคุณจะไล่ทัน — ขนของเจ้าตัวเล็กมืดลงอย่างเห็นได้ชัด'] }) } },
+    scent: { 2: { check: { stat: 'precision', dc: 9, win: 'run', lose: c => { takeMaya(c.g); rep('shadow', 1, 'ลอร์ริกเอา ❖ ไป'); return ['ลอร์ริกมองมือที่ซ่อนอยู่ใต้เสื้อคลุมของคุณ แล้วหยิบ ❖ ออกจากถุงไปหนึ่งชิ้นโดยไม่พูดอะไร "ข้าไม่ขโมยหรอก… ข้าแค่ยืม"'] } } } },
+    armor: { 0: { need: { mat: { iron: 2, coal: 1 } } } },
+    sickRefugee: { 0: { fight: F_('murk', 3, .8, 'defend:4', 'ระหว่างที่คุณพยุงเธอ สัตว์รอยหมองหลายตัวถูกอาการของเธอดึงเข้ามาที่ค่าย — ต้องกันไว้จนกว่าจะถึงเรือนพยาบาล', 'run', c => { rep('village', -1, 'ค่ายถูกสัตว์รอยหมองบุก'); gold(c.S, -10); return ['คุณช่วยเธอออกมาได้ แต่ค่ายเสียหาย ต้องจ่ายค่าซ่อม 10 💰 และชาวค่ายมองคุณด้วยความกลัว'] }) } },
+    languageLeaf: { 2: { check: { stat: 'knowledge', dc: 9, win: c => { rep('crown', 1, 'ถอดจารึกเอง'); bump(c.g, 'ruinStudy'); setf(c.g, 'studyHalf', true); return ['คุณนั่งเทียบลายทั้งคืนจนเจอรูปแบบที่ซ้ำ — บอกโอเดตต์ครึ่งหนึ่ง และเก็บอีกครึ่งไว้เป็นข้อสันนิษฐานของตัวเอง', '✦ ความรู้เรื่องวิธีของคนโบราณเพิ่ม'] }, lose: c => { setf(c.g, 'studyHalf', true); return ['คุณเทียบลายไม่ออก เลยบอกเท่าที่รู้ — โอเดตต์พยักหน้าเหมือนรู้ว่าไม่มีอะไรเหลือ'] } } } },
+    gouge: { 2: { fight: F_('bandit', 3, .6, 'leader', 'ลูกน้องของพ่อค้าที่ถูกเปิดโปงมาเคาะประตูหลังเลิกตลาด — ต้องล้มหัวหน้าก่อนจะมีใครบาดเจ็บ', 'run', c => { rep('merchants', -3, 'เปิดโปงแล้วถูกเอาคืน'); rep('village', -1, 'เปิดโปงแล้วถูกเอาคืน'); return ['คุณเสียท่า ลูกน้องฉีกกระดาษหลักฐานทิ้งต่อหน้า — ตลาดเงียบลงเหมือนไม่มีเรื่องอะไรเกิดขึ้น'] }) } },
+    lightPass: { 0: { fight: F_('shadowWolf', 2, .8, 'defend:3', 'ระหว่างที่คุณรับรองผู้เฝ้าแสง สัตว์เงาสองตัวบุกประตูข้างของค่าย — ต้องกันไว้ให้พวกเขาผ่าน', 'run', c => { rep('guild', -2, 'ค่ายถูกบุกเพราะรับรองคนแปลกหน้า'); return ['ผู้เฝ้าแสงผ่านไปได้ แต่ประตูข้างพัง เรนัลด์ไม่พูดอะไรนอกจากชี้ไปที่รอยกรงเล็บบนไม้'] }) } },
+    sigrid: { 1: { check: { stat: 'knowledge', dc: 9, win: 'run', lose: c => { setf(c.g, 'sigridChoice', 'leave'); rep('north', 1, 'ซิกริดตัดสินใจกลับ'); return ['คุณคิดหาทางไม่ออก ซิกริดยิ้มบาง ๆ "ไม่เป็นไร — ข้ากลับไปดูแลบ้านก่อน"'] } } } },
+    bram: { 0: { fight: F_('bandit', 3, .6, 'leader', 'โรงนาข้างบ้านแม่ถูกพวกโจรยึดเป็นที่ซ่อน — เพื่อนเก่าของบรัมอยู่ข้างใน ต้องล้มหัวหน้าก่อนจะคุยกับเขาได้', 'run', c => { setf(c.g, 'bramChoice', 'ignore'); return ['ในที่สุดเพื่อนเก่าก็หนีออกทางหลังโรงนาไปก่อนที่คุณจะเข้าไปถึง — บรัมไม่พูดอะไรตลอดทางกลับ'] }) } },
+    kier: { 2: { fight: F_('murk', 2, .7, '', 'เซอร์ดาร์เรนพาเคียร์กับคุณลงตรวจชั้นบน — สัตว์รอยหมองสองตัวโผล่จากโพรง', 'run', c => { setf(c.g, 'kierChoice', 'look'); return ['เคียร์เจ็บแขนเล็กน้อย แต่เขาไม่ถอย — เขาเลือกอยู่กับคุณต่อ ด้วยสีหน้าที่คุณอ่านไม่ออก'] }) } }
+  };
+  /* MECH ผูกเข้ากับทางเลือก: win:'run' = ใช้ผลเดิม */
+  for (const e of EVENTS) for (const [i, m] of Object.entries(MECH[e.id] || {})) if (e.choices[+i]) e.choices[+i].mech = m;
+  const mechOf = (e, i) => e.choices[i]?.mech || null;
+  const modeOf = m => m ? (m.fight ? 'fight' : m.check ? 'check' : m.need ? 'need' : '') : '';
+  /* ข้อความบนปุ่ม: ⚔ ต่อสู้ · 🎲 โอกาส % (สเตตัส) · 🎒 ใช้ของ */
+  function hint(g, S, e, i) { const m = mechOf(e, i); if (!m) return ''; if (m.fight) return '⚔ ต่อสู้ ' + (m.fight.obj ? '(' + ({ defend: 'ป้องกัน', escape: 'ฝ่าวงล้อม', leader: 'ล้มหัวหน้า' })[m.fight.obj.split(':')[0]] + ')' : ''); if (m.check) return '🎲 ' + chanceOf(g, S, m.check) + '% (' + STAT_NAME[m.check.stat] + (m.check.failFight ? ' · พลาด = สู้' : '') + ')'; if (m.need) return '🎒 ใช้ ' + needText(m.need); return '' }
+
   const byId = Object.fromEntries(EVENTS.map(e => [e.id, e]));
 
   /* ---------- กลไก ---------- */
@@ -197,9 +248,29 @@
   /* วันละไม่เกิน 1 อีเวนต์ · เรียงตามลำดับในรายการ */
   function pick(g, S, town) { if (!MS() || !g) return null; if (num(flag(g, 'crDay')) === day(g)) return null; return EVENTS.find(e => eligible(g, S, town, e)) || null }
   function record(g, e, i, label) { setf(g, key(e.id), i); setf(g, 'crDay', day(g)); try { T()?.log(g, 'cr.' + e.id, e.icon + ' ' + e.title + ' — ' + label) } catch (er) { } }
+  /* ขั้น 1: ตรวจเงื่อนไข/ใช้ของ/ทอย — ถ้าต้องสู้คืน pending (ผู้เรียกเปิดสนามรบแล้วเรียก settle) */
+  const modeLabel = { win: ' (ชนะ)', lose: ' (แพ้)', flee: ' (หนี)' };
+  function begin(g, S, e, i, ctx = {}) {
+    const ch = e.choices[i]; if (!ch) return { lines: [] }; const m = mechOf(e, i);
+    const w = ch.ok?.(g, S) || (m?.need ? needWhy(g, S, m.need) : ''); if (w) return { lines: [w], blocked: true };
+    const c = { g, S, ctx };
+    if (m?.need) needTake(g, m.need);
+    if (m?.fight) return { pending: m.fight, lines: [m.fight.intro], choice: ch.label };
+    if (m?.check) { const chance = chanceOf(g, S, m.check), roll = Math.round(((ctx.rng || Math.random)()) * 100), win = roll < chance, info = '🎲 ' + STAT_NAME[m.check.stat] + ' ' + statOf(g, S, m.check.stat) + ' / ต้อง ' + m.check.dc + ' — โอกาส ' + chance + '% → ' + (win ? 'สำเร็จ' : 'พลาด');
+      if (!win && m.check.failFight) return { pending: m.check.failFight, lines: [info, m.check.failFight.intro], choice: ch.label, checkFailed: true };
+      const fn = win ? m.check.win : m.check.lose, lines = [info, ...((fn === 'run' ? ch.run(c) : fn(c)) || [])]; record(g, e, i + 1, ch.label + (win ? ' (สำเร็จ)' : ' (พลาด)')); return { lines, choice: ch.label, roll: { chance, win } } }
+    const lines = ch.run(c) || []; record(g, e, i + 1, ch.label); return { lines, choice: ch.label };
+  }
+  /* ขั้น 2: ผลการต่อสู้ ('win' | 'lose' | 'flee') */
+  function settle(g, S, e, i, outcome, ctx = {}) {
+    const ch = e.choices[i], m = mechOf(e, i), spec = m?.fight || m?.check?.failFight; if (!spec) return { lines: [] }; const c = { g, S, ctx };
+    const fn = outcome === 'win' ? spec.win : outcome === 'flee' ? (spec.flee || spec.lose) : spec.lose, lines = (fn === 'run' ? ch.run(c) : fn(c)) || [];
+    record(g, e, i + 1, ch.label + (modeLabel[outcome] || '')); return { lines, choice: ch.label, outcome };
+  }
+  /* แบบรวม (เทสต์/ตัวจำลอง): ถ้ามีการต่อสู้ให้ ctx.battle(spec) ตอบ 'win'|'lose'|'flee' (ไม่มี = ถือว่าชนะ) */
   function resolve(g, S, e, i, ctx = {}) {
-    const ch = e.choices[i]; if (!ch) return { lines: [] }; const w = ch.ok?.(g, S); if (w) return { lines: [w], blocked: true };
-    const lines = ch.run({ g, S, ctx }) || []; record(g, e, i + 1, ch.label); return { lines, choice: ch.label };
+    const b = begin(g, S, e, i, ctx); if (!b.pending) return b;
+    const out = ctx.battle ? ctx.battle(b.pending) : 'win', r = settle(g, S, e, i, out, ctx); r.lines = [...b.lines, ...r.lines]; return r;
   }
   /* หน้าต่างปิดแล้ว (ผ่านหมุด until) โดยไม่ตัดสินใจ → fallback เกิดเอง · คืนบรรทัดข่าว */
   function expire(g, S) {
@@ -215,7 +286,8 @@
   }
   const leans = g => Object.fromEntries(['light', 'shadow', 'crown', 'north', 'village'].map(k => [k, num(flag(g, 'lean_' + k))]));
 
-  const api = { EVENTS, byId, pick, resolve, expire, leans, done, mayaHeld, eligible };
+  const why = (g, S, e, i) => { const ch = e.choices[i], m = mechOf(e, i); return (ch?.ok?.(g, S)) || (m?.need ? needWhy(g, S, m.need) : '') };
+  const api = { why, MECH, STAT_NAME, chanceOf, statOf, hint, modeOf, needWhy, begin, settle, EVENTS, byId, pick, resolve, expire, leans, done, mayaHeld, eligible };
   root.Crossroads = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

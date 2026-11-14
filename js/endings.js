@@ -25,10 +25,10 @@
   const knowledge = g => num(flag(g, 'ruinStudy')) + (flag(g, 'studyKept') || flag(g, 'studyShared') ? 1 : 0);
   const helped = g => num(flag(g, 'infectedHelped')) + Math.floor(num(flag(g, 'campHelped')) / 2) + num(flag(g, 'clinicVisits')) + (num(flag(g, 'greed')) === 0 ? 1 : 0);
   function sideOptions(g) {
-    const L = leans(g), neutral = Math.abs(L.light - L.shadow) <= 1, third = neutral && L.village >= 1 && knowledge(g) >= 2 && helped(g) >= 2;
+    const L = leans(g), neutral = Math.abs(L.light - L.shadow) <= 2, third = neutral && L.village >= 1 && knowledge(g) >= 2 && helped(g) >= 2;
     return [
       { id: 'third', label: 'ทางที่สาม — เจรจาและปิดเหมือง', desc: 'ไม่เข้าข้างแสงหรือเงา · สงบศึกเปราะบาง · ranger กลับป่า', ok: third,
-        why: !neutral ? 'ต้องไม่เอนเอียงไปฝั่งแสงหรือเงามากเกินไป' : L.village < 1 ? 'ชาวบ้านยังไม่ไว้ใจพอ (เลือกช่วยหมู่บ้านมากขึ้น)' : knowledge(g) < 2 ? 'ยังรู้เรื่องวิธีของคนโบราณไม่พอ (ร่องรอยสำนักชายป่า)' : 'ยังช่วยคนไม่พอ (ผู้ติดเชื้อ/ผู้อพยพ)' },
+        why: !neutral ? 'ต้องไม่เอนเอียงไปฝั่งแสงหรือเงามากเกินไป (ต่างกันไม่เกิน 2 แต้ม)' : L.village < 1 ? 'ชาวบ้านยังไม่ไว้ใจพอ (เลือกช่วยหมู่บ้านมากขึ้น)' : knowledge(g) < 2 ? 'ยังรู้เรื่องวิธีของคนโบราณไม่พอ (ร่องรอยสำนักชายป่า)' : 'ยังช่วยคนไม่พอ (ผู้ติดเชื้อ/ผู้อพยพ)' },
       { id: 'light', label: 'เข้าข้างผู้เฝ้าแสง', desc: 'หยุดสงครามด้วยการบังคับ · Elu\'Mierwaa คุมชายแดน · ขมปนหวาน', ok: L.light >= 1, why: 'ผู้เฝ้าแสงยังไม่ไว้ใจคุณ (ช่วยพวกเขาหยุดการขุดอย่างสงบ)' },
       { id: 'shadow', label: 'เข้าข้างนักล่าเงา', desc: 'หยุดด้วยกำลัง · Duum\'Lorien ได้พลังเพิ่ม · มืด เปิดภาคต่อ', ok: L.shadow >= 1, why: 'นักล่าเงายังไม่ไว้ใจคุณ (ช่วยพวกเขาหาต้นตอ)' },
       { id: 'aldren', label: 'ช่วยอัลเดรนชนะก่อน', desc: 'ชนะแต่เสียหายหนัก · ผู้เฝ้าแสงเป็นศัตรู · ขม', ok: true, why: '' }

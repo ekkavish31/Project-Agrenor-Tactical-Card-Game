@@ -1,4 +1,4 @@
-/* v98.490 · node tools/sim-life.cjs [seed] [--write] — จำลอง "ชีวิตหนึ่งคน" ในโลกของเกม (แนว 1 in 8 billion: สุ่มคนธรรมดาหนึ่งคนแล้วดูว่าชีวิตเขาเดินผ่านเส้นเรื่องอย่างไร)
+/* v98.491 · node tools/sim-life.cjs [seed] [--write] — จำลอง "ชีวิตหนึ่งคน" ในโลกของเกม (แนว 1 in 8 billion: สุ่มคนธรรมดาหนึ่งคนแล้วดูว่าชีวิตเขาเดินผ่านเส้นเรื่องอย่างไร)
    ใช้โค้ดจริงของเกม (MainStory · Crossroads · StoryCast · StoryWorld · Endings · Progression · Factions · Titles) — ไม่ได้เขียนเรื่องใหม่ ผลคือสิ่งที่ระบบ "จะเกิดจริง" กับคนคนนี้
    ส่วนที่เป็นการสมมติ (ไม่ใช่โค้ดเกม): นิสัยของตัวละครตัดสินทางเลือก · EXP ต่อวัน · โอกาสเจอ ❖ · ผลสู้ดันเจี้ยน (อิงตาราง tools/simulate-hunger.cjs)
    --write = เขียนรายงานลง docs/sim/SIM-RUN-<seed>-TH.md */
@@ -40,7 +40,7 @@ function stageWatch() { const id = M.stage(g).id; if (id !== lastStage) { say(`\
 const lvl = () => g.village.character.level;
 
 say(`# บันทึกชีวิตจำลอง #${seedArg} — ${persona.name} (${persona.age} ปี · ${persona.back} แห่งเฟิร์นเวล)`);
-say(`> จำลองด้วยโค้ดจริงของเกม v98.490 (หมุดเรื่อง · ทางแยก · NPC · ราคา · ตอนจบ) — นิสัยตัดสินทางเลือก/EXP รายวัน/โอกาสเจอ ❖/ผลสู้ดันเจี้ยน เป็นการสมมติ ไม่ใช่การเล่นจริง\n`);
+say(`> จำลองด้วยโค้ดจริงของเกม v98.491 (หมุดเรื่อง · ทางแยก · NPC · ราคา · ตอนจบ) — นิสัยตัดสินทางเลือก/EXP รายวัน/โอกาสเจอ ❖/ผลสู้ดันเจี้ยน เป็นการสมมติ ไม่ใช่การเล่นจริง\n`);
 say(`**นิสัย** (0–1): ใจอ่อนต่อผู้คน ${traits.heart.toFixed(2)} · ภักดีราชสำนัก ${traits.crown.toFixed(2)} · ศรัทธา ${traits.faith.toFixed(2)} · อยากรู้ ${traits.curious.toFixed(2)} · โลภ ${traits.greed.toFixed(2)} · กล้าเสี่ยง ${traits.bold.toFixed(2)} · โชค ${persona.luck.toFixed(2)}\n`);
 say('## ช่วงที่ 1 — หลังบทนำ: ชีวิตธรรมดาที่เฟิร์นเวล');
 M.check(g); stageWatch();
@@ -49,6 +49,8 @@ const fedForms = [];
 function dailyLife() {
   /* ต่อสู้/ทำงานรายวัน → EXP */ const xp = Math.round(38 + rnd() * 50 + traits.bold * 25 + (lvl() < 6 ? 12 : 0)), ups = P.gainHero(g, xp); fights++;
   if (ups.length) { say(`⬆ วันที่ ${g.day}: เลเวล ${ups[ups.length - 1]}`, 1) }
+  { const c = g.village.character; c.stats ||= {}; const W = { strength: .3 + traits.bold, endurance: .3 + traits.heart * .5, precision: .3 + traits.crown * .2 + traits.greed * .3, knowledge: .3 + traits.curious + traits.faith * .3 }, tot = Object.values(W).reduce((a, b) => a + b, 0);   /* v98.491 · ใช้แต้มสเตตัสตามนิสัย (ทางเลือกทอยสเตตัสจะได้ต่างกันตามคน) */
+    while (c.points >= 1) { let r = rnd() * tot, k = 'strength'; for (const [kk, w] of Object.entries(W)) { r -= w; if (r <= 0) { k = kk; break } } c.stats[k] = (c.stats[k] || 0) + 1; c.points-- } }
   S.gold += Math.round(8 + rnd() * 18); g.day++;
   /* ชิ้นส่วน ❖ */ if (lvl() >= 3 && rnd() < .13 + persona.luck * .05) { const ids = Object.values(ADVENTURE_DATA.MAYA_OF).filter(k => !/Hunger/.test(k)), id = pick(ids); g.village.bag[id] = (g.village.bag[id] || 0) + 1; mayaHeld++; say(`✦ วันที่ ${g.day}: เจอ ${ADVENTURE_DATA.GOODS[id].name} ตอนล่า`, 1) }
   /* สหายร่วมทีม */ for (const [k, lv] of [['kier', 3], ['bram', 5], ['luna', 7], ['sigrid', 9]]) if (lvl() >= lv && !S.party.some(p => p.key === k) && S.party.length < 3 && rnd() < .25) { S.party.push({ key: k }); say(`🤝 วันที่ ${g.day}: ${({ kier: 'เคียร์', bram: 'บรัม', luna: 'ลูน่า', sigrid: 'ซิกริด' })[k]} ร่วมทีม`, 1) }
@@ -74,9 +76,10 @@ function visit(town) {
   const px = StoryWorld.describe(g, town, 2); if (px.length && rnd() < .5) say('🏷 ' + px.join(' · '), 1);
   const e = C.pick(g, S, town);
   if (e) {
-    const opts = e.choices.map((c, i) => ({ i, sc: score(TAGS[e.id][i]) , blocked: !!c.ok?.(g, S) })).sort((a, b) => (a.blocked - b.blocked) || (b.sc - a.sc)), ch = opts[0];
-    say(`⑂ **${e.icon} ${e.title}** — ${e.text.slice(0, 120)}…`, 1); for (const o of e.choices) say(`${o.i === undefined ? '' : ''}${o.label === e.choices[ch.i].label ? '👉 ' : '・'}${o.label}`, 2);
-    const r = C.resolve(g, S, e, ch.i, { passTime() { } }); for (const l of r.lines) say('→ ' + l, 2); say(`(เลือกจาก: ${Object.keys(TAGS[e.id][ch.i]).join('+')})`, 2);
+    const bias = i => { const m = e.choices[i].mech; if (!m) return 0; if (m.fight) return (traits.bold - .45) * .9; if (m.check) return (C.chanceOf(g, S, m.check) - 55) / 120; return 0 };
+    const opts = e.choices.map((c, i) => ({ i, sc: score(TAGS[e.id][i]) + bias(i), blocked: !!C.why(g, S, e, i) })).sort((a, b) => (a.blocked - b.blocked) || (b.sc - a.sc)), ch = opts[0];
+    say(`⑂ **${e.icon} ${e.title}** — ${e.text.slice(0, 120)}…`, 1); for (const [oi, o] of e.choices.entries()) say(`${oi === ch.i ? '👉 ' : '・'}${o.label}${C.hint(g, S, e, oi) ? '  〔' + C.hint(g, S, e, oi) + '〕' : ''}${C.why(g, S, e, oi) ? '  🔒 ' + C.why(g, S, e, oi) : ''}`, 2);
+    const r = C.resolve(g, S, e, ch.i, { passTime() { }, rng: rnd, battle: sp => { const need = 3 + sp.dang * 9 + sp.n * .8, p = clamp(.55 + (lvl() - need) * .08 + S.party.length * .05, .15, .95), o = rnd() < p ? 'win' : (rnd() < .3 ? 'flee' : 'lose'); say(`⚔ ต่อสู้จริง: ${sp.foe} ×${sp.n} (${sp.obj || 'สู้จนจบ'}) · โอกาสชนะประมาณ ${Math.round(p * 100)}% → **${({ win: 'ชนะ', lose: 'แพ้', flee: 'หนี' })[o]}**`, 2); return o } }); for (const l of r.lines) say('→ ' + l, 2); say(`(เลือกจาก: ${Object.keys(TAGS[e.id][ch.i]).join('+')})`, 2);
   }
   g.day += 1; M.check(g); stageWatch();
 }
