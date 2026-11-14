@@ -537,6 +537,8 @@
     /* v98.66 · evolved monsters that fell: a guaranteed chaos item by tier + lineage, and their ordinary drops at half the chance (js/chaos.js) */
     const ek = (evolved || []).filter(e => e.dead);
     if (ek.length && window.Chaos) { const d = Chaos.dropFor(ek); for (const [id, n] of Object.entries(d.items)) for (let i = 0; i < n; i++) add(id); for (const kind of d.half) for (const k of Chaos.halfRolls(DROPS[kind])) add(k); const unl = Chaos.note(g, d.items); for (const id of unl) log('✷ ความโกลาหลตอบรับ · ได้การ์ดธาตุ Grat: ' + (window.TacticsDecks?.COMBAT?.[id]?.name || id)) }
+    /* v98.478 · ชิ้นส่วนหายาก (ชื่อม่วง ❖) ของมอนชนิดนั้น: โอกาสน้อย เพิ่มตามความอันตราย · ล้มบอสได้เพิ่ม */
+    { const my = window.ADVENTURE_DATA?.MAYA_OF?.[foe]; if (my && Math.random() < .07 + dang * .08 + (boss ? .25 : 0) + (evolved || []).some(e => e.dead) * .1) add(my) }
     if (boss) add('relic'); WS.commit();
     const G = window.ADVENTURE_DATA?.GOODS || {}, MN = { iron: 'เหล็ก', coal: 'ถ่าน', wood: 'ไม้', food: 'เสบียง' };
     return Object.entries(got).map(([k, c]) => (G[k]?.name || MN[k] || k) + ' ×' + c).join(' · ');

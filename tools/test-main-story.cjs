@@ -38,4 +38,13 @@ ok(M.STAGES.every((d, i) => i === 0 || d.spoiler >= M.STAGES[i - 1].spoiler), 's
   F.add('crown', -20, 'test'); ok((g.village.rep.north || 0) === 0 && (g.village.rep.light || 0) === 0, 'hidden factions do not move by spill');
   M.advanceTo(g, 'signs', { silent: true }); ok(F.shown('north'), 'the north is shown once the front opens'); F.add('crown', 10, 'test'); ok((g.village.rep.north || 0) !== 0, 'and then it reacts');
   ok(Object.values(F.FACTIONS).every(x => x.name && x.icon && x.col && x.perk), 'every faction is complete') }
+// v98.478 · Maya parts: one distinct rare part per monster kind · purple ❖ (no "(มายา)" word) · sellable · quest-usable · Mip eats them
+{ const vm = require('vm'), fs = require('fs'); const w = {}; w.window = w; vm.createContext(w); vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', 'adventure-data.js'), 'utf8'), w);
+  const AD = w.ADVENTURE_DATA, kinds = Object.keys(AD.MAYA_OF), ids = Object.values(AD.MAYA_OF);
+  ok(kinds.length >= 11 && new Set(ids).size === ids.length, 'one distinct part per monster kind');
+  ok(ids.every(id => { const d = AD.GOODS[id]; return d && d.maya && d.name.startsWith('❖') && !d.name.includes('มายา') && d.price > 0 && /ขาย/.test(d.use) && /เควส/.test(d.use) }), 'symbol, sellable, quest-usable');
+  ok(new Set(ids.map(id => AD.GOODS[id].name)).size === ids.length, 'names differ');
+  const g = game(); g.village.bag = { [AD.MAYA_OF.wolf]: 2, wolfFang: 1 }; global.ADVENTURE_DATA = AD;
+  ok(M.feed(g, 'wolfFang') === null, 'ordinary goods are not fed'); const r = M.feed(g, AD.MAYA_OF.wolf); ok(r && r.fresh && r.kind === 'wolf' && g.village.bag[AD.MAYA_OF.wolf] === 1, 'eaten = consumed');
+  ok(M.mip(g).fed.includes('wolf') && M.mip(g).dark === 6 && T.has(g, 'mip.fed'), 'form remembered · darker · chronicle'); const r2 = M.feed(g, AD.MAYA_OF.wolf); ok(!r2.fresh && M.mip(g).dark === 9 && !g.village.bag[AD.MAYA_OF.wolf], 'repeat feeds darken less') }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

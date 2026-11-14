@@ -11,6 +11,7 @@ function itemInfo(k){if(AD.CONSUMABLES[k])return {cat:'consumable',def:AD.CONSUM
 function addItem(k,n=1){if(!itemInfo(k))return;let b=bag();b[k]=(b[k]||0)+n;if(b[k]<=0)delete b[k]}
 function hasItem(k){return (bag()[k]||0)>0}
 const nameOf=k=>itemInfo(k)?.def.name||MATERIALS[k]?.name||k;
+const nameHtml=k=>{const d=itemInfo(k)?.def;return d?.maya?`<span class="maya-name">${esc(d.name)}</span>`:esc(nameOf(k))};
 const maxHp=()=>s.maxHp||60;
 function heal(hp,st){let a=s.hp;s.hp=Math.min(maxHp(),s.hp+hp);let b=s.stamina;s.stamina=Math.min(cap(),s.stamina+st);return [s.hp-a,s.stamina-b]}
 // consumable use on the map / in the village (battle use is in BattleItems below)
@@ -71,8 +72,8 @@ function runEvent(key,src={}){let E=EVENTS[key],D=AD.EVENT_CARDS[key],adv=state(
  modal(D.name,head,E.choices.map(ch=>({label:ch.label,disabled:ch.disabled?.()||'',run:()=>done(ch.run({adv,area:adv?.area}))})),{onClose:src.node?()=>src.after?.():null,noClose:!!src.node})}
 function shop(D,head,spend,src){let used=false;const stock=Object.entries(AD.CONSUMABLES).filter(([,x])=>x.rarity!=='rare'||Math.random()<.4).map(([k,x])=>[k,x.price]);
  const draw=msg=>{let sell=Object.entries(bag()).filter(([k,n])=>n>0&&AD.GOODS[k]);modal(D.name,head+`${msg?`<p class="adv-note">${esc(msg)}</p>`:''}<div class="currency-banner">◉ <strong>${s.village.coins} เหรียญ</strong></div>
-  <h4>ซื้อ</h4><div class="adv-shop">${stock.map(([k,p])=>`<button data-buy="${k}" data-p="${p}" ${s.village.coins<p?'disabled':''}>${esc(nameOf(k))}<small>◉ ${p}</small></button>`).join('')}</div>
-  <h4>ขายของ</h4><div class="adv-shop">${sell.map(([k,n])=>`<button data-sell="${k}">${esc(nameOf(k))} ×${n}<small>◉ ${vendorGoods(k)}</small></button>`).join('')||'<p class="muted small">ไม่มีของให้ขาย</p>'}</div>`,[{label:'จบการซื้อขาย',primary:true,run:()=>{closeModal();src.after?.()}}],{onClose:()=>src.after?.()});
+  <h4>ซื้อ</h4><div class="adv-shop">${stock.map(([k,p])=>`<button data-buy="${k}" data-p="${p}" ${s.village.coins<p?'disabled':''}>${nameHtml(k)}<small>◉ ${p}</small></button>`).join('')}</div>
+  <h4>ขายของ</h4><div class="adv-shop">${sell.map(([k,n])=>`<button data-sell="${k}">${nameHtml(k)} ×${n}<small>◉ ${vendorGoods(k)}</small></button>`).join('')||'<p class="muted small">ไม่มีของให้ขาย</p>'}</div>`,[{label:'จบการซื้อขาย',primary:true,run:()=>{closeModal();src.after?.()}}],{onClose:()=>src.after?.()});
   modalEl.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{let p=+b.dataset.p;if(s.village.coins<p)return;if(!used){spend();used=true}s.village.coins-=p;addItem(b.dataset.buy,1);save();render();draw('ซื้อ '+nameOf(b.dataset.buy)+' แล้ว')});
   modalEl.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{let k=b.dataset.sell;if(!hasItem(k))return;if(!used){spend();used=true}addItem(k,-1);s.village.coins+=vendorGoods(k);save();render();draw('ขาย '+nameOf(k)+' แล้ว')})};
  draw('')}
@@ -96,7 +97,7 @@ const BattleItems={hand:[],used:false,
 function bagCardHTML(info,n){let S=window.CardStudio,base=S?.cardById(info.card);if(!base)return '';let c=JSON.parse(JSON.stringify(base)),d=info.def||{};if(!c.main?.value){c.main=info.cat==='goods'?{value:'◉ '+(d.price??c.attr?.price??0),label:'ราคาขาย'}:info.cat==='event'?{value:'✉',label:'การ์ดเหตุการณ์'}:{value:'×'+n,label:'ในกระเป๋า'}}if(!(c.effects||[]).filter(Boolean).length&&d.text)c.effects=[d.text];return S.cardHTML(c,S.design(),{mini:true})}
 const baseBag=renderBag;
 renderBag=function(){baseBag();let host=$('panelContent');if(!host)return;let b=bag(),atMarket=s.village.location==='market'&&!state();
- const tile=(k,n,btns)=>{let info=itemInfo(k);return `<div class="bag-item-card"><div class="adv-card mini">${bagCardHTML(info,n)||''}</div><b>${esc(info.def.name)} ×${n}</b><small>${esc(info.def.text||'')}</small>${btns}</div>`};
+ const tile=(k,n,btns)=>{let info=itemInfo(k);return `<div class="bag-item-card"><div class="adv-card mini">${bagCardHTML(info,n)||''}</div><b>${info.def.maya?`<span class="maya-name">${esc(info.def.name)}</span>`:esc(info.def.name)} ×${n}</b><small>${esc(info.def.text||'')}</small>${btns}</div>`};
  let sec=(title,cat,btns)=>{let list=Object.entries(b).filter(([k,n])=>n>0&&itemInfo(k)?.cat===cat);return `<h3>${title}</h3><div class="bag-item-grid">${list.map(([k,n])=>tile(k,n,btns(k))).join('')||'<p class="muted small">ยังไม่มี</p>'}</div>`};
  host.insertAdjacentHTML('afterbegin',`<div class="bag-v11">${sec('ของใช้ · ใช้แล้วหมดไป','consumable',k=>AD.CONSUMABLES[k].use==='ต่อสู้'?'<small class="muted">ใช้ระหว่างต่อสู้</small>':`<button data-use="${k}">ใช้</button>`)}
  ${sec('การ์ดเหตุการณ์ · ใช้แล้วจะเกิดเรื่องราว','event',k=>`<button data-event="${k}">ใช้การ์ด</button>`)}

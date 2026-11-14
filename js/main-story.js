@@ -81,7 +81,16 @@
     if (atLeast(g, 'free') && !flag(g, 'mipJoined')) { set(g, 'mipJoined', true); mip(g); log(g, 'mip.joined'); toast('🦊 มีบางอย่างตัวเล็ก ๆ ตามเรามา …'); moved = true }
     return moved;
   }
-  const api = { mip, STAGES, WAR, DIST, SIGNS, state: st, stage, index, is, atLeast, flag, set, war, warText, infection, signs, reveal, advanceTo, check };
+  /* v98.478 · feed Mip a Maya part (item.maya): the part is consumed, Mip remembers the monster's form (fed) and darkens a little (Canon D) */
+  function feed(g, id) {
+    const AD = root.ADVENTURE_DATA, def = AD?.GOODS?.[id], bag = g.village?.bag; if (!def?.maya || !bag || !(bag[id] > 0)) return null;
+    const kind = Object.keys(AD.MAYA_OF || {}).find(k => AD.MAYA_OF[k] === id) || id, m = mip(g);
+    bag[id]--; if (bag[id] <= 0) delete bag[id];
+    const fresh = !m.fed.includes(kind); if (fresh) m.fed.push(kind);
+    m.dark = Math.min(100, num(m.dark, 0) + (fresh ? 6 : 3)); m.eaten = num(m.eaten, 0) + 1;
+    log(g, 'mip.fed'); return { kind, fresh, dark: m.dark };
+  }
+  const api = { feed, mip, STAGES, WAR, DIST, SIGNS, state: st, stage, index, is, atLeast, flag, set, war, warText, infection, signs, reveal, advanceTo, check };
   root.MainStory = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
