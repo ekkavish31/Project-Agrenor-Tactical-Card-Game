@@ -43,6 +43,8 @@
 
   const raw = g => g?.village?.main || null;
   function st(g) { const v = (g.village ||= {}); const m = (v.main ||= { stage: 'intro', flags: {}, at: {} }); m.flags ||= {}; m.at ||= {}; if (!(m.stage in IDX)) m.stage = 'intro'; return m }
+  /* Mip (Canon A8–A11, D): state 'stable' → (berserk now and then) → 'mad' after the release → 'purified' or 'sealed'. dark 0…100 = how much it has eaten (it greys / darkens). fed = what it remembers (forms). */
+  const mip = g => { const m = st(g); return (m.mip ||= { state: 'stable', dark: 0, fed: [] }) };
   const index = g => { const m = raw(g); return m ? IDX[m.stage] ?? 0 : 0 };
   const stage = g => STAGES[index(g)];
   const is = (g, id) => stage(g).id === id;
@@ -75,9 +77,11 @@
     const intro = g.village.story?.mode === 'done';
     if (is(g, 'intro') && intro) moved = advanceTo(g, 'free', { silent: true }) || moved;
     if (is(g, 'free') && num(g.village.character?.level, 1) >= 5) moved = advanceTo(g, 'signs') || moved;
+    /* v98.477 · after the intro the little fox comes back on its own and follows the hero (no party slot · the player cannot steer it) */
+    if (atLeast(g, 'free') && !flag(g, 'mipJoined')) { set(g, 'mipJoined', true); mip(g); log(g, 'mip.joined'); toast('🦊 มีบางอย่างตัวเล็ก ๆ ตามเรามา …'); moved = true }
     return moved;
   }
-  const api = { STAGES, WAR, DIST, SIGNS, state: st, stage, index, is, atLeast, flag, set, war, warText, infection, signs, reveal, advanceTo, check };
+  const api = { mip, STAGES, WAR, DIST, SIGNS, state: st, stage, index, is, atLeast, flag, set, war, warText, infection, signs, reveal, advanceTo, check };
   root.MainStory = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
