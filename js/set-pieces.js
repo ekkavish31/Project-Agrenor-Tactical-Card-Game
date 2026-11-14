@@ -1,4 +1,4 @@
-/* v98.492 · ฉากต่อสู้ตายตัว (set-piece) — ไม่สุ่ม เหมือนฉากไร่ฟักทอง แต่ใช้กับบอสและทางแยกสำคัญ
+/* v98.493 · ฉากต่อสู้ตายตัว (set-piece) — ไม่สุ่ม เหมือนฉากไร่ฟักทอง แต่ใช้กับบอสและทางแยกสำคัญ
    ต่างจากการต่อสู้ทั่วไปที่สร้างสนามสุ่มจาก seed + วางหน่วยตามมุม — ฉากตายตัวกำหนดเองทั้งหมด:
      • สนาม: แผนที่ (กำแพง พื้นสูง ที่กำบัง โคลน) วาดด้วยโค้ดใน SCENES[id].map → field-host.js ใช้แทนสนามสุ่ม · ทุกครั้งที่สู้เหมือนกัน
      • ตำแหน่งเริ่ม: ตัวเอก/เพื่อน/ศัตรูทุกตัว (hero · allies · enemies) · ศัตรูเริ่มได้เปรียบ (ตาเริ่มก่อน · จำนวนเยอะ · ยึดที่สูง)
@@ -15,8 +15,8 @@
     for (const [ch, u0, v0, u1, v1] of ops) for (let v = Math.min(v0, v1); v <= Math.max(v0, v1); v++) for (let u = Math.min(u0, u1); u <= Math.max(u0, u1); u++) put(u, v, ch);
     return g.map(r => r.join(''));
   }
-  /* ตัวอักษร: # กำแพง(boulder) · . พื้น · + ที่กำบัง(เศษหิน) · ~ โคลนเลือดช้า · 1 2 พื้นสูงระดับ 1/2 · b กำแพงกระดูก */
-  const TILE = { '#': { k: 'blocked', prop: 'boulder' }, b: { k: 'blocked', prop: 'bones' }, '.': { k: 'normal' }, '+': { k: 'cover' }, '~': { k: 'slow' }, 1: { k: 'normal', level: 1 }, 2: { k: 'normal', level: 2 } };
+  /* ตัวอักษร: t เต็นท์ · f รั้วไม้ · p เสาหิน · # กำแพง(boulder) · . พื้น · + ที่กำบัง(เศษหิน) · ~ โคลนเลือดช้า · 1 2 พื้นสูงระดับ 1/2 · b กำแพงกระดูก */
+  const TILE = { '#': { k: 'blocked', prop: 'boulder' }, b: { k: 'blocked', prop: 'bones' }, '.': { k: 'normal' }, '+': { k: 'cover' }, '~': { k: 'slow' }, 1: { k: 'normal', level: 1 }, 2: { k: 'normal', level: 2 }, t: { k: 'blocked', prop: 'tent' }, f: { k: 'blocked', prop: 'barricade' }, p: { k: 'blocked', prop: 'pillar' } };
 
   /* ===================================================================================================
      ก้นเหมือง · ก้อนหิว — "ตัดอาหารของมัน" (Canon A12): ก้อนหิวมีปมหิว 3 จุดป้อนมันอยู่ · ตราบที่ปมยังอยู่ มันเจ็บน้อยลงครึ่งหนึ่งและฟื้นเลือดทุกรอบ
@@ -101,7 +101,48 @@
     ]
   };
 
-  const SCENES = { hungerPit, convoyPass };
+  /* ===================================================================================================
+     ค่ายผู้อพยพ · ผู้ป่วยล้ม (อีเวนต์ "ผู้อพยพที่ป่วย"): รั้วไม้ล้อมค่าย มีช่องทางเข้า 4 ช่อง · ผู้ป่วยนอนกลางค่าย (ช่องป้องกัน) — สัตว์รอยหมองถูกอาการของเธอดึงมา
+     ศัตรูได้เปรียบ: มาจากสามทิศ คลื่นละมากขึ้น (1 → 1 → 2 → 2 ต่อทาง) · ถ้ามีตัวไหนเหยียบช่องผู้ป่วยได้ = แพ้ · ต้องอยู่ครบ 8 รอบ
+     คำตอบ (ต้องคิด): ใช้ตัวคนอุดช่องรั้ว (เหนือ ตะวันออก ใต้) ไม่ให้ไหลเข้าใน · ยืนที่ลังกำบังหลังช่อง · ฆ่าตัวที่มาก่อนคลื่นถัดไป · อย่าไล่ออกนอกรั้ว
+     =================================================================================================== */
+  const R7c = 7, campOps = [['.', -7, -7, 7, 7], ['f', -3, -3, 3, -3], ['f', -3, 3, 3, 3], ['f', -3, -3, -3, 3], ['f', 3, -3, 3, 3], ['.', 0, -3, 0, -3], ['.', 3, 0, 3, 0], ['.', 0, 3, 0, 3], ['.', -3, 0, -3, 0],
+    ['t', -2, -2, -1, -2], ['t', 2, 2, 2, 2], ['+', 1, -2, 1, -2], ['+', -1, 2, -1, 2], ['+', 2, -1, 2, -1], ['+', -2, 1, -2, 1], ['~', -6, -6, -5, -5], ['~', 5, 5, 6, 6], ['#', -5, 3, -5, 3], ['#', 5, -3, 5, -3]];
+  const campDefense = {
+    id: 'campDefense', name: 'ค่ายผู้อพยพ · ผู้ป่วยล้ม', R: R7c, biome: 'grass', noFlee: true, night: true, obj: { type: 'defend', turns: 8, cells: [{ u: 0, v: 0 }] },
+    map: makeGrid(R7c, campOps),
+    hero: { u: -2, v: 0 }, allies: [{ u: -2, v: -1 }, { u: -1, v: 1 }, { u: -1, v: 0 }],
+    enemies: [{ id: 'm1', kind: 'murk', u: -6, v: -6, hp: 1, ct: 12 }, { id: 'm2', kind: 'murk', u: 6, v: 6, hp: 1, ct: 12 }],
+    waves: { everyRounds: 2, first: 3, count: 4, mouths: [{ u: 0, v: -7 }, { u: 7, v: 0 }, { u: 0, v: 7 }], kind: 'murk', per: [1, 1, 2, 2], cap: 6, capBy: 'wave' },
+    waveHint: 'เสียงคำรามจากนอกรั้ว — คลื่นต่อไปกำลังมาจากสามทิศ',
+    intro: [{ who: 'irene', text: 'ผู้ป่วยอยู่กลางค่าย — อย่าให้มันเหยียบถึงที่เธอนอน! รั้วมีช่องแค่สี่ช่อง ใช้ตัวคนอุดไว้' }],
+    hints: ['ป้องกันเธอไว้ 8 รอบ — ถ้าสัตว์รอยหมองตัวไหนเหยียบช่องกลางค่ายได้ เท่ากับแพ้ (ผู้ป่วยอยู่ตรงกลางรั้ว)',
+      'รั้วมีช่องเปิด 4 ช่อง (เหนือ ตะวันออก ใต้ และตะวันตกด้านหลังคุณ) — ใช้เพื่อนอุดช่องเหนือ/ตะวันออก/ใต้ ไม่ให้ไหลเข้าด้านใน · ลังสี่จุดช่วยกันดาเมจ',
+      'ศัตรูมาจากสามทิศ คลื่นละมากขึ้น — ฆ่าตัวที่มาก่อนคลื่นถัดไป อย่าไล่ออกนอกรั้ว']
+  };
+
+  /* ===================================================================================================
+     คืนจันทร์ม่วง · เฝ้า Mip (อีเวนต์ "พิธีคืนจันทร์ม่วง"): แท่นหินกลางลาน Mip ขดอยู่บนแท่น (ช่องป้องกัน) ปลอกคอสั่นเป็นจังหวะ
+     ศัตรูได้เปรียบ: มาสามทาง (ตะวันตก ตะวันออก เหนือ) · เสาหินกั้นให้ศัตรูไหลเข้าช่องแคบพร้อมกัน · ผู้เล่นมีทางถอยด้านใต้เท่านั้น
+     คำตอบ (ต้องคิด): ปลอกคอ Mip ปล่อยแสงทุกรอบที่ 3 และ 6 ทำดาเมจศัตรูรอบแท่น (รัศมี 2) — ล่อให้ศัตรูเข้ามาใกล้แท่นก่อนถึงจังหวะ แล้วเก็บที่เหลือ
+     =================================================================================================== */
+  const R6 = 6;
+  const moonGuard = {
+    id: 'moonGuard', name: 'คืนจันทร์ม่วง · เฝ้า Mip', R: R6, biome: 'hills', noFlee: true, night: true, obj: { type: 'defend', turns: 7, cells: [{ u: 0, v: 0 }] },
+    map: makeGrid(R6, [['.', -6, -6, 6, 6], ['p', -2, -2, -2, -2], ['p', 2, -2, 2, -2], ['p', -2, 2, -2, 2], ['p', 2, 2, 2, 2], ['+', -1, -1, -1, -1], ['+', 1, -1, 1, -1], ['+', -1, 1, -1, 1], ['+', 1, 1, 1, 1], ['#', -6, 2, -4, 6], ['#', 4, 2, 6, 6], ['#', -3, 5, 3, 6]]),
+    hero: { u: 0, v: 3 }, allies: [{ u: -1, v: 3 }, { u: 1, v: 3 }, { u: 0, v: 4 }],
+    enemies: [{ id: 'm1', kind: 'murk', u: -5, v: 0, hp: 1, ct: 24 }, { id: 'm2', kind: 'murk', u: 5, v: 0, hp: 1, ct: 26 }],
+    waves: { everyRounds: 2, first: 2, count: 3, mouths: [{ u: -6, v: -1 }, { u: 6, v: -1 }, { u: 0, v: -6 }], kind: 'murk', per: [1, 1, 2], cap: 6, capBy: 'wave' },
+    pulses: [{ rounds: [3, 6], at: { u: 0, v: 0 }, radius: 2, dmg: 16, text: '✦ ปลอกคอของ Mip ส่องแสงม่วงเป็นวง', warn: 'ปลอกคอของ Mip สั่นแรงขึ้น — อีกรอบเดียวมันจะส่องแสงทำร้ายสิ่งที่อยู่ใกล้แท่น' }],
+    waveHint: 'สัตว์รอยหมองกำลังมาอีกระลอกจากตะวันตก ตะวันออก และเหนือ',
+    intro: [{ who: 'helga', text: 'เสียงสวดหยุดแล้ว… เจ้าตัวเล็กสั่นอยู่บนแท่น — ปกป้องมันจนกว่าพระจันทร์จะลง' }],
+    hints: ['ปกป้อง Mip บนแท่นกลางลานไว้ 7 รอบ — ถ้าสัตว์รอยหมองตัวไหนเหยียบแท่นได้ เท่ากับแพ้',
+      'ปลอกคอของ Mip ส่องแสงทำดาเมจรอบแท่น (รัศมี 2) ที่รอบ 3 และ 6 — ล่อศัตรูเข้ามาใกล้แท่นก่อนถึงรอบนั้น',
+      'เสาหินกั้นให้ศัตรูไหลเข้ามาทีละช่อง — ยืนหลังเสาและที่กำบัง อย่าออกไปนอกลาน',
+      'ปลอกคอของ Mip สั่นแรงขึ้น — แสงใกล้มา']
+  };
+
+  const SCENES = { hungerPit, convoyPass, campDefense, moonGuard };
 
   /* ---------- ข้อมูลช่อง ---------- */
   function cell(sc, u, v) {
@@ -123,22 +164,28 @@
         if (!tgt.boss || tgt.side !== 'monster' || !sc.rootShield) return d; const n = roots(st).length; if (!n) return d;
         notes.push('ปมหิว ' + n + ' จุดยังป้อนอยู่ −' + Math.round((1 - sc.rootShield) * 100) + '%'); return Math.max(1, Math.round(d * sc.rootShield));
       },
+      /* ยังมีคลื่นที่ยังไม่มา = ยังไม่ชนะแม้ศัตรูตอนนี้หมด (ฉากป้องกัน) */
+      pending(st) { const W = sc.waves; return !!(W && W.count && (st.waveN || 0) < W.count) },
       /* ต้นรอบของตัวเอก (เรียกจาก flat-battle runCT) */
       onHeroTurn(st) {
-        const steps = [], r = st.round = (st.round || 0) + 1, b = boss(st), rs = roots(st); if (!b || !api.alive(b)) return steps;
-        if (r === 1) steps.push({ type: 'say', unit: b, text: sc.hints[0], big: true });
-        if (r === 2) steps.push({ type: 'say', unit: b, text: sc.hints[1] });
+        const steps = [], r = st.round = (st.round || 0) + 1, b = boss(st), rs = roots(st), hu = st.units.find(u => u.side === 'hero'), who = b || hu;
+        if (sc.obj.type === 'boss' && (!b || !api.alive(b))) return steps;
+        if (r === 1) steps.push({ type: 'say', unit: who, text: sc.hints[0], big: true });
+        if (r === 2) steps.push({ type: 'say', unit: who, text: sc.hints[1] });
+        /* คลื่นไฟ/ชีพจร: ตามรอบที่กำหนด ทำดาเมจรอบจุดศูนย์กลาง (ผู้เล่นล่อศัตรูเข้ามาแล้วใช้จังหวะ) */
+        for (const P of sc.pulses || []) if (P.rounds.includes(r)) { const hit = st.units.filter(u => u.side === 'monster' && api.alive(u) && Math.max(Math.abs(u.u - P.at.u), Math.abs(u.v - P.at.v)) <= P.radius); for (const u of hit) u.hp = Math.max(0, u.hp - P.dmg); steps.push({ type: 'say', unit: who, text: P.text + (hit.length ? ' (โดน ' + hit.length + ' ตัว −' + P.dmg + ')' : ' (ไม่มีศัตรูในรัศมี)'), big: true, hits: hit }); st.log.push(P.text + ' −' + P.dmg + ' x' + hit.length) }
+        if (sc.pulses && r === Math.min(...sc.pulses.flatMap(x => x.rounds)) - 1) steps.push({ type: 'say', unit: who, text: sc.pulses[0].warn || sc.hints[3] });
         if (sc.rootHeal === undefined && !sc.rootShield) { /* scenes without a shield: nothing to feed */ }
         /* ปมป้อนบอส */
-        if (rs.length && r > 1 && sc.rootHeal) { const h = Math.min(b.maxHp - b.hp, sc.rootHeal * rs.length); if (h > 0) { b.hp += h; st.log.push('ปมหิว ' + rs.length + ' จุดป้อนก้อนหิว +' + h); steps.push({ type: 'say', unit: b, text: '🩸 ปมหิว ' + rs.length + ' จุดป้อนก้อนหิว +' + h, heal: h }) } }
+        if (b && rs.length && r > 1 && sc.rootHeal) { const h = Math.min(b.maxHp - b.hp, sc.rootHeal * rs.length); if (h > 0) { b.hp += h; st.log.push('ปมหิว ' + rs.length + ' จุดป้อนก้อนหิว +' + h); steps.push({ type: 'say', unit: b, text: '🩸 ปมหิว ' + rs.length + ' จุดป้อนก้อนหิว +' + h, heal: h }) } }
         /* ตัดปมครบ: บอสเสียหลัก 1 ตา */
-        if (!rs.length && !st.rootsCut && sc.cutText !== false) { st.rootsCut = true; if (sc.cutStun !== false) b.stun = 1; st.log.push(sc.cutLog || 'ปมหิวขาดหมด — ก้อนหิวเสียหลัก!'); steps.push({ type: 'say', unit: b, text: sc.cutSay || '✂ ตัดอาหารมันได้แล้ว — ก้อนหิวเสียหลัก! ตอนนี้ฟันมันได้เต็มแรง', big: true }) }
+        if (b && (sc.anchorKind || sc.rootShield) && !rs.length && !st.rootsCut && sc.cutText !== false) { st.rootsCut = true; if (sc.cutStun !== false) b.stun = 1; st.log.push(sc.cutLog || 'ปมหิวขาดหมด — ก้อนหิวเสียหลัก!'); steps.push({ type: 'say', unit: b, text: sc.cutSay || '✂ ตัดอาหารมันได้แล้ว — ก้อนหิวเสียหลัก! ตอนนี้ฟันมันได้เต็มแรง', big: true }) }
         /* คลื่นสัตว์รอยหมอง: ประกาศก่อน 1 รอบ */
-        const W = sc.waves; if (W && !(W.needAnchor && !rs.length)) {
-          if (r >= W.first - 1 && (r - W.first + 1) % W.everyRounds === 0 && r < W.first + W.everyRounds * 9) steps.push({ type: 'say', unit: b, text: sc.hints[2] });
+        const W = sc.waves; if (W && !(W.needAnchor && !rs.length) && (!W.count || (st.waveN || 0) < W.count)) {
+          if (r >= W.first - 1 && (r - W.first + 1) % W.everyRounds === 0 && r < W.first + W.everyRounds * 9) steps.push({ type: 'say', unit: who, text: sc.waveHint || sc.hints[2] });
           if (r >= W.first && (r - W.first) % W.everyRounds === 0) {
-            const alive = st.units.filter(u => u.side === 'monster' && u.kind === W.kind && (W.capBy !== 'wave' || u.fromWave) && api.alive(u)).length; let room = W.cap - alive;
-            for (const m of W.mouths) for (let i = 0; i < W.per && room > 0; i++) { const p = nearestFree(st, m); if (!p) continue; const nu = api.mk(W.kind, p, { fromWave: r }); if (nu) { st.units.push(nu); room--; st.log.push('สัตว์รอยหมองไหลลงมาจากอุโมงค์เหนือ'); steps.push({ type: 'spawn', unit: nu, text: 'สัตว์รอยหมองมาเสริม!' }) } }
+            const alive = st.units.filter(u => u.side === 'monster' && u.kind === W.kind && (W.capBy !== 'wave' || u.fromWave) && api.alive(u)).length; let room = W.cap - alive; const wi = st.waveN = (st.waveN || 0) + 1, per = Array.isArray(W.per) ? W.per[Math.min(wi - 1, W.per.length - 1)] : W.per;
+            for (const m of W.mouths) for (let i = 0; i < per && room > 0; i++) { const p = nearestFree(st, m); if (!p) continue; const nu = api.mk(W.kind, p, { fromWave: r }); if (nu) { st.units.push(nu); room--; st.log.push('สัตว์รอยหมองไหลลงมาจากอุโมงค์เหนือ'); steps.push({ type: 'spawn', unit: nu, text: 'สัตว์รอยหมองมาเสริม!' }) } }
           }
         }
         return steps;
@@ -157,7 +204,8 @@
     const start = sc.hero, key = (u, v) => u + ',' + v, vis = new Set([key(start.u, start.v)]), q = [[start.u, start.v]];
     while (q.length) { const [u, v] = q.pop(); for (const [du, dv] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const a = u + du, b = v + dv; if (!walk(sc, a, b) || vis.has(key(a, b))) continue; if (Math.abs(cell(sc, a, b).level - cell(sc, u, v).level) > 1) continue; vis.add(key(a, b)); q.push([a, b]) } }
     for (const e of sc.enemies) if (!vis.has(key(e.u, e.v)) && !e.boss) err.push('enemy ' + e.id + ' unreachable from the hero start');
-    const boss = sc.enemies.find(e => e.boss); if (!boss) err.push('no boss'); else if (!sc.obj || sc.obj.type !== 'boss') err.push('boss scene needs obj.boss');
+    const boss = sc.enemies.find(e => e.boss);
+    if (sc.obj.type === 'boss') { if (!boss) err.push('boss scene needs a boss') } else if (sc.obj.type === 'defend') { if (!(sc.obj.cells || []).length || sc.obj.cells.some(c => !walk(sc, c.u, c.v))) err.push('defend cells must be open ground'); if (!(sc.obj.turns > 0)) err.push('defend needs turns') } else err.push('unknown objective ' + sc.obj.type);
     return err;
   }
   const api = { SCENES, get: id => SCENES[id] || null, cell, walk, units, rules, validate, makeGrid, TILE };

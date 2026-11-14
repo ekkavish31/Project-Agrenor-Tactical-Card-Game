@@ -179,7 +179,18 @@
   }
   function attachScene() {
     if (!SCENE || !st) return; st.rules = window.SetPieces.rules(SCENE, { alive: u => u.hp > 0, free: (s, u, v) => !s.units.some(x => x.hp > 0 && x.u === u && x.v === v), mk: mkSpawn });
-    if (Q.get('resume') !== '1') (SCENE.intro || []).forEach((l, i) => setTimeout(() => { try { toast(l.text) } catch (e) { } }, 900 + i * 4200));
+    scenePanelBtn(); if (Q.get('resume') !== '1') scenePanel();
+  }
+  /* v98.492 · the rules of a set-piece are shown BEFORE the fight (a panel to read, not floating text) and can be re-opened with the 📜 button */
+  function scenePanel() {
+    if (!SCENE || document.getElementById('fbScenePanel')) return; const d = document.createElement('div'); d.id = 'fbScenePanel';
+    d.style.cssText = 'position:fixed;inset:0;z-index:90;background:#05060aee;display:flex;align-items:center;justify-content:center;font-family:AgThai,system-ui,sans-serif';
+    d.innerHTML = `<div style="width:min(620px,92vw);max-height:88vh;overflow:auto;padding:22px 26px;border-radius:16px;background:linear-gradient(#2a2234,#171320);border:2px solid #b49a5a;color:#f2e6c8;box-shadow:0 20px 60px #000c"><h2 style="margin:0 0 10px;font-size:22px;color:#ffd98a">⚔ ${esc(SCENE.name)}</h2>${(SCENE.intro || []).map(l => `<p style="margin:8px 0;line-height:1.55">${esc(l.text)}</p>`).join('')}<h3 style="margin:16px 0 6px;font-size:15px;color:#9fd4a8">📜 ต้องรู้ก่อนสู้</h3><ul style="margin:0 0 6px 18px;padding:0;line-height:1.6;font-size:14.5px">${(SCENE.hints || []).filter(h => !/^(เสียง|ปลอกคอของ Mip สั่น)/.test(h)).map(h => `<li>${esc(h)}</li>`).join('')}</ul><p style="font-size:12.5px;color:#a89c82;margin:10px 0 0">ฉากนี้ตายตัว ไม่สุ่ม — ศัตรูได้เปรียบ ต้องใช้กลยุทธ์ · เปิดอ่านซ้ำได้จากปุ่ม 📜 มุมซ้ายบน</p><div style="text-align:right;margin-top:16px"><button id="fbSceneGo" style="padding:9px 26px;border-radius:10px;border:2px solid #d8b46a;background:#c28a2c;color:#fff;font:700 16px AgThai,system-ui,sans-serif;cursor:pointer">เริ่มสู้</button></div></div>`;
+    document.body.append(d); d.querySelector('#fbSceneGo').onclick = () => d.remove();
+  }
+  function scenePanelBtn() {
+    if (!SCENE || document.getElementById('fbSceneBtn')) return; const b = document.createElement('button'); b.id = 'fbSceneBtn'; b.textContent = '📜 กติกาฉาก'; b.title = SCENE.name;
+    b.style.cssText = 'position:fixed;left:12px;bottom:14px;z-index:60;padding:5px 12px;border-radius:9px;border:1.5px solid #b49a5a;background:#1b1624dd;color:#ffe2a8;font:600 13px AgThai,system-ui,sans-serif;cursor:pointer'; b.onclick = scenePanel; document.body.append(b);
   }
   /* ---------- v98.357 · the way out of a fight ----------
      No "back to the world map" button and no flee entry in the menu: a fight can be left early only by walking the hero onto the FLEE AREA (3 blue cells, away from the enemies).

@@ -56,4 +56,8 @@ const names = (g, town) => SC.locals(g, town, ST.LOCALS[town] || []).map(x => x[
 { const g = game(); M.advanceTo(g, 'release', { silent: true }); M.set(g, 'cr_armor', 1); const has = () => SC.locals(g, 'lakenhold', ST.LOCALS.lakenhold).find(x => x[0] === 'นายพลคอร์วิน แธเรล')[2].some(l => /ก่อนใบไม้ร่วง/.test(l));
   ok(has(), 'during the war Corvin talks about the armour'); M.set(g, 'ending', 'aldren'); ok(!has(), 'after the ending he no longer talks about wartime things (found by tools/sim-life.cjs)'); ok(SC.locals(g, 'lakenhold', ST.LOCALS.lakenhold).find(x => x[0] === 'นายพลคอร์วิน แธเรล')[2].some(l => /นับศพ/.test(l)), 'he talks about the ending instead');
   ok(['third', 'light', 'shadow', 'aldren'].every(e => SC.REACT.some(x => x.id === 'helga' && x.post)), 'Helga has post-ending lines') }
+// v98.492 · กระดานข่าวแสดงเฉพาะข่าวที่ยังไม่ได้อ่าน
+{ const g = game(); M.advanceTo(g, 'release', { silent: true }); const r1 = SC.run(g, 'northgate', 'st:news', { gold: 0 }, {}), r2 = SC.run(g, 'northgate', 'st:news', { gold: 0 }, {});
+  ok(r1.lines.filter(l => l.startsWith('•')).length >= 3, 'first read: the signs of this phase'); ok(r2.lines.some(l => /ไม่มีข่าวใหม่/.test(l)) && !r2.lines.some(l => /ภาษีขึ้น/.test(l)), 'second read: nothing new, the old items are not repeated');
+  M.advanceTo(g, 'mine', { silent: true }); const r3 = SC.run(g, 'northgate', 'st:news', { gold: 0 }, {}); ok(r3.lines.some(l => /สัตว์ผิดปกติ/.test(l)) && !r3.lines.some(l => /ภาษีขึ้น/.test(l)), 'a new phase brings only the new item') }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

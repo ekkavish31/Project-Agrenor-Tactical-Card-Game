@@ -126,7 +126,7 @@
     if (!alive(hero(st))) st.outcome = 'lose';
     else if (o?.type === 'defend' && o.cells?.some(c => monsters(st).some(m => alive(m) && m.u === c.u && m.v === c.v))) st.outcome = 'lose';
     else if (o?.type === 'boss') { if (!monsters(st).some(m => m.boss && alive(m))) st.outcome = 'win' }   /* v98.492 · set-piece boss scenes: the boss falling ends it (its roots and wave units do not have to be cleared) */
-    else if (!monsters(st).some(alive)) st.outcome = 'win';
+    else if (!monsters(st).some(alive) && !(st.rules?.pending?.(st))) st.outcome = 'win';   /* v98.492 · a set-piece with waves still to come is not won yet */
     else if (o?.type === 'leader' && !monsters(st).some(m => m.leader && alive(m))) st.outcome = 'win';
     else if ((o?.type === 'survive' || o?.type === 'defend') && st.turns > o.turns) st.outcome = 'win';
     else if (o?.type === 'escape' && o.cells?.some(c => c.u === hero(st).u && c.v === hero(st).v)) st.outcome = 'win';

@@ -174,7 +174,9 @@
     if (k === 'news') {
       const E = root.Endings, en = M.flag(g, 'ending'); if (en && E?.ENDINGS?.[en]) out.push('📰 ' + E.ENDINGS[en].world);
       const sg = M.signs(g); if (war(g) >= 1) out.push('📰 ' + (M.warText?.(g) || ''));
-      for (const s of sg.slice(-4)) out.push('• ' + s.text);
+      /* v98.492 · the board shows only items you have not read yet (the same four lines every visit were noise — found by tools/sim-life.cjs) */
+      { const seen = String(M.flag(g, 'newsSeen') || '').split(','), fresh = sg.filter(s => !seen.includes(s.id));
+        for (const s of fresh.slice(-4)) out.push('• ' + s.text); if (!fresh.length && sg.length) out.push('• ไม่มีข่าวใหม่ตั้งแต่ครั้งก่อน'); if (fresh.length) M.set(g, 'newsSeen', [...new Set([...seen.filter(Boolean), ...sg.map(s => s.id)])].join(',')) }
       for (const l of root.StoryWorld?.describe(g, town, 3) || []) out.push(l);   /* v98.489 · prices that the war / the ending moved */
       return { lines: out };
     }
