@@ -559,6 +559,24 @@
   }
   /* ---------- v98.486 · ทางแยก ⑂ / อีเวนต์คาบเกี่ยว: สถานการณ์ในเมือง + ทางเลือกที่มีราคา (js/crossroads.js · docs/PROPOSAL-CROSSROADS-TH.md) ---------- */
   const faceBox = (who, w = 84, h = 96) => { const f = who && window.StoryCast?.face(who); return f ? `<span style="float:left;width:${w}px;height:${h}px;margin:0 12px 6px 0;background:url('${f.src}') ${f.pos}/${f.size} no-repeat #1a2b26;border:2px solid #d8b46a;border-radius:6px"></span>` : '' };
+  /* v98.487 · ฉากจบ (js/endings.js · N5): ลงชั้นล่างที่ดีปแคร์นเมื่อถึงหมุดไคลแมกซ์ — ตัดสินใจ 2 ครั้ง อ่านแนวโน้มจากทางแยกที่ผ่านมา */
+  async function pageSeq(title, pages) { for (const p of pages) { const v = await modal(`<h2>${title}</h2>${faceBox(p.who)}<p>${esc(p.text)}</p><div style="clear:both"></div>`, [{ label: 'ต่อไป', value: true }]); if (v == null) break } }
+  async function finaleScene() {
+    const g = WS.game(), E = window.Endings; if (!E || !E.ready(g)) return;
+    await pageSeq('⚑ ปากเหมืองชั้นล่าง', E.openingPages(g));
+    const ro = E.releaseOptions(g);
+    const rel = await modal(`<h2>⑂ ปลอกคอของเซอร์เรียน</h2>${faceBox('mage')}<p>ถึงเวลาตัดสินว่าจะทำอย่างไรกับปลอกคอที่กดเงาไว้ใน Mip</p>${ro.map(o => `<p><b>${esc(o.label)}</b><br><small>${esc(o.desc)}${o.ok ? '' : ' · 🔒 ' + esc(o.why)}</small></p>`).join('')}<div style="clear:both"></div>`, ro.map(o => ({ label: o.label, value: o.id, disabled: !o.ok })));
+    if (rel == null) return;
+    await pageSeq('⚑ ปลอกคอ', E.releasePages(g, rel));
+    const so = E.sideOptions(g);
+    const side = await modal(`<h2>⑂ จุดตัดสินใจสุดท้าย</h2><p>ทุกฝ่ายยืนอยู่ปากเหมือง — คุณเลือกทางไหน? <small>(ทางที่ล็อกแปลว่าสิ่งที่คุณทำมาตลอดทางยังไม่ถึงพอ)</small></p>${so.map(o => `<p><b>${esc(o.label)}</b><br><small>${esc(o.desc)}${o.ok ? '' : ' · 🔒 ' + esc(o.why)}</small></p>`).join('')}`, so.map(o => ({ label: o.label, value: o.id, disabled: !o.ok })));
+    if (side == null) return;
+    const res = E.run(g, S, { release: rel, side }); if (!res) return; WS.commit(); save();
+    await pageSeq('⚑ ' + res.name, res.pages);
+    toast('🏁 ตอนจบ: ' + res.name); log('🏁 ตอนจบ: ' + res.name + ' (' + res.tone + ')');
+    await modal(`<h2>🏁 ${esc(res.name)}</h2><p><small>โทน: ${esc(res.tone)} · Mip ${res.fate === 'purified' ? 'ถูกชำระและกลับป่า (ได้ผลึกสะท้อน)' : 'ถูกผนึกให้หลับ'}</small></p><p>เรื่องหลักจบลงตรงนี้ — โลกยังอยู่ เล่นต่อได้ ไม่มีอะไรทับเซฟของคุณ · ดูทางที่เดินมาในสมุดบันทึก/ฉายา</p>`);
+    hudSync();
+  }
   async function crossroadsAt(id) {
     const g = WS.game(), C = window.Crossroads; if (!C || !g) return;
     for (const m of C.expire(g, S)) { log(m); toast(m) }
@@ -573,13 +591,14 @@
     await modal(`<h2>${e.icon} ${esc(e.title)}</h2><p><b>${esc(r.choice)}</b></p>${r.lines.map(l => `<p>${esc(l)}</p>`).join('')}`);
   }
 
-  window.WMCrossroads = crossroadsAt;   /* ใช้ทดสอบ/ดีบัก */
+  window.WMCrossroads = crossroadsAt; window.WMFinale = finaleScene;   /* ใช้ทดสอบ/ดีบัก */
   async function townVisit(poi) {
     const id = poi.town;
     /* v97.72 · the capital's gate stays shut until the prologue is over */
     if (window.TownServices && window.Settlements?.SETTLEMENTS?.[id]?.capital && !TownServices.capitalOpen()) { await modal(`<h2>🏰 ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id])}</p><p>ทหารหน้าประตูเมืองยกหอกกั้น: "ช่วงนี้นครหลวงปิดรับคนนอก กลับไปก่อนเถอะ"</p><p style="font-size:12px;opacity:.75">เส้นทางไปเมืองใหญ่จะเปิดหลังจบบทนำ</p>`); return }
     ev('town:visit', { town: id, townName: poi.name }); log('ถึง ' + poi.name); S.townVisits = (S.townVisits || 0) + 1;   /* v97.55 · T7 duty counter */
     if (window.TownEvents) for (const m of TownEvents.arrive(S, id)) { log(m); toast(m) }
+    try { window.MainStory?.check(WS.game()) } catch (e) { }   /* v98.487 · หมุดเรื่องที่เกมรู้เอง (ด่านระดับ + สิ่งที่ผู้เล่นทำ) */
     await crossroadsAt(id);   /* v98.486 · ทางแยกของเนื้อเรื่องหลัก (js/crossroads.js) */   /* v97.68 · T8 events: the toll is paid at the gate */
     for (;;) {
       const folk = townsfolk(id), per = window.WorldState?.period(S.hour) || 'day';
@@ -601,6 +620,7 @@
       else if (v === 'petition') { const pol = await ST.petitionPanel(id); if (pol) { log('📜 ' + poi.name + ' เปลี่ยนนโยบายเป็น ' + ST.POLICIES[pol].name); toast('📜 นโยบายใหม่: ' + ST.POLICIES[pol].name) } }
       else if (typeof v === 'string' && v.startsWith('svc:')) {   /* v97.72 · the town's own service (js/town-services.js) */
         const r = TownServices.run(S, id, v.slice(4), { passTime, healParty, game: () => window.WorldState.game(), reveal: n => { for (const [a, b] of G.within(S.pos.c, S.pos.r, n)) S.known[K(a, b)] = 1; fogDirty = true; reveal() } });
+        if (r.panel === 'finale') { await finaleScene() }
         if (r.panel === 'bounty' && window.Bounties) { await Bounties.panel(S, id, () => { save(); hudSync() }); Bounties.place(S, world, G); fogDirty = true; save(); hudSync() }
         for (const m of r.lines) log(m); save(); hudSync(); if (r.lines.length) await modal('<h2>' + esc(poi.name) + '</h2>' + r.lines.map(m => '<p>' + esc(m) + '</p>').join(''));
         if (r.goto) { const tw = world.towns.find(x => x.id === r.goto); if (tw) { S.pos = { c: tw.c, r: tw.r }; S.known[K(tw.c, tw.r)] = 1; fogDirty = true; reveal(); save(); hudSync(); { const p = center(tw.c, tw.r); token.x = p.x; token.y = p.y; follow() } await townVisit(tile(tw.c, tw.r).poi); return } }

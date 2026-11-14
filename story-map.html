@@ -88,13 +88,36 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 .tl-c .opt:hover{outline:1px solid #ffd166}
 #mode{display:flex;gap:0}#mode button{border-radius:0}#mode button:first-child{border-radius:7px 0 0 7px}#mode button:last-child{border-radius:0 7px 7px 0}
 #hint{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;z-index:5;background:#2a2550f2;border:1px solid #9a8cff;border-radius:10px;padding:6px 14px;font-size:12.5px;max-width:min(900px,92vw);display:none}
+#mapv{position:absolute;left:0;right:0;bottom:0;top:var(--bh,86px);display:none;overflow:hidden;background:#07111f;cursor:grab;touch-action:none}
+#mapv.drag{cursor:grabbing}
+#mapw{position:absolute;left:0;top:0;width:960px;height:992px;transform-origin:0 0}
+#mapw img{width:100%;height:100%;display:block;opacity:.9;pointer-events:none;user-select:none}
+.mk{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;z-index:2}
+.mk i{font-style:normal;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:23px;background:#15131cdd;border:3px solid var(--rc,#6f64b8)}
+.mk b{font-size:12px;background:#15131ce8;padding:1px 8px;border-radius:8px;margin-top:3px;white-space:nowrap}
+.mk .bd{position:absolute;right:-8px;top:-8px;min-width:21px;height:21px;border-radius:11px;background:#ffb347;color:#15131c;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.mk.sel i{box-shadow:0 0 0 7px #ffd16688}
+.mk.pulse i{animation:mkp .9s 4}
+@keyframes mkp{0%{box-shadow:0 0 0 0 #ffd166cc}100%{box-shadow:0 0 0 22px #ffd16600}}
+.mk.dim{opacity:.35}
+#mapinfo{position:absolute;left:12px;top:calc(var(--bh,86px) + 10px);width:310px;max-height:calc(100% - var(--bh,86px) - 110px);overflow:auto;background:#1d1a27f2;border:1px solid var(--line);border-radius:12px;padding:12px 14px;z-index:6;display:none}
+#mapinfo h3{margin:0 0 4px;font-size:16px}#mapinfo h4{margin:10px 0 3px;font-size:12px;color:var(--mut);font-weight:600}
+#mapinfo a{display:block;margin:2px 0;color:#ffd166;cursor:pointer;font-size:13px}#mapinfo a.now{font-weight:700;color:#fff}
+#mapinfo .ppl{display:flex;flex-wrap:wrap;gap:6px}#mapinfo .ppl span{font-size:12px;background:#15131c;border:1px solid var(--line);border-radius:8px;padding:1px 8px}
+#maplg{position:absolute;right:12px;bottom:10px;z-index:5;background:#100e17ee;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:11.5px;color:var(--mut)}
+#maplg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 8px;vertical-align:-1px}
+.mini{position:relative;width:100%;height:200px;overflow:hidden;border-radius:10px;border:1px solid var(--line);margin:8px 0 4px;cursor:pointer;background:#07111f}
+.mini .in{position:absolute}.mini img{width:100%;display:block}
+.mini .pin{position:absolute;transform:translate(-50%,-100%);font-size:22px;filter:drop-shadow(0 2px 3px #000)}
+.mini small{position:absolute;left:6px;bottom:4px;background:#15131ccc;padding:0 6px;border-radius:6px;font-size:10.5px;color:#cfc9e6}
+.pchip{display:inline-block;background:#2a2550;border:1px solid #6f64b8;border-radius:99px;padding:1px 10px;margin:2px 4px 2px 0;cursor:pointer;font-size:12px}
 #count{margin-left:auto;color:var(--mut);font-size:12px}
 @media(max-width:700px){#info{width:auto;left:12px}}
 </style>
 </head>
 <body>
 <div id="head"><div id="bar">
- <div class="grp" id="mode"><button id="mTree" class="on">🌳 มุมมองกิ่ง</button><button id="mTl">🛤 เดินคู่ขนาน</button></div>
+ <div class="grp" id="mode"><button id="mTree" class="on">🌳 มุมมองกิ่ง</button><button id="mTl">🛤 เดินคู่ขนาน</button><button id="mMap">🗺 แผนที่โลก</button></div>
  <div class="grp"><button id="expAll">ขยายทั้งหมด</button><button id="colAll">ยุบเหลือเส้นหลัก</button><button id="fit">⤢ พอดีจอ</button></div>
  <div class="grp"><span>สถานะ</span><button data-f="ok" class="on">✅ ทำแล้ว</button><button data-f="wip" class="on">🟡 ทำบางส่วน</button><button data-f="todo" class="on">⚪ ยังไม่ทำ</button><button data-f="wait" class="on">🔒 รอเจ้าของเกม</button></div>
  <div class="grp"><button id="xl" class="on">เส้นเชื่อมข้ามเส้น</button><button id="onlyCh">เฉพาะจุดตัดสินใจ</button></div>
@@ -105,13 +128,16 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 <div id="view"><div id="world"><svg id="edges"></svg></div></div>
 <div id="info"><span class="x" id="ix">✕</span><div id="ib"></div></div>
 <div id="tl"></div>
+<div id="mapv"><div id="mapw"><img id="mapimg" src="docs/lore/maps/norchorthal-region.webp" alt=""></div></div>
+<div id="mapinfo"></div>
+<div id="maplg" style="display:none">วงแหวน = ระดับรอยหมอง ณ หมุดที่เลือก<i style="background:#5fbf7a"></i>0<i style="background:#e6b84d"></i>1<i style="background:#ff8a4d"></i>2<i style="background:#ff4d6a"></i>3 · ป้ายส้ม = จำนวนเหตุการณ์ · ตำแหน่งบนภาพเป็นค่าโดยประมาณ</div>
 <div id="hint"></div>
 <div id="cast"><h4><span id="ct">👥 ตัวละครที่เกี่ยวข้อง</span><span class="x" id="cx">✕</span></h4><div class="cgrid" id="cg"></div><div id="cwhy"></div><p style="font-size:11px;color:var(--mut);margin:8px 0 0">กรอบทอง = ระบุไว้ใน Canon/Draft · กรอบน้ำเงิน = ข้อเสนอ (ยังไม่ใช่ Canon · ตรวจ NPC ก่อนใช้) · กรอบเทา = ยังไม่มีในเกม</p></div>
 <div id="legend">
  <span><i style="background:#9a8cff"></i>เส้นเรื่อง</span><span><i style="background:#ffb347;border-radius:8px"></i>⑂ จุดตัดสินใจ (แตกกิ่ง)</span><span><i style="background:#3f7f7f"></i>ผลของทางเลือก</span><span><i style="background:#ff7fb0"></i>★ ตอนจบ</span><span><i style="background:#4a86c9"></i>⚙ ระบบเกม</span><span><i style="border:1px dashed #c77dff"></i>🔒 ยังไม่ตัดสิน</span>
  <span><i style="background:#5fbf7a"></i>ทำแล้ว</span><span><i style="background:#e6b84d"></i>ทำบางส่วน</span><span><i style="background:#7f8aa8"></i>ยังไม่ทำ</span><span style="color:#7fd6ff">╌╌ เส้นเชื่อมข้ามเส้น</span>
 </div>
-<script src="js/code-portraits.js"></script><script src="js/crossroads.js"></script><script src="js/story-map-data.js"></script>
+<script src="js/main-story.js"></script><script src="js/story-cast.js"></script><script src="js/code-portraits.js"></script><script src="js/crossroads.js"></script><script src="js/story-map-data.js"></script>
 <script>
 (function(){
 'use strict';
@@ -150,6 +176,7 @@ function build(){
 function toggle(id){collapsed.has(id)?collapsed.delete(id):collapsed.add(id);layout()}
 function layout(){
   if(mode==='tl'){renderTL();return}
+  if(mode==='map'){renderMap();return}
   const vis=[];let rows={};
   /* วัดความสูง */
   const walk=(n,d)=>{vis.push([n,d]);for(const k of visibleKids(n))walk(k,d+1)};walk(TREE,0);
@@ -188,6 +215,8 @@ function select(id){sel=id;const n=byId[id];if(!n)return;
   $('ib').innerHTML=`<h3>${esc(n.t)}</h3><div class="tags"><span class="tag">${KD[n.k]}</span><span class="tag" style="color:var(--${n.s});border-color:var(--${n.s})">${ST[n.s]}</span><span class="tag">${SP[n.sp||0]}</span>${n.g?`<span class="tag">หมุด: ${esc(D.STAGES.find(s=>s.id===n.g)?.t||n.g)}</span>`:''}</div>
    ${chain.length?`<p style="color:var(--mut);font-size:12px">${chain.map(c=>esc(c.t)).join(' › ')}</p>`:''}<p>${esc(n.d||'(ยังไม่มีรายละเอียด)')}</p>
    ${n.f?.length?'<h4>ไฟล์ / เอกสารที่เกี่ยวข้อง</h4>'+n.f.map(f=>`<code>${esc(f)}</code>`).join(''):''}${kids}${links?'<h4>เชื่อมกับเส้นอื่น</h4>'+links:''}`;
+  { const pl=placesOf(n);if(pl.length)$('ib').insertAdjacentHTML('beforeend',`<h4>📍 เกิดที่</h4>${miniMap(pl)}${pl.map(x=>`<span class="pchip" data-town="${x}">${esc(D.PLACE[x]?.ic||'')} ${esc(D.PLACE[x]?.n||x)}</span>`).join('')}`);
+    $('ib').querySelectorAll('[data-town]').forEach(a=>a.onclick=()=>{setMode('map');focusTown(a.dataset.town)});const mm=$('ib').querySelector('.mini');if(mm)mm.onclick=()=>{setMode('map');focusTown(pl[0])} }
   const w=WHO[id]||[];$('ib').insertAdjacentHTML('beforeend',w.length?`<button class="cbtn" id="cbtn">👥 ตัวละครที่เกี่ยวข้อง (${w.length}) — ${w.slice(0,4).map(x=>esc(CAST[x[0]].n)).join(' · ')}${w.length>4?' …':''}</button>`:'<p style="color:var(--mut);font-size:12px">ยังไม่ได้ระบุตัวละครของกล่องนี้</p>');
   if(w.length)$('cbtn').onclick=()=>openCast(id);else $('cast').style.display='none';
   $('info').style.display='block';
@@ -214,7 +243,7 @@ view.addEventListener('wheel',e=>{e.preventDefault();const r=view.getBoundingCli
 /* controls */
 $('expAll').onclick=()=>{collapsed=new Set();layout();fit()};
 $('colAll').onclick=()=>{collapseDeep(1);layout();fit()};
-$('fit').onclick=fit;
+$('fit').onclick=()=>mode==='map'?mapFit():fit();
 $('xl').onclick=e=>{showX=!showX;e.target.classList.toggle('on',showX);layout()};
 $('onlyCh').onclick=e=>{onlyChoice=!onlyChoice;e.target.classList.toggle('on',onlyChoice);if(onlyChoice)collapsed=new Set();layout();fit()};
 document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{const f=b.dataset.f;filt[f]=filt[f]?0:1;b.classList.toggle('on',!!filt[f]);layout()});
@@ -248,9 +277,38 @@ function renderTL(){
     if(showX)for(const [a,b] of D.LINKS)arrow(rc(mainId(a)),rc(mainId(b)),'#7fd6ff',true,1.3);
     svg2.innerHTML=out});
   $('count').textContent=`มุมมองเดินคู่ขนาน · ${main.length} กล่องหลัก · ⑂ ${main.filter(n=>n.k==='choice').length} จุดตัดสินใจ`}
-function setMode(m){mode=m;$('mTree').classList.toggle('on',m==='tree');$('mTl').classList.toggle('on',m==='tl');$('view').style.display=m==='tree'?'':'none';$('tl').style.display=m==='tl'?'block':'none';$('stages').style.display=m==='tl'?'none':'';sizeBar();
-  const hn=$('hint');hn.style.display='block';hn.innerHTML=m==='tl'?'🛤 <b>ทุกเส้น (แถว) เดินไปพร้อมกัน</b> — ผู้เล่นไม่ต้องเลือกเส้นเดียว · เลือกเฉพาะที่กล่อง <b style="color:#ffb347">⑂ เลือกได้ทางเดียว</b> · ลูกศรทึบ = ลำดับในเส้นเดียวกัน · เส้นประฟ้า = เส้นหนึ่งส่งผลต่ออีกเส้น':'🌳 มุมมองกิ่ง: กิ่งส้ม ⑂ = เลือกทางเดียว · กิ่งอื่น = เหตุการณ์ที่เกิดต่อกัน (ไม่ต้องเลือก) · สลับเป็น "🛤 เดินคู่ขนาน" เพื่อดูว่าเส้นไหนเดินพร้อมกัน';clearTimeout(hn._t);hn._t=setTimeout(()=>hn.style.display='none',9000);layout();if(m==='tree')fit()}
-$('mTree').onclick=()=>setMode('tree');$('mTl').onclick=()=>setMode('tl');
+/* ---------- แผนที่โลก: เมืองที่เกิดเหตุการณ์ · คลิกอีเวนต์แล้วเด้งมาที่ที่นั่น ---------- */
+const POS=D.POS,PLACES=D.PLACES,MSY=window.MainStory,SCA=window.StoryCast;
+const sidx=id=>Math.max(-1,D.STAGES.findIndex(s=>s.id===id));
+function placesOf(n){for(let x=n;x;x=parent[x.id])if(PLACES[x.id])return PLACES[x.id];return []}
+function miniMap(pl){const W=304,Z=2.1,iw=W*Z,ih=iw*684/662,cx=pl.reduce((a,x)=>a+POS[x][0],0)/pl.length,cy=pl.reduce((a,x)=>a+POS[x][1],0)/pl.length;
+  return `<div class="mini" title="กดเพื่อเปิดแผนที่โลก"><div class="in" style="width:${iw}px;left:${W/2-cx/100*iw}px;top:${100-cy/100*ih}px"><img src="docs/lore/maps/norchorthal-region.webp" alt="">${pl.map(x=>`<span class="pin" style="left:${POS[x][0]}%;top:${POS[x][1]}%">📍</span>`).join('')}</div><small>ตำแหน่งโดยประมาณ</small></div>`}
+const infAt=(town,stageId)=>{const s=MSY?.STAGES.find(x=>x.id===stageId);if(!s)return null;const d=MSY.DIST[town];return d==null?null:Math.max(0,Math.min(3,s.inf-d))};
+const RING=['#5fbf7a','#e6b84d','#ff8a4d','#ff4d6a'];
+let mapSel=null,mz=.75,mx=0,my=0,mdrag=null;
+function nodesAt(town){const si=stageSel?sidx(stageSel):99;return all.filter(n=>n!==TREE&&(PLACES[n.id]||[]).includes(town)&&filt[n.s]&&(sidx(n.g)<=si))}
+function renderMap(){
+  const mw=$('mapw');mw.querySelectorAll('.mk').forEach(e=>e.remove());const sg=stageSel||curStage;
+  for(const [id,pc] of Object.entries(POS)){const P=D.PLACE[id],ns=nodesAt(id),inf=sg?infAt(id,sg):null,m=document.createElement('div');m.className='mk'+(mapSel===id?' sel':'')+((q&&!ns.some(matches))?' dim':'');m.dataset.id=id;m.style.left=pc[0]+'%';m.style.top=pc[1]+'%';m.style.setProperty('--rc',inf==null?'#6f64b8':RING[inf]);
+    m.innerHTML=`<i>${P.ic}</i><b>${esc(P.n)}</b>${ns.length?`<span class="bd">${ns.length}</span>`:''}`;m.onclick=e=>{e.stopPropagation();mapSel=id;renderMap();townPanel(id)};mw.append(m)}
+  $('maplg').style.display='block';$('count').textContent='แผนที่โลก · '+(sg?'หมุด: '+(D.STAGES.find(s=>s.id===sg)?.t||sg):'ทุกหมุด')+(MSY&&sg?' · สงคราม '+MSY.STAGES.find(s=>s.id===sg)?.war+'/4':'');
+  if(mapSel)townPanel(mapSel)}
+function townPanel(id){const P=D.PLACE[id],ns=nodesAt(id),sg=stageSel||curStage,inf=sg?infAt(id,sg):null,pe=SCA?SCA.CAST.filter(c=>c.town===id&&(!stageSel||sidx(c.from)<=sidx(stageSel))):[],sp=SCA?Object.values(SCA.SPOTS).filter(s=>!s.towns||s.towns.includes(id)):[];
+  const nm=Object.keys(D.PLACES).length;$('mapinfo').style.display='block';
+  $('mapinfo').innerHTML=`<h3>${P.ic} ${esc(P.n)}</h3><div style="color:var(--mut);font-size:12px">${esc(P.r)}</div>${inf!=null?`<div style="margin-top:6px;font-size:12px">รอยหมอง ณ หมุดนี้: <b style="color:${RING[inf]}">${inf}/3</b></div>`:''}
+   ${pe.length?`<h4>ตัวละครของเนื้อเรื่องที่นี่</h4><div class="ppl">${pe.map(c=>`<span title="${esc(c.r)} · เริ่มพบที่หมุด ${esc(c.from)}">${esc(c.n)}</span>`).join('')}</div>`:''}
+   ${sp.length?`<h4>สถานที่/ปุ่มในเมือง</h4>${sp.map(s=>`<div style="font-size:12.5px">${esc(s.label)}</div>`).join('')}`:''}
+   <h4>เหตุการณ์ในเส้นเรื่อง (${ns.length}) — กดเพื่อดูรายละเอียด</h4>${ns.map(n=>`<a data-go="${n.id}" class="${n.id===sel?'now':''}">${n.k==='choice'?'⑂ ':'• '}${esc(n.t)} <small style="color:var(--mut)">${esc(D.STAGES.find(s=>s.id===n.g)?.t||'')}</small></a>`).join('')||'<span style="color:var(--mut);font-size:12px">ยังไม่มีเหตุการณ์ที่ผูกกับเมืองนี้ในหมุดที่เลือก</span>'}`;
+  $('mapinfo').querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>{const g=a.dataset.go;for(let p=parent[g];p;p=parent[p.id])collapsed.delete(p.id);select(g)})}
+const mapApply=()=>{$('mapw').style.transform=`translate(${mx}px,${my}px) scale(${mz})`};
+function mapFit(){const r=$('mapv').getBoundingClientRect();mz=Math.min(r.width/960,r.height/992)*1.1;mx=(r.width-960*mz)/2;my=(r.height-992*mz)/2;mapApply()}
+function focusTown(id){if(!POS[id])return;mapSel=id;mz=1.5;const r=$('mapv').getBoundingClientRect(),x=POS[id][0]/100*960,y=POS[id][1]/100*992;mx=r.width/2-x*mz+120;my=r.height/2-y*mz;mapApply();renderMap();$('mapw').querySelector(`.mk[data-id="${id}"]`)?.classList.add('pulse')}
+{const v=$('mapv');v.addEventListener('pointerdown',e=>{if(e.target.closest('.mk'))return;mdrag={x:e.clientX,y:e.clientY,mx,my};v.classList.add('drag');v.setPointerCapture(e.pointerId)});
+ v.addEventListener('pointermove',e=>{if(!mdrag)return;mx=mdrag.mx+e.clientX-mdrag.x;my=mdrag.my+e.clientY-mdrag.y;mapApply()});v.addEventListener('pointerup',()=>{mdrag=null;v.classList.remove('drag')});
+ v.addEventListener('wheel',e=>{e.preventDefault();const r=v.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top,k=Math.exp(-e.deltaY*.0015),ns=Math.min(3,Math.max(.4,mz*k));mx=px-(px-mx)*ns/mz;my=py-(py-my)*ns/mz;mz=ns;mapApply()},{passive:false})}
+function setMode(m){mode=m;$('mTree').classList.toggle('on',m==='tree');$('mTl').classList.toggle('on',m==='tl');$('view').style.display=m==='tree'?'':'none';$('mapv').style.display=m==='map'?'block':'none';if(m!=='map'){$('mapinfo').style.display='none';$('maplg').style.display='none'}$('mMap').classList.toggle('on',m==='map');$('legend').style.display=m==='map'?'none':'';$('tl').style.display=m==='tl'?'block':'none';$('stages').style.display=m==='tl'?'none':'';sizeBar();
+  const hn=$('hint');hn.style.display='block';hn.innerHTML=m==='map'?'🗺 <b>แผนที่โลก</b> — วงกลมคือเมือง · ป้ายส้ม = จำนวนเหตุการณ์ · กดเมืองดูคน/ที่/เหตุการณ์ · กดเหตุการณ์ในแผนผังแล้วกด 📍 เพื่อเด้งมาที่นี่ · เลือกหมุดเรื่องด้านบนเพื่อดูรอยหมองลามตามเรื่อง':m==='tl'?'🛤 <b>ทุกเส้น (แถว) เดินไปพร้อมกัน</b> — ผู้เล่นไม่ต้องเลือกเส้นเดียว · เลือกเฉพาะที่กล่อง <b style="color:#ffb347">⑂ เลือกได้ทางเดียว</b> · ลูกศรทึบ = ลำดับในเส้นเดียวกัน · เส้นประฟ้า = เส้นหนึ่งส่งผลต่ออีกเส้น':'🌳 มุมมองกิ่ง: กิ่งส้ม ⑂ = เลือกทางเดียว · กิ่งอื่น = เหตุการณ์ที่เกิดต่อกัน (ไม่ต้องเลือก) · สลับเป็น "🛤 เดินคู่ขนาน" เพื่อดูว่าเส้นไหนเดินพร้อมกัน';clearTimeout(hn._t);hn._t=setTimeout(()=>hn.style.display='none',9000);layout();if(m==='tree')fit()}
+$('mMap').onclick=()=>{setMode('map');mapFit()};$('mTree').onclick=()=>setMode('tree');$('mTl').onclick=()=>setMode('tl');
 build();layout();fit();
 if(curStage)expandForStage(curStage),layout();
 window.StoryMap={openCast,select,toggle,layout,byId};

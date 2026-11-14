@@ -21,4 +21,7 @@ ok(M.STAGES.every(s => all.some(n => n.g === s.id)), 'every story stage has at l
   ok(Object.values(C).every(c => c.gone || c.code || (c.src && fs.existsSync(path.join(__dirname, '..', c.src.split('?')[0])))), 'every in-game character has a real picture file');
   ok(Object.values(C).every(c => c.n && c.r), 'name and role'); ok(Object.keys(C).every(k => Object.values(W).some(l => l.some(x => x[0] === k))), 'no unused characters') }
 ok(Object.values(D.CAST).every(c => !c.code || CP.has(c.code)), 'code portraits exist for every code character'); ok(all.filter(n => n.id.startsWith('cr_') && n.k === 'choice').length >= 15, 'implemented crossroads appear as decision nodes');
+// แผนที่โลก: ทุกเมืองมีตำแหน่ง/ชื่อ · โหนดอ้างเมืองที่มีจริง · อีเวนต์ Crossroads ผูกเมืองครบ
+{ const P = D.POS, L = D.PLACE; ok(Object.keys(L).every(k => P[k] && P[k].length === 2 && P[k][0] > 0 && P[k][0] < 100 && P[k][1] > 0 && P[k][1] < 100), 'every town has a position on the map'); ok(Object.values(D.PLACES).every(a => a.every(x => L[x])), 'nodes point at known towns');
+  ok(Object.keys(D.PLACES).every(k => ids.has(k)), 'place nodes exist'); const XR = require(path.join(__dirname, '..', 'js', 'crossroads.js')); ok(XR.EVENTS.every(e => D.PLACES['cr_' + e.id] && D.PLACES['cr_' + e.id].length), 'every crossroad has places'); ok(XR.EVENTS.every(e => !e.towns || e.towns.every(x => L[x])), 'crossroad towns are on the map') }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

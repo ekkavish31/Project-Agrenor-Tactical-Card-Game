@@ -32,6 +32,7 @@ const GOODS={
  iceCore:{name:'แก่นน้ำแข็ง',element:'ice',rarity:'good',use:'ขาย',price:32,text:'ผลึกเย็นเฉียบที่ไม่ละลาย'},
  boneCharm:{name:'เครื่องรางกระดูก',element:'dark',rarity:'common',use:'ขาย',price:13,text:'ของขลังจากซากวิหาร'},
  soulGem:{name:'อัญมณีวิญญาณ',element:'chaos',rarity:'good',use:'ขาย',price:38,text:'แสงสีม่วงวนอยู่ข้างใน'},
+ mirrorShard:{name:'ผลึกสะท้อน',element:'light',rarity:'rare',use:'สะสม',price:150,text:'ของที่ระลึกจากเพื่อนตัวเล็กที่กลับป่าไปแล้ว · ไม่ใช่การ์ด'},
  relic:{name:'ตราประทับหัวหน้า',element:'chaos',rarity:'rare',use:'เควส',price:60,text:'หลักฐานการปราบหัวหน้าพื้นที่'}};
 /* v98.478 · ชิ้นส่วนหายากของมอนแต่ละชนิด (Canon D): ชื่อม่วง + สัญลักษณ์ ❖ แทนคำว่า "(มายา)" · ขายได้ ส่งเควสได้ และ Mip กินแล้วหาย (maya:true) */
 const MAYA_OF={wolf:'mayaWolf',shadowWolf:'mayaShadowWolf',frostWolf:'mayaFrostWolf',yeti:'mayaYeti',bat:'mayaBat',gull:'mayaGull',bandit:'mayaBandit',slime:'mayaSlime',kobold:'mayaKobold',snowKobold:'mayaSnowKobold',golem:'mayaGolem'};

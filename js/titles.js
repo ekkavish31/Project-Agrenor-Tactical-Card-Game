@@ -44,6 +44,9 @@
     'mine.closed': 'เหมืองถูกปิด การขุดหยุดลง',
     'mine.freed': 'ผู้ที่ถูกส่งลงเหมืองได้กลับขึ้นมา',
     'merchant.fair': 'ยามสงคราม ไม่โก่งราคาของจำเป็น',
+    'end.light': 'เหมืองถูกปิดด้วยแสงของผู้เฝ้าแสง สงครามหยุดด้วยการบังคับ',
+    'end.shadow': 'ก้อนหิวถูกดึงเข้าเสี้ยวดาบของนักล่าเงา — เงามีพลังเพิ่ม',
+    'end.aldren': 'อัลเดรนชนะก่อนด้วยกำลัง แต่เสียหายหนัก',
     'end.peace': 'สองอาณาจักรหยุดรบ แม้เพียงชั่วคราว'
   };
   const chron = g => ((g.village ||= {}).chronicle ||= []);
@@ -103,9 +106,12 @@
     T('chainbreaker', 'ผู้ปล่อยเชลย', 5, { hp: 15, st: 10 }, 'ผู้คนที่ถูกส่งลงเหมืองได้กลับขึ้นมาเพราะคุณ', (g) => has(g, 'mine.freed')),
     T('fairtrader', 'พ่อค้าผู้ไม่โก่งราคา', 5, { gold: .06 }, 'ยามสงคราม ไม่ขายของจำเป็นแพงกว่าที่ควร', (g) => has(g, 'merchant.fair')),
     T('peacemaker', 'ผู้ทำให้ปืนเงียบ', 5, { power: 2, spell: 2, hp: 20 }, 'ทำให้สองอาณาจักรหยุดรบ แม้เพียงชั่วคราว', (g) => has(g, 'end.peace')),
+    T('lightkeeper', 'ผู้ยืนข้างแสง', 5, { armor: 2, hp: 15 }, 'ช่วยผู้เฝ้าแสงปิดเหมืองจนหยุดสงคราม แม้ต้องใช้การบังคับ', (g) => has(g, 'end.light')),
+    T('shadowwalker', 'ผู้เดินเคียงเงา', 5, { power: 2, crit: .03 }, 'ปล่อยให้เงาเอาก้อนหิวไป — และเปิดประตูสู่บทต่อไป', (g) => has(g, 'end.shadow')),
+    T('warwinner', 'ผู้ชนะอย่างเสียหาย', 5, { gold: .06, hp: 10 }, 'ช่วยอัลเดรนชนะก่อน — ราคาที่จ่ายยังไม่จบ', (g) => has(g, 'end.aldren')),
     T('chosen', 'ผู้ถูกเลือก', 5, { power: 2, spell: 2, crit: .03, armor: 2, hp: 20, st: 10, xp: .05 }, 'สะสมฉายาไว้มากพอจะทำให้โลกหันมามอง', (g, t, earned) => Object.keys(earned).length >= 20)
   ];
-  const ICON = {"foxseen": "🦊", "foxfriend": "🦊", "foxfeeder": "🍖", "collarfree": "⛓", "shadowcleanser": "✨", "sleepkeeper": "💎", "minecloser": "⛏", "chainbreaker": "🔓", "fairtrader": "⚖", "peacemaker": "🕊", "rookie": "🗡", "wolfbane": "🐺", "bandithunter": "🏹", "wayfarer": "👣", "survivor": "🩹", "seasoned": "⛰", "pennywise": "🪙", "veteran": "🛡", "nightwalker": "🌙", "unscathed": "✨", "closecall": "⚡", "lonewolf": "🐾", "packhunter": "🏔", "scholar": "📖", "craftsman": "🔨", "guardian": "🤝", "bosskiller": "👑", "streak10": "🔥", "eliteslayer": "🥀", "shadowless": "🌫", "ironwill": "⛓", "grown": "🌳", "adept": "🔮", "merchantking": "💰", "legend": "🏆", "undying": "♾", "polymath": "☯", "bulwark": "🏰", "stubborn": "💢", "phoenix": "🔥", "coward": "🍃", "ancient": "⏳", "chosen": "👁", "witness": "👀", "chaosHunter": "✷", "gratChosen": "🌀"};
+  const ICON = {"foxseen": "🦊", "foxfriend": "🦊", "foxfeeder": "🍖", "collarfree": "⛓", "shadowcleanser": "✨", "sleepkeeper": "💎", "minecloser": "⛏", "chainbreaker": "🔓", "fairtrader": "⚖", "peacemaker": "🕊", "lightkeeper": "☀", "shadowwalker": "☾", "warwinner": "⚔", "rookie": "🗡", "wolfbane": "🐺", "bandithunter": "🏹", "wayfarer": "👣", "survivor": "🩹", "seasoned": "⛰", "pennywise": "🪙", "veteran": "🛡", "nightwalker": "🌙", "unscathed": "✨", "closecall": "⚡", "lonewolf": "🐾", "packhunter": "🏔", "scholar": "📖", "craftsman": "🔨", "guardian": "🤝", "bosskiller": "👑", "streak10": "🔥", "eliteslayer": "🥀", "shadowless": "🌫", "ironwill": "⛓", "grown": "🌳", "adept": "🔮", "merchantking": "💰", "legend": "🏆", "undying": "♾", "polymath": "☯", "bulwark": "🏰", "stubborn": "💢", "phoenix": "🔥", "coward": "🍃", "ancient": "⏳", "chosen": "👁", "witness": "👀", "chaosHunter": "✷", "gratChosen": "🌀"};
   const BY = Object.fromEntries(LIST.map(x => [x.id, x]));
 
   const st = g => { const v = (g.village ||= {}); const o = (v.titles ||= {}); o.tally ||= {}; o.earned ||= {}; o.equipped ||= []; return o };
