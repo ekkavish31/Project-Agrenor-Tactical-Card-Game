@@ -48,6 +48,9 @@
     pumpkin: { name: 'ฟักทองในไร่', hp: 30, iq: 0, move: 0, atk: 0, scale: .75, fx: 'blunt', img: 'pumpkin', passive: true, loot: true, evoGroup: 'pumpkin', el: 'earth' },
     pumpkinBoss: { name: 'บอสฟักทอง', hp: 70, iq: 1, move: 2, atk: 6, scale: 1.05, fx: 'blunt', img: 'pumpkinBoss', range: 3, el: 'earth' },
     pest: { name: 'ด้วงกินใบ', hp: 4, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', img: 'pest', el: 'wind' },
+    /* v98.488 · mine of Deepcairn (docs/lore/MAIN-STORY-CANON.md · §H): murk = สัตว์รอยหมอง (infected beast) · hunger = ก้อนหิว (boss) — drawn by code (js/code-monsters.js) until real pictures exist */
+    murk: { name: 'สัตว์รอยหมอง', hp: 38, iq: 1, move: 4, atk: 9, scale: .95, fx: 'knife', img: 'murk', code: true, el: 'dark' },
+    hunger: { name: 'ก้อนหิว', hp: 150, iq: 2, move: 2, atk: 14, scale: 1.7, fx: 'blunt', img: 'hunger', code: true, range: 3, shove: true, el: 'dark' },
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
   /* v98.58 · evolution (วิวัฒน์): the next form of a monster, fought mid-battle (rules + hidden odds: js/flat-battle.js evolveCheck). Data only — add a pair to give another monster a next form. */

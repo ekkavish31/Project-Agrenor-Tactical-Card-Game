@@ -238,8 +238,12 @@
   ];
 
   /* ทางแยกที่ทำในเกมแล้ว (js/crossroads.js) สร้างกล่อง ⑂ + ผลของทางเลือกอัตโนมัติ — แหล่งข้อมูลเดียว ไม่เขียนซ้ำ · ต้องโหลด crossroads.js ก่อนไฟล์นี้ */
-  const CROSS_AT = { fugitive: 'x4', callup: 'w2', firstSick: 'x5', mayaBroker: 'm3', corvinInvite: 'x10', convoy: 'w3', moonRite: 'm5', scent: 'r2', armor: 's2', sickRefugee: 's4', languageLeaf: 'x7', gouge: 'w1', sigrid: 's8', bram: 's8', kier: 's8', luna: 's8' };
-  const CROSS_WHO = { fugitive: [['vik', 'เชลยที่หนีมา', I_]], callup: [['third', 'ผู้ตรวจการเสบียง/ใบเรียกพล', I_]], firstSick: [['irene', 'หมอหญิงไอรีน', I_], ['saf', 'หมอยาฝั่งหมู่บ้าน', I_]], mayaBroker: [['vik', 'นายหน้า ❖', I_]], corvinInvite: [['third', 'คอร์วิน', I_], ['mip', 'ผู้ถูกขอยืม', D_]], convoy: [['helga', 'ผู้แสวงบุญในขบวน', I_]], moonRite: [['helga', 'ผู้ทำพิธี', I_], ['mip', 'ปลอกคอสั่น', D_], ['mage', 'เสียงตอบครั้งแรก', G_]], scent: [['shadow', 'ผู้ได้กลิ่น ❖', G_], ['lorrik', 'นักล่าเงาที่ธอร์นวอตช์', I_]], armor: [['gus', 'ช่างตี Xyriel', D_], ['light', 'จำเกราะได้', G_]], sickRefugee: [['irene', 'เรือนพยาบาล', I_]], languageLeaf: [['luna', 'ถอดจารึก', D_], ['mira', 'ถอดจารึก', D_], ['naera', 'ร่องรอยสำนัก', G_]], gouge: [['vik', 'พ่อค้า', I_]], sigrid: [['sigrid', 'สหายในอีเวนต์', D_]], bram: [['bram', 'สหายในอีเวนต์', D_]], kier: [['kier', 'สหายในอีเวนต์', D_]], luna: [['luna', 'สหายในอีเวนต์', D_]] };
+  const CROSS_AT = { fugitive: 'x4', callup: 'w2', firstSick: 'x5', mayaBroker: 'm3', corvinInvite: 'x10', convoy: 'w3', moonRite: 'm5', scent: 'r2', armor: 's2', sickRefugee: 's4', languageLeaf: 'x7', boudilList: 'x4', lightPass: 'r1', gouge: 'w1', sigrid: 's8', bram: 's8', kier: 's8', luna: 's8' };
+  const CROSS_WHO = { fugitive: [['vik', 'เชลยที่หนีมา', I_]], callup: [['third', 'ผู้ตรวจการเสบียง/ใบเรียกพล', I_]], firstSick: [['irene', 'หมอหญิงไอรีน', I_], ['saf', 'หมอยาฝั่งหมู่บ้าน', I_]], mayaBroker: [['vik', 'นายหน้า ❖', I_]], corvinInvite: [['third', 'คอร์วิน', I_], ['mip', 'ผู้ถูกขอยืม', D_]], convoy: [['helga', 'ผู้แสวงบุญในขบวน', I_]], moonRite: [['helga', 'ผู้ทำพิธี', I_], ['mip', 'ปลอกคอสั่น', D_], ['mage', 'เสียงตอบครั้งแรก', G_]], scent: [['shadow', 'ผู้ได้กลิ่น ❖', G_], ['lorrik', 'นักล่าเงาที่ธอร์นวอตช์', I_]], armor: [['gus', 'ช่างตี Xyriel', D_], ['light', 'จำเกราะได้', G_]], sickRefugee: [['irene', 'เรือนพยาบาล', I_]], languageLeaf: [['luna', 'ถอดจารึก', D_], ['mira', 'ถอดจารึก', D_], ['naera', 'ร่องรอยสำนัก', G_]], gouge: [['vik', 'พ่อค้า', I_]], boudilList: [['darren', 'ผู้เฝ้าปากเหมือง (รู้เรื่องคนงาน)', I_]], lightPass: [['mierris', 'ผู้ขอทางผ่าน', I_]], sigrid: [['sigrid', 'สหายในอีเวนต์', D_]], bram: [['bram', 'สหายในอีเวนต์', D_]], kier: [['kier', 'สหายในอีเวนต์', D_]], luna: [['luna', 'สหายในอีเวนต์', D_]] };
+  /* เรื่องย่อย/สถานที่ที่ทำในเกมแล้ว v98.488 (เหมืองชั้นล่าง · เรื่องย่อยต่อท้ายตอนจบ) — ผูกกับกล่องเดิม ไม่ขัด Canon */
+  { const find0 = (n, id) => n.id === id ? n : n.c.reduce((r_, k) => r_ || find0(k, id), null), x9n = find0(TREE, 'x9'), e0n = find0(TREE, 'climax'), xp = find0(TREE, 'x8');
+    if (x9n && !find0(TREE, 'x11')) xp?.c.push(N('x11', 'ดันเจี้ยนเหมืองชั้นล่าง (ลงไป → สัตว์รอยหมอง → ก้อนหิว)', 'sys', 'ok', 3, 'climax', 'ที่ดีปแคร์น ปุ่ม ⚑ เมื่อถึงหมุดไคลแมกซ์: ปากเหมือง → ปลอกคอเซอร์เรียน → ลงดันเจี้ยน (แผนที่ย่อยหกเหลี่ยม 13×9 · ศัตรู: สัตว์รอยหมอง ค้างคาว โคโบลด์ โกเล็ม) → ก้อนหิว (ภาพโค้ดชั่วคราว) → ชนะแล้วมวลยังไม่ตาย รอคำตัดสิน · ถอยออกแล้วกลับลงใหม่ได้', ['js/endings.js (DUNGEON)', 'js/world-map.js (finaleScene · areaExplore)', 'js/code-monsters.js (hunger · murk)'], []));
+    if (e0n && !find0(TREE, 'x12')) e0n.c.push(N('x12', 'เรื่องย่อยต่อท้ายตอนจบ (อ่านธงที่สะสมมา)', 'sys', 'ok', 3, 'end', 'หน้าเล่าเรื่องเพิ่มได้ถึง 6 หน้า ตามสิ่งที่ผู้เล่นทำ: รายชื่อคนงานของโบดิล · ผู้แสวงบุญของเฮลกา · เรือนพยาบาลของไอรีน · เกราะ Xyriel ที่คอร์วินสั่ง · ตลาดมืดของวิก · สหาย 4 คน · จารึก/เมล็ดต้นไม้ของเมียร์ริส + ปุ่ม 🕯 ดูว่าที่นั่นเป็นอย่างไรหลังจบ (ดีปแคร์น/ธอร์นวอตช์/ด่านหินเหนือ ตามตอนจบ)', ['js/endings.js (epilogue · AFTER)'], [])) }
   if (root.Crossroads) {
     const find = (n, id) => n.id === id ? n : n.c.reduce((r_, k) => r_ || find(k, id), null), side = find(TREE, 'side');
     if (!find(TREE, 's8')) side.c.push(N('s8', 'R8 เส้นสหาย (ทางแยกของแต่ละคน · ไม่มีใครตาย/ทิ้งทีม)', 'line', 'ok', 1, 'signs', 'ซิกริด · บรัม · เคียร์ · ลูน่า — เกิดเมื่อสหายคนนั้นอยู่ในทีม/ม้านั่งสำรอง', ['js/crossroads.js'], []));
@@ -256,22 +260,23 @@
      POS = ตำแหน่งโดยประมาณ (x%, y% ของภาพ docs/lore/maps/norchorthal-region.webp 662×684) ตามคำอธิบายใน js/world-gen.js / js/settlements.js
      (ทะเลสาบทางตะวันตกเฉียงใต้ของเฟิร์นเวล · เหนือที่เป็นหิน · เชิงช่องเขาตะวันออก · ที่ราบแดงทางใต้) — **ไม่ใช่พิกัดทางการ** เจ้าของแก้เลขเหล่านี้ได้ที่นี่
      ในเกมจริงโลกบนแผนที่สร้างจาก seed ของเซฟ ตำแหน่งต่างจากนี้ได้ */
-  const POS = { fernvale: [49.8, 43.9], lakenhold: [43.0, 50.6], willowshore: [47.4, 53.0], deepcairn: [50.6, 34.4], northgate: [56.2, 38.3], thornwatch: [65.3, 46.5], vinehollow: [45.3, 64.3], brookmere: [34.0, 49.0], haven: [32.3, 56.3] };
+  const POS = { fernvale: [49.8, 43.9], lakenhold: [43.0, 50.6], willowshore: [47.4, 53.0], deepcairn: [50.6, 34.4], northgate: [56.2, 38.3], thornwatch: [65.3, 46.5], vinehollow: [45.3, 64.3], brookmere: [34.0, 49.0], haven: [32.3, 56.3], deepmine: [48.3, 31.4], ruinsite: [67.4, 43.6] };
   const PLACE = {
     fernvale: { n: 'หมู่บ้านเฟิร์นเวล', ic: '🏡', r: 'หมู่บ้านเริ่มต้น · ที่ราบ' }, lakenhold: { n: 'นครหลวงลาเคนฮอลด์', ic: '🏰', r: 'ราชสำนัก · หอคอยเวท · พิพิธภัณฑ์ · คลังเสบียงหลวง' },
     willowshore: { n: 'หมู่บ้านวิลโลว์ชอร์', ic: '⛵', r: 'หมู่บ้านชาวประมงริมทะเลสาบ · เรือนพยาบาล' }, deepcairn: { n: 'หมู่บ้านดีปแคร์น', ic: '⛏', r: 'หมู่บ้านเหมือง · ปากทางชั้นล่าง' },
     northgate: { n: 'ด่านหินเหนือ', ic: '🛡', r: 'ด่านทางขึ้นเหนือ · แนวหน้าสงคราม · ผู้แสวงบุญ' }, thornwatch: { n: 'ธอร์นวอตช์', ic: '🏕', r: 'ค่ายรั้วไม้ปากช่องเขาตะวันออก · ชายป่าใหญ่' },
-    vinehollow: { n: 'หมู่บ้านไวน์ฮอลโลว์', ic: '🍇', r: 'ไร่องุ่น · ศาลเจ้า · บ่อน้ำร้อน' }, brookmere: { n: 'หมู่บ้านบรู๊คเมียร์', ic: '🌾', r: 'หมู่บ้านเกษตรริมลำธาร' }, haven: { n: 'ท่าเรือซอลต์เฮเวน', ic: '⚓', r: 'เมืองท่า · ตลาดมืด' }
+    vinehollow: { n: 'หมู่บ้านไวน์ฮอลโลว์', ic: '🍇', r: 'ไร่องุ่น · ศาลเจ้า · บ่อน้ำร้อน' }, brookmere: { n: 'หมู่บ้านบรู๊คเมียร์', ic: '🌾', r: 'หมู่บ้านเกษตรริมลำธาร' }, haven: { n: 'ท่าเรือซอลต์เฮเวน', ic: '⚓', r: 'เมืองท่า · ตลาดมืด' },
+    deepmine: { n: 'เหมืองชั้นล่าง', ic: '☠', r: 'ดันเจี้ยนของดีปแคร์น · บอสก้อนหิว · ปากทางถูกปิด', sub: 'deepcairn' }, ruinsite: { n: 'ร่องรอยสำนักชายป่า', ic: '🏚', r: 'ที่ที่เคยมีคนสอน · ใกล้ธอร์นวอตช์ (Naera ล่วงลับแล้วตาม Lore)', sub: 'thornwatch' }
   };
   /* โหนด → เมืองที่เกิด (ไม่ระบุ = ไม่ผูกสถานที่ · ลูกที่เป็นผลของทางเลือกใช้ที่ของแม่) · อีเวนต์จาก Crossroads ใช้ฟิลด์ towns ของมันเอง (null = ทุกเมือง) */
   const PLACES = {
     m1: ['fernvale'], m2: ['fernvale'], m7: ['deepcairn'], m8: ['deepcairn'], m8a: ['thornwatch'],
-    x1: ['lakenhold'], x2: ['deepcairn'], x3: ['deepcairn'], x4: ['deepcairn', 'northgate'], x6: ['willowshore', 'deepcairn'], x7: ['thornwatch', 'lakenhold'], x9: ['deepcairn'], x10: ['lakenhold'],
+    x1: ['lakenhold'], x2: ['deepcairn'], x3: ['deepcairn'], x4: ['deepcairn', 'northgate'], x6: ['willowshore', 'deepcairn'], x7: ['ruinsite', 'lakenhold'], x9: ['deepmine'], x10: ['lakenhold'],
     w1: ['northgate'], w2: ['northgate', 'lakenhold'], w3: ['northgate'], w4: ['deepcairn', 'northgate'], w5: ['deepcairn'], w7: ['northgate', 'willowshore', 'thornwatch', 'deepcairn', 'lakenhold', 'haven'],
     f1: ['northgate'], f2: ['deepcairn'], f4: ['deepcairn'], f5: ['deepcairn'], f6: ['northgate'],
     r1: ['thornwatch'], r2: ['thornwatch'], r3: ['thornwatch'], r3a: ['thornwatch'],
     s1: ['haven', 'lakenhold'], s1a: ['haven'], s2: ['fernvale'], s3: ['lakenhold'], s4: ['fernvale'], s5: ['thornwatch'], s8: ['northgate', 'lakenhold'],
-    climax: ['deepcairn'], e0: ['deepcairn'], e1: ['deepcairn'], e2: ['deepcairn'], e3: ['deepcairn'], e4: ['deepcairn']
+    climax: ['deepmine'], x11: ['deepmine'], x12: ['deepcairn', 'thornwatch', 'northgate'], e0: ['deepcairn'], e1: ['deepcairn'], e2: ['deepcairn'], e3: ['deepcairn'], e4: ['deepcairn']
   };
   if (root.Crossroads) for (const e of root.Crossroads.EVENTS) PLACES['cr_' + e.id] = e.towns ? e.towns.slice() : Object.keys(PLACE).filter(k => k !== 'fernvale');
 

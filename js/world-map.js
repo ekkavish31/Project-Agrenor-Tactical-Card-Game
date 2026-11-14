@@ -82,7 +82,7 @@
   function revealArea(c, r, n) { for (const [a, b] of G.within(c, r, n)) S.known[K(a, b)] = 1; fogDirty = true }
 
   /* ---------- terrain painting (once per world) ---------- */
-  const PAL = { grass: ['#7fa35a', '#8db365', '#6f9450'], forest: ['#4f7a3f', '#5a8646', '#456c37'], hills: ['#a09060', '#b0a06c', '#8f8054'], mountain: ['#8a8378', '#9b948a', '#77706a'],
+  const PAL = { mine: ['#3a3547', '#443e53', '#322d3f'], grass: ['#7fa35a', '#8db365', '#6f9450'], forest: ['#4f7a3f', '#5a8646', '#456c37'], hills: ['#a09060', '#b0a06c', '#8f8054'], mountain: ['#8a8378', '#9b948a', '#77706a'],
     water: ['#3f6f96', '#4a7ba3', '#365f84'], swamp: ['#5b6b45', '#66764d', '#4d5c3b'], snow: ['#dfe7ee', '#eef3f7', '#cfd9e2'], sand: ['#d8c48f', '#e2cf9c', '#cbb680'], ash: ['#4a3a34', '#5a463e', '#3c2f2a'], stone: ['#8f8470', '#9c917c', '#7e7462'], highland: ['#6f665c', '#7c7368', '#615950'], volcano: ['#6a2a1a', '#8a3a1a', '#4a1e14'] };
   let terr = null;
   /* v98.51 · hand-painted hills / mountains / rocks (assets/world): drawn standing on the hex, bottom-centre on the lower middle; the code-drawn shapes below stay as the fallback while they load */
@@ -527,7 +527,7 @@
   function closeModal() { if (modalEl) { modalEl.remove(); modalEl = null; modalOpen = false; const r = modalResolve; modalResolve = null; r?.(null) } }
 
   /* ---------- v94.02 · drops: goods for the market (bag) and materials for the forge, by monster and land ---------- */
-  const DROPS = { bat: ['batWing'], gull: ['driftwood'], wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'] };
+  const DROPS = { hunger: ['crystalShard', 'boneCharm'], murk: ['boneCharm', 'crystalShard'], bat: ['batWing'], gull: ['driftwood'], wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'] };
   const LAND = { forest: ['herb', 'wood'], grass: ['herb'], hills: ['iron', 'coal'], swamp: ['swampHerb'], snow: ['frostFur'], sand: ['pearl', 'driftwood'] };
   const MATS = ['iron', 'coal', 'wood', 'food'];
   function dropLoot(foe, biome, dang, boss, evolved) {
@@ -562,12 +562,27 @@
   /* v98.487 · ฉากจบ (js/endings.js · N5): ลงชั้นล่างที่ดีปแคร์นเมื่อถึงหมุดไคลแมกซ์ — ตัดสินใจ 2 ครั้ง อ่านแนวโน้มจากทางแยกที่ผ่านมา */
   async function pageSeq(title, pages) { for (const p of pages) { const v = await modal(`<h2>${title}</h2>${faceBox(p.who)}<p>${esc(p.text)}</p><div style="clear:both"></div>`, [{ label: 'ต่อไป', value: true }]); if (v == null) break } }
   async function finaleScene() {
-    const g = WS.game(), E = window.Endings; if (!E || !E.ready(g)) return;
-    await pageSeq('⚑ ปากเหมืองชั้นล่าง', E.openingPages(g));
-    const ro = E.releaseOptions(g);
-    const rel = await modal(`<h2>⑂ ปลอกคอของเซอร์เรียน</h2>${faceBox('mage')}<p>ถึงเวลาตัดสินว่าจะทำอย่างไรกับปลอกคอที่กดเงาไว้ใน Mip</p>${ro.map(o => `<p><b>${esc(o.label)}</b><br><small>${esc(o.desc)}${o.ok ? '' : ' · 🔒 ' + esc(o.why)}</small></p>`).join('')}<div style="clear:both"></div>`, ro.map(o => ({ label: o.label, value: o.id, disabled: !o.ok })));
-    if (rel == null) return;
-    await pageSeq('⚑ ปลอกคอ', E.releasePages(g, rel));
+    const g = WS.game(), E = window.Endings, M = window.MainStory; if (!E || !E.ready(g)) return;
+    /* ขั้น 1 · ปากเหมือง + ปลอกคอเซอร์เรียน (ทำครั้งเดียว · จำไว้ถ้าถอยออกมา) */
+    let rel = M.flag(g, 'finaleRelease');
+    if (!rel) {
+      await pageSeq('⚑ ปากเหมืองชั้นล่าง', E.openingPages(g));
+      const ro = E.releaseOptions(g);
+      rel = await modal(`<h2>⑂ ปลอกคอของเซอร์เรียน</h2>${faceBox('mage')}<p>ถึงเวลาตัดสินว่าจะทำอย่างไรกับปลอกคอที่กดเงาไว้ใน Mip</p>${ro.map(o => `<p><b>${esc(o.label)}</b><br><small>${esc(o.desc)}${o.ok ? '' : ' · 🔒 ' + esc(o.why)}</small></p>`).join('')}<div style="clear:both"></div>`, ro.map(o => ({ label: o.label, value: o.id, disabled: !o.ok })));
+      if (rel == null) return;
+      await pageSeq('⚑ ปลอกคอ', E.releasePages(g, rel)); M.set(g, 'finaleRelease', rel); WS.commit(); save();
+    }
+    /* ขั้น 2 · ดันเจี้ยนเหมืองชั้นล่าง + บอสก้อนหิว (ถอยออกมาแล้วกลับลงใหม่ได้) */
+    if (!M.flag(g, 'finaleWon')) {
+      await pageSeq('⚑ ลงชั้นล่าง', E.DUNGEON.intro);
+      const D = E.DUNGEON, go = await modal(`<h2>⛏ ${esc(D.title)}</h2><p>${esc(D.sub)}</p><p>HP ตอนนี้ ${S.hp}/${S.maxHp} · ลงไปแล้วถอยออกมาได้ ความคืบหน้าในชั้นล่างไม่บันทึก แต่ปลอกคอที่เลือกไว้จำไว้แล้ว</p>`, [{ label: '⚔ ลงไป', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]);
+      if (go !== 'go') return;
+      const r = await areaExplore({ title: D.title, sub: D.sub, biome: D.biome, seed: world.seed ^ 0x7a1e, dang: .95, foes: D.foes, roster: D.roster, kinds: D.kinds, boss: D.boss, loreText: D.loreText, lairText: D.lairText });
+      if (r !== 'win') { toast(r === 'left' ? 'ถอยออกจากเหมือง — กลับลงใหม่ได้ที่ปุ่ม ⚑' : 'ยังไม่ชนะก้อนหิว — พักแล้วกลับมาใหม่ได้'); hudSync(); return }
+      M.set(g, 'finaleWon', true); WS.commit(); save(); log('☠ ก้อนหิวล้มลง (ยังไม่ตาย) — รอคำตัดสิน');
+      await pageSeq('⚑ ก้อนหิว', E.CLASH);
+    }
+    /* ขั้น 3 · คำตัดสินสุดท้าย (อ่านแนวโน้ม) */
     const so = E.sideOptions(g);
     const side = await modal(`<h2>⑂ จุดตัดสินใจสุดท้าย</h2><p>ทุกฝ่ายยืนอยู่ปากเหมือง — คุณเลือกทางไหน? <small>(ทางที่ล็อกแปลว่าสิ่งที่คุณทำมาตลอดทางยังไม่ถึงพอ)</small></p>${so.map(o => `<p><b>${esc(o.label)}</b><br><small>${esc(o.desc)}${o.ok ? '' : ' · 🔒 ' + esc(o.why)}</small></p>`).join('')}`, so.map(o => ({ label: o.label, value: o.id, disabled: !o.ok })));
     if (side == null) return;
@@ -651,7 +666,7 @@
     const v = await modal(`<h2>📜 กระดานภารกิจ · ข่าวลือ</h2><p>หมอกดำคลุมทุกทิศ รู้เพียงข่าวลือว่ามีอะไรอยู่ที่ไหน เลือกจุดหมาย แล้วออกจากหมู่บ้านไปเปิดทางเอง — แผนที่จะเผยเฉพาะปลายทางและเส้นทางที่คุณเดินผ่าน</p><div class="wm-quests">${cards}</div>`, [{ label: 'ปิด', value: null, ghost: true }]);
     if (v && world.dests.some(d => d.id === v)) chooseDest(v);
   }
-  const BOSS_NAME = { frostQueen: 'ราชินีน้ำแข็งแห่งศาลหิมะ', wolf: 'จ่าฝูงหมาป่า', golem: 'โกเล็มหิน', slime: 'สไลม์ยักษ์', bandit: 'หัวหน้าโจร', kobold: 'หัวหน้าโคโบลด์' };
+  const BOSS_NAME = { hunger: 'ก้อนหิว', frostQueen: 'ราชินีน้ำแข็งแห่งศาลหิมะ', wolf: 'จ่าฝูงหมาป่า', golem: 'โกเล็มหิน', slime: 'สไลม์ยักษ์', bandit: 'หัวหน้าโจร', kobold: 'หัวหน้าโคโบลด์' };
   /* warm the browser cache with one hidden battle page so the first real fight opens quickly */
   function warm() { if (document.getElementById('wmWarm')) return; const f = document.createElement('iframe'); f.id = 'wmWarm'; f.style.cssText = 'position:fixed;width:2px;height:2px;left:-10px;top:-10px;opacity:0;pointer-events:none;border:0'; f.src = 'battle-field.html?battle=1&embed=1&warm=1'; document.body.append(f); const on = e => { if (e.data?.type === 'agrenor-battle-ready' && e.data.warm) { removeEventListener('message', on); setTimeout(() => f.remove(), 500) } }; addEventListener('message', on); setTimeout(() => f.remove(), 60000) }
   /* v98.295 · a fallen character may be wounded (js/injury.js) — random part, light or heavy; heavy ones mend only in a hospital */
@@ -836,7 +851,7 @@
       for (const k in cells) if (!reach.has(k)) cells[k].block = true;
       const free = [...reach].map(k => cells[k]).filter(x => x.c >= 2 && x.c <= AW - 3);
       for (let i = free.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1));[free[i], free[j]] = [free[j], free[i]] }
-      const spots = {}, kinds = ['foe', 'foe', 'chest', rnd() < .5 ? 'lore' : 'spring'];
+      const spots = {}, kinds = o.kinds ? o.kinds.slice() : ['foe', 'foe', 'chest', rnd() < .5 ? 'lore' : 'spring'];
       for (const x of free) { if (!kinds.length) break; if (Object.values(spots).some(s => Math.abs(s.c - x.c) + Math.abs(s.r - x.r) < 3)) continue; const kind = kinds.shift(); spots[KK(x.c, x.r)] = { c: x.c, r: x.r, kind, foe: kind === 'foe' ? o.foes[Math.floor(rnd() * o.foes.length)] : null } }
       spots[KK(lair.c, lair.r)] = { c: lair.c, r: lair.r, kind: o.boss ? 'lair' : 'prize' };
       const seen = new Set(), look = (c, r) => { for (const k in cells) { const x = cells[k]; if (Math.abs(x.c - c) + Math.abs(x.r - r) <= 3) seen.add(k) } };
@@ -874,12 +889,12 @@
       box.querySelector('header button').onclick = () => { if (!walking && !modalOpen) finish('left') };
       async function arrive(s) {
         const k = KK(s.c, s.r);
-        if (s.kind === 'foe') { const r = await battle(s.foe, o.dang, {}); if (r === 'win') delete spots[k]; else if (prev) pos = { ...prev } }
+        if (s.kind === 'foe') { const r = await battle(s.foe, o.dang, o.roster ? { roster: o.roster } : {}); if (r === 'win') delete spots[k]; else if (prev) pos = { ...prev } }
         else if (s.kind === 'chest') { const gold = Math.round(12 + Math.random() * 20 + o.dang * 40); S.gold += gold; delete spots[k]; log('พบหีบใน ' + o.title + ' +' + gold); await modal(`<h2>🎁 หีบเก่า</h2><p>ได้ <b>${gold} เหรียญ</b></p>`) }
         else if (s.kind === 'spring') { S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .3)); healParty(.3); delete spots[k]; await modal(`<h2>💧 ตาน้ำใส</h2><p>น้ำเย็นชื่นใจ ทีมฟื้น HP 30%</p>`) }
-        else if (s.kind === 'lore') { delete spots[k]; await modal(`<h2>🪨 ศิลาจารึก</h2><p>ตัวอักษรเก่าเลือนจนอ่านไม่ออก มีเพียงรูปแสงที่แตกออกเป็นหลายสายสลักอยู่ตรงกลาง… เหมือนนิทานที่ผู้เฒ่าเคยเล่า</p>`) }
+        else if (s.kind === 'lore') { delete spots[k]; await modal(`<h2>🪨 ศิลาจารึก</h2><p>${esc(o.loreText || 'ตัวอักษรเก่าเลือนจนอ่านไม่ออก มีเพียงรูปแสงที่แตกออกเป็นหลายสายสลักอยู่ตรงกลาง… เหมือนนิทานที่ผู้เฒ่าเคยเล่า')}</p>`) }
         else if (s.kind === 'prize') { const P = o.prize || {}; S.gold += P.gold || 0; S.potions += P.potion || 0; log('พบห้องสมบัติใน ' + o.title + ' +' + (P.gold || 0)); await modal(`<h2>💎 ห้องสมบัติ</h2><p>ลึกสุดของ${esc(o.title)} มี <b>${P.gold || 0} เหรียญ</b>${P.potion ? ' และยาฟื้นฟู ' + P.potion + ' ขวด' : ''}</p>`, [{ label: 'กลับออกไป', value: 1 }]); finish('done'); return }
-        else if (s.kind === 'lair') { const v = await modal(`<h2>☠ ${esc(o.boss.name || o.title)}</h2><p>ลมหายใจของบางอย่างดังอยู่ข้างหน้า… HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ บุก', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]); if (v !== 'go') { if (prev) pos = { ...prev }; return } const r = await battle(o.boss.foe, 1, { boss: true }); if (r === 'win') { finish('win'); return } if (prev) pos = { ...prev } }
+        else if (s.kind === 'lair') { const v = await modal(`<h2>☠ ${esc(o.boss.name || o.title)}</h2><p>${esc(o.lairText || 'ลมหายใจของบางอย่างดังอยู่ข้างหน้า…')} HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ บุก', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]); if (v !== 'go') { if (prev) pos = { ...prev }; return } const r = await battle(o.boss.foe, 1, { boss: true, ...(o.roster ? { roster: o.roster } : {}) }); if (r === 'win') { finish('win'); return } if (prev) pos = { ...prev } }
         hudSync(); status();
       }
       cvA.addEventListener('click', async e => {
@@ -935,7 +950,7 @@
   }
 
   /* ---------- battles (the flat card battle in an iframe) ---------- */
-  const MON_HP = { bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44, bat: 22, gull: 26 };
+  const MON_HP = { murk: 38, hunger: 150, bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44, bat: 22, gull: 26 };
   async function battle(foe, dang, o = {}) {
     busy = true; hudSync();
     const here = tile(S.pos.c, S.pos.r), night = nightness() > .6;
@@ -960,7 +975,7 @@
     const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
     const group = RS ? RS.group.slice() : [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
     /* v98.250 · a varied group: kinds not yet in the group come first, no kind appears more than twice, and now and then a wanderer from a neighbouring land joins (it used to be 60 % the leader's kind again) */
-    const roster = [...new Set(G.FOES[here.biome] || G.FOES.grass)], wander = ['bandit', 'wolf', 'bat', 'kobold', 'slime'].filter(k => !roster.includes(k)), used = { [foe]: 1 };
+    const roster = [...new Set(o.roster || G.FOES[here.biome] || G.FOES.grass)], wander = o.roster ? [] : ['bandit', 'wolf', 'bat', 'kobold', 'slime'].filter(k => !roster.includes(k)), used = { [foe]: 1 };
     for (let i = 1; !RS && i < n; i++) { let cand = roster.slice(); if (wander.length && Math.random() < .3) cand = cand.concat(wander);
       cand = cand.filter(k => (used[k] || 0) < 2); if (!cand.length) cand = roster.slice(); cand.sort((a, b) => ((used[a] || 0) - (used[b] || 0)) || (Math.random() - .5));
       const k = cand[0]; used[k] = (used[k] || 0) + 1; group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }

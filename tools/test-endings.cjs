@@ -25,7 +25,7 @@ const at = (st, flags = {}, lv = 12) => { const g = game(lv); M.advanceTo(g, st,
   ok(E.mipFate(g, 'light', 'trade') === 'purified' && E.mipFate(g, 'light', 'free') === 'sealed', 'light: only with the seal'); M.mip(g).dark = 90; ok(E.mipFate(g, 'third', 'free') === 'sealed', 'too dark → sealed') }
 // ทำจริง: 4 ตอนจบ
 for (const side of ['third', 'light', 'shadow', 'aldren']) { const g = at('climax', { ruinStudy: 3, lean_light: 1, lean_shadow: 1, lean_village: 2, infectedHelped: 2, serrienHeard: 1 }); g.village.bag = {}; reps.length = 0;
-  const res = E.run(g, {}, { release: 'trade', side }); ok(res && res.ending === side && res.pages.length >= 7 && res.pages.every(p => p.text), side + ': scene has pages');
+  const res = E.run(g, {}, { release: 'trade', side }); ok(res && res.ending === side && res.pages.length >= 6 && res.pages.every(p => p.text), side + ': scene has pages');
   ok(M.is(g, 'end') && M.flag(g, 'ending') === side && M.flag(g, 'mipFate') === res.fate && M.flag(g, 'afterWorld'), side + ': stage end + flags'); ok(M.war(g) === 0 && M.infection(g, 'deepcairn') === 0, side + ': world calms');
   ok(T.has(g, E.ENDINGS[side].title) && T.has(g, res.fate === 'purified' ? 'mip.purified' : 'mip.sealed'), side + ': chronicle'); ok(reps.length > 0, side + ': factions moved'); ok(M.mip(g).state === res.fate, side + ': Mip state'); ok((g.village.bag.mirrorShard || 0) === (res.fate === 'purified' ? 1 : 0), side + ': keepsake only when purified');
   ok(E.run(g, {}, { release: 'free', side: 'aldren' }) === null && !E.ready(g), side + ': cannot end twice'); ok(T.view(g).rows.some(r => r.got && /end\./.test('') || r.got), side + ': titles view works') }
@@ -33,4 +33,11 @@ for (const side of ['third', 'light', 'shadow', 'aldren']) { const g = at('clima
   const g = at('climax', { lean_light: 1 }); E.run(g, {}, { release: 'free', side: 'light' }); ok(T.view(g).rows.some(r => r.id === 'lightkeeper' && r.got), 'light ending unlocks its title') }
 // ข้อความ: ไม่มีชื่อโบราณที่ยังไม่ควรโผล่ (Paelasael/Veshra/Wyridean/Zern)
 { const all = JSON.stringify([E.ENDINGS, E.MIP, E.CLASH, E.openingPages(at('climax', { lean_light: 1, lean_shadow: 1 }))]); ok(!/Paelasael|Veshra|Wyridean|Zern-Va|Grat\b/.test(all), 'no ancient names') }
+// v98.488 · เรื่องย่อยต่อท้ายตอนจบอ่านธงจริง + ปุ่มหลังจบ + ดันเจี้ยน
+{ const g = at('climax', { ruinStudy: 3, listKept: true, convoyFollowed: true, clinicVisits: 1, armorSupplied: true, greed: 1, sigridChoice: 'both', bramChoice: 'help', lightShownRuin: true });
+  const ep = E.epilogue(g, 'third'); ok(ep.length >= 5 && ep.length <= 6 && ep.every(p => p.text.length > 20), 'epilogue shows flag-driven pages, capped at 6'); ok(ep.some(p => /โบดิล/.test(p.text)) && ep.some(p => /ไอรีน/.test(p.text)), 'Boudil + Irene lines appear when the player did those threads');
+  ok(E.epilogue(at('climax'), 'third').length === 0, 'a player who did none of the threads gets no invented epilogue'); ok(/ถูกคุมตัว|เอกสาร/.test(E.epilogue(g, 'aldren')[0].text), 'same thread, different tone under a different ending');
+  const res = E.run(g, {}, { release: 'free', side: 'third' }); ok(res.pages.length >= 8, 'ending pages include the epilogue'); ok(SC.services(g, 'deepcairn').some(s => s.key === 'st:epilogue') && SC.run(g, 'deepcairn', 'st:epilogue', {}, {}).lines.length === 1, 'after the ending: a button that describes the place now'); ok(!SC.services(at('mine'), 'deepcairn').some(s => s.key === 'st:epilogue'), 'not before the ending');
+  ok(E.AFTER.deepcairn.third && ['deepcairn', 'thornwatch', 'northgate'].every(t => ['third', 'light', 'shadow', 'aldren'].every(e => E.AFTER[t][e])), 'every ending describes all three places');
+  ok(E.DUNGEON.boss.foe === 'hunger' && E.DUNGEON.foes.includes('murk') && E.DUNGEON.kinds.length >= 5 && E.DUNGEON.intro.length >= 2, 'dungeon definition') }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

@@ -61,6 +61,7 @@
     news: { label: '📰 กระดานข่าวสงคราม', towns: null, when: g => war(g) >= 1 },
     camp: { label: '⛺ ค่ายผู้อพยพ · แบ่งอาหารให้', towns: ['northgate', 'willowshore'], when: g => war(g) >= 2, cost: 10, daily: true },
     ruin: { label: '🏚 ร่องรอยสำนักชายป่า', towns: ['thornwatch'], when: g => at(g, 'wake'), daily: true },
+    epilogue: { label: '🕯 ดูว่าที่นี่เป็นอย่างไรหลังจบเรื่อง', towns: ['deepcairn', 'thornwatch', 'northgate'], when: g => !!root.Endings?.done(g) },
     finale: { label: '⚑ ลงชั้นล่าง · จุดตัดสินใจสุดท้าย', towns: ['deepcairn'], when: g => !!root.Endings?.ready(g) },
     pit: { label: '⛏ ปากเหมืองชั้นล่าง', towns: ['deepcairn'], when: g => war(g) >= 3, daily: true },
     /* v98.486 · สถานที่เพิ่ม */
@@ -111,6 +112,7 @@
       out.push('📦 ส่งเสบียง ' + n + ' หน่วยให้ทัพในราคาพิเศษ +25% = ' + total + ' 💰 · ชื่อเสียงราชสำนัก/กองทหารเพิ่ม'); if (num(M.flag(g, 'armyOrders')) === 1) T()?.log(g, 'site.army'); return { lines: out };
     }
     if (k === 'finale') return { lines: [], panel: 'finale' };
+    if (k === 'epilogue') return { lines: root.Endings?.afterLines(g, town) || [] };
     if (k === 'pit') {
       ctx.passTime?.(1); const first = !M.flag(g, 'pitSeen'); M.set(g, 'pitSeen', true); if (num(M.flag(g, 'pitListen')) < 2) { M.set(g, 'pitListen', num(M.flag(g, 'pitListen')) + 1); M.set(g, 'mineInfo', num(M.flag(g, 'mineInfo')) + 1); out.push('✦ ตั้งใจฟังเสียงจากข้างล่าง — ได้ข้อมูลเรื่องเหมืองเพิ่ม') }
       out.push('⛏ ปากทางลงชั้นล่างถูกปิดด้วยไม้ขวางและอัศวินสองนายยืนเฝ้า · อากาศเย็นขึ้นหนึ่งระดับเมื่อเดินเข้าใกล้ · ได้ยินเสียงขุดจากข้างล่างเบา ๆ');

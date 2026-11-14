@@ -96,6 +96,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 .mk i{font-style:normal;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:23px;background:#15131cdd;border:3px solid var(--rc,#6f64b8)}
 .mk b{font-size:12px;background:#15131ce8;padding:1px 8px;border-radius:8px;margin-top:3px;white-space:nowrap}
 .mk .bd{position:absolute;right:-8px;top:-8px;min-width:21px;height:21px;border-radius:11px;background:#ffb347;color:#15131c;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.mk.sub i{width:30px;height:30px;font-size:16px;border-style:dashed}.mk.sub b{font-size:10.5px}
 .mk.sel i{box-shadow:0 0 0 7px #ffd16688}
 .mk.pulse i{animation:mkp .9s 4}
 @keyframes mkp{0%{box-shadow:0 0 0 0 #ffd166cc}100%{box-shadow:0 0 0 22px #ffd16600}}
@@ -283,13 +284,13 @@ const sidx=id=>Math.max(-1,D.STAGES.findIndex(s=>s.id===id));
 function placesOf(n){for(let x=n;x;x=parent[x.id])if(PLACES[x.id])return PLACES[x.id];return []}
 function miniMap(pl){const W=304,Z=2.1,iw=W*Z,ih=iw*684/662,cx=pl.reduce((a,x)=>a+POS[x][0],0)/pl.length,cy=pl.reduce((a,x)=>a+POS[x][1],0)/pl.length;
   return `<div class="mini" title="กดเพื่อเปิดแผนที่โลก"><div class="in" style="width:${iw}px;left:${W/2-cx/100*iw}px;top:${100-cy/100*ih}px"><img src="docs/lore/maps/norchorthal-region.webp" alt="">${pl.map(x=>`<span class="pin" style="left:${POS[x][0]}%;top:${POS[x][1]}%">📍</span>`).join('')}</div><small>ตำแหน่งโดยประมาณ</small></div>`}
-const infAt=(town,stageId)=>{const s=MSY?.STAGES.find(x=>x.id===stageId);if(!s)return null;const d=MSY.DIST[town];return d==null?null:Math.max(0,Math.min(3,s.inf-d))};
+const infAt=(town,stageId)=>{const s=MSY?.STAGES.find(x=>x.id===stageId);if(!s)return null;const d=MSY.DIST[D.PLACE[town]?.sub||town];return d==null?null:Math.max(0,Math.min(3,s.inf-d))};
 const RING=['#5fbf7a','#e6b84d','#ff8a4d','#ff4d6a'];
 let mapSel=null,mz=.75,mx=0,my=0,mdrag=null;
 function nodesAt(town){const si=stageSel?sidx(stageSel):99;return all.filter(n=>n!==TREE&&(PLACES[n.id]||[]).includes(town)&&filt[n.s]&&(sidx(n.g)<=si))}
 function renderMap(){
   const mw=$('mapw');mw.querySelectorAll('.mk').forEach(e=>e.remove());const sg=stageSel||curStage;
-  for(const [id,pc] of Object.entries(POS)){const P=D.PLACE[id],ns=nodesAt(id),inf=sg?infAt(id,sg):null,m=document.createElement('div');m.className='mk'+(mapSel===id?' sel':'')+((q&&!ns.some(matches))?' dim':'');m.dataset.id=id;m.style.left=pc[0]+'%';m.style.top=pc[1]+'%';m.style.setProperty('--rc',inf==null?'#6f64b8':RING[inf]);
+  for(const [id,pc] of Object.entries(POS)){const P=D.PLACE[id],ns=nodesAt(id),inf=sg?infAt(id,sg):null,m=document.createElement('div');m.className='mk'+(P.sub?' sub':'')+(mapSel===id?' sel':'')+((q&&!ns.some(matches))?' dim':'');m.dataset.id=id;m.style.left=pc[0]+'%';m.style.top=pc[1]+'%';m.style.setProperty('--rc',inf==null?'#6f64b8':RING[inf]);
     m.innerHTML=`<i>${P.ic}</i><b>${esc(P.n)}</b>${ns.length?`<span class="bd">${ns.length}</span>`:''}`;m.onclick=e=>{e.stopPropagation();mapSel=id;renderMap();townPanel(id)};mw.append(m)}
   $('maplg').style.display='block';$('count').textContent='แผนที่โลก · '+(sg?'หมุด: '+(D.STAGES.find(s=>s.id===sg)?.t||sg):'ทุกหมุด')+(MSY&&sg?' · สงคราม '+MSY.STAGES.find(s=>s.id===sg)?.war+'/4':'');
   if(mapSel)townPanel(mapSel)}
