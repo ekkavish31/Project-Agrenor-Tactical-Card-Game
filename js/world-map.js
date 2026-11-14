@@ -606,7 +606,7 @@
     let lines = b.lines, outcome = null;
     if (b.pending) {
       await modal(`<h2>${e.icon} ${esc(e.title)}</h2><p><b>${esc(b.choice)}</b></p>${b.lines.map(l => `<p>${esc(l)}</p>`).join('')}<p><small>⚔ เข้าสู่การต่อสู้</small></p>`, [{ label: '⚔ สู้', value: true }]);
-      const sp = b.pending; outcome = await battle(sp.foe, sp.dang ?? .6, { n: sp.n, obj: sp.obj ?? '', ambush: true });
+      const sp = b.pending; outcome = await battle(sp.foe, sp.dang ?? .6, { n: sp.n, obj: sp.obj ?? '', ambush: true, scene: sp.scene });
       const r = C.settle(g, S, e, v, outcome === 'win' ? 'win' : outcome === 'flee' ? 'flee' : 'lose', { passTime }); lines = b.checkFailed ? [b.lines[0], ...r.lines] : r.lines;
     }
     log(e.icon + ' ' + e.title + ' — ' + (b.choice || '') + (outcome ? ' (' + ({ win: 'ชนะ', flee: 'หนี' })[outcome] + (outcome === 'win' || outcome === 'flee' ? '' : 'แพ้') + ')' : '')); WS.commit();
@@ -901,7 +901,7 @@
         else if (s.kind === 'spring') { S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .3)); healParty(.3); delete spots[k]; await modal(`<h2>💧 ตาน้ำใส</h2><p>น้ำเย็นชื่นใจ ทีมฟื้น HP 30%</p>`) }
         else if (s.kind === 'lore') { delete spots[k]; await modal(`<h2>🪨 ศิลาจารึก</h2><p>${esc(o.loreText || 'ตัวอักษรเก่าเลือนจนอ่านไม่ออก มีเพียงรูปแสงที่แตกออกเป็นหลายสายสลักอยู่ตรงกลาง… เหมือนนิทานที่ผู้เฒ่าเคยเล่า')}</p>`) }
         else if (s.kind === 'prize') { const P = o.prize || {}; S.gold += P.gold || 0; S.potions += P.potion || 0; log('พบห้องสมบัติใน ' + o.title + ' +' + (P.gold || 0)); await modal(`<h2>💎 ห้องสมบัติ</h2><p>ลึกสุดของ${esc(o.title)} มี <b>${P.gold || 0} เหรียญ</b>${P.potion ? ' และยาฟื้นฟู ' + P.potion + ' ขวด' : ''}</p>`, [{ label: 'กลับออกไป', value: 1 }]); finish('done'); return }
-        else if (s.kind === 'lair') { const v = await modal(`<h2>☠ ${esc(o.boss.name || o.title)}</h2><p>${esc(o.lairText || 'ลมหายใจของบางอย่างดังอยู่ข้างหน้า…')} HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ บุก', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]); if (v !== 'go') { if (prev) pos = { ...prev }; return } const r = await battle(o.boss.foe, 1, { boss: true, ...(o.roster ? { roster: o.roster } : {}) }); if (r === 'win') { finish('win'); return } if (prev) pos = { ...prev } }
+        else if (s.kind === 'lair') { const v = await modal(`<h2>☠ ${esc(o.boss.name || o.title)}</h2><p>${esc(o.lairText || 'ลมหายใจของบางอย่างดังอยู่ข้างหน้า…')} HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ บุก', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]); if (v !== 'go') { if (prev) pos = { ...prev }; return } const r = await battle(o.boss.foe, 1, { boss: true, scene: o.boss.scene, ...(o.roster ? { roster: o.roster } : {}) }); if (r === 'win') { finish('win'); return } if (prev) pos = { ...prev } }
         hudSync(); status();
       }
       cvA.addEventListener('click', async e => {
@@ -967,7 +967,7 @@
     const RS = o.resume || null;   /* v98.340 · a fight resumed from the temporary save: the random parts come from the record */
     let fierce = RS ? RS.fierce : false; if (!RS && night && !o.boss && Math.random() < .45) { fierce = true; if (['forest', 'grass', 'snow'].includes(here.biome)) foe = 'shadowWolf' }
     const elite = RS ? RS.elite : !o.boss && dang > .65 && Math.random() < .5, base = MON_HP[foe] || 34;
-    let mult = o.boss ? Math.round((BOSS_HP[foe] || 130) / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
+    let mult = o.scene ? 1 : o.boss ? Math.round((BOSS_HP[foe] || 130) / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
     if (foe === 'shadowWolf') mult = Math.round((1.1 + dang * .5) * 10) / 10;
     const fs = window.Progression ? Progression.foeScale(Progression.heroLevel(WS.game())) : { hp: 1, atk: 1 };   /* v95.00: monsters grow a little with the hero */
     /* v97.29 · the game's difficulty setting (⚙ ตั้งค่า · s.village.settings.difficulty — it only reached the old battles before) */
@@ -996,7 +996,7 @@
        · an elite group → bring down its leader · now and then: just hold out. The prologue and bosses always fight to the end. */
     const obj = RS ? RS.obj : o.obj != null ? o.obj : tut || o.boss ? '' : o.camp ? 'defend:4' : o.ambush && Math.random() < .35 ? 'escape' : elite && n > 2 && Math.random() < .6 ? 'leader' : Math.random() < .15 ? 'survive:5' : '';
     const OBJ_GOLD = { defend: 1.3, escape: .8, leader: 1.25, survive: 1.2 }, OBJ_NAME = { defend: 'ป้องกันค่าย', escape: 'ฝ่าวงล้อม', leader: 'ล้มหัวหน้า', survive: 'ยื้อไว้' };
-    fr.src = `battle-field.html?battle=1&embed=1${tut}${obj ? '&obj=' + obj : ''}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
+    fr.src = `battle-field.html?battle=1&embed=1${tut}${obj ? '&obj=' + obj : ''}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}${o.scene ? '&scene=' + o.scene : ''}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
     /* v98.340 · remember this fight (the temporary save re-opens it); a resumed one loads the same field from the snapshot's URL */
     { const sn = (() => { try { return JSON.parse(localStorage.getItem('projectA.battleSnap') || 'null') } catch (e) { return null } })(), src0 = RS ? RS.src : fr.src;
       if (!RS) { try { localStorage.removeItem('projectA.battleSnap') } catch (e) { } } else fr.src = (RS.snapOk && sn ? sn.page + sn.search : RS.src) + '&resume=1';

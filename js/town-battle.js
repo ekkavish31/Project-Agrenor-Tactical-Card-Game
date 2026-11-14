@@ -50,6 +50,8 @@
     pest: { name: 'ด้วงกินใบ', hp: 4, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', img: 'pest', el: 'wind' },
     /* v98.488 · mine of Deepcairn (docs/lore/MAIN-STORY-CANON.md · §H): murk = สัตว์รอยหมอง (infected beast) · hunger = ก้อนหิว (boss) — drawn by code (js/code-monsters.js) until real pictures exist */
     murk: { name: 'สัตว์รอยหมอง', hp: 38, iq: 1, move: 4, atk: 9, scale: .95, fx: 'knife', img: 'murk', code: true, el: 'dark' },
+    alarmHorn: { name: 'แตรสัญญาณ', hp: 30, iq: 0, move: 0, atk: 0, scale: .85, fx: 'blunt', img: 'alarmHorn', code: true, passive: true, el: 'earth' },
+    hungerRoot: { name: 'ปมหิว', hp: 42, iq: 0, move: 0, atk: 0, scale: .9, fx: 'blunt', img: 'hungerRoot', code: true, passive: true, el: 'dark' },
     hunger: { name: 'ก้อนหิว', hp: 150, iq: 2, move: 2, atk: 14, scale: 1.7, fx: 'blunt', img: 'hunger', code: true, range: 3, shove: true, el: 'dark' },
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
@@ -72,6 +74,8 @@
   const ALLY_ART = ['bram', 'luna', 'kier', 'mil'];   /* v97.78: kier has his new battle sheets (SW + NE own, SE/NW mirrored) */
   const ALLY_OWN = { bram: ['se', 'sw', 'ne', 'nw'], luna: ['se', 'sw', 'ne', 'nw'], kier: ['se', 'sw', 'ne', 'nw'] };   /* v97.65: allies that have their own picture for every diagonal (the rest are mirrored in code) */
   const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv, ctl] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1), control: key !== 'sib' && (ctl === '1' || Q.get('ctl') === '1') } : null }).filter(Boolean);
+  /* v98.492 · ?scene=<id>: a FIXED set-piece fight (js/set-pieces.js) — hand-drawn field, fixed starts, scene rules */
+  const SCENE = window.SetPieces && Q.get('scene') ? window.SetPieces.get(Q.get('scene')) : null;
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
   /* v98.281 · status icons = the user's picture set (assets/ui/status/<name>.webp, tools/build-status-icons.py); statuses with no picture yet (sleep 💤, silence 🔇) keep their emoji */
   const STI = { burn: 'burn', poison: 'poison', freeze: 'freeze', stun: 'freeze', shock: 'slow', slowed: 'slow', weak: 'disarm' };
@@ -89,7 +93,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit' };
+    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
@@ -121,7 +125,7 @@
     });
     const okA = (u, v) => { for (let i = 0; i < FP; i++) for (let j = 0; j < FP; j++) if ((cells.get((u + i) + ',' + (v + j)) || 'blocked') === 'blocked') return false; return true };   /* the whole footprint must stand on open ground */
     const spot = (cu0, cv0) => { let best = null, bd = 1e9; for (const [key, k] of cells) { const [u0, v0] = key.split(',').map(Number); if (k === 'blocked' || !okA(u0, v0)) continue; const [u, v] = key.split(',').map(Number), d = Math.hypot(u - cu0, v - cv0); if (d < bd) { bd = d; best = { u, v } } } return best };
-    const gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
+    const SP = p => ({ u: cu + p.u, v: cv + p.v }), gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = SCENE ? SP(SCENE.hero) : spot(cu - gap, cv + gap), ms = SCENE ? SP(SCENE.enemies[0]) : spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
     /* v97.01: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
@@ -133,10 +137,12 @@
           const d = Math.hypot(u - o.u, v - o.v) + Math.random() * .6; if (d < bd) { bd = d; best = { u, v } } } }
       if (best) taken.add(best.u + ',' + best.v); return best };
     const sibWeapon = () => { try { return Q.get('sibw') || window.top.s.village.sibGear?.kind || 'log' } catch (e) { return Q.get('sibw') || 'log' } };   /* v98.472 · until the forged sword: a firewood log (ท่อนไม้ฟืน) */   /* v98.332 · the forged sword of the follower */
-    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, weapon: p.key === 'sib' ? sibWeapon() : undefined, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms, (T.scale || 1) >= 1.3 ? 4 : (T.scale || 1) >= 1.0 ? 3 : 2) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); const EV = EVOLVE[g.kind], N = !boss && EV && MON[EV[0]], evo = N ? { kind: EV[0], tier: EV[1], line: N.el, name: N.name, hp: Math.round(N.hp * g.mult), atk: Math.round(N.atk * ATKX), move: N.move, iq: N.iq || 0, shove: !!N.shove, el: N.el, fly: !!N.fly, passive: !!N.passive, range: N.range || 1 } : null; return { ...at, evo, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evoGroup: T.evoGroup || null } }).filter(Boolean);
+    const allies = PARTY.map((p, pi) => ({ ...(SCENE && SCENE.allies[pi] ? SP(SCENE.allies[pi]) : near(hs)), key: p.key, weapon: p.key === 'sib' ? sibWeapon() : undefined, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
+    /* v98.492 · set-piece enemies: exact cells, stats from the scene (× the level scale in ?hp), the boss flagged for its specials */
+    const sceneMons = () => SCENE.enemies.map(e => { const T = MON[e.kind]; if (!T) return null; return { ...SP(e), evo: null, variant: null, kind: e.kind, name: e.name || T.name, hp: Math.round(T.hp * (e.hp || 1) * HPX), maxHp: Math.round(T.hp * (e.hp || 1) * HPX), atk: Math.round(T.atk * ATKX * (e.boss ? 1.15 : 1)), move: T.move, boss: !!e.boss, iq: Math.min(3, (T.iq || 0) + (e.boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evoGroup: null, ct: e.ct, sceneId: e.id } }).filter(Boolean);
+    const mons = SCENE ? sceneMons() : GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms, (T.scale || 1) >= 1.3 ? 4 : (T.scale || 1) >= 1.0 ? 3 : 2) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); const EV = EVOLVE[g.kind], N = !boss && EV && MON[EV[0]], evo = N ? { kind: EV[0], tier: EV[1], line: N.el, name: N.name, hp: Math.round(N.hp * g.mult), atk: Math.round(N.atk * ATKX), move: N.move, iq: N.iq || 0, shove: !!N.shove, el: N.el, fly: !!N.fly, passive: !!N.passive, range: N.range || 1 } : null; return { ...at, evo, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evoGroup: T.evoGroup || null } }).filter(Boolean);
     /* v97.22: battle objective from the world map (?obj=survive:5 | escape | defend:4 | leader) */
-    const objective = (() => { const [type, n] = (Q.get('obj') || '').split(':');
+    const objective = SCENE ? { ...SCENE.obj } : (() => { const [type, n] = (Q.get('obj') || '').split(':');
       if (type === 'survive') return { type, turns: Math.max(2, +n || 5) };
       if (type === 'leader' && mons.length > 1) { const L = mons[0]; L.leader = true; L.hp = L.maxHp = Math.round(L.maxHp * 1.3); if (!/หัวหน้า/.test(L.name)) L.name = 'หัวหน้า' + L.name; return { type } }
       if (type === 'defend') { const at = near(hs); return at ? { type, turns: Math.max(2, +n || 4), cells: [at] } : null }
@@ -152,7 +158,7 @@
     if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
-    for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
+    for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = SCENE ? (u.side === 'monster' ? (u.ct ?? u.speed * 3) : 40) : u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
     for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir; { const o = u.side === 'monster' ? FB.hero(st) : FB.monster(st), du = o.u - u.u, dv = o.v - u.v; u.frontDir = du >= dv ? 'SE' : 'SW'; u.idle0 = { u: u.u, v: u.v, face: u.face } } }
     /* v97.08 · same-named enemies get a number (โจรป่า 1, โจรป่า 2 …) so the queue, the list and the log tell them apart */
     { const n = {}, k = {}; for (const u of FB.monsters(st)) n[u.name] = (n[u.name] || 0) + 1; for (const u of FB.monsters(st)) if (n[u.name] > 1) { k[u.name] = (k[u.name] || 0) + 1; u.label = u.name + ' ' + k[u.name] } for (const u of FB.monsters(st)) if (u.label) { u.name = u.label; delete u.label } }
@@ -161,14 +167,26 @@
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
     if (Q.get('resume') === '1') applyResume(); else makeFlee();
+    if (SCENE) attachScene();
   }
   if (EDIT) { const sx = document.createElement('style'); sx.textContent = '#fbBar,.fb-show,.fb-fly,.fb-banner,.fb-toast,#fbHand,#fbActions,#fbAlly,#fbHint,#fbIntro,#fbInspect,#fbQueue,#fbLbTop,#fbLbBot,#fbFace,#fbCoach,#fbHud,#fbPause,#menuBtn{display:none!important}'; document.head.append(sx) }   /* v98.311 · BG editor: no game HUD */
+  /* ---------- v98.492 · set-piece rules: the scene's functions (they live in js/set-pieces.js; the battle state keeps only plain data, so a resumed fight re-attaches them) ---------- */
+  let waveN = 0;
+  function mkSpawn(kind, pos, extra = {}) {
+    const T = MON[kind]; if (!T) return null; const hp = Math.round(T.hp * HPX * (extra.hpMul || 1)), n = ++waveN, hero = FB.hero(st);
+    const u = { id: 'wave' + n, side: 'monster', ai: true, ...pos, kind, name: T.name + ' ' + (n + 2), hp, maxHp: hp, atk: Math.round(T.atk * ATKX), def: 1, move: T.move, range: T.range || 1, boss: false, iq: T.iq || 0, shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evo: null, evoGroup: null, variant: null, ...extra };
+    if (st.fp > 1) u.fp = st.fp; u.speed = Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))); u.ct = u.speed * 2; u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.pose = 'idle'; u.dir = dirTo(u, hero); u.face = u.dir; return u;
+  }
+  function attachScene() {
+    if (!SCENE || !st) return; st.rules = window.SetPieces.rules(SCENE, { alive: u => u.hp > 0, free: (s, u, v) => !s.units.some(x => x.hp > 0 && x.u === u && x.v === v), mk: mkSpawn });
+    if (Q.get('resume') !== '1') (SCENE.intro || []).forEach((l, i) => setTimeout(() => { try { toast(l.text) } catch (e) { } }, 900 + i * 4200));
+  }
   /* ---------- v98.357 · the way out of a fight ----------
      No "back to the world map" button and no flee entry in the menu: a fight can be left early only by walking the hero onto the FLEE AREA (3 blue cells, away from the enemies).
      None in the prologue fights (?tut=…), boss fights, escape-objective fights (they have their own exit) or when ?noflee=1. */
   function makeFlee() {
     try {
-      if (!EMBED || Q.get('tut') || Q.get('noflee') === '1' || st.obj?.type === 'escape' || /^บอส/.test(Q.get('title') || '')) return;
+      if (!EMBED || SCENE?.noFlee || Q.get('tut') || Q.get('noflee') === '1' || st.obj?.type === 'escape' || /^บอส/.test(Q.get('title') || '')) return;
       const h = FB.hero(st), ms = FB.monsters(st); if (!ms.length) return;
       const mc = { u: ms.reduce((a, m) => a + m.u, 0) / ms.length, v: ms.reduce((a, m) => a + m.v, 0) / ms.length };
       const free = (u, v) => cells.get(u + ',' + v) && cells.get(u + ',' + v) !== 'blocked' && !st.units.some(x => x.u === u && x.v === v);
@@ -920,6 +938,8 @@
           if (s.heal) { a.shown = a.hp; floatText(a, '+' + s.heal, '#c9a0ff', false, true); hudSync() }
           for (const h of s.hits) { fx(s.fx === 'ice' ? 'ice' : s.fx === 'dark' ? 'arcane' : 'earth', h.target, a, { scale: 1.2 }); impact(h.target, s.fx === 'ice' ? 'ice' : 'blunt', { big: true, from: a }); h.target.hitUntil = now() + 440; floatText(h.target, '−' + h.damage, '#ffd27a', false, true); h.target.shown = h.target.hp; if (h.target.hp <= 0) h.target.deadAt = now() + 380; hudSync(); await wait(180) }
           await wait(380); a.pose = 'idle' }, { z: 1.5 }) }
+      else if (s.type === 'say') { if (s.text) { try { hint(s.text) } catch (e) { } if (s.big) banner(s.text.length > 26 ? s.text.slice(0, 26) + '…' : s.text, 'crit') } if (s.heal && s.unit) { s.unit.shown = s.unit.hp; floatText(s.unit, '+' + s.heal, '#c9a0ff', false, true); hudSync() } await wait(s.big ? 1100 : 650) }
+      else if (s.type === 'spawn') { const nu = s.unit; nu.shown = nu.hp; nu.vu = nu.u + OFF; nu.vv = nu.v + OFF; glows.push({ u: nu.vu, v: nu.vv, col: '170,90,255', r: UNIT * 1.6, t0: now(), dur: 900 }); floatText(nu, s.text || 'ใหม่!', '#d9a0ff', false, true); await wait(480) }
       else if (s.type === 'sleep') { floatText(s.unit, '💤 SLEEP — SKIP', '#c8c0ff', true); await wait(420) }
       else if (s.type === 'heal') { s.unit.pose = 'strike'; fx('heal', s.target, s.unit, { color: '#7fe08a' }); impact(s.target, 'heal', false); s.target.flashUntil = 0; floatText(s.target, '+' + s.heal, '#7fe08a'); s.target.shown = s.target.hp; hudSync(); await wait(650); s.unit.pose = 'idle' }
       else if (s.type === 'hold') { s.unit.pose = 'guard'; setTimeout(() => { if (s.unit.pose === 'guard') s.unit.pose = 'idle' }, 700) }

@@ -44,6 +44,8 @@ const locations = [{ id: 'square', name: 'สนาม' }];
 function center() { return { u: 0, v: 0 } }
 
 /* ---------- field generation ---------- */
+/* v98.492 · ?scene=<id> (js/set-pieces.js): a FIXED field — the map is drawn by hand, no random props, no random heights */
+const SCENE = window.SetPieces && FQ.get('scene') ? window.SetPieces.get(FQ.get('scene')) : null;
 const FIELD = (function () {
   const biome = ['forest', 'grass', 'hills', 'swamp', 'snow', 'sand'].includes(FQ.get('biome')) ? FQ.get('biome') : 'grass';
   let a = (+FQ.get('seed') || (Math.random() * 1e9) | 0) >>> 0; window.FieldSeed = a;   /* v98.340 · the battle snapshot (town-battle.js) keeps the seed so a resumed fight gets the same field */
@@ -58,7 +60,7 @@ const FIELD = (function () {
     sand: { block: .06, big: .02, props: ['rock', 'cactus', 'cactus', 'bones'], bigProps: ['wagon', 'brokenwall'], slow: .12, cover: .06, slowMat: 'sand', coverMat: 'clover' }
   }[biome];
   /* v97.01: the field is 1.7× wider than the ?r the host asks for (r 7 → R 12 = 25×25 instead of 15×15; r 5 → R 9) */
-  const R = Math.max(6, Math.min(13, Math.round((+FQ.get('r') || 7) * 1.7))), cells = new Map(), key = (u, v) => u + ',' + v;
+  const R = SCENE ? SCENE.R : Math.max(6, Math.min(13, Math.round((+FQ.get('r') || 7) * 1.7))), cells = new Map(), key = (u, v) => u + ',' + v;
   const S = Math.min(6, Math.round(R * .45)), OPEN = 2;   // where each side gathers (town-battle reads window.FieldGap = S)
   for (let u = -R; u <= R; u++) for (let v = -R; v <= R; v++) {
     const x = rnd(); let k = 'normal', prop = null;
@@ -105,6 +107,7 @@ const FIELD = (function () {
   /* the lane carve above may have opened one cell of a big tree: then the whole tree goes */
   { const gr = new Map(); for (const c of cells.values()) if (c.big) (gr.get(c.big.id) || gr.set(c.big.id, []).get(c.big.id)).push(c);
     for (const cs of gr.values()) if (cs.some(c => c.k !== 'blocked')) for (const c of cs) { if (c.k === 'blocked') c.k = 'normal'; c.prop = null; c.big = null } }
+  if (SCENE) for (const c of cells.values()) { const t = window.SetPieces.cell(SCENE, c.u, c.v); c.k = t.k; c.prop = t.prop; c.big = null }   /* v98.492 · the hand-drawn map replaces everything above */
   /* scenery beyond the field (never part of the fight) */
   const outer = [];
   for (let u = -R - 7; u <= R + 7; u++) for (let v = -R - 7; v <= R + 7; v++) { if (Math.abs(u) <= R && Math.abs(v) <= R) continue; const x = rnd(); outer.push({ u, v, prop: x < .12 ? MIX.props[Math.floor(rnd() * MIX.props.length)] : x < .20 ? 'tuft' : null, seed: rnd() }) }
@@ -123,10 +126,11 @@ window.FieldHeight = (function () {
   const fseed = 'field:' + (FQ.get('seed') || Math.floor(FIELD.rnd() * 1e9)) + ':' + FIELD.biome;
   const blocked = (lu, lv) => { const c = FIELD.cells.get(FIELD.key(lu - R, lv - R)); return !c || c.k === 'blocked' };
   const map = T.forScene({ w: n, h: n, seed: fseed, biome: poi === 'patch' ? .08 : SEV[zone] ?? .5, blocked, entries: [{ u: R - S, v: R + S }, { u: R + S, v: R - S }] });
+  if (SCENE) { for (let i = 0; i < n * n; i++) { const c = window.SetPieces.cell(SCENE, (i % n) - R, ((i / n) | 0) - R); map.levels[i] = (c.level || 0) * ST; if (map.ramp) map.ramp[i] = 0; if (map.stair) map.stair[i] = 0; if (map.water) map.water[i] = 0; if (map.mat) map.mat[i] = 0; map.flat[i] = c.level ? 0 : 1 } }   /* v98.492 · fixed heights from the scene map */
   if (poi === 'patch') { const bed = (lu, lv) => lu % 3 !== 2 && lu > 0 && lu < n - 1 && lv > 0 && lv < n - 1; for (let i = 0; i < n * n; i++) { map.levels[i] = 0; if (map.ramp) map.ramp[i] = 0; if (map.stair) map.stair[i] = 0; map.flat[i] = bed(i % n, (i / n) | 0) ? 1 : 0 } }   /* v98.332 · a dead-flat garden: soil beds (planting rows) between grass walkways, no random heights */
   map.origin = { u: -R, v: -R };                        // local lattice → field cells (−R … R)
   const cellAt = i => FIELD.cells.get(FIELD.key((i % n) - R, ((i / n) | 0) - R));
-  if (window.FieldDiorama) {
+  if (window.FieldDiorama && !SCENE) {
     const near = (u, v) => [[R - S, R + S], [R + S, R - S]].some(([a, b]) => Math.abs(u - a) <= 3 && Math.abs(v - b) <= 3);
     const seed = [...fseed].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261) >>> 0;
     /* v95.18 high ground (v96: some plateaus are stone forts) · v96 rivers with bridges, broken walls, pools as real water */

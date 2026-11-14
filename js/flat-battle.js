@@ -125,6 +125,7 @@
     if (st.outcome) return st.outcome; const o = st.obj;
     if (!alive(hero(st))) st.outcome = 'lose';
     else if (o?.type === 'defend' && o.cells?.some(c => monsters(st).some(m => alive(m) && m.u === c.u && m.v === c.v))) st.outcome = 'lose';
+    else if (o?.type === 'boss') { if (!monsters(st).some(m => m.boss && alive(m))) st.outcome = 'win' }   /* v98.492 · set-piece boss scenes: the boss falling ends it (its roots and wave units do not have to be cleared) */
     else if (!monsters(st).some(alive)) st.outcome = 'win';
     else if (o?.type === 'leader' && !monsters(st).some(m => m.leader && alive(m))) st.outcome = 'win';
     else if ((o?.type === 'survive' || o?.type === 'defend') && st.turns > o.turns) st.outcome = 'win';
@@ -236,6 +237,7 @@
   const weakMult = u => u.sts?.weak ? .75 : 1;
   function hurt(st, tgt, raw) {
     let d = Math.max(1, Math.round(raw)), notes = [];
+    if (st.rules?.dmgMod) d = Math.max(1, st.rules.dmgMod(st, tgt, d, notes) | 0);   /* v98.492 · set-piece rules (js/set-pieces.js) */
     if (kind(st, tgt.u, tgt.v) === 'cover') { d = Math.max(1, Math.round(d * (1 - KINDS.cover.reduce))); notes.push('กำบัง −30%') }
     if (st.cards && tgt.armor > 0 && d > 1) { const a = Math.min(tgt.armor, d - 1); d -= a; notes.push('เกราะ −' + a) }   /* v95.00: DEF of the hero (level) and of armoured companions */
     if (tgt.guard > 0) { const a = Math.min(tgt.guard, d); tgt.guard -= a; d -= a; notes.push('ป้องกัน −' + a) }
@@ -288,7 +290,7 @@
       for (const x of list) x.ct = g.get(x); if (u !== hero(st)) u.ct -= 100; st.active = u;   // the hero pays when his turn ends
       /* v97.19: burns / poison tick, sleepers lose the turn */
       if (u.sts) { const slept = tickStatus(st, u, steps); if (st.outcome) break; if (!alive(u)) continue; if (slept) { st.log.push(u.name + ' หลับอยู่'); steps.push({ unit: u, type: 'sleep' }); if (u === hero(st)) u.ct -= 100; continue } }
-      if (u === hero(st)) { beginHeroTurn(st); steps.push({ type: 'turn', unit: u }); return steps }
+      if (u === hero(st)) { if (st.rules?.onHeroTurn) steps.push(...(st.rules.onHeroTurn(st) || [])); beginHeroTurn(st); steps.push({ type: 'turn', unit: u }); return steps }   /* v98.492 · scene rules: round start */
       st.turn = 'monster'; st.cur = u; steps.push({ type: 'turn', unit: u }); if (u.side === 'hero') u.guard = 0;
       if (u.side === 'hero' && u.control && !u.autoCtl && !u.stun && st.cards) { beginAllyTurn(st, u); steps.push({ type: 'control', unit: u }); return steps }   /* v97.15 · the player commands this one */
       if (u.side === 'monster' && (evoEventTurn(st, u, steps) || evolveCheck(st, u, steps))) { st.cur = null; continue }   /* v98.58 · evolution eats the turn (v98.331: the scripted pumpkin event first) */

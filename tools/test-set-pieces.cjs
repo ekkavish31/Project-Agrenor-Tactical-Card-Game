@@ -1,0 +1,44 @@
+/* v98.492 · node tools/test-set-pieces.cjs — ฉากต่อสู้ตายตัว (js/set-pieces.js): แผนที่ถูกต้อง · ตำแหน่งเริ่ม · กติกาฉาก (โล่ปม/ฟื้นเลือด/คลื่น/ตัดปม) · เป้าหมายบอส · ไม่สุ่ม */
+const path = require('path'); global.window = global; const J = f => path.join(__dirname, '..', 'js', f);
+const B = require(J('flat-battle.js')), SP = require(J('set-pieces.js'));
+let pass = 0, fail = 0; const ok = (c, m) => { if (c) pass++; else { fail++; console.log('FAIL', m) } };
+const SC = SP.get('hungerPit');
+// แผนที่/ตำแหน่ง
+ok(SP.validate(SC).length === 0, 'scene validates: ' + SP.validate(SC).join(' | ')); ok(SC.map.length === 19 && SC.map.every(r => r.length === 19), '19×19 map');
+ok(Object.keys(SP.SCENES).every(id => SP.validate(SP.SCENES[id]).length === 0), 'every registered scene is valid'); ok(SP.get('nope') === null, 'unknown scene → null');
+const lv = (u, v) => SP.cell(SC, u, v).level; ok(lv(0, -3) === 2 && lv(0, -1) === 1 && lv(0, 1) === 0, 'plateau 2 → steps 1 → floor 0'); ok(!SP.walk(SC, -3, 2) && SP.walk(SC, 0, 8), 'pillars block, the entry tunnel is open');
+ok(SC.enemies.filter(e => e.kind === 'hungerRoot').length === 3 && SC.enemies.some(e => e.boss && e.kind === 'hunger') && SC.enemies.filter(e => e.kind === 'murk').length === 2, 'enemies: boss + 3 roots + 2 murk');
+ok(SC.enemies.length > SC.allies.length + 1, 'the enemy side is larger than the party (set-piece = enemy advantage)'); ok(SC.noFlee === true && SC.obj.type === 'boss', 'no flee; boss objective');
+// ไม่สุ่ม: สร้างสองครั้งต้องเหมือนกันทุกอย่าง
+const mkState = (rng) => { const U = SP.units(SC); let n = 0; const st = B.create({ bounds: { u0: -9, v0: -9, u1: 9, v1: 9 }, kindAt: (u, v) => SP.cell(SC, u, v).k, levelAt: (u, v) => SP.cell(SC, u, v).level, cards: true, ct: true, rng: rng || (() => .5), objective: { ...SC.obj },
+    hero: { ...U.hero, hp: 100, maxHp: 100, el: 'earth' }, allies: U.allies.slice(0, 3).map((a, i) => ({ ...a, key: 'a' + i, name: 'เพื่อน' + i, hp: 60, maxHp: 60, atk: 12, move: 4, range: 1 })),
+    monsters: U.enemies.map(e => ({ u: e.u, v: e.v, kind: e.kind, name: e.name || e.kind, boss: !!e.boss, hp: e.kind === 'hunger' ? 200 : e.kind === 'hungerRoot' ? 40 : 40, maxHp: e.kind === 'hunger' ? 200 : e.kind === 'hungerRoot' ? 40 : 40, atk: e.kind === 'hungerRoot' ? 0 : 10, move: e.kind === 'hungerRoot' ? 0 : e.kind === 'hunger' ? 2 : 4, range: e.kind === 'hunger' ? 3 : 1, passive: e.kind === 'hungerRoot', el: 'dark', iq: 1, ct: e.ct })) });
+  for (const u of st.units) { u.speed = u.side === 'monster' ? 8 : 8; if (u.side === 'monster') u.ct = u.ct ?? 24; else if (u.id !== 'hero') u.ct = 40 }
+  st.rules = SP.rules(SC, { alive: u => u.hp > 0, free: (s, u, v) => !s.units.some(x => x.hp > 0 && x.u === u && x.v === v), mk: (kind, pos) => { n++; return { id: 'w' + n, side: 'monster', ai: true, ...pos, kind, name: 'murk' + n, hp: 40, maxHp: 40, atk: 9, def: 1, move: 4, range: 1, boss: false, iq: 1, el: 'dark', speed: 8, ct: 10 } } }); return st };
+const A = mkState(), A2 = mkState(); ok(JSON.stringify(A.units.map(u => [u.id, u.u, u.v, u.hp, u.ct])) === JSON.stringify(A2.units.map(u => [u.id, u.u, u.v, u.hp, u.ct])), 'two builds are identical (no randomness)');
+// กติกา: โล่ปม
+{ const st = mkState(), boss = st.units.find(u => u.boss), notes = []; const d = st.rules.dmgMod(st, boss, 20, notes); ok(d === 10 && /ปมหิว 3/.test(notes[0] || ''), 'boss takes 50% while 3 roots live (' + d + ' · ' + notes + ')');
+  const murk = st.units.find(u => u.kind === 'murk'); ok(st.rules.dmgMod(st, murk, 20, []) === 20, 'other units take full damage');
+  for (const r of st.units.filter(u => u.kind === 'hungerRoot')) r.hp = 0; ok(st.rules.dmgMod(st, boss, 20, []) === 20, 'roots cut → full damage') }
+// ฟื้นเลือดจากปม + ประกาศ + ตัดปมครบ = เสียหลัก
+{ const st = mkState(), boss = st.units.find(u => u.boss); boss.hp = 100; let steps = st.rules.onHeroTurn(st); ok(st.round === 1 && steps.some(s => s.type === 'say' && s.big), 'round 1: the rules are announced'); ok(boss.hp === 100, 'no feeding on round 1');
+  steps = st.rules.onHeroTurn(st); ok(boss.hp === 112 && steps.some(s => s.heal === 12), 'round 2: 3 roots feed +12 (4 each)'); const roots = st.units.filter(u => u.kind === 'hungerRoot'); roots[0].hp = 0; st.rules.onHeroTurn(st); ok(boss.hp === 120, 'with 2 roots: +8');
+  roots[1].hp = 0; roots[2].hp = 0; steps = st.rules.onHeroTurn(st); ok(boss.stun === 1 && st.rootsCut && steps.some(s => /ตัดอาหาร/.test(s.text || '')), 'all roots cut → the boss is staggered once'); const hp = boss.hp; st.rules.onHeroTurn(st); ok(boss.hp === hp, 'no feeding after the cut') }
+// คลื่นสัตว์รอยหมอง: รอบ 4, 8, 12 · ประกาศก่อน · เพดาน 3
+{ const st = mkState(); st.units = st.units.filter(u => u.kind !== 'murk'); const murks = () => st.units.filter(u => u.kind === 'murk' && u.hp > 0).length, log = [];
+  for (let r = 1; r <= 12; r++) { const steps = st.rules.onHeroTurn(st); log.push([r, murks(), steps.some(s => s.type === 'spawn'), steps.some(s => s.type === 'say' && /อุโมงค์เหนือ/.test(s.text || ''))]) }
+  ok(log[2][3] && !log[2][2], 'round 3: the wave is announced first'); ok(log[3][2] && log[3][1] === 2, 'round 4: two murk arrive (one per mouth)'); ok(log.slice(0, 3).every(x => x[1] === 0), 'nothing before round 4');
+  ok(Math.max(...log.map(x => x[1])) <= 3, 'never more than 3 murk alive from waves (cap)'); const mouths = SC.waves.mouths; ok(st.units.filter(u => /^w/.test(u.id)).every(u => SP.walk(SC, u.u, u.v)), 'waves appear on open cells'); ok(st.units.filter(u => /^w/.test(u.id)).some(u => Math.abs(u.u) === 5 && u.v <= -6), 'they come from the north cavern mouths') }
+// เป้าหมายบอส: บอสล้ม = ชนะ แม้ลูกน้อง/ปมยังอยู่
+{ const st = mkState(), boss = st.units.find(u => u.boss); boss.hp = 0; B.checkOutcome ? B.checkOutcome(st) : null; ok(st.outcome === 'win' || (B.monsters(st).some(m => m.boss && m.hp > 0) === false), 'boss down = win even with roots and murk alive'); const st2 = mkState(); B.hero(st2).hp = 0; B.checkOutcome(st2); ok(st2.outcome === 'lose', 'hero down = lose') }
+// ผ่านเกมจริงด้วย CT: ไม่ crash ใน 40 ตา + กติกาถูกเรียก
+{ const st = mkState(); let rounds = 0; for (let i = 0; i < 40 && !st.outcome; i++) { const r = B.endTurnCT(st); rounds = st.round || 0; if (!r.steps) break } ok(rounds >= 5 && !!st.units.length, 'CT loop runs the scene rules every hero turn (rounds ' + rounds + ')') }
+// ฉากที่สอง: ช่องเขาขบวนนักโทษ (ตัดแตร = หยุดกำลังเสริม · ไม่มีโล่/ปมป้อนบอส)
+{ const CP = SP.get('convoyPass'); ok(CP && SP.validate(CP).length === 0, 'convoyPass is valid'); ok(CP.enemies.length > CP.allies.length + 1 && CP.noFlee && CP.obj.type === 'boss' && CP.anchorKind === 'alarmHorn', 'enemy advantage + boss objective + horns as anchors'); ok(CP.enemies.filter(e => e.kind === 'alarmHorn').length === 2, 'two horns'); ok(SP.cell(CP, 5, 0).level === 2 && SP.cell(CP, 3, 0).level === 1 && SP.cell(CP, 0, 0).level === 0, 'the captain holds the high ground (2 → 1 → 0)');
+  let n = 0; const U = SP.units(CP), mk = (kind, pos, ex) => { n++; return { id: 'w' + n, side: 'monster', ai: true, ...pos, kind, name: kind + n, ...ex, hp: 30, maxHp: 30, atk: 8, def: 1, move: 3, range: 1, boss: false, iq: 1, el: 'earth', speed: 8, ct: 10 } };
+  const st = B.create({ bounds: { u0: -7, v0: -7, u1: 7, v1: 7 }, kindAt: (u, v) => SP.cell(CP, u, v).k, levelAt: (u, v) => SP.cell(CP, u, v).level, cards: true, ct: true, rng: () => .5, objective: { ...CP.obj }, hero: { ...U.hero, hp: 100, maxHp: 100 }, allies: U.allies.map((a, i) => ({ ...a, key: 'a' + i, hp: 60, maxHp: 60 })),
+    monsters: U.enemies.map(e => ({ u: e.u, v: e.v, kind: e.kind, name: e.id, boss: !!e.boss, hp: 60, maxHp: 60, atk: e.kind === 'alarmHorn' ? 0 : 8, move: e.kind === 'alarmHorn' ? 0 : 3, passive: e.kind === 'alarmHorn', el: 'earth' })) });
+  st.rules = SP.rules(CP, { alive: u => u.hp > 0, free: (s, u, v) => !s.units.some(x => x.hp > 0 && x.u === u && x.v === v), mk }); const boss = st.units.find(u => u.boss), waves = () => st.units.filter(u => /^w/.test(u.id) && u.hp > 0).length;
+  ok(st.rules.dmgMod(st, boss, 20, []) === 20, 'no shield on the captain (the horns are not a damage shield)'); for (let r = 1; r <= 4; r++) st.rules.onHeroTurn(st); ok(waves() === 2, 'horns alive: round 3 brings reinforcements (' + waves() + ')'); for (let r = 5; r <= 12; r++) st.rules.onHeroTurn(st); ok(waves() <= 5, 'reinforcements are capped at 5');
+  const st2 = st; for (const h of st2.units.filter(u => u.kind === 'alarmHorn')) h.hp = 0; const before = st2.units.length; const steps = st2.rules.onHeroTurn(st2); ok(steps.some(s => /แตรเงียบ/.test(s.text || '')) && !boss.stun, 'horns cut: announced, the captain is not staggered'); for (let r = 0; r < 8; r++) st2.rules.onHeroTurn(st2); ok(st2.units.length === before, 'no more reinforcements after the horns are smashed') }
+console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

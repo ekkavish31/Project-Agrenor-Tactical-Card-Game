@@ -4,7 +4,7 @@
    Everything is drawn from the feet up, facing right when dir is SE/NE (the caller flips for SW/NW like a picture). */
 (function (root) {
   'use strict';
-  const KINDS = { goat: 1, pumpkin: 1, pumpkinBoss: 1, pest: 1, hunger: 1, murk: 1 };   /* v98.488 · hunger = ก้อนหิว (boss of the mine) · murk = สัตว์รอยหมอง */
+  const KINDS = { goat: 1, pumpkin: 1, pumpkinBoss: 1, pest: 1, hunger: 1, murk: 1, hungerRoot: 1, alarmHorn: 1 };   /* v98.488 · hunger = ก้อนหิว (boss of the mine) · murk = สัตว์รอยหมอง */
   const E = (g, x, y, rx, ry, fill, rot = 0) => { g.beginPath(); g.ellipse(x, y, Math.max(.01, rx), Math.max(.01, ry), rot, 0, Math.PI * 2); g.fillStyle = fill; g.fill() };
   const line = (g, x0, y0, x1, y1, col, w) => { g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.strokeStyle = col; g.lineWidth = w; g.lineCap = 'round'; g.stroke() };
   const shade = (c, k) => { const n = parseInt(c.slice(1), 16), r = Math.min(255, Math.round((n >> 16) * k)), gg = Math.min(255, Math.round(((n >> 8) & 255) * k)), b = Math.min(255, Math.round((n & 255) * k)); return `rgb(${r},${gg},${b})` };
@@ -86,6 +86,29 @@
     if (o.hit != null && o.hit < 120) { g.globalAlpha = .3; E(g, 0, -h * .45, w * .55, h * .45, '#ffffff'); g.globalAlpha = 1 }
     g.restore();
   }
+  /* ปมหิว (v98.492): a pulsing knot of dark flesh rooted in the floor with violet veins creeping out — the "food line" of ก้อนหิว; cut it to make the boss vulnerable */
+  function drawRoot(g, o) {
+    const { h, t } = o, w = h * .9, pul = 1 + Math.sin(t * .006 + (o.seed || 0)) * .06, dead = o.hp <= 0;
+    g.save();
+    E(g, 0, 0, w * .62, h * .1, 'rgba(0,0,0,.45)');
+    for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2 + .3, rl = w * (.5 + .12 * Math.sin(t * .003 + i)), x = Math.cos(a) * rl, y = Math.sin(a) * rl * .28; g.beginPath(); g.moveTo(0, -h * .05); g.quadraticCurveTo(x * .5, y * .5 - h * .02, x, y); g.strokeStyle = dead ? '#2a2236' : '#2a1d3d'; g.lineWidth = h * .07; g.lineCap = 'round'; g.stroke(); if (!dead) { g.strokeStyle = 'rgba(190,100,255,' + (.35 + .25 * Math.sin(t * .006 + i)) + ')'; g.lineWidth = h * .016; g.stroke() } }
+    g.translate(0, -h * .42); g.scale(pul, 1 / pul);
+    E(g, 0, 0, w * .32, h * .38, dead ? '#1b1524' : '#1a1226'); E(g, -w * .06, -h * .06, w * .22, h * .24, dead ? '#241c30' : '#2b1d3f');
+    if (!dead) { const gl = .65 + .35 * Math.sin(t * .008); E(g, 0, -h * .02, w * .12 * gl, h * .1 * gl, '#d9a0ff'); E(g, 0, -h * .02, w * .22, h * .18, 'rgba(180,80,255,' + .18 * gl + ')') }
+    g.restore();
+  }
+  /* แตรสัญญาณ (v98.492): a brass signal horn on a post — it calls the convoy's reinforcements until it is smashed */
+  function drawHorn(g, o) {
+    const { h, t } = o, dead = o.hp <= 0, w = h * .8, ring = (t * .004) % 1;
+    g.save(); E(g, 0, 0, w * .5, h * .09, 'rgba(0,0,0,.4)');
+    line(g, 0, 0, 0, -h * .62, dead ? '#4a3a2a' : '#6a4a2a', h * .09);                                    // post
+    line(g, -w * .3, -h * .06, w * .3, -h * .06, '#5a3f22', h * .07);                                     // base
+    g.save(); g.translate(0, -h * .66); g.rotate(dead ? .6 : -.25);
+    g.beginPath(); g.moveTo(-w * .38, h * .03); g.quadraticCurveTo(0, -h * .12, w * .42, -h * .08); g.lineTo(w * .46, h * .1); g.quadraticCurveTo(0, h * .06, -w * .38, h * .08); g.closePath(); g.fillStyle = dead ? '#6b5b3a' : '#d9a83a'; g.fill(); g.strokeStyle = dead ? '#3a2d18' : '#8a6a1c'; g.lineWidth = Math.max(1, h * .02); g.stroke();
+    E(g, w * .44, 0, w * .09, h * .1, dead ? '#3a2d18' : '#7a5a14'); g.restore();
+    if (!dead) { g.strokeStyle = 'rgba(255,220,120,' + (.5 * (1 - ring)) + ')'; g.lineWidth = h * .025; g.beginPath(); g.arc(w * .35, -h * .7, h * .12 + ring * h * .35, -1, 1); g.stroke() }
+    g.restore();
+  }
   /* สัตว์รอยหมอง: a lean beast gone dark — smoke curling off it, violet eyes */
   function drawMurk(g, o) {
     const { h, t, walking } = o, w = h * 1.25, bob = Math.sin(t * (walking ? .02 : .005)) * h * .03, st = walking ? Math.sin(t * .02) : 0;
@@ -103,8 +126,8 @@
   function draw(g, kind, o) {
     if (!KINDS[kind]) return false;
     g.save(); g.translate(o.x, o.y);
-    if (o.hp <= 0) { g.rotate(kind === 'pumpkin' ? 0 : Math.PI * .4); g.globalAlpha *= .6 }
-    if (kind === 'goat') drawGoat(g, o); else if (kind === 'pumpkin') drawPumpkin(g, o, false); else if (kind === 'pumpkinBoss') drawPumpkin(g, o, true); else if (kind === 'hunger') drawHunger(g, o); else if (kind === 'murk') drawMurk(g, o); else drawPest(g, o);
+    if (o.hp <= 0) { g.rotate(kind === 'pumpkin' || kind === 'hungerRoot' || kind === 'alarmHorn' ? 0 : Math.PI * .4); g.globalAlpha *= .6 }
+    if (kind === 'goat') drawGoat(g, o); else if (kind === 'pumpkin') drawPumpkin(g, o, false); else if (kind === 'pumpkinBoss') drawPumpkin(g, o, true); else if (kind === 'hunger') drawHunger(g, o); else if (kind === 'hungerRoot') drawRoot(g, o); else if (kind === 'alarmHorn') drawHorn(g, o); else if (kind === 'murk') drawMurk(g, o); else drawPest(g, o);
     g.restore(); return true;
   }
   /* the harvest the pumpkin pops into: a bouncing pumpkin that rests on the ground, drawn after the unit is down (feet at (x, y)) */
@@ -114,7 +137,7 @@
   function icon(kind) {
     if (ICONS[kind]) return ICONS[kind];
     try { const c = document.createElement('canvas'); c.width = c.height = 96; const q = c.getContext('2d'); q.fillStyle = '#2c3a2f'; q.fillRect(0, 0, 96, 96);
-      q.save(); q.translate(48, 86); draw(q, kind, { x: 0, y: 0, h: kind === 'goat' ? 64 : kind === 'hunger' ? 54 : 62, dir: 'SE', t: 0, hp: 1, hit: null, walking: false, pose: 'idle', seed: 1 }); q.restore(); return ICONS[kind] = c.toDataURL('image/png') } catch (e) { return '' }
+      q.save(); q.translate(48, 86); draw(q, kind, { x: 0, y: 0, h: kind === 'goat' ? 64 : kind === 'hunger' ? 54 : kind === 'hungerRoot' ? 52 : 62, dir: 'SE', t: 0, hp: 1, hit: null, walking: false, pose: 'idle', seed: 1 }); q.restore(); return ICONS[kind] = c.toDataURL('image/png') } catch (e) { return '' }
   }
   root.CodeMonsters = { draw, drawLoot, icon, has: k => !!KINDS[k], KINDS: Object.keys(KINDS) };
 })(typeof window !== 'undefined' ? window : globalThis);
