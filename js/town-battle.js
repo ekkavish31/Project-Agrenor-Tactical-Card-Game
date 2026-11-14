@@ -93,7 +93,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit' };
+    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
@@ -169,7 +169,7 @@
     if (Q.get('resume') === '1') applyResume(); else makeFlee();
     if (SCENE) attachScene();
   }
-  if (EDIT) { const sx = document.createElement('style'); sx.textContent = '#fbBar,.fb-show,.fb-fly,.fb-banner,.fb-toast,#fbHand,#fbActions,#fbAlly,#fbHint,#fbIntro,#fbInspect,#fbQueue,#fbLbTop,#fbLbBot,#fbFace,#fbCoach,#fbHud,#fbPause,#menuBtn{display:none!important}'; document.head.append(sx) }   /* v98.311 · BG editor: no game HUD */
+  if (EDIT) { const sx = document.createElement('style'); sx.textContent = '#fbBar,.fb-show,.fb-fly,.fb-banner,.fb-toast,#fbHand,#fbActions,#fbAlly,#fbHint,#fbIntro,#fbInspect,#fbDuel,#fbQueue,#fbLbTop,#fbLbBot,#fbFace,#fbCoach,#fbHud,#fbPause,#menuBtn{display:none!important}'; document.head.append(sx) }   /* v98.311 · BG editor: no game HUD */
   /* ---------- v98.492 · set-piece rules: the scene's functions (they live in js/set-pieces.js; the battle state keeps only plain data, so a resumed fight re-attaches them) ---------- */
   let waveN = 0;
   function mkSpawn(kind, pos, extra = {}) {
@@ -357,6 +357,27 @@
   #fbInspect .top>div{flex:1;min-width:0}#fbInspect b{display:block}#fbInspect small{color:#cdbf98;font-size:11px}
   #fbInspect .bar{height:12px;box-sizing:border-box;border:4px solid transparent;border-image:url(assets/ui/battle-bar.webp) 8 fill/4px stretch;margin:3px 0}#fbInspect .bar i{display:block;height:100%;background:url(assets/ui/bar-green.webp) !important;background-size:auto 100%!important;border-radius:3px}#fbInspect.foe .bar i{background:url(assets/ui/bar-red.webp) !important}
   #fbInspect .st{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin-top:6px;font-size:12px}#fbInspect .st b{display:inline;color:#ffe2a8}#fbInspect .iq{display:block;margin-top:4px}#fbInspect .nx{display:block;margin-top:4px;color:#9fb0a0}
+  #fbDuel{position:fixed;right:14px;top:292px;z-index:40;display:flex;flex-direction:column;align-items:flex-end;gap:4px;pointer-events:none;font-family:AgThai,system-ui,sans-serif;color:#f3e9c9}
+  #fbDuel .dc{position:relative;display:flex;align-items:center;gap:9px;min-width:176px;max-width:210px;padding:6px 10px 6px 6px;border-radius:12px;background:linear-gradient(90deg,#14110fe6,#14110fb0);border:1px solid #fff2;box-shadow:0 4px 14px #0009;transition:opacity .25s}
+  #fbDuel .dc.t{margin-right:18px;opacity:.96}#fbDuel .dc.foe{border-color:#c4563f88}
+  #fbDuel .pf{position:relative;flex:none;width:84px;height:84px;border-radius:11px;overflow:hidden;border:3px solid var(--jc,#8a9a6a);background:#16130f center/cover no-repeat;box-shadow:0 0 0 1px #000a,0 0 12px var(--jc,#8a9a6a)66}
+  #fbDuel .dc.t .pf{width:68px;height:68px}
+  #fbDuel .pf::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:8px;transition:box-shadow .2s}
+  #fbDuel .jb{position:absolute;left:-7px;top:-7px;z-index:2;width:22px;height:22px;border-radius:50%;background:var(--jc,#888);border:2px solid #1a140c;display:grid;place-items:center;font:700 12px AgThai,system-ui,"Segoe UI Symbol",sans-serif;font-style:normal;color:#fff8e8}
+  #fbDuel .nm{flex:1;min-width:0}#fbDuel .nm b{display:block;font-size:14px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#fbDuel .nm small{display:block;font-size:11px;color:#cdbf98}
+  #fbDuel .hp{height:6px;margin:4px 0 2px;border-radius:4px;background:#0009;overflow:hidden}#fbDuel .hp i{display:block;height:100%;border-radius:4px;transition:width .3s}
+  #fbDuel .mo{display:block;min-height:15px;font-style:normal;font-weight:700;font-size:12px;letter-spacing:.3px}
+  #fbDuel .m-attack .pf,#fbDuel .m-attack.pf{animation:fbDuelPush .5s ease-out}#fbDuel .dc.m-attack .pf::after{box-shadow:inset 0 0 18px #ffb347dd}#fbDuel .dc.m-attack .mo{color:#ffcf7a}
+  #fbDuel .dc.m-hurt .pf{animation:fbDuelShake .42s}#fbDuel .dc.m-hurt .pf::after{box-shadow:inset 0 0 26px #ff2a1acc}#fbDuel .dc.m-hurt .mo{color:#ff9a8a}
+  #fbDuel .dc.m-guard .pf::after{box-shadow:inset 0 0 22px #7fc4ffcc}#fbDuel .dc.m-guard .mo{color:#9fd4ff}
+  #fbDuel .dc.m-heal .pf::after,#fbDuel .dc.m-win .pf::after{box-shadow:inset 0 0 22px #7fe08acc}#fbDuel .dc.m-heal .mo,#fbDuel .dc.m-win .mo{color:#9fefaa}
+  #fbDuel .dc.m-down .pf{filter:grayscale(1) brightness(.6)}#fbDuel .dc.m-down .mo{color:#aaa}
+  #fbDuel .vs{margin:-2px 36px -2px 0;font-size:15px;color:#e8c46a;text-shadow:0 1px 3px #000}
+  #fbDuel .tools{pointer-events:auto;display:flex;gap:4px}#fbDuel .tools button{width:26px;height:22px;border-radius:7px;border:1px solid #fff3;background:#14110fcc;color:#e8d9aa;font-size:12px;cursor:pointer;padding:0}
+  #fbDuel.min .dc{min-width:0;padding:4px}#fbDuel.min .nm{display:none}#fbDuel.min .pf,#fbDuel.min .dc.t .pf{width:52px;height:52px}#fbDuel.min .dc.t{margin-right:8px}#fbDuel.min .vs{margin-right:20px}
+  @keyframes fbDuelPush{0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}@keyframes fbDuelShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-2deg)}45%{transform:translateX(5px) rotate(2deg)}70%{transform:translateX(-3px)}}
+  @media (max-width:860px),(max-height:560px){#fbDuel{top:auto;bottom:226px;right:6px}#fbDuel .dc{min-width:0}#fbDuel .nm{display:none}#fbDuel .pf{width:56px;height:56px}#fbDuel .dc.t .pf{width:48px;height:48px}#fbDuel .dc.t{margin-right:8px}}
+  @media (prefers-reduced-motion:reduce){#fbDuel .pf{animation:none!important}}
   #fbActions{position:fixed;left:50%;bottom:148px;transform:translateX(-50%);z-index:41;display:flex;gap:4px;align-items:center;font:700 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}
   #fbActions button{display:flex;align-items:center;gap:6px;min-height:44px;box-sizing:border-box;padding:0;border:12px solid transparent;border-width:11px 16px;border-image:url(assets/ui/battle-btn.webp) 14 fill/11px 16px stretch;background:none;border-radius:0;color:#fff3d2;font:inherit;text-shadow:0 1px 2px #000;cursor:pointer;filter:drop-shadow(0 3px 4px #000a);white-space:nowrap}
   #fbActions button:hover:not(:disabled),#fbActions #fbAuto.on{border-image-source:url(assets/ui/battle-btn-hot.webp);color:#2a1a05;text-shadow:none}#fbActions button:disabled{opacity:.45;cursor:default;filter:grayscale(.7) drop-shadow(0 3px 4px #000a)}
@@ -539,6 +560,38 @@
     d.innerHTML = `<button class="x" aria-label="ปิด" title="ปิด (Esc)"></button><div class="top"><span class="fc" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}"></span><div><b>${esc(u.name)}</b><small>${E ? E.icon + ' ' : ''}${u.level ? 'Lv.' + u.level : ''}</small><div class="bar"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><small>${Math.round(u.shown ?? u.hp)}/${u.maxHp} HP</small></div></div>
       <div class="st"><span>เดิน <b>${u.move || '-'}</b></span><span>ระยะ <b>${u.range ?? '-'}</b></span><span>โจมตี <b>${u.atk ?? '-'}</b></span><span>ป้องกัน <b>${(u.def ?? u.armor) || 0}</b></span></div>${foe ? `<small class="iq">${esc(IQ2[u.iq | 0] || '')}</small>` : ''}<small class="nx">${U === inspectU ? 'ช่องที่เดินได้ตาต่อไปแสดงบนสนาม' : (U === pickU ? 'เลือกอยู่ (คริสตัลเทาเหนือหัว)' : 'ชี้อยู่ · คลิกเพื่อเลือก')}</small>`;
     d.querySelector('.x').hidden = U !== inspectU; d.querySelector('.x').onclick = () => setInspect(null);
+  }
+  /* v98.494 · persistent portrait panel (left): the acting fighter and the one on the receiving end for the whole turn; the face follows the beat — attack · hurt · guard · heal · down.
+     The mood comes from the pose the animation code already sets (BattlePortrait.mood) · real expression pictures when they exist, otherwise code-drawn job busts / CSS glow on a still picture */
+  let duel = { a: null, t: null, sig: '' };
+  const duelPref = k => { try { return localStorage.getItem('projectA.fbDuel' + k) === '1' } catch (e) { return false } };
+  function duelTarget(act) {
+    if (duel.t && duel.t.hp > 0 && st.units.includes(duel.t) && duel.t !== act) return duel.t;
+    if (duel.t && duel.t.hp <= 0 && now() - (duel.tAt || 0) < 1400) return duel.t;   /* the fallen stays on screen a moment */
+    if (act && act.side === 'hero') return FB.monsters(st).find(m => m.id === st.target && m.hp > 0) || FB.monster(st) || null;
+    return null;
+  }
+  function duelTick(t) {
+    const BP = window.BattlePortrait; let d = document.getElementById('fbDuel');
+    if (!BP || !st || EDIT) { d?.remove(); return }
+    const act = actUnit && actUnit.hp > 0 ? actUnit : (st.outcome ? FB.hero(st) : FB.queue(st, 1)[0]);
+    if (!act) { d?.remove(); return }
+    if (act !== duel.a) { duel.a = act; duel.t = null }
+    const tg = st.outcome ? null : duelTarget(act), look = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })();
+    const min = duelPref('Min'), code = duelPref('Code'), win = st.outcome === 'win';
+    const row = u => { const m = win && u.side !== 'monster' ? 'win' : BP.mood(u, t); return { u, m, hp: Math.round(u.shown ?? u.hp) } };
+    const A = row(act), T = tg ? row(tg) : null;
+    const sig = [A.u.id, A.m, A.hp, T && T.u.id, T && T.m, T && T.hp, min ? 1 : 0, code ? 1 : 0, look].join('|');
+    if (d && d.dataset.sig === sig) return;
+    if (!d) { d = document.createElement('div'); d.id = 'fbDuel'; document.body.append(d) }
+    d.dataset.sig = sig; d.classList.toggle('min', min);
+    const card = (R, role) => {
+      const u = R.u, foe = u.side === 'monster', f = BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
+      const jn = !foe && window.Progression?.JOBS?.[job]?.name;
+      return `<div class="dc ${role} ${foe ? 'foe' : 'ally'} m-${R.m}" style="--jc:${jc}"><span class="pf" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}">${job ? `<i class="jb" title="${esc(jn || '')}">${BP.JOB_ICON[job]}</i>` : ''}</span><div class="nm"><b>${esc(u.name)}</b><small>${u.level ? 'Lv.' + u.level + ' ' : ''}${esc(jn || '')}</small><div class="hp"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><em class="mo">${BP.LABEL[R.m] || ''}</em></div></div>`;
+    };
+    d.innerHTML = card(A, 'a') + (T ? '<span class="vs">▾</span>' + card(T, 't') : '') + `<div class="tools"><button data-k="Min" title="ย่อ/ขยายพอร์เทรต">${min ? '▣' : '▭'}</button><button data-k="Code" title="สลับภาพจริง ↔ ภาพวาดตามอาชีพ (โค้ด)">${code ? '🖼' : '✎'}</button></div>`;
+    d.querySelectorAll('.tools button').forEach(b => b.onclick = () => { try { localStorage.setItem('projectA.fbDuel' + b.dataset.k, duelPref(b.dataset.k) ? '0' : '1') } catch (e) { } d.dataset.sig = ''; });
   }
   addEventListener('keydown', e => { if (e.key === 'Escape' && inspectU) { e.preventDefault(); e.stopImmediatePropagation(); setInspect(null) } }, true);
   function queueSync() {
@@ -1207,6 +1260,8 @@
   const kdraw = (g, name, col, x, y, w, rot, alpha) => { const c = kimg(name, col); if (!c || alpha <= 0) return; g.save(); g.globalAlpha = Math.min(1, alpha); g.translate(x, y); g.rotate(rot); g.drawImage(c.cv, -w / 2, -w / 2, w, w); g.restore() };
   function fx(kind, to, from, o = {}) {
     const dur = o.duration || (kind === 'heal' || kind === 'shield' ? 900 : 650);
+    if (from && from !== to) { const act = duel.a; if (from === act) { duel.t = to; duel.tAt = now() } else if (to === act) { duel.t = from; duel.tAt = now() } }
+    if (kind === 'heal' || kind === 'shield') { to.mood = kind === 'heal' ? 'heal' : 'guard'; to.moodUntil = now() + 1100 }
     effects.push({ kind, tier: o.tier, reducedMotion: o.reducedMotion, seed: (Math.random() * 1e6) | 0, scale: o.scale || 1, color: o.color, to: { x: to.vu, y: to.vv }, from: from && from !== to ? { x: from.vu, y: from.vv } : null, start: now(), duration: dur });
 
     /* v98.332 · free CC0 light / slash sprites (Kenney Particle Pack, assets/fx/kenney) on top of the old effects: a sweep for melee, a flare + star + ring for elements */
@@ -1587,6 +1642,7 @@
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
     for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }
     /* v98.278 · the turn crystal over the head of whoever's turn it is: the user's own 8-frame art (gold = team, silver = monsters) — assets/fx/plumbob-ally|foe.webp, 8 frames of 100×160 (source sheet: art-production/plumbob-crystal-sheet-8x2.webp). No code-drawn glow any more: the picture carries its own light. */
+    duelTick(t);
     if (!st.outcome) { const au = actUnit && actUnit.hp > 0 ? actUnit : FB.queue(st, 1)[0];
       if (au && au.hp > 0 && !(au.deadAt && t > au.deadAt)) { const foe = au.side === 'monster', pic = im('assets/fx/plumbob-' + (foe ? 'foe' : 'ally') + '.webp');
         if (pic || CODE_ART) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, ph = UNIT * .98, pw = ph * 100 / 160, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.78 * big + .1) + bob;
