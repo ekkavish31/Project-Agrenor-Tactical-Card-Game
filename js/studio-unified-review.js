@@ -139,7 +139,11 @@
     for(const f of c.frames){const a=byId(f.assetId);if(!a||a.status==='missing')continue;try{await removeFile(a.file);out.files++}catch(e){if(e?.name!=='NotFoundError')throw e}a.status='missing';a.artRevision=Date.now().toString(36)}out.sets++
    }catch(e){out.failed.push(c.label+' '+c.action+' '+c.view+': '+e.message)}}
   try{window.StudioVariants?.syncStatuses?.(M)}catch(e){}await saveManifest();B.invalidate();return out}
- const api=window.StudioUnifiedReview={allClips,setVerdictMany,deleteMany,batchScale,preApprove,mirrorLinked,oppositeClip,copyMirror,open,close,status,changed,committed,history,isOpen:()=>d.open,get speed(){return speed},get onion(){return onion},getState:()=>({clip:clip?.id,loading,...E.getState()}),reset:()=>{token++;loading=false;clip=null;E.clear();comparisonImages=[];if(d.open)d.close()}};
+ /* v98.471 · pictures dropped on a cell of the Animation grid: open that set and import them as a REPLACEMENT (a mirrored set then becomes its own pictures) */
+ async function importFiles(target,files){files=[...(files||[])].filter(f=>f&&f.type&&f.type.startsWith('image/'));if(!files.length)return;await open(target);if(!clip)return;
+  try{q('import').open=true;q('import-mode').value='replace'}catch(e){}if(E.hasDrafts())await E.saveDraft();E.clear();E.setTarget(clip);firstSource=false;await oldAdd(files);changed();
+  status('นำเข้าภาพ '+files.length+' ไฟล์ลง '+clip.action+' '+clip.view+' แล้ว · ตรวจลำดับเฟรม แล้วกดบันทึก = ภาพของทิศนี้เอง (ปลดการลอกกลับด้าน)')}
+ const api=window.StudioUnifiedReview={importFiles,allClips,setVerdictMany,deleteMany,batchScale,preApprove,mirrorLinked,oppositeClip,copyMirror,open,close,status,changed,committed,history,isOpen:()=>d.open,get speed(){return speed},get onion(){return onion},getState:()=>({clip:clip?.id,loading,...E.getState()}),reset:()=>{token++;loading=false;clip=null;E.clear();comparisonImages=[];if(d.open)d.close()}};
  window.AssetAnimationReview={...api,refresh:target=>switchClip(target||clip?.id),hasDrafts:()=>E.hasDrafts(),exportSheet:()=>document.getElementById('wi-sheet-export').click(),exportGif,getState:()=>({clip:clip?.id,loading,...E.getState()})};
  document.getElementById('animationReviewButton').onclick=()=>open();
 })();
