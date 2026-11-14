@@ -110,7 +110,7 @@ body.lineup-expanded{position:fixed;inset:0;overflow:auto;z-index:1000}
 window.lineupLoading=function(message,error){const el=document.getElementById('lineupLoadState');el.hidden=false;el.textContent=message;if(error){el.setAttribute('role','alert');const b=document.createElement('button');b.textContent='ลองโหลดใหม่';b.type='button';b.onclick=()=>location.reload();el.append(' ',b)}};
 addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เกิดข้อผิดพลาด: '+e.message,true);else if(e.target?.tagName==='SCRIPT')window.lineupLoading('โหลดสคริปต์ไม่สำเร็จ: '+e.target.src.split('/').pop(),true)},true);
 </script>
-<header><h1>⚖ Scale Lineup <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
+<header><h1>⚖ Scale Lineup <small id="lineupVer" style="color:#1f6f43;font-weight:700"></small> <small>เฟส 2 · ตัวละคร · อาคาร · ของประดับ · ธรรมชาติ · ตัวละครปรับขนาดได้ (บันทึกเข้าเกม)</small></h1>
 <span id="tabs"></span> <span id="ctxBtns"></span><span id="vpCtl"></span><span class="grow"></span>
 <button id="cartAll" type="button" title="ใส่ค่าปรับสเกลทั้งหมด + Datum เข้า Cart ในครั้งเดียว แล้วกด 🛒 Cart → Push ทั้งหมด">🛒 ใส่ Cart ทั้งหมด</button><button id="cartOpen" type="button" title="เปิด Cart เพื่อ Push">⬆ Push (Cart)</button><button id="lineupCollapse" type="button" aria-expanded="true" aria-controls="lineupOverview">ยุบแถว Lineup ▴</button><button id="lineupFullscreen" type="button" aria-pressed="false">⛶ เต็มจอ</button></header>
 <main>
@@ -214,7 +214,7 @@ const heroLook = () => { try { const l = ST?.lineup?.look?.(); return l === 'fem
 /* v98.458 · a hero look is a PERSON, not "whichever look the studio has open": the open look is the entry `hero`, the other one `hero-<look>`, and they swap names every time you
    pick the other card. Everything that must be remembered per person (size adjustment · ✔ marks) is therefore keyed by the LOOK: male = `hero` (what the game has always used), female = `hero-female`.
    The male look is also the fixed yardstick (1.70 m) and always stands first, so choosing a card never moves anyone or changes anyone's height. */
-const LINEUP_BUILD = '98.458';
+const LINEUP_BUILD = '98.470';
 const lookOfId = id => id === 'hero' ? heroLook() : id === 'hero-male' ? 'male' : id === 'hero-female' ? 'female' : null;
 const AK = id => { const l = lookOfId(id); return l ? (l === 'female' ? 'hero-female' : 'hero') : id };
 const isRefId = id => lookOfId(id) === 'male';
@@ -1198,5 +1198,7 @@ function wireStudio() {   /* inside Asset Studio: follow the Animation tab */
 if (DOCK) { const post = () => { try { const c = document.querySelector('main > section:nth-of-type(2)'), hd = document.querySelector('header'); parent.postMessage({ type: 'lineup-dock-h', h: Math.ceil((hd?.offsetHeight || 0) + (c?.scrollHeight || 0) + 22) }, location.origin) } catch (e) { } };
   let t = 0; const later = () => { clearTimeout(t); t = setTimeout(post, 80) }; try { new ResizeObserver(later).observe(document.querySelector('main > section:nth-of-type(2)')) } catch (e) { } addEventListener('toggle', later, true); addEventListener('load', later) }
 window.dockGoto = async ({ id, action, view, frame = 0, open = 'ratio' }) => { VP.action = action; VP.view = view; VP.index = frame | 0; delete PICK[id]; try { localStorage.setItem('lineup.vp', JSON.stringify(VP)) } catch (e) { } tab = 'ratio'; await buildChars(); sel = id; viewCtl(); render(); const e = ENTRIES.find(x => x.id === id); if (e && open === 'datum') openDatum(e) };
+/* v98.470 · show which version this page runs (the live game-version.js, never from cache) + the scale data it loaded, so an old cached page is obvious */
+fetch('js/game-version.js', { cache: 'no-store' }).then(r => r.text()).then(t => { const v = (t.match(/v:\s*'([^']+)'/) || [])[1] || '?', el = document.getElementById('lineupVer'); if (el) el.textContent = '· ' + v + ' · หน้า ' + LINEUP_BUILD + ' · ข้อมูลสเกล ' + Object.keys(SAVED.global || {}).length + ' ตัว' + (SAVED.pose ? ' + ท่า' : '') }).catch(() => { });
 build().then(() => { ready = true; viewCtl(); render(); wireStudio(); window.__lineupReady = true; $('lineupLoadState').hidden=true }).catch(err=>{console.error('Scale Lineup load failed',err);window.lineupLoading('โหลด Scale Lineup ไม่สำเร็จ: '+err.message,true)});
 </script></body></html>
