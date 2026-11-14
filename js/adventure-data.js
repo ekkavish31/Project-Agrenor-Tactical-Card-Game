@@ -17,7 +17,14 @@ const CONSUMABLES={
  holyWater:{name:'น้ำมนต์',element:'light',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:24,range:3,price:34,text:'สาดใส่ศัตรูในระยะ 3 ช่อง ความเสียหาย 24 (ธาตุแสง)'},
  poisonDart:{name:'ลูกดอกพิษ',element:'nature',rarity:'common',kind:'โจมตี',use:'ต่อสู้',damage:14,range:5,price:16,text:'ยิงไกล 5 ช่อง ความเสียหาย 14'},
  stoneSkin:{name:'ยาผิวศิลา',element:'earth',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',guard:30,price:36,text:'ได้เกราะกันความเสียหาย 30'},
- guardCharm:{name:'เครื่องรางคุ้มกัน',element:'light',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',guard:20,price:28,text:'ได้เกราะกันความเสียหาย 20'}};
+ guardCharm:{name:'เครื่องรางคุ้มกัน',element:'light',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',guard:20,price:28,text:'ได้เกราะกันความเสียหาย 20'},
+ bandage:{name:'ผ้าพันแผลสะอาด',element:'nature',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:16,stamina:0,price:12,text:'ฟื้น HP 16 · ในสนามรบล้างสถานะผิดปกติด้วย'},
+ antidote:{name:'ยาถอนพิษ',element:'water',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:6,stamina:0,price:22,text:'ฟื้น HP 6 · ในสนามรบล้างพิษ ไหม้ ใบ้ และสถานะอื่นทั้งหมด'},
+ smokeBomb:{name:'ระเบิดควัน',element:'dark',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',price:28,text:'ในสนามรบ: หลบการโจมตีครั้งถัดไปที่โดนตี'},
+ whetstone:{name:'หินลับมีด',element:'earth',rarity:'common',kind:'เสริมพลัง',use:'ต่อสู้',price:18,text:'ในสนามรบ: การโจมตีครั้งถัดไปแรงขึ้น ×1.6'},
+ oilFlask:{name:'ขวดน้ำมันไฟ',element:'fire',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:12,range:3,price:26,text:'สาดใส่ศัตรูในระยะ 3 ช่อง ความเสียหาย 12 · ลามถึงศัตรูข้างเคียง · ติดไหม้'},
+ flashPowder:{name:'ผงแสงวาบ',element:'light',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:6,range:3,price:24,text:'ในระยะ 3 ช่อง ความเสียหาย 6 · ทำให้ศัตรูตาพร่าพลาดเทิร์นถัดไป'}
+};
 // ---------- goods: sell at the market or hand in for quests ----------
 const GOODS={
  wolfFang:{name:'เขี้ยวหมาป่า',element:'dark',rarity:'common',use:'ขาย',price:12,text:'ของป่าที่พ่อค้ารับซื้อ'},

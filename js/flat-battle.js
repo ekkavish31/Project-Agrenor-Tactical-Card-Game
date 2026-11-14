@@ -53,7 +53,7 @@
       Object.assign(h, { atk: 0, def: 0, stamina: 100, guard: 0, weapon: 'sword', ...o.hero });
       st.units.forEach((u, i) => { if (i) { if (u.def === 1 && u.side === 'monster') u.def = 0; u.guard = u.guard || 0 } });
       st.cards = true; st.rng = o.rng || Math.random; st.deck = TD.create(o.deckConfig || TD.DEFAULT, st.rng); st.mp = 0;
-      st.crystalMax = o.crystals || CRYSTALS; st.spent = 0; st.drawn = [...st.deck.movement.hand, ...st.deck.combat.hand].map(c => c.uid);
+      st.crystalMax = o.crystals || CRYSTALS; st.spent = 0; st.bag = o.bag ? { ...o.bag } : null; st.itemHand = []; st.itemsUsed = {}; st.itemTurn = 0; if (st.bag) itemDraw(st); st.drawn = [...st.deck.movement.hand, ...st.deck.combat.hand].map(c => c.uid);
     }
     return st;
   }
@@ -80,7 +80,7 @@
       cardEvent(st, 'draw', group, got); drawn.push(...got.map(c => c.uid));
     }
     ensureLoan(st, drawn);
-    st.spent = 0; st.drawn = drawn; return drawn;
+    st.spent = 0; st.itemTurn = 0; st.drawn = drawn; if (st.bag) itemDraw(st); return drawn;
   }
   /* v98.332 · loaned cards (the pumpkin fight: Hilda lends two element cards): always in the combat hand at the start of every turn, never enter the discard pile */
   function ensureLoan(st, drawn) {
@@ -108,7 +108,13 @@
     rockfall: { range: 3, dmg: 8, perLevel: 6, high: 1, slow: 1, st: 10, fx: 'earth' }, perch: { self: true, guard: 6, perch: 2, st: 6, fx: 'shield' }, climb: { self: true, climb: 1, st: 6, fx: 'wind' },
     /* v98.66 · Grat (chaos) cards, unlocked by chaos items from evolved monsters (js/chaos.js) */
     chaosBolt: { range: 4, dmg: 16, st: 14, fx: 'arcane' }, chaosRend: { range: 1, dmg: 14, st: 16, fx: 'arcane', aoe: 'splash' }, chaosWard: { self: true, guard: 12, st: 8, fx: 'shield' },
-    rest: { self: true, restore: 30, st: 0, fx: 'heal' }, mend: { self: true, heal: 16, st: 10, fx: 'heal' }
+    rest: { self: true, restore: 30, st: 0, fx: 'heal' }, mend: { self: true, heal: 16, st: 10, fx: 'heal' },
+    /* v98.496 · new cards (every rule uses mechanics that already exist): cleave/shieldBash (front line) · volley/snipe (ranger) · smite/bless (cleric) · shadowStep (rogue) · emberBurst (mage) · warCry (anyone) */
+    cleave: { range: 1, dmg: 20, st: 18, fx: 'sword', aoe: 'splash', big: 1.2 }, shieldBash: { range: 1, dmg: 10, st: 10, push: 1, guardAfter: 8, fx: 'blunt' },
+    volley: { range: 4, dmg: 8, st: 14, hits: 2, fx: 'spear' }, snipe: { range: 5, dmg: 22, st: 18, fx: 'rapier' },
+    smite: { range: 3, dmg: 18, st: 14, fx: 'arcane' }, bless: { self: true, guard: 10, heal: 8, st: 8, fx: 'heal' },
+    shadowStep: { range: 3, dmg: 14, st: 14, behind: 10, leap: 1, fx: 'knife' }, emberBurst: { range: 3, dmg: 13, st: 14, aoe: 'splash', fx: 'fire' },
+    warCry: { self: true, guard: 6, restore: 24, st: 0, fx: 'shield' }
   };
   const hero = st => st.units[0];
   const monsters = st => st.units.filter(u => u.side === 'monster'), allies = st => st.units.filter((u, i) => i && u.side === 'hero');
@@ -221,7 +227,7 @@
      burn 🔥 / poison ☠: HP lost at the start of the unit's own turn · sleep 💤: skips its turns, a hit wakes it · silence 🔇: no element
      cards or skills · weak ⬇: hits ×0.75 · freeze and shock reuse the old stun (skip a turn) and slow (−2 move). */
   const STATUS = { burn: { name: 'ไหม้', icon: '🔥', dot: 4, turns: 2 }, poison: { name: 'พิษ', icon: '☠', dot: 3, turns: 3 }, sleep: { name: 'หลับ', icon: '💤', turns: 2 }, silence: { name: 'ใบ้', icon: '🔇', turns: 2 }, weak: { name: 'อ่อนแรง', icon: '⬇', turns: 2 }, freeze: { name: 'แข็ง', icon: '❄' }, shock: { name: 'ชา', icon: '⚡' }, bind: { name: 'ติดเถาวัลย์', icon: '🌿', turns: 1 } };   /* v98.331 · bind: no walking until it ends */
-  const CARD_STATUS = { flame: ['burn', .5], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3], chaosBolt: ['weak', .5], chaosRend: ['silence', .4] };
+  const CARD_STATUS = { flame: ['burn', .5], emberBurst: ['burn', .6], snipe: ['weak', .35], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3], chaosBolt: ['weak', .5], chaosRend: ['silence', .4] };
   const MON_STATUS = { hunger: ['weak', .35], murk: ['poison', .25], pumpkinBoss: ['bind', .9],  slime: ['poison', .3], wolf: ['poison', .2], bat: ['sleep', .2], shadowWolf: ['sleep', .2], golem: ['weak', .3], frostWolf: ['freeze', .2], yeti: ['freeze', .25], frostQueen: ['freeze', .35], snowKobold: ['silence', .2], kobold: ['silence', .15], bandit: ['weak', .15] };
   function inflict(st, t, k, chance = 1, notes) {
     if (!st.cards || !alive(t) || !STATUS[k] || (st.rng || Math.random)() >= chance) return null;
@@ -601,6 +607,54 @@
     st.log.push('ไพ่ ' + def.name + ' +' + def.move + ' แต้มเดิน');
     return { ok: true, card: card.id, uid: card.uid, name: def.name, move: def.move };
   }
+  /* ---------- v98.496 · bag cards in battle ("การ์ดกระเป๋า": the adventurers' guild enchants a bag so each consumable becomes a card — docs/lore) ----------
+     st.bag = { key: count } handed in by the page · st.itemHand = up to 3 keys drawn from it · using one costs a crystal (one item per turn) · st.itemsUsed = what to take out of the real bag afterwards */
+  const ITEM = {
+    potion: { heal: 25, fx: 'heal' }, bigPotion: { heal: 50, fx: 'heal' }, elixir: { heal: 80, restore: 50, fx: 'heal' }, tonic: { restore: 40, fx: 'heal' }, bread: { heal: 10, restore: 20, fx: 'heal' },
+    mushroomSoup: { heal: 20, restore: 30, fx: 'heal' }, energyDrink: { restore: 70, fx: 'heal' }, bandage: { heal: 16, cure: 1, fx: 'heal' }, antidote: { heal: 6, cure: 1, fx: 'heal' },
+    stoneSkin: { guard: 30, fx: 'shield' }, guardCharm: { guard: 20, fx: 'shield' }, smokeBomb: { evade: 1, fx: 'wind' }, whetstone: { ambush: 1.6, fx: 'arcane' },
+    firebomb: { el: 'fire', range: 4, dmg: 22, fx: 'fire', status: ['burn', .6] }, iceBomb: { el: 'ice', range: 4, dmg: 18, fx: 'ice', status: ['freeze', .5] }, thunderJar: { el: 'wind', range: 4, dmg: 20, fx: 'lightning', status: ['shock', .5] },
+    holyWater: { el: 'light', range: 3, dmg: 24, fx: 'arcane' }, poisonDart: { el: 'nature', range: 5, dmg: 14, fx: 'spear', status: ['poison', .85] }, oilFlask: { el: 'fire', range: 3, dmg: 12, fx: 'fire', aoe: 1, status: ['burn', .8] },
+    flashPowder: { el: 'light', range: 3, dmg: 6, fx: 'arcane', status: ['freeze', 1] }
+  };
+  const ITEM_NAME = { potion: 'ยาฟื้นฟู', bigPotion: 'ยาฟื้นฟูชั้นดี', elixir: 'น้ำอมฤต', tonic: 'ชาเรี่ยวแรง', bread: 'ขนมปังเดินทาง', mushroomSoup: 'ซุปเห็ดอุ่น ๆ', energyDrink: 'น้ำผึ้งป่าเข้มข้น', bandage: 'ผ้าพันแผลสะอาด', antidote: 'ยาถอนพิษ', stoneSkin: 'ยาผิวศิลา', guardCharm: 'เครื่องรางคุ้มกัน', smokeBomb: 'ระเบิดควัน', whetstone: 'หินลับมีด', firebomb: 'ระเบิดไฟ', iceBomb: 'ระเบิดน้ำแข็ง', thunderJar: 'โถสายฟ้า', holyWater: 'น้ำมนต์', poisonDart: 'ลูกดอกพิษ', oilFlask: 'ขวดน้ำมันไฟ', flashPowder: 'ผงแสงวาบ' };
+  const itemRule = k => ITEM[k] || null;
+  function itemDraw(st) {
+    const bag = st.bag || {}, held = {}; for (const k of st.itemHand || []) held[k] = (held[k] || 0) + 1;
+    const pool = []; for (const [k, n] of Object.entries(bag)) if (ITEM[k]) for (let i = 0; i < Math.max(0, n - (st.itemsUsed?.[k] || 0) - (held[k] || 0)); i++) pool.push(k);
+    const hand = st.itemHand ||= []; while (hand.length < 3 && pool.length) { const i = Math.floor((st.rng || Math.random)() * pool.length); hand.push(pool.splice(i, 1)[0]) }
+    return hand;
+  }
+  function itemBlock(st, index) {
+    if (!st.cards) return 'ไม่ได้เปิดโหมดไพ่'; if (st.outcome) return 'จบการต่อสู้แล้ว'; if (st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
+    const k = st.itemHand?.[index], r = k && ITEM[k]; if (!r) return 'ไม่มีการ์ดใบนี้';
+    if (!crystals(st)) return 'คริสตัลหมดแล้วในเทิร์นนี้'; if (st.itemTurn) return 'ใช้ไอเทมได้ครั้งเดียวต่อเทิร์น';
+    const h = hero(st);
+    if (r.heal && !r.cure && !r.restore && !r.guard && h.hp >= h.maxHp) return 'HP เต็มแล้ว';
+    if (r.cure && !r.heal) { if (!h.sts) return 'ไม่มีสถานะผิดปกติให้รักษา' } else if (r.cure && r.heal && h.hp >= h.maxHp && !h.sts) return 'ไม่มีอะไรต้องรักษา';
+    if (r.dmg && !itemTarget(st, r)) return 'ศัตรูอยู่นอกระยะ (' + reachOf(h, r) + ' ช่อง)';
+    return '';
+  }
+  function itemTarget(st, r) { const h = hero(st), inR = targets(st, h, reachOf(h, r)), pick = inR.find(t => t.id === st.target); return pick || inR[0] || null }
+  function useItem(st, index) {
+    const why = itemBlock(st, index); if (why) return { ok: false, reason: why };
+    const k = st.itemHand[index], r = ITEM[k], h = hero(st), name = ITEM_NAME[k] || k;
+    st.itemHand.splice(index, 1); (st.itemsUsed ||= {})[k] = (st.itemsUsed[k] || 0) + 1; st.itemTurn = 1; st.spent++;
+    const out = { ok: true, item: true, card: k, uid: 'item-' + k, name, fx: r.fx, self: !r.dmg, big: 1, hits: [] };
+    if (!r.dmg) {
+      if (r.guard) { h.guard = Math.max(h.guard, r.guard); out.guard = h.guard }
+      if (r.restore) { h.stamina = Math.min(h.stMax || 100, h.stamina + r.restore); out.restore = r.restore }
+      if (r.heal) { const b = h.hp; h.hp = Math.min(h.maxHp, h.hp + r.heal); out.heal = h.hp - b }
+      if (r.cure && h.sts) { out.cured = Object.keys(h.sts); delete h.sts; if (h.stun) h.stun = 0; h.slowed = 0 }
+      if (r.evade) { h.evade = 1; out.evade = true } if (r.ambush) { h.ambush = r.ambush; out.ambush = true }
+      st.log.push(h.name + ' ใช้' + name + (out.heal ? ' ฟื้น ' + out.heal : '') + (out.restore ? ' แรง +' + out.restore : '') + (out.guard ? ' ป้องกัน ' + out.guard : '') + (out.cured ? ' · รักษาสถานะ' : ''));
+      return out;
+    }
+    const t = itemTarget(st, r); st.acted = true; st.mp = 0; h.face = faceOf(h, t); out.target = t;
+    const hit = (u, mult) => { const en = [], em = elMult(st, r.el, u, en), rr = hurt(st, u, r.dmg * mult * em); out.hits.push({ target: u, damage: rr.damage, notes: [...en, ...rr.notes], crit: false }); if (r.status && alive(u)) { const sk = inflict(st, u, r.status[0], r.status[1]); if (sk && u === t) out.status = { unit: u, kind: sk } } };
+    hit(t, 1); if (r.aoe) for (const o of opponents(st, h)) if (o !== t && dist(o, t) <= r.aoe) hit(o, .7);
+    st.log.push(h.name + ' ใช้' + name + ' −' + out.hits.reduce((a, x) => a + x.damage, 0)); checkOutcome(st); return out;
+  }
   function cardRule(id) { return CARD[id] || null }
   function combatBlock(st, index) {
     if (!st.cards) return 'ไม่ได้เปิดโหมดไพ่';
@@ -796,6 +850,6 @@
     const cards = []; st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (!m || h.stamina < m.stamina) return; const e = reach(st, h, st.mp + m.move).get(key); if (e && e.cost > 0) cards.push({ index: i, uid: c.uid, id: c.id, name: m.name, move: m.move, stamina: m.stamina, cost: e.cost }) });
     return { cards };
   }
-  const api = { free, inside, insideCell, cost, overlap, attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { ITEM, ITEM_NAME, itemRule, itemDraw, itemBlock, useItem, free, inside, insideCell, cost, overlap, attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, STAMINA_PER_DISCARD, HAND, crystals, refill, discardForStamina, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

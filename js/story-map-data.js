@@ -280,7 +280,9 @@
   };
   if (root.Crossroads) for (const e of root.Crossroads.EVENTS) PLACES['cr_' + e.id] = e.towns ? e.towns.slice() : Object.keys(PLACE).filter(k => k !== 'fernvale');
 
-  const api = { TREE, LINKS, STAGES, CAST, WHO, POS, PLACE, PLACES };
+  /* เส้นทางเดินระหว่างสถานที่ (โดยประมาณ ไว้ดูเส้นทางของเหตุการณ์ในแท็บเส้นเรื่อง — **ไม่ใช่ canon** · ถนนในเกมจริงสร้างจาก seed ของเซฟ) */
+  const ROADS = [['fernvale', 'lakenhold'], ['fernvale', 'northgate'], ['fernvale', 'deepcairn'], ['fernvale', 'thornwatch'], ['fernvale', 'willowshore'], ['lakenhold', 'willowshore'], ['lakenhold', 'brookmere'], ['brookmere', 'haven'], ['willowshore', 'vinehollow'], ['haven', 'vinehollow'], ['deepcairn', 'northgate'], ['northgate', 'thornwatch'], ['deepcairn', 'deepmine'], ['thornwatch', 'ruinsite']];
+  const api = { TREE, LINKS, STAGES, CAST, WHO, POS, PLACE, PLACES, ROADS };
   root.StoryMapData = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

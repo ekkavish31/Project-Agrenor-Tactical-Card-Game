@@ -14,14 +14,14 @@
 
   /* tiers (price in gold). Cards not listed here are never sold (basics every deck already has). */
   const TIER = {
-    common: { price: 60, label: 'ทั่วไป', cards: ['c:skill', 'c:line', 'c:pull', 'c:wall', 'c:gust', 'c:mend', 'c:aimed', 'm:sprint', 'm:creep'] },
-    uncommon: { price: 110, label: 'หายาก', cards: ['c:twin', 'c:whirl', 'c:flame', 'c:frost', 'c:spell', 'c:tide', 'c:formation', 'c:evade', 'c:firstAid', 'c:climb', 'm:dash'] },
-    rare: { price: 180, label: 'หายากมาก', cards: ['c:thunder', 'c:quake', 'c:backstab', 'c:dive', 'c:counter', 'c:ambush', 'c:rockfall', 'c:perch'] }
+    common: { price: 60, label: 'ทั่วไป', cards: ['c:skill', 'c:line', 'c:pull', 'c:wall', 'c:gust', 'c:mend', 'c:aimed', 'c:shieldBash', 'c:warCry', 'm:sprint', 'm:creep'] },
+    uncommon: { price: 110, label: 'หายาก', cards: ['c:twin', 'c:whirl', 'c:flame', 'c:frost', 'c:spell', 'c:tide', 'c:formation', 'c:evade', 'c:firstAid', 'c:climb', 'c:volley', 'c:smite', 'c:bless', 'c:emberBurst', 'm:dash'] },
+    rare: { price: 180, label: 'หายากมาก', cards: ['c:thunder', 'c:quake', 'c:backstab', 'c:dive', 'c:counter', 'c:ambush', 'c:rockfall', 'c:perch', 'c:cleave', 'c:snipe', 'c:shadowStep'] }
   };
   const TRAINERS = {
-    sigrid: { line: 'ทหารรับจ้าง · ท่าแนวหน้า', cards: ['c:whirl', 'c:wall', 'c:counter', 'c:twin'] },
-    orla: { line: 'นักบวชวิหารธาตุดิน · ท่าผืนดินและการรักษา', cards: ['c:mend', 'c:quake', 'c:firstAid', 'c:rockfall'] },
-    olwen: { line: 'จอมเวทเกษียณ · ท่าเวท', cards: ['c:spell', 'c:frost', 'c:flame', 'c:thunder'] }
+    sigrid: { line: 'ทหารรับจ้าง · ท่าแนวหน้า', cards: ['c:whirl', 'c:wall', 'c:counter', 'c:twin', 'c:cleave', 'c:shieldBash', 'c:warCry'] },
+    orla: { line: 'นักบวชวิหารธาตุดิน · ท่าผืนดินและการรักษา', cards: ['c:mend', 'c:quake', 'c:firstAid', 'c:rockfall', 'c:bless', 'c:smite'] },
+    olwen: { line: 'จอมเวทเกษียณ · ท่าเวท', cards: ['c:spell', 'c:frost', 'c:flame', 'c:thunder', 'c:emberBurst'] }
   };
   const parse = k => { const [g, id] = k.split(':'); return { group: g === 'm' ? 'movement' : 'combat', id } };
   const tierOf = k => Object.entries(TIER).find(([, t]) => t.cards.includes(k))?.[0] || 'common';

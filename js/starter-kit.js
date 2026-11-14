@@ -16,13 +16,13 @@ if(typeof RECIPES!=='undefined'&&!RECIPES.oldKnife)Object.defineProperty(RECIPES
 
 function freshSave(){const g=G(),v=V();return !!v&&g.day<=1&&!g.wins&&(g.minutes||480)<=520&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!v.adventure&&!v.tacticDecks}
 /* v98.472 · a save that still holds the OLD untouched starter (nothing unlocked, deck = collection = the old starter) gets the balanced one */
-const OLD_STARTER={movement:{step:4,walk:5,run:3},combat:{attack:7,guard:4,rest:3,push:2}},same=(a,b)=>{try{for(const g of ['movement','combat']){const x=a?.[g]||{},y=b?.[g]||{},k=new Set([...Object.keys(x),...Object.keys(y)]);for(const i of k)if((x[i]||0)!==(y[i]||0))return false}return true}catch{return false}};
-function migrate(){const v=V();if(!v||v.starterKit!==1||v.starterRev>=2)return;if(same(v.cardPool,OLD_STARTER)&&same(v.tacticDecks,OLD_STARTER)){v.cardPool=clone(D.STARTER);v.tacticDecks=clone(D.STARTER)}v.starterRev=2;doSave()}
+const OLD_STARTER={movement:{step:4,walk:5,run:3},combat:{attack:7,guard:4,rest:3,push:2}},OLD_STARTER2={movement:{step:2,walk:7,run:3},combat:{attack:9,guard:4,rest:2,push:1}},same=(a,b)=>{try{for(const g of ['movement','combat']){const x=a?.[g]||{},y=b?.[g]||{},k=new Set([...Object.keys(x),...Object.keys(y)]);for(const i of k)if((x[i]||0)!==(y[i]||0))return false}return true}catch{return false}};
+function migrate(){const v=V();if(!v||v.starterKit!==1||v.starterRev>=3)return;if((same(v.cardPool,OLD_STARTER)&&same(v.tacticDecks,OLD_STARTER))||(same(v.cardPool,OLD_STARTER2)&&same(v.tacticDecks,OLD_STARTER2))){v.cardPool=clone(D.STARTER);v.tacticDecks=clone(D.STARTER)}v.starterRev=3;doSave()}
 function apply(){const g=G(),v=V();if(!v)return;if(v.starterKit){migrate();return}
  if(!freshSave()){v.starterKit='legacy';doSave();return}
  v.cardPool=clone(D.STARTER);v.tacticDecks=clone(D.STARTER);v.v38Cards=true;// v38 migration would add cards the hero does not own
  const knife={id:g.nextId++,kind:'knife',recipe:'oldKnife',quality:1};g.inventory.push(knife);g.equipped=knife.id;
- v.starterKit=1;v.starterRev=2;doSave()}
+ v.starterKit=1;v.starterRev=3;doSave()}
 
 // companions: smaller default decks in new games (old saves keep the big ones)
 const baseDefault=D.defaultFor;

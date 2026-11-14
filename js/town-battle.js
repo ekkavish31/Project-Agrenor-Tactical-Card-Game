@@ -93,7 +93,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait' };
+    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
@@ -153,7 +153,7 @@
       return null })();
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
-    st = FB.create({ fp: FP, bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
+    st = FB.create({ fp: FP, bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true, bag: bagForBattle(),
       hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', weapon: HPRO.weapon || 'knife', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
     if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
@@ -169,7 +169,7 @@
     if (Q.get('resume') === '1') applyResume(); else makeFlee();
     if (SCENE) attachScene();
   }
-  if (EDIT) { const sx = document.createElement('style'); sx.textContent = '#fbBar,.fb-show,.fb-fly,.fb-banner,.fb-toast,#fbHand,#fbActions,#fbAlly,#fbHint,#fbIntro,#fbInspect,#fbDuel,#fbQueue,#fbLbTop,#fbLbBot,#fbFace,#fbCoach,#fbHud,#fbPause,#menuBtn{display:none!important}'; document.head.append(sx) }   /* v98.311 · BG editor: no game HUD */
+  if (EDIT) { const sx = document.createElement('style'); sx.textContent = '#fbBar,.fb-show,.fb-fly,.fb-banner,.fb-toast,#fbHand,#fbActions,#fbAlly,#fbHint,#fbIntro,#fbInspect,#fbDuel,#fbItems,#fbQueue,#fbLbTop,#fbLbBot,#fbFace,#fbCoach,#fbHud,#fbPause,#menuBtn{display:none!important}'; document.head.append(sx) }   /* v98.311 · BG editor: no game HUD */
   /* ---------- v98.492 · set-piece rules: the scene's functions (they live in js/set-pieces.js; the battle state keeps only plain data, so a resumed fight re-attaches them) ---------- */
   let waveN = 0;
   function mkSpawn(kind, pos, extra = {}) {
@@ -358,26 +358,29 @@
   #fbInspect .bar{height:12px;box-sizing:border-box;border:4px solid transparent;border-image:url(assets/ui/battle-bar.webp) 8 fill/4px stretch;margin:3px 0}#fbInspect .bar i{display:block;height:100%;background:url(assets/ui/bar-green.webp) !important;background-size:auto 100%!important;border-radius:3px}#fbInspect.foe .bar i{background:url(assets/ui/bar-red.webp) !important}
   #fbInspect .st{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin-top:6px;font-size:12px}#fbInspect .st b{display:inline;color:#ffe2a8}#fbInspect .iq{display:block;margin-top:4px}#fbInspect .nx{display:block;margin-top:4px;color:#9fb0a0}
   #fbDuel{position:fixed;right:14px;top:292px;z-index:40;display:flex;flex-direction:column;align-items:flex-end;gap:4px;pointer-events:none;font-family:AgThai,system-ui,sans-serif;color:#f3e9c9}
-  #fbDuel .dc{position:relative;display:flex;align-items:center;gap:9px;min-width:176px;max-width:210px;padding:6px 10px 6px 6px;border-radius:12px;background:linear-gradient(90deg,#14110fe6,#14110fb0);border:1px solid #fff2;box-shadow:0 4px 14px #0009;transition:opacity .25s}
+  #fbDuel .dc{position:relative;display:flex;align-items:center;gap:9px;min-width:200px;max-width:240px;padding:6px 10px 6px 6px;border-radius:12px;background:linear-gradient(90deg,#14110fe6,#14110fb0);border:1px solid #fff2;box-shadow:0 4px 14px #0009;transition:opacity .25s}
   #fbDuel .dc.t{margin-right:18px;opacity:.96}#fbDuel .dc.foe{border-color:#c4563f88}
-  #fbDuel .pf{position:relative;flex:none;width:84px;height:84px;border-radius:11px;overflow:hidden;border:3px solid var(--jc,#8a9a6a);background:#16130f center/cover no-repeat;box-shadow:0 0 0 1px #000a,0 0 12px var(--jc,#8a9a6a)66}
-  #fbDuel .dc.t .pf{width:68px;height:68px}
+  #fbDuel .pf{position:relative;flex:none;width:108px;height:108px;border-radius:12px;overflow:hidden;border:3px solid var(--jc,#8a9a6a);background:#16130f center/cover no-repeat;box-shadow:0 0 0 1px #000a,0 0 12px var(--jc,#8a9a6a)66}
+  #fbDuel .dc.t .pf{width:88px;height:88px}
   #fbDuel .pf::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:8px;transition:box-shadow .2s}
   #fbDuel .jb{position:absolute;left:-7px;top:-7px;z-index:2;width:22px;height:22px;border-radius:50%;background:var(--jc,#888);border:2px solid #1a140c;display:grid;place-items:center;font:700 12px AgThai,system-ui,"Segoe UI Symbol",sans-serif;font-style:normal;color:#fff8e8}
   #fbDuel .nm{flex:1;min-width:0}#fbDuel .nm b{display:block;font-size:14px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#fbDuel .nm small{display:block;font-size:11px;color:#cdbf98}
   #fbDuel .hp{height:6px;margin:4px 0 2px;border-radius:4px;background:#0009;overflow:hidden}#fbDuel .hp i{display:block;height:100%;border-radius:4px;transition:width .3s}
   #fbDuel .mo{display:block;min-height:15px;font-style:normal;font-weight:700;font-size:12px;letter-spacing:.3px}
-  #fbDuel .m-attack .pf,#fbDuel .m-attack.pf{animation:fbDuelPush .5s ease-out}#fbDuel .dc.m-attack .pf::after{box-shadow:inset 0 0 18px #ffb347dd}#fbDuel .dc.m-attack .mo{color:#ffcf7a}
-  #fbDuel .dc.m-hurt .pf{animation:fbDuelShake .42s}#fbDuel .dc.m-hurt .pf::after{box-shadow:inset 0 0 26px #ff2a1acc}#fbDuel .dc.m-hurt .mo{color:#ff9a8a}
+  #fbDuel .dc.m-attack .pf{animation:fbDuelPush .5s ease-out}#fbDuel .dc.m-attack .pf::before,#fbDuel .dc.m-hurt .pf::before,#fbDuel .dc.m-heal .pf::before,#fbDuel .dc.m-guard .pf::before{content:'';position:absolute;inset:-30%;z-index:3;pointer-events:none;border-radius:50%;opacity:0}#fbDuel .dc.m-attack .pf::before{background:radial-gradient(circle,#fff6c8 0,#ffb34799 35%,#0000 70%);animation:fbDuelFlash .45s ease-out}#fbDuel .dc.m-hurt .pf::before{background:radial-gradient(circle,#ffd0c8 0,#ff2a1aaa 40%,#0000 72%);animation:fbDuelFlash .4s ease-out}#fbDuel .dc.m-heal .pf::before{background:radial-gradient(circle,#e8ffe8 0,#6fe08a88 40%,#0000 72%);animation:fbDuelFlash .8s ease-out}#fbDuel .dc.m-guard .pf::before{background:radial-gradient(circle,#0000 40%,#9fd4ffcc 62%,#0000 78%);animation:fbDuelFlash .6s ease-out}#fbDuel .dc.m-hurt{animation:fbDuelShake .42s}#fbDuel .dc.m-attack .pf::after{box-shadow:inset 0 0 18px #ffb347dd}#fbDuel .dc.m-attack .mo{color:#ffcf7a}
+  #fbDuel .dc.m-hurt .pf{animation:fbDuelShake .36s .04s}#fbDuel .dc.m-hurt .pf::after{box-shadow:inset 0 0 26px #ff2a1acc}#fbDuel .dc.m-hurt .mo{color:#ff9a8a}
   #fbDuel .dc.m-guard .pf::after{box-shadow:inset 0 0 22px #7fc4ffcc}#fbDuel .dc.m-guard .mo{color:#9fd4ff}
   #fbDuel .dc.m-heal .pf::after,#fbDuel .dc.m-win .pf::after{box-shadow:inset 0 0 22px #7fe08acc}#fbDuel .dc.m-heal .mo,#fbDuel .dc.m-win .mo{color:#9fefaa}
   #fbDuel .dc.m-down .pf{filter:grayscale(1) brightness(.6)}#fbDuel .dc.m-down .mo{color:#aaa}
   #fbDuel .vs{margin:-2px 36px -2px 0;font-size:15px;color:#e8c46a;text-shadow:0 1px 3px #000}
   #fbDuel .tools{pointer-events:auto;display:flex;gap:4px}#fbDuel .tools button{width:26px;height:22px;border-radius:7px;border:1px solid #fff3;background:#14110fcc;color:#e8d9aa;font-size:12px;cursor:pointer;padding:0}
-  #fbDuel.min .dc{min-width:0;padding:4px}#fbDuel.min .nm{display:none}#fbDuel.min .pf,#fbDuel.min .dc.t .pf{width:52px;height:52px}#fbDuel.min .dc.t{margin-right:8px}#fbDuel.min .vs{margin-right:20px}
-  @keyframes fbDuelPush{0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}@keyframes fbDuelShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-2deg)}45%{transform:translateX(5px) rotate(2deg)}70%{transform:translateX(-3px)}}
-  @media (max-width:860px),(max-height:560px){#fbDuel{top:auto;bottom:226px;right:6px}#fbDuel .dc{min-width:0}#fbDuel .nm{display:none}#fbDuel .pf{width:56px;height:56px}#fbDuel .dc.t .pf{width:48px;height:48px}#fbDuel .dc.t{margin-right:8px}}
+  #fbDuel.min .dc{min-width:0;padding:4px}#fbDuel.min .nm{display:none}#fbDuel.min .pf,#fbDuel.min .dc.t .pf{width:60px;height:60px}#fbDuel.min .dc.t{margin-right:8px}#fbDuel.min .vs{margin-right:20px}
+  @keyframes fbDuelFlash{0%{opacity:0;transform:scale(.5)}25%{opacity:1}100%{opacity:0;transform:scale(1.15)}}@keyframes fbDuelPush{0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}@keyframes fbDuelShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-2deg)}45%{transform:translateX(5px) rotate(2deg)}70%{transform:translateX(-3px)}}
+  @media (max-width:860px),(max-height:560px){#fbDuel{top:auto;bottom:226px;right:6px}#fbDuel .dc{min-width:0}#fbDuel .nm{display:none}#fbDuel .pf{width:64px;height:64px}#fbDuel .dc.t .pf{width:54px;height:54px}#fbDuel .dc.t{margin-right:8px}}
   @media (prefers-reduced-motion:reduce){#fbDuel .pf{animation:none!important}}
+  #fbItems{position:fixed;left:50%;bottom:208px;transform:translateX(-50%);z-index:42;display:flex;gap:10px;align-items:flex-end;padding:10px 14px 8px;border-radius:14px;background:#14110fe8;border:1px solid #fff3;box-shadow:0 8px 24px #000a}#fbItems[hidden]{display:none}
+  #fbItems .lbl{position:absolute;left:14px;top:-10px;font:700 11px AgThai,system-ui,sans-serif;background:#2a2118;color:#f6d79b;padding:1px 9px;border-radius:8px;border:1px solid #fff3}
+  #fbItems .fb-card{width:96px}#fbActions #fbItemBtn{position:relative}#fbActions #fbItemBtn .n{margin-left:2px;min-width:18px;height:18px;border-radius:9px;background:#ffb347;color:#15131c;font-size:11px;display:grid;place-items:center}
   #fbActions{position:fixed;left:50%;bottom:148px;transform:translateX(-50%);z-index:41;display:flex;gap:4px;align-items:center;font:700 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}
   #fbActions button{display:flex;align-items:center;gap:6px;min-height:44px;box-sizing:border-box;padding:0;border:12px solid transparent;border-width:11px 16px;border-image:url(assets/ui/battle-btn.webp) 14 fill/11px 16px stretch;background:none;border-radius:0;color:#fff3d2;font:inherit;text-shadow:0 1px 2px #000;cursor:pointer;filter:drop-shadow(0 3px 4px #000a);white-space:nowrap}
   #fbActions button:hover:not(:disabled),#fbActions #fbAuto.on{border-image-source:url(assets/ui/battle-btn-hot.webp);color:#2a1a05;text-shadow:none}#fbActions button:disabled{opacity:.45;cursor:default;filter:grayscale(.7) drop-shadow(0 3px 4px #000a)}
@@ -460,7 +463,7 @@
   /* ---------- card faces (old CardStudio design) ---------- */
   const cardKey = (group, id) => (group === 'movement' ? 'm-' : 'a-') + id;
   /* cards that have no picture yet borrow a close one */
-  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell', chaosBolt: 'spell', chaosRend: 'quake', chaosWard: 'guard' };
+  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell', chaosBolt: 'spell', chaosRend: 'quake', chaosWard: 'guard', cleave: 'quake', shieldBash: 'wall', volley: 'line', snipe: 'aimed', smite: 'spell', bless: 'mend', shadowStep: 'twin', emberBurst: 'flame', warCry: 'guard' };
   function faceHTML(group, id, mini) {
     const html = window.CardStudio?.renderCard(cardKey(group, id), { mini, fallbackArt: 'assets/cards/tactic-' + (ART_SUB[id] || id) + '.webp' });
     if (html) return html;
@@ -472,6 +475,8 @@
     if (group === 'movement') { const m = TD.MOVE[id]; return 'เดิน ' + m.move + (m.stamina ? ' · แรง ' + m.stamina : '') }
     const r = FB.cardRule(id); if (!r) return 'ยังไม่รองรับ';
     const stc = r.st ? ' · แรง ' + r.st : '';
+    if (r.self && r.guard && r.heal) return 'ป้องกัน ' + r.guard + ' · ฟื้น HP ' + r.heal + stc;
+    if (r.self && r.guard && r.restore) return 'ป้องกัน ' + r.guard + ' · ฟื้นแรง ' + r.restore + stc;
     if (r.self) return (r.guard ? 'ป้องกัน ' + r.guard : r.heal ? 'ฟื้น HP ' + r.heal : r.evade ? 'หลบการตีครั้งถัดไป' : r.counter ? 'สวนกลับ 12 เมื่อโดนตี' : r.ambush ? 'ตีครั้งถัดไป ×1.6' : 'ฟื้นแรง ' + r.restore) + stc;
     return 'พลัง ' + r.dmg + (r.hits ? '×' + r.hits : '') + ' · ระยะ ' + r.range + (r.behind ? ' · หลัง +' + r.behind : '') + (r.leap ? ' · กระโจน' : '') + (r.guardAfter ? ' · กัน ' + r.guardAfter : '') + stc;
   }
@@ -531,7 +536,7 @@
     document.getElementById('fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
     document.getElementById('fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || !walks.length;
     { const a = document.getElementById('fbAuto'); a.disabled = noAuto(); a.title = noAuto() ? 'ปิดไว้ในบทฝึกต่อสู้' : ''; a.classList.toggle('on', auto); a.querySelector('span').textContent = auto ? 'หยุด Auto' : 'Auto' }
-    queueSync();
+    queueSync(); itemSync();
     document.getElementById('fbDis').disabled = busy || !!st.outcome || st.turn !== 'hero' || (!left && !discardMode);
     document.getElementById('fbDis').querySelector('span').textContent = discardMode ? 'ยกเลิกการทิ้ง' : 'ทิ้งไพ่ฟื้นแรง';
     hud.querySelector('#fbLog').innerHTML = st.log.slice(-6).reverse().map(x => '<div>' + esc(x) + '</div>').join('');
@@ -560,6 +565,30 @@
     d.innerHTML = `<button class="x" aria-label="ปิด" title="ปิด (Esc)"></button><div class="top"><span class="fc" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}"></span><div><b>${esc(u.name)}</b><small>${E ? E.icon + ' ' : ''}${u.level ? 'Lv.' + u.level : ''}</small><div class="bar"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><small>${Math.round(u.shown ?? u.hp)}/${u.maxHp} HP</small></div></div>
       <div class="st"><span>เดิน <b>${u.move || '-'}</b></span><span>ระยะ <b>${u.range ?? '-'}</b></span><span>โจมตี <b>${u.atk ?? '-'}</b></span><span>ป้องกัน <b>${(u.def ?? u.armor) || 0}</b></span></div>${foe ? `<small class="iq">${esc(IQ2[u.iq | 0] || '')}</small>` : ''}<small class="nx">${U === inspectU ? 'ช่องที่เดินได้ตาต่อไปแสดงบนสนาม' : (U === pickU ? 'เลือกอยู่ (คริสตัลเทาเหนือหัว)' : 'ชี้อยู่ · คลิกเพื่อเลือก')}</small>`;
     d.querySelector('.x').hidden = U !== inspectU; d.querySelector('.x').onclick = () => setInspect(null);
+  }
+  /* v98.496 · bag cards: the consumables in the bag become cards in the fight (the adventurers' guild enchants every registered adventurer's bag — docs/lore/CURRENT-ERA-CANON) */
+  function bagForBattle() { if (Q.get('tut') || Q.get('noitems') === '1') return null; try { const b = window.WorldState?.game().village.bag || {}, out = {}; for (const [k, n] of Object.entries(b)) if (n > 0 && window.FlatBattle?.ITEM?.[k]) out[k] = n; return Object.keys(out).length ? out : null } catch (e) { return null } }
+  let itemOpen = false;
+  const itemLine = k => { const r = FB.itemRule(k); if (!r) return ''; const o = []; if (r.dmg) o.push('พลัง ' + r.dmg + ' · ระยะ ' + r.range + (r.aoe ? ' · ลามรอบเป้า' : '')); if (r.heal) o.push('ฟื้น HP ' + r.heal); if (r.restore) o.push('ฟื้นแรง ' + r.restore); if (r.guard) o.push('ป้องกัน ' + r.guard); if (r.cure) o.push('ล้างสถานะ'); if (r.evade) o.push('หลบครั้งถัดไป'); if (r.ambush) o.push('ตีครั้งถัดไป ×1.6'); if (r.status) o.push(({ burn: 'ติดไหม้', freeze: 'ตาพร่า/แช่แข็ง', shock: 'ช็อก', poison: 'ติดพิษ' })[r.status[0]] || ''); return o.join(' · ') };
+  function itemSync() {
+    let btn = document.getElementById('fbItemBtn'), tray = document.getElementById('fbItems');
+    const n = st?.itemHand?.length || 0;
+    if (!st || !Object.keys(st.bag || {}).length) { btn?.remove(); tray?.remove(); return }
+    if (!btn) { btn = document.createElement('button'); btn.id = 'fbItemBtn'; btn.title = 'การ์ดกระเป๋า — ของใช้ในกระเป๋าเป็นการ์ด ใช้ได้เทิร์นละ 1 ใบ'; btn.onclick = () => { itemOpen = !itemOpen; itemSync() }; document.getElementById('fbActions')?.append(btn); window.Tips?.once?.('b_bagcards', 'การ์ดกระเป๋า', ['ของใช้ในกระเป๋าแสดงเป็นการ์ด — เวทแปลงกระเป๋าที่สมาคมนักผจญภัยมอบให้ตอนลงทะเบียน นักผจญภัยทุกคนมีติดตัว', 'กดปุ่ม 🎒 ไอเทม แล้วเลือกการ์ด · ใช้ได้เทิร์นละ 1 ใบ และกินคริสตัล 1 ดวง', 'ใช้แล้วการ์ดหมดไปจากกระเป๋าจริง (กลับมาได้ถ้าซื้อ/เก็บเพิ่ม)']) }
+    btn.innerHTML = '<span>🎒 ไอเทม</span><b class="n">' + n + '</b>'; btn.disabled = !n && !itemOpen;
+    if (!tray) { tray = document.createElement('div'); tray.id = 'fbItems'; document.body.append(tray) }
+    tray.hidden = !itemOpen || !n;
+    tray.innerHTML = '<span class="lbl">การ์ดกระเป๋า · ใช้ได้เทิร์นละ 1</span>' + (st.itemHand || []).map((k, i) => { const why = st.turn === 'hero' ? FB.itemBlock(st, i) : 'ไม่ใช่ตาคุณ', html = window.CardStudio?.renderCard('c-' + k, { mini: true, fallbackArt: 'assets/cards/item/' + k + '.webp' }) || '<div class="fb-fallback"><b>' + esc(FB.ITEM_NAME[k] || k) + '</b></div>';
+      return `<button class="fb-card item ${why ? 'off' : ''}" data-i="${i}" title="${esc((FB.ITEM_NAME[k] || k) + ' — ' + itemLine(k) + (why ? ' · ' + why : ''))}"><div class="face">${html}</div><span class="fb-tag"><b>${esc(FB.ITEM_NAME[k] || k)}</b>${esc(itemLine(k))}</span></button>` }).join('');
+    tray.querySelectorAll('.fb-card').forEach(b => b.onclick = () => useItemCard(+b.dataset.i));
+  }
+  async function useItemCard(i) {
+    if (!st || st.turn !== 'hero' || busy) return; const why = FB.itemBlock(st, i); if (why) { flash(why); return }
+    const k = st.itemHand[i], r = FB.useItem(st, i); if (!r.ok) { flash(r.reason); return }
+    hidePreview(); const pop = document.createElement('div'); pop.className = 'fb-show play'; pop.style.setProperty('--tone', r.self ? TONE.self : TONE.attack);
+    pop.innerHTML = `<div class="face">${window.CardStudio?.renderCard('c-' + k, { mini: false, fallbackArt: 'assets/cards/item/' + k + '.webp' }) || ''}</div><div class="say"><b>${esc(r.name)}</b><br>${esc(itemLine(k))}</div>`; document.body.append(pop); { const s = sideSpot(210, 340); pop.style.left = s.x + 'px'; pop.style.top = s.y + 'px' }
+    busy = true; hudSync(); if (!r.self) walks = []; pend = null; markAuto();
+    await heroAction(r); pop.remove(); busy = false; refresh(); if (st.outcome) finish();
   }
   /* v98.494 · persistent portrait panel (left): the acting fighter and the one on the receiving end for the whole turn; the face follows the beat — attack · hurt · guard · heal · down.
      The mood comes from the pose the animation code already sets (BattlePortrait.mood) · real expression pictures when they exist, otherwise code-drawn job busts / CSS glow on a still picture */
@@ -783,7 +812,7 @@
     const h = FB.hero(st), m = r.target || FB.monster(st);
     if (r.self) {
       h.pose = r.guard ? 'guard' : 'idle'; fx(r.fx, h, h, { color: r.heal ? '#7fe08a' : '#f4d36a' }); if (r.card === 'climb') fx('climbUp', h); if (r.card === 'perch') fx('perchFlag', h); impact(h, r.fx, false); h.flashUntil = 0;
-      await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a'); if (r.evade) floatText(h, 'EVADE READY', '#bfe8ff'); if (r.counter) floatText(h, 'COUNTER READY', '#ffd9a0'); if (r.ambush) floatText(h, 'AMBUSH ×1.6', '#d9b8ff');
+      await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a'); if (r.cured?.length) floatText(h, 'CURED', '#c8f0ff'); if (r.evade) floatText(h, 'EVADE READY', '#bfe8ff'); if (r.counter) floatText(h, 'COUNTER READY', '#ffd9a0'); if (r.ambush) floatText(h, 'AMBUSH ×1.6', '#d9b8ff');
       h.shown = h.hp; hudSync(); await wait(520); h.pose = 'idle'; return;
     }
     const last = !FB.monsters(st).some(u => u.hp > 0), kill = last, heavy = r.big > 1 || r.hits.reduce((a, x) => a + x.damage, 0) >= 20;
@@ -1027,7 +1056,7 @@
   }
   /* embedded in the world map: hand the result back (also automatically a moment after the end) */
   let reported = false;
-  function report(outcome) { if (reported || !EMBED) return; reported = true; try { localStorage.removeItem(SNAP_KEY) } catch (e) { } try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
+  function report(outcome) { if (reported || !EMBED) return; reported = true; try { localStorage.removeItem(SNAP_KEY) } catch (e) { } try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), used: st.itemsUsed || {}, evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
   function finish() {
     if (st.outcome === 'win') { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'win') }
     if (EMBED) { const b = document.getElementById('fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }

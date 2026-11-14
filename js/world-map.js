@@ -1010,6 +1010,8 @@
     const res = await resP; try { localStorage.removeItem('projectA.wmFight'); localStorage.removeItem('projectA.battleSnap') } catch (e) { }
     fr.classList.remove('on'); await wait(380); fr.remove();
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
+    /* v98.496 · bag cards spent in the fight leave the real bag */
+    { const bg = WS.game().village.bag ||= {}, AD = window.ADVENTURE_DATA?.CONSUMABLES || {}, names = []; for (const [k, n] of Object.entries(res.used || {})) { if (!(n > 0) || !bg[k]) continue; bg[k] = Math.max(0, bg[k] - n); if (!bg[k]) delete bg[k]; names.push((AD[k]?.name || k) + ' ×' + n) } if (names.length) log('🎒 ใช้การ์ดกระเป๋า: ' + names.join(', ')) }
     for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ'); ev('party:ko', { who: p.key, whoName: p.name }); woundRoll(p.key, p.name, res.outcome) } } }
     if ((res.hp ?? 1) <= 0) woundRoll('hero', WS.heroName?.() || 'ตัวเอก', res.outcome);   /* v98.295 · the hero fell: maybe a wound too */
     { const ST = window.Settlements; if (ST && ST.load(S) && (res.outcome === 'lose' || res.outcome === 'flee')) { const lost = ST.loseCargo(S, ST.escorted(S) ? .1 : res.outcome === 'lose' ? .5 : .25); if (lost.length) { log('📦 สินค้าหายระหว่างหนี/พ่ายแพ้: ' + lost.join(' · ')); toast('📦 สินค้าหาย ' + lost.join(' · ')) } } }   /* v97.54 · T6 */
