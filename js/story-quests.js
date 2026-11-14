@@ -230,6 +230,18 @@ function battleCut(){
  const t0=performance.now();
  return {open:()=>new Promise(res=>{const wait=Math.max(0,1050-(performance.now()-t0));setTimeout(()=>{town?.classList.remove('qb-zoom');el.classList.add('out');setTimeout(()=>{el.remove();res()},560)},wait)}),drop:()=>{town?.classList.remove('qb-zoom');el.remove()}}}
 function battleReady(fr){return new Promise(res=>{const on=e=>{if(e.source===fr.contentWindow&&e.data?.type==='agrenor-battle-ready'){removeEventListener('message',on);res()}};addEventListener('message',on);setTimeout(res,20000)})}
+/* v98.472 · VICTORY summary after a story fight (goat / pumpkin …): foes beaten, EXP, HP of the party — click / Enter to continue */
+function victorySummary(r){return new Promise(done=>{
+ if(!document.getElementById('qbVicCss')){const c=document.createElement('style');c.id='qbVicCss';c.textContent=`#qbVic{position:fixed;inset:0;z-index:970;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#1d2a1fcc,#05080de8);animation:qbVicIn .35s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif;cursor:pointer}#qbVic .box{width:min(480px,92vw);padding:22px 24px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c;text-align:center}#qbVic h2{margin:0;font:900 40px/1 AgThai,Georgia,serif;letter-spacing:.12em;color:#9a5a12;text-shadow:0 2px 0 #fff8,0 0 24px #ffcf6a;animation:qbVicT .6s cubic-bezier(.2,1.6,.4,1) both}#qbVic .sub{margin:6px 0 14px;color:#6a5030;font-size:14px}#qbVic .row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;text-align:left;margin:6px 0;font-size:14.5px}#qbVic .row b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#qbVic .xp{color:#a0520c;font-weight:800}#qbVic .hp{color:#5a6a40;font-variant-numeric:tabular-nums}#qbVic .go{margin-top:14px;color:#8a7050;font-size:12.5px}@keyframes qbVicIn{from{opacity:0}}@keyframes qbVicT{from{transform:scale(.4);opacity:0}}`;document.head.append(c)}
+ const e=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]),hero=(()=>{try{return G().village?.heroName||'ตัวเอก'}catch{return 'ตัวเอก'}})();
+ const el=document.createElement('div');el.id='qbVic';el.setAttribute('role','dialog');el.setAttribute('aria-label','ชัยชนะ');
+ el.innerHTML=`<div class="box"><h2>VICTORY!</h2><div class="sub">${e(String(r.title||'').replace(/\s*·\s*$/,''))} · ล้มศัตรู ${r.kills} ตัว</div>
+  <div class="row"><b>${e(hero)}</b><span class="xp">${r.xp?'EXP +'+r.xp:''}</span><span class="hp">HP ${r.hp}/${r.maxHp}</span></div>
+  ${r.party.map(p=>`<div class="row"><b>${e(p.name)}</b><span class="xp">${p.xp?'EXP +'+p.xp:''}</span><span class="hp">HP ${p.hp}/${p.max}</span></div>`).join('')}
+  <div class="go">คลิก หรือกด Enter เพื่อไปต่อ</div></div>`;
+ document.body.append(el);try{root.Sfx?.play?.('victory')}catch(x){}
+ const close=()=>{removeEventListener('keydown',key,true);el.remove();done()},key=ev=>{if(['Enter',' ','Escape'].includes(ev.key)){ev.preventDefault();ev.stopPropagation();close()}};
+ setTimeout(()=>{el.onclick=close;addEventListener('keydown',key,true)},450)})}
 function questBattle(d,o){return new Promise(resolve=>{
  if(d.fighting||onWorld()){resolve('busy');return}
  const g=G(),v=V();if((g.hp||0)<30)g.hp=Math.max(g.hp||0,40);
@@ -240,9 +252,10 @@ function questBattle(d,o){return new Promise(resolve=>{
  if(d.resumeSrc){fr.src=d.resumeSrc;d.resumeSrc=null}else{try{localStorage.removeItem('projectA.battleSnap')}catch{}}   /* v98.340 · resumed from the temporary save: same field, same moment */
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
-  const win=r.outcome==='win';
-  if(win){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);if(root.Progression){const xp=Progression.battleXp({dang:.25,kills:r.kills});gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}
-  d.fighting=false;doSave();fr.remove();doRender();resolve(win?'win':'out')};
+  const win=r.outcome==='win';let xpGot=0;
+  if(win){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);if(root.Progression){const xp=Progression.battleXp({dang:.25,kills:r.kills});xpGot=xp;gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}
+  d.fighting=false;doSave();fr.remove();doRender();
+  if(win)victorySummary({title:o.title,kills:r.kills||0,xp:xpGot,hp:g.hp,maxHp:g.maxHp||60,party:(v.party||[]).map(p=>({name:p.name||p.key,hp:p.hp,max:p.max,xp:Math.round(xpGot*.8)}))}).then(()=>resolve('win'));else resolve('out')};
  {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);document.body.appendChild(fr)})}
 
 /* ---------- raid battle (v94: the flat card battle drawn on the village square, in a frame over the game) ---------- */

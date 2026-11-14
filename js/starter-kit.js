@@ -15,15 +15,18 @@ const doSave=()=>{try{save()}catch{}},doRender=()=>{try{render()}catch{}};
 if(typeof RECIPES!=='undefined'&&!RECIPES.oldKnife)Object.defineProperty(RECIPES,'oldKnife',{value:{name:'มีดสั้นเก่าของพ่อ',kind:'knife',level:99,cost:{},sell:6,xp:0},enumerable:false});
 
 function freshSave(){const g=G(),v=V();return !!v&&g.day<=1&&!g.wins&&(g.minutes||480)<=520&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!v.adventure&&!v.tacticDecks}
-function apply(){const g=G(),v=V();if(!v||v.starterKit)return;
+/* v98.472 · a save that still holds the OLD untouched starter (nothing unlocked, deck = collection = the old starter) gets the balanced one */
+const OLD_STARTER={movement:{step:4,walk:5,run:3},combat:{attack:7,guard:4,rest:3,push:2}},same=(a,b)=>{try{for(const g of ['movement','combat']){const x=a?.[g]||{},y=b?.[g]||{},k=new Set([...Object.keys(x),...Object.keys(y)]);for(const i of k)if((x[i]||0)!==(y[i]||0))return false}return true}catch{return false}};
+function migrate(){const v=V();if(!v||v.starterKit!==1||v.starterRev>=2)return;if(same(v.cardPool,OLD_STARTER)&&same(v.tacticDecks,OLD_STARTER)){v.cardPool=clone(D.STARTER);v.tacticDecks=clone(D.STARTER)}v.starterRev=2;doSave()}
+function apply(){const g=G(),v=V();if(!v)return;if(v.starterKit){migrate();return}
  if(!freshSave()){v.starterKit='legacy';doSave();return}
  v.cardPool=clone(D.STARTER);v.tacticDecks=clone(D.STARTER);v.v38Cards=true;// v38 migration would add cards the hero does not own
  const knife={id:g.nextId++,kind:'knife',recipe:'oldKnife',quality:1};g.inventory.push(knife);g.equipped=knife.id;
- v.starterKit=1;doSave()}
+ v.starterKit=1;v.starterRev=2;doSave()}
 
 // companions: smaller default decks in new games (old saves keep the big ones)
 const baseDefault=D.defaultFor;
-D.defaultFor=function(key){if(!V()?.cardPool)return baseDefault(key);const d={movement:{step:3,walk:5,run:2},combat:{attack:7,guard:4,rest:3}},sig=D.SIGNATURE[key];if(sig)d.combat[sig]=3;return D.validate(d)};
+D.defaultFor=function(key){if(!V()?.cardPool)return baseDefault(key);const d={movement:{step:2,walk:6,run:2},combat:{attack:8,guard:4,rest:2}},sig=D.SIGNATURE[key];   /* v98.472 · same balance as the hero's starter */if(sig)d.combat[sig]=3;return D.validate(d)};
 
 /* ---------- unlock ---------- */
 function unlock(list,opt={}){const v=V();if(!v)return Promise.resolve();const legacy=!v.cardPool;

@@ -11,7 +11,9 @@ const DEFAULT={movement:{step:6,walk:10,run:8,sprint:6},combat:{attack:9,skill:8
 // v93: decks may be any size inside SIZE (was exactly 30 / 60). DEFAULT stays the big "balanced" set for old saves and presets.
 const SIZE={movement:{min:10,max:30},combat:{min:14,max:60}};
 // intro starter (new games): small and readable — more cards are unlocked by story quests (js/starter-kit.js)
-const STARTER={movement:{step:4,walk:5,run:3},combat:{attack:7,guard:4,rest:3,push:2}};
+/* v98.472 · balanced with tools/simulate-flat.cjs (lv 1–3): more 4-tile walks (fewer 2-tile steps), one more weapon attack, rest 3→2 (stamina rarely runs out in short fights), push 2→1 (situational)
+   was {movement:{step:4,walk:5,run:3},combat:{attack:7,guard:4,rest:3,push:2}} */
+const STARTER={movement:{step:2,walk:7,run:3},combat:{attack:9,guard:4,rest:2,push:1}};
 function validate(config){if(!config||typeof config!=='object')throw Error('ข้อมูลสำรับไม่ถูกต้อง');let out={};for(let [group,pool]of [['movement',MOVE],['combat',COMBAT]]){let {min,max}=SIZE[group],counts=config[group];if(!counts||Object.keys(counts).some(id=>!pool[id]))throw Error('มีไพ่ที่ไม่รู้จัก');let sum=0;out[group]={};for(let id of Object.keys(pool)){let n=counts[id]??0;if(!Number.isInteger(n)||n<0||n>max)throw Error('จำนวนไพ่ต้องเป็นจำนวนเต็ม 0–'+max);out[group][id]=n;sum+=n}if(sum<min||sum>max)throw Error((group==='movement'?'สำรับเคลื่อนที่':'สำรับแอ็กชัน')+' ต้องมี '+min+'–'+max+' ใบ (ตอนนี้ '+sum+')')}return out}
 function shuffle(cards,rng){let a=[...cards];for(let i=a.length-1;i>0;i--){let j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function pile(counts,rng){let all=[];for(let [id,n]of Object.entries(counts))for(let i=0;i<n;i++)all.push({id,uid:id+'-'+i,used:false});return {draw:shuffle(all,rng),discard:[],hand:[],cycles:0}}

@@ -197,8 +197,8 @@ const TIER=[[-99,'ไม่ไว้ใจ'],[-1,'คนแปลกหน้า
 document.addEventListener('keydown',e=>{if(box.hidden)return;if(e.key==='Escape'){e.stopImmediatePropagation();close()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();next()}else if('123'.includes(e.key)&&e.key&&!box.querySelector('[data-ask]').hidden){e.preventDefault();e.stopImmediatePropagation();askTopic(['news','people','road'][+e.key-1])}},true);
 // clicks on a villager are taken before the town's own walk/enter handling
 let downOn=null;
-root.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.id!=='world'||V()?.isEditing?.())return;downOn=at(e);if(downOn)e.stopPropagation();else approach=null},true);
+root.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.id!=='world'||V()?.isEditing?.()||(root.TownBattle?.active?.()||/[?&]battle=1(&|$)/.test(root.location?.search||"")))return;downOn=at(e);if(downOn)e.stopPropagation();else approach=null},true);
 root.addEventListener('pointerup',e=>{if(!downOn)return;const n=at(e)===downOn?downOn:null;downOn=null;e.stopPropagation();if(n)goTalk(n)},true);
-root.addEventListener('pointermove',e=>{if(e.target.id!=='world')return;const n=at(e);if(n!==hover){hover=n;if(n)e.target.style.cursor='pointer'}},true);
+root.addEventListener('pointermove',e=>{if(e.target.id!=='world'||(root.TownBattle?.active?.()||/[?&]battle=1(&|$)/.test(root.location?.search||"")))return;const n=at(e);if(n!==hover){hover=n;if(n)e.target.style.cursor='pointer'}},true);
 root.TownNPC={objects,talk:id=>{const n=npcs?.find(n=>n.id===id);if(n)goTalk(n)},list:()=>npcs?.map(n=>({id:n.id,u:n.u,v:n.v,walking:n.path.length>0,inside:n.inside,hidden:!!n.hidden,goal:n.goal})),roster:ROSTER,getRoutes,setRoutes,routeKey:ROUTE_KEY};
 })(globalThis);

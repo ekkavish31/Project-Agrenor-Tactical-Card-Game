@@ -157,7 +157,8 @@
      ~4,260 calls / ~100,000 door() calls EVERY frame while a quest step was active. A call made from inside targets() now gets [] (that inner list only decided which
      entries are quest markers, and the outer call does that itself). */
   let inTargets = false;
-  function targets() { if (inTargets) return []; inTargets = true; try { return targets0() } finally { inTargets = false } }
+  function targets() { if (inTargets || (root.TownBattle?.active?.()||/[?&]battle=1(&|$)/.test(root.location?.search||''))) return [];   /* v98.472 · the village's quest objects (runaway goats …) never show up inside a battle arena that uses the village map */
+    inTargets = true; try { return targets0() } finally { inTargets = false } }
   function targets0() {
     const out = []; if (!T) return out;
     for (const id of T.place || []) { const o = loc(id); if (o) { const p = placePoint(o); out.push({ ...p, label: T.label || o.name, o }) } }
@@ -267,7 +268,7 @@
   }
   root.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY } }, true);
   root.addEventListener('pointerup', e => {
-    if (!down || editing || !T || e.target?.closest?.('button,dialog,input,select,textarea,a,label,[role=dialog]')) { down = null; return }
+    if (!down || editing || !T || (root.TownBattle?.active?.()||/[?&]battle=1(&|$)/.test(root.location?.search||'')) || e.target?.closest?.('button,dialog,input,select,textarea,a,label,[role=dialog]')) { down = null; return }
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6; down = null; if (moved) return;
     const o = hit(e); if (!o) return;
     e.stopImmediatePropagation(); try { drag = null } catch (x) { }

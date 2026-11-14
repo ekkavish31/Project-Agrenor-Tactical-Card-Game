@@ -6495,6 +6495,25 @@
    "artRevision": "v16"
   },
   {
+   "id": "tactics-equip-log",
+   "file": "assets/tactics/log.webp",
+   "category": "tactics-equipment",
+   "status": "temp",
+   "size": [
+    160,
+    512
+   ],
+   "transparent": true,
+   "subject": "ท่อนไม้ฟืน — a rough firewood log used as a club, bark, end grain on top, twine wrapped grip at the bottom, drawn alone pointing straight up",
+   "prompt": "Clean cel-shaded fantasy game sprite matching the reference art style, full object visible, centred, nothing cropped. Subject: a rough firewood log used as a club, bark texture, a cut end with growth rings at the top, a small broken branch stub, twine wrapped around the grip near the bottom, drawn alone pointing straight up. Background: perfectly flat pure green (#00FF00), no shadow on the background, no gradient — it will be removed.",
+   "pivot": [
+    0.5,
+    0.86
+   ],
+   "usedIn": "อาวุธเริ่มต้นของน้อง (ตัวเอกอีกคน) ในสนามรบ จนได้ดาบ",
+   "note": "ภาพชั่วคราววาดด้วยโค้ด — ใส่ภาพจริงแทนได้"
+  },
+  {
    "id": "weapon-tome",
    "file": "assets/weapons/tome.webp",
    "category": "items",

@@ -148,7 +148,7 @@
   function heightMult(st, a, t) { const d = Math.max(-3, Math.min(3, gap(st, a, t))); if (!d) return 1; const k = (d > 0 && a.perch) || (d < 0 && t.perch) ? .2 : .1; return Math.max(.4, 1 + k * d) }
   /* ---------- Kaelam elements (v94.02, js/elements.js): the attack's element vs the target's element ---------- */
   const EW = () => root.ElementWheel || (typeof require === 'function' ? require('./elements.js') : null);
-  const WEAPON_EL = { bow: 'wind', axe: 'earth', tome: 'light', sword: 'fire', hammer: 'earth', staff: 'fusion', unarmed: 'earth', knife: 'wind', spear: 'wind', rapier: 'water' };
+  const WEAPON_EL = { bow: 'wind', axe: 'earth', tome: 'light', sword: 'fire', hammer: 'earth', staff: 'fusion', unarmed: 'earth', log: 'earth', knife: 'wind', spear: 'wind', rapier: 'water' };
   const CARD_EL = { thunder: 'lightning', frost: 'ice', flame: 'fire', gust: 'wind', quake: 'earth', aimed: 'light', spell: 'fusion', tide: 'water', push: 'earth', pull: 'wind', rockfall: 'earth', whirl: 'wind', chaosBolt: 'chaos', chaosRend: 'chaos', chaosWard: 'chaos' };
   const FX_EL = { fire: 'fire', ice: 'ice', lightning: 'lightning', wind: 'wind', earth: 'earth', holy: 'light', heal: 'light', water: 'water', arcane: 'fusion' };
   const cardEl = (id, h) => CARD_EL[id] || WEAPON_EL[h.weapon] || 'earth';
