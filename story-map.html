@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แผนผังเส้นเรื่อง</title>
+<style>
+:root{--bg:#15131c;--panel:#1d1a27;--line:#3a3550;--ink:#ece8f6;--mut:#9a93b4;--ok:#5fbf7a;--wip:#e6b84d;--todo:#7f8aa8;--wait:#c77dff}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,"Noto Sans Thai",sans-serif;overflow:hidden}
+#head{position:absolute;left:0;right:0;top:0;z-index:5}
+#bar{background:#100e17ee;border-bottom:1px solid var(--line);padding:8px 12px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+#bar button,#bar input{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:5px 10px;font:inherit}
+#bar button{cursor:pointer}#bar button:hover{border-color:#8a7fc0}
+#bar button.on{background:#3a3270;border-color:#9a8cff}
+#bar input{width:170px}
+.grp{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.grp>span{color:var(--mut);font-size:12px}
+#stages{display:flex;border-bottom:1px solid var(--line);gap:0;padding:6px 12px;background:#100e17cc;overflow-x:auto}
+#stages button{flex:1 0 auto;min-width:92px;background:transparent;color:#cfc9e6;border:0;border-bottom:3px solid var(--line);padding:4px 8px;cursor:pointer;font:inherit;font-size:12px;position:relative}
+#stages button.cur{color:#fff;border-bottom-color:#ffd166}
+#stages button.sel{color:#fff;border-bottom-color:#9a8cff;background:#2a2550}
+#stages button.cur::after{content:"● ตอนนี้ในเซฟ";display:block;font-size:9px;color:#ffd166}
+#view{position:absolute;inset:0;cursor:grab;touch-action:none}
+#view.drag{cursor:grabbing}
+#world{position:absolute;left:0;top:0;transform-origin:0 0}
+#edges{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.node{position:absolute;width:var(--nw,208px);padding:7px 10px 7px 12px;border-radius:10px;background:var(--panel);border:1.5px solid var(--line);cursor:pointer;user-select:none;transition:opacity .15s,box-shadow .15s}
+.node:hover{box-shadow:0 0 0 2px #9a8cff66}
+.node.sel{box-shadow:0 0 0 3px #ffd166aa}
+.node b{display:block;font-size:13.5px;line-height:1.35;font-weight:600}
+.node small{display:block;color:var(--mut);font-size:11px;margin-top:2px}
+.node .st{position:absolute;left:0;top:8px;bottom:8px;width:4px;border-radius:0 3px 3px 0;background:var(--c)}
+.node[data-s=ok]{--c:var(--ok)}.node[data-s=wip]{--c:var(--wip)}.node[data-s=todo]{--c:var(--todo)}.node[data-s=wait]{--c:var(--wait)}
+.node[data-k=root]{background:#2b2350;border-color:#9a8cff;font-size:15px;text-align:center}
+.node[data-k=line]{background:#232043;border-color:#6f64b8}
+.node[data-k=choice]{background:#3a2a14;border:2px solid #ffb347;border-radius:22px}
+.node[data-k=choice] b::before{content:"⑂ ";color:#ffb347}
+.node[data-k=outcome]{background:#1b2a2a;border-color:#3f7f7f;border-style:solid}
+.node[data-k=end]{background:#2e1d2a;border:2px solid #ff7fb0;border-radius:14px}
+.node[data-k=end] b::before{content:"★ ";color:#ff7fb0}
+.node[data-k=sys]{background:#16263a;border-color:#4a86c9;border-radius:4px}
+.node[data-k=sys] b::before{content:"⚙ ";color:#4a86c9}
+.node[data-k=open]{background:#26192f;border:1.5px dashed var(--wait)}
+.node[data-k=open] b::before{content:"🔒 "}
+.node.dim{opacity:.22}
+.tog{position:absolute;right:-11px;top:50%;margin-top:-11px;width:22px;height:22px;border-radius:50%;background:#100e17;border:1.5px solid #8a7fc0;color:#cfc6ff;font-size:11px;display:grid;place-items:center;cursor:pointer;z-index:2}
+.elab{position:absolute;font-size:11px;color:#ffc880;background:#15131cee;padding:0 5px;border-radius:5px;white-space:nowrap;transform:translate(-50%,-50%);pointer-events:none}
+.xlab{position:absolute;font-size:10.5px;color:#7fd6ff;background:#15131cee;padding:0 5px;border-radius:5px;white-space:nowrap;transform:translate(-50%,-50%);pointer-events:none}
+#info{position:absolute;right:12px;top:calc(var(--bh,86px) + 8px);width:340px;max-height:calc(100% - var(--bh,86px) - 24px);overflow:auto;background:#1d1a27f2;border:1px solid var(--line);border-radius:12px;padding:12px 14px;z-index:6;display:none}
+#info h3{margin:0 0 6px;font-size:16px}
+#info .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+#info .tag{font-size:11px;padding:1px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+#info p{margin:6px 0;white-space:pre-wrap}
+#info code{display:block;font-size:11.5px;color:#9fd4ff;word-break:break-all;margin:2px 0}
+#info .x{position:absolute;right:8px;top:6px;cursor:pointer;color:var(--mut)}
+#info h4{margin:10px 0 3px;font-size:12px;color:var(--mut);font-weight:600}
+#info a{color:#ffd166;cursor:pointer;display:block;margin:2px 0}
+#legend{position:absolute;left:12px;bottom:10px;z-index:5;background:#100e17ee;border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:11.5px;color:var(--mut);display:flex;gap:6px 14px;flex-wrap:wrap;max-width:min(760px,70vw)}
+#legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+#count{margin-left:auto;color:var(--mut);font-size:12px}
+@media(max-width:700px){#info{width:auto;left:12px}}
+</style>
+</head>
+<body>
+<div id="head"><div id="bar">
+ <div class="grp"><button id="expAll">ขยายทั้งหมด</button><button id="colAll">ยุบเหลือเส้นหลัก</button><button id="fit">⤢ พอดีจอ</button></div>
+ <div class="grp"><span>สถานะ</span><button data-f="ok" class="on">✅ ทำแล้ว</button><button data-f="wip" class="on">🟡 ทำบางส่วน</button><button data-f="todo" class="on">⚪ ยังไม่ทำ</button><button data-f="wait" class="on">🔒 รอเจ้าของเกม</button></div>
+ <div class="grp"><button id="xl" class="on">เส้นเชื่อมข้ามเส้น</button><button id="onlyCh">เฉพาะจุดตัดสินใจ</button></div>
+ <div class="grp"><input id="q" placeholder="ค้นหา…" type="search"></div>
+ <span id="count"></span>
+</div>
+<div id="stages"></div></div>
+<div id="view"><div id="world"><svg id="edges"></svg></div></div>
+<div id="info"><span class="x" id="ix">✕</span><div id="ib"></div></div>
+<div id="legend">
+ <span><i style="background:#9a8cff"></i>เส้นเรื่อง</span><span><i style="background:#ffb347;border-radius:8px"></i>⑂ จุดตัดสินใจ (แตกกิ่ง)</span><span><i style="background:#3f7f7f"></i>ผลของทางเลือก</span><span><i style="background:#ff7fb0"></i>★ ตอนจบ</span><span><i style="background:#4a86c9"></i>⚙ ระบบเกม</span><span><i style="border:1px dashed #c77dff"></i>🔒 ยังไม่ตัดสิน</span>
+ <span><i style="background:#5fbf7a"></i>ทำแล้ว</span><span><i style="background:#e6b84d"></i>ทำบางส่วน</span><span><i style="background:#7f8aa8"></i>ยังไม่ทำ</span><span style="color:#7fd6ff">╌╌ เส้นเชื่อมข้ามเส้น</span>
+</div>
+<script src="js/story-map-data.js"></script>
+<script>
+(function(){
+'use strict';
+const D=window.StoryMapData,TREE=D.TREE,$=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ST={ok:'✅ ทำแล้วในเกม',wip:'🟡 ทำบางส่วน',todo:'⚪ ยังไม่ทำ',wait:'🔒 รอเจ้าของเกมกำหนด'},KD={root:'หัวเรื่อง',line:'เส้นเรื่อง',event:'เหตุการณ์',choice:'จุดตัดสินใจ',outcome:'ผลของทางเลือก',end:'ตอนจบ',sys:'ระบบเกม',open:'ยังไม่ตัดสิน'};
+const SP=['S0 เล่าได้ตั้งแต่ต้น','S1 ช่วงต้น–กลาง','S2 กลางเกม','S3 ปลายเกม'];
+const byId={},parent={};(function w(n,p){byId[n.id]=n;if(p)parent[n.id]=p;n.c.forEach(k=>w(k,n))})(TREE,null);
+const all=Object.values(byId);
+let collapsed=new Set(),filt={ok:1,wip:1,todo:1,wait:1},showX=true,onlyChoice=false,sel=null,stageSel=null,q='',curStage=null;
+/* ยุบตั้งต้น: แสดงถึงระดับ 2 (ชื่อเส้น + เหตุการณ์แรก) */
+function collapseDeep(d){collapsed=new Set();(function w(n,l){if(n.c.length&&l>=d)collapsed.add(n.id);n.c.forEach(k=>w(k,l+1))})(TREE,0)}
+collapseDeep(2);
+/* เซฟปัจจุบัน (editor แชร์ localStorage กับเกม) */
+try{const s=JSON.parse(localStorage.getItem('three-card-forge-v4'));curStage=s?.village?.main?.stage||null}catch(e){}
+const stBar=$('stages');
+stBar.innerHTML=D.STAGES.map(s=>`<button data-id="${s.id}" class="${s.id===curStage?'cur':''}" title="กดเพื่อดูว่าหมุดนี้มีอะไรเกิดขึ้นบ้าง">${esc(s.t)}</button>`).join('');
+stBar.onclick=e=>{const b=e.target.closest('button');if(!b)return;stageSel=stageSel===b.dataset.id?null:b.dataset.id;stBar.querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x.dataset.id===stageSel));if(stageSel)expandForStage(stageSel);layout()};
+function expandForStage(id){all.filter(n=>n.g===id).forEach(n=>{for(let p=parent[n.id];p;p=parent[p.id])collapsed.delete(p.id)})}
+
+const world=$('world'),svg=$('edges'),view=$('view');
+let els={},pos={},W=208,GAPX=64,GAPY=14;
+function visibleKids(n){return collapsed.has(n.id)?[]:n.c.filter(k=>passes(k)||hasVisibleDesc(k))}
+function passes(n){return filt[n.s]&&(!onlyChoice||n.k==='choice'||n.k==='root'||n.k==='line'||n.k==='end')}
+function hasVisibleDesc(n){return n.c.some(k=>passes(k)||hasVisibleDesc(k))}
+function matches(n){if(!q)return true;return (n.t+' '+(n.d||'')).toLowerCase().includes(q)}
+function build(){
+  world.querySelectorAll('.node,.elab,.xlab').forEach(x=>x.remove());els={};
+  for(const n of all){
+    const e=document.createElement('div');e.className='node';e.dataset.id=n.id;e.dataset.k=n.k;e.dataset.s=n.s;
+    e.innerHTML=`<i class="st"></i><b>${esc(n.t)}</b>${n.sp>=2?`<small>สปอยล์ S${n.sp}</small>`:''}`;
+    if(n.c.length){const t=document.createElement('span');t.className='tog';t.dataset.t=n.id;e.append(t)}
+    e.onclick=ev=>{if(ev.target.dataset.t){toggle(n.id);return}select(n.id)};
+    world.append(e);els[n.id]=e;
+  }
+}
+function toggle(id){collapsed.has(id)?collapsed.delete(id):collapsed.add(id);layout()}
+function layout(){
+  const vis=[];let rows={};
+  /* วัดความสูง */
+  const walk=(n,d)=>{vis.push([n,d]);for(const k of visibleKids(n))walk(k,d+1)};walk(TREE,0);
+  const visSet=new Set(vis.map(v=>v[0].id));
+  for(const n of all){const e=els[n.id];if(!visSet.has(n.id)){e.style.display='none';continue}e.style.display='';const t=e.querySelector('.tog');if(t){const k=n.c.length;t.textContent=collapsed.has(n.id)?k:'‹';t.title=collapsed.has(n.id)?'ขยาย ('+k+')':'ยุบ'}}
+  const H={};for(const [n] of vis)H[n.id]=els[n.id].offsetHeight;
+  const sub={};(function s(n){const ks=visibleKids(n);let h=0;ks.forEach(k=>{h+=s(k)});h+=Math.max(0,ks.length-1)*GAPY;sub[n.id]=Math.max(H[n.id],h);return sub[n.id]})(TREE);
+  pos={};(function p(n,d,y0){const ks=visibleKids(n),h=sub[n.id];let cy=y0;
+    if(ks.length){let kh=ks.reduce((a,k)=>a+sub[k.id],0)+(ks.length-1)*GAPY,yy=y0+(h-kh)/2;const cs=[];for(const k of ks){p(k,d+1,yy);cs.push(pos[k.id].y+H[k.id]/2);yy+=sub[k.id]+GAPY}
+      const mid=(cs[0]+cs[cs.length-1])/2;pos[n.id]={x:d*(W+GAPX),y:mid-H[n.id]/2}}
+    else pos[n.id]={x:d*(W+GAPX),y:y0+(h-H[n.id])/2}})(TREE,0,0);
+  let maxX=0,maxY=0;
+  for(const [n] of vis){const e=els[n.id],p=pos[n.id];e.style.left=p.x+'px';e.style.top=p.y+'px';maxX=Math.max(maxX,p.x+W);maxY=Math.max(maxY,p.y+H[n.id]);
+    const hit=stageSel&&n.g===stageSel,dim=(stageSel&&!hit)||(q&&!matches(n));e.classList.toggle('dim',!!dim);e.classList.toggle('sel',n.id===sel)}
+  svg.setAttribute('width',maxX+40);svg.setAttribute('height',maxY+40);
+  let out='';
+  /* เส้นแม่→ลูก */
+  for(const [n] of vis)for(const k of visibleKids(n)){const a=pos[n.id],b=pos[k.id];if(!a||!b)continue;
+    const x1=a.x+W,y1=a.y+H[n.id]/2,x2=b.x,y2=b.y+H[k.id]/2,mx=(x1+x2)/2,col=k.k==='choice'||n.k==='choice'?'#ffb347':'#5b5390';
+    out+=`<path d="M${x1} ${y1}C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${col}" stroke-width="${n.k==='choice'?2.2:1.6}" opacity=".85"/>`;
+    if(k.lab&&n.k==='choice'){const l=document.createElement('div');l.className='elab';l.textContent=k.lab;l.style.left=(x1+(x2-x1)*.5)+'px';l.style.top=(y1+(y2-y1)*.5)+'px';world.append(l)}}
+  /* เส้นข้ามเส้น */
+  if(showX)for(const [a,b,lab] of D.LINKS){const A=visSet.has(a)?a:null,B=visSet.has(b)?b:null;if(!A||!B)continue;const pa=pos[A],pb=pos[B];
+    const ra=pa.x<=pb.x,x1=ra?pa.x+W:pa.x,x2=ra?pb.x:pb.x+W,y1=pa.y+H[A]/2,y2=pb.y+H[B]/2,dx=Math.max(60,Math.abs(x2-x1)*.45),s=ra?1:-1;
+    out+=`<path d="M${x1} ${y1}C${x1+s*dx} ${y1-40} ${x2-s*dx} ${y2+40} ${x2} ${y2}" fill="none" stroke="#7fd6ff" stroke-width="1.4" stroke-dasharray="5 5" opacity=".7"/>`;
+    if(lab){const l=document.createElement('div');l.className='xlab';l.textContent=lab;l.style.left=((x1+x2)/2)+'px';l.style.top=((y1+y2)/2)+'px';world.append(l)}}
+  svg.innerHTML=out;
+  const cnt=vis.length;$('count').textContent=`แสดง ${cnt}/${all.length} กล่อง · ✅${all.filter(n=>n.s==='ok').length} 🟡${all.filter(n=>n.s==='wip').length} ⚪${all.filter(n=>n.s==='todo').length} 🔒${all.filter(n=>n.s==='wait').length}`;
+}
+function visAnc(id,set){for(let n=byId[id];n;n=parent[n.id])if(set.has(n.id))return n.id;return null}
+/* รายละเอียด */
+function select(id){sel=id;const n=byId[id];if(!n)return;
+  const chain=[];for(let p=parent[id];p;p=parent[p.id])chain.unshift(p);
+  const links=D.LINKS.filter(l=>l[0]===id||l[1]===id).map(l=>{const o=l[0]===id?l[1]:l[0];return `<a data-go="${o}">${l[0]===id?'→':'←'} ${esc(byId[o].t)}${l[2]?` <small style="color:#7fd6ff">(${esc(l[2])})</small>`:''}</a>`}).join('');
+  const kids=n.c.length?`<h4>กิ่งต่อไป</h4>`+n.c.map(k=>`<a data-go="${k.id}">${k.lab&&n.k==='choice'?'⑂ '+esc(k.lab)+' → ':'• '}${esc(k.t)}</a>`).join(''):'';
+  $('ib').innerHTML=`<h3>${esc(n.t)}</h3><div class="tags"><span class="tag">${KD[n.k]}</span><span class="tag" style="color:var(--${n.s});border-color:var(--${n.s})">${ST[n.s]}</span><span class="tag">${SP[n.sp||0]}</span>${n.g?`<span class="tag">หมุด: ${esc(D.STAGES.find(s=>s.id===n.g)?.t||n.g)}</span>`:''}</div>
+   ${chain.length?`<p style="color:var(--mut);font-size:12px">${chain.map(c=>esc(c.t)).join(' › ')}</p>`:''}<p>${esc(n.d||'(ยังไม่มีรายละเอียด)')}</p>
+   ${n.f?.length?'<h4>ไฟล์ / เอกสารที่เกี่ยวข้อง</h4>'+n.f.map(f=>`<code>${esc(f)}</code>`).join(''):''}${kids}${links?'<h4>เชื่อมกับเส้นอื่น</h4>'+links:''}`;
+  $('info').style.display='block';
+  $('ib').querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>{const t=a.dataset.go;for(let p=parent[t];p;p=parent[p.id])collapsed.delete(p.id);layout();select(t);focus(t)});
+  layout()}
+function focus(id){const p=pos[id];if(!p)return;const r=view.getBoundingClientRect();tx=r.width/2-(p.x+W/2)*sc;ty=r.height/2-p.y*sc;apply()}
+$('ix').onclick=()=>{$('info').style.display='none';sel=null;layout()};
+/* pan / zoom */
+let sc=.8,tx=40,ty=110;
+function apply(){world.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`}
+function fit(){const w=+svg.getAttribute('width')||800,h=+svg.getAttribute('height')||600,r=view.getBoundingClientRect(),top=($('head').offsetHeight||90)+12;sc=Math.min(1.1,(r.width-40)/w,(r.height-top-60)/h);tx=20;ty=top;apply()}
+let drag=null;
+view.addEventListener('pointerdown',e=>{if(e.target.closest('.node'))return;drag={x:e.clientX,y:e.clientY,tx,ty};view.classList.add('drag');view.setPointerCapture(e.pointerId)});
+view.addEventListener('pointermove',e=>{if(!drag)return;tx=drag.tx+e.clientX-drag.x;ty=drag.ty+e.clientY-drag.y;apply()});
+view.addEventListener('pointerup',()=>{drag=null;view.classList.remove('drag')});
+view.addEventListener('wheel',e=>{e.preventDefault();const r=view.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,k=Math.exp(-e.deltaY*.0015),ns=Math.min(2,Math.max(.25,sc*k));tx=mx-(mx-tx)*ns/sc;ty=my-(my-ty)*ns/sc;sc=ns;apply()},{passive:false});
+/* controls */
+$('expAll').onclick=()=>{collapsed=new Set();layout();fit()};
+$('colAll').onclick=()=>{collapseDeep(1);layout();fit()};
+$('fit').onclick=fit;
+$('xl').onclick=e=>{showX=!showX;e.target.classList.toggle('on',showX);layout()};
+$('onlyCh').onclick=e=>{onlyChoice=!onlyChoice;e.target.classList.toggle('on',onlyChoice);if(onlyChoice)collapsed=new Set();layout();fit()};
+document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{const f=b.dataset.f;filt[f]=filt[f]?0:1;b.classList.toggle('on',!!filt[f]);layout()});
+$('q').oninput=e=>{q=e.target.value.trim().toLowerCase();if(q)all.filter(matches).forEach(n=>{for(let p=parent[n.id];p;p=parent[p.id])collapsed.delete(p.id)});layout()};
+function sizeBar(){document.documentElement.style.setProperty('--bh',$('head').offsetHeight+'px')}
+addEventListener('resize',sizeBar);sizeBar();
+build();layout();fit();
+if(curStage)expandForStage(curStage),layout();
+window.StoryMap={select,toggle,layout,byId};
+})();
+</script>
+</body>
+</html>
