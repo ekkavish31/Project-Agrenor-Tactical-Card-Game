@@ -57,6 +57,22 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 #info a{color:#ffd166;cursor:pointer;display:block;margin:2px 0}
 #legend{position:absolute;left:12px;bottom:10px;z-index:5;background:#100e17ee;border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:11.5px;color:var(--mut);display:flex;gap:6px 14px;flex-wrap:wrap;max-width:min(760px,70vw)}
 #legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+#cast{position:absolute;right:366px;top:calc(var(--bh,86px) + 8px);width:min(420px,calc(100vw - 390px));max-height:calc(100% - var(--bh,86px) - 24px);overflow:auto;background:#1d1a27f7;border:1px solid #6f64b8;border-radius:12px;padding:10px 12px;z-index:7;display:none}
+#cast h4{margin:0 0 8px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+#cast .x{cursor:pointer;color:var(--mut)}
+.cgrid{display:flex;flex-wrap:wrap;gap:8px}
+.cc{position:relative;width:84px;height:96px;cursor:pointer;flex:none}
+.cc::after{content:"";position:absolute;inset:0;z-index:1;background:url(assets/ui/frames/portrait-gold.webp) center/100% 100% no-repeat;pointer-events:none}
+.cc.idea::after{background-image:url(assets/ui/frames/portrait-blue.webp)}
+.cc.gone::after{background-image:url(assets/ui/frames/portrait-grey.webp)}
+.cc.on::after{background-image:url(assets/ui/frames/portrait-gem.webp)}
+.cc .fc{position:absolute;left:15.6%;top:14.1%;width:68.3%;height:61.5%;background-color:#1a2b26;background-repeat:no-repeat;border-radius:2px;display:grid;place-items:center;color:#8d86a8;font-size:26px}
+.cc b{position:absolute;left:6%;right:6%;bottom:5%;z-index:2;font-size:10.5px;line-height:12px;color:#f6e7c1;text-align:center;text-shadow:0 1px 2px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cwhy{margin-top:10px;padding:8px 10px;border-radius:8px;background:#15131c;border:1px solid var(--line);font-size:13px;display:none}
+#cwhy small{display:block;color:var(--mut);margin-top:3px}
+#cwhy button{margin-top:6px;background:#2a2550;color:var(--ink);border:1px solid #6f64b8;border-radius:7px;padding:3px 10px;cursor:pointer;font:inherit;font-size:12px}
+.cbtn{margin:8px 0 2px;background:#2a2550;color:var(--ink);border:1px solid #9a8cff;border-radius:8px;padding:5px 12px;cursor:pointer;font:inherit;width:100%;text-align:left}
+.node .wh{position:absolute;right:6px;bottom:3px;font-size:10px;color:#cfc6ff}
 #count{margin-left:auto;color:var(--mut);font-size:12px}
 @media(max-width:700px){#info{width:auto;left:12px}}
 </style>
@@ -72,6 +88,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 <div id="stages"></div></div>
 <div id="view"><div id="world"><svg id="edges"></svg></div></div>
 <div id="info"><span class="x" id="ix">✕</span><div id="ib"></div></div>
+<div id="cast"><h4><span id="ct">👥 ตัวละครที่เกี่ยวข้อง</span><span class="x" id="cx">✕</span></h4><div class="cgrid" id="cg"></div><div id="cwhy"></div><p style="font-size:11px;color:var(--mut);margin:8px 0 0">กรอบทอง = ระบุไว้ใน Canon/Draft · กรอบน้ำเงิน = ข้อเสนอ (ยังไม่ใช่ Canon · ตรวจ NPC ก่อนใช้) · กรอบเทา = ยังไม่มีในเกม</p></div>
 <div id="legend">
  <span><i style="background:#9a8cff"></i>เส้นเรื่อง</span><span><i style="background:#ffb347;border-radius:8px"></i>⑂ จุดตัดสินใจ (แตกกิ่ง)</span><span><i style="background:#3f7f7f"></i>ผลของทางเลือก</span><span><i style="background:#ff7fb0"></i>★ ตอนจบ</span><span><i style="background:#4a86c9"></i>⚙ ระบบเกม</span><span><i style="border:1px dashed #c77dff"></i>🔒 ยังไม่ตัดสิน</span>
  <span><i style="background:#5fbf7a"></i>ทำแล้ว</span><span><i style="background:#e6b84d"></i>ทำบางส่วน</span><span><i style="background:#7f8aa8"></i>ยังไม่ทำ</span><span style="color:#7fd6ff">╌╌ เส้นเชื่อมข้ามเส้น</span>
@@ -80,12 +97,12 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 <script>
 (function(){
 'use strict';
-const D=window.StoryMapData,TREE=D.TREE,$=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const D=window.StoryMapData,CAST=D.CAST,WHO=D.WHO,TREE=D.TREE,$=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ST={ok:'✅ ทำแล้วในเกม',wip:'🟡 ทำบางส่วน',todo:'⚪ ยังไม่ทำ',wait:'🔒 รอเจ้าของเกมกำหนด'},KD={root:'หัวเรื่อง',line:'เส้นเรื่อง',event:'เหตุการณ์',choice:'จุดตัดสินใจ',outcome:'ผลของทางเลือก',end:'ตอนจบ',sys:'ระบบเกม',open:'ยังไม่ตัดสิน'};
 const SP=['S0 เล่าได้ตั้งแต่ต้น','S1 ช่วงต้น–กลาง','S2 กลางเกม','S3 ปลายเกม'];
 const byId={},parent={};(function w(n,p){byId[n.id]=n;if(p)parent[n.id]=p;n.c.forEach(k=>w(k,n))})(TREE,null);
 const all=Object.values(byId);
-let collapsed=new Set(),filt={ok:1,wip:1,todo:1,wait:1},showX=true,onlyChoice=false,sel=null,stageSel=null,q='',curStage=null;
+let castSel=null,collapsed=new Set(),filt={ok:1,wip:1,todo:1,wait:1},showX=true,onlyChoice=false,sel=null,stageSel=null,q='',curStage=null;
 /* ยุบตั้งต้น: แสดงถึงระดับ 2 (ชื่อเส้น + เหตุการณ์แรก) */
 function collapseDeep(d){collapsed=new Set();(function w(n,l){if(n.c.length&&l>=d)collapsed.add(n.id);n.c.forEach(k=>w(k,l+1))})(TREE,0)}
 collapseDeep(2);
@@ -106,7 +123,7 @@ function build(){
   world.querySelectorAll('.node,.elab,.xlab').forEach(x=>x.remove());els={};
   for(const n of all){
     const e=document.createElement('div');e.className='node';e.dataset.id=n.id;e.dataset.k=n.k;e.dataset.s=n.s;
-    e.innerHTML=`<i class="st"></i><b>${esc(n.t)}</b>${n.sp>=2?`<small>สปอยล์ S${n.sp}</small>`:''}`;
+    e.innerHTML=`<i class="st"></i><b>${esc(n.t)}</b>${n.sp>=2?`<small>สปอยล์ S${n.sp}</small>`:''}${WHO[n.id]?`<span class="wh">👥${WHO[n.id].length}</span>`:''}`;
     if(n.c.length){const t=document.createElement('span');t.className='tog';t.dataset.t=n.id;e.append(t)}
     e.onclick=ev=>{if(ev.target.dataset.t){toggle(n.id);return}select(n.id)};
     world.append(e);els[n.id]=e;
@@ -127,7 +144,7 @@ function layout(){
     else pos[n.id]={x:d*(W+GAPX),y:y0+(h-H[n.id])/2}})(TREE,0,0);
   let maxX=0,maxY=0;
   for(const [n] of vis){const e=els[n.id],p=pos[n.id];e.style.left=p.x+'px';e.style.top=p.y+'px';maxX=Math.max(maxX,p.x+W);maxY=Math.max(maxY,p.y+H[n.id]);
-    const hit=stageSel&&n.g===stageSel,dim=(stageSel&&!hit)||(q&&!matches(n));e.classList.toggle('dim',!!dim);e.classList.toggle('sel',n.id===sel)}
+    const hit=stageSel&&n.g===stageSel,dim=(stageSel&&!hit)||(q&&!matches(n))||(castSel&&!(WHO[n.id]||[]).some(w=>w[0]===castSel));e.classList.toggle('dim',!!dim);e.classList.toggle('sel',n.id===sel)}
   svg.setAttribute('width',maxX+40);svg.setAttribute('height',maxY+40);
   let out='';
   /* เส้นแม่→ลูก */
@@ -152,11 +169,20 @@ function select(id){sel=id;const n=byId[id];if(!n)return;
   $('ib').innerHTML=`<h3>${esc(n.t)}</h3><div class="tags"><span class="tag">${KD[n.k]}</span><span class="tag" style="color:var(--${n.s});border-color:var(--${n.s})">${ST[n.s]}</span><span class="tag">${SP[n.sp||0]}</span>${n.g?`<span class="tag">หมุด: ${esc(D.STAGES.find(s=>s.id===n.g)?.t||n.g)}</span>`:''}</div>
    ${chain.length?`<p style="color:var(--mut);font-size:12px">${chain.map(c=>esc(c.t)).join(' › ')}</p>`:''}<p>${esc(n.d||'(ยังไม่มีรายละเอียด)')}</p>
    ${n.f?.length?'<h4>ไฟล์ / เอกสารที่เกี่ยวข้อง</h4>'+n.f.map(f=>`<code>${esc(f)}</code>`).join(''):''}${kids}${links?'<h4>เชื่อมกับเส้นอื่น</h4>'+links:''}`;
+  const w=WHO[id]||[];$('ib').insertAdjacentHTML('beforeend',w.length?`<button class="cbtn" id="cbtn">👥 ตัวละครที่เกี่ยวข้อง (${w.length}) — ${w.slice(0,4).map(x=>esc(CAST[x[0]].n)).join(' · ')}${w.length>4?' …':''}</button>`:'<p style="color:var(--mut);font-size:12px">ยังไม่ได้ระบุตัวละครของกล่องนี้</p>');
+  if(w.length)$('cbtn').onclick=()=>openCast(id);else $('cast').style.display='none';
   $('info').style.display='block';
   $('ib').querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>{const t=a.dataset.go;for(let p=parent[t];p;p=parent[p.id])collapsed.delete(p.id);layout();select(t);focus(t)});
   layout()}
 function focus(id){const p=pos[id];if(!p)return;const r=view.getBoundingClientRect();tx=r.width/2-(p.x+W/2)*sc;ty=r.height/2-p.y*sc;apply()}
-$('ix').onclick=()=>{$('info').style.display='none';sel=null;layout()};
+function face(c){return c.src?`<span class="fc" style="background-image:url('${c.src}');background-position:${c.pos};background-size:${c.size};${c.bg?'background-color:'+c.bg:''}"></span>`:`<span class="fc">?</span>`}
+function openCast(id){const n=byId[id],w=WHO[id]||[];$('ct').textContent='👥 '+n.t;$('cast').style.display='block';$('cwhy').style.display='none';
+  $('cg').innerHTML=w.map(([c,why,src],i)=>`<div class="cc ${src==='idea'?'idea':src==='gone'?'gone':''}" data-i="${i}" title="${esc(CAST[c].n)}">${face(CAST[c])}<b>${esc(CAST[c].n)}</b></div>`).join('');
+  $('cg').onclick=e=>{const el=e.target.closest('.cc');if(!el)return;const [c,why,src]=w[+el.dataset.i],C=CAST[c];$('cg').querySelectorAll('.cc').forEach(x=>x.classList.toggle('on',x===el));
+    $('cwhy').style.display='block';$('cwhy').innerHTML=`<b>${esc(C.n)}</b> <small style="display:inline">· ${esc(C.r)}</small><div>${esc(why)}</div><small>${src==='doc'?'ระบุใน Canon/Draft':src==='idea'?'ข้อเสนอ — ยังไม่ใช่ Canon · ต้องตรวจ dependency NPC ก่อนใช้':'ยังไม่มีในเกม — ไม่เดาหน้าตา/ชื่อ'}</small><button id="chl">${castSel===c?'เลิกไฮไลต์':'ไฮไลต์ทุกกล่องที่มีคนนี้'}</button>`;
+    $('chl').onclick=()=>{castSel=castSel===c?null:c;layout();$('chl').textContent=castSel===c?'เลิกไฮไลต์':'ไฮไลต์ทุกกล่องที่มีคนนี้'}}}
+$('cx').onclick=()=>{$('cast').style.display='none';if(castSel){castSel=null;layout()}};
+$('ix').onclick=()=>{$('info').style.display='none';$('cast').style.display='none';sel=null;layout()};
 /* pan / zoom */
 let sc=.8,tx=40,ty=110;
 function apply(){world.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`}
@@ -178,7 +204,7 @@ function sizeBar(){document.documentElement.style.setProperty('--bh',$('head').o
 addEventListener('resize',sizeBar);sizeBar();
 build();layout();fit();
 if(curStage)expandForStage(curStage),layout();
-window.StoryMap={select,toggle,layout,byId};
+window.StoryMap={openCast,select,toggle,layout,byId};
 })();
 </script>
 </body>

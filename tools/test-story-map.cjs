@@ -14,4 +14,10 @@ ok(all.filter(n => n.k === 'end').length === 4, 'four endings (Canon §6)');
 ok(all.filter(n => n.k === 'open').every(n => n.s === 'wait'), 'open questions are marked waiting for the owner');
 ok(!all.some(n => /Paelasael|Veshra|Wyridean|Zern-Va/.test(n.t)), 'no ancient names in titles');
 ok(M.STAGES.every(s => all.some(n => n.g === s.id)), 'every story stage has at least one node');
+// ตัวละครที่เกี่ยวข้อง (v98.480): กล่องที่อ้างถึงมีจริง · ตัวละครอยู่ใน CAST · ที่มาเป็น doc/idea/gone · gone ตรงกับ CAST.gone · NPC ในเกมมีรูปจริง
+{ const fs = require('fs'), W = D.WHO, C = D.CAST;
+  ok(Object.keys(W).every(k => ids.has(k)), 'WHO nodes exist'); ok(Object.values(W).every(l => l.every(([c, why, src]) => C[c] && why && ['doc', 'idea', 'gone'].includes(src))), 'WHO entries valid');
+  ok(Object.values(W).every(l => l.every(([c, , src]) => (src === 'gone') === !!C[c].gone)), 'gone source = character not in the game yet');
+  ok(Object.values(C).every(c => c.gone || (c.src && fs.existsSync(path.join(__dirname, '..', c.src.split('?')[0])))), 'every in-game character has a real picture file');
+  ok(Object.values(C).every(c => c.n && c.r), 'name and role'); ok(Object.keys(C).every(k => Object.values(W).some(l => l.some(x => x[0] === k))), 'no unused characters') }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);
