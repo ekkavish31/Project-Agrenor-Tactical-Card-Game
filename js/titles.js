@@ -24,6 +24,9 @@
   /* ---------- v98.473 · CHRONICLE (บันทึกเหตุการณ์): the big moments of the main story, each written once. g.village.chronicle = [{ id, day, text }].
      Pure on the save object. Phase A of docs/lore/MAIN-STORY-CANON.md: only the ids the game already reaches are written today; the rest are ready for the later phases. */
   const CHRON = {
+    'site.faith': 'นั่งฟังผู้แสวงบุญนิกายรอรุ่งอรุณที่ด่านหินเหนือเล่าความเชื่อเรื่องเทพที่หลับ',
+    'site.clinic': 'พาทีมเข้าเรือนพยาบาลผู้ลี้ภัยที่วิลโลว์ชอร์เป็นครั้งแรก',
+    'site.army': 'ขายเสบียงให้คลังเสบียงหลวงเป็นครั้งแรก',
     'site.camp': 'แบ่งอาหารให้ค่ายผู้อพยพจากทางเหนือเป็นครั้งแรก',
     'site.ruin': 'พบร่องรอยสำนักเล็ก ๆ ที่ชายป่าใกล้ธอร์นวอตช์ มีคนเคยสอนที่นี่',
     'site.mine': 'เห็นปากทางลงชั้นล่างของเหมืองดีปแคร์นถูกปิดและมีอัศวินเฝ้า',

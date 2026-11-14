@@ -32,4 +32,14 @@ const names = (g, town) => SC.locals(g, town, ST.LOCALS[town] || []).map(x => x[
   const r = TS.run(S, 'northgate', 'st:camp', { passTime() { }, game: () => G }); ok(r.lines.length && S.gold === 20, 'run charges 10 and returns lines'); ok(TS.list(S, 'northgate').find(x => x.key === 'st:camp').disabled, 'daily: used today') }
 // ข้อความไม่มีชื่อโบราณ
 { const all = JSON.stringify([SC.CAST.map(c => c.lines({ day: 1, village: { main: { stage: 'release', flags: {}, at: {} } } })), SC.EXTRA]); ok(!/Paelasael|Veshra|Wyridean|Zern-Va|Grat\b/.test(all), 'no ancient names') }
+// v98.486 · สถานที่/ตัวละครเพิ่ม
+{ const g = game(); M.advanceTo(g, 'signs', { silent: true }); ok(names(g, 'willowshore').includes('หมอหญิงไอรีน') && !names(g, 'haven').includes('วิก'), 'irene at signs; vik not yet'); M.advanceTo(g, 'wake', { silent: true }); ok(names(g, 'haven').includes('วิก'), 'vik at wake');
+  ok(SC.locals(g, 'haven', ST.LOCALS.haven || []).find(x => x[0] === 'วิก')[3] === 'vik', 'locals carry a portrait id');
+  const S = { gold: 100, cargo: { iron: 3, fish: 2 }, traded: 0 }, ctx = { passTime() { }, healParty() { } };
+  ok(SC.services(g, 'northgate').some(s => s.key === 'st:faith') && !SC.services(g, 'willowshore').some(s => s.key === 'st:clinic'), 'faith house at signs; clinic needs war 3');
+  M.advanceTo(g, 'release', { silent: true }); ok(SC.services(g, 'willowshore').some(s => s.key === 'st:clinic'), 'clinic at war 3');
+  let r = SC.run(g, 'northgate', 'st:faith', S, ctx); ok(M.flag(g, 'faithVisits') === 1 && T.has(g, 'site.faith') && M.flag(g, 'faithHeard') === 1, 'faith house step 1'); SC.run(g, 'northgate', 'st:faith', S, ctx); SC.run(g, 'northgate', 'st:faith', S, ctx); SC.run(g, 'northgate', 'st:faith', S, ctx); ok(M.flag(g, 'faithVisits') === 3, 'faith capped at 3');
+  r = SC.run(g, 'lakenhold', 'st:army', S, ctx); ok(S.gold > 100 && !S.cargo.iron && !S.cargo.fish && M.flag(g, 'armyOrders') === 1 && T.has(g, 'site.army'), 'army buys the cargo at a premium'); r = SC.run(g, 'lakenhold', 'st:army', S, ctx); ok(/ไม่มี/.test(r.lines[0]), 'nothing to sell');
+  r = SC.run(g, 'willowshore', 'st:clinic', S, ctx); ok(M.flag(g, 'clinicVisits') === 1 && T.has(g, 'site.clinic'), 'clinic visit');
+  ok(SC.face('vik').src.startsWith('data:') === (typeof document !== 'undefined') || SC.face('vik') !== null, 'face helper') }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

@@ -111,7 +111,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
  <span><i style="background:#9a8cff"></i>เส้นเรื่อง</span><span><i style="background:#ffb347;border-radius:8px"></i>⑂ จุดตัดสินใจ (แตกกิ่ง)</span><span><i style="background:#3f7f7f"></i>ผลของทางเลือก</span><span><i style="background:#ff7fb0"></i>★ ตอนจบ</span><span><i style="background:#4a86c9"></i>⚙ ระบบเกม</span><span><i style="border:1px dashed #c77dff"></i>🔒 ยังไม่ตัดสิน</span>
  <span><i style="background:#5fbf7a"></i>ทำแล้ว</span><span><i style="background:#e6b84d"></i>ทำบางส่วน</span><span><i style="background:#7f8aa8"></i>ยังไม่ทำ</span><span style="color:#7fd6ff">╌╌ เส้นเชื่อมข้ามเส้น</span>
 </div>
-<script src="js/story-map-data.js"></script>
+<script src="js/code-portraits.js"></script><script src="js/crossroads.js"></script><script src="js/story-map-data.js"></script>
 <script>
 (function(){
 'use strict';
@@ -194,7 +194,7 @@ function select(id){sel=id;const n=byId[id];if(!n)return;
   $('ib').querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>{const t=a.dataset.go;for(let p=parent[t];p;p=parent[p.id])collapsed.delete(p.id);layout();select(t);focus(t)});
   layout()}
 function focus(id){const p=pos[id];if(!p)return;const r=view.getBoundingClientRect();tx=r.width/2-(p.x+W/2)*sc;ty=r.height/2-p.y*sc;apply()}
-function face(c){return c.src?`<span class="fc" style="background-image:url('${c.src}');background-position:${c.pos};background-size:${c.size};${c.bg?'background-color:'+c.bg:''}"></span>`:`<span class="fc">?</span>`}
+function face(c){if(c.code&&window.CodePortraits){const u=CodePortraits.get(c.code);if(u)return `<span class="fc" style="background-image:url('${u}');background-size:100%"></span>`}return c.src?`<span class="fc" style="background-image:url('${c.src}');background-position:${c.pos};background-size:${c.size};${c.bg?'background-color:'+c.bg:''}"></span>`:`<span class="fc">?</span>`}
 function openCast(id){const n=byId[id],w=WHO[id]||[];$('ct').textContent='👥 '+n.t;$('cast').style.display='block';$('cwhy').style.display='none';
   $('cg').innerHTML=w.map(([c,why,src],i)=>`<div class="cc ${src==='idea'?'idea':src==='gone'?'gone':''}" data-i="${i}" title="${esc(CAST[c].n)}">${face(CAST[c])}<b>${esc(CAST[c].n)}</b></div>`).join('');
   $('cg').onclick=e=>{const el=e.target.closest('.cc');if(!el)return;const [c,why,src]=w[+el.dataset.i],C=CAST[c];$('cg').querySelectorAll('.cc').forEach(x=>x.classList.toggle('on',x===el));

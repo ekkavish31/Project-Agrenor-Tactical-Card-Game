@@ -557,12 +557,30 @@
     const day = S.day, hour = S.hour, finnTown = ['brookmere', 'haven', 'northgate'][day % 3];
     return Object.values(L.P).filter(p => (p.from === id || (p.from === 'wander' && finnTown === id)) && !L.inParty(S, p.id) && !L.present(p, day, hour));
   }
+  /* ---------- v98.486 · ทางแยก ⑂ / อีเวนต์คาบเกี่ยว: สถานการณ์ในเมือง + ทางเลือกที่มีราคา (js/crossroads.js · docs/PROPOSAL-CROSSROADS-TH.md) ---------- */
+  const faceBox = (who, w = 84, h = 96) => { const f = who && window.StoryCast?.face(who); return f ? `<span style="float:left;width:${w}px;height:${h}px;margin:0 12px 6px 0;background:url('${f.src}') ${f.pos}/${f.size} no-repeat #1a2b26;border:2px solid #d8b46a;border-radius:6px"></span>` : '' };
+  async function crossroadsAt(id) {
+    const g = WS.game(), C = window.Crossroads; if (!C || !g) return;
+    for (const m of C.expire(g, S)) { log(m); toast(m) }
+    const e = C.pick(g, S, id); if (!e) return;
+    const why = c => c.ok?.(g, S) || '';
+    const v = await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who)}<p><small>${esc(e.cast || '')}</small></p><p>${esc(e.text)}</p><div style="clear:both"></div><p><small>ทุกทางเลือกมีราคา — ไม่มีถูกหรือผิด</small></p>`,
+      [...e.choices.map((c, i) => ({ label: c.label + (why(c) ? ' (' + why(c) + ')' : ''), value: i, disabled: !!why(c) })), { label: 'ยังไม่ตัดสินใจ', value: -1, ghost: true }]);
+    if (v == null || v < 0) return;
+    const r = C.resolve(g, S, e, v, { passTime });
+    if (r.blocked) { toast(r.lines[0]); return }
+    log(e.icon + ' ' + e.title + ' — ' + r.choice); WS.commit();
+    await modal(`<h2>${e.icon} ${esc(e.title)}</h2><p><b>${esc(r.choice)}</b></p>${r.lines.map(l => `<p>${esc(l)}</p>`).join('')}`);
+  }
+
+  window.WMCrossroads = crossroadsAt;   /* ใช้ทดสอบ/ดีบัก */
   async function townVisit(poi) {
     const id = poi.town;
     /* v97.72 · the capital's gate stays shut until the prologue is over */
     if (window.TownServices && window.Settlements?.SETTLEMENTS?.[id]?.capital && !TownServices.capitalOpen()) { await modal(`<h2>🏰 ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id])}</p><p>ทหารหน้าประตูเมืองยกหอกกั้น: "ช่วงนี้นครหลวงปิดรับคนนอก กลับไปก่อนเถอะ"</p><p style="font-size:12px;opacity:.75">เส้นทางไปเมืองใหญ่จะเปิดหลังจบบทนำ</p>`); return }
     ev('town:visit', { town: id, townName: poi.name }); log('ถึง ' + poi.name); S.townVisits = (S.townVisits || 0) + 1;   /* v97.55 · T7 duty counter */
-    if (window.TownEvents) for (const m of TownEvents.arrive(S, id)) { log(m); toast(m) }   /* v97.68 · T8 events: the toll is paid at the gate */
+    if (window.TownEvents) for (const m of TownEvents.arrive(S, id)) { log(m); toast(m) }
+    await crossroadsAt(id);   /* v98.486 · ทางแยกของเนื้อเรื่องหลัก (js/crossroads.js) */   /* v97.68 · T8 events: the toll is paid at the gate */
     for (;;) {
       const folk = townsfolk(id), per = window.WorldState?.period(S.hour) || 'day';
       const people = folk.length ? folk.map(p => { const ls = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…']; return `<p>👤 <b>${esc(p.name)}</b> <small>${esc(p.role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>` }).join('') : '<p style="opacity:.7">ไม่เจอคนรู้จักที่นี่ตอนนี้</p>';
@@ -571,7 +589,7 @@
       if (window.Law && Law.file(S, id).wanted) { const a = await Law.arrest(S, id, 'ยามที่ประตู' + poi.name + 'จำหน้าคุณได้ — คุณถูกหมายจับที่นี่'); if (a === 'jail') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to) } save(); hudSync(); if (a === 'run') { log('🏃 หนีออกจาก' + poi.name); break } }
       const ST = window.Settlements, pInn = ST ? ST.price(id, 'inn', 12) : 12, pFood = ST ? ST.price(id, 'food', 10) : 10, pPot = ST ? ST.price(id, 'potion', 18) : 18;
       const tev = window.TownEvents?.card(S, id);
-      const locals = (window.StoryCast ? StoryCast.locals(WS.game(), id, ST?.LOCALS?.[id] || []) : (ST?.LOCALS?.[id] || [])).map(([n, role, ls]) => `<p>👤 <b>${esc(n)}</b> <small>${esc(role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>`).join('');
+      const locals = (window.StoryCast ? StoryCast.locals(WS.game(), id, ST?.LOCALS?.[id] || []) : (ST?.LOCALS?.[id] || [])).map(([n, role, ls, pid]) => `<p>${faceBox(pid, 42, 48)}👤 <b>${esc(n)}</b> <small>${esc(role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>`).join('');
       let v = await modal(`${TOWN_PIC[id] ? `<img src="assets/village-town/decor/gate-${TOWN_PIC[id]}.webp" alt="" style="float:right;width:150px;margin:-6px 0 4px 10px;filter:drop-shadow(0 4px 8px #0006)">` : ''}<h2>${ST?.SETTLEMENTS?.[id]?.capital ? '🏰' : '🏘'} ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}${tev ? tev.html : ''}${locals ? '<h3 style="margin:8px 0 2px;font-size:14px">ผู้คนที่นี่</h3>' + locals : ''}${folk.length || !locals ? '<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>' + people : ''}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
         [...(tev?.button ? [tev.button] : []), ...(window.TownServices ? TownServices.list(S, id).map(o => ({ label: o.label + (o.disabled && o.title ? ' (' + o.title + ')' : ''), value: 'svc:' + o.key, disabled: o.disabled })) : []), { label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates || ST || window.Offices ? [{ label: '🏛 ศาลากลาง', value: 'hall' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
       /* v97.76 · land, petitions and offices sit behind the town hall so the card keeps to the everyday things */

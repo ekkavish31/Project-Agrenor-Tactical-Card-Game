@@ -1,6 +1,6 @@
 /* v98.479 · node tools/test-story-map.cjs — แผนผังเส้นเรื่อง (js/story-map-data.js): id ไม่ซ้ำ · เส้นเชื่อมชี้ถูก · หมุดตรงกับ MainStory.STAGES · จุดตัดสินใจมีอย่างน้อย 2 กิ่งที่มีป้าย · ตอนจบมี 4 */
 const path = require('path'); global.window = global;
-const D = require(path.join(__dirname, '..', 'js', 'story-map-data.js')), M = require(path.join(__dirname, '..', 'js', 'main-story.js'));
+require(path.join(__dirname, '..', 'js', 'crossroads.js')); const CP = require(path.join(__dirname, '..', 'js', 'code-portraits.js')); const D = require(path.join(__dirname, '..', 'js', 'story-map-data.js')), M = require(path.join(__dirname, '..', 'js', 'main-story.js'));
 let pass = 0, fail = 0; const ok = (c, m) => { if (c) pass++; else { fail++; console.log('FAIL', m) } };
 const all = []; (function w(n) { all.push(n); n.c.forEach(w) })(D.TREE);
 const ids = new Set(all.map(n => n.id)); ok(ids.size === all.length, 'ids unique');
@@ -18,6 +18,7 @@ ok(M.STAGES.every(s => all.some(n => n.g === s.id)), 'every story stage has at l
 { const fs = require('fs'), W = D.WHO, C = D.CAST;
   ok(Object.keys(W).every(k => ids.has(k)), 'WHO nodes exist'); ok(Object.values(W).every(l => l.every(([c, why, src]) => C[c] && why && ['doc', 'idea', 'gone'].includes(src))), 'WHO entries valid');
   ok(Object.values(W).every(l => l.every(([c, , src]) => src !== 'gone' || !!C[c].gone)), 'gone source only for characters without art');
-  ok(Object.values(C).every(c => c.gone || (c.src && fs.existsSync(path.join(__dirname, '..', c.src.split('?')[0])))), 'every in-game character has a real picture file');
+  ok(Object.values(C).every(c => c.gone || c.code || (c.src && fs.existsSync(path.join(__dirname, '..', c.src.split('?')[0])))), 'every in-game character has a real picture file');
   ok(Object.values(C).every(c => c.n && c.r), 'name and role'); ok(Object.keys(C).every(k => Object.values(W).some(l => l.some(x => x[0] === k))), 'no unused characters') }
+ok(Object.values(D.CAST).every(c => !c.code || CP.has(c.code)), 'code portraits exist for every code character'); ok(all.filter(n => n.id.startsWith('cr_') && n.k === 'choice').length >= 15, 'implemented crossroads appear as decision nodes');
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

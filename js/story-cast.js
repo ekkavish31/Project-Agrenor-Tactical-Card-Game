@@ -25,6 +25,10 @@
         ...(at(g, 'release') ? ['ข้าเห็นขบวนที่ผ่านช่องเขาเมื่อคืน มีคนของเรารวมอยู่ในนั้น พวกเขาไม่ได้อยากไปเหมือง'] : [])] },
     { id: 'darren', n: 'เซอร์ดาร์เรน', r: 'อัศวินเฝ้าเหมือง', town: 'deepcairn', from: 'release',
       lines: g => ['ข้าได้รับคำสั่งให้ยืนตรงนี้ แค่นั้น ถ้าเจ้ามีธุระกับชั้นล่าง ธุระนั้นถูกยกเลิกแล้ว', ...(war(g) >= 4 ? ['พวกเราเอาไม่อยู่แล้ว… ถ้าเจ้าเป็นคนที่เข้มแข็งพอ อย่าเพิ่งเดินทางไกล'] : ['บางตัวที่หลงขึ้นมาจากโพรง… ไม่เหมือนสัตว์ที่ข้ารู้จัก'])] },
+    { id: 'irene', n: 'หมอหญิงไอรีน', r: 'หมอประจำเรือนพยาบาลผู้ลี้ภัย', town: 'willowshore', from: 'signs',
+      lines: g => ['คนที่มาที่นี่ไม่ได้ป่วยแค่ร่างกาย… แต่ยิ่งช่วงนี้ บางคนมีควันดำจาง ๆ ในตา ข้ายังไม่รู้ว่ามันคืออะไร', ...(war(g) >= 3 ? ['ถ้าเจอใครมีอาการแบบนั้น พามาหาข้าก่อนที่ทหารจะรู้ ระยะแรกยังรักษาได้'] : [])] },
+    { id: 'vik', n: 'วิก', r: 'นายหน้าตลาดมืด', town: 'haven', from: 'wake',
+      lines: g => ['ในสงคราม ของทุกอย่างมีราคา… แม้แต่ของที่ไม่มีใครบอกว่าเป็นของใคร', 'ถ้าเจอของแปลก ๆ ที่เรืองแสงสีม่วง อย่าเพิ่งทิ้ง ข้าอาจรู้ว่าใครให้ราคาสูงที่สุด'] },
     { id: 'mierris', n: 'เมียร์ริส', r: 'ผู้เฝ้าแสง', town: 'thornwatch', from: 'release',
       lines: g => ["ข้าเห็นพวกเจ้าขุดเหมือนที่พวกเราเคยเห็นมาก่อน… ในเมืองที่ไม่มีใครจำชื่อได้อีกแล้ว", 'เรามาจากเมืองในป่าลึก เราเรียกตัวเองว่า Elu\'Mierwaa ผู้เฝ้าแสง ไม่ได้มาเป็นศัตรู ถ้าการขุดหยุดอย่างสงบ',
         'อย่าไว้ใจพวกที่ตามรอยเงา — เป้าหมายของเราคล้ายกัน แต่วิธีไม่เหมือนกัน'] },
@@ -47,7 +51,7 @@
   /* คนในเมืองบนแผนที่โลก: base = Settlements.LOCALS[town] → คืนรายการใหม่ (ไม่แก้ของเดิม) */
   function locals(g, town, base) {
     const out = (base || []).map(([n, role, ls]) => { const add = (EXTRA[town]?.[n] || []).filter(d => extraOK(g, d, town)).map(d => d.t); return [n, role, add.length ? ls.concat(add) : ls] });
-    for (const c of CAST) if (c.town === town && at(g, c.from)) out.push([c.n, c.r, c.lines(g)]);
+    for (const c of CAST) if (c.town === town && at(g, c.from)) out.push([c.n, c.r, c.lines(g), c.id]);
     return out;
   }
 
@@ -57,7 +61,11 @@
     news: { label: '📰 กระดานข่าวสงคราม', towns: null, when: g => war(g) >= 1 },
     camp: { label: '⛺ ค่ายผู้อพยพ · แบ่งอาหารให้', towns: ['northgate', 'willowshore'], when: g => war(g) >= 2, cost: 10, daily: true },
     ruin: { label: '🏚 ร่องรอยสำนักชายป่า', towns: ['thornwatch'], when: g => at(g, 'wake'), daily: true },
-    pit: { label: '⛏ ปากเหมืองชั้นล่าง', towns: ['deepcairn'], when: g => war(g) >= 3, daily: true }
+    pit: { label: '⛏ ปากเหมืองชั้นล่าง', towns: ['deepcairn'], when: g => war(g) >= 3, daily: true },
+    /* v98.486 · สถานที่เพิ่ม */
+    faith: { label: '🕯 ที่พักผู้แสวงบุญนิกายรอรุ่งอรุณ', towns: ['northgate'], when: g => at(g, 'signs'), daily: true },
+    clinic: { label: '🏥 เรือนพยาบาลผู้ลี้ภัย', towns: ['willowshore'], when: g => war(g) >= 3, cost: 15, daily: true },
+    army: { label: '📦 คลังเสบียงหลวง · ขายให้ทัพ', towns: ['lakenhold', 'northgate'], when: g => war(g) >= 2, daily: true }
   };
   function services(g, town) {
     const out = [];
@@ -83,6 +91,24 @@
         '🕯 ใต้พื้นกระท่อมมีกล่องเล็ก ๆ ข้างในมีแผ่นจดว่าด้วยการ "ตัดสิ่งที่ผูกกับสิ่งที่ไม่ใช่ตัวมัน" — ไม่เข้าใจทั้งหมด แต่ถูกเก็บไว้เป็นอย่างดี'];
       out.push(L[n - 1]); if (n === 1) T()?.log(g, 'site.ruin'); if (n >= 3) out.push('✦ บันทึกครบชุดแรก — ตอนนี้พอเข้าใจแล้วว่ามีวิธีของคนสมัยก่อนที่ใช้กับสิ่งที่ผูกติดกับสิ่งอื่น'); return { lines: out };
     }
+    if (k === 'faith') {
+      ctx.passTime?.(1); const n = Math.min(3, num(M.flag(g, 'faithVisits')) + 1); M.set(g, 'faithVisits', n); M.set(g, 'faithHeard', Math.max(num(M.flag(g, 'faithHeard')), n));
+      const L = ['🕯 ห้องพักเล็กที่ผู้แสวงบุญจุดเทียนเรียงบนพื้นหิน เฮลกาเล่า: "เทพไม่ได้จากไป ท่านหลับ — และเรากำลังรอวันที่ท่านพร้อมตื่น"',
+        '🕯 "แร่ที่พวกเจ้าขุดคือเถ้ากระดูกของบุตรคนแรกของเทพ" เธอพูดเบา ๆ "ถ้าเจ้ามองมันเป็นแค่ของมีค่า เจ้าก็เหมือนกับคนที่ขโมยของจากหลุมศพ"',
+        '🕯 เฮลกาถามกลับ: "ข้าอยากรู้ว่าฝั่งเจ้าเชื่ออะไร" คุณเล่าเรื่องเทพที่อยู่รอบตัว เธอฟังจบแล้วยิ้ม "อาจไม่ต่างกันเท่าที่คิด"'];
+      out.push(L[n - 1]); F()?.add('north', 1, 'พูดคุยกับผู้แสวงบุญ'); if (n === 1) T()?.log(g, 'site.faith'); return { lines: out };
+    }
+    if (k === 'clinic') {
+      ctx.passTime?.(2); ctx.healParty?.(1); const n = num(M.flag(g, 'clinicVisits')) + 1; M.set(g, 'clinicVisits', n); F()?.add('village', 1, 'บริจาคเรือนพยาบาล');
+      out.push('🏥 หมอหญิงไอรีนรักษาแผลทั้งทีมโดยไม่ถามอะไร · HP เต็ม · บริจาคให้เรือนพยาบาล'); if (n === 1) T()?.log(g, 'site.clinic'); return { lines: out };
+    }
+    if (k === 'army') {
+      const cargo = S.cargo || {}, goods = ['iron', 'ore', 'cloth', 'salt', 'fish', 'wood'].filter(x => num(cargo[x]) > 0); if (!goods.length) return { lines: ['📦 ไม่มีเหล็ก แร่ ผ้า เกลือ ปลา หรือไม้ในเกวียน — ทัพไม่รับของอื่น'] };
+      let total = 0, n = 0; const sp = (root.Settlements?.sellPrice) || (() => 8);
+      for (const x of goods) { const q = cargo[x]; total += Math.round(q * (num(sp(town, x)) || 0) * 1.25); n += q; delete cargo[x] }
+      S.gold = num(S.gold) + total; S.traded = num(S.traded) + n; F()?.add('crown', 1, 'ขายเสบียงให้ทัพ'); F()?.add('garrison', 1, 'ขายเสบียงให้ทัพ'); M.set(g, 'armyOrders', num(M.flag(g, 'armyOrders')) + 1);
+      out.push('📦 ส่งเสบียง ' + n + ' หน่วยให้ทัพในราคาพิเศษ +25% = ' + total + ' 💰 · ชื่อเสียงราชสำนัก/กองทหารเพิ่ม'); if (num(M.flag(g, 'armyOrders')) === 1) T()?.log(g, 'site.army'); return { lines: out };
+    }
     if (k === 'pit') {
       ctx.passTime?.(1); const first = !M.flag(g, 'pitSeen'); M.set(g, 'pitSeen', true);
       out.push('⛏ ปากทางลงชั้นล่างถูกปิดด้วยไม้ขวางและอัศวินสองนายยืนเฝ้า · อากาศเย็นขึ้นหนึ่งระดับเมื่อเดินเข้าใกล้ · ได้ยินเสียงขุดจากข้างล่างเบา ๆ');
@@ -91,7 +117,14 @@
     return { lines: out };
   }
 
-  const api = { CAST, EXTRA, SPOTS, locals, services, run };
+  /* หน้าตัวละคร (CT-style frame) — ภาพจริงถ้ามี · ไม่มี = ภาพวาดด้วยโค้ด (js/code-portraits.js) */
+  const CARD_FACE = ['bram', 'kier', 'luna', 'mil'];
+  function face(id) {
+    const P = root.CodePortraits; if (P && P.has(id)) { const s = P.get(id); return s ? { src: s, pos: '50% 50%', size: '100%' } : null }
+    if (CARD_FACE.includes(id)) return { src: `assets/cards/portraits/u-${id}.webp`, pos: '50% 22%', size: '165%' };
+    return { src: `assets/village-town/npc/${id}/sw-stand.webp`, pos: '50% 9%', size: '285%' };
+  }
+  const api = { face, CAST, EXTRA, SPOTS, locals, services, run };
   root.StoryCast = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
