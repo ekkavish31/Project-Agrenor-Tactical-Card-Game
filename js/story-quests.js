@@ -67,7 +67,7 @@ function targetsOf(step,d){const t=typeof step.targets==='function'?step.targets
 
 /* street objects (shared by several steps) */
 const SPOT={
- goats:{key:'goats',kind:'goat',near:['square','inn','market','npc7'],n:2,spread:7,flee:true},   /* v98.331 · 2 goats (was 3): touching one starts the goat fight */
+ goats:{key:'goats',kind:'goat',near:['square','inn','market','npc7'],n:2,spread:7,flee:true,mystery:true},   /* v98.331 · 2 goats (was 3): touching one starts the goat fight */
  planks:{key:'planks',kind:'plank',near:['npc3'],n:2,spread:3,mark:true,label:'แผ่นไม้ของเคน'},
  ripe:{key:'ripe',kind:'ripe',near:['npc13'],n:3,spread:4,mark:true,label:'ฟักทองสุก'},
  plot:{key:'plot',kind:'plot',near:['npc13'],n:1,spread:2,mark:true,label:'ฟักทองประกวดของฮิลดา'},
@@ -340,7 +340,10 @@ async function resumeFight(){const step=cur();if(!step)return false;const d=data
  d.fighting=false;d.resumeSrc=rec?rec.page+rec.search+'&resume=1':null;doSave();
  if(step.id==='raid'){startRaid(d);return true}
  if(step.onSpot){const r=await step.onSpot(d);doSave();if(r?.msg)toast(r.msg);return true}return false}
-root.Story={resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+/* v98.472 · main story phase A: the odd extra goat (Mip in disguise) was seen once — docs/lore/MAIN-STORY-CANON.md A8 */
+const mipSeen=()=>!!V()?.story?.mip?.seen;
+function mystery(ev){const v=V();if(!v||ev!=='seen')return;v.story=v.story||{};v.story.mip=v.story.mip||{};if(!v.story.mip.seen){v.story.mip.seen=true;doSave()}}
+root.Story={mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

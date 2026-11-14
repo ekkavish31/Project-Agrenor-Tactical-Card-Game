@@ -51,6 +51,7 @@
   /* ---------- quest objects ---------- */
   function spawn(sp) {
     let list = objs.get(sp.key) || [];
+    const mys = list.filter(x => x.mystery); list = list.filter(x => !x.mystery);   /* v98.472 · the odd extra goat is not one of the quest's goats: it never counts toward n */
     if (list.length > sp.n) list = list.slice(0, sp.n);
     const r = rng(hash(sp.key + ':' + (sp.seed || 0))), near = [].concat(sp.near || 'square'), spread = sp.spread || 5;
     let i = 0;
@@ -63,6 +64,17 @@
       }
       if (!spot) { const n = typeof nearest === 'function' ? nearest(base) : base; spot = n ? { u: n.u, v: n.v } : null }
       if (spot) list.push({ key: sp.key, kind: sp.kind, label: sp.label || '', flee: !!sp.flee, u: spot.u, v: spot.v, i: list.length, mode: 'idle', t: 0, phase: r() * 6, cool: 0 });
+    }
+    /* v98.472 · MAIN STORY (docs/lore/MAIN-STORY-CANON.md A8 · phase A): one more goat than Pip owns — it behaves strangely, and when the hero tries to catch it
+       it drops its disguise (the loading-screen mascot, Mip) and runs off. It never starts the fight and never counts. Shown once (story.mip.seen). */
+    if (sp.mystery && !story()?.mipSeen?.() && sp.n > 0) {
+      let m = mys[0];
+      if (!m) {
+        const o = loc([].concat(sp.near || 'square')[1 % [].concat(sp.near || 'square').length]) || locations[0]; let spot = null;
+        if (o) { const base = door(o); for (let k = 0; k < 80 && !spot; k++) { const u = base.u + (r() - .5) * 2 * spread, v = base.v + (r() - .5) * 2 * spread; if (free(u, v) && list.every(x => dist(x, { u, v }) > 2.6) && dist(hero, { u, v }) > 6) spot = { u, v } } }
+        if (spot) m = { key: sp.key, kind: 'goat', label: '', flee: false, mystery: true, u: spot.u, v: spot.v, i: 99, mode: 'idle', t: 0, phase: r() * 6, cool: 0, stare: 0 };
+      }
+      if (m) list.push(m);
     }
     objs.set(sp.key, list); return list;
   }
@@ -91,6 +103,20 @@
     if (o.dir) { const sp = 6.4, u = o.u + o.dir.du * sp * dt, v = o.v + o.dir.dv * sp * dt; if (free(u, v)) { o.u = u; o.v = v } else o.dir = null }
     if (o.t <= 0) { o.mode = 'rest'; o.t = 2 + Math.random() * 1.2; o.dir = null }
   }
+  /* v98.472 · the odd goat: grazes, turns to watch the hero (a blue glint), edges away a little — never runs like the others. Touch → reveal → Mip runs off → gone. */
+  function mysteryStep(o, dt) {
+    const d = dist(hero, o), now = performance.now();
+    if (o.mode === 'reveal') { o.t -= dt; if (o.t <= 0) { o.mode = 'mip'; o.t = 3.2; const a = Math.atan2(o.v - hero.v, o.u - hero.u); o.dir = { du: Math.cos(a), dv: Math.sin(a) } } return }
+    if (o.mode === 'mip') {
+      o.t -= dt; const sp = 9, u = o.u + o.dir.du * sp * dt, v = o.v + o.dir.dv * sp * dt;
+      if (free(u, v)) { o.u = u; o.v = v } else { const a = Math.atan2(o.dir.dv, o.dir.du) + (Math.random() - .5) * 2.2; o.dir = { du: Math.cos(a), dv: Math.sin(a) } }
+      if (o.t <= 0) { const l = objs.get(o.key); if (l) objs.set(o.key, l.filter(x => x !== o)); if (pending === o) pending = null; try { story()?.mystery?.('seen') } catch (e) { } float('…ไปแล้ว', o.u, o.v) }
+      return;
+    }
+    if (d < 1.15) { o.mode = 'reveal'; o.t = .75; o.t0 = now; float('✨', o.u, o.v); status('แพะตัวนั้น … เปลี่ยนร่าง!?'); return }
+    if (d < 4.2) { o.stare = Math.min(1, o.stare + dt * 2); o.face = hero } else o.stare = Math.max(0, o.stare - dt);
+    if (d < 2.6 && d > 1.2) { const a = Math.atan2(o.v - hero.v, o.u - hero.u), u = o.u + Math.cos(a) * 1.1 * dt, v = o.v + Math.sin(a) * 1.1 * dt; if (free(u, v)) { o.u = u; o.v = v } }   // edges away, slowly
+  }
   function use(o) {
     if (o.busy || o.cool > 0) return; o.busy = true;
     let r = null; try { r = story()?.questEvent?.({ key: o.key, kind: o.kind, i: o.i }) } catch (e) { r = null }
@@ -105,6 +131,7 @@
     poll(now);
     for (const list of objs.values()) for (const o of list) {
       o.cool = Math.max(0, o.cool - dt);
+      if (o.mystery) { mysteryStep(o, dt); continue }
       if (o.flee) fleeStep(o, dt);
       const reach = o.flee ? 1.05 : 1.35;
       if (dist(hero, o) < reach && (o.flee || pending === o || !path.length)) use(o);
@@ -155,11 +182,28 @@
     if (!o.flee || pending === o) { gx.strokeStyle = 'rgba(255,214,90,' + (.45 + Math.sin(t * .006) * .3) + ')'; gx.lineWidth = 2.5; gx.beginPath(); gx.ellipse(p.x, p.y, 24, 11, 0, 0, 7); gx.stroke() }
     gx.font = '34px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif'; gx.textAlign = 'center';
     gx.translate(p.x, p.y - 6 - hop); { const right = o.flee && o.dir && o.dir.du - o.dir.dv > 0; if (o.kind !== 'goat' && right) gx.scale(-1, 1) }
-    if (o.kind === 'goat') goat(gx, o, t); else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
+    if (o.mystery) mysteryDraw(gx, o, t); else if (o.kind === 'goat') goat(gx, o, t); else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
     if (o.flee && o.mode === 'rest') { gx.save(); gx.font = `700 ${12}px AgThai,system-ui`; gx.fillStyle = '#e8f4ff'; gx.textAlign = 'center'; gx.fillText('หอบ…', p.x, p.y - 46); gx.restore() }
   }
   /* v97.14 · the goat is drawn (solid colours with a dark outline) instead of the pale 🐐 emoji that washed out on the light cobbles:
      brown coat, cream belly and beard, dark horns and hooves; legs run in 4 frames, the head dips to graze when it rests */
+  /* v98.472 · drawn with code (no new picture): the goat with a faint blue glint, then the Mip run cycle (assets/ui/mip-sheet.webp · 12 cells · faces LEFT) after the reveal */
+  let mipImg = null; const mipSheet = () => { if (!mipImg && typeof Image !== 'undefined') { mipImg = new Image(); mipImg.src = 'assets/ui/mip-sheet.webp?v=2' } return mipImg && mipImg.complete && mipImg.naturalWidth ? mipImg : null };
+  function glint(gx, x, y, a, s) { gx.save(); gx.globalAlpha = a; gx.fillStyle = '#9fd8ff'; gx.strokeStyle = '#2b6fb0'; gx.lineWidth = 1.2; gx.beginPath(); gx.moveTo(x, y - s); gx.lineTo(x + s * .6, y); gx.lineTo(x, y + s); gx.lineTo(x - s * .6, y); gx.closePath(); gx.fill(); gx.stroke(); gx.restore() }
+  function mysteryDraw(gx, o, t) {
+    if (o.mode === 'reveal' || o.mode === 'mip') {
+      const im = mipSheet(), k = o.mode === 'reveal' ? 1 - Math.max(0, o.t) / .75 : 1;
+      if (o.mode === 'reveal') { for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2 + t * .01, r = 10 + k * 26; glint(gx, Math.cos(a) * r, -20 + Math.sin(a) * r * .5, 1 - k * .5, 4 + (i % 3)) } }
+      if (im) { const cell = im.naturalWidth / 12, f = Math.floor(t / 70) % 12, sz = 58, right = o.dir && o.dir.du - o.dir.dv > 0; gx.save(); gx.translate(0, 0); if (right) gx.scale(-1, 1); gx.globalAlpha = o.mode === 'reveal' ? .35 + k * .65 : 1; gx.drawImage(im, f * cell, 0, cell, im.naturalHeight, -sz / 2, -sz * .92, sz, sz); gx.restore() }
+      else { gx.fillStyle = '#d8b99a'; gx.beginPath(); gx.ellipse(0, -16, 14, 10, 0, 0, 7); gx.fill() }
+      return;
+    }
+    /* before the reveal: a goat that holds still when watched, with a slow blue glint on the horn / ear */
+    const wob = Math.sin(t * .003 + o.phase) * .06 * (1 - o.stare);
+    gx.save(); gx.rotate(wob); if (o.face) o.dir = { du: hero.u - o.u, dv: hero.v - o.v }; goat(gx, o, t); gx.restore();
+    const pulse = .35 + Math.max(0, Math.sin(t * .004 + o.phase)) * .65;
+    glint(gx, 13, -36, pulse * (.5 + o.stare * .5), 4); glint(gx, -17, -24, pulse * .6, 3);
+  }
   function goat(gx, o, t) {
     /* v98.444 · chase states use the existing authored goat extras. Remember
        facing while resting; MonsterArt owns SW/NW mirroring (never flip twice). */
