@@ -42,4 +42,15 @@ const names = (g, town) => SC.locals(g, town, ST.LOCALS[town] || []).map(x => x[
   r = SC.run(g, 'lakenhold', 'st:army', S, ctx); ok(S.gold > 100 && !S.cargo.iron && !S.cargo.fish && M.flag(g, 'armyOrders') === 1 && T.has(g, 'site.army'), 'army buys the cargo at a premium'); r = SC.run(g, 'lakenhold', 'st:army', S, ctx); ok(/ไม่มี/.test(r.lines[0]), 'nothing to sell');
   r = SC.run(g, 'willowshore', 'st:clinic', S, ctx); ok(M.flag(g, 'clinicVisits') === 1 && T.has(g, 'site.clinic'), 'clinic visit');
   ok(SC.face('vik').src.startsWith('data:') === (typeof document !== 'undefined') || SC.face('vik') !== null, 'face helper') }
+// v98.489 · NPC พูดถึงสิ่งที่ผู้เล่นทำ (REACT)
+{ const allLocal = Object.values(ST.LOCALS).flat().map(x => x[0]), ids = SC.CAST.map(c => c.id);
+  ok(SC.REACT.length >= 40 && SC.REACT.every(x => (x.n ? allLocal.includes(x.n) : ids.includes(x.id)) && x.t.length > 25 && typeof x.c === 'function'), 'every reaction belongs to a real local / cast member');
+  const CR = require(path.join(__dirname, '..', 'js', 'crossroads.js')); global.Crossroads = CR; const evIds = CR.EVENTS.map(e => e.id), src = require('fs').readFileSync(path.join(__dirname, '..', 'js', 'story-cast.js'), 'utf8'), used = [...src.matchAll(/cr\('([a-zA-Z]+)', (\d)\)/g)];
+  ok(used.length >= 30 && used.every(([, id, v]) => evIds.includes(id) && +v >= 1 && +v <= 3), 'every reaction points at a real crossroad choice (1–3)');
+  const g = game(); M.advanceTo(g, 'release', { silent: true }); const base = SC.locals(g, 'northgate', ST.LOCALS.northgate || []).find(x => x[0] === 'พี่น้องเฮลกา')[2].length;
+  M.set(g, 'cr_convoy', 2); const after = SC.locals(g, 'northgate', ST.LOCALS.northgate || []).find(x => x[0] === 'พี่น้องเฮลกา')[2]; ok(after.length === base + 3 && after.some(l => /ตามขบวน/.test(l)), 'Helga mentions following the convoy (weighted ×3)');
+  M.set(g, 'cr_convoy', 1); ok(!SC.locals(g, 'northgate', []).find(x => x[0] === 'พี่น้องเฮลกา')[2].some(l => /ตามขบวนไปดู/.test(l)) && SC.locals(g, 'northgate', []).find(x => x[0] === 'พี่น้องเฮลกา')[2].some(l => /ปล่อยพวกเขาผ่านไป/.test(l)), 'a different choice → a different line');
+  const h = game(); M.advanceTo(h, 'release', { silent: true }); ok(!SC.locals(h, 'deepcairn', ST.LOCALS.deepcairn).find(x => x[0] === 'โบดิล')[2].some(l => /รายชื่อที่เจ้ารับปาก/.test(l)), 'no reaction to something the player never did');
+  M.set(h, 'listKept', true); ok(SC.locals(h, 'deepcairn', ST.LOCALS.deepcairn).find(x => x[0] === 'โบดิล')[2].some(l => /รายชื่อที่เจ้ารับปาก/.test(l)), 'Boudil remembers the list');
+  M.set(h, 'ending', 'third'); ok(SC.locals(h, 'deepcairn', ST.LOCALS.deepcairn).find(x => x[0] === 'โบดิล')[2].some(l => /ปากเหมืองถูกปิดแล้ว/.test(l)), 'and after the ending he speaks of it') }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

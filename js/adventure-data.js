@@ -35,7 +35,7 @@ const GOODS={
  mirrorShard:{name:'ผลึกสะท้อน',element:'light',rarity:'rare',use:'สะสม',price:150,text:'ของที่ระลึกจากเพื่อนตัวเล็กที่กลับป่าไปแล้ว · ไม่ใช่การ์ด'},
  relic:{name:'ตราประทับหัวหน้า',element:'chaos',rarity:'rare',use:'เควส',price:60,text:'หลักฐานการปราบหัวหน้าพื้นที่'}};
 /* v98.478 · ชิ้นส่วนหายากของมอนแต่ละชนิด (Canon D): ชื่อม่วง + สัญลักษณ์ ❖ แทนคำว่า "(มายา)" · ขายได้ ส่งเควสได้ และ Mip กินแล้วหาย (maya:true) */
-const MAYA_OF={murk:'mayaMurk',wolf:'mayaWolf',shadowWolf:'mayaShadowWolf',frostWolf:'mayaFrostWolf',yeti:'mayaYeti',bat:'mayaBat',gull:'mayaGull',bandit:'mayaBandit',slime:'mayaSlime',kobold:'mayaKobold',snowKobold:'mayaSnowKobold',golem:'mayaGolem'};
+const MAYA_OF={hunger:'mayaHunger',murk:'mayaMurk',wolf:'mayaWolf',shadowWolf:'mayaShadowWolf',frostWolf:'mayaFrostWolf',yeti:'mayaYeti',bat:'mayaBat',gull:'mayaGull',bandit:'mayaBandit',slime:'mayaSlime',kobold:'mayaKobold',snowKobold:'mayaSnowKobold',golem:'mayaGolem'};
 const MAYA_GOODS={
  mayaWolf:{name:'❖ เขี้ยวเรืองรอง',element:'dark',price:70,text:'เขี้ยวหมาป่าที่ยังมีประกายแปลก ๆ ซ่อนอยู่ข้างใน'},
  mayaShadowWolf:{name:'❖ ขนเงาไม่สะท้อนแสง',element:'dark',price:95,text:'ขนที่ดูดแสงรอบตัวไปหมด'},
@@ -47,6 +47,7 @@ const MAYA_GOODS={
  mayaSlime:{name:'❖ ก้อนเมือกนิ่ง',element:'nature',price:75,text:'เมือกที่แข็งตัวเป็นก้อน ข้างในมีบางอย่างเต้นช้า ๆ'},
  mayaKobold:{name:'❖ เสี้ยวผลึกคนขุด',element:'fusion',price:90,text:'เสี้ยวผลึกที่สะท้อนแสงตะเกียงเป็นสีม่วง'},
  mayaSnowKobold:{name:'❖ ตะขอน้ำแข็งเหมือง',element:'ice',price:100,text:'ตะขอเหล็กเคลือบน้ำแข็งที่ไม่ยอมละลาย'},
+ mayaHunger:{name:'❖ ผลึกหิวจาง',element:'dark',price:260,text:'เศษของก้อนหิวที่ยังเย็นเฉียบ — ของที่ใครก็อยากได้ แต่ไม่มีใครอยากถือนาน'},
  mayaMurk:{name:'❖ เสี้ยวหมองดำ',element:'dark',price:105,text:'เศษเงามืดจากสัตว์ที่ถูกรอยหมอง ยังเต้นเบา ๆ เหมือนมีชีวิต'},
  mayaGolem:{name:'❖ หัวใจหินร้าว',element:'earth',price:130,text:'ก้อนหินที่มีรอยร้าวเรืองแสงจาง ๆ'}};
 for(const [k,g] of Object.entries(MAYA_GOODS))GOODS[k]={rarity:'rare',use:'ขาย · เควส · ให้ Mip',maya:true,...g};

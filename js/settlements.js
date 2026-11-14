@@ -53,7 +53,10 @@
   /* local price of a good: cheap −25 % · dear +35 % · then your standing with the ruler (−5 % a step) */
   /* v97.54 · T6 phase 2: prices move week to week (seeded by town, good and week: ×0.8…×1.25) — the market news says where */
   const week = () => { try { return Math.floor(((root.WorldState?.game?.()?.day) || 1) / 7) } catch (e) { return 0 } };
-  function swing(id, good, w = week()) { if (good === 'inn') return 1; let h = 0; for (const c of id + ':' + good + ':' + w) h = Math.imul(h ^ c.charCodeAt(0), 2654435761) >>> 0; h ^= h >>> 13; return .8 + ((h >>> 0) % 1000) / 1000 * .45 }
+  /* v98.489 · the story's world (war / after-ending) moves prices too — js/story-world.js */
+  const storyMult = (id, good) => { try { return root.StoryWorld ? root.StoryWorld.mult(id, good) : 1 } catch (e) { return 1 } };
+  function swing(id, good, w = week()) { return swing0(id, good, w) * (good === 'inn' ? 1 : storyMult(id, good)) }
+  function swing0(id, good, w = week()) { if (good === 'inn') return 1; let h = 0; for (const c of id + ':' + good + ':' + w) h = Math.imul(h ^ c.charCodeAt(0), 2654435761) >>> 0; h ^= h >>> 13; return .8 + ((h >>> 0) % 1000) / 1000 * .45 }
   function news(id) { const T = SETTLEMENTS[id]; if (!T) return ''; let best = null; for (const k of Object.keys(TRADE)) { const v = swing(id, k); if (!best || Math.abs(v - 1) > Math.abs(best[1] - 1)) best = [k, v] } return best && Math.abs(best[1] - 1) > .12 ? (best[1] > 1 ? '📈 ' + GOODS[best[0]] + 'ขาดตลาดที่' + T.name + ' ราคาสูงขึ้น' : '📉 ' + GOODS[best[0]] + 'ล้นตลาดที่' + T.name + ' ราคาตก') + ' (สัปดาห์นี้)' : '' }
   /* ---------- v97.56 · T8 governance lite: each settlement runs one policy for a month (seeded), or the one you petitioned for ----------
      tax_high prices ×1.1 · tax_low ×0.95 · trade sell ×1.1 and buy ×0.97 · safety thieves caught more (law) and fewer ambushes on the way in · festival inn half price.

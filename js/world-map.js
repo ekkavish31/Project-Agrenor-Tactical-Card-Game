@@ -539,6 +539,7 @@
     if (ek.length && window.Chaos) { const d = Chaos.dropFor(ek); for (const [id, n] of Object.entries(d.items)) for (let i = 0; i < n; i++) add(id); for (const kind of d.half) for (const k of Chaos.halfRolls(DROPS[kind])) add(k); const unl = Chaos.note(g, d.items); for (const id of unl) log('✷ ความโกลาหลตอบรับ · ได้การ์ดธาตุ Grat: ' + (window.TacticsDecks?.COMBAT?.[id]?.name || id)) }
     /* v98.478 · ชิ้นส่วนหายาก (ชื่อม่วง ❖) ของมอนชนิดนั้น: โอกาสน้อย เพิ่มตามความอันตราย · ล้มบอสได้เพิ่ม */
     { const my = window.ADVENTURE_DATA?.MAYA_OF?.[foe]; if (my && Math.random() < .07 + dang * .08 + (boss ? .25 : 0) + (evolved || []).some(e => e.dead) * .1) add(my) }
+    if (boss && foe === 'hunger' && window.ADVENTURE_DATA?.MAYA_OF?.hunger) add(window.ADVENTURE_DATA.MAYA_OF.hunger);   /* v98.489 · the boss of the mine always leaves its rare part */
     if (boss) add('relic'); WS.commit();
     const G = window.ADVENTURE_DATA?.GOODS || {}, MN = { iron: 'เหล็ก', coal: 'ถ่าน', wood: 'ไม้', food: 'เสบียง' };
     return Object.entries(got).map(([k, c]) => (G[k]?.name || MN[k] || k) + ' ×' + c).join(' · ');
@@ -950,6 +951,8 @@
   }
 
   /* ---------- battles (the flat card battle in an iframe) ---------- */
+  /* v98.489 · effective boss health (before level scaling) — ก้อนหิว 160 from tools/simulate-hunger.cjs (with its 3 specials): ~65 % first-try win at hero Lv.12 (the story gate), ~40 % at Lv.10, ~87 % at Lv.14 (greedy bot, no items — a real player does better) */
+  const BOSS_HP = { hunger: 160 };
   const MON_HP = { murk: 38, hunger: 150, bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44, bat: 22, gull: 26 };
   async function battle(foe, dang, o = {}) {
     busy = true; hudSync();
@@ -958,7 +961,7 @@
     const RS = o.resume || null;   /* v98.340 · a fight resumed from the temporary save: the random parts come from the record */
     let fierce = RS ? RS.fierce : false; if (!RS && night && !o.boss && Math.random() < .45) { fierce = true; if (['forest', 'grass', 'snow'].includes(here.biome)) foe = 'shadowWolf' }
     const elite = RS ? RS.elite : !o.boss && dang > .65 && Math.random() < .5, base = MON_HP[foe] || 34;
-    let mult = o.boss ? Math.round(130 / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
+    let mult = o.boss ? Math.round((BOSS_HP[foe] || 130) / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
     if (foe === 'shadowWolf') mult = Math.round((1.1 + dang * .5) * 10) / 10;
     const fs = window.Progression ? Progression.foeScale(Progression.heroLevel(WS.game())) : { hp: 1, atk: 1 };   /* v95.00: monsters grow a little with the hero */
     /* v97.29 · the game's difficulty setting (⚙ ตั้งค่า · s.village.settings.difficulty — it only reached the old battles before) */

@@ -395,6 +395,17 @@
     if (u.bossT % 3 !== 0) return false;
     const opp = opponents(st, u), hitAll = (list, mult, name, fx, extra) => { const hits = []; for (const o of list) { const r = hurt(st, o, u.atk * mult(o) * weakMult(u)); if (extra) extra(o, r); hits.push({ target: o, damage: r.damage, notes: r.notes }) }
       st.log.push(u.name + ' ใช้ ' + name + ' (' + hits.map(h => h.target.name + ' −' + h.damage).join(', ') + ')'); steps.push({ unit: u, type: 'bossSkill', name, fx, hits }); checkOutcome(st); return true };
+    /* v98.489 · ก้อนหิว (boss of the Deepcairn mine · docs/lore/MAIN-STORY-CANON.md A4): it only hungers. Three specials in turn, each announced the turn before —
+       กลืนกิน: bites the weakest foe within 3 and feeds on it (heals 60 % of the damage, weakens) · หนวดกวาด: everyone within 3 cells (its reach), poison · เสียงเรียกหิว: a fallen สัตว์รอยหมอง gets up at half health (no fallen one → it devours instead) */
+    if (u.kind === 'hunger') {
+      const k = (Math.floor(u.bossT / 3) - 1) % 3, fallen = st.units.filter(f => f.side === 'monster' && f.kind === 'murk' && f.hp <= 0 && !st.units.some(o => alive(o) && o.u === f.u && o.v === f.v));
+      if (k === 2 && fallen.length) { const f = fallen[0]; f.hp = Math.max(1, Math.round(f.maxHp * .5)); f.shown = f.hp; f.deadAt = 0; f.pose = 'idle'; f.stun = 0; f.revived = (f.revived | 0) + 1;
+        st.log.push(u.name + ' ใช้ เสียงเรียกหิว — ' + f.name + ' ลุกขึ้นอีกครั้ง'); steps.push({ unit: u, type: 'bossSkill', name: 'เสียงเรียกหิว', fx: 'dark', hits: [], revive: [f] }); return true }
+      if (k === 1) { const sw = opp.filter(o => dist(o, u) <= 3); if (sw.length) return hitAll(sw, () => .55, 'หนวดกวาด', 'dark', o => inflict(st, o, 'poison', .45)) }
+      const t = opp.filter(o => dist(o, u) <= 3).sort((a, b) => a.hp - b.hp)[0];
+      if (t) { u.face = faceOf(u, t); let fed = 0; const ok = hitAll([t], () => .9, 'กลืนกิน', 'dark', (o, r) => { fed += Math.round((r.damage || 0) * .6); inflict(st, o, 'weak', .6) });
+        if (ok && fed > 0) { u.hp = Math.min(u.maxHp, u.hp + fed); const last = steps[steps.length - 1]; if (last) last.heal = fed; st.log.push(u.name + ' ดูดกลืนพลังชีวิต +' + fed) } return ok }
+    }
     if (u.kind === 'frostQueen') { const t = opp.filter(o => dist(o, u) <= 3).sort((a, b) => a.hp - b.hp)[0]; if (t) { u.face = faceOf(u, t); return hitAll(opp.filter(o => dist(o, t) <= 1), () => .55, 'พายุน้ำแข็ง', 'ice', o => inflict(st, o, 'freeze', .5)) } }
     const low = opp.filter(o => dist(o, u) <= 4 && gap(st, u, o) >= 1).sort((a, b) => gap(st, u, b) - gap(st, u, a))[0];
     if (low) { u.face = faceOf(u, low); return hitAll([low], o => .9 * (1 + .15 * Math.min(4, gap(st, u, o))), 'ขว้างหินจากที่สูง', 'earth') }

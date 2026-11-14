@@ -87,7 +87,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 .tl-c .opt[data-k=end]{background:#2e1d2a;border-color:#ff7fb0}.tl-c .opt[data-k=open]{border-style:dashed;border-color:var(--wait);background:#26192f}
 .tl-c .opt:hover{outline:1px solid #ffd166}
 #mode{display:flex;gap:0}#mode button{border-radius:0}#mode button:first-child{border-radius:7px 0 0 7px}#mode button:last-child{border-radius:0 7px 7px 0}
-#hint{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;z-index:5;background:#2a2550f2;border:1px solid #9a8cff;border-radius:10px;padding:6px 14px;font-size:12.5px;max-width:min(900px,92vw);display:none}
+#hint{position:absolute;left:50%;transform:translateX(-50%);bottom:62px;z-index:5;background:#2a2550f2;border:1px solid #9a8cff;border-radius:10px;padding:6px 14px;font-size:12.5px;max-width:min(900px,92vw);display:none}
 #mapv{position:absolute;left:0;right:0;bottom:0;top:var(--bh,86px);display:none;overflow:hidden;background:#07111f;cursor:grab;touch-action:none}
 #mapv.drag{cursor:grabbing}
 #mapw{position:absolute;left:0;top:0;width:960px;height:992px;transform-origin:0 0}
@@ -112,13 +112,27 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 .mini .pin{position:absolute;transform:translate(-50%,-100%);font-size:22px;filter:drop-shadow(0 2px 3px #000)}
 .mini small{position:absolute;left:6px;bottom:4px;background:#15131ccc;padding:0 6px;border-radius:6px;font-size:10.5px;color:#cfc9e6}
 .pchip{display:inline-block;background:#2a2550;border:1px solid #6f64b8;border-radius:99px;padding:1px 10px;margin:2px 4px 2px 0;cursor:pointer;font-size:12px}
+body.split{--mapw:46%}
+body.split #view,body.split #tl{right:var(--mapw)}
+body.split #mapv{left:auto;width:var(--mapw);border-left:2px solid #6f64b8}
+body.split #info{right:calc(var(--mapw) + 12px)}
+body.split #cast{right:calc(var(--mapw) + 366px);width:min(420px,calc(100vw - var(--mapw) - 390px))}
+body.split #mapinfo{left:calc(100% - var(--mapw) + 10px);width:min(300px,calc(var(--mapw) - 20px))}
+body.split #hint{left:calc((100% - var(--mapw)) / 2)}
+body.split #legend{max-width:calc(100% - var(--mapw) - 30px)}
+#split{position:absolute;top:var(--bh,86px);bottom:0;width:10px;margin-right:-5px;cursor:col-resize;z-index:9;display:none;right:var(--mapw)}
+#split::after{content:"";position:absolute;left:4px;top:50%;height:48px;margin-top:-24px;width:3px;border-radius:2px;background:#9a8cff88}
+body.split #split{display:block}
+.mk.hit i{border-color:#ffd166;box-shadow:0 0 0 7px #ffd16688}
+.mk.faded{opacity:.4}
+.mk.hit{z-index:4}
 #count{margin-left:auto;color:var(--mut);font-size:12px}
 @media(max-width:700px){#info{width:auto;left:12px}}
 </style>
 </head>
 <body>
 <div id="head"><div id="bar">
- <div class="grp" id="mode"><button id="mTree" class="on">🌳 มุมมองกิ่ง</button><button id="mTl">🛤 เดินคู่ขนาน</button><button id="mMap">🗺 แผนที่โลก</button></div>
+ <div class="grp" id="mode"><button id="mTree" class="on">🌳 มุมมองกิ่ง</button><button id="mTl">🛤 เดินคู่ขนาน</button><button id="mMap" class="on" title="แสดง/ซ่อนแผนที่โลกข้างแผนผัง">🗺 แผนที่ข้างกัน</button></div>
  <div class="grp"><button id="expAll">ขยายทั้งหมด</button><button id="colAll">ยุบเหลือเส้นหลัก</button><button id="fit">⤢ พอดีจอ</button></div>
  <div class="grp"><span>สถานะ</span><button data-f="ok" class="on">✅ ทำแล้ว</button><button data-f="wip" class="on">🟡 ทำบางส่วน</button><button data-f="todo" class="on">⚪ ยังไม่ทำ</button><button data-f="wait" class="on">🔒 รอเจ้าของเกม</button></div>
  <div class="grp"><button id="xl" class="on">เส้นเชื่อมข้ามเส้น</button><button id="onlyCh">เฉพาะจุดตัดสินใจ</button></div>
@@ -131,6 +145,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1
 <div id="tl"></div>
 <div id="mapv"><div id="mapw"><img id="mapimg" src="docs/lore/maps/norchorthal-region.webp" alt=""></div></div>
 <div id="mapinfo"></div>
+<div id="split" title="ลากเพื่อปรับความกว้างของแผนที่"></div>
 <div id="maplg" style="display:none">วงแหวน = ระดับรอยหมอง ณ หมุดที่เลือก<i style="background:#5fbf7a"></i>0<i style="background:#e6b84d"></i>1<i style="background:#ff8a4d"></i>2<i style="background:#ff4d6a"></i>3 · ป้ายส้ม = จำนวนเหตุการณ์ · ตำแหน่งบนภาพเป็นค่าโดยประมาณ</div>
 <div id="hint"></div>
 <div id="cast"><h4><span id="ct">👥 ตัวละครที่เกี่ยวข้อง</span><span class="x" id="cx">✕</span></h4><div class="cgrid" id="cg"></div><div id="cwhy"></div><p style="font-size:11px;color:var(--mut);margin:8px 0 0">กรอบทอง = ระบุไว้ใน Canon/Draft · กรอบน้ำเงิน = ข้อเสนอ (ยังไม่ใช่ Canon · ตรวจ NPC ก่อนใช้) · กรอบเทา = ยังไม่มีในเกม</p></div>
@@ -147,7 +162,7 @@ const ST={ok:'✅ ทำแล้วในเกม',wip:'🟡 ทำบาง�
 const SP=['S0 เล่าได้ตั้งแต่ต้น','S1 ช่วงต้น–กลาง','S2 กลางเกม','S3 ปลายเกม'];
 const byId={},parent={};(function w(n,p){byId[n.id]=n;if(p)parent[n.id]=p;n.c.forEach(k=>w(k,n))})(TREE,null);
 const all=Object.values(byId);
-let mode='tree',castSel=null,collapsed=new Set(),filt={ok:1,wip:1,todo:1,wait:1},showX=true,onlyChoice=false,sel=null,stageSel=null,q='',curStage=null;
+let mapOn=false,hl=new Set(),mode='tree',castSel=null,collapsed=new Set(),filt={ok:1,wip:1,todo:1,wait:1},showX=true,onlyChoice=false,sel=null,stageSel=null,q='',curStage=null;
 /* ยุบตั้งต้น: แสดงถึงระดับ 2 (ชื่อเส้น + เหตุการณ์แรก) */
 function collapseDeep(d){collapsed=new Set();(function w(n,l){if(n.c.length&&l>=d)collapsed.add(n.id);n.c.forEach(k=>w(k,l+1))})(TREE,0)}
 collapseDeep(2);
@@ -176,8 +191,8 @@ function build(){
 }
 function toggle(id){collapsed.has(id)?collapsed.delete(id):collapsed.add(id);layout()}
 function layout(){
+  if(mapOn)renderMap();
   if(mode==='tl'){renderTL();return}
-  if(mode==='map'){renderMap();return}
   const vis=[];let rows={};
   /* วัดความสูง */
   const walk=(n,d)=>{vis.push([n,d]);for(const k of visibleKids(n))walk(k,d+1)};walk(TREE,0);
@@ -216,8 +231,9 @@ function select(id){sel=id;const n=byId[id];if(!n)return;
   $('ib').innerHTML=`<h3>${esc(n.t)}</h3><div class="tags"><span class="tag">${KD[n.k]}</span><span class="tag" style="color:var(--${n.s});border-color:var(--${n.s})">${ST[n.s]}</span><span class="tag">${SP[n.sp||0]}</span>${n.g?`<span class="tag">หมุด: ${esc(D.STAGES.find(s=>s.id===n.g)?.t||n.g)}</span>`:''}</div>
    ${chain.length?`<p style="color:var(--mut);font-size:12px">${chain.map(c=>esc(c.t)).join(' › ')}</p>`:''}<p>${esc(n.d||'(ยังไม่มีรายละเอียด)')}</p>
    ${n.f?.length?'<h4>ไฟล์ / เอกสารที่เกี่ยวข้อง</h4>'+n.f.map(f=>`<code>${esc(f)}</code>`).join(''):''}${kids}${links?'<h4>เชื่อมกับเส้นอื่น</h4>'+links:''}`;
-  { const pl=placesOf(n);if(pl.length)$('ib').insertAdjacentHTML('beforeend',`<h4>📍 เกิดที่</h4>${miniMap(pl)}${pl.map(x=>`<span class="pchip" data-town="${x}">${esc(D.PLACE[x]?.ic||'')} ${esc(D.PLACE[x]?.n||x)}</span>`).join('')}`);
-    $('ib').querySelectorAll('[data-town]').forEach(a=>a.onclick=()=>{setMode('map');focusTown(a.dataset.town)});const mm=$('ib').querySelector('.mini');if(mm)mm.onclick=()=>{setMode('map');focusTown(pl[0])} }
+  { const pl=placesOf(n);if(pl.length)$('ib').insertAdjacentHTML('beforeend',`<h4>📍 เกิดที่</h4>${mapOn?'':miniMap(pl)}${pl.map(x=>`<span class="pchip" data-town="${x}">${esc(D.PLACE[x]?.ic||'')} ${esc(D.PLACE[x]?.n||x)}</span>`).join('')}`);
+    $('ib').querySelectorAll('[data-town]').forEach(a=>a.onclick=()=>{setMode('map');focusTown(a.dataset.town)});const mm=$('ib').querySelector('.mini');if(mm)mm.onclick=()=>{setMode('map');focusTown(pl[0])};
+    hl=new Set(pl);if(mapOn){if(pl.length){mapSel=pl[0];focusPlaces(pl)}else renderMap()} }
   const w=WHO[id]||[];$('ib').insertAdjacentHTML('beforeend',w.length?`<button class="cbtn" id="cbtn">👥 ตัวละครที่เกี่ยวข้อง (${w.length}) — ${w.slice(0,4).map(x=>esc(CAST[x[0]].n)).join(' · ')}${w.length>4?' …':''}</button>`:'<p style="color:var(--mut);font-size:12px">ยังไม่ได้ระบุตัวละครของกล่องนี้</p>');
   if(w.length)$('cbtn').onclick=()=>openCast(id);else $('cast').style.display='none';
   $('info').style.display='block';
@@ -244,7 +260,7 @@ view.addEventListener('wheel',e=>{e.preventDefault();const r=view.getBoundingCli
 /* controls */
 $('expAll').onclick=()=>{collapsed=new Set();layout();fit()};
 $('colAll').onclick=()=>{collapseDeep(1);layout();fit()};
-$('fit').onclick=()=>mode==='map'?mapFit():fit();
+$('fit').onclick=()=>{if(mapOn)mapFit();if(mode==='tree')fit()};
 $('xl').onclick=e=>{showX=!showX;e.target.classList.toggle('on',showX);layout()};
 $('onlyCh').onclick=e=>{onlyChoice=!onlyChoice;e.target.classList.toggle('on',onlyChoice);if(onlyChoice)collapsed=new Set();layout();fit()};
 document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{const f=b.dataset.f;filt[f]=filt[f]?0:1;b.classList.toggle('on',!!filt[f]);layout()});
@@ -290,8 +306,8 @@ let mapSel=null,mz=.75,mx=0,my=0,mdrag=null;
 function nodesAt(town){const si=stageSel?sidx(stageSel):99;return all.filter(n=>n!==TREE&&(PLACES[n.id]||[]).includes(town)&&filt[n.s]&&(sidx(n.g)<=si))}
 function renderMap(){
   const mw=$('mapw');mw.querySelectorAll('.mk').forEach(e=>e.remove());const sg=stageSel||curStage;
-  for(const [id,pc] of Object.entries(POS)){const P=D.PLACE[id],ns=nodesAt(id),inf=sg?infAt(id,sg):null,m=document.createElement('div');m.className='mk'+(P.sub?' sub':'')+(mapSel===id?' sel':'')+((q&&!ns.some(matches))?' dim':'');m.dataset.id=id;m.style.left=pc[0]+'%';m.style.top=pc[1]+'%';m.style.setProperty('--rc',inf==null?'#6f64b8':RING[inf]);
-    m.innerHTML=`<i>${P.ic}</i><b>${esc(P.n)}</b>${ns.length?`<span class="bd">${ns.length}</span>`:''}`;m.onclick=e=>{e.stopPropagation();mapSel=id;renderMap();townPanel(id)};mw.append(m)}
+  for(const [id,pc] of Object.entries(POS)){const P=D.PLACE[id],ns=nodesAt(id),inf=sg?infAt(id,sg):null,m=document.createElement('div');m.className='mk'+(P.sub?' sub':'')+(hl.has(id)?' hit':hl.size?' faded':'')+(mapSel===id?' sel':'')+((q&&!ns.some(matches))?' dim':'');m.dataset.id=id;m.style.left=pc[0]+'%';m.style.top=pc[1]+'%';m.style.setProperty('--rc',inf==null?'#6f64b8':RING[inf]);
+    m.innerHTML=`<i>${P.ic}</i><b>${esc(P.n)}</b>${ns.length?`<span class="bd">${ns.length}</span>`:''}`;m.onclick=e=>{e.stopPropagation();mapSel=id;hl=new Set();renderMap();townPanel(id)};mw.append(m)}
   $('maplg').style.display='block';$('count').textContent='แผนที่โลก · '+(sg?'หมุด: '+(D.STAGES.find(s=>s.id===sg)?.t||sg):'ทุกหมุด')+(MSY&&sg?' · สงคราม '+MSY.STAGES.find(s=>s.id===sg)?.war+'/4':'');
   if(mapSel)townPanel(mapSel)}
 function townPanel(id){const P=D.PLACE[id],ns=nodesAt(id),sg=stageSel||curStage,inf=sg?infAt(id,sg):null,pe=SCA?SCA.CAST.filter(c=>c.town===id&&(!stageSel||sidx(c.from)<=sidx(stageSel))):[],sp=SCA?Object.values(SCA.SPOTS).filter(s=>!s.towns||s.towns.includes(id)):[];
@@ -307,10 +323,18 @@ function focusTown(id){if(!POS[id])return;mapSel=id;mz=1.5;const r=$('mapv').get
 {const v=$('mapv');v.addEventListener('pointerdown',e=>{if(e.target.closest('.mk'))return;mdrag={x:e.clientX,y:e.clientY,mx,my};v.classList.add('drag');v.setPointerCapture(e.pointerId)});
  v.addEventListener('pointermove',e=>{if(!mdrag)return;mx=mdrag.mx+e.clientX-mdrag.x;my=mdrag.my+e.clientY-mdrag.y;mapApply()});v.addEventListener('pointerup',()=>{mdrag=null;v.classList.remove('drag')});
  v.addEventListener('wheel',e=>{e.preventDefault();const r=v.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top,k=Math.exp(-e.deltaY*.0015),ns=Math.min(3,Math.max(.4,mz*k));mx=px-(px-mx)*ns/mz;my=py-(py-my)*ns/mz;mz=ns;mapApply()},{passive:false})}
-function setMode(m){mode=m;$('mTree').classList.toggle('on',m==='tree');$('mTl').classList.toggle('on',m==='tl');$('view').style.display=m==='tree'?'':'none';$('mapv').style.display=m==='map'?'block':'none';if(m!=='map'){$('mapinfo').style.display='none';$('maplg').style.display='none'}$('mMap').classList.toggle('on',m==='map');$('legend').style.display=m==='map'?'none':'';$('tl').style.display=m==='tl'?'block':'none';$('stages').style.display=m==='tl'?'none':'';sizeBar();
-  const hn=$('hint');hn.style.display='block';hn.innerHTML=m==='map'?'🗺 <b>แผนที่โลก</b> — วงกลมคือเมือง · ป้ายส้ม = จำนวนเหตุการณ์ · กดเมืองดูคน/ที่/เหตุการณ์ · กดเหตุการณ์ในแผนผังแล้วกด 📍 เพื่อเด้งมาที่นี่ · เลือกหมุดเรื่องด้านบนเพื่อดูรอยหมองลามตามเรื่อง':m==='tl'?'🛤 <b>ทุกเส้น (แถว) เดินไปพร้อมกัน</b> — ผู้เล่นไม่ต้องเลือกเส้นเดียว · เลือกเฉพาะที่กล่อง <b style="color:#ffb347">⑂ เลือกได้ทางเดียว</b> · ลูกศรทึบ = ลำดับในเส้นเดียวกัน · เส้นประฟ้า = เส้นหนึ่งส่งผลต่ออีกเส้น':'🌳 มุมมองกิ่ง: กิ่งส้ม ⑂ = เลือกทางเดียว · กิ่งอื่น = เหตุการณ์ที่เกิดต่อกัน (ไม่ต้องเลือก) · สลับเป็น "🛤 เดินคู่ขนาน" เพื่อดูว่าเส้นไหนเดินพร้อมกัน';clearTimeout(hn._t);hn._t=setTimeout(()=>hn.style.display='none',9000);layout();if(m==='tree')fit()}
-$('mMap').onclick=()=>{setMode('map');mapFit()};$('mTree').onclick=()=>setMode('tree');$('mTl').onclick=()=>setMode('tl');
+function focusPlaces(pl){if(!mapOn)return;if(pl.length===1){focusTown(pl[0]);return}const r=$('mapv').getBoundingClientRect(),xs=pl.map(x=>POS[x][0]/100*960),ys=pl.map(x=>POS[x][1]/100*992),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),pad=170;
+  mz=Math.max(.5,Math.min(1.6,Math.min(r.width/(x1-x0+pad*1.3),r.height/(y1-y0+pad*1.3))));mx=r.width/2-(x0+x1)/2*mz+60;my=r.height/2-(y0+y1)/2*mz;mapApply();renderMap();pl.forEach(id=>$('mapw').querySelector(`.mk[data-id="${id}"]`)?.classList.add('pulse'))}
+function toggleMap(on){mapOn=on;document.body.classList.toggle('split',on);$('mapv').style.display=on?'block':'none';$('mMap').classList.toggle('on',on);if(!on){$('mapinfo').style.display='none';$('maplg').style.display='none';hl=new Set()}
+  sizeBar();layout();requestAnimationFrame(()=>{if(on)mapFit();if(mode==='tree')fit()})}
+function setMode(m){if(m==='map'){if(!mapOn)toggleMap(true);return}
+  mode=m;$('mTree').classList.toggle('on',m==='tree');$('mTl').classList.toggle('on',m==='tl');$('view').style.display=m==='tree'?'':'none';$('tl').style.display=m==='tl'?'block':'none';$('stages').style.display=m==='tl'?'none':'';sizeBar();
+  const hn=$('hint');hn.style.display='block';hn.innerHTML=(m==='tl'?'🛤 <b>ทุกเส้น (แถว) เดินไปพร้อมกัน</b> — เลือกเฉพาะที่กล่อง <b style="color:#ffb347">⑂ เลือกได้ทางเดียว</b> · ลูกศรทึบ = ลำดับในเส้นเดียวกัน · เส้นประฟ้า = เส้นหนึ่งส่งผลต่ออีกเส้น':'🌳 กิ่งส้ม ⑂ = เลือกทางเดียว · กิ่งอื่น = เหตุการณ์ที่ต่อกัน (ไม่ต้องเลือก)')+(mapOn?' · 🗺 <b>กดอีเวนต์ แผนที่ด้านขวาเด้งไปเมืองที่เกิด</b>':'');clearTimeout(hn._t);hn._t=setTimeout(()=>hn.style.display='none',9000);layout();if(m==='tree')fit()}
+{const sp=$('split');let dr=false;sp.addEventListener('pointerdown',e=>{dr=true;sp.setPointerCapture(e.pointerId)});sp.addEventListener('pointermove',e=>{if(!dr)return;const w=Math.max(300,Math.min(innerWidth*.7,innerWidth-e.clientX));document.body.style.setProperty('--mapw',w+'px')});
+ sp.addEventListener('pointerup',()=>{if(!dr)return;dr=false;try{localStorage.setItem('smMapW',getComputedStyle(document.body).getPropertyValue('--mapw'))}catch(e){}mapFit();if(mode==='tree')fit()})}
+$('mMap').onclick=()=>toggleMap(!mapOn);$('mTree').onclick=()=>setMode('tree');$('mTl').onclick=()=>setMode('tl');
 build();layout();fit();
+if(innerWidth>=900){try{const w=localStorage.getItem('smMapW');if(w)document.body.style.setProperty('--mapw',w.trim())}catch(e){}toggleMap(true);const hn=$('hint');hn.style.display='block';hn.innerHTML='🧭 <b>ซ้าย = เส้นเรื่อง · ขวา = แผนที่โลก</b> — กดอีเวนต์ฝั่งซ้าย แผนที่ฝั่งขวาจะเด้งไปเมืองที่เกิดเหตุ · กดเมืองเพื่อดูคน/สถานที่/เหตุการณ์ · ลากแถบกลางปรับความกว้าง';setTimeout(()=>hn.style.display='none',9000)}
 if(curStage)expandForStage(curStage),layout();
 window.StoryMap={openCast,select,toggle,layout,byId};
 })();
