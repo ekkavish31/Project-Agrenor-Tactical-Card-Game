@@ -24,6 +24,11 @@
   /* ---------- v98.473 · CHRONICLE (บันทึกเหตุการณ์): the big moments of the main story, each written once. g.village.chronicle = [{ id, day, text }].
      Pure on the save object. Phase A of docs/lore/MAIN-STORY-CANON.md: only the ids the game already reaches are written today; the rest are ready for the later phases. */
   const CHRON = {
+    'war.rumor': 'บทนำจบแล้ว ข่าวลือจากด่านเหนือเริ่มแพร่ — อัลเดรนยังรบอยู่',
+    'war.signs': 'ราคาเหล็กขึ้น ป้ายเกณฑ์ทหารติดตามหมู่บ้าน สงครามเริ่มส่งเสียงถึงหุบเขา',
+    'mage.wake': 'มีใครบางคนอยู่ข้างในจิ้งจอกตัวเล็ก และเขาเริ่มพูด',
+    'war.arms': 'ทหารหลวงได้อาวุธใหม่ และมีขบวนนักโทษไปทางเหมือง',
+    'war.front': 'สัตว์ผิดปกติหลุดถึงแนวรบ ทั้งสองกองทัพถูกตี',
     'mip.seen': 'ในฝูงแพะของปิ๊บมีตัวหนึ่งที่ไม่ใช่แพะ — มันกลายเป็นจิ้งจอกตัวเล็กแล้ววิ่งหายเข้าป่า',
     'mip.joined': 'จิ้งจอกตัวเล็กกลับมาอยู่กับเรา โดยไม่มีใครรู้ว่ามันมาจากไหน',
     'mip.fed': 'ป้อนเศษของสัตว์ร้ายให้จิ้งจอก มันแปลงร่างตามสิ่งที่กินเข้าไป',

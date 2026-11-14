@@ -89,6 +89,6 @@ let fired = 0; T.onEarn = l => { fired += l.length }; g = game(); win(g); win(g)
   ok(!T.view(g).rows.some(r => r.id === 'foxfriend'), 'a story title not yet earned is not listed (secret)');
   ok(T.log(g, 'custom.x', 'ข้อความเอง') && T.chronicle(g).at(-1).text === 'ข้อความเอง', 'custom text');
   ok(T.LIST.filter(d => /^mip\.|^mine\.|^merchant\.|^end\./.test(Object.keys(T.CHRON).find(k => d.cond.toString().includes("'" + k + "'")) || '')).length >= 8, 'story titles exist for the planned chronicle ids');
-  ok(Object.keys(T.CHRON).every(k => T.LIST.some(d => d.cond.toString().includes("'" + k + "'"))), 'every chronicle id has a title');
+  ok(Object.keys(T.CHRON).filter(k => /^(mip|mine|merchant|end)\./.test(k)).every(k => T.LIST.some(d => d.cond.toString().includes("'" + k + "'"))), 'every decision-type chronicle id has a title (stage lines war.* / mage.* do not need one)');
 }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);
