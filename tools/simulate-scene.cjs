@@ -55,7 +55,7 @@ function fight(lv, dang) {
         const mv = st.deck.movement.hand.map((c, i) => [c, i]).filter(([c]) => c && D.MOVE[c.id].stamina <= h.stamina).sort((a, b) => D.MOVE[b[0].id].move - D.MOVE[a[0].id].move)[0];
         if (mv && st.mp < 3) { B.playMove(st, mv[1]); }
         const r = B.reach(st, h, st.mp); let to = null, bd = 1e9;
-        for (const e of r.values()) { const foc = (() => { const al = B.monsters(st).filter(B.alive); if (BOT !== 'smart') return al; const rr = al.filter(m => m.kind === AK); return rr.length ? rr : al.filter(m => m.boss).length ? al.filter(m => m.boss) : al })(); const d = Math.min(...foc.map(m => B.dist(e, m))); if (d >= 1 && d < bd) { bd = d; to = e } }
+        for (const e of r.values()) { const foc = (() => { const al = B.monsters(st).filter(B.alive); if (BOT !== 'smart') return al; const rr = al.filter(m => m.kind === AK); return rr.length ? rr : al.filter(m => m.boss).length ? al.filter(m => m.boss) : al })(); const d = Math.min(...foc.map(m => B.dist(e, m))); if (d >= 1 && d < bd && !(BOT === 'smart' && SC.obj?.leash && B.dist(e, SC.obj.cells[0]) > SC.obj.leash)) { bd = d; to = e } }
         if (to && (to.u !== h.u || to.v !== h.v)) { B.move(st, { u: to.u, v: to.v }); continue }
       }
       if (best >= 0) { B.playCombat(st, best); continue }
@@ -66,6 +66,7 @@ function fight(lv, dang) {
     B.alliesTurn(st); if (st.outcome) break;
     B.endTurn(st); B.monsterTurn(st);
   }
+  if (process.env.DEBUG && st.outcome !== 'win') console.log('LOSS t' + st.turns, st.outcome, st.log.slice(-5).join(' / '), JSON.stringify(st.units.filter(u => u.hp > 0).map(u => [u.id, u.u, u.v, u.hp])));
   return { rev: B.monsters(st).reduce((a, m) => a + (m.revived | 0), 0), win: st.outcome === 'win', turns: st.turns, hp: Math.max(0, h.hp) / h.maxHp, down: B.allies(st).filter(a => !B.alive(a)).length };
 }
 

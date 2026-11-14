@@ -586,7 +586,7 @@
     if (!d) { d = document.createElement('div'); d.id = 'fbDuel'; document.body.append(d) }
     d.dataset.sig = sig; d.classList.toggle('min', min);
     const card = (R, role) => {
-      const u = R.u, foe = u.side === 'monster', f = BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
+      const u = R.u, foe = u.side === 'monster', f = foe && MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
       const jn = !foe && window.Progression?.JOBS?.[job]?.name;
       return `<div class="dc ${role} ${foe ? 'foe' : 'ally'} m-${R.m}" style="--jc:${jc}"><span class="pf" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}">${job ? `<i class="jb" title="${esc(jn || '')}">${BP.JOB_ICON[job]}</i>` : ''}</span><div class="nm"><b>${esc(u.name)}</b><small>${u.level ? 'Lv.' + u.level + ' ' : ''}${esc(jn || '')}</small><div class="hp"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><em class="mo">${BP.LABEL[R.m] || ''}</em></div></div>`;
     };

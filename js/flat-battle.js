@@ -374,6 +374,14 @@
       tgt = targets(st, u).find(o => dist(o, h) <= 3); if (tgt) { const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) }
       return steps;
     }
+    /* v98.494 · defend scenes with a leash: a companion on "charge" holds the camp (within `leash` cells of the guarded cell) instead of chasing foes out into the dark */
+    if (u.side === 'hero' && st.obj?.type === 'defend' && st.obj.leash && st.obj.cells?.[0] && (!u.order || u.order === 'charge')) {
+      const g = st.obj.cells[0], L = st.obj.leash, r = reach(st, u, u.move), nearO = opp.slice().sort((a, b) => dist(a, g) - dist(b, g))[0]; let bestE = null, bestS = 1e9;
+      for (const e of r.values()) { if (dist(e, g) > L) continue; const hit = opp.some(o => dist(o, e) <= u.range && dist(o, g) <= L + 1); const sc = hit ? -100 + dist(e, g) * .4 + e.cost * .1 : (nearO ? dist(e, nearO) : Math.max(0, dist(e, g) - 2)) * 10 + e.cost * .1; if (sc < bestS) { bestS = sc; bestE = e } }
+      if (bestE && (bestE.u !== u.u || bestE.v !== u.v)) { const path = pathTo(r, bestE), pv = path[path.length - 2] || u; u.face = faceOf(pv, bestE); u.u = bestE.u; u.v = bestE.v; steps.push({ unit: u, type: 'move', path }) }
+      tgt = targets(st, u).find(o => dist(o, g) <= L + 1); if (tgt) { st.cur = u; const at = strike(st, u, tgt); steps.push({ unit: u, type: 'attack', target: tgt, damage: at.damage, notes: at.notes, crit: at.crit, evaded: !!at.evaded, counter: at.counter || 0, fall: at.fall }) }
+      return steps;
+    }
     if (!tgt) {
       let best = 1e9;
       for (const o of opp) { const f = distField(st, o), d = f.get(key(u.u, u.v)); const sc = (d === undefined ? 1e6 : d) + o.hp / 200; if (sc < best) { best = sc; tgt = o; field = f } }
