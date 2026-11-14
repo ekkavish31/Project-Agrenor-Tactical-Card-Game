@@ -78,4 +78,17 @@ ok(P.battleHero(g, {}).hpMod !== undefined, 'battleHero still builds');
 // onEarn callback fires once per newly earned set
 let fired = 0; T.onEarn = l => { fired += l.length }; g = game(); win(g); win(g); ok(fired === 1, 'onEarn fires only for new titles'); T.onEarn = null;
 
+
+
+// v98.473 · chronicle (main story, phase A): each moment is written once, story titles unlock from it, secret until earned
+{ const g = game(); T.battle(g, { outcome: 'win', foe: 'wolf', kills: 1, hp0: 50, hp1: 40, maxHp: 60, party: 1, allyDown: 0 });
+  ok(T.chronicle(g).length === 0 && !T.has(g, 'mip.seen'), 'nothing written yet');
+  ok(T.log(g, 'mip.seen') === true && T.log(g, 'mip.seen') === false, 'a moment is written once');
+  ok(T.chronicle(g).length === 1 && /แพะ/.test(T.chronicle(g)[0].text) && T.chronicle(g)[0].day === g.day, 'default text + day');
+  ok(T.view(g).rows.some(r => r.id === 'foxseen' && r.got), 'the story title unlocks from the chronicle');
+  ok(!T.view(g).rows.some(r => r.id === 'foxfriend'), 'a story title not yet earned is not listed (secret)');
+  ok(T.log(g, 'custom.x', 'ข้อความเอง') && T.chronicle(g).at(-1).text === 'ข้อความเอง', 'custom text');
+  ok(T.LIST.filter(d => /^mip\.|^mine\.|^merchant\.|^end\./.test(Object.keys(T.CHRON).find(k => d.cond.toString().includes("'" + k + "'")) || '')).length >= 8, 'story titles exist for the planned chronicle ids');
+  ok(Object.keys(T.CHRON).every(k => T.LIST.some(d => d.cond.toString().includes("'" + k + "'"))), 'every chronicle id has a title');
+}
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

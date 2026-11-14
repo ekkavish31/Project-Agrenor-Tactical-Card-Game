@@ -355,7 +355,7 @@ async function resumeFight(){const step=cur();if(!step)return false;const d=data
  if(step.onSpot){const r=await step.onSpot(d);doSave();if(r?.msg)toast(r.msg);return true}return false}
 /* v98.472 · main story phase A: the odd extra goat (Mip in disguise) was seen once — docs/lore/MAIN-STORY-CANON.md A8 */
 const mipSeen=()=>!!V()?.story?.mip?.seen;
-function mystery(ev){const v=V();if(!v||ev!=='seen')return;v.story=v.story||{};v.story.mip=v.story.mip||{};if(!v.story.mip.seen){v.story.mip.seen=true;doSave()}}
+function mystery(ev){const v=V();if(!v||ev!=='seen')return;v.story=v.story||{};v.story.mip=v.story.mip||{};if(!v.story.mip.seen){v.story.mip.seen=true;try{window.Titles?.log(G(),'mip.seen')}catch(e){}doSave()}}
 root.Story={mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},

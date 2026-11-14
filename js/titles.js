@@ -21,6 +21,25 @@
   const maxJob = g => Math.max(0, ...Object.values(jobs(g)).map(j => num(j?.lv)));
   const jobsAt = (g, n) => Object.values(jobs(g)).filter(j => num(j?.lv) >= n).length;
   const T = (id, name, tier, fx, story, cond) => ({ id, name, tier, fx, story, cond });
+  /* ---------- v98.473 · CHRONICLE (บันทึกเหตุการณ์): the big moments of the main story, each written once. g.village.chronicle = [{ id, day, text }].
+     Pure on the save object. Phase A of docs/lore/MAIN-STORY-CANON.md: only the ids the game already reaches are written today; the rest are ready for the later phases. */
+  const CHRON = {
+    'mip.seen': 'ในฝูงแพะของปิ๊บมีตัวหนึ่งที่ไม่ใช่แพะ — มันกลายเป็นจิ้งจอกตัวเล็กแล้ววิ่งหายเข้าป่า',
+    'mip.joined': 'จิ้งจอกตัวเล็กกลับมาอยู่กับเรา โดยไม่มีใครรู้ว่ามันมาจากไหน',
+    'mip.fed': 'ป้อนเศษของสัตว์ร้ายให้จิ้งจอก มันแปลงร่างตามสิ่งที่กินเข้าไป',
+    'mip.released': 'ปล่อยวิญญาณที่ถูกกักอยู่ในตัวจิ้งจอก — ตัวมันเปลี่ยนไป',
+    'mip.purified': 'จิ้งจอกกลับเป็นสัตว์ป่าบริสุทธิ์ ลืมทุกอย่าง แล้ววิ่งกลับป่าตะวันออก',
+    'mip.sealed': 'จิ้งจอกหลับลงเป็นผลึกสงบ — ผนึกไว้ ไม่ตาย',
+    'mine.closed': 'เหมืองถูกปิด การขุดหยุดลง',
+    'mine.freed': 'ผู้ที่ถูกส่งลงเหมืองได้กลับขึ้นมา',
+    'merchant.fair': 'ยามสงคราม ไม่โก่งราคาของจำเป็น',
+    'end.peace': 'สองอาณาจักรหยุดรบ แม้เพียงชั่วคราว'
+  };
+  const chron = g => ((g.village ||= {}).chronicle ||= []);
+  const has = (g, id) => chron(g).some(e => e.id === id);
+  /* write a moment once · text optional (defaults to the line above) · returns true when it was new */
+  function log(g, id, text) { if (!id || has(g, id)) return false; chron(g).push({ id, day: num(g.day, 1), text: String(text || CHRON[id] || id) }); try { check(g) } catch (e) { } return true }
+  const chronicle = g => chron(g).slice();
   const LIST = [
     /* ── ระดับ 1 สามัญ ── */
     T('rookie', 'มือใหม่หัดดาบ', 1, { hp: 3 }, 'ชนะการต่อสู้ครั้งแรกนอกหมู่บ้าน', (g, t) => t.win >= 1),
@@ -62,9 +81,20 @@
     T('phoenix', 'ฟื้นจากเถ้า', 5, { hp: 20, armor: 1, xp: .05 }, 'แพ้ติดกันสามครั้ง แล้วกลับมาชนะติดกันห้าครั้ง', (g, t) => !!t.phoenix),
     T('coward', 'ผู้หนีอย่างมีศิลป์', 5, { st: 15, armor: 1 }, 'หนีรอดมาสิบครั้ง — บางทีนั่นคือความฉลาด', (g, t) => t.flee >= 10),
     T('ancient', 'ผู้อยู่มานาน', 5, { hp: 15, st: 15 }, 'หนึ่งร้อยวันผ่านไปแล้ว', (g) => num(g.day) >= 100),
+    /* ── เนื้อเรื่องหลัก (docs/lore/MAIN-STORY-CANON.md · v98.473) — ปลดจากบันทึกเหตุการณ์ (chronicle) ที่เรื่องหลักเขียนไว้ · ลับ ไม่ลงรายการจนกว่าจะได้ ── */
+    T('foxseen', 'ผู้เห็นแพะที่เกินมา', 5, { st: 10 }, 'ในฝูงแพะของปิ๊บ มีตัวหนึ่งที่ไม่ใช่แพะ — และคุณเห็นมันเปลี่ยนร่าง', (g) => has(g, 'mip.seen')),
+    T('foxfriend', 'เพื่อนของจิ้งจอก', 5, { hp: 8, st: 8 }, 'ได้เพื่อนตัวเล็กที่ไม่มีใครรู้ที่มา', (g) => has(g, 'mip.joined')),
+    T('foxfeeder', 'ผู้ป้อนจิ้งจอก', 5, { spell: 1 }, 'ป้อนเศษของสัตว์ร้ายให้เพื่อนตัวเล็ก — และมันเปลี่ยนไปทุกครั้ง', (g) => has(g, 'mip.fed')),
+    T('collarfree', 'ผู้ปลดปลอกคอ', 5, { power: 1, hp: 10 }, 'ปล่อยผู้ที่ถูกกักไว้ แม้รู้ว่าอาจต้องแลกด้วยบางสิ่ง', (g) => has(g, 'mip.released')),
+    T('shadowcleanser', 'ผู้ชำระเงา', 5, { hp: 20, armor: 1, xp: .05 }, 'เรียกชื่อเดิมของมันกลับมา — มันลืมทุกอย่าง แต่กลับบ้านได้', (g) => has(g, 'mip.purified')),
+    T('sleepkeeper', 'ผู้เฝ้าการหลับ', 5, { armor: 2, hp: 12 }, 'ผนึกเพื่อนให้หลับเพื่อโลกจะตื่นต่อไปได้', (g) => has(g, 'mip.sealed')),
+    T('minecloser', 'ผู้ปิดเหมือง', 5, { power: 2, armor: 1 }, 'หยุดการขุดก่อนที่ความหิวจะโตกว่านี้', (g) => has(g, 'mine.closed')),
+    T('chainbreaker', 'ผู้ปล่อยเชลย', 5, { hp: 15, st: 10 }, 'ผู้คนที่ถูกส่งลงเหมืองได้กลับขึ้นมาเพราะคุณ', (g) => has(g, 'mine.freed')),
+    T('fairtrader', 'พ่อค้าผู้ไม่โก่งราคา', 5, { gold: .06 }, 'ยามสงคราม ไม่ขายของจำเป็นแพงกว่าที่ควร', (g) => has(g, 'merchant.fair')),
+    T('peacemaker', 'ผู้ทำให้ปืนเงียบ', 5, { power: 2, spell: 2, hp: 20 }, 'ทำให้สองอาณาจักรหยุดรบ แม้เพียงชั่วคราว', (g) => has(g, 'end.peace')),
     T('chosen', 'ผู้ถูกเลือก', 5, { power: 2, spell: 2, crit: .03, armor: 2, hp: 20, st: 10, xp: .05 }, 'สะสมฉายาไว้มากพอจะทำให้โลกหันมามอง', (g, t, earned) => Object.keys(earned).length >= 20)
   ];
-  const ICON = {"rookie": "🗡", "wolfbane": "🐺", "bandithunter": "🏹", "wayfarer": "👣", "survivor": "🩹", "seasoned": "⛰", "pennywise": "🪙", "veteran": "🛡", "nightwalker": "🌙", "unscathed": "✨", "closecall": "⚡", "lonewolf": "🐾", "packhunter": "🏔", "scholar": "📖", "craftsman": "🔨", "guardian": "🤝", "bosskiller": "👑", "streak10": "🔥", "eliteslayer": "🥀", "shadowless": "🌫", "ironwill": "⛓", "grown": "🌳", "adept": "🔮", "merchantking": "💰", "legend": "🏆", "undying": "♾", "polymath": "☯", "bulwark": "🏰", "stubborn": "💢", "phoenix": "🔥", "coward": "🍃", "ancient": "⏳", "chosen": "👁", "witness": "👀", "chaosHunter": "✷", "gratChosen": "🌀"};
+  const ICON = {"foxseen": "🦊", "foxfriend": "🦊", "foxfeeder": "🍖", "collarfree": "⛓", "shadowcleanser": "✨", "sleepkeeper": "💎", "minecloser": "⛏", "chainbreaker": "🔓", "fairtrader": "⚖", "peacemaker": "🕊", "rookie": "🗡", "wolfbane": "🐺", "bandithunter": "🏹", "wayfarer": "👣", "survivor": "🩹", "seasoned": "⛰", "pennywise": "🪙", "veteran": "🛡", "nightwalker": "🌙", "unscathed": "✨", "closecall": "⚡", "lonewolf": "🐾", "packhunter": "🏔", "scholar": "📖", "craftsman": "🔨", "guardian": "🤝", "bosskiller": "👑", "streak10": "🔥", "eliteslayer": "🥀", "shadowless": "🌫", "ironwill": "⛓", "grown": "🌳", "adept": "🔮", "merchantking": "💰", "legend": "🏆", "undying": "♾", "polymath": "☯", "bulwark": "🏰", "stubborn": "💢", "phoenix": "🔥", "coward": "🍃", "ancient": "⏳", "chosen": "👁", "witness": "👀", "chaosHunter": "✷", "gratChosen": "🌀"};
   const BY = Object.fromEntries(LIST.map(x => [x.id, x]));
 
   const st = g => { const v = (g.village ||= {}); const o = (v.titles ||= {}); o.tally ||= {}; o.earned ||= {}; o.equipped ||= []; return o };
@@ -168,7 +198,7 @@ button.tcard{cursor:pointer}button.tcard:hover:not(:disabled){transform:translat
     el.onclick = () => { el.classList.remove('on'); setTimeout(() => el.remove(), 300) }; document.body.append(el); requestAnimationFrame(() => el.classList.add('on'));
     setTimeout(() => el.isConnected && el.onclick(), 6000);
   }
-  const api = { cardHtml, reveal, css, TIERS, LIST, BY, CAP, LABEL, st, slots, note, battle, check, equip, unequip, swap, mods, view, current, fxText, onEarn: null };
+  const api = { log, has, chronicle, CHRON, cardHtml, reveal, css, TIERS, LIST, BY, CAP, LABEL, st, slots, note, battle, check, equip, unequip, swap, mods, view, current, fxText, onEarn: null };
   root.Titles = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
