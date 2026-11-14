@@ -80,10 +80,11 @@
     /* v98.487 · milestone gates for the late story (no clock · Canon D): level + things the player has actually done (flags written by js/story-cast.js, js/crossroads.js) */
     { const lv = num(g.village.character?.level, 1), mi = num(flag(g, 'mineInfo')), ru = num(flag(g, 'ruinStudy'));
       if (is(g, 'signs') && lv >= 7) moved = advanceTo(g, 'wake') || moved;
-      if (is(g, 'wake') && lv >= 9 && (mi >= 1 || ru >= 1)) moved = advanceTo(g, 'release') || moved;
-      if (is(g, 'release') && lv >= 10 && mi >= 1) moved = advanceTo(g, 'chase') || moved;
-      if (is(g, 'chase') && lv >= 11 && flag(g, 'pitSeen')) moved = advanceTo(g, 'mine') || moved;
-      if (is(g, 'mine') && lv >= 12 && mi >= 2) moved = advanceTo(g, 'climax') || moved }
+      /* each gate = what the player did, OR a level fallback two steps higher — the story must never stall just because someone skipped the optional places (found by tools/sim-life.cjs: a low-curiosity life sat on "wake" for 280 days) */
+      if (is(g, 'wake') && ((lv >= 9 && (mi >= 1 || ru >= 1)) || lv >= 11)) moved = advanceTo(g, 'release') || moved;
+      if (is(g, 'release') && ((lv >= 10 && mi >= 1) || lv >= 12)) moved = advanceTo(g, 'chase') || moved;
+      if (is(g, 'chase') && ((lv >= 11 && flag(g, 'pitSeen')) || lv >= 13)) moved = advanceTo(g, 'mine') || moved;
+      if (is(g, 'mine') && ((lv >= 12 && mi >= 2) || lv >= 14)) moved = advanceTo(g, 'climax') || moved }
     /* v98.477 · after the intro the little fox comes back on its own and follows the hero (no party slot · the player cannot steer it) */
     if (atLeast(g, 'free') && !flag(g, 'mipJoined')) { set(g, 'mipJoined', true); mip(g); log(g, 'mip.joined'); toast('🦊 มีบางอย่างตัวเล็ก ๆ ตามเรามา …'); moved = true }
     return moved;

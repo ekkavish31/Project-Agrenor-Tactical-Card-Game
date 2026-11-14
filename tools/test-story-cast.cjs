@@ -53,4 +53,7 @@ const names = (g, town) => SC.locals(g, town, ST.LOCALS[town] || []).map(x => x[
   const h = game(); M.advanceTo(h, 'release', { silent: true }); ok(!SC.locals(h, 'deepcairn', ST.LOCALS.deepcairn).find(x => x[0] === 'โบดิล')[2].some(l => /รายชื่อที่เจ้ารับปาก/.test(l)), 'no reaction to something the player never did');
   M.set(h, 'listKept', true); ok(SC.locals(h, 'deepcairn', ST.LOCALS.deepcairn).find(x => x[0] === 'โบดิล')[2].some(l => /รายชื่อที่เจ้ารับปาก/.test(l)), 'Boudil remembers the list');
   M.set(h, 'ending', 'third'); ok(SC.locals(h, 'deepcairn', ST.LOCALS.deepcairn).find(x => x[0] === 'โบดิล')[2].some(l => /ปากเหมืองถูกปิดแล้ว/.test(l)), 'and after the ending he speaks of it') }
+{ const g = game(); M.advanceTo(g, 'release', { silent: true }); M.set(g, 'cr_armor', 1); const has = () => SC.locals(g, 'lakenhold', ST.LOCALS.lakenhold).find(x => x[0] === 'นายพลคอร์วิน แธเรล')[2].some(l => /ก่อนใบไม้ร่วง/.test(l));
+  ok(has(), 'during the war Corvin talks about the armour'); M.set(g, 'ending', 'aldren'); ok(!has(), 'after the ending he no longer talks about wartime things (found by tools/sim-life.cjs)'); ok(SC.locals(g, 'lakenhold', ST.LOCALS.lakenhold).find(x => x[0] === 'นายพลคอร์วิน แธเรล')[2].some(l => /นับศพ/.test(l)), 'he talks about the ending instead');
+  ok(['third', 'light', 'shadow', 'aldren'].every(e => SC.REACT.some(x => x.id === 'helga' && x.post)), 'Helga has post-ending lines') }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

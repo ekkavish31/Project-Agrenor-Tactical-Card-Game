@@ -614,7 +614,7 @@
     if (window.TownServices && window.Settlements?.SETTLEMENTS?.[id]?.capital && !TownServices.capitalOpen()) { await modal(`<h2>🏰 ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id])}</p><p>ทหารหน้าประตูเมืองยกหอกกั้น: "ช่วงนี้นครหลวงปิดรับคนนอก กลับไปก่อนเถอะ"</p><p style="font-size:12px;opacity:.75">เส้นทางไปเมืองใหญ่จะเปิดหลังจบบทนำ</p>`); return }
     ev('town:visit', { town: id, townName: poi.name }); log('ถึง ' + poi.name); S.townVisits = (S.townVisits || 0) + 1;   /* v97.55 · T7 duty counter */
     if (window.TownEvents) for (const m of TownEvents.arrive(S, id)) { log(m); toast(m) }
-    try { window.MainStory?.check(WS.game()) } catch (e) { }   /* v98.487 · หมุดเรื่องที่เกมรู้เอง (ด่านระดับ + สิ่งที่ผู้เล่นทำ) */
+    try { const gA = WS.game(); for (const m of window.StoryCast?.arrive(gA, id) || []) { log(m); toast(m) } window.MainStory?.check(gA) } catch (e) { }   /* v98.487 · หมุดเรื่องที่เกมรู้เอง (ด่านระดับ + สิ่งที่ผู้เล่นทำ) */
     await crossroadsAt(id);   /* v98.486 · ทางแยกของเนื้อเรื่องหลัก (js/crossroads.js) */   /* v97.68 · T8 events: the toll is paid at the gate */
     for (;;) {
       const folk = townsfolk(id), per = window.WorldState?.period(S.hour) || 'day';
