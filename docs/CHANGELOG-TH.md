@@ -5747,3 +5747,7 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 ## v98.534 — Asset Manager: ภาพสนทนาที่ใช้ในเกมจริงไม่ขึ้นกรอบแดงอีก
 - กรอบแดง "ไม่พบการใช้" ของ portrait ใหม่ (assets/portraits/story) มาจากสแกนการใช้ที่เก่า (12 พ.ย.) + ชื่อไฟล์ถูกประกอบตอนรัน (`<set>-<face>.webp`) ไม่ใช่ว่ายังไม่เชื่อมเข้าเกม · ตรวจแล้วเชื่อมครบ: StoryActors.PAINTED ครอบ 64/64 ไฟล์ (hilda · guard · lin · mom · hero ชาย/หญิง · เนื้อเรื่อง 8 คน) และ test-story-portrait-art ผ่าน 80 กรณี
 - ดัชนีรูปอ่านตาราง StoryActors.PAINTED จริงเพื่อติดป้าย "ใช้อยู่" (พร้อมบอกว่าใช้โดยใคร) แทนการเดาจากชื่อไฟล์ → portrait ทั้ง 64 เป็นกรอบเขียว
+
+## v98.535 — ภาพสนทนา ปิ๊บ และ ผู้ใหญ่บ้านโอเรน (4 อารมณ์)
+- ตัดจากแผ่นภาพที่เจ้าของส่ง (2×2 พื้นขาว → โปร่งใส 512×768, หันซ้าย): assets/portraits/pip-{neutral,happy,angry,worry}.webp และ oren-… (neutral=ท่ายืนปกติ · happy=ยิ้ม/โบกมือ · angry=ขึ้นเสียง · worry=กังวล)
+- ผูก StoryActors.PAINTED: pip · oren · และ elder (speaker id ของโอเรนใน story-data.js) · StoryCast.face('oren'|'pip') ใช้ภาพจริง · ดัชนีรูปมองเห็น 72/72 ภาพสนทนา

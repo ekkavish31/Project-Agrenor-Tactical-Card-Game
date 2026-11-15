@@ -247,6 +247,10 @@
       const mood = ({ happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry' })[emotion] || 'neutral';
       return { src: `assets/portraits/story/${id}-${mood}.webp`, pos: '50% 4%', size: '200%' };
     }
+    if (id === 'oren' || id === 'pip') {   /* v98.535 · painted village faces */
+      const mood = ({ happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry' })[emotion] || 'neutral';
+      return { src: `assets/portraits/${id}-${mood}.webp`, pos: '50% 4%', size: '200%' };
+    }
     const P = root.CodePortraits; if (P && P.has(id)) { const s = P.get(id); return s ? { src: s, pos: '50% 50%', size: '100%' } : null }
     if (CARD_FACE.includes(id)) return { src: `assets/cards/portraits/u-${id}.webp`, pos: '50% 22%', size: '165%' };
     return { src: `assets/village-town/npc/${id}/sw-stand.webp`, pos: '50% 9%', size: '285%' };
