@@ -12,7 +12,7 @@ ok(C.EVENTS.length >= 15 && new Set(C.EVENTS.map(e => e.id)).size === C.EVENTS.l
 ok(C.EVENTS.every(e => e.title && e.text && e.icon && e.choices.length === 3 && e.choices.every(c => c.label && typeof c.run === 'function')), 'each event: text + exactly 3 priced choices');
 ok(C.EVENTS.every(e => M.STAGES.some(s => s.id === e.from) && (!e.until || M.STAGES.some(s => s.id === e.until))), 'stage ids exist');
 ok(C.EVENTS.every(e => !e.until || e.fallback || e.id === 'mayaBroker' || e.companion), 'timed events have a fallback (or are optional)');
-ok(!/Paelasael|Veshra|Wyridean|Zern-Va|Grat\b|Heracean|Byrexael|Borak|Aeth/.test(JSON.stringify(C.EVENTS.map(e => [e.title, e.text, e.choices.map(c => c.label)]))), 'no ancient names in player text');
+ok(!/Paelasael|Veshra|Wyridean|Zern-Va|Grat\b|Heracean|Borak|Aeth/.test(JSON.stringify(C.EVENTS.map(e => [e.title, e.text, e.choices.map(c => c.label)]))), 'no ancient names in player text'); ok(C.EVENTS.filter(e => /Byrexael/.test(JSON.stringify([e.title, e.text, e.choices.map(c => c.label), e.fallback?.toString()]))).every(e => e.id === 'dragonName'), 'the dragon\'s old name appears only in the inscription event');
 // ซ่อนจนถึงหมุด · เซฟเก่าไม่พัง
 { const g = game(); ok(C.pick(g, S0(), 'willowshore') === null && g.village.main === undefined, 'nothing at the start and no save block created') }
 // หมุด + เมือง
@@ -87,4 +87,9 @@ ok(!/Paelasael|Veshra|Wyridean|Zern-Va|Grat\b|Heracean|Byrexael|Borak|Aeth/.test
   { const g = game('signs'); ok(C.eligible(g, S0(), 'haven', C.byId.dragonTale), 'dragon tale at the harbour from signs'); const S = S0(); C.resolve(g, S, C.byId.dragonTale, 1, {}); ok(M.flag(g, 'dragonLore') === 2 && M.flag(g, 'dragonMap') === true && S.gold === 85, 'buy the map: lore 2, 15 gold'); }
   { const g = game('mine'); ok(!C.eligible(g, S0(), 'haven', C.byId.dragonOmen), 'omen needs the ash first'); M.set(g, 'dragonLore', 1); M.set(g, 'cr_dragonAsh', 2); ok(C.eligible(g, S0(), 'haven', C.byId.dragonOmen), 'omen after tale + ash'); const S = S0(); g.village.materials = { iron: 2 }; C.resolve(g, S, C.byId.dragonOmen, 1, {}); ok(M.flag(g, 'dragonOmen') === 'port' && g.village.materials.iron === 0, 'repair the port: iron spent'); }
   ok(C.EVENTS.every(e => !/มังกร/.test(e.title) || e.id === 'dragonTale'), 'the dragon is only introduced through the tale'); }
+// v98.513 · ชื่อบนจารึก → สิ่งที่มันเฝ้า
+{ const g = game('chase'); ok(!C.eligible(g, S0(), 'lakenhold', C.byId.dragonName), 'inscription event needs the tale + the ruin study'); M.set(g, 'dragonLore', 2); M.set(g, 'ruinStudy', 1); ok(C.eligible(g, S0(), 'lakenhold', C.byId.dragonName), 'tale + ruin study → the name on the inscription');
+  const S = S0(); C.resolve(g, S, C.byId.dragonName, 2, {}); ok(M.flag(g, 'dragonNamed') === 'asked' && M.flag(g, 'dragonSediment') === true, 'asking about the sediment: flags');
+  const g2 = game('mine'); ok(!C.eligible(g2, S0(), 'thornwatch', C.byId.dragonWell), 'Mierris tells nothing before the name is known'); M.set(g2, 'dragonNamed', 'kept'); ok(C.eligible(g2, S0(), 'thornwatch', C.byId.dragonWell), 'after the name she explains what it guards');
+  const S2 = S0(); C.resolve(g2, S2, C.byId.dragonWell, 1, {}); ok(M.flag(g2, 'dragonAlly') === true && M.flag(g2, 'dragonPlan') === 'ally', 'ask her to come along'); }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);
