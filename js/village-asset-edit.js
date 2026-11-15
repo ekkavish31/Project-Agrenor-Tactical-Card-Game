@@ -2604,10 +2604,7 @@
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
   ${nudgeHtml}${sec('place','① วาง · ขนาด · หมุน',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
-`,1)}${sec('img','② ภาพ · แกนเฉียง',`${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>`)}${sec('foot','③ พื้นและการชน',`<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.5">กว้าง −</button><button data-fz="fw,0.5">กว้าง +</button><button data-fz="fh,-0.5">ลึก −</button><button data-fz="fh,0.5">ลึก +</button></div>
-  <div class="row" style="align-items:center" title="กรอบที่ใช้ตัดสินว่าตัวละครอยู่หน้า/หลังชิ้นนี้ (แยกจากกรอบบล็อกเดิน) · ไม่ตั้ง = เท่ากรอบพื้น"><span>กรอบเรียงลำดับ ${ov.sw??ov.fw??.5}×${ov.sh??ov.fh??.5}</span><button data-sz="sw,-0.5">กว้าง −</button><button data-sz="sw,0.5">กว้าง +</button><button data-sz="sh,-0.5">ลึก −</button><button data-sz="sh,0.5">ลึก +</button>${(ov.sw!=null||ov.sh!=null)?'<button id="aeSzReset">= กรอบพื้น</button>':''}</div>
-  <label class="chk" title="ใช้กรอบพื้นของชิ้นนี้เป็นกริดฟ้า: ตัวเอกและ NPC เดินผ่านไม่ได้ (ปรับขนาดด้วยปุ่ม กว้าง/ลึก ข้างบน)"><input type="checkbox" id="aeBlock" ${ov.block?'checked':''}> ▦ กริดฟ้า · เดินผ่านไม่ได้ ${ov.block?'('+itemSize(key).w+'×'+itemSize(key).h+' ช่อง)':''}</label>
-  `,1)}${groupHtml(1)}`;
+`,1)}${sec('img','② ภาพ · แกนเฉียง',`${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>`)}${groupHtml(1)}`;
   body.querySelectorAll('details.aeSec').forEach(d => d.ontoggle = () => secOpen.set(d.dataset.sec, d.open));
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
   act('#iBack', () => {
@@ -2669,7 +2666,7 @@
   bindZ('iz', d => { const v = ovOf(key); v.z = clampN((v.z || 0) + d, -20, 20); clean(key) });
   body.querySelector('#aeFlip').onchange = e => once(() => ovOf(key).f = e.target.checked)();
   /* v97.47 · blue grid under a decoration outside the buildings: its ground frame blocks walking. The first time, guess a size from what it is */
-  body.querySelector('#aeBlock').onchange = e => once(() => { const v = ovOf(key); if (e.target.checked) { v.block = true; if (v.fw == null && v.fh == null) { const g = guessBlock(label); v.fw = g[0]; v.fh = g[1] } } else delete v.block; render() })();
+  const blkEl = body.querySelector('#aeBlock'); if (blkEl) blkEl.onchange = e => once(() => { const v = ovOf(key); if (e.target.checked) { v.block = true; if (v.fw == null && v.fh == null) { const g = guessBlock(label); v.fw = g[0]; v.fh = g[1] } } else delete v.block; render() })();
   bindSliders((k, v) => {const ov=ovOf(key);if(k==='ix'||k==='iy')ov[k]=v/100;else ov[k]=v}, () => clean(key))
  }
 
