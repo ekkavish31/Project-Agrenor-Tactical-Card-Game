@@ -51,6 +51,8 @@
     /* v98.488 · mine of Deepcairn (docs/lore/MAIN-STORY-CANON.md · §H): murk = สัตว์รอยหมอง (infected beast) · hunger = ก้อนหิว (boss) — drawn by code (js/code-monsters.js) until real pictures exist */
     murk: { name: 'สัตว์รอยหมอง', hp: 38, iq: 1, move: 4, atk: 9, scale: .95, fx: 'knife', img: 'murk', code: true, el: 'dark' },
     alarmHorn: { name: 'แตรสัญญาณ', hp: 30, iq: 0, move: 0, atk: 0, scale: .85, fx: 'blunt', img: 'alarmHorn', code: true, passive: true, el: 'earth' },
+    byrexael: { name: 'มังกรดำจ้าววิญญาณ', hp: 170, iq: 2, move: 1, atk: 13, scale: 2.3, fx: 'fire', img: 'byrexael', code: true, range: 3, shove: true, el: 'fire' },
+    soulCore: { name: 'แก่นตะกอนวิญญาณ', hp: 46, iq: 0, move: 0, atk: 0, scale: .95, fx: 'blunt', img: 'soulCore', code: true, passive: true, el: 'dark' },
     hungerRoot: { name: 'ปมหิว', hp: 42, iq: 0, move: 0, atk: 0, scale: .9, fx: 'blunt', img: 'hungerRoot', code: true, passive: true, el: 'dark' },
     hunger: { name: 'ก้อนหิว', hp: 150, iq: 2, move: 2, atk: 14, scale: 1.7, fx: 'blunt', img: 'hunger', code: true, range: 3, shove: true, el: 'dark' },
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }

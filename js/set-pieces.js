@@ -142,7 +142,49 @@
       'ปลอกคอของ Mip สั่นแรงขึ้น — แสงใกล้มา']
   };
 
-  const SCENES = { hungerPit, convoyPass, campDefense, moonGuard };
+  /* ===================================================================================================
+     ปากปล่องใต้ · มังกรดำจ้าววิญญาณ (Byrexael-Cean · v98.511 · docs/DRAGON-BYREXAEL-TH.md): สัตว์ปฐมกาลที่ตื่นเพราะตะกอนวิญญาณล้นปล่อง — ไม่ใช่ปีศาจ มันป้องกันถิ่น
+     "ตัดแก่นตะกอนวิญญาณ" (เหมือนที่คนยุคเก่ารับมือสัตว์ระดับมหันตภัย: เบี่ยงทาง ผนึก ไม่ใช่รบประจัญบานล้วน ๆ): แก่น 3 จุดป้อนมังกร (มังกรเจ็บน้อยลงครึ่งหนึ่ง + ฟื้นเลือดทุกรอบ)
+     ศัตรูได้เปรียบ: บอสอยู่ที่สูง (ระดับ 2) · ลมหายใจไฟดำ/เสียงคร่ำครวญ/หางฟาดทุก 3 รอบ (ประกาศก่อน 1 รอบ) · สัตว์รอยหมองไหลจากแก่นทุก 4 รอบ · ลาวาช้าขวางทาง
+     คำตอบ: แยกทีมตัดแก่นสามจุด · อย่าปีนที่สูงตอนแก่นยังอยู่ · ใช้เสา/เศษหินบังลมหายใจ · ตัวบางอย่ายืนรวมกลุ่มตอนเสียงคร่ำครวญ (ใบ้)
+     =================================================================================================== */
+  const R11 = 11;
+  const dragonLair = {
+    id: 'dragonLair', name: 'ปากปล่องใต้ · มังกรดำจ้าววิญญาณ', R: R11, biome: 'hills', noFlee: true, night: true, obj: { type: 'boss' }, anchorKind: 'soulCore', anchorName: 'แก่นตะกอนวิญญาณ', bossName: 'มังกร',
+    map: makeGrid(R11, [
+      ['.', -10, -10, 10, 10],
+      [2, -3, -9, 3, -6], [1, -3, -5, 3, -4],                         // ที่สูงของมังกร (ระดับ 2) + ขั้นหิน (ระดับ 1)
+      ['~', -10, -3, -6, -2], ['~', 6, -3, 10, -2], ['~', -2, 2, 2, 2],   // ธารลาวาช้า (ซ้าย ขวา และแถบหน้าที่สูง)
+      ['#', -5, -6, -5, -6], ['#', 5, -6, 5, -6], ['#', -7, 3, -7, 3], ['#', 7, 3, 7, 3], ['#', -4, 6, -4, 6], ['#', 4, 6, 4, 6], ['#', 0, 0, 0, 0],   // เสาหินบังลมหายใจ
+      ['+', -4, -1, -4, -1], ['+', 4, -1, 4, -1], ['+', -2, 5, -2, 5], ['+', 2, 5, 2, 5], ['+', -8, 7, -8, 7], ['+', 8, 7, 8, 7], ['+', 0, 8, 0, 8],   // เศษหินกันดาเมจ −30%
+      ['#', -10, 9, -3, 10], ['#', 3, 9, 10, 10]                       // ทางเข้าแคบด้านใต้ (กว้าง 5)
+    ]),
+    hero: { u: 0, v: 10 }, allies: [{ u: -1, v: 10 }, { u: 1, v: 10 }, { u: 0, v: 9 }],
+    enemies: [
+      { id: 'boss', kind: 'byrexael', u: 0, v: -7, boss: true, hp: 1.0, name: 'มังกรดำจ้าววิญญาณ', ct: 28 },
+      { id: 'coreW', kind: 'soulCore', u: -8, v: -5, hp: 1, name: 'แก่นตะกอนตะวันตก' },
+      { id: 'coreE', kind: 'soulCore', u: 8, v: -5, hp: 1, name: 'แก่นตะกอนตะวันออก' },
+      { id: 'coreC', kind: 'soulCore', u: 0, v: -1, hp: 1, name: 'แก่นตะกอนหน้าที่สูง' },
+      { id: 'm1', kind: 'murk', u: -5, v: 1, hp: 1, ct: 30 },
+      { id: 'm2', kind: 'murk', u: 5, v: 1, hp: 1, ct: 22 }
+    ],
+    waves: { everyRounds: 4, first: 4, mouths: [{ u: -9, v: -8 }, { u: 9, v: -8 }], kind: 'murk', per: 1, cap: 3 },
+    waveLog: 'สัตว์รอยหมองหลุดออกมาจากรอยแตกข้างแก่นตะกอน',
+    rootHeal: 5, rootShield: .5,
+    cutLog: 'แก่นตะกอนสลายหมด — มังกรหายใจสะดุดและทรุดลง!', cutSay: '✦ แก่นตะกอนสลายหมดแล้ว — มังกรสะดุ้งและทรุดตัวลง! ตอนนี้ฟันมันได้เต็มแรง',
+    intro: [
+      { who: null, text: 'ปากปล่องทางใต้ร้อนจนอากาศสั่น บนเนินหินดำที่สูงกว่าพื้นปล่องมีบางอย่างขดอยู่ — เกล็ดเงาเหมือนแก้วภูเขาไฟ รอยแตกเรืองส้มวิ่งไปตามหลังที่ยกขึ้นลงช้า ๆ มันเก่ากว่าอาณาจักรทุกแห่ง และมันตื่นแล้ว' },
+      { who: 'mierris', text: 'มันไม่ได้โกรธเจ้า… มันหวงถิ่นของมัน และตะกอนที่ล้นอยู่รอบปล่องกำลังกดมันอยู่ — ตัดแก่นทั้งสามก่อน ไม่งั้นดาบเจ้าก็แค่ทำให้มันเจ็บ' }
+    ],
+    hints: [
+      'มังกรเจ็บน้อยลงครึ่งหนึ่งและฟื้นเลือดทุกรอบตราบที่แก่นตะกอนวิญญาณยังอยู่ — ตัดแก่นให้หมดก่อนแล้วค่อยล้มมัน',
+      'แก่นมี 3 จุด: ตะวันตก ตะวันออก และหน้าที่สูง — เสาหินกับเศษหินช่วยบังลมหายใจไฟ ธารลาวาทำให้เดินช้า',
+      'สัตว์รอยหมองหลุดจากรอยแตกทุก 4 รอบ — อย่าให้ทีมถูกต้อนรวมกลุ่มกลางปล่อง',
+      'อย่าปีนขึ้นที่สูงของมังกรตอนแก่นยังอยู่ · เสียงคร่ำครวญทำให้ใช้เวทไม่ได้ ถือไพร่ธรรมดาเผื่อไว้'
+    ]
+  };
+
+  const SCENES = { hungerPit, convoyPass, campDefense, moonGuard, dragonLair };
 
   /* ---------- ข้อมูลช่อง ---------- */
   function cell(sc, u, v) {
@@ -162,7 +204,7 @@
       /* ดาเมจที่บอสได้รับ: ปมหิวยังอยู่ = เหลือ 40% */
       dmgMod(st, tgt, d, notes) {
         if (!tgt.boss || tgt.side !== 'monster' || !sc.rootShield) return d; const n = roots(st).length; if (!n) return d;
-        notes.push('ปมหิว ' + n + ' จุดยังป้อนอยู่ −' + Math.round((1 - sc.rootShield) * 100) + '%'); return Math.max(1, Math.round(d * sc.rootShield));
+        notes.push((sc.anchorName || 'ปมหิว') + ' ' + n + ' จุดยังป้อนอยู่ −' + Math.round((1 - sc.rootShield) * 100) + '%'); return Math.max(1, Math.round(d * sc.rootShield));
       },
       /* ยังมีคลื่นที่ยังไม่มา = ยังไม่ชนะแม้ศัตรูตอนนี้หมด (ฉากป้องกัน) */
       pending(st) { const W = sc.waves; return !!(W && W.count && (st.waveN || 0) < W.count) },
@@ -177,15 +219,15 @@
         if (sc.pulses && r === Math.min(...sc.pulses.flatMap(x => x.rounds)) - 1) steps.push({ type: 'say', unit: who, text: sc.pulses[0].warn || sc.hints[3] });
         if (sc.rootHeal === undefined && !sc.rootShield) { /* scenes without a shield: nothing to feed */ }
         /* ปมป้อนบอส */
-        if (b && rs.length && r > 1 && sc.rootHeal) { const h = Math.min(b.maxHp - b.hp, sc.rootHeal * rs.length); if (h > 0) { b.hp += h; st.log.push('ปมหิว ' + rs.length + ' จุดป้อนก้อนหิว +' + h); steps.push({ type: 'say', unit: b, text: '🩸 ปมหิว ' + rs.length + ' จุดป้อนก้อนหิว +' + h, heal: h }) } }
+        if (b && rs.length && r > 1 && sc.rootHeal) { const h = Math.min(b.maxHp - b.hp, sc.rootHeal * rs.length); if (h > 0) { b.hp += h; st.log.push((sc.anchorName || 'ปมหิว') + ' ' + rs.length + ' จุดป้อน' + (sc.bossName || 'ก้อนหิว') + ' +' + h); steps.push({ type: 'say', unit: b, text: '🩸 ' + (sc.anchorName || 'ปมหิว') + ' ' + rs.length + ' จุดป้อน' + (sc.bossName || 'ก้อนหิว') + ' +' + h, heal: h }) } }
         /* ตัดปมครบ: บอสเสียหลัก 1 ตา */
-        if (b && (sc.anchorKind || sc.rootShield) && !rs.length && !st.rootsCut && sc.cutText !== false) { st.rootsCut = true; if (sc.cutStun !== false) b.stun = 1; st.log.push(sc.cutLog || 'ปมหิวขาดหมด — ก้อนหิวเสียหลัก!'); steps.push({ type: 'say', unit: b, text: sc.cutSay || '✂ ตัดอาหารมันได้แล้ว — ก้อนหิวเสียหลัก! ตอนนี้ฟันมันได้เต็มแรง', big: true }) }
+        if (b && (sc.anchorKind || sc.rootShield) && !rs.length && !st.rootsCut && sc.cutText !== false) { st.rootsCut = true; if (sc.cutStun !== false) b.stun = 1; st.log.push(sc.cutLog || ((sc.anchorName || 'ปมหิว') + 'ขาดหมด — ' + (sc.bossName || 'ก้อนหิว') + 'เสียหลัก!')); steps.push({ type: 'say', unit: b, text: sc.cutSay || ('✂ ตัดอาหารมันได้แล้ว — ' + (sc.bossName || 'ก้อนหิว') + 'เสียหลัก! ตอนนี้ฟันมันได้เต็มแรง'), big: true }) }
         /* คลื่นสัตว์รอยหมอง: ประกาศก่อน 1 รอบ */
         const W = sc.waves; if (W && !(W.needAnchor && !rs.length) && (!W.count || (st.waveN || 0) < W.count)) {
           if (r >= W.first - 1 && (r - W.first + 1) % W.everyRounds === 0 && r < W.first + W.everyRounds * 9) steps.push({ type: 'say', unit: who, text: sc.waveHint || sc.hints[2] });
           if (r >= W.first && (r - W.first) % W.everyRounds === 0) {
             const alive = st.units.filter(u => u.side === 'monster' && u.kind === W.kind && (W.capBy !== 'wave' || u.fromWave) && api.alive(u)).length; let room = W.cap - alive; const wi = st.waveN = (st.waveN || 0) + 1, per = Array.isArray(W.per) ? W.per[Math.min(wi - 1, W.per.length - 1)] : W.per;
-            for (const m of W.mouths) for (let i = 0; i < per && room > 0; i++) { const p = nearestFree(st, m); if (!p) continue; const nu = api.mk(W.kind, p, { fromWave: r }); if (nu) { st.units.push(nu); room--; st.log.push('สัตว์รอยหมองไหลลงมาจากอุโมงค์เหนือ'); steps.push({ type: 'spawn', unit: nu, text: 'สัตว์รอยหมองมาเสริม!' }) } }
+            for (const m of W.mouths) for (let i = 0; i < per && room > 0; i++) { const p = nearestFree(st, m); if (!p) continue; const nu = api.mk(W.kind, p, { fromWave: r }); if (nu) { st.units.push(nu); room--; st.log.push(sc.waveLog || 'สัตว์รอยหมองไหลลงมาจากอุโมงค์เหนือ'); steps.push({ type: 'spawn', unit: nu, text: 'สัตว์รอยหมองมาเสริม!' }) } }
           }
         }
         return steps;

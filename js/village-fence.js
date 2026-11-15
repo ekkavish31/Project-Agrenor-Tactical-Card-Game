@@ -27,7 +27,9 @@
         const o = {};
         if (pl.sides && typeof pl.sides === 'object') { o.sides = {}; for (const s of SIDES) if (typeof pl.sides[s] === 'string' && pl.sides[s].length < 30) o.sides[s] = pl.sides[s] }
         if (Number.isFinite(+pl.gate)) o.gate = num(pl.gate, 2, .5, 8);
-        if (o.sides || o.gate != null) out.places[id] = o;
+        /* v98.512 · fine position: px offset per side (and 'all'), screen directions at 100 % zoom — free of the grid */
+        if (pl.off && typeof pl.off === 'object') { const f = {}; for (const k of [...SIDES, 'all']) { const v = pl.off[k]; if (Array.isArray(v) && (Math.abs(+v[0]) > 1e-9 || Math.abs(+v[1]) > 1e-9)) f[k] = [Math.round(num(v[0], 0, -300, 300) * 10) / 10, Math.round(num(v[1], 0, -300, 300) * 10) / 10] } if (Object.keys(f).length) o.off = f }
+        if (o.sides || o.gate != null || o.off) out.places[id] = o;
       }
     }
     return out;
@@ -45,7 +47,11 @@
     return { back: 'none', left: 'none', right: 'none', front: 'none' };
   }
   const sidesOf = (id, profile) => ({ ...legacySides(profile), ...(cfg.places[id]?.sides || {}) });
-  const gateOf = id => cfg.places[id]?.gate ?? 2;      // half width of the entrance, in cells
+  const gateOf = id => cfg.places[id]?.gate ?? 2;
+  /* px offset of a side (screen x right / y down) · 'all' moves every side together · world cell = 56 px wide, 28 px tall per (u−v) / (u+v) step of the 2:1 diamond */
+  const offOf = (id, side) => { const o = cfg.places[id]?.off || {}, a = o[side] || [0, 0], b = o.all || [0, 0]; return [a[0] + b[0], a[1] + b[1]] };
+  const pxToCells = (dx, dy) => ({ du: dx / 56 + dy / 28, dv: -dx / 56 + dy / 28 });
+  function setOff(c, id, side, dx, dy) { const pl = (c.places[id] ||= {}); pl.off = { ...(pl.off || {}) }; if (!dx && !dy) delete pl.off[side]; else pl.off[side] = [dx, dy]; if (!Object.keys(pl.off).length) delete pl.off; return c }      // half width of the entrance, in cells
 
   /* gaps (own axes, in cells along each edge) where the entrance goes: every yellow cell that touches an edge
      (widened to at least the gate), or - when none does - the gate centred on the front edge. */
@@ -77,12 +83,14 @@
         const t0 = a + (b - a) * k / n, t1 = a + (b - a) * (k + 1) / n, m = (t0 + t1) / 2;
         if (gp[s].some(([x, y]) => m > x && m < y)) continue;
         const P = t => axis === 'u' ? W(t, fix) : W(fix, t);
-        out.push({ side: s, key: sides[s], A: P(t0), B: P(t1) });
+        const A = P(t0), B = P(t1), of = offOf(o.id, s);
+        if (of[0] || of[1]) { const d = pxToCells(of[0], of[1]); A.u += d.du; A.v += d.dv; B.u += d.du; B.v += d.dv }
+        out.push({ side: s, key: sides[s], A, B });
       }
     }
     return out;
   }
-  const api = { BUILTIN, SIDES, set, get, clean, pieceOf, allPieces, legacySides, sidesOf, gateOf, gaps, plan, cfg: () => cfg };
+  const api = { BUILTIN, SIDES, set, get, clean, pieceOf, allPieces, legacySides, sidesOf, gateOf, gaps, plan, offOf, pxToCells, setOff, cfg: () => cfg };
   root.VillageFence = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

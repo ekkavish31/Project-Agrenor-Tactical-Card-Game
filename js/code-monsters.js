@@ -4,7 +4,7 @@
    Everything is drawn from the feet up, facing right when dir is SE/NE (the caller flips for SW/NW like a picture). */
 (function (root) {
   'use strict';
-  const KINDS = { goat: 1, pumpkin: 1, pumpkinBoss: 1, pest: 1, hunger: 1, murk: 1, hungerRoot: 1, alarmHorn: 1 };   /* v98.488 · hunger = ก้อนหิว (boss of the mine) · murk = สัตว์รอยหมอง */
+  const KINDS = { goat: 1, pumpkin: 1, pumpkinBoss: 1, pest: 1, hunger: 1, murk: 1, hungerRoot: 1, alarmHorn: 1, byrexael: 1, soulCore: 1 };   /* v98.488 · hunger = ก้อนหิว (boss of the mine) · murk = สัตว์รอยหมอง */
   const E = (g, x, y, rx, ry, fill, rot = 0) => { g.beginPath(); g.ellipse(x, y, Math.max(.01, rx), Math.max(.01, ry), rot, 0, Math.PI * 2); g.fillStyle = fill; g.fill() };
   const line = (g, x0, y0, x1, y1, col, w) => { g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.strokeStyle = col; g.lineWidth = w; g.lineCap = 'round'; g.stroke() };
   const shade = (c, k) => { const n = parseInt(c.slice(1), 16), r = Math.min(255, Math.round((n >> 16) * k)), gg = Math.min(255, Math.round(((n >> 8) & 255) * k)), b = Math.min(255, Math.round((n & 255) * k)); return `rgb(${r},${gg},${b})` };
@@ -123,11 +123,45 @@
     line(g, -w * .36, -h * .46, -w * .56, -h * .56 + Math.sin(t * .01) * h * .04, '#17101f', h * .05);                                  // tail
     g.restore();
   }
+  /* v98.511 · มังกรดำจ้าววิญญาณ (Byrexael-Cean · ภาพวาดด้วยโค้ดชั่วคราวจนกว่าผู้ใช้เจนภาพจริง): ตัวดำเกล็ดแก้วภูเขาไฟ ปีกใหญ่ รอยแตกเรืองส้ม ตาสีไฟ — เป็นสัตว์ปฐมกาล ไม่ใช่ปีศาจ ท่าทางนิ่งและเก่าแก่ */
+  function drawDragon(g, o) {
+    const { h, t } = o, w = h * 1.5, br = Math.sin(t * .0025) * h * .015, atk = o.pose === 'attack' || o.pose === 'cast' || (o.hit != null && o.hit < 160), gl = .75 + .25 * Math.sin(t * .006);
+    g.save(); g.translate(0, -h * .04);
+    E(g, 0, h * .02, w * .62, h * .11, 'rgba(0,0,0,.5)');
+    // wings (behind)
+    for (const sg of [-1, 1]) { g.beginPath(); g.moveTo(sg * w * .08, -h * .62 + br); g.quadraticCurveTo(sg * w * .55, -h * 1.12, sg * w * .72, -h * .5); g.quadraticCurveTo(sg * w * .5, -h * .62, sg * w * .46, -h * .4); g.quadraticCurveTo(sg * w * .3, -h * .52, sg * w * .12, -h * .36); g.closePath(); g.fillStyle = '#0d0912'; g.fill(); g.strokeStyle = 'rgba(255,110,40,' + (.35 * gl) + ')'; g.lineWidth = Math.max(1, h * .012); g.stroke() }
+    // tail
+    g.beginPath(); g.moveTo(-w * .16, -h * .22); g.quadraticCurveTo(-w * .5, -h * .02, -w * .62, -h * .3 + Math.sin(t * .004) * h * .05); g.strokeStyle = '#120d18'; g.lineWidth = h * .16; g.lineCap = 'round'; g.stroke();
+    // body + belly
+    E(g, 0, -h * .32 + br, w * .33, h * .26, '#120d18'); E(g, w * .02, -h * .22 + br, w * .26, h * .15, '#1b1424');
+    // glowing cracks
+    g.strokeStyle = 'rgba(255,120,40,' + (.55 * gl) + ')'; g.lineWidth = Math.max(1, h * .016);
+    for (const [x0, y0, x1, y1] of [[-.2, -.4, -.05, -.3], [.02, -.48, .14, -.34], [-.1, -.26, .08, -.2], [.16, -.28, .26, -.22]]) { g.beginPath(); g.moveTo(x0 * w, y0 * h + br); g.lineTo(x1 * w, y1 * h + br); g.stroke() }
+    // legs
+    for (const x of [-.14, .16]) { g.fillStyle = '#0f0a15'; g.fillRect(x * w - h * .05, -h * .18, h * .1, h * .17); E(g, x * w, -h * .01, h * .09, h * .035, '#0b0710') }
+    // neck + head (facing right)
+    g.beginPath(); g.moveTo(w * .22, -h * .42 + br); g.quadraticCurveTo(w * .36, -h * .78, w * .34, -h * .9); g.strokeStyle = '#120d18'; g.lineWidth = h * .17; g.stroke();
+    const hx = w * .38, hy = -h * .94 + br; E(g, hx, hy, h * .15, h * .1, '#17101f', -.2); E(g, hx + h * .16, hy + h * .03, h * .1, h * .055, '#0e0a14', -.12);
+    g.fillStyle = '#0a0710'; for (const [dx, dy] of [[-.08, -.1], [.02, -.13]]) { g.beginPath(); g.moveTo(hx + dx * h, hy + dy * h); g.lineTo(hx + (dx - .09) * h, hy + (dy - .14) * h); g.lineTo(hx + (dx + .03) * h, hy + (dy - .03) * h); g.fill() }   // horns
+    E(g, hx + h * .05, hy - h * .02, h * .03, h * .025, '#ffb347'); E(g, hx + h * .05, hy - h * .02, h * .07, h * .06, 'rgba(255,120,30,' + .3 * gl + ')');
+    if (atk) { E(g, hx + h * .26, hy + h * .05, h * .16, h * .06, 'rgba(255,140,40,.55)'); E(g, hx + h * .2, hy + h * .04, h * .08, h * .035, '#ffd36a') }
+    for (let i = 0; i < 4; i++) { const p = ((t * .0006 + i / 4) % 1); E(g, -w * .2 + i * w * .13, -h * .55 - p * h * .35, h * .018 * (1 - p), h * .018 * (1 - p), 'rgba(255,140,50,' + (.6 * (1 - p)) + ')') }   // embers
+    g.restore();
+    if (o.hit != null && o.hit < 120) { g.globalAlpha = .3; E(g, 0, -h * .5, w * .5, h * .5, '#ffffff'); g.globalAlpha = 1 }
+  }
+  /* แก่นตะกอนวิญญาณ (v98.511): กลุ่มผลึกดำขุ่นที่เรืองม่วงอมขาว — ตะกอนความทรงจำเจ็บปวดที่ป้อนมังกร ตัดมันเพื่อให้บอสเจ็บเต็มแรง */
+  function drawCore(g, o) {
+    const { h, t } = o, w = h * .9, pul = .7 + .3 * Math.sin(t * .006 + (o.seed || 0)), dead = o.hp <= 0;
+    g.save(); E(g, 0, 0, w * .55, h * .1, 'rgba(0,0,0,.45)');
+    for (const [x, hh, wd] of [[-.22, .52, .13], [.02, .78, .17], [.24, .46, .12], [-.06, .4, .1]]) { g.beginPath(); g.moveTo(x * w - wd * w, -h * .02); g.lineTo(x * w, -hh * h); g.lineTo(x * w + wd * w, -h * .02); g.closePath(); g.fillStyle = dead ? '#1d1a24' : '#241a33'; g.fill(); g.strokeStyle = dead ? '#2a2535' : 'rgba(214,170,255,' + (.5 * pul) + ')'; g.lineWidth = Math.max(1, h * .02); g.stroke() }
+    if (!dead) { E(g, 0, -h * .42, w * .2 * pul, h * .22 * pul, 'rgba(235,215,255,' + .35 * pul + ')'); E(g, 0, -h * .42, w * .08, h * .09, '#f4e8ff') }
+    g.restore();
+  }
   function draw(g, kind, o) {
     if (!KINDS[kind]) return false;
     g.save(); g.translate(o.x, o.y);
-    if (o.hp <= 0) { g.rotate(kind === 'pumpkin' || kind === 'hungerRoot' || kind === 'alarmHorn' ? 0 : Math.PI * .4); g.globalAlpha *= .6 }
-    if (kind === 'goat') drawGoat(g, o); else if (kind === 'pumpkin') drawPumpkin(g, o, false); else if (kind === 'pumpkinBoss') drawPumpkin(g, o, true); else if (kind === 'hunger') drawHunger(g, o); else if (kind === 'hungerRoot') drawRoot(g, o); else if (kind === 'alarmHorn') drawHorn(g, o); else if (kind === 'murk') drawMurk(g, o); else drawPest(g, o);
+    if (o.hp <= 0) { g.rotate(kind === 'pumpkin' || kind === 'hungerRoot' || kind === 'alarmHorn' || kind === 'soulCore' ? 0 : Math.PI * .4); g.globalAlpha *= .6 }
+    if (kind === 'goat') drawGoat(g, o); else if (kind === 'pumpkin') drawPumpkin(g, o, false); else if (kind === 'pumpkinBoss') drawPumpkin(g, o, true); else if (kind === 'hunger') drawHunger(g, o); else if (kind === 'hungerRoot') drawRoot(g, o); else if (kind === 'alarmHorn') drawHorn(g, o); else if (kind === 'byrexael') drawDragon(g, o); else if (kind === 'soulCore') drawCore(g, o); else if (kind === 'murk') drawMurk(g, o); else drawPest(g, o);
     g.restore(); return true;
   }
   /* the harvest the pumpkin pops into: a bouncing pumpkin that rests on the ground, drawn after the unit is down (feet at (x, y)) */
@@ -137,7 +171,7 @@
   function icon(kind) {
     if (ICONS[kind]) return ICONS[kind];
     try { const c = document.createElement('canvas'); c.width = c.height = 96; const q = c.getContext('2d'); q.fillStyle = '#2c3a2f'; q.fillRect(0, 0, 96, 96);
-      q.save(); q.translate(48, 86); draw(q, kind, { x: 0, y: 0, h: kind === 'goat' ? 64 : kind === 'hunger' ? 54 : kind === 'hungerRoot' ? 52 : 62, dir: 'SE', t: 0, hp: 1, hit: null, walking: false, pose: 'idle', seed: 1 }); q.restore(); return ICONS[kind] = c.toDataURL('image/png') } catch (e) { return '' }
+      q.save(); q.translate(48, 86); draw(q, kind, { x: 0, y: 0, h: kind === 'goat' ? 64 : kind === 'hunger' ? 54 : kind === 'hungerRoot' ? 52 : kind === 'byrexael' ? 54 : kind === 'soulCore' ? 50 : 62, dir: 'SE', t: 0, hp: 1, hit: null, walking: false, pose: 'idle', seed: 1 }); q.restore(); return ICONS[kind] = c.toDataURL('image/png') } catch (e) { return '' }
   }
   root.CodeMonsters = { draw, drawLoot, icon, has: k => !!KINDS[k], KINDS: Object.keys(KINDS) };
 })(typeof window !== 'undefined' ? window : globalThis);

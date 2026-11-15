@@ -422,6 +422,13 @@
       if (t) { u.face = faceOf(u, t); let fed = 0; const ok = hitAll([t], () => .9, 'กลืนกิน', 'dark', (o, r) => { fed += Math.round((r.damage || 0) * .6); inflict(st, o, 'weak', .6) });
         if (ok && fed > 0) { u.hp = Math.min(u.maxHp, u.hp + fed); const last = steps[steps.length - 1]; if (last) last.heal = fed; st.log.push(u.name + ' ดูดกลืนพลังชีวิต +' + fed) } return ok }
     }
+    /* v98.511 · มังกรดำจ้าววิญญาณ (Byrexael-Cean · docs/DRAGON-BYREXAEL-TH.md): ลมหายใจไฟดำ (3 ตัวใกล้สุดในระยะ 4 · ไหม้) · เสียงคร่ำครวญของวิญญาณ (ทุกคนในระยะ 6 · ใบ้/อ่อนแรง) · หางฟาด (ใกล้ตัว) */
+    if (u.kind === 'byrexael') {
+      const k = (Math.floor(u.bossT / 3) - 1) % 3;
+      if (k === 0) { const sw = opp.filter(o => dist(o, u) <= 4).sort((a, b) => dist(a, u) - dist(b, u)).slice(0, 3); if (sw.length) { u.face = faceOf(u, sw[0]); return hitAll(sw, () => .85, 'ลมหายใจไฟดำ', 'fire', o => inflict(st, o, 'burn', .75)) } }
+      if (k === 1) { const sw = opp.filter(o => dist(o, u) <= 6); if (sw.length) return hitAll(sw, () => .3, 'เสียงคร่ำครวญของวิญญาณ', 'dark', o => { inflict(st, o, 'silence', .7); inflict(st, o, 'weak', .5) }) }
+      const near = opp.filter(o => dist(o, u) <= 2); if (near.length) return hitAll(near, () => .75, 'หางฟาด', 'blunt');
+    }
     if (u.kind === 'frostQueen') { const t = opp.filter(o => dist(o, u) <= 3).sort((a, b) => a.hp - b.hp)[0]; if (t) { u.face = faceOf(u, t); return hitAll(opp.filter(o => dist(o, t) <= 1), () => .55, 'พายุน้ำแข็ง', 'ice', o => inflict(st, o, 'freeze', .5)) } }
     const low = opp.filter(o => dist(o, u) <= 4 && gap(st, u, o) >= 1).sort((a, b) => gap(st, u, b) - gap(st, u, a))[0];
     if (low) { u.face = faceOf(u, low); return hitAll([low], o => .9 * (1 + .15 * Math.min(4, gap(st, u, o))), 'ขว้างหินจากที่สูง', 'earth') }

@@ -2413,6 +2413,10 @@
   <b class="sec">ชิ้นรั้วแต่ละด้าน</b>${FN.SIDES.map(s => `<label class="sel">${SIDE_L[s]}<select data-side="${s}">${opts(cfgSides[s])}</select></label>`).join('')}
   <div class="row" style="flex-wrap:wrap"><button data-all="wood">🪵 ไม้ทุกด้าน</button><button data-all="stone">🧱 หินทุกด้าน</button><button data-all="hedge">🌳 พุ่มทุกด้าน</button><button data-all="none">🗑 ลบรั้วทั้งหมดของที่นี่</button></div>
   ${slider('gate', 'ประตูกว้าง', gate * 2, 1, 12, .5, unit)}
+  <hr><b class="sec">🎯 ปรับตำแหน่งรั้วละเอียด (ไม่ติดกริด)</b>
+  <p class="sub">ขยับรั้วเป็นพิกเซล (ที่ซูม 100%) ทีละนิด — เลือกด้านที่จะขยับ หรือ "ทั้งหมด" ขยับทุกด้านพร้อมกัน · กดลูกศร (กด Shift = ×5) หรือพิมพ์ค่าเอง · ↺ คืนตำแหน่ง</p>
+  <div class="row"><label>ก้าว <select id="fnStep"><option value=".5">0.5</option><option value="1" selected>1</option><option value="2">2</option><option value="5">5</option></select> px</label></div>
+  ${['all', ...FN.SIDES].map(k => { const v = FN.cfg().places[o.id]?.off?.[k] || [0, 0]; return `<div class="row fnrow" data-fo="${k}" style="flex-wrap:wrap;align-items:center;gap:4px"><b style="min-width:74px">${k === 'all' ? 'ทั้งหมด' : SIDE_L[k]}</b><button data-fn="-1,0" title="ซ้าย">◀</button><button data-fn="1,0" title="ขวา">▶</button><button data-fn="0,-1" title="ขึ้น">▲</button><button data-fn="0,1" title="ลง">▼</button> x<input type="number" step=".5" data-fx value="${v[0]}" style="width:62px"> y<input type="number" step=".5" data-fy value="${v[1]}" style="width:62px"><button data-fn="reset" title="คืนตำแหน่ง">↺</button></div>` }).join('')}
   <hr><b class="sec">ชิ้นรั้วของฉัน (กำหนดภาพ + จุด snap ระหว่างชิ้น)</b>
   <p class="sub">len = ชิ้นหนึ่งยาวกี่ช่อง · ทับกัน = px ที่ชิ้นข้างเคียงซ้อน (พุ่มไม้ ≈ ขอบชนขอบ 0–10, กำแพงหิน ≈ เสาทับกัน 20+) · ขนาด/ลดลง = ปรับแนวตั้ง</p>
   ${custom.map(([id, p]) => `<div class="card" style="border:1px solid #4d6656;border-radius:8px;padding:6px;margin:6px 0"><label>ชื่อ<input type="text" data-pf="${id}:name" value="${p.name.replace(/"/g, '&quot;')}"></label>
@@ -2428,6 +2432,16 @@
    pl.sides = { ...FN.sidesOf(o.id, borderProfile(o)), ...(pl.sides || {}), [sel.dataset.side]: sel.value };
    save(c)
   }));
+  /* v98.512 · fine fence position (px, free of the grid): per side and 'all' */
+  body.querySelectorAll('.fnrow').forEach(row => {
+   const k = row.dataset.fo, fx = row.querySelector('[data-fx]'), fy = row.querySelector('[data-fy]'), apply = (x, y) => { const c = cur(); FN.setOff(c, o.id, k, x, y); save(c); fx.value = x; fy.value = y };
+   row.querySelectorAll('[data-fn]').forEach(b => b.onclick = e => {
+    if (b.dataset.fn === 'reset') return apply(0, 0);
+    const [dx, dy] = b.dataset.fn.split(',').map(Number), st = (+body.querySelector('#fnStep').value || 1) * (e.shiftKey ? 5 : 1);
+    apply(Math.round(((+fx.value || 0) + dx * st) * 10) / 10, Math.round(((+fy.value || 0) + dy * st) * 10) / 10)
+   });
+   [fx, fy].forEach(inp => inp.onchange = () => apply(+fx.value || 0, +fy.value || 0))
+  });
   body.querySelectorAll('[data-all]').forEach(b => b.onclick = once(() => {
    const c = cur();
    placeCfg(c).sides = Object.fromEntries(FN.SIDES.map(s => [s, b.dataset.all]));
