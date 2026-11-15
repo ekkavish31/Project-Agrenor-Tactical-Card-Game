@@ -5794,3 +5794,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 ## v98.549 — ภาพสนทนา มิล · ลูน่า · บรัม (4 อารมณ์)
 - ตัดจากแผ่น 2×2 ของเจ้าของ → assets/portraits/{mil,luna,bram}-{neutral,happy,angry,worry}.webp (512×768 โปร่งใส หันซ้าย)
 - ผูก StoryActors/StoryCast (ฉากสนทนา · กรอบหน้า) และ BattlePortrait: ในสนามรบเพื่อนทั้งสามใช้หน้าเขียนจริงตามอารมณ์ (เจ็บ/ล้ม = worry) แทนภาพการ์ดนิ่ง · เคียร์ยังใช้ภาพการ์ด
+
+## v98.550 — ภาพสนทนา เคียร์ (4 อารมณ์)
+- ตัดจากแผ่น 2×2 ของเจ้าของ → assets/portraits/kier-{neutral,happy,angry,worry}.webp (512×768 โปร่งใส หันซ้าย) · ผูก StoryActors/StoryCast และ BattlePortrait (เคียร์ในสนามรบใช้หน้าเขียนตามอารมณ์แล้ว เหมือนมิล/ลูน่า/บรัม)
