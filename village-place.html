@@ -1083,6 +1083,7 @@ function draw(t) {
  const put = o => window.PlaceBuild ? PlaceBuild.drawObj(o) : o.draw();
 list.sort((a, b) => a.y - b.y);
  fixOrderPlace(list);
+ window.DepthStyle?.pairOrder?.(list, e => e.o && e.o.hero, e => e.o && e.o.follower, e => e.o ? e.o.y : null);   /* v98.538 · the follower is ordered against the lead by their own feet (south = in front, north = behind) */
  /* v98.309 · a TALL prop with an order footprint that the hero stands BEHIND turns see-through around him (DepthStyle: fade + silhouette), low ones (fence, bush…) cover naturally */
  const hi = list.findIndex(e => e.o && e.o.hero), hobj = hi >= 0 ? list[hi].o : null, heroH = CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K;
  list.forEach((e, i) => {

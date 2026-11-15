@@ -23,7 +23,19 @@
   const nearestPart = (fp, wu, wv) => { let b = fp.parts[0], bd = Infinity; for (const p of fp.parts) { const d = d0(p, wu, wv); if (d < bd) { bd = d; b = p } } return b };
   const dist = (fp, wu, wv) => { if (fp.parts && fp.parts.length > 1) return d0(nearestPart(fp, wu, wv), wu, wv); return dist1(fp, wu, wv) };
   const dist1 = (fp, wu, wv) => { const du = Math.max(fp.u0 - wu, 0, wu - fp.u1), dv = Math.max(fp.v0 - wv, 0, wv - fp.v1); return Math.hypot(du, dv) };
+  /* v98.538 · the two heroes (lead + follower) are ordered against EACH OTHER by their own feet, whatever else moved them: the follower further SOUTH (larger screen y) is drawn over the lead,
+     further NORTH it is drawn under the lead. Nothing else is touched (places keep the rule the follower already shares with the lead). Within 1.5 px the last answer is kept, so two heroes
+     side by side never flicker. list = the draw list · isHero / isFollower pick an entry · yOf gives its feet y (or null → skip). */
+  let pairFront = false;
+  function pairOrder(list, isHero, isFollower, yOf) {
+    const ih = list.findIndex(isHero), ifo = list.findIndex(isFollower); if (ih < 0 || ifo < 0) return false;
+    const hy = yOf(list[ih]), fy = yOf(list[ifo]); if (hy == null || fy == null || fy >= 1e8) return false;
+    if (fy > hy + 1.5) pairFront = true; else if (fy < hy - 1.5) pairFront = false;
+    if (pairFront ? ifo > ih : ifo < ih) return false;     // already right
+    const [f] = list.splice(ifo, 1), at = list.findIndex(isHero); list.splice(pairFront ? at + 1 : at, 0, f); return true;
+  }
   const api = {
+    pairOrder,
     KEY, DEF, isLow, walkerInFront, dist,
     get: () => ({ ...read() }),
     set(patch) { const d = { ...read(), ...patch }; try { root.localStorage.setItem(KEY, JSON.stringify(d)) } catch (e) { } stamp = null; try { root.dispatchEvent(new Event('depthstyle')) } catch (e) { } },

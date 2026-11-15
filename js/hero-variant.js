@@ -64,8 +64,8 @@
     try { const c = JSON.parse(JSON.stringify(T())); applyTo(c, id); return (tables[id] = c) } catch (e) { return (tables[id] = null) }
   }
   function motionFor(id) {
-    if (id in motions) return motions[id];
-    const c = tableFor(id); try { return (motions[id] = c ? root.HeroMotion.snapshot(c) : null) } catch (e) { return (motions[id] = null) }
+    if (motions[id]) return motions[id];   /* v98.538 · a FAILED snapshot (sprite table / HeroMotion not ready yet) is no longer remembered as null forever: the follower vanished until the next reload */
+    const c = tableFor(id); try { const m = c ? root.HeroMotion.snapshot(c) : null; if (m) motions[id] = m; return m } catch (e) { return null }
   }
   function apply(id) {
     const t = T(); if (!t) return false;
