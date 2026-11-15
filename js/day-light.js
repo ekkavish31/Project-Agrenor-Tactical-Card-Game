@@ -47,6 +47,7 @@
   function render(g, cv) {
     const S = state(); if (S.dark <= .005) { lights = []; return }
     const W = cv.width, H = cv.height, T = T0 || g.getTransform(), t = performance.now();
+    if (W < 1 || H < 1) { lights = []; return }   /* v98.524 · 0×0 canvas (page being resized / hidden): nothing to light */
     if (!lm) { lm = document.createElement('canvas'); lg = lm.getContext('2d') } if (lm.width !== W || lm.height !== H) { lm.width = W; lm.height = H }
     /* 1. ambient: white blended towards the clock colour by `dark` */
     const amb = S.rgb.map(v => Math.round(255 - (255 - v) * S.dark));
