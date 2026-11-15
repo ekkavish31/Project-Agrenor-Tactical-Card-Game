@@ -2604,7 +2604,7 @@
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
   ${nudgeHtml}${sec('place','① วาง · ขนาด · หมุน',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
-`,1)}${sec('img','② ภาพ · แกนเฉียง',`${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>`)}${groupHtml(1)}`;
+`,1)}${groupHtml(1)}`;
   body.querySelectorAll('details.aeSec').forEach(d => d.ontoggle = () => secOpen.set(d.dataset.sec, d.open));
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
   act('#iBack', () => {
