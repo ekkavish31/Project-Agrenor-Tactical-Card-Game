@@ -937,9 +937,55 @@ const PB_ART = (() => {
  const panel = document.createElement('section');
  panel.id = 'pbPanel';
  document.body.append(panel);
- /* v98.558 · slant of the picture: ix = scale along the ↗↙ diagonal, iy = along ↖↘ (100 % = as drawn) · kx = lean (shear) of the picture to the side. They bend the drawing only — the order / block frames stay. */
- const SLANT_KEYS = ['ix', 'iy', 'kx'], slantRows = o => `${sl('ix', 'แกนเอียง ↗↙', o.ix ?? 1, .5, 2, .01, pct)}${sl('iy', 'แกนเอียง ↖↘', o.iy ?? 1, .5, 2, .01, pct)}${sl('kx', 'เอียงภาพ (ตะแคง)', o.kx || 0, -.6, .6, .01, pct)}<div class="row"><button id="slReset">⟲ คืนค่าเอียง</button></div>`;
- const writeSlant = (o, k, v) => { if ((k === 'ix' || k === 'iy') && Math.abs(v - 1) < .005 || k === 'kx' && Math.abs(v) < .005) delete o[k]; else o[k] = v };
+ /* v98.562 · picture slant, the same four numbers as Object Workshop / Asset Studio: ix = แกนเฉียง ↗↙ (%) · iy = แกนเฉียง ↖↘ (%) · sky = เอียงฐาน ° (ยกขอบขวา) · skx = เอียงเสา ° (บิดแนวตั้ง)
+    drawn as scale(ix, iy) then transform(1, tan sky, tan skx, 1) (village-place.html drawArt) · 📐 วัด/ปรับมุมฐาน = the same 3-point 2:1 base fit. Bends the drawing only — the order / block frames stay. */
+ const SLANT_KEYS = ['ix', 'iy', 'skx', 'sky'];
+ const slantRows = o => `<b class="sec">เอียงภาพ (แบบ Asset Studio)</b><div class="two2" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px">
+  <label style="display:block;min-width:0;font-size:12px">แกนเฉียง ↗↙ (%)<input style="width:100%;box-sizing:border-box" type="number" data-sl="ix" min="50" max="200" step="1" value="${+((o.ix ?? 1) * 100).toFixed(2)}"></label><label style="display:block;min-width:0;font-size:12px">แกนเฉียง ↖↘ (%)<input style="width:100%;box-sizing:border-box" type="number" data-sl="iy" min="50" max="200" step="1" value="${+((o.iy ?? 1) * 100).toFixed(2)}"></label>
+  <label style="display:block;min-width:0;font-size:12px">เอียงฐาน ° (ยกขอบขวา)<input style="width:100%;box-sizing:border-box" type="number" data-sl="sky" min="-60" max="60" step="0.5" value="${+(o.sky || 0).toFixed(2)}"></label><label style="display:block;min-width:0;font-size:12px">เอียงเสา ° (บิดแนวตั้ง)<input style="width:100%;box-sizing:border-box" type="number" data-sl="skx" min="-60" max="60" step="0.5" value="${+(o.skx || 0).toFixed(2)}"></label></div>
+  <div class="row"><button id="slFit" title="จิ้ม 3 จุดที่ขอบฐานของภาพ แล้วปรับมุมฐานเป็น 2:1">📐 วัด/ปรับมุมฐาน</button><button id="slReset">⟲ คืนค่าเอียง</button></div>`;
+ function bindSlant(body, o) {
+  body.querySelectorAll('[data-sl]').forEach(i => i.onchange = once(() => { const k = i.dataset.sl, v = +i.value; if (!Number.isFinite(v)) return; if (k === 'ix' || k === 'iy') { const r = Math.max(.5, Math.min(2, v / 100)); if (Math.abs(r - 1) < .0005) delete o[k]; else o[k] = +r.toFixed(4) } else if (Math.abs(v) < .005) delete o[k]; else o[k] = +Math.max(-60, Math.min(60, v)).toFixed(2) }));
+  act('#slReset', once(() => { for (const k of SLANT_KEYS) delete o[k] }));
+  act('#slFit', () => openBaseFit(o))
+ }
+ /* the 3-point base fit (same maths as Object Workshop bfApplyMode): click left corner · front (lowest) corner · right corner of the picture's base → angles of the two edges → balance (2:1) / keep height / keep width */
+ function openBaseFit(o) {
+  let d = document.getElementById('pbFit'); if (!d) { d = document.createElement('dialog'); d.id = 'pbFit'; d.style.cssText = 'background:#1b2a23;color:#eef2dc;border:1px solid #6f8b5b;border-radius:12px;padding:12px;font:13px AgThai,system-ui,sans-serif;max-width:94vw'; document.body.append(d) }
+  const CW = 620, CH = 520, Z = Math.min(4, 360 / Math.max(60, (o.width || 110) * (o.s || 1)) * 1.4), pts = [];
+  d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>📐 ปรับมุมฐานเป็น 2:1</b><button id="bfX">ปิด (Esc)</button></div><p style="margin:6px 0">จิ้ม 3 จุดตามขอบฐานของภาพ: <b>ซ้าย → หน้าสุด (ต่ำสุด) → ขวา</b> · ลากจุดปรับได้ · ดับเบิลคลิกจุด = ลบ</p><canvas id="bfCv" width="${CW}" height="${CH}" style="background:repeating-conic-gradient(#2d3a33 0 25%,#26322c 0 50%) 0 0/20px 20px;border:1px solid #4d6656;border-radius:8px;cursor:crosshair;display:block;margin:0 auto;width:auto;height:auto;max-width:100%;max-height:58vh"></canvas><p id="bfMsg" style="margin:6px 0;color:#b9d6a0">ยังไม่มีจุด</p><div class="row" style="display:flex;gap:6px;flex-wrap:wrap"><button data-m="b" disabled>ปรับ 2:1 (สมดุล)</button><button data-m="h" disabled>รักษาความสูง</button><button data-m="w" disabled>รักษาความกว้าง</button><button id="bfClr">ล้างจุด</button></div>`;
+  const cv2 = d.querySelector('#bfCv'), q = cv2.getContext('2d'), msg = d.querySelector('#bfMsg');
+  const E = () => pts.length === 3 ? window.PieceGeometry.edges(pts) : null;
+  function paint() {
+   q.clearRect(0, 0, CW, CH); q.save(); q.translate(CW / 2, CH * .82); q.scale(Z, Z);
+   const main = g; g = q; try { const p0 = project(0, 0); q.translate(-p0.x, -p0.y); drawArt(o.art, 0, 0, o.width || 110, o.s || 1, o.f, 0, null, o) } catch (e) { } finally { g = main } q.restore();
+   const e = E();
+   if (e) { q.setLineDash([8, 6]); q.strokeStyle = '#39e07a'; q.lineWidth = 2; q.beginPath(); q.moveTo(e.M.x, e.M.y); q.lineTo(e.M.x + 700, e.M.y - 350); q.moveTo(e.M.x, e.M.y); q.lineTo(e.M.x - 700, e.M.y - 350); q.stroke(); q.setLineDash([]) }
+   if (pts.length > 1) { const s2 = pts.slice().sort((a, b) => a.x - b.x); q.strokeStyle = '#ffd166'; q.lineWidth = 2; q.beginPath(); s2.forEach((a, i) => q[i ? 'lineTo' : 'moveTo'](a.x, a.y)); q.stroke() }
+   q.fillStyle = '#ffd166'; for (const a of pts) { q.beginPath(); q.arc(a.x, a.y, 5, 0, 7); q.fill() }
+   if (e) { q.fillStyle = '#fff'; q.font = 'bold 14px AgThai,system-ui'; q.textAlign = 'center'; q.fillText(e.a1.toFixed(1) + '°', (e.L.x + e.M.x) / 2 - 22, (e.L.y + e.M.y) / 2 + 22); q.fillText(e.a2.toFixed(1) + '°', (e.R.x + e.M.x) / 2 + 22, (e.R.y + e.M.y) / 2 + 22) }
+   msg.textContent = e ? (e.ok ? `ขอบฐานซ้าย ${e.a1.toFixed(1)}° · ขวา ${e.a2.toFixed(1)}° → เป้า 26.57° ทั้งสองด้าน` : 'จุดวางไม่เป็นรูปฐาน (ขอบสองด้านต้องเอียงเข้าหาจุดหน้าสุด)') : `ยังขาดอีก ${3 - pts.length} จุด`;
+   d.querySelectorAll('[data-m]').forEach(b => b.disabled = !(e && e.ok))
+  }
+  let dragI = -1;
+  const at = ev => { const r = cv2.getBoundingClientRect(); return { x: (ev.clientX - r.left) * CW / r.width, y: (ev.clientY - r.top) * CH / r.height } };
+  cv2.onpointerdown = ev => { const p = at(ev), k = pts.findIndex(a => Math.hypot(a.x - p.x, a.y - p.y) < 9); if (k >= 0) { dragI = k; cv2.setPointerCapture(ev.pointerId); return } if (pts.length < 3) { pts.push(p); dragI = pts.length - 1; cv2.setPointerCapture(ev.pointerId); paint() } };
+  cv2.onpointermove = ev => { if (dragI >= 0) { pts[dragI] = at(ev); paint() } };
+  cv2.onpointerup = () => { dragI = -1 };
+  cv2.ondblclick = ev => { const p = at(ev), k = pts.findIndex(a => Math.hypot(a.x - p.x, a.y - p.y) < 9); if (k >= 0) { pts.splice(k, 1); paint() } };
+  d.querySelector('#bfClr').onclick = () => { pts.length = 0; paint() };
+  d.querySelector('#bfX').onclick = () => d.close();
+  d.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+   const e = E(); if (!e || !e.ok) return; const m1 = e.m1, m2 = e.m2, k = m1 - m2, mode = b.dataset.m; let a, dd; if (mode === 'h') { dd = 1; a = k } else if (mode === 'w') { a = 1; dd = 1 / k } else { a = Math.sqrt(k); dd = 1 / a }
+   const c = -dd * (m1 + m2) / 2, ix = o.ix ?? 1, iy = o.iy ?? 1, tX = Math.tan((o.skx || 0) * Math.PI / 180), tY = Math.tan((o.sky || 0) * Math.PI / 180),
+    mul = (A, B) => [[A[0][0] * B[0][0] + A[0][1] * B[1][0], A[0][0] * B[0][1] + A[0][1] * B[1][1]], [A[1][0] * B[0][0] + A[1][1] * B[1][0], A[1][0] * B[0][1] + A[1][1] * B[1][1]]],
+    M = mul([[ix, 0], [0, iy]], [[1, tX], [tY, 1]]), N = mul([[a, 0], [c, dd]], M);   /* screen-space correction applied after the current matrix */
+   if (!(N[0][0] > 0 && N[1][1] > 0)) { msg.textContent = 'ปรับอัตโนมัติไม่ได้กับค่าปัจจุบัน — ลองคืนค่าเอียงก่อน'; return }
+   once(() => { const r = (v, n = 4) => +v.toFixed(n); o.ix = r(N[0][0]); o.iy = r(N[1][1]); o.skx = r(Math.atan(N[0][1] / N[0][0]) * 180 / Math.PI, 2); o.sky = r(Math.atan(N[1][0] / N[1][1]) * 180 / Math.PI, 2); for (const kk of SLANT_KEYS) if ((kk === 'ix' || kk === 'iy') ? Math.abs(o[kk] - 1) < .0005 : Math.abs(o[kk]) < .005) delete o[kk] })();
+   d.close(); status('ปรับมุมฐานเป็น 2:1 แล้ว — ย้อนกลับได้ (Ctrl+Z)')
+  });
+  paint(); d.showModal()
+ }
  const pct = x => Math.round(x * 100) + '%',
   one = x => (+x).toFixed(1);
  const sl = (k, l, v, a, b, st, f = x => x) => `<label>${l}<input type="range" data-k="${k}" data-f="${f===pct?'pct':f===one?'one':''}" min="${a}" max="${b}" step="${st}" value="${v}"><output>${f(v)}</output></label>`;
@@ -1208,8 +1254,8 @@ const PB_ART = (() => {
    save();
    render()
   });
-  act('#slReset', once(() => { for (const k of SLANT_KEYS) delete s[k] }));
-  sliders((k, v) => SLANT_KEYS.includes(k) ? writeSlant(s, k, v) : (s[k] = v))
+  bindSlant(body, s);
+  sliders((k, v) => s[k] = v)
  }
 
  function tabBase(body, s) {
@@ -1299,8 +1345,8 @@ const PB_ART = (() => {
    }));
    act('#pDel', delProps);
    act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);bindGroup();bindZ('pz1',d=>{o.z=Math.max(-20,Math.min(20,(o.z||0)+d));if(!o.z)delete o.z});
-   act('#slReset', once(() => { for (const k of SLANT_KEYS) delete o[k] }));
-   sliders((k, v) => SLANT_KEYS.includes(k) ? writeSlant(o, k, v) : (o[k] = v));
+   bindSlant(body, o);
+   sliders((k, v) => o[k] = v);
    return
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น${sel.length>1?` · <b>เลือก ${sel.length} ชิ้น</b> ลากชิ้นใดก็ได้เพื่อย้ายทั้งกลุ่ม`:''}</p>
@@ -1368,7 +1414,7 @@ const PB_ART = (() => {
   render,
   /* v98.292 · bridge for js/piece-detail.js: a prop of this sub-map (key = index in M.props) */
   detail: {
-   caps: { rot: false, slant: true, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
+   caps: { rot: false, slant: false, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
    item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
    ov: key => M.props[+key] || {},
    edit(key, fn, cp) { const o = M.props[+key]; if (!o) return; if (cp) checkpoint(); fn(o); for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === false) delete o[k]; dirty = true; save(); render() },
