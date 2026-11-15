@@ -37,7 +37,7 @@
     { label: 'ถิ่น Frenol\'Heracean', how: 'ทะเลตะวันตกไกล/มหาสมุทรคลั่ง ตาม Codex (นอกภาพ)' }
   ];
   const find = (geo, need) => [...geo.zones, ...geo.routes, ...geo.points].filter(o => o.need === need);
-  const blank = () => ({ v: 1, zones: [], routes: [], points: [], needs: {} });
+  const blank = () => ({ v: 1, zones: [], routes: [], points: [], needs: {}, pos: {} });
   const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
   function add(geo, type, o) { const list = type === 'zone' ? geo.zones : type === 'route' ? geo.routes : geo.points, kind = o.kind || Object.keys(KINDS[type])[0], obj = { id: uid(type[0]), n: o.n || '', kind, status: o.status || 'proposed', notes: o.notes || '', need: o.need || '', ...o }; obj.c = obj.c || KINDS[type][kind]?.[1] || '#fff'; list.push(obj); return obj }
   function remove(geo, id) { for (const k of ['zones', 'routes', 'points']) { const i = geo[k].findIndex(o => o.id === id); if (i >= 0) { geo[k].splice(i, 1); return true } } return false }
@@ -48,7 +48,7 @@
   }
   function progress(geo) { const c = { done: 0, proposed: 0, skip: 0, decided: 0, missing: 0 }; for (const n of NEEDS) c[needStatus(geo, n)]++; return { ...c, total: NEEDS.length, settled: c.done + c.skip + c.decided } }
   const serialize = geo => JSON.stringify(geo, null, 1);
-  function parse(txt) { const g = JSON.parse(txt); if (!g || typeof g !== 'object') throw Error('ไม่ใช่ข้อมูลแผนที่'); const o = blank(); for (const k of ['zones', 'routes', 'points']) o[k] = Array.isArray(g[k]) ? g[k].filter(x => x && x.id) : []; o.needs = g.needs && typeof g.needs === 'object' ? g.needs : {}; return o }
+  function parse(txt) { const g = JSON.parse(txt); if (!g || typeof g !== 'object') throw Error('ไม่ใช่ข้อมูลแผนที่'); const o = blank(); for (const k of ['zones', 'routes', 'points']) o[k] = Array.isArray(g[k]) ? g[k].filter(x => x && x.id) : []; o.needs = g.needs && typeof g.needs === 'object' ? g.needs : {}; o.pos = g.pos && typeof g.pos === 'object' ? g.pos : {}; return o }
   const centroid = pts => pts.reduce((a, p) => [a[0] + p[0] / pts.length, a[1] + p[1] / pts.length], [0, 0]);
   const bbox = pts => { const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]); return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) } };
   function pointInPoly(x, y, pts) { let c = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) { const [xi, yi] = pts[i], [xj, yj] = pts[j]; if (((yi > y) !== (yj > y)) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c } return c }
