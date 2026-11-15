@@ -11,6 +11,8 @@
   let mode = 'tiles'; try { mode = localStorage.getItem('project-a-manager-mode') || 'tiles' } catch (e) { }   /* v98.303 · tiles (default) or the table */
 
   const twin = p => /\.png$/.test(p) ? p.replace(/\.png$/, '.webp') : /\.webp$/.test(p) ? p.replace(/\.webp$/, '.png') : p;
+  /* v98.569 · how big a picture is really drawn on screen compared with its own pixels (samples recorded by js/texel.js in the game pages) */
+  const texelLine = p => { try { const T = JSON.parse(localStorage.getItem('projectA.texelStats') || '{}'), e = T[p]; if (!e) return ''; const lvl = e.r > 1.15 ? ['ขยาย · นุ่ม', '#b5462e'] : e.r < .12 ? ['ย่อหนักมาก', '#b5462e'] : e.r < .5 ? ['ย่อ · ปรับให้อัตโนมัติ', '#2f7d4f'] : ['ใกล้ 1:1', '#2f7d4f']; return `<div style="margin:3px 0"><small>🔍 บนจอ ×${e.r.toFixed(2)} (ภาพ ${e.sw}px → จอ ${e.dw}px · ${e.p}) <b style="color:${lvl[1]}">${lvl[0]}</b></small></div>` } catch (x) { return '' } };
   const usageOf = p => { const U = window.ASSET_USAGE || {}, k = p.replace(/^assets\//, ''); return U[k] || U[twin(p).replace(/^assets\//, '')] || [] };
 
   function build() {
@@ -94,6 +96,7 @@
       cb.onclick = e => { e.stopPropagation(); t() }; el.onclick = t;
       const place = e => { const w = tip.offsetWidth, h = tip.offsetHeight; let x = e.clientX + 16, y = e.clientY + 16; if (x + w > innerWidth - 8) x = e.clientX - w - 12; if (y + h > innerHeight - 8) y = innerHeight - h - 8; tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px' };
       el.onmouseenter = e => { if (!r) return; tip.innerHTML = `<div class="tp">${esc(p)}</div><div style="margin:3px 0"><span class="mg-badge" style="background:${LABEL[r.st][1]}">${LABEL[r.st][0]}</span> <small>โฟลเดอร์ ${esc(r.folder)}</small></div><div style="margin:2px 0"><small>${esc(window.ImageCatalog ? window.ImageCatalog.label(r.cat) : r.cat)}${r.sub ? ' › ' + esc(r.sub) : ''}${r.w ? ' · ' + r.w + '×' + r.h : ''}${r.bytes ? ' · ' + (r.bytes / 1024 | 0) + ' KB' : ''}${r.dup ? ' · <b>ซ้ำกับอีก ' + r.dup + ' ไฟล์</b>' : ''}${r.slot ? ' · slot ' + esc(r.slot) : ''}</small></div><div><b>ใช้ที่ไหน</b><br>${r.where.length ? r.where.map(esc).join('<br>') : 'ไม่พบว่ามีส่วนไหนของเกมเรียกใช้'}</div><small style="opacity:.75">คลิก = เลือก/ยกเลิกเพื่อลบ</small>`; tip.style.display = 'block'; place(e) };
+      { const oe = el.onmouseenter; el.onmouseenter = e => { oe(e); const L = texelLine(p); if (L) tip.innerHTML += L } }   /* v98.569 · screen px ÷ picture px, from TexelNorm's samples */
       el.onmousemove = place; el.onmouseleave = () => { tip.style.display = 'none' };
     });
     pane.querySelectorAll('tbody tr').forEach(tr => { const p = tr.dataset.p, cb = tr.querySelector('input'); const t = () => { picked.has(p) ? picked.delete(p) : picked.add(p); tr.classList.toggle('on', picked.has(p)); cb.checked = picked.has(p); $('mgDel').disabled = !picked.size; $('mgDel').textContent = `ลบที่เลือก (${picked.size})` }; cb.onclick = e => { e.stopPropagation(); t() }; tr.onclick = t });

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>รายงานความละเอียดบนจอ</title>
+<link rel="stylesheet" href="css/thai-font.css?v=1">
+<style>
+:root{--bg:#f6f3ea;--panel:#fffdf6;--line:#d9d0b8;--ink:#2b2a22;--muted:#6b6652;--ok:#2f7d4f;--warn:#b57a1c;--bad:#b5462e;--gold:#c9893a}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1d1b16;--panel:#26231c;--line:#443e30;--ink:#efe8d4;--muted:#a79f86}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 AgThai,"Noto Sans Thai",system-ui,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0 0 4px}p.sub{margin:0 0 12px;color:var(--muted)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+button,select,input{font:inherit;padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}button{cursor:pointer}button.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;margin:12px 0}
+.cat{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:8px 10px}.cat b{display:block}.cat small{color:var(--muted)}
+.hist{display:flex;gap:2px;align-items:flex-end;height:34px;margin-top:6px}.hist i{flex:1;background:var(--gold);opacity:.8;min-height:1px;border-radius:2px 2px 0 0}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{font-weight:600;color:var(--muted);position:sticky;top:0;background:var(--panel)}
+td.n{text-align:right;font-variant-numeric:tabular-nums}.th{width:56px;height:44px;object-fit:contain;background:repeating-conic-gradient(#0000000d 0 25%,#0000 0 50%) 0/10px 10px;border-radius:4px}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;color:#fff}.ok{background:var(--ok)}.warn{background:var(--warn)}.bad{background:var(--bad)}
+.path{font-family:ui-monospace,monospace;font-size:12px;word-break:break-all}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<h1>🔍 รายงานความละเอียดบนจอ</h1>
+<p class="sub">อัตราส่วน <b>พิกเซลบนจอ ÷ พิกเซลของภาพ</b> ของทุกภาพที่เกมวาดจริง (สุ่มตัวอย่างจากหน้าเกม: หมู่บ้าน แมพย่อย ในอาคาร สนามรบ แผนที่โลก) · ค่าต่ำ = ย่อมาก (คมแต่เส้นบาง) · เกิน 1 = ขยาย (นุ่ม) · ภาพที่ย่อเกิน 1.5 เท่าถูกย่อให้พอดีขนาดจอด้วยกฎเดียวกันอัตโนมัติ (js/texel.js)</p>
+<div class="bar">
+  <button id="norm"></button><button id="clear">ล้างข้อมูลที่เก็บไว้</button>
+  <label>หมวด <select id="cat"></select></label>
+  <label>แสดง <select id="show"><option value="odd">เฉพาะตัวที่ผิดปกติ</option><option value="all">ทั้งหมด</option></select></label>
+  <span id="count" class="sub"></span>
+</div>
+<div id="cats" class="cats"></div>
+<div id="out"></div>
+</main>
+<script src="js/image-catalog.js?v=v98.569"></script>
+<script>
+(function () {
+  const KEY = 'projectA.texelStats', NORM = 'projectA.texelNorm', $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const med = a => { const b = [...a].sort((x, y) => x - y); return b.length ? b[b.length >> 1] : 0 };
+  let rows = [];
+  const load = () => { let T = {}; try { T = JSON.parse(localStorage.getItem(KEY) || '{}') || {} } catch (e) { }
+    rows = Object.entries(T).filter(([p]) => /\.(webp|png|jpe?g)$/i.test(p)).map(([p, e]) => { const c = window.ImageCatalog ? ImageCatalog.categoryOf(p) : { cat: 'other', sub: '' }; return { ...e, pg: e.p, p, cat: c.cat, sub: c.sub } });
+    const by = {}; for (const r of rows) (by[r.cat] ||= []).push(r);
+    for (const [k, list] of Object.entries(by)) { const m = med(list.map(r => r.r)); for (const r of list) { r.m = m; r.x = m ? r.r / m : 1 } }
+    return by };
+  const verdict = r => r.r > 1.15 ? ['ขยาย · นุ่ม', 'bad'] : r.r < .1 ? ['ย่อหนักมาก', 'bad'] : (r.x > 1.7 || r.x < .55) ? ['ต่างจากหมวด', 'warn'] : ['ปกติ', 'ok'];
+  const lab = c => (window.ImageCatalog && ImageCatalog.label) ? ImageCatalog.label(c) : c;
+  function draw() {
+    const by = load(), cats = Object.keys(by).sort(), cur = $('cat').value || '';
+    $('cat').innerHTML = '<option value="">ทุกหมวด</option>' + cats.map(c => `<option value="${esc(c)}"${c === cur ? ' selected' : ''}>${esc(lab(c))} (${by[c].length})</option>`).join('');
+    $('cats').innerHTML = cats.map(c => { const l = by[c], rs = l.map(r => r.r), mx = 12, bins = Array(mx).fill(0); for (const r of rs) bins[Math.min(mx - 1, Math.floor(Math.min(r, 1.2) / 1.2 * mx))]++; const top = Math.max(1, ...bins), odd = l.filter(r => verdict(r)[1] !== 'ok').length;
+      return `<div class="cat"><b>${esc(lab(c))}</b><small>${l.length} ภาพ · กลาง ×${med(rs).toFixed(2)} · ผิดปกติ ${odd}</small><div class="hist" title="กระจายอัตราส่วน 0 → 1.2">${bins.map(n => `<i style="height:${Math.max(2, n / top * 34)}px"></i>`).join('')}</div></div>` }).join('') || '';
+    const sel = $('cat').value, odd = $('show').value === 'odd';
+    let list = rows.filter(r => (!sel || r.cat === sel) && (!odd || verdict(r)[1] !== 'ok')); list.sort((a, b) => Math.abs(Math.log(b.x)) - Math.abs(Math.log(a.x)));
+    $('count').textContent = `${rows.length} ภาพที่เก็บตัวอย่างแล้ว · แสดง ${Math.min(list.length, 300)}/${list.length}`;
+    if (!rows.length) { $('out').innerHTML = '<div class="empty">ยังไม่มีข้อมูล — เปิดเกม (หมู่บ้าน / แมพย่อย / สนามรบ) เดินดูสักครู่ แล้วกลับมาหน้านี้ ข้อมูลอัปเดตเองทุกไม่กี่วินาที</div>'; return }
+    $('out').innerHTML = `<table><thead><tr><th></th><th>ไฟล์</th><th>หมวด</th><th class="n">ภาพ px</th><th class="n">จอ px</th><th class="n">อัตรา</th><th class="n">เทียบหมวด</th><th>ผล</th><th>หน้า</th></tr></thead><tbody>${list.slice(0, 300).map(r => { const v = verdict(r); return `<tr><td><img class="th" loading="lazy" src="${esc(r.p)}" alt=""></td><td class="path">${esc(r.p)}</td><td>${esc(lab(r.cat))}</td><td class="n">${r.sw}</td><td class="n">${r.dw}</td><td class="n">×${r.r.toFixed(2)}</td><td class="n">${r.x.toFixed(2)}×</td><td><span class="tag ${v[1]}">${v[0]}</span></td><td>${esc(r.pg || '')}</td></tr>` }).join('')}</tbody></table>`;
+  }
+  const normUi = () => { const on = localStorage.getItem(NORM) !== '0'; $('norm').textContent = on ? '✔ ปรับความละเอียดอัตโนมัติ: เปิด' : '✘ ปรับความละเอียดอัตโนมัติ: ปิด'; $('norm').className = on ? 'on' : '' };
+  $('norm').onclick = () => { localStorage.setItem(NORM, localStorage.getItem(NORM) === '0' ? '1' : '0'); normUi() };
+  $('clear').onclick = () => { if (confirm('ล้างข้อมูลตัวอย่างทั้งหมด?')) { localStorage.setItem(KEY, '{}'); draw() } };
+  $('cat').onchange = $('show').onchange = draw; normUi(); draw(); setInterval(draw, 4000);
+})();
+</script>
+</body>
+</html>
