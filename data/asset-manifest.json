@@ -116009,6 +116009,76 @@
     "flipX": false
    },
    "artRevision": "20261115-091804"
+  },
+  {
+   "id": "iron-fence4-corner-new",
+   "file": "assets/objects/iron-fence4-corner-new.webp",
+   "category": "tactics-props",
+   "status": "final",
+   "size": [
+    1583,
+    709
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: iron-fence4-corner-new",
+   "prompt": "",
+   "pivot": [
+    0.647484295385373,
+    0.9776017847449652
+   ],
+   "mapW": 255,
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     2.554283069176573,
+     1.602748729445626
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1.0026000000000002,
+     0.9974
+    ],
+    "flipX": true
+   },
+   "artRevision": "20261115-093627"
+  },
+  {
+   "id": "iron-fence4-corner-new-2",
+   "file": "assets/objects/iron-fence4-corner-new-2.webp",
+   "category": "tactics-props",
+   "status": "final",
+   "size": [
+    1685,
+    1629
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: iron-fence4-corner-new-2",
+   "prompt": "",
+   "pivot": [
+    0.3202277973178513,
+    1.1647476908762096
+   ],
+   "mapW": 320,
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.3202277973178513,
+     1.1647476908762096
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1.0026000000000002,
+     0.9974
+    ],
+    "flipX": true
+   },
+   "artRevision": "20261115-093642"
   }
  ],
  "studioReviews": {
