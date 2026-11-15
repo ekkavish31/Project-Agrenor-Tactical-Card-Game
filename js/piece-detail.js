@@ -95,11 +95,18 @@
     if (!el('pdFitMsg')) return; const E = G().edges(points);
     el('pdFitMsg').textContent = E ? `ซ้าย ${E.a1.toFixed(1)}° · ขวา ${E.a2.toFixed(1)}° → เป้า 26.57° ทั้งสองด้าน${E.ok ? '' : ' · จุดฐานไม่ถูกต้อง ลองวัดใหม่'}` : (points.length < 3 ? ['① คลิกมุมซ้ายของฐาน', '② คลิกมุมหน้าสุดของฐาน', '③ คลิกมุมขวาของฐาน'][points.length] : 'จุดชิดกันเกินไป ลองวัดใหม่');
     dlg.querySelectorAll('[data-fit]').forEach(b => b.disabled = !E?.ok);
+    if (el('pdFrSave')) { el('pdFrSave').onclick = () => { D().frames.saveToArt(key); build(); paint(); readouts() }; el('pdFrUse').onclick = () => { D().frames.useArt(key); build(); paint(); readouts() } }
+  }
+  function frState() {   // v98.567 · where this piece's frame comes from
+    const m = el('pdFrState'); if (!m) return; const st = D().frames?.state(key); if (!st) return;
+    m.textContent = st.own ? '✎ แก้เฉพาะชิ้นนี้ (ไม่ตามค่าของภาพ)' : st.tpl ? '🔗 ตามค่าของภาพนี้ (บันทึกไว้แล้ว)' : '🔗 ตามกรอบอัตโนมัติจากความกว้างภาพ (ยังไม่ได้บันทึกค่าของภาพ)';
+    const u = el('pdFrUse'); if (u) u.disabled = !st.own;
   }
   function readouts() {
     if (!dlg) return; const o = D().ov(key);
     for (const f of ['sw', 'sh', 'fw', 'fh']) { const e = el('pd_' + f + 'V'); if (e) e.textContent = f === 'sw' ? (o.sw ?? o.fw ?? .5) : f === 'sh' ? (o.sh ?? o.fh ?? .5) : (o[f] ?? .5) }
     el('pdUndo').disabled = !undo.length;
+    frState();
     el('pdOffsets').textContent = `ภาพ X ${round(o.artX || 0)} / Y ${round(o.artY || 0)} · ฟ้า ${round(o.orderU || 0)}, ${round(o.orderV || 0)} · แดง ${round(o.blockU || 0)}, ${round(o.blockV || 0)}`;
   }
   const brushLabel = () => (brush * (G()?.H || .5)).toFixed(1) + '×' + (brush * (G()?.H || .5)).toFixed(1) + ' ช่อง';
@@ -112,7 +119,7 @@
 <h4>รูปร่าง</h4>${row('pdS', 'ขนาด', Math.round((ov.s ?? 1) * 100), 30, 250, 1, v => v + '%')}${caps().rot === false ? '' : row('pdR', 'หมุน', ov.r || 0, -180, 180, 1, v => v + '°')}${caps().slant === false ? '' : row('pdIx', 'เฉียง ↗↙', Math.round((ov.ix ?? 1) * 100), 50, 200, 1, v => v + '%') + row('pdIy', 'เฉียง ↖↘', Math.round((ov.iy ?? 1) * 100), 50, 200, 1, v => v + '%')}
 <label class="pdc"><input type="checkbox" id="pdF" ${ov.f ? 'checked' : ''}> กลับด้านซ้าย-ขวา</label><button id="pdArtReset">คืนตำแหน่งภาพ</button>
 <section id="pdFitPanel" ${mode === 'fit' ? '' : 'hidden'}><h4>📐 ปรับมุมฐานแบบ Studio</h4><p class="pdhint">เลือกมุมฐานเดียวกัน ซ้าย → หน้าสุด → ขวา ไม่เลือกยอดพนักหรือจุดต่างระดับ</p><p id="pdFitMsg"></p><div class="pdtools"><button data-fit="balanced">ปรับ 2:1 (สมดุล)</button><button data-fit="height">รักษาความสูง</button><button data-fit="width">รักษาความกว้าง</button><button id="pdFitClear">วัดใหม่</button><button id="pdFitReset">คืนค่ามุมฐาน</button></div></section>
-<h4>กรอบพื้น</h4>${step('sw', '🟦 เรียงลำดับ กว้าง', ov.sw ?? ov.fw ?? .5)}${step('sh', '🟦 เรียงลำดับ ลึก', ov.sh ?? ov.fh ?? .5)}<button id="pdOrderReset">คืนตำแหน่งกรอบฟ้า</button> <button id="pdSzReset">ฟ้า = กรอบแดง</button>
+${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint" id="pdFrState"></p><div class="pdr" style="display:flex;gap:6px;flex-wrap:wrap"><button id="pdFrSave" title="กรอบฟ้า/แดงนี้กลายเป็นค่าของภาพนี้ — ทุกแมพที่ใช้ภาพนี้และไม่ได้แก้เองจะตามทันที">💾 บันทึกลงภาพนี้ (ทุกแมพ)</button><button id="pdFrUse" title="ทิ้งกรอบที่แก้เฉพาะชิ้นนี้ แล้วตามค่าของภาพ">↩ ใช้ค่าของภาพ</button></div>` : ''}<h4>กรอบพื้น</h4>${step('sw', '🟦 เรียงลำดับ กว้าง', ov.sw ?? ov.fw ?? .5)}${step('sh', '🟦 เรียงลำดับ ลึก', ov.sh ?? ov.fh ?? .5)}<button id="pdOrderReset">คืนตำแหน่งกรอบฟ้า</button> <button id="pdSzReset">ฟ้า = กรอบแดง</button>
 ${caps().block === false ? '' : `<label class="pdc"><input type="checkbox" id="pdB" ${ov.block ? 'checked' : ''}> 🟥 บล็อกเดิน</label>${step('fw', '🟥 บล็อก กว้าง', ov.fw ?? .5)}${step('fh', '🟥 บล็อก ลึก', ov.fh ?? .5)}<button id="pdBlockReset">คืนตำแหน่งกรอบแดง</button>`}${caps().note ? `<p class="pdst">${caps().note}</p>` : ''}
 <h4>การบัง</h4><label class="pdc">ความสูง <select id="pdT"><option value="">อัตโนมัติ (จากชื่อ)</option><option value="tall"${ov.tall === 'tall' ? ' selected' : ''}>สูง</option><option value="low"${ov.tall === 'low' ? ' selected' : ''}>เตี้ย</option></select></label><p id="pdState" class="pdst"></p></div></div>`;
   }

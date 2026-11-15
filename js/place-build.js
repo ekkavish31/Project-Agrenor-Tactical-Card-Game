@@ -911,7 +911,7 @@ const PB_ART = (() => {
    return
   }
   try {
-   const sha = await GitHubPush.pushSettings([KEY, 'map-char-scale-v1'], 'แผนที่ย่อย', [], status);
+   const sha = await GitHubPush.pushSettings([KEY, 'map-char-scale-v1', 'place-art-frames-v1'], 'แผนที่ย่อย', [], status);
    status(sha ? '⬆ push แผนที่ย่อยแล้ว · ' + sha : 'ไม่มีค่าที่ต้อง push')
   } catch (err) {
    status('push ไม่สำเร็จ: ' + err.message)
@@ -1416,8 +1416,20 @@ const PB_ART = (() => {
   detail: {
    caps: { rot: false, slant: false, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
    item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
-   ov: key => M.props[+key] || {},
-   edit(key, fn, cp) { const o = M.props[+key]; if (!o) return; if (cp) checkpoint(); fn(o); for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === false) delete o[k]; dirty = true; save(); render() },
+   ov: key => { const o = M.props[+key]; return o ? (window.ArtFrames ? ArtFrames.effective(o) : o) : {} },   /* v98.567 · the window shows the frame the piece really uses (own → picture's template → automatic) */
+   edit(key, fn, cp) {
+    const o = M.props[+key]; if (!o) return; if (cp) checkpoint();
+    const AF = window.ArtFrames, wasOwn = !AF || AF.isOwn(o);
+    if (!wasOwn) AF.materialize(o);   // edit on top of what is shown
+    fn(o); for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === false) delete o[k];
+    if (!wasOwn) { const tmp = { ...o }; AF.strip(tmp); const eff = AF.effective(tmp), same = AF.FIELDS.every(k => JSON.stringify(o[k] ?? null) === JSON.stringify(eff[k] ?? null)); if (same) AF.strip(o); else o.fo = true }   // nothing in the frame really changed → keep following the picture
+    dirty = true; save(); render()
+   },
+   frames: {
+    state: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return null; return { own: AF.isOwn(o), tpl: AF.has(o.art) } },
+    saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom(o); AF.strip(o); dirty = true; save(); render() },
+    useArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.strip(o); dirty = true; save(); render() }
+   },
    drawTo(q, E, ov) { const main = g; g = q; try { q.save(); const p0 = project(0, 0); q.translate(-p0.x, -p0.y); drawArt(ov.art, 0, 0, ov.width || 110, ov.s || 1, ov.f, 0, null, ov); q.restore() } catch (e) { } finally { g = main } }
   },
   enter,
