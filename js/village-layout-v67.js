@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-11-15T02:47:15.250Z.
+// Village default layout — saved from the in-game editor 2026-11-15T06:43:00.139Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -2935,10 +2935,11 @@ window.VillageDefaultLayout={
         "dv": -0.8
       },
       "add:mwh8f6jjdy0": {
-        "du": -10.5,
-        "dv": -0.5,
-        "s": 0.84,
-        "f": true
+        "du": -10.9334,
+        "dv": -0.4334,
+        "s": 0.764,
+        "f": true,
+        "free": true
       },
       "add:mwh8hby2wpy": {
         "s": 0.84,
