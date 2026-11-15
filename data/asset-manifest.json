@@ -109271,7 +109271,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.434",
+   "artRevision": "20261115-141403",
    "usedIn": "NPC เทส · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:tess",
@@ -109287,7 +109287,16 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "history": [
+    {
+     "file": "assets/_versions/npc-tess-sw-walk1/20261115-141403.webp",
+     "at": "2026-11-15T07:14:03.245Z",
+     "stamp": "20261115-141403",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-tess-se-walk1",
@@ -109306,7 +109315,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.434",
+   "artRevision": "20261115-141403",
    "usedIn": "NPC เทส · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:tess",
@@ -109323,7 +109332,16 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-tess-sw-walk1"
+   "mirroredFrom": "npc-tess-sw-walk1",
+   "history": [
+    {
+     "file": "assets/_versions/npc-tess-se-walk1/20261115-141403.webp",
+     "at": "2026-11-15T07:14:03.289Z",
+     "stamp": "20261115-141403",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-ash-sw-walk1",
@@ -109626,7 +109644,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.434",
+   "artRevision": "20261115-141432",
    "usedIn": "NPC เทส · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:tess",
@@ -109642,7 +109660,16 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "history": [
+    {
+     "file": "assets/_versions/npc-tess-ne-walk1/20261115-141431.webp",
+     "at": "2026-11-15T07:14:32.102Z",
+     "stamp": "20261115-141431",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-tess-nw-walk1",
@@ -109661,7 +109688,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.434",
+   "artRevision": "20261115-141432",
    "usedIn": "NPC เทส · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:tess",
@@ -109678,7 +109705,16 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-tess-ne-walk1"
+   "mirroredFrom": "npc-tess-ne-walk1",
+   "history": [
+    {
+     "file": "assets/_versions/npc-tess-nw-walk1/20261115-141431.webp",
+     "at": "2026-11-15T07:14:32.029Z",
+     "stamp": "20261115-141431",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-ash-ne-walk1",
