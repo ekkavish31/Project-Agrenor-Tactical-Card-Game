@@ -101,7 +101,7 @@ const DEFAULTS = {
    /* รอบแผงร้านของเรา + กระดานข่าว */
    { art: 'int:price-post', u: -2.4, v: -6.2, s: 1 }, { art: 'int:till-scale', u: 2.4, v: -6, s: 1 }, { art: 'decor:v1-notice-board', u: -6.4, v: 0.2, s: 1 }, { art: 'int:quest-board', u: -9.4, v: 5.4, s: 1 },
    /* ทางเข้า (ใต้): ป้าย ธง ต้นไม้กระถาง รถเข็น บ่อน้ำ */
-   { art: 'decor:banner-pole', u: -2.2, v: 10, s: .62 }, { art: 'decor:banner-pole', u: 2.2, v: 10, s: .62 }, { art: 'decor:signpost', u: 3.6, v: 9, s: 1 }, { art: 'decor:flower-box', u: -3.4, v: 9.6, s: 1 }, { art: 'decor:flower-box', u: 5.2, v: 9.8, s: 1 },
+   { art: 'decor:banner-pole', u: -3.8, v: 10.2, s: .62 }, { art: 'decor:banner-pole', u: 3.8, v: 10.2, s: .62 }, { art: 'decor:signpost', u: 6.4, v: 8.4, s: 1 }, { art: 'decor:flower-box', u: -5.4, v: 9.8, s: 1 }, { art: 'decor:flower-box', u: 5.2, v: 9.8, s: 1 },
    { art: 'decor:well', u: 7.4, v: 9.2, s: 1 }, { art: 'decor:cart', u: 9.6, v: 9.4, s: 1 }, { art: 'decor:hay', u: 11, v: 7.6, s: .9 }, { art: 'int:water-trough', u: -7.4, v: 10.4, s: 1 }, { art: 'int:map-table', u: 4.6, v: 4.6, s: .9 },
    { art: 'int:plant-large', u: -11, v: 9.4, s: 1 }, { art: 'int:plant-large', u: 11, v: -1, s: 1 }, { art: 'decor:flower-bed', u: -11, v: 0.8, s: 1 }
   ]
@@ -918,6 +918,50 @@ function focus() {
 }
 let hits = [];
 
+/* ---- v98.548 · the way out: a soft light aura (like daylight coming in through the doorway) + a floor arrow that slides toward the exit ----
+   Facing SW / SE (the door is on the near side, behind the camera): only the light. Facing NE / NW (far walls): the door is drawn too, with the light behind it.
+   The arrow is where you stand to leave (click it / walk onto it / the exit button all go there). It slides along its own axis by 20 % of its length. */
+const EXIT_DIRS = { SE: [1, 0], NW: [-1, 0], SW: [0, 1], NE: [0, -1] };
+function exitDir() {
+ const e = M.exit, F = M.floor; if (!e) return 'SW'; if (EXIT_DIRS[e.dir]) return e.dir;
+ return [['SE', F.w - e.u], ['NW', F.w + e.u], ['SW', F.d + 1 - e.v], ['NE', F.d + e.v]].sort((a, b) => a[1] - b[1])[0][0]
+}
+const EXIT_BACK = 2.3;   /* cells inside the room, from the exit, to the arrow's resting centre */
+function exitSpot() { const d = EXIT_DIRS[exitDir()]; return { u: M.exit.u - d[0] * EXIT_BACK, v: M.exit.v - d[1] * EXIT_BACK } }
+function exitGlow(t) {
+ if (!M.exit) return;
+ const e = M.exit, dk = exitDir(), d = EXIT_DIRS[dk], pulse = .5 + .5 * Math.sin(t * .0021), pe = project(e.u, e.v), ps = project(exitSpot().u, exitSpot().v);
+ g.save(); g.globalCompositeOperation = 'lighter';
+ const aura = (p, rx, a) => { const gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, rx); gr.addColorStop(0, `rgba(255,238,178,${a})`); gr.addColorStop(.55, `rgba(255,226,150,${a * .38})`); gr.addColorStop(1, 'rgba(255,220,140,0)'); g.save(); g.translate(p.x, p.y); g.scale(1, .5); g.translate(-p.x, -p.y); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, rx, 0, 7); g.fill(); g.restore() };
+ aura(pe, 250, .55 + .08 * pulse); aura(ps, 170, .26 + .06 * pulse);
+ g.restore()
+}
+function exitArrow(t) {
+ if (!M.exit) return;
+ const d = EXIT_DIRS[exitDir()], L = 2.1, W = .62, HW = 1.5, HL = .85, slide = .2 * L * (.5 + .5 * Math.sin(t * .0042)), c = exitSpot(),
+  base = { u: c.u + d[0] * slide, v: c.v + d[1] * slide }, n = [-d[1], d[0]],
+  at = (a, b) => project(base.u + d[0] * (a - L / 2) + n[0] * b, base.v + d[1] * (a - L / 2) + n[1] * b),
+  pts = [at(0, -W / 2), at(L - HL, -W / 2), at(L - HL, -HW / 2), at(L, 0), at(L - HL, HW / 2), at(L - HL, W / 2), at(0, W / 2)];
+ g.save();
+ g.shadowColor = 'rgba(255,224,140,.85)'; g.shadowBlur = 14;
+ g.beginPath(); pts.forEach((p, i) => g[i ? 'lineTo' : 'moveTo'](p.x, p.y)); g.closePath();
+ const a0 = at(0, 0), a1 = at(L, 0), gr = g.createLinearGradient(a0.x, a0.y, a1.x, a1.y); gr.addColorStop(0, 'rgba(255,240,190,.72)'); gr.addColorStop(1, 'rgba(255,208,96,.96)');
+ g.fillStyle = gr; g.fill(); g.shadowBlur = 0; g.lineWidth = 2.6; g.strokeStyle = 'rgba(140,96,34,.85)'; g.stroke();
+ g.restore()
+}
+/* the far-wall door (NE / NW only): an upright door picture sheared to lie in the wall plane, with a bright opening behind it */
+function exitDoorObj() {
+ const dk = exitDir(); if (!M.exit || (dk !== 'NE' && dk !== 'NW')) return null;
+ const p = project(M.exit.u, M.exit.v), im = imgOf('int:door-open'), w = 128, h = w * 389 / 262;
+ return { y: p.y - 40, draw: () => {
+  g.save(); g.translate(p.x, p.y + 6); g.transform(1, dk === 'NE' ? .5 : -.5, 0, 1, 0, 0);
+  const gr = g.createLinearGradient(0, -h, 0, 0); gr.addColorStop(0, 'rgba(255,246,206,.95)'); gr.addColorStop(1, 'rgba(255,226,150,.78)');
+  g.fillStyle = gr; g.fillRect(-w * .36, -h * .9, w * .72, h * .88);
+  if (im && im.complete && im.naturalWidth) g.drawImage(im, -w / 2, -h, w, h);
+  g.restore()
+ } }
+}
+
 function draw(t) {
  requestAnimationFrame(draw);
  if (!active || document.hidden) {
@@ -961,6 +1005,7 @@ function draw(t) {
  g.drawImage(terrain, 0, 0);
  window.PlacePaint?.draw(g);
  walls();
+ exitGlow(t); exitArrow(t);   /* v98.548 */
  if (path.length) {
   g.strokeStyle = '#e4ce8e';
   g.lineWidth = 2;
@@ -1035,6 +1080,7 @@ function draw(t) {
    /* v95.21: same size as on the village map (93.6 px × the village's hero scale) */ if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K, hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0 || !!window.TouchControls?.moving?.(), CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K)   /* v98.532 · was (hc.s || 1): the village editor's OLD per-hero cast scale (≈0.58 here) → the lead hero was drawn at ~60 % of the follower and every villager; same rule as the first branch now */
   }
  });
+ { const dr = exitDoorObj(); if (dr) objects.push(dr) }   /* v98.548 */
  objects.push(...(window.PlacePeople?.objects(project, g, t, blocked, hero) || []));   // v94.02 villagers who are here now
  // v87 · a work station and its own decorations are one set (layer number, then depth); sets and loose things sort by depth
  const sets = new Map(), list = [];
@@ -1083,14 +1129,14 @@ list.sort((a, b) => a.y - b.y);
   g.fillRect(p.x - w / 2, p.y + 14, w, 26);
   g.fillStyle = '#f6e8bd';
   g.fillText(s.name, p.x, p.y + 32)
- } {
+ } if (editing) {   /* v98.548 · players see the light + arrow instead of the old sign */
   const p = project(M.exit.u, M.exit.v);
   g.fillStyle = '#233a2ee0';
   g.fillRect(p.x - 58, p.y + 10, 116, 26);
   g.fillStyle = '#f6e8bd';
   g.font = '13px TownThai,system-ui';
   g.textAlign = 'center';
-  g.fillText('← ทางออก', p.x, p.y + 28)
+  g.fillText('ทางออก · ' + exitDir(), p.x, p.y + 28)
  }
  window.PlaceBuild?.overlay(g, t)
 }
@@ -1235,11 +1281,11 @@ cv.onpointerup = e => {
   return
  }
  const q = inv(p.x, p.y);
- if (Math.hypot(q.u - M.exit.u, q.v - M.exit.v) < 1.3) {
+ if (Math.hypot(q.u - M.exit.u, q.v - M.exit.v) < 1.3 || Math.hypot(q.u - exitSpot().u, q.v - exitSpot().v) < 1.5) {
   target = {
    exit: true
   };
-  path = route(hero, M.exit);
+  path = route(hero, exitSpot());
   if (!path.length) arrive();
   return
  }
@@ -1401,7 +1447,7 @@ $('leave').onclick = () => {
  target = {
   exit: true
  };
- path = route(hero, M.exit);
+ path = route(hero, exitSpot());
  if (!path.length) arrive()
 };
 document.querySelectorAll('[data-menu]').forEach(b => b.onclick = () => send('menu', {
@@ -1412,9 +1458,7 @@ function setup() {
  $('title').textContent = M.name;
  $('subtitle').textContent = M.sub || '';
  document.title = M.name + ' · Project A';
- hero.u = M.exit.u;
- hero.v = M.exit.v - .6;
- hero.dir = 'NE';
+ { const d = EXIT_DIRS[exitDir()]; hero.u = M.exit.u - d[0] * .8; hero.v = M.exit.v - d[1] * .8; hero.dir = ({ SW: 'NE', SE: 'NW', NE: 'SW', NW: 'SE' })[exitDir()] }   /* v98.548 · steps in from the doorway, facing into the room */
  path = [];
  target = null;
  dirty = true;
@@ -1552,7 +1596,7 @@ Interactables.add(() => {
   out.push({ id: 'p:' + a.id, kind: 'talk', u: a.u, v: a.v, r: 2.4, bumpR: 1.3, bumpT: .3, bump: true, label: 'คุย · ' + nm, icon: 'party', x: p.x, y: p.y,
    run: () => window.PlacePeople.click({ x: p.x, y: p.y - 10 }, project, { hero, go: () => { }, stop: () => { path = [] } }) });
  }
- if (M.exit) { const p = project(M.exit.u, M.exit.v); out.push({ id: 'exit', kind: 'exit', u: M.exit.u, v: M.exit.v, r: 1.9, bumpR: 1.1, bumpT: .12, bump: true, pri: -.6, label: 'ออกไปข้างนอก', icon: 'portal', x: p.x, y: p.y, run: () => send('leave') }) }
+ if (M.exit) { const sp = exitSpot(), p = project(sp.u, sp.v); out.push({ id: 'exit', kind: 'exit', u: sp.u, v: sp.v, r: 1.9, bumpR: 1.1, bumpT: .12, bump: true, pri: -.6, label: 'ออกไปข้างนอก', icon: 'portal', x: p.x, y: p.y, run: () => send('leave') }) }
  return out;
 });
 window.joyPlaceWalk = dt => {
