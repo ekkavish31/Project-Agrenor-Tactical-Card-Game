@@ -150,7 +150,9 @@ const verifiedMark = id => `<span class="verify-mark" role="group" aria-label="�
    // character id → { clip, index }: a frame chosen from the Animation clips (studio only)
 const $ = id => document.getElementById(id);
 let loadedPictures=0;
-const load = src => new Promise(r => { const i = new Image();let finished=false;const done=value=>{if(finished)return;finished=true;clearTimeout(timer);loadedPictures++;const el=document.getElementById('lineupLoadState');if(el&&!el.hidden&&el.getAttribute('role')!=='alert')el.textContent='กำลังโหลดภาพ Scale Lineup… ตรวจแล้ว '+loadedPictures+' ภาพ';r(value)};const timer=setTimeout(()=>done(null),15000);i.onload=()=>done(i);i.onerror=()=>done(null);i.src=src });
+const load1 = src => new Promise(r => { const i = new Image();let finished=false;const done=value=>{if(finished)return;finished=true;clearTimeout(timer);loadedPictures++;const el=document.getElementById('lineupLoadState');if(el&&!el.hidden&&el.getAttribute('role')!=='alert')el.textContent='กำลังโหลดภาพ Scale Lineup… ตรวจแล้ว '+loadedPictures+' ภาพ';r(value)};const timer=setTimeout(()=>done(null),15000);i.onload=()=>done(i);i.onerror=()=>done(null);i.src=src });
+/* v98.529 · the manifest may name .png while the repo holds the .webp twin (js/asset-manager.js twin()): try both, remember which one answered */
+const load = async src => { let im = await load1(src); if (im) { im.__rel = src; return im } const alt = /\.png$/.test(src) ? src.replace(/\.png$/, '.webp') : /\.webp$/.test(src) ? src.replace(/\.webp$/, '.png') : null; if (alt) { im = await load1(alt); if (im) im.__rel = alt } return im };
 function measure(img, flip, raw) {
   const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h;
   const g = c.getContext('2d', { willReadFrequently: true }); if (flip) { g.translate(w, 0); g.scale(-1, 1) } g.drawImage(img, 0, 0); const d = g.getImageData(0, 0, w, h).data;
@@ -203,13 +205,16 @@ const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},villa
 const RANK = { hero: 0, ally: 1, monster: 2 };
 /* one picture per character (the standing SW picture, or the frame picked from the Animation clips) — the SAME entry for 'battle' and 'village', so both views always agree */
 async function addChar(id, name, kind, pic, factor) {
-  const url = pic.url || pic.src, img = await load(url); if (!img) return; const m = measure(img, pic.flip); if (!m) return;
+  const url0 = pic.url || pic.src, img = await load(url0); if (!img) return; const url = img.__rel || url0; const m = measure(img, pic.flip); if (!m) return;
   const C = { img, m, src: url, url, file: pic.file || pic.src, flip: !!pic.flip, label: pic.label || '', vp: pic.vp || null, units: m.H / 384 * factor, factor, formula: `สูง ÷ 384 × ${factor}` };
   let e = ENTRIES.find(x => x.id === id); if (!e) ENTRIES.push(e = { id, name, kind, ctx: {} });
   e.name = name; e.ctx.battle = e.ctx.village = C;
 }
 /* v98.457 · the standing picture of a hero look: the imported cast pictures that exist in the repo (SE = SW mirrored · NW = NE mirrored) */
-const lookPic = (look, view) => { const k = look === 'female' ? 'f' : 'm', back = view === 'NW' || view === 'NE', mir = view === 'SE' || view === 'NW'; return { src: `assets/tactics/imported/idle-${back ? 'ne' : 'sw'}-mwcast2-${k}/frame-01.webp`, flip: mir } };
+/* v98.529 · the standing picture of a hero look = the one the GAME uses: ASSET_MANIFEST.heroVariants[look].studioPoses.idle[view] (what HeroVariant.apply puts on TACTICS_SPRITES). It used to read the OLD mwcast2 files, so the look that was NOT open
+   was measured from older art than the open one (which the studio gives from the live sprite table) → every height changed when you switched ชาย/หญิง */
+const lookPic = (look, view) => { const v = view || 'SW', f = window.ASSET_MANIFEST?.heroVariants?.[look]?.studioPoses?.idle?.[v]?.frames?.[0]?.src; if (f) return { src: f, flip: false };
+  const k = look === 'female' ? 'f' : 'm', back = v === 'NW' || v === 'NE', mir = v === 'SE' || v === 'NW'; return { src: `assets/tactics/imported/idle-${back ? 'ne' : 'sw'}-mwcast2-${k}/frame-01.webp`, flip: mir } };
 const heroLook = () => { try { const l = ST?.lineup?.look?.(); return l === 'female' ? 'female' : 'male' } catch (e) { return 'male' } };   /* which look the studio has open (the game's default is male) */
 /* v98.458 · a hero look is a PERSON, not "whichever look the studio has open": the open look is the entry `hero`, the other one `hero-<look>`, and they swap names every time you
    pick the other card. Everything that must be remembered per person (size adjustment · ✔ marks) is therefore keyed by the LOOK: male = `hero` (what the game has always used), female = `hero-female`.
@@ -220,13 +225,14 @@ const AK = id => { const l = lookOfId(id); return l ? (l === 'female' ? 'hero-fe
 const isRefId = id => lookOfId(id) === 'male';
 const GROUPOF = {};   /* id → the studio's group (characters / npcs) so the lineup filter matches the left panel */
 async function buildChars() {
+  if (!window.ASSET_MANIFEST) await new Promise(r => { const sc = document.createElement('script'); sc.src = 'js/asset-manifest.js?v=' + (window.GAME_VERSION?.v || ''); sc.onload = sc.onerror = r; document.head.append(sc) });   /* v98.529 · the game's real hero pictures (lookPic) */
   const list = ST ? ST.lineup.entities().map(e => { const id = e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc):/, ''); if (e.group) GROUPOF[id] = e.group; return { id, sid: e.id, name: e.name, clips: e.clips } }) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
   for (const c of list) {
     let pic, vp = null;
     if (ST) { const own = PICK[c.id], clip = own ? null : (c.clips || []).find(x => x.action === VP.action && x.view === VP.view) || (VP.action === 'idle' ? null : (c.clips || []).find(x => x.action === VP.action && x.view === OPPV[VP.view]));
       pic = await ST.lineup.picture(c.sid, VP.view, own?.clip || clip?.id, own ? own.index : Math.min(VP.index, (clip?.n || 1) - 1)); vp = { sid: c.sid, action: own ? 'pick' : VP.action, view: VP.view, index: own ? own.index : VP.index, clips: c.clips || [] };
       if (!pic) pic = await ST.lineup.picture(c.sid, 'SW') }
-    else pic = { src: c.id === 'hero' ? HERO_SRC : `assets/village-town/npc/${c.id}/sw-stand.webp` };
+    else pic = { src: c.id === 'hero' ? lookPic(heroLook(), 'SW').src : `assets/village-town/npc/${c.id}/sw-stand.webp` };
     if (pic) pic.vp = vp;
     if (!pic) continue; await addChar(c.id, c.id === 'hero' ? 'ตัวหลัก · ' + (heroLook() === 'female' ? 'หญิง' : 'ชาย') : (ALLIES[c.id] || c.name), c.id === 'hero' ? 'hero' : 'ally', pic, c.id === 'hero' ? DS.hero : DS.ally);
     /* v98.452 · the hero's two looks side by side: the open look is `hero` (everything keeps working on it), the other look is its own entry `hero-<look>` (standing picture of that look) */
