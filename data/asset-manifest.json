@@ -106645,7 +106645,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.421",
+   "artRevision": "20261114-074953",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -106658,7 +106658,16 @@
     "sharedAcross": "whole sheet, both views"
    },
    "sourceLibraryFile": "libfile_7226da7533f88191aca37da451300a52",
-   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "history": [
+    {
+     "file": "assets/_versions/npc-berg-sw-stand/20261114-074827.webp",
+     "at": "2026-11-14T00:48:27.937Z",
+     "stamp": "20261114-074827",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-berg-se-stand",
@@ -106676,7 +106685,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.421",
+   "artRevision": "20261114-074953",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -106690,7 +106699,16 @@
    },
    "sourceLibraryFile": "libfile_7226da7533f88191aca37da451300a52",
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
-   "mirroredFrom": "npc-berg-sw-stand"
+   "mirroredFrom": "npc-berg-sw-stand",
+   "history": [
+    {
+     "file": "assets/_versions/npc-berg-se-stand/20261114-074827.webp",
+     "at": "2026-11-14T00:48:27.978Z",
+     "stamp": "20261114-074827",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-ken-sw-stand",
@@ -106960,7 +106978,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.421",
+   "artRevision": "20261114-075005",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -106973,7 +106991,16 @@
     "sharedAcross": "whole sheet, both views"
    },
    "sourceLibraryFile": "libfile_7226da7533f88191aca37da451300a52",
-   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "history": [
+    {
+     "file": "assets/_versions/npc-berg-ne-stand/20261114-074851.webp",
+     "at": "2026-11-14T00:48:51.140Z",
+     "stamp": "20261114-074851",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-berg-nw-stand",
@@ -106991,7 +107018,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.421",
+   "artRevision": "20261114-075005",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -107005,7 +107032,16 @@
    },
    "sourceLibraryFile": "libfile_7226da7533f88191aca37da451300a52",
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
-   "mirroredFrom": "npc-berg-ne-stand"
+   "mirroredFrom": "npc-berg-ne-stand",
+   "history": [
+    {
+     "file": "assets/_versions/npc-berg-nw-stand/20261114-074851.webp",
+     "at": "2026-11-14T00:48:51.071Z",
+     "stamp": "20261114-074851",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-ken-ne-stand",
@@ -108399,7 +108435,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.432",
+   "artRevision": "20261114-075230",
    "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:berg",
@@ -108415,7 +108451,16 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "history": [
+    {
+     "file": "assets/_versions/npc-berg-sw-walk1/20261114-075230.webp",
+     "at": "2026-11-14T00:52:30.548Z",
+     "stamp": "20261114-075230",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-berg-se-walk1",
@@ -108434,7 +108479,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.432",
+   "artRevision": "20261114-075230",
    "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:berg",
@@ -108451,7 +108496,16 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-berg-sw-walk1"
+   "mirroredFrom": "npc-berg-sw-walk1",
+   "history": [
+    {
+     "file": "assets/_versions/npc-berg-se-walk1/20261114-075230.webp",
+     "at": "2026-11-14T00:52:30.613Z",
+     "stamp": "20261114-075230",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-ken-sw-walk1",
@@ -108754,7 +108808,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.432",
+   "artRevision": "20261114-075258",
    "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:berg",
@@ -108770,7 +108824,16 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "history": [
+    {
+     "file": "assets/_versions/npc-berg-ne-walk1/20261114-075258.webp",
+     "at": "2026-11-14T00:52:58.409Z",
+     "stamp": "20261114-075258",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-berg-nw-walk1",
@@ -108789,7 +108852,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.432",
+   "artRevision": "20261114-075258",
    "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:berg",
@@ -108806,7 +108869,16 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-berg-ne-walk1"
+   "mirroredFrom": "npc-berg-ne-walk1",
+   "history": [
+    {
+     "file": "assets/_versions/npc-berg-nw-walk1/20261114-075258.webp",
+     "at": "2026-11-14T00:52:58.334Z",
+     "stamp": "20261114-075258",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-ken-ne-walk1",
