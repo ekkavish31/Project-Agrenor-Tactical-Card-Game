@@ -9,14 +9,16 @@
 (function (root) {
   'use strict';
   /* ---------- วาดแผนที่ด้วยสี่เหลี่ยม: พิกัด u,v ∈ [−R, R] (v ลบ = เหนือ) ---------- */
-  function makeGrid(R, ops) {
-    const n = 2 * R + 1, g = Array.from({ length: n }, () => Array(n).fill('#'));
+  function makeGrid(R, ops, fill = '#') {
+    const n = 2 * R + 1, g = Array.from({ length: n }, () => Array(n).fill(fill));
     const put = (u, v, ch) => { if (Math.abs(u) <= R && Math.abs(v) <= R) g[v + R][u + R] = ch };
     for (const [ch, u0, v0, u1, v1] of ops) for (let v = Math.min(v0, v1); v <= Math.max(v0, v1); v++) for (let u = Math.min(u0, u1); u <= Math.max(u0, u1); u++) put(u, v, ch);
     return g.map(r => r.join(''));
   }
   /* ตัวอักษร: t เต็นท์ · f รั้วไม้ · p เสาหิน · # กำแพง(boulder) · . พื้น · + ที่กำบัง(เศษหิน) · ~ โคลนเลือดช้า · 1 2 พื้นสูงระดับ 1/2 · b กำแพงกระดูก */
-  const TILE = { '#': { k: 'blocked', prop: 'boulder' }, b: { k: 'blocked', prop: 'bones' }, '.': { k: 'normal' }, '+': { k: 'cover' }, '~': { k: 'slow' }, 1: { k: 'normal', level: 1 }, 2: { k: 'normal', level: 2 }, t: { k: 'blocked', prop: 'tent' }, f: { k: 'blocked', prop: 'barricade' }, p: { k: 'blocked', prop: 'pillar' } };
+  const TILE = { '#': { k: 'blocked', prop: 'boulder' }, b: { k: 'blocked', prop: 'bones' }, '.': { k: 'normal' }, '+': { k: 'cover' }, '~': { k: 'slow' }, 1: { k: 'normal', level: 1 }, 2: { k: 'normal', level: 2 }, t: { k: 'blocked', prop: 'tent' }, f: { k: 'blocked', prop: 'barricade' }, p: { k: 'blocked', prop: 'pillar' },
+    /* v98.569 · town dressing (street / plaza scenes): x = wall with no picture · H house · S red stall · T blue stall · k crates · r barrel · z sacks · c cart · y hay · L lamp post · w well · V veg stand · B bench (cover) · F flower box (cover) */
+    x: { k: 'blocked' }, H: { k: 'blocked', prop: 'house' }, S: { k: 'blocked', prop: 'stallR' }, T: { k: 'blocked', prop: 'stallB' }, k: { k: 'blocked', prop: 'crates' }, r: { k: 'blocked', prop: 'barrel' }, z: { k: 'blocked', prop: 'sacks' }, c: { k: 'blocked', prop: 'cart' }, y: { k: 'blocked', prop: 'hay' }, L: { k: 'blocked', prop: 'lamp' }, w: { k: 'blocked', prop: 'well' }, V: { k: 'blocked', prop: 'vegstand' }, B: { k: 'cover', prop: 'bench' }, F: { k: 'cover', prop: 'flowerbox' } };
 
   /* ===================================================================================================
      ก้นเหมือง · ก้อนหิว — "ตัดอาหารของมัน" (Canon A12): ก้อนหิวมีปมหิว 3 จุดป้อนมันอยู่ · ตราบที่ปมยังอยู่ มันเจ็บน้อยลงครึ่งหนึ่งและฟื้นเลือดทุกรอบ
@@ -184,7 +186,29 @@
     ]
   };
 
-  const SCENES = { hungerPit, convoyPass, campDefense, moonGuard, dragonLair };
+  /* ===================================================================================================
+     ถนนกลางเมือง · จับแพะของปิ๊บ (เควสบทนำ): ฉากตายตัวแทนลานน้ำพุ — ลานหินปูในเมือง บ้าน 3 หลังเรียงหลังสนาม แผงตลาด ถังไม้ ลังกระสอบ โคม ม้านั่ง
+     ไม่มีกติกาพิเศษ: ล้างแพะ 2 ตัวก็ชนะ (ตัวเอกกับน้องสู้ไม่ตาย) · ม้านั่ง/กล่องดอกไม้ = ที่กำบัง
+     =================================================================================================== */
+  const RG = 6;
+  const goatStreet = {
+    id: 'goatStreet', name: 'ถนนกลางเมืองเฟิร์นเวล', R: RG, biome: 'grass', poi: 'town', noFlee: true, obj: { type: 'rout' },
+    map: makeGrid(RG, [
+      ['.', -5, -5, 5, 5],
+      ['x', -5, -5, 5, -5], ['H', -4, -5, -4, -5], ['H', 0, -5, 0, -5], ['H', 4, -5, 4, -5],     // บ้าน 3 หลังเรียงหลังสนาม
+      ['z', -5, -4, -5, -4], ['S', -5, -3, -5, -3], ['r', -5, -1, -5, -1], ['T', -5, 0, -5, 0], ['k', -5, 2, -5, 2], ['V', -5, 4, -5, 4],   // แผงตลาดฝั่งตะวันตก
+      ['r', 5, -4, 5, -4], ['T', 5, -2, 5, -2], ['c', 5, 0, 5, 0], ['S', 5, 2, 5, 2], ['y', 5, 4, 5, 4],                                    // ฝั่งตะวันออก
+      ['L', -3, -3, -3, -3], ['L', 3, -3, 3, -3], ['L', -3, 3, -3, 3], ['L', 3, 3, 3, 3],         // โคมริมถนน
+      ['B', -2, 1, -2, 1], ['B', 2, 1, 2, 1], ['F', -1, -4, -1, -4], ['F', 1, -4, 1, -4], ['F', 0, 2, 0, 2], ['k', 3, -1, 3, -1], ['z', -3, -1, -3, -1]
+    ], 'x'),
+    hero: { u: 0, v: 4 }, allies: [{ u: -1, v: 4 }, { u: 1, v: 4 }, { u: 0, v: 3 }],
+    enemies: [
+      { id: 'g1', kind: 'goat', u: -2, v: -2, hp: .625, name: 'แพะของปิ๊บ', ct: 24 },
+      { id: 'g2', kind: 'goat', u: 2, v: -1, hp: .625, name: 'แพะของปิ๊บ', ct: 28 }
+    ],
+    intro: [], hints: []
+  };
+  const SCENES = { hungerPit, convoyPass, campDefense, moonGuard, dragonLair, goatStreet };
 
   /* ---------- ข้อมูลช่อง ---------- */
   function cell(sc, u, v) {
@@ -247,7 +271,7 @@
     while (q.length) { const [u, v] = q.pop(); for (const [du, dv] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const a = u + du, b = v + dv; if (!walk(sc, a, b) || vis.has(key(a, b))) continue; if (Math.abs(cell(sc, a, b).level - cell(sc, u, v).level) > 1) continue; vis.add(key(a, b)); q.push([a, b]) } }
     for (const e of sc.enemies) if (!vis.has(key(e.u, e.v)) && !e.boss) err.push('enemy ' + e.id + ' unreachable from the hero start');
     const boss = sc.enemies.find(e => e.boss);
-    if (sc.obj.type === 'boss') { if (!boss) err.push('boss scene needs a boss') } else if (sc.obj.type === 'defend') { if (!(sc.obj.cells || []).length || sc.obj.cells.some(c => !walk(sc, c.u, c.v))) err.push('defend cells must be open ground'); if (!(sc.obj.turns > 0)) err.push('defend needs turns') } else err.push('unknown objective ' + sc.obj.type);
+    if (sc.obj.type === 'boss') { if (!boss) err.push('boss scene needs a boss') } else if (sc.obj.type === 'defend') { if (!(sc.obj.cells || []).length || sc.obj.cells.some(c => !walk(sc, c.u, c.v))) err.push('defend cells must be open ground'); if (!(sc.obj.turns > 0)) err.push('defend needs turns') } else if (sc.obj.type === 'rout') { if (!(sc.enemies || []).length) err.push('rout scene needs enemies') } else err.push('unknown objective ' + sc.obj.type);
     return err;
   }
   const api = { SCENES, get: id => SCENES[id] || null, cell, walk, units, rules, validate, makeGrid, TILE };

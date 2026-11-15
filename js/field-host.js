@@ -46,6 +46,7 @@ function center() { return { u: 0, v: 0 } }
 /* ---------- field generation ---------- */
 /* v98.492 · ?scene=<id> (js/set-pieces.js): a FIXED field — the map is drawn by hand, no random props, no random heights */
 const SCENE = window.SetPieces && FQ.get('scene') ? window.SetPieces.get(FQ.get('scene')) : null;
+const POI = FQ.get('poi') || SCENE?.poi || null;   /* v98.570 · a set-piece can dress its own ground (poi 'town' = cobbled street) */
 const FIELD = (function () {
   const biome = ['forest', 'grass', 'hills', 'swamp', 'snow', 'sand'].includes(FQ.get('biome')) ? FQ.get('biome') : 'grass';
   let a = (+FQ.get('seed') || (Math.random() * 1e9) | 0) >>> 0; window.FieldSeed = a;   /* v98.340 · the battle snapshot (town-battle.js) keeps the seed so a resumed fight gets the same field */
@@ -69,7 +70,7 @@ const FIELD = (function () {
     cells.set(key(u, v), { u, v, k, prop, seed: rnd() });
   }
   /* boss dressing: pillars (ruin), rails + rocks (mine), bones (den) on the rim */
-  const poi = FQ.get('poi');
+  const poi = POI;
   /* v98.332 · poi=patch: a pumpkin garden (the prologue pumpkin fight). A fence round the rim with a gap on each start side, big pumpkin plants in loose rows, hay bales,
      a scarecrow in the middle — all code-drawn props (below) until real art exists. Same seed → same garden (the quest pins ?seed=4102). */
   if (poi === 'patch') {
@@ -120,7 +121,7 @@ window.FieldR = FIELD.R; window.FieldGap = FIELD.S;
 /* ---------- heights (v94 · v96 half levels) ---------- */
 window.FieldHeight = (function () {
   if (!window.TerrainHeight || FQ.get('flat') === '1') return null;
-  const R = FIELD.R, n = 2 * R + 1, S = FIELD.S, T = TerrainHeight, PX = T.LEVEL_PX, ST = T.STEP, poi = FQ.get('poi');
+  const R = FIELD.R, n = 2 * R + 1, S = FIELD.S, T = TerrainHeight, PX = T.LEVEL_PX, ST = T.STEP, poi = POI;
   const zone = poi === 'mine' ? 'hills' : FIELD.biome;
   const SEV = { grass: .5, forest: .55, hills: .85, swamp: .25, snow: .75, sand: .4 };   // v95.18: battle fields are hillier than the world around them
   const fseed = 'field:' + (FQ.get('seed') || Math.floor(FIELD.rnd() * 1e9)) + ':' + FIELD.biome;
@@ -207,7 +208,7 @@ function paintGround() {
   const pal = GROUND[F.biome];
   if (window.FieldHeight && window.FieldDiorama) {   /* v95.18 · the field as a floating diorama */
     FieldDiorama.ramp?.(window.__rampStyle || window.BgField?.current?.rampStyle || (() => { try { return localStorage.getItem('project-a-ramp') } catch (e) { } })() || 'auto');
-    FieldDiorama.paint(t, FieldHeight.view, { biome: F.biome, poi: FQ.get('poi') });
+    FieldDiorama.paint(t, FieldHeight.view, { biome: F.biome, poi: POI });
     /* v97.01: slow ground (mud / snow drift / sand) is the painted ground texture; the old colour + dabs only while it loads */
     const SLOWTEX = { mud: 'mud', snow: 'snowd', sand: 'sandc' }[F.MIX.slowMat];
     for (const c of F.cells.values()) if (c.k === 'slow') { const col = SLOWC[F.MIX.slowMat], pat = FieldDiorama.pattern(t, SLOWTEX, FieldHeight.lift(c.u, c.v) / TerrainHeight.LEVEL_PX); diamond(t, c.u, c.v, -2);
@@ -253,6 +254,12 @@ const PA = 'assets/', PROP_ART = {
   deadtree: { _: [['village-town/nature/w1-dead-tree', 236, 'h'], ['village-town/nature/w1-swamp-willow', 236, 'h'], ['tactics/props/deadtree', 208, 'h']] },
   /* v98.562 · the pumpkin garden (poi=patch) now uses the real pictures: pumpkin plants (assets/crops), hay bale, picket fence piece, scarecrow */
   pumpkinPlant: { _: [['crops/pumpkin-4', 74, 'w'], ['crops/pumpkin-3', 68, 'w'], ['crops/pumpkin-4', 70, 'w']] }, hay: { _: [['village-town/decor/hay', 54, 'w']] }, fence: { _: [['village-town/decor/fence-picket', 62, 'w']] }, scarecrow: { _: [['scarecrow', 104, 'h']] },
+  /* v98.570 · town dressing for the street scenes (set-pieces TILE letters H S T k r z c L w V B F) — the village's own pictures */
+  house: { _: [['village-town/inn', 176, 'w'], ['village-town/shop', 176, 'w'], ['village-town/healer', 176, 'w']] },
+  stallR: { _: [['village-town/decor/market-stall-red', 104, 'w']] }, stallB: { _: [['village-town/decor/market-stall-blue', 104, 'w']] }, crates: { _: [['interior/crate-stack', 58, 'w']] },
+  barrel: { _: [['interior/keg', 44, 'w'], ['village-town/decor/v1-rain-barrel', 42, 'w']] }, sacks: { _: [['interior/sack-pile', 56, 'w']] }, cart: { _: [['village-town/decor/cart', 90, 'w']] },
+  lamp: { _: [['village-town/decor/lamp-post', 108, 'h']] }, well: { _: [['village-town/decor/well', 66, 'w']] }, vegstand: { _: [['village-town/decor/v1-veg-stand', 86, 'w']] },
+  bench: { _: [['village-town/decor/bench', 66, 'w']] }, flowerbox: { _: [['village-town/decor/flower-box', 56, 'w']] },
   cactus: { _: [['tactics/props/b1-cactus', 84, 'h'], ['tactics/props/cactus', 72, 'h']] }   // deadtree / cactus pictures are planned (docs/ART-TODO.md): code drawing until they exist
 };
 const PIMG = {};

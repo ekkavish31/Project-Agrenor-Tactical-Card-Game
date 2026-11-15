@@ -148,7 +148,7 @@
   add('bryn', { name: 'บริน', role: 'คนโม่แป้ง', age: 39, look: { sprite: 'bryn', coat: '#c8b898', apron: '#ece4d0', hair: '#7a5a3a', hat: 'cap', hatCol: '#e8e0cc', beard: '#7a5a3a' },
     trait: 'ขยัน ขี้เล่น ชอบท้าแข่งแขนกับทุกคน', story: 'โม่ที่ลำธารเป็นของตระกูลมาห้ารุ่น แป้งทุกกระสอบในหมู่บ้านผ่านมือเขา', likes: 'แข่งแขน, ขนมปังของป้าเมย์', sched: [[5, 14, 'market'], [14, 17, 'shop'], [17, 23, 'inn', 'table']],
     lines: { day: ['ข้าวสาลีปีนี้เม็ดเต็ม ป้าเมย์คงอบขนมปังได้อร่อยเป็นพิเศษ'], evening: ['มาแข่งแขนกันไหม? แพ้เลี้ยงเบียร์!'] }, about: ['ห้ารุ่นแล้วที่ตระกูลข้าโม่แป้งให้ Fernvale'] });
-  add('hilda', { name: 'ฮิลดา', role: 'ชาวนา', age: 44, look: { sprite: 'hilda', coat: '#7a6a3a', apron: '#d8c8a0', hair: '#c9a46a', hat: 'straw', hatCol: '#d9be7a', longHair: true },
+  add('hilda', { name: 'ฮิลดา', role: 'ชาวนา', age: 27, look: { sprite: 'hilda', coat: '#7a6a3a', apron: '#d8c8a0', hair: '#c9a46a', hat: 'straw', hatCol: '#d9be7a', longHair: true },
     trait: 'ตรงไปตรงมา อ่านฟ้าฝนแม่นกว่าใคร', story: 'ทุ่งของเธออยู่ติดชายป่า เห็นอะไรแปลก ๆ บ่อยกว่าคนอื่น', likes: 'ฝนต้นฤดู', sched: [[5, 16, 'market'], [16, 18, 'temple', 'pew'], [18, 22, 'inn', 'table']],
     lines: { morning: ['ฟ้าแดงตอนเช้า บ่ายนี้ลมแรงแน่'], day: ['ชายป่าทางทุ่งข้า มีรอยเท้าอะไรใหญ่ ๆ เดินผ่านเมื่อคืน'], evening: ['เหนื่อยทั้งวัน แต่ได้นั่งกินซุปของมาร์ธาก็หายเหนื่อย'] }, about: ['ข้าไม่เชื่อเรื่องผี แต่ข้าเชื่อรอยเท้า'] });
   add('tess', { name: 'เทส', role: 'แม่ค้าดอกไม้', age: 20, look: { sprite: 'tess', coat: '#c8789a', apron: '#f4e8d8', hair: '#e0b070', hat: 'none', longHair: true },

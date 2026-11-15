@@ -119,6 +119,7 @@
     if (poi === 'ruin') { m.path = ['cobble', { mortar: '#5a5448', stone: '#a8a294' }]; m.cliff = ['brick', { mortar: '#4a453c', stone: '#8f897a' }] }
     if (poi === 'patch') { m.top = ['grass', { base: '#5f8f3c', blades: ['#68994040', '#5a8a38', '#64943e', '#5f8f3c'], flowers: 0 }]; m.path = ['dirt', { base: '#6b4a2b', pebble: '#74522f' }] }   /* v98.332 · tilled garden soil */
     if (poi === 'mine') { m.path = ['dirt', { base: '#6a5a48', pebble: '#8a7a68' }] }
+    if (poi === 'town') { m.top = ['cobble', { mortar: '#5a5448', stone: '#b0a898' }]; m.path = ['slab', { mortar: '#4e4a42', stone: '#a8a294', moss: '#6a7a42' }] }   /* v98.570 · cobbled town street */
     m.cobble = ['cobble', { mortar: '#5a5448', stone: '#a8a294' }]; m.wood = ['wood', { base: '#8a6440' }]; m.brick = ['brick', { mortar: '#4a453c', stone: '#9a9282' }];
     m.slab = ['slab', { mortar: '#4e4a42', stone: biome === 'sand' ? '#c8b48c' : biome === 'snow' ? '#b8c0c8' : '#a39d8e', moss: biome === 'snow' ? '#e8eef4' : '#6a7a42' }];
     return m;
@@ -140,7 +141,7 @@
   /* everything a cell needs to paint, made once per map (textures, per-cell variation) */
   function prepare(m, o) {
     o = o || {};
-    const mat = materials(o.biome, o.poi), PT = Object.assign({}, PAINTED[o.biome] || PAINTED.grass); if (o.poi === 'ruin') { PT.path = 'cobble'; PT.cliff = 'brick'; PT.wash = {} }
+    const mat = materials(o.biome, o.poi), PT = Object.assign({}, PAINTED[o.biome] || PAINTED.grass); if (o.poi === 'ruin') { PT.path = 'cobble'; PT.cliff = 'brick'; PT.wash = {} } if (o.poi === 'town') { PT.top = 'cobble'; PT.path = 'slab'; PT.wash = {} }
     const slot = (name, proc, seed) => loaded(IMG[name]) ? IMG[name] : tex(proc[0], proc[1], seed);
     const img = k => slot(PT[k], mat[k], k.length * 97), wash = k => (loaded(IMG[PT[k]]) && PT.wash?.[k]) || null;
     const r = rng(1234), ctx = { o, mat, hang: loaded(IMG[PT.hang]) ? IMG[PT.hang] : null, img, wash, top: img('top'), path: img('path'), lip: img('lip'), cliff: img('cliff'), vary: Array.from({ length: m.w * m.h }, () => r()), tiles: new Map(), pools: o.pools || (() => false) };
