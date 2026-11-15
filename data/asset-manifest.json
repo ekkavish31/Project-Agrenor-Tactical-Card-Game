@@ -105077,6 +105077,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-ella-sw-stand/20261115-140824.webp",
+     "at": "2026-11-15T07:08:25.111Z",
+     "stamp": "20261115-140824",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
      "file": "assets/_versions/npc-ella-sw-stand/20261115-074609.webp",
      "at": "2026-11-15T00:46:09.878Z",
      "stamp": "20261115-074609",
@@ -105084,7 +105091,7 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-074841"
+   "artRevision": "20261115-141137"
   },
   {
    "id": "npc-ella-sw-walk1",
@@ -105104,7 +105111,17 @@
     "id": "npc:ella",
     "name": "ช่างทอผ้าเอลลา",
     "group": "npcs"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/npc-ella-sw-walk1/20261115-140824.webp",
+     "at": "2026-11-15T07:08:24.624Z",
+     "stamp": "20261115-140824",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261115-141137"
   },
   {
    "id": "npc-ella-ne-stand",
@@ -105126,6 +105143,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-ella-ne-stand/20261115-141106.webp",
+     "at": "2026-11-15T07:11:06.676Z",
+     "stamp": "20261115-141106",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
      "file": "assets/_versions/npc-ella-ne-stand/20261115-074548.webp",
      "at": "2026-11-15T00:45:48.406Z",
      "stamp": "20261115-074548",
@@ -105133,7 +105157,7 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-075155"
+   "artRevision": "20261115-141106"
   },
   {
    "id": "npc-ella-ne-walk1",
@@ -105153,7 +105177,17 @@
     "id": "npc:ella",
     "name": "ช่างทอผ้าเอลลา",
     "group": "npcs"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/npc-ella-ne-walk1/20261115-141106.webp",
+     "at": "2026-11-15T07:11:06.782Z",
+     "stamp": "20261115-141106",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261115-141106"
   },
   {
    "id": "npc-ella-se-stand",
