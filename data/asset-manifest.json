@@ -107556,7 +107556,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.423",
+   "artRevision": "20261115-075856",
    "usedIn": "NPC เทส · ยืน",
    "studioOwner": {
     "id": "npc:tess",
@@ -107569,7 +107569,16 @@
     "sharedAcross": "whole sheet, both views"
    },
    "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
-   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "history": [
+    {
+     "file": "assets/_versions/npc-tess-sw-stand/20261115-075856.webp",
+     "at": "2026-11-15T00:58:56.425Z",
+     "stamp": "20261115-075856",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-tess-se-stand",
@@ -107587,7 +107596,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.423",
+   "artRevision": "20261115-075856",
    "usedIn": "NPC เทส · ยืน",
    "studioOwner": {
     "id": "npc:tess",
@@ -107601,7 +107610,16 @@
    },
    "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
-   "mirroredFrom": "npc-tess-sw-stand"
+   "mirroredFrom": "npc-tess-sw-stand",
+   "history": [
+    {
+     "file": "assets/_versions/npc-tess-se-stand/20261115-075856.webp",
+     "at": "2026-11-15T00:58:56.475Z",
+     "stamp": "20261115-075856",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-ash-sw-stand",
@@ -107871,7 +107889,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.423",
+   "artRevision": "20261115-080003",
    "usedIn": "NPC เทส · ยืน",
    "studioOwner": {
     "id": "npc:tess",
@@ -107884,7 +107902,16 @@
     "sharedAcross": "whole sheet, both views"
    },
    "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
-   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "history": [
+    {
+     "file": "assets/_versions/npc-tess-ne-stand/20261115-075945.webp",
+     "at": "2026-11-15T00:59:46.123Z",
+     "stamp": "20261115-075945",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-tess-nw-stand",
@@ -107902,7 +107929,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.423",
+   "artRevision": "20261115-080003",
    "usedIn": "NPC เทส · ยืน",
    "studioOwner": {
     "id": "npc:tess",
@@ -107916,7 +107943,16 @@
    },
    "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
-   "mirroredFrom": "npc-tess-ne-stand"
+   "mirroredFrom": "npc-tess-ne-stand",
+   "history": [
+    {
+     "file": "assets/_versions/npc-tess-nw-stand/20261115-075945.webp",
+     "at": "2026-11-15T00:59:46.012Z",
+     "stamp": "20261115-075945",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-ash-ne-stand",
