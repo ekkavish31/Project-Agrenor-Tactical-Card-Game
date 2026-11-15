@@ -5765,6 +5765,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 ## v98.539 — Workshop: ปิดแท็บไม่ถามยืนยัน
 - object-asset-studio.html closeScene: เอา confirm "ปิดแท็บ … งานที่ยังไม่ได้บันทึกจะหาย" ออก ปิดทันที (เจ้าของสั่ง) · งานในแท็บที่ปิดและยังไม่บันทึกจะหาย
 
-##  — ภาพสนทนา เกรเวน · กัส · ลุงทอม (4 อารมณ์)
+## v98.541 — ภาพสนทนา เกรเวน · กัส · ลุงทอม (4 อารมณ์)
 - ตัดจากแผ่น 2×2 ที่เจ้าของส่ง (โปร่งใส 512×768 หันซ้าย): assets/portraits/{grev,gus,tom}-{neutral,happy,angry,worry}.webp (neutral=ท่ายืนปกติ · happy=ยิ้ม/ชูนิ้ว/โบกมือ · angry=ขึ้นเสียง · worry=กังวล) — ใช้ `tools/cut-portrait-sheet.py <แผ่น> <id>`
 - ผูก StoryActors.PAINTED: grev (+ graven) · gus · tom · StoryCast.face ใช้ภาพจริงของทั้งสามคน · ดัชนีรูป/แผนที่รูปอัปเดตแล้ว
