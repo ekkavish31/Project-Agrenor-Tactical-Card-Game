@@ -37,4 +37,17 @@ ok(Object.values(D.CAST).every(c => !c.code || CP.has(c.code)), 'code portraits 
   ok(SW.GREY.every(g => !g.zone || SW.ZONES[g.zone]), 'grey nodes point to real zones');
   ok(['aldren', 'frostmere', 'south', 'westIsles'].every(z => SW.ZONES[z]) && Object.values(SW.ZONES).every(z => z.pts.length >= 3 && z.c && z.n), 'kingdom zones: Aldren, Frostmere, south and island placeholders exist');
   ok(SW.ROADS.every(([a, b]) => L[a] && L[b]) && JSON.stringify(SW.ROADS) === JSON.stringify(D.ROADS), 'roads reference real towns and match the data file'); }
+// v98.506 เครื่องมือกำหนดพื้นที่ (js/story-map-geo.js)
+{ const GEO = require(path.join(__dirname, '..', 'js', 'story-map-geo.js')), SW = require(path.join(__dirname, '..', 'js', 'story-map-world.js'));
+  ok(GEO.NEEDS.length >= 25 && new Set(GEO.NEEDS.map(n => n.id)).size === GEO.NEEDS.length, 'needs list has unique ids');
+  ok(GEO.NEEDS.every(n => n.label && n.why && n.src && ['zone', 'route', 'point', 'decision'].includes(n.type)), 'every need explains why and cites a source');
+  ok(GEO.NEEDS.every(n => n.type === 'decision' || GEO.KINDS[n.type][n.kind]), 'every need has a valid default kind');
+  ok(GEO.NEEDS.filter(n => n.hex).every(n => { const p = SW.hex(n.hex[0], n.hex[1]); return p[0] > 0 && p[0] < SW.W && p[1] > 0 && p[1] < SW.H && SW.isLandHex(n.hex[0], n.hex[1]) }), 'seed hexes are land tiles inside the picture');
+  const g = GEO.blank(); ok(GEO.progress(g).missing === GEO.NEEDS.length && GEO.progress(g).settled === 0, 'fresh state: everything missing');
+  const z = GEO.add(g, 'zone', { pts: [[0, 0], [100, 0], [100, 100]], need: 'z_aldren' }); ok(GEO.needStatus(g, GEO.NEEDS.find(n => n.id === 'z_aldren')) === 'proposed' && z.status === 'proposed', 'a drawn zone is a proposal until confirmed');
+  z.status = 'confirmed'; ok(GEO.needStatus(g, GEO.NEEDS.find(n => n.id === 'z_aldren')) === 'done', 'confirmed → done');
+  g.needs.z_south = { state: 'skip' }; g.needs.d_dragon = { state: 'decided' }; const pr = GEO.progress(g); ok(pr.done === 1 && pr.skip === 1 && pr.decided === 1 && pr.settled === 3, 'progress counts done/skip/decided');
+  const back = GEO.parse(GEO.serialize(g)); ok(back.zones.length === 1 && back.needs.z_south.state === 'skip', 'export → import round trip');
+  ok(GEO.remove(g, z.id) && g.zones.length === 0, 'remove works'); ok(GEO.pointInPoly(10, 10, [[0, 0], [100, 0], [100, 100], [0, 100]]) && !GEO.pointInPoly(200, 10, [[0, 0], [100, 0], [100, 100], [0, 100]]), 'point in polygon');
+  let bad = false; try { GEO.parse('null') } catch (e) { bad = true } ok(bad, 'bad import is rejected'); }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);
