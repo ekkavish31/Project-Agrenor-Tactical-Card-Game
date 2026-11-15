@@ -1068,7 +1068,7 @@ function draw(t) {
    g.ellipse(hp.x, hp.y, 13 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7);
    g.fill();
    const hc = heroCast();
-   /* v95.21: same size as on the village map (93.6 px × the village's hero scale) */ if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K, hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0 || !!window.TouchControls?.moving?.(), CharSize.VILLAGE_HERO_PX * (hc.s || 1) * PLACE_CHAR_K)
+   /* v95.21: same size as on the village map (93.6 px × the village's hero scale) */ if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K, hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0 || !!window.TouchControls?.moving?.(), CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K)   /* v98.532 · was (hc.s || 1): the village editor's OLD per-hero cast scale (≈0.58 here) → the lead hero was drawn at ~60 % of the follower and every villager; same rule as the first branch now */
   }
  });
  objects.push(...(window.PlacePeople?.objects(project, g, t, blocked, hero) || []));   // v94.02 villagers who are here now
