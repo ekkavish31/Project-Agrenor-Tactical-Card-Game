@@ -107039,7 +107039,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261114-075005",
+   "artRevision": "20261115-214855",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -107054,6 +107054,13 @@
    "sourceLibraryFile": "libfile_7226da7533f88191aca37da451300a52",
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
    "history": [
+    {
+     "file": "assets/_versions/npc-berg-ne-stand/20261115-214855.webp",
+     "at": "2026-11-15T14:48:55.692Z",
+     "stamp": "20261115-214855",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-berg-ne-stand/20261114-074851.webp",
      "at": "2026-11-14T00:48:51.140Z",
@@ -107079,7 +107086,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261114-075005",
+   "artRevision": "20261115-214855",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -107095,6 +107102,13 @@
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
    "mirroredFrom": "npc-berg-ne-stand",
    "history": [
+    {
+     "file": "assets/_versions/npc-berg-nw-stand/20261115-214855.webp",
+     "at": "2026-11-15T14:48:55.638Z",
+     "stamp": "20261115-214855",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-berg-nw-stand/20261114-074851.webp",
      "at": "2026-11-14T00:48:51.071Z",
@@ -108532,7 +108546,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261114-075230",
+   "artRevision": "20261115-215211",
    "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:berg",
@@ -108550,6 +108564,13 @@
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "history": [
+    {
+     "file": "assets/_versions/npc-berg-sw-walk1/20261115-215211.webp",
+     "at": "2026-11-15T14:52:11.652Z",
+     "stamp": "20261115-215211",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-berg-sw-walk1/20261114-075230.webp",
      "at": "2026-11-14T00:52:30.548Z",
@@ -108576,7 +108597,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261114-075230",
+   "artRevision": "20261115-215211",
    "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:berg",
@@ -108595,6 +108616,13 @@
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "mirroredFrom": "npc-berg-sw-walk1",
    "history": [
+    {
+     "file": "assets/_versions/npc-berg-se-walk1/20261115-215211.webp",
+     "at": "2026-11-15T14:52:11.806Z",
+     "stamp": "20261115-215211",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-berg-se-walk1/20261114-075230.webp",
      "at": "2026-11-14T00:52:30.613Z",
@@ -108905,7 +108933,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261114-075258",
+   "artRevision": "20261115-215116",
    "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:berg",
@@ -108923,6 +108951,13 @@
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "history": [
+    {
+     "file": "assets/_versions/npc-berg-ne-walk1/20261115-215115.webp",
+     "at": "2026-11-15T14:51:16.052Z",
+     "stamp": "20261115-215115",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-berg-ne-walk1/20261114-075258.webp",
      "at": "2026-11-14T00:52:58.409Z",
@@ -108949,7 +108984,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261114-075258",
+   "artRevision": "20261115-215115",
    "usedIn": "NPC เบิร์ก · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:berg",
@@ -108968,6 +109003,13 @@
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "mirroredFrom": "npc-berg-ne-walk1",
    "history": [
+    {
+     "file": "assets/_versions/npc-berg-nw-walk1/20261115-215115.webp",
+     "at": "2026-11-15T14:51:15.914Z",
+     "stamp": "20261115-215115",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-berg-nw-walk1/20261114-075258.webp",
      "at": "2026-11-14T00:52:58.334Z",
