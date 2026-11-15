@@ -129,7 +129,7 @@ let tab='slots',zone='all',sub='all',filter='all',query='',sel=null,lkind='all',
 const exportedFiles=window.StudioExportedFiles=new Map();
 const pending=new Map(); // id -> {blob,url,status,canvas}  (only when no folder is connected)
 let dir=null,scanned=null;
-let manifestJsonPath='data/asset-manifest.json',manifestJsPath='js/asset-manifest.js?v=98.515
+let manifestJsonPath='data/asset-manifest.json',manifestJsPath='js/asset-manifest.js?v=v98.515';
 function toast(t){let e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
 function byId(id){return M.assets.find(a=>a.id===id)}
 const isSlot=a=>a.status!=='unused';
