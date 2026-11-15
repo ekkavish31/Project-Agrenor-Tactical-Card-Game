@@ -51,4 +51,11 @@ for (const id of ['campDefense', 'moonGuard']) { const { st, S2 } = mkDef(id); o
   const st2 = mkDef(id).st; const cell = S2.obj.cells[0]; const m = st2.units.find(u => u.side === 'monster'); m.u = cell.u; m.v = cell.v; B.checkOutcome(st2); ok(st2.outcome === 'lose', id + ': a monster on the guarded cell = lose') }
 { const { st, S2 } = mkDef('moonGuard'); const near = st.units.find(u => u.side === 'monster'); near.u = 1; near.v = 0; near.hp = 30; const far = st.units.filter(u => u.side === 'monster')[1]; far.u = 5; far.v = 5 === 5 ? 0 : 0; far.hp = 30; st.round = 2; const steps = st.rules.onHeroTurn(st); ok(near.hp === 14 && far.hp === 30 && steps.some(s => /ส่องแสง/.test(s.text || '')), 'moonGuard pulse on round 3: −16 inside radius 2 only (' + near.hp + '/' + far.hp + ')');
   const { st: s3 } = mkDef('moonGuard'); s3.round = 1; ok(s3.rules.onHeroTurn(s3).some(s => /สั่นแรงขึ้น/.test(s.text || '')), 'the pulse is announced one round before'); const { st: s4 } = mkDef('campDefense'); ok(s4.rules.dmgMod(s4, s4.units[1], 20, []) === 20, 'no damage shield in defend scenes') }
+// v98.573 · conversations (Disgaea-style window) + the goat street's mystery goat
+{ const bad = []; for (const id of Object.keys(SP.SCENES)) { const T = SP.SCENES[id].talk || {}; for (const [k, v] of Object.entries(T)) { const sets = k === 'rounds' ? Object.values(v) : [v]; for (const L of sets) for (const l of L) if (!l || !l.text || !('who' in l)) bad.push(id + '.' + k) } }
+  ok(bad.length === 0, 'every scene talk line has who + text (' + bad.join(',') + ')');
+  const G = SP.get('goatStreet'); ok(SP.validate(G).length === 0 && G.enemies.length === 3 && G.enemies.filter(e => e.mystery).length === 1, 'goatStreet: 3 goats, one of them is the mystery goat');
+  ok(!!(G.talk.start && G.talk.reveal && G.talk.soft && G.talk.win), 'goatStreet has start / reveal / soft / win talk');
+  for (const id of ['hungerPit', 'convoyPass', 'campDefense', 'moonGuard', 'dragonLair']) ok(!!SP.get(id).talk?.win && !!SP.get(id).talk?.lose, id + ' has win + lose talk');
+  const { st } = mkDef('moonGuard'); st.round = 2; const r3 = st.rules.onHeroTurn(st); ok(r3.some(x => x.type === 'talk' && x.lines.length), 'moonGuard round 3 emits a talk step'); }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

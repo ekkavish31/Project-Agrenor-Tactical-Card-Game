@@ -51,6 +51,8 @@
     waves: { everyRounds: 4, first: 4, mouths: [{ u: -7, v: -11 }, { u: 7, v: -11 }], kind: 'murk', per: 1, cap: 3 },   // คลื่นแรกรอบที่ 4 แล้วทุก 4 รอบ · มีสัตว์รอยหมองในสนามไม่เกิน 3 ตัว
     rootHeal: 4,                // ปมหนึ่งจุดป้อนบอส +4 HP ต่อรอบ
     rootShield: .5,             // ดาเมจที่บอสได้รับเหลือ 50% ตราบที่ยังมีปม
+    talk: { cut: [{ who: 'darren', emo: 'angry', text: 'ปมขาดหมดแล้ว! มันเสียหลัก — ฟันเลย ตอนนี้แหละ!' }], half: [{ who: 'hero', emo: 'worry', text: 'มันยังไม่ล้ม… ยังมีแรงเหลือ!' }, { who: 'darren', emo: 'neutral', text: 'อย่าเผลอ ครึ่งหลังมันจะดิ้นแรงกว่าเดิม' }],
+      win: [{ who: 'darren', emo: 'worry', text: 'มันหยุดแล้ว… แต่นี่แค่ตัดอาหารมันชั่วคราว อย่าเพิ่งคิดว่าจบ' }], lose: [{ who: 'darren', emo: 'worry', text: 'ถอยออกมา…! ไว้ค่อยกลับมาใหม่ตอนเตรียมพร้อมกว่านี้' }] },
     intro: [
       { who: null, text: 'ห้องกลางก้นเหมืองมืดและชื้น เส้นเลือดสีม่วงขดไปตามพื้นเข้าหาที่สูงด้านเหนือ — ก้อนหิวอยู่ตรงนั้น และมันมองลงมา' },
       { who: 'darren', text: 'สามจุดบนพื้นนั่น… ปมที่มันใช้กินกิเลสของคนข้างบน ถ้ายังอยู่ เจ้าฟันมันไม่เข้าหรอก — ตัดอาหารมันก่อน' }
@@ -92,6 +94,8 @@
     ],
     waves: { everyRounds: 3, first: 3, mouths: [{ u: 10, v: -3 }, { u: 10, v: 3 }], kind: 'bandit', per: 1, cap: 5, needAnchor: true, capBy: 'wave' },
     cutStun: false, cutSay: '📯 แตรเงียบแล้ว — กำลังเสริมเรียกไม่ได้อีก เหลือแต่หัวหน้ากับพวกที่อยู่ตรงนี้', cutLog: 'แตรสัญญาณถูกทำลาย — ไม่มีกำลังเสริมอีก',
+    talk: { cut: [{ who: 'helga', emo: 'happy', text: 'แตรเงียบแล้ว! ไม่มีใครมาเสริมอีก เหลือแค่พวกที่ยืนอยู่ตรงนี้' }], half: [{ who: 'hero', emo: 'angry', text: 'หัวหน้าเริ่มเสียกระบวนแล้ว — กดต่อ!' }],
+      win: [{ who: 'helga', emo: 'worry', text: 'เปิดเกวียนเถอะ… คนข้างในต้องได้ออกมาสูดอากาศสักที' }], lose: [{ who: 'helga', emo: 'worry', text: 'ถอย! ถอยไปทางช่องเขาก่อน!' }] },
     intro: [
       { who: null, text: 'ช่องเขาแคบ ขบวนเกวียนเหล็กดำจอดอยู่บนเนินสูงฝั่งตะวันออก — ผู้คุมรู้ว่าคุณสะกดรอยมาและเตรียมซุ่มไว้แล้ว' },
       { who: 'helga', text: 'พวกเขามีแตรสองตัว เป่าทีเดียวคนที่เหลือจะมาหมด… ทำให้แตรเงียบก่อน' }
@@ -117,6 +121,8 @@
     enemies: [{ id: 'm1', kind: 'murk', u: -9, v: -9, hp: 1, ct: 12 }, { id: 'm2', kind: 'murk', u: 9, v: 9, hp: 1, ct: 12 }],
     waves: { everyRounds: 2, first: 2, count: 5, mouths: [{ u: 0, v: -10 }, { u: 10, v: 0 }, { u: 0, v: 10 }], kind: 'murk', per: [1, 2, 2, 3, 3], cap: 9, capBy: 'wave' },
     waveHint: 'เสียงคำรามจากนอกรั้ว — คลื่นต่อไปกำลังมาจากสามทิศ',
+    talk: { rounds: { 4: [{ who: 'irene', emo: 'worry', text: 'ลมหายใจเธอตื้นลงแล้ว… อย่าให้มันเข้ามาใกล้เตียงเด็ดขาด!' }], 7: [{ who: 'irene', emo: 'happy', text: 'อีกนิดเดียว! สีหน้าเธอดีขึ้นแล้ว ทนอีกหน่อย!' }] },
+      win: [{ who: 'irene', emo: 'happy', text: 'เธอหายใจสม่ำเสมอแล้ว… ขอบคุณ ถ้าไม่มีพวกคุณ ข้าคงรักษาไม่ทัน' }], lose: [{ who: 'irene', emo: 'worry', text: 'ไม่ทัน… เธอ—' }] },
     intro: [{ who: 'irene', text: 'ผู้ป่วยอยู่กลางค่าย — อย่าให้มันเหยียบถึงที่เธอนอน! รั้วมีช่องแค่สี่ช่อง ใช้ตัวคนอุดไว้' }],
     hints: ['ป้องกันเธอไว้ 8 รอบ — ถ้าสัตว์รอยหมองตัวไหนเหยียบช่องกลางค่ายได้ เท่ากับแพ้ (ผู้ป่วยอยู่ตรงกลางรั้ว)',
       'รั้วมีช่องเปิด 4 ช่อง (เหนือ ตะวันออก ใต้ และตะวันตกด้านหลังคุณ) — ใช้เพื่อนอุดช่องเหนือ/ตะวันออก/ใต้ ไม่ให้ไหลเข้าด้านใน · ลังสี่จุดช่วยกันดาเมจ',
@@ -137,6 +143,8 @@
     waves: { everyRounds: 2, first: 2, count: 3, mouths: [{ u: -9, v: -2 }, { u: 9, v: -2 }, { u: 0, v: -9 }], kind: 'murk', per: [1, 1, 1], cap: 6, capBy: 'wave' },
     pulses: [{ rounds: [3, 6], at: { u: 0, v: 0 }, radius: 2, dmg: 16, text: '✦ ปลอกคอของ Mip ส่องแสงม่วงเป็นวง', warn: 'ปลอกคอของ Mip สั่นแรงขึ้น — อีกรอบเดียวมันจะส่องแสงทำร้ายสิ่งที่อยู่ใกล้แท่น' }],
     waveHint: 'สัตว์รอยหมองกำลังมาอีกระลอกจากตะวันตก ตะวันออก และเหนือ',
+    talk: { rounds: { 3: [{ who: 'helga', emo: 'worry', text: 'ได้ยินไหม… ประกายที่คอมันสั่นแรงขึ้นทุกที' }], 5: [{ who: 'helga', emo: 'angry', text: 'อีกสองรอบ! พระจันทร์กำลังลง — อย่าให้ใครแตะแท่น!' }] },
+      win: [{ who: 'helga', emo: 'happy', text: 'พระจันทร์ลงแล้ว… เจ้าตัวเล็กหลับไปแล้ว ปลอดภัยแล้ว' }], lose: [{ who: 'helga', emo: 'worry', text: 'ไม่…! เจ้าตัวเล็ก—' }] },
     intro: [{ who: 'helga', text: 'เสียงสวดหยุดแล้ว… เจ้าตัวเล็กสั่นอยู่บนแท่น — ปกป้องมันจนกว่าพระจันทร์จะลง' }],
     hints: ['ปกป้อง Mip บนแท่นกลางลานไว้ 7 รอบ — ถ้าสัตว์รอยหมองตัวไหนเหยียบแท่นได้ เท่ากับแพ้',
       'ปลอกคอของ Mip ส่องแสงทำดาเมจรอบแท่น (รัศมี 2) ที่รอบ 3 และ 6 — ล่อศัตรูเข้ามาใกล้แท่นก่อนถึงรอบนั้น',
@@ -174,6 +182,8 @@
     waveLog: 'สัตว์รอยหมองหลุดออกมาจากรอยแตกข้างแก่นตะกอน',
     rootHeal: 5, rootShield: .5,
     cutLog: 'แก่นตะกอนสลายหมด — มังกรหายใจสะดุดและทรุดลง!', cutSay: '✦ แก่นตะกอนสลายหมดแล้ว — มังกรสะดุ้งและทรุดตัวลง! ตอนนี้ฟันมันได้เต็มแรง',
+    talk: { cut: [{ who: 'mierris', emo: 'happy', text: 'แก่นสุดท้ายสลายแล้ว! มันสะดุ้ง — ตอนนี้ดาบของเจ้าเจ็บมันได้เต็มที่' }], half: [{ who: 'mierris', emo: 'worry', text: 'อย่าลืมว่ามันไม่ได้โกรธเจ้า… มันแค่เจ็บ จบเร็วที่สุดคือเมตตาที่สุด' }],
+      win: [{ who: 'mierris', emo: 'worry', text: 'มันหลับตาแล้ว… ตะกอนที่กดมันไว้หายไปแล้ว ขอบคุณที่ไม่ปล่อยให้มันทุกข์ไปมากกว่านี้' }], lose: [{ who: 'mierris', emo: 'worry', text: 'ถอยจากปล่อง…! มันยังไม่ยอมเรา' }] },
     intro: [
       { who: null, text: 'ปากปล่องทางใต้ร้อนจนอากาศสั่น บนเนินหินดำที่สูงกว่าพื้นปล่องมีบางอย่างขดอยู่ — เกล็ดเงาเหมือนแก้วภูเขาไฟ รอยแตกเรืองส้มวิ่งไปตามหลังที่ยกขึ้นลงช้า ๆ มันเก่ากว่าอาณาจักรทุกแห่ง และมันตื่นแล้ว' },
       { who: 'mierris', text: 'มันไม่ได้โกรธเจ้า… มันหวงถิ่นของมัน และตะกอนที่ล้นอยู่รอบปล่องกำลังกดมันอยู่ — ตัดแก่นทั้งสามก่อน ไม่งั้นดาบเจ้าก็แค่ทำให้มันเจ็บ' }
@@ -204,9 +214,16 @@
     hero: { u: 0, v: 4 }, allies: [{ u: -1, v: 4 }, { u: 1, v: 4 }, { u: 0, v: 3 }],
     enemies: [
       { id: 'g1', kind: 'goat', u: -2, v: -2, hp: .625, name: 'แพะของปิ๊บ', ct: 24 },
-      { id: 'g2', kind: 'goat', u: 2, v: -1, hp: .625, name: 'แพะของปิ๊บ', ct: 28 }
+      { id: 'g2', kind: 'goat', u: 2, v: -1, hp: .625, name: 'แพะของปิ๊บ', ct: 28 },
+      { id: 'g3', kind: 'goat', u: 0, v: -3, hp: .8, name: 'แพะแปลกตา', ct: 20, mystery: true }   /* v98.573 · Mip in a goat's shape: it cannot die — when beaten it drops the shape and runs (js/town-battle.js · mysteryCheck) */
     ],
-    intro: [], hints: []
+    hints: [],
+    talk: {
+      start: [{ who: null, text: 'ถนนหน้าตลาดเฟิร์นเวลวุ่นวายเพราะแพะสองตัวของปิ๊บ — แต่ท่ามกลางพวกมัน มีแพะอีกตัวยืนนิ่งอยู่ ขนขาวผิดปกติ และมองมาทางคุณไม่วางตา' }, { who: 'hero', emo: 'worry', text: 'แพะของปิ๊บมีแค่สองตัวไม่ใช่เหรอ… แล้วตัวนั้นมาจากไหน?' }],
+      reveal: [{ who: null, text: 'แพะตัวที่สามทรุดลง — แล้วร่างของมันก็ไหวเหมือนผิวน้ำ ขนขาวหดเป็นสีน้ำตาลอ่อน เหลือสัตว์ตัวเล็กหน้าตาเหมือนจิ้งจอก' }, { who: 'hero', emo: 'worry', text: 'นั่นมัน… ไม่ใช่แพะ!?' }, { who: 'mip', emo: 'worry', name: '???', text: 'กี๊…!' }, { who: null, text: 'มันสะบัดหัวมองคุณแวบหนึ่ง มีประกายสีฟ้าวาบที่คอ แล้ววิ่งหายไปทางปลายถนน' }, { who: 'hero', emo: 'neutral', text: 'เดี๋ยว! … ไปแล้วเหรอ เอาเถอะ — แพะของปิ๊บยังเหลืออีก!' }],
+      soft: [{ who: null, text: 'แพะตัวที่สามสะดุ้ง แล้วร่างของมันก็ไหวเหมือนผิวน้ำ — สัตว์ตัวเล็กสีน้ำตาลอ่อนมองคุณแวบหนึ่ง ก่อนวิ่งหายไปทางปลายถนน' }, { who: 'hero', emo: 'worry', text: 'ตัวอะไรกันนั่น…' }],
+      win: [{ who: 'hero', emo: 'happy', text: 'ครบแล้ว! เอาแพะกลับไปคืนปิ๊บ… ส่วนตัวที่สามนั่น ไม่รู้จะเล่าให้ใครฟังดี' }]
+    }
   };
   const SCENES = { hungerPit, convoyPass, campDefense, moonGuard, dragonLair, goatStreet };
 
@@ -236,8 +253,12 @@
       onHeroTurn(st) {
         const steps = [], r = st.round = (st.round || 0) + 1, b = boss(st), rs = roots(st), hu = st.units.find(u => u.side === 'hero'), who = b || hu;
         if (sc.obj.type === 'boss' && (!b || !api.alive(b))) return steps;
+        const TK = sc.talk || {}, talk = (key, lines, unit) => { st.talked = st.talked || {}; if (!lines || st.talked[key]) return; st.talked[key] = 1; steps.push({ type: 'talk', lines, unit: unit || who }) };
+        if (TK.rounds?.[r]) talk('r' + r, TK.rounds[r]);
+        if (b && b.hp > 0 && b.hp <= b.maxHp * .5 && r > 1) talk('half', TK.half, b);
+        if (!(sc.hints?.length)) { /* scenes without hints (the goat street) have only talk */ } else
         if (r === 1) steps.push({ type: 'say', unit: who, text: sc.hints[0], big: true });
-        if (r === 2) steps.push({ type: 'say', unit: who, text: sc.hints[1] });
+        if (sc.hints?.length && r === 2) steps.push({ type: 'say', unit: who, text: sc.hints[1] });
         /* คลื่นไฟ/ชีพจร: ตามรอบที่กำหนด ทำดาเมจรอบจุดศูนย์กลาง (ผู้เล่นล่อศัตรูเข้ามาแล้วใช้จังหวะ) */
         for (const P of sc.pulses || []) if (P.rounds.includes(r)) { const hit = st.units.filter(u => u.side === 'monster' && api.alive(u) && Math.max(Math.abs(u.u - P.at.u), Math.abs(u.v - P.at.v)) <= P.radius); for (const u of hit) u.hp = Math.max(0, u.hp - P.dmg); steps.push({ type: 'say', unit: who, text: P.text + (hit.length ? ' (โดน ' + hit.length + ' ตัว −' + P.dmg + ')' : ' (ไม่มีศัตรูในรัศมี)'), big: true, hits: hit }); st.log.push(P.text + ' −' + P.dmg + ' x' + hit.length) }
         if (sc.pulses && r === Math.min(...sc.pulses.flatMap(x => x.rounds)) - 1) steps.push({ type: 'say', unit: who, text: sc.pulses[0].warn || sc.hints[3] });
@@ -245,7 +266,7 @@
         /* ปมป้อนบอส */
         if (b && rs.length && r > 1 && sc.rootHeal) { const h = Math.min(b.maxHp - b.hp, sc.rootHeal * rs.length); if (h > 0) { b.hp += h; st.log.push((sc.anchorName || 'ปมหิว') + ' ' + rs.length + ' จุดป้อน' + (sc.bossName || 'ก้อนหิว') + ' +' + h); steps.push({ type: 'say', unit: b, text: '🩸 ' + (sc.anchorName || 'ปมหิว') + ' ' + rs.length + ' จุดป้อน' + (sc.bossName || 'ก้อนหิว') + ' +' + h, heal: h }) } }
         /* ตัดปมครบ: บอสเสียหลัก 1 ตา */
-        if (b && (sc.anchorKind || sc.rootShield) && !rs.length && !st.rootsCut && sc.cutText !== false) { st.rootsCut = true; if (sc.cutStun !== false) b.stun = 1; st.log.push(sc.cutLog || ((sc.anchorName || 'ปมหิว') + 'ขาดหมด — ' + (sc.bossName || 'ก้อนหิว') + 'เสียหลัก!')); steps.push({ type: 'say', unit: b, text: sc.cutSay || ('✂ ตัดอาหารมันได้แล้ว — ' + (sc.bossName || 'ก้อนหิว') + 'เสียหลัก! ตอนนี้ฟันมันได้เต็มแรง'), big: true }) }
+        if (b && (sc.anchorKind || sc.rootShield) && !rs.length && !st.rootsCut && sc.cutText !== false) { st.rootsCut = true; talk('cut', TK.cut, b); if (sc.cutStun !== false) b.stun = 1; st.log.push(sc.cutLog || ((sc.anchorName || 'ปมหิว') + 'ขาดหมด — ' + (sc.bossName || 'ก้อนหิว') + 'เสียหลัก!')); steps.push({ type: 'say', unit: b, text: sc.cutSay || ('✂ ตัดอาหารมันได้แล้ว — ' + (sc.bossName || 'ก้อนหิว') + 'เสียหลัก! ตอนนี้ฟันมันได้เต็มแรง'), big: true }) }
         /* คลื่นสัตว์รอยหมอง: ประกาศก่อน 1 รอบ */
         const W = sc.waves; if (W && !(W.needAnchor && !rs.length) && (!W.count || (st.waveN || 0) < W.count)) {
           if (r >= W.first - 1 && (r - W.first + 1) % W.everyRounds === 0 && r < W.first + W.everyRounds * 9) steps.push({ type: 'say', unit: who, text: sc.waveHint || sc.hints[2] });

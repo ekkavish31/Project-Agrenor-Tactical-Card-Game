@@ -95,7 +95,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait' };
+    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
@@ -141,7 +141,7 @@
     const sibWeapon = () => { try { return Q.get('sibw') || window.top.s.village.sibGear?.kind || 'log' } catch (e) { return Q.get('sibw') || 'log' } };   /* v98.472 · until the forged sword: a firewood log (ท่อนไม้ฟืน) */   /* v98.332 · the forged sword of the follower */
     const allies = PARTY.map((p, pi) => ({ ...(SCENE && SCENE.allies[pi] ? SP(SCENE.allies[pi]) : near(hs)), key: p.key, weapon: p.key === 'sib' ? sibWeapon() : undefined, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
     /* v98.492 · set-piece enemies: exact cells, stats from the scene (× the level scale in ?hp), the boss flagged for its specials */
-    const sceneMons = () => SCENE.enemies.map(e => { const T = MON[e.kind]; if (!T) return null; return { ...SP(e), evo: null, variant: null, kind: e.kind, name: e.name || T.name, hp: Math.round(T.hp * (e.hp || 1) * HPX), maxHp: Math.round(T.hp * (e.hp || 1) * HPX), atk: Math.round(T.atk * ATKX * (e.boss ? 1.15 : 1)), move: T.move, boss: !!e.boss, iq: Math.min(3, (T.iq || 0) + (e.boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evoGroup: null, ct: e.ct, sceneId: e.id } }).filter(Boolean);
+    const sceneMons = () => SCENE.enemies.map(e => { const T = MON[e.kind]; if (!T) return null; return { ...SP(e), evo: null, variant: null, kind: e.kind, name: e.name || T.name, hp: Math.round(T.hp * (e.hp || 1) * HPX), maxHp: Math.round(T.hp * (e.hp || 1) * HPX), atk: Math.round(T.atk * ATKX * (e.boss ? 1.15 : 1)), move: T.move, boss: !!e.boss, iq: Math.min(3, (T.iq || 0) + (e.boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evoGroup: null, ct: e.ct, sceneId: e.id, ...(e.mystery ? { mystery: true, immortal: true } : {}) } }).filter(Boolean);
     const mons = SCENE ? sceneMons() : GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms, (T.scale || 1) >= 1.3 ? 4 : (T.scale || 1) >= 1.0 ? 3 : 2) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); const EV = EVOLVE[g.kind], N = !boss && EV && MON[EV[0]], evo = N ? { kind: EV[0], tier: EV[1], line: N.el, name: N.name, hp: Math.round(N.hp * g.mult), atk: Math.round(N.atk * ATKX), move: N.move, iq: N.iq || 0, shove: !!N.shove, el: N.el, fly: !!N.fly, passive: !!N.passive, range: N.range || 1 } : null; return { ...at, evo, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evoGroup: T.evoGroup || null } }).filter(Boolean);
     /* v97.22: battle objective from the world map (?obj=survive:5 | escape | defend:4 | leader) */
     const objective = SCENE ? { ...SCENE.obj } : (() => { const [type, n] = (Q.get('obj') || '').split(':');
@@ -187,7 +187,7 @@
   function scenePanel() {
     if (!SCENE || !(SCENE.intro?.length || SCENE.hints?.length) || document.getElementById('fbScenePanel')) return; const d = document.createElement('div'); d.id = 'fbScenePanel';
     d.style.cssText = 'position:fixed;inset:0;z-index:90;background:#05060aee;display:flex;align-items:center;justify-content:center;font-family:AgThai,system-ui,sans-serif';
-    d.innerHTML = `<div style="width:min(620px,92vw);max-height:88vh;overflow:auto;padding:22px 26px;border-radius:16px;background:linear-gradient(#2a2234,#171320);border:2px solid #b49a5a;color:#f2e6c8;box-shadow:0 20px 60px #000c"><h2 style="margin:0 0 10px;font-size:22px;color:#ffd98a">⚔ ${esc(SCENE.name)}</h2>${(SCENE.intro || []).map(l => `<p style="margin:8px 0;line-height:1.55">${esc(l.text)}</p>`).join('')}<h3 style="margin:16px 0 6px;font-size:15px;color:#9fd4a8">📜 ต้องรู้ก่อนสู้</h3><ul style="margin:0 0 6px 18px;padding:0;line-height:1.6;font-size:14.5px">${(SCENE.hints || []).filter(h => !/^(เสียง|ปลอกคอของ Mip สั่น)/.test(h)).map(h => `<li>${esc(h)}</li>`).join('')}</ul><p style="font-size:12.5px;color:#a89c82;margin:10px 0 0">ฉากนี้ตายตัว ไม่สุ่ม — ศัตรูได้เปรียบ ต้องใช้กลยุทธ์ · เปิดอ่านซ้ำได้จากปุ่ม 📜 มุมซ้ายบน</p><div style="text-align:right;margin-top:16px"><button id="fbSceneGo" style="padding:9px 26px;border-radius:10px;border:2px solid #d8b46a;background:#c28a2c;color:#fff;font:700 16px AgThai,system-ui,sans-serif;cursor:pointer">เริ่มสู้</button></div></div>`;
+    d.innerHTML = `<div style="width:min(620px,92vw);max-height:88vh;overflow:auto;padding:22px 26px;border-radius:16px;background:linear-gradient(#2a2234,#171320);border:2px solid #b49a5a;color:#f2e6c8;box-shadow:0 20px 60px #000c"><h2 style="margin:0 0 10px;font-size:22px;color:#ffd98a">⚔ ${esc(SCENE.name)}</h2><h3 style="margin:16px 0 6px;font-size:15px;color:#9fd4a8">📜 ต้องรู้ก่อนสู้</h3><ul style="margin:0 0 6px 18px;padding:0;line-height:1.6;font-size:14.5px">${(SCENE.hints || []).filter(h => !/^(เสียง|ปลอกคอของ Mip สั่น)/.test(h)).map(h => `<li>${esc(h)}</li>`).join('')}</ul><p style="font-size:12.5px;color:#a89c82;margin:10px 0 0">ฉากนี้ตายตัว ไม่สุ่ม — ศัตรูได้เปรียบ ต้องใช้กลยุทธ์ · เปิดอ่านซ้ำได้จากปุ่ม 📜 มุมซ้ายบน</p><div style="text-align:right;margin-top:16px"><button id="fbSceneGo" style="padding:9px 26px;border-radius:10px;border:2px solid #d8b46a;background:#c28a2c;color:#fff;font:700 16px AgThai,system-ui,sans-serif;cursor:pointer">เริ่มสู้</button></div></div>`;
     document.body.append(d); d.querySelector('#fbSceneGo').onclick = () => d.remove();
   }
   function scenePanelBtn() {
@@ -729,6 +729,54 @@
   function toast(t) { const d = document.createElement('div'); d.className = 'fb-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 1700) }
   /* v97.12 · battle opening (B13, first part): the field's name and the win / lose rule come in, the camera looks at the enemy leader,
      then back to the party. Skipped when the arena is only warming up and with reduced motion (CINE off). */
+  /* ---------- v98.573 · battle conversations (js/battle-talk.js) ---------- */
+  const TALKED = new Set();
+  const scriptOf = key => (SCENE?.talk?.[key]) || (window.BattleTalk?.scripts?.[TUT]?.[key]) || null;
+  async function runTalk(lines, focus) {
+    if (!lines?.length || !window.BattleTalk || EDIT) return;
+    const f = focus && focus.vu !== undefined ? focus : null;
+    if (f && CINE) await cinematic(f, f, () => window.BattleTalk.play(lines), { z: 1.35, bars: false, lead: 260, tail: 120 }); else await window.BattleTalk.play(lines);
+  }
+  async function openingTalk() {
+    while (document.getElementById('fbScenePanel')) await wait(120);   /* the rules panel is read first */
+    const lines = scriptOf('start') || (SCENE?.intro || []).map(l => ({ who: l.who, text: l.text, emo: l.emo }));
+    await runTalk(lines);
+  }
+  /* once-only reactions in story fights: a friend goes down · the hero is hurt · the enemy side is half gone */
+  async function eventTalk() {
+    if (!(SCENE || TUT) || !st || st.outcome) return;
+    const once = (k, fn) => { if (TALKED.has(k)) return null; const r = fn(); if (r) TALKED.add(k); return r };
+    const hero = FB.hero(st), L = [];
+    const down = FB.allies(st).find(a => a.hp <= 0 && !TALKED.has('down' + a.key)); if (down) { TALKED.add('down' + down.key); const t = window.PartyTalk?.line(down.key, 'down'); if (t) L.push({ who: down.key, emo: 'worry', text: t }); L.push({ who: 'hero', emo: 'worry', text: 'ล้มไปแล้วหรือ… ไหวไหม? ข้าจะจัดการเอง!' }) }
+    once('low', () => { if (hero.hp > 0 && hero.hp <= hero.maxHp * .3) { L.push({ who: 'hero', emo: 'worry', text: 'เจ็บชะมัด… แต่ยังไม่ล้ม' }); return 1 } });
+    const mons = FB.monsters(st).filter(m => !m.mystery), tot = mons.reduce((a, m) => a + m.maxHp, 0), cur = mons.reduce((a, m) => a + Math.max(0, m.hp), 0);
+    if (!SCENE?.talk?.half && tot && cur <= tot * .5) once('half', () => { const t = scriptOf('half'); if (t) { L.push(...t); return 1 } });
+    if (L.length) await runTalk(L, hero);
+  }
+  async function endTalk() {
+    if (!window.BattleTalk || EDIT) return; await wait(700);
+    if (st.outcome === 'win' && SCENE && st.units.some(u => u.mystery && u.hp > 0 && !u._rev)) { for (const u of st.units.filter(u => u.mystery && u.hp > 0 && !u._rev)) await mysteryReveal(u, true) }
+    const key = st.outcome === 'win' ? 'win' : st.outcome === 'lose' ? 'lose' : null, L = key && scriptOf(key); if (L) await runTalk(L);
+  }
+  /* the odd goat is Mip in disguise: it cannot die. Beaten (HP 1) it drops the shape, speaks, runs off the street and is gone */
+  if (Q.get('dbg') === '1') window.__FB = { get st() { return st }, mysteryCheck: () => mysteryCheck(), eventTalk: () => eventTalk(), endTalk: () => endTalk(), runTalk: (l, f) => runTalk(l, f) };   /* test hook (tools/*) */
+  let mysteryBusy = false;
+  async function mysteryCheck() {
+    if (mysteryBusy || !st) return; const u = st.units.find(x => x.mystery && !x._rev && x.hp <= 1 && x.hp < x.maxHp); if (!u) return;
+    mysteryBusy = true; try { await mysteryReveal(u, false) } finally { mysteryBusy = false }
+  }
+  async function mysteryReveal(u, soft) {
+    u._rev = true; u.immortal = false; u.pose = 'idle'; u.mipForm = true; u.shown = 0; sfx('cast', .5); screenFlash('159,216,255', .35, 420);
+    glows.push({ u: u.vu, v: u.vv, col: '159,216,255', r: UNIT * 1.8, t0: now(), dur: 1100 }); floatText(u, '✦', '#9fd8ff', false, true); hudSync();
+    await wait(500); await runTalk((SCENE?.talk && (soft ? SCENE.talk.soft : SCENE.talk.reveal)) || [], u);
+    /* run away from the hero along the nearest empty line, then fade */
+    const h = FB.hero(st), du = Math.sign(u.u - h.u) || 1, dv = Math.sign(u.v - h.v) || -1, far = SCENE ? SCENE.R + 3 : 9;
+    const to = Math.abs(u.u - h.u) >= Math.abs(u.v - h.v) ? { u: du * far, v: u.v } : { u: u.u, v: dv * far };
+    u.dir = dirTo(u, to); u.walking = true; setTimeout(() => { u.deadAt = now() }, 450);
+    await walkAnim(u, [{ u: u.u, v: u.v }, to], 7.5, true); u.walking = false;
+    u.hp = 0; try { FB.checkOutcome(st) } catch (e) { }
+    refresh(); hudSync();
+  }
   async function battleIntro() {
     const d = document.createElement('div'); d.id = 'fbIntro';
     d.innerHTML = `<small>${esc(({ forest: 'ป่า', grass: 'ทุ่งหญ้า', hills: 'เนินเขา', swamp: 'บึง', snow: 'ทุ่งหิมะ', sand: 'หาดทราย' })[Q.get('biome')] || 'สนามรบ')}${Q.get('night') === '1' ? ' · กลางคืน' : ''}</small><b>${esc(TITLE || FB.monster(st)?.name || 'การต่อสู้')}</b><span>${esc(goalLine())}</span>`;
@@ -741,8 +789,10 @@
   async function startTurnShow(first) {
     walks = []; pend = null;
     if (first && CINE && Q.get('warm') !== '1' && !st.introDone) { st.introDone = true; busy = true; hudSync(); try { await battleIntro() } finally { busy = false } }
+    if (first && Q.get('warm') !== '1' && Q.get('resume') !== '1') { busy = true; hudSync(); try { await openingTalk() } finally { busy = false } }   /* v98.573 · the opening conversation (Disgaea-style window over the field) */
     if (first) { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'start') }
     if (first && !TUT && Q.get('warm') !== '1') battleTip();   /* v97.93 · C10: one new rule per battle, the first few battles after the prologue */
+    if (!first) { busy = true; try { await mysteryCheck(); await eventTalk() } finally { busy = false } }
     refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
     toast(first ? 'BATTLE START · DRAW' : `TURN ${st.turns} · DRAW ${fresh.length}`);
     if (fresh.length) { busy = true; hudSync(); await drawShow(fresh); busy = false; refresh() }
@@ -911,6 +961,7 @@
       if (s.fall) { shake(12, 380); await walkAnim(t, [s.fall.from, { u: t.u, v: t.v }], 6, true); fx('fallDust', t); floatText(t, 'FALL −' + s.fall.damage, '#ff9a8a', false, true); t.shown = t.hp; hudSync() }   /* v94: knocked off a ledge */
       a.pose = 'idle'; if (t.hp > 0) t.pose = 'idle';
     }, full ? { z: 1.7 } : { z: 1.4, bars: false, lead: 170, tail: 90 });
+    await mysteryCheck();
   }
   /* companion signature skill, ordered by the player */
   async function allySkillAct(id) {
@@ -1013,7 +1064,7 @@
     hint('⚠ ' + s.to.name + ' วิวัฒน์แล้ว! พลังเพิ่มขึ้นมาก');
     await wait(500);
   }
-  async function playSteps(steps) { try { await playSteps0(steps) } finally { talkCheck() } }
+  async function playSteps(steps) { try { await playSteps0(steps); await mysteryCheck() } finally { talkCheck() } }
   async function playSteps0(steps) {
     for (const s of steps) if (s.type === 'evolve') s.unit.evoShow = s.from.kind;   /* v98.58: keep showing the old form until the flash */
     for (const s of steps) {
@@ -1033,6 +1084,7 @@
           if (s.heal) { a.shown = a.hp; floatText(a, '+' + s.heal, '#c9a0ff', false, true); hudSync() }
           for (const h of s.hits) { fx(s.fx === 'ice' ? 'ice' : s.fx === 'dark' ? 'arcane' : 'earth', h.target, a, { scale: 1.2 }); impact(h.target, s.fx === 'ice' ? 'ice' : 'blunt', { big: true, from: a }); h.target.hitUntil = now() + 440; floatText(h.target, '−' + h.damage, '#ffd27a', false, true); h.target.shown = h.target.hp; if (h.target.hp <= 0) h.target.deadAt = now() + 380; hudSync(); await wait(180) }
           await wait(380); a.pose = 'idle' }, { z: 1.5 }) }
+      else if (s.type === 'talk') await runTalk(s.lines, s.unit)
       else if (s.type === 'say') { if (s.text) { try { hint(s.text) } catch (e) { } if (s.big) banner(s.text.length > 26 ? s.text.slice(0, 26) + '…' : s.text, 'crit') } if (s.heal && s.unit) { s.unit.shown = s.unit.hp; floatText(s.unit, '+' + s.heal, '#c9a0ff', false, true); hudSync() } await wait(s.big ? 1100 : 650) }
       else if (s.type === 'spawn') { const nu = s.unit; nu.shown = nu.hp; nu.vu = nu.u + OFF; nu.vv = nu.v + OFF; glows.push({ u: nu.vu, v: nu.vv, col: '170,90,255', r: UNIT * 1.6, t0: now(), dur: 900 }); floatText(nu, s.text || 'ใหม่!', '#d9a0ff', false, true); await wait(480) }
       else if (s.type === 'sleep') { floatText(s.unit, '💤 SLEEP — SKIP', '#c8c0ff', true); await wait(420) }
@@ -1061,7 +1113,7 @@
   function report(outcome) { if (reported || !EMBED) return; reported = true; try { localStorage.removeItem(SNAP_KEY) } catch (e) { } try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), used: st.itemsUsed || {}, evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
   function finish() {
     if (st.outcome === 'win') { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'win') }
-    if (EMBED) { const b = document.getElementById('fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
+    if (EMBED) { const b = document.getElementById('fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; endTalk().then(() => setTimeout(() => report(st.outcome), 3600)) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
   function flash(msg) { texts.push({ u: FB.hero(st).vu, v: FB.hero(st).vv, txt: msg, col: '#f6d79b', t0: now(), small: true }) }
   function floatText(unit, txt, col, small, big) { const t = now(), stack = texts.filter(x => x.unit === unit && t - x.t0 < 450).length; texts.push({ unit, u: unit.vu, v: unit.vv, txt, col, t0: t, small, big, dx: (Math.random() - .5) * 18, dy: -stack * 22 }) }   // texts on the same unit stack upward
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }
@@ -1556,8 +1608,19 @@
     if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
   }
   function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px AgThai,system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
+  /* v98.573 · Mip after the goat's shape drops: the run cycle of assets/ui/mip-sheet.webp (12 cells · faces LEFT), drawn over a soft blue glint */
+  function mysteryGlint(g, u, t) {
+    const p = project(u.vu, u.vv), k = .35 + Math.max(0, Math.sin(t * .004)) * .65; g.save(); g.fillStyle = '#9fd8ff'; g.strokeStyle = '#2b6fb0'; g.lineWidth = 1;
+    for (const [dx, dy, r] of [[UNIT * .26, -UNIT * .95, 4.5], [-UNIT * .3, -UNIT * .62, 3.2]]) { g.globalAlpha = k; g.beginPath(); g.moveTo(p.x + dx, p.y + dy - r); g.lineTo(p.x + dx + r * .6, p.y + dy); g.lineTo(p.x + dx, p.y + dy + r); g.lineTo(p.x + dx - r * .6, p.y + dy); g.closePath(); g.fill(); g.stroke() } g.restore();
+  }
+  function drawMip(g, u, p0, t) {
+    const sheet = im('assets/ui/mip-sheet.webp?v=2'), h = UNIT * 1.15; shadow(g, p0, UNIT * .2);
+    if (!sheet) return; const cw = sheet.naturalWidth / 12, f = Math.floor(t / 70) % 12, right = /^(SE|NE)$/.test(u.dir || ''), fade = u.deadAt ? Math.max(0, 1 - (t - u.deadAt) / 1400) : 1;
+    g.save(); g.globalAlpha = fade; g.translate(p0.x, p0.y); if (right) g.scale(-1, 1); g.drawImage(sheet, f * cw, 0, cw, sheet.naturalHeight, -h / 2, -h * .92, h, h); g.restore();
+    g.save(); g.globalAlpha = .5 * fade; g.fillStyle = '#9fd8ff'; for (let i = 0; i < 5; i++) { const a = t * .004 + i * 1.26; g.beginPath(); g.arc(p0.x + Math.cos(a) * h * .5, p0.y - h * .5 + Math.sin(a * 1.3) * h * .35, 2.2, 0, 7); g.fill() } g.restore();
+  }
   function drawMonster(g, u, t) {
-    const p0 = project(u.vu, u.vv), v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
+    const p0 = project(u.vu, u.vv); if (u.mipForm) return drawMip(g, u, p0, t); const v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
     const sk = u.evoShow || u.kind, T = MON[sk] || MT, kind = MON[sk] ? sk : MK, mid = 'm:' + kind;   /* v98.320 · ONE size per species in the ⚖ Scale Lineup — a boss is the same picture, so it uses the same row (no separate boss row, no hidden multiplier) */   /* v98.58: evoShow = the old form until the flash */
     if (T.code && window.CodeMonsters?.has(kind)) {   /* v98.331 · code-drawn unit */
       const lift0 = 0, h = UNIT * 1.3 * (T.scale || 1) * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1), hitMs = (u.hitUntil || 0) > t ? 420 - ((u.hitUntil || 0) - t) : null, atk = u.pose === 'strike' || u.pose === 'windup';
@@ -1661,7 +1724,7 @@
     const drawUnit = u => { const ld = u.dir; if (frontShown(u)) u.dir = u.frontDir; if (window.viewDir) u.dir = viewDir(u.dir);
       const SFX = window.StatusFX, sp = SFX && u.hp > 0 && (u.sts || u.stun || u.slowed) ? project(u.vu, u.vv) : null, sh = sp ? UNIT * 1.3 * (u.side === 'monster' ? (MON[u.evoShow || u.kind]?.scale || 1) : 1) : 0;   /* v98.397 · the status shows on the body (js/status-fx.js): bubbles, flames + smoke, ice … */
       if (sp) SFX.back(g, u, sp.x, sp.y, sh, t);
-      try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), SFX || frozenMark(g, u, t)) } finally { u.dir = ld }
+      try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), SFX || frozenMark(g, u, t), u.mystery && !u.mipForm && u.hp > 0 && mysteryGlint(g, u, t)) } finally { u.dir = ld }
       if (sp) SFX.front(g, u, sp.x, sp.y, sh, t) };
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
