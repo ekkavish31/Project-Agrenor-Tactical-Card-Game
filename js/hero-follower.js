@@ -9,6 +9,7 @@
   function build() {
     const id = other(); if (motion && motionFor === id) return motion;
     motion = root.HeroVariant?.motionFor?.(id) || null; motionFor = id;
+    try { root.TownArt?.prefetch?.(motion) } catch (e) { }   /* v98.574 · no first-step download stalls */
     return motion;
   }
   function target(gap) {         // the point `gap` cells back along the trail (the last trail point is the lead itself)

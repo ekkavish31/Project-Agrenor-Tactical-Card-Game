@@ -525,6 +525,7 @@ function panel(now) {
 /* ---------- frame ---------- */
 function resize() { W = innerWidth; H = innerHeight; cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio); cv.style.width = W + 'px'; cv.style.height = H + 'px'; scale = Math.max(.7, Math.min(1.4, Math.min(W / 900, H / 620))) }
 addEventListener('resize', resize); resize();
+window.applyRenderScale = () => { cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio) };   /* v98.574 · js/perf-scale.js lowers the resolution when frames are slow (the fights had no such safety net) */
 function frame(t) {
   OCC.frame++;
   window.__feDirtyGround = () => { groundCanvas = null };   // BG Editor: repaint the ground (blocked-cell tint) after a prop moved

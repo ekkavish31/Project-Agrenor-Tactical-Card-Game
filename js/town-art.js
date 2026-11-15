@@ -8,7 +8,7 @@
  const files={grass:'grass.png',paving:'paving.png',soil:'soil.png',details:'meadow-details.png',pond:'garden-pond.png',materials:'market-materials.png',equipment:'market-equipment.png',orders:'market-orders.png',props:'props.png',fountain:'fountain.png'};
  /* v98.330 · only a ground / village-sheet picture (asset()) arriving late asks for the whole ground to be repainted (0.1–1.5 s). The hero's walk frames and other pictures fetched by image(src)
     are drawn every frame anyway: before, each of them finishing its download (the first walk in a new direction!) froze the village for ~1.4 s. */
- function image(src,notify){if(!images.has(src)){const im=new Image();if(notify)im.onload=()=>listeners.forEach(f=>f());im.src=src;images.set(src,im)}return images.get(src)}
+ function image(src,notify){if(!images.has(src)){const im=new Image();im.decoding='async';im.onload=()=>{try{im.decode?.().catch(()=>{})}catch(e){}if(notify)listeners.forEach(f=>f())};im.src=src;images.set(src,im)}return images.get(src)}   /* v98.574 · decode right after the download (off the main thread) so the first drawing of a walk frame is not a stall */
  function asset(id){return image('assets/village-town/'+(files[id]||id),true)}
  function pattern(g,id){const im=asset(id);if(!im.complete||!im.naturalWidth)return null;let cache=patterns.get(g);if(!cache)patterns.set(g,cache=new Map());if(!cache.has(id)){const c=document.createElement('canvas');c.width=c.height=SIZE[id]||420;c.getContext('2d').drawImage(im,0,0,c.width,c.height);const pattern=g.createPattern(c,'repeat');if(SIZE[id])pattern.setTransform(new DOMMatrix().rotate(45));cache.set(id,pattern)}return cache.get(id)}
  function mask(im){/* v98.78 · remember the mask on the image object: VillageAlpha.get splits the file name out of the address on every call, and this runs several times per picture per frame */
@@ -42,7 +42,7 @@
  let extraScreens=[],holeCv=null;const AURA=55.2;   /* v98.123 · was 92: the see-through window around the hero is half the size */
  /* v98.241 · the see-through window is cut only where it is: the picture is drawn whole EXCEPT the small box around each window (clip, even-odd), and only that box goes through a scratch canvas with the soft erase.
     Before, the whole picture (a big building / the fountain = up to 2× its size) was copied into a scratch canvas every frame for every covering picture — with two characters (lead + follower) that was the frame-rate drop at the plaza. */
- function holeDraw(g,im,crop,rect,holes){const [x,y,w,h]=rect,t=g.getTransform(),s=Math.min(2,Math.max(.5,Math.hypot(t.a,t.b))),RX=AURA*.85,RY=AURA*1.15,src=crop?im:(blendFor(im)||im),iw=crop?crop[2]:(src.naturalWidth||src.width),ih=crop?crop[3]:(src.naturalHeight||src.height),ix=crop?crop[0]:0,iy=crop?crop[1]:0;
+ function holeDraw(g,im,crop,rect,holes){const [x,y,w,h]=rect,t=g.getTransform(),s=Math.min(2,Math.max(.5,Math.hypot(t.a,t.b))),RX=AURA*.85,RY=AURA*1.15,src0=crop?im:(blendFor(im)||im),src=crop?im:(sharpFor(g,src0,w)||lodFor(g,src0,w)||src0),iw=crop?crop[2]:(src.naturalWidth||src.width),ih=crop?crop[3]:(src.naturalHeight||src.height),ix=crop?crop[0]:0,iy=crop?crop[1]:0;   /* v98.574 · read the picture at the size it is shown at (the 15×-too-big original made one covering building cost ~16 ms a frame) */
   const boxes=[];for(const hole of holes){let b={x0:Math.max(x,hole.x-RX),y0:Math.max(y,hole.y-RY),x1:Math.min(x+w,hole.x+RX),y1:Math.min(y+h,hole.y+RY),hs:[hole]};if(b.x1>b.x0&&b.y1>b.y0)boxes.push(b)}
   for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){const a=boxes[i],c=boxes[j];if(a.x0<c.x1&&c.x0<a.x1&&a.y0<c.y1&&c.y0<a.y1){a.x0=Math.min(a.x0,c.x0);a.y0=Math.min(a.y0,c.y0);a.x1=Math.max(a.x1,c.x1);a.y1=Math.max(a.y1,c.y1);a.hs.push(...c.hs);boxes.splice(j,1);j=i}}   // overlapping windows share one box
   const draw0=()=>{if(crop)g.drawImage(im,...crop,...rect);else g.drawImage(src,...rect)};
@@ -51,7 +51,7 @@
   const keep=Math.max(0,Math.min(1,root.DepthStyle?root.DepthStyle.get().alpha:0)),er=Math.min(1,(1-keep)*1.3);   /* v98.344 · see-through window: +30 % more transparent, +20 % wider (AURA 46 → 55.2) */
   if(!holeCv)holeCv=document.createElement('canvas');
   for(const b of boxes){const bw=b.x1-b.x0,bh=b.y1-b.y0,cw=Math.max(1,Math.ceil(bw*s)),ch=Math.max(1,Math.ceil(bh*s));
-   if(holeCv.width!==cw||holeCv.height!==ch){holeCv.width=cw;holeCv.height=ch}
+   if(holeCv.width<cw||holeCv.height<ch){holeCv.width=Math.max(holeCv.width,cw);holeCv.height=Math.max(holeCv.height,ch)}   /* v98.574 · only ever grows: resizing a canvas every frame reallocates its bitmap */
    const q=holeCv.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,cw,ch);q.imageSmoothingEnabled=true;q.imageSmoothingQuality='high';
    q.drawImage(src,ix+(b.x0-x)/w*iw,iy+(b.y0-y)/h*ih,bw/w*iw,bh/h*ih,0,0,cw,ch);
    for(const hole of b.hs){const hx=(hole.x-b.x0)*s,hy=(hole.y-b.y0)*s,R=AURA*s;q.save();q.translate(hx,hy);q.scale(.85,1.15);const gr=q.createRadialGradient(0,0,R*.3,0,0,R);gr.addColorStop(0,'rgba(0,0,0,'+er+')');gr.addColorStop(.6,'rgba(0,0,0,'+(er*.75)+')');gr.addColorStop(1,'rgba(0,0,0,0)');q.globalCompositeOperation='destination-out';q.fillStyle=gr;q.fillRect(-R,-R,R*2,R*2);q.restore()}
@@ -76,6 +76,8 @@
  const silhouettes=new WeakMap();
  function outline(g,im,crop,rect,radius=3){if(!im?.complete||!im.naturalWidth)return;let c=silhouettes.get(im);if(!c){c=document.createElement('canvas');c.width=Math.min(768,im.naturalWidth);c.height=Math.round(c.width*im.naturalHeight/im.naturalWidth);const q=c.getContext('2d');q.drawImage(im,0,0,c.width,c.height);q.globalCompositeOperation='source-in';q.fillStyle='#fff';q.fillRect(0,0,c.width,c.height);silhouettes.set(im,c)}g.save();g.globalAlpha*=.88;const src=crop?[crop[0]/im.naturalWidth*c.width,crop[1]/im.naturalHeight*c.height,crop[2]/im.naturalWidth*c.width,crop[3]/im.naturalHeight*c.height]:[0,0,c.width,c.height];for(const[a,b]of[[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[-.7,.7],[.7,-.7],[-.7,-.7]])g.drawImage(c,...src,rect[0]+a*radius,rect[1]+b*radius,rect[2],rect[3]);g.restore()}
  function hit(im,x,y){if(x<0||x>1||y<0||y>1)return false;const m=mask(im);return !m||(m.data[(Math.min(m.h-1,Math.floor(y*m.h))*m.w+Math.min(m.w-1,Math.floor(x*m.w)))*4+3]||0)>35}
+ /* v98.574 · fetch + decode every frame of a motion set WITHOUT making it the hero's (the follower's frames used to be downloaded one by one during the first steps) */
+ function prefetch(data){if(!data?.directions)return;for(const d of Object.values(data.directions)){if(d.idle?.src)image(d.idle.src);for(const f of d.idleFrames||[])if(f?.src)image(f.src);for(const f of d.walk||[])if(f.src)image(f.src)}}
  function setMotion(data){if(!data?.directions)return;motion=data;for(const d of Object.values(data.directions)){if(d.idle?.src)image(d.idle.src);for(const f of d.walk||[])if(f.src)image(f.src)}}
   // v97.99 · large soft light/dark patches over the small grass tile, so the repeat does not read as a grid
  function grassTone(g,w,h,seed=7){const n=40,c=document.createElement('canvas');c.width=c.height=n;const q=c.getContext('2d'),d=q.createImageData(n,n);let r=seed>>>0;const rnd=()=>((r=(r*1664525+1013904223)>>>0)/4294967296);
@@ -87,6 +89,6 @@
  function view(ctx,pad=0){try{const m=ctx.getTransform();if(!m.is2D||Math.abs(m.b)>1e-6||Math.abs(m.c)>1e-6||!m.a||!m.d)return null;const w=ctx.canvas.width,h=ctx.canvas.height,x0=(0-m.e)/m.a,x1=(w-m.e)/m.a,y0=(0-m.f)/m.d,y1=(h-m.f)/m.d;return{x0:Math.min(x0,x1)-pad,x1:Math.max(x0,x1)+pad,y0:Math.min(y0,y1)-pad,y1:Math.max(y0,y1)+pad}}catch(e){return null}}
  /* draw an image whose pixels are 1:1 with world px at (0,0), cropped to the visible part */
  function drawWorld(ctx,im,pad=6){const v=view(ctx,pad);if(!v){ctx.drawImage(im,0,0);return}const x=Math.max(0,Math.floor(v.x0)),y=Math.max(0,Math.floor(v.y0)),w=Math.min(im.width,Math.ceil(v.x1))-x,h=Math.min(im.height,Math.ceil(v.y1))-y;if(w>0&&h>0)ctx.drawImage(im,x,y,w,h,x,y,w,h)}
- root.TownArt={xray:()=>xray,view,drawWorld,grassTone,setCur:v=>{cur=v||null},sharpOn:()=>sharpOn,sharpAmt:()=>sharpAmt,setSharp,image,asset,pattern,begin,draw,outline,hit,sprite,detail,hero,setMotion,onLoad:f=>listeners.add(f),getMotion:()=>motion};
+ root.TownArt={xray:()=>xray,view,drawWorld,grassTone,setCur:v=>{cur=v||null},sharpOn:()=>sharpOn,sharpAmt:()=>sharpAmt,setSharp,image,asset,pattern,begin,draw,outline,hit,sprite,detail,hero,setMotion,prefetch,onLoad:f=>listeners.add(f),getMotion:()=>motion};
  Object.keys(files).forEach(asset);if(motion)setMotion(motion);
 })(globalThis);

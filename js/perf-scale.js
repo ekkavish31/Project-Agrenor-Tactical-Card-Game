@@ -27,6 +27,8 @@
   document.addEventListener('DOMContentLoaded', () => { try { document.documentElement.classList.toggle('perf-lite', step >= 2) } catch (e) { } });
   try { Object.defineProperty(window, 'devicePixelRatio', { configurable: true, get: () => real * STEPS[step] }) } catch (e) { return }
   window.RENDER_STEP = () => step;
+  /* v98.574 · pages other than the village (the fights, the sub-maps) have no "drawn" stamp of their own: count from when the page finished loading */
+  if (!/village-town/.test(location.pathname)) addEventListener('load', () => { if (!window.__townDrawnAt) window.__townDrawnAt = performance.now() });
   /* v98.77 · at 60 % or lower the decorative HD-2D layers are switched off too (js/hd2d.js: bloom, blurred top/bottom bars, light rays, dust):
      each costs a full-screen blur or an animated layer every frame, which a slow screen cannot spare. They come back when the picture climbs back above 60 %. */
   const lite = () => document.documentElement.classList.toggle('perf-lite', step >= 2);
