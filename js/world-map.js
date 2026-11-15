@@ -593,6 +593,35 @@
     await modal(`<h2>🏁 ${esc(res.name)}</h2><p><small>โทน: ${esc(res.tone)} · Mip ${res.fate === 'purified' ? 'ถูกชำระและกลับป่า (ได้ผลึกสะท้อน)' : 'ถูกผนึกให้หลับ'}</small></p><p>เรื่องหลักจบลงตรงนี้ — โลกยังอยู่ เล่นต่อได้ ไม่มีอะไรทับเซฟของคุณ · ดูทางที่เดินมาในสมุดบันทึก/ฉายา</p>`);
     hudSync();
   }
+  /* v98.514 · มังกรดำจ้าววิญญาณ (Byrexael-Cean · docs/DRAGON-BYREXAEL-TH.md): บอสเสริมที่ปากปล่องภูเขาไฟใต้ — ฉากตายตัว \`dragonLair\` · ชนะแล้วเลือก ปลิดชีพ / ผนึกให้หลับ / ช่วยระบายตะกอน (สองทางหลังต้องมีความรู้จากเส้นเรื่อง) */
+  async function dragonScene() {
+    const g = WS.game(), M = window.MainStory; if (!M || M.flag(g, 'dragonFate')) return;
+    const rep = (f, n, why) => window.Factions?.add(f, n, why);
+    const ally = !!M.flag(g, 'dragonAlly');
+    if (!M.flag(g, 'dragonSeen')) { await pageSeq('⚑ ปากปล่องใต้', [{ who: null, text: 'ทางขึ้นปากปล่องเต็มไปด้วยเถ้าดำที่ยังอุ่น ทุกก้าวได้ยินเสียงหินแตกเบา ๆ ใต้ฝ่าเท้า — เหมือนกำลังเดินอยู่บนหลังของบางอย่างที่ยังไม่ตื่นเต็มที่' }].concat(ally ? [{ who: 'mierris', text: 'เมียร์ริสหยุดห่างจากขอบปล่องสิบก้าว "ข้าจะยืนตรงนี้ ถ้าเจ้าเห็นมันตั้งใจจะหยุด ข้าจะตะโกนบอก — อย่าลืมว่าเราไม่ได้มาฆ่าเพราะเกลียด"' }] : [])); M.set(g, 'dragonSeen', true); WS.commit(); save() }
+    const go = await modal(`<h2>🔥 ปากปล่องใต้ · มังกรดำจ้าววิญญาณ</h2><p>มันเก่ากว่าอาณาจักรทุกแห่ง ไม่ได้โกรธเจ้า แต่ตะกอนที่ล้นปล่องกำลังกดมันอยู่ — ตัดแก่นตะกอนทั้งสามจุดก่อน แล้วค่อยล้มมัน · HP ตอนนี้ ${S.hp}/${S.maxHp} · ฉากนี้เป็นบอสเสริม (ควรเลเวล 12 ขึ้นไป) ถอยแล้วกลับมาใหม่ได้</p>`, [{ label: '⚔ ลงไปที่ก้นปล่อง', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]);
+    if (go !== 'go') return;
+    const out = await battle('byrexael', .95, { scene: 'dragonLair', boss: true, obj: '' });
+    if (out !== 'win') { toast(out === 'flee' ? 'ถอยจากปากปล่อง — กลับมาใหม่ได้ที่ปุ่ม 🔥' : 'ยังไม่ชนะมังกร — พักแล้วกลับมาใหม่ได้'); hudSync(); return }
+    log('🔥 มังกรดำจ้าววิญญาณล้มลง (ยังหายใจ) — รอคำตัดสิน');
+    await pageSeq('⚑ มังกรดำจ้าววิญญาณ', [{ who: null, text: 'มังกรทรุดลงบนที่สูงโดยไม่ครางสักเสียง รอยแตกเรืองส้มบนหลังเริ่มหรี่ลงช้า ๆ ตาที่เคยเป็นสีไฟมองคุณเหมือนเพิ่งจำใครบางคนได้ — มันไม่ได้ลุกขึ้นอีก แต่มันก็ยังไม่ตาย' }]);
+    const know = Math.max(+M.flag(g, 'ruinStudy') || 0, 0), sig = +M.flag(g, 'faithSignal') || 0, plan = M.flag(g, 'dragonPlan');
+    const canSeal = know >= 2 || plan === 'old', canEase = sig >= 1 || !!M.flag(g, 'dragonSediment') || ally;
+    const fate = await modal(`<h2>⑂ มังกรที่หมดแรง</h2><p>คนสมัยก่อนไม่รบกับสัตว์ระดับนี้จนตาย — พวกเขาเลือกวิธีที่ไม่ทิ้งตะกอนไว้ไม่มีใครดูแล คุณเลือกอะไร?</p>`, [
+      { label: '⚔ ปลิดชีพมัน (ได้เกล็ดและทรัพย์ แต่ตะกอนรอบปล่องจะไม่มีใครรับ)', value: 'slain' },
+      { label: '🕯 ผนึกให้หลับ' + (canSeal ? '' : ' (ต้องมีความรู้จากจารึกสำนักชายป่า)'), value: 'sealed', disabled: !canSeal },
+      { label: '🌫 ช่วยระบายตะกอนแล้วปล่อยให้มันหลับเอง' + (canEase ? '' : ' (ต้องเข้าใจเรื่องตะกอน/ฟังเสียงที่ศาล หรือมีเมียร์ริสไปด้วย)'), value: 'eased', disabled: !canEase }]);
+    if (fate == null) { toast('มังกรยังหายใจอยู่ — กลับมาตัดสินที่ปุ่ม 🔥 ได้'); M.set(g, 'dragonDown', true); WS.commit(); save(); hudSync(); return }
+    M.set(g, 'dragonFate', fate); WS.commit();
+    const TXT = { slain: ['ดาบสุดท้ายลงโดยไม่มีเสียงตอบ เกล็ดดำหลุดเป็นแผ่นเหมือนแก้วภูเขาไฟ แสงในรอยแตกดับหมด — ปล่องเงียบลงทันที แต่เถ้าสีม่วงจาง ๆ ยังลอยขึ้นจากก้นปล่องไม่หยุด และไม่มีใครรับมันไว้อีกแล้ว', 'ได้เกล็ดมังกรดำ +250 💰'], sealed: ['คุณวางสามวงตามที่เมียร์ริสวาดไว้ รอบตัวมันด้วยเถ้าและน้ำค้าง มังกรหลับตาลงช้า ๆ รอยแตกบนหลังกลายเป็นสีเทาเงิน — ปล่องยังอุ่น แต่ไม่ขยับอีก', 'ได้ ผงเถ้าผนึก (ราคาดี) +120 💰 · ชื่อเสียงผู้เฝ้าแสง +'], eased: ['คุณช่วยกันเบี่ยงธารเถ้าและยกแก่นตะกอนที่แตกออกไปไว้ห่างปล่อง ลมหายใจของมังกรช้าลงทีละน้อยจนเหมือนคนหลับสนิท รอยแตกบนหลังหรี่เป็นสีส้มอ่อนที่ไม่เคยดับสนิท — มันยังอยู่ และจะตื่นเมื่อมีใครมาปลุกอีกครั้ง', 'ผู้เฝ้าแสงและชาวไร่ชายฝั่งต่างได้ยินข่าวนี้ ชื่อเสียงเพิ่ม'] }[fate];
+    if (fate === 'slain') { S.gold += 250; rep('crown', 1, 'ปลิดชีพมังกร'); rep('light', -2, 'ปลิดชีพสัตว์เก่าแก่'); rep('village', 1, 'ปลิดชีพมังกร') }
+    if (fate === 'sealed') { S.gold += 120; rep('light', 3, 'ผนึกมังกร'); rep('village', 1, 'ผนึกมังกร') }
+    if (fate === 'eased') { S.gold += 60; rep('light', 3, 'ช่วยระบายตะกอนมังกร'); rep('village', 3, 'ช่วยระบายตะกอนมังกร'); rep('temple', 1, 'ช่วยระบายตะกอนมังกร') }
+    try { window.Titles?.log?.(g, 'dragon.' + fate, '🔥 มังกรดำจ้าววิญญาณ — ' + ({ slain: 'ปลิดชีพ', sealed: 'ผนึกให้หลับ', eased: 'ช่วยระบายตะกอน' })[fate]) } catch (e) { }
+    WS.commit(); save();
+    await pageSeq('⚑ ' + ({ slain: 'ปลิดชีพ', sealed: 'ผนึก', eased: 'ระบายตะกอน' })[fate], [{ who: null, text: TXT[0] }, { who: null, text: TXT[1] }]);
+    toast('🔥 ' + ({ slain: 'มังกรถูกปลิดชีพ', sealed: 'มังกรถูกผนึก', eased: 'มังกรหลับสนิท' })[fate]); hudSync();
+  }
   async function crossroadsAt(id) {
     const g = WS.game(), C = window.Crossroads; if (!C || !g) return;
     for (const m of C.expire(g, S)) { log(m); toast(m) }
@@ -643,6 +672,7 @@
       else if (typeof v === 'string' && v.startsWith('svc:')) {   /* v97.72 · the town's own service (js/town-services.js) */
         const r = TownServices.run(S, id, v.slice(4), { passTime, healParty, game: () => window.WorldState.game(), reveal: n => { for (const [a, b] of G.within(S.pos.c, S.pos.r, n)) S.known[K(a, b)] = 1; fogDirty = true; reveal() } });
         if (r.panel === 'finale') { await finaleScene() }
+        if (r.panel === 'dragon') { await dragonScene() }
         if (r.panel === 'bounty' && window.Bounties) { await Bounties.panel(S, id, () => { save(); hudSync() }); Bounties.place(S, world, G); fogDirty = true; save(); hudSync() }
         for (const m of r.lines) log(m); save(); hudSync(); if (r.lines.length) await modal('<h2>' + esc(poi.name) + '</h2>' + r.lines.map(m => '<p>' + esc(m) + '</p>').join(''));
         if (r.goto) { const tw = world.towns.find(x => x.id === r.goto); if (tw) { S.pos = { c: tw.c, r: tw.r }; S.known[K(tw.c, tw.r)] = 1; fogDirty = true; reveal(); save(); hudSync(); { const p = center(tw.c, tw.r); token.x = p.x; token.y = p.y; follow() } await townVisit(tile(tw.c, tw.r).poi); return } }
@@ -959,7 +989,7 @@
 
   /* ---------- battles (the flat card battle in an iframe) ---------- */
   /* v98.489 · effective boss health (before level scaling) — ก้อนหิว 160 from tools/simulate-hunger.cjs (with its 3 specials): ~65 % first-try win at hero Lv.12 (the story gate), ~40 % at Lv.10, ~87 % at Lv.14 (greedy bot, no items — a real player does better) */
-  const BOSS_HP = { hunger: 160 };
+  const BOSS_HP = { hunger: 160, byrexael: 170 };
   const MON_HP = { murk: 38, hunger: 150, bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44, bat: 22, gull: 26 };
   async function battle(foe, dang, o = {}) {
     busy = true; hudSync();
