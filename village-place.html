@@ -983,7 +983,7 @@ function draw(t) {
   }
  }
  window.joyPlaceWalk?.(dt);
- if (!editing && !drag && performance.now() > camHold) { const hq = project(hero.u, hero.v), tx = -(hq.x - 1100) * scale * zoom, ty = H * .12 - (hq.y - 700) * scale * zoom, kf = 1 - Math.exp(-dt * 5); pan = { x: pan.x + (tx - pan.x) * kf, y: pan.y + (ty - pan.y) * kf } }
+ if (!editing && !drag && performance.now() > camHold) { const hq = project(hero.u, hero.v), tx = -(hq.x - 1100) * scale * zoom, ty = H * .12 - (hq.y - 700) * scale * zoom, kf = 1 - Math.exp(-dt * 11); pan = { x: pan.x + (tx - pan.x) * kf, y: pan.y + (ty - pan.y) * kf } }
  g.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
  g.fillStyle = '#2c3d2e';
  g.fillRect(0, 0, W, H);

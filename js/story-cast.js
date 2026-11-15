@@ -247,7 +247,7 @@
       const mood = ({ happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry' })[emotion] || 'neutral';
       return { src: `assets/portraits/story/${id}-${mood}.webp`, pos: '50% 4%', size: '200%' };
     }
-    if (id === 'oren' || id === 'pip') {   /* v98.535 · painted village faces */
+    if (id === 'oren' || id === 'pip' || id === 'elder') { id = id === 'elder' ? 'oren' : id;   /* v98.535 · painted village faces */
       const mood = ({ happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry' })[emotion] || 'neutral';
       return { src: `assets/portraits/${id}-${mood}.webp`, pos: '50% 4%', size: '200%' };
     }
@@ -255,7 +255,10 @@
     if (CARD_FACE.includes(id)) return { src: `assets/cards/portraits/u-${id}.webp`, pos: '50% 22%', size: '165%' };
     return { src: `assets/village-town/npc/${id}/sw-stand.webp`, pos: '50% 9%', size: '285%' };
   }
-  const api = { arrive, REACT, reactFor, face, CAST, EXTRA, SPOTS, locals, services, run };
+  /* v98.536 · which painted expression suits a line of text (neutral · happy · angry · worry) — the portraits have four faces; event / result / page text picks one by its words */
+  const MOODS = [['angry', /โกรธ|ตวาด|ตะคอก|ข่มขู่|ด่า|ฟาดฟัน|ทรยศ|ยื่นคำขาด|สั่งให้|ห้ามเด็ดขาด|เสียงดัง/], ['worry', /กังวล|กลัว|หิว|ขาดแคลน|ศพ|บาดเจ็บ|ลี้ภัย|หนี|ล้มเหลว|แพ้|เสียหาย|อันตราย|ตาย|ไม่พอ|ร้อนรน|ระแวง/], ['happy', /ขอบคุณ|ดีใจ|ยิ้ม|สำเร็จ|ชนะ|ปลอดภัย|ยินดี|เทศกาล|โล่งใจ|รอดแล้ว|ได้รับ/]];
+  const mood = text => { const t = String(text || ''); for (const [m, re] of MOODS) if (re.test(t)) return m; return 'neutral' };
+  const api = { arrive, REACT, reactFor, face, mood, CAST, EXTRA, SPOTS, locals, services, run };
   root.StoryCast = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

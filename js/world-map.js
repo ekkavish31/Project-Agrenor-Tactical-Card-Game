@@ -559,9 +559,9 @@
     return Object.values(L.P).filter(p => (p.from === id || (p.from === 'wander' && finnTown === id)) && !L.inParty(S, p.id) && !L.present(p, day, hour));
   }
   /* ---------- v98.486 · ทางแยก ⑂ / อีเวนต์คาบเกี่ยว: สถานการณ์ในเมือง + ทางเลือกที่มีราคา (js/crossroads.js · docs/PROPOSAL-CROSSROADS-TH.md) ---------- */
-  const faceBox = (who, w = 84, h = 96) => { const f = who && window.StoryCast?.face(who); return f ? `<span style="float:left;width:${w}px;height:${h}px;margin:0 12px 6px 0;background:url('${f.src}') ${f.pos}/${f.size} no-repeat #1a2b26;border:2px solid #d8b46a;border-radius:6px"></span>` : '' };
+  const faceBox = (who, w = 84, h = 96, mood = 'neutral') => { const f = who && window.StoryCast?.face(who, mood); return f ? `<span style="float:left;width:${w}px;height:${h}px;margin:0 12px 6px 0;background:url('${f.src}') ${f.pos}/${f.size} no-repeat #1a2b26;border:2px solid #d8b46a;border-radius:6px"></span>` : '' };
   /* v98.487 · ฉากจบ (js/endings.js · N5): ลงชั้นล่างที่ดีปแคร์นเมื่อถึงหมุดไคลแมกซ์ — ตัดสินใจ 2 ครั้ง อ่านแนวโน้มจากทางแยกที่ผ่านมา */
-  async function pageSeq(title, pages) { for (const p of pages) { const v = await modal(`<h2>${title}</h2>${faceBox(p.who)}<p>${esc(p.text)}</p><div style="clear:both"></div>`, [{ label: 'ต่อไป', value: true }]); if (v == null) break } }
+  async function pageSeq(title, pages) { for (const p of pages) { const v = await modal(`<h2>${title}</h2>${faceBox(p.who, 84, 96, p.mood || window.StoryCast?.mood?.(p.text))}<p>${esc(p.text)}</p><div style="clear:both"></div>`, [{ label: 'ต่อไป', value: true }]); if (v == null) break } }
   async function finaleScene() {
     const g = WS.game(), E = window.Endings, M = window.MainStory; if (!E || !E.ready(g)) return;
     /* ขั้น 1 · ปากเหมือง + ปลอกคอเซอร์เรียน (ทำครั้งเดียว · จำไว้ถ้าถอยออกมา) */
@@ -627,7 +627,7 @@
     for (const m of C.expire(g, S)) { log(m); toast(m) }
     const e = C.pick(g, S, id); if (!e) return;
     const lab = (c, i) => c.label + (C.hint(g, S, e, i) ? ' · ' + C.hint(g, S, e, i) : '') + (C.why(g, S, e, i) ? ' (' + C.why(g, S, e, i) + ')' : '');
-    const v = await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who)}<p><small>${esc(e.cast || '')}</small></p><p>${esc(e.text)}</p><div style="clear:both"></div><p><small>ทุกทางเลือกมีราคา — ⚔ = ต่อสู้จริง · 🎲 = ทอยตามสเตตัสของคุณ · 🎒 = ใช้ของจริง</small></p>`,
+    const v = await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who, 84, 96, e.mood || window.StoryCast?.mood?.(e.text))}<p><small>${esc(e.cast || '')}</small></p><p>${esc(e.text)}</p><div style="clear:both"></div><p><small>ทุกทางเลือกมีราคา — ⚔ = ต่อสู้จริง · 🎲 = ทอยตามสเตตัสของคุณ · 🎒 = ใช้ของจริง</small></p>`,
       [...e.choices.map((c, i) => ({ label: lab(c, i), value: i, disabled: !!C.why(g, S, e, i) })), { label: 'ยังไม่ตัดสินใจ', value: -1, ghost: true }]);
     if (v == null || v < 0) return;
     const b = C.begin(g, S, e, v, { passTime });
@@ -639,7 +639,9 @@
       const r = C.settle(g, S, e, v, outcome === 'win' ? 'win' : outcome === 'flee' ? 'flee' : 'lose', { passTime }); lines = b.checkFailed ? [b.lines[0], ...r.lines] : r.lines;
     }
     log(e.icon + ' ' + e.title + ' — ' + (b.choice || '') + (outcome ? ' (' + ({ win: 'ชนะ', flee: 'หนี' })[outcome] + (outcome === 'win' || outcome === 'flee' ? '' : 'แพ้') + ')' : '')); WS.commit();
-    await modal(`<h2>${e.icon} ${esc(e.title)}</h2><p><b>${esc(b.choice || '')}</b></p>${lines.map(l => `<p>${esc(l)}</p>`).join('')}`);
+    /* v98.536 · the speaker answers with a face that fits how it went: won / safe → happy · lost / fled / failed check → worry · else from the words of the result */
+    const rm = outcome === 'win' ? 'happy' : (outcome === 'lose' || outcome === 'flee' || b.checkFailed) ? 'worry' : (e.choices[v]?.mood || window.StoryCast?.mood?.(lines.join(' ')));
+    await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who, 84, 96, rm)}<p><b>${esc(b.choice || '')}</b></p>${lines.map(l => `<p>${esc(l)}</p>`).join('')}<div style="clear:both"></div>`);
   }
 
   window.WMCrossroads = crossroadsAt; window.WMFinale = finaleScene;   /* ใช้ทดสอบ/ดีบัก */

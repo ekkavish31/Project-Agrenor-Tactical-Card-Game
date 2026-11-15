@@ -10,6 +10,7 @@ const SPEAKERS={
  sib:{name:()=>{try{return s.village.siblingName||'น้อง'}catch{return 'น้อง'}},color:'#5a6a8a'},   /* v98.230 · the other hero: elder BROTHER (male look) / younger SISTER (female look) — same name/portrait logic as hero, see story-actors sibSet */
  mom:{name:'แม่',color:'#8a4b5c'},
  elder:{name:'ผู้ใหญ่บ้านโอเรน',color:'#56683a'},
+ corvin:{name:'นายพลคอร์วิน แธเรล',color:'#8a2a2a'},helga:{name:'พี่น้องเฮลกา',color:'#7a6a8a'},darren:{name:'เซอร์ดาร์เรน',color:'#4a5a7a'},irene:{name:'หมอหญิงไอรีน',color:'#5a7a4a'},mierris:{name:'เมียร์ริส',color:'#b09a5a'},lorrik:{name:'ลอร์ริก',color:'#5a3a6a'},serrien:{name:'เซอร์เรียน',color:'#4a4a7a'},vik:{name:'วิก',color:'#6a4a2a'},   /* v98.536 · painted story cast (assets/portraits/story) */
  pip:{name:'ปิ๊บ · เด็กเลี้ยงแพะ',color:'#6f8f36'},
  tom:{name:'ลุงทอม · ช่างไม้',color:'#7a5a2a'},
  grev:{name:'เกรเวน · พ่อค้าจากเมือง',color:'#36507a'},
