@@ -24,16 +24,17 @@ ok(Object.values(D.CAST).every(c => !c.code || CP.has(c.code)), 'code portraits 
 // แผนที่โลก: ทุกเมืองมีตำแหน่ง/ชื่อ · โหนดอ้างเมืองที่มีจริง · อีเวนต์ Crossroads ผูกเมืองครบ
 { const P = D.POS, L = D.PLACE; ok(Object.keys(L).every(k => P[k] && P[k].length === 2 && P[k][0] > 0 && P[k][0] < 100 && P[k][1] > 0 && P[k][1] < 100), 'every town has a position on the map'); ok(Object.values(D.PLACES).every(a => a.every(x => L[x])), 'nodes point at known towns');
   ok(Object.keys(D.PLACES).every(k => ids.has(k)), 'place nodes exist'); const XR = require(path.join(__dirname, '..', 'js', 'crossroads.js')); ok(XR.EVENTS.every(e => D.PLACES['cr_' + e.id] && D.PLACES['cr_' + e.id].length), 'every crossroad has places'); ok(XR.EVENTS.every(e => !e.towns || e.towns.every(x => L[x])), 'crossroad towns are on the map') }
-// v98.497 แผนที่โลกวาดด้วยโค้ด: โหนดที่กดได้อยู่บน Nor'Chorthal · โหนดเทามีที่มา · ตัวยึดมีป้ายบอก · โซน/ถนนอ้างถึงของที่มีจริง
-{ const SW = require(path.join(__dirname, '..', 'js', 'story-map-world.js')), L = D.PLACE;
+// v98.505 แผนที่โลก = ภาพของผู้เขียน 2 ชั้น: ที่ตั้งจากช่อง hex จริง · โหนดเทามีที่มา · ตัวยึดมีป้าย · โซน/ถนนอ้างถึงของจริง
+{ const SW = require(path.join(__dirname, '..', 'js', 'story-map-world.js')), L = D.PLACE, fs2 = require('fs');
   ok(Object.keys(L).every(k => SW.WPOS[k]) && Object.keys(SW.WPOS).every(k => L[k]), 'every clickable town has a world position');
-  ok(Object.entries(SW.WPOS).every(([k, p]) => SW.inLand(p[0], p[1]) === 'norchorthal'), "clickable towns sit on Nor'Chorthal");
+  ok(Object.entries(SW.WPOS).every(([k, p]) => p[0] > 0 && p[0] < SW.W && p[1] > 0 && p[1] < SW.H), 'positions are inside the picture');
+  ok(Object.entries(SW.MARK).every(([k, m]) => SW.isLandHex(m[0], m[1]) || k === 'haven'), 'every place mark is on a land hex (haven may sit on the coast)');
+  ok(fs2.existsSync(path.join(__dirname, '..', SW.IMG)) && fs2.existsSync(path.join(__dirname, '..', SW.CLOSE.src)), 'both map pictures exist');
+  ok(Object.keys(SW.WPOS).filter(k => SW.inRect(SW.WPOS[k][0], SW.WPOS[k][1])).length >= 9, 'most towns lie inside the close-up picture');
   const ids = SW.GREY.map(g => g.id); ok(new Set(ids).size === ids.length && ids.every(i => !L[i]), 'grey node ids are unique and never clash with clickable towns');
-  ok(SW.GREY.every(g => g.src && g.r && g.n && Number.isFinite(g.x)), 'every grey node has a source and a description');
+  ok(SW.GREY.every(g => g.src && g.r && g.n && Number.isFinite(g.x) && g.x >= 0 && g.x <= SW.W && g.y >= 0 && g.y <= SW.H), 'every grey node has a source, a description and a position on the picture');
   ok(SW.GREY.every(g => !g.placeholder || /ยังไม่ตั้งชื่อ|ตัวยึด/.test(g.n + g.src)), 'placeholders are labelled as not canon');
-  ok(SW.GREY.every(g => SW.inLand(g.x, g.y) || g.kind === 'wonder' || g.kind === 'legend'), 'kingdom/city grey nodes are on land');
   ok(SW.GREY.every(g => !g.zone || SW.ZONES[g.zone]), 'grey nodes point to real zones');
   ok(['aldren', 'frostmere', 'south', 'westIsles'].every(z => SW.ZONES[z]) && Object.values(SW.ZONES).every(z => z.pts.length >= 3 && z.c && z.n), 'kingdom zones: Aldren, Frostmere, south and island placeholders exist');
-  ok(SW.ROADS.every(([a, b]) => L[a] && L[b]) && JSON.stringify(SW.ROADS) === JSON.stringify(D.ROADS), 'roads reference real towns and match the data file');
-  ok(/^<svg/.test(SW.svg()) && SW.svg({ labels: false }).length > 2000, 'svg renders'); }
+  ok(SW.ROADS.every(([a, b]) => L[a] && L[b]) && JSON.stringify(SW.ROADS) === JSON.stringify(D.ROADS), 'roads reference real towns and match the data file'); }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);
