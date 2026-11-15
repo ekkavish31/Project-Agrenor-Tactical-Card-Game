@@ -115974,6 +115974,41 @@
     "group": "characters"
    },
    "artRevision": "mwh3reel-1je7"
+  },
+  {
+   "id": "iron-fence3-corner",
+   "file": "assets/objects/iron-fence3-corner.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    840,
+    653
+   ],
+   "transparent": true,
+   "subject": "Object Workshop: iron-fence3-corner",
+   "prompt": "",
+   "pivot": [
+    0.3346428562752643,
+    0.612448968189188
+   ],
+   "mapW": 280,
+   "geometry": {
+    "collisionShape": [],
+    "occlusionMask": [],
+    "coordinateSpace": "normalized-source-image",
+    "version": 1,
+    "anchor": [
+     0.3346428562752643,
+     0.612448968189188
+    ],
+    "rotation": 0,
+    "isoAxisScale": [
+     1,
+     1
+    ],
+    "flipX": false
+   },
+   "artRevision": "20261115-091804"
   }
  ],
  "studioReviews": {
