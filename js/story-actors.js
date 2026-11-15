@@ -15,7 +15,8 @@
   const STORY_FACES = { neutral: 'neutral', think: 'neutral', calm: 'neutral', talk: 'neutral', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'worry', worry: 'worry' };
   for (const id of ['corvin', 'helga', 'darren', 'mierris', 'lorrik', 'serrien', 'vik', 'irene']) PAINTED[id] = ['story/' + id, STORY_FACES];
   /* v98.535 · village faces painted from the owner's sheets (assets/portraits/<id>-<face>.webp): Oren (the village head · speaker id 'elder' in js/story-data.js) and Pip. Native facing left. */
-  for (const id of ['oren', 'pip']) PAINTED[id] = [id, STORY_FACES];
+  for (const id of ['oren', 'pip', 'grev', 'gus', 'tom']) PAINTED[id] = [id, STORY_FACES];   /* v98.536 · + Graven (grev) · Gus · Tom */
+  PAINTED.graven = PAINTED.grev;
   PAINTED.elder = PAINTED.oren;
   PAINTED.third = PAINTED.corvin;
   PAINTED.mage = PAINTED.serrien;

@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 4940 ไฟล์ (377.3 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 4939 ไฟล์ (376.4 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -16,7 +16,7 @@
 ## จำนวนต่อหมวดหมู่
 | หมวดหมู่ | ไฟล์ | ขนาด | โฟลเดอร์หลัก | ลงทะเบียน slot | ไฟล์ซ้ำ (เนื้อหาเหมือนกัน) |
 |---|---|---|---|---|---|
-| 🗣 ภาพสนทนา (portrait) | 72 | 7.8 MB | `assets/portraits` 72 | 0 | 4 |
+| 🗣 ภาพสนทนา (portrait) | 84 | 8.6 MB | `assets/portraits` 84 | 0 | 4 |
 | 🧑‍🎤 ตัวเอก | 2310 | 92.3 MB | `assets/tactics` 2283 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2310 | 486 |
 | 👥 ชาวบ้าน / NPC | 284 | 11.0 MB | `assets/village-town` 284 | 172 | 22 |
 | 🤝 เพื่อนร่วมทีม | 200 | 9.4 MB | `assets/tactics` 196 · `assets/allies` 4 | 200 | 16 |
@@ -24,7 +24,7 @@
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 334 | 24.0 MB | `assets/tactics` 327 · `assets/objects` 7 | 302 | 26 |
 | 🃏 การ์ด | 166 | 43.7 MB | `assets/cards` 164 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 155 | 15 |
 | 🎛 UI · ไอคอน · เมนู | 180 | 4.8 MB | `assets/ui` 91 · `assets/icons` 81 · `assets/cursor-fantasy-active.png` 1 · `assets/cursor-fantasy.png` 1 | 90 | 9 |
-| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 125 | 18.5 MB | `assets/village-town` 115 · `assets/objects` 10 | 4 | 6 |
+| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 128 | 18.3 MB | `assets/village-town` 115 · `assets/objects` 13 | 4 | 6 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 106 | 6.9 MB | `assets/terrain` 75 · `assets/world` 27 · `assets/v03` 4 | 4 | 0 |
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
@@ -33,12 +33,12 @@
 | 📖 เปิดเรื่อง · อินโทร · ฉาก | 27 | 36.0 MB | `assets/new-game-prologue` 17 · `assets/intro` 10 | 0 | 0 |
 | 🗺 แผนที่โลกในเอกสาร (lore) | 5 | 1.9 MB | `docs/lore` 5 | 0 | 0 |
 | 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน) | 219 | 16.1 MB | `assets/_versions` 219 | 0 | 46 |
-| 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 58 | 8.4 MB | `archive/old-scene` 31 · `tools/out` 16 · `_archive/undefined-bg` 2 · `adjbox.png` 1 | 0 | 12 |
+| 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 42 | 6.9 MB | `archive/old-scene` 31 · `_archive/undefined-bg` 2 · `adjbox.png` 1 · `art-production/facing-arrows-4.png` 1 | 0 | 12 |
 
 ## หมวดย่อยในแต่ละหมวด
 
 ### 🗣 ภาพสนทนา (portrait)
-- ตัวเอก · ชาวบ้าน — 40
+- ตัวเอก · ชาวบ้าน — 52
 - ตัวละครเนื้อเรื่อง (4 อารมณ์) — 32
 
 ### 🧑‍🎤 ตัวเอก
@@ -90,7 +90,7 @@
 - ภาพหมู่บ้านอื่น ๆ — 48
 - ของตกแต่ง — 33
 - ขอบ — 24
-- วัตถุ · รั้ว · บ้านจาก Workshop — 10
+- วัตถุ · รั้ว · บ้านจาก Workshop — 13
 - พื้น — 7
 - อาคาร — 3
 
@@ -126,7 +126,6 @@
 
 ### 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง
 - archive — 31
-- tools/out — 16
 - art-production (แผ่นสไปรต์ต้นฉบับ) — 6
 - _archive — 2
 - dev — 2

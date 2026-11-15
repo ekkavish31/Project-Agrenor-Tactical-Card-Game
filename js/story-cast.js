@@ -247,7 +247,7 @@
       const mood = ({ happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry' })[emotion] || 'neutral';
       return { src: `assets/portraits/story/${id}-${mood}.webp`, pos: '50% 4%', size: '200%' };
     }
-    if (id === 'oren' || id === 'pip' || id === 'elder') { id = id === 'elder' ? 'oren' : id;   /* v98.535 · painted village faces */
+    if (id === 'oren' || id === 'pip' || id === 'elder' || id === 'grev' || id === 'graven' || id === 'gus' || id === 'tom') { id = id === 'elder' ? 'oren' : id === 'graven' ? 'grev' : id;   /* v98.535 · painted village faces */
       const mood = ({ happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry' })[emotion] || 'neutral';
       return { src: `assets/portraits/${id}-${mood}.webp`, pos: '50% 4%', size: '200%' };
     }
