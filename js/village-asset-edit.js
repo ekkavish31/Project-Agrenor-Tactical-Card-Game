@@ -998,6 +998,7 @@
     a blocked drop slides to the closest free spot, flush against the neighbour. Stack mode (V) or a multi-selection skips that. */
  const modeNow = () => window.TownUX?.gridMode?.() || window.VillageGrid.DEFAULT_MODE;
  const stackOn = () => !!window.TownUX?.stackOn?.();
+ let bldDetail = false;
  const secOpen = new Map();   /* v98.287 · which panel sections are open (kept while you select other pieces) */
  const itemSize = k => ({ w: data.edit[k]?.fw ?? .5, h: data.edit[k]?.fh ?? .5 });
  /* v97.47 · a first guess of the blocking frame (cells) from the item's name; adjusted with กว้าง/ลึก ± */
@@ -2221,7 +2222,7 @@
    choices = o.id === 'square' ? [] : buildingChoices(o),
    cur = choices.find(c => c.id === (t.art || o.id)) || choices.find(c => c.id === (isHouse(o) ? (o.npc ? o.id : 'home') : o.id));
   body.innerHTML = `${choices.length?`<div class="art"><span class="th" id="bThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="bSwap">เปลี่ยนภาพ…</button></div>${t.art&&t.art!==o.id?'<button id="bOrig">ใช้ภาพเดิม</button>':''}<p class="sub" style="margin:6px 0 0">${cur?.label||''}</p></div></div>`:''}
-  ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div>`:''}
+  ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div><div class="row"><button id="bDetail" title="ระบายกรอบฟ้า (กรอบเรียงลำดับ) ให้เป็นรูปตัวสถานที่จริง เช่น เฉลียง/ปีกยื่น แล้วลากคนทดสอบว่าบัง/โดนบังถูกไหม">🔍 แก้ละเอียด… (กรอบบัง ${t.zo?.length?'ระบายแล้ว':'ยังเป็นกรอบแปลง'})</button></div>`:''}
   ${slider('kx','Base Slope · ความลาดฐาน',t.kx||0,-.6,.6,.005,FMT.kx)}<p class="sub">Base Slope เปลี่ยนแนวฐานโดยไม่ทำให้เส้นตั้งของอาคารเอียง</p>${nudgeHtml}
   ${o.id!=='square'?(() => { const w0 = wkSharpOf(o), eff = o.sharp?.amt ?? w0?.amt ?? (window.TownArt?.sharpOn?.() ? TownArt.sharpAmt() : 0), md = o.sharp?.px != null ? (o.sharp.px ? 'px' : 'soft') : 'def'; return `<b class="sec">🔍 ความคมชัดภาพนี้</b>${slider('sa','ความคม (unsharp)',eff,0,2,.05,x=>(+x).toFixed(2))}<label class="sel">ขยายพิกเซล<select id="sMode"><option value="def" ${md==='def'?'selected':''}>ตามค่าเริ่มต้น${w0?' (จาก Workshop)':''}</option><option value="soft" ${md==='soft'?'selected':''}>นุ่ม — ปรับขนาดเนียน + คม</option><option value="px" ${md==='px'?'selected':''}>คมพิกเซล — ขยายแบบไม่เบลอ</option></select></label><div class="row"><button id="sReset"${o.sharp?'':' disabled'}>⟲ ใช้ค่าเริ่มต้น${w0?'ของภาพ':''}</button></div><p class="sub">ปรับเฉพาะสถานที่นี้ · ค่าเริ่มต้นมาจากที่ตั้งไว้ใน Workshop หรือสวิตช์ ✨ คมชัด</p><b class="sec">🌿 ผสมกับพื้น</b>${slider('bf','ความนุ่มของขอบพื้น',o.blend?.f ?? wkBlendOf(o)?.f ?? 0,0,100,1,x=>x)}${slider('bt','ปรับโทนเข้าฉาก (ลดสว่าง/สี)',o.blend?.t ?? wkBlendOf(o)?.t ?? 0,0,1,.05,x=>(+x).toFixed(2))}<div class="row"><button id="bReset"${o.blend?'':' disabled'}>⟲ ใช้ค่าเริ่มต้น</button></div><p class="sub">ขอบพื้นนุ่ม = ขอบดินด้านล่างของภาพจางเข้าหาหญ้า · ปรับโทน = ภาพไม่สว่าง/สดเกินพื้นหลัง</p>` })():''}
   ${fpHtml(o)}
@@ -2275,6 +2276,7 @@
    document.getElementById('facing').click();
    render()
   });
+  act('#bDetail', () => window.PieceDetail?.open('bld:' + o.id));
   act('#bFlip', () => {
    selected = o.id;
    document.getElementById('flipArt').click();
@@ -3071,7 +3073,10 @@
   if (tp) tp.style.display = 'none'; // everything it held now lives in the top bar and the side panel
  }
 
+ /* v98.522 · the order frame painted for a PLACE (data.buildings[id].zo, cells of 0.5 in world axes from the place centre) → composite footprint in world cells, or null = use the plot rectangle */
+ const buildingOrder = o => { const t = data.buildings[o.id]; if (!t || !Array.isArray(t.zo) || !t.zo.length) return null; const c = center(o); return window.PieceGeometry.footprint({ zo: t.zo, orderU: t.orderU, orderV: t.orderV }, c.u, c.v, false) };
  window.VillageAssetEdit = {
+  buildingOrder,
   blockedAt, blocks: () => blockBoxes().map(r => ({ u0: r.u0, u1: r.u1, v0: r.v0, v1: r.v1 })),
   refreshPanel: () => { try { render() } catch (_) {} },
   charScale,
@@ -3089,11 +3094,18 @@
   pick: key => selectItem(key),
   /* v98.291 · bridge for js/piece-detail.js (the detailed single-piece window) */
   detail: {
-   item: key => frame.find(e => e.key === key) || null,
-   ov: key => data.edit[key] || {},
-   edit(key, fn, checkpoint) { if (checkpoint) UX.checkpoint(); fn(ovOf(key)); clean(key); UX.persist(); render() },
+   /* v98.522 · key 'bld:<placeId>' = the PLACE itself (its order frame zo / orderU / orderV live in data.buildings[id]); no red frame, no art transforms */
+   get caps() { return bldDetail ? { rot: false, slant: false, block: false, shape: false, zoom: 0.55, note: 'สถานที่: ระบายกรอบฟ้าให้เท่าส่วนที่แตะพื้นจริงของตัวอาคาร (รวมเฉลียง/ปีกยื่น) · ไม่ระบาย = ใช้กรอบแปลงเดิม' } : {} },
+   item: key => { if (String(key).startsWith('bld:')) { const o = locations.find(x => x.id === key.slice(4)); bldDetail = !!o; return o ? { key, label: bldName[o.id] || o.name || o.id, ax: 0, ay: 0, bld: o } : null } bldDetail = false; return frame.find(e => e.key === key) || null },
+   ov: key => String(key).startsWith('bld:') ? (data.buildings[key.slice(4)] || {}) : (data.edit[key] || {}),
+   edit(key, fn, checkpoint) {
+    if (checkpoint) UX.checkpoint();
+    if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); render(); return }
+    fn(ovOf(key)); clean(key); UX.persist(); render()
+   },
    /* draws the piece, with its own edit (size, turn, flip, slant, swapped picture) but WITHOUT the map offset, at (0,0) of the context q */
    drawTo(q, E, ov) {
+    if (E.bld) { const main = g; g = q; try { const c = center(E.bld), p = project(c.u, c.v); q.save(); q.translate(-p.x, -p.y); drawB(E.bld); q.restore() } catch (e) { } finally { g = main } return }
     const main = g, s = ov.s ?? 1, r = (ov.r || 0) * Math.PI / 180, ix = ov.ix ?? 1, iy = ov.iy ?? 1, k = ov.kind && KINDS[ov.kind] ? ov.kind : null;
     g = q;
     try {

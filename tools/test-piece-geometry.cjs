@@ -32,7 +32,7 @@ class Element {
   constructor(tag) { this.tag = tag; this.style = {}; this.dataset = {}; this.captured = new Set(); this.value = ''; this._html = ''; this.checked = false }
   set innerHTML(s) { this._html = s; if (this.tag !== 'dialog') return; nodes = []; for (const m of s.matchAll(/<([a-z]+)\b([^>]*)>/gi)) { const e = new Element(m[1]); for (const a of m[2].matchAll(/([\w-]+)(?:="([^"]*)")?/g)) { const [_, k, v = ''] = a; if (k === 'id') { e.id = v; byId.set(v, e) } if (k === 'value') e.value = v; if (k === 'checked') e.checked = true; if (k.startsWith('data-')) e.dataset[k.slice(5)] = v } nodes.push(e) } }
   get innerHTML() { return this._html }
-  querySelector(s) { return s.startsWith('#') ? byId.get(s.slice(1)) || null : this.querySelectorAll(s)[0] || null }
+  querySelector(s) { const ia = s.match(/^\[id="(.+)"\]$/); if (ia) return byId.get(ia[1]) || null; return s.startsWith('#') ? byId.get(s.slice(1)) || null : this.querySelectorAll(s)[0] || null }
   querySelectorAll(s) { const m = s.match(/^\[data-([\w-]+)\]$/); return m ? nodes.filter(e => m[1] in e.dataset) : [] }
   setAttribute(k, v) { this[k] = v }
   append(e) { if (e.id) byId.set(e.id, e) }

@@ -3,7 +3,7 @@
    All edits go through the map's existing save/checkpoint bridge. */
 (function () {
   'use strict';
-  const Z = 1.9, CW = 620, CH = 500, CX = 310, CY = 330, S = 28 * Z, T = 14 * Z;
+  let Z = 1.9, S = 28 * Z, T = 14 * Z; const CW = 620, CH = 500, CX = 310, CY = 330;   /* v98.522 · zoom per piece: a whole place (caps.zoom) is far bigger than a prop */
   let dlg = null, key = null, cv = null, gesture = null, mode = 'walk', points = [], undo = [], walker = { u: 0, v: 1.6 }, hover = null, erase = false;
   const pref = (k, d) => { try { const v = localStorage.getItem('pd-' + k); return v == null ? d : JSON.parse(v) } catch (e) { return d } }, setPref = (k, v) => { try { localStorage.setItem('pd-' + k, JSON.stringify(v)) } catch (e) { } };
   let snapOn = pref('snap', true), brush = pref('brush', 2);   /* brush = side in H cells (H = 0.5 unit) */
@@ -11,7 +11,7 @@
   const D = () => window.PlaceBuild?.detail || window.VillageAssetEdit?.detail, DS = () => window.DepthStyle, G = () => window.PieceGeometry;
   const P = (u, v) => ({ x: CX + (u - v) * S, y: CY + (u + v) * T });
   const inv = (x, y) => { const a = (x - CX) / S, b = (y - CY) / T; return { u: (a + b) / 2, v: (b - a) / 2 } };
-  const caps = () => D()?.caps || {}, el = id => dlg.querySelector('#' + id), copy = o => JSON.parse(JSON.stringify(o));
+  const caps = () => D()?.caps || {}, el = id => dlg.querySelector(/^[A-Za-z][\w-]*$/.test(id) ? '#' + id : '[id="' + id + '"]')   /* v98.522 · ids like pdBr+ / pdBr− are not valid #selectors: the whole window failed to open since v98.500 */, copy = o => JSON.parse(JSON.stringify(o));
   const limit = (v, n = 12) => Math.max(-n, Math.min(n, v)), round = v => Math.round(v * 100) / 100;
   function edit(fn, checkpoint = true) {
     if (checkpoint) { undo.push(copy(D().ov(key))); if (undo.length > 60) undo.shift() }
@@ -70,7 +70,7 @@
     const E = D().item(key); if (!E || !cv) return;
     const ov = D().ov(key), q = cv.getContext('2d'), b = G().footprint(ov), block = G().footprint(ov, 0, 0, true), ds = DS();
     q.clearRect(0, 0, CW, CH); q.fillStyle = '#26382d'; q.fillRect(0, 0, CW, CH); q.strokeStyle = '#ffffff1f'; q.lineWidth = 1;
-    for (let i = -6; i <= 6; i++) { let a = P(i, -6), c = P(i, 6); q.beginPath(); q.moveTo(a.x, a.y); q.lineTo(c.x, c.y); q.stroke(); a = P(-6, i); c = P(6, i); q.beginPath(); q.moveTo(a.x, a.y); q.lineTo(c.x, c.y); q.stroke() }
+    const R = Math.round(6 * 1.9 / Z); for (let i = -R; i <= R; i++) { let a = P(i, -R), c = P(i, R); q.beginPath(); q.moveTo(a.x, a.y); q.lineTo(c.x, c.y); q.stroke(); a = P(-R, i); c = P(R, i); q.beginPath(); q.moveTo(a.x, a.y); q.lineTo(c.x, c.y); q.stroke() }
     if (ov.block) zone(q, ov, 'bb', '#e0504040', '#e05040', block); zone(q, ov, 'bo', '#3c82ff2e', '#3c82ff', b);
     const front = ds.walkerInFront(b, walker.u, walker.v), low = ds.isLow({ label: E.label, tall: ov.tall }), set = ds.get(), hit = !front && overlaps(E, ov);
     const style = ds.styleFor({ label: E.label, tall: ov.tall });
@@ -123,7 +123,7 @@ ${caps().block === false ? '' : `<label class="pdc"><input type="checkbox" id="p
   }
   function open(k) {
     const d = D(); if (!d || !G() || !DS()) return; const E = d.item(k); if (!E) return;
-    key = k; css(); walker = { u: 0, v: 1.6 }; points = []; undo = []; mode = 'walk'; gesture = null;
+    key = k; Z = d.caps?.zoom || 1.9; S = 28 * Z; T = 14 * Z; css(); walker = { u: 0, v: 1.6 }; points = []; undo = []; mode = 'walk'; gesture = null;
     if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'pieceDetail'; document.body.append(dlg) }
     build(); if (!dlg.open) dlg.showModal();
   }
@@ -133,6 +133,13 @@ ${caps().block === false ? '' : `<label class="pdc"><input type="checkbox" id="p
   }
   function build() {
     const E = D().item(key), ov = D().ov(key); dlg.innerHTML = html(E, ov); cv = el('pdCv');
+    if (caps().shape === false) { /* v98.522 · a whole place: only the order frame is edited here (size / flip / base-fit belong to the place panel) */
+      for (const id of ['pdS', 'pdF', 'pdT']) { const e = el(id); const c = e && e.closest('label'); if (c) c.style.display = 'none' }
+      for (const id of ['pdArtReset', 'pdSzReset']) { const e = el(id); if (e) e.style.display = 'none' }
+      for (const b of dlg.querySelectorAll('[data-st]')) { const r = b.closest('.pdr'); if (r) r.style.display = 'none' }
+      for (const m of ['art', 'fit']) { const e = dlg.querySelector('[data-mode="' + m + '"]'); if (e) e.style.display = 'none' }
+      for (const h of dlg.querySelectorAll('h4')) if (h.textContent === 'รูปร่าง' || h.textContent === 'การบัง' || h.textContent === 'กรอบพื้น') h.style.display = 'none'
+    }
     const rng = (id, fn, fmt) => { const e = el(id); if (!e) return; let checkpoint = true; e.onpointerdown = () => { checkpoint = true }; e.onkeydown = () => { checkpoint = true }; e.oninput = () => { points = []; el(id + 'V').textContent = fmt(+e.value); edit(o => fn(o, +e.value), checkpoint); checkpoint = false } };
     rng('pdS', (o, v) => { o.s = v / 100 }, v => v + '%'); rng('pdR', (o, v) => { o.r = v }, v => v + '°'); rng('pdIx', (o, v) => { o.ix = v / 100 }, v => v + '%'); rng('pdIy', (o, v) => { o.iy = v / 100 }, v => v + '%');
     el('pdF').onchange = e => { points = []; edit(o => { o.f = e.target.checked }) };
@@ -154,7 +161,7 @@ ${caps().block === false ? '' : `<label class="pdc"><input type="checkbox" id="p
     el('pdFitClear').onclick = () => { points = []; paint() }; el('pdFitReset').onclick = () => { points = []; edit(o => { delete o.pm }) };
     dlg.querySelectorAll('[data-fit]').forEach(b => b.onclick = () => { const result = G().fit(points, b.dataset.fit, G().matrix(D().ov(key))); if (!result) return; points = []; edit(o => { o.pm = result.matrix }); setMode('walk') });
     const at = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * CW / r.width, y: (e.clientY - r.top) * CH / r.height } };
-    const moveWalker = p => { const w = inv(p.x, p.y); walker = { u: limit(w.u, 5.5), v: limit(w.v, 5.5) }; paint() };
+    const moveWalker = p => { const w = inv(p.x, p.y); const wl = Math.round(5.5 * 1.9 / Z * 2) / 2; walker = { u: limit(w.u, wl), v: limit(w.v, wl) }; paint() };
     cv.onpointerdown = e => {
       if (e.button !== 0) return; e.preventDefault(); const p = at(e); cv.setPointerCapture(e.pointerId);
       if (mode === 'fit') { const i = points.findIndex(q => Math.hypot(q.x - p.x, q.y - p.y) <= 12); if (i >= 0) gesture = { kind: 'point', i, start: p, moved: false }; else if (points.length < 3) { points.push(p); paint() } return }
