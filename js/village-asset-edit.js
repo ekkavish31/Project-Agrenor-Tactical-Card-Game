@@ -1205,11 +1205,7 @@
   render()
  }
  const groupHtml = n => `<b class="sec">จัดการ${n > 1 ? 'ทั้งกลุ่ม' : ''}</b><div class="row"><button id="gUp" title="PageUp">＋ ชั้น (+1)</button><button id="gDown" title="PageDown">－ ชั้น (−1)</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div>
-  <div class="row"><button id="gRotL" title="หมุนทั้งกลุ่ม -15°">หมุน −15°</button><button id="gRotR" title="หมุนทั้งกลุ่ม +15°">หมุน +15°</button><button id="gIxDn" title="ปรับแกน ↗↙ ลดลง">แกน ↗↙ −</button><button id="gIxUp" title="ปรับแกน ↗↙ เพิ่มขึ้น">แกน ↗↙ +</button></div>
-  <div class="row"><button id="gIyDn" title="ปรับแกน ↖↘ ลดลง">แกน ↖↘ −</button><button id="gIyUp" title="ปรับแกน ↖↘ เพิ่มขึ้น">แกน ↖↘ +</button><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gFlip" title="กลับซ้าย–ขวาทั้งกลุ่ม">⇋ กลับซ้าย–ขวา</button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>
-  <b class="sec" title="รั้ว/กำแพงหลายท่อนที่ต่อกัน: ให้ทั้งกลุ่มใช้กรอบเรียงลำดับร่วมกันเป็นชิ้นเดียว (กรอบรวม + กรอบของแต่ละท่อนสำหรับรูป L/U)">ชิ้นประกอบ</b>
-  <div class="row"><button id="cmpToggle">▣ กรอบรวมของกลุ่ม: เปิด/ปิด</button></div>
-  <div class="row" style="align-items:center"><span>เรียงซ้ำ ×</span><input id="cmpN" type="number" value="4" min="2" max="40" style="width:46px"><select id="cmpAx"><option value="u">↘ แกน u</option><option value="v">↙ แกน v</option></select><span>ห่าง</span><input id="cmpStep" type="number" step="0.5" min="0.5" style="width:52px" placeholder="อัตโนมัติ"><button id="cmpRep">เรียง</button></div>`;
+  <div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gFlip" title="กลับซ้าย–ขวาทั้งกลุ่ม">⇋ กลับซ้าย–ขวา</button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
 /* v98.292 · COMPOSITE pieces: a group can share ONE order footprint (cmp); a piece can be repeated along an axis into such a group (fences, walls) */
  function groupMembers() {
   const gs = new Set((place?.keys || []).map(k => data.edit[k]?.grp).filter(Boolean));
@@ -1247,15 +1243,7 @@
   act('#gDown', () => groupStep('layer', -1));
   act('#gBig', () => groupStep('size', 1));
   act('#gSmall', () => groupStep('size', -1));
-  act('#gRotL', () => groupStep('rotate', -1));
-  act('#gRotR', () => groupStep('rotate', 1));
-  act('#gIxDn', () => groupStep('ix', -1));
-  act('#gIxUp', () => groupStep('ix', 1));
-  act('#gIyDn', () => groupStep('iy', -1));
-  act('#gIyUp', () => groupStep('iy', 1));
   act('#gDup', dupGroup);
-  act('#cmpToggle', toggleComposite);
-  act('#cmpRep', repeatPiece);
   act('#gFlip', flipGroup);
   act('#gCopy', copyGroup);
   act('#gPaste', pasteGroup)
