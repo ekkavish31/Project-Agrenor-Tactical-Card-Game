@@ -310,6 +310,19 @@ const DEFAULTS = {
  }
 };
 const copy = x => JSON.parse(JSON.stringify(x));
+const defaultMap = id => autoFrames(copy(DEFAULTS[id]), a => PA_BY[a]?.sw || (a.startsWith('vt:') ? 400 : 110));
+window.defaultMap = defaultMap;   /* v98.553 */
+/* v98.553 · ORDER frames for the pieces of a built-in map. A prop without sw/sh is sorted by the y of its centre only, which is wrong for anything wider than a post (stalls, carts, racks:
+   the hero walking along a stall's side popped in front / behind). Each unframed prop gets a square frame from its picture width on the ground (a square of c cells is ≈ 90·c px wide), min 0.5 cell,
+   written into the map so the 🔍 detail window shows and edits the same numbers. */
+function autoFrames(m, widthOf) {
+ for (const o of m.props || []) {
+  if (o.sw != null || o.sh != null || o.fw != null || o.zo || o.orderU || o.orderV || o.cmp) continue;
+  const w = (o.width || widthOf(o.art) || 100) * (o.s || 1), c = Math.max(.5, Math.min(4, Math.round(w / 90 * .8 * 2) / 2));
+  o.sw = o.sh = c
+ }
+ return m
+}
 // v82.1 · the hero's size / image on this map come from the map itself (M.cast), else from the village
 const VILLAGE_HERO = (() => {
  try {
@@ -362,7 +375,7 @@ function upgradeMarket(all) {
  return all
 }
 let all = upgradeMarket(loadAll()),
- M = withArt(withShop(copy(all[PLACE] || DEFAULTS[PLACE])));
+ M = withArt(withShop(all[PLACE] ? copy(all[PLACE]) : defaultMap(PLACE)));
 
 // v85 · painted ground for this map (paths painted here are walkable, even outside the floor; water blocks)
 window.PlacePaint = window.GroundPaint ? GroundPaint.create({ w: 2200, h: 1400, res: .25, unitPx: 45, origin: { x: 1100, y: 700 } }) : null;
@@ -1036,6 +1049,7 @@ function draw(t) {
    set: s.id,
    isStation: true,
    z: s.z || 0,
+   fp: { u0: s.u - s.w, u1: s.u + s.w, v0: s.v - s.d, v1: s.v + s.d },   /* v98.553 · a station's ORDER frame = its blocked area: the hero is behind / in front of the whole stall by the village rule (was: only the y of its centre) */
    tag: {
     type: 'station',
     i
@@ -1482,7 +1496,7 @@ window.addEventListener('message', e => {
  }
  if (m.type === 'init') {
   all = loadAll();
-  M = withArt(withShop(copy(all[PLACE] || DEFAULTS[PLACE])));
+  M = withArt(withShop(all[PLACE] ? copy(all[PLACE]) : defaultMap(PLACE)));
   setup();
   fitView()
  }

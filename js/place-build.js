@@ -1031,7 +1031,7 @@ const PB_ART = (() => {
    if (!confirm('คืนแผนที่ ' + M.name + ' เป็นค่าเริ่มต้นทั้งหมด?')) return;
    once(() => {
     const cast = M.cast;
-    M = copy(DEFAULTS[PLACE]);
+    M = window.defaultMap ? defaultMap(PLACE) : copy(DEFAULTS[PLACE]);
     if (cast) M.cast = cast;
     window.PlacePaint?.load(null)
    })()
