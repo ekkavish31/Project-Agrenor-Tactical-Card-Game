@@ -105077,6 +105077,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-ella-sw-stand/20261115-211839.webp",
+     "at": "2026-11-15T14:18:39.246Z",
+     "stamp": "20261115-211839",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
      "file": "assets/_versions/npc-ella-sw-stand/20261115-140824.webp",
      "at": "2026-11-15T07:08:25.111Z",
      "stamp": "20261115-140824",
@@ -105091,7 +105098,7 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-141137"
+   "artRevision": "20261115-211839"
   },
   {
    "id": "npc-ella-sw-walk1",
