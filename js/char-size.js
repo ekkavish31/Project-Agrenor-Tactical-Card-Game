@@ -19,10 +19,10 @@
     FEET_Y: 360,                    /* every character picture is 384×384 with its feet (lowest opaque row) at y=360 — Asset Studio > Animation keeps it so */
     NPC_CANVAS_K: 384 * 84 / 330,  /* canvas px of a VillagerDraw picture at scale 1 */
     /* v98.570 · THE PLAY CAMERA: the village map starts at TOWN_ZOOM × its fit-to-screen scale (was 1×: +100 %). Sub-maps (village-place.html) and rooms (interior.js) pick the zoom
-       that draws the hero at the SAME size on screen as the village map does — heroScreenPx() is that size: 93.6 px × the village hero scale × the village fit scale × TOWN_ZOOM.
+       that draws the hero at the SAME size on screen as the village map does — heroScreenPx() is that size: 93.6 px × the village hero scale × the village fit scale × TOWN_ZOOM (keep the 1.7 below in step with TOWN_ZOOM).
        The player can still zoom with the wheel; the map editors keep their free zoom. */
-    TOWN_ZOOM: 2,
+    TOWN_ZOOM: 1.7,   /* v98.572 · was 2 (a little further back) — sub-maps and rooms follow automatically */
     townFit: (W, H) => Math.min(W / 1800, H / 950) * 1.55,
-    heroScreenPx: (W, H) => { const MS = root.MapScale, adj = root.CharScaleAdjust; return 93.6 * ((MS ? MS.get('village') : 1) * ((adj && adj.factor('village', 'hero')) || 1)) * Math.min(W / 1800, H / 950) * 1.55 * 2 }
+    heroScreenPx: (W, H) => { const MS = root.MapScale, adj = root.CharScaleAdjust; return 93.6 * ((MS ? MS.get('village') : 1) * ((adj && adj.factor('village', 'hero')) || 1)) * Math.min(W / 1800, H / 950) * 1.55 * 1.7 }
   });
 })(globalThis);
