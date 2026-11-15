@@ -403,6 +403,7 @@ const PB_ART = (() => {
    if (!s) return;
    const d = project(door(s).u, door(s).v);
    pin(d, '#9ff3f5', place.tab === 'door' ? 9 : 6, place.tab === 'door' ? 'จุดใช้งาน' : '');
+   if (s.vendor?.who) { const vp = vendorPos(s); pin(project(vp.u, vp.v), '#ffd166', place.tab === 'vendor' ? 9 : 6, place.tab === 'vendor' ? 'คนขาย' : '') }   /* v98.554 */
    if (place.tab === 'base') handles(basePts(s), '#7fe3ff')
   } else {
    pin(ex, '#e8a04a', place.tab === 'exit' ? 9 : 6, place.tab === 'exit' ? 'ทางออก' : '');
@@ -626,6 +627,10 @@ const PB_ART = (() => {
      c
     })
    }
+   if (s.vendor?.who && near(project(vendorPos(s).u, vendorPos(s).v), p, 13)) {   /* v98.554 · drag the vendor */
+    if (place.tab !== 'vendor') { place.tab = 'vendor'; render() }
+    const df = window.vendorDefault(s); return take({ kind: 'vendor', orig: { du: s.vendor.du ?? df.du, dv: s.vendor.dv ?? df.dv } })
+   }
    if (near(project(door(s).u, door(s).v), p, 13)) {
     if (place.tab !== 'door') {
      place.tab = 'door';
@@ -737,7 +742,9 @@ const PB_ART = (() => {
     M.props[i].v = grab.orig[k].v + dv
    }
   });
-  else if (grab.kind === 'door') {
+  else if (grab.kind === 'vendor') {
+   const s = stOf(place.id); s.vendor = { ...s.vendor, du: +(grab.orig.du + du).toFixed(2), dv: +(grab.orig.dv + dv).toFixed(2) }
+  } else if (grab.kind === 'door') {
    const s = stOf(place.id);
    s.door = {
     du: grab.orig.du + du,
@@ -1114,6 +1121,7 @@ const PB_ART = (() => {
    ['art', '🖼 ภาพ'],
    ['base', '🔲 ฐาน'],
    ['door', '🚪 จุดใช้งาน'],
+   ['vendor', '🧑‍🌾 คนขาย'],
    ['props', '🪴 ของประดับ ' + props.length]
   ] : [
    ['floor', '🔲 พื้น / ผนัง'],
@@ -1140,7 +1148,8 @@ const PB_ART = (() => {
   if (st) ({
    art: tabArt,
    base: tabBase,
-   door: tabDoor
+   door: tabDoor,
+   vendor: tabVendor
   })[place.tab](body, s);
   else ({
    floor: tabFloor,
@@ -1217,6 +1226,21 @@ const PB_ART = (() => {
    du: 0,
    dv: +(s.d + .8).toFixed(2)
   }))
+ }
+
+/* v98.554 · 🧑‍🌾 vendor: who stands at this station, where (drag the gold pin on the map or nudge), which way they look */
+ const vendorPos = s => { const df = window.vendorDefault(s); return { u: s.u + (s.vendor?.du ?? df.du), v: s.v + (s.vendor?.dv ?? df.dv) } };
+ function tabVendor(body, s) {
+  const P = window.VillageLife?.P || {}, df = window.vendorDefault(s), v = s.vendor || {}, cur = v.who || '';
+  body.innerHTML = `<p class="sub">คนที่ยืนขายของที่จุดนี้ · เขาจะไม่เดินเตร็ดเตร่ในแมพนี้อีก · คลิกคุยได้เหมือนชาวบ้าน · ลาก <b style="color:#ffd166">หมุดทอง</b> บนแมพเพื่อย้ายที่ยืน</p>
+  <label class="two">ผู้ขาย<select id="vWho"><option value="">— ไม่มี —</option>${Object.values(P).map(p => `<option value="${p.id}" ${cur === p.id ? 'selected' : ''}>${p.name}${p.role ? ' · ' + p.role : ''}</option>`).join('')}</select></label>
+  ${cur ? `<label class="two">หันหน้า<select id="vFace">${[['', 'ตามหน้าร้าน (' + df.face + ')'], ['SW', 'SW ↙'], ['SE', 'SE ↘'], ['NE', 'NE ↗'], ['NW', 'NW ↖']].map(([k, l]) => `<option value="${k}" ${(v.face || '') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+  <div class="row"><button data-vn="-.25,0">◤ u −</button><button data-vn=".25,0">u + ◢</button><button data-vn="0,-.25">◥ v −</button><button data-vn="0,.25">v + ◣</button></div>
+  <div class="row"><button id="vReset">⟲ วางหน้าร้านตามค่าเริ่มต้น</button></div>` : ''}`;
+  body.querySelector('#vWho').onchange = e => once(() => { if (e.target.value) s.vendor = { ...(s.vendor || {}), who: e.target.value }; else delete s.vendor })();
+  const f = body.querySelector('#vFace'); if (f) f.onchange = e => once(() => { if (e.target.value) s.vendor.face = e.target.value; else delete s.vendor.face })();
+  body.querySelectorAll('[data-vn]').forEach(b => b.onclick = once(() => { const [a, c] = b.dataset.vn.split(',').map(Number), d0 = window.vendorDefault(s); s.vendor.du = +((s.vendor.du ?? d0.du) + a).toFixed(2); s.vendor.dv = +((s.vendor.dv ?? d0.dv) + c).toFixed(2) }));
+  act('#vReset', once(() => { delete s.vendor.du; delete s.vendor.dv; delete s.vendor.face }))
  }
 
  function tabFloor(body) {

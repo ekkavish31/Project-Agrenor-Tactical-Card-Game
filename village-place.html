@@ -79,9 +79,9 @@ const DEFAULTS = {
   floor: { w: 12, d: 11, tex: 'ground/cobble.png', walls: false, fence: 'stone' },
   exit: { u: 0, v: 10.4 },
   stations: [
-   { id: 'materials', name: 'ร้านวัตถุดิบ', actions: ['buy'], u: -7, v: -6, w: 2.3, d: 2.5, door: { du: 3.5, dv: 0 }, art: 'vt:market-materials.png', width: 470 },
-   { id: 'equipment', name: 'ร้านรับซื้ออุปกรณ์', actions: ['sell'], u: 6.5, v: -6, w: 2.5, d: 2.3, door: { du: 0, dv: 3.5 }, art: 'vt:market-equipment.png', width: 470 },
-   { id: 'orders', name: 'กระดานออร์เดอร์', actions: ['orders'], u: -9, v: 2.5, w: 2.2, d: 1.7, door: { du: 3.5, dv: 0 }, art: 'vt:market-orders.png', width: 310 },
+   { id: 'materials', vendor: { who: 'pell' }, name: 'ร้านวัตถุดิบ', actions: ['buy'], u: -7, v: -6, w: 2.3, d: 2.5, door: { du: 3.5, dv: 0 }, art: 'vt:market-materials.png', width: 470 },
+   { id: 'equipment', vendor: { who: 'vera' }, name: 'ร้านรับซื้ออุปกรณ์', actions: ['sell'], u: 6.5, v: -6, w: 2.5, d: 2.3, door: { du: 0, dv: 3.5 }, art: 'vt:market-equipment.png', width: 470 },
+   { id: 'orders', vendor: { who: 'oren' }, name: 'กระดานออร์เดอร์', actions: ['orders'], u: -9, v: 2.5, w: 2.2, d: 1.7, door: { du: 3.5, dv: 0 }, art: 'vt:market-orders.png', width: 310 },
    { id: 'myshop', name: 'แผงร้านของเรา', actions: ['shop'], u: 0, v: -8, w: 1.7, d: 1.1, door: { du: 0, dv: 2.4 }, art: 'decor:market-stall-red', width: 270 }
   ],
   props: [
@@ -934,6 +934,14 @@ let hits = [];
 /* ---- v98.548 · the way out: a soft light aura (like daylight coming in through the doorway) + a floor arrow that slides toward the exit ----
    Facing SW / SE (the door is on the near side, behind the camera): only the light. Facing NE / NW (far walls): the door is drawn too, with the light behind it.
    The arrow is where you stand to leave (click it / walk onto it / the exit button all go there). It slides along its own axis by 20 % of its length. */
+/* v98.554 · VENDORS: a station can have a person who stands there and sells (s.vendor = { who: <villager id>, du, dv, face }). du/dv = offset from the station centre (default: at the stall's front, toward the door);
+   face default = looking at the door. Set / drag them in the editor (station → 🧑‍🌾 คนขาย). They are drawn and talk like villagers (js/place-people.js) but never wander, and that villager does not also stroll around the map. */
+function vendorDefault(s) {
+ const d = s.door || { du: 0, dv: 1 }, alongU = Math.abs(d.du) >= Math.abs(d.dv), sg = Math.sign(alongU ? d.du : d.dv) || 1;
+ return { du: alongU ? sg * +(s.w * .55).toFixed(2) : 0, dv: alongU ? 0 : sg * +(s.d * .55).toFixed(2), face: alongU ? (sg > 0 ? 'SE' : 'NW') : (sg > 0 ? 'SW' : 'NE') }
+}
+window.vendorDefault = vendorDefault;
+window.PLACE_VENDORS = () => M.stations.filter(s => s.vendor?.who).map(s => { const df = vendorDefault(s), v = s.vendor; return { who: v.who, st: s.id, u: s.u + (v.du ?? df.du), v: s.v + (v.dv ?? df.dv), face: v.face || df.face } });
 const EXIT_DIRS = { SE: [1, 0], NW: [-1, 0], SW: [0, 1], NE: [0, -1] };
 function exitDir() {
  const e = M.exit, F = M.floor; if (!e) return 'SW'; if (EXIT_DIRS[e.dir]) return e.dir;

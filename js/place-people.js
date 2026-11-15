@@ -7,7 +7,7 @@
   'use strict';
   const Q = new URLSearchParams(location.search), L = () => root.VillageLife, CLK = () => root.VillageClock;
   const PLACE = Q.get('kind') || Q.get('place') || '';
-  let people = [], lastSync = 0, bubble = null;
+  let people = [], lastSync = 0, bubble = null, lastVSig = '';
   const hash = s => { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h };
   /* is p in this place now? */
   function here(p, day, hour, S) {
@@ -20,17 +20,21 @@
   }
   function sync(blocked) {
     const Lf = L(), C = CLK(); if (!Lf || !C) return; const n = C.read(), S = Lf.save();
-    const want = Object.values(Lf.P).filter(p => here(p, n.day, n.hour, S)).slice(0, 8);
-    people = want.map((p, i) => {
+    /* v98.554 · vendors stand at their stations (PLACE_VENDORS from village-place.html) and are not also wanderers */
+    const V = root.PLACE_VENDORS?.() || [], vids = new Set(V.map(v => v.who));
+    const vend = V.filter(v => Lf.P[v.who] && !Lf.inParty(S, v.who) && !root.Mind?.away?.(v.who)).map((v, i) => { const old = people.find(x => x.fixed && x.p.id === v.who); return old ? Object.assign(old, { u: v.u, v: v.v, face: v.face, home: v.face }) : { p: Lf.P[v.who], u: v.u, v: v.v, face: v.face, phase: i * 2.3, goal: null, wait: 99, fixed: true, home: v.face } });
+    const want = Object.values(Lf.P).filter(p => !vids.has(p.id) && here(p, n.day, n.hour, S)).slice(0, 8);
+    people = vend.concat(want.map((p, i) => {
       const old = people.find(x => x.p.id === p.id); if (old) return old;
       // a stable free spot near the middle of the floor for each person
       let u = 0, v = 0; for (let k = 0; k < 40; k++) { const h = hash(p.id + k), a = (h % 360) / 57.3, r = 1.5 + (h % 7) * .6; u = Math.round(Math.cos(a) * r * 2) / 2; v = Math.round(Math.sin(a) * r * 2) / 2; if (!blocked?.(u, v)) break }
       return { p, u, v, face: ['SE', 'SW', 'NE', 'NW'][hash(p.id) % 4], phase: i * 1.7, goal: null, wait: 1 + (hash(p.id) % 5) };
-    });
+    }));
   }
   /* v94.03 · they move: stroll to a free spot or to a work station (stations from village-place.html: window.PLACE_STATIONS), pause, repeat */
   let lastT = 0;
   function walk(a, dt, blocked, hero) {
+    if (a.fixed) { if (bubble?.a === a && performance.now() < bubble.until && hero) a.face = faceTo(hero.u - a.u, hero.v - a.v); else if (a.home) a.face = a.home; return false }   /* v98.554 · a vendor stays at the stall, looks at the customer side */
     if (bubble?.a === a && performance.now() < bubble.until) { if (hero) a.face = faceTo(hero.u - a.u, hero.v - a.v); return false }
     if (!a.goal) { a.wait -= dt; if (a.wait > 0) return false; const st = root.PLACE_STATIONS?.() || [], useSt = st.length && Math.random() < .45, s = useSt ? st[Math.floor(Math.random() * st.length)] : null;
       for (let k = 0; k < 12; k++) { const q = s ? { u: s.u + (Math.random() - .5) * 2, v: s.v + s.d + .8 + Math.random() } : { u: a.u + (Math.random() - .5) * 5, v: a.v + (Math.random() - .5) * 5 }; if (!blocked?.(q.u, q.v) && plan(a, q)) { a.goal = q; break } } a.wait = 3 + Math.random() * 6; if (!a.goal) return false }
@@ -50,7 +54,7 @@
   const faceTo = (du, dv) => { const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') };
   function objects(project, g, t, blocked, hero) {
     if (!root.VillagerDraw || !L()) return [];
-    const now = performance.now(); chase(now, hero); if (now > lastSync) { lastSync = now + 3000; sync(blocked) }
+    const now = performance.now(); chase(now, hero); const vsig = JSON.stringify(root.PLACE_VENDORS?.() || []); if (now > lastSync || vsig !== lastVSig) { lastVSig = vsig; lastSync = now + 3000; sync(blocked) }
     const out = [], dt = Math.min(.1, (t - lastT) / 1000 || 0); lastT = t;
     for (const a of people) {
       const moving = walk(a, dt, blocked, hero), pt = project(a.u, a.v);
