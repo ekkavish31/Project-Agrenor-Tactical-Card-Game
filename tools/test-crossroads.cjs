@@ -12,11 +12,11 @@ ok(C.EVENTS.length >= 15 && new Set(C.EVENTS.map(e => e.id)).size === C.EVENTS.l
 ok(C.EVENTS.every(e => e.title && e.text && e.icon && e.choices.length === 3 && e.choices.every(c => c.label && typeof c.run === 'function')), 'each event: text + exactly 3 priced choices');
 ok(C.EVENTS.every(e => M.STAGES.some(s => s.id === e.from) && (!e.until || M.STAGES.some(s => s.id === e.until))), 'stage ids exist');
 ok(C.EVENTS.every(e => !e.until || e.fallback || e.id === 'mayaBroker' || e.companion), 'timed events have a fallback (or are optional)');
-ok(!/Paelasael|Veshra|Wyridean|Zern-Va|Grat\b/.test(JSON.stringify(C.EVENTS.map(e => [e.title, e.text, e.choices.map(c => c.label)]))), 'no ancient names in player text');
+ok(!/Paelasael|Veshra|Wyridean|Zern-Va|Grat\b|Heracean|Byrexael|Borak|Aeth/.test(JSON.stringify(C.EVENTS.map(e => [e.title, e.text, e.choices.map(c => c.label)]))), 'no ancient names in player text');
 // ซ่อนจนถึงหมุด · เซฟเก่าไม่พัง
 { const g = game(); ok(C.pick(g, S0(), 'willowshore') === null && g.village.main === undefined, 'nothing at the start and no save block created') }
 // หมุด + เมือง
-{ const g = game('signs'); const e = C.pick(g, S0(), 'willowshore'); ok(e && e.id === 'callup', 'callup at signs/willowshore'); ok(C.pick(g, S0(), 'haven') === null, 'nothing at haven yet') }
+{ const g = game('signs'); const e = C.pick(g, S0(), 'willowshore'); ok(e && e.id === 'callup', 'callup at signs/willowshore'); ok(C.pick(g, S0(), 'haven')?.id !== 'mayaBroker', 'no ❖ broker at haven yet (other events may be there)') }
 // วันละ 1 อีเวนต์ + บันทึก
 { const g = game('signs'), S = S0(); reps.length = 0; const e = C.pick(g, S, 'willowshore'); const r = C.resolve(g, S, e, 1, { passTime() { } });
   ok(r.lines.length && S.gold === 75 && M.flag(g, 'cr_callup') === 2, 'ransom costs 25 and is recorded'); ok(T.has(g, 'cr.callup') && M.flag(g, 'lean_village') === 1, 'chronicle + lean');
@@ -26,7 +26,7 @@ ok(!/Paelasael|Veshra|Wyridean|Zern-Va|Grat\b/.test(JSON.stringify(C.EVENTS.map(
 // ❖: ตลาด/ขายแล้วของหาย
 { const g = game('wake'); g.village.bag = { [ADVENTURE_DATA.MAYA_OF.wolf]: 2 }; M.set(g, 'mipJoined', true); const S = S0({ gold: 0 });
   const e = C.pick(g, S, 'haven'); ok(e && e.id === 'mayaBroker', 'broker appears when holding ❖'); const r = C.resolve(g, S, e, 2, {}); ok(S.gold > 60 && g.village.bag[ADVENTURE_DATA.MAYA_OF.wolf] === 1 && M.flag(g, 'lean_shadow') === 1, 'secret buyer: paid more, ❖ consumed, shadow lean');
-  const g2 = game('wake'); ok(C.pick(g2, S0(), 'haven') === null, 'no ❖ = no broker') }
+  const g2 = game('wake'); ok(C.pick(g2, S0(), 'haven')?.id !== 'mayaBroker', 'no ❖ = no broker') }
 // สหาย R8 ต้องอยู่ในทีม
 { const g = game('release'); ok(C.pick(g, S0(), 'northgate')?.id !== 'sigrid', 'sigrid event needs sigrid'); const e = C.byId.sigrid; ok(C.eligible(g, S0({ party: [{ key: 'sigrid' }] }), 'northgate', e), 'sigrid in party → eligible'); ok(C.eligible(g, S0({ bench: [{ key: 'sigrid' }] }), 'lakenhold', e), 'bench counts') }
 // ป่วย: ต้องมีผู้ติดเชื้อ
@@ -67,4 +67,24 @@ ok(!/Paelasael|Veshra|Wyridean|Zern-Va|Grat\b/.test(JSON.stringify(C.EVENTS.map(
   // every fight/check/need choice resolves in both directions without error
   for (const e of C.EVENTS) for (let i = 0; i < 3; i++) { if (!e.choices[i].mech) continue; for (const out of ['win', 'lose']) { const g2 = game('mine'); g2.village.bag = { [ADVENTURE_DATA.MAYA_OF.wolf]: 2, herb: 2 }; g2.village.materials = { iron: 5, coal: 5 }; M.set(g2, 'mipJoined', true); M.set(g2, 'ruinStudy', 1); g2.village.character.level = 12; g2.village.character.stats = { precision: 5, knowledge: 5 };
       let r; try { r = C.resolve(g2, S0({ gold: 500, party: [{ key: 'sigrid' }, { key: 'bram' }, { key: 'kier' }, { key: 'luna' }] }), e, i, { battle: () => out, rng: () => out === 'win' ? 0 : .99, passTime() { } }) } catch (er) { r = { err: er } } ok(!r.err && r.lines.length, e.id + '#' + i + ' ' + out + ' runs: ' + (r.err && r.err.message)) } } }
+// v98.510 · R1 พ่อค้ายามสงคราม · R4 เฟิร์นเวลยามสงคราม · ④ เส้นศรัทธา · เส้นตำนานมังกรไฟดำ
+{ const ids = ['armySupply', 'caravanEscort', 'gravenWar', 'farmLabor', 'refugeeShelter', 'granaryAsk', 'leafBeetle', 'pilgrimTwo', 'northPriest', 'godAnswers', 'manMadeGod', 'dragonTale', 'dragonAsh', 'dragonOmen'];
+  ok(ids.every(i => C.byId[i]), 'all 14 new events exist');
+  ok(C.EVENTS.filter(e => e.towns && e.towns.includes('fernvale')).length === 5, 'four R4 events + Hugo live at Fernvale (fired from arriveHome)');
+  { const g = game('signs'), S = S0(); M.set(g, 'cr_callup', 1); M.set(g, 'cr_armor', 1); const e = C.pick(g, S, 'lakenhold'); ok(e && e.id === 'armySupply', 'R1 supply contract at lakenhold from signs'); reps.length = 0; const r = C.resolve(g, S, e, 0, {}); ok(S.gold === 140 && M.flag(g, 'supplyWay') === 'army' && reps.some(x => x[0] === 'crown' && x[1] === 2), 'sign the army contract: +40 gold, crown +2, flag'); }
+  { const g = game('signs'), S = S0({ gold: 10 }); M.set(g, 'cr_callup', 1); M.set(g, 'cr_armor', 1); const e = C.pick(g, S, 'lakenhold'); const r = C.resolve(g, S, e, 1, {}); ok(r.blocked && M.flag(g, 'cr_armySupply') === undefined, 'refugee supply needs 20 gold'); }
+  { const g = game('signs'), S = S0(); const e = C.pick(g, S, 'fernvale'); ok(e && e.id === 'farmLabor', 'R4 farm labour at Fernvale from signs'); let t = 0; const r = C.resolve(g, S, e, 0, { passTime: h => { t += h } }); ok(t === 24 && S.gold === 110 && M.flag(g, 'farmWay') === 'help', 'help the harvest: three days pass, small income'); }
+  { const g = game('release'); g.village.materials = { wood: 2 }; M.set(g, 'cr_farmLabor', 1); const S = S0(), e = C.byId.refugeeShelter; ok(C.why(g, S, e, 0) && /ไม้/.test(C.why(g, S, e, 0)), 'shelter needs wood'); g.village.materials.wood = 3; ok(!C.why(g, S, e, 0), 'with 3 wood it can be built'); C.resolve(g, S, e, 0, {}); ok(g.village.materials.wood === 0 && M.flag(g, 'shelter') === 'built', 'wood is spent, flag set'); }
+  { const g = game('release'); const S = S0(); M.set(g, 'cr_farmLabor', 1); M.set(g, 'cr_gouge', 1); const e = C.pick(g, S, 'fernvale'); ok(e && ['refugeeShelter', 'granaryAsk'].includes(e.id), 'later R4 events come after the first'); }
+  { const g = game('mine'); ok(C.eligible(g, S0(), 'fernvale', C.byId.leafBeetle) === (M.infection(g, 'fernvale') >= 1), 'leaf beetle follows the infection ring of Fernvale'); }
+  /* ④: Hugo → the signal → the man-made god */
+  { const g = game('signs'), S = S0(); const e = C.pick(g, S, 'fernvale'); ok(e.id === 'farmLabor', 'farm first'); M.set(g, 'cr_farmLabor', 1); g.day++; const p = C.pick(g, S, 'northgate'); ok(p && p.id !== undefined, 'something at northgate');
+    const h = C.byId.pilgrimTwo; ok(C.eligible(g, S, 'fernvale', h), 'Hugo at Fernvale from signs'); C.resolve(g, S, h, 0, {}); ok(M.flag(g, 'faithView') === 'near' && M.flag(g, 'faithHeard') === 1, 'listen to the Aldren view'); }
+  { const g = game('chase'); ok(!C.eligible(g, S0(), 'vinehollow', C.byId.godAnswers), 'no signal without hearing Hugo first'); M.set(g, 'faithView', 'sleep'); ok(C.eligible(g, S0(), 'vinehollow', C.byId.godAnswers), 'after Hugo the signal can be found at the shrine'); }
+  { const g = game('climax'); ok(C.eligible(g, S0(), 'northgate', C.byId.manMadeGod), 'man-made god appears at war 4'); const S = S0(); C.resolve(g, S, C.byId.manMadeGod, 2, {}); ok(M.flag(g, 'manGod') === 'guide' && M.flag(g, 'infectedHelped') === 1, 'guide the faith to the sick: flag + helped');
+    const g2 = game('climax'); M.advanceTo(g2, 'end', { silent: true }); C.expire(g2, S0()); ok(M.flag(g2, 'manGod') === 'grow' && M.flag(g2, 'cr_manMadeGod') === 'fb', 'nobody stops it → the faith grows by itself (fallback)'); }
+  /* มังกรไฟดำ: ตำนาน → เถ้า → สัญญาณ */
+  { const g = game('signs'); ok(C.eligible(g, S0(), 'haven', C.byId.dragonTale), 'dragon tale at the harbour from signs'); const S = S0(); C.resolve(g, S, C.byId.dragonTale, 1, {}); ok(M.flag(g, 'dragonLore') === 2 && M.flag(g, 'dragonMap') === true && S.gold === 85, 'buy the map: lore 2, 15 gold'); }
+  { const g = game('mine'); ok(!C.eligible(g, S0(), 'haven', C.byId.dragonOmen), 'omen needs the ash first'); M.set(g, 'dragonLore', 1); M.set(g, 'cr_dragonAsh', 2); ok(C.eligible(g, S0(), 'haven', C.byId.dragonOmen), 'omen after tale + ash'); const S = S0(); g.village.materials = { iron: 2 }; C.resolve(g, S, C.byId.dragonOmen, 1, {}); ok(M.flag(g, 'dragonOmen') === 'port' && g.village.materials.iron === 0, 'repair the port: iron spent'); }
+  ok(C.EVENTS.every(e => !/มังกร/.test(e.title) || e.id === 'dragonTale'), 'the dragon is only introduced through the tale'); }
 console.log(`${pass} ok · ${fail} fail`); process.exit(fail ? 1 : 0);

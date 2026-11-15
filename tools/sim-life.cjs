@@ -26,7 +26,12 @@ const TAGS = { fugitive: [{ heart: 1, bold: .5 }, { crown: 1 }, { light: 1, curi
   moonRite: [{ faith: 1, curious: .5 }, { heart: 1 }, { curious: 1, bold: .5 }], scent: [{ shadow: 1, curious: .5, greed: .3 }, { heart: 1 }, { bold: .5 }], armor: [{ crown: 1, greed: .8 }, { light: 1, heart: .4 }, { heart: .8, faith: .3 }],
   sickRefugee: [{ heart: 1 }, { crown: .6 }, { greed: .5 }], languageLeaf: [{ crown: 1, greed: .5 }, { light: 1, heart: .5 }, { curious: .7, bold: .2 }], gouge: [{ greed: 1 }, { heart: 1 }, { bold: .8, heart: .5 }],
   boudilList: [{ heart: 1 }, { heart: .6, crown: .2 }, { crown: .5 }], lightPass: [{ light: 1, heart: .4 }, { crown: 1 }, { curious: 1, light: .5 }], sigrid: [{ heart: .4 }, { heart: 1, curious: .3 }, { bold: .7, heart: .5 }],
-  bram: [{ heart: 1, bold: .5 }, { crown: .7 }, { crown: .4, heart: .4 }], kier: [{ heart: .6 }, { heart: 1 }, { curious: 1 }], luna: [{ crown: .7, greed: .3 }, { faith: .3, curious: .5 }, { light: 1, curious: .5 }] };
+  bram: [{ heart: 1, bold: .5 }, { crown: .7 }, { crown: .4, heart: .4 }], kier: [{ heart: .6 }, { heart: 1 }, { curious: 1 }], luna: [{ crown: .7, greed: .3 }, { faith: .3, curious: .5 }, { light: 1, curious: .5 }],
+  /* v98.510 · R1 · R4 · ④ · เส้นตำนาน */
+  armySupply: [{ crown: 1 }, { heart: 1 }, { greed: 1, bold: .6 }], caravanEscort: [{ bold: 1, heart: .5 }, { greed: .4, crown: .3 }, { curious: 1 }], gravenWar: [{ heart: 1, bold: .3 }, { greed: 1 }, { crown: 1 }],
+  farmLabor: [{ heart: 1 }, { greed: .6 }, { curious: .5, crown: .3 }], refugeeShelter: [{ heart: 1, bold: .3 }, { crown: .4, heart: .5 }, { heart: .8 }], granaryAsk: [{ crown: 1 }, { heart: 1, bold: .6 }, { curious: .4, crown: .3 }], leafBeetle: [{ bold: 1 }, { heart: 1, curious: .3 }, { curious: 1 }],
+  pilgrimTwo: [{ faith: 1, heart: .3 }, { faith: .7, shadow: .3 }, { curious: 1 }], northPriest: [{ curious: 1, faith: .5 }, { heart: 1 }, { crown: .8 }], godAnswers: [{ faith: 1 }, { curious: 1 }, { heart: .5, faith: .4 }], manMadeGod: [{ faith: .5 }, { heart: .7, curious: .5 }, { heart: 1 }],
+  dragonTale: [{ curious: 1 }, { curious: .7, greed: .3 }, { bold: .5 }], dragonAsh: [{ heart: 1 }, { curious: 1, bold: .5 }, { crown: 1 }], dragonOmen: [{ heart: 1 }, { heart: .6, greed: .3 }, { light: 1 }] };
 const score = (w, noise = .35) => Object.entries(w).reduce((a, [k, v]) => a + v * tv(k), 0) + (rnd() - .5) * noise;
 
 /* ---------- บันทึกเหตุการณ์ ---------- */

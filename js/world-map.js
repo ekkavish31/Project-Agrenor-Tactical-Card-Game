@@ -954,6 +954,7 @@
     const left = world.dests.filter(d => !S.done[d.id]).length;
     await modal(`<h2>🏠 หมู่บ้านเฟิร์นเวล</h2><p>ชาวบ้านออกมารับ HP ฟื้นเต็ม · เสบียงเหลือ ${S.food} ห่อ${S.food < 4 ? ' (ซื้อเพิ่มได้ที่ตลาด)' : ''}</p><p>${left ? 'ยังมีข่าวลือรออยู่อีก ' + left + ' แห่งที่กระดานภารกิจ' : 'ทุกข่าวลือถูกพิสูจน์แล้ว — ลองสร้าง “โลกใหม่” ได้'}</p>`);
     if (S.dest && S.done[S.dest]) S.dest = null; hudSync();
+    await crossroadsAt('fernvale');   /* v98.510 · R4 เฟิร์นเวลยามสงคราม (js/crossroads.js towns:['fernvale']) */
   }
 
   /* ---------- battles (the flat card battle in an iframe) ---------- */
