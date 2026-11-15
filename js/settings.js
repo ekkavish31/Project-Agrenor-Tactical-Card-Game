@@ -15,6 +15,7 @@ window.openSettings=function(){let c=S(),D=window.TacticsCore?.DIFFICULTY||{};
  <label>เสียงเอฟเฟกต์ <input type="range" min="0" max="1" step=".05" value="${window.BattlePolish?.volume??.65}" oninput="BattlePolish.set('volume',+this.value)"></label>
  <label>เพลงพื้นหลัง <input type="range" min="0" max="1" step=".05" value="${window.BattlePolish?.musicVolume??.24}" oninput="BattlePolish.set('musicVolume',+this.value)"></label>
  <label>คำแนะนำครั้งแรก <span><input type="checkbox" ${c.tips?'checked':''} onchange="GameSettings.set('tips',this.checked)"> แสดง <button onclick="GameSettings.resetTips()">ดูคำแนะนำอีกครั้ง</button></span></label>
+ <label>ลดความละเอียดอัตโนมัติเมื่อกระตุก (ภาพจะเบาลงเมื่อเครื่องช้า · ปกติปิดไว้) <span><input type="checkbox" ${(()=>{try{return localStorage.getItem('projectA.autoRes')==='1'?'checked':''}catch(e){return ''}})()} onchange="try{localStorage.setItem('projectA.autoRes',this.checked?'1':'0')}catch(e){};GameSettings&&alert('มีผลเมื่อโหลดหน้าใหม่')"> เปิด</span></label>
  <label>วัดประสิทธิภาพ (fps) <span><button onclick="GameSettings.perf()">📊 วัดประสิทธิภาพ</button></span></label>
  <p class="muted small">เดินด้วยจอยสติ๊กหรือแป้น W A S D / ลูกศร · ปุ่มใหญ่ (E หรือ Space) = คุย / เข้าประตู / ออก · ความยากมีผลกับการต่อสู้ครั้งถัดไป · เสียงและเพลงเริ่มหลังคลิกหรือกดปุ่มครั้งแรก · สำรอง/นำเข้าเซฟอยู่ท้ายหน้าเกม</p></div>`)};
 const TIPS={

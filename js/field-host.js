@@ -548,6 +548,7 @@ requestAnimationFrame(frame);
   props.sort((a, b) => window.FieldDepth(a[1] + .5, a[2] + .5) - window.FieldDepth(b[1] + .5, b[2] + .5));
   for (const p of props) { if (p[0] === 'pool') prop(g, ...p, t) }
   for (const p of props) { if (p[0] !== 'pool') prop(g, ...p, t) }
+  if (FQ.get('edit') !== '1') window.TiltShift?.apply(g, cv, { top: .16, bottom: .14 });   /* v98.575 · Octopath tilt-shift (in-canvas) */
   window.TownBattle?.draw?.(g, t);
   g.setTransform(1, 0, 0, 1, 0, 0); if (dio) FieldDiorama.grade(g, cv.width, cv.height, FIELD.biome, FIELD.night);
   if (FIELD.night) { g.fillStyle = 'rgba(10,18,55,.42)'; g.fillRect(0, 0, cv.width, cv.height) }

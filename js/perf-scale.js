@@ -6,14 +6,15 @@
    a window that contains a hitch (one frame over 250 ms: tab switch, big task) is thrown away, two slow windows in a row are needed to drop,
    the step is NOT remembered between visits any more, and climbing back is quick.
    The editor (?edit=1), the embedded battle page and the speed check (?perf=1) keep full quality.
-   Turn it off:  localStorage.setItem('projectA.autoRes','0')   ·  see what it did:  RENDER_LOG  (in the browser console) */
+   v98.575: opt-in. Turn it ON:  localStorage.setItem('projectA.autoRes','1')  (Settings has the switch)   ·  see what it did:  RENDER_LOG  (in the browser console) */
 (function () {
   'use strict';
   if (/[?&](edit|perf)=1/.test(location.search)) return;   // ?perf=1 = the speed check: measure at full quality
   const BATTLE = /[?&]battle=1/.test(location.search);   // the embedded battle: the start step below, then it may only go DOWN (v98.78)
   try { if (window.parent !== window && /[?&]perf=1/.test(parent.location.search)) return } catch (e) { }
   try { localStorage.removeItem('projectA.renderStep') } catch (e) { }   // old versions remembered a step; forget it
-  try { if (localStorage.getItem('projectA.autoRes') === '0') return } catch (e) { }
+  /* v98.575 · OFF by default (the picture is never made less sharp behind the player's back); Settings → "ลดความละเอียดอัตโนมัติเมื่อกระตุก" turns it on: localStorage 'projectA.autoRes' = '1' */
+  try { if (localStorage.getItem('projectA.autoRes') !== '1') return } catch (e) { return }
   /* v98.329 · a Retina / 4K screen (ratio 2–3) means 4–9× the pixels of an ordinary one for the same picture: the village drew a 4-million-pixel canvas through several full-screen passes
      (measured: 49 ms a frame at ratio 1, 198 ms at 2, 412 ms at 3) and only stepped down after ~15–25 s of stutter, every visit. Now: a computer draws at most 1.5× per screen pixel and starts at a
      step that keeps the canvas under ~2.6 million pixels (a tablet / phone keeps its own, lower, budget below). Still adaptive both ways afterwards. */

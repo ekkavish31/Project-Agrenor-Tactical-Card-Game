@@ -6,7 +6,7 @@
    Settings: localStorage 'projectA.hd2d' = {tilt,bloom,rays,dust}; toggles in the village ⚙ panel and battle settings.
    HD2D.attach(canvas,{battle}) adds the overlay right after the canvas; HD2D.bloom(ctx,canvas) runs at the end of a frame. */
 (function(root){'use strict';
-const KEY='projectA.hd2d',DEF={tilt:true,tiltBlur:false,bloom:true,rays:true,dust:true};
+const KEY='projectA.hd2d',DEF={tilt:true,tiltShift:true,tiltBlur:false,bloom:true,rays:true,dust:true};
 let opt={...DEF};try{Object.assign(opt,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
 const overlays=new Set();
 const css=document.createElement('style');css.textContent=`
@@ -47,8 +47,8 @@ function bloom(ctx,canvas,strength=.32,force=false){if(!opt.bloom||!canvas.width
  const now=performance.now();if(force||resized||canvas!==bloomFor||!bloomAt||now-bloomAt>Math.max(140,bloomCost*6)){bloomFor=canvas;const q=small.getContext('2d');q.globalCompositeOperation='copy';q.filter='brightness(.75) contrast(2.6) saturate(1.2) blur(2px)';q.drawImage(canvas,0,0,w,h);q.filter='none';q.globalCompositeOperation='source-over';bloomAt=performance.now();bloomCost=bloomAt-now}
 
  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='screen';ctx.globalAlpha=strength;ctx.imageSmoothingEnabled=true;ctx.drawImage(small,0,0,canvas.width,canvas.height);ctx.restore()}
-function set(k,v){opt[k]=!!v;try{localStorage.setItem(KEY,JSON.stringify(opt))}catch(e){}overlays.forEach(el=>build(el,el.dataset.battle==='1'));document.querySelectorAll('.hd2dOpts input').forEach(i=>i.checked=!!opt[i.dataset.k])}
-function controls(){const d=document.createElement('div');d.className='hd2dOpts';d.innerHTML='<b>สไตล์ HD-2D</b>'+[['tilt','เงาจางบน-ล่าง'],['tiltBlur','เบลอจริง (กินเฟรม)'],['bloom','แสงฟุ้ง'],['rays','ลำแสง'],['dust','ฝุ่นในแสง']].map(([k,t])=>`<label><input type="checkbox" data-k="${k}" ${opt[k]?'checked':''}>${t}</label>`).join('');d.onchange=e=>{const i=e.target.closest('input');if(i)set(i.dataset.k,i.checked)};return d}
+function set(k,v){opt[k]=!!v;if(k==='tiltShift')root.TiltShift?.set?.(v);try{localStorage.setItem(KEY,JSON.stringify(opt))}catch(e){}overlays.forEach(el=>build(el,el.dataset.battle==='1'));document.querySelectorAll('.hd2dOpts input').forEach(i=>i.checked=!!opt[i.dataset.k])}
+function controls(){const d=document.createElement('div');d.className='hd2dOpts';d.innerHTML='<b>สไตล์ HD-2D</b>'+[['tilt','เงาจางบน-ล่าง'],['tiltShift','เบลอฉากแบบ Octopath'],['bloom','แสงฟุ้ง'],['rays','ลำแสง'],['dust','ฝุ่นในแสง']].map(([k,t])=>`<label><input type="checkbox" data-k="${k}" ${opt[k]?'checked':''}>${t}</label>`).join('');d.onchange=e=>{const i=e.target.closest('input');if(i)set(i.dataset.k,i.checked)};return d}
 root.addEventListener('storage',e=>{if(e.key===KEY){try{opt={...DEF,...JSON.parse(e.newValue||'{}')}}catch(x){}overlays.forEach(el=>build(el,el.dataset.battle==='1'))}});
 // battle: overlay on #battleCanvas and toggles in the battle settings dialog
 // battle bloom: runs right after a frame the battle actually drew (its clearRect marks the frame)
