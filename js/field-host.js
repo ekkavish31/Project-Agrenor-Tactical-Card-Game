@@ -251,6 +251,8 @@ const PA = 'assets/', PROP_ART = {
   wagon: { _: [['tactics/props/b1-wrecked-wagon', 190, 'w']] }, fallentree: { _: [['tactics/props/b1-fallen-tree', 200, 'w']] }, brokenwall: { _: [['tactics/props/b1-broken-wall', 190, 'w']] },
   tent: { _: [['tactics/props/b1-tent-ruin', 84, 'w']] }, bones: { _: [['tactics/props/b1-bone-pile', 80, 'w']] }, iceblock: { _: [['tactics/props/b1-ice-block', 70, 'w']] }, barricade: { _: [['tactics/props/b1-barricade', 82, 'w']] },
   deadtree: { _: [['village-town/nature/w1-dead-tree', 236, 'h'], ['village-town/nature/w1-swamp-willow', 236, 'h'], ['tactics/props/deadtree', 208, 'h']] },
+  /* v98.562 · the pumpkin garden (poi=patch) now uses the real pictures: pumpkin plants (assets/crops), hay bale, picket fence piece, scarecrow */
+  pumpkinPlant: { _: [['crops/pumpkin-4', 74, 'w'], ['crops/pumpkin-3', 68, 'w'], ['crops/pumpkin-4', 70, 'w']] }, hay: { _: [['village-town/decor/hay', 54, 'w']] }, fence: { _: [['village-town/decor/fence-picket', 62, 'w']] }, scarecrow: { _: [['scarecrow', 104, 'h']] },
   cactus: { _: [['tactics/props/b1-cactus', 84, 'h'], ['tactics/props/cactus', 72, 'h']] }   // deadtree / cactus pictures are planned (docs/ART-TODO.md): code drawing until they exist
 };
 const PIMG = {};
