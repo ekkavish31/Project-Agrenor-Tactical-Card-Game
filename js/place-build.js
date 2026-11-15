@@ -937,6 +937,9 @@ const PB_ART = (() => {
  const panel = document.createElement('section');
  panel.id = 'pbPanel';
  document.body.append(panel);
+ /* v98.558 · slant of the picture: ix = scale along the ↗↙ diagonal, iy = along ↖↘ (100 % = as drawn) · kx = lean (shear) of the picture to the side. They bend the drawing only — the order / block frames stay. */
+ const SLANT_KEYS = ['ix', 'iy', 'kx'], slantRows = o => `${sl('ix', 'แกนเอียง ↗↙', o.ix ?? 1, .5, 2, .01, pct)}${sl('iy', 'แกนเอียง ↖↘', o.iy ?? 1, .5, 2, .01, pct)}${sl('kx', 'เอียงภาพ (ตะแคง)', o.kx || 0, -.6, .6, .01, pct)}<div class="row"><button id="slReset">⟲ คืนค่าเอียง</button></div>`;
+ const writeSlant = (o, k, v) => { if ((k === 'ix' || k === 'iy') && Math.abs(v - 1) < .005 || k === 'kx' && Math.abs(v) < .005) delete o[k]; else o[k] = v };
  const pct = x => Math.round(x * 100) + '%',
   one = x => (+x).toFixed(1);
  const sl = (k, l, v, a, b, st, f = x => x) => `<label>${l}<input type="range" data-k="${k}" data-f="${f===pct?'pct':f===one?'one':''}" min="${a}" max="${b}" step="${st}" value="${v}"><output>${f(v)}</output></label>`;
@@ -1183,7 +1186,7 @@ const PB_ART = (() => {
 
  function tabArt(body, s) {
   body.innerHTML = `<div class="art"><span class="th" id="aTh"></span><div><button id="aSwap">เปลี่ยนภาพ…</button><p class="sub" style="margin:6px 0 0">${propName(s)}</p></div></div>
-  ${sl('width','ความกว้างภาพ',s.width||120,30,700,5)}${sl('s','ขนาด',s.s||1,.3,2.5,.05,pct)}
+  ${sl('width','ความกว้างภาพ',s.width||120,30,700,5)}${sl('s','ขนาด',s.s||1,.3,2.5,.05,pct)}${slantRows(s)}
   <label class="chk"><input type="checkbox" id="aFlip" ${s.f?'checked':''}> กลับด้านภาพ</label>
   ${zRow('sz','ชั้นของจุดทำงาน',s.z||0,'เทียบกับของประดับของจุดนี้ · ของที่เลขมากกว่าจะทับ')}
   <p class="sub">ลากตัวจุดบนแผนที่เพื่อย้าย (ของประดับของจุดนี้ตามไปด้วย) · ลูกศร = ขยับทีละ ¼ ช่อง</p>
@@ -1205,7 +1208,8 @@ const PB_ART = (() => {
    save();
    render()
   });
-  sliders((k, v) => s[k] = v)
+  act('#slReset', once(() => { for (const k of SLANT_KEYS) delete s[k] }));
+  sliders((k, v) => SLANT_KEYS.includes(k) ? writeSlant(s, k, v) : (s[k] = v))
  }
 
  function tabBase(body, s) {
@@ -1274,7 +1278,7 @@ const PB_ART = (() => {
     o = M.props[i];
    body.innerHTML = `<div class="row" style="margin-top:0"><button id="pBack">← ของประดับทั้งหมด</button></div><b class="sec">${propName(o)}</b>
    <div class="art"><span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button> <button id="pDetail">🔍 แก้ละเอียด…</button></div></div>
-   ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${zRow('pz1','ชั้นของชิ้นนี้',o.z||0,o.owner?'ในจุดทำงานนี้ · จุดทำงาน = '+(stOf(o.owner)?.z||0):'ของประดับทั่วไป (ไม่อยู่ในชุดจุดทำงาน)')}
+   ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${slantRows(o)}${zRow('pz1','ชั้นของชิ้นนี้',o.z||0,o.owner?'ในจุดทำงานนี้ · จุดทำงาน = '+(stOf(o.owner)?.z||0):'ของประดับทั่วไป (ไม่อยู่ในชุดจุดทำงาน)')}
    <label class="chk"><input type="checkbox" id="pFlip" ${o.f?'checked':''}> กลับด้าน</label>${groupHtml(1)}
    <div class="row"><button id="pDup">ทำสำเนา</button><button id="pDel">ลบ (Delete)</button></div><div class="row"><button id="pSavePrefab">บันทึกเป็นชุด</button><button id="pUsePrefab">วางชุดที่บันทึก</button></div><p class="sub">ลากบนแผนที่เพื่อย้าย · ลูกศร = ขยับทีละ ¼ ช่อง · R หมุน · F กลับด้าน</p>`;
    thumbInto(body.querySelector('#pTh'), o.art, o.width || 110);
@@ -1295,7 +1299,8 @@ const PB_ART = (() => {
    }));
    act('#pDel', delProps);
    act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);bindGroup();bindZ('pz1',d=>{o.z=Math.max(-20,Math.min(20,(o.z||0)+d));if(!o.z)delete o.z});
-   sliders((k, v) => o[k] = v);
+   act('#slReset', once(() => { for (const k of SLANT_KEYS) delete o[k] }));
+   sliders((k, v) => SLANT_KEYS.includes(k) ? writeSlant(o, k, v) : (o[k] = v));
    return
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น${sel.length>1?` · <b>เลือก ${sel.length} ชิ้น</b> ลากชิ้นใดก็ได้เพื่อย้ายทั้งกลุ่ม`:''}</p>
@@ -1363,7 +1368,7 @@ const PB_ART = (() => {
   render,
   /* v98.292 · bridge for js/piece-detail.js: a prop of this sub-map (key = index in M.props) */
   detail: {
-   caps: { rot: false, slant: false, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
+   caps: { rot: false, slant: true, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
    item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
    ov: key => M.props[+key] || {},
    edit(key, fn, cp) { const o = M.props[+key]; if (!o) return; if (cp) checkpoint(); fn(o); for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === false) delete o[k]; dirty = true; save(); render() },

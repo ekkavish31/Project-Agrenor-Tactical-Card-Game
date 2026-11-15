@@ -698,7 +698,7 @@ function codeArt(kind, u, v, s, t) {
 function drawArt(a, u, v, width, s = 1, flip = false, t = 0, hp = null, geometry = null) {
  if (geometry && window.PieceGeometry) {
   const anchor = project(u, v); g.save();
-  try { g.translate(anchor.x, anchor.y); PieceGeometry.apply(g, geometry); g.translate(-anchor.x, -anchor.y); drawArt(a, u, v, width, s, flip, t, hp) } finally { g.restore() }
+  try { g.translate(anchor.x, anchor.y); PieceGeometry.apply(g, geometry); const ix = geometry.ix ?? 1, iy = geometry.iy ?? 1; if (ix !== 1 || iy !== 1) g.transform((ix + iy) / 2, (iy - ix) / 2, (iy - ix) / 2, (ix + iy) / 2, 0, 0); if (geometry.kx) g.transform(1, 0, geometry.kx, 1, 0, 0); g.translate(-anchor.x, -anchor.y);   /* v98.558 · slant: ix/iy diagonal scales + kx lean */ drawArt(a, u, v, width, s, flip, t, hp) } finally { g.restore() }
   return
  }
  if (a.startsWith('code:')) {
@@ -1095,7 +1095,7 @@ function draw(t) {
     type: 'station',
     i
    },
-   draw: () => { if (window.Interactables?.isActive('st:' + i)) stationOutline(s); drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp) }
+   draw: () => { if (window.Interactables?.isActive('st:' + i)) stationOutline(s); drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp, (s.ix != null || s.iy != null || s.kx) ? s : null) }
   })
  });
  M.stations.forEach((s, i) => { const o = vendorObj(s, i); if (o) objects.push(o) });   /* v98.556 */
