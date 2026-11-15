@@ -4,7 +4,7 @@
      • ปุ่มของเมือง TownServices (ปุ่มบนการ์ดเมือง)           → services(g, town) / run(...) ปุ่มสถานที่ใหม่ของเนื้อเรื่อง
    ทุกอย่างผูกกับ MainStory (war / infection / หมุดเรื่อง) ไม่ผูกกับวัน (Canon D: ไม่มีนาฬิกานับถอยหลัง) · ผู้เล่นยังไม่ถึงหมุด = ไม่เห็น
    ข้อความผู้เล่นตามระดับสปอยล์: ไม่มีชื่อโบราณ (Paelasael ฯลฯ) · Elu'Mierwaa / Duum'Lorien โผล่เมื่อพวกเขาแนะนำตัว (หมุด release ขึ้นไป)
-   ตัวละครใหม่ยังไม่มีภาพ (ผู้ใช้จะเจนภายหลัง) — ในเมืองบนแผนที่เป็นข้อความอยู่แล้วจึงไม่ต้องใช้ภาพ
+   ตัวละครเนื้อเรื่องมีภาพสนทนา 4 อารมณ์ใน assets/portraits/story — ในเมืองบนแผนที่เป็นข้อความอยู่แล้วจึงไม่ต้องใช้ภาพ
    เซฟ: ใช้ MainStory.flag/set (village.main.flags) + Titles.log (chronicle) เท่านั้น · ไม่มีเซฟก้อนใหม่ */
 (function (root) {
   'use strict';
@@ -239,10 +239,14 @@
   /* หน้าตัวละคร (CT-style frame) — ภาพจริงถ้ามี · ไม่มี = ภาพวาดด้วยโค้ด (js/code-portraits.js) */
   const CARD_FACE = ['bram', 'kier', 'luna', 'mil'];
   const ALIAS = { third: 'corvin', mage: 'serrien' };
-  function face(id) {
+  function face(id, emotion = 'neutral') {
     id = ALIAS[id] || id;
     if (id === 'hero') return { src: 'assets/portraits/hero-male-neutral.webp', pos: '50% 4%', size: '230%' };
     if (id === 'mip') return { src: 'assets/ui/mip-sheet.webp?v=2', pos: '0% 50%', size: '1200% auto' };
+    if (['corvin', 'helga', 'darren', 'mierris', 'lorrik', 'serrien', 'irene', 'vik'].includes(id)) {
+      const mood = ({ happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry' })[emotion] || 'neutral';
+      return { src: `assets/portraits/story/${id}-${mood}.webp`, pos: '50% 4%', size: '200%' };
+    }
     const P = root.CodePortraits; if (P && P.has(id)) { const s = P.get(id); return s ? { src: s, pos: '50% 50%', size: '100%' } : null }
     if (CARD_FACE.includes(id)) return { src: `assets/cards/portraits/u-${id}.webp`, pos: '50% 22%', size: '165%' };
     return { src: `assets/village-town/npc/${id}/sw-stand.webp`, pos: '50% 9%', size: '285%' };

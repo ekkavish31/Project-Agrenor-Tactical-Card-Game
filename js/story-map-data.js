@@ -168,9 +168,9 @@
   const npc = (id, n, r) => ({ n, r, src: `assets/village-town/npc/${id}/sw-stand.webp`, pos: '50% 9%', size: '285%' });
   const card = (id, n, r) => ({ n, r, src: `assets/cards/portraits/u-${id}.webp`, pos: '50% 22%', size: '165%' });
   const CAST = {
-    mierris: { n: 'เมียร์ริส', r: 'ผู้เฝ้าแสง (Elu\'Mierwaa) · ธอร์นวอตช์ · ภาพวาดด้วยโค้ดชั่วคราว', code: 'mierris' }, lorrik: { n: 'ลอร์ริก', r: 'นักล่าเงา (Duum\'Lorien) · ธอร์นวอตช์ · ภาพวาดด้วยโค้ดชั่วคราว', code: 'lorrik' },
-    helga: { n: 'พี่น้องเฮลกา', r: 'นิกายรอรุ่งอรุณ · ด่านหินเหนือ · ภาพวาดด้วยโค้ดชั่วคราว', code: 'helga' }, darren: { n: 'เซอร์ดาร์เรน', r: 'อัศวินเฝ้าเหมือง · ดีปแคร์น · ภาพวาดด้วยโค้ดชั่วคราว', code: 'darren' },
-    irene: { n: 'หมอหญิงไอรีน', r: 'เรือนพยาบาลผู้ลี้ภัย · วิลโลว์ชอร์ · ภาพวาดด้วยโค้ดชั่วคราว', code: 'irene' }, vik: { n: 'วิก', r: 'นายหน้าตลาดมืด · ซอลต์เฮเวน · ภาพวาดด้วยโค้ดชั่วคราว', code: 'vik' },
+    mierris: { n: 'เมียร์ริส', r: 'ผู้เฝ้าแสง (Elu\'Mierwaa) · ธอร์นวอตช์', src: 'assets/portraits/story/mierris-neutral.webp', pos: '50% 4%', size: '200%' }, lorrik: { n: 'ลอร์ริก', r: 'นักล่าเงา (Duum\'Lorien) · ธอร์นวอตช์', src: 'assets/portraits/story/lorrik-neutral.webp', pos: '50% 4%', size: '200%' },
+    helga: { n: 'พี่น้องเฮลกา', r: 'นิกายรอรุ่งอรุณ · ด่านหินเหนือ', src: 'assets/portraits/story/helga-neutral.webp', pos: '50% 4%', size: '200%' }, darren: { n: 'เซอร์ดาร์เรน', r: 'อัศวินเฝ้าเหมือง · ดีปแคร์น', src: 'assets/portraits/story/darren-neutral.webp', pos: '50% 4%', size: '200%' },
+    irene: { n: 'หมอหญิงไอรีน', r: 'เรือนพยาบาลผู้ลี้ภัย · วิลโลว์ชอร์', src: 'assets/portraits/story/irene-neutral.webp', pos: '50% 4%', size: '200%' }, vik: { n: 'วิก', r: 'นายหน้าตลาดมืด · ซอลต์เฮเวน', src: 'assets/portraits/story/vik-neutral.webp', pos: '50% 4%', size: '200%' },
     hero: { n: 'ตัวเอก', r: 'ผู้เล่น', src: 'assets/portraits/hero-male-neutral.webp', pos: '50% 4%', size: '230%' },
     mip: { n: 'Mip', r: 'จิ้งจอกตัวเล็ก (ไม่กินช่องปาร์ตี้)', src: 'assets/ui/mip-sheet.webp?v=2', pos: '0% 50%', size: '1200% auto', bg: '#2a2140' },
     lin: { n: 'คุณยายลิน', r: 'คนเฒ่าเล่านิทาน', src: 'assets/portraits/lin-neutral.webp', pos: '50% 12%', size: '190%' },
@@ -180,9 +180,9 @@
     oren: npc('oren', 'ผู้ใหญ่โอเรน', 'ผู้ใหญ่บ้าน'), may: npc('may', 'ป้าเมย์', 'คนทำขนมปัง'), marta: npc('marta', 'มาร์ธา', 'เจ้าของโรงแรม'),
     ren: npc('ren', 'เรน', 'นักธนูหนุ่ม'), berg: npc('berg', 'นายพรานเบิร์ก', 'นายพราน'),
     bram: card('bram', 'บรัม', 'นักรบค้อนรับจ้าง (อดีตยามเมืองหลวง)'), luna: card('luna', 'ลูน่า', 'นักเวทศึกษาซากโบราณ'), kier: card('kier', 'เคียร์', 'นักดาบหนุ่ม เพื่อนสมัยเด็ก'),
-    mage: { n: 'เซอร์เรียน', r: 'วิญญาณจอมเวทที่ถูกกักใน Mip (ชื่อตั้งแล้ว §H · ภาพโค้ดชั่วคราว)', gone: true, code: 'serrien' }, light: { n: 'ผู้เฝ้าแสง', r: 'Elu\'Mierwaa · ranger จากนครแห่งแสง', gone: true },
+    mage: { n: 'เซอร์เรียน', r: 'วิญญาณจอมเวทที่ถูกกักใน Mip (ชื่อตั้งแล้ว §H)', gone: true, src: 'assets/portraits/story/serrien-neutral.webp', pos: '50% 4%', size: '200%' }, light: { n: 'ผู้เฝ้าแสง', r: 'Elu\'Mierwaa · ranger จากนครแห่งแสง', gone: true },
     shadow: { n: 'นักล่าเงา', r: 'Duum\'Lorien · ranger จากหกเมือง', gone: true }, naera: { n: 'สำนัก Naera', r: 'ร่องรอยสำนักชายป่า + ศิษย์สืบทอด (Naera ล่วงลับแล้วตาม Lore)', gone: true },
-    third: { n: 'คอร์วิน แธเรล', r: 'นายพล ผู้ตรวจการเสบียงหลวง · ภาพโค้ดชั่วคราว', code: 'corvin' }
+    third: { n: 'คอร์วิน แธเรล', r: 'นายพล ผู้ตรวจการเสบียงหลวง', src: 'assets/portraits/story/corvin-neutral.webp', pos: '50% 4%', size: '200%' }
   };
   /* ใครเกี่ยวข้องกับกล่องไหน: nodeId → [[ตัวละคร, เหตุผล, ที่มา]]  ที่มา: doc = ระบุใน Canon/Draft · idea = ข้อเสนอ (ยังไม่ใช่ Canon · ตรวจ dependency NPC ก่อนใช้) · gone = ยังไม่มีในเกม */
   const D_ = 'doc', I_ = 'idea', G_ = 'gone';

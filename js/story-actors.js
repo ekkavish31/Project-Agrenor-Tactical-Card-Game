@@ -11,6 +11,11 @@
   /* painted portrait sets: speaker → [set, faces] */
   /* a set lists its faces as an array (file = <set>-<face>.webp) or as an object {face: file suffix} (v98.201: mom, six painted poses: talk · calm · happy · worry · sad · angry) */
   const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], guard: ['guard', ['neutral', 'happy', 'angry', 'surprised']], lin: ['lin', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
+  /* v98.529 · story cast: four painted expressions, native facing left. */
+  const STORY_FACES = { neutral: 'neutral', think: 'neutral', calm: 'neutral', talk: 'neutral', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'worry', worry: 'worry' };
+  for (const id of ['corvin', 'helga', 'darren', 'mierris', 'lorrik', 'serrien', 'vik', 'irene']) PAINTED[id] = ['story/' + id, STORY_FACES];
+  PAINTED.third = PAINTED.corvin;
+  PAINTED.mage = PAINTED.serrien;
   /* v98.204 · the hero's painted set follows the chosen look (HeroVariant): hero-<look>-<pose>.webp. Only looks that have a sheet are listed; the other keeps the code-drawn bust */
   const HERO_SETS = { male: ['hero-male', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }], female: ['hero-female', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   /* v98.206 · which way a painted set faces as drawn (checked on every pose: hero male/female all look LEFT, mom all looks RIGHT). A speaker on the left of the stage must face right, one on the right must face left, so the picture is mirrored when its native facing is wrong for its side. */
