@@ -490,9 +490,11 @@
   }
   const ROOM_ZOOM = 1.3;   /* v98.379 · +30 % room zoom */
   function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
-    const w = (R.W + R.D) * HW, h = (R.W + R.D) * HH + WALL_H + 40; Z = Math.min(1.6, Math.max(.6, Math.min((W - (W < 760 ? 20 : 300)) / w, (H - 200) / h))) * ROOM_ZOOM;   /* v98.379 · rooms are shown 30 % closer; the camera follows the hero (followCam) */
+    const w = (R.W + R.D) * HW, h = (R.W + R.D) * HH + WALL_H + 40; Z = Math.min(1.6, Math.max(.6, Math.min((W - (W < 760 ? 20 : 300)) / w, (H - 200) / h))) * ROOM_ZOOM;
+    /* v98.570 · the hero is drawn as big on screen as on the village map: Z = (village hero px on screen) ÷ (this room's hero px) — rooms and the farm alike */
+    try { const hs = CharSize.INTERIOR_HERO_PX * IK() * (window.CharScaleAdjust?.factor('village', 'hero') || 1), z = CharSize.heroScreenPx(W, H) / hs; if (isFinite(z) && z > .3) Z = Math.min(6, z) } catch (e) { }   /* v98.379 · rooms are shown 30 % closer; the camera follows the hero (followCam) */
     const c = P(R.W / 2, R.D / 2); CX = (W < 760 ? W / 2 : W / 2 + 120) - c.x * Z; CY = H / 2 + 20 - c.y * Z + WALL_H * Z * .35;
-    if (KIND === 'farm') { Z = W < 760 ? .8 : 1.05 } followCam(true) }
+    followCam(true) }
   /* v97.83 · the farm is bigger than the screen: the camera follows the hero (snap on resize, glide otherwise) */
   function followCam(snap) { const p = P(hero.vu, hero.vv); let tx = (W < 760 ? W / 2 : W / 2 + 120) - p.x * Z, ty = H / 2 + 30 - p.y * Z;
     if (KIND !== 'farm' && R) {   /* a room: follow the hero but never show empty space beyond the room (when the room is smaller than the screen it stays centred) */
