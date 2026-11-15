@@ -347,7 +347,8 @@ function render() {
   });
   st.innerHTML = h;
   /* v98.388 · pick by the character's CENTRE line, not by its picture box (the transparent box of the next picture covered the right half → the hit looked shifted left) */
-  st.onclick = ev => { const r = st.getBoundingClientRect(), x = ev.clientX - r.left; let best = -1, bd = 1e9; xs.forEach((cx, i) => { const d = Math.abs(cx - x); if (d < bd) { bd = d; best = i } }); if (best >= 0 && bd <= bw(V[best]) / 2 + 12) pickSel(V[best].id) };
+  /* v98.503 · pick by the SLOT the click falls in (each slot = the picture's own width + the 22 px gap), nearest edge when between — the old 'nearest centre line' gave a wide figure's outer half to its narrower neighbour */
+  st.onclick = ev => { const r = st.getBoundingClientRect(), x = ev.clientX - r.left; let best = -1, bd = 1e9; xs.forEach((cx, i) => { const half = bw(V[i]) / 2, d = Math.max(0, Math.abs(cx - x) - half); if (d < bd) { bd = d; best = i } }); if (best >= 0 && bd <= 12) pickSel(V[best].id) };
   $('note').textContent = tab !== 'char' ? 'ไม้บรรทัดหมู่บ้าน: 1 m = ความสูงตัวเอกในหมู่บ้าน ÷ 1.70 (≈ 55 px) · ช่องพื้น 1 ช่อง ≈ 0.57 m · ตัวเอกยืนเป็นไม้วัดทางซ้าย + เงาเทาซ้อนหลัง · ชิป พอดี/เล็กไป/ใหญ่ไป เทียบกับช่วงเป้าหมายของแต่ละชนิด (แก้ช่วงได้ใน WORLD)' : 'เทียบกันเอง: ตัวเอก = 1.70 m เป็นไม้วัด · ภาพมาจากเฟรมปัจจุบันของแท็บ Animation (ท่ายืน SW หรือเฟรมที่เลือก) · ทุกฉากใช้สัดส่วนชุดเดียวกัน · การเทียบ % ต่อฉากทำแยกในแต่ละฉากภายหลัง';
   inspect(); controls();
 }
