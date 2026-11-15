@@ -116079,6 +116079,123 @@
     "flipX": true
    },
    "artRevision": "20261115-093642"
+  },
+  {
+   "id": "tactic-card-cleave",
+   "file": "assets/cards/skills/cleave.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "ผ่าขวานกวาด",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-shieldBash",
+   "file": "assets/cards/skills/shieldBash.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "กระแทกโล่",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-volley",
+   "file": "assets/cards/skills/volley.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "ห่าธนูคู่",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-snipe",
+   "file": "assets/cards/skills/snipe.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "เล็งไกล",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-smite",
+   "file": "assets/cards/skills/smite.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "แสงลงทัณฑ์",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-bless",
+   "file": "assets/cards/skills/bless.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "คำอวยพร",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-shadowStep",
+   "file": "assets/cards/skills/shadowStep.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "ก้าวเงา",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-emberBurst",
+   "file": "assets/cards/skills/emberBurst.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "ระเบิดถ่านร้อน",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-warCry",
+   "file": "assets/cards/skills/warCry.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "เสียงร้องศึก",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
   }
  ],
  "studioReviews": {

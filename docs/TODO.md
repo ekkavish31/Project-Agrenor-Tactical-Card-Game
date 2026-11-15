@@ -158,6 +158,8 @@
 
 ---
 
+- [x] v98.514 เพิ่มภาพจริงการ์ดใหม่ 9 ใบ cleave/shieldBash/volley/snipe/smite/bless/shadowStep/emberBurst/warCry แทนภาพ code/fallback และผูก tactic-card ID
+
 ## 3. ทำแล้ว (สรุปสั้น · รายละเอียดอยู่ใน CHANGELOG)
 
 - [x] v98.447 แก้ blank Scale Lineup: CSS mode ต้องชนะ body.anim-mode เดิม วัดจากเว็บจริงพบ iframe สูง 0px; ใช้ grid จัดความสูง เพิ่ม loading/error/retry และแสดง cast ก่อนโหลด monster จบ
