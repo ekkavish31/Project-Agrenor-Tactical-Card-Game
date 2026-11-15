@@ -14,7 +14,9 @@ const exists = f => fs.existsSync(path.join(__dirname, '..', f));
 /* every real picture the face() map can point at must exist */
 for (const look of ['male', 'female']) for (const m of BP.MOODS) { const f = BP.face({ id: 'hero', side: 'hero', key: 'hero' }, m, { look }); t('hero real ' + look + ' ' + m, f.kind === 'real' && exists(f.src)) }
 for (const k of ['hilda', 'lin', 'guard']) for (const m of BP.MOODS) { const f = BP.face({ key: k, side: 'hero' }, m, {}); t(k + ' real ' + m, f.kind === 'real' && exists(f.src)) }
-for (const k of ['kier', 'bram', 'luna', 'mil']) { const f = BP.face({ key: k, side: 'hero' }, 'idle', {}); t(k + ' still', f.kind === 'still' && exists(f.src)) }
+for (const k of ['kier']) { const f = BP.face({ key: k, side: 'hero' }, 'idle', {}); t(k + ' still', f.kind === 'still' && exists(f.src)) }
+/* v98.546 · bram · luna · mil have painted expressions (hurt/down → the 'worry' face) */
+for (const k of ['bram', 'luna', 'mil']) for (const m of ['idle', 'attack', 'hurt', 'heal', 'win', 'down']) { const f = BP.face({ key: k, side: 'hero' }, m, {}); t(k + ' painted ' + m, f.kind === 'real' && exists(f.src)) }
 t('monster uses en-portrait', BP.face({ side: 'monster', kind: 'goblin' }, 'idle', {}).src === 'assets/cards/portraits/en-goblin.webp');
 /* no DOM in node: a recruit falls back to the standing picture (browser draws the code bust) */
 t('recruit fallback without canvas', BP.face({ key: 'zed', side: 'hero' }, 'idle', {}).kind === 'still');

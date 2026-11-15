@@ -18,7 +18,8 @@
     mil: { job: 'rogue', skin: '#d9b28e', hair: '#2a2230', cloth: '#3a4a5a' },
     sigrid: { job: 'warrior', skin: '#e8c9a8', hair: '#e8d28a', cloth: '#7a4a3a', long: 1 }
   };
-  const REAL_SET = { hilda: 1, lin: 1, guard: 1 };
+  const REAL_SET = { hilda: 1, lin: 1, guard: 1, mil: 1, luna: 1, bram: 1 };
+  const WORRY_SET = { mil: 1, luna: 1, bram: 1 };   /* v98.546 · painted companions have a 'worry' face instead of 'surprised' */
   const HERO_EXPR = { idle: 'neutral', attack: 'angry', hurt: 'worry', guard: 'calm', heal: 'happy', win: 'happy', down: 'sad' };
   const NPC_EXPR = { idle: 'neutral', attack: 'angry', hurt: 'surprised', guard: 'neutral', heal: 'happy', win: 'happy', down: 'surprised' };
   const LABEL = { idle: '', attack: 'ลงมือ!', hurt: 'เจ็บ!', guard: 'ตั้งรับ', heal: 'ฟื้นฟู', win: 'ชนะ', down: 'ล้ม' };
@@ -93,7 +94,7 @@
     }
     const isHero = u.id === 'hero', isSib = u.key === 'sib';
     if (!o.code && (isHero || isSib)) return { src: `assets/portraits/hero-${isSib ? other : look}-${HERO_EXPR[m] || 'neutral'}.webp`, pos: '50% 4%', size: '230%', kind: 'real' };
-    if (!o.code && REAL_SET[u.key]) return { src: `assets/portraits/${u.key}-${NPC_EXPR[m] || 'neutral'}.webp`, pos: '50% 8%', size: '200%', kind: 'real' };
+    if (!o.code && REAL_SET[u.key]) return { src: `assets/portraits/${u.key}-${(WORRY_SET[u.key] && NPC_EXPR[m] === 'surprised') ? 'worry' : (NPC_EXPR[m] || 'neutral')}.webp`, pos: '50% 8%', size: '200%', kind: 'real' };
     if (!o.code && ['kier', 'bram', 'luna', 'mil'].includes(u.key)) return { src: `assets/cards/portraits/u-${u.key}.webp`, pos: '50% 22%', size: '165%', kind: 'still' };
     const spec = specFor(u); if (isHero || isSib) { spec.skin = '#e0b894'; spec.hair = '#4a3226'; spec.cloth = '#5a6a8a'; spec.job = j || 'adventurer' }
     const src = bust(spec, m);
