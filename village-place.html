@@ -886,6 +886,16 @@ function walls() {
 
 /* ---------- loop ---------- */
 /* v98.309 · the hero against props that have an order footprint: move him after every prop he stands in front of, before every prop he stands behind (same rule as the village's fixOrder) */
+/* v98.552 · LAYER NUMBER (z) works between stations, their sets and loose small items: two pieces whose pictures overlap on screen are drawn lower z first, whatever their depth (y).
+   Equal z keeps the depth order. People and the hero (no rect) are not moved here — they keep the depth / footprint rules. (Before, z only ordered the members INSIDE one station set.) */
+function layerOrderPlace(list) {
+ const R = e => e.o ? e.o.rect : e.G && e.G.rect, Z = e => e.o ? (e.o.z || 0) : (e.G.z || 0), hit = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+ if (!list.some(e => Z(e))) return;
+ for (let pass = 0; pass < 8; pass++) { let moved = false;
+  for (let i = 0; i < list.length && !moved; i++) { const a = list[i], ra = R(a); if (!ra) continue;
+   for (let j = i + 1; j < list.length; j++) { const b = list[j], rb = R(b); if (!rb || Z(b) >= Z(a) || !hit(ra, rb)) continue; const [x] = list.splice(j, 1); list.splice(i, 0, x); moved = true; break } }
+  if (!moved) break }
+}
 function fixOrderPlace(list) {
  if (!window.DepthStyle || /[?&]depthfix=0/.test(location.search)) return;
  const ih = list.findIndex(e => e.o && e.o.hero); if (ih < 0) return; const w = list[ih].o;
@@ -1079,6 +1089,7 @@ function draw(t) {
    set: s.id,
    isStation: true,
    z: s.z || 0,
+   rect: artRect(s.art, s.u, s.v, s.width || 120, s.s || 1),   /* v98.552 · for the layer (z) rule below */
    fp: { u0: s.u - s.w, u1: s.u + s.w, v0: s.v - s.d, v1: s.v + s.d },   /* v98.553 · a station's ORDER frame = its blocked area: the hero is behind / in front of the whole stall by the village rule (was: only the y of its centre) */
    tag: {
     type: 'station',
@@ -1133,10 +1144,12 @@ function draw(t) {
  for (const G of sets.values()) {
   const fps = G.m.map(x => x.fp).filter(Boolean);
   if (fps.length) G.fp = { u0: Math.min(...fps.map(f => f.u0)), u1: Math.max(...fps.map(f => f.u1)), v0: Math.min(...fps.map(f => f.v0)), v1: Math.max(...fps.map(f => f.v1)), parts: fps };   /* v98.309 · a work station set is ONE piece for the order rule: union of its members' footprints */
+  { const rs = G.m.map(x => x.rect).filter(Boolean); if (rs.length) { const x0 = Math.min(...rs.map(r => r.x)), y0 = Math.min(...rs.map(r => r.y)), x1 = Math.max(...rs.map(r => r.x + r.w)), y1 = Math.max(...rs.map(r => r.y + r.h)); G.rect = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } } G.z = (G.m.find(x => x.isStation) || {}).z || 0 }
   list.push({ y: G.y ?? Math.min(...G.m.map(x => x.y)), G });
  }
  const put = o => window.PlaceBuild ? PlaceBuild.drawObj(o) : o.draw();
 list.sort((a, b) => a.y - b.y);
+ layerOrderPlace(list);
  fixOrderPlace(list);
  window.DepthStyle?.pairOrder?.(list, e => e.o && e.o.hero, e => e.o && e.o.follower, e => e.o ? e.o.y : null);   /* v98.538 · the follower is ordered against the lead by their own feet (south = in front, north = behind) */
  /* v98.309 · a TALL prop with an order footprint that the hero stands BEHIND turns see-through around him (DepthStyle: fade + silhouette), low ones (fence, bush…) cover naturally */
