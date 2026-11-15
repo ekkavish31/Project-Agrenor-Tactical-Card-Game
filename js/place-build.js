@@ -84,6 +84,11 @@ const PB_ART = (() => {
   if (!list.some(([k]) => k === PLACE)) list.push([PLACE, PLACE]);
   return list
  })();
+ /* v98.526 · dropdown = EVERY sub-map grouped by town (js/place-catalog.js); an entry that has no map yet creates an empty room when chosen */
+ const CAT = (() => {
+  try { let all = {}, hid = []; try { all = JSON.parse(localStorage.getItem(KEY) || '{}') || {} } catch (e) {} try { hid = JSON.parse(localStorage.getItem('project-a-village-hidden-places-v1') || '[]') || [] } catch (e) {} return window.PlaceCatalog ? window.PlaceCatalog.groups(all, hid, PLACE) : null } catch (e) { return null }
+ })();
+ const mapOptions = () => CAT ? CAT.filter(g => g.items.length).map(g => `<optgroup label="${g.icon} ${g.name} (${g.items.filter(i => i.exists).length}/${g.items.length})">${g.items.map(i => `<option value="${i.key}" data-new="${i.exists ? '' : '1'}" data-town="${i.town}" data-name="${i.name.replace(/"/g, '&quot;')}" ${i.key === PLACE ? 'selected' : ''}>${i.exists ? '✔' : '＋'} ${i.name}${i.exists ? '' : ' (ยังไม่มีแมพ · สร้างให้)'}</option>`).join('')}</optgroup>`).join('') : MAPS.map(([k, l]) => `<option value="${k}" ${k === PLACE ? 'selected' : ''}>${l}</option>`).join('');
  let tool = 'select',
   place = null, // {type:'station', id, tab, sel:[prop i]} | {type:'room', tab, sel:[]}
   hover = null, // {type:'station', i} | {type:'prop', i} | {type:'exit'}
@@ -860,7 +865,7 @@ const PB_ART = (() => {
  /* ---------- top bar ---------- */
  const bar = document.createElement('div');
  bar.id = 'placeTools';
- bar.innerHTML = `<select id="pbMap" title="เลือกแผนที่ย่อย">${MAPS.map(([k,l])=>`<option value="${k}" ${k===PLACE?'selected':''}>${l}</option>`).join('')}</select><i></i>
+ bar.innerHTML = `<select id="pbMap" title="เลือกแผนที่ย่อย · แบ่งตามเมือง · ✔ มีแมพแล้ว · ＋ ยังไม่มี (เลือกแล้วสร้างห้องว่างให้)">${mapOptions()}</select><i></i>
  <button data-t="select"><b>👆</b><span>เลือก / ย้าย</span><kbd>1</kbd></button><button data-t="chars"><b>👤</b><span>ตัวละคร</span><kbd>2</kbd></button><i></i>
  <button data-a="undo"><b>↶</b><span>ย้อน</span></button><button data-a="redo"><b>↷</b><span>ทำซ้ำ</span></button><button data-a="fit"><b>⤢</b><span>ดูทั้งหมด</span></button><i></i>
  <button data-a="test"><b>▶</b><span>ทดสอบ</span><kbd>T</kbd></button><button data-a="push" class="pp"><b>⬆</b><span>push</span></button>`;
@@ -875,6 +880,10 @@ const PB_ART = (() => {
  bar.querySelector('#pbMap').onchange = e => {
   if (place) leave(true);
   persist();
+  const op = e.target.selectedOptions[0];
+  if (op && op.dataset.new === '1' && window.PlaceCatalog) {   /* v98.526 · first visit to a place that has no sub-map yet: an empty room from the same template as ＋ สถานที่ใหม่ */
+   try { const A = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; if (!A[op.value]) { A[op.value] = window.PlaceCatalog.template(op.dataset.name, op.dataset.town); localStorage.setItem(KEY, JSON.stringify(A)) } } catch (err) { alert('สร้างแมพย่อยไม่สำเร็จ'); return }
+  }
   location.search = '?edit=1&place=' + e.target.value
  };
  bar.onclick = e => {
