@@ -35,7 +35,7 @@
       if (!ws.length) ws.push(slot ? '' : 'ไม่พบว่ามีส่วนไหนของเกมเรียกใช้');
       const ix = IDX.get(p), cc = ix ? { cat: ix[5], sub: ix[6] } : (window.ImageCatalog ? window.ImageCatalog.categoryOf(p) : { cat: 'other', sub: '' });
       if (!/^(assets|docs|archive|_archive|dev|tools|art-production)\//.test(p) && !ix) { }
-      if (ix && st === 'none' && ix[9]) { st = ix[9] === 2 ? 'code' : 'guess'; ws.push(ix[9] === 2 ? 'มีพาธ/ชื่อไฟล์นี้เขียนอยู่ในโค้ด (ตรวจโดยดัชนีรูป)' : 'มีโฟลเดอร์นี้เขียนอยู่ในโค้ด — ชื่อไฟล์อาจถูกประกอบตอนรัน') }
+      if (ix && st === 'none' && ix[9]) { st = ix[9] === 2 ? 'code' : 'guess'; ws.push(ix[10] ? ix[10] : ix[9] === 2 ? 'มีพาธ/ชื่อไฟล์นี้เขียนอยู่ในโค้ด (ตรวจโดยดัชนีรูป)' : 'มีโฟลเดอร์นี้เขียนอยู่ในโค้ด — ชื่อไฟล์อาจถูกประกอบตอนรัน') }
       if (cc.cat === 'archive' || cc.cat === 'lore') { if (st === 'none') st = cc.cat === 'archive' ? 'old' : 'none' }
       list.set(p, { p, st, where: ws.filter(Boolean), folder: p.split('/').slice(0, 2).join('/'), cat: cc.cat, sub: cc.sub || '', bytes: ix ? ix[1] : 0, w: ix ? ix[2] : 0, h: ix ? ix[3] : 0, dup: ix ? ix[8] : 0, slot: ix ? ix[7] : (slot && !slot.old ? slot.id : '') });
     }
