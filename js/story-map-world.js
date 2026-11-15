@@ -9,7 +9,7 @@
   'use strict';
   const NC = root.NORCHORTAL || (typeof require === 'function' ? (() => { try { global.window = global; require('./world-norchorthal.js'); return global.NORCHORTAL } catch (e) { return null } })() : null);
   const W = 1870, H = 841, IMG = 'docs/lore/maps/world-wide.webp';
-  const CLOSE = { src: 'docs/lore/maps/norchorthal-close.webp', x: 651, y: 167, w: Math.round(1500 / 2.05), h: Math.round(1049 / 2.05), natW: 1500, natH: 1049 };
+  const CLOSE = { src: 'docs/lore/maps/norchorthal-close-hd.webp', x: 651, y: 167, w: 732, h: 512, natW: 1596, natH: 1124 };   /* v98.508 · เย็บจากภาพ 4 มุม NW/NE/SW/SE ที่เจ้าของส่ง (ขยายแล้ว ~1.07×) — ภาพเดิมยังอยู่ที่ norchorthal-close.webp */
   const hex = (c, r) => [Math.round(540 + 4.0 * (c + .5 * (r & 1) + .5) * Math.sqrt(3)), Math.round(44 + 4.0 * (1 + 1.5 * r))];
   const tile = (c, r) => NC && c >= 0 && r >= 0 && c < NC.cols && r < NC.rows ? NC.grid[r][c] : 'w';
   const isLandHex = (c, r) => tile(c, r) !== 'w';
