@@ -786,6 +786,8 @@ function inspectRatio() {
     const outCanvas = () => { if (!last || !previewReady) return null; const o = document.createElement('canvas'); o.width = last.canvas.width; o.height = last.canvas.height; const og = o.getContext('2d'); if (c.flip) { og.translate(o.width, 0); og.scale(-1, 1) } og.drawImage(last.canvas, 0, 0); return o };   /* back to the file's own orientation */
     $a('adjPng').onclick = () => { const o = outCanvas(); if (!o) return; const a = document.createElement('a'); a.download = e.id.replace(/[^a-z0-9_-]+/gi, '-') + '-proportion.png'; a.href = o.toDataURL('image/png'); a.click() };
     previewButtons(previewReady); if (!inStudio) $a('adjApply').title = 'ใช้ได้เมื่อเปิดใน Asset Studio (แท็บ Scale Lineup)';
+    /* v98.502 · after a successful 💾 Cart the proportion ticks (หัว/ลำตัว/ขา/ไหล่…) are cleared so the next picture starts clean */
+    const clearChecks = () => { document.querySelectorAll('.adjSel').forEach(b => { b.checked = false }); mem.sel = sel() };
     $a('adjApply').onclick = async () => { const o = outCanvas(); if (!o || !c.file) { alert(!c.file ? 'รูปนี้ไม่มีไฟล์ในโปรเจกต์ (ใส่ Cart ไม่ได้)' : 'ยังไม่มีภาพพรีวิว — กด 👁 พรีวิว ก่อน แล้วค่อยกด 💾 Cart'); return }
       { const cs0 = PD.cutsFor(datumRec, q.dir, PD.cutHint(e.id, GRP, { pose: q.pose, frame: String(q.frame | 0), dir: q.dir }), c.m.w, c.m.h); if (!(cs0.neck?.own && cs0.hip?.own)) { alert('ยังไม่ได้ยืนยันเส้นแบ่งโซนของภาพนี้\n\nเปิด 📍 Datum ของทิศนี้ → กด "✔ ใช้เส้นแนะนำ" (หรือจุดเส้นเอง ✂) แล้วตรวจว่าเส้นตัดหัวพ้นคาง/เส้นเริ่มขาอยู่ใต้เอว จากนั้นค่อยบันทึกเข้า Cart\n(พรีวิวใช้เส้นแนะนำได้ แต่การเขียนทับภาพต้องยืนยันก่อน)'); return } } const config = { scale: { ...lastConfig.scale }, options: { ...lastConfig.options } };
       /* v98.386 · the same pose in the OPPOSITE direction (SW↔SE · NW↔NE) gets the same settings, warped from its own picture */
@@ -795,7 +797,7 @@ function inspectRatio() {
       const post = (file, cv) => window.parent.postMessage({ type: 'asset-lineup:apply', file, dataUrl: cv.toDataURL('image/png'), note: 'ปรับสัดส่วน หัว/ลำตัว/ขา' }, location.origin);
       let o2 = null; if (opp) { const img = await load(opp.url || opp.src), m2 = img && measure(img, opp.flip); if (m2) { const otherMarks0 = PD.marksFrom(datumRec, opp.view, m2, m2.h) || marks, otherPoints = PD.pixelPoints(datumRec, opp.view, m2.w, m2.h), otherPk = cutPack(opp.view, m2, otherPoints, otherMarks0); const res = PA.warp(img, m2, otherPk.marks, config.scale, { ...config.options, zoneEdits: null, flip: opp.flip, points: otherPoints, cuts: otherPk.cuts, grow: Math.round(m2.H * .03) }); o2 = document.createElement('canvas'); o2.width = res.canvas.width; o2.height = res.canvas.height; const g2 = o2.getContext('2d'); if (opp.flip) { g2.translate(o2.width, 0); g2.scale(-1, 1) } g2.drawImage(res.canvas, 0, 0) } else opp = null }
       post(c.file, o); if (o2) post(opp.file, o2); const n = o2 ? 2 : 1;   /* both are sent together: the studio reloads this row after saving */
-      const a0 = vp && vp.action !== 'pick' ? vp.action : VP.action, v0 = vp ? vp.view : VP.view; DONE[doneKey(e.id, a0, v0)] = 'adj'; if (opp) DONE[doneKey(e.id, a0, opp.view)] = 'adj'; saveDone();
+      const a0 = vp && vp.action !== 'pick' ? vp.action : VP.action, v0 = vp ? vp.view : VP.view; DONE[doneKey(e.id, a0, v0)] = 'adj'; if (opp) DONE[doneKey(e.id, a0, opp.view)] = 'adj'; saveDone(); clearChecks();
       $a('adjMsg').textContent = 'ส่งให้ Asset Studio แล้ว ' + n + ' ภาพ — ตรวจผลแล้วติ๊ก "✔ ปรับถูกต้องแล้ว" (แล้ววาง 📍 Datum ใหม่ถ้าจะวัดซ้ำ)' };
     /* v98.460 · ONE click = every frame of this pose (and the opposite direction), same scale, each frame warped from its own picture + its own datum */
     $a('adjApplyAll').onclick = async () => { const o = outCanvas(), vp = c.vp; if (!o || !lastConfig) return alert('ยังไม่มีภาพพรีวิว — กด 👁 พรีวิว ก่อน');
@@ -816,7 +818,7 @@ function inspectRatio() {
         if (!items.length) { $a('adjMsg').textContent = 'ไม่มีเฟรมที่ปรับได้: ' + skipped.join(' · '); return }
         if (soft.length && !confirm('เฟรมเหล่านี้ยังไม่ได้ยืนยันเส้นแบ่งโซน (ใช้เส้นแนะนำ): ' + soft.join(', ') + '\n\nเขียนทับต่อไหม?')) { $a('adjMsg').textContent = 'ยกเลิก — ยืนยันเส้นใน 📍 Datum ของเฟรมเหล่านั้นก่อน'; return }
         window.parent.postMessage({ type: 'asset-lineup:apply', items, note: 'ปรับสัดส่วน หัว/ลำตัว/ขา (ทุกเฟรม)' }, location.origin);
-        for (const v of new Set(jobs.map(j => j.v))) DONE[doneKey(e.id, vp.action, v)] = 'adj'; saveDone();
+        for (const v of new Set(jobs.map(j => j.v))) DONE[doneKey(e.id, vp.action, v)] = 'adj'; saveDone(); clearChecks();
         $a('adjMsg').textContent = 'ส่งให้ Asset Studio ' + items.length + ' ภาพแล้ว' + (skipped.length ? ' · ข้าม ' + skipped.length + ': ' + skipped.join(', ') : '') + ' — ตรวจผลก่อนกด Push (Cart)'
       } catch (err) { $a('adjMsg').textContent = 'ไม่สำเร็จ: ' + err.message } finally { btn.disabled = false } };
     paintAdj = redraw; redraw();
