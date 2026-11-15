@@ -106383,7 +106383,17 @@
     "id": "npc:mother",
     "name": "แม่",
     "group": "npcs"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/npc-mother-sw-stand/20261115-220828.webp",
+     "at": "2026-11-15T15:08:28.587Z",
+     "stamp": "20261115-220828",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261115-220828"
   },
   {
    "id": "npc-mother-sw-walk1",
@@ -106403,7 +106413,17 @@
     "id": "npc:mother",
     "name": "แม่",
     "group": "npcs"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/npc-mother-sw-walk1/20261115-220828.webp",
+     "at": "2026-11-15T15:08:28.538Z",
+     "stamp": "20261115-220828",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261115-220828"
   },
   {
    "id": "npc-mother-ne-stand",
@@ -106422,7 +106442,17 @@
     "id": "npc:mother",
     "name": "แม่",
     "group": "npcs"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/npc-mother-ne-stand/20261115-221030.webp",
+     "at": "2026-11-15T15:10:30.189Z",
+     "stamp": "20261115-221030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261115-221030"
   },
   {
    "id": "npc-mother-ne-walk1",
@@ -106442,7 +106472,17 @@
     "id": "npc:mother",
     "name": "แม่",
     "group": "npcs"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/npc-mother-ne-walk1/20261115-221030.webp",
+     "at": "2026-11-15T15:10:30.311Z",
+     "stamp": "20261115-221030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261115-221030"
   },
   {
    "id": "npc-mother-se-stand",
