@@ -52,11 +52,23 @@ window.PieceDetail.open('bench');
 const button = (key, v) => nodes.find(e => e.dataset[key] === v);
 const e = (x, y) => ({ button: 0, pointerId: 1, clientX: 10 + x / 2, clientY: 20 + y / 2, preventDefault() {} });
 const drag = (a, b) => { const cv = byId.get('pdCv'); cv.onpointerdown(e(...a)); cv.onpointermove(e(...b)); cv.onpointerup(e(...b)) };
+byId.get('pdSnap').onchange({ target: { checked: false } });   // the old drags are measured without snapping
 button('mode', 'art').onclick(); drag([300, 300], [338, 319]);
 assert.equal(saved.artX, 20); assert.equal(saved.artY, 10); assert.equal(saved.orderU, undefined); assert.equal(checkpoints, 1);
 byId.get('pdUndo').onclick(); assert.equal(saved.artX, undefined);
 button('mode', 'order').onclick(); drag([310, 330], [416.4, 383.2]); assert.equal(saved.orderU, 2); assert.equal(saved.orderV, 0);
 button('mode', 'block').onclick(); drag([310, 330], [310, 436.4]); assert.equal(saved.block, true); assert.equal(saved.blockU, 2); assert.equal(saved.blockV, 2); assert.equal(saved.orderU, 2);
+// v98.499 · snap + free-form (painted) zones
+byId.get('pdSnap').onchange({ target: { checked: true } }); button('mode', 'order').onclick(); drag([310, 330], [416.4, 383.2]);
+assert.equal((saved.orderU - .25) % .5, 0, 'snapped frame edges sit on the half-cell grid');
+button('mode', 'bo').onclick(); byId.get('pdBrFrom').onclick(); assert(Array.isArray(saved.zo) && saved.zo.length >= 1, 'brush mode starts from the rectangle');
+byId.get('pdBrClear').onclick(); assert.equal(saved.zo, undefined, 'clear returns to the rectangle');
+{ const F = G.footprint({ zo: [[0, 0], [1, 0], [0, 1], [0, 2]] }, 0, 0); assert.equal(F.parts.length, 2); assert.deepEqual(F, { u0: 0, u1: 1, v0: 0, v1: 1.5, parts: [{ u0: 0, u1: 1, v0: 0, v1: .5 }, { u0: 0, u1: .5, v0: .5, v1: 1.5 }] }, 'an L shape = two boxes');
+  assert.deepEqual(G.footprint({ zb: [[0, 0]], blockU: 1, blockV: 2 }, 0, 0, true), { u0: 1, u1: 1.5, v0: 2, v1: 2.5 }); assert.deepEqual(G.swapCells([[1, 2]]), [[2, 1]]); assert.equal(G.extra({ zo: [[0, 0]] }).zo[0][0], 0); const x = { zo: [[1, 1]] }; G.extra(x).zo[0][0] = 9; assert.equal(x.zo[0][0], 1, 'extra() deep-copies masks');
+  assert.deepEqual(G.footprint({ sw: 2, sh: 2 }, 0, 0), { u0: -1, u1: 1, v0: -1, v1: 1 }, 'no mask → unchanged'); }
+button('mode', 'bo').onclick(); byId.get('pdBrClear').onclick(); byId.get('pdBrFrom').onclick(); const n0 = saved.zo.length; drag([400, 330], [520, 330]); assert(saved.zo.length > n0 || n0 > 0, 'dragging the brush paints cells');
+byId.get('pdBrErase').onclick(); const n1 = saved.zo.length; drag([310, 330], [330, 340]); assert(saved.zo.length <= n1, 'erase never adds'); byId.get('pdBrDraw').onclick(); byId.get('pdBrClear').onclick(); assert.equal(saved.zo, undefined);
+byId.get('pdSnap').onchange({ target: { checked: false } });
 button('mode', 'fit').onclick();
 const cv = byId.get('pdCv'); for (const p of [[160, 300], [300, 390], [480, 300]]) { cv.onpointerdown(e(...p)); cv.onpointerup(e(...p)) }
 assert.equal(button('fit', 'height').disabled, false); button('fit', 'height').onclick(); assert(Array.isArray(saved.pm)); assert.equal(saved.pm[3], 1);

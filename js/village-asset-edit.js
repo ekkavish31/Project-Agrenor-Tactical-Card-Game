@@ -292,7 +292,7 @@
     let U = grpFpNow.get(ov.grp);
     if (!U) grpFpNow.set(ov.grp, U = { u0: own.u0, u1: own.u1, v0: own.v0, v1: own.v1, parts: [] });
     else { U.u0 = Math.min(U.u0, own.u0); U.u1 = Math.max(U.u1, own.u1); U.v0 = Math.min(U.v0, own.v0); U.v1 = Math.max(U.v1, own.v1) }
-    U.parts.push(own);
+    U.parts.push(...(own.parts || [own]));
     return grpFpPrev.get(ov.grp) || U
    })(),
    label: label || '',
@@ -1004,7 +1004,8 @@
  function guessBlock(label) { const t = String(label || ''); return /ต้นไม้|ต้นโอ๊ก|ต้นสน|tree|oak|pine/i.test(t) ? [1, 1] : /เกวียน|รถ|cart|wagon/i.test(t) ? [1.5, 1] : /บ่อ|well|น้ำพุ|รูปปั้น|statue/i.test(t) ? [1.5, 1.5] : /โคม|lamp|ถัง|barrel|ลัง|crate|ป้าย|sign/i.test(t) ? [.5, .5] : /หิน|rock/i.test(t) ? [1, 1] : [1, 1] }
  let blockList = [];
  function rebuildBlocks() { blockList = frame.filter(e => e.ov?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.ov, c.u, c.v, true) }) }
- const blockedAt = (u, v) => { for (const r of blockList) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
+ const blockBoxes = () => blockList.flatMap(r => r.parts || [r]);   /* v98.499 · free-form red zones are lists of boxes */
+ const blockedAt = (u, v) => { for (const r of blockBoxes()) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
  function itemRectAt(k, c) {
   const z = itemSize(k);
   const ov = data.edit[k] || {};
@@ -1164,6 +1165,8 @@
    [ov.blockU, ov.blockV] = [ov.blockV, ov.blockU];
    [ov.sw, ov.sh] = [ov.sh, ov.sw];
    [ov.fw, ov.fh] = [ov.fh, ov.fw];
+   if (ov.zo) ov.zo = window.PieceGeometry.swapCells(ov.zo);
+   if (ov.zb) ov.zb = window.PieceGeometry.swapCells(ov.zb);
    clean(E.key)
   }
   UX.persist();
@@ -3070,7 +3073,7 @@
  }
 
  window.VillageAssetEdit = {
-  blockedAt, blocks: () => blockList.map(r => ({ ...r })),
+  blockedAt, blocks: () => blockBoxes().map(r => ({ u0: r.u0, u1: r.u1, v0: r.v0, v1: r.v1 })),
   refreshPanel: () => { try { render() } catch (_) {} },
   charScale,
   drawChar,
