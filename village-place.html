@@ -414,7 +414,7 @@ const door = s => ({
  v: s.v + s.door.dv
 });
 
-window.PLACE_ROUTE = (a, b) => route(a, b);   /* v97.69 · V2: villagers walk around furniture with the hero's A* */
+window.PLACE_ROUTE = (a, b) => route(a, b, 'npc');   /* v97.69 · V2: villagers walk around furniture with the hero's A* */
 window.PLACE_STATIONS = () => (typeof M !== 'undefined' && M?.stations) ? M.stations.map(s => ({ u: s.u, v: s.v, d: s.d || 1 })) : [];
 function blocked(u, v) {
  const F = M.floor,
@@ -464,7 +464,11 @@ function clear(a, b) {
  return true
 }
 
-function route(from, to) {
+/* v98.540 · painted roads (🛣 / any path material) pull auto-walking: off the road a step costs ROAD_PULL × more — the hero a lot, villagers only a little. No painted road → plain shortest path as before. */
+const ROAD_PULL = { hero: 1.8, npc: 1.2 };
+function onRoadUV(u, v) { const P = window.PlacePaint; return !!P && P.walk(1100 + (u - v) * 45, 700 + (u + v) * 22.5) > 0 }
+function route(from, to, who = 'hero') {
+ const pull = window.PlacePaint?.hasPath?.() ? (ROAD_PULL[who] || 1) : 1;
  const end = {
    u: Math.round(to.u * 2) / 2,
    v: Math.round(to.v * 2) / 2
@@ -507,7 +511,7 @@ function route(from, to) {
      v: a.v + dv
     },
     bk = key(b),
-    n = cost.get(ak) + Math.hypot(du, dv);
+    n = cost.get(ak) + Math.hypot(du, dv) * (pull === 1 || onRoadUV(a.u + du / 2, a.v + dv / 2) ? 1 : pull);
    if (closed.has(bk) || blocked(b.u, b.v) || !clear(a, b) || n >= (cost.get(bk) ?? Infinity)) continue;
    cost.set(bk, n);
    prev.set(bk, a);
