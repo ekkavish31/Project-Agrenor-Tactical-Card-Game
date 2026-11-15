@@ -116079,6 +116079,4551 @@
     "flipX": true
    },
    "artRevision": "20261115-093642"
+  },
+  {
+   "id": "tactic-card-cleave",
+   "file": "assets/cards/skills/cleave.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "ผ่าขวานกวาด",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-shieldBash",
+   "file": "assets/cards/skills/shieldBash.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "กระแทกโล่",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-volley",
+   "file": "assets/cards/skills/volley.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "ห่าธนูคู่",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-snipe",
+   "file": "assets/cards/skills/snipe.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "เล็งไกล",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-smite",
+   "file": "assets/cards/skills/smite.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "แสงลงทัณฑ์",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-bless",
+   "file": "assets/cards/skills/bless.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "คำอวยพร",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-shadowStep",
+   "file": "assets/cards/skills/shadowStep.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "ก้าวเงา",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-emberBurst",
+   "file": "assets/cards/skills/emberBurst.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "ระเบิดถ่านร้อน",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "tactic-card-warCry",
+   "file": "assets/cards/skills/warCry.webp",
+   "status": "final",
+   "category": "tactic-cards",
+   "subject": "เสียงร้องศึก",
+   "generated": true,
+   "size": [
+    700,
+    500
+   ],
+   "transparent": false
+  },
+  {
+   "id": "enemy-anim-murk-se-idle",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "se",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.83203125
+   ],
+   "renderHeight": 1.401729106628242,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-se-walk",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "se",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.83203125
+   ],
+   "renderHeight": 1.401729106628242,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-se-windup",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "se",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.83203125
+   ],
+   "renderHeight": 1.401729106628242,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-se-guard",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "se",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.83203125
+   ],
+   "renderHeight": 1.401729106628242,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-se-hit",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "se",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.83203125
+   ],
+   "renderHeight": 1.401729106628242,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-se-strike",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "se",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.859375
+   ],
+   "renderHeight": 1.401729106628242,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-murk-se-cast",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "se",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.859375
+   ],
+   "renderHeight": 1.401729106628242,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-murk-se-special",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "se",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.859375
+   ],
+   "renderHeight": 1.401729106628242,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-murk-se-down",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "se",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.83984375
+   ],
+   "renderHeight": 1.401729106628242,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-ne-idle",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "ne",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 1.3217391304347825,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-ne-walk",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "ne",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 1.3217391304347825,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-ne-windup",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "ne",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 1.3217391304347825,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-ne-guard",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "ne",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 1.3217391304347825,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-ne-hit",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "ne",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 1.3217391304347825,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-murk-ne-strike",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "ne",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.81640625
+   ],
+   "renderHeight": 1.3217391304347825,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-murk-ne-cast",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "ne",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.81640625
+   ],
+   "renderHeight": 1.3217391304347825,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-murk-ne-special",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "ne",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.81640625
+   ],
+   "renderHeight": 1.3217391304347825,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-murk-ne-down",
+   "file": "assets/enemies/new-art/murk-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "murk",
+   "view": "ne",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "สัตว์รอยหมอง",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.818359375
+   ],
+   "renderHeight": 1.3217391304347825,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-murk",
+   "file": "assets/enemies/murk.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "สัตว์รอยหมอง",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "enemy-murk-back",
+   "file": "assets/enemies/murk-back.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "สัตว์รอยหมอง ด้านหลัง",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "unit-card-en-murk",
+   "file": "assets/cards/portraits/en-murk.webp",
+   "status": "final",
+   "category": "unit-card-art",
+   "subject": "สัตว์รอยหมอง",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": false
+  },
+  {
+   "id": "enemy-anim-hunger-se-idle",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "se",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.908203125
+   ],
+   "renderHeight": 2.2035443037974685,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-se-walk",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "se",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.908203125
+   ],
+   "renderHeight": 2.2035443037974685,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-se-windup",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "se",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.908203125
+   ],
+   "renderHeight": 2.2035443037974685,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-se-guard",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "se",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.908203125
+   ],
+   "renderHeight": 2.2035443037974685,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-se-hit",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "se",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.908203125
+   ],
+   "renderHeight": 2.2035443037974685,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-se-strike",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "se",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.908203125
+   ],
+   "renderHeight": 2.2035443037974685,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-se-cast",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "se",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.908203125
+   ],
+   "renderHeight": 2.2035443037974685,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-se-special",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "se",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.908203125
+   ],
+   "renderHeight": 2.2035443037974685,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-se-down",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "se",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.8828125
+   ],
+   "renderHeight": 2.2035443037974685,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-ne-idle",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "ne",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.869140625
+   ],
+   "renderHeight": 2.3716621253405994,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-ne-walk",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "ne",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.869140625
+   ],
+   "renderHeight": 2.3716621253405994,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-ne-windup",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "ne",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.869140625
+   ],
+   "renderHeight": 2.3716621253405994,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-ne-guard",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "ne",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.869140625
+   ],
+   "renderHeight": 2.3716621253405994,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-ne-hit",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "ne",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.869140625
+   ],
+   "renderHeight": 2.3716621253405994,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-ne-strike",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "ne",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.890625
+   ],
+   "renderHeight": 2.3716621253405994,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-ne-cast",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "ne",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.890625
+   ],
+   "renderHeight": 2.3716621253405994,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-ne-special",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "ne",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.890625
+   ],
+   "renderHeight": 2.3716621253405994,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hunger-ne-down",
+   "file": "assets/enemies/new-art/hunger-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hunger",
+   "view": "ne",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ก้อนหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.849609375
+   ],
+   "renderHeight": 2.3716621253405994,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-hunger",
+   "file": "assets/enemies/hunger.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "ก้อนหิว",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "enemy-hunger-back",
+   "file": "assets/enemies/hunger-back.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "ก้อนหิว ด้านหลัง",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "unit-card-en-hunger",
+   "file": "assets/cards/portraits/en-hunger.webp",
+   "status": "final",
+   "category": "unit-card-art",
+   "subject": "ก้อนหิว",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": false
+  },
+  {
+   "id": "enemy-anim-hungerRoot-se-idle",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "se",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.916015625
+   ],
+   "renderHeight": 1.052054794520548,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-se-walk",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "se",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.916015625
+   ],
+   "renderHeight": 1.052054794520548,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-se-windup",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "se",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.916015625
+   ],
+   "renderHeight": 1.052054794520548,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-se-guard",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "se",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.916015625
+   ],
+   "renderHeight": 1.052054794520548,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-se-hit",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "se",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.916015625
+   ],
+   "renderHeight": 1.052054794520548,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-se-strike",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "se",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.91796875
+   ],
+   "renderHeight": 1.052054794520548,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-se-cast",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "se",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.91796875
+   ],
+   "renderHeight": 1.052054794520548,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-se-special",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "se",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.91796875
+   ],
+   "renderHeight": 1.052054794520548,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-se-down",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "se",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.892578125
+   ],
+   "renderHeight": 1.052054794520548,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-ne-idle",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "ne",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.875
+   ],
+   "renderHeight": 1.0919431279620853,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-ne-walk",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "ne",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.875
+   ],
+   "renderHeight": 1.0919431279620853,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-ne-windup",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "ne",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.875
+   ],
+   "renderHeight": 1.0919431279620853,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-ne-guard",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "ne",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.875
+   ],
+   "renderHeight": 1.0919431279620853,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-ne-hit",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "ne",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.875
+   ],
+   "renderHeight": 1.0919431279620853,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-ne-strike",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "ne",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.873046875
+   ],
+   "renderHeight": 1.0919431279620853,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-ne-cast",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "ne",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.873046875
+   ],
+   "renderHeight": 1.0919431279620853,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-ne-special",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "ne",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.873046875
+   ],
+   "renderHeight": 1.0919431279620853,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-hungerRoot-ne-down",
+   "file": "assets/enemies/new-art/hungerRoot-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "hungerRoot",
+   "view": "ne",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "ปมหิว",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.86328125
+   ],
+   "renderHeight": 1.0919431279620853,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-hungerRoot",
+   "file": "assets/enemies/hungerRoot.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "ปมหิว",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "enemy-hungerRoot-back",
+   "file": "assets/enemies/hungerRoot-back.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "ปมหิว ด้านหลัง",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "unit-card-en-hungerRoot",
+   "file": "assets/cards/portraits/en-hungerRoot.webp",
+   "status": "final",
+   "category": "unit-card-art",
+   "subject": "ปมหิว",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": false
+  },
+  {
+   "id": "enemy-anim-alarmHorn-se-idle",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "se",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.953125
+   ],
+   "renderHeight": 0.9220338983050848,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-se-walk",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "se",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.953125
+   ],
+   "renderHeight": 0.9220338983050848,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-se-windup",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "se",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.953125
+   ],
+   "renderHeight": 0.9220338983050848,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-se-guard",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "se",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.953125
+   ],
+   "renderHeight": 0.9220338983050848,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-se-hit",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "se",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.953125
+   ],
+   "renderHeight": 0.9220338983050848,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-se-strike",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "se",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.953125
+   ],
+   "renderHeight": 0.9220338983050848,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-se-cast",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "se",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.953125
+   ],
+   "renderHeight": 0.9220338983050848,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-se-special",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "se",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.953125
+   ],
+   "renderHeight": 0.9220338983050848,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-se-down",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "se",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.951171875
+   ],
+   "renderHeight": 0.9220338983050848,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-ne-idle",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "ne",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.955078125
+   ],
+   "renderHeight": 0.9010351966873705,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-ne-walk",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "ne",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.955078125
+   ],
+   "renderHeight": 0.9010351966873705,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-ne-windup",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "ne",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.955078125
+   ],
+   "renderHeight": 0.9010351966873705,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-ne-guard",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "ne",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.955078125
+   ],
+   "renderHeight": 0.9010351966873705,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-ne-hit",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "ne",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.955078125
+   ],
+   "renderHeight": 0.9010351966873705,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-ne-strike",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "ne",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.955078125
+   ],
+   "renderHeight": 0.9010351966873705,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-ne-cast",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "ne",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.955078125
+   ],
+   "renderHeight": 0.9010351966873705,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-ne-special",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "ne",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.955078125
+   ],
+   "renderHeight": 0.9010351966873705,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-alarmHorn-ne-down",
+   "file": "assets/enemies/new-art/alarmHorn-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "alarmHorn",
+   "view": "ne",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แตรสัญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.94921875
+   ],
+   "renderHeight": 0.9010351966873705,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-alarmHorn",
+   "file": "assets/enemies/alarmHorn.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "แตรสัญญาณ",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "enemy-alarmHorn-back",
+   "file": "assets/enemies/alarmHorn-back.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "แตรสัญญาณ ด้านหลัง",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "unit-card-en-alarmHorn",
+   "file": "assets/cards/portraits/en-alarmHorn.webp",
+   "status": "final",
+   "category": "unit-card-art",
+   "subject": "แตรสัญญาณ",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": false
+  },
+  {
+   "id": "enemy-anim-byrexael-se-idle",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "se",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.81640625
+   ],
+   "renderHeight": 3.4635294117647057,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-se-walk",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "se",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.81640625
+   ],
+   "renderHeight": 3.4635294117647057,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-se-windup",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "se",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.81640625
+   ],
+   "renderHeight": 3.4635294117647057,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-se-guard",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "se",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.81640625
+   ],
+   "renderHeight": 3.4635294117647057,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-se-hit",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "se",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.81640625
+   ],
+   "renderHeight": 3.4635294117647057,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-se-strike",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "se",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.8203125
+   ],
+   "renderHeight": 3.4635294117647057,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-se-cast",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "se",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.8203125
+   ],
+   "renderHeight": 3.4635294117647057,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-se-special",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "se",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.8203125
+   ],
+   "renderHeight": 3.4635294117647057,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-se-down",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "se",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.8046875
+   ],
+   "renderHeight": 3.4635294117647057,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-ne-idle",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "ne",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 3.393659942363112,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-ne-walk",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "ne",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 3.393659942363112,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-ne-windup",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "ne",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 3.393659942363112,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-ne-guard",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "ne",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 3.393659942363112,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-ne-hit",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "ne",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.826171875
+   ],
+   "renderHeight": 3.393659942363112,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-ne-strike",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "ne",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.822265625
+   ],
+   "renderHeight": 3.393659942363112,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-ne-cast",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "ne",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.822265625
+   ],
+   "renderHeight": 3.393659942363112,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-ne-special",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "ne",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.822265625
+   ],
+   "renderHeight": 3.393659942363112,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-byrexael-ne-down",
+   "file": "assets/enemies/new-art/byrexael-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "byrexael",
+   "view": "ne",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.81640625
+   ],
+   "renderHeight": 3.393659942363112,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-byrexael",
+   "file": "assets/enemies/byrexael.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "enemy-byrexael-back",
+   "file": "assets/enemies/byrexael-back.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "มังกรดำจ้าววิญญาณ ด้านหลัง",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "unit-card-en-byrexael",
+   "file": "assets/cards/portraits/en-byrexael.webp",
+   "status": "final",
+   "category": "unit-card-art",
+   "subject": "มังกรดำจ้าววิญญาณ",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": false
+  },
+  {
+   "id": "enemy-anim-soulCore-se-idle",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "se",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-se-walk",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "se",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-se-windup",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "se",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-se-guard",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "se",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-se-hit",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "se",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-se-strike",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "se",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-se-cast",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "se",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-se-special",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "se",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-se-down",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "se",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      0,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-ne-idle",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "ne",
+   "pose": "idle",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-ne-walk",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "ne",
+   "pose": "walk",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": true,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-ne-windup",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "ne",
+   "pose": "windup",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-ne-guard",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "ne",
+   "pose": "guard",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-ne-hit",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "ne",
+   "pose": "hit",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      0,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-ne-strike",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "ne",
+   "pose": "strike",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-ne-cast",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "ne",
+   "pose": "cast",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-ne-special",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "ne",
+   "pose": "special",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      512,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     420
+    ],
+    "loop": false,
+    "impactMs": 180
+   }
+  },
+  {
+   "id": "enemy-anim-soulCore-ne-down",
+   "file": "assets/enemies/new-art/soulCore-poses.webp",
+   "status": "final",
+   "category": "enemy-animations",
+   "enemy": "soulCore",
+   "view": "ne",
+   "pose": "down",
+   "size": [
+    1536,
+    1024
+   ],
+   "transparent": true,
+   "subject": "แก่นตะกอนวิญญาณ",
+   "artRevision": "v98.515",
+   "pivot": [
+    0.5,
+    0.923828125
+   ],
+   "renderHeight": 1.0784922394678491,
+   "animation": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 1,
+    "regions": [
+     [
+      1024,
+      512,
+      512,
+      512
+     ]
+    ],
+    "timings": [
+     800
+    ],
+    "loop": false,
+    "impactMs": 0
+   }
+  },
+  {
+   "id": "enemy-soulCore",
+   "file": "assets/enemies/soulCore.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "แก่นตะกอนวิญญาณ",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "enemy-soulCore-back",
+   "file": "assets/enemies/soulCore-back.webp",
+   "status": "final",
+   "category": "enemies",
+   "subject": "แก่นตะกอนวิญญาณ ด้านหลัง",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": true
+  },
+  {
+   "id": "unit-card-en-soulCore",
+   "file": "assets/cards/portraits/en-soulCore.webp",
+   "status": "final",
+   "category": "unit-card-art",
+   "subject": "แก่นตะกอนวิญญาณ",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": false
   }
  ],
  "studioReviews": {

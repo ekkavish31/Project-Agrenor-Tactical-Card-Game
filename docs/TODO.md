@@ -158,6 +158,10 @@
 
 ---
 
+- [x] v98.515 เพิ่มภาพจริงการ์ดใหม่ 9 ใบ cleave/shieldBash/volley/snipe/smite/bless/shadowStep/emberBurst/warCry แทนภาพ code/fallback และผูก tactic-card ID
+
+- [x] v98.515 นำภาพแทน code ของ murk/hunger/hungerRoot/alarmHorn/byrexael/soulCore เข้า renderer พร้อม atlas 6 ท่า/ตัว สองมุมกลับครบสี่ทิศ ภาพสำรองและ CT portrait; ใช้ท่าพักแทนช่วงเดิน/โดนตี ยังไม่ใช่ animation loop เต็ม
+
 ## 3. ทำแล้ว (สรุปสั้น · รายละเอียดอยู่ใน CHANGELOG)
 
 - [x] v98.447 แก้ blank Scale Lineup: CSS mode ต้องชนะ body.anim-mode เดิม วัดจากเว็บจริงพบ iframe สูง 0px; ใช้ grid จัดความสูง เพิ่ม loading/error/retry และแสดง cast ก่อนโหลด monster จบ

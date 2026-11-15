@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.439';
+  const V = '98.515';
   const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -49,12 +49,12 @@
     pumpkinBoss: { name: 'บอสฟักทอง', hp: 70, iq: 1, move: 2, atk: 6, scale: 1.05, fx: 'blunt', img: 'pumpkinBoss', range: 3, el: 'earth' },
     pest: { name: 'ด้วงกินใบ', hp: 4, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', img: 'pest', el: 'wind' },
     /* v98.488 · mine of Deepcairn (docs/lore/MAIN-STORY-CANON.md · §H): murk = สัตว์รอยหมอง (infected beast) · hunger = ก้อนหิว (boss) — drawn by code (js/code-monsters.js) until real pictures exist */
-    murk: { name: 'สัตว์รอยหมอง', hp: 38, iq: 1, move: 4, atk: 9, scale: .95, fx: 'knife', img: 'murk', code: true, el: 'dark' },
-    alarmHorn: { name: 'แตรสัญญาณ', hp: 30, iq: 0, move: 0, atk: 0, scale: .85, fx: 'blunt', img: 'alarmHorn', code: true, passive: true, el: 'earth' },
-    byrexael: { name: 'มังกรดำจ้าววิญญาณ', hp: 170, iq: 2, move: 1, atk: 13, scale: 2.3, fx: 'fire', img: 'byrexael', code: true, range: 3, shove: true, el: 'fire' },
-    soulCore: { name: 'แก่นตะกอนวิญญาณ', hp: 46, iq: 0, move: 0, atk: 0, scale: .95, fx: 'blunt', img: 'soulCore', code: true, passive: true, el: 'dark' },
-    hungerRoot: { name: 'ปมหิว', hp: 42, iq: 0, move: 0, atk: 0, scale: .9, fx: 'blunt', img: 'hungerRoot', code: true, passive: true, el: 'dark' },
-    hunger: { name: 'ก้อนหิว', hp: 150, iq: 2, move: 2, atk: 14, scale: 1.7, fx: 'blunt', img: 'hunger', code: true, range: 3, shove: true, el: 'dark' },
+    murk: { name: 'สัตว์รอยหมอง', hp: 38, iq: 1, move: 4, atk: 9, scale: .95, fx: 'knife', img: 'murk', el: 'dark' },
+    alarmHorn: { name: 'แตรสัญญาณ', hp: 30, iq: 0, move: 0, atk: 0, scale: .85, fx: 'blunt', img: 'alarmHorn', passive: true, el: 'earth' },
+    byrexael: { name: 'มังกรดำจ้าววิญญาณ', hp: 170, iq: 2, move: 1, atk: 13, scale: 2.3, fx: 'fire', img: 'byrexael', range: 3, shove: true, el: 'fire' },
+    soulCore: { name: 'แก่นตะกอนวิญญาณ', hp: 46, iq: 0, move: 0, atk: 0, scale: .95, fx: 'blunt', img: 'soulCore', passive: true, el: 'dark' },
+    hungerRoot: { name: 'ปมหิว', hp: 42, iq: 0, move: 0, atk: 0, scale: .9, fx: 'blunt', img: 'hungerRoot', passive: true, el: 'dark' },
+    hunger: { name: 'ก้อนหิว', hp: 150, iq: 2, move: 2, atk: 14, scale: 1.7, fx: 'blunt', img: 'hunger', range: 3, shove: true, el: 'dark' },
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
   /* v98.58 · evolution (วิวัฒน์): the next form of a monster, fought mid-battle (rules + hidden odds: js/flat-battle.js evolveCheck). Data only — add a pair to give another monster a next form. */
