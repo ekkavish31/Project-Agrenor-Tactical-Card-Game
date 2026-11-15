@@ -1023,7 +1023,7 @@
  }
  function gridSnapItem(E, b, du, dv, solo) {
   const G = window.VillageGrid;
-  if (!G || !b) return { du: +du.toFixed(4), dv: +dv.toFixed(4) };
+  if (!G || !b || data.edit[E.key]?.free) return { du: +du.toFixed(4), dv: +dv.toFixed(4) };   /* v98.521 · free = ย้ายอิสระ ไม่แนบกริด */
   const s = screenDelta(b, du, dv), q = G.snapPoint(E.ax + s.x, E.ay + s.y, modeNow()),
    c = solo ? freeCell(E.owner, E.key, { u: q.u, v: q.v }) : { u: q.u, v: q.v },
    p = G.project(c.u, c.v), r = canonDelta(b, p.x - E.ax, p.y - E.ay);
@@ -1044,6 +1044,7 @@
   for (const k of place.keys) {
    const E = frame.find(e => e.key === k), b = E && baseOf(E.owner);
    if (!E || !b) continue;
+   if (data.edit[k]?.free) { const d = canonDelta(b, ax * 2 * mult, ay * 2 * mult), o = ovOf(k); o.du = +((o.du || 0) + d.du).toFixed(4); o.dv = +((o.dv || 0) + d.dv).toFixed(4); continue }
    const cur = G.snapPoint(E.x, E.y, mode), q = G.snapPoint(cur.x + ax * 56 * st, cur.y + ay * 28 * st, mode),
     c = solo ? freeCell(E.owner, k, { u: q.u, v: q.v }) : { u: q.u, v: q.v }, p = G.project(c.u, c.v),
     r = canonDelta(b, p.x - E.ax, p.y - E.ay), ov = ovOf(k);
@@ -1115,7 +1116,7 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { ...window.PieceGeometry.extra(ov), kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
+  return { ...window.PieceGeometry.extra(ov), kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, free: ov.free, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
  }
  function addRecords(recs, owner, off) {
   const ids = [], gmap = {};
@@ -1124,7 +1125,7 @@
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    const G = window.VillageGrid, bs = baseOf(owner), sn = !G ? { du: r.du + off, dv: r.dv + off } : recs.length === 1 ? placeNewItem(owner, nid, r.du + off, r.dv + off) : G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, modeNow());
    data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-   data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
+   data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
    if (r.g) data.edit[nid].grp = gmap[r.g] || (gmap[r.g] = newGid());
    clean(nid);
    ids.push(nid)
@@ -2500,7 +2501,7 @@
    for (const r of a.recs) {
     const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sn = window.VillageGrid.snapOffset({ u: base.u, v: base.v }, !!base.mirror, r.du, r.dv + +base.front.toFixed(2), modeNow());
     data.added.push({ id: nid, owner: place.id, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-    data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
+    data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
     clean(nid);
     ids.push(nid)
    }
@@ -2603,7 +2604,7 @@
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
   <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
   ${nudgeHtml}${sec('place','① วาง · ขนาด · หมุน',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
-  <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
+  <div class="row"><button id="aeFree" class="${ov.free?'on':''}" title="เปิด = ชิ้นนี้ลาก/ย้ายด้วยลูกศรได้อิสระ ไม่ดูดเข้ากริด ไม่หลบกรอบชิ้นข้างเคียง (ลูกศร = 2px ต่อครั้ง · Shift = 8px)">${ov.free?'✅':'⬜'} ย้ายอิสระ (ไม่แนบกริด)</button></div>
 `,1)}${groupHtml(1)}`;
   body.querySelectorAll('details.aeSec').forEach(d => d.ontoggle = () => secOpen.set(d.dataset.sec, d.open));
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
@@ -2664,7 +2665,7 @@
   });
   bindGroup();
   bindZ('iz', d => { const v = ovOf(key); v.z = clampN((v.z || 0) + d, -20, 20); clean(key) });
-  body.querySelector('#aeFlip').onchange = e => once(() => ovOf(key).f = e.target.checked)();
+  act('#aeFree', once(() => { const o2 = ovOf(key); if (o2.free) delete o2.free; else o2.free = true; clean(key) }));
   /* v97.47 · blue grid under a decoration outside the buildings: its ground frame blocks walking. The first time, guess a size from what it is */
   const blkEl = body.querySelector('#aeBlock'); if (blkEl) blkEl.onchange = e => once(() => { const v = ovOf(key); if (e.target.checked) { v.block = true; if (v.fw == null && v.fh == null) { const g = guessBlock(label); v.fw = g[0]; v.fh = g[1] } } else delete v.block; render() })();
   bindSliders((k, v) => {const ov=ovOf(key);if(k==='ix'||k==='iy')ov[k]=v/100;else ov[k]=v}, () => clean(key))
