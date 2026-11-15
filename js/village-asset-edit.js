@@ -2607,8 +2607,7 @@
 `,1)}${sec('img','② ภาพ · แกนเฉียง',`${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>`)}${sec('foot','③ พื้นและการชน',`<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.5">กว้าง −</button><button data-fz="fw,0.5">กว้าง +</button><button data-fz="fh,-0.5">ลึก −</button><button data-fz="fh,0.5">ลึก +</button></div>
   <div class="row" style="align-items:center" title="กรอบที่ใช้ตัดสินว่าตัวละครอยู่หน้า/หลังชิ้นนี้ (แยกจากกรอบบล็อกเดิน) · ไม่ตั้ง = เท่ากรอบพื้น"><span>กรอบเรียงลำดับ ${ov.sw??ov.fw??.5}×${ov.sh??ov.fh??.5}</span><button data-sz="sw,-0.5">กว้าง −</button><button data-sz="sw,0.5">กว้าง +</button><button data-sz="sh,-0.5">ลึก −</button><button data-sz="sh,0.5">ลึก +</button>${(ov.sw!=null||ov.sh!=null)?'<button id="aeSzReset">= กรอบพื้น</button>':''}</div>
   <label class="chk" title="ใช้กรอบพื้นของชิ้นนี้เป็นกริดฟ้า: ตัวเอกและ NPC เดินผ่านไม่ได้ (ปรับขนาดด้วยปุ่ม กว้าง/ลึก ข้างบน)"><input type="checkbox" id="aeBlock" ${ov.block?'checked':''}> ▦ กริดฟ้า · เดินผ่านไม่ได้ ${ov.block?'('+itemSize(key).w+'×'+itemSize(key).h+' ช่อง)':''}</label>
-  `,1)}${sec('occ','④ การบัง · ความสูง',`  <div class="row" style="align-items:center" title="ชิ้นสูงจะโปร่งเมื่อบังตัวละคร ชิ้นเตี้ยบังเท้าได้ตามจริง · อัตโนมัติ = เดาจากชื่อ"><span>ความสูง</span><select id="aeTall"><option value="">อัตโนมัติ (จากชื่อ)</option><option value="tall"${ov.tall==='tall'?' selected':''}>สูง</option><option value="low"${ov.tall==='low'?' selected':''}>เตี้ย</option></select></div>`)}
-  <div class="row"><button id="aeDel">ลบชิ้นนี้ (Delete)</button>${added?'':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชั่วคราว'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
+  `,1)}${groupHtml(1)}`;
   body.querySelectorAll('details.aeSec').forEach(d => d.ontoggle = () => secOpen.set(d.dataset.sec, d.open));
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
   act('#iBack', () => {
@@ -2635,7 +2634,7 @@
    o2[f] = v; clean(key)
   }));
   act('#aeSzReset', once(() => { const o2 = ovOf(key); delete o2.sw; delete o2.sh; clean(key) }));
-  body.querySelector('#aeTall').onchange = e => once(() => { const o2 = ovOf(key); if (e.target.value) o2.tall = e.target.value; else delete o2.tall; clean(key) })();
+  const tallSel = body.querySelector('#aeTall'); if (tallSel) tallSel.onchange = e => once(() => { const o2 = ovOf(key); if (e.target.value) o2.tall = e.target.value; else delete o2.tall; clean(key) })();
   act('#aeDel', removeSelected);
   act('#aeReset', once(() => delete data.edit[key]));
   act('#aeDup', () => {
