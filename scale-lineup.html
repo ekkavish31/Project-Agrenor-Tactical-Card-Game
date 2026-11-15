@@ -151,7 +151,7 @@ const verifiedMark = id => `<span class="verify-mark" role="group" aria-label="�
 const $ = id => document.getElementById(id);
 let loadedPictures=0;
 const load1 = src => new Promise(r => { const i = new Image();let finished=false;const done=value=>{if(finished)return;finished=true;clearTimeout(timer);loadedPictures++;const el=document.getElementById('lineupLoadState');if(el&&!el.hidden&&el.getAttribute('role')!=='alert')el.textContent='กำลังโหลดภาพ Scale Lineup… ตรวจแล้ว '+loadedPictures+' ภาพ';r(value)};const timer=setTimeout(()=>done(null),15000);i.onload=()=>done(i);i.onerror=()=>done(null);i.src=src });
-/* v98.529 · the manifest may name .png while the repo holds the .webp twin (js/asset-manager.js twin()): try both, remember which one answered */
+/* v98.530 · the manifest may name .png while the repo holds the .webp twin (js/asset-manager.js twin()): try both, remember which one answered */
 const load = async src => { let im = await load1(src); if (im) { im.__rel = src; return im } const alt = /\.png$/.test(src) ? src.replace(/\.png$/, '.webp') : /\.webp$/.test(src) ? src.replace(/\.webp$/, '.png') : null; if (alt) { im = await load1(alt); if (im) im.__rel = alt } return im };
 function measure(img, flip, raw) {
   const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h;
@@ -211,7 +211,7 @@ async function addChar(id, name, kind, pic, factor) {
   e.name = name; e.ctx.battle = e.ctx.village = C;
 }
 /* v98.457 · the standing picture of a hero look: the imported cast pictures that exist in the repo (SE = SW mirrored · NW = NE mirrored) */
-/* v98.529 · the standing picture of a hero look = the one the GAME uses: ASSET_MANIFEST.heroVariants[look].studioPoses.idle[view] (what HeroVariant.apply puts on TACTICS_SPRITES). It used to read the OLD mwcast2 files, so the look that was NOT open
+/* v98.530 · the standing picture of a hero look = the one the GAME uses: ASSET_MANIFEST.heroVariants[look].studioPoses.idle[view] (what HeroVariant.apply puts on TACTICS_SPRITES). It used to read the OLD mwcast2 files, so the look that was NOT open
    was measured from older art than the open one (which the studio gives from the live sprite table) → every height changed when you switched ชาย/หญิง */
 const lookPic = (look, view) => { const v = view || 'SW', f = window.ASSET_MANIFEST?.heroVariants?.[look]?.studioPoses?.idle?.[v]?.frames?.[0]?.src; if (f) return { src: f, flip: false };
   const k = look === 'female' ? 'f' : 'm', back = v === 'NW' || v === 'NE', mir = v === 'SE' || v === 'NW'; return { src: `assets/tactics/imported/idle-${back ? 'ne' : 'sw'}-mwcast2-${k}/frame-01.webp`, flip: mir } };
@@ -225,7 +225,7 @@ const AK = id => { const l = lookOfId(id); return l ? (l === 'female' ? 'hero-fe
 const isRefId = id => lookOfId(id) === 'male';
 const GROUPOF = {};   /* id → the studio's group (characters / npcs) so the lineup filter matches the left panel */
 async function buildChars() {
-  if (!window.ASSET_MANIFEST) await new Promise(r => { const sc = document.createElement('script'); sc.src = 'js/asset-manifest.js?v=' + (window.GAME_VERSION?.v || ''); sc.onload = sc.onerror = r; document.head.append(sc) });   /* v98.529 · the game's real hero pictures (lookPic) */
+  if (!window.ASSET_MANIFEST) await new Promise(r => { const sc = document.createElement('script'); sc.src = 'js/asset-manifest.js?v=' + (window.GAME_VERSION?.v || ''); sc.onload = sc.onerror = r; document.head.append(sc) });   /* v98.530 · the game's real hero pictures (lookPic) */
   const list = ST ? ST.lineup.entities().map(e => { const id = e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc):/, ''); if (e.group) GROUPOF[id] = e.group; return { id, sid: e.id, name: e.name, clips: e.clips } }) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
   for (const c of list) {
     let pic, vp = null;
