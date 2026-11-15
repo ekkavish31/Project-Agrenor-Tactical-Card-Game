@@ -926,27 +926,27 @@ function exitDir() {
  const e = M.exit, F = M.floor; if (!e) return 'SW'; if (EXIT_DIRS[e.dir]) return e.dir;
  return [['SE', F.w - e.u], ['NW', F.w + e.u], ['SW', F.d + 1 - e.v], ['NE', F.d + e.v]].sort((a, b) => a[1] - b[1])[0][0]
 }
-const EXIT_BACK = 2.3;   /* cells inside the room, from the exit, to the arrow's resting centre */
+const EXIT_BACK = 1.15;   /* cells inside the room, from the exit, to the arrow's resting centre (close to the door) */
 function exitSpot() { const d = EXIT_DIRS[exitDir()]; return { u: M.exit.u - d[0] * EXIT_BACK, v: M.exit.v - d[1] * EXIT_BACK } }
 function exitGlow(t) {
  if (!M.exit) return;
  const e = M.exit, dk = exitDir(), d = EXIT_DIRS[dk], pulse = .5 + .5 * Math.sin(t * .0021), pe = project(e.u, e.v), ps = project(exitSpot().u, exitSpot().v);
  g.save(); g.globalCompositeOperation = 'lighter';
  const aura = (p, rx, a) => { const gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, rx); gr.addColorStop(0, `rgba(255,238,178,${a})`); gr.addColorStop(.55, `rgba(255,226,150,${a * .38})`); gr.addColorStop(1, 'rgba(255,220,140,0)'); g.save(); g.translate(p.x, p.y); g.scale(1, .5); g.translate(-p.x, -p.y); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, rx, 0, 7); g.fill(); g.restore() };
- aura(pe, 250, .55 + .08 * pulse); aura(ps, 170, .26 + .06 * pulse);
+ aura(pe, 125, .55 + .08 * pulse); aura(ps, 85, .26 + .06 * pulse);
  g.restore()
 }
 function exitArrow(t) {
  if (!M.exit) return;
- const d = EXIT_DIRS[exitDir()], L = 2.1, W = .62, HW = 1.5, HL = .85, slide = .2 * L * (.5 + .5 * Math.sin(t * .0042)), c = exitSpot(),
+ const d = EXIT_DIRS[exitDir()], L = 1.05, W = .31, HW = .75, HL = .42, slide = .2 * L * (.5 + .5 * Math.sin(t * .0042)), c = exitSpot(),
   base = { u: c.u + d[0] * slide, v: c.v + d[1] * slide }, n = [-d[1], d[0]],
   at = (a, b) => project(base.u + d[0] * (a - L / 2) + n[0] * b, base.v + d[1] * (a - L / 2) + n[1] * b),
   pts = [at(0, -W / 2), at(L - HL, -W / 2), at(L - HL, -HW / 2), at(L, 0), at(L - HL, HW / 2), at(L - HL, W / 2), at(0, W / 2)];
  g.save();
- g.shadowColor = 'rgba(255,224,140,.85)'; g.shadowBlur = 14;
+ g.shadowColor = 'rgba(255,224,140,.85)'; g.shadowBlur = 8;
  g.beginPath(); pts.forEach((p, i) => g[i ? 'lineTo' : 'moveTo'](p.x, p.y)); g.closePath();
  const a0 = at(0, 0), a1 = at(L, 0), gr = g.createLinearGradient(a0.x, a0.y, a1.x, a1.y); gr.addColorStop(0, 'rgba(255,240,190,.72)'); gr.addColorStop(1, 'rgba(255,208,96,.96)');
- g.fillStyle = gr; g.fill(); g.shadowBlur = 0; g.lineWidth = 2.6; g.strokeStyle = 'rgba(140,96,34,.85)'; g.stroke();
+ g.fillStyle = gr; g.fill(); g.shadowBlur = 0; g.lineWidth = 1.8; g.strokeStyle = 'rgba(140,96,34,.85)'; g.stroke();
  g.restore()
 }
 /* the far-wall door (NE / NW only): an upright door picture sheared to lie in the wall plane, with a bright opening behind it */
@@ -1458,7 +1458,7 @@ function setup() {
  $('title').textContent = M.name;
  $('subtitle').textContent = M.sub || '';
  document.title = M.name + ' · Project A';
- { const d = EXIT_DIRS[exitDir()]; hero.u = M.exit.u - d[0] * .8; hero.v = M.exit.v - d[1] * .8; hero.dir = ({ SW: 'NE', SE: 'NW', NE: 'SW', NW: 'SE' })[exitDir()] }   /* v98.548 · steps in from the doorway, facing into the room */
+ { const d = EXIT_DIRS[exitDir()]; hero.u = M.exit.u - d[0] * (EXIT_BACK + 1.5); hero.v = M.exit.v - d[1] * (EXIT_BACK + 1.5); hero.dir = ({ SW: 'NE', SE: 'NW', NE: 'SW', NW: 'SE' })[exitDir()] }   /* v98.548 · steps in from the doorway, facing into the room */
  path = [];
  target = null;
  dirty = true;
