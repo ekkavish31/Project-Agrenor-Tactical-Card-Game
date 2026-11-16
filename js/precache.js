@@ -5,9 +5,9 @@
   'use strict';
   try {
     if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol) || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) return;
-    const c = navigator.connection || {}; if (c.saveData || /(^|-)2g$/.test(c.effectiveType || '')) return;
+    const c = navigator.connection || {}; if (c.saveData || /(^|-)2g$/.test(c.effectiveType || '') || c.effectiveType === '3g' || c.type === 'cellular') return;   /* v98.580 · ~100 MB: only on a good, non-mobile-data connection */
     const V = (window.GAME_VERSION && window.GAME_VERSION.v) || ''; if (!V || localStorage.getItem('projectA.precached') === V) return;
-    const WANT = { portrait: 1, interior: 1, terrain: 1, battlefield: 1, item: 1 }, CAP = 85e6;
+    const WANT = { portrait: 1, interior: 1, terrain: 1, battlefield: 1, item: 1 }, CAP = 110e6;   /* v98.580 · ~70 MB of recorded scenes + portraits etc. */
     /* v98.579 · the list is what the game REALLY requests (tools/build-precache-list.cjs: village → sub-maps → fights, in that order); the old guess by picture category
        missed 318 of the 473 pictures a short session used — including temple / shop / market and the hero's walk frames — because the 60 MB cut-off stopped it early */
     const go = async () => {
