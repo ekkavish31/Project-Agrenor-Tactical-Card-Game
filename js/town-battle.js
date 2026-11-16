@@ -47,7 +47,7 @@
     goat: { name: 'แพะของปิ๊บ', hp: 24, iq: 1, move: 4, atk: 3, scale: .8, fx: 'blunt', img: 'goat', el: 'earth' },   /* v98.361 · painted (assets/enemies/animations/goat) */
     pumpkin: { name: 'ฟักทองในไร่', hp: 30, iq: 0, move: 0, atk: 0, scale: .75, fx: 'blunt', img: 'pumpkin', passive: true, loot: true, evoGroup: 'pumpkin', el: 'earth' },
     pumpkinBoss: { name: 'บอสฟักทอง', hp: 70, iq: 1, move: 2, atk: 6, scale: 1.05, fx: 'blunt', img: 'pumpkinBoss', range: 3, el: 'earth' },
-    pest: { name: 'ด้วงกินใบ', hp: 4, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', img: 'pest', el: 'wind' },
+    pest: { name: 'ด้วงกินใบ', hp: 9, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', img: 'pest', el: 'wind' },
     /* v98.488 · mine of Deepcairn (docs/lore/MAIN-STORY-CANON.md · §H): murk = สัตว์รอยหมอง (infected beast) · hunger = ก้อนหิว (boss) — drawn by code (js/code-monsters.js) until real pictures exist */
     murk: { name: 'สัตว์รอยหมอง', hp: 38, iq: 1, move: 4, atk: 9, scale: .95, fx: 'knife', img: 'murk', el: 'dark' },
     alarmHorn: { name: 'แตรสัญญาณ', hp: 30, iq: 0, move: 0, atk: 0, scale: .85, fx: 'blunt', img: 'alarmHorn', passive: true, el: 'earth' },
@@ -1156,7 +1156,7 @@
       { t: '⚡ ใบที่ 2 · อัสนีบาต — ธาตุสายฟ้า ชนะ "ธาตุลม" ซึ่งเป็นธาตุของด้วงกินใบ · วิธีใช้: คลิกด้วงตัวเล็ก แล้วคลิกไพ่ใบนี้ · ลองคลิกสลับฟักทอง ↔ ด้วง แล้วดูลูกศรบนไพ่เปลี่ยนตามเป้าที่เลือก (เขียว ▲ = ได้เปรียบ · แดง ▼ = เสียเปรียบ ×0.7)', spot: 'thunder' },
       { t: 'ลองดูเอง: ครั้งแรกให้ใช้ ⚡ อัสนีบาต ตีฟักทองก่อน (คลิกฟักทอง → ไพ่ที่เรืองแสง) จะได้เห็นว่าตีเสียเปรียบเป็นอย่างไร', spot: 'thunder', done: () => st.loan?.force?.done },
       { t: 'เห็นไหม? ธาตุสายฟ้าแพ้ผืนดิน ดาเมจเหลือ ×0.7 · จากนี้ใช้ 💧 คลื่นน้ำ ตีฟักทอง (×1.3) และ ⚡ ตีด้วง (×1.3) · ฟักทองลูกหนึ่งรับตีราว 2–3 ครั้ง', spot: 'tide', done: () => (st.log || []).filter(x => /ชนะ/.test(x)).length > 0 },
-      { t: 'ด้วงกินใบตัวเล็กตีทีเดียวตาย — กำจัดก่อนจะกัดกวนคุณ · ตีฟักทองจนล้ม มันจะเด้งเป็นฟักทองให้เก็บ' },
+      { t: 'ด้วงกินใบ: ⚡ อัสนีบาต (ชนะทาง) ตีทีเดียวล้ม แต่ถ้าใช้ไพ่ผิดธาตุ (ลูกศรแดง ▼) มันจะทนได้ ต้องตีซ้ำ — กำจัดก่อนจะกัดกวนคุณ · ตีฟักทองจนล้ม มันจะเด้งเป็นฟักทอง (นับเป็นเก็บเกี่ยวแล้ว) แล้วค่อยๆ หายไป' },
       { t: 'ระวัง! ถ้าฟักทองลูกหนึ่งเริ่มสั่น มันอาจวิวัฒน์ — บอสฟักทองใช้เถาวัลย์ระยะไกลพันธนาการ (เดินไม่ได้ 1 เทิร์น) และตีระยะใกล้เบาๆ' },
       { t: 'ใช้ไพ่ธาตุที่ชนะทาง (ดูลูกศร ▲ บนไพ่หลังคลิกเป้า) และตีจากด้านหลัง ×1.2 · ไม่ต้องกลัว — ตัวเอกเลือดไม่ต่ำกว่า 1' }],
     expedition: [
@@ -1639,13 +1639,17 @@
     g.save(); g.globalAlpha = fade; g.translate(p0.x, p0.y); if (right) g.scale(-1, 1); g.drawImage(sheet, f * cw, 0, cw, sheet.naturalHeight, -h / 2, -h * .92, h, h); g.restore();
     g.save(); g.globalAlpha = .5 * fade; g.fillStyle = '#9fd8ff'; for (let i = 0; i < 5; i++) { const a = t * .004 + i * 1.26; g.beginPath(); g.arc(p0.x + Math.cos(a) * h * .5, p0.y - h * .5 + Math.sin(a * 1.3) * h * .35, 2.2, 0, 7); g.fill() } g.restore();
   }
+  /* v98.601 · defeated loot pumpkins: visible 1.6 s (the pop), fade out over 0.9 s, then gone */
+  const lootFade = (u, T, t) => (u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt) ? Math.max(0, Math.min(1, 1 - ((t - u.deadAt) - 1600) / 900)) : 1;
+  const lootGone = (u, T, t) => u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt && (t - u.deadAt) > 2500;
   function drawMonster(g, u, t) {
     const p0 = project(u.vu, u.vv); if (u.mipForm) return drawMip(g, u, p0, t); const v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
     const sk = u.evoShow || u.kind, T = MON[sk] || MT, kind = MON[sk] ? sk : MK, mid = 'm:' + kind;   /* v98.320 · ONE size per species in the ⚖ Scale Lineup — a boss is the same picture, so it uses the same row (no separate boss row, no hidden multiplier) */   /* v98.58: evoShow = the old form until the flash */
     if (T.code && window.CodeMonsters?.has(kind)) {   /* v98.331 · code-drawn unit */
       const lift0 = 0, h = UNIT * 1.3 * (T.scale || 1) * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1), hitMs = (u.hitUntil || 0) > t ? 420 - ((u.hitUntil || 0) - t) : null, atk = u.pose === 'strike' || u.pose === 'windup';
-      shadow(g, p0, UNIT * .26 * (T.scale || 1));
-      if (u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt) { CodeMonsters.drawLoot(g, { x: p0.x, y: p0.y, h, t: t - u.deadAt }); return }   /* the pumpkin pops into a pumpkin to collect */
+      if (lootGone(u, T, t)) return;   /* v98.601 · a beaten pumpkin pops up, then fades away — it does not stay on the field */
+      shadow(g, p0, UNIT * .26 * (T.scale || 1) * lootFade(u, T, t));
+      if (u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt) { g.save(); g.globalAlpha = lootFade(u, T, t); CodeMonsters.drawLoot(g, { x: p0.x, y: p0.y, h, t: t - u.deadAt }); g.restore(); return }   /* the pumpkin pops into a pumpkin to collect */
       evoAura(g, u, { x: p0.x, y: p0.y - lift0 }, h, t);
       g.save(); g.translate(p0.x + (hitMs != null ? Math.sin(t * .08) * 3 : 0), p0.y); if (['SW', 'NW'].includes(u.dir)) g.scale(-1, 1);
       CodeMonsters.draw(g, kind, { x: 0, y: 0, h, dir: u.dir, t, hp: u.hp, hit: atk ? t % 420 : hitMs, walking: !!u.walking, pose: atk ? 'attack' : u.pose, vine: atk && kind === 'pumpkinBoss', seed: u.id.length * 1.7 + (u.id.charCodeAt(u.id.length - 1) || 0), evoFlash: !!(u.evoCharge && t - u.evoCharge < 1800) });
@@ -1654,6 +1658,7 @@
     }
     // A harvested pumpkin keeps its real loot pose after defeat; it is not a living unit.
     const isLoot = u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt;
+    if (lootGone(u, T, t)) return;
     const af = window.MonsterArt?.frame(kind, u.dir, isLoot ? { pose: 'loot' } : v, isLoot ? 1 : u.hp, t, 'fb-' + u.id);
     /* v97.26 · B3: fliers hover half a cell up and bob; their shadow stays on the ground, smaller as they rise */
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
