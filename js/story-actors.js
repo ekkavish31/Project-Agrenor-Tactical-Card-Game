@@ -182,6 +182,7 @@
       if (!cur.el || cur.el.tagName !== 'IMG') { art.innerHTML = ''; cur.el = new Image(); cur.el.alt = ''; art.append(cur.el) }
       if (!cur.el.src.endsWith(src)) { cur.el.style.opacity = '0'; cur.el.onload = () => { cur.el.style.transition = 'opacity .18s'; cur.el.style.opacity = '1' }; cur.el.src = src; if (cur.el.complete && cur.el.naturalWidth) cur.el.onload() }   /* v98.336 · the picture fades in once loaded (no empty stage with an emote floating over it) */
       cur.el.dataset.flip = ((FACING[P[0]] || 'left') === (side === 'L' ? 'left' : 'right')) ? '1' : '0';
+      cur.el.style.maxHeight = Math.round(100 * (window.PortraitScale ? PortraitScale.k(P[0]) : 1)) + '%';   /* v98.593 · children / small people are drawn smaller (⚖ Scale Lineup) */
     } else {
       if (!cur.el || cur.el.tagName !== 'CANVAS') { art.innerHTML = ''; cur.el = document.createElement('canvas'); cur.el.width = 300; cur.el.height = 420; art.append(cur.el) }
       drawBust(cur.el, cur.look, face, false);
