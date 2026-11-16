@@ -33,7 +33,7 @@
   };
   const svg = k => `<svg viewBox="0 0 48 48" aria-hidden="true">${G[k]}</svg>`;
   /* v98.16 · the picture icons from assets/icons/menu replace the drawn glyphs (same pack as the game's top bar; Editor → ไอคอนเมนู can override: key 'hud-<id>', '-' = drawn glyph) */
-  const PICS = { map: 'map', today: 'calendar', me: 'party', go: 'portal', menu: 'settings', activity: 'quest', journal: 'spellbook', farm: 'treasure', character: 'party', bag: 'bag', deck: 'deck', job: 'forge', element: 'collection' };
+  const PICS = { map: 'map', today: 'calendar', me: 'party', go: 'portal', menu: 'settings', activity: 'quest', journal: 'spellbook', farm: 'treasure', character: 'party', bag: 'cardbook', deck: 'deck', job: 'forge', element: 'collection' };
   const pick = k => { let v; try { v = (JSON.parse(localStorage.getItem('menu-icons-v1')) || {})['hud-' + k] } catch (e) { } return v === '-' ? '' : (v || PICS[k] || '') };
   const pic = k => { const p = pick(k); return p ? `<img src="assets/icons/menu/${p}.webp" alt="" draggable="false">` : svg(k) };
   const click = sel => { const b = typeof sel === 'string' ? store.querySelector(sel) || document.querySelector(sel) : sel; if (b) b.click(); return !!b };
@@ -53,7 +53,7 @@
     ],
     me: () => [
       ['character', 'ตัวละคร', () => click('[data-game="character"]')],
-      ['bag', 'กระเป๋า', () => click('[data-game="bag"]')],
+      ['bag', 'สมุดผนึก', () => click('[data-game="bag"]')],
       ['deck', 'สำรับ', () => click('[data-game="deck"]')],
       ['job', 'อาชีพ', () => call('JobsUI')],
       ['element', 'ตารางธาตุ', () => click('#elChart')]
@@ -62,7 +62,7 @@
   const ICONS = [
     ['map', 'แผนที่', 'แผนที่เมือง · คลิกหมุดเพื่อเดินไป (M)', () => click('#townMapBtn')],
     ['today', 'วันนี้', 'กิจกรรม · สมุดหมู่บ้าน · ไร่', 'today'],
-    ['me', 'ตัวเรา', 'ตัวละคร · กระเป๋า · สำรับ · อาชีพ · ธาตุ', 'me'],
+    ['me', 'ตัวเรา', 'ตัวละคร · สมุดผนึก · สำรับ · อาชีพ · ธาตุ', 'me'],
     ...(store.querySelector('.town-go') ? [['go', 'ออกเดินทาง', 'ไปแผนที่โลก · หรือเดินไปที่ประตูหมู่บ้าน', () => click('.town-go')]] : [])
   ];
   const pop = document.createElement('div'); pop.className = 'hud-pop'; pop.hidden = true; document.body.append(pop);

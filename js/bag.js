@@ -94,7 +94,7 @@ const BattleItems={hand:[],used:false,
   window.TacticsDecks?.consumeItem(st.deck);window.BattleCrystals?.spend('item');addItem(k,-1);save();L.say(msg);L.stats();L.finish?.();this.render()}};
 // ---------------- bag panel: consumables / event cards / goods ----------------
 // v38: every bag card uses the card-table frame with its text filled in (goods had an empty main box)
-function bagCardHTML(info,n){let S=window.CardStudio,base=S?.cardById(info.card);if(!base)return '';let c=JSON.parse(JSON.stringify(base)),d=info.def||{};if(!c.main?.value){c.main=info.cat==='goods'?{value:'◉ '+(d.price??c.attr?.price??0),label:'ราคาขาย'}:info.cat==='event'?{value:'✉',label:'การ์ดเหตุการณ์'}:{value:'×'+n,label:'ในกระเป๋า'}}if(!(c.effects||[]).filter(Boolean).length&&d.text)c.effects=[d.text];return S.cardHTML(c,S.design(),{mini:true})}
+function bagCardHTML(info,n){let S=window.CardStudio,base=S?.cardById(info.card);if(!base)return '';let c=JSON.parse(JSON.stringify(base)),d=info.def||{};if(!c.main?.value){c.main=info.cat==='goods'?{value:'◉ '+(d.price??c.attr?.price??0),label:'ราคาขาย'}:info.cat==='event'?{value:'✉',label:'การ์ดเหตุการณ์'}:{value:'×'+n,label:'ในสมุด'}}if(!(c.effects||[]).filter(Boolean).length&&d.text)c.effects=[d.text];return S.cardHTML(c,S.design(),{mini:true})}
 const baseBag=renderBag;
 renderBag=function(){baseBag();let host=$('panelContent');if(!host)return;let b=bag(),atMarket=s.village.location==='market'&&!state();
  const tile=(k,n,btns)=>{let info=itemInfo(k);return `<div class="bag-item-card"><div class="adv-card mini">${bagCardHTML(info,n)||''}</div><b>${info.def.maya?`<span class="maya-name">${esc(info.def.name)}</span>`:esc(info.def.name)} ×${n}</b><small>${esc(info.def.text||'')}</small>${btns}</div>`};

@@ -586,11 +586,11 @@
     let btn = document.getElementById('fbItemBtn'), tray = document.getElementById('fbItems');
     const n = st?.itemHand?.length || 0;
     if (!st || !Object.keys(st.bag || {}).length) { btn?.remove(); tray?.remove(); return }
-    if (!btn) { btn = document.createElement('button'); btn.id = 'fbItemBtn'; btn.title = 'การ์ดกระเป๋า — ของใช้ในกระเป๋าเป็นการ์ด ใช้ได้เทิร์นละ 1 ใบ'; btn.onclick = () => { itemOpen = !itemOpen; itemSync() }; document.getElementById('fbActions')?.append(btn); window.Tips?.once?.('b_bagcards', 'การ์ดกระเป๋า', ['ของใช้ในกระเป๋าแสดงเป็นการ์ด — เวทแปลงกระเป๋าที่สมาคมนักผจญภัยมอบให้ตอนลงทะเบียน นักผจญภัยทุกคนมีติดตัว', 'กดปุ่ม 🎒 ไอเทม แล้วเลือกการ์ด · ใช้ได้เทิร์นละ 1 ใบ และกินคริสตัล 1 ดวง', 'ใช้แล้วการ์ดหมดไปจากกระเป๋าจริง (กลับมาได้ถ้าซื้อ/เก็บเพิ่ม)']) }
-    btn.innerHTML = '<span>🎒 ไอเทม</span><b class="n">' + n + '</b>'; btn.disabled = !n && !itemOpen;
+    if (!btn) { btn = document.createElement('button'); btn.id = 'fbItemBtn'; btn.title = 'การ์ดไอเทม — ของใช้ในสมุดผนึกเป็นการ์ด ใช้ได้เทิร์นละ 1 ใบ'; btn.onclick = () => { itemOpen = !itemOpen; itemSync() }; document.getElementById('fbActions')?.append(btn); window.Tips?.once?.('b_bagcards', 'การ์ดไอเทม', ['ของที่เจ้าเก็บไว้ในสมุดผนึกแสดงเป็นการ์ด — เวทแปลงของเป็นการ์ดที่สมาคมนักผจญภัยใส่ไว้ในสมุดตอนลงทะเบียนแรงก์ F ใครลงทะเบียนก็มีเหมือนกัน', 'กดปุ่ม 📖 ไอเทม แล้วเลือกการ์ด · ใช้ได้เทิร์นละ 1 ใบ และกินคริสตัล 1 ดวง', 'ใช้แล้วการ์ดหมดไปจากสมุดจริง (กลับมาได้ถ้าซื้อ/เก็บเพิ่ม)']) }
+    btn.innerHTML = '<span>📖 ไอเทม</span><b class="n">' + n + '</b>'; btn.disabled = !n && !itemOpen;
     if (!tray) { tray = document.createElement('div'); tray.id = 'fbItems'; document.body.append(tray) }
     tray.hidden = !itemOpen || !n;
-    tray.innerHTML = '<span class="lbl">การ์ดกระเป๋า · ใช้ได้เทิร์นละ 1</span>' + (st.itemHand || []).map((k, i) => { const why = st.turn === 'hero' ? FB.itemBlock(st, i) : 'ไม่ใช่ตาคุณ', html = window.CardStudio?.renderCard('c-' + k, { mini: true, fallbackArt: 'assets/cards/item/' + k + '.webp' }) || '<div class="fb-fallback"><b>' + esc(FB.ITEM_NAME[k] || k) + '</b></div>';
+    tray.innerHTML = '<span class="lbl">การ์ดไอเทม · ใช้ได้เทิร์นละ 1</span>' + (st.itemHand || []).map((k, i) => { const why = st.turn === 'hero' ? FB.itemBlock(st, i) : 'ไม่ใช่ตาคุณ', html = window.CardStudio?.renderCard('c-' + k, { mini: true, fallbackArt: 'assets/cards/item/' + k + '.webp' }) || '<div class="fb-fallback"><b>' + esc(FB.ITEM_NAME[k] || k) + '</b></div>';
       return `<button class="fb-card item ${why ? 'off' : ''}" data-i="${i}" title="${esc((FB.ITEM_NAME[k] || k) + ' — ' + itemLine(k) + (why ? ' · ' + why : ''))}"><div class="face">${html}</div><span class="fb-tag"><b>${esc(FB.ITEM_NAME[k] || k)}</b>${esc(itemLine(k))}</span></button>` }).join('');
     tray.querySelectorAll('.fb-card').forEach(b => b.onclick = () => useItemCard(+b.dataset.i));
   }

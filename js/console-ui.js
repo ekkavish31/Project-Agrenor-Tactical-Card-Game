@@ -70,7 +70,7 @@
     const host = n => { try { return parent[n] || window[n] } catch (e) { return window[n] } };
     const item = (label, fn, ok = true) => ok ? { label, fn } : null;
     const GROUPS = [
-      ['me', '👤 ตัวเรา', 'ตัวละคร · อาชีพ · สำรับ · กระเป๋า', () => [item('ตัวละคร', () => q('[data-game="character"]')?.click()), item('⚔ อาชีพ', () => host('JobsUI')?.open()), item('สำรับ', () => q('[data-game="deck"]')?.click()), item('กระเป๋า', () => q('[data-game="bag"]')?.click()), item('◈ ตารางธาตุ', () => q('#elChart')?.click(), !!q('#elChart'))]],
+      ['me', '👤 ตัวเรา', 'ตัวละคร · อาชีพ · สำรับ · สมุดผนึก', () => [item('ตัวละคร', () => q('[data-game="character"]')?.click()), item('⚔ อาชีพ', () => host('JobsUI')?.open()), item('สำรับ', () => q('[data-game="deck"]')?.click()), item('สมุดผนึก', () => q('[data-game="bag"]')?.click()), item('◈ ตารางธาตุ', () => q('#elChart')?.click(), !!q('#elChart'))]],
       ['life', '🏡 ชีวิต', 'สมุดหมู่บ้าน · กิจกรรม · ไร่ · หมู่บ้าน', () => [item('สมุดหมู่บ้าน', () => q('[data-game="journal"]')?.click()), item('🎯 กิจกรรม', () => q('#activities')?.click(), !!q('#activities')), item('🌾 ไร่ของเรา', openFarm, !!farmHere()), item('🏗 พัฒนาหมู่บ้าน', () => host('VillageProjects')?.open()), item('🏛 ชื่อเสียง', () => host('Factions')?.open()), item('🗺 ออกเดินทาง', () => go?.click(), !!go)]],
       ['sys', '⚙ ระบบ', 'บันทึก · โหลด · ตั้งค่า · เต็มจอ', () => [item('💾 บันทึกเกม', () => slotMenu('save')), item('📂 โหลดเกม', () => slotMenu('load')), item('ตั้งค่า', () => q('[data-game="settings"]')?.click()), item('⛶ เต็มจอ', () => q('#fullscreen')?.click(), !!q('#fullscreen'))]]
     ];

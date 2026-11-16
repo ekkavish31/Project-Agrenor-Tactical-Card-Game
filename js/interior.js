@@ -633,7 +633,7 @@
   function leave() { if (KIND === 'farm') { location.href = /^[a-z0-9_-]+\.html$/i.test(Q.get('back') || '') ? Q.get('back') : 'world-map.html'; return } if (EMBED) { parent.postMessage({ source: 'project-a-place', type: 'leave' }, '*'); return } location.href = 'village-town.html?from=' + encodeURIComponent(PLACE) }
   if (EMBED) {
     addEventListener('message', e => { if (e.source !== parent || e.data?.source !== 'project-a-game') return; if (e.data.type === 'visibility') shown = !!e.data.visible });
-    addEventListener('load', () => parent.postMessage({ source: 'project-a-place', type: 'ready' }, '*'));
+    addEventListener('load', () => { parent.postMessage({ source: 'project-a-place', type: 'ready' }, '*'); if (KIND === 'guild') setTimeout(() => { try { parent.Story?.guildFirst?.() } catch (e) { } }, 1400) });   /* v98.584 · the clerk's first talk (js/story-quests.js) */
   }
 
   /* ---------- UI ---------- */

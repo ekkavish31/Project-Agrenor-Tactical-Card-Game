@@ -121,7 +121,7 @@
     }
     pads.prev = g.buttons.map(b => !!b.pressed);
   }
-  addEventListener('gamepadconnected', () => { toast('ต่อจอยเกมแพดแล้ว · สติ๊กซ้ายเดิน · A ทำ · กด A ค้าง = ตัวเลือก · B ย้อน · X กระเป๋า · Y แผนที่') });
+  addEventListener('gamepadconnected', () => { toast('ต่อจอยเกมแพดแล้ว · สติ๊กซ้ายเดิน · A ทำ · กด A ค้าง = ตัวเลือก · B ย้อน · X สมุดผนึก · Y แผนที่') });
   function toast(t) { if (!doc.body) return; const e = doc.createElement('div'); e.textContent = t; e.style.cssText = 'position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:60;padding:7px 16px;border-radius:999px;background:#16251eee;border:1px solid #d8b46a99;color:#fff3d2;font:700 13px VillageThai,system-ui,sans-serif;box-shadow:0 4px 14px #0009;pointer-events:none'; doc.body.append(e); setTimeout(() => e.remove(), 3800) }
 
   /* ---- frame loop: pad · hold timer · bump ---- */

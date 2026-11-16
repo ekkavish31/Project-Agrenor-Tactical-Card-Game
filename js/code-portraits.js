@@ -13,6 +13,7 @@
     lorrik: { skin: '#b79a86', hair: '#241d33', style: 'hood', cloth: '#2c2540', accent: '#8a6ad8', extra: ['shadowveil', 'pointed'], bg: '#14101f' },
     serrien: { skin: '#e6dccb', hair: '#bfc8e8', style: 'long', cloth: '#3a3f7a', accent: '#a8c4ff', extra: ['ghost', 'beard'], bg: '#171a38' },
     irene: { skin: '#e3bf9d', hair: '#7a4a2a', style: 'bun', cloth: '#d8e6d4', accent: '#7fbf8a', extra: ['crosscap'], bg: '#1d2e24' },
+    clerk: { skin: '#ddb592', hair: '#5a4030', style: 'short', cloth: '#3f5a74', accent: '#d8b46a', extra: [], bg: '#22303a' },   /* v98.584 · the guild counter clerk (unnamed) */
     vik: { skin: '#c9a283', hair: '#1f1a16', style: 'hood', cloth: '#4a3a2a', accent: '#d8a33a', extra: ['mask', 'coin'], bg: '#241c14' }
   };
   const cache = {};

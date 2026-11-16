@@ -80,18 +80,18 @@ const plotIfDry=()=>(V()?.story?.seeds&&!wateredToday())?[SPOT.plot]:[];
    The battles of the prologue pass ?tut= to the arena, which coaches move by move (js/town-battle.js). The prologue cannot be skipped
    and the world map only opens when a step sends you out — free play starts when the finale is reached. */
 const LESSON={
- wake:['เดินในหมู่บ้าน',['คลิกถนนหรืออาคารเพื่อเดิน · ลากพื้นเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม','◆ สีทองบนแผนที่คือสิ่งที่เควสต้องการ · 📍 นำทาง ให้ตัวเอกเดินไปเอง','คลิกคนเพื่อคุย · Esc เปิดเมนู (กระเป๋า สำรับ ตัวละคร บันทึกเกม)','เดินด้วยปุ่ม: W A S D หรือลูกศร (จอสัมผัส/จอยสติ๊ก = จอยซ้ายมือ) · เดินชนประตูหรือคนค้างไว้สักครู่ก็ทำสิ่งนั้นเอง','ปุ่ม Act: E หรือ Space (จอสัมผัสคือปุ่มกลมใหญ่ · จอยคือปุ่ม A) = ทำสิ่งที่อยู่ตรงหน้า เช่น คุย เข้าอาคาร เก็บของ · กดค้าง ~½ วินาทีเพื่อเปิดวงกลมตัวเลือก (คุย ถามข่าว ให้ของ ...) แล้วปล่อยบนตัวเลือก']],
+ wake:['เดินในหมู่บ้าน',['คลิกถนนหรืออาคารเพื่อเดิน · ลากพื้นเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม','◆ สีทองบนแผนที่คือสิ่งที่เควสต้องการ · 📍 นำทาง ให้ตัวเอกเดินไปเอง','คลิกคนเพื่อคุย · Esc เปิดเมนู (สมุดผนึก สำรับ ตัวละคร บันทึกเกม)','เดินด้วยปุ่ม: W A S D หรือลูกศร (จอสัมผัส/จอยสติ๊ก = จอยซ้ายมือ) · เดินชนประตูหรือคนค้างไว้สักครู่ก็ทำสิ่งนั้นเอง','ปุ่ม Act: E หรือ Space (จอสัมผัสคือปุ่มกลมใหญ่ · จอยคือปุ่ม A) = ทำสิ่งที่อยู่ตรงหน้า เช่น คุย เข้าอาคาร เก็บของ · กดค้าง ~½ วินาทีเพื่อเปิดวงกลมตัวเลือก (คุย ถามข่าว ให้ของ ...) แล้วปล่อยบนตัวเลือก']],
  goats:['เวลาและแรง',['นาฬิกาเดินตลอดเวลาในหมู่บ้าน · ชาวบ้านแต่ละคนมีตารางของตัวเอง','งานและกิจกรรมใช้แรงและเวลา · แรงหมดต้องพักหรือนอน','แพะวิ่งหนีเมื่อเข้าใกล้ แต่จะหอบแล้วหยุด — รอจังหวะนั้น']],
  seeds:['งานในหมู่บ้าน',['ชาวบ้านมีงานให้ช่วยเสมอ · ช่วยแล้วได้เงิน ของ และความสนิท','ลองคุยกับคนเดิมหลายครั้ง บทสนทนาเปลี่ยนตามเรื่องที่เกิดขึ้น']],
  pumpkin:['งานที่ต้องทำทุกวัน',['ฟักทองประกวดต้องดูแลวันละครั้ง · ยิ่งดูแลครบหลายวัน ผลประกวดยิ่งดี','งานบางอย่างได้ผลตามจำนวนวัน ไม่ใช่ทำครั้งเดียวจบ']],
- planks:['วัตถุดิบ',['ของที่เก็บได้เข้ากระเป๋าวัตถุดิบ (ไม้ เหล็ก ถ่าน เสบียง) · ดูได้ที่ 🎒 กระเป๋า','วัตถุดิบที่ขาดซื้อได้ที่ตลาด']],
+ planks:['วัตถุดิบ',['ของที่เก็บได้เข้าสมุดผนึก (หมวดวัตถุดิบ) (ไม้ เหล็ก ถ่าน เสบียง) · ดูได้ที่ 📖 สมุดผนึก','วัตถุดิบที่ขาดซื้อได้ที่ตลาด']],
  stall:['ซ่อมและสร้าง',['การซ่อม/สร้างใช้วัตถุดิบ แรง และเวลา · ถ้าของไม่พอ เกมบอกว่าขาดอะไร']],
  sleep1:['นอนพักและบันทึกเกม',['นอนที่เตียงในบ้าน = ฟื้นแรงและ HP ข้ามไปเช้าวันใหม่','เกมเซฟเองตลอด · อยากเก็บจุดนี้ไว้ ใช้ Esc → 💾 บันทึกเกม (3 ช่อง)']],
  guard:['ออกนอกหมู่บ้าน',['แผนที่โลกเดินทีละช่อง · หมอกจางเมื่อเดินผ่าน','การเดินกินเสบียงและเวลา · กลางคืนศัตรูดุกว่า','กลับหมู่บ้านได้ทุกเมื่อด้วยปุ่ม 🏠']],
  cave:['การต่อสู้ครั้งแรก',['คิวด้านบนบอกลำดับ: ใครเต็มแถบ CT ก่อนได้เล่นก่อน','คลิกช่องเพื่อเดิน · คลิกศัตรูเพื่อดูการ์ดที่ดีที่สุด · คลิกซ้ำเพื่อโจมตี','จบเทิร์นแล้วเลือกทิศหันหน้า — โดนตีจากด้านหลังแรงขึ้น ×1.2']],
  gus:['ช่างตีเหล็ก',['โรงตีเหล็กคือที่ทำของ ทั้งอาวุธ ของใช้ และของขาย']],
  lanterns:['คราฟต์ที่ทั่ง',['เดินไปที่จุดบริการ แล้วเลือกสิ่งที่จะทำ · ของแต่ละอย่างใช้วัตถุดิบต่างกัน']],
- craft:['ตีอาวุธ',['เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูป → ถังน้ำ: ชุบแข็ง','ฝีมือดีได้อาวุธ ★ สูงกว่า · สวมอาวุธที่ 🎒 กระเป๋า แล้ว ATK ในสนามเพิ่ม']],
+ craft:['ตีอาวุธ',['เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูป → ถังน้ำ: ชุบแข็ง','ฝีมือดีได้อาวุธ ★ สูงกว่า · สวมอาวุธที่ 📖 สมุดผนึก แล้ว ATK ในสนามเพิ่ม']],
  hire:['เพื่อนร่วมทาง',['ชวนคนที่มี ★ ที่โรงแรมเข้าทีม (สูงสุด 4 คน)','ในสนาม: สั่ง ⚔ บุก · 👣 ตาม · 🛡 ยึด และท่าพิเศษ (ใช้ 1 คริสตัล)','เพื่อนถึง Lv.3 แล้วสั่งเองได้ในตาของเขา 🎮']],
  sell:['ขายของ',['ขายที่โต๊ะรับซื้อในตลาด หรือวางของใน "ร้านของเรา" แล้วตั้งราคา','ร้านขายต่อเองแม้ตัวเอกไม่อยู่ · ดูยอดในสมุดยอดขาย']],
  raid:['สู้อย่างนักวางแผน',['ยืนสูงกว่าเป้า ตีแรงขึ้น ~10% ต่อระดับ (▲ บนช่องคือความสูง)','ธาตุชนะทาง ×1.3 · แพ้ทาง ×0.7 · ดูตารางธาตุใน Esc','การ์ดตอบโต้/หลบ ใช้ก่อนจบเทิร์น ทำงานตอนศัตรูตี']],
@@ -138,7 +138,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
   onSpot:async d=>{const r=await questBattle(d,{title:'ฟักทองในไร่ ·',ms:'pumpkin*1,pumpkin*1,pumpkin*1,pest*1,pest*1,pest*1',tut:'pumpkin',seed:4102,r:6,biome:'grass',poi:'patch',bg:'pumpkin-patch'});
    if(r==='win'){d.got=3;doSave();return {msg:'🎃 เก็บฟักทองสุกครบ 3 ลูกแล้ว!',consume:true}}return {msg:r==='busy'?'':'ฟักทองยังรอเก็บอยู่ · กลับไปเก็บต่อได้เลย',consume:false}}},
  talkStep({id:'tom',outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
- {id:'planks',tag:'real',title:'แผ่นไม้ของเคน',goal:'เก็บแผ่นไม้ 2 แผ่นที่กองไว้หน้าบ้านเคน',hint:'เดินไปแตะกองไม้ 🪵 · ได้ไม้เข้ากระเป๋าวัตถุดิบ',
+ {id:'planks',tag:'real',title:'แผ่นไม้ของเคน',goal:'เก็บแผ่นไม้ 2 แผ่นที่กองไว้หน้าบ้านเคน',hint:'เดินไปแตะกองไม้ 🪵 · ได้ไม้เข้าสมุดผนึก (หมวดวัตถุดิบ)',
   spot:SPOT.planks,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
   onSpot:d=>{mats().wood=(mats().wood||0)+1;d.got=(d.got||0)+1;doSave();doRender();return {msg:'🪵 ไม้ +1 ('+d.got+'/2)',consume:true}}},
  {id:'stall',tag:'real',outro:'stallDone',title:'ซ่อมแผงขายของ',goal:'เดินไปที่แผงหน้าตลาด แล้วซ่อม (ใช้ไม้ 2)',hint:'เดินไปแตะแผง 🛠️ · ใช้แรง 6 และเวลา 30 นาที · ไม้ไม่พอซื้อได้ที่ตลาด',
@@ -304,7 +304,7 @@ function draw(force){const el=tracker(),st=story();if(!st||st.mode==='off'||root
  if(st.closed&&st.mode!=='offer'){el.hidden=true;badgeSync();return}   /* v98.337 · closed: only the badge on the 'วันนี้' icon remains */
  let html='';el.classList.toggle('stk-done',st.mode==='done');el.classList.toggle('stk-folded',!!st.fold);
  if(st.mode==='offer')html=`<div class="stk-head"><small>บทนำใหม่</small><b>เทศกาลเฟิร์นเวล</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div><div class="stk-body"><p class="stk-goal">เล่นบทนำ 3 วันของงานเทศกาล และการเดินทางครั้งแรก</p><p class="stk-hint">เหมาะกับเซฟใหม่ · เซฟเดิมเล่นได้ บางขั้นจะผ่านเองถ้าทำไว้แล้ว</p><div class="stk-acts"><button data-act="start" class="primary" type="button">▶ เล่นบทนำ</button><button data-act="off" type="button">ซ่อน</button></div></div>`;
- else if(st.mode==='done')html=`<div class="stk-head"><small>เล่นอิสระ</small><b>เบาะแสที่ได้</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div><div class="stk-body"><p class="stk-hint">• จานหินโบราณที่มีเส้นแสง<br>• จดหมายของ "G." ถึงเมืองใหญ่<br>• ผลึกม่วงจากเหมืองเก่าที่อุ่นเมื่อแตะ<br>• แผนที่สมบัติเก่าในกระเป๋า</p><p class="stk-hint">เส้นทางไปเมืองใหญ่ยังไม่เปิด (อยู่ในแผน)</p><div class="stk-acts"><button data-act="off" type="button">ซ่อนกล่องนี้</button></div></div>`;
+ else if(st.mode==='done')html=`<div class="stk-head"><small>เล่นอิสระ</small><b>เบาะแสที่ได้</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div><div class="stk-body"><p class="stk-hint">• จานหินโบราณที่มีเส้นแสง<br>• จดหมายของ "G." ถึงเมืองใหญ่<br>• ผลึกม่วงจากเหมืองเก่าที่อุ่นเมื่อแตะ<br>• แผนที่สมบัติเก่าในสมุดผนึก</p><p class="stk-hint">เส้นทางไปเมืองใหญ่ยังไม่เปิด (อยู่ในแผน)</p><div class="stk-acts"><button data-act="off" type="button">ซ่อนกล่องนี้</button></div></div>`;
  else{const step=STEPS[st.i];if(!step){el.hidden=true;return}const d=dataOf(step),chap=chapterOf(st.i),acts=(step.acts||[]).filter(a=>!a.hide?.(d));
   const p=step.progress?.(d);const night=late()&&!/^sleep|^rest/.test(step.id)?'<p class="stk-hint">🌙 ดึกแล้ว กลับบ้านนอนแล้วทำต่อพรุ่งนี้ได้</p>':'';
   html=`<div class="stk-head"><small>${esc(chap)}</small><b>${esc(step.title)}${step.tag==='temp'&&root.PROJECT_DEV?'<span class="stk-tag" title="ระบบชั่วคราว ระบบจริงอยู่ในแผน (แสดงเฉพาะเครื่องผู้สร้าง)">ชั่วคราว</span>':''}</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div>
@@ -360,7 +360,9 @@ async function resumeFight(){const step=cur();if(!step)return false;const d=data
 /* v98.472 · main story phase A: the odd extra goat (Mip in disguise) was seen once — docs/lore/MAIN-STORY-CANON.md A8 */
 const mipSeen=()=>!!V()?.story?.mip?.seen;
 function mystery(ev){const v=V();if(!v||ev!=='seen')return;v.story=v.story||{};v.story.mip=v.story.mip||{};if(!v.story.mip.seen){v.story.mip.seen=true;try{window.Titles?.log(G(),'mip.seen')}catch(e){}doSave()}}
-root.Story={mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+/* v98.584 · the first visit to the guild counter: the clerk explains where the card book's spell comes from (and why the kingdom likes cards) — played once, from the interior page */
+async function guildFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.guildSeen)return false;v.story.guildSeen=true;doSave();await root.Cutscene.play(D().SCENES.guildFirst);return true}
+root.Story={guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},
