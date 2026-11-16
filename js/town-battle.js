@@ -320,6 +320,9 @@
     top.classList.toggle('on', on); bot.classList.toggle('on', on); document.body.classList.toggle('fb-cine', on);
   }
   /* run an action as a short cut-scene: bars in, push in on the pair, play, ease back out */
+  /* v98.602 · the attack close-up zoom is only for STRONG hits (critical · a kill · big damage · bosses); ordinary attacks play at the normal camera. ?zoom=all brings the old behaviour back */
+  const ZOOM_ALL = Q.get('zoom') === 'all';
+  const cinemaIf = (cond, a, b, run, o) => (cond || ZOOM_ALL) ? cinematic(a, b, run, o) : run();
   async function cinematic(a, b, run, o = {}) {
     if (!CINE) return run();
     cine = { a, b, z: Math.min(2.1, (o.z || 1.75)), speed: 7, soft: o.bars === false }; if (o.bars !== false) bars(true); hidePreview(); await wait(o.lead ?? 380);
@@ -880,7 +883,7 @@
       h.shown = h.hp; hudSync(); await wait(520); h.pose = 'idle'; return;
     }
     const last = !FB.monsters(st).some(u => u.hp > 0), kill = last, heavy = r.big > 1 || r.hits.reduce((a, x) => a + x.damage, 0) >= 20;
-    await cinematic(h, m, async () => {
+    await cinemaIf(heavy || last || r.hits.some(x => x.crit || x.down || x.dead || (x.hp ?? 1) <= 0), h, m, async () => {
       if (r.leap) { const from = { vu: h.vu, vv: h.vv }; h.pose = 'windup'; await wait(160); await leapAnim(h, r.leap.to); fx('diveTrail', m, from); shake(9, 260) }
       h.dir = dirTo(h, m); h.pose = 'windup'; if (cine) { cine.z += .18; cine.speed = 4 } if (heavy) await chargeAttack(h); else await wait(280);
       h.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(h, m) * (heavy ? 2.2 : 1.3)); lines(m, 220);
@@ -957,7 +960,7 @@
     const strikePose = isMon && a.kind === 'pumpkinBoss' && FB.dist(a, t) > 1 ? 'cast' : 'strike';
     const tw = isMon ? M?.timing?.(a.kind, a.dir, 'windup') : null, ts = isMon ? M?.timing?.(a.kind, a.dir, strikePose) : null;
     const isHero = t === FB.hero(st), down = t.hp <= 0, guarded = s.notes.some(n => n.startsWith('ป้องกัน')), full = isHero || s.crit || down || a.boss;
-    await cinematic(a, t, async () => {
+    await cinemaIf(s.crit || s.damage >= 20 || a.boss || (down && isHero), a, t, async () => {
       a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } if (a.boss || s.damage >= 20) await chargeAttack(a, Math.max(560, Math.min(900, tw?.duration || 0))); else await wait(isMon ? Math.min(full ? 900 : 520, tw?.duration || 380) : (full ? 300 : 200));
       a.pose = strikePose; sfx('swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * 1.4); lines(t, 200) } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
       if (s.evaded) { const o = { u: t.vu, v: t.vv }; t.vu += (t.vu - a.vu) * .35; t.vv += (t.vv - a.vv) * .35; fx('wind', t, a, {}); sfx('swing'); floatText(t, 'MISS', '#bfe8ff', false, true); await wait(420); t.vu = o.u; t.vv = o.v; a.pose = 'idle'; return }
