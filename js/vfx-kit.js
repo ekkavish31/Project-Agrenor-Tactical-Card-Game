@@ -36,7 +36,7 @@
 
   /* ---------- the effects ---------- */
   const FX = {
-    sword(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), dir = a.x <= p.x ? 1 : -1, cy = chest(p, cw), sw = eo(seg(t, 0, .34)), al = 1 - seg(t, .32, .8), a0 = dir > 0 ? Math.PI + 2.3 : -2.3, a1 = a0 - dir * 2.5 * sw;
+    sword(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), dir = a.x <= p.x ? -1 : 1,   /* v98.594 · the crescent faced the opposite side (it opened away from the attacker) → mirrored */ cy = chest(p, cw), sw = eo(seg(t, 0, .34)), al = 1 - seg(t, .32, .8), a0 = dir > 0 ? Math.PI + 2.3 : -2.3, a1 = a0 - dir * 2.5 * sw;
       add(g, () => { crescent(g, p.x + dir * W * .25, cy + W * .1, W * .78, a0, a1, W * .2, C.white, C.steel, al); crescent(g, p.x + dir * W * .25, cy + W * .1, W * .7, a0, a1, W * .42, C.steel, C.gold, al * .45);
         const hx = p.x, k = seg(t, .22, 1); glow(g, hx, cy, W * .85 * bell(seg(t, .16, .55)), C.white, .55); if (k > 0) { sparks(g, e, 10, hx, cy, W * .95, W * .035, k, C.gold, { a0: dir > 0 ? -1.2 : Math.PI - 1.2, arc: 2.4, grav: W * .25 }); star4(g, hx, cy, W * .55 * (1 - k), C.white, 1 - k, k) } }); return true },
     knife(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), cy = chest(p, cw);
@@ -151,9 +151,14 @@
   let mode; try { mode = new URLSearchParams(root.location?.search || '').get('vfx') } catch (_) { }
   let cache = null, cacheAt = 0;
   const choices = () => { const now = Date.now(); if (cache && now - cacheAt < 1500) return cache; cacheAt = now; try { cache = JSON.parse(root.localStorage?.getItem(KEY) || '{}') || {} } catch (_) { cache = {} } try { cache.__all = root.localStorage?.getItem('vfx-kit') === '1' } catch (_) { } return cache };
-  const uses = k => { k = nameOf(k); if (!FX[k]) return false; if (mode === 'old' || mode === '0') return false; if (mode === 'new' || mode === '1') return true; const c = choices(); return c[k] ? c[k] === 'new' : !!c.__all };
-  const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = v === 'new' ? 'new' : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
+  /* v98.594 · each effect has a LIST of looks: 'old' (the painted picture) · 'new' (this kit) · any extra look added later with VfxKit.addVariant(kind, id, label, fn) — the editor shows them all and the game uses the one chosen. */
+  const EXTRA = {};
+  const variants = k => { k = nameOf(k); return [['old', 'เดิม (ภาพวาดแปะ)'], ['new', 'ใหม่ (วาดด้วยโค้ด)'], ...Object.entries(EXTRA[k] || {}).map(([id, v]) => [id, v.label])] };
+  const addVariant = (k, id, label, fn) => { k = nameOf(k); if (!id || id === 'old' || id === 'new' || typeof fn !== 'function') return false; (EXTRA[k] = EXTRA[k] || {})[id] = { label: label || id, fn }; return true };
+  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : 'old') };
+  const uses = k => { k = nameOf(k); if (!FX[k] && !EXTRA[k]) return false; return choiceOf(k) !== 'old' };
+  const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = (v === 'new' || (v && v !== 'old')) ? String(v) : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
   const enabled = () => Object.keys(FX).some(uses);
-  function draw(e, t, p, a, g, camera) { const f = FX[nameOf(e.kind)]; if (!f) return false; g.save(); try { return !!f(g, e, clamp(t), p, a || p, camera.w) } catch (err) { return false } finally { g.restore() } }
-  root.VfxKit = { KEY, draw, has: k => !!FX[nameOf(k)], kinds: Object.keys(FX), uses, setChoice, enabled, setEnabled: v => { for (const k of Object.keys(FX)) setChoice(k, v ? 'new' : 'old') } };
+  function draw(e, t, p, a, g, camera, variant) { const k = nameOf(e.kind), id = variant || choiceOf(k), f = (id !== 'old' && id !== 'new' && EXTRA[k]?.[id]?.fn) || FX[k]; if (!f) return false; g.save(); try { return !!f(g, e, clamp(t), p, a || p, camera.w) } catch (err) { return false } finally { g.restore() } }
+  root.VfxKit = { KEY, draw, has: k => !!FX[nameOf(k)], kinds: Object.keys(FX), uses, setChoice, choiceOf, variants, addVariant, enabled, setEnabled: v => { for (const k of Object.keys(FX)) setChoice(k, v ? 'new' : 'old') } };
 })(globalThis);
