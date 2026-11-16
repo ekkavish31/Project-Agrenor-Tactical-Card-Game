@@ -58,7 +58,7 @@ const GATE_AREA=['mine','frost','forest','coast','ruins','swamp'],gateImg={};
 /* v98.20 · the six themed adventure-gate pictures are no longer loaded: the two town gates are drawn by code */
 function gateSprite(g,pa,pb,im,flip){const mx=(pa.x+pb.x)/2,my=(pa.y+pb.y)/2,w=(Math.abs(pb.x-pa.x)+90)*1.3,h=w*im.naturalHeight/im.naturalWidth;g.save();g.translate(mx,my+10);if(flip)g.scale(-1,1);root.TownArt.draw(g,im,null,[-w/2,-h*.9,w,h],null);g.restore()}
 function gateObjects(){const out=[];V().getExits().forEach((e,i)=>{if(e.off)return;const axis=gateAxis(e),span=1.9,A=axis==='v'?{u:e.u,v:e.v-span}:{u:e.u-span,v:e.v},B=axis==='v'?{u:e.u,v:e.v+span}:{u:e.u+span,v:e.v},pa=V().project(A.u,A.v),pb=V().project(B.u,B.v),pc=V().project(e.u,e.v);
-  out.push({i,x:pc.x,y:Math.max(pa.y,pb.y)+420,draw:g=>{g.__gateK=i;gate(g,pa,pb,pc,'ประตูเมือง')}})   /* +420: drawn in front of the border forest */});return out}
+  out.push({i,x:pc.x,y:Math.max(pa.y,pb.y)+420,draw:g=>{g.__gateK=i;gate(g,pa,pb,pc,'ประตูหมู่บ้าน')}})   /* +420: drawn in front of the border forest */});return out}
 /* v98.20 · the town gate, drawn by code: two stone towers with battlements, a timber lintel under a red tiled roof (same tiles as the village), a hanging name board,
    a pennant and a lantern. pa/pb = foot of the left/right tower on screen (the gate spans the road), pc = the middle of the opening. */
 function tower(g,p,h,w=38,c=['#d6cbad','#a99d7e','#e4dbc0']){

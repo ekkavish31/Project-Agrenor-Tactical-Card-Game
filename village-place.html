@@ -1213,13 +1213,7 @@ list.sort((a, b) => a.y - b.y);
  for (const s of M.stations) {
   const d = door(s),
    p = project(d.u, d.v);
-  g.font = '13px TownThai,system-ui';
-  g.textAlign = 'center';
-  const w = g.measureText(s.name).width + 22;
-  g.fillStyle = '#233a2ee0';
-  g.fillRect(p.x - w / 2, p.y + 14, w, 26);
-  g.fillStyle = '#f6e8bd';
-  g.fillText(s.name, p.x, p.y + 32)
+  if (window.NamePlate) window.NamePlate.draw(g, s.name, p.x, p.y + 6, { size: 14, dir: 'down' });   /* v98.606 · shared name plate */
  } if (editing) {   /* v98.548 · players see the light + arrow instead of the old sign */
   const p = project(M.exit.u, M.exit.v);
   g.fillStyle = '#233a2ee0';
@@ -1715,4 +1709,4 @@ window.TouchControls?.attach({
  act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
  buttons: [{ id: 'bag', icon: 'cardbook', title: 'สมุดผนึก', run: () => send('menu', { id: 'bag' }) }, { id: 'menu', icon: 'settings', title: 'เมนู', run: () => send('menu', { id: 'settings' }) }, ...(KIND === 'forge' ? [{ id: 'wip', icon: 'forge', title: 'ซ่อน/แสดงการ์ดงาน', run: () => send('wip-toggle') }] : [])]
 });
-</script><script src="js/place-catalog.js?v=v98.526"></script><script src="js/art-frames.js?v=v98.567"></script><script src="js/place-build.js?v=v98.431"></script><script src="js/depth-style.js?v=98.292"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=v98.500"></script><script src="js/injury.js?v=v98.332"></script><script src="js/world-state.js?v=98.297"></script><script src="js/villager-draw.js?v=v98.605"></script><script src="js/village-life.js?v=v98.427"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=98.263"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+</script><script src="js/place-catalog.js?v=v98.526"></script><script src="js/art-frames.js?v=v98.567"></script><script src="js/place-build.js?v=v98.431"></script><script src="js/depth-style.js?v=98.292"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=v98.500"></script><script src="js/injury.js?v=v98.332"></script><script src="js/world-state.js?v=98.297"></script><script src="js/name-plate.js?v=v98.606"></script><script src="js/villager-draw.js?v=v98.605"></script><script src="js/village-life.js?v=v98.427"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=98.263"></script><script src="js/editor-tools.js?v=91.77"></script></html>
