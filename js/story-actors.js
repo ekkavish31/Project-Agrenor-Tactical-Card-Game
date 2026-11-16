@@ -117,7 +117,7 @@
   let box = null, stands = null, slots = { L: null, R: null }, recent = [], speakerSide = null, scene = null, typingFlap = null;
   const css = `
   .cs-actors{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
-  .cs-actor{position:absolute;bottom:4vh;height:min(74vh,640px);width:min(44vw,460px);display:flex;align-items:flex-end;justify-content:center;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),filter .35s,opacity .35s;opacity:0;filter:brightness(.45) saturate(.7)}
+  .cs-actor{position:absolute;bottom:4vh;height:min(74vh,640px);width:min(56vw,620px);display:flex;align-items:flex-end;justify-content:center;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),filter .35s,opacity .35s;opacity:0;filter:brightness(.45) saturate(.7)}
   .cs-actor.L{left:max(0px,calc(50% - 560px));transform:translateX(-60px) scale(.94);transform-origin:50% 100%}
   .cs-actor.R{right:max(0px,calc(50% - 560px));transform:translateX(60px) scale(.94);transform-origin:50% 100%}
   .cs-actor.in{opacity:1}.cs-actor.in.L,.cs-actor.in.R{transform:translateX(0) scale(.94)}
