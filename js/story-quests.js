@@ -427,6 +427,8 @@ async function guildFirst(){const v=V();if(!v||!root.Cutscene)return false;v.sto
 const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','tom','planks','stall','homeWelcome','chestLesson','deckLesson','sleep1']);
 function timeScale(){try{const st=story();if(!st||st.mode!=='active')return 1;const step=STEPS[st.i];if(!step||!DAY1.has(step.id))return 1;const g=G();if(!g||g.day>1)return 1;const m=g.minutes||480;return m<720?.4:m<900?.3:m<1020?.2:m<1110?.1:0}catch(e){return 1}}
 /* v98.589 · the card-book lesson plays once, the first time the player opens the book during the prologue (old saves past the prologue never see it) */
+/* v98.607 · the world map asks where the current step sends the player (beacon + edge arrow, js/world-map.js guideOf) */
+function worldGuide(){const st=story();if(!st||st.mode!=='active')return null;const step=STEPS[st.i];if(!step)return null;if(step.id==='cave')return {id:'mine',label:'เหมืองเก่า (ทางเหนือ)'};if(step.id==='caveBack')return {id:'home',label:'หมู่บ้านเฟิร์นเวล'};return null}
 /* v98.605 · helpers for the home-evening steps */
 function chestCount(){try{const c=V().chest||{};return Object.values(c.materials||{}).reduce((a,b)=>a+(+b||0),0)+(c.items||[]).length}catch(e){return 0}}
 function deckHas(id){try{return ((V().tacticDecks||{}).combat||{})[id]>0}catch(e){return false}}
@@ -446,7 +448,7 @@ async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!
  if(document.getElementById('storyBattle')||onWorld())return false;
  bookBusy=true;try{v.story.bookIntro=true;doSave();await root.Cutscene.play(D().SCENES.bookExit);try{if(typeof openPanel==='function')openPanel('bag')}catch(e){}}finally{bookBusy=false}return true}
 async function bookFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
-root.Story={homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

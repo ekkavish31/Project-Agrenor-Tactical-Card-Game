@@ -286,8 +286,16 @@
 
   /* ---------- beacon + encounter marks ---------- */
   const destOf = () => S.dest ? world.dests.find(d => d.id === S.dest) : null;
+  /* v98.607 · the story guide: while a prologue step sends the player somewhere on this map (the old mine · back home) the same beacon + edge arrow as a quest destination point there.
+     Story.worldGuide() → { id:'mine'|'home', label } or null */
+  function guideOf() {
+    if (S.dest) return null;
+    try { const G0 = (window.Story || window.parent?.Story)?.worldGuide?.(); if (!G0) return null;
+      if (G0.id === 'home') { const h = world.home; return h ? { id: 'story:home', name: G0.label || 'หมู่บ้านเฟิร์นเวล', c: h.c, r: h.r } : null }
+      const d = world.dests.find(x => x.id === G0.id) || world.dests.find(x => x.icon === G0.id); return d ? { ...d, id: 'story:' + d.id, name: G0.label || d.name } : null } catch (e) { return null }
+  }
   function drawBeacon(now) {
-    const d = destOf(); if (!d) return; const p = center(d.c, d.r), pulse = (Math.sin(now * .003) + 1) / 2;
+    const d = destOf() || guideOf(); if (!d) return; const p = center(d.c, d.r), pulse = (Math.sin(now * .003) + 1) / 2;
     g.save(); g.globalCompositeOperation = 'lighter';
     const col = S.done[d.id] ? '140,255,170' : '255,200,110', gr = g.createLinearGradient(p.x, p.y - 260, p.x, p.y); gr.addColorStop(0, `rgba(${col},0)`); gr.addColorStop(1, `rgba(${col},${.35 + pulse * .15})`);
     g.fillStyle = gr; g.beginPath(); g.moveTo(p.x - 10, p.y - 260); g.lineTo(p.x + 10, p.y - 260); g.lineTo(p.x + 22, p.y); g.lineTo(p.x - 22, p.y); g.closePath(); g.fill();
@@ -395,7 +403,8 @@
   }
   /* arrow on the screen edge pointing at the destination when it is off screen */
   function drawCompass() {
-    const d = destOf(); if (!d || S.done[d.id]) return; const p = center(d.c, d.r), s = toScreen(p.x, p.y), m = 46;
+    const d = destOf() || guideOf(); if (!d || S.done[d.id]) return; const p = center(d.c, d.r), s = toScreen(p.x, p.y), m = 46;
+    if (d.id.startsWith('story:')) { g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); label(g, '📍 เป้าหมายตอนนี้: ' + d.name + ' — เดินไปทางลูกศรสีทองที่ขอบจอ', W / 2, H - 28, '#ffe2a8', 15); g.restore() }
     if (s.x > m && s.x < W - m && s.y > m && s.y < H - m) return;
     const cx = W / 2, cy = H / 2, ang = Math.atan2(s.y - cy, s.x - cx), k = Math.min((W / 2 - m) / Math.abs(Math.cos(ang) || 1e-6), (H / 2 - m) / Math.abs(Math.sin(ang) || 1e-6)), x = cx + Math.cos(ang) * k, y = cy + Math.sin(ang) * k;
     g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.translate(x, y); g.rotate(ang); g.fillStyle = 'rgba(255,205,120,.95)'; g.beginPath(); g.moveTo(16, 0); g.lineTo(-8, -10); g.lineTo(-3, 0); g.lineTo(-8, 10); g.closePath(); g.fill(); g.restore();
