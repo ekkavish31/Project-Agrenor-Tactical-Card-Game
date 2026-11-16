@@ -13,6 +13,8 @@
   /* v98.152 · ONE size multiplier for every character in this room (js/map-scale.js, edited in ⚖ Scale Lineup → 🗺 ขนาดต่อแผนที่ → ภายใน) */
   const IK = () => window.MapScale ? MapScale.get('interior', PLACE) : 1;
   const KIND = PLACE === 'farm' ? 'farm' : L.placeKind(PLACE, NAME), OWNER = L.HOUSE_OF[PLACE] || null;
+  /* v98.609 · a small house with no map of its own: no walking around a generic room — the owner comes to the door and you TALK (the conversation screen, code-drawn backdrop); every choice (chat · gift · service · bye) is a button in the talk. ?walk=1 still opens the old room. */
+  const VISIT = KIND === 'house' && Q.get('walk') !== '1' && !!OWNER;
   /* v97.82 · the farm sub-map (place-interior.html?place=farm&farm=<plot id>&back=<page>): a 🌾 farm plot of js/estates.js, drawn
      outdoors — soil beds that show each crop of js/garden.js as it grows, the pen with its animals, the barn and the tools you bought.
      Click a bed: plant (opens the seed list) · water · harvest · clear. Click the pen: pat them. The gate leads back to where you came from. */
@@ -852,7 +854,7 @@
     document.body.append(bg); dlg = bg;
     const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, p.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
     bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
-    bg.onclick = e => { if (e.target === bg) close() };
+    bg.onclick = e => { if (e.target === bg) { close(); if (VISIT) leave() } };
     a.face = faceOf(hero.u - a.u, hero.v - a.v);
   }
 
@@ -890,7 +892,7 @@
   }
   async function act(a, what) {
     const p = a.p; S = L.save(); const rec = L.RECRUIT[p.id], r = (S.recruit[p.id] ||= {}), hour = CLK.read().hour;
-    if (what === 'bye') { close(); return }
+    if (what === 'bye') { close(); if (VISIT) leave(); return }
     if (what === 'teach') { close(); try { parent.CardSources?.teach?.(p.id) } catch (e) { } return }
     if (what === 'talk') { talk(a); return }
     if (what === 'chat') { choices(a, 'อยากคุยเรื่องอะไรดี?', [['talk', '💬 คุยเล่น'], ['about', '❔ เรื่องของเขา'], ...(MIND && L.P[p.id] ? [['ask', '❓ ถามข่าว…']] : []), ...(p.id === 'marta' ? [['rumor', '📜 ข่าวลือ']] : [])]); return }
@@ -994,6 +996,36 @@
     buttons: []
   });
   /* v98.340 · temporary save (js/resume.js): where the hero stands */
+  /* ---------- v98.609 · visit mode ---------- */
+  if (VISIT) {
+    const st = document.createElement('style'); st.textContent = `
+    #room,#inHud{display:none!important}
+    #visitBg{position:fixed;inset:0;z-index:1;overflow:hidden;background:linear-gradient(#f6c98a 0,#f0b574 34%,#7d5a3a 34.2%,#4a3220 100%)}
+    #visitBg .wall{position:absolute;left:0;right:0;top:0;height:62%;background:repeating-linear-gradient(90deg,#6b4a2d 0 46px,#5f4026 46px 48px),#6b4a2d;box-shadow:inset 0 -26px 40px #0006}
+    #visitBg .door{position:absolute;left:50%;bottom:38%;width:min(22vw,230px);height:min(40vh,340px);transform:translateX(-50%);border-radius:999px 999px 6px 6px/46% 46% 6px 6px;background:linear-gradient(90deg,#4a2e18,#6a4426 45%,#4a2e18);border:7px solid #2d1b0e;box-shadow:0 0 0 5px #8a6a3a,0 18px 40px #0009,inset 0 0 40px #0008}
+    #visitBg .door::after{content:'';position:absolute;right:16%;top:54%;width:14px;height:14px;border-radius:50%;background:radial-gradient(#ffe29a,#a8782a)}
+    #visitBg .win{position:absolute;bottom:50%;width:min(12vw,130px);height:min(16vh,130px);border:6px solid #2d1b0e;border-radius:8px;background:radial-gradient(circle at 50% 60%,#ffd985,#d28b2e 70%);box-shadow:0 0 70px 20px #ffb74d55}
+    #visitBg .win.l{left:12%}#visitBg .win.r{right:12%}
+    #visitBg .step{position:absolute;left:50%;bottom:34%;width:min(30vw,320px);height:16px;transform:translateX(-50%);background:linear-gradient(#a89a82,#7a6e5a);border-radius:4px;box-shadow:0 8px 14px #0007}
+    #visitBg .glow{position:absolute;left:50%;top:38%;width:70vmin;height:70vmin;transform:translate(-50%,-50%);background:radial-gradient(circle,#ffcf7a55,#0000 65%)}
+    #visitBg h1{position:absolute;left:0;right:0;top:4%;margin:0;text-align:center;font:700 clamp(18px,3vw,30px) VillageThai,system-ui;color:#fff0c7;text-shadow:0 2px 8px #000}
+    .visit .in-dlg-bg{background:linear-gradient(#0000 45%,#000b)}
+    .visit .in-dlg{width:min(980px,100%);grid-template-columns:170px 1fr}.visit .in-dlg canvas{width:160px;height:190px}`;
+    document.head.append(st); document.documentElement.classList.add('visit');
+    const bgv = document.createElement('div'); bgv.id = 'visitBg'; bgv.innerHTML = '<div class="wall"></div><div class="glow"></div><div class="win l"></div><div class="win r"></div><div class="door"></div><div class="step"></div><h1></h1>'; bgv.querySelector('h1').textContent = NAME; document.body.prepend(bgv);
+    const WHERE = { market: 'ตลาด', inn: 'โรงแรม', temple: 'วิหาร', forge: 'โรงตีเหล็ก', square: 'ลานกลางหมู่บ้าน', shop: 'ร้านค้า', healer: 'บ้านหมอยา', guild: 'สมาคมนักผจญภัย' };
+    const startVisit = () => {
+      const a = people.get(OWNER);
+      if (a) { talk(a); return }
+      const P = L.P[OWNER]; if (!P) { leave(); return }
+      const per = CLK.period(CLK.read().hour); let at = ''; for (const [x, y, pl] of P.sched || []) if (CLK.read().hour >= x && CLK.read().hour < y) { at = pl; break }
+      const bg = document.createElement('div'); bg.className = 'in-dlg-bg'; modalOpen = true; dlg = bg;
+      bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(NAME)}</h2><p>เคาะประตูแล้ว… ไม่มีใครตอบ ${esc(P.name)} ไม่อยู่บ้านตอนนี้${WHERE[at] ? ' (น่าจะอยู่ที่' + WHERE[at] + ')' : ''}</p><div class="acts"><button class="ghost" data-a="bye">กลับ</button></div></div></div>`;
+      document.body.append(bg); const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, P.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
+      bg.querySelector('[data-a]').onclick = () => { close(); leave() }; bg.onclick = e => { if (e.target === bg) { close(); leave() } };
+    };
+    setTimeout(startVisit, 900);
+  }
   window.ResumeHook = { ready: () => !window.__imgGateOpen, get: () => ({ u: hero.vu, v: hero.vv, face: hero.face }), set: d => { if (!d) return; hero.vu = d.u; hero.vv = d.v; hero.u = Math.floor(d.u); hero.v = Math.floor(d.v); if (d.face) hero.face = d.face; hero.path = []; hero.then = null; hero.walking = false } };
   window.Interior = { people, hero, talk: id => { const a = people.get(id); if (a) talk(a) }, act: (id, w) => { const a = people.get(id); if (a) return act(a, w) }, room: R, kind: KIND, sync: () => { syncPeople(false); hudSync() } };
 })();
