@@ -295,7 +295,17 @@
     if (sc.obj.type === 'boss') { if (!boss) err.push('boss scene needs a boss') } else if (sc.obj.type === 'defend') { if (!(sc.obj.cells || []).length || sc.obj.cells.some(c => !walk(sc, c.u, c.v))) err.push('defend cells must be open ground'); if (!(sc.obj.turns > 0)) err.push('defend needs turns') } else if (sc.obj.type === 'rout') { if (!(sc.enemies || []).length) err.push('rout scene needs enemies') } else err.push('unknown objective ' + sc.obj.type);
     return err;
   }
-  const api = { SCENES, get: id => SCENES[id] || null, cell, walk, units, rules, validate, makeGrid, TILE };
+  /* ---------- v98.596 · แก้แผนที่ฉากตายตัวด้วย Editor (✏ ฉากตายตัว ในแท็บ ⚔ สนามต่อสู้) ----------
+     localStorage 'set-piece-edits-v1' = { [sceneId]: { R?, map?, hero?, allies?, enemies? } } — ค่าที่แก้ "ทับ" ค่าในโค้ดเฉพาะฟิลด์นั้น (กติกา · บทพูด · เป้าหมาย ยังมาจากโค้ด) · ⬆ Push เข้า GAME_SETTINGS ให้ทุกเครื่อง
+     SetPieces.get(id) = ฉากหลังทับแล้ว (เกมใช้ตัวนี้) · SetPieces.base(id) = ค่าในโค้ดล้วน · SetPieces.edits() = ค่าที่แก้ทั้งหมด */
+  const EDIT_KEY = 'set-piece-edits-v1';
+  const edits = () => { try { const o = JSON.parse(root.localStorage?.getItem(EDIT_KEY) || '{}'); return o && typeof o === 'object' ? o : {} } catch (e) { return {} } };
+  const FIELDS = ['R', 'map', 'hero', 'allies', 'enemies'];
+  function merged(id) { const b = SCENES[id]; if (!b) return null; const e = edits()[id]; if (!e || typeof e !== 'object') return b; const o = { ...b };
+    for (const f of FIELDS) if (e[f] != null) o[f] = e[f];
+    /* an edit that does not describe a valid square map is ignored (never break the fight for a bad draft) */
+    const n = 2 * o.R + 1; if (!Array.isArray(o.map) || o.map.length !== n || o.map.some(r => typeof r !== 'string' || r.length !== n)) return b; return o }
+  const api = { SCENES, get: merged, base: id => SCENES[id] || null, edits, EDIT_KEY, FIELDS, cell, walk, units, rules, validate, makeGrid, TILE };
   root.SetPieces = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
