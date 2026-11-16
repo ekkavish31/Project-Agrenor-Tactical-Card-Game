@@ -232,16 +232,53 @@ function battleCut(){
 function battleReady(fr){return new Promise(res=>{const on=e=>{if(e.source===fr.contentWindow&&e.data?.type==='agrenor-battle-ready'){removeEventListener('message',on);res()}};addEventListener('message',on);setTimeout(res,20000)})}
 /* v98.472 · VICTORY summary after a story fight (goat / pumpkin …): foes beaten, EXP, HP of the party — click / Enter to continue */
 function victorySummary(r){return new Promise(done=>{
- if(!document.getElementById('qbVicCss')){const c=document.createElement('style');c.id='qbVicCss';c.textContent=`#qbVic{position:fixed;inset:0;z-index:970;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#1d2a1fcc,#05080de8);animation:qbVicIn .35s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif;cursor:pointer}#qbVic .box{width:min(480px,92vw);padding:22px 24px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c;text-align:center}#qbVic h2{margin:0;font:900 40px/1 AgThai,Georgia,serif;letter-spacing:.12em;color:#9a5a12;text-shadow:0 2px 0 #fff8,0 0 24px #ffcf6a;animation:qbVicT .6s cubic-bezier(.2,1.6,.4,1) both}#qbVic .sub{margin:6px 0 14px;color:#6a5030;font-size:14px}#qbVic .row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;text-align:left;margin:6px 0;font-size:14.5px}#qbVic .row b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#qbVic .xp{color:#a0520c;font-weight:800}#qbVic .hp{color:#5a6a40;font-variant-numeric:tabular-nums}#qbVic .go{margin-top:14px;color:#8a7050;font-size:12.5px}@keyframes qbVicIn{from{opacity:0}}@keyframes qbVicT{from{transform:scale(.4);opacity:0}}`;document.head.append(c)}
- const e=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]),hero=(()=>{try{return G().village?.heroName||'ตัวเอก'}catch{return 'ตัวเอก'}})();
+ /* v98.597 · a victory CEREMONY: golden rays + sparks · the word VICTORY letter by letter · party cards one by one (portrait · EXP counting up · HP) · the victory theme (bgm-victory-01) plays over it
+    first click = show everything at once · next click / Enter = go on */
+ if(!document.getElementById('qbVicCss')){const c=document.createElement('style');c.id='qbVicCss';c.textContent=`
+#qbVic{position:fixed;inset:0;z-index:970;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#2a2412e6,#07090dee 70%);animation:qbVicIn .5s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif;cursor:pointer;color:#f6e7c0}
+#qbVic .rays{position:absolute;left:50%;top:38%;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;background:repeating-conic-gradient(from 0deg,#ffd77a22 0 6deg,#0000 6deg 18deg);-webkit-mask:radial-gradient(circle,#000 0,#0000 55%);mask:radial-gradient(circle,#000 0,#0000 55%);animation:qbVicSpin 60s linear infinite;pointer-events:none}
+#qbVic canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#qbVic .wrap{position:relative;width:min(560px,94vw);text-align:center}
+#qbVic .crest{height:3px;margin:0 auto 10px;width:0;background:linear-gradient(90deg,#0000,#ffd77a,#0000);animation:qbVicLine .9s .1s ease-out forwards}
+#qbVic h2{margin:0;display:flex;justify-content:center;gap:.04em;font:900 clamp(40px,10vw,76px)/1 AgThai,Georgia,serif;letter-spacing:.1em;color:#ffd77a;text-shadow:0 3px 0 #7a4a0e,0 0 30px #ffb52e,0 0 70px #ff9a1f88}
+#qbVic h2 span{display:inline-block;opacity:0;transform:translateY(34px) scale(1.7);animation:qbVicLetter .55s cubic-bezier(.2,1.5,.4,1) forwards}
+#qbVic .sub{margin:10px 0 4px;font-size:16px;color:#e8d5a8;opacity:0;animation:qbVicFade .5s 1.05s forwards}
+#qbVic .kills{display:inline-block;margin:0 0 14px;padding:3px 16px;border:1px solid #ffd77a66;border-radius:20px;background:#00000055;color:#ffd77a;font-size:14px;opacity:0;animation:qbVicFade .5s 1.2s forwards}
+#qbVic .cards{display:grid;gap:9px}
+#qbVic .card{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;text-align:left;padding:9px 14px 9px 9px;border-radius:14px;background:linear-gradient(100deg,#3a2f17ee,#201a0eee);border:1px solid #ffd77a55;box-shadow:0 10px 26px #0009,inset 0 0 22px #ffd77a14;opacity:0;transform:translateX(-30px);animation:qbVicCard .5s cubic-bezier(.2,1.2,.4,1) forwards}
+#qbVic .face{width:64px;height:64px;border-radius:12px;overflow:hidden;border:2px solid #ffd77a;background:#4a3b1c;display:grid;place-items:center;font:900 26px AgThai,sans-serif;color:#ffd77a}
+#qbVic .face img{width:100%;height:100%;object-fit:cover;object-position:50% 14%}
+#qbVic .nm{font-weight:800;font-size:17px;color:#fff1cf;display:flex;justify-content:space-between;gap:8px}#qbVic .nm .xp{color:#ffd77a;font-variant-numeric:tabular-nums}
+#qbVic .bar{height:9px;margin-top:6px;border-radius:6px;background:#0008;overflow:hidden}#qbVic .bar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#ffb52e,#ffe08a);box-shadow:0 0 10px #ffc94e;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+#qbVic .hp{display:flex;justify-content:space-between;margin-top:4px;font-size:12.5px;color:#cfc29c}#qbVic .hp b{color:#a8e6a0;font-weight:700}
+#qbVic .go{margin-top:16px;font-size:13px;color:#cdb98a;opacity:0;animation:qbVicFade .5s forwards}#qbVic .go.on{animation:qbVicFade .5s forwards,qbVicPulse 1.6s 0.6s ease-in-out infinite}
+#qbVic.skip *{animation-delay:0s!important;animation-duration:.01s!important}#qbVic.skip .bar i{transition-duration:.01s}
+@keyframes qbVicIn{from{opacity:0}to{opacity:1}}@keyframes qbVicSpin{to{transform:rotate(360deg)}}@keyframes qbVicLine{to{width:min(420px,70vw)}}
+@keyframes qbVicLetter{to{opacity:1;transform:none}}@keyframes qbVicFade{to{opacity:1}}@keyframes qbVicCard{to{opacity:1;transform:none}}@keyframes qbVicPulse{50%{opacity:.45}}`;document.head.append(c)}
+ const e=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]),female=(()=>{try{return root.HeroVariant?.get?.()==='female'}catch{return false}})();
+ const hero=(()=>{try{return G().village?.heroName||'ตัวเอก'}catch{return 'ตัวเอก'}})(),look=female?'hero-female':'hero-male',other=female?'hero-male':'hero-female';
+ const members=[{name:hero,xp:r.xp,hp:r.hp,max:r.maxHp,pic:look},...(r.party||[]).map(p=>({name:p.name,xp:p.xp,hp:p.hp,max:p.max,pic:p.key==='sib'?other:p.key}))];
  const el=document.createElement('div');el.id='qbVic';el.setAttribute('role','dialog');el.setAttribute('aria-label','ชัยชนะ');
- el.innerHTML=`<div class="box"><h2>VICTORY!</h2><div class="sub">${e(String(r.title||'').replace(/\s*·\s*$/,''))} · ล้มศัตรู ${r.kills} ตัว</div>
-  <div class="row"><b>${e(hero)}</b><span class="xp">${r.xp?'EXP +'+r.xp:''}</span><span class="hp">HP ${r.hp}/${r.maxHp}</span></div>
-  ${r.party.map(p=>`<div class="row"><b>${e(p.name)}</b><span class="xp">${p.xp?'EXP +'+p.xp:''}</span><span class="hp">HP ${p.hp}/${p.max}</span></div>`).join('')}
-  <div class="go">คลิก หรือกด Enter เพื่อไปต่อ</div></div>`;
- document.body.append(el);try{root.Sfx?.play?.('victory')}catch(x){}
- const close=()=>{removeEventListener('keydown',key,true);el.remove();done()},key=ev=>{if(['Enter',' ','Escape'].includes(ev.key)){ev.preventDefault();ev.stopPropagation();close()}};
- setTimeout(()=>{el.onclick=close;addEventListener('keydown',key,true)},450)})}
+ const word='VICTORY!'.split('').map((c,i)=>`<span style="animation-delay:${.25+i*.09}s">${c}</span>`).join('');
+ const t0=1.5;   /* the cards start after the title has settled */
+ el.innerHTML=`<div class="rays"></div><canvas></canvas><div class="wrap"><div class="crest"></div><h2>${word}</h2>
+  <div class="sub">${e(String(r.title||'').replace(/\s*·\s*$/,''))}</div><div class="kills">⚔ ล้มศัตรู ${r.kills||0} ตัว</div>
+  <div class="cards">${members.map((m,i)=>`<div class="card" style="animation-delay:${t0+i*.38}s"><div class="face"><img alt="" src="assets/portraits/${e(m.pic)}-happy.webp" onerror="this.remove()"><span>${e((m.name||'?')[0])}</span></div>
+   <div><div class="nm"><span>${e(m.name)}</span><span class="xp" data-xp="${m.xp||0}">${m.xp?'EXP +0':''}</span></div><div class="bar"><i data-w="${m.xp?Math.min(100,30+m.xp):0}"></i></div><div class="hp"><span>HP</span><b>${m.hp}/${m.max}</b></div></div></div>`).join('')}</div>
+  <div class="go" style="animation-delay:${t0+members.length*.38+1.1}s">คลิก หรือกด Enter เพื่อไปต่อ</div></div>`;
+ document.body.append(el);try{root.Sfx?.play?.('victory')}catch(x){}try{root.GameBGM?.force?.('victory')}catch(x){}
+ /* gold sparks rising */
+ const cv=el.querySelector('canvas'),g=cv.getContext('2d');let raf=0,W=0,H=0;const P=Array.from({length:70},()=>({x:Math.random(),y:Math.random(),s:.4+Math.random()*1.4,v:.0004+Math.random()*.0012,p:Math.random()*6}));
+ const fit=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight};fit();addEventListener('resize',fit);
+ const frame=t=>{g.clearRect(0,0,W,H);for(const q of P){q.y-=q.v*16;if(q.y<-.05){q.y=1.05;q.x=Math.random()}const a=.35+.45*Math.sin(t/500+q.p);g.fillStyle=`rgba(255,${200+((q.p*20)|0)},110,${Math.max(0,a)})`;g.beginPath();g.arc(q.x*W+Math.sin(t/900+q.p)*14,q.y*H,q.s*2.2,0,7);g.fill()}raf=requestAnimationFrame(frame)};raf=requestAnimationFrame(frame);
+ /* EXP bars fill and count up as each card arrives */
+ const timers=[];el.querySelectorAll('.card').forEach((c,i)=>{timers.push(setTimeout(()=>{const b=c.querySelector('.bar i');b.style.width=b.dataset.w+'%';const x=c.querySelector('.xp'),n=+x.dataset.xp;if(!n)return;const t1=performance.now();const step=now=>{const k=Math.min(1,(now-t1)/1000);x.textContent='EXP +'+Math.round(n*k);if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)},(t0+i*.38+.35)*1000))});
+ const goOn=()=>el.querySelector('.go').classList.add('on');timers.push(setTimeout(goOn,(t0+members.length*.38+1.1)*1000));
+ let skipped=false,ready=false;timers.push(setTimeout(()=>ready=true,500));
+ const finish=()=>{el.querySelectorAll('.card').forEach(c=>{c.querySelector('.bar i').style.width=c.querySelector('.bar i').dataset.w+'%';const x=c.querySelector('.xp');if(+x.dataset.xp)x.textContent='EXP +'+x.dataset.xp});goOn()};
+ const close=()=>{removeEventListener('keydown',key,true);removeEventListener('resize',fit);cancelAnimationFrame(raf);timers.forEach(clearTimeout);try{root.GameBGM?.force?.(null)}catch(x){}el.style.transition='opacity .35s';el.style.opacity='0';setTimeout(()=>{el.remove();done()},330)};
+ const next=()=>{if(!ready)return;if(!skipped){skipped=true;el.classList.add('skip');finish();return}close()},key=ev=>{if(['Enter',' ','Escape'].includes(ev.key)){ev.preventDefault();ev.stopPropagation();next()}};
+ el.onclick=next;addEventListener('keydown',key,true)})}
 /* v98.476 · a story fight must not move the hero: remember where they stood on the village map (or in the open place) when the fight started,
    and put them back there afterwards — retried for a moment, because the map can re-place the hero at a door while it wakes up again */
 function heroSpot(){try{const T=root.VillageTown;if(!T)return null;const sc=T.getScene?.(),f=/^place:/.test(sc||'')?T.marketFrame:T.frame,h=f?.contentWindow?.ResumeHook?.get?.();return h?{f,h:{...h},sc}:null}catch(e){return null}}
@@ -258,8 +295,9 @@ function questBattle(d,o){return new Promise(resolve=>{
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
   const win=r.outcome==='win';let xpGot=0;
   if(win){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);if(root.Progression){const xp=Progression.battleXp({dang:.25,kills:r.kills});xpGot=xp;gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}
-  d.fighting=false;doSave();fr.remove();doRender();heroBack(spot);
-  if(win)victorySummary({title:o.title,kills:r.kills||0,xp:xpGot,hp:g.hp,maxHp:g.maxHp||60,party:(v.party||[]).map(p=>({name:p.name||p.key,hp:p.hp,max:p.max,xp:Math.round(xpGot*.8)}))}).then(()=>resolve('win'));else resolve('out')};
+  fr.remove();doRender();heroBack(spot);
+  /* v98.597 · the "fighting" lock stays ON while the victory screen is up — otherwise another goat standing next to the hero started a second fight behind it (goats left in the village · the chase went on) */
+  if(win)victorySummary({title:o.title,kills:r.kills||0,xp:xpGot,hp:g.hp,maxHp:g.maxHp||60,party:(v.party||[]).map(p=>({key:p.key,name:p.name||p.key,hp:p.hp,max:p.max,xp:Math.round(xpGot*.8)}))}).then(()=>{d.fighting=false;doSave();resolve('win')});else{d.fighting=false;doSave();resolve('out')}};
  {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);document.body.appendChild(fr)})}
 
 /* ---------- raid battle (v94: the flat card battle drawn on the village square, in a frame over the game) ---------- */
@@ -368,7 +406,7 @@ const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','tom','planks','stall'
 function timeScale(){try{const st=story();if(!st||st.mode!=='active')return 1;const step=STEPS[st.i];if(!step||!DAY1.has(step.id))return 1;const g=G();if(!g||g.day>1)return 1;const m=g.minutes||480;return m<720?.4:m<900?.3:m<1020?.2:m<1110?.1:0}catch(e){return 1}}
 /* v98.589 · the card-book lesson plays once, the first time the player opens the book during the prologue (old saves past the prologue never see it) */
 async function bookFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
-root.Story={bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},
