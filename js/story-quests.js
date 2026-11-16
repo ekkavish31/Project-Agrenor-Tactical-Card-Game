@@ -32,7 +32,7 @@ const potionCount=()=>{try{return root.VillageLife.save().potions||0}catch{retur
 /* the sword forged for the sibling: it leaves the bag and becomes the sibling's weapon (town-battle reads village.sibGear) */
 function giveSibSword(d){try{const g=G(),inv=g.inventory||[],it=inv.find(x=>x.id>=d.next&&x.kind==='sword');if(!it)return;
  g.inventory=inv.filter(x=>x!==it);if(g.equipped===it.id){const k=g.inventory.find(x=>x.recipe==='oldKnife')||g.inventory[0];g.equipped=k?k.id:null}
- V().sibGear={kind:'sword',quality:it.quality||1,recipe:it.recipe||'sword'};doSave();toast('⚔ น้องได้ดาบเหล็กเล่มใหม่แล้ว · ตัวเอกยังใช้มีดสั้นของพ่อ','good')}catch(e){}}
+ V().sibGear={kind:'sword',quality:it.quality||1,recipe:it.recipe||'sword'};doSave();toast('⚔ ตัวตามได้ดาบเหล็กเล่มใหม่แล้ว · ตัวเอกยังใช้มีดสั้นของพ่อ','good')}catch(e){}}
 /* the friend is hurt on the way home: a heavy leg wound (js/injury.js) and out of the team — the hospital step follows */
 function kierInjured(){try{const k=V().story.tempAlly||'kier',g=root.WorldState?.game?.()||G();root.Injury?.force(g,k,'leg','heavy');
  leaveTemp('เคียร์บาดเจ็บที่ขาอย่างหนัก · ออกจากทีมไปพักฟื้น');V().story.kierHurt=true;doSave();try{root.WorldState?.commit?.()}catch{}}catch(e){}}
@@ -95,7 +95,7 @@ const LESSON={
  hire:['เพื่อนร่วมทาง',['ชวนคนที่มี ★ ที่โรงแรมเข้าทีม (สูงสุด 4 คน)','ในสนาม: สั่ง ⚔ บุก · 👣 ตาม · 🛡 ยึด และท่าพิเศษ (ใช้ 1 คริสตัล)','เพื่อนถึง Lv.3 แล้วสั่งเองได้ในตาของเขา 🎮']],
  sell:['ขายของ',['ขายที่โต๊ะรับซื้อในตลาด หรือวางของใน "ร้านของเรา" แล้วตั้งราคา','ร้านขายต่อเองแม้ตัวเอกไม่อยู่ · ดูยอดในสมุดยอดขาย']],
  raid:['สู้อย่างนักวางแผน',['ยืนสูงกว่าเป้า ตีแรงขึ้น ~10% ต่อระดับ (▲ บนช่องคือความสูง)','ธาตุชนะทาง ×1.3 · แพ้ทาง ×0.7 · ดูตารางธาตุใน Esc','การ์ดตอบโต้/หลบ ใช้ก่อนจบเทิร์น ทำงานตอนศัตรูตี']],
- sibSword:['อาวุธของน้อง',['ตัวเอกพกมีดสั้นของพ่อ · น้องยังมือเปล่า จึงต้องตีดาบเหล็กให้','ดาบที่ตีให้น้องจะถูกมอบให้เลย (ไม่เข้าชุดอาวุธของตัวเอก) · ยิ่งฝีมือดี ยิ่งแรง']],
+ sibSword:['อาวุธของตัวตาม',['ตัวเอกพกมีดสั้นของพ่อ · ตัวตามยังถือแค่ท่อนฟืน จึงต้องตีดาบเหล็กให้','ดาบที่ตีให้ตัวตามจะถูกมอบให้เลย (ไม่เข้าชุดอาวุธของตัวเอก) · ยิ่งฝีมือดี ยิ่งแรง']],
  potions:['ยาฟื้นฟู',['ยาใช้ได้ทั้งตอนเดินทางและกลางการต่อสู้ · ข้างนอกศัตรูแข็งและเยอะกว่าในหมู่บ้าน','ซื้อได้ที่ร้านค้า หมอยา และตลาด · ราคาขึ้นลงตามความสัมพันธ์กับหมู่บ้าน']],
  hospital:['โรงพยาบาลและบาดแผล',['ตัวละครที่ล้มในสนามอาจได้แผล: เจ็บ (หายเองได้ทีละวัน) หรือ หนัก (หายได้เฉพาะเตียงโรงพยาบาล)','แผลหนักห้ามสู้ ทำงาน หรือเดินทางตามตำแหน่ง · เตียงคิดค่าพักต่อวัน','ที่บ้านหมอยามีปุ่ม 🏥 ห้องผู้ป่วย: รับเข้าพัก รับกลับ และเยี่ยมไข้วันละครั้ง (ความสนิท +1 และหายไวขึ้นเล็กน้อย)']],
  prep:['เตรียมตัวเดินทาง',['ซื้อเสบียงและยาก่อนออก · จัดสำรับที่ 🃏 สำรับ ให้เข้ากับสนาม']],
@@ -175,7 +175,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
  talkStep({id:'plate',outro:'plate',title:'จานหินโบราณ',talk:'oren',goal:'นำจานหินไปให้ผู้ใหญ่บ้านโอเรนดู',hint:'หัวค่ำผู้ใหญ่บ้านนั่งที่โรงแรม สองทุ่มกลับบ้าน · '+HINT_WALK}),
  talkStep({id:'saf',chapter:'การเดินทางครั้งแรก · รังโจรป่า',outro:'safTalk',title:'ร้านยาของซาฟ',talk:'saf',goal:'แวะหาหมอยาซาฟก่อนออกเดินทาง',hint:'ซาฟอยู่ร้านยา 6 โมงเช้าถึง 6 โมงเย็น · '+HINT_WALK,
   reward:()=>{try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}}}),
- {id:'sibSword',tag:'real',intro:'sibSwordIntro',outro:'sibSwordDone',title:'ดาบเหล็กของน้อง',goal:'ตีดาบเหล็ก 1 เล่มที่โรงตีเหล็ก ให้น้องใช้ในการเดินทาง',hint:'เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูปจนครบ 100 → ถังน้ำ: ชุบแข็ง · ดาบใช้เหล็ก 2 ถ่าน 1 ไม้ 1 ซื้อวัตถุดิบที่ตลาด · ตัวเอกพกมีดสั้นของพ่ออยู่แล้ว',
+ {id:'sibSword',tag:'real',intro:'sibSwordIntro',outro:'sibSwordDone',title:'ดาบเหล็กของตัวตาม',goal:'ตีดาบเหล็ก 1 เล่มที่โรงตีเหล็ก ให้ตัวตามใช้ในการเดินทาง',hint:'เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูปจนครบ 100 → ถังน้ำ: ชุบแข็ง · ดาบใช้เหล็ก 2 ถ่าน 1 ไม้ 1 ซื้อวัตถุดิบที่ตลาด · ตัวเอกพกมีดสั้นของพ่ออยู่แล้ว',
   place:'forge',begin:d=>{d.next=G().nextId},check:d=>(G().inventory||[]).some(x=>x.id>=d.next&&x.kind==='sword'),acts:[guideBtn],reward:d=>giveSibSword(d)},
  {id:'potions',tag:'real',outro:'potionsDone',title:'ซื้อยาก่อนออกเดินทาง',goal:'ซื้อยาอย่างน้อย 2 ขวดที่ร้านค้าของเวร่า',hint:'ร้านค้าเปิด 7 โมงเช้าถึงหนึ่งทุ่ม · เข้าไปในร้านแล้วกด "🧪 ซื้อยา" · ซื้อที่หมอยา/ตลาดก็นับ',
   place:['shop','healer','market'],begin:d=>{d.p=potionCount()},progress:d=>Math.min(1,(potionCount()-(d.p||0))/2),check:d=>potionCount()-(d.p||0)>=2,acts:[guideBtn]},

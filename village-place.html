@@ -35,7 +35,8 @@ const PA_ITEMS = (window.PLACEABLE_ART?.items || []), PA_BY = Object.fromEntries
 const CODE_SWAP = { 'code:furnace': 'int:furnace', 'code:anvil': 'int:anvil', 'code:tub': 'int:quench', 'code:board': 'int:writing-desk', 'code:crate': 'int:crate', 'code:lamp': 'decor:lamp-post', 'code:table': 'int:table-square', 'code:bed': 'int:bed-double', 'code:chest': 'int:trunk', 'code:hearth': 'int:fireplace-stone', 'code:shelf': 'int:shelf-store' };
 let SAVED_MAP = null;
 try { SAVED_MAP = (JSON.parse(localStorage.getItem(KEY) || '{}') || {})[PLACE] || null } catch (e) {}
-const KIND = ['market', 'forge', 'home'].includes(PLACE) ? PLACE : (['market', 'forge', 'home'].includes(Q.get('kind')) ? Q.get('kind') : (['market', 'forge', 'home'].includes(SAVED_MAP?.kind) ? SAVED_MAP.kind : 'market'));
+const KINDS_OK = ['market', 'forge', 'home', 'guild'];   /* v98.585 · + guild (the Adventurers' Guild hall · js/guild-desk.js) */
+const KIND = KINDS_OK.includes(PLACE) ? PLACE : (KINDS_OK.includes(Q.get('kind')) ? Q.get('kind') : (KINDS_OK.includes(SAVED_MAP?.kind) ? SAVED_MAP.kind : 'market'));
 const cv = document.getElementById('world'),
  $ = id => document.getElementById(id),
  send = (type, data = {}) => parent.postMessage({
@@ -59,6 +60,12 @@ const ACTIONS = {
   recipes: 'เลือกแบบงาน',
   rest: 'พักหายใจ',
   meal: 'อาหารอุ่น'
+ },
+ guild: {
+  register: 'คุยกับเจ้าหน้าที่ทะเบียน',
+  contracts: 'งานกิลด์',
+  bounty: 'ประกาศจับ',
+  cards: 'ตู้การ์ด'
  },
  home: {
   sleep: 'นอนพัก',
@@ -104,6 +111,41 @@ const DEFAULTS = {
    { art: 'decor:banner-pole', u: -3.8, v: 10.2, s: .62 }, { art: 'decor:banner-pole', u: 3.8, v: 10.2, s: .62 }, { art: 'decor:signpost', u: 6.4, v: 8.4, s: 1 }, { art: 'decor:flower-box', u: -5.4, v: 9.8, s: 1 }, { art: 'decor:flower-box', u: 5.2, v: 9.8, s: 1 },
    { art: 'decor:well', u: 7.4, v: 9.2, s: 1 }, { art: 'decor:cart', u: 9.6, v: 9.4, s: 1 }, { art: 'decor:hay', u: 11, v: 7.6, s: .9 }, { art: 'int:water-trough', u: -7.4, v: 10.4, s: 1 }, { art: 'int:map-table', u: 4.6, v: 4.6, s: .9 },
    { art: 'int:plant-large', u: -11, v: 9.4, s: 1 }, { art: 'int:plant-large', u: 11, v: -1, s: 1 }, { art: 'decor:flower-bed', u: -11, v: 0.8, s: 1 }
+  ]
+ },
+ /* v98.585 · the Adventurers' Guild hall (rich interior: counters, boards, lounge, hearth, bar) · 4 counters with staff (js/guild-desk.js) */
+ guild: {
+  rev: 1,
+  name: 'สมาคมนักผจญภัย',
+  sub: 'ลงทะเบียน · รับ–ส่งงานกิลด์ · ประกาศจับ · ตู้การ์ด',
+  kind: 'guild',
+  floor: { w: 12, d: 10, tex: 'paving', walls: true },
+  exit: { u: 0, v: 10.4 },
+  stations: [
+   { id: 'register', vendor: { kind: 'g1' }, name: 'เคาน์เตอร์ทะเบียน', actions: ['register'], u: -6.5, v: -7.4, w: 2.4, d: 1.4, door: { du: 0, dv: 2.6 }, art: 'int:reg-desk', width: 300 },
+   { id: 'contracts', vendor: { kind: 'g2' }, name: 'โต๊ะงานกิลด์', actions: ['contracts'], u: 3.2, v: -7.6, w: 3.2, d: 1.4, door: { du: 0, dv: 2.7 }, art: 'int:counter-guild', width: 420 },
+   { id: 'bounty', vendor: { kind: 'g4' }, name: 'กระดานประกาศจับ', actions: ['bounty'], u: -10.6, v: -1.2, w: 1.2, d: 2.2, door: { du: 2.7, dv: 0 }, art: 'int:quest-board', width: 270 },
+   { id: 'cards', vendor: { kind: 'g3' }, name: 'ตู้การ์ด', actions: ['cards'], u: 10.2, v: -1.6, w: 1.6, d: 2.4, door: { du: -2.8, dv: 0 }, art: 'int:writing-desk', width: 230 }
+  ],
+  props: [
+   /* ผนังหลัง: ธงสมาคม หน้าต่างโค้ง อาวุธประดับ ตู้หนังสือ ตู้ถ้วยรางวัล */
+   { art: 'int:banner-guild', u: -1.4, v: -9.3, s: 1 }, { art: 'int:banner-guild', u: 8, v: -9.3, s: 1 }, { art: 'int:big-bookcase', u: -10.2, v: -9, s: 1 }, { art: 'int:trophy-case', u: 10.6, v: -8.8, s: 1 },
+   { art: 'int:window-arched', u: -3.4, v: -9.7, s: 1 }, { art: 'int:window-arched', u: 6.2, v: -9.7, s: 1 }, { art: 'int:swords-shield', u: 0.4, v: -9.7, s: 1 }, { art: 'int:antlers', u: 9.6, v: -9.7, s: 1 },
+   { art: 'int:wall-torch', u: -8.4, v: -9.7, s: 1 }, { art: 'int:wall-torch', u: 1.6, v: -9.7, s: 1 }, { art: 'int:scroll-rack', u: -8.8, v: -7.6, s: 1 }, { art: 'int:book-scrolls', u: -4.4, v: -8, s: 1 },
+   /* ผนังซ้าย: เตาผิงใหญ่ + มุมนั่งพัก */
+   { art: 'int:fireplace-grand', u: -11.4, v: 6.2, s: 1 }, { art: 'int:armchair-set', u: -8.4, v: 6.6, s: 1 }, { art: 'int:rug-round', u: -8.2, v: 6.4, s: 1 }, { art: 'int:fire-tools', u: -11.2, v: 8.6, s: 1 },
+   { art: 'int:noticeboard', u: -11.7, v: 2.4, s: 1 }, { art: 'int:painting', u: -11.7, v: -5.2, s: 1 }, { art: 'int:wall-torch', u: -11.7, v: 4.2, s: 1 },
+   /* กลางห้อง: โต๊ะแผนที่ พรม โต๊ะยาวของปาร์ตี้ */
+   { art: 'int:rug-4x3', u: 0.4, v: 1.6, s: 1.2 }, { art: 'int:map-table', u: 0, v: -2.4, s: 1 }, { art: 'int:candle-stand', u: -2.4, v: -3.2, s: 1 }, { art: 'int:candle-stand', u: 2.4, v: -3.2, s: 1 },
+   { art: 'int:table-long', u: -3.2, v: 2.8, s: 1 }, { art: 'int:bench-long', u: -3.2, v: 4.4, s: 1 }, { art: 'int:bench-long', u: -3.2, v: 1.2, s: 1 }, { art: 'int:table-lantern', u: -3.4, v: 2.6, s: 1 },
+   { art: 'int:game-table', u: 3.8, v: 2.6, s: 1 }, { art: 'int:stool', u: 2.4, v: 3.8, s: 1 }, { art: 'int:stool', u: 5.2, v: 1.6, s: 1 }, { art: 'int:stool', u: 5.2, v: 3.8, s: 1 },
+   /* ฝั่งขวา: บาร์เล็ก ถังเบียร์ ชั้นอุปกรณ์ */
+   { art: 'int:counter-bar', u: 8.6, v: 6.4, s: 1 }, { art: 'int:barrel-rack', u: 11, v: 4.4, s: 1 }, { art: 'int:keg', u: 11, v: 8.4, s: 1 }, { art: 'int:stool-bar', u: 7.2, v: 8, s: 1 }, { art: 'int:stool-bar', u: 8.6, v: 8.2, s: 1 }, { art: 'int:stool-bar', u: 10, v: 8, s: 1 },
+   { art: 'int:gear-bench', u: 10.2, v: -5.6, s: 1 }, { art: 'int:armor-display', u: 6.6, v: -4.4, s: 1 }, { art: 'int:rack-weapons', u: 11.2, v: 1.4, s: 1 }, { art: 'int:weapon-barrel', u: 7.6, v: -1.2, s: 1 },
+   { art: 'int:trunk', u: -10.8, v: -5.4, s: 1 }, { art: 'int:crate-stack', u: 11, v: -3.6, s: .9 },
+   /* ทางเข้า: กระถางต้นไม้ ธงตั้ง รูปปั้น */
+   { art: 'int:plant-large', u: -4.6, v: 9.8, s: 1 }, { art: 'int:plant-large', u: 4.6, v: 9.8, s: 1 }, { art: 'int:banner-stand', u: -2.2, v: 9.4, s: 1 }, { art: 'int:banner-stand', u: 2.2, v: 9.4, s: 1 },
+   { art: 'int:statue', u: 7.4, v: 9.6, s: 1 }, { art: 'int:plant-fern', u: -7.6, v: 9.8, s: 1 }, { art: 'int:rug-runner', u: 0, v: 7.6, s: 1 }
   ]
  },
  forge: {
@@ -944,7 +986,12 @@ const VENDOR_KINDS = {
  m3: { name: 'พ่อค้า ค (หมวกเขียว)', look: { coat: '#6a3a3a', apron: '#e8dcc0', hair: '#6a5030', hat: 'cap', hatCol: '#3a4a3a', age: 38 } },
  f1: { name: 'แม่ค้า ก (ผ้าโพกหัว)', look: { coat: '#8a4b5c', apron: '#efe2c8', hair: '#5a3a22', hat: 'scarf', hatCol: '#c9a07a', longHair: true, age: 35 } },
  f2: { name: 'แม่ค้า ข (ผ้าโพกครีม)', look: { coat: '#4a6a4a', apron: '#efe2c8', hair: '#3a2a1e', hat: 'scarf', hatCol: '#e8d6b0', longHair: true, age: 40 } },
- f3: { name: 'แม่ค้า ค (ผมยาว)', look: { coat: '#6a5a8a', apron: '#f1e6cc', hair: '#8a5a2a', hat: 'none', longHair: true, age: 32 } }
+ f3: { name: 'แม่ค้า ค (ผมยาว)', look: { coat: '#6a5a8a', apron: '#f1e6cc', hair: '#8a5a2a', hat: 'none', longHair: true, age: 32 } },
+ /* v98.585 · Adventurers' Guild staff (unnamed · navy-and-gold guild coat) — js/guild-desk.js STAFF */
+ g1: { name: 'สมาคม · เจ้าหน้าที่ทะเบียน', look: { coat: '#2f4a6a', apron: '#e8d6a8', hair: '#5a3a22', hat: 'none', longHair: true, age: 30 } },
+ g2: { name: 'สมาคม · เจ้าหน้าที่จัดงาน', look: { coat: '#2f4a6a', apron: '#c9a45a', hair: '#2a2018', hat: 'cap', hatCol: '#1f3048', beard: '#2a2018', age: 42 } },
+ g3: { name: 'สมาคม · ผู้ประเมินการ์ด', look: { coat: '#4a3a6a', apron: '#e8dcc0', hair: '#cfcfd6', hat: 'none', beard: '#bfbfc6', age: 60 } },
+ g4: { name: 'สมาคม · ผู้ดูแลกระดานประกาศ', look: { coat: '#3a4a3a', apron: '#d8c08a', hair: '#8a5a2a', hat: 'scarf', hatCol: '#2f4a6a', longHair: true, age: 26 } }
 };
 window.VENDOR_KINDS = VENDOR_KINDS;
 function vendorDefault(s) {
@@ -1436,7 +1483,7 @@ function openArtPicker(title, cur, onPick) {
   document.body.append(d)
  }
  /* v98.434 · opens on the tab of the current picture (เปลี่ยนภาพ) or of this kind of map (forge → โรงตีเหล็ก …) */
- const KIND_TAB = { forge: 'โรงตีเหล็ก/งานช่าง', market: 'ร้านค้า/ตลาด', home: 'บ้าน: โต๊ะ/ที่นั่ง/ตู้' };
+ const KIND_TAB = { guild: 'สมาคมนักผจญภัย', forge: 'โรงตีเหล็ก/งานช่าง', market: 'ร้านค้า/ตลาด', home: 'บ้าน: โต๊ะ/ที่นั่ง/ตู้' };
  let tab = cur ? ART_GROUP(cur) : KIND_TAB[KIND] || 'ทั้งหมด',
   q = '';
  const groups = [...new Set(ART_LIST.map(([a]) => ART_GROUP(a)))];
@@ -1639,7 +1686,7 @@ function stationOutline(s) {
  if (s.f) { g.translate(p.x * 2, 0); g.scale(-1, 1) }
  TownArt.outline(g, im, null, [p.x - w / 2, p.y - h * (a.startsWith('vt:') ? .86 : .92), w, h], 3); g.restore();
 }
-const ST_ICON = { smelt: 'forge', forge: 'forge', quench: 'forge', temper: 'forge', repair: 'forge', train: 'battle', rest: 'castle', sleep: 'castle', buy: 'market', sell: 'trade', shop: 'market', orders: 'quest' };
+const ST_ICON = { register: 'guild', contracts: 'quest', bounty: 'battle', cards: 'collection', smelt: 'forge', forge: 'forge', quench: 'forge', temper: 'forge', repair: 'forge', train: 'battle', rest: 'castle', sleep: 'castle', buy: 'market', sell: 'trade', shop: 'market', orders: 'quest' };
 const stIcon = ids => { for (const id of ids) if (ST_ICON[id]) return ST_ICON[id]; return KIND === 'forge' ? 'forge' : KIND === 'market' ? 'market' : 'quest' };
 const faceTo = (u, v) => { hero.dir = v < hero.v ? (u < hero.u ? 'NW' : 'NE') : (u < hero.u ? 'SW' : 'SE') };
 function useAt(i, id) { path = []; target = null; hidePick(); const s = M.stations[i]; if (s) faceTo(s.u, s.v); lastSt = i; use(i, id) }

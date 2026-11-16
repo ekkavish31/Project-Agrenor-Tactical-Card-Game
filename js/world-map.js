@@ -626,8 +626,12 @@
     const g = WS.game(), C = window.Crossroads; if (!C || !g) return;
     for (const m of C.expire(g, S)) { log(m); toast(m) }
     const e = C.pick(g, S, id); if (!e) return;
-    const lab = (c, i) => c.label + (C.hint(g, S, e, i) ? ' · ' + C.hint(g, S, e, i) : '') + (C.why(g, S, e, i) ? ' (' + C.why(g, S, e, i) + ')' : '');
-    const v = await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who, 84, 96, e.mood || window.StoryCast?.mood?.(e.text))}<p><small>${esc(e.cast || '')}</small></p><p>${esc(e.text)}</p><div style="clear:both"></div><p><small>ทุกทางเลือกมีราคา — ⚔ = ต่อสู้จริง · 🎲 = ทอยตามสเตตัสของคุณ · 🎒 = ใช้ของจริง</small></p>`,
+    /* v98.585 · the team speaks first: the follower and companions lean toward a choice by their nature (js/crossroads.js voices) */
+    const vs = (() => { try { return C.voices?.(g, S, e) || [] } catch (x) { return [] } })(), backs = i => vs.filter(v => v.pick === i).map(v => v.name);
+    const vface = v => v.who === 'sib' ? `<img src="assets/portraits/hero-${window.HeroVariant?.get?.() === 'female' ? 'male' : 'female'}-neutral.webp" alt="" style="width:40px;height:40px;object-fit:cover;object-position:50% 8%;border-radius:8px;border:1px solid #b49a5a;flex:none">` : `<span style="flex:none">${faceBox(v.who, 40, 40)}</span>`;
+    const vhtml = vs.length ? `<div style="margin:8px 0 6px;padding:8px 10px;border-radius:10px;background:#00000018">${vs.map(v => `<div style="display:flex;gap:8px;align-items:center;margin:4px 0">${vface(v)}<span><b>${esc(v.name)}</b>: ${esc(v.text)}</span></div>`).join('')}</div>` : '';
+    const lab = (c, i) => c.label + (C.hint(g, S, e, i) ? ' · ' + C.hint(g, S, e, i) : '') + (C.why(g, S, e, i) ? ' (' + C.why(g, S, e, i) + ')' : '') + (backs(i).length ? ' · 💬 ' + backs(i).join(', ') : '');
+    const v = await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who, 84, 96, e.mood || window.StoryCast?.mood?.(e.text))}<p><small>${esc(e.cast || '')}</small></p><p>${esc(e.text)}</p><div style="clear:both"></div>${vhtml}<p><small>ทุกทางเลือกมีราคา — ⚔ = ต่อสู้จริง · 🎲 = ทอยตามสเตตัสของคุณ · 🎒 = ใช้ของจริง</small></p>`,
       [...e.choices.map((c, i) => ({ label: lab(c, i), value: i, disabled: !!C.why(g, S, e, i) })), { label: 'ยังไม่ตัดสินใจ', value: -1, ghost: true }]);
     if (v == null || v < 0) return;
     const b = C.begin(g, S, e, v, { passTime });

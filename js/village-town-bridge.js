@@ -36,7 +36,7 @@ function enterPlace(id,map,interior){const sub=interior?'in:'+id:map||id;placeAc
 renderMap=function(edit){openTown();if(edit)send({type:'edit'})};window.openMapEditor=function(){renderMap(true)};
 villageTravel=function(id){if(['home','forge','market'].includes(id)){openTown();send({type:'walk',id})}};
 const oldRender=render;render=function(){const r=oldRender.apply(this,arguments);sync();return r};
-const CORE=['market','forge','home'];
+const CORE=['market','forge','home','guild'];   /* v98.585 · + guild */
 function arrived(id,map,info={}){if(id.startsWith('exit:')){openWorld();return}if(busy||devActive||s.mode==='battle'){send({type:'place',id,ok:false,message:'รอให้กิจกรรมปัจจุบันเสร็จก่อน',actions:[]});return}
  // v94: the hero's own house (an editor place) is home; editor houses with an empty sub-map and every non-core place open the living interior
  if(info.name&&/บ้านของเรา|บ้านเรา/.test(info.name))id='home';
@@ -45,6 +45,7 @@ function arrived(id,map,info={}){if(id.startsWith('exit:')){openWorld();return}i
  if(!CORE.includes(id)||(info.custom&&emptyMap&&id!=='home')){if(id==='square'||real==='square'){send({type:'place',id,ok:false,message:'ลานกลางหมู่บ้าน',actions:[]});return}enterPlace(real,'',info.name||real);sync();return}
  if(!PLACES[id]){send({type:'place',id,ok:false,message:'สถานที่นี้เตรียมไว้ ยังไม่เปิดกิจกรรม',actions:[]});return}
  const result=id===s.village.location?{ok:true}:travel(id);if(!result.ok){send({type:'place',id,ok:false,message:result.reason,actions:[]});return}
+ if(id==='guild')setTimeout(()=>{try{window.Story?.guildFirst?.()}catch(e){}},1600);   /* v98.585 · the registrar's first talk, once */
  if(CORE.includes(id)){render();/* v95.30: the hero's house uses its own sub-map when one has been built in the editor (with home services), else the built-in home */ enterPlace(id,info.name&&/บ้านของเรา|บ้านเรา/.test(info.name)?(map&&!emptyMap?map:''):map);return}
  inside=true;marketOpen=false;closeCardFocus();hideEntityPeek();render();applySceneLayout(true);sync();
 }

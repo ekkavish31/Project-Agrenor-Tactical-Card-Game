@@ -13,7 +13,14 @@ const sibName=()=>{try{return (typeof s!=='undefined'&&s.village?.siblingName)||
 /* v98.230 · {hero} lead's name · {sib} the other hero · {sibrel} พี่ชาย (when you play the sister) / น้องสาว (when you play the brother) · {polite} ครับ / ค่ะ by the lead's look */
 const leadFemale=()=>{try{return root.HeroVariant?.get?.()==='female'}catch{return false}};
 const polite=()=>{try{return root.HeroVariant?.get?.()==='female'?'ค่ะ':'ครับ'}catch{return 'ครับ'}};
-const fill=t=>String(t??'').replace(/\{hero\}/g,heroName()).replace(/\{sib\}/g,sibName()).replace(/\{callhero\}/g,leadFemale()?heroName():'พี่'+heroName()).replace(/\{callsib\}/g,leadFemale()?'พี่'+sibName():sibName()).replace(/\{sibpolite\}/g,leadFemale()?'ครับ':'ค่ะ').replace(/\{sibrel\}/g,root.HeroVariant?.get?.()==='female'?'พี่ชาย':'น้องสาว').replace(/\{polite\}/g,polite());
+/* v98.585 · the two siblings by ROLE, whichever one the player leads: B = the elder brother (the late riser), S = the younger sister (always ready first).
+   who:'B' / who:'S' on a line is resolved to 'hero' or 'sib'; {Bn} {Sn} their names · {S2B} how the sister calls him (พี่…) · {B2S} how he calls her · {Bp}/{Sp} ครับ/ค่ะ
+   lead:'brother' / lead:'sister' on a line = shown only when the player leads that sibling */
+const roleName=r=>(r==='S')===leadFemale()?heroName():sibName();
+const roleWho=w=>w==='B'||w==='S'?((w==='S')===leadFemale()?'hero':'sib'):w;
+const fill0=t=>String(t??'').replace(/\{Bn\}/g,roleName('B')).replace(/\{Sn\}/g,roleName('S')).replace(/\{S2B\}/g,'พี่'+roleName('B')).replace(/\{B2S\}/g,roleName('S')).replace(/\{Bp\}/g,'ครับ').replace(/\{Sp\}/g,'ค่ะ');
+const fill=t=>fill1(fill0(t));
+const fill1=t=>String(t??'').replace(/\{hero\}/g,heroName()).replace(/\{sib\}/g,sibName()).replace(/\{callhero\}/g,leadFemale()?heroName():'พี่'+heroName()).replace(/\{callsib\}/g,leadFemale()?'พี่'+sibName():sibName()).replace(/\{sibpolite\}/g,leadFemale()?'ครับ':'ค่ะ').replace(/\{sibrel\}/g,root.HeroVariant?.get?.()==='female'?'พี่ชาย':'น้องสาว').replace(/\{polite\}/g,polite());
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* ---------------- particles ---------------- */
@@ -106,7 +113,7 @@ async function showCard(card){const c=$('.cs-card');c.querySelector('small').tex
 function applyLine(line){if(line.art)setArt(line.art);else if(line.bg){setArt(null);setBg(line.bg,line.pan)}if(line.tint!=null||line.fx)setLook({tint:line.tint,fx:line.fx??[...parts.kinds]});if(line.flash)flash(line.flash===true?null:line.flash);if(line.shake)shake(line.shake==='big');if(line.burst)burst(line.burst===true?{}:line.burst)}
 function play(scene){if(!scene)return Promise.resolve();if(playing)return playing.then(()=>play(scene));
  build();playing=new Promise(async resolve=>{
-  const lines=scene.lines||[];let i=-1,done=false,busy=false;
+  const lines=(scene.lines||[]).filter(l=>!l.lead||(l.lead==='sister')===leadFemale()).map(l=>l.who==='B'||l.who==='S'?{...l,who:roleWho(l.who)}:l);let i=-1,done=false,busy=false;
   el.hidden=false;root.StoryActors?.begin(el);document.body.classList.add('cs-open');parts.size();parts.start();
   setArt(scene.art);setBg(scene.bg,scene.pan,true);setLook({tint:scene.tint||'',fx:scene.fx||[]});$('.cs-box').hidden=true;
   requestAnimationFrame(()=>el.classList.add('cs-live'));

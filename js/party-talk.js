@@ -11,7 +11,13 @@
     anxious: { start:['พวกมันเยอะเกินไปแล้ว!'], low:['ข้า-ข้าจะตายไหม!?'], down:['ข้าบอกแล้ว … '], walk: ['ได้ยินเสียงอะไรไหม … ไม่ได้ยินหรือ?', 'เรามาไกลจากหมู่บ้านแล้วนะ'], night: ['มืดแบบนี้ … อะไรก็โผล่มาได้'], tired: ['พักเถอะ ถ้าล้มตอนนี้ไม่มีใครช่วยนะ'], hungry: ['เสบียงหมด! เราจะอดตายกลางทางไหม!'], camp: ['ข้าจะนอนตรงกลางนะ … ไม่ได้กลัวหรอก'], fight: ['ม-มาแล้ว!'], win: ['รอดแล้ว … รอดจริง ๆ'] },
     formal: { start:['จัดแถวให้พร้อม!'], low:['ข้ายังปฏิบัติหน้าที่ได้'], down:['ข้าขออภัย … ที่ทำได้เพียงเท่านี้'], walk: ['เส้นทางนี้ปลอดภัยพอสมควร ข้าเห็นว่าควรเดินต่อ'], night: ['การเดินทางยามวิกาลมีความเสี่ยง ขอให้ระมัดระวัง'], tired: ['ข้าเสนอให้พักแรมก่อนเดินทางต่อ'], hungry: ['เสบียงหมดลงแล้ว ควรวางแผนกลับไปเติม'], camp: ['ข้าจะรับเวรยามช่วงแรก'], fight: ['เตรียมรับมือ!'], win: ['ภารกิจลุล่วง ขอบคุณทุกท่าน'] }
   };
-  const voiceOf = key => root.VillageLife?.P?.[key]?.voice || 'cheerful';
+  /* v98.585 · the sibling (party key 'sib') by role, whoever the player leads (owner's direction 16 Nov 2026): they love each other and tease each other now and then.
+     sister = the one who is always ready first, careful, looks after her brother · brother = easy-going, brave, a late riser who keeps his word.
+     A light tease is only ONE of several lines in each set, so it does not come up every time. */
+  SAY.sibSister = { start: ['ข้าอยู่ข้างพี่เสมอ ลุยเลย!', 'อย่าบุ่มบ่ามนักนะพี่ ข้าคอยระวังหลังให้'], low: ['ข้ายังไหว… พี่ไม่ต้องห่วง'], down: ['ขอโทษนะพี่… ข้าไปต่อไม่ไหว'], walk: ['ทางนี้ข้าจำได้ เดินตามข้ามาเลย', 'พี่ดื่มน้ำบ้างหรือยัง', 'ถ้าพี่ตื่นเช้ากว่านี้ เราคงถึงไปนานแล้วนะ'], night: ['มืดแล้ว เดินชิดกันไว้นะพี่'], tired: ['พักกันก่อนเถอะ ขาพี่เริ่มลากแล้ว'], hungry: ['เสบียงหมดแล้ว กลับไปหาอะไรกินกันก่อน'], camp: ['ข้าจัดที่นอนให้แล้ว พี่ก่อไฟนะ'], fight: ['ข้าคุมทางนี้เอง!'], win: ['เห็นไหม พอตั้งใจก็ทำได้นี่', 'เราสองคนก็พอแล้ว'] };
+  SAY.sibBrother = { start: ['ข้าอยู่นี่ ไม่ต้องกลัว!', 'ข้าลุยหน้าเอง เจ้าคอยอยู่หลังข้าไว้'], low: ['แค่นี้ยังไม่ล้มหรอก…'], down: ['ข้า… พักแป๊บนึงนะ…'], walk: ['ทางนี้ไกลจัง… แต่ก็สนุกดี', 'เจ้าเดินเร็วไปแล้ว รอข้าด้วย', 'วันนี้ข้าตื่นทันนะ จำไว้ด้วย'], night: ['มืดแล้ว เดินชิดข้าไว้'], tired: ['พักก่อนเถอะ ข้าหิวแล้วด้วย'], hungry: ['เสบียงหมด… กลับบ้านไปกินฝีมือแม่กันเถอะ'], camp: ['ข้าก่อไฟเอง เจ้าพักเถอะ'], fight: ['มาเลย! ข้าไม่ถอยหรอก!'], win: ['ชนะแล้ว! ฝีมือเราไม่เลวเลยนะ', 'เจ้าทำได้ดีมาก'] };
+  const sibVoice = () => { try { return root.HeroVariant?.get?.() === 'female' ? 'sibBrother' : 'sibSister' } catch (e) { return 'sibSister' } };
+  const voiceOf = key => key === 'sib' ? sibVoice() : (root.VillageLife?.P?.[key]?.voice || 'cheerful');
   const line = (key, kind) => { const set = (SAY[voiceOf(key)] || SAY.cheerful)[kind] || SAY.cheerful[kind]; return set ? set[Math.floor(Math.random() * set.length)] : '' };
   root.PartyTalk = { SAY, voiceOf, line };
 })(typeof window !== 'undefined' ? window : globalThis);

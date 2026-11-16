@@ -453,7 +453,37 @@
   const leans = g => Object.fromEntries(['light', 'shadow', 'crown', 'north', 'village'].map(k => [k, num(flag(g, 'lean_' + k))]));
 
   const why = (g, S, e, i) => { const ch = e.choices[i], m = mechOf(e, i); return (ch?.ok?.(g, S)) || (m?.need ? needWhy(g, S, m.need) : '') };
-  const api = { why, MECH, STAT_NAME, chanceOf, statOf, hint, modeOf, needWhy, begin, settle, EVENTS, byId, pick, resolve, expire, leans, done, mayaHeld, eligible };
+  /* v98.585 · VOICES OF THE TEAM at a crossroads (owner's direction 16 Nov 2026): the follower and up to two companions each lean toward one choice, by THEIR nature
+     (sibling role or the companion's village voice), and say so in a line. Nothing is decided for the player — the choices stay the same; the window shows who leans where.
+     A choice is read as: fight (⚔ mech) · roll (🎲 mech) · cost (pays gold) · side (the lean_<side> it writes: light/shadow/crown/north/village). Deterministic per event + day. */
+  const sideOf = ch => { const m = /lean\(c\.g,\s*'(\w+)'/.exec(String(ch?.run || '')); return m ? m[1] : '' };
+  const traitsOf = (e, i) => { const ch = e.choices[i], m = mechOf(e, i) || {}; return { fight: !!m.fight, roll: !!m.check, cost: !!ch.cost, side: sideOf(ch) } };
+  const TASTE = {
+    sibSister: { village: 2, light: 1.5, cost: 1, fight: -1, roll: -.5, shadow: -1 }, sibBrother: { fight: 2, village: 1, roll: 1, crown: -.5 },
+    warm: { village: 2, light: 1, cost: 1 }, cheerful: { fight: 1.5, roll: 1, village: 1 }, gruff: { fight: 2, north: 1, crown: -1 }, scholar: { light: 2, roll: -1, shadow: -1 },
+    sly: { shadow: 2, roll: 2, crown: -2 }, gentle: { village: 2, light: 1, fight: -2 }, anxious: { fight: -2, roll: -2, crown: 1 }, formal: { crown: 2, shadow: -2, north: -1 }
+  };
+  const SAYS = {
+    sibSister: ['ข้าว่า “{c}” ดีกว่านะ{to} — คนอื่นจะได้ไม่เดือดร้อน', 'เลือก “{c}” เถอะ{to} ข้าว่าพ่อก็คงเลือกแบบนี้', 'คิดดี ๆ ก่อนนะ{to} … ถ้าให้ข้าเลือก ข้าเอา “{c}”'],
+    sibBrother: ['“{c}” เลย ง่ายดี ข้าไปด้วย', 'ข้าว่า “{c}” นะ อย่าคิดนาน เดี๋ยวก็ค่ำ', 'ไม่ต้องห่วงข้า เลือก “{c}” ได้เลย'],
+    warm: ['ข้าว่า “{c}” นะ ช่วยคนได้ก็ช่วยเถอะ'], cheerful: ['“{c}” สิ! สนุกกว่าตั้งเยอะ'], gruff: ['“{c}” จบเร็วกว่า'], scholar: ['ถ้าคิดตามเหตุผล “{c}” เสี่ยงน้อยที่สุด'],
+    sly: ['“{c}”… ไม่มีใครต้องรู้หรอก'], gentle: ['“{c}” เถอะ อย่าให้ใครต้องเจ็บเลย'], anxious: ['เอา… เอา “{c}” ได้ไหม ปลอดภัยกว่า'], formal: ['ตามระเบียบ ควรเป็น “{c}”']
+  };
+  function voices(g, S, e) {
+    if (!e?.choices?.length) return []; const out = [], female = (() => { try { return root.HeroVariant?.get?.() === 'female' } catch (x) { return false } })();
+    const sibName = g?.village?.siblingName || (female ? 'พี่ชาย' : 'น้องสาว'), lead = g?.village?.heroName || '';
+    const team = [{ key: 'sib', name: sibName, voice: female ? 'sibBrother' : 'sibSister' }];
+    for (const m of (S?.party || [])) { if (team.length >= 3) break; if (!m || m.key === 'sib') continue; const v = root.VillageLife?.P?.[m.key]?.voice; if (v && TASTE[v]) team.push({ key: m.key, name: m.name || root.VillageLife.P[m.key].name, voice: v }) }
+    let h = (num(g?.day, 1) * 31 + e.id.length * 7) >>> 0; const r = () => (h = Math.imul(h ^ (h >>> 13), 1103515245) + 12345 >>> 0) / 4294967296;
+    for (const t of team) {
+      const T = TASTE[t.voice] || {}; let best = -1, bs = -1e9;
+      e.choices.forEach((ch, i) => { if (why(g, S, e, i)) return; const q = traitsOf(e, i); let sc = (q.fight ? T.fight || 0 : 0) + (q.roll ? T.roll || 0 : 0) + (q.cost ? T.cost || 0 : 0) + (q.side ? T[q.side] || 0 : 0) + r() * .6; if (sc > bs) { bs = sc; best = i } });
+      if (best < 0) continue; const lines = SAYS[t.voice] || SAYS.warm, to = t.voice === 'sibSister' ? ' พี่' + (lead ? lead : '') : '';
+      out.push({ who: t.key, name: t.name, pick: best, text: lines[Math.floor(r() * lines.length)].replace('{c}', e.choices[best].label.replace(/\s*\(.*$/, '')).replace('{to}', to) });
+    }
+    return out;
+  }
+  const api = { voices, why, MECH, STAT_NAME, chanceOf, statOf, hint, modeOf, needWhy, begin, settle, EVENTS, byId, pick, resolve, expire, leans, done, mayaHeld, eligible };
   root.Crossroads = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
