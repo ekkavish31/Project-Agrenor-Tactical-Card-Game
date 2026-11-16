@@ -120785,6 +120785,78 @@
     512
    ],
    "transparent": false
+  },
+  {
+   "id": "village-npc-house-1",
+   "file": "assets/village-town/buildings/npc-house-1.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "subject": "บ้านชาวบ้านทั่วไป แบบที่ 1 (ใช้กับ npc0–npc15 ตามตาราง NPC_HOUSE_OF ใน village-town.html — ตายตัว)",
+   "usedIn": "หมู่บ้าน · บ้านชาวบ้าน"
+  },
+  {
+   "id": "village-npc-house-2",
+   "file": "assets/village-town/buildings/npc-house-2.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "subject": "บ้านชาวบ้านทั่วไป แบบที่ 2 (ใช้กับ npc0–npc15 ตามตาราง NPC_HOUSE_OF ใน village-town.html — ตายตัว)",
+   "usedIn": "หมู่บ้าน · บ้านชาวบ้าน"
+  },
+  {
+   "id": "village-npc-house-3",
+   "file": "assets/village-town/buildings/npc-house-3.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "subject": "บ้านชาวบ้านทั่วไป แบบที่ 3 (ใช้กับ npc0–npc15 ตามตาราง NPC_HOUSE_OF ใน village-town.html — ตายตัว)",
+   "usedIn": "หมู่บ้าน · บ้านชาวบ้าน"
+  },
+  {
+   "id": "village-npc-house-4",
+   "file": "assets/village-town/buildings/npc-house-4.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "subject": "บ้านชาวบ้านทั่วไป แบบที่ 4 (ใช้กับ npc0–npc15 ตามตาราง NPC_HOUSE_OF ใน village-town.html — ตายตัว)",
+   "usedIn": "หมู่บ้าน · บ้านชาวบ้าน"
+  },
+  {
+   "id": "village-npc-house-5",
+   "file": "assets/village-town/buildings/npc-house-5.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "subject": "บ้านชาวบ้านทั่วไป แบบที่ 5 (ใช้กับ npc0–npc15 ตามตาราง NPC_HOUSE_OF ใน village-town.html — ตายตัว)",
+   "usedIn": "หมู่บ้าน · บ้านชาวบ้าน"
+  },
+  {
+   "id": "village-npc-house-6",
+   "file": "assets/village-town/buildings/npc-house-6.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "subject": "บ้านชาวบ้านทั่วไป แบบที่ 6 (ใช้กับ npc0–npc15 ตามตาราง NPC_HOUSE_OF ใน village-town.html — ตายตัว)",
+   "usedIn": "หมู่บ้าน · บ้านชาวบ้าน"
+  },
+  {
+   "id": "village-npc-house-7",
+   "file": "assets/village-town/buildings/npc-house-7.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "subject": "บ้านชาวบ้านทั่วไป แบบที่ 7 (ใช้กับ npc0–npc15 ตามตาราง NPC_HOUSE_OF ใน village-town.html — ตายตัว)",
+   "usedIn": "หมู่บ้าน · บ้านชาวบ้าน"
+  },
+  {
+   "id": "village-npc-house-8",
+   "file": "assets/village-town/buildings/npc-house-8.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "subject": "บ้านชาวบ้านทั่วไป แบบที่ 8 (ใช้กับ npc0–npc15 ตามตาราง NPC_HOUSE_OF ใน village-town.html — ตายตัว)",
+   "usedIn": "หมู่บ้าน · บ้านชาวบ้าน"
   }
  ],
  "studioReviews": {
