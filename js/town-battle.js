@@ -1141,6 +1141,7 @@
       { t: 'แถบบนสุดคือคิวเทิร์น · กรอบทองคือตัวที่ได้เล่นตอนนี้ — ตอนนี้ตาคุณ' },
       { t: 'คลิกช่องว่างเพื่อเดิน (เกมเลือกไพ่เดินให้เอง) · เดินพลาดกด Z หรือ ↶ ย้อนเดิน', done: () => coachState.moved },
       { t: 'คลิกศัตรูที่อยู่ในระยะ → แถวไพ่โจมตีที่ใช้ได้ขึ้นข้างตัวมัน (เห็นดาเมจโดยประมาณ) แล้วเลือกใบที่จะตี (ยังไม่ถึงระยะ เกมพาเดินเข้าไปให้)', done: () => st.acted },
+      { t: '🔓 ปลดล็อกแล้ว: ปุ่ม Auto (ปุ่มที่เรืองแสง) — ให้เกมเล่นเทิร์นของตัวเอกให้ เลือกไพ่เดิน เลือกไพ่ตี และจบเทิร์นเอง กดอีกครั้งเพื่อหยุด · เหมาะกับศัตรูตัวเล็กที่ซ้ำๆ แต่เจอบอสหรือสนามอันตรายควรเล่นเอง', spot: '#fbAuto' },
       { t: 'กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า — หันเข้าหาศัตรู เพราะโดนตีจากด้านหลังแรงขึ้น ×1.2', done: () => st.turns > coachState.t0 },
       { t: 'ลูกศรใต้ตัวบอกทิศที่แต่ละตัวหัน · อ้อมไปตีศัตรูจากด้านหลังได้ ×1.2 · ล้มศัตรูให้หมดเพื่อชนะ' }],
     raid: [
@@ -1179,8 +1180,8 @@
   }
   /* v98.598 · the card the coach is talking about glows in the hand (re-applied after every hand redraw) */
   function spotCard(id) {
-    if (!document.getElementById('fbSpotCss')) { const x = document.createElement('style'); x.id = 'fbSpotCss'; x.textContent = '.fb-card.fb-spot{outline:3px solid #ffd77a;outline-offset:2px;box-shadow:0 0 22px #ffd77a,0 0 6px #fff8;animation:fbSpot 1.1s ease-in-out infinite;position:relative;z-index:5}@keyframes fbSpot{50%{box-shadow:0 0 34px #ffe9a8,0 0 10px #fff;transform:translateY(-4px)}}'; document.head.append(x) }
-    document.querySelectorAll('.fb-card.fb-spot').forEach(e => e.classList.remove('fb-spot')); if (id) document.querySelectorAll('.fb-card[data-id="' + id + '"]').forEach(e => e.classList.add('fb-spot'));
+    if (!document.getElementById('fbSpotCss')) { const x = document.createElement('style'); x.id = 'fbSpotCss'; x.textContent = '#fbActions button.fb-spot{outline:3px solid #ffd77a;outline-offset:2px;box-shadow:0 0 22px #ffd77a,0 0 6px #fff8;animation:fbSpot 1.1s ease-in-out infinite}.fb-card.fb-spot{outline:3px solid #ffd77a;outline-offset:2px;box-shadow:0 0 22px #ffd77a,0 0 6px #fff8;animation:fbSpot 1.1s ease-in-out infinite;position:relative;z-index:5}@keyframes fbSpot{50%{box-shadow:0 0 34px #ffe9a8,0 0 10px #fff;transform:translateY(-4px)}}'; document.head.append(x) }
+    document.querySelectorAll('.fb-spot').forEach(e => e.classList.remove('fb-spot')); if (id) document.querySelectorAll(String(id)[0] === '#' ? id : '.fb-card[data-id="' + id + '"]').forEach(e => e.classList.add('fb-spot'));   /* '#fbAuto' = any element by selector */
   }
   /* ---------- v97.15 · controlled companions (B14): on an unlocked companion's CT turn the battle waits for the player.
      Click a cell = walk (its own move points) · click an enemy = show the hit (≈ damage, walking in if needed), click again = do it ·
