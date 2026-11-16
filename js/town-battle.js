@@ -1465,6 +1465,29 @@
     const fr = set[name + 'Frames']; if (fr?.length) return name === 'down' ? fr.at(-1) : (window.StudioWalks?.frame(fr, t) || fr[0]);
     return set[name] || set.idle;
   }
+  /* v98.610 · when a fighter falls: (1) a grey aura on the ground around them that drains the colour of the scene for a moment, (2) pale smoke wisps rising from the body,
+     (3) a bright soul wisp leaving the body with a tail. 2.2 s in all; the body itself slumps, goes grey and only then fades (see poseMotion / the unit loop). */
+  function deathFx(g, u, t) {
+    if (MON[u.kind]?.loot) return; const e = t - u.deadAt; if (e < 0 || e > 2300) return;
+    const p = project(u.vu, u.vv), big = u.side === 'monster' ? (MON[u.evoShow || u.kind]?.scale || 1) : 1, R = UNIT * 2.3 * big, ak = e < 250 ? e / 250 : Math.max(0, 1 - (e - 250) / 1250);
+    if (ak > 0) {
+      g.save(); g.translate(p.x, p.y); g.scale(1, .5); g.globalCompositeOperation = 'saturation';
+      let gr = g.createRadialGradient(0, 0, R * .1, 0, 0, R); gr.addColorStop(0, `rgba(128,128,128,${.95 * ak})`); gr.addColorStop(.65, `rgba(128,128,128,${.55 * ak})`); gr.addColorStop(1, 'rgba(128,128,128,0)'); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, R, 0, 7); g.fill();
+      g.globalCompositeOperation = 'source-over'; gr = g.createRadialGradient(0, 0, 0, 0, 0, R); gr.addColorStop(0, `rgba(36,40,50,${.38 * ak})`); gr.addColorStop(1, 'rgba(36,40,50,0)'); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, R, 0, 7); g.fill(); g.restore();
+    }
+    let h = 7; for (const c of String(u.id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    for (let i = 0; i < 9; i++) {
+      const k = (e - i * 110) / 1500; if (k < 0 || k > 1) continue; const rnd = ((h >> i) & 7) / 7, x = p.x + Math.sin(k * 5 + i * 1.7 + rnd * 6) * UNIT * .22 * (.4 + k), y = p.y - UNIT * .5 * big - k * UNIT * 1.9 * big, r = UNIT * (.16 + .2 * k) * big;
+      g.save(); g.globalAlpha = Math.sin(Math.PI * k) * .5; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(238,241,248,.9)'); gr.addColorStop(1, 'rgba(180,186,204,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.restore();
+    }
+    const k = (e - 120) / 1700;
+    if (k > 0 && k < 1) {
+      g.save(); g.globalCompositeOperation = 'lighter'; const a = Math.sin(Math.PI * Math.min(1, k * 1.1));
+      for (let j = 6; j >= 0; j--) { const kk = Math.max(0, k - j * .028), x = p.x + Math.sin(kk * 7) * UNIT * .18, y = p.y - UNIT * .6 * big - kk * UNIT * 2.4 * big, r = UNIT * (.2 - j * .02) * big;
+        g.globalAlpha = a * (j ? .32 - j * .035 : .95); const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.45, 'rgba(190,215,255,.65)'); gr.addColorStop(1, 'rgba(150,180,255,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill() }
+      g.restore();
+    }
+  }
   /* procedural action poses (code instead of pictures): lean back on windup, lunge + sword arc on strike, recoil on hit, crouch on guard, fall on down */
   function poseMotion(u, t) {
     const name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
@@ -1476,7 +1499,7 @@
     else if (name === 'strike') { const k = ease(e / 90), d = 1 - ease((e - 220) / 320); Object.assign(m, { dx: fs * 18 * k * d, dy: -2 * k * d, rot: fs * .17 * k * d, sx: 1 - .03 * k * d, sy: 1 + .05 * k * d, wpn: fs * (-75 + 170 * k) * d }) }
     else if (name === 'hit') { const k = Math.exp(-e / 170); Object.assign(m, { dx: -fs * 9 * k, rot: -fs * .13 * k, sy: 1 - .04 * k }) }
     else if (name === 'guard') { const k = ease(e / 130); Object.assign(m, { dx: -fs * 3 * k, sx: 1 + .04 * k, sy: 1 - .08 * k, wpn: -fs * 40 * k }) }
-    else if (name === 'down') { const k = ease(e / 450); Object.assign(m, { rot: -fs * 1.3 * k, dy: 2 * k }) }
+    else if (name === 'down') { const k = ease(e / 520); Object.assign(m, { rot: -fs * .2 * k, dy: 7 * k, sx: 1 + .07 * k, sy: 1 - .3 * k }) }   /* v98.610 · a slump (sink + squash), not lying sideways */
     return m;
   }
   function weapon(g, def, hand, left, top, size, angle) {
@@ -1758,10 +1781,11 @@
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
-      if (u.deadAt && t > u.deadAt && !MON[u.kind]?.loot) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
+      if (u.deadAt && t > u.deadAt && !MON[u.kind]?.loot) { const e = (t - u.deadAt) / 1400; g.globalAlpha = e < .55 ? 1 : Math.max(0, 1 - (e - .55) / .45); if ('filter' in g) { const k = Math.min(1, (t - u.deadAt) / 400); g.filter = 'grayscale(' + (.85 * k).toFixed(2) + ') brightness(' + (1 - .22 * k).toFixed(2) + ')' } }   /* v98.610 · stays solid while it slumps, goes grey, fades only at the end (it used to be see-through at once) */
       const isSel = u.hp > 0 && (u === selUnit || u === hoverU || u === pickU) && !u.deadAt; if (isSel && SEL_OUTLINE) { g.shadowColor = '#fff'; g.shadowBlur = 6 * (devicePixelRatio || 1) }   /* v98.324 · the selected character: thin white edge + soft aura */
       drawUnit(u); g.restore();
     }
+    for (const u of st.units) if (u.deadAt && t > u.deadAt) deathFx(g, u, t);   /* v98.610 · grey aura + smoke + the soul leaving the body */
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
     for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }
     /* v98.278 · the turn crystal over the head of whoever's turn it is: the user's own 8-frame art (gold = team, silver = monsters) — assets/fx/plumbob-ally|foe.webp, 8 frames of 100×160 (source sheet: art-production/plumbob-crystal-sheet-8x2.webp). No code-drawn glow any more: the picture carries its own light. */
