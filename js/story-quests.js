@@ -60,6 +60,8 @@ function guide(){const step=cur();if(!step)return;if(onWorld()){toast('อยู
 const guideBtn={label:'📍 นำทาง',primary:true,hide:()=>onWorld(),run:guide};
 const HINT_WALK='◆ สีทองบนแผนที่บอกทาง · คลิกถนนหรืออาคารเพื่อเดิน · คลิกคนเพื่อคุย';
 function talkStep(o){return {tag:'real',...o,talk:o.talk,check:d=>!!d.talked,acts:[guideBtn,...(o.acts||[])],hint:o.hint||HINT_WALK}}
+/* v98.598 · where a talk scene happens follows where the person really is: Hilda at the market → the market picture, otherwise her farm (code-drawn) — never the hero's own house */
+function sceneAt(id){const sc=D().SCENES[id];if(id==='seeds'){try{const at=npcPlace('hilda');if(at&&/market|square|shop/.test(String(at)))return {...sc,art:null,bg:'assets/market.webp'}}catch(e){}}return sc}
 function targetsOf(step,d){const t=typeof step.targets==='function'?step.targets(d)||{}:{};const out={npc:[...(t.npc||[])],place:[...(t.place||[])],exit:!!(t.exit||step.exit),spots:[...(t.spots||[])],label:t.label||''};
  if(step.talk&&!d.talked)out.npc.push(step.talk);if(step.place)out.place.push(...[].concat(step.place));
  if(step.spot){const left=(step.spot.n||1)-(d.got||0);if(left>0)out.spots.push({...step.spot,n:left})}
@@ -355,7 +357,7 @@ async function act(a){const st=story();if(!st)return;
  if(a==='start'){st.mode='active';st.i=0;st.data={};doSave();draw(true);return}
  if(a==='off'){if(st.mode==='active')return;st.mode='off';doSave();draw(true);return}   /* v97.16: an active prologue cannot be switched off */
  if(a==='skipall'){const ok=root.GameDialog?await root.GameDialog.confirm('ข้ามบทนำทั้งหมด?\nจะไม่ได้รางวัลและฉากที่เหลือ (เปิดเล่นใหม่ได้จาก Story.reset() ในโหมดนักพัฒนา)'):confirm('ข้ามบทนำทั้งหมด?');if(!ok)return;st.mode='done';doSave();draw(true);return}
- if(a==='replay'){const sc=lastScene();if(sc)root.Cutscene.play(D().SCENES[sc]);return}
+ if(a==='replay'){const sc=lastScene();if(sc)root.Cutscene.play(sceneAt(sc));return}
  const step=cur();const x=step?.acts?.[+a];if(x)await x.run(dataOf(step));draw(true)}
 function lastScene(){const st=story();for(let j=st.i;j>=0;j--){const s1=STEPS[j],o=typeof s1.outro==='function'?s1.outro():s1.outro,n=typeof s1.intro==='function'?s1.intro():s1.intro;if(j<st.i&&o)return o;if(n&&(j<st.i||st.data[s1.id]?.introSeen))return n}return null}
 
@@ -372,9 +374,9 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
   const introId=typeof step.intro==='function'?step.intro():step.intro;
-  if(introId&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(D().SCENES[introId])}
+  if(introId&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(sceneAt(introId))}
   if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();await lessonCard(step.id)}
-  if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(D().SCENES[outroId]);await step.reward?.(d);st.i++;doSave();doRender();
+  if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(sceneAt(outroId));await step.reward?.(d);st.i++;doSave();doRender();
    const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
 
@@ -406,7 +408,7 @@ const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','tom','planks','stall'
 function timeScale(){try{const st=story();if(!st||st.mode!=='active')return 1;const step=STEPS[st.i];if(!step||!DAY1.has(step.id))return 1;const g=G();if(!g||g.day>1)return 1;const m=g.minutes||480;return m<720?.4:m<900?.3:m<1020?.2:m<1110?.1:0}catch(e){return 1}}
 /* v98.589 · the card-book lesson plays once, the first time the player opens the book during the prologue (old saves past the prologue never see it) */
 async function bookFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
-root.Story={victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

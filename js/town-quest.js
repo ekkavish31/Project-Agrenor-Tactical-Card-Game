@@ -175,15 +175,35 @@
     for (const it of root.Interactables?.all?.() || []) if (it.quest && it.x != null && !/^(place|npc|q):/.test(it.id)) out.push({ x: it.x, y: it.y - 60, label: it.label || '', reg: it.id });
     return out;
   }
+  /* v98.598 · pumpkins are the real pictures (assets/crops/pumpkin-1…4) instead of the 🎃 emoji that looked washed out / see-through on the cobbles.
+     ripe / field pumpkin = pumpkin-4 · the contest pumpkin ('plot') = a BIG pumpkin-4 with a pulsing gold aura + sparks, a little bigger for every day it has been tended */
+  const PIC = {}, picOf = n => { if (!PIC[n]) { const im = new Image(); im.src = 'assets/crops/pumpkin-' + n + '.webp'; PIC[n] = im } return PIC[n] };
+  const contestDays = () => { try { return Math.min(3, story()?.pumpkinDays?.() || 0) } catch (e) { return 0 } };
+  function pumpAura(gx, p, t) {
+    const d = contestDays(), R = 62 + d * 9, pulse = .78 + Math.sin(t * .004) * .22;
+    gx.save(); gx.globalCompositeOperation = 'lighter';
+    const gr = gx.createRadialGradient(p.x, p.y - 36, 6, p.x, p.y - 36, R); gr.addColorStop(0, 'rgba(255,214,90,' + (.85 * pulse) + ')'); gr.addColorStop(.5, 'rgba(255,176,40,' + (.42 * pulse) + ')'); gr.addColorStop(1, 'rgba(255,170,40,0)');
+    gx.fillStyle = gr; gx.beginPath(); gx.ellipse(p.x, p.y - 36, R, R * .85, 0, 0, 7); gx.fill();
+    for (let i = 0; i < 7; i++) { const a = t * .0016 + i * 0.9, r2 = R * (.45 + .35 * ((Math.sin(t * .002 + i * 2) + 1) / 2)), x = p.x + Math.cos(a) * r2, y = p.y - 36 + Math.sin(a * 1.3) * r2 * .75 - ((t * .02 + i * 11) % 22), al = .35 + .5 * Math.sin(t * .006 + i); gx.fillStyle = 'rgba(255,236,150,' + Math.max(0, al) + ')'; gx.beginPath(); gx.arc(x, y, 1.6 + (i % 3) * .7, 0, 7); gx.fill() }
+    gx.restore();
+  }
+  function pumpDraw(gx, o, t) {
+    const im = picOf(4); if (!im.complete || !im.naturalWidth) return false;
+    const big = o.kind === 'plot', d = big ? contestDays() : 0, w = big ? 132 + d * 14 : 80, h = w * im.naturalHeight / im.naturalWidth, sway = Math.sin(t * .0021 + o.phase) * .012;
+    gx.save(); gx.translate(0, 8); gx.rotate(sway); gx.drawImage(im, -w / 2, -h + 4, w, h);
+    if (big) { gx.globalCompositeOperation = 'lighter'; gx.globalAlpha = .22 + Math.sin(t * .004) * .08; gx.drawImage(im, -w / 2, -h + 4, w, h) }   /* a soft golden shine over the fruit */
+    gx.restore(); return true;
+  }
   function drawObj(gx, o, t, k) {
     const p = project(o.u, o.v), hop = o.flee ? (o.mode === 'run' ? Math.abs(Math.sin(t * .026 + o.phase)) * 15 : o.mode === 'idle' ? Math.abs(Math.sin(t * .004 + o.phase)) * 2 : 0) : Math.sin(t * .003 + o.phase) * 2;
     gx.save();
     gx.fillStyle = 'rgba(20,30,20,.35)'; gx.beginPath(); gx.ellipse(p.x, p.y, 16, 7, 0, 0, 7); gx.fill();
-    if (o.kind === 'plot') { gx.fillStyle = '#6a4a2a'; gx.beginPath(); gx.ellipse(p.x, p.y, 30, 14, 0, 0, 7); gx.fill(); gx.strokeStyle = '#4a3218'; gx.lineWidth = 2; gx.stroke() }
+    const pump = o.kind === 'plot' || o.kind === 'ripe' || o.kind === 'pumpkin';
+    if (pump && o.kind === 'plot') pumpAura(gx, p, t);   /* v98.598 · the contest pumpkin: big, with a golden aura */
     if (!o.flee || pending === o) { gx.strokeStyle = 'rgba(255,214,90,' + (.45 + Math.sin(t * .006) * .3) + ')'; gx.lineWidth = 2.5; gx.beginPath(); gx.ellipse(p.x, p.y, 24, 11, 0, 0, 7); gx.stroke() }
     gx.font = '34px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif'; gx.textAlign = 'center';
     gx.translate(p.x, p.y - 6 - hop); { const right = o.flee && o.dir && o.dir.du - o.dir.dv > 0; if (o.kind !== 'goat' && right) gx.scale(-1, 1) }
-    if (o.mystery) mysteryDraw(gx, o, t); else if (o.kind === 'goat') goat(gx, o, t); else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
+    if (o.mystery) mysteryDraw(gx, o, t); else if (o.kind === 'goat') goat(gx, o, t); else if (pump && pumpDraw(gx, o, t)) { /* picture drawn */ } else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
     if (o.flee && o.mode === 'rest') { gx.save(); gx.font = `700 ${12}px AgThai,system-ui`; gx.fillStyle = '#e8f4ff'; gx.textAlign = 'center'; gx.fillText('หอบ…', p.x, p.y - 46); gx.restore() }
   }
   /* v97.14 · the goat is drawn (solid colours with a dark outline) instead of the pale 🐐 emoji that washed out on the light cobbles:
