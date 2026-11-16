@@ -57,8 +57,17 @@ const SCENES={
   {who:'sib',text:'{sibpolite} ๆ รอข้าด้วย {callhero}!'},
   {text:'เฟิร์นเวลยังเป็นเฟิร์นเวลเหมือนทุกปี… อย่างน้อยก็ในเช้าวันนั้น'},
   {text:'ของที่ได้มาจะถูกผนึกเก็บไว้ใน 📖 สมุดผนึก — ลองเปิดดูได้ที่ปุ่มมุมจอ'}]},
+ /* v98.600 · FIRST STEP OUTSIDE THE HOUSE: the sister stops the hero at the door and sends them to open the card-book (Story.bookIntro ← tick) — the lesson below (bookFirst) plays the moment the book opens */
+ bookExit:{art:'fernvale',tint:'day',fx:['motes','leaves'],lines:[
+  {seg:true,text:'ก้าวแรกพ้นประตูบ้าน แสงเช้าส่องลงบนถนนหินของเฟิร์นเวล — {Sn} คว้าแขนคุณไว้ก่อนจะเดินไปไหนต่อ'},
+  {who:'S',text:'เดี๋ยวก่อน! จะถือมีดของพ่อกับท่อนฟืนไปทั่วหมู่บ้านทั้งวันเลยเหรอ'},
+  {who:'B',text:'…ก็ข้ายังไม่ทันคิดเลยว่าจะเก็บไว้ตรงไหน'},
+  {who:'S',text:'ก็สมุดผนึกไง! ที่สมาคมนักผจญภัยให้ตอนเราไปลงทะเบียนแรงก์ F — ของทุกอย่างเก็บเข้าไปเป็นการ์ดได้หมด'},
+  {who:'S',text:'เปิดสมุดเลย เดี๋ยวข้าสอนวิธีผนึกของให้ ทำครั้งเดียวก็จำได้ ไม่ยากหรอก'},
+  {who:'B',text:'ได้ ๆ … งั้นเปิดเลย'},
+  {text:'📖 สมุดผนึกกำลังเปิดออก — ปุ่มสมุดอยู่ที่มุมจอ เปิดดูได้ทุกเมื่อ'}]},
  /* v98.589 · the card-book lesson, moved out of the opening: plays ONCE the first time the player opens the book (Story.bookFirst ← js/card-book.js) */
- bookFirst:{bg:B.home,tint:'day',fx:['motes'],lines:[
+ bookFirst:{art:'fernvale',tint:'day',fx:['motes','leaves'],lines:[
   {seg:true,text:'คุณเปิดสมุดผนึกขึ้นมาครั้งแรกของวัน หน้ากระดาษยังว่างเปล่า ขณะที่มีดของพ่อกับท่อนฟืนที่ {Sn} ถืออยู่เกะกะไปหมด'},
   {who:'S',text:'จะถือของแบบนั้นไปทั้งวันเหรอ เดี๋ยวก็เกี่ยวเสื้อขาด ไม่ก็ทำหล่นกลางตลาด'},
   {who:'B',text:'แล้วจะให้ทำยังไงล่ะ'},
