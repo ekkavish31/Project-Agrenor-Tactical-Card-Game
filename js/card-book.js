@@ -19,6 +19,7 @@
   renderBag = function () {
     prev();
     try { rebuild() } catch (e) { console.error('card-book', e) }
+    try { window.Story?.bookFirst?.() } catch (e) { }   /* v98.589 · the first-time lesson (story scene bookFirst) */
   };
   function rebuild() {
     const host = document.getElementById('panelContent'); if (!host || host.querySelector('.card-book')) return;
