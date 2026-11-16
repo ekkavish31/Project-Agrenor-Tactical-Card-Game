@@ -34,6 +34,6 @@
   function set(src, ratio) { const k = key(src); if (!k || !(ratio > 0.02 && ratio < 80)) return false; const r = +ratio.toFixed(4); if (data()[k] === r) return false; data()[k] = r; dirty = true; clearTimeout(timer); timer = setTimeout(flush, 500); return true }
   function record(src, widthPx, ctx) { const h = heroPx(ctx); if (!(widthPx > 0) || !(h > 0)) return false; return set(src, widthPx / h) }
   addEventListener('pagehide', flush); addEventListener('beforeunload', flush);
-  root.AssetSize = { KEY, key, get, startWidth, record, set, flush, all: () => ({ ...data() }), heroPx, setHero: (ctx, fn) => { heroFns[ctx] = fn } };
+  root.AssetSize = { KEY, key, get, startWidth, record, set, flush, all: () => ({ ...data() }), clear(src) { const k = key(src); if (k in data()) { delete data()[k]; dirty = true; flush() } }, heroPx, setHero: (ctx, fn) => { heroFns[ctx] = fn } };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.AssetSize;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -1572,7 +1572,17 @@ addEventListener('resize', resize);
 window.applyRenderScale = () => { cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio) };   /* v98.574 · see js/perf-scale.js */
 setup();
 resize();
-send('ready');
+/* v98.578 · WARM-UP: 'ready' (the game lifts its cover) waits until every picture of this map is downloaded and decoded (at most ~3 s) — the first sight of each piece used to be a stall while walking in */
+(async () => {
+ try {
+  if (!editing) {
+   const arts = [...new Set([...(M.props || []), ...(M.stations || [])].map(o => o.art).filter(a => a && !/^code:/.test(a)))], ims = arts.map(a => imgOf(a)).filter(Boolean);
+   const dec = im => im.complete && im.naturalWidth ? (im.decode ? im.decode().catch(() => { }) : 0) : new Promise(r => { im.addEventListener('load', () => r(im.decode ? im.decode().catch(() => { }) : 0), { once: true }); im.addEventListener('error', r, { once: true }) });
+   await Promise.race([Promise.all(ims.map(dec)), new Promise(r => setTimeout(r, 3000))]);
+  }
+ } catch (e) { }
+ send('ready');
+})();
 requestAnimationFrame(draw);
 
 
