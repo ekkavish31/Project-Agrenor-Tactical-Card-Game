@@ -145,7 +145,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
   spot:SPOT.stall,check:d=>!!d.built,acts:[guideBtn],
   reward:()=>{addCoins(20);toast('รางวัล: +20 เหรียญจากลุงทอม')},
   onSpot:d=>{if((mats().wood||0)<2)return {msg:'ไม้ไม่พอ (ต้องใช้ 2)'};const why=spend(6,30,3);if(why)return {msg:why};mats().wood-=2;d.built=true;d.got=1;doSave();doRender();return {msg:'🔨 ซ่อมแผงเสร็จ!',consume:true}}},
- {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'เดินกลับบ้าน แล้วไปที่เตียงเพื่อนอนพัก',hint:'ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก" · การนอนข้ามไปเช้าวันถัดไป',
+ {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'งานวันนี้เสร็จแล้ว — พระอาทิตย์ใกล้ตก เดินกลับบ้านแล้วไปที่เตียงเพื่อนอนพัก',hint:'ตอนเย็นของวันแรกเวลาเดินช้าลงให้ทำงานครบ · ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก" · การนอนข้ามไปเช้าวันถัดไป',
   place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn]},
  talkStep({id:'guard',chapter:'วันที่ 2 · ทำของ และหาคน',outro:'guardTalk',reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'push',n:1}],{kicker:'คำแนะนำของยามดอร์ก',title:'ผลัก',text:'ผลักศัตรูถอยหนึ่งช่อง · ผลักตกที่สูงเสีย HP เพิ่ม'}),title:'ยามประตูหมู่บ้าน',talk:'dork',goal:'ไปคุยกับยามดอร์กก่อนออกนอกหมู่บ้าน',hint:'ยามดอร์กเฝ้าอยู่ที่ลานกลางหมู่บ้านทั้งวัน · '+HINT_WALK}),
  {id:'cave',tag:'real',outro:'crystal',title:'ผลึกในถ้ำเหมืองเก่า',goal:'เดินออกทางออกหมู่บ้าน ไปทางเหมืองเก่า แล้วชนะการต่อสู้ 1 ครั้ง',hint:'บนแผนที่โลกเดินทีละช่อง · ระหว่างทางมีศัตรูดักอยู่ · สนามรบมีเนินและหน้าผา ยืนที่สูงตีแรงกว่า',
@@ -362,7 +362,11 @@ const mipSeen=()=>!!V()?.story?.mip?.seen;
 function mystery(ev){const v=V();if(!v||ev!=='seen')return;v.story=v.story||{};v.story.mip=v.story.mip||{};if(!v.story.mip.seen){v.story.mip.seen=true;try{window.Titles?.log(G(),'mip.seen')}catch(e){}doSave()}}
 /* v98.584 · the first visit to the guild counter: the clerk explains where the card book's spell comes from (and why the kingdom likes cards) — played once, from the interior page */
 async function guildFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.guildSeen)return false;v.story.guildSeen=true;doSave();await root.Cutscene.play(D().SCENES.guildFirst);return true}
-root.Story={guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+/* v98.586 · DAY 1 PACING: pumpkins used to end at dusk, leaving the planks / stall quests in the dark. Until the "จบวันแรก" step is done the clock runs slower through the day and
+   stops near 18:30 (golden hour), so every day-1 task (goats → Hilda → pumpkins → Tom → planks → stall) fits before the evening; the player sleeps when ready. Started at 08:00 (WorldState). */
+const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1']);
+function timeScale(){try{const st=story();if(!st||st.mode!=='active')return 1;const step=STEPS[st.i];if(!step||!DAY1.has(step.id))return 1;const g=G();if(!g||g.day>1)return 1;const m=g.minutes||480;return m<720?.4:m<900?.3:m<1020?.2:m<1110?.1:0}catch(e){return 1}}
+root.Story={timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

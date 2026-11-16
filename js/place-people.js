@@ -24,6 +24,8 @@
     people = want.map((p, i) => {
       const old = people.find(x => x.p.id === p.id); if (old) return old;
       // a stable free spot near the middle of the floor for each person
+      /* v98.586 · a map can pin a person to a spot (village-place.html M.npcSpots → window.PLACE_NPC_SPOTS): they stand there, turn to the hero, never stroll */
+      const pin = (root.PLACE_NPC_SPOTS?.() || {})[p.id]; if (pin) return { p, u: pin.u, v: pin.v, face: pin.face || 'SW', phase: i * 1.7, goal: null, wait: 1e9, pinned: true };
       let u = 0, v = 0; for (let k = 0; k < 40; k++) { const h = hash(p.id + k), a = (h % 360) / 57.3, r = 1.5 + (h % 7) * .6; u = Math.round(Math.cos(a) * r * 2) / 2; v = Math.round(Math.sin(a) * r * 2) / 2; if (!blocked?.(u, v)) break }
       return { p, u, v, face: ['SE', 'SW', 'NE', 'NW'][hash(p.id) % 4], phase: i * 1.7, goal: null, wait: 1 + (hash(p.id) % 5) };
     });
@@ -32,6 +34,7 @@
   let lastT = 0;
   function walk(a, dt, blocked, hero) {
     if (bubble?.a === a && performance.now() < bubble.until) { if (hero) a.face = faceTo(hero.u - a.u, hero.v - a.v); return false }
+    if (a.pinned) return false;
     if (!a.goal) { a.wait -= dt; if (a.wait > 0) return false; const st = root.PLACE_STATIONS?.() || [], useSt = st.length && Math.random() < .45, s = useSt ? st[Math.floor(Math.random() * st.length)] : null;
       for (let k = 0; k < 12; k++) { const q = s ? { u: s.u + (Math.random() - .5) * 2, v: s.v + s.d + .8 + Math.random() } : { u: a.u + (Math.random() - .5) * 5, v: a.v + (Math.random() - .5) * 5 }; if (!blocked?.(q.u, q.v) && plan(a, q)) { a.goal = q; break } } a.wait = 3 + Math.random() * 6; if (!a.goal) return false }
     const w = a.path?.[0] || a.goal, du = w.u - a.u, dv = w.v - a.v, d = Math.hypot(du, dv), step = dt * 1.6;

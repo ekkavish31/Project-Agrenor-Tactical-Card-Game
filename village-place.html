@@ -121,6 +121,7 @@ const DEFAULTS = {
   kind: 'guild',
   floor: { w: 12, d: 10, tex: 'paving', walls: true },
   exit: { u: 0, v: 10.4 },
+  npcSpots: { sigrid: { u: -1.4, v: 2.8, face: 'SW' } },   /* v98.586 · Sigrid (mercenary for hire) waits by the party table, 8:00–17:00 */
   stations: [
    { id: 'register', vendor: { kind: 'g1' }, name: 'เคาน์เตอร์ทะเบียน', actions: ['register'], u: -6.5, v: -7.4, w: 2.4, d: 1.4, door: { du: 0, dv: 2.6 }, art: 'int:reg-desk', width: 300 },
    { id: 'contracts', vendor: { kind: 'g2' }, name: 'โต๊ะงานกิลด์', actions: ['contracts'], u: 3.2, v: -7.6, w: 3.2, d: 1.4, door: { du: 0, dv: 2.7 }, art: 'int:counter-guild', width: 420 },
@@ -458,7 +459,8 @@ const door = s => ({
  v: s.v + s.door.dv
 });
 
-window.PLACE_ROUTE = (a, b) => route(a, b, 'npc');   /* v97.69 · V2: villagers walk around furniture with the hero's A* */
+window.PLACE_ROUTE = (a, b) => route(a, b, 'npc');
+window.PLACE_NPC_SPOTS = () => (typeof M !== 'undefined' && M?.npcSpots) || {};   /* v98.586 · pinned villagers (js/place-people.js) */   /* v97.69 · V2: villagers walk around furniture with the hero's A* */
 window.PLACE_STATIONS = () => (typeof M !== 'undefined' && M?.stations) ? M.stations.map(s => ({ u: s.u, v: s.v, d: s.d || 1 })) : [];
 function blocked(u, v) {
  const F = M.floor,
@@ -988,10 +990,10 @@ const VENDOR_KINDS = {
  f2: { name: 'แม่ค้า ข (ผ้าโพกครีม)', look: { coat: '#4a6a4a', apron: '#efe2c8', hair: '#3a2a1e', hat: 'scarf', hatCol: '#e8d6b0', longHair: true, age: 40 } },
  f3: { name: 'แม่ค้า ค (ผมยาว)', look: { coat: '#6a5a8a', apron: '#f1e6cc', hair: '#8a5a2a', hat: 'none', longHair: true, age: 32 } },
  /* v98.585 · Adventurers' Guild staff (unnamed · navy-and-gold guild coat) — js/guild-desk.js STAFF */
- g1: { name: 'สมาคม · เจ้าหน้าที่ทะเบียน', look: { coat: '#2f4a6a', apron: '#e8d6a8', hair: '#5a3a22', hat: 'none', longHair: true, age: 30 } },
- g2: { name: 'สมาคม · เจ้าหน้าที่จัดงาน', look: { coat: '#2f4a6a', apron: '#c9a45a', hair: '#2a2018', hat: 'cap', hatCol: '#1f3048', beard: '#2a2018', age: 42 } },
- g3: { name: 'สมาคม · ผู้ประเมินการ์ด', look: { coat: '#4a3a6a', apron: '#e8dcc0', hair: '#cfcfd6', hat: 'none', beard: '#bfbfc6', age: 60 } },
- g4: { name: 'สมาคม · ผู้ดูแลกระดานประกาศ', look: { coat: '#3a4a3a', apron: '#d8c08a', hair: '#8a5a2a', hat: 'scarf', hatCol: '#2f4a6a', longHair: true, age: 26 } }
+ g1: { name: 'ฟรีดา · เจ้าหน้าที่ทะเบียน', look: { coat: '#2f4a6a', apron: '#e8d6a8', hair: '#5a3a22', hat: 'none', longHair: true, age: 30 } },
+ g2: { name: 'แกเร็ธ · เจ้าหน้าที่จัดงาน', look: { coat: '#2f4a6a', apron: '#c9a45a', hair: '#2a2018', hat: 'cap', hatCol: '#1f3048', beard: '#2a2018', age: 42 } },
+ g3: { name: 'ออสวิน · ผู้ประเมินการ์ด', look: { coat: '#4a3a6a', apron: '#e8dcc0', hair: '#cfcfd6', hat: 'none', beard: '#bfbfc6', age: 60 } },
+ g4: { name: 'ไนลา · ผู้ดูแลกระดานประกาศ', look: { coat: '#3a4a3a', apron: '#d8c08a', hair: '#8a5a2a', hat: 'scarf', hatCol: '#2f4a6a', longHair: true, age: 26 } }
 };
 window.VENDOR_KINDS = VENDOR_KINDS;
 function vendorDefault(s) {

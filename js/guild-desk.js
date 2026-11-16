@@ -9,11 +9,16 @@
    STAFF lists the guild's people by post (all unnamed for now — names are the owner's to give; drawn with code in the sub-map). */
 (function (root) {
   'use strict';
+  /* v98.586 · the staff, named and characterised by the owner's delegation (16 Nov 2026 · "กำหนดมาให้ได้เลย") — guild employees, not villagers of the roster */
   const STAFF = {
-    registrar: { title: 'เจ้าหน้าที่ทะเบียน', post: 'เคาน์เตอร์ทะเบียน', vendor: 'g1', lines: ['ลงทะเบียน ต่ออายุแรงก์ หรือสมุดผนึกมีปัญหา มาที่นี่', 'สมุดหายเมื่อไหร่ มาแจ้งเลยนะ อย่าปล่อยไว้'] },
-    officer: { title: 'เจ้าหน้าที่จัดงาน', post: 'โต๊ะงานกิลด์', vendor: 'g2', lines: ['งานวันนี้มีสามอย่าง รับได้ทีละงาน', 'ล้มให้ครบแล้วค่อยกลับมาส่งงาน'] },
-    appraiser: { title: 'ผู้ประเมินการ์ด', post: 'เคาน์เตอร์การ์ด', vendor: 'g3', lines: ['การ์ดใบไหนมีผู้ผลิต ข้าดูออกหมด', 'อยากได้การ์ดใหม่ ดูที่ตู้ได้เลย'] },
-    keeper: { title: 'ผู้ดูแลกระดานประกาศ', post: 'กระดานประกาศจับ', vendor: 'g4', lines: ['ค่าหัวเปลี่ยนทุกสัปดาห์', 'ใบไหนถูกฉีกไปแล้วก็มีคนรับไปแล้ว'] }
+    registrar: { name: 'ฟรีดา', title: 'เจ้าหน้าที่ทะเบียน', age: 29, post: 'เคาน์เตอร์ทะเบียน', vendor: 'g1', trait: 'ละเอียด ใจเย็น จำหน้าทุกคนที่เคยลงทะเบียนได้ ชอบชาอุ่น ไม่ชอบสมุดยับ',
+      lines: ['ลงทะเบียน ต่ออายุแรงก์ หรือสมุดผนึกมีปัญหา มาที่นี่ได้เลย', 'สมุดหายเมื่อไหร่มาแจ้งนะ อย่าปล่อยไว้ — แล้วก็อย่าพับมุมกระดาษ'] },
+    officer: { name: 'แกเร็ธ', title: 'เจ้าหน้าที่จัดงาน', age: 46, post: 'โต๊ะงานกิลด์', vendor: 'g2', trait: 'อดีตนักผจญภัยแรงก์ C เข่าเจ็บจนต้องมานั่งโต๊ะ พูดตรง ห้าวแต่ใจดี',
+      lines: ['งานวันนี้มีสามอย่าง เลือกเอาสักงาน รับได้ทีละงานนะ', 'ล้มให้ครบก่อนค่อยกลับมาส่งงาน ข้าไม่จ่ายครึ่งเดียว'] },
+    appraiser: { name: 'ออสวิน', title: 'ผู้ประเมินการ์ด', age: 61, post: 'ตู้การ์ด', vendor: 'g3', trait: 'เคยทำงานในโรงผลิตการ์ดของหน่วยงานหลวง ดูออกว่าการ์ดใบไหนใครผลิต พูดช้า ชอบอธิบาย',
+      lines: ['การ์ดทุกใบมีคนทำ ดูลายวงจรก็รู้ว่ามาจากโรงไหน', 'อยากได้การ์ดใหม่ ดูในตู้ได้เลย ราคาตามความหายาก'] },
+    keeper: { name: 'ไนลา', title: 'ผู้ดูแลกระดานประกาศ', age: 24, post: 'กระดานประกาศจับ', vendor: 'g4', trait: 'ชอบข่าวลือ เขียนประกาศเองทุกใบ ตื่นเต้นทุกครั้งที่มีค่าหัวใหม่',
+      lines: ['ค่าหัวเปลี่ยนทุกสัปดาห์ ใบนี้ข้าเพิ่งเขียนเมื่อเช้า!', 'ใบไหนถูกฉีกไปแล้วก็มีคนรับไปแล้วนะ'] }
   };
   const ACTIONS = { register: 'คุยกับเจ้าหน้าที่ทะเบียน', contracts: 'งานกิลด์', bounty: 'ประกาศจับ', cards: 'ตู้การ์ด' };
   const L = () => root.VillageLife, day = () => { try { return root.VillageClock.read().day } catch (e) { return 1 } };
@@ -47,7 +52,7 @@
       d.innerHTML = `<div style="width:min(520px,94vw);max-height:90vh;overflow:auto;padding:16px 18px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c;border:3px solid #7a5a2a">
         <button data-x style="float:right;background:none;border:0;font-size:20px;cursor:pointer">✕</button>
         <h2 style="margin:0 0 2px;font:800 21px AgThai,Georgia,serif">📜 งานกิลด์</h2>
-        <p style="margin:0 0 10px;font-size:13px;color:#6a5030">${esc(st.title)}: “${esc(st.lines[a ? 1 : 0])}”</p>
+        <p style="margin:0 0 10px;font-size:13px;color:#6a5030">${esc(st.name)} · ${esc(st.title)}: “${esc(st.lines[a ? 1 : 0])}”</p>
         ${a ? btn('turnin', done ? `✔ ส่งงาน ${esc(a.label)} · +${a.reward}💰` : `⏳ ${esc(a.label)} · ${k}/${a.n}`, done ? '' : 'ล้มศัตรูบนแผนที่โลกให้ครบก่อน') + (done ? '' : btn('drop', '✕ ยกเลิกงานนี้'))
           : G.offers.map((o, i) => btn('take:' + i, `📜 ${esc(o.label)} → ${o.reward}💰`, G.taken ? 'วันนี้รับงานไปแล้ว พรุ่งนี้มีงานใหม่' : '')).join('')}
         <p style="font-size:12px;color:#6a5030;margin:10px 0 0">งานใหม่ทุกวัน · รับได้ทีละงาน · นับจากศัตรูที่ล้มบนแผนที่โลก${G.done ? ' · ส่งงานสำเร็จแล้ว ' + G.done + ' ครั้ง' : ''}</p>${note ? `<p style="margin:8px 0 0;font-weight:700">${esc(note)}</p>` : ''}</div>`;
@@ -70,7 +75,7 @@
   async function register() {
     try { if (await root.Story?.guildFirst?.()) return } catch (e) { }
     const st = STAFF.registrar, rank = 'F';
-    const html = `<p><b>${esc(st.title)}</b>: “${esc(st.lines[0])}”</p><p>แรงก์ของคุณ: <b>${rank}</b> · สมุดผนึกใช้งานได้ปกติ</p><p class="muted small">สมุดผนึกแปลงของที่ใส่ลงไปเป็นการ์ด · เปิดดูได้ที่ปุ่ม 📖 สมุดผนึก</p>
+    const html = `<p><b>${esc(st.name)}</b> · ${esc(st.title)}: “${esc(st.lines[0])}”</p><p>แรงก์ของคุณ: <b>${rank}</b> · สมุดผนึกใช้งานได้ปกติ</p><p class="muted small">สมุดผนึกแปลงของที่ใส่ลงไปเป็นการ์ด · เปิดดูได้ที่ปุ่ม 📖 สมุดผนึก</p>
       <p><button onclick="window.Story?.play?.('guildFirst')">🔁 ฟังคำอธิบายเรื่องสมุดผนึกอีกครั้ง</button></p>`;
     if (typeof villageDialog === 'function') villageDialog('เคาน์เตอร์ทะเบียน', html);
   }
