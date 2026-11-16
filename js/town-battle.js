@@ -103,6 +103,16 @@
   /* embedded (world map): a black veil until the arena is ready, then tell the parent */
   let veil0 = null;
   if (EMBED) { veil0 = document.createElement('div'); veil0.style.cssText = 'position:fixed;inset:0;z-index:100;background:#07080c;display:flex;align-items:center;justify-content:center;color:#ffe2a8;font:italic 800 22px AgThai,system-ui,sans-serif;letter-spacing:3px;transition:opacity .4s'; veil0.textContent = 'PREPARING BATTLE…'; addEventListener('DOMContentLoaded', () => document.body.append(veil0)) }
+  /* v98.576 · WARM-UP: the arena is not announced as ready (the cover stays) until every animation clip of the monsters in this fight and every prop picture of the field has been
+     downloaded and decoded (at most ~3.5 s) — the first strike / first walk / first hit of each creature used to be a stall in the middle of the fight */
+  async function warmThen(fn) {
+    try {
+      const kinds = [...new Set((st?.units || []).filter(u => u.side === 'monster').map(u => u.kind))], jobs = kinds.map(k => window.MonsterArt?.prepare?.(k)).filter(Boolean);
+      const props = (async () => { for (let i = 0; i < 35; i++) { try { if (Object.values(PIMG).every(x => x.ok || x.complete)) break } catch (e) { break } await wait(100) } })();
+      await Promise.race([Promise.all([...jobs, props]), wait(3500)]);
+    } catch (e) { }
+    fn();
+  }
   function arenaReady() { if (veil0) { veil0.style.opacity = '0'; setTimeout(() => veil0?.remove(), 450) } if (EMBED) try { parent.postMessage({ type: 'agrenor-battle-ready', warm: Q.get('warm') === '1' }, '*') } catch (e) { } }
   boot();
   /* v98.252 · while a fight is on screen the story tracker of the main page is hidden (body.fb-open) */
@@ -1670,7 +1680,7 @@
   function draw(g, t0, mode) {
     if (!ready || typeof locations === 'undefined' || !locations.length) return;
     const t = now();
-    if (!st) { if (mode === 'rest') return; build(); hudMake(); handMake(); cam.set = false; focusCamera(true); arenaReady(); if (Q.get('warm') !== '1') startTurnShow(true) }
+    if (!st) { if (mode === 'rest') return; build(); hudMake(); handMake(); cam.set = false; focusCamera(true); warmThen(arenaReady); if (Q.get('warm') !== '1') startTurnShow(true) }
     if (mode !== 'rest') step(t);
     const h = FB.hero(st);
     if (mode !== 'rest') {

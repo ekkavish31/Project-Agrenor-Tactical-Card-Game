@@ -269,7 +269,7 @@ function propImg(f) {
     try { const c = document.createElement('canvas'), w = c.width = 64, h = c.height = Math.max(8, Math.round(64 * im.naturalHeight / im.naturalWidth)), q = c.getContext('2d'); q.drawImage(im, 0, 0, w, h); const d = q.getImageData(0, 0, w, h).data; let b = h - 1; for (; b > 0; b--) { let hit = false; for (let x = 0; x < w; x++) if (d[(b * w + x) * 4 + 3] > 40) { hit = true; break } if (hit) break } im.base = (b + 1) / h } catch (e) { im.base = .97 }
     im.ok = true }; im.src = PA + f + '.webp'; return null;
 }
-function propSpec(kind, s) { const set = PROP_ART[kind]; if (!set) return null; const list = set[FIELD.biome] || set._; return list[Math.floor(s * 997) % list.length] || null }
+function propSpec(kind, s) { const set = PROP_ART[kind]; if (!set) return null; const list = set[FIELD.biome] || set._, sp = list[Math.floor(s * 997) % list.length] || null; if (!sp) return null; const r = window.AssetSize?.get(PA + sp[0] + '.webp'); return r ? [sp[0], Math.round(r * AssetSize.heroPx('battle')), sp[2]] : sp }   /* v98.576 · a picture's own size next to the hero (js/asset-size.js) wins over the table */
 /* drawn size of a prop (for depth and occlusion boxes) */
 function propBox(kind, s, big) { const b = propBox0(kind, s, big); return { w: b.w * FK, h: b.h * FK } }
 const CODE_BOX = { pumpkinPlant: { w: 58, h: 46 }, hay: { w: 58, h: 44 }, fence: { w: 60, h: 46 }, scarecrow: { w: 46, h: 96 } };   /* v98.332 · code-drawn garden props */

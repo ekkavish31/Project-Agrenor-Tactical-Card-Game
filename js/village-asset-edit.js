@@ -96,6 +96,11 @@
  /* ---------- what can be placed / swapped in ---------- */
  const { DECOR_W, NAMES, NAME_KIND, LABEL_HINT } = window.VillageAssetTables;   /* v98.293 · js/village-asset-tables.js */
  const KINDS = {};
+ /* v98.576 · AssetSize (js/asset-size.js): a decoration remembers how big it is next to the hero; a NEW one starts at that size, changing the size slider stores the new number */
+ window.AssetSize?.setHero('village', () => CharSize.VILLAGE_HERO_PX * charScale('hero'));
+ const decorFile = kind => /^decor:/.test(kind || '') ? 'assets/village-town/decor/' + kind.slice(6) + '.png' : '';
+ function sizeStart(nid, kind) { const f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1], r = f && window.AssetSize?.get(f); if (r && w) ovOf(nid).s = +clampN(r * AssetSize.heroPx('village') / w, .2, 4).toFixed(3) }
+ function sizeRec(key) { const a = data.added.find(x => x.id === key), ov = data.edit[key] || {}, kind = ov.kind || a?.kind, f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1]; if (f && w && window.AssetSize) AssetSize.record(f, w * (ov.s ?? 1), 'village') }
  const kind = (id, label, group, draw) => KINDS[id] = {
   label,
   group,
@@ -2569,7 +2574,7 @@
     dv: +base.front.toFixed(2),
     kind: k
    });
-   (() => { const a = data.added[data.added.length - 1], r = placeNewItem(place.id, nid, a.du, a.dv); a.du = r.du; a.dv = r.dv })();
+   (() => { const a = data.added[data.added.length - 1], r = placeNewItem(place.id, nid, a.du, a.dv); a.du = r.du; a.dv = r.dv; sizeStart(nid, k) })();
    UX.persist();
    place.keys = [nid];
    requestAnimationFrame(() => requestAnimationFrame(render));
@@ -2670,7 +2675,7 @@
   act('#aeFree', once(() => { const o2 = ovOf(key); if (o2.free) delete o2.free; else o2.free = true; clean(key) }));
   /* v97.47 · blue grid under a decoration outside the buildings: its ground frame blocks walking. The first time, guess a size from what it is */
   const blkEl = body.querySelector('#aeBlock'); if (blkEl) blkEl.onchange = e => once(() => { const v = ovOf(key); if (e.target.checked) { v.block = true; if (v.fw == null && v.fh == null) { const g = guessBlock(label); v.fw = g[0]; v.fh = g[1] } } else delete v.block; render() })();
-  bindSliders((k, v) => {const ov=ovOf(key);if(k==='ix'||k==='iy')ov[k]=v/100;else ov[k]=v}, () => clean(key))
+  bindSliders((k, v) => {const ov=ovOf(key);if(k==='ix'||k==='iy')ov[k]=v/100;else ov[k]=v}, k => { clean(key); if (k === 's') sizeRec(key) })
  }
 
  function insideFp(o, w) {

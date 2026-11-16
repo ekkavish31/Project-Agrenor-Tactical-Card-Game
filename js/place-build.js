@@ -911,7 +911,7 @@ const PB_ART = (() => {
    return
   }
   try {
-   const sha = await GitHubPush.pushSettings([KEY, 'map-char-scale-v1', 'place-art-frames-v1'], 'แผนที่ย่อย', [], status);
+   const sha = await GitHubPush.pushSettings([KEY, 'map-char-scale-v1', 'place-art-frames-v1', 'asset-hero-ratio-v1'], 'แผนที่ย่อย', [], status);
    status(sha ? '⬆ push แผนที่ย่อยแล้ว · ' + sha : 'ไม่มีค่าที่ต้อง push')
   } catch (err) {
    status('push ไม่สำเร็จ: ' + err.message)
@@ -993,6 +993,11 @@ const PB_ART = (() => {
   const b = panel.querySelector(sel);
   if (b) b.onclick = fn
  };
+ /* v98.576 · AssetSize (js/asset-size.js): each picture remembers how big it is next to the hero — a NEW piece starts at that size, resizing one stores the new number */
+ const artSrc = a => { try { return typeof imgOf === 'function' && a && !/^code:/.test(a) ? (imgOf(a)?.src || '') : '' } catch (e) { return '' } };
+ const startW = (a, fb) => { const k = artSrc(a), r = k && window.AssetSize?.get(k); return r ? Math.max(30, Math.round(r * AssetSize.heroPx('place'))) : (typeof artWidth === 'function' ? artWidth(a, fb) : (a.startsWith('vt:') ? 400 : fb || 110)) };
+ const recSize = o => { const k = artSrc(o?.art); if (k && window.AssetSize) AssetSize.record(k, (+o.width || 110) * (+o.s || 1), 'place') };
+ const sizeKey = k => k === 'width' || k === 's';
  const once = fn => () => {
   checkpoint();
   fn();
@@ -1074,7 +1079,7 @@ const PB_ART = (() => {
      dv: 1.6
     },
     art: a,
-    width: typeof artWidth === 'function' ? artWidth(a, 120) : a.startsWith('vt:') ? 400 : 120   /* v98.434 · catalogue width */
+    width: startW(a, 120)   /* v98.434 · catalogue width · v98.576 · the picture's own size next to the hero */
    });
    save();
    enter({
@@ -1255,7 +1260,7 @@ const PB_ART = (() => {
    render()
   });
   bindSlant(body, s);
-  sliders((k, v) => s[k] = v)
+  sliders((k, v) => s[k] = v, k => { if (sizeKey(k)) recSize(s) })
  }
 
  function tabBase(body, s) {
@@ -1346,7 +1351,7 @@ const PB_ART = (() => {
    act('#pDel', delProps);
    act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);bindGroup();bindZ('pz1',d=>{o.z=Math.max(-20,Math.min(20,(o.z||0)+d));if(!o.z)delete o.z});
    bindSlant(body, o);
-   sliders((k, v) => o[k] = v);
+   sliders((k, v) => o[k] = v, k => { if (sizeKey(k)) recSize(o) });
    return
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น${sel.length>1?` · <b>เลือก ${sel.length} ชิ้น</b> ลากชิ้นใดก็ได้เพื่อย้ายทั้งกลุ่ม`:''}</p>
@@ -1386,7 +1391,7 @@ const PB_ART = (() => {
     u: q4(at.u),
     v: q4(at.v),
     s: 1,
-    ...(typeof artWidth === 'function' && artWidth(a) !== 110 ? { width: artWidth(a) } : {}),   /* v98.434 · the picture's own starting width (110 = the old default, left out) */
+    ...(startW(a) !== 110 ? { width: startW(a) } : {}),   /* v98.434 · the picture's own starting width (110 = the old default, left out) */
     ...(owner ? {
      owner
     } : {})
