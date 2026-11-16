@@ -62,11 +62,11 @@ const HINT_WALK='◆ สีทองบนแผนที่บอกทาง �
 function talkStep(o){return {tag:'real',...o,talk:o.talk,check:d=>!!d.talked,acts:[guideBtn,...(o.acts||[])],hint:o.hint||HINT_WALK}}
 /* v98.598/604 · WHERE a talk happens decides the backdrop — for every NPC scene (talkStep outro → the NPC), by where that person really is at that hour (npcPlace):
    forge → the forge picture · market / shop → the market picture · square / a house door → the village (code-drawn) · inn / guild / temple / healer / Hilda's farm → code-drawn rooms (no paintings yet) */
-const PLACE_BG={forge:{bg:'assets/forge.webp'},market:{bg:'assets/market.webp'},shop:{bg:'assets/market.webp'},square:{art:'fernvale'},inn:{art:'innHall'},guild:{art:'guildHall'},temple:{art:'temple'},healer:{art:'hearth'}};
+const PLACE_BG={forge:{bg:'assets/forge.webp'},market:{bg:'assets/market.webp'},shop:{bg:'assets/market.webp'},square:{bg:'assets/market.webp'},inn:{art:'innHall'},guild:{art:'guildHall'},temple:{art:'temple'},healer:{art:'hearth'}};
 let TALK_NPC=null;
 function talkNpcOf(id){if(!TALK_NPC){TALK_NPC={};for(const s of STEPS)if((s.talk||s.npc)&&s.outro&&typeof s.outro==='string')TALK_NPC[s.outro]=s.talk||s.npc}return TALK_NPC[id]||null}
 function sceneAt(id){const sc=D().SCENES[id];if(!sc)return sc;try{const npc=talkNpcOf(id);if(!npc)return sc;const at=String(npcPlace(npc)||'');
-  let o=PLACE_BG[at];if(!o){o=npc==='hilda'?{art:'hildaFarm'}:{art:'fernvale'}}   /* her own farm / a house door → outdoors */
+  let o=PLACE_BG[at];if(!o){o=npc==='hilda'?{art:'hildaFarm'}:{bg:'assets/market.webp'}}   /* v98.617 · outdoors in the village = the painted market square (owner's request), not the code-drawn countryside */   /* her own farm / a house door → outdoors */
   return {...sc,art:o.art||null,bg:o.bg||null}}catch(e){return sc}}
 function targetsOf(step,d){const t=typeof step.targets==='function'?step.targets(d)||{}:{};const out={npc:[...(t.npc||[])],place:[...(t.place||[])],exit:!!(t.exit||step.exit),spots:[...(t.spots||[])],label:t.label||''};
  if(step.talk&&!d.talked)out.npc.push(step.talk);if(step.place)out.place.push(...[].concat(step.place));
@@ -394,7 +394,7 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
   const introId=typeof step.intro==='function'?step.intro():step.intro;
-  if(introId&&!d.introSeen){d.introSeen=true;if(introId==='opening'){V().story.bookSeen=true;V().story.bookIntro=true}doSave();draw();await root.Cutscene.play(sceneAt(introId))}
+  if(introId&&!d.introSeen){d.introSeen=true;if(introId==='opening'){V().story.bookSeen=true;V().story.bookIntro=true}doSave();draw();await root.Cutscene.play(sceneAt(introId));if(introId==='opening')await bookTour()}
   if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();await lessonCard(step.id)}
   if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(sceneAt(outroId));await step.reward?.(d);st.i++;doSave();doRender();
    const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
@@ -447,9 +447,22 @@ async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!
  if(scene()!=='town')return false;   /* VillageTown.getScene(): 'town' = the village map · 'home'/'forge'… = inside a building · 'place:…' = an open sub-map */
  if(document.getElementById('storyBattle')||onWorld())return false;
  bookBusy=true;try{v.story.bookIntro=true;doSave();await root.Cutscene.play(D().SCENES.bookExit);try{if(typeof openPanel==='function')openPanel('bag')}catch(e){}}finally{bookBusy=false}return true}
+/* v98.617 · THE CARD-BOOK TOUR: after the opening scene the siblings teach the สมุดผนึก on the live village map — the player does each step by hand (open the book · look at the gear tab · tap a card · close it · the other tabs · close the book) */
+const BOOK_TOUR=[
+ {who:'S',text:'ดูมุมขวาบนนั่น มีปุ่มสมุดผนึกอยู่ — {S2B} ลองกดเปิดดู',target:"button[onclick*=\"openPanel('bag')\"]"},
+ {who:'S',text:'นี่คือสมุดผนึกที่สมาคมให้ ของที่เราพกจะกลายเป็นการ์ดเก็บอยู่ในนี้ ลองกดแท็บ อุปกรณ์ ก่อน',target:'.cb-tabs button[data-t="gear"]'},
+ {who:'B',text:'มีดของพ่อ… อยู่ในนี้แล้วจริงด้วย'},
+ {who:'S',text:'แตะการ์ดใบนั้นดูสิ จะเห็นรายละเอียด',target:'.cb-page[data-p="gear"] .card-thumb'},
+ {who:'S',text:'ปิดการ์ดนี้ก่อน แล้วไปดูแท็บอื่น',target:'#collectionFocus button, #collectionFocus .focus-close'},
+ {who:'S',text:'เหล็ก ถ่าน ไม้ ที่เก็บมาผลิตของ จะอยู่แท็บ วัตถุดิบ',target:'.cb-tabs button[data-t="mat"]',prep:()=>{if(!document.getElementById('panel').open)openPanel('bag')}},
+ {who:'S',text:'ส่วนยากับอาหารอยู่แท็บ ของใช้ — กดใช้จากตรงนี้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
+ {who:'B',text:'เข้าใจแล้ว ใส่ไว้ในสมุดก็ไม่ต้องหอบเป็นกอง'},
+ {who:'S',text:'งั้นปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .panelhead button, #panel > header button, #panel button[onclick*="close"], #panel button'}];
+let tourBusy=false;
+async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{const ok=await root.GuidedTour.run(BOOK_TOUR);try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
 async function bookFirst(){return false}   /* v98.613 · the book lesson now plays at the end of the opening scene */
 async function bookFirstOld(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
-root.Story={worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

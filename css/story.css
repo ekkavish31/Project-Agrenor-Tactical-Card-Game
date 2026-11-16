@@ -95,8 +95,8 @@ body.cs-open #storyTracker,body.tactics-open #storyTracker{display:none}
 @media (max-width:640px){#storyTracker{left:12px;top:auto;bottom:86px}}
 
 /* toasts */
-#storyToasts{position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:9600;display:grid;gap:8px;pointer-events:none}
-.st-toast{font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;padding:9px 18px;border-radius:999px;background:rgba(20,14,8,.88);color:#fff1d2;border:1px solid rgba(232,201,138,.6);box-shadow:0 6px 20px rgba(0,0,0,.4);animation:stIn .35s ease-out;font-size:14px;text-align:center}
+#storyToasts{position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:9600;display:grid;gap:8px;pointer-events:none;width:max-content;max-width:min(92vw,620px);justify-items:center}   /* v98.617 · a toast keeps its width (it was squeezed into a 4-line column) and never runs past two lines */
+.st-toast{font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;padding:9px 22px;border-radius:18px;max-width:100%;line-height:1.4;word-break:keep-all;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;background:rgba(20,14,8,.88);color:#fff1d2;border:1px solid rgba(232,201,138,.6);box-shadow:0 6px 20px rgba(0,0,0,.4);animation:stIn .35s ease-out;font-size:14px;text-align:center}
 .st-toast.good{border-color:#9fe08a}.st-toast.quest{background:linear-gradient(90deg,rgba(120,80,20,.92),rgba(60,40,10,.92));border-color:#ffd68c;font-size:15px}
 .st-toast.out{opacity:0;transform:translateY(-8px);transition:.5s}@keyframes stIn{from{opacity:0;transform:translateY(-10px) scale(.96)}}
 

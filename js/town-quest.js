@@ -127,7 +127,10 @@
       lastPoll = 0;
     }).catch(() => { o.busy = false; o.cool = 3 });
   }
+  /* v98.617 · frozen while the victory ceremony (#qbVic in the game page) or a guided tour is up */
+  const frozen = () => { try { return !!(root.parent !== root && root.parent.document.getElementById('qbVic')) } catch (e) { return false } };
   function update(dt, now) {
+    if (frozen()) { pending = null; chaseTo = null; return }
     poll(now);
     for (const list of objs.values()) for (const o of list) {
       o.cool = Math.max(0, o.cool - dt);
@@ -322,5 +325,5 @@
   }
   /* v95.14: street objects join the village's own depth-sorted list, so goats are solid and pass in front of / behind the hero and buildings like any villager */
   function sorted(t) { if (editing || !T) return []; const k = Math.min(2.2, K()); return [...objs.values()].flat().map(o => { const p = project(o.u, o.v); return { x: p.x, y: p.y, mobile: true, draw: g => drawObj(g, o, t, k) } }) }
-  root.TownQuest = { draw, sorted, guide, use, targets, objects: () => [...objs.values()].flat() };
+  root.TownQuest = { frozen, draw, sorted, guide, use, targets, objects: () => [...objs.values()].flat() };
 })(globalThis);

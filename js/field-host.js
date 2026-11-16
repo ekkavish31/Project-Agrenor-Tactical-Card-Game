@@ -196,6 +196,17 @@ const TownPaint = { matsAt: pts => { const own = new Map(); for (const c of FIEL
 /* water, walls and forts already read as obstacles: no red blocked tint over them */
 window.FieldCellTint = (u, v, k, col) => { const F = window.FieldHeight; if (!F || k !== 'blocked') return col; const i = (v + F.R) * F.n + u + F.R, M = F.map; return M.water?.[i] || M.mat?.[i] ? null : (() => { const c = FIELD.cells.get(FIELD.key(u, v)); return c && (c.prop || c.big) ? 'rgba(210,60,60,.14)' : col })() };
 
+/* v98.618 · the ground picture is as big as the whole field (3742×2564 px) but is shown at ~½ size on screen: scaling it down every frame cost 20–30 ms (a slideshow on a weak GPU).
+   Now a reduced copy (⅔ · ½ · ⅓ · ¼ — the smallest that is still ≥ the on-screen size) is made ONCE per zoom step and that is blitted instead. */
+const lodMap = new WeakMap();
+function drawGround(g, gc) {
+  const t = g.getTransform(), sc = Math.hypot(t.a, t.b); let ls = 1;
+  if (sc < .72) ls = sc < .3 ? .34 : sc < .45 ? .5 : .75;   // never smaller than the screen size → no blur
+  if (ls === 1) { g.drawImage(gc, gc.ox, gc.oy); return }
+  let m = lodMap.get(gc); if (!m) lodMap.set(gc, m = new Map());
+  let c = m.get(ls); if (!c) { c = document.createElement('canvas'); c.width = Math.max(1, Math.round(gc.width * ls)); c.height = Math.max(1, Math.round(gc.height * ls)); const q = c.getContext('2d'); q.imageSmoothingEnabled = true; q.imageSmoothingQuality = 'high'; q.drawImage(gc, 0, 0, c.width, c.height); m.set(ls, c) }
+  g.drawImage(c, 0, 0, c.width, c.height, gc.ox, gc.oy, gc.width, gc.height);
+}
 /* ---------- painting ---------- */
 const GROUND = { forest: ['#5f7a3e', '#6b8746', '#56703a'], grass: ['#7ea055', '#8cb062', '#729650'], hills: ['#a39168', '#b09e74', '#958560'], swamp: ['#55654a', '#5f7052', '#4b5a41'], snow: ['#dfe7ef', '#eef3f8', '#ced9e3'], sand: ['#d6c08c', '#e0cc99', '#c9b47f'] };
 const SLOWC = { mud: ['#6b5236', '#7a5f3f'], snow: ['#f7fbff', '#e6eef6'], sand: ['#c9a96a', '#d8ba7c'] }, COVERC = { forest: '#3f6a2e', grass: '#5c8f3a', hills: '#6f7f3e', swamp: '#4f6a3a', snow: '#6f8a6a', sand: '#9a9a50' };
@@ -397,10 +408,15 @@ let HOLE_CV = null;
 function propAura(ctx, c, e, t, bg) {
   const hs = c._holes, k = c._ha ?? 0;
   if (!hs || k < .02) return prop(ctx, c.prop, c.u, c.v, c.seed, t, bg);
-  const m = 34, x0 = Math.floor(e.x0 - m), y0 = Math.floor(e.y0 - m), w = Math.ceil(e.x1 - e.x0 + 2 * m), h = Math.ceil(e.foot - e.y0 + 2 * m + 12), sc = Math.max(1, ctx.getTransform().a);
-  HOLE_CV = HOLE_CV || document.createElement('canvas'); const W2 = Math.ceil(w * sc), H2 = Math.ceil(h * sc); if (HOLE_CV.width < W2 || HOLE_CV.height < H2) { HOLE_CV.width = Math.max(HOLE_CV.width, W2); HOLE_CV.height = Math.max(HOLE_CV.height, H2) }
-  const o = HOLE_CV.getContext('2d'); o.setTransform(1, 0, 0, 1, 0, 0); o.globalCompositeOperation = 'source-over'; o.clearRect(0, 0, HOLE_CV.width, HOLE_CV.height); o.setTransform(sc, 0, 0, sc, -x0 * sc, -y0 * sc);
-  prop(o, c.prop, c.u, c.v, c.seed, t, bg);
+  /* v98.618 · only the patch around the hidden unit(s) goes through the offscreen buffer (the prop was copied WHOLE: a house = a full-screen buffer every frame);
+     the rest of the prop is drawn straight onto the canvas with that patch clipped out (even-odd). */
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (const q of hs) { x0 = Math.min(x0, q.x - q.r); y0 = Math.min(y0, q.y - q.r); x1 = Math.max(x1, q.x + q.r); y1 = Math.max(y1, q.y + q.r) }
+  x0 = Math.floor(x0 - 2); y0 = Math.floor(y0 - 2); x1 = Math.ceil(x1 + 2); y1 = Math.ceil(y1 + 2);
+  const sc = Math.max(.4, Math.min(2, ctx.getTransform().a)), w = x1 - x0, h = y1 - y0, W2 = Math.ceil(w * sc), H2 = Math.ceil(h * sc), BIG = 6000;
+  ctx.save(); ctx.beginPath(); ctx.rect(-BIG, -BIG, 2 * BIG, 2 * BIG); ctx.rect(x0, y0, w, h); ctx.clip('evenodd'); prop(ctx, c.prop, c.u, c.v, c.seed, t, bg); ctx.restore();
+  HOLE_CV = HOLE_CV || document.createElement('canvas'); if (HOLE_CV.width < W2 || HOLE_CV.height < H2) { HOLE_CV.width = Math.max(HOLE_CV.width, W2); HOLE_CV.height = Math.max(HOLE_CV.height, H2) }
+  const o = HOLE_CV.getContext('2d'); o.setTransform(1, 0, 0, 1, 0, 0); o.globalCompositeOperation = 'source-over'; o.clearRect(0, 0, W2 + 2, H2 + 2); o.setTransform(sc, 0, 0, sc, -x0 * sc, -y0 * sc);
+  o.save(); o.beginPath(); o.rect(x0, y0, w, h); o.clip(); prop(o, c.prop, c.u, c.v, c.seed, t, bg); o.restore();
   o.globalCompositeOperation = 'destination-out';
   for (const q of hs) { const gr = o.createRadialGradient(q.x, q.y, q.r * .35, q.x, q.y, q.r); gr.addColorStop(0, `rgba(0,0,0,${k})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); o.fillStyle = gr; o.fillRect(q.x - q.r, q.y - q.r, q.r * 2, q.r * 2) }
   ctx.drawImage(HOLE_CV, 0, 0, W2, H2, x0, y0, W2 / sc, H2 / sc);
@@ -538,7 +554,7 @@ requestAnimationFrame(frame);
   g.setTransform(1, 0, 0, 1, 0, 0); if (dio) FieldDiorama.sky(g, cv.width, cv.height, FIELD.biome, FIELD.night, FQ.get('poi')); else { g.fillStyle = FIELD.biome === 'snow' ? '#9aa8b5' : '#1a2016'; g.fillRect(0, 0, cv.width, cv.height) }
   const k = devicePixelRatio * scale * zoom; g.setTransform(k, 0, 0, k, devicePixelRatio * (W / 2 + pan.x) - WORLD_W / 2 * k, devicePixelRatio * (H / 2 + pan.y) - WORLD_H / 2 * k);
   const tm = TURN ? turnMat(TURN.th, TURN.pu, TURN.pv) : null; if (tm) { g.save(); g.transform(...tm) }   /* the ground picture turns with the view; units and props below are placed (upright) with the same turn */
-  if (groundCanvas) g.drawImage(groundCanvas, groundCanvas.ox, groundCanvas.oy);
+  if (groundCanvas) drawGround(g, groundCanvas);
   if (dio && tm) waterFx(g, t);
   if (tm) g.restore();
   if (fadeGround) { const a = 1 - (performance.now() - fadeAt) / 320; if (a <= 0) { fadeGround = null; fadeMat = null } else { g.save(); if (fadeMat) g.transform(...fadeMat); g.globalAlpha = a; g.drawImage(fadeGround, fadeGround.ox, fadeGround.oy); g.restore() } }

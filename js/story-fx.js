@@ -139,7 +139,7 @@ function play(scene){if(!scene)return Promise.resolve();if(playing)return playin
   await wait(reduced()?0:450);if(scene.card){busy=true;await showCard(scene.card);busy=false}
   next()});
  return playing}
-const Cutscene={play,speakers:{},isPlaying:()=>!!playing,flash:(c)=>{build();flash(c)},burst:(o)=>{build();burst(o)}};
+const Cutscene={play,fill,roleWho,roleName,speakers:{},isPlaying:()=>!!playing,flash:(c)=>{build();flash(c)},burst:(o)=>{build();burst(o)}};
 root.Cutscene=Cutscene;
 
 /* ---------------- small floating toast for quest feedback (used outside cutscenes) ---------------- */
