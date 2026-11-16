@@ -5,7 +5,7 @@
 (function (root) {
   'use strict';
   const NC = root.NORCHORTAL || null;   // v95.22: the real map of Nor'Chorthal (js/world-norchorthal.js); without it the old random map
-  const COLS = NC ? NC.cols : 30, ROWS = NC ? NC.rows : 22;
+  const COLS = NC ? NC.cols : 30, ROWS = NC ? NC.rows : 22, SC = NC?.scale || 1;   /* v98.612 · SC = 2 when the half-size-hex world is on (js/world-scale.js): every distance below that means "hexes" is multiplied by it */
   const BIOME = {
     grass: { name: 'ทุ่งหญ้า', cost: 2, pass: true },
     forest: { name: 'ป่า', cost: 3, pass: true },
@@ -146,14 +146,14 @@
     for (const [c, r] of within(home.c, home.r, 1)) { const t = T(c, r); if (t.biome !== 'water' && !BIOME[t.biome].pass) t.biome = 'hills' }
     home.biome = 'grass'; home.river = false; home.poi = { id: 'home', name: 'หมู่บ้านเฟิร์นเวล', icon: 'village' };
     /* v95.24: the country around Fernvale stays temperate (grass, woods, hills, the range) — no snow, beach or ash within ~15 hexes */
-    for (const [c, r] of within(home.c, home.r, 9)) { const t = T(c, r); if (t.biome === 'snow' || t.biome === 'ash') t.biome = 'hills'; else if (t.biome === 'sand') t.biome = 'grass' }
+    for (const [c, r] of within(home.c, home.r, 9 * SC)) { const t = T(c, r); if (t.biome === 'snow' || t.biome === 'ash') t.biome = 'hills'; else if (t.biome === 'sand') t.biome = 'grass' }
     const w = { seed, cols: COLS, rows: ROWS, tiles, home: { c: home.c, r: home.r }, dests: [], towns: [], real: 'norchorthal' };
     for (const d of DESTS) {
       const t = snap(NC.marks[d.id], [d.biome]); if (!t) continue;
       t.biome = d.biome; t.river = false; t.poi = { ...d }; w.dests.push({ ...d, c: t.c, r: t.r });
     }
     for (const d of TOWNS) {
-      const m = NC.marks[d.id] || d.mark; if (!m) continue; const t = snap(m, d.biomes); if (!t || t.poi) continue;
+      const m = NC.marks[d.id] || (d.mark && (SC > 1 && root.WorldScale ? root.WorldScale.convertCell(d.mark[0], d.mark[1], 1, SC) : d.mark)); if (!m) continue; const t = snap(m, d.biomes); if (!t || t.poi) continue;
       t.poi = { id: 'town:' + d.id, town: d.id, name: d.name, icon: d.icon || 'town' }; t.river = false; w.towns.push({ ...d, c: t.c, r: t.r });
     }
     /* every destination and town must be reachable: where a range or a channel cuts one off, open a pass (mountain → hills) or a ford (water → beach) on the cheapest way through */
@@ -166,7 +166,7 @@
     /* roads: Fernvale to every town, along the cheapest way */
     for (const tw of w.towns) { const p = path(w, home, tw); if (p) for (const q of p) T(q.c, q.r).road = true }
     /* encounters: battles along the way to each destination, a camp half way, then a sprinkle of everything */
-    const occupied = t => t.enc || t.poi || t.road || dist(t, home) < 2;
+    const occupied = t => t.enc || t.poi || t.road || dist(t, home) < 2 * SC;
     for (const d of w.dests) {
       const p = path(w, home, d); if (!p) continue;
       const L = p.length;
@@ -179,10 +179,10 @@
       outpost: ['ด่านสะพานหิน', 'ด่านทางแยก', 'ด่านริมน้ำ', 'ด่านเชิงเขา', 'ด่านลมเหนือ', 'ด่านประตูทุ่ง'], tower: ['หอสังเกตการณ์เก่า', 'หอไฟบนเนิน', 'ยอดชมทิวเขา', 'หอหินร้าง', 'หอระฆังร้าง'],
       ruins: ['ซากป้อมโบราณ', 'ซากศาลาหิน', 'ซากหมู่บ้านร้าง', 'ซากวิหารเล็ก', 'ซากหอคอยล้ม', 'ซากสะพานเก่า', 'ซากคฤหาสน์'] };
     const used = {}, nameOf = k => { const L = NAMES[k], n = used[k] = (used[k] || 0) + 1; return L[(n - 1) % L.length] + (n > L.length ? ' ' + ['', '', 'ใต้', 'เหนือ', 'ตะวันออก', 'ตะวันตก'][Math.min(5, Math.ceil(n / L.length))] : '') };
-    const lm = [], cand = Object.values(tiles).filter(t => BIOME[t.biome].pass && !t.poi && !t.enc && dist(t, home) >= 4);
+    const lm = [], cand = Object.values(tiles).filter(t => BIOME[t.biome].pass && !t.poi && !t.enc && dist(t, home) >= 4 * SC);
     for (let i = cand.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1));[cand[i], cand[j]] = [cand[j], cand[i]] }
     for (const t of cand) {
-      if (lm.some(m => dist(m, t) < 6) || [...w.dests, ...w.towns].some(m => dist(m, t) < 4)) continue;
+      if (lm.some(m => dist(m, t) < 6 * SC) || [...w.dests, ...w.towns].some(m => dist(m, t) < 4 * SC)) continue;
       const b = t.biome, wet = t.river || neighbors(t.c, t.r).some(([c, r]) => T(c, r).river);
       const nearRoad = t.road || neighbors(t.c, t.r).some(([c, r]) => T(c, r).road);
       let type = (b === 'highland' || b === 'hills') && R() < .4 ? 'tower' : nearRoad && R() < .75 ? 'outpost' : (b === 'grass' || b === 'forest') && (wet || R() < .45) ? 'hamlet' : ['forest', 'stone', 'swamp', 'grass', 'ash', 'hills'].includes(b) && R() < .45 ? 'ruins' : R() < .5 ? 'shrine' : b === 'grass' || b === 'forest' ? 'hamlet' : 'tower';
@@ -224,9 +224,9 @@
   const pick = (R, a) => a[Math.floor(R() * a.length)];
   /* how deep into the fog a tile is: 0 at the village … 1 at the far rim (monsters get tougher) */
   /* the heights are dangerous however close they are: high slopes +0.2, snow +0.4 on the real map */
-  function danger(w, t) { return Math.min(1, dist(t, w.home) / (w.real ? 70 : 14) + (w.real ? ({ highland: .2, snow: .4, stone: .05 }[t.biome] || 0) : 0)) }
+  function danger(w, t) { return Math.min(1, dist(t, w.home) / (w.real ? 70 * SC : 14) + (w.real ? ({ highland: .2, snow: .4, stone: .05 }[t.biome] || 0) : 0)) }
 
   generate.real = NC ? 'norchorthal' : null;
-  const api = { COLS, ROWS, BIOME, FOES, DESTS, TOWNS, rng, key, inside, neighbors, dist, within, stepCost, path, generate, danger };
+  const api = { SCALE: SC, KM: NC?.km || 1, COLS, ROWS, BIOME, FOES, DESTS, TOWNS, rng, key, inside, neighbors, dist, within, stepCost, path, generate, danger };
   root.WorldGen = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

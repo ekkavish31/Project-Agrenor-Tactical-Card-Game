@@ -8,7 +8,8 @@
 (function () {
   'use strict';
   const G = window.WorldGen, Q = new URLSearchParams(location.search), SAVE = 'agrenor-world-v1';
-  const R = 36, HW = Math.sqrt(3) * R, VS = 1.5 * R;                              // hex radius, width, row step
+  const SCx = G.SCALE || 1;   /* v98.612 · 2 = the half-size-hex world (js/world-scale.js): hexes are drawn at half the radius so the picture keeps its size, and "N hexes" distances below are multiplied */
+  const R = 36 / SCx, HW = Math.sqrt(3) * R, VS = 1.5 * R;                              // hex radius, width, row step
   const WW = Math.ceil(HW * (G.COLS + .5)) + 8, WH = Math.ceil(VS * (G.ROWS - 1) + 2 * R) + 8;
   const cv = document.getElementById('wm'), g = cv.getContext('2d');
   const K = G.key, wait = ms => new Promise(r => setTimeout(r, ms));
@@ -48,13 +49,26 @@
   function healParty(f) { for (const p of S.party) p.hp = Math.min(p.max, f >= 1 ? p.max : p.hp + Math.round(p.max * f)) }
   function fresh(seed) {
     world = G.generate(seed);
-    S = WS.bind({ seed: world.seed, map: world.real || 'random', known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], dest: null, cleared: {}, done: {}, steps: 0, log: [] });
+    S = WS.bind({ worldScale: SCx, seed: world.seed, map: world.real || 'random', known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], dest: null, cleared: {}, done: {}, steps: 0, log: [] });
     reveal(); save();
+  }
+  /* v98.612 · a save made at another hex scale (S.worldScale, 1 when missing) is converted: position, previous hex, trail, cleared fights and the explored hexes (a new hex counts as explored when the
+     old hex under it was, and the other way round) */
+  function convertSave() {
+    const from = S.worldScale || 1, to = SCx; if (from === to || !window.WorldScale) { S.worldScale = to; return }
+    const cvt = (c, r) => window.WorldScale.convertCell(c, r, from, to), parse = k => String(k).split(',').map(Number), mapKey = k => { const [c, r] = parse(k), [a, b] = cvt(c, r); return K(a, b) };
+    const pos = p => { if (!p) return p; const [c, r] = cvt(p.c, p.r); return { c, r } };
+    S.pos = pos(S.pos); S.prev = pos(S.prev); S.trail = (S.trail || []).map(mapKey);
+    const cl = {}; for (const k in S.cleared || {}) cl[mapKey(k)] = S.cleared[k]; S.cleared = cl;
+    const nk = {};
+    if (to > from) { for (let r = 0; r < G.ROWS; r++) for (let c = 0; c < G.COLS; c++) { const [oc, or] = window.WorldScale.convertCell(c, r, to, from); if (S.known[K(oc, or)]) nk[K(c, r)] = 1 } }
+    else for (const k in S.known || {}) nk[mapKey(k)] = 1;
+    S.known = nk; S.worldScale = to; save();
   }
   function load() {
     if (Q.get('new') === '1') { fresh(+Q.get('seed') || undefined); history.replaceState(null, '', location.pathname); return }
     try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (s.map || 'random') !== (G.generate.real || 'random')) { /* v95.22: an old random-map save moves to Nor'Chorthal: same seed, finished destinations kept, back at Fernvale */ fresh(s.seed); S.done = s.done || {}; S.dest = S.done[s.dest] ? null : s.dest || null; S.log = ['— แผนที่ใหม่: ดินแดน Nor\'Chorthal —']; reveal(); save(); adoptVillage(); adoptLeads(); return }
-      if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = WS.bind(s); S.done ??= {}; S.log ??= []; adoptVillage(); adoptLeads(); reveal(); return } } catch (e) { }
+      if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = WS.bind(s); S.done ??= {}; S.log ??= []; convertSave(); adoptVillage(); adoptLeads(); reveal(); return } } catch (e) { }
     fresh(+Q.get('seed') || undefined);
   }
   function save() { WS.writeWorld(S) }
@@ -70,16 +84,16 @@
 
   /* ---------- fog ---------- */
   let visible = new Set(), fogDirty = true;
-  function sight() { const t = tile(S.pos.c, S.pos.r), night = S.hour >= 21 || S.hour < 4; return Math.max(1, 1 + (t.biome === 'hills' ? 1 : 0) + (t.poi?.id === 'home' ? 1 : 0) - (night ? 1 : 0)) }   // night: the hill bonus is lost
+  function sight() { const t = tile(S.pos.c, S.pos.r), night = S.hour >= 21 || S.hour < 4; return Math.max(1, 1 + (t.biome === 'hills' ? 1 : 0) + (t.poi?.id === 'home' ? 1 : 0) - (night ? 1 : 0)) * SCx }   // night: the hill bonus is lost
   function reveal() {
     visible = new Set(G.within(S.pos.c, S.pos.r, sight()).map(([c, r]) => K(c, r)));
     for (const k of visible) S.known[k] = 1;
-    for (const [c, r] of G.within(world.home.c, world.home.r, 1)) S.known[K(c, r)] = 1;
-    for (const id in S.done) { const d = world.dests.find(x => x.id === id); if (d) for (const [c, r] of G.within(d.c, d.r, 2)) S.known[K(c, r)] = 1 }
+    for (const [c, r] of G.within(world.home.c, world.home.r, SCx)) S.known[K(c, r)] = 1;
+    for (const id in S.done) { const d = world.dests.find(x => x.id === id); if (d) for (const [c, r] of G.within(d.c, d.r, 2 * SCx)) S.known[K(c, r)] = 1 }
     fogDirty = true;
   }
   const isKnown = k => !!S.known[k] || visible.has(k);
-  function revealArea(c, r, n) { for (const [a, b] of G.within(c, r, n)) S.known[K(a, b)] = 1; fogDirty = true }
+  function revealArea(c, r, n) { for (const [a, b] of G.within(c, r, n * SCx)) S.known[K(a, b)] = 1; fogDirty = true }
 
   /* ---------- terrain painting (once per world) ---------- */
   const PAL = { mine: ['#3a3547', '#443e53', '#322d3f'], grass: ['#7fa35a', '#8db365', '#6f9450'], forest: ['#4f7a3f', '#5a8646', '#456c37'], hills: ['#a09060', '#b0a06c', '#8f8054'], mountain: ['#8a8378', '#9b948a', '#77706a'],
@@ -326,7 +340,7 @@
   }
   async function meetTraveller(tv) {
     (S.metTv ||= {})[tv.p.id] = S.day; const per = window.WorldState?.period(S.hour) || 'day', ls = tv.p.lines?.[per] || tv.p.lines?.day || ['…'];
-    const road = roadCache[tv.p.from] || []; for (const q of road) for (const [a, b] of G.within(q.c, q.r, 1)) S.known[K(a, b)] = 1; fogDirty = true; reveal();
+    const road = roadCache[tv.p.from] || []; for (const q of road) for (const [a, b] of G.within(q.c, q.r, SCx)) S.known[K(a, b)] = 1; fogDirty = true; reveal();
     await modal(`<h2>🧳 ${esc(tv.p.name)}</h2><p><small>${esc(tv.p.role || '')} · ${tv.dir === 'in' ? 'กำลังเดินทางไปเฟิร์นเวล' : 'กำลังกลับ' + esc(tv.town.name)}</small></p><p>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p><p style="font-size:12.5px;opacity:.8">🗺 ${esc(tv.p.name)}วาดทางไป${esc(tv.town.name)}ให้ดู · เส้นทางเปิดบนแผนที่แล้ว</p>`);
     save(); hudSync();
   }
@@ -408,7 +422,7 @@
     if (s.x > m && s.x < W - m && s.y > m && s.y < H - m) return;
     const cx = W / 2, cy = H / 2, ang = Math.atan2(s.y - cy, s.x - cx), k = Math.min((W / 2 - m) / Math.abs(Math.cos(ang) || 1e-6), (H / 2 - m) / Math.abs(Math.sin(ang) || 1e-6)), x = cx + Math.cos(ang) * k, y = cy + Math.sin(ang) * k;
     g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.translate(x, y); g.rotate(ang); g.fillStyle = 'rgba(255,205,120,.95)'; g.beginPath(); g.moveTo(16, 0); g.lineTo(-8, -10); g.lineTo(-3, 0); g.lineTo(-8, 10); g.closePath(); g.fill(); g.restore();
-    g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); label(g, d.name + ' · ' + G.dist(S.pos, d) * (world.real ? 12 : 1) + (world.real ? ' กม.' : ' ช่อง'), x - Math.cos(ang) * 40, y - Math.sin(ang) * 26, '#ffe2a8', 12); g.restore();
+    g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); label(g, d.name + ' · ' + G.dist(S.pos, d) * (world.real ? (G.KM || 12) : 1) + (world.real ? ' กม.' : ' ช่อง'), x - Math.cos(ang) * 40, y - Math.sin(ang) * 26, '#ffe2a8', 12); g.restore();
   }
 
   /* ---------- frame ---------- */
@@ -487,8 +501,9 @@
       <div class="row"><span>จุดหมาย</span><span style="color:#ffe2a8">${d ? esc(d.name) + (S.done[d.id] ? ' ✔' : ' · ' + G.dist(S.pos, d) + ' ช่อง') : '—'}</span></div>
       <div class="btns">${atHome() ? `<button id="wmQuest">📜 เรื่องที่ได้ยินมา</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}${landHere() ? `<button id="wmLand" class="ghost">🏡 ที่ดิน${Estates.at(S, landHere()).length ? ' (' + Estates.at(S, landHere()).length + ')' : ''}</button>` : ''}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button>${eventCards().length ? `<button id="wmCards" class="ghost">🎴 การ์ดเหตุการณ์ (${eventCards().reduce((a, x) => a + x.n, 0)})</button>` : ''}</div>
       <div id="wmLog">${S.log.slice(0, 8).map(x => '<div>' + esc(x) + '</div>').join('')}</div>
-      <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกที่ไหนก็ได้ = เดินไป · ในหมอกจะเดินไปให้ใกล้ที่สุดเท่าที่รู้ทาง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a></div>`;
+      <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกที่ไหนก็ได้ = เดินไป · ในหมอกจะเดินไปให้ใกล้ที่สุดเท่าที่รู้ทาง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a> · <a href="#" id="wmScale" title="ทดลอง: ช่องหกเหลี่ยมเล็กลงครึ่งหนึ่ง (ช่องมากขึ้น 4 เท่า) ตำแหน่งที่เคยไปจะถูกแปลงให้" style="color:#c9a86a">${SCx === 2 ? 'กลับกริดปกติ' : 'กริดละเอียด 2× (ทดลอง)'}</a></div>`;
     const on = (id, fn) => { const b = hud.querySelector('#' + id); if (b) b.onclick = fn };
+    { const l = hud.querySelector('#wmScale'); if (l) l.onclick = e => { e.preventDefault(); try { localStorage.setItem('projectA.worldScale', SCx === 2 ? '1' : '2') } catch (x) { } const u = new URL(location.href); u.searchParams.delete('world'); location.href = u.toString() } }   /* v98.612 · experimental world-scale switch */
     on('wmCards', useEventCard); on('wmQuest', questBoard); on('wmVillage', () => { save(); syncClock(); location.href = 'village-town.html' }); on('wmCamp', () => camp(false)); on('wmHome', goHome); on('wmLand', () => landPanel(landHere(), atHome() ? 'หมู่บ้านเฟิร์นเวล' : 'ที่ดินกลางป่า'));
     on('wmPotion', () => { if (!S.potions) return; S.potions--; const b = S.hp; S.hp = Math.min(S.maxHp, S.hp + 25); log('ดื่มยาฟื้นฟู +' + (S.hp - b) + ' HP'); save(); hudSync() });
     hud.querySelectorAll('button').forEach(b => b.disabled = b.disabled || busy);
