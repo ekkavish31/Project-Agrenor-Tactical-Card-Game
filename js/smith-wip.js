@@ -55,6 +55,7 @@ function draw(){const v=V();if(!v){return}const show=atForge()&&!blocked();box()
  if(prev&&w.started&&prev.shape>=100&&w.shape>=100&&w.heat<prev.heat)juice('quench');
  prev={started:w.started,shape:w.shape,heat:w.heat,recipe:w.recipe,inv:G().inventory.length};
  const finished=performance.now()<doneUntil,fr=finished?RECIPES[doneItem]||r:r,fw=finished?{...w,recipe:doneItem,started:true,shape:100,heat:0}:w,st=finished?3:stage(w);
+ if(!w.started&&!finished){el.hidden=true;stamp='';return}   /* v98.604 · the work card is shown only while a piece is really being made (or just finished) — it used to pop up with the default iron sword the moment the forge sub-map opened, before anything was pressed (and built a whole card at that moment = a hitch) */
  const key=JSON.stringify([fw.recipe,fw.started,fw.heat,fw.shape,finished,v.smith.level]);el.hidden=false;if(key===stamp)return;stamp=key;
  el.querySelector('.sw-head b').textContent=fr.name;el.querySelector('.sw-head small').textContent=finished?'เสร็จแล้ว!':st===0?'แบบงานที่เลือก':'กำลังทำ';
  el.querySelector('.sw-face').innerHTML=cardHtml(fw,fr,st,finished);root.CardStudio?.fit?.(el.querySelector('.sw-card'));

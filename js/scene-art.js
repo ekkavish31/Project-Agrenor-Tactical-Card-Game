@@ -583,6 +583,22 @@
     for (let i = 0; i < 4; i++) { const x = w * (.55 + i * .13) + Math.sin(t * .2 + i) * 14; g.fillStyle = 'rgba(255,238,170,.08)'; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + w * .09, 0); g.lineTo(x - w * .12, h); g.lineTo(x - w * .22, h); g.closePath(); g.fill() }
     glow(g, w * .5, h * .6, w * .7, hsla(40, 90, 70), .12);
   }
+  /* ---------------- innHall / guildHall · v98.604 · code-drawn rooms for talk scenes held at the inn or the guild (no painted backdrops yet): wood walls, a long counter / notice board, shelves, hanging lanterns ---------------- */
+  function hall(g, w, h, t, guild) {
+    const R = rng(guild ? 31 : 41), fl = h * .66;
+    sky(g, w, h, [[0, '#2b1c12'], [1, '#3a2616']]);
+    for (let x = 0; x < w; x += 54) { g.fillStyle = (x / 54) % 2 ? '#4a3220' : '#432c1c'; g.fillRect(x, 0, 54, fl); g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(x, 0, 2, fl) }
+    g.fillStyle = '#2a1a10'; g.fillRect(0, h * .14, w, 8); g.fillRect(0, fl - 10, w, 10);   // beams
+    const gr = g.createLinearGradient(0, fl, 0, h); gr.addColorStop(0, '#5a3d24'); gr.addColorStop(1, '#2e1d10'); g.fillStyle = gr; g.fillRect(0, fl, w, h - fl);
+    g.strokeStyle = 'rgba(0,0,0,.28)'; for (let y = fl + 14; y < h; y += 18) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke() }
+    if (guild) { g.fillStyle = '#6a4a2a'; g.fillRect(w * .14, h * .2, w * .72, h * .3); g.strokeStyle = '#2a1a10'; g.lineWidth = 4; g.strokeRect(w * .14, h * .2, w * .72, h * .3);   // notice board
+      for (let i = 0; i < 14; i++) { const x = w * (.17 + .66 * R()), y = h * (.23 + .22 * R()), pw = 26 + R() * 18, ph = 34 + R() * 16; g.save(); g.translate(x, y); g.rotate((R() - .5) * .16); g.fillStyle = ['#e8dcb8', '#d8c9a0', '#efe3c4'][i % 3]; g.fillRect(-pw / 2, 0, pw, ph); g.fillStyle = '#7a3a2a'; g.beginPath(); g.arc(0, 4, 2.4, 0, TAU); g.fill(); g.restore() } }
+    else { for (let r = 0; r < 2; r++) { g.fillStyle = '#5a3a22'; g.fillRect(w * .1, h * (.2 + r * .17), w * .8, 7); for (let i = 0; i < 16; i++) { const x = w * (.12 + .76 * (i / 16)) + R() * 8, bh = 18 + R() * 20; g.fillStyle = ['#7a3a2a', '#3a5a7a', '#8a6a2a', '#4a6a3a'][(i + r) % 4]; g.beginPath(); g.roundRect(x, h * (.2 + r * .17) - bh, 16 + R() * 8, bh, 3); g.fill() } } }
+    g.fillStyle = '#6a4528'; g.fillRect(0, h * .56, w, h * .1); g.fillStyle = '#8a5d36'; g.fillRect(0, h * .55, w, 10);   // counter
+    for (const lx of [w * .2, w * .5, w * .8]) { const sw = Math.sin(t * .8 + lx) * 3; glow(g, lx + sw, h * .12, w * .2, hsla(36, 100, 62), .7); g.fillStyle = '#2a1a10'; g.fillRect(lx + sw - 1, 0, 2, h * .06); g.fillStyle = '#ffd98a'; g.beginPath(); g.ellipse(lx + sw, h * .085, 8, 11, 0, 0, TAU); g.fill() }
+    glow(g, w * .5, h * .6, w * .6, hsla(30, 90, 55), .14);
+  }
+  const innHall = (g, w, h, t) => hall(g, w, h, t, false), guildHall = (g, w, h, t) => hall(g, w, h, t, true);
   function emblem(g, x, y, r, t, a = 1) { gods(g, x, y + r * 2, r * 6, t, a * .8) }
   /* three tall veiled figures, barely there — deep sky blue · purple · light green; they shimmer and never take a clear shape */
   function gods(g, x, y, H, t, a = 1) {
@@ -888,10 +904,10 @@
     temple: { motes: 'ember', n: 30, grade: 'night', vig: .5 }, shrines: { motes: 'firefly', n: 30, grade: 'warm', vig: .42 }, journal: { motes: 'firefly', n: 24, grade: 'night', vig: .45 },
     riverCity: { rays: SUNRAYS(.2), motes: 'pollen', grade: 'gold' }, roadOut: { rays: SUNRAYS(.85), motes: 'dust', grade: 'gold' }, fernvale: { rays: SUNRAYS(.85, .4), motes: 'pollen', grade: 'warm' },
     dawn: { rays: SUNRAYS(.3, .5), motes: 'pollen', grade: 'gold', vig: .3 }, orb: { motes: 'pollen', grade: 'gold', vig: .3 }, festival: { motes: 'ember', n: 36, grade: 'night', vig: .4 },
-    hildaFarm: { rays: SUNRAYS(.35, .4), motes: 'pollen', n: 22, grade: 'warm', vig: .3 }, homeMorning: { motes: 'dust', n: 26, vig: .45 }, heirs: { motes: 'spark', n: 30, grade: 'night', vig: .5 }, realms: { motes: 'dust', n: 24, grade: 'warm', vig: .45 }
+    innHall: { motes: 'dust', n: 22, grade: 'warm', vig: .5 }, guildHall: { motes: 'dust', n: 22, grade: 'warm', vig: .5 }, hildaFarm: { rays: SUNRAYS(.35, .4), motes: 'pollen', n: 22, grade: 'warm', vig: .3 }, homeMorning: { motes: 'dust', n: 26, vig: .45 }, heirs: { motes: 'spark', n: 30, grade: 'night', vig: .5 }, realms: { motes: 'dust', n: 24, grade: 'warm', vig: .45 }
   };
 
-  const SCENES = { hildaFarm, towns, dig, crystals, trails, settle, eras, realmsWide, inscription, study, temple, shrines, journal, riverCity, roadOut, treeline: (g, w, h, t) => deepwood(g, w, h, t, true), ruins: (g, w, h, t) => ancient(g, w, h, t, true), ancient, heirs, journey, realms, kin, forgotten, faith, deepwood, hearth, elukhor, homeMorning, fernvale, festival: (g, w, h, t) => village(g, w, h, t, 'festival'), dawn: (g, w, h, t) => village(g, w, h, t, 'dawn'), orb: (g, w, h, t) => village(g, w, h, t, 'orb') };
+  const SCENES = { innHall, guildHall, hildaFarm, towns, dig, crystals, trails, settle, eras, realmsWide, inscription, study, temple, shrines, journal, riverCity, roadOut, treeline: (g, w, h, t) => deepwood(g, w, h, t, true), ruins: (g, w, h, t) => ancient(g, w, h, t, true), ancient, heirs, journey, realms, kin, forgotten, faith, deepwood, hearth, elukhor, homeMorning, fernvale, festival: (g, w, h, t) => village(g, w, h, t, 'festival'), dawn: (g, w, h, t) => village(g, w, h, t, 'dawn'), orb: (g, w, h, t) => village(g, w, h, t, 'orb') };
 
   function create(canvas, opt = {}) {
     const g = canvas.getContext('2d'), buf = document.createElement('canvas'), bg = buf.getContext('2d');

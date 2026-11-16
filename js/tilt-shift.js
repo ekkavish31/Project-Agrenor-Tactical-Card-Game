@@ -24,11 +24,16 @@
     qa.fillStyle = gr; qa.fillRect(0, 0, w1, h1); qa.globalCompositeOperation = 'source-over';
     return a;
   }
+  /* v98.604 · the READ-BACK of the big canvas into the small strip canvases is the expensive part (a GPU → CPU copy that stalls the frame: 1600×900 → 400×45 cost ~11 ms each in the forge sub-map = the hitch).
+     The blurred strips are rebuilt only every few frames (adaptive: slower when a rebuild is slow) and the cached ones are drawn in between — a blurred edge never shows the lag. */
+  let frame = 0, every = 3, cached = null, cKey = '';
   function apply(g, cv, o = {}) {
     if (!enabled || !g || !cv || cv.width < 320 || cv.height < 240) return;
     const H = cv.height, W = cv.width, th = Math.round(H * (o.top ?? .2)), bh = Math.round(H * (o.bottom ?? .17));
     try {
-      const t = strip(cv, 0, th, true, 0), bt = strip(cv, H - bh, bh, false, 1);   /* both strips are read before either is drawn back */
+      const key = W + 'x' + H + ':' + th + ':' + bh; let t, bt;
+      if (cached && cKey === key && (++frame % every) !== 0) { t = cached[0]; bt = cached[1] }
+      else { const t0 = performance.now(); t = strip(cv, 0, th, true, 0); bt = strip(cv, H - bh, bh, false, 1); cached = [t, bt]; cKey = key; const ms = performance.now() - t0; every = ms > 8 ? 8 : ms > 3 ? 5 : 3 }   /* both strips are read before either is drawn back */
       g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'low';
       g.drawImage(t, 0, 0, t.width, t.height, 0, 0, W, th); g.drawImage(bt, 0, 0, bt.width, bt.height, 0, H - bh, W, bh);
       g.restore();

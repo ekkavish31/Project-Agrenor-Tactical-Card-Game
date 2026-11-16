@@ -179,6 +179,17 @@
      ripe / field pumpkin = pumpkin-4 · the contest pumpkin ('plot') = a BIG pumpkin-4 with a pulsing gold aura + sparks, a little bigger for every day it has been tended */
   const PIC = {}, picOf = n => { if (!PIC[n]) { const im = new Image(); im.src = 'assets/crops/pumpkin-' + n + '.webp'; PIC[n] = im } return PIC[n] };
   const contestDays = () => { try { return Math.min(3, story()?.pumpkinDays?.() || 0) } catch (e) { return 0 } };
+  /* v98.604 · the quest planks are drawn as real BOARDS (a small stack of three, solid colours + dark outline, nails and grain) — the 🪵 emoji looked like a see-through log */
+  function plankDraw(gx, o, t) {
+    const bob = Math.sin(t * .003 + o.phase) * 1.2; gx.save(); gx.translate(0, 6 + bob);
+    const board = (x, y, w, h, rot, base, dark) => { gx.save(); gx.translate(x, y); gx.rotate(rot); const g = gx.createLinearGradient(0, -h / 2, 0, h / 2); g.addColorStop(0, base); g.addColorStop(1, dark); gx.fillStyle = g; gx.strokeStyle = '#3b2412'; gx.lineWidth = 2.2; gx.lineJoin = 'round';
+      gx.beginPath(); gx.roundRect(-w / 2, -h / 2, w, h, 3); gx.fill(); gx.stroke();
+      gx.strokeStyle = 'rgba(70,40,18,.55)'; gx.lineWidth = 1; for (const k of [-.22, .08, .3]) { gx.beginPath(); gx.moveTo(-w / 2 + 4, h * k); gx.bezierCurveTo(-w * .2, h * k - 2, w * .15, h * k + 2, w / 2 - 4, h * k); gx.stroke() }
+      gx.fillStyle = '#5a5a5e'; for (const sx of [-w / 2 + 6, w / 2 - 6]) { gx.beginPath(); gx.arc(sx, 0, 1.7, 0, 7); gx.fill() }
+      gx.restore() };
+    board(-3, -3, 56, 11, -.10, '#c8955a', '#a06a36'); board(4, -12, 54, 11, .06, '#d6a468', '#b07a40'); board(-2, -21, 50, 11, -.04, '#c08a50', '#9a6430');
+    gx.restore();
+  }
   function pumpAura(gx, p, t) {
     const d = contestDays(), R = 62 + d * 9, pulse = .78 + Math.sin(t * .004) * .22;
     gx.save(); gx.globalCompositeOperation = 'lighter';
@@ -203,7 +214,7 @@
     if (!o.flee || pending === o) { gx.strokeStyle = 'rgba(255,214,90,' + (.45 + Math.sin(t * .006) * .3) + ')'; gx.lineWidth = 2.5; gx.beginPath(); gx.ellipse(p.x, p.y, 24, 11, 0, 0, 7); gx.stroke() }
     gx.font = '34px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif'; gx.textAlign = 'center';
     gx.translate(p.x, p.y - 6 - hop); { const right = o.flee && o.dir && o.dir.du - o.dir.dv > 0; if (o.kind !== 'goat' && right) gx.scale(-1, 1) }
-    if (o.mystery) mysteryDraw(gx, o, t); else if (o.kind === 'goat') goat(gx, o, t); else if (pump && pumpDraw(gx, o, t)) { /* picture drawn */ } else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
+    if (o.mystery) mysteryDraw(gx, o, t); else if (o.kind === 'goat') goat(gx, o, t); else if (pump && pumpDraw(gx, o, t)) { /* picture drawn */ } else if (o.kind === 'plank') plankDraw(gx, o, t); else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
     if (o.flee && o.mode === 'rest') { gx.save(); gx.font = `700 ${12}px AgThai,system-ui`; gx.fillStyle = '#e8f4ff'; gx.textAlign = 'center'; gx.fillText('หอบ…', p.x, p.y - 46); gx.restore() }
   }
   /* v97.14 · the goat is drawn (solid colours with a dark outline) instead of the pale 🐐 emoji that washed out on the light cobbles:

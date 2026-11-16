@@ -60,8 +60,14 @@ function guide(){const step=cur();if(!step)return;if(onWorld()){toast('อยู
 const guideBtn={label:'📍 นำทาง',primary:true,hide:()=>onWorld(),run:guide};
 const HINT_WALK='◆ สีทองบนแผนที่บอกทาง · คลิกถนนหรืออาคารเพื่อเดิน · คลิกคนเพื่อคุย';
 function talkStep(o){return {tag:'real',...o,talk:o.talk,check:d=>!!d.talked,acts:[guideBtn,...(o.acts||[])],hint:o.hint||HINT_WALK}}
-/* v98.598 · where a talk scene happens follows where the person really is: Hilda at the market → the market picture, otherwise her farm (code-drawn) — never the hero's own house */
-function sceneAt(id){const sc=D().SCENES[id];if(id==='seeds'){try{const at=npcPlace('hilda');if(at&&/market|square|shop/.test(String(at)))return {...sc,art:null,bg:'assets/market.webp'}}catch(e){}}return sc}
+/* v98.598/604 · WHERE a talk happens decides the backdrop — for every NPC scene (talkStep outro → the NPC), by where that person really is at that hour (npcPlace):
+   forge → the forge picture · market / shop → the market picture · square / a house door → the village (code-drawn) · inn / guild / temple / healer / Hilda's farm → code-drawn rooms (no paintings yet) */
+const PLACE_BG={forge:{bg:'assets/forge.webp'},market:{bg:'assets/market.webp'},shop:{bg:'assets/market.webp'},square:{art:'fernvale'},inn:{art:'innHall'},guild:{art:'guildHall'},temple:{art:'temple'},healer:{art:'hearth'}};
+let TALK_NPC=null;
+function talkNpcOf(id){if(!TALK_NPC){TALK_NPC={};for(const s of STEPS)if(s.talk&&s.outro&&typeof s.outro==='string')TALK_NPC[s.outro]=s.talk}return TALK_NPC[id]||null}
+function sceneAt(id){const sc=D().SCENES[id];if(!sc)return sc;try{const npc=talkNpcOf(id);if(!npc)return sc;const at=String(npcPlace(npc)||'');
+  let o=PLACE_BG[at];if(!o){o=npc==='hilda'?{art:'hildaFarm'}:{art:'fernvale'}}   /* her own farm / a house door → outdoors */
+  return {...sc,art:o.art||null,bg:o.bg||null}}catch(e){return sc}}
 function targetsOf(step,d){const t=typeof step.targets==='function'?step.targets(d)||{}:{};const out={npc:[...(t.npc||[])],place:[...(t.place||[])],exit:!!(t.exit||step.exit),spots:[...(t.spots||[])],label:t.label||''};
  if(step.talk&&!d.talked)out.npc.push(step.talk);if(step.place)out.place.push(...[].concat(step.place));
  if(step.spot){const left=(step.spot.n||1)-(d.got||0);if(left>0)out.spots.push({...step.spot,n:left})}
@@ -145,7 +151,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
   onSpot:d=>{mats().wood=(mats().wood||0)+1;d.got=(d.got||0)+1;doSave();doRender();return {msg:'🪵 ไม้ +1 ('+d.got+'/2)',consume:true}}},
  {id:'stall',tag:'real',outro:'stallDone',title:'ซ่อมแผงขายของ',goal:'เดินไปที่แผงหน้าตลาด แล้วซ่อม (ใช้ไม้ 2)',hint:'เดินไปแตะแผง 🛠️ · ใช้แรง 6 และเวลา 30 นาที · ไม้ไม่พอซื้อได้ที่ตลาด',
   spot:SPOT.stall,check:d=>!!d.built,acts:[guideBtn],
-  reward:()=>{addCoins(20);toast('รางวัล: +20 เหรียญจากลุงทอม')},
+  reward:()=>{addCoins(20);toast('รางวัล: +20 เหรียญจากลุงทอม');/* v98.604 · Tom's job ends the afternoon: the clock jumps to 18:00 (evening prep) so going home to sleep fits */try{const g=G();if(g&&(g.minutes||0)<1080){g.minutes=1080;doSave();doRender();toast('🌇 งานเสร็จตอนเย็น — ตอนนี้ 18:00 · เตรียมค่ำ')}}catch(e){}},
   onSpot:d=>{if((mats().wood||0)<2)return {msg:'ไม้ไม่พอ (ต้องใช้ 2)'};const why=spend(6,30,3);if(why)return {msg:why};mats().wood-=2;d.built=true;d.got=1;doSave();doRender();return {msg:'🔨 ซ่อมแผงเสร็จ!',consume:true}}},
  {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'งานวันนี้เสร็จแล้ว — พระอาทิตย์ใกล้ตก เดินกลับบ้านแล้วไปที่เตียงเพื่อนอนพัก',hint:'ตอนเย็นของวันแรกเวลาเดินช้าลงให้ทำงานครบ · ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก" · การนอนข้ามไปเช้าวันถัดไป',
   place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn]},
@@ -416,7 +422,7 @@ async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!
  if(document.getElementById('storyBattle')||onWorld())return false;
  bookBusy=true;try{v.story.bookIntro=true;doSave();await root.Cutscene.play(D().SCENES.bookExit);try{if(typeof openPanel==='function')openPanel('bag')}catch(e){}}finally{bookBusy=false}return true}
 async function bookFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
-root.Story={bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},
