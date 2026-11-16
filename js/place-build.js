@@ -1244,7 +1244,7 @@ const PB_ART = (() => {
   <hr><div class="row"><button id="aDel">ลบจุดทำงานนี้</button></div>`;
   thumbInto(body.querySelector('#aTh'), s.art, s.width || 120);
   bindZ('sz', d => { s.z = Math.max(-20, Math.min(20, (s.z || 0) + d)); if (!s.z) delete s.z });
-  act('#aSwap', () => openArtPicker('เปลี่ยนภาพ ' + s.name, s.art, a => once(() => { if (/^code:/.test(s.art || '') && !/^code:/.test(a) && typeof artWidth === 'function') s.width = Math.max(+s.width || 0, artWidth(a)); s.art = a })()));   /* v98.434 · code shape → picture: start at the picture's own width */
+  act('#aSwap', () => openArtPicker('เปลี่ยนภาพ ' + s.name, s.art, a => once(() => { if (/^code:/.test(s.art || '') && !/^code:/.test(a) && typeof artWidth === 'function') s.width = Math.max(+s.width || 0, artWidth(a)); s.art = a; if (window.AssetSize?.get(artSrc(a))) { s.width = startW(a); delete s.s } })())   /* v98.577 · a picture that knows its size next to the hero takes it when swapped in */);   /* v98.434 · code shape → picture: start at the picture's own width */
   body.querySelector('#aFlip').onchange = e => once(() => s.f = e.target.checked || undefined)();
   act('#aDel', () => {
    if (M.stations.length <= 1) {
@@ -1338,7 +1338,7 @@ const PB_ART = (() => {
     render()
    });
    act('#pDetail', () => window.PieceDetail?.open(i));
-   act('#pSwap', () => openArtPicker('เปลี่ยนภาพ', o.art, a => once(() => { if (/^code:/.test(o.art || '') && !/^code:/.test(a) && typeof artWidth === 'function') o.width = artWidth(a); o.art = a })()));
+   act('#pSwap', () => openArtPicker('เปลี่ยนภาพ', o.art, a => once(() => { if (/^code:/.test(o.art || '') && !/^code:/.test(a) && typeof artWidth === 'function') o.width = artWidth(a); o.art = a; if (window.AssetSize?.get(artSrc(a))) { o.width = startW(a); o.s = 1 } })()));
    body.querySelector('#pFlip').onchange = e => once(() => o.f = e.target.checked || undefined)();
    act('#pDup', once(() => {
     M.props.push({

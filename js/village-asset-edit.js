@@ -100,6 +100,7 @@
  window.AssetSize?.setHero('village', () => CharSize.VILLAGE_HERO_PX * charScale('hero'));
  const decorFile = kind => /^decor:/.test(kind || '') ? 'assets/village-town/decor/' + kind.slice(6) + '.png' : '';
  function sizeStart(nid, kind) { const f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1], r = f && window.AssetSize?.get(f); if (r && w) ovOf(nid).s = +clampN(r * AssetSize.heroPx('village') / w, .2, 4).toFixed(3) }
+ function buildingRec(id) { const b = data.buildings[id] || {}, spec = artSpecs[id], f = BUILDINGS[id]; if (spec && f && window.AssetSize) AssetSize.record(f, spec[0] * 2 * (b.sx ?? 1), 'village') }
  function sizeRec(key) { const a = data.added.find(x => x.id === key), ov = data.edit[key] || {}, kind = ov.kind || a?.kind, f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1]; if (f && w && window.AssetSize) AssetSize.record(f, w * (ov.s ?? 1), 'village') }
  const kind = (id, label, group, draw) => KINDS[id] = {
   label,
@@ -2260,7 +2261,7 @@
   bindFp(body, o);
   act('#bSwap', () => openList('เปลี่ยนภาพ ' + o.name, choices, cur?.id, it => {
    UX.checkpoint();
-   if (it.wk && !artSpecs[it.id]) { data.assets.push({ id: it.id, name: it.label, w: Math.max(30, Math.round((it.wk.mapW || 380) / 2)), bld: 1, file: it.wk.file, ...(it.wk.mapFx ? { fx: it.wk.mapFx, fy: it.wk.mapFy } : Array.isArray(it.wk.pivot) && it.wk.pivot[0] > 0 && it.wk.pivot[0] < 1 && it.wk.pivot[1] > 0 && it.wk.pivot[1] <= 1 ? { fx: it.wk.pivot[0], fy: it.wk.pivot[1] } : {}) }); registerAssets() }
+   if (it.wk && !artSpecs[it.id]) { data.assets.push({ id: it.id, name: it.label, w: Math.max(30, Math.round((window.AssetSize?.startWidth(it.wk.file, 'village', it.wk.mapW || 380) || 380) / 2)), bld: 1, file: it.wk.file, ...(it.wk.mapFx ? { fx: it.wk.mapFx, fy: it.wk.mapFy } : Array.isArray(it.wk.pivot) && it.wk.pivot[0] > 0 && it.wk.pivot[0] < 1 && it.wk.pivot[1] > 0 && it.wk.pivot[1] <= 1 ? { fx: it.wk.pivot[0], fy: it.wk.pivot[1] } : {}) }); registerAssets() }
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
    if (it.id === o.id || !o.npc && it.id === 'home' && o.id === 'home') delete b.art;
    else b.art = it.id;
@@ -2337,7 +2338,7 @@
    }
    b[k] = v;
    if (Math.abs(v - (k === 'kx' || k === 'lx' ? 0 : 1)) < 1e-9) delete b[k];
-  })
+  }, k => { if (k === 'sx' || k === 'sy') buildingRec(o.id) })   /* v98.577 · the building's width next to the hero is stored */
  }
 
  /* v91.46 · bake this map's stretch/tilt of a building picture into its file, push it, and reset the per-map edit */
@@ -2367,6 +2368,7 @@
   c.drawImage(r.im, r.x, r.y, r.w, r.h);
   const blob = await new Promise(ok => cv.toBlob(ok, 'image/png'));
   const newW = Math.round(W / 2);
+  try { window.AssetSize?.record(path, W, 'village') } catch (e) { }   /* v98.577 · the baked width is the picture's new size next to the hero */
   say('กำลังส่งภาพกลับไปทับ ' + path + '…');
   try {
    const man = (window.ASSET_MANIFEST?.assets || []).find(a => a.file === path);

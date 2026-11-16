@@ -5,7 +5,7 @@
    item = [path, bytes, width, height, hash8, category, sub-category, slotId|'', duplicates, usage 0|1|2, why] */
 const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto');
 const ROOT = path.join(__dirname, '..'), C = require('../js/image-catalog.js');
-const SKIP = new Set(['node_modules', '.git']), IMG = /\.(png|webp|jpe?g|gif|svg)$/i;
+const SKIP = new Set(['node_modules', '.git', 'out'])   /* v98.577 · tools/out = local scratch (gitignored): never in the index */, IMG = /\.(png|webp|jpe?g|gif|svg)$/i;
 function walk(d, out = []) { for (const e of fs.readdirSync(d, { withFileTypes: true })) { if (SKIP.has(e.name)) continue; const p = path.join(d, e.name); if (e.isDirectory()) walk(p, out); else if (IMG.test(e.name)) out.push(path.relative(ROOT, p).split(path.sep).join('/')) } return out }
 function dims(buf, p) {
   try {
