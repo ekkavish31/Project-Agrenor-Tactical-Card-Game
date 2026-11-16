@@ -1,4 +1,4 @@
-/* v98.612 · WorldScale — the world map with HALF-SIZE hexes (k = 2: four times as many hexes over the SAME picture), so there is room for many more places.
+/* v98.612/613 · WorldScale — a world map with TWICE as many hexes each way (k = 2: four times as many hexes), drawn at the SAME hex size next to the characters, so the world is twice as wide and tall and there is room for many more places.
    window.NORCHORTAL (js/world-norchorthal.js, 150×130 hexes of 12 km) is re-sampled into 300×260 hexes of 6 km: every new hex takes the terrain letter / river flag of the OLD hex whose centre
    is nearest to its own centre (so shorelines, ranges and rivers keep their shape), and every mark (Fernvale, the mine, the towns …) moves to the new hex nearest to the old one.
    Switch (default OFF = the map the game has always used):   URL  ?world=2  (or ?world=1 to force off)   ·   localStorage 'projectA.worldScale' = '2'.

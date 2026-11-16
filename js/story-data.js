@@ -2,7 +2,7 @@
    Pure data — edit text freely. {hero} = the hero's name. Backgrounds reuse existing scene art.
    Lore source: docs/lore/GAME-ERA.md (world of the heirs; the ancient people are never named in the game text). */
 (function(root){'use strict';
-const B={home:'assets/home.webp',market:'assets/market.webp',work:'assets/workshop.webp',anvil:'assets/forge.webp',camp:'assets/camp.webp',
+const B={houseFront:'assets/new-game-prologue/images/hero-house.webp',home:'assets/home.webp',market:'assets/market.webp',work:'assets/workshop.webp',anvil:'assets/forge.webp',camp:'assets/camp.webp',
  forest:'assets/scenes/area-forest.webp',mine:'assets/scenes/area-mine.webp',ruins:'assets/scenes/area-ruins.webp'};
 const ally=()=>{try{const c=(s.village.party||[]).find(x=>x.key!=='sib');const R=root.Companions?.ROSTER?.[c?.key];return c&&R?{name:R.name,portrait:'assets/cards/portraits/u-'+c.key+'.webp'}:null}catch{return null}};
 const SPEAKERS={
@@ -51,23 +51,20 @@ const SCENES={
   {who:'sib',lead:'sister',text:'ข้าหยิบฟืนไว้แล้ว! เผื่อเจอหมาป่าจริง ๆ'},
   {who:'hero',lead:'sister',text:'หยิบตอนเดินชนประตูเมื่อกี้ล่ะสิ'},
   {who:'sib',text:'{sibpolite} แม่ ข้าไปด้วยเอง จะได้ช่วยกันถือของ'},
-  {bg:B.market,tint:'dawn',fx:['motes'],text:'พอก้าวออกจากบ้าน Elukhor ลอยค้างอยู่เหนือขอบฟ้าทางตะวันออก ส่องแสงอุ่นลงมาทั่วลุ่มน้ำ'},
+  {bg:B.houseFront,tint:'dawn',fx:['motes'],text:'พอก้าวออกจากบ้าน Elukhor ลอยค้างอยู่เหนือขอบฟ้าทางตะวันออก ส่องแสงอุ่นลงมาทั่วลุ่มน้ำ'},
   {who:'mom',text:'ดวงทองมาค้างทางตะวันออกแต่เช้า วันนี้ร้อนแน่ อย่าลืมดื่มน้ำล่ะ'},
   {who:'hero',text:'{polite} ๆ ข้าไปละ!'},
   {who:'sib',text:'{sibpolite} ๆ รอข้าด้วย {callhero}!'},
-  {text:'เฟิร์นเวลยังเป็นเฟิร์นเวลเหมือนทุกปี… อย่างน้อยก็ในเช้าวันนั้น'},
-  {text:'ของที่ได้มาจะถูกผนึกเก็บไว้ใน 📖 สมุดผนึก — ลองเปิดดูได้ที่ปุ่มมุมจอ'}]},
- /* v98.600 · FIRST STEP OUTSIDE THE HOUSE: the sister stops the hero at the door and sends them to open the card-book (Story.bookIntro ← tick) — the lesson below (bookFirst) plays the moment the book opens */
- bookExit:{art:'fernvale',tint:'day',fx:['motes','leaves'],lines:[
+  /* v98.613 · back IN the opening (owner, 16 Nov 2026): after the wake-up talk with Mom, as the pair step out of the front door on the way to Elder Oren, {Sn} stops {Bn} and explains the สมุดผนึก — over the picture of the hero's house front */
+
   {seg:true,text:'ก้าวแรกพ้นประตูบ้าน แสงเช้าส่องลงบนถนนหินของเฟิร์นเวล — {Sn} คว้าแขนคุณไว้ก่อนจะเดินไปไหนต่อ'},
   {who:'S',text:'เดี๋ยวก่อน! จะถือมีดของพ่อกับท่อนฟืนไปทั่วหมู่บ้านทั้งวันเลยเหรอ'},
   {who:'B',text:'…ก็ข้ายังไม่ทันคิดเลยว่าจะเก็บไว้ตรงไหน'},
   {who:'S',text:'ก็สมุดผนึกไง! ที่สมาคมนักผจญภัยให้ตอนเราไปลงทะเบียนแรงก์ F — ของทุกอย่างเก็บเข้าไปเป็นการ์ดได้หมด'},
   {who:'S',text:'เปิดสมุดเลย เดี๋ยวข้าสอนวิธีผนึกของให้ ทำครั้งเดียวก็จำได้ ไม่ยากหรอก'},
   {who:'B',text:'ได้ ๆ … งั้นเปิดเลย'},
-  {text:'📖 สมุดผนึกกำลังเปิดออก — ปุ่มสมุดอยู่ที่มุมจอ เปิดดูได้ทุกเมื่อ'}]},
- /* v98.589 · the card-book lesson, moved out of the opening: plays ONCE the first time the player opens the book (Story.bookFirst ← js/card-book.js) */
- bookFirst:{art:'fernvale',tint:'day',fx:['motes','leaves'],lines:[
+  {text:'📖 สมุดผนึกกำลังเปิดออก — ปุ่มสมุดอยู่ที่มุมจอ เปิดดูได้ทุกเมื่อ'},
+
   {seg:true,text:'คุณเปิดสมุดผนึกขึ้นมาครั้งแรกของวัน หน้ากระดาษยังว่างเปล่า ขณะที่มีดของพ่อกับท่อนฟืนที่ {Sn} ถืออยู่เกะกะไปหมด'},
   {who:'S',text:'จะถือของแบบนั้นไปทั้งวันเหรอ เดี๋ยวก็เกี่ยวเสื้อขาด ไม่ก็ทำหล่นกลางตลาด'},
   {who:'B',text:'แล้วจะให้ทำยังไงล่ะ'},
@@ -83,7 +80,12 @@ const SCENES={
   {who:'B',text:'…ขอบใจที่เตือนนะ {B2S}'},
   {who:'S',text:'ถ้าไม่มีข้า {S2B} คงลืมทั้งมีดทั้งสมุดไว้ที่บ้านแน่'},
   {who:'B',text:'ก็… คงงั้นแหละ'},
-  {text:'📖 สมุดผนึก: ของที่ได้มาจะถูกผนึกเป็นการ์ดเก็บไว้ในสมุด แยกเป็นหมวดตามแท็บด้านบน'}]},
+  {text:'📖 สมุดผนึก: ของที่ได้มาจะถูกผนึกเป็นการ์ดเก็บไว้ในสมุด แยกเป็นหมวดตามแท็บด้านบน'},
+  {text:'เฟิร์นเวลยังเป็นเฟิร์นเวลเหมือนทุกปี… อย่างน้อยก็ในเช้าวันนั้น'}]},
+ /* v98.600 · FIRST STEP OUTSIDE THE HOUSE: the sister stops the hero at the door and sends them to open the card-book (Story.bookIntro ← tick) — the lesson below (bookFirst) plays the moment the book opens */
+ bookExit:{bg:B.houseFront,lines:[{text:' '}]},
+ /* v98.589 · the card-book lesson, moved out of the opening: plays ONCE the first time the player opens the book (Story.bookFirst ← js/card-book.js) */
+ bookFirst:{bg:B.houseFront,lines:[{text:' '}]},
  elderMeet:{bg:B.market,pan:'in',tint:'day',fx:['motes','dust'],lines:[
   {who:'elder',text:'มาแล้วรึ {hero} {sib} ดีเลย ข้ามีงานให้เพียบ'},
   {who:'elder',text:'เรื่องแรก... แพะของปิ๊บสองตัวหนีออกจากคอกไปทั่วหมู่บ้าน ตัวหนึ่งขึ้นไปยืนบนหลังคาโรงเตี๊ยมแล้ว'},

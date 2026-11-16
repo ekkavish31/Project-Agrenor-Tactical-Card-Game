@@ -8,8 +8,8 @@
 (function () {
   'use strict';
   const G = window.WorldGen, Q = new URLSearchParams(location.search), SAVE = 'agrenor-world-v1';
-  const SCx = G.SCALE || 1;   /* v98.612 · 2 = the half-size-hex world (js/world-scale.js): hexes are drawn at half the radius so the picture keeps its size, and "N hexes" distances below are multiplied */
-  const R = 36 / SCx, HW = Math.sqrt(3) * R, VS = 1.5 * R;                              // hex radius, width, row step
+  const SCx = G.SCALE || 1;   /* v98.613 · 2 = the finer-grid world (js/world-scale.js): TWICE as many hexes each way, but a hex is drawn at the same size next to the characters as before — so the world itself is twice as wide and tall (the camera can zoom out further) */
+  const R = 36, HW = Math.sqrt(3) * R, VS = 1.5 * R;                              // hex radius, width, row step
   const WW = Math.ceil(HW * (G.COLS + .5)) + 8, WH = Math.ceil(VS * (G.ROWS - 1) + 2 * R) + 8;
   const cv = document.getElementById('wm'), g = cv.getContext('2d');
   const K = G.key, wait = ms => new Promise(r => setTimeout(r, ms));
@@ -84,16 +84,16 @@
 
   /* ---------- fog ---------- */
   let visible = new Set(), fogDirty = true;
-  function sight() { const t = tile(S.pos.c, S.pos.r), night = S.hour >= 21 || S.hour < 4; return Math.max(1, 1 + (t.biome === 'hills' ? 1 : 0) + (t.poi?.id === 'home' ? 1 : 0) - (night ? 1 : 0)) * SCx }   // night: the hill bonus is lost
+  function sight() { const t = tile(S.pos.c, S.pos.r), night = S.hour >= 21 || S.hour < 4; return Math.max(1, 1 + (t.biome === 'hills' ? 1 : 0) + (t.poi?.id === 'home' ? 1 : 0) - (night ? 1 : 0)) }   // night: the hill bonus is lost
   function reveal() {
     visible = new Set(G.within(S.pos.c, S.pos.r, sight()).map(([c, r]) => K(c, r)));
     for (const k of visible) S.known[k] = 1;
-    for (const [c, r] of G.within(world.home.c, world.home.r, SCx)) S.known[K(c, r)] = 1;
-    for (const id in S.done) { const d = world.dests.find(x => x.id === id); if (d) for (const [c, r] of G.within(d.c, d.r, 2 * SCx)) S.known[K(c, r)] = 1 }
+    for (const [c, r] of G.within(world.home.c, world.home.r, 1)) S.known[K(c, r)] = 1;
+    for (const id in S.done) { const d = world.dests.find(x => x.id === id); if (d) for (const [c, r] of G.within(d.c, d.r, 2)) S.known[K(c, r)] = 1 }
     fogDirty = true;
   }
   const isKnown = k => !!S.known[k] || visible.has(k);
-  function revealArea(c, r, n) { for (const [a, b] of G.within(c, r, n * SCx)) S.known[K(a, b)] = 1; fogDirty = true }
+  function revealArea(c, r, n) { for (const [a, b] of G.within(c, r, n)) S.known[K(a, b)] = 1; fogDirty = true }
 
   /* ---------- terrain painting (once per world) ---------- */
   const PAL = { mine: ['#3a3547', '#443e53', '#322d3f'], grass: ['#7fa35a', '#8db365', '#6f9450'], forest: ['#4f7a3f', '#5a8646', '#456c37'], hills: ['#a09060', '#b0a06c', '#8f8054'], mountain: ['#8a8378', '#9b948a', '#77706a'],
@@ -340,7 +340,7 @@
   }
   async function meetTraveller(tv) {
     (S.metTv ||= {})[tv.p.id] = S.day; const per = window.WorldState?.period(S.hour) || 'day', ls = tv.p.lines?.[per] || tv.p.lines?.day || ['…'];
-    const road = roadCache[tv.p.from] || []; for (const q of road) for (const [a, b] of G.within(q.c, q.r, SCx)) S.known[K(a, b)] = 1; fogDirty = true; reveal();
+    const road = roadCache[tv.p.from] || []; for (const q of road) for (const [a, b] of G.within(q.c, q.r, 1)) S.known[K(a, b)] = 1; fogDirty = true; reveal();
     await modal(`<h2>🧳 ${esc(tv.p.name)}</h2><p><small>${esc(tv.p.role || '')} · ${tv.dir === 'in' ? 'กำลังเดินทางไปเฟิร์นเวล' : 'กำลังกลับ' + esc(tv.town.name)}</small></p><p>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p><p style="font-size:12.5px;opacity:.8">🗺 ${esc(tv.p.name)}วาดทางไป${esc(tv.town.name)}ให้ดู · เส้นทางเปิดบนแผนที่แล้ว</p>`);
     save(); hudSync();
   }
@@ -439,7 +439,7 @@
     drawFog(now); drawBeacon(now);
     drawSky(); drawCompass();
   }
-  function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cam.z = Math.max(world?.real ? .18 : .55, Math.min(1.4, cam.z)) }
+  function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cam.z = Math.max(world?.real ? .18 / SCx : .55, Math.min(1.4, cam.z)) }
   addEventListener('resize', resize);
   function follow(z) { const p = center(S.pos.c, S.pos.r); cam.tx = p.x; cam.ty = p.y; if (z) cam.tz = z }
 
@@ -452,7 +452,7 @@
     if (drag.moved) { cv.classList.add('drag'); cam.tx = null; cam.tz = null; cam.x = drag.cx - dx / cam.z; cam.y = drag.cy - dy / cam.z }
   });
   cv.addEventListener('pointerup', e => { const d = drag; drag = null; cv.classList.remove('drag'); if (d && !d.moved) { const w = toWorld(e.clientX, e.clientY), h = pixelToHex(w.x, w.y); if (h) clickHex(h) } });
-  cv.addEventListener('wheel', e => { e.preventDefault(); cam.tz = null; cam.z = Math.max(world.real ? .18 : .55, Math.min(2, cam.z * (e.deltaY < 0 ? 1.12 : .89))) }, { passive: false });
+  cv.addEventListener('wheel', e => { e.preventDefault(); cam.tz = null; cam.z = Math.max(world.real ? .18 / SCx : .55, Math.min(2, cam.z * (e.deltaY < 0 ? 1.12 : .89))) }, { passive: false });
   addEventListener('keydown', e => { if (e.key === 'Escape') closeModal() });
 
   /* ---------- UI (HUD, tooltip, modal, toast) ---------- */

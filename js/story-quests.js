@@ -390,11 +390,11 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  if(step.id==='raid'&&d.fighting&&!document.getElementById('storyBattle')){d.fighting=false;doSave()}
  step.tick?.(d);
  if(root.Cutscene?.isPlaying()||tacticsOpen()||document.getElementById('storyBattle')){draw();return}
- bookIntro().catch(()=>{});homeHooks().catch(()=>{});   /* v98.600 · first time out of the house → the sister sends the hero to open the card-book */
+ homeHooks().catch(()=>{});   /* v98.600 · first time out of the house → the sister sends the hero to open the card-book */
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
   const introId=typeof step.intro==='function'?step.intro():step.intro;
-  if(introId&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(sceneAt(introId))}
+  if(introId&&!d.introSeen){d.introSeen=true;if(introId==='opening'){V().story.bookSeen=true;V().story.bookIntro=true}doSave();draw();await root.Cutscene.play(sceneAt(introId))}
   if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();await lessonCard(step.id)}
   if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(sceneAt(outroId));await step.reward?.(d);st.i++;doSave();doRender();
    const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
@@ -447,7 +447,8 @@ async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!
  if(scene()!=='town')return false;   /* VillageTown.getScene(): 'town' = the village map · 'home'/'forge'… = inside a building · 'place:…' = an open sub-map */
  if(document.getElementById('storyBattle')||onWorld())return false;
  bookBusy=true;try{v.story.bookIntro=true;doSave();await root.Cutscene.play(D().SCENES.bookExit);try{if(typeof openPanel==='function')openPanel('bag')}catch(e){}}finally{bookBusy=false}return true}
-async function bookFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
+async function bookFirst(){return false}   /* v98.613 · the book lesson now plays at the end of the opening scene */
+async function bookFirstOld(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
 root.Story={worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
