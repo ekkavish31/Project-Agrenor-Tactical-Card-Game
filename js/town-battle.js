@@ -661,7 +661,9 @@
   /* v94.02 · element tip: the card's element against the target it would hit (Kaelam chart: js/elements.js) */
   function elTip(group, id) {
     const W = window.ElementWheel; if (!W || group !== 'combat') return null; const r = FB.cardRule(id); if (!r || r.self) return null;
-    const el = FB.CARD_EL[id] || FB.WEAPON_EL[FB.hero(st).weapon] || 'earth', tg = FB.pickTarget(st, r) || st.units.find(u => u.id === st.target) || FB.monster(st);
+    const el = FB.CARD_EL[id] || FB.WEAPON_EL[FB.hero(st).weapon] || 'earth', alive = u => u && u.side === 'monster' && u.hp > 0,
+      /* v98.598 · the ▲ / ▼ on a card is about the enemy the player has SELECTED right now (clicked → pickU / st.target), not about whichever one the game would pick by itself */
+      tg = (alive(pickU) ? pickU : null) || (alive(st.units.find(u => u.id === st.target)) ? st.units.find(u => u.id === st.target) : null) || FB.pickTarget(st, r) || FB.monster(st);
     return W.tip(el, tg?.el);
   }
   function cardEl(group, c, i) {
@@ -1150,11 +1152,13 @@
       { t: 'ลูกศรใต้ตัวคือทิศที่หัน · ตีจากด้านหลังแรงขึ้น ×1.2 · กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า', done: () => st.turns > coachState.t0 },
       { t: 'ตัวเอกทั้งสองยังไม่ล้มในเควสนี้ (เลือดลดได้แต่ไม่ต่ำกว่า 1) — ลองเดิน ตี และหันหน้าให้คล่องจนจับแพะครบ' }],
     pumpkin: [
-      { t: 'ฮิลด้าให้ยืมไพ่ธาตุ 2 ใบ (ติดมือทุกเทิร์น): 💧 คลื่นน้ำ ชนะผืนดิน (ฟักทอง) · ⚡ อัสนีบาต ชนะลม (ด้วง) — ครั้งแรกให้ลอง ⚡ อัสนีบาต ตีฟักทองก่อน (คลิกฟักทอง → คลิกไพ่)', done: () => st.loan?.force?.done },
-      { t: 'เห็นไหม? โดนผลึกดินกลบ ธาตุโกลาหลแพ้ผืนดิน ดาเมจเหลือ ×0.7 · จากนี้ใช้ 💧 คลื่นน้ำ ตีฟักทอง (×1.3) และ ⚡ ตีด้วง (×1.3) · ฟักทองลูกหนึ่งรับตีราว 2–3 ครั้ง', done: () => (st.log || []).filter(x => /ชนะ/.test(x)).length > 0 },
+      { t: '💧 ใบที่ 1 · คลื่นน้ำ (ไพ่ที่เรืองแสงในมือ) — ธาตุน้ำ ชนะ "ธาตุดิน" ซึ่งเป็นธาตุของฟักทอง · วิธีใช้: คลิกฟักทอง 1 ลูกบนสนาม แล้วคลิกไพ่ใบนี้ · ลูกศรเขียว ▲ มุมไพ่ = ได้เปรียบเป้าที่เลือกอยู่ (ดาเมจ ×1.3)', spot: 'tide' },
+      { t: '⚡ ใบที่ 2 · อัสนีบาต — ธาตุสายฟ้า ชนะ "ธาตุลม" ซึ่งเป็นธาตุของด้วงกินใบ · วิธีใช้: คลิกด้วงตัวเล็ก แล้วคลิกไพ่ใบนี้ · ลองคลิกสลับฟักทอง ↔ ด้วง แล้วดูลูกศรบนไพ่เปลี่ยนตามเป้าที่เลือก (เขียว ▲ = ได้เปรียบ · แดง ▼ = เสียเปรียบ ×0.7)', spot: 'thunder' },
+      { t: 'ลองดูเอง: ครั้งแรกให้ใช้ ⚡ อัสนีบาต ตีฟักทองก่อน (คลิกฟักทอง → ไพ่ที่เรืองแสง) จะได้เห็นว่าตีเสียเปรียบเป็นอย่างไร', spot: 'thunder', done: () => st.loan?.force?.done },
+      { t: 'เห็นไหม? ธาตุสายฟ้าแพ้ผืนดิน ดาเมจเหลือ ×0.7 · จากนี้ใช้ 💧 คลื่นน้ำ ตีฟักทอง (×1.3) และ ⚡ ตีด้วง (×1.3) · ฟักทองลูกหนึ่งรับตีราว 2–3 ครั้ง', spot: 'tide', done: () => (st.log || []).filter(x => /ชนะ/.test(x)).length > 0 },
       { t: 'ด้วงกินใบตัวเล็กตีทีเดียวตาย — กำจัดก่อนจะกัดกวนคุณ · ตีฟักทองจนล้ม มันจะเด้งเป็นฟักทองให้เก็บ' },
       { t: 'ระวัง! ถ้าฟักทองลูกหนึ่งเริ่มสั่น มันอาจวิวัฒน์ — บอสฟักทองใช้เถาวัลย์ระยะไกลพันธนาการ (เดินไม่ได้ 1 เทิร์น) และตีระยะใกล้เบาๆ' },
-      { t: 'ใช้ไพ่ธาตุที่ชนะทาง (ไอคอนข้างชื่อศัตรู) และตีจากด้านหลัง ×1.2 · ไม่ต้องกลัว — ตัวเอกเลือดไม่ต่ำกว่า 1' }],
+      { t: 'ใช้ไพ่ธาตุที่ชนะทาง (ดูลูกศร ▲ บนไพ่หลังคลิกเป้า) และตีจากด้านหลัง ×1.2 · ไม่ต้องกลัว — ตัวเอกเลือดไม่ต่ำกว่า 1' }],
     expedition: [
       { t: 'แรงหมด? กด ♻ ทิ้งไพ่ฟื้นแรง เลือกไพ่ที่ไม่ใช้ แลกเป็นแรง (ใช้ 1 คริสตัล)' },
       { t: 'หญ้าสูง/มอสคือกำบัง โดนตี −30% · ถอยไปยืนตอนเลือดน้อย' },
@@ -1163,11 +1167,17 @@
   function coach() {
     if (EDIT) return;
     const list = TUT && COACH[TUT]; let d = document.getElementById('fbCoach');
-    if (!list || !st || st.outcome || coachState.i >= list.length) { d?.remove(); return }
+    if (!list || !st || st.outcome || coachState.i >= list.length) { d?.remove(); try { spotCard(null) } catch (e) { } return }
     const c = list[coachState.i]; if (c.done && c.done()) { coachState.i++; sfx('cast', .25); return coach() }
     if (!d) { d = document.createElement('div'); d.id = 'fbCoach'; document.body.append(d); d.onclick = e => { const a = e.target.closest('[data-c]')?.dataset.c; if (a === 'next') { coachState.i++; coach() } else if (a === 'close') { coachState.i = 1e9; coach() } } }
     const html = `<small>📘 บทเรียน ${coachState.i + 1}/${list.length}</small><span>${esc(c.t)}</span>${c.done ? '' : '<button data-c="next">ถัดไป ▸</button>'}<button data-c="close" class="x" title="ปิดบทเรียน">✕</button>`;
     if (d.dataset.k !== TUT + coachState.i) { d.dataset.k = TUT + coachState.i; d.innerHTML = html; d.classList.remove('on'); void d.offsetWidth; d.classList.add('on') }
+    spotCard(c.spot);
+  }
+  /* v98.598 · the card the coach is talking about glows in the hand (re-applied after every hand redraw) */
+  function spotCard(id) {
+    if (!document.getElementById('fbSpotCss')) { const x = document.createElement('style'); x.id = 'fbSpotCss'; x.textContent = '.fb-card.fb-spot{outline:3px solid #ffd77a;outline-offset:2px;box-shadow:0 0 22px #ffd77a,0 0 6px #fff8;animation:fbSpot 1.1s ease-in-out infinite;position:relative;z-index:5}@keyframes fbSpot{50%{box-shadow:0 0 34px #ffe9a8,0 0 10px #fff;transform:translateY(-4px)}}'; document.head.append(x) }
+    document.querySelectorAll('.fb-card.fb-spot').forEach(e => e.classList.remove('fb-spot')); if (id) document.querySelectorAll('.fb-card[data-id="' + id + '"]').forEach(e => e.classList.add('fb-spot'));
   }
   /* ---------- v97.15 · controlled companions (B14): on an unlocked companion's CT turn the battle waits for the player.
      Click a cell = walk (its own move points) · click an enemy = show the hit (≈ damage, walking in if needed), click again = do it ·
@@ -1848,7 +1858,7 @@
     const unitAt = wp => { let best = null, by = -1e9; for (const u of st.units) { if (u.hp <= 0 || u.deadAt) continue; const g0 = inv(wp.x, wp.y), p = project(u.vu, u.vv); const same = inBlock(u, g0), box = Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5; if ((same || box) && p.y > by) { best = u; by = p.y } } return best };
     cv.addEventListener('pointermove', e => { if (!st || e.pointerType === 'touch') return; const u = unitAt(world(e)); if (u !== hoverU) { hoverU = u; cv.style.cursor = u ? 'pointer' : ''; inspectSync() } });
     cv.addEventListener('pointerleave', () => { if (hoverU) { hoverU = null; inspectSync() } });
-    cv.addEventListener('pointerdown', e => { if (e.button !== 0 || !st) return; const u = unitAt(world(e)); if (u && u !== pickU) { pickU = u; sfx('cast', .15); inspectSync() } else if (!u && pickU && !hoverU) { /* clicking the ground keeps the mark: it clears when that unit acts or falls */ } }, true);
+    cv.addEventListener('pointerdown', e => { if (e.button !== 0 || !st) return; const u = unitAt(world(e)); if (u && u !== pickU) { pickU = u; sfx('cast', .15); inspectSync(); if (u.side === 'monster' && u.hp > 0) { try { FB.setTarget(st, u.id) } catch (e) { } } handSync() } else if (!u && pickU && !hoverU) { /* clicking the ground keeps the mark: it clears when that unit acts or falls */ } }, true);
     cv.addEventListener('pointerup', e => { if (e.button !== 0 || !down) return; const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5; down = null; if (moved) { userCam = true; try { follow = false } catch (e) { } } else if (!EDIT) click(world(e)) }, true);
     cv.addEventListener('wheel', () => { userCam = true; try { follow = false } catch (e) { } }, true) }
   /* runs before the frame's camera transform: TownUX re-centres on the village hero every frame, so the arena has to win after it */
