@@ -71,7 +71,10 @@
     const proc = procKey && root.ProcMotion && root.ProcMotion.raw && root.ProcMotion.raw(procKey);   /* the studio's ขยับในเกม setting of that walk set (e.g. bob 0.3 / 0.6) replaces the built-in bob */
     const bob = proc ? 0 : walking ? Math.abs(Math.sin(t * .012 + ph)) * (full ? .6 : 4) * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
     contactShadow(g, x, y, s * (info.ageScaleBaked ? .72 : 1));
-    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (proc) { try { root.ProcMotion.apply(g, procKey, { frames: wn, pose: 'walk' }, t, 384 * k * .9, L.sprite) } catch (e) { } } if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -CharSize.FEET_Y * k, 384 * k, 384 * k); g.restore();
+    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (proc) { try { root.ProcMotion.apply(g, procKey, { frames: wn, pose: 'walk' }, t, 384 * k * .9, L.sprite) } catch (e) { } } if (P.flip) g.scale(-1, 1);
+    /* v98.605 · the villager picture goes through the SAME sharpening / quality pipeline as the hero and the followers (TownArt.draw) — drawn raw it looked soft and aliased next to them */
+    if (root.TownArt?.draw) root.TownArt.draw(g, P.im, null, [-192 * k, -CharSize.FEET_Y * k, 384 * k, 384 * k], false); else g.drawImage(P.im, -192 * k, -CharSize.FEET_Y * k, 384 * k, 384 * k);
+    g.restore();
     fx(g, act, x, y, s, t, ph);
     return true;
   }

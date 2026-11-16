@@ -7,6 +7,7 @@ const CONSUMABLES={
  potion:{name:'ยาฟื้นฟู',element:'water',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:25,stamina:0,price:20,text:'ฟื้น HP 25'},
  bigPotion:{name:'ยาฟื้นฟูชั้นดี',element:'nature',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:50,stamina:0,price:45,text:'ฟื้น HP 50'},
  tonic:{name:'ชาเรี่ยวแรง',element:'fire',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:0,stamina:40,price:15,text:'ฟื้นแรง 40'},
+ smallPumpkin:{name:'ฟักทองลูกเล็ก',element:'earth',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:30,stamina:30,price:14,text:'ฟื้น HP 30 และแรง 30 · ของขวัญจากฮิลดา'},
  bread:{name:'ขนมปังเดินทาง',element:'earth',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:10,stamina:20,price:8,text:'ฟื้น HP 10 และแรง 20'},
  firebomb:{name:'ระเบิดไฟ',element:'fire',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:22,range:4,price:30,text:'ขว้างใส่ศัตรูในระยะ 4 ช่อง ความเสียหาย 22'},
  iceBomb:{name:'ระเบิดน้ำแข็ง',element:'ice',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:18,range:4,price:32,text:'ขว้างใส่ศัตรูในระยะ 4 ช่อง ความเสียหาย 18 · น้ำตื้นกลายเป็นน้ำแข็ง'},

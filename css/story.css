@@ -52,7 +52,7 @@
 .cut-top{top:0}.cs-bottom{bottom:0}.cs-live .cs-bar{height:9vh}
 /* chapter card */
 .cs-card{position:absolute;inset:0;z-index:3;display:grid;place-content:center;text-align:center;pointer-events:none}
-.cs-card small{display:block;letter-spacing:.06em;font-size:clamp(11px,1.4vw,14px);color:#e8c98a;text-transform:uppercase;margin-bottom:.6em}
+.cs-card small{display:block;letter-spacing:.06em;font-size:clamp(26px,4.6vw,54px);font-weight:600;line-height:1.15;color:#e8c98a;text-transform:uppercase;margin-bottom:.35em;text-shadow:0 0 22px rgba(255,200,120,.45),0 2px 8px #000}   /* v98.605 · the chapter label (บทที่ …) is as big as the chapter title */
 .cs-card h2{margin:0;font-size:clamp(26px,4.6vw,54px);font-weight:600;color:#fff6df;text-shadow:0 0 24px rgba(255,200,120,.55),0 2px 8px #000}
 .cs-card.cs-in small,.cs-card.cs-in h2{animation:csCardIn 1.1s cubic-bezier(.2,.8,.2,1) both}.cs-card.cs-in h2{animation-delay:.18s}
 .cs-card.cs-out{opacity:0;transition:opacity .5s}

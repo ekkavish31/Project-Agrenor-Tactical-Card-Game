@@ -31,7 +31,8 @@ function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'|
  const data=stateData(),stamp=JSON.stringify(data);if(stamp!==lastStamp){lastStamp=stamp;send({type:'state',data});if(marketReady)post(marketFrame,{type:'state',data})}
  const motion=HeroMotion.snapshot(TACTICS_SPRITES),sig=JSON.stringify(motion);if(sig!==lastMotion){lastMotion=sig;send({type:'motion',data:motion});if(marketReady)post(marketFrame,{type:'motion',data:motion})}
 }
-function openTown(){if(busy||s.mode==='battle')return;inside=false;marketOpen=false;if($('panel').open)$('panel').close();send({type:'return'});sync();send({type:'focus'})}
+function openTown(){if(busy||s.mode==='battle')return;if(inside||marketOpen){const why=window.Story?.homeLock?.();if(why){villageDialog('ยังออกไปไม่ได้','<p>'+why.replace(/[<>&]/g,'')+'</p>');return}}   /* v98.605 · day-1 evening: no going out until bed */
+inside=false;marketOpen=false;if($('panel').open)$('panel').close();send({type:'return'});sync();send({type:'focus'})}
 function enterPlace(id,map,interior){const sub=interior?'in:'+id:map||id;placeAct=id;inside=false;marketOpen=true;if(placeId!==sub){placeId=sub;marketReady=false;marketFrame.src=interior?'place-interior.html?embed=1&v='+(GV||'95.01')+'&place='+encodeURIComponent(id)+'&name='+encodeURIComponent(interior):'village-place.html?v='+(GV||'95.01')+'&place='+encodeURIComponent(sub)+(map?'&kind='+id:'')}else if(marketReady){post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)})}lastStamp='';sync()}
 renderMap=function(edit){openTown();if(edit)send({type:'edit'})};window.openMapEditor=function(){renderMap(true)};
 villageTravel=function(id){if(['home','forge','market'].includes(id)){openTown();send({type:'walk',id})}};

@@ -64,7 +64,7 @@ function talkStep(o){return {tag:'real',...o,talk:o.talk,check:d=>!!d.talked,act
    forge → the forge picture · market / shop → the market picture · square / a house door → the village (code-drawn) · inn / guild / temple / healer / Hilda's farm → code-drawn rooms (no paintings yet) */
 const PLACE_BG={forge:{bg:'assets/forge.webp'},market:{bg:'assets/market.webp'},shop:{bg:'assets/market.webp'},square:{art:'fernvale'},inn:{art:'innHall'},guild:{art:'guildHall'},temple:{art:'temple'},healer:{art:'hearth'}};
 let TALK_NPC=null;
-function talkNpcOf(id){if(!TALK_NPC){TALK_NPC={};for(const s of STEPS)if(s.talk&&s.outro&&typeof s.outro==='string')TALK_NPC[s.outro]=s.talk}return TALK_NPC[id]||null}
+function talkNpcOf(id){if(!TALK_NPC){TALK_NPC={};for(const s of STEPS)if((s.talk||s.npc)&&s.outro&&typeof s.outro==='string')TALK_NPC[s.outro]=s.talk||s.npc}return TALK_NPC[id]||null}
 function sceneAt(id){const sc=D().SCENES[id];if(!sc)return sc;try{const npc=talkNpcOf(id);if(!npc)return sc;const at=String(npcPlace(npc)||'');
   let o=PLACE_BG[at];if(!o){o=npc==='hilda'?{art:'hildaFarm'}:{art:'fernvale'}}   /* her own farm / a house door → outdoors */
   return {...sc,art:o.art||null,bg:o.bg||null}}catch(e){return sc}}
@@ -88,6 +88,8 @@ const plotIfDry=()=>(V()?.story?.seeds&&!wateredToday())?[SPOT.plot]:[];
    The battles of the prologue pass ?tut= to the arena, which coaches move by move (js/town-battle.js). The prologue cannot be skipped
    and the world map only opens when a step sends you out — free play starts when the finale is reached. */
 const LESSON={
+ chestLesson:['หีบเก็บของ',['หีบในบ้านฝากของได้ทั้งวัตถุดิบ (เหล็ก ถ่าน ไม้ เสบียง) และอุปกรณ์ที่ไม่ได้สวมใส่ — ของในหีบไม่หายตอนออกเดินทาง','ใช้ได้เฉพาะตอนอยู่ที่บ้าน · เดินไปที่หีบแล้วเลือก หีบเก็บของ · ฝากได้ทีละชิ้น ลองฝากแท่งเหล็กที่ลุงทอมให้ 1 ชิ้นดู']],
+ deckLesson:['จัดสำรับ',['สำรับคือไพ่ที่ตัวละครใช้ในสนามรบ แยกเป็นไพ่เดินกับไพ่โจมตี — ไพ่ใหม่ที่ได้มาอยู่ในสมุดก่อน ยังไม่ลงสำรับเอง','เดินไปที่โต๊ะจัดสำรับ แล้วเพิ่มไพ่ อัสนีบาต ที่ฮิลดาให้ลงสำรับโจมตี (กด + ที่ใบนั้น) แล้วกดบันทึก · ไพ่แต่ละธาตุชนะศัตรูต่างธาตุ']],
  wake:['เดินในหมู่บ้าน',['คลิกถนนหรืออาคารเพื่อเดิน · ลากพื้นเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม','◆ สีทองบนแผนที่คือสิ่งที่เควสต้องการ · 📍 นำทาง ให้ตัวเอกเดินไปเอง','คลิกคนเพื่อคุย · Esc เปิดเมนู (สมุดผนึก สำรับ ตัวละคร บันทึกเกม)','เดินด้วยปุ่ม: W A S D หรือลูกศร (จอสัมผัส/จอยสติ๊ก = จอยซ้ายมือ) · เดินชนประตูหรือคนค้างไว้สักครู่ก็ทำสิ่งนั้นเอง','ปุ่ม Act: E หรือ Space (จอสัมผัสคือปุ่มกลมใหญ่ · จอยคือปุ่ม A) = ทำสิ่งที่อยู่ตรงหน้า เช่น คุย เข้าอาคาร เก็บของ · กดค้าง ~½ วินาทีเพื่อเปิดวงกลมตัวเลือก (คุย ถามข่าว ให้ของ ...) แล้วปล่อยบนตัวเลือก']],
  goats:['เวลาและแรง',['นาฬิกาเดินตลอดเวลาในหมู่บ้าน · ชาวบ้านแต่ละคนมีตารางของตัวเอง','งานและกิจกรรมใช้แรงและเวลา · แรงหมดต้องพักหรือนอน','แพะวิ่งหนีเมื่อเข้าใกล้ แต่จะหอบแล้วหยุด — รอจังหวะนั้น']],
  seeds:['งานในหมู่บ้าน',['ชาวบ้านมีงานให้ช่วยเสมอ · ช่วยแล้วได้เงิน ของ และความสนิท','ลองคุยกับคนเดิมหลายครั้ง บทสนทนาเปลี่ยนตามเรื่องที่เกิดขึ้น']],
@@ -141,8 +143,12 @@ const STEPS=[
  talkStep({id:'goatsBack',outro:'goatsDone',reward:()=>{addCoins(15);toast('รางวัล: +15 เหรียญ')},title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
 talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮิลดา',talk:'hilda',goal:'ไปหาฮิลดาชาวนา ถามว่าช่วยอะไรได้บ้าง',hint:'เช้าอยู่ที่ไร่ เที่ยงถึงบ่ายสามขายผักที่ตลาด · '+HINT_WALK,
   reward:()=>{V().story.seeds=true}}),
-{id:'pumpkin',tag:'real',title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
+{id:'pumpkin',tag:'real',outro:'pumpkinDone',npc:'hilda',title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
   spot:SPOT.ripe,progress:d=>Math.min(1,((d.got||0)+(waterDays()>=1?1:0))/4),targets:()=>({spots:wateredToday()?[]:[SPOT.plot]}),check:d=>(d.got||0)>=3&&waterDays()>=1,acts:[guideBtn],
+  reward:async()=>{/* v98.605 · Hilda's thank-you: the first attack card (⚡ อัสนีบาต). It goes to the collection only — NOT into the deck — so the deck lesson at home has something to place */
+   try{await root.StarterKit?.unlock?.([{group:'combat',id:'thunder',n:1}],{kicker:'ของขวัญจากฮิลดา',title:'อัสนีบาต',text:'ฮิลดาให้ไพ่ใบนี้เป็นของขอบคุณ — ยังไม่ได้ใส่ในสำรับ ไว้ตอนเย็นจัดสำรับที่บ้านนะ'})}catch(e){}
+   try{const dk=V().tacticDecks;if(dk?.combat?.thunder){dk.combat.thunder-=1;if(dk.combat.thunder<=0)delete dk.combat.thunder;doSave()}}catch(e){}
+   try{if(typeof addItem==='function'){addItem('smallPumpkin',1);doSave();doRender();toast('🎃 ฮิลดาให้ ฟักทองลูกเล็ก ×1 (ฟื้น HP +30 · แรง +30) — ดูในสมุดผนึก')}}catch(e){}},
   onSpot:async d=>{const r=await questBattle(d,{title:'ฟักทองในไร่ ·',ms:'pumpkin*1,pumpkin*1,pumpkin*1,pest*1,pest*1,pest*1',tut:'pumpkin',seed:4102,r:6,biome:'grass',poi:'patch',bg:'pumpkin-patch'});
    if(r==='win'){d.got=3;doSave();return {msg:'🎃 เก็บฟักทองสุกครบ 3 ลูกแล้ว!',consume:true}}return {msg:r==='busy'?'':'ฟักทองยังรอเก็บอยู่ · กลับไปเก็บต่อได้เลย',consume:false}}},
  talkStep({id:'tom',outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
@@ -151,8 +157,12 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
   onSpot:d=>{mats().wood=(mats().wood||0)+1;d.got=(d.got||0)+1;doSave();doRender();return {msg:'🪵 ไม้ +1 ('+d.got+'/2)',consume:true}}},
  {id:'stall',tag:'real',outro:'stallDone',title:'ซ่อมแผงขายของ',goal:'เดินไปที่แผงหน้าตลาด แล้วซ่อม (ใช้ไม้ 2)',hint:'เดินไปแตะแผง 🛠️ · ใช้แรง 6 และเวลา 30 นาที · ไม้ไม่พอซื้อได้ที่ตลาด',
   spot:SPOT.stall,check:d=>!!d.built,acts:[guideBtn],
-  reward:()=>{addCoins(20);toast('รางวัล: +20 เหรียญจากลุงทอม');/* v98.604 · Tom's job ends the afternoon: the clock jumps to 18:00 (evening prep) so going home to sleep fits */try{const g=G();if(g&&(g.minutes||0)<1080){g.minutes=1080;doSave();doRender();toast('🌇 งานเสร็จตอนเย็น — ตอนนี้ 18:00 · เตรียมค่ำ')}}catch(e){}},
+  reward:()=>{addCoins(20);try{mats().iron=(mats().iron||0)+3}catch(e){}toast('รางวัล: +20 เหรียญ · แท่งเหล็ก ×3 จากลุงทอม');   /* v98.605 · Tom pays in iron too (for the first forging) *//* v98.604 · Tom's job ends the afternoon: the clock jumps to 18:00 (evening prep) so going home to sleep fits */try{const g=G();if(g&&(g.minutes||0)<1080){g.minutes=1080;doSave();doRender();toast('🌇 งานเสร็จตอนเย็น — ตอนนี้ 18:00 · เตรียมค่ำ')}}catch(e){}},
   onSpot:d=>{if((mats().wood||0)<2)return {msg:'ไม้ไม่พอ (ต้องใช้ 2)'};const why=spend(6,30,3);if(why)return {msg:why};mats().wood-=2;d.built=true;d.got=1;doSave();doRender();return {msg:'🔨 ซ่อมแผงเสร็จ!',consume:true}}},
+ /* v98.605 · day-1 evening at home: dinner with Mom (scene homeWelcome, played by homeHooks when the hero is inside the house) → free time but NO going outside (Story.homeLock) → chest lesson → deck lesson → bed */
+ {id:'homeWelcome',tag:'real',title:'กลับบ้าน',goal:'เย็นแล้ว — เดินกลับบ้าน แม่รออยู่',hint:'งานวันนี้เสร็จแล้ว เดินกลับบ้านได้เลย · แม่ทำอาหารอุ่น ๆ รออยู่',place:'home',check:d=>!!d.welcomed,acts:[guideBtn]},
+ {id:'chestLesson',tag:'real',title:'ฝากของในหีบ',goal:'ในบ้าน: เดินไปที่หีบแล้วฝากของอย่างน้อย 1 ชิ้น (เช่นแท่งเหล็กที่ลุงทอมให้)',hint:'เดินไปที่หีบในบ้าน → เลือก หีบเก็บของ → กดฝาก · คืนนี้ยังออกไปข้างนอกไม่ได้ ทำอะไรในบ้านก็ได้',place:'home',begin:d=>{d.base=chestCount()},check:d=>chestCount()>(d.base||0),acts:[guideBtn]},
+ {id:'deckLesson',tag:'real',title:'จัดสำรับ',goal:'ที่โต๊ะจัดสำรับ: ใส่ไพ่ อัสนีบาต ที่ฮิลดาให้ลงสำรับโจมตี แล้วกดบันทึก',hint:'เดินไปที่โต๊ะ → จัดสำรับ → หาไพ่ อัสนีบาต กด + → บันทึก',place:'home',check:d=>deckHas('thunder'),acts:[guideBtn]},
  {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'งานวันนี้เสร็จแล้ว — พระอาทิตย์ใกล้ตก เดินกลับบ้านแล้วไปที่เตียงเพื่อนอนพัก',hint:'ตอนเย็นของวันแรกเวลาเดินช้าลงให้ทำงานครบ · ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก" · การนอนข้ามไปเช้าวันถัดไป',
   place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn]},
  talkStep({id:'guard',chapter:'วันที่ 2 · ทำของ และหาคน',outro:'guardTalk',reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'push',n:1}],{kicker:'คำแนะนำของยามดอร์ก',title:'ผลัก',text:'ผลักศัตรูถอยหนึ่งช่อง · ผลักตกที่สูงเสีย HP เพิ่ม'}),title:'ยามประตูหมู่บ้าน',talk:'dork',goal:'ไปคุยกับยามดอร์กก่อนออกนอกหมู่บ้าน',hint:'ยามดอร์กเฝ้าอยู่ที่ลานกลางหมู่บ้านทั้งวัน · '+HINT_WALK}),
@@ -332,11 +342,14 @@ function detectSale(){const now=snapshot(),p=prev;prev=now;if(!p)return false;if
 const OLD_IDS=['wake','goats','pumpkin','stall','sleep1','cave','caveBack','lanterns','craft','hire','sleep2','sell','contest','raid','plate','prep','expedition','return','sellLoot','rest'];
 const OLD_TO={pumpkin:'seeds',stall:'tom',cave:'guard',lanterns:'gus',prep:'saf'};
 const V2_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','prep','expedition','return','sellLoot','rest'];
-function migrate(st){if(st&&st.v===2){const old=V2_IDS[st.i];if(old){const i=byId(old==='prep'?'sibSword':old);if(i>=0)st.i=i}else if(st.i>=V2_IDS.length)st.i=STEPS.length;st.v=3;doSave();return st}
+/* v98.605 · v3 → v4: three steps (homeWelcome · chestLesson · deckLesson) were inserted before sleep1 — a saved position is mapped by step id */
+const V3_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','sibSword','potions','prep','expedition','return','hospital','sellLoot','rest'];
+function migrate(st){if(st&&st.v===3){const old=V3_IDS[st.i];if(old){const i=byId(old);if(i>=0)st.i=i}else if(st.i>=V3_IDS.length)st.i=STEPS.length;st.v=4;doSave();return st}
+ if(st&&st.v===2){const old=V2_IDS[st.i];if(old){const i=byId(old==='prep'?'sibSword':old);if(i>=0)st.i=i}else if(st.i>=V2_IDS.length)st.i=STEPS.length;st.v=3;doSave();return st}
  if(!st||st.v>=2)return st;const old=OLD_IDS[st.i];if(old){const id=OLD_TO[old]||old,i=byId(id);if(i>=0){st.i=i;if(OLD_TO[old])delete st.data[old]}}else if(st.i>=OLD_IDS.length)st.i=STEPS.length;st.v=2;doSave();return st}
 function story(){const v=V();if(!v)return null;return migrate(v.story||null)}
 function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!(v.party||[]).filter(m=>m.key!=='sib').length&&!v.adventure}
-function init(){const v=V();if(!v||v.story)return;v.story={v:3,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
+function init(){const v=V();if(!v||v.story)return;v.story={v:4,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
 function cur(){const st=story();return st&&st.mode==='active'?STEPS[st.i]:null}
 function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step.id]}
 
@@ -377,7 +390,7 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  if(step.id==='raid'&&d.fighting&&!document.getElementById('storyBattle')){d.fighting=false;doSave()}
  step.tick?.(d);
  if(root.Cutscene?.isPlaying()||tacticsOpen()||document.getElementById('storyBattle')){draw();return}
- bookIntro().catch(()=>{});   /* v98.600 · first time out of the house → the sister sends the hero to open the card-book */
+ bookIntro().catch(()=>{});homeHooks().catch(()=>{});   /* v98.600 · first time out of the house → the sister sends the hero to open the card-book */
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
   const introId=typeof step.intro==='function'?step.intro():step.intro;
@@ -411,9 +424,20 @@ function mystery(ev){const v=V();if(!v||ev!=='seen')return;v.story=v.story||{};v
 async function guildFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.guildSeen)return false;v.story.guildSeen=true;doSave();await root.Cutscene.play(D().SCENES.guildFirst);return true}
 /* v98.586 · DAY 1 PACING: pumpkins used to end at dusk, leaving the planks / stall quests in the dark. Until the "จบวันแรก" step is done the clock runs slower through the day and
    stops near 18:30 (golden hour), so every day-1 task (goats → Hilda → pumpkins → Tom → planks → stall) fits before the evening; the player sleeps when ready. Started at 08:00 (WorldState). */
-const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1']);
+const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','tom','planks','stall','homeWelcome','chestLesson','deckLesson','sleep1']);
 function timeScale(){try{const st=story();if(!st||st.mode!=='active')return 1;const step=STEPS[st.i];if(!step||!DAY1.has(step.id))return 1;const g=G();if(!g||g.day>1)return 1;const m=g.minutes||480;return m<720?.4:m<900?.3:m<1020?.2:m<1110?.1:0}catch(e){return 1}}
 /* v98.589 · the card-book lesson plays once, the first time the player opens the book during the prologue (old saves past the prologue never see it) */
+/* v98.605 · helpers for the home-evening steps */
+function chestCount(){try{const c=V().chest||{};return Object.values(c.materials||{}).reduce((a,b)=>a+(+b||0),0)+(c.items||[]).length}catch(e){return 0}}
+function deckHas(id){try{return ((V().tacticDecks||{}).combat||{})[id]>0}catch(e){return false}}
+const HOME_LOCKED=['chestLesson','deckLesson','sleep1'];
+/* the player may not step outside from dinner until they go to bed (day 1 evening) */
+function homeLock(){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||!HOME_LOCKED.includes(step.id))return '';return 'คืนนี้อยู่บ้านก่อน — แม่รออยู่ และพรุ่งนี้ยังมีงานอีกเยอะ · ทำอะไรในบ้านก็ได้ แล้วค่อยเข้านอน'}
+let homeBusy=false;
+async function homeHooks(){const st=story();if(homeBusy||!st||st.mode!=='active'||!root.Cutscene)return;const step=STEPS[st.i];if(!step||step.id!=='homeWelcome')return;const d=dataOf(step);if(d.welcomed||scene()!=='home')return;
+ homeBusy=true;try{await root.Cutscene.play(D().SCENES.homeWelcome);d.welcomed=true;
+  try{if(typeof heal==='function'){const r=heal(15,30);toast('🍲 ซุปอุ่น ๆ ของแม่ · HP +'+r[0]+' · แรง +'+r[1])}}catch(e){}
+  doSave();doRender()}finally{homeBusy=false}}
 /* v98.600 · the first time the hero is OUTSIDE the house (village map, not inside a place) the sister stops them (scene bookExit) and the card-book is opened FOR them — its lesson (bookFirst) then plays at once.
    Only before the book has been seen and before the guild step; never while another scene / fight / panel is up. */
 let bookBusy=false;
@@ -422,7 +446,7 @@ async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!
  if(document.getElementById('storyBattle')||onWorld())return false;
  bookBusy=true;try{v.story.bookIntro=true;doSave();await root.Cutscene.play(D().SCENES.bookExit);try{if(typeof openPanel==='function')openPanel('bag')}catch(e){}}finally{bookBusy=false}return true}
 async function bookFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
-root.Story={sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},
