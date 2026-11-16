@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 5000 ไฟล์ (379.3 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 5004 ไฟล์ (379.6 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -16,11 +16,11 @@
 ## จำนวนต่อหมวดหมู่
 | หมวดหมู่ | ไฟล์ | ขนาด | โฟลเดอร์หลัก | ลงทะเบียน slot | ไฟล์ซ้ำ (เนื้อหาเหมือนกัน) |
 |---|---|---|---|---|---|
-| 🗣 ภาพสนทนา (portrait) | 132 | 12.4 MB | `assets/portraits` 132 | 0 | 4 |
+| 🗣 ภาพสนทนา (portrait) | 136 | 12.8 MB | `assets/portraits` 136 | 0 | 4 |
 | 🧑‍🎤 ตัวเอก | 2310 | 92.3 MB | `assets/tactics` 2283 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2310 | 486 |
 | 👥 ชาวบ้าน / NPC | 284 | 11.0 MB | `assets/village-town` 284 | 172 | 22 |
 | 🤝 เพื่อนร่วมทีม | 200 | 9.4 MB | `assets/tactics` 196 · `assets/allies` 4 | 200 | 16 |
-| 👹 มอนสเตอร์ | 546 | 76.9 MB | `assets/enemies` 546 | 507 | 18 |
+| 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 334 | 24.0 MB | `assets/tactics` 327 · `assets/objects` 7 | 302 | 26 |
 | 🃏 การ์ด | 166 | 43.7 MB | `assets/cards` 164 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 155 | 15 |
 | 🎛 UI · ไอคอน · เมนู | 180 | 4.8 MB | `assets/ui` 91 · `assets/icons` 81 · `assets/cursor-fantasy-active.png` 1 · `assets/cursor-fantasy.png` 1 | 90 | 9 |
@@ -38,7 +38,7 @@
 ## หมวดย่อยในแต่ละหมวด
 
 ### 🗣 ภาพสนทนา (portrait)
-- ตัวเอก · ชาวบ้าน — 100
+- ตัวเอก · ชาวบ้าน — 104
 - ตัวละครเนื้อเรื่อง (4 อารมณ์) — 32
 
 ### 🧑‍🎤 ตัวเอก

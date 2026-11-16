@@ -18,8 +18,8 @@
     mil: { job: 'rogue', skin: '#d9b28e', hair: '#2a2230', cloth: '#3a4a5a' },
     sigrid: { job: 'warrior', skin: '#e8c9a8', hair: '#e8d28a', cloth: '#7a4a3a', long: 1 }
   };
-  const REAL_SET = { hilda: 1, lin: 1, guard: 1, mil: 1, luna: 1, bram: 1, kier: 1, sigrid: 1, orla: 1, ren: 1, nadia: 1 };
-  const WORRY_SET = { mil: 1, luna: 1, bram: 1, kier: 1, sigrid: 1, orla: 1, ren: 1, nadia: 1 };   /* v98.546 · painted companions have a 'worry' face instead of 'surprised' */
+  const REAL_SET = { hilda: 1, lin: 1, guard: 1, mil: 1, luna: 1, bram: 1, kier: 1, sigrid: 1, orla: 1, ren: 1, nadia: 1, olwen: 1 };
+  const WORRY_SET = { mil: 1, luna: 1, bram: 1, kier: 1, sigrid: 1, orla: 1, ren: 1, nadia: 1, olwen: 1 };   /* v98.546 · painted companions have a 'worry' face instead of 'surprised' */
   const HERO_EXPR = { idle: 'neutral', attack: 'angry', hurt: 'worry', guard: 'calm', heal: 'happy', win: 'happy', down: 'sad' };
   const NPC_EXPR = { idle: 'neutral', attack: 'angry', hurt: 'surprised', guard: 'neutral', heal: 'happy', win: 'happy', down: 'surprised' };
   const LABEL = { idle: '', attack: 'ลงมือ!', hurt: 'เจ็บ!', guard: 'ตั้งรับ', heal: 'ฟื้นฟู', win: 'ชนะ', down: 'ล้ม' };

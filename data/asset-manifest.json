@@ -100980,7 +100980,7 @@
   {
    "id": "enemy-anim-goat-se-idle",
    "subject": "แพะของปิ๊บ · ยืน/หายใจ · SE",
-   "file": "assets/enemies/animations/goat/se-idle.webp",
+   "file": "assets/enemies/animations/goat/se-idle-v98-581.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "goat",
@@ -101000,7 +101000,7 @@
     0.95
    ],
    "barHeight": 0.6668,
-   "artRevision": "v1",
+   "artRevision": "v98.581",
    "animation": {
     "columns": 2,
     "rows": 1,
@@ -101249,7 +101249,7 @@
   {
    "id": "enemy-anim-goat-ne-idle",
    "subject": "แพะของปิ๊บ · ยืน/หายใจ · NE",
-   "file": "assets/enemies/animations/goat/ne-idle.webp",
+   "file": "assets/enemies/animations/goat/ne-idle-v98-581.webp",
    "category": "enemy-animations",
    "status": "final",
    "enemy": "goat",
@@ -101269,7 +101269,7 @@
     0.95
    ],
    "barHeight": 0.69805,
-   "artRevision": "v1",
+   "artRevision": "v98.581",
    "animation": {
     "columns": 2,
     "rows": 1,
@@ -101525,7 +101525,8 @@
     512,
     512
    ],
-   "transparent": true
+   "transparent": true,
+   "artRevision": "v98.581"
   },
   {
    "id": "enemy-goat-back",
@@ -101537,7 +101538,8 @@
     512,
     512
    ],
-   "transparent": true
+   "transparent": true,
+   "artRevision": "v98.581"
   },
   {
    "id": "enemy-anim-pumpkin-se-idle",
