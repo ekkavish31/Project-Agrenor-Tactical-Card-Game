@@ -82,7 +82,7 @@
   /* v97.01: planks, brick, slabs, water, mud, snow, sand, per-biome cliffs and the lip strips come from the terrain sets already in the repo;
      names not listed here live in assets/terrain/diorama/<name>.webp */
   const TEXFILE = { wood: 'terrain/ground/planks', brick: 'terrain/cliff/ruin-wall', slab: 'terrain/ground/slabs', water: 'terrain/ground/water-deep', swampw: 'terrain/ground/swamp',
-    mud: 'terrain/ground/mud-wet', snowd: 'terrain/ground/snow-deep', sandc: 'terrain/ground/sand-coarse', cliff_snow: 'terrain/cliff/snow-rock', cliff_sand: 'terrain/cliff/sandstone', cliff_swamp: 'terrain/cliff/swamp-roots',
+    mud: 'terrain/ground/mud-wet', soil_dark: 'terrain/ground/soil-dark', grass_worn: 'terrain/ground/grass-worn', lip_earth: 'terrain/cliff/earth-strata', snowd: 'terrain/ground/snow-deep', sandc: 'terrain/ground/sand-coarse', cliff_snow: 'terrain/cliff/snow-rock', cliff_sand: 'terrain/cliff/sandstone', cliff_swamp: 'terrain/cliff/swamp-roots',
     lip_grass: 'terrain/lip/lip-grass', lip_moss: 'terrain/lip/lip-moss', lip_snow: 'terrain/lip/lip-snow', lip_sand: 'terrain/lip/lip-sand',
     bg_forest: 'scenes/area-forest', bg_coast: 'scenes/area-coast', bg_frost: 'scenes/area-frost', bg_mine: 'scenes/area-mine', bg_quarry: 'scenes/area-quarry', bg_ruins: 'scenes/area-ruins', bg_swamp: 'scenes/area-swamp' };
   const SRC = document.currentScript?.src || '', IMG = {}, CORE = ['grass', 'drygrass', 'dirt', 'cobble', 'snow', 'sand', 'cliff', 'earth'], WANT = CORE.concat(Object.keys(TEXFILE).filter(n => !n.startsWith('bg_')));
@@ -141,7 +141,8 @@
   /* everything a cell needs to paint, made once per map (textures, per-cell variation) */
   function prepare(m, o) {
     o = o || {};
-    const mat = materials(o.biome, o.poi), PT = Object.assign({}, PAINTED[o.biome] || PAINTED.grass); if (o.poi === 'ruin') { PT.path = 'cobble'; PT.cliff = 'brick'; PT.wash = {} } if (o.poi === 'town') { PT.top = 'cobble'; PT.path = 'slab'; PT.wash = {} }
+    const mat = materials(o.biome, o.poi), PT = Object.assign({}, PAINTED[o.biome] || PAINTED.grass); if (o.poi === 'patch') { PT.path = 'soil_dark'; PT.cliff = 'lip_earth'; PT.wash = { path: 'rgba(60,35,15,.10)' } }   /* v98.573 · the pumpkin garden: painted tilled soil in the planting beds */
+    if (o.poi === 'ruin') { PT.path = 'cobble'; PT.cliff = 'brick'; PT.wash = {} } if (o.poi === 'town') { PT.top = 'cobble'; PT.path = 'slab'; PT.wash = {} }
     const slot = (name, proc, seed) => loaded(IMG[name]) ? IMG[name] : tex(proc[0], proc[1], seed);
     const img = k => slot(PT[k], mat[k], k.length * 97), wash = k => (loaded(IMG[PT[k]]) && PT.wash?.[k]) || null;
     const r = rng(1234), ctx = { o, mat, hang: loaded(IMG[PT.hang]) ? IMG[PT.hang] : null, img, wash, top: img('top'), path: img('path'), lip: img('lip'), cliff: img('cliff'), vary: Array.from({ length: m.w * m.h }, () => r()), tiles: new Map(), pools: o.pools || (() => false) };

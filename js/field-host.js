@@ -83,6 +83,7 @@ const FIELD = (function () {
       const x = rnd();
       if (row && x < .34 && Math.abs(c.u) + Math.abs(c.v) > 3) { c.k = 'blocked'; c.prop = 'pumpkinPlant' }
       else if (!row && x < .035) { c.k = 'blocked'; c.prop = 'hay' }
+      else if (!row && x < .2 && c.k === 'normal') c.prop = 'tuft'   /* v98.573 · wild flower tufts on the grass walkways (walkable decoration, real picture) */
       else if (row && c.k === 'normal') c.k = 'normal';
     }
     const sc = cells.get(key(0, 0)); if (sc) { sc.k = 'blocked'; sc.prop = 'scarecrow' }
