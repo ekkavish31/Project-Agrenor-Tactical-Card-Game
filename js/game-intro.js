@@ -1,8 +1,11 @@
-/* Opening cutscene = the supplied video (assets/intro/agrenor-intro.mp4). The background music (Intro Adventure 01) is started by
+/* Opening cutscene = the supplied video (assets/intro/agrenor-intro.mp4).
+   v98.590 · NEW VIDEO (owner's, 16 Nov 2026): 1662×1086 (the 4:3 original cropped: the "Wink" watermark at the top-left and a little of the bottom cut off), 60 fps, no audio track,
+   the first frame (the house) is held for 2 s inside the file and the last second fades to white. It is narrower than the screen, so the sides are black bars (object-fit:contain on a black video box;
+   the bars fade to white together with the picture at the end). Old 1920×1080 version: archive/intro/agrenor-intro-v5-1920x1080.mp4. The background music (Intro Adventure 01) is started by
    js/game-bgm.js the moment the maker logo is gone, so it runs together with this (muted) video and carries on into the menu.
    Skip: Esc or X key (text hint only, no buttons). When the video ends — or is skipped — the menu is revealed (class ag-reveal). */
 (()=>{'use strict';
-const SRC='assets/intro/agrenor-intro.mp4?v=5';let active=false,video=null,ready=null,blobUrl=null,aborter=null,onProg=null;
+const SRC='assets/intro/agrenor-intro.mp4?v=6';let active=false,video=null,ready=null,blobUrl=null,aborter=null,onProg=null;
 /* v98.175 · the whole video is downloaded (with progress) while the black start gate is up and played from a blob URL, so nothing streams
    during the logo/cutscene. If the download is too slow the gate calls fallback(): the download is aborted and the video streams as before. */
 async function download(){
@@ -34,8 +37,8 @@ window.GameIntro={prepare,fallback,ready:()=>!!video&&video.readyState>=3,play(t
  let ended=false;
  function finish(skipped){if(ended)return;ended=true;active=false;
   document.removeEventListener('keydown',key,true);document.removeEventListener('visibilitychange',visibility);
-  v.removeEventListener('ended',onEnd);v.removeEventListener('error',onError);
-  if(!skipped)el.style.background='#fff'; /* the video ends on pure white: letterbox bars fade with it */
+  v.removeEventListener('ended',onEnd);v.removeEventListener('error',onError);v.removeEventListener('timeupdate',onTime);
+  if(!skipped){el.style.background='#fff';v.style.background='#fff'} /* the video ends on pure white: letterbox bars fade with it */
   title.classList.add('ag-reveal');el.classList.add(skipped?'si-out-fast':'si-out');
   main.inert=false;title.classList.remove('ag-playing');release();
   const gone=()=>{v.pause();v.removeAttribute('src');v.load();video=null;ready=null;el.remove()};
@@ -46,6 +49,8 @@ window.GameIntro={prepare,fallback,ready:()=>!!video&&video.readyState>=3,play(t
  function visibility(){if(document.hidden)v.pause();else if(!ended)v.play().catch(()=>{})}
  document.addEventListener('keydown',key,true);document.addEventListener('visibilitychange',visibility);
  v.addEventListener('ended',onEnd);v.addEventListener('error',onError);
+ /* v98.590 · the last second: the video fades to white (baked in) — the side bars follow, so no black frame is left at the sides */
+ let whitening=false;const onTime=()=>{if(!whitening&&v.duration&&v.duration-v.currentTime<=1.05){whitening=true;v.style.transition='background-color 1s linear';v.style.background='#fff'}};v.addEventListener('timeupdate',onTime);
  try{v.currentTime=0}catch{}v.muted=true;
  v.play().catch(()=>finish(true));
 }};})();
