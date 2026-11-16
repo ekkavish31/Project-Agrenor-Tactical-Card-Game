@@ -4,7 +4,7 @@
 #titleScreen.ag-title{background:#cfe3f5;--ag-ink:#1b2b47;--ag-ink2:#44546f;--ag-gold:#b98d3f;
   /* v98.175 · title block sits in the middle of the scene; --ag-menu-r keeps its centre clear of the (full-size) menu column on narrow screens */
   --ag-logo-w:clamp(300px,min(52vw,82vh),900px);--ag-menu-r:calc(2.6vw + clamp(250px,28vw,430px))}
-#titleScreen.ag-title .ts-bg{inset:0;background:url('../assets/intro/menu-bg.webp?v=3') center/cover no-repeat;filter:none;animation:none;transform:none}
+#titleScreen.ag-title .ts-bg{inset:0;background:url('../assets/intro/menu-bg.webp?v=4') center/cover no-repeat;filter:none;animation:none;transform:none}
 #titleScreen.ag-title .ts-veil{background:
   radial-gradient(ellipse 34% 34% at 50% 31%,#ffffff8c 0%,#ffffff4d 52%,transparent 80%),
   linear-gradient(90deg,#ffffffc2 0%,#ffffff94 16%,#ffffff4d 32%,transparent 50%),

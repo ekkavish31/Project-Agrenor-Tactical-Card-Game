@@ -86,7 +86,7 @@
       const font = document.fonts?.load
         ? Promise.all(['20px Wizzta', '400 16px AgThai', '600 16px AgThai', '700 16px AgThai'].map(f => document.fonts.load(f, 'กขค').catch(() => {})))
         : Promise.resolve();
-      return Promise.all([image('assets/intro/menu-bg.webp?v=3'), image('assets/intro/agrenor-logo.webp?v=2'), font]);
+      return Promise.all([image('assets/intro/menu-bg.webp?v=4'), image('assets/intro/agrenor-logo.webp?v=2'), font]);
     }
 
     function runOpening(current) {
