@@ -78,12 +78,12 @@ let npcs=null,last=0,talking=null,hover=null;
 function target(stop){const v=V();if(stop in EXIT_IDX){const e=v.getExits()[EXIT_IDX[stop]];return e?{u:e.u,v:e.v}:null}const L=v.getLocations(),o=L.find(o=>o.id===stop)||(LIFE?.placeKind?L.find(o=>LIFE.placeKind(o.id,o.name||'')===stop):null);return o?v.door(o):null}   /* v97.40 · a schedule may name a kind of place (e.g. 'guild') built in the editor under its own id */
 function init(){const v=V();if(!v)return false;npcs=ROSTER.map((n,i)=>{let start;if(n.fixed){const e=v.getExits()[EXIT_IDX[n.home]];start={u:e.u-1.5,v:e.v+1.5};const s=snap(start);if(s)start=s}else start=target(n.home)||target('square');return {...n,inside:null,enter:null,alpha:1,u:start.u,v:start.v,path:[],wait:1+i*.6,stop:-1,face:'SE',phase:i*1.7,speed:(n.speed||1)*1.9}});return true}
 function snap(p){const v=V();for(let r=0;r<=6;r+=.5)for(let a=0;a<8;a++){const q={u:p.u+Math.cos(a/8*Math.PI*2)*r,v:p.v+Math.sin(a/8*Math.PI*2)*r};if(!v.blocked(q.u,q.v))return q}return null}
-function update(dt){if(!npcs&&!init())return;const v=V(),h=v.getHero();
+function update(dt){if(!npcs&&!init())return;const v=V(),h=v.getHero(),fs0=performance.now();   /* v98.620 · fs0: villagers that want to plan a walk stop asking once this frame has used 10 ms — the rest try again a moment later (no pile-up of searches in one frame) */
  for(const n of npcs){n.alpha+=((n.inside?0:1)-n.alpha)*Math.min(1,dt*5);
   if(n.inside&&n!==talking){n.path=[];n.wait-=dt;if(n.wait<=0){n.inside=null;n.wait=.6}continue}
   if(n===talking){const du=h.u-n.u,dv=h.v-n.v;n.face=root.WalkSpeed?WalkSpeed.dir.face(n,du,dv):faceOf(du,dv);continue}
   if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*(root.WalkSpeed?WalkSpeed.npcCells(n):n.speed);n.face=root.WalkSpeed?WalkSpeed.dir.face(n,du,dv):faceOf(du,dv);if(len<=st){n.u=b.u;n.v=b.v;n.path.shift();if(!n.path.length&&n.enter){n.inside=n.enter;n.enter=null;n.wait=7+Math.random()*12}else if(!n.path.length)n.wait=n.pause?n.pause[0]+Math.random()*(n.pause[1]-n.pause[0]):3+Math.random()*5}else{n.u+=du/len*st;n.v+=dv/len*st}continue}
-  if(n.fixed||!n.stops.length)continue;n.wait-=dt;if(n.wait>0)continue;
+  if(n.fixed||!n.stops.length)continue;n.wait-=dt;if(n.wait>0)continue;if(performance.now()-fs0>10){n.wait=.04;continue}
   const seq=[...n.stops,n.home];n.stop=(n.stop+1)%seq.length;const tgt=target(seq[n.stop]);if(!tgt){n.wait=4;continue}
   // stand near, not exactly on, the door so villagers do not pile up
   const off={u:tgt.u+(Math.random()-.5)*2.4,v:tgt.v+(Math.random()-.5)*2.4},goal=v.blocked(off.u,off.v)?tgt:off,room=seq[n.stop]!=='square'&&!(seq[n.stop] in EXIT_IDX);
@@ -119,7 +119,7 @@ function lifeUpdate(dt){if(!npcs&&!lifeInit())return;const v=V(),h=v.getHero(),h
   const want=desire(n,hour);if(want!==n.goal){lifeGo(n,want);continue}
   if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*(root.WalkSpeed?WalkSpeed.npcCells(n):n.speed);n.face=root.WalkSpeed?WalkSpeed.dir.face(n,du,dv):faceOf(du,dv);
    if(len<=st){n.u=b.u;n.v=b.v;n.path.shift();if(!n.path.length){if(n.enter){n.inside=n.enter;n.enter=null}else if(n.leaveTown)n.hidden=true;n.wait=3+Math.random()*6}}else{n.u+=du/len*st;n.v+=dv/len*st}continue}
-  if(n.goal==='square'&&!n.inside&&!n.hidden){n.wait-=dt;if(n.wait<=0){const q=nearSquare();if(q)n.path=v.findPath({u:n.u,v:n.v},q);n.wait=4+Math.random()*8}}}
+  if(n.goal==='square'&&!n.inside&&!n.hidden){n.wait-=dt;if(n.wait<=0&&performance.now()-fs0>10)n.wait=.04;if(n.wait<=0){const q=nearSquare();if(q)n.path=v.findPath({u:n.u,v:n.v},q);n.wait=4+Math.random()*8}}}
  /* v94.03 · two villagers standing close together near the hero now and then talk to each other out loud (same scenes as indoors) */
  if(now>sceneAt&&MIND()&&!scenePlaying){sceneAt=now+20000+Math.random()*15000;const per=root.VillageClock?.period(hour)||'day',idle=npcs.filter(n=>!n.inside&&!n.hidden&&!n.path?.length&&n!==talking&&Math.hypot(n.u-h.u,n.v-h.v)<16);
   let pair=null;for(const a of idle){const b=idle.find(x=>x!==a&&Math.hypot(x.u-a.u,x.v-a.v)<3);if(b){pair=[a,b];break}}
