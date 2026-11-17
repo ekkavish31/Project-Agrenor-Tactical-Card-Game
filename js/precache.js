@@ -21,6 +21,6 @@
         localStorage.setItem('projectA.precached', V);
       } catch (e) { }
     };
-    addEventListener('load', () => setTimeout(() => (window.requestIdleCallback || setTimeout)(go, 1200), 12000));
+    addEventListener('load', () => setTimeout(() => (window.requestIdleCallback ? (f => window.requestIdleCallback(f, { timeout: 1200 })) : (f => setTimeout(f, 1200)))(go), 12000));
   } catch (e) { }
 })();

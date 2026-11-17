@@ -119,7 +119,7 @@ function lifeUpdate(dt){if(!npcs&&!lifeInit())return;const v=V(),h=v.getHero(),h
   const want=desire(n,hour);if(want!==n.goal){lifeGo(n,want);continue}
   if(n.path.length){const b=n.path[0],du=b.u-n.u,dv=b.v-n.v,len=Math.hypot(du,dv),st=dt*(root.WalkSpeed?WalkSpeed.npcCells(n):n.speed);n.face=root.WalkSpeed?WalkSpeed.dir.face(n,du,dv):faceOf(du,dv);
    if(len<=st){n.u=b.u;n.v=b.v;n.path.shift();if(!n.path.length){if(n.enter){n.inside=n.enter;n.enter=null}else if(n.leaveTown)n.hidden=true;n.wait=3+Math.random()*6}}else{n.u+=du/len*st;n.v+=dv/len*st}continue}
-  if(n.goal==='square'&&!n.inside&&!n.hidden){n.wait-=dt;if(n.wait<=0&&performance.now()-fs0>10)n.wait=.04;if(n.wait<=0){const q=nearSquare();if(q)n.path=v.findPath({u:n.u,v:n.v},q);n.wait=4+Math.random()*8}}}
+  if(n.goal==='square'&&!n.inside&&!n.hidden){n.wait-=dt;if(n.wait<=0&&performance.now()-now>10)n.wait=.04;if(n.wait<=0){const q=nearSquare();if(q)n.path=v.findPath({u:n.u,v:n.v},q);n.wait=4+Math.random()*8}}}
  /* v94.03 · two villagers standing close together near the hero now and then talk to each other out loud (same scenes as indoors) */
  if(now>sceneAt&&MIND()&&!scenePlaying){sceneAt=now+20000+Math.random()*15000;const per=root.VillageClock?.period(hour)||'day',idle=npcs.filter(n=>!n.inside&&!n.hidden&&!n.path?.length&&n!==talking&&Math.hypot(n.u-h.u,n.v-h.v)<16);
   let pair=null;for(const a of idle){const b=idle.find(x=>x!==a&&Math.hypot(x.u-a.u,x.v-a.v)<3);if(b){pair=[a,b];break}}
