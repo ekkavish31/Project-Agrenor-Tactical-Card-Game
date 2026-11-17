@@ -177,7 +177,7 @@
     g.save(); g.globalAlpha *= alpha; g.drawImage(im, (f % 4) * d.cw, Math.floor(f / 4) * d.ch, d.cw, d.ch, -w * d.ax, -h * d.ay, w, h); g.restore(); return true }
   /* cross-fade between neighbouring frames: u = 0..1 over the whole sheet */
   function animPlay(g, n, u, w, alpha = 1, loop = false) { let x = u * 16; if (loop) x = ((x % 16) + 16) % 16; else x = clamp(x, 0, 15.999); const i = Math.floor(x), f = x - i, j = loop ? (i + 1) % 16 : Math.min(15, i + 1);
-    const ok = animFrame(g, n, i, w, alpha * (1 - f * .85)); if (ok && j !== i) animFrame(g, n, j, w, alpha * f); return ok }
+    const ok = animFrame(g, n, i, w, alpha); if (ok && j !== i) animFrame(g, n, j, w, alpha * f); return ok }
   /* single painted pieces: the fire-streak (spark) and the smoke wisp */
   const PIECE = { spark: 'fire-spark', smoke: 'fire-smoke' }, pieceImg = {};
   function piece(n) { let im = pieceImg[n]; if (!im) { im = pieceImg[n] = new Image(); im.decoding = 'async'; im.src = SRC ? new URL('../assets/fx/anim/' + PIECE[n] + '.webp', SRC).href : 'assets/fx/anim/' + PIECE[n] + '.webp' } return im.complete && im.naturalWidth ? im : null }
@@ -197,14 +197,14 @@
     if (far && t < split) {   /* flight: the fireball runs along an arc from the caster's chest to the target, turned to face where it goes */
       const k = t / split, ay = a.y - cw * .75, py = chest(p, cw), lift = cw * .4, at = kk => [a.x + (p.x - a.x) * kk, ay + (py - ay) * kk - Math.sin(kk * Math.PI) * lift], pos = k => eo(k) * .88 + k * .12;
       const kk = pos(k), [x, y] = at(kk), [x2, y2] = at(Math.min(1, kk + .02)), an = Math.atan2(y2 - y, x2 - x) || 0, grow = .55 + .45 * eo(seg(k, 0, .25)), back_ = an + Math.PI;
-      /* light motes and sparks left behind the fireball: each one is dropped at an earlier point of the path, then falls away and fades */
-      add(g, () => { glow(g, x, y, W * .8 * grow, C.fire, .4); for (let i = 0; i < 9; i++) { const born = k - (i + 1) * .045 - R(e, i) * .03; if (born < 0) continue; const age = (k - born) / .4, [bx, by] = at(pos(born)); const px = bx + Math.cos(back_) * W * .1 * age + (R(e, i + 5) - .5) * W * .25, py_ = by + (R(e, i + 9) - .3) * W * .3 + W * .35 * age * age; glow(g, px, py_, W * (.1 - age * .05), i % 2 ? C.fireHi : C.white, (1 - age) * .9); if (i % 3 === 0) star4(g, px, py_, W * .14 * (1 - age), C.white, (1 - age) * .8, age * 4 + i) }
-        for (let i = 0; i < 5; i++) { const born = k - (i + 1) * .07 - R(e, i + 40) * .04; if (born < 0) continue; const age = (k - born) / .4, [bx, by] = at(pos(born)), side = (i % 2 ? 1 : -1) * (.25 + .5 * R(e, i + 44)), an2 = back_ + side + (R(e, i + 48) - .5) * .4; spark(g, bx + Math.cos(an2) * W * .5 * age, by + Math.sin(an2) * W * .5 * age + W * .3 * age * age, an2 + side * .3, W * (.5 - .22 * age), (1 - age) * .95) } });
-      g.save(); g.translate(x, y); g.rotate(an); if (Math.cos(an) < 0) g.scale(1, -1); animPlay(g, 'ball', k * 1.6, W * 1.55 * grow, 1, true); g.restore();
+      /* v98.623 · like the reference clip: a compact fireball with a short tail — only a small warm glow, no trail of motes or sparks */
+      add(g, () => glow(g, x, y, W * .34 * grow, C.fire, .3));
+      g.save(); g.translate(x, y); g.rotate(an); if (Math.cos(an) < 0) g.scale(1, -1); animPlay(g, 'ball', k * 1.6, W * .95 * grow, 1, true); g.restore();
       return true }
     const k = far ? (t - split) / (1 - split) : t;   /* impact: 16 frames — flames rise, burn, turn to smoke */
     /* behind the flames: the smoke that is left (three wisps, rising and spreading, born as the fire dies) */
-    for (let i = 0; i < 3; i++) { const ks = seg(k, .3 + i * .1, 1); if (ks <= 0) continue; smoke(g, p.x + (i - 1) * W * .38 + Math.sin(ks * 3 + i) * W * .1, p.y - W * (.55 + 1.25 * eo(ks)) - i * W * .12, W * (.9 + .7 * ks + i * .15), .8 * bell(ks) * (i ? .8 : 1), (i - 1) * .35 + ks * .5 * (i % 2 ? 1 : -1)) }
+    /* smoke as in the reference: one thin, pale wisp hanging at the head of the target after the fire dies — small, low and slow */
+    { const ks = seg(k, .38, 1); if (ks > 0) smoke(g, p.x + Math.sin(ks * 2.4) * W * .06, p.y - W * (.95 + .5 * eo(ks)), W * (.38 + .22 * ks), .4 * bell(ks), ks * .4) }
     add(g, () => { glow(g, p.x, p.y - W * .35, W * 1.6 * bell(seg(k, 0, .5)), C.fire, .42 * (1 - seg(k, .4, .8))); glow(g, p.x, p.y - W * .25, W * .9 * bell(seg(k, 0, .22)), C.white, .6); motes(g, e, 10, p.x, p.y - W * .1, W * 1.2, W * 1.9, W * .09, seg(k, 0, .9), 70) });
     g.save(); g.translate(p.x, p.y + cw * .12); animPlay(g, 'hit', k, W * 2.5, 1, false); g.restore();
     /* in front of the flames: fire sparks thrown out of the burst, flying up and out, then falling; a few lights glint on top */
