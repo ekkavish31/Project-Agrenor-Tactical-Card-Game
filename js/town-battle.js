@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.661';
+  const V = '98.662';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -95,7 +95,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk', 'js/portrait-scale.js': 'PortraitScale', 'js/portrait-facing.js': 'PortraitFacing' };
+    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk', 'js/portrait-scale.js': 'PortraitScale', 'js/portrait-facing.js': 'PortraitFacing', 'js/head-arrow.js': 'HeadArrow' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
@@ -1835,10 +1835,9 @@
     /* v98.278 · the turn crystal over the head of whoever's turn it is: the user's own 8-frame art (gold = team, silver = monsters) — assets/fx/plumbob-ally|foe.webp, 8 frames of 100×160 (source sheet: art-production/plumbob-crystal-sheet-8x2.webp). No code-drawn glow any more: the picture carries its own light. */
     duelTick(t);
     if (!st.outcome) { const au = actUnit && actUnit.hp > 0 ? actUnit : FB.queue(st, 1)[0];
-      if (au && au.hp > 0 && !(au.deadAt && t > au.deadAt)) { const foe = au.side === 'monster', pic = im('assets/fx/plumbob-' + (foe ? 'foe' : 'ally') + '.webp'), ha = !foe && im('assets/fx/head-arrow-teal.webp');
-        if (ha) { /* v98.632 · the allies' turn marker = the teal/gold head arrow (96-frame spin, assets/fx/head-arrow-teal.webp, 128 px frames, 12×8, tip pivot .5078/.8672); it bobs slowly up and down by 20 % of its own length */
-          const q = project(au.vu, au.vv), ko = kbOff(au, t), sz = UNIT * .74, len = sz * .836, bob = Math.sin(t * .0022) * len * .1, fr = Math.floor(t / (3200 / 96)) % 96, tx = q.x + ko.x, ty = q.y + ko.y - UNIT * 1.42 + bob;
-          g.drawImage(ha, (fr % 12) * 128, Math.floor(fr / 12) * 128, 128, 128, tx - sz * .5078, ty - sz * .8672, sz, sz) }
+      if (au && au.hp > 0 && !(au.deadAt && t > au.deadAt)) { const foe = au.side === 'monster', pic = im('assets/fx/plumbob-' + (foe ? 'foe' : 'ally') + '.webp'), ha = window.HeadArrow?.ready();
+        if (ha) { /* v98.662 · whose turn it is = the head arrow (js/head-arrow.js): teal for the team, red for enemies; bobs 20 % of its own length */
+          const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1; HeadArrow.draw(g, q.x + ko.x, q.y + ko.y - UNIT * 1.42 * big, UNIT * .74, t, { foe }) }
         else if (pic || CODE_ART) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, ph = UNIT * .98, pw = ph * 100 / 160, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.78 * big + .1) + bob;
           if (CODE_ART) GroundArtCode.crystal(g, cx, cy, ph * .8, t, foe ? 'foe' : 'ally'); else g.drawImage(pic, (Math.floor(t / 110) % 8) * 100, 0, 100, 160, cx - pw / 2, cy - ph / 2, pw, ph) } } }
     /* v98.253 · grey crystal (no ring) over the fighter picked in the queue */
