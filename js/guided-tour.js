@@ -21,9 +21,17 @@
 #gtour .box p{margin:0;font-size:19px;line-height:1.5;min-height:3em}
 #gtour .box small{position:absolute;right:14px;bottom:8px;color:#d8b46acc;font-size:13px}
 #gtour .box .skip{position:absolute;right:12px;top:8px;background:#0006;border:1px solid #d8b46a66;color:#e8d5a8;border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
+body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility:hidden!important}
 @keyframes gtPulse{50%{box-shadow:0 0 0 2px #0008,0 0 34px #ffe9a8,inset 0 0 20px #ffd77a88}}
 @keyframes gtBob{0%,100%{transform:translate(0,0)}50%{transform:translate(var(--bx,0),var(--by,0))}}`;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
+  /* the page itself and every same-origin frame (the village map lives in an iframe: its icon row is what the player really sees) */
+  const docs = () => { const out = [document]; for (const f of document.querySelectorAll('iframe')) { try { const d = f.contentDocument; if (d && d.body && f.getBoundingClientRect().width > 0 && !f.hidden) out.push(d) } catch (e) { } } return out };
+  const visible = e => { try { const r = e.getBoundingClientRect(); if (r.width < 2) return false; const cs = e.ownerDocument.defaultView.getComputedStyle(e); return cs.visibility !== 'hidden' && cs.display !== 'none' } catch (x) { return false } };
+  const query = spec => { if (typeof spec === 'function') return spec(); for (const d of docs()) { for (const e of d.querySelectorAll(spec)) if (visible(e)) return e } return null };
+  const rectOf = e => { const r = e.getBoundingClientRect(), d = e.ownerDocument; if (d === document) return r; let fx = 0, fy = 0; try { const f = d.defaultView.frameElement.getBoundingClientRect(); fx = f.left; fy = f.top } catch (x) { } return { left: r.left + fx, top: r.top + fy, right: r.right + fx, bottom: r.bottom + fy, width: r.width, height: r.height } };
+  /* anything that could cover the lesson: the Esc menu of the village, the quest window, toasts — removed / hidden while a tour runs */
+  const quiet = () => { for (const d of docs()) { d.getElementById('cuMenu')?.remove(); const h = d.getElementById('townHudPop'); void h } };
   const lookOf = who => { const female = (() => { try { return root.HeroVariant?.get?.() === 'female' } catch (e) { return false } })(), isLead = who === 'hero'; return isLead ? (female ? 'hero-female' : 'hero-male') : (female ? 'hero-male' : 'hero-female') };
   const resolve = (C, who) => C?.roleWho ? C.roleWho(who) : (who === 'S' ? 'sib' : 'hero');
   async function run(steps, opt = {}) {
@@ -32,7 +40,7 @@
     const C = root.Cutscene, fill = t => C?.fill ? C.fill(t) : String(t || '');
     const el = document.createElement('div'); el.id = 'gtour';
     el.innerHTML = '<div class="blk" data-b="t"></div><div class="blk" data-b="b"></div><div class="blk" data-b="l"></div><div class="blk" data-b="r"></div><div class="ring" hidden></div><div class="arrow" hidden><svg viewBox="0 0 54 54"><path d="M27 4 L48 30 H35 V50 H19 V30 H6 Z" fill="#ffd77a" stroke="#5a3a0a" stroke-width="3" stroke-linejoin="round"/></svg></div><div class="pic L"></div><div class="pic R"></div><div class="box"><b></b><p></p><small>คลิกเพื่อไปต่อ</small><button class="skip" type="button">ข้ามบทสอน (Esc)</button></div>';
-    const mount = () => { const dl = document.querySelectorAll('dialog[open]'), host = dl.length ? dl[dl.length - 1] : document.body;   /* the TOPMOST open dialog (a card view opens above the book) */ if (el.parentNode !== host) host.append(el); };
+    const mount = () => { const dl = document.querySelectorAll('dialog[open]'), host = dl.length ? dl[dl.length - 1] : document.body;   quiet();   /* the TOPMOST open dialog (a card view opens above the book) */ if (el.parentNode !== host) host.append(el); };
     mount();
     const $ = s => el.querySelector(s), blk = k => $(`[data-b="${k}"]`), ring = $('.ring'), arrow = $('.arrow'), box = $('.box'), say = box.querySelector('p'), nm = box.querySelector('b');
     const lead = { hero: lookOf('hero'), sib: lookOf('sib') };
@@ -47,11 +55,11 @@
     let curSpec = null;
     const place = () => {   /* keep the spotlight on the (possibly moving) target */
       mount();
-      if (curSpec && targetEl && !targetEl.isConnected) { const e = typeof curSpec === 'function' ? curSpec() : document.querySelector(curSpec); if (e) targetEl = e }   /* the book redraws itself: follow the new element */
+      if (curSpec && targetEl && !targetEl.isConnected) { const e = query(curSpec); if (e) targetEl = e }   /* the book redraws itself: follow the new element */
       const W = innerWidth, H = innerHeight;
       if (!targetEl || !targetEl.isConnected) { for (const k of 'tblr') { const b = blk(k); Object.assign(b.style, { left: 0, top: 0, width: W + 'px', height: H + 'px' }) } blk('b').style.display = blk('l').style.display = blk('r').style.display = 'none'; ring.hidden = arrow.hidden = true; return }
       for (const k of 'blr') blk(k).style.display = '';
-      const r = targetEl.getBoundingClientRect(), pad = 6, x0 = Math.max(0, r.left - pad), y0 = Math.max(0, r.top - pad), x1 = Math.min(W, r.right + pad), y1 = Math.min(H, r.bottom + pad);
+      const r = rectOf(targetEl), pad = 6, x0 = Math.max(0, r.left - pad), y0 = Math.max(0, r.top - pad), x1 = Math.min(W, r.right + pad), y1 = Math.min(H, r.bottom + pad);
       Object.assign(blk('t').style, { left: 0, top: 0, width: W + 'px', height: y0 + 'px' }); Object.assign(blk('b').style, { left: 0, top: y1 + 'px', width: W + 'px', height: Math.max(0, H - y1) + 'px' });
       Object.assign(blk('l').style, { left: 0, top: y0 + 'px', width: x0 + 'px', height: (y1 - y0) + 'px' }); Object.assign(blk('r').style, { left: x1 + 'px', top: y0 + 'px', width: Math.max(0, W - x1) + 'px', height: (y1 - y0) + 'px' });
       Object.assign(ring.style, { left: x0 + 'px', top: y0 + 'px', width: (x1 - x0) + 'px', height: (y1 - y0) + 'px' }); ring.hidden = false;
@@ -63,8 +71,9 @@
       arrow.style.left = Math.max(4, Math.min(W - A - 4, pos[0])) + 'px'; arrow.style.top = Math.max(4, Math.min(H - A - 4, pos[1])) + 'px';
       const svg = arrow.querySelector('svg'); svg.style.transform = `rotate(${pos[2]}deg)`; const mv = { up: ['0', '10px'], down: ['0', '-10px'], left: ['10px', '0'], right: ['-10px', '0'] }[dir]; svg.style.setProperty('--bx', mv[0]); svg.style.setProperty('--by', mv[1]); arrow.hidden = false;
     };
+    document.body.classList.add('gt-on'); try { document.activeElement?.blur?.(); window.focus() } catch (e) { }
     let raf = 0; const loop = () => { place(); raf = requestAnimationFrame(loop) }; loop();
-    const findTarget = async spec => { const t0 = performance.now(); while (performance.now() - t0 < 4500 && !skipped) { const e = typeof spec === 'function' ? spec() : document.querySelector(spec); if (e && e.getBoundingClientRect().width > 2) return e; await sleep(120) } return null };
+    const findTarget = async spec => { const t0 = performance.now(); while (performance.now() - t0 < 4500 && !skipped) { const e = query(spec); if (e) return e; await sleep(120) } return null };
     try {
       for (const st of steps) {
         if (skipped) break;
@@ -77,12 +86,12 @@
         if (skipped) break;
         await new Promise(res => {
           stepDone = res;
-          if (targetEl) { const hit = ev => { const spec = typeof st.target === 'string' ? st.target : null; if (!targetEl || !(targetEl.contains(ev.target) || (spec && ev.target.closest?.(spec)))) return; document.removeEventListener('click', hit, true); setTimeout(res, st.delay ?? 380) }; document.addEventListener('click', hit, true); stepDone = () => { document.removeEventListener('click', hit, true); res() } }
+          if (targetEl) { const ds = docs(), off = () => { for (const d of ds) d.removeEventListener('click', hit, true) }; const hit = ev => { const spec = typeof st.target === 'string' ? st.target : null; if (!targetEl || !(targetEl.contains(ev.target) || (spec && ev.target.closest?.(spec)))) return; off(); setTimeout(res, st.delay ?? 380) }; for (const d of ds) d.addEventListener('click', hit, true); stepDone = () => { off(); res() } }
           else if (typeof st.wait === 'function') { const t = setInterval(() => { if (st.wait()) { clearInterval(t); res() } }, 150) }
         });
         targetEl = null; stepDone = null;
       }
-    } finally { cancelAnimationFrame(raf); clearInterval(typeTimer); removeEventListener('keydown', onKey, true); el.remove() }
+    } finally { document.body.classList.remove('gt-on'); cancelAnimationFrame(raf); clearInterval(typeTimer); removeEventListener('keydown', onKey, true); el.remove() }
     return !skipped;
   }
   root.GuidedTour = { run };

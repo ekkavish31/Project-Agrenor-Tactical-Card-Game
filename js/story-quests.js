@@ -449,7 +449,7 @@ async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!
  bookBusy=true;try{v.story.bookIntro=true;doSave();await root.Cutscene.play(D().SCENES.bookExit);try{if(typeof openPanel==='function')openPanel('bag')}catch(e){}}finally{bookBusy=false}return true}
 /* v98.617 · THE CARD-BOOK TOUR: after the opening scene the siblings teach the สมุดผนึก on the live village map — the player does each step by hand (open the book · look at the gear tab · tap a card · close it · the other tabs · close the book) */
 const BOOK_TOUR=[
- {who:'S',text:'ดูมุมขวาบนนั่น มีปุ่มสมุดผนึกอยู่ — {S2B} ลองกดเปิดดู',target:"button[onclick*=\"openPanel('bag')\"]"},
+ {who:'S',text:'ดูมุมขวาบนนั่น มีไอคอน สมุดผนึก อยู่ — {S2B} ลองกดเปิดดู',target:'.hud-ico[data-hud="bag"]'},
  {who:'S',text:'นี่คือสมุดผนึกที่สมาคมให้ ของที่เราพกจะกลายเป็นการ์ดเก็บอยู่ในนี้ ลองกดแท็บ อุปกรณ์ ก่อน',target:'.cb-tabs button[data-t="gear"]'},
  {who:'B',text:'มีดของพ่อ… อยู่ในนี้แล้วจริงด้วย'},
  {who:'S',text:'แตะการ์ดใบนั้นดูสิ จะเห็นรายละเอียด',target:'.cb-page[data-p="gear"] .card-thumb'},
