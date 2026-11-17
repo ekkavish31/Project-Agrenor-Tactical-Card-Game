@@ -104882,7 +104882,7 @@
    "id": "npc-mira-se-stand",
    "file": "assets/village-town/npc/mira/se-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -104895,7 +104895,8 @@
     "id": "npc:mira",
     "name": "ครูมิรา",
     "group": "npcs"
-   }
+   },
+   "artRevision": "mwkd70c7"
   },
   {
    "id": "npc-mira-se-walk1",
@@ -104921,7 +104922,7 @@
    "id": "npc-mira-nw-stand",
    "file": "assets/village-town/npc/mira/nw-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -104934,7 +104935,8 @@
     "id": "npc:mira",
     "name": "ครูมิรา",
     "group": "npcs"
-   }
+   },
+   "artRevision": "mwkd751o"
   },
   {
    "id": "npc-mira-nw-walk1",
@@ -124340,6 +124342,1140 @@
     "group": "characters"
    },
    "artRevision": "20261117-141356"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-1",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-2",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-3",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-4",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-5",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-6",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-7",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-8",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-9",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-10",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-11",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-sw-walk-mwkd5e3g-12",
+   "file": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5e3g"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-1",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-2",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-3",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-4",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-5",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-6",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-7",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-8",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-9",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-10",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-11",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-se-walk-mwkd5ito-12",
+   "file": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd5ito"
+  },
+  {
+   "id": "studio-ally-mira-ne-walk-mwkd6te0-1",
+   "file": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6te0"
+  },
+  {
+   "id": "studio-ally-mira-ne-walk-mwkd6te0-2",
+   "file": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6te0"
+  },
+  {
+   "id": "studio-ally-mira-ne-walk-mwkd6te0-3",
+   "file": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6te0"
+  },
+  {
+   "id": "studio-ally-mira-ne-walk-mwkd6te0-4",
+   "file": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6te0"
+  },
+  {
+   "id": "studio-ally-mira-ne-walk-mwkd6te0-5",
+   "file": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6te0"
+  },
+  {
+   "id": "studio-ally-mira-ne-walk-mwkd6te0-6",
+   "file": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6te0"
+  },
+  {
+   "id": "studio-ally-mira-ne-walk-mwkd6te0-7",
+   "file": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6te0"
+  },
+  {
+   "id": "studio-ally-mira-ne-walk-mwkd6te0-8",
+   "file": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6te0"
+  },
+  {
+   "id": "studio-ally-mira-ne-walk-mwkd6te0-9",
+   "file": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6te0"
+  },
+  {
+   "id": "studio-ally-mira-nw-walk-mwkd6wsu-1",
+   "file": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6wsu"
+  },
+  {
+   "id": "studio-ally-mira-nw-walk-mwkd6wsu-2",
+   "file": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6wsu"
+  },
+  {
+   "id": "studio-ally-mira-nw-walk-mwkd6wsu-3",
+   "file": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6wsu"
+  },
+  {
+   "id": "studio-ally-mira-nw-walk-mwkd6wsu-4",
+   "file": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6wsu"
+  },
+  {
+   "id": "studio-ally-mira-nw-walk-mwkd6wsu-5",
+   "file": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6wsu"
+  },
+  {
+   "id": "studio-ally-mira-nw-walk-mwkd6wsu-6",
+   "file": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6wsu"
+  },
+  {
+   "id": "studio-ally-mira-nw-walk-mwkd6wsu-7",
+   "file": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6wsu"
+  },
+  {
+   "id": "studio-ally-mira-nw-walk-mwkd6wsu-8",
+   "file": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6wsu"
+  },
+  {
+   "id": "studio-ally-mira-nw-walk-mwkd6wsu-9",
+   "file": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 9,
+   "ms": 80,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mira",
+    "name": "ครูมิรา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkd6wsu"
   }
  ],
  "studioReviews": {
@@ -129542,6 +130678,87 @@
   "[\"allywalk:graven:NE\",\"NE\",true,[[\"studio-ally-graven-ne-walk-mwkcu1se-1\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-01.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-2\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-02.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-3\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-03.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-4\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-04.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-5\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-05.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-6\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-06.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-7\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-07.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-8\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-08.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-9\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-09.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-10\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-10.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-11\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-11.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcu1se-12\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-12.png\",0,\"mwkcu1se\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
    "frames": {}
+  },
+  "[\"npc-mira-sw-stand\",\"SW\",true,[[\"npc-mira-sw-stand\",\"assets/village-town/npc/mira/sw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-mira-se-stand\",\"SE\",true,[[\"npc-mira-se-stand\",\"assets/village-town/npc/mira/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-mira-se-stand\",\"SE\",true,[[\"npc-mira-se-stand\",\"assets/village-town/npc/mira/se-stand.webp\",0,\"mwkczrpt\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:16:34.253Z"
+  },
+  "[\"npc-mira-ne-stand\",\"NE\",true,[[\"npc-mira-ne-stand\",\"assets/village-town/npc/mira/ne-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-mira-nw-stand\",\"NW\",true,[[\"npc-mira-nw-stand\",\"assets/village-town/npc/mira/nw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-mira-nw-stand\",\"NW\",true,[[\"npc-mira-nw-stand\",\"assets/village-town/npc/mira/nw-stand.webp\",0,\"mwkczw0m\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:16:38.440Z"
+  },
+  "[\"npc-mira-sw-walk1\",\"SW\",true,[[\"npc-mira-sw-walk1\",\"assets/village-town/npc/mira/sw-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:20:56.793Z"
+  },
+  "[\"allywalk:mira:SW\",\"SW\",true,[[\"studio-ally-mira-sw-walk-mwkd0cwx-1\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-01.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-2\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-02.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-3\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-03.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-4\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-04.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-5\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-05.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-6\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-06.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-7\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-07.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-8\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-08.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-9\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-09.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-10\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-10.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-11\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-11.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd0cwx-12\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd0cwx/frame-12.png\",0,\"mwkd0cwx\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-mira-se-walk1\",\"SE\",true,[[\"npc-mira-se-walk1\",\"assets/village-town/npc/mira/se-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:21:01.823Z"
+  },
+  "[\"npc-mira-ne-walk1\",\"NE\",true,[[\"npc-mira-ne-walk1\",\"assets/village-town/npc/mira/ne-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:22:02.111Z"
+  },
+  "[\"allywalk:mira:NE\",\"NE\",true,[[\"studio-ally-mira-ne-walk-mwkd3ihc-1\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-01.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-2\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-02.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-3\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-03.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-4\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-04.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-5\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-05.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-6\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-06.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-7\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-07.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-8\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-08.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-9\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-09.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-10\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-10.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd3ihc-11\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd3ihc/frame-11.png\",0,\"mwkd3ihc\",null,80,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-mira-nw-walk1\",\"NW\",true,[[\"npc-mira-nw-walk1\",\"assets/village-town/npc/mira/nw-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:22:06.551Z"
+  },
+  "[\"allywalk:mira:NW\",\"NW\",true,[[\"studio-ally-mira-nw-walk-mwkd3lmg-1\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-01.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-2\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-02.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-3\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-03.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-4\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-04.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-5\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-05.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-6\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-06.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-7\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-07.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-8\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-08.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-9\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-09.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-10\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-10.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd3lmg-11\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd3lmg/frame-11.png\",0,\"mwkd3lmg\",null,80,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:mira:NW\",\"NW\",true,[[\"studio-ally-mira-nw-walk-mwkd46mk-1\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-01.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-2\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-02.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-3\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-03.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-4\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-04.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-5\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-05.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-6\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-06.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-7\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-07.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-8\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-08.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-9\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-09.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-10\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-10.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-nw-walk-mwkd46mk-11\",\"assets/tactics/imported/ally-mira-walk-nw-mwkd46mk/frame-11.png\",0,\"mwkd46mk\",null,70,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:19:59.461Z"
+  },
+  "[\"allywalk:mira:NE\",\"NE\",true,[[\"studio-ally-mira-ne-walk-mwkd4g62-1\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-01.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-2\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-02.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-3\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-03.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-4\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-04.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-5\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-05.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-6\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-06.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-7\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-07.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-8\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-08.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-9\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-09.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-10\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-10.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd4g62-11\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd4g62/frame-11.png\",0,\"mwkd4g62\",null,80,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:20:11.789Z"
+  },
+  "[\"allywalk:mira:SW\",\"SW\",true,[[\"studio-ally-mira-sw-walk-mwkd5e3g-1\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-01.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-2\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-02.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-3\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-03.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-4\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-04.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-5\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-05.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-6\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-06.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-7\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-07.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-8\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-08.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-9\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-09.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-10\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-10.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-11\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-11.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-sw-walk-mwkd5e3g-12\",\"assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-12.png\",0,\"mwkd5e3g\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:mira:NE\",\"NE\",true,[[\"studio-ally-mira-ne-walk-mwkd6te0-1\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-01.png\",0,\"mwkd6te0\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd6te0-2\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-02.png\",0,\"mwkd6te0\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd6te0-3\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-03.png\",0,\"mwkd6te0\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd6te0-4\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-04.png\",0,\"mwkd6te0\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd6te0-5\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-05.png\",0,\"mwkd6te0\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd6te0-6\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-06.png\",0,\"mwkd6te0\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd6te0-7\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-07.png\",0,\"mwkd6te0\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd6te0-8\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-08.png\",0,\"mwkd6te0\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mira-ne-walk-mwkd6te0-9\",\"assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-09.png\",0,\"mwkd6te0\",null,80,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-mira-se-stand\",\"SE\",true,[[\"npc-mira-se-stand\",\"assets/village-town/npc/mira/se-stand.webp\",0,\"mwkd70c7\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:22:11.241Z"
   }
  },
  "studioClipHistory": {
@@ -132042,6 +133259,18 @@
       "archive": "assets/_versions/unified/mwkc95d0/tactics-nadia-nw-windup.png"
      }
     ]
+   }
+  ],
+  "static:npc-mira-se-stand": [
+   {
+    "at": "2026-11-17T07:22:11.041Z",
+    "entries": []
+   }
+  ],
+  "static:npc-mira-nw-stand": [
+   {
+    "at": "2026-11-17T07:22:16.567Z",
+    "entries": []
    }
   ]
  },
@@ -138132,6 +139361,278 @@
       "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-12",
       "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-12.png",
       "ms": 100
+     }
+    ]
+   }
+  },
+  "mira": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:20:54.940Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-1",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-2",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-3",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-4",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-5",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-6",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-7",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-8",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-9",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-10",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-11",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-sw-walk-mwkd5e3g-12",
+      "src": "assets/tactics/imported/ally-mira-walk-sw-mwkd5e3g/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:21:01.068Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-1",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-2",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-3",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-4",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-5",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-6",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-7",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-8",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-9",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-10",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-11",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mira-se-walk-mwkd5ito-12",
+      "src": "assets/tactics/imported/ally-mira-walk-se-mwkd5ito/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:22:01.416Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-mira-ne-walk-mwkd6te0-1",
+      "src": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-01.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-ne-walk-mwkd6te0-2",
+      "src": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-02.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-ne-walk-mwkd6te0-3",
+      "src": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-03.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-ne-walk-mwkd6te0-4",
+      "src": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-04.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-ne-walk-mwkd6te0-5",
+      "src": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-05.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-ne-walk-mwkd6te0-6",
+      "src": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-06.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-ne-walk-mwkd6te0-7",
+      "src": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-07.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-ne-walk-mwkd6te0-8",
+      "src": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-08.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-ne-walk-mwkd6te0-9",
+      "src": "assets/tactics/imported/ally-mira-walk-ne-mwkd6te0/frame-09.webp",
+      "ms": 80
+     }
+    ]
+   },
+   "NW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:22:05.838Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-mira-nw-walk-mwkd6wsu-1",
+      "src": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-01.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-nw-walk-mwkd6wsu-2",
+      "src": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-02.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-nw-walk-mwkd6wsu-3",
+      "src": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-03.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-nw-walk-mwkd6wsu-4",
+      "src": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-04.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-nw-walk-mwkd6wsu-5",
+      "src": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-05.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-nw-walk-mwkd6wsu-6",
+      "src": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-06.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-nw-walk-mwkd6wsu-7",
+      "src": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-07.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-nw-walk-mwkd6wsu-8",
+      "src": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-08.webp",
+      "ms": 80
+     },
+     {
+      "assetId": "studio-ally-mira-nw-walk-mwkd6wsu-9",
+      "src": "assets/tactics/imported/ally-mira-walk-nw-mwkd6wsu/frame-09.webp",
+      "ms": 80
      }
     ]
    }
