@@ -85,3 +85,8 @@
 /* v98.672 · the row of ribbons is one ribbon-width further right (the first one used to graze the corner ornament); the event ribbon crosses the spine and hangs on the right page, next to the inner edge */
 .cb-v2 .cb-tabs{left:calc(var(--u)*14.3)}
 .cb-v2 .cb-tabs button[data-t="event"]{position:absolute;bottom:0;left:calc(var(--u)*38.9)}   /* 14.3 + 38.9 = 53.2 u from the book's left edge: just right of the spine */
+/* v98.673 · the action buttons (ใช้ / สวมใส่ / ถอด / ขาย…) sit on the card's bottom-left corner instead of under it */
+.cb-v2 .cb-pg .collection-tile>button:not(.card-thumb),.cb-v2 .cb-pg .bag-item-card>button:not(.card-thumb){position:absolute;top:calc(var(--u)*15.9 - var(--u)*2.9);left:calc(50% - var(--u)*5.3 + var(--u)*.45);min-height:0;height:calc(var(--u)*2.3);padding:0 calc(var(--u)*.9);font-size:calc(var(--u)*1.05);line-height:1;white-space:nowrap;z-index:3;box-shadow:0 1px 3px #0008}
+.cb-v2 .cb-pg .collection-tile>button:not(.card-thumb)~button:not(.card-thumb),.cb-v2 .cb-pg .bag-item-card>button:not(.card-thumb)~button:not(.card-thumb){top:calc(var(--u)*15.9 - var(--u)*5.4)}
+.cb-v2 .cb-pg .gear-card-item>button:not(.card-thumb){top:calc(var(--u)*15.9 - var(--u)*2.9 + var(--u)*1.05)}
+.cb-v2 .cb-pg .collection-tile>button:not(.card-thumb),.cb-v2 .cb-pg .bag-item-card>button:not(.card-thumb){width:auto!important;min-width:0!important;min-height:0!important;height:calc(var(--u)*2.3)!important;padding:0 calc(var(--u)*.8)!important;font-size:calc(var(--u)*1.0)!important;border-radius:calc(var(--u)*.5)!important;margin:0!important}
