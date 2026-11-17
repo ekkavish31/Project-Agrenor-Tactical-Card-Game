@@ -55,7 +55,7 @@
    raw.push({id:'allywalk:'+key+':'+view,canonical:'allywalk:'+key+':'+view,action:'walk',view,loop:cfg.loop!==false,kind:'files',frames:fr});   /* the catalog then skips the one-frame placeholder of that direction */
   }
   /* v98.376 · a villager's walk = the frames npc-<id>-<dir>-walk1…N of that direction (one looping clip) */
-  try{const by=new Map();for(const a of manifest.assets||[]){const o=a.studioOwner;if(!o||o.group!=='npcs'||a.pose!=='walk'||!a.file||['missing','planned','unused'].includes(a.status))continue;const key=o.id+'|'+a.view;(by.get(key)||by.set(key,[]).get(key)).push(a)}
+  try{const by=new Map();for(const a of manifest.assets||[]){const o=a.studioOwner;if(!o||o.group!=='npcs'||a.pose!=='walk'||a.studioAllyWalk||!a.file||['missing','planned','unused'].includes(a.status))continue;const key=o.id+'|'+a.view;(by.get(key)||by.set(key,[]).get(key)).push(a)}
    for(const [key,list] of by){if(list.length<2)continue;list.sort((x,y)=>(x.frame||1)-(y.frame||1));const [oid,view]=key.split('|');raw.push({id:'npcwalk:'+oid+':'+view,canonical:'npcwalk:'+oid+':'+view,action:'walk',view,loop:true,kind:'files',frames:list.map(a=>({assetId:a.id,file:a.file,cell:0,crop:null,ms:a.ms||110,flip:false,pivot:a.pivot||[.5,.9375],renderHeight:a.renderHeight||1,revision:a.artRevision||'',size:a.size||[384,384]}))})}}catch(e){}
   const heroIds=new Set(active.filter(a=>C.owner(a,meta).id==='hero').map(a=>a.id));return raw.filter(c=>(!/(?:walk|run)/i.test(c.action)||!c.frames.some(f=>heroIds.has(f.assetId))||c.id.startsWith('runtime:hero:walk:'))&&(!runtime.tactics?._studioCreatedDirections?.has(c.view)||c.action==='walk'));
  }
