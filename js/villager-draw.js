@@ -20,30 +20,61 @@
     g.restore();
   }
   function fx(g, act, x, y, s, t, ph) {
-    if (act === 'sleep') { g.save(); g.fillStyle = '#f2f2ff'; g.font = `700 ${12 * s}px system-ui`; const k = (t * .001 + ph) % 1; g.globalAlpha = 1 - k; g.fillText('z', x + 12 * s, y - 80 * s - k * 16); g.restore() }
-    if (act === 'play') { g.save(); g.fillStyle = '#ffe9a0'; g.font = `700 ${13 * s}px system-ui`; for (let i = 0; i < 2; i++) { const k = (t * .0007 + ph + i * .5) % 1; g.globalAlpha = 1 - k; g.fillText('♪', x + (10 + i * 6) * s + Math.sin(k * 6) * 6, y - 70 * s - k * 30) } g.restore() }
+    if (act === 'sleep') { g.save(); g.fillStyle = '#f2f2ff'; g.font = `700 ${12 * s}px AgThai,system-ui`; const k = (t * .001 + ph) % 1; g.globalAlpha = 1 - k; g.fillText('z', x + 12 * s, y - 80 * s - k * 16); g.restore() }
+    if (act === 'play') { g.save(); g.fillStyle = '#ffe9a0'; g.font = `700 ${13 * s}px AgThai,system-ui`; for (let i = 0; i < 2; i++) { const k = (t * .0007 + ph + i * .5) % 1; g.globalAlpha = 1 - k; g.fillText('♪', x + (10 + i * 6) * s + Math.sin(k * 6) * 6, y - 70 * s - k * 30) } g.restore() }
   }
   /* v97.37 · picture-based people. look.sprite = 'bram' → assets/village-town/npc/bram/<se|sw|ne|nw>-<stand|walk1..walk4>.webp
-     (384×384, feet at y=372). v97.59: a direction without its own pictures uses the opposite one mirrored (SE←SW, NW←NE and back), so two directions are enough ·
+     (384×384, feet at y=360). v97.59: a direction without its own pictures uses the opposite one mirrored (SE←SW, NW←NE and back), so two directions are enough ·
      walk frames: 12 = a full 12-picture cycle (per-direction counts in wn; a direction with fewer pictures than its mirror uses the mirror's, flipped) · 4 = left contact, passing, right contact, passing · 2 = contact A, stand, contact B, stand · 1 = contact, stand, contact, stand · 0 = the standing picture with a bob.
      Falls back to the code-drawn figure until a standing picture has loaded. */
-  const SPR_INFO = { bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 2, wn: { sw: 12, ne: 12 } }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1, wn: { sw: 13, ne: 13 } }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } } }, dn = (info, d) => (info.wn && info.wn[d] != null ? info.wn[d] : info.walk), SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
+  /* v98.126 · new cast pictures (standing SW/NE + one walking picture SW/NE each, SE/NW = mirrored files): bram / luna / the recruits use walk 1 (contact, stand, contact, stand) */
+  const SPR_INFO = { mil: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 0 }, graven: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, tess: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, ash: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, pell: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, hugo: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, pim: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1, ageScaleBaked: true }, pip: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1, ageScaleBaked: true },
+    finn: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, berg: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, ken: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, shep: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 }, vera: { dirs: ['sw', 'se', 'ne', 'nw'], walk: 1 },
+    oren: { dirs: ['sw', 'ne'], walk: 1 }, joe: { dirs: ['sw', 'ne'], walk: 1 }, ella: { dirs: ['sw', 'ne'], walk: 1 }, mother: { dirs: ['sw', 'ne'], walk: 1 }, hilda: { dirs: ['sw', 'ne'], walk: 1 }, marta: { dirs: ['sw', 'ne'], walk: 1 }, gus: { dirs: ['sw', 'ne'], walk: 1 }, mira: { dirs: ['sw', 'ne'], walk: 1 }, saf: { dirs: ['sw', 'ne'], walk: 1 }, bryn: { dirs: ['sw', 'ne'], walk: 1 },   /* v98.300 · painted people: front/back pictures (npc sheets, tools/build-npc-sprites.py) */
+    may: { dirs: ['sw', 'ne'], walk: 1 }, tom: { dirs: ['sw', 'ne'], walk: 1 }, lin: { dirs: ['sw', 'ne'], walk: 1 }, guard: { dirs: ['sw', 'ne'], walk: 1 }, bram: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1, wn: { sw: 12 } }, luna: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, kier: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 0, wn: { sw: 12, ne: 12 } },
+    /* v98.86 · recruits (front view = SW; NE is the front picture mirrored for now, replace ne-stand.webp when the back view exists). No walk frames yet: the standing picture bobs. */
+    ren: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, nadia: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, sigrid: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, orla: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 }, olwen: { dirs: ['se', 'sw', 'ne', 'nw'], walk: 1 } }, dn = (info, d) => (info.wn && info.wn[d] != null ? info.wn[d] : info.walk), SPR = {}, MIR = { se: 'sw', sw: 'se', ne: 'nw', nw: 'ne' };
+  /* v98.131 · ONE source with the editor: the walk sets saved in Asset Studio (ASSET_MANIFEST.studioAllyWalks[name][DIR], frames + ms) and the standing pictures of the
+     studio slots (tactics-<name>-<dir>-idle) are what the village / battle draw. The files under assets/village-town/npc/<name>/ are only the fallback for what the studio has not got. */
   function sprites(name) {
-    let S = SPR[name]; if (S) return S; S = SPR[name] = {}; const info = SPR_INFO[name]; if (!info || typeof Image === 'undefined') return S;
-    for (const d of info.dirs) for (const k of ['stand', ...Array.from({ length: dn(info, d) }, (_, n) => 'walk' + (n + 1))]) { const im = new Image(); im.src = 'assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp'; S[d + '-' + k] = im }
-    return S;
+    let S = SPR[name]; if (S) return S; S = SPR[name] = {}; const base = SPR_INFO[name]; if (!base || typeof Image === 'undefined') return S;
+    const M = root.ASSET_MANIFEST || {}, W = (M.studioAllyWalks || {})[name] || {}, A = new Map((M.assets || []).map(a => [a.id, a])), info = { ...base, wn: { ...(base.wn || {}) } }, ms = {};
+    const load = src => { const im = new Image(); im.src = src; return im };
+    for (const d of ['sw', 'se', 'ne', 'nw']) {
+      const a = A.get('tactics-' + name + '-' + d + '-idle') || A.get('npc-' + name + '-' + d + '-stand'), w = W[d.toUpperCase()];
+      if (a && a.status === 'final' && a.file) S[d + '-stand'] = load(a.file + (a.artRevision ? '?r=' + a.artRevision : ''));
+      if (w && w.frames && w.frames.length) { w.frames.forEach((f, i) => { S[d + '-walk' + (i + 1)] = load(A.get(f.assetId)?.file || f.src) }); info.wn[d] = w.frames.length; ms[d] = w.frames[0].ms || 100 }
+      else {
+        const step = A.get('npc-' + name + '-' + d + '-walk1');
+        if (step?.status === 'final' && step.file) { S[d + '-walk1'] = load(step.file + (step.artRevision ? '?r=' + step.artRevision : '')); info.wn[d] = 1 }
+      }
+    }
+    for (const d of base.dirs) for (const k of ['stand', ...Array.from({ length: dn(base, d) }, (_, n) => 'walk' + (n + 1))]) if (!S[d + '-' + k] && !(k !== 'stand' && info.wn[d] != null && ms[d])) S[d + '-' + k] = load('assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp');
+    S.info = info; S.ms = ms; return S;
   }
   const ready = im => im && im.complete && im.naturalWidth > 0;
+  /* v98.261 · feet on the ground + size as the ⚖ Scale Lineup shows it. (1) the picture's own lowest opaque row is put on the ground (Luna's pictures end at y=360, not 372, so she floated);
+     (2) allies are drawn at 1.45/1.6 of the hero's canvas (93.6 px), the same rule the lineup uses for metres — before, they were 1.04× the hero's canvas, so Luna stood taller than the hero. */
+  const LINEUP_ALLY = new Set(['graven', 'tess', 'ash', 'pell', 'hugo', 'pim', 'pip', 'finn', 'berg', 'ken', 'shep', 'vera', 'bram', 'luna', 'kier', 'mil', 'ren', 'nadia', 'sigrid', 'orla', 'olwen', 'may', 'tom', 'lin', 'guard', 'oren', 'joe', 'ella', 'mother', 'hilda', 'marta', 'gus', 'mira', 'saf', 'bryn']);   /* every picture-based person is sized by the lineup rule */
+  const allyK = () => CharSize.VILLAGE_HERO_PX * CharSize.DRAW.ally / CharSize.DRAW.hero / CharSize.NPC_CANVAS_K;   /* v98.264 · numbers live in js/char-size.js */
   function pic(S, d, k) { const own = S[d + '-' + k]; if (ready(own)) return { im: own, flip: false }; const m = S[MIR[d] + '-' + k]; return ready(m) ? { im: m, flip: true } : null }
+  /* v98.152 · ONE shadow for every walker (village, battle-in-village, interiors): a soft wide oval + a darker contact core right under the feet, both sized by the character's scale */
+  function contactShadow(g, x, y, s) { g.save(); g.fillStyle = 'rgba(20,16,10,.17)'; g.beginPath(); g.ellipse(x, y, 19 * s, 7.6 * s, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(20,16,10,.34)'; g.beginPath(); g.ellipse(x, y, 11 * s, 4.2 * s, 0, 0, 7); g.fill(); g.restore() }
   function spriteDraw(g, L, x, y, t, o) {
-    const S = sprites(L.sprite), info = SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
+    const S = sprites(L.sprite), info = S.info || SPR_INFO[L.sprite], d = (o.face || 'SE').toLowerCase(), ph = o.phase || 0, act = o.act || '', walking = !!o.walking;
     let P = pic(S, d, 'stand'), full = false; if (!P) return false;
-    const s = (o.scale || 1) * (L.small ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330;
+    // Pim/Pip are smaller in the image itself, matching the lineup. L.small
+    // remains for the code fallback, but must not shrink these pictures again.
+    const s = (o.scale || 1) * (L.small && !info.ageScaleBaked ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330 * (LINEUP_ALLY.has(L.sprite) ? allyK() : 1);
     let wn = dn(info, d), wsrc = d, wflip = false; if (dn(info, MIR[d]) > wn) { wn = dn(info, MIR[d]); wsrc = MIR[d]; wflip = true }
-    if (walking && act === '' && wn) { const p = t * .012 + ph, N = wn >= 4 ? wn : 4, f = ((Math.round(p / (Math.PI * 2 / N)) % N) + N) % N, key = wn >= 4 ? 'walk' + (f + 1) : wn === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, wsrc, key); if (W) { P = wflip ? { im: W.im, flip: !W.flip } : W; full = wn >= 8 } }
-    const bob = walking ? Math.abs(Math.sin(t * .012 + ph)) * (full ? .6 : 4) * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
-    g.save(); g.fillStyle = 'rgba(20,20,20,.32)'; g.beginPath(); g.ellipse(x, y, 15 * s, 6 * s, 0, 0, 7); g.fill(); g.restore();
-    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (P.flip) g.scale(-1, 1); g.drawImage(P.im, -192 * k, -372 * k, 384 * k, 384 * k); g.restore();
+    let procKey = null; if (walking && act === '' && wn) { const p = t * .012 + ph, N = wn >= 4 ? wn : 4, f = S.ms && S.ms[wsrc] && wn >= 4 ? Math.floor((t + ph * 1000) / S.ms[wsrc]) % wn : ((Math.round(p / (Math.PI * 2 / N)) % N) + N) % N; procKey = 'allywalk:' + L.sprite + ':' + wsrc.toUpperCase(); const _u = 0, key = wn >= 4 ? 'walk' + (f + 1) : wn === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, wsrc, key); if (W) { P = wflip ? { im: W.im, flip: !W.flip } : W; full = wn >= 8 } }
+    const proc = procKey && root.ProcMotion && root.ProcMotion.raw && root.ProcMotion.raw(procKey);   /* the studio's ขยับในเกม setting of that walk set (e.g. bob 0.3 / 0.6) replaces the built-in bob */
+    const bob = proc ? 0 : walking ? Math.abs(Math.sin(t * .012 + ph)) * (full ? .6 : 4) * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
+    contactShadow(g, x, y, s * (info.ageScaleBaked ? .72 : 1));
+    g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (proc) { try { root.ProcMotion.apply(g, procKey, { frames: wn, pose: 'walk' }, t, 384 * k * .9, L.sprite) } catch (e) { } } if (P.flip) g.scale(-1, 1);
+    /* v98.605 · the villager picture goes through the SAME sharpening / quality pipeline as the hero and the followers (TownArt.draw) — drawn raw it looked soft and aliased next to them */
+    if (root.TownArt?.draw) root.TownArt.draw(g, P.im, null, [-192 * k, -CharSize.FEET_Y * k, 384 * k, 384 * k], false); else g.drawImage(P.im, -192 * k, -CharSize.FEET_Y * k, 384 * k, 384 * k);
+    g.restore();
     fx(g, act, x, y, s, t, ph);
     return true;
   }
@@ -52,7 +83,7 @@
     const face = o.face || 'SE', back = face === 'NE' || face === 'NW', flip = face === 'SW' || face === 'NW', ph = o.phase || 0, walking = !!o.walking;
     const s = (o.scale || 1) * (L.small ? .72 : L.tall ? 1.1 : 1), act = o.act || '';
     const bob = walking ? Math.abs(Math.sin(t * .012 + ph)) * 4 * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
-    g.save(); g.fillStyle = 'rgba(20,20,20,.32)'; g.beginPath(); g.ellipse(x, y, 15 * s, 6 * s, 0, 0, 7); g.fill(); g.restore();
+    contactShadow(g, x, y, s);
     g.save(); g.translate(x, y - bob); if (flip) g.scale(-1, 1);
     const skin = L.skin || '#ecc6a0';
     if (act === 'sit') g.translate(0, 8 * s);
@@ -92,5 +123,5 @@
     g.restore();
     fx(g, act, x, y, s, t, ph);
   }
-  root.VillagerDraw = draw;
+  root.VillagerDraw = draw; draw.sprites = sprites; draw.shadow = contactShadow;   /* v98.131 · for tests / tools: the pictures a sprite set really uses */
 })(globalThis);

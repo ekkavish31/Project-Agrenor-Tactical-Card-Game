@@ -12,16 +12,20 @@
    them back) · procedural battle sounds (BattlePolish) · smaller arena (r 5), fighters start closer, monster HP ×1.6 (?hp=). */
 (function () {
   'use strict';
-  const Q = new URLSearchParams(location.search), ON = Q.get('battle') === '1';
+  const Q = new URLSearchParams(location.search), ON = Q.get('battle') === '1', EDIT = Q.get('edit') === '1';   /* v98.311 · EDIT = the BG editor owns the pointer + keys: the game's own walk / attack / hover cursor are OFF */
   if (!ON) {
     window.TownBattle = { active: () => false };
     /* v92.12: the way out of the village — a button to the world map (not in the editor) */
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '97.93';
-  const SLOW = ['mud', 'snow', 'sand'], COVER = ['moss', 'clover'], WATER = ['water', 'pond'];
+  const V = '98.622';
+  const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
+  /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
+  const MAPK = window.MapScale ? MapScale.get('battle', Q.get('biome') || 'grass') : 1;
+  let FP = 1, OFF = .5;   /* v98.368 · footprint of one unit in lattice cells (2 in village fights, 1 on battle-field.html) and where its centre sits from its anchor cell */
+  const setFP = () => { FP = (Q.has('fp') ? +Q.get('fp') : window.FieldOcc ? 1 : 2) > 1 ? 2 : 1; OFF = FP / 2 };
   const CW = 56, SIZE = +Q.get('size') || 1.5, UNIT = CW * SIZE;           // old camera.w ≙ one lattice cell, scaled once for the village
   const MON = {
     bandit: { name: 'โจรป่า', hp: 34, iq: 2, move: 3, atk: 8, scale: 1, fx: 'sword', img: 'bandit', shove: true , el: 'earth' },
@@ -38,12 +42,27 @@
     frostQueen: { name: 'ราชินีน้ำแข็ง', hp: 120, iq: 3, move: 3, atk: 16, scale: 1.25, fx: 'ice', img: 'frost-queen', range: 3, el: 'ice' },
     shadowWolf: { name: 'หมาป่าเงา', hp: 44, iq: 2, move: 5, atk: 11, scale: 1.05, fx: 'knife', img: 'shadow-wolf' , el: 'dark' },
     /* v95.00: the training-ground scarecrow (does not move or hit back) */
+    /* v98.331 · prologue tutorials (docs/TODO.md §14): drawn by code (js/code-monsters.js) until real pictures exist — add assets/enemies/<img>.webp and drop `code: true` to replace.
+       goat = Pip's goat (light counter-attacks) · pumpkin = the harvest pumpkin (stands still; 2–3 hits; pops into a pumpkin to collect) · pumpkinBoss = the one that evolves (event, never random) · pest = crop pest (one hit) */
+    goat: { name: 'แพะของปิ๊บ', hp: 24, iq: 1, move: 4, atk: 3, scale: .8, fx: 'blunt', img: 'goat', el: 'earth' },   /* v98.361 · painted (assets/enemies/animations/goat) */
+    pumpkin: { name: 'ฟักทองในไร่', hp: 30, iq: 0, move: 0, atk: 0, scale: .75, fx: 'blunt', img: 'pumpkin', passive: true, loot: true, evoGroup: 'pumpkin', el: 'earth' },
+    pumpkinBoss: { name: 'บอสฟักทอง', hp: 70, iq: 1, move: 2, atk: 6, scale: 1.05, fx: 'blunt', img: 'pumpkinBoss', range: 3, el: 'earth' },
+    pest: { name: 'ด้วงกินใบ', hp: 9, iq: 0, move: 3, atk: 2, scale: .5, fx: 'knife', img: 'pest', el: 'wind' },
+    /* v98.488 · mine of Deepcairn (docs/lore/MAIN-STORY-CANON.md · §H): murk = สัตว์รอยหมอง (infected beast) · hunger = ก้อนหิว (boss) — drawn by code (js/code-monsters.js) until real pictures exist */
+    murk: { name: 'สัตว์รอยหมอง', hp: 38, iq: 1, move: 4, atk: 9, scale: .95, fx: 'knife', img: 'murk', el: 'dark' },
+    alarmHorn: { name: 'แตรสัญญาณ', hp: 30, iq: 0, move: 0, atk: 0, scale: .85, fx: 'blunt', img: 'alarmHorn', passive: true, el: 'earth' },
+    byrexael: { name: 'มังกรดำจ้าววิญญาณ', hp: 170, iq: 2, move: 1, atk: 13, scale: 2.3, fx: 'fire', img: 'byrexael', range: 3, shove: true, el: 'fire' },
+    soulCore: { name: 'แก่นตะกอนวิญญาณ', hp: 46, iq: 0, move: 0, atk: 0, scale: .95, fx: 'blunt', img: 'soulCore', passive: true, el: 'dark' },
+    hungerRoot: { name: 'ปมหิว', hp: 42, iq: 0, move: 0, atk: 0, scale: .9, fx: 'blunt', img: 'hungerRoot', passive: true, el: 'dark' },
+    hunger: { name: 'ก้อนหิว', hp: 150, iq: 2, move: 2, atk: 14, scale: 1.7, fx: 'blunt', img: 'hunger', range: 3, shove: true, el: 'dark' },
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
+  /* v98.58 · evolution (วิวัฒน์): the next form of a monster, fought mid-battle (rules + hidden odds: js/flat-battle.js evolveCheck). Data only — add a pair to give another monster a next form. */
+  const EVOLVE = { pumpkin: ['pumpkinBoss', 3], wolf: ['shadowWolf', 1], frostWolf: ['yeti', 2], snowKobold: ['yeti', 2], kobold: ['golem', 2] };   /* [next form, tier: 1 → elite · 2 → mini-boss · 3 → boss] — the tier decides the chaos item it leaves (js/chaos.js) */
   const MK = MON[Q.get('m')] ? Q.get('m') : 'bandit', MT = MON[MK];
   const NIGHT = Q.get('night') === '1', ATKX = +Q.get('atk') || 1, HST = Q.get('hst') != null ? Math.max(0, Math.min(100, +Q.get('hst'))) : 100;
   const EMBED = Q.get('embed') === '1', TITLE = Q.get('title') || '', HHP = +Q.get('hhp') || 0, HMAX = +Q.get('hmax') || 60, HPRO = (() => { try { return JSON.parse(Q.get('hero') || 'null') || {} } catch (e) { return {} } })();   /* v95.00: js/progression.js battleHero() — power, spell, crit, armor, stMax, st */
-  const CINE = Q.get('cine') !== '0', OLDPOSE = Q.get('oldposes') === '1', HPX = +Q.get('hp') || 1.6;
+  const CINE = Q.get('cine') !== '0' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches, OLDPOSE = Q.get('oldposes') === '1', HPX = +Q.get('hp') || 1.6;
   /* v92.15 melee: companions (old roster, old pictures assets/tactics/<key>_<se|ne>_<pose>.webp) and monster groups
      ?party=bram:54:54,luna:44:44 (key:hp:max) · ?ms=wolf*1.5,wolf*1.5,bandit*1.4 (kind*hp multiplier) */
   const ALLY = {
@@ -56,9 +75,15 @@
   for (const [k, v] of Object.entries(window.VillageLife?.ALLY_STATS || {})) if (!ALLY[k]) ALLY[k] = v;
   const ALLY_ART = ['bram', 'luna', 'kier', 'mil'];   /* v97.78: kier has his new battle sheets (SW + NE own, SE/NW mirrored) */
   const ALLY_OWN = { bram: ['se', 'sw', 'ne', 'nw'], luna: ['se', 'sw', 'ne', 'nw'], kier: ['se', 'sw', 'ne', 'nw'] };   /* v97.65: allies that have their own picture for every diagonal (the rest are mirrored in code) */
-  const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv, ctl] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1), control: ctl === '1' || Q.get('ctl') === '1' } : null }).filter(Boolean);
+  const PARTY = (Q.get('party') ?? (EMBED ? '' : 'bram,luna')).split(',').filter(Boolean).map(x => { const [key, hp, max, order, lv, ctl] = x.split(':'); return ALLY[key] ? { key, hp: +hp || ALLY[key].hp, max: +max || ALLY[key].hp, order: order || 'charge', level: Math.max(1, +lv || 1), control: key !== 'sib' && (ctl === '1' || Q.get('ctl') === '1') } : null }).filter(Boolean);
+  /* v98.492 · ?scene=<id>: a FIXED set-piece fight (js/set-pieces.js) — hand-drawn field, fixed starts, scene rules */
+  const SCENE = window.SetPieces && Q.get('scene') ? window.SetPieces.get(Q.get('scene')) : null;
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
-  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null;
+  /* v98.281 · status icons = the user's picture set (assets/ui/status/<name>.webp, tools/build-status-icons.py); statuses with no picture yet (sleep 💤, silence 🔇) keep their emoji */
+  const STI = { burn: 'burn', poison: 'poison', freeze: 'freeze', stun: 'freeze', shock: 'slow', slowed: 'slow', weak: 'disarm' };
+  const stiSrc = k => STI[k] ? 'assets/ui/status/' + STI[k] + '.webp' : null;
+  const stiHtml = (k, title) => { const s = stiSrc(k); return s ? `<img class="sti" src="${s}" alt="" draggable="false"${title ? ` title="${title}"` : ''}>` : `<span${title ? ` title="${title}"` : ''}>${(FB.STATUS[k] || {}).icon || ''}</span>` };
+  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null, hoverU = null, pickU = null;   /* v98.358 · hoverU: the unit under the pointer (white edge + info window) · pickU: the unit last clicked (grey crystal over its head) */
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -70,19 +95,32 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css');
-    const want = { 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk' };
+    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk', 'js/portrait-scale.js': 'PortraitScale', 'js/portrait-facing.js': 'PortraitFacing' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
-    window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'hit', 'down']);
+    window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
   }
   /* embedded (world map): a black veil until the arena is ready, then tell the parent */
   let veil0 = null;
-  if (EMBED) { veil0 = document.createElement('div'); veil0.style.cssText = 'position:fixed;inset:0;z-index:100;background:#07080c;display:flex;align-items:center;justify-content:center;color:#ffe2a8;font:italic 800 22px system-ui,sans-serif;letter-spacing:3px;transition:opacity .4s'; veil0.textContent = 'PREPARING BATTLE…'; addEventListener('DOMContentLoaded', () => document.body.append(veil0)) }
+  if (EMBED) { veil0 = document.createElement('div'); veil0.style.cssText = 'position:fixed;inset:0;z-index:100;background:#07080c;display:flex;align-items:center;justify-content:center;color:#ffe2a8;font:italic 800 22px AgThai,system-ui,sans-serif;letter-spacing:3px;transition:opacity .4s'; veil0.textContent = 'PREPARING BATTLE…'; addEventListener('DOMContentLoaded', () => document.body.append(veil0)) }
+  /* v98.576 · WARM-UP: the arena is not announced as ready (the cover stays) until every animation clip of the monsters in this fight and every prop picture of the field has been
+     downloaded and decoded (at most ~3.5 s) — the first strike / first walk / first hit of each creature used to be a stall in the middle of the fight */
+  async function warmThen(fn) {
+    try {
+      const kinds = [...new Set((st?.units || []).filter(u => u.side === 'monster').map(u => u.kind))], jobs = kinds.map(k => window.MonsterArt?.prepare?.(k)).filter(Boolean);
+      const props = (async () => { for (let i = 0; i < 35; i++) { try { if (Object.values(PIMG).every(x => x.ok || x.complete)) break } catch (e) { break } await wait(100) } })();
+      await Promise.race([Promise.all([...jobs, props]), wait(3500)]);
+    } catch (e) { }
+    fn();
+  }
   function arenaReady() { if (veil0) { veil0.style.opacity = '0'; setTimeout(() => veil0?.remove(), 450) } if (EMBED) try { parent.postMessage({ type: 'agrenor-battle-ready', warm: Q.get('warm') === '1' }, '*') } catch (e) { } }
   boot();
+  /* v98.252 · while a fight is on screen the story tracker of the main page is hidden (body.fb-open) */
+  try { if (window.top !== window) { const tb = window.top.document.body; tb.classList.add('fb-open'); addEventListener('pagehide', () => tb.classList.remove('fb-open')) } } catch (e) { }
 
   /* ---------- arena ---------- */
   function build() {
+    setFP();
     const sq = locations.find(o => o.id === 'square') || locations[0], c = center(sq);
     const r = window.FieldR || +Q.get('r') || (GROUP.length + PARTY.length > 2 ? 7 : 5), cu = Math.floor(+Q.get('u') || c.u), cv = Math.floor(+Q.get('v') || c.v);
     const b = { u0: cu - r, v0: cv - r, u1: cu + r, v1: cv + r }, list = [];
@@ -97,22 +135,40 @@
       else if (COVER.includes(m)) k = 'cover';
       cells.set(c.u + ',' + c.v, k);
     });
-    const spot = (cu0, cv0) => { let best = null, bd = 1e9; for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.hypot(u - cu0, v - cv0); if (d < bd) { bd = d; best = { u, v } } } return best };
-    const gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = spot(cu - gap, cv + gap), ms = spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
+    const okA = (u, v) => { for (let i = 0; i < FP; i++) for (let j = 0; j < FP; j++) if ((cells.get((u + i) + ',' + (v + j)) || 'blocked') === 'blocked') return false; return true };   /* the whole footprint must stand on open ground */
+    const spot = (cu0, cv0) => { let best = null, bd = 1e9; for (const [key, k] of cells) { const [u0, v0] = key.split(',').map(Number); if (k === 'blocked' || !okA(u0, v0)) continue; const [u, v] = key.split(',').map(Number), d = Math.hypot(u - cu0, v - cv0); if (d < bd) { bd = d; best = { u, v } } } return best };
+    const SP = p => ({ u: cu + p.u, v: cv + p.v }), gap = window.FieldGap || (r >= 7 ? 4 : Math.min(r - 1, 3)), hs = SCENE ? SP(SCENE.hero) : spot(cu - gap, cv + gap), ms = SCENE ? SP(SCENE.enemies[0]) : spot(cu + gap, cv - gap);   // diagonal opposites: contact by turn 1–2
     /* the rest of each side gathers on the free cells nearest its leader */
     const taken = new Set([hs.u + ',' + hs.v, ms.u + ',' + ms.v]);
     /* v97.01: units gather around their leader but never packed shoulder to shoulder: each keeps at least one free cell from every other unit
        (spacing 2 by king-move distance); only when the area is too tight does it fall back to 1, then 0 */
-    const near = (o) => {
+    const near = (o, sp0 = 2) => {   /* v98.249 · sp0 = the spacing we try first (king-move cells); big monsters ask for more so their pictures do not pile onto each other */
       const pts = [...taken].map(k => k.split(',').map(Number)); let best = null;
-      for (let sp = 2; sp >= 0 && !best; sp--) { let bd = 1e9;
-        for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number); if (pts.some(([a, b]) => Math.max(Math.abs(u - a), Math.abs(v - b)) < sp)) continue;
+      for (let sp = Math.max(sp0, FP); sp >= (FP > 1 ? FP : 0) && !best; sp--) { let bd = 1e9;
+        for (const [key, k] of cells) { if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number); if (!okA(u, v)) continue; if (pts.some(([a, b]) => Math.max(Math.abs(u - a), Math.abs(v - b)) < sp)) continue;
           const d = Math.hypot(u - o.u, v - o.v) + Math.random() * .6; if (d < bd) { bd = d; best = { u, v } } } }
       if (best) taken.add(best.u + ',' + best.v); return best };
-    const allies = PARTY.map(p => ({ ...near(hs), key: p.key, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
-    const mons = GROUP.map((g, i) => { const T = MON[g.kind], at = i ? near(ms) : ms; if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); return { ...at, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive } }).filter(Boolean);
+    const sibWeapon = () => { try { return Q.get('sibw') || window.top.s.village.sibGear?.kind || 'log' } catch (e) { return Q.get('sibw') || 'log' } };   /* v98.472 · until the forged sword: a firewood log (ท่อนไม้ฟืน) */   /* v98.332 · the forged sword of the follower */
+    const allies = PARTY.map((p, pi) => ({ ...(SCENE && SCENE.allies[pi] ? SP(SCENE.allies[pi]) : near(hs)), key: p.key, weapon: p.key === 'sib' ? sibWeapon() : undefined, kind: 'ally', name: ALLY[p.key].name, hp: Math.max(0, Math.min(p.max, p.hp)), maxHp: p.max, atk: ALLY[p.key].atk + (p.level - 1), level: p.level, def: ALLY[p.key].def || 0, armor: ALLY[p.key].def || 0, move: ALLY[p.key].move, range: ALLY[p.key].range, fx: ALLY[p.key].fx, healer: !!ALLY[p.key].healer, order: p.order, control: !!p.control, el: { blunt: 'earth', arcane: 'fusion', sword: 'fire', knife: 'wind', arrow: 'wind', fire: 'fire', holy: 'light' }[ALLY[p.key].fx] || 'earth' })).filter(a => a.hp > 0 && a.u != null);
+    /* v98.492 · set-piece enemies: exact cells, stats from the scene (× the level scale in ?hp), the boss flagged for its specials */
+    const sceneMons = () => SCENE.enemies.map(e => { const T = MON[e.kind]; if (!T) return null; return { ...SP(e), evo: null, variant: null, kind: e.kind, name: e.name || T.name, hp: Math.round(T.hp * (e.hp || 1) * HPX), maxHp: Math.round(T.hp * (e.hp || 1) * HPX), atk: Math.round(T.atk * ATKX * (e.boss ? 1.15 : 1)), move: T.move, boss: !!e.boss, iq: Math.min(3, (T.iq || 0) + (e.boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evoGroup: null, ct: e.ct, sceneId: e.id, ...(e.mystery ? { mystery: true, immortal: true } : {}) } }).filter(Boolean);
+    /* v98.611 · the monsters start SCATTERED over the map — not all in one clump next to the leader every time. Each one takes a random free cell that is
+       (1) at least `minK` cells (king-move) from every party member, so nobody starts in melee range, (2) spaced from the monsters already placed (bigger monsters want more room),
+       and (3) preferring the cells with the most room around them. The party itself still starts together. A boss fight keeps the boss at the far corner. Falls back to the old clump if the map is too tight. */
+    const minK = Math.max(3, Math.min(5, r - 2)) + (gap >= 4 ? 0 : 0), partyPts = () => [hs, ...allies].filter(Boolean);
+    const scatter = (sp0 = 2) => {
+      const P = partyPts(), placed = [...taken].map(k => k.split(',').map(Number)).filter(([a, b]) => !P.some(q => q.u === a && q.v === b)); let pool = [];
+      for (let sp = Math.max(sp0, FP); sp >= 1 && !pool.length; sp--) for (const [key, k] of cells) {
+        if (k === 'blocked' || taken.has(key)) continue; const [u, v] = key.split(',').map(Number); if (!okA(u, v)) continue;
+        if (P.some(q => Math.max(Math.abs(u - q.u), Math.abs(v - q.v)) < minK)) continue;
+        if (placed.some(([a, b]) => Math.max(Math.abs(u - a), Math.abs(v - b)) < sp)) continue;
+        const room = placed.length ? Math.min(...placed.map(([a, b]) => Math.max(Math.abs(u - a), Math.abs(v - b)))) : 6;
+        pool.push({ u, v, w: .4 + Math.min(room, 6) + Math.random() * 3 }) }
+      if (!pool.length) return null; pool.sort((a, b) => b.w - a.w); const top = pool.slice(0, Math.max(3, Math.ceil(pool.length * .35))), at = top[Math.floor(Math.random() * top.length)];
+      taken.add(at.u + ',' + at.v); return { u: at.u, v: at.v } };
+    const mons = SCENE ? sceneMons() : GROUP.map((g, i) => { const T = MON[g.kind], sz0 = (T.scale || 1) >= 1.3 ? 4 : (T.scale || 1) >= 1.0 ? 3 : 2, at = (i === 0 && TITLE.startsWith('บอส')) ? ms : (scatter(sz0) || (i ? near(ms, sz0) : ms)); if (!at) return null; const boss = i === 0 && TITLE.startsWith('บอส'); const EV = EVOLVE[g.kind], N = !boss && EV && MON[EV[0]], evo = N ? { kind: EV[0], tier: EV[1], line: N.el, name: N.name, hp: Math.round(N.hp * g.mult), atk: Math.round(N.atk * ATKX), move: N.move, iq: N.iq || 0, shove: !!N.shove, el: N.el, fly: !!N.fly, passive: !!N.passive, range: N.range || 1 } : null; return { ...at, evo, variant: boss ? null : NIGHT && ATKX > 1 ? 'fierce' : i === 0 && TITLE.startsWith('ยอดฝีมือ') ? 'elite' : null, kind: g.kind, name: (i === 0 && TITLE ? TITLE + ' ' : '') + T.name + (NIGHT && ATKX > 1 ? ' (ดุร้าย)' : ''), hp: Math.round(T.hp * g.mult), maxHp: Math.round(T.hp * g.mult), atk: Math.round(T.atk * ATKX * (boss ? 1.15 : 1)), move: T.move, boss, iq: Math.min(3, (T.iq || 0) + (boss ? 1 : 0)), shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evoGroup: T.evoGroup || null } }).filter(Boolean);
     /* v97.22: battle objective from the world map (?obj=survive:5 | escape | defend:4 | leader) */
-    const objective = (() => { const [type, n] = (Q.get('obj') || '').split(':');
+    const objective = SCENE ? { ...SCENE.obj } : (() => { const [type, n] = (Q.get('obj') || '').split(':');
       if (type === 'survive') return { type, turns: Math.max(2, +n || 5) };
       if (type === 'leader' && mons.length > 1) { const L = mons[0]; L.leader = true; L.hp = L.maxHp = Math.round(L.maxHp * 1.3); if (!/หัวหน้า/.test(L.name)) L.name = 'หัวหน้า' + L.name; return { type } }
       if (type === 'defend') { const at = near(hs); return at ? { type, turns: Math.max(2, +n || 4), cells: [at] } : null }
@@ -123,28 +179,107 @@
       return null })();
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
-    st = FB.create({ bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true,
-      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
+    st = FB.create({ fp: FP, bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true, bag: bagForBattle(),
+      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', weapon: HPRO.weapon || 'knife', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
+    if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
-    for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
-    for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir }
+    for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = SCENE ? (u.side === 'monster' ? (u.ct ?? u.speed * 3) : 40) : u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
+    for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir; { const o = u.side === 'monster' ? FB.hero(st) : FB.monster(st), du = o.u - u.u, dv = o.v - u.v; u.frontDir = du >= dv ? 'SE' : 'SW'; u.idle0 = { u: u.u, v: u.v, face: u.face } } }
     /* v97.08 · same-named enemies get a number (โจรป่า 1, โจรป่า 2 …) so the queue, the list and the log tell them apart */
     { const n = {}, k = {}; for (const u of FB.monsters(st)) n[u.name] = (n[u.name] || 0) + 1; for (const u of FB.monsters(st)) if (n[u.name] > 1) { k[u.name] = (k[u.name] || 0) + 1; u.label = u.name + ' ' + k[u.name] } for (const u of FB.monsters(st)) if (u.label) { u.name = u.label; delete u.label } }
+    if (Q.get('imm') === '1') for (const u of st.units) if (u.side === 'hero' && (u.id === 'hero' || u.key === 'sib')) u.immortal = true;   /* v98.331 · prologue tutorials: HP can drop, never below 1 */
     pend = null; walks = [];
     st.arena = { cu, cv, r };
     texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
+    if (Q.get('resume') === '1') applyResume(); else makeFlee();
+    if (SCENE) attachScene();
   }
-  function refresh() { if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null; allyBar(); hudSync(); handSync() }
+  if (EDIT) { const sx = document.createElement('style'); sx.textContent = '#fbBar,.fb-show,.fb-fly,.fb-banner,.fb-toast,#fbHand,#fbActions,#fbAlly,#fbHint,#fbIntro,#fbInspect,#fbDuel,#fbItems,#fbQueue,#fbLbTop,#fbLbBot,#fbFace,#fbCoach,#fbHud,#fbPause,#menuBtn{display:none!important}'; document.head.append(sx) }   /* v98.311 · BG editor: no game HUD */
+  /* ---------- v98.492 · set-piece rules: the scene's functions (they live in js/set-pieces.js; the battle state keeps only plain data, so a resumed fight re-attaches them) ---------- */
+  let waveN = 0;
+  function mkSpawn(kind, pos, extra = {}) {
+    const T = MON[kind]; if (!T) return null; const hp = Math.round(T.hp * HPX * (extra.hpMul || 1)), n = ++waveN, hero = FB.hero(st);
+    const u = { id: 'wave' + n, side: 'monster', ai: true, ...pos, kind, name: T.name + ' ' + (n + 2), hp, maxHp: hp, atk: Math.round(T.atk * ATKX), def: 1, move: T.move, range: T.range || 1, boss: false, iq: T.iq || 0, shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evo: null, evoGroup: null, variant: null, ...extra };
+    if (st.fp > 1) u.fp = st.fp; u.speed = Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))); u.ct = u.speed * 2; u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.pose = 'idle'; u.dir = dirTo(u, hero); u.face = u.dir; return u;
+  }
+  function attachScene() {
+    if (!SCENE || !st) return; st.rules = window.SetPieces.rules(SCENE, { alive: u => u.hp > 0, free: (s, u, v) => !s.units.some(x => x.hp > 0 && x.u === u && x.v === v), mk: mkSpawn });
+    scenePanelBtn(); if (Q.get('resume') !== '1') scenePanel();
+  }
+  /* v98.492 · the rules of a set-piece are shown BEFORE the fight (a panel to read, not floating text) and can be re-opened with the 📜 button */
+  function scenePanel() {
+    if (!SCENE || !(SCENE.intro?.length || SCENE.hints?.length) || document.getElementById('fbScenePanel')) return; const d = document.createElement('div'); d.id = 'fbScenePanel';
+    d.style.cssText = 'position:fixed;inset:0;z-index:90;background:#05060aee;display:flex;align-items:center;justify-content:center;font-family:AgThai,system-ui,sans-serif';
+    d.innerHTML = `<div style="width:min(620px,92vw);max-height:88vh;overflow:auto;padding:22px 26px;border-radius:16px;background:linear-gradient(#2a2234,#171320);border:2px solid #b49a5a;color:#f2e6c8;box-shadow:0 20px 60px #000c"><h2 style="margin:0 0 10px;font-size:22px;color:#ffd98a">⚔ ${esc(SCENE.name)}</h2><h3 style="margin:16px 0 6px;font-size:15px;color:#9fd4a8">📜 ต้องรู้ก่อนสู้</h3><ul style="margin:0 0 6px 18px;padding:0;line-height:1.6;font-size:14.5px">${(SCENE.hints || []).filter(h => !/^(เสียง|ปลอกคอของ Mip สั่น)/.test(h)).map(h => `<li>${esc(h)}</li>`).join('')}</ul><p style="font-size:12.5px;color:#a89c82;margin:10px 0 0">ฉากนี้ตายตัว ไม่สุ่ม — ศัตรูได้เปรียบ ต้องใช้กลยุทธ์ · เปิดอ่านซ้ำได้จากปุ่ม 📜 มุมซ้ายบน</p><div style="text-align:right;margin-top:16px"><button id="fbSceneGo" style="padding:9px 26px;border-radius:10px;border:2px solid #d8b46a;background:#c28a2c;color:#fff;font:700 16px AgThai,system-ui,sans-serif;cursor:pointer">เริ่มสู้</button></div></div>`;
+    document.body.append(d); d.querySelector('#fbSceneGo').onclick = () => d.remove();
+  }
+  function scenePanelBtn() {
+    if (!SCENE || !(SCENE.intro?.length || SCENE.hints?.length) || document.getElementById('fbSceneBtn')) return; const b = document.createElement('button'); b.id = 'fbSceneBtn'; b.textContent = '📜 กติกาฉาก'; b.title = SCENE.name;
+    b.style.cssText = 'position:fixed;left:12px;bottom:14px;z-index:60;padding:5px 12px;border-radius:9px;border:1.5px solid #b49a5a;background:#1b1624dd;color:#ffe2a8;font:600 13px AgThai,system-ui,sans-serif;cursor:pointer'; b.onclick = scenePanel; document.body.append(b);
+  }
+  /* ---------- v98.357 · the way out of a fight ----------
+     No "back to the world map" button and no flee entry in the menu: a fight can be left early only by walking the hero onto the FLEE AREA (3 blue cells, away from the enemies).
+     None in the prologue fights (?tut=…), boss fights, escape-objective fights (they have their own exit) or when ?noflee=1. */
+  function makeFlee() {
+    try {
+      if (!EMBED || SCENE?.noFlee || Q.get('tut') || Q.get('noflee') === '1' || st.obj?.type === 'escape' || /^บอส/.test(Q.get('title') || '')) return;
+      const h = FB.hero(st), ms = FB.monsters(st); if (!ms.length) return;
+      const mc = { u: ms.reduce((a, m) => a + m.u, 0) / ms.length, v: ms.reduce((a, m) => a + m.v, 0) / ms.length };
+      const free = (u, v) => cells.get(u + ',' + v) && cells.get(u + ',' + v) !== 'blocked' && !st.units.some(x => x.u === u && x.v === v);
+      let best = null, bs = -1e9;
+      for (const [key] of cells) { const [u, v] = key.split(',').map(Number); if (!free(u, v)) continue; const dh = Math.hypot(u - h.u, v - h.v), dm = Math.hypot(u - mc.u, v - mc.v); if (dh < 4 || dh > 8) continue; const sc = dm - dh * 1.2; if (sc > bs) { bs = sc; best = { u, v } } }
+      if (!best) return; const zone = [best];
+      for (const [du, dv] of [[1, 0], [0, 1], [-1, 0], [0, -1]]) { if (zone.length >= 3) break; const u = best.u + du, v = best.v + dv; if (free(u, v)) zone.push({ u, v }) }
+      st.flee = { cells: zone }; setTimeout(() => { try { toast('ทางหนี: ช่องสีฟ้า — เดินตัวเอกไปถึงจึงจะหนีการต่อสู้ได้') } catch (e) { } }, 2500);
+    } catch (e) { }
+  }
+  /* ---------- v98.340 · temporary save: the fight is snapshotted at every stable moment of the hero's turn and can be resumed exactly (js/resume.js) ----------
+     Only the state of the rules (st) is stored — a few KB of JSON; the field comes back from the same seed, the pictures from the same URL (+ &resume=1). */
+  const SNAP_KEY = 'projectA.battleSnap'; let snapT = 0;
+  function snapNow() {
+    if (!EMBED || !st || !FB || reported || st.outcome || busy || facing || st.turn !== 'hero') return;
+    try {
+      const raw = JSON.parse(JSON.stringify(st, (k, v) => (k[0] === '_' || k === 'arena' || k === 'drawn' || k === 'cur' || k === 'active') ? undefined : v));
+      if (raw.deck) delete raw.deck.cardEvents; raw.active = st.active && st.active.id;
+      const q = new URLSearchParams(location.search); if (window.FieldSeed) q.set('seed', String(window.FieldSeed)); q.delete('resume');
+      localStorage.setItem(SNAP_KEY, JSON.stringify({ t: Date.now(), page: location.pathname.split('/').pop(), search: '?' + q.toString(), coach: coachState.i, snap: raw }));
+    } catch (e) { }
+  }
+  function snapSoon() { if (!EMBED) return; clearTimeout(snapT); snapT = setTimeout(snapNow, 250) }
+  addEventListener('pagehide', snapNow); document.addEventListener('visibilitychange', () => { if (document.hidden) snapNow() });
+  function applyResume() {
+    try {
+      const rec = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null'); if (!rec?.snap) return false; const sn = rec.snap;
+      const cur = new Map(st.units.map(u => [u.id, u])), out = sn.units.map(su => { const c = cur.get(su.id); if (c) { Object.assign(c, su); return c } return su });
+      st.units.length = 0; st.units.push(...out);
+      for (const k of Object.keys(sn)) if (!['units', 'active', 'deck', 'arena', 'drawn', 'cur'].includes(k)) st[k] = sn[k];
+      if (sn.deck) Object.assign(st.deck, sn.deck);
+      st.active = st.units.find(u => u.id === sn.active) || st.units[0]; st.drawn = [];
+      for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.walking = false; if (['windup', 'strike', 'cast', 'guard', 'hit'].includes(u.pose)) u.pose = 'idle' }
+      for (const g of ['movement', 'combat']) for (const c of st.deck[g]?.hand || []) seenUids.add(c.uid);
+      if (rec.coach) coachState.i = rec.coach; return true;
+    } catch (e) { return false }
+  }
+  function refresh() { if (pickEl && (busy || !st || st.turn !== 'hero' || st.outcome)) closePick(); snapSoon(); if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null;
+    /* v98.244 · second layer: where the farthest move card in hand would take you */
+    if (inspectU && (inspectU.hp <= 0 || !st.units.includes(inspectU))) inspectU = null; inspectMap = inspectU && !st.outcome ? FB.reach(st, inspectU, inspectU.move || 4) : null; inspectSync();
+    farInfo = st.turn === 'hero' ? FB.farMove?.(st) || null : null; farMap = farInfo ? FB.reach(st, FB.actor(st), st.mp + farInfo.move) : null; allyBar(); hudSync(); handSync() }
   /* ---------- camera director ----------
      cam = world point at the screen centre + zoom. Normal: frame both fighters (shifted right/up so the HUD and the hand don't cover them).
      Cinematic: push in on attacker + target. Shake and roll kick are added on top. */
   const cam = { x: 0, y: 0, z: 1.05, set: false }, kick = { shake: 0, shakeT: 0, shakeDur: 1, roll: 0 };
   let cine = null, lastPre = 0, light = 0, ox = 120;            // light: 0 normal … 1 full spotlight
   function frameTarget() {
+    if (inspectU && inspectU.hp > 0 && !cine) { const p = project(inspectU.vu, inspectU.vv); return { x: p.x, y: p.y - UNIT * .5, z: 1.2 } }   /* v98.253 · a unit picked in the queue is centred and closer */
     if (cine) { const a = project(cine.a.vu, cine.a.vv), b = project(cine.b.vu, cine.b.vv); return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - UNIT * .75, z: cine.z } }
     const pts = st.units.filter(u => u.hp > 0 || u.side === 'hero').map(u => project(u.vu, u.vv)), xs = pts.map(p => p.x), ys = pts.map(p => p.y);
-    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), dx = x1 - x0 + UNIT * 3, dy = y1 - y0 + UNIT * 3;
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    /* v98.253 · the zoom must not change when the view is turned: the fit uses the WORST extent over the four camera turns (a 90° turn maps the basis (a,b) to (b,−a)) */
+    let ex = x1 - x0, ey = y1 - y0;
+    try { const o = project(0, 0), a = project(1, 0), b = project(0, 1), A = { x: a.x - o.x, y: a.y - o.y }, B = { x: b.x - o.x, y: b.y - o.y }, us = st.units.filter(u => u.hp > 0 || u.side === 'hero');
+      if (us.length) for (const [p, q] of [[A, B], [B, { x: -A.x, y: -A.y }], [{ x: -A.x, y: -A.y }, { x: -B.x, y: -B.y }], [{ x: -B.x, y: -B.y }, A]]) { const X = us.map(u => u.vu * p.x + u.vv * q.x), Y = us.map(u => u.vu * p.y + u.vv * q.y); ex = Math.max(ex, Math.max(...X) - Math.min(...X)); ey = Math.max(ey, Math.max(...Y) - Math.min(...Y)) } } catch (e) { }
+    const dx = ex + UNIT * 3, dy = ey + UNIT * 3;
     const narrow = W < 820, z = Math.max(narrow ? .4 : .6, Math.min(1.35, Math.min((W - (narrow ? 20 : 330)) / (dx * scale), (H - (narrow ? 330 : 240)) / (dy * scale))));
     return { x: (x0 + x1) / 2, y: (y0 + y1) / 2 - UNIT * .5, z };
   }
@@ -169,10 +304,22 @@
     return Math.max(120, Math.min(need, W / 2 - half - 12));
   }
   /* procedural battle audio from the old system (BattlePolish: synthesized + the recorded slash) */
-  const SFXK = { sword: 'slash', knife: 'knife', spear: 'spear', rapier: 'rapier', blunt: 'hammer', fire: 'magic', ice: 'ice', lightning: 'lightning', arcane: 'magic', wind: 'magic', earth: 'earth', heal: 'heal', shield: 'block', parry: 'block' };
+  const SFXK = { sword: 'slash', knife: 'knife', spear: 'spear', rapier: 'rapier', blunt: 'hammer', fire: 'fire', ice: 'ice', lightning: 'lightning', arcane: 'magic', wind: 'magic', earth: 'earth', heal: 'heal', shield: 'block', parry: 'block' };
   function sfx(kind, s = .6) {
+    if (window.Sfx?.battle(kind, s)) return;   /* v98.297 · recorded Kenney sounds (CC0) first; the old synth is the fallback while a file is still loading */
     const P = window.BattlePolish; if (!P) return;
     try { if (kind === 'slash') P.sample('slash', s); else if (kind === 'swing') P.swing('sword'); else if (kind === 'step') P.footstep('stone'); else if (kind === 'victory') P.victory(true); else if (kind === 'lose') P.victory(false); else P.sound(kind, s) } catch (e) { }
+  }
+  try { window.Sfx?.preload(['mg-cast', 'mg-magic', 'mg-heal', 'mg-lightning', 'mg-fire', 'mg-earth', 'mg-shield', 'victory', 'defeat', 'hit-glass', 'hit-metal', 'hit-metal-light', 'draw-knife', 'knife', 'hit-wood-heavy', 'hit-plate', 'hit-metal-heavy', 'hit-punch', 'hit-soft', 'cloth', 'step-stone', 'hit-generic', 'chop', 'hit-punch-heavy']) } catch (e) { }
+  /* v98.304 · ONE size for a monster: the ⚖ Scale Lineup measures the STATIC picture (figure height ÷ picture height). The animation frames are different pictures (other canvas, the figure fills more of it), so each monster's frames are scaled by
+     (figure fill of the static picture) ÷ (figure fill of its first idle frame) × MON.k-style base — measured once per monster from the pixels, then every frame (walk, strike, down …) uses the same factor. Without this the animated bandit stood ~1.4× taller than the lineup says. */
+  const fillCache = new Map();
+  function fillOf(img, sx, sy, sw, sh) { try { const W = Math.min(128, sw), H = Math.max(1, Math.round(sh * W / sw)), c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, sx, sy, sw, sh, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data; let top = -1, bot = -1; for (let y = 0; y < H; y++) { let any = false; for (let xx = 0; xx < W; xx++) if (d[(y * W + xx) * 4 + 3] > 24) { any = true; break } if (any) { if (top < 0) top = y; bot = y } } return top < 0 ? 0 : (bot - top + 1) / H } catch (e) { return 0 } }
+  function monNorm(kind, T) {
+    if (fillCache.has(kind)) return fillCache.get(kind); const stat = im('assets/enemies/' + (T?.img || kind) + '.webp'); const af0 = window.MonsterArt?.frame(kind, 'SW', 0, 1, 0, 'norm-' + kind);
+    if (!stat || !af0 || !af0.image || !af0.image.complete || !stat.complete) return 1;   /* not loaded yet: draw at 1 now, measure on a later frame */
+    const fs = fillOf(stat, 0, 0, stat.naturalWidth, stat.naturalHeight), fa = fillOf(af0.image, af0.sx, af0.sy, af0.sw, af0.sh), k = fs > .1 && fa > .1 ? Math.max(.5, Math.min(1.6, fs / fa)) : 1;
+    fillCache.set(kind, k); return k;
   }
   function hitSound(fx, o = {}) { sfx(SFXK[fx] || 'sword', o.big ? .85 : .6); if (o.crit || o.kill) { sfx('critical', .8); sfx('hammer', .55) } else if (o.big) sfx('hammer', .35) }
   function shake(px, ms) { if (!CINE || window.BattlePolish?.shake === false) return; kick.shake = Math.max(kick.shake, px); kick.shakeT = performance.now(); kick.shakeDur = ms }
@@ -187,6 +334,9 @@
     top.classList.toggle('on', on); bot.classList.toggle('on', on); document.body.classList.toggle('fb-cine', on);
   }
   /* run an action as a short cut-scene: bars in, push in on the pair, play, ease back out */
+  /* v98.602 · the attack close-up zoom is only for STRONG hits (critical · a kill · big damage · bosses); ordinary attacks play at the normal camera. ?zoom=all brings the old behaviour back */
+  const ZOOM_ALL = Q.get('zoom') === 'all';
+  const cinemaIf = (cond, a, b, run, o) => (cond || ZOOM_ALL) ? cinematic(a, b, run, o) : run();
   async function cinematic(a, b, run, o = {}) {
     if (!CINE) return run();
     cine = { a, b, z: Math.min(2.1, (o.z || 1.75)), speed: 7, soft: o.bars === false }; if (o.bars !== false) bars(true); hidePreview(); await wait(o.lead ?? 380);
@@ -200,24 +350,81 @@
   const css = document.createElement('style'); css.textContent = `
   #status,#help,#credit,.toolbar,#menuBtn,.town-icon-row,#townPreview{display:none!important}
   ${EMBED ? '.floatBtn,#townTools,#hudTop,.town-hud,.townux-top{display:none!important}' : ''}
-  #fbHud{position:fixed;left:14px;top:14px;z-index:40;width:260px;background:#1b302af2;border:1px solid #b9c48a66;border-radius:12px;padding:10px 12px;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 30px #0008}
+  #fbHud{position:fixed;left:14px;top:14px;z-index:40;width:260px;background:#1b302af2;border:1px solid #b9c48a66;border-radius:12px;padding:10px 12px;color:#f3e9c9;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 8px 30px #0008}
   #fbHud button{font:inherit;background:#c9893a;color:#fff;border:0;border-radius:7px;padding:6px 9px;cursor:pointer}#fbHud button:disabled{opacity:.4;cursor:default}
-  #fbQueue{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:38;display:flex;gap:4px;align-items:center;pointer-events:none;font:11px system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
+  #fbQueue{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:38;display:flex;gap:4px;align-items:center;pointer-events:none;font:11px AgThai,system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
   #fbQueue .qc{position:relative;width:54px;padding:3px 2px 6px;text-align:center;border-radius:8px;background:#14231fdd;border:1px solid #b9c48a55;overflow:hidden}#fbQueue .qc .ic{display:block;font-size:16px;line-height:18px}#fbQueue .qc b{display:block;font-weight:600;white-space:nowrap;overflow:hidden}
   #fbQueue .qc i{position:absolute;left:0;bottom:0;height:3px;background:#6fd18a}#fbQueue .qc.foe{border-color:#e2705f88}#fbQueue .qc.foe i{background:#e2705f}#fbQueue .qc.ally{border-color:#8fd0b0aa}
-  #fbQueue .qc.on{width:66px;border:2px solid #ffd25a;background:#2a3a1fee;transform:scale(1.05)}#fbQueue .arr{color:#ffd25a;font-size:18px;margin:0 2px}
+  #fbQueue .qc .fc{display:block;width:42px;height:42px;margin:0 auto 2px;border-radius:9px;background-color:#1a2b26;background-repeat:no-repeat;border:1px solid #d8b46a}#fbQueue .qc.foe .fc{border-color:#cfd8e6}#fbQueue .qc .ic{position:absolute;top:2px;right:3px;font-size:11px;line-height:11px;text-shadow:0 1px 2px #000}#fbQueue .qc.foe{border-color:#cfd8e6aa}#fbQueue .qc.hero,#fbQueue .qc.ally{border-color:#e6c36eaa}#fbQueue .qc.on{width:66px;border:2px solid #ffd25a;background:#2a3a1fee;transform:scale(1.05)}#fbQueue .arr{color:#ffd25a;font-size:18px;margin:0 2px}
+  /* v98.283 · CT queue chips = the user's portrait frames (assets/ui/frames): gold = team · grey iron = foes · blue = the one being inspected · gem frame = whose turn it is. The picture window and the name plate are placed by the frame's own geometry (frames.json) */
+  #fbQueue .qc{width:56px;height:64px;padding:0;border:0;border-radius:0;background:none;overflow:visible}#fbQueue .qc.on{width:72px;height:85px;border:0;background:none;transform:none}
+  #fbQueue .qc::after{content:"";position:absolute;inset:0;z-index:1;background:url(assets/ui/frames/portrait-gold.webp) center/100% 100% no-repeat;pointer-events:none}
+  #fbQueue .qc.foe::after{background-image:url(assets/ui/frames/portrait-grey.webp)}#fbQueue .qc.look::after{background-image:url(assets/ui/frames/portrait-blue.webp)}#fbQueue .qc.on::after{background-image:url(assets/ui/frames/portrait-gem.webp)}
+  #fbQueue .qc .fc{position:absolute;left:15.6%;top:14.1%;width:68.3%;height:61.5%;margin:0;border:0;border-radius:2px}#fbQueue .qc.on .fc{left:15.1%;top:16.1%;width:69.7%;height:60.1%}
+  #fbQueue .qc .ic{z-index:2;top:15%;right:17%}#fbQueue .qc b{position:absolute;left:8%;right:8%;bottom:5%;z-index:2;font-size:9.5px;line-height:11px;color:#f6e7c1;text-align:center;text-shadow:0 1px 2px #000}
+  #fbQueue .qc i{left:15.6%;bottom:25%;z-index:2;width:calc(var(--p) * .683%)!important;height:3px}#fbQueue .qc.on i{left:15.1%;width:calc(var(--p) * .697%)!important}#fbQueue .qc.look{box-shadow:none}
   #fbHud #fbAuto.on{background:#2f8a5a}
   #fbHud .bar{height:7px;background:#0006;border-radius:4px;overflow:hidden;margin:2px 0 6px;position:relative}#fbHud .bar i{display:block;height:100%;transition:width .35s}
   #fbHud .arow{margin:3px 0 5px}#fbHud .arow.down{opacity:.45}#fbHud .ord{display:flex;gap:3px;margin-top:2px}#fbHud .ord button{padding:2px 6px;font-size:12px;background:#33463e;border-radius:6px}#fbHud .ord button.on{background:#5d8a6e;box-shadow:inset 0 0 0 1px #bfe8c8}#fbHud .ord button.sk{flex:1;background:#6b4e9a;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #fbHud .grp{margin:6px 0 2px;color:#bba57f;font-size:11px;border-top:1px solid #ffffff1a;padding-top:4px}#fbHud .grp small{opacity:.7}
+  /* v98.252 · battle info window + action row made of pictures (assets/ui/battle-*.webp, bar-*.webp, gem-*.webp; icons from assets/icons/pack) */
+  #fbHud{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;border-style:solid!important;border-width:30px!important;border-image:url(assets/ui/battle-panel.webp) 40 fill/30px stretch!important;padding:0!important;width:300px;left:6px;top:6px;filter:drop-shadow(0 8px 14px #000a)}
+  #fbHud .hd{display:flex;align-items:center;gap:6px}#fbHud .hd b{flex:1}
+  #fbHud .bi{width:20px;height:20px;vertical-align:-5px;margin-right:4px}
+  #fbHud #fbMin{width:30px;height:30px;padding:0;border-radius:0;background:url(assets/ui/battle-controls-v34.webp) no-repeat;background-size:400% 200%;background-position:33.333% 100%;filter:drop-shadow(0 2px 3px #000a)}#fbHud.min #fbMin{background-position:0 100%}
+  #fbHud.min #fbGoal,#fbHud.min #fbLog,#fbHud.min .help,#fbHud.min #fbUnits .grp,#fbHud.min #fbUnits .arow,#fbHud.min #fbUnits .mini{display:none}
+  #fbHud .bar{height:14px;box-sizing:border-box;background:none;border:4px solid transparent;border-image:url(assets/ui/battle-bar.webp) 8 fill/4px stretch;overflow:visible;margin:3px 0 7px}
+  #fbHud .bar i,#fbHud .mini i{background-color:transparent!important;background-image:url(assets/ui/bar-green.webp)!important;background-size:auto 100%;border-radius:3px}
+  #fbHud .bar i[style*="e8c34a"]{background-image:url(assets/ui/bar-yellow.webp)!important}#fbHud .bar i[style*="e2705f"],#fbHud .mini i[style*="e2705f"]{background-image:url(assets/ui/bar-red.webp)!important}#fbHud .bar i[style*="9cc8ff"]{background-image:url(assets/ui/bar-blue.webp)!important}
+  #fbHud .gemi{width:24px;height:24px;margin-right:2px;vertical-align:-7px;filter:drop-shadow(0 0 4px #6fd6ff66)}
+  #fbHud .ord button{background:none!important;border:6px solid transparent;border-image:url(assets/ui/battle-btn.webp) 14 fill/6px stretch;padding:0 6px;color:#fff3d2}#fbHud .ord button.on,#fbHud .ord button.sk{border-image-source:url(assets/ui/battle-btn-hot.webp);color:#2a1a05}
+  #fbHud .mini{padding:0 2px}
+  #fbQueue .qc{pointer-events:auto;cursor:pointer}#fbQueue .qc.look{box-shadow:0 0 0 2px #cfd8e6,0 0 12px #cfd8e6aa}
+  #fbInspect{position:fixed;right:14px;top:112px;width:250px;z-index:41;box-sizing:border-box;padding:0;border:26px solid transparent;border-image:url(assets/ui/battle-panel.webp) 40 fill/26px stretch;color:#f3e9c9;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;filter:drop-shadow(0 8px 14px #000a)}
+  #fbInspect .x{position:absolute;right:-18px;top:-18px;width:26px;height:26px;border:0;background:url(assets/ui/battle-controls-v34.webp) no-repeat;background-size:400% 200%;background-position:66.666% 0;transform:rotate(45deg) scale(.9);cursor:pointer}
+  #fbInspect .top{display:flex;gap:10px;align-items:center}#fbInspect .fc{flex:none;width:58px;height:58px;border-radius:9px;background-repeat:no-repeat;background-color:#1a2b26;border:2px solid #d8b46a}#fbInspect.foe .fc{border-color:#cfd8e6}
+  #fbInspect .top>div{flex:1;min-width:0}#fbInspect b{display:block}#fbInspect small{color:#cdbf98;font-size:11px}
+  #fbInspect .bar{height:12px;box-sizing:border-box;border:4px solid transparent;border-image:url(assets/ui/battle-bar.webp) 8 fill/4px stretch;margin:3px 0}#fbInspect .bar i{display:block;height:100%;background:url(assets/ui/bar-green.webp) !important;background-size:auto 100%!important;border-radius:3px}#fbInspect.foe .bar i{background:url(assets/ui/bar-red.webp) !important}
+  #fbInspect .st{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin-top:6px;font-size:12px}#fbInspect .st b{display:inline;color:#ffe2a8}#fbInspect .iq{display:block;margin-top:4px}#fbInspect .nx{display:block;margin-top:4px;color:#9fb0a0}
+  #fbDuel{position:fixed;right:14px;top:292px;z-index:40;display:flex;flex-direction:column;align-items:flex-end;gap:4px;pointer-events:none;font-family:AgThai,system-ui,sans-serif;color:#f3e9c9}
+  #fbDuel .dc{position:relative;display:flex;align-items:center;gap:9px;min-width:200px;max-width:240px;padding:6px 10px 6px 6px;border-radius:12px;background:linear-gradient(90deg,#14110fe6,#14110fb0);border:1px solid #fff2;box-shadow:0 4px 14px #0009;transition:opacity .25s}
+  #fbDuel .dc.t{margin-right:18px;opacity:.96}#fbDuel .dc.foe{border-color:#c4563f88}
+  #fbDuel .pf{position:relative;flex:none;width:108px;height:108px;border-radius:12px;overflow:hidden;border:3px solid var(--jc,#8a9a6a);background:#16130f center/cover no-repeat;box-shadow:0 0 0 1px #000a,0 0 12px var(--jc,#8a9a6a)66}
+  #fbDuel .dc.t .pf{width:88px;height:88px}
+  #fbDuel .pf::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:8px;transition:box-shadow .2s}
+  #fbDuel .jb{position:absolute;left:-7px;top:-7px;z-index:2;width:22px;height:22px;border-radius:50%;background:var(--jc,#888);border:2px solid #1a140c;display:grid;place-items:center;font:700 12px AgThai,system-ui,"Segoe UI Symbol",sans-serif;font-style:normal;color:#fff8e8}
+  #fbDuel .nm{flex:1;min-width:0}#fbDuel .nm b{display:block;font-size:14px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#fbDuel .nm small{display:block;font-size:11px;color:#cdbf98}
+  #fbDuel .hp{height:6px;margin:4px 0 2px;border-radius:4px;background:#0009;overflow:hidden}#fbDuel .hp i{display:block;height:100%;border-radius:4px;transition:width .3s}
+  #fbDuel .mo{display:block;min-height:15px;font-style:normal;font-weight:700;font-size:12px;letter-spacing:.3px}
+  #fbDuel .dc.m-attack .pf{animation:fbDuelPush .5s ease-out}#fbDuel .dc.m-attack .pf::before,#fbDuel .dc.m-hurt .pf::before,#fbDuel .dc.m-heal .pf::before,#fbDuel .dc.m-guard .pf::before{content:'';position:absolute;inset:-30%;z-index:3;pointer-events:none;border-radius:50%;opacity:0}#fbDuel .dc.m-attack .pf::before{background:radial-gradient(circle,#fff6c8 0,#ffb34799 35%,#0000 70%);animation:fbDuelFlash .45s ease-out}#fbDuel .dc.m-hurt .pf::before{background:radial-gradient(circle,#ffd0c8 0,#ff2a1aaa 40%,#0000 72%);animation:fbDuelFlash .4s ease-out}#fbDuel .dc.m-heal .pf::before{background:radial-gradient(circle,#e8ffe8 0,#6fe08a88 40%,#0000 72%);animation:fbDuelFlash .8s ease-out}#fbDuel .dc.m-guard .pf::before{background:radial-gradient(circle,#0000 40%,#9fd4ffcc 62%,#0000 78%);animation:fbDuelFlash .6s ease-out}#fbDuel .dc.m-hurt{animation:fbDuelShake .42s}#fbDuel .dc.m-attack .pf::after{box-shadow:inset 0 0 18px #ffb347dd}#fbDuel .dc.m-attack .mo{color:#ffcf7a}
+  #fbDuel .dc.m-hurt .pf{animation:fbDuelShake .36s .04s}#fbDuel .dc.m-hurt .pf::after{box-shadow:inset 0 0 26px #ff2a1acc}#fbDuel .dc.m-hurt .mo{color:#ff9a8a}
+  #fbDuel .dc.m-guard .pf::after{box-shadow:inset 0 0 22px #7fc4ffcc}#fbDuel .dc.m-guard .mo{color:#9fd4ff}
+  #fbDuel .dc.m-heal .pf::after,#fbDuel .dc.m-win .pf::after{box-shadow:inset 0 0 22px #7fe08acc}#fbDuel .dc.m-heal .mo,#fbDuel .dc.m-win .mo{color:#9fefaa}
+  #fbDuel .dc.m-down .pf{filter:grayscale(1) brightness(.6)}#fbDuel .dc.m-down .mo{color:#aaa}
+  #fbDuel .vs{margin:-2px 36px -2px 0;font-size:15px;color:#e8c46a;text-shadow:0 1px 3px #000}
+  #fbDuel .tools{pointer-events:auto;display:flex;gap:4px}#fbDuel .tools button{width:26px;height:22px;border-radius:7px;border:1px solid #fff3;background:#14110fcc;color:#e8d9aa;font-size:12px;cursor:pointer;padding:0}
+  #fbDuel.min .dc{min-width:0;padding:4px}#fbDuel.min .nm{display:none}#fbDuel.min .pf,#fbDuel.min .dc.t .pf{width:60px;height:60px}#fbDuel.min .dc.t{margin-right:8px}#fbDuel.min .vs{margin-right:20px}
+  @keyframes fbDuelFlash{0%{opacity:0;transform:scale(.5)}25%{opacity:1}100%{opacity:0;transform:scale(1.15)}}@keyframes fbDuelPush{0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}@keyframes fbDuelShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-2deg)}45%{transform:translateX(5px) rotate(2deg)}70%{transform:translateX(-3px)}}
+  @media (max-width:860px),(max-height:560px){#fbDuel{top:auto;bottom:226px;right:6px}#fbDuel .dc{min-width:0}#fbDuel .nm{display:none}#fbDuel .pf{width:64px;height:64px}#fbDuel .dc.t .pf{width:54px;height:54px}#fbDuel .dc.t{margin-right:8px}}
+  @media (prefers-reduced-motion:reduce){#fbDuel .pf{animation:none!important}}
+  #fbItems{position:fixed;left:50%;bottom:208px;transform:translateX(-50%);z-index:42;display:flex;gap:10px;align-items:flex-end;padding:10px 14px 8px;border-radius:14px;background:#14110fe8;border:1px solid #fff3;box-shadow:0 8px 24px #000a}#fbItems[hidden]{display:none}
+  #fbItems .lbl{position:absolute;left:14px;top:-10px;font:700 11px AgThai,system-ui,sans-serif;background:#2a2118;color:#f6d79b;padding:1px 9px;border-radius:8px;border:1px solid #fff3}
+  #fbItems .fb-card{width:96px}#fbActions #fbItemBtn{position:relative}#fbActions #fbItemBtn .n{margin-left:2px;min-width:18px;height:18px;border-radius:9px;background:#ffb347;color:#15131c;font-size:11px;display:grid;place-items:center}
+  #fbActions{position:fixed;left:50%;bottom:148px;transform:translateX(-50%);z-index:41;display:flex;gap:4px;align-items:center;font:700 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}
+  #fbActions button{display:flex;align-items:center;gap:6px;min-height:44px;box-sizing:border-box;padding:0;border:12px solid transparent;border-width:11px 16px;border-image:url(assets/ui/battle-btn.webp) 14 fill/11px 16px stretch;background:none;border-radius:0;color:#fff3d2;font:inherit;text-shadow:0 1px 2px #000;cursor:pointer;filter:drop-shadow(0 3px 4px #000a);white-space:nowrap}
+  #fbActions button:hover:not(:disabled),#fbActions #fbAuto.on{border-image-source:url(assets/ui/battle-btn-hot.webp);color:#2a1a05;text-shadow:none}#fbActions button:disabled{opacity:.45;cursor:default;filter:grayscale(.7) drop-shadow(0 3px 4px #000a)}
+  #fbActions #fbBack[hidden]{display:none!important}#fbActions #fbBack{border-image-source:url(assets/ui/battle-btn-warn.webp)}#fbActions .bi{width:22px;height:22px}
+  #fbActions #fbMenu.ico{width:48px;min-width:48px;height:48px;border:0;border-image:none;background:url(assets/ui/battle-controls-v34.webp) no-repeat;background-size:400% 200%;background-position:100% 0}
+  body.fb-cine #fbActions{opacity:.35}body.fb-ally #fbActions{opacity:.25;pointer-events:none}
+  @media (max-width:760px){#fbActions{bottom:118px;flex-wrap:wrap;justify-content:center;max-width:94vw}#fbHud{width:250px}}
   #fbHud .mini{position:relative;display:flex;justify-content:space-between;font-size:11.5px;padding:2px 5px 4px;margin:2px 0;border-radius:6px;background:#0003;cursor:default;overflow:hidden}#fbHud .mini i{position:absolute;left:0;bottom:0;height:3px}#fbHud .mini.down{opacity:.4}#fbHud .mini.tgt{outline:2px solid #ffd25a}#fbHud .mini[data-id^=monster]{cursor:pointer}
   #fbHud{max-height:calc(100vh - 210px);overflow:auto}
   #fbHud .gem{display:inline-block;width:14px;height:14px;margin-right:3px;transform:rotate(45deg) scale(.8);border-radius:3px;background:#3b4c55;border:1px solid #8fb7c9}
   #fbHud .gem.on{background:radial-gradient(circle at 35% 35%,#e6fbff,#56c8f5 55%,#1b6b99);box-shadow:0 0 8px #6fd6ff}
-  #fbHand{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:41;display:flex;align-items:flex-end;gap:10px;padding:8px 12px 6px;border-radius:16px;background:linear-gradient(#0000,#0b1512cc 35%);max-width:calc(100vw - 16px);font:12px system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
+  #fbHand{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:41;display:flex;align-items:flex-end;gap:10px;padding:8px 12px 6px;border-radius:16px;background:linear-gradient(#0000,#0b1512cc 35%);max-width:calc(100vw - 16px);font:12px AgThai,system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
   #fbHand .row{display:flex;gap:6px;align-items:flex-end}#fbHand .sep{width:1px;align-self:stretch;background:#ffffff33;margin:0 2px}
   #fbHand .lbl{position:absolute;left:0;right:0;top:-17px;text-align:center;font-size:11px;color:#cdbb8f;white-space:nowrap}
-  .fb-el{position:absolute;z-index:3;top:-8px;right:-6px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 13px system-ui;box-shadow:0 2px 6px #000a}.fb-el.adv{background:#3fbf6a;color:#fff}.fb-el.dis{background:#c9503f;color:#fff}
+  .fb-el{position:absolute;z-index:3;top:-8px;right:-6px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 13px AgThai,system-ui;box-shadow:0 2px 6px #000a}.fb-el.adv{background:#3fbf6a;color:#fff}.fb-el.dis{background:#c9503f;color:#fff}
   .fb-card{position:relative;width:84px;padding:0;border:0;background:none;cursor:pointer;transition:transform .16s,filter .16s;border-radius:9px}
   .fb-card .face{width:84px;aspect-ratio:750/1101;border-radius:8px;overflow:hidden;box-shadow:0 4px 10px #0008;background:#2a2a2a}
   .fb-card .face .gcard{width:100%}.fb-card .face>.fb-fallback{display:flex;flex-direction:column;height:100%;align-items:center;justify-content:center;color:#fff;font-size:11px}
@@ -226,19 +433,20 @@
   .fb-card:hover{transform:translateY(-10px)}
   .fb-card.off{filter:grayscale(.75) brightness(.7)}.fb-card.off:hover{transform:translateY(-4px)}
   .fb-card.new .face{box-shadow:0 0 0 2px #ffe08a,0 0 16px 4px #ffd25a}
-  .fb-card.new::after{content:'ใหม่';position:absolute;top:-8px;right:-6px;background:#ffd25a;color:#2a1c00;font:700 10px system-ui;padding:1px 6px;border-radius:999px;box-shadow:0 2px 6px #0007}
+  .fb-card.new::after{content:'ใหม่';position:absolute;top:-8px;right:-6px;background:#ffd25a;color:#2a1c00;font:700 10px AgThai,system-ui;padding:1px 6px;border-radius:999px;box-shadow:0 2px 6px #0007}
   .fb-card.picked{transform:translateY(-14px)}.fb-card.picked .face{box-shadow:0 0 0 3px #ff6a55,0 0 14px #ff6a55}
-  .fb-card.picked::before{content:'✕';position:absolute;z-index:2;top:30%;left:50%;transform:translateX(-50%);font:700 30px system-ui;color:#ff6a55;text-shadow:0 2px 6px #000}
+  .fb-card.picked::before{content:'✕';position:absolute;z-index:2;top:30%;left:50%;transform:translateX(-50%);font:700 30px AgThai,system-ui;color:#ff6a55;text-shadow:0 2px 6px #000}
   #fbHand.discarding .fb-card:not(.picked){filter:none}
   .fb-pile{position:relative;width:56px;height:82px;border-radius:8px;background:repeating-linear-gradient(45deg,#3c2b4a,#3c2b4a 6px,#46335a 6px,#46335a 12px);border:2px solid #c7a96a;box-shadow:3px 3px 0 #2a2131,6px 6px 0 #1e1824;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:700;color:#f6e7c1;text-shadow:0 1px 2px #000}
   .fb-pile.discard{background:#2a2622;border-style:dashed;box-shadow:none}.fb-pile small{font-weight:400;font-size:10px;opacity:.85}
-  #fbBar{position:fixed;left:50%;bottom:190px;transform:translateX(-50%);z-index:42;background:#2b1712f2;border:1px solid #ff8a6a88;border-radius:10px;padding:8px 12px;color:#ffe9dc;font:13px system-ui,"Noto Sans Thai",sans-serif;display:flex;gap:8px;align-items:center;box-shadow:0 6px 20px #0008}
+  .sti{width:16px;height:16px;vertical-align:-3px;display:inline-block}
+  #fbBar{position:fixed;left:50%;bottom:190px;transform:translateX(-50%);z-index:42;background:#2b1712f2;border:1px solid #ff8a6a88;border-radius:10px;padding:8px 12px;color:#ffe9dc;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;display:flex;gap:8px;align-items:center;box-shadow:0 6px 20px #0008}
   #fbBar button{font:inherit;border:0;border-radius:7px;padding:6px 10px;cursor:pointer;background:#d25a3c;color:#fff}#fbBar button.ghost{background:#5a4a44}#fbBar button:disabled{opacity:.45}
   .fb-show{position:fixed;z-index:43;width:210px;pointer-events:none;filter:drop-shadow(0 16px 26px rgba(0,0,0,.6));transition:opacity .2s}
   .fb-show .face{position:relative;border-radius:14px;overflow:hidden}.fb-show .face .gcard{width:100%}
   .fb-show.play{animation:fbIn .42s cubic-bezier(.2,1.5,.4,1) both}.fb-show.play .face{box-shadow:0 0 0 3px var(--tone),0 0 30px 6px var(--tone)}
   .fb-show.play .face::after{content:'';position:absolute;inset:-40%;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);transform:translateX(-70%);animation:fbSweep .7s ease-out .12s both}
-  .fb-show .say{margin-top:6px;padding:5px 9px;border-radius:8px;background:#101a17ee;color:#f6e7c1;font:12px system-ui,"Noto Sans Thai",sans-serif;text-align:center}
+  .fb-show .say{margin-top:4px;padding:15px 30px;border-radius:0;background:url(assets/ui/frames/plate-gold.webp) center/100% 100% no-repeat;color:#f6e7c1;font:12px AgThai,system-ui,"Noto Sans Thai",sans-serif;text-align:center}
   .fb-show .say b{color:#ffd25a}
   .fb-show.out{animation:fbOut .45s cubic-bezier(.5,0,.75,0) forwards}
   @keyframes fbIn{0%{opacity:0;transform:translateY(30px) scale(.45) rotateY(80deg)}60%{opacity:1}100%{opacity:1;transform:none}}
@@ -246,7 +454,7 @@
   @keyframes fbSweep{to{transform:translateX(70%)}}
   .fb-fly{position:fixed;z-index:44;pointer-events:none;width:84px;transition:transform .45s cubic-bezier(.3,.8,.3,1),opacity .45s}
   .fb-fly .face{width:84px;aspect-ratio:750/1101;border-radius:8px;overflow:hidden}.fb-fly .face .gcard{width:100%}
-  .fb-toast{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:45;padding:8px 18px;border-radius:999px;background:#101a17ee;color:#ffe9a8;font:700 16px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 6px 20px #0008;animation:fbToast 1.6s ease forwards;pointer-events:none}
+  .fb-toast{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:45;padding:8px 18px;border-radius:999px;background:#101a17ee;color:#ffe9a8;font:700 16px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 6px 20px #0008;animation:fbToast 1.6s ease forwards;pointer-events:none}
   @keyframes fbToast{0%{opacity:0;transform:translate(-50%,10px)}15%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
   .fb-lb{position:fixed;left:0;right:0;height:0;background:#000;z-index:39;transition:height .32s cubic-bezier(.3,.8,.3,1);pointer-events:none}
   #fbLbTop{top:0}#fbLbBot{bottom:0}.fb-lb.on{height:9vh}
@@ -254,28 +462,29 @@
   #fbHand,#fbHud{transition:transform .3s,opacity .3s}
   #world{transform-origin:50% 50%;transition:none}
   .fb-banner{position:fixed;left:50%;top:30%;z-index:46;pointer-events:none;transform:translate(-50%,-50%)}
-  .fb-banner span{display:block;font:italic 900 64px/1 system-ui,"Noto Sans Thai",sans-serif;letter-spacing:2px;color:#fff3b0;-webkit-text-stroke:3px #5a1a00;text-shadow:0 0 18px #ff9a2a,0 6px 0 #7a2400,0 10px 24px #000a;animation:fbBan 1.1s cubic-bezier(.2,1.4,.4,1) forwards}
+  .fb-banner span{display:block;font:italic 900 64px/1 AgThai,system-ui,"Noto Sans Thai",sans-serif;letter-spacing:2px;color:#fff3b0;-webkit-text-stroke:3px #5a1a00;text-shadow:0 0 18px #ff9a2a,0 6px 0 #7a2400,0 10px 24px #000a;animation:fbBan 1.1s cubic-bezier(.2,1.4,.4,1) forwards}
   .fb-banner.crit span{color:#ffe14d;transform:skewX(-12deg)}
-  .fb-banner.win span{font:italic 900 76px/1.1 system-ui,"Noto Sans Thai",sans-serif;letter-spacing:0;-webkit-text-stroke:0;color:#ffe9a8;text-shadow:0 0 22px #ff9a2a,0 4px 0 #7a2400,0 0 3px #5a1a00,0 10px 26px #000c;animation:fbBanWin 2.6s ease forwards}
+  .fb-banner.win span{font:italic 900 76px/1.1 AgThai,system-ui,"Noto Sans Thai",sans-serif;letter-spacing:0;-webkit-text-stroke:0;color:#ffe9a8;text-shadow:0 0 22px #ff9a2a,0 4px 0 #7a2400,0 0 3px #5a1a00,0 10px 26px #000c;animation:fbBanWin 2.6s ease forwards}
   @keyframes fbBan{0%{opacity:0;transform:translateX(-120px) skewX(-18deg) scale(1.6)}18%{opacity:1;transform:translateX(0) skewX(-12deg) scale(1)}75%{opacity:1;transform:translateX(12px) skewX(-12deg)}100%{opacity:0;transform:translateX(160px) skewX(-18deg) scale(.9)}}
   @keyframes fbBanWin{0%{opacity:0;transform:scale(2.4)}12%{opacity:1;transform:scale(1);filter:none}85%{opacity:1}100%{opacity:0;transform:scale(1.05)}}
   @media (max-width:820px){.fb-banner span{font-size:40px}.fb-banner.win span{font-size:48px}}
   .fb-card.auto{transform:translateY(-12px)}.fb-card.auto .face{box-shadow:0 0 0 3px #ffd25a,0 0 18px 4px #ffd25a}
   #fbIntro{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:48;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 34px;pointer-events:none;color:#f6ecd6;text-align:center;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif;animation:fbIntroIn .5s cubic-bezier(.2,1.3,.4,1) both;background:linear-gradient(90deg,transparent,#0b1410e0 18%,#0b1410e0 82%,transparent);min-width:min(620px,92vw)}
-  #fbIntro small{letter-spacing:.3em;color:#cdbb92;font-size:12px}#fbIntro b{font:900 34px/1.15 Georgia,"Noto Sans Thai",serif;color:#ffe2a8;text-shadow:0 2px 0 #000,0 0 22px #ffb34a88}#fbIntro span{font-size:14px;color:#e9dcbc}
+  #fbIntro small{letter-spacing:.3em;color:#cdbb92;font-size:12px}#fbIntro b{font:900 34px/1.15 AgThai,Georgia,"Noto Sans Thai",serif;color:#ffe2a8;text-shadow:0 2px 0 #000,0 0 22px #ffb34a88}#fbIntro span{font-size:14px;color:#e9dcbc}
   #fbIntro.out{animation:fbIntroOut .5s ease both}@keyframes fbIntroIn{from{opacity:0;transform:translate(-50%,-50%) scale(1.3)}}@keyframes fbIntroOut{to{opacity:0;transform:translate(-50%,-60%)}}
-  #fbAlly{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:45;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:94vw;padding:10px 14px;border-radius:14px;background:#14231ff2;border:1px solid #ffd25a88;color:#f3e9c9;font:13px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 10px 26px #000a}
+  #fbAlly{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:45;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:94vw;padding:10px 14px;border-radius:14px;background:#14231ff2;border:1px solid #ffd25a88;color:#f3e9c9;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 10px 26px #000a}
   #fbAlly b{font-size:16px;color:#ffe2a8}#fbAlly small{color:#cdbb92}#fbAlly button{padding:8px 12px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:600 13px inherit;font-family:inherit;cursor:pointer}#fbAlly button:disabled{opacity:.45;cursor:default}#fbAlly button.ok{background:#c9893a;border-color:#ffe2a8}
   body.fb-ally #fbHand{opacity:.25;pointer-events:none;transform:translate(-50%,60px)}
-  #fbCoach{position:fixed;left:50%;top:104px;transform:translateX(-50%);z-index:46;display:flex;gap:10px;align-items:center;max-width:min(760px,94vw);padding:9px 12px 9px 16px;border-radius:12px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;border:2px solid #b08a4a;box-shadow:0 10px 26px #0009;font:14px system-ui,"Noto Sans Thai",sans-serif}
+  #fbCoach{position:fixed;left:50%;top:104px;transform:translateX(-50%);z-index:46;display:flex;gap:10px;align-items:center;max-width:min(760px,94vw);padding:9px 12px 9px 16px;border-radius:12px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;border:2px solid #b08a4a;box-shadow:0 10px 26px #0009;font:14px AgThai,system-ui,"Noto Sans Thai",sans-serif}
   #fbCoach.on{animation:fbCoachIn .35s ease both}@keyframes fbCoachIn{from{opacity:0;transform:translate(-50%,-10px)}}#fbCoach small{white-space:nowrap;color:#8a6a3a;font-weight:700}#fbCoach span{flex:1;min-width:0;line-height:1.5}
   #fbCoach button{padding:6px 12px;border-radius:9px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:700 13px inherit;font-family:inherit;cursor:pointer;white-space:nowrap}#fbCoach button.x{background:none;border:none;padding:4px 6px;color:#8a6a3a}
-  #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
-  #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
-  #fbFace [data-f]{position:fixed;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid #f3e9c9aa;background:#1b302ae6;color:#f3e9c9;font:22px system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:0 4px 12px #0008;transition:transform .12s,background .12s}
-  #fbFace [data-f] span{display:inline-block}#fbFace [data-f].on{background:#c9893a;border-color:#ffe2a8;transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
-  #fbFace .bar{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}#fbFace .bar button{padding:8px 16px;border-radius:10px;border:1px solid #b9c48a88;background:#1b302af2;color:#f3e9c9;font:600 14px system-ui,"Noto Sans Thai",sans-serif;cursor:pointer}#fbFace .bar .ok{background:#c9893a;border-color:#ffe2a8}#fbFace .bar small{opacity:.7;font-weight:400}
-  #fbPause{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px)}#fbPause .box{display:flex;flex-direction:column;gap:8px;min-width:280px;max-width:92vw;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f3e9c9;font:14px system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 16px 40px #000a}
+  #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px AgThai,system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
+  #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
+  #fbFace [data-f]{position:fixed;width:var(--s,52px);height:var(--s,52px);margin:calc(var(--s,52px)/-2) 0 0 calc(var(--s,52px)/-2);padding:0;border:0;background:none;color:#f3e9c9;font:22px AgThai,system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:none;outline:none;transition:transform .12s,background .12s}#fbFace [data-f]:focus-visible{outline:2px solid #ffd978;outline-offset:2px;border-radius:50%}
+  #fbFace [data-f] svg{display:block;overflow:visible;filter:drop-shadow(0 3px 5px #000a) brightness(.9);transition:filter .12s}#fbFace [data-f].on svg{filter:drop-shadow(0 0 9px #ffb080) brightness(1.2)}#fbFace [data-f] span{display:inline-block}#fbFace [data-f] img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 3px 6px #000a) brightness(.86) saturate(.85);transition:filter .12s}#fbFace [data-f].on img{filter:drop-shadow(0 0 10px #ffd978) brightness(1.12)}#fbFace [data-f].on{transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
+  #fbFace .nj{display:block;width:100%;height:100%;animation:fbNudge .7s ease-in-out infinite alternate}@keyframes fbNudge{from{transform:translate(calc(var(--dx)*-.5),calc(var(--dy)*-.5))}to{transform:translate(calc(var(--dx)*.5),calc(var(--dy)*.5))}}@media (prefers-reduced-motion:reduce){#fbFace .nj{animation:none}}   /* v98.279 · the facing arrows slide in and out along their own axis (centre → tip, away from / towards the fighter) by 20 % of their length (58 px → 11.6 px) */
+  #fbFace .bar{position:fixed;left:24px;top:446px;display:flex;gap:8px;pointer-events:auto}   /* v98.629 · off to the left so it never covers the facing wedges around the fighter */#fbFace .bar .hb{display:flex;flex-direction:column;align-items:center;gap:3px}#fbFace .bar .hudb{--s:58px}#fbFace .bar .hb span{color:#f3e9c9;font:600 12px AgThai,system-ui,"Noto Sans Thai",sans-serif;text-shadow:0 1px 3px #000}#fbFace .bar small{opacity:.7;font-weight:400}
+  #fbPause{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px)}#fbPause .box{display:flex;flex-direction:column;gap:8px;min-width:280px;max-width:92vw;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f3e9c9;font:14px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 16px 40px #000a}
   #fbPause b{font-size:18px}#fbPause small{color:#cdbb92}#fbPause button{padding:9px 14px;border-radius:10px;border:1px solid #b9c48a66;background:#1b302a;color:#f3e9c9;font:inherit;text-align:left;cursor:pointer}#fbPause button:hover:not(:disabled){background:#2d4a40}#fbPause button.warn{border-color:#e2705f88;color:#ffc2b4}#fbPause button:disabled{opacity:.45}#fbPause .keys{font-size:12.5px;line-height:1.7;color:#d8caa0;padding:6px 4px}#fbPause .opt{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#d8caa0;padding:4px}#fbPause .opt[hidden]{display:none}#fbPause .opt label{display:flex;align-items:center;justify-content:space-between;gap:10px}#fbPause .opt label:has(input[type=checkbox]){justify-content:flex-start}
   @media (max-width:820px){#fbHud{width:200px;padding:7px 9px;font-size:12px}#fbHud .help{display:none}#fbHand{overflow-x:auto;justify-content:flex-start}.fb-card,.fb-card .face,.fb-fly,.fb-fly .face{width:58px}.fb-pile{width:40px;height:58px}#fbHand{gap:5px;padding:6px}.fb-card .fb-tag{font-size:9px}#fbBar{bottom:130px}}`;
   document.head.append(css);
@@ -283,7 +492,7 @@
   /* ---------- card faces (old CardStudio design) ---------- */
   const cardKey = (group, id) => (group === 'movement' ? 'm-' : 'a-') + id;
   /* cards that have no picture yet borrow a close one */
-  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell' };
+  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell', chaosBolt: 'spell', chaosRend: 'quake', chaosWard: 'guard', cleave: 'quake', shieldBash: 'wall', volley: 'line', snipe: 'aimed', smite: 'spell', bless: 'mend', shadowStep: 'twin', emberBurst: 'flame', warCry: 'guard' };
   function faceHTML(group, id, mini) {
     const html = window.CardStudio?.renderCard(cardKey(group, id), { mini, fallbackArt: 'assets/cards/tactic-' + (ART_SUB[id] || id) + '.webp' });
     if (html) return html;
@@ -295,6 +504,8 @@
     if (group === 'movement') { const m = TD.MOVE[id]; return 'เดิน ' + m.move + (m.stamina ? ' · แรง ' + m.stamina : '') }
     const r = FB.cardRule(id); if (!r) return 'ยังไม่รองรับ';
     const stc = r.st ? ' · แรง ' + r.st : '';
+    if (r.self && r.guard && r.heal) return 'ป้องกัน ' + r.guard + ' · ฟื้น HP ' + r.heal + stc;
+    if (r.self && r.guard && r.restore) return 'ป้องกัน ' + r.guard + ' · ฟื้นแรง ' + r.restore + stc;
     if (r.self) return (r.guard ? 'ป้องกัน ' + r.guard : r.heal ? 'ฟื้น HP ' + r.heal : r.evade ? 'หลบการตีครั้งถัดไป' : r.counter ? 'สวนกลับ 12 เมื่อโดนตี' : r.ambush ? 'ตีครั้งถัดไป ×1.6' : 'ฟื้นแรง ' + r.restore) + stc;
     return 'พลัง ' + r.dmg + (r.hits ? '×' + r.hits : '') + ' · ระยะ ' + r.range + (r.behind ? ' · หลัง +' + r.behind : '') + (r.leap ? ' · กระโจน' : '') + (r.guardAfter ? ' · กัน ' + r.guardAfter : '') + stc;
   }
@@ -311,10 +522,10 @@
   const turnGoal = () => st.obj?.turns ? '/' + st.obj.turns : '';
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
-    d.innerHTML = `<b style="color:#f6d79b">⚔ สนามรบ · ไพ่</b><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space">จบเทิร์น</button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)">↶ ย้อนเดิน</button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)">⚡ Auto</button><button id="fbDis">♻ ทิ้งไพ่ฟื้นแรง</button><button id="fbMenu" title="เมนู (Esc)">☰</button>${EMBED ? '<button id="fbBack" hidden>🗺 กลับแผนที่โลก</button>' : ''}</div>
+    d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbDis"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ทิ้งไพ่ฟื้นแรง</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '<button id="fbBack" hidden><img class="bi" src="assets/icons/pack/arrow.webp" alt="" draggable="false"><span>ไปต่อ ▸</span></button>' : ''}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
-      <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรู = ดูการ์ดที่ดีที่สุด · คลิกซ้ำ = โจมตี<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง) · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
+      <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรูในระยะ = เลือกไพ่โจมตีจากแถวไพ่ข้างตัว (ไกลเกิน = เกมพาเดินเข้าไปให้)<br>คลิกช่องฟ้า/เหลือง = เลือกไพ่เดินจากแถวไพ่ · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
     document.body.append(d); hud = d;
     d.querySelector('#fbEnd').onclick = () => endHeroTurn();
     d.querySelector('#fbAuto').onclick = () => setAuto(!auto);
@@ -322,7 +533,11 @@
     d.querySelector('#fbDis').onclick = () => setDiscard(!discardMode);
     d.querySelector('#fbUndo').onclick = () => undoWalk();
     d.querySelector('#fbMenu').onclick = () => pauseMenu();
-    if (EMBED) d.querySelector('#fbBack').onclick = () => report(st.outcome);
+    /* v98.252 · the action buttons live in their own row above the cards; the info window can be folded */
+    { const row = d.querySelector('#fbEnd').parentElement, acts = document.createElement('div'); acts.id = 'fbActions'; while (row.firstChild) acts.append(row.firstChild); row.remove(); document.body.append(acts);
+      const min = d.querySelector('#fbMin'), apply = m => { d.classList.toggle('min', m); try { localStorage.setItem('projectA.fbHudMin', m ? '1' : '0') } catch (e) { } };
+      let was = false; try { was = localStorage.getItem('projectA.fbHudMin') === '1' } catch (e) { } apply(was); min.onclick = () => apply(!d.classList.contains('min')) }
+    if (EMBED) document.getElementById('fbBack').onclick = () => report(st.outcome);
   }
   function hudSync() {
     if (!hud || !st) return;
@@ -335,7 +550,7 @@
     const IQN = ['ดุร้าย · พุ่งใส่ตัวใกล้สุด', 'เจ้าเล่ห์ · ล่าตัวอ่อนแอ จบตัวที่ใกล้ตาย', 'ชำนาญยุทธวิธี · เล็งตัวซัพพอต หลบกลางวงล้อม ถอยหนีตอนใกล้ตาย', 'จอมวางแผน · ใช้ตัวบังพวกอ่อนแอ ถอยไปฟื้นตัว'];
     const mini = (u, col) => `<div class="mini ${u.hp <= 0 ? 'down' : ''} ${st.target === u.id ? 'tgt' : ''}" data-id="${u.id}" title="${u.side === 'monster' ? esc(IQN[u.iq | 0]) : ''}"><span>${esc(u.name)}${elb(u)}${lvb(u)}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:${col}"></i></div>`;
     hud.querySelector('#fbUnits').innerHTML =
-      `<div>${esc(h.name)}${Object.keys(h.sts || {}).map(k => ` <span title="${esc(FB.STATUS[k].name)} ${h.sts[k]} เทิร์น">${FB.STATUS[k].icon}</span>`).join('')} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff">🛡' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
+      `<div>${esc(h.name)}${Object.keys(h.sts || {}).map(k => ' ' + stiHtml(k, esc(FB.STATUS[k].name) + ' ' + h.sts[k] + ' เทิร์น')).join('')} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff"><img class="sti" src="assets/ui/status/guard.webp" alt="" draggable="false"> ' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
       `<div><small style="color:#bba57f">แรง (stamina)</small> <span style="float:right">${h.stamina}/100</span></div>${bar(h.stamina, 100, '#e8c34a')}` +
       (FB.allies(st).length ? '<div class="grp">ทีม <small>(สั่งการ · ท่าพิเศษใช้ 1 คริสตัล)</small></div>' + FB.allies(st).map(u => allyRow(u)).join('') : '') +
       '<div class="grp">ศัตรู <small>(คลิกเพื่อเล็งเป้า)</small></div>' + FB.monsters(st).map(u => mini(u, '#e2705f')).join('');
@@ -343,26 +558,109 @@
     hud.querySelectorAll('#fbUnits [data-skill]').forEach(e => e.onclick = () => allySkillAct(e.dataset.skill));
     hud.querySelectorAll('#fbUnits [data-ctl]').forEach(e => e.onclick = () => { const u = st.units.find(x => x.id === e.dataset.ctl); if (!u) return; u.autoCtl = !u.autoCtl; floatText(u, u.autoCtl ? 'AI' : 'MANUAL', '#bfe8ff', true); hudSync() });
     hud.querySelectorAll('#fbUnits .mini[data-id^="monster"]').forEach(e => e.onclick = () => { if (st.turn === 'hero' && !busy) { FB.setTarget(st, e.dataset.id); hudSync(); handSync() } });
-    hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? '🏆 ชนะ!' : '💀 แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns}${turnGoal()} · ตาคุณ · แต้มเดิน ${st.mp}` : st.turn === 'ally' && st.cur ? `เทิร์น ${st.turns}${turnGoal()} · ตาของ ${st.cur.name} · เดิน ${st.mp}` : `เทิร์น ${st.turns}${turnGoal()} · ตาศัตรู…`;
-    hud.querySelector('#fbTurn').title = goalLine(); hud.querySelector('#fbGoal').textContent = '🎯 ' + FB.objText(st);
+    hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? 'ชนะ!' : 'แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns}${turnGoal()} · ตาคุณ · แต้มเดิน ${st.mp}` : st.turn === 'ally' && st.cur ? `เทิร์น ${st.turns}${turnGoal()} · ตาของ ${st.cur.name} · เดิน ${st.mp}` : `เทิร์น ${st.turns}${turnGoal()} · ตาศัตรู…`;
+    hud.querySelector('#fbTurn').title = goalLine(); hud.querySelector('#fbGoal').innerHTML = '<img class="bi" src="assets/icons/pack/target.webp" alt="" draggable="false">' + esc(FB.objText(st));
     const left = FB.crystals(st), max = st.crystalMax;
-    hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<span class="gem ${i < left ? 'on' : ''}"></span>`).join('');
-    hud.querySelector('#fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
-    hud.querySelector('#fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || !walks.length;
-    { const a = hud.querySelector('#fbAuto'); a.classList.toggle('on', auto); a.textContent = auto ? '⏸ หยุด Auto' : '⚡ Auto' }
-    queueSync();
-    hud.querySelector('#fbDis').disabled = busy || !!st.outcome || st.turn !== 'hero' || (!left && !discardMode);
-    hud.querySelector('#fbDis').textContent = discardMode ? 'ยกเลิกการทิ้ง' : '♻ ทิ้งไพ่ฟื้นแรง';
+    hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<img class="gemi" src="assets/ui/gem-${i < left ? 'on' : 'off'}.webp" alt="" draggable="false">`).join('');
+    document.getElementById('fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
+    document.getElementById('fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || !walks.length;
+    { const a = document.getElementById('fbAuto'); a.disabled = noAuto(); a.title = noAuto() ? 'ปิดไว้ในบทฝึกต่อสู้' : ''; a.classList.toggle('on', auto); a.querySelector('span').textContent = auto ? 'หยุด Auto' : 'Auto' }
+    queueSync(); itemSync();
+    document.getElementById('fbDis').disabled = busy || !!st.outcome || st.turn !== 'hero' || (!left && !discardMode);
+    document.getElementById('fbDis').querySelector('span').textContent = discardMode ? 'ยกเลิกการทิ้ง' : 'ทิ้งไพ่ฟื้นแรง';
     hud.querySelector('#fbLog').innerHTML = st.log.slice(-6).reverse().map(x => '<div>' + esc(x) + '</div>').join('');
   }
 
   /* v97 · FFT turn queue (top centre): who acts next, the acting unit highlighted, with its HP */
+  /* v98.253 · the face picture of a fighter (queue chips + inspect card) */
+  function faceFor(u) {
+    const lookNow = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })(), otherLook = lookNow === 'female' ? 'male' : 'female';
+    return u.side === 'monster' ? (MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' })
+      : u === FB.hero(st) ? { src: `assets/portraits/hero-${lookNow}-neutral.webp`, pos: '50% 4%', size: '230%' }
+      : u.key === 'sib' ? { src: `assets/portraits/hero-${otherLook}-neutral.webp`, pos: '50% 4%', size: '230%' }
+      : ['kier', 'bram', 'luna', 'mil'].includes(u.key) ? { src: `assets/cards/portraits/u-${u.key}.webp`, pos: '50% 22%', size: '165%' }
+      : { src: `assets/village-town/npc/${u.key}/se-stand.webp`, pos: '50% 9%', size: '285%' };   /* recruits have no card portrait: the head of their standing picture */
+  }
+  /* click a chip of the queue: the camera goes to that fighter, a small detail card opens, a grey crystal turns over its head and its cells for the NEXT turn are shown; click again / Esc / ✕ to close */
+  function setInspect(u) { inspectU = (!u || u === inspectU || u.hp <= 0) ? null : u; userCam = false; cam.set = true; refresh(); queueSync() }
+  function inspectSync() {
+    let d = document.getElementById('fbInspect');
+    const U = hoverU && hoverU.hp > 0 ? hoverU : inspectU;
+    if (!U) { d?.remove(); return }
+    const u = U, f = faceFor(u), E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, (u.shown ?? u.hp) / u.maxHp * 100)), foe = u.side === 'monster';
+    const IQ2 = ['ดุร้าย · พุ่งใส่ตัวใกล้สุด', 'เจ้าเล่ห์ · ล่าตัวอ่อนแอ', 'ชำนาญยุทธวิธี · เล็งตัวซัพพอต', 'จอมวางแผน · ใช้ตัวบังพวกอ่อนแอ'];
+    if (!d) { d = document.createElement('div'); d.id = 'fbInspect'; document.body.append(d) }
+    d.className = foe ? 'foe' : 'ally';
+    d.innerHTML = `<button class="x" aria-label="ปิด" title="ปิด (Esc)"></button><div class="top"><span class="fc" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}"></span><div><b>${esc(u.name)}</b><small>${E ? E.icon + ' ' : ''}${u.level ? 'Lv.' + u.level : ''}</small><div class="bar"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><small>${Math.round(u.shown ?? u.hp)}/${u.maxHp} HP</small></div></div>
+      <div class="st"><span>เดิน <b>${u.move || '-'}</b></span><span>ระยะ <b>${u.range ?? '-'}</b></span><span>โจมตี <b>${u.atk ?? '-'}</b></span><span>ป้องกัน <b>${(u.def ?? u.armor) || 0}</b></span></div>${foe ? `<small class="iq">${esc(IQ2[u.iq | 0] || '')}</small>` : ''}<small class="nx">${U === inspectU ? 'ช่องที่เดินได้ตาต่อไปแสดงบนสนาม' : (U === pickU ? 'เลือกอยู่ (คริสตัลเทาเหนือหัว)' : 'ชี้อยู่ · คลิกเพื่อเลือก')}</small>`;
+    d.querySelector('.x').hidden = U !== inspectU; d.querySelector('.x').onclick = () => setInspect(null);
+  }
+  /* v98.496 · bag cards: the consumables in the bag become cards in the fight (the adventurers' guild enchants every registered adventurer's bag — docs/lore/CURRENT-ERA-CANON) */
+  function bagForBattle() { if (Q.get('tut') || Q.get('noitems') === '1') return null; try { const b = window.WorldState?.game().village.bag || {}, out = {}; for (const [k, n] of Object.entries(b)) if (n > 0 && window.FlatBattle?.ITEM?.[k]) out[k] = n; return Object.keys(out).length ? out : null } catch (e) { return null } }
+  let itemOpen = false;
+  const itemLine = k => { const r = FB.itemRule(k); if (!r) return ''; const o = []; if (r.dmg) o.push('พลัง ' + r.dmg + ' · ระยะ ' + r.range + (r.aoe ? ' · ลามรอบเป้า' : '')); if (r.heal) o.push('ฟื้น HP ' + r.heal); if (r.restore) o.push('ฟื้นแรง ' + r.restore); if (r.guard) o.push('ป้องกัน ' + r.guard); if (r.cure) o.push('ล้างสถานะ'); if (r.evade) o.push('หลบครั้งถัดไป'); if (r.ambush) o.push('ตีครั้งถัดไป ×1.6'); if (r.status) o.push(({ burn: 'ติดไหม้', freeze: 'ตาพร่า/แช่แข็ง', shock: 'ช็อก', poison: 'ติดพิษ' })[r.status[0]] || ''); return o.join(' · ') };
+  function itemSync() {
+    let btn = document.getElementById('fbItemBtn'), tray = document.getElementById('fbItems');
+    const n = st?.itemHand?.length || 0;
+    if (!st || !Object.keys(st.bag || {}).length) { btn?.remove(); tray?.remove(); return }
+    if (!btn) { btn = document.createElement('button'); btn.id = 'fbItemBtn'; btn.title = 'การ์ดไอเทม — ของใช้ในสมุดผนึกเป็นการ์ด ใช้ได้เทิร์นละ 1 ใบ'; btn.onclick = () => { itemOpen = !itemOpen; itemSync() }; document.getElementById('fbActions')?.append(btn); window.Tips?.once?.('b_bagcards', 'การ์ดไอเทม', ['ของที่เจ้าเก็บไว้ในสมุดผนึกแสดงเป็นการ์ด — เวทแปลงของเป็นการ์ดที่สมาคมนักผจญภัยใส่ไว้ในสมุดตอนลงทะเบียนแรงก์ F ใครลงทะเบียนก็มีเหมือนกัน', 'กดปุ่ม 📖 ไอเทม แล้วเลือกการ์ด · ใช้ได้เทิร์นละ 1 ใบ และกินคริสตัล 1 ดวง', 'ใช้แล้วการ์ดหมดไปจากสมุดจริง (กลับมาได้ถ้าซื้อ/เก็บเพิ่ม)']) }
+    btn.innerHTML = '<span>📖 ไอเทม</span><b class="n">' + n + '</b>'; btn.disabled = !n && !itemOpen;
+    if (!tray) { tray = document.createElement('div'); tray.id = 'fbItems'; document.body.append(tray) }
+    tray.hidden = !itemOpen || !n;
+    tray.innerHTML = '<span class="lbl">การ์ดไอเทม · ใช้ได้เทิร์นละ 1</span>' + (st.itemHand || []).map((k, i) => { const why = st.turn === 'hero' ? FB.itemBlock(st, i) : 'ไม่ใช่ตาคุณ', html = window.CardStudio?.renderCard('c-' + k, { mini: true, fallbackArt: 'assets/cards/item/' + k + '.webp' }) || '<div class="fb-fallback"><b>' + esc(FB.ITEM_NAME[k] || k) + '</b></div>';
+      return `<button class="fb-card item ${why ? 'off' : ''}" data-i="${i}" title="${esc((FB.ITEM_NAME[k] || k) + ' — ' + itemLine(k) + (why ? ' · ' + why : ''))}"><div class="face">${html}</div><span class="fb-tag"><b>${esc(FB.ITEM_NAME[k] || k)}</b>${esc(itemLine(k))}</span></button>` }).join('');
+    tray.querySelectorAll('.fb-card').forEach(b => b.onclick = () => useItemCard(+b.dataset.i));
+  }
+  async function useItemCard(i) {
+    if (!st || st.turn !== 'hero' || busy) return; const why = FB.itemBlock(st, i); if (why) { flash(why); return }
+    const k = st.itemHand[i], r = FB.useItem(st, i); if (!r.ok) { flash(r.reason); return }
+    hidePreview(); const pop = document.createElement('div'); pop.className = 'fb-show play'; pop.style.setProperty('--tone', r.self ? TONE.self : TONE.attack);
+    pop.innerHTML = `<div class="face">${window.CardStudio?.renderCard('c-' + k, { mini: false, fallbackArt: 'assets/cards/item/' + k + '.webp' }) || ''}</div><div class="say"><b>${esc(r.name)}</b><br>${esc(itemLine(k))}</div>`; document.body.append(pop); { const s = sideSpot(210, 340); pop.style.left = s.x + 'px'; pop.style.top = s.y + 'px' }
+    busy = true; hudSync(); if (!r.self) walks = []; pend = null; markAuto();
+    await heroAction(r); pop.remove(); busy = false; refresh(); if (st.outcome) finish();
+  }
+  /* v98.494 · persistent portrait panel (left): the acting fighter and the one on the receiving end for the whole turn; the face follows the beat — attack · hurt · guard · heal · down.
+     The mood comes from the pose the animation code already sets (BattlePortrait.mood) · real expression pictures when they exist, otherwise code-drawn job busts / CSS glow on a still picture */
+  let duel = { a: null, t: null, sig: '' };
+  const duelPref = k => { try { return localStorage.getItem('projectA.fbDuel' + k) === '1' } catch (e) { return false } };
+  function duelTarget(act) {
+    if (duel.t && duel.t.hp > 0 && st.units.includes(duel.t) && duel.t !== act) return duel.t;
+    if (duel.t && duel.t.hp <= 0 && now() - (duel.tAt || 0) < 1400) return duel.t;   /* the fallen stays on screen a moment */
+    if (act && act.side === 'hero') return FB.monsters(st).find(m => m.id === st.target && m.hp > 0) || FB.monster(st) || null;
+    return null;
+  }
+  function duelTick(t) {
+    const BP = window.BattlePortrait; let d = document.getElementById('fbDuel');
+    if (!BP || !st || EDIT) { d?.remove(); return }
+    const act = actUnit && actUnit.hp > 0 ? actUnit : (st.outcome ? FB.hero(st) : FB.queue(st, 1)[0]);
+    if (!act) { d?.remove(); return }
+    if (act !== duel.a) { duel.a = act; duel.t = null }
+    const tg = st.outcome ? null : duelTarget(act), look = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })();
+    const min = duelPref('Min'), code = duelPref('Code'), win = st.outcome === 'win';
+    const row = u => { const m = win && u.side !== 'monster' ? 'win' : BP.mood(u, t); return { u, m, hp: Math.round(u.shown ?? u.hp) } };
+    const A = row(act), T = tg ? row(tg) : null;
+    const sig = [A.u.id, A.m, A.hp, T && T.u.id, T && T.m, T && T.hp, min ? 1 : 0, code ? 1 : 0, look].join('|');
+    if (d && d.dataset.sig === sig) return;
+    if (!d) { d = document.createElement('div'); d.id = 'fbDuel'; document.body.append(d) }
+    d.dataset.sig = sig; d.classList.toggle('min', min);
+    const card = (R, role) => {
+      const u = R.u, foe = u.side === 'monster', f = foe && MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
+      const jn = !foe && window.Progression?.JOBS?.[job]?.name;
+      return `<div class="dc ${role} ${foe ? 'foe' : 'ally'} m-${R.m}" style="--jc:${jc}"><span class="pf" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}">${job ? `<i class="jb" title="${esc(jn || '')}">${BP.JOB_ICON[job]}</i>` : ''}</span><div class="nm"><b>${esc(u.name)}</b><small>${u.level ? 'Lv.' + u.level + ' ' : ''}${esc(jn || '')}</small><div class="hp"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><em class="mo">${BP.LABEL[R.m] || ''}</em></div></div>`;
+    };
+    d.innerHTML = card(A, 'a') + (T ? '<span class="vs">▾</span>' + card(T, 't') : '') + `<div class="tools"><button data-k="Min" title="ย่อ/ขยายพอร์เทรต">${min ? '▣' : '▭'}</button><button data-k="Code" title="สลับภาพจริง ↔ ภาพวาดตามอาชีพ (โค้ด)">${code ? '🖼' : '✎'}</button></div>`;
+    d.querySelectorAll('.tools button').forEach(b => b.onclick = () => { try { localStorage.setItem('projectA.fbDuel' + b.dataset.k, duelPref(b.dataset.k) ? '0' : '1') } catch (e) { } d.dataset.sig = ''; });
+  }
+  addEventListener('keydown', e => { if (e.key === 'Escape' && inspectU) { e.preventDefault(); e.stopImmediatePropagation(); setInspect(null) } }, true);
   function queueSync() {
     const q = document.getElementById('fbQueue'); if (!q || !st) return;
+    if (!q._wired) { q._wired = true; q.addEventListener('click', e => { const c = e.target.closest('.qc'); if (!c) return; const u = st.units.find(x => x.id === c.dataset.id); if (u) setInspect(u) }) }
     if (st.outcome) { q.innerHTML = ''; return }
     const list = FB.queue(st, 9), act = actUnit && actUnit.hp > 0 ? actUnit : list[0], rest = list.filter(u => u !== act).slice(0, 8), chip = (u, on) => {
       const E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, u.hp / u.maxHp * 100)), side = u.side === 'monster' ? 'foe' : u === FB.hero(st) ? 'hero' : 'ally';
-      return `<div class="qc ${side} ${on ? 'on' : ''}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="ic">${E ? E.icon : esc((u.name || '?')[0])}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%"></i></div>` };
+      const face = faceFor(u);
+      /* v98.251 · the queue shows each fighter's face (cropped from their portrait); the element icon is a small badge */
+      return `<div class="qc ${side} ${on ? 'on' : ''} ${inspectU === u ? 'look' : ''}" data-id="${u.id}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="fc" style="background-image:url('${face.src}'),none;background-position:${face.pos};background-size:${face.size}"></span><span class="ic">${E ? E.icon : ''}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%;--p:${pct}"></i></div>` };
     q.innerHTML = chip(act, true) + '<span class="arr">›</span>' + rest.map(u => chip(u, false)).join('');
   }
   /* ---------- hand ---------- */
@@ -380,7 +678,9 @@
   /* v94.02 · element tip: the card's element against the target it would hit (Kaelam chart: js/elements.js) */
   function elTip(group, id) {
     const W = window.ElementWheel; if (!W || group !== 'combat') return null; const r = FB.cardRule(id); if (!r || r.self) return null;
-    const el = FB.CARD_EL[id] || FB.WEAPON_EL[FB.hero(st).weapon] || 'earth', tg = FB.pickTarget(st, r) || st.units.find(u => u.id === st.target) || FB.monster(st);
+    const el = FB.CARD_EL[id] || FB.WEAPON_EL[FB.hero(st).weapon] || 'earth', alive = u => u && u.side === 'monster' && u.hp > 0,
+      /* v98.598 · the ▲ / ▼ on a card is about the enemy the player has SELECTED right now (clicked → pickU / st.target), not about whichever one the game would pick by itself */
+      tg = (alive(pickU) ? pickU : null) || (alive(st.units.find(u => u.id === st.target)) ? st.units.find(u => u.id === st.target) : null) || FB.pickTarget(st, r) || FB.monster(st);
     return W.tip(el, tg?.el);
   }
   function cardEl(group, c, i) {
@@ -458,6 +758,54 @@
   function toast(t) { const d = document.createElement('div'); d.className = 'fb-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 1700) }
   /* v97.12 · battle opening (B13, first part): the field's name and the win / lose rule come in, the camera looks at the enemy leader,
      then back to the party. Skipped when the arena is only warming up and with reduced motion (CINE off). */
+  /* ---------- v98.573 · battle conversations (js/battle-talk.js) ---------- */
+  const TALKED = new Set();
+  const scriptOf = key => (SCENE?.talk?.[key]) || (window.BattleTalk?.scripts?.[TUT]?.[key]) || null;
+  async function runTalk(lines, focus) {
+    if (!lines?.length || !window.BattleTalk || EDIT) return;
+    const f = focus && focus.vu !== undefined ? focus : null;
+    if (f && CINE) await cinematic(f, f, () => window.BattleTalk.play(lines), { z: 1.35, bars: false, lead: 260, tail: 120 }); else await window.BattleTalk.play(lines);
+  }
+  async function openingTalk() {
+    while (document.getElementById('fbScenePanel')) await wait(120);   /* the rules panel is read first */
+    const lines = scriptOf('start') || (SCENE?.intro || []).map(l => ({ who: l.who, text: l.text, emo: l.emo }));
+    await runTalk(lines);
+  }
+  /* once-only reactions in story fights: a friend goes down · the hero is hurt · the enemy side is half gone */
+  async function eventTalk() {
+    if (!(SCENE || TUT) || !st || st.outcome) return;
+    const once = (k, fn) => { if (TALKED.has(k)) return null; const r = fn(); if (r) TALKED.add(k); return r };
+    const hero = FB.hero(st), L = [];
+    const down = FB.allies(st).find(a => a.hp <= 0 && !TALKED.has('down' + a.key)); if (down) { TALKED.add('down' + down.key); const t = window.PartyTalk?.line(down.key, 'down'); if (t) L.push({ who: down.key, emo: 'worry', text: t }); L.push({ who: 'hero', emo: 'worry', text: 'ล้มไปแล้วหรือ… ไหวไหม? ข้าจะจัดการเอง!' }) }
+    once('low', () => { if (hero.hp > 0 && hero.hp <= hero.maxHp * .3) { L.push({ who: 'hero', emo: 'worry', text: 'เจ็บชะมัด… แต่ยังไม่ล้ม' }); return 1 } });
+    const mons = FB.monsters(st).filter(m => !m.mystery), tot = mons.reduce((a, m) => a + m.maxHp, 0), cur = mons.reduce((a, m) => a + Math.max(0, m.hp), 0);
+    if (!SCENE?.talk?.half && tot && cur <= tot * .5) once('half', () => { const t = scriptOf('half'); if (t) { L.push(...t); return 1 } });
+    if (L.length) await runTalk(L, hero);
+  }
+  async function endTalk() {
+    if (!window.BattleTalk || EDIT) return; await wait(700);
+    if (st.outcome === 'win' && SCENE && st.units.some(u => u.mystery && u.hp > 0 && !u._rev)) { for (const u of st.units.filter(u => u.mystery && u.hp > 0 && !u._rev)) await mysteryReveal(u, true) }
+    const key = st.outcome === 'win' ? 'win' : st.outcome === 'lose' ? 'lose' : null, L = key && scriptOf(key); if (L) await runTalk(L);
+  }
+  /* the odd goat is Mip in disguise: it cannot die. Beaten (HP 1) it drops the shape, speaks, runs off the street and is gone */
+  if (Q.get('dbg') === '1') window.__FB = { get st() { return st }, mysteryCheck: () => mysteryCheck(), eventTalk: () => eventTalk(), endTalk: () => endTalk(), runTalk: (l, f) => runTalk(l, f) };   /* test hook (tools/*) */
+  let mysteryBusy = false;
+  async function mysteryCheck() {
+    if (mysteryBusy || !st) return; const u = st.units.find(x => x.mystery && !x._rev && x.hp <= 1 && x.hp < x.maxHp); if (!u) return;
+    mysteryBusy = true; try { await mysteryReveal(u, false) } finally { mysteryBusy = false }
+  }
+  async function mysteryReveal(u, soft) {
+    u._rev = true; u.immortal = false; u.pose = 'idle'; u.mipForm = true; u.shown = 0; sfx('cast', .5); screenFlash('159,216,255', .35, 420);
+    glows.push({ u: u.vu, v: u.vv, col: '159,216,255', r: UNIT * 1.8, t0: now(), dur: 1100 }); floatText(u, '✦', '#9fd8ff', false, true); hudSync();
+    await wait(500); await runTalk((SCENE?.talk && (soft ? SCENE.talk.soft : SCENE.talk.reveal)) || [], u);
+    /* run away from the hero along the nearest empty line, then fade */
+    const h = FB.hero(st), du = Math.sign(u.u - h.u) || 1, dv = Math.sign(u.v - h.v) || -1, far = SCENE ? SCENE.R + 3 : 9;
+    const to = Math.abs(u.u - h.u) >= Math.abs(u.v - h.v) ? { u: du * far, v: u.v } : { u: u.u, v: dv * far };
+    u.dir = dirTo(u, to); u.walking = true; setTimeout(() => { u.deadAt = now() }, 450);
+    await walkAnim(u, [{ u: u.u, v: u.v }, to], 7.5, true); u.walking = false;
+    u.hp = 0; try { FB.checkOutcome(st) } catch (e) { }
+    refresh(); hudSync();
+  }
   async function battleIntro() {
     const d = document.createElement('div'); d.id = 'fbIntro';
     d.innerHTML = `<small>${esc(({ forest: 'ป่า', grass: 'ทุ่งหญ้า', hills: 'เนินเขา', swamp: 'บึง', snow: 'ทุ่งหิมะ', sand: 'หาดทราย' })[Q.get('biome')] || 'สนามรบ')}${Q.get('night') === '1' ? ' · กลางคืน' : ''}</small><b>${esc(TITLE || FB.monster(st)?.name || 'การต่อสู้')}</b><span>${esc(goalLine())}</span>`;
@@ -470,8 +818,10 @@
   async function startTurnShow(first) {
     walks = []; pend = null;
     if (first && CINE && Q.get('warm') !== '1' && !st.introDone) { st.introDone = true; busy = true; hudSync(); try { await battleIntro() } finally { busy = false } }
+    if (first && Q.get('warm') !== '1' && Q.get('resume') !== '1') { busy = true; hudSync(); try { await openingTalk() } finally { busy = false } }   /* v98.573 · the opening conversation (Disgaea-style window over the field) */
     if (first) { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'start') }
     if (first && !TUT && Q.get('warm') !== '1') battleTip();   /* v97.93 · C10: one new rule per battle, the first few battles after the prologue */
+    if (!first) { busy = true; try { await mysteryCheck(); await eventTalk() } finally { busy = false } }
     refresh(); const fresh = (st.drawn || []).filter(u => !seenUids.has(u) || !first); st.drawn.forEach(u => seenUids.add(u));
     toast(first ? 'BATTLE START · DRAW' : `TURN ${st.turns} · DRAW ${fresh.length}`);
     if (fresh.length) { busy = true; hudSync(); await drawShow(fresh); busy = false; refresh() }
@@ -490,7 +840,9 @@
     } finally { autoRun = false }
     if (auto && !busy && st.turn === 'hero' && !st.outcome) await endHeroTurn();
   }
-  function setAuto(on) { auto = on; hudSync(); if (on && !busy && st.turn === 'hero' && !st.outcome) autoTurn() }
+  /* v98.354 · the first two fights (goat, pumpkin) teach the battle system: no Auto, for the leader or for the friends */
+  const noAuto = () => ['goat', 'pumpkin'].includes(Q.get('tut')) || Q.get('noauto') === '1';
+  function setAuto(on) { if (on && noAuto()) { flash('บทฝึกต่อสู้ · ยังใช้ Auto ไม่ได้ ลองเล่นเองก่อน'); return } auto = on; hudSync(); if (on && !busy && st.turn === 'hero' && !st.outcome) autoTurn() }
 
   /* ---------- discard for stamina ---------- */
   function setDiscard(on) { discardMode = on && !busy && st.turn === 'hero' && !st.outcome && (FB.crystals(st) > 0); picked.clear(); hidePreview(); refresh() }
@@ -531,17 +883,23 @@
     await show.done(); busy = false; refresh();
     if (st.outcome) finish();
   }
+  async function chargeAttack(unit, duration = 560) {
+    unit.pose = 'windup';
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) glows.push({ u: unit.vu, v: unit.vv, col: '255,210,110', r: UNIT * 1.2, charge: true, t0: now(), dur: duration });
+    await wait(reduced ? Math.min(220, duration) : duration);
+  }
   async function heroAction(r) {
     const h = FB.hero(st), m = r.target || FB.monster(st);
     if (r.self) {
       h.pose = r.guard ? 'guard' : 'idle'; fx(r.fx, h, h, { color: r.heal ? '#7fe08a' : '#f4d36a' }); if (r.card === 'climb') fx('climbUp', h); if (r.card === 'perch') fx('perchFlag', h); impact(h, r.fx, false); h.flashUntil = 0;
-      await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a'); if (r.evade) floatText(h, 'EVADE READY', '#bfe8ff'); if (r.counter) floatText(h, 'COUNTER READY', '#ffd9a0'); if (r.ambush) floatText(h, 'AMBUSH ×1.6', '#d9b8ff');
+      await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a'); if (r.cured?.length) floatText(h, 'CURED', '#c8f0ff'); if (r.evade) floatText(h, 'EVADE READY', '#bfe8ff'); if (r.counter) floatText(h, 'COUNTER READY', '#ffd9a0'); if (r.ambush) floatText(h, 'AMBUSH ×1.6', '#d9b8ff');
       h.shown = h.hp; hudSync(); await wait(520); h.pose = 'idle'; return;
     }
     const last = !FB.monsters(st).some(u => u.hp > 0), kill = last, heavy = r.big > 1 || r.hits.reduce((a, x) => a + x.damage, 0) >= 20;
-    await cinematic(h, m, async () => {
+    await cinemaIf(heavy || last || r.hits.some(x => x.crit || x.down || x.dead || (x.hp ?? 1) <= 0), h, m, async () => {
       if (r.leap) { const from = { vu: h.vu, vv: h.vv }; h.pose = 'windup'; await wait(160); await leapAnim(h, r.leap.to); fx('diveTrail', m, from); shake(9, 260) }
-      h.dir = dirTo(h, m); h.pose = 'windup'; if (cine) { cine.z += .18; cine.speed = 4 } await wait(heavy ? 420 : 280);
+      h.dir = dirTo(h, m); h.pose = 'windup'; if (cine) { cine.z += .18; cine.speed = 4 } if (heavy) await chargeAttack(h); else await wait(280);
       h.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(h, m) * (heavy ? 2.2 : 1.3)); lines(m, 220);
       const dur = r.card === 'rockfall' ? (fx('rockfall', m), 700) : fx(r.fx, m, h, { scale: r.big, color: r.fx === 'arcane' ? '#b49ae8' : '#7cc5db' });
       await wait(Math.min(320, dur * .45));
@@ -566,7 +924,7 @@
   function noteEn(notes) { return notes.map(n => n === 'คริติคอล' ? '' : n.startsWith('กำบัง') ? 'COVER −30%' : n.startsWith('ป้องกัน') ? 'GUARD ' + n.replace(/[^0-9−-]/g, '') : n).filter(Boolean).join(' · ') }
   /* dive: an arc through the air to the cell next to the target */
   function leapAnim(u, to) {
-    return new Promise(res => { const f = { u: u.vu, v: u.vv }, t1 = { u: to.u + .5, v: to.v + .5 }, t0 = performance.now(), dur = 380; u.dir = dirTo({ u: f.u, v: f.v }, { u: t1.u, v: t1.v });
+    return new Promise(res => { const f = { u: u.vu, v: u.vv }, t1 = { u: to.u + OFF, v: to.v + OFF }, t0 = performance.now(), dur = 380; u.dir = dirTo({ u: f.u, v: f.v }, { u: t1.u, v: t1.v });
       const tick = () => { const e = Math.min(1, (performance.now() - t0) / dur); u.vu = f.u + (t1.u - f.u) * e; u.vv = f.v + (t1.v - f.v) * e; u.lift = Math.sin(e * Math.PI) * 46; if (e < 1) requestAnimationFrame(tick); else { u.lift = 0; res() } }; tick() });
   }
   const dirSign = (a, b) => (project(b.vu, b.vv).x >= project(a.vu, a.vv).x ? 1 : -1);
@@ -576,15 +934,18 @@
   function impact(u, kind, o = {}) {
     if (typeof o === 'boolean') o = { big: o };
     const big = o.big || o.crit || o.kill, col = FXCOL[kind] || '255,230,170';
+    const offensive = !!o.from && kind !== 'heal' && kind !== 'shield' && kind !== 'parry';
+    const enhanced = offensive && window.BattleVFX?.impactReady();
+    if (enhanced) { const tier = BattleVFX.impactTier(o); fx('impactCore', u, o.from, { tier, duration: BattleVFX.impactSpec(tier).duration, reducedMotion: !CINE }) }
     u.flashUntil = now() + (big ? 190 : 120);
-    glows.push({ u: u.vu, v: u.vv, col, r: UNIT * (big ? 1.8 : 1.2), t0: now(), dur: big ? 620 : 420 });
+    glows.push({ u: u.vu, v: u.vv, col, r: UNIT * (enhanced ? .65 : big ? 1.8 : 1.2), t0: now(), dur: big ? 620 : 420 });
     if (o.sound !== false) hitSound(kind, { big, crit: o.crit, kill: o.kill });
     if (kind === 'heal' || kind === 'shield' && !o.from) return;
-    burst(u, col, big ? 30 : 16, o.from, big);
-    if (o.from) knock(u, o.from, big ? 16 : 9);
+    if (!enhanced && CINE) burst(u, col, big ? 30 : 16, o.from, big);
+    if (o.from && CINE) knock(u, o.from, big ? 16 : 9);
     if (!CINE) return;
     zoomPunch(big ? .24 : .12); lines(u, big ? 460 : 280);
-    if (big) screenFlash('255,255,255', o.crit || o.kill ? .6 : .35, 150);
+    if (big && !enhanced) screenFlash('255,255,255', o.crit || o.kill ? .6 : .35, 150);
   }
   let glows = [], parts = [], speed = [], flashes = [];
   function burst(u, col, n, from, big) {
@@ -610,11 +971,12 @@
      a quick push-in without bars otherwise so a big fight keeps moving */
   async function unitAttack(a, t, s) {
     a.dir = dirTo(a, t); const M = window.MonsterArt, isMon = a.side === 'monster', fxk = isMon ? (MON[a.kind]?.fx || 'sword') : (a.fx || 'sword');
-    const tw = isMon ? M?.timing?.(a.kind, a.dir, 'windup') : null, ts = isMon ? M?.timing?.(a.kind, a.dir, 'strike') : null;
+    const strikePose = isMon && a.kind === 'pumpkinBoss' && FB.dist(a, t) > 1 ? 'cast' : 'strike';
+    const tw = isMon ? M?.timing?.(a.kind, a.dir, 'windup') : null, ts = isMon ? M?.timing?.(a.kind, a.dir, strikePose) : null;
     const isHero = t === FB.hero(st), down = t.hp <= 0, guarded = s.notes.some(n => n.startsWith('ป้องกัน')), full = isHero || s.crit || down || a.boss;
-    await cinematic(a, t, async () => {
-      a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } await wait(isMon ? Math.min(full ? 900 : 520, tw?.duration || 380) : (full ? 300 : 200));
-      a.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * 1.4); lines(t, 200) } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
+    await cinemaIf(s.crit || s.damage >= 20 || a.boss || (down && isHero), a, t, async () => {
+      a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } if (a.boss || s.damage >= 20) await chargeAttack(a, Math.max(560, Math.min(900, tw?.duration || 0))); else await wait(isMon ? Math.min(full ? 900 : 520, tw?.duration || 380) : (full ? 300 : 200));
+      a.pose = strikePose; sfx('swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * 1.4); lines(t, 200) } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
       if (s.evaded) { const o = { u: t.vu, v: t.vv }; t.vu += (t.vu - a.vu) * .35; t.vv += (t.vv - a.vv) * .35; fx('wind', t, a, {}); sfx('swing'); floatText(t, 'MISS', '#bfe8ff', false, true); await wait(420); t.vu = o.u; t.vv = o.v; a.pose = 'idle'; return }
       fx(guarded ? 'parry' : fxk, t, a, { color: isMon ? '#ffb36a' : '#9fd4ff' }); impact(t, guarded ? 'parry' : fxk, { big: s.crit || s.damage >= 12, crit: s.crit, kill: down && (isHero || !FB.monsters(st).some(u => u.hp > 0)), from: a });
       if (s.crit) banner('CRITICAL!', 'crit'); if (isHero && s.damage && CINE) screenFlash('255,30,20', s.crit || down ? .38 : .22, 320);
@@ -628,6 +990,7 @@
       if (s.fall) { shake(12, 380); await walkAnim(t, [s.fall.from, { u: t.u, v: t.v }], 6, true); fx('fallDust', t); floatText(t, 'FALL −' + s.fall.damage, '#ff9a8a', false, true); t.shown = t.hp; hudSync() }   /* v94: knocked off a ledge */
       a.pose = 'idle'; if (t.hp > 0) t.pose = 'idle';
     }, full ? { z: 1.7 } : { z: 1.4, bars: false, lead: 170, tail: 90 });
+    await mysteryCheck();
   }
   /* companion signature skill, ordered by the player */
   async function allySkillAct(id) {
@@ -646,7 +1009,7 @@
     } else {
       const t = r.target, last = !FB.monsters(st).some(u => u.hp > 0);
       await cinematic(a, t, async () => {
-        a.dir = dirTo(a, t); a.pose = 'windup'; if (cine) { cine.z += .15; cine.speed = 4 } await wait(300); a.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(a, t) * 1.6); lines(t, 220);
+        a.dir = dirTo(a, t); a.pose = 'windup'; if (cine) { cine.z += .15; cine.speed = 4 } await chargeAttack(a); a.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(a, t) * 1.6); lines(t, 220);
         fx(r.fx, t, a, { scale: 1.2, color: '#9fd4ff' }); await wait(200);
         for (const [n, x] of r.hits.entries()) {
           const tu = x.target, down = tu.hp <= 0 && !r.hits.slice(n + 1).some(y => y.target === tu);
@@ -664,7 +1027,7 @@
   let actUnit = null, auto = false, autoRun = false;
   /* v97.28 · companions speak in battle (js/party-talk.js, their village voice): at the start, on a win, under 30 % HP and when they fall */
   let sayB = null;
-  function say(u, kind) { const t = u?.key && window.PartyTalk?.line(u.key, kind); if (t) sayB = { unit: u, text: t, t0: now(), until: now() + 2600 } }
+  function say(u, kind) { if (EDIT) return; const t = u?.key && window.PartyTalk?.line(u.key, kind); if (t) sayB = { unit: u, text: t, t0: now(), until: now() + 2600 } }
   function talkCheck() { for (const a of FB.allies(st)) { if (a.hp <= 0 && !a._saidDown) { a._saidDown = a._saidLow = true; say(a, 'down') } else if (a.hp > 0 && a.hp <= a.maxHp * .3 && !a._saidLow) { a._saidLow = true; say(a, 'low') } } }
   function drawSay(g) {
     if (!sayB || now() > sayB.until) return; const u = sayB.unit, q = project(u.vu, u.vv), a = Math.min(1, (sayB.until - now()) / 300, (now() - sayB.t0) / 150);
@@ -672,8 +1035,67 @@
     g.fillStyle = 'rgba(250,242,220,.96)'; g.strokeStyle = '#5a3e18'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, 26, 11); g.fill(); g.stroke(); g.beginPath(); g.moveTo(q.x - 6, y + 26); g.lineTo(q.x, y + 34); g.lineTo(q.x + 6, y + 26); g.fill();
     g.fillStyle = '#3a2810'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(sayB.text, q.x, y + 13.5); g.restore();
   }
-  async function playSteps(steps) { try { await playSteps0(steps) } finally { talkCheck() } }
+  /* ---------- v98.58 · evolution cut-in — Dragon-Ball-style power-up: the ground cracks and shakes, rocks and gold sparks rise, the screen darkens,
+     lightning crawls over the body, a white-gold flash, the NEXT form appears wrapped in a flame aura (kept while it lives) ---------- */
+  let bolts = [];
+  function evoSparks(u, n, o = {}) {
+    const p = project(u.vu, u.vv);
+    for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, r = UNIT * (o.r ?? .5) * Math.random();
+      parts.push({ x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r * .45, vx: (Math.random() - .5) * 40, vy: -(120 + Math.random() * (o.up ?? 260)), t0: now(), life: 500 + Math.random() * 500, col: Math.random() < .6 ? '255,214,90' : '255,250,200', size: 2 + Math.random() * 3, spark: Math.random() < .6, float: true }) }
+    if (o.rocks) for (let i = 0; i < o.rocks; i++) { const a = (Math.random() - .5) * 2.4; parts.push({ x: p.x + a * UNIT * .7, y: p.y, vx: a * 14, vy: -(90 + Math.random() * 150), t0: now(), life: 700 + Math.random() * 400, col: '150,130,100', size: 3 + Math.random() * 4, float: true }) }
+  }
+  function evoBolts(u, n) {
+    const p = project(u.vu, u.vv), cy = p.y - UNIT * .7;
+    for (let k = 0; k < n; k++) { const pts = [], a0 = Math.random() * 6.28; let x = p.x + Math.cos(a0) * UNIT * .25, y = cy + Math.sin(a0) * UNIT * .5;
+      for (let i = 0; i < 6; i++) { pts.push([x, y]); x += (Math.random() - .5) * UNIT * .45; y += (Math.random() - .5) * UNIT * .55 }
+      bolts.push({ pts, t0: now(), life: 160 + Math.random() * 120 }) }
+  }
+  function boltDraw(g, t) {
+    bolts = bolts.filter(b => t - b.t0 < b.life); if (!bolts.length) return;
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = g.lineJoin = 'round';
+    for (const b of bolts) { const a = 1 - (t - b.t0) / b.life; for (const [w, c] of [[6, `rgba(255,200,60,${a * .35})`], [2.2, `rgba(255,255,230,${a})`]]) { g.strokeStyle = c; g.lineWidth = w; g.beginPath(); b.pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke() } }
+    g.restore();
+  }
+  /* the persistent aura behind an evolved monster: a golden glow + licking flames */
+  function evoAura(g, u, p, h, t) {
+    if (!u.evolved || u.hp <= 0) return;
+    const cx = p.x, by = p.y, k = h / UNIT, pulse = .85 + .15 * Math.sin(t * .008 + u.id.length);
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const gr = g.createRadialGradient(cx, by - h * .45, 0, cx, by - h * .45, h * .9); gr.addColorStop(0, `rgba(255,214,90,${.34 * pulse})`); gr.addColorStop(.6, `rgba(255,150,30,${.14 * pulse})`); gr.addColorStop(1, 'rgba(255,120,0,0)');
+    g.fillStyle = gr; g.beginPath(); g.ellipse(cx, by - h * .45, h * .62, h * .85, 0, 0, 7); g.fill();
+    for (let i = 0; i < 7; i++) { const ph = t * .006 + i * 1.9, fx = cx + (i - 3) * h * .1, fh = h * (.45 + .25 * Math.abs(Math.sin(ph))) * (1 - Math.abs(i - 3) * .12);
+      const fg = g.createLinearGradient(fx, by, fx, by - fh); fg.addColorStop(0, 'rgba(255,230,120,.55)'); fg.addColorStop(1, 'rgba(255,140,20,0)');
+      g.fillStyle = fg; g.beginPath(); g.moveTo(fx - h * .07, by); g.quadraticCurveTo(fx + Math.sin(ph) * h * .08, by - fh * .6, fx, by - fh); g.quadraticCurveTo(fx + h * .06 + Math.sin(ph) * h * .05, by - fh * .5, fx + h * .07, by); g.fill() }
+    g.restore();
+    if (Math.random() < .12) evoSparks(u, 1, { r: .5, up: 160 });
+  }
+  async function playEvolve(s) {
+    const u = s.unit; actUnit = u; u.pose = 'idle'; u.evoCharge = now();
+    hint('…ตัวนี้ผิดปกติ');
+    sfx('swing', .4);
+    // ① gather power: shake grows, dark vignette, sparks and rocks rise, the ground glows
+    screenFlash('0,0,0', .5, 1700);
+    for (let i = 0; i < 9; i++) {
+      const k = i / 8; shake(5 + 13 * k, 260); evoSparks(u, 4 + i * 2, { rocks: i > 2 ? 2 : 0 });
+      if (i % 2 === 0) glows.push({ u: u.vu, v: u.vv, col: '255,200,60', r: UNIT * (1 + k * 1.6), t0: now(), dur: 520 });
+      if (i > 3) evoBolts(u, 2); if (i === 5) { floatText(u, '!!', '#ffe27a', false, true); sfx('swing', .6) }
+      await wait(150);
+    }
+    // ② the burst: white-gold flash, the NEXT form appears
+    screenFlash('255,248,210', 1, 700); shake(30, 700); sfx('swing', 1);
+    evoSparks(u, 70, { r: 1.1, up: 480, rocks: 14 }); evoBolts(u, 9);
+    for (const r of [1.6, 2.6, 3.8]) glows.push({ u: u.vu, v: u.vv, col: '255,220,100', r: UNIT * r, t0: now(), dur: 900 });
+    u.evoShow = null; u.shown = u.hp; u.flashUntil = now() + 500; hudSync();
+    await wait(260);
+    banner('วิวัฒน์!  ' + s.to.name, 'crit');
+    floatText(u, s.to.name + ' ATK ' + s.to.atk, '#ffd25a', false, true);
+    for (let i = 0; i < 4; i++) { evoSparks(u, 18, { r: .8, up: 380 }); evoBolts(u, 3); shake(10, 200); await wait(170) }
+    hint('⚠ ' + s.to.name + ' วิวัฒน์แล้ว! พลังเพิ่มขึ้นมาก');
+    await wait(500);
+  }
+  async function playSteps(steps) { try { await playSteps0(steps); await mysteryCheck() } finally { talkCheck() } }
   async function playSteps0(steps) {
+    for (const s of steps) if (s.type === 'evolve') s.unit.evoShow = s.from.kind;   /* v98.58: keep showing the old form until the flash */
     for (const s of steps) {
       if (st.outcome && s.type !== 'attack') continue;
       if (s.type === 'control') continue;
@@ -682,22 +1104,28 @@
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
       else if (s.type === 'stun') { floatText(s.unit, 'FROZEN — SKIP', '#bfe8ff', true); await wait(420) }
       else if (s.type === 'dot') { const S = FB.STATUS[s.kind] || {}; s.unit.hitUntil = now() + 300; floatText(s.unit, (S.icon || '') + ' −' + s.damage, s.kind === 'burn' ? '#ffb070' : '#b6e07a'); s.unit.shown = s.unit.hp; hudSync(); if (s.unit.hp <= 0) s.unit.deadAt = now() + 300; await wait(420) }
+      else if (s.type === 'evolve') await playEvolve(s)
       else if (s.type === 'phase') { actUnit = s.unit; banner('ENRAGED!', 'crit'); screenFlash('255,90,58', .35, 420); shake(16, 520); floatText(s.unit, 'คลั่ง! ATK ↑', '#ff8a6a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,90,60', r: UNIT * 1.8, t0: now(), dur: 900 }); await wait(800) }
       else if (s.type === 'charge') { floatText(s.unit, '⚠ กำลังรวบรวมพลัง', '#ffd25a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,210,90', r: UNIT * 1.5, t0: now(), dur: 1100 }); hint('⚠ ' + s.unit.name + ' จะใช้ท่าใหญ่ในตาหน้า · กระจายตัว หรือถอยออกจากระยะ'); await wait(700) }
       else if (s.type === 'bossSkill') { const a = s.unit, tg = s.hits[0]?.target || a; banner(s.name, 'crit');
-        await cinematic(a, tg, async () => { a.pose = 'windup'; await wait(320); a.pose = 'strike'; sfx('swing'); shake(18, 520); screenFlash(s.fx === 'ice' ? '191,232,255' : '255,207,138', .3, 300);
-          for (const h of s.hits) { fx(s.fx === 'ice' ? 'ice' : 'earth', h.target, a, { scale: 1.2 }); impact(h.target, s.fx === 'ice' ? 'ice' : 'blunt', { big: true, from: a }); h.target.hitUntil = now() + 440; floatText(h.target, '−' + h.damage, '#ffd27a', false, true); h.target.shown = h.target.hp; if (h.target.hp <= 0) h.target.deadAt = now() + 380; hudSync(); await wait(180) }
+        await cinematic(a, tg, async () => { await chargeAttack(a, 680); a.pose = 'strike'; sfx('swing'); shake(18, 520); screenFlash(s.fx === 'ice' ? '191,232,255' : s.fx === 'dark' ? '170,90,255' : '255,207,138', .3, 300);
+          for (const f of s.revive || []) { f.deadAt = 0; f.shown = f.hp; f.pose = 'idle'; floatText(f, 'ฟื้น!', '#d9a0ff', false, true); glows.push({ u: f.vu, v: f.vv, col: '170,90,255', r: UNIT * 1.6, t0: now(), dur: 900 }) }
+          if (s.heal) { a.shown = a.hp; floatText(a, '+' + s.heal, '#c9a0ff', false, true); hudSync() }
+          for (const h of s.hits) { fx(s.fx === 'ice' ? 'ice' : s.fx === 'dark' ? 'arcane' : 'earth', h.target, a, { scale: 1.2 }); impact(h.target, s.fx === 'ice' ? 'ice' : 'blunt', { big: true, from: a }); h.target.hitUntil = now() + 440; floatText(h.target, '−' + h.damage, '#ffd27a', false, true); h.target.shown = h.target.hp; if (h.target.hp <= 0) h.target.deadAt = now() + 380; hudSync(); await wait(180) }
           await wait(380); a.pose = 'idle' }, { z: 1.5 }) }
+      else if (s.type === 'talk') await runTalk(s.lines, s.unit)
+      else if (s.type === 'say') { if (s.text) { try { hint(s.text) } catch (e) { } if (s.big) banner(s.text.length > 26 ? s.text.slice(0, 26) + '…' : s.text, 'crit') } if (s.heal && s.unit) { s.unit.shown = s.unit.hp; floatText(s.unit, '+' + s.heal, '#c9a0ff', false, true); hudSync() } await wait(s.big ? 1100 : 650) }
+      else if (s.type === 'spawn') { const nu = s.unit; nu.shown = nu.hp; nu.vu = nu.u + OFF; nu.vv = nu.v + OFF; glows.push({ u: nu.vu, v: nu.vv, col: '170,90,255', r: UNIT * 1.6, t0: now(), dur: 900 }); floatText(nu, s.text || 'ใหม่!', '#d9a0ff', false, true); await wait(480) }
       else if (s.type === 'sleep') { floatText(s.unit, '💤 SLEEP — SKIP', '#c8c0ff', true); await wait(420) }
       else if (s.type === 'heal') { s.unit.pose = 'strike'; fx('heal', s.target, s.unit, { color: '#7fe08a' }); impact(s.target, 'heal', false); s.target.flashUntil = 0; floatText(s.target, '+' + s.heal, '#7fe08a'); s.target.shown = s.target.hp; hudSync(); await wait(650); s.unit.pose = 'idle' }
       else if (s.type === 'hold') { s.unit.pose = 'guard'; setTimeout(() => { if (s.unit.pose === 'guard') s.unit.pose = 'idle' }, 700) }
     }
-    for (const u of st.units) { u.vu = u.u + .5; u.vv = u.v + .5; if (u.face && u.hp > 0) u.dir = u.face }   /* v97.14: a unit that turned at the end (clever monsters) shows it */
+    for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; if (u.face && u.hp > 0) u.dir = u.face }   /* v97.14: a unit that turned at the end (clever monsters) shows it */
   }
-  async function endHeroTurn() {
+  async function endHeroTurn(forced) {
     if (busy || st.turn !== 'hero' || st.outcome || facing) return;
     pend = null; markAuto(); hidePreview();
-    if (auto) faceNearest(FB.hero(st)); else if (!(await pickFacing())) return;
+    if (auto) faceNearest(FB.hero(st)); else if (!(await pickFacing(null, forced === true))) return;
     walks = []; setDiscard(false); busy = true; refresh();
     if (st.ct) { const r = FB.endTurnCT(st); await playSteps(r.steps); actUnit = null; busy = false; if (st.outcome) { refresh(); finish(); return } await afterAI(); return }
     const allySteps = FB.alliesTurn(st);
@@ -711,10 +1139,10 @@
   }
   /* embedded in the world map: hand the result back (also automatically a moment after the end) */
   let reported = false;
-  function report(outcome) { if (reported || !EMBED) return; reported = true; try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })) }, '*') } catch (e) { } }
+  function report(outcome) { if (reported || !EMBED) return; reported = true; try { localStorage.removeItem(SNAP_KEY) } catch (e) { } try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), used: st.itemsUsed || {}, evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
   function finish() {
     if (st.outcome === 'win') { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'win') }
-    if (EMBED) { const b = hud?.querySelector('#fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; setTimeout(() => report(st.outcome), 3600) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
+    if (EMBED) { const b = document.getElementById('fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; endTalk().then(() => setTimeout(() => report(st.outcome), 3600)) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
   function flash(msg) { texts.push({ u: FB.hero(st).vu, v: FB.hero(st).vv, txt: msg, col: '#f6d79b', t0: now(), small: true }) }
   function floatText(unit, txt, col, small, big) { const t = now(), stack = texts.filter(x => x.unit === unit && t - x.t0 < 450).length; texts.push({ unit, u: unit.vu, v: unit.vv, txt, col, t0: t, small, big, dx: (Math.random() - .5) * 18, dy: -stack * 22 }) }   // texts on the same unit stack upward
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }
@@ -726,7 +1154,8 @@
     cave: [
       { t: 'แถบบนสุดคือคิวเทิร์น · กรอบทองคือตัวที่ได้เล่นตอนนี้ — ตอนนี้ตาคุณ' },
       { t: 'คลิกช่องว่างเพื่อเดิน (เกมเลือกไพ่เดินให้เอง) · เดินพลาดกด Z หรือ ↶ ย้อนเดิน', done: () => coachState.moved },
-      { t: 'คลิกศัตรู 1 ครั้ง ดูการ์ดที่ดีที่สุดกับดาเมจ · คลิกซ้ำเพื่อโจมตี (ยังไม่ถึงระยะ เกมพาเดินเข้าไปให้)', done: () => st.acted },
+      { t: 'คลิกศัตรูที่อยู่ในระยะ → แถวไพ่โจมตีที่ใช้ได้ขึ้นข้างตัวมัน (เห็นดาเมจโดยประมาณ) แล้วเลือกใบที่จะตี (ยังไม่ถึงระยะ เกมพาเดินเข้าไปให้)', done: () => st.acted },
+      { t: '🔓 ปลดล็อกแล้ว: ปุ่ม Auto (ปุ่มที่เรืองแสง) — ให้เกมเล่นเทิร์นของตัวเอกให้ เลือกไพ่เดิน เลือกไพ่ตี และจบเทิร์นเอง กดอีกครั้งเพื่อหยุด · เหมาะกับศัตรูตัวเล็กที่ซ้ำๆ แต่เจอบอสหรือสนามอันตรายควรเล่นเอง', spot: '#fbAuto' },
       { t: 'กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า — หันเข้าหาศัตรู เพราะโดนตีจากด้านหลังแรงขึ้น ×1.2', done: () => st.turns > coachState.t0 },
       { t: 'ลูกศรใต้ตัวบอกทิศที่แต่ละตัวหัน · อ้อมไปตีศัตรูจากด้านหลังได้ ×1.2 · ล้มศัตรูให้หมดเพื่อชนะ' }],
     raid: [
@@ -734,18 +1163,39 @@
       { t: 'ไอคอนข้างชื่อศัตรูคือธาตุ · ธาตุชนะทาง ×1.3 แพ้ทาง ×0.7 · Esc → ◈ ตารางธาตุ' },
       { t: 'เพื่อนที่แผงซ้าย: ⚔ บุก · 👣 ตาม · 🛡 ยึด · ✦ ท่าพิเศษใช้ 1 คริสตัล' },
       { t: 'การ์ดตอบโต้/ก้าวหลบ ใช้ก่อนจบเทิร์น แล้วจะทำงานเองตอนศัตรูตีเข้ามา' }],
+    /* v98.331 · the first two real fights (prologue quests): Pip's goats teach WALKING / DISTANCE / FACING · the pumpkin patch teaches ATTACKING / TARGETS / ELEMENTS */
+    goat: [
+      { t: 'ตอนนี้ตาคุณ — คลิกช่องว่างเพื่อเดินเข้าใกล้แพะ (เกมเลือกไพ่เดินให้เอง) · เดินพลาดกด Z ย้อนได้', done: () => coachState.moved },
+      { t: 'แพะวิ่งหนีและขวิดสวนเบาๆ ได้ — ต้อนให้ชิดก่อนค่อยตี · คลิกแพะ แล้วเลือกไพ่โจมตีจากแถวไพ่ที่ขึ้นข้างตัวมัน (มีดาเมจโดยประมาณให้ดู)', done: () => st.acted },
+      { t: 'ลูกศรใต้ตัวคือทิศที่หัน · ตีจากด้านหลังแรงขึ้น ×1.2 · กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า', done: () => st.turns > coachState.t0 },
+      { t: 'ตัวเอกทั้งสองยังไม่ล้มในเควสนี้ (เลือดลดได้แต่ไม่ต่ำกว่า 1) — ลองเดิน ตี และหันหน้าให้คล่องจนจับแพะครบ' }],
+    pumpkin: [
+      { t: '💧 ใบที่ 1 · คลื่นน้ำ (ไพ่ที่เรืองแสงในมือ) — ธาตุน้ำ ชนะ "ธาตุดิน" ซึ่งเป็นธาตุของฟักทอง · วิธีใช้: คลิกฟักทอง 1 ลูกบนสนาม แล้วคลิกไพ่ใบนี้ · ลูกศรเขียว ▲ มุมไพ่ = ได้เปรียบเป้าที่เลือกอยู่ (ดาเมจ ×1.3)', spot: 'tide' },
+      { t: '⚡ ใบที่ 2 · อัสนีบาต — ธาตุสายฟ้า ชนะ "ธาตุลม" ซึ่งเป็นธาตุของด้วงกินใบ · วิธีใช้: คลิกด้วงตัวเล็ก แล้วคลิกไพ่ใบนี้ · ลองคลิกสลับฟักทอง ↔ ด้วง แล้วดูลูกศรบนไพ่เปลี่ยนตามเป้าที่เลือก (เขียว ▲ = ได้เปรียบ · แดง ▼ = เสียเปรียบ ×0.7)', spot: 'thunder' },
+      { t: 'ลองดูเอง: ครั้งแรกให้ใช้ ⚡ อัสนีบาต ตีฟักทองก่อน (คลิกฟักทอง → ไพ่ที่เรืองแสง) จะได้เห็นว่าตีเสียเปรียบเป็นอย่างไร', spot: 'thunder', done: () => st.loan?.force?.done },
+      { t: 'เห็นไหม? ธาตุสายฟ้าแพ้ผืนดิน ดาเมจเหลือ ×0.7 · จากนี้ใช้ 💧 คลื่นน้ำ ตีฟักทอง (×1.3) และ ⚡ ตีด้วง (×1.3) · ฟักทองลูกหนึ่งรับตีราว 2–3 ครั้ง', spot: 'tide', done: () => (st.log || []).filter(x => /ชนะ/.test(x)).length > 0 },
+      { t: 'ด้วงกินใบ: ⚡ อัสนีบาต (ชนะทาง) ตีทีเดียวล้ม แต่ถ้าใช้ไพ่ผิดธาตุ (ลูกศรแดง ▼) มันจะทนได้ ต้องตีซ้ำ — กำจัดก่อนจะกัดกวนคุณ · ตีฟักทองจนล้ม มันจะเด้งเป็นฟักทอง (นับเป็นเก็บเกี่ยวแล้ว) แล้วค่อยๆ หายไป' },
+      { t: 'ระวัง! ถ้าฟักทองลูกหนึ่งเริ่มสั่น มันอาจวิวัฒน์ — บอสฟักทองใช้เถาวัลย์ระยะไกลพันธนาการ (เดินไม่ได้ 1 เทิร์น) และตีระยะใกล้เบาๆ' },
+      { t: 'ใช้ไพ่ธาตุที่ชนะทาง (ดูลูกศร ▲ บนไพ่หลังคลิกเป้า) และตีจากด้านหลัง ×1.2 · ไม่ต้องกลัว — ตัวเอกเลือดไม่ต่ำกว่า 1' }],
     expedition: [
       { t: 'แรงหมด? กด ♻ ทิ้งไพ่ฟื้นแรง เลือกไพ่ที่ไม่ใช้ แลกเป็นแรง (ใช้ 1 คริสตัล)' },
       { t: 'หญ้าสูง/มอสคือกำบัง โดนตี −30% · ถอยไปยืนตอนเลือดน้อย' },
       { t: 'การ์ดปีนป่าย กระโจน หินถล่ม ใช้ความสูงให้ได้เปรียบ · ผลักศัตรูตกผาเสีย HP เพิ่ม' }]
   };
   function coach() {
+    if (EDIT) return;
     const list = TUT && COACH[TUT]; let d = document.getElementById('fbCoach');
-    if (!list || !st || st.outcome || coachState.i >= list.length) { d?.remove(); return }
+    if (!list || !st || st.outcome || coachState.i >= list.length) { d?.remove(); try { spotCard(null) } catch (e) { } return }
     const c = list[coachState.i]; if (c.done && c.done()) { coachState.i++; sfx('cast', .25); return coach() }
     if (!d) { d = document.createElement('div'); d.id = 'fbCoach'; document.body.append(d); d.onclick = e => { const a = e.target.closest('[data-c]')?.dataset.c; if (a === 'next') { coachState.i++; coach() } else if (a === 'close') { coachState.i = 1e9; coach() } } }
     const html = `<small>📘 บทเรียน ${coachState.i + 1}/${list.length}</small><span>${esc(c.t)}</span>${c.done ? '' : '<button data-c="next">ถัดไป ▸</button>'}<button data-c="close" class="x" title="ปิดบทเรียน">✕</button>`;
     if (d.dataset.k !== TUT + coachState.i) { d.dataset.k = TUT + coachState.i; d.innerHTML = html; d.classList.remove('on'); void d.offsetWidth; d.classList.add('on') }
+    spotCard(c.spot);
+  }
+  /* v98.598 · the card the coach is talking about glows in the hand (re-applied after every hand redraw) */
+  function spotCard(id) {
+    if (!document.getElementById('fbSpotCss')) { const x = document.createElement('style'); x.id = 'fbSpotCss'; x.textContent = '#fbActions button.fb-spot{outline:3px solid #ffd77a;outline-offset:2px;box-shadow:0 0 22px #ffd77a,0 0 6px #fff8;animation:fbSpot 1.1s ease-in-out infinite}.fb-card.fb-spot{outline:3px solid #ffd77a;outline-offset:2px;box-shadow:0 0 22px #ffd77a,0 0 6px #fff8;animation:fbSpot 1.1s ease-in-out infinite;position:relative;z-index:5}@keyframes fbSpot{50%{box-shadow:0 0 34px #ffe9a8,0 0 10px #fff;transform:translateY(-4px)}}'; document.head.append(x) }
+    document.querySelectorAll('.fb-spot').forEach(e => e.classList.remove('fb-spot')); if (id) document.querySelectorAll(String(id)[0] === '#' ? id : '.fb-card[data-id="' + id + '"]').forEach(e => e.classList.add('fb-spot'));   /* '#fbAuto' = any element by selector */
   }
   /* ---------- v97.15 · controlled companions (B14): on an unlocked companion's CT turn the battle waits for the player.
      Click a cell = walk (its own move points) · click an enemy = show the hit (≈ damage, walking in if needed), click again = do it ·
@@ -770,9 +1220,12 @@
       ${sk ? `<button data-a="skill" ${st.acted || u.cd ? 'disabled' : ''} title="${esc(sk.name)}">✦ ${esc(sk.name)}${u.cd ? ' (' + u.cd + ')' : ''}</button>` : ''}
       <button data-a="undo" ${st.acted || !walks.length ? 'disabled' : ''}>↶ ย้อนเดิน</button><button data-a="auto" title="ให้ AI เล่นคนนี้แทน (สลับกลับได้ที่แผงซ้าย)">🤖 AI เล่นแทน</button><button data-a="end" class="ok">⏭ จบเทิร์น <small>Space</small></button>`;
   }
+  /* v98.368 · pointer → unit anchor: the nearest lattice corner (fp 2) or the cell under the pointer (fp 1); a unit's block is the cells u..u+FP-1 */
+  const anchorAt = g => FP > 1 ? { u: Math.round(g.u) - FP / 2, v: Math.round(g.v) - FP / 2 } : { u: Math.floor(g.u), v: Math.floor(g.v) };
+  const inBlock = (u, g) => g.u >= u.u && g.u < u.u + FP && g.v >= u.v && g.v < u.v + FP;
   function allyClick(wp) {
-    const g = inv(wp.x, wp.y), to = { u: Math.floor(g.u), v: Math.floor(g.v) };
-    const m = FB.monsters(st).find(u => u.hp > 0 && ((u.u === to.u && u.v === to.v) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
+    const g = inv(wp.x, wp.y), to = anchorAt(g);
+    const m = FB.monsters(st).find(u => u.hp > 0 && (inBlock(u, g) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
     if (m) return allyEnemy(m);
     pendAlly = null; heroMove(to);
   }
@@ -783,7 +1236,7 @@
     pendAlly = { id: m.id, ...p }; floatText(m, '≈ −' + p.est + (p.kill ? ' ☠' : ''), p.kill ? '#ffe14d' : '#ffd0a0', true); hint((p.to ? 'เดินเข้าไปแล้วตี' : 'ตี') + ' ' + m.name + ' · คลิกอีกครั้งเพื่อยืนยัน'); hudSync();
   }
   async function allySkillCtl() { const u = st.cur, r = FB.allySkillNow(st); if (!r.ok) { flash(r.reason); return } walks = []; busy = true; hudSync(); await playSkill(r); busy = false; refresh(); if (st.outcome) finish() }
-  async function allyAutoCtl() { const u = st.cur; u.autoCtl = true; busy = true; const s = FB.allyAuto(st); await playSteps(s); busy = false; await finishAlly(false) }
+  async function allyAutoCtl() { if (noAuto()) { flash('บทฝึกต่อสู้ · ยังใช้ Auto ไม่ได้'); return } const u = st.cur; u.autoCtl = true; busy = true; const s = FB.allyAuto(st); await playSteps(s); busy = false; await finishAlly(false) }
   async function endAllyTurn() { if (busy || st.turn !== 'ally' || facing) return; if (!(await pickFacing(st.cur))) return; await finishAlly(true) }
   async function finishAlly() { pendAlly = null; walks = []; busy = true; document.body.classList.remove('fb-ally'); const r = FB.endAllyTurn(st); refresh(); await playSteps(r.steps); actUnit = null; busy = false; await afterAI() }
   /* ---------- v97.08 · pause menu (Esc / ☰): restart, flee, element chart, controls — kept off the main HUD so they can't be hit by mistake ---------- */
@@ -795,7 +1248,7 @@
     const canAct = !busy && st.turn === 'hero' && !st.outcome;
     d.innerHTML = `<div class="box"><b>หยุดเกม</b><small>${esc(goalLine())}</small>
       <button data-a="resume">▶ เล่นต่อ</button><button data-a="el">◈ ตารางธาตุ</button><button data-a="keys">⌨ ปุ่มควบคุม</button><button data-a="opt">⚙ เสียงและภาพ</button>
-      ${EMBED ? `<button data-a="flee" class="warn" ${canAct ? '' : 'disabled'}>🏃 หนีจากการต่อสู้</button>` : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
+      ${EMBED ? (st.flee ? '<p style="margin:6px 0;font-size:13px;color:#bfe8ff">🏃 หนีได้ที่ช่องสีฟ้า "ทางหนี" บนสนามเท่านั้น — พาตัวเอกเดินไปถึงช่องนั้น</p>' : '') : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
       <div class="keys" hidden>คลิกศัตรู · Tab = เลือกเป้าและดูการ์ดที่ดีที่สุด<br>คลิกซ้ำ · Enter = โจมตีตามที่แสดง<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง)<br>1–9 = ใช้ไพ่ต่อสู้ใบนั้น · Z / Backspace = ย้อนเดิน<br>Space = จบเทิร์น แล้วเลือกทิศด้วยลูกศร · A = Auto<br>Q / E = หมุนกล้อง · Esc = เมนูนี้</div>
       <div class="opt" hidden>${(() => { const P = window.BattlePolish || {}; return `<label>🔊 เสียงเอฟเฟกต์ <input type="range" min="0" max="1" step=".05" data-o="volume" value="${P.volume ?? .65}"></label><label>🎵 เพลง <input type="range" min="0" max="1" step=".05" data-o="musicVolume" value="${P.musicVolume ?? .3}"></label><label><input type="checkbox" data-o="shake" ${P.shake === false ? '' : 'checked'}> จอสั่นตอนโดนตี</label>` })()}</div></div>`;
     document.body.append(d);
@@ -807,8 +1260,8 @@
       else if (a === 'new') { const b = e.target.closest('button'); if (b.dataset.sure) { pauseMenu(); document.querySelectorAll('.fb-show,.fb-fly,#fbBar').forEach(x => x.remove()); build(); userCam = false; cam.set = false; startTurnShow(true) } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อเริ่มใหม่' } } };
   }
   addEventListener('keydown', e => {
-    if (!ON || !st || facing || e.target.closest?.('input,textarea') || e.repeat) return;
-    if (e.key === 'Escape') { if (pauseEl) pauseMenu(); else if (pend) { pend = null; markAuto() } else if (!document.querySelector('dialog[open]')) pauseMenu(); return }
+    if (EDIT || !ON || !st || facing || e.target.closest?.('input,textarea') || e.repeat) return;
+    if (e.key === 'Escape') { if (pickEl) closePick(); else if (pauseEl) pauseMenu(); else if (pend) { pend = null; markAuto() } else if (!document.querySelector('dialog[open]')) pauseMenu(); return }
     if (pauseEl || busy || st.outcome) return;
     const k = e.key.toLowerCase();
     if (st.turn === 'ally') { if (k === ' ') { e.preventDefault(); endAllyTurn() } else if (k === 'z' || k === 'backspace') { e.preventDefault(); undoWalk() } else if (k === 'enter' && pendAlly) { e.preventDefault(); const m = st.units.find(u => u.id === pendAlly.id); if (m) allyEnemy(m) } else if (k === 'tab') { e.preventDefault(); const ms = FB.monsters(st).filter(m => m.hp > 0); const i = ms.findIndex(m => m.id === pendAlly?.id); pendAlly = null; if (ms.length) allyEnemy(ms[(i + 1) % ms.length]) } return }
@@ -823,10 +1276,41 @@
   function click(wp) {
     if (st && st.turn === 'ally' && !busy && !st.outcome && !facing) return allyClick(wp);
     if (!st || busy || st.outcome || st.turn !== 'hero' || discardMode || facing) return;
-    const g = inv(wp.x, wp.y), to = { u: Math.floor(g.u), v: Math.floor(g.v) };
-    const m = FB.monsters(st).find(u => u.hp > 0 && ((u.u === to.u && u.v === to.v) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
-    if (m) { onEnemy(m); return }
-    pend = null; markAuto(); walkTo(to);
+    const g = inv(wp.x, wp.y), to = anchorAt(g);
+    const m = FB.monsters(st).find(u => u.hp > 0 && (inBlock(u, g) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
+    closePick();
+    if (m) { if (openAttackPick(m)) return; onEnemy(m); return }
+    pend = null; markAuto(); if (openMovePick(to)) return; walkTo(to);
+  }
+  /* ---------- v98.359 · the card chooser ----------
+     Click a foe that one or more cards in hand can hit from where you stand → a column of those cards (damage preview, element, stamina) opens beside it: pick one to attack.
+     Click a cell you can reach → the move cards that would take you there open beside it: pick one, the hero walks. Out of reach → the old one-click planner (walk + attack). */
+  let pickEl = null;
+  function closePick() { pickEl?.remove(); pickEl = null }
+  function pickCss() { if (document.getElementById('fbPickCss')) return; const c = document.createElement('style'); c.id = 'fbPickCss'; c.textContent = `#fbPick{position:fixed;z-index:70;width:238px;display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:12px;background:linear-gradient(#2f2418f6,#1b140de6);border:1px solid #d8b46a;box-shadow:0 12px 30px #000a;font:13px VillageThai,system-ui,sans-serif;color:#f6e7bf;animation:fbPickIn .16s ease-out}@keyframes fbPickIn{from{opacity:0;transform:translateX(-8px)}}#fbPick h4{margin:0 0 2px;font:700 13px VillageThai,system-ui;color:#ffe2a8;display:flex;justify-content:space-between;gap:6px}#fbPick h4 i{font-style:normal;opacity:.7;font-weight:400;font-size:11px}#fbPick button.pk{display:grid;grid-template-columns:1fr auto;gap:1px 8px;text-align:left;padding:7px 9px;border-radius:8px;border:1px solid #8a6a2a;background:#3a2d1c;color:inherit;font:inherit;cursor:pointer}#fbPick button.pk:hover,#fbPick button.pk:focus-visible{background:#5a4528;border-color:#ffd88a;outline:0}#fbPick .pk b{font-weight:700}#fbPick .pk em{font-style:normal;color:#ffd0a0;font-weight:700}#fbPick .pk small{grid-column:1/-1;color:#c9b88f;font-size:11.5px}#fbPick .pk.best{border-color:#ffd25a}`; document.head.append(c) }
+  function scrOf(vu, vv) { const q = project(vu, vv), k = scale * zoom, r = cv.getBoundingClientRect(); return { x: r.left + (q.x - WORLD_W / 2) * k + W / 2 + pan.x, y: r.top + (q.y - WORLD_H / 2) * k + H / 2 + pan.y } }
+  function showPick(title, sub, rows, vu, vv) {
+    pickCss(); closePick(); const el = pickEl = document.createElement('div'); el.id = 'fbPick';
+    el.innerHTML = `<h4><span>${esc(title)}</span><i>${esc(sub)} · Esc ปิด</i></h4>` + rows.map((r, i) => `<button type="button" class="pk${i === 0 && r.best ? ' best' : ''}" data-i="${i}"><b>${esc(r.name)}</b><em>${esc(r.badge)}</em><small>${esc(r.note)}</small></button>`).join('');
+    document.body.append(el); const p = scrOf(vu, vv), w = 238, h = el.offsetHeight;
+    el.style.left = Math.max(8, Math.min(innerWidth - w - 8, p.x + 56)) + 'px'; el.style.top = Math.max(70, Math.min(innerHeight - h - 150, p.y - h / 2 - 30)) + 'px';
+    el.onclick = async e => { const b = e.target.closest('button.pk'); if (!b) return; const r = rows[+b.dataset.i]; closePick(); if (r?.run) await r.run() };
+    el.addEventListener('pointerdown', e => e.stopPropagation()); el.querySelector('button.pk')?.focus({ preventScroll: true });
+  }
+  function openAttackPick(m) {
+    const all = FB.attackOptions(st, m.id); if (!all.length) return false;
+    const cnt = {}; for (const o of all) cnt[o.id] = (cnt[o.id] || 0) + 1; const opts = all.filter((o, i) => all.findIndex(x => x.id === o.id) === i);   /* identical copies are listed once (×n) */
+    FB.setTarget(st, m.id); pickU = m; sfx('cast', .25); hudSync(); handSync(); pend = null; markAuto();
+    const rows = opts.map((o, i) => { const E = window.ElementWheel?.info(o.el); return { name: (E ? E.icon + ' ' : '') + cardName('combat', o.id) + (cnt[o.id] > 1 ? ' ×' + cnt[o.id] : ''), badge: '≈ −' + o.pv.total + (o.pv.kill ? ' ☠' : ''), note: (o.pv.hits > 1 ? o.pv.hits + ' ครั้ง · ' : '') + (o.pv.notes.length ? o.pv.notes.join(' · ') + ' · ' : '') + 'แรง ' + o.stamina, best: i === 0,
+      run: async () => { FB.setTarget(st, m.id); const b = handBtn('combat', o.uid); if (b) await cardClick(b) } } });
+    showPick('ใช้ไพ่ไหนโจมตี ' + m.name + '?', 'ไพ่ที่ใช้ได้ ' + rows.length + ' ใบ', rows, m.vu, m.vv); return true;
+  }
+  function openMovePick(to) {
+    const w = FB.walkOptions(st, to); if (w.reason || w.free || !w.cards.length) return false;
+    const cnt = {}; for (const c of w.cards) cnt[c.id] = (cnt[c.id] || 0) + 1; const uniq = w.cards.filter((c, i) => w.cards.findIndex(x => x.id === c.id) === i);
+    const rows = uniq.map((c, i) => ({ name: '👣 ' + cardName('movement', c.id) + (cnt[c.id] > 1 ? ' ×' + cnt[c.id] : ''), badge: 'เดิน +' + c.move, note: 'ใช้ ' + c.cost + ' แต้ม · แรง ' + c.stamina, best: i === 0,
+      run: async () => { const b = handBtn('movement', c.uid); if (!b) return; await cardClick(b); await heroMove(to) } }));
+    showPick('ใช้ไพ่เดินใบไหน?', 'ถึงช่องนี้ได้ ' + rows.length + ' ใบ', rows, to.u + OFF, to.v + OFF); return true;
   }
   /* ---------- v97.08 · one-click play: the game picks the card ----------
      click an enemy: it becomes the target and the best card for it shows (gold); click it again to play — walking next to it first
@@ -852,6 +1336,7 @@
   }
   async function walkTo(to) {
     const p = FB.autoWalk(st, to); if (p.reason) { flash(p.reason); return }
+    if (p.moveCard != null && farInfo && farMap?.has(to.u + ',' + to.v)) p.moveCard = farInfo.index;   /* v98.244 · beyond the free walk: play the card the yellow layer showed (the farthest one), not the smallest that would do */
     if (p.moveCard != null) { const b = handBtn('movement', st.deck.movement.hand[p.moveCard].uid); if (!b) return; await cardClick(b) }
     await heroMove(to);
   }
@@ -860,36 +1345,63 @@
   function undoWalk() {
     if (busy || !st || (st.turn !== 'hero' && st.turn !== 'ally') || st.outcome) return;
     if (st.acted || !walks.length) { flash(st.acted ? 'โจมตีแล้ว ย้อนการเดินไม่ได้' : 'ยังไม่ได้เดิน'); return }
-    const w = walks.pop(), h = FB.actor(st); h.u = w.from.u; h.v = w.from.v; h.vu = h.u + .5; h.vv = h.v + .5; h.face = w.face; h.dir = w.dir; st.mp += w.cost;
+    const w = walks.pop(), h = FB.actor(st); h.u = w.from.u; h.v = w.from.v; h.vu = h.u + OFF; h.vv = h.v + OFF; h.face = w.face; h.dir = w.dir; st.mp += w.cost;
     pend = null; sfx('cast', .2); floatText(h, 'UNDO', '#bfe8ff', true); refresh();
   }
   /* ---------- v97.08 · FFT end of turn: pick where the hero faces (hits from behind ×1.2, from the side ×1.1) ---------- */
   const FACES = [['SE', 1, 0], ['SW', 0, 1], ['NW', -1, 0], ['NE', 0, -1]];
   function faceNearest(u) { let best = null, bd = 1e9; for (const o of FB.opponents(st, u)) { const d = FB.dist(u, o); if (d < bd) { bd = d; best = o } } if (best) { u.face = u.dir = FB.faceOf(u, best) } }
-  function pickFacing(unit) {
+  /* v98.629 · the facing marker = a glossy red wedge lying on the floor like the FFT arrow heads: its corners are placed on the battle lattice (apex toward the facing cell, base across) and projected with the same camera as the units, so it points exactly along the cell edges and shrinks / grows with the zoom and the perspective. A thick extruded side gives it the 3D block look. */
+  function facingWedge(h, du, dv) {
+    const at = (a, b) => screenOf({ vu: h.vu + du * a - dv * b, vv: h.vv + dv * a + du * b }), o = screenOf(h), cell = Math.hypot(screenOf({ vu: h.vu + 1, vv: h.vv }).x - o.x, screenOf({ vu: h.vu + 1, vv: h.vv }).y - o.y), D = cell * .16;
+    const P = [at(1.12, 0), at(.5, .34), at(.5, -.34)], c = at(.78, 0), xs = P.map(p => p.x - c.x), ys = P.map(p => p.y - c.y), pad = 3;
+    const x0 = Math.min(...xs) - pad, x1 = Math.max(...xs) + pad, y0 = Math.min(...ys) - pad, y1 = Math.max(...ys) + D + pad, w = x1 - x0, hh = y1 - y0;
+    const T = P.map((p, k) => [xs[k] - x0, ys[k] - y0]), pt = (a, dy = 0) => a.map(([x, y]) => x.toFixed(1) + ',' + (y + dy).toFixed(1)).join(' ');
+    const sides = [[0, 1], [1, 2], [2, 0]].map(([a, b]) => ({ a, b, m: T[a][1] + T[b][1] })).sort((p, q) => p.m - q.m), id = 'fw' + Math.round(Math.random() * 1e6);
+    const svg = `<svg viewBox="0 0 ${w.toFixed(1)} ${hh.toFixed(1)}" width="${w.toFixed(1)}" height="${hh.toFixed(1)}" aria-hidden="true"><defs><linearGradient id="${id}t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a46"/><stop offset="1" stop-color="#d11a1a"/></linearGradient><linearGradient id="${id}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a30f12"/><stop offset="1" stop-color="#650609"/></linearGradient></defs>` +
+      `<polygon points="${pt(T, D)}" fill="#4a0406"/>` +
+      sides.map(q => `<polygon points="${T[q.a][0].toFixed(1)},${T[q.a][1].toFixed(1)} ${T[q.b][0].toFixed(1)},${T[q.b][1].toFixed(1)} ${T[q.b][0].toFixed(1)},${(T[q.b][1] + D).toFixed(1)} ${T[q.a][0].toFixed(1)},${(T[q.a][1] + D).toFixed(1)}" fill="url(#${id}s)" stroke="#3a0305" stroke-width="1" stroke-linejoin="round"/>`).join('') +
+      `<polygon points="${pt(T)}" fill="url(#${id}t)" stroke="#ffb3a4" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
+    return { x: c.x, y: c.y, w, h: hh, left: -x0, top: -y0, ang: Math.atan2(P[0].y - o.y, P[0].x - o.x), svg, cell };
+  }
+  function pickFacing(unit, forced) {
     return new Promise(res => {
       const h = unit || FB.hero(st), f0 = h.face, d0 = h.dir, c = screenOf(h), box = document.createElement('div'); box.id = 'fbFace';
-      const btns = FACES.map(([f, du, dv]) => { const p = screenOf({ vu: h.vu + du * .95, vv: h.vv + dv * .95 }); return { f, x: p.x, y: p.y, ang: Math.atan2(p.y - c.y, p.x - c.x) } });
-      box.innerHTML = `<div class="tip">หันหน้าไปทางไหน? <small>ศัตรูตีจากด้านหลัง ×1.2 · ด้านข้าง ×1.1</small></div>` +
-        btns.map(b => `<button data-f="${b.f}" style="left:${b.x}px;top:${b.y}px" title="หันไปทางนี้แล้วจบเทิร์น"><span style="transform:rotate(${(b.ang * 180 / Math.PI).toFixed(0)}deg)">➜</span></button>`).join('') +
-        `<div class="bar"><button class="ok">✓ จบเทิร์น <small>Enter</small></button><button class="no">ยกเลิก <small>Esc</small></button></div>`;
+      const btns = FACES.map(([f, du, dv]) => ({ f, ...facingWedge(h, du, dv) }));
+      box.innerHTML = `<div class="tip">${forced ? 'หมดคริสตัลแล้ว — เลือกทิศที่จะหัน' : 'หันหน้าไปทางไหน?'} <small>ศัตรูตีจากด้านหลัง ×1.2 · ด้านข้าง ×1.1</small></div>` +
+        btns.map(b => `<button data-f="${b.f}" style="left:${(b.x - b.left + b.w / 2).toFixed(1)}px;top:${(b.y - b.top + b.h / 2).toFixed(1)}px;width:${b.w.toFixed(1)}px;height:${b.h.toFixed(1)}px;margin:${(-b.h / 2).toFixed(1)}px 0 0 ${(-b.w / 2).toFixed(1)}px" title="หันไปทางนี้แล้วจบเทิร์น"><i class="nj" style="--dx:${(Math.cos(b.ang) * b.cell * .08).toFixed(1)}px;--dy:${(Math.sin(b.ang) * b.cell * .08).toFixed(1)}px">${b.svg}</i></button>`).join('') +
+        `<div class="bar"><div class="hb"><button class="ok hudb hudb-check" title="จบเทิร์น (Enter)" aria-label="จบเทิร์น"></button><span>จบเทิร์น <small>Enter</small></span></div>${forced ? '' : '<div class="hb"><button class="no hudb hudb-x" title="ยกเลิก (Esc)" aria-label="ยกเลิก"></button><span>ยกเลิก <small>Esc</small></span></div>'}</div>`;
       document.body.append(box); facing = box;
       const set = f => { h.face = f; h.dir = f; box.querySelectorAll('[data-f]').forEach(b => b.classList.toggle('on', b.dataset.f === f)) };
       const done = ok => { removeEventListener('keydown', key, true); box.remove(); facing = null; if (!ok) { h.face = f0; h.dir = d0 } else sfx('cast', .3); res(ok) };
       const key = e => { const A = { ArrowRight: 0, ArrowDown: Math.PI / 2, ArrowLeft: Math.PI, ArrowUp: -Math.PI / 2 }[e.key];
         if (A != null) { e.preventDefault(); e.stopPropagation(); let best = null, bd = 9; for (const b of btns) { const d = Math.abs(Math.atan2(Math.sin(b.ang - A), Math.cos(b.ang - A))); if (d < bd) { bd = d; best = b } } set(best.f); return }
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); done(true) } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false) } };
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); done(true) } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); if (!forced) done(false) } };
       addEventListener('keydown', key, true);
       box.querySelectorAll('[data-f]').forEach(b => { b.onmouseenter = () => set(b.dataset.f); b.onclick = () => { set(b.dataset.f); done(true) } });
-      box.querySelector('.ok').onclick = () => done(true); box.querySelector('.no').onclick = () => done(false);
+      box.querySelector('.ok').onclick = () => done(true); const no = box.querySelector('.no'); if (no) no.onclick = () => done(false);
       set(h.face || h.dir);
     });
   }
 
   /* ---------- effects (old BattleVFX images; code fallback = a ring) ---------- */
+  const KFX_MELEE = new Set(['sword', 'knife', 'spear', 'rapier', 'blunt', 'slash']), KFX_BURST = { fire: '#ff9a4a', ice: '#bfe8ff', water: '#6fb2ec', lightning: '#e4dcff', earth: '#d9b27a', wind: '#a8e6c8', arcane: '#d49af0', holy: '#f6e08a' };
+  const KIMG = {};   /* white sprites → tinted copies, cached by name+colour */
+  function kimg(name, col) {
+    const k = name + col; let c = KIMG[k]; if (c) return c.ok ? c : null; c = KIMG[k] = { ok: false };
+    const im = new Image(); im.onload = () => { const cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight; const q = cv.getContext('2d'); q.drawImage(im, 0, 0); q.globalCompositeOperation = 'source-in'; q.fillStyle = col; q.fillRect(0, 0, cv.width, cv.height); c.cv = cv; c.ok = true }; im.src = 'assets/fx/kenney/' + name + '.webp'; return null;
+  }
+  const kdraw = (g, name, col, x, y, w, rot, alpha) => { const c = kimg(name, col); if (!c || alpha <= 0) return; g.save(); g.globalAlpha = Math.min(1, alpha); g.translate(x, y); g.rotate(rot); g.drawImage(c.cv, -w / 2, -w / 2, w, w); g.restore() };
   function fx(kind, to, from, o = {}) {
-    const dur = kind === 'heal' || kind === 'shield' ? 900 : 650;
-    effects.push({ kind, seed: (Math.random() * 1e6) | 0, scale: o.scale || 1, color: o.color, to: { x: to.vu, y: to.vv }, from: from && from !== to ? { x: from.vu, y: from.vv } : null, start: now(), duration: dur });
+    const dur = o.duration || (kind === 'heal' || kind === 'shield' ? 900 : 650);
+    if (from && from !== to) { const act = duel.a; if (from === act) { duel.t = to; duel.tAt = now() } else if (to === act) { duel.t = from; duel.tAt = now() } }
+    if (kind === 'heal' || kind === 'shield') { to.mood = kind === 'heal' ? 'heal' : 'guard'; to.moodUntil = now() + 1100 }
+    effects.push({ kind, tier: o.tier, reducedMotion: o.reducedMotion, seed: (Math.random() * 1e6) | 0, scale: o.scale || 1, color: o.color, to: { x: to.vu, y: to.vv }, from: from && from !== to ? { x: from.vu, y: from.vv } : null, start: now(), duration: dur });
+
+    /* v98.332 · free CC0 light / slash sprites (Kenney Particle Pack, assets/fx/kenney) on top of the old effects: a sweep for melee, a flare + star + ring for elements */
+    if (to && !o.noK) { const base = effects[effects.length - 1], col = KFX_BURST[kind];
+      if (KFX_MELEE.has(kind)) effects.push({ ...base, kind: 'kslash', color: '#fff0c0', duration: 380 });
+      else if (col) effects.push({ ...base, kind: 'kburst', color: col, duration: 560 }) }
     return dur;
   }
   /* v94.03 · code-drawn effects for the height cards: rocks raining down, climb chevrons, the perch banner, landing dust, the dive streak */
@@ -900,6 +1412,14 @@
     fallDust(g, e, t, p) { for (let i = 0; i < 10; i++) { const a = i / 10 * 6.28, r = UNIT * (.2 + t * .9); g.globalAlpha = (1 - t) * .8; g.fillStyle = '#b8a888'; g.beginPath(); g.arc(p.x + Math.cos(a) * r, p.y + Math.sin(a) * r * .45 - t * 10, 5 + t * 6, 0, 7); g.fill() } },
     diveTrail(g, e, t, p, a) { g.globalAlpha = 1 - t; const gr = g.createLinearGradient(a.x, a.y - UNIT, p.x, p.y - UNIT * .5); gr.addColorStop(0, 'rgba(255,240,180,0)'); gr.addColorStop(1, 'rgba(255,220,120,.9)'); g.strokeStyle = gr; g.lineWidth = 10 * (1 - t) + 2; g.beginPath(); g.moveTo(a.x, a.y - UNIT * 1.4); g.quadraticCurveTo((a.x + p.x) / 2, Math.min(a.y, p.y) - UNIT * 2.4, p.x, p.y - UNIT * .5); g.stroke() }
   };
+  HEIGHT_FX.kslash = (g, e, t, p, a) => {
+    const names = ['slash_01', 'slash_02', 'slash_03', 'slash_04', 'scratch_01'], n = names[e.seed % names.length], ang = (e.from ? Math.atan2(p.y - a.y, p.x - a.x) : 0) + ((e.seed % 7) - 3) * .12 + (n === 'scratch_01' ? .6 : 0);
+    const w = UNIT * (n === 'scratch_01' ? 1.5 : 1.25) * (.7 + t * .5), al = t < .25 ? t * 4 : 1 - (t - .25) / .75; g.globalCompositeOperation = 'lighter';
+    kdraw(g, n, '#ffb35a', p.x, p.y - UNIT * .55, w * 1.15, ang, al * .55); kdraw(g, n, e.color, p.x, p.y - UNIT * .55, w, ang, al); kdraw(g, 'spark_05', '#fff6d8', p.x, p.y - UNIT * .55, UNIT * 1.1, 0, (1 - t) * .5 * (t < .5 ? 1 : .6)); };
+  HEIGHT_FX.kburst = (g, e, t, p, a) => {
+    const cy = p.y - UNIT * .55, al = t < .2 ? t * 5 : 1 - (t - .2) / .8; g.globalCompositeOperation = 'lighter';
+    kdraw(g, 'circle_05', e.color, p.x, cy, UNIT * (.6 + t * 1.3), 0, al * .7); kdraw(g, 'magic_03', e.color, p.x, cy, UNIT * (.5 + t * .7), t * 2.2, al * .85);
+    kdraw(g, 'flare_01', '#ffffff', p.x, cy, UNIT * (1.8 - t * .6), 0, al * .9); kdraw(g, 'star_04', '#fff6d8', p.x, cy, UNIT * (.4 + (1 - Math.abs(t - .3)) * .5), t * 1.4, al); if (e.kind === 'kburst' && e.color === '#e4dcff') kdraw(g, 'spark_05', '#e4dcff', p.x, cy - UNIT * .3, UNIT * 1.4, 0, al) };
   function fxDraw(g, now) {
     effects = effects.filter(e => now < e.start + e.duration);
     for (const e of effects) {
@@ -912,7 +1432,31 @@
 
   /* ---------- drawing ---------- */
   /* v94: a cell outline sits on its own raised top (battle-field heights); the village has none */
-  function poly(g, u, v) { if (window.FieldCellPoly) return FieldCellPoly(g, u, v); const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, F = window.projectFlat || project, P = (x, y) => { const q = F(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }
+  /* v98.312 · grid on/off (key G, remembered) + which cells are hidden behind taller ground in front of them */
+  let GRID = (() => { try { return localStorage.getItem('project-a-field-grid') !== '0' } catch (e) { return true } })();
+  function gridSet(on) { GRID = on; try { localStorage.setItem('project-a-field-grid', on ? '1' : '0') } catch (_) { } const b = document.getElementById('gridBtn'); if (b) { b.classList.toggle('on', on); b.title = on ? 'ซ่อนลายกริด (G)' : 'แสดงลายกริด (G)' } }
+  if (ON) { const sx = document.createElement('style'); sx.textContent = '#gridBtn{position:fixed;right:228px;bottom:30px;z-index:60;width:44px;height:44px;border-radius:50%;border:2px solid #b89654;background:#1d2a22e6;color:#f3e7cf;font:22px/1 system-ui;cursor:pointer;box-shadow:0 3px 10px #0008;opacity:.75}#gridBtn.on{opacity:1;background:#3a5a3ae6;border-color:#e0c070}#gridBtn:hover{opacity:1}@media(max-width:700px){#gridBtn{right:12px;bottom:150px}}'; document.head.append(sx);
+    const gb = document.createElement('button'); gb.id = 'gridBtn'; gb.type = 'button'; gb.textContent = '▦'; gb.onclick = () => gridSet(!GRID); document.body.append(gb); gridSet(GRID) }
+  addEventListener('keydown', e => { if (e.key.toLowerCase() !== 'g' || e.repeat || e.ctrlKey || e.metaKey || e.target.closest?.('input,textarea,select')) return; gridSet(!GRID) });
+  function gridHidden(cells) {
+    const out = new Set(), FH = window.FieldHeight, DEP = window.FieldDepth; if (!FH?.lift || !DEP) return out;
+    const F = window.projectFlat || project, raised = [], all = [];
+    for (const key of cells.keys()) {
+      const [u, v] = key.split(',').map(Number), L = FH.lift(u, v), a = F(u, v), b = F(u + 1, v), c = F(u + 1, v + 1), d = F(u, v + 1), xs = [a.x, b.x, c.x, d.x], ys = [a.y, b.y, c.y, d.y];
+      const o = { key, d: DEP(u + .5, v + .5), L, cx: (Math.min(...xs) + Math.max(...xs)) / 2, cy: (Math.min(...ys) + Math.max(...ys)) / 2 - L, hw: (Math.max(...xs) - Math.min(...xs)) / 2, hh: (Math.max(...ys) - Math.min(...ys)) / 2 };
+      { const ix = (v + FH.R) * FH.n + u + FH.R; if (FH.map?.ramp?.[ix]) out.add(key) }   /* sloped cells: their skewed outline reads as noise */   /* steps are drawn as treads + risers: no grid lines across them */
+      all.push(o); if (L > 2) raised.push(o);
+    }
+    for (const c of all) for (const n of raised) {
+      if (n === c || n.d <= c.d || n.L <= c.L + 2) continue;
+      const rise = n.L - c.L;   /* the taller cell's body hangs from its top down to the level of c */
+      for (let i = 0; i <= 4; i++) { const sy = rise * i / 4; if (Math.abs(c.cx - n.cx) / n.hw + Math.abs((c.cy - sy) - n.cy) / n.hh <= 1) { out.add(c.key); break } }
+    }
+    return out;
+  }
+  function poly(g, u, v) { if (FP > 1) { u += (FP - 1) / 2; v += (FP - 1) / 2 } return polyC(g, u, v) }   /* overlays on anchors: a one-cell diamond centred on the unit's centre */
+  function polyF(g, u, v) { if (FP < 2) return polyC(g, u, v); const P = (x, y) => project(x, y), a = P(u, v), b = P(u + FP, v), c = P(u + FP, v + FP), d = P(u, v + FP); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }   /* the unit's whole footprint */
+  function polyC(g, u, v) { if (window.FieldCellPoly) return FieldCellPoly(g, u, v); const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, F = window.projectFlat || project, P = (x, y) => { const q = F(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }
   let last = 0;
   function step(t) {
     const dt = Math.min(.1, Math.max(0, t - last) / 1000 || 0); last = t;
@@ -920,7 +1464,7 @@
     for (let k = anims.length - 1; k >= 0; k--) {
       const a = anims[k], u = a.unit, tgt = a.pts[a.i];
       if (!tgt) { anims.splice(k, 1); a.res(); continue }
-      const tu = tgt.u + .5, tv = tgt.v + .5, du = tu - u.vu, dv = tv - u.vv, len = Math.hypot(du, dv), sp = dt * a.speed;
+      const tu = tgt.u + OFF, tv = tgt.v + OFF, du = tu - u.vu, dv = tv - u.vv, len = Math.hypot(du, dv), sp = dt * a.speed;
       if (!a.slide) { u.walking = true; if (len > .01) u.dir = Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'SE' : 'NW') : (dv > 0 ? 'SW' : 'NE') }
       if (len <= sp) { u.vu = tu; u.vv = tv; a.i++; if (!a.slide) sfx('step', .3) } else { u.vu += du / len * sp; u.vv += dv / len * sp }
     }
@@ -929,27 +1473,60 @@
   function bar(g, p, top, frac, col) { const bw = 46, bx = p.x - bw / 2, by = top - 8; g.fillStyle = '#000a'; g.fillRect(bx - 1, by - 1, bw + 2, 7); g.fillStyle = col; g.fillRect(bx, by, bw * Math.max(0, frac), 5) }
   /* hero: the old TACTICS_SPRITES poses (idle/walk/windup/strike/guard/hit/down) per direction, weapon drawn at the pose's hand anchor */
   /* TACTICS_SPRITES is a top-level const (not a window property) */
-  function sprites() { return typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES : null }
+  let SPR_TABLE = null;   /* set while the sibling is drawn */
+  function sprites() { return SPR_TABLE || (typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES : null) }
+  /* v98.251 · every picture of a sprite table (idle / walk / poses, all directions) is requested once, so no frame is missing while the hero walks */
+  function preloadSprites(T) { if (!T || T._pre) return; try { Object.defineProperty(T, '_pre', { value: true, enumerable: false }) } catch (e) { T._pre = 1 } for (const d of Object.values(T.directions || {})) for (const v of Object.values(d)) for (const f of (Array.isArray(v) ? v : [v])) if (f && f.src) im(f.src) }
   function heroFrame(u, t) {
-    const A = sprites(); if (!A) return null;
+    const A = sprites(); if (!A) return null; preloadSprites(A);
     const set = A.directions[u.dir] || A.directions.SE, name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
     if (name === 'walk') return window.HeroMotion?.frame(A, u.dir, t, true) || set.idle;
     if (name === 'idle') return window.HeroMotion?.frame(A, u.dir, t, false) || set.idle;
+    /* v98.243 · the poses saved in the editor (windup / strike / guard / hit / down, per direction — set[pose+'Frames']) are played from the moment the pose starts and held on the last frame;
+       only a pose the editor has no pictures for falls back to the still idle frame moved by poseMotion() */
+    if (u._lp !== name) { u._lp = name; u._pt = t }
+    const ed = set[name + 'Frames'];
+    if (!OLDPOSE && ed?.length) { u._edPose = ed.length > 1; const e = t - (u._pt || t), total = ed.reduce((n, f) => n + (Number(f.ms) || 110), 0); return e >= total ? ed.at(-1) : (window.StudioWalks?.frame(ed, e) || ed[0]) }
+    u._edPose = false;
     if (!OLDPOSE) return set.idleFrames?.[0] || set.idle;                 // action poses: still frame of the new outfit, moved by poseMotion()
     const fr = set[name + 'Frames']; if (fr?.length) return name === 'down' ? fr.at(-1) : (window.StudioWalks?.frame(fr, t) || fr[0]);
     return set[name] || set.idle;
+  }
+  /* v98.610 · when a fighter falls: (1) a grey aura on the ground around them that drains the colour of the scene for a moment, (2) pale smoke wisps rising from the body,
+     (3) a bright soul wisp leaving the body with a tail. 2.2 s in all; the body itself slumps, goes grey and only then fades (see poseMotion / the unit loop). */
+  function deathFx(g, u, t) {
+    if (MON[u.kind]?.loot) return; const e = t - u.deadAt; if (e < 0 || e > 2300) return;
+    const p = project(u.vu, u.vv), big = u.side === 'monster' ? (MON[u.evoShow || u.kind]?.scale || 1) : 1, R = UNIT * 2.3 * big, ak = e < 250 ? e / 250 : Math.max(0, 1 - (e - 250) / 1250);
+    if (ak > 0) {
+      g.save(); g.translate(p.x, p.y); g.scale(1, .5); g.globalCompositeOperation = 'saturation';
+      let gr = g.createRadialGradient(0, 0, R * .1, 0, 0, R); gr.addColorStop(0, `rgba(128,128,128,${.95 * ak})`); gr.addColorStop(.65, `rgba(128,128,128,${.55 * ak})`); gr.addColorStop(1, 'rgba(128,128,128,0)'); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, R, 0, 7); g.fill();
+      g.globalCompositeOperation = 'source-over'; gr = g.createRadialGradient(0, 0, 0, 0, 0, R); gr.addColorStop(0, `rgba(36,40,50,${.38 * ak})`); gr.addColorStop(1, 'rgba(36,40,50,0)'); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, R, 0, 7); g.fill(); g.restore();
+    }
+    let h = 7; for (const c of String(u.id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    for (let i = 0; i < 9; i++) {
+      const k = (e - i * 110) / 1500; if (k < 0 || k > 1) continue; const rnd = ((h >> i) & 7) / 7, x = p.x + Math.sin(k * 5 + i * 1.7 + rnd * 6) * UNIT * .22 * (.4 + k), y = p.y - UNIT * .5 * big - k * UNIT * 1.9 * big, r = UNIT * (.16 + .2 * k) * big;
+      g.save(); g.globalAlpha = Math.sin(Math.PI * k) * .5; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(238,241,248,.9)'); gr.addColorStop(1, 'rgba(180,186,204,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.restore();
+    }
+    const k = (e - 120) / 1700;
+    if (k > 0 && k < 1) {
+      g.save(); g.globalCompositeOperation = 'lighter'; const a = Math.sin(Math.PI * Math.min(1, k * 1.1));
+      for (let j = 6; j >= 0; j--) { const kk = Math.max(0, k - j * .028), x = p.x + Math.sin(kk * 7) * UNIT * .18, y = p.y - UNIT * .6 * big - kk * UNIT * 2.4 * big, r = UNIT * (.2 - j * .02) * big;
+        g.globalAlpha = a * (j ? .32 - j * .035 : .95); const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.45, 'rgba(190,215,255,.65)'); gr.addColorStop(1, 'rgba(150,180,255,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill() }
+      g.restore();
+    }
   }
   /* procedural action poses (code instead of pictures): lean back on windup, lunge + sword arc on strike, recoil on hit, crouch on guard, fall on down */
   function poseMotion(u, t) {
     const name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
     if (u._lp !== name) { u._lp = name; u._pt = t }
     const e = t - (u._pt || t), fs = ['SE', 'NE'].includes(u.dir) ? 1 : -1, ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3), m = { dx: 0, dy: 0, rot: 0, sx: 1, sy: 1, wpn: 0 };
-    if (OLDPOSE) return m;
+    if (name === 'idle' && u.hp > 0 && !OLDPOSE) { const k = Math.sin(t * .0032 + (u.id?.length || 0) * 1.3) * .012; m.sy = 1 + k; m.sx = 1 - k * .5 }   /* v98.251 · a slow breath so a one-picture idle is not frozen */
+    if (OLDPOSE || u._edPose) return m;   /* a multi-frame editor pose carries its own motion; a single picture still gets the lean / lunge */
     if (name === 'windup') { const k = ease(e / 200); Object.assign(m, { dx: -fs * 7 * k, rot: -fs * .15 * k, sx: 1 + .03 * k, sy: 1 - .05 * k, wpn: -fs * 75 * k }) }
     else if (name === 'strike') { const k = ease(e / 90), d = 1 - ease((e - 220) / 320); Object.assign(m, { dx: fs * 18 * k * d, dy: -2 * k * d, rot: fs * .17 * k * d, sx: 1 - .03 * k * d, sy: 1 + .05 * k * d, wpn: fs * (-75 + 170 * k) * d }) }
     else if (name === 'hit') { const k = Math.exp(-e / 170); Object.assign(m, { dx: -fs * 9 * k, rot: -fs * .13 * k, sy: 1 - .04 * k }) }
     else if (name === 'guard') { const k = ease(e / 130); Object.assign(m, { dx: -fs * 3 * k, sx: 1 + .04 * k, sy: 1 - .08 * k, wpn: -fs * 40 * k }) }
-    else if (name === 'down') { const k = ease(e / 450); Object.assign(m, { rot: -fs * 1.3 * k, dy: 2 * k }) }
+    else if (name === 'down') { const k = ease(e / 520); Object.assign(m, { rot: -fs * .2 * k, dy: 7 * k, sx: 1 + .07 * k, sy: 1 - .3 * k }) }   /* v98.610 · a slump (sink + squash), not lying sideways */
     return m;
   }
   function weapon(g, def, hand, left, top, size, angle) {
@@ -958,13 +1535,13 @@
     g.save(); g.translate(left + hand[0] * size, top + hand[1] * size); g.rotate(angle * Math.PI / 180); g.drawImage(i, -def.pivot[0] * w, -def.pivot[1] * h, w, h); g.restore();
   }
   /* v97.01: weapons the sprite sheet has no hand anchor for (axe, bow, knife, rapier, spear, tome) use the loose pictures in assets/tactics */
-  const WEXTRA = { axe: { pivot: [.5, .9], size: [256, 768], scale: .62 }, knife: { pivot: [.5, .8], size: [256, 512], scale: .34 }, rapier: { pivot: [.5, .88], size: [256, 768], scale: .78 }, spear: { pivot: [.5, .72], size: [256, 1024], scale: 1.1 }, bow: { pivot: [.5, .5], size: [128, 320], scale: .6 }, tome: { pivot: [.5, .5], size: [160, 200], scale: .26 } };
+  const WEXTRA = { axe: { pivot: [.5, .9], size: [256, 768], scale: .62 }, knife: { pivot: [.5, .8], size: [256, 512], scale: .34 }, rapier: { pivot: [.5, .88], size: [256, 768], scale: .78 }, spear: { pivot: [.5, .72], size: [256, 1024], scale: 1.1 }, bow: { pivot: [.5, .5], size: [128, 320], scale: .6 }, tome: { pivot: [.5, .5], size: [160, 200], scale: .26 }, log: { pivot: [.5, .86], size: [160, 512], scale: .5 } };   /* v98.472 · log = ท่อนไม้ฟืน, the sibling's first weapon */
   const weaponDef = (A, k) => A.equipment[k] || (WEXTRA[k] ? { src: `assets/tactics/${k}.webp`, ...WEXTRA[k] } : null);
   /* ---------- v97.48 · attack poses without hand anchors: the weapon floats in front of the fighter, the swing is a code-drawn trail ----------
      windup: weapon lifts behind the head and glows · strike: it swings over the top to the front with a light trail, a flash and (hammer/axe) a ground ring
      · guard: held up in front with a shimmer arc · hit: hangs loose. Allies carry their class weapon the same way. */
   const FLOATPOSE = ['windup', 'strike', 'guard', 'hit'], ALLYW = { bram: 'hammer', kier: 'sword', mil: 'knife', luna: 'staff' };
-  const wkind = k => ['hammer', 'axe'].includes(k) ? 'blunt' : ['spear', 'rapier'].includes(k) ? 'pierce' : ['staff', 'tome', 'bow'].includes(k) ? 'magic' : 'blade';
+  const wkind = k => ['hammer', 'axe', 'log'].includes(k) ? 'blunt' : ['spear', 'rapier'].includes(k) ? 'pierce' : ['staff', 'tome', 'bow'].includes(k) ? 'magic' : 'blade';
   const actState = (u, t) => ({ act: u.hp <= 0 ? 'down' : u.walking ? 'walk' : (u.pose || 'idle'), e: Math.max(0, t - (u._pt || t)), fs: ['SE', 'NE'].includes(u.dir) ? 1 : -1 });
   const aEase = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3), aLerp = (a, b, k) => a + (b - a) * k;
   function floatPos(S, t) {   /* x: forward of the body centre (sprite widths) · y: down from the sprite top · a: degrees, tip up = 0, forward = + */
@@ -980,7 +1557,7 @@
     const S = actState(u, t), P = floatPos(S, t), h = size * (W.scale || .63), w = h * W.size[0] / W.size[1], x = cx + S.fs * size * P.x, y = top + size * P.y;
     g.save();
     if (P.glow > 0) { const r = size * .22, gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(255,230,170,${.45 * P.glow})`); gr.addColorStop(1, 'rgba(255,200,120,0)'); g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.globalCompositeOperation = 'source-over' }
-    g.translate(x, y); g.rotate(S.fs * P.a * Math.PI / 180); g.drawImage(i, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore();
+    g.translate(x, y); g.rotate(S.fs * (['NE', 'NW'].includes(u.dir) && P.a > 0 ? P.a * .4 : P.a) * Math.PI / 180); g.drawImage(i, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore();
   }
   function actionTrail(g, u, t, wkey, cx, top, size, gy, cyN) {
     if (!wkey) return; const S = actState(u, t), { act, e, fs } = S; if (!['strike', 'guard'].includes(act)) return;
@@ -996,15 +1573,17 @@
         const gr = g.createRadialGradient(x, y, 0, x, y, size * .2); gr.addColorStop(0, `rgba(${col},${.7 * (1 - k)})`); gr.addColorStop(1, `rgba(${col},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x, y, size * .2, 0, 7); g.fill();
       } else {
         g.save(); g.translate(cx, cy); g.scale(fs, 1);
+        /* v98.244 · the swing is aimed along the way the attacker really faces on the grid (SE/SW = down-screen, NE/NW = up-screen): ph = that direction's screen angle in the mirrored frame */
+        const ph = ['NE', 'NW'].includes(u.dir) ? -.46 : .46; g.rotate(ph);
         if (kind === 'pierce') { const len = size * .5 * aEase(e / 100); [[2.5, .5], [6, .35], [12, .2]].forEach(([wd, al]) => { g.strokeStyle = `rgba(${col},${al * fade})`; g.lineWidth = wd; g.beginPath(); g.moveTo(size * .08, size * .06); g.lineTo(size * .08 + len, size * .06); g.stroke() }) }
         else {
-          const th0 = -2.5, th1 = .9, hd = th0 + (th1 - th0) * aEase(e / 110), tl = Math.max(th0, hd - 1.5), N = 16, wd = kind === 'blunt' ? 16 : 9;
+          const th0 = -2.4, th1 = .45, hd = th0 + (th1 - th0) * aEase(e / 110), tl = Math.max(th0, hd - 1.5), N = 16, wd = kind === 'blunt' ? 16 : 9;
           for (let j = 0; j < N; j++) { const a0 = tl + (hd - tl) * j / N, a1 = tl + (hd - tl) * (j + 1) / N, q = (j + 1) / N;
             for (const [wm, am, c] of [[2.2, .22, col], [1, .55, col], [.35, .95, '255,255,245']]) { g.strokeStyle = `rgba(${c},${am * q * fade})`; g.lineWidth = wd * wm * q; g.beginPath(); g.arc(0, 0, R, a0, a1 + .03); g.stroke() } }
         }
         g.restore();
         if (e > 70 && e < 260) {
-          const k = (e - 70) / 190, ix = cx + fs * R * Math.cos(.9), iy = cy + R * Math.sin(.9), r = size * (.1 + .12 * k), gr = g.createRadialGradient(ix, iy, 0, ix, iy, r);
+          const k = (e - 70) / 190, ix = cx + fs * R * Math.cos(.45 + (['NE', 'NW'].includes(u.dir) ? -.46 : .46)), iy = cy + R * Math.sin(.45 + (['NE', 'NW'].includes(u.dir) ? -.46 : .46)), r = size * (.1 + .12 * k), gr = g.createRadialGradient(ix, iy, 0, ix, iy, r);
           gr.addColorStop(0, `rgba(255,250,225,${.8 * (1 - k)})`); gr.addColorStop(1, 'rgba(255,190,110,0)'); g.fillStyle = gr; g.beginPath(); g.arc(ix, iy, r, 0, 7); g.fill();
           if (kind === 'blunt') { g.strokeStyle = `rgba(255,220,170,${.55 * (1 - k)})`; g.lineWidth = 3; g.beginPath(); g.ellipse(cx + fs * size * .3, gy, size * (.08 + .3 * k), size * (.03 + .1 * k), 0, 0, 7); g.stroke() }
         }
@@ -1016,7 +1595,7 @@
      with the floating weapon + swing trail. Characters that have their own battle pictures (ALLY_ART) keep using those. */
   const NPCW = { sword: 'sword', axe: 'axe', bow: 'bow', staff: 'staff', dagger: 'knife', hammer: 'hammer', book: 'tome' };
   function drawNpcSprite(g, u, t, p, look, pm, UNITv, A, scaleK) {
-    const sc = scaleK, size = 384 * sc * 84 / 330;   /* the 384 canvas of the picture as drawn by VillagerDraw (feet at y 372) */
+    const sc = scaleK, size = 384 * sc * 84 / 330;   /* the 384 canvas of the picture as drawn by VillagerDraw (feet at y 360) */
     g.save(); if (u.hp <= 0) g.globalAlpha *= .5;
     g.translate(p.x + pm.dx, p.y + pm.dy - (u.lift || 0)); g.rotate(pm.rot); g.scale(pm.sx, pm.sy);
     window.VillagerDraw(g, look, 0, 0, t, { walking: u.walking && u.hp > 0, face: u.dir, scale: sc });
@@ -1024,7 +1603,7 @@
     g.restore();
     const wk = NPCW[look.weapon];
     if (A && wk && u.hp > 0 && FLOATPOSE.includes(actState(u, t).act)) {
-      g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * 372 / 384, size); actionTrail(g, u, t, wk, 0, -size * 372 / 384, size, 0, .56); g.restore();
+      g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * CharSize.FEET_Y / 384, size); actionTrail(g, u, t, wk, 0, -size * CharSize.FEET_Y / 384, size, 0, .56); g.restore();
     }
   }
   /* ---------- v97.18 · the job's look on the same hero picture (docs/TODO.md "อาชีพและอาวุธ") ----------
@@ -1035,11 +1614,12 @@
   function jobEmblem(g, u, p, top) {
     const L = u.look; if (!L?.icon) return; const x = p.x - 32, y = top - 7;
     g.save(); g.fillStyle = L.col || '#888'; g.strokeStyle = '#1a140c'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, 8.5, 0, 7); g.fill(); g.stroke();
-    g.fillStyle = '#fff8e8'; g.font = '700 11px system-ui,"Segoe UI Symbol",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(L.icon, x, y + .5); g.restore();
+    g.fillStyle = '#fff8e8'; g.font = '700 11px AgThai,system-ui,"Segoe UI Symbol",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(L.icon, x, y + .5); g.restore();
   }
   function drawHero(g, u, t) {
     const A = sprites(), p = project(u.vu, u.vv), f = heroFrame(u, t); if (!A || !f) return;
-    const size = UNIT * 1.6, left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1], i = jobPic(im(f.src), f.src, u.look);
+    const size = UNIT * CharSize.DRAW.hero * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1) * (window.CharScaleAdjust?.poseFactor('hero', u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose) || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1];
+    let i = jobPic(im(f.src), f.src, u.look); if (i) u._lastPic = i; else i = u._lastPic || null;   /* a frame that has not arrived yet shows the last one instead of nothing */
     let ox = 0; if (u.pose === 'hit') ox = Math.sin(t * .07) * 3;
     const pm = poseMotion(u, t);
     shadow(g, p, UNIT * .26); g.save(); g.translate(ox, -(u.lift || 0)); if (u.hp <= 0) g.globalAlpha *= .6;
@@ -1067,18 +1647,32 @@
   }
   /* monster: old MonsterArt clips (idle/walk/windup/strike/hit/down, SE/NE + mirror); static picture until the clip loads */
   /* companions: the old per-character pictures (<key>_<se|ne>_<idle|windup|strike|hit|guard|down>.webp), SW/NW mirrored, moved with poseMotion */
+  let _assetById = null;
+  function allyWalkPic(u, t) {
+    const M = window.ASSET_MANIFEST, c = M?.studioAllyWalks?.[u.key]?.[u.dir]; if (!c?.frames?.length) return null;
+    if (!_assetById) _assetById = new Map((M.assets || []).map(a => [a.id, a]));
+    const total = c.frames.reduce((n, f) => n + (Number(f.ms) || 100), 0); let e = ((t + (u.id?.length || 0) * 90) % total + total) % total, fr = c.frames[0];
+    for (const f of c.frames) { const ms = Number(f.ms) || 100; if (e < ms) { fr = f; break } e -= ms }
+    const src = _assetById.get(fr.assetId)?.file || fr.src; return im(src);
+  }
   function drawAlly(g, u, t) {
+    if (u.key === 'sib') {   /* v98.237 · the other hero is drawn by the lead's own routine (drawHero) on the sprite table of its look, so every picture the studio saved for it is used */
+      const look = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } })(), tab = window.HeroVariant?.tableFor?.(look);
+      if (tab) { SPR_TABLE = tab; try { drawHero(g, u, t) } finally { SPR_TABLE = null } return }
+    }
     const p = project(u.vu, u.vv), back = ['NE', 'NW'].includes(u.dir), flip = ['SW', 'NW'].includes(u.dir), pose = u.hp <= 0 ? 'down' : u.walking ? 'idle' : (['windup', 'strike', 'hit', 'guard'].includes(u.pose) ? u.pose : 'idle');
-    if (!ALLY_ART.includes(u.key) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
-      if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT / 56 * .78); if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
+    if (!ALLY_ART.includes(u.key) && !(pose !== 'idle' && !u.walking && (im(`assets/tactics/${u.key}_${u.dir.toLowerCase()}_${pose}.webp`) || im(`assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`))) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
+      if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT * CharSize.DRAW.ally / CharSize.NPC_CANVAS_K * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1));   /* v98.126 · ×1.065 = same 1.45-UNIT canvas as bram/luna/mil, × the ⚖ size */ if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
       g.save(); if (u.hp <= 0) g.globalAlpha *= .5; g.translate(pm.dx * .6, pm.dy - (u.lift || 0)); VillagerDraw(g, look, p.x, p.y, t, { walking: u.walking, face: u.dir, scale: UNIT / 56 * .78, act: u.hp <= 0 ? 'sleep' : u.pose === 'strike' ? 'work' : '' });
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .5; VillagerDraw(g, look, p.x, p.y, t, { face: u.dir, scale: UNIT / 56 * .78 }) } g.restore(); if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
     /* v97.65: allies with their own SW/NW pictures (ALLY_OWN) use them as they are; everyone else mirrors SE/NE */
-    const own = (ALLY_OWN[u.key] || []).includes(u.dir.toLowerCase()), mirSrc = `assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`;
-    let i = own && im(`assets/tactics/${u.key}_${u.dir.toLowerCase()}_${pose}.webp`), useFlip = false;
+    /* v98.254 · the pictures the editor holds for this ally: its own picture for THIS direction first (all four exist in the manifest), the mirrored one only as a fallback; while walking, the 12-frame walk saved in the editor (studioAllyWalks) */
+    const mirSrc = `assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`;
+    let i = im(`assets/tactics/${u.key}_${u.dir.toLowerCase()}_${pose}.webp`), useFlip = false;
+    if (u.walking && u.hp > 0) { const wf = allyWalkPic(u, t); if (wf) i = wf }
     if (!i) { i = im(mirSrc) || im(`assets/tactics/${u.key}_se_idle.webp`); useFlip = flip }
     shadow(g, p, UNIT * .24);
-    if (!i) return; const size = UNIT * 1.45, pm = poseMotion(u, t);
+    if (!i) return; const size = UNIT * CharSize.DRAW.ally * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1) * (window.CharScaleAdjust?.poseFactor(u.key, u.walking && u.hp > 0 ? 'walk' : pose) || 1), pm = poseMotion(u, t);
     g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (useFlip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
     g.drawImage(i, -size / 2, -size * .94, size, size);
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
@@ -1087,76 +1681,150 @@
       if (!OLDPOSE && A && wk && u.hp > 0 && FLOATPOSE.includes(actState(u, t).act)) { g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * .94, size); actionTrail(g, u, t, wk, 0, -size * .94, size, 0, .56); g.restore() } }
     if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
   }
-  function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
+  function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px AgThai,system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
+  /* v98.573 · Mip after the goat's shape drops: the run cycle of assets/ui/mip-sheet.webp (12 cells · faces LEFT), drawn over a soft blue glint */
+  function mysteryGlint(g, u, t) {
+    const p = project(u.vu, u.vv), k = .35 + Math.max(0, Math.sin(t * .004)) * .65; g.save(); g.fillStyle = '#9fd8ff'; g.strokeStyle = '#2b6fb0'; g.lineWidth = 1;
+    for (const [dx, dy, r] of [[UNIT * .26, -UNIT * .95, 4.5], [-UNIT * .3, -UNIT * .62, 3.2]]) { g.globalAlpha = k; g.beginPath(); g.moveTo(p.x + dx, p.y + dy - r); g.lineTo(p.x + dx + r * .6, p.y + dy); g.lineTo(p.x + dx, p.y + dy + r); g.lineTo(p.x + dx - r * .6, p.y + dy); g.closePath(); g.fill(); g.stroke() } g.restore();
+  }
+  function drawMip(g, u, p0, t) {
+    const sheet = im('assets/ui/mip-sheet.webp?v=2'), h = UNIT * 1.15; shadow(g, p0, UNIT * .2);
+    if (!sheet) return; const cw = sheet.naturalWidth / 12, f = Math.floor(t / 70) % 12, right = /^(SE|NE)$/.test(u.dir || ''), fade = u.deadAt ? Math.max(0, 1 - (t - u.deadAt) / 1400) : 1;
+    g.save(); g.globalAlpha = fade; g.translate(p0.x, p0.y); if (right) g.scale(-1, 1); g.drawImage(sheet, f * cw, 0, cw, sheet.naturalHeight, -h / 2, -h * .92, h, h); g.restore();
+    g.save(); g.globalAlpha = .5 * fade; g.fillStyle = '#9fd8ff'; for (let i = 0; i < 5; i++) { const a = t * .004 + i * 1.26; g.beginPath(); g.arc(p0.x + Math.cos(a) * h * .5, p0.y - h * .5 + Math.sin(a * 1.3) * h * .35, 2.2, 0, 7); g.fill() } g.restore();
+  }
+  /* v98.601 · defeated loot pumpkins: visible 1.6 s (the pop), fade out over 0.9 s, then gone */
+  const lootFade = (u, T, t) => (u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt) ? Math.max(0, Math.min(1, 1 - ((t - u.deadAt) - 1600) / 900)) : 1;
+  const lootGone = (u, T, t) => u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt && (t - u.deadAt) > 2500;
   function drawMonster(g, u, t) {
-    const p0 = project(u.vu, u.vv), v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
-    const T = MON[u.kind] || MT, kind = MON[u.kind] ? u.kind : MK, bs = u.boss ? 1.25 : 1;
-    const af = window.MonsterArt?.frame(kind, u.dir, v, u.hp, t, 'fb-' + u.id);
+    const p0 = project(u.vu, u.vv); if (u.mipForm) return drawMip(g, u, p0, t); const v = { walking: u.walking, hitUntil: u.hitUntil || 0, guardUntil: 0, pose: u.pose };
+    const sk = u.evoShow || u.kind, T = MON[sk] || MT, kind = MON[sk] ? sk : MK, mid = 'm:' + kind;   /* v98.320 · ONE size per species in the ⚖ Scale Lineup — a boss is the same picture, so it uses the same row (no separate boss row, no hidden multiplier) */   /* v98.58: evoShow = the old form until the flash */
+    if (T.code && window.CodeMonsters?.has(kind)) {   /* v98.331 · code-drawn unit */
+      const lift0 = 0, h = UNIT * 1.3 * (T.scale || 1) * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1), hitMs = (u.hitUntil || 0) > t ? 420 - ((u.hitUntil || 0) - t) : null, atk = u.pose === 'strike' || u.pose === 'windup';
+      if (lootGone(u, T, t)) return;   /* v98.601 · a beaten pumpkin pops up, then fades away — it does not stay on the field */
+      shadow(g, p0, UNIT * .26 * (T.scale || 1) * lootFade(u, T, t));
+      if (u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt) { g.save(); g.globalAlpha = lootFade(u, T, t); CodeMonsters.drawLoot(g, { x: p0.x, y: p0.y, h, t: t - u.deadAt }); g.restore(); return }   /* the pumpkin pops into a pumpkin to collect */
+      evoAura(g, u, { x: p0.x, y: p0.y - lift0 }, h, t);
+      g.save(); g.translate(p0.x + (hitMs != null ? Math.sin(t * .08) * 3 : 0), p0.y); if (['SW', 'NW'].includes(u.dir)) g.scale(-1, 1);
+      CodeMonsters.draw(g, kind, { x: 0, y: 0, h, dir: u.dir, t, hp: u.hp, hit: atk ? t % 420 : hitMs, walking: !!u.walking, pose: atk ? 'attack' : u.pose, vine: atk && kind === 'pumpkinBoss', seed: u.id.length * 1.7 + (u.id.charCodeAt(u.id.length - 1) || 0), evoFlash: !!(u.evoCharge && t - u.evoCharge < 1800) });
+      if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .6; CodeMonsters.draw(g, kind, { x: 0, y: 0, h, dir: u.dir, t, hp: u.hp, hit: null, walking: false, pose: 'idle', seed: 0 }) }
+      g.restore(); if (u.hp > 0) bar(g, p0, p0.y - h * 1.02, u.shown / u.maxHp, '#e2705f'); return;
+    }
+    // A harvested pumpkin keeps its real loot pose after defeat; it is not a living unit.
+    const isLoot = u.hp <= 0 && T.loot && u.deadAt && t > u.deadAt;
+    if (lootGone(u, T, t)) return;
+    const af = window.MonsterArt?.frame(kind, u.dir, isLoot ? { pose: 'loot' } : v, isLoot ? 1 : u.hp, t, 'fb-' + u.id);
     /* v97.26 · B3: fliers hover half a cell up and bob; their shadow stays on the ground, smaller as they rise */
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
-    shadow(g, p0, UNIT * .26 * T.scale * bs * (lift ? .7 - lift / UNIT * .3 : 1));
+    shadow(g, p0, UNIT * .26 * T.scale * (lift ? .7 - lift / UNIT * .3 : 1));
     if (af) {
-      const h = UNIT * 1.6 * Math.max(.8, T.scale) * bs * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
-      g.save(); g.translate(p.x, p.y); if (af.flip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .55;
+      const h = UNIT * CharSize.MON.base * CharSize.MON.k * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * monNorm(kind, T) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
+      evoAura(g, u, p, h, t);
+      const ec = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? 1 + .06 * Math.sin(t * .05) : 1, ex = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? Math.sin(t * .09) * 3 : 0;
+      g.save(); g.translate(p.x + ex, p.y); g.scale(ec, ec); if (af.flip) g.scale(-1, 1); if (u.hp <= 0 && !isLoot) g.globalAlpha *= .55;
       const ai = u.variant || u.leader ? window.JobLook?.tint(af.image, JobLook.VARIANT[u.variant || 'elite']) || af.image : af.image;   /* v97.26 · J6 */
       g.drawImage(ai, af.sx, af.sy, af.sw, af.sh, -w * pv[0], -h * pv[1], w, h);
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; for (let k = 0; k < 2; k++) g.drawImage(af.image, af.sx, af.sy, af.sw, af.sh, -w * pv[0], -h * pv[1], w, h) }
       g.restore();
-      bar(g, p, p.y - h * (af.barHeight || .85), u.shown / u.maxHp, '#e2705f'); return;
+      if (u.hp > 0) bar(g, p, p.y - h * (af.barHeight || .85), u.shown / u.maxHp, '#e2705f'); return;
     }
     const back = ['NE', 'NW'].includes(u.dir), i = im('assets/enemies/' + T.img + (back ? '-back' : '') + '.webp') || im('assets/enemies/' + T.img + '.webp'); if (!i) return;
-    const h = UNIT * 1.6 * T.scale * bs * .8, w = h * i.naturalWidth / i.naturalHeight;
+    const h = UNIT * CharSize.MON.base * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * CharSize.MON.k, w = h * i.naturalWidth / i.naturalHeight;
+    evoAura(g, u, p, h, t);
     g.save(); g.translate(p.x + ((u.hitUntil || 0) > t ? Math.sin(t * .08) * 4 : 0), p.y); if (['SE', 'NE'].includes(u.dir)) g.scale(-1, 1); if (u.hp <= 0) { g.rotate(Math.PI * .4); g.globalAlpha = .5 }
     g.drawImage(u.variant || u.leader ? window.JobLook?.tint(i, JobLook.VARIANT[u.variant || 'elite']) || i : i, -w / 2, -h, w, h); g.restore(); bar(g, p, p.y - h, u.shown / u.maxHp, '#e2705f');
   }
-  function draw(g, t0) {
+  /* v98.282 · the user's ground pictures (js/ground-art.js): ring under the active / targeted fighter, frame on a cell, glowing corners on the hovered cell — all fitted to the grid cell (width = 2 half-widths, read from project()) */
+  const cellW = (u, v) => Math.abs(project(u + 1, v).x - project(u, v + 1).x);
+  /* v98.308 · the ground art (cell frames, foot rings, hover corners, turn crystals) is drawn by code (js/ground-art-code.js) — smooth, bright, one source for the battle AND the BG editor. ?gart=pic or localStorage project-a-gart=pic brings the old picture sets back. */
+  const CODE_ART = !!window.GroundArtCode && GroundArtCode.enabled(), RING_STYLE = window.GroundArtCode ? GroundArtCode.ringStyle() : 1;
+  /* v98.324 · selection frames / hover corners sit on the ground: when taller ground stands in front of their cell they are mostly hidden (faint), they no longer glow through a cliff */
+  const SEL_OUTLINE = !/[?&]selglow=0/.test(location.search);
+  let HID_ALL = null; const behind = (u, v) => !!HID_ALL && HID_ALL.has(u + ',' + v);
+  function cellFrame(g, name, u, v, k = FP) { let r = false; const f = () => { r = cellFrame0(g, name, u, v, k) }; window.FieldOcc ? FieldOcc.draw(g, u, v, f) : f(); return r }
+  function cellFrame0(g, name, u, v, k = 1) { if (CODE_ART) { const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return GroundArtCode.frame(g, name, p.x, p.y, w, w * .56, performance.now()) } const G = window.GroundArt; if (!G) return false; const p = project(u + .5 * k, v + .5 * k), w = cellW(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56) }
+  function footRing(g, unit, foe, t) { if (CODE_ART) { const p = project(unit.vu, unit.vv); GroundArtCode.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98 * FP, t, RING_STYLE); return true } const G = window.GroundArt; if (!G) return false; const p = project(unit.vu, unit.vv); return G.ring(g, foe, p.x, p.y + 1, cellW(unit.u, unit.v) * .98 * FP, t) }
+  /* v98.360 · draw(g, t, mode): the village page calls it twice per frame — 'ground' BEFORE its buildings/props are drawn (the grid, its colours and the markers lie on the ground, so every object stands over them
+     and the grid shows through only where the picture is transparent) and 'rest' after (units, effects, HUD overlays). battle-field.html calls it once with no mode (it clips the ground overlays itself, FieldOcc). */
+  function draw(g, t0, mode) {
     if (!ready || typeof locations === 'undefined' || !locations.length) return;
     const t = now();
-    if (!st) { build(); hudMake(); handMake(); cam.set = false; focusCamera(true); arenaReady(); if (Q.get('warm') !== '1') startTurnShow(true) }
-    step(t);
+    if (!st) { if (mode === 'rest') return; build(); hudMake(); handMake(); cam.set = false; focusCamera(true); warmThen(arenaReady); if (Q.get('warm') !== '1') startTurnShow(true) }
+    if (mode !== 'rest') step(t);
+    const h = FB.hero(st);
+    if (mode !== 'rest') {
     g.save();
+    HID_ALL = gridHidden(cells); const hid = GRID ? HID_ALL : null;   /* v98.312 · grid lines only where nothing taller stands in front (no lines through cliffs / behind high ground) */
+    const OV = (u, v, fn) => window.FieldOcc ? FieldOcc.draw(g, u, v, fn) : fn();   /* v98.325 · every ground overlay is clipped by taller ground in front (js/field-host.js FieldOcc) */
     for (const [key, k] of cells) {
-      const [u, v] = key.split(',').map(Number); poly(g, u, v);
-      const col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k]; if (col) { g.fillStyle = col; g.fill() }
-      g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke();
+      const [u, v] = key.split(',').map(Number), col = window.FieldCellTint ? FieldCellTint(u, v, k, COL[k]) : COL[k], lines = GRID && !hid.has(key);
+      if (!col && !lines) continue;
+      OV(u, v, () => { polyC(g, u, v); if (col) { g.fillStyle = col; g.fill() } if (lines) { g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke() } });
     }
-    if (reachMap && !busy) for (const e of reachMap.values()) { if (e.cost === 0) continue; poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }
+    if (inspectMap && !busy && !EDIT) { const foeI = inspectU.side === 'monster'; for (const e of inspectMap.values()) { if (e.cost === 0) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = foeI ? 'rgba(236,96,72,.30)' : 'rgba(150,200,255,.28)'; g.fill(); g.strokeStyle = foeI ? 'rgba(255,170,150,.9)' : 'rgba(200,225,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.stroke(); g.setLineDash([]) }) } }   /* next-turn cells of the picked fighter */
+    if (farMap && !busy && !EDIT) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }) }   /* yellow = needs the farthest move card */
+    if (reachMap && !busy && !EDIT) for (const e of reachMap.values()) { if (e.cost === 0) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }) }
     /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
-    if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); poly(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
-      const p = project(c.u + .5, c.v + .5); g.font = '16px system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(esc_ ? '⇲' : '🚩', p.x, p.y + 5 - 3 * pul) }
+    if (st.flee?.cells && !st.outcome) for (const c of st.flee.cells) { const pul = .5 + .5 * Math.sin(t * .005); OV(c.u, c.v, () => { polyC(g, c.u, c.v); g.fillStyle = `rgba(90,190,255,${.26 + .2 * pul})`; g.fill(); g.strokeStyle = '#bfe8ff'; g.lineWidth = 2.5; g.stroke() }) }
+    if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); polyC(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
+      const p = project(c.u + .5, c.v + .5); g.font = '16px AgThai,system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(esc_ ? '⇲' : '🚩', p.x, p.y + 5 - 3 * pul) }
     /* v94.02 · height of every cell you can reach (1–3; 0 = ground) */
-    if (reachMap && !busy && window.FieldHeight) { g.font = '700 11px system-ui'; g.textAlign = 'center'; for (const e of reachMap.values()) { const L = FB.lv(st, e.u, e.v); if (!L) continue; const p = project(e.u + .5, e.v + .5); g.fillStyle = 'rgba(10,20,40,.75)'; g.beginPath(); g.arc(p.x, p.y, 8, 0, 7); g.fill(); g.fillStyle = '#cfe4ff'; g.fillText('▲' + L, p.x, p.y + 4) } }
-    if (pushShow && !busy) { poly(g, pushShow.u, pushShow.v); g.fillStyle = pushShow.stuck ? 'rgba(160,160,160,.35)' : pushShow.dmg ? 'rgba(255,60,40,.45)' : 'rgba(255,200,80,.35)'; g.fill(); const p = project(pushShow.u + .5, pushShow.v + .5); g.font = '800 13px system-ui'; g.textAlign = 'center'; g.fillStyle = '#000a'; g.fillRect(p.x - 48, p.y - 30, 96, 18); g.fillStyle = pushShow.dmg ? '#ffb0a0' : '#ffe2a8'; g.fillText(pushShow.stuck ? 'ผลักไม่ได้' : pushShow.dmg ? 'ตก ' + pushShow.drop + ' ระดับ −' + pushShow.dmg : 'ไม่ตก', p.x, p.y - 17) }
-    const h = FB.hero(st), tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
+    if (reachMap && !busy && window.FieldHeight) { g.font = '700 11px AgThai,system-ui'; g.textAlign = 'center'; for (const e of reachMap.values()) { const L = FB.lv(st, e.u, e.v); if (!L) continue; const p = project(e.u + OFF, e.v + OFF); g.fillStyle = 'rgba(10,20,40,.75)'; g.beginPath(); g.arc(p.x, p.y, 8, 0, 7); g.fill(); g.fillStyle = '#cfe4ff'; g.fillText('▲' + L, p.x, p.y + 4) } }
+    if (pushShow && !busy) { poly(g, pushShow.u, pushShow.v); g.fillStyle = pushShow.stuck ? 'rgba(160,160,160,.35)' : pushShow.dmg ? 'rgba(255,60,40,.45)' : 'rgba(255,200,80,.35)'; g.fill(); const p = project(pushShow.u + .5, pushShow.v + .5); g.font = '800 13px AgThai,system-ui'; g.textAlign = 'center'; g.fillStyle = '#000a'; g.fillRect(p.x - 48, p.y - 30, 96, 18); g.fillStyle = pushShow.dmg ? '#ffb0a0' : '#ffe2a8'; g.fillText(pushShow.stuck ? 'ผลักไม่ได้' : pushShow.dmg ? 'ตก ' + pushShow.drop + ' ระดับ −' + pushShow.dmg : 'ไม่ตก', p.x, p.y - 17) }
+    const tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
     /* hovering a combat card: its reach around the hero in red */
-    if (dmgShow && !busy && dmgShow.target.hp > 0) { const q = project(dmgShow.target.vu, dmgShow.target.vv), txt = '−' + dmgShow.total + (dmgShow.kill ? ' ☠' : ''); g.save(); g.font = '900 24px system-ui,"Noto Sans Thai",sans-serif'; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = dmgShow.kill ? '#ffe14d' : '#ffd0a0'; const y = q.y - UNIT * 1.75 - 4 * Math.sin(now() * .006); g.strokeText(txt, q.x, y); g.fillText(txt, q.x, y); g.restore() }
-    if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }
+    if (dmgShow && !busy && dmgShow.target.hp > 0) { const q = project(dmgShow.target.vu, dmgShow.target.vv), txt = '−' + dmgShow.total + (dmgShow.kill ? ' ☠' : ''); g.save(); g.font = '900 24px AgThai,system-ui,"Noto Sans Thai",sans-serif'; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = dmgShow.kill ? '#ffe14d' : '#ffd0a0'; const y = q.y - UNIT * 1.75 - 4 * Math.sin(now() * .006); g.strokeText(txt, q.x, y); g.fillText(txt, q.x, y); g.restore() }
+    if (rangeShow && !busy) for (const [key, k] of cells) { if (k === 'blocked') continue; const [u, v] = key.split(',').map(Number), d = Math.abs(u - h.u) + Math.abs(v - h.v); if (d < 1 || d > rangeShow) continue; OV(u, v, () => { poly(g, u, v); g.fillStyle = 'rgba(255,80,60,.26)'; g.fill(); g.strokeStyle = 'rgba(255,150,130,.7)'; g.lineWidth = 1.2; g.stroke() }) }
     /* enemies some playable card can reach: red; the chosen target: gold */
-    if (!busy && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range + (FB.cardRule(c.id).range > 1 ? h.rangePlus || 0 : 0) : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
-    if (tg) { poly(g, tg.u, tg.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3.5; g.setLineDash([6, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) }
-    for (const a of FB.allies(st)) if (a.hp > 0) { poly(g, a.u, a.v); g.strokeStyle = 'rgba(127,200,160,.7)'; g.lineWidth = 1.5; g.stroke() }
-    poly(g, h.u, h.v); g.strokeStyle = '#6fd18a'; g.lineWidth = 2; g.stroke();
+    if (!busy && !EDIT && st.turn === 'hero' && !st.outcome) { const reachR = Math.max(0, ...st.deck.combat.hand.map((c, i) => !FB.combatBlock(st, i) && !FB.cardRule(c.id)?.self ? FB.cardRule(c.id).range + (FB.cardRule(c.id).range > 1 ? h.rangePlus || 0 : 0) : 0)); for (const mm of FB.monsters(st)) if (mm.hp > 0 && reachR && FB.dist(h, mm) <= reachR) { poly(g, mm.u, mm.v); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3; g.stroke() } }
+    if (tg) { if (!(cellFrame(g, 'red', tg.u, tg.v) && footRing(g, tg, true, t))) { polyF(g, tg.u, tg.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3.5; g.setLineDash([6, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
+    for (const a of FB.allies(st)) if (a.hp > 0) { polyF(g, a.u, a.v); g.strokeStyle = 'rgba(127,200,160,.7)'; g.lineWidth = 1.5; g.stroke() }
+    if (!(st.turn === 'hero' && !st.outcome && footRing(g, h, false, t))) { polyF(g, h.u, h.v); g.strokeStyle = '#6fd18a'; g.lineWidth = 2; g.stroke() }
+    if (padOn && padCur && !busy && st.turn === 'hero' && !st.outcome) { const pu = .55 + .45 * Math.sin(t * .008); poly(g, padCur.u, padCur.v); g.fillStyle = `rgba(255,255,255,${.12 + .1 * pu})`; g.fill(); g.strokeStyle = `rgba(255,255,255,${.7 + .3 * pu})`; g.lineWidth = 3; g.stroke() }   /* v98.21 · stick / pad cursor */
     /* v97.08 · where everyone faces: a small wedge on the ground in front of each unit (hits from behind ×1.2, side ×1.1) */
     for (const u of st.units) { const F = u.hp > 0 && FB.FACE_V[u.face]; if (!F) continue; const [fu, fv] = F, P = (a, b) => project(u.vu + fu * a - fv * b, u.vv + fv * a + fu * b), tip = P(.62, 0), l = P(.34, .17), r = P(.34, -.17);
       g.beginPath(); g.moveTo(tip.x, tip.y); g.lineTo(l.x, l.y); g.lineTo(r.x, r.y); g.closePath(); g.fillStyle = u.side === 'monster' ? 'rgba(255,120,95,.85)' : u === h ? 'rgba(130,230,150,.9)' : 'rgba(150,215,190,.8)'; g.fill(); g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 1; g.stroke() }
-    if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { poly(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() }
-    if (pendAlly?.to && !busy) { poly(g, pendAlly.to.u, pendAlly.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) }
-    if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) }
+    if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { if (!footRing(g, st.cur, false, t)) { polyF(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() } }
+    if (pendAlly?.to && !busy) { poly(g, pendAlly.to.u, pendAlly.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pendAlly.to.u, pendAlly.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
+    if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pend.to.u, pend.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
+    if (!EDIT && typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; OV(hoverCell.u, hoverCell.v, () => G?.corners(g, p.x, p.y, w, w * .56, t)) }   /* v98.282 · glowing corners on the cell under the mouse */
     g.restore();
+    }   /* end of the ground pass */
+    if (mode === 'ground') return;
     if (CINE) spotlight(g, cine ? [cine.a, cine.b] : st.units.filter(u => u.hp > 0));
     glowDraw(g, t);
     /* a host page (battle-field.html) can hand in standing props so trees/rocks and units overlap by depth */
     /* v96: a host with view depth (battle-field.html) sorts by depth so cells in front of a unit can be drawn over it */
     const extras = window.TownBattleExtras?.() || [], DEP = window.FieldDepth, order = [...st.units.map(u => ({ unit: u, y: project(u.vu, u.vv).y, d: DEP ? DEP(u.vu, u.vv) : 0 })), ...extras].sort(DEP ? (a, b) => (a.d ?? 0) - (b.d ?? 0) : (a, b) => a.y - b.y);
-    const drawUnit = u => { const ld = u.dir; if (window.viewDir) u.dir = viewDir(ld); try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), frozenMark(g, u, t)) } finally { u.dir = ld } };
+    const selUnit = inspectU || (st.turn === 'ally' && st.cur ? st.cur : st.turn === 'hero' ? h : null);
+    window.__fieldOrder = order;   /* v98.284 · read by tools/check-field-occlusion.cjs */
+    /* v98.71 · until a unit moves, acts or is turned (u.face changes), it shows SW/SE (toward the camera) so the player sees who is there; the rules still use u.face */
+    const frontShown = u => { const i = u.idle0; if (!i) return false; if (u.walking || (u.pose && u.pose !== 'idle') || u.u !== i.u || u.v !== i.v || u.face !== i.face || u.hp <= 0) { u.idle0 = null; return false } return true };
+    const drawUnit = u => { const ld = u.dir; if (frontShown(u)) u.dir = u.frontDir; if (window.viewDir) u.dir = viewDir(u.dir);
+      const SFX = window.StatusFX, sp = SFX && u.hp > 0 && (u.sts || u.stun || u.slowed) ? project(u.vu, u.vv) : null, sh = sp ? UNIT * 1.3 * (u.side === 'monster' ? (MON[u.evoShow || u.kind]?.scale || 1) : 1) : 0;   /* v98.397 · the status shows on the body (js/status-fx.js): bubbles, flames + smoke, ice … */
+      if (sp) SFX.back(g, u, sp.x, sp.y, sh, t);
+      try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), SFX || frozenMark(g, u, t), u.mystery && !u.mipForm && u.hp > 0 && mysteryGlint(g, u, t)) } finally { u.dir = ld }
+      if (sp) SFX.front(g, u, sp.x, sp.y, sh, t) };
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
-      if (u.deadAt && t > u.deadAt) { const e = (t - u.deadAt) / 1400; g.globalAlpha = Math.max(0, 1 - e); if (e < 1 && Math.random() < .5) { const p = project(u.vu, u.vv); parts.push({ x: p.x + (Math.random() - .5) * UNIT * .8, y: p.y - Math.random() * UNIT * 1.3, vx: (Math.random() - .5) * 30, vy: -60 - Math.random() * 60, t0: t, life: 700, col: '255,220,180', spark: false, size: 2 + Math.random() * 2, float: true }) } }
+      if (u.deadAt && t > u.deadAt && !MON[u.kind]?.loot) { const e = (t - u.deadAt) / 1400; g.globalAlpha = e < .55 ? 1 : Math.max(0, 1 - (e - .55) / .45); if ('filter' in g) { const k = Math.min(1, (t - u.deadAt) / 400); g.filter = 'grayscale(' + (.85 * k).toFixed(2) + ') brightness(' + (1 - .22 * k).toFixed(2) + ')' } }   /* v98.610 · stays solid while it slumps, goes grey, fades only at the end (it used to be see-through at once) */
+      const isSel = u.hp > 0 && (u === selUnit || u === hoverU || u === pickU) && !u.deadAt; if (isSel && SEL_OUTLINE) { g.shadowColor = '#fff'; g.shadowBlur = 6 * (devicePixelRatio || 1) }   /* v98.324 · the selected character: thin white edge + soft aura */
       drawUnit(u); g.restore();
     }
+    for (const u of st.units) if (u.deadAt && t > u.deadAt) deathFx(g, u, t);   /* v98.610 · grey aura + smoke + the soul leaving the body */
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
     for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }
+    /* v98.278 · the turn crystal over the head of whoever's turn it is: the user's own 8-frame art (gold = team, silver = monsters) — assets/fx/plumbob-ally|foe.webp, 8 frames of 100×160 (source sheet: art-production/plumbob-crystal-sheet-8x2.webp). No code-drawn glow any more: the picture carries its own light. */
+    duelTick(t);
+    if (!st.outcome) { const au = actUnit && actUnit.hp > 0 ? actUnit : FB.queue(st, 1)[0];
+      if (au && au.hp > 0 && !(au.deadAt && t > au.deadAt)) { const foe = au.side === 'monster', pic = im('assets/fx/plumbob-' + (foe ? 'foe' : 'ally') + '.webp');
+        if (pic || CODE_ART) { const q = project(au.vu, au.vv), ko = kbOff(au, t), big = foe ? (MON[au.evoShow || au.kind]?.scale || 1) : 1, ph = UNIT * .98, pw = ph * 100 / 160, bob = Math.sin(t * .0042) * UNIT * .05, cx = q.x + ko.x, cy = q.y + ko.y - UNIT * (1.78 * big + .1) + bob;
+          if (CODE_ART) GroundArtCode.crystal(g, cx, cy, ph * .8, t, foe ? 'foe' : 'ally'); else g.drawImage(pic, (Math.floor(t / 110) % 8) * 100, 0, 100, 160, cx - pw / 2, cy - ph / 2, pw, ph) } } }
+    /* v98.253 · grey crystal (no ring) over the fighter picked in the queue */
+    const crU = inspectU || pickU;
+    if (crU && crU.hp > 0) { const pic = im('assets/fx/plumbob-view.webp'); if (pic || CODE_ART) { const q = project(crU.vu, crU.vv), ko = kbOff(crU, t), big = crU.side === 'monster' ? (MON[crU.evoShow || crU.kind]?.scale || 1) : 1, pw = UNIT * .36, ph = pw * 96 / 64, cy = q.y + ko.y - UNIT * (1.72 * big + .1) + Math.sin(t * .0042 + 1) * UNIT * .05 - (actUnit === crU ? UNIT * .55 : 0);
+      if (CODE_ART) GroundArtCode.crystal(g, q.x + ko.x, cy, ph * .8, t, 'view'); else g.drawImage(pic, (Math.floor(t / 85) % 12) * 64, 0, 64, 96, q.x + ko.x - pw / 2, cy - ph / 2, pw, ph) } }
     /* v97.32 · B13: at night the hero and companions carry lanterns — a warm flickering glow at hip height that lights the ground around them */
     if (NIGHT) { g.save(); g.globalCompositeOperation = 'lighter'; for (const u of FB.allies(st).concat(h)) { if (u.hp <= 0) continue; const q = project(u.vu, u.vv), fl = .85 + .15 * Math.sin(t * .013 + u.id.length) * Math.sin(t * .007), x = q.x + UNIT * .22, y = q.y - UNIT * .55;
       let gr = g.createRadialGradient(q.x, q.y, 0, q.x, q.y, UNIT * 1.6); gr.addColorStop(0, `rgba(255,170,80,${.32 * fl})`); gr.addColorStop(1, 'rgba(255,170,80,0)'); g.fillStyle = gr; g.beginPath(); g.ellipse(q.x, q.y, UNIT * 1.6, UNIT * .8, 0, 0, 7); g.fill();
@@ -1164,17 +1832,17 @@
       g.restore() }
     drawSay(g);
     /* v97.19 · status icons above the head (sleep, burn, poison, silence, weak, frozen, slowed) */
-    g.save(); g.font = '15px system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center';
-    for (const u of st.units) { if (u.hp <= 0) continue; const ic = [u.leader ? '👑' : '', ...Object.keys(u.sts || {}).map(k => FB.STATUS[k]?.icon), u.stun ? '❄' : '', u.slowed ? '⚡' : ''].filter(Boolean); if (!ic.length) continue;
-      const q = project(u.vu, u.vv), y = q.y - UNIT * 1.95 + Math.sin(t * .004) * 2, w = ic.length * 18 + 6; g.fillStyle = 'rgba(10,14,20,.7)'; g.beginPath(); g.roundRect?.(q.x - w / 2, y - 14, w, 20, 9); g.fill(); ic.forEach((x, k) => g.fillText(x, q.x - w / 2 + 12 + k * 18, y + 1)) }
+    g.save(); g.font = '15px AgThai,system-ui,"Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center';
+    for (const u of st.units) { if (u.hp <= 0) continue; const ic = [u.leader ? '👑' : '', ...Object.keys(u.sts || {}).map(k => stiSrc(k) ? { k } : FB.STATUS[k]?.icon), u.stun ? { k: 'stun' } : '', u.slowed ? { k: 'slowed' } : ''].filter(Boolean); if (!ic.length) continue;
+      const q = project(u.vu, u.vv), y = q.y - UNIT * 1.95 + Math.sin(t * .004) * 2, w = ic.length * 18 + 6; g.fillStyle = 'rgba(10,14,20,.7)'; g.beginPath(); g.roundRect?.(q.x - w / 2, y - 14, w, 20, 9); g.fill(); ic.forEach((x, k) => { const cx = q.x - w / 2 + 12 + k * 18; if (typeof x === 'string') g.fillText(x, cx, y + 1); else { const pic = im(stiSrc(x.k)); if (pic) g.drawImage(pic, cx - 8, y - 9, 17, 17); else g.fillText('•', cx, y + 1) } }) }
     g.restore();
-    fxDraw(g, t); partDraw(g, t);
+    fxDraw(g, t); partDraw(g, t); boltDraw(g, t);
     if (CINE) { speedDraw(g, t); atmosphere(g, t0); flashDraw(g) }
     texts = texts.filter(x => t - x.t0 < 1300);
     for (const x of texts) {
       const p = project(x.u, x.v), e = (t - x.t0), a = e / 1300, pop = x.small ? 1 : e < 140 ? 1 + .9 * (1 - e / 140) : 1 + .08 * Math.max(0, 1 - (e - 140) / 200);
       const base = x.small ? 14 : x.big ? 30 : 23, y = p.y - UNIT * 1.6 - (x.small ? 18 : 0) + (x.dy || 0) - Math.min(1, e / 260) * 26 - a * 18;
-      g.save(); g.globalAlpha = a < .7 ? 1 : 1 - (a - .7) / .3; g.font = `900 ${Math.round(base * pop)}px system-ui,"Noto Sans Thai",sans-serif`; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = x.small ? 4 : 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = x.col; g.strokeText(x.txt, p.x + (x.dx || 0), y); g.fillText(x.txt, p.x + (x.dx || 0), y); g.restore();
+      g.save(); g.globalAlpha = a < .7 ? 1 : 1 - (a - .7) / .3; g.font = `900 ${Math.round(base * pop)}px AgThai,system-ui,"Noto Sans Thai",sans-serif`; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = x.small ? 4 : 6; g.strokeStyle = '#1a0d08e6'; g.fillStyle = x.col; g.strokeText(x.txt, p.x + (x.dx || 0), y); g.fillText(x.txt, p.x + (x.dx || 0), y); g.restore();
     }
   }
   /* ---------- HD-2D light (code-drawn) ----------
@@ -1198,7 +1866,7 @@
   function glowDraw(g, t) {
     glows = glows.filter(x => t - x.t0 < x.dur);
     for (const x of glows) {
-      const p = project(x.u, x.v), a = 1 - (t - x.t0) / x.dur, r = x.r * (.7 + .5 * (1 - a));
+      const progress = (t - x.t0) / x.dur, p = project(x.u, x.v), a = x.charge ? .15 + progress * .85 : 1 - progress, r = x.r * (x.charge ? 1.3 - progress * .65 : .7 + .5 * progress);
       g.save(); g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(p.x, p.y - UNIT * .2, 0, p.x, p.y - UNIT * .2, r);
       gr.addColorStop(0, `rgba(${x.col},${.55 * a})`); gr.addColorStop(1, `rgba(${x.col},0)`); g.fillStyle = gr; g.beginPath(); g.ellipse(p.x, p.y - UNIT * .2, Math.max(0, r), Math.max(0, r * .55), 0, 0, 7); g.fill(); g.restore();
     }
@@ -1246,10 +1914,51 @@
   }
   /* the page's own pointerup is replaced by TownUX, so the battle listens for a plain click itself (no drag = click) */
   { let down = null; cv.addEventListener('pointerdown', e => { if (e.button === 0) down = { x: e.clientX, y: e.clientY } }, true);
-    cv.addEventListener('pointerup', e => { if (e.button !== 0 || !down) return; const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5; down = null; if (moved) userCam = true; else click(world(e)) }, true);
-    cv.addEventListener('wheel', () => { userCam = true }, true) }
+    /* v98.358 · pointing at a character / monster: white edge + a short info window; clicking marks it with the grey crystal */
+    const unitAt = wp => { let best = null, by = -1e9; for (const u of st.units) { if (u.hp <= 0 || u.deadAt) continue; const g0 = inv(wp.x, wp.y), p = project(u.vu, u.vv); const same = inBlock(u, g0), box = Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5; if ((same || box) && p.y > by) { best = u; by = p.y } } return best };
+    cv.addEventListener('pointermove', e => { if (!st || e.pointerType === 'touch') return; const u = unitAt(world(e)); if (u !== hoverU) { hoverU = u; cv.style.cursor = u ? 'pointer' : ''; inspectSync() } });
+    cv.addEventListener('pointerleave', () => { if (hoverU) { hoverU = null; inspectSync() } });
+    cv.addEventListener('pointerdown', e => { if (e.button !== 0 || !st) return; const u = unitAt(world(e)); if (u && u !== pickU) { pickU = u; sfx('cast', .15); inspectSync(); if (u.side === 'monster' && u.hp > 0) { try { FB.setTarget(st, u.id) } catch (e) { } } handSync() } else if (!u && pickU && !hoverU) { /* clicking the ground keeps the mark: it clears when that unit acts or falls */ } }, true);
+    cv.addEventListener('pointerup', e => { if (e.button !== 0 || !down) return; const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5; down = null; if (moved) { userCam = true; try { follow = false } catch (e) { } } else if (!EDIT) click(world(e)) }, true);
+    cv.addEventListener('wheel', () => { userCam = true; try { follow = false } catch (e) { } }, true) }
   /* runs before the frame's camera transform: TownUX re-centres on the village hero every frame, so the arena has to win after it */
-  function pre() { if (st && (!userCam || cine)) focusCamera(); else if (kick.roll) { kick.roll = 0; cv.style.transform = '' } }
-  window.TownBattle = { pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
+  function pre() { if (st && userCam) { try { follow = false } catch (e) { } }   /* v98.354 · zoom / drag: the village must not pull the camera back to the hero's house */
+    if (st && (!userCam || cine)) focusCamera(); else if (kick.roll) { kick.roll = 0; cv.style.transform = '' } }
+
+  /* ---------- v98.21 · stick / gamepad / keys (js/touch-controls.js): a tile cursor on the grid ----------
+     stick = move the cursor one tile every 150 ms along the floor axes · A = click that tile (walk / target / attack) · hold A = ring (attack the target · end turn · undo · auto)
+     LB / RB = next / previous enemy (like Tab). Mouse use hides the cursor again. */
+  let padCur = null, padOn = false, padAt = 0;
+  const padHeroCell = () => { const h = FB.hero(st); return { u: Math.floor(h.u), v: Math.floor(h.v) } };
+  /* v98.628 · out of crystals = the turn is over: the facing picker opens by itself (no cancel) and picking a direction ends the turn */
+  setInterval(() => { if (!ON || !st || EDIT || busy || facing || pauseEl || discardMode || st.outcome || st.turn !== 'hero' || FB.crystals(st) > 0) return; if (document.hidden) return; endHeroTurn(true) }, 350);
+  const padReady = () => st && !busy && !st.outcome && st.turn === 'hero' && !discardMode && !facing && !pauseEl;
+  function padStep(v) {
+    if (!padReady()) return; const now = performance.now(); if (now < padAt) return; padAt = now + 150;
+    if (!padCur) padCur = padHeroCell();
+    let du = v.x / 2 + v.y, dv = v.y - v.x / 2; const l = Math.hypot(du, dv) || 1; du /= l; dv /= l;
+    const m = Math.max(Math.abs(du), Math.abs(dv)), su = Math.abs(du) > m * .45 ? Math.sign(du) : 0, sv = Math.abs(dv) > m * .45 ? Math.sign(dv) : 0;
+    const nu = padCur.u + su, nv = padCur.v + sv; if (cells.has(nu + ',' + nv)) padCur = { u: nu, v: nv }; padOn = true;
+  }
+  const padEnemyAt = c => c && FB.monsters(st).find(u => u.hp > 0 && Math.floor(u.u) === c.u && Math.floor(u.v) === c.v);
+  function padConfirm() { if (!padReady()) return; if (!padCur) padCur = padHeroCell(); padOn = true; const p = project(padCur.u + OFF, padCur.v + OFF); click({ x: p.x, y: p.y - 4 }) }
+  function padTarget(d) {
+    if (!padReady()) return; const ms = FB.monsters(st).filter(m => m.hp > 0); if (!ms.length) return;
+    const i = ms.findIndex(m => m.id === (pend?.id || st.target)), m = ms[i < 0 ? (d < 0 ? ms.length - 1 : 0) : (i + (d < 0 ? ms.length - 1 : 1)) % ms.length]; pend = null; padOn = true; padCur = { u: Math.floor(m.u), v: Math.floor(m.v) }; onEnemy(m);
+  }
+  function padContext() {
+    if (!padReady() || !padOn && !padCur) return padReady() ? { kind: 'cell', id: 'cell', icon: 'map', label: 'เลื่อนเคอร์เซอร์ด้วยจอยสติ๊ก', options: padOptions() } : null;
+    const c = padCur || padHeroCell(), m = padEnemyAt(c), tg = st.target && st.units.find(u => u.id === st.target && u.hp > 0);
+    const label = m ? (pend && pend.id === m.id ? 'โจมตี ' : 'เล็ง ') + (m.name || m.label || m.kind || m.id) : 'เดินไปช่องนี้';
+    return { kind: 'cell', id: 'cell', icon: m ? 'battle' : 'map', label, options: padOptions(!!tg) };
+  }
+  function padOptions(hasTarget) {
+    const o = [];
+    if (hasTarget !== false) o.push({ label: 'โจมตีเป้าหมาย', icon: 'battle', run: () => { const t = st.target && st.units.find(u => u.id === st.target && u.hp > 0); if (t) { pend = null; onEnemy(t); setTimeout(() => padReady() && onEnemy(t), 60) } } });
+    o.push({ label: 'จบเทิร์น', icon: 'calendar', run: () => endHeroTurn() }, { label: 'ย้อนเดิน', icon: 'guard', run: () => undoWalk() }, { label: 'ออโต้', icon: 'gear', run: () => setAuto(!auto) });
+    return o;
+  }
+  addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') padOn = false }, true);
+  window.TownBattle = { fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing || discardMode), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
     act: { undo: undoWalk, attackPlan: id => st && FB.autoAttack(st, id), skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, discard: setDiscard, confirmDiscard: doDiscard }, busy: () => busy };
 })();

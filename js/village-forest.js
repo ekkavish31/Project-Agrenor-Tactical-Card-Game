@@ -8,9 +8,9 @@
    objects() feeds the depth-sorted draw list of village-town.html, like TownBiome.objects(). */
 (function (root) {
   'use strict';
-  const TREES = [['broadleaf', 230, 5], ['old-oak', 250, 3], ['tree-round', 190, 4], ['tree-round-2', 175, 3], ['pine', 215, 4], ['tree-conifer', 200, 3], ['tree-blossom', 185, .35]];
-  const UNDER = [['bush-small', 74, 5], ['rock-cluster', 66, 2], ['tall-grass', 64, 3]];
-  const img = {}; for (const [n] of [...TREES, ...UNDER]) { const im = new Image(); im.onload = () => { try { terrainDirty = true } catch (e) { } }; im.src = 'assets/village-town/nature/' + n + '.webp'; img[n] = im }
+  const TREES = [['broadleaf', 230, 5], ['old-oak', 250, 3], ['tree-round', 190, 4], ['tree-round-2', 175, 3], ['pine', 215, 4], ['tree-conifer', 200, 3], ['tree-blossom', 185, .35], ['w1-oak-tree', 235, 3], ['w1-oak-grove', 250, 1.5], ['w1-fir-tree', 215, 2], ['w1-autumn-tree', 215, .8]];
+  const UNDER = [['bush-small', 74, 5], ['rock-cluster', 66, 2], ['tall-grass', 64, 3], ['w1-bush-flowers', 80, 3]];
+  let imgTimer = 0; const img = {}; for (const [n] of [...TREES, ...UNDER]) { const im = new Image(); im.onload = () => { clearTimeout(imgTimer); imgTimer = setTimeout(() => { try { terrainDirty = true } catch (e) { } }, 500) };   /* v98.241 · one ground repaint after the last tree picture arrives, not one per picture (each repaint is 0.1–2 s) */ im.src = 'assets/village-town/nature/' + n + '.webp'; img[n] = im }
   const SECT = 48, MARGIN = 230, CORRIDOR = 190;
   let rim = null, items = null, mid = null, roadsAt = null;
   const rng = s => () => { s = Math.imul(s ^ s >>> 15, 2246822507) + 0x9e3779b9 | 0; return ((s >>> 0) % 100000) / 100000 };
@@ -32,7 +32,7 @@
   function corridorDist(x, y) {   /* distance to the nearest exit road (dirt roads to the gates) */
     const lines = typeof roadExitLines !== 'undefined' ? roadExitLines : []; let best = 1e9;
     for (const L of lines) for (let i = 0; i < L.length - 1; i++) { const a = L[i], b = L[i + 1], dx = b.x - a.x, dy = (b.y - a.y) * 2, l2 = dx * dx + dy * dy || 1; let t = ((x - a.x) * dx + (y - a.y) * 2 * dy) / l2; t = Math.max(0, Math.min(1, t)); best = Math.min(best, Math.hypot(x - (a.x + dx * t), (y - a.y) * 2 - dy * t)) }
-    try { for (const e of exitDoors()) { const p = project(e.u, e.v); best = Math.min(best, sd(x, y, p.x, p.y) * .8) } } catch (e) { }
+    try { for (const e of exitDoors()) { if (e.off) continue; const p = project(e.u, e.v); best = Math.min(best, sd(x, y, p.x, p.y) * .5)   /* v98.20 · a wider clearing around the two town gates */ } } catch (e) { }
     return best;
   }
   /* is this world pixel forest ground? (outside the village outline, not in a corridor, not a gate biome, not water / road) */
@@ -63,10 +63,17 @@
     return items.filter(q => img[q.n]?.complete && img[q.n].naturalWidth).map(q => ({ x: q.x, y: q.y, draw: g => { const im = img[q.n], h = q.w * im.naturalHeight / im.naturalWidth; g.save(); g.translate(q.x, q.y); if (q.flip) g.scale(-1, 1); TownArt.draw(g, im, null, [-q.w / 2, -h * .93, q.w, h], null); g.restore() } }));
   }
   /* walking: the forest belt is closed (only the exit corridors lead out) */
-  const memo = new Map();
+  /* v98.199 · walking asks "is this forest?" for thousands of points per click (A* + line-of-sight samples at 1/48 cell). The old cache was keyed by the exact
+     float pair as a string, so the fine samples never hit it and forestAt() (road distance, exit corridors, biome, paint) ran each time: 60 % of a path search.
+     Now the answer is stored per 8 px world cell in a typed array (looked up by integer index) and forestAt() is evaluated once at the cell centre. */
+  const CELL = 8; let grid = null, GW = 0, GH = 0;
   function blocks(u, v) {
-    const k = u + ',' + v; let b = memo.get(k); if (b !== undefined) return b;
-    const p = project(u, v); b = forestAt(p.x, p.y); if (memo.size > 200000) memo.clear(); memo.set(k, b); return b;
+    const p = project(u, v), W = WORLD_W, H = WORLD_H;
+    if (!(p.x >= 0 && p.y >= 0 && p.x < W && p.y < H)) return forestAt(p.x, p.y);
+    if (!grid || GW !== (W / CELL | 0) + 1 || GH !== (H / CELL | 0) + 1) { GW = (W / CELL | 0) + 1; GH = (H / CELL | 0) + 1; grid = new Uint8Array(GW * GH) }
+    const cx = p.x / CELL | 0, cy = p.y / CELL | 0, i = cy * GW + cx; let b = grid[i];
+    if (!b) { b = forestAt(cx * CELL + CELL / 2, cy * CELL + CELL / 2) ? 2 : 1; grid[i] = b }
+    return b === 2;
   }
-  root.VillageForest = { objects, blocks, forestAt, reset: () => { rim = null; items = null; memo.clear() }, get count() { return items?.length || 0 } };
+  root.VillageForest = { objects, blocks, forestAt, reset: () => { rim = null; items = null; grid = null }, get count() { return items?.length || 0 } };
 })(window);

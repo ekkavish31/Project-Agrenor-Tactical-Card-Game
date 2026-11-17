@@ -33,11 +33,15 @@
     thornwatch: [{ key: 'guide', label: '🧭 จ้างพรานนำทางสำรวจ', cost: 20, daily: true }, { key: 'tales', label: '🔥 ฟังเรื่องป่าใหญ่', cost: 0 }],
     vinehollow: [{ key: 'spring', label: '♨ แช่บ่อน้ำร้อน', cost: 8 }]
   };
+  const gm = ctx => { try { return (ctx && ctx.game && ctx.game()) || root.WorldState?.game?.() } catch (e) { return null } };
+  /* v98.485 · ปุ่มสถานที่ของเนื้อเรื่องหลัก (js/story-cast.js) ต่อท้ายปุ่มเดิม */
+  const storySvc = (S, id) => { const g = gm(); return root.StoryCast && g ? root.StoryCast.services(g, id) : [] };
   function list(S, id) {
-    return (SVC[id] || []).map(o => { const w = (o.why?.(S) || '') || (o.daily && used(S, id, o.key) ? 'วันนี้ใช้ไปแล้ว' : '') || (o.cost && (S.gold || 0) < o.cost ? 'เงินไม่พอ' : '');
+    return (SVC[id] || []).concat(storySvc(S, id)).map(o => { const w = (o.why?.(S) || '') || (o.daily && used(S, id, o.key) ? 'วันนี้ใช้ไปแล้ว' : '') || (o.cost && (S.gold || 0) < o.cost ? 'เงินไม่พอ' : '');
       return { key: o.key, label: o.label + (o.cost ? ' · ' + o.cost + ' 💰' : ''), disabled: !!w, title: w } });
   }
   function run(S, id, key, ctx = {}) {
+    if (key.startsWith('st:')) { const g = gm(), w0 = list(S, id).find(x => x.key === key); if (!g || !root.StoryCast || !w0) return { lines: [] }; if (w0.disabled) return { lines: [w0.title] }; const o0 = storySvc(S, id).find(x => x.key === key); if (o0?.cost) S.gold -= o0.cost; if (o0?.daily) use(S, id, key); return root.StoryCast.run(g, id, key, S, ctx) }
     const o = (SVC[id] || []).find(x => x.key === key); if (!o) return { lines: [] };
     const w = list(S, id).find(x => x.key === key); if (w.disabled) return { lines: [w.title] };
     if (o.cost) S.gold -= o.cost; if (o.daily) use(S, id, key);
@@ -45,7 +49,7 @@
     if (key === 'bounty') return { lines: [], panel: 'bounty' };
     if (key === 'ferry') { ctx.passTime?.(3); return { lines: ['⛵ ล่องเรือข้ามทะเลสาบสามชั่วโมง ลมเย็นสบาย'], goto: id === 'willowshore' ? 'lakenhold' : 'willowshore' } }
     if (key === 'mine') {
-      ctx.passTime?.(4); S.fatigue = Math.min(100, (S.fatigue || 0) + 20); S.gold += 12; out.push('⛏ ทำงานกะหนึ่ง ได้ค่าแรง 12 💰 · เหนื่อย +20');
+      ctx.passTime?.(4);  S.gold += 12; out.push('⛏ ทำงานกะหนึ่ง ได้ค่าแรง 12 💰');
       const room = () => (ST()?.cargoMax(S) || 12) - (ST()?.load(S) || 0); S.cargo ||= {};
       const ore = Math.min(2, Math.max(0, room())); if (ore) { S.cargo.ore = (S.cargo.ore || 0) + ore; out.push('🪨 หัวหน้าเหมืองแบ่งแร่ให้ ' + ore + ' ก้อน (ใส่เกวียน)') }
       if (r() < .3 && room() > 0) { S.cargo.crystal = (S.cargo.crystal || 0) + 1; out.push('💎 ขุดเจอผลึกเรืองแสงเล็ก ๆ หนึ่งก้อน') }

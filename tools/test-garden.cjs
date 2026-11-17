@@ -14,9 +14,9 @@ g.village.coins = 500;
 const G = Gd.of(r.plot); eq(G.plots.length, Gd.FN, 'a field of FW×FH tiles'); eq(G.ground.filter(k => k === 'soil').length, 6, 'six tiles tilled to start'); ok(Gd.fieldCount(G).debris > 15, 'the rest is overgrown'); eq(Gd.of(r.plot), G, 'one garden per farm');
 /* v97.83 · clearing and tilling */
 const rockAt = G.ground.indexOf('rock'), grassAt = G.ground.indexOf('grass'); g.village.materials = {}; g.fatigue = 0;
-ok(/ไถดิน/.test(Gd.plant(G, rockAt, 'lettuce')), 'no planting on rocks'); eq(Gd.clearTile(G, rockAt), ''); eq(G.ground[rockAt], 'grass'); eq(g.village.materials.stone, 1, 'a rock gives stone'); eq(g.fatigue, 3, 'clearing tires you');
+ok(/ไถดิน/.test(Gd.plant(G, rockAt, 'lettuce')), 'no planting on rocks'); eq(Gd.clearTile(G, rockAt), ''); eq(G.ground[rockAt], 'grass'); eq(g.village.materials.stone, 1, 'a rock gives stone'); eq(g.fatigue || 0, 0, 'clearing no longer tires you (v98.294)');
 eq(Gd.till(G, rockAt), ''); eq(G.ground[rockAt], 'soil'); ok(/ไถแล้ว/.test(Gd.till(G, rockAt)));
-g.fatigue = 99; const stump = G.ground.indexOf('stump'); ok(/เหนื่อย/.test(Gd.clearTile(G, stump)), 'too tired to chop a stump'); g.fatigue = 0;
+g.fatigue = 99; const stump = G.ground.indexOf('stump'); eq(Gd.clearTile(G, stump), '', 'a stump can be cleared even with old fatigue saved (v98.294)'); g.fatigue = 0;
 let wd = 0; const before = G.ground.filter(k => k === 'grass').length; G.last = 1; g.day = 120; Gd.tick(G); ok(G.ground.filter(k => k === 'grass').length < before, 'weeds creep back onto grass'); g.day = 1; G.last = 1;
 /* an old 6-bed garden moves onto a field and keeps its crops */
 const old = { id: 'oldfarm', garden: { plots: [{ crop: 'carrot', g: 2, dry: 0, w: 0, fert: false, perfect: true }, null, null, null, null, null], size: 6, last: 1, basket: {}, have: {}, fert: 0, compostDay: 1 } }; const OG = Gd.of(old); eq(OG.plots[0].crop, 'carrot'); eq(OG.ground[0], 'soil'); eq(OG.plots.length, Gd.FN);
@@ -66,5 +66,5 @@ eq(res.place, 1, 'a ★3 pumpkin wins'); eq(S2.gold, 120); ok(/แล้ว/.tes
 g.day = ad - 30; ok(/ช่วง/.test(Gd.contest({}, [P], 'pumpkin').why), 'only in the last week of autumn');
 /* v97.85 · processing · v97.86 · fishing */
 const K = Gd.of({ id: 'kitchen' }); K.basket = { milk: 3, egg: 2, herb: 1 }; eq(Gd.make(K, 'cheese'), ''); eq(K.basket.cheese, 1); ok(!K.basket.milk, 'milk used up'); ok(/ไม่พอ/.test(Gd.make(K, 'cheese')), 'not enough milk now'); eq(Gd.make(K, 'omelette'), ''); eq(Gd.GOODS.cheese.sell, 40, 'made goods sell like any other');
-g.fatigue = 0; let f1 = Gd.fish(K, () => .01); eq(f1.k, 'koi', 'a rare golden carp'); f1 = Gd.fish(K, () => .3); eq(f1.k, 'fish'); f1 = Gd.fish(K, () => .9); eq(f1.k, null, 'sometimes nothing bites'); eq(g.fatigue, 6, 'each cast tires a little');
+g.fatigue = 0; let f1 = Gd.fish(K, () => .01); eq(f1.k, 'koi', 'a rare golden carp'); f1 = Gd.fish(K, () => .3); eq(f1.k, 'fish'); f1 = Gd.fish(K, () => .9); eq(f1.k, null, 'sometimes nothing bites'); eq(g.fatigue || 0, 0, 'casting no longer tires (v98.294)');
 console.log('garden: ' + n + ' checks passed');

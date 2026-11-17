@@ -1,0 +1,47 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agrenor · ทิศหน้า Portrait</title>
+<link rel="stylesheet" href="css/thai-font.css?v=1">
+<style>
+:root{--bg:#171a16;--panel:#20251f;--line:#3a4236;--text:#ece6d4;--muted:#a8a58f;--gold:#d9a441}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px AgThai,system-ui,"Noto Sans Thai",sans-serif}
+header{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 16px;background:#11140fee;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:18px}button,select{font:inherit;background:#2c3328;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}button.primary{background:var(--gold);color:#241a07;font-weight:700}
+p.note{margin:8px 16px;color:var(--muted);max-width:980px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:10px;padding:10px 16px 40px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px}.card.changed{border-color:var(--gold)}
+.pic{position:relative;height:220px;background:#2d3329;border-radius:8px;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.pic img{max-height:100%;max-width:100%;object-fit:contain}.pic .arrow{position:absolute;top:6px;font-size:22px;font-weight:700;color:#ffe08a;text-shadow:0 1px 3px #000}
+.pic .mid{position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed #ffffff30}
+.name{font-size:12px;margin:6px 0 4px;display:flex;justify-content:space-between;gap:6px}.name small{color:var(--muted)}
+.btns{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.btns button{padding:4px 0}.btns button[aria-pressed=true]{background:var(--gold);color:#241a07;font-weight:700}
+.sample{margin:6px 0 0;font-size:11px;color:var(--muted)}
+</style></head><body>
+<header><h1>🧭 ทิศหน้า Portrait</h1>
+ <label>แสดง <select id="flt"><option value="all">ทั้งหมด</option><option value="L">หันซ้าย</option><option value="R">หันขวา</option><option value="F">มองตรง</option><option value="chg">ที่แก้แล้ว</option></select></label>
+ <label>ชุด <select id="setSel"><option value="">ทุกชุด</option></select></label>
+ <button id="reset">ล้างค่าที่แก้ (กลับค่าตั้งต้น)</button><button id="pushBtn" class="primary">⬆ ใส่ Cart (Push)</button><small id="msg"></small></header>
+<p class="note">ทิศ = <b>ใบหน้า</b> มองไปทางไหน (ไม่ใช่ลำตัว) · ซ้าย = มองไปทางซ้ายของจอ · ตอนคุยในเกม คนที่ยืนซ้ายจอต้องมองขวา คนที่ยืนขวาจอต้องมองซ้าย — ระบบจะกลับภาพให้เองตามค่าที่ตั้งไว้ที่นี่ (มองตรง = ไม่กลับภาพ)<br>
+กด <b>ซ้าย / ตรง / ขวา</b> ใต้ภาพ · กดชื่อชุดเพื่อตั้งทั้งชุดในครั้งเดียว · ค่าตั้งต้นมาจากการดูภาพด้วยตา (ตัวเลข "เดา" = ผลจากพิกเซล: ลบ = หน้าไปทางซ้าย · ไม่แม่นกับคนใส่หมวก/ผ้าคลุม) · ตัวอย่างใต้ภาพ = เมื่อยืนซ้ายจอ ภาพจะถูกกลับหรือไม่</p>
+<div class="grid" id="grid"></div>
+<script src="js/game-settings.js"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.631"></script><script src="js/portrait-facing.js?v=v98.595"></script>
+<script>
+const PF = PortraitFacing, grid = document.getElementById('grid'), cards = [];
+const sets = [...new Set(PF.FILES.map(PF.setOf))].sort(); const sel = document.getElementById('setSel'); sets.forEach(s => sel.insertAdjacentHTML('beforeend', `<option>${s}</option>`));
+const src = k => `assets/portraits/${k}.webp`, AR = { L: '◀', R: '▶', F: '●' }, TH = { L: 'ซ้าย', R: 'ขวา', F: 'ตรง' };
+for (const k of PF.FILES) { const el = document.createElement('div'); el.className = 'card'; el.dataset.k = k; el.dataset.set = PF.setOf(k);
+  el.innerHTML = `<div class="pic"><img loading="lazy" src="${src(k)}" alt=""><i class="mid"></i><span class="arrow"></span></div><div class="name"><b>${k}</b><small>เดา ${PF.AUTO[k] ?? '–'}</small></div><div class="btns">${['L', 'F', 'R'].map(f => `<button data-f="${f}">${TH[f]}</button>`).join('')}</div><div class="sample"></div>`;
+  el.onclick = e => { const b = e.target.closest('button'); if (b) { PF.set(k, b.dataset.f === PF.face(src(k)) && !(PF.read()[k]) ? b.dataset.f : b.dataset.f); paint() } };
+  el.querySelector('.name b').onclick = () => { const f = prompt('ตั้งทั้งชุด "' + PF.setOf(k) + '" เป็น (L = ซ้าย · F = ตรง · R = ขวา) · เว้นว่าง = ล้างค่า', PF.face(src(k))); if (f === null) return; PF.set(PF.setOf(k), f.trim().toUpperCase()); for (const kk of PF.FILES) if (PF.setOf(kk) === PF.setOf(k) && PF.read()[kk]) PF.set(kk, ''); paint() };
+  el.querySelector('.name b').style.cursor = 'pointer'; el.querySelector('.name b').title = 'กดเพื่อตั้งทั้งชุด';
+  grid.append(el); cards.push(el) }
+function paint() { const o = PF.read(), flt = document.getElementById('flt').value, st = sel.value;
+  for (const el of cards) { const k = el.dataset.k, f = PF.face(src(k)), ch = !!(o[k] || o[PF.setOf(k)]); el.classList.toggle('changed', ch);
+    el.querySelector('.arrow').textContent = AR[f]; el.querySelector('.arrow').style.left = f === 'R' ? 'auto' : '8px'; el.querySelector('.arrow').style.right = f === 'R' ? '8px' : 'auto';
+    el.querySelectorAll('.btns button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === f));
+    el.querySelector('.sample').textContent = f === 'F' ? 'ยืนซ้ายจอ: ไม่กลับภาพ' : PF.flip(src(k), 'L') ? 'ยืนซ้ายจอ: กลับภาพ (หันขวา)' : 'ยืนซ้ายจอ: ไม่ต้องกลับ';
+    el.style.display = (flt === 'all' || (flt === 'chg' ? ch : f === flt)) && (!st || el.dataset.set === st) ? '' : 'none' } }
+document.getElementById('flt').onchange = paint; sel.onchange = paint;
+document.getElementById('reset').onclick = () => { if (confirm('ล้างค่าที่แก้ทั้งหมดในเบราว์เซอร์นี้?')) { try { localStorage.removeItem(PF.KEY) } catch (e) { } paint() } };
+document.getElementById('pushBtn').onclick = async () => { const m = document.getElementById('msg'), G = window.GitHubPush; if (!G) { m.textContent = 'ไม่พบระบบ Push'; return } if (!G.config().token) return G.openSettings();
+  try { const t = await G.pushSettings([PF.KEY], 'ทิศหน้า Portrait'); m.textContent = String(t || 'ใส่แล้ว') } catch (err) { m.textContent = 'ไม่สำเร็จ: ' + err.message } };
+paint();
+</script></body></html>

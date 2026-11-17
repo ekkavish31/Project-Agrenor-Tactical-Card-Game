@@ -39,7 +39,7 @@ ok(P.starText({ kind: 'sword', recipe: 'sword', quality: 4 }, R) === '★★', '
 g = game(); g.village.character.stats = { strength: 4, knowledge: 2, precision: 3, endurance: 2 }; P.sync(g);
 let c = P.heroCombat(g);
 ok(c.power === 2 && c.spell === 1 && Math.abs(c.crit - .06) < 1e-9 && c.stMax === 108, 'strength/knowledge/precision/endurance → power, spell, crit, battle stamina');
-g.fatigue = 50; const bh = P.battleHero(g); ok(bh.st === 78 && bh.stMax === 108, 'tired hero starts with less stamina');
+g.fatigue = 50; const bh = P.battleHero(g); ok(bh.st === bh.stMax, 'fatigue is switched off: the hero starts at full stamina (v98.294)');
 ok(/^hero=/.test(P.battleParam(g)) && JSON.parse(decodeURIComponent(P.battleParam(g).slice(5))).power === 2, 'battle param carries the profile');
 ok(P.LEVEL_CARDS[2][0].id === 'climb' && P.LEVEL_CARDS[3][0].id === 'rockfall' && P.LEVEL_CARDS[4].some(x => x.id === 'perch'), 'height cards come first (Lv2–4)');
 ok(P.foeScale(3).hp === 1 && P.foeScale(10).hp > 1.4 && P.foeScale(10).atk > 1.3, 'monsters grow from Lv4 on');

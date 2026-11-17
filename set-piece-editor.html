@@ -1,0 +1,154 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agrenor · แก้ฉากตายตัว</title>
+<link rel="stylesheet" href="css/thai-font.css?v=1">
+<style>
+:root{--bg:#141713;--panel:#1d221b;--line:#363e32;--text:#ece6d4;--muted:#a3a08b;--gold:#d9a441;--bad:#e0715a;--ok:#7fd08a}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--text);font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif;display:grid;grid-template-columns:230px 1fr 290px;grid-template-rows:auto 1fr auto;height:100vh;overflow:hidden}
+button,select,input,textarea{font:inherit;color:var(--text);background:#2a3126;border:1px solid var(--line);border-radius:7px;padding:4px 8px}button{cursor:pointer}button:hover{border-color:#6a7a5c}button.on,button[aria-pressed=true]{background:var(--gold);color:#241a07;border-color:var(--gold);font-weight:700}button.primary{background:var(--gold);color:#241a07;font-weight:700}
+header{grid-column:1/4;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 10px;background:#0f120e;border-bottom:1px solid var(--line)}header h1{font-size:15px;margin:0 6px 0 0}header .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+aside{background:var(--panel);overflow:auto;padding:8px}#left{border-right:1px solid var(--line)}#right{border-left:1px solid var(--line)}
+h3{margin:10px 0 4px;font-size:12px;color:var(--gold);letter-spacing:.3px}
+#scenes button{display:block;width:100%;text-align:left;margin-bottom:4px}#scenes small{color:var(--muted);display:block}#scenes .chg::after{content:' ● แก้แล้ว';color:var(--gold);font-size:11px}
+#pal{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}#pal button{display:flex;align-items:center;gap:6px;text-align:left;padding:3px 6px;font-size:12px}#pal i{width:20px;height:20px;border-radius:4px;flex:none;display:grid;place-items:center;font:700 12px monospace;font-style:normal;color:#fff;text-shadow:0 1px 2px #000;border:1px solid #0006}
+main{position:relative;overflow:hidden;background:#0b0d0a}canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none}
+#status{grid-column:1/4;display:flex;gap:14px;padding:4px 10px;background:#0f120e;border-top:1px solid var(--line);color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden}
+.row{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:4px 0}.row label{display:flex;gap:4px;align-items:center;color:var(--muted)}input[type=number]{width:62px}input[type=text]{width:100%}
+#val div{font-size:12px;margin:2px 0}#val .e{color:var(--bad)}#val .g{color:var(--ok)}
+#unitlist button{display:block;width:100%;text-align:left;margin-bottom:3px;font-size:12px}
+textarea{width:100%;height:120px;font:11px monospace}
+.hint{color:var(--muted);font-size:11.5px;line-height:1.5}
+</style></head><body>
+<header><h1>📌 แก้ฉากตายตัว</h1>
+ <span id="tools"></span><span class="sep"></span>
+ <label class="row" style="margin:0">แปรง <select id="bsz"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+ <label class="row" style="margin:0">สมมาตร <select id="sym"><option value="">ไม่มี</option><option value="h">ซ้าย–ขวา</option><option value="v">บน–ล่าง</option><option value="hv">ทั้งสอง</option></select></label>
+ <span class="sep"></span><button id="undo" title="Ctrl+Z">↶ ย้อน</button><button id="redo" title="Ctrl+Y">↷ ทำซ้ำ</button>
+ <span class="sep"></span><button id="grid" aria-pressed="true">ตาราง</button><button id="fit">พอดีจอ</button>
+ <span class="sep"></span><button id="test" title="เปิดฉากจริงในแท็บใหม่ (ใช้ค่าที่แก้ในเบราว์เซอร์นี้)">▶ ทดลองเล่น</button><button id="push" class="primary" title="ใส่ Cart เพื่อ Push ให้ทุกเครื่อง">⬆ ใส่ Cart (Push)</button><small id="msg" style="color:var(--muted)"></small></header>
+<aside id="left"><h3>ฉาก</h3><div id="scenes"></div>
+ <h3>ชนิดช่อง (คลิกเลือกแปรง · คลิกขวาที่แผนที่ = ดูดสี)</h3><div id="pal"></div>
+ <h3>ทั้งแผนที่</h3><div class="row"><button data-t="fh">กลับซ้าย–ขวา</button><button data-t="fv">กลับบน–ล่าง</button><button data-t="rot">หมุน 90°</button></div>
+ <div class="row"><button data-t="sl">◀ เลื่อน</button><button data-t="sr">▶</button><button data-t="su">▲</button><button data-t="sd">▼</button></div>
+ <div class="row"><label>ขนาด (R) <input type="number" id="rsz" min="4" max="14"></label><button id="rapply">ปรับ</button></div>
+ <div class="row"><button id="clearAll">ล้างเป็นพื้นทั้งหมด</button><button id="resetScene">คืนค่าตามโค้ด</button></div>
+</aside>
+<main id="stage"><canvas id="cv"></canvas></main>
+<aside id="right"><h3>ตรวจความถูกต้อง</h3><div id="val"></div>
+ <h3>ยูนิตในฉาก</h3><div class="row"><button id="addEnemy">+ ศัตรู</button><button id="addAlly">+ เพื่อนร่วมทีม</button><button id="delUnit">ลบที่เลือก</button></div><div id="unitlist"></div>
+ <h3>ที่เลือก</h3><div id="sel" class="hint">คลิกยูนิตด้วยเครื่องมือ 👤 ยูนิต</div>
+ <h3>ส่งออก / นำเข้า</h3><div class="row"><button id="exp">คัดลอก JSON ฉากนี้</button><button id="imp">นำเข้า JSON</button></div><textarea id="io" placeholder="วาง JSON ที่นี่แล้วกด นำเข้า"></textarea>
+ <p class="hint">• ค่าที่แก้บันทึกอัตโนมัติในเบราว์เซอร์นี้ (กด ▶ ทดลองเล่นเห็นผลทันที) · กด ⬆ ใส่ Cart แล้ว Push เพื่อให้ทุกเครื่องใช้ตาม<br>• แก้ได้: แผนที่ · ขนาด · ตำแหน่งตัวเอก/เพื่อน/ศัตรู · ชนิด/เลือด/ชื่อของศัตรู · กติกา บทพูด เป้าหมาย คลื่น ยังอยู่ในโค้ด <code>js/set-pieces.js</code> (ปากอุโมงค์/จุดป้องกัน แสดงเป็นเครื่องหมายอ่านอย่างเดียว)</p></aside>
+<div id="status"><span id="pos"></span><span id="info"></span></div>
+<script src="js/game-settings.js"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.631"></script><script src="js/set-pieces.js?v=v98.619"></script>
+<script>
+const SP = SetPieces, KEY = SP.EDIT_KEY, $ = id => document.getElementById(id), cv = $('cv'), g = cv.getContext('2d');
+const NAMES = { '.': 'พื้นเรียบ', '#': 'หินใหญ่ (ตัน)', b: 'กระดูก (ตัน)', '+': 'ที่กำบัง (เศษหิน)', '~': 'โคลน (เดินช้า)', 1: 'พื้นสูง ระดับ 1', 2: 'พื้นสูง ระดับ 2', t: 'เต็นท์', f: 'รั้วไม้', p: 'เสาหิน', x: 'กำแพงไม่มีภาพ', H: 'บ้าน', S: 'แผงตลาดแดง', T: 'แผงตลาดน้ำเงิน', k: 'ลังไม้', r: 'ถังไม้', z: 'กระสอบ', c: 'เกวียน', y: 'กองฟาง', L: 'เสาโคม', w: 'บ่อน้ำ', V: 'แผงผัก', B: 'ม้านั่ง (กำบัง)', F: 'กล่องดอกไม้ (กำบัง)' };
+const COL = { normal: '#5d6b45', blocked: '#2c2f2c', cover: '#8a7a45', slow: '#6b4f34' }, propHue = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h };
+const tileCol = ch => { const t = SP.TILE[ch] || SP.TILE['.']; if (t.k === 'normal' && t.level) return t.level === 1 ? '#7b8c58' : '#9bab6c'; if (t.prop && t.k === 'blocked') return `hsl(${propHue(t.prop)} 32% 34%)`; if (t.prop) return `hsl(${propHue(t.prop)} 45% 42%)`; return COL[t.k] || COL.normal };
+let sid = Object.keys(SP.SCENES)[0], S = null, hist = [], hi = -1, tool = 'brush', brush = '#', sel = null, sz = 24, ox = 20, oy = 20, drag = null, space = false, showGrid = true, hover = null;
+const clone = o => JSON.parse(JSON.stringify(o)), snap = () => JSON.stringify({ R: S.R, map: S.map, hero: S.hero, allies: S.allies, enemies: S.enemies });
+function load(id) { sid = id; const sc = SP.get(id); S = clone({ R: sc.R, map: sc.map, hero: sc.hero, allies: sc.allies, enemies: sc.enemies }); hist = [snap()]; hi = 0; sel = null; fit(); refresh() }
+function persist() { const b = SP.base(sid), cur = JSON.parse(snap()), all = SP.edits(), same = JSON.stringify(cur) === JSON.stringify({ R: b.R, map: b.map, hero: b.hero, allies: b.allies, enemies: b.enemies });
+  if (same) delete all[sid]; else all[sid] = cur; try { localStorage.setItem(KEY, JSON.stringify(all)) } catch (e) { } }
+function commit(label) { const s = snap(); if (s === hist[hi]) return; hist = hist.slice(0, hi + 1); hist.push(s); if (hist.length > 120) hist.shift(); hi = hist.length - 1; persist(); refresh() }
+function restore(i) { if (i < 0 || i >= hist.length) return; hi = i; S = JSON.parse(hist[i]); sel = null; persist(); refresh() }
+$('undo').onclick = () => restore(hi - 1); $('redo').onclick = () => restore(hi + 1);
+const inb = (u, v) => Math.abs(u) <= S.R && Math.abs(v) <= S.R, rowOf = v => v + S.R;
+function setCell(u, v, ch) { if (!inb(u, v)) return; const r = S.map[rowOf(v)], i = u + S.R; if (r[i] === ch) return; S.map[rowOf(v)] = r.slice(0, i) + ch + r.slice(i + 1) }
+const getCell = (u, v) => inb(u, v) ? S.map[rowOf(v)][u + S.R] : null;
+function stamp(u, v, ch) { const n = +$('bsz').value, o = Math.floor((n - 1) / 2), sy = $('sym').value;
+  for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) { const uu = u - o + a, vv = v - o + b; setCell(uu, vv, ch); if (sy.includes('h')) setCell(-uu, vv, ch); if (sy.includes('v')) setCell(uu, -vv, ch); if (sy === 'hv') setCell(-uu, -vv, ch) } }
+function line(a, b, f) { let [x0, y0] = a, [x1, y1] = b; const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1; let e = dx + dy; for (;;) { f(x0, y0); if (x0 === x1 && y0 === y1) break; const e2 = 2 * e; if (e2 >= dy) { e += dy; x0 += sx } if (e2 <= dx) { e += dx; y0 += sy } } }
+function rect(a, b, f) { for (let v = Math.min(a[1], b[1]); v <= Math.max(a[1], b[1]); v++) for (let u = Math.min(a[0], b[0]); u <= Math.max(a[0], b[0]); u++) f(u, v) }
+function flood(u, v, ch) { const from = getCell(u, v); if (from == null || from === ch) return; const q = [[u, v]]; while (q.length) { const [x, y] = q.pop(); if (getCell(x, y) !== from) continue; setCell(x, y, ch); q.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]) } }
+/* ---- view ---- */
+const W = () => cv.width, H = () => cv.height, toCell = (px, py) => [Math.floor((px - ox) / sz) - S.R, Math.floor((py - oy) / sz) - S.R], sx = u => ox + (u + S.R) * sz, sy = v => oy + (v + S.R) * sz;
+function fit() { const r = $('stage').getBoundingClientRect(), n = 2 * S.R + 1; sz = Math.max(8, Math.floor(Math.min(r.width, r.height) / (n + 1))); ox = Math.round((r.width - n * sz) / 2); oy = Math.round((r.height - n * sz) / 2) }
+function resize() { const r = $('stage').getBoundingClientRect(), d = devicePixelRatio || 1; cv.width = r.width * d; cv.height = r.height * d; g.setTransform(d, 0, 0, d, 0, 0); draw() }
+addEventListener('resize', resize);
+const unitAt = (u, v) => { if (S.hero.u === u && S.hero.v === v) return { t: 'hero' }; let i = S.allies.findIndex(a => a.u === u && a.v === v); if (i >= 0) return { t: 'ally', i }; i = S.enemies.findIndex(e => e.u === u && e.v === v); return i >= 0 ? { t: 'enemy', i } : null };
+const getUnit = s => !s ? null : s.t === 'hero' ? S.hero : s.t === 'ally' ? S.allies[s.i] : S.enemies[s.i];
+function draw() { const r = $('stage').getBoundingClientRect(); g.clearRect(0, 0, r.width, r.height); if (!S) return; const R = S.R, n = 2 * R + 1;
+  g.font = `700 ${Math.max(8, sz * .5)}px monospace`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  for (let v = -R; v <= R; v++) for (let u = -R; u <= R; u++) { const ch = getCell(u, v), t = SP.TILE[ch] || SP.TILE['.']; g.fillStyle = tileCol(ch); g.fillRect(sx(u), sy(v), sz, sz);
+    if (t.level) { g.fillStyle = '#fff8'; g.fillText(t.level, sx(u) + sz / 2, sy(v) + sz / 2) } else if (ch !== '.' && ch !== '#' && sz >= 14) { g.fillStyle = '#fffd'; g.fillText(ch, sx(u) + sz / 2, sy(v) + sz / 2) } else if (ch === '#') { g.fillStyle = '#0006'; g.fillRect(sx(u) + 2, sy(v) + 2, sz - 4, sz - 4) } }
+  if (showGrid && sz >= 12) { g.strokeStyle = '#0005'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= n; i++) { g.moveTo(ox + i * sz + .5, oy); g.lineTo(ox + i * sz + .5, oy + n * sz); g.moveTo(ox, oy + i * sz + .5); g.lineTo(ox + n * sz, oy + i * sz + .5) } g.stroke() }
+  g.strokeStyle = '#ffffff40'; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(sx(0) + sz / 2, oy); g.lineTo(sx(0) + sz / 2, oy + n * sz); g.moveTo(ox, sy(0) + sz / 2); g.lineTo(ox + n * sz, sy(0) + sz / 2); g.stroke(); g.setLineDash([]);
+  g.fillStyle = '#ffffff70'; g.font = '11px sans-serif'; g.fillText('เหนือ ▲', ox + n * sz / 2, oy - 8);
+  const sc = SP.base(sid); for (const m of sc.waves?.mouths || []) mark(m.u, m.v, '▼', '#ffb347'); for (const c of sc.obj?.cells || []) mark(c.u, c.v, '◎', '#6ec6ff'); for (const p of sc.pulses || []) mark(p.at.u, p.at.v, '✺', '#ff7f7f');
+  unit(S.hero, '#4da3ff', 'H'); S.allies.forEach((a, i) => unit(a, '#43c9a0', 'A' + (i + 1))); S.enemies.forEach(e => unit(e, e.boss ? '#ff4d4d' : '#e0715a', e.boss ? '★' : (e.kind || '?')[0].toUpperCase()));
+  const s = getUnit(sel); if (s) { g.strokeStyle = '#ffe08a'; g.lineWidth = 3; g.strokeRect(sx(s.u) + 1, sy(s.v) + 1, sz - 2, sz - 2); g.lineWidth = 1 }
+  if (drag?.rect) { const [a, b] = [drag.start, drag.cur], x0 = Math.min(a[0], b[0]), y0 = Math.min(a[1], b[1]), x1 = Math.max(a[0], b[0]), y1 = Math.max(a[1], b[1]); g.strokeStyle = '#ffe08a'; g.setLineDash([5, 3]); g.strokeRect(sx(x0), sy(y0), (x1 - x0 + 1) * sz, (y1 - y0 + 1) * sz); g.setLineDash([]) }
+  if (drag?.line) { g.fillStyle = '#ffe08a55'; line(drag.start, drag.cur, (u, v) => g.fillRect(sx(u), sy(v), sz, sz)) }
+  if (selRect) { g.strokeStyle = '#7fe0ff'; g.setLineDash([5, 3]); g.strokeRect(sx(selRect[0]), sy(selRect[1]), (selRect[2] - selRect[0] + 1) * sz, (selRect[3] - selRect[1] + 1) * sz); g.setLineDash([]) }
+  if (hover && (tool === 'brush' || tool === 'rect' || tool === 'line')) { const nn = +$('bsz').value, o = Math.floor((nn - 1) / 2); g.strokeStyle = '#fff'; g.strokeRect(sx(hover[0] - o), sy(hover[1] - o), nn * sz, nn * sz) } }
+function mark(u, v, t, c) { if (!inb(u, v)) return; g.fillStyle = c; g.font = `700 ${sz * .7}px sans-serif`; g.fillText(t, sx(u) + sz / 2, sy(v) + sz / 2) }
+function unit(u, c, t) { if (!inb(u.u, u.v)) return; g.fillStyle = c; g.strokeStyle = '#000a'; g.lineWidth = 2; g.beginPath(); g.arc(sx(u.u) + sz / 2, sy(u.v) + sz / 2, sz * .38, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#fff'; g.font = `700 ${Math.max(9, sz * .42)}px sans-serif`; g.fillText(t, sx(u.u) + sz / 2, sy(u.v) + sz / 2 + 1); g.lineWidth = 1 }
+/* ---- tools ---- */
+const TOOLS = [['brush', '✏ แปรง'], ['rect', '▭ สี่เหลี่ยม'], ['line', '╱ เส้น'], ['fill', '🪣 เทสี'], ['pick', '💧 ดูดสี'], ['select', '⬚ เลือกพื้นที่'], ['unit', '👤 ยูนิต']];
+$('tools').innerHTML = TOOLS.map(([id, n]) => `<button data-tool="${id}">${n}</button>`).join(''); $('tools').onclick = e => { const b = e.target.closest('button'); if (b) { tool = b.dataset.tool; syncUi() } };
+let selRect = null, clip = null;
+function syncUi() { $('tools').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.tool === tool)); $('pal').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.ch === brush)); draw() }
+$('pal').innerHTML = Object.keys(SP.TILE).map(ch => `<button data-ch="${ch}"><i style="background:${tileCol(ch)}">${ch}</i>${NAMES[ch] || (SP.TILE[ch].prop || ch)}</button>`).join(''); $('pal').onclick = e => { const b = e.target.closest('button'); if (b) { brush = b.dataset.ch; if (tool === 'pick' || tool === 'select' || tool === 'unit') tool = 'brush'; syncUi() } };
+const pt = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top] };
+cv.addEventListener('contextmenu', e => e.preventDefault());
+cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); const [px, py] = pt(e), c = toCell(px, py);
+  if (e.button === 1 || space) { drag = { pan: true, px, py, ox, oy }; return }
+  if (e.button === 2) { const ch = getCell(...c); if (ch != null) { brush = ch; syncUi() } return }
+  if (tool === 'brush') { drag = { paint: true, last: c }; stamp(c[0], c[1], brush); draw() }
+  else if (tool === 'rect') drag = { rect: true, start: c, cur: c }
+  else if (tool === 'line') drag = { line: true, start: c, cur: c }
+  else if (tool === 'select') { drag = { rect: true, start: c, cur: c, isSel: true }; selRect = null }
+  else if (tool === 'fill') { flood(c[0], c[1], brush); commit() }
+  else if (tool === 'pick') { const ch = getCell(...c); if (ch != null) { brush = ch; tool = 'brush'; syncUi() } }
+  else if (tool === 'unit') { const u = unitAt(...c); sel = u; if (u) drag = { unit: u, moved: false }; refresh(true) } });
+cv.addEventListener('pointermove', e => { const [px, py] = pt(e), c = toCell(px, py); hover = c; $('pos').textContent = inb(...c) ? `u ${c[0]} · v ${c[1]} · '${getCell(...c)}' ${NAMES[getCell(...c)] || ''}` : '';
+  if (!drag) return draw(); if (drag.pan) { ox = drag.ox + px - drag.px; oy = drag.oy + py - drag.py } else if (drag.paint) { line(drag.last, c, (u, v) => stamp(u, v, brush)); drag.last = c } else if (drag.rect || drag.line) drag.cur = c
+  else if (drag.unit) { const u = getUnit(drag.unit); if (u && inb(...c) && !unitAt(...c)) { u.u = c[0]; u.v = c[1]; drag.moved = true } } draw() });
+cv.addEventListener('pointerup', e => { const d = drag; drag = null; if (!d) return; const c = toCell(...pt(e));
+  if (d.rect && !d.isSel) { rect(d.start, d.cur, (u, v) => stamp1(u, v)); commit() } else if (d.rect && d.isSel) { selRect = [Math.min(d.start[0], d.cur[0]), Math.min(d.start[1], d.cur[1]), Math.max(d.start[0], d.cur[0]), Math.max(d.start[1], d.cur[1])]; draw() }
+  else if (d.line) { line(d.start, d.cur, (u, v) => stamp(u, v, brush)); commit() } else if (d.paint) commit(); else if (d.unit) { if (d.moved) commit(); else refresh(true) } else draw() });
+const stamp1 = (u, v) => { const sy2 = $('sym').value; setCell(u, v, brush); if (sy2.includes('h')) setCell(-u, v, brush); if (sy2.includes('v')) setCell(u, -v, brush); if (sy2 === 'hv') setCell(-u, -v, brush) };
+cv.addEventListener('wheel', e => { e.preventDefault(); const [px, py] = pt(e), k = e.deltaY < 0 ? 1.15 : 1 / 1.15, ns = Math.max(6, Math.min(64, sz * k)), f = ns / sz; ox = px - (px - ox) * f; oy = py - (py - oy) * f; sz = ns; draw() }, { passive: false });
+addEventListener('keydown', e => { if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return; if (e.code === 'Space') { space = true; e.preventDefault() }
+  const k = e.key.toLowerCase(); if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); restore(hi - (e.shiftKey ? -1 : 1)) } else if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); restore(hi + 1) }
+  else if ((e.ctrlKey || e.metaKey) && k === 'c' && selRect) { clip = []; for (let v = selRect[1]; v <= selRect[3]; v++) clip.push(S.map[rowOf(v)].slice(selRect[0] + S.R, selRect[2] + S.R + 1)); $('msg').textContent = 'คัดลอกแล้ว ' + clip[0].length + '×' + clip.length }
+  else if ((e.ctrlKey || e.metaKey) && k === 'x' && selRect) { e.preventDefault(); clip = []; for (let v = selRect[1]; v <= selRect[3]; v++) clip.push(S.map[rowOf(v)].slice(selRect[0] + S.R, selRect[2] + S.R + 1)); rect([selRect[0], selRect[1]], [selRect[2], selRect[3]], (u, v) => setCell(u, v, '.')); commit() }
+  else if ((e.ctrlKey || e.metaKey) && k === 'v' && clip && hover) { e.preventDefault(); clip.forEach((row, j) => [...row].forEach((ch, i) => setCell(hover[0] + i, hover[1] + j, ch))); commit() }
+  else if (k === 'delete' || k === 'backspace') { if (selRect) { rect([selRect[0], selRect[1]], [selRect[2], selRect[3]], (u, v) => setCell(u, v, '.')); commit() } else if (sel && sel.t !== 'hero') delUnit() }
+  else if (!e.ctrlKey && TOOLS[+k - 1]) { tool = TOOLS[+k - 1][0]; syncUi() } });
+addEventListener('keyup', e => { if (e.code === 'Space') space = false });
+/* ---- whole-map ops ---- */
+const grid2 = () => S.map.map(r => [...r]), fromGrid = G => G.map(r => r.join(''));
+const mapOps = { fh: () => { S.map = S.map.map(r => [...r].reverse().join('')); S.hero.u *= -1; [...S.allies, ...S.enemies].forEach(u => u.u *= -1) }, fv: () => { S.map = [...S.map].reverse(); S.hero.v *= -1; [...S.allies, ...S.enemies].forEach(u => u.v *= -1) },
+  rot: () => { const G = grid2(), n = G.length, N = G.map(r => r.slice()); for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) N[x][n - 1 - y] = G[y][x]; S.map = fromGrid(N); for (const u of [S.hero, ...S.allies, ...S.enemies]) { const a = u.u, b = u.v; u.u = -b; u.v = a } },
+  sl: () => shift(-1, 0), sr: () => shift(1, 0), su: () => shift(0, -1), sd: () => shift(0, 1) };
+function shift(du, dv) { const fill = S.map[0][0], n = 2 * S.R + 1, G = grid2(), N = Array.from({ length: n }, () => Array(n).fill(fill)); for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) { const a = x + du, b = y + dv; if (a >= 0 && b >= 0 && a < n && b < n) N[b][a] = G[y][x] } S.map = fromGrid(N); for (const u of [S.hero, ...S.allies, ...S.enemies]) { u.u += du; u.v += dv } }
+document.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { mapOps[b.dataset.t](); commit() });
+$('rapply').onclick = () => { const R2 = Math.max(4, Math.min(14, +$('rsz').value | 0)); if (R2 === S.R) return; const fill = S.map[0][0], n2 = 2 * R2 + 1, G = Array.from({ length: n2 }, () => Array(n2).fill(fill)); for (let v = -Math.min(R2, S.R); v <= Math.min(R2, S.R); v++) for (let u = -Math.min(R2, S.R); u <= Math.min(R2, S.R); u++) G[v + R2][u + R2] = getCell(u, v); S.map = fromGrid(G); S.R = R2; fit(); commit() };
+$('clearAll').onclick = () => { if (!confirm('ล้างแผนที่เป็นพื้นเรียบทั้งหมด (ขอบนอกเป็นกำแพง)?')) return; const n = 2 * S.R + 1, fill = SP.base(sid).map[0][0]; S.map = Array.from({ length: n }, (_, y) => Array.from({ length: n }, (_, x) => (x === 0 || y === 0 || x === n - 1 || y === n - 1) ? fill : '.').join('')); commit() };
+$('resetScene').onclick = () => { if (!confirm('คืนฉากนี้เป็นค่าตามโค้ด (ทิ้งที่แก้ทั้งหมด)?')) return; const all = SP.edits(); delete all[sid]; try { localStorage.setItem(KEY, JSON.stringify(all)) } catch (e) { } load(sid) };
+/* ---- units ---- */
+const kinds = [...new Set(Object.values(SP.SCENES).flatMap(s => s.enemies.map(e => e.kind)))];
+function freeCell() { for (let r = 0; r <= S.R; r++) for (let v = -r; v <= r; v++) for (let u = -r; u <= r; u++) { if (Math.max(Math.abs(u), Math.abs(v)) !== r) continue; if (SP.TILE[getCell(u, v)]?.k !== 'blocked' && !unitAt(u, v)) return [u, v] } return [0, 0] }
+$('addEnemy').onclick = () => { const k = prompt('ชนิดศัตรู (kind) — เช่น ' + kinds.slice(0, 8).join(', '), kinds[0]); if (!k) return; const [u, v] = freeCell(), ref = S.enemies.find(e => e.kind === k) || {}, n = S.enemies.length + 1; S.enemies.push({ ...clone(ref), id: 'e' + Date.now().toString(36).slice(-4), kind: k, u, v, hp: ref.hp ?? 1, name: ref.name || k }); sel = { t: 'enemy', i: S.enemies.length - 1 }; commit() };
+$('addAlly').onclick = () => { const [u, v] = freeCell(); S.allies.push({ u, v }); sel = { t: 'ally', i: S.allies.length - 1 }; commit() };
+function delUnit() { if (!sel || sel.t === 'hero') return; (sel.t === 'ally' ? S.allies : S.enemies).splice(sel.i, 1); sel = null; commit() } $('delUnit').onclick = delUnit;
+function panel() { const rows = [['hero', S.hero, '👤 ตัวเอก'], ...S.allies.map((a, i) => [{ t: 'ally', i }, a, '🟢 เพื่อน ' + (i + 1)]), ...S.enemies.map((e, i) => [{ t: 'enemy', i }, e, (e.boss ? '★ ' : '🔴 ') + (e.name || e.kind) + ' (' + e.kind + ')'])];
+  $('unitlist').innerHTML = rows.map(([s, u, n], i) => `<button data-i="${i}" ${sel && JSON.stringify(sel) === JSON.stringify(typeof s === 'string' ? { t: s } : s) ? 'class="on"' : ''}>${n} · ${u.u},${u.v}</button>`).join(''); $('unitlist').onclick = e => { const b = e.target.closest('button'); if (!b) return; const s = rows[+b.dataset.i][0]; sel = typeof s === 'string' ? { t: s } : s; refresh(true) };
+  const u = getUnit(sel); if (!u) { $('sel').innerHTML = '<span class="hint">คลิกยูนิตด้วยเครื่องมือ 👤 ยูนิต หรือเลือกจากรายการ · ลากเพื่อย้าย</span>'; return }
+  if (sel.t === 'enemy') { $('sel').innerHTML = `<div class="row"><label>u <input type="number" id="fu" value="${u.u}"></label><label>v <input type="number" id="fv" value="${u.v}"></label></div><div class="row"><label>ชนิด <input type="text" id="fk" list="kinds" value="${u.kind || ''}"></label></div><datalist id="kinds">${kinds.map(k => `<option>${k}</option>`).join('')}</datalist><div class="row"><label>ชื่อ <input type="text" id="fn" value="${u.name || ''}"></label></div><div class="row"><label>เลือด (สัดส่วน) <input type="number" step=".025" id="fh" value="${u.hp ?? 1}"></label><label>CT <input type="number" id="fc" value="${u.ct ?? ''}"></label></div><div class="row"><label><input type="checkbox" id="fb" ${u.boss ? 'checked' : ''}> บอส</label></div><div class="hint">ฟิลด์ทั้งหมด (แก้ JSON ได้):</div><textarea id="fj">${JSON.stringify(u, null, 1)}</textarea><button id="fjapply">นำ JSON ไปใช้</button>` }
+  else $('sel').innerHTML = `<div class="row"><label>u <input type="number" id="fu" value="${u.u}"></label><label>v <input type="number" id="fv" value="${u.v}"></label></div>`;
+  const upd = () => { u.u = +$('fu').value; u.v = +$('fv').value; if (sel.t === 'enemy') { u.kind = $('fk').value; u.name = $('fn').value; u.hp = +$('fh').value; const c = $('fc').value; if (c === '') delete u.ct; else u.ct = +c; if ($('fb').checked) u.boss = true; else delete u.boss } commit() };
+  $('sel').querySelectorAll('input').forEach(i => i.onchange = upd); if ($('fjapply')) $('fjapply').onclick = () => { try { const o = JSON.parse($('fj').value); S.enemies[sel.i] = o; commit() } catch (e) { alert('JSON ไม่ถูกต้อง: ' + e.message) } } }
+function validateUi() { const sc = { ...SP.base(sid), ...clone(S) }; let errs = []; try { errs = SP.validate(sc) } catch (e) { errs = ['ตรวจไม่ได้: ' + e.message] } $('val').innerHTML = errs.length ? errs.map(e => `<div class="e">⚠ ${e}</div>`).join('') : '<div class="g">✓ ผ่านการตรวจ (ทางเดินต่อกัน · ไม่มีใครยืนในกำแพง)</div>'; return errs }
+function scenesUi() { const ed = SP.edits(); $('scenes').innerHTML = Object.keys(SP.SCENES).map(id => `<button data-id="${id}" ${id === sid ? 'class="on"' : ''}><span class="${ed[id] ? 'chg' : ''}">${SP.SCENES[id].name || id}</span><small>${id} · ${2 * SP.SCENES[id].R + 1}×${2 * SP.SCENES[id].R + 1}</small></button>`).join(''); $('scenes').onclick = e => { const b = e.target.closest('button'); if (b) load(b.dataset.id) } }
+function refresh(light) { if (!light) { scenesUi(); validateUi(); $('rsz').value = S.R } panel(); syncUi(); $('info').textContent = `${2 * S.R + 1}×${2 * S.R + 1} · ศัตรู ${S.enemies.length} · เพื่อน ${S.allies.length}`; draw() }
+$('grid').onclick = () => { showGrid = !showGrid; $('grid').setAttribute('aria-pressed', showGrid); draw() }; $('fit').onclick = () => { fit(); draw() };
+$('test').onclick = () => { const sc = SP.base(sid); persist(); const u = `battle-field.html?battle=1&imm=1&noflee=1&r=${S.R}&biome=${sc.biome || 'grass'}&seed=4100${sc.poi ? '&poi=' + sc.poi : ''}&scene=${sid}&ms=${encodeURIComponent(S.enemies.map(e => e.kind + '*1').join(','))}&party=&hhp=60&hmax=60&title=${encodeURIComponent('ทดลอง · ' + (sc.name || sid))}`; window.open(u, '_blank') };
+$('push').onclick = async () => { const m = $('msg'), G = window.GitHubPush; if (!G) { m.textContent = 'ไม่พบระบบ Push'; return } if (!G.config().token) return G.openSettings(); persist();
+  try { const t = await G.pushSettings([KEY], 'ฉากตายตัว: แผนที่/ตำแหน่ง'); m.textContent = String(t || 'ใส่แล้ว') } catch (err) { m.textContent = 'ไม่สำเร็จ: ' + err.message } };
+$('exp').onclick = () => { $('io').value = JSON.stringify({ id: sid, ...JSON.parse(snap()) }, null, 1); $('io').select(); try { navigator.clipboard?.writeText($('io').value) } catch (e) { } $('msg').textContent = 'คัดลอกแล้ว' };
+$('imp').onclick = () => { try { const o = JSON.parse($('io').value); if (o.id && SP.SCENES[o.id] && o.id !== sid) { sid = o.id } S = clone({ R: o.R, map: o.map, hero: o.hero, allies: o.allies, enemies: o.enemies }); const errs = validateUi(); commit(); $('msg').textContent = errs.length ? 'นำเข้าแล้ว แต่มีข้อผิดพลาด ' + errs.length : 'นำเข้าแล้ว' } catch (e) { alert('นำเข้าไม่ได้: ' + e.message) } };
+new ResizeObserver(resize).observe($('stage'));
+load(new URLSearchParams(location.search).get('scene') in SP.SCENES ? new URLSearchParams(location.search).get('scene') : sid); resize();
+</script></body></html>

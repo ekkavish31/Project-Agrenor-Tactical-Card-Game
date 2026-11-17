@@ -84,6 +84,11 @@ const PB_ART = (() => {
   if (!list.some(([k]) => k === PLACE)) list.push([PLACE, PLACE]);
   return list
  })();
+ /* v98.526 · dropdown = EVERY sub-map grouped by town (js/place-catalog.js); an entry that has no map yet creates an empty room when chosen */
+ const CAT = (() => {
+  try { let all = {}, hid = []; try { all = JSON.parse(localStorage.getItem(KEY) || '{}') || {} } catch (e) {} try { hid = JSON.parse(localStorage.getItem('project-a-village-hidden-places-v1') || '[]') || [] } catch (e) {} return window.PlaceCatalog ? window.PlaceCatalog.groups(all, hid, PLACE) : null } catch (e) { return null }
+ })();
+ const mapOptions = () => CAT ? CAT.filter(g => g.items.length).map(g => `<optgroup label="${g.icon} ${g.name} (${g.items.filter(i => i.exists).length}/${g.items.length})">${g.items.map(i => `<option value="${i.key}" data-new="${i.exists ? '' : '1'}" data-town="${i.town}" data-name="${i.name.replace(/"/g, '&quot;')}" ${i.key === PLACE ? 'selected' : ''}>${i.exists ? '✔' : '＋'} ${i.name}${i.exists ? '' : ' (ยังไม่มีแมพ · สร้างให้)'}</option>`).join('')}</optgroup>`).join('') : MAPS.map(([k, l]) => `<option value="${k}" ${k === PLACE ? 'selected' : ''}>${l}</option>`).join('');
  let tool = 'select',
   place = null, // {type:'station', id, tab, sel:[prop i]} | {type:'room', tab, sel:[]}
   hover = null, // {type:'station', i} | {type:'prop', i} | {type:'exit'}
@@ -104,8 +109,14 @@ const PB_ART = (() => {
  function transformSelected(kind){const list=selectedObjects();if(!list.length)return;checkpoint();if(kind==='rotate'){const cu=list.reduce((s,o)=>s+o.u,0)/list.length,cv=list.reduce((s,o)=>s+o.v,0)/list.length;for(const o of list){const u=o.u-cu,v=o.v-cv;o.u=q4(cu-v);o.v=q4(cv+u)}}else for(const o of list)o.f=!o.f;save();render();status(kind==='rotate'?'หมุนกลุ่มแล้ว':'กลับด้านของที่เลือกแล้ว')}
  // v85 · layer / size steps for the selection
  function groupStep(what,dir){const list=selectedObjects();if(!list.length)return;checkpoint();for(const o of list){if(what==='layer'){o.z=Math.max(-20,Math.min(20,(o.z||0)+dir));if(!o.z)delete o.z}else o.s=+Math.max(.2,Math.min(4,(o.s||1)*(dir>0?1.1:1/1.1))).toFixed(3)}save();render()}
- const groupHtml=n=>`<b class="sec">จัดการ${n>1?'ทั้งกลุ่ม':''}</b><div class="row"><button id="gUp" title="PageUp">＋ ชั้น (+1)</button><button id="gDown" title="PageDown">－ ชั้น (−1)</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div><div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
- function bindGroup(){act('#gUp',()=>groupStep('layer',1));act('#gDown',()=>groupStep('layer',-1));act('#gBig',()=>groupStep('size',1));act('#gSmall',()=>groupStep('size',-1));act('#gDup',duplicateSelected);act('#gCopy',copySelected);act('#gPaste',pasteSelected)}
+ const groupHtml=n=>`<b class="sec">จัดการ${n>1?'ทั้งกลุ่ม':''}</b><div class="row"><button id="gUp" title="PageUp">＋ ชั้น (+1)</button><button id="gDown" title="PageDown">－ ชั้น (−1)</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div><div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>
+  <b class="sec" title="ของหลายชิ้นที่ต่อกัน (รั้ว กำแพง) ใช้กรอบเรียงลำดับร่วมกันเป็นชิ้นเดียว">ชิ้นประกอบ</b>
+  <div class="row"><button id="cmpToggle">▣ กรอบรวมของชิ้นที่เลือก: เปิด/ปิด</button></div>
+  <div class="row" style="align-items:center"><span>เรียงซ้ำ ×</span><input id="cmpN" type="number" value="4" min="2" max="40" style="width:46px"><select id="cmpAx"><option value="u">↘ แกน u</option><option value="v">↙ แกน v</option></select><span>ห่าง</span><input id="cmpStep" type="number" step="0.5" min="0.5" style="width:52px" placeholder="1"><button id="cmpRep">เรียง</button></div>`;
+ /* v98.293 · composite props: props sharing a `cmp` id share ONE order footprint (union box + member boxes) in village-place.html */
+ function toggleCmp(){const list=(place?.sel||[]).filter(i=>M.props[i]);if(list.length<2){status('เลือกหลายชิ้นก่อน (Shift+คลิก) หรือใช้ “เรียงซ้ำ” กับชิ้นเดียว');return}const on=!list.some(i=>M.props[i].cmp),id=list.map(i=>M.props[i].cmp).find(Boolean)||'c'+Date.now().toString(36);checkpoint();for(const i of list){const p=M.props[i];if(on)p.cmp=id;else delete p.cmp}dirty=true;save();render();status(on?'ตั้งเป็นชิ้นประกอบแล้ว':'ยกเลิกกรอบรวมแล้ว')}
+ function repeatCmp(){const i=place?.sel?.[0],o=M.props[i];if(!o){status('เลือกชิ้นเดียวก่อน');return}const n=Math.max(2,Math.min(40,+panel.querySelector('#cmpN').value||4)),ax=panel.querySelector('#cmpAx').value,step=+panel.querySelector('#cmpStep').value||(ax==='u'?o.sw:o.sh)||1;checkpoint();const id=o.cmp||'c'+Date.now().toString(36);o.cmp=id;if(o.sw==null)o.sw=ax==='u'?step:.5;if(o.sh==null)o.sh=ax==='v'?step:.5;const ids=[i];for(let k=1;k<n;k++){M.props.push({...copy(o),u:o.u+(ax==='u'?step*k:0),v:o.v+(ax==='v'?step*k:0)});ids.push(M.props.length-1)}place.sel=ids;dirty=true;save();render();status('เรียงซ้ำ '+n+' ชิ้นเป็นชิ้นประกอบแล้ว')}
+ function bindGroup(){act('#gUp',()=>groupStep('layer',1));act('#gDown',()=>groupStep('layer',-1));act('#gBig',()=>groupStep('size',1));act('#gSmall',()=>groupStep('size',-1));act('#gDup',duplicateSelected);act('#cmpToggle',toggleCmp);act('#cmpRep',repeatCmp);act('#gCopy',copySelected);act('#gPaste',pasteSelected)}
  const zRow=(id,label,v,hint)=>`<div style="display:grid;grid-template-columns:1fr 34px 46px 34px;gap:4px;align-items:center;margin:6px 0"><span>${label}${hint?`<small style="display:block;color:#b9b49a;font-size:11px">${hint}</small>`:''}</span><button data-zid="${id}" data-zd="-1">−</button><b style="text-align:center;font-size:16px;color:#e5c06b">${v>0?'+':''}${v}</b><button data-zid="${id}" data-zd="1">+</button></div>`;
  function bindZ(id,fn){panel.querySelectorAll(`[data-zid="${id}"]`).forEach(b=>b.onclick=()=>{checkpoint();fn(+b.dataset.zd);save();render()})}
  function readPrefabs(){try{return JSON.parse(localStorage.getItem(PREFAB_KEY)||'[]')}catch(e){return[]}}
@@ -372,7 +383,7 @@ const PB_ART = (() => {
   };
   if (tool === 'chars') {
    const p = project(hero.u, hero.v),
-    s = heroCast().s || 1;
+    s = window.placeScale ? placeScale() : (heroCast().s || 1);
    gg.save();
    gg.lineWidth = 2.5 / Z;
    gg.strokeStyle = '#9ff3f5';
@@ -392,6 +403,7 @@ const PB_ART = (() => {
    if (!s) return;
    const d = project(door(s).u, door(s).v);
    pin(d, '#9ff3f5', place.tab === 'door' ? 9 : 6, place.tab === 'door' ? 'จุดใช้งาน' : '');
+   if (s.vendor?.kind) { const vp = vendorPos(s); pin(project(vp.u, vp.v), '#ffd166', place.tab === 'vendor' ? 9 : 6, place.tab === 'vendor' ? 'คนขาย' : '') }   /* v98.554 */
    if (place.tab === 'base') handles(basePts(s), '#7fe3ff')
   } else {
    pin(ex, '#e8a04a', place.tab === 'exit' ? 9 : 6, place.tab === 'exit' ? 'ทางออก' : '');
@@ -615,6 +627,10 @@ const PB_ART = (() => {
      c
     })
    }
+   if (s.vendor?.kind && near(project(vendorPos(s).u, vendorPos(s).v), p, 13)) {   /* v98.554 · drag the vendor */
+    if (place.tab !== 'vendor') { place.tab = 'vendor'; render() }
+    const df = window.vendorDefault(s); return take({ kind: 'vendor', orig: { du: s.vendor.du ?? df.du, dv: s.vendor.dv ?? df.dv } })
+   }
    if (near(project(door(s).u, door(s).v), p, 13)) {
     if (place.tab !== 'door') {
      place.tab = 'door';
@@ -726,7 +742,9 @@ const PB_ART = (() => {
     M.props[i].v = grab.orig[k].v + dv
    }
   });
-  else if (grab.kind === 'door') {
+  else if (grab.kind === 'vendor') {
+   const s = stOf(place.id); s.vendor = { ...s.vendor, du: +(grab.orig.du + du).toFixed(2), dv: +(grab.orig.dv + dv).toFixed(2) }
+  } else if (grab.kind === 'door') {
    const s = stOf(place.id);
    s.door = {
     du: grab.orig.du + du,
@@ -854,7 +872,7 @@ const PB_ART = (() => {
  /* ---------- top bar ---------- */
  const bar = document.createElement('div');
  bar.id = 'placeTools';
- bar.innerHTML = `<select id="pbMap" title="เลือกแผนที่ย่อย">${MAPS.map(([k,l])=>`<option value="${k}" ${k===PLACE?'selected':''}>${l}</option>`).join('')}</select><i></i>
+ bar.innerHTML = `<select id="pbMap" title="เลือกแผนที่ย่อย · แบ่งตามเมือง · ✔ มีแมพแล้ว · ＋ ยังไม่มี (เลือกแล้วสร้างห้องว่างให้)">${mapOptions()}</select><i></i>
  <button data-t="select"><b>👆</b><span>เลือก / ย้าย</span><kbd>1</kbd></button><button data-t="chars"><b>👤</b><span>ตัวละคร</span><kbd>2</kbd></button><i></i>
  <button data-a="undo"><b>↶</b><span>ย้อน</span></button><button data-a="redo"><b>↷</b><span>ทำซ้ำ</span></button><button data-a="fit"><b>⤢</b><span>ดูทั้งหมด</span></button><i></i>
  <button data-a="test"><b>▶</b><span>ทดสอบ</span><kbd>T</kbd></button><button data-a="push" class="pp"><b>⬆</b><span>push</span></button>`;
@@ -869,6 +887,10 @@ const PB_ART = (() => {
  bar.querySelector('#pbMap').onchange = e => {
   if (place) leave(true);
   persist();
+  const op = e.target.selectedOptions[0];
+  if (op && op.dataset.new === '1' && window.PlaceCatalog) {   /* v98.526 · first visit to a place that has no sub-map yet: an empty room from the same template as ＋ สถานที่ใหม่ */
+   try { const A = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; if (!A[op.value]) { A[op.value] = window.PlaceCatalog.template(op.dataset.name, op.dataset.town); localStorage.setItem(KEY, JSON.stringify(A)) } } catch (err) { alert('สร้างแมพย่อยไม่สำเร็จ'); return }
+  }
   location.search = '?edit=1&place=' + e.target.value
  };
  bar.onclick = e => {
@@ -889,7 +911,7 @@ const PB_ART = (() => {
    return
   }
   try {
-   const sha = await GitHubPush.pushSettings([KEY], 'แผนที่ย่อย', [], status);
+   const sha = await GitHubPush.pushSettings([KEY, 'map-char-scale-v1', 'place-art-frames-v1', 'asset-hero-ratio-v1'], 'แผนที่ย่อย', [], status);
    status(sha ? '⬆ push แผนที่ย่อยแล้ว · ' + sha : 'ไม่มีค่าที่ต้อง push')
   } catch (err) {
    status('push ไม่สำเร็จ: ' + err.message)
@@ -915,6 +937,55 @@ const PB_ART = (() => {
  const panel = document.createElement('section');
  panel.id = 'pbPanel';
  document.body.append(panel);
+ /* v98.562 · picture slant, the same four numbers as Object Workshop / Asset Studio: ix = แกนเฉียง ↗↙ (%) · iy = แกนเฉียง ↖↘ (%) · sky = เอียงฐาน ° (ยกขอบขวา) · skx = เอียงเสา ° (บิดแนวตั้ง)
+    drawn as scale(ix, iy) then transform(1, tan sky, tan skx, 1) (village-place.html drawArt) · 📐 วัด/ปรับมุมฐาน = the same 3-point 2:1 base fit. Bends the drawing only — the order / block frames stay. */
+ const SLANT_KEYS = ['ix', 'iy', 'skx', 'sky'];
+ const slantRows = o => `<b class="sec">เอียงภาพ (แบบ Asset Studio)</b><div class="two2" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px">
+  <label style="display:block;min-width:0;font-size:12px">แกนเฉียง ↗↙ (%)<input style="width:100%;box-sizing:border-box" type="number" data-sl="ix" min="50" max="200" step="1" value="${+((o.ix ?? 1) * 100).toFixed(2)}"></label><label style="display:block;min-width:0;font-size:12px">แกนเฉียง ↖↘ (%)<input style="width:100%;box-sizing:border-box" type="number" data-sl="iy" min="50" max="200" step="1" value="${+((o.iy ?? 1) * 100).toFixed(2)}"></label>
+  <label style="display:block;min-width:0;font-size:12px">เอียงฐาน ° (ยกขอบขวา)<input style="width:100%;box-sizing:border-box" type="number" data-sl="sky" min="-60" max="60" step="0.5" value="${+(o.sky || 0).toFixed(2)}"></label><label style="display:block;min-width:0;font-size:12px">เอียงเสา ° (บิดแนวตั้ง)<input style="width:100%;box-sizing:border-box" type="number" data-sl="skx" min="-60" max="60" step="0.5" value="${+(o.skx || 0).toFixed(2)}"></label></div>
+  <div class="row"><button id="slFit" title="จิ้ม 3 จุดที่ขอบฐานของภาพ แล้วปรับมุมฐานเป็น 2:1">📐 วัด/ปรับมุมฐาน</button><button id="slReset">⟲ คืนค่าเอียง</button></div>`;
+ function bindSlant(body, o) {
+  body.querySelectorAll('[data-sl]').forEach(i => i.onchange = once(() => { const k = i.dataset.sl, v = +i.value; if (!Number.isFinite(v)) return; if (k === 'ix' || k === 'iy') { const r = Math.max(.5, Math.min(2, v / 100)); if (Math.abs(r - 1) < .0005) delete o[k]; else o[k] = +r.toFixed(4) } else if (Math.abs(v) < .005) delete o[k]; else o[k] = +Math.max(-60, Math.min(60, v)).toFixed(2) }));
+  act('#slReset', once(() => { for (const k of SLANT_KEYS) delete o[k] }));
+  act('#slFit', () => openBaseFit(o))
+ }
+ /* the 3-point base fit (same maths as Object Workshop bfApplyMode): click left corner · front (lowest) corner · right corner of the picture's base → angles of the two edges → balance (2:1) / keep height / keep width */
+ function openBaseFit(o) {
+  let d = document.getElementById('pbFit'); if (!d) { d = document.createElement('dialog'); d.id = 'pbFit'; d.style.cssText = 'background:#1b2a23;color:#eef2dc;border:1px solid #6f8b5b;border-radius:12px;padding:12px;font:13px AgThai,system-ui,sans-serif;max-width:94vw'; document.body.append(d) }
+  const CW = 620, CH = 520, Z = Math.min(4, 360 / Math.max(60, (o.width || 110) * (o.s || 1)) * 1.4), pts = [];
+  d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>📐 ปรับมุมฐานเป็น 2:1</b><button id="bfX">ปิด (Esc)</button></div><p style="margin:6px 0">จิ้ม 3 จุดตามขอบฐานของภาพ: <b>ซ้าย → หน้าสุด (ต่ำสุด) → ขวา</b> · ลากจุดปรับได้ · ดับเบิลคลิกจุด = ลบ</p><canvas id="bfCv" width="${CW}" height="${CH}" style="background:repeating-conic-gradient(#2d3a33 0 25%,#26322c 0 50%) 0 0/20px 20px;border:1px solid #4d6656;border-radius:8px;cursor:crosshair;display:block;margin:0 auto;width:auto;height:auto;max-width:100%;max-height:58vh"></canvas><p id="bfMsg" style="margin:6px 0;color:#b9d6a0">ยังไม่มีจุด</p><div class="row" style="display:flex;gap:6px;flex-wrap:wrap"><button data-m="b" disabled>ปรับ 2:1 (สมดุล)</button><button data-m="h" disabled>รักษาความสูง</button><button data-m="w" disabled>รักษาความกว้าง</button><button id="bfClr">ล้างจุด</button></div>`;
+  const cv2 = d.querySelector('#bfCv'), q = cv2.getContext('2d'), msg = d.querySelector('#bfMsg');
+  const E = () => pts.length === 3 ? window.PieceGeometry.edges(pts) : null;
+  function paint() {
+   q.clearRect(0, 0, CW, CH); q.save(); q.translate(CW / 2, CH * .82); q.scale(Z, Z);
+   const main = g; g = q; try { const p0 = project(0, 0); q.translate(-p0.x, -p0.y); drawArt(o.art, 0, 0, o.width || 110, o.s || 1, o.f, 0, null, o) } catch (e) { } finally { g = main } q.restore();
+   const e = E();
+   if (e) { q.setLineDash([8, 6]); q.strokeStyle = '#39e07a'; q.lineWidth = 2; q.beginPath(); q.moveTo(e.M.x, e.M.y); q.lineTo(e.M.x + 700, e.M.y - 350); q.moveTo(e.M.x, e.M.y); q.lineTo(e.M.x - 700, e.M.y - 350); q.stroke(); q.setLineDash([]) }
+   if (pts.length > 1) { const s2 = pts.slice().sort((a, b) => a.x - b.x); q.strokeStyle = '#ffd166'; q.lineWidth = 2; q.beginPath(); s2.forEach((a, i) => q[i ? 'lineTo' : 'moveTo'](a.x, a.y)); q.stroke() }
+   q.fillStyle = '#ffd166'; for (const a of pts) { q.beginPath(); q.arc(a.x, a.y, 5, 0, 7); q.fill() }
+   if (e) { q.fillStyle = '#fff'; q.font = 'bold 14px AgThai,system-ui'; q.textAlign = 'center'; q.fillText(e.a1.toFixed(1) + '°', (e.L.x + e.M.x) / 2 - 22, (e.L.y + e.M.y) / 2 + 22); q.fillText(e.a2.toFixed(1) + '°', (e.R.x + e.M.x) / 2 + 22, (e.R.y + e.M.y) / 2 + 22) }
+   msg.textContent = e ? (e.ok ? `ขอบฐานซ้าย ${e.a1.toFixed(1)}° · ขวา ${e.a2.toFixed(1)}° → เป้า 26.57° ทั้งสองด้าน` : 'จุดวางไม่เป็นรูปฐาน (ขอบสองด้านต้องเอียงเข้าหาจุดหน้าสุด)') : `ยังขาดอีก ${3 - pts.length} จุด`;
+   d.querySelectorAll('[data-m]').forEach(b => b.disabled = !(e && e.ok))
+  }
+  let dragI = -1;
+  const at = ev => { const r = cv2.getBoundingClientRect(); return { x: (ev.clientX - r.left) * CW / r.width, y: (ev.clientY - r.top) * CH / r.height } };
+  cv2.onpointerdown = ev => { const p = at(ev), k = pts.findIndex(a => Math.hypot(a.x - p.x, a.y - p.y) < 9); if (k >= 0) { dragI = k; cv2.setPointerCapture(ev.pointerId); return } if (pts.length < 3) { pts.push(p); dragI = pts.length - 1; cv2.setPointerCapture(ev.pointerId); paint() } };
+  cv2.onpointermove = ev => { if (dragI >= 0) { pts[dragI] = at(ev); paint() } };
+  cv2.onpointerup = () => { dragI = -1 };
+  cv2.ondblclick = ev => { const p = at(ev), k = pts.findIndex(a => Math.hypot(a.x - p.x, a.y - p.y) < 9); if (k >= 0) { pts.splice(k, 1); paint() } };
+  d.querySelector('#bfClr').onclick = () => { pts.length = 0; paint() };
+  d.querySelector('#bfX').onclick = () => d.close();
+  d.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+   const e = E(); if (!e || !e.ok) return; const m1 = e.m1, m2 = e.m2, k = m1 - m2, mode = b.dataset.m; let a, dd; if (mode === 'h') { dd = 1; a = k } else if (mode === 'w') { a = 1; dd = 1 / k } else { a = Math.sqrt(k); dd = 1 / a }
+   const c = -dd * (m1 + m2) / 2, ix = o.ix ?? 1, iy = o.iy ?? 1, tX = Math.tan((o.skx || 0) * Math.PI / 180), tY = Math.tan((o.sky || 0) * Math.PI / 180),
+    mul = (A, B) => [[A[0][0] * B[0][0] + A[0][1] * B[1][0], A[0][0] * B[0][1] + A[0][1] * B[1][1]], [A[1][0] * B[0][0] + A[1][1] * B[1][0], A[1][0] * B[0][1] + A[1][1] * B[1][1]]],
+    M = mul([[ix, 0], [0, iy]], [[1, tX], [tY, 1]]), N = mul([[a, 0], [c, dd]], M);   /* screen-space correction applied after the current matrix */
+   if (!(N[0][0] > 0 && N[1][1] > 0)) { msg.textContent = 'ปรับอัตโนมัติไม่ได้กับค่าปัจจุบัน — ลองคืนค่าเอียงก่อน'; return }
+   once(() => { const r = (v, n = 4) => +v.toFixed(n); o.ix = r(N[0][0]); o.iy = r(N[1][1]); o.skx = r(Math.atan(N[0][1] / N[0][0]) * 180 / Math.PI, 2); o.sky = r(Math.atan(N[1][0] / N[1][1]) * 180 / Math.PI, 2); for (const kk of SLANT_KEYS) if ((kk === 'ix' || kk === 'iy') ? Math.abs(o[kk] - 1) < .0005 : Math.abs(o[kk]) < .005) delete o[kk] })();
+   d.close(); status('ปรับมุมฐานเป็น 2:1 แล้ว — ย้อนกลับได้ (Ctrl+Z)')
+  });
+  paint(); d.showModal()
+ }
  const pct = x => Math.round(x * 100) + '%',
   one = x => (+x).toFixed(1);
  const sl = (k, l, v, a, b, st, f = x => x) => `<label>${l}<input type="range" data-k="${k}" data-f="${f===pct?'pct':f===one?'one':''}" min="${a}" max="${b}" step="${st}" value="${v}"><output>${f(v)}</output></label>`;
@@ -922,6 +993,11 @@ const PB_ART = (() => {
   const b = panel.querySelector(sel);
   if (b) b.onclick = fn
  };
+ /* v98.576 · AssetSize (js/asset-size.js): each picture remembers how big it is next to the hero — a NEW piece starts at that size, resizing one stores the new number */
+ const artSrc = a => { try { return typeof imgOf === 'function' && a && !/^code:/.test(a) ? (imgOf(a)?.src || '') : '' } catch (e) { return '' } };
+ const startW = (a, fb) => { const k = artSrc(a), r = k && window.AssetSize?.get(k); return r ? Math.max(30, Math.round(r * AssetSize.heroPx('place'))) : (typeof artWidth === 'function' ? artWidth(a, fb) : (a.startsWith('vt:') ? 400 : fb || 110)) };
+ const recSize = o => { const k = artSrc(o?.art); if (k && window.AssetSize) AssetSize.record(k, (+o.width || 110) * (+o.s || 1), 'place') };
+ const sizeKey = k => k === 'width' || k === 's';
  const once = fn => () => {
   checkpoint();
   fn();
@@ -1003,7 +1079,7 @@ const PB_ART = (() => {
      dv: 1.6
     },
     art: a,
-    width: a.startsWith('vt:') ? 400 : 120
+    width: startW(a, 120)   /* v98.434 · catalogue width · v98.576 · the picture's own size next to the hero */
    });
    save();
    enter({
@@ -1016,7 +1092,7 @@ const PB_ART = (() => {
    if (!confirm('คืนแผนที่ ' + M.name + ' เป็นค่าเริ่มต้นทั้งหมด?')) return;
    once(() => {
     const cast = M.cast;
-    M = copy(DEFAULTS[PLACE]);
+    M = window.defaultMap ? defaultMap(PLACE) : copy(DEFAULTS[PLACE]);
     if (cast) M.cast = cast;
     window.PlacePaint?.load(null)
    })()
@@ -1029,7 +1105,7 @@ const PB_ART = (() => {
    heroSrc = c.img || (typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES.directions?.SE?.idle?.src : '');
   panel.innerHTML = `<div class="body"><h3>👤 ตัวละครใน${M.name}</h3><p class="sub">ค่าในหน้านี้ใช้เฉพาะแผนที่นี้ · ถ้าติ๊ก "ตามหมู่บ้าน" จะใช้ขนาดและภาพเดียวกับหมู่บ้าน</p>
   <b class="sec">ตัวเอก</b><div class="art"><span class="th">${heroSrc?`<img src="${heroSrc}">`:''}</span><div><label class="chk"><input type="checkbox" id="cFollow" ${own?'':'checked'}> ตามหมู่บ้าน</label>${own?`<div class="row"><button id="cSwap">เปลี่ยนภาพ…</button>${own.img?'<button id="cOrig">ใช้ภาพเดิม</button>':''}</div>`:''}</div></div>
-  ${own?`${sl('s','ขนาด',own.s??1,.3,3,.05,pct)}${own.img?`<label class="chk"><input type="checkbox" id="cFlip" ${own.flip?'checked':''}> กลับด้านภาพ</label>`:''}`:`<p class="sub">ตอนนี้: ขนาด ${pct(c.s||1)}${c.img?' · ภาพจากหมู่บ้าน':''}</p>`}</div>`;
+  ${sl('s','ขนาดตัวละครทั้งแผนที่',window.placeScale?placeScale():(c.s||1),.3,3,.05,pct)}<p class="sub">ตัวคูณเดียวสำหรับตัวละครทุกตัวในแผนที่นี้ (ไม่ตั้ง = ตามหมู่บ้าน) · สัดส่วนระหว่างตัวละครตั้งที่ ⚖ Scale Lineup</p>${own?.img?`<label class="chk"><input type="checkbox" id="cFlip" ${own.flip?'checked':''}> กลับด้านภาพ</label>`:''}</div>`;
   panel.querySelector('#cFollow').onchange = e => once(() => {
    if (e.target.checked) {
     if (M.cast) delete M.cast.hero;
@@ -1046,7 +1122,7 @@ const PB_ART = (() => {
     }
    }
   })();
-  sliders((k, v) => M.cast.hero[k] = v);
+  sliders((k, v) => { if (k === 's' && window.MapScale) MapScale.set('place', window.PLACE_ID || (new URLSearchParams(location.search).get('place') || 'market'), v) });   /* v98.139 · one multiplier per sub-map */
   act('#cSwap', () => openList('ภาพตัวเอกใน' + M.name, CAST_ART, own?.img, it => once(() => {
    M.cast.hero.img = it.id;
    if (it.back) M.cast.hero.back = it.back;
@@ -1099,6 +1175,7 @@ const PB_ART = (() => {
    ['art', '🖼 ภาพ'],
    ['base', '🔲 ฐาน'],
    ['door', '🚪 จุดใช้งาน'],
+   ['vendor', '🧑‍🌾 คนขาย'],
    ['props', '🪴 ของประดับ ' + props.length]
   ] : [
    ['floor', '🔲 พื้น / ผนัง'],
@@ -1125,7 +1202,8 @@ const PB_ART = (() => {
   if (st) ({
    art: tabArt,
    base: tabBase,
-   door: tabDoor
+   door: tabDoor,
+   vendor: tabVendor
   })[place.tab](body, s);
   else ({
    floor: tabFloor,
@@ -1159,14 +1237,14 @@ const PB_ART = (() => {
 
  function tabArt(body, s) {
   body.innerHTML = `<div class="art"><span class="th" id="aTh"></span><div><button id="aSwap">เปลี่ยนภาพ…</button><p class="sub" style="margin:6px 0 0">${propName(s)}</p></div></div>
-  ${sl('width','ความกว้างภาพ',s.width||120,30,700,5)}${sl('s','ขนาด',s.s||1,.3,2.5,.05,pct)}
+  ${sl('width','ความกว้างภาพ',s.width||120,30,700,5)}${sl('s','ขนาด',s.s||1,.3,2.5,.05,pct)}${slantRows(s)}
   <label class="chk"><input type="checkbox" id="aFlip" ${s.f?'checked':''}> กลับด้านภาพ</label>
   ${zRow('sz','ชั้นของจุดทำงาน',s.z||0,'เทียบกับของประดับของจุดนี้ · ของที่เลขมากกว่าจะทับ')}
   <p class="sub">ลากตัวจุดบนแผนที่เพื่อย้าย (ของประดับของจุดนี้ตามไปด้วย) · ลูกศร = ขยับทีละ ¼ ช่อง</p>
   <hr><div class="row"><button id="aDel">ลบจุดทำงานนี้</button></div>`;
   thumbInto(body.querySelector('#aTh'), s.art, s.width || 120);
   bindZ('sz', d => { s.z = Math.max(-20, Math.min(20, (s.z || 0) + d)); if (!s.z) delete s.z });
-  act('#aSwap', () => openArtPicker('เปลี่ยนภาพ ' + s.name, s.art, a => once(() => s.art = a)()));
+  act('#aSwap', () => openArtPicker('เปลี่ยนภาพ ' + s.name, s.art, a => once(() => { if (/^code:/.test(s.art || '') && !/^code:/.test(a) && typeof artWidth === 'function') s.width = Math.max(+s.width || 0, artWidth(a)); s.art = a; if (window.AssetSize?.get(artSrc(a))) { s.width = startW(a); delete s.s } })())   /* v98.577 · a picture that knows its size next to the hero takes it when swapped in */);   /* v98.434 · code shape → picture: start at the picture's own width */
   body.querySelector('#aFlip').onchange = e => once(() => s.f = e.target.checked || undefined)();
   act('#aDel', () => {
    if (M.stations.length <= 1) {
@@ -1181,7 +1259,8 @@ const PB_ART = (() => {
    save();
    render()
   });
-  sliders((k, v) => s[k] = v)
+  bindSlant(body, s);
+  sliders((k, v) => s[k] = v, k => { if (sizeKey(k)) recSize(s) })
  }
 
  function tabBase(body, s) {
@@ -1202,6 +1281,21 @@ const PB_ART = (() => {
    du: 0,
    dv: +(s.d + .8).toFixed(2)
   }))
+ }
+
+/* v98.554 · 🧑‍🌾 vendor: who stands at this station, where (drag the gold pin on the map or nudge), which way they look */
+ const vendorPos = s => { const df = window.vendorDefault(s); return { u: s.u + (s.vendor?.du ?? df.du), v: s.v + (s.vendor?.dv ?? df.dv) } };
+ function tabVendor(body, s) {
+  const K = window.VENDOR_KINDS || {}, df = window.vendorDefault(s), v = s.vendor || {}, cur = v.kind || '';
+  body.innerHTML = `<p class="sub">คนขายที่ยืนประจำจุดนี้ · เป็นพ่อค้า/แม่ค้าทั่วไป (ไม่ใช่ชาวบ้านมีชื่อ) · มีแค่ 2 ทิศ SW / SE · ตอนนี้วาดด้วยโค้ดชั่วคราว — ใส่ภาพจริงที่ <code>assets/village-town/vendors/&lt;แบบ&gt;-sw.webp</code> และ <code>-se.webp</code> (ผืน 384×384 เท้าที่ y=360) ระบบใช้ภาพแทนโค้ดเอง · ลาก <b style="color:#ffd166">หมุดทอง</b> บนแมพเพื่อย้ายที่ยืน · คลิกคนขายในเกม = ใช้จุดนี้</p>
+  <label class="two">แบบคนขาย<select id="vKind"><option value="">— ไม่มี —</option>${Object.entries(K).map(([k, o]) => `<option value="${k}" ${cur === k ? 'selected' : ''}>${k} · ${o.name}</option>`).join('')}</select></label>
+  ${cur ? `<label class="two">หันหน้า<select id="vFace">${[['', 'ตามหน้าร้าน (' + df.face + ')'], ['SW', 'SW ↙'], ['SE', 'SE ↘']].map(([k, l]) => `<option value="${k}" ${(v.face || '') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+  <div class="row"><button data-vn="-.25,0">◤ u −</button><button data-vn=".25,0">u + ◢</button><button data-vn="0,-.25">◥ v −</button><button data-vn="0,.25">v + ◣</button></div>
+  <div class="row"><button id="vReset">⟲ วางหน้าร้านตามค่าเริ่มต้น</button></div>` : ''}`;
+  body.querySelector('#vKind').onchange = e => once(() => { if (e.target.value) s.vendor = { ...(s.vendor || {}), kind: e.target.value }; else delete s.vendor })();
+  const f = body.querySelector('#vFace'); if (f) f.onchange = e => once(() => { if (e.target.value) s.vendor.face = e.target.value; else delete s.vendor.face })();
+  body.querySelectorAll('[data-vn]').forEach(b => b.onclick = once(() => { const [a, c] = b.dataset.vn.split(',').map(Number), d0 = window.vendorDefault(s); s.vendor.du = +((s.vendor.du ?? d0.du) + a).toFixed(2); s.vendor.dv = +((s.vendor.dv ?? d0.dv) + c).toFixed(2) }));
+  act('#vReset', once(() => { delete s.vendor.du; delete s.vendor.dv; delete s.vendor.face }))
  }
 
  function tabFloor(body) {
@@ -1234,8 +1328,8 @@ const PB_ART = (() => {
    const i = sel[0],
     o = M.props[i];
    body.innerHTML = `<div class="row" style="margin-top:0"><button id="pBack">← ของประดับทั้งหมด</button></div><b class="sec">${propName(o)}</b>
-   <div class="art"><span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button></div></div>
-   ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${zRow('pz1','ชั้นของชิ้นนี้',o.z||0,o.owner?'ในจุดทำงานนี้ · จุดทำงาน = '+(stOf(o.owner)?.z||0):'ของประดับทั่วไป (ไม่อยู่ในชุดจุดทำงาน)')}
+   <div class="art"><span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button> <button id="pDetail">🔍 แก้ละเอียด…</button></div></div>
+   ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${slantRows(o)}${zRow('pz1','ชั้นของชิ้นนี้',o.z||0,o.owner?'ในจุดทำงานนี้ · จุดทำงาน = '+(stOf(o.owner)?.z||0):'ของประดับทั่วไป (ไม่อยู่ในชุดจุดทำงาน)')}
    <label class="chk"><input type="checkbox" id="pFlip" ${o.f?'checked':''}> กลับด้าน</label>${groupHtml(1)}
    <div class="row"><button id="pDup">ทำสำเนา</button><button id="pDel">ลบ (Delete)</button></div><div class="row"><button id="pSavePrefab">บันทึกเป็นชุด</button><button id="pUsePrefab">วางชุดที่บันทึก</button></div><p class="sub">ลากบนแผนที่เพื่อย้าย · ลูกศร = ขยับทีละ ¼ ช่อง · R หมุน · F กลับด้าน</p>`;
    thumbInto(body.querySelector('#pTh'), o.art, o.width || 110);
@@ -1243,7 +1337,8 @@ const PB_ART = (() => {
     place.sel = [];
     render()
    });
-   act('#pSwap', () => openArtPicker('เปลี่ยนภาพ', o.art, a => once(() => o.art = a)()));
+   act('#pDetail', () => window.PieceDetail?.open(i));
+   act('#pSwap', () => openArtPicker('เปลี่ยนภาพ', o.art, a => once(() => { if (/^code:/.test(o.art || '') && !/^code:/.test(a) && typeof artWidth === 'function') o.width = artWidth(a); o.art = a; if (window.AssetSize?.get(artSrc(a))) { o.width = startW(a); o.s = 1 } })()));
    body.querySelector('#pFlip').onchange = e => once(() => o.f = e.target.checked || undefined)();
    act('#pDup', once(() => {
     M.props.push({
@@ -1255,7 +1350,8 @@ const PB_ART = (() => {
    }));
    act('#pDel', delProps);
    act('#pSavePrefab',savePrefab);act('#pUsePrefab',openPrefabPicker);bindGroup();bindZ('pz1',d=>{o.z=Math.max(-20,Math.min(20,(o.z||0)+d));if(!o.z)delete o.z});
-   sliders((k, v) => o[k] = v);
+   bindSlant(body, o);
+   sliders((k, v) => o[k] = v, k => { if (sizeKey(k)) recSize(o) });
    return
   }
   body.innerHTML = `<p class="sub">คลิกชิ้นบนแผนที่หรือในรายการ · Shift+คลิก = เลือกหลายชิ้น${sel.length>1?` · <b>เลือก ${sel.length} ชิ้น</b> ลากชิ้นใดก็ได้เพื่อย้ายทั้งกลุ่ม`:''}</p>
@@ -1295,6 +1391,7 @@ const PB_ART = (() => {
     u: q4(at.u),
     v: q4(at.v),
     s: 1,
+    ...(startW(a) !== 110 ? { width: startW(a) } : {}),   /* v98.434 · the picture's own starting width (110 = the old default, left out) */
     ...(owner ? {
      owner
     } : {})
@@ -1320,6 +1417,26 @@ const PB_ART = (() => {
   overlay,
   drawHero: PB_ART.drawHero,
   render,
+  /* v98.292 · bridge for js/piece-detail.js: a prop of this sub-map (key = index in M.props) */
+  detail: {
+   caps: { rot: false, slant: false, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
+   item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
+   ov: key => { const o = M.props[+key]; return o ? (window.ArtFrames ? ArtFrames.effective(o) : o) : {} },   /* v98.567 · the window shows the frame the piece really uses (own → picture's template → automatic) */
+   edit(key, fn, cp) {
+    const o = M.props[+key]; if (!o) return; if (cp) checkpoint();
+    const AF = window.ArtFrames, wasOwn = !AF || AF.isOwn(o);
+    if (!wasOwn) AF.materialize(o);   // edit on top of what is shown
+    fn(o); for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === false) delete o[k];
+    if (!wasOwn) { const tmp = { ...o }; AF.strip(tmp); const eff = AF.effective(tmp), same = AF.FIELDS.every(k => JSON.stringify(o[k] ?? null) === JSON.stringify(eff[k] ?? null)); if (same) AF.strip(o); else o.fo = true }   // nothing in the frame really changed → keep following the picture
+    dirty = true; save(); render()
+   },
+   frames: {
+    state: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return null; return { own: AF.isOwn(o), tpl: AF.has(o.art) } },
+    saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom(o); AF.strip(o); dirty = true; save(); render() },
+    useArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.strip(o); dirty = true; save(); render() }
+   },
+   drawTo(q, E, ov) { const main = g; g = q; try { q.save(); const p0 = project(0, 0); q.translate(-p0.x, -p0.y); drawArt(ov.art, 0, 0, ov.width || 110, ov.s || 1, ov.f, 0, null, ov); q.restore() } catch (e) { } finally { g = main } }
+  },
   enter,
   leave: () => leave(true),
   state: () => ({

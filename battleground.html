@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Battleground Editor</title>
-<style>
+<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/key-layout.js?v=1"></script><style>
 :root{--panel:#1b302af7;--line:#4d6656;--edge:#b9c48f;--text:#f3ead0;--muted:#c9d2b8;--gold:#e5c06b;--accent:#c9893a}
-*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#14201b;color:var(--text);font:13px/1.45 system-ui,"Noto Sans Thai",sans-serif}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#14201b;color:var(--text);font:13px/1.45 AgThai,system-ui,"Noto Sans Thai",sans-serif}
 button,select,input{font:inherit;color:var(--text);background:#233a2e;border:1px solid #7f9170;border-radius:8px;padding:5px 9px}button{cursor:pointer}button:hover{border-color:var(--gold)}button.on{background:var(--gold);color:#1b302a;border-color:var(--gold)}
 #cv{display:block;width:100vw;height:100dvh;cursor:crosshair;touch-action:none}.cmini canvas{width:64px;height:48px}
 .muted{color:var(--muted)}
@@ -29,6 +29,15 @@ details{margin:6px 0}summary{cursor:pointer;color:#fff0c7}table{width:100%;borde
 #warn{position:fixed;left:14px;bottom:86px;max-width:calc(100vw - 400px);background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--muted);z-index:8}
 #tileInfo{position:fixed;left:14px;top:14px;background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:5px 9px;color:var(--muted);z-index:8}#tileInfo:empty{display:none}
 #status{position:fixed;left:14px;bottom:14px;max-width:340px;background:#1b302ae8;border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:#e6d3a9;z-index:8}#status:empty{display:none}
+#realFrame{position:fixed;inset:0;width:100vw;height:100dvh;border:0;z-index:7;background:#0f1713;display:none}
+#realBar{position:fixed;left:10px;top:12px;width:236px;z-index:12;display:none;flex-direction:column;gap:4px;background:#1b302af2;border:1px solid var(--edge);border-radius:12px;padding:8px 10px;box-shadow:0 6px 18px #0008}
+body.real #realFrame{display:block}body.real #realBar{display:flex}body.real #bar,body.real #cat,body.real #side,body.real #tileInfo,body.real #warn,body.real #cv{display:none!important}
+#realBar .rb-h{display:flex;gap:6px;justify-content:space-between}#realBar details{border-top:1px solid #4d665688;padding-top:3px}#realBar summary{cursor:pointer;font-weight:700;color:#f4dc9f;padding:3px 0}
+#realBar label{display:grid;gap:3px;margin:5px 0;font-size:12px}#realBar select{width:100%}#realBar .rb-seed{display:flex;gap:5px}#realBar .rb-seed input{flex:1;width:auto}
+#realBar.min{width:auto}#realBar.min details,#realBar.min #realBack{display:none}
+#animDrawer{position:fixed;right:0;top:0;bottom:0;width:min(1500px,97vw);z-index:30;display:none;flex-direction:column;background:#1b302a;border-left:2px solid var(--edge);box-shadow:-10px 0 30px #000a}#animDrawer.on{display:flex}
+#animDrawer .ad-h{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid #4d6656}#animDrawer iframe{flex:1;border:0;background:#fffdf5}
+#realBar input[type=number]{width:96px}#realBar .muted{font-size:12px}
 </style>
 </head>
 <body>
@@ -41,9 +50,14 @@ details{margin:6px 0}summary{cursor:pointer;color:#fff0c7}table{width:100%;borde
  <button data-tool="erase"><b>🧽</b><span>ลบ</span><kbd>4</kbd></button><button data-tool="spawnAllies"><b>🟢</b><span>จุดเกิดเรา</span></button><button data-tool="spawnEnemies"><b>🔴</b><span>จุดเกิดศัตรู</span></button><button data-tool="spawnErase"><b>⌫</b><span>ลบจุดเกิด</span></button><i></i>
  <button id="undo" title="Ctrl+Z"><b>↶</b><span>ย้อน</span></button><button id="redo" title="Ctrl+Shift+Z"><b>↷</b><span>ทำซ้ำ</span></button>
  <button id="rotL" title="หมุนมุมมอง ["><b>⟲</b><span>หมุน</span></button><button id="rotR" title="หมุนมุมมอง ]"><b>⟳</b><span>หมุน</span></button><i></i>
- <button id="try"><b>▶</b><span>ลองเล่น</span><kbd>T</kbd></button><button id="pushBtn" class="pp"><b>⬆</b><span>push</span></button>
+ <button id="real" title="เปิดฉากต่อสู้จริงของเกมในโหมดแก้ไข: ซูม เลื่อน ย้ายตัวละครและของ แล้วบันทึก"><b>🎬</b><span>แก้บนฉากจริง</span></button><button id="pushBtn" class="pp"><b>⬆</b><span>push</span></button>
 </div>
 <div id="cat"></div>
+<iframe id="realFrame" title="ฉากต่อสู้จริง"></iframe>
+<div id="realBar"><div class="rb-h"><button id="realBack">← กลับไปแก้ชิ้น</button><button id="railToggle" title="ย่อ / ขยายแผงซ้าย">◀</button></div>
+<details open><summary>🗺 สนาม</summary><label>พื้นที่ <select id="realBiome"></select></label><label>Seed <span class="rb-seed"><input type="number" id="realSeed"><button id="realDice" title="สุ่มฉากใหม่">🎲</button></span></label></details>
+<details open><summary>⚔ ฝ่ายต่อสู้</summary><label>ศัตรู <select id="realFoes"></select></label><label>ทีม <select id="realParty"></select></label></details></div>
+<div id="animDrawer"><div class="ad-h"><b id="adTitle">🎞 แก้อนิเมชัน</b><button id="adClose">✕ ปิด</button></div><iframe id="adFrame" title="ตัวแก้อนิเมชัน"></iframe></div>
 <aside id="side">
  <h3>⚔ สนามต่อสู้</h3>
  <p class="muted" style="margin:0">วาดชิ้นภูมิประเทศ (ความสูง พื้น ของ) แล้วตัวสุ่มแผนที่จะหยิบไปวางในสนามสุ่มของพื้นที่ที่เลือก · คลิกขวา = ทำกลับ (ลด / คืนหญ้า / เอาของออก) · ลากที่ว่าง = เลื่อนมุมมอง · หัวแปรงสี่เหลี่ยมตามแนว Iso 2.5D แสดงขอบเขตด้วยเส้นประ · ล้อ = ซูม · B = ขนาดแปรง</p>
@@ -57,11 +71,10 @@ details{margin:6px 0}summary{cursor:pointer;color:#fff0c7}table{width:100%;borde
  <div class="row"><button id="new" style="background:#4f7a3c;border-color:#b8d39a">＋ ชิ้นใหม่ <span class="muted">N</span></button><button id="dup">ทำสำเนา</button><button id="del">ลบชิ้นนี้</button></div>
  <details><summary>ตั้งค่าแต่ละพื้นที่</summary><table><thead><tr><th>พื้นที่</th><th>โอกาสใส่ชิ้น</th><th>กลางคืน</th></tr></thead><tbody id="areaRows"></tbody></table>
  <p class="muted">โอกาสใส่ชิ้น = ทุกกี่ศึกจะมีชิ้นทำมือหนึ่งชิ้นวางบนแผนที่ (ถ้าวางแล้วทำให้ทางไปจุดเกิดขาด ระบบจะย้ายที่หรือไม่วาง) · กลางคืน = โอกาสเป็นฉากกลางคืน</p></details>
- <details><summary>เครื่องมือเดิม</summary><div class="row"><button id="legacy">จุดมืออาวุธ · เอฟเฟกต์ · Seed</button></div></details>
 </aside>
 <div id="tileInfo"></div><div id="warn"></div><div id="status"></div>
-<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-settings.js?v=97.03"></script>
-<script src="js/github-push.js?v=97.93"></script>
+<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-settings.js?v=98.566"></script>
+<script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.631"></script>
 <script>
 'use strict';
 /* v87.4 · Battleground editor in the same Build Mode layout as the village / sub-maps:
@@ -112,8 +125,6 @@ $('del').onclick=()=>{if(!C()||!confirm('ลบชิ้น "'+C().name+'"?'))re
 $('undo').onclick=()=>{if(!undo.length)return;redo.push(JSON.stringify(data));data=JSON.parse(undo.pop());cur=Math.min(cur,data.chunks.length-1);save();draw()};
 $('redo').onclick=()=>{if(!redo.length)return;undo.push(JSON.stringify(data));data=JSON.parse(redo.pop());cur=Math.min(cur,data.chunks.length-1);save();draw()};
 $('rotL').onclick=()=>{view=(view+3)%4;draw()};$('rotR').onclick=()=>{view=(view+1)%4;draw()};
-$('try').onclick=()=>{save();localStorage.setItem('battleground-try',C().id);window.open('index.html?editor=battle&try='+encodeURIComponent(C().id),'_blank')};
-$('legacy').onclick=()=>window.open('index.html?editor=battle','_blank');
 
 /* ---------- tools + catalog ---------- */
 function setMode(m){mode=m;if(m==='height'&&!['h','set','flat'].includes(tool.type))tool={type:'h',v:1};else if(m==='kind'&&tool.type!=='k')tool={type:'k',v:'path'};else if(m==='prop'&&tool.type!=='p')tool={type:'p',v:'tree'};else if(m==='erase')tool={type:'erase'};renderCat()}
@@ -121,9 +132,9 @@ function transformChunk(kind){const c=C();if(!c)return;checkpoint();const w=c.w,
 function assetSwatch(src){const c=document.createElement('canvas');c.width=96;c.height=72;const q=c.getContext('2d');q.fillStyle='#263a2c';q.fillRect(0,0,96,72);const im=loadImg(propImages,src,src);if(im){const s=Math.min(62/im.naturalWidth,62/im.naturalHeight);q.drawImage(im,48-im.naturalWidth*s/2,40-im.naturalHeight*s/2,im.naturalWidth*s,im.naturalHeight*s)}return c}
 function swatchKind(col){const c=document.createElement('canvas');c.width=96;c.height=72;const q=c.getContext('2d');q.fillStyle=col;q.beginPath();q.moveTo(48,10);q.lineTo(90,32);q.lineTo(48,54);q.lineTo(6,32);q.closePath();q.fill();q.fillStyle='#0003';q.beginPath();q.moveTo(6,32);q.lineTo(48,54);q.lineTo(48,64);q.lineTo(6,42);q.closePath();q.fill();q.fillStyle='#0005';q.beginPath();q.moveTo(90,32);q.lineTo(48,54);q.lineTo(48,64);q.lineTo(90,42);q.closePath();q.fill();return c}
 function swatchProp(k){const c=document.createElement('canvas');c.width=96;c.height=72;const q=c.getContext('2d');q.fillStyle='#6c9a4a';q.beginPath();q.moveTo(48,34);q.lineTo(84,52);q.lineTo(48,70);q.lineTo(12,52);q.closePath();q.fill();if(k){const old=zoom;zoom=1.4;prop(k,{x:48,y:56},q);zoom=old}return c}
-function swatchHeight(t){const c=document.createElement('canvas');c.width=96;c.height=72;const q=c.getContext('2d'),[type,v]=t,hh=type==='set'?v:type==='h'?(v>0?3:1):2;q.fillStyle='#7b6a52';q.fillRect(26,40-hh*7,44,hh*7+14);q.fillStyle='#6c9a4a';q.beginPath();q.moveTo(48,30-hh*7);q.lineTo(74,40-hh*7);q.lineTo(48,50-hh*7);q.lineTo(22,40-hh*7);q.closePath();q.fill();q.fillStyle='#fff';q.font='bold 22px system-ui';q.textAlign='center';q.fillText(type==='h'?(v>0?'▲':'▼'):type==='flat'?'▬':String(v),48,68);return c}
+function swatchHeight(t){const c=document.createElement('canvas');c.width=96;c.height=72;const q=c.getContext('2d'),[type,v]=t,hh=type==='set'?v:type==='h'?(v>0?3:1):2;q.fillStyle='#7b6a52';q.fillRect(26,40-hh*7,44,hh*7+14);q.fillStyle='#6c9a4a';q.beginPath();q.moveTo(48,30-hh*7);q.lineTo(74,40-hh*7);q.lineTo(48,50-hh*7);q.lineTo(22,40-hh*7);q.closePath();q.fill();q.fillStyle='#fff';q.font='bold 22px AgThai,system-ui';q.textAlign='center';q.fillText(type==='h'?(v>0?'▲':'▼'):type==='flat'?'▬':String(v),48,68);return c}
 function renderCat(){document.querySelectorAll('#bar [data-tool]').forEach(b=>b.classList.toggle('on',b.dataset.tool===mode));
- if(!$('cat').querySelector('#catSearchStyle')){const st=document.createElement('style');st.id='catSearchStyle';st.textContent='#cat .catSearch{display:flex;gap:6px;align-items:center;flex:none;margin-right:8px}#cat .catSearch input{width:150px;max-width:32vw;padding:6px 8px;border-radius:7px;border:1px solid #687766;background:#1b2923;color:#fff;font:12px system-ui}#cat .catSearch button{padding:6px 8px;font-size:11px}#cat .catSearch button.on{background:#bc8d49;color:#1b2118}';document.head.append(st)}
+ if(!$('cat').querySelector('#catSearchStyle')){const st=document.createElement('style');st.id='catSearchStyle';st.textContent='#cat .catSearch{display:flex;gap:6px;align-items:center;flex:none;margin-right:8px}#cat .catSearch input{width:150px;max-width:32vw;padding:6px 8px;border-radius:7px;border:1px solid #687766;background:#1b2923;color:#fff;font:12px AgThai,system-ui}#cat .catSearch button{padding:6px 8px;font-size:11px}#cat .catSearch button.on{background:#bc8d49;color:#1b2118}';document.head.append(st)}
  const box=$('cat');let items=[];
  if(mode==='height')items=HEIGHT_TOOLS.map(t=>({type:t[0],v:t[1],label:t[2],key:t[3],cv:swatchHeight(t)}));
  else if(mode==='kind')items=Object.entries(KINDS).map(([k,[l,col]])=>({type:'k',v:k,label:l,cv:swatchKind(col)}));
@@ -149,7 +160,7 @@ document.addEventListener('keydown',e=>{if(e.target.closest?.('input,select'))re
  else if(k==='5')setMode('select');else if(k==='g'){const i=tool.type==='k'?(kinds.indexOf(tool.v)+(e.shiftKey?-1:1)+kinds.length)%kinds.length:0;set('kind',{type:'k',v:kinds[i]})}
  else if(k==='p'){const i=tool.type==='p'?(props.indexOf(tool.v)+(e.shiftKey?-1:1)+props.length)%props.length:0;set('prop',{type:'p',v:props[i]})}
  else if(k==='b'){brush=brush%3+1;renderCat()}
- else if(k==='['||k===']')(k==='['?$('rotL'):$('rotR')).click();else if(k==='n')$('new').click();else if(k==='t')$('try').click()});
+ else if(k==='['||k===']')(k==='['?$('rotL'):$('rotR')).click();else if(k==='n')$('new').click();});
 
 /* ---------- iso view + painting ---------- */
 const cv=$('cv'),g=cv.getContext('2d');let W=0,H=0,TW=56,TH=28,ZH=16,origin={x:0,y:0},pan={x:0,y:0};
@@ -170,7 +181,7 @@ function draw(){const c=C();g.setTransform(devicePixelRatio,0,0,devicePixelRatio
   if(z>0){poly([p[1],p[2],b2,b1],shade(wall,.8));poly([p[3],p[2],b2,b3],shade(wall,.6));for(let k=1;k<z;k++){const a=proj(o.vx+1,o.vy,k),bb=proj(o.vx+1,o.vy+1,k),cc=proj(o.vx,o.vy+1,k);g.strokeStyle='#0003';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(bb.x,bb.y);g.lineTo(cc.x,cc.y);g.stroke()}}
   const src=TEX[q.k]||TEX.grass,im=loadImg(texImages,src,src);if(im){const x0=Math.min(...p.map(v=>v.x)),x1=Math.max(...p.map(v=>v.x)),y0=Math.min(...p.map(v=>v.y)),y1=Math.max(...p.map(v=>v.y));g.save();g.beginPath();p.forEach((v,i)=>g[i?'lineTo':'moveTo'](v.x,v.y));g.closePath();g.clip();g.drawImage(im,x0,y0,x1-x0,y1-y0);g.restore();poly(p,'#00000008','#0003')}else poly(p,col,'#0004');drawList.push({o,p});if(inBrush(o,hover))poly(p,'#ffffff40','#fff');if(selectedTile&&selectedTile.x===o.x&&selectedTile.y===o.y)poly(p,'#ffd36a55','#ffe59a');
   if(q.p)prop(q.p,{x:(p[0].x+p[2].x)/2,y:(p[0].y+p[2].y)/2})}
- for(const s of c.spawns||[]){const r=rv(s.x,s.y,c),tile=c.cells[s.y*c.w+s.x],sp=proj(r[0]+.5,r[1]+.5,tile?.h||0);g.fillStyle=s.team==='allies'?'#5de08b':'#ff6c63';g.strokeStyle='#101510';g.lineWidth=2;g.beginPath();g.arc(sp.x,sp.y,Math.max(7,10*zoom),0,Math.PI*2);g.fill();g.stroke();g.fillStyle='#101510';g.font='bold 10px system-ui';g.textAlign='center';g.fillText(s.team==='allies'?'A':'E',sp.x,sp.y+3)}  checks()}
+ for(const s of c.spawns||[]){const r=rv(s.x,s.y,c),tile=c.cells[s.y*c.w+s.x],sp=proj(r[0]+.5,r[1]+.5,tile?.h||0);g.fillStyle=s.team==='allies'?'#5de08b':'#ff6c63';g.strokeStyle='#101510';g.lineWidth=2;g.beginPath();g.arc(sp.x,sp.y,Math.max(7,10*zoom),0,Math.PI*2);g.fill();g.stroke();g.fillStyle='#101510';g.font='bold 10px AgThai,system-ui';g.textAlign='center';g.fillText(s.team==='allies'?'A':'E',sp.x,sp.y+3)}  checks()}
 function poly(pts,fill,stroke){g.beginPath();pts.forEach((q,i)=>g[i?'lineTo':'moveTo'](q.x,q.y));g.closePath();g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=1;g.stroke()}}
 function prop(k,c,q=g){const s=zoom;q.save();q.translate(c.x,c.y);q.scale(s,s);const col=PROPS[k][1];
  if(k==='tree'){q.fillStyle='#5a3d22';q.fillRect(-3,-16,6,16);q.fillStyle=col;q.beginPath();q.arc(0,-26,14,0,7);q.fill();q.fillStyle='#3f8a36';q.beginPath();q.arc(-4,-30,8,0,7);q.fill()}
@@ -206,6 +217,36 @@ $('pushBtn').onclick=async()=>{save();if(!GitHubPush.config().token){GitHubPush.
 {const s=GitHubPush.settingsButton();s.innerHTML='<b>⚙</b><span>GitHub</span>';s.title='ตั้งค่า GitHub (token / repo)';$('bar').append(s)}
 
 load();if(!localStorage.getItem(KEY))save();renderSide();renderCat();renderTileProps();addEventListener('resize',fit);fit();
+
+/* ---------- v98.257 · 🎬 ฉากจริง: the REAL battle scene (battle-field.html — the renderer the game uses) with its real textures, props and units, inside the editor.
+   Honest note: that scene is generated from the biome + seed (js/field-host.js), it does NOT read the chunks drawn here yet (chunks feed the old grid-lab) — see docs/TODO.md §13. */
+(function(){
+ const BIOMES={grass:'ทุ่งหญ้า',forest:'ป่า',hills:'เนินเขา',swamp:'บึง',snow:'หิมะ',sand:'ทราย'};
+ const FOES={wolf:['หมาป่า + โจร','wolf*1.2,bandit*1.2'],pack:['ฝูงหมาป่า (3)','wolf*1.2,wolf*1.2,wolf*1.2'],ice:['เยติ + หมาป่าน้ำแข็ง','yeti*1.2,frostWolf*1.2,yeti*1.2'],mine:['โคโบลด์ + ค้างคาว + สไลม์','kobold*1.2,bat*1.2,slime*1.2'],none:['ไม่มีศัตรู (ดูฉากเฉยๆ)','']};
+ const PARTY={duo:['ตัวเอก + น้อง/พี่','sib:50:50:charge:1'],squad:['ตัวเอก + น้อง/พี่ + 3 เพื่อน','sib:50:50:charge:1,kier:50:50:charge:1,luna:50:50:charge:1,bram:50:50:charge:1'],all:['ทีมเต็ม 6 คน','sib:50:50:charge:1,kier:50:50:charge:1,mil:50:50:charge:1,sigrid:50:50:charge:1,ren:50:50:charge:1,nadia:50:50:charge:1']};
+ const fill=(el,o)=>el.innerHTML=Object.entries(o).map(([k,v])=>`<option value="${k}">${Array.isArray(v)?v[0]:v}</option>`).join('');
+ fill($('realBiome'),BIOMES);fill($('realFoes'),FOES);fill($('realParty'),PARTY);
+ let hud=false,frame=$('realFrame');
+ function url(){const seed=+$('realSeed').value||1,f=FOES[$('realFoes').value][1],p=PARTY[$('realParty').value][1];
+  return 'battle-field.html?battle=1&embed=1&edit=1&warm=1&cine=0&r=7&night=0&biome='+$('realBiome').value+'&seed='+seed+(f?'&ms='+encodeURIComponent(f):'')+'&party='+encodeURIComponent(p)}
+ function hideUi(){try{const d=frame.contentDocument;if(!d)return;let st=d.getElementById('realViewCss');if(!st){st=d.createElement('style');st.id='realViewCss';d.head.append(st)}
+  st.textContent=hud?'':'#fbHand,#fbActions,#fbHud,#fbQueue,#fieldUi,#fbInspect,.fb-banner,#fbTip,.fb-tip,#fbHint{display:none!important}'}catch(e){}}
+ function dismissTips(){let n=0;const t=setInterval(()=>{try{const d=frame.contentDocument;for(const b of d.querySelectorAll('button'))if(/เข้าใจแล้ว|ข้าม/.test(b.textContent))b.click()}catch(e){}if(++n>14)clearInterval(t)},600)}
+ function load(){frame.src=url();frame.onload=()=>{hideUi();dismissTips()}}
+ $('real').onclick=()=>{if(!$('realSeed').value)$('realSeed').value=Math.floor(Math.random()*9e5)+1e5;document.body.classList.add('real');load()};
+ $('realBack').onclick=()=>{document.body.classList.remove('real');frame.src='about:blank'};
+/* v98.309 · left rail: the top part (this page) and the inner part (js/field-edit.js, inside the frame) stack on the left; the inner one learns where to start through --rail-top */
+function railTop(){try{const r=$('realBar').getBoundingClientRect();frame.contentDocument?.documentElement.style.setProperty('--rail-top',Math.round(r.bottom+10)+'px')}catch(e){}}
+$('railToggle').onclick=()=>{$('realBar').classList.toggle('min');$('railToggle').textContent=$('realBar').classList.contains('min')?'▶':'◀';railTop()};
+$('realBar').querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>setTimeout(railTop,0)));
+frame.addEventListener('load',()=>{railTop();setTimeout(railTop,600);setTimeout(railTop,2500)});addEventListener('resize',railTop);
+/* click a character in the scene → 🎞 แก้อนิเมชันตัวนี้ : Asset Studio's animation tab opens in a drawer on the right; closing it offers to reload the scene so the new frames show */
+addEventListener('message',e=>{if(e.source!==frame.contentWindow||!e.data||e.data.type!=='fe-open-anim')return;$('adTitle').textContent='🎞 แก้อนิเมชัน · '+(e.data.name||e.data.key);$('adFrame').src='asset-studio.html?anim='+encodeURIComponent(e.data.key)+'&embed=1&x='+Date.now();$('animDrawer').classList.add('on')});
+$('adClose').onclick=()=>{$('animDrawer').classList.remove('on');$('adFrame').src='about:blank';if(confirm('โหลดฉากใหม่เพื่อให้เห็นอนิเมชันที่เพิ่งแก้?\n(การแก้ในสนามที่ยังไม่ได้กด 💾 บันทึก BG จะหาย — กด “ยกเลิก” แล้วบันทึกก่อนได้)'))load()};
+ for(const id of ['realBiome','realFoes','realParty','realSeed'])$(id).onchange=load;
+ $('realDice').onclick=()=>{$('realSeed').value=Math.floor(Math.random()*9e5)+1e5;load()};
+ 
+})();
 </script>
 </body>
 </html>

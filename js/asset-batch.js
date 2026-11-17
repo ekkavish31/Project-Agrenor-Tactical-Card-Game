@@ -47,7 +47,7 @@ function template(){let L=layout(),sc=Math.min(1,2048/(L.cols*L.cw)),c=document.
  g.fillStyle=L.green?'#00ff00':'#f2ead8';g.fillRect(0,0,c.width,c.height);
  items().forEach((a,i)=>{let x=(i%L.cols)*w,y=Math.floor(i/L.cols)*h;g.strokeStyle='#00000055';g.setLineDash([8,6]);g.lineWidth=2;g.strokeRect(x+6,y+6,w-12,h-12);g.setLineDash([]);
   if(a.pivot||a.anchor){let fy=y+h*(a.pivot?a.pivot[1]:(a.anchor[1]>=.99?.98:a.anchor[1]));g.strokeStyle='#ff000088';g.beginPath();g.moveTo(x+w*.35,fy);g.lineTo(x+w*.65,fy);g.stroke()}
-  g.fillStyle='#000000aa';g.font=`bold ${Math.round(Math.max(14,w*.07))}px sans-serif`;g.fillText(String(i+1),x+12,y+12+Math.max(14,w*.07))});
+  g.fillStyle='#000000aa';g.font=`bold ${Math.round(Math.max(14,w*.07))}px AgThai,sans-serif`;g.fillText(String(i+1),x+12,y+12+Math.max(14,w*.07))});
  return c}
 async function collage(){let refs=[...new Set(items().map(reference).filter(Boolean))];let cats=new Set(items().map(a=>a.category));for(let a of M.assets)if(refs.length<6&&cats.has(a.category)&&a.status==='final'&&a.file&&!refs.includes(a.file))refs.push(a.file);
  if(!refs.length)return null;let ims=(await Promise.all(refs.slice(0,6).map(src=>new Promise(r=>{let i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src})))).filter(Boolean);if(!ims.length)return null;

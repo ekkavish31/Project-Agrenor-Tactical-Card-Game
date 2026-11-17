@@ -8,6 +8,7 @@
 (function () {
   'use strict';
   const G = window.WorldGen, Q = new URLSearchParams(location.search), SAVE = 'agrenor-world-v1';
+  const SCx = G.SCALE || 1;   /* v98.613 · 2 = the finer-grid world (js/world-scale.js): TWICE as many hexes each way, but a hex is drawn at the same size next to the characters as before — so the world itself is twice as wide and tall (the camera can zoom out further) */
   const R = 36, HW = Math.sqrt(3) * R, VS = 1.5 * R;                              // hex radius, width, row step
   const WW = Math.ceil(HW * (G.COLS + .5)) + 8, WH = Math.ceil(VS * (G.ROWS - 1) + 2 * R) + 8;
   const cv = document.getElementById('wm'), g = cv.getContext('2d');
@@ -48,13 +49,26 @@
   function healParty(f) { for (const p of S.party) p.hp = Math.min(p.max, f >= 1 ? p.max : p.hp + Math.round(p.max * f)) }
   function fresh(seed) {
     world = G.generate(seed);
-    S = WS.bind({ seed: world.seed, map: world.real || 'random', known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], dest: null, cleared: {}, done: {}, steps: 0, log: [] });
+    S = WS.bind({ worldScale: SCx, seed: world.seed, map: world.real || 'random', known: {}, pos: { ...world.home }, prev: null, trail: [K(world.home.c, world.home.r)], dest: null, cleared: {}, done: {}, steps: 0, log: [] });
     reveal(); save();
+  }
+  /* v98.612 · a save made at another hex scale (S.worldScale, 1 when missing) is converted: position, previous hex, trail, cleared fights and the explored hexes (a new hex counts as explored when the
+     old hex under it was, and the other way round) */
+  function convertSave() {
+    const from = S.worldScale || 1, to = SCx; if (from === to || !window.WorldScale) { S.worldScale = to; return }
+    const cvt = (c, r) => window.WorldScale.convertCell(c, r, from, to), parse = k => String(k).split(',').map(Number), mapKey = k => { const [c, r] = parse(k), [a, b] = cvt(c, r); return K(a, b) };
+    const pos = p => { if (!p) return p; const [c, r] = cvt(p.c, p.r); return { c, r } };
+    S.pos = pos(S.pos); S.prev = pos(S.prev); S.trail = (S.trail || []).map(mapKey);
+    const cl = {}; for (const k in S.cleared || {}) cl[mapKey(k)] = S.cleared[k]; S.cleared = cl;
+    const nk = {};
+    if (to > from) { for (let r = 0; r < G.ROWS; r++) for (let c = 0; c < G.COLS; c++) { const [oc, or] = window.WorldScale.convertCell(c, r, to, from); if (S.known[K(oc, or)]) nk[K(c, r)] = 1 } }
+    else for (const k in S.known || {}) nk[mapKey(k)] = 1;
+    S.known = nk; S.worldScale = to; save();
   }
   function load() {
     if (Q.get('new') === '1') { fresh(+Q.get('seed') || undefined); history.replaceState(null, '', location.pathname); return }
     try { const s = JSON.parse(localStorage.getItem(SAVE) || 'null'); if (s && s.seed != null && (s.map || 'random') !== (G.generate.real || 'random')) { /* v95.22: an old random-map save moves to Nor'Chorthal: same seed, finished destinations kept, back at Fernvale */ fresh(s.seed); S.done = s.done || {}; S.dest = S.done[s.dest] ? null : s.dest || null; S.log = ['— แผนที่ใหม่: ดินแดน Nor\'Chorthal —']; reveal(); save(); adoptVillage(); adoptLeads(); return }
-      if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = WS.bind(s); S.done ??= {}; S.log ??= []; adoptVillage(); adoptLeads(); reveal(); return } } catch (e) { }
+      if (s && s.seed != null && (!Q.get('seed') || +Q.get('seed') === s.seed)) { world = G.generate(s.seed); S = WS.bind(s); S.done ??= {}; S.log ??= []; convertSave(); adoptVillage(); adoptLeads(); reveal(); return } } catch (e) { }
     fresh(+Q.get('seed') || undefined);
   }
   function save() { WS.writeWorld(S) }
@@ -82,15 +96,34 @@
   function revealArea(c, r, n) { for (const [a, b] of G.within(c, r, n)) S.known[K(a, b)] = 1; fogDirty = true }
 
   /* ---------- terrain painting (once per world) ---------- */
-  const PAL = { grass: ['#7fa35a', '#8db365', '#6f9450'], forest: ['#4f7a3f', '#5a8646', '#456c37'], hills: ['#a09060', '#b0a06c', '#8f8054'], mountain: ['#8a8378', '#9b948a', '#77706a'],
+  const PAL = { mine: ['#3a3547', '#443e53', '#322d3f'], grass: ['#7fa35a', '#8db365', '#6f9450'], forest: ['#4f7a3f', '#5a8646', '#456c37'], hills: ['#a09060', '#b0a06c', '#8f8054'], mountain: ['#8a8378', '#9b948a', '#77706a'],
     water: ['#3f6f96', '#4a7ba3', '#365f84'], swamp: ['#5b6b45', '#66764d', '#4d5c3b'], snow: ['#dfe7ee', '#eef3f7', '#cfd9e2'], sand: ['#d8c48f', '#e2cf9c', '#cbb680'], ash: ['#4a3a34', '#5a463e', '#3c2f2a'], stone: ['#8f8470', '#9c917c', '#7e7462'], highland: ['#6f665c', '#7c7368', '#615950'], volcano: ['#6a2a1a', '#8a3a1a', '#4a1e14'] };
   let terr = null;
+  /* v98.51 · hand-painted hills / mountains / rocks (assets/world): drawn standing on the hex, bottom-centre on the lower middle; the code-drawn shapes below stay as the fallback while they load */
+  const WART = {}, WART_NAMES = ['hill-small', 'hill-large', 'mountain', 'mountain-snow', 'mountain-range', 'boulders', 'ice-spires', 'mesa-cliff', 'marsh-mound'];
+  const wart = n => { const im = WART[n]; return im && im.complete && im.naturalWidth ? im : null };
+  for (const n of WART_NAMES) { const im = WART[n] = new Image(); im.onload = () => { if (WART_NAMES.every(k => wart(k)) && !WART.repainted) { WART.repainted = true; if (terr) { try { paint(); paintFog?.() } catch (e) { } } } }; im.src = 'assets/world/' + n + '.webp' }
+  /* v98.53 · whole-hex ground tiles (sheet W4): the picture is feathered at its hexagon edge so neighbouring tiles melt into one painted map; skipped on road / river / settlement hexes so those stay visible */
+  const TILE_NAMES = ['grassland', 'flower-meadow', 'forest-light', 'forest-dark', 'pine-forest', 'snow-forest', 'autumn-forest', 'swamp', 'sand-dunes'], TILEC = {};
+  for (const n of TILE_NAMES) { const im = new Image(); im.onload = () => { try { const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0);
+      x.globalCompositeOperation = 'destination-in'; x.filter = 'blur(7px)'; x.fillStyle = '#fff'; const i = 9; x.beginPath(); x.moveTo(w / 2, i); x.lineTo(w - i, h * .25 + i * .3); x.lineTo(w - i, h * .75 - i * .3); x.lineTo(w / 2, h - i); x.lineTo(i, h * .75 - i * .3); x.lineTo(i, h * .25 + i * .3); x.closePath(); x.fill(); TILEC[n] = c;
+    } catch (e) { } }; im.src = 'assets/world/tile-' + n + '.webp' }
+  /* drawn live (full-resolution pictures, only while zoomed in and only the hexes in view) instead of baked into the half-size terrain picture, where their detail would turn to mush */
+  let TILELIST = [];
+  function wtile(t, n, p, flip) { TILELIST.push({ n, x: p.x, y: p.y, flip }); return false }
+  function drawTiles() {
+    if (cam.z < .3 || !TILELIST.length) return; const a = Math.min(1, (cam.z - .3) / .18), vx0 = cam.x - W / 2 / cam.z - 60, vx1 = cam.x + W / 2 / cam.z + 60, vy0 = cam.y - H / 2 / cam.z - 60, vy1 = cam.y + H / 2 / cam.z + 60;
+    g.save(); g.globalAlpha = a;
+    for (const q of TILELIST) { if (q.x < vx0 || q.x > vx1 || q.y < vy0 || q.y > vy1) continue; const c = TILEC[q.n]; if (!c) continue; const w = HW * 1.2, h = w * c.height / c.width; g.save(); g.translate(q.x, q.y + 1); if (q.flip) g.scale(-1, 1); g.drawImage(c, -w / 2, -h / 2, w, h); g.restore() }
+    g.restore();
+  }
+  function wsprite(t, n, x, y, wd, a = 1) { const im = wart(n); if (!im) return false; const s = wd / im.naturalWidth, h = im.naturalHeight * s; t.save(); t.globalAlpha = a; t.fillStyle = 'rgba(0,0,0,.14)'; t.beginPath(); t.ellipse(x, y - 2, wd * .36, wd * .1, 0, 0, 7); t.fill(); t.drawImage(im, x - wd / 2, y - h, wd, h); t.restore(); return true }
   function paint() {
     /* v95.22: the real Nor'Chorthal map is big — paint it at half resolution (it is drawn scaled up) */
     const TS = world.real ? .4 : 1;
     terr = document.createElement('canvas'); terr.width = Math.ceil(WW * TS); terr.height = Math.ceil(WH * TS); const t = terr.getContext('2d'), rnd = G.rng(world.seed ^ 0xabc); t.scale(TS, TS);
     t.fillStyle = '#2a2f2a'; t.fillRect(0, 0, WW, WH);
-    const all = Object.values(world.tiles);
+    const all = Object.values(world.tiles); TILELIST = [];
     /* v97.94 · the world painted without the hex grid (the user chose free walking on a painted map): every hex is an irregular blob a bit larger
        than the hex, drawn in a shuffled order, so the land types run into each other like a painted map; the hexes stay underneath for the rules */
     const blob = (x, y, rad, seedv) => { t.beginPath(); for (let i = 0; i <= 10; i++) { const a = i / 10 * Math.PI * 2, k = rad * (.86 + .3 * Math.abs(Math.sin(seedv * 7.1 + i * 2.3))); i ? t.lineTo(x + Math.cos(a) * k, y + Math.sin(a) * k * .92) : t.moveTo(x + Math.cos(a) * k, y + Math.sin(a) * k * .92) } t.closePath() };
@@ -122,14 +155,26 @@
     /* decorations, sorted top→bottom so they overlap correctly */
     for (const h of all.sort((a, b) => a.r - b.r || a.c - b.c)) {
       const p = center(h.c, h.r);
-      if (h.biome === 'forest') for (let i = 0; i < 5; i++) tree(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .4) * R * .9, 9 + rnd() * 5, rnd);
+      const free = !h.road && !h.river && !h.poi, fl = rnd() < .5, pick = rnd();
+      if (free && h.biome === 'forest' && wtile(t, pick < .07 ? 'autumn-forest' : pick < .52 ? 'forest-light' : pick < .66 ? 'forest-dark' : 'pine-forest', p, fl)) { }
+      else if (free && h.biome === 'grass' && pick < .3 && wtile(t, pick < .13 ? 'flower-meadow' : 'grassland', p, fl)) { }
+      else if (free && h.biome === 'swamp' && wtile(t, 'swamp', p, fl)) { }
+      else if (free && h.biome === 'sand' && wtile(t, 'sand-dunes', p, fl)) { }
+      else if (free && h.biome === 'snow' && pick < .4 && wtile(t, 'snow-forest', p, fl)) { }
+      else if (h.biome === 'forest') for (let i = 0; i < 5; i++) tree(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .4) * R * .9, 9 + rnd() * 5, rnd);
+      else if (h.biome === 'snow' && rnd() < .14 && wsprite(t, 'ice-spires', p.x + (rnd() - .5) * 8, p.y + R * .5, HW * .9)) { }
       else if (h.biome === 'snow' && rnd() < .35) tree(t, p.x + (rnd() - .5) * 20, p.y + (rnd() - .5) * 18, 9, rnd, true);
+      else if (h.biome === 'hills' && wsprite(t, rnd() < .5 ? 'hill-large' : 'hill-small', p.x + (rnd() - .5) * 8, p.y + R * .5, HW * (1 + rnd() * .1))) { }
       else if (h.biome === 'hills') for (let i = 0; i < 2; i++) hill(t, p.x + (rnd() - .5) * HW * .8, p.y + (rnd() - .5) * R * .9, 15 + rnd() * 12);   /* v97.94 · scattered, not in rows */
+      else if (h.biome === 'mountain' && wsprite(t, (world.real ? h.elev > .8 : (h.r < G.ROWS * .3 || h.elev > .8)) ? (rnd() < .3 ? 'mountain-range' : 'mountain-snow') : (rnd() < .25 ? 'mountain-range' : 'mountain'), p.x + (rnd() - .5) * 8, p.y + R * .55, HW * 1.15)) { }
       else if (h.biome === 'mountain') { const snowy = world.real ? h.elev > .8 : (h.r < G.ROWS * .3 || h.elev > .8), n = rnd() < .45 ? 2 : 1; for (let i = 0; i < n; i++) mountain(t, p.x + (rnd() - .5) * HW * .75, p.y + 10 + (rnd() - .5) * R * .8, (n > 1 ? 22 : 30) + rnd() * 14, snowy) }   /* v97.94 · ranges, not rows */
       else if (h.biome === 'volcano') { mountain(t, p.x, p.y + 10, 34, false); const gr = t.createRadialGradient(p.x, p.y - 20, 0, p.x, p.y - 20, 22); gr.addColorStop(0, 'rgba(255,140,40,.85)'); gr.addColorStop(1, 'rgba(255,60,20,0)'); t.fillStyle = gr; t.beginPath(); t.arc(p.x, p.y - 20, 22, 0, 7); t.fill() }
+      else if (h.biome === 'stone' && wsprite(t, rnd() < .3 ? 'mesa-cliff' : 'boulders', p.x + (rnd() - .5) * 8, p.y + R * .45, HW * .85)) { }
       else if (h.biome === 'stone') { for (let i = 0; i < 4; i++) { const x = p.x + (rnd() - .5) * 40, y = p.y + (rnd() - .5) * 28, r = 2.5 + rnd() * 4; t.fillStyle = 'rgba(0,0,0,.25)'; t.beginPath(); t.ellipse(x + 1.5, y + 1.5, r, r * .6, 0, 0, 7); t.fill(); t.fillStyle = ['#b8ae98', '#a39882', '#cfc6b0'][i % 3]; t.beginPath(); t.ellipse(x, y, r, r * .62, 0, 0, 7); t.fill() } }
+      else if (h.biome === 'highland' && wsprite(t, rnd() < .55 ? 'mountain' : 'hill-large', p.x + (rnd() - .5) * 8, p.y + R * .5, HW * .95)) { }
       else if (h.biome === 'highland') { mountain(t, p.x + (rnd() - .5) * HW * .7, p.y + 12 + (rnd() - .5) * R * .6, 16 + rnd() * 12, rnd() < .3); hill(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .5) * R * .6, 14 + rnd() * 6) }
       else if (h.biome === 'ash' && rnd() < .6) { t.fillStyle = 'rgba(255,110,40,.35)'; for (let i = 0; i < 3; i++) { t.beginPath(); t.ellipse(p.x + (rnd() - .5) * 40, p.y + (rnd() - .5) * 30, 3 + rnd() * 4, 1.5, rnd() * 3, 0, 7); t.fill() } }
+      else if (h.biome === 'swamp' && rnd() < .3 && wsprite(t, 'marsh-mound', p.x + (rnd() - .5) * 8, p.y + R * .45, HW * .95)) { }
       else if (h.biome === 'swamp') for (let i = 0; i < 4; i++) reed(t, p.x + (rnd() - .5) * HW * .7, p.y + (rnd() - .5) * R, rnd);
       else if (h.biome === 'grass' && rnd() < .5) { t.strokeStyle = 'rgba(60,90,40,.5)'; t.lineWidth = 1.2; for (let i = 0; i < 3; i++) { const x = p.x + (rnd() - .5) * 40, y = p.y + (rnd() - .5) * 30; t.beginPath(); t.moveTo(x - 3, y); t.lineTo(x - 1, y - 5); t.moveTo(x, y); t.lineTo(x + 1, y - 6); t.moveTo(x + 3, y); t.lineTo(x + 3, y - 4); t.stroke() } }
     }
@@ -219,12 +264,35 @@
   /* v97.54 · T6 phase 2: a loaded wagon draws bandits (up to ×1.5), an escort keeps them off (×0.6) */
   const cargoRisk = () => { const ST = window.Settlements; if (!ST) return 1; const n = ST.load(S); return (n ? 1 + Math.min(.5, n / 24) : 1) * (ST.escorted(S) ? .6 : 1) };
   const LOOK = window.JobLook?.mine() || null;   /* v97.23 · J4: the job's outfit colour and aura on the map too */
+  /* v98.19 · the hero token uses the same walk data as the village and the battle (12-frame walk, procedural bob) — facing left/right = SW/SE */
+  const MOTION = (() => { try { return window.HeroMotion && typeof TACTICS_SPRITES !== 'undefined' ? HeroMotion.snapshot(TACTICS_SPRITES) : null } catch (e) { return null } })();
+  const motionPics = new Map(), motionPic = src => { let im = motionPics.get(src); if (!im) { im = new Image(); im.src = src; motionPics.set(src, im) } return im };
+  function drawTokenMotion(now, s, at, faceArg, walkArg, motArg) {
+    const MOT = motArg || MOTION, T = at || token, walk0 = motArg ? walkArg : token.walking;
+    if (!MOT) return false;
+    const face = faceArg || (token.face < 0 ? 'SW' : 'SE'); let f = null; try { f = HeroMotion.frame(MOT, face, now, walk0) } catch (e) { }
+    if (!f || !f.src) return false; const im0 = motionPic(f.src); if (!im0.complete || !im0.naturalWidth) return false;
+    const a = MOT.anchor || [.5, .9375], im = LOOK && !motArg ? JobLook.pic(im0, f.src, LOOK) : im0, ap = { x: 0, y: 0 };
+    g.save(); g.translate(T.x, T.y + 4);
+    try { window.ProcMotion?.apply(g, 'tactics.' + (walk0 ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: walk0 ? (MOT.directions?.[face]?.walk?.length || 1) : 1, pose: walk0 ? 'walk' : 'idle' }, now, s, 'town-hero') } catch (e) { }
+    if (f.flipImage) g.scale(-1, 1);
+    if (LOOK && !motArg) JobLook.aura(g, LOOK, ap, s, now, false);
+    g.drawImage(im, -s * a[0], -s * a[1], s, s);
+    if (LOOK && !motArg) JobLook.aura(g, LOOK, ap, s, now, true);
+    g.restore(); return true;
+  }
+  /* v98.233 · the other hero (the sibling) walks one body length behind the party token */
+  function drawFollower(now) {
+    const sz = CharSize.WORLD_HERO_PX * (window.MapScale ? MapScale.get('world') : 1) * (window.CharScaleAdjust?.factor('world', 'hero') || 1);
+    for (const o of window.HeroFollower?.objects({ u: token.x, v: token.y }, null, now, { show: true, project: (u, v) => ({ x: u, y: v }), size: sz * .9, face: (du, dv, pd) => { if (Math.abs(du) < .01 && Math.abs(dv) < .01) return pd; const k = ((Math.round(Math.atan2(dv, du) / (Math.PI / 4)) % 8) + 8) % 8; return ['SE', 'SE', 'SE', 'SW', 'SW', 'NW', 'NE', 'NE'][k] },   /* v98.345 · E→SE · SE→SE · S→SE · SW→SW · W→SW · NW→NW · N→NE · NE→NE */ drawFn: (p, dir, walking, mot) => { g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(p.x, p.y + 2, 14, 5, 0, 0, 7); g.fill(); return drawTokenMotion(now, sz, p, dir === 'SW' || dir === 'NW' ? 'SW' : 'SE', walking, mot) } }) || []) o.draw();
+  }
   function drawToken(now) {
-    const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = 76;
+    const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = CharSize.WORLD_HERO_PX * (window.MapScale ? MapScale.get('world') : 1) * (window.CharScaleAdjust?.factor('world', 'hero') || 1);   /* v98.139 · one multiplier for the world map */
     const night = nightness(), lr = 70 + Math.sin(now * .004) * 4;
     const lg = g.createRadialGradient(token.x, token.y - 8, 4, token.x, token.y - 8, lr); lg.addColorStop(0, `rgba(255,210,130,${.18 + night * .25})`); lg.addColorStop(1, 'rgba(255,210,130,0)');
     g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = lg; g.beginPath(); g.arc(token.x, token.y - 8, lr, 0, 7); g.fill(); g.restore();
     g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(token.x, token.y + 2, 14, 5, 0, 0, 7); g.fill();
+    if (drawTokenMotion(now, s)) return;
     const ap = { x: token.x, y: token.y + 4 }; if (LOOK) JobLook.aura(g, LOOK, ap, s, now, false);
     if (im0.complete && im0.naturalWidth) { g.save(); g.translate(token.x, token.y + 4 - Math.abs(Math.sin(token.bob)) * (token.walking ? 3 : 0)); if (token.face < 0) g.scale(-1, 1); g.drawImage(im, -s / 2, -s * .94, s, s); g.restore() }
     if (LOOK) JobLook.aura(g, LOOK, ap, s, now, true);
@@ -232,14 +300,22 @@
 
   /* ---------- beacon + encounter marks ---------- */
   const destOf = () => S.dest ? world.dests.find(d => d.id === S.dest) : null;
+  /* v98.607 · the story guide: while a prologue step sends the player somewhere on this map (the old mine · back home) the same beacon + edge arrow as a quest destination point there.
+     Story.worldGuide() → { id:'mine'|'home', label } or null */
+  function guideOf() {
+    if (S.dest) return null;
+    try { const G0 = (window.Story || window.parent?.Story)?.worldGuide?.(); if (!G0) return null;
+      if (G0.id === 'home') { const h = world.home; return h ? { id: 'story:home', name: G0.label || 'หมู่บ้านเฟิร์นเวล', c: h.c, r: h.r } : null }
+      const d = world.dests.find(x => x.id === G0.id) || world.dests.find(x => x.icon === G0.id); return d ? { ...d, id: 'story:' + d.id, name: G0.label || d.name } : null } catch (e) { return null }
+  }
   function drawBeacon(now) {
-    const d = destOf(); if (!d) return; const p = center(d.c, d.r), pulse = (Math.sin(now * .003) + 1) / 2;
+    const d = destOf() || guideOf(); if (!d) return; const p = center(d.c, d.r), pulse = (Math.sin(now * .003) + 1) / 2;
     g.save(); g.globalCompositeOperation = 'lighter';
     const col = S.done[d.id] ? '140,255,170' : '255,200,110', gr = g.createLinearGradient(p.x, p.y - 260, p.x, p.y); gr.addColorStop(0, `rgba(${col},0)`); gr.addColorStop(1, `rgba(${col},${.35 + pulse * .15})`);
     g.fillStyle = gr; g.beginPath(); g.moveTo(p.x - 10, p.y - 260); g.lineTo(p.x + 10, p.y - 260); g.lineTo(p.x + 22, p.y); g.lineTo(p.x - 22, p.y); g.closePath(); g.fill();
     for (let k = 0; k < 2; k++) { const e = ((now * .0006 + k * .5) % 1); g.strokeStyle = `rgba(${col},${(1 - e) * .7})`; g.lineWidth = 2; g.beginPath(); g.ellipse(p.x, p.y + 4, 14 + e * 30, (14 + e * 30) * .45, 0, 0, 7); g.stroke() }
     g.restore();
-    poiIcon(g, d, p.x, p.y + 6, 1);
+    if (!(LMIMG[lmName(d)] && LMIMG[lmName(d)].complete && LMIMG[lmName(d)].naturalWidth)) poiIcon(g, d, p.x, p.y + 6, 1);
     label(g, (S.done[d.id] ? '✔ ' : '') + d.name, p.x, p.y + 30, S.done[d.id] ? '#bfffd0' : '#ffe2a8');
   }
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
@@ -271,25 +347,54 @@
   /* v97.84 · the target's own picture stands over its wanted mark */
   const bountyImgs = {}, bountyPic = b => { const src = Bounties.picOf(b); let im = bountyImgs[src]; if (!im) { im = bountyImgs[src] = new Image(); im.src = src } return im.complete && im.naturalWidth ? im : null };
   function drawMarks(now) {
-    if (window.Estates) for (const p of Estates.list(S)) { if (!p.at.startsWith('tile:')) continue; const [c, r] = p.at.slice(5).split(',').map(Number), q = center(c, r); g.save(); g.font = '18px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(p.kind ? Estates.KINDS[p.kind].icon : '🚩', q.x + 14, q.y - 14); if (p.kind === 'farm' && p.garden && window.Garden) { const st = Garden.status(p.garden); if (st.ripe || st.thirsty) { g.font = '11px system-ui,"Segoe UI Emoji",sans-serif'; g.fillText((st.ripe ? '🧺' : '') + (st.thirsty ? '💧' : ''), q.x + 14, q.y - 30) } }   /* v97.86 · what the farm needs */ g.restore() }   /* v97.49 · your plots */
+    if (window.Estates) for (const p of Estates.list(S)) { if (!p.at.startsWith('tile:')) continue; const [c, r] = p.at.slice(5).split(',').map(Number), q = center(c, r); g.save(); g.font = '18px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.fillText(p.kind ? Estates.KINDS[p.kind].icon : '🚩', q.x + 14, q.y - 14); if (p.kind === 'farm' && p.garden && window.Garden) { const st = Garden.status(p.garden); if (st.ripe || st.thirsty) { g.font = '11px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.fillText((st.ripe ? '🧺' : '') + (st.thirsty ? '💧' : ''), q.x + 14, q.y - 30) } }   /* v97.86 · what the farm needs */ g.restore() }   /* v97.49 · your plots */
     for (const k in world.tiles) {
       const h = world.tiles[k]; if (!isKnown(k)) continue;
       const p = center(h.c, h.r);
-      if (h.poi && h.poi.id !== 'home' && S.done[h.poi.id] && h.poi.id !== S.dest) { poiIcon(g, h.poi, p.x, p.y + 6, .8); label(g, '✔ ' + h.poi.name, p.x, p.y + 28, '#bfffd0', 11) }
+      if (h.poi && h.poi.id !== 'home' && S.done[h.poi.id] && h.poi.id !== S.dest) { if (!(LMIMG[lmName(h.poi)] && LMIMG[lmName(h.poi)].complete)) poiIcon(g, h.poi, p.x, p.y + 6, .8); label(g, '✔ ' + h.poi.name, p.x, p.y + 28, '#bfffd0', 11) }
       if (!h.enc || S.cleared[k] || h.enc.type === 'trap') continue;
       const lmk = h.enc.landmark;
       if (h.enc.type === 'battle') continue;   // v95.16: no battle marks — an ambush can happen on any step
       const bob = Math.sin(now * .004 + h.c) * 2, x = p.x, y = p.y - 6 + bob;
+      { const nm = { hamlet: 'village', tower: 'watchtower', outpost: 'watchtower', ruins: 'ruins', camp: 'frost-camp', shrine: 'standing-stones' }[h.enc.type], im = nm && LMIMG[nm], m = nm && LM[nm];
+        if (im && im.complete && im.naturalWidth) { const pul = (Math.sin(now * .003 + h.c * 2) + 1) / 2, kk = HW * 1.25 / m[4], gr = g.createRadialGradient(p.x, p.y, 4, p.x, p.y, HW * .75); g.save(); g.globalCompositeOperation = 'lighter'; gr.addColorStop(0, 'rgba(255,220,140,0)'); gr.addColorStop(.7, `rgba(255,220,140,${.12 + pul * .1})`); gr.addColorStop(1, 'rgba(255,220,140,0)'); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, HW * .75, 0, 7); g.fill(); g.restore();
+          g.save(); g.translate(p.x, p.y + bob * .4); g.scale(kk, kk); g.drawImage(im, -m[2], -m[3]); g.restore(); if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11); continue } }
       g.save(); g.fillStyle = lmk ? 'rgba(70,50,20,.85)' : 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, lmk ? 14 : 12, 0, 7); g.fill(); g.strokeStyle = lmk ? '#ffd27a' : '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
-      g.font = '13px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
+      g.font = '13px AgThai,system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(ENC_ICON[h.enc.type] || '?', x, y + 1); g.restore();
       if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11);
     }
     if (window.Bounties) for (const b of Bounties.active(S)) { if (b.state !== 'open' || b.c == null || !isKnown(b.c + ',' + b.r)) continue; const p = center(b.c, b.r), y = p.y - 8 + Math.sin(now * .005 + b.c) * 2;   /* v97.73 · wanted */
-      g.save(); g.fillStyle = 'rgba(140,25,20,.9)'; g.beginPath(); g.arc(p.x, y, 14, 0, 7); g.fill(); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); g.font = '15px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('☠', p.x, y + 1); { const im = bountyPic(b); if (im) { const h = 46, w = h * im.naturalWidth / im.naturalHeight; g.drawImage(im, p.x - w / 2, y - 14 - h, w, h) } } g.restore(); label(g, b.name, p.x, y + 26, '#ffb0a0', 11) }
+      g.save(); g.fillStyle = 'rgba(140,25,20,.9)'; g.beginPath(); g.arc(p.x, y, 14, 0, 7); g.fill(); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); g.font = '15px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('☠', p.x, y + 1); { const im = bountyPic(b); if (im) { const h = 46, w = h * im.naturalWidth / im.naturalHeight; g.drawImage(im, p.x - w / 2, y - 14 - h, w, h) } } g.restore(); label(g, b.name, p.x, y + 26, '#ffb0a0', 11) }
     for (const tv of travellers()) { if (!isKnown(tv.c + ',' + tv.r)) continue; const p = center(tv.c, tv.r), y = p.y - 6 + Math.sin(now * .006 + tv.c) * 1.5;   /* v97.90 · W2 */
-      g.save(); g.fillStyle = 'rgba(40,60,90,.88)'; g.beginPath(); g.arc(p.x - 16, y, 11, 0, 7); g.fill(); g.strokeStyle = '#cfe6ff'; g.lineWidth = 1.5; g.stroke(); g.font = '12px system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('🧳', p.x - 16, y + 1); g.restore(); label(g, tv.p.name, p.x - 16, y + 22, '#cfe6ff', 10) }
+      g.save(); g.fillStyle = 'rgba(40,60,90,.88)'; g.beginPath(); g.arc(p.x - 16, y, 11, 0, 7); g.fill(); g.strokeStyle = '#cfe6ff'; g.lineWidth = 1.5; g.stroke(); g.font = '12px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('🧳', p.x - 16, y + 1); g.restore(); label(g, tv.p.name, p.x - 16, y + 22, '#cfe6ff', 10) }
     const hp = center(world.home.c, world.home.r); label(g, 'หมู่บ้านเฟิร์นเวล', hp.x, hp.y + 32, '#f6e7c1', 12);
     for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) { const q = center(tw.c, tw.r); label(g, tw.name, q.x, q.y + 32, '#d8f0ff', 12) }
+  }
+  /* v98.52 · landmarks (sheet W3): hand-painted hex tiles for the village, towns and destinations, standing out with a pulsing halo, rising sparkles, a gentle breathing scale and a pop when the hero is near.
+     LM[name] = [w, h, centre x, centre y, hex width] of the picture; they are drawn live (not baked) so they can move. */
+  const LM = {"village": [369, 377, 184, 188, 358], "town": [384, 410, 192, 213, 373], "harbor": [368, 381, 184, 190, 357], "watchtower": [361, 387, 180, 207, 350], "ruins": [376, 365, 188, 182, 365], "mine": [365, 366, 182, 182, 354], "den": [365, 360, 182, 180, 354], "frost-camp": [372, 364, 186, 182, 361], "standing-stones": [368, 358, 184, 178, 357]}, LMIMG = {};
+  for (const n in LM) { const im = LMIMG[n] = new Image(); im.src = 'assets/world/' + n + '.webp' }
+  const LM_COL = { village: '255,214,120', town: '140,200,255', harbor: '120,220,255', mine: '255,190,110', den: '255,120,100', 'frost-camp': '190,230,255', ruins: '190,255,190', watchtower: '255,200,120', 'standing-stones': '210,170,255' };
+  const lmName = (poi, tw) => poi.id === 'home' ? 'village' : tw ? (tw.icon === 'city' ? 'town' : tw.side === 'lake' || tw.side === 'coast' ? 'harbor' : 'village') : ({ mine: 'mine', ruin: 'ruins' }[poi.icon] || (poi.id === 'frost' ? 'frost-camp' : 'den'));
+  function drawLandmark(now, c, r, name, done, label2) {
+    const im = LMIMG[name], m = LM[name]; if (!im || !im.complete || !im.naturalWidth) return false;
+    const p = center(c, r), near = G.dist(S.pos, { c, r }) <= 2, breathe = 1 + Math.sin(now * .002 + c * 1.7) * .012, pop = near ? 1.1 : 1;
+    const k = HW * 1.75 / m[4] * breathe * pop, col = done ? '150,255,180' : LM_COL[name] || '255,214,120', pulse = (Math.sin(now * .003 + r) + 1) / 2;
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const rad = HW * (1.2 + pulse * .15 + (near ? .15 : 0)), gr = g.createRadialGradient(p.x, p.y, rad * .25, p.x, p.y, rad); gr.addColorStop(0, `rgba(${col},${.0})`); gr.addColorStop(.7, `rgba(${col},${.16 + pulse * .1})`); gr.addColorStop(1, `rgba(${col},0)`);
+    g.fillStyle = gr; g.beginPath(); g.ellipse(p.x, p.y, rad, rad * .9, 0, 0, 7); g.fill(); g.restore();
+    g.save(); g.translate(p.x, p.y); g.scale(k, k); g.shadowColor = `rgba(${col},${near ? .8 : .45})`; g.shadowBlur = near ? 16 : 8; g.drawImage(im, -m[2], -m[3]); g.restore();
+    g.save(); g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 4; i++) { const e = ((now * .00028 + i * .25 + c * .13) % 1), sx = p.x + Math.sin(i * 2.4 + c) * HW * .6, sy = p.y + R * .4 - e * R * 3, a = Math.sin(e * Math.PI) * .9, sz = 1.6 + (i % 2); g.fillStyle = `rgba(255,248,220,${a})`; g.beginPath(); g.moveTo(sx, sy - sz * 2); g.lineTo(sx + sz * .6, sy); g.lineTo(sx, sy + sz * 2); g.lineTo(sx - sz * .6, sy); g.closePath(); g.fill(); g.beginPath(); g.moveTo(sx - sz * 2, sy); g.lineTo(sx, sy + sz * .6); g.lineTo(sx + sz * 2, sy); g.lineTo(sx, sy - sz * .6); g.closePath(); g.fill() }
+    g.restore();
+    if (done) { g.save(); g.font = '700 13px AgThai,system-ui,sans-serif'; g.textAlign = 'center'; g.fillStyle = '#bfffd0'; g.strokeStyle = 'rgba(10,25,15,.9)'; g.lineWidth = 3; g.strokeText('✔', p.x + HW * .36, p.y - R * .62); g.fillText('✔', p.x + HW * .36, p.y - R * .62); g.restore() }
+    return true;
+  }
+  function drawLandmarks(now) {
+    if (!world) return;
+    const hp = world.home; if (isKnown(K(hp.c, hp.r))) drawLandmark(now, hp.c, hp.r, 'village', false);
+    for (const tw of world.towns || []) if (isKnown(K(tw.c, tw.r))) drawLandmark(now, tw.c, tw.r, lmName({ id: 'town:' + tw.id }, tw), false);
+    for (const d of world.dests || []) if (isKnown(K(d.c, d.r)) || S.done[d.id]) drawLandmark(now, d.c, d.r, lmName(d), !!S.done[d.id]);
   }
   function drawTrail() {
     if (S.trail.length < 2) return; g.save(); g.setLineDash([2, 7]); g.lineCap = 'round'; g.strokeStyle = 'rgba(255,226,150,.9)'; g.lineWidth = 3;
@@ -312,11 +417,12 @@
   }
   /* arrow on the screen edge pointing at the destination when it is off screen */
   function drawCompass() {
-    const d = destOf(); if (!d || S.done[d.id]) return; const p = center(d.c, d.r), s = toScreen(p.x, p.y), m = 46;
+    const d = destOf() || guideOf(); if (!d || S.done[d.id]) return; const p = center(d.c, d.r), s = toScreen(p.x, p.y), m = 46;
+    if (d.id.startsWith('story:')) { g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); label(g, '📍 เป้าหมายตอนนี้: ' + d.name + ' — เดินไปทางลูกศรสีทองที่ขอบจอ', W / 2, H - 28, '#ffe2a8', 15); g.restore() }
     if (s.x > m && s.x < W - m && s.y > m && s.y < H - m) return;
     const cx = W / 2, cy = H / 2, ang = Math.atan2(s.y - cy, s.x - cx), k = Math.min((W / 2 - m) / Math.abs(Math.cos(ang) || 1e-6), (H / 2 - m) / Math.abs(Math.sin(ang) || 1e-6)), x = cx + Math.cos(ang) * k, y = cy + Math.sin(ang) * k;
     g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.translate(x, y); g.rotate(ang); g.fillStyle = 'rgba(255,205,120,.95)'; g.beginPath(); g.moveTo(16, 0); g.lineTo(-8, -10); g.lineTo(-3, 0); g.lineTo(-8, 10); g.closePath(); g.fill(); g.restore();
-    g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); label(g, d.name + ' · ' + G.dist(S.pos, d) * (world.real ? 12 : 1) + (world.real ? ' กม.' : ' ช่อง'), x - Math.cos(ang) * 40, y - Math.sin(ang) * 26, '#ffe2a8', 12); g.restore();
+    g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); label(g, d.name + ' · ' + G.dist(S.pos, d) * (world.real ? (G.KM || 12) : 1) + (world.real ? ' กม.' : ' ช่อง'), x - Math.cos(ang) * 40, y - Math.sin(ang) * 26, '#ffe2a8', 12); g.restore();
   }
 
   /* ---------- frame ---------- */
@@ -329,11 +435,11 @@
     g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#07080c'; g.fillRect(0, 0, cv.width, cv.height);
     g.setTransform(dpr * cam.z, 0, 0, dpr * cam.z, dpr * (W / 2 - cam.x * cam.z), dpr * (H / 2 - cam.y * cam.z));
     if (terr) g.drawImage(terr, 0, 0, WW, WH);
-    drawTrail(); drawMarks(now); drawHover(); drawToken(now); drawTalk(now);
+    drawTiles(); drawLandmarks(now); drawTrail(); drawMarks(now); drawHover(); drawFollower(now); drawToken(now); drawTalk(now);
     drawFog(now); drawBeacon(now);
     drawSky(); drawCompass();
   }
-  function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cam.z = Math.max(world?.real ? .18 : .55, Math.min(1.4, cam.z)) }
+  function resize() { dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cam.z = Math.max(world?.real ? .18 / SCx : .55, Math.min(1.4, cam.z)) }
   addEventListener('resize', resize);
   function follow(z) { const p = center(S.pos.c, S.pos.r); cam.tx = p.x; cam.ty = p.y; if (z) cam.tz = z }
 
@@ -346,7 +452,7 @@
     if (drag.moved) { cv.classList.add('drag'); cam.tx = null; cam.tz = null; cam.x = drag.cx - dx / cam.z; cam.y = drag.cy - dy / cam.z }
   });
   cv.addEventListener('pointerup', e => { const d = drag; drag = null; cv.classList.remove('drag'); if (d && !d.moved) { const w = toWorld(e.clientX, e.clientY), h = pixelToHex(w.x, w.y); if (h) clickHex(h) } });
-  cv.addEventListener('wheel', e => { e.preventDefault(); cam.tz = null; cam.z = Math.max(world.real ? .18 : .55, Math.min(2, cam.z * (e.deltaY < 0 ? 1.12 : .89))) }, { passive: false });
+  cv.addEventListener('wheel', e => { e.preventDefault(); cam.tz = null; cam.z = Math.max(world.real ? .18 / SCx : .55, Math.min(2, cam.z * (e.deltaY < 0 ? 1.12 : .89))) }, { passive: false });
   addEventListener('keydown', e => { if (e.key === 'Escape') closeModal() });
 
   /* ---------- UI (HUD, tooltip, modal, toast) ---------- */
@@ -370,7 +476,7 @@
   @keyframes wmFade{from{opacity:0}}
   .wm-enc{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
   .wm-enc i{position:absolute;left:-10%;width:120%;height:12.5%;background:#07080c;transform:translateX(-110%) skewX(-20deg);animation:wmShard .5s cubic-bezier(.7,0,.3,1) forwards}
-  .wm-enc b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(2.2);font:italic 900 64px system-ui,sans-serif;color:#fff3b0;letter-spacing:3px;text-shadow:0 0 22px #ff6a2a,0 6px 0 #7a2400;opacity:0;animation:wmEncT .9s .25s forwards}
+  .wm-enc b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(2.2);font:italic 900 64px AgThai,system-ui,sans-serif;color:#fff3b0;letter-spacing:3px;text-shadow:0 0 22px #ff6a2a,0 6px 0 #7a2400;opacity:0;animation:wmEncT .9s .25s forwards}
   @keyframes wmShard{to{transform:translateX(0) skewX(-20deg)}}@keyframes wmEncT{20%{opacity:1;transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.9)}}
   .wm-area{position:fixed;inset:0;z-index:15;background:#07080c;animation:wmFade .3s}.wm-area canvas{position:absolute;inset:0;cursor:pointer}
   .wm-area header{position:absolute;left:12px;right:12px;top:10px;display:flex;align-items:center;gap:12px;padding:8px 12px;background:#20190fe6;border:1px solid #8a6a3a;border-radius:10px;color:#f3e6c6;font-family:VillageThai,system-ui,sans-serif}
@@ -387,7 +493,7 @@
     hud.innerHTML = `<h1>🗺 Agrenor</h1><div class="sub">${window.WorldState?.season ? WorldState.season(S.day)[2] + ' ' : ''}วันที่ ${S.day} · ${icon} ${String(hh).padStart(2, '0')}:${mm} · ${esc(G.BIOME[t.biome].name)}${t.poi ? ' · ' + esc(t.poi.name) : ''}</div>
       <div class="row"><span>HP</span><span>${S.hp}/${S.maxHp}</span></div><div class="bar"><i style="width:${S.hp / S.maxHp * 100}%;background:#6fd18a"></i></div>
       <div class="row" style="flex-wrap:wrap;gap:4px">${S.party.map(p => `<span title="${esc(p.name)}" style="font-size:11px;background:#0004;border-radius:5px;padding:1px 5px;${p.hp < p.max * .3 ? 'color:#ff9a7a' : ''}">${esc(p.name)} ${p.hp}/${p.max}</span>`).join('')}</div>
-      <div class="row"><span>ความเหนื่อย</span><span style="color:${S.fatigue >= 80 ? '#ff8a6a' : '#e8d8a8'}">${S.fatigue}%${S.fatigue >= 80 ? ' ⚠' : ''}</span></div><div class="bar"><i style="width:${S.fatigue}%;background:${S.fatigue >= 80 ? '#e2705f' : '#c9a24a'}"></i></div>
+      
       <div class="row"><span>🍞 เสบียง ${S.food}</span><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span></div>${(() => { const bs = window.Bounties?.active(S) || []; if (!bs.length) return ''; const won = bs.filter(b => b.state === 'slain').length, open = bs.length - won; const near = bs.filter(b => b.state === 'open' && b.c != null).map(b => ({ b, d: G.dist(S.pos, b) })).sort((a, b) => a.d - b.d)[0];   /* v97.84 · which way to the nearest one */
         const dir = near ? (() => { const dx = near.b.c - S.pos.c, dy = near.b.r - S.pos.r; if (!dx && !dy) return 'ตรงนี้'; const a = Math.atan2(dy, dx), k = Math.round(a / (Math.PI / 4)) & 7; return ['ตะวันออก', 'ตะวันออกเฉียงใต้', 'ใต้', 'ตะวันตกเฉียงใต้', 'ตะวันตก', 'ตะวันตกเฉียงเหนือ', 'เหนือ', 'ตะวันออกเฉียงเหนือ'][k] })() : '';
         return `<div class="row" style="color:#ffb0a0"><span>☠ ค่าหัว${open ? ' ' + open + ' ใบ' : ''}</span><span>${won ? '✔ รอรับรางวัล ' + won : 'เหลือ ' + Math.max(0, Math.min(...bs.filter(b => b.state === 'open').map(b => b.until)) - S.day) + ' วัน'}</span></div>${near && !won ? `<div style="color:#ffb0a0;font-size:11.5px">ใกล้สุด ${esc(near.b.name)} · ทาง${dir} ${world.real ? near.d * 12 + ' กม.' : near.d + ' ช่อง'}</div>` : ''}` })()}
@@ -395,8 +501,9 @@
       <div class="row"><span>จุดหมาย</span><span style="color:#ffe2a8">${d ? esc(d.name) + (S.done[d.id] ? ' ✔' : ' · ' + G.dist(S.pos, d) + ' ช่อง') : '—'}</span></div>
       <div class="btns">${atHome() ? `<button id="wmQuest">📜 เรื่องที่ได้ยินมา</button><button id="wmVillage" class="ghost">🏠 เข้าหมู่บ้าน</button>` : `<button id="wmCamp">⛺ พักแรม</button><button id="wmHome" class="ghost">🏠 กลับหมู่บ้าน</button>`}${landHere() ? `<button id="wmLand" class="ghost">🏡 ที่ดิน${Estates.at(S, landHere()).length ? ' (' + Estates.at(S, landHere()).length + ')' : ''}</button>` : ''}<button id="wmPotion" class="ghost" ${S.potions && S.hp < S.maxHp ? '' : 'disabled'}>🧪 ดื่มยา</button>${eventCards().length ? `<button id="wmCards" class="ghost">🎴 การ์ดเหตุการณ์ (${eventCards().reduce((a, x) => a + x.n, 0)})</button>` : ''}</div>
       <div id="wmLog">${S.log.slice(0, 8).map(x => '<div>' + esc(x) + '</div>').join('')}</div>
-      <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกที่ไหนก็ได้ = เดินไป · ในหมอกจะเดินไปให้ใกล้ที่สุดเท่าที่รู้ทาง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a></div>`;
+      <div style="margin-top:6px;font-size:11px;color:#9a8a6a">คลิกที่ไหนก็ได้ = เดินไป · ในหมอกจะเดินไปให้ใกล้ที่สุดเท่าที่รู้ทาง · ลากเพื่อเลื่อน · ล้อเมาส์ซูม <a href="?new=1" style="color:#c9a86a">โลกใหม่</a> · <a href="#" id="wmScale" title="ทดลอง: ช่องหกเหลี่ยมเล็กลงครึ่งหนึ่ง (ช่องมากขึ้น 4 เท่า) ตำแหน่งที่เคยไปจะถูกแปลงให้" style="color:#c9a86a">${SCx === 2 ? 'กลับกริดปกติ' : 'กริดละเอียด 2× (ทดลอง)'}</a></div>`;
     const on = (id, fn) => { const b = hud.querySelector('#' + id); if (b) b.onclick = fn };
+    { const l = hud.querySelector('#wmScale'); if (l) l.onclick = e => { e.preventDefault(); try { localStorage.setItem('projectA.worldScale', SCx === 2 ? '1' : '2') } catch (x) { } const u = new URL(location.href); u.searchParams.delete('world'); location.href = u.toString() } }   /* v98.612 · experimental world-scale switch */
     on('wmCards', useEventCard); on('wmQuest', questBoard); on('wmVillage', () => { save(); syncClock(); location.href = 'village-town.html' }); on('wmCamp', () => camp(false)); on('wmHome', goHome); on('wmLand', () => landPanel(landHere(), atHome() ? 'หมู่บ้านเฟิร์นเวล' : 'ที่ดินกลางป่า'));
     on('wmPotion', () => { if (!S.potions) return; S.potions--; const b = S.hp; S.hp = Math.min(S.maxHp, S.hp + 25); log('ดื่มยาฟื้นฟู +' + (S.hp - b) + ' HP'); save(); hudSync() });
     hud.querySelectorAll('button').forEach(b => b.disabled = b.disabled || busy);
@@ -444,13 +551,19 @@
   function closeModal() { if (modalEl) { modalEl.remove(); modalEl = null; modalOpen = false; const r = modalResolve; modalResolve = null; r?.(null) } }
 
   /* ---------- v94.02 · drops: goods for the market (bag) and materials for the forge, by monster and land ---------- */
-  const DROPS = { bat: ['batWing'], gull: ['driftwood'], wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'] };
+  const DROPS = { hunger: ['crystalShard', 'boneCharm'], murk: ['boneCharm', 'crystalShard'], bat: ['batWing'], gull: ['driftwood'], wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'] };
   const LAND = { forest: ['herb', 'wood'], grass: ['herb'], hills: ['iron', 'coal'], swamp: ['swampHerb'], snow: ['frostFur'], sand: ['pearl', 'driftwood'] };
   const MATS = ['iron', 'coal', 'wood', 'food'];
-  function dropLoot(foe, biome, dang, boss) {
+  function dropLoot(foe, biome, dang, boss, evolved) {
     const g = WS.game(), v = g.village, bag = v.bag ||= {}, got = {}, add = k => { got[k] = (got[k] || 0) + 1; if (MATS.includes(k)) v.materials[k] = (v.materials[k] || 0) + 1; else bag[k] = (bag[k] || 0) + 1 };
     const pool = [...(DROPS[foe] || []), ...(LAND[biome] || [])], n = (boss ? 3 : 1) + (Math.random() < .35 + dang * .3 ? 1 : 0);
     for (let i = 0; i < n && pool.length; i++) add(pool[Math.floor(Math.random() * pool.length)]);
+    /* v98.66 · evolved monsters that fell: a guaranteed chaos item by tier + lineage, and their ordinary drops at half the chance (js/chaos.js) */
+    const ek = (evolved || []).filter(e => e.dead);
+    if (ek.length && window.Chaos) { const d = Chaos.dropFor(ek); for (const [id, n] of Object.entries(d.items)) for (let i = 0; i < n; i++) add(id); for (const kind of d.half) for (const k of Chaos.halfRolls(DROPS[kind])) add(k); const unl = Chaos.note(g, d.items); for (const id of unl) log('✷ ความโกลาหลตอบรับ · ได้การ์ดธาตุ Grat: ' + (window.TacticsDecks?.COMBAT?.[id]?.name || id)) }
+    /* v98.478 · ชิ้นส่วนหายาก (ชื่อม่วง ❖) ของมอนชนิดนั้น: โอกาสน้อย เพิ่มตามความอันตราย · ล้มบอสได้เพิ่ม */
+    { const my = window.ADVENTURE_DATA?.MAYA_OF?.[foe]; if (my && Math.random() < .07 + dang * .08 + (boss ? .25 : 0) + (evolved || []).some(e => e.dead) * .1) add(my) }
+    if (boss && foe === 'hunger' && window.ADVENTURE_DATA?.MAYA_OF?.hunger) add(window.ADVENTURE_DATA.MAYA_OF.hunger);   /* v98.489 · the boss of the mine always leaves its rare part */
     if (boss) add('relic'); WS.commit();
     const G = window.ADVENTURE_DATA?.GOODS || {}, MN = { iron: 'เหล็ก', coal: 'ถ่าน', wood: 'ไม้', food: 'เสบียง' };
     return Object.entries(got).map(([k, c]) => (G[k]?.name || MN[k] || k) + ' ×' + c).join(' · ');
@@ -469,12 +582,105 @@
     const day = S.day, hour = S.hour, finnTown = ['brookmere', 'haven', 'northgate'][day % 3];
     return Object.values(L.P).filter(p => (p.from === id || (p.from === 'wander' && finnTown === id)) && !L.inParty(S, p.id) && !L.present(p, day, hour));
   }
+  /* ---------- v98.486 · ทางแยก ⑂ / อีเวนต์คาบเกี่ยว: สถานการณ์ในเมือง + ทางเลือกที่มีราคา (js/crossroads.js · docs/PROPOSAL-CROSSROADS-TH.md) ---------- */
+  const faceBox = (who, w = 84, h = 96, mood = 'neutral') => { const f = who && window.StoryCast?.face(who, mood); return f ? `<span style="float:left;width:${w}px;height:${h}px;margin:0 12px 6px 0;background:url('${f.src}') ${f.pos}/${f.size} no-repeat #1a2b26;border:2px solid #d8b46a;border-radius:6px"></span>` : '' };
+  /* v98.487 · ฉากจบ (js/endings.js · N5): ลงชั้นล่างที่ดีปแคร์นเมื่อถึงหมุดไคลแมกซ์ — ตัดสินใจ 2 ครั้ง อ่านแนวโน้มจากทางแยกที่ผ่านมา */
+  async function pageSeq(title, pages) { for (const p of pages) { const v = await modal(`<h2>${title}</h2>${faceBox(p.who, 84, 96, p.mood || window.StoryCast?.mood?.(p.text))}<p>${esc(p.text)}</p><div style="clear:both"></div>`, [{ label: 'ต่อไป', value: true }]); if (v == null) break } }
+  async function finaleScene() {
+    const g = WS.game(), E = window.Endings, M = window.MainStory; if (!E || !E.ready(g)) return;
+    /* ขั้น 1 · ปากเหมือง + ปลอกคอเซอร์เรียน (ทำครั้งเดียว · จำไว้ถ้าถอยออกมา) */
+    let rel = M.flag(g, 'finaleRelease');
+    if (!rel) {
+      await pageSeq('⚑ ปากเหมืองชั้นล่าง', E.openingPages(g));
+      const ro = E.releaseOptions(g);
+      rel = await modal(`<h2>⑂ ปลอกคอของเซอร์เรียน</h2>${faceBox('mage')}<p>ถึงเวลาตัดสินว่าจะทำอย่างไรกับปลอกคอที่กดเงาไว้ใน Mip</p>${ro.map(o => `<p><b>${esc(o.label)}</b><br><small>${esc(o.desc)}${o.ok ? '' : ' · 🔒 ' + esc(o.why)}</small></p>`).join('')}<div style="clear:both"></div>`, ro.map(o => ({ label: o.label, value: o.id, disabled: !o.ok })));
+      if (rel == null) return;
+      await pageSeq('⚑ ปลอกคอ', E.releasePages(g, rel)); M.set(g, 'finaleRelease', rel); WS.commit(); save();
+    }
+    /* ขั้น 2 · ดันเจี้ยนเหมืองชั้นล่าง + บอสก้อนหิว (ถอยออกมาแล้วกลับลงใหม่ได้) */
+    if (!M.flag(g, 'finaleWon')) {
+      await pageSeq('⚑ ลงชั้นล่าง', E.DUNGEON.intro);
+      const D = E.DUNGEON, go = await modal(`<h2>⛏ ${esc(D.title)}</h2><p>${esc(D.sub)}</p><p>HP ตอนนี้ ${S.hp}/${S.maxHp} · ลงไปแล้วถอยออกมาได้ ความคืบหน้าในชั้นล่างไม่บันทึก แต่ปลอกคอที่เลือกไว้จำไว้แล้ว</p>`, [{ label: '⚔ ลงไป', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]);
+      if (go !== 'go') return;
+      const r = await areaExplore({ title: D.title, sub: D.sub, biome: D.biome, seed: world.seed ^ 0x7a1e, dang: .95, foes: D.foes, roster: D.roster, kinds: D.kinds, boss: D.boss, loreText: D.loreText, lairText: D.lairText });
+      if (r !== 'win') { toast(r === 'left' ? 'ถอยออกจากเหมือง — กลับลงใหม่ได้ที่ปุ่ม ⚑' : 'ยังไม่ชนะก้อนหิว — พักแล้วกลับมาใหม่ได้'); hudSync(); return }
+      M.set(g, 'finaleWon', true); WS.commit(); save(); log('☠ ก้อนหิวล้มลง (ยังไม่ตาย) — รอคำตัดสิน');
+      await pageSeq('⚑ ก้อนหิว', E.CLASH);
+    }
+    /* ขั้น 3 · คำตัดสินสุดท้าย (อ่านแนวโน้ม) */
+    const so = E.sideOptions(g);
+    const side = await modal(`<h2>⑂ จุดตัดสินใจสุดท้าย</h2><p>ทุกฝ่ายยืนอยู่ปากเหมือง — คุณเลือกทางไหน? <small>(ทางที่ล็อกแปลว่าสิ่งที่คุณทำมาตลอดทางยังไม่ถึงพอ)</small></p>${so.map(o => `<p><b>${esc(o.label)}</b><br><small>${esc(o.desc)}${o.ok ? '' : ' · 🔒 ' + esc(o.why)}</small></p>`).join('')}`, so.map(o => ({ label: o.label, value: o.id, disabled: !o.ok })));
+    if (side == null) return;
+    const res = E.run(g, S, { release: rel, side }); if (!res) return; WS.commit(); save();
+    await pageSeq('⚑ ' + res.name, res.pages);
+    toast('🏁 ตอนจบ: ' + res.name); log('🏁 ตอนจบ: ' + res.name + ' (' + res.tone + ')');
+    await modal(`<h2>🏁 ${esc(res.name)}</h2><p><small>โทน: ${esc(res.tone)} · Mip ${res.fate === 'purified' ? 'ถูกชำระและกลับป่า (ได้ผลึกสะท้อน)' : 'ถูกผนึกให้หลับ'}</small></p><p>เรื่องหลักจบลงตรงนี้ — โลกยังอยู่ เล่นต่อได้ ไม่มีอะไรทับเซฟของคุณ · ดูทางที่เดินมาในสมุดบันทึก/ฉายา</p>`);
+    hudSync();
+  }
+  /* v98.514 · มังกรดำจ้าววิญญาณ (Byrexael-Cean · docs/DRAGON-BYREXAEL-TH.md): บอสเสริมที่ปากปล่องภูเขาไฟใต้ — ฉากตายตัว \`dragonLair\` · ชนะแล้วเลือก ปลิดชีพ / ผนึกให้หลับ / ช่วยระบายตะกอน (สองทางหลังต้องมีความรู้จากเส้นเรื่อง) */
+  async function dragonScene() {
+    const g = WS.game(), M = window.MainStory; if (!M || M.flag(g, 'dragonFate')) return;
+    const rep = (f, n, why) => window.Factions?.add(f, n, why);
+    const ally = !!M.flag(g, 'dragonAlly');
+    if (!M.flag(g, 'dragonSeen')) { await pageSeq('⚑ ปากปล่องใต้', [{ who: null, text: 'ทางขึ้นปากปล่องเต็มไปด้วยเถ้าดำที่ยังอุ่น ทุกก้าวได้ยินเสียงหินแตกเบา ๆ ใต้ฝ่าเท้า — เหมือนกำลังเดินอยู่บนหลังของบางอย่างที่ยังไม่ตื่นเต็มที่' }].concat(ally ? [{ who: 'mierris', text: 'เมียร์ริสหยุดห่างจากขอบปล่องสิบก้าว "ข้าจะยืนตรงนี้ ถ้าเจ้าเห็นมันตั้งใจจะหยุด ข้าจะตะโกนบอก — อย่าลืมว่าเราไม่ได้มาฆ่าเพราะเกลียด"' }] : [])); M.set(g, 'dragonSeen', true); WS.commit(); save() }
+    const go = await modal(`<h2>🔥 ปากปล่องใต้ · มังกรดำจ้าววิญญาณ</h2><p>มันเก่ากว่าอาณาจักรทุกแห่ง ไม่ได้โกรธเจ้า แต่ตะกอนที่ล้นปล่องกำลังกดมันอยู่ — ตัดแก่นตะกอนทั้งสามจุดก่อน แล้วค่อยล้มมัน · HP ตอนนี้ ${S.hp}/${S.maxHp} · ฉากนี้เป็นบอสเสริม (ควรเลเวล 12 ขึ้นไป) ถอยแล้วกลับมาใหม่ได้</p>`, [{ label: '⚔ ลงไปที่ก้นปล่อง', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]);
+    if (go !== 'go') return;
+    const out = await battle('byrexael', .95, { scene: 'dragonLair', boss: true, obj: '' });
+    if (out !== 'win') { toast(out === 'flee' ? 'ถอยจากปากปล่อง — กลับมาใหม่ได้ที่ปุ่ม 🔥' : 'ยังไม่ชนะมังกร — พักแล้วกลับมาใหม่ได้'); hudSync(); return }
+    log('🔥 มังกรดำจ้าววิญญาณล้มลง (ยังหายใจ) — รอคำตัดสิน');
+    await pageSeq('⚑ มังกรดำจ้าววิญญาณ', [{ who: null, text: 'มังกรทรุดลงบนที่สูงโดยไม่ครางสักเสียง รอยแตกเรืองส้มบนหลังเริ่มหรี่ลงช้า ๆ ตาที่เคยเป็นสีไฟมองคุณเหมือนเพิ่งจำใครบางคนได้ — มันไม่ได้ลุกขึ้นอีก แต่มันก็ยังไม่ตาย' }]);
+    const know = Math.max(+M.flag(g, 'ruinStudy') || 0, 0), sig = +M.flag(g, 'faithSignal') || 0, plan = M.flag(g, 'dragonPlan');
+    const canSeal = know >= 2 || plan === 'old', canEase = sig >= 1 || !!M.flag(g, 'dragonSediment') || ally;
+    const fate = await modal(`<h2>⑂ มังกรที่หมดแรง</h2><p>คนสมัยก่อนไม่รบกับสัตว์ระดับนี้จนตาย — พวกเขาเลือกวิธีที่ไม่ทิ้งตะกอนไว้ไม่มีใครดูแล คุณเลือกอะไร?</p>`, [
+      { label: '⚔ ปลิดชีพมัน (ได้เกล็ดและทรัพย์ แต่ตะกอนรอบปล่องจะไม่มีใครรับ)', value: 'slain' },
+      { label: '🕯 ผนึกให้หลับ' + (canSeal ? '' : ' (ต้องมีความรู้จากจารึกสำนักชายป่า)'), value: 'sealed', disabled: !canSeal },
+      { label: '🌫 ช่วยระบายตะกอนแล้วปล่อยให้มันหลับเอง' + (canEase ? '' : ' (ต้องเข้าใจเรื่องตะกอน/ฟังเสียงที่ศาล หรือมีเมียร์ริสไปด้วย)'), value: 'eased', disabled: !canEase }]);
+    if (fate == null) { toast('มังกรยังหายใจอยู่ — กลับมาตัดสินที่ปุ่ม 🔥 ได้'); M.set(g, 'dragonDown', true); WS.commit(); save(); hudSync(); return }
+    M.set(g, 'dragonFate', fate); WS.commit();
+    const TXT = { slain: ['ดาบสุดท้ายลงโดยไม่มีเสียงตอบ เกล็ดดำหลุดเป็นแผ่นเหมือนแก้วภูเขาไฟ แสงในรอยแตกดับหมด — ปล่องเงียบลงทันที แต่เถ้าสีม่วงจาง ๆ ยังลอยขึ้นจากก้นปล่องไม่หยุด และไม่มีใครรับมันไว้อีกแล้ว', 'ได้เกล็ดมังกรดำ +250 💰'], sealed: ['คุณวางสามวงตามที่เมียร์ริสวาดไว้ รอบตัวมันด้วยเถ้าและน้ำค้าง มังกรหลับตาลงช้า ๆ รอยแตกบนหลังกลายเป็นสีเทาเงิน — ปล่องยังอุ่น แต่ไม่ขยับอีก', 'ได้ ผงเถ้าผนึก (ราคาดี) +120 💰 · ชื่อเสียงผู้เฝ้าแสง +'], eased: ['คุณช่วยกันเบี่ยงธารเถ้าและยกแก่นตะกอนที่แตกออกไปไว้ห่างปล่อง ลมหายใจของมังกรช้าลงทีละน้อยจนเหมือนคนหลับสนิท รอยแตกบนหลังหรี่เป็นสีส้มอ่อนที่ไม่เคยดับสนิท — มันยังอยู่ และจะตื่นเมื่อมีใครมาปลุกอีกครั้ง', 'ผู้เฝ้าแสงและชาวไร่ชายฝั่งต่างได้ยินข่าวนี้ ชื่อเสียงเพิ่ม'] }[fate];
+    if (fate === 'slain') { S.gold += 250; rep('crown', 1, 'ปลิดชีพมังกร'); rep('light', -2, 'ปลิดชีพสัตว์เก่าแก่'); rep('village', 1, 'ปลิดชีพมังกร') }
+    if (fate === 'sealed') { S.gold += 120; rep('light', 3, 'ผนึกมังกร'); rep('village', 1, 'ผนึกมังกร') }
+    if (fate === 'eased') { S.gold += 60; rep('light', 3, 'ช่วยระบายตะกอนมังกร'); rep('village', 3, 'ช่วยระบายตะกอนมังกร'); rep('temple', 1, 'ช่วยระบายตะกอนมังกร') }
+    try { window.Titles?.log?.(g, 'dragon.' + fate, '🔥 มังกรดำจ้าววิญญาณ — ' + ({ slain: 'ปลิดชีพ', sealed: 'ผนึกให้หลับ', eased: 'ช่วยระบายตะกอน' })[fate]) } catch (e) { }
+    WS.commit(); save();
+    await pageSeq('⚑ ' + ({ slain: 'ปลิดชีพ', sealed: 'ผนึก', eased: 'ระบายตะกอน' })[fate], [{ who: null, text: TXT[0] }, { who: null, text: TXT[1] }]);
+    toast('🔥 ' + ({ slain: 'มังกรถูกปลิดชีพ', sealed: 'มังกรถูกผนึก', eased: 'มังกรหลับสนิท' })[fate]); hudSync();
+  }
+  async function crossroadsAt(id) {
+    const g = WS.game(), C = window.Crossroads; if (!C || !g) return;
+    for (const m of C.expire(g, S)) { log(m); toast(m) }
+    const e = C.pick(g, S, id); if (!e) return;
+    /* v98.585 · the team speaks first: the follower and companions lean toward a choice by their nature (js/crossroads.js voices) */
+    const vs = (() => { try { return C.voices?.(g, S, e) || [] } catch (x) { return [] } })(), backs = i => vs.filter(v => v.pick === i).map(v => v.name);
+    const vface = v => v.who === 'sib' ? `<img src="assets/portraits/hero-${window.HeroVariant?.get?.() === 'female' ? 'male' : 'female'}-neutral.webp" alt="" style="width:40px;height:40px;object-fit:cover;object-position:50% 8%;border-radius:8px;border:1px solid #b49a5a;flex:none">` : `<span style="flex:none">${faceBox(v.who, 40, 40)}</span>`;
+    const vhtml = vs.length ? `<div style="margin:8px 0 6px;padding:8px 10px;border-radius:10px;background:#00000018">${vs.map(v => `<div style="display:flex;gap:8px;align-items:center;margin:4px 0">${vface(v)}<span><b>${esc(v.name)}</b>: ${esc(v.text)}</span></div>`).join('')}</div>` : '';
+    const lab = (c, i) => c.label + (C.hint(g, S, e, i) ? ' · ' + C.hint(g, S, e, i) : '') + (C.why(g, S, e, i) ? ' (' + C.why(g, S, e, i) + ')' : '') + (backs(i).length ? ' · 💬 ' + backs(i).join(', ') : '');
+    const v = await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who, 84, 96, e.mood || window.StoryCast?.mood?.(e.text))}<p><small>${esc(e.cast || '')}</small></p><p>${esc(e.text)}</p><div style="clear:both"></div>${vhtml}<p><small>ทุกทางเลือกมีราคา — ⚔ = ต่อสู้จริง · 🎲 = ทอยตามสเตตัสของคุณ · 🎒 = ใช้ของจริง</small></p>`,
+      [...e.choices.map((c, i) => ({ label: lab(c, i), value: i, disabled: !!C.why(g, S, e, i) })), { label: 'ยังไม่ตัดสินใจ', value: -1, ghost: true }]);
+    if (v == null || v < 0) return;
+    const b = C.begin(g, S, e, v, { passTime });
+    if (b.blocked) { toast(b.lines[0]); return }
+    let lines = b.lines, outcome = null;
+    if (b.pending) {
+      await modal(`<h2>${e.icon} ${esc(e.title)}</h2><p><b>${esc(b.choice)}</b></p>${b.lines.map(l => `<p>${esc(l)}</p>`).join('')}<p><small>⚔ เข้าสู่การต่อสู้</small></p>`, [{ label: '⚔ สู้', value: true }]);
+      const sp = b.pending; outcome = await battle(sp.foe, sp.dang ?? .6, { n: sp.n, obj: sp.obj ?? '', ambush: true, scene: sp.scene });
+      const r = C.settle(g, S, e, v, outcome === 'win' ? 'win' : outcome === 'flee' ? 'flee' : 'lose', { passTime }); lines = b.checkFailed ? [b.lines[0], ...r.lines] : r.lines;
+    }
+    log(e.icon + ' ' + e.title + ' — ' + (b.choice || '') + (outcome ? ' (' + ({ win: 'ชนะ', flee: 'หนี' })[outcome] + (outcome === 'win' || outcome === 'flee' ? '' : 'แพ้') + ')' : '')); WS.commit();
+    /* v98.536 · the speaker answers with a face that fits how it went: won / safe → happy · lost / fled / failed check → worry · else from the words of the result */
+    const rm = outcome === 'win' ? 'happy' : (outcome === 'lose' || outcome === 'flee' || b.checkFailed) ? 'worry' : (e.choices[v]?.mood || window.StoryCast?.mood?.(lines.join(' ')));
+    await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who, 84, 96, rm)}<p><b>${esc(b.choice || '')}</b></p>${lines.map(l => `<p>${esc(l)}</p>`).join('')}<div style="clear:both"></div>`);
+  }
+
+  window.WMCrossroads = crossroadsAt; window.WMFinale = finaleScene;   /* ใช้ทดสอบ/ดีบัก */
   async function townVisit(poi) {
     const id = poi.town;
     /* v97.72 · the capital's gate stays shut until the prologue is over */
     if (window.TownServices && window.Settlements?.SETTLEMENTS?.[id]?.capital && !TownServices.capitalOpen()) { await modal(`<h2>🏰 ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id])}</p><p>ทหารหน้าประตูเมืองยกหอกกั้น: "ช่วงนี้นครหลวงปิดรับคนนอก กลับไปก่อนเถอะ"</p><p style="font-size:12px;opacity:.75">เส้นทางไปเมืองใหญ่จะเปิดหลังจบบทนำ</p>`); return }
     ev('town:visit', { town: id, townName: poi.name }); log('ถึง ' + poi.name); S.townVisits = (S.townVisits || 0) + 1;   /* v97.55 · T7 duty counter */
-    if (window.TownEvents) for (const m of TownEvents.arrive(S, id)) { log(m); toast(m) }   /* v97.68 · T8 events: the toll is paid at the gate */
+    if (window.TownEvents) for (const m of TownEvents.arrive(S, id)) { log(m); toast(m) }
+    try { const gA = WS.game(); for (const m of window.StoryCast?.arrive(gA, id) || []) { log(m); toast(m) } window.MainStory?.check(gA) } catch (e) { }   /* v98.487 · หมุดเรื่องที่เกมรู้เอง (ด่านระดับ + สิ่งที่ผู้เล่นทำ) */
+    await crossroadsAt(id);   /* v98.486 · ทางแยกของเนื้อเรื่องหลัก (js/crossroads.js) */   /* v97.68 · T8 events: the toll is paid at the gate */
     for (;;) {
       const folk = townsfolk(id), per = window.WorldState?.period(S.hour) || 'day';
       const people = folk.length ? folk.map(p => { const ls = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…']; return `<p>👤 <b>${esc(p.name)}</b> <small>${esc(p.role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>` }).join('') : '<p style="opacity:.7">ไม่เจอคนรู้จักที่นี่ตอนนี้</p>';
@@ -483,7 +689,7 @@
       if (window.Law && Law.file(S, id).wanted) { const a = await Law.arrest(S, id, 'ยามที่ประตู' + poi.name + 'จำหน้าคุณได้ — คุณถูกหมายจับที่นี่'); if (a === 'jail') { const to = S.hour < 8 ? 8 - S.hour : 32 - S.hour; passTime(to) } save(); hudSync(); if (a === 'run') { log('🏃 หนีออกจาก' + poi.name); break } }
       const ST = window.Settlements, pInn = ST ? ST.price(id, 'inn', 12) : 12, pFood = ST ? ST.price(id, 'food', 10) : 10, pPot = ST ? ST.price(id, 'potion', 18) : 18;
       const tev = window.TownEvents?.card(S, id);
-      const locals = (ST?.LOCALS?.[id] || []).map(([n, role, ls]) => `<p>👤 <b>${esc(n)}</b> <small>${esc(role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>`).join('');
+      const locals = (window.StoryCast ? StoryCast.locals(WS.game(), id, ST?.LOCALS?.[id] || []) : (ST?.LOCALS?.[id] || [])).map(([n, role, ls, pid]) => `<p>${faceBox(pid, 42, 48)}👤 <b>${esc(n)}</b> <small>${esc(role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>`).join('');
       let v = await modal(`${TOWN_PIC[id] ? `<img src="assets/village-town/decor/gate-${TOWN_PIC[id]}.webp" alt="" style="float:right;width:150px;margin:-6px 0 4px 10px;filter:drop-shadow(0 4px 8px #0006)">` : ''}<h2>${ST?.SETTLEMENTS?.[id]?.capital ? '🏰' : '🏘'} ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}${tev ? tev.html : ''}${locals ? '<h3 style="margin:8px 0 2px;font-size:14px">ผู้คนที่นี่</h3>' + locals : ''}${folk.length || !locals ? '<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>' + people : ''}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
         [...(tev?.button ? [tev.button] : []), ...(window.TownServices ? TownServices.list(S, id).map(o => ({ label: o.label + (o.disabled && o.title ? ' (' + o.title + ')' : ''), value: 'svc:' + o.key, disabled: o.disabled })) : []), { label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates || ST || window.Offices ? [{ label: '🏛 ศาลากลาง', value: 'hall' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
       /* v97.76 · land, petitions and offices sit behind the town hall so the card keeps to the everyday things */
@@ -495,6 +701,8 @@
       else if (v === 'petition') { const pol = await ST.petitionPanel(id); if (pol) { log('📜 ' + poi.name + ' เปลี่ยนนโยบายเป็น ' + ST.POLICIES[pol].name); toast('📜 นโยบายใหม่: ' + ST.POLICIES[pol].name) } }
       else if (typeof v === 'string' && v.startsWith('svc:')) {   /* v97.72 · the town's own service (js/town-services.js) */
         const r = TownServices.run(S, id, v.slice(4), { passTime, healParty, game: () => window.WorldState.game(), reveal: n => { for (const [a, b] of G.within(S.pos.c, S.pos.r, n)) S.known[K(a, b)] = 1; fogDirty = true; reveal() } });
+        if (r.panel === 'finale') { await finaleScene() }
+        if (r.panel === 'dragon') { await dragonScene() }
         if (r.panel === 'bounty' && window.Bounties) { await Bounties.panel(S, id, () => { save(); hudSync() }); Bounties.place(S, world, G); fogDirty = true; save(); hudSync() }
         for (const m of r.lines) log(m); save(); hudSync(); if (r.lines.length) await modal('<h2>' + esc(poi.name) + '</h2>' + r.lines.map(m => '<p>' + esc(m) + '</p>').join(''));
         if (r.goto) { const tw = world.towns.find(x => x.id === r.goto); if (tw) { S.pos = { c: tw.c, r: tw.r }; S.known[K(tw.c, tw.r)] = 1; fogDirty = true; reveal(); save(); hudSync(); { const p = center(tw.c, tw.r); token.x = p.x; token.y = p.y; follow() } await townVisit(tile(tw.c, tw.r).poi); return } }
@@ -525,9 +733,14 @@
     const v = await modal(`<h2>📜 กระดานภารกิจ · ข่าวลือ</h2><p>หมอกดำคลุมทุกทิศ รู้เพียงข่าวลือว่ามีอะไรอยู่ที่ไหน เลือกจุดหมาย แล้วออกจากหมู่บ้านไปเปิดทางเอง — แผนที่จะเผยเฉพาะปลายทางและเส้นทางที่คุณเดินผ่าน</p><div class="wm-quests">${cards}</div>`, [{ label: 'ปิด', value: null, ghost: true }]);
     if (v && world.dests.some(d => d.id === v)) chooseDest(v);
   }
-  const BOSS_NAME = { frostQueen: 'ราชินีน้ำแข็งแห่งศาลหิมะ', wolf: 'จ่าฝูงหมาป่า', golem: 'โกเล็มหิน', slime: 'สไลม์ยักษ์', bandit: 'หัวหน้าโจร', kobold: 'หัวหน้าโคโบลด์' };
+  const BOSS_NAME = { hunger: 'ก้อนหิว', frostQueen: 'ราชินีน้ำแข็งแห่งศาลหิมะ', wolf: 'จ่าฝูงหมาป่า', golem: 'โกเล็มหิน', slime: 'สไลม์ยักษ์', bandit: 'หัวหน้าโจร', kobold: 'หัวหน้าโคโบลด์' };
   /* warm the browser cache with one hidden battle page so the first real fight opens quickly */
   function warm() { if (document.getElementById('wmWarm')) return; const f = document.createElement('iframe'); f.id = 'wmWarm'; f.style.cssText = 'position:fixed;width:2px;height:2px;left:-10px;top:-10px;opacity:0;pointer-events:none;border:0'; f.src = 'battle-field.html?battle=1&embed=1&warm=1'; document.body.append(f); const on = e => { if (e.data?.type === 'agrenor-battle-ready' && e.data.warm) { removeEventListener('message', on); setTimeout(() => f.remove(), 500) } }; addEventListener('message', on); setTimeout(() => f.remove(), 60000) }
+  /* v98.295 · a fallen character may be wounded (js/injury.js) — random part, light or heavy; heavy ones mend only in a hospital */
+  function woundRoll(key, name, outcome) {
+    const I = window.Injury; if (!I) return; const w = I.roll(WS.game(), key, { lose: outcome === 'lose' }); if (!w) return;
+    const t = name + ' ' + w.name + (w.lv === 'heavy' ? 'บาดเจ็บหนัก — ต้องไปพักฟื้นที่โรงพยาบาล' : 'บาดเจ็บ — พักสักพักจะหาย'); log('🩹 ' + t); toast('🩹 ' + t); WS.commit();
+  }
   async function chooseDest(id) {
     setTimeout(warm, 2500);
     S.dest = id; const d = destOf(); log('รับภารกิจ: ' + d.name); S.leftDay = S.day; ev('journey:start', { dest: d.id, destName: d.name }); save(); fogDirty = true; hudSync();
@@ -562,15 +775,16 @@
   async function step(to) {
     const t = tile(to.c, to.r), cost = G.stepCost(t), from = center(S.pos.c, S.pos.r), dst = center(to.c, to.r);
     token.walking = true; token.face = dst.x >= from.x ? 1 : -1;
+    try { const b = t.biome, sf = b === 'snow' ? 'snow' : /hills|stone|ash|volcano|highland|ruins/.test(b) ? 'stone' : 'grass'; window.Sfx?.play('step-' + sf, { vol: .9 }) } catch (e) { }   /* v98.298 · a footstep per tile */
     const dur = 260 + cost * 90, t0 = performance.now();
     await new Promise(res => { const tick = () => { const e = Math.min(1, (performance.now() - t0) / dur); token.x = from.x + (dst.x - from.x) * e; token.y = from.y + (dst.y - from.y) * e; cam.tx = token.x; cam.ty = token.y; if (e < 1) requestAnimationFrame(tick); else res() }; tick() });
     token.walking = false;
     S.prev = { ...S.pos }; S.pos = { c: to.c, r: to.r }; S.steps++; const k = K(to.c, to.r); if (S.trail.at(-1) !== k) S.trail.push(k); if (S.trail.length > 200) S.trail.shift();
     const wasNight = nightness() > .6;
     passTime(cost + (wasNight ? 1 : 0));                                              // walking in the dark is slower
-    S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * (wasNight ? 1.5 : 1) * (VP('road') ? .8 : 1)));   /* v97.35 · R3 projects */
+       /* v97.35 · R3 projects */
     /* v95.26 · the heights are cold: walking there tires you faster and eats more */
-    if (world.real && (t.biome === 'snow' || t.biome === 'highland')) { const cold = t.biome === 'snow' ? 1 : .5; S.fatigue = Math.min(100, S.fatigue + Math.round(cost * 3 * cold)); S.trek = (S.trek || 0) + cost * cold; if (S.coldDay !== S.day) { S.coldDay = S.day; log('ลมหนาวบนที่สูง เหนื่อยเร็วและหิวไว'); toast('❄ หนาวจัด: เหนื่อยเร็วขึ้น กินเสบียงมากขึ้น') } }
+    if (world.real && (t.biome === 'snow' || t.biome === 'highland')) { const cold = t.biome === 'snow' ? 1 : .5;  S.trek = (S.trek || 0) + cost * cold; if (S.coldDay !== S.day) { S.coldDay = S.day; log('ลมหนาวบนที่สูง เหนื่อยเร็วและหิวไว'); toast('❄ หนาวจัด: เหนื่อยเร็วขึ้น กินเสบียงมากขึ้น') } }
     /* v95.23: on the real map a hex is ~12 km — a ration lasts 12 hours of walking, not one hex */
     let eat = !t.road && !t.poi; if (world.real) { S.trek = (S.trek || 0) + cost; eat = S.trek >= 12; if (eat) S.trek -= 12 }
     if (eat) { if (S.food > 0) S.food--; else { S.hp = Math.max(1, S.hp - 5); log('เสบียงหมด! หิวโหย −5 HP'); toast('เสบียงหมด −5 HP') } }
@@ -600,7 +814,7 @@
   async function nightEvent(t) {
     const d = destOf(), r = Math.random();
     if (r < .4 && d && !S.done[d.id]) { const p = G.path(world, t, d); if (p) p.slice(0, 5).forEach(x => S.known[K(x.c, x.r)] = 1); fogDirty = true; log('ดวงไฟวิญญาณนำทาง'); ev('night:wisp', { biome: t.biome }); await modal(`<h2>✧ ดวงไฟวิญญาณ</h2><p>แสงสีฟ้าลอยวนอยู่กลางความมืด แล้วค่อย ๆ ล่องไปทางหนึ่ง… หมอกตามทางนั้นจางลงชั่วครู่</p>`); return true }
-    if (r < .75) { S.fatigue = Math.min(100, S.fatigue + 15); log('เสียงหอนทั้งคืน เหนื่อยขึ้น'); await modal(`<h2>🐺 เสียงหอนในความมืด</h2><p>เสียงหอนรอบทิศทำให้ต้องเดินระวังตัวทุกฝีก้าว ความเหนื่อย +15</p>`); return true }
+    if (r < .75) { log('เสียงหอนทั้งคืน ไม่ค่อยได้หลับ'); await modal(`<h2>🐺 เสียงหอนในความมืด</h2><p>เสียงหอนรอบทิศทำให้ต้องเดินระวังตัวทุกฝีก้าว ความเหนื่อย +15</p>`); return true }
     const gold = Math.round(20 + Math.random() * 30); S.gold += gold; log('พบของมีค่าใต้แสงจันทร์ +' + gold); await modal(`<h2>🌙 ประกายใต้แสงจันทร์</h2><p>มีบางอย่างสะท้อนแสงจันทร์อยู่ในพงหญ้า — ถุงเหรียญของนักเดินทาง <b>+${gold} 💰</b></p>`); return true;
   }
   function passTime(h) { S.hour += h; let nd = false; while (S.hour >= 24) { S.hour -= 24; S.day++; nd = true; log('— วันที่ ' + S.day + ' —') } if (nd && window.Estates) for (const m of Estates.tickAll(S)) { log(m); toast(m) } if (nd && window.Offices) for (const m of Offices.settle(S)) { log(m); toast(m) } if (nd && window.Settlements?.councilSettle) for (const m of Settlements.councilSettle()) { log(m); toast(m) } if (nd && window.Bounties) for (const m of Bounties.expire(S)) { log(m); toast(m) } }
@@ -704,7 +918,7 @@
       for (const k in cells) if (!reach.has(k)) cells[k].block = true;
       const free = [...reach].map(k => cells[k]).filter(x => x.c >= 2 && x.c <= AW - 3);
       for (let i = free.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1));[free[i], free[j]] = [free[j], free[i]] }
-      const spots = {}, kinds = ['foe', 'foe', 'chest', rnd() < .5 ? 'lore' : 'spring'];
+      const spots = {}, kinds = o.kinds ? o.kinds.slice() : ['foe', 'foe', 'chest', rnd() < .5 ? 'lore' : 'spring'];
       for (const x of free) { if (!kinds.length) break; if (Object.values(spots).some(s => Math.abs(s.c - x.c) + Math.abs(s.r - x.r) < 3)) continue; const kind = kinds.shift(); spots[KK(x.c, x.r)] = { c: x.c, r: x.r, kind, foe: kind === 'foe' ? o.foes[Math.floor(rnd() * o.foes.length)] : null } }
       spots[KK(lair.c, lair.r)] = { c: lair.c, r: lair.r, kind: o.boss ? 'lair' : 'prize' };
       const seen = new Set(), look = (c, r) => { for (const k in cells) { const x = cells[k]; if (Math.abs(x.c - c) + Math.abs(x.r - r) <= 3) seen.add(k) } };
@@ -732,7 +946,7 @@
           gA.restore();
           if (!seen.has(KK(c, r))) { gA.save(); gA.translate(p.x, p.y); gA.scale(sc, sc); hexPath(gA, 0, 0, RAD + 1); gA.fillStyle = 'rgba(5,6,10,.88)'; gA.fill(); gA.restore() }
         }
-        for (const k in spots) { if (!seen.has(k)) continue; const s = spots[k], p = ctr(s.c, s.r), bob = Math.sin(now * .004 + s.c) * 3 * sc; gA.save(); gA.fillStyle = s.kind === 'foe' || s.kind === 'lair' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; gA.beginPath(); gA.arc(p.x, p.y - 8 * sc + bob, 15 * sc, 0, 7); gA.fill(); gA.font = `${18 * sc}px system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif`; gA.textAlign = 'center'; gA.textBaseline = 'middle'; gA.fillText(ICON[s.kind], p.x, p.y - 7 * sc + bob); gA.restore() }
+        for (const k in spots) { if (!seen.has(k)) continue; const s = spots[k], p = ctr(s.c, s.r), bob = Math.sin(now * .004 + s.c) * 3 * sc; gA.save(); gA.fillStyle = s.kind === 'foe' || s.kind === 'lair' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; gA.beginPath(); gA.arc(p.x, p.y - 8 * sc + bob, 15 * sc, 0, 7); gA.fill(); gA.font = `${18 * sc}px AgThai,system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif`; gA.textAlign = 'center'; gA.textBaseline = 'middle'; gA.fillText(ICON[s.kind], p.x, p.y - 7 * sc + bob); gA.restore() }
         const pe = ctr(entry.c, entry.r); gA.save(); gA.font = `700 ${12 * sc}px VillageThai,system-ui`; gA.fillStyle = '#e8d8a8'; gA.textAlign = 'center'; gA.fillText('ทางเข้า', pe.x, pe.y + 26 * sc); gA.restore();
         const pp = ctr(pos.c, pos.r), im = heroImgs[Math.floor(now / 160) % 4]; if (im.complete && im.naturalWidth) { const h = 70 * sc, w = h * im.naturalWidth / im.naturalHeight; gA.drawImage(im, pp.x - w / 2, pp.y - h + 10 * sc, w, h) } else { gA.fillStyle = '#ffd36a'; gA.beginPath(); gA.arc(pp.x, pp.y - 10, 8, 0, 7); gA.fill() }
         requestAnimationFrame(frame);
@@ -742,12 +956,12 @@
       box.querySelector('header button').onclick = () => { if (!walking && !modalOpen) finish('left') };
       async function arrive(s) {
         const k = KK(s.c, s.r);
-        if (s.kind === 'foe') { const r = await battle(s.foe, o.dang, {}); if (r === 'win') delete spots[k]; else if (prev) pos = { ...prev } }
+        if (s.kind === 'foe') { const r = await battle(s.foe, o.dang, o.roster ? { roster: o.roster } : {}); if (r === 'win') delete spots[k]; else if (prev) pos = { ...prev } }
         else if (s.kind === 'chest') { const gold = Math.round(12 + Math.random() * 20 + o.dang * 40); S.gold += gold; delete spots[k]; log('พบหีบใน ' + o.title + ' +' + gold); await modal(`<h2>🎁 หีบเก่า</h2><p>ได้ <b>${gold} เหรียญ</b></p>`) }
         else if (s.kind === 'spring') { S.hp = Math.min(S.maxHp, S.hp + Math.round(S.maxHp * .3)); healParty(.3); delete spots[k]; await modal(`<h2>💧 ตาน้ำใส</h2><p>น้ำเย็นชื่นใจ ทีมฟื้น HP 30%</p>`) }
-        else if (s.kind === 'lore') { delete spots[k]; await modal(`<h2>🪨 ศิลาจารึก</h2><p>ตัวอักษรเก่าเลือนจนอ่านไม่ออก มีเพียงรูปแสงที่แตกออกเป็นหลายสายสลักอยู่ตรงกลาง… เหมือนนิทานที่ผู้เฒ่าเคยเล่า</p>`) }
+        else if (s.kind === 'lore') { delete spots[k]; await modal(`<h2>🪨 ศิลาจารึก</h2><p>${esc(o.loreText || 'ตัวอักษรเก่าเลือนจนอ่านไม่ออก มีเพียงรูปแสงที่แตกออกเป็นหลายสายสลักอยู่ตรงกลาง… เหมือนนิทานที่ผู้เฒ่าเคยเล่า')}</p>`) }
         else if (s.kind === 'prize') { const P = o.prize || {}; S.gold += P.gold || 0; S.potions += P.potion || 0; log('พบห้องสมบัติใน ' + o.title + ' +' + (P.gold || 0)); await modal(`<h2>💎 ห้องสมบัติ</h2><p>ลึกสุดของ${esc(o.title)} มี <b>${P.gold || 0} เหรียญ</b>${P.potion ? ' และยาฟื้นฟู ' + P.potion + ' ขวด' : ''}</p>`, [{ label: 'กลับออกไป', value: 1 }]); finish('done'); return }
-        else if (s.kind === 'lair') { const v = await modal(`<h2>☠ ${esc(o.boss.name || o.title)}</h2><p>ลมหายใจของบางอย่างดังอยู่ข้างหน้า… HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ บุก', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]); if (v !== 'go') { if (prev) pos = { ...prev }; return } const r = await battle(o.boss.foe, 1, { boss: true }); if (r === 'win') { finish('win'); return } if (prev) pos = { ...prev } }
+        else if (s.kind === 'lair') { const v = await modal(`<h2>☠ ${esc(o.boss.name || o.title)}</h2><p>${esc(o.lairText || 'ลมหายใจของบางอย่างดังอยู่ข้างหน้า…')} HP ตอนนี้ ${S.hp}/${S.maxHp}</p>`, [{ label: '⚔ บุก', value: 'go' }, { label: 'ถอยก่อน', value: null, ghost: true }]); if (v !== 'go') { if (prev) pos = { ...prev }; return } const r = await battle(o.boss.foe, 1, { boss: true, scene: o.boss.scene, ...(o.roster ? { roster: o.roster } : {}) }); if (r === 'win') { finish('win'); return } if (prev) pos = { ...prev } }
         hudSync(); status();
       }
       cvA.addEventListener('click', async e => {
@@ -800,65 +1014,84 @@
     const left = world.dests.filter(d => !S.done[d.id]).length;
     await modal(`<h2>🏠 หมู่บ้านเฟิร์นเวล</h2><p>ชาวบ้านออกมารับ HP ฟื้นเต็ม · เสบียงเหลือ ${S.food} ห่อ${S.food < 4 ? ' (ซื้อเพิ่มได้ที่ตลาด)' : ''}</p><p>${left ? 'ยังมีข่าวลือรออยู่อีก ' + left + ' แห่งที่กระดานภารกิจ' : 'ทุกข่าวลือถูกพิสูจน์แล้ว — ลองสร้าง “โลกใหม่” ได้'}</p>`);
     if (S.dest && S.done[S.dest]) S.dest = null; hudSync();
+    await crossroadsAt('fernvale');   /* v98.510 · R4 เฟิร์นเวลยามสงคราม (js/crossroads.js towns:['fernvale']) */
   }
 
   /* ---------- battles (the flat card battle in an iframe) ---------- */
-  const MON_HP = { bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44, bat: 22, gull: 26 };
+  /* v98.489 · effective boss health (before level scaling) — ก้อนหิว 160 from tools/simulate-hunger.cjs (with its 3 specials): ~65 % first-try win at hero Lv.12 (the story gate), ~40 % at Lv.10, ~87 % at Lv.14 (greedy bot, no items — a real player does better) */
+  const BOSS_HP = { hunger: 160, byrexael: 170 };
+  const MON_HP = { murk: 38, hunger: 150, bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44, bat: 22, gull: 26 };
   async function battle(foe, dang, o = {}) {
     busy = true; hudSync();
     const here = tile(S.pos.c, S.pos.r), night = nightness() > .6;
     /* after dark: fierce night monsters (shadow wolves in open land, enraged ones elsewhere) */
-    let fierce = false; if (night && !o.boss && Math.random() < .45) { fierce = true; if (['forest', 'grass', 'snow'].includes(here.biome)) foe = 'shadowWolf' }
-    const elite = !o.boss && dang > .65 && Math.random() < .5, base = MON_HP[foe] || 34;
-    let mult = o.boss ? Math.round(130 / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
+    const RS = o.resume || null;   /* v98.340 · a fight resumed from the temporary save: the random parts come from the record */
+    let fierce = RS ? RS.fierce : false; if (!RS && night && !o.boss && Math.random() < .45) { fierce = true; if (['forest', 'grass', 'snow'].includes(here.biome)) foe = 'shadowWolf' }
+    const elite = RS ? RS.elite : !o.boss && dang > .65 && Math.random() < .5, base = MON_HP[foe] || 34;
+    let mult = o.scene ? 1 : o.boss ? Math.round((BOSS_HP[foe] || 130) / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
     if (foe === 'shadowWolf') mult = Math.round((1.1 + dang * .5) * 10) / 10;
     const fs = window.Progression ? Progression.foeScale(Progression.heroLevel(WS.game())) : { hp: 1, atk: 1 };   /* v95.00: monsters grow a little with the hero */
     /* v97.29 · the game's difficulty setting (⚙ ตั้งค่า · s.village.settings.difficulty — it only reached the old battles before) */
     const DIFF = ({ easy: { hp: .8, atk: .8, gold: .9 }, hard: { hp: 1.25, atk: 1.2, gold: 1.2 } })[(() => { try { return WS.game().village.settings?.difficulty } catch (e) { return '' } })()] || { hp: 1, atk: 1, gold: 1 };
-    mult = Math.round(mult * fs.hp * DIFF.hp * 10) / 10;
-    const atk = Math.round((fierce ? 1.3 : 1) * fs.atk * DIFF.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6));
+    mult = Math.round(mult * fs.hp * DIFF.hp * 10) / 10; if (RS) mult = RS.mult;
+    let atk = Math.round((fierce ? 1.3 : 1) * fs.atk * DIFF.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6)); if (o.resume) hst = o.resume.hst;
     chatter('fight', .6);
-    await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : fierce ? 'NIGHT TERROR!' : 'ENCOUNTER!');
+    if (RS) { atk = RS.atk }
+    if (!RS) await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : fierce ? 'NIGHT TERROR!' : 'ENCOUNTER!');
     const fr = document.createElement('iframe'); fr.id = 'wmBattle';
     const title = (o.boss ? 'บอส · ' : elite ? 'ยอดฝีมือ · ' : '') + (BOSS_NAME[foe] && o.boss ? BOSS_NAME[foe] : '');
     const poi = o.boss ? (destOf()?.id || '') : '';
     /* a group: more monsters deeper in the fog, at night and in ambushes; the boss brings two of the local monsters */
-    const n = o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
-    const group = [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
-    for (let i = 1; i < n; i++) { const k = o.boss ? pickFoe(here) : Math.random() < .6 ? foe : pickFoe(here); group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }
+    const n = o.n ? o.n : o.boss ? 3 : Math.max(2, Math.min(5, 2 + Math.round(dang * 2) + (night ? 1 : 0) + (o.ambush ? 1 : 0)));   // a party of four meets 2–5 monsters
+    const group = RS ? RS.group.slice() : [foe + '*' + (n > 1 && !o.boss ? Math.round(mult * .85 * 10) / 10 : mult)];
+    /* v98.250 · a varied group: kinds not yet in the group come first, no kind appears more than twice, and now and then a wanderer from a neighbouring land joins (it used to be 60 % the leader's kind again) */
+    const roster = [...new Set(o.roster || G.FOES[here.biome] || G.FOES.grass)], wander = o.roster ? [] : ['bandit', 'wolf', 'bat', 'kobold', 'slime'].filter(k => !roster.includes(k)), used = { [foe]: 1 };
+    for (let i = 1; !RS && i < n; i++) { let cand = roster.slice(); if (wander.length && Math.random() < .3) cand = cand.concat(wander);
+      cand = cand.filter(k => (used[k] || 0) < 2); if (!cand.length) cand = roster.slice(); cand.sort((a, b) => ((used[a] || 0) - (used[b] || 0)) || (Math.random() - .5));
+      const k = cand[0]; used[k] = (used[k] || 0) + 1; group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
-    const fighters = S.party.filter(p => p.hp > 0), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
-    const tut = (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
+    const hp0 = S.hp;   /* v98.41 · for titles: was the win flawless / a close call */
+    const fighters = S.party.filter(p => p.hp > 0 && (!window.Injury || Injury.canFight(WS.game(), p.key))), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
+    const tut = RS ? '' : (() => { try { const st = WS.game().village.story; const k = st?.tut; if (k) { delete st.tut; WS.commit() } return k ? '&tut=' + k : '' } catch (e) { return '' } })();   /* v97.16: the prologue's first fights coach the player */
     /* v97.22 · battle objectives: a night camp raid → hold the camp banner · an ambush → sometimes break out to the map edge
        · an elite group → bring down its leader · now and then: just hold out. The prologue and bosses always fight to the end. */
-    const obj = tut || o.boss ? '' : o.camp ? 'defend:4' : o.ambush && Math.random() < .35 ? 'escape' : elite && n > 2 && Math.random() < .6 ? 'leader' : Math.random() < .15 ? 'survive:5' : '';
+    const obj = RS ? RS.obj : o.obj != null ? o.obj : tut || o.boss ? '' : o.camp ? 'defend:4' : o.ambush && Math.random() < .35 ? 'escape' : elite && n > 2 && Math.random() < .6 ? 'leader' : Math.random() < .15 ? 'survive:5' : '';
     const OBJ_GOLD = { defend: 1.3, escape: .8, leader: 1.25, survive: 1.2 }, OBJ_NAME = { defend: 'ป้องกันค่าย', escape: 'ฝ่าวงล้อม', leader: 'ล้มหัวหน้า', survive: 'ยื้อไว้' };
-    fr.src = `battle-field.html?battle=1&embed=1${tut}${obj ? '&obj=' + obj : ''}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
+    fr.src = `battle-field.html?battle=1&embed=1${tut}${obj ? '&obj=' + obj : ''}&r=7&biome=${({ ash: 'hills', volcano: 'hills', stone: 'hills', highland: 'hills' })[here.biome] || here.biome}&poi=${poi}&night=${night ? 1 : 0}${o.scene ? '&scene=' + o.scene : ''}&m=${foe}&ms=${encodeURIComponent(group.join(','))}&party=${encodeURIComponent(party)}&hp=${mult}&atk=${atk}&hst=${hst}&hhp=${S.hp}&hmax=${S.maxHp}${heroQ}&title=${encodeURIComponent(title)}`;
+    /* v98.340 · remember this fight (the temporary save re-opens it); a resumed one loads the same field from the snapshot's URL */
+    { const sn = (() => { try { return JSON.parse(localStorage.getItem('projectA.battleSnap') || 'null') } catch (e) { return null } })(), src0 = RS ? RS.src : fr.src;
+      if (!RS) { try { localStorage.removeItem('projectA.battleSnap') } catch (e) { } } else fr.src = (RS.snapOk && sn ? sn.page + sn.search : RS.src) + '&resume=1';
+      try { localStorage.setItem('projectA.wmFight', JSON.stringify({ foe, dang, o: { boss: o.boss, ambush: o.ambush, camp: o.camp }, elite, fierce, mult, atk, hst, title, poi, group, obj, src: src0 })) } catch (e) { } }
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
     document.body.append(fr);
-    const wait1 = document.createElement('div'); wait1.className = 'wm-toast'; wait1.style.animation = 'none'; wait1.style.top = '62%'; wait1.textContent = 'กำลังเตรียมสนามรบ…'; setTimeout(() => { if (wait1.isConnected === false && !fr.classList.contains('on')) document.body.append(wait1) }, 1400);
+    const wait1 = document.createElement('div'); wait1.className = 'wm-toast'; wait1.style.animation = 'none'; wait1.style.top = '62%'; wait1.style.cssText += ';display:flex;align-items:center;gap:12px;padding:8px 22px 8px 14px;border-radius:22px'; wait1.innerHTML = (window.MipLoader ? MipLoader.html({ size: '56px', width: '150px' }) : '') + '<span>กำลังเตรียมสนามรบ…</span>'; setTimeout(() => { if (wait1.isConnected === false && !fr.classList.contains('on')) document.body.append(wait1) }, 1400);
     await readyP; wait1.remove(); fr.classList.add('on'); document.querySelectorAll('.wm-enc').forEach(e => setTimeout(() => e.remove(), 350));
-    const res = await resP;
+    const res = await resP; try { localStorage.removeItem('projectA.wmFight'); localStorage.removeItem('projectA.battleSnap') } catch (e) { }
     fr.classList.remove('on'); await wait(380); fr.remove();
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
-    for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ'); ev('party:ko', { who: p.key, whoName: p.name }) } } }
+    /* v98.496 · bag cards spent in the fight leave the real bag */
+    { const bg = WS.game().village.bag ||= {}, AD = window.ADVENTURE_DATA?.CONSUMABLES || {}, names = []; for (const [k, n] of Object.entries(res.used || {})) { if (!(n > 0) || !bg[k]) continue; bg[k] = Math.max(0, bg[k] - n); if (!bg[k]) delete bg[k]; names.push((AD[k]?.name || k) + ' ×' + n) } if (names.length) log('🎒 ใช้การ์ดกระเป๋า: ' + names.join(', ')) }
+    for (const r of res.party || []) { const p = S.party.find(x => x.key === r.key); if (p) { p.hp = Math.max(0, r.hp); if (r.order) p.order = r.order; if (p.hp <= 0) { p.hp = Math.round(p.max * .25); log(p.name + ' ล้มในการต่อสู้ ลุกขึ้นมาบาดเจ็บ'); ev('party:ko', { who: p.key, whoName: p.name }); woundRoll(p.key, p.name, res.outcome) } } }
+    if ((res.hp ?? 1) <= 0) woundRoll('hero', WS.heroName?.() || 'ตัวเอก', res.outcome);   /* v98.295 · the hero fell: maybe a wound too */
     { const ST = window.Settlements; if (ST && ST.load(S) && (res.outcome === 'lose' || res.outcome === 'flee')) { const lost = ST.loseCargo(S, ST.escorted(S) ? .1 : res.outcome === 'lose' ? .5 : .25); if (lost.length) { log('📦 สินค้าหายระหว่างหนี/พ่ายแพ้: ' + lost.join(' · ')); toast('📦 สินค้าหาย ' + lost.join(' · ')) } } }   /* v97.54 · T6 */
     if (fierce && res.outcome !== 'flee') ev('night:terror', { foe, biome: here.biome });
     if (!o.boss) ev(res.outcome === 'win' ? 'battle:win' : res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome });
     else if (res.outcome !== 'win') ev(res.outcome === 'flee' ? 'battle:flee' : 'battle:lose', { foe, biome: here.biome, destName: destOf()?.name });
+    /* v98.41 · ฉายา: count the fight, award titles whose hidden condition is now true */
+    let TM = {}; try { const T = window.Titles; if (T) { const g0 = WS.game(); { const ev = res.evolved || []; if (ev.length) { T.note(g0, 'evolve', ev.length); const k = ev.filter(e => e.dead).length; if (k) T.note(g0, 'evolveKill', k); window.Chaos?.seen(g0, ev) } } const got = T.battle(g0, { outcome: res.outcome, foe, boss: !!o.boss, elite, night, kills: res.kills || 0, hp0, hp1: S.hp, maxHp: S.maxHp, party: fighters.length, allyDown: (res.party || []).filter(r => r.hp <= 0).length }); TM = T.mods(g0); for (const d of got) { log('🏅 ได้รับฉายา «' + d.name + '» (' + T.TIERS[d.tier].name + ')'); toast('🏅 ฉายาใหม่ «' + d.name + '»'); if (d.tier >= 3) T.reveal(d) } if (got.length) WS.commit() } } catch (e) { }
     if (res.outcome === 'win') {
-      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (OBJ_GOLD[obj.split(':')[0]] || 1) * DIFF.gold); S.gold += gold; S.hp = Math.max(1, S.hp);
-      const loot = dropLoot(foe, here.biome, dang, o.boss);
+      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (1 + (TM.gold || 0)) * (OBJ_GOLD[obj.split(':')[0]] || 1) * DIFF.gold); S.gold += gold; S.hp = Math.max(1, S.hp);
+      const loot = dropLoot(foe, here.biome, dang, o.boss, res.evolved); if (loot && (loot.length || Object.keys(loot).length)) window.Sfx?.play('item-get');
       { const hp = window.Offices?.perk(S, 'hunter') || 0; if (hp) { S.food += hp; log('➶ พรานหลวงได้เสบียง +' + hp) } }   /* v97.57 · office perk */
       /* v94.06 F2: experience — the hero and the companions who fought */
       let jobRes = null; const P = window.Progression, ch0 = WS.game().village?.character || {}, members = [{ key: 'hero', name: WS.heroName?.() || 'ตัวเอก', lv0: ch0.level || 1, xp0: ch0.xp || 0 }, ...fighters.map(p => { const m = S.party.find(x => x.key === p.key); return m && { key: m.key, name: m.name, lv0: m.level || 1, xp0: m.xp || 0, ref: m } }).filter(Boolean)];
       if (window.Progression) {
-        const xp = Math.round(Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }) * (VP('drill') ? 1.15 : 1)), ups = Progression.gainHero(WS.game(), xp);
+        const xp = Math.round(Progression.battleXp({ dang, elite, boss: o.boss, kills: res.kills }) * (VP('drill') ? 1.15 : 1) * (1 + (TM.xp || 0))), ups = Progression.gainHero(WS.game(), xp);
         { const c = WS.game().village.character; Object.assign(members[0], { gain: xp, lv1: c.level, xp1: c.xp }) }
         log('✦ EXP +' + xp + (ups.length ? ' · เลเวลอัป! Lv.' + ups[ups.length - 1] + ' (HP สูงสุด ' + S.maxHp + ')' : ''));
-        if (ups.length) toast('LEVEL UP! Lv.' + ups[ups.length - 1]);
+        if (ups.length) { toast('LEVEL UP! Lv.' + ups[ups.length - 1]); window.Sfx?.play('level-up') }
         for (const p of fighters) { const m = S.party.find(x => x.key === p.key); if (!m) continue; const u = Progression.gainAlly(m, Math.round(xp * .8)); if (u.length) log(m.name + ' เลเวลอัป Lv.' + u[u.length - 1] + ' (HP ' + m.max + ')'); const mm = members.find(x => x.ref === m); if (mm) Object.assign(mm, { gain: Math.round(xp * .8), lv1: m.level, xp1: m.xp }) }
         jobRes = Progression.gainJob ? Progression.gainJob(WS.game(), Math.round(xp * .7)) : null;   /* v97.18: job points */
         WS.commit();
@@ -884,7 +1117,7 @@
     if (!document.getElementById('wmResCss')) { const s = document.createElement('style'); s.id = 'wmResCss'; s.textContent = `
       .wm-res{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#1d2a1fcc,#05080de8);animation:wmResIn .35s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
       .wm-res .box{width:min(560px,92vw);padding:22px 24px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c;text-align:center}
-      .wm-res .ttl{font:900 40px/1 Georgia,serif;letter-spacing:.12em;color:#9a5a12;text-shadow:0 2px 0 #fff8,0 0 24px #ffcf6a;animation:wmResT .6s cubic-bezier(.2,1.6,.4,1) both}
+      .wm-res .ttl{font:900 40px/1 AgThai,Georgia,serif;letter-spacing:.12em;color:#9a5a12;text-shadow:0 2px 0 #fff8,0 0 24px #ffcf6a;animation:wmResT .6s cubic-bezier(.2,1.6,.4,1) both}
       .wm-res .sub{margin:6px 0 12px;color:#6a5030;font-size:14px}
       .wm-res .loot{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px}.wm-res .loot span{padding:5px 10px;border-radius:999px;background:#fff7;border:1px solid #b08a4a66;font-size:13.5px;animation:wmResPop .4s cubic-bezier(.2,1.6,.4,1) both}
       .wm-res .m{display:grid;grid-template-columns:92px 54px 1fr 74px;gap:8px;align-items:center;text-align:left;margin:7px 0;font-size:14px}.wm-res .m b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -941,6 +1174,9 @@
   { const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; cam.x = p.x; cam.y = p.y; cam.z = innerWidth < 700 ? .9 : 1.25 }
   try { if (window.Bounties) { for (const m of Bounties.expire(S)) log(m); Bounties.place(S, world, G); save() } } catch (e) { }   /* v97.73 · bounties get their hex */
   hudSync(); requestAnimationFrame(frame);
+  /* v98.340 · temporary save: the world map was left in the middle of a fight → open the same fight again at the saved moment (js/resume.js sets the flag) */
+  try { if (sessionStorage.getItem('projectA.wmResume') === '1') { sessionStorage.removeItem('projectA.wmResume'); const rec = JSON.parse(localStorage.getItem('projectA.wmFight') || 'null'), sn = JSON.parse(localStorage.getItem('projectA.battleSnap') || 'null');
+    if (rec) setTimeout(() => battle(rec.foe, rec.dang, { ...rec.o, resume: { ...rec, snapOk: !!sn } }), 1500) } } catch (e) { }
   setInterval(() => { try { adoptLeads() } catch (e) { } }, 2500);
   window.WorldMap = { travellers: () => travellers().map(t => ({ id: t.p.id, name: t.p.name, c: t.c, r: t.r, dir: t.dir })), results, chatter, townVisit, landPanel, hudSync: () => hudSync(), area: o => areaExplore(o), revealAll: () => { for (const k in world.tiles) S.known[k] = 1; fogDirty = true }, state: () => S, world: () => world, step: h => clickHex(h), questBoard, chooseDest, busy: () => busy, center };
 })();

@@ -1,0 +1,223 @@
+/* v98.276 · BG Editor, phase 1 — edit the REAL battle field in place (battle-field.html?edit=1&seed=…&biome=…).
+   Same renderer, same textures, same height map as the game: what you see is what the fight uses. (docs/BG-EDITOR-CONCEPT-TH.md)
+   • camera: wheel = zoom at the cursor · drag on empty ground (or right / middle button) = pan · the compass turns the view
+   • click selects a fighter or a prop · drag moves it (snaps to cells, green = allowed, red = not) · R turns a fighter · D duplicates a prop · Del removes a prop · Esc unselects
+   • palette: pick a prop kind, click a cell to put it there
+   • Ctrl+Z / Ctrl+Y undo / redo · 💾 keeps the edits in this browser for THIS field (biome + seed + size + poi) and re-applies them on load
+   Edits are an overlay of small operations on top of the seeded field (prop-move / prop-add / prop-del / unit), so a field is still fully described by seed + ops
+   (phase 2: the same ops are written to a BG Asset file — js/bg-field.js). Nothing here changes the game when ?edit=1 is absent. */
+(function () {
+  'use strict';
+  const Q = new URLSearchParams(location.search); if (Q.get('edit') !== '1') return;
+  const key = (u, v) => u + ',' + v;
+  document.documentElement.classList.add('fe-on');
+  const style = document.createElement('style');
+  style.textContent = `.fe-on [id^=fb],.fe-on .fb-show,.fe-on #fbBar{display:none!important}
+#fePanel{position:fixed;left:10px;top:var(--rail-top,240px);width:236px;max-height:calc(100dvh - var(--rail-top,240px) - 14px);overflow:auto;z-index:80;display:flex;flex-direction:column;gap:4px;padding:8px 10px;background:#241d15ee;border:1px solid #c9893a;border-radius:12px;font:13px AgThai,ProjectThai,system-ui,sans-serif;color:#f3e7cf;box-shadow:0 6px 24px #0008}
+#fePanel button,#fePanel select{font:inherit;color:#f3e7cf;background:#3a2f22;border:1px solid #6a5434;border-radius:8px;padding:5px 10px;cursor:pointer}#fePanel select{width:100%}
+#fePanel button:hover:not(:disabled){background:#4a3a28;border-color:#e0b050}#fePanel button:disabled{opacity:.4;cursor:default}
+#fePanel .fe-test{width:100%;margin:2px 0 6px;padding:8px 10px;font-weight:700;background:#2f6a3e;border-color:#7fd08f;color:#f4fff5}#fePanel .fe-test:hover:not(:disabled){background:#3b8250}#fePanel .fe-h{display:flex;justify-content:space-between;align-items:center;gap:6px}#fePanel details{border-top:1px solid #6a543488;padding-top:3px}#fePanel summary{cursor:pointer;font-weight:700;color:#f0c46a;padding:3px 0}
+#fePanel .fe-row{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0}#fePanel .fe-row button{flex:1}#fePanel details>button,#fePanel details>select{display:block;width:100%;margin:4px 0}
+#fePanel.min{width:auto}#fePanel.min details{display:none}#fePanel.min .fe-h b{display:none}
+#fePanel .sep{width:1px;height:22px;background:#6a5434}#feInfo{color:#e6d3a9;font-size:12.5px;line-height:1.4;margin:2px 0 4px}#feHint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:80;background:#241d15d0;border:1px solid #6a5434;border-radius:10px;padding:6px 12px;font:12px AgThai,ProjectThai,system-ui,sans-serif;color:#cdbb92;max-width:94vw;text-align:center}`;
+  document.head.appendChild(style);
+
+  /* ---------- the field's own data (shared core: js/bg-field.js) ---------- */
+  const B = window.BgField, FH = () => window.FieldHeight, cellsMap = () => FIELD.cells, R = () => FIELD.R, stateOf = () => window.TownBattle?.state?.() || null;
+  const { propAt, footprint, canPut, canStand } = B;
+  const PROP_KINDS = () => [...(FIELD.MIX.props || []).map(k => [k, false]), ...(FIELD.MIX.bigProps || []).map(k => [k, true])].filter(([k], i, a) => a.findIndex(x => x[0] === k) === i);
+
+  /* ---------- operations: undo / redo / save all run through BgField.run ---------- */
+  const ops = [], undone = []; let dirty = false;
+  const run = (o, inverse) => B.run(o, inverse);
+  function commit(op) { run(op, false); ops.push(op); undone.length = 0; dirty = true; sync() }
+  function undo() { const o = ops.pop(); if (!o) return; run(o, true); undone.push(o); dirty = true; selPick(null); sync() }
+  function redo() { const o = undone.pop(); if (!o) return; run(o, false); ops.push(o); dirty = true; sync() }
+  /* props edited before this page opened (a loaded BG Asset) are the first entries of the history */
+  if (B.current?.ops) for (const o of B.current.ops) ops.push(o);
+
+  /* ---------- selection / hit test ---------- */
+  let sel = null, drag = null, adding = null, hover = null;
+  const selPick = s => { sel = s; sync() };
+  const screenOf = (u, v) => project(u, v);
+  function pick(w) {
+    const st = stateOf(); let best = null;
+    for (const u of st?.units || []) { if (u.hp <= 0) continue; const p = screenOf(u.vu ?? u.u + .5, u.vv ?? u.v + .5), dx = w.x - p.x, dy = w.y - p.y; if (Math.abs(dx) < 30 * FK && dy > -96 * FK && dy < 14 * FK) { const d = Math.hypot(dx, dy + 40); if (!best || d < best.d) best = { d, s: { type: 'unit', unit: u } } } }
+    if (best) return best.s;
+    for (const c of cellsMap().values()) {
+      if (!c.prop || (c.big && !c.big.anchor)) continue; const big = !!c.big, p = screenOf(c.u + (big ? 1 : .5), c.v + (big ? 1 : .5)), b = propBox(c.prop, c.seed, big);
+      if (w.x >= p.x - b.w / 2 && w.x <= p.x + b.w / 2 && w.y >= p.y - b.h && w.y <= p.y + 6) { const d = -(c.u + c.v); if (!best || d < best.d) best = { d, s: { type: 'prop', prop: propAt(c.u, c.v) } } }
+    }
+    return best ? best.s : null;
+  }
+  const cellOf = w => { const F = FH(); const c = F ? F.hit(w.x, w.y) : null; return c && cellsMap().has(key(c.u, c.v)) ? c : null };
+
+  /* ---------- pointer ---------- */
+  const cvs = document.getElementById('world');
+  const w2 = e => world(e);
+  cvs.addEventListener('wheel', e => {
+    e.preventDefault(); const before = world(e), f = Math.exp(-e.deltaY * .0012), nz = Math.max(.45, Math.min(3.5, zoom * f)); if (nz === zoom) return;
+    zoom = nz; const after = world(e); pan.x += (after.x - before.x) * scale * zoom; pan.y += (after.y - before.y) * scale * zoom;
+  }, { passive: false });
+  cvs.addEventListener('contextmenu', e => e.preventDefault());
+  cvs.addEventListener('pointerdown', e => {
+    cvs.setPointerCapture?.(e.pointerId); window.TownBattle && cvs.dispatchEvent(new WheelEvent('wheel', { deltaY: 0 }));   // userCam = true: the battle camera stops following units
+    const w = w2(e);
+    if (e.button === 1 || e.button === 2) { drag = { kind: 'pan', x: e.clientX, y: e.clientY, px: pan.x, py: pan.y }; return }
+    if (e.button !== 0) return;
+    if (adding) { const c = cellOf(w); if (c) { const big = adding.big, p = { kind: adding.kind, big, seed: Math.random(), u: c.u, v: c.v }; if (canPut(p, c.u, c.v)) { commit({ t: 'prop-add', kind: p.kind, big, seed: p.seed, at: [c.u, c.v] }); selPick({ type: 'prop', prop: propAt(c.u, c.v) }) } } return }
+    const s = pick(w);
+    if (s) { selPick(s); drag = s.type === 'unit' ? { kind: 'unit', unit: s.unit, from: { u: s.unit.u, v: s.unit.v, dir: s.unit.dir }, to: null, moved: false } : { kind: 'prop', prop: s.prop, to: null, moved: false } }
+    else { selPick(null); drag = { kind: 'pan', x: e.clientX, y: e.clientY, px: pan.x, py: pan.y } }
+  });
+  cvs.addEventListener('pointermove', e => {
+    const w = w2(e); hover = cellOf(w);
+    if (!drag) return;
+    if (drag.kind === 'pan') { pan.x = drag.px + (e.clientX - drag.x); pan.y = drag.py + (e.clientY - drag.y); return }
+    const c = hover; if (!c) { drag.to = null; return }
+    drag.moved = true;
+    if (drag.kind === 'unit') drag.to = { u: c.u, v: c.v, ok: canStand(c.u, c.v, drag.unit) };
+    else { const p = drag.prop, off = p.big ? 0 : 0; drag.to = { u: c.u - off, v: c.v - off, ok: canPut(p, c.u, c.v, p) } }
+  });
+  cvs.addEventListener('pointerup', e => {
+    const d = drag; drag = null; if (!d || d.kind === 'pan' || !d.moved || !d.to || !d.to.ok) return;
+    if (d.kind === 'unit') { if (d.to.u !== d.from.u || d.to.v !== d.from.v) commit({ t: 'unit', id: d.unit.id, from: d.from, to: { u: d.to.u, v: d.to.v, dir: d.from.dir } }) }
+    else if (d.to.u !== d.prop.u || d.to.v !== d.prop.v) { const p = d.prop; commit({ t: 'prop-move', kind: p.kind, big: p.big, seed: p.seed, from: [p.u, p.v], to: [d.to.u, d.to.v] }); selPick({ type: 'prop', prop: propAt(d.to.u, d.to.v) }) }
+  });
+
+  /* ---------- actions ---------- */
+  const DIRS = ['SE', 'SW', 'NW', 'NE'];
+  function turnUnit() { const u = sel?.unit; if (!u) return; const n = DIRS[(DIRS.indexOf(u.dir) + 1) % 4]; commit({ t: 'unit', id: u.id, from: { u: u.u, v: u.v, dir: u.dir }, to: { u: u.u, v: u.v, dir: n } }) }
+  function dupProp() {
+    const p = sel?.prop; if (!p) return; const R0 = R();
+    for (let r = (p.big ? 2 : 1); r < 8; r++) for (let du = -r; du <= r; du++) for (let dv = -r; dv <= r; dv++) { if (Math.max(Math.abs(du), Math.abs(dv)) !== r) continue; const u = p.u + du, v = p.v + dv; if (Math.abs(u) > R0 || Math.abs(v) > R0) continue; if (canPut(p, u, v)) { const q = { ...p, seed: Math.random() }; commit({ t: 'prop-add', kind: q.kind, big: q.big, seed: q.seed, at: [u, v] }); selPick({ type: 'prop', prop: propAt(u, v) }); return } }
+  }
+  function delSel() { const p = sel?.prop; if (!p) return; commit({ t: 'prop-del', kind: p.kind, big: p.big, seed: p.seed, at: [p.u, p.v] }); selPick(null) }
+  /* ---------- BG Asset: save (draft in this browser + thumbnail), library, push ---------- */
+  const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+  let curId = Q.get('bg') || '', curMeta = B.current ? { name: B.current.name, tags: B.current.tags, asked: 1 } : { name: '', tags: { kind: 'random', difficulty: 1, useInGame: false } };
+  if (curId === '_test') {   /* back from ทดลองสนาม: the draft carries the edits, the identity (name / file id) is the one you had before */
+    let r = {}; try { r = JSON.parse(sessionStorage.getItem('fe-test-meta') || '{}') } catch (e) { }
+    curId = r.id || ''; curMeta = { name: r.name || '', tags: r.tags || curMeta.tags, asked: r.asked ? 1 : 0 };
+    if (!curId) { const q0 = new URLSearchParams(location.search); q0.delete('bg'); history.replaceState(null, '', '?' + q0.toString()) }
+  }
+  function thumb() {   // a small picture of the real field as it looks right now (webp data URL)
+    try { const c = document.createElement('canvas'), w = 384, h = Math.round(w * cvs.height / cvs.width); c.width = w; c.height = h; c.getContext('2d').drawImage(cvs, 0, 0, w, h); return c.toDataURL('image/webp', .8) } catch (e) { return null }
+  }
+  function build() {
+    return { format: 'bg-asset', v: 1, id: curId, name: curMeta.name, biome: FIELD.biome, r: +(Q.get('r') || 7), seed: +Q.get('seed'), poi: Q.get('poi') || '', night: FIELD.night ? 1 : 0, rampStyle: window.__rampStyle || B.current?.rampStyle || 'auto', tags: curMeta.tags,
+      gen: window.__bgGen, ops: ops.filter(o => o.t !== 'unit'), spawns: B.spawnsNow(), thumb: 'data/battlefields/' + curId + '.webp', savedAt: new Date().toISOString() };
+  }
+  function ask() {
+    const name = prompt('ชื่อ BG Asset นี้ (ภาษาไทยได้)', curMeta.name || ''); if (!name) return false;
+    let id = curId || slug(name) || ('bg-' + Q.get('seed')); id = prompt('รหัสไฟล์ (a-z 0-9 -) → data/battlefields/' + id + '.json', id); if (!id) return false;
+    curId = slug(id); curMeta.name = name; if (!curMeta.asked) { curMeta.asked = 1; curMeta.tags.useInGame = confirm('ให้เกมสุ่มเลือกสนามนี้เอง (ในไบโอม ' + FIELD.biome + ') ตอนมีการต่อสู้ไหม?\n\nตกลง = ใช้ในเกม (ต้องส่งขึ้นเกมก่อน)\nยกเลิก = เก็บไว้ก่อน') } return !!curId;
+  }
+  function save() {
+    if (!curId && !ask()) return; const a = build(); a.thumbData = thumb();
+    if (!B.saveDraft(a)) return note('บันทึกไม่ได้ (พื้นที่เบราว์เซอร์เต็ม?)');
+    dirty = false; const q = new URLSearchParams(location.search); q.set('bg', curId); history.replaceState(null, '', '?' + q.toString()); sync(); note('บันทึก BG Asset "' + curMeta.name + '" (' + curId + ') ในเบราว์เซอร์นี้แล้ว · กด ⬆ เพื่อส่งขึ้นเกม');
+  }
+  async function push() {
+    const P = parent.GitHubPush; if (!P) return note('หน้านี้ไม่ได้อยู่ใน editor — เปิดผ่านแท็บ ⚔ สนามต่อสู้');
+    if (dirty || !curId) save(); if (!curId) return; const a = build(), td = thumb(), meta = { id: curId, name: curMeta.name, biome: a.biome, tags: a.tags, thumb: a.thumb, seed: a.seed };
+    if (!P.config().token) return P.openSettings(() => push());
+    try {
+      const blob = td ? await (await fetch(td)).blob() : null;
+      const sha = await P.commit('BG Asset: ' + curMeta.name + ' (' + curId + ')', async head => {
+        let idx = { format: 'bg-asset-index', v: 1, assets: [] }; try { const x = JSON.parse(await head.read('data/battlefields/index.json') || 'null'); if (x && Array.isArray(x.assets)) idx = x } catch (e) { }
+        idx.assets = idx.assets.filter(x => x.id !== curId).concat([meta]).sort((p, q) => p.id < q.id ? -1 : 1);
+        const files = [{ path: 'data/battlefields/' + curId + '.json', content: JSON.stringify(a, null, 1) + '\n' }, { path: 'data/battlefields/index.json', content: JSON.stringify(idx, null, 1) + '\n' }];
+        if (blob) files.push({ path: 'data/battlefields/' + curId + '.webp', content: blob }); return files;
+      }, m => note(m));
+      note(sha ? 'ส่งขึ้น GitHub แล้ว · ' + sha : 'ไม่มีอะไรเปลี่ยน');
+    } catch (e) { note('push ไม่สำเร็จ: ' + e.message) }
+  }
+  function openAsset(id) { const q = new URLSearchParams(location.search); if (id) q.set('bg', id); else { q.delete('bg'); q.set('seed', String(100000 + Math.floor(Math.random() * 900000))) } if (dirty && !confirm('มีการแก้ที่ยังไม่บันทึก ทิ้งแล้วเปิดอันอื่น?')) return; location.search = q.toString() }
+  function reset() { if (!ops.length || !confirm('ล้างการแก้ทั้งหมดของสนามนี้ (' + ops.length + ' รายการ)?')) return; while (ops.length) run(ops.pop(), true); undone.length = 0; selPick(null); dirty = true; sync() }
+  const load = () => 0;
+  window.addEventListener('keydown', e => {
+    if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+    const k = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo() }
+    else if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); redo() }
+    else if ((e.ctrlKey || e.metaKey) && k === 's') { e.preventDefault(); save() }
+    else if (k === 'r' && sel?.unit) turnUnit(); else if (k === 'd' && sel?.prop) dupProp();
+    else if (k === 'delete' || k === 'backspace') { e.preventDefault(); delSel() } else if (k === 'escape') { adding = null; selPick(null) }
+  }, true);
+
+  /* ---------- panel ---------- */
+  const panel = document.createElement('div'); panel.id = 'fePanel';
+  panel.innerHTML = `<div class="fe-h"><b>🛠 แก้สนาม</b><button id="feToggle" title="ย่อ / ขยายแผงซ้าย">◀</button></div>
+<button id="feTest" class="fe-test" title="เปิดสนามที่เห็นนี้เข้าเล่นจริงในระบบเกม (HUD การ์ด เทิร์น ครบทุกอย่าง) · กด ↩ บนหน้าจอเพื่อกลับมาแก้ต่อ">▶ ทดลองสนาม (เล่นจริง)</button>
+<details open><summary>👤 ที่เลือก</summary><div id="feInfo"></div><div class="fe-row" id="feSizeRow" hidden><label title="ขนาดของภาพนี้ เทียบความสูงตัวเอก · เก็บติดตัว asset (ทุกชิ้นที่ใช้ภาพนี้เปลี่ยนตาม) · ⬆ ส่งขึ้นเกมที่ปุ่มข้างๆ">ขนาด <input id="feSize" type="number" step="0.05" min="0.2" max="12" style="width:64px"> ×ตัวเอก</label><button id="feSizePush" title="ส่งขนาด asset ขึ้นเกม">⬆</button></div><div class="fe-row"><button id="feTurn" title="R">↻ หมุนทิศ</button><button id="feDup" title="D">⧉ ทำซ้ำ</button><button id="feDel" title="Del">🗑 ลบ</button></div><button id="feAnim" title="เปิดตัวแก้อนิเมชันของตัวละครนี้ (จากหน้า Animation) ข้างๆ">🎞 แก้อนิเมชันตัวนี้</button></details>
+<details open><summary>＋ เพิ่มของลงสนาม</summary><select id="feAdd" title="เลือกของ แล้วคลิกช่องบนสนาม"><option value="">＋ เพิ่มของ…</option></select></details>
+<details open><summary>⛰ ทางลาด</summary><select id="feRamp" title="หน้าตาทางลาดทั้งสนาม"><option value="auto">อัตโนมัติ (หิน/ปูน = บันได · ธรรมชาติ = ลาด)</option><option value="slope">ทางลาดเรียบทั้งหมด</option><option value="steps">บันไดหินทุกทางลาด</option><option value="wood">บันไดไม้ทุกทางลาด</option></select></details>
+<details open><summary>💾 บันทึก / คลัง</summary><div class="fe-row"><button id="feUndo" title="Ctrl+Z">↶ ย้อน</button><button id="feRedo" title="Ctrl+Y">↷ ทำซ้ำ</button></div><button id="feSave" title="Ctrl+S">💾 บันทึก BG</button><button id="fePush" title="ส่งไฟล์ BG Asset + ภาพย่อ ขึ้น GitHub">⬆ ส่งขึ้นเกม</button><select id="feLib" title="คลัง BG Asset"><option value="">📂 คลัง BG Asset…</option><option value="__new">＋ สนามใหม่ (สุ่ม)</option></select><button id="feReset">ล้างการแก้</button></details>`;
+  document.body.appendChild(panel);
+  { const rs = panel.querySelector('#feRamp'); rs.value = window.__rampStyle || B.current?.rampStyle || 'auto'; rs.onchange = () => { window.__rampStyle = rs.value; window.FieldRepaint?.() } }   /* v98.314 · ramp look is part of the BG asset */
+  const hint = document.createElement('div'); hint.id = 'feHint'; document.body.appendChild(hint);
+  const $ = id => document.getElementById(id);
+  for (const [k, big] of PROP_KINDS()) { const o = document.createElement('option'); o.value = k + '|' + (big ? 1 : 0); o.textContent = k + (big ? ' (2×2)' : ''); $('feAdd').appendChild(o) }
+  $('feAdd').onchange = e => { const [k, b] = e.target.value.split('|'); adding = k ? { kind: k, big: b === '1' } : null; sync() };
+  /* v98.578 · AssetSize (js/asset-size.js): the picture of the selected prop remembers how big it is next to the hero; typing a number here changes that picture everywhere */
+  const propFile = p => { try { const sp = p && window.propSpec ? propSpec(p.kind, p.seed) : null; return sp ? 'assets/' + sp[0] + '.webp' : '' } catch (e) { return '' } };
+  $('feSize').onchange = () => { const p = sel?.prop, f = propFile(p), v = +$('feSize').value; if (!f || !(v > 0)) return; AssetSize.set(f, v); AssetSize.flush(); try { window.__feDirtyGround?.(); window.FieldRepaint?.() } catch (e) { } sync(); note('ขนาด ' + v + ' ×ตัวเอก · ' + f.split('/').pop()) };
+  $('feSizePush').onclick = async () => { const G = window.GitHubPush; if (!G) return note('ไม่มีระบบ push'); if (!G.config().token) return G.openSettings(); try { const t = await G.pushSettings(['asset-hero-ratio-v1'], 'ขนาด asset เทียบตัวเอก', [], note); note(t ? '⬆ push ขนาด asset แล้ว' : 'ไม่มีค่าที่ต้อง push') } catch (e) { note('push ไม่สำเร็จ: ' + (e.message || e)) } };
+  $('feTurn').onclick = turnUnit; $('feDup').onclick = dupProp; $('feDel').onclick = delSel; $('feToggle').onclick = () => { panel.classList.toggle('min'); $('feToggle').textContent = panel.classList.contains('min') ? '▶' : '◀' };
+  $('feAnim').onclick = () => { const u = sel?.unit; if (!u) return; try { parent.postMessage({ type: 'fe-open-anim', key: String(u.key || u.kind || u.id || ''), name: u.name || u.key || u.kind || '' }, '*') } catch (e) { note('เปิดตัวแก้อนิเมชันไม่ได้ (ต้องเปิดจากหน้า BG editor)') } };
+  /* v98.326 · ทดลองสนาม: save what you see as a temporary draft (_test), reopen the page WITHOUT ?edit=1 so the real game runs it (HUD, cards, turns, AI); a pill on the game page brings you back here */
+  $('feTest').onclick = () => {
+    const a = build(); a.id = '_test'; a.name = '(ทดลองสนาม)'; a.thumb = ''; if (!B.saveDraft(a)) return note('เปิดโหมดทดลองไม่ได้ (พื้นที่เบราว์เซอร์เต็ม?)');
+    const back = new URLSearchParams(location.search); back.set('bg', '_test');   /* coming back reopens the test draft: nothing you edited is lost */
+    try { sessionStorage.setItem('fe-test-return', location.pathname + '?' + back.toString()); sessionStorage.setItem('fe-test-meta', JSON.stringify({ id: curId, name: curMeta.name, tags: curMeta.tags, asked: curMeta.asked || 0 })) } catch (e) { }
+    const q = new URLSearchParams(location.search); q.delete('edit'); q.set('bg', '_test'); q.set('testplay', '1'); location.search = q.toString();
+  };
+  $('feUndo').onclick = undo; $('feRedo').onclick = redo; $('feSave').onclick = save; $('fePush').onclick = push; $('feReset').onclick = reset;
+  { const ix = B.fetchIndex(); for (const a of ix) { const o = document.createElement('option'); o.value = a.id; o.textContent = (a.draft ? '✎ ' : '') + (a.name || a.id) + ' · ' + a.biome; $('feLib').appendChild(o) } $('feLib').value = curId && ix.some(a => a.id === curId) ? curId : ''; $('feLib').onchange = e => { const v = e.target.value; if (v) openAsset(v === '__new' ? '' : v) } }
+  let noteT = 0, noteMsg = '';
+  function note(m) { noteMsg = m; noteT = performance.now() + 4000; sync() }
+  function sync() {
+    const u = sel?.unit, p = sel?.prop;
+    $('feInfo').textContent = adding ? 'โหมดวาง: ' + adding.kind + ' — คลิกช่องที่ต้องการ (Esc ยกเลิก)' : u ? 'ตัวละคร: ' + (u.name || u.key || u.kind || u.id) + ' · ช่อง ' + u.u + ',' + u.v + ' · ' + u.dir : p ? 'ของ: ' + p.kind + (p.big ? ' (2×2)' : '') + ' · ช่อง ' + p.u + ',' + p.v : 'ยังไม่ได้เลือก — คลิกตัวละครหรือของบนสนาม';
+    { const f = propFile(p), row = $('feSizeRow'); row.hidden = !f; if (f && document.activeElement !== $('feSize')) { const sp = propSpec(p.kind, p.seed); $('feSize').value = (sp[1] / AssetSize.heroPx('battle')).toFixed(2) } }
+    $('feAnim').disabled = !u; $('feTurn').disabled = !u; $('feDup').disabled = !p; $('feDel').disabled = !p; $('feUndo').disabled = !ops.length; $('feRedo').disabled = !undone.length; $('feSave').textContent = dirty ? '💾 บันทึก BG ●' : '💾 บันทึก BG';
+    hint.textContent = (performance.now() < noteT ? noteMsg + ' · ' : '') + 'ล้อเมาส์ = ซูม · ลากพื้นว่าง = เลื่อน · ลากของ/ตัวละคร = ย้าย · R หมุน · D ทำซ้ำ · Del ลบ · Ctrl+Z ย้อน · Ctrl+S บันทึก';
+  }
+  /* camera buttons with the HUD object set (assets/ui/hud): zoom in / out, centre, fit the whole field */
+  { const z = document.createElement('div'); z.id = 'feZoom'; z.style.cssText = 'position:fixed;right:14px;bottom:112px;z-index:39;display:flex;flex-direction:column;gap:6px;transform:scale(.8);transform-origin:100% 100%';
+    z.innerHTML = '<button class="hudb hudb-plus" title="ซูมเข้า" aria-label="ซูมเข้า" style="--s:48px"></button><button class="hudb hudb-minus" title="ซูมออก" aria-label="ซูมออก" style="--s:48px"></button><button class="hudb hudb-focus" title="จัดกึ่งกลางสนาม" aria-label="จัดกึ่งกลางสนาม" style="--s:48px"></button><button class="hudb hudb-expand" title="ดูทั้งสนาม" aria-label="ดูทั้งสนาม" style="--s:48px"></button>';
+    document.body.appendChild(z); const [zi, zo, zf, zx] = z.children, hold = () => cvs.dispatchEvent(new WheelEvent('wheel', { deltaY: 0 })), step = f => { hold(); zoom = Math.max(.45, Math.min(3.5, zoom * f)) };
+    zi.onclick = () => step(1.25); zo.onclick = () => step(.8); zf.onclick = () => { hold(); zoom = 1; pan.x = 0; pan.y = 0 }; zx.onclick = () => { hold(); zoom = .6; pan.x = 0; pan.y = 0 } }
+  /* ---------- overlay drawn inside the world transform (called from field-host frame) ---------- */
+  window.FieldEdit = {
+    active: true, ops: () => ops.slice(), save, push, build,
+    /* v98.327 · the editor's ground rings are items of the battle's depth-sorted list (units / props in front of a cell hide its ring) */
+    items() {
+      const D = window.FieldDepth, out = [], add = (u, v, big, which) => out.push({ d: D(u + (big ? 1 : .5), v + (big ? 1 : .5)) - .05, draw: (g, t) => window.FieldEdit.draw(g, t, which) });
+      if (hover && !drag) add(hover.u, hover.v, false, 'hover'); if (sel?.unit) add(sel.unit.u, sel.unit.v, false, 'selu'); if (sel?.prop) add(sel.prop.u, sel.prop.v, sel.prop.big, 'selp');
+      if (drag?.to) add(drag.to.u, drag.to.v, drag.kind === 'prop' && drag.prop.big, 'drag'); else if (adding && hover) add(hover.u, hover.v, adding.big, 'add');
+      return out;
+    },
+    draw(g, t, which) {
+      const G = window.GroundArtCode && GroundArtCode.enabled() ? window.GroundArtCode : window.GroundArt, cw = (u, v) => Math.abs(project(u + 1, v).x - project(u, v + 1).x);   /* v98.309 · the same code-drawn art as the battle */
+      const pic = (name, u, v, big) => { if (!G) return false; const k = big ? 2 : 1, p = project(u + .5 * k, v + .5 * k), w = cw(u, v) * 1.06 * k; return G.frame(g, name, p.x, p.y, w, w * .56, t) };   // v98.282 · the user's cell frames
+      const ring = (u, v, big, col, fill) => window.FieldOcc ? FieldOcc.draw(g, u, v, () => ringRaw(u, v, big, col, fill)) : ringRaw(u, v, big, col, fill);   /* v98.325 · the same exact occlusion as the battle (js/field-host.js FieldOcc) */
+      const ringRaw = (u, v, big, col, fill) => {
+        const name = col === '#6fe08a' ? 'green' : col === '#ff6a5a' ? 'red' : col === '#ffd34d' ? 'yellow' : 'grey';
+        if (fill) { /* soft fill under the frame */ const cs = big ? [[u, v], [u + 2, v], [u + 2, v + 2], [u, v + 2]] : [[u, v], [u + 1, v], [u + 1, v + 1], [u, v + 1]]; g.beginPath(); cs.forEach(([a, b], i) => { const q = project(a, b); i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y) }); g.closePath(); g.fillStyle = fill; g.fill() }
+        if (pic(name, u, v, big)) return;
+ const cs = big ? [[u, v], [u + 2, v], [u + 2, v + 2], [u, v + 2]] : [[u, v], [u + 1, v], [u + 1, v + 1], [u, v + 1]]; g.beginPath(); cs.forEach(([a, b], i) => { const q = project(a, b); i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y) }); g.closePath(); if (fill) { g.fillStyle = fill; g.fill() } g.strokeStyle = col; g.lineWidth = 3; g.stroke() };
+      g.save();
+      if (hover && !drag && (!which || which === 'hover')) { const p = project(hover.u + .5, hover.v + .5), w = cw(hover.u, hover.v) * 1.06; let ok = false; const f = () => { ok = !!(G && G.corners(g, p.x, p.y, w, w * .56, t)) }; window.FieldOcc ? FieldOcc.draw(g, hover.u, hover.v, f) : f(); if (!ok) ring(hover.u, hover.v, false, 'rgba(255,255,255,.55)') }
+      if (sel?.unit && (!which || which === 'selu')) ring(sel.unit.u, sel.unit.v, false, '#ffd34d', 'rgba(255,211,77,.18)');
+      if (sel?.prop && (!which || which === 'selp')) ring(sel.prop.u, sel.prop.v, sel.prop.big, '#ffd34d', 'rgba(255,211,77,.18)');
+      if (drag?.to && (!which || which === 'drag')) { const big = drag.kind === 'prop' && drag.prop.big; ring(drag.to.u, drag.to.v, big, drag.to.ok ? '#6fe08a' : '#ff6a5a', drag.to.ok ? 'rgba(111,224,138,.28)' : 'rgba(255,106,90,.28)') }
+      else if (adding && hover && (!which || which === 'add')) { const p = { kind: adding.kind, big: adding.big }, ok = canPut(p, hover.u, hover.v); ring(hover.u, hover.v, adding.big, ok ? '#6fe08a' : '#ff6a5a', ok ? 'rgba(111,224,138,.25)' : 'rgba(255,106,90,.25)') }
+      g.restore();
+    }
+  };
+  /* once the battle is built (units exist) put the saved edits back */
+  if (B.current) setTimeout(() => note('เปิด BG Asset "' + (B.current.name || B.current.id) + '" แล้ว' + (B.drift ? ' · ⚠ ตัวสร้างสนามเปลี่ยนไปตั้งแต่ตอนบันทึก หน้าตาอาจต่างจากเดิม' : '')), 1500);
+  sync();
+})();

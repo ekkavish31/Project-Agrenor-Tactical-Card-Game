@@ -19,9 +19,23 @@ const late=()=>(G()?.minutes||0)>=1140;
 /* v94: journeys happen on the world map (the old area maps are archived), companions are recruited in the inn */
 const onWorld=()=>!!root.VillageTown?.onWorld?.();
 /* v95.14: Kier walks the first expedition with you only — he joins (or is already in the party), and leaves again when you are home. He can be recruited normally afterwards. */
-function markTemp(){try{const L=root.VillageLife,S=L.save(),had=L.inParty(S,'kier');if(!had&&S.party.length+S.bench.length===0&&L.join(S,'kier')){L.writeSave(S);toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)')}else if(had)toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)');if(L.inParty(L.save(),'kier')){V().story.tempAlly='kier';doSave()}}catch(e){}}
-function leaveTemp(){try{const st=V()?.story;if(!st?.tempAlly)return;const k=st.tempAlly,S=root.VillageLife.save();S.party=S.party.filter(p=>p.key!==k);S.bench=S.bench.filter(p=>p.key!==k);root.VillageLife.writeSave(S);st.tempAlly=null;doSave();toast('เคียร์ขอกลับไปช่วยที่บ้านก่อน · ชวนเขาใหม่ได้ที่โรงแรม','good')}catch(e){}}
-const partySize=()=>(V()?.party||[]).length+(V()?.bench||[]).length;
+function markTemp(){try{const L=root.VillageLife,S=L.save(),had=L.inParty(S,'kier');if(!had&&[...S.party,...S.bench].filter(m=>m.key!=='sib').length===0&&L.join(S,'kier')){L.writeSave(S);toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)')}else if(had)toast('★ เคียร์ไปด้วยในภารกิจนี้ (กลับบ้านแล้วเขาจะแยกไปก่อน)');if(L.inParty(L.save(),'kier')){V().story.tempAlly='kier';doSave()}}catch(e){}}
+function leaveTemp(msg){try{const st=V()?.story;if(!st?.tempAlly)return;const k=st.tempAlly,S=root.VillageLife.save();S.party=S.party.filter(p=>p.key!==k);S.bench=S.bench.filter(p=>p.key!==k);root.VillageLife.writeSave(S);st.tempAlly=null;doSave();toast(msg||'เคียร์ขอกลับไปช่วยที่บ้านก่อน · ชวนเขาใหม่ได้ที่โรงแรม','good')}catch(e){}}
+/* v98.234 · the sibling is always in the party, so it does not count as a recruited companion */
+const partySize=()=>[...(V()?.party||[]),...(V()?.bench||[])].filter(m=>m.key!=='sib').length;
+
+/* ---------- v98.332 · before the first trip: the follower's sword, potions, a temporary friend, and the wound on the way home ----------
+   (story content is a PROPOSAL from the owner's brief, not promoted canon — see docs/TODO.md §15) */
+const kierRetired=()=>!!V()?.story?.kierHurt;
+const kierCase=()=>V()?.story?.tempAlly==='kier';
+const potionCount=()=>{try{return root.VillageLife.save().potions||0}catch{return 0}};
+/* the sword forged for the sibling: it leaves the bag and becomes the sibling's weapon (town-battle reads village.sibGear) */
+function giveSibSword(d){try{const g=G(),inv=g.inventory||[],it=inv.find(x=>x.id>=d.next&&x.kind==='sword');if(!it)return;
+ g.inventory=inv.filter(x=>x!==it);if(g.equipped===it.id){const k=g.inventory.find(x=>x.recipe==='oldKnife')||g.inventory[0];g.equipped=k?k.id:null}
+ V().sibGear={kind:'sword',quality:it.quality||1,recipe:it.recipe||'sword'};doSave();toast('⚔ ตัวตามได้ดาบเหล็กเล่มใหม่แล้ว · ตัวเอกยังใช้มีดสั้นของพ่อ','good')}catch(e){}}
+/* the friend is hurt on the way home: a heavy leg wound (js/injury.js) and out of the team — the hospital step follows */
+function kierInjured(){try{const k=V().story.tempAlly||'kier',g=root.WorldState?.game?.()||G();root.Injury?.force(g,k,'leg','heavy');
+ leaveTemp('เคียร์บาดเจ็บที่ขาอย่างหนัก · ออกจากทีมไปพักฟื้น');V().story.kierHurt=true;doSave();try{root.WorldState?.commit?.()}catch{}}catch(e){}}
 
 /* ---------- helpers that call existing game actions ---------- */
 function spend(energy,minutes,fatigue){try{return spendActivity(energy,minutes,fatigue)}catch{return ''}}
@@ -46,6 +60,14 @@ function guide(){const step=cur();if(!step)return;if(onWorld()){toast('อยู
 const guideBtn={label:'📍 นำทาง',primary:true,hide:()=>onWorld(),run:guide};
 const HINT_WALK='◆ สีทองบนแผนที่บอกทาง · คลิกถนนหรืออาคารเพื่อเดิน · คลิกคนเพื่อคุย';
 function talkStep(o){return {tag:'real',...o,talk:o.talk,check:d=>!!d.talked,acts:[guideBtn,...(o.acts||[])],hint:o.hint||HINT_WALK}}
+/* v98.598/604 · WHERE a talk happens decides the backdrop — for every NPC scene (talkStep outro → the NPC), by where that person really is at that hour (npcPlace):
+   forge → the forge picture · market / shop → the market picture · square / a house door → the village (code-drawn) · inn / guild / temple / healer / Hilda's farm → code-drawn rooms (no paintings yet) */
+const PLACE_BG={forge:{bg:'assets/forge.webp'},market:{bg:'assets/market.webp'},shop:{bg:'assets/market.webp'},square:{bg:'assets/market.webp'},inn:{art:'innHall'},guild:{art:'guildHall'},temple:{art:'temple'},healer:{art:'hearth'}};
+let TALK_NPC=null;
+function talkNpcOf(id){if(!TALK_NPC){TALK_NPC={};for(const s of STEPS)if((s.talk||s.npc)&&s.outro&&typeof s.outro==='string')TALK_NPC[s.outro]=s.talk||s.npc}return TALK_NPC[id]||null}
+function sceneAt(id){const sc=D().SCENES[id];if(!sc)return sc;try{const npc=talkNpcOf(id);if(!npc)return sc;const at=String(npcPlace(npc)||'');
+  let o=PLACE_BG[at];if(!o){o=npc==='hilda'?{art:'hildaFarm'}:{bg:'assets/market.webp'}}   /* v98.617 · outdoors in the village = the painted market square (owner's request), not the code-drawn countryside */   /* her own farm / a house door → outdoors */
+  return {...sc,art:o.art||null,bg:o.bg||null}}catch(e){return sc}}
 function targetsOf(step,d){const t=typeof step.targets==='function'?step.targets(d)||{}:{};const out={npc:[...(t.npc||[])],place:[...(t.place||[])],exit:!!(t.exit||step.exit),spots:[...(t.spots||[])],label:t.label||''};
  if(step.talk&&!d.talked)out.npc.push(step.talk);if(step.place)out.place.push(...[].concat(step.place));
  if(step.spot){const left=(step.spot.n||1)-(d.got||0);if(left>0)out.spots.push({...step.spot,n:left})}
@@ -53,7 +75,7 @@ function targetsOf(step,d){const t=typeof step.targets==='function'?step.targets
 
 /* street objects (shared by several steps) */
 const SPOT={
- goats:{key:'goats',kind:'goat',near:['square','inn','market','npc7'],n:3,spread:7,flee:true},
+ goats:{key:'goats',kind:'goat',near:['square','inn','market','npc7'],n:2,spread:7,flee:true},   /* v98.331 · 2 goats (was 3): touching one starts the goat fight */
  planks:{key:'planks',kind:'plank',near:['npc3'],n:2,spread:3,mark:true,label:'แผ่นไม้ของเคน'},
  ripe:{key:'ripe',kind:'ripe',near:['npc13'],n:3,spread:4,mark:true,label:'ฟักทองสุก'},
  plot:{key:'plot',kind:'plot',near:['npc13'],n:1,spread:2,mark:true,label:'ฟักทองประกวดของฮิลดา'},
@@ -66,21 +88,26 @@ const plotIfDry=()=>(V()?.story?.seeds&&!wateredToday())?[SPOT.plot]:[];
    The battles of the prologue pass ?tut= to the arena, which coaches move by move (js/town-battle.js). The prologue cannot be skipped
    and the world map only opens when a step sends you out — free play starts when the finale is reached. */
 const LESSON={
- wake:['เดินในหมู่บ้าน',['คลิกถนนหรืออาคารเพื่อเดิน · ลากพื้นเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม','◆ สีทองบนแผนที่คือสิ่งที่เควสต้องการ · 📍 นำทาง ให้ตัวเอกเดินไปเอง','คลิกคนเพื่อคุย · Esc เปิดเมนู (กระเป๋า สำรับ ตัวละคร บันทึกเกม)']],
+ chestLesson:['หีบเก็บของ',['หีบในบ้านฝากของได้ทั้งวัตถุดิบ (เหล็ก ถ่าน ไม้ เสบียง) และอุปกรณ์ที่ไม่ได้สวมใส่ — ของในหีบไม่หายตอนออกเดินทาง','ใช้ได้เฉพาะตอนอยู่ที่บ้าน · เดินไปที่หีบแล้วเลือก หีบเก็บของ · ฝากได้ทีละชิ้น ลองฝากแท่งเหล็กที่ลุงทอมให้ 1 ชิ้นดู']],
+ deckLesson:['จัดสำรับ',['สำรับคือไพ่ที่ตัวละครใช้ในสนามรบ แยกเป็นไพ่เดินกับไพ่โจมตี — ไพ่ใหม่ที่ได้มาอยู่ในสมุดก่อน ยังไม่ลงสำรับเอง','เดินไปที่โต๊ะจัดสำรับ แล้วเพิ่มไพ่ อัสนีบาต ที่ฮิลดาให้ลงสำรับโจมตี (กด + ที่ใบนั้น) แล้วกดบันทึก · ไพ่แต่ละธาตุชนะศัตรูต่างธาตุ']],
+ wake:['เดินในหมู่บ้าน',['คลิกถนนหรืออาคารเพื่อเดิน · ลากพื้นเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม','◆ สีทองบนแผนที่คือสิ่งที่เควสต้องการ · 📍 นำทาง ให้ตัวเอกเดินไปเอง','คลิกคนเพื่อคุย · Esc เปิดเมนู (สมุดผนึก สำรับ ตัวละคร บันทึกเกม)','เดินด้วยปุ่ม: W A S D หรือลูกศร (จอสัมผัส/จอยสติ๊ก = จอยซ้ายมือ) · เดินชนประตูหรือคนค้างไว้สักครู่ก็ทำสิ่งนั้นเอง','ปุ่ม Act: E หรือ Space (จอสัมผัสคือปุ่มกลมใหญ่ · จอยคือปุ่ม A) = ทำสิ่งที่อยู่ตรงหน้า เช่น คุย เข้าอาคาร เก็บของ · กดค้าง ~½ วินาทีเพื่อเปิดวงกลมตัวเลือก (คุย ถามข่าว ให้ของ ...) แล้วปล่อยบนตัวเลือก']],
  goats:['เวลาและแรง',['นาฬิกาเดินตลอดเวลาในหมู่บ้าน · ชาวบ้านแต่ละคนมีตารางของตัวเอง','งานและกิจกรรมใช้แรงและเวลา · แรงหมดต้องพักหรือนอน','แพะวิ่งหนีเมื่อเข้าใกล้ แต่จะหอบแล้วหยุด — รอจังหวะนั้น']],
  seeds:['งานในหมู่บ้าน',['ชาวบ้านมีงานให้ช่วยเสมอ · ช่วยแล้วได้เงิน ของ และความสนิท','ลองคุยกับคนเดิมหลายครั้ง บทสนทนาเปลี่ยนตามเรื่องที่เกิดขึ้น']],
  pumpkin:['งานที่ต้องทำทุกวัน',['ฟักทองประกวดต้องดูแลวันละครั้ง · ยิ่งดูแลครบหลายวัน ผลประกวดยิ่งดี','งานบางอย่างได้ผลตามจำนวนวัน ไม่ใช่ทำครั้งเดียวจบ']],
- planks:['วัตถุดิบ',['ของที่เก็บได้เข้ากระเป๋าวัตถุดิบ (ไม้ เหล็ก ถ่าน เสบียง) · ดูได้ที่ 🎒 กระเป๋า','วัตถุดิบที่ขาดซื้อได้ที่ตลาด']],
+ planks:['วัตถุดิบ',['ของที่เก็บได้เข้าสมุดผนึก (หมวดวัตถุดิบ) (ไม้ เหล็ก ถ่าน เสบียง) · ดูได้ที่ 📖 สมุดผนึก','วัตถุดิบที่ขาดซื้อได้ที่ตลาด']],
  stall:['ซ่อมและสร้าง',['การซ่อม/สร้างใช้วัตถุดิบ แรง และเวลา · ถ้าของไม่พอ เกมบอกว่าขาดอะไร']],
  sleep1:['นอนพักและบันทึกเกม',['นอนที่เตียงในบ้าน = ฟื้นแรงและ HP ข้ามไปเช้าวันใหม่','เกมเซฟเองตลอด · อยากเก็บจุดนี้ไว้ ใช้ Esc → 💾 บันทึกเกม (3 ช่อง)']],
  guard:['ออกนอกหมู่บ้าน',['แผนที่โลกเดินทีละช่อง · หมอกจางเมื่อเดินผ่าน','การเดินกินเสบียงและเวลา · กลางคืนศัตรูดุกว่า','กลับหมู่บ้านได้ทุกเมื่อด้วยปุ่ม 🏠']],
  cave:['การต่อสู้ครั้งแรก',['คิวด้านบนบอกลำดับ: ใครเต็มแถบ CT ก่อนได้เล่นก่อน','คลิกช่องเพื่อเดิน · คลิกศัตรูเพื่อดูการ์ดที่ดีที่สุด · คลิกซ้ำเพื่อโจมตี','จบเทิร์นแล้วเลือกทิศหันหน้า — โดนตีจากด้านหลังแรงขึ้น ×1.2']],
  gus:['ช่างตีเหล็ก',['โรงตีเหล็กคือที่ทำของ ทั้งอาวุธ ของใช้ และของขาย']],
  lanterns:['คราฟต์ที่ทั่ง',['เดินไปที่จุดบริการ แล้วเลือกสิ่งที่จะทำ · ของแต่ละอย่างใช้วัตถุดิบต่างกัน']],
- craft:['ตีอาวุธ',['เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูป → ถังน้ำ: ชุบแข็ง','ฝีมือดีได้อาวุธ ★ สูงกว่า · สวมอาวุธที่ 🎒 กระเป๋า แล้ว ATK ในสนามเพิ่ม']],
+ craft:['ตีอาวุธ',['เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูป → ถังน้ำ: ชุบแข็ง','ฝีมือดีได้อาวุธ ★ สูงกว่า · สวมอาวุธที่ 📖 สมุดผนึก แล้ว ATK ในสนามเพิ่ม']],
  hire:['เพื่อนร่วมทาง',['ชวนคนที่มี ★ ที่โรงแรมเข้าทีม (สูงสุด 4 คน)','ในสนาม: สั่ง ⚔ บุก · 👣 ตาม · 🛡 ยึด และท่าพิเศษ (ใช้ 1 คริสตัล)','เพื่อนถึง Lv.3 แล้วสั่งเองได้ในตาของเขา 🎮']],
  sell:['ขายของ',['ขายที่โต๊ะรับซื้อในตลาด หรือวางของใน "ร้านของเรา" แล้วตั้งราคา','ร้านขายต่อเองแม้ตัวเอกไม่อยู่ · ดูยอดในสมุดยอดขาย']],
  raid:['สู้อย่างนักวางแผน',['ยืนสูงกว่าเป้า ตีแรงขึ้น ~10% ต่อระดับ (▲ บนช่องคือความสูง)','ธาตุชนะทาง ×1.3 · แพ้ทาง ×0.7 · ดูตารางธาตุใน Esc','การ์ดตอบโต้/หลบ ใช้ก่อนจบเทิร์น ทำงานตอนศัตรูตี']],
+ sibSword:['อาวุธของตัวตาม',['ตัวเอกพกมีดสั้นของพ่อ · ตัวตามยังถือแค่ท่อนฟืน จึงต้องตีดาบเหล็กให้','ดาบที่ตีให้ตัวตามจะถูกมอบให้เลย (ไม่เข้าชุดอาวุธของตัวเอก) · ยิ่งฝีมือดี ยิ่งแรง']],
+ potions:['ยาฟื้นฟู',['ยาใช้ได้ทั้งตอนเดินทางและกลางการต่อสู้ · ข้างนอกศัตรูแข็งและเยอะกว่าในหมู่บ้าน','ซื้อได้ที่ร้านค้า หมอยา และตลาด · ราคาขึ้นลงตามความสัมพันธ์กับหมู่บ้าน']],
+ hospital:['โรงพยาบาลและบาดแผล',['ตัวละครที่ล้มในสนามอาจได้แผล: เจ็บ (หายเองได้ทีละวัน) หรือ หนัก (หายได้เฉพาะเตียงโรงพยาบาล)','แผลหนักห้ามสู้ ทำงาน หรือเดินทางตามตำแหน่ง · เตียงคิดค่าพักต่อวัน','ที่บ้านหมอยามีปุ่ม 🏥 ห้องผู้ป่วย: รับเข้าพัก รับกลับ และเยี่ยมไข้วันละครั้ง (ความสนิท +1 และหายไวขึ้นเล็กน้อย)']],
  prep:['เตรียมตัวเดินทาง',['ซื้อเสบียงและยาก่อนออก · จัดสำรับที่ 🃏 สำรับ ให้เข้ากับสนาม']],
  expedition:['การเดินทางไกล',['ศัตรูซุ่มโจมตีได้ระหว่างทาง · ชนะแล้วได้ EXP เงิน และของ','แรงหมดในสนาม ใช้ ♻ ทิ้งไพ่แลกแรง · การ์ดปีน/กระโจนใช้ความสูงให้เป็นประโยชน์']],
  rest:['การผจญภัยของเจ้าเริ่มแล้ว',['จบบทนำแล้วเล่นได้อิสระ: บอร์ดเควส ร้านการ์ด ครูฝึก เมืองบนแผนที่โลก และบอสในตำนาน','เพื่อนเก่งขึ้นตามเลเวล · ไพ่ใหม่ได้จากเลเวล บอส ร้าน และครู']]
@@ -88,7 +115,7 @@ const LESSON={
 function lessonCard(id){const L=LESSON[id];if(!L)return Promise.resolve();
  if(!document.getElementById('stkLessonCss')){const c=document.createElement('style');c.id='stkLessonCss';c.textContent=`#stkLesson{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;background:#05080daa;animation:stkL .3s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
   #stkLesson .card{width:min(520px,92vw);padding:20px 22px;border-radius:14px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 20px 50px #000b;border:2px solid #b08a4a}
-  #stkLesson small{letter-spacing:.2em;color:#8a6a3a;font-size:11px}#stkLesson h3{margin:4px 0 10px;font:800 22px Georgia,"Noto Sans Thai",serif;color:#5a3a10}
+  #stkLesson small{letter-spacing:.2em;color:#8a6a3a;font-size:11px}#stkLesson h3{margin:4px 0 10px;font:800 22px AgThai,Georgia,"Noto Sans Thai",serif;color:#5a3a10}
   #stkLesson ul{margin:0 0 14px;padding-left:20px;line-height:1.7;font-size:15px}#stkLesson button{width:100%;padding:10px;border-radius:10px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:700 15px inherit;font-family:inherit;cursor:pointer}
   @keyframes stkL{from{opacity:0}}`;document.head.append(c)}
  const st=V().story;(st.lessons||=[]).includes(id)||st.lessons.push(id);doSave();
@@ -97,28 +124,46 @@ function lessonCard(id){const L=LESSON[id];if(!L)return Promise.resolve();
   d.querySelector('button').onclick=close;addEventListener('keydown',key,true);document.body.append(d);d.querySelector('button').focus()})}
 /* world map only when the prologue sends you out (or you are already out on a step) */
 const WORLD_STEPS=['cave','caveBack','expedition','return'];
-function lock(){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||WORLD_STEPS.includes(step.id))return '';return 'ทำเควสบทนำต่อก่อน: '+step.title+' — '+step.goal}
+function lock(){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||WORLD_STEPS.includes(step.id))return '';return 'ธุระตรงหน้ายังไม่เสร็จ — '+step.title+': '+step.goal+' · ยังไม่ใช่เวลาออกจากหมู่บ้าน'}
+/* v98.364 · during the prologue only the places the current step needs are open (home and the plaza always); the others answer with an in-story line.
+   A talk step opens the place where that villager is right now (shared daily schedule); anything unknown stays open rather than trapping the player. */
+function npcPlace(id){try{const L=root.VillageLife,p=L?.P?.[id];if(!p)return null;const h=L.VillageClock.read().hour;for(const [a,b,at] of p.sched||[])if(h>=a&&h<b)return at==='home'?(L.homeOf(p)||'inn'):at}catch{}return null}
+function placeLock(ids,name){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||WORLD_STEPS.includes(step.id)||step.id==='raid')return '';
+ const list=[].concat(ids).filter(Boolean),ok=new Set(['home','square']);for(const x of [].concat(step.place||[]))ok.add(x);
+ if(step.talk){const w=npcPlace(step.talk);if(!w)return '';ok.add(w)}
+ if(list.some(x=>ok.has(x)))return '';
+ return (name?'ตอนนี้ยังไม่มีธุระที่'+String(name).replace(/[<>&]/g,'')+' · ':'')+'ธุระตรงหน้าคือ "'+step.title+'" — '+step.goal+' · ไว้ค่อยแวะทีหลัง'}
 const STEPS=[
  talkStep({id:'wake',chapter:'วันที่ 1 · เตรียมงานเทศกาล',intro:'opening',outro:'elderMeet',title:'ไปหาผู้ใหญ่บ้าน',talk:'oren',goal:'เดินไปหาผู้ใหญ่บ้านโอเรน แล้วคลิกที่ตัวเพื่อคุย',
   hint:'ช่วงเช้าผู้ใหญ่บ้านอยู่ที่ตลาด · '+HINT_WALK}),
- {id:'goats',tag:'real',title:'แพะหนีออกจากคอก',goal:'ตามจับแพะของปิ๊บ 3 ตัวที่หนีไปทั่วหมู่บ้าน',hint:'คลิกที่แพะเพื่อวิ่งตาม · มันวิ่งหนีเมื่อเข้าใกล้ แต่วิ่งได้ไม่นานก็หอบ ตอนหยุดพักคือจังหวะจับ · ลูกศรขอบจอชี้ไปทางแพะ',
-  spot:SPOT.goats,progress:d=>(d.got||0)/3,check:d=>(d.got||0)>=3,acts:[guideBtn],
-  onSpot:d=>{d.got=(d.got||0)+1;return {msg:'🐐 จับได้ '+d.got+'/3',consume:true}}},
+ {id:'goats',tag:'real',title:'แพะหนีออกจากคอก',goal:'ตามจับแพะของปิ๊บ 2 ตัวที่หนีไปทั่วหมู่บ้าน',hint:'คลิกที่แพะเพื่อวิ่งตาม · มันวิ่งหนีเมื่อเข้าใกล้ แต่วิ่งได้ไม่นานก็หอบ พอแตะตัวมัน จะเข้าสู่ฉากต่อสู้จับแพะ (ตัวเอกไม่ล้มในฉากนี้) · ลูกศรขอบจอชี้ไปทางแพะ',
+  spot:SPOT.goats,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
+  onSpot:async d=>{const r=await questBattle(d,{title:'จับแพะของปิ๊บ ·',ms:'goat*1,goat*1',tut:'goat',seed:4101,r:6,biome:'grass',scene:'goatStreet'}   /* v98.570 · a fixed town-street scene (was: the village map around the fountain) */);
+   if(r==='win'){d.got=2;try{root.Story?.mystery?.('seen')}catch(e){}return {msg:'🐐 จับแพะได้ครบ 2 ตัวแล้ว!',consume:true}}return {msg:r==='busy'?'':'แพะยังหนีอยู่ · กลับไปจับต่อได้เลย',consume:false}}},
  talkStep({id:'goatsBack',outro:'goatsDone',reward:()=>{addCoins(15);toast('รางวัล: +15 เหรียญ')},title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
 talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮิลดา',talk:'hilda',goal:'ไปหาฮิลดาชาวนา ถามว่าช่วยอะไรได้บ้าง',hint:'เช้าอยู่ที่ไร่ เที่ยงถึงบ่ายสามขายผักที่ตลาด · '+HINT_WALK,
   reward:()=>{V().story.seeds=true}}),
-{id:'pumpkin',tag:'real',title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
+{id:'pumpkin',tag:'real',outro:'pumpkinDone',npc:'hilda',title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
   spot:SPOT.ripe,progress:d=>Math.min(1,((d.got||0)+(waterDays()>=1?1:0))/4),targets:()=>({spots:wateredToday()?[]:[SPOT.plot]}),check:d=>(d.got||0)>=3&&waterDays()>=1,acts:[guideBtn],
-  onSpot:d=>{d.got=(d.got||0)+1;doSave();return {msg:'🎃 เก็บฟักทองสุก '+d.got+'/3',consume:true}}},
+  reward:async()=>{/* v98.605 · Hilda's thank-you: the first attack card (⚡ อัสนีบาต). It goes to the collection only — NOT into the deck — so the deck lesson at home has something to place */
+   try{await root.StarterKit?.unlock?.([{group:'combat',id:'thunder',n:1}],{kicker:'ของขวัญจากฮิลดา',title:'อัสนีบาต',text:'ฮิลดาให้ไพ่ใบนี้เป็นของขอบคุณ — ยังไม่ได้ใส่ในสำรับ ไว้ตอนเย็นจัดสำรับที่บ้านนะ'})}catch(e){}
+   try{const dk=V().tacticDecks;if(dk?.combat?.thunder){dk.combat.thunder-=1;if(dk.combat.thunder<=0)delete dk.combat.thunder;doSave()}}catch(e){}
+   try{if(typeof addItem==='function'){addItem('smallPumpkin',1);doSave();doRender();toast('🎃 ฮิลดาให้ ฟักทองลูกเล็ก ×1 (ฟื้น HP +30 · แรง +30) — ดูในสมุดผนึก')}}catch(e){}},
+  onSpot:async d=>{const r=await questBattle(d,{title:'ฟักทองในไร่ ·',ms:'pumpkin*1,pumpkin*1,pumpkin*1,pest*1,pest*1,pest*1',tut:'pumpkin',seed:4102,r:6,biome:'grass',poi:'patch',bg:'pumpkin-patch'});
+   if(r==='win'){d.got=3;doSave();return {msg:'🎃 เก็บฟักทองสุกครบ 3 ลูกแล้ว!',consume:true}}return {msg:r==='busy'?'':'ฟักทองยังรอเก็บอยู่ · กลับไปเก็บต่อได้เลย',consume:false}}},
  talkStep({id:'tom',outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
- {id:'planks',tag:'real',title:'แผ่นไม้ของเคน',goal:'เก็บแผ่นไม้ 2 แผ่นที่กองไว้หน้าบ้านเคน',hint:'เดินไปแตะกองไม้ 🪵 · ได้ไม้เข้ากระเป๋าวัตถุดิบ',
+ {id:'planks',tag:'real',title:'แผ่นไม้ของเคน',goal:'เก็บแผ่นไม้ 2 แผ่นที่กองไว้หน้าบ้านเคน',hint:'เดินไปแตะกองไม้ 🪵 · ได้ไม้เข้าสมุดผนึก (หมวดวัตถุดิบ)',
   spot:SPOT.planks,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
   onSpot:d=>{mats().wood=(mats().wood||0)+1;d.got=(d.got||0)+1;doSave();doRender();return {msg:'🪵 ไม้ +1 ('+d.got+'/2)',consume:true}}},
  {id:'stall',tag:'real',outro:'stallDone',title:'ซ่อมแผงขายของ',goal:'เดินไปที่แผงหน้าตลาด แล้วซ่อม (ใช้ไม้ 2)',hint:'เดินไปแตะแผง 🛠️ · ใช้แรง 6 และเวลา 30 นาที · ไม้ไม่พอซื้อได้ที่ตลาด',
   spot:SPOT.stall,check:d=>!!d.built,acts:[guideBtn],
-  reward:()=>{addCoins(20);toast('รางวัล: +20 เหรียญจากลุงทอม')},
+  reward:()=>{addCoins(20);try{mats().iron=(mats().iron||0)+3}catch(e){}toast('รางวัล: +20 เหรียญ · แท่งเหล็ก ×3 จากลุงทอม');   /* v98.605 · Tom pays in iron too (for the first forging) *//* v98.604 · Tom's job ends the afternoon: the clock jumps to 18:00 (evening prep) so going home to sleep fits */try{const g=G();if(g&&(g.minutes||0)<1080){g.minutes=1080;doSave();doRender();toast('🌇 งานเสร็จตอนเย็น — ตอนนี้ 18:00 · เตรียมค่ำ')}}catch(e){}},
   onSpot:d=>{if((mats().wood||0)<2)return {msg:'ไม้ไม่พอ (ต้องใช้ 2)'};const why=spend(6,30,3);if(why)return {msg:why};mats().wood-=2;d.built=true;d.got=1;doSave();doRender();return {msg:'🔨 ซ่อมแผงเสร็จ!',consume:true}}},
- {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'เดินกลับบ้าน แล้วไปที่เตียงเพื่อนอนพัก',hint:'ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก" · การนอนข้ามไปเช้าวันถัดไป',
+ /* v98.605 · day-1 evening at home: dinner with Mom (scene homeWelcome, played by homeHooks when the hero is inside the house) → free time but NO going outside (Story.homeLock) → chest lesson → deck lesson → bed */
+ {id:'homeWelcome',tag:'real',title:'กลับบ้าน',goal:'เย็นแล้ว — เดินกลับบ้าน แม่รออยู่',hint:'งานวันนี้เสร็จแล้ว เดินกลับบ้านได้เลย · แม่ทำอาหารอุ่น ๆ รออยู่',place:'home',check:d=>!!d.welcomed,acts:[guideBtn]},
+ {id:'chestLesson',tag:'real',title:'ฝากของในหีบ',goal:'ในบ้าน: เดินไปที่หีบแล้วฝากของอย่างน้อย 1 ชิ้น (เช่นแท่งเหล็กที่ลุงทอมให้)',hint:'เดินไปที่หีบในบ้าน → เลือก หีบเก็บของ → กดฝาก · คืนนี้ยังออกไปข้างนอกไม่ได้ ทำอะไรในบ้านก็ได้',place:'home',begin:d=>{d.base=chestCount()},check:d=>chestCount()>(d.base||0),acts:[guideBtn]},
+ {id:'deckLesson',tag:'real',title:'จัดสำรับ',goal:'ที่โต๊ะจัดสำรับ: ใส่ไพ่ อัสนีบาต ที่ฮิลดาให้ลงสำรับโจมตี แล้วกดบันทึก',hint:'เดินไปที่โต๊ะ → จัดสำรับ → หาไพ่ อัสนีบาต กด + → บันทึก',place:'home',check:d=>deckHas('thunder'),acts:[guideBtn]},
+ {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'งานวันนี้เสร็จแล้ว — พระอาทิตย์ใกล้ตก เดินกลับบ้านแล้วไปที่เตียงเพื่อนอนพัก',hint:'ตอนเย็นของวันแรกเวลาเดินช้าลงให้ทำงานครบ · ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก" · การนอนข้ามไปเช้าวันถัดไป',
   place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn]},
  talkStep({id:'guard',chapter:'วันที่ 2 · ทำของ และหาคน',outro:'guardTalk',reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'push',n:1}],{kicker:'คำแนะนำของยามดอร์ก',title:'ผลัก',text:'ผลักศัตรูถอยหนึ่งช่อง · ผลักตกที่สูงเสีย HP เพิ่ม'}),title:'ยามประตูหมู่บ้าน',talk:'dork',goal:'ไปคุยกับยามดอร์กก่อนออกนอกหมู่บ้าน',hint:'ยามดอร์กเฝ้าอยู่ที่ลานกลางหมู่บ้านทั้งวัน · '+HINT_WALK}),
  {id:'cave',tag:'real',outro:'crystal',title:'ผลึกในถ้ำเหมืองเก่า',goal:'เดินออกทางออกหมู่บ้าน ไปทางเหมืองเก่า แล้วชนะการต่อสู้ 1 ครั้ง',hint:'บนแผนที่โลกเดินทีละช่อง · ระหว่างทางมีศัตรูดักอยู่ · สนามรบมีเนินและหน้าผา ยืนที่สูงตีแรงกว่า',
@@ -148,14 +193,21 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
  talkStep({id:'plate',outro:'plate',title:'จานหินโบราณ',talk:'oren',goal:'นำจานหินไปให้ผู้ใหญ่บ้านโอเรนดู',hint:'หัวค่ำผู้ใหญ่บ้านนั่งที่โรงแรม สองทุ่มกลับบ้าน · '+HINT_WALK}),
  talkStep({id:'saf',chapter:'การเดินทางครั้งแรก · รังโจรป่า',outro:'safTalk',title:'ร้านยาของซาฟ',talk:'saf',goal:'แวะหาหมอยาซาฟก่อนออกเดินทาง',hint:'ซาฟอยู่ร้านยา 6 โมงเช้าถึง 6 โมงเย็น · '+HINT_WALK,
   reward:()=>{try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}}}),
+ {id:'sibSword',tag:'real',intro:'sibSwordIntro',outro:'sibSwordDone',title:'ดาบเหล็กของตัวตาม',goal:'ตีดาบเหล็ก 1 เล่มที่โรงตีเหล็ก ให้ตัวตามใช้ในการเดินทาง',hint:'เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูปจนครบ 100 → ถังน้ำ: ชุบแข็ง · ดาบใช้เหล็ก 2 ถ่าน 1 ไม้ 1 ซื้อวัตถุดิบที่ตลาด · ตัวเอกพกมีดสั้นของพ่ออยู่แล้ว',
+  place:'forge',begin:d=>{d.next=G().nextId},check:d=>(G().inventory||[]).some(x=>x.id>=d.next&&x.kind==='sword'),acts:[guideBtn],reward:d=>giveSibSword(d)},
+ {id:'potions',tag:'real',outro:'potionsDone',title:'ซื้อยาก่อนออกเดินทาง',goal:'ซื้อยาอย่างน้อย 2 ขวดที่ร้านค้าของเวร่า',hint:'ร้านค้าเปิด 7 โมงเช้าถึงหนึ่งทุ่ม · เข้าไปในร้านแล้วกด "🧪 ซื้อยา" · ซื้อที่หมอยา/ตลาดก็นับ',
+  place:['shop','healer','market'],begin:d=>{d.p=potionCount()},progress:d=>Math.min(1,(potionCount()-(d.p||0))/2),check:d=>potionCount()-(d.p||0)>=2,acts:[guideBtn]},
  {id:'prep',tag:'real',title:'เตรียมตัวออกเดินทาง',goal:'ซื้อเสบียงอย่างน้อย 1 ชิ้นที่ตลาด',hint:'เดินไปที่โต๊ะซื้อวัตถุดิบในตลาด · เสบียงใช้กินฟื้นความสดชื่นระหว่างทาง · จัดสำรับได้ที่โต๊ะในบ้าน',
   place:'market',begin:d=>{d.food=mats().food||0},check:d=>(mats().food||0)>d.food,acts:[guideBtn]},
  {id:'expedition',tag:'real',intro:'departure',outro:'camp',title:'รังโจรป่า',goal:'ออกทางออกหมู่บ้าน ล้มศัตรูบนแผนที่โลกให้ได้ 3 ตัว',hint:'ผู้ใหญ่บ้านบอกทางไปจุดหมายแล้ว · เดินออกไปแล้วอาจถูกซุ่มโจมตีได้ทุกก้าว · พักแรมได้ทุกที่ · กลางคืนศัตรูดุร้ายขึ้น · HP ต่ำให้ดื่มยาหรือกลับก่อนก็ได้',
+  tick:d=>{const w=onWorld();if(w){d.wasW=true;if(!V().story.tempAlly&&!kierRetired())markTemp()}else if(d.wasW){d.wasW=false;if(V().story.tempAlly)leaveTemp('เคียร์กลับไปช่วยงานที่บ้านก่อน · ออกเดินทางอีกครั้งเขาจะตามไปด้วย')}},   /* v98.332 · the friend walks only the trip itself */
   exit:true,begin:d=>{d.base=V().kills||0;markTemp();try{root.WorldState?.addLead('den','ผู้ใหญ่บ้านโอเรน',true)}catch(e){}},progress:d=>Math.min(1,((V().kills||0)-(d.base||0))/3),check:d=>(V().kills||0)-(d.base||0)>=3,
   acts:[guideBtn],
   reward:()=>root.StarterKit?.unlock?.([{group:'movement',id:'sprint',n:2},{group:'combat',id:'climb',n:2},{group:'combat',id:'dive',n:1},{group:'combat',id:'evade',n:1},{group:'combat',id:'firstAid',n:1}],{kicker:'ของจากค่ายโจร',title:'ทักษะเอาตัวรอด',text:'ป่ามีเนินและหน้าผา · ปีนขึ้นที่สูงแล้วกระโจนฟาดลงมาแรงกว่าเดิม'})},
- {id:'return',tag:'real',outro:'home',title:'กลับบ้าน',reward:()=>leaveTemp(),goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะเดินต่อไปจนถึงจุดหมายก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!onWorld(),acts:[]},
- {id:'sellLoot',tag:'real',reward:()=>{addCoins(20);try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}toast('รางวัล: +20 เหรียญ · ยา 1 ขวด')},title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',place:'market',check:d=>d.sales>0,acts:[guideBtn]},
+ {id:'return',tag:'real',outro:()=>kierCase()?'kierHurt':'home',title:'กลับบ้าน',reward:()=>kierCase()?kierInjured():leaveTemp(),goal:'กลับหมู่บ้านพร้อมของที่ได้',hint:'จะเดินต่อไปจนถึงจุดหมายก็ได้ ยิ่งลึกของยิ่งดี แต่ยิ่งเสี่ยง',check:()=>!onWorld(),acts:[]},
+ {id:'hospital',tag:'real',outro:'kierAdmitted',title:'ส่งเคียร์เข้าโรงพยาบาล',goal:'พาเคียร์ไปบ้านหมอยา เปิด 🏥 ห้องผู้ป่วย แล้วรับเข้าพักฟื้น',hint:'บ้านหมอยา (ซาฟ) เปิด 6 โมงเช้าถึง 6 โมงเย็น · เดินเข้าไปแล้วกดปุ่ม 🏥 ห้องผู้ป่วย → "รับเข้าพัก" ที่แถวของเคียร์ · เตียงคิดค่าพักต่อวัน',
+  place:'healer',skip:()=>!V().story.kierHurt,check:()=>!!root.Injury?.of?.(root.WorldState?.game?.()||G(),'kier')?.bed,acts:[guideBtn]},
+ {id:'sellLoot',tag:'real',intro:()=>V().story.kierHurt?'homeKier':null,reward:()=>{addCoins(20);try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}toast('รางวัล: +20 เหรียญ · ยา 1 ขวด')},title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',place:'market',check:d=>d.sales>0,acts:[guideBtn]},
  {id:'rest',tag:'real',outro:'finale',title:'พักฟื้น',goal:'กลับบ้านแล้วนอนพัก',hint:'ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก"',place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn],
   reward:async()=>{addCoins(30);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1},{group:'combat',id:'rockfall',n:1},{group:'combat',id:'perch',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
 const byId=id=>STEPS.findIndex(x=>x.id===id);
@@ -183,18 +235,102 @@ function hookActions(){if(typeof placeActions!=='function'||placeActions.storyHo
  placeActions=function(){const list=base.apply(this,arguments);try{const a=lanternAction();if(a)list.push(a)}catch{}return list};placeActions.storyHooked=true;
  if(typeof runPlaceAction==='function'){const run=runPlaceAction;runPlaceAction=async function(id){if(id==='lantern'){makeLantern();return}return run.apply(this,arguments)}}}
 
+/* ---------- v98.331 · tutorial fights inside the prologue quests (docs/TODO.md §14) ----------
+   questBattle(d, {title, ms, tut, seed, r, biome}) → 'win' | 'out' | 'busy'. A full-screen battle in a frame over the game (battle-field.html), the two heroes are immortal
+   (?imm=1 · HP never below 1) and cannot flee (?noflee=1), so the fight always ends in a win once it is played through. */
+/* v98.354 · ENCOUNTER CUT (Final Fantasy style): the village zooms + blurs, black bars whip across the screen and close, the fight loads BEHIND them (no half-loaded village / home flash),
+   then the bars open on the arena. battleCut() → {open()} ; the iframe sends 'agrenor-battle-ready' when the arena has been built. */
+function battleCut(){
+ if(!document.getElementById('qbCutCss')){const c=document.createElement('style');c.id='qbCutCss';c.textContent=`#qbCut{position:fixed;inset:0;z-index:960;pointer-events:all;overflow:hidden}#qbCut i{position:absolute;left:-12%;width:124%;height:10.2%;background:#05070b;transform:translateX(-112%) skewX(-18deg);transition:transform .42s cubic-bezier(.7,0,.25,1)}#qbCut i:nth-child(even){transform:translateX(112%) skewX(-18deg)}#qbCut.on i{transform:translateX(0) skewX(-18deg)}#qbCut.out i{transform:translateX(-112%) skewX(-18deg);transition-duration:.5s}#qbCut.out i:nth-child(even){transform:translateX(112%) skewX(-18deg)}#qbCut b{position:absolute;inset:0;background:radial-gradient(circle,#fff 0,#fff0 62%);opacity:0;transition:opacity .22s}#qbCut.flash b{opacity:.85}#qbCut u{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(2.4);opacity:0;font:italic 900 56px AgThai,system-ui,sans-serif;letter-spacing:.14em;color:#fff3b0;text-decoration:none;text-shadow:0 0 22px #ff6a1f;transition:all .35s .3s cubic-bezier(.2,1.5,.4,1)}#qbCut.on u{opacity:1;transform:translate(-50%,-50%) scale(1)}#qbCut.out u{opacity:0;transition:opacity .2s}.qb-zoom{transition:transform .5s cubic-bezier(.5,0,.9,.4),filter .5s!important;transform:scale(1.28)!important;filter:blur(5px) brightness(1.3)!important}`;document.head.append(c)}
+ const el=document.createElement('div');el.id='qbCut';el.innerHTML='<b></b>'+Array.from({length:10},(_,k)=>`<i style="top:${k*10}%"></i>`).join('')+'<u>ENCOUNTER!</u>';document.body.append(el);
+ const town=document.getElementById('villageTownLayer');town?.classList.add('qb-zoom');
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{el.classList.add('flash');setTimeout(()=>{el.classList.remove('flash');el.classList.add('on')},120)}));
+ const t0=performance.now();
+ return {open:()=>new Promise(res=>{const wait=Math.max(0,1050-(performance.now()-t0));setTimeout(()=>{town?.classList.remove('qb-zoom');el.classList.add('out');setTimeout(()=>{el.remove();res()},560)},wait)}),drop:()=>{town?.classList.remove('qb-zoom');el.remove()}}}
+function battleReady(fr){return new Promise(res=>{const on=e=>{if(e.source===fr.contentWindow&&e.data?.type==='agrenor-battle-ready'){removeEventListener('message',on);res()}};addEventListener('message',on);setTimeout(res,20000)})}
+/* v98.472 · VICTORY summary after a story fight (goat / pumpkin …): foes beaten, EXP, HP of the party — click / Enter to continue */
+function victorySummary(r){return new Promise(done=>{
+ /* v98.597 · a victory CEREMONY: golden rays + sparks · the word VICTORY letter by letter · party cards one by one (portrait · EXP counting up · HP) · the victory theme (bgm-victory-01) plays over it
+    first click = show everything at once · next click / Enter = go on */
+ if(!document.getElementById('qbVicCss')){const c=document.createElement('style');c.id='qbVicCss';c.textContent=`
+#qbVic{position:fixed;inset:0;z-index:970;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#2a2412e6,#07090dee 70%);animation:qbVicIn .5s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif;cursor:pointer;color:#f6e7c0}
+#qbVic .rays{position:absolute;left:50%;top:38%;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;background:repeating-conic-gradient(from 0deg,#ffd77a22 0 6deg,#0000 6deg 18deg);-webkit-mask:radial-gradient(circle,#000 0,#0000 55%);mask:radial-gradient(circle,#000 0,#0000 55%);animation:qbVicSpin 60s linear infinite;pointer-events:none}
+#qbVic canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#qbVic .wrap{position:relative;width:min(560px,94vw);text-align:center}
+#qbVic .crest{height:3px;margin:0 auto 10px;width:0;background:linear-gradient(90deg,#0000,#ffd77a,#0000);animation:qbVicLine .9s .1s ease-out forwards}
+#qbVic h2{margin:0;display:flex;justify-content:center;gap:.04em;font:900 clamp(40px,10vw,76px)/1 AgThai,Georgia,serif;letter-spacing:.1em;color:#ffd77a;text-shadow:0 3px 0 #7a4a0e,0 0 30px #ffb52e,0 0 70px #ff9a1f88}
+#qbVic h2 span{display:inline-block;opacity:0;transform:translateY(34px) scale(1.7);animation:qbVicLetter .55s cubic-bezier(.2,1.5,.4,1) forwards}
+#qbVic .sub{margin:10px 0 4px;font-size:16px;color:#e8d5a8;opacity:0;animation:qbVicFade .5s 1.05s forwards}
+#qbVic .kills{display:inline-block;margin:0 0 14px;padding:3px 16px;border:1px solid #ffd77a66;border-radius:20px;background:#00000055;color:#ffd77a;font-size:14px;opacity:0;animation:qbVicFade .5s 1.2s forwards}
+#qbVic .cards{display:grid;gap:9px}
+#qbVic .card{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;text-align:left;padding:9px 14px 9px 9px;border-radius:14px;background:linear-gradient(100deg,#3a2f17ee,#201a0eee);border:1px solid #ffd77a55;box-shadow:0 10px 26px #0009,inset 0 0 22px #ffd77a14;opacity:0;transform:translateX(-30px);animation:qbVicCard .5s cubic-bezier(.2,1.2,.4,1) forwards}
+#qbVic .face{width:64px;height:64px;border-radius:12px;overflow:hidden;border:2px solid #ffd77a;background:#4a3b1c;display:grid;place-items:center;font:900 26px AgThai,sans-serif;color:#ffd77a}
+#qbVic .face img{width:100%;height:100%;object-fit:cover;object-position:50% 14%}
+#qbVic .nm{font-weight:800;font-size:17px;color:#fff1cf;display:flex;justify-content:space-between;gap:8px}#qbVic .nm .xp{color:#ffd77a;font-variant-numeric:tabular-nums}
+#qbVic .bar{height:9px;margin-top:6px;border-radius:6px;background:#0008;overflow:hidden}#qbVic .bar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#ffb52e,#ffe08a);box-shadow:0 0 10px #ffc94e;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+#qbVic .hp{display:flex;justify-content:space-between;margin-top:4px;font-size:12.5px;color:#cfc29c}#qbVic .hp b{color:#a8e6a0;font-weight:700}
+#qbVic .go{margin-top:16px;font-size:13px;color:#cdb98a;opacity:0;animation:qbVicFade .5s forwards}#qbVic .go.on{animation:qbVicFade .5s forwards,qbVicPulse 1.6s 0.6s ease-in-out infinite}
+#qbVic.skip *{animation-delay:0s!important;animation-duration:.01s!important}#qbVic.skip .bar i{transition-duration:.01s}
+@keyframes qbVicIn{from{opacity:0}to{opacity:1}}@keyframes qbVicSpin{to{transform:rotate(360deg)}}@keyframes qbVicLine{to{width:min(420px,70vw)}}
+@keyframes qbVicLetter{to{opacity:1;transform:none}}@keyframes qbVicFade{to{opacity:1}}@keyframes qbVicCard{to{opacity:1;transform:none}}@keyframes qbVicPulse{50%{opacity:.45}}`;document.head.append(c)}
+ const e=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]),female=(()=>{try{return root.HeroVariant?.get?.()==='female'}catch{return false}})();
+ const hero=(()=>{try{return G().village?.heroName||'ตัวเอก'}catch{return 'ตัวเอก'}})(),look=female?'hero-female':'hero-male',other=female?'hero-male':'hero-female';
+ const members=[{name:hero,xp:r.xp,hp:r.hp,max:r.maxHp,pic:look},...(r.party||[]).map(p=>({name:p.name,xp:p.xp,hp:p.hp,max:p.max,pic:p.key==='sib'?other:p.key}))];
+ const el=document.createElement('div');el.id='qbVic';el.setAttribute('role','dialog');el.setAttribute('aria-label','ชัยชนะ');
+ const word='VICTORY!'.split('').map((c,i)=>`<span style="animation-delay:${.25+i*.09}s">${c}</span>`).join('');
+ const t0=1.5;   /* the cards start after the title has settled */
+ el.innerHTML=`<div class="rays"></div><canvas></canvas><div class="wrap"><div class="crest"></div><h2>${word}</h2>
+  <div class="sub">${e(String(r.title||'').replace(/\s*·\s*$/,''))}</div><div class="kills">⚔ ล้มศัตรู ${r.kills||0} ตัว</div>
+  <div class="cards">${members.map((m,i)=>`<div class="card" style="animation-delay:${t0+i*.38}s"><div class="face"><img alt="" src="assets/portraits/${e(m.pic)}-happy.webp" onerror="this.remove()"><span>${e((m.name||'?')[0])}</span></div>
+   <div><div class="nm"><span>${e(m.name)}</span><span class="xp" data-xp="${m.xp||0}">${m.xp?'EXP +0':''}</span></div><div class="bar"><i data-w="${m.xp?Math.min(100,30+m.xp):0}"></i></div><div class="hp"><span>HP</span><b>${m.hp}/${m.max}</b></div></div></div>`).join('')}</div>
+  <div class="go" style="animation-delay:${t0+members.length*.38+1.1}s">คลิก หรือกด Enter เพื่อไปต่อ</div></div>`;
+ document.body.append(el);try{root.Sfx?.play?.('victory')}catch(x){}try{root.GameBGM?.force?.('victory')}catch(x){}
+ /* gold sparks rising */
+ const cv=el.querySelector('canvas'),g=cv.getContext('2d');let raf=0,W=0,H=0;const P=Array.from({length:70},()=>({x:Math.random(),y:Math.random(),s:.4+Math.random()*1.4,v:.0004+Math.random()*.0012,p:Math.random()*6}));
+ const fit=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight};fit();addEventListener('resize',fit);
+ const frame=t=>{g.clearRect(0,0,W,H);for(const q of P){q.y-=q.v*16;if(q.y<-.05){q.y=1.05;q.x=Math.random()}const a=.35+.45*Math.sin(t/500+q.p);g.fillStyle=`rgba(255,${200+((q.p*20)|0)},110,${Math.max(0,a)})`;g.beginPath();g.arc(q.x*W+Math.sin(t/900+q.p)*14,q.y*H,q.s*2.2,0,7);g.fill()}raf=requestAnimationFrame(frame)};raf=requestAnimationFrame(frame);
+ /* EXP bars fill and count up as each card arrives */
+ const timers=[];el.querySelectorAll('.card').forEach((c,i)=>{timers.push(setTimeout(()=>{const b=c.querySelector('.bar i');b.style.width=b.dataset.w+'%';const x=c.querySelector('.xp'),n=+x.dataset.xp;if(!n)return;const t1=performance.now();const step=now=>{const k=Math.min(1,(now-t1)/1000);x.textContent='EXP +'+Math.round(n*k);if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)},(t0+i*.38+.35)*1000))});
+ const goOn=()=>el.querySelector('.go').classList.add('on');timers.push(setTimeout(goOn,(t0+members.length*.38+1.1)*1000));
+ let skipped=false,ready=false;timers.push(setTimeout(()=>ready=true,500));
+ const finish=()=>{el.querySelectorAll('.card').forEach(c=>{c.querySelector('.bar i').style.width=c.querySelector('.bar i').dataset.w+'%';const x=c.querySelector('.xp');if(+x.dataset.xp)x.textContent='EXP +'+x.dataset.xp});goOn()};
+ const close=()=>{removeEventListener('keydown',key,true);removeEventListener('resize',fit);cancelAnimationFrame(raf);timers.forEach(clearTimeout);try{root.GameBGM?.force?.(null)}catch(x){}el.style.transition='opacity .35s';el.style.opacity='0';setTimeout(()=>{el.remove();done()},330)};
+ const next=()=>{if(!ready)return;if(!skipped){skipped=true;el.classList.add('skip');finish();return}close()},key=ev=>{if(['Enter',' ','Escape'].includes(ev.key)){ev.preventDefault();ev.stopPropagation();next()}};
+ el.onclick=next;addEventListener('keydown',key,true)})}
+/* v98.476 · a story fight must not move the hero: remember where they stood on the village map (or in the open place) when the fight started,
+   and put them back there afterwards — retried for a moment, because the map can re-place the hero at a door while it wakes up again */
+function heroSpot(){try{const T=root.VillageTown;if(!T)return null;const sc=T.getScene?.(),f=/^place:/.test(sc||'')?T.marketFrame:T.frame,h=f?.contentWindow?.ResumeHook?.get?.();return h?{f,h:{...h},sc}:null}catch(e){return null}}
+function heroBack(spot){if(!spot)return;const put=()=>{try{if(root.VillageTown?.getScene?.()===spot.sc)spot.f.contentWindow?.ResumeHook?.set?.(spot.h)}catch(e){}};put();for(const ms of [120,400,900,1600])setTimeout(put,ms)}
+function questBattle(d,o){return new Promise(resolve=>{
+ if(d.fighting||onWorld()){resolve('busy');return}
+ const g=G(),v=V();if((g.hp||0)<30)g.hp=Math.max(g.hp||0,40);
+ d.fighting=true;doSave();const spot=heroSpot();
+ const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')+':'+(p.level||1)).join(',');
+ const fr=document.createElement('iframe');fr.id='storyBattle';fr.title=o.title;fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
+ fr.src=(o.page||'battle-field.html')+'?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&imm=1&noflee=1&r='+(o.r||6)+'&biome='+(o.biome||'grass')+'&seed='+(o.seed||4100)+(o.poi?'&poi='+o.poi:'')+(o.scene?'&scene='+o.scene:'')+(o.bg?'&bg='+o.bg:'')+'&ms='+encodeURIComponent(o.ms)+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent(o.title||'')+'&tut='+(o.tut||'');
+ if(d.resumeSrc){fr.src=d.resumeSrc;d.resumeSrc=null}else{try{localStorage.removeItem('projectA.battleSnap')}catch{}}   /* v98.340 · resumed from the temporary save: same field, same moment */
+ const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
+  g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
+  const win=r.outcome==='win';let xpGot=0;
+  if(win){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);if(root.Progression){const xp=Progression.battleXp({dang:.25,kills:r.kills});xpGot=xp;gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}
+  fr.remove();doRender();heroBack(spot);
+  /* v98.597 · the "fighting" lock stays ON while the victory screen is up — otherwise another goat standing next to the hero started a second fight behind it (goats left in the village · the chase went on) */
+  if(win)victorySummary({title:o.title,kills:r.kills||0,xp:xpGot,hp:g.hp,maxHp:g.maxHp||60,party:(v.party||[]).map(p=>({key:p.key,name:p.name||p.key,hp:p.hp,max:p.max,xp:Math.round(xpGot*.8)}))}).then(()=>{d.fighting=false;doSave();resolve('win')});else{d.fighting=false;doSave();resolve('out')}};
+ {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);document.body.appendChild(fr)})}
+
 /* ---------- raid battle (v94: the flat card battle drawn on the village square, in a frame over the game) ---------- */
 function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับหมู่บ้านก่อน');return}
  const g=G(),v=V();if((g.hp||0)<30)g.hp=Math.max(g.hp||0,40);   // the festival raid never starts the player half-dead
- d.fighting=true;d.outcome=null;doSave();
+ d.fighting=true;d.outcome=null;doSave();const spot=heroSpot();
  const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')+':'+(p.level||1)).join(',');
  const fr=document.createElement('iframe');fr.id='storyBattle';fr.title='โจรป่าบุกงาน';fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
- fr.src='village-town.html?battle=1&embed=1&r=6&ms='+encodeURIComponent('bandit*1.2,wolf*1.1,bandit*1.2,wolf*1.1')+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent('คืนเทศกาล ·')+(d.tutDone?'':'&tut=raid');d.tutDone=true;
+ fr.src='village-town.html?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&r=6&ms='+encodeURIComponent('bandit*1.2,wolf*1.1,bandit*1.2,wolf*1.1')+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent('คืนเทศกาล ·')+(d.tutDone?'':'&tut=raid');d.tutDone=true;
+ if(d.resumeSrc){fr.src=d.resumeSrc;d.resumeSrc=null}else{try{localStorage.removeItem('projectA.battleSnap')}catch{}}   /* v98.340 · resumed from the temporary save: same field, same moment */
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
   if(r.outcome==='win'){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);d.won=true;if(root.Progression){const xp=Progression.battleXp({dang:.4,kills:r.kills});gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}else toast(r.outcome==='lose'?'พ่ายแพ้... ตั้งหลักแล้วลองใหม่':'ถอยออกมา · โจรยังอยู่ในงาน','');
-  d.fighting=false;doSave();fr.remove();doRender()};
- addEventListener('message',done);document.body.appendChild(fr)}
+  d.fighting=false;doSave();fr.remove();doRender();heroBack(spot)};
+ {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);document.body.appendChild(fr)}
 
 /* ---------- sales detector (coins up while an item or goods left the bag at the market) ---------- */
 let prev=null;
@@ -205,25 +341,32 @@ function detectSale(){const now=snapshot(),p=prev;prev=now;if(!p)return false;if
 /* v95.01: steps were added (talk to the villager first), so a save from before keeps its place by step id */
 const OLD_IDS=['wake','goats','pumpkin','stall','sleep1','cave','caveBack','lanterns','craft','hire','sleep2','sell','contest','raid','plate','prep','expedition','return','sellLoot','rest'];
 const OLD_TO={pumpkin:'seeds',stall:'tom',cave:'guard',lanterns:'gus',prep:'saf'};
-function migrate(st){if(!st||st.v>=2)return st;const old=OLD_IDS[st.i];if(old){const id=OLD_TO[old]||old,i=byId(id);if(i>=0){st.i=i;if(OLD_TO[old])delete st.data[old]}}else if(st.i>=OLD_IDS.length)st.i=STEPS.length;st.v=2;doSave();return st}
+const V2_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','prep','expedition','return','sellLoot','rest'];
+/* v98.605 · v3 → v4: three steps (homeWelcome · chestLesson · deckLesson) were inserted before sleep1 — a saved position is mapped by step id */
+const V3_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','sibSword','potions','prep','expedition','return','hospital','sellLoot','rest'];
+function migrate(st){if(st&&st.v===3){const old=V3_IDS[st.i];if(old){const i=byId(old);if(i>=0)st.i=i}else if(st.i>=V3_IDS.length)st.i=STEPS.length;st.v=4;doSave();return st}
+ if(st&&st.v===2){const old=V2_IDS[st.i];if(old){const i=byId(old==='prep'?'sibSword':old);if(i>=0)st.i=i}else if(st.i>=V2_IDS.length)st.i=STEPS.length;st.v=3;doSave();return st}
+ if(!st||st.v>=2)return st;const old=OLD_IDS[st.i];if(old){const id=OLD_TO[old]||old,i=byId(id);if(i>=0){st.i=i;if(OLD_TO[old])delete st.data[old]}}else if(st.i>=OLD_IDS.length)st.i=STEPS.length;st.v=2;doSave();return st}
 function story(){const v=V();if(!v)return null;return migrate(v.story||null)}
-function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!(v.party||[]).length&&!v.adventure}
-function init(){const v=V();if(!v||v.story)return;v.story={v:2,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
+function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!(v.party||[]).filter(m=>m.key!=='sib').length&&!v.adventure}
+function init(){const v=V();if(!v||v.story)return;v.story={v:4,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
 function cur(){const st=story();return st&&st.mode==='active'?STEPS[st.i]:null}
 function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step.id]}
 
 /* ---------- tracker ---------- */
 let box=null;
 function tracker(){if(box)return box;box=document.createElement('aside');box.id='storyTracker';box.hidden=true;box.setAttribute('aria-live','polite');document.body.appendChild(box);
- box.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b){e.stopPropagation();act(b.dataset.act);return}if(e.target.closest('.stk-head')){const st=story();if(st){st.fold=!st.fold;doSave();draw(true)}}});return box}
+ box.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(e.target.closest('.stk-x')){e.stopPropagation();const st=story();if(st){st.closed=true;st.unseen=0;doSave();draw(true);badgeSync()}return}
+  if(b){e.stopPropagation();act(b.dataset.act);return}if(e.target.closest('.stk-head')){const st=story();if(st){st.fold=!st.fold;doSave();draw(true)}}});return box}
 let lastHtml='';
 function draw(force){const el=tracker(),st=story();if(!st||st.mode==='off'||root.TitleScreen?.active||document.querySelector('dialog[open],.ck-reveal,.mg')){el.hidden=true;return}
+ if(st.closed&&st.mode!=='offer'){el.hidden=true;badgeSync();return}   /* v98.337 · closed: only the badge on the 'วันนี้' icon remains */
  let html='';el.classList.toggle('stk-done',st.mode==='done');el.classList.toggle('stk-folded',!!st.fold);
  if(st.mode==='offer')html=`<div class="stk-head"><small>บทนำใหม่</small><b>เทศกาลเฟิร์นเวล</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div><div class="stk-body"><p class="stk-goal">เล่นบทนำ 3 วันของงานเทศกาล และการเดินทางครั้งแรก</p><p class="stk-hint">เหมาะกับเซฟใหม่ · เซฟเดิมเล่นได้ บางขั้นจะผ่านเองถ้าทำไว้แล้ว</p><div class="stk-acts"><button data-act="start" class="primary" type="button">▶ เล่นบทนำ</button><button data-act="off" type="button">ซ่อน</button></div></div>`;
- else if(st.mode==='done')html=`<div class="stk-head"><small>เล่นอิสระ</small><b>เบาะแสที่ได้</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div><div class="stk-body"><p class="stk-hint">• จานหินโบราณที่มีเส้นแสง<br>• จดหมายของ "G." ถึงเมืองใหญ่<br>• ผลึกม่วงจากเหมืองเก่าที่อุ่นเมื่อแตะ<br>• แผนที่สมบัติเก่าในกระเป๋า</p><p class="stk-hint">เส้นทางไปเมืองใหญ่ยังไม่เปิด (อยู่ในแผน)</p><div class="stk-acts"><button data-act="off" type="button">ซ่อนกล่องนี้</button></div></div>`;
+ else if(st.mode==='done')html=`<div class="stk-head"><small>เล่นอิสระ</small><b>เบาะแสที่ได้</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div><div class="stk-body"><p class="stk-hint">• จานหินโบราณที่มีเส้นแสง<br>• จดหมายของ "G." ถึงเมืองใหญ่<br>• ผลึกม่วงจากเหมืองเก่าที่อุ่นเมื่อแตะ<br>• แผนที่สมบัติเก่าในสมุดผนึก</p><p class="stk-hint">เส้นทางไปเมืองใหญ่ยังไม่เปิด (อยู่ในแผน)</p><div class="stk-acts"><button data-act="off" type="button">ซ่อนกล่องนี้</button></div></div>`;
  else{const step=STEPS[st.i];if(!step){el.hidden=true;return}const d=dataOf(step),chap=chapterOf(st.i),acts=(step.acts||[]).filter(a=>!a.hide?.(d));
   const p=step.progress?.(d);const night=late()&&!/^sleep|^rest/.test(step.id)?'<p class="stk-hint">🌙 ดึกแล้ว กลับบ้านนอนแล้วทำต่อพรุ่งนี้ได้</p>':'';
-  html=`<div class="stk-head"><small>${esc(chap)}</small><b>${esc(step.title)}${step.tag==='temp'&&root.PROJECT_DEV?'<span class="stk-tag" title="ระบบชั่วคราว ระบบจริงอยู่ในแผน (แสดงเฉพาะเครื่องผู้สร้าง)">ชั่วคราว</span>':''}</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div>
+  html=`<div class="stk-head"><small>${esc(chap)}</small><b>${esc(step.title)}${step.tag==='temp'&&root.PROJECT_DEV?'<span class="stk-tag" title="ระบบชั่วคราว ระบบจริงอยู่ในแผน (แสดงเฉพาะเครื่องผู้สร้าง)">ชั่วคราว</span>':''}</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div>
   <div class="stk-body"><p class="stk-goal">◆ ${esc(step.goal)}</p>${p!=null?`<div class="stk-prog"><i style="width:${Math.round(p*100)}%"></i></div>`:''}${step.hint?`<p class="stk-hint">${esc(step.hint)}</p>`:''}${night}
   <div class="stk-acts">${acts.map((a,j)=>`<button type="button" data-act="${(step.acts||[]).indexOf(a)}" class="${a.primary?'primary':''}">${esc(a.label)}</button>`).join('')}</div>
   <div class="stk-acts"><button type="button" data-act="replay" title="ดูฉากล่าสุดอีกครั้ง">↺ ดูฉาก</button>${(()=>{try{return localStorage.getItem('projectA.dev')==='1'}catch(e){return false}})()?'<button type="button" data-act="skipall" title="ข้ามบทนำทั้งหมด">ข้ามบทนำ</button>':''}</div></div>`}
@@ -233,25 +376,28 @@ async function act(a){const st=story();if(!st)return;
  if(a==='start'){st.mode='active';st.i=0;st.data={};doSave();draw(true);return}
  if(a==='off'){if(st.mode==='active')return;st.mode='off';doSave();draw(true);return}   /* v97.16: an active prologue cannot be switched off */
  if(a==='skipall'){const ok=root.GameDialog?await root.GameDialog.confirm('ข้ามบทนำทั้งหมด?\nจะไม่ได้รางวัลและฉากที่เหลือ (เปิดเล่นใหม่ได้จาก Story.reset() ในโหมดนักพัฒนา)'):confirm('ข้ามบทนำทั้งหมด?');if(!ok)return;st.mode='done';doSave();draw(true);return}
- if(a==='replay'){const sc=lastScene();if(sc)root.Cutscene.play(D().SCENES[sc]);return}
+ if(a==='replay'){const sc=lastScene();if(sc)root.Cutscene.play(sceneAt(sc));return}
  const step=cur();const x=step?.acts?.[+a];if(x)await x.run(dataOf(step));draw(true)}
-function lastScene(){const st=story();for(let j=st.i;j>=0;j--){const s1=STEPS[j];if(j<st.i&&s1.outro)return s1.outro;if(s1.intro&&(j<st.i||st.data[s1.id]?.introSeen))return s1.intro}return null}
+function lastScene(){const st=story();for(let j=st.i;j>=0;j--){const s1=STEPS[j],o=typeof s1.outro==='function'?s1.outro():s1.outro,n=typeof s1.intro==='function'?s1.intro():s1.intro;if(j<st.i&&o)return o;if(n&&(j<st.i||st.data[s1.id]?.introSeen))return n}return null}
 
 /* ---------- loop ---------- */
 let busy=false;
 async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){draw();return}init();const st=story();
  const sale=detectSale();if(!st||st.mode!=='active'){draw();return}
  const step=STEPS[st.i];if(!step){st.mode='done';doSave();draw(true);return}const d=dataOf(step);
+ if(step.skip?.(d)){st.i++;doSave();draw(true);return}
  if(sale){d.sales=(d.sales||0)+1}
  if(step.id==='raid'&&d.fighting&&!document.getElementById('storyBattle')){d.fighting=false;doSave()}
  step.tick?.(d);
  if(root.Cutscene?.isPlaying()||tacticsOpen()||document.getElementById('storyBattle')){draw();return}
+ homeHooks().catch(()=>{});   /* v98.600 · first time out of the house → the sister sends the hero to open the card-book */
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
-  if(step.intro&&!d.introSeen){d.introSeen=true;doSave();draw();await root.Cutscene.play(D().SCENES[step.intro])}
+  const introId=typeof step.intro==='function'?step.intro():step.intro;
+  if(introId&&!d.introSeen){d.introSeen=true;if(introId==='opening'){V().story.bookSeen=true;V().story.bookIntro=true}doSave();draw();await root.Cutscene.play(sceneAt(introId));if(introId==='opening')await bookTour()}
   if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();await lessonCard(step.id)}
-  if(step.check(d)){d.done=true;if(step.outro)await root.Cutscene.play(D().SCENES[step.outro]);await step.reward?.(d);st.i++;doSave();doRender();
-   const nx=STEPS[st.i];if(nx){toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
+  if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(sceneAt(outroId));await step.reward?.(d);st.i++;doSave();doRender();
+   const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
 
 function boot(){Object.assign(root.Cutscene.speakers,D().SPEAKERS);hookActions();
@@ -261,7 +407,62 @@ function boot(){Object.assign(root.Cutscene.speakers,D().SPEAKERS);hookActions()
  setInterval(()=>{tick().catch(e=>{busy=false;console.warn('[story]',e)})},700)}
 if(document.readyState!=='loading')setTimeout(boot,0);else document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0));
 
-root.Story={lock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+/* v98.337 · the quest window can be closed: the 'วันนี้' icon of the village HUD (js/town-hud.js) shows a number and a ภารกิจ entry that opens it again */
+function badgeSync(){try{const st=story();root.dispatchEvent(new CustomEvent('story-tracker',{detail:trackerInfo()}))}catch{}}
+function trackerInfo(){const st=story(),on=!!st&&st.mode!=='off'&&st.mode!=='offer'&&!!st.closed;return {closed:on,count:on?Math.max(1,st.unseen||0)+(st.mode==='active'?0:0):0,fresh:!!(on&&st.unseen),title:st&&st.mode==='active'?STEPS[st.i]?.title||'':'เบาะแสที่ได้'}}
+function openTracker(){const st=story();if(!st)return false;st.closed=false;st.unseen=0;doSave();draw(true);badgeSync();return true}
+/* v98.340 · temporary save: re-open the story fight that was on screen when the game was closed (js/resume.js) */
+async function resumeFight(){const step=cur();if(!step)return false;const d=dataOf(step);if(!(d.fighting||(step.id==='raid'&&!d.won))||document.getElementById('storyBattle'))return false;
+ let rec=null;try{rec=JSON.parse(localStorage.getItem('projectA.battleSnap')||'null')}catch{}
+ d.fighting=false;d.resumeSrc=rec?rec.page+rec.search+'&resume=1':null;doSave();
+ if(step.id==='raid'){startRaid(d);return true}
+ if(step.onSpot){const r=await step.onSpot(d);doSave();if(r?.msg)toast(r.msg);return true}return false}
+/* v98.472 · main story phase A: the odd extra goat (Mip in disguise) was seen once — docs/lore/MAIN-STORY-CANON.md A8 */
+const mipSeen=()=>!!V()?.story?.mip?.seen;
+function mystery(ev){const v=V();if(!v||ev!=='seen')return;v.story=v.story||{};v.story.mip=v.story.mip||{};if(!v.story.mip.seen){v.story.mip.seen=true;try{window.Titles?.log(G(),'mip.seen')}catch(e){}doSave()}}
+/* v98.584 · the first visit to the guild counter: the clerk explains where the card book's spell comes from (and why the kingdom likes cards) — played once, from the interior page */
+async function guildFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.guildSeen)return false;v.story.guildSeen=true;doSave();await root.Cutscene.play(D().SCENES.guildFirst);return true}
+/* v98.586 · DAY 1 PACING: pumpkins used to end at dusk, leaving the planks / stall quests in the dark. Until the "จบวันแรก" step is done the clock runs slower through the day and
+   stops near 18:30 (golden hour), so every day-1 task (goats → Hilda → pumpkins → Tom → planks → stall) fits before the evening; the player sleeps when ready. Started at 08:00 (WorldState). */
+const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','tom','planks','stall','homeWelcome','chestLesson','deckLesson','sleep1']);
+function timeScale(){try{const st=story();if(!st||st.mode!=='active')return 1;const step=STEPS[st.i];if(!step||!DAY1.has(step.id))return 1;const g=G();if(!g||g.day>1)return 1;const m=g.minutes||480;return m<720?.4:m<900?.3:m<1020?.2:m<1110?.1:0}catch(e){return 1}}
+/* v98.589 · the card-book lesson plays once, the first time the player opens the book during the prologue (old saves past the prologue never see it) */
+/* v98.607 · the world map asks where the current step sends the player (beacon + edge arrow, js/world-map.js guideOf) */
+function worldGuide(){const st=story();if(!st||st.mode!=='active')return null;const step=STEPS[st.i];if(!step)return null;if(step.id==='cave')return {id:'mine',label:'เหมืองเก่า (ทางเหนือ)'};if(step.id==='caveBack')return {id:'home',label:'หมู่บ้านเฟิร์นเวล'};return null}
+/* v98.605 · helpers for the home-evening steps */
+function chestCount(){try{const c=V().chest||{};return Object.values(c.materials||{}).reduce((a,b)=>a+(+b||0),0)+(c.items||[]).length}catch(e){return 0}}
+function deckHas(id){try{return ((V().tacticDecks||{}).combat||{})[id]>0}catch(e){return false}}
+const HOME_LOCKED=['chestLesson','deckLesson','sleep1'];
+/* the player may not step outside from dinner until they go to bed (day 1 evening) */
+function homeLock(){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||!HOME_LOCKED.includes(step.id))return '';return 'คืนนี้อยู่บ้านก่อน — แม่รออยู่ และพรุ่งนี้ยังมีงานอีกเยอะ · ทำอะไรในบ้านก็ได้ แล้วค่อยเข้านอน'}
+let homeBusy=false;
+async function homeHooks(){const st=story();if(homeBusy||!st||st.mode!=='active'||!root.Cutscene)return;const step=STEPS[st.i];if(!step||step.id!=='homeWelcome')return;const d=dataOf(step);if(d.welcomed||scene()!=='home')return;
+ homeBusy=true;try{await root.Cutscene.play(D().SCENES.homeWelcome);d.welcomed=true;
+  try{if(typeof heal==='function'){const r=heal(15,30);toast('🍲 ซุปอุ่น ๆ ของแม่ · HP +'+r[0]+' · แรง +'+r[1])}}catch(e){}
+  doSave();doRender()}finally{homeBusy=false}}
+/* v98.600 · the first time the hero is OUTSIDE the house (village map, not inside a place) the sister stops them (scene bookExit) and the card-book is opened FOR them — its lesson (bookFirst) then plays at once.
+   Only before the book has been seen and before the guild step; never while another scene / fight / panel is up. */
+let bookBusy=false;
+async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!=='active'||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen||v.story.bookIntro)return false;if(st.i>=byId('hire'))return false;
+ if(scene()!=='town')return false;   /* VillageTown.getScene(): 'town' = the village map · 'home'/'forge'… = inside a building · 'place:…' = an open sub-map */
+ if(document.getElementById('storyBattle')||onWorld())return false;
+ bookBusy=true;try{v.story.bookIntro=true;doSave();await root.Cutscene.play(D().SCENES.bookExit);try{if(typeof openPanel==='function')openPanel('bag')}catch(e){}}finally{bookBusy=false}return true}
+/* v98.617 · THE CARD-BOOK TOUR: after the opening scene the siblings teach the สมุดผนึก on the live village map — the player does each step by hand (open the book · look at the gear tab · tap a card · close it · the other tabs · close the book) */
+const BOOK_TOUR=[
+ {who:'S',text:'ดูมุมขวาบนนั่น มีไอคอน สมุดผนึก อยู่ — {S2B} ลองกดเปิดดู',target:'.hud-ico[data-hud="bag"]'},
+ {who:'S',text:'นี่คือสมุดผนึกที่สมาคมให้ ของที่เราพกจะกลายเป็นการ์ดเก็บอยู่ในนี้ ลองกดแท็บ อุปกรณ์ ก่อน',target:'.cb-tabs button[data-t="gear"]'},
+ {who:'B',text:'มีดของพ่อ… อยู่ในนี้แล้วจริงด้วย'},
+ {who:'S',text:'แตะการ์ดใบนั้นดูสิ จะเห็นรายละเอียด',target:'.cb-page[data-p="gear"] .card-thumb'},
+ {who:'S',text:'ปิดการ์ดนี้ก่อน แล้วไปดูแท็บอื่น',target:'#collectionFocus button, #collectionFocus .focus-close'},
+ {who:'S',text:'เหล็ก ถ่าน ไม้ ที่เก็บมาผลิตของ จะอยู่แท็บ วัตถุดิบ',target:'.cb-tabs button[data-t="mat"]',prep:()=>{if(!document.getElementById('panel').open)openPanel('bag')}},
+ {who:'S',text:'ส่วนยากับอาหารอยู่แท็บ ของใช้ — กดใช้จากตรงนี้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
+ {who:'B',text:'เข้าใจแล้ว ใส่ไว้ในสมุดก็ไม่ต้องหอบเป็นกอง'},
+ {who:'S',text:'งั้นปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .panelhead button, #panel > header button, #panel button[onclick*="close"], #panel button'}];
+let tourBusy=false;
+async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{const ok=await root.GuidedTour.run(BOOK_TOUR);try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
+async function bookFirst(){return false}   /* v98.613 · the book lesson now plays at the end of the opening scene */
+async function bookFirstOld(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
+root.Story={bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

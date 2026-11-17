@@ -1,0 +1,20 @@
+// v98.576 · AssetSize: ratio = width ÷ hero height · replace semantics · key normalising · seeded data sane
+const assert = require('node:assert/strict'); let pass = 0; const ok = (c, m) => { assert.ok(c, m); pass++ };
+global.window = global; global.addEventListener = () => { }; global.CustomEvent = class { }; global.dispatchEvent = () => { };
+const store = {}; global.localStorage = { getItem: k => k in store ? store[k] : null, setItem: (k, v) => { store[k] = String(v) }, removeItem: k => { delete store[k] } };
+global.CharSize = { VILLAGE_HERO_PX: 93.6 };
+const A = require('../js/asset-size.js');
+ok(A.key('http://x.test/assets/a/b.webp?v=3') === 'assets/a/b.webp' && A.key('./assets/a/b.webp#x') === 'assets/a/b.webp', 'key strips origin / query / hash');
+A.setHero('place', () => 100);
+ok(A.get('assets/a.webp') === null && A.startWidth('assets/a.webp', 'place', 77) === 77, 'no number → the fallback width');
+ok(A.record('assets/a.webp', 250, 'place') && A.get('assets/a.webp') === 2.5, 'width 250 on a 100 px hero = 2.5');
+ok(A.startWidth('assets/a.webp', 'place', 77) === 250, 'a new piece starts at ratio × hero');
+A.setHero('place', () => 50); ok(A.startWidth('assets/a.webp', 'place', 77) === 125, 'another map with a smaller hero → proportionally smaller');
+A.record('assets/a.webp', 100, 'place'); ok(A.get('assets/a.webp') === 2, 'the latest size REPLACES the number (100 ÷ 50)');
+ok(!A.record('assets/a.webp', 0, 'place') && !A.set('assets/a.webp', 500), 'nonsense is refused');
+A.flush(); ok(JSON.parse(store['asset-hero-ratio-v1'])['assets/a.webp'] === 2, 'flush writes localStorage');
+global.window = global;
+const gs = {}; global.window = gs; require('../js/game-settings.js');
+const seed = JSON.parse(gs.GAME_SETTINGS['asset-hero-ratio-v1']), ks = Object.keys(seed);
+ok(ks.length > 50 && ks.every(k => /^assets\//.test(k) && seed[k] > .02 && seed[k] < 80), 'seeded ratios are sane (' + ks.length + ')');
+console.log(pass + ' ok');

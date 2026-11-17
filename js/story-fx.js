@@ -9,7 +9,18 @@
 const reduced=()=>root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const heroName=()=>{try{return (typeof s!=='undefined'&&s.village?.heroName)||'นักผจญภัย'}catch{return 'นักผจญภัย'}};
-const fill=t=>String(t??'').replace(/\{hero\}/g,heroName());
+const sibName=()=>{try{return (typeof s!=='undefined'&&s.village?.siblingName)||'น้อง'}catch{return 'น้อง'}};
+/* v98.230 · {hero} lead's name · {sib} the other hero · {sibrel} พี่ชาย (when you play the sister) / น้องสาว (when you play the brother) · {polite} ครับ / ค่ะ by the lead's look */
+const leadFemale=()=>{try{return root.HeroVariant?.get?.()==='female'}catch{return false}};
+const polite=()=>{try{return root.HeroVariant?.get?.()==='female'?'ค่ะ':'ครับ'}catch{return 'ครับ'}};
+/* v98.585 · the two siblings by ROLE, whichever one the player leads: B = the elder brother (the late riser), S = the younger sister (always ready first).
+   who:'B' / who:'S' on a line is resolved to 'hero' or 'sib'; {Bn} {Sn} their names · {S2B} how the sister calls him (พี่…) · {B2S} how he calls her · {Bp}/{Sp} ครับ/ค่ะ
+   lead:'brother' / lead:'sister' on a line = shown only when the player leads that sibling */
+const roleName=r=>(r==='S')===leadFemale()?heroName():sibName();
+const roleWho=w=>w==='B'||w==='S'?((w==='S')===leadFemale()?'hero':'sib'):w;
+const fill0=t=>String(t??'').replace(/\{Bn\}/g,roleName('B')).replace(/\{Sn\}/g,roleName('S')).replace(/\{S2B\}/g,'พี่'+roleName('B')).replace(/\{B2S\}/g,roleName('S')).replace(/\{Bp\}/g,'ครับ').replace(/\{Sp\}/g,'ค่ะ');
+const fill=t=>fill1(fill0(t));
+const fill1=t=>String(t??'').replace(/\{hero\}/g,heroName()).replace(/\{sib\}/g,sibName()).replace(/\{callhero\}/g,leadFemale()?heroName():'พี่'+heroName()).replace(/\{callsib\}/g,leadFemale()?'พี่'+sibName():sibName()).replace(/\{sibpolite\}/g,leadFemale()?'ครับ':'ค่ะ').replace(/\{sibrel\}/g,root.HeroVariant?.get?.()==='female'?'พี่ชาย':'น้องสาว').replace(/\{polite\}/g,polite());
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* ---------------- particles ---------------- */
@@ -47,81 +58,89 @@ class Particles{
 /* ---------------- DOM ---------------- */
 let el=null,parts=null,playing=null;
 function build(){if(el)return el;el=document.createElement('div');el.id='cutscene';el.className='cs';el.hidden=true;el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','ฉากเนื้อเรื่อง');
- el.innerHTML=`<div class="cs-stage"><div class="cs-bg"></div><div class="cs-bg cs-bg-next"></div><canvas class="cs-art" hidden></canvas><div class="cs-tint"></div><div class="cs-rays"></div><div class="cs-orb"><i></i></div><div class="cs-mist"></div><canvas class="cs-canvas"></canvas><div class="cs-vignette"></div><div class="cs-flash"></div><div class="cs-ring"></div></div>
- <div class="cs-bar cs-top"></div><div class="cs-bar cs-bottom"></div>
+ el.innerHTML=`<div class="cut-stage"><div class="cs-bg"></div><div class="cs-bg cs-bg-next"></div><canvas class="cs-art" hidden></canvas><div class="cs-tint"></div><div class="cs-rays"></div><div class="cs-orb"><i></i></div><div class="cs-mist"></div><canvas class="cs-canvas"></canvas><div class="cs-vignette"></div><div class="cs-flash"></div><div class="cs-ring"></div></div>
+ <div class="cs-bar cut-top"></div><div class="cs-bar cs-bottom"></div>
  <div class="cs-card" hidden><small></small><h2></h2></div>
  <div class="cs-box" hidden><div class="cs-portrait"></div><div class="cs-talk"><b class="cs-name"></b><p class="cs-text"></p></div><span class="cs-next" aria-hidden="true">▼</span></div>
- <div class="cs-tools"><button type="button" class="cs-log-btn" title="ย้อนอ่านบทพูด (L)">☰ บันทึก</button><button type="button" class="cs-auto-btn" title="เล่นอัตโนมัติ (A)">▶ AUTO</button><button type="button" class="cs-ff-btn" title="กดค้างเพื่อเร่ง (หรือกด Ctrl ค้าง)">⏩ เร่ง</button></div><div class="cs-log" hidden><div class="cs-log-in"><b>บทพูดที่ผ่านมา</b><div class="cs-log-list"></div><small>L หรือ Esc ปิด</small></div></div>
- <button type="button" class="cs-skip">ข้ามฉาก ▸▸</button>`;
+ <button type="button" class="cs-log-btn cs-ib" title="ย้อนอ่านบทพูด (L)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Log</span></button><div class="cut-tools"><button type="button" class="cs-auto-btn cs-ib" title="เล่นอัตโนมัติ (A)"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-play"><path d="M8 5v14l11-7z" fill="currentColor"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-pause"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg><span>Auto</span></button><button type="button" class="cs-ff-btn cs-ib" title="กดค้างเพื่อเร่ง (หรือกด Ctrl ค้าง)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l8 6-8 6zM12 6l8 6-8 6z" fill="currentColor"/></svg><span>เร่ง</span></button></div><div class="cs-log" hidden><div class="cs-log-in"><b>บทพูดที่ผ่านมา</b><div class="cs-log-list"></div><small>L หรือ Esc ปิด</small></div></div>
+ <button type="button" class="cs-skip cs-ib" title="ข้ามไปส่วนถัดไป (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6l8 6-8 6zM13 6l7 6-7 6z" fill="currentColor"/><path d="M21 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>ข้ามฉาก</span></button>`;
  document.body.appendChild(el);parts=new Particles(el.querySelector('.cs-canvas'));root.addEventListener('resize',()=>{if(!el.hidden)parts.size()});return el}
 const $=sel=>el.querySelector(sel);
 /* v95.02 · scene/line `art:'dawn'|'orb'|…` → an animated scene drawn in code (js/scene-art.js) instead of a background image */
 let art=null;
 function setArt(name){const c=$('.cs-art');if(!name||!root.SceneArt?.has(name)){if(!c.hidden){c.hidden=true;art?.stop()}return false}c.hidden=false;art||=root.SceneArt.create(c);art.size();art.show(name);return true}
-function setBg(src,pan,instant){const a=$('.cs-bg:not(.cs-bg-next)'),b=$('.cs-bg-next');if(!src)return;const cur=a.dataset.src;if(cur===src&&!pan)return;
- if(instant||!cur){a.style.backgroundImage=`url("${src}")`;a.dataset.src=src;a.className='cs-bg'+(pan&&!reduced()?' cs-pan-'+pan:'');return}
- b.style.backgroundImage=`url("${src}")`;b.dataset.src=src;b.className='cs-bg cs-bg-next cs-show'+(pan&&!reduced()?' cs-pan-'+pan:'');
+/* v98.201 · a background picture that does not exist yet (e.g. the hero's bedroom, still to be painted) shows the "Waiting for Pic" board instead of a broken/empty scene */
+const WAIT_LABELS={'hero-bedroom':'ห้องนอนตัวเอก'},bgMissing=new Set(),bgProbed=new Set();
+const waitUrl=src=>{const n=(src.split('/').pop()||'').replace(/\.\w+$/,''),l=WAIT_LABELS[n]||n;return 'url("data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'><defs><radialGradient id='g' cx='50%' cy='40%' r='75%'><stop offset='0' stop-color='#1a2433'/><stop offset='1' stop-color='#0a0f17'/></radialGradient></defs><rect width='1600' height='900' fill='url(#g)'/><rect x='560' y='300' width='480' height='170' rx='16' fill='none' stroke='#8da2c0' stroke-opacity='.45' stroke-width='3' stroke-dasharray='14 10'/><text x='800' y='392' text-anchor='middle' font-family='system-ui,sans-serif' font-size='46' font-weight='700' fill='#9fb2cf' letter-spacing='3'>Waiting for Pic</text><text x='800' y='440' text-anchor='middle' font-family='sans-serif' font-size='24' fill='#9fb2cf' fill-opacity='.8'>${l}</text></svg>`)+'")'};
+const bgUrl=src=>bgMissing.has(src)?waitUrl(src):`url("${src}")`;
+function probeBg(src){if(!/^assets\/new-game-prologue\//.test(src)||bgProbed.has(src))return;bgProbed.add(src);const im=new Image();im.onerror=()=>{bgMissing.add(src);for(const e of document.querySelectorAll('.cs-bg'))if(e.dataset.src===src)e.style.backgroundImage=waitUrl(src)};im.src=src}
+function setBg(src,pan,instant){const a=$('.cs-bg:not(.cs-bg-next)'),b=$('.cs-bg-next');if(!src)return;probeBg(src);const cur=a.dataset.src;if(cur===src&&!pan)return;
+ if(instant||!cur){a.style.backgroundImage=bgUrl(src);a.dataset.src=src;a.className='cs-bg'+(pan&&!reduced()?' cs-pan-'+pan:'');return}
+ b.style.backgroundImage=bgUrl(src);b.dataset.src=src;b.className='cs-bg cs-bg-next cs-show'+(pan&&!reduced()?' cs-pan-'+pan:'');
  setTimeout(()=>{a.style.backgroundImage=b.style.backgroundImage;a.dataset.src=src;a.className='cs-bg'+(pan&&!reduced()?' cs-pan-'+pan:'');b.className='cs-bg cs-bg-next'},reduced()?0:900)}
-function setLook(o){if(o.tint!=null)$('.cs-stage').dataset.tint=o.tint||'';const fx=o.fx||[];$('.cs-stage').classList.toggle('fx-rays',fx.includes('rays'));$('.cs-stage').classList.toggle('fx-orb',fx.includes('orb'));$('.cs-stage').classList.toggle('fx-mist',fx.includes('mist'));parts.set(fx)}
-function shake(strong){if(reduced())return;const st=$('.cs-stage');st.classList.remove('cs-shake','cs-shake-big');void st.offsetWidth;st.classList.add(strong?'cs-shake-big':'cs-shake')}
+function setLook(o){if(o.tint!=null)$('.cut-stage').dataset.tint=o.tint||'';const fx=o.fx||[];$('.cut-stage').classList.toggle('fx-rays',fx.includes('rays'));$('.cut-stage').classList.toggle('fx-orb',fx.includes('orb'));$('.cut-stage').classList.toggle('fx-mist',fx.includes('mist'));parts.set(fx)}
+function shake(strong){if(reduced())return;const st=$('.cut-stage');st.classList.remove('cs-shake','cs-shake-big');void st.offsetWidth;st.classList.add(strong?'cs-shake-big':'cs-shake')}
 function flash(color){const f=$('.cs-flash');f.style.background=color||'#fff';f.classList.remove('on');void f.offsetWidth;f.classList.add('on')}
 function burst(opt={}){const r=el.getBoundingClientRect(),x=(opt.x??.5)*r.width,y=(opt.y??.45)*r.height;parts.burst(x,y,opt);if(opt.ring!==false){const ring=$('.cs-ring');ring.style.left=x+'px';ring.style.top=y+'px';ring.style.setProperty('--ring',opt.ringColor||'rgba(255,214,140,.9)');ring.classList.remove('on');void ring.offsetWidth;ring.classList.add('on')}}
 
 /* ---------------- text ---------------- */
-let typing=null,full='';
+let T=null,full='';   /* v98.179 · T = DialogueFX typer of the text box: pages split at sentence boundaries, rapid typing + voice blips */
 /* v97.10 · console cutscene controls: AUTO (next line by itself after a reading pause · remembered), hold ⏩ / Ctrl to fast-forward,
    ☰ บันทึก / L = backlog of the lines shown in this scene */
 let history=[],autoT=0,autoOn=(()=>{try{return localStorage.getItem('projectA.csAuto')==='1'}catch{return false}})(),curNext=null,ffT=0;
 function autoNext(){clearTimeout(autoT);if(!autoOn||!curNext)return;autoT=setTimeout(()=>{if(autoOn&&curNext&&$('.cs-log')?.hidden!==false)curNext()},1400+Math.min(2600,[...full].length*38))}
-function setAuto(on){autoOn=on;try{localStorage.setItem('projectA.csAuto',on?'1':'0')}catch{}$('.cs-auto-btn')?.classList.toggle('on',on);if(on&&!typing)autoNext();else if(!on)clearTimeout(autoT)}
+function setAuto(on){autoOn=on;try{localStorage.setItem('projectA.csAuto',on?'1':'0')}catch{}$('.cs-auto-btn')?.classList.toggle('on',on);if(on&&!(T&&T.busy()))autoNext();else if(!on)clearTimeout(autoT)}
 function ff(on){clearInterval(ffT);$('.cs-ff-btn')?.classList.toggle('on',!!on);if(!on||!curNext)return;ffT=setInterval(()=>{if(!curNext){clearInterval(ffT);return}if(!finishTyping())curNext()},110)}
 function logToggle(force){const L=$('.cs-log');if(!L)return false;const open=force??L.hidden;L.hidden=!open;if(open){clearTimeout(autoT);L.querySelector('.cs-log-list').innerHTML=history.map(h=>`<p>${h.name?`<b>${esc(h.name)}</b> `:''}${esc(h.text).replace(/\n/g,'<br>')}</p>`).join('');const li=L.querySelector('.cs-log-list');li.scrollTop=li.scrollHeight}else autoNext();return true}
 const SEG=(()=>{try{return new Intl.Segmenter('th',{granularity:'word'})}catch{return null}})();
 function speaker(who){const S=Cutscene.speakers[who]||{};const name=typeof S.name==='function'?S.name():S.name;return {name:name??(who==='hero'?heroName():who||''),portrait:typeof S.portrait==='function'?S.portrait():S.portrait,color:S.color||'#6b5a3a',look:S.look,bust:S.bust}}
-function showLine(line){const box=$('.cs-box'),sp=speaker(line.who);box.hidden=false;clearTimeout(autoT);history.push({name:line.who?sp.name:'',text:fill(line.text)});box.classList.toggle('cs-narr',!line.who);
+function showLine(group){const line=group[0],box=$('.cs-box'),sp=speaker(line.who);box.hidden=false;clearTimeout(autoT);for(const g of group)history.push({name:g.who?sp.name:'',text:fill(g.text)});box.classList.toggle('cs-narr',!line.who);
  /* v95.20: half-body portraits left/right with faces, emotes, glow and moods (js/story-actors.js) */
  const hint=root.StoryActors?.line(el,line,sp)||{};if(hint.shake)shake(false);if(hint.flash)flash(hint.flash);
  $('.cs-name').textContent=line.who?sp.name:'';const pt=$('.cs-portrait');pt.hidden=!line.who;
- if(line.who){if(sp.portrait)pt.innerHTML=`<img src="${esc(sp.portrait)}" alt="">`;else{pt.innerHTML=`<span>${esc([...sp.name][0]||'?')}</span>`;pt.style.setProperty('--pc',sp.color)}}
+ pt.classList.remove('cs-face');if(line.who){const fp=root.StoryActors?.facePic?.(line.who,sp,root.StoryActors.faceOf(line));if(fp){pt.classList.add('cs-face');pt.innerHTML=`<img src="${esc(fp)}" alt="">`;pt.style.setProperty('--pc',sp.color)}else if(sp.portrait)pt.innerHTML=`<img src="${esc(sp.portrait)}" alt="">`;else{pt.innerHTML=`<span>${esc([...sp.name][0]||'?')}</span>`;pt.style.setProperty('--pc',sp.color)}}
  box.classList.remove('cs-in');void box.offsetWidth;box.classList.add('cs-in');
- full=fill(line.text);const t=$('.cs-text');clearTimeout(typing);typing=null;if(reduced()){t.textContent=full;autoNext();return}
- /* v95.05: word by word (Thai word breaks), never letter by letter */
- /* v95.07: fast inside a phrase, a beat at each space, longer after … ? ! and line breaks */
- const words=SEG?[...SEG.segment(full)].map(x=>x.segment):full.split(/(\s+)/);let i=0;t.textContent='';
- const gap=w=>/\n/.test(w)?600:/^\s+$/.test(w)?320:Math.min(150,45+[...w].length*12)+(/(…|\.\.\.)$/.test(w)?500:/[?!]$/.test(w)?380:0);
- const step=()=>{i++;t.textContent=words.slice(0,i).join('');if(i>=words.length){typing=null;root.StoryActors?.talk(false);autoNext();return}typing=setTimeout(step,gap(words[i-1]))};root.StoryActors?.talk(!!line.who);typing=setTimeout(step,60)}
-function finishTyping(){if(!typing)return false;clearTimeout(typing);typing=null;root.StoryActors?.talk(false);$('.cs-text').textContent=full;return true}
+ const t=$('.cs-text');T?.stop();
+ /* v98.179: the consecutive lines of one speaker are one passage: rapid typing + a voice, split into pages only at sentence ends; a full page waits for the player */
+ T=root.DialogueFX.create(t,{maxLines:innerHeight<520?3:4,voice:line.who||null,
+  onPageStart:txt=>{full=txt;clearTimeout(autoT);root.StoryActors?.talk(!!line.who)},
+  onPageDone:skipped=>{root.StoryActors?.talk(false);box.classList.toggle('cs-more',!!T?.hasMore());if(!skipped)autoNext()}});
+ T.load(group.map(g=>fill(g.text)));T.start()}
+function finishTyping(){return !!T&&T.finish()}
 
 /* ---------------- play ---------------- */
 async function showCard(card){const c=$('.cs-card');c.querySelector('small').textContent=fill(card.kicker||'');c.querySelector('h2').textContent=fill(card.title||'');c.hidden=false;c.classList.remove('cs-in');void c.offsetWidth;c.classList.add('cs-in');await wait(reduced()?900:2300);c.classList.add('cs-out');await wait(reduced()?0:500);c.hidden=true;c.classList.remove('cs-out')}
 function applyLine(line){if(line.art)setArt(line.art);else if(line.bg){setArt(null);setBg(line.bg,line.pan)}if(line.tint!=null||line.fx)setLook({tint:line.tint,fx:line.fx??[...parts.kinds]});if(line.flash)flash(line.flash===true?null:line.flash);if(line.shake)shake(line.shake==='big');if(line.burst)burst(line.burst===true?{}:line.burst)}
 function play(scene){if(!scene)return Promise.resolve();if(playing)return playing.then(()=>play(scene));
  build();playing=new Promise(async resolve=>{
-  const lines=scene.lines||[];let i=-1,done=false,busy=false;
+  const lines=(scene.lines||[]).filter(l=>!l.lead||(l.lead==='sister')===leadFemale()).map(l=>l.who==='B'||l.who==='S'?{...l,who:roleWho(l.who)}:l);let i=-1,done=false,busy=false;
+  try{await root.StoryActors?.preload?.(lines,speaker)}catch(e){}   /* v98.621 · portraits are decoded before the scene opens */
   el.hidden=false;root.StoryActors?.begin(el);document.body.classList.add('cs-open');parts.size();parts.start();
   setArt(scene.art);setBg(scene.bg,scene.pan,true);setLook({tint:scene.tint||'',fx:scene.fx||[]});$('.cs-box').hidden=true;
   requestAnimationFrame(()=>el.classList.add('cs-live'));
-  const end=async()=>{if(done)return;done=true;finishTyping();el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();setArt(null);root.StoryActors?.end();document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
-   const st=$('.cs-stage');st.dataset.tint='';st.className='cs-stage';el.querySelectorAll('.cs-bg').forEach(b=>{b.dataset.src='';b.style.backgroundImage=''});
+  const end=async()=>{if(done)return;done=true;T?.stop();T=null;el.classList.remove('cs-live');el.classList.add('cs-leaving');await wait(reduced()?0:520);el.hidden=true;el.classList.remove('cs-leaving');parts.stop();setArt(null);root.StoryActors?.end();document.body.classList.remove('cs-open');$('.cs-box').hidden=true;
+   const st=$('.cut-stage');st.dataset.tint='';st.className='cut-stage';el.querySelectorAll('.cs-bg').forEach(b=>{b.dataset.src='';b.style.backgroundImage=''});
    el.onclick=null;document.removeEventListener('keydown',key,true);document.removeEventListener('keyup',keyUp,true);curNext=null;ff(false);clearTimeout(autoT);playing=null;resolve()};
-  const next=async()=>{if(done||busy)return;if(finishTyping())return;i++;if(i>=lines.length)return end();const line=lines[i];applyLine(line);
+  /* v98.16 · "ข้ามฉาก" skips only to the next part of a scene (a line marked seg:true) — e.g. the opening narration → the talk with mum; the last part ends the scene */
+  const skip=()=>{if(done)return;let j=-1;for(let k=i+1;k<lines.length;k++)if(lines[k].seg){j=k;break}if(j<0){end();return}if(busy)return;T?.stop();T=null;clearTimeout(autoT);i=j-1;next()};
+  const next=async()=>{if(done||busy)return;if(finishTyping())return;if(T&&T.hasMore()){T.nextPage();return}i++;if(i>=lines.length)return end();const line=lines[i];applyLine(line);
    if(line.wait){busy=true;$('.cs-box').hidden=true;await wait(reduced()?150:line.wait);busy=false;if(!line.text)return next()}
-   if(line.text)showLine(line);else next()};
+   if(line.text){const group=[line],plain=l=>l&&l.text&&!(l.bg||l.art||l.pan||l.tint!=null||l.fx||l.flash||l.shake||l.burst||l.wait||l.seg||l.card);while(plain(line)&&plain(lines[i+1])&&(lines[i+1].who||'')===(line.who||''))group.push(lines[++i]);showLine(group)}else next()};
   const key=e=>{if(el.hidden)return;const logOpen=!$('.cs-log').hidden;
    if(e.key==='Control'){if(!e.repeat)ff(true);return}
    if(e.key==='l'||e.key==='L'){e.preventDefault();e.stopPropagation();logToggle();return}
    if(logOpen){if(e.key==='Escape'||e.key==='Enter'){e.preventDefault();e.stopPropagation();logToggle(false)}return}
    if(e.key==='a'||e.key==='A'){e.preventDefault();e.stopPropagation();setAuto(!autoOn);return}
-   if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();next()}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();end()}};
+   if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();next()}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();skip()}};
   const keyUp=e=>{if(e.key==='Control')ff(false)};document.addEventListener('keyup',keyUp,true);
   history=[];curNext=()=>next();$('.cs-auto-btn').classList.toggle('on',autoOn);$('.cs-log').hidden=true;
   const ffb=$('.cs-ff-btn');ffb.onpointerdown=e=>{e.stopPropagation();ff(true)};ffb.onpointerup=ffb.onpointerleave=ffb.onpointercancel=e=>{e.stopPropagation();ff(false)};
-  el.onclick=e=>{if(e.target.closest('.cs-skip')){end();return}if(e.target.closest('.cs-auto-btn')){setAuto(!autoOn);return}if(e.target.closest('.cs-log-btn')){logToggle();return}if(e.target.closest('.cs-ff-btn'))return;if(!$('.cs-log').hidden){if(!e.target.closest('.cs-log-in'))logToggle(false);return}next()};document.addEventListener('keydown',key,true);
+  el.onclick=e=>{if(e.target.closest('.cs-skip')){skip();return}if(e.target.closest('.cs-auto-btn')){setAuto(!autoOn);return}if(e.target.closest('.cs-log-btn')){logToggle();return}if(e.target.closest('.cs-ff-btn'))return;if(!$('.cs-log').hidden){if(!e.target.closest('.cs-log-in'))logToggle(false);return}next()};document.addEventListener('keydown',key,true);
   $('.cs-skip').focus?.({preventScroll:true});
   await wait(reduced()?0:450);if(scene.card){busy=true;await showCard(scene.card);busy=false}
   next()});
  return playing}
-const Cutscene={play,speakers:{},isPlaying:()=>!!playing,flash:(c)=>{build();flash(c)},burst:(o)=>{build();burst(o)}};
+const Cutscene={play,fill,roleWho,roleName,speakers:{},isPlaying:()=>!!playing,flash:(c)=>{build();flash(c)},burst:(o)=>{build();burst(o)}};
 root.Cutscene=Cutscene;
 
 /* ---------------- small floating toast for quest feedback (used outside cutscenes) ---------------- */

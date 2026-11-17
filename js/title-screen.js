@@ -8,7 +8,7 @@
 (function(root){'use strict';
 /* v95.05: told like a picture book — each page is a picture (js/scene-art.js · art:'…') with one or two gentle lines that appear word by word.
    The ancient people are never named; Elukhor is the familiar golden light; nights have the purple moon. bg = fallback image only. */
-const PROLOGUE=[// v95.09: the creator's script (v2, sections ก–ช) — no map with names, no reveal of where people came from, no god appears
+const LEGACY_PROLOGUE=[// v95.09: the creator's script (v2, sections ก–ช) — no map with names, no reveal of where people came from, no god appears
  {art:'ruins',text:'มีนิทานเก่าเรื่องหนึ่ง ที่บางเผ่ายังเล่าสืบกันมา\nว่าครั้งหนึ่ง โลกใบนี้เคยเป็นของผู้คนที่เก่าแก่ยิ่งกว่าใคร'},
  {art:'deepwood',text:'พวกเขาอาศัยอยู่ในป่าลึก ที่แสงจันทร์แทบส่องไม่ถึง\nจนวันหนึ่ง ก็พากันเดินออกมา'},
  {art:'journey',text:'พวกเขาเดินทางออกไปทั่วผืนพิภพ ข้ามขุนเขา ล่องตามสายน้ำ\nบ้างตามหาผืนดินที่ตอบรับความเชื่อของตน บ้างพบหนทางใหม่ระหว่างทาง'},
@@ -26,10 +26,12 @@ const PROLOGUE=[// v95.09: the creator's script (v2, sections ก–ช) — no 
  {art:'riverCity',text:'ห่างจากเงาของมหาพงไพร สายน้ำหล่อเลี้ยงไร่นาและเมืองของมนุษย์\nผู้เดินทางต่างเผ่าพันธุ์ นำสินค้าและข่าวสารจากแดนไกลมาด้วย'},
  {art:'roadOut',text:'บ้างมาแสวงหาความมั่งคั่ง บ้างมาตามหาสิ่งที่สูญหาย\nและบ้าง… เพียงต้องการเริ่มต้นใหม่'},
  {art:'fernvale',text:'ริมเส้นทางสู่เมืองใหญ่ มีหมู่บ้านเล็ก ๆ แห่งหนึ่ง\nที่นครลึกลับและอารยธรรมที่สาบสูญ เป็นเพียงเรื่องเล่าจากแดนไกล'},
- {art:'dawn',text:'เช้าวันหนึ่งเริ่มต้นขึ้น เช่นเดียวกับวันอื่น\nและเรื่องราวของเจ้า… ก็เริ่มต้นที่นี่'}
-];
+ {art:'dawn',text:'เช้าวันหนึ่งเริ่มต้นขึ้น เช่นเดียวกับวันอื่น\nและเรื่องราวของเจ้าสองพี่น้อง… ก็เริ่มต้นที่นี่'}
+]; 
+const PROLOGUE=root.NewGamePrologueKit?.pages||LEGACY_PROLOGUE;
 /* after the name: one more page that walks into the village chapter, then the game starts (js/story-data.js 'opening') */
-const BRIDGE={art:'dawn',text:'{hero}…\nเช้าวันแรกก่อนงานเทศกาลเก็บเกี่ยว'};
+/* v98.201 · the bridge page keeps the hero's house picture of the last prologue page (same key = no new layer, no effect) and the game fades in after it */
+const BRIDGE={bg:(root.NewGamePrologueKit?.base||'assets/new-game-prologue/images/')+'hero-house.webp',fx:'same',prologueId:'W13a',art:null,text:'{hero} กับ {sib}…\nเช้าวันแรกก่อนงานเทศกาลเก็บเกี่ยว'};
 const HOWTO=[
  ['หมู่บ้าน','คลิกถนนหรือสถานที่เพื่อเดิน · บ้านใช้พัก นอน จัดสำรับ · โรงตีเหล็กใช้คราฟต์อุปกรณ์และฝึกต่อสู้ · ตลาดใช้ซื้อวัตถุดิบ ขายของ รับออร์เดอร์'],
  ['ออกผจญภัย','เดินไปทางออกขอบหมู่บ้าน เลือกพื้นที่ แล้วเลือกเส้นทางบนแผนที่ — ต่อสู้ เก็บของ เจอเหตุการณ์ และบอสท้ายพื้นที่'],
@@ -48,7 +50,7 @@ const CREDITS=[
 const TIPS=['โจมตีจากด้านหลังศัตรูแรงกว่าด้านหน้า','ยืนบนที่สูงช่วยให้ตีแรงขึ้นและหลบได้ดีขึ้น','กด "รอ" แทนการเดินจะได้ CT คืนบางส่วน','อุปกรณ์ที่ดีต้องใช้วัตถุดิบจากพื้นที่ที่ยากขึ้น','นอนที่บ้านเพื่อฟื้นแรงและชีวิตเต็ม','ล็อกเป้าแล้วดูหน้าต่างทำนายผลก่อนโจมตี'];
 
 /* v97.13 · a save slot picked in Load (js/console-ui.js) is copied over the auto save here, before the game page reads it */
-try{const n=sessionStorage.getItem('projectA.pendingSlot');if(n){sessionStorage.removeItem('projectA.pendingSlot');const o=JSON.parse(localStorage.getItem('projectA.slot.'+n)||'null');if(o?.data)for(const [k,v] of Object.entries(o.data)){if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v)}}}catch(e){}
+try{const n=sessionStorage.getItem('projectA.pendingSlot');if(n){sessionStorage.removeItem('projectA.pendingSlot');sessionStorage.setItem('projectA.startHome','1');localStorage.removeItem('projectA.resume');   /* v98.340 · a main-save slot starts at home; the temporary save is dropped */const o=JSON.parse(localStorage.getItem('projectA.slot.'+n)||'null');if(o?.data)for(const [k,v] of Object.entries(o.data)){if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v)}}}catch(e){}
 /* v97.10 · developer tools (✎ Editor on the title) only on the creator's machine: a GitHub token is set for ⬆ Push, or ?dev=1 (remembered; ?dev=0 forgets) */
 const DEV=(()=>{try{const q=new URLSearchParams(location.search).get('dev');if(q==='1')localStorage.setItem('projectA.dev','1');if(q==='0')localStorage.removeItem('projectA.dev');return localStorage.getItem('projectA.dev')==='1'||!!JSON.parse(localStorage.getItem('projectA.github')||'{}').token}catch(e){return false}})();root.PROJECT_DEV=DEV;
 const SAVE='three-card-forge-v4',STARTED='project-a-started-v1',NEW_FLAG='project-a-newgame',VERSION=(root.GAME_VERSION?.v||'v50');
@@ -70,6 +72,9 @@ if(T.active)document.documentElement.classList.add('title-boot');
 let townReady=false;const townWaiters=[];
 root.addEventListener('message',e=>{if(e.data?.source==='project-a-town'&&e.data.type==='ready'){townReady=true;townWaiters.splice(0).forEach(f=>f())}});
 const whenTown=()=>townReady?Promise.resolve():new Promise(r=>townWaiters.push(r));
+/* v98.352 · 'ready' is sent before the ground is painted; the frame's own "preparing the village" cover (village-town.html #townLoading) goes away ~1.2 s after the first full draw.
+   The loading screen waits for the same moment, so that second cover never shows after it. */
+const whenTownDrawn=()=>whenTown().then(()=>new Promise(r=>{const t0=Date.now(),iv=setInterval(()=>{let ok=false;try{const w=root.VillageTown.frame.contentWindow;ok=!!w.__townDrawnAt&&w.performance.now()-w.__townDrawnAt>1250}catch{}if(ok||Date.now()-t0>14000){clearInterval(iv);r()}},120)}));
 
 /* ---------- loader: images, audio, fonts, custom promises ---------- */
 const loaded=new Map();// url → Promise
@@ -80,11 +85,11 @@ function load(item){if(typeof item==='function')return Promise.resolve().then(it
 const isCached=url=>loaded.has(url);
 
 const manifest=()=>root.ASSET_MANIFEST?.assets||[];
-const byCategory=(...cats)=>manifest().filter(a=>cats.includes(a.category)).map(a=>a.file);
+const byCategory=(...cats)=>manifest().filter(a=>cats.includes(a.category)&&a.status!=='missing').map(a=>a.file);   /* v98.347 · empty slots ('missing': no picture yet) were fetched → a pile of 404s in the console */
 const uniq=list=>[...new Set(list.filter(Boolean))];
 function heroFrames(){const t=root.TACTICS_SPRITES;if(!t?.directions)return[];const out=[];for(const p of Object.values(t.directions))for(const f of Object.values(p).flat())if(f?.src)out.push(f.src);return out}
-const VILLAGE=['grass','paving','soil','meadow-details','garden-pond','props','fountain','player-house','inn','guild','healer','shop','market','temple','forge'].map(f=>'assets/village-town/'+f+'.png').concat(['broadleaf','pine','old-oak'].map(f=>'assets/village-town/nature/'+f+'.webp'));
-function villageSet(){return uniq([...VILLAGE,...heroFrames(),'assets/hero.webp','assets/home.webp','assets/market.webp','assets/workshop.webp',...['bag','upgrade','map','develop'].map(k=>'assets/ui-'+k+'.webp'),'assets/audio/bgm/bgm-village-01.mp3'])}
+const VILLAGE=['grass','paving','soil','meadow-details','garden-pond','props','fountain','player-house','inn','healer','shop','market','temple','forge'].map(f=>'assets/village-town/'+f+'.png').concat(['broadleaf','pine','old-oak'].map(f=>'assets/village-town/nature/'+f+'.webp'));
+function villageSet(){return uniq([...VILLAGE,...heroFrames(),'assets/hero.webp','assets/home.webp','assets/market.webp','assets/workshop.webp',...['bag','upgrade','map','develop'].map(k=>'assets/ui-'+k+'.webp'),'assets/audio/bgm/bgm-village-festival-01.mp3'])}
 // what a battle draws the moment it opens (measured: hero/ally frames, weapons, props, hand cards) — the loader waits for these
 function battleCore(){return uniq(byCategory('tactics-hero','tactics-equipment','tactics-props','tactic-cards','allies','battle-scenery'))}
 // the rest of the battle art — fetched quietly in the background after the village is up
@@ -96,7 +101,7 @@ function areaKinds(area){const e=root.ADVENTURE_DATA?.AREAS?.[area]?.enemies;ret
 /* ---------- loading screen ---------- */
 let screen=null;
 function loadingScreen(){if(screen)return screen;const el=document.createElement('div');el.id='gameLoading';el.className='gl';el.hidden=true;el.setAttribute('role','progressbar');el.setAttribute('aria-valuemin','0');el.setAttribute('aria-valuemax','100');
- el.innerHTML='<div class="gl-bg"></div><div class="gl-box"><span class="gl-kicker">LOADING</span><h2 class="gl-title"></h2><div class="gl-bar"><i></i></div><div class="gl-meta"><span class="gl-step"></span><b class="gl-pct">0%</b></div><p class="gl-tip"></p><button type="button" class="gl-skip" hidden>เข้าเกมเลย · โหลดส่วนที่เหลือเบื้องหลัง</button></div>';
+ el.innerHTML='<div class="gl-bg"></div><div class="gl-box"><span class="gl-kicker">LOADING</span><h2 class="gl-title"></h2>'+(root.MipLoader?root.MipLoader.html({width:'min(560px,calc(100vw - 40px))',size:'clamp(76px,11vh,108px)'}):'')+'<div class="gl-bar"><i></i></div><div class="gl-meta"><span class="gl-step"></span><b class="gl-pct">0%</b></div><p class="gl-tip"></p><button type="button" class="gl-skip" tabindex="-1" aria-hidden="true">เข้าเกมเลย · โหลดส่วนที่เหลือเบื้องหลัง</button></div>';
  document.body.appendChild(el);return screen=el}
 function setProgress(el,f,step){const pct=Math.round(f*100);el.querySelector('.gl-bar i').style.width=pct+'%';el.querySelector('.gl-pct').textContent=pct+'%';el.setAttribute('aria-valuenow',pct);if(step!=null)el.querySelector('.gl-step').textContent=step}
 /* run(title, groups[, {bg, minMs, quiet}]) — groups: [{label, items:[url|promise|fn]}]. quiet = only show if it takes >150ms */
@@ -108,9 +113,12 @@ async function runNow(title,groups,opt={}){const el=loadingScreen(),items=groups
  // a few at a time, in order, so the bar moves steadily and the first scene's files come first
  const queue=items.slice(),workers=Array.from({length:Math.min(6,queue.length)},async()=>{while(queue.length){const x=queue.shift();await load(x.it);done++;setProgress(el,done/total,x.label)}});
  // a slow connection never traps the player: after 7 s offer to continue while the rest keeps loading in the background
- let release;const early=new Promise(r=>release=r),later=setTimeout(()=>{const b=el.querySelector('.gl-skip');b.hidden=false;b.onclick=()=>release()},7000);
- await Promise.race([Promise.all(workers),early]);clearTimeout(timer);clearTimeout(later);el.querySelector('.gl-skip').hidden=true;
- if(shown){const left=(opt.minMs??0)-(performance.now()-start);if(left>0)await wait(left);setProgress(el,1,'พร้อมแล้ว');await wait(reduced?0:220);el.classList.add('gl-out');await wait(reduced?0:380);el.hidden=true;el.classList.remove('gl-out')}
+ let release;const early=new Promise(r=>release=r),later=setTimeout(()=>{const b=el.querySelector('.gl-skip');b.classList.add('on');b.tabIndex=0;b.removeAttribute('aria-hidden');b.onclick=()=>release()},7000);
+ await Promise.race([Promise.all(workers),early]);clearTimeout(timer);clearTimeout(later);{const sk=el.querySelector('.gl-skip');sk.classList.remove('on');sk.tabIndex=-1;sk.setAttribute('aria-hidden','true')}
+ if(shown){const left=(opt.minMs??0)-(performance.now()-start);if(left>0)await wait(left);setProgress(el,1,'พร้อมแล้ว');await wait(reduced?0:220);
+  /* v98.230 · opt.gate: wait for any key / tap before leaving the loading screen — that press is also what unlocks the music (browsers only start sound after a gesture) */
+  if(opt.gate){await wait(250);const tip=el.querySelector('.gl-tip');tip.textContent=opt.gate;el.classList.add('gl-gate');await new Promise(res=>{const ev=['keydown','pointerdown','touchend'],done=e=>{if(e.type==='keydown'&&(e.repeat||['Shift','Control','Alt','Meta','CapsLock'].includes(e.key)))return;ev.forEach(n=>document.removeEventListener(n,done,true));e.stopPropagation();res()};ev.forEach(n=>document.addEventListener(n,done,true))});el.classList.remove('gl-gate')}
+  el.classList.add('gl-out');await wait(reduced?0:380);el.hidden=true;el.classList.remove('gl-out')}
 }
 
 /* ---------- background prefetch of the next scenes ---------- */
@@ -141,9 +149,9 @@ function checkGitHub(el){const box=el.querySelector('.ts-gh'),repo=root.GAME_VER
  fetch('https://api.github.com/repos/'+repo+'/commits/main',{headers:{Accept:'application/vnd.github+json'}}).then(r=>r.ok?r.json():null).then(c=>{if(!c?.sha){box.textContent='';return}
   const msg=c.commit?.message||'',v=(msg.match(/^v\d+(\.\d+)?/)||[''])[0],sha=c.sha.slice(0,7),d=new Date(c.commit?.committer?.date||Date.now()),when=d.toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'});
   const num=x=>{const m=String(x).match(/(\d+)(?:\.(\d+))?/);return m?+m[1]*10000+(+m[2]||0):0},same=!v||num(v)<=num(VERSION);box.textContent=same?(v&&num(v)===num(VERSION)?`· ล่าสุดแล้ว (${sha})`:`· GitHub ${v||'—'} (${sha})`)+` · อัปเดต ${when}`:`· มีเวอร์ชันใหม่ ${v} (${sha}) — กด Ctrl+F5 เพื่อโหลดใหม่`;box.classList.toggle('ts-gh-new',!same);box.title=msg.split('\n')[0]}).catch(()=>{box.textContent=''})}
-function buildTitle(){const el=document.createElement('div');el.id='titleScreen';el.className='ts';
+function buildTitle(){const el=document.createElement('div');el.id='titleScreen';el.className='ts'+(!newGame&&!reduced?' ag-intro-pending':'');
  el.innerHTML=`<div class="ts-bg"></div><div class="ts-veil"></div><div class="ts-motes" aria-hidden="true">${'<i></i>'.repeat(18)}</div>
- <div class="ts-main"><div class="ts-brand"><span class="ts-kicker">AGRENOR · TACTICAL CARD ADVENTURE</span><h1>Project A</h1><p>ไพ่และการผจญภัย</p></div>
+ <div class="ts-main"><div class="ts-brand"><span class="ts-kicker">AGRENOR · TACTICAL CARD ADVENTURE</span><h1>Agrenor: Paths Unwritten</h1><p>ไพ่และการผจญภัย</p></div>
  <nav class="ts-menu" aria-label="เมนูหลัก">
   <button data-act="new"><span>New Game</span><small>เริ่มเกมใหม่</small></button>
   <button data-act="continue" ${hasSave?'':'disabled hidden'}><span>Continue</span><small>${hasSave?saveSummary():'ยังไม่มีเซฟ'}</small></button>
@@ -155,7 +163,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  <div class="ts-foot"><span class="ts-ver">Project A ${VERSION}${root.GAME_VERSION?.date?" · "+root.GAME_VERSION.date:""} <em class="ts-gh">· กำลังเช็ก GitHub…</em></span><span>↑↓ เลือก · Enter ยืนยัน</span></div>
  <section class="ts-extra" hidden aria-label="Extra"><div class="ts-extra-box"><div class="ts-extra-head"><div class="ts-tabs" role="tablist"><button role="tab" data-tab="howto">วิธีเล่น</button><button role="tab" data-tab="gallery">คลังภาพ</button><button role="tab" data-tab="credits">เครดิต</button></div><button class="ts-close" data-act="close-extra" aria-label="ปิด">✕</button></div><div class="ts-extra-body"></div></div></section>
  <section class="ts-story" hidden aria-live="polite"><div class="ts-story-bg"></div><canvas class="ts-story-art"></canvas><div class="ts-story-veil"></div><div class="ts-story-text"></div><div class="ts-story-hint">คลิก หรือกด Enter เพื่อไปต่อ</div><button class="ts-skip" data-act="skip">ข้าม ▸▸</button>
-  <form class="ts-name" hidden><span class="ts-kicker">ตัวเอกของเรื่อง</span><h2>เจ้าชื่ออะไร?</h2><input name="hero" maxlength="16" autocomplete="off" spellcheck="false" placeholder="นักผจญภัย"><p>เปลี่ยนภายหลังได้ในตั้งค่า หรือคลิกชื่อตัวเอกในเกม</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
+  <form class="ts-name" hidden><span class="ts-kicker">ตัวเอกของเรื่อง · สองพี่น้อง</span><h2>เจ้าสองพี่น้องชื่ออะไร?</h2><div class="ts-gender" role="radiogroup" aria-label="เลือกคนที่เล่น"><button type="button" class="ts-g" data-g="female" role="radio" aria-checked="false" title="เล่นเป็นน้องสาว"><span class="ts-gframe"><img src="assets/portraits/hero-female-neutral.webp" alt="" draggable="false"></span><b>น้องสาว</b><small></small></button><button type="button" class="ts-g on" data-g="male" role="radio" aria-checked="true" title="เล่นเป็นพี่ชาย"><span class="ts-gframe"><img src="assets/portraits/hero-male-neutral.webp" alt="" draggable="false"></span><b>พี่ชาย</b><small></small></button></div><div class="ts-names"><label class="ts-nm" data-g="female"><span>ชื่อน้องสาว</span><span class="ts-inw"><input name="heroF" maxlength="16" autocomplete="off" spellcheck="false" placeholder="ชื่อน้องสาว"><button type="button" class="ts-edit" title="แก้ชื่อได้" aria-label="แก้ชื่อ">✎</button></span></label><label class="ts-nm" data-g="male"><span>ชื่อพี่ชาย</span><span class="ts-inw"><input name="heroM" maxlength="16" autocomplete="off" spellcheck="false" placeholder="ชื่อพี่ชาย"><button type="button" class="ts-edit" title="แก้ชื่อได้" aria-label="แก้ชื่อ">✎</button></span></label></div><p>ตั้งชื่อให้ทั้งสองคน · สองพี่น้อง · คนที่เลือกคือคนที่เล่น อีกคนอยู่ในทีมและเดินตามเราเสมอ · เปลี่ยนภายหลังได้ในตั้งค่า</p><button type="submit">เริ่มการผจญภัย</button></form></section>`;
  document.body.appendChild(el);title=el;checkGitHub(el);
  const menu=[...el.querySelectorAll('.ts-menu button')];
  el.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)act(b.dataset.act)});
@@ -175,11 +183,11 @@ const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
 function goFull(){try{fsSet('1');try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch{}if(fsEl())return;const d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;if(f){const r=f.call(d,{navigationUI:'hide'});r?.then?.(()=>{try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch{}})?.catch?.(()=>{})}}catch{}}
 root.goFullscreen=goFull;
 for(const ev of ['fullscreenchange','webkitfullscreenchange'])document.addEventListener(ev,()=>{fsSet(fsEl()?'1':'0')});   // leaving (Esc / the in-game button) is remembered; a reload fires nothing
-if(newGame)fsSet('1');
+/* v98.200 · New Game no longer goes fullscreen by itself (user request); Continue still does, and the in-game fullscreen button works as before */
 {const back=e=>{if(!fsWanted()||fsEl())return;goFull()};addEventListener('pointerdown',back,true);addEventListener('keydown',e=>{if(e.key!=='Escape')back(e)},true)}
 async function act(a){if(busyTitle)return;
  /* v97.05 · New Game over a save asks first and then reloads (which leaves fullscreen anyway); going fullscreen before the question made the dialog jump. The reload re-enters fullscreen on the next click */
- if(a==='continue'||(a==='new'&&!hasSave))goFull();
+ /* v98.341 · Continue no longer goes fullscreen by itself (user request); the in-game fullscreen button still works */
  if(a==='new'){if(hasSave){const ok=await (root.GameDialog?root.GameDialog.confirm('เริ่มเกมใหม่?\nความคืบหน้าในเซฟปัจจุบันจะถูกแทนที่ (ระบบเก็บสำเนาเซฟเดิมไว้ให้ 1 ชุด) · การ์ดที่ออกแบบและผังหมู่บ้านยังอยู่'):Promise.resolve(root.confirm('เริ่มเกมใหม่?')));if(!ok)return;
    try{localStorage.setItem('three-card-forge-before-newgame',localStorage.getItem(SAVE)||'');localStorage.removeItem(SAVE);localStorage.removeItem(STARTED);for(const k of ['agrenor-world-v1','agrenor-mind-v1','agrenor-clock-v1','agrenor-standalone-v1'])localStorage.removeItem(k);/* v94: the world map, village memory and old clock start over too */sessionStorage.setItem(NEW_FLAG,'1')}catch{}busyTitle=true;title.classList.add('ts-out');await wait(reduced?0:300);location.reload();return}
   prepareStory();return}
@@ -199,9 +207,9 @@ function tab(id){const box=title.querySelector('.ts-extra-body');title.querySele
 /* ---------- prologue ---------- */
 let page=-1,art=null;
 function artPlayer(st){if(art)return art;const c=st.querySelector('.ts-story-art');if(!c||!root.SceneArt)return null;art=root.SceneArt.create(c);return art}
-function story(){busyTitle=true;const st=title.querySelector('.ts-story');st.hidden=false;title.classList.add('ts-in-story');page=-1;busyTitle=false;
+function story(){try{queueMicrotask(()=>root.GameBGM?.refresh?.())}catch{}prologueDone=false;busyTitle=true;const st=title.querySelector('.ts-story');layersOf(st).forEach(o=>o.remove());curImg=null;st.hidden=false;title.classList.add('ts-in-story');page=-1;busyTitle=false;
  st.onclick=e=>{if(e.target.closest('.ts-skip,.ts-name'))return;next()};
- st.onkeydown=e=>{if(e.target.closest('.ts-name'))return;if(e.key==='Enter'||e.key===' '){e.preventDefault();next()}else if(e.key==='Escape'){e.preventDefault();storyEnd()}};
+ st.onkeydown=e=>{if(prologueDone||e.target.closest('.ts-name'))return;if(e.key==='Enter'||e.key===' '){e.preventDefault();next()}else if(e.key==='Escape'){e.preventDefault();storyEnd()}};
  st.tabIndex=-1;st.focus();next()}
 /* v95.05 · Thai reads best word by word (Intl.Segmenter), never letter by letter */
 const seg=(()=>{try{return new Intl.Segmenter('th',{granularity:'word'})}catch{return null}})();
@@ -210,33 +218,58 @@ let revealUntil=0;
 /* v95.07 · pacing: words inside a phrase run quickly; a space (Thai phrase/sentence break) holds a beat, "…" and ?/! hold longer, a new line longest */
 const PACE={word:.05,perChar:.012,maxWord:.16,space:.38,ellipsis:.6,mark:.45,line:.7};
 function pauseAfter(w){if(/^\s+$/.test(w))return PACE.space;let p=Math.min(PACE.maxWord,PACE.word+[...w].length*PACE.perChar);if(/(…|\.\.\.)$/.test(w))p+=PACE.ellipsis;else if(/[?!]$/.test(w))p+=PACE.mark;return p}
-function reveal(box,text){const lines=String(text).split('\n');let d=.25,html='';
- for(const [li,line] of lines.entries()){if(li)d+=PACE.line;html+='<span class="ts-ln">'+wordsOf(line).map(w=>{const h=`<span class="ts-w" style="animation-delay:${d.toFixed(2)}s">${esc(w)}</span>`;d+=pauseAfter(w);return h}).join('')+'</span>'}
- box.innerHTML=html;box.classList.remove('ts-all');revealUntil=performance.now()+d*1000+600;if(reduced)box.classList.add('ts-all')}
+/* v98.179 · prologue pages use the shared DialogueFX typer (rapid typing + voice, split at sentence ends if a page would overflow) instead of the per-word CSS fade */
+let TS=null;
+function reveal(box,text){TS?.stop();box.innerHTML='';box.classList.add('ts-all');const cs=getComputedStyle(box),lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.55,lines=Math.max(3,Math.min(8,Math.floor(innerHeight*.58/lh)));const hint=box.parentElement?.querySelector('.ts-story-hint');TS=root.DialogueFX.create(box,{maxLines:lines,voice:null,fade:true,onPageStart:()=>{if(hint)hint.style.visibility='hidden'},onPageDone:()=>{if(hint)hint.style.visibility=''}});TS.load([String(text)]);TS.start()}
+/* v98.187 · New Game pictures are stacked layers (one per page). A new layer plays a mood transition (fx-* in css/title-screen.css) over the previous one;
+   when it finishes the old layers go. A page without a picture shows the "Waiting for Pic" board. The old SceneArt path is kept for the legacy prologue and the BRIDGE page. */
+let curImg=null;
+const layersOf=st=>[...st.querySelectorAll('.ts-story-layer')];
+function placeholderHTML(label){return '<div class="ts-wait"><b>Waiting for Pic</b><small>'+esc(label||'')+'</small></div>'}
 function showPage(p){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text'),bg=st.querySelector('.ts-story-bg'),pa=artPlayer(st);
- if(pa&&p.art&&pa.show(p.art)){bg.style.backgroundImage='none';bg.classList.remove('ts-pan')}else if(p.bg){bg.classList.remove('ts-pan');void bg.offsetWidth;bg.style.backgroundImage=`url("${p.bg}")`;bg.classList.add('ts-pan')}
+ if(p.bg||p.placeholder){
+  const key=p.placeholder?'wait:'+(p.prologueId||''):p.bg,same=key===curImg&&layersOf(st).length;
+  if(same){st.classList.remove('ts-glow');if(p.fx==='glow'&&!reduced){void st.offsetWidth;st.classList.add('ts-glow')}}
+  else{
+   pa?.stop?.();bg.style.backgroundImage='none';bg.classList.remove('ts-pan');
+   const old=layersOf(st),L=document.createElement('div'),fx=reduced?'none':(p.fx&&p.fx!=='same'&&p.fx!=='glow'?p.fx:'fade');
+   L.className='ts-story-layer fx-'+fx+(p.placeholder?' ts-layer-wait':'');
+   if(p.placeholder)L.innerHTML=placeholderHTML(p.label);else{L.style.backgroundImage='url("'+p.bg+'")';if(p.pos)L.style.backgroundPosition=p.pos}
+   st.querySelector('.ts-story-veil').before(L);curImg=key;
+   const done=()=>{if(!L.isConnected)return;old.forEach(o=>o.remove());L.classList.add('fx-done')};
+   L.addEventListener('animationend',e=>{if(e.target===L&&/^fx-/.test(e.animationName))done()});setTimeout(done,fx==='none'?0:3200);
+  }
+ }else if(pa&&p.art&&pa.show(p.art)){layersOf(st).forEach(o=>o.remove());curImg=null;bg.style.backgroundImage='none';bg.classList.remove('ts-pan')}
  reveal(box,p.text)}
+let prologueDone=false;   /* v98.201 · once the name form is up (skip button or last page) clicks / keys must NOT advance the prologue any more */
 function next(){const st=title.querySelector('.ts-story'),box=st.querySelector('.ts-story-text');
- if(performance.now()<revealUntil&&!box.classList.contains('ts-all')){box.classList.add('ts-all');revealUntil=0;return}// first press shows the whole page
+ if(prologueDone)return;if(TS&&TS.busy())return;/* v98.232 · a press is ignored while the page is still being typed; it only works once the whole passage of the scene has been shown (the ข้าม button still skips everything) */if(TS&&TS.hasMore()){TS.nextPage();return}/* v98.216 · a press never waits for the typing: it cuts it and goes straight on to the next page / scene */ // press shows the next page of a long passage
  page++;if(page>=PROLOGUE.length){storyEnd();return}showPage(PROLOGUE[page])}
-function storyEnd(){const st=title.querySelector('.ts-story'),f=st.querySelector('.ts-name');st.querySelector('.ts-story-text').textContent='';st.querySelector('.ts-story-hint').hidden=true;st.querySelector('.ts-skip').hidden=true;f.hidden=false;
- const input=f.elements.hero;input.value=game()?.village?.heroName||'';setTimeout(()=>input.focus(),30);
- f.onsubmit=async e=>{e.preventDefault();const n=input.value.trim().slice(0,16)||'นักผจญภัย';if(game()?.village){game().village.heroName=n;doSave()}root.HeroIdentity?.syncHeroName?.();
-  f.hidden=true;showPage({...BRIDGE,text:BRIDGE.text.replace('{hero}',n)});st.onclick=null;st.onkeydown=null;await wait(reduced?600:4200);enter(true)}}
+function storyEnd(){if(prologueDone)return;prologueDone=true;TS?.stop();TS=null;const st=title.querySelector('.ts-story'),f=st.querySelector('.ts-name');st.querySelector('.ts-story-text').textContent='';st.querySelector('.ts-story-hint').hidden=true;st.querySelector('.ts-skip').hidden=true;f.hidden=false;
+ const inputs={male:f.elements.heroM,female:f.elements.heroF},saved=game()?.village?.heroNames||{};inputs.male.value=saved.male||'Arz';inputs.female.value=saved.female||'Liz';   /* v98.334 · default names (editable) */
+ /* v98.230 · both heroes are named here: the picked one is the lead, the other is the younger sibling who follows */
+ let look=(()=>{try{return root.HeroVariant?.get?.()||'male'}catch{return'male'}})();if(look!=='female')look='male';
+ const gbtn=[...f.querySelectorAll('.ts-g')];const pick=g=>{look=g;gbtn.forEach(b=>{const on=b.dataset.g===g;b.classList.toggle('on',on);b.setAttribute('aria-checked',on?'true':'false');b.querySelector('small').textContent=on?'คนที่เล่น':(b.dataset.g==='male'?'พี่ชายที่เดินตาม':'น้องสาวที่เดินตาม')})};pick(look);setTimeout(()=>inputs[look].focus(),30);
+ gbtn.forEach(b=>b.addEventListener('click',()=>pick(b.dataset.g)));
+ f.querySelectorAll('.ts-edit').forEach(b=>b.addEventListener('click',()=>{const i=b.previousElementSibling;i.focus();i.select()}));   /* v98.335 · the pencil: this name can be changed */
+ for(const i of Object.values(inputs))i.addEventListener('focus',()=>i.select());   /* the name fields live outside the picker: typing a name never changes who you play */
+f.onsubmit=async e=>{e.preventDefault();const nm=(v,d)=>v.trim().slice(0,16)||d,nameM=nm(inputs.male.value,'Arz'),nameF=nm(inputs.female.value,'Liz'),n=look==='male'?nameM:nameF,sib=look==='male'?nameF:nameM;if(game()?.village){const v=game().village;v.heroName=n;v.siblingName=sib;v.heroNames={male:nameM,female:nameF};doSave()}root.HeroIdentity?.syncHeroName?.();try{root.HeroVariant?.set?.(look);root.HeroVariant?.apply?.(look);root.dispatchEvent(new CustomEvent('hero-look-changed',{detail:look}));const tf=document.querySelector('#villageTownLayer iframe');tf?.contentWindow?.HeroVariant?.set?.(look);tf?.contentWindow?.HeroVariant?.apply?.(look)}catch{}
+  f.hidden=true;showPage({...BRIDGE,text:BRIDGE.text.replace('{hero}',n).replace('{sib}',sib)});st.onclick=null;st.onkeydown=null;await wait(reduced?600:4200);enter(true)}}
 
 /* ---------- v95.02 · New Game: load everything first, then play the prologue (no stutter while the game page and the town frame are still loading) ---------- */
 const fonts=()=>[()=>loadFont('VillageThai','assets/village-town/noto-sans-thai-thai-400-normal.woff2'),()=>document.fonts?.ready];
 const pageLoaded=()=>document.readyState==='complete'?Promise.resolve():Promise.race([new Promise(r=>root.addEventListener('load',r,{once:true})),wait(15000)]);
 const settle=()=>new Promise(r=>{let n=0;const f=()=>++n>=12?r():requestAnimationFrame(f);requestAnimationFrame(f)});   // a few quiet frames after the heavy work
-let storyReady=false;
-async function prepareStory(){title.classList.add('ts-quick');
- await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(12000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900});
+let storyReady=false,preparing=false;
+async function prepareStory(){if(preparing)return;preparing=true;title.classList.add('ts-quick','ts-story-pre');try{root.GameBGM?.refresh?.()}catch{}   /* v98.213 · switch the music NOW (the 100 ms timer can be starved while the village frame loads) */   /* v98.201 · the menu stays hidden behind the loading screen (it flashed up before the first picture) */
+ await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'เพลงบทนำ',items:[()=>root.GameBGM?.preloadPrologue?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(12000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900,gate:'กดปุ่มใดก็ได้เพื่อไปต่อ'});
  storyReady=true;story()}
 
 
 /* ---------- into the game ---------- */
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}
- await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(10000)])]}],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
+ if(!isNew&&title)title.style.visibility='hidden';   /* v98.352 · the menu must not show again while the loading screen fades out */
+ await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
  /* v97.04 · New Game: the opening cutscene (mother wakes the hero) fades in over the last prologue page and the title goes away underneath it,
     so the village map never shows in between (the story loop only starts a cutscene once T.active is false) */
  if(isNew&&root.Story&&root.Cutscene){T.active=false;const t0=Date.now();while(!root.Cutscene.isPlaying()&&Date.now()-t0<4000)await wait(100);if(root.Cutscene.isPlaying())await wait(reduced?0:600)}

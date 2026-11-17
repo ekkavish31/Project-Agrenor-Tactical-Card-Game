@@ -8,8 +8,8 @@ const M=root.ASSET_MANIFEST,T=root.TacticsDecks;if(!M?.assets||!T||typeof docume
 const has=id=>M.assets.some(a=>a.id===id&&a.file&&['final','temp'].includes(a.status));
 // element palette: [deep, mid, glow]
 const PAL={wind:['#12313f','#2f7f96','#c8f2ff'],dark:['#140c22','#4b2f78','#d2b4ff'],water:['#0c2a44','#1f6f9c','#a8e6ff'],light:['#3a2808','#9a7420','#fff0b8'],
- earth:['#2a1a0c','#7a5328','#ffd38a'],nature:['#0f2a16','#3f7a3a','#c8f5a0'],fire:['#2a0c06','#9a3a18','#ffc27a']};
-const LOOK={thunder:['wind','bolt'],backstab:['dark','backstab'],dive:['wind','dive'],tide:['water','wave'],formation:['light','formation'],
+ earth:['#2a1a0c','#7a5328','#ffd38a'],nature:['#0f2a16','#3f7a3a','#c8f5a0'],fire:['#2a0c06','#9a3a18','#ffc27a'],chaos:['#2a0c26','#8a2a78','#ffb0f0']};
+const LOOK={chaosBolt:['chaos','bolt'],chaosRend:['chaos','burst'],chaosWard:['chaos','shield'],thunder:['wind','bolt'],backstab:['dark','backstab'],dive:['wind','dive'],tide:['water','wave'],formation:['light','formation'],
  counter:['earth','counter'],evade:['wind','evade'],firstAid:['nature','aid'],ambush:['dark','eye'],rockfall:['earth','rocks'],perch:['light','flag'],climb:['nature','peak'],
  // fallbacks for any other card that may lose its art
  attack:['earth','sword'],skill:['fire','burst'],guard:['light','shield'],rest:['nature','leaf'],push:['earth','burst'],step:['nature','boot'],walk:['wind','boot'],run:['wind','boot'],sprint:['fire','boot'],dash:['wind','boot'],creep:['dark','boot']};

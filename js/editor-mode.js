@@ -7,25 +7,28 @@ window.openEditor=()=>window.open('editor.html#cards','_blank');
 if(!mode)return;
 document.body.classList.add('editor-mode','editor-'+mode);
 window.EDITOR_MODE=mode;
+{const st=document.createElement('style');st.textContent='body.editor-mode #villageTownLayer,body.editor-mode .ambient,body.editor-mode .day-veil,body.editor-mode main>*:not(header){display:none!important}';document.head.appendChild(st)}   // v98.260: the old sub-map / village scene never shows behind an editor tool
 save=function(){};                                 // sandbox: play data is read but never written
 if(window.Adventure){let st=Adventure.state;Adventure.state=()=>null;void st}
 function boot(){try{
  document.getElementById('advLayer')?.setAttribute('hidden','');
  if(mode==='cards'){CardStudio.open()}
- else if(mode==='map'){if(typeof openMapEditor==='function')openMapEditor();else openPanel('map')}
- else if(mode==='dev'){if(typeof toggleDev==='function'&&!devActive)toggleDev()}
+
+
  else if(mode==='menu'){menuPicker()}
- else if(mode==='battle'){if(!new URLSearchParams(location.search).get('try'))try{localStorage.removeItem('battleground-try')}catch(e){}s.village.adventure=null;s.village.location='forge';s.hp=60;s.stamina=100;s.fatigue=0;s.minutes=480;s.mode='forge';render();openTactical()}
+ 
 }catch(e){console.error('editor boot',e)}}
 // menu icon chooser: each top-right button can use a picture from assets/icons/menu or the drawn icon
-const MENU_ICONS=['village','map','bag','deck','market','battle','guard','party','quest','trophy','spellbook','potion','treasure','forge','settings','mail','calendar','guild','trade','portal','castle','balance','stats','collection','gear'];
+const MENU_ICONS=['village','map','bag','cardbook','deck','market','battle','guard','party','quest','trophy','spellbook','potion','treasure','forge','settings','mail','calendar','guild','trade','portal','castle','balance','stats','collection','gear'];
+/* v98.630 · the in-game top bar is the village HUD (js/town-hud.js), whose icons read the key 'hud-<id>' of this same setting: list exactly those buttons (the old header buttons no longer exist, so the list was empty) */
+const HUD_BTNS=[['map','แผนที่ (แถบบน)','map'],['today','วันนี้ (แถบบน)','calendar'],['bag','สมุดผนึก (แถบบน)','cardbook'],['me','ตัวเรา (แถบบน)','party'],['go','ออกเดินทาง (แถบบน)','portal'],['menu','เมนู (แถบบน)','settings'],['character','ตัวละคร (ในเมนู ตัวเรา)','party'],['deck','สำรับ (ในเมนู ตัวเรา)','deck'],['job','อาชีพ (ในเมนู ตัวเรา)','forge'],['element','ตารางธาตุ (ในเมนู ตัวเรา)','collection'],['activity','กิจกรรม/ภารกิจ (ในเมนู วันนี้)','quest'],['journal','สมุดหมู่บ้าน (ในเมนู วันนี้)','spellbook'],['farm','ไร่ของเรา (ในเมนู วันนี้)','treasure']].map(([id,label,def])=>({id:'hud-'+id,label,def}));
 function menuPicker(){let KEY='menu-icons-v1',get=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}};let box=document.createElement('section');box.id='menuPicker';document.body.appendChild(box);
- const draw=()=>{let cur=get(),btns=[...document.querySelectorAll('.header-actions .illustrated-nav')].map(b=>({id:b.id==='motion'?'motion':b.id.replace(/^nav-/,''),label:b.querySelector('span')?.textContent||b.title}));
-  box.innerHTML=`<h2>ไอคอนเมนู (ปุ่มขวาบน)</h2><p style="color:#bba57f">เลือกภาพให้แต่ละปุ่ม ดูผลได้ทันทีที่แถบด้านบน · "เดิม" = ไอคอนวาดด้วยโค้ด · บันทึกอัตโนมัติ เกมเห็นเมื่อรีโหลด</p><div class="mp-rows">${btns.map(b=>`<div class="mp-row"><h3>${b.label}</h3><div class="mp-grid"><button data-b="${b.id}" data-i="" class="${cur[b.id]?'':'on'}">เดิม</button>${MENU_ICONS.map(i=>`<button data-b="${b.id}" data-i="${i}" class="${cur[b.id]===i?'on':''}" title="${i}"><img src="assets/icons/menu/${i}.webp" alt=""></button>`).join('')}</div></div>`).join('')}</div>`};
+ const draw=()=>{let cur=get(),btns=HUD_BTNS;
+  box.innerHTML=`<h2>ไอคอนเมนู (ปุ่มขวาบน)</h2><p style="color:#bba57f">เลือกภาพให้แต่ละปุ่ม ดูผลได้ทันทีที่แถบด้านบน · "วาด" = ไอคอนวาดด้วยโค้ด · "ค่าเริ่มต้น" = ภาพที่เกมตั้งไว้ · บันทึกอัตโนมัติ เกมเห็นเมื่อรีโหลด</p><div class="mp-rows">${btns.map(b=>`<div class="mp-row"><h3>${b.label}</h3><div class="mp-grid"><button data-b="${b.id}" data-i="-" class="${cur[b.id]==='-'?'on':''}">วาด</button><button data-b="${b.id}" data-i="" class="${cur[b.id]?'':'on'}" title="ค่าเริ่มต้น: ${b.def||''}">ค่าเริ่มต้น</button>${MENU_ICONS.map(i=>`<button data-b="${b.id}" data-i="${i}" class="${cur[b.id]===i?'on':''}" title="${i}"><img src="assets/icons/menu/${i}.webp" alt=""></button>`).join('')}</div></div>`).join('')}</div>`};
  box.onclick=e=>{let b=e.target.closest('[data-b]');if(!b)return;let cur=get();if(b.dataset.i)cur[b.dataset.b]=b.dataset.i;else delete cur[b.dataset.b];localStorage.setItem(KEY,JSON.stringify(cur));window.NavIcons?.paint();draw()};draw()}
 // v38j: one "⬆ Push" button per editor tool — publishes that tool's settings (and the card design files) to GitHub
-const PUSH={cards:{label:'การ์ด',keys:[]},battle:{label:'สนามต่อสู้',keys:['tactics-anchors-v1','project-a-battle-polish','project-a-ct-crops-v32']},menu:{label:'ไอคอนเมนู',keys:['menu-icons-v1']},dev:{label:'จัดฉาก/layout',keys:['everyday-layout-v1','three-card-config-v2']},map:{label:'แผนที่หมู่บ้าน',keys:['everyday-village-map-v03','everyday-village-routes-v1','three-card-routes-v1']}};
-function pushBar(){if(!window.GitHubPush||!PUSH[mode])return;const bar=document.createElement('div');bar.id='editorPush';bar.style.cssText='position:fixed;right:14px;bottom:14px;z-index:2147483000;display:flex;gap:6px;align-items:center;background:#241d15f0;border:1px solid #c9893a;border-radius:10px;padding:6px 8px;font:12px system-ui,"Noto Sans Thai",sans-serif;color:#f3e7cf;box-shadow:0 6px 20px #0008';
+const PUSH={cards:{label:'การ์ด',keys:[]},battle:{label:'สนามต่อสู้',keys:['tactics-anchors-v1','project-a-battle-polish','project-a-ct-crops-v32']},menu:{label:'ไอคอนเมนู',keys:['menu-icons-v1']},dev:{label:'จัดฉาก/layout',keys:['everyday-layout-v1','three-card-config-v2']},map:{label:'แผนที่หมู่บ้าน',keys:['everyday-village-map-v03','everyday-village-routes-v1','three-card-routes-v1','asset-hero-ratio-v1']}};
+function pushBar(){if(!window.GitHubPush||!PUSH[mode])return;const bar=document.createElement('div');bar.id='editorPush';bar.style.cssText='position:fixed;right:14px;bottom:14px;z-index:2147483000;display:flex;gap:6px;align-items:center;background:#241d15f0;border:1px solid #c9893a;border-radius:10px;padding:6px 8px;font:12px AgThai,system-ui,"Noto Sans Thai",sans-serif;color:#f3e7cf;box-shadow:0 6px 20px #0008';
  const go=document.createElement('button'),msg=document.createElement('span');go.textContent='⬆ Push '+PUSH[mode].label+' ขึ้นเกม';go.style.cssText='background:#c9893a;color:#fff;border:0;border-radius:7px;padding:6px 10px;cursor:pointer;font:inherit';msg.style.cssText='max-width:280px;color:#e6d3a9';
  const set=GitHubPush.settingsButton();set.style.cssText='background:#30271d;color:#f3e7cf;border:1px solid #4a3b29;border-radius:7px;padding:6px 8px;cursor:pointer;font:inherit';bar.append(msg,go,set);document.body.appendChild(bar);
  go.onclick=async()=>{if(!GitHubPush.config().token){GitHubPush.openSettings(()=>go.click());return}go.disabled=true;const status=t=>msg.textContent=t;

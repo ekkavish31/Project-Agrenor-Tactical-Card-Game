@@ -4,32 +4,49 @@
 (function(){'use strict';
 const host=document.createElement('section');host.id='villageTownLayer';host.setAttribute('aria-label','หมู่บ้าน');host.style.cssText='position:fixed;inset:0;z-index:200;background:#718568';
 function makeFrame(title,src){const f=document.createElement('iframe');f.title=title;f.style.cssText='width:100%;height:100%;border:0';f.allow='fullscreen';if(src)f.src=src;host.appendChild(f);return f}
-const frame=makeFrame('หมู่บ้าน 2.5D','village-town.html?v=97.17'),marketFrame=makeFrame('สถานที่ 2.5D');let placeId='',placeAct='';marketFrame.hidden=true;document.body.appendChild(host);
+const deferTown=!!window.TitleScreen?.active&&!window.TitleScreen?.newGame&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* v98.181 · iframe pages are addressed with the GAME version, not a fixed number: a fixed ?v let browsers keep an old village-town.html (HTTP cache) after a release, so new scripts/fixes in it never arrived */
+const GV=(()=>{try{return (window.GAME_VERSION||{}).v||''}catch{return ''}})();
+const frame=makeFrame('หมู่บ้าน 2.5D',deferTown?'':'village-town.html?v='+(GV||'97.17')),marketFrame=makeFrame('สถานที่ 2.5D');let placeId='',placeAct='';marketFrame.hidden=true;document.body.appendChild(host);
 const back=document.createElement('button');back.id='townReturn';back.textContent='← กลับแผนที่หมู่บ้าน';back.style.cssText='position:fixed;left:20px;top:78px;z-index:201;padding:10px 16px;border-radius:10px;background:#213b2df0;color:#fff0c7;border:1px solid #b6c48e';back.hidden=true;back.onclick=()=>openTown();document.body.append(back);
 let ready=false,marketReady=false,initialized=false,lastStamp='',lastMotion='',inside=false,marketOpen=false,lastVisible='';
 function post(f,data){f.contentWindow?.postMessage({source:'project-a-game',...data},'*')}
 function send(data){if(ready)post(frame,data)}
 function stateData(){return{location:s.village.location,name:heroName(),day:s.day,minutes:s.minutes,hp:s.hp,stamina:s.stamina,coins:s.village.coins,message:s.log,exits:Object.entries(window.ADVENTURE_DATA.AREAS).map(([id,a])=>({id,name:a.name,exit:a.exit})),actions:placeActions().map(a=>({id:a.id,name:a.name,cost:a.cost,effect:a.effect,reason:a.reason||''}))}}
 function modalOpen(){return !!document.querySelector('dialog[open]')}
-function activeHide(){return inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden}
+function activeHide(){return !!window.TitleScreen?.active||inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden}
+/* v98.198 · keyboard focus follows the visible frame: after entering/leaving a place the iframe that is now on screen was never focused (the key presses went to the hidden one or the parent), so WASD/arrows did nothing until the player clicked */
+let lastFocusKey='';
+function focusActive(force){if(host.hidden||modalOpen())return;const f=marketOpen?marketFrame:frame;try{if(document.activeElement&&document.activeElement!==document.body&&document.activeElement!==f)document.activeElement.blur?.();f.contentWindow?.focus()}catch{}}
+/* v98.240 · safety net for the scene change: if a key press still lands on the page itself (focus was never moved into the iframe that is on screen, or was lost when it reloaded) it is handed to that iframe and the iframe is focused — no click on the screen needed */
+for(const type of ['keydown','keyup'])document.addEventListener(type,e=>{
+ if(!e.isTrusted||host.hidden||modalOpen()||e.defaultPrevented)return;
+ const tg=e.target;if(tg&&tg!==document.body&&tg!==document.documentElement)return;
+ const f=marketOpen?marketFrame:frame,w=f?.contentWindow;if(!w||f.hidden)return;
+ try{focusActive();w.document.dispatchEvent(new w.KeyboardEvent(type,{key:e.key,code:e.code,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,repeat:e.repeat,bubbles:true,cancelable:true}));e.preventDefault();e.stopPropagation()}catch{}
+},true);
 function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden;frame.hidden=marketOpen;marketFrame.hidden=!marketOpen;
+ {const fk=JSON.stringify([!host.hidden,marketOpen,placeId,ready,marketReady,modalOpen()]);if(fk!==lastFocusKey){lastFocusKey=fk;setTimeout(focusActive,0);setTimeout(focusActive,250)}}
  const vis=JSON.stringify([!host.hidden,marketOpen,ready,marketReady,modalOpen()]);if(vis!==lastVisible){lastVisible=vis;send({type:'visibility',visible:!host.hidden&&!marketOpen&&!modalOpen()});if(marketReady)post(marketFrame,{type:'visibility',visible:!host.hidden&&marketOpen&&!modalOpen()})}
  const data=stateData(),stamp=JSON.stringify(data);if(stamp!==lastStamp){lastStamp=stamp;send({type:'state',data});if(marketReady)post(marketFrame,{type:'state',data})}
  const motion=HeroMotion.snapshot(TACTICS_SPRITES),sig=JSON.stringify(motion);if(sig!==lastMotion){lastMotion=sig;send({type:'motion',data:motion});if(marketReady)post(marketFrame,{type:'motion',data:motion})}
 }
-function openTown(){if(busy||s.mode==='battle')return;inside=false;marketOpen=false;if($('panel').open)$('panel').close();send({type:'return'});sync();send({type:'focus'})}
-function enterPlace(id,map,interior){const sub=interior?'in:'+id:map||id;placeAct=id;inside=false;marketOpen=true;if(placeId!==sub){placeId=sub;marketReady=false;marketFrame.src=interior?'place-interior.html?embed=1&v=95.01&place='+encodeURIComponent(id)+'&name='+encodeURIComponent(interior):'village-place.html?v=95.01&place='+encodeURIComponent(sub)+(map?'&kind='+id:'')}else if(marketReady){post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)})}lastStamp='';sync()}
+function openTown(){if(busy||s.mode==='battle')return;if(inside||marketOpen){const why=window.Story?.homeLock?.();if(why){villageDialog('ยังออกไปไม่ได้','<p>'+why.replace(/[<>&]/g,'')+'</p>');return}}   /* v98.605 · day-1 evening: no going out until bed */
+inside=false;marketOpen=false;if($('panel').open)$('panel').close();send({type:'return'});sync();send({type:'focus'})}
+function enterPlace(id,map,interior){const sub=interior?'in:'+id:map||id;placeAct=id;inside=false;marketOpen=true;if(placeId!==sub){placeId=sub;marketReady=false;marketFrame.src=interior?'place-interior.html?embed=1&v='+(GV||'95.01')+'&place='+encodeURIComponent(id)+'&name='+encodeURIComponent(interior):'village-place.html?v='+(GV||'95.01')+'&place='+encodeURIComponent(sub)+(map?'&kind='+id:'')}else if(marketReady){post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)})}lastStamp='';sync()}
 renderMap=function(edit){openTown();if(edit)send({type:'edit'})};window.openMapEditor=function(){renderMap(true)};
 villageTravel=function(id){if(['home','forge','market'].includes(id)){openTown();send({type:'walk',id})}};
 const oldRender=render;render=function(){const r=oldRender.apply(this,arguments);sync();return r};
-const CORE=['market','forge','home'];
+const CORE=['market','forge','home','guild'];   /* v98.585 · + guild */
 function arrived(id,map,info={}){if(id.startsWith('exit:')){openWorld();return}if(busy||devActive||s.mode==='battle'){send({type:'place',id,ok:false,message:'รอให้กิจกรรมปัจจุบันเสร็จก่อน',actions:[]});return}
  // v94: the hero's own house (an editor place) is home; editor houses with an empty sub-map and every non-core place open the living interior
  if(info.name&&/บ้านของเรา|บ้านเรา/.test(info.name))id='home';
+ {const why=window.Story?.placeLock?.([id,info.placeId],info.name);if(why){villageDialog('ยังไม่ถึงเวลา','<p>'+why.replace(/[<>&]/g,'')+'</p>');send({type:'place',id,ok:false,message:'',actions:[]});return}}
  const real=info.placeId||id,emptyMap=map&&!(placeMaps()[map]?.stations||[]).length;
  if(!CORE.includes(id)||(info.custom&&emptyMap&&id!=='home')){if(id==='square'||real==='square'){send({type:'place',id,ok:false,message:'ลานกลางหมู่บ้าน',actions:[]});return}enterPlace(real,'',info.name||real);sync();return}
  if(!PLACES[id]){send({type:'place',id,ok:false,message:'สถานที่นี้เตรียมไว้ ยังไม่เปิดกิจกรรม',actions:[]});return}
  const result=id===s.village.location?{ok:true}:travel(id);if(!result.ok){send({type:'place',id,ok:false,message:result.reason,actions:[]});return}
+ if(id==='guild')setTimeout(()=>{try{window.Story?.guildFirst?.()}catch(e){}},1600);   /* v98.585 · the registrar's first talk, once */
  if(CORE.includes(id)){render();/* v95.30: the hero's house uses its own sub-map when one has been built in the editor (with home services), else the built-in home */ enterPlace(id,info.name&&/บ้านของเรา|บ้านเรา/.test(info.name)?(map&&!emptyMap?map:''):map);return}
  inside=true;marketOpen=false;closeCardFocus();hideEntityPeek();render();applySceneLayout(true);sync();
 }
@@ -45,14 +62,18 @@ window.addEventListener('message',e=>{const m=e.data;if(e.source===frame.content
  else if(m.type==='menu')menu(m.id);
  }});
 /* v94: the old area adventure (adventure.js node maps) is archived — leaving the village always opens the world map in the town frame */
-function openWorld(){if(busy||s.mode==='battle')return;/* v97.16: the prologue decides when the world map opens */const lock=window.Story?.lock?.();if(lock){villageDialog('ยังออกเดินทางไม่ได้','<p>'+lock.replace(/[<>&]/g,'')+'</p><p>จบบทนำแล้วจะออกผจญภัยได้อิสระ</p>');return}const reason=s.hp<20?'HP ต่ำกว่า 20 พักก่อน':s.fatigue>=85?'ความสดชื่นต่ำเกินไป':'';if(reason){villageDialog('ยังออกเดินทางไม่ได้','<p>'+reason+'</p>');return}if($('panel').open)$('panel').close();openTown();ready=false;frame.src='world-map.html';sync()}
+function openWorld(){if(busy||s.mode==='battle')return;/* v97.16: the prologue decides when the world map opens */const lock=window.Story?.lock?.();if(lock){villageDialog('ยังไม่ถึงเวลา','<p>'+lock.replace(/[<>&]/g,'')+'</p>');return}let reason=s.hp<20?'HP ต่ำกว่า 20 พักก่อน':'';{const IJ=window.Injury,G0=window.WorldState?.game?.()||s;if(!reason&&IJ&&(!IJ.canFight(G0,'hero')||!IJ.canTravel(G0,'hero')))reason='ตัวเอกบาดเจ็บหนัก ('+IJ.describe(G0,'hero')+') ต้องพักฟื้นที่โรงพยาบาลก่อน'}if(reason){villageDialog('ยังออกเดินทางไม่ได้','<p>'+reason+'</p>');return}if($('panel').open)$('panel').close();openTown();ready=false;frame.src='world-map.html';sync()}
 function openInterior(id,name){if(busy||s.mode==='battle')return;if($('panel').open)$('panel').close();openTown();enterPlace(id,'',name||id);sync()}
 function onWorld(){try{return /world-map\.html/.test(frame.contentWindow.location.pathname)}catch{return false}}
 function placeMaps(){try{return JSON.parse(localStorage.getItem('place-maps-v1')||'{}')}catch{return{}}}
 function chooseExpedition(){openWorld()}function expedition(){openWorld()}
-window.VillageTown={open:openTown,frame,marketFrame,host,sync,expedition,openWorld,openInterior,onWorld,getScene:()=>inside?s.village.location:marketOpen?'place:'+placeId:'town',enterPlace};
+/* v98.340 · temporary save (js/resume.js): re-open exactly the place frame / the world map that was on screen */
+function resumePlace(src){if(!src)return false;let u;try{u=new URL(src,location.href)}catch{return false}const pl=u.searchParams.get('place')||'',interior=/place-interior/.test(u.pathname);if(!pl)return false;placeAct=interior?pl:(u.searchParams.get('kind')||pl);inside=false;marketOpen=true;placeId=interior?'in:'+pl:pl;marketReady=false;marketFrame.src=u.pathname.split('/').pop()+u.search;sync();return true}
+function resumeWorld(){if(busy)return false;openTown();ready=false;frame.src='world-map.html';sync();return true}
+window.VillageTown={resumePlace,resumeWorld,isMarketReady:()=>marketReady,isTownReady:()=>ready,open:openTown,frame,marketFrame,host,sync,expedition,openWorld,openInterior,onWorld,getScene:()=>inside?s.village.location:marketOpen?'place:'+placeId:'town',enterPlace};
 new MutationObserver(()=>{const hide=activeHide();if(host.hidden!==hide||lastVisible!==JSON.stringify([!hide,marketOpen,ready,marketReady,modalOpen()]))sync()}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
 setInterval(()=>{if(!document.hidden)sync()},800);
 try{const channel=new BroadcastChannel('project-a-hero-motion');channel.onmessage=e=>{if(e.data?.kind!=='hero-walk'||!e.data.data?.directions)return;for(const[d,p]of Object.entries(e.data.data.directions)){if(!TACTICS_SPRITES.directions[d])TACTICS_SPRITES.directions[d]={};TACTICS_SPRITES.directions[d].walk=p.walk}lastMotion='';sync()}}catch{}
+if(deferTown){let loaded=false;const loadTown=()=>{if(loaded)return;loaded=true;clearTimeout(fallback);window.removeEventListener('maker-intro-finished',loadTown);if(!frame.getAttribute('src'))frame.src='village-town.html?v='+(GV||'97.17');};const fallback=setTimeout(loadTown,65000);window.addEventListener('maker-intro-finished',loadTown,{once:true});}
 sync();
 })();

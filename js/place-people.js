@@ -24,6 +24,8 @@
     people = want.map((p, i) => {
       const old = people.find(x => x.p.id === p.id); if (old) return old;
       // a stable free spot near the middle of the floor for each person
+      /* v98.586 · a map can pin a person to a spot (village-place.html M.npcSpots → window.PLACE_NPC_SPOTS): they stand there, turn to the hero, never stroll */
+      const pin = (root.PLACE_NPC_SPOTS?.() || {})[p.id]; if (pin) return { p, u: pin.u, v: pin.v, face: pin.face || 'SW', phase: i * 1.7, goal: null, wait: 1e9, pinned: true };
       let u = 0, v = 0; for (let k = 0; k < 40; k++) { const h = hash(p.id + k), a = (h % 360) / 57.3, r = 1.5 + (h % 7) * .6; u = Math.round(Math.cos(a) * r * 2) / 2; v = Math.round(Math.sin(a) * r * 2) / 2; if (!blocked?.(u, v)) break }
       return { p, u, v, face: ['SE', 'SW', 'NE', 'NW'][hash(p.id) % 4], phase: i * 1.7, goal: null, wait: 1 + (hash(p.id) % 5) };
     });
@@ -32,6 +34,7 @@
   let lastT = 0;
   function walk(a, dt, blocked, hero) {
     if (bubble?.a === a && performance.now() < bubble.until) { if (hero) a.face = faceTo(hero.u - a.u, hero.v - a.v); return false }
+    if (a.pinned) return false;
     if (!a.goal) { a.wait -= dt; if (a.wait > 0) return false; const st = root.PLACE_STATIONS?.() || [], useSt = st.length && Math.random() < .45, s = useSt ? st[Math.floor(Math.random() * st.length)] : null;
       for (let k = 0; k < 12; k++) { const q = s ? { u: s.u + (Math.random() - .5) * 2, v: s.v + s.d + .8 + Math.random() } : { u: a.u + (Math.random() - .5) * 5, v: a.v + (Math.random() - .5) * 5 }; if (!blocked?.(q.u, q.v) && plan(a, q)) { a.goal = q; break } } a.wait = 3 + Math.random() * 6; if (!a.goal) return false }
     const w = a.path?.[0] || a.goal, du = w.u - a.u, dv = w.v - a.v, d = Math.hypot(du, dv), step = dt * 1.6;
@@ -56,7 +59,7 @@
       const moving = walk(a, dt, blocked, hero), pt = project(a.u, a.v);
       out.push({ y: pt.y, draw: () => {
         g.fillStyle = 'rgba(20,30,20,.35)'; g.beginPath(); g.ellipse(pt.x, pt.y, 14, 6, 0, 0, 7); g.fill();
-        root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, scale: castScale('npc:' + a.p.id) });
+        root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, scale: castScale('npc:' + a.p.id) * (root.PLACE_CHAR_K || 1) });
         if (questNpc(a.p.id)) mark(g, pt, t);
         if (bubble?.a === a && now < bubble.until) say(g, pt, bubble.text);
       } });
@@ -74,13 +77,8 @@
     g.fillStyle = 'rgba(255,248,230,.96)'; g.strokeStyle = '#8a6a3a'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(x, y, w, h, 9); g.fill(); g.stroke();
     g.fillStyle = '#3a2a14'; g.textAlign = 'left'; lines.forEach((l, i) => g.fillText(l, x + 9, y + 18 + i * 17)); g.restore();
   }
-  /* v95.21 · villagers here are the same size as on the village map: the village editor's cast scales (all × npc × this one) */
-  let castCache = null, castAt = 0;
-  function castScale(k) {
-    const now = performance.now(); if (!castCache || now > castAt) { castAt = now + 2000; try { castCache = (JSON.parse(localStorage.getItem('project-a-village-editor-v67') || 'null')?.assets || root.VillageDefaultLayout?.assets || {}).cast || {} } catch (e) { castCache = {} } }
-    const C = castCache, o = x => (C[x] && typeof C[x] === 'object' ? C[x] : null), all = +C.all || 1;
-    return all * (o(k)?.s ?? 1) * (o('npc')?.s ?? 1);
-  }
+  /* v98.263 · ONE rule with the village: this sub-map's size multiplier (MapScale 'place') × the ⚖ Scale Lineup factor of that villager (the old per-NPC cast scales are gone) */
+  function castScale(k) { return (root.placeScale ? root.placeScale() : 1) * (root.CharScaleAdjust?.factor('village', k) || 1) }
   /* world point → talk to the villager under it. Returns true when a villager took the click. */
   /* v95.14 · talking needs you next to the villager: a click from afar walks the hero up first (ctx = {hero, go(u,v), stop()} from village-place.html) */
   const REACH = 1.6; let approach = null, CTX = null;

@@ -1,5 +1,5 @@
-// Card artwork and individual square CT face crops. v33: five large-creature face crops reviewed.
-window.UNIT_CARD_ART = {
+// Card artwork and CT crops.
+window.UNIT_CARD_ART={
   "u-hero": {
     "src": "assets/cards/portraits/u-hero.webp",
     "legacy": [
@@ -674,6 +674,78 @@ window.UNIT_CARD_ART = {
     "ctSize": [
       1200,
       1200
+    ]
+  },
+  "en-murk": {
+    "src": "assets/cards/portraits/en-murk.webp",
+    "ctCrop": [
+      0.5,
+      0.45,
+      0.9
+    ],
+    "ctSize": [
+      512,
+      512
+    ]
+  },
+  "en-hunger": {
+    "src": "assets/cards/portraits/en-hunger.webp",
+    "ctCrop": [
+      0.5,
+      0.45,
+      0.9
+    ],
+    "ctSize": [
+      512,
+      512
+    ]
+  },
+  "en-hungerRoot": {
+    "src": "assets/cards/portraits/en-hungerRoot.webp",
+    "ctCrop": [
+      0.5,
+      0.45,
+      0.9
+    ],
+    "ctSize": [
+      512,
+      512
+    ]
+  },
+  "en-alarmHorn": {
+    "src": "assets/cards/portraits/en-alarmHorn.webp",
+    "ctCrop": [
+      0.5,
+      0.45,
+      0.9
+    ],
+    "ctSize": [
+      512,
+      512
+    ]
+  },
+  "en-byrexael": {
+    "src": "assets/cards/portraits/en-byrexael.webp",
+    "ctCrop": [
+      0.5,
+      0.45,
+      0.9
+    ],
+    "ctSize": [
+      512,
+      512
+    ]
+  },
+  "en-soulCore": {
+    "src": "assets/cards/portraits/en-soulCore.webp",
+    "ctCrop": [
+      0.5,
+      0.45,
+      0.9
+    ],
+    "ctSize": [
+      512,
+      512
     ]
   }
 };

@@ -32,19 +32,28 @@
     farm: `<path d="M24 40V22" ${S}/><path d="M24 26c-8 0-11-5-11-11 7 0 11 4 11 11zM24 22c0-7 4-11 11-11 0 6-3 11-11 11" ${S}/><path d="M12 40h24" ${S}/>`
   };
   const svg = k => `<svg viewBox="0 0 48 48" aria-hidden="true">${G[k]}</svg>`;
+  /* v98.16 · the picture icons from assets/icons/menu replace the drawn glyphs (same pack as the game's top bar; Editor → ไอคอนเมนู can override: key 'hud-<id>', '-' = drawn glyph) */
+  const PICS = { map: 'map', today: 'calendar', me: 'party', go: 'portal', menu: 'settings', activity: 'quest', journal: 'spellbook', farm: 'treasure', character: 'party', bag: 'cardbook', deck: 'deck', job: 'forge', element: 'collection' };
+  const pick = k => { let v; try { v = (JSON.parse(localStorage.getItem('menu-icons-v1')) || {})['hud-' + k] } catch (e) { } return v === '-' ? '' : (v || PICS[k] || '') };
+  const pic = k => { const p = pick(k); return p ? `<img src="assets/icons/menu/${p}.webp" alt="" draggable="false">` : svg(k) };
   const click = sel => { const b = typeof sel === 'string' ? store.querySelector(sel) || document.querySelector(sel) : sel; if (b) b.click(); return !!b };
   function farmHere() { try { return ((parent.WorldState || window.WorldState)?.world()?.estates || []).find(p => p.at === 'town:fernvale' && p.kind === 'farm') || null } catch (e) { return null } }
+  /* v98.337 · the closed quest window: a number on the 'วันนี้' icon, a ภารกิจ entry in its menu opens it again (Story lives in the parent page) */
+  const storyInfo = () => { try { return parent.Story?.trackerInfo?.() || { closed: false, count: 0 } } catch (e) { return { closed: false, count: 0 } } };
+  function badge() { const b = row.querySelector('[data-hud="today"] .hud-medal'); if (!b) return; const i = storyInfo(); let n = b.querySelector('.hud-badge'); if (!i.closed) { n?.remove(); return } if (!n) { n = document.createElement('i'); n.className = 'hud-badge'; b.append(n) } n.textContent = i.count || 1; n.classList.toggle('fresh', !!i.fresh) }
+  setInterval(badge, 800); try { parent.addEventListener('story-tracker', badge) } catch (e) { }
   const call = (name, fn = 'open') => { try { (parent[name] || window[name])?.[fn]?.() } catch (e) { } };
 
   const MENUS = {
     today: () => [
+      ...(storyInfo().closed ? [['activity', '📜 ภารกิจ' + (storyInfo().count ? ' (' + storyInfo().count + ')' : '') + ' · ' + storyInfo().title, () => { try { parent.Story.openTracker() } catch (e) { } badge() }]] : []),
       ['activity', 'กิจกรรมวันนี้', () => click('#activities')],
       ['journal', 'สมุดหมู่บ้าน', () => click('[data-game="journal"]')],
       ...(farmHere() ? [['farm', 'ไร่ของเรา', () => { const f = farmHere(); location.href = 'place-interior.html?place=farm&farm=' + encodeURIComponent(f.id) + '&name=' + encodeURIComponent('ไร่ · ' + f.name) + '&back=village-town.html' }]] : [])
     ],
     me: () => [
       ['character', 'ตัวละคร', () => click('[data-game="character"]')],
-      ['bag', 'กระเป๋า', () => click('[data-game="bag"]')],
+      ['bag', 'สมุดผนึก', () => click('[data-game="bag"]')],
       ['deck', 'สำรับ', () => click('[data-game="deck"]')],
       ['job', 'อาชีพ', () => call('JobsUI')],
       ['element', 'ตารางธาตุ', () => click('#elChart')]
@@ -53,7 +62,8 @@
   const ICONS = [
     ['map', 'แผนที่', 'แผนที่เมือง · คลิกหมุดเพื่อเดินไป (M)', () => click('#townMapBtn')],
     ['today', 'วันนี้', 'กิจกรรม · สมุดหมู่บ้าน · ไร่', 'today'],
-    ['me', 'ตัวเรา', 'ตัวละคร · กระเป๋า · สำรับ · อาชีพ · ธาตุ', 'me'],
+    ['bag', 'สมุดผนึก', 'การ์ดและของทั้งหมดที่พกไว้ (สมุดผนึก)', () => click('[data-game="bag"]')],   /* v98.622 · the card-book is a main icon of its own (it was buried in ตัวเรา ▸) */
+    ['me', 'ตัวเรา', 'ตัวละคร · สมุดผนึก · สำรับ · อาชีพ · ธาตุ', 'me'],
     ...(store.querySelector('.town-go') ? [['go', 'ออกเดินทาง', 'ไปแผนที่โลก · หรือเดินไปที่ประตูหมู่บ้าน', () => click('.town-go')]] : [])
   ];
   const pop = document.createElement('div'); pop.className = 'hud-pop'; pop.hidden = true; document.body.append(pop);
@@ -62,18 +72,18 @@
   function openPop(btn, key) {
     if (popFor === btn) { closePop(); return }
     closePop(); popFor = btn; btn.setAttribute('aria-expanded', 'true');
-    pop.innerHTML = ''; for (const [ico, label, fn] of MENUS[key]()) { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = svg(ico) + '<span></span>'; b.lastChild.textContent = label; b.onclick = () => { closePop(); fn() }; pop.append(b) }
+    pop.innerHTML = ''; for (const [ico, label, fn] of MENUS[key]()) { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = pic(ico) + '<span></span>'; b.lastChild.textContent = label; b.onclick = () => { closePop(); fn() }; pop.append(b) }
     pop.hidden = false; const r = btn.getBoundingClientRect(), w = pop.offsetWidth;
     pop.style.top = (r.bottom + 8) + 'px'; pop.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
     pop.querySelector('button')?.focus();
   }
   for (const [key, label, title, act] of ICONS) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'hud-ico'; b.dataset.hud = key; b.title = title;
-    b.innerHTML = `<span class="hud-medal">${svg(key)}</span><span class="hud-lbl">${label}</span>`;
+    b.innerHTML = `<span class="hud-medal${pick(key) ? ' has-img' : ''}">${pic(key)}</span><span class="hud-lbl">${label}</span>`;
     if (typeof act === 'string') { b.setAttribute('aria-haspopup', 'true'); b.setAttribute('aria-expanded', 'false'); b.onclick = () => openPop(b, act) } else b.onclick = () => { closePop(); act() };
     row.append(b);
   }
-  { const b = document.createElement('button'); b.type = 'button'; b.className = 'hud-ico hud-small'; b.title = 'เมนู · บันทึก โหลด ตั้งค่า (Esc)'; b.innerHTML = `<span class="hud-medal">${svg('menu')}</span><span class="hud-lbl">เมนู</span>`;
+  { const b = document.createElement('button'); b.type = 'button'; b.className = 'hud-ico hud-small'; b.title = 'เมนู · บันทึก โหลด ตั้งค่า (Esc)'; b.innerHTML = `<span class="hud-medal${pick('menu') ? ' has-img' : ''}">${pic('menu')}</span><span class="hud-lbl">เมนู</span>`;
     b.onclick = () => { closePop(); dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })) }; row.append(b) }
   addEventListener('pointerdown', e => { if (!pop.hidden && !e.target.closest('.hud-pop,.hud-ico')) closePop() }, true);
   addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { closePop(); e.preventDefault(); e.stopImmediatePropagation() } }, true);
@@ -84,14 +94,16 @@
   .hud-medal{position:relative;display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#4a6b52,#24392e 62%,#16251e);box-shadow:0 0 0 3px #d8b46a,0 0 0 5px #3a2a14,0 6px 14px #000a,inset 0 2px 0 #ffffff26,inset 0 -6px 12px #0006}
   .hud-medal::after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid #f1dca059}
   .hud-medal svg{width:38px;height:38px}
+  .hud-medal.has-img{width:70px;height:70px;border-radius:16px;background:none;box-shadow:none}.hud-medal.has-img::after{display:none}.hud-medal img{position:absolute!important;inset:0;width:100%!important;height:100%!important;max-width:none!important;min-width:0!important;margin:0!important;object-fit:contain;filter:drop-shadow(0 4px 6px #000b);pointer-events:none}
   .hud-lbl{padding:2px 9px;border-radius:999px;background:#16251ee6;border:1px solid #d8b46a80;color:#fff3d2;font:700 12px VillageThai,system-ui,sans-serif;white-space:nowrap;box-shadow:0 2px 6px #0007}
   .town-icon-row>.hud-ico:hover{transform:translateY(-3px)}.town-icon-row>.hud-ico:hover .hud-medal,.town-icon-row>.hud-ico[aria-expanded=true] .hud-medal{box-shadow:0 0 0 3px #f3d48a,0 0 0 5px #3a2a14,0 0 18px #f3d48a99,0 6px 14px #000a,inset 0 2px 0 #ffffff26}
   .town-icon-row>.hud-ico:focus-visible{outline:2px dashed #fff3d2;outline-offset:4px;border-radius:12px}
-  .town-icon-row>.hud-small{width:56px}.hud-small .hud-medal{width:46px;height:46px;margin-top:9px}.hud-small .hud-medal svg{width:28px;height:28px}
+  .town-icon-row>.hud-small{width:56px}.hud-small .hud-medal{width:46px;height:46px;margin-top:9px}.hud-small .hud-medal svg{width:28px;height:28px}.hud-small .hud-medal.has-img{width:52px;height:52px;margin-top:6px}
   .hud-pop[hidden]{display:none!important}
   .hud-pop{position:fixed;z-index:30;display:flex;flex-direction:column;gap:4px;min-width:190px;padding:8px;border-radius:14px;background:#1b2b24f5;border:1px solid #d8b46a99;box-shadow:0 14px 34px #000a}
   .hud-pop button{display:flex;align-items:center;gap:10px;padding:8px 12px;border:0;border-radius:9px;background:none;color:#f6e7bf;font:600 14px VillageThai,system-ui,sans-serif;text-align:left;cursor:pointer}
-  .hud-pop button:hover,.hud-pop button:focus-visible{background:#2f4a3e;outline:none}.hud-pop svg{width:24px;height:24px;flex:none;color:#e8c46a}
-  @media (max-width:900px){.town-icon-row{gap:6px!important;top:8px!important;right:8px!important}.town-icon-row>.hud-ico{width:58px}.hud-medal{width:46px;height:46px}.hud-medal svg{width:28px;height:28px}.hud-lbl{font-size:10px;padding:1px 6px}.town-icon-row>.hud-small{width:44px}.hud-small .hud-medal{width:36px;height:36px;margin-top:5px}}`;
+  .hud-pop button:hover,.hud-pop button:focus-visible{background:#2f4a3e;outline:none}.hud-pop svg{width:24px;height:24px;flex:none;color:#e8c46a}.hud-pop img{width:30px;height:30px;flex:none;object-fit:contain}
+  @media (max-width:900px){.town-icon-row{gap:6px!important;top:8px!important;right:8px!important}.town-icon-row>.hud-ico{width:58px}.hud-medal{width:46px;height:46px}.hud-medal.has-img{width:50px;height:50px}.hud-medal svg{width:28px;height:28px}.hud-lbl{font-size:10px;padding:1px 6px}.town-icon-row>.hud-small{width:44px}.hud-small .hud-medal{width:36px;height:36px;margin-top:5px}}`;
+  css.textContent += `.hud-badge{position:absolute;right:-4px;top:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#d8402e;border:2px solid #fff3d2;color:#fff;font:800 12px/16px VillageThai,system-ui,sans-serif;text-align:center;font-style:normal;box-sizing:border-box;z-index:2}.hud-badge.fresh{animation:hudPulse 1.1s ease-in-out infinite}@keyframes hudPulse{50%{transform:scale(1.25)}}`;
   document.head.append(css);
 })();

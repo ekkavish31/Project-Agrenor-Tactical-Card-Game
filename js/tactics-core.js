@@ -36,7 +36,7 @@ const PROP_H={tree:2.6,pine:2.6,pillar:2,beam:2,stalagmite:2,standstone:1.8,rock
 const has=(u,k)=>!!u&&(u.traits||[]).includes(k);
 const terrainOf=(map,x,y)=>TERRAIN[at(map,x,y)?.kind]||TERRAIN.grass;
 function stepCost(u,tile){let T=TERRAIN[tile.kind]||TERRAIN.grass;if(has(u,'fly'))return 1;if(has(u,'amphib')&&T.wet)return 1;if(has(u,'light')&&T.light)return 1;if(has(u,'heavy')&&T.heavyStop)return 'stop';return T.cost}
-const COMBAT_RULES={attack:{target:'enemy'},skill:{target:'enemy',bonus:12,extraStamina:10},spell:{target:'enemy',range:4,damage:14,stamina:12,magic:true},guard:{target:'self'},rest:{target:'self'},push:{target:'enemy'},pull:{target:'enemy'},line:{target:'enemy'},frost:{target:'enemy'},wall:{target:'self'},whirl:{target:'enemy'},twin:{target:'enemy'},flame:{target:'enemy'},gust:{target:'enemy'},mend:{target:'self'},quake:{target:'enemy'},aimed:{target:'enemy'},thunder:{target:'enemy'},backstab:{target:'enemy'},dive:{target:'enemy'},tide:{target:'enemy'},formation:{target:'enemy'},counter:{target:'self'},evade:{target:'self'},firstAid:{target:'self'},ambush:{target:'self'},rockfall:{target:'enemy'},perch:{target:'self'},climb:{target:'self'}};
+const COMBAT_RULES={chaosBolt:{target:'enemy'},chaosRend:{target:'enemy'},chaosWard:{target:'self'},attack:{target:'enemy'},skill:{target:'enemy',bonus:12,extraStamina:10},spell:{target:'enemy',range:4,damage:14,stamina:12,magic:true},guard:{target:'self'},rest:{target:'self'},push:{target:'enemy'},pull:{target:'enemy'},line:{target:'enemy'},frost:{target:'enemy'},wall:{target:'self'},whirl:{target:'enemy'},twin:{target:'enemy'},flame:{target:'enemy'},gust:{target:'enemy'},mend:{target:'self'},quake:{target:'enemy'},aimed:{target:'enemy'},thunder:{target:'enemy'},backstab:{target:'enemy'},dive:{target:'enemy'},tide:{target:'enemy'},formation:{target:'enemy'},counter:{target:'self'},evade:{target:'self'},firstAid:{target:'self'},ambush:{target:'self'},rockfall:{target:'enemy'},perch:{target:'self'},climb:{target:'self'}};
 const ENEMY_TYPES={
  dummy:{name:'หุ่นไล่กาฝึกซ้อม',hp:110,move:3,melee:13,ranged:9,rangedReach:3,image:'assets/scarecrow.webp',scale:1},
  straw:{name:'ทหารฟาง',hp:30,move:3,melee:7,ranged:4,rangedReach:3,image:'assets/scarecrow.webp',scale:.82,art:'enemy-straw-soldier'},
@@ -120,7 +120,7 @@ function groundSettings(){try{const s=root.localStorage?.getItem('battleground-v
 const groundArea=(theme,mode)=>mode==='training'?'training':theme;
 const GROUND_BLOCK={tree:2,rock:1,pillar:2,crystal:1,cart:1,log:1,bush:1,mossrock:1};
 function stampGround(map,seed,theme,mode,clearance=[1,1]){const G=groundSettings();if(!G||!Array.isArray(G.chunks))return;const area=groundArea(theme,mode),A=G.areas?.[area]||{},rng=random(String(seed)+'|ground');
- let forced=null;try{if(root.EDITOR_MODE==='battle'){const id=root.localStorage.getItem('battleground-try');forced=G.chunks.find(c=>c.id===id)||null}}catch(e){}
+ const forced=null;
  if(!forced&&(clearance[0]>1||clearance[1]>1))return;// big bosses need 2-wide routes the stamp can't promise
  const pool=forced?[forced]:G.chunks.filter(c=>(c.areas||[]).includes(area)&&c.cells?.length);if(!pool.length||!forced&&rng()>=(Number.isFinite(A.chance)?A.chance:.5))return;
  let r=rng()*pool.reduce((n,c)=>n+(c.weight||1),0),ch=pool[0];for(const c of pool){r-=c.weight||1;if(r<0){ch=c;break}}

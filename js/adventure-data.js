@@ -7,6 +7,7 @@ const CONSUMABLES={
  potion:{name:'ยาฟื้นฟู',element:'water',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:25,stamina:0,price:20,text:'ฟื้น HP 25'},
  bigPotion:{name:'ยาฟื้นฟูชั้นดี',element:'nature',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:50,stamina:0,price:45,text:'ฟื้น HP 50'},
  tonic:{name:'ชาเรี่ยวแรง',element:'fire',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:0,stamina:40,price:15,text:'ฟื้นแรง 40'},
+ smallPumpkin:{name:'ฟักทองลูกเล็ก',element:'earth',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:30,stamina:30,price:14,text:'ฟื้น HP 30 และแรง 30 · ของขวัญจากฮิลดา'},
  bread:{name:'ขนมปังเดินทาง',element:'earth',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:10,stamina:20,price:8,text:'ฟื้น HP 10 และแรง 20'},
  firebomb:{name:'ระเบิดไฟ',element:'fire',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:22,range:4,price:30,text:'ขว้างใส่ศัตรูในระยะ 4 ช่อง ความเสียหาย 22'},
  iceBomb:{name:'ระเบิดน้ำแข็ง',element:'ice',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:18,range:4,price:32,text:'ขว้างใส่ศัตรูในระยะ 4 ช่อง ความเสียหาย 18 · น้ำตื้นกลายเป็นน้ำแข็ง'},
@@ -17,7 +18,14 @@ const CONSUMABLES={
  holyWater:{name:'น้ำมนต์',element:'light',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:24,range:3,price:34,text:'สาดใส่ศัตรูในระยะ 3 ช่อง ความเสียหาย 24 (ธาตุแสง)'},
  poisonDart:{name:'ลูกดอกพิษ',element:'nature',rarity:'common',kind:'โจมตี',use:'ต่อสู้',damage:14,range:5,price:16,text:'ยิงไกล 5 ช่อง ความเสียหาย 14'},
  stoneSkin:{name:'ยาผิวศิลา',element:'earth',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',guard:30,price:36,text:'ได้เกราะกันความเสียหาย 30'},
- guardCharm:{name:'เครื่องรางคุ้มกัน',element:'light',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',guard:20,price:28,text:'ได้เกราะกันความเสียหาย 20'}};
+ guardCharm:{name:'เครื่องรางคุ้มกัน',element:'light',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',guard:20,price:28,text:'ได้เกราะกันความเสียหาย 20'},
+ bandage:{name:'ผ้าพันแผลสะอาด',element:'nature',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:16,stamina:0,price:12,text:'ฟื้น HP 16 · ในสนามรบล้างสถานะผิดปกติด้วย'},
+ antidote:{name:'ยาถอนพิษ',element:'water',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:6,stamina:0,price:22,text:'ฟื้น HP 6 · ในสนามรบล้างพิษ ไหม้ ใบ้ และสถานะอื่นทั้งหมด'},
+ smokeBomb:{name:'ระเบิดควัน',element:'dark',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',price:28,text:'ในสนามรบ: หลบการโจมตีครั้งถัดไปที่โดนตี'},
+ whetstone:{name:'หินลับมีด',element:'earth',rarity:'common',kind:'เสริมพลัง',use:'ต่อสู้',price:18,text:'ในสนามรบ: การโจมตีครั้งถัดไปแรงขึ้น ×1.6'},
+ oilFlask:{name:'ขวดน้ำมันไฟ',element:'fire',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:12,range:3,price:26,text:'สาดใส่ศัตรูในระยะ 3 ช่อง ความเสียหาย 12 · ลามถึงศัตรูข้างเคียง · ติดไหม้'},
+ flashPowder:{name:'ผงแสงวาบ',element:'light',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:6,range:3,price:24,text:'ในระยะ 3 ช่อง ความเสียหาย 6 · ทำให้ศัตรูตาพร่าพลาดเทิร์นถัดไป'}
+};
 // ---------- goods: sell at the market or hand in for quests ----------
 const GOODS={
  wolfFang:{name:'เขี้ยวหมาป่า',element:'dark',rarity:'common',use:'ขาย',price:12,text:'ของป่าที่พ่อค้ารับซื้อ'},
@@ -32,7 +40,26 @@ const GOODS={
  iceCore:{name:'แก่นน้ำแข็ง',element:'ice',rarity:'good',use:'ขาย',price:32,text:'ผลึกเย็นเฉียบที่ไม่ละลาย'},
  boneCharm:{name:'เครื่องรางกระดูก',element:'dark',rarity:'common',use:'ขาย',price:13,text:'ของขลังจากซากวิหาร'},
  soulGem:{name:'อัญมณีวิญญาณ',element:'chaos',rarity:'good',use:'ขาย',price:38,text:'แสงสีม่วงวนอยู่ข้างใน'},
+ mirrorShard:{name:'ผลึกสะท้อน',element:'light',rarity:'rare',use:'สะสม',price:150,text:'ของที่ระลึกจากเพื่อนตัวเล็กที่กลับป่าไปแล้ว · ไม่ใช่การ์ด'},
  relic:{name:'ตราประทับหัวหน้า',element:'chaos',rarity:'rare',use:'เควส',price:60,text:'หลักฐานการปราบหัวหน้าพื้นที่'}};
+/* v98.478 · ชิ้นส่วนหายากของมอนแต่ละชนิด (Canon D): ชื่อม่วง + สัญลักษณ์ ❖ แทนคำว่า "(มายา)" · ขายได้ ส่งเควสได้ และ Mip กินแล้วหาย (maya:true) */
+const MAYA_OF={hunger:'mayaHunger',murk:'mayaMurk',wolf:'mayaWolf',shadowWolf:'mayaShadowWolf',frostWolf:'mayaFrostWolf',yeti:'mayaYeti',bat:'mayaBat',gull:'mayaGull',bandit:'mayaBandit',slime:'mayaSlime',kobold:'mayaKobold',snowKobold:'mayaSnowKobold',golem:'mayaGolem'};
+const MAYA_GOODS={
+ mayaWolf:{name:'❖ เขี้ยวเรืองรอง',element:'dark',price:70,text:'เขี้ยวหมาป่าที่ยังมีประกายแปลก ๆ ซ่อนอยู่ข้างใน'},
+ mayaShadowWolf:{name:'❖ ขนเงาไม่สะท้อนแสง',element:'dark',price:95,text:'ขนที่ดูดแสงรอบตัวไปหมด'},
+ mayaFrostWolf:{name:'❖ เกล็ดน้ำแข็งฝูงนำ',element:'ice',price:110,text:'เกล็ดเย็นที่ไม่ละลายแม้ถือไว้ในมือ'},
+ mayaYeti:{name:'❖ กรงเล็บหิมะลึก',element:'ice',price:120,text:'กรงเล็บหนักและเย็น มีลวดลายคล้ายรอยแตกของน้ำแข็ง'},
+ mayaBat:{name:'❖ เยื่อปีกใส',element:'dark',price:60,text:'เยื่อบางจนมองทะลุได้ มีเส้นสีม่วงจาง ๆ'},
+ mayaGull:{name:'❖ ขนนกคลื่นลม',element:'wind',price:60,text:'ขนที่สั่นเบา ๆ เหมือนได้ยินเสียงทะเล'},
+ mayaBandit:{name:'❖ ตราเหรียญร้อยมือ',element:'light',price:85,text:'เหรียญเก่าที่เหมือนผ่านมือคนมานับไม่ถ้วน'},
+ mayaSlime:{name:'❖ ก้อนเมือกนิ่ง',element:'nature',price:75,text:'เมือกที่แข็งตัวเป็นก้อน ข้างในมีบางอย่างเต้นช้า ๆ'},
+ mayaKobold:{name:'❖ เสี้ยวผลึกคนขุด',element:'fusion',price:90,text:'เสี้ยวผลึกที่สะท้อนแสงตะเกียงเป็นสีม่วง'},
+ mayaSnowKobold:{name:'❖ ตะขอน้ำแข็งเหมือง',element:'ice',price:100,text:'ตะขอเหล็กเคลือบน้ำแข็งที่ไม่ยอมละลาย'},
+ mayaHunger:{name:'❖ ผลึกหิวจาง',element:'dark',price:260,text:'เศษของก้อนหิวที่ยังเย็นเฉียบ — ของที่ใครก็อยากได้ แต่ไม่มีใครอยากถือนาน'},
+ mayaMurk:{name:'❖ เสี้ยวหมองดำ',element:'dark',price:105,text:'เศษเงามืดจากสัตว์ที่ถูกรอยหมอง ยังเต้นเบา ๆ เหมือนมีชีวิต'},
+ mayaGolem:{name:'❖ หัวใจหินร้าว',element:'earth',price:130,text:'ก้อนหินที่มีรอยร้าวเรืองแสงจาง ๆ'}};
+for(const [k,g] of Object.entries(MAYA_GOODS))GOODS[k]={rarity:'rare',use:'ขาย · เควส · ให้ Mip',maya:true,...g};
+if(window.Chaos)Object.assign(GOODS,window.Chaos.GOODS);/* v98.66 · แก่นโกลาหลจากมอนวิวัฒน์ (js/chaos.js) */
 // ---------- event cards: use from the bag → a story modal with choices → card disappears ----------
 const EVENT_CARDS={
  treasureMap:{name:'แผนที่สมบัติเก่า',element:'earth',rarity:'good',kind:'สมบัติ',area:'ทุกที่',minutes:20,text:'ตามรอยแผนที่ไปหาของที่ซ่อนไว้'},
@@ -79,5 +106,5 @@ const AREAS={
   types:{start:'start',a1:'event',a2:'fight',b1:'fight',b2:'treasure',b3:'quest',c1:'elite',c2:'event',c3:'fight',d1:'miniboss',d2:'treasure',e1:'fight',e2:'rest',f1:'rest',boss:'boss'},
   enemies:{normal:['skeleton','wisp','cultist'],elite:['ghostKnight'],miniboss:'gargoyle',boss:'voidKing'},
   goods:['boneCharm','soulGem','oldCoin'],events:['cursedIdol','oldShrine','strangeRune','treasureMap','merchant','wanderingKnight']}};
-return {CONSUMABLES,GOODS,EVENT_CARDS,AREAS};
+return {CONSUMABLES,GOODS,EVENT_CARDS,AREAS,MAYA_OF};
 })();

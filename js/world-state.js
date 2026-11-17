@@ -55,9 +55,14 @@
     if (!g) return;
     const v = g.village ||= {};
     if (!Number.isFinite(g.day)) g.day = 1; if (!Number.isFinite(g.minutes)) g.minutes = 480;
-    if (!Number.isFinite(g.hp)) g.hp = MAX_HP; if (!Number.isFinite(g.fatigue)) g.fatigue = 0;
+    if (!Number.isFinite(g.hp)) g.hp = MAX_HP; g.fatigue = 0;   /* v98.294 · fatigue is switched off (old saves are read, the value is dropped) */
+    if (root.Injury) { try { g.injuries ||= {}; root.Injury.sync(g) } catch (e) { } }   /* v98.295 · wounds heal day by day (js/injury.js) */
     v.coins ??= 80; v.materials ||= {}; v.materials.food ??= 0; v.bag ||= {};
     v.party ||= []; v.bench ||= []; v.recruit ||= {}; v.battles ??= 0; v.kills ??= 0;
+    /* v98.234 · minimum team of two: the other hero (พี่ชาย/น้องสาว) is always in the travelling party (new saves and old ones) */
+    { const nm = v.siblingName || 'น้อง'; let m = v.party.find(x => x.key === 'sib') || v.bench.find(x => x.key === 'sib');
+      if (!m) { m = { key: 'sib', name: nm, hp: 50, max: 50, order: 'charge', locked: true }; v.party.unshift(m) }
+      else { m.name = nm; m.locked = true; if (!v.party.includes(m)) { v.bench = v.bench.filter(x => x !== m); v.party.unshift(m) } } }
     if (!v.worldMerged) merge(g);
   }
   // before v94 the world map / inn kept their own gold, potions, party and clock; fold them into the game once
@@ -86,10 +91,12 @@
   // run the clock while the hero is in the village; saved every few seconds, not every frame
   let acc = 0;
   function tick(dt) {
-    if (!(dt > 0)) return; const g = game(); acc += Math.min(dt, .5) * RATE;
+    if (!(dt > 0)) return; const g = game(); acc += Math.min(dt, .5) * RATE * timeScale();   /* v98.586 · the story can slow / hold the clock (day 1 of the prologue: js/story-quests.js) */
     if (acc < 1) return; const add = Math.floor(acc); acc -= add; const before = g.day; g.minutes += add; normalize(g);
     const t = performance.now(); if (t > dirtyAt || g.day !== before) { dirtyAt = t + 8000; commit() }
   }
+  /* v98.586 · the clock speed is asked from the story (it lives in the main page; the village frame has its own copy of this file) */
+  function timeScale() { try { const S = root.Story || (root.parent && root.parent !== root && root.parent.Story) || (root.top && root.top.Story); const k = S?.timeScale?.(); return Number.isFinite(k) ? k : 1 } catch (e) { return 1 } }
   const label = h => { const m = Math.floor(h * 60 + 1e-6), hh = Math.floor(m / 60) % 24, mm = m % 60; return String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0') };
   const period = h => h >= 5 && h < 11 ? 'morning' : h >= 11 && h < 17 ? 'day' : h >= 17 && h < 21 ? 'evening' : 'night';
 
@@ -114,12 +121,12 @@
   function bind(o) {
     const G = () => game(), V = () => game().village;
     const def = (k, get, set) => Object.defineProperty(o, k, { configurable: true, enumerable: false, get, set });
-    def('gold', () => V().coins, x => { V().coins = Math.max(0, Math.round(x)) });
+    def('gold', () => V().coins, x => { const o = V().coins; V().coins = Math.max(0, Math.round(x)); if (V().coins !== o && root.Sfx) root.Sfx.play('coins', { vol: .8 }) });   /* v98.297 · coins clink whenever the purse changes */
     def('potions', () => V().bag.potion || 0, x => { if (x > 0) V().bag.potion = x; else delete V().bag.potion });
     def('food', () => V().materials.food || 0, x => { V().materials.food = Math.max(0, x) });
     def('hp', () => G().hp, x => { G().hp = Math.max(0, Math.round(x)) });
     def('maxHp', () => G().maxHp || MAX_HP, () => { });
-    def('fatigue', () => G().fatigue || 0, x => { G().fatigue = Math.max(0, Math.min(100, Math.round(x))) });
+    def('fatigue', () => 0, x => { G().fatigue = 0 });   /* v98.294 · switched off */
     def('party', () => V().party, x => { V().party = x });
     def('bench', () => V().bench, x => { V().bench = x });
     def('recruit', () => V().recruit, x => { V().recruit = x });
@@ -142,7 +149,7 @@
   /* v97.76 · the season of a day (28 days each from day 1 · js/garden.js uses the same calendar): [key, name, icon] */
   const SEASONS = [['spring', 'ฤดูใบไม้ผลิ', '🌸'], ['summer', 'ฤดูร้อน', '☀'], ['autumn', 'ฤดูใบไม้ร่วง', '🍂'], ['winter', 'ฤดูหนาว', '❄']];
   const season = d => SEASONS[Math.floor((Math.max(1, d || game().day || 1) - 1) / 28) % 4];
-  const api = { season, leads, addLead, clearPick, KEY, WORLD, RATE, DAY, LATE, MAX_ACTIVE, MAX_HP, game, commit, inGame, now, advance, setTime, tick, sleep, label, period, coins, addCoins, spendCoins, heroName, deck, unitDeck, bind, world, writeWorld, flush: commit };
+  const api = { timeScale, season, leads, addLead, clearPick, KEY, WORLD, RATE, DAY, LATE, MAX_ACTIVE, MAX_HP, game, commit, inGame, now, advance, setTime, tick, sleep, label, period, coins, addCoins, spendCoins, heroName, deck, unitDeck, bind, world, writeWorld, flush: commit };
   root.WorldState = api;
   // index.html: offer the live save to the pages it opens in frames
   if (local()) root.GameHost = local();

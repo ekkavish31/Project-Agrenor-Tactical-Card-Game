@@ -1,0 +1,16 @@
+let autoRunning=false,autoStop=false;
+const freshnessNames=['สดชื่นเต็มที่','สบายดี','เริ่มเหนื่อย','อ่อนล้า','เหนื่อยมาก'];
+function showFreshness(){if(busy)return;villageDialog('ความสดชื่น',`<p>${freshnessNames[freshnessState()]} · <b>${freshness()}/100</b></p><p>ทำกิจกรรมแล้วลดลง • อาหาร +20 • แคมป์และนอนฟื้นตามคุณภาพการพัก</p><p>พักหายใจฟื้นเฉพาะ Stamina เมื่อความสดชื่นต่ำกว่า 50 แรงสูงสุดจะเริ่มลดลง</p>`)}
+const journeyActions=placeActions;
+placeActions=function(){let a=journeyActions().filter(x=>!['rest','meal'].includes(x.id));if(s.village.location!=='market')a.push({id:'rest',name:'พัก',image:'breath',kind:'rest-menu',cost:'เลือกวิธีพัก',effect:'พักหายใจ / กินอาหาร'});if(s.village.location==='forge'){a.push({id:'auto',name:'ทำอัตโนมัติ',image:'action-auto',kind:'auto',cost:'ใช้ทรัพยากรตามจริง',effect:'ทำจนเสร็จ · รวมพัก'},{id:'cancel',name:'ยกเลิกงาน',image:'action-cancel',kind:'cancel',cost:'คืนเฉพาะโลหะ',effect:'ทิ้งชิ้นงานค้าง',reason:s.village.work.started?'':'ยังไม่มีชิ้นงาน'});}return a.map(x=>({...x,cost:x.cost.replace(/◒ (\d+)/,'◒ −$1').replace('◒ −70','◒ +70').replace('◒ −90','◒ +90'),effect:x.effect.replace('◒ −','◒ +'),reason:x.reason==='ล้าสะสมสูง'?'ความสดชื่นไม่พอ':x.reason}))};
+const journeyActionRunner=runPlaceAction;
+runPlaceAction=async function(id){if(busy||devActive||s.mode==='battle')return;if(id==='rest'){renderRestChoice();return}if(id==='cancel'){if(s.village.work.started&&confirm('ยกเลิกชิ้นงานนี้? คืนโลหะทั้งหมดที่ใช้ แต่ไม่คืนถ่าน ไม้ แรง หรือเวลา')){cancelSmithWork();render()}return}if(id==='auto'){await runAutoSmith();return}return journeyActionRunner(id)};
+function renderRestChoice(){villageDialog('เลือกวิธีพัก',`<div class="rest-choices"><button onclick="villageRest('short')"><img src="assets/breath.webp" alt=""><b>พักหายใจ</b><p>15 นาที · Stamina +${25+stat('endurance')*4}</p></button><button onclick="villageRest('meal')" ${s.village.materials.food<1?'disabled':''}><img src="assets/meal.webp" alt=""><b>พักกินข้าว</b><p>30 นาที · เสบียง 1</p><small>Stamina +30 · HP +15</small></button></div>`)}
+async function runAutoSmith(){if(busy||autoRunning)return;if(!confirm('ทำชิ้นงานนี้อัตโนมัติจนเสร็จ? ใช้แรง เวลา วัตถุดิบ และเสบียงเหมือนกดเอง รวมพักหายใจ/กินอาหารเมื่อจำเป็น ไม่ข้ามวันอัตโนมัติ และหยุดเมื่อทรัพยากรหรือเวลาไม่พอ'))return;autoRunning=true;autoStop=false;busy=true;document.body.classList.add('busy');let result;
+try{for(let n=0;n<100;n++){if(autoStop)break;result=autoSmithStep();render();if(!result.ok){s.log=result.reason;break}if(result.event==='craft')break;await wait(260)}if(autoStop)s.log='หยุดทำอัตโนมัติ • ชิ้นงานยังเก็บไว้';}
+finally{autoRunning=false;busy=false;document.body.classList.remove('busy');save();render();if(result?.event==='craft')showReward('craft')}}
+render();
+// Translate legacy configured descriptions without changing their numeric rules.
+function freshText(t){return String(t).replaceAll('ลดความล้า','ฟื้นความสดชื่น').replaceAll('ลดล้า','ฟื้นความสดชื่น').replaceAll('ความล้า −','ความสดชื่น +').replaceAll('ล้าสะสมมากเกินไป','ความสดชื่นไม่พอ')}
+const journeyCardFace=cardFace;cardFace=function(i){let c={...journeyCardFace(i)};for(let k of ['core','condition','limit','growth'])if(c[k])c[k]=freshText(c[k]);return c};
+const journeyExpected=expected;expected=function(i){return freshText(journeyExpected(i))};

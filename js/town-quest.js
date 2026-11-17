@@ -13,7 +13,7 @@
   const story = () => { try { return root.parent !== root ? root.parent.Story : null } catch (e) { return null } };
   const life = () => { try { return root.VillageLife || root.parent?.VillageLife } catch (e) { return null } };
   const objs = new Map();               // spot key → [{key,kind,u,v,i,...}]
-  let T = null, lastPoll = 0, lastT = 0, chaseAt = 0, pending = null, floats = [], down = null;
+  let chaseTo = null, T = null, lastPoll = 0, lastT = 0, chaseAt = 0, pending = null, floats = [], down = null;
   const ICON = { goat: '🐐', plank: '🪵', plot: '🌿', ripe: '🎃', stall: '🛠️', pumpkin: '🎃' };
 
   /* ---------- helpers ---------- */
@@ -35,20 +35,23 @@
     return at;
   }
   function placePoint(o) {
+    /* v98.371 · the target crystal of a place stands at its ENTRANCE (where the hero walks in), not above the roof */
+    try { const e = root.TownUX?.entryPoint?.(o); if (e && isFinite(e.u + e.v)) { const q = project(e.u, e.v); return { x: q.x, y: q.y - 70 } } } catch (err) { }
     const lp = root.TownUX?.labelPoint?.(o); const x = lp ? lp.x : o.x * MX, y = (lp ? lp.y : o.y * MY);
     return { x, y: y - 70 };
   }
   function exitTarget() {
     const ds = typeof exitDoors === 'function' ? exitDoors() : []; let best = -1, bd = 1e9;
-    ds.forEach((d, i) => { const k = dist(hero, d); if (k < bd) { bd = k; best = i } });
+    ds.forEach((d, i) => { if (d.off) return; const k = dist(hero, d); if (k < bd) { bd = k; best = i } });
     if (best < 0) return null; const d = ds[best], map = { north: 0, northeast: 1, east: 2, southeast: 3, southwest: 4, west: 5 };
     const a = (gameState?.exits || []).find(e => map[e.exit] === best);
-    return { door: d, id: a ? 'exit:' + a.id : null, name: a?.name || d.name };
+    return { door: d, id: a ? 'exit:' + a.id : null, name: d.name };   /* v98.606 · the gate's own name (ประตูหมู่บ้าน / ทางเข้าออกหมู่บ้าน), not the old dungeon it used to lead to */
   }
 
   /* ---------- quest objects ---------- */
   function spawn(sp) {
     let list = objs.get(sp.key) || [];
+    const mys = list.filter(x => x.mystery); list = list.filter(x => !x.mystery);   /* v98.472 · the odd extra goat is not one of the quest's goats: it never counts toward n */
     if (list.length > sp.n) list = list.slice(0, sp.n);
     const r = rng(hash(sp.key + ':' + (sp.seed || 0))), near = [].concat(sp.near || 'square'), spread = sp.spread || 5;
     let i = 0;
@@ -61,6 +64,17 @@
       }
       if (!spot) { const n = typeof nearest === 'function' ? nearest(base) : base; spot = n ? { u: n.u, v: n.v } : null }
       if (spot) list.push({ key: sp.key, kind: sp.kind, label: sp.label || '', flee: !!sp.flee, u: spot.u, v: spot.v, i: list.length, mode: 'idle', t: 0, phase: r() * 6, cool: 0 });
+    }
+    /* v98.472 · MAIN STORY (docs/lore/MAIN-STORY-CANON.md A8 · phase A): one more goat than Pip owns — it behaves strangely, and when the hero tries to catch it
+       it drops its disguise (the loading-screen mascot, Mip) and runs off. It never starts the fight and never counts. Shown once (story.mip.seen). */
+    if (sp.mystery && !story()?.mipSeen?.() && sp.n > 0) {
+      let m = mys[0];
+      if (!m) {
+        const o = loc([].concat(sp.near || 'square')[1 % [].concat(sp.near || 'square').length]) || locations[0]; let spot = null;
+        if (o) { const base = door(o); for (let k = 0; k < 80 && !spot; k++) { const u = base.u + (r() - .5) * 2 * spread, v = base.v + (r() - .5) * 2 * spread; if (free(u, v) && list.every(x => dist(x, { u, v }) > 2.6) && dist(hero, { u, v }) > 6) spot = { u, v } } }
+        if (spot) m = { key: sp.key, kind: 'goat', label: '', flee: false, mystery: true, u: spot.u, v: spot.v, i: 99, mode: 'idle', t: 0, phase: r() * 6, cool: 0, stare: 0 };
+      }
+      if (m) list.push(m);
     }
     objs.set(sp.key, list); return list;
   }
@@ -89,6 +103,20 @@
     if (o.dir) { const sp = 6.4, u = o.u + o.dir.du * sp * dt, v = o.v + o.dir.dv * sp * dt; if (free(u, v)) { o.u = u; o.v = v } else o.dir = null }
     if (o.t <= 0) { o.mode = 'rest'; o.t = 2 + Math.random() * 1.2; o.dir = null }
   }
+  /* v98.472 · the odd goat: grazes, turns to watch the hero (a blue glint), edges away a little — never runs like the others. Touch → reveal → Mip runs off → gone. */
+  function mysteryStep(o, dt) {
+    const d = dist(hero, o), now = performance.now();
+    if (o.mode === 'reveal') { o.t -= dt; if (o.t <= 0) { o.mode = 'mip'; o.t = 3.2; const a = Math.atan2(o.v - hero.v, o.u - hero.u); o.dir = { du: Math.cos(a), dv: Math.sin(a) } } return }
+    if (o.mode === 'mip') {
+      o.t -= dt; const sp = 9, u = o.u + o.dir.du * sp * dt, v = o.v + o.dir.dv * sp * dt;
+      if (free(u, v)) { o.u = u; o.v = v } else { const a = Math.atan2(o.dir.dv, o.dir.du) + (Math.random() - .5) * 2.2; o.dir = { du: Math.cos(a), dv: Math.sin(a) } }
+      if (o.t <= 0) { const l = objs.get(o.key); if (l) objs.set(o.key, l.filter(x => x !== o)); if (pending === o) pending = null; try { story()?.mystery?.('seen') } catch (e) { } float('…ไปแล้ว', o.u, o.v) }
+      return;
+    }
+    if (d < 1.15) { o.mode = 'reveal'; o.t = .75; o.t0 = now; float('✨', o.u, o.v); status('แพะตัวนั้น … เปลี่ยนร่าง!?'); return }
+    if (d < 4.2) { o.stare = Math.min(1, o.stare + dt * 2); o.face = hero } else o.stare = Math.max(0, o.stare - dt);
+    if (d < 2.6 && d > 1.2) { const a = Math.atan2(o.v - hero.v, o.u - hero.u), u = o.u + Math.cos(a) * 1.1 * dt, v = o.v + Math.sin(a) * 1.1 * dt; if (free(u, v)) { o.u = u; o.v = v } }   // edges away, slowly
+  }
   function use(o) {
     if (o.busy || o.cool > 0) return; o.busy = true;
     let r = null; try { r = story()?.questEvent?.({ key: o.key, kind: o.kind, i: o.i }) } catch (e) { r = null }
@@ -99,16 +127,22 @@
       lastPoll = 0;
     }).catch(() => { o.busy = false; o.cool = 3 });
   }
+  /* v98.617 · frozen while the victory ceremony (#qbVic in the game page) or a guided tour is up */
+  const frozen = () => { try { return !!(root.parent !== root && root.parent.document.getElementById('qbVic')) } catch (e) { return false } };
   function update(dt, now) {
+    if (frozen()) { pending = null; chaseTo = null; return }
     poll(now);
     for (const list of objs.values()) for (const o of list) {
       o.cool = Math.max(0, o.cool - dt);
+      if (o.mystery) { mysteryStep(o, dt); continue }
       if (o.flee) fleeStep(o, dt);
       const reach = o.flee ? 1.05 : 1.35;
       if (dist(hero, o) < reach && (o.flee || pending === o || !path.length)) use(o);
     }
     // chasing a goat: follow it as it moves
-    if (pending?.flee && now > chaseAt) { chaseAt = now + 450; const p = findPath(hero, { u: pending.u, v: pending.v }); if (p.length) path = p }
+    /* v98.355 · chasing a goat re-planned a full A* search twice a second for as long as the chase lasted (a visible stutter until the goat was caught). Now: re-plan only when the goat has moved ≥1.6 cells (or the path is used up),
+       at most every 0.8 s, and a clear straight line is just one step */
+    if (pending?.flee && now > chaseAt && (!path.length || !chaseTo || dist(chaseTo, pending) >= 1.6)) { chaseAt = now + 800; chaseTo = { u: pending.u, v: pending.v }; let p = []; try { if (dist(hero, pending) < 6 && typeof clearSegment === 'function' && clearSegment(hero, chaseTo, blocked)) p = [chaseTo] } catch (e) { } if (!p.length) p = findPath(hero, chaseTo); if (p.length) path = p }
   }
 
   /* ---------- drawing ---------- */
@@ -122,7 +156,13 @@
       gx.fillStyle = '#ffe9a8'; gx.fillText(label, x, y - s * 1.6 - 12 * k) }
     gx.restore();
   }
-  function targets() {
+  /* v98.111 · targets() asks Interactables.all(), whose village provider asks targets() again … a loop that only ended when the stack overflowed (the error was swallowed):
+     ~4,260 calls / ~100,000 door() calls EVERY frame while a quest step was active. A call made from inside targets() now gets [] (that inner list only decided which
+     entries are quest markers, and the outer call does that itself). */
+  let inTargets = false;
+  function targets() { if (inTargets || (root.TownBattle?.active?.()||/[?&]battle=1(&|$)/.test(root.location?.search||''))) return [];   /* v98.472 · the village's quest objects (runaway goats …) never show up inside a battle arena that uses the village map */
+    inTargets = true; try { return targets0() } finally { inTargets = false } }
+  function targets0() {
     const out = []; if (!T) return out;
     for (const id of T.place || []) { const o = loc(id); if (o) { const p = placePoint(o); out.push({ ...p, label: T.label || o.name, o }) } }
     for (const id of T.npc || []) {
@@ -133,22 +173,83 @@
     }
     if (T.exit) { const e = exitTarget(); if (e) { const p = project(e.door.u, e.door.v); out.push({ x: p.x, y: p.y - 60, label: 'ทางออก ' + e.name, exit: e }) } }
     for (const list of objs.values()) if (list[0] && T.spots?.find(s => s.key === list[0].key)?.mark) for (const o of list) { const p = project(o.u, o.v); out.push({ x: p.x, y: p.y - 70, label: o.label, spot: o }) }
+    /* v98.21 · the shared registry (js/interactables.js): anything a system registers with quest:true gets the same ◆ marker and edge arrow.
+       (places / villagers / quest spots above are already registered from THIS list, so they are skipped here) */
+    for (const it of root.Interactables?.all?.() || []) if (it.quest && it.x != null && !/^(place|npc|q):/.test(it.id)) out.push({ x: it.x, y: it.y - 60, label: it.label || '', reg: it.id });
     return out;
+  }
+  /* v98.598 · pumpkins are the real pictures (assets/crops/pumpkin-1…4) instead of the 🎃 emoji that looked washed out / see-through on the cobbles.
+     ripe / field pumpkin = pumpkin-4 · the contest pumpkin ('plot') = a BIG pumpkin-4 with a pulsing gold aura + sparks, a little bigger for every day it has been tended */
+  const PIC = {}, picOf = n => { if (!PIC[n]) { const im = new Image(); im.src = 'assets/crops/pumpkin-' + n + '.webp'; PIC[n] = im } return PIC[n] };
+  const contestDays = () => { try { return Math.min(3, story()?.pumpkinDays?.() || 0) } catch (e) { return 0 } };
+  /* v98.604 · the quest planks are drawn as real BOARDS (a small stack of three, solid colours + dark outline, nails and grain) — the 🪵 emoji looked like a see-through log */
+  function plankDraw(gx, o, t) {
+    const bob = Math.sin(t * .003 + o.phase) * 1.2; gx.save(); gx.translate(0, 6 + bob);
+    const board = (x, y, w, h, rot, base, dark) => { gx.save(); gx.translate(x, y); gx.rotate(rot); const g = gx.createLinearGradient(0, -h / 2, 0, h / 2); g.addColorStop(0, base); g.addColorStop(1, dark); gx.fillStyle = g; gx.strokeStyle = '#3b2412'; gx.lineWidth = 2.2; gx.lineJoin = 'round';
+      gx.beginPath(); gx.roundRect(-w / 2, -h / 2, w, h, 3); gx.fill(); gx.stroke();
+      gx.strokeStyle = 'rgba(70,40,18,.55)'; gx.lineWidth = 1; for (const k of [-.22, .08, .3]) { gx.beginPath(); gx.moveTo(-w / 2 + 4, h * k); gx.bezierCurveTo(-w * .2, h * k - 2, w * .15, h * k + 2, w / 2 - 4, h * k); gx.stroke() }
+      gx.fillStyle = '#5a5a5e'; for (const sx of [-w / 2 + 6, w / 2 - 6]) { gx.beginPath(); gx.arc(sx, 0, 1.7, 0, 7); gx.fill() }
+      gx.restore() };
+    board(-3, -3, 56, 11, -.10, '#c8955a', '#a06a36'); board(4, -12, 54, 11, .06, '#d6a468', '#b07a40'); board(-2, -21, 50, 11, -.04, '#c08a50', '#9a6430');
+    gx.restore();
+  }
+  function pumpAura(gx, p, t) {
+    const d = contestDays(), R = 62 + d * 9, pulse = .78 + Math.sin(t * .004) * .22;
+    gx.save(); gx.globalCompositeOperation = 'lighter';
+    const gr = gx.createRadialGradient(p.x, p.y - 36, 6, p.x, p.y - 36, R); gr.addColorStop(0, 'rgba(255,214,90,' + (.85 * pulse) + ')'); gr.addColorStop(.5, 'rgba(255,176,40,' + (.42 * pulse) + ')'); gr.addColorStop(1, 'rgba(255,170,40,0)');
+    gx.fillStyle = gr; gx.beginPath(); gx.ellipse(p.x, p.y - 36, R, R * .85, 0, 0, 7); gx.fill();
+    for (let i = 0; i < 7; i++) { const a = t * .0016 + i * 0.9, r2 = R * (.45 + .35 * ((Math.sin(t * .002 + i * 2) + 1) / 2)), x = p.x + Math.cos(a) * r2, y = p.y - 36 + Math.sin(a * 1.3) * r2 * .75 - ((t * .02 + i * 11) % 22), al = .35 + .5 * Math.sin(t * .006 + i); gx.fillStyle = 'rgba(255,236,150,' + Math.max(0, al) + ')'; gx.beginPath(); gx.arc(x, y, 1.6 + (i % 3) * .7, 0, 7); gx.fill() }
+    gx.restore();
+  }
+  function pumpDraw(gx, o, t) {
+    const im = picOf(4); if (!im.complete || !im.naturalWidth) return false;
+    const big = o.kind === 'plot', d = big ? contestDays() : 0, w = big ? 132 + d * 14 : 80, h = w * im.naturalHeight / im.naturalWidth, sway = Math.sin(t * .0021 + o.phase) * .012;
+    gx.save(); gx.translate(0, 8); gx.rotate(sway); gx.drawImage(im, -w / 2, -h + 4, w, h);
+    if (big) { gx.globalCompositeOperation = 'lighter'; gx.globalAlpha = .22 + Math.sin(t * .004) * .08; gx.drawImage(im, -w / 2, -h + 4, w, h) }   /* a soft golden shine over the fruit */
+    gx.restore(); return true;
   }
   function drawObj(gx, o, t, k) {
     const p = project(o.u, o.v), hop = o.flee ? (o.mode === 'run' ? Math.abs(Math.sin(t * .026 + o.phase)) * 15 : o.mode === 'idle' ? Math.abs(Math.sin(t * .004 + o.phase)) * 2 : 0) : Math.sin(t * .003 + o.phase) * 2;
     gx.save();
     gx.fillStyle = 'rgba(20,30,20,.35)'; gx.beginPath(); gx.ellipse(p.x, p.y, 16, 7, 0, 0, 7); gx.fill();
-    if (o.kind === 'plot') { gx.fillStyle = '#6a4a2a'; gx.beginPath(); gx.ellipse(p.x, p.y, 30, 14, 0, 0, 7); gx.fill(); gx.strokeStyle = '#4a3218'; gx.lineWidth = 2; gx.stroke() }
+    const pump = o.kind === 'plot' || o.kind === 'ripe' || o.kind === 'pumpkin';
+    if (pump && o.kind === 'plot') pumpAura(gx, p, t);   /* v98.598 · the contest pumpkin: big, with a golden aura */
     if (!o.flee || pending === o) { gx.strokeStyle = 'rgba(255,214,90,' + (.45 + Math.sin(t * .006) * .3) + ')'; gx.lineWidth = 2.5; gx.beginPath(); gx.ellipse(p.x, p.y, 24, 11, 0, 0, 7); gx.stroke() }
     gx.font = '34px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif'; gx.textAlign = 'center';
-    gx.translate(p.x, p.y - 6 - hop); { const right = o.flee && o.dir && o.dir.du - o.dir.dv > 0; if (o.kind === 'goat' ? !right : right) gx.scale(-1, 1) }   /* the emoji faces left, the drawn goat right */
-    if (o.kind === 'goat') goat(gx, o, t); else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
-    if (o.flee && o.mode === 'rest') { gx.save(); gx.font = `700 ${12}px system-ui`; gx.fillStyle = '#e8f4ff'; gx.textAlign = 'center'; gx.fillText('หอบ…', p.x, p.y - 46); gx.restore() }
+    gx.translate(p.x, p.y - 6 - hop); { const right = o.flee && o.dir && o.dir.du - o.dir.dv > 0; if (o.kind !== 'goat' && right) gx.scale(-1, 1) }
+    if (o.mystery) mysteryDraw(gx, o, t); else if (o.kind === 'goat') goat(gx, o, t); else if (pump && pumpDraw(gx, o, t)) { /* picture drawn */ } else if (o.kind === 'plank') plankDraw(gx, o, t); else gx.fillText(ICON[o.kind] || '❔', 0, 0); gx.restore();
+    if (o.flee && o.mode === 'rest') { gx.save(); gx.font = `700 ${12}px AgThai,system-ui`; gx.fillStyle = '#e8f4ff'; gx.textAlign = 'center'; gx.fillText('หอบ…', p.x, p.y - 46); gx.restore() }
   }
   /* v97.14 · the goat is drawn (solid colours with a dark outline) instead of the pale 🐐 emoji that washed out on the light cobbles:
      brown coat, cream belly and beard, dark horns and hooves; legs run in 4 frames, the head dips to graze when it rests */
+  /* v98.472 · drawn with code (no new picture): the goat with a faint blue glint, then the Mip run cycle (assets/ui/mip-sheet.webp · 12 cells · faces LEFT) after the reveal */
+  let mipImg = null; const mipSheet = () => { if (!mipImg && typeof Image !== 'undefined') { mipImg = new Image(); mipImg.src = 'assets/ui/mip-sheet.webp?v=2' } return mipImg && mipImg.complete && mipImg.naturalWidth ? mipImg : null };
+  function glint(gx, x, y, a, s) { gx.save(); gx.globalAlpha = a; gx.fillStyle = '#9fd8ff'; gx.strokeStyle = '#2b6fb0'; gx.lineWidth = 1.2; gx.beginPath(); gx.moveTo(x, y - s); gx.lineTo(x + s * .6, y); gx.lineTo(x, y + s); gx.lineTo(x - s * .6, y); gx.closePath(); gx.fill(); gx.stroke(); gx.restore() }
+  function mysteryDraw(gx, o, t) {
+    if (o.mode === 'reveal' || o.mode === 'mip') {
+      const im = mipSheet(), k = o.mode === 'reveal' ? 1 - Math.max(0, o.t) / .75 : 1;
+      if (o.mode === 'reveal') { for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2 + t * .01, r = 10 + k * 26; glint(gx, Math.cos(a) * r, -20 + Math.sin(a) * r * .5, 1 - k * .5, 4 + (i % 3)) } }
+      if (im) { const cell = im.naturalWidth / 12, f = Math.floor(t / 70) % 12, sz = 58, right = o.dir && o.dir.du - o.dir.dv > 0; gx.save(); gx.translate(0, 0); if (right) gx.scale(-1, 1); gx.globalAlpha = o.mode === 'reveal' ? .35 + k * .65 : 1; gx.drawImage(im, f * cell, 0, cell, im.naturalHeight, -sz / 2, -sz * .92, sz, sz); gx.restore() }
+      else { gx.fillStyle = '#d8b99a'; gx.beginPath(); gx.ellipse(0, -16, 14, 10, 0, 0, 7); gx.fill() }
+      return;
+    }
+    /* before the reveal: a goat that holds still when watched, with a slow blue glint on the horn / ear */
+    const wob = Math.sin(t * .003 + o.phase) * .06 * (1 - o.stare);
+    gx.save(); gx.rotate(wob); if (o.face) o.dir = { du: hero.u - o.u, dv: hero.v - o.v }; goat(gx, o, t); gx.restore();
+    const pulse = .35 + Math.max(0, Math.sin(t * .004 + o.phase)) * .65;
+    glint(gx, 13, -36, pulse * (.5 + o.stare * .5), 4); glint(gx, -17, -24, pulse * .6, 3);
+  }
   function goat(gx, o, t) {
+    /* v98.444 · chase states use the existing authored goat extras. Remember
+       facing while resting; MonsterArt owns SW/NW mirroring (never flip twice). */
+    if (o.dir) o.artFace = o.dir.du + o.dir.dv < 0 ? (o.dir.du - o.dir.dv > 0 ? 'NE' : 'NW') : (o.dir.du - o.dir.dv > 0 ? 'SE' : 'SW');
+    const pose = o.mode === 'run' ? 'run' : o.mode === 'rest' ? 'pant' : 'graze';
+    const art = root.MonsterArt?.frame('goat', o.artFace || 'SE', { pose }, 1, t, 'quest-goat-' + o.key + '-' + o.i);
+    if (art) {
+      const h = 52, w = h * art.sw / art.sh, pv = art.pivot || [.5, .95];
+      gx.save(); if (art.flip) gx.scale(-1, 1);
+      gx.drawImage(art.image, art.sx, art.sy, art.sw, art.sh, -w * pv[0], -h * pv[1], w, h); gx.restore(); return;
+    }
     const run = o.mode === 'run', f = run ? Math.floor(t * .02 + o.phase) % 4 : 0, sw = [0, 4, 0, -4][f], graze = !run && o.mode !== 'rest' ? Math.max(0, Math.sin(t * .0016 + o.phase)) : 0, pant = o.mode === 'rest' ? Math.sin(t * .02) * 1.2 : 0;
     const coat = o.coat || (o.coat = ['#7a5232', '#5e4a3a', '#8a6a48', '#4a3a30'][Math.abs(Math.round(o.phase * 7)) % 4]);
     gx.lineJoin = 'round'; gx.lineCap = 'round'; gx.strokeStyle = '#1e140c'; gx.lineWidth = 2;
@@ -201,7 +302,7 @@
   }
   root.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY } }, true);
   root.addEventListener('pointerup', e => {
-    if (!down || editing || !T || e.target?.closest?.('button,dialog,input,select,textarea,a,label,[role=dialog]')) { down = null; return }
+    if (!down || editing || !T || (root.TownBattle?.active?.()||/[?&]battle=1(&|$)/.test(root.location?.search||'')) || e.target?.closest?.('button,dialog,input,select,textarea,a,label,[role=dialog]')) { down = null; return }
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6; down = null; if (moved) return;
     const o = hit(e); if (!o) return;
     e.stopImmediatePropagation(); try { drag = null } catch (x) { }
@@ -224,5 +325,5 @@
   }
   /* v95.14: street objects join the village's own depth-sorted list, so goats are solid and pass in front of / behind the hero and buildings like any villager */
   function sorted(t) { if (editing || !T) return []; const k = Math.min(2.2, K()); return [...objs.values()].flat().map(o => { const p = project(o.u, o.v); return { x: p.x, y: p.y, mobile: true, draw: g => drawObj(g, o, t, k) } }) }
-  root.TownQuest = { draw, sorted, guide, targets: () => T, objects: () => [...objs.values()].flat() };
+  root.TownQuest = { frozen, draw, sorted, guide, use, targets, objects: () => [...objs.values()].flat() };
 })(globalThis);

@@ -14,7 +14,9 @@ const I={
  fullscreenExit:'<rect x="5" y="6" width="14" height="12" rx="1.5" class="fill"/><path d="M8.5 4v4.5H4M20 8.5h-4.5V4M15.5 20v-4.5H20M4 15.5h4.5V20" class="hot"/>'};
 const svg=k=>`<svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>`;
 // v12: a picture from assets/icons/menu can replace the drawn icon (chosen in Editor → ไอคอนเมนู)
-const MENU_KEY='menu-icons-v1',pick=id=>{try{return (JSON.parse(localStorage.getItem(MENU_KEY))||{})[id]||''}catch(e){return ''}};
+/* v98.16 · picture icons are the default; a choice saved in Editor → ไอคอนเมนู wins, and '-' there means the drawn icon */
+const DEFAULT_PICS={map:'map',bag:'bag',upgrade:'deck',settings:'settings',editor:'quest'};
+const MENU_KEY='menu-icons-v1',pick=id=>{let v;try{v=(JSON.parse(localStorage.getItem(MENU_KEY))||{})[id]}catch(e){}if(v==='-')return '';return v||DEFAULT_PICS[id]||''};
 const icon=(id,k)=>{let p=pick(id);return p?`<img class="nav-img" src="assets/icons/menu/${p}.webp" alt="">`:svg(k)};
 const key=id=>id==='motion'?(typeof reduced!=='undefined'&&reduced?'motionOff':'motionOn'):id==='fullscreen'?(document.fullscreenElement?'fullscreenExit':'fullscreen'):id;
 function paint(){document.querySelectorAll('.header-actions .illustrated-nav').forEach(b=>{let id=b.id==='motion'?'motion':b.id.replace(/^nav-/,'');if(!I[key(id)])return;let old=b.querySelector('img,svg');if(old)old.outerHTML=icon(id,key(id));else b.insertAdjacentHTML('afterbegin',icon(id,key(id)));b.classList.add('icon-nav');b.classList.toggle('has-img',!!pick(id));if(id==='motion'){let s=b.querySelector('span');if(s)s.textContent='แอนิเมชัน'}})}

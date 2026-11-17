@@ -19,7 +19,9 @@
    buildings: {},
    frames: {},
    cast: {},
-   lib: []
+   lib: [],
+   starterFrame: {},
+   starterKeys: {}
   },
   place = null,
   frame = [],
@@ -33,7 +35,9 @@
   frames: {},
   cast: {},
   lib: [],
-  assets: []
+  assets: [],
+  starterFrame: {},   /* v98.329 · the frame the starter items of each place were laid out from (frozen: editing the blue grid / outer frame later never moves them) */
+  starterKeys: {}     /* v98.329 · which starter items each place has (a piece that was never in this list does not pop up by itself) */
  });
 
  function set(v) {
@@ -49,6 +53,8 @@
    // v94: the new villager homes (npc10…npc15) start at the same size as the other village houses until edited
    for (let i = 10; i <= 15; i++) if (!data.buildings['npc' + i]) data.buildings['npc' + i] = { sx: 0.73, sy: 0.73 };
    if (v.frames && typeof v.frames === 'object') data.frames = copy(v.frames);
+   if (v.starterFrame && typeof v.starterFrame === 'object') data.starterFrame = copy(v.starterFrame);
+   if (v.starterKeys && typeof v.starterKeys === 'object') data.starterKeys = copy(v.starterKeys);
    window.VillageFence?.set(v.fence);
    if (Array.isArray(v.assets)) data.assets = v.assets.filter(a => a && /^[a-z0-9-]{2,40}$/.test(a.id) && typeof a.name === 'string').map(a => ({ id: a.id, name: a.name.slice(0, 40), w: Math.max(30, Math.min(900, +a.w || 120)), ...(a.bld ? { bld: 1 } : {}), ...(typeof a.file === 'string' && /^assets\/[\w\/.-]+$/.test(a.file) ? { file: a.file } : {}), ...(a.ov ? { ov: 1 } : {}), ...(a.fx > 0 && a.fx < 1 && a.fy > 0 && a.fy <= 1 ? { fx: +a.fx, fy: +a.fy } : {}) }));
    registerAssets();
@@ -70,6 +76,8 @@
   if (data.added.length) out.added = copy(data.added);
   if (Object.keys(data.buildings).length) out.buildings = copy(data.buildings);
   if (Object.keys(data.frames).length) out.frames = copy(data.frames);
+  if (Object.keys(data.starterFrame).length) out.starterFrame = copy(data.starterFrame);
+  if (Object.keys(data.starterKeys).length) out.starterKeys = copy(data.starterKeys);
   if (data.lib.length) out.lib = copy(data.lib);
   if (data.assets.length) out.assets = copy(data.assets);
   const fc = window.VillageFence?.get(); if (fc) out.fence = fc;
@@ -86,30 +94,20 @@
  }
 
  /* ---------- what can be placed / swapped in ---------- */
+ const { DECOR_W, NAMES, NAME_KIND, LABEL_HINT } = window.VillageAssetTables;   /* v98.293 · js/village-asset-tables.js */
  const KINDS = {};
+ /* v98.576 · AssetSize (js/asset-size.js): a decoration remembers how big it is next to the hero; a NEW one starts at that size, changing the size slider stores the new number */
+ window.AssetSize?.setHero('village', () => CharSize.VILLAGE_HERO_PX * charScale('hero'));
+ const decorFile = kind => /^decor:/.test(kind || '') ? 'assets/village-town/decor/' + kind.slice(6) + '.png' : '';
+ function sizeStart(nid, kind) { const f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1], r = f && window.AssetSize?.get(f); if (r && w) ovOf(nid).s = +clampN(r * AssetSize.heroPx('village') / w, .2, 4).toFixed(3) }
+ function buildingRec(id) { const b = data.buildings[id] || {}, spec = artSpecs[id], f = BUILDINGS[id]; if (spec && f && window.AssetSize) AssetSize.record(f, spec[0] * 2 * (b.sx ?? 1), 'village') }
+ function sizeRec(key) { const a = data.added.find(x => x.id === key), ov = data.edit[key] || {}, kind = ov.kind || a?.kind, f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1]; if (f && w && window.AssetSize) AssetSize.record(f, w * (ov.s ?? 1), 'village') }
  const kind = (id, label, group, draw) => KINDS[id] = {
   label,
   group,
   draw
  };
- const DECOR_W = {
-  'fence-picket': ['รั้วไม้', 110],
-  'stone-wall-low': ['กำแพงหินเตี้ย', 110],
-  'hedge-row': ['แนวพุ่มไม้', 120],
-  'flower-bed': ['แปลงดอกไม้', 118],
-  'flower-box': ['กระบะดอกไม้', 90],
-  'stepping-stones': ['หินทางเดิน', 130],
-  'pond-lilies': ['บ่อบัว', 220],
-  'bench': ['ม้านั่ง', 110],
-  'market-stall-red': ['แผงตลาดแดง', 230],
-  'market-stall-blue': ['แผงตลาดน้ำเงิน', 230],
-  'banner-pole': ['เสาธง', 75],
-  'woodpile': ['กองฟืน', 115],
-  'signpost': ['ป้ายบอกทาง', 70],
-  'well': ['บ่อน้ำ', 120],
-  'cart': ['เกวียน', 150],
-  'hay': ['กองฟาง', 95]
- };
+ /* v98.293 · DECOR_W now lives in js/village-asset-tables.js */
  for (const [n, [label, w]] of Object.entries(DECOR_W)) kind('decor:' + n, label, 'ของประดับ', p => decor(n, p, w, false));
  /* v91.5 · pictures the user added through "＋ เพิ่มภาพ Asset": saved in the layout (id, name, width) + the PNG under assets/village-town/decor/ */
  const bldName = {}; // names of the buildings added from pictures
@@ -186,8 +184,9 @@
  }
 
  /* ---------- owners: a place (estate frame, mirrored when it faces SE), the plaza, or an exit gate ---------- */
+ function gateName(i) { const n = Village25D.getExits()[i]?.name || ''; return /^ประตู/.test(n) ? n : 'ประตู' + n }
  function ownerName(owner) {
-  if (owner.startsWith('exit:')) return 'ประตู' + (Village25D.getExits()[+owner.slice(5)]?.name || '');
+  if (owner.startsWith('exit:')) return gateName(+owner.slice(5));
   return locations.find(o => o.id === owner)?.name || owner
  }
 
@@ -269,10 +268,11 @@
    ix = ov.ix ?? 1, iy = ov.iy ?? 1,
    ia = (ix + iy) / 2, ib = (iy - ix) / 2, ic = (iy - ix) / 2, id = (ix + iy) / 2,
    k = ov.kind && KINDS[ov.kind] ? ov.kind : null,
-   plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !k;
+   plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !k && !ov.pm && !ov.artX && !ov.artY;
   const inner = plain ? draw : gg => {
    g.save();
    g.translate(E.x, E.y);
+   window.PieceGeometry.apply(g, ov);
    if (r) g.rotate(r);
    g.scale(f ? -s : s, s);
    g.transform(ia, ib, ic, id, 0, 0);
@@ -285,10 +285,24 @@
    g.restore()
   };
   if (ov.grp) grpYNow.set(ov.grp, Math.max(grpYNow.get(ov.grp) ?? -1e9, E.y));
+  /* v98.146 · the part's footprint on the grid (กรอบพื้น) and its name: depth order against walkers uses the footprint (js/depth-style.js), tall / low decides if it may fade */
+  const fc = inv(E.x, E.y);   /* v98.286 · the ORDER footprint (sw/sh) is separate from the walk-block / spacing footprint (fw/fh); unset → same as fw/fh */
   const it = {
    x: E.x,
    y: (ov.grp && grpYPrev.get(ov.grp) != null ? grpYPrev.get(ov.grp) : E.y) + (ov.layer || 0),
    z: ov.z || 0,
+   fp: (() => {
+    const own = window.PieceGeometry.footprint(ov, fc.u, fc.v);
+    if (!ov.cmp || !ov.grp) return own;
+    /* v98.292 · COMPOSITE: every member of the group shares ONE footprint = the union box of all member boxes (+ the member boxes themselves as .parts, for L / U shapes) */
+    let U = grpFpNow.get(ov.grp);
+    if (!U) grpFpNow.set(ov.grp, U = { u0: own.u0, u1: own.u1, v0: own.v0, v1: own.v1, parts: [] });
+    else { U.u0 = Math.min(U.u0, own.u0); U.u1 = Math.max(U.u1, own.u1); U.v0 = Math.min(U.v0, own.v0); U.v1 = Math.max(U.v1, own.v1) }
+    U.parts.push(...(own.parts || [own]));
+    return grpFpPrev.get(ov.grp) || U
+   })(),
+   label: label || '',
+   tall: ov.tall,
    place: loc(owner) ? owner : null,
    draw: gg => {
     if (lit(key, owner)) stamp('ring', inner);
@@ -319,51 +333,11 @@
   return out
  }
  // v81.4 · names come from what the item really is (estateObjects tags each item); NAME_KIND maps it to a placeable kind
- const NAMES = {
-  'border:hedge': 'แนวพุ่มไม้',
-  'border:flowers': 'แปลงดอกไม้ (ขอบ)',
-  'border:planter': 'กระถาง (ขอบ)',
-  'border:wood': 'รั้วไม้',
-  'border:stone': 'กำแพงหิน',
-  lamp: 'โคมไฟ',
-  bushflower: 'พุ่มดอกไม้',
-  pot: 'กระถาง',
-  statue: 'ของตั้งหน้าอาคาร',
-  table: 'โต๊ะ/ถัง',
-  crate: 'ลังไม้',
-  herb: 'สมุนไพร',
-  'flower:1': 'ดอกไม้ชุด 1',
-  'flower:2': 'ดอกไม้ชุด 2',
-  bush: 'พุ่มไม้'
- };
- const NAME_KIND = {
-  'border:hedge': 'decor:hedge-row',
-  'border:flowers': 'decor:flower-bed',
-  'border:planter': 'prop:3',
-  'border:wood': 'decor:fence-picket',
-  'border:stone': 'decor:stone-wall-low',
-  lamp: 'lamp',
-  bushflower: 'prop:2',
-  pot: 'prop:3',
-  statue: 'prop:4',
-  table: 'prop:5',
-  crate: 'prop:6',
-  herb: 'flowers:3',
-  'flower:1': 'flowers:1',
-  'flower:2': 'flowers:2',
-  bush: 'prop:2'
- };
+ /* v98.293 · NAMES now lives in js/village-asset-tables.js */
+ /* v98.293 · NAME_KIND now lives in js/village-asset-tables.js */
  const nameLabel = n => !n ? null : NAMES[n] || (n.startsWith('decor:') ? DECOR_W[n.slice(6)]?.[0] || n.slice(6) : null);
  const nameKind = n => !n ? null : NAME_KIND[n] || (n.startsWith('decor:') && KINDS[n] ? n : null);
- const LABEL_HINT = [
-  ['propSprite(7', 'ต้นไม้'],
-  ['lamp(', 'โคมไฟ'],
-  ["decor('bench'", 'ม้านั่ง'],
-  ['bush(', 'พุ่มไม้'],
-  ['TownArt.detail', 'ดอกไม้'],
-  ['propSprite(3', 'กระถาง'],
-  ['propSprite(6', 'ลังไม้']
- ];
+ /* v98.293 · LABEL_HINT now lives in js/village-asset-tables.js */
  const labelOf = fn => {
   const t = String(fn);
   for (const [k, l] of LABEL_HINT)
@@ -371,19 +345,42 @@
   const m = t.match(/decor\('([\w-]+)'|dec\('([\w-]+)'/);
   return m ? (DECOR_W[m[1] || m[2]]?.[0] || 'ของประดับ') : 'ของประดับ'
  };
- let grpYPrev = new Map(), grpYNow = new Map(), fixedFence = new Map();
+ let grpYPrev = new Map(), grpYNow = new Map(), fixedFence = new Map(), grpFpPrev = new Map(), grpFpNow = new Map();
+ let suppressedStarter = [];
  const baseEstate = estateObjects;
  estateObjects = function() {
   frame = [];
+  suppressedStarter = [];
   fixedFence = new Map();
   grpYPrev = grpYNow;
   grpYNow = new Map();
+  grpFpPrev = grpFpNow;
+  grpFpNow = new Map();
   stableDefaults = true;
   let list;
   try { list = baseEstate() } finally { stableDefaults = false }
   const sq = locations.find(o => o.id === 'square'),
    out = [],
    seen = {};
+  /* v98.329 · pass 1: the key of every starter item (same rule as pass 2) → a per-place list that is remembered with the layout */
+  const gen = {}, pre = {};
+  for (const it of list) {
+   if (it.fixed) continue;
+   if (it.frontageKey) { if (it.owner?.id) (gen[it.owner.id] ||= []).push(it.frontageKey); continue }   /* shop-front pieces (anvil, crates, racks…) found by js/village-frontage.js: remembered too */
+   let owner, rel;
+   if (it.owner && it.rel) { owner = it.owner.id; rel = it.rel }
+   else if (sq && it.x != null) { const w = inv(it.x, it.y), c = center(sq); owner = 'square'; rel = { u: w.u - c.u, v: w.v - c.v } }
+   else continue;
+   let key = owner + ':' + rel.u.toFixed(1) + ',' + rel.v.toFixed(1);
+   pre[key] = (pre[key] || 0) + 1; if (pre[key] > 1) key += '#' + pre[key];
+   (gen[owner] ||= []).push(key);
+  }
+  for (const [owner, keys] of Object.entries(gen)) {
+   const rec = data.starterKeys[owner];
+   if (!rec) { data.starterKeys[owner] = keys.slice(); continue }
+   const hit = rec.filter(k => keys.includes(k)).length;
+   if (hit < rec.length * .5) data.starterKeys[owner] = keys.slice();   /* the whole place changed shape (new size / new look): accept the new set instead of hiding everything */
+  }
   for (const it of list) {
    let owner, rel;
    if (it.fixed) { // fence pieces: laid out by the fence system, not hand-placed
@@ -405,9 +402,10 @@
     out.push(it);
     continue
    }
-   let key = owner + ':' + rel.u.toFixed(1) + ',' + rel.v.toFixed(1);
+   let key = it.frontageKey || owner + ':' + rel.u.toFixed(1) + ',' + rel.v.toFixed(1);
    seen[key] = (seen[key] || 0) + 1;
    if (seen[key] > 1) key += '#' + seen[key];
+   if (data.starterKeys[owner] && !data.starterKeys[owner].includes(key) && !data.edit[key]) { suppressedStarter.push(key); continue }   /* v98.329 · a starter piece this place never had before does not pop up by itself */
    const n0 = frame.length, e = entry(key, owner, it.x, it.y, it.draw, it, nameLabel(it.name) || labelOf(it.draw));
    /* v97.07: a deleted item adds no frame entry — naming "the last entry" crashed the whole map when it was the first one (frame empty) and renamed the wrong item otherwise */
    if (frame.length > n0) frame[frame.length - 1].name = it.name || null;
@@ -419,8 +417,9 @@
   baseGates = TM.gateObjects;
  TM.gateObjects = function() {
   const out = [];
-  baseGates().forEach((it, i) => {
-   const e = entry('exit:' + i, 'exit:' + i, it.x, it.y, it.draw, null, 'ประตู ' + (Village25D.getExits()[i]?.name || ''));
+  baseGates().forEach((it, k) => {
+   const i = it.i ?? k;   /* v98.20 · the slot number of the gate (only two slots exist now) */
+   const e = entry('exit:' + i, 'exit:' + i, it.x, it.y, it.draw, null, gateName(i));
    if (e) out.push(e)
   });
   const all = out.concat(addedItems(true)); rebuildBlocks(); return all
@@ -558,10 +557,15 @@
    if (f && Number.isFinite(f[k])) e[k] = f[k];
   if (!FP) return e;
   o.fpAuto = { u0: Math.min(FP.MAX, Math.max(.5, up2(-e.left))), u1: Math.min(FP.MAX, Math.max(.5, up2(e.right))), v0: Math.min(FP.MAX, Math.max(.5, up2(-e.back))), v1: Math.min(FP.MAX, Math.max(.5, up2(e.front))) };
-  const fp = stableDefaults ? o.fpAuto : FP.fpOf(o); // v91.46: starter items are laid out from the AUTOMATIC frame so moving the blue footprint never moves/loses them
+  /* v98.329 · …and from a FROZEN copy of that automatic frame: editing the outer frame / blue grid later (or opening the layout on another computer that has other numbers) no longer moves the starter items, so their saved moves / deletions keep matching */
+  const sf = data.starterFrame || (data.starterFrame = {});
+  if (!sf[o.id]) sf[o.id] = { ...o.fpAuto };
+  const fp = stableDefaults ? sf[o.id] : FP.fpOf(o); // v91.46: starter items are laid out from the AUTOMATIC frame so moving the blue footprint never moves/loses them
   e.left = -fp.u0; e.right = fp.u1; e.back = -fp.v0; e.front = fp.v1;
   return e
  };
+ /* v98.16 · the walk cache was built from the old frame before this patch: rebuild it, or the hero is walled in at the default frame edge */
+ try { if (typeof cacheSolids === 'function') { cacheSolids(); terrainDirty = true } } catch (_) {}
  const loc = id => locations.find(o => o.id === id);
  const hasFrame = o => !!o && !!baseEstateFn(o);
  const mirrorX = (o, p) => o.facing === 'SE' ? {
@@ -658,10 +662,12 @@
  };
 
  function charScale(k) {
-  const all = +data.cast.all || 1;
-  if (k === 'hero') return all * (castOf('hero')?.s ?? 1);
-  if (k === 'npc') return all * (castOf('npc')?.s ?? 1);
-  if (k.startsWith('npc:')) return all * (castOf(k)?.s ?? 1) * (castOf('npc')?.s ?? 1);
+  /* v98.139 · ONE multiplier for the whole cast of this map (js/map-scale.js); how big characters are compared with each other = ⚖ Scale Lineup. The old per-NPC / "NPC ทุกตัว" / hero sizes are no longer used. */
+  const all = window.MapScale ? MapScale.get('village') : (+data.cast.all || 1);
+  const adj = id => window.CharScaleAdjust?.factor('village', id) || 1;   /* v98.65 · ⚖ scale-lineup adjustments */
+  if (k === 'hero') return all * adj('hero');
+  if (k.startsWith('npc:')) return all * adj(k);
+  if (k === 'npc') return all;
   return all
  }
  // draws the swapped image (feet on p, visible height ≈ h); returns false when the character keeps its own art
@@ -998,15 +1004,19 @@
     a blocked drop slides to the closest free spot, flush against the neighbour. Stack mode (V) or a multi-selection skips that. */
  const modeNow = () => window.TownUX?.gridMode?.() || window.VillageGrid.DEFAULT_MODE;
  const stackOn = () => !!window.TownUX?.stackOn?.();
+ let bldDetail = false;
+ const secOpen = new Map();   /* v98.287 · which panel sections are open (kept while you select other pieces) */
  const itemSize = k => ({ w: data.edit[k]?.fw ?? .5, h: data.edit[k]?.fh ?? .5 });
  /* v97.47 · a first guess of the blocking frame (cells) from the item's name; adjusted with กว้าง/ลึก ± */
  function guessBlock(label) { const t = String(label || ''); return /ต้นไม้|ต้นโอ๊ก|ต้นสน|tree|oak|pine/i.test(t) ? [1, 1] : /เกวียน|รถ|cart|wagon/i.test(t) ? [1.5, 1] : /บ่อ|well|น้ำพุ|รูปปั้น|statue/i.test(t) ? [1.5, 1.5] : /โคม|lamp|ถัง|barrel|ลัง|crate|ป้าย|sign/i.test(t) ? [.5, .5] : /หิน|rock/i.test(t) ? [1, 1] : [1, 1] }
  let blockList = [];
- function rebuildBlocks() { blockList = frame.filter(e => e.ov?.block && !e.hidden).map(e => { const z = itemSize(e.key), c = inv(e.x, e.y); return { u0: c.u - z.w / 2, u1: c.u + z.w / 2, v0: c.v - z.h / 2, v1: c.v + z.h / 2 } }) }
- const blockedAt = (u, v) => { for (const r of blockList) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
+ function rebuildBlocks() { blockList = frame.filter(e => e.ov?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.ov, c.u, c.v, true) }) }
+ const blockBoxes = () => blockList.flatMap(r => r.parts || [r]);   /* v98.499 · free-form red zones are lists of boxes */
+ const blockedAt = (u, v) => { for (const r of blockBoxes()) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
  function itemRectAt(k, c) {
   const z = itemSize(k);
-  return window.VillageGrid.rectFromCells(c.u - z.w / 2, c.v - z.h / 2, z.w, z.h)
+  const ov = data.edit[k] || {};
+  return window.VillageGrid.rectFromCells(c.u + (ov.blockU || 0) - z.w / 2, c.v + (ov.blockV || 0) - z.h / 2, z.w, z.h)
  }
  function siblingRects(owner, exceptKeys) {
   const G = window.VillageGrid;
@@ -1020,7 +1030,7 @@
  }
  function gridSnapItem(E, b, du, dv, solo) {
   const G = window.VillageGrid;
-  if (!G || !b) return { du: +du.toFixed(4), dv: +dv.toFixed(4) };
+  if (!G || !b || data.edit[E.key]?.free) return { du: +du.toFixed(4), dv: +dv.toFixed(4) };   /* v98.521 · free = ย้ายอิสระ ไม่แนบกริด */
   const s = screenDelta(b, du, dv), q = G.snapPoint(E.ax + s.x, E.ay + s.y, modeNow()),
    c = solo ? freeCell(E.owner, E.key, { u: q.u, v: q.v }) : { u: q.u, v: q.v },
    p = G.project(c.u, c.v), r = canonDelta(b, p.x - E.ax, p.y - E.ay);
@@ -1041,6 +1051,7 @@
   for (const k of place.keys) {
    const E = frame.find(e => e.key === k), b = E && baseOf(E.owner);
    if (!E || !b) continue;
+   if (data.edit[k]?.free) { const d = canonDelta(b, ax * 2 * mult, ay * 2 * mult), o = ovOf(k); o.du = +((o.du || 0) + d.du).toFixed(4); o.dv = +((o.dv || 0) + d.dv).toFixed(4); continue }
    const cur = G.snapPoint(E.x, E.y, mode), q = G.snapPoint(cur.x + ax * 56 * st, cur.y + ay * 28 * st, mode),
     c = solo ? freeCell(E.owner, k, { u: q.u, v: q.v }) : { u: q.u, v: q.v }, p = G.project(c.u, c.v),
     r = canonDelta(b, p.x - E.ax, p.y - E.ay), ov = ovOf(k);
@@ -1112,7 +1123,7 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, g: ov.grp }
+  return { ...window.PieceGeometry.extra(ov), kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, free: ov.free, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
  }
  function addRecords(recs, owner, off) {
   const ids = [], gmap = {};
@@ -1121,7 +1132,7 @@
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    const G = window.VillageGrid, bs = baseOf(owner), sn = !G ? { du: r.du + off, dv: r.dv + off } : recs.length === 1 ? placeNewItem(owner, nid, r.du + off, r.dv + off) : G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, modeNow());
    data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-   data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh };
+   data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
    if (r.g) data.edit[nid].grp = gmap[r.g] || (gmap[r.g] = newGid());
    clean(nid);
    ids.push(nid)
@@ -1155,6 +1166,15 @@
    ov.du = +((ov.du || 0) + delta.du).toFixed(3);
    ov.dv = +((ov.dv || 0) + delta.dv).toFixed(3);
    ov.f = !ov.f;
+   if (ov.r) ov.r = -ov.r;
+   if (ov.artX) ov.artX = -ov.artX;
+   if (ov.pm) ov.pm = [ov.pm[0], -ov.pm[1], -ov.pm[2], ov.pm[3]];
+   [ov.orderU, ov.orderV] = [ov.orderV, ov.orderU];
+   [ov.blockU, ov.blockV] = [ov.blockV, ov.blockU];
+   [ov.sw, ov.sh] = [ov.sh, ov.sw];
+   [ov.fw, ov.fh] = [ov.fh, ov.fw];
+   if (ov.zo) ov.zo = window.PieceGeometry.swapCells(ov.zo);
+   if (ov.zb) ov.zb = window.PieceGeometry.swapCells(ov.zb);
    clean(E.key)
   }
   UX.persist();
@@ -1193,19 +1213,44 @@
   render()
  }
  const groupHtml = n => `<b class="sec">จัดการ${n > 1 ? 'ทั้งกลุ่ม' : ''}</b><div class="row"><button id="gUp" title="PageUp">＋ ชั้น (+1)</button><button id="gDown" title="PageDown">－ ชั้น (−1)</button><button id="gBig" title="+">＋ ใหญ่ขึ้น</button><button id="gSmall" title="-">－ เล็กลง</button></div>
-  <div class="row"><button id="gRotL" title="หมุนทั้งกลุ่ม -15°">หมุน −15°</button><button id="gRotR" title="หมุนทั้งกลุ่ม +15°">หมุน +15°</button><button id="gIxDn" title="ปรับแกน ↗↙ ลดลง">แกน ↗↙ −</button><button id="gIxUp" title="ปรับแกน ↗↙ เพิ่มขึ้น">แกน ↗↙ +</button></div>
-  <div class="row"><button id="gIyDn" title="ปรับแกน ↖↘ ลดลง">แกน ↖↘ −</button><button id="gIyUp" title="ปรับแกน ↖↘ เพิ่มขึ้น">แกน ↖↘ +</button><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gFlip" title="กลับซ้าย–ขวาทั้งกลุ่ม">⇋ กลับซ้าย–ขวา</button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
+  <div class="row"><button id="gDup">ทำสำเนา <small>Ctrl+D</small></button><button id="gFlip" title="กลับซ้าย–ขวาทั้งกลุ่ม">⇋ กลับซ้าย–ขวา</button><button id="gCopy">คัดลอก <small>Ctrl+C</small></button><button id="gPaste">วาง <small>Ctrl+V</small></button></div>`;
+/* v98.292 · COMPOSITE pieces: a group can share ONE order footprint (cmp); a piece can be repeated along an axis into such a group (fences, walls) */
+ function groupMembers() {
+  const gs = new Set((place?.keys || []).map(k => data.edit[k]?.grp).filter(Boolean));
+  const ks = new Set(place?.keys || []);
+  for (const E of frame) if (E.ov?.grp && gs.has(E.ov.grp)) ks.add(E.key);
+  return [...ks]
+ }
+ function toggleComposite() {
+  const sel = place?.keys || [], mem = groupMembers();
+  if (sel.length < 2 && mem.length < 2) return flashStatus('เลือกหลายชิ้นก่อน (หรือใช้ “เรียงซ้ำ” กับชิ้นเดียว)');
+  once(() => {
+   const on = !mem.some(k => data.edit[k]?.cmp);
+   let gid = mem.map(k => data.edit[k]?.grp).find(Boolean) || newGid();
+   for (const k of mem) { const o = ovOf(k); o.grp = gid; if (on) o.cmp = true; else delete o.cmp; clean(k) }
+   flashStatus(on ? 'ตั้งเป็นชิ้นประกอบแล้ว · ทั้งกลุ่มใช้กรอบเรียงลำดับร่วมกัน' : 'ยกเลิกกรอบรวมแล้ว')
+  })()
+ }
+ function repeatPiece() {
+  const k = place?.keys?.[0], r = k && recordOf(k);
+  if (!r) return flashStatus('เลือกชิ้นที่มีภาพแบบเลือกได้ก่อน (ชิ้นเดียว)');
+  const n = Math.max(2, Math.min(40, +panel.querySelector('#cmpN').value || 4)), ax = panel.querySelector('#cmpAx').value;
+  const ov = data.edit[k] || {}, len = ax === 'u' ? (ov.sw ?? ov.fw ?? .5) : (ov.sh ?? ov.fh ?? .5);
+  const step = +panel.querySelector('#cmpStep').value || len;
+  once(() => {
+   const recs = []; for (let i = 1; i < n; i++) recs.push({ ...r, g: 'rep', cmp: true, du: r.du + (ax === 'u' ? step * i : 0), dv: r.dv + (ax === 'v' ? step * i : 0) });
+   const ids = addRecords(recs, place.id, 0);
+   const gid = data.edit[ids[0]]?.grp; if (!gid) return;
+   const o0 = ovOf(k); o0.grp = gid; o0.cmp = true; clean(k);
+   place.keys = [k, ...ids];
+   flashStatus('เรียงซ้ำ ' + n + ' ท่อนเป็นชิ้นประกอบแล้ว (ปรับ “ห่าง” ให้เท่าความยาวท่อนถ้ามีช่องว่าง)')
+  })()
+ }
  function bindGroup() {
   act('#gUp', () => groupStep('layer', 1));
   act('#gDown', () => groupStep('layer', -1));
   act('#gBig', () => groupStep('size', 1));
   act('#gSmall', () => groupStep('size', -1));
-  act('#gRotL', () => groupStep('rotate', -1));
-  act('#gRotR', () => groupStep('rotate', 1));
-  act('#gIxDn', () => groupStep('ix', -1));
-  act('#gIxUp', () => groupStep('ix', 1));
-  act('#gIyDn', () => groupStep('iy', -1));
-  act('#gIyUp', () => groupStep('iy', 1));
   act('#gDup', dupGroup);
   act('#gFlip', flipGroup);
   act('#gCopy', copyGroup);
@@ -1537,58 +1582,11 @@
  function readUploaded(){try{return JSON.parse(localStorage.getItem(UPLOAD_KEY)||'[]').filter(x=>x&&x.id&&x.dataUrl)}catch(e){return[]}}
  function registerUploaded(rec){const im=new Image();im.onload=()=>{if(typeof render==='function')render()};im.src=rec.dataUrl;kind('upload:'+rec.id,rec.name||'ภาพอัปโหลด','อัปโหลด',p=>{if(im.complete&&im.naturalWidth){const w=rec.width||140,h=rec.height||110;g.drawImage(im,p.x-w/2,p.y-h,w,h)}})}
  readUploaded().forEach(registerUploaded);
- /* ---------- discover all repository image assets for the map picker ---------- */
- const REPO_ASSET_CACHE = 'project-a-village-repo-assets-v1';
- let repoAssetLoadStarted = false;
- function assetGroup(path) {
-  const p = path.toLowerCase();
-  if (/\b(building|house|inn|guild|shop|market|temple|forge|healer|player-house)\b/.test(p)) return 'อาคารจากคลังเกม';
-  if (/\b(tree|bush|flower|grass|plant|nature|forest|leaf|herb)\b/.test(p)) return 'ธรรมชาติจากคลังเกม';
-  if (/\b(rock|stone|ore|crystal|mine|mountain)\b/.test(p)) return 'หิน/แร่จากคลังเกม';
-  if (/\b(fence|wall|gate|road|path|floor|ground|tile|terrain)\b/.test(p)) return 'พื้น/ทาง/สิ่งก่อสร้าง';
-  if (/\b(prop|decor|furniture|bench|barrel|crate|sign|lamp|cart|well|pond|fountain)\b/.test(p)) return 'ของตกแต่งจากคลังเกม';
-  return 'Asset เกมอื่นๆ';
- }
- function registerRepoAsset(path) {
-  if (!path || !/\.(png|webp|jpe?g)$/i.test(path) || !path.startsWith('assets/')) return;
-  // Skip UI art, card faces, and sprite sheets: these are not standalone map objects.
-  if (/(^|\/)(ui|icons?|cards?|portraits?|faces|animations?|spritesheets?)(\/|[-_])/i.test(path)) return;
-  const id = 'repoasset:' + path;
-  if (KINDS[id]) return;
-  /* v91.62 · lazy: the image is only requested when it is first drawn (picker thumbnail / placed object) — not for every repo file at startup */
-  let file = null;
-  const url = 'https://raw.githubusercontent.com/ekkavish31/Project-Agrenor-Tactical-Card-Game/main/' + path.split('/').map(encodeURIComponent).join('/');
-  const name = path.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
-  kind(id, name, assetGroup(path), p => {
-   if (!file) { file = new Image(); file.crossOrigin = 'anonymous'; /* v91.82: raw.githubusercontent allows CORS → canvas stays readable so thumbnails can crop to the visible pixels */ file.onload = () => { clearTimeout(window.__repoThumbT); window.__repoThumbT = setTimeout(() => { thumbCache.clear(); if (typeof render === 'function') render(); }, 150); }; file.src = url; return; }
-   if (!file.complete || !file.naturalWidth) return;
-   const w = 130, h = w * file.naturalHeight / file.naturalWidth;
-   g.drawImage(file, p.x - w / 2, p.y - h, w, h);
-  });
- }
- async function loadRepositoryAssets() {
-  if (repoAssetLoadStarted) return;
-  repoAssetLoadStarted = true;
-  try {
-   // Cache the discovered paths locally; images themselves remain served by the public repository.
-   const saved = JSON.parse(localStorage.getItem(REPO_ASSET_CACHE) || '[]');
-   if (Array.isArray(saved) && saved.length) saved.forEach(registerRepoAsset);
-   const response = await fetch('https://api.github.com/repos/ekkavish31/Project-Agrenor-Tactical-Card-Game/git/trees/main?recursive=1', { headers: { Accept: 'application/vnd.github+json' } });
-   if (!response.ok) throw new Error('GitHub asset list unavailable');
-   const tree = await response.json();
-   if (!Array.isArray(tree.tree)) throw new Error('Invalid GitHub asset list');
-   const paths = tree.tree.filter(x => x.type === 'blob' && x.path.startsWith('assets/') && /\.(png|webp|jpe?g)$/i.test(x.path)).map(x => x.path);
-   paths.forEach(registerRepoAsset);
-   try { localStorage.setItem(REPO_ASSET_CACHE, JSON.stringify(paths)); } catch (_) {}
-   thumbCache.clear();
-   if (typeof render === 'function') render();
-  } catch (_) {
-   // Existing built-in assets and user-uploaded assets remain available offline.
-  }
- }
- loadRepositoryAssets();
  /* ---------- thumbnails (rendered from the real draw code) ---------- */
  const thumbCache = new Map();
+ window.VillageRepoAssets.init({ KINDS, kind, getG: () => g, thumbCache, decorW: DECOR_W, render: () => { if (typeof render === 'function') render() } });
+ /* v98.434 · a catalogue picture finished loading → refresh its tile if the picker is open */
+ document.addEventListener('village-kind-ready', ev => { const b = picker?.open && [...picker.querySelectorAll('[data-id]')].find(x => x.dataset.id === ev.detail); if (b) putThumb(b.querySelector('.th'), kindThumb(ev.detail)) });   /* v98.293 · js/village-repo-assets.js */
  let thumbBox = null;
  /* v91.77 · drag handle of a sub-asset sits at the middle of its visible pixels (not at its ground anchor, which can be far from the art, e.g. a long fence) */
  const handleCache = new Map();
@@ -1728,11 +1726,11 @@
    picker.id = 'aePicker';
    document.body.append(picker)
   }
-  const groups = [...new Set(Object.values(KINDS).map(k => k.group))];
+  const groups = [...new Set(Object.values(KINDS).filter(k => !k.hidden).map(k => k.group))];   /* v98.434 · hidden = legacy kinds kept only so old pieces still draw */
   let tab = 'ทั้งหมด',
    q = '';
   const draw = () => {
-   const list = Object.entries(KINDS).filter(([id, k]) => (tab === 'ทั้งหมด' || k.group === tab) && (!q || k.label.includes(q) || id.includes(q)));
+   const list = Object.entries(KINDS).filter(([id, k]) => !k.hidden && (tab === 'ทั้งหมด' || k.group === tab) && (!q || k.label.includes(q) || id.includes(q)));
    picker.innerHTML = `<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid" style="grid-template-columns:repeat(5,1fr)">${list.map(([id,k])=>`<button data-id="${id}" class="${id===current?'cur':''}"><span class="th"></span><span>${k.label}</span><small>${k.group}</small></button>`).join('')||'<p>ไม่พบ</p>'}</div>`;
    /* v91.75 · thumbnails render lazily: only the tiles scrolled into view, a few per frame (was: every kind at once → long freeze) */
    const io = new IntersectionObserver(es => {
@@ -1939,23 +1937,7 @@
 
  /* ---------- panel ---------- */
  const css = document.createElement('style');
- css.textContent = `#assetEdit{position:fixed;right:14px;top:78px;z-index:9;width:340px;max-height:calc(100dvh - 96px);display:flex;flex-direction:column;background:#1b302af7;color:#f3ead0;border:1px solid #b9c48f;border-radius:12px;font-size:12px;box-shadow:0 10px 30px #0006}#assetEdit[hidden]{display:none}
-#assetEdit .head{padding:11px 12px 0}#assetEdit .body{overflow:auto;padding:10px 12px 12px;flex:1}#assetEdit h3{margin:0 0 3px;font-size:16px;color:#fff0c7}#assetEdit .sub{color:#c9d2b8;margin:0 0 8px;line-height:1.55}#assetEdit .chip{display:inline-block;background:#e5c06b;color:#1b302a;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:6px;vertical-align:2px}
-#assetEdit .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin:8px 0 0}#assetEdit .tabs button{padding:6px 2px;font-size:11px;border-radius:8px 8px 0 0;border-bottom:0;background:#132621}#assetEdit .tabs button.on{background:#e5c06b;color:#1b302a;border-color:#e5c06b}#assetEdit .tabs button:disabled{opacity:.35}
-#assetEdit label{display:grid;grid-template-columns:96px 1fr 46px;gap:6px;align-items:center;margin:6px 0}#assetEdit label.chk{display:flex}#assetEdit label.sel{grid-template-columns:118px 1fr}#assetEdit input[type=range]{width:100%}#assetEdit select{width:100%;padding:5px;background:#132621;color:inherit;border:1px solid #7f9170;border-radius:6px}
-#assetEdit .row{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}#assetEdit button{padding:6px 9px;font-size:12px}#assetEdit hr{border:0;border-top:1px solid #4d6656;margin:10px 0}#assetEdit output{text-align:right;font-variant-numeric:tabular-nums}#assetEdit b.sec{display:block;margin:4px 0 2px;color:#fff0c7}
-#assetEdit .art{display:flex;gap:10px;align-items:center;background:#132621;border:1px solid #4d6656;border-radius:10px;padding:8px}#assetEdit .th{width:112px;height:92px;flex:none;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}#assetEdit .th img,#assetEdit .th canvas{max-width:104px;max-height:86px}
-#assetEdit [data-fp]{padding:5px 6px;min-width:0;font-size:11px}#assetEdit .nudge{display:grid;grid-template-columns:repeat(3,34px);gap:3px}#assetEdit .nudge button{padding:4px 0}
-#assetEdit .foot{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #4d6656;background:#16281f;border-radius:0 0 12px 12px}#assetEdit .foot button{flex:1;padding:9px;font-size:13px}#assetEdit .foot .reset{flex:none;padding:9px 10px}#assetEdit .ok{background:#4f7a3c;border-color:#b8d39a}#assetEdit .cancel{background:#5b3a30;border-color:#c49a8a}
-#assetEdit .items{display:grid;gap:3px;max-height:280px;overflow:auto}#assetEdit .items button{display:flex;align-items:center;gap:8px;text-align:left}#assetEdit .items button.on{border-color:#9ff3f5;background:#24443d}#assetEdit .mini{width:44px;height:36px;flex:none;display:grid;place-items:center;background:#132621;border-radius:6px;overflow:hidden}#assetEdit .mini canvas,#assetEdit .mini img{max-width:44px;max-height:36px}#assetEdit .items small{color:#c9d2b8}
-#assetEdit .places{display:grid;grid-template-columns:1fr 1fr;gap:4px}#assetEdit .places button{text-align:left}
-#assetEdit.ae-shake{animation:aeShake .35s}@keyframes aeShake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-#aePicker{width:min(940px,96vw);max-width:96vw;max-height:86vh;padding:0;border:1px solid #b9c48f;border-radius:14px;background:#1b302a;color:#f3ead0;font:13px system-ui,"Noto Sans Thai",sans-serif}#aePicker::backdrop{background:#071c17aa}
-#aePicker .pk-head{display:flex;gap:8px;align-items:center;padding:12px;border-bottom:1px solid #4d6656;position:static}#aePicker .pk-head input[type=search]{flex:1;min-width:0}#aePicker .pk-head b{flex:none;white-space:nowrap;font-size:15px;color:#fff0c7}#aePicker button{width:auto!important;margin:0!important}#aePicker input{padding:6px 10px;border-radius:8px;border:1px solid #7f9170;background:#132621;color:inherit}
-#aePicker .pk-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px}#aePicker .pk-tabs button.on{background:#e5c06b;color:#1b302a}#aePicker .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:12px;overflow:auto;max-height:62vh}
-#aePicker .grid button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px;border-radius:10px;background:#132621;border:1px solid #4d6656;color:inherit;cursor:pointer}#aePicker .grid button:hover{border-color:#e5c06b}#aePicker .grid button.cur{border-color:#9ff3f5;box-shadow:0 0 0 2px #9ff3f555}
-#aePicker .th canvas{max-width:none;max-height:none;width:100%;height:100%}#aePicker .th{width:100%;aspect-ratio:200/164;display:grid;place-items:center;background:repeating-conic-gradient(#20372e 0 25%,#1a2f27 0 50%) 0 0/16px 16px;border-radius:8px}#aePicker small{color:#9fb19a;font-size:10px}#aePicker button{font:inherit;background:#233a2e;color:inherit;border:1px solid #7f9170;border-radius:8px;padding:6px 10px;cursor:pointer}
-#townTools .gh{min-width:0!important}`;
+ css.textContent = window.VillageAssetCss;
  document.head.append(css);
  const panel = document.createElement('section');
  panel.id = 'assetEdit';
@@ -1976,7 +1958,8 @@
   all: pct,
   npc: pct
  };
- const nudgeHtml = `<div class="row" style="align-items:center"><span>ขยับ 1 ช่องกริด</span><div class="nudge"><span></span><button data-n="0,-2">↑</button><span></span><button data-n="-2,0">←</button><button data-n="0,2">↓</button><button data-n="2,0">→</button></div><small class="sub" style="margin:0">ลากบนแผนที่ก็เข้ากริด · ลูกศร = 1 ช่อง (Shift ×4) · Q สลับ 1×1/2×2</small></div>`;
+ const sec = (id, title, html, def) => `<details class="aeSec" data-sec="${id}" ${(secOpen.has(id) ? secOpen.get(id) : def) ? 'open' : ''}><summary>${title}</summary>${html}</details>`;
+  const nudgeHtml = `<div class="row" style="align-items:center"><span>ขยับ 1 ช่องกริด</span><div class="nudge"><span></span><button data-n="0,-2">↑</button><span></span><button data-n="-2,0">←</button><button data-n="0,2">↓</button><button data-n="2,0">→</button></div><small class="sub" style="margin:0">ลากบนแผนที่ก็เข้ากริด · ลูกศร = 1 ช่อง (Shift ×4) · Q สลับ 1×1/2×2</small></div>`;
  let sliding = false;
  // a slider gesture = one undo step; the value is written live, saved when released
  function bindSliders(write, done) {
@@ -2038,7 +2021,7 @@
  }
 
  function renderMap() {
-  const gates = Village25D.getExits().map((x, i) => ['exit:' + i, 'ประตู' + (x.name || '')]);
+  const gates = Village25D.getExits().filter(x => !x.off).map(x => ['exit:' + x.i, gateName(x.i)]);
   panel.innerHTML = `<div class="body"><h3>🗺 หมู่บ้าน</h3><p class="sub">ชี้สถานที่ = เห็นกรอบขาวทั้งแปลง · <b>คลิก</b> = เปิดแก้ในสถานที่นั้น · <b>ลาก</b> = ย้ายทั้งแปลง (ถนนตามไปเอง)</p>
   <b class="sec">สถานที่</b><div class="places">${locations.map(o=>`<button data-open="${o.id}">${o.num??''} ${o.name}</button>`).join('')}</div>
   <b class="sec" style="margin-top:8px">ประตูผจญภัย</b><div class="places">${gates.map(([k,n])=>`<button data-open="${k}">${n}</button>`).join('')}</div><hr>
@@ -2116,14 +2099,14 @@
   if (selChar && !list.some(c => c.k === selChar)) selChar = null;
   const thumbOf = c => castOf(c.k)?.img || (c.k === 'hero' && typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES.directions?.SE?.idle?.src || '' : '');
   let html = `<div class="body"><h3>👤 ตัวละครในหมู่บ้าน</h3><p class="sub">ค่าในหน้านี้ใช้เฉพาะแผนที่หมู่บ้าน · คลิกตัวละครบนแผนที่ (ตอนนี้หยุดยืนนิ่ง) หรือเลือกจากรายการ</p>
-  ${slider('all','ทั้งแผนที่',+data.cast.all||1,.4,2.5,.05,pct)}${slider('npc','NPC ทุกตัว',castOf('npc')?.s??1,.4,2.5,.05,pct)}
+  ${slider('all','ขนาดตัวละครทั้งแผนที่',window.MapScale?MapScale.get('village'):(+data.cast.all||1),.4,2.5,.05,pct)}
   <div class="items">${list.map(c=>`<button data-c="${c.k}" class="${c.k===selChar?'on':''}"><span class="mini">${thumbOf(c)?`<img src="${thumbOf(c)}">`:'🧑'}</span><span style="flex:1">${c.name}${c.role?` <small>· ${c.role}</small>`:''}</span><small>${castOf(c.k)?.img?'เปลี่ยนภาพ':''}${castOf(c.k)?.s&&castOf(c.k).s!==1?' '+pct(castOf(c.k).s):''}</small></button>`).join('')}</div>`;
   if (selChar) {
    const c = castOf(selChar) || {},
     name = list.find(x => x.k === selChar).name,
     art = CAST_ART.find(a => a.id === c.img);
    html += `<hr><b class="sec">${name}</b><div class="art"><span class="th">${thumbOf({k:selChar})?`<img src="${thumbOf({k:selChar})}">`:'ภาพเดิม (วาดด้วยโค้ด)'}</span><div><div class="row" style="margin:0 0 6px"><button id="cSwap">เปลี่ยนภาพ…</button></div>${c.img?`<button id="cOrig">ใช้ภาพเดิม</button><p class="sub" style="margin:6px 0 0">${art?.label||''}</p>`:''}</div></div>
-   ${slider('s','ขนาดตัวนี้',c.s??1,.3,3,.05,pct)}${c.img?`<label class="chk"><input type="checkbox" id="cFlip" ${c.flip?'checked':''}> กลับด้านภาพ</label>`:''}
+   ${c.img?`<label class="chk"><input type="checkbox" id="cFlip" ${c.flip?'checked':''}> กลับด้านภาพ</label>`:''}
    <div class="row"><button id="cReset">ค่าเริ่มต้นของตัวนี้</button></div>`
   }
   panel.innerHTML = html + '</div>';
@@ -2133,9 +2116,7 @@
   });
   const cs = k => data.cast[k] && typeof data.cast[k] === 'object' ? data.cast[k] : (data.cast[k] = {});
   bindSliders((k, v) => {
-   if (k === 'all') data.cast.all = v;
-   else if (k === 'npc') cs('npc').s = v;
-   else cs(selChar).s = v
+   if (k === 'all') { if (window.MapScale) MapScale.set('village', null, v); data.cast.all = v }
   }, () => {
    tidyCast();
    render()
@@ -2247,7 +2228,7 @@
    choices = o.id === 'square' ? [] : buildingChoices(o),
    cur = choices.find(c => c.id === (t.art || o.id)) || choices.find(c => c.id === (isHouse(o) ? (o.npc ? o.id : 'home') : o.id));
   body.innerHTML = `${choices.length?`<div class="art"><span class="th" id="bThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="bSwap">เปลี่ยนภาพ…</button></div>${t.art&&t.art!==o.id?'<button id="bOrig">ใช้ภาพเดิม</button>':''}<p class="sub" style="margin:6px 0 0">${cur?.label||''}</p></div></div>`:''}
-  ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div>`:''}
+  ${o.id!=='square'?`<div class="row"><button id="bFacing">หันหน้า: ${o.facing==='SE'?'↘ SE':'↙ SW'} ⇄</button><button id="bFlip">${o.flipArt?'✓ ':''}พลิกภาพ ซ้าย↔ขวา</button></div><div class="row"><button id="bDetail" title="ระบายกรอบฟ้า (กรอบเรียงลำดับ) ให้เป็นรูปตัวสถานที่จริง เช่น เฉลียง/ปีกยื่น แล้วลากคนทดสอบว่าบัง/โดนบังถูกไหม">🔍 แก้ละเอียด… (กรอบบัง ${t.zo?.length?'ระบายแล้ว':'ยังเป็นกรอบแปลง'})</button></div>`:''}
   ${slider('kx','Base Slope · ความลาดฐาน',t.kx||0,-.6,.6,.005,FMT.kx)}<p class="sub">Base Slope เปลี่ยนแนวฐานโดยไม่ทำให้เส้นตั้งของอาคารเอียง</p>${nudgeHtml}
   ${o.id!=='square'?(() => { const w0 = wkSharpOf(o), eff = o.sharp?.amt ?? w0?.amt ?? (window.TownArt?.sharpOn?.() ? TownArt.sharpAmt() : 0), md = o.sharp?.px != null ? (o.sharp.px ? 'px' : 'soft') : 'def'; return `<b class="sec">🔍 ความคมชัดภาพนี้</b>${slider('sa','ความคม (unsharp)',eff,0,2,.05,x=>(+x).toFixed(2))}<label class="sel">ขยายพิกเซล<select id="sMode"><option value="def" ${md==='def'?'selected':''}>ตามค่าเริ่มต้น${w0?' (จาก Workshop)':''}</option><option value="soft" ${md==='soft'?'selected':''}>นุ่ม — ปรับขนาดเนียน + คม</option><option value="px" ${md==='px'?'selected':''}>คมพิกเซล — ขยายแบบไม่เบลอ</option></select></label><div class="row"><button id="sReset"${o.sharp?'':' disabled'}>⟲ ใช้ค่าเริ่มต้น${w0?'ของภาพ':''}</button></div><p class="sub">ปรับเฉพาะสถานที่นี้ · ค่าเริ่มต้นมาจากที่ตั้งไว้ใน Workshop หรือสวิตช์ ✨ คมชัด</p><b class="sec">🌿 ผสมกับพื้น</b>${slider('bf','ความนุ่มของขอบพื้น',o.blend?.f ?? wkBlendOf(o)?.f ?? 0,0,100,1,x=>x)}${slider('bt','ปรับโทนเข้าฉาก (ลดสว่าง/สี)',o.blend?.t ?? wkBlendOf(o)?.t ?? 0,0,1,.05,x=>(+x).toFixed(2))}<div class="row"><button id="bReset"${o.blend?'':' disabled'}>⟲ ใช้ค่าเริ่มต้น</button></div><p class="sub">ขอบพื้นนุ่ม = ขอบดินด้านล่างของภาพจางเข้าหาหญ้า · ปรับโทน = ภาพไม่สว่าง/สดเกินพื้นหลัง</p>` })():''}
   ${fpHtml(o)}
@@ -2280,7 +2261,7 @@
   bindFp(body, o);
   act('#bSwap', () => openList('เปลี่ยนภาพ ' + o.name, choices, cur?.id, it => {
    UX.checkpoint();
-   if (it.wk && !artSpecs[it.id]) { data.assets.push({ id: it.id, name: it.label, w: Math.max(30, Math.round((it.wk.mapW || 380) / 2)), bld: 1, file: it.wk.file, ...(it.wk.mapFx ? { fx: it.wk.mapFx, fy: it.wk.mapFy } : Array.isArray(it.wk.pivot) && it.wk.pivot[0] > 0 && it.wk.pivot[0] < 1 && it.wk.pivot[1] > 0 && it.wk.pivot[1] <= 1 ? { fx: it.wk.pivot[0], fy: it.wk.pivot[1] } : {}) }); registerAssets() }
+   if (it.wk && !artSpecs[it.id]) { data.assets.push({ id: it.id, name: it.label, w: Math.max(30, Math.round((window.AssetSize?.startWidth(it.wk.file, 'village', it.wk.mapW || 380) || 380) / 2)), bld: 1, file: it.wk.file, ...(it.wk.mapFx ? { fx: it.wk.mapFx, fy: it.wk.mapFy } : Array.isArray(it.wk.pivot) && it.wk.pivot[0] > 0 && it.wk.pivot[0] < 1 && it.wk.pivot[1] > 0 && it.wk.pivot[1] <= 1 ? { fx: it.wk.pivot[0], fy: it.wk.pivot[1] } : {}) }); registerAssets() }
    const b = data.buildings[o.id] || (data.buildings[o.id] = {});
    if (it.id === o.id || !o.npc && it.id === 'home' && o.id === 'home') delete b.art;
    else b.art = it.id;
@@ -2301,6 +2282,7 @@
    document.getElementById('facing').click();
    render()
   });
+  act('#bDetail', () => window.PieceDetail?.open('bld:' + o.id));
   act('#bFlip', () => {
    selected = o.id;
    document.getElementById('flipArt').click();
@@ -2356,7 +2338,7 @@
    }
    b[k] = v;
    if (Math.abs(v - (k === 'kx' || k === 'lx' ? 0 : 1)) < 1e-9) delete b[k];
-  })
+  }, k => { if (k === 'sx' || k === 'sy') buildingRec(o.id) })   /* v98.577 · the building's width next to the hero is stored */
  }
 
  /* v91.46 · bake this map's stretch/tilt of a building picture into its file, push it, and reset the per-map edit */
@@ -2386,6 +2368,7 @@
   c.drawImage(r.im, r.x, r.y, r.w, r.h);
   const blob = await new Promise(ok => cv.toBlob(ok, 'image/png'));
   const newW = Math.round(W / 2);
+  try { window.AssetSize?.record(path, W, 'village') } catch (e) { }   /* v98.577 · the baked width is the picture's new size next to the hero */
   say('กำลังส่งภาพกลับไปทับ ' + path + '…');
   try {
    const man = (window.ASSET_MANIFEST?.assets || []).find(a => a.file === path);
@@ -2428,6 +2411,10 @@
   <b class="sec">ชิ้นรั้วแต่ละด้าน</b>${FN.SIDES.map(s => `<label class="sel">${SIDE_L[s]}<select data-side="${s}">${opts(cfgSides[s])}</select></label>`).join('')}
   <div class="row" style="flex-wrap:wrap"><button data-all="wood">🪵 ไม้ทุกด้าน</button><button data-all="stone">🧱 หินทุกด้าน</button><button data-all="hedge">🌳 พุ่มทุกด้าน</button><button data-all="none">🗑 ลบรั้วทั้งหมดของที่นี่</button></div>
   ${slider('gate', 'ประตูกว้าง', gate * 2, 1, 12, .5, unit)}
+  <hr><b class="sec">🎯 ปรับตำแหน่งรั้วละเอียด (ไม่ติดกริด)</b>
+  <p class="sub">ขยับรั้วเป็นพิกเซล (ที่ซูม 100%) ทีละนิด — เลือกด้านที่จะขยับ หรือ "ทั้งหมด" ขยับทุกด้านพร้อมกัน · กดลูกศร (กด Shift = ×5) หรือพิมพ์ค่าเอง · ↺ คืนตำแหน่ง</p>
+  <div class="row"><label>ก้าว <select id="fnStep"><option value=".5">0.5</option><option value="1" selected>1</option><option value="2">2</option><option value="5">5</option></select> px</label></div>
+  ${['all', ...FN.SIDES].map(k => { const v = FN.cfg().places[o.id]?.off?.[k] || [0, 0]; return `<div class="row fnrow" data-fo="${k}" style="flex-wrap:wrap;align-items:center;gap:4px"><b style="min-width:74px">${k === 'all' ? 'ทั้งหมด' : SIDE_L[k]}</b><button data-fn="-1,0" title="ซ้าย">◀</button><button data-fn="1,0" title="ขวา">▶</button><button data-fn="0,-1" title="ขึ้น">▲</button><button data-fn="0,1" title="ลง">▼</button> x<input type="number" step=".5" data-fx value="${v[0]}" style="width:62px"> y<input type="number" step=".5" data-fy value="${v[1]}" style="width:62px"><button data-fn="reset" title="คืนตำแหน่ง">↺</button></div>` }).join('')}
   <hr><b class="sec">ชิ้นรั้วของฉัน (กำหนดภาพ + จุด snap ระหว่างชิ้น)</b>
   <p class="sub">len = ชิ้นหนึ่งยาวกี่ช่อง · ทับกัน = px ที่ชิ้นข้างเคียงซ้อน (พุ่มไม้ ≈ ขอบชนขอบ 0–10, กำแพงหิน ≈ เสาทับกัน 20+) · ขนาด/ลดลง = ปรับแนวตั้ง</p>
   ${custom.map(([id, p]) => `<div class="card" style="border:1px solid #4d6656;border-radius:8px;padding:6px;margin:6px 0"><label>ชื่อ<input type="text" data-pf="${id}:name" value="${p.name.replace(/"/g, '&quot;')}"></label>
@@ -2443,6 +2430,16 @@
    pl.sides = { ...FN.sidesOf(o.id, borderProfile(o)), ...(pl.sides || {}), [sel.dataset.side]: sel.value };
    save(c)
   }));
+  /* v98.512 · fine fence position (px, free of the grid): per side and 'all' */
+  body.querySelectorAll('.fnrow').forEach(row => {
+   const k = row.dataset.fo, fx = row.querySelector('[data-fx]'), fy = row.querySelector('[data-fy]'), apply = (x, y) => { const c = cur(); FN.setOff(c, o.id, k, x, y); save(c); fx.value = x; fy.value = y };
+   row.querySelectorAll('[data-fn]').forEach(b => b.onclick = e => {
+    if (b.dataset.fn === 'reset') return apply(0, 0);
+    const [dx, dy] = b.dataset.fn.split(',').map(Number), st = (+body.querySelector('#fnStep').value || 1) * (e.shiftKey ? 5 : 1);
+    apply(Math.round(((+fx.value || 0) + dx * st) * 10) / 10, Math.round(((+fy.value || 0) + dy * st) * 10) / 10)
+   });
+   [fx, fy].forEach(inp => inp.onchange = () => apply(+fx.value || 0, +fy.value || 0))
+  });
   body.querySelectorAll('[data-all]').forEach(b => b.onclick = once(() => {
    const c = cur();
    placeCfg(c).sides = Object.fromEntries(FN.SIDES.map(s => [s, b.dataset.all]));
@@ -2513,7 +2510,7 @@
    for (const r of a.recs) {
     const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sn = window.VillageGrid.snapOffset({ u: base.u, v: base.v }, !!base.mirror, r.du, r.dv + +base.front.toFixed(2), modeNow());
     data.added.push({ id: nid, owner: place.id, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-    data.edit[nid] = { s: r.s, r: r.r, f: r.f, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, grp: g };
+    data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
     clean(nid);
     ids.push(nid)
    }
@@ -2579,7 +2576,7 @@
     dv: +base.front.toFixed(2),
     kind: k
    });
-   (() => { const a = data.added[data.added.length - 1], r = placeNewItem(place.id, nid, a.du, a.dv); a.du = r.du; a.dv = r.dv })();
+   (() => { const a = data.added[data.added.length - 1], r = placeNewItem(place.id, nid, a.du, a.dv); a.du = r.du; a.dv = r.dv; sizeStart(nid, k) })();
    UX.persist();
    place.keys = [nid];
    requestAnimationFrame(() => requestAnimationFrame(render));
@@ -2614,11 +2611,11 @@
    ov = data.edit[key] || {},
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
-  <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
-  ${nudgeHtml}<div class="row" style="align-items:center"><span title="ช่องกริดที่ชิ้นนี้กิน (ชิดขอบกัน)">กรอบพื้น ${itemSize(key).w}×${itemSize(key).h}</span><button data-fz="fw,-0.5">กว้าง −</button><button data-fz="fw,0.5">กว้าง +</button><button data-fz="fh,-0.5">ลึก −</button><button data-fz="fh,0.5">ลึก +</button></div>${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('ix','แกนเฉียง ↗↙ (%)',Math.round((ov.ix??1)*100),50,200,1,v=>v+'%')}${slider('iy','แกนเฉียง ↖↘ (%)',Math.round((ov.iy??1)*100),50,200,1,v=>v+'%')}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}<p class="sub">100% = เดิม · ปรับสองแกนเฉียงแยกกันตามระนาบ 2.5D</p>${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
-  <label class="chk"><input type="checkbox" id="aeFlip" ${ov.f?'checked':''}> กลับด้านซ้าย-ขวา</label>
-  <label class="chk" title="ใช้กรอบพื้นของชิ้นนี้เป็นกริดฟ้า: ตัวเอกและ NPC เดินผ่านไม่ได้ (ปรับขนาดด้วยปุ่ม กว้าง/ลึก ข้างบน)"><input type="checkbox" id="aeBlock" ${ov.block?'checked':''}> ▦ กริดฟ้า · เดินผ่านไม่ได้ ${ov.block?'('+itemSize(key).w+'×'+itemSize(key).h+' ช่อง)':''}</label>
-  <div class="row"><button id="aeDel">ลบชิ้นนี้ (Delete)</button>${added?'':`<button id="aeHide">${ov.hide?'แสดงกลับ':'ซ่อนชั่วคราว'}</button>`}<button id="aeDup">ทำสำเนา</button><button id="aeReset">คืนค่าเริ่มต้น</button></div>${groupHtml(1)}`;
+  <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
+  ${nudgeHtml}${sec('place','① วาง · ขนาด · หมุน',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
+  <div class="row"><button id="aeFree" class="${ov.free?'on':''}" title="เปิด = ชิ้นนี้ลาก/ย้ายด้วยลูกศรได้อิสระ ไม่ดูดเข้ากริด ไม่หลบกรอบชิ้นข้างเคียง (ลูกศร = 2px ต่อครั้ง · Shift = 8px)">${ov.free?'✅':'⬜'} ย้ายอิสระ (ไม่แนบกริด)</button></div>
+`,1)}${groupHtml(1)}`;
+  body.querySelectorAll('details.aeSec').forEach(d => d.ontoggle = () => secOpen.set(d.dataset.sec, d.open));
   putThumb(body.querySelector('#aeThumb'), E ? entryThumb(E) : added ? kindThumb(added.kind) : null);
   act('#iBack', () => {
    place.keys = [];
@@ -2629,6 +2626,7 @@
    else ovOf(key).kind = k
   })()));
   act('#aeOrig', once(() => delete ovOf(key).kind));
+  act('#aeDetail', () => window.PieceDetail?.open(key));
   act('#aeHide', once(() => {
    if (ov.hide) delete ovOf(key).hide;
    else ovOf(key).hide = true
@@ -2638,6 +2636,12 @@
    if (v === .5) delete o2[f]; else o2[f] = v;
    clean(key)
   }));
+  body.querySelectorAll('[data-sz]').forEach(b => b.onclick = once(() => {
+   const [f, d] = b.dataset.sz.split(','), o2 = ovOf(key), base = f === 'sw' ? (o2.sw ?? o2.fw ?? .5) : (o2.sh ?? o2.fh ?? .5), v = clampN(base + +d, .5, 12);
+   o2[f] = v; clean(key)
+  }));
+  act('#aeSzReset', once(() => { const o2 = ovOf(key); delete o2.sw; delete o2.sh; clean(key) }));
+  const tallSel = body.querySelector('#aeTall'); if (tallSel) tallSel.onchange = e => once(() => { const o2 = ovOf(key); if (e.target.value) o2.tall = e.target.value; else delete o2.tall; clean(key) })();
   act('#aeDel', removeSelected);
   act('#aeReset', once(() => delete data.edit[key]));
   act('#aeDup', () => {
@@ -2670,10 +2674,10 @@
   });
   bindGroup();
   bindZ('iz', d => { const v = ovOf(key); v.z = clampN((v.z || 0) + d, -20, 20); clean(key) });
-  body.querySelector('#aeFlip').onchange = e => once(() => ovOf(key).f = e.target.checked)();
+  act('#aeFree', once(() => { const o2 = ovOf(key); if (o2.free) delete o2.free; else o2.free = true; clean(key) }));
   /* v97.47 · blue grid under a decoration outside the buildings: its ground frame blocks walking. The first time, guess a size from what it is */
-  body.querySelector('#aeBlock').onchange = e => once(() => { const v = ovOf(key); if (e.target.checked) { v.block = true; if (v.fw == null && v.fh == null) { const g = guessBlock(label); v.fw = g[0]; v.fh = g[1] } } else delete v.block; render() })();
-  bindSliders((k, v) => {const ov=ovOf(key);if(k==='ix'||k==='iy')ov[k]=v/100;else ov[k]=v}, () => clean(key))
+  const blkEl = body.querySelector('#aeBlock'); if (blkEl) blkEl.onchange = e => once(() => { const v = ovOf(key); if (e.target.checked) { v.block = true; if (v.fw == null && v.fh == null) { const g = guessBlock(label); v.fw = g[0]; v.fh = g[1] } } else delete v.block; render() })();
+  bindSliders((k, v) => {const ov=ovOf(key);if(k==='ix'||k==='iy')ov[k]=v/100;else ov[k]=v}, k => { clean(key); if (k === 's') sizeRec(key) })
  }
 
  function insideFp(o, w) {
@@ -2774,7 +2778,7 @@
  function drawRefChar(gg, t) {
   const o = loc(place.id);
   if (!o || o.id === 'square') return;
-  const p = refFeet(o), hs = charScale('hero'), tmp = g, H = 93.6 * hs;
+  const p = refFeet(o), hs = charScale('hero'), tmp = g, H = CharSize.VILLAGE_HERO_PX * hs;
   g = gg;
   try {
    ellipse(p.x, p.y, 16.9 * hs, 7.8 * hs, '#182b2877');
@@ -2875,7 +2879,7 @@
    for (const [iu, iv] of cells) { gg.beginPath(); [[iu, iv], [iu + 1, iv], [iu + 1, iv + 1], [iu, iv + 1]].forEach(([x, y], i) => { const c = canonical(o, a.u + x / 2, a.v + y / 2), s2 = project(c.u, c.v); gg[i ? 'lineTo' : 'moveTo'](s2.x, s2.y) }); gg.closePath(); gg.fill(); gg.stroke() }
    const lays = drag?.type === 'cells' ? drag.layers : (o.court?.layers || {}), zz = o.court?.z || 0;
    if (courtLayer || Object.keys(lays).length || zz) {
-    gg.font = 'bold ' + 11 / z + 'px system-ui'; gg.textAlign = 'center'; gg.textBaseline = 'middle';
+    gg.font = 'bold ' + 11 / z + 'px AgThai,system-ui'; gg.textAlign = 'center'; gg.textBaseline = 'middle';
     for (const [iu, iv] of cells) {
      const val = lays[iu + ',' + iv] ?? zz;
      if (!courtLayer && val === zz && !(iu + ',' + iv in lays)) continue;
@@ -3049,7 +3053,7 @@
      // v86: compare the layout itself (not the timestamp line) so an unchanged layout is not re-pushed
      if((old||'').replace(/^\/\/.*\n/,'')!==body.replace(/^\/\/.*\n/,''))files.push({path:'js/village-layout-v67.js',content:body});
      // everything else the village editor keeps outside the layout snapshot → js/game-settings.js
-     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1'],vals={};
+     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1','depth-style-v1'],vals={};
      for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
      const text=await head.read('js/game-settings.js')||'',settings=GitHubPush.parseSettings(text)||{};
      if(Object.entries(vals).some(([k,v])=>settings[k]!==v)){Object.assign(settings,vals);files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
@@ -3076,8 +3080,11 @@
   if (tp) tp.style.display = 'none'; // everything it held now lives in the top bar and the side panel
  }
 
+ /* v98.522 · the order frame painted for a PLACE (data.buildings[id].zo, cells of 0.5 in world axes from the place centre) → composite footprint in world cells, or null = use the plot rectangle */
+ const buildingOrder = o => { const t = data.buildings[o.id]; if (!t || !Array.isArray(t.zo) || !t.zo.length) return null; const c = center(o); return window.PieceGeometry.footprint({ zo: t.zo, orderU: t.orderU, orderV: t.orderV }, c.u, c.v, false) };
  window.VillageAssetEdit = {
-  blockedAt, blocks: () => blockList.map(r => ({ ...r })),
+  buildingOrder,
+  blockedAt, blocks: () => blockBoxes().map(r => ({ u0: r.u0, u1: r.u1, v0: r.v0, v1: r.v1 })),
   refreshPanel: () => { try { render() } catch (_) {} },
   charScale,
   drawChar,
@@ -3092,8 +3099,34 @@
   itemKeys: owner => frame.filter(e => e.owner === owner && !e.hidden).map(e => e.key),
   select: ks => { if (place) { place.keys = [...ks]; place.tab = 'items'; render() } },
   pick: key => selectItem(key),
+  /* v98.291 · bridge for js/piece-detail.js (the detailed single-piece window) */
+  detail: {
+   /* v98.522 · key 'bld:<placeId>' = the PLACE itself (its order frame zo / orderU / orderV live in data.buildings[id]); no red frame, no art transforms */
+   get caps() { return bldDetail ? { rot: false, slant: false, block: false, shape: false, zoom: 0.55, note: 'สถานที่: ระบายกรอบฟ้าให้เท่าส่วนที่แตะพื้นจริงของตัวอาคาร (รวมเฉลียง/ปีกยื่น) · ไม่ระบาย = ใช้กรอบแปลงเดิม' } : {} },
+   item: key => { if (String(key).startsWith('bld:')) { const o = locations.find(x => x.id === key.slice(4)); bldDetail = !!o; return o ? { key, label: bldName[o.id] || o.name || o.id, ax: 0, ay: 0, bld: o } : null } bldDetail = false; return frame.find(e => e.key === key) || null },
+   ov: key => String(key).startsWith('bld:') ? (data.buildings[key.slice(4)] || {}) : (data.edit[key] || {}),
+   edit(key, fn, checkpoint) {
+    if (checkpoint) UX.checkpoint();
+    if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); render(); return }
+    fn(ovOf(key)); clean(key); UX.persist(); render()
+   },
+   /* draws the piece, with its own edit (size, turn, flip, slant, swapped picture) but WITHOUT the map offset, at (0,0) of the context q */
+   drawTo(q, E, ov) {
+    if (E.bld) { const main = g; g = q; try { const c = center(E.bld), p = project(c.u, c.v); q.save(); q.translate(-p.x, -p.y); drawB(E.bld); q.restore() } catch (e) { } finally { g = main } return }
+    const main = g, s = ov.s ?? 1, r = (ov.r || 0) * Math.PI / 180, ix = ov.ix ?? 1, iy = ov.iy ?? 1, k = ov.kind && KINDS[ov.kind] ? ov.kind : null;
+    g = q;
+    try {
+     q.save(); window.PieceGeometry.apply(q, ov); if (r) q.rotate(r); q.scale(ov.f ? -s : s, s); q.transform((ix + iy) / 2, (iy - ix) / 2, (iy - ix) / 2, (ix + iy) / 2, 0, 0); q.translate(-E.ax, -E.ay);
+     if (k) KINDS[k].draw({ x: E.ax, y: E.ay }); else E.base(q);
+     q.restore()
+    } catch (e) { } finally { g = main }
+   }
+  },
   itemWorld: key => { const E = frame.find(e => e.key === key); return E ? { x: E.x, y: E.y, owner: E.owner, hidden: E.hidden } : null },
   frameSig: () => JSON.stringify(data.frames),
+  /* v98.329 · starter-item memory: VillageAssetEdit.starterInfo() shows what was held back · resetStarter(id?) forgets the frozen frame + list of one place (or all) so they are laid out again from the current numbers */
+  starterInfo: () => ({ held: suppressedStarter.slice(), places: Object.fromEntries(Object.entries(data.starterKeys).map(([k, v]) => [k, v.length])) }),
+  resetStarter: id => { if (id) { delete data.starterFrame[id]; delete data.starterKeys[id] } else { data.starterFrame = {}; data.starterKeys = {} } terrainDirty = true },
   dropPlace,
   openWorld,
   purgeOrphans,

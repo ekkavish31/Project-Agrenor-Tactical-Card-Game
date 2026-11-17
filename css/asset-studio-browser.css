@@ -20,7 +20,7 @@ main{grid-template-columns:238px minmax(0,1fr);position:relative}nav{border-righ
 /* Unified clip workspace, v46 */
 .anim-matrix .clip-cell.approved{background:#e0f1dc;border-color:#87ac7c}.anim-matrix tr.set-approved>th,.anim-matrix tr.set-approved>td{background:#dfeffb}.anim-matrix tr.set-approved .clip-cell{background:#dcecf9;border-color:#81a6c5}.set-approved-label{display:block;color:#32648d;font-size:11px;margin-top:5px}
 #animation-review{width:min(1440px,97vw);max-width:97vw;height:94vh;max-height:94vh;overflow:auto;padding:16px;background:#f7f5ee}#animation-review .ur-head{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-16px;z-index:8;background:#f7f5ee;border-bottom:1px solid #c4cdb8;padding:10px 0}#animation-review h2{margin:0;font-size:22px}#ur-context{color:#567251;margin-top:4px}.ur-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.ur-toolbar label{display:flex;align-items:center;gap:6px}.ur-toolbar select{max-width:250px;padding:6px}#ur-status{min-height:25px;background:#edf0e4;border-radius:5px;padding:7px}#ur-editor .wi-top{grid-template-columns:minmax(300px,1fr) minmax(270px,.8fr);align-items:start}#ur-editor .wi-top>div:first-child{overflow:auto;max-height:65vh;padding:10px}#wi-preview{transform-origin:top center}#wi-preview[data-bg=ground]{background:#45624c}#wi-preview[data-bg=light]{background:#eee9dd}#wi-preview[data-bg=dark]{background:#1d252d}#ur-editor .wi-top canvas{max-width:560px}#ur-editor .wi-settings{border:1px solid #c7d0bd;border-radius:8px;padding:12px}#ur-editor .wi-settings p{font-size:12px}#ur-import,#ur-compare{padding:12px;border:1px solid #c6d0ba;border-radius:8px;margin:12px 0}#ur-import summary,#ur-compare summary{cursor:pointer;font-weight:600}.ur-import-actions,.ur-review-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0}.ur-review-tools{background:#e9efde;padding:12px;border-radius:8px}#ur-note{min-width:240px;flex:1;padding:7px}#ur-original{width:260px;max-width:100%;background:repeating-conic-gradient(#e3e5db 0 25%,#f9f8ef 0 50%) 0/16px 16px}#ur-history-list{display:flex;gap:6px;flex-wrap:wrap}#ur-editor .wi-footer{position:sticky;bottom:-16px;gap:12px;z-index:9;padding:12px;background:#f7f5ee}#ur-editor #wi-draft-status{flex-basis:auto;flex:1;font-size:12px}#ur-export,#ur-work-files{position:relative}#ur-export>summary,#ur-work-files>summary{padding:8px 14px;border:1px solid #b7c5a9;border-radius:6px;cursor:pointer}#ur-export>div,#ur-work-files>div{position:absolute;bottom:110%;right:0;display:flex;flex-direction:column;gap:8px;padding:12px;min-width:220px;background:#fffdf5;border:1px solid #b8c8a9;box-shadow:0 4px 20px #0002}#ur-export:not([open])>div,#ur-work-files:not([open])>div{display:none}#ur-editor #wi-eraser{width:100%;max-height:none;position:static;background:#eef1e7;margin:12px 0;padding:12px}#wi-eraser[hidden]{display:none}#ur-editor #wi-order{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}#ur-editor .wi-frame{scroll-margin-top:100px}#ur-editor .wi-frame canvas{width:120px;height:120px}#ur-editor [hidden]{display:none!important}.ur-play-tools{border-top:1px solid #c4cdb7;padding-top:8px;margin-top:10px}@media(max-width:760px){#ur-editor .wi-top{grid-template-columns:1fr}#animation-review .ur-head{top:-16px}#ur-editor .wi-top>div:first-child{max-height:50vh}.ur-toolbar select{max-width:160px}#ur-editor .wi-footer{flex-wrap:wrap}#ur-editor #wi-draft-status{flex-basis:100%}}
-#ur-editor .wi-top canvas{max-width:360px}#ur-editor .wi-top>div:first-child{max-height:420px;text-align:center}#ur-editor .wi-top>div:first-child>.row{justify-content:center}#ur-editor .wi-settings{max-height:400px;overflow:auto}#ur-editor .wi-settings p{display:none}#ur-editor .wi-settings h3{margin:0 0 8px}#ur-editor .wi-settings label{margin:5px 0}#ur-editor #wi-order{max-height:380px;overflow:auto;padding:4px}#ur-editor .wi-footer{min-height:64px}.ur-preview-box{display:flex;flex-direction:column;align-items:center}
+#ur-editor .wi-top canvas{max-width:405px}#ur-editor .wi-top>div:first-child{max-height:420px;text-align:center}#ur-editor .wi-top>div:first-child>.row{justify-content:center}#ur-editor .wi-settings{max-height:400px;overflow:auto}#ur-editor .wi-settings p{display:none}#ur-editor .wi-settings h3{margin:0 0 8px}#ur-editor .wi-settings label{margin:5px 0}#ur-editor #wi-order{max-height:380px;overflow:auto;padding:4px}#ur-editor .wi-footer{min-height:64px}.ur-preview-box{display:flex;flex-direction:column;align-items:center}
 #ur-editor .wi-top{position:sticky;top:76px;z-index:4;background:#f7f5ee;border-bottom:1px solid #d0d7c5;padding-bottom:8px;max-height:340px}#ur-editor .wi-top>div:first-child{max-height:330px}#ur-editor .wi-top canvas{max-width:280px}#ur-editor .wi-settings{max-height:325px}#ur-editor:has(#wi-eraser:not([hidden])) .wi-top{position:static}@media(max-width:1100px){#ur-editor .wi-top{max-height:280px;top:70px}#ur-editor .wi-top canvas{max-width:220px}#ur-editor .wi-top>div:first-child{max-height:270px}#ur-editor .wi-settings{max-height:265px}}@media(max-width:760px){#ur-editor .wi-top{position:static;max-height:none}#ur-editor .wi-top canvas{max-width:280px}#ur-editor .wi-settings{max-height:none}}
 /* v38h · drag + auto-align on the frame preview */
 .wi-align{display:flex;flex-direction:column;gap:6px;margin:10px 0;padding:10px;border:1px solid #c7d0bd;border-radius:8px;background:#eef1e7}.wi-align small{font-size:11px;color:#5d6b57}.wi-align .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#wi-preview:focus-visible{outline:2px solid #e8433a}
@@ -70,12 +70,12 @@ main{grid-template-columns:238px minmax(0,1fr);position:relative}nav{border-righ
 #animation-review.ur-v2 .ur-tab>details>summary{display:none}
 #animation-review.ur-v2 .ur-tab>.wi-align{margin:0}
 #animation-review.ur-v2 .wi-footer{flex:none;margin-top:8px}
-#animation-review.ur-v2 #wi-eraser:not([hidden]){position:fixed;inset:4vh 8vw;z-index:50;overflow:auto;background:#f7f5ee;border:1px solid #c7a35a;border-radius:14px;padding:14px;box-shadow:0 20px 60px #0007}
+#animation-review.ur-v2 #wi-eraser:not([hidden]){position:fixed;inset:4vh 8vw;width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;box-sizing:border-box;z-index:50;overflow:auto;background:#f7f5ee;border:1px solid #c7a35a;border-radius:14px;padding:14px;box-shadow:0 20px 60px #0007}
 @media (max-width:1050px){#animation-review.ur-v2{overflow:auto}#animation-review.ur-v2 .wi-top{grid-template-columns:1fr!important}#animation-review.ur-v2 .wi-settings{max-height:70vh!important}}
 #animation-review.ur-v2 #ur-editor .wi-top{position:static;max-height:none;padding:0;border:0;background:none}
 #animation-review.ur-v2 #ur-editor .wi-top>.ur-left{max-height:none;padding:0 2px 0 0}
 #animation-review.ur-v2 #ur-editor .ur-preview-box canvas{max-width:min(440px,100%)}
-#animation-review.ur-v2 #ur-editor .ur-preview-box canvas#wi-preview{width:min(36vh,420px);height:auto;max-width:none}
+#animation-review.ur-v2 #ur-editor .ur-preview-box canvas#wi-preview{width:min(40vh,470px);height:auto;max-width:none}
 #animation-review.ur-v2 .wi-frame>canvas{width:72px!important;height:72px!important;max-width:none}
 #animation-review.ur-v2 .wi-frame{flex-basis:140px}
 #animation-review.ur-v2 .ur-dock{flex:none;border-top:1px solid #c7d0bd;padding:8px;display:flex;flex-direction:column;gap:6px}
@@ -83,3 +83,70 @@ main{grid-template-columns:238px minmax(0,1fr);position:relative}nav{border-righ
 #animation-review.ur-v2 .ur-dock .ur-review-tools #ur-note{grid-column:1/-1}
 #animation-review.ur-v2 .ur-dock .ur-review-tools button{font-size:12px}
 #animation-review.ur-v2 .ur-dock #wi-mirror-row{justify-content:flex-start}
+/* v98.90 · character list busts (upper half of the SE standing picture) */
+nav button img.bust{width:43px;height:43px;object-fit:cover;border-radius:8px;background:#f1ead8;flex:none}
+/* v98.96 · review panel: only the pass / not-pass toggle is shown */
+#animation-review .ur-review-tools [hidden]{display:none!important}#animation-review .ur-review-tools button[aria-pressed=true]{background:#2f6a4a;color:#fff;border-color:#2f6a4a}#animation-review .ur-review-tools #ur-reject[aria-pressed=true]{background:#a8402f;border-color:#a8402f}
+/* v98.117 · the eraser panel is exactly the box inset 4vh 8vw (it was as wide as the whole window, so its "เสร็จแล้ว" button sat off screen) and its picture area uses the space that is left */
+#animation-review.ur-v2 #wi-eraser:not([hidden]) #wie-scroll{max-height:calc(92vh - 190px)}
+
+/* v98.256 · a passed cell shows no pill (the row label says ผ่านครบทุกทิศ): only things that need attention are marked */
+.clip-status:empty{display:none}
+
+/* v98.376 · pick a tile (📌 ใส่ช่อง) → click an animation cell to fill it */
+.asset-cards .tile{position:relative}
+.arm-btn{position:absolute;left:8px;top:8px;padding:3px 8px;border-radius:12px;border:1px solid #b9a56a;background:#fff8e4;cursor:pointer;font:600 11px inherit;font-family:inherit;z-index:2}
+.arm-btn.on{background:#e8c766;border-color:#a8801f}
+.arm-bar{margin:10px 0;padding:8px 12px;border-radius:10px;background:#fff2c8;border:1px solid #d8b24a;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#grid.arming .clip-cell,#grid.arming .missing-cell{outline:2px dashed #d8a21a;outline-offset:-3px;cursor:pointer}
+#grid.arming .missing-cell{display:block;padding:18px 6px;background:#fff8e4}
+
+/* v98.383 · Animation tab = character studio: the Scale Lineup row on top, tools grouped next to what they act on, bigger frames */
+#lineupDock{display:none;margin:0 0 14px;border:1px solid var(--studio-line);border-radius:10px;background:#f7f5ee;overflow:hidden}
+body.anim-mode #lineupDock{display:block}
+#lineupDock .dock-bar{display:flex;gap:8px;align-items:center;padding:6px 10px;background:#edf0e6;border-bottom:1px solid var(--studio-line)}
+#lineupDock .dock-bar small{color:#6b7963;font-size:11px}#lineupDock .grow{flex:1}
+#lineupDock .dock-body{height:430px;min-height:220px;max-height:88vh;resize:vertical;overflow:hidden}
+#lineupDock.min .dock-body{display:none}#lineupDock.min .dock-bar{border-bottom:0}
+#lineupDockFrame{width:100%;height:100%;border:0;display:block}
+.entity-controls{gap:10px}
+.tb-group{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid #d9dccd;border-radius:9px;background:#fbfaf3;flex-wrap:wrap}
+.tb-group:not(:has(.tb-items > *)){display:none}
+.tb-label{font-size:11px;font-weight:700;color:#6b7963;margin-right:2px;white-space:nowrap}
+.tb-items{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.matrix-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 10px;border:1px solid var(--studio-line);border-bottom:0;border-radius:10px 10px 0 0;background:#edf0e6;font-size:12px}
+.matrix-bar label{display:flex;align-items:center;gap:5px}
+.matrix-bar ~ .matrix-wrap{border-top-left-radius:0;border-top-right-radius:0}
+.files-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.files-title button{font-size:12px;font-weight:600}
+.anim-matrix td{min-width:172px}
+.clip-cell canvas{width:152px;height:146px}
+.missing-cell{height:190px}
+@media(max-width:1000px){.anim-matrix td{min-width:132px}.clip-cell canvas{width:118px;height:114px}.missing-cell{height:160px}}
+@media(max-width:650px){.anim-matrix td{min-width:110px}.clip-cell canvas{width:98px;height:96px}}
+/* v98.385 · compact head: name + tools on one row · files collapsed */
+.entity-head{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.entity-head .entity-title{margin:0;flex:0 1 auto}.entity-head .entity-title h2{font-size:22px;margin:2px 0}.entity-head .entity-title p{margin:0;font-size:12px}
+.entity-head .entity-controls{flex:1 1 520px;justify-content:flex-end;margin:0;gap:8px}
+.tb-group{padding:4px 7px}
+.files-box{margin-top:16px;border:1px solid var(--studio-line);border-radius:10px;padding:6px 12px;background:#fffdf7}
+.files-box>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;margin:2px 0}.files-box>summary::-webkit-details-marker{display:none}
+.files-box>summary::before{content:'▸';color:#6b7963}.files-box[open]>summary::before{content:'▾'}
+/* v98.392 · datum status + shortcuts in the animation cells */
+.pd-row{display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:10px;line-height:1.4}
+.pd-act{border:1px solid #c9c2a4;border-radius:6px;padding:0 5px;background:#fff8e4;cursor:pointer}.pd-act:hover{background:#f3dfa0}
+.pd-ok{color:#2f7d3a}.pd-bad{color:#a8402f}
+.pd-warn{color:#b0701a}.pd-none{color:#9a9a8a}
+
+/* v98.415 · drag a cell onto another to swap the two sets */
+.clip-cell[draggable=true]{cursor:grab}.clip-cell.dragging{opacity:.45}.clip-cell.drop-ok{outline:3px dashed #2f9a4a;outline-offset:-2px;background:#e3f6e4}
+
+/* v98.447 · mode selectors must outrank body.anim-mode #lineupDock {display:block}.
+   Grid gives the absolute iframe a real remaining-height track in both modes. */
+body.anim-mode #lineupDock.edit-fit,body.anim-mode #lineupDock.lineup-fullscreen{display:grid;grid-template-rows:auto minmax(0,1fr);margin-bottom:0}
+#lineupDock.lineup-fullscreen{position:fixed;inset:0;z-index:1000;margin:0;border-radius:0;height:100dvh!important}
+#lineupDock.edit-fit .dock-body,#lineupDock.lineup-fullscreen .dock-body{position:relative;height:auto!important;min-height:0;max-height:none;resize:none;overflow:hidden}
+#lineupDock.edit-fit #lineupDockFrame,#lineupDock.lineup-fullscreen #lineupDockFrame{position:absolute;inset:0;width:100%;height:100%}
+#lineupDock.lineup-fullscreen .dock-bar{flex-wrap:wrap}
+#lineupDock.min:not(.lineup-fullscreen){height:auto!important;display:block}
+#lineupDock.min:not(.lineup-fullscreen) .dock-body{display:none}
+@media(max-width:1000px){#lineupDock .dock-bar small{display:none}}

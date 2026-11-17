@@ -30,6 +30,10 @@
   const ZONE_RECIPES = {
     fangBlade: { name: 'ดาบเขี้ยวหมาป่า', kind: 'sword', level: 2, cost: { iron: 2, coal: 1, wood: 1 }, goods: { wolfFang: 2 }, sell: 70, xp: 30, star: 2, zone: 'ป่า · ทุ่งหญ้า (หมาป่า)' },
     crystalHammer: { name: 'ค้อนผลึกแร่', kind: 'hammer', level: 3, cost: { iron: 3, coal: 2 }, goods: { crystalShard: 2 }, sell: 95, xp: 40, star: 2, zone: 'เนินเขา · บึง (โคโบลด์ สไลม์ โกเล็ม)' },
+    /* v98.66 · chaos weapons: they need several chaos items from EVOLVED monsters (js/chaos.js) */
+    chaosFang: { chaos: 'dark', name: 'เขี้ยวโกลาหล', kind: 'sword', level: 3, cost: { iron: 3, coal: 2 }, goods: { chaosShardDark: 4, wolfFang: 2 }, sell: 190, xp: 70, star: 3, zone: 'ได้จากมอนวิวัฒน์สายราตรี (หมาป่าเงา)' },
+    chaosMaul: { chaos: 'earth', name: 'ค้อนแก่นโกลาหล', kind: 'hammer', level: 4, cost: { iron: 4, coal: 3 }, goods: { chaosCoreEarth: 2, chaosShardEarth: 3, crystalShard: 2 }, sell: 260, xp: 90, star: 3, zone: 'ได้จากมอนวิวัฒน์สายผืนดิน (โกเล็ม)' },
+    rimeChaosBlade: { chaos: 'ice', name: 'ดาบน้ำค้างโกลาหล', kind: 'sword', level: 4, cost: { iron: 3, coal: 2, wood: 1 }, goods: { chaosCoreIce: 2, chaosShardIce: 3, frostFur: 1 }, sell: 250, xp: 90, star: 3, zone: 'ได้จากมอนวิวัฒน์สายน้ำแข็ง (เยติ)' },
     frostBlade: { name: 'ดาบน้ำค้างแข็ง', kind: 'sword', level: 4, cost: { iron: 3, coal: 2, wood: 1 }, goods: { frostFur: 1, pearl: 1 }, sell: 130, xp: 55, star: 3, zone: 'ทุ่งหิมะ + หาดทราย' }
   };
 
@@ -110,13 +114,16 @@
     const power = wb + Math.floor((lv - 1) / 3) + Math.floor(stat(g, 'strength') / 2), spell = Math.floor(stat(g, 'knowledge') / 2) + Math.floor((lv - 1) / 3);
     const armor = Math.floor((lv - 1) / 3), stMax = (g.maxStamina || heroMaxStamina(lv)) + 4 * stat(g, 'endurance');
     const J = jobCombat(g).mods;   /* v97.18: the job's stat changes */
-    return { power: power + (J.power || 0), spell: spell + (J.spell || 0), crit: Math.min(.35, .02 * stat(g, 'precision') + (J.crit || 0)), armor: Math.max(0, armor + (J.armor || 0)), stMax, level: lv, weapon: wb, atk: BASE_ATK + power + (J.power || 0), def: BASE_DEF + armor, hpMod: J.hp || 0 };
+    const TM = root.Titles?.mods(g) || {};   /* v98.41: equipped titles (js/titles.js) */
+    { const AM = root.Chaos?.affixMods(w?.affix) || {}; for (const k of Object.keys(AM)) TM[k] = (TM[k] || 0) + AM[k] }   /* v98.66 · the weapon's chaos affix (js/chaos.js) */
+    return { power: power + (J.power || 0) + (TM.power || 0), spell: spell + (J.spell || 0) + (TM.spell || 0), crit: Math.min(.35, .02 * stat(g, 'precision') + (J.crit || 0) + (TM.crit || 0)), armor: Math.max(0, armor + (J.armor || 0) + (TM.armor || 0)), stMax: stMax + (TM.st || 0), level: lv, weapon: wb, atk: BASE_ATK + power + (J.power || 0) + (TM.power || 0), def: BASE_DEF + armor + (TM.armor || 0), hpMod: (J.hp || 0) + (TM.hp || 0) };
   }
   /* the hero as sent into a battle frame: combat profile + the stamina to start with (tired heroes start lower) */
   function battleHero(g, recipes) {
     const c = heroCombat(g, recipes);
     const j = jobCombat(g);   /* v97.18: job id, passive and look go into the battle (the arena page does not load this file) */
-    return { power: c.power, spell: c.spell, crit: c.crit, armor: c.armor, stMax: c.stMax, st: Math.max(20, Math.round(c.stMax - (g.fatigue || 0) * .6)), hpMod: c.hpMod, job: j.id, jobLv: j.lv, ...j.pass, look: j.look ? { ...j.look, icon: j.icon, col: j.col, name: j.name } : null };
+    const wk = equipped(g)?.kind;   /* v98.332 · the lead fights with what he carries: the father's knife until he forges something else */
+    return { weapon: ['knife', 'sword', 'axe', 'hammer', 'staff', 'bow', 'spear', 'rapier', 'tome'].includes(wk) ? wk : undefined, power: c.power, spell: c.spell, crit: c.crit, armor: c.armor, stMax: c.stMax, st: Math.max(20, Math.round(c.stMax)), hpMod: c.hpMod, job: j.id, jobLv: j.lv, ...j.pass, look: j.look ? { ...j.look, icon: j.icon, col: j.col, name: j.name } : null };
   }
   const battleParam = (g, recipes) => 'hero=' + encodeURIComponent(JSON.stringify(battleHero(g, recipes)));
   /* missing materials for a recipe (materials in v.materials, goods in v.bag) — '' when enough */
@@ -159,7 +166,7 @@
   setInterval(() => {
     const q = s?.village?.levelUnlocks; if (showing || !q?.length || busyNow() || !root.StarterKit?.unlock) return;
     const next = q.shift(); showing = true; try { save() } catch (e) { }
-    const J = next.level === 'job' && JOBS[next.job];   /* v97.18: a job level teaches its card */
-    Promise.resolve(root.StarterKit.unlock(next.cards, J ? { kicker: 'อาชีพ ' + J.icon + ' ' + J.name, title: 'ทักษะประจำอาชีพ', text: 'เรียนแล้วติดตัว ใช้ได้แม้เปลี่ยนอาชีพ' } : { kicker: 'เลเวลอัป · Lv.' + next.level, title: 'การ์ดใหม่จากประสบการณ์', text: 'HP สูงสุด ' + heroMaxHp(next.level) + ' · แรงสูงสุด ' + heroMaxStamina(next.level) })).finally(() => { showing = false });
+    const CH = next.level === 'chaos', J = next.level === 'job' && JOBS[next.job];   /* v97.18: a job level teaches its card */
+    Promise.resolve(root.StarterKit.unlock(next.cards, CH ? { kicker: '✷ แก่นโกลาหล · Grat', title: 'การ์ดธาตุโกลาหล', text: 'สะสมแก่นจากมอนวิวัฒน์ครบตามกำหนด · ความโกลาหลตอบรับคุณ' } : J ? { kicker: 'อาชีพ ' + J.icon + ' ' + J.name, title: 'ทักษะประจำอาชีพ', text: 'เรียนแล้วติดตัว ใช้ได้แม้เปลี่ยนอาชีพ' } : { kicker: 'เลเวลอัป · Lv.' + next.level, title: 'การ์ดใหม่จากประสบการณ์', text: 'HP สูงสุด ' + heroMaxHp(next.level) + ' · แรงสูงสุด ' + heroMaxStamina(next.level) })).finally(() => { showing = false });
   }, 1500);
 })(typeof globalThis !== 'undefined' ? globalThis : this);

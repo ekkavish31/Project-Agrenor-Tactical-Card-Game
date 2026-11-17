@@ -82,7 +82,7 @@
   /* v97.01: planks, brick, slabs, water, mud, snow, sand, per-biome cliffs and the lip strips come from the terrain sets already in the repo;
      names not listed here live in assets/terrain/diorama/<name>.webp */
   const TEXFILE = { wood: 'terrain/ground/planks', brick: 'terrain/cliff/ruin-wall', slab: 'terrain/ground/slabs', water: 'terrain/ground/water-deep', swampw: 'terrain/ground/swamp',
-    mud: 'terrain/ground/mud-wet', snowd: 'terrain/ground/snow-deep', sandc: 'terrain/ground/sand-coarse', cliff_snow: 'terrain/cliff/snow-rock', cliff_sand: 'terrain/cliff/sandstone', cliff_swamp: 'terrain/cliff/swamp-roots',
+    mud: 'terrain/ground/mud-wet', soil_dark: 'terrain/ground/soil-dark', grass_worn: 'terrain/ground/grass-worn', lip_earth: 'terrain/cliff/earth-strata', snowd: 'terrain/ground/snow-deep', sandc: 'terrain/ground/sand-coarse', cliff_snow: 'terrain/cliff/snow-rock', cliff_sand: 'terrain/cliff/sandstone', cliff_swamp: 'terrain/cliff/swamp-roots',
     lip_grass: 'terrain/lip/lip-grass', lip_moss: 'terrain/lip/lip-moss', lip_snow: 'terrain/lip/lip-snow', lip_sand: 'terrain/lip/lip-sand',
     bg_forest: 'scenes/area-forest', bg_coast: 'scenes/area-coast', bg_frost: 'scenes/area-frost', bg_mine: 'scenes/area-mine', bg_quarry: 'scenes/area-quarry', bg_ruins: 'scenes/area-ruins', bg_swamp: 'scenes/area-swamp' };
   const SRC = document.currentScript?.src || '', IMG = {}, CORE = ['grass', 'drygrass', 'dirt', 'cobble', 'snow', 'sand', 'cliff', 'earth'], WANT = CORE.concat(Object.keys(TEXFILE).filter(n => !n.startsWith('bg_')));
@@ -117,7 +117,9 @@
     }[biome] || null;
     const m = M || materials('grass');
     if (poi === 'ruin') { m.path = ['cobble', { mortar: '#5a5448', stone: '#a8a294' }]; m.cliff = ['brick', { mortar: '#4a453c', stone: '#8f897a' }] }
+    if (poi === 'patch') { m.top = ['grass', { base: '#5f8f3c', blades: ['#68994040', '#5a8a38', '#64943e', '#5f8f3c'], flowers: 0 }]; m.path = ['dirt', { base: '#6b4a2b', pebble: '#74522f' }] }   /* v98.332 · tilled garden soil */
     if (poi === 'mine') { m.path = ['dirt', { base: '#6a5a48', pebble: '#8a7a68' }] }
+    if (poi === 'town') { m.top = ['cobble', { mortar: '#5a5448', stone: '#b0a898' }]; m.path = ['slab', { mortar: '#4e4a42', stone: '#a8a294', moss: '#6a7a42' }] }   /* v98.570 · cobbled town street */
     m.cobble = ['cobble', { mortar: '#5a5448', stone: '#a8a294' }]; m.wood = ['wood', { base: '#8a6440' }]; m.brick = ['brick', { mortar: '#4a453c', stone: '#9a9282' }];
     m.slab = ['slab', { mortar: '#4e4a42', stone: biome === 'sand' ? '#c8b48c' : biome === 'snow' ? '#b8c0c8' : '#a39d8e', moss: biome === 'snow' ? '#e8eef4' : '#6a7a42' }];
     return m;
@@ -139,7 +141,8 @@
   /* everything a cell needs to paint, made once per map (textures, per-cell variation) */
   function prepare(m, o) {
     o = o || {};
-    const mat = materials(o.biome, o.poi), PT = Object.assign({}, PAINTED[o.biome] || PAINTED.grass); if (o.poi === 'ruin') { PT.path = 'cobble'; PT.cliff = 'brick'; PT.wash = {} }
+    const mat = materials(o.biome, o.poi), PT = Object.assign({}, PAINTED[o.biome] || PAINTED.grass); if (o.poi === 'patch') { PT.path = 'soil_dark'; PT.cliff = 'lip_earth'; PT.wash = { path: 'rgba(60,35,15,.10)' } }   /* v98.573 · the pumpkin garden: painted tilled soil in the planting beds */
+    if (o.poi === 'ruin') { PT.path = 'cobble'; PT.cliff = 'brick'; PT.wash = {} } if (o.poi === 'town') { PT.top = 'cobble'; PT.path = 'slab'; PT.wash = {} }
     const slot = (name, proc, seed) => loaded(IMG[name]) ? IMG[name] : tex(proc[0], proc[1], seed);
     const img = k => slot(PT[k], mat[k], k.length * 97), wash = k => (loaded(IMG[PT[k]]) && PT.wash?.[k]) || null;
     const r = rng(1234), ctx = { o, mat, hang: loaded(IMG[PT.hang]) ? IMG[PT.hang] : null, img, wash, top: img('top'), path: img('path'), lip: img('lip'), cliff: img('cliff'), vary: Array.from({ length: m.w * m.h }, () => r()), tiles: new Map(), pools: o.pools || (() => false) };
@@ -191,13 +194,24 @@
       return;
     }
     const isPath = m.flat && m.flat[i] && !mt, timg = mt ? C.matTop[mt] : isPath ? C.path : C.top;
-    poly(g, t4); g.fillStyle = groundPattern(g, timg, avg); g.fill(); const tw = mt ? null : C.wash(isPath ? 'path' : 'top'); if (tw) { g.fillStyle = tw; g.fill() }
+    { const pat = groundPattern(g, timg, avg); poly(g, t4); g.fillStyle = pat; g.fill(); g.strokeStyle = pat; g.lineWidth = .9; g.lineJoin = 'round'; g.stroke() }   /* the same picture on the outline too: no hairline gaps between neighbouring cells */
+    const tw = mt ? null : C.wash(isPath ? 'path' : 'top'); if (tw) { g.fillStyle = tw; g.fill() }
     /* stairs: step edges across the slope (dark riser + lit nose) */
     const rd = m.ramp ? m.ramp[i] : 0;
-    if (rd && m.stair && m.stair[i]) {
+    const simg = RAMP === 'wood' ? (C.matTop[2] || timg) : timg;
+    if (rd && RAMP !== 'slope' && (RAMP === 'steps' || RAMP === 'wood' || (m.stair && m.stair[i] && [1, 3, 4].includes(m.mat ? m.mat[i] : 0)))) {   /* v98.313 · steps only on stone / cobble / slab; natural ground stays a plain slope */
       const lowE = { 1: [0, 3], 2: [1, 2], 3: [0, 1], 4: [3, 2] }[rd], highE = { 1: [1, 2], 2: [0, 3], 3: [3, 2], 4: [0, 1] }[rd];
-      for (const s of [.25, .5, .75]) { const a = { x: t4[lowE[0]].x + (t4[highE[0]].x - t4[lowE[0]].x) * s, y: t4[lowE[0]].y + (t4[highE[0]].y - t4[lowE[0]].y) * s }, b = { x: t4[lowE[1]].x + (t4[highE[1]].x - t4[lowE[1]].x) * s, y: t4[lowE[1]].y + (t4[highE[1]].y - t4[lowE[1]].y) * s };
-        g.strokeStyle = 'rgba(0,0,0,.42)'; g.lineWidth = 2; g.beginPath(); g.moveTo(a.x, a.y + 1.5); g.lineTo(b.x, b.y + 1.5); g.stroke(); g.strokeStyle = 'rgba(255,245,215,.32)'; g.lineWidth = 1; g.beginPath(); g.moveTo(a.x, a.y - .5); g.lineTo(b.x, b.y - .5); g.stroke() }
+      /* v98.313 · real steps: N flat treads (lit) with a vertical riser (dark, lit nose) between them, instead of scribbled lines on the slope */
+      const N = 4, cu = [u, u + 1, u + 1, u], cv = [v, v, v + 1, v + 1], A = lowE[0], B = lowE[1], A1 = highE[0], B1 = highE[1], zl = (c[A] + c[B]) / 2, zh = (c[A1] + c[B1]) / 2;
+      const at = (j, j1, sv, z) => P(m, cu[j] + (cu[j1] - cu[j]) * sv, cv[j] + (cv[j1] - cv[j]) * sv, z), zS = k => zl + (zh - zl) * k / N;
+      for (let k = 0; k < N; k++) {
+        const s0 = k / N, s1 = (k + 1) / N, zt = zS(k + 1), zp = zS(k);
+        const riser = [at(A, A1, s0, zp), at(B, B1, s0, zp), at(B, B1, s0, zt), at(A, A1, s0, zt)];
+        poly(g, riser); g.fillStyle = groundPattern(g, simg, zp); g.fill(); poly(g, riser); g.fillStyle = 'rgba(8,6,14,.5)'; g.fill();
+        const tread = [at(A, A1, s0, zt), at(B, B1, s0, zt), at(B, B1, s1, zt), at(A, A1, s1, zt)];
+        poly(g, tread); g.fillStyle = groundPattern(g, simg, zt); g.fill(); poly(g, tread); g.fillStyle = 'rgba(255,246,220,.12)'; g.fill();
+        g.strokeStyle = 'rgba(255,245,215,.4)'; g.lineWidth = 1; g.beginPath(); g.moveTo(tread[0].x, tread[0].y); g.lineTo(tread[1].x, tread[1].y); g.stroke();
+      }
     }
     /* height light, slope light, a little cell-to-cell variation */
     const lift = avg / ST * .045 + (C.vary[i] - .5) * .05 + (RAMP_LIGHT[rd] || 0);
@@ -206,23 +220,22 @@
     for (const [du, dv, A, B, Cc, D] of [[-1, 0, 0, 3, 1, 2], [0, -1, 0, 1, 3, 2]]) {
       if (!inside(m, u + du, v + dv)) continue; const n = cz(m, (v + dv) * m.w + u + du), nl = Math.max(...n); if (nl <= avg + .5) continue;
       const from = { x: (t4[A].x + t4[B].x) / 2, y: (t4[A].y + t4[B].y) / 2 }, to = { x: (t4[Cc].x + t4[D].x) / 2, y: (t4[Cc].y + t4[D].y) / 2 };
-      const gr = g.createLinearGradient(from.x, from.y, to.x, to.y); gr.addColorStop(0, `rgba(10,8,20,${Math.min(.6, .1 * (nl - avg) + .15)})`); gr.addColorStop(.8, 'rgba(10,8,20,0)');
+      const gr = g.createLinearGradient(from.x, from.y, to.x, to.y); gr.addColorStop(0, `rgba(10,8,20,${Math.min(.3, .05 * (nl - avg) + .08)})`); gr.addColorStop(.85, 'rgba(10,8,20,0)');   /* v98.325 · softer ambient shade */
       poly(g, t4); g.fillStyle = gr; g.fill();
     }
     /* cast shadow: the sun is up and to the left (−u); tall ground up to 4 cells that way shades this top */
     let shade = 0; for (let k = 1; k <= 4; k++) { if (!inside(m, u - k, v)) break; const hz = Math.max(...cz(m, v * m.w + u - k)); if (hz > avg + k * ST * .9) shade = Math.max(shade, Math.min(.34, .1 + (hz - avg - k * ST * .9) * .05)) }
-    if (shade) { poly(g, t4); g.fillStyle = `rgba(12,10,30,${shade})`; g.fill() }
+    if (shade) {   /* v98.325 · cast shadow fades across the cell (strong on the side facing the tall ground) instead of a flat dark block per cell: neighbouring cells blend */
+      const a0 = { x: (t4[0].x + t4[3].x) / 2, y: (t4[0].y + t4[3].y) / 2 }, a1 = { x: (t4[1].x + t4[2].x) / 2, y: (t4[1].y + t4[2].y) / 2 }, sh = shade * .55, gs = g.createLinearGradient(a0.x, a0.y, a1.x, a1.y);
+      gs.addColorStop(0, `rgba(12,10,30,${sh})`); gs.addColorStop(1, `rgba(12,10,30,${sh * .45})`); poly(g, t4); g.fillStyle = gs; g.fill() }
     if (C.pools(i)) { poly(g, t4); g.fillStyle = 'rgba(40,90,120,.6)'; g.fill() }
-    /* fort tops: a lighter rim so walls read as built */
-    if (mt === 3 || mt === 4) { g.strokeStyle = 'rgba(255,250,235,.35)'; g.lineWidth = 1.5; poly(g, t4); g.stroke() }
+    /* v98.325 · no per-cell rim / outline any more: the stone and grass tops read as one smooth surface (the cliff lip already has its own highlight) */
     /* bridge rails on the sides that face water or the void */
     if (mt === 2) for (const [du, dv, A, B] of [[1, 0, 1, 2], [-1, 0, 0, 3], [0, 1, 3, 2], [0, -1, 0, 1]]) {
       const out = !inside(m, u + du, v + dv) || (m.water && m.water[(v + dv) * m.w + u + du]); if (!out) continue;
       const a = t4[A], b = t4[B]; g.strokeStyle = '#4a2f18'; g.lineWidth = 2; g.beginPath(); g.moveTo(a.x, a.y - 9); g.lineTo(b.x, b.y - 9); g.stroke();
       g.fillStyle = '#5a3a1e'; for (const t of [.1, .5, .9]) { const x = a.x + (b.x - a.x) * t, y = a.y + (b.y - a.y) * t; g.fillRect(x - 1.5, y - 11, 3, 11) }
     }
-    /* tactical grid: a faint line so cells read clearly */
-    poly(g, t4); g.strokeStyle = 'rgba(0,0,0,.1)'; g.lineWidth = 1; g.stroke();
   }
 
   function order(m) { const o = []; for (let v = 0; v < m.h; v++) for (let u = 0; u < m.w; u++) o.push(v * m.w + u); return o.sort((a, b) => ((a % m.w) + ((a / m.w) | 0)) - ((b % m.w) + ((b / m.w) | 0)) || (a % m.w) - (b % m.w)) }
@@ -341,5 +354,7 @@
     return out;
   }
 
-  root.FieldDiorama = { paint, tile, sky, grade, pattern, landforms, structures, rotate, materials, ready, walkOK, areas, BASE, WATER };
+  let RAMP = 'auto';   /* v98.314 · what a ramp looks like: auto (steps on stone / cobble, plain slope on natural ground) · slope · steps (stone) · wood (plank steps) */
+  const ramp = v => { if (v) RAMP = v; return RAMP };
+  root.FieldDiorama = { ramp, paint, tile, sky, grade, pattern, landforms, structures, rotate, materials, ready, walkOK, areas, BASE, WATER };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

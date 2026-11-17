@@ -10,13 +10,14 @@ const ROSTER={
 const MAX_LV=10,xpNeed=lv=>lv*80;
 function list(){if(!Array.isArray(s.village.party))s.village.party=[];return s.village.party.filter(c=>ROSTER[c.key]||FALLBACK[c.key])}
 // recruits who joined in the inn but have no old training-battle sprite: fight as a sword/axe/bow fighter
-const FALLBACK={sigrid:{name:'ซิกริด',role:'ทหารรับจ้าง',weapon:'axe',shield:false,hp:60},ren:{name:'เรน',role:'นักธนู',weapon:'bow',shield:false,hp:40},olwen:{name:'โอลเวน',role:'จอมเวท',weapon:'staff',shield:false,hp:36},nadia:{name:'นาเดีย',role:'นักย่องเบา',weapon:'knife',shield:false,hp:42},orla:{name:'ซิสเตอร์ออร์ลา',role:'นักบวช',weapon:'tome',shield:false,hp:40},berg:{name:'นายพรานเบิร์ก',role:'นายพราน',weapon:'bow',shield:false,hp:50}};
+const FALLBACK={sib:{name:'น้อง',role:'พี่น้องของตัวเอก',weapon:'sword',shield:false,hp:50},sigrid:{name:'ซิกริด',role:'ทหารรับจ้าง',weapon:'axe',shield:false,hp:60},ren:{name:'เรน',role:'นักธนู',weapon:'bow',shield:false,hp:40},olwen:{name:'โอลเวน',role:'จอมเวท',weapon:'staff',shield:false,hp:36},nadia:{name:'นาเดีย',role:'นักย่องเบา',weapon:'knife',shield:false,hp:42},orla:{name:'ซิสเตอร์ออร์ลา',role:'นักบวช',weapon:'tome',shield:false,hp:40},berg:{name:'นายพรานเบิร์ก',role:'นายพราน',weapon:'bow',shield:false,hp:50}};
 // v13: companions can carry a weapon you forged (moved out of your bag while equipped)
 const CAN_EQUIP={luna:['staff','tome'],bram:['hammer','axe','sword'],kier:['sword','rapier','spear','axe'],mil:['sword','knife','rapier','bow']};
 function gearBonus(g){return g?g.quality*2+(g.recipe==='tempered'?3:0):0}
 function gearName(g){return g?(typeof RECIPES!=='undefined'&&RECIPES[g.recipe||g.kind]?.name||g.kind)+' ★'+g.quality:''}
 function stats(c){let r=ROSTER[c.key]||FALLBACK[c.key],lv=c.level||1,g=c.gear&&(CAN_EQUIP[c.key]||[]).includes(c.gear.kind)?c.gear:null;return {key:c.key,name:r.name,weapon:g?g.kind:r.weapon,shield:r.shield,maxHp:r.hp+(lv-1)*6,bonus:(lv-1)*2+gearBonus(g),level:lv,gear:g?gearName(g):''}}
 window.Companions={ROSTER,CAN_EQUIP,gearName,
+ info:key=>ROSTER[key]||FALLBACK[key]||null,   /* v98.274 · the deck builder used ROSTER only, so recruits such as the sibling (FALLBACK) never appeared in 'จัดสำรับ' */
  party(){return list().slice(0,4).map(stats)},
  reward(st){let out=[];for(let c of list().slice(0,4)){let r=ROSTER[c.key]||FALLBACK[c.key],u=st.units.find(x=>x.key===c.key),xp=u&&u.hp>0?50:35,before=c.level||1;c.xp=(c.xp||0)+xp;c.level=before;while(c.level<MAX_LV&&c.xp>=xpNeed(c.level)){c.xp-=xpNeed(c.level);c.level++}out.push({name:r.name,xp,level:c.level,levelUp:c.level>before})}save();return out}};
 })();

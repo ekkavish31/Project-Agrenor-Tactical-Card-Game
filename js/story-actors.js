@@ -9,7 +9,24 @@
 (function (root) {
   'use strict';
   /* painted portrait sets: speaker → [set, faces] */
-  const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']] };
+  /* a set lists its faces as an array (file = <set>-<face>.webp) or as an object {face: file suffix} (v98.201: mom, six painted poses: talk · calm · happy · worry · sad · angry) */
+  const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], guard: ['guard', ['neutral', 'happy', 'angry', 'surprised']], lin: ['lin', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
+  /* v98.529 · story cast: four painted expressions, native facing left. */
+  const STORY_FACES = { neutral: 'neutral', think: 'neutral', calm: 'neutral', talk: 'neutral', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'worry', worry: 'worry' };
+  for (const id of ['corvin', 'helga', 'darren', 'mierris', 'lorrik', 'serrien', 'vik', 'irene']) PAINTED[id] = ['story/' + id, STORY_FACES];
+  /* v98.535 · village faces painted from the owner's sheets (assets/portraits/<id>-<face>.webp): Oren (the village head · speaker id 'elder' in js/story-data.js) and Pip. Native facing left. */
+  for (const id of ['oren', 'pip', 'grev', 'gus', 'tom', 'may', 'marta', 'mira', 'saf', 'mil', 'luna', 'bram', 'kier', 'sigrid', 'orla', 'ren', 'nadia', 'olwen']) PAINTED[id] = [id, STORY_FACES];   /* + Mil · Luna · Bram (companions) */   /* v98.536 · + Graven (grev) · Gus · Tom · v98.542 · + May · Marta · Mira · Saf */
+  PAINTED.graven = PAINTED.grev;
+  PAINTED.elder = PAINTED.oren;
+  PAINTED.third = PAINTED.corvin;
+  PAINTED.mage = PAINTED.serrien;
+  /* v98.204 · the hero's painted set follows the chosen look (HeroVariant): hero-<look>-<pose>.webp. Only looks that have a sheet are listed; the other keeps the code-drawn bust */
+  const HERO_SETS = { male: ['hero-male', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }], female: ['hero-female', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
+  /* v98.206 · which way a painted set faces as drawn (checked on every pose: hero male/female all look LEFT, mom all looks RIGHT). A speaker on the left of the stage must face right, one on the right must face left, so the picture is mirrored when its native facing is wrong for its side. */
+  const FACING = { hilda: 'left', guard: 'left', lin: 'left', mom: 'right', 'hero-male': 'left', 'hero-female': 'left' };
+  const heroSet = () => { try { return HERO_SETS[root.HeroVariant?.get?.() || 'male'] || null } catch (e) { return null } };
+  /* v98.230 · 'sib' = the other hero (the lead's younger sibling): the painted set of the look the player did NOT choose */
+  const sibSet = () => { try { return HERO_SETS[(root.HeroVariant?.get?.() || 'male') === 'female' ? 'male' : 'female'] || null } catch (e) { return null } };
   /* looks for the code-drawn busts (same palette as the villagers in js/village-life.js) */
   const LOOK = {
     hero: { coat: '#4a5a7a', hair: '#3a2a1e', hat: 'none', cape: '#7a3a2a', eye: '#5a3a1a' },
@@ -19,6 +36,7 @@
     tom: { coat: '#7a5a3a', apron: '#a07a4a', hair: '#8a8a86', hat: 'cap', hatCol: '#5a4632', beard: '#9a9a96', age: 61 },
     grev: { coat: '#8a6a2a', hair: '#7a6a5a', hat: 'hat', hatCol: '#5a3a1a', beard: '#7a6a5a', cape: '#3a5a6a', age: 50 },
     guard: { coat: '#5a5a6a', hair: '#3a3a3a', hat: 'helm', hatCol: '#9a9aa8' },
+    lin: { coat: '#6f6a8f', hair: '#e6e2da', hat: 'hood', hatCol: '#57506f', age: 84 },
     gus: { coat: '#4a3a2a', apron: '#6a4a2a', hair: '#1a1a1a', beard: '#2a2a2a', big: true },
     saf: { coat: '#4a7a5a', apron: '#c9d6b0', hair: '#6a6a6a', hat: 'hood', hatCol: '#3a5a44', beard: '#7a7a7a', age: 58 },
     hilda: { coat: '#b8742a', apron: '#e8e0d0', hair: '#e2c36a', hat: 'straw', hatCol: '#d9be7a', longHair: true },
@@ -99,13 +117,13 @@
   let box = null, stands = null, slots = { L: null, R: null }, recent = [], speakerSide = null, scene = null, typingFlap = null;
   const css = `
   .cs-actors{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
-  .cs-actor{position:absolute;bottom:4vh;height:min(74vh,640px);width:min(44vw,460px);display:flex;align-items:flex-end;justify-content:center;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),filter .35s,opacity .35s;opacity:0;filter:brightness(.45) saturate(.7)}
+  .cs-actor{position:absolute;bottom:4vh;height:min(74vh,640px);width:min(56vw,620px);display:flex;align-items:flex-end;justify-content:center;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),filter .35s,opacity .35s;opacity:0;filter:brightness(.45) saturate(.7)}
   .cs-actor.L{left:max(0px,calc(50% - 560px));transform:translateX(-60px) scale(.94);transform-origin:50% 100%}
   .cs-actor.R{right:max(0px,calc(50% - 560px));transform:translateX(60px) scale(.94);transform-origin:50% 100%}
   .cs-actor.in{opacity:1}.cs-actor.in.L,.cs-actor.in.R{transform:translateX(0) scale(.94)}
   .cs-actor.on{filter:none;z-index:2}.cs-actor.on.L,.cs-actor.on.R{transform:translateX(0) scale(1)}
   .cs-actor .art{position:relative;height:100%;width:100%;display:flex;align-items:flex-end;justify-content:center;animation:csBreath 3.6s ease-in-out infinite}
-  .cs-actor.L .art>img,.cs-actor.L .art>canvas{transform:scaleX(-1)}
+  .cs-actor.L .art>canvas,.cs-actor .art>img[data-flip="1"]{transform:scaleX(-1)}
   .cs-actor .art>img,.cs-actor .art>canvas{max-height:100%;max-width:100%;object-fit:contain;filter:drop-shadow(0 0 2px rgba(0,0,0,.6)) drop-shadow(0 18px 28px rgba(0,0,0,.55))}
   .cs-actor .art>canvas{height:92%;width:auto}
   .cs-actor.talk .art{animation:csTalk .32s ease-in-out infinite alternate}
@@ -124,7 +142,7 @@
   @keyframes csShakeA{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
   .cs-actor.fx-sag .art{animation:csSag 1.2s ease-out forwards}
   @keyframes csSag{to{transform:translateY(10px) scale(.985)}}
-  .cs-emote{position:absolute;top:6%;left:58%;font-size:clamp(34px,5.4vh,56px);line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6));animation:csEmote 1.6s ease-out forwards;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
+  .cs-emote{position:absolute;top:6%;left:58%;font-size:clamp(34px,5.4vh,56px);line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6));animation:csEmote 1.6s ease-out forwards;font-family:AgThai,"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
   .cs-actor.L .cs-emote{left:26%}
   @keyframes csEmote{0%{opacity:0;transform:translateY(16px) scale(.4)}18%{opacity:1;transform:translateY(-4px) scale(1.15)}30%{transform:translateY(0) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
   .cs-mood{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .6s ease}
@@ -148,31 +166,50 @@
     if (slots.L?.who === who) return 'L'; if (slots.R?.who === who) return 'R';
     if (who === 'hero') return 'L';
     if (!slots.R) return 'R'; if (!slots.L) return 'L';
-    if (slots.L.who === 'hero') return 'R';
-    return recent.lastIndexOf(slots.L.who) < recent.lastIndexOf(slots.R.who) ? 'L' : 'R';   // replace whoever spoke least recently
+    /* v98.230 · someone new joins the talk: their picture is slid in on the LISTENER's side (opposite the last speaker); the lead hero is never the one pushed out */
+    let side = speakerSide === 'L' ? 'R' : speakerSide === 'R' ? 'L' : (recent.lastIndexOf(slots.L.who) < recent.lastIndexOf(slots.R.who) ? 'L' : 'R');
+    if (slots[side]?.who === 'hero') side = side === 'L' ? 'R' : 'L';
+    return side;
   }
   function setArt(side, who, sp, face) {
-    const st = stands[side], art = st.querySelector('.art'), P = PAINTED[sp?.bust || who];
+    const st = stands[side], art = st.querySelector('.art'), P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : who === 'sib' ? sibSet() : null);
     let cur = slots[side];
     if (!cur || cur.who !== who) { art.innerHTML = ''; cur = slots[side] = { who, face: null, el: null, look: lookOf(who, sp) }; st.classList.remove('in'); void st.offsetWidth; requestAnimationFrame(() => st.classList.add('in')) }
     if (cur.face === face && cur.el) return cur;
     cur.face = face;
     if (P) {
-      const f = P[1].includes(face) ? face : face === 'sad' || face === 'think' ? 'neutral' : 'neutral', src = 'assets/portraits/' + P[0] + '-' + f + '.webp';
+      const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral), src = 'assets/portraits/' + P[0] + '-' + f + '.webp';
       if (!cur.el || cur.el.tagName !== 'IMG') { art.innerHTML = ''; cur.el = new Image(); cur.el.alt = ''; art.append(cur.el) }
-      cur.el.src = src;
+      if (!cur.el.src.endsWith(src)) { cur.el.style.opacity = '0'; cur.el.onload = () => { cur.el.style.transition = 'opacity .18s'; cur.el.style.opacity = '1' }; cur.el.src = src; if (cur.el.complete && cur.el.naturalWidth) cur.el.onload() }   /* v98.336 · the picture fades in once loaded (no empty stage with an emote floating over it) */
+      cur.el.dataset.flip = (window.PortraitFacing ? PortraitFacing.flip(src, side) : ((FACING[P[0]] || 'left') === (side === 'L' ? 'left' : 'right'))) ? '1' : '0';   /* v98.595 · the face direction of EACH picture (js/portrait-facing.js) decides the mirror, not one guess per character */
+      cur.el.style.maxHeight = Math.round(100 * (window.PortraitScale ? PortraitScale.k(P[0]) : 1)) + '%';   /* v98.593 · children / small people are drawn smaller (⚖ Scale Lineup) */
     } else {
       if (!cur.el || cur.el.tagName !== 'CANVAS') { art.innerHTML = ''; cur.el = document.createElement('canvas'); cur.el.width = 300; cur.el.height = 420; art.append(cur.el) }
       drawBust(cur.el, cur.look, face, false);
     }
     return cur;
   }
+  /* v98.222 · the face picture for the dialogue box: the speaker's painted portrait (current mood) when they have a set, else null */
+  function facePic(who, sp, face) { const P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : who === 'sib' ? sibSet() : null); if (!P) return null; const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral); return 'assets/portraits/' + P[0] + '-' + f + '.webp' }
   function emote(side, ch) { const st = stands[side]; st.querySelector('.cs-emote')?.remove(); if (!ch) return; const e = document.createElement('div'); e.className = 'cs-emote'; e.textContent = ch; st.append(e); setTimeout(() => e.remove(), 1700) }
   function fx(side, cls) { const st = stands[side]; st.classList.remove('fx-shock', 'fx-hop', 'fx-jump', 'fx-shake', 'fx-sag'); void st.offsetWidth; if (cls) for (const c of cls) st.classList.add(c) }
 
   /* ---------- API used by story-fx ---------- */
   function begin(el) { build(el); for (const s of ['L', 'R']) { stands[s].className = 'cs-actor ' + s; stands[s].querySelector('.art').innerHTML = ''; } slots = { L: null, R: null }; recent = []; box.querySelector('.cs-mood').className = 'cs-mood'; box.hidden = false }
   function end() { if (!box) return; talk(false); box.hidden = true; slots = { L: null, R: null } }
+  /* v98.621 · PRELOAD: every portrait a scene is going to show is fetched and decoded BEFORE the scene opens (and re-checked a few lines ahead), so a speaker never appears with an empty stand
+     for a moment — the picture used to be requested only when that person first spoke. StoryActors.preload(lines, speakerOf) → Promise (resolves when all are ready or after ~1.5 s). */
+  const PRE = new Map();
+  function srcsOf(line, sp) {
+    if (!line?.who) return []; const P = PAINTED[sp?.bust || line.who] || (line.who === 'hero' ? heroSet() : line.who === 'sib' ? sibSet() : null); if (!P) return [];
+    const face = faceOf(line), f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral);
+    return ['assets/portraits/' + P[0] + '-' + f + '.webp', 'assets/portraits/' + P[0] + '-neutral.webp'];
+  }
+  function warm(src) { let p = PRE.get(src); if (!p) { const im = new Image(); im.src = src; p = im.decode ? im.decode().catch(() => { }) : Promise.resolve(); PRE.set(src, p) } return p }
+  function preload(lines, speakerOf, from = 0, n = 1e9) {
+    const list = []; for (const l of (lines || []).slice(from, from + n)) for (const src of srcsOf(l, speakerOf ? speakerOf(l.who) : null)) list.push(warm(src));
+    return Promise.race([Promise.all(list), new Promise(r => setTimeout(r, 1500))]);
+  }
   /* a line: who (or none = narration), the resolved speaker {name, portrait, color, look, bust}; returns hints for the stage (shake) */
   function line(el, l, sp) {
     build(el); const mood = box.querySelector('.cs-mood');
@@ -183,7 +220,8 @@
     stands[side].style.setProperty('--gl', { happy: 'rgba(255,214,140,.5)', angry: 'rgba(255,90,70,.45)', surprised: 'rgba(255,255,255,.5)', sad: 'rgba(120,170,255,.35)', think: 'rgba(200,180,255,.35)' }[face] || 'rgba(255,230,180,.32)');
     const m = moodOf(l, face); mood.className = 'cs-mood' + (m && m !== 'calm' ? ' ' + m : '');
     fx(side, face === 'surprised' ? ['fx-shock', 'fx-jump'] : face === 'angry' ? ['fx-shake'] : face === 'happy' && /!/.test(l.text || '') ? ['fx-hop'] : face === 'sad' ? ['fx-sag'] : null);
-    emote(side, l.emote === false ? null : l.emote || (face !== 'neutral' && (face !== 'happy' || /!|♪|ฮ่า/.test(l.text || '')) ? EMO[face] : null));
+    const em = l.emote === false ? null : l.emote || (face !== 'neutral' && (face !== 'happy' || /!|♪|ฮ่า/.test(l.text || '')) ? EMO[face] : null), pic = slots[side]?.el;
+    if (em && pic && pic.tagName === 'IMG' && !(pic.complete && pic.naturalWidth)) pic.addEventListener('load', () => { if (slots[side]?.el === pic) emote(side, em) }, { once: true }); else emote(side, em);   /* v98.336 · emote waits for the portrait */
     speakerSide = side;
     const strong = /!!|！！/.test(l.text || '') || face === 'angry' && /!/.test(l.text || '');
     return { shake: strong && !l.shake ? 'small' : null, flash: face === 'surprised' && !l.flash ? 'rgba(255,255,255,.35)' : null };
@@ -197,5 +235,5 @@
       if (on) { let open = false; typingFlap = setInterval(() => { open = !open; drawBust(cur.el, cur.look, cur.face, open) }, 130) } else drawBust(cur.el, cur.look, cur.face, false);
     }
   }
-  root.StoryActors = { begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
+  root.StoryActors = { preload, facePic, begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
 })(typeof window !== 'undefined' ? window : globalThis);

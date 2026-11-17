@@ -70,7 +70,7 @@
     const host = n => { try { return parent[n] || window[n] } catch (e) { return window[n] } };
     const item = (label, fn, ok = true) => ok ? { label, fn } : null;
     const GROUPS = [
-      ['me', '👤 ตัวเรา', 'ตัวละคร · อาชีพ · สำรับ · กระเป๋า', () => [item('ตัวละคร', () => q('[data-game="character"]')?.click()), item('⚔ อาชีพ', () => host('JobsUI')?.open()), item('สำรับ', () => q('[data-game="deck"]')?.click()), item('กระเป๋า', () => q('[data-game="bag"]')?.click()), item('◈ ตารางธาตุ', () => q('#elChart')?.click(), !!q('#elChart'))]],
+      ['me', '👤 ตัวเรา', 'ตัวละคร · อาชีพ · สำรับ · สมุดผนึก', () => [item('ตัวละคร', () => q('[data-game="character"]')?.click()), item('⚔ อาชีพ', () => host('JobsUI')?.open()), item('สำรับ', () => q('[data-game="deck"]')?.click()), item('สมุดผนึก', () => q('[data-game="bag"]')?.click()), item('◈ ตารางธาตุ', () => q('#elChart')?.click(), !!q('#elChart'))]],
       ['life', '🏡 ชีวิต', 'สมุดหมู่บ้าน · กิจกรรม · ไร่ · หมู่บ้าน', () => [item('สมุดหมู่บ้าน', () => q('[data-game="journal"]')?.click()), item('🎯 กิจกรรม', () => q('#activities')?.click(), !!q('#activities')), item('🌾 ไร่ของเรา', openFarm, !!farmHere()), item('🏗 พัฒนาหมู่บ้าน', () => host('VillageProjects')?.open()), item('🏛 ชื่อเสียง', () => host('Factions')?.open()), item('🗺 ออกเดินทาง', () => go?.click(), !!go)]],
       ['sys', '⚙ ระบบ', 'บันทึก · โหลด · ตั้งค่า · เต็มจอ', () => [item('💾 บันทึกเกม', () => slotMenu('save')), item('📂 โหลดเกม', () => slotMenu('load')), item('ตั้งค่า', () => q('[data-game="settings"]')?.click()), item('⛶ เต็มจอ', () => q('#fullscreen')?.click(), !!q('#fullscreen'))]]
     ];
@@ -131,12 +131,13 @@
     requestAnimationFrame(poll);
     if (!navigator.getGamepads || !document.hasFocus()) return;
     const pads = [...navigator.getGamepads()].filter(Boolean); if (!pads.length) return;
+    if (window.TouchControls?.owns?.()) { for (const i in held) held[i] = false; return }   /* v98.21 · the game's own pad controls (js/touch-controls.js) have the pad while you play; menus still use this bridge */
     const p = pads[0], now = performance.now(), ax = p.axes[0] || 0, ay = p.axes[1] || 0;
     const state = {}; for (const i in PAD) state[i] = !!p.buttons[i]?.pressed;
     if (ax < -.55) state[14] = true; if (ax > .55) state[15] = true; if (ay < -.55) state[12] = true; if (ay > .55) state[13] = true;
     for (const i in PAD) { if (state[i] && !held[i]) { held[i] = true; repeatAt[i] = now + 380; press(PAD[i]) } else if (state[i] && i >= 12 && now > repeatAt[i]) { repeatAt[i] = now + 130; press(PAD[i]) } else if (!state[i]) held[i] = false }
   }
-  addEventListener('gamepadconnected', () => { try { const d = document.createElement('div'); d.textContent = '🎮 เชื่อมต่อจอยแล้ว · A ยืนยัน · B ยกเลิก · Start เมนู'; d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;padding:8px 16px;border-radius:999px;background:#14231ff2;color:#f3e9c9;border:1px solid #b9c48a88;font:600 13px system-ui,"Noto Sans Thai",sans-serif;pointer-events:none'; document.body.append(d); setTimeout(() => d.remove(), 3200) } catch (e) { } });
+  addEventListener('gamepadconnected', () => { try { const d = document.createElement('div'); d.textContent = '🎮 เชื่อมต่อจอยแล้ว · A ยืนยัน · B ยกเลิก · Start เมนู'; d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;padding:8px 16px;border-radius:999px;background:#14231ff2;color:#f3e9c9;border:1px solid #b9c48a88;font:600 13px AgThai,system-ui,"Noto Sans Thai",sans-serif;pointer-events:none'; document.body.append(d); setTimeout(() => d.remove(), 3200) } catch (e) { } });
   requestAnimationFrame(poll);
 
   window.ConsoleUI = { sfx: SFX, moveFocus, villageMenu, slotMenu, saveSlot, loadSlot, slotInfo };

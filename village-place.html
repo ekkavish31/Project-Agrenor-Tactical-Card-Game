@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
-<script src="js/touch.js?v=94.02"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=1"></script><style>
+<html lang="th"><meta charset="utf-8"><script src="js/perf-scale.js?v=v98.574"></script><script src="js/asset-size.js?v=v98.576"></script><script src="js/tilt-shift.js?v=v98.604"></script><script src="js/texel.js?v=v98.569"></script><script src="js/piece-geometry.js?v=v98.500"></script><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
+<script src="js/img-gate.js?v=v98.352"></script><script src="js/walk-speed.js?v=98.109"></script><script src="js/sfx.js?v=98.298"></script><script src="js/key-layout.js?v=1"></script><script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=92.04"></script><script src="js/staged-preview.js?v=v98.387"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
 button,select,input{font:inherit;background:#233a2ef0;color:#fff0c7;border:1px solid #cad6a77a;border-radius:9px;padding:8px 12px;cursor:pointer}button:hover{background:#4b6040}button:disabled{opacity:.45;cursor:default}
 header{position:fixed;left:22px;top:20px;pointer-events:none;text-shadow:0 2px 8px #193524}h1{margin:0 0 5px;font-size:23px}header small{color:#fff1c4}
 #hud{position:fixed;top:88px;left:22px;background:#233a2ee8;border:1px solid #cad6a770;border-radius:9px;padding:8px 12px;pointer-events:none;font-size:12px}
+.toolbar button{width:54px;height:54px;padding:0;display:grid;place-items:center;background:#1d2d27d8;border:1px solid #b9c48f88;border-radius:12px;cursor:pointer;transition:transform .12s,border-color .12s}.toolbar button img{width:44px;height:44px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 2px 3px #0008)}.toolbar button:hover,.toolbar button:focus-visible{transform:translateY(-2px);border-color:#ffe6a9;outline:none}@media(max-width:700px){.toolbar button{width:44px;height:44px}.toolbar button img{width:36px;height:36px}}
 .toolbar{position:fixed;right:22px;top:22px;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:60%}
 nav{position:fixed;left:22px;bottom:76px;display:flex;gap:6px;flex-wrap:wrap;max-width:70%}nav button small{display:block;font-size:10px;color:#d8d0b0}
 #status{position:fixed;left:22px;bottom:22px;background:#233a2ee8;border:1px solid #cad6a770;padding:10px 14px;border-radius:9px;max-width:calc(100% - 44px);pointer-events:none;font-size:12px}
@@ -15,23 +16,27 @@ nav{position:fixed;left:22px;bottom:76px;display:flex;gap:6px;flex-wrap:wrap;max
 </style>
 <canvas id="world" aria-label="แผนที่สถานที่ คลิกจุดทำงานเพื่อเดินไปใช้"></canvas>
 <header><h1 id="title">สถานที่</h1><small id="subtitle">เดินไปที่จุดทำงานเพื่อใช้บริการ</small></header><div id="hud"></div>
-<div class="toolbar"><button data-menu="bag">กระเป๋า</button><button data-menu="character">ตัวละคร</button><button data-menu="settings">ตั้งค่า</button><button id="focus">หาตัวละคร</button><button id="fit">ดูทั้งหมด</button><button id="editBtn">✎ จัดแผนที่</button><button id="leave">← กลับหมู่บ้าน</button></div>
-<nav id="shortcuts" aria-label="จุดทำงาน"></nav>
+<div class="toolbar"><button data-menu="bag" title="สมุดผนึก" aria-label="สมุดผนึก"><img src="assets/icons/menu/cardbook.webp" alt="" draggable="false"></button><button data-menu="character" title="ตัวละคร" aria-label="ตัวละคร"><img src="assets/icons/menu/stats.webp" alt="" draggable="false"></button><button data-menu="settings" title="ตั้งค่า" aria-label="ตั้งค่า"><img src="assets/icons/menu/settings.webp" alt="" draggable="false"></button><button id="focus" title="หาตัวละคร" aria-label="หาตัวละคร"><img src="assets/icons/menu/party.webp" alt="" draggable="false"></button><button id="fit" title="ดูทั้งหมด" aria-label="ดูทั้งหมด"><img src="assets/icons/menu/map.webp" alt="" draggable="false"></button><button id="editBtn" title="จัดแผนที่" aria-label="จัดแผนที่"><img src="assets/icons/menu/quest.webp" alt="" draggable="false"></button><button id="leave" title="กลับหมู่บ้าน" aria-label="กลับหมู่บ้าน"><img src="assets/icons/menu/village.webp" alt="" draggable="false"></button></div>
+<nav id="shortcuts" aria-label="จุดทำงาน" hidden></nav><style>#shortcuts{display:none!important}</style>
 <div id="status" role="status">คลิกจุดทำงานเพื่อเดินไปใช้ · ลากเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม</div>
 <section id="pick" hidden></section><section id="edit" hidden></section>
-<script src="js/game-settings.js?v=97.03"></script><script src="js/asset-manifest.js?v=98.2"></script><script src="js/tactics-sprites.js?v=97.47"></script><script src="js/hero-motion.js"></script><script src="js/village-alpha-masks.js"></script><script src="js/town-art.js"></script><script src="js/proc-motion.js?v=81.8"></script><script src="js/github-push.js?v=97.93"></script>
-<script src="js/ground-paint.js?v=97.46"></script><script src="js/village-layout-v67.js?v=98.6"></script><script>
+<script src="js/game-settings.js?v=98.566"></script><script src="js/map-scale.js?v=v98.373"></script><script src="js/char-size.js?v=v98.572"></script><script src="js/character-scale-adjust-data.js?v=v98.466"></script><script src="js/character-scale-adjust.js?v=v98.466"></script><script src="js/asset-manifest.js?v=v98.587"></script><script src="js/tactics-sprites.js?v=98.72"></script><script src="js/hero-variant.js?v=98.238"></script><script src="js/hero-motion.js"></script><script src="js/village-alpha-masks.js"></script><script src="js/hero-follower.js?v=v98.373"></script><script src="js/town-art.js?v=v98.356"></script><script src="js/proc-motion.js?v=81.8"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.631"></script>
+<script src="js/ground-paint.js?v=98.13"></script><script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/placeable-art.js?v=v98.431"></script><script>
 'use strict';
 /* v38m · One 2.5D sub-map engine for every place (market, forge, home). Layout = data (localStorage 'place-maps-v1',
-   defaults below, pushed into js/game-settings.js?v=97.03). A station walks the hero to its door and runs the game's own place
+   defaults below, pushed into js/game-settings.js?v=98.566). A station walks the hero to its door and runs the game's own place
    action (runPlaceAction) through the parent page, so every rule stays in the game. */
 const Q = new URLSearchParams(location.search),
  PLACE = /^[a-z0-9_-]{1,40}$/i.test(Q.get('place') || '') ? Q.get('place') : 'market',
  KEY = 'place-maps-v1';
 /* v91.42 · a sub-map can be any id (made by ＋ สถานที่ใหม่ → แมพย่อยใหม่); KIND = which built-in service set (market/forge/home) its stations may use */
+/* v98.434 · placeable-picture catalogue (js/placeable-art.js) — needed before the map is loaded (withArt) */
+const PA_ITEMS = (window.PLACEABLE_ART?.items || []), PA_BY = Object.fromEntries(PA_ITEMS.map(i => [i.sub, i]));
+const CODE_SWAP = { 'code:furnace': 'int:furnace', 'code:anvil': 'int:anvil', 'code:tub': 'int:quench', 'code:board': 'int:writing-desk', 'code:crate': 'int:crate', 'code:lamp': 'decor:lamp-post', 'code:table': 'int:table-square', 'code:bed': 'int:bed-double', 'code:chest': 'int:trunk', 'code:hearth': 'int:fireplace-stone', 'code:shelf': 'int:shelf-store' };
 let SAVED_MAP = null;
 try { SAVED_MAP = (JSON.parse(localStorage.getItem(KEY) || '{}') || {})[PLACE] || null } catch (e) {}
-const KIND = ['market', 'forge', 'home'].includes(PLACE) ? PLACE : (['market', 'forge', 'home'].includes(Q.get('kind')) ? Q.get('kind') : (['market', 'forge', 'home'].includes(SAVED_MAP?.kind) ? SAVED_MAP.kind : 'market'));
+const KINDS_OK = ['market', 'forge', 'home', 'guild'];   /* v98.585 · + guild (the Adventurers' Guild hall · js/guild-desk.js) */
+const KIND = KINDS_OK.includes(PLACE) ? PLACE : (KINDS_OK.includes(Q.get('kind')) ? Q.get('kind') : (KINDS_OK.includes(SAVED_MAP?.kind) ? SAVED_MAP.kind : 'market'));
 const cv = document.getElementById('world'),
  $ = id => document.getElementById(id),
  send = (type, data = {}) => parent.postMessage({
@@ -56,6 +61,12 @@ const ACTIONS = {
   rest: 'พักหายใจ',
   meal: 'อาหารอุ่น'
  },
+ guild: {
+  register: 'คุยกับเจ้าหน้าที่ทะเบียน',
+  contracts: 'งานกิลด์',
+  bounty: 'ประกาศจับ',
+  cards: 'ตู้การ์ด'
+ },
  home: {
   sleep: 'นอนพัก',
   rest: 'พักหายใจ',
@@ -66,88 +77,77 @@ const ACTIONS = {
  }
 } [KIND];
 const DEFAULTS = {
+ /* v98.542 · ตลาดเฟิร์นเวล ออกแบบใหม่ (rev 2): ลานตลาด 24×22 · 4 จุดทำงาน (ร้านวัตถุดิบ · ร้านรับซื้ออุปกรณ์ · กระดานออร์เดอร์ · แผงร้านของเรา) + แผงขายของ น้ำพุกลางลาน ม้านั่ง โคม ของตั้งขาย — ภาพจริงจากแค็ตตาล็อก (decor/int/vt) ·
+    ของที่ขยับ/เพิ่ม/ลบได้ในตัวแก้แมพย่อย · ถ้าเคยบันทึกตลาดเวอร์ชันเก่าไว้ในเบราว์เซอร์ จะถูกแทนด้วยแบบใหม่นี้ครั้งเดียว (ดู upgradeMarket) */
  market: {
+  rev: 2,
   name: 'ตลาดหมู่บ้าน',
-  sub: 'เดินเลือกใช้บริการตามร้านค้า',
-  floor: {
-   w: 11,
-   d: 10,
-   tex: 'paving',
-   walls: false
-  },
-  exit: {
-   u: 0,
-   v: 9.4
-  },
-  stations: [{
-   id: 'materials',
-   name: 'ร้านวัตถุดิบ',
-   actions: ['buy'],
-   u: -6,
-   v: -5,
-   w: 2.3,
-   d: 2.5,
-   door: {
-    du: 3.5,
-    dv: 0
-   },
-   art: 'vt:market-materials.png',
-   width: 470
-  }, {
-   id: 'equipment',
-   name: 'ร้านรับซื้ออุปกรณ์',
-   actions: ['sell'],
-   u: 5,
-   v: -5,
-   w: 2.5,
-   d: 2.3,
-   door: {
-    du: 0,
-    dv: 3.5
-   },
-   art: 'vt:market-equipment.png',
-   width: 470
-  }, {
-   id: 'orders',
-   name: 'กระดานออร์เดอร์',
-   actions: ['orders'],
-   u: -6,
-   v: 4,
-   w: 2.2,
-   d: 1.7,
-   door: {
-    du: 3.5,
-    dv: 0
-   },
-   art: 'vt:market-orders.png',
-   width: 310
-  }],
-  props: [{
-   art: 'decor:market-stall-red',
-   u: 4,
-   v: 4,
-   s: 1
-  }, {
-   art: 'decor:cart',
-   u: 7.5,
-   v: 6,
-   s: 1
-  }, {
-   art: 'decor:hay',
-   u: -8.5,
-   v: -8.5,
-   s: 1
-  }, {
-   art: 'code:lamp',
-   u: -2,
-   v: 7,
-   s: 1
-  }, {
-   art: 'code:lamp',
-   u: 2,
-   v: 7,
-   s: 1
-  }]
+  sub: 'เดินเลือกใช้บริการตามร้านค้า · ซื้อวัตถุดิบ · ขายอุปกรณ์ · รับออร์เดอร์ · วางของขายในแผงของเรา',
+  floor: { w: 12, d: 11, tex: 'ground/cobble.png', walls: false, fence: 'stone' },
+  exit: { u: 0, v: 10.4 },
+  stations: [
+   { id: 'materials', vendor: { kind: 'm2' }, name: 'ร้านวัตถุดิบ', actions: ['buy'], u: -7, v: -6, w: 2.3, d: 2.5, door: { du: 3.5, dv: 0 }, art: 'vt:market-materials.png', width: 470 },
+   { id: 'equipment', vendor: { kind: 'f2' }, name: 'ร้านรับซื้ออุปกรณ์', actions: ['sell'], u: 6.5, v: -6, w: 2.5, d: 2.3, door: { du: 0, dv: 3.5 }, art: 'vt:market-equipment.png', width: 470 },
+   { id: 'orders', vendor: { kind: 'm3' }, name: 'กระดานออร์เดอร์', actions: ['orders'], u: -9, v: 2.5, w: 2.2, d: 1.7, door: { du: 3.5, dv: 0 }, art: 'vt:market-orders.png', width: 310 },
+   { id: 'myshop', name: 'แผงร้านของเรา', actions: ['shop'], u: 0, v: -8, w: 1.7, d: 1.1, door: { du: 0, dv: 2.4 }, art: 'decor:market-stall-red', width: 270 }
+  ],
+  props: [
+   /* ลานกลาง: น้ำพุ ม้านั่ง โคม */
+   { art: 'vt:fountain.webp', u: 0, v: 1.5, s: 1, width: 470 },
+   { art: 'decor:bench', u: -4.2, v: 1.5, s: 1 }, { art: 'decor:bench', u: 4.2, v: 1.5, s: 1 }, { art: 'decor:bench', u: 0, v: 5.2, s: 1 },
+   { art: 'decor:lamp-post', u: -3.2, v: -1.8, s: .5 }, { art: 'decor:lamp-post', u: 3.2, v: -1.8, s: .5 }, { art: 'decor:lamp-post', u: -3.2, v: 4.8, s: .5 }, { art: 'decor:lamp-post', u: 3.2, v: 4.8, s: .5 },
+   /* ฝั่งตะวันออก: แผงผัก/ผลไม้/ชีส (ตกแต่ง — ชาวบ้านมาเดินซื้อของ) */
+   { art: 'decor:v1-veg-stand', u: 8.6, v: 0.5, s: 1 }, { art: 'int:stall-green', u: 9.4, v: 3.6, s: 1 }, { art: 'int:stall-gold', u: 8.2, v: 7, s: 1 },
+   { art: 'int:fruit-crate', u: 6.2, v: 1.6, s: 1 }, { art: 'int:veg-basket', u: 10.2, v: 1.8, s: 1 }, { art: 'int:cheese-table', u: 5.8, v: 6.4, s: 1 }, { art: 'decor:v1-wheelbarrow', u: 10.4, v: 5.4, s: 1 },
+   /* ฝั่งตะวันตก: แผงของเกรเวน (พ่อค้าคู่แข่ง) · ผ้า · เครื่องดื่ม */
+   { art: 'decor:market-stall-blue', u: -9, v: 7.2, s: 1 }, { art: 'int:cloth-shelf', u: -10.4, v: -1.4, s: 1 }, { art: 'int:barrel-rack', u: -5.2, v: 7.6, s: 1 }, { art: 'int:keg', u: -6.4, v: 8.6, s: 1 }, { art: 'int:tankards', u: -4.4, v: 8.4, s: 1 },
+   /* รอบร้านวัตถุดิบ: กระสอบ ลัง ไม้ฟืน */
+   { art: 'int:sack-pile', u: -4.4, v: -3.4, s: 1 }, { art: 'int:crate-stack', u: -10, v: -4.2, s: 1 }, { art: 'decor:woodpile', u: -10.2, v: -8.2, s: 1 }, { art: 'int:log-pile', u: -3.6, v: -9, s: .8 }, { art: 'int:ingots', u: -2.6, v: -4.8, s: 1 },
+   /* รอบร้านรับซื้ออุปกรณ์: ชั้นอาวุธ ตู้โชว์ */
+   { art: 'int:weapon-display', u: 10.2, v: -3.6, s: 1 }, { art: 'int:rack-weapons', u: 3.2, v: -3.8, s: 1 }, { art: 'int:trunk', u: 10.6, v: -8.4, s: 1 },
+   /* รอบแผงร้านของเรา + กระดานข่าว */
+   { art: 'int:price-post', u: -2.4, v: -6.2, s: 1 }, { art: 'int:till-scale', u: 2.4, v: -6, s: 1 }, { art: 'decor:v1-notice-board', u: -6.4, v: 0.2, s: 1 }, { art: 'int:quest-board', u: -9.4, v: 5.4, s: 1 },
+   /* ทางเข้า (ใต้): ป้าย ธง ต้นไม้กระถาง รถเข็น บ่อน้ำ */
+   { art: 'decor:banner-pole', u: -3.8, v: 10.2, s: .62 }, { art: 'decor:banner-pole', u: 3.8, v: 10.2, s: .62 }, { art: 'decor:signpost', u: 6.4, v: 8.4, s: 1 }, { art: 'decor:flower-box', u: -5.4, v: 9.8, s: 1 }, { art: 'decor:flower-box', u: 5.2, v: 9.8, s: 1 },
+   { art: 'decor:well', u: 7.4, v: 9.2, s: 1 }, { art: 'decor:cart', u: 9.6, v: 9.4, s: 1 }, { art: 'decor:hay', u: 11, v: 7.6, s: .9 }, { art: 'int:water-trough', u: -7.4, v: 10.4, s: 1 }, { art: 'int:map-table', u: 4.6, v: 4.6, s: .9 },
+   { art: 'int:plant-large', u: -11, v: 9.4, s: 1 }, { art: 'int:plant-large', u: 11, v: -1, s: 1 }, { art: 'decor:flower-bed', u: -11, v: 0.8, s: 1 }
+  ]
+ },
+ /* v98.585 · the Adventurers' Guild hall (rich interior: counters, boards, lounge, hearth, bar) · 4 counters with staff (js/guild-desk.js) */
+ guild: {
+  rev: 1,
+  name: 'สมาคมนักผจญภัย',
+  sub: 'ลงทะเบียน · รับ–ส่งงานกิลด์ · ประกาศจับ · ตู้การ์ด',
+  kind: 'guild',
+  floor: { w: 12, d: 10, tex: 'paving', walls: true },
+  exit: { u: 0, v: 10.4 },
+  npcSpots: { sigrid: { u: -1.4, v: 2.8, face: 'SW' } },   /* v98.586 · Sigrid (mercenary for hire) waits by the party table, 8:00–17:00 */
+  stations: [
+   { id: 'register', vendor: { kind: 'g1' }, name: 'เคาน์เตอร์ทะเบียน', actions: ['register'], u: -6.5, v: -7.4, w: 2.4, d: 1.4, door: { du: 0, dv: 2.6 }, art: 'int:reg-desk', width: 300 },
+   { id: 'contracts', vendor: { kind: 'g2' }, name: 'โต๊ะงานกิลด์', actions: ['contracts'], u: 3.2, v: -7.6, w: 3.2, d: 1.4, door: { du: 0, dv: 2.7 }, art: 'int:counter-guild', width: 420 },
+   { id: 'bounty', vendor: { kind: 'g4' }, name: 'กระดานประกาศจับ', actions: ['bounty'], u: -10.6, v: -1.2, w: 1.2, d: 2.2, door: { du: 2.7, dv: 0 }, art: 'int:quest-board', width: 270 },
+   { id: 'cards', vendor: { kind: 'g3' }, name: 'ตู้การ์ด', actions: ['cards'], u: 10.2, v: -1.6, w: 1.6, d: 2.4, door: { du: -2.8, dv: 0 }, art: 'int:writing-desk', width: 230 }
+  ],
+  props: [
+   /* ผนังหลัง: ธงสมาคม หน้าต่างโค้ง อาวุธประดับ ตู้หนังสือ ตู้ถ้วยรางวัล */
+   { art: 'int:banner-guild', u: -1.4, v: -9.3, s: 1 }, { art: 'int:banner-guild', u: 8, v: -9.3, s: 1 }, { art: 'int:big-bookcase', u: -10.2, v: -9, s: 1 }, { art: 'int:trophy-case', u: 10.6, v: -8.8, s: 1 },
+   { art: 'int:window-arched', u: -3.4, v: -9.7, s: 1 }, { art: 'int:window-arched', u: 6.2, v: -9.7, s: 1 }, { art: 'int:swords-shield', u: 0.4, v: -9.7, s: 1 }, { art: 'int:antlers', u: 9.6, v: -9.7, s: 1 },
+   { art: 'int:wall-torch', u: -8.4, v: -9.7, s: 1 }, { art: 'int:wall-torch', u: 1.6, v: -9.7, s: 1 }, { art: 'int:scroll-rack', u: -8.8, v: -7.6, s: 1 }, { art: 'int:book-scrolls', u: -4.4, v: -8, s: 1 },
+   /* ผนังซ้าย: เตาผิงใหญ่ + มุมนั่งพัก */
+   { art: 'int:fireplace-grand', u: -11.4, v: 6.2, s: 1 }, { art: 'int:armchair-set', u: -8.4, v: 6.6, s: 1 }, { art: 'int:rug-round', u: -8.2, v: 6.4, s: 1 }, { art: 'int:fire-tools', u: -11.2, v: 8.6, s: 1 },
+   { art: 'int:noticeboard', u: -11.7, v: 2.4, s: 1 }, { art: 'int:painting', u: -11.7, v: -5.2, s: 1 }, { art: 'int:wall-torch', u: -11.7, v: 4.2, s: 1 },
+   /* กลางห้อง: โต๊ะแผนที่ พรม โต๊ะยาวของปาร์ตี้ */
+   { art: 'int:rug-4x3', u: 0.4, v: 1.6, s: 1.2 }, { art: 'int:map-table', u: 0, v: -2.4, s: 1 }, { art: 'int:candle-stand', u: -2.4, v: -3.2, s: 1 }, { art: 'int:candle-stand', u: 2.4, v: -3.2, s: 1 },
+   { art: 'int:table-long', u: -3.2, v: 2.8, s: 1 }, { art: 'int:bench-long', u: -3.2, v: 4.4, s: 1 }, { art: 'int:bench-long', u: -3.2, v: 1.2, s: 1 }, { art: 'int:table-lantern', u: -3.4, v: 2.6, s: 1 },
+   { art: 'int:game-table', u: 3.8, v: 2.6, s: 1 }, { art: 'int:stool', u: 2.4, v: 3.8, s: 1 }, { art: 'int:stool', u: 5.2, v: 1.6, s: 1 }, { art: 'int:stool', u: 5.2, v: 3.8, s: 1 },
+   /* ฝั่งขวา: บาร์เล็ก ถังเบียร์ ชั้นอุปกรณ์ */
+   { art: 'int:counter-bar', u: 8.6, v: 6.4, s: 1 }, { art: 'int:barrel-rack', u: 11, v: 4.4, s: 1 }, { art: 'int:keg', u: 11, v: 8.4, s: 1 }, { art: 'int:stool-bar', u: 7.2, v: 8, s: 1 }, { art: 'int:stool-bar', u: 8.6, v: 8.2, s: 1 }, { art: 'int:stool-bar', u: 10, v: 8, s: 1 },
+   { art: 'int:gear-bench', u: 10.2, v: -5.6, s: 1 }, { art: 'int:armor-display', u: 6.6, v: -4.4, s: 1 }, { art: 'int:rack-weapons', u: 11.2, v: 1.4, s: 1 }, { art: 'int:weapon-barrel', u: 7.6, v: -1.2, s: 1 },
+   { art: 'int:trunk', u: -10.8, v: -5.4, s: 1 }, { art: 'int:crate-stack', u: 11, v: -3.6, s: .9 },
+   /* ทางเข้า: กระถางต้นไม้ ธงตั้ง รูปปั้น */
+   { art: 'int:plant-large', u: -4.6, v: 9.8, s: 1 }, { art: 'int:plant-large', u: 4.6, v: 9.8, s: 1 }, { art: 'int:banner-stand', u: -2.2, v: 9.4, s: 1 }, { art: 'int:banner-stand', u: 2.2, v: 9.4, s: 1 },
+   { art: 'int:statue', u: 7.4, v: 9.6, s: 1 }, { art: 'int:plant-fern', u: -7.6, v: 9.8, s: 1 }, { art: 'int:rug-runner', u: 0, v: 7.6, s: 1 }
+  ]
  },
  forge: {
   name: 'โรงตีเหล็ก',
@@ -280,8 +280,8 @@ const DEFAULTS = {
     du: 1.8,
     dv: 1
    },
-   art: 'code:bed',
-   width: 150
+   art: 'int:bed-double',
+   width: 215
   }, {
    id: 'chest',
    name: 'หีบเก็บของ',
@@ -294,8 +294,8 @@ const DEFAULTS = {
     du: 0,
     dv: 1.5
    },
-   art: 'code:chest',
-   width: 90
+   art: 'int:offering-box',
+   width: 110
   }, {
    id: 'table',
    name: 'โต๊ะจัดสำรับ',
@@ -308,37 +308,45 @@ const DEFAULTS = {
     du: -1.7,
     dv: 0
    },
-   art: 'code:table',
-   width: 120
-  }, {
-   id: 'hearth',
-   name: 'เตาผิง',
-   actions: ['meal', 'rest'],
-   u: -1.6,
-   v: -3.9,
-   w: 1.1,
-   d: .6,
-   door: {
-    du: 0,
-    dv: 1.6
-   },
-   art: 'code:hearth',
+   art: 'int:table-square',
    width: 130
   }],
   props: [{
-   art: 'decor:flower-box',
+   art: 'int:fireplace-stone',   /* v98.605 · the hearth is only scenery now (it used to be a station: meal / rest) */
+   u: -1.6,
+   v: -3.9,
+   width: 150,
+   s: 1
+  }, {
+   art: 'int:flower-vase',
    u: 3.8,
    v: -3.8,
-   s: .8
+   width: 80,
+   s: 1
   }, {
-   art: 'code:crate',
+   art: 'int:crate-stack',
    u: -4.6,
    v: 2.6,
-   s: .8
+   width: 95,
+   s: 1
+  }, {
+   art: 'int:plant-fern',
+   u: -4.7,
+   v: -3.6,
+   width: 95,
+   s: 1
+  }, {
+   art: 'int:stool',
+   u: 1.4,
+   v: .8,
+   width: 62,
+   s: 1
   }]
  }
 };
 const copy = x => JSON.parse(JSON.stringify(x));
+const defaultMap = id => copy(DEFAULTS[id]);   /* frames now come from ArtFrames (js/art-frames.js): the picture's template, else an automatic one */
+window.defaultMap = defaultMap;   /* v98.553 */
 // v82.1 · the hero's size / image on this map come from the map itself (M.cast), else from the village
 const VILLAGE_HERO = (() => {
  try {
@@ -355,6 +363,9 @@ const VILLAGE_HERO = (() => {
  }
 })();
 const heroCast = () => M.cast?.hero || VILLAGE_HERO;
+/* v98.139 · the ONE size multiplier of this sub-map (js/map-scale.js): its own value, else the village's */
+window.placeHeroScale = () => window.placeScale() * (window.CharScaleAdjust?.factor('village', 'hero') || 1);   /* v98.263 · the ⚖ Scale Lineup size of the hero applies in sub-maps too */
+window.placeScale = () => window.MapScale ? MapScale.get('place', PLACE) : (VILLAGE_HERO.s || 1);
 
 if (!DEFAULTS[PLACE]) DEFAULTS[PLACE] = {
  name: SAVED_MAP?.name || PLACE,
@@ -380,8 +391,15 @@ function withShop(m) {
  st.actions = [...(st.actions || []), 'shop'];
  return m
 }
-let all = loadAll(),
- M = withShop(copy(all[PLACE] || DEFAULTS[PLACE]));
+/* v98.542 · a market saved in this browser from before the redesign (the 3 original stalls, no rev) is the old default, not the owner's own layout: use the new design */
+function upgradeMarket(all) {
+ const m = all?.market; if (PLACE !== 'market' || !m || m.rev >= (DEFAULTS.market.rev || 0)) return all;
+ const ids = (m.stations || []).map(s => s.id).join(','), old = ids === 'materials,equipment,orders' && (m.props || []).length <= 6;
+ if (old) { delete all.market; try { localStorage.setItem(KEY, JSON.stringify(all)) } catch (e) { } }
+ return all
+}
+let all = upgradeMarket(loadAll()),
+ M = withArt(withShop(all[PLACE] ? copy(all[PLACE]) : defaultMap(PLACE)));
 
 // v85 · painted ground for this map (paths painted here are walkable, even outside the floor; water blocks)
 window.PlacePaint = window.GroundPaint ? GroundPaint.create({ w: 2200, h: 1400, res: .25, unitPx: 45, origin: { x: 1100, y: 700 } }) : null;
@@ -433,7 +451,8 @@ const door = s => ({
  v: s.v + s.door.dv
 });
 
-window.PLACE_ROUTE = (a, b) => route(a, b);   /* v97.69 · V2: villagers walk around furniture with the hero's A* */
+window.PLACE_ROUTE = (a, b) => route(a, b, 'npc');
+window.PLACE_NPC_SPOTS = () => (typeof M !== 'undefined' && M?.npcSpots) || {};   /* v98.586 · pinned villagers (js/place-people.js) */   /* v97.69 · V2: villagers walk around furniture with the hero's A* */
 window.PLACE_STATIONS = () => (typeof M !== 'undefined' && M?.stations) ? M.stations.map(s => ({ u: s.u, v: s.v, d: s.d || 1 })) : [];
 function blocked(u, v) {
  const F = M.floor,
@@ -483,7 +502,11 @@ function clear(a, b) {
  return true
 }
 
-function route(from, to) {
+/* v98.540 · painted roads (🛣 / any path material) pull auto-walking: off the road a step costs ROAD_PULL × more — the hero a lot, villagers only a little. No painted road → plain shortest path as before. */
+const ROAD_PULL = { hero: 1.8, npc: 1.2 };
+function onRoadUV(u, v) { const P = window.PlacePaint; return !!P && P.walk(1100 + (u - v) * 45, 700 + (u + v) * 22.5) > 0 }
+function route(from, to, who = 'hero') {
+ const pull = window.PlacePaint?.hasPath?.() ? (ROAD_PULL[who] || 1) : 1;
  const end = {
    u: Math.round(to.u * 2) / 2,
    v: Math.round(to.v * 2) / 2
@@ -526,7 +549,7 @@ function route(from, to) {
      v: a.v + dv
     },
     bk = key(b),
-    n = cost.get(ak) + Math.hypot(du, dv);
+    n = cost.get(ak) + Math.hypot(du, dv) * (pull === 1 || onRoadUV(a.u + du / 2, a.v + dv / 2) ? 1 : pull);
    if (closed.has(bk) || blocked(b.u, b.v) || !clear(a, b) || n >= (cost.get(bk) ?? Infinity)) continue;
    cost.set(bk, n);
    prev.set(bk, a);
@@ -543,7 +566,10 @@ function route(from, to) {
 }
 
 /* ---------- art: real images or code-drawn placeholders ---------- */
+/* v98.434 · every placeable picture of the repository comes from js/placeable-art.js (Thai names + groups + starting width);
+   the code-drawn shapes stay at the end of the list (tab "วาดด้วยโค้ด (ชั่วคราว)") for maps that still want them */
 const ART_LIST = [
+ ...PA_ITEMS.map(i => [i.sub, i.n]),
  ['code:furnace', 'เตาหลอม (โค้ด)'],
  ['code:anvil', 'ทั่ง (โค้ด)'],
  ['code:tub', 'ถังชุบ (โค้ด)'],
@@ -554,15 +580,19 @@ const ART_LIST = [
  ['code:hearth', 'เตาผิง (โค้ด)'],
  ['code:crate', 'ลังไม้ (โค้ด)'],
  ['code:lamp', 'โคมไฟ (โค้ด)'],
- ['code:shelf', 'ชั้นวาง (โค้ด)'],
- ['vt:market-materials.png', 'ร้านวัตถุดิบ'],
- ['vt:market-equipment.png', 'ร้านรับซื้อ'],
- ['vt:market-orders.png', 'กระดานออร์เดอร์'],
- ['vt:forge.png', 'โรงตีเหล็ก (อาคาร)'],
- ['vt:fountain.png', 'น้ำพุ'],
- ...['bench', 'woodpile', 'hay', 'cart', 'well', 'signpost', 'banner-pole', 'flower-box', 'flower-bed', 'market-stall-red', 'market-stall-blue', 'stepping-stones', 'pond-lilies', 'fence-picket', 'stone-wall-low', 'hedge-row'].map(n => ['decor:' + n, n])
+ ['code:shelf', 'ชั้นวาง (โค้ด)']
 ];
-const imgOf = a => a.startsWith('vt:') ? TownArt.image('assets/village-town/' + a.slice(3)) : a.startsWith('decor:') ? TownArt.image('assets/village-town/decor/' + a.slice(6) + '.png') : a.startsWith('img:') ? TownArt.image(a.slice(4)) : null;
+/* starting width of a newly placed piece: the catalogue's sub-map width, else the old defaults */
+const artWidth = (a, fallback) => PA_BY[a]?.sw || (a.startsWith('vt:') ? 400 : fallback || 110);
+/* v98.434 · built-in maps first drawn with code shapes get the real pictures (once — artV 2 marks a map as done, so a code shape
+   picked again later from the picker stays). Stations keep at least their old width; loose pieces take the catalogue width. */
+function withArt(m) {
+ if (!m || m.artV >= 2) return m;
+ for (const st of m.stations || []) { const to = CODE_SWAP[st.art]; if (to && PA_BY[to]) { st.art = to; st.width = Math.max(PA_BY[to].sw, +st.width || 0) } }
+ for (const o of m.props || []) { const to = CODE_SWAP[o.art]; if (to && PA_BY[to]) { o.art = to; o.width = PA_BY[to].sw } }
+ m.artV = 2; return m
+}
+const imgOf = a => a.startsWith('vt:') ? TownArt.image('assets/village-town/' + a.slice(3)) : a.startsWith('decor:') ? TownArt.image('assets/village-town/decor/' + a.slice(6) + '.png') : a.startsWith('img:') ? TownArt.image(a.slice(4)) : a.startsWith('int:') ? TownArt.image('assets/interior/' + a.slice(4) + '.webp') : null;
 
 function box(u, v, w, d, h, top, left, right) {
  const P = (a, b, z) => project(u + a, v + b, z),
@@ -690,7 +720,13 @@ function codeArt(kind, u, v, s, t) {
  }
 }
 
-function drawArt(a, u, v, width, s = 1, flip = false, t = 0, hp = null) {
+function drawArt(a, u, v, width, s = 1, flip = false, t = 0, hp = null, geometry = null) {
+ if (geometry && window.PieceGeometry) {
+  const anchor = project(u, v); g.save();
+  try { g.translate(anchor.x, anchor.y); PieceGeometry.apply(g, geometry); const ix = geometry.ix ?? 1, iy = geometry.iy ?? 1, tX = Math.tan((geometry.skx || 0) * Math.PI / 180), tY = Math.tan((geometry.sky || 0) * Math.PI / 180); if (ix !== 1 || iy !== 1) g.scale(ix, iy); if (tX || tY) g.transform(1, tY, tX, 1, 0, 0);   /* v98.562 · same as Object Workshop: scale(ix,iy) then skew (skx เอียงเสา · sky เอียงฐาน) */
+  g.translate(-anchor.x, -anchor.y);   /* v98.558 · slant: ix/iy diagonal scales + kx lean */ drawArt(a, u, v, width, s, flip, t, hp) } finally { g.restore() }
+  return
+ }
  if (a.startsWith('code:')) {
   g.save();
   if (flip) {
@@ -712,8 +748,8 @@ function drawArt(a, u, v, width, s = 1, flip = false, t = 0, hp = null) {
   g.translate(p.x * 2, 0);
   g.scale(-1, 1)
  }
- if (a.startsWith('decor:')) {
-  g.fillStyle = '#00000028';
+ if (a.startsWith('decor:') || a.startsWith('int:')) {
+  g.fillStyle = '#00000030';
   g.beginPath();
   g.ellipse(p.x, p.y, w * .36, w * .11, 0, 0, 7);
   g.fill()
@@ -761,7 +797,18 @@ function drawFloor() {
  t.beginPath();
  pts.forEach((p, i) => t[i ? 'lineTo' : 'moveTo'](p.x, p.y));
  t.closePath();
- if (F.tex === 'plank') {
+ const floorTex = F.tex === 'plank' ? TownArt.image('assets/interior/tex-floor-wood.webp') : null;
+ if (floorTex && floorTex.complete && floorTex.naturalWidth) {
+  /* v98.198 · real wood floor texture (assets/interior) laid on the isometric grid: one 418px tile = 4 x 4 grid cells */
+  const k = 4 / floorTex.naturalWidth;
+  t.save();
+  t.clip();
+  t.transform(k * S, k * S / 2, -k * S, k * S / 2, 1100, 700);
+  t.fillStyle = t.createPattern(floorTex, 'repeat');
+  t.fillRect(-(F.w + 2) / k, -(F.d + 2) / k, (F.w * 2 + 4) / k, (F.d * 2 + 6) / k);
+  t.restore()
+ } else if (F.tex === 'plank') {
+  if (floorTex && !floorTex.complete) floorTex.addEventListener('load', () => { try { drawFloor() } catch (e) {} }, { once: true });
   t.save();
   t.clip();
   t.fillStyle = '#9a7046';
@@ -808,7 +855,8 @@ function walls() {
  if (!F.walls) return;
  const h = 120,
   P = (u, v, z) => project(u, v, z),
-  face = (a, b, c1) => {
+  wallTex = TownArt.image('assets/interior/tex-wall-timber.webp'),
+  face = (a, b, c1, shade) => {
    g.beginPath();
    g.moveTo(a.x, a.y);
    g.lineTo(b.x, b.y);
@@ -817,13 +865,33 @@ function walls() {
    g.closePath();
    g.fillStyle = c1;
    g.fill();
+   if (wallTex && wallTex.complete && wallTex.naturalWidth) {
+    /* v98.198 · timber wall picture mapped onto the wall plane (2 grid cells per tile, one tile tall) */
+    const tw = wallTex.naturalWidth, dx = (b.x - a.x) / (2 * tw), dy = (b.y - a.y) / (2 * tw);
+    g.save();
+    g.clip();
+    g.transform(dx, dy, 0, h / tw, a.x, a.y - h);
+    g.fillStyle = g.createPattern(wallTex, 'repeat');
+    g.fillRect(-tw * 6, 0, tw * 12 + Math.abs(b.x - a.x) * 2, tw);
+    g.restore();
+    g.save();
+    g.beginPath();
+    g.moveTo(a.x, a.y);
+    g.lineTo(b.x, b.y);
+    g.lineTo(b.x, b.y - h);
+    g.lineTo(a.x, a.y - h);
+    g.closePath();
+    g.fillStyle = shade;
+    g.fill();
+    g.restore()
+   }
    g.strokeStyle = '#5b4330';
    g.lineWidth = 2;
    g.stroke()
   };
  const base = KIND === 'forge' ? ['#857a6c', '#73695d'] : ['#dccdb0', '#cbbb9c'];
- face(P(-F.w, -F.d), P(F.w, -F.d), base[0]);
- face(P(-F.w, F.d + 1), P(-F.w, -F.d), base[1]);
+ face(P(-F.w, -F.d), P(F.w, -F.d), base[0], '#00000000');
+ face(P(-F.w, F.d + 1), P(-F.w, -F.d), base[1], '#00000040');
  g.strokeStyle = '#6b4a2e';
  g.lineWidth = 6;
  for (let k = -F.w; k <= F.w; k += 2.5) {
@@ -843,24 +911,52 @@ function walls() {
 }
 
 /* ---------- loop ---------- */
+/* v98.309 · the hero against props that have an order footprint: move him after every prop he stands in front of, before every prop he stands behind (same rule as the village's fixOrder) */
+/* v98.552 · LAYER NUMBER (z) works between stations, their sets and loose small items: two pieces whose pictures overlap on screen are drawn lower z first, whatever their depth (y).
+   Equal z keeps the depth order. People and the hero (no rect) are not moved here — they keep the depth / footprint rules. (Before, z only ordered the members INSIDE one station set.) */
+function layerOrderPlace(list) {
+ const R = e => e.o ? e.o.rect : e.G && e.G.rect, Z = e => e.o ? (e.o.z || 0) : (e.G.z || 0), hit = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+ if (!list.some(e => Z(e))) return;
+ for (let pass = 0; pass < 8; pass++) { let moved = false;
+  for (let i = 0; i < list.length && !moved; i++) { const a = list[i], ra = R(a); if (!ra) continue;
+   for (let j = i + 1; j < list.length; j++) { const b = list[j], rb = R(b); if (!rb || Z(b) >= Z(a) || !hit(ra, rb)) continue; const [x] = list.splice(j, 1); list.splice(i, 0, x); moved = true; break } }
+  if (!moved) break }
+}
+function fixOrderPlace(list) {
+ if (!window.DepthStyle || /[?&]depthfix=0/.test(location.search)) return;
+ const ih = list.findIndex(e => e.o && e.o.hero); if (ih < 0) return; const w = list[ih].o;
+ const fr = []; let must = Infinity, back = Infinity;
+ list.forEach((e, i) => { const fp = e.o ? e.o.fp : e.G?.fp; if (i === ih || !fp) return; const inF = DepthStyle.walkerInFront(fp, w.wu, w.wv); if (i > ih) { if (inF) fr.push(i); else must = Math.min(must, i) } else if (!inF) back = Math.min(back, i) });
+ const after = Math.max(-1, ...fr.filter(i => i < must));
+ if (after > ih) { const [r] = list.splice(ih, 1); list.splice(after, 0, r) }
+ else if (back < ih) { const [r] = list.splice(ih, 1); list.splice(back, 0, r) }
+}
+let cvLeft = 0, cvTop = 0;   /* v98.309 · where the canvas starts on the page (0,0 normally; the docked editor layout insets it) */
 function resize() {
- W = innerWidth;
- H = innerHeight;
+ if (document.body.classList.contains('edDock')) { const r = cv.getBoundingClientRect(); W = r.width; H = r.height; cvLeft = r.left; cvTop = r.top } else { W = innerWidth; H = innerHeight; cvLeft = cvTop = 0 }
  cv.width = Math.round(W * devicePixelRatio);
  cv.height = Math.round(H * devicePixelRatio);
  fitView()
 }
 
+/* v98.570 · the sub-map zoom is whatever draws the hero as big on screen as on the village map (CharSize.heroScreenPx) — needs the fit scale, so it is computed in fitView */
+const PLACE_ZOOM = 1.65;   /* fallback only */
+/* characters keep the same size relative to the floor grid as on the village map (that grid is 56 px wide per cell, this one 90) */
+const PLACE_CHAR_K = 90 / 56;
+window.PLACE_CHAR_K = PLACE_CHAR_K;
+let camHold = 0;
 function fitView() {
  const F = M.floor,
   spanX = (F.w * 2 + F.d * 2 + 2) * S,
   spanY = (F.w + F.d + 1) * S + 260;
  scale = Math.min((W - 60) / spanX, (H - 200) / spanY, 1.4);
- zoom = 1;
+ /* v98.20 · play view: zoomed in on the hero (the whole room is still one wheel-turn away); the editor keeps the fit-all view */
+ zoom = (typeof editing !== 'undefined' && editing) ? 1 : (() => { try { const hw = CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K * scale, z = CharSize.heroScreenPx(W, H) / hw; return isFinite(z) && z > .3 ? Math.min(6, z) : PLACE_ZOOM } catch (e) { return PLACE_ZOOM } })();
  pan = {
   x: 0,
   y: 60
  }
+ if (zoom !== 1 && typeof hero !== 'undefined' && typeof M !== 'undefined') focus()
 }
 
 function focus() {
@@ -871,6 +967,85 @@ function focus() {
  }
 }
 let hits = [];
+
+/* ---- v98.548 · the way out: a soft light aura (like daylight coming in through the doorway) + a floor arrow that slides toward the exit ----
+   Facing SW / SE (the door is on the near side, behind the camera): only the light. Facing NE / NW (far walls): the door is drawn too, with the light behind it.
+   The arrow is where you stand to leave (click it / walk onto it / the exit button all go there). It slides along its own axis by 20 % of its length. */
+/* v98.556 · VENDORS: a station can have a seller who stands there (s.vendor = { kind, du, dv, face }). Generic sellers, NOT named villagers: several similar "kinds", each with only TWO directions (SW · SE).
+   Art: assets/village-town/vendors/<kind>-sw.webp and <kind>-se.webp (384×384 canvas, feet at y=360 like every character picture) — until a picture exists the seller is drawn with code (VillagerDraw, palette below).
+   du/dv = offset from the station centre (default: at the stall's front, toward the door) · face SW|SE (default: toward the customer side). Set / drag in the editor (station → 🧑‍🌾 คนขาย). Clicking a seller = using the station. */
+const VENDOR_KINDS = {
+ m1: { name: 'พ่อค้า ก (หมวกแก๊ป)', look: { coat: '#7a5a3a', apron: '#e8dcc0', hair: '#4a3020', hat: 'cap', hatCol: '#6a4a2a', age: 40 } },
+ m2: { name: 'พ่อค้า ข (มีหนวด)', look: { coat: '#4a5a6a', apron: '#d8d0b8', hair: '#2a2018', hat: 'none', beard: '#2a2018', age: 45 } },
+ m3: { name: 'พ่อค้า ค (หมวกเขียว)', look: { coat: '#6a3a3a', apron: '#e8dcc0', hair: '#6a5030', hat: 'cap', hatCol: '#3a4a3a', age: 38 } },
+ f1: { name: 'แม่ค้า ก (ผ้าโพกหัว)', look: { coat: '#8a4b5c', apron: '#efe2c8', hair: '#5a3a22', hat: 'scarf', hatCol: '#c9a07a', longHair: true, age: 35 } },
+ f2: { name: 'แม่ค้า ข (ผ้าโพกครีม)', look: { coat: '#4a6a4a', apron: '#efe2c8', hair: '#3a2a1e', hat: 'scarf', hatCol: '#e8d6b0', longHair: true, age: 40 } },
+ f3: { name: 'แม่ค้า ค (ผมยาว)', look: { coat: '#6a5a8a', apron: '#f1e6cc', hair: '#8a5a2a', hat: 'none', longHair: true, age: 32 } },
+ /* v98.585 · Adventurers' Guild staff (unnamed · navy-and-gold guild coat) — js/guild-desk.js STAFF */
+ g1: { name: 'ฟรีดา · เจ้าหน้าที่ทะเบียน', look: { coat: '#2f4a6a', apron: '#e8d6a8', hair: '#5a3a22', hat: 'none', longHair: true, age: 30 } },
+ g2: { name: 'แกเร็ธ · เจ้าหน้าที่จัดงาน', look: { coat: '#2f4a6a', apron: '#c9a45a', hair: '#2a2018', hat: 'cap', hatCol: '#1f3048', beard: '#2a2018', age: 42 } },
+ g3: { name: 'ออสวิน · ผู้ประเมินการ์ด', look: { coat: '#4a3a6a', apron: '#e8dcc0', hair: '#cfcfd6', hat: 'none', beard: '#bfbfc6', age: 60 } },
+ g4: { name: 'ไนลา · ผู้ดูแลกระดานประกาศ', look: { coat: '#3a4a3a', apron: '#d8c08a', hair: '#8a5a2a', hat: 'scarf', hatCol: '#2f4a6a', longHair: true, age: 26 } }
+};
+window.VENDOR_KINDS = VENDOR_KINDS;
+function vendorDefault(s) {
+ const d = s.door || { du: 0, dv: 1 }, alongU = Math.abs(d.du) >= Math.abs(d.dv), sg = Math.sign(alongU ? d.du : d.dv) || 1;
+ return { du: alongU ? sg * +(s.w * .55).toFixed(2) : 0, dv: alongU ? 0 : sg * +(s.d * .55).toFixed(2), face: alongU && sg > 0 ? 'SE' : 'SW' }
+}
+window.vendorDefault = vendorDefault;
+const vendorFace = s => ({ SW: 'SW', SE: 'SE' })[s.vendor?.face] || vendorDefault(s).face;
+const vendorWorld = s => { const df = vendorDefault(s), v = s.vendor || {}; return { u: s.u + (v.du ?? df.du), v: s.v + (v.dv ?? df.dv) } };
+function vendorObj(s, i) {
+ if (!s.vendor?.kind || !VENDOR_KINDS[s.vendor.kind]) return null;
+ const w = vendorWorld(s), p = project(w.u, w.v), face = vendorFace(s), kind = s.vendor.kind, hash = [...kind + s.id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % 628 / 100,
+  px = CharSize.VILLAGE_HERO_PX * (CharSize.DRAW.ally / CharSize.DRAW.hero) * window.placeScale() * PLACE_CHAR_K;
+ hits.push({ type: 'station', i, r: { x: p.x - px * .22, y: p.y - px * .9, w: px * .44, h: px * .95 } });   /* a click on the seller = the station */
+ return { y: p.y, vendor: true, draw: (t = performance.now()) => {
+  const im = TownArt.image('assets/village-town/vendors/' + kind + '-' + face.toLowerCase() + '.webp'), bob = Math.sin(t * .0018 + hash) * 1.1;
+  if (im && im.complete && im.naturalWidth) { g.fillStyle = 'rgba(20,16,10,.28)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7); g.fill(); g.drawImage(im, p.x - px / 2, p.y - px * 360 / 384 - bob, px, px) }
+  else window.VillagerDraw?.(g, VENDOR_KINDS[kind].look, p.x, p.y, t, { face, scale: window.placeScale() * PLACE_CHAR_K })
+ } }
+}
+const EXIT_DIRS = { SE: [1, 0], NW: [-1, 0], SW: [0, 1], NE: [0, -1] };
+function exitDir() {
+ const e = M.exit, F = M.floor; if (!e) return 'SW'; if (EXIT_DIRS[e.dir]) return e.dir;
+ return [['SE', F.w - e.u], ['NW', F.w + e.u], ['SW', F.d + 1 - e.v], ['NE', F.d + e.v]].sort((a, b) => a[1] - b[1])[0][0]
+}
+const EXIT_BACK = 1.15;   /* cells inside the room, from the exit, to the arrow's resting centre (close to the door) */
+function exitSpot() { const d = EXIT_DIRS[exitDir()]; return { u: M.exit.u - d[0] * EXIT_BACK, v: M.exit.v - d[1] * EXIT_BACK } }
+function exitGlow(t) {
+ if (!M.exit) return;
+ const e = M.exit, dk = exitDir(), d = EXIT_DIRS[dk], pulse = .5 + .5 * Math.sin(t * .0021), pe = project(e.u, e.v), ps = project(exitSpot().u, exitSpot().v);
+ g.save(); g.globalCompositeOperation = 'lighter';
+ const aura = (p, rx, a) => { const gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, rx); gr.addColorStop(0, `rgba(255,238,178,${a})`); gr.addColorStop(.55, `rgba(255,226,150,${a * .38})`); gr.addColorStop(1, 'rgba(255,220,140,0)'); g.save(); g.translate(p.x, p.y); g.scale(1, .5); g.translate(-p.x, -p.y); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, rx, 0, 7); g.fill(); g.restore() };
+ aura(pe, 125, .55 + .08 * pulse); aura(ps, 85, .26 + .06 * pulse);
+ g.restore()
+}
+function exitArrow(t) {
+ if (!M.exit) return;
+ const d = EXIT_DIRS[exitDir()], L = 1.05, W = .31, HW = .75, HL = .42, slide = .2 * L * (.5 + .5 * Math.sin(t * .0042)), c = exitSpot(),
+  base = { u: c.u + d[0] * slide, v: c.v + d[1] * slide }, n = [-d[1], d[0]],
+  at = (a, b) => project(base.u + d[0] * (a - L / 2) + n[0] * b, base.v + d[1] * (a - L / 2) + n[1] * b),
+  pts = [at(0, -W / 2), at(L - HL, -W / 2), at(L - HL, -HW / 2), at(L, 0), at(L - HL, HW / 2), at(L - HL, W / 2), at(0, W / 2)];
+ g.save();
+ g.shadowColor = 'rgba(255,224,140,.85)'; g.shadowBlur = 8;
+ g.beginPath(); pts.forEach((p, i) => g[i ? 'lineTo' : 'moveTo'](p.x, p.y)); g.closePath();
+ const a0 = at(0, 0), a1 = at(L, 0), gr = g.createLinearGradient(a0.x, a0.y, a1.x, a1.y); gr.addColorStop(0, 'rgba(255,240,190,.72)'); gr.addColorStop(1, 'rgba(255,208,96,.96)');
+ g.fillStyle = gr; g.fill(); g.shadowBlur = 0; g.lineWidth = 1.8; g.strokeStyle = 'rgba(140,96,34,.85)'; g.stroke();
+ g.restore()
+}
+/* the far-wall door (NE / NW only): an upright door picture sheared to lie in the wall plane, with a bright opening behind it */
+function exitDoorObj() {
+ const dk = exitDir(); if (!M.exit || (dk !== 'NE' && dk !== 'NW')) return null;
+ const p = project(M.exit.u, M.exit.v), im = imgOf('int:door-open'), w = 128, h = w * 389 / 262;
+ return { y: p.y - 40, draw: () => {
+  g.save(); g.translate(p.x, p.y + 6); g.transform(1, dk === 'NE' ? .5 : -.5, 0, 1, 0, 0);
+  const gr = g.createLinearGradient(0, -h, 0, 0); gr.addColorStop(0, 'rgba(255,246,206,.95)'); gr.addColorStop(1, 'rgba(255,226,150,.78)');
+  g.fillStyle = gr; g.fillRect(-w * .36, -h * .9, w * .72, h * .88);
+  if (im && im.complete && im.naturalWidth) g.drawImage(im, -w / 2, -h, w, h);
+  g.restore()
+ } }
+}
 
 function draw(t) {
  requestAnimationFrame(draw);
@@ -897,9 +1072,11 @@ function draw(t) {
    hero.v += dv / n * step;
    const dx = du - dv,
     dy = du + dv;
-   hero.dir = dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW')
+   hero.dir = window.WalkSpeed ? WalkSpeed.dir.face(hero, du, dv) : dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW')   /* v98.345 · the shared rule */
   }
  }
+ window.joyPlaceWalk?.(dt);
+ if (!editing && !drag && performance.now() > camHold) { const hq = project(hero.u, hero.v), tx = -(hq.x - 1100) * scale * zoom, ty = H * .12 - (hq.y - 700) * scale * zoom, kf = 1 - Math.exp(-dt * 11); pan = { x: pan.x + (tx - pan.x) * kf, y: pan.y + (ty - pan.y) * kf } }
  g.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
  g.fillStyle = '#2c3d2e';
  g.fillRect(0, 0, W, H);
@@ -913,6 +1090,7 @@ function draw(t) {
  g.drawImage(terrain, 0, 0);
  window.PlacePaint?.draw(g);
  walls();
+ exitGlow(t); exitArrow(t);   /* v98.548 */
  if (path.length) {
   g.strokeStyle = '#e4ce8e';
   g.lineWidth = 2;
@@ -943,50 +1121,78 @@ function draw(t) {
    set: s.id,
    isStation: true,
    z: s.z || 0,
+   rect: artRect(s.art, s.u, s.v, s.width || 120, s.s || 1),   /* v98.552 · for the layer (z) rule below */
+   fp: { u0: s.u - s.w, u1: s.u + s.w, v0: s.v - s.d, v1: s.v + s.d },   /* v98.553 · a station's ORDER frame = its blocked area: the hero is behind / in front of the whole stall by the village rule (was: only the y of its centre) */
    tag: {
     type: 'station',
     i
    },
-   draw: () => drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp)
+   draw: () => { if (window.Interactables?.isActive('st:' + i)) stationOutline(s); drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp, (s.ix != null || s.iy != null || s.skx || s.sky) ? s : null) }
   })
  });
+ M.stations.forEach((s, i) => { const o = vendorObj(s, i); if (o) objects.push(o) });   /* v98.556 */
+ /* v98.309 · composite props (same `cmp` id): one shared footprint = union box, member boxes kept as .parts */
+ const cmpFp = new Map();
+ for (const o of M.props) if (o.cmp) { const b = PieceGeometry.footprint(o, o.u, o.v); let U = cmpFp.get(o.cmp); if (!U) cmpFp.set(o.cmp, U = { ...b, parts: [] }); else { U.u0 = Math.min(U.u0, b.u0); U.u1 = Math.max(U.u1, b.u1); U.v0 = Math.min(U.v0, b.v0); U.v1 = Math.max(U.v1, b.v1) } U.parts.push(...(b.parts || [b])) }
  M.props.forEach((o, i) => {
   const p = project(o.u, o.v);
   hits.push({
    type: 'prop',
    i,
-   r: artRect(o.art, o.u, o.v, o.width || 110, o.s || 1)
+   r: PieceGeometry.rect(artRect(o.art, o.u, o.v, o.width || 110, o.s || 1), project(o.u, o.v), o)
   });
   objects.push({
    y: p.y + (o.layer || 0),
    set: o.owner || null,
    z: o.z || 0,
+   rect: PieceGeometry.rect(artRect(o.art, o.u, o.v, o.width || 110, o.s || 1), project(o.u, o.v), o), label: o.art, tall: o.tall,
+   /* v98.309 · opt-in ORDER footprint (set in the 🔍 detail window): the hero is drawn in front of / behind this prop by the same rule as the village (DepthStyle) */
+   fp: cmpFp.get(o.cmp) || (window.ArtFrames ? PieceGeometry.footprint(ArtFrames.effective(o), o.u, o.v) : (o.sw != null || o.sh != null || o.orderU || o.orderV || o.zo || o.cmp ? PieceGeometry.footprint(o, o.u, o.v) : null)),   /* v98.567 · own frame → the picture's template → automatic */
    tag: {
     type: 'prop',
     i
    },
-   draw: () => drawArt(o.art, o.u, o.v, o.width || 110, o.s || 1, o.f, t, hp)
+   draw: () => drawArt(o.art, o.u, o.v, o.width || 110, o.s || 1, o.f, t, hp, o)
   })
  });
  for (const f of fencePieces()) objects.push({ y: project(f.m.u, f.m.v).y, draw: () => drawFencePiece(f, hp) });
+ objects.push(...(window.HeroFollower?.objects(hero, dt, t, { show: !editing, project, g, ellipse: (x, y, rx, ry, c) => { g.fillStyle = c; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill() }, face: (du, dv, pd) => { if (window.WalkSpeed) return WalkSpeed.dir.face(FOLLOW_FACE, du, dv); const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') }, size: CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K, scale: window.placeScale() * PLACE_CHAR_K }) || []));
  objects.push({
-  y: hp.y,
+  y: hp.y, hero: true, wu: hero.u, wv: hero.v,
   draw: () => {
    g.fillStyle = '#182b2866';
    g.beginPath();
-   g.ellipse(hp.x, hp.y, 13, 6, 0, 0, 7);
+   g.ellipse(hp.x, hp.y, 13 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7);
    g.fill();
    const hc = heroCast();
-   /* v95.21: same size as on the village map (93.6 px × the village's hero scale) */ if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, 93.6 * (hc.s || 1), hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0, 93.6 * (hc.s || 1))
+   /* v95.21: same size as on the village map (93.6 px × the village's hero scale) */ if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K, hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0 || !!window.TouchControls?.moving?.(), CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K)   /* v98.532 · was (hc.s || 1): the village editor's OLD per-hero cast scale (≈0.58 here) → the lead hero was drawn at ~60 % of the follower and every villager; same rule as the first branch now */
   }
  });
+ { const dr = exitDoorObj(); if (dr) objects.push(dr) }   /* v98.548 */
  objects.push(...(window.PlacePeople?.objects(project, g, t, blocked, hero) || []));   // v94.02 villagers who are here now
  // v87 · a work station and its own decorations are one set (layer number, then depth); sets and loose things sort by depth
  const sets = new Map(), list = [];
  for (const o of objects) { if (o.set && M.stations.some(s => s.id === o.set)) { let G = sets.get(o.set); if (!G) sets.set(o.set, G = { m: [], y: null }); G.m.push(o); if (o.isStation) G.y = o.y } else list.push({ y: o.y, o }) }
- for (const G of sets.values()) list.push({ y: G.y ?? Math.min(...G.m.map(x => x.y)), G });
+ for (const G of sets.values()) {
+  const fps = G.m.map(x => x.fp).filter(Boolean);
+  if (fps.length) G.fp = { u0: Math.min(...fps.map(f => f.u0)), u1: Math.max(...fps.map(f => f.u1)), v0: Math.min(...fps.map(f => f.v0)), v1: Math.max(...fps.map(f => f.v1)), parts: fps };   /* v98.309 · a work station set is ONE piece for the order rule: union of its members' footprints */
+  { const rs = G.m.map(x => x.rect).filter(Boolean); if (rs.length) { const x0 = Math.min(...rs.map(r => r.x)), y0 = Math.min(...rs.map(r => r.y)), x1 = Math.max(...rs.map(r => r.x + r.w)), y1 = Math.max(...rs.map(r => r.y + r.h)); G.rect = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } } G.z = (G.m.find(x => x.isStation) || {}).z || 0 }
+  list.push({ y: G.y ?? Math.min(...G.m.map(x => x.y)), G });
+ }
  const put = o => window.PlaceBuild ? PlaceBuild.drawObj(o) : o.draw();
- list.sort((a, b) => a.y - b.y).forEach(e => e.o ? put(e.o) : e.G.m.sort((a, b) => (a.z || 0) - (b.z || 0) || a.y - b.y).forEach(put));
+list.sort((a, b) => a.y - b.y);
+ layerOrderPlace(list);
+ fixOrderPlace(list);
+ window.DepthStyle?.pairOrder?.(list, e => e.o && e.o.hero, e => e.o && e.o.follower, e => e.o ? e.o.y : null);   /* v98.538 · the follower is ordered against the lead by their own feet (south = in front, north = behind) */
+ /* v98.309 · a TALL prop with an order footprint that the hero stands BEHIND turns see-through around him (DepthStyle: fade + silhouette), low ones (fence, bush…) cover naturally */
+ const hi = list.findIndex(e => e.o && e.o.hero), hobj = hi >= 0 ? list[hi].o : null, heroH = CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K;
+ list.forEach((e, i) => {
+  if (hobj && window.DepthStyle && i > hi && e.o && e.o.fp && e.o.rect && !DepthStyle.walkerInFront(e.o.fp, hobj.wu, hobj.wv)) {
+   const r = e.o.rect, mode = DepthStyle.styleFor({ label: e.o.label, tall: e.o.tall });
+   if (mode !== 'solid' && hp.x > r.x - 24 && hp.x < r.x + r.w + 24 && hp.y - 30 > r.y && hp.y - 70 < r.y + r.h) { DepthStyle.coverDraw(g, { draw: () => put(e.o) }, hobj, hp.x, hp.y, heroH, mode); return }
+  }
+  e.o ? put(e.o) : e.G.m.sort((a, b) => (a.z || 0) - (b.z || 0) || a.y - b.y).forEach(put)
+ });
  if (work && t < work.until) {
   const s = M.stations[work.i];
   if (s) {
@@ -1001,25 +1207,21 @@ function draw(t) {
    }
   }
  }
+ drawFx(t);
+ if (!editing) window.TiltShift?.apply(g, cv);   /* v98.575 · Octopath tilt-shift (in-canvas) */
  // labels + doors
  for (const s of M.stations) {
   const d = door(s),
    p = project(d.u, d.v);
-  g.font = '13px TownThai,system-ui';
-  g.textAlign = 'center';
-  const w = g.measureText(s.name).width + 22;
-  g.fillStyle = '#233a2ee0';
-  g.fillRect(p.x - w / 2, p.y + 14, w, 26);
-  g.fillStyle = '#f6e8bd';
-  g.fillText(s.name, p.x, p.y + 32)
- } {
+  if (window.NamePlate) window.NamePlate.draw(g, s.name, p.x, p.y + 6, { size: 14, dir: 'down' });   /* v98.606 · shared name plate */
+ } if (editing) {   /* v98.548 · players see the light + arrow instead of the old sign */
   const p = project(M.exit.u, M.exit.v);
   g.fillStyle = '#233a2ee0';
   g.fillRect(p.x - 58, p.y + 10, 116, 26);
   g.fillStyle = '#f6e8bd';
   g.font = '13px TownThai,system-ui';
   g.textAlign = 'center';
-  g.fillText('← ทางออก', p.x, p.y + 28)
+  g.fillText('ทางออก · ' + exitDir(), p.x, p.y + 28)
  }
  window.PlaceBuild?.overlay(g, t)
 }
@@ -1066,6 +1268,7 @@ function arrive() {
 
 function use(i, id) {
  hidePick();
+ lastSt = i;
  const a = actionInfo(id),
   s = M.stations[i];
  if (a?.reason) {
@@ -1112,8 +1315,8 @@ function shortcuts() {
 
 function world(e) {
  return {
-  x: (e.clientX - W / 2 - pan.x) / (scale * zoom) + 1100,
-  y: (e.clientY - H / 2 - pan.y) / (scale * zoom) + 700
+  x: (e.clientX - cvLeft - W / 2 - pan.x) / (scale * zoom) + 1100,
+  y: (e.clientY - cvTop - H / 2 - pan.y) / (scale * zoom) + 700
  }
 }
 
@@ -1140,10 +1343,12 @@ cv.onpointerdown = e => {
  cv.setPointerCapture(e.pointerId)
 };
 cv.onpointermove = e => {
+ if (!drag && !editing && e.pointerType !== 'touch') { const w = world(e), h = hitAt(w), it = h?.type === 'station' ? { id: 'st:' + h.i, label: M.stations[h.i].name, x: e.clientX, y: e.clientY } : window.Interactables?.at(w.x, w.y); window.Interactables?.setHover(it?.id); window.Interactables?.showTip(it ? { ...it, x: 0 } : null, e.clientX, e.clientY) }
  if (!drag) return;
  const dx = e.clientX - drag.x,
   dy = e.clientY - drag.y;
  if (Math.hypot(dx, dy) > 5) drag.moved = true;
+ if (drag.moved) camHold = performance.now() + 3500;
  if (drag.moved) pan = {
   x: drag.pan.x + dx,
   y: drag.pan.y + dy
@@ -1161,11 +1366,11 @@ cv.onpointerup = e => {
   return
  }
  const q = inv(p.x, p.y);
- if (Math.hypot(q.u - M.exit.u, q.v - M.exit.v) < 1.3) {
+ if (Math.hypot(q.u - M.exit.u, q.v - M.exit.v) < 1.3 || Math.hypot(q.u - exitSpot().u, q.v - exitSpot().v) < 1.5) {
   target = {
    exit: true
   };
-  path = route(hero, M.exit);
+  path = route(hero, exitSpot());
   if (!path.length) arrive();
   return
  }
@@ -1177,9 +1382,9 @@ cv.onpointercancel = () => drag = null;
 cv.onwheel = e => {
  e.preventDefault();
  const old = zoom;
- zoom = Math.max(editing ? .35 : .6, Math.min(editing ? 4 : 2.5, zoom * Math.exp(-e.deltaY * .001)));
- const x = e.clientX - W / 2,
-  y = e.clientY - H / 2;
+ zoom = Math.max(editing ? .35 : .6, Math.min(editing ? 4 : 6, zoom * Math.exp(-e.deltaY * .001)));
+ const x = e.clientX - cvLeft - W / 2,
+  y = e.clientY - cvTop - H / 2;
  pan = {
   x: x - (x - pan.x) * zoom / old,
   y: y - (y - pan.y) * zoom / old
@@ -1256,7 +1461,7 @@ function putThumb(slot, a, w) {
   }, 700)
  }
 }
-const ART_GROUP = a => a.startsWith('code:') ? 'วาดด้วยโค้ด (ชั่วคราว)' : a.startsWith('vt:') ? 'อาคาร/ร้าน' : 'ของประดับ';
+const ART_GROUP = a => a.startsWith('code:') ? 'วาดด้วยโค้ด (ชั่วคราว)' : PA_BY[a]?.g || (a.startsWith('vt:') ? 'อาคาร (ภาพทั้งหลัง)' : 'ของประดับ');   /* v98.434 · catalogue groups */
 
 function openArtPicker(title, cur, onPick) {
  let d = document.getElementById('artPick');
@@ -1265,9 +1470,12 @@ function openArtPicker(title, cur, onPick) {
   d.id = 'artPick';
   document.body.append(d)
  }
- let tab = 'ทั้งหมด',
+ /* v98.434 · opens on the tab of the current picture (เปลี่ยนภาพ) or of this kind of map (forge → โรงตีเหล็ก …) */
+ const KIND_TAB = { guild: 'สมาคมนักผจญภัย', forge: 'โรงตีเหล็ก/งานช่าง', market: 'ร้านค้า/ตลาด', home: 'บ้าน: โต๊ะ/ที่นั่ง/ตู้' };
+ let tab = cur ? ART_GROUP(cur) : KIND_TAB[KIND] || 'ทั้งหมด',
   q = '';
  const groups = [...new Set(ART_LIST.map(([a]) => ART_GROUP(a)))];
+ if (!groups.includes(tab)) tab = 'ทั้งหมด';
  const draw = () => {
   const list = ART_LIST.filter(([a, l]) => (tab === 'ทั้งหมด' || ART_GROUP(a) === tab) && (!q || l.includes(q) || a.includes(q)));
   d.innerHTML = `<div class="pk-head"><b>${title}</b><input type="search" placeholder="ค้นหา…" value="${q}"><button data-x>ปิด (Esc)</button></div><div class="pk-tabs">${['ทั้งหมด',...groups].map(gr=>`<button data-tab="${gr}" class="${gr===tab?'on':''}">${gr}</button>`).join('')}</div><div class="grid">${list.map(([a,l])=>`<button data-a="${a}" class="${a===cur?'cur':''}"><span class="th"></span><span>${l}</span></button>`).join('')}</div><div class="pk-tabs"><input id="pkFile" placeholder="หรือใส่ไฟล์ภาพเอง เช่น assets/village-town/xxx.png" style="flex:1"><button id="pkUse">ใช้ไฟล์นี้</button></div>`;
@@ -1324,7 +1532,7 @@ $('leave').onclick = () => {
  target = {
   exit: true
  };
- path = route(hero, M.exit);
+ path = route(hero, exitSpot());
  if (!path.length) arrive()
 };
 document.querySelectorAll('[data-menu]').forEach(b => b.onclick = () => send('menu', {
@@ -1335,15 +1543,16 @@ function setup() {
  $('title').textContent = M.name;
  $('subtitle').textContent = M.sub || '';
  document.title = M.name + ' · Project A';
- hero.u = M.exit.u;
- hero.v = M.exit.v - .6;
- hero.dir = 'NE';
+ { const d = EXIT_DIRS[exitDir()]; hero.u = M.exit.u - d[0] * (EXIT_BACK + 1.5); hero.v = M.exit.v - d[1] * (EXIT_BACK + 1.5); hero.dir = ({ SW: 'NE', SE: 'NW', NE: 'SW', NW: 'SE' })[exitDir()] }   /* v98.548 · steps in from the doorway, facing into the room */
  path = [];
  target = null;
  dirty = true;
  shortcuts();
  renderEdit()
 }
+/* v98.340 · temporary save (js/resume.js): where the hero stands */
+const FOLLOW_FACE = {};
+window.ResumeHook = { ready: () => !window.__imgGateOpen, get: () => ({ u: hero.u, v: hero.v, dir: hero.dir }), set: d => { if (!d) return; path = []; target = null; hero.u = d.u; hero.v = d.v; if (d.dir) hero.dir = d.dir } };
 window.addEventListener('message', e => {
  if (e.source !== parent || e.data?.source !== 'project-a-game') return;
  const m = e.data;
@@ -1351,13 +1560,14 @@ window.addEventListener('message', e => {
   active = m.visible;
   return
  }
+ if (m.type === 'wip-fx') { addFx(m.kind, m.amt); return }
  if (m.type === 'motion') {
   TownArt.setMotion(m.data);
   return
  }
  if (m.type === 'init') {
   all = loadAll();
-  M = withShop(copy(all[PLACE] || DEFAULTS[PLACE]));
+  M = withArt(withShop(all[PLACE] ? copy(all[PLACE]) : defaultMap(PLACE)));
   setup();
   fitView()
  }
@@ -1394,8 +1604,109 @@ document.addEventListener('keydown', () => send('input'), {
 });
 TownArt.onLoad(() => dirty = true);
 addEventListener('resize', resize);
+window.applyRenderScale = () => { cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio) };   /* v98.574 · see js/perf-scale.js */
 setup();
 resize();
-send('ready');
+/* v98.578 · WARM-UP: 'ready' (the game lifts its cover) waits until every picture of this map is downloaded and decoded (at most ~3 s) — the first sight of each piece used to be a stall while walking in */
+(async () => {
+ try {
+  if (!editing) {
+   const arts = [...new Set([...(M.props || []), ...(M.stations || [])].map(o => o.art).filter(a => a && !/^code:/.test(a)))], ims = arts.map(a => imgOf(a)).filter(Boolean);
+   const dec = im => im.complete && im.naturalWidth ? (im.decode ? im.decode().catch(() => { }) : 0) : new Promise(r => { im.addEventListener('load', () => r(im.decode ? im.decode().catch(() => { }) : 0), { once: true }); im.addEventListener('error', r, { once: true }) });
+   await Promise.race([Promise.all(ims.map(dec)), new Promise(r => setTimeout(r, 3000))]);
+  }
+ } catch (e) { }
+ send('ready');
+})();
 requestAnimationFrame(draw);
-</script><script src="js/place-build.js?v=87"></script><script src="js/world-state.js?v=97.76"></script><script src="js/villager-draw.js?v=97.96"></script><script src="js/village-life.js?v=97.76"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=97.69"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+
+
+/* v98.20 · WIP juice. The game page (js/smith-wip.js) tells us when the piece in progress moves ('wip-fx': hit = shaped · heat = heated · quench = cooled · done = finished);
+   we answer with light + particles on the station you were just using. And we report where the station and the hero are on screen ('layout'),
+   so the WIP card can sit next to the station without covering it or you. */
+let lastSt = -1, fxs = [], parts = [], fxLast = 0, layoutAt = 0, layoutSig = '';
+const stationForFx = () => { let i = lastSt; if (!M.stations[i]) { let bd = 1e9; M.stations.forEach((s, k) => { const d = Math.hypot(s.u - hero.u, s.v - hero.v); if (d < bd) { bd = d; i = k } }) } return M.stations[i] ? i : -1 };
+function addFx(kind, amt = 8) {
+ const i = stationForFx(); if (i < 0) return; const s = M.stations[i], p = project(s.u, s.v), top = p.y - (s.width || 120) * (s.s || 1) * .35;
+ fxs.push({ kind, t0: performance.now(), x: p.x, y: top, i });
+ const n = kind === 'done' ? 46 : kind === 'hit' ? 12 + Math.min(14, amt) : kind === 'heat' ? 9 : 10;
+ for (let k = 0; k < n; k++) {
+  const a = Math.random() * 6.28, sp = kind === 'done' ? 120 + Math.random() * 260 : kind === 'hit' ? 90 + Math.random() * 190 : 30 + Math.random() * 60;
+  parts.push({ x: p.x + (Math.random() - .5) * 30, y: top + (Math.random() - .5) * 14, vx: Math.cos(a) * sp * (kind === 'heat' || kind === 'quench' ? .35 : 1), vy: kind === 'heat' ? -40 - Math.random() * 70 : kind === 'quench' ? -30 - Math.random() * 50 : Math.sin(a) * sp - 90,
+   g: kind === 'heat' || kind === 'quench' ? -10 : 520, life: 0, max: kind === 'quench' ? 1.1 : .55 + Math.random() * .6, r: kind === 'quench' ? 7 + Math.random() * 8 : 2 + Math.random() * 2.6, kind });
+ }
+}
+function drawFx(t) {
+ const dt = Math.min(.06, (t - (fxLast || t)) / 1000); fxLast = t;
+ g.save(); g.globalCompositeOperation = 'lighter';
+ fxs = fxs.filter(f => t - f.t0 < 1100);
+ for (const f of fxs) {   // light bloom on the station
+  const a = (t - f.t0) / 1000, k = f.kind === 'done' ? 1 - a / 1.1 : f.kind === 'hit' ? 1 - a / .5 : 1 - a / .8; if (k <= 0) continue;
+  const R = (f.kind === 'done' ? 210 : f.kind === 'hit' ? 130 : 100) * (1 + (1 - k) * .35), col = f.kind === 'quench' ? '120,190,255' : f.kind === 'done' ? '255,236,170' : '255,170,70';
+  const gr = g.createRadialGradient(f.x, f.y, 4, f.x, f.y, R); gr.addColorStop(0, `rgba(${col},${.75 * k})`); gr.addColorStop(.45, `rgba(${col},${.28 * k})`); gr.addColorStop(1, `rgba(${col},0)`);
+  g.fillStyle = gr; g.beginPath(); g.arc(f.x, f.y, R, 0, 7); g.fill();
+  if (f.kind === 'done' || f.kind === 'hit') { g.strokeStyle = `rgba(255,240,200,${.7 * k})`; g.lineWidth = 3 * k + 1; g.beginPath(); g.ellipse(f.x, f.y + 14, R * (1 - k) * 1.1 + 12, (R * (1 - k) * 1.1 + 12) * .5, 0, 0, 7); g.stroke() }
+ }
+ parts = parts.filter(q => q.life < q.max);
+ for (const q of parts) {
+  q.life += dt; q.vy += q.g * dt; q.x += q.vx * dt; q.y += q.vy * dt; const k = 1 - q.life / q.max;
+  if (q.kind === 'quench') { g.fillStyle = `rgba(220,235,255,${.35 * k})`; g.beginPath(); g.arc(q.x, q.y, q.r * (1 + (1 - k)), 0, 7); g.fill() }
+  else { g.fillStyle = `rgba(255,${190 + (1 - k) * 40 | 0},${90 + (1 - k) * 90 | 0},${k})`; g.beginPath(); g.arc(q.x, q.y, q.r * (.5 + k * .7), 0, 7); g.fill() }
+ }
+ g.restore();
+}
+/* where things are on screen (iframe coordinates) → the game page puts the WIP card beside the station */
+function reportLayout() {
+ const i = stationForFx(); if (i < 0) return; const s = M.stations[i], R = artRect(s.art, s.u, s.v, s.width || 120, s.s || 1), k = scale * zoom,
+  X = x => (x - 1100) * k + W / 2 + pan.x, Y = y => (y - 700) * k + H / 2 + pan.y, hp = project(hero.u, hero.v);
+ const msg = { w: W, h: H, i, station: { x: X(R.x), y: Y(R.y), w: R.w * k, h: R.h * k + 34 }, hero: { x: X(hp.x) - 30 * PLACE_CHAR_K * k, y: Y(hp.y) - 110 * PLACE_CHAR_K * k, w: 60 * PLACE_CHAR_K * k, h: 120 * PLACE_CHAR_K * k + 10 } },
+  sig = JSON.stringify(msg, (kk, v) => typeof v === 'number' ? Math.round(v / 6) : v); const nw = performance.now(); if (sig === layoutSig && nw - layoutAt < 1500) return; layoutSig = sig; layoutAt = nw; send('layout', msg);
+}
+setInterval(() => { try { if (!editing && active) reportLayout() } catch (e) { } }, 220);
+
+/* v98.20 · play, don't press. Every work station, villager and the exit is something you walk up to and ACT on (big button / E / click); the station
+   shortcut menu is gone. Several actions on one station = hold the big button for the ring of choices. (js/interactables.js + js/touch-controls.js) */
+function stationOutline(s) {
+ const a = s.art, w = (s.width || 120) * (s.s || 1), p = project(s.u, s.v);
+ if (!a || a.startsWith('code:')) { g.save(); g.strokeStyle = '#fff'; g.lineWidth = 3; g.globalAlpha = .9; g.beginPath(); g.ellipse(p.x, p.y, w * .42, w * .16, 0, 0, 7); g.stroke(); g.restore(); return }
+ const im = imgOf(a); if (!im?.complete || !im.naturalWidth) return;
+ const h = w * im.naturalHeight / im.naturalWidth; g.save();
+ if (s.f) { g.translate(p.x * 2, 0); g.scale(-1, 1) }
+ TownArt.outline(g, im, null, [p.x - w / 2, p.y - h * (a.startsWith('vt:') ? .86 : .92), w, h], 3); g.restore();
+}
+const ST_ICON = { register: 'guild', contracts: 'quest', bounty: 'battle', cards: 'collection', smelt: 'forge', forge: 'forge', quench: 'forge', temper: 'forge', repair: 'forge', train: 'battle', rest: 'castle', sleep: 'castle', buy: 'market', sell: 'trade', shop: 'market', orders: 'quest' };
+const stIcon = ids => { for (const id of ids) if (ST_ICON[id]) return ST_ICON[id]; return KIND === 'forge' ? 'forge' : KIND === 'market' ? 'market' : 'quest' };
+const faceTo = (u, v) => { hero.dir = v < hero.v ? (u < hero.u ? 'NW' : 'NE') : (u < hero.u ? 'SW' : 'SE') };
+function useAt(i, id) { path = []; target = null; hidePick(); const s = M.stations[i]; if (s) faceTo(s.u, s.v); lastSt = i; use(i, id) }
+function actAt(i) { const s = M.stations[i]; if (!s) return; const acts = stationActs(s); useAt(i, acts.find(id => !actionInfo(id)?.reason) || acts[0]) }
+Interactables.add(() => {
+ if (editing || typeof M === 'undefined' || !M?.stations) return [];
+ const out = [];
+ M.stations.forEach((s, i) => {
+  const d = door(s), acts = stationActs(s), p = project(d.u, d.v), names = acts.map(id => actionInfo(id)?.name || ACTIONS[id] || id);
+  out.push({ id: 'st:' + i, kind: 'station', u: d.u, v: d.v, r: 2.3, label: (s.name || 'จุดทำงาน') + (acts.length === 1 ? ' · ' + names[0] : ''), icon: stIcon(acts), x: p.x, y: p.y,
+   run: () => actAt(i), options: acts.length > 1 ? acts.map((id, k) => ({ label: names[k], icon: stIcon([id]), run: () => useAt(i, id) })) : undefined });
+ });
+ for (const a of window.PlacePeople?.state?.() || []) {
+  const p = project(a.u, a.v), nm = window.VillageLife?.P?.[a.id]?.name || a.id;
+  out.push({ id: 'p:' + a.id, kind: 'talk', u: a.u, v: a.v, r: 2.4, bumpR: 1.3, bumpT: .3, bump: true, label: 'คุย · ' + nm, icon: 'party', x: p.x, y: p.y,
+   run: () => window.PlacePeople.click({ x: p.x, y: p.y - 10 }, project, { hero, go: () => { }, stop: () => { path = [] } }) });
+ }
+ if (M.exit) { const sp = exitSpot(), p = project(sp.u, sp.v); out.push({ id: 'exit', kind: 'exit', u: sp.u, v: sp.v, r: 1.9, bumpR: 1.1, bumpT: .12, bump: true, pri: -.6, label: 'ออกไปข้างนอก', icon: 'portal', x: p.x, y: p.y, run: () => send('leave') }) }
+ return out;
+});
+window.joyPlaceWalk = dt => {
+ const tc = window.TouchControls; if (!tc || editing || !tc.moving() || !$('pick').hidden || document.querySelector('dialog[open]')) return;
+ const v = tc.vec(); let du = v.x / 2 + v.y, dv = v.y - v.x / 2; const l = Math.hypot(du, dv) || 1; du /= l; dv /= l;
+ const sp = dt * 5.5 * Math.min(1, Math.hypot(v.x, v.y)), nu = hero.u + du * sp, nv = hero.v + dv * sp;
+ path = []; target = null;
+ if (!blocked(nu, nv)) { hero.u = nu; hero.v = nv } else if (!blocked(nu, hero.v)) hero.u = nu; else if (!blocked(hero.u, nv)) hero.v = nv;
+ const dx = du - dv, dy = du + dv; hero.dir = window.WalkSpeed ? WalkSpeed.dir.face(hero, du, dv) : dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW');
+};
+window.TouchControls?.attach({
+ paused: () => editing || !$('pick').hidden,
+ context() { if (editing) return null; const it = Interactables.nearest(hero); return it && { ...it, sx: ((it.u - hero.u) - (it.v - hero.v)) * 45, sy: ((it.u - hero.u) + (it.v - hero.v)) * 22.5 } },
+ act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
+ buttons: [{ id: 'bag', icon: 'cardbook', title: 'สมุดผนึก', run: () => send('menu', { id: 'bag' }) }, { id: 'menu', icon: 'settings', title: 'เมนู', run: () => send('menu', { id: 'settings' }) }, ...(KIND === 'forge' ? [{ id: 'wip', icon: 'forge', title: 'ซ่อน/แสดงการ์ดงาน', run: () => send('wip-toggle') }] : [])]
+});
+</script><script src="js/place-catalog.js?v=v98.526"></script><script src="js/art-frames.js?v=v98.567"></script><script src="js/place-build.js?v=v98.431"></script><script src="js/depth-style.js?v=98.292"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=v98.500"></script><script src="js/injury.js?v=v98.332"></script><script src="js/world-state.js?v=98.297"></script><script src="js/name-plate.js?v=v98.606"></script><script src="js/villager-draw.js?v=v98.605"></script><script src="js/village-life.js?v=v98.427"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=98.263"></script><script src="js/editor-tools.js?v=91.77"></script></html>

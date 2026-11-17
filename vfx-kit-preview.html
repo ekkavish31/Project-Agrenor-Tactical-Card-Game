@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VFX Preview · เทียบเอฟเฟกต์เดิมกับใหม่</title>
+<link rel="stylesheet" href="css/thai-font.css?v=1"><link rel="stylesheet" href="css/town-font.css">
+<style>
+:root{--bg:#14171d;--panel:#1d222b;--ink:#e9e4d6;--muted:#9a937f;--line:#343b48;--gold:#c9a45a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px VillageThai,"Noto Sans Thai",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:10px 16px;background:#1a1e26f2;border-bottom:1px solid var(--line)}
+h1{font-size:17px;margin:0}h2{font-size:15px;margin:22px 16px 8px;color:var(--gold)}header label{display:flex;gap:6px;align-items:center}
+.sw{padding:6px 12px;border:1px solid var(--gold);border-radius:10px;background:#2a2416}
+button{font:inherit;color:inherit;background:#252b36;border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer}button.primary{background:var(--gold);color:#1d1608;border-color:#e6c47c;font-weight:700}
+.pick{display:flex;gap:6px;align-items:center;margin-top:6px;font-size:12px;color:var(--muted)}.pick button{padding:3px 12px}.pick button[aria-pressed=true]{background:var(--gold);color:#1d1608;border-color:#e6c47c;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;padding:0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.card b{font-size:14px}.card small{color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.pair.one{grid-template-columns:1fr}
+.pair figure{margin:0}.pair figcaption{font-size:11px;color:var(--muted);text-align:center;margin-top:2px}
+figure[data-v]{cursor:pointer;border:2px solid transparent;border-radius:10px;padding:3px;position:relative}figure[data-v]:hover{border-color:#6a5a3a}figure.chosen{border-color:#d9a441;background:#d9a44118}.use{display:none;text-align:center;font-size:11px;font-weight:700;color:#d9a441;margin-top:2px}figure.chosen .use{display:block}.pair.many{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}canvas{display:block;width:100%;border-radius:8px;background:#20281f}
+#dlg{position:fixed;inset:0;z-index:20;background:#000a;display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto}#dlg[hidden]{display:none}#dlg .box{background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:12px 14px;width:min(980px,100%)}#dlg .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}#dlg h3{margin:0;font-size:16px;color:var(--gold)}.card.shown figcaption b{color:var(--gold)}.card.shown figcaption u{text-decoration:none;color:#d9a441}
+p.note{margin:6px 16px;color:var(--muted);max-width:900px}
+</style></head><body>
+<header><h1>✨ VFX Preview</h1>
+ <span class="sw">ในเกมใช้: <b id="sumUse"></b></span><button id="allNew">ใหม่ทั้งหมด</button><button id="allOld">เดิมทั้งหมด</button><button id="pushBtn" class="primary" title="ใส่ค่าที่เลือกลง Cart เพื่อ Push — ทุกเครื่องที่เปิดเกมจะใช้ตามนี้">⬆ ใส่ Cart (Push)</button><small id="pushMsg"></small>
+ <label>ความเร็ว <select id="speed"><option value="1">ปกติ</option><option value=".5">ช้า ½</option><option value=".25">ช้า ¼</option></select></label>
+</header>
+<p class="note">แต่ละท่าแสดงเฉพาะ <b>เอฟเฟกต์ที่เกมใช้อยู่</b> (ตัวสีเทา = ผู้โจมตี · ตัวสีน้ำตาล = เป้าหมาย) — <b>คลิกที่ท่า</b> เพื่อเปิดรายการเอฟเฟกต์ทั้งหมดของท่านั้นแล้วเลือกใหม่ (แบบที่เพิ่มภายหลังจะขึ้นต่อท้ายรายการเอง) — ค่าที่เลือกมีผลในเบราว์เซอร์นี้ทันที (เปิดสนามรบใหม่) · กด <b>⬆ ใส่ Cart (Push)</b> เพื่อให้มีผลกับเกมจริงทุกเครื่อง</p>
+<h2>อาวุธ</h2><div class="grid" id="gWeapon"></div>
+<h2>ธาตุและเวท</h2><div class="grid" id="gMagic"></div>
+<h2>แรงกระแทกตอนโดนตี / ล้ม</h2><div class="grid" id="gHit"></div>
+<h2>สถานะบนตัว (ใช้ในเกมอยู่แล้ว)</h2><div class="grid" id="gStatus"></div>
+<div id="dlg" hidden><div class="box"><div class="top"><h3 id="dlgTitle"></h3><button id="dlgClose">ปิด ✕</button></div><div id="dlgGrid"></div></div></div>
+<script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.631"></script><script src="js/battle-vfx.js?v=v98.594"></script><script src="js/vfx-kit.js?v=v98.627"></script><script src="js/status-fx.js?v=v98.405"></script>
+<script>
+const W = 300, H = 200, CW = 78, A = { x: 62, y: 158 }, P = { x: 222, y: 158 };
+const NAMES = { sword: 'ดาบ ฟัน', knife: 'มีด ฟันไขว้', blunt: 'ค้อน/กระบอง ทุบ', spear: 'หอก แทง', rapier: 'เรเปียร์ แทงเร็ว', arrow: 'ธนู', shield: 'โล่ ป้องกัน', parry: 'ปัดป้อง',
+  fire: 'ไฟ', ice: 'น้ำแข็ง', lightning: 'สายฟ้า', wind: 'ลม', water: 'น้ำ', earth: 'ดิน', holy: 'แสงศักดิ์สิทธิ์', dark: 'ความมืด', arcane: 'เวทอาร์เคน', heal: 'ฮีล',
+  burn: 'ไหม้', poison: 'พิษ', sleep: 'หลับ', freeze: 'แข็ง', shock: 'ชา', weak: 'อ่อนแรง', silence: 'ใบ้', bind: 'เถาวัลย์' };
+const DUR = { sword: 620, knife: 620, blunt: 760, spear: 640, rapier: 560, arrow: 720, shield: 900, parry: 620, fire: 1150, ice: 1150, lightning: 820, wind: 1050, water: 1100, earth: 950, holy: 1150, dark: 1200, arcane: 1150, heal: 1150 };
+const cards = [];
+function person(g, x, y, col, lean = 0) { g.fillStyle = 'rgba(0,0,0,.28)'; g.beginPath(); g.ellipse(x, y, 20, 7, 0, 0, 7); g.fill(); g.fillStyle = col; g.beginPath(); g.roundRect(x - 13 + lean, y - 62, 26, 62, 10); g.fill(); g.beginPath(); g.arc(x + lean, y - 74, 14, 0, 7); g.fill() }
+function scene(g, both = true) { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#1b2330'); gr.addColorStop(.62, '#27342a'); gr.addColorStop(1, '#31412f'); g.fillStyle = gr; g.fillRect(0, 0, W, H); if (both) person(g, A.x, A.y, '#7b8794'); person(g, P.x, P.y, '#8a6a5a') }
+function mk(host, title, sub, draws) {   /* draws = [[caption, fn(g, t, now)], …] */
+  const el = document.createElement('div'); el.className = 'card'; el.innerHTML = `<b>${title}</b> <small>${sub || ''}</small><div class="pair${draws.length < 2 ? ' one' : ''}">${draws.map(d => `<figure><canvas width="${W * 2}" height="${H * 2}"></canvas><figcaption>${d[0]}</figcaption></figure>`).join('')}</div>`;
+  host.append(el); const cvs = [...el.querySelectorAll('canvas')]; cards.push({ el, cvs, draws }); return el }
+const fxCard = (host, kind, extra = {}, title) => { const dur = extra.dur || DUR[kind] || 700, e = { kind, seed: 7, color: '#ff8a5a', ...extra };
+  const run = fn => (g, now) => { const cyc = dur + 520, t = ((now % cyc) / dur); scene(g); if (t <= 1) fn({ ...e, seed: 7 + Math.floor(now / cyc) }, t, g) };
+  const oldFn = run((ev, t, g) => { const ok = BattleVFX.drawOld(ev.kind === 'impact' ? { ...ev, kind: 'impactCore' } : ev, t, P, A, g, { w: CW, h: CW / 2 }); if (!ok) { g.fillStyle = '#9a937f'; g.font = '12px sans-serif'; g.fillText('(ภาพเดิมยังโหลดไม่เสร็จ/ไม่มี)', 60, 24) } });
+  const list = extra.old === false ? [['new', 'ใหม่']] : VfxKit.variants(kind);   /* [id, label] — 'old', 'new' and any look added later (VfxKit.addVariant) */
+  const d = list.map(([id, label]) => [label, id === 'old' ? oldFn : run((ev, t, g) => VfxKit.draw(ev, t, P, A, g, { w: CW, h: CW / 2 }, id)), id]);
+  const ttl = title || NAMES[kind] || kind, sub = kind + (extra.tier ? ' · ' + extra.tier : '');
+  if (extra.old === false) { const c = mk(host, ttl, sub, d); c.dataset.old = '0'; return }
+  /* the card shows ONLY the look the game uses now; click it to open the full list and change */
+  const byId = Object.fromEntries(d.map(x => [x[2], x])), cur = () => byId[VfxKit.choiceOf(kind)] || byId.old;
+  const c = mk(host, ttl, sub, [['', (g, now) => cur()[1](g, now)]]); c.dataset.old = '1'; c.dataset.kind = kind; c.classList.add('shown');
+  const fig = c.querySelector('figure'), cap = fig.querySelector('figcaption'); c.refresh = () => { cap.innerHTML = 'ใช้อยู่: <b>' + cur()[0] + '</b>' + (extra.pick !== false && d.length > 1 ? ' · <u>กดเพื่อเปลี่ยน (' + d.length + ' แบบ)</u>' : '') };
+  if (extra.pick !== false) { c.classList.add('pickable'); fig.style.cursor = 'pointer'; fig.title = 'คลิกเพื่อเลือกเอฟเฟกต์อื่นของท่านี้'; fig.classList.add('chosen'); fig.insertAdjacentHTML('beforeend', '<div class="use">✓ ในเกมใช้</div>'); fig.onclick = () => openPicker(kind, ttl, d) }
+  c.refresh() };
+/* picker: every look of one effect, animated; click one to use it in the game */
+function openPicker(kind, ttl, d) { const dlg = document.getElementById('dlg'), box = document.getElementById('dlgGrid'); box.innerHTML = ''; document.getElementById('dlgTitle').textContent = ttl + ' — เลือกเอฟเฟกต์';
+  const el = document.createElement('div'); el.className = 'pair many'; el.innerHTML = d.map(x => `<figure data-v="${x[2]}"><canvas width="${W * 2}" height="${H * 2}"></canvas><figcaption>${x[0]}</figcaption><div class="use">✓ ในเกมใช้</div></figure>`).join(''); box.append(el);
+  const entry = { el: dlg, cvs: [...el.querySelectorAll('canvas')], draws: d.map(x => [x[0], x[1]]), picker: true }; cards.push(entry);
+  const mark = () => el.querySelectorAll('figure').forEach(f => f.classList.toggle('chosen', VfxKit.choiceOf(kind) === f.dataset.v)); mark();
+  const close = () => { dlg.hidden = true; const i = cards.indexOf(entry); if (i >= 0) cards.splice(i, 1) };
+  el.onclick = ev => { const f = ev.target.closest('figure'); if (!f) return; VfxKit.setChoice(kind, f.dataset.v); mark(); syncPicks(); setTimeout(close, 220) };
+  document.getElementById('dlgClose').onclick = close; dlg.onclick = ev => { if (ev.target === dlg) close() }; dlg.hidden = false }
+for (const k of ['sword', 'knife', 'blunt', 'spear', 'rapier', 'arrow', 'shield', 'parry']) fxCard(gWeapon, k);
+for (const k of ['fire', 'ice', 'lightning', 'wind', 'water', 'earth', 'holy', 'dark', 'arcane']) fxCard(gMagic, k);
+fxCard(gMagic, 'heal', { color: '#7fe0a0' });
+fxCard(gMagic, 'heal', { color: '#ffe08a', pick: false }, 'ฮีล (แสงทอง) — ใช้ค่าเดียวกับฮีล');
+for (const [tier, n] of [['light', 'โดนตีเบา'], ['heavy', 'โดนตีหนัก'], ['critical', 'คริติคอล'], ['finisher', 'ปิดฉาก']]) fxCard(gHit, 'impact', { tier, dur: 520, pick: tier === 'light' }, n + (tier === 'light' ? ' — เลือกที่นี่ มีผลทั้ง 4 ระดับ' : ''));
+fxCard(gHit, 'death', { dur: 1300, old: false, pick: false }, 'ล้ม · วิญญาณลอยขึ้น (ใหม่ ยังไม่ต่อเข้าเกม)');
+/* status: the same two layers the battle draws — behind the fighter, then in front */
+for (const k of StatusFX.kinds) { const u = { id: 'pv-' + k, hp: 1, sts: k === 'freeze' || k === 'shock' ? null : { [k]: 9 }, stun: k === 'freeze' ? 1 : 0, slowed: k === 'shock' ? 1 : 0 };
+  mk(gStatus, NAMES[k] || k, k, [['ในเกม', (g, now) => { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#1b2330'); gr.addColorStop(.62, '#27342a'); gr.addColorStop(1, '#31412f'); g.fillStyle = gr; g.fillRect(0, 0, W, H); const x = W / 2, y = 164; StatusFX.back(g, u, x, y, 104, now + 5000); person(g, x, y, '#8a6a5a'); StatusFX.front(g, u, x, y, 104, now + 5000) }]]) }
+let speed = 1, clock = 0, last = performance.now();
+function frame(now) { clock += (now - last) * speed; last = now;
+  for (const c of cards) { const r = c.el.getBoundingClientRect(); if (r.bottom < -50 || r.top > innerHeight + 50) continue; c.cvs.forEach((cv, i) => { if (cv.offsetParent === null) return; const g = cv.getContext('2d'); g.setTransform(2, 0, 0, 2, 0, 0); try { c.draws[i][1](g, clock) } catch (e) { } }) }
+  requestAnimationFrame(frame) }
+requestAnimationFrame(frame);
+const GAME_KINDS = () => [...new Set([...document.querySelectorAll('.pickable')].map(r => r.dataset.kind))];
+function syncPicks() { const ks = GAME_KINDS(), cnt = { old: 0, new: 0, other: 0 }; cards.forEach(c => c.refresh && c.refresh()); for (const k of ks) { const v = VfxKit.choiceOf(k); cnt[v === 'old' ? 'old' : v === 'new' ? 'new' : 'other']++ } document.getElementById('sumUse').textContent = `ใหม่ ${cnt.new} · เดิม ${cnt.old}` + (cnt.other ? ` · แบบอื่น ${cnt.other}` : '') }
+document.getElementById('allNew').onclick = () => { for (const k of GAME_KINDS()) VfxKit.setChoice(k, 'new'); syncPicks() };
+document.getElementById('allOld').onclick = () => { for (const k of GAME_KINDS()) VfxKit.setChoice(k, 'old'); syncPicks() };
+document.getElementById('pushBtn').onclick = async () => { const m = document.getElementById('pushMsg'), G = window.GitHubPush; if (!G) { m.textContent = 'ไม่พบระบบ Push'; return } if (!G.config().token) return G.openSettings();
+  for (const k of GAME_KINDS()) VfxKit.setChoice(k, VfxKit.choiceOf(k));   /* write every kind out, so the pushed setting is complete */
+  try { const t = await G.pushSettings([VfxKit.KEY], 'VFX สนามรบ: เลือกเดิม/ใหม่ต่อเอฟเฟกต์'); m.textContent = String(t || 'ใส่แล้ว') } catch (err) { m.textContent = 'ไม่สำเร็จ: ' + err.message } };
+syncPicks();
+document.getElementById('speed').onchange = e => { speed = +e.target.value };
+</script></body></html>

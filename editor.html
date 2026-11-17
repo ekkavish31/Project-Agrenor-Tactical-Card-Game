@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Project A Editor</title>
-<style>
+<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/key-layout.js?v=1"></script><style>
 :root{--bg:#1a1510;--bar:#241d15;--line:#4a3b29;--text:#f3e7cf;--muted:#bba57f;--gold:#f6d79b;--accent:#c9893a}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,"Noto Sans Thai",sans-serif;overflow:hidden}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.4 AgThai,system-ui,"Noto Sans Thai",sans-serif;overflow:hidden}
 header{height:48px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--bar);border-bottom:1px solid var(--line)}\n#deployStatus{font-size:11px;color:var(--muted);white-space:nowrap;border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:#17130f}#deployStatus.latest{color:#a9d9a4;border-color:#466b40}#deployStatus.waiting{color:#f3d08d;border-color:#9c7332}
 header h1{font-size:16px;margin:0 12px 0 0;color:var(--gold);white-space:nowrap}
 nav{display:flex;gap:4px;flex:1;min-width:0;overflow:auto}
@@ -32,16 +32,19 @@ iframe[hidden]{display:none}
 </header>
 <div class="note" id="note"></div><div id="editorConflict" hidden role="status"></div>
 <main id="frames"></main>
-<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-version.js?v=98.6"></script><script src="js/game-settings.js?v=97.03"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js"></script><script>
+<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-version.js?v=v98.631"></script><script src="js/game-settings.js?v=98.566"></script><script src="js/layout-sync.js?v=98.96"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js?v=v98.631"></script><script src="js/manifest-merge.js?v=v98.444"></script><script>
 // Editor shell: every tool runs in its own frame; the game opens in "editor mode" (no play-save writes).
 // All tools share this browser's storage with the game — reload the game to see changes.
 const TABS=[
  {id:'assets',name:'🧰 Workshop / Asset Studio',src:'asset-studio.html',note:'จัดการภาพทั้งหมด · แอนิเมชันตัวละคร/มอนสเตอร์ทุกท่าทุกทิศ · ส่งคำขอเจนเป็นชุด · นำเข้า frame sheet แล้วตัดภาพอัตโนมัติ · บันทึกแล้ว push ขึ้นเกมได้'},
  {id:'cards',name:'🃏 การ์ด',src:'index.html?editor=cards',note:'โต๊ะออกแบบการ์ด 9 ประเภท · ส่งออก ZIP เพื่อใส่เกมถาวร · ปุ่ม "ทดลองในเกม" ใช้ค่าจากที่นี่ในเกมทันที'},
  {id:'map',name:'🗺 แผนที่หมู่บ้าน & ถนน',src:'village-town.html?edit=1',note:'แก้ผังหมู่บ้านอย่างเดียว · มุมมองอิสระ ลาก/ซูมได้ · ถนน อาคาร ของประดับ ประตู มุมเอียง ขนาดตัวละคร · ปุ่มทดสอบเดินตัวเอกและ NPC · บันทึกแล้ว push ขึ้นเกม'},
- {id:'battle',name:'⚔ สนามต่อสู้',src:'battleground.html',note:'Battleground Editor · แถบบน = เลือกชิ้น + เครื่องมือ (ความสูง/พื้น/ของ/ลบ) · แถบล่าง = แคตตาล็อกและขนาดแปรง · แผงขวา = ตั้งค่าชิ้นและพื้นที่ · ลองเล่นได้ทันที'},
+ {id:'places',name:'🏠 แผนที่ภายในสถานที่',src:'village-place.html?edit=1&place=forge',note:'ตลาด · โรงตีเหล็ก · บ้าน แบบ 2.5D เดินได้ · ลากจุดทำงาน/ของประดับ · ผูกกิจกรรมกับจุดทำงาน · เปลี่ยนภาพ ขนาด พื้น ผนัง · push ขึ้นเกม'},
+ {id:'battle',name:'⚔ สนามต่อสู้',src:'battle-tab.html',note:'2 แท็บย่อย: 🧱 แล็บชิ้น/สนามสุ่ม (เดิม) · 📌 ฉากตายตัว (แก้แผนที่ถนนแพะ/ก้นเหมือง/ตำแหน่งยูนิต · ▶ ทดลองเล่น · ⬆ Push) — แล็บเดิม: Battleground Editor · แถบบน = เลือกชิ้น + เครื่องมือ (ความสูง/พื้น/ของ/ลบ) · แถบล่าง = แคตตาล็อกและขนาดแปรง · แผงขวา = ตั้งค่าชิ้นและพื้นที่ · ลองเล่นได้ทันที'},
+ {id:'vfx',name:'✨ VFX',src:'vfx-kit-preview.html',note:'เอฟเฟกต์สนามรบ: เทียบของเดิม (ภาพวาด) กับของใหม่ (วาดด้วยโค้ด) ทีละตัว · เลือกว่าเกมจะใช้แบบไหนต่อเอฟเฟกต์ · ใส่ Cart แล้ว Push = มีผลกับทุกเครื่อง'},
  {id:'menu',name:'🎛 ไอคอนเมนู',src:'index.html?editor=menu',note:'เลือกภาพไอคอนให้ปุ่มเมนูขวาบนของเกม'},
- {id:'places',name:'🏠 แผนที่ย่อย',src:'village-place.html?edit=1&place=forge',note:'ตลาด · โรงตีเหล็ก · บ้าน แบบ 2.5D เดินได้ · ลากจุดทำงาน/ของประดับ · ผูกกิจกรรมกับจุดทำงาน · เปลี่ยนภาพ ขนาด พื้น ผนัง · push ขึ้นเกม'}];
+ {id:'progress',name:'📊 Progress',src:'progress.html',note:'สมุดภารกิจ (Quest Log): แผนแม่บท 8 เฟส วัดความคืบหน้าเป็นตัวเลข รวม/รายเฟส/ต่อเวอร์ชัน · คำนวณจาก data/master-plan.json + docs/TODO.md · อัปเดตด้วย node tools/update-progress.cjs'},
+ {id:'story',name:'🧭 เส้นเรื่อง',src:'story-map.html',note:'แผนผังเส้นเรื่องหลัก (mind map): เส้น Mip · เหมือง/VQ · สงคราม · ศรัทธา · ranger · เส้นรอง · จุดตัดสินใจแตกกิ่งถึงตอนจบ · ดูว่ากล่องไหนทำแล้ว/ยังไม่ทำ/รอเจ้าของเกม · อ่านอย่างเดียว (ข้อมูลที่ js/story-map-data.js)'},];
 const tabs=document.getElementById('tabs'),frames=document.getElementById('frames'),note=document.getElementById('note');let cur=null;
 function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replaceState(null,'','#'+T.id);
  tabs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===T.id));
@@ -55,12 +58,15 @@ show(TABS.some(t=>t.id===location.hash.slice(1))?location.hash.slice(1):'assets'
 (function(){const sp=document.getElementById('stagedPush'),sd=document.getElementById('stagedDrop');let bc=null;try{bc=new BroadcastChannel('project-a-staged')}catch(e){}
  const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('asset-studio',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
  const get=async()=>{try{const db=await idb();return await new Promise(r=>{const q=db.transaction('kv').objectStore('kv').get('repo-staged');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}catch(e){return null}};
+ /* v98.96 · remember what was pushed (the web copy is old for a few minutes) — read by js/studio-repo-dir.js */
+ const remember=async list=>{const db=await idb(),old=await new Promise(r=>{const q=db.transaction('kv').objectStore('kv').get('repo-recent');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}),at=Date.now(),keep=(Array.isArray(old)?old:[]).filter(([p,,t])=>at-t<36e5&&!list.some(([q])=>q===p));await new Promise(r=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put([...keep,...list.map(([p,b])=>[p,b,at])],'repo-recent');t.oncomplete=r;t.onerror=r})};
  const clear=async()=>{const db=await idb();await new Promise(r=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put([],'repo-staged');t.oncomplete=r;t.onerror=r})};
  const tellFrames=m=>{for(const f of frames.children)try{f.contentWindow.postMessage(m,location.origin)}catch(e){}};
- async function count(){const s=await get(),n=Array.isArray(s)?s.length:0;sp.textContent='⬆ รอ Push ('+n+')';sp.disabled=!n;sd.hidden=!n;sp.dataset.n=n;return n}
- count();if(bc)bc.onmessage=()=>count();setInterval(count,15000);
- sp.onclick=async()=>{const s=await get();if(!Array.isArray(s)||!s.length)return count();if(!GitHubPush.config().token){GitHubPush.openSettings(()=>sp.click());return}
-  sp.disabled=true;try{const tag=await GitHubPush.commit('Editor: update images ('+s.length+' files)',async()=>s.map(([p,b])=>b?{path:p,content:b}:{path:p,remove:true}));if(tag){await clear();try{bc&&bc.postMessage(0)}catch(e){}tellFrames({repoStagedPushed:true});alert('push แล้ว · '+tag)}}catch(e){alert('push ไม่สำเร็จ: '+(e.message||e))}finally{count()}};
+ /* v98.96 · ONE place for "waiting to push": staged files + map layout / settings edited in this browser but not pushed (was a separate floating pill) */
+ async function count(){if(window.GitHubPush?.cart?.on()){GitHubPush.cart.refresh();sd.hidden=true;return 0}/* v98.387 · the 🛒 cart owns this button */const s=await get(),n=Array.isArray(s)?s.length:0,LS=window.LayoutSync,u=LS?LS.pending():0,nw=LS?LS.newer():0;sp.textContent='⬆ รอ Push ('+(n+u)+')'+(nw?' · ⬇ เว็บใหม่กว่า':'');sp.disabled=!(n+u)&&!nw;sd.hidden=!n;sp.dataset.n=n;sp.title=[n?n+' ไฟล์ภาพ/ข้อมูลที่แก้ในเครื่อง (จาก Asset Studio / Workshop)':'',...(LS?LS.describe():[])].filter(Boolean).join(' · ')||'ไม่มีงานรอ push';return n}
+ count();if(bc)bc.onmessage=()=>count();setInterval(count,15000);addEventListener('load',()=>{try{LayoutSync&&LayoutSync.onChange(count)}catch(e){}});
+ sp.onclick=async()=>{if(window.GitHubPush?.cart?.on())return GitHubPush.cart.open();const s=await get();if(!Array.isArray(s)||!s.length){if(window.LayoutSync&&(LayoutSync.pending()||LayoutSync.newer()))return LayoutSync.open();return count()}if(!GitHubPush.config().token){GitHubPush.openSettings(()=>sp.click());return}
+  sp.disabled=true;try{const tag=await GitHubPush.commit('Editor: update images ('+s.length+' files)',async head=>{let list=s;try{if(window.ManifestMerge&&head&&head.read){const tx=await head.read('data/asset-manifest.json');if(tx){const db=await idb(),base=await new Promise(r=>{const q=db.transaction('kv').objectStore('kv').get('repo-staged-base');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}),rb=await ManifestMerge.rebase(s,tx,base&&base.text);if(rb.changed){list=rb.files;console.log('manifest merged with main:',rb.note)}}}}catch(e){console.warn('manifest merge',e)}/* v98.136 · a staged manifest is merged with main first, so newer work there is kept */return list.map(([p,b])=>b?{path:p,content:b}:{path:p,remove:true})});if(tag){await remember(s);await clear();try{bc&&bc.postMessage(0)}catch(e){}tellFrames({repoStagedPushed:true});alert('push แล้ว · '+tag)}}catch(e){alert('push ไม่สำเร็จ: '+(e.message||e))}finally{count()}};
  sd.onclick=async()=>{const n=+sp.dataset.n||0;if(!confirm('ทิ้งงานที่ยังไม่ push ทั้งหมด ('+n+' ไฟล์)? ย้อนกลับไม่ได้'))return;await clear();try{bc&&bc.postMessage(0)}catch(e){}tellFrames({repoStagedDiscarded:true});count()}})();
 window.addEventListener('message',e=>{let d=e.data||{};if(d.editorTab){let f=frames.querySelector(`[data-id="${d.editorTab}"]`);if(f&&d.reload)f.src=f.src;show(d.editorTab)}});
 </script>

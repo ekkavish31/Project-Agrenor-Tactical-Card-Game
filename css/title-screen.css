@@ -6,7 +6,7 @@ html.title-boot,html.title-boot body{overflow:hidden}
 /* v97.05 · dark from the first paint: the reload after New Game used to flash the cream paper body before the title / loader was built */
 html.title-boot,html.title-boot body{background:#070b10!important}
 
-#titleScreen.ts{position:fixed;inset:0;z-index:1900;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ts-ink);font:15px/1.5 system-ui,Tahoma,sans-serif;background:#070b10;overflow:hidden;transition:opacity .45s ease}
+#titleScreen.ts{position:fixed;inset:0;z-index:1900;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ts-ink);font:15px/1.5 AgThai,system-ui,Tahoma,sans-serif;background:#070b10;overflow:hidden;transition:opacity .45s ease}
 #titleScreen.ts.ts-out{opacity:0;pointer-events:none}
 #titleScreen .ts-bg{position:absolute;inset:-4%;background:url('../assets/scenes/area-forest.webp') center/cover no-repeat;filter:saturate(.9) brightness(.62);animation:ts-drift 38s ease-in-out infinite alternate}
 #titleScreen .ts-veil{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 42%,#0000 0,#05080dcc 75%),linear-gradient(#0a101a00 40%,#05080df2)}
@@ -22,12 +22,12 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 /* v97.11 · the name box is centred with a transform, so its rise keeps the centring (ts-rise ended at transform:none and pushed it right/down) */
 @keyframes ts-rise-c{from{opacity:0;transform:translate(-50%,calc(-50% + 18px))}to{opacity:1;transform:translate(-50%,-50%)}}
 #titleScreen .ts-brand{text-align:center}
-#titleScreen .ts-kicker{display:block;font:600 11px/1 system-ui,sans-serif;letter-spacing:.32em;color:var(--ts-gold);opacity:.85}
-#titleScreen .ts-brand h1{margin:12px 0 4px;font:700 clamp(54px,8vw,96px)/1 Georgia,'Times New Roman',serif;letter-spacing:.02em;background:linear-gradient(#fff4d2 10%,#f0c870 52%,#a8701e 92%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #2a1806) drop-shadow(0 10px 26px #000c)}
+#titleScreen .ts-kicker{display:block;font:600 11px/1 AgThai,system-ui,sans-serif;letter-spacing:.32em;color:var(--ts-gold);opacity:.85}
+#titleScreen .ts-brand h1{max-width:min(88vw,1100px);margin:12px 0 4px;font:400 clamp(28px,6vw,76px)/1.12 AgThai,Papyrus,'Palatino Linotype','Book Antiqua',Georgia,serif;letter-spacing:.04em;text-wrap:balance;background:linear-gradient(#fff4d2 10%,#f0c870 52%,#a8701e 92%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #2a1806) drop-shadow(0 10px 26px #000c)}
 #titleScreen .ts-brand p{margin:0;font-size:17px;letter-spacing:.2em;color:var(--ts-dim);text-shadow:0 2px 8px #000}
 #titleScreen .ts-menu{display:flex;flex-direction:column;gap:6px;width:min(360px,calc(100vw - 40px))}
 #titleScreen .ts-menu button{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:11px 22px 11px 44px;border:1px solid #d9b46b33;border-radius:10px;background:linear-gradient(90deg,#121b2ed9,#121b2e8c);color:var(--ts-ink);cursor:pointer;text-align:left;transition:background .15s,border-color .15s,transform .15s}
-#titleScreen .ts-menu button span{font:700 19px/1.2 Georgia,serif;letter-spacing:.03em}
+#titleScreen .ts-menu button span{font:700 19px/1.2 AgThai,Georgia,serif;letter-spacing:.03em}
 #titleScreen .ts-menu button small{font-size:12px;color:var(--ts-dim)}
 #titleScreen .ts-menu button::before{content:'';position:absolute;left:18px;top:50%;width:9px;height:9px;margin-top:-5px;border:2px solid var(--ts-gold);transform:rotate(45deg) scale(.4);opacity:0;transition:.15s}
 #titleScreen .ts-menu button:not(:disabled):hover,#titleScreen .ts-menu button:not(:disabled):focus-visible{outline:none;border-color:var(--ts-gold);background:linear-gradient(90deg,#3a2c12f0,#1d2a44cc);transform:translateX(4px);color:var(--ts-ink);text-shadow:none}
@@ -40,21 +40,21 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #titleScreen .ts-extra-box{width:min(860px,calc(100vw - 32px));max-height:calc(100dvh - 48px);display:flex;flex-direction:column;background:linear-gradient(var(--ts-navy-2),var(--ts-navy));border:2px solid #d9b46b;border-radius:14px;box-shadow:0 0 0 4px #00000055,0 20px 60px #000d}
 #titleScreen .ts-extra-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #d9b46b44}
 #titleScreen .ts-tabs{display:flex;gap:6px}
-#titleScreen .ts-tabs button,#titleScreen .ts-close{padding:7px 14px;border-radius:8px;border:1px solid #a88a5866;background:#0d1424;color:var(--ts-dim);font:600 14px system-ui,sans-serif;cursor:pointer}
+#titleScreen .ts-tabs button,#titleScreen .ts-close{padding:7px 14px;border-radius:8px;border:1px solid #a88a5866;background:#0d1424;color:var(--ts-dim);font:600 14px AgThai,system-ui,sans-serif;cursor:pointer}
 #titleScreen .ts-tabs button[aria-selected=true]{background:linear-gradient(#f0c560,#c9901f);border-color:#7a4b06;color:#2a1a05}
 #titleScreen .ts-close{padding:7px 11px}
 #titleScreen .ts-tabs button:focus-visible,#titleScreen .ts-close:focus-visible{outline:2px solid var(--ts-gold);outline-offset:2px}
 #titleScreen .ts-extra-body{overflow:auto;padding:16px 22px 22px}
 #titleScreen .ts-howto,#titleScreen .ts-credits{display:grid;grid-template-columns:150px 1fr;gap:12px 18px;margin:0}
-#titleScreen .ts-howto dt,#titleScreen .ts-credits dt{font:700 15px Georgia,serif;color:var(--ts-gold)}
+#titleScreen .ts-howto dt,#titleScreen .ts-credits dt{font:700 15px AgThai,Georgia,serif;color:var(--ts-gold)}
 #titleScreen .ts-howto dd,#titleScreen .ts-credits dd{margin:0;color:var(--ts-ink)}
-#titleScreen .ts-extra-body h3{margin:18px 0 8px;font:700 15px Georgia,serif;color:var(--ts-gold)}
+#titleScreen .ts-extra-body h3{margin:18px 0 8px;font:700 15px AgThai,Georgia,serif;color:var(--ts-gold)}
 #titleScreen .ts-gal-count{margin:0;color:var(--ts-dim);font-size:13px}
 #titleScreen .ts-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
 #titleScreen .ts-gal-item{aspect-ratio:1;padding:0;border:1px solid #d9b46b55;border-radius:8px;overflow:hidden;background:#0a101c;cursor:zoom-in}
 #titleScreen .ts-gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
 #titleScreen .ts-gal-item:hover img{transform:scale(1.06)}
-#titleScreen .ts-gal-item.locked{display:grid;place-items:center;cursor:default;color:#d9b46b55;font:700 28px Georgia,serif;background:repeating-linear-gradient(45deg,#0c1220 0 8px,#0f1728 8px 16px)}
+#titleScreen .ts-gal-item.locked{display:grid;place-items:center;cursor:default;color:#d9b46b55;font:700 28px AgThai,Georgia,serif;background:repeating-linear-gradient(45deg,#0c1220 0 8px,#0f1728 8px 16px)}
 #titleScreen .ts-viewer{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:#000d;cursor:zoom-out}
 #titleScreen .ts-viewer img{max-width:92vw;max-height:88vh;border:2px solid #d9b46b;border-radius:10px;box-shadow:0 20px 60px #000}
 
@@ -63,35 +63,37 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #titleScreen .ts-story-bg{position:absolute;inset:-3%;background:center/cover no-repeat;filter:brightness(.55) saturate(.85)}
 #titleScreen .ts-story-bg.ts-pan{animation:ts-pan 12s ease-out both}
 @keyframes ts-pan{from{opacity:0;transform:scale(1.08)}12%{opacity:1}to{opacity:1;transform:scale(1)}}
-#titleScreen .ts-story-veil{position:absolute;inset:0;background:linear-gradient(#0000 35%,#000d 82%)}
-#titleScreen .ts-story-text{position:relative;width:min(760px,calc(100vw - 48px));min-height:5.4em;margin-bottom:96px;font:400 clamp(17px,2.1vw,22px)/1.8 Georgia,'Noto Serif Thai',serif;color:#fbf0d6;text-shadow:0 2px 10px #000;white-space:pre-line;text-align:center}
+#titleScreen .ts-story-veil{position:absolute;inset:0;background:linear-gradient(#0000 52%,#0006 74%,#000b 100%)}
+#titleScreen .ts-story-text{position:relative;width:min(760px,calc(100vw - 48px));min-height:5.4em;margin-bottom:96px;font:400 clamp(17px,2.1vw,22px)/1.8 AgThai,Georgia,'Noto Serif Thai',serif;color:#fbf0d6;text-shadow:0 2px 10px #000;white-space:pre-line;text-align:center}
 #titleScreen .ts-story-text.ts-line{animation:ts-fade .5s ease both}
 @keyframes ts-fade{from{opacity:0}to{opacity:1}}
 #titleScreen .ts-story-hint{position:absolute;bottom:40px;font-size:12px;letter-spacing:.12em;color:#c9bb98aa;animation:ts-blink 2.2s ease-in-out infinite}
 @keyframes ts-blink{50%{opacity:.35}}
-#titleScreen .ts-skip{position:absolute;top:20px;right:22px;padding:7px 14px;border-radius:8px;border:1px solid #d9b46b66;background:#0d1424cc;color:var(--ts-ink);font:600 13px system-ui,sans-serif;cursor:pointer}
+#titleScreen .ts-skip{position:absolute;top:20px;right:22px;padding:7px 14px;border-radius:8px;border:1px solid #d9b46b66;background:#0d1424cc;color:var(--ts-ink);font:600 13px AgThai,system-ui,sans-serif;cursor:pointer}
 #titleScreen .ts-name{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 32px));padding:22px 24px;text-align:center;background:linear-gradient(var(--ts-navy-2),var(--ts-navy));border:2px solid #d9b46b;border-radius:14px;box-shadow:0 0 0 4px #00000055,0 20px 60px #000d;cursor:default;animation:ts-rise-c .5s both}
-#titleScreen .ts-name h2{margin:10px 0 14px;font:700 26px Georgia,serif;color:#ffe8a6}
-#titleScreen .ts-name input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:9px;border:1px solid #a88a58;background:#f7e8c5;color:#2a2318;font:600 18px system-ui,sans-serif;text-align:center}
+#titleScreen .ts-name h2{margin:10px 0 14px;font:700 26px AgThai,Georgia,serif;color:#ffe8a6}
+#titleScreen .ts-name input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:9px;border:1px solid #a88a58;background:#f7e8c5;color:#2a2318;font:600 18px AgThai,system-ui,sans-serif;text-align:center}
 #titleScreen .ts-name input:focus{outline:3px solid #ffe8a6;outline-offset:2px}
 #titleScreen .ts-name p{margin:8px 0 16px;font-size:12px;color:var(--ts-dim)}
-#titleScreen .ts-name button{width:100%;padding:11px;border-radius:9px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9901f);color:#2a1a05;font:700 16px system-ui,sans-serif;cursor:pointer}
+#titleScreen .ts-name button{width:100%;padding:11px;border-radius:9px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9901f);color:#2a1a05;font:700 16px AgThai,system-ui,sans-serif;cursor:pointer}
 #titleScreen .ts-name button:focus-visible{outline:3px solid #ffe8a6;outline-offset:2px}
 #titleScreen.ts.ts-quick .ts-main{animation:none;opacity:0}
 
 /* Loading screen */
-#gameLoading.gl{position:fixed;inset:0;z-index:1950;display:flex;align-items:flex-end;justify-content:center;background:#05080d;color:var(--ts-ink);font:14px/1.5 system-ui,Tahoma,sans-serif;transition:opacity .38s ease}
+#gameLoading.gl{position:fixed;inset:0;z-index:1950;display:flex;align-items:flex-end;justify-content:center;background:#05080d;color:var(--ts-ink);font:14px/1.5 AgThai,system-ui,Tahoma,sans-serif;transition:opacity .38s ease}
 #gameLoading.gl[hidden],#titleScreen.ts [hidden]{display:none!important}
 #gameLoading.gl.gl-out{opacity:0;pointer-events:none}
 #gameLoading .gl-bg{position:absolute;inset:0;background:center/cover no-repeat;filter:blur(2px) brightness(.38) saturate(.8);transform:scale(1.04)}
 #gameLoading .gl-box{position:relative;width:min(560px,calc(100vw - 40px));margin-bottom:9vh}
-#gameLoading .gl-kicker{font:600 11px/1 system-ui,sans-serif;letter-spacing:.32em;color:var(--ts-gold)}
-#gameLoading .gl-title{margin:8px 0 14px;font:700 28px Georgia,serif;color:#ffe8a6;text-shadow:0 3px 14px #000}
+#gameLoading .gl-kicker{font:600 11px/1 AgThai,system-ui,sans-serif;letter-spacing:.32em;color:var(--ts-gold)}
+#gameLoading .gl-title{margin:8px 0 14px;font:700 28px AgThai,Georgia,serif;color:#ffe8a6;text-shadow:0 3px 14px #000}
 #gameLoading .gl-bar{height:10px;border-radius:6px;background:#0b1220;border:1px solid #d9b46b66;overflow:hidden;box-shadow:inset 0 1px 3px #000}
 #gameLoading .gl-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a8701e,#f0c870 70%,#fff2c8);box-shadow:0 0 12px #f0c87088;transition:width .18s ease-out}
 #gameLoading .gl-meta{display:flex;justify-content:space-between;margin-top:7px;font-size:12px;color:var(--ts-dim)}
 #gameLoading .gl-meta b{color:var(--ts-gold);font-variant-numeric:tabular-nums}
-#gameLoading .gl-skip{margin-top:14px;padding:8px 16px;border-radius:9px;border:1px solid #d9b46b88;background:#0d1424cc;color:var(--ts-ink);font:600 13px system-ui,sans-serif;cursor:pointer}
+/* v98.378 · the skip button always holds its place (invisible until it is offered) so showing it never pushes the box above it */
+#gameLoading .gl-skip{visibility:hidden;pointer-events:none;margin-top:14px;padding:8px 16px;border-radius:9px;border:1px solid #d9b46b88;background:#0d1424cc;color:var(--ts-ink);font:600 13px AgThai,system-ui,sans-serif;cursor:pointer}
+#gameLoading .gl-skip.on{visibility:visible;pointer-events:auto}
 #gameLoading .gl-skip:hover,#gameLoading .gl-skip:focus-visible{border-color:var(--ts-gold);background:#3a2c12;color:var(--ts-ink)}
 #gameLoading .gl-tip{margin:18px 0 0;font-size:13px;color:#c9bb98cc}
 
@@ -100,7 +102,7 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 
 /* dev tools on the title menu */
 #titleScreen .ts-tools{display:flex;gap:8px;margin-top:6px}
-#titleScreen .ts-tools a{flex:1;padding:8px 10px;border-radius:9px;border:1px dashed #d9b46b66;background:#0d1424b0;color:#d8c9a4;text-align:center;font:600 13px system-ui,sans-serif;text-decoration:none;transition:border-color .15s,color .15s,background .15s}
+#titleScreen .ts-tools a{flex:1;padding:8px 10px;border-radius:9px;border:1px dashed #d9b46b66;background:#0d1424b0;color:#d8c9a4;text-align:center;font:600 13px AgThai,system-ui,sans-serif;text-decoration:none;transition:border-color .15s,color .15s,background .15s}
 #titleScreen .ts-tools a:hover,#titleScreen .ts-tools a:focus-visible{outline:none;border-style:solid;border-color:var(--ts-gold);color:var(--ts-ink);background:#3a2c12cc}
 
 #titleScreen .ts-ver em{font-style:normal;opacity:.85}#titleScreen .ts-gh-new{color:#ffd76a;opacity:1!important;font-weight:700}
@@ -114,3 +116,124 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #titleScreen .ts-story-text.ts-all .ts-w{animation:none;opacity:1}
 @keyframes ts-word{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:none}}
 #titleScreen .ts-story-text{font-size:clamp(18px,2.3vw,25px);line-height:1.9;letter-spacing:.01em}
+
+/* v98.187 · New Game picture layers + mood transitions. --b = the resting look of a picture (same as .ts-story-bg). */
+#titleScreen .ts-story{perspective:1400px}
+#titleScreen .ts-story-layer{--b:brightness(.9) saturate(1);position:absolute;inset:-3%;background:center/cover no-repeat;filter:var(--b);will-change:transform,opacity,filter}
+#titleScreen .ts-story-layer.fx-done{animation:ts-slow 18s ease-in-out infinite alternate}
+@keyframes ts-slow{from{transform:scale(1)}to{transform:scale(1.045) translate(-.6%,-.4%)}}
+#titleScreen .ts-story-layer:not(.fx-done){animation-duration:2s;animation-timing-function:cubic-bezier(.2,.7,.2,1);animation-fill-mode:both}
+/* fade — default */
+#titleScreen .ts-story-layer.fx-fade:not(.fx-done){animation-name:fx-fade;animation-duration:1.4s}
+@keyframes fx-fade{from{opacity:0}to{opacity:1}}
+/* bloom — golden light swells (W01 the world, Elukhor) */
+#titleScreen .ts-story-layer.fx-bloom:not(.fx-done){animation-name:fx-bloom;animation-duration:2.6s}
+@keyframes fx-bloom{0%{opacity:0;transform:scale(1.18);filter:brightness(2.6) saturate(.5) sepia(.5)}45%{opacity:1}100%{opacity:1;transform:scale(1);filter:var(--b)}}
+/* frost — cold, desaturated, settles downward (north snowlands) */
+#titleScreen .ts-story-layer.fx-frost:not(.fx-done){animation-name:fx-frost;animation-duration:2.2s}
+@keyframes fx-frost{0%{opacity:0;transform:translateY(-3%);filter:brightness(1.1) saturate(0) hue-rotate(-25deg)}100%{opacity:1;transform:none;filter:var(--b)}}
+/* wave — slides in from the sea side with a gentle sway (western isles) */
+#titleScreen .ts-story-layer.fx-wave:not(.fx-done){animation-name:fx-wave;animation-duration:2.4s}
+@keyframes fx-wave{0%{opacity:0;transform:translateX(7%) rotate(.8deg)}60%{transform:translateX(-1%) rotate(-.3deg)}100%{opacity:1;transform:none}}
+/* ember — heat flicker (southern fire lands) */
+#titleScreen .ts-story-layer.fx-ember:not(.fx-done){animation-name:fx-ember;animation-duration:2.2s;animation-timing-function:linear}
+@keyframes fx-ember{0%{opacity:0;filter:brightness(.3) sepia(1) saturate(3)}18%{opacity:1;filter:brightness(1.3) sepia(.6) saturate(2)}32%{filter:brightness(.6) sepia(.8) saturate(2)}52%{filter:brightness(1) sepia(.4) saturate(1.4)}72%{filter:brightness(.7) sepia(.2)}100%{opacity:1;filter:var(--b)}}
+/* mist — comes out of blur and darkness (the great forest) */
+#titleScreen .ts-story-layer.fx-mist:not(.fx-done){animation-name:fx-mist;animation-duration:2.8s}
+@keyframes fx-mist{0%{opacity:0;transform:scale(1.07);filter:blur(22px) brightness(.25)}100%{opacity:1;transform:scale(1);filter:var(--b)}}
+/* iris — a circle opens on a secret (legend of the ancient cities) */
+#titleScreen .ts-story-layer.fx-iris:not(.fx-done){animation-name:fx-iris;animation-duration:2.4s}
+@keyframes fx-iris{0%{clip-path:circle(0% at 50% 52%);transform:scale(1.15)}100%{clip-path:circle(78% at 50% 52%);transform:scale(1)}}
+/* focus — pulls focus on something half remembered (inscriptions) */
+#titleScreen .ts-story-layer.fx-focus:not(.fx-done){animation-name:fx-focus;animation-duration:2.6s}
+@keyframes fx-focus{0%{opacity:0;transform:scale(1.12);filter:blur(14px) brightness(.9) sepia(.5)}100%{opacity:1;transform:scale(1);filter:var(--b)}}
+/* wipe — a curtain pulled across (many peoples) */
+#titleScreen .ts-story-layer.fx-wipe:not(.fx-done){animation-name:fx-wipe;animation-duration:1.7s}
+@keyframes fx-wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+/* rise — the camera lifts over the valley (Nor'Chorthal) */
+#titleScreen .ts-story-layer.fx-rise:not(.fx-done){animation-name:fx-rise;animation-duration:2.8s}
+@keyframes fx-rise{0%{opacity:0;transform:translateY(9%) scale(1.14)}50%{opacity:1}100%{opacity:1;transform:none}}
+/* drift — the view travels along the road (cities & roads, the road to Fernvale) */
+#titleScreen .ts-story-layer.fx-drift:not(.fx-done){animation-name:fx-drift;animation-duration:2.6s}
+@keyframes fx-drift{0%{opacity:0;transform:translateX(-6%) scale(1.12)}40%{opacity:1}100%{opacity:1;transform:none}}
+/* pulse — two blue-white flashes, a circuit waking (magic cards) */
+#titleScreen .ts-story-layer.fx-pulse:not(.fx-done){animation-name:fx-pulse;animation-duration:1.9s;animation-timing-function:ease-out}
+@keyframes fx-pulse{0%{opacity:0;filter:brightness(3) hue-rotate(35deg) saturate(.4)}15%{opacity:1;filter:brightness(2.4) hue-rotate(30deg)}30%{filter:brightness(.7)}48%{filter:brightness(1.9) hue-rotate(20deg)}100%{opacity:1;filter:var(--b)}}
+/* page — a page of an old book turns (the history people are taught) */
+#titleScreen .ts-story-layer.fx-page:not(.fx-done){animation-name:fx-page;animation-duration:1.9s;transform-origin:0 50%}
+@keyframes fx-page{0%{opacity:0;transform:rotateY(-78deg);filter:sepia(1) brightness(.4)}55%{opacity:1}100%{opacity:1;transform:none;filter:var(--b)}}
+/* darklift — out of darkness (the dangers of the road) */
+#titleScreen .ts-story-layer.fx-darklift:not(.fx-done){animation-name:fx-darklift;animation-duration:2.6s}
+@keyframes fx-darklift{0%{opacity:0;filter:brightness(.05) contrast(1.5)}100%{opacity:1;filter:var(--b)}}
+/* warm — firelight swells (stories told around the fire) */
+#titleScreen .ts-story-layer.fx-warm:not(.fx-done){animation-name:fx-warm;animation-duration:2.4s;animation-timing-function:ease-in-out}
+@keyframes fx-warm{0%{opacity:0;transform:scale(1.05);filter:brightness(.3) sepia(.7)}30%{opacity:1;filter:brightness(.8) sepia(.4)}48%{filter:brightness(.6) sepia(.4)}100%{opacity:1;transform:none;filter:var(--b)}}
+/* sunrise — light climbs from below (Fernvale morning) */
+#titleScreen .ts-story-layer.fx-sunrise:not(.fx-done){animation-name:fx-sunrise;animation-duration:2.8s}
+@keyframes fx-sunrise{0%{opacity:0;transform:translateY(7%);filter:brightness(2.2) saturate(.4)}50%{opacity:1}100%{opacity:1;transform:none;filter:var(--b)}}
+/* glow — the same picture, a soft golden pulse over it (last page: "your story begins here") */
+#titleScreen .ts-story.ts-glow::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 60% 55% at 50% 35%,#ffe9a8d0,#ffd77a40 55%,transparent 80%);animation:ts-glow 2.6s ease-out both}
+@keyframes ts-glow{0%{opacity:0}30%{opacity:.85}100%{opacity:0}}
+/* Waiting for Pic — the board shown while a page's picture still has to be created */
+#titleScreen .ts-layer-wait{filter:none;background:radial-gradient(ellipse at 50% 40%,#1a2433,#0a0f17 75%);display:grid;place-items:center}
+#titleScreen .ts-wait{display:flex;flex-direction:column;align-items:center;gap:8px;padding:24px 40px;border:2px dashed #8da2c066;border-radius:14px;color:#9fb2cf;text-align:center;transform:translateY(-8%)}
+#titleScreen .ts-wait b{font:700 clamp(20px,3vw,34px)/1.2 system-ui,AgThai,sans-serif;letter-spacing:.1em}
+#titleScreen .ts-wait small{font:500 clamp(12px,1.3vw,16px)/1.4 AgThai,system-ui,sans-serif;letter-spacing:.06em;opacity:.8}
+@media(prefers-reduced-motion:reduce){#titleScreen .ts-story-layer,#titleScreen .ts-story-layer.fx-done,#titleScreen .ts-story.ts-glow::after{animation:none!important}}
+#titleScreen .ts-story-text{text-wrap:balance}
+
+/* v98.201 · brighter pictures (the old 55 % dimming made every prologue image look dark); the text stays readable through the bottom gradient + a stronger text shadow */
+#titleScreen .ts-story-text{text-shadow:0 1px 3px #000,0 2px 14px #000d,0 0 28px #000a}
+/* menu stays hidden behind the loading screen until the first picture is ready (no flash of the menu background) */
+#titleScreen.ts-story-pre{background:#000}
+#titleScreen.ts-story-pre .ts-bg,#titleScreen.ts-story-pre .ts-veil,#titleScreen.ts-story-pre .ts-motes,#titleScreen.ts-story-pre .ts-main,#titleScreen.ts-story-pre .ts-foot,#titleScreen.ts-story-pre .ag-replay{visibility:hidden!important}
+/* tide — a calm cross-dissolve with a slow settle (no sideways move or rotation: the old "wave" shook) */
+#titleScreen .ts-story-layer.fx-tide:not(.fx-done){animation-name:fx-tide;animation-duration:2.2s}
+@keyframes fx-tide{0%{opacity:0;transform:scale(1.06);filter:blur(10px) brightness(1.1)}100%{opacity:1;transform:none;filter:var(--b)}}
+/* gender choice on the name form */
+#titleScreen .ts-name .ts-gender{display:flex;justify-content:center;gap:14px;margin:4px 0 14px}
+#titleScreen .ts-name .ts-g{width:100px;padding:8px 6px 7px;border-radius:12px;border:2px solid #d9b46b55;background:#0d1424b8;color:#d8c9a4;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font:600 14px AgThai,system-ui,sans-serif;transition:border-color .15s,transform .15s,background .15s}
+#titleScreen .ts-name .ts-g .ts-gframe{position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;background:radial-gradient(#fff4d2,#d9c08a);border:2px solid #8a6a3a}
+/* the sprite is 384×384 with the head at x 120–264, y 80–224: show that square (scale .5) */
+#titleScreen .ts-name .ts-g .ts-gframe img{position:absolute;max-width:none;width:192px;height:192px;left:-60px;top:-40px;pointer-events:none;image-rendering:auto}
+#titleScreen .ts-name .ts-g:hover{transform:translateY(-2px);border-color:#ffe6a9}
+#titleScreen .ts-name .ts-g.on{border-color:#ffd978;background:linear-gradient(#3a2c12e6,#1d2a44e6);color:#ffe8a6;box-shadow:0 0 0 2px #ffd97855}
+#titleScreen .ts-name .ts-g:focus-visible{outline:3px solid #ffe8a6;outline-offset:2px}
+#titleScreen .ts-name .ts-g .ts-gframe.portrait img{width:128px;height:auto;top:-4px}
+#titleScreen .ts-name .ts-g[data-g=female] .ts-gframe.portrait img{width:112px;left:-2px;top:2px}
+#titleScreen .ts-name .ts-g[data-g=male] .ts-gframe.portrait img{left:-30px;top:-8px}
+
+/* heat — warm light blooms in and the picture settles from a slight zoom; never dips dark (the old "ember" flicker looked like a power cut) */
+#titleScreen .ts-story-layer.fx-heat:not(.fx-done){animation-name:fx-heat;animation-duration:2.4s}
+@keyframes fx-heat{0%{opacity:0;transform:scale(1.07);filter:brightness(1.5) sepia(.55) saturate(1.6) blur(5px)}60%{opacity:1}100%{opacity:1;transform:none;filter:var(--b)}}
+
+/* v98.216 · prologue narration text is twice as big (was 18–25 px → 36–50 px). The box is wider and taller so a page still holds a whole sentence or two; longer passages split into more pages at sentence ends (DialogueFX). */
+#titleScreen .ts-story-text{width:min(1240px,calc(100vw - 48px));font-size:clamp(34px,4.4vw,50px);line-height:1.55;letter-spacing:.005em;margin-bottom:clamp(60px,9vh,96px);min-height:3.2em}
+@media(max-width:700px){#titleScreen .ts-story-text{font-size:clamp(26px,6.4vw,34px);line-height:1.5}}
+/* v98.230 · name both heroes: two cards, each with its own name field; the highlighted card is the one you play */
+#titleScreen .ts-name{width:min(560px,calc(100vw - 32px))}
+#titleScreen .ts-name .ts-gender{gap:16px;align-items:stretch}
+#titleScreen .ts-name .ts-g{width:min(230px,44vw);padding:10px 10px 9px;gap:6px;cursor:pointer}
+#titleScreen .ts-name .ts-g input{margin-top:2px;padding:8px 10px;font-size:16px;text-align:center}
+#titleScreen .ts-name .ts-g small{font:600 12px AgThai,system-ui,sans-serif;color:#d8c9a4;min-height:1.2em}
+#titleScreen .ts-name .ts-g.on small{color:#ffe8a6}
+/* v98.230 · loading screen waiting for a key press before the prologue */
+#gameLoading.gl-gate .gl-tip{font-size:18px;font-weight:700;color:#ffe8a6;animation:glGate 1.3s ease-in-out infinite}
+@keyframes glGate{0%,100%{opacity:.55}50%{opacity:1}}
+/* v98.235 · name form: the two heroes' half-body dialogue portraits face each other (the picker); the name fields sit below, outside the picker */
+#titleScreen .ts-name{width:min(700px,calc(100vw - 24px))}
+#titleScreen .ts-name .ts-gender{gap:0;justify-content:center;align-items:flex-end;margin:2px 0 8px}
+#titleScreen .ts-name .ts-g{width:min(300px,46vw);height:min(300px,40vh);padding:0 6px 8px;position:relative;overflow:hidden;justify-content:flex-end;gap:2px;background:radial-gradient(ellipse at 50% 85%,#3a4a70aa,#0d1424b8 70%)}
+#titleScreen .ts-name .ts-g .ts-gframe{position:absolute;inset:0 0 54px 0;width:auto;height:auto;border:0;border-radius:0;background:none;overflow:hidden}
+#titleScreen .ts-name .ts-g .ts-gframe img,#titleScreen .ts-name .ts-g .ts-gframe.portrait img{position:absolute;left:50%;top:0;width:auto!important;height:100%!important;max-width:none;transform:translateX(-50%);object-fit:contain;filter:brightness(.62) saturate(.75);transition:filter .25s}
+#titleScreen .ts-name .ts-g[data-g=female] .ts-gframe img{transform:translateX(-50%) scaleX(-1)}   /* the left hero looks right, the right one looks left: they face each other */
+#titleScreen .ts-name .ts-g.on .ts-gframe img{filter:none}
+#titleScreen .ts-name .ts-g b,#titleScreen .ts-name .ts-g small{position:relative;text-shadow:0 1px 4px #000}
+#titleScreen .ts-name .ts-g[data-g=female]{border-radius:14px 0 0 14px}#titleScreen .ts-name .ts-g[data-g=male]{border-radius:0 14px 14px 0}
+#titleScreen .ts-name .ts-names{display:flex;gap:14px;justify-content:center;margin:0 0 4px}
+#titleScreen .ts-name .ts-nm{flex:1;max-width:300px;display:flex;flex-direction:column;gap:4px;text-align:left;font:600 13px AgThai,system-ui,sans-serif;color:#d8c9a4}
+#titleScreen .ts-name .ts-nm input{text-align:center}
+/* v98.247 · the loading screen's tip line has a fixed height, so swapping it for the bigger "press any key" text no longer changes the box height (the picture and bar used to jump) */
+#gameLoading .gl-tip{height:64px;line-height:28px;overflow:visible}
+#gameLoading.gl-gate .gl-tip{line-height:28px}
+#titleScreen .ts-name .ts-inw{position:relative;display:block}#titleScreen .ts-name .ts-inw input{padding-right:40px}#titleScreen .ts-name .ts-edit{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;border-radius:7px;border:1px solid #a88a58;background:#e4cf9c;color:#5a3a10;font:16px/1 system-ui;cursor:pointer}#titleScreen .ts-name .ts-edit:hover{background:#ffe8a6}

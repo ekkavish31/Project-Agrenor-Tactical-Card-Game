@@ -1,0 +1,3 @@
+Kenney Particle Pack 1.1 — by Kenney Vleugels (www.kenney.nl) — License CC0 1.0 (public domain): https://creativecommons.org/publicdomain/zero/1.0/
+Source used: https://github.com/Calinou/kenney-particle-pack (mirror of kenney.nl/assets/particle-pack)
+Files here are the original PNGs downscaled to <=256px and converted to WebP. Used by js/town-battle.js (kslash / kburst effects).

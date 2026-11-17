@@ -9,11 +9,11 @@
     if (document.getElementById('jobsCss')) return; const s = document.createElement('style'); s.id = 'jobsCss';
     s.textContent = `#jobsUI{position:fixed;inset:0;z-index:2050;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px);font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
     #jobsUI .box{width:min(980px,96vw);max-height:92vh;overflow:auto;padding:18px 20px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c}
-    #jobsUI h2{margin:0 0 4px;font:800 24px Georgia,"Noto Sans Thai",serif;color:#5a3a10}#jobsUI .js{margin:0 0 14px;color:#6a5030;font-size:13.5px}
+    #jobsUI h2{margin:0 0 4px;font:800 24px AgThai,Georgia,"Noto Sans Thai",serif;color:#5a3a10}#jobsUI .js{margin:0 0 14px;color:#6a5030;font-size:13.5px}
     #jobsUI .jg{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
     #jobsUI .jb{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:12px;background:#fff8;border:2px solid #b08a4a55;min-width:0}
     #jobsUI .jb.cur{border-color:var(--c);box-shadow:0 0 0 2px var(--c) inset}#jobsUI .jb.lock{opacity:.6}
-    #jobsUI .jh{display:flex;gap:10px;align-items:center}#jobsUI .je{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#fff8e8;font:700 19px system-ui,"Segoe UI Symbol",sans-serif;border:2px solid #1a140c;flex:none}
+    #jobsUI .jh{display:flex;gap:10px;align-items:center}#jobsUI .je{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#fff8e8;font:700 19px AgThai,system-ui,"Segoe UI Symbol",sans-serif;border:2px solid #1a140c;flex:none}
     #jobsUI .jh b{font-size:17px}#jobsUI .jh small{display:block;color:#7a6040;font-size:12.5px}
     #jobsUI .jr{font-size:13px;line-height:1.5}#jobsUI .jr i{font-style:normal;color:#7a6040}
     #jobsUI .jx{height:8px;border-radius:5px;background:#0002;overflow:hidden}#jobsUI .jx span{display:block;height:100%;background:var(--c)}
