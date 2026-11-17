@@ -1,7 +1,7 @@
 /* v38n · Procedural motion for animations that have only one frame (or any clip you choose).
    Settings per clip (localStorage 'proc-motion-v1', pushed into js/game-settings.js): {type, amp, speed}
    Clip keys: monsters = their asset id (enemy-anim-<kind>-<view>-<pose>), hero/allies = tactics.<pose>.<dir>.
-   Without a setting, a single-frame idle breathes and a single-frame walk bobs; multi-frame clips are left alone.
+   Without a setting, a single-frame idle breathes and a single-frame walk bobs (v98.639: default 0.3× strength · 0.6× speed); multi-frame clips are left alone.
    Transforms are applied around the feet, so the shadow and the ground point never move. */
 (function(root){'use strict';
 const KEY='proc-motion-v1';
@@ -10,7 +10,7 @@ let cache=null,stamp='';
 function all(){try{const s=root.localStorage?.getItem(KEY)||'';if(s!==stamp){stamp=s;cache=s?JSON.parse(s):{}}}catch(e){cache={}}return cache||{}}
 function set(key,cfg){const a={...all()};if(!cfg||cfg.type==='auto')delete a[key];else a[key]={type:cfg.type,amp:+cfg.amp||1,speed:+cfg.speed||1};try{root.localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}stamp='';return a[key]||null}
 const hash=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h%1000/1000*6.283};
-function defaultFor(info){if(!info||(info.frames||1)>1)return null;if(info.pose==='idle'||info.pose==='guard')return info.skipIdle?null:{type:'breathe',amp:info.pose==='guard'?.6:1,speed:1};if(info.pose==='walk')return{type:'bob',amp:1,speed:1};return null}
+function defaultFor(info){if(!info||(info.frames||1)>1)return null;if(info.pose==='idle'||info.pose==='guard')return info.skipIdle?null:{type:'breathe',amp:info.pose==='guard'?.6:1,speed:1};if(info.pose==='walk')return{type:'bob',amp:.3,speed:.6};return null}
 function config(key,info){const s=all()[key];return s?(s.type==='none'?null:s):defaultFor(info)}
 // matrix [a,b,c,d,e,f] for ctx.transform, origin = feet, h = drawn sprite height in px
 function matrix(cfg,time,h,id){const A=cfg.amp??1,w=(cfg.speed??1),ph=hash(id),T=time/1000;
