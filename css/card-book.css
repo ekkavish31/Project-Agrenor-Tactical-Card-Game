@@ -80,3 +80,5 @@
 .cb-v2 .cb-close:hover{transform:scale(1.08);filter:drop-shadow(0 0 4px #ffd77a) brightness(1.1)}
 .cb-v2 .cb-close,.cb-v2 .cb-close:focus,.cb-v2 .cb-close:focus-visible{outline:0!important;border:0!important}
 .cb-v2 .cb-close:focus-visible span,.cb-v2 .cb-close:focus-visible{text-decoration:underline;text-decoration-color:#ffd77a}
+/* v98.670 · the ribbons come down over the leather seam: their straight ends rest on the edge of the paper */
+.cb-v2 .cb-tabs{height:calc(var(--u)*12.5)}
