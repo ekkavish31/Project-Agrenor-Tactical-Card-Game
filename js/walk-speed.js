@@ -47,7 +47,17 @@
   api.dir = {
     DEF: DEF_DIR, ORDER, ANG, config: dcfg, raw8, anim: animOf,
     /* hero / villager: remembers the raw heading on the object (o.raw8) and returns the animation direction */
-    face: (o, du, dv) => { o.raw8 = raw8(du, dv, o.raw8); return animOf(o.raw8) },
+    /* v98.633 · anti-flicker for tight spots (a table in the inn, a staircase-shaped path): the heading is low-pass filtered (~0.2 s) before it is read, and a picture that just changed is kept for at least 0.3 s,
+       so a walker that bumps / zig-zags between two directions every frame keeps ONE walking picture. A new walk (no call for 0.4 s) or a big turn-around starts from the raw heading. */
+    face: (o, du, dv) => {
+      const l = Math.hypot(du, dv), now = typeof performance !== 'undefined' ? performance.now() : Date.now(); if (!l) return animOf(o.raw8 || 'SE');
+      const ux = du / l, uy = dv / l, gap = now - (o._ht || 0); o._ht = now;
+      if (!o._hv || gap > 400) { o._hv = [ux, uy]; o._hc = now; o.raw8 = raw8(du, dv, o.raw8); return animOf(o.raw8) }
+      const k = 1 - Math.exp(-Math.min(.1, gap / 1000) / .2); let hx = o._hv[0] + (ux - o._hv[0]) * k, hy = o._hv[1] + (uy - o._hv[1]) * k; const hl = Math.hypot(hx, hy);
+      if (hl < .25) { hx = ux; hy = uy } else { hx /= hl; hy /= hl } o._hv = [hx, hy];
+      const next = raw8(hx, hy, o.raw8); if (next !== o.raw8) { if (animOf(next) === animOf(o.raw8) || now - o._hc > 300) { o.raw8 = next; o._hc = now } }
+      return animOf(o.raw8);
+    },
     set: (patch) => { cfg.dir = { ...(cfg.dir || {}), ...patch }; if (patch.map) cfg.dir.map = { ...(cfg.dir.map || {}), ...patch.map }; save() },
     reset: () => { delete cfg.dir; save() }
   };
