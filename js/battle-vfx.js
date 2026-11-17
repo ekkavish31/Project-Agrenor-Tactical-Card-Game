@@ -40,7 +40,7 @@ function drawImpact(g,e,t,p,a,cw){
 }
 I('impact/core-atlas');
 const KIND={
- sword(g,e,t,p,a,cw){const W=cw*(e.scale||1),dir=a.x<=p.x?1:-1,s=back(pop(t,.32));if(!stamp(g,'skill/slash',p.x,chest(p,cw),W*2.1*(.7+.3*s),{flip:dir<0,rot:dir*(-.25+.35*pop(t,.3)),alpha:fade(t,.45)}))return false;if(t>.12&&t<.6)stamp(g,'particle/hit',p.x,chest(p,cw),W*1.1*(1-pop(t-.12,.48)),{alpha:1-pop(t-.12,.48)});return true},
+ sword(g,e,t,p,a,cw){const W=cw*(e.scale||1),dir=a.x<=p.x?1:-1,s=back(pop(t,.32));if(!stamp(g,'skill/slash',p.x,chest(p,cw),W*2.1*(.7+.3*s),{flip:dir>0,rot:-dir*(-.25+.35*pop(t,.3)),alpha:fade(t,.45)}/* v98.636 mirrored: the slash crescent faces the opposite side */))return false;if(t>.12&&t<.6)stamp(g,'particle/hit',p.x,chest(p,cw),W*1.1*(1-pop(t-.12,.48)),{alpha:1-pop(t-.12,.48)});return true},
  knife(g,e,t,p,a,cw){const W=cw*(e.scale||1);for(let k=0;k<2;k++){const tt=clamp((t-k*.28)*2);if(!tt)continue;if(!stamp(g,'skill/cross',p.x+(k?W*.18:-W*.1),chest(p,cw)+(k?W*.12:-W*.06),W*(k?1.05:1.35)*back(pop(tt,.35)),{rot:(R(e,k)-.5)*.6,alpha:fade(tt,.4)}))return false}burst(g,e,6,p.x,chest(p,cw),W*.7,W*.25,pop(t,1),'star');return true},
  blunt(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!stamp(g,'skill/shockwave',p.x,p.y-cw*.05,W*(1+1.6*pop(t,.6)),{sy:.5,alpha:fade(t,.35)}))return false;if(t<.45)stamp(g,'particle/hit',p.x,chest(p,cw),W*1.3*(1-t/.45),{alpha:1-t/.45});
   for(let i=0;i<5;i++){const k=clamp((t-.1)/.9),an=Math.PI+R(e,i)*Math.PI;stamp(g,'particle/dust',p.x+Math.cos(an)*W*.8*k,p.y-cw*.1-W*.35*k,W*(.45+.4*k),{blend:'source-over',alpha:.7*(1-k)})}return true},
