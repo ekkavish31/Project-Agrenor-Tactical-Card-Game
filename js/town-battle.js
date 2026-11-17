@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.622';
+  const V = '98.635';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -939,6 +939,7 @@
     const offensive = !!o.from && kind !== 'heal' && kind !== 'shield' && kind !== 'parry';
     const enhanced = offensive && window.BattleVFX?.impactReady();
     if (enhanced) { const tier = BattleVFX.impactTier(o); fx('impactCore', u, o.from, { tier, duration: BattleVFX.impactSpec(tier).duration, reducedMotion: !CINE }) }
+    if (kind === 'fire' && offensive) smokeUp(u, 260);   /* v98.635 · fire hit → smoke wisps */
     u.flashUntil = now() + (big ? 190 : 120);
     glows.push({ u: u.vu, v: u.vv, col, r: UNIT * (enhanced ? .65 : big ? 1.8 : 1.2), t0: now(), dur: big ? 620 : 420 });
     if (o.sound !== false) hitSound(kind, { big, crit: o.crit, kill: o.kill });
@@ -1105,7 +1106,7 @@
       if (s.type === 'move') await walkAnim(s.unit, s.path);
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
       else if (s.type === 'stun') { floatText(s.unit, 'FROZEN — SKIP', '#bfe8ff', true); await wait(420) }
-      else if (s.type === 'dot') { const S = FB.STATUS[s.kind] || {}; s.unit.hitUntil = now() + 300; floatText(s.unit, (S.icon || '') + ' −' + s.damage, s.kind === 'burn' ? '#ffb070' : '#b6e07a'); s.unit.shown = s.unit.hp; hudSync(); if (s.unit.hp <= 0) s.unit.deadAt = now() + 300; await wait(420) }
+      else if (s.type === 'dot') { const S = FB.STATUS[s.kind] || {}; if (s.kind === 'burn') smokeUp(s.unit); s.unit.hitUntil = now() + 300; floatText(s.unit, (S.icon || '') + ' −' + s.damage, s.kind === 'burn' ? '#ffb070' : '#b6e07a'); s.unit.shown = s.unit.hp; hudSync(); if (s.unit.hp <= 0) s.unit.deadAt = now() + 300; await wait(420) }
       else if (s.type === 'evolve') await playEvolve(s)
       else if (s.type === 'phase') { actUnit = s.unit; banner('ENRAGED!', 'crit'); screenFlash('255,90,58', .35, 420); shake(16, 520); floatText(s.unit, 'คลั่ง! ATK ↑', '#ff8a6a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,90,60', r: UNIT * 1.8, t0: now(), dur: 900 }); await wait(800) }
       else if (s.type === 'charge') { floatText(s.unit, '⚠ กำลังรวบรวมพลัง', '#ffd25a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,210,90', r: UNIT * 1.5, t0: now(), dur: 1100 }); hint('⚠ ' + s.unit.name + ' จะใช้ท่าใหญ่ในตาหน้า · กระจายตัว หรือถอยออกจากระยะ'); await wait(700) }
@@ -1490,6 +1491,22 @@
     const fr = set[name + 'Frames']; if (fr?.length) return name === 'down' ? fr.at(-1) : (window.StudioWalks?.frame(fr, t) || fr[0]);
     return set[name] || set.idle;
   }
+  /* v98.635 · smoke wisps on a fighter hit by fire / ticking burn damage: 1–3 of the painted wisp (assets/fx/smoke-wisp.webp) curl up from the body, grow, drift and fade (~2.4 s) */
+  const SMOKES = [];
+  function smokeUp(u, delay = 0) {
+    if (!u || u.hp <= 0 || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const n = 1 + Math.floor(Math.random() * 3), t0 = now() + delay;
+    for (let i = 0; i < n; i++) SMOKES.push({ u, t0: t0 + i * 220, dur: 2200 + Math.random() * 600, dx: (Math.random() - .5) * .7, sway: Math.random() * 6.28, rot: (Math.random() - .5) * .9, sz: .62 + Math.random() * .3 });
+  }
+  function smokeDraw(g, t) {
+    if (!SMOKES.length) return; const pic = im('assets/fx/smoke-wisp.webp'); if (!pic) return;
+    for (let i = SMOKES.length - 1; i >= 0; i--) {
+      const m = SMOKES[i], e = t - m.t0; if (e > m.dur || m.u.hp <= 0 && !m.u.deadAt) { SMOKES.splice(i, 1); continue } if (e < 0) continue;
+      const k = e / m.dur, u = m.u, p = project(u.vu, u.vv), ko = kbOff(u, t), big = u.side === 'monster' ? (MON[u.evoShow || u.kind]?.scale || 1) : 1;
+      const w = UNIT * m.sz * (.7 + .8 * k) * big, hh = w * pic.naturalHeight / pic.naturalWidth, x = p.x + ko.x + UNIT * m.dx * big * (.3 + k) + Math.sin(k * 4 + m.sway) * UNIT * .07, y = p.y + ko.y - UNIT * big * (.75 + 1.0 * k);
+      g.save(); g.globalAlpha = Math.min(1, Math.sin(Math.min(1, k * 1.08) * Math.PI) * 1.5) * .85; g.translate(x, y); g.rotate(m.rot + k * .5); g.drawImage(pic, -w / 2, -hh / 2, w, hh); g.restore();
+    }
+  }
   /* v98.610 · when a fighter falls: (1) a grey aura on the ground around them that drains the colour of the scene for a moment, (2) pale smoke wisps rising from the body,
      (3) a bright soul wisp leaving the body with a tail. 2.2 s in all; the body itself slumps, goes grey and only then fades (see poseMotion / the unit loop). */
   function deathFx(g, u, t) {
@@ -1810,6 +1827,7 @@
       const isSel = u.hp > 0 && (u === selUnit || u === hoverU || u === pickU) && !u.deadAt; if (isSel && SEL_OUTLINE && u.side === 'monster') { g.shadowColor = '#fff'; g.shadowBlur = 6 * (devicePixelRatio || 1) }   /* v98.324 · the selected character: thin white edge + soft aura · v98.632: only on monsters now — the hero and companions have the head arrow instead */
       drawUnit(u); g.restore();
     }
+    smokeDraw(g, t);
     for (const u of st.units) if (u.deadAt && t > u.deadAt) deathFx(g, u, t);   /* v98.610 · grey aura + smoke + the soul leaving the body */
     /* v96: units hidden behind higher ground show through as a ghost in normal colours (Tactics Ogre / Triangle Strategy style) */
     for (const u of st.units) if (u._occ && u.hp > 0) { const o = kbOff(u, t); g.save(); g.translate(o.x, o.y); g.globalAlpha = .78; drawUnit(u); g.restore() }

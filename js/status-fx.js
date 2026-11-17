@@ -15,6 +15,7 @@
   const TAU = Math.PI * 2, clamp = v => Math.max(0, Math.min(1, v));
   const H = (a, b) => { let h = Math.imul((a | 0) * 2654435761 ^ (b | 0) * 40503, 2246822519) >>> 0; h = (h ^ h >>> 15) >>> 0; return (h % 10000) / 10000 };
   const COL = { burn: '255,140,50', poison: '120,220,90', sleep: '190,170,255', freeze: '150,220,255', shock: '255,235,110', weak: '170,120,210', silence: '200,200,210', bind: '110,170,70' };
+  let SMK = null; const smokeImg = () => { if (!SMK) { SMK = new Image(); SMK.src = 'assets/fx/smoke-wisp.webp' } return SMK.complete && SMK.naturalWidth ? SMK : null };
   const seen = new WeakMap();   /* unit → { keys:Set, born:{kind:t} } so a new status gets its burst */
   function keys(u) { const k = Object.keys(u.sts || {}); if (u.stun) k.push('freeze'); if (u.slowed) k.push('shock'); return k }
   function track(u, t) { let s = seen.get(u); if (!s) seen.set(u, s = { keys: new Set(), born: {} }); const k = keys(u); for (const x of k) if (!s.keys.has(x)) s.born[x] = t; s.keys = new Set(k); return { k, born: s.born } }
@@ -40,6 +41,7 @@
         g.restore();
         /* smoke: a grey puff rolls off the top every so often */
         puffs(t, s + 5, 4, 2400, (k, i, c) => { if (H(s + c, i + 40) < .35) return; const sx = x + (H(s + c, i + 7) - .5) * h * .3 + k * h * .12 * (H(s, i) - .4), sy = y - h * (.75 + .6 * k), r = h * (.06 + .12 * k), a = Math.sin(Math.min(1, k * 1.15) * Math.PI) * .34;
+          const im = smokeImg(); if (im) { const w = h * (.34 + .3 * k), hh = w * im.naturalHeight / im.naturalWidth; g.save(); g.globalAlpha = Math.min(1, a * 2.4); g.translate(sx, sy - hh * .3); g.rotate((H(s + c, i + 3) - .5) * .8 + k * .3); g.drawImage(im, -w / 2, -hh / 2, w, hh); g.restore(); return }   /* v98.635 · the painted smoke wisp (assets/fx/smoke-wisp.webp) */
           const gr = g.createRadialGradient(sx, sy, 0, sx, sy, r); gr.addColorStop(0, `rgba(70,62,58,${a})`); gr.addColorStop(1, 'rgba(70,62,58,0)'); g.fillStyle = gr; g.beginPath(); g.arc(sx, sy, r, 0, TAU); g.fill() });
       }
     },
