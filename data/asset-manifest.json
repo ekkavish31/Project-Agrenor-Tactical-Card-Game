@@ -12423,7 +12423,8 @@
    "reference": [
     "assets/enemies/wolf.webp",
     "assets/enemies/wolf-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-wolf-ne-walk",
@@ -12469,7 +12470,8 @@
    "reference": [
     "assets/enemies/wolf.webp",
     "assets/enemies/wolf-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-wolf-se-windup",
@@ -13002,7 +13004,8 @@
    "reference": [
     "assets/enemies/bandit.webp",
     "assets/enemies/bandit-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-bandit-ne-walk",
@@ -13048,7 +13051,8 @@
    "reference": [
     "assets/enemies/bandit.webp",
     "assets/enemies/bandit-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-bandit-se-windup",
@@ -13569,7 +13573,8 @@
    "reference": [
     "assets/enemies/poacher.webp",
     "assets/enemies/poacher-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-poacher-ne-walk",
@@ -13615,7 +13620,8 @@
    "reference": [
     "assets/enemies/poacher.webp",
     "assets/enemies/poacher-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-poacher-se-windup",
@@ -14230,7 +14236,8 @@
    "reference": [
     "assets/enemies/bat.webp",
     "assets/enemies/bat-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-bat-ne-walk",
@@ -14276,7 +14283,8 @@
    "reference": [
     "assets/enemies/bat.webp",
     "assets/enemies/bat-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-bat-se-windup",
@@ -14788,7 +14796,8 @@
    "reference": [
     "assets/enemies/kobold.webp",
     "assets/enemies/kobold-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-kobold-ne-walk",
@@ -14834,7 +14843,8 @@
    "reference": [
     "assets/enemies/kobold.webp",
     "assets/enemies/kobold-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-kobold-se-windup",
@@ -15485,7 +15495,8 @@
    },
    "qaResolvedIds": [
     "A03"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-slime-ne-walk",
@@ -15531,7 +15542,8 @@
    "reference": [
     "assets/enemies/slime.webp",
     "assets/enemies/slime-back.webp"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-slime-se-windup",
@@ -16029,7 +16041,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-dummy-ne-walk",
@@ -16079,7 +16092,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-dummy-se-windup",
@@ -16871,7 +16885,8 @@
    },
    "qaResolvedIds": [
     "A08"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-straw-ne-walk",
@@ -16921,7 +16936,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-straw-se-windup",
@@ -17899,7 +17915,8 @@
    },
    "qaResolvedIds": [
     "A06"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-archer-ne-walk",
@@ -17949,7 +17966,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-archer-se-windup",
@@ -18791,7 +18809,8 @@
    },
    "qaResolvedIds": [
     "A07"
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "enemy-anim-captain-ne-walk",
@@ -18841,7 +18860,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-captain-se-windup",
@@ -19652,7 +19672,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-shadowWolf-ne-walk",
@@ -19702,7 +19723,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-shadowWolf-se-windup",
@@ -20232,7 +20254,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-alpha-ne-walk",
@@ -20282,7 +20305,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-alpha-se-windup",
@@ -20858,7 +20882,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-foreman-ne-walk",
@@ -20908,7 +20933,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-foreman-se-windup",
@@ -21589,7 +21615,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-golem-ne-walk",
@@ -21639,7 +21666,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas columns; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-golem-se-windup",
@@ -22175,7 +22203,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas cells; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-treant-ne-walk",
@@ -22225,7 +22254,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas cells; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-treant-se-windup",
@@ -22976,7 +23006,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas cells; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-crystalKing-ne-walk",
@@ -23026,7 +23057,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas cells; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-crystalKing-se-windup",
@@ -23814,7 +23846,8 @@
    },
    "sourceFlip": true,
    "nativeFacing": "SW",
-   "orientationNote": "Source art faces left; display flip normalizes front/back to SE/NE."
+   "orientationNote": "Source art faces left; display flip normalizes front/back to SE/NE.",
+   "ms": 100
   },
   {
    "id": "enemy-anim-bogSlime-ne-walk",
@@ -23864,7 +23897,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas cells; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-bogSlime-se-windup",
@@ -24469,7 +24503,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas cells; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-mireBat-ne-walk",
@@ -24519,7 +24554,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "Isolated connected sprites when source art crosses nominal atlas cells; original color and alpha retained."
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-mireBat-se-windup",
@@ -25074,7 +25110,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "grid"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-bogHunter-ne-walk",
@@ -25126,7 +25163,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "grid"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-bogHunter-se-windup",
@@ -25782,7 +25820,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "connected sprites across atlas cells"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-swampWitch-ne-walk",
@@ -25834,7 +25873,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "connected sprites across atlas cells"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-swampWitch-se-windup",
@@ -26490,7 +26530,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "connected sprites across atlas cells"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-mudTroll-ne-walk",
@@ -26542,7 +26583,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "connected sprites across atlas cells"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-mudTroll-se-windup",
@@ -27094,7 +27136,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "grid"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-bogHydra-ne-walk",
@@ -27146,7 +27189,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "grid"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-bogHydra-se-windup",
@@ -27906,7 +27950,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "grid"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-pirate-ne-walk",
@@ -27958,7 +28003,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "grid"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-pirate-se-windup",
@@ -28552,7 +28598,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "connected sprites across atlas cells"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-gull-ne-walk",
@@ -28604,7 +28651,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "connected sprites across atlas cells"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-gull-se-windup",
@@ -29156,7 +29204,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "connected sprites across atlas cells"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-seaSlime-ne-walk",
@@ -29208,7 +29257,8 @@
     "sharedAcross": "all poses and both views per species",
     "paddingCompensated": true,
     "sourceExtraction": "connected sprites across atlas cells"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-seaSlime-se-windup",
@@ -29833,7 +29883,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-iceWolf-se-windup",
@@ -30431,7 +30482,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-iceWolf-ne-windup",
@@ -31029,7 +31081,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-frostSlime-se-windup",
@@ -31627,7 +31680,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-frostSlime-ne-windup",
@@ -32225,7 +32279,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-wisp-se-windup",
@@ -32823,7 +32878,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-wisp-ne-windup",
@@ -33421,7 +33477,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-captainHook-se-windup",
@@ -34019,7 +34076,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-captainHook-ne-windup",
@@ -34617,7 +34675,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-coralGolem-se-windup",
@@ -35215,7 +35274,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-coralGolem-ne-windup",
@@ -35813,7 +35873,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-snowKobold-se-windup",
@@ -36411,7 +36472,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-snowKobold-ne-windup",
@@ -37009,7 +37071,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-frostWolf-se-windup",
@@ -37607,7 +37670,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-frostWolf-ne-windup",
@@ -38205,7 +38269,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-yeti-se-windup",
@@ -38803,7 +38868,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-yeti-ne-windup",
@@ -39401,7 +39467,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-frostQueen-se-windup",
@@ -39960,7 +40027,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-frostQueen-ne-windup",
@@ -40567,7 +40635,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-skeleton-se-windup",
@@ -41189,7 +41258,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-skeleton-ne-windup",
@@ -41787,7 +41857,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-cultist-se-windup",
@@ -42333,7 +42404,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-cultist-ne-windup",
@@ -42940,7 +43012,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-gargoyle-se-windup",
@@ -43562,7 +43635,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-gargoyle-ne-windup",
@@ -44160,7 +44234,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-ghostKnight-se-windup",
@@ -44758,7 +44833,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-ghostKnight-ne-windup",
@@ -45356,7 +45432,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-voidKing-se-windup",
@@ -45954,7 +46031,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-voidKing-ne-windup",
@@ -46565,7 +46643,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-corsair-se-windup",
@@ -47163,7 +47242,8 @@
     "qaIssueIds": null
    },
    "qaResolvedIds": [],
-   "qaIssueIds": []
+   "qaIssueIds": [],
+   "ms": 100
   },
   {
    "id": "enemy-anim-corsair-ne-windup",
@@ -47731,7 +47811,8 @@
     "A18-SW-cultist"
    ],
    "qaIssueIds": [],
-   "nativeDirection": true
+   "nativeDirection": true,
+   "ms": 100
   },
   {
    "id": "enemy-anim-cultist-sw-windup",
@@ -57144,7 +57225,8 @@
    "view": "SW",
    "clip": "tactics.walk.sw",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-bram-nw-walk-1",
@@ -57165,7 +57247,8 @@
    "view": "NW",
    "clip": "tactics.walk.nw",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-bram-ne-walk-1",
@@ -57186,7 +57269,8 @@
    "view": "NE",
    "clip": "tactics.walk.ne",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-bram-se-walk-1",
@@ -57207,7 +57291,8 @@
    "view": "SE",
    "clip": "tactics.walk.se",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-luna-sw-walk-1",
@@ -57237,7 +57322,8 @@
    "view": "SW",
    "clip": "tactics.walk.sw",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-luna-nw-walk-1",
@@ -57267,7 +57353,8 @@
    "view": "NW",
    "clip": "tactics.walk.nw",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-luna-ne-walk-1",
@@ -57297,7 +57384,8 @@
    "view": "NE",
    "clip": "tactics.walk.ne",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-luna-se-walk-1",
@@ -57327,7 +57415,8 @@
    "view": "SE",
    "clip": "tactics.walk.se",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-kier-sw-walk-1",
@@ -57348,7 +57437,8 @@
    "view": "SW",
    "clip": "tactics.walk.sw",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-kier-nw-walk-1",
@@ -57369,7 +57459,8 @@
    "view": "NW",
    "clip": "tactics.walk.nw",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-kier-ne-walk-1",
@@ -57390,7 +57481,8 @@
    "view": "NE",
    "clip": "tactics.walk.ne",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-kier-se-walk-1",
@@ -57411,7 +57503,8 @@
    "view": "SE",
    "clip": "tactics.walk.se",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-mil-sw-idle",
@@ -57552,7 +57645,8 @@
    "view": "SW",
    "clip": "tactics.walk.sw",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-mil-nw-idle",
@@ -57670,7 +57764,8 @@
    "view": "NW",
    "clip": "tactics.walk.nw",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-mil-ne-walk-1",
@@ -57691,7 +57786,8 @@
    "view": "NE",
    "clip": "tactics.walk.ne",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-mil-se-walk-1",
@@ -57712,7 +57808,8 @@
    "view": "SE",
    "clip": "tactics.walk.se",
    "frame": 1,
-   "frames": 1
+   "frames": 1,
+   "ms": 100
   },
   {
    "id": "tactics-ren-sw-idle",
@@ -64774,7 +64871,8 @@
    "view": "SW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Ren",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-ren-nw-walk-1",
@@ -64789,7 +64887,8 @@
    "view": "NW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Ren",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-ren-ne-walk-1",
@@ -64804,7 +64903,8 @@
    "view": "NE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Ren",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-ren-se-walk-1",
@@ -64819,7 +64919,8 @@
    "view": "SE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Ren",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-nadia-se-idle",
@@ -64873,7 +64974,8 @@
    "view": "SW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Nadia",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-nadia-nw-walk-1",
@@ -64888,7 +64990,8 @@
    "view": "NW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Nadia",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-nadia-ne-walk-1",
@@ -64903,7 +65006,8 @@
    "view": "NE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Nadia",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-nadia-se-walk-1",
@@ -64918,7 +65022,8 @@
    "view": "SE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Nadia",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-sigrid-se-idle",
@@ -65009,7 +65114,8 @@
    "view": "SW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Sigrid",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-sigrid-nw-walk-1",
@@ -65024,7 +65130,8 @@
    "view": "NW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Sigrid",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-sigrid-ne-walk-1",
@@ -65039,7 +65146,8 @@
    "view": "NE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Sigrid",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-sigrid-se-walk-1",
@@ -65054,7 +65162,8 @@
    "view": "SE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Sigrid",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-orla-se-idle",
@@ -65117,7 +65226,8 @@
    "view": "SW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Orla",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-orla-nw-walk-1",
@@ -65132,7 +65242,8 @@
    "view": "NW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Orla",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-orla-ne-walk-1",
@@ -65147,7 +65258,8 @@
    "view": "NE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Orla",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-orla-se-walk-1",
@@ -65162,7 +65274,8 @@
    "view": "SE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Orla",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-olwen-se-idle",
@@ -65207,7 +65320,8 @@
    "view": "SW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Olwen",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-olwen-nw-walk-1",
@@ -65222,7 +65336,8 @@
    "view": "NW",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Olwen",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-olwen-ne-walk-1",
@@ -65237,7 +65352,8 @@
    "view": "NE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Olwen",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "tactics-olwen-se-walk-1",
@@ -65252,7 +65368,8 @@
    "view": "SE",
    "pose": "walk",
    "usedIn": "เพื่อนร่วมทีม Olwen",
-   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้"
+   "note": "ช่องว่าง: ยังไม่มีท่าเดิน — เติมได้",
+   "ms": 100
   },
   {
    "id": "studio-ally-nadia-sw-walk-mw0h1tab-1",
@@ -101120,7 +101237,8 @@
     "assets/enemies/goat.webp",
     "assets/enemies/goat-back.webp"
    ],
-   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง",
+   "ms": 100
   },
   {
    "id": "enemy-anim-goat-se-windup",
@@ -101389,7 +101507,8 @@
     "assets/enemies/goat.webp",
     "assets/enemies/goat-back.webp"
    ],
-   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง"
+   "note": "ภาพจากชีต Goat actions (ผู้ใช้): ท่า idle/walk ประกอบจากท่า windup/strike ชั่วคราวจนกว่าจะมีเฟรมจริง",
+   "ms": 100
   },
   {
    "id": "enemy-anim-goat-ne-windup",
@@ -102058,7 +102177,8 @@
     "motionSourceScale": 1.082969
    },
    "qaStatus": "reviewed-static",
-   "qaCheckedAt": "2026-11-13"
+   "qaCheckedAt": "2026-11-13",
+   "ms": 100
   },
   {
    "id": "enemy-anim-pumpkinBoss-se-windup",
@@ -102371,7 +102491,8 @@
     "motionSourceScale": 1.082969
    },
    "qaStatus": "reviewed-static",
-   "qaCheckedAt": "2026-11-13"
+   "qaCheckedAt": "2026-11-13",
+   "ms": 100
   },
   {
    "id": "enemy-anim-pumpkinBoss-ne-windup",
@@ -102684,7 +102805,8 @@
     "motionSourceScale": 0.873846
    },
    "qaStatus": "reviewed-static",
-   "qaCheckedAt": "2026-11-13"
+   "qaCheckedAt": "2026-11-13",
+   "ms": 100
   },
   {
    "id": "enemy-anim-pest-se-windup",
@@ -102960,7 +103082,8 @@
     "motionSourceScale": 0.873846
    },
    "qaStatus": "reviewed-static",
-   "qaCheckedAt": "2026-11-13"
+   "qaCheckedAt": "2026-11-13",
+   "ms": 100
   },
   {
    "id": "enemy-anim-pest-ne-windup",
@@ -104369,7 +104492,8 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-may-ne-stand",
@@ -104408,7 +104532,8 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-may-se-stand",
@@ -104447,7 +104572,8 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-may-nw-stand",
@@ -104486,7 +104612,8 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-tom-sw-stand",
@@ -104525,7 +104652,8 @@
     "id": "npc:tom",
     "name": "ลุงทอม",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-tom-ne-stand",
@@ -104564,7 +104692,8 @@
     "id": "npc:tom",
     "name": "ลุงทอม",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-tom-se-stand",
@@ -104603,7 +104732,8 @@
     "id": "npc:tom",
     "name": "ลุงทอม",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-tom-nw-stand",
@@ -104642,7 +104772,8 @@
     "id": "npc:tom",
     "name": "ลุงทอม",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-lin-sw-stand",
@@ -104681,7 +104812,8 @@
     "id": "npc:lin",
     "name": "คุณยายลิน",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-lin-ne-stand",
@@ -104720,7 +104852,8 @@
     "id": "npc:lin",
     "name": "คุณยายลิน",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-lin-se-stand",
@@ -104759,7 +104892,8 @@
     "id": "npc:lin",
     "name": "คุณยายลิน",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-lin-nw-stand",
@@ -104798,7 +104932,8 @@
     "id": "npc:lin",
     "name": "คุณยายลิน",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-mira-sw-stand",
@@ -104837,7 +104972,8 @@
     "id": "npc:mira",
     "name": "ครูมิรา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-mira-ne-stand",
@@ -104876,7 +105012,8 @@
     "id": "npc:mira",
     "name": "ครูมิรา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-mira-se-stand",
@@ -104915,7 +105052,8 @@
     "id": "npc:mira",
     "name": "ครูมิรา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-mira-nw-stand",
@@ -104954,7 +105092,8 @@
     "id": "npc:mira",
     "name": "ครูมิรา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-joe-sw-stand",
@@ -104993,7 +105132,8 @@
     "id": "npc:joe",
     "name": "ชาวประมงโจ",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-joe-ne-stand",
@@ -105032,7 +105172,8 @@
     "id": "npc:joe",
     "name": "ชาวประมงโจ",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-joe-se-stand",
@@ -105071,7 +105212,8 @@
     "id": "npc:joe",
     "name": "ชาวประมงโจ",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-joe-nw-stand",
@@ -105110,7 +105252,8 @@
     "id": "npc:joe",
     "name": "ชาวประมงโจ",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-ella-sw-stand",
@@ -105183,7 +105326,8 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-141137"
+   "artRevision": "20261115-141137",
+   "ms": 100
   },
   {
    "id": "npc-ella-ne-stand",
@@ -105249,7 +105393,8 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-141106"
+   "artRevision": "20261115-141106",
+   "ms": 100
   },
   {
    "id": "npc-ella-se-stand",
@@ -105288,7 +105433,8 @@
     "id": "npc:ella",
     "name": "ช่างทอผ้าเอลลา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-ella-nw-stand",
@@ -105327,7 +105473,8 @@
     "id": "npc:ella",
     "name": "ช่างทอผ้าเอลลา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-oren-sw-stand",
@@ -105366,7 +105513,8 @@
     "id": "npc:oren",
     "name": "ผู้ใหญ่บ้านโอเรน",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-oren-ne-stand",
@@ -105405,7 +105553,8 @@
     "id": "npc:oren",
     "name": "ผู้ใหญ่บ้านโอเรน",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-oren-se-stand",
@@ -105444,7 +105593,8 @@
     "id": "npc:oren",
     "name": "ผู้ใหญ่บ้านโอเรน",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-oren-nw-stand",
@@ -105483,7 +105633,8 @@
     "id": "npc:oren",
     "name": "ผู้ใหญ่บ้านโอเรน",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-gus-sw-stand",
@@ -105522,7 +105673,8 @@
     "id": "npc:gus",
     "name": "ช่างตีเหล็กกัส",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-gus-ne-stand",
@@ -105561,7 +105713,8 @@
     "id": "npc:gus",
     "name": "ช่างตีเหล็กกัส",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-gus-se-stand",
@@ -105600,7 +105753,8 @@
     "id": "npc:gus",
     "name": "ช่างตีเหล็กกัส",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-gus-nw-stand",
@@ -105639,7 +105793,8 @@
     "id": "npc:gus",
     "name": "ช่างตีเหล็กกัส",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-guard-sw-stand",
@@ -105678,7 +105833,8 @@
     "id": "npc:guard",
     "name": "ยามดอร์ก",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-guard-ne-stand",
@@ -105717,7 +105873,8 @@
     "id": "npc:guard",
     "name": "ยามดอร์ก",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-guard-se-stand",
@@ -105756,7 +105913,8 @@
     "id": "npc:guard",
     "name": "ยามดอร์ก",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-guard-nw-stand",
@@ -105795,7 +105953,8 @@
     "id": "npc:guard",
     "name": "ยามดอร์ก",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-hilda-sw-stand",
@@ -105834,7 +105993,8 @@
     "id": "npc:hilda",
     "name": "ชาวนาฮิลดา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-hilda-ne-stand",
@@ -105873,7 +106033,8 @@
     "id": "npc:hilda",
     "name": "ชาวนาฮิลดา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-hilda-se-stand",
@@ -105912,7 +106073,8 @@
     "id": "npc:hilda",
     "name": "ชาวนาฮิลดา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-hilda-nw-stand",
@@ -105951,7 +106113,8 @@
     "id": "npc:hilda",
     "name": "ชาวนาฮิลดา",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-bryn-sw-stand",
@@ -105990,7 +106153,8 @@
     "id": "npc:bryn",
     "name": "บริน (โม่แป้ง)",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-bryn-ne-stand",
@@ -106029,7 +106193,8 @@
     "id": "npc:bryn",
     "name": "บริน (โม่แป้ง)",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-bryn-se-stand",
@@ -106068,7 +106233,8 @@
     "id": "npc:bryn",
     "name": "บริน (โม่แป้ง)",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-bryn-nw-stand",
@@ -106107,7 +106273,8 @@
     "id": "npc:bryn",
     "name": "บริน (โม่แป้ง)",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-marta-sw-stand",
@@ -106146,7 +106313,8 @@
     "id": "npc:marta",
     "name": "มาร์ธา (เขากวางทอง)",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-marta-ne-stand",
@@ -106185,7 +106353,8 @@
     "id": "npc:marta",
     "name": "มาร์ธา (เขากวางทอง)",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-marta-se-stand",
@@ -106224,7 +106393,8 @@
     "id": "npc:marta",
     "name": "มาร์ธา (เขากวางทอง)",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-marta-nw-stand",
@@ -106263,7 +106433,8 @@
     "id": "npc:marta",
     "name": "มาร์ธา (เขากวางทอง)",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-saf-sw-stand",
@@ -106302,7 +106473,8 @@
     "id": "npc:saf",
     "name": "หมอยาซาฟ",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-saf-ne-stand",
@@ -106341,7 +106513,8 @@
     "id": "npc:saf",
     "name": "หมอยาซาฟ",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-saf-se-stand",
@@ -106380,7 +106553,8 @@
     "id": "npc:saf",
     "name": "หมอยาซาฟ",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-saf-nw-stand",
@@ -106419,7 +106593,8 @@
     "id": "npc:saf",
     "name": "หมอยาซาฟ",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-mother-sw-stand",
@@ -106478,7 +106653,8 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-220828"
+   "artRevision": "20261115-220828",
+   "ms": 100
   },
   {
    "id": "npc-mother-ne-stand",
@@ -106537,7 +106713,8 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-221030"
+   "artRevision": "20261115-221030",
+   "ms": 100
   },
   {
    "id": "npc-mother-se-stand",
@@ -106576,7 +106753,8 @@
     "id": "npc:mother",
     "name": "แม่",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "npc-mother-nw-stand",
@@ -106615,7 +106793,8 @@
     "id": "npc:mother",
     "name": "แม่",
     "group": "npcs"
-   }
+   },
+   "ms": 100
   },
   {
    "id": "iron-fence2",
@@ -108586,7 +108765,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-finn-se-walk1",
@@ -108622,7 +108802,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-finn-sw-walk1"
+   "mirroredFrom": "npc-finn-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-berg-sw-walk1",
@@ -108673,7 +108854,8 @@
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-berg-se-walk1",
@@ -108725,7 +108907,8 @@
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-ken-sw-walk1",
@@ -108760,7 +108943,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-ken-se-walk1",
@@ -108796,7 +108980,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-ken-sw-walk1"
+   "mirroredFrom": "npc-ken-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-shep-sw-walk1",
@@ -108831,7 +109016,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-shep-se-walk1",
@@ -108867,7 +109053,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-shep-sw-walk1"
+   "mirroredFrom": "npc-shep-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-vera-sw-walk1",
@@ -108902,7 +109089,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-vera-se-walk1",
@@ -108938,7 +109126,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-vera-sw-walk1"
+   "mirroredFrom": "npc-vera-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-finn-ne-walk1",
@@ -108973,7 +109162,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-finn-nw-walk1",
@@ -109009,7 +109199,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-finn-ne-walk1"
+   "mirroredFrom": "npc-finn-ne-walk1",
+   "ms": 100
   },
   {
    "id": "npc-berg-ne-walk1",
@@ -109060,7 +109251,8 @@
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-berg-nw-walk1",
@@ -109112,7 +109304,8 @@
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-ken-ne-walk1",
@@ -109147,7 +109340,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-ken-nw-walk1",
@@ -109183,7 +109377,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-ken-ne-walk1"
+   "mirroredFrom": "npc-ken-ne-walk1",
+   "ms": 100
   },
   {
    "id": "npc-shep-ne-walk1",
@@ -109218,7 +109413,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-shep-nw-walk1",
@@ -109254,7 +109450,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-shep-ne-walk1"
+   "mirroredFrom": "npc-shep-ne-walk1",
+   "ms": 100
   },
   {
    "id": "npc-vera-ne-walk1",
@@ -109289,7 +109486,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-vera-nw-walk1",
@@ -109325,7 +109523,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-vera-ne-walk1"
+   "mirroredFrom": "npc-vera-ne-walk1",
+   "ms": 100
   },
   {
    "id": "npc-graven-sw-walk1",
@@ -109360,7 +109559,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-graven-se-walk1",
@@ -109396,7 +109596,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-graven-sw-walk1"
+   "mirroredFrom": "npc-graven-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-tess-sw-walk1",
@@ -109440,7 +109641,8 @@
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-tess-se-walk1",
@@ -109485,7 +109687,8 @@
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-ash-sw-walk1",
@@ -109520,7 +109723,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-ash-se-walk1",
@@ -109556,7 +109760,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-ash-sw-walk1"
+   "mirroredFrom": "npc-ash-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-pell-sw-walk1",
@@ -109591,7 +109796,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-pell-se-walk1",
@@ -109627,7 +109833,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-pell-sw-walk1"
+   "mirroredFrom": "npc-pell-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-hugo-sw-walk1",
@@ -109662,7 +109869,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-hugo-se-walk1",
@@ -109698,7 +109906,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-hugo-sw-walk1"
+   "mirroredFrom": "npc-hugo-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-graven-ne-walk1",
@@ -109733,7 +109942,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-graven-nw-walk1",
@@ -109769,7 +109979,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-graven-ne-walk1"
+   "mirroredFrom": "npc-graven-ne-walk1",
+   "ms": 100
   },
   {
    "id": "npc-tess-ne-walk1",
@@ -109813,7 +110024,8 @@
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-tess-nw-walk1",
@@ -109858,7 +110070,8 @@
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-ash-ne-walk1",
@@ -109893,7 +110106,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-ash-nw-walk1",
@@ -109929,7 +110143,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-ash-ne-walk1"
+   "mirroredFrom": "npc-ash-ne-walk1",
+   "ms": 100
   },
   {
    "id": "npc-pell-ne-walk1",
@@ -109964,7 +110179,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-pell-nw-walk1",
@@ -110000,7 +110216,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-pell-ne-walk1"
+   "mirroredFrom": "npc-pell-ne-walk1",
+   "ms": 100
   },
   {
    "id": "npc-hugo-ne-walk1",
@@ -110035,7 +110252,8 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100
   },
   {
    "id": "npc-hugo-nw-walk1",
@@ -110071,7 +110289,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-hugo-ne-walk1"
+   "mirroredFrom": "npc-hugo-ne-walk1",
+   "ms": 100
   },
   {
    "id": "npc-pim-sw-walk1",
@@ -110107,7 +110326,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "ageScaleBaked": true
+   "ageScaleBaked": true,
+   "ms": 100
   },
   {
    "id": "npc-pim-se-walk1",
@@ -110144,7 +110364,8 @@
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "ageScaleBaked": true,
-   "mirroredFrom": "npc-pim-sw-walk1"
+   "mirroredFrom": "npc-pim-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-pip-sw-walk1",
@@ -110180,7 +110401,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "ageScaleBaked": true
+   "ageScaleBaked": true,
+   "ms": 100
   },
   {
    "id": "npc-pip-se-walk1",
@@ -110217,7 +110439,8 @@
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "ageScaleBaked": true,
-   "mirroredFrom": "npc-pip-sw-walk1"
+   "mirroredFrom": "npc-pip-sw-walk1",
+   "ms": 100
   },
   {
    "id": "npc-pim-ne-walk1",
@@ -110253,7 +110476,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "ageScaleBaked": true
+   "ageScaleBaked": true,
+   "ms": 100
   },
   {
    "id": "npc-pim-nw-walk1",
@@ -110290,7 +110514,8 @@
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "ageScaleBaked": true,
-   "mirroredFrom": "npc-pim-ne-walk1"
+   "mirroredFrom": "npc-pim-ne-walk1",
+   "ms": 100
   },
   {
    "id": "npc-pip-ne-walk1",
@@ -110326,7 +110551,8 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "ageScaleBaked": true
+   "ageScaleBaked": true,
+   "ms": 100
   },
   {
    "id": "npc-pip-nw-walk1",
@@ -110363,7 +110589,8 @@
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "ageScaleBaked": true,
-   "mirroredFrom": "npc-pip-ne-walk1"
+   "mirroredFrom": "npc-pip-ne-walk1",
+   "ms": 100
   },
   {
    "id": "studio-hero-sw-idle-mwfibrva-mpyx-1",
@@ -116487,7 +116714,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-murk-se-windup",
@@ -116838,7 +117066,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-murk-ne-windup",
@@ -117225,7 +117454,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-hunger-se-windup",
@@ -117576,7 +117806,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-hunger-ne-windup",
@@ -117963,7 +118194,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-hungerRoot-se-windup",
@@ -118314,7 +118546,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-hungerRoot-ne-windup",
@@ -118701,7 +118934,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-alarmHorn-se-windup",
@@ -119052,7 +119286,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-alarmHorn-ne-windup",
@@ -119439,7 +119674,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-byrexael-se-windup",
@@ -119790,7 +120026,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-byrexael-ne-windup",
@@ -120177,7 +120414,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-soulCore-se-windup",
@@ -120528,7 +120766,8 @@
     ],
     "loop": true,
     "impactMs": 0
-   }
+   },
+   "ms": 100
   },
   {
    "id": "enemy-anim-soulCore-ne-windup",

@@ -265,7 +265,7 @@
  function staticClip(a){
   let d=a.view||a.id.match(/-(se|sw|ne|nw|s|n|e|w)-/i)?.[1]?.toUpperCase()||'—';
   let action=a.pose||a.id.match(/-(idle|windup|strike|guard|hit|down)$/)?.[1]||'ภาพนิ่ง';
-  let f={assetId:a.id,file:a.file,cell:0,crop:null,ms:a.ms||1000,flip:!!a.sourceFlip,pivot:a.pivot||a.anchor||[.5,.95],renderHeight:a.renderHeight||1,revision:a.artRevision||'',size:a.size||[384,384]};
+  let f={assetId:a.id,file:a.file,cell:0,crop:null,ms:a.ms||(action==='walk'?100:1000),flip:!!a.sourceFlip,pivot:a.pivot||a.anchor||[.5,.95],renderHeight:a.renderHeight||1,revision:a.artRevision||'',size:a.size||[384,384]};
   return {id:'static:'+a.id,canonical:a.id,action,view:d,loop:true,kind:'static',frames:[f]};
  }
  function build(manifest,clips,meta={}){
