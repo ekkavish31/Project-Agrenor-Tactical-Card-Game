@@ -20,7 +20,7 @@
 #gtour .box b{display:block;color:#ffd98a;font-size:18px;margin-bottom:4px}
 #gtour .box p{margin:0;font-size:19px;line-height:1.5;min-height:3em}
 #gtour .box small{position:absolute;right:14px;bottom:8px;color:#d8b46acc;font-size:13px}
-#gtour .box .skip{position:absolute;right:12px;top:8px;background:#0006;border:1px solid #d8b46a66;color:#e8d5a8;border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
+#gtour .skip{position:fixed;right:16px;bottom:16px;z-index:5;background:#14100af0;border:1px solid #d8b46a;color:#f0dfb4;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;pointer-events:auto;box-shadow:0 4px 14px #0008}#gtour .skip:hover{background:#2a2016}
 body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility:hidden!important}
 @keyframes gtPulse{50%{box-shadow:0 0 0 2px #0008,0 0 34px #ffe9a8,inset 0 0 20px #ffd77a88}}
 @keyframes gtBob{0%,100%{transform:translate(0,0)}50%{transform:translate(var(--bx,0),var(--by,0))}}`;
@@ -48,6 +48,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     let skipped = false, targetEl = null, stepDone = null, typeTimer = 0, typed = '', shown = '';
     const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); skipped = true; stepDone?.() } else if ((e.key === 'Enter' || e.key === ' ') && !targetEl) { e.preventDefault(); e.stopPropagation(); advance() } };
     addEventListener('keydown', onKey, true);
+    el.append($('.skip'));   /* the box is transformed (fixed children would be placed against it): the skip button lives on the overlay root so it sits in the screen's bottom-right corner */
     $('.skip').onclick = e => { e.stopPropagation(); skipped = true; stepDone?.() };
     const finishType = () => { clearInterval(typeTimer); typeTimer = 0; say.textContent = typed; shown = typed };
     const advance = () => { if (typeTimer) { finishType(); return } if (!targetEl) stepDone?.() };
@@ -59,7 +60,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
       const W = innerWidth, H = innerHeight;
       if (!targetEl || !targetEl.isConnected) { for (const k of 'tblr') { const b = blk(k); Object.assign(b.style, { left: 0, top: 0, width: W + 'px', height: H + 'px' }) } blk('b').style.display = blk('l').style.display = blk('r').style.display = 'none'; ring.hidden = arrow.hidden = true; return }
       for (const k of 'blr') blk(k).style.display = '';
-      const r = rectOf(targetEl), pad = 6, x0 = Math.max(0, r.left - pad), y0 = Math.max(0, r.top - pad), x1 = Math.min(W, r.right + pad), y1 = Math.min(H, r.bottom + pad);
+      const r = rectOf(targetEl), pad = 6, x0 = Math.max(0, Math.floor(r.left - pad)), y0 = Math.max(0, Math.floor(r.top - pad)), x1 = Math.min(W, Math.ceil(r.right + pad)), y1 = Math.min(H, Math.ceil(r.bottom + pad));   /* whole pixels only: fractional edges (a lifting card) left a bright hairline between the four dark panels */
       Object.assign(blk('t').style, { left: 0, top: 0, width: W + 'px', height: y0 + 'px' }); Object.assign(blk('b').style, { left: 0, top: y1 + 'px', width: W + 'px', height: Math.max(0, H - y1) + 'px' });
       Object.assign(blk('l').style, { left: 0, top: y0 + 'px', width: x0 + 'px', height: (y1 - y0) + 'px' }); Object.assign(blk('r').style, { left: x1 + 'px', top: y0 + 'px', width: Math.max(0, W - x1) + 'px', height: (y1 - y0) + 'px' });
       Object.assign(ring.style, { left: x0 + 'px', top: y0 + 'px', width: (x1 - x0) + 'px', height: (y1 - y0) + 'px' }); ring.hidden = false;
@@ -69,7 +70,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
       const pos = { up: [cx - A / 2, y0 - A - gap, 180], down: [cx - A / 2, y1 + gap, 0], left: [x0 - A - gap, cy - A / 2, 90], right: [x1 + gap, cy - A / 2, 270] }[dir];
       // the picture points UP at rotation 0 → "arrow above the target" has to point DOWN (180°)
       arrow.style.left = Math.max(4, Math.min(W - A - 4, pos[0])) + 'px'; arrow.style.top = Math.max(4, Math.min(H - A - 4, pos[1])) + 'px';
-      const svg = arrow.querySelector('svg'); arrow.style.transform = `rotate(${pos[2]}deg)`;   /* the rotation lives on the outer box: the bobbing animation owns the svg's own transform */ const mv = { up: ['0', '10px'], down: ['0', '-10px'], left: ['10px', '0'], right: ['-10px', '0'] }[dir]; svg.style.setProperty('--bx', mv[0]); svg.style.setProperty('--by', mv[1]); arrow.hidden = false;
+      const svg = arrow.querySelector('svg'); arrow.style.transform = `rotate(${pos[2]}deg)`;   /* the rotation lives on the outer box: the bobbing animation owns the svg's own transform */ const mv = ['0', '-10px'];   /* the box is rotated, so "toward the target" is always local up */ svg.style.setProperty('--bx', mv[0]); svg.style.setProperty('--by', mv[1]); arrow.hidden = false;
     };
     document.body.classList.add('gt-on'); try { document.activeElement?.blur?.(); window.focus() } catch (e) { }
     let raf = 0; const loop = () => { place(); raf = requestAnimationFrame(loop) }; loop();
