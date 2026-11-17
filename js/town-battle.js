@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.655';
+  const V = '98.656';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1634,7 +1634,7 @@
   }
   function drawHero(g, u, t) {
     const A = sprites(), p = project(u.vu, u.vv), f = heroFrame(u, t); if (!A || !f) return;
-    const size = UNIT * CharSize.DRAW.hero * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1) * (window.CharScaleAdjust?.poseFactor('hero', u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose) || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1];
+    const size = UNIT * CharSize.DRAW.hero * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1) * (window.CharScaleAdjust?.poseFactor('hero', u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose, null, u.dir) || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1];
     let i = jobPic(im(f.src), f.src, u.look); if (i) u._lastPic = i; else i = u._lastPic || null;   /* a frame that has not arrived yet shows the last one instead of nothing */
     let ox = 0; if (u.pose === 'hit') ox = Math.sin(t * .07) * 3;
     const pm = poseMotion(u, t);
@@ -1688,7 +1688,7 @@
     if (u.walking && u.hp > 0) { const wf = allyWalkPic(u, t); if (wf) i = wf }
     if (!i) { i = im(mirSrc) || im(`assets/tactics/${u.key}_se_idle.webp`); useFlip = flip }
     shadow(g, p, UNIT * .24);
-    if (!i) return; const size = UNIT * CharSize.DRAW.ally * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1) * (window.CharScaleAdjust?.poseFactor(u.key, u.walking && u.hp > 0 ? 'walk' : pose) || 1), pm = poseMotion(u, t);
+    if (!i) return; const size = UNIT * CharSize.DRAW.ally * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1) * (window.CharScaleAdjust?.poseFactor(u.key, u.walking && u.hp > 0 ? 'walk' : pose, null, u.dir) || 1), pm = poseMotion(u, t);
     g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (useFlip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
     g.drawImage(i, -size / 2, -size * .94, size, size);
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
