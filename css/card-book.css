@@ -27,3 +27,41 @@
 .card-book .bag-item-card button{padding:4px 12px;border:1.5px solid #7a4b06;background:linear-gradient(#f0c560,#c99a38);color:#3a2a14;font-weight:700;cursor:pointer}
 .card-book .bag-item-card button:hover{filter:brightness(1.08)}
 .card-book .collection-grid{display:grid;grid-template-columns:repeat(auto-fill,156px);gap:14px 10px;justify-content:start;margin:6px 0 14px}
+
+/* v98.665 · the painted open book (js/card-book.js · .card-book.cb-v2). Every size is a fraction of --w (the book's width) so the zones always sit on the paper */
+#panel:has(.card-book.cb-v2){background:transparent;border:0;box-shadow:none;max-width:none;width:min(1120px,98vw);padding:0;overflow:visible}
+#panel:has(.card-book.cb-v2) .panelhead{display:none}
+#panel:has(.card-book.cb-v2)::backdrop{background:radial-gradient(70% 60% at 50% 48%,#ffaa5036,#0000 70%),#0a0503d0;backdrop-filter:blur(5px)}
+.card-book.cb-v2{--w:min(1100px,94vw);--u:calc(var(--w)/100);width:var(--w);margin:0 auto;padding:calc(var(--u)*5.6) 0 0;background:none;border:0;box-shadow:none;border-radius:0;position:relative;color:#3a2a14}
+.card-book.cb-v2::before{display:none}
+.cb-v2 .cb-tabs{position:absolute;left:calc(var(--u)*7);top:0;display:flex;gap:calc(var(--u)*.9);align-items:flex-start;padding:0;margin:0;z-index:3;height:calc(var(--u)*9)}
+.cb-v2 .cb-tabs button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;width:calc(var(--u)*6.4);height:calc(var(--u)*8.4);margin-top:calc(var(--u)*-.2);padding:calc(var(--u)*.7) 0 0;border:0;border-radius:0 0 0 0;background:linear-gradient(90deg,#8e1f1c,#b83a2e 45%,#8a1c1a);color:#ffe9b8;clip-path:polygon(0 0,100% 0,100% 100%,50% 86%,0 100%);box-shadow:none;cursor:pointer;font:700 calc(var(--u)*1.05) AgThai,VillageThai,system-ui,sans-serif;transform:translateY(calc(var(--u)*-3.2));transition:transform .18s,filter .15s;filter:drop-shadow(0 calc(var(--u)*.3) calc(var(--u)*.4) #0008)}
+.cb-v2 .cb-tabs button::before{content:'';position:absolute;inset:calc(var(--u)*.25) calc(var(--u)*.35) calc(var(--u)*1.2);border:calc(var(--u)*.14) solid #e2b95c;border-bottom:0;opacity:.8;pointer-events:none}
+.cb-v2 .cb-tabs button img{width:calc(var(--u)*4);height:calc(var(--u)*4);object-fit:contain;filter:drop-shadow(0 1px 2px #000a)}
+.cb-v2 .cb-tabs button em{position:absolute;top:calc(var(--u)*.5);right:calc(var(--u)*.4);min-width:calc(var(--u)*1.7);height:calc(var(--u)*1.7);border-radius:99px;background:#2a160c;border:1px solid #e2b95c;color:#ffe9b8;font:800 calc(var(--u)*.95)/calc(var(--u)*1.55) system-ui,sans-serif;text-align:center;font-style:normal;padding:0 calc(var(--u)*.3)}
+.cb-v2 .cb-tabs button b{margin-top:calc(var(--u)*.2);font-weight:700;text-shadow:0 1px 2px #000a}
+.cb-v2 .cb-tabs button:hover{filter:brightness(1.12) drop-shadow(0 calc(var(--u)*.3) calc(var(--u)*.4) #0008)}
+.cb-v2 .cb-tabs button.on{transform:translateY(calc(var(--u)*-1.9));height:calc(var(--u)*10.4);background:linear-gradient(90deg,#b52a22,#e0503a 45%,#b0261f)}
+.cb-v2 .cb-open{position:relative;width:100%;aspect-ratio:1774/887;background:url(../assets/ui/cardbook-open.webp) center/100% 100% no-repeat;filter:drop-shadow(0 calc(var(--u)*2) calc(var(--u)*2.5) #000c)}
+.cb-v2 .cb-page{position:absolute;inset:0}.cb-v2 .cb-page[hidden]{display:none}
+.cb-v2 .cb-pg{position:absolute;top:10%;height:73%;width:38.6%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:0 calc(var(--u)*.8);margin:0;justify-items:center;align-items:start;overflow:hidden}
+.cb-v2 .cb-pg.L{left:9.2%}.cb-v2 .cb-pg.R{left:53.2%}
+.cb-v2 .cb-pg .collection-tile,.cb-v2 .cb-pg .bag-item-card{width:100%;min-width:0;display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*.3);font-size:calc(var(--u)*1.05)}
+.cb-v2 .cb-pg .card-thumb{width:calc(var(--u)*10.6);height:calc(var(--u)*15.9);padding:0}
+.cb-v2 .cb-pg .bag-item-card .adv-card{width:calc(var(--u)*10.6);height:calc(var(--u)*15.9)}
+.cb-v2 .cb-pg .collection-tile>p,.cb-v2 .cb-pg .bag-item-card small{margin:0;font-size:calc(var(--u)*1.05);line-height:1.2;color:#5a4222}
+.cb-v2 .cb-pg .collection-tile button:not(.card-thumb),.cb-v2 .cb-pg .bag-item-card button{font-size:calc(var(--u)*1.05);padding:calc(var(--u)*.2) calc(var(--u)*1);min-height:0;border-radius:calc(var(--u)*.5)}
+.cb-v2 .cb-pg .collection-count{font-size:calc(var(--u)*1.1)}
+.cb-v2 .cb-empty{grid-column:1/-1;grid-row:1/-1;align-self:center;color:#8a7350;font-style:italic;font-size:calc(var(--u)*1.4);text-align:center;margin:0}
+.cb-v2 .cb-no{position:absolute;bottom:7.6%;font:700 calc(var(--u)*1.35) AgThai,VillageThai,serif;color:#6a4a22}.cb-v2 .cb-no.L{left:13%}.cb-v2 .cb-no.R{left:85.4%}
+.cb-v2 .cb-nav{position:absolute;right:7.2%;bottom:5.4%;display:flex;align-items:center;gap:calc(var(--u)*.5);color:#5a3a16;font:700 calc(var(--u)*1.25) AgThai,VillageThai,system-ui,sans-serif;z-index:2}
+.cb-v2 .cb-nav button{width:calc(var(--u)*2.2);height:calc(var(--u)*2.2);min-height:0;padding:0;border:0;border-radius:50%;background:#6a3a1ccc;color:#ffe9b8;font-size:calc(var(--u)*1);line-height:1;cursor:pointer;box-shadow:inset 0 0 0 1px #e2b95c}
+.cb-v2 .cb-nav button:disabled{opacity:.3;cursor:default}.cb-v2 .cb-nav.single .cb-prev,.cb-v2 .cb-nav.single .cb-next{visibility:hidden}
+.cb-v2 .cb-close{position:absolute;right:7.8%;top:7.2%;width:calc(var(--u)*3.4);height:calc(var(--u)*3.4);min-height:0;padding:0;border:0;background:url(../assets/ui/close-x.webp) center/contain no-repeat!important;box-shadow:none!important;border:0!important;cursor:pointer;z-index:4;filter:drop-shadow(0 1px 1px #5a3a10aa);transition:transform .12s}.cb-v2 .cb-close:hover{transform:scale(1.15)}
+.cb-v2 .cb-foot{margin:calc(var(--u)*.8) 0 0;text-align:center;color:#e8d3a2;font-size:calc(var(--u)*1.1);text-shadow:0 1px 3px #000}
+#bagMsg{text-align:center;color:#ffe9b8}
+@media(max-width:640px){.cb-v2 .cb-tabs button b{display:none}}
+.cb-v2 .cb-pg .collection-tile,.cb-v2 .cb-pg .bag-item-card{align-self:start;height:fit-content;position:relative}
+.cb-v2 .cb-pg .collection-count{right:calc(var(--u)*.3);top:auto;bottom:auto}
+.cb-v2 .cb-pg{background:none!important;border:0!important;padding:0!important}
+.cb-v2 .cb-close{right:8.6%;top:13.8%;width:calc(var(--u)*2.6);height:calc(var(--u)*2.6);filter:drop-shadow(0 0 2px #3a2208) drop-shadow(0 1px 1px #3a2208)}

@@ -24,6 +24,9 @@
 #gtour .box small{position:absolute;right:14px;bottom:8px;color:#d8b46acc;font-size:13px}
 #gtour .skip{position:fixed;right:16px;bottom:16px;z-index:5;background:#14100af0;border:1px solid #d8b46a;color:#f0dfb4;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;pointer-events:auto;box-shadow:0 4px 14px #0008}#gtour .skip:hover{background:#2a2016}
 body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility:hidden!important}
+/* v98.665 · bright tour (the book lesson): no dark veil, no dark ring shadow — the book stays fully lit the whole time; only the gold ring + arrow point */
+#gtour.bright .veil{display:none}#gtour.bright .ring{box-shadow:0 0 22px #ffd77a,inset 0 0 14px #ffd77a55;animation-name:gtPulseB}
+@keyframes gtPulseB{50%{box-shadow:0 0 34px #ffe9a8,inset 0 0 20px #ffd77a88}}
 @keyframes gtPulse{50%{box-shadow:0 0 34px #ffe9a8,inset 0 0 20px #ffd77a88,0 0 0 200vmax rgba(8,4,2,.5)}}
 @keyframes gtBob{0%,100%{transform:translate(0,0)}50%{transform:translate(var(--bx,0),var(--by,0))}}`;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -40,7 +43,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     if (!steps?.length) return; if (document.getElementById('gtour')) return;
     if (!document.getElementById('gtourCss')) { const st = document.createElement('style'); st.id = 'gtourCss'; st.textContent = css; document.head.append(st) }
     const C = root.Cutscene, fill = t => C?.fill ? C.fill(t) : String(t || '');
-    const el = document.createElement('div'); el.id = 'gtour';
+    const el = document.createElement('div'); el.id = 'gtour'; if (opt.bright) el.className = 'bright';
     el.innerHTML = '<div class="blk" data-b="t"></div><div class="blk" data-b="b"></div><div class="blk" data-b="l"></div><div class="blk" data-b="r"></div><div class="veil"></div><div class="ring hide"></div><div class="arrow" hidden><svg viewBox="0 0 54 54"><path d="M27 4 L48 30 H35 V50 H19 V30 H6 Z" fill="#ffd77a" stroke="#5a3a0a" stroke-width="3" stroke-linejoin="round"/></svg></div><div class="pic L"></div><div class="pic R"></div><div class="box"><b></b><p></p><small>คลิกเพื่อไปต่อ</small><button class="skip" type="button">ข้ามบทสอน (Esc)</button></div>';
     const mount = () => { const dl = document.querySelectorAll('dialog[open]'), host = dl.length ? dl[dl.length - 1] : document.body;   quiet();   /* the TOPMOST open dialog (a card view opens above the book) */ if (el.parentNode !== host) host.append(el); };
     mount();

@@ -15,7 +15,7 @@
   const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) { return null } }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) { } } };
   let on = !(/[?&]texel=0(&|$)/.test(location.search) || ls.get(NORM_KEY) === '0');
   const draw0 = CanvasRenderingContext2D.prototype.drawImage;
-  const cache = new Map(), MAX_BYTES = 56 * 1024 * 1024; let bytes = 0, hits = 0, builds = 0, ids = new WeakMap(), idN = 0;
+  const cache = new Map(), MAX_BYTES = 56 * 1024 * 1024; let bytes = 0, hits = 0, builds = 0, spent = 0, ids = new WeakMap(), idN = 0;
   const idOf = im => { let i = ids.get(im); if (!i) ids.set(im, i = ++idN); return i };
   const bucket = w => Math.max(16, Math.round(Math.pow(1.1, Math.ceil(Math.log(w) / Math.log(1.1)))));
   const srcKey = im => String(im.currentSrc || im.src || '').replace(/^[a-z]+:\/\/[^/]+\//i, '').replace(/[?#].*$/, '');
@@ -28,8 +28,11 @@
       const im = g.getImageData(0, 0, w, h), d = im.data, o = new Uint8ClampedArray(d);
       for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
         const i = (y * w + x) * 4, a = d[i + 3]; if (a < 24) continue;
-        let sr = 0, sg = 0, sb = 0, sw = 0;
-        for (const j of [i - 4, i + 4, i - w * 4, i + w * 4]) { const aj = d[j + 3]; if (!aj) continue; sr += d[j] * aj; sg += d[j + 1] * aj; sb += d[j + 2] * aj; sw += aj }
+        let sr = 0, sg = 0, sb = 0, sw = 0, j, aj;
+        j = i - 4; aj = d[j + 3]; if (aj) { sr += d[j] * aj; sg += d[j + 1] * aj; sb += d[j + 2] * aj; sw += aj }
+        j = i + 4; aj = d[j + 3]; if (aj) { sr += d[j] * aj; sg += d[j + 1] * aj; sb += d[j + 2] * aj; sw += aj }
+        j = i - w * 4; aj = d[j + 3]; if (aj) { sr += d[j] * aj; sg += d[j + 1] * aj; sb += d[j + 2] * aj; sw += aj }
+        j = i + w * 4; aj = d[j + 3]; if (aj) { sr += d[j] * aj; sg += d[j + 1] * aj; sb += d[j + 2] * aj; sw += aj }
         if (!sw) continue; const br = sr / sw, bg = sg / sw, bb = sb / sw;
         o[i] = d[i] + amt * (d[i] - br); o[i + 1] = d[i + 1] + amt * (d[i + 1] - bg); o[i + 2] = d[i + 2] + amt * (d[i + 2] - bb);
       }
@@ -39,6 +42,8 @@
   function shrunk(im, sx, sy, sw, sh, target) {
     const key = idOf(im) + '|' + sx + '|' + sy + '|' + sw + '|' + sh + '|' + target, hit = cache.get(key);
     if (hit) { cache.delete(key); cache.set(key, hit); hits++; return hit }
+    if (spent > 4) return null;   /* v98.665 · BUILD BUDGET: at most ~4 ms of shrinking per frame — new pictures that walk into view are drawn as they are for a frame or two and shrunk later, instead of freezing the frame (the 'jerk' while walking) */
+    const t0 = performance.now();
     const f = target / sw, tw = Math.max(1, Math.round(sw * f)), th = Math.max(1, Math.round(sh * f));
     let cw = sw, ch = sh, src = im, rx = sx, ry = sy, rw = sw, rh = sh, c = null;
     while (cw / 2 >= tw) {   /* each step at most ½ */
@@ -47,7 +52,7 @@
       src = n; rx = ry = 0; rw = nw; rh = nh; cw = nw; ch = nh; c = n;
     }
     if (!c || c.width !== tw || c.height !== th) { const n = document.createElement('canvas'); n.width = tw; n.height = th; const g = n.getContext('2d'); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; draw0.call(g, src, rx, ry, rw, rh, 0, 0, tw, th); c = n }
-    sharpen(c, sw / tw); builds++;
+    sharpen(c, sw / tw); builds++; spent += performance.now() - t0;
     cache.set(key, c); bytes += c.width * c.height * 4;
     while (bytes > MAX_BYTES && cache.size > 8) { const k = cache.keys().next().value, v = cache.get(k); cache.delete(k); bytes -= v.width * v.height * 4 }
     return c;
@@ -67,7 +72,7 @@
     seen.clear(); const keys = Object.keys(all); if (keys.length > 5000) { keys.sort((a, b) => all[a].t - all[b].t).slice(0, keys.length - 5000).forEach(k => delete all[k]) }
     ls.set(KEY, JSON.stringify(all));
   }
-  (function loop() { frame++; sampling = frame % 30 === 0 && !document.hidden; if (frame % 240 === 0) flush(); requestAnimationFrame(loop) })();
+  (function loop() { frame++; spent = 0; sampling = frame % 30 === 0 && !document.hidden; if (frame % 240 === 0) flush(); requestAnimationFrame(loop) })();
   addEventListener('pagehide', flush);
 
   CanvasRenderingContext2D.prototype.drawImage = function (im) {
@@ -81,7 +86,7 @@
     if (!on || !this.imageSmoothingEnabled || dev < 6) return draw0.apply(this, arguments);
     const target = bucket(dev);
     if (sw < target * 1.5 || sw > 6000) return draw0.apply(this, arguments);
-    const c = shrunk(im, sx, sy, sw, sh, target);
+    const c = shrunk(im, sx, sy, sw, sh, target); if (!c) return draw0.apply(this, arguments);
     return draw0.call(this, c, 0, 0, c.width, c.height, dx, dy, dw, dh);
   };
 
