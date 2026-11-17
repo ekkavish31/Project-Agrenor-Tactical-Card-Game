@@ -105209,6 +105209,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-ella-ne-stand/20261117-144021.webp",
+     "at": "2026-11-17T07:40:21.859Z",
+     "stamp": "20261117-144021",
+     "status": "final",
+     "note": "สลับกับ npc-ella-nw-stand"
+    },
+    {
      "file": "assets/_versions/npc-ella-ne-stand/20261115-141106.webp",
      "at": "2026-11-15T07:11:06.676Z",
      "stamp": "20261115-141106",
@@ -105223,7 +105230,7 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-141106"
+   "artRevision": "20261117-144021"
   },
   {
    "id": "npc-ella-ne-walk1",
@@ -105259,7 +105266,7 @@
    "id": "npc-ella-se-stand",
    "file": "assets/village-town/npc/ella/se-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -105272,7 +105279,8 @@
     "id": "npc:ella",
     "name": "ช่างทอผ้าเอลลา",
     "group": "npcs"
-   }
+   },
+   "artRevision": "mwkdu5zd"
   },
   {
    "id": "npc-ella-se-walk1",
@@ -105298,7 +105306,7 @@
    "id": "npc-ella-nw-stand",
    "file": "assets/village-town/npc/ella/nw-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -105311,7 +105319,8 @@
     "id": "npc:ella",
     "name": "ช่างทอผ้าเอลลา",
     "group": "npcs"
-   }
+   },
+   "artRevision": "20261117-144021"
   },
   {
    "id": "npc-ella-nw-walk1",
@@ -126964,6 +126973,1302 @@
     "group": "npcs"
    },
    "artRevision": "mwkdl292"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-1",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-2",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-3",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-4",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-5",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-6",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-7",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-8",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-9",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-10",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-11",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-sw-walk-mwkdt7a4-12",
+   "file": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdt7a4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-1",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-2",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-3",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-4",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-5",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-6",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-7",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-8",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-9",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-10",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-11",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-se-walk-mwkdtcg4-12",
+   "file": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtcg4"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-1",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-2",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-3",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-4",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-5",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-6",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-7",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-8",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-9",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-10",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-11",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-ne-walk-mwkdtvu1-12",
+   "file": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtvu1"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-1",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-2",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-3",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-4",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-5",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-6",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-7",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-8",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-9",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-10",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-11",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-ella-nw-walk-mwkdtyz7-12",
+   "file": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:ella",
+    "name": "ช่างทอผ้าเอลลา",
+    "group": "npcs"
+   },
+   "artRevision": "mwkdtyz7"
   }
  ],
  "studioReviews": {
@@ -132303,8 +133608,63 @@
    "frames": {}
   },
   "[\"npc-lin-nw-walk1\",\"NW\",true,[[\"npc-lin-nw-walk1\",\"assets/village-town/npc/lin/nw-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:33:07.096Z"
+  },
+  "[\"npc-ella-sw-walk1\",\"SW\",true,[[\"npc-ella-sw-walk1\",\"assets/village-town/npc/ella/sw-walk1.webp\",0,\"20261115-141137\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:39:28.633Z"
+  },
+  "[\"allywalk:ella:SW\",\"SW\",true,[[\"studio-ally-ella-sw-walk-mwkdt7a4-1\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-01.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-2\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-02.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-3\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-03.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-4\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-04.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-5\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-05.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-6\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-06.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-7\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-07.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-8\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-08.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-9\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-09.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-10\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-10.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-11\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-11.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-sw-walk-mwkdt7a4-12\",\"assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-12.png\",0,\"mwkdt7a4\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
    "frames": {}
+  },
+  "[\"npc-ella-se-walk1\",\"SE\",true,[[\"npc-ella-se-walk1\",\"assets/village-town/npc/ella/se-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:39:33.357Z"
+  },
+  "[\"npc-ella-ne-walk1\",\"NE\",true,[[\"npc-ella-ne-walk1\",\"assets/village-town/npc/ella/ne-walk1.webp\",0,\"20261115-141106\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:39:58.548Z"
+  },
+  "[\"allywalk:ella:NE\",\"NE\",true,[[\"studio-ally-ella-ne-walk-mwkdtvu1-1\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-01.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-2\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-02.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-3\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-03.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-4\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-04.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-5\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-05.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-6\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-06.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-7\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-07.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-8\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-08.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-9\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-09.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-10\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-10.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-11\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-11.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-ella-ne-walk-mwkdtvu1-12\",\"assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-12.png\",0,\"mwkdtvu1\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-ella-nw-walk1\",\"NW\",true,[[\"npc-ella-nw-walk1\",\"assets/village-town/npc/ella/nw-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:40:02.583Z"
+  },
+  "[\"npc-ella-sw-stand\",\"SW\",true,[[\"npc-ella-sw-stand\",\"assets/village-town/npc/ella/sw-stand.webp\",0,\"20261115-211839\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-ella-se-stand\",\"SE\",true,[[\"npc-ella-se-stand\",\"assets/village-town/npc/ella/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-ella-se-stand\",\"SE\",true,[[\"npc-ella-se-stand\",\"assets/village-town/npc/ella/se-stand.webp\",0,\"mwkdu5zd\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:40:11.632Z"
+  },
+  "[\"npc-ella-ne-stand\",\"NE\",true,[[\"npc-ella-ne-stand\",\"assets/village-town/npc/ella/ne-stand.webp\",0,\"20261115-141106\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-ella-nw-stand\",\"NW\",true,[[\"npc-ella-nw-stand\",\"assets/village-town/npc/ella/nw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-ella-nw-stand\",\"NW\",true,[[\"npc-ella-nw-stand\",\"assets/village-town/npc/ella/nw-stand.webp\",0,\"mwkdua7g\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:40:16.580Z"
   }
  },
  "studioClipHistory": {
@@ -134828,6 +136188,18 @@
   "static:npc-lin-nw-stand": [
    {
     "at": "2026-11-17T07:30:13.422Z",
+    "entries": []
+   }
+  ],
+  "static:npc-ella-se-stand": [
+   {
+    "at": "2026-11-17T07:40:11.405Z",
+    "entries": []
+   }
+  ],
+  "static:npc-ella-nw-stand": [
+   {
+    "at": "2026-11-17T07:40:16.347Z",
     "entries": []
    }
   ]
@@ -141493,6 +142865,308 @@
       "assetId": "studio-ally-lin-nw-walk-mwkdl292-12",
       "src": "assets/tactics/imported/ally-lin-walk-nw-mwkdl292/frame-12.webp",
       "ms": 200
+     }
+    ]
+   }
+  },
+  "ella": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:39:25.852Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-1",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-2",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-3",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-4",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-5",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-6",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-7",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-8",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-9",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-10",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-11",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-sw-walk-mwkdt7a4-12",
+      "src": "assets/tactics/imported/ally-ella-walk-sw-mwkdt7a4/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:39:32.548Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-1",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-2",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-3",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-4",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-5",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-6",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-7",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-8",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-9",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-10",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-11",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-se-walk-mwkdtcg4-12",
+      "src": "assets/tactics/imported/ally-ella-walk-se-mwkdtcg4/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:39:57.673Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-1",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-2",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-3",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-4",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-5",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-6",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-7",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-8",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-9",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-10",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-11",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-ne-walk-mwkdtvu1-12",
+      "src": "assets/tactics/imported/ally-ella-walk-ne-mwkdtvu1/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:40:01.747Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-1",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-2",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-3",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-4",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-5",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-6",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-7",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-8",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-9",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-10",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-11",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-12",
+      "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-12.webp",
+      "ms": 100
      }
     ]
    }
