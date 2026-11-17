@@ -17,7 +17,7 @@
     logo.className = 'ag-logo'; logo.src = 'assets/intro/agrenor-logo.webp?v=2'; logo.alt = 'Agrenor: Paths Unwritten'; logo.draggable = false;
     h1.append(logo);
     brand.querySelector('p').remove();
-    kicker.textContent = 'EVERY SMALL BEGINNING\nCAN CHANGE A GREATER WORLD';
+    kicker.textContent = 'SMALL BEGINNINGS · GREATER WORLDS';   /* v98.651 · shorter tagline (was two lines: EVERY SMALL BEGINNING / CAN CHANGE A GREATER WORLD) */
     brand.append(kicker);
     title.classList.add('ag-title');
     const horizon = document.createElement('div');
