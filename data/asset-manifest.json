@@ -48794,7 +48794,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -48821,7 +48821,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -48848,7 +48848,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -48875,7 +48875,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -48902,7 +48902,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -48929,7 +48929,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -48956,7 +48956,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -48983,7 +48983,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49010,7 +49010,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49037,7 +49037,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 10,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49064,7 +49064,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49091,7 +49091,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49118,7 +49118,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49145,7 +49145,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49172,7 +49172,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49199,7 +49199,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49226,7 +49226,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49253,7 +49253,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49280,7 +49280,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49307,7 +49307,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49334,7 +49334,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49361,7 +49361,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49388,7 +49388,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49415,7 +49415,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49442,7 +49442,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49469,7 +49469,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49496,7 +49496,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49523,7 +49523,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49550,7 +49550,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49577,7 +49577,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49604,7 +49604,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49631,7 +49631,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49658,7 +49658,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49685,7 +49685,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49712,7 +49712,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49739,7 +49739,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49766,7 +49766,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49793,7 +49793,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49820,7 +49820,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49847,7 +49847,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49874,7 +49874,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49901,7 +49901,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49928,7 +49928,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49955,7 +49955,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -49982,7 +49982,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50009,7 +50009,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50036,7 +50036,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50063,7 +50063,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50090,7 +50090,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50117,7 +50117,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50144,7 +50144,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50171,7 +50171,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50198,7 +50198,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50225,7 +50225,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50252,7 +50252,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50279,7 +50279,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50306,7 +50306,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50333,7 +50333,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50360,7 +50360,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50387,7 +50387,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50414,7 +50414,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50441,7 +50441,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50468,7 +50468,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50495,7 +50495,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50522,7 +50522,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50549,7 +50549,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50576,7 +50576,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50603,7 +50603,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50630,7 +50630,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50657,7 +50657,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50684,7 +50684,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50711,7 +50711,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50738,7 +50738,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50765,7 +50765,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50792,7 +50792,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50819,7 +50819,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50846,7 +50846,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50873,7 +50873,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50900,7 +50900,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50927,7 +50927,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50954,7 +50954,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -50981,7 +50981,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 80,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54448,7 +54448,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54475,7 +54475,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54502,7 +54502,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54529,7 +54529,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54556,7 +54556,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54583,7 +54583,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54610,7 +54610,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54637,7 +54637,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54664,7 +54664,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54691,7 +54691,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54718,7 +54718,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -54745,7 +54745,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 75,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59561,7 +59561,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59588,7 +59588,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59615,7 +59615,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59642,7 +59642,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59669,7 +59669,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59696,7 +59696,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59723,7 +59723,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59750,7 +59750,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59777,7 +59777,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59804,7 +59804,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59831,7 +59831,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -59858,7 +59858,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61181,7 +61181,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61208,7 +61208,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61235,7 +61235,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61262,7 +61262,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61289,7 +61289,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61316,7 +61316,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61343,7 +61343,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61370,7 +61370,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61397,7 +61397,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61424,7 +61424,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61451,7 +61451,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -61478,7 +61478,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63125,7 +63125,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63152,7 +63152,7 @@
    "pose": "walk",
    "frame": 2,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63179,7 +63179,7 @@
    "pose": "walk",
    "frame": 3,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63206,7 +63206,7 @@
    "pose": "walk",
    "frame": 4,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63233,7 +63233,7 @@
    "pose": "walk",
    "frame": 5,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63260,7 +63260,7 @@
    "pose": "walk",
    "frame": 6,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63287,7 +63287,7 @@
    "pose": "walk",
    "frame": 7,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63314,7 +63314,7 @@
    "pose": "walk",
    "frame": 8,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63341,7 +63341,7 @@
    "pose": "walk",
    "frame": 9,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63368,7 +63368,7 @@
    "pose": "walk",
    "frame": 10,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63395,7 +63395,7 @@
    "pose": "walk",
    "frame": 11,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -63422,7 +63422,7 @@
    "pose": "walk",
    "frame": 12,
    "frames": 12,
-   "ms": 1000,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -69858,7 +69858,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -69885,7 +69885,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -69912,7 +69912,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -69939,7 +69939,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -69966,7 +69966,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -69993,7 +69993,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70020,7 +70020,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70047,7 +70047,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70074,7 +70074,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70101,7 +70101,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70128,7 +70128,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70155,7 +70155,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70182,7 +70182,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70209,7 +70209,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70236,7 +70236,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70263,7 +70263,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70290,7 +70290,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70317,7 +70317,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70344,7 +70344,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70371,7 +70371,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70398,7 +70398,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70425,7 +70425,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70452,7 +70452,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70479,7 +70479,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70506,7 +70506,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70533,7 +70533,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70560,7 +70560,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70587,7 +70587,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70614,7 +70614,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70641,7 +70641,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70668,7 +70668,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -70695,7 +70695,7 @@
    "pose": "walk",
    "frame": 1,
    "frames": 1,
-   "ms": 160,
+   "ms": 100,
    "pivot": [
     0.5,
     0.9375
@@ -133698,62 +133698,62 @@
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-1",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-01.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-2",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-02.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-3",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-03.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-4",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-04.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-5",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-05.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-6",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-06.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-7",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-07.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-8",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-08.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-9",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-09.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-10",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-10.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-11",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-11.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-se-walk-mvkaodo9-foiz-12",
      "src": "assets/tactics/imported/walk-se-mvkaodo9-foiz/frame-12.webp",
-     "ms": 80
+     "ms": 100
     }
    ]
   },
@@ -133773,62 +133773,62 @@
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-1",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-01.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-2",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-02.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-3",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-03.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-4",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-04.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-5",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-05.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-6",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-06.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-7",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-07.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-8",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-08.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-9",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-09.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-10",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-10.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-11",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-11.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-ne-walk-mvkb5i8n-bsfb-12",
      "src": "assets/tactics/imported/walk-ne-mvkb5i8n-bsfb/frame-12.webp",
-     "ms": 80
+     "ms": 100
     }
    ]
   },
@@ -133848,62 +133848,62 @@
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-1",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-01.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-2",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-02.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-3",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-03.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-4",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-04.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-5",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-05.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-6",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-06.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-7",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-07.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-8",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-08.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-9",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-09.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-10",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-10.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-11",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-11.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-sw-walk-mvke05mg-w0yc-12",
      "src": "assets/tactics/imported/walk-sw-mvke05mg-w0yc/frame-12.webp",
-     "ms": 80
+     "ms": 100
     }
    ]
   },
@@ -133923,62 +133923,62 @@
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-1",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-01.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-2",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-02.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-3",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-03.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-4",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-04.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-5",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-05.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-6",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-06.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-7",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-07.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-8",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-08.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-9",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-09.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-10",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-10.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-11",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-11.webp",
-     "ms": 80
+     "ms": 100
     },
     {
      "assetId": "studio-hero-nw-walk-mvke36hd-xj6u-12",
      "src": "assets/tactics/imported/walk-nw-mvke36hd-xj6u/frame-12.webp",
-     "ms": 80
+     "ms": 100
     }
    ]
   }

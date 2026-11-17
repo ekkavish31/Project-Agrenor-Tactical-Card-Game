@@ -16,19 +16,19 @@ const HERO_ANIMATIONS = {
       "frames": [
         {
           "src": "assets/characters/hero/hero_daily_walk_right_01_ready.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_daily_walk_right_02_action.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_daily_walk_right_03_action.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_daily_walk_right_04_recover.webp",
-          "ms": 140
+          "ms": 100
         }
       ]
     },
@@ -45,19 +45,19 @@ const HERO_ANIMATIONS = {
       "frames": [
         {
           "src": "assets/characters/hero/hero_sword_walk_right_01_ready.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_sword_walk_right_02_action.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_sword_walk_right_03_action.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_sword_walk_right_04_recover.webp",
-          "ms": 140
+          "ms": 100
         }
       ]
     },
@@ -74,19 +74,19 @@ const HERO_ANIMATIONS = {
       "frames": [
         {
           "src": "assets/characters/hero/hero_hammer_walk_right_01_ready.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_hammer_walk_right_02_action.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_hammer_walk_right_03_action.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_hammer_walk_right_04_recover.webp",
-          "ms": 140
+          "ms": 100
         }
       ]
     },
@@ -103,19 +103,19 @@ const HERO_ANIMATIONS = {
       "frames": [
         {
           "src": "assets/characters/hero/hero_unarmed_walk_right_01_ready.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_unarmed_walk_right_02_action.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_unarmed_walk_right_03_action.webp",
-          "ms": 140
+          "ms": 100
         },
         {
           "src": "assets/characters/hero/hero_unarmed_walk_right_04_recover.webp",
-          "ms": 140
+          "ms": 100
         }
       ]
     },
