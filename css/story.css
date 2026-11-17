@@ -68,10 +68,8 @@
 .cs-talk{flex:1;min-width:0}.cs-name{display:block;color:#f0c977;font-size:15px;letter-spacing:.04em;margin-bottom:4px}
 .cs-text{margin:0;font-size:clamp(15px,1.7vw,19px);line-height:1.65;white-space:pre-line;min-height:3.3em}
 .cs-next{position:absolute;right:18px;bottom:10px;color:#f0c977;font-size:12px;animation:csNext 1s ease-in-out infinite}@keyframes csNext{50%{transform:translateY(3px);opacity:.5}}
-.cs-skip{position:absolute;top:calc(9vh + 12px);right:16px;z-index:5;background:rgba(0,0,0,.45);color:#f6ecd6;border:1px solid rgba(246,236,214,.35);border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;cursor:pointer}
-.cs-skip:hover{background:rgba(0,0,0,.7)}
 body.cs-open{overflow:hidden}
-@media (max-width:640px){.cs-portrait{width:48px;height:48px}.cs-portrait span{font-size:22px}.cs-box{padding:12px 14px 16px;gap:10px}.cs-live .cs-bar{height:6vh}.cs-box{bottom:calc(6vh + 10px)}.cs-skip{top:calc(6vh + 8px)}}
+@media (max-width:640px){.cs-portrait{width:48px;height:48px}.cs-portrait span{font-size:22px}.cs-box{padding:12px 14px 16px;gap:10px}.cs-live .cs-bar{height:6vh}.cs-box{bottom:calc(6vh + 10px)}}
 
 /* ---------------- quest tracker ---------------- */
 #storyTracker{position:fixed;left:24px;top:172px;z-index:1200;width:min(320px,calc(100vw - 48px));font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;color:#f6ecd6;
@@ -174,14 +172,11 @@ body.cs-open #smithWip{display:none}
 .cs-offer button:disabled,.cs-teach button:disabled{opacity:.5;cursor:default}
 .cs-teach{list-style:none;padding:0}.cs-teach li{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #ffffff1a}.cs-teach li button{margin-left:auto}
 /* v97.10 · cutscene tools: AUTO · hold to fast-forward · backlog */
-.cut-tools{position:absolute;top:calc(9vh + 12px);right:132px;z-index:5;display:flex;gap:6px}
-.cut-tools button{background:rgba(0,0,0,.45);color:#f6ecd6;border:1px solid rgba(246,236,214,.35);border-radius:999px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer;touch-action:none;user-select:none}
-.cut-tools button.on{background:rgba(201,137,58,.85);border-color:#ffe2a8}
 .cs-log{position:absolute;inset:0;z-index:8;display:grid;place-items:center;background:rgba(4,6,10,.72);backdrop-filter:blur(3px)}
 .cs-log-in{width:min(760px,92vw);max-height:76vh;display:flex;flex-direction:column;gap:8px;padding:18px 20px;border-radius:14px;background:rgba(18,22,30,.94);border:1px solid rgba(246,236,214,.25);cursor:default}
 .cs-log-in>b{font-size:16px;color:#f3d79b}.cs-log-in small{color:#a99a7c;text-align:right}
 .cs-log-list{overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:6px}.cs-log-list p{margin:0;line-height:1.6;color:#efe4cc;font-size:15px}.cs-log-list p b{color:#f3d79b;margin-right:4px}
-@media (max-width:640px){.cut-tools{top:calc(6vh + 8px);right:118px}.cut-tools button{padding:5px 9px;font-size:11px}}
+
 
 
 /* v98.20 · WIP juice + docking */
@@ -218,3 +213,15 @@ body.cs-open #smithWip{display:none}
 /* v98.252 · no quest window over a battle */
 body.fb-open #storyTracker{display:none!important}
 #storyTracker .stk-head .stk-x{all:unset;color:#e8c98a;font-size:13px;cursor:pointer;padding:0 5px;line-height:1;opacity:.75}#storyTracker .stk-head .stk-x:hover{opacity:1;color:#fff3d6}
+
+/* v98.621 · scene buttons redesigned: icon + short label, round glass buttons with a thin gold edge.
+   top-left = Log · top-right = Auto + เร่ง · bottom-right = ข้ามฉาก */
+.cs-ib{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px 0 11px;border-radius:19px;border:1px solid rgba(232,201,138,.55);background:linear-gradient(#2c2218cc,#120d08cc);color:#f6e6c2;font:600 13.5px/1 VillageThai,AgThai,system-ui,sans-serif;letter-spacing:.02em;cursor:pointer;touch-action:none;user-select:none;box-shadow:0 3px 12px #0007,inset 0 1px 0 #ffffff1f;backdrop-filter:none;transition:transform .12s,border-color .15s,background .15s,color .15s}
+.cs-ib svg{width:18px;height:18px;flex:none;filter:drop-shadow(0 1px 1px #0008)}
+.cs-ib:hover{border-color:#ffe2a8;color:#fff;transform:translateY(-1px)}.cs-ib:active{transform:translateY(1px)}
+.cs-ib.on{background:linear-gradient(#e0a24acc,#9a6420d9);border-color:#ffe9b8;color:#2a1704;box-shadow:0 0 14px #ffc96a88,0 3px 12px #0007}
+.cs-ib .i-pause{display:none}.cs-ib.on .i-play{display:none}.cs-ib.on .i-pause{display:block}
+.cs-log-btn{position:absolute;top:calc(9vh + 12px);left:16px;z-index:5}
+.cut-tools{position:absolute;top:calc(9vh + 12px);right:16px;z-index:5;display:flex;gap:8px}
+.cs-skip{position:absolute;right:16px;bottom:calc(9vh + 14px);z-index:5}
+@media (max-width:640px){.cs-log-btn,.cut-tools{top:calc(6vh + 8px)}.cs-skip{bottom:calc(6vh + 8px)}.cs-ib{height:34px;padding:0 11px 0 8px;font-size:12px}.cs-ib svg{width:16px;height:16px}}

@@ -62,8 +62,8 @@ function build(){if(el)return el;el=document.createElement('div');el.id='cutscen
  <div class="cs-bar cut-top"></div><div class="cs-bar cs-bottom"></div>
  <div class="cs-card" hidden><small></small><h2></h2></div>
  <div class="cs-box" hidden><div class="cs-portrait"></div><div class="cs-talk"><b class="cs-name"></b><p class="cs-text"></p></div><span class="cs-next" aria-hidden="true">▼</span></div>
- <div class="cut-tools"><button type="button" class="cs-log-btn" title="ย้อนอ่านบทพูด (L)">☰ บันทึก</button><button type="button" class="cs-auto-btn" title="เล่นอัตโนมัติ (A)">▶ AUTO</button><button type="button" class="cs-ff-btn" title="กดค้างเพื่อเร่ง (หรือกด Ctrl ค้าง)">⏩ เร่ง</button></div><div class="cs-log" hidden><div class="cs-log-in"><b>บทพูดที่ผ่านมา</b><div class="cs-log-list"></div><small>L หรือ Esc ปิด</small></div></div>
- <button type="button" class="cs-skip">ข้ามฉาก ▸▸</button>`;
+ <button type="button" class="cs-log-btn cs-ib" title="ย้อนอ่านบทพูด (L)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Log</span></button><div class="cut-tools"><button type="button" class="cs-auto-btn cs-ib" title="เล่นอัตโนมัติ (A)"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-play"><path d="M8 5v14l11-7z" fill="currentColor"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-pause"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg><span>Auto</span></button><button type="button" class="cs-ff-btn cs-ib" title="กดค้างเพื่อเร่ง (หรือกด Ctrl ค้าง)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l8 6-8 6zM12 6l8 6-8 6z" fill="currentColor"/></svg><span>เร่ง</span></button></div><div class="cs-log" hidden><div class="cs-log-in"><b>บทพูดที่ผ่านมา</b><div class="cs-log-list"></div><small>L หรือ Esc ปิด</small></div></div>
+ <button type="button" class="cs-skip cs-ib" title="ข้ามไปส่วนถัดไป (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6l8 6-8 6zM13 6l7 6-7 6z" fill="currentColor"/><path d="M21 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>ข้ามฉาก</span></button>`;
  document.body.appendChild(el);parts=new Particles(el.querySelector('.cs-canvas'));root.addEventListener('resize',()=>{if(!el.hidden)parts.size()});return el}
 const $=sel=>el.querySelector(sel);
 /* v95.02 · scene/line `art:'dawn'|'orb'|…` → an animated scene drawn in code (js/scene-art.js) instead of a background image */
@@ -114,6 +114,7 @@ function applyLine(line){if(line.art)setArt(line.art);else if(line.bg){setArt(nu
 function play(scene){if(!scene)return Promise.resolve();if(playing)return playing.then(()=>play(scene));
  build();playing=new Promise(async resolve=>{
   const lines=(scene.lines||[]).filter(l=>!l.lead||(l.lead==='sister')===leadFemale()).map(l=>l.who==='B'||l.who==='S'?{...l,who:roleWho(l.who)}:l);let i=-1,done=false,busy=false;
+  try{await root.StoryActors?.preload?.(lines,speaker)}catch(e){}   /* v98.621 · portraits are decoded before the scene opens */
   el.hidden=false;root.StoryActors?.begin(el);document.body.classList.add('cs-open');parts.size();parts.start();
   setArt(scene.art);setBg(scene.bg,scene.pan,true);setLook({tint:scene.tint||'',fx:scene.fx||[]});$('.cs-box').hidden=true;
   requestAnimationFrame(()=>el.classList.add('cs-live'));

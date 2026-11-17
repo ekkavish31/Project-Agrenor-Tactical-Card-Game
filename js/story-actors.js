@@ -197,6 +197,19 @@
   /* ---------- API used by story-fx ---------- */
   function begin(el) { build(el); for (const s of ['L', 'R']) { stands[s].className = 'cs-actor ' + s; stands[s].querySelector('.art').innerHTML = ''; } slots = { L: null, R: null }; recent = []; box.querySelector('.cs-mood').className = 'cs-mood'; box.hidden = false }
   function end() { if (!box) return; talk(false); box.hidden = true; slots = { L: null, R: null } }
+  /* v98.621 · PRELOAD: every portrait a scene is going to show is fetched and decoded BEFORE the scene opens (and re-checked a few lines ahead), so a speaker never appears with an empty stand
+     for a moment — the picture used to be requested only when that person first spoke. StoryActors.preload(lines, speakerOf) → Promise (resolves when all are ready or after ~1.5 s). */
+  const PRE = new Map();
+  function srcsOf(line, sp) {
+    if (!line?.who) return []; const P = PAINTED[sp?.bust || line.who] || (line.who === 'hero' ? heroSet() : line.who === 'sib' ? sibSet() : null); if (!P) return [];
+    const face = faceOf(line), f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral);
+    return ['assets/portraits/' + P[0] + '-' + f + '.webp', 'assets/portraits/' + P[0] + '-neutral.webp'];
+  }
+  function warm(src) { let p = PRE.get(src); if (!p) { const im = new Image(); im.src = src; p = im.decode ? im.decode().catch(() => { }) : Promise.resolve(); PRE.set(src, p) } return p }
+  function preload(lines, speakerOf, from = 0, n = 1e9) {
+    const list = []; for (const l of (lines || []).slice(from, from + n)) for (const src of srcsOf(l, speakerOf ? speakerOf(l.who) : null)) list.push(warm(src));
+    return Promise.race([Promise.all(list), new Promise(r => setTimeout(r, 1500))]);
+  }
   /* a line: who (or none = narration), the resolved speaker {name, portrait, color, look, bust}; returns hints for the stage (shake) */
   function line(el, l, sp) {
     build(el); const mood = box.querySelector('.cs-mood');
@@ -222,5 +235,5 @@
       if (on) { let open = false; typingFlap = setInterval(() => { open = !open; drawBust(cur.el, cur.look, cur.face, open) }, 130) } else drawBust(cur.el, cur.look, cur.face, false);
     }
   }
-  root.StoryActors = { facePic, begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
+  root.StoryActors = { preload, facePic, begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
 })(typeof window !== 'undefined' ? window : globalThis);

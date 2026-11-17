@@ -69,7 +69,9 @@
     lines = (lines || []).filter(l => l && l.text); if (!lines.length) return Promise.resolve();
     if (running) return running.then(() => play(lines, opt));
     css();
-    running = new Promise(resolve => {
+    /* v98.621 · every portrait of this conversation is decoded first (it used to be requested when the person first spoke → an empty stand for a moment) */
+    const pre = Promise.race([Promise.all([...new Set((lines || []).map(l => l.who && portrait(l.who, l.emo)).filter(x => x && x !== 'mip'))].map(src => { const im = new Image(); im.src = src; return im.decode ? im.decode().catch(() => { }) : Promise.resolve() })), new Promise(r => setTimeout(r, 1200))]);
+    running = pre.then(() => new Promise(resolve => {
       el = document.createElement('div'); el.id = 'btTalk';
       el.innerHTML = '<button type="button" class="bt-skip">ข้าม ▸▸</button><div class="bt-row"></div><div class="bt-box"><div class="bt-name"></div><div class="bt-text"></div><div class="bt-next">▼</div></div>';
       document.body.append(el);
@@ -116,7 +118,7 @@
       document.addEventListener('keydown', key, true);
       el.addEventListener('click', e => { if (e.target.closest('.bt-skip')) { e.stopPropagation(); end(); return } next() });
       next();
-    });
+    }));
     return running;
   }
   /* conversations for the story fights that are not set-pieces, keyed by the ?tut= id (set-pieces carry their own in js/set-pieces.js: sc.talk)
