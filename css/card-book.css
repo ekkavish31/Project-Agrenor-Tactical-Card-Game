@@ -82,3 +82,6 @@
 .cb-v2 .cb-close:focus-visible span,.cb-v2 .cb-close:focus-visible{text-decoration:underline;text-decoration-color:#ffd77a}
 /* v98.670 · the ribbons come down over the leather seam: their straight ends rest on the edge of the paper */
 .cb-v2 .cb-tabs{height:calc(var(--u)*12.5)}
+/* v98.672 · the row of ribbons is one ribbon-width further right (the first one used to graze the corner ornament); the event ribbon crosses the spine and hangs on the right page, next to the inner edge */
+.cb-v2 .cb-tabs{left:calc(var(--u)*14.3)}
+.cb-v2 .cb-tabs button[data-t="event"]{position:absolute;bottom:0;left:calc(var(--u)*38.9)}   /* 14.3 + 38.9 = 53.2 u from the book's left edge: just right of the spine */
