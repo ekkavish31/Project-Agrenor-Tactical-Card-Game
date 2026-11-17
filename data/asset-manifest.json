@@ -105892,7 +105892,7 @@
    "id": "npc-hilda-se-stand",
    "file": "assets/village-town/npc/hilda/se-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -105905,7 +105905,8 @@
     "id": "npc:hilda",
     "name": "ชาวนาฮิลดา",
     "group": "npcs"
-   }
+   },
+   "artRevision": "mwke4e9t"
   },
   {
    "id": "npc-hilda-se-walk1",
@@ -105931,7 +105932,7 @@
    "id": "npc-hilda-nw-stand",
    "file": "assets/village-town/npc/hilda/nw-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -105944,7 +105945,8 @@
     "id": "npc:hilda",
     "name": "ชาวนาฮิลดา",
     "group": "npcs"
-   }
+   },
+   "artRevision": "mwke4jfw"
   },
   {
    "id": "npc-hilda-nw-walk1",
@@ -128269,6 +128271,1302 @@
     "group": "npcs"
    },
    "artRevision": "mwkdtyz7"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-1",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-2",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-3",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-4",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-5",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-6",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-7",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-8",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-9",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-10",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-11",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-sw-walk-12",
+   "file": "assets/tactics/imported/ally-hilda-walk-sw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke4yrx"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-1",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-2",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-3",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-4",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-5",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-6",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-7",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-8",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-9",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-10",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-11",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-se-walk-12",
+   "file": "assets/tactics/imported/ally-hilda-walk-se/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5190"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-1",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-2",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-3",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-4",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-5",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-6",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-7",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-8",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-9",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-10",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-11",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-ne-walk-12",
+   "file": "assets/tactics/imported/ally-hilda-walk-ne/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5f8a"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-1",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-2",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-3",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-4",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-5",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-6",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-7",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-8",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-9",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-10",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-11",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
+  },
+  {
+   "id": "studio-ally-hilda-nw-walk-12",
+   "file": "assets/tactics/imported/ally-hilda-walk-nw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:hilda",
+    "name": "ชาวนาฮิลดา",
+    "group": "npcs"
+   },
+   "artRevision": "mwke5i02"
   }
  ],
  "studioReviews": {
@@ -133665,6 +134963,72 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-17T07:40:16.580Z"
+  },
+  "[\"npc-ella-nw-stand\",\"NW\",true,[[\"npc-ella-nw-stand\",\"assets/village-town/npc/ella/nw-stand.webp\",0,\"20261117-144021\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-ella-ne-stand\",\"NE\",true,[[\"npc-ella-ne-stand\",\"assets/village-town/npc/ella/ne-stand.webp\",0,\"20261117-144021\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {}
+  },
+  "[\"npc-hilda-sw-stand\",\"SW\",true,[[\"npc-hilda-sw-stand\",\"assets/village-town/npc/hilda/sw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-hilda-se-stand\",\"SE\",true,[[\"npc-hilda-se-stand\",\"assets/village-town/npc/hilda/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-hilda-se-stand\",\"SE\",true,[[\"npc-hilda-se-stand\",\"assets/village-town/npc/hilda/se-stand.webp\",0,\"mwkdwin5\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:42:02.770Z"
+  },
+  "[\"npc-hilda-se-stand\",\"SE\",true,[[\"npc-hilda-se-stand\",\"assets/village-town/npc/hilda/se-stand.webp\",0,\"mwke4e9t\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:48:11.238Z"
+  },
+  "[\"npc-hilda-ne-stand\",\"NE\",true,[[\"npc-hilda-ne-stand\",\"assets/village-town/npc/hilda/ne-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-hilda-nw-stand\",\"NW\",true,[[\"npc-hilda-nw-stand\",\"assets/village-town/npc/hilda/nw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-hilda-nw-stand\",\"NW\",true,[[\"npc-hilda-nw-stand\",\"assets/village-town/npc/hilda/nw-stand.webp\",0,\"mwke4jfw\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:48:15.083Z"
+  },
+  "[\"npc-hilda-sw-walk1\",\"SW\",true,[[\"npc-hilda-sw-walk1\",\"assets/village-town/npc/hilda/sw-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:48:35.379Z"
+  },
+  "[\"allywalk:hilda:SW\",\"SW\",true,[[\"studio-ally-hilda-sw-walk-1\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-01.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-2\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-02.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-3\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-03.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-4\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-04.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-5\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-05.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-6\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-06.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-7\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-07.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-8\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-08.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-9\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-09.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-10\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-10.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-11\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-11.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-sw-walk-12\",\"assets/tactics/imported/ally-hilda-walk-sw/frame-12.png\",0,\"mwke4yrx\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-hilda-se-walk1\",\"SE\",true,[[\"npc-hilda-se-walk1\",\"assets/village-town/npc/hilda/se-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:48:38.704Z"
+  },
+  "[\"npc-hilda-ne-walk1\",\"NE\",true,[[\"npc-hilda-ne-walk1\",\"assets/village-town/npc/hilda/ne-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:48:56.909Z"
+  },
+  "[\"allywalk:hilda:NE\",\"NE\",true,[[\"studio-ally-hilda-ne-walk-1\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-01.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-2\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-02.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-3\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-03.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-4\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-04.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-5\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-05.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-6\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-06.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-7\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-07.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-8\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-08.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-9\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-09.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-10\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-10.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-11\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-11.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-ne-walk-12\",\"assets/tactics/imported/ally-hilda-walk-ne/frame-12.png\",0,\"mwke5f8a\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-hilda-nw-walk1\",\"NW\",true,[[\"npc-hilda-nw-walk1\",\"assets/village-town/npc/hilda/nw-walk1.webp\",0,\"\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
   }
  },
  "studioClipHistory": {
@@ -136200,6 +137564,18 @@
   "static:npc-ella-nw-stand": [
    {
     "at": "2026-11-17T07:40:16.347Z",
+    "entries": []
+   }
+  ],
+  "static:npc-hilda-se-stand": [
+   {
+    "at": "2026-11-17T07:48:09.024Z",
+    "entries": []
+   }
+  ],
+  "static:npc-hilda-nw-stand": [
+   {
+    "at": "2026-11-17T07:48:14.899Z",
     "entries": []
    }
   ]
@@ -143166,6 +144542,308 @@
      {
       "assetId": "studio-ally-ella-nw-walk-mwkdtyz7-12",
       "src": "assets/tactics/imported/ally-ella-walk-nw-mwkdtyz7/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   }
+  },
+  "hilda": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:48:34.701Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-hilda-sw-walk-1",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-2",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-3",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-4",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-5",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-6",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-7",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-8",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-9",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-10",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-11",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-sw-walk-12",
+      "src": "assets/tactics/imported/ally-hilda-walk-sw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:48:37.908Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-hilda-se-walk-1",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-2",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-3",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-4",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-5",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-6",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-7",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-8",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-9",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-10",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-11",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-se-walk-12",
+      "src": "assets/tactics/imported/ally-hilda-walk-se/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:48:56.026Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-hilda-ne-walk-1",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-2",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-3",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-4",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-5",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-6",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-7",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-8",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-9",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-10",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-11",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-ne-walk-12",
+      "src": "assets/tactics/imported/ally-hilda-walk-ne/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:48:59.618Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-hilda-nw-walk-1",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-2",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-3",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-4",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-5",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-6",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-7",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-8",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-9",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-10",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-11",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-hilda-nw-walk-12",
+      "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-12.webp",
       "ms": 100
      }
     ]
