@@ -31,7 +31,7 @@ function giveLoot(l,adv){let lines=[];if(l.coins){s.village.coins+=l.coins;lines
  save();return lines}
 const lootHtml=lines=>lines.length?`<ul class="adv-loot">${lines.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p class="muted">ไม่ได้อะไรเพิ่ม</p>';
 function rollLoot(area,tier=1){let A=AD.AREAS[area],l={coins:rnd(12,30)*tier,mats:{},items:[]};let mk=['iron','coal','wood'];for(let i=0;i<rnd(1,2);i++){let m=pick(mk);l.mats[m]=(l.mats[m]||0)+1}
- if(Math.random()<.55)l.items.push(pick(Object.keys(AD.CONSUMABLES)));if(Math.random()<.4)l.items.push(pick(A.goods));if(Math.random()<.22*tier)l.items.push(pick(A.events));return l}
+ if(Math.random()<.55)l.items.push(pick(Object.keys(AD.CONSUMABLES).filter(k=>!AD.CONSUMABLES[k].gift)));if(Math.random()<.4)l.items.push(pick(A.goods));if(Math.random()<.22*tier)l.items.push(pick(A.events));return l}
 // ---------------- events (event cards + event nodes share these) ----------------
 // run(ctx) returns {text, loot?, fight?} ; ctx = {adv, area}
 const EVENTS={
@@ -70,7 +70,7 @@ function runEvent(key,src={}){let E=EVENTS[key],D=AD.EVENT_CARDS[key],adv=state(
  const head=`<div class="adv-story"><div class="adv-card">${window.CardStudio?.renderCard('ev-'+key,{})||`<span class="adv-art">${E.art}</span>`}</div><div><p>${esc(E.story)}</p>${src.card?'<p class="muted small">เลือกแล้วการ์ดจะหายไป · กด ✕ ถ้ายังไม่ใช้</p>':''}</div></div>`;
  if(E.shop)return shop(D,head,spend,src);
  modal(D.name,head,E.choices.map(ch=>({label:ch.label,disabled:ch.disabled?.()||'',run:()=>done(ch.run({adv,area:adv?.area}))})),{onClose:src.node?()=>src.after?.():null,noClose:!!src.node})}
-function shop(D,head,spend,src){let used=false;const stock=Object.entries(AD.CONSUMABLES).filter(([,x])=>x.rarity!=='rare'||Math.random()<.4).map(([k,x])=>[k,x.price]);
+function shop(D,head,spend,src){let used=false;const stock=Object.entries(AD.CONSUMABLES).filter(([,x])=>!x.gift&&(x.rarity!=='rare'||Math.random()<.4)).map(([k,x])=>[k,x.price]);
  const draw=msg=>{let sell=Object.entries(bag()).filter(([k,n])=>n>0&&AD.GOODS[k]);modal(D.name,head+`${msg?`<p class="adv-note">${esc(msg)}</p>`:''}<div class="currency-banner">◉ <strong>${s.village.coins} เหรียญ</strong></div>
   <h4>ซื้อ</h4><div class="adv-shop">${stock.map(([k,p])=>`<button data-buy="${k}" data-p="${p}" ${s.village.coins<p?'disabled':''}>${nameHtml(k)}<small>◉ ${p}</small></button>`).join('')}</div>
   <h4>ขายของ</h4><div class="adv-shop">${sell.map(([k,n])=>`<button data-sell="${k}">${nameHtml(k)} ×${n}<small>◉ ${vendorGoods(k)}</small></button>`).join('')||'<p class="muted small">ไม่มีของให้ขาย</p>'}</div>`,[{label:'จบการซื้อขาย',primary:true,run:()=>{closeModal();src.after?.()}}],{onClose:()=>src.after?.()});

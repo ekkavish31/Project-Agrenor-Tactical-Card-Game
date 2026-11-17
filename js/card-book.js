@@ -5,7 +5,7 @@
      • a page number in the bottom corner of each page; the spread counter (1/2) and the small ◀ ▶ arrows sit in the bottom-right corner
      • the tabs are red-and-gold bookmark ribbons hanging from the top edge of the book (icons from assets/icons/menu); the open one hangs further down
        ของใช้ = potion · อุปกรณ์ = battle (swords) · วัตถุดิบ = forge (hammer + anvil) · ทั่วไป = treasure (no coin-bag icon in the set yet) · เหตุการณ์ = mail
-     • close = the gold X inside the book, top-right
+     • close = the gold X + "ปิดสมุด" ABOVE the book, top-right (the guided lesson points at it)
    The open tab and the open spread of every tab are remembered while the dialog is re-drawn (using a potion redraws it).  Data keys stay `bag` / `materials` / `inventory` — saves are untouched.
    Selectors used by the guided book lesson (js/story-quests.js BOOK_TOUR) stay valid: .cb-tabs button[data-t] · .cb-page[data-p] .card-thumb · .cb-page[data-p] .collection-grid */
 (function () {
@@ -48,7 +48,7 @@
     const book = document.createElement('div'); book.className = 'card-book cb-v2';
     book.innerHTML = `<nav class="cb-tabs" role="tablist">${tabs.map(t => `<button type="button" role="tab" data-t="${t.id}" title="${esc(t.name + ' · ' + t.tip)}"><img src="${t.icon}" alt="" draggable="false"><em>${count(t.id)}</em><b>${t.name}</b></button>`).join('')}</nav>
       <div class="cb-open">
-        <button type="button" class="cb-close" aria-label="ปิดสมุด" title="ปิด" onclick="document.getElementById('panel').close()"></button>
+        <button type="button" class="cb-close" aria-label="ปิดสมุด" title="ปิดสมุด" onclick="document.getElementById('panel').close()">ปิดสมุด</button>
         ${tabs.map(t => `<section class="cb-page" data-p="${t.id}" role="tabpanel" aria-label="${esc(notes[t.id] || t.name)}"><div class="cb-pg L collection-grid"></div><div class="cb-pg R collection-grid"></div><span class="cb-no L"></span><span class="cb-no R"></span></section>`).join('')}
         <div class="cb-nav"><button type="button" class="cb-prev" aria-label="หน้าก่อน">◀</button><span class="cb-count">1/1</span><button type="button" class="cb-next" aria-label="หน้าถัดไป">▶</button></div>
       </div>

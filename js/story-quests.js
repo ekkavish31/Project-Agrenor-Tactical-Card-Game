@@ -462,11 +462,12 @@ const BOOK_TOUR=[   /* v98.659 · the lesson is a talk between the two siblings 
  {who:'B',text:'แล้วเสบียงล่ะ เอาไปทำอะไร',target:'.cb-page[data-p="mat"] .collection-grid',wait:'next'},
  {who:'S',text:'เสบียงเอาไว้กินตอนพักฟื้นแรง ไม่ได้เอาไปผลิตของ',target:'.cb-page[data-p="mat"] .collection-grid',wait:'next'},
  {who:'B',text:'งั้นยากับอาหารที่ทำเสร็จแล้วล่ะ อยู่ตรงไหน'},
- {who:'S',text:'แท็บ ของใช้ — กดใช้จากตรงนี้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
+ {who:'S',text:'แท็บ ของใช้ — ยาฟื้นฟูกับน้ำดื่มที่แม่เตรียมให้อยู่ตรงนี้ กดใช้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
  {who:'B',text:'เข้าใจแล้ว ใส่ไว้ในสมุดก็ไม่ต้องหอบเป็นกอง'},
- {who:'S',text:'งั้นปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .cb-close, #panel .panelhead button, #panel button'}];
+ {who:'S',text:'งั้นกดกากบาทมุมขวาบนปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .cb-close'}];
 let tourBusy=false;
-async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{const ok=await root.GuidedTour.run(BOOK_TOUR,{bright:true});try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
+async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{v.story=v.story||{};if(!v.story.bookGift){v.story.bookGift=true;const b=v.bag||(v.bag={});b.potion=(b.potion||0)+1;b.momWater=(b.momWater||0)+1;doSave()}   /* v98.668 · the ของใช้ page is not empty: 1 potion (+HP) and 1 water from mother (+stamina) */
+  const ok=await root.GuidedTour.run(BOOK_TOUR,{bright:true});try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
 async function bookFirst(){return false}   /* v98.613 · the book lesson now plays at the end of the opening scene */
 async function bookFirstOld(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
 root.Story={bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,

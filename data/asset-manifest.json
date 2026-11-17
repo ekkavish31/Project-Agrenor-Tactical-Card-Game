@@ -5473,6 +5473,22 @@
    "artRevision": "v16"
   },
   {
+   "id": "item-momWater",
+   "file": "assets/cards/item/momWater.webp",
+   "category": "items",
+   "status": "temp",
+   "size": [
+    1120,
+    800
+   ],
+   "transparent": false,
+   "subject": "น้ำดื่มจากแม่ — ฟื้นแรง 30",
+   "prompt": "Landscape 7:5 fantasy RPG card illustration (the card window crops nothing important: keep the subject centred with margin), warm amber lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: กระติกไม้ใส่น้ำดื่มที่แม่เตรียมให้ ตั้งบนโต๊ะครัวไม้ มีไอจาง ๆ.",
+   "usedIn": "ของใช้ · น้ำดื่มจากแม่",
+   "note": "ภาพชั่วคราว: ใช้ภาพเดียวกับชาเรี่ยวแรงไปก่อน — วาดภาพกระติกน้ำของแม่มาแทน",
+   "artRevision": "v16"
+  },
+  {
    "id": "item-bread",
    "file": "assets/cards/item/bread.webp",
    "category": "items",

@@ -74,3 +74,9 @@
 .cb-v2 .cb-tabs button em{top:calc(var(--u)*1.6);right:calc(var(--u)*.4)}
 .cb-v2 .cb-tabs button.on{transform:none;height:calc(var(--u)*10);background:linear-gradient(90deg,#b52a22,#e0503a 45%,#b0261f)}
 .cb-v2 .cb-tabs button{filter:drop-shadow(0 calc(var(--u)*-.1) calc(var(--u)*.35) #0009)}
+
+/* v98.668 · close: gold X + label above the book, top-right */
+.cb-v2 .cb-close{right:calc(var(--u)*1.2);top:calc(var(--u)*-6.2);width:auto;height:calc(var(--u)*3.6);padding:0 0 0 calc(var(--u)*4.2);background:url(../assets/ui/close-x.webp) left center/auto 100% no-repeat!important;color:#ffe9b8;font:700 calc(var(--u)*1.6) AgThai,VillageThai,system-ui,sans-serif;text-shadow:0 1px 3px #000;display:flex;align-items:center;white-space:nowrap;filter:drop-shadow(0 1px 2px #000)}
+.cb-v2 .cb-close:hover{transform:scale(1.08);filter:drop-shadow(0 0 4px #ffd77a) brightness(1.1)}
+.cb-v2 .cb-close,.cb-v2 .cb-close:focus,.cb-v2 .cb-close:focus-visible{outline:0!important;border:0!important}
+.cb-v2 .cb-close:focus-visible span,.cb-v2 .cb-close:focus-visible{text-decoration:underline;text-decoration-color:#ffd77a}
