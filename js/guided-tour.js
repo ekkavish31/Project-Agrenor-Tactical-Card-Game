@@ -9,9 +9,11 @@
   'use strict';
   const css = `
 #gtour{position:fixed;inset:0;z-index:2147483000;pointer-events:none;font-family:AgThai,VillageThai,system-ui,sans-serif}
-#gtour .blk{position:fixed;background:rgba(6,8,14,.52);pointer-events:auto;transition:all .25s ease}
-#gtour .ring{position:fixed;border:3px solid #ffd77a;border-radius:12px;box-shadow:0 0 0 2px #0008,0 0 22px #ffd77a,inset 0 0 14px #ffd77a55;pointer-events:none;transition:all .25s ease;animation:gtPulse 1.2s ease-in-out infinite}
-#gtour .arrow{position:fixed;width:54px;height:54px;pointer-events:none;filter:drop-shadow(0 3px 5px #000a);transition:left .25s ease,top .25s ease}
+/* v98.660 · NO MOVING CURTAIN: the four blockers only stop clicks (invisible, no transition); the dark veil is a fixed soft shadow around ONE ring that fades out, jumps to the next target and fades in — it never slides across the screen */
+#gtour .blk{position:fixed;background:transparent;pointer-events:auto}
+#gtour .veil{position:fixed;inset:0;background:rgba(8,4,2,.5);pointer-events:none;opacity:1;transition:opacity .18s ease}#gtour .veil.hide{opacity:0}
+#gtour .ring{position:fixed;border:2px solid #f0cf84;border-radius:12px;box-shadow:0 0 22px #ffd77a,inset 0 0 14px #ffd77a55,0 0 0 200vmax rgba(8,4,2,.5);pointer-events:none;opacity:1;transition:opacity .18s ease;animation:gtPulse 2.4s ease-in-out infinite}#gtour .ring.hide{opacity:0}
+#gtour .arrow{position:fixed;width:54px;height:54px;pointer-events:none;filter:drop-shadow(0 3px 5px #000a)}
 #gtour .arrow svg{width:100%;height:100%;animation:gtBob .8s ease-in-out infinite;transform-origin:50% 50%}
 #gtour .pic{position:fixed;bottom:0;height:min(58vh,520px);display:flex;align-items:flex-end;pointer-events:none;transition:filter .25s,opacity .25s,transform .25s}
 #gtour .pic img{max-height:100%;max-width:26vw;object-fit:contain;filter:drop-shadow(0 8px 16px #000c)}
@@ -22,7 +24,7 @@
 #gtour .box small{position:absolute;right:14px;bottom:8px;color:#d8b46acc;font-size:13px}
 #gtour .skip{position:fixed;right:16px;bottom:16px;z-index:5;background:#14100af0;border:1px solid #d8b46a;color:#f0dfb4;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;pointer-events:auto;box-shadow:0 4px 14px #0008}#gtour .skip:hover{background:#2a2016}
 body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility:hidden!important}
-@keyframes gtPulse{50%{box-shadow:0 0 0 2px #0008,0 0 34px #ffe9a8,inset 0 0 20px #ffd77a88}}
+@keyframes gtPulse{50%{box-shadow:0 0 34px #ffe9a8,inset 0 0 20px #ffd77a88,0 0 0 200vmax rgba(8,4,2,.5)}}
 @keyframes gtBob{0%,100%{transform:translate(0,0)}50%{transform:translate(var(--bx,0),var(--by,0))}}`;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   /* the page itself and every same-origin frame (the village map lives in an iframe: its icon row is what the player really sees) */
@@ -39,31 +41,36 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     if (!document.getElementById('gtourCss')) { const st = document.createElement('style'); st.id = 'gtourCss'; st.textContent = css; document.head.append(st) }
     const C = root.Cutscene, fill = t => C?.fill ? C.fill(t) : String(t || '');
     const el = document.createElement('div'); el.id = 'gtour';
-    el.innerHTML = '<div class="blk" data-b="t"></div><div class="blk" data-b="b"></div><div class="blk" data-b="l"></div><div class="blk" data-b="r"></div><div class="ring" hidden></div><div class="arrow" hidden><svg viewBox="0 0 54 54"><path d="M27 4 L48 30 H35 V50 H19 V30 H6 Z" fill="#ffd77a" stroke="#5a3a0a" stroke-width="3" stroke-linejoin="round"/></svg></div><div class="pic L"></div><div class="pic R"></div><div class="box"><b></b><p></p><small>คลิกเพื่อไปต่อ</small><button class="skip" type="button">ข้ามบทสอน (Esc)</button></div>';
+    el.innerHTML = '<div class="blk" data-b="t"></div><div class="blk" data-b="b"></div><div class="blk" data-b="l"></div><div class="blk" data-b="r"></div><div class="veil"></div><div class="ring hide"></div><div class="arrow" hidden><svg viewBox="0 0 54 54"><path d="M27 4 L48 30 H35 V50 H19 V30 H6 Z" fill="#ffd77a" stroke="#5a3a0a" stroke-width="3" stroke-linejoin="round"/></svg></div><div class="pic L"></div><div class="pic R"></div><div class="box"><b></b><p></p><small>คลิกเพื่อไปต่อ</small><button class="skip" type="button">ข้ามบทสอน (Esc)</button></div>';
     const mount = () => { const dl = document.querySelectorAll('dialog[open]'), host = dl.length ? dl[dl.length - 1] : document.body;   quiet();   /* the TOPMOST open dialog (a card view opens above the book) */ if (el.parentNode !== host) host.append(el); };
     mount();
     const $ = s => el.querySelector(s), blk = k => $(`[data-b="${k}"]`), ring = $('.ring'), arrow = $('.arrow'), box = $('.box'), say = box.querySelector('p'), nm = box.querySelector('b');
     const lead = { hero: lookOf('hero'), sib: lookOf('sib') };
     for (const [side, w] of [['L', 'hero'], ['R', 'sib']]) { const img = new Image(); img.alt = ''; const src = `assets/portraits/${lead[w]}-neutral.webp`; img.src = src; if (root.PortraitFacing?.flip(src, side)) img.style.transform = 'scaleX(-1)'; $('.pic.' + side).append(img) }
-    let skipped = false, targetEl = null, stepDone = null, typeTimer = 0, typed = '', shown = '';
-    const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); skipped = true; stepDone?.() } else if ((e.key === 'Enter' || e.key === ' ') && !targetEl) { e.preventDefault(); e.stopPropagation(); advance() } };
+    let skipped = false, targetEl = null, stepDone = null, typeTimer = 0, typed = '', shown = '', lastTarget = null, warpAt = 0, curNext = false;
+    const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); skipped = true; stepDone?.() } else if ((e.key === 'Enter' || e.key === ' ') && (!targetEl || curNext)) { e.preventDefault(); e.stopPropagation(); advance() } };
     addEventListener('keydown', onKey, true);
     el.append($('.skip'));   /* the box is transformed (fixed children would be placed against it): the skip button lives on the overlay root so it sits in the screen's bottom-right corner */
     $('.skip').onclick = e => { e.stopPropagation(); skipped = true; stepDone?.() };
     const finishType = () => { clearInterval(typeTimer); typeTimer = 0; say.textContent = typed; shown = typed };
-    const advance = () => { if (typeTimer) { finishType(); return } if (!targetEl) stepDone?.() };
+    const advance = () => { if (typeTimer) { finishType(); return } if (!targetEl || curNext) stepDone?.() };
     box.onclick = () => advance();
     let curSpec = null;
     const place = () => {   /* keep the spotlight on the (possibly moving) target */
       mount();
       if (curSpec && targetEl && !targetEl.isConnected) { const e = query(curSpec); if (e) targetEl = e }   /* the book redraws itself: follow the new element */
       const W = innerWidth, H = innerHeight;
-      if (!targetEl || !targetEl.isConnected) { for (const k of 'tblr') { const b = blk(k); Object.assign(b.style, { left: 0, top: 0, width: W + 'px', height: H + 'px' }) } blk('b').style.display = blk('l').style.display = blk('r').style.display = 'none'; ring.hidden = arrow.hidden = true; return }
+      const veil = $('.veil');
+      if (!targetEl || !targetEl.isConnected) { for (const k of 'tblr') { const b = blk(k); Object.assign(b.style, { left: 0, top: 0, width: W + 'px', height: H + 'px' }) } blk('b').style.display = blk('l').style.display = blk('r').style.display = 'none'; ring.classList.add('hide'); veil.classList.remove('hide'); arrow.hidden = true; lastTarget = null; return }
+      veil.classList.add('hide');
       for (const k of 'blr') blk(k).style.display = '';
-      const r = rectOf(targetEl), pad = 6, x0 = Math.max(0, Math.floor(r.left - pad)), y0 = Math.max(0, Math.floor(r.top - pad)), x1 = Math.min(W, Math.ceil(r.right + pad)), y1 = Math.min(H, Math.ceil(r.bottom + pad));   /* whole pixels only: fractional edges (a lifting card) left a bright hairline between the four dark panels */
+      const r = rectOf(targetEl), pad = 6, x0 = Math.max(0, Math.floor(r.left - pad)), y0 = Math.max(0, Math.floor(r.top - pad)), x1 = Math.min(W, Math.ceil(r.right + pad)), y1 = Math.min(H, Math.ceil(r.bottom + pad));   /* whole pixels only */
       Object.assign(blk('t').style, { left: 0, top: 0, width: W + 'px', height: y0 + 'px' }); Object.assign(blk('b').style, { left: 0, top: y1 + 'px', width: W + 'px', height: Math.max(0, H - y1) + 'px' });
       Object.assign(blk('l').style, { left: 0, top: y0 + 'px', width: x0 + 'px', height: (y1 - y0) + 'px' }); Object.assign(blk('r').style, { left: x1 + 'px', top: y0 + 'px', width: Math.max(0, W - x1) + 'px', height: (y1 - y0) + 'px' });
-      Object.assign(ring.style, { left: x0 + 'px', top: y0 + 'px', width: (x1 - x0) + 'px', height: (y1 - y0) + 'px' }); ring.hidden = false;
+      /* a new target: fade the ring out, move it while invisible, fade it in (no sliding) */
+      if (targetEl !== lastTarget) { lastTarget = targetEl; ring.classList.add('hide'); arrow.hidden = true; warpAt = performance.now() + 200 }
+      if (performance.now() < warpAt) return;
+      Object.assign(ring.style, { left: x0 + 'px', top: y0 + 'px', width: (x1 - x0) + 'px', height: (y1 - y0) + 'px' }); ring.classList.remove('hide');
       /* the arrow sits on the side with the most room and points at the target; it moves in and out along that line */
       const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, room = { up: y0, down: H - y1, left: x0, right: W - x1 };
       const dir = Object.entries(room).sort((a, b) => b[1] - a[1])[0][0], A = 54, gap = 8;
@@ -81,13 +88,14 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
         const who = resolve(C, st.who || 'S'), side = who === 'hero' ? 'L' : 'R'; $('.pic.L').classList.toggle('dim', side !== 'L'); $('.pic.R').classList.toggle('dim', side !== 'R');
         nm.textContent = who === 'hero' ? (C?.fill ? C.fill('{hero}') : 'พี่') : (C?.fill ? C.fill('{sib}') : 'น้อง');
         typed = fill(st.text); say.textContent = ''; let i = 0; clearInterval(typeTimer); typeTimer = setInterval(() => { i += 2; say.textContent = typed.slice(0, i); if (i >= typed.length) { clearInterval(typeTimer); typeTimer = 0 } }, 22);
-        box.querySelector('small').textContent = st.target ? '👆 ทำตามที่บอก — กดตรงที่ลูกศรชี้' : 'คลิกเพื่อไปต่อ';
+        curNext = st.wait === 'next'; box.querySelector('small').textContent = st.target && !curNext ? '👆 ทำตามที่บอก — กดตรงที่ลูกศรชี้' : 'คลิกเพื่อไปต่อ';
         if (st.prep) { try { st.prep() } catch (e) { } await sleep(350) }   /* e.g. re-open the book if the previous click closed it */
         curSpec = st.target || null; targetEl = st.target ? await findTarget(st.target) : null;
         if (skipped) break;
         await new Promise(res => {
           stepDone = res;
-          if (targetEl) { const ds = docs(), off = () => { for (const d of ds) d.removeEventListener('click', hit, true) }; const hit = ev => { const spec = typeof st.target === 'string' ? st.target : null; if (!targetEl || !(targetEl.contains(ev.target) || (spec && ev.target.closest?.(spec)))) return; off(); setTimeout(res, st.delay ?? 380) }; for (const d of ds) d.addEventListener('click', hit, true); stepDone = () => { off(); res() } }
+          if (targetEl && curNext) { stepDone = res }
+          else if (targetEl) { const ds = docs(), off = () => { for (const d of ds) d.removeEventListener('click', hit, true) }; const hit = ev => { const spec = typeof st.target === 'string' ? st.target : null; if (!targetEl || !(targetEl.contains(ev.target) || (spec && ev.target.closest?.(spec)))) return; off(); setTimeout(res, st.delay ?? 380) }; for (const d of ds) d.addEventListener('click', hit, true); stepDone = () => { off(); res() } }
           else if (typeof st.wait === 'function') { const t = setInterval(() => { if (st.wait()) { clearInterval(t); res() } }, 150) }
         });
         targetEl = null; stepDone = null;

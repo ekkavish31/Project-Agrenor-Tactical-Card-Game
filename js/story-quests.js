@@ -457,7 +457,11 @@ const BOOK_TOUR=[   /* v98.659 · the lesson is a talk between the two siblings 
  {who:'B',text:'ละเอียดกว่าที่คิดแฮะ เหมือนของจริงเลย'},
  {who:'S',text:'ปิดการ์ดนี้ก่อน แล้วไปดูแท็บอื่นกัน',target:'#collectionFocus button, #collectionFocus .focus-close'},
  {who:'S',text:'เหล็ก ถ่าน ไม้ ที่เก็บมาผลิตของ จะอยู่แท็บ วัตถุดิบ',target:'.cb-tabs button[data-t="mat"]',prep:()=>{if(!document.getElementById('panel').open)openPanel('bag')}},
- {who:'B',text:'แล้วยากับอาหารล่ะ อยู่ตรงไหน'},
+ {who:'B',text:'การ์ดสี่ใบนี้คือวัตถุดิบสินะ ตัวเลข ×6 ตรงมุมคือจำนวนที่เรามีใช่ไหม',target:'.cb-page[data-p="mat"] .collection-grid',wait:'next'},
+ {who:'S',text:'ใช่ เอาไว้ผลิตของที่โรงตีเหล็ก — เหล็กกับถ่านเอาไว้ตีดาบ ไม้ก็ใช้ทำโคมกับซ่อมแผง',target:'.cb-page[data-p="mat"] .collection-grid',wait:'next'},
+ {who:'B',text:'แล้วเสบียงล่ะ เอาไปทำอะไร',target:'.cb-page[data-p="mat"] .collection-grid',wait:'next'},
+ {who:'S',text:'เสบียงเอาไว้กินตอนพักฟื้นแรง ไม่ได้เอาไปผลิตของ',target:'.cb-page[data-p="mat"] .collection-grid',wait:'next'},
+ {who:'B',text:'งั้นยากับอาหารที่ทำเสร็จแล้วล่ะ อยู่ตรงไหน'},
  {who:'S',text:'แท็บ ของใช้ — กดใช้จากตรงนี้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
  {who:'B',text:'เข้าใจแล้ว ใส่ไว้ในสมุดก็ไม่ต้องหอบเป็นกอง'},
  {who:'S',text:'งั้นปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .panelhead button, #panel > header button, #panel button[onclick*="close"], #panel button'}];
