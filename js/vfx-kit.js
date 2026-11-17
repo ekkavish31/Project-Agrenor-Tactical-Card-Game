@@ -207,6 +207,10 @@
     { const ks = seg(k, .38, 1); if (ks > 0) smoke(g, p.x + Math.sin(ks * 2.4) * W * .06, p.y - W * (.95 + .5 * eo(ks)), W * (.38 + .22 * ks), .4 * bell(ks), ks * .4) }
     add(g, () => { glow(g, p.x, p.y - W * .35, W * 1.6 * bell(seg(k, 0, .5)), C.fire, .42 * (1 - seg(k, .4, .8))); glow(g, p.x, p.y - W * .25, W * .9 * bell(seg(k, 0, .22)), C.white, .6); motes(g, e, 10, p.x, p.y - W * .1, W * 1.2, W * 1.9, W * .09, seg(k, 0, .9), 70) });
     g.save(); g.translate(p.x, p.y + cw * .12); animPlay(g, 'hit', k, W * 2.5, 1, false); g.restore();
+    /* v98.626 · HIT flash: a small, quick orange pop at the moment the fireball lands — ring flash, a cross glint and a few short sparks */
+    { const kh = seg(k, 0, .22); if (kh > 0 && kh < 1) { const hx = p.x, hy = p.y - W * .4, fade_ = 1 - kh;
+      add(g, () => { glow(g, hx, hy, W * (.25 + .4 * eo(kh)), C.fire, .8 * fade_); glow(g, hx, hy, W * (.12 + .16 * eo(kh)), C.fireHi, .55 * fade_); star4(g, hx, hy, W * (.18 + .3 * eo(kh)), C.fire, .85 * fade_, kh * .6);
+        for (let i = 0; i < 8; i++) { const an = (i / 8) * Math.PI * 2 + R(e, i + 90) * .5, d = W * (.1 + .38 * eo(kh)) * (.7 + .5 * R(e, i + 95)); spark(g, hx + Math.cos(an) * d, hy + Math.sin(an) * d * .8, an, W * .2 * (1 - kh * .6), fade_) } }) } }
     /* in front of the flames: fire sparks thrown out of the burst, flying up and out, then falling; a few lights glint on top */
     add(g, () => { const ks = seg(k, 0, .75); for (let i = 0; i < 11; i++) { const an = -Math.PI * (.08 + .84 * R(e, i + 50)), v = W * (.9 + 1.1 * R(e, i + 60)), kk = seg(k, R(e, i + 70) * .12, .85); if (kk <= 0 || kk >= 1) continue;
         const vx = Math.cos(an) * v, vy = Math.sin(an) * v, x = p.x + vx * eo(kk) * .9, y = p.y - W * .2 + vy * eo(kk) * .9 + W * 1.1 * kk * kk, dir = Math.atan2(vy * (1 - kk) * .9 + W * 2.2 * kk, vx * (1 - kk) * .9 + 1e-3); spark(g, x, y, dir, W * (.45 + .3 * R(e, i + 80)) * (1 - kk * .5), 1 - kk * kk) }
