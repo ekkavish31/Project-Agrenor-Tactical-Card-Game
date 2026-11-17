@@ -6291,3 +6291,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 ## v98.652 — 17 พ.ย. 2026
 - **คำใต้โลโก้หน้าเปิดเกม** เปลี่ยนจาก 2 บรรทัด "EVERY SMALL BEGINNING / CAN CHANGE A GREATER WORLD" เป็นบรรทัดเดียว **"SMALL BEGINNINGS · GREATER WORLDS"** (`js/opening-cinematic.js`) · เป็นข้อความหน้าจอ ไม่ใช่ lore · ถ้าอยากตัดทิ้งทั้งหมด ลบบรรทัด `kicker.textContent` ได้
+
+## v98.653 — 17 พ.ย. 2026
+- คำใต้โลโก้หน้าเปิดเกมเปลี่ยนเป็น **"FROM SMALL THINGS, A WORLD"** ตามที่ผู้ใช้เลือก (`js/opening-cinematic.js`)
