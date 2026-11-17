@@ -97,7 +97,7 @@ const BattleItems={hand:[],used:false,
 function bagCardHTML(info,n){let S=window.CardStudio,base=S?.cardById(info.card);if(!base)return '';let c=JSON.parse(JSON.stringify(base)),d=info.def||{};if(!c.main?.value){c.main=info.cat==='goods'?{value:'◉ '+(d.price??c.attr?.price??0),label:'ราคาขาย'}:info.cat==='event'?{value:'✉',label:'การ์ดเหตุการณ์'}:{value:'×'+n,label:'ในสมุด'}}if(!(c.effects||[]).filter(Boolean).length&&d.text)c.effects=[d.text];return S.cardHTML(c,S.design(),{mini:true})}
 const baseBag=renderBag;
 renderBag=function(){baseBag();let host=$('panelContent');if(!host)return;let b=bag(),atMarket=s.village.location==='market'&&!state();
- const tile=(k,n,btns)=>{let info=itemInfo(k);return `<div class="bag-item-card"><div class="adv-card mini">${bagCardHTML(info,n)||''}</div><b>${info.def.maya?`<span class="maya-name">${esc(info.def.name)}</span>`:esc(info.def.name)} ×${n}</b><small>${esc(info.def.text||'')}</small>${btns}</div>`};
+ const tile=(k,n,btns)=>{let info=itemInfo(k);return `<div class="bag-item-card"><button type="button" class="card-thumb bag-thumb" aria-label="ดูการ์ด ${esc(info.def.name)}" onclick="openCollectionCard('item','${k}')" style="all:unset;cursor:pointer;display:block"><div class="adv-card mini">${bagCardHTML(info,n)||''}</div></button><b>${info.def.maya?`<span class="maya-name">${esc(info.def.name)}</span>`:esc(info.def.name)} ×${n}</b><small>${esc(info.def.text||'')}</small>${btns}</div>`};
  let sec=(title,cat,btns)=>{let list=Object.entries(b).filter(([k,n])=>n>0&&itemInfo(k)?.cat===cat);return `<h3>${title}</h3><div class="bag-item-grid">${list.map(([k,n])=>tile(k,n,btns(k))).join('')||'<p class="muted small">ยังไม่มี</p>'}</div>`};
  host.insertAdjacentHTML('afterbegin',`<div class="bag-v11">${sec('ของใช้ · ใช้แล้วหมดไป','consumable',k=>AD.CONSUMABLES[k].use==='ต่อสู้'?'<small class="muted">ใช้ระหว่างต่อสู้</small>':`<button data-use="${k}">ใช้</button>`)}
  ${sec('การ์ดเหตุการณ์ · ใช้แล้วจะเกิดเรื่องราว','event',k=>`<button data-event="${k}">ใช้การ์ด</button>`)}
@@ -107,6 +107,6 @@ renderBag=function(){baseBag();let host=$('panelContent');if(!host)return;let b=
  host.querySelectorAll('[data-event]').forEach(x=>x.onclick=()=>{$('panel').close();runEvent(x.dataset.event,{card:x.dataset.event})});
  host.querySelectorAll('[data-sellg]').forEach(x=>x.onclick=()=>{let k=x.dataset.sellg;if(!hasItem(k))return;addItem(k,-1);s.village.coins+=vendorGoods(k);save();render();renderBag();$('bagMsg')&&($('bagMsg').textContent='ขาย '+nameOf(k)+' แล้ว')})};
 window.addEventListener('load',()=>{if(s.village?.adventure){s.village.adventure=null;save()}});   // a save from the old area maps simply comes home
-window.Adventure={state,runEvent,bag,addItem,hasItem,EVENTS,enter:()=>window.VillageTown?.openWorld?.()};
+window.Adventure={state,runEvent,bag,addItem,hasItem,EVENTS,itemInfo,cardHTML:bagCardHTML,enter:()=>window.VillageTown?.openWorld?.()};
 window.BattleItems=BattleItems;
 })();
