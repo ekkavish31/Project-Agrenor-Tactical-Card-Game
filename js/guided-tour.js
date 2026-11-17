@@ -1,7 +1,9 @@
 /* v98.617 · GuidedTour — a TEACHING conversation that is played on the LIVE game: the two siblings talk at the sides of the screen (portraits left / right + a text box at the bottom),
    the middle stays the real village map, and the player is told to do each step by hand — only the highlighted thing can be clicked, an arrow points at it (it moves in and out), everything else is blocked.
    GuidedTour.run([step, …]) → Promise (resolves when the last step is done or Esc skips the tour)
-   step = { who:'B'|'S', text, target?: selector | () => Element, wait?: 'click' (default when there is a target) | 'next' | () => boolean, hint?: 'อาร์โรว์ข้อความสั้น', pad?: px }
+   step = { who:'B'|'S', text, target?: selector | () => Element, wait?: 'click' (default when there is a target) | 'next' | () => boolean, hint?: 'อาร์โรว์ข้อความสั้น', pad?: px,
+            clear?: true (v98.632 · a text-only step with NO dark shade: the screen stays fully visible while it is read — everything is still not clickable except the text box),
+            look?: selector (v98.632 · a gold frame around that area, no shade, no click needed: "look at this") }
      • who 'B' = the elder brother · 'S' = the younger sister (resolved to the lead / the follower by js/story-fx.js roleWho) · text may use {Bn} {Sn} {S2B} {B2S} {hero} {sib}
      • no target → a text-only line: click / Enter / Space = next      • target → the step finishes when the target is clicked (the click still goes through to it)
    The UI lives inside the open <dialog> when there is one (a modal dialog makes everything outside it inert), otherwise in <body>. */
@@ -53,12 +55,16 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     const finishType = () => { clearInterval(typeTimer); typeTimer = 0; say.textContent = typed; shown = typed };
     const advance = () => { if (typeTimer) { finishType(); return } if (!targetEl) stepDone?.() };
     box.onclick = () => advance();
-    let curSpec = null;
+    let curSpec = null, curClear = false, lookEl = null;
     const place = () => {   /* keep the spotlight on the (possibly moving) target */
       mount();
       if (curSpec && targetEl && !targetEl.isConnected) { const e = query(curSpec); if (e) targetEl = e }   /* the book redraws itself: follow the new element */
       const W = innerWidth, H = innerHeight;
-      if (!targetEl || !targetEl.isConnected) { for (const k of 'tblr') { const b = blk(k); Object.assign(b.style, { left: 0, top: 0, width: W + 'px', height: H + 'px' }) } blk('b').style.display = blk('l').style.display = blk('r').style.display = 'none'; ring.hidden = arrow.hidden = true; return }
+      for (const k of 'tblr') blk(k).style.background = curClear ? 'transparent' : '';   /* v98.632 · "clear" steps show the screen without the dark shade (the blocks stay: they still stop clicks) */
+      if (!targetEl || !targetEl.isConnected) {
+        for (const k of 'tblr') { const b = blk(k); Object.assign(b.style, { left: 0, top: 0, width: W + 'px', height: H + 'px' }) } blk('b').style.display = blk('l').style.display = blk('r').style.display = 'none'; arrow.hidden = true;
+        if (lookEl && lookEl.isConnected && visible(lookEl)) { const q = rectOf(lookEl), lp = 8; Object.assign(ring.style, { left: Math.max(0, q.left - lp) + 'px', top: Math.max(0, q.top - lp) + 'px', width: Math.min(W, q.right - q.left + lp * 2) + 'px', height: Math.min(H, q.bottom - q.top + lp * 2) + 'px' }); ring.hidden = false } else ring.hidden = true;
+        return }
       for (const k of 'blr') blk(k).style.display = '';
       const r = rectOf(targetEl), pad = 6, x0 = Math.max(0, Math.floor(r.left - pad)), y0 = Math.max(0, Math.floor(r.top - pad)), x1 = Math.min(W, Math.ceil(r.right + pad)), y1 = Math.min(H, Math.ceil(r.bottom + pad));   /* whole pixels only: fractional edges (a lifting card) left a bright hairline between the four dark panels */
       Object.assign(blk('t').style, { left: 0, top: 0, width: W + 'px', height: y0 + 'px' }); Object.assign(blk('b').style, { left: 0, top: y1 + 'px', width: W + 'px', height: Math.max(0, H - y1) + 'px' });
@@ -83,7 +89,8 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
         typed = fill(st.text); say.textContent = ''; let i = 0; clearInterval(typeTimer); typeTimer = setInterval(() => { i += 2; say.textContent = typed.slice(0, i); if (i >= typed.length) { clearInterval(typeTimer); typeTimer = 0 } }, 22);
         box.querySelector('small').textContent = st.target ? '👆 ทำตามที่บอก — กดตรงที่ลูกศรชี้' : 'คลิกเพื่อไปต่อ';
         if (st.prep) { try { st.prep() } catch (e) { } await sleep(350) }   /* e.g. re-open the book if the previous click closed it */
-        curSpec = st.target || null; targetEl = st.target ? await findTarget(st.target) : null;
+        curSpec = st.target || null; curClear = !!st.clear; lookEl = null; targetEl = st.target ? await findTarget(st.target) : null;
+        if (st.look && !skipped) lookEl = await findTarget(st.look);   /* v98.632 */
         if (skipped) break;
         await new Promise(res => {
           stepDone = res;

@@ -450,11 +450,16 @@ async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!
 /* v98.617 · THE CARD-BOOK TOUR: after the opening scene the siblings teach the สมุดผนึก on the live village map — the player does each step by hand (open the book · look at the gear tab · tap a card · close it · the other tabs · close the book) */
 const BOOK_TOUR=[
  {who:'S',text:'ดูมุมขวาบนนั่น มีไอคอน สมุดผนึก อยู่ — {S2B} ลองกดเปิดดู',target:'.hud-ico[data-hud="bag"]'},
- {who:'S',text:'นี่คือสมุดผนึกที่สมาคมให้ ของที่เราพกจะกลายเป็นการ์ดเก็บอยู่ในนี้ ลองกดแท็บ อุปกรณ์ ก่อน',target:'.cb-tabs button[data-t="gear"]'},
- {who:'B',text:'มีดของพ่อ… อยู่ในนี้แล้วจริงด้วย'},
+ {who:'S',text:'นี่คือสมุดผนึกที่สมาคมให้ ของที่เราพกจะกลายเป็นการ์ดเก็บอยู่ในนี้ แยกเป็นแท็บตามชนิด ลองกดแท็บ อุปกรณ์ ก่อน',target:'.cb-tabs button[data-t="gear"]'},
+ {who:'B',text:'มีดของพ่อ… อยู่ในนี้แล้วจริงด้วย ด้ามมันสึกเป็นรอยมือพ่อเลย'},
+ /* v98.632 · a few more lines about the weapon (the user asked): what the tab holds, one worn at a time, and the knife stays with the hero (STORY: the hero keeps father's knife even after a better weapon) */
+ {who:'S',text:'แท็บนี้เก็บอาวุธกับของที่สวมใส่ ใต้การ์ดจะบอกว่า "กำลังสวมใส่" สวมได้ทีละ 1 ใบ ใบนั้นแหละที่เอาไปใช้ตอนสู้ ถ้าได้ของที่ดีกว่าก็เปลี่ยนใบได้',look:'.cb-page[data-p="gear"]',clear:true},
+ {who:'B',text:'ตอนนี้มีดเล่มนี้ก็ยังพอไหว ถ้าตีอาวุธใหม่ได้ที่โรงตีเหล็ก ข้าคงได้เปลี่ยนเล่ม… แต่เล่มนี้ข้าจะเก็บไว้เสมอ',look:'.cb-page[data-p="gear"]',clear:true},
  {who:'S',text:'แตะการ์ดใบนั้นดูสิ จะเห็นรายละเอียด',target:'.cb-page[data-p="gear"] .card-thumb'},
  {who:'S',text:'ปิดการ์ดนี้ก่อน แล้วไปดูแท็บอื่น',target:'#collectionFocus button, #collectionFocus .focus-close'},
  {who:'S',text:'เหล็ก ถ่าน ไม้ ที่เก็บมาผลิตของ จะอยู่แท็บ วัตถุดิบ',target:'.cb-tabs button[data-t="mat"]',prep:()=>{if(!document.getElementById('panel').open)openPanel('bag')}},
+ /* v98.632 · no dark shade on the materials page: the cards are visible while this is read, then the next tab */
+ {who:'S',text:'นี่แหละการ์ดวัตถุดิบ ตัวเลข ×… "ในสมุด" คือจำนวนที่เรามี ส่วนบรรทัด "ใช้ทำ" บอกว่าเอาไปผลิตอะไรได้ ไว้ไปโรงตีเหล็กก็หยิบไปหลอมตีของได้เลย',look:'.cb-page[data-p="mat"]',clear:true},
  {who:'S',text:'ส่วนยากับอาหารอยู่แท็บ ของใช้ — กดใช้จากตรงนี้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
  {who:'B',text:'เข้าใจแล้ว ใส่ไว้ในสมุดก็ไม่ต้องหอบเป็นกอง'},
  {who:'S',text:'งั้นปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .panelhead button, #panel > header button, #panel button[onclick*="close"], #panel button'}];

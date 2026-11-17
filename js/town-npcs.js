@@ -112,7 +112,7 @@ function lifeGo(n,want){const v=V();n.goal=want;n.enter=null;n.leaveTown=false;
 function lifeInit(){const v=V();if(!v)return false;const hour=clockHour();lifeSave=LIFE.save();
  npcs=ROSTER.map((n,i)=>{const want=desire(n,hour),d=want&&want!=='gone'?(want==='square'?nearSquare():target(want)):null,s=d||target(n.home)||target('square')||{u:0,v:0};
   return {...n,goal:want,inside:want&&want!=='square'&&want!=='gone'&&d?want:null,hidden:!want||want==='gone'||!d,enter:null,alpha:0,u:s.u,v:s.v,path:[],wait:2+Math.random()*6,stop:-1,face:'SE',phase:i*1.7,speed:(n.speed||1)*1.9}});return true}
-function lifeUpdate(dt){if(!npcs&&!lifeInit())return;const v=V(),h=v.getHero(),hour=clockHour(),now=performance.now();
+function lifeUpdate(dt){if(!npcs&&!lifeInit())return;const v=V(),h=v.getHero(),hour=clockHour(),now=performance.now(),fs0=now;   /* v98.632 · fs0 (frame start for the 10 ms path-planning budget, v98.620) was only declared in update(); line below used it here and threw a ReferenceError that killed the whole object layer */
  if(now>lifeSaveAt){lifeSaveAt=now+2000;lifeSave=LIFE.save();const done=MIND()?.tick?.(lifeSave);if(done?.length){LIFE.writeSave(lifeSave)}}
  for(const n of npcs){n.alpha+=((n.inside||n.hidden?0:1)-n.alpha)*Math.min(1,dt*5);
   if(n===talking){const du=h.u-n.u,dv=h.v-n.v;n.face=root.WalkSpeed?WalkSpeed.dir.face(n,du,dv):faceOf(du,dv);continue}
