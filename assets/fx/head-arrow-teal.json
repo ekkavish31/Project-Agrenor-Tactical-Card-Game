@@ -1,0 +1,57 @@
+{
+  "id": "head-arrow-teal-stable-v3",
+  "source": "one rigid textured 3D arrowhead using approved raster artwork",
+  "shaft": false,
+  "colour": "bright teal, slim aged gold",
+  "atlas": "head-arrow-teal-64-atlas.png",
+  "atlas_2x": "head-arrow-teal-128-atlas.png",
+  "columns": 12,
+  "rows": 8,
+  "cell_size": 64,
+  "frame_count": 96,
+  "fps": 30,
+  "loop_duration_ms": 3200,
+  "pivot": [
+    0.5078125,
+    0.8671874701976776
+  ],
+  "pivot_pixels": [
+    32.5,
+    55.49999809265137
+  ],
+  "rotation_axis": "upright vertical Z through the lower tip",
+  "yaw_step_degrees": 3.75,
+  "camera_ground_projection": "orthographic isometric 2:1",
+  "baked_bob": false,
+  "per_frame_rescaling": false,
+  "crossfade_required": false,
+  "supersampling": {
+    "render_size": 256,
+    "export_sizes": [
+      64,
+      128
+    ]
+  },
+  "validation": {
+    "projected_tip_max_variation_pixels_at_256": [
+      0.0,
+      0.0
+    ],
+    "frames_checked": 96,
+    "raster_tip_at_64_alpha_127": {
+      "min": [
+        55.0,
+        32.0
+      ],
+      "max": [
+        55.0,
+        32.0
+      ]
+    }
+  },
+  "uses": [
+    "town controlled hero",
+    "battle active CT unit"
+  ],
+  "status": "updated design assets; no game integration changes"
+}
