@@ -119,12 +119,12 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.572"></script><script src="js/character-scale-adjust-data.js?v=v98.466"></script><script src="js/character-scale-adjust.js?v=v98.656"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.650"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.444"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
+<script src="js/village-layout-v67.js?v=v98.329"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.572"></script><script src="js/character-scale-adjust-data.js?v=v98.466"></script><script src="js/character-scale-adjust.js?v=v98.656"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.650"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.658"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
    on-screen height (UNIT = one battle cell) = silhouette height ÷ picture height × the size the game draws the picture at:
-     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.657 drawHero · CHARACTER_SCALE.drawSize.hero)
+     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.658 drawHero · CHARACTER_SCALE.drawSize.hero)
      ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
@@ -260,7 +260,7 @@ async function build() {
   if(DOCK){viewCtl();render();}
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.657')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const src = await (await fetch('js/town-battle.js?v=v98.658')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
       const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
     }
@@ -349,7 +349,7 @@ function render() {
     if (SHADOW) h += `<div style="position:absolute;left:${cx - w * .22}px;top:${base - 5}px;width:${w * .44}px;height:10px;border-radius:50%;background:rgba(0,0,0,.28)"></div>`;
     if (FOOT) h += `<div style="position:absolute;left:${cx}px;top:${base - 18 * ZOOM}px;height:${18 * ZOOM}px;border-left:1px solid #c0392b"></div>`;
     h += `<img class="ch${isSel(e.id) ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${src}" style="${fl}width:${w}px;height:${hh}px;left:${left}px;top:${top}px;opacity:${e.id === 'hero' ? 1 : ALPHA}">`;
-    h += `<div class="nm${isSel(e.id) ? ' sel' : ''}" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m${!isW(e) && Math.abs(eff(e) - 1) > .0005 ? ' · ' + Math.round(eff(e) * 100) + '%' : ''}</i><span class="verify-slot">${verifiedMark(e.id)}</span></div>`;
+    h += `<div class="nm${isSel(e.id) ? ' sel' : ''}" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m${!isW(e) && Math.abs(eff(e) - 1) > .0005 ? ' · ' + Math.round(eff(e) * 100) + '%' : ''}</i></div>`;
   });
   st.innerHTML = h;
   /* v98.388 · pick by the character's CENTRE line, not by its picture box (the transparent box of the next picture covered the right half → the hit looked shifted left) */
@@ -431,7 +431,7 @@ function renderRatio(V) {
     /* v98.401 · the chin/shoulder/hip LINES are gone for good (see v98.400) — but a dozen tiny dots over every thumbnail in this overview
        row turned out just as hard to read, so the row stays plain. The 📍 Datum points still show on the big panel below when you pick one. */
     h += `<div data-c="${e.id}"${noPose ? ' style="opacity:.35" title="ตัวนี้ยังไม่มีภาพท่านี้ (แสดงภาพท่ายืนแทน)"' : ''}><div class="fig" style="width:${fw}px;height:${fh}px"><img alt="" src="${c.url || c.src}" style="${fl}position:absolute;width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
-    h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}${doneOf(e.id) === 'ok' ? ' verified' : ''}" data-c="${e.id}">${e.name}${r.datum ? ` <span class="chip ok" title="วาง 📍 Datum ครบแล้ว (ตา · คาง · ขาหนีบ · เท้า) — ตัวเลข ${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}% ด้านล่างวัดจากจุดนี้โดยตรง ไม่ใช่ประมาณจากภาพ">📍✔</span>` : ''}<br><span class="chip ${LV[v.level][0]}">${r.manual ? `${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}%` : 'รอ Datum'}</span>${doneOf(e.id) === 'adj' ? ' <span class="chip warn" title="ปรับแล้ว รอติ๊กยืนยัน">✎</span>' : ''}<span class="verify-slot">${verifiedMark(e.id)}</span></div></div>`;
+    h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}${doneOf(e.id) === 'ok' ? ' verified' : ''}" data-c="${e.id}">${e.name}${r.datum ? ` <span class="chip ok" title="วาง 📍 Datum ครบแล้ว (ตา · คาง · ขาหนีบ · เท้า) — ตัวเลข ${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}% ด้านล่างวัดจากจุดนี้โดยตรง ไม่ใช่ประมาณจากภาพ">📍✔</span>` : ''}<br><span class="chip ${LV[v.level][0]}">${r.manual ? `${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}%` : 'รอ Datum'}</span>${doneOf(e.id) === 'adj' ? ' <span class="chip warn" title="ปรับแล้ว รอติ๊กยืนยัน">✎</span>' : ''}</div></div>`;
   }
   h += `</div><details class="rtBox"${(() => { try { return localStorage.getItem('lineup.rtOpen') === '1' ? ' open' : '' } catch (e) { return '' } })()}><summary><b>📋 ตารางเทียบทั้งทีม</b> <small>(${R.length} ตัว · ตรง ${ok} · เฉียด ${warn} · ไม่ตรง ${bad} · ${medianText(med)}${ST ? ` · ✔ ตรวจแล้ว ${nOk}/${R.length}${nAdj ? ' · ✎ รอติ๊ก ' + nAdj : ''}` : ''})</small> <span class="info" title="จุดสี = 📍 Datum ที่จิ้มไว้จริง (จางกว่า = ยืมจากทิศคู่ ยังไม่ได้จิ้มเอง) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · ป้าย 📍✔ ที่ชื่อ = วาง Datum ครบแล้ว · รอ Datum = ยังไม่แสดงสัดส่วนและไม่ตัดสิน · เลือกตัวแล้ววาง/แก้ Datum ที่แผงขวา (ปุ่ม 📍 Datum)">ⓘ วิธีอ่าน</span> <button id="rNext" type="button" title="ข้ามไปตัวถัดไปที่ยังไม่ติ๊ก ✔ (ไล่ปรับทีละตัวให้ครบทีม)" style="padding:2px 9px;font-size:12px;font-weight:700">⏭ ถัดไปที่ยังไม่เสร็จ</button> <button id="rCopy" type="button" style="padding:2px 9px;font-size:12px">📋 คัดลอกรายงาน</button></summary><table class="rt"><tr><th>ตัวละคร</th><th>หัว–ข้อเท้า px</th><th>หัว %</th><th>จำนวนหัว</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
   for (const { e, r, v } of R) h += `<tr data-c="${e.id}" class="${e.id === sel ? 'sel' : ''}"><td>${e.name}${r.manual ? '' : ' <small title="ยังไม่ได้วาง 📍 Datum — ตัวเลขนี้ประมาณจากภาพคร่าว ๆ เท่านั้น">~</small>'}</td><td>${r.manual ? r.H : '—'}</td><td>${r.manual ? (r.head * 100).toFixed(1) : '—'}</td><td>${r.manual ? r.heads.toFixed(2) : '—'}</td><td>${r.manual ? (r.torso * 100).toFixed(1) : '—'}</td><td>${r.manual ? (r.legs * 100).toFixed(1) : '—'}</td><td><span class="chip ${LV[v.level][0]}" title="${v.notes.join(' · ')}">${LV[v.level][1]}</span></td></tr>`;
@@ -451,6 +451,8 @@ function renderRatio(V) {
    for this exact pose/frame/direction, and the target scale always comes from comparing datum SPANS (head/torso/legs) against a
    template — either the team standard (⭐) or another character. Without datum the panel is gated off; nothing to cut without it. */
 function inspectRatio() {
+  /* v98.658 · the old Before/After · 📍 Datum · 🛠 ปรับสัดส่วน panel is retired — proportions are now done per character in Asset Studio → Animation → 📐 เรียงท่า (js/pose-sheet.js). */
+  if (!window.__oldInspect) { $('insp').innerHTML = ''; return }
   const e = ENTRIES.find(x => x.id === sel); if (!e || isW(e) || !e.ctx.battle) { $('insp').innerHTML = ''; return }
   const c = e.ctx.battle, r = ratioOf(e), med = PT.median(visible().map(ratioOf).filter(x => x.manual).map(x => x.head)), v = PT.verdict(r, STDOBJ()), CH = DOCK ? 400 : 300, PW = DOCK ? 560 : 300, HALF = PW / 2, hasDatum = !!r.datum;
   /* v98.400 · no more measuring LINES across the picture — the actual 📍 Datum points (the same dots you placed) are drawn on the picture instead, both before and after */
