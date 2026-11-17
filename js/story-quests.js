@@ -448,14 +448,17 @@ async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!
  if(document.getElementById('storyBattle')||onWorld())return false;
  bookBusy=true;try{v.story.bookIntro=true;doSave();await root.Cutscene.play(D().SCENES.bookExit);try{if(typeof openPanel==='function')openPanel('bag')}catch(e){}}finally{bookBusy=false}return true}
 /* v98.617 · THE CARD-BOOK TOUR: after the opening scene the siblings teach the สมุดผนึก on the live village map — the player does each step by hand (open the book · look at the gear tab · tap a card · close it · the other tabs · close the book) */
-const BOOK_TOUR=[
+const BOOK_TOUR=[   /* v98.659 · the lesson is a talk between the two siblings (the S / B roles), not one voice reading buttons */
  {who:'S',text:'ดูมุมขวาบนนั่น มีไอคอน สมุดผนึก อยู่ — {S2B} ลองกดเปิดดู',target:'.hud-ico[data-hud="bag"]'},
- {who:'S',text:'นี่คือสมุดผนึกที่สมาคมให้ ของที่เราพกจะกลายเป็นการ์ดเก็บอยู่ในนี้ ลองกดแท็บ อุปกรณ์ ก่อน',target:'.cb-tabs button[data-t="gear"]'},
+ {who:'B',text:'ของที่สมาคมให้ใช่ไหม ข้าไม่เคยเปิดดูจริง ๆ จัง ๆ เลย'},
+ {who:'S',text:'ของที่เราพกจะกลายเป็นการ์ดเก็บอยู่ในนี้แหละ ลองกดแท็บ อุปกรณ์ ก่อนสิ',target:'.cb-tabs button[data-t="gear"]'},
  {who:'B',text:'มีดของพ่อ… อยู่ในนี้แล้วจริงด้วย'},
  {who:'S',text:'แตะการ์ดใบนั้นดูสิ จะเห็นรายละเอียด',target:'.cb-page[data-p="gear"] .card-thumb'},
- {who:'S',text:'ปิดการ์ดนี้ก่อน แล้วไปดูแท็บอื่น',target:'#collectionFocus button, #collectionFocus .focus-close'},
+ {who:'B',text:'ละเอียดกว่าที่คิดแฮะ เหมือนของจริงเลย'},
+ {who:'S',text:'ปิดการ์ดนี้ก่อน แล้วไปดูแท็บอื่นกัน',target:'#collectionFocus button, #collectionFocus .focus-close'},
  {who:'S',text:'เหล็ก ถ่าน ไม้ ที่เก็บมาผลิตของ จะอยู่แท็บ วัตถุดิบ',target:'.cb-tabs button[data-t="mat"]',prep:()=>{if(!document.getElementById('panel').open)openPanel('bag')}},
- {who:'S',text:'ส่วนยากับอาหารอยู่แท็บ ของใช้ — กดใช้จากตรงนี้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
+ {who:'B',text:'แล้วยากับอาหารล่ะ อยู่ตรงไหน'},
+ {who:'S',text:'แท็บ ของใช้ — กดใช้จากตรงนี้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
  {who:'B',text:'เข้าใจแล้ว ใส่ไว้ในสมุดก็ไม่ต้องหอบเป็นกอง'},
  {who:'S',text:'งั้นปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .panelhead button, #panel > header button, #panel button[onclick*="close"], #panel button'}];
 let tourBusy=false;
