@@ -6299,3 +6299,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - **หมู่บ้านเละ/ของหาย หลังจบฉากคุยกับแม่ + ค้างตอนสอนกดสมุดผนึก**: `lifeUpdate` ใน `js/town-npcs.js` อ้างตัวแปร `fs0` ที่ประกาศอยู่ในฟังก์ชัน `update()` อีกตัว (ติดมาตั้งแต่ v98.620 · งบเวลาวางแผนเดินต่อเฟรม) → `ReferenceError: fs0 is not defined` ทุกเฟรมที่วาดหมู่บ้าน ทำให้ `objects()` ล้ม ตึก/ของประกอบฉากไม่ถูกวาดและเกมค้าง (ผู้ใช้กดสมุดผนึกไม่ได้) แก้ให้ใช้เวลาเริ่มเฟรม `now` ของ `lifeUpdate` เอง
 - แก้ `js/precache.js`: `requestIdleCallback(go, 1200)` ส่งตัวเลขแทน options → TypeError ใน console (แก้เป็น `{timeout:1200}`)
 - ไม่เกี่ยวกับ 404 ของ `mom-neutral.webp` (ไฟล์ภาพหาย) — ดูแยกต่างหาก
+
+## v98.655 — 17 พ.ย. 2026
+- **ภาพแม่ `mom-neutral.webp` 404**: แม่ไม่มีภาพ neutral (มี calm / talk / happy / sad / angry / worry) — ผู้ใช้กำหนด **neutral = calm**: บทสนทนาต่อสู้/เควส (`js/battle-talk.js`) ใช้ `mom-calm` แทน และ fallback ของแม่ไปที่ calm · ฉากเนื้อเรื่อง (`js/story-actors.js`) ใช้ `mom-calm` เป็นหน้านิ่ง (เดิมใช้ talk) · ตัวอื่นทุกตัวมีภาพ neutral ครบอยู่แล้ว (ตรวจจากโฟลเดอร์ `assets/portraits`) จึงไม่ต้องผูกเพิ่ม

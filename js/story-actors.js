@@ -10,7 +10,7 @@
   'use strict';
   /* painted portrait sets: speaker → [set, faces] */
   /* a set lists its faces as an array (file = <set>-<face>.webp) or as an object {face: file suffix} (v98.201: mom, six painted poses: talk · calm · happy · worry · sad · angry) */
-  const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], guard: ['guard', ['neutral', 'happy', 'angry', 'surprised']], lin: ['lin', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
+  const PAINTED = { hilda: ['hilda', ['neutral', 'happy', 'angry', 'surprised']], guard: ['guard', ['neutral', 'happy', 'angry', 'surprised']], lin: ['lin', ['neutral', 'happy', 'angry', 'surprised']], mom: ['mom', { neutral: 'calm', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   /* v98.529 · story cast: four painted expressions, native facing left. */
   const STORY_FACES = { neutral: 'neutral', think: 'neutral', calm: 'neutral', talk: 'neutral', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'worry', worry: 'worry' };
   for (const id of ['corvin', 'helga', 'darren', 'mierris', 'lorrik', 'serrien', 'vik', 'irene']) PAINTED[id] = ['story/' + id, STORY_FACES];
@@ -203,7 +203,7 @@
   function srcsOf(line, sp) {
     if (!line?.who) return []; const P = PAINTED[sp?.bust || line.who] || (line.who === 'hero' ? heroSet() : line.who === 'sib' ? sibSet() : null); if (!P) return [];
     const face = faceOf(line), f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral);
-    return ['assets/portraits/' + P[0] + '-' + f + '.webp', 'assets/portraits/' + P[0] + '-neutral.webp'];
+    return ['assets/portraits/' + P[0] + '-' + f + '.webp', 'assets/portraits/' + P[0] + '-' + (Array.isArray(P[1]) ? 'neutral' : P[1].neutral) + '.webp'];
   }
   function warm(src) { let p = PRE.get(src); if (!p) { const im = new Image(); im.src = src; p = im.decode ? im.decode().catch(() => { }) : Promise.resolve(); PRE.set(src, p) } return p }
   function preload(lines, speakerOf, from = 0, n = 1e9) {

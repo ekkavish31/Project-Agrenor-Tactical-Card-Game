@@ -33,7 +33,7 @@
     if (who === 'boss') return 'assets/cards/portraits/en-bandit.webp';
     if (who === 'mip') return 'mip'; if (who === 'sib') return female() ? 'assets/portraits/hero-male-' + m + '.webp' : 'assets/portraits/hero-female-' + m + '.webp';
     if (STORY.has(who)) return `assets/portraits/story/${who}-${m}.webp`;
-    if (PLAIN.has(who)) return `assets/portraits/${who}-${m === 'worry' && /^(hilda|lin|guard)$/.test(who) ? 'surprised' : m}.webp`;   /* hilda · lin · guard have 'surprised' in place of 'worry' */
+    if (PLAIN.has(who)) return `assets/portraits/${who}-${m === 'worry' && /^(hilda|lin|guard)$/.test(who) ? 'surprised' : (who === 'mom' && m === 'neutral' ? 'calm' : m)}.webp`;   /* v98.655 · mom has no 'neutral' picture: her neutral = calm */   /* hilda · lin · guard have 'surprised' in place of 'worry' */
     return null;
   }
 
@@ -89,7 +89,7 @@
         }
         const src = portrait(w, l.emo);
         if (src === 'mip') p.innerHTML = '<div class="bt-sprite"></div>';
-        else if (src) { const im = new Image(); im.alt = ''; im.draggable = false; im.onerror = () => { if (!im.dataset.fb) { im.dataset.fb = 1; im.src = src.replace(/-[a-z]+\.webp$/, '-neutral.webp') } else if (!im.dataset.fb2) { im.dataset.fb2 = 1; im.src = src.replace(/-[a-z]+\.webp$/, '-surprised.webp') } else im.remove() }; im.src = src; if (window.PortraitFacing ? PortraitFacing.flip(src, side) : ((w === 'mom' ? 'right' : 'left') === (side === 'L' ? 'left' : 'right'))) im.style.transform = 'scaleX(-1)'; /* v98.593 · portraits face the other speaker (painted facing left by default) */ const pk = window.PortraitScale ? PortraitScale.k(w) : 1; if (pk < 1) im.style.maxHeight = Math.round(100 * pk) + '%'; p.replaceChildren(im) }
+        else if (src) { const im = new Image(); im.alt = ''; im.draggable = false; im.onerror = () => { if (!im.dataset.fb) { im.dataset.fb = 1; im.src = src.replace(/-[a-z]+\.webp$/, /portraits\/mom-/.test(src) ? '-calm.webp' : '-neutral.webp') } else if (!im.dataset.fb2) { im.dataset.fb2 = 1; im.src = src.replace(/-[a-z]+\.webp$/, '-surprised.webp') } else im.remove() }; im.src = src; if (window.PortraitFacing ? PortraitFacing.flip(src, side) : ((w === 'mom' ? 'right' : 'left') === (side === 'L' ? 'left' : 'right'))) im.style.transform = 'scaleX(-1)'; /* v98.593 · portraits face the other speaker (painted facing left by default) */ const pk = window.PortraitScale ? PortraitScale.k(w) : 1; if (pk < 1) im.style.maxHeight = Math.round(100 * pk) + '%'; p.replaceChildren(im) }
         else p.innerHTML = '<span class="bt-icon">' + (ICONS[w] || '💬') + '</span>';
         p.classList.remove('dim'); if (l.shake) { p.classList.remove('shake'); void p.offsetWidth; p.classList.add('shake') }
         setTimeout(() => p.classList.remove('in'), 340);
