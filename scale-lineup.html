@@ -124,7 +124,7 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
    on-screen height (UNIT = one battle cell) = silhouette height ÷ picture height × the size the game draws the picture at:
-     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.656 drawHero · CHARACTER_SCALE.drawSize.hero)
+     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.657 drawHero · CHARACTER_SCALE.drawSize.hero)
      ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
@@ -260,7 +260,7 @@ async function build() {
   if(DOCK){viewCtl();render();}
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.656')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const src = await (await fetch('js/town-battle.js?v=v98.657')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
       const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
     }
@@ -417,17 +417,20 @@ function reportText(R, med) {
 }
 let _rt = 0; const reRatio = () => { cancelAnimationFrame(_rt); _rt = requestAnimationFrame(() => { if (tab === 'ratio') renderRatio(visible()) }) };
 function renderRatio(V) {
-  const { R, med } = ratioRows(V), FH = DOCK ? 250 : 300, fhOf = e => FH * metres(e) / HERO_M, maxFH = Math.max(...V.map(fhOf)), bad = R.filter(x => x.v.level === 'bad').length, warn = R.filter(x => x.v.level === 'warn').length, ok = R.filter(x => x.v.level === 'ok').length;
+  /* v98.657 · a pose other than standing is drawn at the SAME scale as the standing figure of that character (screen px per picture px = the game's draw size), never fitted to its own silhouette — a lying figure is short and wide and was blown up to several times the row, and a character without that pose showed its standing picture at a random size */
+  const poseNow = vpPose(), FH = DOCK ? 250 : 300, SU = (() => { try { if (poseNow === 'idle') { const u = refE()?.ctx?.[ctx]?.units; if (u > .5) localStorage.setItem('lineup.standU', String(u)) } return +localStorage.getItem('lineup.standU') || 1.43 } catch (x) { return 1.43 } })();
+  const ksOf = e => FH / SU * (e.ctx.battle.factor / 384) * eff(e), sizeOfFig = e => { const c = e.ctx.battle, bw = c.m.x1 - c.m.x0 + 1; let k = ksOf(e); const cap = FH * 1.25 / bw; if (k * bw > FH * 1.25) k = cap; return { k, fh: c.m.H * k } };
+  const { R, med } = ratioRows(V), fhOf = poseNow === 'idle' ? (e => FH * metres(e) / HERO_M) : (e => sizeOfFig(e).fh), maxFH = Math.max(...V.map(fhOf)), bad = R.filter(x => x.v.level === 'bad').length, warn = R.filter(x => x.v.level === 'warn').length, ok = R.filter(x => x.v.level === 'ok').length;
   const st = $('stage'); st.style.height = 'auto'; st.style.width = 'auto';
   const lvl = bad ? 'bad' : warn ? 'warn' : 'ok';
   const nOk = R.filter(x => doneOf(x.e.id) === 'ok').length, nAdj = R.filter(x => doneOf(x.e.id) === 'adj').length;
   let h = `<div class="stdctl"><b>⭐ ตัวมาตรฐาน: ${standardText()}</b> · ยอมคลาดเคลื่อน ± <input type="number" id="sTol" min="1" max="15" step="0.5" value="${STDV.tol}"> จุดเปอร์เซ็นต์ <span class="lgd">สัดส่วนชุดเดียว: กะโหลก–คาง / คาง–ขาหนีบ / ขาหนีบ–ข้อเท้า · ไม่รวมผมและมือยก · ยังไม่มี Datum ครบ = รอข้อมูล</span></div>`;
   h += `<div class="figs" style="min-height:${maxFH + 92}px;align-items:flex-end">`;
   for (const { e, r, v } of R) {
-    const c = e.ctx.battle, bw = c.m.x1 - c.m.x0 + 1, fh0 = fhOf(e), k = Math.min(fh0 / c.m.H, fh0 * 1.1 / bw), fh = c.m.H * k, fw = bw * k, fl = c.flip ? 'transform:scaleX(-1);' : '';   /* v98.416 · a wide, low pose (lying down) is capped so it does not grow past the row */
+    const c = e.ctx.battle, bw = c.m.x1 - c.m.x0 + 1, fh0 = fhOf(e), k = poseNow === 'idle' ? Math.min(fh0 / c.m.H, fh0 * 1.1 / bw) : sizeOfFig(e).k, fh = c.m.H * k, fw = bw * k, fl = c.flip ? 'transform:scaleX(-1);' : '', noPose = poseNow !== 'idle' && /^ท่ายืน/.test(c.label || '');   /* v98.416 · a wide, low pose (lying down) is capped so it does not grow past the row */
     /* v98.401 · the chin/shoulder/hip LINES are gone for good (see v98.400) — but a dozen tiny dots over every thumbnail in this overview
        row turned out just as hard to read, so the row stays plain. The 📍 Datum points still show on the big panel below when you pick one. */
-    h += `<div data-c="${e.id}"><div class="fig" style="width:${fw}px;height:${fh}px"><img alt="" src="${c.url || c.src}" style="${fl}position:absolute;width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
+    h += `<div data-c="${e.id}"${noPose ? ' style="opacity:.35" title="ตัวนี้ยังไม่มีภาพท่านี้ (แสดงภาพท่ายืนแทน)"' : ''}><div class="fig" style="width:${fw}px;height:${fh}px"><img alt="" src="${c.url || c.src}" style="${fl}position:absolute;width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
     h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}${doneOf(e.id) === 'ok' ? ' verified' : ''}" data-c="${e.id}">${e.name}${r.datum ? ` <span class="chip ok" title="วาง 📍 Datum ครบแล้ว (ตา · คาง · ขาหนีบ · เท้า) — ตัวเลข ${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}% ด้านล่างวัดจากจุดนี้โดยตรง ไม่ใช่ประมาณจากภาพ">📍✔</span>` : ''}<br><span class="chip ${LV[v.level][0]}">${r.manual ? `${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}%` : 'รอ Datum'}</span>${doneOf(e.id) === 'adj' ? ' <span class="chip warn" title="ปรับแล้ว รอติ๊กยืนยัน">✎</span>' : ''}<span class="verify-slot">${verifiedMark(e.id)}</span></div></div>`;
   }
   h += `</div><details class="rtBox"${(() => { try { return localStorage.getItem('lineup.rtOpen') === '1' ? ' open' : '' } catch (e) { return '' } })()}><summary><b>📋 ตารางเทียบทั้งทีม</b> <small>(${R.length} ตัว · ตรง ${ok} · เฉียด ${warn} · ไม่ตรง ${bad} · ${medianText(med)}${ST ? ` · ✔ ตรวจแล้ว ${nOk}/${R.length}${nAdj ? ' · ✎ รอติ๊ก ' + nAdj : ''}` : ''})</small> <span class="info" title="จุดสี = 📍 Datum ที่จิ้มไว้จริง (จางกว่า = ยืมจากทิศคู่ ยังไม่ได้จิ้มเอง) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · ป้าย 📍✔ ที่ชื่อ = วาง Datum ครบแล้ว · รอ Datum = ยังไม่แสดงสัดส่วนและไม่ตัดสิน · เลือกตัวแล้ววาง/แก้ Datum ที่แผงขวา (ปุ่ม 📍 Datum)">ⓘ วิธีอ่าน</span> <button id="rNext" type="button" title="ข้ามไปตัวถัดไปที่ยังไม่ติ๊ก ✔ (ไล่ปรับทีละตัวให้ครบทีม)" style="padding:2px 9px;font-size:12px;font-weight:700">⏭ ถัดไปที่ยังไม่เสร็จ</button> <button id="rCopy" type="button" style="padding:2px 9px;font-size:12px">📋 คัดลอกรายงาน</button></summary><table class="rt"><tr><th>ตัวละคร</th><th>หัว–ข้อเท้า px</th><th>หัว %</th><th>จำนวนหัว</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;

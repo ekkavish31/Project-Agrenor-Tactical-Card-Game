@@ -219,7 +219,7 @@
   d.scrollIntoView({behavior:'smooth',block:'start'});for(let i=0;i<160;i++){try{if(f.contentWindow.__lineupReady&&f.contentWindow.dockGoto)break}catch(x){}await new Promise(r=>setTimeout(r,250))}
   try{await f.contentWindow.dockGoto({id:lidOf(e),action:c.action,view:c.view,frame:0,open})}catch(x){toast('เปิดแถว Scale Lineup ไม่ได้: '+x.message)}}
  {let t=0;addEventListener('storage',ev=>{if(ev.key==='proportion-datum-v1'||ev.key==='proportion-done-v1'){clearTimeout(t);t=setTimeout(()=>{try{render()}catch(x){}},600)}})}
- function renderEntity(){let e=entity();$('filters').innerHTML='';lookBar(e);state.entries=[];previewObserver.disconnect();viewed.clear();
+ function renderEntity(){let e=entity();$('filters').innerHTML='';/* v98.657 · the ชาย / หญิง switch bar is gone: the two looks are two separate characters in the left list */state.entries=[];previewObserver.disconnect();viewed.clear();
   if(!e){$('grid').innerHTML='<div class="entity-empty">เลือกตัวหรือวัตถุทางซ้าย<p>ถ้าไม่มีรายการ ลองเชื่อมโฟลเดอร์เกมหรือเปลี่ยนหมวด</p></div>';return}
   let clips=e.clips.filter(visible),matrixClips=clips.filter(c=>c.kind!=='static'||c.view!=='—'&&/idle|walk|windup|strike|guard|hit|down/.test(c.action));
   let views=dirs.filter(d=>matrixClips.some(c=>c.view===d));for(let c of matrixClips)if(!views.includes(c.view))views.push(c.view);
