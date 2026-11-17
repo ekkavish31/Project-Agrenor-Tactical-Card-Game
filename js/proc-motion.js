@@ -9,6 +9,8 @@ const TYPES={none:'ไม่ขยับ',breathe:'หายใจ (ยืด-�
 let cache=null,stamp='';
 function all(){try{const s=root.localStorage?.getItem(KEY)||'';if(s!==stamp){stamp=s;cache=s?JSON.parse(s):{}}}catch(e){cache={}}return cache||{}}
 function set(key,cfg){const a={...all()};if(!cfg||cfg.type==='auto')delete a[key];else a[key]={type:cfg.type,amp:+cfg.amp||1,speed:+cfg.speed||1};try{root.localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}stamp='';return a[key]||null}
+/* v98.640 · ONE-TIME reset (asked by the user): every saved walk setting in this browser becomes bob · 0.3× · 0.6×, once; the flag below stops it from ever running again */
+(function(){try{const F='proc-motion-walk-reset-v98.640',L=root.localStorage;if(!L||L.getItem(F))return;const s=L.getItem(KEY);if(s){const a=JSON.parse(s);let n=0;for(const k of Object.keys(a))if(/walk/i.test(k)){a[k]={type:'bob',amp:.3,speed:.6};n++}if(n)L.setItem(KEY,JSON.stringify(a))}L.setItem(F,'1')}catch(e){}})();
 const hash=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h%1000/1000*6.283};
 function defaultFor(info){if(!info||(info.frames||1)>1)return null;if(info.pose==='idle'||info.pose==='guard')return info.skipIdle?null:{type:'breathe',amp:info.pose==='guard'?.6:1,speed:1};if(info.pose==='walk')return{type:'bob',amp:.3,speed:.6};return null}
 function config(key,info){const s=all()[key];return s?(s.type==='none'?null:s):defaultFor(info)}
