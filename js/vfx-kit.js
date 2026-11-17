@@ -195,7 +195,7 @@
     const W = cw * (e.scale || 1), split = .46, far = a && (Math.abs(a.x - p.x) + Math.abs(a.y - p.y)) >= 4;
     if (!animSheet('ball') || !animSheet('hit')) return false;
     if (far && t < split) {   /* flight: the fireball runs along an arc from the caster's chest to the target, turned to face where it goes */
-      const k = t / split, ay = a.y - cw * .75, py = chest(p, cw), lift = cw * .4, at = kk => [a.x + (p.x - a.x) * kk, ay + (py - ay) * kk - Math.sin(kk * Math.PI) * lift], pos = k => eo(k) * .88 + k * .12;
+      const k = t / split, ay = a.y - cw * .75, py = chest(p, cw), at = kk => [a.x + (p.x - a.x) * kk, ay + (py - ay) * kk], pos = k => k * k * .35 + k * .65;
       const kk = pos(k), [x, y] = at(kk), [x2, y2] = at(Math.min(1, kk + .02)), an = Math.atan2(y2 - y, x2 - x) || 0, grow = .55 + .45 * eo(seg(k, 0, .25)), back_ = an + Math.PI;
       /* v98.623 · like the reference clip: a compact fireball with a short tail — only a small warm glow, no trail of motes or sparks */
       add(g, () => glow(g, x, y, W * .34 * grow, C.fire, .3));
