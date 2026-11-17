@@ -121560,6 +121560,330 @@
    "artRevision": "mwkbscj7"
   },
   {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-1",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-01.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-2",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-02.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-3",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-03.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-4",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-04.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-5",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-05.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-6",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-06.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-7",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-07.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-8",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-08.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-9",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-09.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-10",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-10.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-11",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-11.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwkc159t-12",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc159t/frame-12.png",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:berg",
+    "name": "เบิร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwkc159t"
+  },
+  {
    "id": "studio-ally-berg-sw-walk-mwkc2buy-1",
    "file": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-01.png",
    "category": "allies",
@@ -122206,6 +122530,978 @@
     "group": "npcs"
    },
    "artRevision": "mwkc2f47"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-1",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-2",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-3",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-4",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-5",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-6",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-7",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-8",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-9",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-10",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-11",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcnhxf-12",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 1000,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcnhxf"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-1",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-2",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-3",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-4",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-5",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-6",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-7",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-8",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-9",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-10",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-11",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-sw-walk-mwkcr8r2-12",
+   "file": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcr8r2"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-1",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-2",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-3",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-4",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-5",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-6",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-7",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-8",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-9",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-10",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-11",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
+  },
+  {
+   "id": "studio-ally-graven-se-walk-mwkcrf49-12",
+   "file": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "artRevision": "mwkcrf49"
   }
  ],
  "studioReviews": {
@@ -127331,6 +128627,79 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-17T06:55:47.850Z"
+  },
+  "[\"tactics-nadia-nw-windup\",\"NW\",true,[[\"tactics-nadia-nw-windup\",\"assets/tactics/nadia_nw_windup.webp\",0,\"mwkc95d0\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T06:55:51.016Z"
+  },
+  "[\"npc-graven-sw-walk1\",\"SW\",true,[[\"npc-graven-sw-walk1\",\"assets/village-town/npc/graven/sw-walk1.webp\",0,\"v98.434\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:09:55.783Z"
+  },
+  "[\"allywalk:graven:SW\",\"SW\",true,[[\"studio-ally-graven-sw-walk-mwkcbib0-1\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-01.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-2\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-02.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-3\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-03.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-4\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-04.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-5\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-05.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-6\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-06.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-7\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-07.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-8\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-08.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-9\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-09.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-10\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-10.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-11\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-11.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcbib0-12\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcbib0/frame-12.png\",0,\"mwkcbib0\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npc-graven-se-walk1\",\"SE\",true,[[\"npc-graven-se-walk1\",\"assets/village-town/npc/graven/se-walk1.webp\",0,\"v98.434\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:03:33.553Z"
+  },
+  "[\"npc-graven-nw-walk1\",\"NW\",true,[[\"npc-graven-nw-walk1\",\"assets/village-town/npc/graven/nw-walk1.webp\",0,\"v98.434\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:04:00.463Z"
+  },
+  "[\"npc-graven-ne-walk1\",\"NE\",true,[[\"npc-graven-ne-walk1\",\"assets/village-town/npc/graven/ne-walk1.webp\",0,\"v98.434\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:03:51.761Z"
+  },
+  "[\"allywalk:graven:SE\",\"SE\",true,[[\"studio-ally-graven-se-walk-mwkcbpel-1\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-01.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-2\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-02.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-3\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-03.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-4\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-04.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-5\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-05.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-6\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-06.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-7\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-07.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-8\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-08.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-9\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-09.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-10\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-10.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-11\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-11.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkcbpel-12\",\"assets/tactics/imported/ally-graven-walk-se-mwkcbpel/frame-12.png\",0,\"mwkcbpel\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:graven:SE\",\"SE\",true,[[\"studio-ally-graven-se-walk-mwkce336-1\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-01.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-2\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-02.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-3\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-03.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-4\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-04.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-5\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-05.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-6\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-06.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-7\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-07.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-8\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-08.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-9\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-09.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-10\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-10.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-11\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-11.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-se-walk-mwkce336-12\",\"assets/tactics/imported/ally-graven-walk-se-mwkce336/frame-12.png\",0,\"mwkce336\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T06:59:41.871Z"
+  },
+  "[\"allywalk:graven:SW\",\"SW\",true,[[\"studio-ally-graven-sw-walk-mwkciwj4-1\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-01.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-2\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-02.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-3\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-03.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-4\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-04.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-5\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-05.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-6\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-06.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-7\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-07.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-8\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-08.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-9\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-09.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-10\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-10.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-11\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-11.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkciwj4-12\",\"assets/tactics/imported/ally-graven-walk-sw-mwkciwj4/frame-12.png\",0,\"mwkciwj4\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:graven:NE\",\"NE\",true,[[\"studio-ally-graven-ne-walk-mwkcjfyv-1\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-01.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-2\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-02.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-3\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-03.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-4\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-04.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-5\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-05.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-6\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-06.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-7\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-07.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-8\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-08.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-9\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-09.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-10\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-10.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-11\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-11.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcjfyv-12\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcjfyv/frame-12.png\",0,\"mwkcjfyv\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:graven:NW\",\"NW\",true,[[\"studio-ally-graven-nw-walk-mwkcjmo0-1\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-01.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-2\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-02.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-3\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-03.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-4\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-04.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-5\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-05.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-6\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-06.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-7\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-07.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-8\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-08.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-9\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-09.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-10\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-10.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-11\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-11.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjmo0-12\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjmo0/frame-12.png\",0,\"mwkcjmo0\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:graven:NW\",\"NW\",true,[[\"studio-ally-graven-nw-walk-mwkcjt5q-1\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-01.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-2\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-02.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-3\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-03.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-4\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-04.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-5\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-05.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-6\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-06.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-7\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-07.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-8\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-08.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-9\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-09.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-10\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-10.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-11\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-11.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-nw-walk-mwkcjt5q-12\",\"assets/tactics/imported/ally-graven-walk-nw-mwkcjt5q/frame-12.png\",0,\"mwkcjt5q\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:04:08.951Z"
+  },
+  "[\"allywalk:graven:NE\",\"NE\",true,[[\"studio-ally-graven-ne-walk-mwkcl12k-1\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-01.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-2\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-02.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-3\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-03.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-4\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-04.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-5\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-05.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-6\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-06.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-7\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-07.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-8\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-08.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-9\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-09.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-10\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-10.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-11\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-11.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-ne-walk-mwkcl12k-12\",\"assets/tactics/imported/ally-graven-walk-ne-mwkcl12k/frame-12.png\",0,\"mwkcl12k\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:05:06.477Z"
+  },
+  "[\"allywalk:graven:SW\",\"SW\",true,[[\"studio-ally-graven-sw-walk-mwkcnhxf-1\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-01.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-2\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-02.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-3\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-03.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-4\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-04.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-5\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-05.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-6\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-06.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-7\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-07.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-8\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-08.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-9\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-09.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-10\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-10.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-11\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-11.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcnhxf-12\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcnhxf/frame-12.png\",0,\"mwkcnhxf\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:graven:SW\",\"SW\",true,[[\"studio-ally-graven-sw-walk-mwkco1i7-1\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-01.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-2\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-02.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-3\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-03.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-4\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-04.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-5\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-05.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-6\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-06.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-7\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-07.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-8\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-08.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-9\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-09.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-10\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-10.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-11\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-11.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkco1i7-12\",\"assets/tactics/imported/ally-graven-walk-sw-mwkco1i7/frame-12.png\",0,\"mwkco1i7\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-17T07:07:26.219Z"
+  },
+  "[\"allywalk:graven:SW\",\"SW\",true,[[\"studio-ally-graven-sw-walk-mwkcr8r2-1\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-01.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-2\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-02.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-3\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-03.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-4\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-04.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-5\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-05.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-6\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-06.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-7\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-07.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-8\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-08.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-9\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-09.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-10\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-10.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-11\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-11.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-mwkcr8r2-12\",\"assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-12.png\",0,\"mwkcr8r2\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
   }
  },
  "studioClipHistory": {
@@ -135618,6 +136987,158 @@
      {
       "assetId": "studio-ally-berg-se-walk-mwkc2f47-12",
       "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-12.png",
+      "ms": 100
+     }
+    ]
+   }
+  },
+  "graven": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:09:54.830Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-1",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-2",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-3",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-4",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-5",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-6",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-7",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-8",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-9",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-10",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-11",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-12",
+      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-17T07:10:03.081Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-1",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-2",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-3",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-4",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-5",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-6",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-7",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-8",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-9",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-10",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-11",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-graven-se-walk-mwkcrf49-12",
+      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-12.webp",
       "ms": 100
      }
     ]
