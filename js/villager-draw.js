@@ -43,7 +43,7 @@
     for (const d of ['sw', 'se', 'ne', 'nw']) {
       const a = A.get('tactics-' + name + '-' + d + '-idle') || A.get('npc-' + name + '-' + d + '-stand'), w = W[d.toUpperCase()];
       if (a && a.status === 'final' && a.file) S[d + '-stand'] = load(a.file + (a.artRevision ? '?r=' + a.artRevision : ''));
-      if (w && w.frames && w.frames.length) { w.frames.forEach((f, i) => { S[d + '-walk' + (i + 1)] = load(A.get(f.assetId)?.file || f.src) }); info.wn[d] = w.frames.length; ms[d] = w.frames[0].ms || 100 }
+      if (w && w.frames && w.frames.length) { w.frames.forEach((f, i) => { const fa = A.get(f.assetId); S[d + '-walk' + (i + 1)] = load((fa?.file || f.src) + (fa?.artRevision ? '?r=' + fa.artRevision : '')) }); info.wn[d] = w.frames.length; ms[d] = w.frames[0].ms || 100 }
       else {
         const step = A.get('npc-' + name + '-' + d + '-walk1');
         if (step?.status === 'final' && step.file) { S[d + '-walk1'] = load(step.file + (step.artRevision ? '?r=' + step.artRevision : '')); info.wn[d] = 1 }
