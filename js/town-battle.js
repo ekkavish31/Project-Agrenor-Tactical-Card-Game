@@ -481,7 +481,7 @@
   #fbHint{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);z-index:46;padding:7px 14px;border-radius:999px;background:#14231ff2;border:1px solid #ffd25a88;color:#ffe9b0;font:600 13px AgThai,system-ui,"Noto Sans Thai",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}#fbHint.on{opacity:1;transform:translate(-50%,0)}
   #fbFace{position:fixed;inset:0;z-index:47;pointer-events:none}#fbFace .tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);padding:7px 16px;border-radius:999px;background:#14231ff2;border:1px solid #b9c48a88;color:#f3e9c9;font:600 14px AgThai,system-ui,"Noto Sans Thai",sans-serif}#fbFace .tip small{color:#cdbb92;font-weight:400;margin-left:6px}
   #fbFace [data-f]{position:fixed;width:var(--s,52px);height:var(--s,52px);margin:calc(var(--s,52px)/-2) 0 0 calc(var(--s,52px)/-2);padding:0;border:0;background:none;color:#f3e9c9;font:22px AgThai,system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:none;outline:none;transition:transform .12s,background .12s}#fbFace [data-f]:focus-visible{outline:2px solid #ffd978;outline-offset:2px;border-radius:50%}
-  #fbFace [data-f] span{display:inline-block}#fbFace [data-f] img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 3px 6px #000a) brightness(.86) saturate(.85);transition:filter .12s}#fbFace [data-f].on img{filter:drop-shadow(0 0 10px #ffd978) brightness(1.12)}#fbFace [data-f].on{transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
+  #fbFace [data-f] svg{display:block;overflow:visible;filter:drop-shadow(0 3px 5px #000a) brightness(.9);transition:filter .12s}#fbFace [data-f].on svg{filter:drop-shadow(0 0 9px #ffb080) brightness(1.2)}#fbFace [data-f] span{display:inline-block}#fbFace [data-f] img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 3px 6px #000a) brightness(.86) saturate(.85);transition:filter .12s}#fbFace [data-f].on img{filter:drop-shadow(0 0 10px #ffd978) brightness(1.12)}#fbFace [data-f].on{transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
   #fbFace .nj{display:block;width:100%;height:100%;animation:fbNudge .7s ease-in-out infinite alternate}@keyframes fbNudge{from{transform:translate(calc(var(--dx)*-.5),calc(var(--dy)*-.5))}to{transform:translate(calc(var(--dx)*.5),calc(var(--dy)*.5))}}@media (prefers-reduced-motion:reduce){#fbFace .nj{animation:none}}   /* v98.279 · the facing arrows slide in and out along their own axis (centre → tip, away from / towards the fighter) by 20 % of their length (58 px → 11.6 px) */
   #fbFace .bar{position:fixed;left:50%;bottom:222px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}#fbFace .bar .hb{display:flex;flex-direction:column;align-items:center;gap:3px}#fbFace .bar .hudb{--s:58px}#fbFace .bar .hb span{color:#f3e9c9;font:600 12px AgThai,system-ui,"Noto Sans Thai",sans-serif;text-shadow:0 1px 3px #000}#fbFace .bar small{opacity:.7;font-weight:400}
   #fbPause{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px)}#fbPause .box{display:flex;flex-direction:column;gap:8px;min-width:280px;max-width:92vw;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f3e9c9;font:14px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 16px 40px #000a}
@@ -1122,10 +1122,10 @@
     }
     for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; if (u.face && u.hp > 0) u.dir = u.face }   /* v97.14: a unit that turned at the end (clever monsters) shows it */
   }
-  async function endHeroTurn() {
+  async function endHeroTurn(forced) {
     if (busy || st.turn !== 'hero' || st.outcome || facing) return;
     pend = null; markAuto(); hidePreview();
-    if (auto) faceNearest(FB.hero(st)); else if (!(await pickFacing())) return;
+    if (auto) faceNearest(FB.hero(st)); else if (!(await pickFacing(null, forced === true))) return;
     walks = []; setDiscard(false); busy = true; refresh();
     if (st.ct) { const r = FB.endTurnCT(st); await playSteps(r.steps); actUnit = null; busy = false; if (st.outcome) { refresh(); finish(); return } await afterAI(); return }
     const allySteps = FB.alliesTurn(st);
@@ -1351,22 +1351,35 @@
   /* ---------- v97.08 · FFT end of turn: pick where the hero faces (hits from behind ×1.2, from the side ×1.1) ---------- */
   const FACES = [['SE', 1, 0], ['SW', 0, 1], ['NW', -1, 0], ['NE', 0, -1]];
   function faceNearest(u) { let best = null, bd = 1e9; for (const o of FB.opponents(st, u)) { const d = FB.dist(u, o); if (d < bd) { bd = d; best = o } } if (best) { u.face = u.dir = FB.faceOf(u, best) } }
-  function pickFacing(unit) {
+  /* v98.628 · the facing marker is a glossy red 3D triangular block (like a wedge toy block) that points to the direction: a top face, a darker extruded side and a white edge highlight, all drawn by code */
+  function prismSvg(ang) {
+    const R = (x, y) => [x * Math.cos(ang) - y * Math.sin(ang), x * Math.sin(ang) * .8 + y * Math.cos(ang) * .8], D = 11, cx = 50, cy = 46;
+    const tri = [R(34, 0), R(-20, 23), R(-20, -23)].map(([x, y]) => [cx + x, cy + y]), P = (a, dy = 0) => a.map(([x, y]) => (x).toFixed(1) + ',' + (y + dy).toFixed(1)).join(' ');
+    const sides = [[0, 1], [1, 2], [2, 0]].map(([i, j]) => ({ i, j, m: tri[i][1] + tri[j][1] })).sort((a, b) => a.m - b.m);
+    const id = 'pg' + Math.round(ang * 100 + 400);
+    return `<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><defs><linearGradient id="${id}t" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6a55"/><stop offset=".55" stop-color="#e11d1d"/><stop offset="1" stop-color="#b30f12"/></linearGradient><linearGradient id="${id}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a50e10"/><stop offset="1" stop-color="#5e0508"/></linearGradient></defs>` +
+      `<ellipse cx="${cx}" cy="${cy + D + 6}" rx="38" ry="12" fill="#000" opacity=".28"/>` +
+      `<polygon points="${P(tri, D)}" fill="#5e0508"/>` +
+      sides.map(q => `<polygon points="${tri[q.i][0].toFixed(1)},${tri[q.i][1].toFixed(1)} ${tri[q.j][0].toFixed(1)},${tri[q.j][1].toFixed(1)} ${tri[q.j][0].toFixed(1)},${(tri[q.j][1] + D).toFixed(1)} ${tri[q.i][0].toFixed(1)},${(tri[q.i][1] + D).toFixed(1)}" fill="url(#${id}s)" stroke="#4a0406" stroke-width=".6" stroke-linejoin="round"/>`).join('') +
+      `<polygon points="${P(tri)}" fill="url(#${id}t)" stroke="#ff9d8c" stroke-width="1.1" stroke-linejoin="round"/>` +
+      `<polyline points="${P([tri[1], tri[0], tri[2]])}" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,-.6)"/></svg>`;
+  }
+  function pickFacing(unit, forced) {
     return new Promise(res => {
       const h = unit || FB.hero(st), f0 = h.face, d0 = h.dir, c = screenOf(h), box = document.createElement('div'); box.id = 'fbFace';
       const btns = FACES.map(([f, du, dv]) => { const p = screenOf({ vu: h.vu + du * .95, vv: h.vv + dv * .95 }); return { f, x: p.x, y: p.y, ang: Math.atan2(p.y - c.y, p.x - c.x) } });
-      box.innerHTML = `<div class="tip">หันหน้าไปทางไหน? <small>ศัตรูตีจากด้านหลัง ×1.2 · ด้านข้าง ×1.1</small></div>` +
-        btns.map(b => `<button data-f="${b.f}" style="left:${b.x}px;top:${b.y}px;--s:${b.f[0] === 'N' ? 40 : 52}px" title="หันไปทางนี้แล้วจบเทิร์น"><i class="nj" style="--dx:${(Math.cos(b.ang) * (b.f[0] === 'N' ? 6.5 : 8.5)).toFixed(1)}px;--dy:${(Math.sin(b.ang) * (b.f[0] === 'N' ? 6.5 : 8.5)).toFixed(1)}px"><img src="assets/ui/arrows/face-${b.f.toLowerCase()}.webp" alt="" draggable="false"></i></button>`).join('') +
-        `<div class="bar"><div class="hb"><button class="ok hudb hudb-check" title="จบเทิร์น (Enter)" aria-label="จบเทิร์น"></button><span>จบเทิร์น <small>Enter</small></span></div><div class="hb"><button class="no hudb hudb-x" title="ยกเลิก (Esc)" aria-label="ยกเลิก"></button><span>ยกเลิก <small>Esc</small></span></div></div>`;
+      box.innerHTML = `<div class="tip">${forced ? 'หมดคริสตัลแล้ว — เลือกทิศที่จะหัน' : 'หันหน้าไปทางไหน?'} <small>ศัตรูตีจากด้านหลัง ×1.2 · ด้านข้าง ×1.1</small></div>` +
+        btns.map(b => `<button data-f="${b.f}" style="left:${b.x}px;top:${b.y}px;--s:${b.f[0] === 'N' ? 54 : 66}px" title="หันไปทางนี้แล้วจบเทิร์น"><i class="nj" style="--dx:${(Math.cos(b.ang) * (b.f[0] === 'N' ? 6.5 : 8.5)).toFixed(1)}px;--dy:${(Math.sin(b.ang) * (b.f[0] === 'N' ? 6.5 : 8.5)).toFixed(1)}px">${prismSvg(b.ang)}</i></button>`).join('') +
+        `<div class="bar"><div class="hb"><button class="ok hudb hudb-check" title="จบเทิร์น (Enter)" aria-label="จบเทิร์น"></button><span>จบเทิร์น <small>Enter</small></span></div>${forced ? '' : '<div class="hb"><button class="no hudb hudb-x" title="ยกเลิก (Esc)" aria-label="ยกเลิก"></button><span>ยกเลิก <small>Esc</small></span></div>'}</div>`;
       document.body.append(box); facing = box;
       const set = f => { h.face = f; h.dir = f; box.querySelectorAll('[data-f]').forEach(b => b.classList.toggle('on', b.dataset.f === f)) };
       const done = ok => { removeEventListener('keydown', key, true); box.remove(); facing = null; if (!ok) { h.face = f0; h.dir = d0 } else sfx('cast', .3); res(ok) };
       const key = e => { const A = { ArrowRight: 0, ArrowDown: Math.PI / 2, ArrowLeft: Math.PI, ArrowUp: -Math.PI / 2 }[e.key];
         if (A != null) { e.preventDefault(); e.stopPropagation(); let best = null, bd = 9; for (const b of btns) { const d = Math.abs(Math.atan2(Math.sin(b.ang - A), Math.cos(b.ang - A))); if (d < bd) { bd = d; best = b } } set(best.f); return }
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); done(true) } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false) } };
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); done(true) } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); if (!forced) done(false) } };
       addEventListener('keydown', key, true);
       box.querySelectorAll('[data-f]').forEach(b => { b.onmouseenter = () => set(b.dataset.f); b.onclick = () => { set(b.dataset.f); done(true) } });
-      box.querySelector('.ok').onclick = () => done(true); box.querySelector('.no').onclick = () => done(false);
+      box.querySelector('.ok').onclick = () => done(true); const no = box.querySelector('.no'); if (no) no.onclick = () => done(false);
       set(h.face || h.dir);
     });
   }
@@ -1917,6 +1930,8 @@
      LB / RB = next / previous enemy (like Tab). Mouse use hides the cursor again. */
   let padCur = null, padOn = false, padAt = 0;
   const padHeroCell = () => { const h = FB.hero(st); return { u: Math.floor(h.u), v: Math.floor(h.v) } };
+  /* v98.628 · out of crystals = the turn is over: the facing picker opens by itself (no cancel) and picking a direction ends the turn */
+  setInterval(() => { if (!ON || !st || EDIT || busy || facing || pauseEl || discardMode || st.outcome || st.turn !== 'hero' || FB.crystals(st) > 0) return; if (document.hidden) return; endHeroTurn(true) }, 350);
   const padReady = () => st && !busy && !st.outcome && st.turn === 'hero' && !discardMode && !facing && !pauseEl;
   function padStep(v) {
     if (!padReady()) return; const now = performance.now(); if (now < padAt) return; padAt = now + 150;
