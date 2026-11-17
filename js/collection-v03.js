@@ -12,7 +12,7 @@ dialog#collectionFocus.grim::before{content:'';position:absolute;inset:0;backgro
 #collectionFocus.grim>*{z-index:1}
 dialog#collectionFocus.grim::backdrop{background:radial-gradient(70% 60% at 50% 48%,rgba(255,170,80,.22),rgba(255,140,50,.06) 40%,transparent 70%),radial-gradient(75% 70% at 50% 50%,rgba(14,7,3,.35),rgba(6,3,1,.8) 100%);-webkit-backdrop-filter:blur(6px) saturate(.85);backdrop-filter:blur(6px) saturate(.85)}
 @keyframes gmOpen{from{transform:translateY(22px) scale(.94);opacity:0}to{transform:none;opacity:1}}
-#collectionFocus.grim .gm-card{position:absolute;left:27.9%;top:46.8%;height:61%;aspect-ratio:2/3;transform:translate(-50%,-50%) rotate(-1deg);filter:drop-shadow(0 9px 10px rgba(40,20,5,.55))}
+#collectionFocus.grim .gm-card{position:absolute;left:27.7%;top:47.7%;height:64.5%;aspect-ratio:2/3;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 7px rgba(40,20,5,.5))}   /* v98.661 · level (no tilt) and as tall as the book's frame inside its stitched border */
 #collectionFocus.grim .collection-full-card{position:relative;width:100%;height:100%;max-width:none;margin:0;aspect-ratio:auto}
 #collectionFocus.grim .gm-text{position:absolute;left:55.5%;top:11%;width:34%;height:76%;overflow:hidden auto;scrollbar-width:thin}
 #collectionFocus.grim .gm-eyebrow{position:absolute;left:0;top:0;margin:0;font-size:clamp(9px,1.05vw,12px);letter-spacing:.05em;color:#8f1d1d;opacity:.85}
