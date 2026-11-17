@@ -16,19 +16,20 @@ button{font:inherit;color:inherit;background:#252b36;border:1px solid var(--line
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.pair.one{grid-template-columns:1fr}
 .pair figure{margin:0}.pair figcaption{font-size:11px;color:var(--muted);text-align:center;margin-top:2px}
 figure[data-v]{cursor:pointer;border:2px solid transparent;border-radius:10px;padding:3px;position:relative}figure[data-v]:hover{border-color:#6a5a3a}figure.chosen{border-color:#d9a441;background:#d9a44118}.use{display:none;text-align:center;font-size:11px;font-weight:700;color:#d9a441;margin-top:2px}figure.chosen .use{display:block}.pair.many{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}canvas{display:block;width:100%;border-radius:8px;background:#20281f}
+#dlg{position:fixed;inset:0;z-index:20;background:#000a;display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto}#dlg[hidden]{display:none}#dlg .box{background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:12px 14px;width:min(980px,100%)}#dlg .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}#dlg h3{margin:0;font-size:16px;color:var(--gold)}.card.shown figcaption b{color:var(--gold)}.card.shown figcaption u{text-decoration:none;color:#d9a441}
 p.note{margin:6px 16px;color:var(--muted);max-width:900px}
 </style></head><body>
 <header><h1>✨ VFX Preview</h1>
  <span class="sw">ในเกมใช้: <b id="sumUse"></b></span><button id="allNew">ใหม่ทั้งหมด</button><button id="allOld">เดิมทั้งหมด</button><button id="pushBtn" class="primary" title="ใส่ค่าที่เลือกลง Cart เพื่อ Push — ทุกเครื่องที่เปิดเกมจะใช้ตามนี้">⬆ ใส่ Cart (Push)</button><small id="pushMsg"></small>
  <label>ความเร็ว <select id="speed"><option value="1">ปกติ</option><option value=".5">ช้า ½</option><option value=".25">ช้า ¼</option></select></label>
- <label><input type="checkbox" id="showOld" checked> แสดงของเดิมเทียบ</label>
 </header>
-<p class="note">ซ้าย = ของเดิม (ภาพวาดแปะ) · ขวา = ของใหม่ (วาดด้วยโค้ด เคลื่อนไหวทุกเฟรม) · ตัวสีเทา = ผู้โจมตี · ตัวสีน้ำตาล = เป้าหมาย<br>แต่ละท่าแสดงทุกแบบเป็นรายการ — <b>คลิกที่แบบที่ต้องการ</b> เพื่อเลือกว่าในเกมจะใช้แบบไหน (กรอบทอง = ใช้อยู่ · เพิ่มแบบใหม่ภายหลังได้ ระบบจะแสดงต่อท้ายรายการเอง) — ค่าที่เลือกมีผลในเบราว์เซอร์นี้ทันที (เปิดสนามรบใหม่) · กด <b>⬆ ใส่ Cart (Push)</b> เพื่อให้มีผลกับเกมจริงทุกเครื่อง</p>
+<p class="note">แต่ละท่าแสดงเฉพาะ <b>เอฟเฟกต์ที่เกมใช้อยู่</b> (ตัวสีเทา = ผู้โจมตี · ตัวสีน้ำตาล = เป้าหมาย) — <b>คลิกที่ท่า</b> เพื่อเปิดรายการเอฟเฟกต์ทั้งหมดของท่านั้นแล้วเลือกใหม่ (แบบที่เพิ่มภายหลังจะขึ้นต่อท้ายรายการเอง) — ค่าที่เลือกมีผลในเบราว์เซอร์นี้ทันที (เปิดสนามรบใหม่) · กด <b>⬆ ใส่ Cart (Push)</b> เพื่อให้มีผลกับเกมจริงทุกเครื่อง</p>
 <h2>อาวุธ</h2><div class="grid" id="gWeapon"></div>
 <h2>ธาตุและเวท</h2><div class="grid" id="gMagic"></div>
 <h2>แรงกระแทกตอนโดนตี / ล้ม</h2><div class="grid" id="gHit"></div>
 <h2>สถานะบนตัว (ใช้ในเกมอยู่แล้ว)</h2><div class="grid" id="gStatus"></div>
-<script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/battle-vfx.js?v=v98.594"></script><script src="js/vfx-kit.js?v=v98.594"></script><script src="js/status-fx.js?v=v98.405"></script>
+<div id="dlg" hidden><div class="box"><div class="top"><h3 id="dlgTitle"></h3><button id="dlgClose">ปิด ✕</button></div><div id="dlgGrid"></div></div></div>
+<script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.446"></script><script src="js/battle-vfx.js?v=v98.594"></script><script src="js/vfx-kit.js?v=v98.622"></script><script src="js/status-fx.js?v=v98.405"></script>
 <script>
 const W = 300, H = 200, CW = 78, A = { x: 62, y: 158 }, P = { x: 222, y: 158 };
 const NAMES = { sword: 'ดาบ ฟัน', knife: 'มีด ฟันไขว้', blunt: 'ค้อน/กระบอง ทุบ', spear: 'หอก แทง', rapier: 'เรเปียร์ แทงเร็ว', arrow: 'ธนู', shield: 'โล่ ป้องกัน', parry: 'ปัดป้อง',
@@ -46,10 +47,22 @@ const fxCard = (host, kind, extra = {}, title) => { const dur = extra.dur || DUR
   const oldFn = run((ev, t, g) => { const ok = BattleVFX.drawOld(ev.kind === 'impact' ? { ...ev, kind: 'impactCore' } : ev, t, P, A, g, { w: CW, h: CW / 2 }); if (!ok) { g.fillStyle = '#9a937f'; g.font = '12px sans-serif'; g.fillText('(ภาพเดิมยังโหลดไม่เสร็จ/ไม่มี)', 60, 24) } });
   const list = extra.old === false ? [['new', 'ใหม่']] : VfxKit.variants(kind);   /* [id, label] — 'old', 'new' and any look added later (VfxKit.addVariant) */
   const d = list.map(([id, label]) => [label, id === 'old' ? oldFn : run((ev, t, g) => VfxKit.draw(ev, t, P, A, g, { w: CW, h: CW / 2 }, id)), id]);
-  const c = mk(host, title || NAMES[kind] || kind, kind + (extra.tier ? ' · ' + extra.tier : ''), d); c.dataset.old = extra.old === false ? '0' : '1';
-  c.querySelector('.pair').classList.toggle('many', d.length > 2);
-  if (extra.pick !== false) { c.dataset.kind = kind; c.classList.add('pickable'); c.querySelectorAll('figure').forEach((f, n) => { f.dataset.v = d[n][2]; f.dataset.kind = kind; f.title = 'คลิกเพื่อเลือกแบบนี้ให้เกมใช้'; f.insertAdjacentHTML('beforeend', '<div class="use">✓ ในเกมใช้</div>') });
-    c.onclick = ev => { const f = ev.target.closest('figure'); if (!f || !f.dataset.v) return; VfxKit.setChoice(kind, f.dataset.v); syncPicks() } } };
+  const ttl = title || NAMES[kind] || kind, sub = kind + (extra.tier ? ' · ' + extra.tier : '');
+  if (extra.old === false) { const c = mk(host, ttl, sub, d); c.dataset.old = '0'; return }
+  /* the card shows ONLY the look the game uses now; click it to open the full list and change */
+  const byId = Object.fromEntries(d.map(x => [x[2], x])), cur = () => byId[VfxKit.choiceOf(kind)] || byId.old;
+  const c = mk(host, ttl, sub, [['', (g, now) => cur()[1](g, now)]]); c.dataset.old = '1'; c.dataset.kind = kind; c.classList.add('shown');
+  const fig = c.querySelector('figure'), cap = fig.querySelector('figcaption'); c.refresh = () => { cap.innerHTML = 'ใช้อยู่: <b>' + cur()[0] + '</b>' + (extra.pick !== false && d.length > 1 ? ' · <u>กดเพื่อเปลี่ยน (' + d.length + ' แบบ)</u>' : '') };
+  if (extra.pick !== false) { c.classList.add('pickable'); fig.style.cursor = 'pointer'; fig.title = 'คลิกเพื่อเลือกเอฟเฟกต์อื่นของท่านี้'; fig.classList.add('chosen'); fig.insertAdjacentHTML('beforeend', '<div class="use">✓ ในเกมใช้</div>'); fig.onclick = () => openPicker(kind, ttl, d) }
+  c.refresh() };
+/* picker: every look of one effect, animated; click one to use it in the game */
+function openPicker(kind, ttl, d) { const dlg = document.getElementById('dlg'), box = document.getElementById('dlgGrid'); box.innerHTML = ''; document.getElementById('dlgTitle').textContent = ttl + ' — เลือกเอฟเฟกต์';
+  const el = document.createElement('div'); el.className = 'pair many'; el.innerHTML = d.map(x => `<figure data-v="${x[2]}"><canvas width="${W * 2}" height="${H * 2}"></canvas><figcaption>${x[0]}</figcaption><div class="use">✓ ในเกมใช้</div></figure>`).join(''); box.append(el);
+  const entry = { el: dlg, cvs: [...el.querySelectorAll('canvas')], draws: d.map(x => [x[0], x[1]]), picker: true }; cards.push(entry);
+  const mark = () => el.querySelectorAll('figure').forEach(f => f.classList.toggle('chosen', VfxKit.choiceOf(kind) === f.dataset.v)); mark();
+  const close = () => { dlg.hidden = true; const i = cards.indexOf(entry); if (i >= 0) cards.splice(i, 1) };
+  el.onclick = ev => { const f = ev.target.closest('figure'); if (!f) return; VfxKit.setChoice(kind, f.dataset.v); mark(); syncPicks(); setTimeout(close, 220) };
+  document.getElementById('dlgClose').onclick = close; dlg.onclick = ev => { if (ev.target === dlg) close() }; dlg.hidden = false }
 for (const k of ['sword', 'knife', 'blunt', 'spear', 'rapier', 'arrow', 'shield', 'parry']) fxCard(gWeapon, k);
 for (const k of ['fire', 'ice', 'lightning', 'wind', 'water', 'earth', 'holy', 'dark', 'arcane']) fxCard(gMagic, k);
 fxCard(gMagic, 'heal', { color: '#7fe0a0' });
@@ -65,7 +78,7 @@ function frame(now) { clock += (now - last) * speed; last = now;
   requestAnimationFrame(frame) }
 requestAnimationFrame(frame);
 const GAME_KINDS = () => [...new Set([...document.querySelectorAll('.pickable')].map(r => r.dataset.kind))];
-function syncPicks() { const ks = GAME_KINDS(), cnt = { old: 0, new: 0, other: 0 }; document.querySelectorAll('.pickable figure[data-v]').forEach(f => f.classList.toggle('chosen', VfxKit.choiceOf(f.dataset.kind) === f.dataset.v)); for (const k of ks) { const v = VfxKit.choiceOf(k); cnt[v === 'old' ? 'old' : v === 'new' ? 'new' : 'other']++ } document.getElementById('sumUse').textContent = `ใหม่ ${cnt.new} · เดิม ${cnt.old}` + (cnt.other ? ` · แบบอื่น ${cnt.other}` : '') }
+function syncPicks() { const ks = GAME_KINDS(), cnt = { old: 0, new: 0, other: 0 }; cards.forEach(c => c.refresh && c.refresh()); for (const k of ks) { const v = VfxKit.choiceOf(k); cnt[v === 'old' ? 'old' : v === 'new' ? 'new' : 'other']++ } document.getElementById('sumUse').textContent = `ใหม่ ${cnt.new} · เดิม ${cnt.old}` + (cnt.other ? ` · แบบอื่น ${cnt.other}` : '') }
 document.getElementById('allNew').onclick = () => { for (const k of GAME_KINDS()) VfxKit.setChoice(k, 'new'); syncPicks() };
 document.getElementById('allOld').onclick = () => { for (const k of GAME_KINDS()) VfxKit.setChoice(k, 'old'); syncPicks() };
 document.getElementById('pushBtn').onclick = async () => { const m = document.getElementById('pushMsg'), G = window.GitHubPush; if (!G) { m.textContent = 'ไม่พบระบบ Push'; return } if (!G.config().token) return G.openSettings();
@@ -73,5 +86,4 @@ document.getElementById('pushBtn').onclick = async () => { const m = document.ge
   try { const t = await G.pushSettings([VfxKit.KEY], 'VFX สนามรบ: เลือกเดิม/ใหม่ต่อเอฟเฟกต์'); m.textContent = String(t || 'ใส่แล้ว') } catch (err) { m.textContent = 'ไม่สำเร็จ: ' + err.message } };
 syncPicks();
 document.getElementById('speed').onchange = e => { speed = +e.target.value };
-document.getElementById('showOld').onchange = e => { for (const c of cards) if (c.el.dataset.old === '1') { const f = c.el.querySelector('figure'); f.style.display = e.target.checked ? '' : 'none'; c.el.querySelector('.pair').classList.toggle('one', !e.target.checked) } };
 </script></body></html>
