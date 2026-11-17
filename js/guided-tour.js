@@ -69,7 +69,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
       const pos = { up: [cx - A / 2, y0 - A - gap, 180], down: [cx - A / 2, y1 + gap, 0], left: [x0 - A - gap, cy - A / 2, 90], right: [x1 + gap, cy - A / 2, 270] }[dir];
       // the picture points UP at rotation 0 → "arrow above the target" has to point DOWN (180°)
       arrow.style.left = Math.max(4, Math.min(W - A - 4, pos[0])) + 'px'; arrow.style.top = Math.max(4, Math.min(H - A - 4, pos[1])) + 'px';
-      const svg = arrow.querySelector('svg'); svg.style.transform = `rotate(${pos[2]}deg)`; const mv = { up: ['0', '10px'], down: ['0', '-10px'], left: ['10px', '0'], right: ['-10px', '0'] }[dir]; svg.style.setProperty('--bx', mv[0]); svg.style.setProperty('--by', mv[1]); arrow.hidden = false;
+      const svg = arrow.querySelector('svg'); arrow.style.transform = `rotate(${pos[2]}deg)`;   /* the rotation lives on the outer box: the bobbing animation owns the svg's own transform */ const mv = { up: ['0', '10px'], down: ['0', '-10px'], left: ['10px', '0'], right: ['-10px', '0'] }[dir]; svg.style.setProperty('--bx', mv[0]); svg.style.setProperty('--by', mv[1]); arrow.hidden = false;
     };
     document.body.classList.add('gt-on'); try { document.activeElement?.blur?.(); window.focus() } catch (e) { }
     let raf = 0; const loop = () => { place(); raf = requestAnimationFrame(loop) }; loop();
