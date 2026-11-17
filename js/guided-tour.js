@@ -53,6 +53,9 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     let skipped = false, targetEl = null, stepDone = null, typeTimer = 0, typed = '', shown = '', lastTarget = null, warpAt = 0, curNext = false;
     const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); skipped = true; stepDone?.() } else if ((e.key === 'Enter' || e.key === ' ') && (!targetEl || curNext)) { e.preventDefault(); e.stopPropagation(); advance() } };
     addEventListener('keydown', onKey, true);
+    /* v98.667 · a "read this" step (wait:'next') only POINTS at its target: a click on it must advance the talk, never open what is underneath (a card's detail window would trap the lesson) */
+    const onClick = e => { if (!curNext || !targetEl || !targetEl.contains?.(e.target)) return; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); advance() };
+    addEventListener('click', onClick, true);
     el.append($('.skip'));   /* the box is transformed (fixed children would be placed against it): the skip button lives on the overlay root so it sits in the screen's bottom-right corner */
     $('.skip').onclick = e => { e.stopPropagation(); skipped = true; stepDone?.() };
     const finishType = () => { clearInterval(typeTimer); typeTimer = 0; say.textContent = typed; shown = typed };
@@ -103,7 +106,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
         });
         targetEl = null; stepDone = null;
       }
-    } finally { document.body.classList.remove('gt-on'); cancelAnimationFrame(raf); clearInterval(typeTimer); removeEventListener('keydown', onKey, true); el.remove() }
+    } finally { document.body.classList.remove('gt-on'); cancelAnimationFrame(raf); clearInterval(typeTimer); removeEventListener('keydown', onKey, true); removeEventListener('click', onClick, true); el.remove() }
     return !skipped;
   }
   root.GuidedTour = { run };
