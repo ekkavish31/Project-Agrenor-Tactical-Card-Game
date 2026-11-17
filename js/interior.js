@@ -841,7 +841,8 @@
     if (after !== before) toast(`${p.name} · ความสัมพันธ์: ${after[1]} ${after[2]}`); else if (liked) toast('💝 ' + p.name + ' ชอบของขวัญนี้มาก');
   }
   function talk(a, line) {
-    close(); modalOpen = true; talkingTo = a; S = L.save(); if (!line) try{if(parent!==window)parent.Story?.talked?.(a.p.id)}catch(e){};
+    close(); if (!line) { let quest = false; try { if (parent !== window) quest = !!parent.Story?.talked?.(a.p.id) } catch (e) { } if (quest) return }   /* v98.664 · a quest step: the story scene plays, no talk window */
+    modalOpen = true; talkingTo = a; S = L.save();
     const p = a.p, per = CLK.period(CLK.read().hour), lines = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…'];
     let said = null; if (!line && MIND && L.P[p.id]) { said = MIND.talk(p.id, { period: per, place: KIND, save: S }); L.writeSave(S); if (said.reward) setTimeout(() => toast('รางวัล: ' + [said.reward.gold ? '+' + said.reward.gold + ' 💰' : '', said.reward.potions ? 'ยา +' + said.reward.potions : ''].filter(Boolean).join(' · ')), 200) }
     const txt = line || (said ? fill(said.text) : fill(lines[Math.floor(Math.random() * lines.length)]));

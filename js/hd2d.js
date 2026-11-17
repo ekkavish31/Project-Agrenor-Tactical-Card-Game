@@ -13,14 +13,14 @@ const css=document.createElement('style');css.textContent=`
 .hd2d{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .hd2d .tilt{position:absolute;left:0;right:0}
 /* v98.339 · the live blur (backdrop-filter) re-blurs the whole canvas strip every frame: the speed check measured 41 → 58 fps with it hidden. Default is now a soft dark haze (no filter); the real blur is opt-in (option 'tiltBlur') */
-.hd2d .tilt.top:not(.blur){background:linear-gradient(rgba(12,22,16,.34),rgba(12,22,16,0))}.hd2d .tilt.bottom:not(.blur){background:linear-gradient(rgba(12,22,16,0),rgba(12,22,16,.34))}
+.hd2d .tilt.top:not(.blur){background:linear-gradient(rgba(12,22,16,.16),rgba(12,22,16,0))}.hd2d .tilt.bottom:not(.blur){background:linear-gradient(rgba(12,22,16,0),rgba(12,22,16,.16))}   /* v98.663 · lighter and CONSTANT: the haze used to fade out while walking and back in after — it pulsed like jelly */
 .hd2d .tilt.blur{-webkit-backdrop-filter:blur(var(--b,3px));backdrop-filter:blur(var(--b,3px))}
 .hd2d .tilt.top{top:0;height:18%;-webkit-mask-image:linear-gradient(#000 0%,rgba(0,0,0,.6) 45%,transparent 100%);mask-image:linear-gradient(#000 0%,rgba(0,0,0,.6) 45%,transparent 100%)}
 .hd2d .tilt.bottom{bottom:0;height:15%;-webkit-mask-image:linear-gradient(transparent 0%,rgba(0,0,0,.6) 55%,#000 100%);mask-image:linear-gradient(transparent 0%,rgba(0,0,0,.6) 55%,#000 100%)}
 /* v98.330 · while the hero is walking the village the blurred top / bottom bands (a backdrop-filter that re-blurs the moving picture every frame) and the dust motes rest, and the bloom is skipped
    (measured while walking: ≈ 26 of ≈ 55 ms per frame). They fade back in a moment after the hero stops. */
-.hd2d .tilt{transition:opacity .3s ease}
-.hd2d-moving .hd2d .tilt{opacity:0;transition:opacity .18s ease}
+.hd2d .tilt.blur{transition:opacity .3s ease}
+.hd2d-moving .hd2d .tilt.blur{opacity:0;transition:opacity .18s ease}   /* only the (opt-in) live blur still rests while walking */
 .hd2d-moving .hd2d i{visibility:hidden}
 .hd2d .rays{position:absolute;inset:-4% -3%;opacity:.5;background-size:100% 100%;background-repeat:no-repeat;will-change:transform,opacity;animation:hd2dRays 14s ease-in-out infinite alternate}
 @keyframes hd2dRays{from{transform:translateX(-30px);opacity:.38}to{transform:translateX(30px);opacity:.58}}

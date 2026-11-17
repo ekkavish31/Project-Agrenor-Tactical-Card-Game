@@ -99,7 +99,7 @@
   }
   function talkTo(a) {
     {
-      try{if(parent!==window)parent.Story?.talked?.(a.p.id)}catch(e){};
+      let quest = false; try { if (parent !== window) quest = !!parent.Story?.talked?.(a.p.id) } catch (e) { } if (quest) return;   /* v98.664 · quest step: the scene plays, no speech bubble */
       const Lf = L(), C = CLK(), S = Lf.save(), per = C.period(C.read().hour);
       let text = ''; try { const r = root.Mind?.talk(a.p.id, { period: per, place: PLACE, save: S }); Lf.writeSave(S); text = r?.text || '' } catch (e) { }
       if (!text) { const ls = a.p.lines?.[per] || a.p.lines?.day || ['…']; text = ls[Math.floor(Math.random() * ls.length)] }
