@@ -51,7 +51,7 @@
   /* v98.102 · an ally's saved walk set (manifest.studioAllyWalks) replaces the one-frame placeholder clip of that direction */
   for(const[key,views]of Object.entries(manifest.studioAllyWalks||{}))for(const[view,cfg]of Object.entries(views||{})){
    if(!cfg?.frames?.length)continue;
-   const byAsset=new Map((manifest.assets||[]).map(a=>[a.id,a])),fr=cfg.frames.map(f=>{const a=byAsset.get(f.assetId);return {assetId:f.assetId,file:a?.file||f.src,cell:0,crop:null,ms:f.ms||80,flip:false,pivot:cfg.anchor||[.5,.9375],renderHeight:a?.renderHeight||1,revision:a?.artRevision||'',size:cfg.canvas||[384,384]}});
+   const byAsset=new Map((manifest.assets||[]).map(a=>[a.id,a])),fr=cfg.frames.map(f=>{const a=byAsset.get(f.assetId);return {assetId:f.assetId,file:a?.file||f.src,cell:0,crop:null,ms:f.ms||100,flip:false,pivot:cfg.anchor||[.5,.9375],renderHeight:a?.renderHeight||1,revision:a?.artRevision||'',size:cfg.canvas||[384,384]}});
    raw.push({id:'allywalk:'+key+':'+view,canonical:'allywalk:'+key+':'+view,action:'walk',view,loop:cfg.loop!==false,kind:'files',frames:fr});   /* the catalog then skips the one-frame placeholder of that direction */
   }
   /* v98.376 · a villager's walk = the frames npc-<id>-<dir>-walk1…N of that direction (one looping clip) */

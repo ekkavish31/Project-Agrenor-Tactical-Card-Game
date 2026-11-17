@@ -43,6 +43,6 @@
     return [{ x: p.x, y: p.y, uv: pos.u + pos.v, mobile: true, follower: true, z: o.layer ? (o.layer(pos.u, pos.v) || 0) : 0, draw: () => { const ph = moving > 0 ? cycleOf(m, dir) / 2 : 0; if (o.drawFn) return o.drawFn(p, dir, moving > 0, m, ph); o.ellipse(p.x, p.y, 16.9 * o.scale, 7.8 * o.scale, '#182b2877'); root.TownArt.hero(o.g, p, dir, t + ph, moving > 0, o.size, dir, m) } }];
   }
   /* v98.352 · the follower's walk cycle runs HALF a cycle behind the leader's: both stepping with the same foot at the same instant looked mechanical */
-  function cycleOf(m, d) { try { const w = (m.directions[d] || m.directions.SE).walk || []; const sum = w.reduce((a, f) => a + (f.ms || 75), 0); return sum > 0 ? sum : 900 } catch (e) { return 900 } }
+  function cycleOf(m, d) { try { const w = (m.directions[d] || m.directions.SE).walk || []; const sum = w.reduce((a, f) => a + (f.ms || 100), 0); return sum > 0 ? sum : 900 } catch (e) { return 900 } }
   root.HeroFollower = { objects, reset() { trail = []; pos = null } };
 })(globalThis);
