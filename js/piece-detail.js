@@ -178,7 +178,8 @@ ${caps().block === false ? '' : `<button id="pdSzReset" title="ระบาย�
   function fitCanvas() { const sideW = innerWidth < 900 ? 0 : 360; CW = Math.max(480, innerWidth - sideW - 56); CH = Math.max(360, innerHeight - (innerWidth < 900 ? 330 : 190)); CX = Math.round(CW / 2); CY = Math.round(CH * .66) }
   function setZoom(z) { Z = Math.max(.5, Math.min(6, z)); S = 28 * Z; T = 14 * Z; paint(); const l = el('pdZoomV'); if (l) l.textContent = Math.round(Z / Z0 * 100) + '%' }
   function build() {
-    const E = D().item(key), ov = D().ov(key); dlg.innerHTML = html(E, ov); cv = el('pdCv');
+    const E = D().item(key), ov = D().ov(key), keepY = dlg.querySelector('.pdside')?.scrollTop || 0, keepV = dlg.querySelector('.pdview')?.scrollTop || 0; dlg.innerHTML = html(E, ov); cv = el('pdCv');   /* v98.715 · re-drawing the panel keeps its scroll position (it used to jump back to the top after every click) */
+    { const sd = dlg.querySelector('.pdside'), vw = dlg.querySelector('.pdview'); if (sd) sd.scrollTop = keepY; if (vw) vw.scrollTop = keepV }
     if (caps().shape === false) { /* v98.522 · a whole place: only the order frame is edited here (size / flip / base-fit belong to the place panel) */
       for (const id of ['pdS', 'pdF', 'pdT']) { const e = el(id); const c = e && e.closest('label'); if (c) c.style.display = 'none' }
       for (const id of ['pdArtReset', 'pdSzReset']) { const e = el(id); if (e) e.style.display = 'none' }
