@@ -364,7 +364,7 @@
   #fbQueue .qc::after{content:"";position:absolute;inset:0;z-index:1;background:url(assets/ui/frames/portrait-gold.webp) center/100% 100% no-repeat;pointer-events:none}
   #fbQueue .qc.foe::after{background-image:url(assets/ui/frames/portrait-grey.webp)}#fbQueue .qc.look::after{background-image:url(assets/ui/frames/portrait-blue.webp)}#fbQueue .qc.on::after{background-image:url(assets/ui/frames/portrait-gem.webp)}
   #fbQueue .qc .fc{position:absolute;left:15.6%;top:14.1%;width:68.3%;height:61.5%;margin:0;border:0;border-radius:2px}#fbQueue .qc.on .fc{left:15.1%;top:16.1%;width:69.7%;height:60.1%}
-  #fbQueue .qc .ic{z-index:2;top:15%;right:17%}#fbQueue .qc b{position:absolute;left:8%;right:8%;bottom:5%;z-index:2;font-size:9.5px;line-height:11px;color:#f6e7c1;text-align:center;text-shadow:0 1px 2px #000}
+  #fbQueue .qc .ic{z-index:2;top:15%;right:17%}#fbQueue .qc b{position:absolute;left:2%;right:2%;bottom:5%;z-index:2;font-size:11px;line-height:12px;white-space:nowrap;color:#f6e7c1;text-align:center;text-shadow:0 1px 2px #000}
   #fbQueue .qc i{left:15.6%;bottom:25%;z-index:2;width:calc(var(--p) * .683%)!important;height:3px}#fbQueue .qc.on i{left:15.1%;width:calc(var(--p) * .697%)!important}#fbQueue .qc.look{box-shadow:none}
   #fbHud #fbAuto.on{background:#2f8a5a}
   #fbHud .bar{height:7px;background:#0006;border-radius:4px;overflow:hidden;margin:2px 0 6px;position:relative}#fbHud .bar i{display:block;height:100%;transition:width .35s}
@@ -665,7 +665,7 @@
       const E = window.ElementWheel?.info(u.el), pct = Math.max(0, Math.min(100, u.hp / u.maxHp * 100)), side = u.side === 'monster' ? 'foe' : u === FB.hero(st) ? 'hero' : 'ally';
       const face = faceFor(u);
       /* v98.251 · the queue shows each fighter's face (cropped from their portrait); the element icon is a small badge */
-      return `<div class="qc ${side} ${on ? 'on' : ''} ${inspectU === u ? 'look' : ''}" data-id="${u.id}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="fc" style="background-image:url('${face.src}'),none;background-position:${face.pos};background-size:${face.size}"></span><span class="ic">${E ? E.icon : ''}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 5 ? base.slice(0, 4) + '…' : base) + n })())}</b><i style="width:${pct}%;--p:${pct}"></i></div>` };
+      return `<div class="qc ${side} ${on ? 'on' : ''} ${inspectU === u ? 'look' : ''}" data-id="${u.id}" title="${esc(u.name)} · ${u.hp}/${u.maxHp}"><span class="fc" style="background-image:url('${face.src}'),none;background-position:${face.pos};background-size:${face.size}"></span><span class="ic">${E ? E.icon : ''}</span><b>${esc((() => { const m = u.name.match(/^(.*?)\s(\d+)$/), base = m ? m[1] : u.name, n = m ? ' ' + m[2] : ''; return (base.length > 7 ? base.slice(0, 6) + '…' : base) + n })())}</b><i style="width:${pct}%;--p:${pct}"></i></div>` };
     q.innerHTML = chip(act, true) + '<span class="arr">›</span>' + rest.map(u => chip(u, false)).join('');
   }
   /* ---------- hand ---------- */
