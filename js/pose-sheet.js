@@ -126,6 +126,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 #poseSheet .ps-side{grid-area:side;position:sticky;top:56px;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:6px;background:#f8f6ee;border:1px solid #d6dccb;border-radius:10px}
 #poseSheet .ps-side .ps-sh{font-weight:700;font-size:12.5px;color:#4a5b3f;margin-top:4px}#poseSheet .ps-side .ps-row{display:flex;flex-wrap:wrap;gap:4px}#poseSheet .ps-side label{font-size:13px;display:flex;gap:6px;align-items:center}
 #poseSheet .ps-side .ps-steps{display:flex;flex-direction:column;gap:3px}#poseSheet .ps-side .ps-steps button{display:flex;align-items:center;gap:7px;text-align:left;padding:4px 8px;font-size:13px}#poseSheet .ps-side .ps-steps .n{font-weight:700;opacity:.6;min-width:16px}
+#poseSheet .qa-r{border-top:1px solid #e4e6da;padding-top:4px}#poseSheet .qa-h{display:flex;justify-content:space-between;font-size:12.5px}#poseSheet .qa-b{display:flex;gap:4px;margin-top:2px}#poseSheet .qa-b button{flex:1;padding:3px 0}
 #poseSheet .ps-zone{grid-area:zone;min-width:0;overflow-x:auto}
 #poseSheet:fullscreen{overflow:auto;background:#eef0e6;padding:0 10px 10px}#poseSheet:fullscreen .ps-top{top:0}
 #poseSheet .ps-next{flex:0 1 auto;padding:5px 12px;border-radius:10px;background:#fff8e1;border:2px solid #e0b64a;font-size:15px}#poseSheet .ps-next b{padding:2px 9px;border-radius:7px;color:#fff;margin-left:6px}#psTip{position:fixed;z-index:99999;pointer-events:none;padding:3px 9px;border-radius:7px;color:#fff;font:700 13px AgThai,system-ui,sans-serif;box-shadow:0 2px 6px #0006;white-space:nowrap}
@@ -189,6 +190,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const mkDirty = marksDirty();
     const swatches = `${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}`;
     let h = `<div class="ps-app"><div class="ps-top" id="psTop"><b class="ps-name">${esc(cur.name)}</b><div class="ps-next" id="psNext"></div><span class="sp" style="flex:1"></span>
+        <button type="button" class="act ${SHOW.pts ? 'on' : ''}" id="psShowPts" title="แสดง/ซ่อนจุด datum บนภาพ">● จุด</button><button type="button" class="act ${SHOW.zone ? 'on' : ''}" id="psShowZone" title="โซนสีแบ่งส่วน: หัว · ลำตัว · ขา (ท่าที่มี คาง + เส้นตัดขา แล้ว)">🎨 โซนสี</button>
         <button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button>
         <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max=".8" step=".05" value="${Z}"></label>
         <span id="psCartMsg" style="font-size:12.5px;color:#315d46"></span>
@@ -226,17 +228,59 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   }
   /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
   const stepInfo = () => { const i = STEPS.findIndex(s => s[0] === step), s = STEPS[Math.max(0, i)]; return { n: Math.max(0, i) + 1, all: STEPS.length, label: s[1], short: s[1].split(' · ')[0], col: s[2] } };
+  /* v98.745 · SHOW: points on/off · colour zones on/off (head pink · torso blue · legs green, cut at the chin and the crotch line) */
+  const SHOW = (() => { try { return { pts: true, zone: false, ...(JSON.parse(localStorage.getItem('pose-sheet.show')) || {}) } } catch (e) { return { pts: true, zone: false } } })();
+  const saveShow = () => { try { localStorage.setItem('pose-sheet.show', JSON.stringify(SHOW)) } catch (e) { } };
+  const marksFor = (P, mm) => ({ chin: Math.min(.9, Math.max(.04, (P.chin[1] - mm.top) / mm.H)), hip: Math.min(.95, Math.max(.2, (P.crotch[1] - mm.top) / mm.H)), headTop: 0, ankle: 1 });
+  const ZCACHE = new Map();
+  function zoneOver(ck) {
+    const c = cur?.cells[ck], P = peek(ck)?.p || {}, PAm = PA(); if (!c?.img || !P.chin || !P.crotch || !PAm?.zoneWeights) return null;
+    const key = [c.fp, P.chin, P.crotch].join('|'); if (ZCACHE.has(key)) return ZCACHE.get(key); let out = null;
+    try {
+      const m = sil(c.img, c.flip); if (m) {
+        const cv = document.createElement('canvas'); cv.width = cv.height = SRC; const q = cv.getContext('2d', { willReadFrequently: true }); if (c.flip) { q.translate(SRC, 0); q.scale(-1, 1) } q.drawImage(c.img, 0, 0, SRC, SRC); q.setTransform(1, 0, 0, 1, 0, 0);
+        const d = q.getImageData(0, 0, SRC, SRC), seg = PAm.segments(m, marksFor(P, m)), z = PAm.zoneWeights(d.data, SRC, SRC, seg, { mode: 'band', soft: .06, grow: 10 }, m.H), o = q.createImageData(SRC, SRC), rgb = PAm.ZONES.map(zz => zz && zz[1].slice(1).match(/../g).map(v => parseInt(v, 16)));
+        for (let i = 0; i < z.labels.length; i++) { const col = rgb[z.labels[i] || 1]; o.data[i * 4] = col[0]; o.data[i * 4 + 1] = col[1]; o.data[i * 4 + 2] = col[2]; o.data[i * 4 + 3] = d.data[i * 4 + 3] * .42 } q.putImageData(o, 0, 0); out = cv
+      }
+    } catch (e) { out = null; console.error('pose-sheet zones', e) }
+    ZCACHE.set(key, out); return out;
+  }
+  /* v98.745 · QUICK ADJUST (the old 🛠 ปรับสัดส่วน sliders as ± buttons, live on the selected pose): head · torso height / width · shoulders · legs length / width */
+  const QD = () => ({ head: 100, torso: 100, wTorso: 100, shoulder: 100, legs: 100, wLegs: 100 });
+  const QA = { ck: null, S: QD(), keep: true, canvas: null, t: 0, busy: false, msg: '' };
+  const QROWS = [['head', 'หัว ใหญ่-เล็ก'], ['torso', 'ลำตัว สูง (แนวตั้ง)'], ['wTorso', 'ลำตัว หนา (แนวนอน)'], ['shoulder', 'ไหล่ กว้าง'], ['legs', 'ขา ยาว (แนวตั้ง)'], ['wLegs', 'ท่อนขา หนา (แนวนอน)']];
+  const qaDirty = () => Object.values(QA.S).some(v => v !== 100);
+  const qaScale = () => Object.fromEntries(Object.entries(QA.S).map(([k, v]) => [k, v / 100]));
+  function qaRender(img, flip, P) { const mm = sil(img, flip); if (!mm) return null; const r = PA().warp(img, mm, marksFor(P, mm), qaScale(), { keepHeight: QA.keep, flip, grow: Math.round(mm.H * .03), sharpen: 'auto' }); const o = document.createElement('canvas'); o.width = o.height = SRC; o.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]); return o }
+  function qaSync() { if (act !== QA.ck) { QA.ck = act; QA.S = QD(); QA.canvas = null; QA.msg = '' } }
+  function qaLive() { clearTimeout(QA.t); QA.t = setTimeout(() => { const c = cur?.cells[QA.ck], P = peek(QA.ck)?.p; try { QA.canvas = c?.img && P?.chin && P?.crotch && qaDirty() ? qaRender(c.img, c.flip, P) : null } catch (e) { QA.canvas = null; QA.msg = 'พรีวิวไม่สำเร็จ: ' + e.message; console.error('pose-sheet preview', e) } paintAll() }, 90) }
+  async function qaSave() {
+    const ck = QA.ck, c = cur?.cells[ck], P = peek(ck)?.p; if (!c || !P?.chin || !qaDirty() || QA.busy) return; QA.busy = true; const say = t => { QA.msg = t; const m = $('qaMsg'); if (m) m.textContent = t };
+    try {
+      const items = []; let n = 0; for (const f of c.clip.frames) { say('ปรับ ' + (++n) + '/' + c.clip.frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), cv = qaRender(img, fl, P); items.push({ file: f.file, dataUrl: toURL(fl ? mirrorCv(cv) : cv) }); await new Promise(r => setTimeout(r, 0)) }
+      say('กำลังบันทึก…'); await apply(items); const r = peek(ck); if (r) { r.ok = false; r.fp = null } write(KEY, DATA); QA.S = QD(); QA.canvas = null; QA.busy = false; await load(); QA.msg = '✔ ใส่ Cart แล้ว (รอ Push) · จุดอาจเลื่อน ตรวจอีกครั้ง'; updNext()
+    } catch (e) { QA.busy = false; say('ไม่สำเร็จ: ' + e.message) }
+  }
+  function qaClick(e) {
+    const b = e.target.closest('[data-qd]'); if (b) { const [k, d] = b.dataset.qd.split(','); QA.S[k] = Math.max(60, Math.min(150, QA.S[k] + +d)); QA.msg = ''; qaLive(); updNext(); return }
+    if (e.target.closest('#qaReset')) { QA.S = QD(); QA.canvas = null; QA.msg = ''; paintAll(); return }
+    if (e.target.closest('#qaSave')) return qaSave(); if (e.target.closest('#qaWin')) return openAdjust(act);
+    if (e.target.id === 'qaKeep') { QA.keep = e.target.checked; qaLive() }
+  }
   /* v98.741 · the selected pose (last clicked): once it has its chin + crotch line, the 🛠 re-proportion window (head · torso height / thickness · legs length / thickness) is one click away, right under the banner */
   function adjBar() {
-    const c = act && cur?.cells[act]; if (!c) return '';
-    const P = peek(act)?.p || {}, name = (POSES.find(q => q[0] === c.pose) || [, c.pose])[1] + ' ' + c.dir;
-    return P.chin && P.crotch ? `<div style="margin-top:6px;font-size:14px">🛠 ท่าที่เลือก <b style="background:#2e6b4f">${esc(name)}</b> <button type="button" class="act" id="psAdjOpen" style="margin-left:6px">🛠 ปรับสัดส่วน · หัว · ลำตัว สูง/หนา · ขา ยาว/หนา</button></div>`
-      : `<div style="margin-top:6px;font-size:13px;color:#7a5a00">ท่าที่เลือก <b>${esc(name)}</b> · วาง <b>คาง</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีปุ่มปรับสัดส่วน</div>`;
+    const c = act && cur?.cells[act]; if (!c) return '<div style="font-size:12.5px;color:#7a5a00">คลิกที่ภาพของท่าหนึ่งเพื่อเลือกท่า</div>';
+    qaSync(); const P = peek(act)?.p || {}, name = (POSES.find(q => q[0] === c.pose) || [, c.pose])[1] + ' ' + c.dir;
+    if (!(P.chin && P.crotch)) return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> · วาง <b>คาง</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีโซนสีและปุ่มปรับสัดส่วน</div>`;
+    return `<div style="font-size:13.5px">ท่า <b style="background:#2e6b4f;color:#fff;padding:1px 8px;border-radius:6px">${esc(name)}</b> · 🛠 ปรับสัดส่วน (ดูผลสดบนภาพ)</div>`
+      + QROWS.map(([k, l]) => `<div class="qa-r"><div class="qa-h"><span>${l}</span><b>${QA.S[k]}%</b></div><div class="qa-b">${[-5, -1, 1, 5].map(d => `<button type="button" data-qd="${k},${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</div></div>`).join('')
+      + `<label style="font-size:12.5px"><input type="checkbox" id="qaKeep" ${QA.keep ? 'checked' : ''}>คงความสูงตัวเท่าเดิม</label>`
+      + `<div class="ps-row"><button type="button" class="act" id="qaReset" ${qaDirty() ? '' : 'disabled'}>↺ รีเซ็ต</button><button type="button" class="act main" id="qaSave" ${qaDirty() && !QA.busy ? '' : 'disabled'}>💾 ใช้กับท่านี้ (ใส่ Cart)</button><button type="button" class="act" id="qaWin" title="หน้าต่างใหญ่ก่อน/หลัง">🔍</button></div><div id="qaMsg" style="font-size:12px;color:#315d46">${esc(QA.msg)}</div>`;
   }
   function updNext() {
     const el = $('psNext'); if (!el) return;
     const box = $('psAdjBox'); if (box) { const hh = adjBar(); if (box._h !== hh) { box._h = hh; box.innerHTML = hh } }
-    const ab = $('psAdjOpen'); if (ab) ab.onclick = () => openAdjust(act);
+    if (box) box.onclick = qaClick;
     const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight; sd.style.top = hgt + 'px'; sd.style.maxHeight = 'calc(100vh - ' + (hgt + 8) + 'px)' }
     if (tool === 'hand') { el.innerHTML = '✋ โหมดย้ายภาพ · ลากภาพในช่อง'; el._h = ''; return } const s = stepInfo();
     const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
@@ -247,7 +291,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const ghostCache = new Map();
   function silhouette(img, flip) { const k = img.src + (flip ? 'f' : ''); let c = ghostCache.get(k); if (c) return c; c = document.createElement('canvas'); c.width = c.height = SRC; const g = c.getContext('2d'); if (flip) { g.translate(SRC, 0); g.scale(-1, 1) } g.drawImage(img, 0, 0, SRC, SRC); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = '#ff7a00'; g.fillRect(0, 0, SRC, SRC); ghostCache.set(k, c); return c }
   function paint(el) {
-    try { updNext() } catch (e) { }
+    try { updNext() } catch (e) { console.error('pose-sheet updNext', e) }
     const ck = el.dataset.ck, c = cur.cells[ck], cv = el.querySelector('canvas'), g = cv.getContext('2d'), W = cv.width, k = kOf(c), [ox, oy] = off(ck);
     g.clearRect(0, 0, W, W); for (let y = 0; y < W; y += 14) for (let x = (y / 14) % 2 ? 14 : 0; x < W; x += 28) { g.fillStyle = '#f1efe6'; g.fillRect(x, y, 14, 14) }
     g.fillStyle = '#fff9'; { const [x0, y0] = sc(0, 0); g.fillRect(x0, y0, SRC * Z, SRC * Z) }
@@ -261,7 +305,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     };
     const idle = cur.cells['idle@SW'];
     if (RUL.ghost && idle?.img && ck !== 'idle@SW') { const ia = anchorOf('idle@SW') || [GX, GY], ki = kOf(idle); const ax = GX - (ia[0] - 0) * ki + 0, ay = GY - ia[1] * ki; /* idle origin so that its anchor sits on the ground point */ g.save(); const [dx, dy] = sc(ax, ay), s = SRC * ki * Z; g.globalAlpha = .38; g.drawImage(silhouette(idle.img, idle.flip), dx, dy, s, s); g.restore() }
-    if (c.img) drawImg(c.img, c.flip, ox, oy, k, 1, false); else { g.fillStyle = '#9aa18f'; g.font = '12px sans-serif'; g.textAlign = 'center'; g.fillText('กำลังโหลด…', W / 2, W / 2) }
+    if (c.img) { const prev = QA.ck === ck && QA.canvas; if (prev) drawImg(prev, false, ox, oy, k, 1, false); else drawImg(c.img, c.flip, ox, oy, k, 1, false); if (SHOW.zone && !prev) { const zo = zoneOver(ck); if (zo) drawImg(zo, false, ox, oy, k, 1, false) } } else { g.fillStyle = '#9aa18f'; g.font = '12px sans-serif'; g.textAlign = 'center'; g.fillText('กำลังโหลด…', W / 2, W / 2) }
     /* the real 384 × 384 frame */ { const [x0, y0] = sc(0, 0); g.save(); g.strokeStyle = '#d9480f'; g.lineWidth = 1.5; g.strokeRect(x0 + .5, y0 + .5, SRC * Z, SRC * Z); g.restore() }
     /* rulers */
     if (RUL.on) {
@@ -275,7 +319,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const dot = (key, v, col, label, sel) => { const [fx, fy] = toFrame(c, ck, v[0], v[1]), [x, y] = sc(fx, fy);
       g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 1.6; g.beginPath(); g.arc(x, y, sel ? 7 : 5, 0, 7); g.fill(); g.stroke();
       /* v98.743 · no text next to a point (it covered the picture) — the colour is enough, the side bar names the points */ };
-    for (const [key, , col] of STEPS) {
+    for (const [key, , col] of (SHOW.pts ? STEPS : [])) {
       const lk = LINES[key], pts = lk && P[lk];
       if (pts && pts.length) {   /* a cut LINE: the points joined by a line (dashed while it is still open) */
         g.save(); g.strokeStyle = col; g.lineWidth = 1.8; if (P[key + 'Done'] === false) g.setLineDash([5, 4]); g.beginPath(); pts.forEach((q, i) => { const [x, y] = sc(...toFrame(c, ck, q[0], q[1])); i ? g.lineTo(x, y) : g.moveTo(x, y) }); g.stroke(); g.restore();
@@ -283,12 +327,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       const v = P[key]; if (!v) continue; dot(key, v, col, STEP[key][1].replace(/ \(.*| ·.*/, ''), act === ck && pick === key);
     }
     /* the skull-top suggestion: a dashed head ellipse from the eyes + chin (click its top mark to take it, or click elsewhere to place the point yourself) */
-    { const sg = skullGuess(P); if (sg && !P.top) { const [cx, cy] = sc(...toFrame(c, ck, sg.cx, sg.cy)), [tx, ty] = sc(...toFrame(c, ck, sg.x, sg.y)), k2 = kOf(c) * Z;
+    { const sg = SHOW.pts && skullGuess(P); if (sg && !P.top) { const [cx, cy] = sc(...toFrame(c, ck, sg.cx, sg.cy)), [tx, ty] = sc(...toFrame(c, ck, sg.x, sg.y)), k2 = kOf(c) * Z;
         g.save(); g.strokeStyle = '#8a4fff'; g.fillStyle = '#8a4fff22'; g.lineWidth = 1.6; g.setLineDash([5, 4]); g.beginPath(); g.ellipse(cx, cy, sg.rx * k2, sg.ry * k2, 0, 0, 7); g.fill(); g.stroke(); g.setLineDash([]);
         g.fillStyle = '#fff'; g.beginPath(); g.arc(tx, ty, 6, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#8a4fff'; g.restore() } }
     const seg = (a, b, col) => { if (P[a] && P[b]) { const [x1, y1] = sc(...toFrame(c, ck, ...P[a])), [x2, y2] = sc(...toFrame(c, ck, ...P[b])); line(x1, y1, x2, y2, col, 1.4, [4, 3]) } };
-    seg('shL', 'shR', STEP.shL[2]); seg('legL', 'legR', STEP.legL[2]); seg('footL', 'footR', STEP.footL[2]); seg('top', 'chin', STEP.top[2]);
-    const an = anchorOf(ck); if (an) { const [x, y] = sc(...toFrame(c, ck, ...an)); line(x - 9, y, x + 9, y, '#000', 2); line(x, y - 9, x, y + 9, '#000', 2); g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.arc(x, y, 6, 0, 7); g.stroke() }
+    if (SHOW.pts) { seg('shL', 'shR', STEP.shL[2]); seg('legL', 'legR', STEP.legL[2]); seg('footL', 'footR', STEP.footL[2]); seg('top', 'chin', STEP.top[2]) }
+    const an = SHOW.pts && anchorOf(ck); if (an) { const [x, y] = sc(...toFrame(c, ck, ...an)); line(x - 9, y, x + 9, y, '#000', 2); line(x, y - 9, x, y + 9, '#000', 2); g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.arc(x, y, 6, 0, 7); g.stroke() }
   }
   /* what is under the pointer, in priority: ruler line → point */
   /* the head ellipse that suggests the skull top: eyes in the middle of the head, so crown ≈ eye line − 1.1 × (eye line → chin) */
@@ -316,6 +360,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const msg = t => { const m = $('psMsg'); if (m) m.textContent = t };
     ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() });
     const zm = $('psZoom'); if (zm) zm.onchange = () => { Z = +zm.value; try { localStorage.setItem('pose-sheet.zoom', String(Z)) } catch (e) { } draw() };
+    $('psShowPts').onclick = () => { SHOW.pts = !SHOW.pts; saveShow(); draw() }; $('psShowZone').onclick = () => { SHOW.zone = !SHOW.zone; saveShow(); draw() };
     $('psFull').onclick = () => { const e = document.fullscreenElement; if (e === ps) document.exitFullscreen?.(); else (ps.requestFullscreen?.() || Promise.reject()).catch(() => msg('เปิดเต็มจอไม่ได้ในหน้านี้ — ลองกด F11 ของเบราว์เซอร์')) };
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
     $('psHand').onclick = () => { tool = tool === 'hand' ? 'mark' : 'hand'; draw() };
