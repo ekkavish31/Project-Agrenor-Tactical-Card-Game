@@ -32,7 +32,7 @@ iframe[hidden]{display:none}
 </header>
 <div class="note" id="note"></div><div id="editorConflict" hidden role="status"></div>
 <main id="frames"></main>
-<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-version.js?v=v98.681"></script><script src="js/game-settings.js?v=v98.648"></script><script src="js/layout-sync.js?v=98.96"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js?v=v98.650"></script><script src="js/manifest-merge.js?v=v98.444"></script><script>
+<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-version.js?v=v98.682"></script><script src="js/game-settings.js?v=v98.648"></script><script src="js/layout-sync.js?v=98.96"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js?v=v98.650"></script><script src="js/manifest-merge.js?v=v98.444"></script><script>
 // Editor shell: every tool runs in its own frame; the game opens in "editor mode" (no play-save writes).
 // All tools share this browser's storage with the game — reload the game to see changes.
 const TABS=[
@@ -45,7 +45,7 @@ const TABS=[
  {id:'menu',name:'🎛 ไอคอนเมนู',src:'index.html?editor=menu',note:'เลือกภาพไอคอนให้ปุ่มเมนูขวาบนของเกม'},
  {id:'progress',name:'📊 Progress',src:'progress.html',note:'สมุดภารกิจ (Quest Log): แผนแม่บท 8 เฟส วัดความคืบหน้าเป็นตัวเลข รวม/รายเฟส/ต่อเวอร์ชัน · คำนวณจาก data/master-plan.json + docs/TODO.md · อัปเดตด้วย node tools/update-progress.cjs'},
  {id:'story',name:'🧭 เส้นเรื่อง',src:'story-map.html',note:'แผนผังเส้นเรื่องหลัก (mind map): เส้น Mip · เหมือง/VQ · สงคราม · ศรัทธา · ranger · เส้นรอง · จุดตัดสินใจแตกกิ่งถึงตอนจบ · ดูว่ากล่องไหนทำแล้ว/ยังไม่ทำ/รอเจ้าของเกม · อ่านอย่างเดียว (ข้อมูลที่ js/story-map-data.js)'},];
-/* v98.681 · every (re)load of a tab asks for a URL nobody has cached: the old reload button reused the same URL (f.src=f.src) so the browser handed back the OLD page */
+/* v98.682 · every (re)load of a tab asks for a URL nobody has cached: the old reload button reused the same URL (f.src=f.src) so the browser handed back the OLD page */
 const busted=src=>src.replace(/([?&])build=[^&]*&?/,'$1').replace(/[?&]$/,'')+(src.includes('?')?'&':'?')+'build='+encodeURIComponent((window.GAME_VERSION?.v||'')+'-'+Date.now().toString(36));
 const tabs=document.getElementById('tabs'),frames=document.getElementById('frames'),note=document.getElementById('note');let cur=null;
 function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replaceState(null,'','#'+T.id);
