@@ -1,7 +1,7 @@
 /* v98.658 · 📐 เรียงท่า — the new proportion tool of Asset Studio (Animation tab), replacing 📐 สัดส่วน / 📍 Datum of scale-lineup.html.
    ONE character at a time: every pose (idle · walk · windup · strike · guard · hit · down) of SW and NE side by side, first frame of each pose as the stand-in
    (what is done to a pose applies to every frame of that pose), all on the same ruler: same scale, same ground line. SE / NW are the mirror copies of SW / NE.
-   • DATUM POINTS (11, placed in this order): eye · chin · skull top · neck cut · shoulder L/R · crotch · leg edge L/R · foot L/R.  Numbers of each pose are shown under it
+   • DATUM POINTS (12, placed in this order): eyes L/R · chin · skull top · neck cut · shoulder L/R · crotch · leg edge L/R · foot L/R.  Numbers of each pose are shown under it
      (head · shoulder width · torso · leg length · leg thickness, px and % of the body height, and the change against the SW standing pose).
      The FOOT POINT of a pose = the middle of the two ground-contact points (heel when the heel lands, ball when the toe pushes off); for the lying pose ('down') ONE point (foot L) =
      the ground point under the middle of the torso.
@@ -17,9 +17,15 @@
   const POSES = [['idle', 'ยืน'], ['walk', 'เดิน'], ['windup', 'เตรียมโจมตี'], ['strike', 'โจมตี'], ['guard', 'ป้องกัน'], ['hit', 'โดนโจมตี'], ['down', 'นอน / ล้ม']];
   const ROWS = [['SW', 'SW (SE = กลับด้าน)'], ['NE', 'NE (NW = กลับด้าน)']], MIR = { SW: 'SE', NE: 'NW' };
   const KEY = 'pose-sheet-v1', SKEY = 'pose-sheet.scaleDraft', RKEY = 'pose-sheet.rulers';
-  const STEPS = [['eye', 'ตา', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['top', 'ยอดกะโหลก', '#8a4fff'], ['neck', 'เส้นตัดหัว (คอ)', '#e07b00'],
-    ['shL', 'ไหล่ ซ้ายภาพ', '#1f7a4d'], ['shR', 'ไหล่ ขวาภาพ', '#1f7a4d'], ['crotch', 'เส้นตัดขา (ขาหนีบ)', '#1d5fbf'], ['legL', 'ขอบขา ซ้าย', '#0d8f99'], ['legR', 'ขอบขา ขวา', '#0d8f99'],
+  /* v98.711 · the datum points, in the old 📍 Datum way: both eyes · chin · skull top (a dashed head ellipse suggests it) · neck cut LINE (click the points one after another, they are joined by a line; a click-and-HOLD ends it) · shoulders L/R ·
+     leg cut LINE (same way) · the width of ONE leg (its two edges) · left / right foot (the stance centre on the ground = their middle) */
+  const STEPS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['top', 'ยอดกะโหลก (มีวงรีแนะนำ)', '#8a4fff'], ['neck', 'เส้นตัดหัว (คอ) · คลิกเรียงจุด คลิกค้างเพื่อจบ', '#e07b00'],
+    ['shL', 'ไหล่ ซ้ายภาพ', '#1f7a4d'], ['shR', 'ไหล่ ขวาภาพ', '#1f7a4d'], ['crotch', 'เส้นตัดขา (ขาหนีบ) · คลิกเรียงจุด คลิกค้างเพื่อจบ', '#1d5fbf'], ['legL', 'ความกว้างท่อนขา 1 ข้าง · ขอบซ้าย', '#0d8f99'], ['legR', 'ความกว้างท่อนขา · ขอบขวา', '#0d8f99'],
     ['footL', 'เท้า ซ้าย (จุดแตะพื้น)', '#7b4a12'], ['footR', 'เท้า ขวา (จุดแตะพื้น)', '#7b4a12']];
+  const LINES = { neck: 'neckLine', crotch: 'crotchLine' };   /* P.neck / P.crotch = the middle of the line (what the numbers use) · P.neckLine / P.crotchLine = its points · P.<k>Done = the line is finished */
+  const lineMid = pts => [Math.round(pts.reduce((a, q) => a + q[0], 0) / pts.length), Math.round(pts.reduce((a, q) => a + q[1], 0) / pts.length)];
+  const setLine = (P, k, pts) => { P[LINES[k]] = pts; P[k] = lineMid(pts) };
+  const lineOpen = (P, k) => !!(P[LINES[k]] && P[k + 'Done'] === false);
   const STEP = Object.fromEntries(STEPS.map(s => [s[0], s]));
   const SRC = 384, GX = 192, GY = 360, PAD = 96;   /* every character frame: 384 × 384, ground point (192, 360) */
   const RCOL = ['#e03131', '#1971c2', '#2f9e44', '#f08c00', '#9c36b5', '#0c8599', '#c2255c', '#5c940d'];
@@ -67,7 +73,7 @@
       if (have[ck]) continue; const pts = src[cell.pose]?.[0]?.pts; if (!pts) continue;
       let P = pts[cell.dir], mir = false; if (!P && pts[MIR[cell.dir]]) { P = pts[MIR[cell.dir]]; mir = true } if (!P) continue;
       const X = v => (mir ? 1 - v : v) * SRC, Y = v => v * SRC, g = (a, b) => mir ? P[b] : P[a], p = {}, pt = a => a && [X(a[0]), Y(a[1])];
-      if (P.eyeL && P.eyeR) p.eye = [X((P.eyeL[0] + P.eyeR[0]) / 2), Y((P.eyeL[1] + P.eyeR[1]) / 2)]; if (P.chin) p.chin = pt(P.chin); if (P.crown) p.top = pt(P.crown); if (P.crotch) p.crotch = pt(P.crotch);
+      if (P.eyeL) p.eyeL = pt(mir ? P.eyeR || P.eyeL : P.eyeL); if (P.eyeR) p.eyeR = pt(mir ? P.eyeL || P.eyeR : P.eyeR); if (P.chin) p.chin = pt(P.chin); if (P.crown) p.top = pt(P.crown); if (P.crotch) p.crotch = pt(P.crotch);
       const sl = g('shL', 'shR'), sr = g('shR', 'shL'); if (sl) p.shL = pt(sl); if (sr) p.shR = pt(sr);
       const fl = g('footL', 'footR'), fr = g('footR', 'footL'); if (fl) p.footL = pt(fl); if (fr) p.footR = pt(fr);
       for (const kk of Object.keys(p)) if (!p[kk]) delete p[kk]; if (Object.keys(p).length) { have[ck] = { fp: cell.fp, p, ok: false, from: 'datum-v1' }; n++ }
@@ -106,7 +112,7 @@
   }
 
   /* ---------- UI state ---------- */
-  let Z = +(localStorage.getItem('pose-sheet.zoom') || .45), step = 'eye', pinned = false, act = null, pick = null, drag = null, tool = 'mark', rpick = null;
+  let holdT = 0, Z = +(localStorage.getItem('pose-sheet.zoom') || .45), step = 'eyeL', pinned = false, act = null, pick = null, drag = null, tool = 'mark', rpick = null;
   function css() {
     if ($('poseSheetCss')) return; const s = document.createElement('style'); s.id = 'poseSheetCss';
     s.textContent = `#sheetSwitch{display:none;gap:6px;margin:0 0 10px}body.anim-mode #sheetSwitch{display:flex}
@@ -172,7 +178,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
     let h = `<div class="ps-bar"><b>${esc(cur.name)}</b><span class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${STEPS.map(([k, l, col]) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i>${l}</button>`).join('')}</span><span class="sp"></span>
       <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max=".8" step=".05" value="${Z}"></label></div>
-      <div class="ps-tools"><button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button><button type="button" class="act" id="psCopySW" title="ใส่จุดของท่ายืน SW ให้ท่าที่ยังไม่มีจุด">📋 datum SW → ท่าที่ว่าง</button><button type="button" class="act" id="psSnapAll" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น (192,360) ทุกท่าที่มีจุดเท้า">⤓ เข้าเส้นพื้นทุกท่า</button>
+      <div class="ps-tools"><button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button><button type="button" class="act" id="psCopySW" title="คัดลอกจุด datum ของท่ายืน (SW / NE) ไปให้ท่าที่เลือก (คลิกในช่องของท่านั้นก่อน)">📋 datum SW → ท่าที่เลือก</button><button type="button" class="act" id="psSnapAll" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น (192,360) ทุกท่าที่มีจุดเท้า">⤓ เข้าเส้นพื้นทุกท่า</button>
         <span style="width:8px"></span><label><input type="checkbox" id="psRon" ${RUL.on ? 'checked' : ''}>ไม้บรรทัด</label><button type="button" class="act" id="psRadd" title="เพิ่มเส้นนอน (ลากเพื่อย้าย · ดับเบิลคลิกเพื่อลบ)">＋ เส้น</button><button type="button" class="act" id="psMadd" title="ตัววัด: 2 เส้นขนาน บอกระยะห่าง">＋ ตัววัด 2 เส้น</button><button type="button" class="act" id="psRclr">ล้างไม้บรรทัด</button>
         <label><input type="checkbox" id="psCen" ${RUL.center ? 'checked' : ''}>เส้นกลางช่อง</label><label><input type="checkbox" id="psGho" ${RUL.ghost ? 'checked' : ''}>เงาท่ายืน SW</label><span class="sp" style="flex:1"></span>
         <button type="button" class="act" id="psClear" ${act ? '' : 'disabled'}>ล้างจุดของท่าที่เลือก</button><button type="button" class="act" id="psCart" title="จุด/ติ๊ก/ไม้บรรทัด → 🛒 Cart (js/game-settings.js)">🛒 จุด/ติ๊ก ใส่ Cart</button>
@@ -224,19 +230,33 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     }
     /* the points of this pose */
     const P = peek(ck)?.p || {};
-    for (const [key, , col] of STEPS) {
-      const v = P[key]; if (!v) continue; const [fx, fy] = toFrame(c, ck, v[0], v[1]), [x, y] = sc(fx, fy), sel = act === ck && pick === key;
+    const dot = (key, v, col, label, sel) => { const [fx, fy] = toFrame(c, ck, v[0], v[1]), [x, y] = sc(fx, fy);
       g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 1.6; g.beginPath(); g.arc(x, y, sel ? 7 : 5, 0, 7); g.fill(); g.stroke();
-      g.font = '10px sans-serif'; g.textAlign = 'left'; g.fillStyle = '#fffd'; const t = STEP[key][1].replace(/ \(.*\)/, ''); g.fillRect(x + 8, y - 11, g.measureText(t).width + 4, 13); g.fillStyle = col; g.fillText(t, x + 10, y - 1);
+      if (label) { g.font = '10px sans-serif'; g.textAlign = 'left'; g.fillStyle = '#fffd'; g.fillRect(x + 8, y - 11, g.measureText(label).width + 4, 13); g.fillStyle = col; g.fillText(label, x + 10, y - 1) } };
+    for (const [key, , col] of STEPS) {
+      const lk = LINES[key], pts = lk && P[lk];
+      if (pts && pts.length) {   /* a cut LINE: the points joined by a line (dashed while it is still open) */
+        g.save(); g.strokeStyle = col; g.lineWidth = 1.8; if (P[key + 'Done'] === false) g.setLineDash([5, 4]); g.beginPath(); pts.forEach((q, i) => { const [x, y] = sc(...toFrame(c, ck, q[0], q[1])); i ? g.lineTo(x, y) : g.moveTo(x, y) }); g.stroke(); g.restore();
+        pts.forEach((q, i) => dot(key + '#' + i, q, col, i === 0 ? STEP[key][1].replace(/ ·.*| \(.*/, '') : '', act === ck && pick === key + '#' + i)); continue }
+      const v = P[key]; if (!v) continue; dot(key, v, col, STEP[key][1].replace(/ \(.*| ·.*/, ''), act === ck && pick === key);
     }
+    /* the skull-top suggestion: a dashed head ellipse from the eyes + chin (click its top mark to take it, or click elsewhere to place the point yourself) */
+    { const sg = skullGuess(P); if (sg && !P.top) { const [cx, cy] = sc(...toFrame(c, ck, sg.cx, sg.cy)), [tx, ty] = sc(...toFrame(c, ck, sg.x, sg.y)), k2 = kOf(c) * Z;
+        g.save(); g.strokeStyle = '#8a4fff'; g.fillStyle = '#8a4fff22'; g.lineWidth = 1.6; g.setLineDash([5, 4]); g.beginPath(); g.ellipse(cx, cy, sg.rx * k2, sg.ry * k2, 0, 0, 7); g.fill(); g.stroke(); g.setLineDash([]);
+        g.fillStyle = '#fff'; g.beginPath(); g.arc(tx, ty, 6, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#8a4fff'; g.font = '10px sans-serif'; g.fillText('ยอดกะโหลก (แนะนำ) คลิกที่นี่', tx + 9, ty + 3); g.restore() } }
     const seg = (a, b, col) => { if (P[a] && P[b]) { const [x1, y1] = sc(...toFrame(c, ck, ...P[a])), [x2, y2] = sc(...toFrame(c, ck, ...P[b])); line(x1, y1, x2, y2, col, 1.4, [4, 3]) } };
     seg('shL', 'shR', STEP.shL[2]); seg('legL', 'legR', STEP.legL[2]); seg('footL', 'footR', STEP.footL[2]); seg('top', 'chin', STEP.top[2]);
     const an = anchorOf(ck); if (an) { const [x, y] = sc(...toFrame(c, ck, ...an)); line(x - 9, y, x + 9, y, '#000', 2); line(x, y - 9, x, y + 9, '#000', 2); g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.arc(x, y, 6, 0, 7); g.stroke() }
   }
   /* what is under the pointer, in priority: ruler line → point */
+  /* the head ellipse that suggests the skull top: eyes in the middle of the head, so crown ≈ eye line − 1.1 × (eye line → chin) */
+  function skullGuess(P) { if (!P.eyeL || !P.eyeR || !P.chin) return null; const ex = (P.eyeL[0] + P.eyeR[0]) / 2, ey = (P.eyeL[1] + P.eyeR[1]) / 2, f = P.chin[1] - ey; if (f < 6) return null; const y = ey - f * 1.1, x = (ex + P.chin[0]) / 2, ry = (P.chin[1] - y) / 2; return { x, y, cx: x, cy: (y + P.chin[1]) / 2, rx: ry * .78, ry } }
   function hitPoint(c, ck, P, sx, sy) {
     let best = null, bd = 9;
-    for (const [key] of STEPS) { const v = P[key]; if (!v) continue; const [x, y] = sc(...toFrame(c, ck, ...v)), d = Math.hypot(x - sx, y - sy); if (d < bd) { bd = d; best = key } }
+    for (const [key] of STEPS) {
+      const lk = LINES[key], pts = lk && P[lk];
+      if (pts && pts.length) { pts.forEach((v, i) => { const [x, y] = sc(...toFrame(c, ck, ...v)), d = Math.hypot(x - sx, y - sy); if (d < bd) { bd = d; best = key + '#' + i } }); continue }
+      const v = P[key]; if (!v) continue; const [x, y] = sc(...toFrame(c, ck, ...v)), d = Math.hypot(x - sx, y - sy); if (d < bd) { bd = d; best = key } }
     return best;
   }
   function hitRuler(sx, sy) {
@@ -245,7 +265,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     for (let i = 0; i < RUL.lines.length; i++) if (Math.abs(sc(0, RUL.lines[i].y)[1] - sy) < 5) return { t: 'l', i };
     return null;
   }
-  const firstMissing = P => STEPS.find(s => !P[s[0]])?.[0];
+  const firstMissing = P => STEPS.find(s => !P[s[0]] || (LINES[s[0]] && lineOpen(P, s[0])))?.[0];
   function wire(ps) {
     const msg = t => { const m = $('psMsg'); if (m) m.textContent = t };
     ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() });
@@ -253,7 +273,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     $('psHand').onclick = () => { tool = tool === 'hand' ? 'mark' : 'hand'; draw() };
     $('psClear').onclick = () => { if (!act) return; const r = peek(act); if (r) { r.p = {}; r.ok = false; write(KEY, DATA) } pick = null; draw(); status() };
     $('psCart').onclick = () => pushMarks(); $('psSave').onclick = () => saveSizes(); $('psBake').onclick = () => bakeMoves();
-    $('psCopySW').onclick = () => { const n = copyFromSW(null); msg(n ? 'ใส่จุดของท่ายืน SW ให้ ' + n + ' ท่าแล้ว — ลากแก้ให้ตรงตัว' : 'ไม่มีท่าที่ว่าง หรือท่ายืนยังไม่มีจุด'); draw() };
+    $('psCopySW').onclick = () => { if (!act) { msg('คลิกเลือกท่าที่ต้องการก่อน (คลิกในช่องของท่านั้น) แล้วกดปุ่มนี้'); return } const n = copyFromSW(act); msg(n ? 'ใส่จุดของท่ายืน (' + cur.cells[act].dir + ') ให้ท่าที่เลือกแล้ว — ลากแก้ให้ตรงตัว' : 'ท่านี้เป็นท่าต้นแบบเอง หรือท่ายืนยังไม่มีจุด'); draw() };
     $('psSnapAll').onclick = () => { let n = 0; for (const ck of Object.keys(cur.cells)) if (snap(ck, true)) n++; write(KEY, DATA); draw(); msg(n ? 'จัดเท้าเข้าเส้นพื้น ' + n + ' ท่า — กด 💾 บันทึกตำแหน่งภาพ เพื่อเปลี่ยนจริง' : 'ยังไม่มีท่าที่วางจุดเท้าครบ') };
     $('psRon').onchange = ev => { RUL.on = ev.target.checked; saveRul(); draw() };
     $('psCen').onchange = ev => { RUL.center = ev.target.checked; saveRul(); paintAll() };
@@ -276,7 +296,18 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         const hr = hitRuler(sx, sy); if (hr) { rpick = hr.t + hr.i; drag = { kind: 'rul', h: hr }; cv.setPointerCapture(ev.pointerId); paintAll(); return }
         if (tool === 'hand') { drag = { kind: 'hand', ck, sx, sy, ox: rec.ox || 0, oy: rec.oy || 0 }; cv.setPointerCapture(ev.pointerId); return }
         let key = hitPoint(c, ck, P, sx, sy);
-        if (!key) { key = pinned ? step : (firstMissing(P) || step); pinned = false; const [fx, fy] = unsc(sx, sy), [x, y] = fromFrame(c, ck, fx, fy); P[key] = [Math.round(x), Math.round(y)]; rec.fp = c.fp; write(KEY, DATA); step = firstMissing(P) || key }
+        if (!key) {
+          let k = pinned ? step : (firstMissing(P) || step); pinned = false; const [fx, fy] = unsc(sx, sy), [x, y] = fromFrame(c, ck, fx, fy), q = [Math.round(x), Math.round(y)];
+          if (LINES[k]) {   /* a cut line: this click is its next point; a click-and-HOLD (0.55 s) ends the line */
+            const lk = LINES[k]; if (!P[lk] || P[k + 'Done'] !== false) { P[lk] = []; P[k + 'Done'] = false }   /* a finished line asked again starts a new one */
+            P[lk].push(q); setLine(P, k, P[lk]); rec.fp = c.fp; write(KEY, DATA); key = k + '#' + (P[lk].length - 1); step = k;
+            clearTimeout(holdT); holdT = setTimeout(() => { holdT = 0; const R = peek(ck)?.p; if (R && lineOpen(R, k)) { R[k + 'Done'] = true; write(KEY, DATA); drag = null; step = firstMissing(R) || k; msg((STEP[k][1].replace(/ ·.*/, '')) + ' จบแล้ว'); draw() } }, 550);
+          } else {
+            const sg = k === 'top' ? skullGuess(P) : null, [gx, gy] = sg ? sc(...toFrame(c, ck, sg.x, sg.y)) : [0, 0];
+            if (sg && Math.hypot(gx - sx, gy - sy) < 14) { P.top = [Math.round(sg.x), Math.round(sg.y)]; key = 'top' } else P[k] = q;
+            if (k !== key) key = k; rec.fp = c.fp; write(KEY, DATA); step = firstMissing(P) || key;
+          }
+        }
         pick = key; drag = { kind: 'pt', ck, key }; cv.setPointerCapture(ev.pointerId); draw();
       };
     });
@@ -285,14 +316,21 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       if (drag.kind === 'rul') { const el = ps.querySelector('.ps-c canvas'); const [, sy] = ptr(el, ev), fy = Math.round(unsc(0, sy)[1]), h = drag.h, o = h.t === 'l' ? RUL.lines[h.i] : RUL.meas[h.i]; if (!o) return; if (h.t === 'l') o.y = fy; else o[h.e] = fy; paintAll(); return }
       const el = ps.querySelector(`.ps-c[data-ck="${drag.ck}"]`), cv = el?.querySelector('canvas'); if (!cv) return; const [sx, sy] = ptr(cv, ev), c = cur.cells[drag.ck];
       if (drag.kind === 'hand') { const k = kOf(c), r = peek(drag.ck) || recOf(drag.ck); r.ox = Math.round(drag.ox + (sx - drag.sx) / Z / k); r.oy = Math.round(drag.oy + (sy - drag.sy) / Z / k); paint(el); return }
-      const [fx, fy] = unsc(sx, sy), [x, y] = fromFrame(c, drag.ck, fx, fy); recOf(drag.ck).p[drag.key] = [Math.round(x), Math.round(y)]; paint(el);
+      const [fx, fy] = unsc(sx, sy), [x, y] = fromFrame(c, drag.ck, fx, fy), q = [Math.round(x), Math.round(y)], R = recOf(drag.ck).p;
+      if (holdT) { const last = drag.key.includes('#') && R[LINES[drag.key.split('#')[0]]]?.[+drag.key.split('#')[1]]; if (!last || Math.hypot(last[0] - q[0], last[1] - q[1]) > 4) { clearTimeout(holdT); holdT = 0 } }   /* moving cancels the hold */
+      if (drag.key.includes('#')) { const [k, i] = drag.key.split('#'), pts = R[LINES[k]]; if (pts && pts[+i]) { pts[+i] = q; setLine(R, k, pts) } } else R[drag.key] = q; paint(el);
     };
-    ps.onpointerup = () => { if (drag) { if (drag.kind === 'rul') saveRul(); write(KEY, DATA); const hand = drag.kind === 'hand'; drag = null; if (hand) draw() } };
+    ps.onpointerup = () => { clearTimeout(holdT); holdT = 0; if (drag) { if (drag.kind === 'rul') saveRul(); write(KEY, DATA); const hand = drag.kind === 'hand'; drag = null; if (hand) draw() } };
   }
   addEventListener('keydown', ev => {
     if (!document.body.classList.contains('sheet-mode') || $('psAdj') || /INPUT|TEXTAREA|SELECT/.test(ev.target?.tagName || '')) return;
     if (ev.key === 'h' || ev.key === 'H') { tool = tool === 'hand' ? 'mark' : 'hand'; draw(); return }
-    if (!act || !pick) return; const P = recOf(act).p, v = P[pick]; if (!v) return; const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[ev.key];
+    if (ev.key === 'Enter' && act) { const R = peek(act)?.p; const k = R && Object.keys(LINES).find(x => lineOpen(R, x)); if (k) { ev.preventDefault(); R[k + 'Done'] = true; write(KEY, DATA); step = firstMissing(R) || k; draw(); return } }
+    if (!act || !pick) return; const P = recOf(act).p, hk = pick.includes('#') ? pick.split('#') : null, v = hk ? P[LINES[hk[0]]]?.[+hk[1]] : P[pick]; if (!v) return;
+    if (hk) { const pts = P[LINES[hk[0]]], d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[ev.key];
+      if (d) { ev.preventDefault(); pts[+hk[1]] = [v[0] + d[0], v[1] + d[1]]; setLine(P, hk[0], pts); write(KEY, DATA); draw() }
+      else if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); pts.splice(+hk[1], 1); if (pts.length) setLine(P, hk[0], pts); else { delete P[LINES[hk[0]]]; delete P[hk[0]]; delete P[hk[0] + 'Done'] } pick = null; write(KEY, DATA); draw() }
+      return } const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[ev.key];
     if (d) { ev.preventDefault(); P[pick] = [v[0] + d[0], v[1] + d[1]]; write(KEY, DATA); draw() }
     else if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); delete P[pick]; pick = null; write(KEY, DATA); draw() }
   });
