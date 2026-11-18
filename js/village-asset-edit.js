@@ -243,6 +243,23 @@
  };
 
  /* ---------- wrap each drawable with its edit (offset, scale, rotation, flip, swap, layer, hide) ---------- */
+ /* v98.692 · PICTURE FRAMES ON THE VILLAGE MAP: the blue / red frame of a piece can belong to its PICTURE (js/art-frames.js, the same store the sub-maps use: localStorage 'place-art-frames-v1').
+    A piece with its own frame fields (or ov.fo) keeps them ("แก้เฉพาะชิ้นนี้"); a piece without follows the template of its picture (scaled by its size, mirrored when flipped); no template = nothing changes. */
+ const FR_FIELDS = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'zb', 'fw', 'fh', 'block', 'blockU', 'blockV', 'cmp'];
+ const frOwn = ov => !!ov.fo || FR_FIELDS.some(k => ov[k] != null && ov[k] !== false && !(Array.isArray(ov[k]) && !ov[k].length));
+ const geoOv = (ov, art) => { const AF = window.ArtFrames; if (!AF || !art || !AF.has(art) || frOwn(ov)) return ov; return AF.effective({ ...ov, art, width: 100 }) };
+ const artOfSrc = (src, ov, label, key) => 'v:' + (ov.kind || src?.name || label || key);
+ /* v98.692 · sway physics: one damped spring per plant (angle a, velocity v) driven by how close the hero's feet are; the target leans AWAY from the hero (up to ~13°) and the spring overshoots a little when the hero has passed */
+ const SWAY_RE = /bush|shrub|grass|weed|fern|flower|hedge|reed|clover|herb|พุ่ม|หญ้า|ดอก|แปลง|เฟิร์น|วัชพืช|ต้นกล้า/i, swayState = new Map();
+ function swayOf(key, x, y) {
+  const t = performance.now(); let st = swayState.get(key); if (!st) swayState.set(key, st = { a: 0, v: 0, t });
+  const hp = project(hero.u, hero.v), dx = x - hp.x, dy = (y - hp.y) * 2, d = Math.hypot(dx, dy), R = 64, infl = d < R ? 1 - d / R : 0;
+  const dt = Math.min(.05, Math.max(0, (t - st.t) / 1000)); st.t = t;
+  const target = (dx >= 0 ? 1 : -1) * Math.pow(infl, 1.15) * .23;
+  if (dt > 0) { st.v += ((target - st.a) * 90 - st.v * 7) * dt; st.a += st.v * dt }
+  if (Math.abs(st.a) < .0015 && Math.abs(st.v) < .01 && !infl) { st.a = 0; st.v = 0; return null }
+  return { sk: -Math.tan(st.a), sy: 1 - Math.abs(st.a) * .12 }
+ }
  function entry(key, owner, ax, ay, draw, src, label) {
   const ov = data.edit[key] || {},
    b = baseOf(owner),
@@ -259,6 +276,7 @@
     hidden: !!ov.hide,
     base: draw
    };
+  E.art = artOfSrc(src, ov, label, key); E.geo = geoOv(ov, E.art);
   if (ov.del) return null; // v91.5: deleted starter item - gone from the list too (⟲ on the place brings it back)
   frame.push(E);
   if (ov.hide) return null;
@@ -269,9 +287,12 @@
    ia = (ix + iy) / 2, ib = (iy - ix) / 2, ic = (iy - ix) / 2, id = (ix + iy) / 2,
    k = ov.kind && KINDS[ov.kind] ? ov.kind : null,
    plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !k && !ov.pm && !ov.artX && !ov.artY;
-  const inner = plain ? draw : gg => {
+  /* v98.692 · WALK-THROUGH PLANTS SWAY: a bush / grass / flower / hedge the hero can walk through (no red block frame) leans away from the hero and springs back with a little overshoot (below: swayOf) */
+  const swayOn = ov.sway === true || (ov.sway !== false && !ov.block && SWAY_RE.test((label || '') + ' ' + (ov.kind || '')));
+  const inner = plain && !swayOn ? draw : gg => {
    g.save();
    g.translate(E.x, E.y);
+   if (swayOn) { const q = swayOf(key, E.x, E.y); if (q) g.transform(1, 0, q.sk, q.sy, 0, 0) }
    window.PieceGeometry.apply(g, ov);
    if (r) g.rotate(r);
    g.scale(f ? -s : s, s);
@@ -292,7 +313,7 @@
    y: (ov.grp && grpYPrev.get(ov.grp) != null ? grpYPrev.get(ov.grp) : E.y) + (ov.layer || 0),
    z: ov.z || 0,
    fp: (() => {
-    const own = window.PieceGeometry.footprint(ov, fc.u, fc.v);
+    const own = window.PieceGeometry.footprint(E.geo, fc.u, fc.v);
     if (!ov.cmp || !ov.grp) return own;
     /* v98.292 · COMPOSITE: every member of the group shares ONE footprint = the union box of all member boxes (+ the member boxes themselves as .parts, for L / U shapes) */
     let U = grpFpNow.get(ov.grp);
@@ -327,7 +348,7 @@
    const b = baseOf(a.owner);
    if (!b || !KINDS[a.kind]) continue;
    const p = toScreen(b, a.du, a.dv),
-    it = entry(a.id, a.owner, p.x, p.y, () => KINDS[a.kind].draw(p), null, KINDS[a.kind].label + ' (เพิ่มเอง)');
+    it = entry(a.id, a.owner, p.x, p.y, () => KINDS[a.kind].draw(p), { name: a.kind }, KINDS[a.kind].label + ' (เพิ่มเอง)');
    if (it) out.push(it)
   }
   return out
@@ -1010,7 +1031,7 @@
  /* v97.47 · a first guess of the blocking frame (cells) from the item's name; adjusted with กว้าง/ลึก ± */
  function guessBlock(label) { const t = String(label || ''); return /ต้นไม้|ต้นโอ๊ก|ต้นสน|tree|oak|pine/i.test(t) ? [1, 1] : /เกวียน|รถ|cart|wagon/i.test(t) ? [1.5, 1] : /บ่อ|well|น้ำพุ|รูปปั้น|statue/i.test(t) ? [1.5, 1.5] : /โคม|lamp|ถัง|barrel|ลัง|crate|ป้าย|sign/i.test(t) ? [.5, .5] : /หิน|rock/i.test(t) ? [1, 1] : [1, 1] }
  let blockList = [];
- function rebuildBlocks() { blockList = frame.filter(e => e.ov?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.ov, c.u, c.v, true) }) }
+ function rebuildBlocks() { blockList = frame.filter(e => (e.geo || e.ov)?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.geo || e.ov, c.u, c.v, true) }) }
  const blockBoxes = () => blockList.flatMap(r => r.parts || [r]);   /* v98.499 · free-form red zones are lists of boxes */
  const blockedAt = (u, v) => { for (const r of blockBoxes()) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
  function itemRectAt(k, c) {
@@ -3053,7 +3074,7 @@
      // v86: compare the layout itself (not the timestamp line) so an unchanged layout is not re-pushed
      if((old||'').replace(/^\/\/.*\n/,'')!==body.replace(/^\/\/.*\n/,''))files.push({path:'js/village-layout-v67.js',content:body});
      // everything else the village editor keeps outside the layout snapshot → js/game-settings.js
-     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1','depth-style-v1'],vals={};
+     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1','depth-style-v1','place-art-frames-v1'],vals={};
      for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
      const text=await head.read('js/game-settings.js')||'',settings=GitHubPush.parseSettings(text)||{};
      if(Object.entries(vals).some(([k,v])=>settings[k]!==v)){Object.assign(settings,vals);files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
@@ -3100,16 +3121,35 @@
   select: ks => { if (place) { place.keys = [...ks]; place.tab = 'items'; render() } },
   pick: key => selectItem(key),
   /* v98.291 · bridge for js/piece-detail.js (the detailed single-piece window) */
+  frameList: () => frame.map(e => ({ key: e.key, art: e.art, label: e.label, own: frOwn(e.ov || {}), block: !!(e.geo || e.ov)?.block })),   /* v98.692 · for tests / tools */
   detail: {
    /* v98.522 · key 'bld:<placeId>' = the PLACE itself (its order frame zo / orderU / orderV live in data.buildings[id]); no red frame, no art transforms */
    get caps() { return bldDetail ? { rot: false, slant: false, block: false, shape: false, zoom: 0.55, note: 'สถานที่: ระบายกรอบฟ้าให้เท่าส่วนที่แตะพื้นจริงของตัวอาคาร (รวมเฉลียง/ปีกยื่น) · ไม่ระบาย = ใช้กรอบแปลงเดิม' } : {} },
    item: key => { if (String(key).startsWith('bld:')) { const o = locations.find(x => x.id === key.slice(4)); bldDetail = !!o; return o ? { key, label: bldName[o.id] || o.name || o.id, ax: 0, ay: 0, bld: o } : null } bldDetail = false; return frame.find(e => e.key === key) || null },
-   ov: key => String(key).startsWith('bld:') ? (data.buildings[key.slice(4)] || {}) : (data.edit[key] || {}),
+   ov: key => { if (String(key).startsWith('bld:')) return data.buildings[key.slice(4)] || {}; const o = data.edit[key] || {}, E = frame.find(e => e.key === key); return E ? geoOv(o, E.art) : o },   /* v98.692 · the window shows the frame the piece really uses (own → picture's template) */
    edit(key, fn, checkpoint) {
     if (checkpoint) UX.checkpoint();
+    if (!String(key).startsWith('bld:') && window.ArtFrames) {
+     const E = frame.find(e => e.key === key), AF = window.ArtFrames;
+     if (E && AF.has(E.art)) {
+      const o = ovOf(key), wasOwn = frOwn(o);
+      if (!wasOwn) { const m = AF.materialize({ ...o, art: E.art, width: 100 }); for (const k of FR_FIELDS) if (m[k] != null) o[k] = m[k] }   /* edit on top of what is shown */
+      const before = JSON.stringify(FR_FIELDS.map(k => o[k] ?? null));
+      fn(o);
+      if (!wasOwn) { if (JSON.stringify(FR_FIELDS.map(k => o[k] ?? null)) === before) { for (const k of [...FR_FIELDS, 'fo']) delete o[k] } else o.fo = true }   /* nothing in the frame changed → keep following the picture */
+      clean(key); UX.persist(); render(); return
+     }
+    }
     if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); render(); return }
     fn(ovOf(key)); clean(key); UX.persist(); render()
    },
+   frames: window.ArtFrames ? {
+    autoNote: 'ยังไม่มีค่าของภาพนี้ (ชิ้นนี้ยังไม่มีกรอบ ให้วางกรอบฟ้า/แดงก่อน)',
+    state: key => { const E = frame.find(e => e.key === key); if (!E) return null; const AF = window.ArtFrames, o = data.edit[key] || {}, own = frOwn(o); return { own, tpl: AF.has(E.art), uses: frame.filter(e => e.art === E.art && !e.hidden && !frOwn(e.ov || {})).length } },
+    saveToArt: key => { const E = frame.find(e => e.key === key); if (!E) return; const o = ovOf(key), AF = window.ArtFrames; if (!frOwn(o) && !AF.has(E.art)) { flashStatus('วางกรอบฟ้า/แดงของชิ้นนี้ก่อน แล้วค่อยบันทึกลงภาพ'); return } UX.checkpoint(); AF.saveFrom({ ...o, ...window.ArtFrames.effective({ ...o, art: E.art, width: 100 }), art: E.art, width: 100, s: o.s, f: o.f }); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(key); UX.persist(); render() },
+    applyAll: key => { const E = frame.find(e => e.key === key); if (!E) return 0; UX.checkpoint(); let n = 0; for (const e of frame) if (e.art === E.art) { const o = data.edit[e.key]; if (o && frOwn(o)) { for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(e.key); n++ } } UX.persist(); render(); return n },
+    useArt: key => { const o = data.edit[key]; if (!o) return; UX.checkpoint(); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(key); UX.persist(); render() }
+   } : null,
    /* draws the piece, with its own edit (size, turn, flip, slant, swapped picture) but WITHOUT the map offset, at (0,0) of the context q */
    drawTo(q, E, ov) {
     if (E.bld) { const main = g; g = q; try { const c = center(E.bld), p = project(c.u, c.v); q.save(); q.translate(-p.x, -p.y); drawB(E.bld); q.restore() } catch (e) { } finally { g = main } return }

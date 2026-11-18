@@ -21,10 +21,10 @@
     const pts = [[b.u0, b.v0], [b.u1, b.v0], [b.u1, b.v1], [b.u0, b.v1]].map(([u, v]) => P(u, v));
     q.beginPath(); pts.forEach((p, i) => q[i ? 'lineTo' : 'moveTo'](p.x, p.y)); q.closePath(); q.fillStyle = fill; q.fill(); q.strokeStyle = line; q.lineWidth = 2; q.stroke();
   }
-  /* v98.691 · the test person is the male hero, idle SW (assets/characters/hero-male/idle-sw.webp) — the blue capsule stays as a fallback while the picture loads */
+  /* v98.691 · the test person is the male hero, idle SW (assets/tactics/imported/idle-sw-mwcast2-m/frame-01.webp) — the blue capsule stays as a fallback while the picture loads */
   const HERO = { im: null, box: null, white: null };
   function heroSprite() {
-    if (!HERO.im) { HERO.im = new Image(); HERO.im.onload = () => { try { if (dlg && cv) paint() } catch (e) { } }; HERO.im.src = 'assets/characters/hero-male/idle-sw.webp' }
+    if (!HERO.im) { HERO.im = new Image(); HERO.im.onload = () => { try { if (dlg && cv) paint() } catch (e) { } }; HERO.im.src = 'assets/tactics/imported/idle-sw-mwcast2-m/frame-01.webp' }
     const im = HERO.im; if (!im.complete || !im.naturalWidth) return null;
     if (!HERO.box) {
       const c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
@@ -115,12 +115,14 @@
     if (!el('pdFitMsg')) return; const E = G().edges(points);
     el('pdFitMsg').textContent = E ? `ซ้าย ${E.a1.toFixed(1)}° · ขวา ${E.a2.toFixed(1)}° → เป้า 26.57° ทั้งสองด้าน${E.ok ? '' : ' · จุดฐานไม่ถูกต้อง ลองวัดใหม่'}` : (points.length < 3 ? ['① คลิกมุมซ้ายของฐาน', '② คลิกมุมหน้าสุดของฐาน', '③ คลิกมุมขวาของฐาน'][points.length] : 'จุดชิดกันเกินไป ลองวัดใหม่');
     dlg.querySelectorAll('[data-fit]').forEach(b => b.disabled = !E?.ok);
-    if (el('pdFrSave')) { el('pdFrSave').onclick = () => { D().frames.saveToArt(key); build(); paint(); readouts() }; el('pdFrUse').onclick = () => { D().frames.useArt(key); build(); paint(); readouts() } }
+    if (el('pdFrSave')) { el('pdFrSave').onclick = () => { D().frames.saveToArt(key); build(); paint(); readouts() }; el('pdFrUse').onclick = () => { D().frames.useArt(key); build(); paint(); readouts() }; if (el('pdFrAll')) el('pdFrAll').onclick = () => { if (confirm('ทิ้งกรอบที่แก้เฉพาะชิ้นของทุกชิ้นที่ใช้ภาพนี้บนแมพนี้ แล้วให้ตามค่าของภาพ?')) { const n = D().frames.applyAll(key); build(); paint(); readouts(); const m = el('pdFrState'); if (m) m.textContent += ' · ล้างค่าเฉพาะชิ้นแล้ว ' + n + ' ชิ้น' } } }
   }
   function frState() {   // v98.567 · where this piece's frame comes from
     const m = el('pdFrState'); if (!m) return; const st = D().frames?.state(key); if (!st) return;
-    m.textContent = st.own ? '✎ แก้เฉพาะชิ้นนี้ (ไม่ตามค่าของภาพ)' : st.tpl ? '🔗 ตามค่าของภาพนี้ (บันทึกไว้แล้ว)' : '🔗 ตามกรอบอัตโนมัติจากความกว้างภาพ (ยังไม่ได้บันทึกค่าของภาพ)';
+    const base = st.own ? '✎ แก้เฉพาะชิ้นนี้ (ไม่ตามค่าของภาพ)' : st.tpl ? '🔗 ตามค่าของภาพนี้ (บันทึกไว้แล้ว)' : '🔗 ' + (D().frames.autoNote || 'ตามกรอบอัตโนมัติจากความกว้างภาพ') + ' (ยังไม่ได้บันทึกค่าของภาพ)';
+    m.textContent = base + (st.tpl && st.uses != null ? ` · ตอนนี้ ${st.uses} ชิ้นบนแมพนี้ตามค่าของภาพ` : '');
     const u = el('pdFrUse'); if (u) u.disabled = !st.own;
+    const all = el('pdFrAll'); if (all) all.disabled = !st.tpl;
   }
   function readouts() {
     if (!dlg) return; const o = D().ov(key);
@@ -139,8 +141,8 @@
 <h4>รูปร่าง</h4>${row('pdS', 'ขนาด', Math.round((ov.s ?? 1) * 100), 30, 250, 1, v => v + '%')}${caps().rot === false ? '' : row('pdR', 'หมุน', ov.r || 0, -180, 180, 1, v => v + '°')}${caps().slant === false ? '' : row('pdIx', 'เฉียง ↗↙', Math.round((ov.ix ?? 1) * 100), 50, 200, 1, v => v + '%') + row('pdIy', 'เฉียง ↖↘', Math.round((ov.iy ?? 1) * 100), 50, 200, 1, v => v + '%')}
 <label class="pdc"><input type="checkbox" id="pdF" ${ov.f ? 'checked' : ''}> กลับด้านซ้าย-ขวา</label><button id="pdArtReset">คืนตำแหน่งภาพ</button>
 <section id="pdFitPanel" ${mode === 'fit' ? '' : 'hidden'}><h4>📐 ปรับมุมฐานแบบ Studio</h4><p class="pdhint">เลือกมุมฐานเดียวกัน ซ้าย → หน้าสุด → ขวา ไม่เลือกยอดพนักหรือจุดต่างระดับ</p><p id="pdFitMsg"></p><div class="pdtools"><button data-fit="balanced">ปรับ 2:1 (สมดุล)</button><button data-fit="height">รักษาความสูง</button><button data-fit="width">รักษาความกว้าง</button><button id="pdFitClear">วัดใหม่</button><button id="pdFitReset">คืนค่ามุมฐาน</button></div></section>
-${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint" id="pdFrState"></p><div class="pdr" style="display:flex;gap:6px;flex-wrap:wrap"><button id="pdFrSave" title="กรอบฟ้า/แดงนี้กลายเป็นค่าของภาพนี้ — ทุกแมพที่ใช้ภาพนี้และไม่ได้แก้เองจะตามทันที">💾 บันทึกลงภาพนี้ (ทุกแมพ)</button><button id="pdFrUse" title="ทิ้งกรอบที่แก้เฉพาะชิ้นนี้ แล้วตามค่าของภาพ">↩ ใช้ค่าของภาพ</button></div>` : ''}<h4>กรอบพื้น</h4>${step('sw', '🟦 เรียงลำดับ กว้าง', ov.sw ?? ov.fw ?? .5)}${step('sh', '🟦 เรียงลำดับ ลึก', ov.sh ?? ov.fh ?? .5)}<button id="pdOrderReset">คืนตำแหน่งกรอบฟ้า</button> <button id="pdSzReset">ฟ้า = กรอบแดง</button>
-${caps().block === false ? '' : `<label class="pdc"><input type="checkbox" id="pdB" ${ov.block ? 'checked' : ''}> 🟥 บล็อกเดิน</label>${step('fw', '🟥 บล็อก กว้าง', ov.fw ?? .5)}${step('fh', '🟥 บล็อก ลึก', ov.fh ?? .5)}<button id="pdBlockReset">คืนตำแหน่งกรอบแดง</button>`}${caps().note ? `<p class="pdst">${caps().note}</p>` : ''}
+${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint" id="pdFrState"></p><div class="pdr" style="display:flex;gap:6px;flex-wrap:wrap"><button id="pdFrSave" title="กรอบฟ้า/แดงนี้กลายเป็นค่าของภาพนี้ — ทุกแมพที่ใช้ภาพนี้และไม่ได้แก้เองจะตามทันที">💾 บันทึกลงภาพนี้ (ทุกแมพ)</button><button id="pdFrUse" title="ทิ้งกรอบที่แก้เฉพาะชิ้นนี้ แล้วตามค่าของภาพ">↩ ใช้ค่าของภาพ</button>${D().frames.applyAll ? '<button id="pdFrAll" title="ชิ้นอื่นบนแมพนี้ที่ใช้ภาพเดียวกันแต่เคยแก้เฉพาะชิ้นไว้ จะทิ้งกรอบเดิมแล้วตามค่าของภาพทั้งหมด">⤵ ให้ทุกชิ้นของภาพนี้ตามค่าของภาพ</button>' : ''}</div>` : ''}<h4>กรอบพื้น</h4>${step('sw', '🟦 เรียงลำดับ กว้าง', ov.sw ?? ov.fw ?? .5)}${step('sh', '🟦 เรียงลำดับ ลึก', ov.sh ?? ov.fh ?? .5)}<button id="pdOrderReset">คืนตำแหน่งกรอบฟ้า</button>
+${caps().block === false ? '' : `<button id="pdSzReset" title="ระบายพื้นแดงให้เต็มพื้นที่กรอบฟ้า (กรอบแดง = กรอบฟ้า) แล้วแก้ต่อด้วยแปรงแดงได้">🟥 ปรับกรอบแดงตามกรอบฟ้า</button><label class="pdc"><input type="checkbox" id="pdB" ${ov.block ? 'checked' : ''}> 🟥 บล็อกเดิน</label>${step('fw', '🟥 บล็อก กว้าง', ov.fw ?? .5)}${step('fh', '🟥 บล็อก ลึก', ov.fh ?? .5)}<button id="pdBlockReset">คืนตำแหน่งกรอบแดง</button>`}${caps().note ? `<p class="pdst">${caps().note}</p>` : ''}
 <h4>การบัง</h4><label class="pdc">ความสูง <select id="pdT"><option value="">อัตโนมัติ (จากชื่อ)</option><option value="tall"${ov.tall === 'tall' ? ' selected' : ''}>สูง</option><option value="low"${ov.tall === 'low' ? ' selected' : ''}>เตี้ย</option></select></label><p id="pdState" class="pdst"></p></div></div>`;
   }
   function css() {
@@ -173,7 +175,8 @@ ${caps().block === false ? '' : `<label class="pdc"><input type="checkbox" id="p
     if (el('pdB')) el('pdB').onchange = e => edit(o => { o.block = e.target.checked });
     el('pdT').onchange = e => edit(o => { o.tall = e.target.value });
     dlg.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { const [f, d] = b.dataset.st.split(','); edit(o => { const base = f === 'sw' ? (o.sw ?? o.fw ?? .5) : f === 'sh' ? (o.sh ?? o.fh ?? .5) : (o[f] ?? .5); o[f] = Math.max(.5, Math.min(12, base + +d)) }) });
-    el('pdSzReset').onclick = () => { edit(o => { o.sw = o.fw ?? .5; o.sh = o.fh ?? .5; o.orderU = o.blockU || 0; o.orderV = o.blockV || 0 }); build() };
+    /* v98.692 · "ปรับกรอบแดงตามกรอบฟ้า": the red frame is PAINTED over the whole blue area (the opposite of the old "blue = red"): blue cells (or the blue rectangle rounded onto the grid) are copied into the red zone, same offset, block turned on */
+    if (el('pdSzReset')) el('pdSzReset').onclick = () => { edit(o => { const zo = G().cellsOf(o.zo), cells = zo.length ? zo.map(c => [c[0], c[1]]) : rectCells(o, 'bo'); o.zb = cells; o.blockU = o.orderU || 0; o.blockV = o.orderV || 0; o.fw = o.sw ?? o.fw ?? .5; o.fh = o.sh ?? o.fh ?? .5; o.block = true }, true); build(); paint(); readouts() };
     el('pdArtReset').onclick = () => { points = []; edit(o => { delete o.artX; delete o.artY }) };
     el('pdOrderReset').onclick = () => edit(o => { delete o.orderU; delete o.orderV });
     if (el('pdBlockReset')) el('pdBlockReset').onclick = () => edit(o => { delete o.blockU; delete o.blockV });
