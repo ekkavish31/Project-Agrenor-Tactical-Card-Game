@@ -18,7 +18,7 @@
   const KEY = 'pose-sheet-v1', SKEY = 'pose-sheet.scaleDraft', RKEY = 'pose-sheet.rulers';
   /* v98.711 · the datum points, in the old 📍 Datum way: both eyes · chin · skull top (a dashed head ellipse suggests it) · neck cut LINE (click the points one after another, they are joined by a line; a click-and-HOLD ends it) · shoulders L/R ·
      leg cut LINE (same way) · the width of ONE leg (its two edges) · left / right foot (the stance centre on the ground = their middle) */
-  const STEPS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['top', 'ยอดกะโหลก', '#8a4fff'], ['neck', 'เส้นตัดหัว (คอ) · คลิกเรียงจุด คลิกค้างเพื่อจบ', '#e07b00'],
+  const STEPS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['headA', 'หัว จุด A (เลือกเอง เช่น หู) · ท่าหันหลัง', '#d63384'], ['headB', 'หัว จุด B (เลือกเอง เช่น กระหม่อม) · ท่าหันหลัง', '#d63384'], ['top', 'ยอดกะโหลก', '#8a4fff'], ['neck', 'เส้นตัดหัว (คอ) · คลิกเรียงจุด คลิกค้างเพื่อจบ', '#e07b00'],
     ['shL', 'ไหล่ ซ้ายภาพ', '#1f7a4d'], ['shR', 'ไหล่ ขวาภาพ', '#1f7a4d'], ['crotch', 'เส้นตัดขา (ขาหนีบ) · คลิกเรียงจุด คลิกค้างเพื่อจบ', '#1d5fbf'], ['legL', 'ความกว้างท่อนขา 1 ข้าง · ขอบซ้าย', '#0d8f99'], ['legR', 'ความกว้างท่อนขา · ขอบขวา', '#0d8f99'],
     ['footL', 'เท้า ซ้าย (จุดแตะพื้น)', '#7b4a12'], ['footR', 'เท้า ขวา (จุดแตะพื้น)', '#7b4a12']];
   const LINES = { neck: 'neckLine', crotch: 'crotchLine' };   /* P.neck / P.crotch = the middle of the line (what the numbers use) · P.neckLine / P.crotchLine = its points · P.<k>Done = the line is finished */
@@ -26,6 +26,10 @@
   const setLine = (P, k, pts) => { P[LINES[k]] = pts; P[k] = lineMid(pts) };
   const lineOpen = (P, k) => !!(P[LINES[k]] && P[k + 'Done'] === false);
   const STEP = Object.fromEntries(STEPS.map(s => [s[0], s]));
+  /* v98.781 · a pose seen from the front (SW row) uses the two EYES for the head size; a pose seen from behind (NE row) has no eyes → two FREE points (A, B) that you choose yourself (e.g. an ear and the crown). Back poses are compared with the STANDING BACK pose (idle NE) only */
+  const isBack = ck => /@(NE|NW)$/.test(ck || '');
+  const stepsOf = ck => STEPS.filter(s => isBack(ck) ? s[0] !== 'eyeL' && s[0] !== 'eyeR' : s[0] !== 'headA' && s[0] !== 'headB');
+  const stepsHtml = ck => stepsOf(ck).map(([k, l, col], i) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i><span class="n">${i + 1}</span>${l.split(' · ')[0]}</button>`).join('');
   const SRC = 384, GX = 192, GY = 360, PAD = 96;   /* every character frame: 384 × 384, ground point (192, 360) */
   const RCOL = ['#e03131', '#1971c2', '#2f9e44', '#f08c00', '#9c36b5', '#0c8599', '#c2255c', '#5c940d'];
   const $ = id => document.getElementById(id), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -111,22 +115,22 @@
   }
   function vals(ck) {
     const P = Pof(ck), an = anchorOf(ck), c = cur?.cells[ck]; if (!c) return null; const d = (a, b) => a && b ? Math.hypot(a[0] - b[0], a[1] - b[1]) : null;
-    if (!an || !P.top || !(P.eyeL && P.eyeR)) return { need: 'วางจุดเท้า + ยอดกะโหลก + ตาสองข้างก่อน' };
+    const back = isBack(ck);
+    if (!an || !P.top || !(back ? P.headA && P.headB : P.eyeL && P.eyeR)) return { need: back ? 'วางจุดเท้า + ยอดกะโหลก + หัว จุด A/B ก่อน' : 'วางจุดเท้า + ยอดกะโหลก + ตาสองข้างก่อน' };
     /* a LYING pose (down): the length is measured along the body axis (skull top → feet), not as a height — the same line whichever way the body lies */
     const H = c.pose === 'down' ? Math.max(0, ...[P.footL, P.footR].filter(Boolean).map(f => d(P.top, f))) : an[1] - P.top[1]; if (!(H >= 20)) return { need: 'ความสูงตัวผิดปกติ' };
     /* v98.780 · HEAD = (skull top → the EYE LINE) × 2. The eye line = the line through the two eyes; the distance is taken straight to that line (so a tilted or lying head works), twice = the whole head. The jaw / an open mouth does not count.
        The old head (skull top → chin) stays below as "หัว→คาง", for reference only. */
-    const ex = P.eyeR[0] - P.eyeL[0], ey = P.eyeR[1] - P.eyeL[1], el = Math.hypot(ex, ey), tx = P.top[0] - P.eyeL[0], ty = P.top[1] - P.eyeL[1];
-    const topToEyes = el >= 2 ? Math.abs(tx * ey - ty * ex) / el : d(P.top, [(P.eyeL[0] + P.eyeR[0]) / 2, (P.eyeL[1] + P.eyeR[1]) / 2]);
-    const o = { H, head: topToEyes * 2, sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR) };
+    let topToEyes = 0; if (!back) { const ex = P.eyeR[0] - P.eyeL[0], ey = P.eyeR[1] - P.eyeL[1], el = Math.hypot(ex, ey), tx = P.top[0] - P.eyeL[0], ty = P.top[1] - P.eyeL[1]; topToEyes = el >= 2 ? Math.abs(tx * ey - ty * ex) / el : d(P.top, [(P.eyeL[0] + P.eyeR[0]) / 2, (P.eyeL[1] + P.eyeR[1]) / 2]) }
+    const o = { H, headLabel: back ? 'หัว (A–B)' : 'หัว (ตา×2)', head: back ? d(P.headA, P.headB) : topToEyes * 2, sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR) };
     return o;
   }
   const pct = (v, H) => v == null ? '—' : (v / H * 100).toFixed(1) + '%';
   function valsHtml(ck) {
     const v = vals(ck); if (!v) return ''; if (v.need) return `<div class="vals dim">${v.need}</div>`;
-    const base = (ck !== 'idle@SW' ? vals('idle@' + cur.cells[ck].dir) || vals('idle@SW') : null);
+    const bk = 'idle@' + cur.cells[ck].dir, base = (ck === bk || ck === 'idle@SW' ? null : isBack(ck) ? vals(bk) : vals(bk) || vals('idle@SW'));   /* back poses: only against the standing BACK pose */
     const row = (n, a, bk, dim) => { const p = a == null ? null : a / v.H * 100; let dl = ''; if (base && !base.need && base[bk] != null && p != null) { const q = base[bk] / base.H * 100, x = (p - q) / q * 100; dl = ` <i class="${Math.abs(x) > 5 ? 'bad' : Math.abs(x) > 2 ? 'warn' : 'ok'}">${x > 0 ? '+' : ''}${x.toFixed(1)}%</i>` } return `<tr${dim ? ' style="opacity:.5"' : ''}><td>${n}</td><td>${a == null ? '—' : Math.round(a)}px</td><td>${p == null ? '—' : p.toFixed(1) + '%'}${dl}</td></tr>` };
-    return `<table class="vals"><tr><td>สูงตัว</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>${row('หัว (ตา×2)', v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}</table>`;
+    return `<table class="vals"><tr><td>สูงตัว</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>${row(v.headLabel, v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}</table>`;
   }
 
   /* ---------- UI state ---------- */
@@ -219,7 +223,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         <span id="psCartMsg" style="font-size:12.5px;color:#315d46"></span>
         <button type="button" class="act main" id="psCartAll" ${cartPlan().n ? '' : 'disabled'} title="ที่เปลี่ยนทั้งหมด (ปรับสัดส่วนท่าที่เลือก · ตำแหน่งภาพ · ขนาดเข้าเกม · จุด/ติ๊ก/ไม้บรรทัด) → 🛒 Cart รอ Push">${cartPlan().text}</button>
         <button type="button" class="act" id="psFull" title="เต็มจอ: เห็นแค่แถบบน + แถบข้าง + พื้นที่แก้ไข (Esc = ออก)">⛶ เต็มจอ</button></div>
-      <div class="ps-side" id="psSide"><div class="ps-sh">จุดที่วาง (ตามลำดับ)</div><div class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${STEPS.map(([k, l, col], i) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i><span class="n">${i + 1}</span>${l.split(' · ')[0]}</button>`).join('')}</div>
+      <div class="ps-side" id="psSide"><div class="ps-sh">จุดที่วาง (ตามลำดับ)</div><div class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${stepsHtml(act || 'idle@SW')}</div>
         <div class="ps-sh">ท่าที่เลือก</div><div id="psAdjBox"></div>
         <div class="ps-row"><button type="button" class="act" id="psHide" ${act ? '' : 'disabled'} title="ซ่อนท่าที่เลือกออกจากหน้ารวม (ไม่ลบจุด)">🙈 ซ่อนท่านี้</button><button type="button" class="act" id="psUnhideAll" ${HID.size ? '' : 'disabled'}>👁 แสดงทั้งหมด${HID.size ? ' (' + HID.size + ')' : ''}</button></div>
         <button type="button" class="act" id="psCopySW" title="คัดลอกจุด datum ของท่ายืน (SW / NE) ไปให้ท่าที่เลือก (คลิกในช่องของท่านั้นก่อน)">📋 datum SW → ท่าที่เลือก</button>
@@ -272,14 +276,14 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, LOUPE, LOUPE); g.fillStyle = '#fff'; g.fillRect(0, 0, LOUPE, LOUPE);
     g.save(); g.beginPath(); g.rect(0, 0, LOUPE, LOUPE); g.clip(); g.translate(LOUPE / 2, LOUPE / 2); g.scale(LZ, LZ); g.translate(-fx, -fy); g.imageSmoothingEnabled = false;
     if (flip) { g.save(); g.translate(x0 + s, y0); g.scale(-1, 1); g.drawImage(src, 0, 0, s, s); g.restore() } else g.drawImage(src, x0, y0, s, s);
-    if (SHOW.pts) { const P = Pof(ck); for (const [key, , col] of STEPS) { const lk = LINES[key], pts = lk && P[lk]; for (const v of (pts && pts.length ? pts : (P[key] ? [P[key]] : []))) { const [px, py] = toFrame(c, ck, v[0], v[1]); g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 1 / LZ * 1.4; g.beginPath(); g.arc(px, py, 3.2 / LZ * 1.6, 0, 7); g.fill(); g.stroke() } } }
+    if (SHOW.pts) { const P = Pof(ck); for (const [key, , col] of stepsOf(ck)) { const lk = LINES[key], pts = lk && P[lk]; for (const v of (pts && pts.length ? pts : (P[key] ? [P[key]] : []))) { const [px, py] = toFrame(c, ck, v[0], v[1]); g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 1 / LZ * 1.4; g.beginPath(); g.arc(px, py, 3.2 / LZ * 1.6, 0, 7); g.fill(); g.stroke() } } }
     g.restore();
     /* the cross-hair: the point goes exactly under the centre */
     const m = LOUPE / 2; g.save(); g.lineWidth = 1.5; g.strokeStyle = s0.col; for (const [a, b, c2, d] of [[m, 0, m, m - 12], [m, m + 12, m, LOUPE], [0, m, m - 12, m], [m + 12, m, LOUPE, m]]) { g.beginPath(); g.moveTo(a, b); g.lineTo(c2, d); g.stroke() } g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.arc(m, m, 12, 0, 7); g.stroke(); g.strokeStyle = s0.col; g.beginPath(); g.arc(m, m, 12.8, 0, 7); g.stroke();
     g.font = '700 11px sans-serif'; g.textAlign = 'left'; g.fillStyle = '#000b'; g.fillRect(0, LOUPE - 17, LOUPE, 17); g.fillStyle = '#fff'; g.fillText(s0.n + '/' + s0.all + ' · ' + s0.short + ' · ' + Math.round(fx) + ',' + Math.round(fy), 6, LOUPE - 5); g.restore();
   }
   /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
-  const stepInfo = () => { const i = STEPS.findIndex(s => s[0] === step), s = STEPS[Math.max(0, i)]; return { n: Math.max(0, i) + 1, all: STEPS.length, label: s[1], short: s[1].split(' · ')[0], col: s[2] } };
+  const stepInfo = () => { const L = stepsOf(act); const i = L.findIndex(s => s[0] === step), s = L[Math.max(0, i)]; return { n: Math.max(0, i) + 1, all: L.length, label: s[1], short: s[1].split(' · ')[0], col: s[2] } };
   /* v98.745 · SHOW: points on/off · colour zones on/off (head pink · torso blue · legs green, cut at the chin and the crotch line) */
   const SHOW = (() => { try { return { pts: true, zone: false, ...(JSON.parse(localStorage.getItem('pose-sheet.show')) || {}) } } catch (e) { return { pts: true, zone: false } } })();
   const saveShow = () => { try { localStorage.setItem('pose-sheet.show', JSON.stringify(SHOW)) } catch (e) { } };
@@ -378,6 +382,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function updNext() {
     const el = $('psNext'); if (!el) return;
     for (const id of ['psHide', 'psClear']) { const b = $(id); if (b) b.disabled = !act }
+    { const box = $('poseSheet')?.querySelector('.ps-steps'), kind = String(isBack(act)); if (box && box.dataset.k !== kind) { if (!stepsOf(act).some(s => s[0] === step)) step = stepsOf(act)[0][0]; box.dataset.k = kind; box.innerHTML = stepsHtml(act || 'idle@SW'); bindSteps($('poseSheet')) } }
     { const cb = $('psCartAll'); if (cb && !cb.dataset.busy) { const pl = cartPlan(); cb.textContent = pl.text; cb.disabled = !pl.n } }
     { const u = $('psUndo'), r = $('psRedo'); if (u) u.disabled = !UNDO.length; if (r) r.disabled = !REDO.length }   /* follow the selected pose without a full redraw */
     const box = $('psAdjBox'); if (box) { const hh = adjBar(); if (box._h !== hh) { box._h = hh; box.innerHTML = hh } }
@@ -423,7 +428,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const dot = (key, v, col, label, sel) => { const [fx, fy] = toFrame(c, ck, v[0], v[1]), [x, y] = sc(fx, fy);
       g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 1.6; g.beginPath(); g.arc(x, y, sel ? 7 : 5, 0, 7); g.fill(); g.stroke();
       /* v98.743 · no text next to a point (it covered the picture) — the colour is enough, the side bar names the points */ };
-    for (const [key, , col] of (SHOW.pts ? STEPS : [])) {
+    for (const [key, , col] of (SHOW.pts ? stepsOf(ck) : [])) {
       const lk = LINES[key], pts = lk && P[lk];
       if (pts && pts.length) {   /* a cut LINE: the points joined by a line (dashed while it is still open) */
         g.save(); g.strokeStyle = col; g.lineWidth = 1.8; if (P[key + 'Done'] === false) g.setLineDash([5, 4]); g.beginPath(); pts.forEach((q, i) => { const [x, y] = sc(...toFrame(c, ck, q[0], q[1])); i ? g.lineTo(x, y) : g.moveTo(x, y) }); g.stroke(); g.restore();
@@ -444,7 +449,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!P.eyeL || !P.eyeR || !P.chin) return null; const ex = (P.eyeL[0] + P.eyeR[0]) / 2, ey = (P.eyeL[1] + P.eyeR[1]) / 2, f = P.chin[1] - ey; if (f < 6) return null; const y = ey - f * 1.1, x = (ex + P.chin[0]) / 2, ry = (P.chin[1] - y) / 2; return { x, y, cx: x, cy: (y + P.chin[1]) / 2, rx: ry * .78, ry } }
   function hitPoint(c, ck, P, sx, sy) {
     let best = null, bd = 9;
-    for (const [key] of STEPS) {
+    for (const [key] of stepsOf(ck)) {
       const lk = LINES[key], pts = lk && P[lk];
       if (pts && pts.length) { pts.forEach((v, i) => { const [x, y] = sc(...toFrame(c, ck, ...v)), d = Math.hypot(x - sx, y - sy); if (d < bd) { bd = d; best = key + '#' + i } }); continue }
       const v = P[key]; if (!v) continue; const [x, y] = sc(...toFrame(c, ck, ...v)), d = Math.hypot(x - sx, y - sy); if (d < bd) { bd = d; best = key } }
@@ -456,7 +461,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     for (let i = 0; i < RUL.lines.length; i++) if (Math.abs(sc(0, RUL.lines[i].y)[1] - sy) < 5) return { t: 'l', i };
     return null;
   }
-  const firstMissing = P => STEPS.find(s => !P[s[0]] || (LINES[s[0]] && lineOpen(P, s[0])))?.[0];
+  const firstMissing = (P, ck) => stepsOf(ck || act).find(s => !P[s[0]] || (LINES[s[0]] && lineOpen(P, s[0])))?.[0];
+  function bindSteps(ps) { ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() }) }
   function wire(ps) {
     if (!ps.dataset.tip) { ps.dataset.tip = '1';   /* the label that follows the pointer */
       const tip = () => { let t = $('psTip'); if (!t) { t = document.createElement('div'); t.id = 'psTip'; t.hidden = true; document.body.append(t) } return t };
@@ -467,7 +473,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       ps.addEventListener('pointermove', ev => { const t = tip(), on = tool !== 'hand' && SHOW.pts && !drag && ev.target.closest?.('.ps-c canvas'); if (!on) { t.hidden = true; return } const s = stepInfo(); t.textContent = s.n + '/' + s.all + ' · ' + s.short; t.style.background = s.col; t.style.left = (ev.clientX + 16) + 'px'; t.style.top = (ev.clientY + 18) + 'px'; t.hidden = false });
       ps.addEventListener('pointerleave', () => { const t = $('psTip'); if (t) t.hidden = true; hideLoupes(null) }) }
     const msg = t => { const m = $('psMsg'); if (m) m.textContent = t };
-    ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() });
+    bindSteps(ps);
     const zm = $('psZoom'); if (zm) zm.onchange = () => {
       const oldZ = Z; Z = +zm.value; try { localStorage.setItem('pose-sheet.zoom', String(Z)) } catch (e) { }
       /* the cells grow / shrink with the zoom: scale the scroll positions by the same ratio so the pose you are looking at stays in view */
@@ -519,15 +525,15 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         if (tool === 'hand') { drag = { kind: 'hand', ck, sx, sy, ox: rec.ox || 0, oy: rec.oy || 0 }; cv.setPointerCapture(ev.pointerId); return }
         let key = hitPoint(c, ck, P, sx, sy);
         if (!key) {
-          let k = pinned ? step : (firstMissing(P) || step); pinned = false; const [fx, fy] = unsc(sx, sy), [x, y] = fromFrame(c, ck, fx, fy), q = [Math.round(x), Math.round(y)];
+          let k = pinned && stepsOf(ck).some(s => s[0] === step) ? step : (firstMissing(P, ck) || stepsOf(ck)[0][0]); pinned = false; const [fx, fy] = unsc(sx, sy), [x, y] = fromFrame(c, ck, fx, fy), q = [Math.round(x), Math.round(y)];
           if (LINES[k]) {   /* a cut line: this click is its next point; a click-and-HOLD (0.55 s) ends the line */
             const lk = LINES[k]; if (!P[lk] || P[k + 'Done'] !== false) { P[lk] = []; P[k + 'Done'] = false }   /* a finished line asked again starts a new one */
             P[lk].push(q); setLine(P, k, P[lk]); rec.fp = c.fp; write(KEY, DATA); key = k + '#' + (P[lk].length - 1); step = k;
-            clearTimeout(holdT); holdT = setTimeout(() => { holdT = 0; const R = peek(ck)?.p; if (R && lineOpen(R, k)) { R[k + 'Done'] = true; write(KEY, DATA); drag = null; step = firstMissing(R) || k; msg((STEP[k][1].replace(/ ·.*/, '')) + ' จบแล้ว'); draw() } }, 550);
+            clearTimeout(holdT); holdT = setTimeout(() => { holdT = 0; const R = peek(ck)?.p; if (R && lineOpen(R, k)) { R[k + 'Done'] = true; write(KEY, DATA); drag = null; step = firstMissing(R, ck) || k; msg((STEP[k][1].replace(/ ·.*/, '')) + ' จบแล้ว'); draw() } }, 550);
           } else {
             const sg = k === 'top' ? skullGuess(P) : null, [gx, gy] = sg ? sc(...toFrame(c, ck, sg.x, sg.y)) : [0, 0];
             if (sg && Math.hypot(gx - sx, gy - sy) < 14) { P.top = [Math.round(sg.x), Math.round(sg.y)]; key = 'top' } else P[k] = q;
-            if (k !== key) key = k; rec.fp = c.fp; write(KEY, DATA); step = firstMissing(P) || key;
+            if (k !== key) key = k; rec.fp = c.fp; write(KEY, DATA); step = firstMissing(P, ck) || key;
           }
         }
         pick = key; drag = { kind: 'pt', ck, key }; cv.setPointerCapture(ev.pointerId); draw();
@@ -547,7 +553,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   addEventListener('keydown', ev => {
     if (!document.body.classList.contains('sheet-mode') || $('psAdj') || /INPUT|TEXTAREA|SELECT/.test(ev.target?.tagName || '')) return;
     if (ev.key === 'h' || ev.key === 'H') { tool = tool === 'hand' ? 'mark' : 'hand'; draw(); return }
-    if (ev.key === 'Enter' && act) { const R = peek(act)?.p; const k = R && Object.keys(LINES).find(x => lineOpen(R, x)); if (k) { ev.preventDefault(); R[k + 'Done'] = true; write(KEY, DATA); step = firstMissing(R) || k; draw(); return } }
+    if (ev.key === 'Enter' && act) { const R = peek(act)?.p; const k = R && Object.keys(LINES).find(x => lineOpen(R, x)); if (k) { ev.preventDefault(); R[k + 'Done'] = true; write(KEY, DATA); step = firstMissing(R, act) || k; draw(); return } }
     if (act && isLocked(act) && (/^Arrow/.test(ev.key) || ev.key === 'Delete' || ev.key === 'Backspace' || ev.key === 'Enter')) { flash(LOCKMSG); return }
     if (!act || !pick) return; const P = recOf(act).p, hk = pick.includes('#') ? pick.split('#') : null, v = hk ? P[LINES[hk[0]]]?.[+hk[1]] : P[pick]; if (!v) return;
     if (hk) { const pts = P[LINES[hk[0]]], d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[ev.key];
