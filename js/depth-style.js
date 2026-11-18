@@ -67,6 +67,8 @@
       } else part.draw(g);
       if (ghost) {
         g.save(); g.globalAlpha *= fade ? .62 : .8;
+        /* v98.784 · the white-outline filter works on the whole clip region: clip to the walker's box first (it was the whole screen ×4 passes every frame → 2.8 fps in the market) */
+        g.beginPath(); g.rect(cx - h * .8, cy - h * .8, h * 1.6, h * 1.6); g.clip();
         try { if ('filter' in g) g.filter = 'drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff)' } catch (e) { }
         walker.draw(g); g.restore();
       }

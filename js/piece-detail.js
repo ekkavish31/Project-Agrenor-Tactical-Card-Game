@@ -26,7 +26,7 @@
   /* hero canvas size in map pixels = AssetSize.heroPx of the map this window was opened from (village map → 'village', sub-map → 'place'): the SAME fixed reference new pieces start from (base × the map's one multiplier, no Lineup factor) */
   function heroWorldPx() {
     const place = !!(window.PlaceBuild?.detail && D() === window.PlaceBuild.detail);
-    try { return window.AssetSize.heroPx(place ? 'place' : 'village') } catch (e) { return place ? 93.6 * 0.96 * 1.607 * 0.8 : 93.6 * 0.96 * 0.8 }
+    try { return window.AssetSize.heroPx(place ? 'place' : 'village') } catch (e) { const K = window.CharSize?.VILLAGE_HERO_PX || 90; return place ? K * 0.96 * 1.607 * 0.8 : K * 0.96 * 0.8 }
   }
   function heroSprite() {
     if (!HERO.im) { HERO.im = new Image(); HERO.im.onload = () => { try { if (dlg && cv) paint() } catch (e) { } }; HERO.im.src = 'assets/tactics/imported/idle-sw-mwcast2-m/frame-01.webp' }

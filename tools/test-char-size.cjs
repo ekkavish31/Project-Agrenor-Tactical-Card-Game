@@ -27,7 +27,7 @@ const srv = http.createServer((q, r) => { let p = decodeURIComponent(q.url.split
 (async () => {
   await new Promise(r => srv.listen(0, r)); const BASE = 'http://localhost:' + srv.address().port + '/';
   const { chromium } = require('playwright'), b = await chromium.launch(), p = await b.newPage({ viewport: { width: 1440, height: 800 } });
-  await p.addInitScript(() => { const o = CanvasRenderingContext2D.prototype.drawImage; window.__h = []; CanvasRenderingContext2D.prototype.drawImage = function (im, ...a) { try { if (a.length === 4 && /imported\/idle-sw-mwcast2-[mf]\/frame-01/.test(im.src || '')) { const m = this.getTransform(); window.__h.push(a[2] * Math.hypot(m.a, m.b)) } } catch (e) { } return o.call(this, im, ...a) } });
+  await p.addInitScript(() => { const o = CanvasRenderingContext2D.prototype.drawImage; window.__h = []; CanvasRenderingContext2D.prototype.drawImage = function (im, ...a) { try { if (a.length === 4 && /imported\/(idle|walk)-[a-z]+-[a-z0-9-]+\/frame-\d+/.test(im.src || '')) { const m = this.getTransform(); window.__h.push(a[2] * Math.hypot(m.a, m.b)) } } catch (e) { } return o.call(this, im, ...a) } });
   await p.goto(BASE + 'village-town.html'); await p.waitForTimeout(8000);
   const r = await p.evaluate(() => { const d = window.__h || []; const v = window.VillageAssetEdit?.charScale?.('hero'); return { px: d.length ? d[d.length - 1] : 0, scale: v || 1, zoom: window.__zoom } });
   const expect = 93.6 * (r.scale || 1); /* canvas transform includes the camera zoom, so compare the ratio to the hero's own px only when zoom is 1 — report instead of failing on zoom */

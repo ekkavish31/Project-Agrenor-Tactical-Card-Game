@@ -31,6 +31,7 @@ const context = new Proxy({ getImageData: () => ({ data: new Uint8ClampedArray(6
 class Element {
   constructor(tag) { this.tag = tag; this.style = {}; this.dataset = {}; this.captured = new Set(); this.value = ''; this._html = ''; this.checked = false }
   set innerHTML(s) { this._html = s; if (this.tag !== 'dialog') return; nodes = []; for (const m of s.matchAll(/<([a-z]+)\b([^>]*)>/gi)) { const e = new Element(m[1]); for (const a of m[2].matchAll(/([\w-]+)(?:="([^"]*)")?/g)) { const [_, k, v = ''] = a; if (k === 'id') { e.id = v; byId.set(v, e) } if (k === 'value') e.value = v; if (k === 'checked') e.checked = true; if (k.startsWith('data-')) e.dataset[k.slice(5)] = v } nodes.push(e) } }
+  addEventListener() { }
   get innerHTML() { return this._html }
   querySelector(s) { const ia = s.match(/^\[id="(.+)"\]$/); if (ia) return byId.get(ia[1]) || null; return s.startsWith('#') ? byId.get(s.slice(1)) || null : this.querySelectorAll(s)[0] || null }
   querySelectorAll(s) { const m = s.match(/^\[data-([\w-]+)\]$/); return m ? nodes.filter(e => m[1] in e.dataset) : [] }
@@ -47,7 +48,7 @@ class Element {
 const document = { head: new Element('head'), body: new Element('body'), getElementById: id => byId.get(id) || null, createElement: tag => { const e = new Element(tag); if (tag === 'dialog') dialog = e; return e } };
 let saved = {}, persisted = '{}', checkpoints = 0;
 const window = { PieceGeometry: G, DepthStyle: { walkerInFront: (b, u, v) => u + v > (b.u0 + b.u1 + b.v0 + b.v1) / 2, isLow: () => true, get: () => ({ alpha: .35 }), styleFor: () => 'solid' }, VillageAssetEdit: { detail: { item: () => ({ label: 'Bench', ax: 0, ay: 0 }), ov: () => saved, drawTo() {}, edit(k, fn, cp) { if (cp) checkpoints++; fn(saved); persisted = JSON.stringify(saved) } } } };
-vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../js/piece-detail.js'), 'utf8'), { window, document });
+vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../js/piece-detail.js'), 'utf8'), { window, document, innerWidth: 1440, innerHeight: 800, addEventListener() { }, requestAnimationFrame() { return 0 }, Image: class { }, localStorage: { getItem: () => null, setItem() { } }, performance, setTimeout, clearTimeout, console });
 window.PieceDetail.open('bench');
 const button = (key, v) => nodes.find(e => e.dataset[key] === v);
 const e = (x, y) => ({ button: 0, pointerId: 1, clientX: 10 + x / 2, clientY: 20 + y / 2, preventDefault() {} });

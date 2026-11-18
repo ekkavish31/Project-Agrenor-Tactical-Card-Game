@@ -29,7 +29,7 @@
   const read = () => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); return o && typeof o === 'object' ? o : {} } catch (e) { return {} } };
   let cache = null; const data = () => cache || (cache = read());
   addEventListener('storage', e => { if (e.key === KEY) cache = null });
-  const key = src => { if (!src) return ''; let s = String(src).split('#')[0].split('?')[0]; try { if (/^https?:/.test(s)) s = new URL(s).pathname.replace(/^\//, '') } catch (e) { } return s.replace(/^\.\//, '').replace(/^\/+/, '') };
+  const key = src => { if (!src) return ''; let s = String(src).split('#')[0].split('?')[0]; try { if (/^https?:/.test(s)) s = new URL(s).pathname.replace(/^\//, '') } catch (e) { } s = s.replace(/^\.\//, '').replace(/^\/+/, ''); const i = s.indexOf('assets/'); return i > 0 ? s.slice(i) : s };   /* v98.784 · a GitHub-Pages base path (Project-…/assets/x) is the same file as assets/x */
   const heroPx = ctx => { try { const h = (heroFns[ctx] || heroFns.village)(); return h > 10 ? h : 93.6 } catch (e) { return 93.6 } };
   const get = src => { const v = data()[key(src)]; return v > 0 ? v : null };
   function startWidth(src, ctx, fallback) { const r = get(src); return r ? Math.round(r * heroPx(ctx)) : fallback }
