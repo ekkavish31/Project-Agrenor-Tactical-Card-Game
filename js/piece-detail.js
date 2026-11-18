@@ -21,12 +21,32 @@
     const pts = [[b.u0, b.v0], [b.u1, b.v0], [b.u1, b.v1], [b.u0, b.v1]].map(([u, v]) => P(u, v));
     q.beginPath(); pts.forEach((p, i) => q[i ? 'lineTo' : 'moveTo'](p.x, p.y)); q.closePath(); q.fillStyle = fill; q.fill(); q.strokeStyle = line; q.lineWidth = 2; q.stroke();
   }
+  /* v98.691 · the test person is the male hero, idle SW (assets/characters/hero-male/idle-sw.webp) — the blue capsule stays as a fallback while the picture loads */
+  const HERO = { im: null, box: null, white: null };
+  function heroSprite() {
+    if (!HERO.im) { HERO.im = new Image(); HERO.im.onload = () => { try { if (dlg && cv) paint() } catch (e) { } }; HERO.im.src = 'assets/characters/hero-male/idle-sw.webp' }
+    const im = HERO.im; if (!im.complete || !im.naturalWidth) return null;
+    if (!HERO.box) {
+      const c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+      const d = x.getImageData(0, 0, c.width, c.height).data; let x0 = c.width, x1 = 0, y0 = c.height, y1 = 0;
+      for (let y = 0; y < c.height; y++) for (let xx = 0; xx < c.width; xx++) if (d[(y * c.width + xx) * 4 + 3] > 40) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (y < y0) y0 = y; if (y > y1) y1 = y }
+      HERO.box = { x0, x1, y0, y1 };
+      const w = document.createElement('canvas'); w.width = c.width; w.height = c.height; const wq = w.getContext('2d'); wq.drawImage(im, 0, 0); wq.globalCompositeOperation = 'source-in'; wq.fillStyle = '#fff'; wq.fillRect(0, 0, w.width, w.height); HERO.white = w;
+    }
+    return HERO;
+  }
   function drawWalker(q, ghost, shadow = true) {
-    const p = P(walker.u, walker.v); q.save(); q.globalAlpha = ghost ? .7 : 1;
+    const p = P(walker.u, walker.v), H = heroSprite(); q.save(); q.globalAlpha = ghost ? .7 : 1;
     if (shadow) { q.fillStyle = '#0006'; q.beginPath(); q.ellipse(p.x, p.y, 17, 7, 0, 0, 7); q.fill() }
-    q.fillStyle = ghost ? '#fff' : '#3c6fb0'; q.strokeStyle = ghost ? '#fff' : '#142840'; q.lineWidth = 2;
-    q.beginPath(); q.roundRect(p.x - 11, p.y - 60, 22, 52, 9); q.fill(); if (!ghost) q.stroke();
-    q.fillStyle = ghost ? '#fff' : '#f0c9a0'; q.beginPath(); q.arc(p.x, p.y - 68, 9, 0, 7); q.fill(); if (!ghost) q.stroke(); q.restore();
+    if (H) {
+      const b = H.box, hpx = 104 * Z / 1.9, k = hpx / (b.y1 - b.y0 + 1), w = (b.x1 - b.x0 + 1) * k;   /* the visible figure is ~104 px tall at the default zoom, feet on the walker's point */
+      q.drawImage(ghost ? H.white : H.im, b.x0, b.y0, b.x1 - b.x0 + 1, b.y1 - b.y0 + 1, p.x - w / 2, p.y - hpx, w, hpx);
+    } else {
+      q.fillStyle = ghost ? '#fff' : '#3c6fb0'; q.strokeStyle = ghost ? '#fff' : '#142840'; q.lineWidth = 2;
+      q.beginPath(); q.roundRect(p.x - 11, p.y - 60, 22, 52, 9); q.fill(); if (!ghost) q.stroke();
+      q.fillStyle = ghost ? '#fff' : '#f0c9a0'; q.beginPath(); q.arc(p.x, p.y - 68, 9, 0, 7); q.fill(); if (!ghost) q.stroke();
+    }
+    q.restore();
   }
   function drawPiece(q, E, ov, alpha = 1) { q.save(); q.globalAlpha = alpha; q.translate(CX, CY); q.scale(Z, Z); D().drawTo(q, E, ov); q.restore() }
   function overlaps(E, ov) {
@@ -34,7 +54,7 @@
     try { const actor = document.createElement('canvas'); actor.width = CW; actor.height = CH; drawWalker(actor.getContext('2d'), false, false); drawPiece(q, E, ov); q.globalCompositeOperation = 'destination-in'; q.drawImage(actor, 0, 0); const d = q.getImageData(0, 0, CW, CH).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 100) return true; return false } catch (_) { return true }
   }
   const hints = {
-    walk: 'ลากบนภาพเพื่อย้ายคนทดสอบหน้า/หลัง (ย้ายเข้ากรอบแดงได้เพื่อทดสอบ)',
+    walk: 'ลากบนภาพเพื่อย้ายคนทดสอบหน้า/หลัง (ชนขอบกรอบแดงแล้วเข้าไปไม่ได้ ไถไปตามขอบ)',
     art: 'ลากบนภาพเพื่อเลื่อนเฉพาะภาพ Asset เทียบกับฐาน · กรอบทั้งสองอยู่ที่เดิม',
     order: 'ลากเพื่อย้ายกรอบฟ้า · วางให้ครอบฐานที่แตะพื้น ใช้ตัดสินหน้า/หลัง',
     block: 'ลากเพื่อย้ายกรอบแดง · วางเฉพาะส่วนที่ไม่ให้คนเดินทะลุ',
@@ -168,7 +188,15 @@ ${caps().block === false ? '' : `<label class="pdc"><input type="checkbox" id="p
     el('pdFitClear').onclick = () => { points = []; paint() }; el('pdFitReset').onclick = () => { points = []; edit(o => { delete o.pm }) };
     dlg.querySelectorAll('[data-fit]').forEach(b => b.onclick = () => { const result = G().fit(points, b.dataset.fit, G().matrix(D().ov(key))); if (!result) return; points = []; edit(o => { o.pm = result.matrix }); setMode('walk') });
     const at = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * CW / r.width, y: (e.clientY - r.top) * CH / r.height } };
-    const moveWalker = p => { const w = inv(p.x, p.y); const wl = Math.round(5.5 * 1.9 / Z * 2) / 2; walker = { u: limit(w.u, wl), v: limit(w.v, wl) }; paint() };
+    /* v98.691 · the test person cannot walk into the RED (blocked) frame: the move is made in small steps; a step that would enter the frame slides along its edge (u only, then v only) or stops */
+    const blockedAt = (u, v) => { const ov = D().ov(key); if (!ov.block) return false; const bl = G().footprint(ov, 0, 0, true); return (bl.parts || [bl]).some(r => u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) };
+    const moveWalker = p => {
+      const w = inv(p.x, p.y), wl = Math.round(5.5 * 1.9 / Z * 2) / 2, tu = limit(w.u, wl), tv = limit(w.v, wl);
+      let u = walker.u, v = walker.v; const dist = Math.hypot(tu - u, tv - v), n = Math.max(1, Math.ceil(dist / .08)), du = (tu - u) / n, dv = (tv - v) / n;
+      if (blockedAt(u, v)) { u = tu; v = tv }                 /* already inside (the frame was just painted over the person): let it leave freely */
+      else for (let i = 0; i < n; i++) { if (!blockedAt(u + du, v + dv)) { u += du; v += dv } else if (!blockedAt(u + du, v)) u += du; else if (!blockedAt(u, v + dv)) v += dv; else break }
+      walker = { u, v }; paint();
+    };
     cv.onpointerdown = e => {
       if (e.button !== 0) return; e.preventDefault(); const p = at(e); cv.setPointerCapture(e.pointerId);
       if (mode === 'fit') { const i = points.findIndex(q => Math.hypot(q.x - p.x, q.y - p.y) <= 12); if (i >= 0) gesture = { kind: 'point', i, start: p, moved: false }; else if (points.length < 3) { points.push(p); paint() } return }
