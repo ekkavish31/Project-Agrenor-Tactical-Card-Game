@@ -18,7 +18,7 @@
   const KEY = 'pose-sheet-v1', SKEY = 'pose-sheet.scaleDraft', RKEY = 'pose-sheet.rulers';
   /* v98.711 · the datum points, in the old 📍 Datum way: both eyes · chin · skull top (a dashed head ellipse suggests it) · neck cut LINE (click the points one after another, they are joined by a line; a click-and-HOLD ends it) · shoulders L/R ·
      leg cut LINE (same way) · the width of ONE leg (its two edges) · left / right foot (the stance centre on the ground = their middle) */
-  const STEPS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['chin', 'คาง', '#d62d2d'], ['top', 'ยอดกะโหลก (มีวงรีแนะนำ)', '#8a4fff'], ['neck', 'เส้นตัดหัว (คอ) · คลิกเรียงจุด คลิกค้างเพื่อจบ', '#e07b00'],
+  const STEPS = [['eyeL', 'ตา ซ้ายภาพ', '#d63384'], ['eyeR', 'ตา ขวาภาพ', '#d63384'], ['top', 'ยอดกะโหลก', '#8a4fff'], ['neck', 'เส้นตัดหัว (คอ) · คลิกเรียงจุด คลิกค้างเพื่อจบ', '#e07b00'],
     ['shL', 'ไหล่ ซ้ายภาพ', '#1f7a4d'], ['shR', 'ไหล่ ขวาภาพ', '#1f7a4d'], ['crotch', 'เส้นตัดขา (ขาหนีบ) · คลิกเรียงจุด คลิกค้างเพื่อจบ', '#1d5fbf'], ['legL', 'ความกว้างท่อนขา 1 ข้าง · ขอบซ้าย', '#0d8f99'], ['legR', 'ความกว้างท่อนขา · ขอบขวา', '#0d8f99'],
     ['footL', 'เท้า ซ้าย (จุดแตะพื้น)', '#7b4a12'], ['footR', 'เท้า ขวา (จุดแตะพื้น)', '#7b4a12']];
   const LINES = { neck: 'neckLine', crotch: 'crotchLine' };   /* P.neck / P.crotch = the middle of the line (what the numbers use) · P.neckLine / P.crotchLine = its points · P.<k>Done = the line is finished */
@@ -117,7 +117,7 @@
        The old head (skull top → chin) stays below as "หัว→คาง", for reference only. */
     const ex = P.eyeR[0] - P.eyeL[0], ey = P.eyeR[1] - P.eyeL[1], el = Math.hypot(ex, ey), tx = P.top[0] - P.eyeL[0], ty = P.top[1] - P.eyeL[1];
     const topToEyes = el >= 2 ? Math.abs(tx * ey - ty * ex) / el : d(P.top, [(P.eyeL[0] + P.eyeR[0]) / 2, (P.eyeL[1] + P.eyeR[1]) / 2]);
-    const o = { H, head: topToEyes * 2, headChin: d(P.top, P.chin), sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR) };
+    const o = { H, head: topToEyes * 2, sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR) };
     return o;
   }
   const pct = (v, H) => v == null ? '—' : (v / H * 100).toFixed(1) + '%';
@@ -125,7 +125,7 @@
     const v = vals(ck); if (!v) return ''; if (v.need) return `<div class="vals dim">${v.need}</div>`;
     const base = (ck !== 'idle@SW' ? vals('idle@' + cur.cells[ck].dir) || vals('idle@SW') : null);
     const row = (n, a, bk, dim) => { const p = a == null ? null : a / v.H * 100; let dl = ''; if (base && !base.need && base[bk] != null && p != null) { const q = base[bk] / base.H * 100, x = (p - q) / q * 100; dl = ` <i class="${Math.abs(x) > 5 ? 'bad' : Math.abs(x) > 2 ? 'warn' : 'ok'}">${x > 0 ? '+' : ''}${x.toFixed(1)}%</i>` } return `<tr${dim ? ' style="opacity:.5"' : ''}><td>${n}</td><td>${a == null ? '—' : Math.round(a)}px</td><td>${p == null ? '—' : p.toFixed(1) + '%'}${dl}</td></tr>` };
-    return `<table class="vals"><tr><td>สูงตัว</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>${row('หัว (ตา×2)', v.head, 'head')}${row('หัว→คาง', v.headChin, 'headChin', true)}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}</table>`;
+    return `<table class="vals"><tr><td>สูงตัว</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>${row('หัว (ตา×2)', v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}</table>`;
   }
 
   /* ---------- UI state ---------- */
@@ -145,7 +145,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 #poseSheet .ps-side .ps-steps{display:flex;flex-direction:column;gap:3px}#poseSheet .ps-side .ps-steps button{display:flex;align-items:center;gap:7px;text-align:left;padding:4px 8px;font-size:13px}#poseSheet .ps-side .ps-steps .n{font-weight:700;opacity:.6;min-width:16px}
 #poseSheet .qa-r{border-top:1px solid #e4e6da;padding-top:4px}#poseSheet .qa-h{display:flex;justify-content:space-between;font-size:12.5px}#poseSheet .qa-b{display:flex;gap:4px;margin-top:2px}#poseSheet .qa-b button{flex:1;padding:3px 0}
 #poseSheet .ps-zone{grid-area:zone;min-width:0;overflow-x:auto}
-#poseSheet .ps-c{position:relative}#poseSheet .ps-c[data-ck]{display:grid;grid-template-columns:auto 200px;grid-template-rows:auto auto;align-items:start}#poseSheet .ps-c[data-ck]>canvas{grid-column:1;grid-row:1}#poseSheet .ps-c[data-ck]>.ctl{grid-column:1/-1;grid-row:2}#poseSheet .ps-c[data-ck]>.vals{grid-column:2;grid-row:1;width:200px;margin:10px 0 0;font-size:11px}#poseSheet .ps-c[data-ck]>.vals td{padding:1px 4px}#poseSheet .ps-c.locked{outline:3px solid #2f9e44;outline-offset:-3px}#poseSheet .ps-c.locked::after{content:'🔒';position:absolute;top:8px;left:8px;font-size:24px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px #0008)}body:not(.ps-sel) #poseSheet .ps-c.locked canvas{cursor:not-allowed}#poseSheet .ps-loupe{position:absolute;top:98px;right:298px;width:180px;height:180px;border:3px solid #8a4fff;border-radius:10px;background:#fff;box-shadow:0 3px 12px #0006;pointer-events:none;z-index:5}
+#poseSheet .ps-c{position:relative}#poseSheet .ps-c[data-ck]>.vals{position:absolute;top:6px;right:6px;width:auto;min-width:172px;margin:0;font-size:11px;background:#fffdf6ec;border:1.5px solid #b9c48a;border-radius:8px;padding:3px 5px;box-shadow:0 1px 4px #0003;pointer-events:none;z-index:4}#poseSheet .ps-c[data-ck]>.vals td{padding:1px 4px}#poseSheet .ps-c.locked{outline:3px solid #2f9e44;outline-offset:-3px}#poseSheet .ps-c.locked::after{content:'🔒';position:absolute;top:8px;left:8px;font-size:24px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px #0008)}body:not(.ps-sel) #poseSheet .ps-c.locked canvas{cursor:not-allowed}#poseSheet .ps-loupe{position:absolute;top:98px;right:98px;width:180px;height:180px;border:3px solid #8a4fff;border-radius:10px;background:#fff;box-shadow:0 3px 12px #0006;pointer-events:none;z-index:5}
 #poseSheet:fullscreen{overflow:auto;background:#eef0e6;padding:0 10px 10px}#poseSheet:fullscreen .ps-top{top:0}
 #poseSheet .ps-next{flex:0 1 auto;padding:5px 12px;border-radius:10px;background:#fff8e1;border:2px solid #e0b64a;font-size:15px}#poseSheet .ps-next b{padding:2px 9px;border-radius:7px;color:#fff;margin-left:6px}#psTip{position:fixed;z-index:99999;pointer-events:none;padding:3px 9px;border-radius:7px;color:#fff;font:700 13px AgThai,system-ui,sans-serif;box-shadow:0 2px 6px #0006;white-space:nowrap}
 #poseSheet .ps-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}#poseSheet .ps-bar b{font-size:16px;margin-right:6px}
@@ -206,7 +206,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function draw() {
     const ps = $('poseSheet'); if (!ps || !document.body.classList.contains('sheet-mode')) return;
     if (!cur) { if (ps.querySelector('.ps-app')) SCROLLMEM = scrollNow(ps); ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
-    const VW = 200, HID = hidSet(), cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
+    const HID = hidSet(), cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
     /* v98.742 · LAYOUT: a sticky TOP BAR (name · next point · the tools used all the time) + a sticky SIDE BAR (the 12 points, the selected pose, the other tools) + the edit ZONE. ⛶ = full screen: only these three. */
     const mkDirty = marksDirty();
     const swatches = `${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}`;
@@ -230,7 +230,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         <label><input type="checkbox" id="psCen" ${RUL.center ? 'checked' : ''}>เส้นกลางช่อง</label><label><input type="checkbox" id="psGho" ${RUL.ghost ? 'checked' : ''}>เงาท่ายืน SW</label>
         <div class="ps-tools" style="margin:2px 0;display:${RUL.on && (RUL.lines.length || RUL.meas.length) ? 'flex' : 'none'}">สี: ${swatches}</div></div>
       <div class="ps-zone" id="psZone">`;
-    h += `<div class="ps-grid" style="grid-template-columns:34px repeat(${POSES.length},${W + VW}px)"><div class="ps-h"></div>${POSES.map(([, l]) => `<div class="ps-h">${l}</div>`).join('')}`;
+    h += `<div class="ps-grid" style="grid-template-columns:34px repeat(${POSES.length},${W}px)"><div class="ps-h"></div>${POSES.map(([, l]) => `<div class="ps-h">${l}</div>`).join('')}`;
     for (const [dir, rl] of ROWS) {
       h += `<div class="ps-rl">${rl}</div>`;
       for (const [pose] of POSES) {
@@ -292,7 +292,10 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function flash(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#a4341c">🔒 ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2200) }
   function flashOk(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#2e6b4f">✔ ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2600) }
   const LOCKMSG = 'ท่านี้ล็อกอยู่ — เอาติ๊ก “ล็อก” ออกก่อนจึงจะแก้ได้';
-  const marksFor = (P, mm) => ({ chin: Math.min(.9, Math.max(.04, (P.chin[1] - mm.top) / mm.H)), hip: Math.min(.95, Math.max(.2, (P.crotch[1] - mm.top) / mm.H)), headTop: 0, ankle: 1 });
+  /* v98.775 · no chin point: the cut rows come from the NECK LINE (its middle) and the CROTCH LINE (its middle); an old chin / crotch point is still honoured when a pose has one */
+  const midOf = a => a && a.length ? [a.reduce((s, q) => s + q[0], 0) / a.length, a.reduce((s, q) => s + q[1], 0) / a.length] : null;
+  const withChin = P => ({ ...P, chin: P.chin || midOf(P.neckLine) || P.neck || null, crotch: P.crotch || midOf(P.crotchLine) || null });
+  const marksFor = (P0, mm) => { const P = withChin(P0); return { chin: Math.min(.9, Math.max(.04, (P.chin[1] - mm.top) / mm.H)), hip: Math.min(.95, Math.max(.2, (P.crotch[1] - mm.top) / mm.H)), headTop: 0, ankle: 1 } };
   const ZCACHE = new Map();
   function zoneOver(ck) {
     const c = cur?.cells[ck], P0 = peek(ck)?.p || {}, PAm = PA(); if (!c?.img || !PAm?.zoneWeights) return null;
@@ -330,9 +333,9 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!html) { old?.remove(); return } const t = document.createElement('div'); t.innerHTML = html; const n = t.firstElementChild; if (old) old.replaceWith(n); else cell.append(n);
   }
   function qaSync() { if (act !== QA.ck) { const was = QA.ck; QA.ck = act; QA.S = QD(); QA.canvas = null; QA.P = null; QA.msg = ''; if (was) refreshVals(was) } }
-  function qaLive() { clearTimeout(QA.t); QA.t = setTimeout(() => { const c = cur?.cells[QA.ck], P = peek(QA.ck)?.p; try { QA.canvas = c?.img && P?.chin && P?.crotch && qaDirty() ? qaRender(c.img, c.flip, P) : null; QA.P = QA.canvas ? qaMovePoints(P, QA.canvas) : null } catch (e) { QA.canvas = null; QA.P = null; QA.msg = 'พรีวิวไม่สำเร็จ: ' + e.message; console.error('pose-sheet preview', e) } paintAll(); refreshVals(QA.ck) }, 90) }
+  function qaLive() { clearTimeout(QA.t); QA.t = setTimeout(() => { const c = cur?.cells[QA.ck], P = peek(QA.ck)?.p; try { QA.canvas = c?.img && withChin(P || {}).chin && withChin(P || {}).crotch && qaDirty() ? qaRender(c.img, c.flip, P) : null; QA.P = QA.canvas ? qaMovePoints(P, QA.canvas) : null } catch (e) { QA.canvas = null; QA.P = null; QA.msg = 'พรีวิวไม่สำเร็จ: ' + e.message; console.error('pose-sheet preview', e) } paintAll(); refreshVals(QA.ck) }, 90) }
   async function qaSave() {
-    const ck = QA.ck, c = cur?.cells[ck], P = peek(ck)?.p; if (!c || !P?.chin || !qaDirty() || QA.busy) return false; QA.busy = true; const say = t => { QA.msg = t; const m = $('qaMsg'); if (m) m.textContent = t };
+    const ck = QA.ck, c = cur?.cells[ck], P = peek(ck)?.p; if (!c || !withChin(P || {}).chin || !qaDirty() || QA.busy) return false; QA.busy = true; const say = t => { QA.msg = t; const m = $('qaMsg'); if (m) m.textContent = t };
     try {
       const items = []; let n = 0; for (const f of c.clip.frames) { say('ปรับ ' + (++n) + '/' + c.clip.frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), cv = qaRender(img, fl, P); items.push({ file: f.file, dataUrl: toURL(fl ? mirrorCv(cv) : cv) }); await new Promise(r => setTimeout(r, 0)) }
       say('กำลังบันทึก…'); const moved = QA.P; await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } write(KEY, DATA); QA.S = QD(); QA.canvas = null; QA.P = null; QA.busy = false; await load(); QA.msg = '✔ ใส่ Cart แล้ว (รอ Push) · ตรวจจุดอีกครั้ง'; updNext(); return true
@@ -350,7 +353,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     qaSync(); const P = peek(act)?.p || {}, name = (POSES.find(q => q[0] === c.pose) || [, c.pose])[1] + ' ' + c.dir;
     if (c.pose === 'down') return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> เป็นท่านอน — ตัวปรับสัดส่วนตัดตามแนวตั้ง ใช้กับท่านอนไม่ได้ (โซนสีและตัวเลขใช้ได้ตามแกนลำตัว)</div>`;
     if (isLocked(act)) return `<div style="font-size:13px;color:#2f7a3a">🔒 ท่า <b>${esc(name)}</b> ล็อกอยู่ — เอาติ๊ก “ล็อก” ที่ใต้ภาพออกก่อนจึงจะปรับ/แก้จุดได้</div>`;
-    if (!(P.chin && P.crotch)) return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> · วาง <b>คาง</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีโซนสีและปุ่มปรับสัดส่วน</div>`;
+    if (!(withChin(P).chin && withChin(P).crotch)) return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> · วาง <b>เส้นตัดหัว (คอ)</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีโซนสีและปุ่มปรับสัดส่วน</div>`;
     return `<div style="font-size:13.5px">ท่า <b style="background:#2e6b4f;color:#fff;padding:1px 8px;border-radius:6px">${esc(name)}</b> · 🛠 ปรับสัดส่วน (ดูผลสดบนภาพ)</div>`
       + QROWS.map(([k, l]) => `<div class="qa-r"><div class="qa-h"><span>${l}</span><b>${QA.S[k]}%</b></div><div class="qa-b">${[-5, -1, 1, 5].map(d => `<button type="button" data-qd="${k},${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</div></div>`).join('')
       + `<label style="font-size:12.5px"><input type="checkbox" id="qaKeep" ${QA.keep ? 'checked' : ''}>คงความสูงตัวเท่าเดิม</label>`
@@ -414,12 +417,13 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         g.save(); g.strokeStyle = '#8a4fff'; g.fillStyle = '#8a4fff22'; g.lineWidth = 1.6; g.setLineDash([5, 4]); g.beginPath(); g.ellipse(cx, cy, sg.rx * k2, sg.ry * k2, 0, 0, 7); g.fill(); g.stroke(); g.setLineDash([]);
         g.fillStyle = '#fff'; g.beginPath(); g.arc(tx, ty, 6, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#8a4fff'; g.restore() } }
     const seg = (a, b, col) => { if (P[a] && P[b]) { const [x1, y1] = sc(...toFrame(c, ck, ...P[a])), [x2, y2] = sc(...toFrame(c, ck, ...P[b])); line(x1, y1, x2, y2, col, 1.4, [4, 3]) } };
-    if (SHOW.pts) { seg('shL', 'shR', STEP.shL[2]); seg('legL', 'legR', STEP.legL[2]); seg('footL', 'footR', STEP.footL[2]); seg('top', 'chin', STEP.top[2]) }
+    if (SHOW.pts) { seg('shL', 'shR', STEP.shL[2]); seg('legL', 'legR', STEP.legL[2]); seg('footL', 'footR', STEP.footL[2]) }
     const an = SHOW.pts && anchorOf(ck); if (an) { const [x, y] = sc(...toFrame(c, ck, ...an)); line(x - 9, y, x + 9, y, '#000', 2); line(x, y - 9, x, y + 9, '#000', 2); g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.arc(x, y, 6, 0, 7); g.stroke() }
   }
   /* what is under the pointer, in priority: ruler line → point */
   /* the head ellipse that suggests the skull top: eyes in the middle of the head, so crown ≈ eye line − 1.1 × (eye line → chin) */
-  function skullGuess(P) { if (!P.eyeL || !P.eyeR || !P.chin) return null; const ex = (P.eyeL[0] + P.eyeR[0]) / 2, ey = (P.eyeL[1] + P.eyeR[1]) / 2, f = P.chin[1] - ey; if (f < 6) return null; const y = ey - f * 1.1, x = (ex + P.chin[0]) / 2, ry = (P.chin[1] - y) / 2; return { x, y, cx: x, cy: (y + P.chin[1]) / 2, rx: ry * .78, ry } }
+  function skullGuess(P) { return null;   /* v98.775 · no chin any more → no suggestion */
+    if (!P.eyeL || !P.eyeR || !P.chin) return null; const ex = (P.eyeL[0] + P.eyeR[0]) / 2, ey = (P.eyeL[1] + P.eyeR[1]) / 2, f = P.chin[1] - ey; if (f < 6) return null; const y = ey - f * 1.1, x = (ex + P.chin[0]) / 2, ry = (P.chin[1] - y) / 2; return { x, y, cx: x, cy: (y + P.chin[1]) / 2, rx: ry * .78, ry } }
   function hitPoint(c, ck, P, sx, sy) {
     let best = null, bd = 9;
     for (const [key] of STEPS) {
@@ -585,10 +589,10 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (cur?.cells[ck]?.pose === 'down') { flash('ท่านอนปรับสัดส่วนด้วยตัวปรับนี้ไม่ได้'); return }
     const c = cur.cells[ck], P = peek(ck)?.p || {}, PAm = PA(); if (!PAm) return msg('ไม่พบตัวปรับสัดส่วน');
     if (off(ck)[0] || off(ck)[1]) return msg('ท่านี้ย้ายภาพไว้ยังไม่บันทึก — กด 💾 บันทึกตำแหน่งภาพก่อน แล้วค่อยปรับสัดส่วน');
-    if (!c.img || !P.chin || !P.crotch) return msg('วางจุด คาง และ เส้นตัดขา (ขาหนีบ) ของท่านี้ก่อน (ตัวปรับตัดภาพที่สองจุดนี้)');
+    if (!c.img || !withChin(P).chin || !withChin(P).crotch) return msg('วางเส้นตัดหัว (คอ) และเส้นตัดขา (ขาหนีบ) ของท่านี้ก่อน (ตัวปรับตัดภาพที่สองเส้นนี้)');
     const m = sil(c.img, c.flip); if (!m) return msg('ภาพว่าง');
     const S = { head: 100, torso: 100, legs: 100, shoulder: 100, wLegs: 100, wTorso: 100 }, O = { keep: true }, ref = peek('idle@' + c.dir)?.p || peek('idle@SW')?.p;
-    const marksOf = mm => ({ chin: Math.min(.9, Math.max(.04, (P.chin[1] - mm.top) / mm.H)), hip: Math.min(.95, Math.max(.2, (P.crotch[1] - mm.top) / mm.H)), headTop: 0, ankle: 1 });
+    const marksOf = mm => marksFor(P, mm);
     const box = document.createElement('div'); box.id = 'psAdj';
     const SL = [['head', 'หัว (ใหญ่-เล็ก)'], ['torso', 'ลำตัว (สูง)'], ['legs', 'ขา (ยาว)'], ['shoulder', 'ไหล่ กว้าง'], ['wTorso', 'ลำตัว หนา'], ['wLegs', 'ท่อนขา หนา']];
     box.innerHTML = `<div class="box" role="dialog" aria-label="ปรับสัดส่วน"><h3>🛠 ปรับสัดส่วน · ${esc(cur.name)} · ${POSES.find(p => p[0] === c.pose)[1]} ${c.dir}</h3>
