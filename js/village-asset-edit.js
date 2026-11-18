@@ -243,7 +243,7 @@
  };
 
  /* ---------- wrap each drawable with its edit (offset, scale, rotation, flip, swap, layer, hide) ---------- */
- /* v98.692 · PICTURE FRAMES ON THE VILLAGE MAP: the blue / red frame of a piece can belong to its PICTURE (js/art-frames.js, the same store the sub-maps use: localStorage 'place-art-frames-v1').
+ /* v98.692 · PICTURE FRAMES ON THE VILLAGE MAP: the blue / red frame of a piece can belong to its PICTURE (js/art-frames.js, the same store the sub-maps use: localStorage 'place-art-frames-v1','art-lights-v1').
     A piece with its own frame fields (or ov.fo) keeps them ("แก้เฉพาะชิ้นนี้"); a piece without follows the template of its picture (scaled by its size, mirrored when flipped); no template = nothing changes. */
  const FR_FIELDS = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'zb', 'fw', 'fh', 'block', 'blockU', 'blockV', 'cmp'];
  const frOwn = ov => !!ov.fo || FR_FIELDS.some(k => ov[k] != null && ov[k] !== false && !(Array.isArray(ov[k]) && !ov[k].length));
@@ -3074,7 +3074,7 @@
      // v86: compare the layout itself (not the timestamp line) so an unchanged layout is not re-pushed
      if((old||'').replace(/^\/\/.*\n/,'')!==body.replace(/^\/\/.*\n/,''))files.push({path:'js/village-layout-v67.js',content:body});
      // everything else the village editor keeps outside the layout snapshot → js/game-settings.js
-     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1','depth-style-v1','place-art-frames-v1','asset-hero-ratio-v1'],vals={};
+     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1','depth-style-v1','place-art-frames-v1','art-lights-v1','asset-hero-ratio-v1'],vals={};
      for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
      const text=await head.read('js/game-settings.js')||'',settings=GitHubPush.parseSettings(text)||{};
      if(Object.entries(vals).some(([k,v])=>settings[k]!==v)){Object.assign(settings,vals);files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}

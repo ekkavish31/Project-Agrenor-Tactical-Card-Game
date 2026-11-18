@@ -110,6 +110,7 @@
     if (isBrush(mode) && hover) { const cs = brushCells(hover, mode), [du, dv] = offOf(ov, mode), h = H(), i0 = Math.min(...cs.map(c => c[0])), i1 = Math.max(...cs.map(c => c[0])) + 1, j0 = Math.min(...cs.map(c => c[1])), j1 = Math.max(...cs.map(c => c[1])) + 1; poly(q, { u0: i0 * h + du, u1: i1 * h + du, v0: j0 * h + dv, v1: j1 * h + dv }, erase ? '#ffffff22' : (mode === 'bo' ? '#3c82ff55' : '#e0504055'), erase ? '#fff' : (mode === 'bo' ? '#9cc5ff' : '#ff9a8b')) }
     q.fillStyle = '#ffe9a8'; q.beginPath(); q.arc(CX, CY, 4, 0, 7); q.fill();
     if (mode === 'fit') drawPoints(q);
+    if (mode === 'light') drawLights(q);
     const inside = ov.block && (block.parts || [block]).some(r => walker.u > r.u0 && walker.u < r.u1 && walker.v > r.v0 && walker.v < r.v1);
     el('pdState').innerHTML = `คนอยู่ <b>${front ? 'หน้า' : 'หลัง'}</b>ชิ้นนี้${hit ? ' · ภาพซ้อนกัน' : ' · ไม่ได้โดนชิ้นนี้บัง'} · ชิ้นนี้นับเป็น <b>${low ? 'เตี้ย' : 'สูง'}</b>${ov.tall ? ' (ตั้งเอง)' : ' (จากชื่อ)'}${inside ? '<br>🟥 เท้าคนอยู่ในกรอบห้ามเดิน (ในเกมจะเดินเข้าตรงนี้ไม่ได้)' : ''}`;
     if (el('pdDragHint')) el('pdDragHint').textContent = hints[mode]; fitReadouts();
@@ -150,7 +151,7 @@
     const sides = (pre, label, shaped) => shaped ? `<p class="pdhint">${label}: เป็นรูปร่างที่ระบายไว้ — ใช้แปรงเพิ่ม/ลบ หรือ "▦ เริ่มจากกรอบเดิม"</p>` : `<div class="pdsd"><div class="pdsdh">${label} ทีละด้าน</div>${SIDES.map(([sd, t]) => `<div class="pdsdc"><b>${t}</b><span><button data-sd="${pre},${sd},-0.25">−</button><button data-sd="${pre},${sd},0.25">＋</button></span></div>`).join('')}</div>`;
     const step = (f, label, cur) => `<div class="pdr"><span>${label} <b id="pd_${f}V">${cur}</b></span><span><button data-st="${f},-0.5">−</button><button data-st="${f},0.5">+</button></span></div>`;
     return `<div class="pdhead"><b>🔍 ${E.label || 'ชิ้นส่วน'}</b><div><button id="pdUndo">↶ ย้อน</button> <button id="pdClose">✓ ปิด</button></div></div>
-<div class="pdbody"><div class="pdview"><div class="pdtools">${[['walk', '👆 ชี้ / ลาก (คนทดสอบ · ภาพ)'], ['order', '🟦 ย้ายกรอบฟ้า'], ['bo', '🖌 แปรงฟ้า'], ...(caps().block === false ? [] : [['block', '🟥 ย้ายกรอบแดง'], ['bb', '🖌 แปรงแดง']]), ['fit', '📐 ฐาน 3 จุด']].map(([k, n]) => `<button data-mode="${k}" aria-pressed="${mode === k}">${n}</button>`).join('')}<span class="pdzoom"><button id="pdZoomOut" title="ซูมออก (−)">−</button><b id="pdZoomV">${Math.round(Z / Z0 * 100)}%</b><button id="pdZoomIn" title="ซูมเข้า (+)">＋</button><button id="pdZoomReset" title="ขนาดเริ่มต้น">⟲</button></span></div><div id="pdBrushBar" class="pdtools" ${isBrush(mode) ? '' : 'hidden'}><button id="pdBr−" title="หัวแปรงเล็กลง">−</button><b id="pdBrN">${brushLabel()}</b><button id="pdBr+" title="หัวแปรงใหญ่ขึ้น">+</button><button id="pdBrDraw" aria-pressed="${!erase}">✏ วาด</button><button id="pdBrErase" aria-pressed="${erase}">🧽 ลบ</button><button id="pdBrFrom" title="เปลี่ยนกรอบสี่เหลี่ยมเดิมเป็นช่องกริด แล้วแก้ต่อได้">▦ เริ่มจากกรอบเดิม</button><button id="pdBrClear" title="ลบรูปร่างอิสระ กลับไปใช้กรอบสี่เหลี่ยมกว้าง/ลึก">↺ กลับเป็นสี่เหลี่ยม</button></div><label class="pdc"><input type="checkbox" id="pdSnap" ${snapOn ? 'checked' : ''}> 🧲 Snap เข้ากริด (ครึ่งช่อง) ตอนลากกรอบ</label><p id="pdDragHint" class="pdhint"></p><canvas id="pdCv" width="${CW}" height="${CH}" style="width:${CW}px!important;height:${CH}px!important;max-width:none!important"></canvas><small id="pdOffsets"></small></div><div class="pdside">
+<div class="pdbody"><div class="pdview"><div class="pdtools">${[['walk', '👆 ชี้ / ลาก (คนทดสอบ · ภาพ)'], ['order', '🟦 ย้ายกรอบฟ้า'], ['bo', '🖌 แปรงฟ้า'], ...(caps().block === false ? [] : [['block', '🟥 ย้ายกรอบแดง'], ['bb', '🖌 แปรงแดง']]), ['fit', '📐 ฐาน 3 จุด'], ...(D().lightMap && window.ArtLights ? [['light', '💡 จุดสว่าง']] : [])].map(([k, n]) => `<button data-mode="${k}" aria-pressed="${mode === k}">${n}</button>`).join('')}<span class="pdzoom"><button id="pdZoomOut" title="ซูมออก (−)">−</button><b id="pdZoomV">${Math.round(Z / Z0 * 100)}%</b><button id="pdZoomIn" title="ซูมเข้า (+)">＋</button><button id="pdZoomReset" title="ขนาดเริ่มต้น">⟲</button></span></div><div id="pdBrushBar" class="pdtools" ${isBrush(mode) ? '' : 'hidden'}><button id="pdBr−" title="หัวแปรงเล็กลง">−</button><b id="pdBrN">${brushLabel()}</b><button id="pdBr+" title="หัวแปรงใหญ่ขึ้น">+</button><button id="pdBrDraw" aria-pressed="${!erase}">✏ วาด</button><button id="pdBrErase" aria-pressed="${erase}">🧽 ลบ</button><button id="pdBrFrom" title="เปลี่ยนกรอบสี่เหลี่ยมเดิมเป็นช่องกริด แล้วแก้ต่อได้">▦ เริ่มจากกรอบเดิม</button><button id="pdBrClear" title="ลบรูปร่างอิสระ กลับไปใช้กรอบสี่เหลี่ยมกว้าง/ลึก">↺ กลับเป็นสี่เหลี่ยม</button></div><label class="pdc"><input type="checkbox" id="pdSnap" ${snapOn ? 'checked' : ''}> 🧲 Snap เข้ากริด (ครึ่งช่อง) ตอนลากกรอบ</label><p id="pdDragHint" class="pdhint"></p><canvas id="pdCv" width="${CW}" height="${CH}" style="width:${CW}px!important;height:${CH}px!important;max-width:none!important"></canvas><small id="pdOffsets"></small></div><div class="pdside">
 <details class="pdhelp" open><summary>วิธีตั้งให้บังตัวละครถูก</summary><ol><li>เลือก “ย้ายภาพ” จัดภาพเทียบฐาน</li><li>เลือก “ย้ายกรอบฟ้า” วางครอบฐานที่แตะพื้น แล้วปรับกว้าง/ลึก</li><li>กรอบแดง = ส่วนที่ห้ามเดิน วางและปรับแยกจากกรอบฟ้าได้</li><li>เลือก “ทดสอบคน” ลากคนไปหลังพนัก/หน้าขา ดูว่าใครบังใคร</li></ol><small>กรอบฟ้าตัดสินหน้า/หลัง · สูง/เตี้ยกำหนดวิธีแสดงเมื่อถูกบัง<br>ปิดแล้วกด ✓ เสร็จที่แผงเดิม · ⬆ Push เพื่อใช้ทุกเครื่อง</small></details>
 <h4>รูปร่าง</h4>${zrow('s', 'ขนาด', Math.round((ov.s ?? 1) * 100) + '%', [-5, -1, 1, 5])}${caps().skew === false ? '' : zrow('sky', 'เอียงฐาน ° (ยกขอบขวา)', +(ov.sky || 0).toFixed(1) + '°', [-1, -.5, .5, 1]) + zrow('skx', 'เอียงเสา ° (บิดแนวตั้ง)', +(ov.skx || 0).toFixed(1) + '°', [-1, -.5, .5, 1]) + '<button type="button" id="pdSkReset">↺ คืนค่าเอียง</button>'}${caps().rot === false ? '' : row('pdR', 'หมุน', ov.r || 0, -180, 180, 1, v => v + '°')}${caps().slant === false ? '' : row('pdIx', 'เฉียง ↗↙', Math.round((ov.ix ?? 1) * 100), 50, 200, 1, v => v + '%') + row('pdIy', 'เฉียง ↖↘', Math.round((ov.iy ?? 1) * 100), 50, 200, 1, v => v + '%')}
 <label class="pdc"><input type="checkbox" id="pdF" ${ov.f ? 'checked' : ''}> กลับด้านซ้าย-ขวา</label><button id="pdArtReset">คืนตำแหน่งภาพ</button>
@@ -159,6 +160,7 @@
 ${caps().block === false ? '' : `<button id="pdSzReset" title="กรอบแดง = กรอบฟ้า + ขยายด้าน SE และ SW อีก 0.5 (เท่ากด + สองที) แล้วแก้ต่อได้">🟥 ปรับกรอบแดงตามกรอบฟ้า</button><label class="pdc"><input type="checkbox" id="pdB" ${ov.block ? 'checked' : ''}> 🟥 บล็อกเดิน</label>${sides('block', '🟥 ขยาย/ลดกรอบแดง', G().cellsOf(ov.zb).length > 0)}<button id="pdBlockReset">คืนตำแหน่งกรอบแดง</button>`}${caps().note ? `<p class="pdst">${caps().note}</p>` : ''}
 
 <h4>การบัง</h4><label class="pdc">ความสูง <select id="pdT"><option value="">อัตโนมัติ (จากชื่อ)</option><option value="tall"${ov.tall === 'tall' ? ' selected' : ''}>สูง</option><option value="low"${ov.tall === 'low' ? ' selected' : ''}>เตี้ย</option></select></label><p id="pdState" class="pdst"></p>
+${D().lightMap && window.ArtLights ? '<h4>💡 จุดสว่าง</h4><div id="pdLights"></div>' : ''}
 ${D().check ? (() => { const c = D().check(key) || {}; const row = (f, col, t) => `<label class="pdc"><input type="checkbox" data-chk="${f}" ${c[f] ? 'checked' : ''}> <span style="color:${col}">■</span> ${t}</label>`; return `<h4>✔ ตรวจสอบแล้ว <small style="opacity:.7">(ติ๊กเองทีละข้อ · แสดงเป็นหลอดที่มุมบนขวาของแผงภาพ)</small></h4><button type="button" id="pdChkAll">${c.b && c.r && c.s ? '↺ ล้างการตรวจสอบทั้ง 3' : '✔ ตรวจสอบครบทั้ง 3 (คลิกเดียว)'}</button>${row('b', '#3c82ff', 'กรอบฟ้า ตรวจสอบแล้ว')}${row('r', '#e0435f', 'กรอบแดง ตรวจสอบแล้ว')}${row('s', '#f2c200', 'สัดส่วนเทียบตัวหลัก ตรวจสอบแล้ว')}` })() : ''}
 ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint" id="pdFrState"></p><div class="pdr" style="display:flex;gap:6px;flex-wrap:wrap"><button id="pdFrSave" title="บันทึกกรอบฟ้า/แดง + ขนาดของภาพเทียบตัวเอก เป็นค่าของภาพนี้ — ทุกแมพที่ใช้ภาพนี้และไม่ได้แก้กรอบเองจะตามทันที · ชิ้นใหม่ของภาพนี้เริ่มที่ขนาดนี้">💾 บันทึกลงภาพนี้ (ทุกแมพ)</button><button id="pdFrUse" title="ทิ้งกรอบที่แก้เฉพาะชิ้นนี้ แล้วตามค่าของภาพ">↩ ใช้ค่าของภาพ</button>${D().frames.applyAll ? '<button id="pdFrAll" title="ชิ้นอื่นบนแมพนี้ที่ใช้ภาพเดียวกันแต่เคยแก้เฉพาะชิ้นไว้ จะทิ้งกรอบเดิมแล้วตามค่าของภาพทั้งหมด">⤵ ให้ทุกชิ้นของภาพนี้ตามค่าของภาพ</button>' : ''}</div>` : ''}</div></div>`;   /* v98.723 · order at the bottom: … การบัง · ✔ ตรวจสอบแล้ว (3 colours) · กรอบติดตัวภาพ (save to the picture) LAST */
   }
@@ -188,6 +190,26 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
   addEventListener('keydown', e => { if (!dlg || !dlg.open || !DIR[e.code] || e.ctrlKey || e.metaKey || e.altKey || e.target.closest?.('input[type=text],input[type=number],textarea,select')) return; e.preventDefault(); e.stopPropagation(); HELD.add(e.code); if (!kRaf) { kLast = 0; kRaf = requestAnimationFrame(kLoop) } }, true);
   addEventListener('keyup', e => { if (DIR[e.code]) { HELD.delete(e.code); if (dlg?.open) e.stopPropagation() } }, true);
   addEventListener('blur', () => HELD.clear());
+  /* v98.736 · 💡 LIGHT POINTS of the picture (js/art-lights.js): click the picture to add a point, drag to move it; the list in the panel sets radius and brightness. They belong to the PICTURE (every piece, every map) */
+  let selLight = -1;
+  const LM = () => { try { return D().lightMap?.(key) } catch (e) { return null } };
+  const lightList = m => (window.ArtLights && m ? ArtLights.get(m.art).map(x => ({ ...x })) : []);
+  const lightPx = (m, pt) => { const l = m.toLocal(pt.x, pt.y); return { x: CX + l.x * Z, y: CY + l.y * Z } };
+  function drawLights(q) {
+    const m = LM(); if (!m) return; lightList(m).forEach((pt, i) => {
+      const c = lightPx(m, pt), R = pt.r * m.hero * Z, gr = q.createRadialGradient(c.x, c.y, 0, c.x, c.y, R); gr.addColorStop(0, 'rgba(255,214,120,.38)'); gr.addColorStop(1, 'rgba(255,214,120,0)');
+      q.save(); q.fillStyle = gr; q.beginPath(); q.arc(c.x, c.y, R, 0, 7); q.fill(); q.strokeStyle = i === selLight ? '#fff' : '#ffd978'; q.lineWidth = 2; q.setLineDash([5, 4]); q.beginPath(); q.arc(c.x, c.y, R, 0, 7); q.stroke(); q.setLineDash([]);
+      q.fillStyle = i === selLight ? '#fff' : '#ffcf5a'; q.strokeStyle = '#5a3b00'; q.beginPath(); q.arc(c.x, c.y, 8, 0, 7); q.fill(); q.stroke(); q.fillStyle = '#3b2600'; q.font = 'bold 10px sans-serif'; q.textAlign = 'center'; q.fillText(i + 1, c.x, c.y + 3.5); q.restore()
+    });
+  }
+  function renderLights() {
+    const box = el('pdLights'); if (!box) return; const m = LM(); if (!m) { box.innerHTML = ''; return }; const L = lightList(m), own = ArtLights.isOwn(m.art);
+    box.innerHTML = L.map((x, i) => `<div class="pdr pdz"><span>จุด ${i + 1} · รัศมี <b>${x.r}</b> · แสง <b>${x.k}</b></span><span class="pdzb" style="display:flex;gap:4px"><button type="button" data-lt="${i},r,-0.2" title="รัศมีเล็กลง">◔−</button><button type="button" data-lt="${i},r,0.2" title="รัศมีใหญ่ขึ้น">◔+</button><button type="button" data-lt="${i},k,-0.1" title="สว่างน้อยลง">☀−</button><button type="button" data-lt="${i},k,0.1" title="สว่างขึ้น">☀+</button><button type="button" data-lt="${i},x,0">✕</button></span></div>`).join('')
+      + `<div class="pdr" style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" id="pdLtAdd">＋ เพิ่มจุดสว่าง</button>${L.length ? '<button type="button" id="pdLtOff">🚫 ปิดแสง</button>' : ''}${own ? '<button type="button" id="pdLtDef">↺ ค่าเริ่มต้น</button>' : ''}</div>`;
+    const save = list => { ArtLights.set(m.art, list); renderLights(); paint() };
+    box.querySelectorAll('[data-lt]').forEach(b => b.onclick = () => { const [i, f, d] = b.dataset.lt.split(','), list = lightList(m); if (!list[+i]) return; if (f === 'x') { list.splice(+i, 1); selLight = -1 } else { list[+i][f] = +(list[+i][f] + +d).toFixed(2); selLight = +i } save(list) });
+    if (el('pdLtAdd')) el('pdLtAdd').onclick = () => setMode('light'); if (el('pdLtOff')) el('pdLtOff').onclick = () => { selLight = -1; save([]) }; if (el('pdLtDef')) el('pdLtDef').onclick = () => { ArtLights.clear(m.art); selLight = -1; renderLights(); paint() };
+  }
   function open(k) {
     const d = D(); if (!d || !G() || !DS()) return; const E = d.item(k); if (!E) return;
     key = k; Z = d.caps?.zoom || 1.9; Z0 = Z; S = 28 * Z; T = 14 * Z; fitCanvas(); css(); walker = { u: -.6, v: 3.4 }; points = []; undo = []; mode = 'walk'; gesture = null;
@@ -196,7 +218,7 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
   }
   function setMode(m) {
     gesture = null; mode = m; hover = null; if (el('pdBrushBar')) el('pdBrushBar').hidden = !isBrush(m); if ((m === 'block' || m === 'bb') && !D().ov(key).block) { edit(o => { o.block = true }); if (el('pdB')) el('pdB').checked = true }
-    dlg.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === m)); el('pdFitPanel').hidden = m !== 'fit'; cv.style.cursor = m === 'fit' || isBrush(m) ? 'crosshair' : 'grab'; paint();
+    dlg.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === m)); el('pdFitPanel').hidden = m !== 'fit'; cv.style.cursor = m === 'fit' || m === 'light' || isBrush(m) ? 'crosshair' : 'grab'; paint();
   }
   /* v98.705 · FULL-SCREEN window: the canvas fills the space left of the side panel (1 canvas px = 1 screen px) · zoom with − / + / ⟲ or the mouse wheel */
   function fitCanvas() { const sideW = innerWidth < 900 ? 0 : 360; CW = Math.max(480, innerWidth - sideW - 56); CH = Math.max(360, innerHeight - (innerWidth < 900 ? 330 : 190)); CX = Math.round(CW / 2); CY = Math.round(CH * .66) }
@@ -273,6 +295,9 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
     cv.onpointerdown = e => {
       if (e.button !== 0) return; e.preventDefault(); const p = at(e); cv.setPointerCapture(e.pointerId);
       if (mode === 'fit') { const i = points.findIndex(q => Math.hypot(q.x - p.x, q.y - p.y) <= 12); if (i >= 0) gesture = { kind: 'point', i, start: p, moved: false }; else if (points.length < 3) { points.push(p); paint() } return }
+      if (mode === 'light') { const m = LM(); if (!m) return; const L = lightList(m); let i = L.findIndex(pt => { const c = lightPx(m, pt); return Math.hypot(c.x - p.x, c.y - p.y) <= 14 });
+        if (i < 0) { const f = m.toFrac((p.x - CX) / Z, (p.y - CY) / Z); if (f.x < -.05 || f.x > 1.05 || f.y < -.05 || f.y > 1.05) return; L.push({ x: f.x, y: f.y, r: 1.5, k: 1 }); ArtLights.set(m.art, L); i = L.length - 1 }
+        selLight = i; gesture = { kind: 'light', i, m, start: p }; renderLights(); paint(); return }
       if (isBrush(mode)) { const ov = D().ov(key), prop = propOf(mode); gesture = { kind: 'brush', first: true }; if (!G().cellsOf(ov[prop]).length && !erase) { const seed = rectCells(ov, mode); edit(o => { o[prop] = seed }, true); gesture.first = false } paintCells(mode, brushCells(p, mode), gesture.first); gesture.first = false; return }
       /* v98.708 · one pointer mode: press on the test person → move the person (collision / occlusion test) · press anywhere else on the picture → move the picture */
       let kind = mode; if (mode === 'walk') { const b = walkerBox; kind = b && p.x >= b.x0 && p.x <= b.x1 && p.y >= b.y0 && p.y <= b.y1 ? 'walk' : artAt(p) ? 'art' : 'pan' }   /* person → person · on the picture → picture · empty ground → move the view */
@@ -281,6 +306,7 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
     cv.onpointermove = e => {
       const hp = at(e); if (isBrush(mode)) { hover = hp; if (gesture?.kind === 'brush') paintCells(mode, brushCells(hp, mode), false); else paint() }
       if (!gesture || gesture.kind === 'brush') return; const p = hp, d = gesture, dx = p.x - d.start.x, dy = p.y - d.start.y;
+      if (d.kind === 'light') { const f = d.m.toFrac((p.x - CX) / Z, (p.y - CY) / Z), L = lightList(d.m); if (L[d.i]) { L[d.i].x = f.x; L[d.i].y = f.y; ArtLights.set(d.m.art, L); paint() } return }
       if (d.kind === 'walk') { moveWalker(p); return } if (d.kind === 'pan') { CX = d.cx + dx; CY = d.cy + dy; paint(); return } if (!d.moved && Math.hypot(dx, dy) < 4) return;
       if (d.kind === 'point') { d.moved = true; points[d.i] = p; paint(); return }
       const first = !d.moved; d.moved = true; const a = inv(d.start.x, d.start.y), b = inv(p.x, p.y), before = d.before; points = [];
@@ -293,7 +319,7 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
     const finish = (e, cancelled) => { const d = gesture; gesture = null; if (!cancelled && d?.kind === 'point' && !d.moved) { points.splice(d.i, 1); paint() } if (cv.hasPointerCapture(e.pointerId)) cv.releasePointerCapture(e.pointerId) };
     cv.onpointerleave = () => { hover = null; if (isBrush(mode)) paint() };
     cv.onpointerup = e => finish(e, false); cv.onpointercancel = e => finish(e, true); cv.onlostpointercapture = () => { gesture = null };
-    paint(); readouts();
+    paint(); readouts(); renderLights();
   }
   /* v98.719 · REVIEW GAUGE: three little cells at the top-right of a piece's panel — blue = blue frame checked · red = red frame checked · yellow = size next to the hero checked.
      Each one is ticked by hand, separately, in the 🔍 detail window ("ตรวจสอบแล้ว"); the object keeps o.chk = { b, r, s } */

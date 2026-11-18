@@ -917,7 +917,7 @@ const PB_ART = (() => {
    return
   }
   try {
-   const sha = await GitHubPush.pushSettings([KEY, 'map-char-scale-v1', 'place-art-frames-v1', 'asset-hero-ratio-v1'], 'แผนที่ย่อย', [], status);
+   const sha = await GitHubPush.pushSettings([KEY, 'map-char-scale-v1', 'place-art-frames-v1', 'art-lights-v1', 'asset-hero-ratio-v1'], 'แผนที่ย่อย', [], status);
    status(sha ? '⬆ push แผนที่ย่อยแล้ว · ' + sha : 'ไม่มีค่าที่ต้อง push')
   } catch (err) {
    status('push ไม่สำเร็จ: ' + err.message)
@@ -1478,6 +1478,15 @@ const PB_ART = (() => {
     get frameFields() { return STF },
     check: key => { const o = isSt(key) ? stOfKey(key) : M.props[+key]; return o?.chk || {} },
     setCheck(key, f, v) { const o = isSt(key) ? stOfKey(key) : M.props[+key]; if (!o) return; const c = { ...(o.chk || {}) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; dirty = true; save(); render() },
+    /* v98.736 · where the picture's light points (js/art-lights.js) are inside the piece window: picture fraction ⇄ the window's local pixels (same geometry as drawTo) */
+    lightMap(key) {
+     const st = isSt(key), s = st ? stOfKey(key) : M.props[+key]; if (!s || !s.art || /^code:/.test(s.art) || typeof artLightMap !== 'function') return null;
+     const ov = st ? stView(s) : propDetail.ov(key), m = artLightMap(s.art, 0, 0, (st ? s.width : ov.width) || (st ? 120 : 110), (st ? s.s : ov.s) || 1, st ? s.f : ov.f, ov); if (!m) return null;
+     const p0 = project(0, 0), inv = m.M.inverse();
+     return { art: s.art, hero: window.AssetSize ? AssetSize.heroPx('place') : 144,
+      toLocal: (fx, fy) => { const P = m.M.transformPoint({ x: m.x + fx * m.w, y: m.y + fy * m.h }); return { x: P.x - p0.x, y: P.y - p0.y } },
+      toFrac: (x, y) => { const P = inv.transformPoint({ x: x + p0.x, y: y + p0.y }); return { x: (P.x - m.x) / m.w, y: (P.y - m.y) / m.h } } }
+    },
     drawTo(q, E, ov) { const main = g; g = q; try { q.save(); const p0 = project(0, 0); q.translate(-p0.x, -p0.y); const o = isSt(E.key) ? ov : ov; drawArt(isSt(E.key) ? stOfKey(E.key)?.art : ov.art, 0, 0, (isSt(E.key) ? stOfKey(E.key)?.width : ov.width) || (isSt(E.key) ? 120 : 110), (isSt(E.key) ? stOfKey(E.key)?.s : ov.s) || 1, isSt(E.key) ? stOfKey(E.key)?.f : ov.f, 0, null, o); q.restore() } catch (e) { } finally { g = main } }
    }
   })(),
