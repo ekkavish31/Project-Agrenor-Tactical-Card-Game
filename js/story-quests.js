@@ -57,7 +57,7 @@ function guide(){const step=cur();if(!step)return;if(onWorld()){toast('อยู
  if(t.place?.length&&t.place.includes(V()?.location)&&/^place:/.test(scene())&&!t.npc?.length){toast('อยู่ที่นี่แล้ว · เดินไปที่จุดบริการในฉาก');return}
  const go=()=>{const w=townWin();if(!w?.TownQuest?.guide?.())toast('ทำตาม ◆ สีทองบนแผนที่หมู่บ้าน')};
  if(scene()!=='town'){root.VillageTown?.open?.();setTimeout(go,350)}else go()}
-const guideBtn={label:'📍 นำทาง',primary:true,hide:()=>onWorld(),run:guide};
+const guideBtn={label:'📍⬅️',tip:'นำทาง · เดินไปยังจุดที่เควสต้องการตามถนน',primary:true,hide:()=>onWorld(),run:guide};
 const HINT_WALK='◆ สีทองบนแผนที่บอกทาง · คลิกถนนหรืออาคารเพื่อเดิน · คลิกคนเพื่อคุย';
 function talkStep(o){return {tag:'real',...o,talk:o.talk,check:d=>!!d.talked,acts:[guideBtn,...(o.acts||[])],hint:o.hint||HINT_WALK}}
 /* v98.598/604 · WHERE a talk happens decides the backdrop — for every NPC scene (talkStep outro → the NPC), by where that person really is at that hour (npcPlace):
@@ -368,8 +368,7 @@ function draw(force){const el=tracker(),st=story();if(!st||st.mode==='off'||root
   const p=step.progress?.(d);const night=late()&&!/^sleep|^rest/.test(step.id)?'<p class="stk-hint">🌙 ดึกแล้ว กลับบ้านนอนแล้วทำต่อพรุ่งนี้ได้</p>':'';
   html=`<div class="stk-head"><small>${esc(chap)}</small><b>${esc(step.title)}${step.tag==='temp'&&root.PROJECT_DEV?'<span class="stk-tag" title="ระบบชั่วคราว ระบบจริงอยู่ในแผน (แสดงเฉพาะเครื่องผู้สร้าง)">ชั่วคราว</span>':''}</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div>
   <div class="stk-body"><p class="stk-goal">◆ ${esc(step.goal)}</p>${p!=null?`<div class="stk-prog"><i style="width:${Math.round(p*100)}%"></i></div>`:''}${step.hint?`<p class="stk-hint">${esc(step.hint)}</p>`:''}${night}
-  <div class="stk-acts">${acts.map((a,j)=>`<button type="button" data-act="${(step.acts||[]).indexOf(a)}" class="${a.primary?'primary':''}">${esc(a.label)}</button>`).join('')}</div>
-  <div class="stk-acts"><button type="button" data-act="replay" title="ดูฉากล่าสุดอีกครั้ง">↺ ดูฉาก</button>${(()=>{try{return localStorage.getItem('projectA.dev')==='1'}catch(e){return false}})()?'<button type="button" data-act="skipall" title="ข้ามบทนำทั้งหมด">ข้ามบทนำ</button>':''}</div></div>`}
+  <div class="stk-acts">${acts.map((a,j)=>`<button type="button" data-act="${(step.acts||[]).indexOf(a)}" class="${a.primary?'primary':''}"${a.tip?` title="${esc(a.tip)}" aria-label="${esc(a.tip)}"`:''}>${esc(a.label)}</button>`).join('')}<button type="button" data-act="replay" title="ดูฉากล่าสุดอีกครั้ง" aria-label="ดูฉากล่าสุดอีกครั้ง">🎞️↩️</button>${(()=>{try{return localStorage.getItem('projectA.dev')==='1'}catch(e){return false}})()?'<button type="button" data-act="skipall" title="ข้ามบทนำทั้งหมด">ข้ามบทนำ</button>':''}</div></div>`}
  if(html!==lastHtml||force){el.innerHTML=html;lastHtml=html}el.hidden=false}
 function chapterOf(i){for(let j=i;j>=0;j--)if(STEPS[j].chapter)return STEPS[j].chapter;return ''}
 async function act(a){const st=story();if(!st)return;

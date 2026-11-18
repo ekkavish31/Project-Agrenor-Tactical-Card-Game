@@ -237,5 +237,10 @@
       if (on) { let open = false; typingFlap = setInterval(() => { open = !open; drawBust(cur.el, cur.look, cur.face, open) }, 130) } else drawBust(cur.el, cur.look, cur.face, false);
     }
   }
-  root.StoryActors = { preload, facePic, begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
+  /* v98.687 · every painted face of every speaker (+ both hero sets), for the loading screen: a portrait that is not loaded in time leaves the PREVIOUS speaker's picture on stage */
+  function allFaces() {
+    const out = new Set(), add = P => { if (!P) return; const [set, f] = P; for (const x of (Array.isArray(f) ? f : Object.values(f))) out.add('assets/portraits/' + set + '-' + x + '.webp') };
+    for (const k of Object.keys(PAINTED)) add(PAINTED[k]); for (const k of Object.keys(HERO_SETS)) add(HERO_SETS[k]); return [...out];
+  }
+  root.StoryActors = { allFaces, preload, facePic, begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
 })(typeof window !== 'undefined' ? window : globalThis);

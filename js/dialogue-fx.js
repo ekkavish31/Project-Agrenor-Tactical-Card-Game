@@ -84,15 +84,16 @@
 
   function create(el, opts) {
     const o = Object.assign({ maxLines: 4, voice: null, speed: 1, onPageStart: null, onPageDone: null }, opts || {});
-    let pages = [], pi = -1, segs = [], spans = [], j = 0, shown = '', ei = 0, timer = 0, typing = false, probe = null, limit = 0;
+    let pages = [], pi = -1, segs = [], spans = [], j = 0, shown = '', ei = 0, timer = 0, typing = false, probe = null, limit = 0, lineH = 24;
 
     function dropProbe() { probe?.remove(); probe = null; }
     function makeProbe() {
       dropProbe();
-      const w = el.getBoundingClientRect().width;
+      /* v98.687 · LAYOUT width (offsetWidth), not the painted one: while the talk box pops in (scale animation) getBoundingClientRect() is smaller, the probe then wrapped the text into many more lines and cut the page after a word or two ("ข้า" ▼) */
+      const w = el.offsetWidth || el.getBoundingClientRect().width;
       if (!el.isConnected || !w) return false;
       const cs = getComputedStyle(el), lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.6;
-      limit = lh * o.maxLines + (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0) + 2;
+      lineH = lh; limit = lh * o.maxLines + (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0) + 2;
       probe = el.cloneNode(false);
       probe.removeAttribute('id'); probe.removeAttribute('hidden'); probe.setAttribute('aria-hidden', 'true');
       probe.style.cssText += ';position:absolute;left:-99999px;top:0;visibility:hidden;pointer-events:none;height:auto;min-height:0;max-height:none;overflow:visible;animation:none;transition:none;width:' + w + 'px';
@@ -116,6 +117,8 @@
       for (const u of units) {
         const cand = cur ? cur + u.sep + u.t : u.t;
         if (fits(cand)) { cur = cand; ends.push(cur.length); continue; }
+        /* v98.687 · never leave a stub page: if what is on the page is only a few characters ("ข้า…") and the next sentence overflows by at most one line, keep them together */
+        if (cur && cur.length < 16 && probe.scrollHeight <= limit + lineH * 1.05) { cur = cand; ends.push(cur.length); continue; }
         push();
         if (fits(u.t)) { cur = u.t; ends = [cur.length]; continue; }
         let buf = '';                                   // a single sentence longer than the box: last resort, word boundary

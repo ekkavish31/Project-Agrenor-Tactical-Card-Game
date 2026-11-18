@@ -53,7 +53,6 @@
     ],
     me: () => [
       ['character', 'ตัวละคร', () => click('[data-game="character"]')],
-      ['bag', 'สมุดผนึก', () => click('[data-game="bag"]')],
       ['deck', 'สำรับ', () => click('[data-game="deck"]')],
       ['job', 'อาชีพ', () => call('JobsUI')],
       ['element', 'ตารางธาตุ', () => click('#elChart')]
@@ -63,7 +62,7 @@
     ['map', 'แผนที่', 'แผนที่เมือง · คลิกหมุดเพื่อเดินไป (M)', () => click('#townMapBtn')],
     ['today', 'วันนี้', 'กิจกรรม · สมุดหมู่บ้าน · ไร่', 'today'],
     ['bag', 'สมุดผนึก', 'การ์ดและของทั้งหมดที่พกไว้ (สมุดผนึก)', () => click('[data-game="bag"]')],   /* v98.622 · the card-book is a main icon of its own (it was buried in ตัวเรา ▸) */
-    ['me', 'ตัวเรา', 'ตัวละคร · สมุดผนึก · สำรับ · อาชีพ · ธาตุ', 'me'],
+    ['me', 'ตัวเรา', 'ตัวละคร · สำรับ · อาชีพ · ธาตุ', 'me'],
     ...(store.querySelector('.town-go') ? [['go', 'ออกเดินทาง', 'ไปแผนที่โลก · หรือเดินไปที่ประตูหมู่บ้าน', () => click('.town-go')]] : [])
   ];
   const pop = document.createElement('div'); pop.className = 'hud-pop'; pop.hidden = true; document.body.append(pop);

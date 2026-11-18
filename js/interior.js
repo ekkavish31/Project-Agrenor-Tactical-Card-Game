@@ -841,7 +841,13 @@
     if (after !== before) toast(`${p.name} · ความสัมพันธ์: ${after[1]} ${after[2]}`); else if (liked) toast('💝 ' + p.name + ' ชอบของขวัญนี้มาก');
   }
   function talk(a, line) {
-    close(); if (!line) { let quest = false; try { if (parent !== window) quest = !!parent.Story?.talked?.(a.p.id) } catch (e) { } if (quest) return }   /* v98.664 · a quest step: the story scene plays, no talk window */
+    close(); if (!line) { let quest = false; try { if (parent !== window) quest = !!parent.Story?.talked?.(a.p.id) } catch (e) { }
+      if (quest) {   /* v98.664 · a quest step: the story scene plays, no talk window */
+        /* v98.687 · in a visit house (just the door + the owner) there is nothing to do once the scene has played: the player was left on the empty door page. Leave when the scene ends (or at once if it never started) */
+        if (VISIT) { const t0 = Date.now(); let started = false; const iv = setInterval(() => { let playing = false; try { playing = !!parent.Cutscene?.isPlaying?.() } catch (e) { } if (playing) started = true; if ((started && !playing) || (!started && Date.now() - t0 > 6000) || Date.now() - t0 > 90000) { clearInterval(iv); leave() } }, 400) }
+        return
+      }
+    }
     modalOpen = true; talkingTo = a; S = L.save();
     const p = a.p, per = CLK.period(CLK.read().hour), lines = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…'];
     let said = null; if (!line && MIND && L.P[p.id]) { said = MIND.talk(p.id, { period: per, place: KIND, save: S }); L.writeSave(S); if (said.reward) setTimeout(() => toast('รางวัล: ' + [said.reward.gold ? '+' + said.reward.gold + ' 💰' : '', said.reward.potions ? 'ยา +' + said.reward.potions : ''].filter(Boolean).join(' · ')), 200) }

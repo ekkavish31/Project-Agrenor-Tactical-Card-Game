@@ -91,6 +91,8 @@ function heroFrames(){const t=root.TACTICS_SPRITES;if(!t?.directions)return[];co
 const VILLAGE=['grass','paving','soil','meadow-details','garden-pond','props','fountain','player-house','inn','healer','shop','market','temple','forge'].map(f=>'assets/village-town/'+f+'.png').concat(['broadleaf','pine','old-oak'].map(f=>'assets/village-town/nature/'+f+'.webp'));
 /* v98.679 · the card book (สมุดผนึก) is the first thing the lesson opens: its pictures are fetched during the loading screen so it never pops in late */
 const BOOK_ART=['assets/ui/cardbook-open.webp','assets/ui/grimoire-open.webp','assets/ui/close-x.webp','assets/icons/menu/cardbook.webp','assets/icons/menu/potion.webp','assets/icons/menu/battle.webp','assets/icons/menu/forge.webp','assets/icons/menu/treasure.webp','assets/icons/menu/mail.webp','assets/cards/item/potion.webp','assets/cards/item/momWater.webp','assets/cursor/cursor-atlas.webp','assets/cursor/pointer.png','assets/cursor/pointer@2x.png','assets/cursor/grab.png','assets/cursor/grabbing.png','assets/cursor/zoom.png'];
+/* v98.687 · all story portraits (~10 MB, stored once by the service worker) are fetched behind the Mip loading screen so a talk never shows a missing / previous face */
+function portraitSet(){try{return uniq(root.StoryActors?.allFaces?.()||[])}catch(e){return[]}}
 function villageSet(){return uniq([...VILLAGE,...heroFrames(),'assets/hero.webp','assets/home.webp','assets/market.webp','assets/workshop.webp',...['bag','upgrade','map','develop'].map(k=>'assets/ui-'+k+'.webp'),'assets/audio/bgm/bgm-village-festival-01.mp3',...BOOK_ART])}
 // what a battle draws the moment it opens (measured: hero/ally frames, weapons, props, hand cards) — the loader waits for these
 function battleCore(){return uniq(byCategory('tactics-hero','tactics-equipment','tactics-props','tactic-cards','allies','battle-scenery'))}
@@ -271,14 +273,14 @@ const pageLoaded=()=>document.readyState==='complete'?Promise.resolve():Promise.
 const settle=()=>new Promise(r=>{let n=0;const f=()=>++n>=12?r():requestAnimationFrame(f);requestAnimationFrame(f)});   // a few quiet frames after the heavy work
 let storyReady=false,preparing=false;
 async function prepareStory(){if(preparing)return;preparing=true;title.classList.add('ts-quick','ts-story-pre');try{root.GameBGM?.refresh?.()}catch{}   /* v98.213 · switch the music NOW (the 100 ms timer can be starved while the village frame loads) */   /* v98.201 · the menu stays hidden behind the loading screen (it flashed up before the first picture) */
- await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'เพลงบทนำ',items:[()=>root.GameBGM?.preloadPrologue?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(12000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900,gate:'กดปุ่มใดก็ได้เพื่อไปต่อ'});
+ await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'เพลงบทนำ',items:[()=>root.GameBGM?.preloadPrologue?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(12000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900,gate:'กดปุ่มใดก็ได้เพื่อไปต่อ'});
  storyReady=true;story()}
 
 
 /* ---------- into the game ---------- */
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}
  if(!isNew&&title)title.style.visibility='hidden';   /* v98.352 · the menu must not show again while the loading screen fades out */
- await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',share:.3,items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
+ await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',share:.3,items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
  /* v97.04 · New Game: the opening cutscene (mother wakes the hero) fades in over the last prologue page and the title goes away underneath it,
     so the village map never shows in between (the story loop only starts a cutscene once T.active is false) */
  if(isNew&&root.Story&&root.Cutscene){T.active=false;const t0=Date.now();while(!root.Cutscene.isPlaying()&&Date.now()-t0<4000)await wait(100);if(root.Cutscene.isPlaying())await wait(reduced?0:600)}
