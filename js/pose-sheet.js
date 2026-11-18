@@ -185,7 +185,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function draw() {
     const ps = $('poseSheet'); if (!ps || !document.body.classList.contains('sheet-mode')) return;
     if (!cur) { ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
-    const cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
+    const HID = hidSet(), cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
     /* v98.742 · LAYOUT: a sticky TOP BAR (name · next point · the tools used all the time) + a sticky SIDE BAR (the 12 points, the selected pose, the other tools) + the edit ZONE. ⛶ = full screen: only these three. */
     const mkDirty = marksDirty();
     const swatches = `${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}`;
@@ -198,6 +198,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         <button type="button" class="act" id="psFull" title="เต็มจอ: เห็นแค่แถบบน + แถบข้าง + พื้นที่แก้ไข (Esc = ออก)">⛶ เต็มจอ</button></div>
       <div class="ps-side" id="psSide"><div class="ps-sh">จุดที่วาง (ตามลำดับ)</div><div class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${STEPS.map(([k, l, col], i) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i><span class="n">${i + 1}</span>${l.split(' · ')[0]}</button>`).join('')}</div>
         <div class="ps-sh">ท่าที่เลือก</div><div id="psAdjBox"></div>
+        <div class="ps-row"><button type="button" class="act" id="psHide" ${act ? '' : 'disabled'} title="ซ่อนท่าที่เลือกออกจากหน้ารวม (ไม่ลบจุด)">🙈 ซ่อนท่านี้</button><button type="button" class="act" id="psUnhideAll" ${HID.size ? '' : 'disabled'}>👁 แสดงทั้งหมด${HID.size ? ' (' + HID.size + ')' : ''}</button></div>
         <button type="button" class="act" id="psCopySW" title="คัดลอกจุด datum ของท่ายืน (SW / NE) ไปให้ท่าที่เลือก (คลิกในช่องของท่านั้นก่อน)">📋 datum SW → ท่าที่เลือก</button>
         <button type="button" class="act" id="psClear" ${act ? '' : 'disabled'}>ล้างจุดของท่าที่เลือก</button>
         <button type="button" class="act" id="psSnapAll" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น (192,360) ทุกท่าที่มีจุดเท้า">⤓ เข้าเส้นพื้นทุกท่า</button>
@@ -212,6 +213,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       for (const [pose] of POSES) {
         const ck = cellKey(pose, dir), c = cells[ck];
         if (!c) { h += `<div class="ps-c none" style="height:${W + 90}px">ไม่มีภาพ</div>`; continue }
+        if (HID.has(ck)) { h += `<div class="ps-c hid" style="height:${W + 90}px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:#8a8f7e;background:#efeee6">🙈 ซ่อนอยู่<br>${esc(pose)} ${dir}<button type="button" class="act" data-unhide="${ck}">👁 แสดง</button></div>`; continue }
         const k = kOf(c), ok = okOf(ck), chg = changed(ck), [ox, oy] = off(ck);
         h += `<div class="ps-c${act === ck ? ' act' : ''}" data-ck="${ck}"><canvas width="${W}" height="${W}" aria-label="${pose} ${dir}"></canvas><div class="ctl">
           <button type="button" data-k="-1" title="เล็กลง 1%">−1%</button><input data-in type="number" step="0.5" min="30" max="250" value="${(k * 100).toFixed(1)}" aria-label="ขนาด %"><button type="button" data-k="1" title="ใหญ่ขึ้น 1%">+1%</button>
@@ -231,6 +233,10 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   /* v98.745 · SHOW: points on/off · colour zones on/off (head pink · torso blue · legs green, cut at the chin and the crotch line) */
   const SHOW = (() => { try { return { pts: true, zone: false, ...(JSON.parse(localStorage.getItem('pose-sheet.show')) || {}) } } catch (e) { return { pts: true, zone: false } } })();
   const saveShow = () => { try { localStorage.setItem('pose-sheet.show', JSON.stringify(SHOW)) } catch (e) { } };
+  /* v98.746 · hide a pose from the overview (per character): 🙈 hides the selected pose's cell (a small placeholder stays), 👁 shows them all again */
+  const HKEY = 'pose-sheet.hidden', hidAll = () => { try { return JSON.parse(localStorage.getItem(HKEY)) || {} } catch (e) { return {} } };
+  const hidSet = () => new Set(hidAll()[cur?.id] || []);
+  const hidSave = set => { const o = hidAll(); if (set.size) o[cur.id] = [...set]; else delete o[cur.id]; try { localStorage.setItem(HKEY, JSON.stringify(o)) } catch (e) { } };
   const marksFor = (P, mm) => ({ chin: Math.min(.9, Math.max(.04, (P.chin[1] - mm.top) / mm.H)), hip: Math.min(.95, Math.max(.2, (P.crotch[1] - mm.top) / mm.H)), headTop: 0, ankle: 1 });
   const ZCACHE = new Map();
   function zoneOver(ck) {
@@ -279,6 +285,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   }
   function updNext() {
     const el = $('psNext'); if (!el) return;
+    for (const id of ['psHide', 'psClear']) { const b = $(id); if (b) b.disabled = !act }   /* follow the selected pose without a full redraw */
     const box = $('psAdjBox'); if (box) { const hh = adjBar(); if (box._h !== hh) { box._h = hh; box.innerHTML = hh } }
     if (box) box.onclick = qaClick;
     const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight; sd.style.top = hgt + 'px'; sd.style.maxHeight = 'calc(100vh - ' + (hgt + 8) + 'px)' }
@@ -360,6 +367,9 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const msg = t => { const m = $('psMsg'); if (m) m.textContent = t };
     ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() });
     const zm = $('psZoom'); if (zm) zm.onchange = () => { Z = +zm.value; try { localStorage.setItem('pose-sheet.zoom', String(Z)) } catch (e) { } draw() };
+    $('psHide').onclick = () => { if (!act) return; const s = hidSet(); s.add(act); hidSave(s); act = null; draw() };
+    $('psUnhideAll').onclick = () => { hidSave(new Set()); draw() };
+    ps.querySelectorAll('[data-unhide]').forEach(b => b.onclick = () => { const s = hidSet(); s.delete(b.dataset.unhide); hidSave(s); draw() });
     $('psShowPts').onclick = () => { SHOW.pts = !SHOW.pts; saveShow(); draw() }; $('psShowZone').onclick = () => { SHOW.zone = !SHOW.zone; saveShow(); draw() };
     $('psFull').onclick = () => { const e = document.fullscreenElement; if (e === ps) document.exitFullscreen?.(); else (ps.requestFullscreen?.() || Promise.reject()).catch(() => msg('เปิดเต็มจอไม่ได้ในหน้านี้ — ลองกด F11 ของเบราว์เซอร์')) };
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
