@@ -1,0 +1,62 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agrenor · HUD (Editor)</title>
+<link rel="stylesheet" href="css/thai-font.css?v=1">
+<style>
+:root{--bg:#14171d;--panel:#1d222b;--ink:#e9e4d6;--muted:#9a937f;--line:#343b48;--gold:#d9a441}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:14px AgThai,"Noto Sans Thai",system-ui,sans-serif}
+nav{display:flex;gap:6px;align-items:center;padding:6px 10px;background:#101319;border-bottom:1px solid var(--line)}nav button{font:inherit;color:var(--ink);background:#252b36;border:1px solid var(--line);border-radius:8px;padding:5px 14px;cursor:pointer}nav button[aria-pressed=true]{background:var(--gold);color:#241a07;font-weight:700;border-color:var(--gold)}
+nav .sp{flex:1}#msg{color:var(--muted);font-size:12px;max-width:420px}#push{background:#c9893a;color:#fff;border:0;border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}#gh{background:#30271d;color:#f3e7cf;border:1px solid #4a3b29;border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit}
+main{flex:1;position:relative;overflow:auto}iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#111}iframe[hidden]{display:none}
+section{display:none;padding:14px 18px}section.on{display:block}
+h2{margin:0 0 4px;font-size:17px;color:#f6d79b}h3{margin:18px 0 8px;font-size:14px;color:#f6d79b}p.help{margin:0 0 12px;color:var(--muted);max-width:820px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.opt{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;text-align:left;color:inherit;font:inherit}.opt:hover{border-color:#6a5a3a}.opt.on{border-color:var(--gold);box-shadow:0 0 12px #d9a44155}
+.opt b{display:block;margin-bottom:2px}.opt small{color:var(--muted)}.opt .pv{display:flex;gap:10px;align-items:center;justify-content:center;min-height:110px;margin:6px 0;background:#14171d;border-radius:8px}
+.opt canvas{width:96px;height:96px}.opt img{max-height:72px}
+.pad{margin-top:8px;padding:30px;border:1px dashed var(--line);border-radius:12px;background:#171b22;text-align:center;color:var(--muted)}.pad span{display:inline-block;margin:6px 10px;padding:8px 14px;border-radius:8px;background:#252b36;color:var(--ink)}
+.tog{display:flex;align-items:center;gap:10px;margin:10px 0;font-size:14px}.tog button{padding:5px 14px;border-radius:8px;border:1px solid var(--line);background:#252b36;color:var(--ink);cursor:pointer;font:inherit}.tog button.on{background:var(--gold);color:#241a07;font-weight:700;border-color:var(--gold)}
+.hands{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0}.hands figure{margin:0;text-align:center;font-size:12px;color:var(--muted)}.hands img{height:56px;display:block;margin:0 auto 4px}
+</style></head><body>
+<!-- v98.690 · Editor › Visual › HUD:  ไอคอนเมนู (the old Editor menu tab) · เคอร์เซอร์ · ลูกศรชี้ (Head arrow).  Choices are saved in localStorage 'projectA.visual' = {arrow, cursorArrow, hands} and pushed with the editor's ⬆ Push; the game reads them on load. -->
+<nav><button data-id="icons" aria-pressed="true">🎛 ไอคอนเมนู</button><button data-id="cursor">🖱 เคอร์เซอร์</button><button data-id="arrow">⬇ ลูกศรชี้ (Head arrow)</button><span class="sp"></span><span id="msg"></span><button id="push" title="ส่งค่าเคอร์เซอร์/ลูกศรขึ้นเกม (ไอคอนเมนูมีปุ่ม Push ของตัวเองในแท็บนั้น)">⬆ Push เคอร์เซอร์ + ลูกศร</button></nav>
+<main>
+ <iframe id="fIcons" data-id="icons" title="ไอคอนเมนู"></iframe>
+ <section id="sCursor" data-id="cursor">
+  <h2>เคอร์เซอร์</h2><p class="help">เลือกลูกศรเมาส์พื้นฐาน และเลือกว่าจะใช้มือวาด (มือชี้ · มือกาง/กำ · แว่นขยาย) หรือไม่ · วางเมาส์บนกล่องทดสอบเพื่อดูของจริง · บันทึกอัตโนมัติ เกมเห็นเมื่อรีโหลด</p>
+  <div class="cards" id="curCards"></div>
+  <div class="tog"><b>มือวาด</b><button id="handsOn">เปิด</button><button id="handsOff">ปิด (ใช้ลูกศรทุกที่)</button></div>
+  <div class="hands"><figure><img src="assets/cursor/pointer@2x.png" alt=""><span>มือชี้ (คลิกได้)</span></figure><figure><img src="assets/cursor/grab@2x.png" alt=""><span>มือกาง (ลากได้)</span></figure><figure><img src="assets/cursor/grabbing@2x.png" alt=""><span>กำมือ (กำลังลาก)</span></figure><figure><img src="assets/cursor/zoom@2x.png" alt=""><span>แว่นขยาย (ดูรายละเอียด)</span></figure></div>
+  <h3>กล่องทดสอบ (เคอร์เซอร์ที่เลือกใช้ตรงนี้ทันที)</h3>
+  <div class="pad" id="pad"><span data-k="arrow">พื้นทั่วไป (ลูกศร)</span><span data-k="pointer">ปุ่มคลิกได้</span><span data-k="grab">ลากได้</span><span data-k="grabbing">กำลังลาก</span><span data-k="zoom">ดูรายละเอียด</span></div>
+ </section>
+ <section id="sArrow" data-id="arrow">
+  <h2>ลูกศรชี้ (Head arrow)</h2><p class="help">ลูกศรเหนือหัวตัวนำ (ในหมู่บ้าน) และเหนือหัวตัวที่ถึงตา (ในสนามรบ): ฝ่ายเรา = ทอง · ศัตรู = แดง · ของเดิมเก็บไว้เลือกใช้ได้</p>
+  <div class="cards" id="arrCards"></div>
+ </section>
+</main>
+<script src="js/github-push.js?v=v98.690"></script><script src="js/head-arrow.js?v=v98.690"></script>
+<script>
+const KEY='projectA.visual',get=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}},set=o=>{localStorage.setItem(KEY,JSON.stringify({...get(),...o}));draw()};
+const $=id=>document.getElementById(id);
+/* ---- tabs ---- */
+let tab='icons';try{tab=localStorage.getItem('hud-tab-sub')||'icons'}catch(e){}
+function show(id){tab=id;try{localStorage.setItem('hud-tab-sub',id)}catch(e){}document.querySelectorAll('nav button[data-id]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
+ $('fIcons').hidden=id!=='icons';if(id==='icons'&&!$('fIcons').src)$('fIcons').src='index.html?editor=menu&build='+Date.now().toString(36);$('sCursor').classList.toggle('on',id==='cursor');$('sArrow').classList.toggle('on',id==='arrow');$('push').hidden=id==='icons'}
+document.querySelector('nav').onclick=e=>{const b=e.target.closest('button[data-id]');if(b)show(b.dataset.id)};
+/* ---- cursor ---- */
+const CUR={gold:{name:'ทอง (ใหม่)',note:'ลูกศรทองสามมิติ (ค่าเริ่มต้น)',img:'assets/cursor/gold-arrow@2x.png',css:"url(assets/cursor/gold-arrow.png) 9 9,default"},fantasy:{name:'แฟนตาซี (เดิม)',note:'ลูกศรเดิมของเกม (cursor-fantasy.png)',img:'assets/cursor-fantasy.png',css:"url(assets/cursor-fantasy.png) 4 3,default"},system:{name:'ของระบบ',note:'ลูกศรปกติของ Windows / Mac',img:'',css:'default'}};
+const HAND={pointer:"url(assets/cursor/pointer.png) 9 4,pointer",grab:"url(assets/cursor/grab.png) 24 24,grab",grabbing:"url(assets/cursor/grabbing.png) 24 28,grabbing",zoom:"url(assets/cursor/zoom.png) 22 22,zoom-in"};
+/* ---- arrow: animated previews ---- */
+const AR=['new','oldGold','oldTeal'];let raf=0;
+function drawArrows(t){document.querySelectorAll('canvas[data-st]').forEach(c=>{const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);const s=c.dataset.st;HeadArrow.draw(g,c.width/2,c.height*.72,c.width*.95,t,{style:s,foe:c.dataset.foe==='1'})});raf=requestAnimationFrame(drawArrows)}
+function draw(){const v=get(),ca=CUR[v.cursorArrow]?v.cursorArrow:'gold',ar=HeadArrow.styles[v.arrow]?v.arrow:'new',hands=v.hands!==false;
+ $('curCards').innerHTML=Object.entries(CUR).map(([k,o])=>`<button class="opt ${ca===k?'on':''}" data-cur="${k}"><b>${o.name}</b><small>${o.note}</small><div class="pv">${o.img?`<img src="${o.img}" alt="">`:'<span style="font-size:42px">➤</span>'}</div></button>`).join('');
+ $('arrCards').innerHTML=AR.map(k=>`<button class="opt ${ar===k?'on':''}" data-arr="${k}"><b>${HeadArrow.styles[k].name}</b><small>${k==='new'?'ใช้ในเกมตอนนี้ถ้าเลือกข้อนี้ (ค่าเริ่มต้น)':'เก็บไว้เลือกใช้'}</small><div class="pv"><canvas width="96" height="96" data-st="${k}"></canvas><canvas width="96" height="96" data-st="${k}" data-foe="1"></canvas></div></button>`).join('');
+ $('handsOn').classList.toggle('on',hands);$('handsOff').classList.toggle('on',!hands);
+ for(const sp of $('pad').querySelectorAll('span')){const k=sp.dataset.k;sp.style.cursor=k==='arrow'?CUR[ca].css:(hands?HAND[k]:CUR[ca].css)}$('pad').style.cursor=CUR[ca].css}
+document.body.addEventListener('click',e=>{const c=e.target.closest('[data-cur]'),a=e.target.closest('[data-arr]');if(c)set({cursorArrow:c.dataset.cur});else if(a)set({arrow:a.dataset.arr});else if(e.target.id==='handsOn')set({hands:true});else if(e.target.id==='handsOff')set({hands:false})});
+/* ---- push ---- */
+const msg=t=>$('msg').textContent=t;
+{const G=window.GitHubPush;if(G?.settingsButton){const b=G.settingsButton();b.id='gh';$('push').after(b)}}
+$('push').onclick=async()=>{const G=window.GitHubPush;if(!G)return msg('ไม่มีระบบ push');if(!G.config().token){G.openSettings(()=>$('push').click());return}$('push').disabled=true;try{const sha=await G.pushSettings([KEY],'HUD: เคอร์เซอร์ + ลูกศรชี้',[],msg);msg(sha?'⬆ push แล้ว · '+sha:'ไม่มีค่าที่ต้อง push')}catch(e){msg('push ไม่สำเร็จ: '+e.message)}finally{$('push').disabled=false}};
+draw();show(tab);raf=requestAnimationFrame(drawArrows);
+</script></body></html>

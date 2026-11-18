@@ -14,24 +14,35 @@
   try { if (localStorage.getItem('projectA.cursor') === '0') return } catch (e) { }
   if (!root.matchMedia || !matchMedia('(pointer:fine)').matches) return;
   const D = 'assets/cursor/', H = document.documentElement, HS = { pointer: [9, 4], grab: [24, 24], grabbing: [24, 28], zoom: [22, 22] }, KEY = { pointer: 'pointer', grab: 'grab', grabbing: 'grabbing', zoom: 'zoom-in' };
+  /* v98.690 · Editor › Visual › HUD › เคอร์เซอร์ saves {cursorArrow:'gold'|'fantasy'|'system', hands:true|false} in localStorage 'projectA.visual'
+       gold = the artist's gold arrow (default) · fantasy = the earlier cursor-fantasy.png · system = the OS arrow;  hands = the painted hand / fist / magnifier cursors (off → the arrow everywhere) */
+  const vs = () => { try { return JSON.parse(localStorage.getItem('projectA.visual')) || {} } catch (e) { return {} } };
+  const O = { arrow: ['gold', 'fantasy', 'system'].includes(vs().cursorArrow) ? vs().cursorArrow : 'gold', hands: vs().hands !== false };
+  const ARROW = { gold: { url: D + 'gold-arrow.png', url2: D + 'gold-arrow@2x.png', hs: [9, 9] }, fantasy: { url: 'assets/cursor-fantasy.png', hs: [4, 3] } };
   const st = document.createElement('style'); st.id = 'agcCss';
-  st.textContent = Object.keys(HS).map(k => `html.agc-${k},html.agc-${k} *{cursor:url(${D}${k}.png) ${HS[k][0]} ${HS[k][1]},${KEY[k]}!important;cursor:-webkit-image-set(url(${D}${k}.png) 1x,url(${D}${k}@2x.png) 2x) ${HS[k][0]} ${HS[k][1]},${KEY[k]}!important}`).join('\n') +
+  const rule = (cls, img, hs, kw) => `html.${cls},html.${cls} *{cursor:url(${img.url}) ${hs[0]} ${hs[1]},${kw}!important;${img.url2 ? `cursor:-webkit-image-set(url(${img.url}) 1x,url(${img.url2}) 2x) ${hs[0]} ${hs[1]},${kw}!important` : ''}}`;
+  st.textContent = Object.keys(HS).map(k => rule('agc-' + k, { url: D + k + '.png', url2: D + k + '@2x.png' }, HS[k], KEY[k])).join('\n') +
+    (ARROW[O.arrow] ? '\n' + rule('agc-arrow', ARROW[O.arrow], ARROW[O.arrow].hs, 'default') : '\nhtml.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=button],html.agc-sys .station{cursor:pointer!important}') +
     '\nhtml.agc-anim,html.agc-anim *{cursor:none!important}\n#agcFx{position:fixed;left:0;top:0;width:48px;height:48px;pointer-events:none;z-index:2147483647;background:url(' + D + 'cursor-atlas.webp) 0 0/384px 144px no-repeat;display:none;will-change:transform}';
+  if (!ARROW[O.arrow]) H.classList.add('agc-sys');
   document.head.appendChild(st);
   let on = true, kind = '', held = false, x = -99, y = -99, target = null, pend = false, lastCheck = 0, fx = null, animTimer = 0, animRun = 0;
   new Image().src = D + 'cursor-atlas.webp';
-  const CLS = Object.keys(HS).map(k => 'agc-' + k);
+  const CLS = [...Object.keys(HS), 'arrow'].map(k => 'agc-' + k);
   const classify = el => {
     const had = CLS.find(c => H.classList.contains(c)); if (had) H.classList.remove(had);
     let k = '';
     try {
       if (el && el.nodeType === 1) {
         const c = (getComputedStyle(el).cursor || '').split(',').pop().trim();
-        k = c === 'pointer' ? 'pointer' : c === 'grab' ? 'grab' : c === 'grabbing' ? 'grabbing' : (c === 'zoom-in' || c === 'help') ? 'zoom' : '';
+        k = c === 'pointer' ? 'pointer' : c === 'grab' ? 'grab' : c === 'grabbing' ? 'grabbing' : (c === 'zoom-in' || c === 'help') ? 'zoom' : (c === 'auto' || c === 'default') ? 'arrow' : '';
         if (k === 'pointer' && el.closest('.card-thumb,.bag-thumb,[data-inspect]')) k = 'zoom';
       }
     } catch (e) { }
-    if (had) H.classList.add(had); return k;
+    if (had) H.classList.add(had);
+    if (k === 'arrow' && !ARROW[O.arrow]) k = '';                                  /* OS arrow: leave it */
+    if (!O.hands && (k === 'pointer' || k === 'grab' || k === 'grabbing' || k === 'zoom')) k = ARROW[O.arrow] ? 'arrow' : '';   /* hands off: the arrow everywhere */
+    return k;
   };
   const apply = k => { if (k === kind) return; const was = kind; kind = k; for (const c of CLS) H.classList.remove(c); if (k) H.classList.add('agc-' + k); if (k === 'zoom' && was !== 'zoom') play(1, [1, 2, 3, 4, 5, 6, 7], 55, HS.zoom) };
   const check = () => { pend = false; if (!on || animRun) return; lastCheck = performance.now(); let k = classify(target); if (held && k === 'grab') k = 'grabbing'; apply(k) };

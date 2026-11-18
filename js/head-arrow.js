@@ -1,13 +1,22 @@
-/* v98.662 · HeadArrow — the "whose turn / who leads" marker above a character's head: the user's rigid 3D arrowhead (teal + gold), 96 frames spinning around its tip
-   (assets/fx/head-arrow-teal.webp · 12 × 8 frames of 128 px · tip pivot (.5078, .8672) · 3.2 s per turn), bobbing up and down by 20 % of its OWN visible length
-   (peak to peak · ±10 %). Used by the battle (js/town-battle.js: allies teal, enemies red) and the village map (js/town-art.js: the leading hero, always).
-   HeadArrow.draw(g, x, y, size, t, opt) → true when drawn · (x, y) = the TIP of the arrow (the point just above the head) · size = drawn width of one 128 px frame
-   opt = { foe: true → the red variant (only the teal pixels are re-coloured, the gold stays) · bob: false → no bobbing } · HeadArrow.length(size) = the visible length (v98.684: the arrow is drawn at 0.8 × size tall and 0.64 × size wide) */
+/* v98.690 · HeadArrow — the "whose turn / who leads" marker above a character's head: a rigid 3D arrowhead, 96 frames spinning around its tip, bobbing up and down by 20 % of its OWN visible length
+   (peak to peak · ±10 %). Used by the battle (js/town-battle.js: allies / enemies) and the village map (js/town-art.js: the leading hero, always).
+   THREE STYLES (Editor › Visual › HUD › ลูกศรชี้ saves the choice in localStorage 'projectA.visual' → {arrow}):
+     'new'     (default) the artist's gold arrow (assets/fx/head-arrow-gold-new.webp) for the lead / allies and the red one (…red-new.webp) for enemies · 12 × 8 frames of 128 px · apex pivot · 4 s per turn
+     'oldGold' the earlier teal arrow recoloured to gold (code), enemies red    ·   'oldTeal' the original teal / gold arrow, enemies red (code recolour)
+   HeadArrow.draw(g, x, y, size, t, opt) → true when drawn · (x, y) = the TIP of the arrow (the point just above the head) · size = drawn width of one frame
+   opt = { foe: true → the red variant · bob: false → no bobbing · style: 'new'|'oldGold'|'oldTeal' → force a style (the editor preview) } · HeadArrow.length(size) = the visible length · HeadArrow.style() / HeadArrow.styles = the choices */
 (function (root) {
   'use strict';
-  const SRC = 'assets/fx/head-arrow-teal.webp', FR = 128, COLS = 12, N = 96, PX = .5078, PY = .8672, LEN = .836;
-  let img = null, red = null, gold = null;
-  function atlas() { if (!img) { img = new Image(); img.decoding = 'async'; img.src = SRC } return img.complete && img.naturalWidth ? img : null }
+  const FR = 128, COLS = 12, N = 96;
+  const TEAL = 'assets/fx/head-arrow-teal.webp';
+  const STYLES = {
+    new: { name: 'ใหม่ · ทอง / แดง (3D)', ally: 'assets/fx/head-arrow-gold-new.webp', foe: 'assets/fx/head-arrow-red-new.webp', k: .8, wk: 1, px: .5039, py: .8672, len: .8125, loop: 4000 },
+    oldGold: { name: 'เดิม · ทองย้อมสี (เล็ก เรียว)', ally: TEAL, recolor: 'gold', foe: TEAL, foeRecolor: 'red', k: .8, wk: .8, px: .5078, py: .8672, len: .836, loop: 3200 },
+    oldTeal: { name: 'เดิมดั้งเดิม · เขียวมิ้นต์', ally: TEAL, foe: TEAL, foeRecolor: 'red', k: 1, wk: 1, px: .5078, py: .8672, len: .836, loop: 3200 }
+  };
+  const style = () => { let v; try { v = (JSON.parse(localStorage.getItem('projectA.visual')) || {}).arrow } catch (e) { } return STYLES[v] ? v : 'new' };
+  const imgs = {}, made = {};
+  const load = src => { let e = imgs[src]; if (!e) { e = imgs[src] = new Image(); e.decoding = 'async'; e.src = src } return e.complete && e.naturalWidth ? e : null };
   /* teal (and the green-ish fringe it makes against the gold) → red (≈ 355°), same saturation / lightness — the gold trim (hue ≈ 45°) is left alone */
   function makeRed(im) {
     const c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
@@ -36,13 +45,17 @@
     }
     x.putImageData(d, 0, 0); return c;
   }
+  function sheet(st, foe) {
+    const src = foe ? st.foe : st.ally, how = foe ? st.foeRecolor : st.recolor, im = load(src); if (!im) return null;
+    if (!how) return im;
+    const k = src + '|' + how; if (!made[k]) { try { made[k] = how === 'red' ? makeRed(im) : makeGold(im) } catch (e) { made[k] = im } } return made[k];
+  }
   function draw(g, x, y, size, t, opt = {}) {
-    const im = atlas(); if (!im || !(size > 0)) return false;
-    let src = im; if (opt.foe) { if (!red) { try { red = makeRed(im) } catch (e) { red = im } } src = red } else { if (!gold) { try { gold = makeGold(im) } catch (e) { gold = im } } src = gold }
-    /* v98.684 · 20 % smaller overall and a further 20 % slimmer (width only) */
-    const k = .8, dw = size * k * .8, dh = size * k, len = dh * LEN, bob = opt.bob === false ? 0 : Math.sin(t * .0022) * len * .1, f = Math.floor(t / (3200 / N)) % N;
-    g.drawImage(src, (f % COLS) * FR, Math.floor(f / COLS) * FR, FR, FR, x - dw * PX, y + bob - dh * PY, dw, dh);
+    const st = STYLES[opt.style] || STYLES[style()], src = sheet(st, !!opt.foe); if (!src || !(size > 0)) return false;
+    /* overall size and (for the old gold style) extra slimness are per style */
+    const dw = size * st.k * st.wk, dh = size * st.k, len = dh * st.len, bob = opt.bob === false ? 0 : Math.sin(t * .0022) * len * .1, f = Math.floor(t / (st.loop / N)) % N;
+    g.drawImage(src, (f % COLS) * FR, Math.floor(f / COLS) * FR, FR, FR, x - dw * st.px, y + bob - dh * st.py, dw, dh);
     return true;
   }
-  root.HeadArrow = { draw, length: size => size * .8 * LEN, ready: () => !!atlas() };
+  root.HeadArrow = { draw, length: size => { const st = STYLES[style()]; return size * st.k * st.len }, ready: () => !!load(STYLES[style()].ally), style, styles: STYLES };
 })(globalThis);
