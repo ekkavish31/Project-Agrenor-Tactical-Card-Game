@@ -276,7 +276,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const HKEY = 'pose-sheet.hidden', hidAll = () => { try { return JSON.parse(localStorage.getItem(HKEY)) || {} } catch (e) { return {} } };
   const hidSet = () => new Set(hidAll()[cur?.id] || []);
   const hidSave = set => { const o = hidAll(); if (set.size) o[cur.id] = [...set]; else delete o[cur.id]; try { localStorage.setItem(HKEY, JSON.stringify(o)) } catch (e) { } };
-  /* v98.762 · LOCK: a pose with its tick ON ("🔒 ล็อก" = the old "ตรวจแล้ว") cannot be changed by accident — no points, no move, no size, no adjust, no clear, no copy / snap — until the tick is taken off */
+  /* v98.764 · LOCK: a pose with its tick ON ("🔒 ล็อก" = the old "ตรวจแล้ว") cannot be changed by accident — no points, no move, no size, no adjust, no clear, no copy / snap — until the tick is taken off */
   const isLocked = ck => !!ck && okOf(ck);
   let flashT = 0;
   function flash(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#a4341c">🔒 ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2200) }
