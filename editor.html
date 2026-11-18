@@ -32,7 +32,7 @@ iframe[hidden]{display:none}
 </header>
 <div class="note" id="note"></div><div id="editorConflict" hidden role="status"></div>
 <main id="frames"></main>
-<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-version.js?v=v98.675"></script><script src="js/game-settings.js?v=v98.648"></script><script src="js/layout-sync.js?v=98.96"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js?v=v98.650"></script><script src="js/manifest-merge.js?v=v98.444"></script><script>
+<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-version.js?v=v98.676"></script><script src="js/game-settings.js?v=v98.648"></script><script src="js/layout-sync.js?v=98.96"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js?v=v98.650"></script><script src="js/manifest-merge.js?v=v98.444"></script><script>
 // Editor shell: every tool runs in its own frame; the game opens in "editor mode" (no play-save writes).
 // All tools share this browser's storage with the game — reload the game to see changes.
 const TABS=[
@@ -45,14 +45,16 @@ const TABS=[
  {id:'menu',name:'🎛 ไอคอนเมนู',src:'index.html?editor=menu',note:'เลือกภาพไอคอนให้ปุ่มเมนูขวาบนของเกม'},
  {id:'progress',name:'📊 Progress',src:'progress.html',note:'สมุดภารกิจ (Quest Log): แผนแม่บท 8 เฟส วัดความคืบหน้าเป็นตัวเลข รวม/รายเฟส/ต่อเวอร์ชัน · คำนวณจาก data/master-plan.json + docs/TODO.md · อัปเดตด้วย node tools/update-progress.cjs'},
  {id:'story',name:'🧭 เส้นเรื่อง',src:'story-map.html',note:'แผนผังเส้นเรื่องหลัก (mind map): เส้น Mip · เหมือง/VQ · สงคราม · ศรัทธา · ranger · เส้นรอง · จุดตัดสินใจแตกกิ่งถึงตอนจบ · ดูว่ากล่องไหนทำแล้ว/ยังไม่ทำ/รอเจ้าของเกม · อ่านอย่างเดียว (ข้อมูลที่ js/story-map-data.js)'},];
+/* v98.676 · every (re)load of a tab asks for a URL nobody has cached: the old reload button reused the same URL (f.src=f.src) so the browser handed back the OLD page */
+const busted=src=>src.replace(/([?&])build=[^&]*&?/,'$1').replace(/[?&]$/,'')+(src.includes('?')?'&':'?')+'build='+encodeURIComponent((window.GAME_VERSION?.v||'')+'-'+Date.now().toString(36));
 const tabs=document.getElementById('tabs'),frames=document.getElementById('frames'),note=document.getElementById('note');let cur=null;
 function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replaceState(null,'','#'+T.id);
  tabs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===T.id));
  for(let f of frames.children)f.hidden=f.dataset.id!==T.id;
- if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=T.src+(T.src.includes('?')?'&':'?')+'build='+encodeURIComponent((window.GAME_VERSION?.v||'')+'-'+Date.now().toString(36));f.title=T.name;frames.appendChild(f)}}
+ if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=busted(T.src);f.title=T.name;frames.appendChild(f)}}
 tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}" title="${t.note.replace(/"/g,'&quot;')} · ค่าที่แก้บันทึกในเบราว์เซอร์นี้ เกมเห็นเมื่อรีโหลด">${t.name}</button>`).join('');
 tabs.onclick=e=>{let b=e.target.closest('button');if(b)show(b.dataset.id)};
-document.getElementById('reload').onclick=()=>{let f=frames.querySelector(`[data-id="${cur}"]`);if(f)f.src=f.src};
+document.getElementById('reload').onclick=()=>{let f=frames.querySelector(`[data-id="${cur}"]`),T=TABS.find(t=>t.id===cur);if(f&&T)f.src=busted(T.src)};
 show(TABS.some(t=>t.id===location.hash.slice(1))?location.hash.slice(1):'assets');
 /* v91.55 · ⬆ Push of everything staged by Asset Studio / Object Workshop, from any tab (staged files live in IndexedDB, shared by all frames) */
 (function(){const sp=document.getElementById('stagedPush'),sd=document.getElementById('stagedDrop');let bc=null;try{bc=new BroadcastChannel('project-a-staged')}catch(e){}
@@ -68,7 +70,7 @@ show(TABS.some(t=>t.id===location.hash.slice(1))?location.hash.slice(1):'assets'
  sp.onclick=async()=>{if(window.GitHubPush?.cart?.on())return GitHubPush.cart.open();const s=await get();if(!Array.isArray(s)||!s.length){if(window.LayoutSync&&(LayoutSync.pending()||LayoutSync.newer()))return LayoutSync.open();return count()}if(!GitHubPush.config().token){GitHubPush.openSettings(()=>sp.click());return}
   sp.disabled=true;try{const tag=await GitHubPush.commit('Editor: update images ('+s.length+' files)',async head=>{let list=s;try{if(window.ManifestMerge&&head&&head.read){const tx=await head.read('data/asset-manifest.json');if(tx){const db=await idb(),base=await new Promise(r=>{const q=db.transaction('kv').objectStore('kv').get('repo-staged-base');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}),rb=await ManifestMerge.rebase(s,tx,base&&base.text);if(rb.changed){list=rb.files;console.log('manifest merged with main:',rb.note)}}}}catch(e){console.warn('manifest merge',e)}/* v98.136 · a staged manifest is merged with main first, so newer work there is kept */return list.map(([p,b])=>b?{path:p,content:b}:{path:p,remove:true})});if(tag){await remember(s);await clear();try{bc&&bc.postMessage(0)}catch(e){}tellFrames({repoStagedPushed:true});alert('push แล้ว · '+tag)}}catch(e){alert('push ไม่สำเร็จ: '+(e.message||e))}finally{count()}};
  sd.onclick=async()=>{const n=+sp.dataset.n||0;if(!confirm('ทิ้งงานที่ยังไม่ push ทั้งหมด ('+n+' ไฟล์)? ย้อนกลับไม่ได้'))return;await clear();try{bc&&bc.postMessage(0)}catch(e){}tellFrames({repoStagedDiscarded:true});count()}})();
-window.addEventListener('message',e=>{let d=e.data||{};if(d.editorTab){let f=frames.querySelector(`[data-id="${d.editorTab}"]`);if(f&&d.reload)f.src=f.src;show(d.editorTab)}});
+window.addEventListener('message',e=>{let d=e.data||{};if(d.editorTab){let f=frames.querySelector(`[data-id="${d.editorTab}"]`);if(f&&d.reload){const T=TABS.find(t=>t.id===d.editorTab);if(T)f.src=busted(T.src)}show(d.editorTab)}});
 </script>
 </body>
 </html>
