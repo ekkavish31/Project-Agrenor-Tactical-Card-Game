@@ -1456,7 +1456,11 @@ const PB_ART = (() => {
     },
     frames: {
      state: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return null; return { own: AF.isOwn(o), tpl: AF.has(o.art) } },
-     saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom(o); recSize(o); /* v98.718 · also the picture's size next to the hero (new pieces of it start at this size) */ AF.strip(o); dirty = true; save(); render() },
+     saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom(o); recSize(o); /* v98.718 · also the picture's size next to the hero (new pieces of it start at this size) */ AF.strip(o); propDetail.frames.applyAll(key); dirty = true; save(); render() },
+     /* v98.726 · every other piece of this picture drops its own frame and follows the template — on this map and on the other saved sub-maps (the lamp saved once = all lamps, placed before or after) */
+     applyAll: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return 0; let n = 0; const art = o.art; checkpoint(); for (const p of M.props) if (p.art === art && AF.isOwn(p)) { AF.strip(p); for (const k of ['sw', 'sh', 'orderU', 'orderV', 'zo', 'cmp']) delete p[k]; n++ }
+      try { const all = JSON.parse(localStorage.getItem('place-maps-v1') || '{}'), me = window.PLACE_ID || new URLSearchParams(location.search).get('place') || 'market'; let ch = false; for (const [id, m] of Object.entries(all)) { if (id === me || !m?.props) continue; for (const p of m.props) if (p.art === art && AF.isOwn(p)) { AF.strip(p); for (const k of ['sw', 'sh', 'orderU', 'orderV', 'zo', 'cmp']) delete p[k]; n++; ch = true } } if (ch) localStorage.setItem('place-maps-v1', JSON.stringify(all)) } catch (e) { }
+      dirty = true; save(); return n },
      useArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.strip(o); dirty = true; save(); render() }
     }
    };

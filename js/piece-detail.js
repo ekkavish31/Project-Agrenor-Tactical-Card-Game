@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   let Z = 1.9, S = 28 * Z, T = 14 * Z; let CW = 620, CH = 500, CX = 310, CY = 330, Z0 = 1.9;   /* v98.522 · zoom per piece: a whole place (caps.zoom) is far bigger than a prop */
-  let dlg = null, key = null, cv = null, gesture = null, mode = 'walk', points = [], undo = [], walker = { u: 0, v: 1.6 }, hover = null, erase = false;
+  let dlg = null, key = null, cv = null, gesture = null, mode = 'walk', points = [], undo = [], walker = { u: -.6, v: 3.4 }, hover = null, erase = false;
   const pref = (k, d) => { try { const v = localStorage.getItem('pd-' + k); return v == null ? d : JSON.parse(v) } catch (e) { return d } }, setPref = (k, v) => { try { localStorage.setItem('pd-' + k, JSON.stringify(v)) } catch (e) { } };
   let snapOn = pref('snap', true), brush = pref('brush', 2);   /* brush = side in H cells (H = 0.5 unit) */
   const H = () => G().H || .5, isBrush = m => m === 'bo' || m === 'bb', propOf = m => m === 'bo' ? 'zo' : 'zb', offOf = (o, m) => m === 'bo' ? [o.orderU || 0, o.orderV || 0] : [o.blockU || 0, o.blockV || 0];
@@ -168,7 +168,7 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
   }
   function open(k) {
     const d = D(); if (!d || !G() || !DS()) return; const E = d.item(k); if (!E) return;
-    key = k; Z = d.caps?.zoom || 1.9; Z0 = Z; S = 28 * Z; T = 14 * Z; fitCanvas(); css(); walker = { u: 0, v: 1.6 }; points = []; undo = []; mode = 'walk'; gesture = null;
+    key = k; Z = d.caps?.zoom || 1.9; Z0 = Z; S = 28 * Z; T = 14 * Z; fitCanvas(); css(); walker = { u: -.6, v: 3.4 }; points = []; undo = []; mode = 'walk'; gesture = null;
     if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'pieceDetail'; document.body.append(dlg) }
     build(); if (!dlg.open) dlg.showModal();
   }
