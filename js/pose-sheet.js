@@ -213,7 +213,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         <button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button>
         <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max="2.5" step=".05" value="${Z}"></label>
         <span id="psCartMsg" style="font-size:12.5px;color:#315d46"></span>
-        <button type="button" class="act main" id="psCartAll" ${moved || nd || mkDirty ? '' : 'disabled'} title="ที่เปลี่ยนทั้งหมด (ตำแหน่งภาพ · ขนาดเข้าเกม · จุด/ติ๊ก/ไม้บรรทัด) → 🛒 Cart รอ Push">🛒 ใส่ Cart${moved || nd || mkDirty ? ' (' + [moved ? 'ตำแหน่ง ' + moved : '', nd ? 'ขนาด ' + nd : '', mkDirty ? 'จุด/ติ๊ก' : ''].filter(Boolean).join(' · ') + ')' : ' · ไม่มีอะไรเปลี่ยน'}</button>
+        <button type="button" class="act main" id="psCartAll" ${cartPlan().n ? '' : 'disabled'} title="ที่เปลี่ยนทั้งหมด (ปรับสัดส่วนท่าที่เลือก · ตำแหน่งภาพ · ขนาดเข้าเกม · จุด/ติ๊ก/ไม้บรรทัด) → 🛒 Cart รอ Push">${cartPlan().text}</button>
         <button type="button" class="act" id="psFull" title="เต็มจอ: เห็นแค่แถบบน + แถบข้าง + พื้นที่แก้ไข (Esc = ออก)">⛶ เต็มจอ</button></div>
       <div class="ps-side" id="psSide"><div class="ps-sh">จุดที่วาง (ตามลำดับ)</div><div class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${STEPS.map(([k, l, col], i) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i><span class="n">${i + 1}</span>${l.split(' · ')[0]}</button>`).join('')}</div>
         <div class="ps-sh">ท่าที่เลือก</div><div id="psAdjBox"></div>
@@ -311,16 +311,16 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function qaSync() { if (act !== QA.ck) { const was = QA.ck; QA.ck = act; QA.S = QD(); QA.canvas = null; QA.P = null; QA.msg = ''; if (was) refreshVals(was) } }
   function qaLive() { clearTimeout(QA.t); QA.t = setTimeout(() => { const c = cur?.cells[QA.ck], P = peek(QA.ck)?.p; try { QA.canvas = c?.img && P?.chin && P?.crotch && qaDirty() ? qaRender(c.img, c.flip, P) : null; QA.P = QA.canvas ? qaMovePoints(P, QA.canvas) : null } catch (e) { QA.canvas = null; QA.P = null; QA.msg = 'พรีวิวไม่สำเร็จ: ' + e.message; console.error('pose-sheet preview', e) } paintAll(); refreshVals(QA.ck) }, 90) }
   async function qaSave() {
-    const ck = QA.ck, c = cur?.cells[ck], P = peek(ck)?.p; if (!c || !P?.chin || !qaDirty() || QA.busy) return; QA.busy = true; const say = t => { QA.msg = t; const m = $('qaMsg'); if (m) m.textContent = t };
+    const ck = QA.ck, c = cur?.cells[ck], P = peek(ck)?.p; if (!c || !P?.chin || !qaDirty() || QA.busy) return false; QA.busy = true; const say = t => { QA.msg = t; const m = $('qaMsg'); if (m) m.textContent = t };
     try {
       const items = []; let n = 0; for (const f of c.clip.frames) { say('ปรับ ' + (++n) + '/' + c.clip.frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), cv = qaRender(img, fl, P); items.push({ file: f.file, dataUrl: toURL(fl ? mirrorCv(cv) : cv) }); await new Promise(r => setTimeout(r, 0)) }
-      say('กำลังบันทึก…'); const moved = QA.P; await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } write(KEY, DATA); QA.S = QD(); QA.canvas = null; QA.P = null; QA.busy = false; await load(); QA.msg = '✔ ใส่ Cart แล้ว (รอ Push) · จุดอาจเลื่อน ตรวจอีกครั้ง'; updNext()
-    } catch (e) { QA.busy = false; say('ไม่สำเร็จ: ' + e.message) }
+      say('กำลังบันทึก…'); const moved = QA.P; await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } write(KEY, DATA); QA.S = QD(); QA.canvas = null; QA.P = null; QA.busy = false; await load(); QA.msg = '✔ ใส่ Cart แล้ว (รอ Push) · ตรวจจุดอีกครั้ง'; updNext(); return true
+    } catch (e) { QA.busy = false; say('ไม่สำเร็จ: ' + e.message); return false }
   }
   function qaClick(e) {
     const b = e.target.closest('[data-qd]'); if (b) { const [k, d] = b.dataset.qd.split(','); QA.S[k] = Math.max(60, Math.min(150, QA.S[k] + +d)); QA.msg = ''; qaLive(); updNext(); return }
     if (e.target.closest('#qaReset')) { QA.S = QD(); QA.canvas = null; QA.P = null; QA.msg = ''; paintAll(); refreshVals(QA.ck); return }
-    if (e.target.closest('#qaSave')) return qaSave(); if (e.target.closest('#qaWin')) return openAdjust(act);
+    if (e.target.closest('#qaSave')) return cartAll(); if (e.target.closest('#qaWin')) return openAdjust(act);
     if (e.target.id === 'qaKeep') { QA.keep = e.target.checked; qaLive() }
   }
   /* v98.741 · the selected pose (last clicked): once it has its chin + crotch line, the 🛠 re-proportion window (head · torso height / thickness · legs length / thickness) is one click away, right under the banner */
@@ -331,11 +331,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     return `<div style="font-size:13.5px">ท่า <b style="background:#2e6b4f;color:#fff;padding:1px 8px;border-radius:6px">${esc(name)}</b> · 🛠 ปรับสัดส่วน (ดูผลสดบนภาพ)</div>`
       + QROWS.map(([k, l]) => `<div class="qa-r"><div class="qa-h"><span>${l}</span><b>${QA.S[k]}%</b></div><div class="qa-b">${[-5, -1, 1, 5].map(d => `<button type="button" data-qd="${k},${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</div></div>`).join('')
       + `<label style="font-size:12.5px"><input type="checkbox" id="qaKeep" ${QA.keep ? 'checked' : ''}>คงความสูงตัวเท่าเดิม</label>`
-      + `<div class="ps-row"><button type="button" class="act" id="qaReset" ${qaDirty() ? '' : 'disabled'}>↺ รีเซ็ต</button><button type="button" class="act main" id="qaSave" ${qaDirty() && !QA.busy ? '' : 'disabled'}>💾 ใช้กับท่านี้ (ใส่ Cart)</button><button type="button" class="act" id="qaWin" title="หน้าต่างใหญ่ก่อน/หลัง">🔍</button></div><div id="qaMsg" style="font-size:12px;color:#315d46">${esc(QA.msg)}</div>`;
+      + `<div class="ps-row"><button type="button" class="act" id="qaReset" ${qaDirty() ? '' : 'disabled'}>↺ รีเซ็ต</button><button type="button" class="act main" id="qaSave" ${qaDirty() && !QA.busy ? '' : 'disabled'} title="เหมือนปุ่ม 🛒 ใส่ Cart ด้านบน — ใส่ทั้งหมดที่เปลี่ยน">🛒 ใส่ Cart</button><button type="button" class="act" id="qaWin" title="หน้าต่างใหญ่ก่อน/หลัง">🔍</button></div><div id="qaMsg" style="font-size:12px;color:#315d46">${esc(QA.msg)}</div>`;
   }
   function updNext() {
     const el = $('psNext'); if (!el) return;
     for (const id of ['psHide', 'psClear']) { const b = $(id); if (b) b.disabled = !act }
+    { const cb = $('psCartAll'); if (cb && !cb.dataset.busy) { const pl = cartPlan(); cb.textContent = pl.text; cb.disabled = !pl.n } }
     { const u = $('psUndo'), r = $('psRedo'); if (u) u.disabled = !UNDO.length; if (r) r.disabled = !REDO.length }   /* follow the selected pose without a full redraw */
     const box = $('psAdjBox'); if (box) { const hh = adjBar(); if (box._h !== hh) { box._h = hh; box.innerHTML = hh } }
     if (box) box.onclick = qaClick;
@@ -596,11 +597,18 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function sigOf(s) { let x = 2166136261; for (let i = 0; i < s.length; i++) x = Math.imul(x ^ s.charCodeAt(i), 16777619); return (x >>> 0).toString(36) }
   function marksDirty() { const s = markSig(); return s.length > 1 && sigOf(s) !== localStorage.getItem('pose-sheet.cart-sig') }
   function markSent() { try { localStorage.setItem('pose-sheet.cart-sig', sigOf(markSig())) } catch (e) { } }
+  /* what the one Cart button will put in the Cart (live: the adjust on the selected pose counts too) */
+  function cartPlan() {
+    const moved = Object.keys(cur?.cells || {}).filter(ck => { const [x, y] = off(ck); return x || y }).length, nd = draftCount(), mk = marksDirty(), qa = !!(QA.ck && qaDirty());
+    const parts = [qa ? 'ปรับสัดส่วน' : '', moved ? 'ตำแหน่ง ' + moved : '', nd ? 'ขนาด ' + nd : '', mk ? 'จุด/ติ๊ก' : ''].filter(Boolean), n = parts.length;
+    return { moved, nd, mk, qa, n, text: '🛒 ใส่ Cart' + (n ? ' (' + parts.join(' · ') + ')' : ' · ไม่มีอะไรเปลี่ยน') };
+  }
   async function cartAll() {
     const btn = $('psCartAll'); if (btn) btn.disabled = true; const done = [], fail = [], why = [], note = t => { const m = $('psCartMsg'); if (m) m.textContent = t };
-    const moved = Object.keys(cur?.cells || {}).filter(ck => { const [x, y] = off(ck); return x || y }).length;
+    const movedNow = () => Object.keys(cur?.cells || {}).filter(ck => { const [x, y] = off(ck); return x || y }).length;
     try {
-      if (moved) { note('ตำแหน่งภาพ…'); const r = await bakeMoves(); if (r.ok) { done.push('ตำแหน่งภาพ' + (r.skipped.length ? ' (ข้าม ' + r.skipped.length + ')' : '')); if (r.skipped.length) why.push('ข้าม: ' + r.skipped.join(' · ')) } else { fail.push('ตำแหน่งภาพ'); why.push(r.err) } }
+      if (qaDirty() && QA.ck) { note('ปรับสัดส่วน…'); const okq = await qaSave(); (okq ? done : fail).push('ปรับสัดส่วน'); if (!okq && QA.msg) why.push(QA.msg) }
+      if (movedNow()) { note('ตำแหน่งภาพ…'); const r = await bakeMoves(); if (r.ok) { done.push('ตำแหน่งภาพ' + (r.skipped.length ? ' (ข้าม ' + r.skipped.length + ')' : '')); if (r.skipped.length) why.push('ข้าม: ' + r.skipped.join(' · ')) } else { fail.push('ตำแหน่งภาพ'); why.push(r.err) } }
       if (draftCount()) { note('ขนาด…'); (await saveSizes() ? done : fail).push('ขนาด') }
       if (marksDirty()) { note('จุด/ติ๊ก…'); (await pushMarks() ? done : fail).push('จุด/ติ๊ก') }
     } finally { draw(); const extra = why.length ? ' — ' + why.join(' · ') : ''; note(fail.length ? '⚠ ไม่สำเร็จ: ' + fail.join(' · ') + (done.length ? ' · ใส่ Cart แล้ว: ' + done.join(' · ') : '') + extra : done.length ? '✔ ใส่ Cart แล้ว: ' + done.join(' · ') + ' (รอ Push)' + extra : ''); const m = $('psCartMsg'); if (m) { m.style.cssText = 'font-size:12.5px;color:' + (fail.length || why.length ? '#a4341c' : '#315d46') + ';max-width:46ch;white-space:normal;line-height:1.25'; m.title = extra.slice(3) } }
