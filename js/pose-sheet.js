@@ -274,7 +274,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const P = peek(ck)?.p || {};
     const dot = (key, v, col, label, sel) => { const [fx, fy] = toFrame(c, ck, v[0], v[1]), [x, y] = sc(fx, fy);
       g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 1.6; g.beginPath(); g.arc(x, y, sel ? 7 : 5, 0, 7); g.fill(); g.stroke();
-      if (label) { g.font = '10px sans-serif'; g.textAlign = 'left'; g.fillStyle = '#fffd'; g.fillRect(x + 8, y - 11, g.measureText(label).width + 4, 13); g.fillStyle = col; g.fillText(label, x + 10, y - 1) } };
+      /* v98.743 · no text next to a point (it covered the picture) — the colour is enough, the side bar names the points */ };
     for (const [key, , col] of STEPS) {
       const lk = LINES[key], pts = lk && P[lk];
       if (pts && pts.length) {   /* a cut LINE: the points joined by a line (dashed while it is still open) */
@@ -285,7 +285,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     /* the skull-top suggestion: a dashed head ellipse from the eyes + chin (click its top mark to take it, or click elsewhere to place the point yourself) */
     { const sg = skullGuess(P); if (sg && !P.top) { const [cx, cy] = sc(...toFrame(c, ck, sg.cx, sg.cy)), [tx, ty] = sc(...toFrame(c, ck, sg.x, sg.y)), k2 = kOf(c) * Z;
         g.save(); g.strokeStyle = '#8a4fff'; g.fillStyle = '#8a4fff22'; g.lineWidth = 1.6; g.setLineDash([5, 4]); g.beginPath(); g.ellipse(cx, cy, sg.rx * k2, sg.ry * k2, 0, 0, 7); g.fill(); g.stroke(); g.setLineDash([]);
-        g.fillStyle = '#fff'; g.beginPath(); g.arc(tx, ty, 6, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#8a4fff'; g.font = '10px sans-serif'; g.fillText('ยอดกะโหลก (แนะนำ) คลิกที่นี่', tx + 9, ty + 3); g.restore() } }
+        g.fillStyle = '#fff'; g.beginPath(); g.arc(tx, ty, 6, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#8a4fff'; g.restore() } }
     const seg = (a, b, col) => { if (P[a] && P[b]) { const [x1, y1] = sc(...toFrame(c, ck, ...P[a])), [x2, y2] = sc(...toFrame(c, ck, ...P[b])); line(x1, y1, x2, y2, col, 1.4, [4, 3]) } };
     seg('shL', 'shR', STEP.shL[2]); seg('legL', 'legR', STEP.legL[2]); seg('footL', 'footR', STEP.footL[2]); seg('top', 'chin', STEP.top[2]);
     const an = anchorOf(ck); if (an) { const [x, y] = sc(...toFrame(c, ck, ...an)); line(x - 9, y, x + 9, y, '#000', 2); line(x, y - 9, x, y + 9, '#000', 2); g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.arc(x, y, 6, 0, 7); g.stroke() }
