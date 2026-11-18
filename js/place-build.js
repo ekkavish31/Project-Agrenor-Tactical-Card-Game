@@ -1236,7 +1236,7 @@ const PB_ART = (() => {
  }
 
  function tabArt(body, s) {
-  body.innerHTML = `<div class="art"><span class="th" id="aTh"></span><div><button id="aSwap">เปลี่ยนภาพ…</button><p class="sub" style="margin:6px 0 0">${propName(s)}</p></div></div>
+  body.innerHTML = `<div class="art"><span class="th" id="aTh"></span><div><button id="aSwap">เปลี่ยนภาพ…</button> <button id="aDetail">🔍 แก้ละเอียด…</button><p class="sub" style="margin:6px 0 0">${propName(s)}</p></div></div>
   ${sl('width','ความกว้างภาพ',s.width||120,30,700,5)}${sl('s','ขนาด',s.s||1,.3,2.5,.05,pct)}${slantRows(s)}
   <label class="chk"><input type="checkbox" id="aFlip" ${s.f?'checked':''}> กลับด้านภาพ</label>
   ${zRow('sz','ชั้นของจุดทำงาน',s.z||0,'เทียบกับของประดับของจุดนี้ · ของที่เลขมากกว่าจะทับ')}
@@ -1244,6 +1244,7 @@ const PB_ART = (() => {
   <hr><div class="row"><button id="aDel">ลบจุดทำงานนี้</button></div>`;
   thumbInto(body.querySelector('#aTh'), s.art, s.width || 120);
   bindZ('sz', d => { s.z = Math.max(-20, Math.min(20, (s.z || 0) + d)); if (!s.z) delete s.z });
+  act('#aDetail', () => window.PieceDetail?.open('st:' + s.id));   /* v98.702 · the same asset window as a prop: picture, slant, 📐 base, blue / red frames */
   act('#aSwap', () => openArtPicker('เปลี่ยนภาพ ' + s.name, s.art, a => once(() => { if (/^code:/.test(s.art || '') && !/^code:/.test(a) && typeof artWidth === 'function') s.width = Math.max(+s.width || 0, artWidth(a)); s.art = a; if (window.AssetSize?.get(artSrc(a))) { s.width = startW(a); delete s.s } })())   /* v98.577 · a picture that knows its size next to the hero takes it when swapped in */);   /* v98.434 · code shape → picture: start at the picture's own width */
   body.querySelector('#aFlip').onchange = e => once(() => s.f = e.target.checked || undefined)();
   act('#aDel', () => {
@@ -1418,25 +1419,46 @@ const PB_ART = (() => {
   drawHero: PB_ART.drawHero,
   render,
   /* v98.292 · bridge for js/piece-detail.js: a prop of this sub-map (key = index in M.props) */
-  detail: {
-   caps: { rot: false, slant: false, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
-   item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
-   ov: key => { const o = M.props[+key]; return o ? (window.ArtFrames ? ArtFrames.effective(o) : o) : {} },   /* v98.567 · the window shows the frame the piece really uses (own → picture's template → automatic) */
-   edit(key, fn, cp) {
-    const o = M.props[+key]; if (!o) return; if (cp) checkpoint();
-    const AF = window.ArtFrames, wasOwn = !AF || AF.isOwn(o);
-    if (!wasOwn) AF.materialize(o);   // edit on top of what is shown
-    fn(o); for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === false) delete o[k];
-    if (!wasOwn) { const tmp = { ...o }; AF.strip(tmp); const eff = AF.effective(tmp), same = AF.FIELDS.every(k => JSON.stringify(o[k] ?? null) === JSON.stringify(eff[k] ?? null)); if (same) AF.strip(o); else o.fo = true }   // nothing in the frame really changed → keep following the picture
-    dirty = true; save(); render()
-   },
-   frames: {
-    state: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return null; return { own: AF.isOwn(o), tpl: AF.has(o.art) } },
-    saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom(o); AF.strip(o); dirty = true; save(); render() },
-    useArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.strip(o); dirty = true; save(); render() }
-   },
-   drawTo(q, E, ov) { const main = g; g = q; try { q.save(); const p0 = project(0, 0); q.translate(-p0.x, -p0.y); drawArt(ov.art, 0, 0, ov.width || 110, ov.s || 1, ov.f, 0, null, ov); q.restore() } catch (e) { } finally { g = main } }
-  },
+  detail: (() => {
+   /* v98.702 · keys: '<index>' = a loose prop · 'st:<id>' = a station (work point): frames are its own (no picture template), red frame = what blocks walking (default = the old box ±w ±d) */
+   let curKey = '';
+   const isSt = k => String(k).startsWith('st:'), stOfKey = k => M.stations.find(x => x.id === String(k).slice(3));
+   const STF = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'zb', 'fw', 'fh', 'blockU', 'blockV'];
+   const stView = s => { const o = { ...s }; if (o.sw == null && o.fw == null && !(o.zo && o.zo.length)) { o.sw = s.w * 2; o.sh = s.d * 2 } if (o.fw == null && !(o.zb && o.zb.length)) { o.fw = s.w * 2; o.fh = s.d * 2 } o.block = s.block !== false; return o };
+   const stMaterialize = s => { const v = stView(s); for (const k of ['sw', 'sh', 'fw', 'fh']) if (s[k] == null) s[k] = v[k]; if (s.block == null) s.block = true };
+   const propDetail = {
+    caps: { rot: false, slant: false, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
+    item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
+    ov: key => { const o = M.props[+key]; return o ? (window.ArtFrames ? ArtFrames.effective(o) : o) : {} },   /* v98.567 · the window shows the frame the piece really uses (own → picture's template → automatic) */
+    edit(key, fn, cp) {
+     const o = M.props[+key]; if (!o) return; if (cp) checkpoint();
+     const AF = window.ArtFrames, wasOwn = !AF || AF.isOwn(o);
+     if (!wasOwn) AF.materialize(o);   // edit on top of what is shown
+     fn(o); for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === false) delete o[k];
+     if (!wasOwn) { const tmp = { ...o }; AF.strip(tmp); const eff = AF.effective(tmp), same = AF.FIELDS.every(k => JSON.stringify(o[k] ?? null) === JSON.stringify(eff[k] ?? null)); if (same) AF.strip(o); else o.fo = true }   // nothing in the frame really changed → keep following the picture
+     dirty = true; save(); render()
+    },
+    frames: {
+     state: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return null; return { own: AF.isOwn(o), tpl: AF.has(o.art) } },
+     saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom(o); AF.strip(o); dirty = true; save(); render() },
+     useArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.strip(o); dirty = true; save(); render() }
+    }
+   };
+   return {
+    get caps() { return isSt(curKey) ? { rot: false, slant: false, note: 'จุดทำงาน: กรอบฟ้า = ใครอยู่หน้า/หลังแผงนี้ · กรอบแดง = ส่วนที่ห้ามเดิน (ค่าเริ่มต้น = กรอบเดิมของจุดนี้) · ติ๊ก "บล็อกเดิน" ออก = เดินทะลุได้' } : propDetail.caps },
+    get frames() { return isSt(curKey) ? null : propDetail.frames },
+    item: key => { curKey = String(key); if (isSt(key)) { const s = stOfKey(key); return s ? { key, label: s.name || propName(s), ax: 0, ay: 0 } : null } return propDetail.item(key) },
+    ov: key => { curKey = String(key); if (isSt(key)) { const s = stOfKey(key); return s ? stView(s) : {} } return propDetail.ov(key) },
+    edit(key, fn, cp) {
+     if (!isSt(key)) return propDetail.edit(key, fn, cp);
+     const s = stOfKey(key); if (!s) return; if (cp) checkpoint();
+     stMaterialize(s); fn(s); for (const k of Object.keys(s)) if (s[k] === undefined || (s[k] === false && k !== 'block')) delete s[k];
+     dirty = true; save(); render()
+    },
+    get frameFields() { return STF },
+    drawTo(q, E, ov) { const main = g; g = q; try { q.save(); const p0 = project(0, 0); q.translate(-p0.x, -p0.y); const o = isSt(E.key) ? ov : ov; drawArt(isSt(E.key) ? stOfKey(E.key)?.art : ov.art, 0, 0, (isSt(E.key) ? stOfKey(E.key)?.width : ov.width) || (isSt(E.key) ? 120 : 110), (isSt(E.key) ? stOfKey(E.key)?.s : ov.s) || 1, isSt(E.key) ? stOfKey(E.key)?.f : ov.f, 0, null, o); q.restore() } catch (e) { } finally { g = main } }
+   }
+  })(),
   enter,
   leave: () => leave(true),
   state: () => ({
