@@ -56,7 +56,7 @@
     const k = akey(id), d = DRAFT[k]?.[cellKey(pose, dir)]; if (typeof d === 'number') return d;
     const m = committed().pose?.[k]; const v = m?.[cellKey(pose, dir)] ?? m?.[pose]; return typeof v === 'number' && v > .2 && v < 3 ? v : 1;
   }
-  function setSize(id, pose, dir, v) { const k = akey(id); v = Math.max(.3, Math.min(2.5, Math.round(v * 1000) / 1000)); (DRAFT[k] ||= {})[cellKey(pose, dir)] = v; write(SKEY, DRAFT); draw(); status() }
+  function setSize(id, pose, dir, v) { if (isLocked(cellKey(pose, dir))) { flash(LOCKMSG); return } const k = akey(id); v = Math.max(.3, Math.min(2.5, Math.round(v * 1000) / 1000)); (DRAFT[k] ||= {})[cellKey(pose, dir)] = v; write(SKEY, DRAFT); draw(); status() }
   const draftCount = () => Object.values(DRAFT).reduce((n, m) => n + Object.keys(m || {}).length, 0);
 
   /* ---------- the pictures of the character on show ---------- */
@@ -142,7 +142,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 #poseSheet .ps-side .ps-steps{display:flex;flex-direction:column;gap:3px}#poseSheet .ps-side .ps-steps button{display:flex;align-items:center;gap:7px;text-align:left;padding:4px 8px;font-size:13px}#poseSheet .ps-side .ps-steps .n{font-weight:700;opacity:.6;min-width:16px}
 #poseSheet .qa-r{border-top:1px solid #e4e6da;padding-top:4px}#poseSheet .qa-h{display:flex;justify-content:space-between;font-size:12.5px}#poseSheet .qa-b{display:flex;gap:4px;margin-top:2px}#poseSheet .qa-b button{flex:1;padding:3px 0}
 #poseSheet .ps-zone{grid-area:zone;min-width:0;overflow-x:auto}
-#poseSheet .ps-c{position:relative}#poseSheet .ps-loupe{position:absolute;top:98px;right:98px;width:180px;height:180px;border:3px solid #8a4fff;border-radius:10px;background:#fff;box-shadow:0 3px 12px #0006;pointer-events:none;z-index:5}
+#poseSheet .ps-c{position:relative}#poseSheet .ps-c.locked{outline:3px solid #2f9e44;outline-offset:-3px}#poseSheet .ps-c.locked::after{content:'🔒';position:absolute;top:8px;left:8px;font-size:24px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px #0008)}body:not(.ps-sel) #poseSheet .ps-c.locked canvas{cursor:not-allowed}#poseSheet .ps-loupe{position:absolute;top:98px;right:98px;width:180px;height:180px;border:3px solid #8a4fff;border-radius:10px;background:#fff;box-shadow:0 3px 12px #0006;pointer-events:none;z-index:5}
 #poseSheet:fullscreen{overflow:auto;background:#eef0e6;padding:0 10px 10px}#poseSheet:fullscreen .ps-top{top:0}
 #poseSheet .ps-next{flex:0 1 auto;padding:5px 12px;border-radius:10px;background:#fff8e1;border:2px solid #e0b64a;font-size:15px}#poseSheet .ps-next b{padding:2px 9px;border-radius:7px;color:#fff;margin-left:6px}#psTip{position:fixed;z-index:99999;pointer-events:none;padding:3px 9px;border-radius:7px;color:#fff;font:700 13px AgThai,system-ui,sans-serif;box-shadow:0 2px 6px #0006;white-space:nowrap}
 #poseSheet .ps-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}#poseSheet .ps-bar b{font-size:16px;margin-right:6px}
@@ -234,10 +234,10 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         if (!c) { h += `<div class="ps-c none" style="height:${W + 90}px">ไม่มีภาพ</div>`; continue }
         if (HID.has(ck)) { h += `<div class="ps-c hid" style="height:${W + 90}px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:#8a8f7e;background:#efeee6">🙈 ซ่อนอยู่<br>${esc(pose)} ${dir}<button type="button" class="act" data-unhide="${ck}">👁 แสดง</button></div>`; continue }
         const k = kOf(c), ok = okOf(ck), chg = changed(ck), [ox, oy] = off(ck);
-        h += `<div class="ps-c${act === ck ? ' act' : ''}" data-ck="${ck}"><canvas width="${W}" height="${W}" aria-label="${pose} ${dir}"></canvas><div class="ctl">
-          <button type="button" data-k="-1" title="เล็กลง 1%">−1%</button><input data-in type="number" step="0.5" min="30" max="250" value="${(k * 100).toFixed(1)}" aria-label="ขนาด %"><button type="button" data-k="1" title="ใหญ่ขึ้น 1%">+1%</button>
-          <label class="${ok ? 'ok' : ''}"><input type="checkbox" data-ok ${ok ? 'checked' : ''}>${ok ? '✓ ตรวจแล้ว' : 'ตรวจ'}</label>${chg ? '<span class="chg" title="ภาพของท่านี้เปลี่ยนหลังวางจุด/ติ๊ก — ติ๊กหลุดแล้ว">ภาพเปลี่ยน</span>' : ''}
-          <button type="button" data-b="sw" title="ใส่จุดทั้งหมดของท่ายืน ${dir} ทับท่านี้">📋 SW</button><button type="button" data-b="snap" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น">⤓ พื้น</button><button type="button" data-b="adj" title="เปิดหน้าต่างปรับสัดส่วน (บิดภาพ) — บันทึกเป็นภาพใหม่">🛠 ปรับ</button>${ox || oy ? `<span class="mv" title="ย้ายแล้ว ยังไม่บันทึก">ย้าย ${ox},${oy}</span>` : ''}</div>${valsHtml(ck)}</div>`;
+        h += `<div class="ps-c${act === ck ? ' act' : ''}${ok ? ' locked' : ''}" data-ck="${ck}"><canvas width="${W}" height="${W}" aria-label="${pose} ${dir}"></canvas><div class="ctl">
+          <button type="button" data-k="-1" title="เล็กลง 1%" ${ok ? 'disabled' : ''}>−1%</button><input data-in type="number" step="0.5" min="30" max="250" value="${(k * 100).toFixed(1)}" aria-label="ขนาด %" ${ok ? 'disabled' : ''}><button type="button" data-k="1" title="ใหญ่ขึ้น 1%" ${ok ? 'disabled' : ''}>+1%</button>
+          <label class="${ok ? 'ok' : ''}" title="${ok ? 'ท่านี้ล็อกอยู่ — เอาติ๊กออกเพื่อแก้' : 'ติ๊ก = ตรวจแล้ว และล็อกท่านี้กันแก้พลาด'}"><input type="checkbox" data-ok ${ok ? 'checked' : ''}>${ok ? '🔒 ล็อกแล้ว' : '🔓 ล็อก'}</label>${chg ? '<span class="chg" title="ภาพของท่านี้เปลี่ยนหลังวางจุด/ติ๊ก — ติ๊กหลุดแล้ว">ภาพเปลี่ยน</span>' : ''}
+          <button type="button" data-b="sw" title="ใส่จุดทั้งหมดของท่ายืน ${dir} ทับท่านี้" ${ok ? 'disabled' : ''}>📋 SW</button><button type="button" data-b="snap" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น" ${ok ? 'disabled' : ''}>⤓ พื้น</button><button type="button" data-b="adj" title="เปิดหน้าต่างปรับสัดส่วน (บิดภาพ) — บันทึกเป็นภาพใหม่" ${ok ? 'disabled' : ''}>🛠 ปรับ</button>${ox || oy ? `<span class="mv" title="ย้ายแล้ว ยังไม่บันทึก">ย้าย ${ox},${oy}</span>` : ''}</div>${valsHtml(ck)}</div>`;
       }
     }
     h += `</div><div class="ps-msg" id="psMsg" role="status">${tool === 'hand' ? 'โหมด ✋: ลากภาพในช่องเพื่อย้าย' : 'คลิกบนภาพเพื่อวาง <b>' + STEP[step][1] + '</b> · ลากจุดเพื่อย้าย · ลูกศร = ขยับจุดที่เลือก 1 px · Delete = ลบจุด'} · กรอบแดง = ภาพจริง 384×384 (ขอบนอกกรอบจะถูกตัดตอนบันทึก) · เส้นเขียว = เส้นพื้น</div></div></div>`;
@@ -276,6 +276,11 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const HKEY = 'pose-sheet.hidden', hidAll = () => { try { return JSON.parse(localStorage.getItem(HKEY)) || {} } catch (e) { return {} } };
   const hidSet = () => new Set(hidAll()[cur?.id] || []);
   const hidSave = set => { const o = hidAll(); if (set.size) o[cur.id] = [...set]; else delete o[cur.id]; try { localStorage.setItem(HKEY, JSON.stringify(o)) } catch (e) { } };
+  /* v98.762 · LOCK: a pose with its tick ON ("🔒 ล็อก" = the old "ตรวจแล้ว") cannot be changed by accident — no points, no move, no size, no adjust, no clear, no copy / snap — until the tick is taken off */
+  const isLocked = ck => !!ck && okOf(ck);
+  let flashT = 0;
+  function flash(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#a4341c">🔒 ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2200) }
+  const LOCKMSG = 'ท่านี้ล็อกอยู่ — เอาติ๊ก “ล็อก” ออกก่อนจึงจะแก้ได้';
   const marksFor = (P, mm) => ({ chin: Math.min(.9, Math.max(.04, (P.chin[1] - mm.top) / mm.H)), hip: Math.min(.95, Math.max(.2, (P.crotch[1] - mm.top) / mm.H)), headTop: 0, ankle: 1 });
   const ZCACHE = new Map();
   function zoneOver(ck) {
@@ -327,6 +332,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function adjBar() {
     const c = act && cur?.cells[act]; if (!c) return '<div style="font-size:12.5px;color:#7a5a00">คลิกที่ภาพของท่าหนึ่งเพื่อเลือกท่า</div>';
     qaSync(); const P = peek(act)?.p || {}, name = (POSES.find(q => q[0] === c.pose) || [, c.pose])[1] + ' ' + c.dir;
+    if (isLocked(act)) return `<div style="font-size:13px;color:#2f7a3a">🔒 ท่า <b>${esc(name)}</b> ล็อกอยู่ — เอาติ๊ก “ล็อก” ที่ใต้ภาพออกก่อนจึงจะปรับ/แก้จุดได้</div>`;
     if (!(P.chin && P.crotch)) return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> · วาง <b>คาง</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีโซนสีและปุ่มปรับสัดส่วน</div>`;
     return `<div style="font-size:13.5px">ท่า <b style="background:#2e6b4f;color:#fff;padding:1px 8px;border-radius:6px">${esc(name)}</b> · 🛠 ปรับสัดส่วน (ดูผลสดบนภาพ)</div>`
       + QROWS.map(([k, l]) => `<div class="qa-r"><div class="qa-h"><span>${l}</span><b>${QA.S[k]}%</b></div><div class="qa-b">${[-5, -1, 1, 5].map(d => `<button type="button" data-qd="${k},${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</div></div>`).join('')
@@ -417,7 +423,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       const tip = () => { let t = $('psTip'); if (!t) { t = document.createElement('div'); t.id = 'psTip'; t.hidden = true; document.body.append(t) } return t };
       ps.addEventListener('pointermove', ev => {
         const cvs = ev.target.closest?.('.ps-c canvas'), cell = cvs?.closest('.ps-c[data-ck]');
-        if (cvs && cell && tool !== 'hand' && SHOW.pts && cur?.cells[cell.dataset.ck]?.img) { const [sx, sy] = ptr(cvs, ev), [fx, fy] = unsc(sx, sy); paintLoupe(cell.dataset.ck, fx, fy, cell) } else if (!drag) hideLoupes(null);
+        if (cvs && cell && tool !== 'hand' && SHOW.pts && !isLocked(cell.dataset.ck) && cur?.cells[cell.dataset.ck]?.img) { const [sx, sy] = ptr(cvs, ev), [fx, fy] = unsc(sx, sy); paintLoupe(cell.dataset.ck, fx, fy, cell) } else if (!drag) hideLoupes(null);
       });
       ps.addEventListener('pointermove', ev => { const t = tip(), on = tool !== 'hand' && SHOW.pts && !drag && ev.target.closest?.('.ps-c canvas'); if (!on) { t.hidden = true; return } const s = stepInfo(); t.textContent = s.n + '/' + s.all + ' · ' + s.short; t.style.background = s.col; t.style.left = (ev.clientX + 16) + 'px'; t.style.top = (ev.clientY + 18) + 'px'; t.hidden = false });
       ps.addEventListener('pointerleave', () => { const t = $('psTip'); if (t) t.hidden = true; hideLoupes(null) }) }
@@ -439,10 +445,10 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     $('psFull').onclick = () => { const e = document.fullscreenElement; if (e === ps) document.exitFullscreen?.(); else (ps.requestFullscreen?.() || Promise.reject()).catch(() => msg('เปิดเต็มจอไม่ได้ในหน้านี้ — ลองกด F11 ของเบราว์เซอร์')) };
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
     $('psHand').onclick = () => { tool = tool === 'hand' ? 'mark' : 'hand'; draw() };
-    $('psClear').onclick = () => { if (!act) return; const r = peek(act); if (r) { r.p = {}; r.ok = false; write(KEY, DATA) } pick = null; draw(); status() };
+    $('psClear').onclick = () => { if (!act) return; if (isLocked(act)) { flash(LOCKMSG); return } const r = peek(act); if (r) { r.p = {}; r.ok = false; write(KEY, DATA) } pick = null; draw(); status() };
     $('psCartAll').onclick = () => cartAll();
-    $('psCopySW').onclick = () => { if (!act) { msg('คลิกเลือกท่าที่ต้องการก่อน (คลิกในช่องของท่านั้น) แล้วกดปุ่มนี้'); return } const n = copyFromSW(act); msg(n ? 'ใส่จุดของท่ายืน (' + cur.cells[act].dir + ') ให้ท่าที่เลือกแล้ว — ลากแก้ให้ตรงตัว' : 'ท่านี้เป็นท่าต้นแบบเอง หรือท่ายืนยังไม่มีจุด'); draw() };
-    $('psSnapAll').onclick = () => { let n = 0; for (const ck of Object.keys(cur.cells)) if (snap(ck, true)) n++; write(KEY, DATA); draw(); msg(n ? 'จัดเท้าเข้าเส้นพื้น ' + n + ' ท่า — กด 💾 บันทึกตำแหน่งภาพ เพื่อเปลี่ยนจริง' : 'ยังไม่มีท่าที่วางจุดเท้าครบ') };
+    $('psCopySW').onclick = () => { if (!act) { msg('คลิกเลือกท่าที่ต้องการก่อน (คลิกในช่องของท่านั้น) แล้วกดปุ่มนี้'); return } if (isLocked(act)) { flash(LOCKMSG); return } const n = copyFromSW(act); msg(n ? 'ใส่จุดของท่ายืน (' + cur.cells[act].dir + ') ให้ท่าที่เลือกแล้ว — ลากแก้ให้ตรงตัว' : 'ท่านี้เป็นท่าต้นแบบเอง หรือท่ายืนยังไม่มีจุด'); draw() };
+    $('psSnapAll').onclick = () => { let n = 0; for (const ck of Object.keys(cur.cells)) if (!isLocked(ck) && snap(ck, true)) n++; write(KEY, DATA); draw(); msg(n ? 'จัดเท้าเข้าเส้นพื้น ' + n + ' ท่า — กด 💾 บันทึกตำแหน่งภาพ เพื่อเปลี่ยนจริง' : 'ยังไม่มีท่าที่วางจุดเท้าครบ') };
     $('psRon').onchange = ev => { RUL.on = ev.target.checked; saveRul(); draw() };
     $('psCen').onchange = ev => { RUL.center = ev.target.checked; saveRul(); paintAll() };
     $('psGho').onchange = ev => { RUL.ghost = ev.target.checked; saveRul(); paintAll() };
@@ -460,6 +466,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       el.querySelector('[data-b="adj"]').onclick = () => openAdjust(ck);
       cv.ondblclick = ev => { const [sx, sy] = ptr(cv, ev), h = hitRuler(sx, sy); if (h) { (h.t === 'l' ? RUL.lines : RUL.meas).splice(h.i, 1); saveRul(); draw() } };
       cv.onpointerdown = ev => {
+        if (isLocked(ck) && !selectMode()) { act = ck; ps.querySelectorAll('.ps-c[data-ck]').forEach(x => x.classList.toggle('act', x.dataset.ck === ck)); hideLoupes(null); paintAll(); flash(LOCKMSG); return }
         if (selectMode()) { act = ck; ps.querySelectorAll('.ps-c[data-ck]').forEach(x => x.classList.toggle('act', x.dataset.ck === ck)); hideLoupes(null); paintAll(); return }
         const [sx, sy] = ptr(cv, ev); act = ck; const rec = recOf(ck), P = rec.p;
         const hr = hitRuler(sx, sy); if (hr) { rpick = hr.t + hr.i; drag = { kind: 'rul', h: hr }; cv.setPointerCapture(ev.pointerId); paintAll(); return }
@@ -495,6 +502,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!document.body.classList.contains('sheet-mode') || $('psAdj') || /INPUT|TEXTAREA|SELECT/.test(ev.target?.tagName || '')) return;
     if (ev.key === 'h' || ev.key === 'H') { tool = tool === 'hand' ? 'mark' : 'hand'; draw(); return }
     if (ev.key === 'Enter' && act) { const R = peek(act)?.p; const k = R && Object.keys(LINES).find(x => lineOpen(R, x)); if (k) { ev.preventDefault(); R[k + 'Done'] = true; write(KEY, DATA); step = firstMissing(R) || k; draw(); return } }
+    if (act && isLocked(act) && (/^Arrow/.test(ev.key) || ev.key === 'Delete' || ev.key === 'Backspace' || ev.key === 'Enter')) { flash(LOCKMSG); return }
     if (!act || !pick) return; const P = recOf(act).p, hk = pick.includes('#') ? pick.split('#') : null, v = hk ? P[LINES[hk[0]]]?.[+hk[1]] : P[pick]; if (!v) return;
     if (hk) { const pts = P[LINES[hk[0]]], d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[ev.key];
       if (d) { ev.preventDefault(); pts[+hk[1]] = [v[0] + d[0], v[1] + d[1]]; setLine(P, hk[0], pts); write(KEY, DATA); draw() }
@@ -508,7 +516,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   /* ---------- datum from the SW standing pose · snapping the feet to the ground ---------- */
   function copyFromSW(only) {
     let n = 0; const base = d => { const q = peek('idle@' + d)?.p; return q && Object.keys(q).length ? q : null };
-    for (const ck of (only ? [only] : Object.keys(cur.cells))) { if (ck === 'idle@SW' || ck === 'idle@NE') continue; const c = cur.cells[ck]; if (!c) continue; const src = base(c.dir) || base('SW'); if (!src) continue; const r = recOf(ck); if (!only && Object.keys(r.p).length) continue;
+    for (const ck of (only ? [only] : Object.keys(cur.cells))) { if (ck === 'idle@SW' || ck === 'idle@NE') continue; const c = cur.cells[ck]; if (!c || isLocked(ck)) continue; const src = base(c.dir) || base('SW'); if (!src) continue; const r = recOf(ck); if (!only && Object.keys(r.p).length) continue;
       r.p = JSON.parse(JSON.stringify(src)); if (c.pose === 'down') r.p = { footL: src.footL ? [...src.footL] : [GX, GY] }; r.ok = false; r.fp = c.fp; n++ }
     write(KEY, DATA); return n;
   }
@@ -554,6 +562,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   /* ---------- the adjust window (the old head / torso / legs sliders, live) ---------- */
   function sil(img, flip) { const c = document.createElement('canvas'); c.width = c.height = SRC; const g = c.getContext('2d', { willReadFrequently: true }); if (flip) { g.translate(SRC, 0); g.scale(-1, 1) } g.drawImage(img, 0, 0, SRC, SRC); const d = g.getImageData(0, 0, SRC, SRC).data; let top = SRC, bot = -1; for (let y = 0; y < SRC; y++) for (let x = 0; x < SRC; x++) if (d[(y * SRC + x) * 4 + 3] > 40) { top = Math.min(top, y); bot = Math.max(bot, y); break } if (bot < 0) return null; return { w: SRC, h: SRC, top, bottom: bot, H: bot - top + 1 } }
   function openAdjust(ck) {
+    if (isLocked(ck)) { flash(LOCKMSG); return }
     const c = cur.cells[ck], P = peek(ck)?.p || {}, PAm = PA(); if (!PAm) return msg('ไม่พบตัวปรับสัดส่วน');
     if (off(ck)[0] || off(ck)[1]) return msg('ท่านี้ย้ายภาพไว้ยังไม่บันทึก — กด 💾 บันทึกตำแหน่งภาพก่อน แล้วค่อยปรับสัดส่วน');
     if (!c.img || !P.chin || !P.crotch) return msg('วางจุด คาง และ เส้นตัดขา (ขาหนีบ) ของท่านี้ก่อน (ตัวปรับตัดภาพที่สองจุดนี้)');
