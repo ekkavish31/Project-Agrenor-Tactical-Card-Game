@@ -146,14 +146,19 @@
   }
 
   /* ---------- drawing ---------- */
+  /* v98.684 · the quest mark is the painted gold gem (assets/ui/quest-marker.webp, transparent, tip pointing down); until that file exists / loads, the old code-drawn diamond is used */
+  let markImg = null; const markPic = () => { if (!markImg) { markImg = new Image(); markImg.onerror = () => { markImg.bad = true }; markImg.src = 'assets/ui/quest-marker.webp' } return markImg.complete && markImg.naturalWidth && !markImg.bad ? markImg : null };
   function marker(gx, x, y, t, label, k) {
-    const b = Math.sin(t * .006) * 6 * k, s = 13 * k; y -= b;
+    const b = Math.sin(t * .006) * 6 * k, s = 13 * k; y -= b; const pic = markPic(), top = pic ? s * 3.6 * .72 : s * 1.6;
     gx.save(); gx.shadowColor = 'rgba(255,200,60,.9)'; gx.shadowBlur = 16 * k;
+    if (pic) { const h = s * 3.6, w = h * pic.naturalWidth / pic.naturalHeight; gx.drawImage(pic, x - w / 2, y - h * .72, w, h); gx.shadowBlur = 0 }
+    else {
     gx.beginPath(); gx.moveTo(x, y - s * 1.6); gx.lineTo(x + s, y); gx.lineTo(x, y + s * 1.6); gx.lineTo(x - s, y); gx.closePath();
     gx.fillStyle = '#ffd34d'; gx.fill(); gx.shadowBlur = 0; gx.lineWidth = 2.5 * k; gx.strokeStyle = '#5a3a0a'; gx.stroke();
+    }
     if (label) { gx.font = `700 ${13 * k}px VillageThai,system-ui`; gx.textAlign = 'center'; const w = gx.measureText(label).width + 16 * k;
-      gx.fillStyle = 'rgba(36,30,14,.88)'; gx.beginPath(); gx.roundRect(x - w / 2, y - s * 1.6 - 28 * k, w, 22 * k, 7 * k); gx.fill();
-      gx.fillStyle = '#ffe9a8'; gx.fillText(label, x, y - s * 1.6 - 12 * k) }
+      gx.fillStyle = 'rgba(36,30,14,.88)'; gx.beginPath(); gx.roundRect(x - w / 2, y - top - 28 * k, w, 22 * k, 7 * k); gx.fill();
+      gx.fillStyle = '#ffe9a8'; gx.fillText(label, x, y - top - 12 * k) }
     gx.restore();
   }
   /* v98.111 · targets() asks Interactables.all(), whose village provider asks targets() again … a loop that only ended when the stack overflowed (the error was swallowed):

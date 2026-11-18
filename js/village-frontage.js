@@ -67,7 +67,7 @@
      if([[0,0],[-width*.44,0],[width*.44,0],[0,-12],[0,12]].some(onPath)) continue;
      if(paved(p.x,p.y)) continue;
      result.push({owner:o,rel:{u,v},frontageKey:o.id+':front:'+name,name:'decor:'+name,x:p.x,y:p.y,
-      draw(){const im=pieceImg('assets/interior/'+name+'.webp');if(!im)return;
+      draw(){const im=pieceImg('assets/interior/'+name+'.webp',true);if(!im)return;
        const h=width*im.naturalHeight/im.naturalWidth;
        TownArt.draw(g,im,null,[p.x-width/2,p.y-h*.94,width,h],project(hero.u,hero.v));}});
      placed=true;break;
