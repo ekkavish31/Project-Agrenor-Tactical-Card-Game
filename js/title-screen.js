@@ -89,7 +89,9 @@ const byCategory=(...cats)=>manifest().filter(a=>cats.includes(a.category)&&a.st
 const uniq=list=>[...new Set(list.filter(Boolean))];
 function heroFrames(){const t=root.TACTICS_SPRITES;if(!t?.directions)return[];const out=[];for(const p of Object.values(t.directions))for(const f of Object.values(p).flat())if(f?.src)out.push(f.src);return out}
 const VILLAGE=['grass','paving','soil','meadow-details','garden-pond','props','fountain','player-house','inn','healer','shop','market','temple','forge'].map(f=>'assets/village-town/'+f+'.png').concat(['broadleaf','pine','old-oak'].map(f=>'assets/village-town/nature/'+f+'.webp'));
-function villageSet(){return uniq([...VILLAGE,...heroFrames(),'assets/hero.webp','assets/home.webp','assets/market.webp','assets/workshop.webp',...['bag','upgrade','map','develop'].map(k=>'assets/ui-'+k+'.webp'),'assets/audio/bgm/bgm-village-festival-01.mp3'])}
+/* v98.679 · the card book (สมุดผนึก) is the first thing the lesson opens: its pictures are fetched during the loading screen so it never pops in late */
+const BOOK_ART=['assets/ui/cardbook-open.webp','assets/ui/grimoire-open.webp','assets/ui/close-x.webp','assets/icons/menu/cardbook.webp','assets/icons/menu/potion.webp','assets/icons/menu/battle.webp','assets/icons/menu/forge.webp','assets/icons/menu/treasure.webp','assets/icons/menu/mail.webp','assets/cards/item/potion.webp','assets/cards/item/momWater.webp'];
+function villageSet(){return uniq([...VILLAGE,...heroFrames(),'assets/hero.webp','assets/home.webp','assets/market.webp','assets/workshop.webp',...['bag','upgrade','map','develop'].map(k=>'assets/ui-'+k+'.webp'),'assets/audio/bgm/bgm-village-festival-01.mp3',...BOOK_ART])}
 // what a battle draws the moment it opens (measured: hero/ally frames, weapons, props, hand cards) — the loader waits for these
 function battleCore(){return uniq(byCategory('tactics-hero','tactics-equipment','tactics-props','tactic-cards','allies','battle-scenery'))}
 // the rest of the battle art — fetched quietly in the background after the village is up
