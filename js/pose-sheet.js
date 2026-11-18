@@ -111,9 +111,10 @@
     return P.footL || P.footR || null;
   }
   function vals(ck) {
-    const P = Pof(ck), an = anchorOf(ck), c = cur?.cells[ck]; if (!c || c.pose === 'down') return null; const d = (a, b) => a && b ? Math.hypot(a[0] - b[0], a[1] - b[1]) : null;
+    const P = Pof(ck), an = anchorOf(ck), c = cur?.cells[ck]; if (!c) return null; const d = (a, b) => a && b ? Math.hypot(a[0] - b[0], a[1] - b[1]) : null;
     if (!an || !P.top || !P.chin) return { need: 'วางจุดเท้า + ยอดกะโหลก + คางก่อน' };
-    const H = an[1] - P.top[1]; if (H < 20) return { need: 'ความสูงตัวผิดปกติ' };
+    /* a LYING pose (down): the length is measured along the body axis (skull top → feet), not as a height — the same line whichever way the body lies */
+    const H = c.pose === 'down' ? d(P.top, an) : an[1] - P.top[1]; if (!(H >= 20)) return { need: 'ความสูงตัวผิดปกติ' };
     const o = { H, head: d(P.top, P.chin), sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR) };
     return o;
   }
@@ -284,12 +285,17 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const marksFor = (P, mm) => ({ chin: Math.min(.9, Math.max(.04, (P.chin[1] - mm.top) / mm.H)), hip: Math.min(.95, Math.max(.2, (P.crotch[1] - mm.top) / mm.H)), headTop: 0, ankle: 1 });
   const ZCACHE = new Map();
   function zoneOver(ck) {
-    const c = cur?.cells[ck], P = peek(ck)?.p || {}, PAm = PA(); if (!c?.img || !P.chin || !P.crotch || !PAm?.zoneWeights) return null;
-    const key = [c.fp, P.chin, P.crotch].join('|'); if (ZCACHE.has(key)) return ZCACHE.get(key); let out = null;
+    const c = cur?.cells[ck], P0 = peek(ck)?.p || {}, PAm = PA(); if (!c?.img || !PAm?.zoneWeights) return null;
+    const mid2 = a => a && a.length ? [a.reduce((s, q) => s + q[0], 0) / a.length, a.reduce((s, q) => s + q[1], 0) / a.length] : null;
+    const P = { ...P0, chin: P0.chin || mid2(P0.neckLine), crotch: P0.crotch || mid2(P0.crotchLine) };   /* zones need only the two lines; the old chin / crotch POINTS are the fallback */
+    if (!P.chin || !P.crotch) return null;
+    /* v98.766 · the zones are cut by the LINES you drew (ProportionAdjust 'cuts'): the head side of the neck line = head, the far side of the crotch line = ALL legs, whatever direction the lines run (a lying pose: they run up-down) */
+    const lineOK = a => Array.isArray(a) && a.length >= 2, hp = P.top || (P.eyeL && P.eyeR ? [(P.eyeL[0] + P.eyeR[0]) / 2, (P.eyeL[1] + P.eyeR[1]) / 2] : null) || (lineOK(P.neckLine) && lineOK(P.crotchLine) ? (() => { const n = mid2(P.neckLine), h = mid2(P.crotchLine), dx = n[0] - h[0], dy = n[1] - h[1], l = Math.hypot(dx, dy) || 1; return [n[0] + dx / l * 12, n[1] + dy / l * 12] })() : P.chin), cuts = lineOK(P.neckLine) && lineOK(P.crotchLine) && hp ? { neck: P.neckLine, hip: P.crotchLine, head: hp } : null;
+    const key = [c.fp, P.chin, P.crotch, cuts ? JSON.stringify([P.neckLine, P.crotchLine, hp]) : ''].join('|'); if (ZCACHE.has(key)) return ZCACHE.get(key); let out = null;
     try {
       const m = sil(c.img, c.flip); if (m) {
         const cv = document.createElement('canvas'); cv.width = cv.height = SRC; const q = cv.getContext('2d', { willReadFrequently: true }); if (c.flip) { q.translate(SRC, 0); q.scale(-1, 1) } q.drawImage(c.img, 0, 0, SRC, SRC); q.setTransform(1, 0, 0, 1, 0, 0);
-        const d = q.getImageData(0, 0, SRC, SRC), seg = PAm.segments(m, marksFor(P, m)), z = PAm.zoneWeights(d.data, SRC, SRC, seg, { mode: 'band', soft: .06, grow: 10 }, m.H), o = q.createImageData(SRC, SRC), rgb = PAm.ZONES.map(zz => zz && zz[1].slice(1).match(/../g).map(v => parseInt(v, 16)));
+        const d = q.getImageData(0, 0, SRC, SRC), seg = PAm.segments(m, marksFor(P, m)), z = PAm.zoneWeights(d.data, SRC, SRC, seg, { mode: 'band', soft: .06, grow: 10, ...(cuts ? { cuts } : {}) }, m.H), o = q.createImageData(SRC, SRC), rgb = PAm.ZONES.map(zz => zz && zz[1].slice(1).match(/../g).map(v => parseInt(v, 16)));
         for (let i = 0; i < z.labels.length; i++) { const col = rgb[z.labels[i] || 1]; o.data[i * 4] = col[0]; o.data[i * 4 + 1] = col[1]; o.data[i * 4 + 2] = col[2]; o.data[i * 4 + 3] = d.data[i * 4 + 3] * .42 } q.putImageData(o, 0, 0); out = cv
       }
     } catch (e) { out = null; console.error('pose-sheet zones', e) }
@@ -332,6 +338,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function adjBar() {
     const c = act && cur?.cells[act]; if (!c) return '<div style="font-size:12.5px;color:#7a5a00">คลิกที่ภาพของท่าหนึ่งเพื่อเลือกท่า</div>';
     qaSync(); const P = peek(act)?.p || {}, name = (POSES.find(q => q[0] === c.pose) || [, c.pose])[1] + ' ' + c.dir;
+    if (c.pose === 'down') return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> เป็นท่านอน — ตัวปรับสัดส่วนตัดตามแนวตั้ง ใช้กับท่านอนไม่ได้ (โซนสีและตัวเลขใช้ได้ตามแกนลำตัว)</div>`;
     if (isLocked(act)) return `<div style="font-size:13px;color:#2f7a3a">🔒 ท่า <b>${esc(name)}</b> ล็อกอยู่ — เอาติ๊ก “ล็อก” ที่ใต้ภาพออกก่อนจึงจะปรับ/แก้จุดได้</div>`;
     if (!(P.chin && P.crotch)) return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> · วาง <b>คาง</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีโซนสีและปุ่มปรับสัดส่วน</div>`;
     return `<div style="font-size:13.5px">ท่า <b style="background:#2e6b4f;color:#fff;padding:1px 8px;border-radius:6px">${esc(name)}</b> · 🛠 ปรับสัดส่วน (ดูผลสดบนภาพ)</div>`
@@ -563,6 +570,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function sil(img, flip) { const c = document.createElement('canvas'); c.width = c.height = SRC; const g = c.getContext('2d', { willReadFrequently: true }); if (flip) { g.translate(SRC, 0); g.scale(-1, 1) } g.drawImage(img, 0, 0, SRC, SRC); const d = g.getImageData(0, 0, SRC, SRC).data; let top = SRC, bot = -1; for (let y = 0; y < SRC; y++) for (let x = 0; x < SRC; x++) if (d[(y * SRC + x) * 4 + 3] > 40) { top = Math.min(top, y); bot = Math.max(bot, y); break } if (bot < 0) return null; return { w: SRC, h: SRC, top, bottom: bot, H: bot - top + 1 } }
   function openAdjust(ck) {
     if (isLocked(ck)) { flash(LOCKMSG); return }
+    if (cur?.cells[ck]?.pose === 'down') { flash('ท่านอนปรับสัดส่วนด้วยตัวปรับนี้ไม่ได้'); return }
     const c = cur.cells[ck], P = peek(ck)?.p || {}, PAm = PA(); if (!PAm) return msg('ไม่พบตัวปรับสัดส่วน');
     if (off(ck)[0] || off(ck)[1]) return msg('ท่านี้ย้ายภาพไว้ยังไม่บันทึก — กด 💾 บันทึกตำแหน่งภาพก่อน แล้วค่อยปรับสัดส่วน');
     if (!c.img || !P.chin || !P.crotch) return msg('วางจุด คาง และ เส้นตัดขา (ขาหนีบ) ของท่านี้ก่อน (ตัวปรับตัดภาพที่สองจุดนี้)');
