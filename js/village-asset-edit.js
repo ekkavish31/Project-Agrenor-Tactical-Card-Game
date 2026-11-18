@@ -3074,7 +3074,7 @@
      // v86: compare the layout itself (not the timestamp line) so an unchanged layout is not re-pushed
      if((old||'').replace(/^\/\/.*\n/,'')!==body.replace(/^\/\/.*\n/,''))files.push({path:'js/village-layout-v67.js',content:body});
      // everything else the village editor keeps outside the layout snapshot → js/game-settings.js
-     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1','depth-style-v1','place-art-frames-v1'],vals={};
+     const keys=[UPLOAD_KEY,'project-a-village-custom-places-v1','project-a-village-hidden-places-v1','place-maps-v1','projectA.roadShape','projectA.roadBlend','project-a-npc-routes-v1','walk-speed-v1','map-char-scale-v1','depth-style-v1','place-art-frames-v1','asset-hero-ratio-v1'],vals={};
      for(const k of keys){const v=localStorage.getItem(k);if(v!==null)vals[k]=v}
      const text=await head.read('js/game-settings.js')||'',settings=GitHubPush.parseSettings(text)||{};
      if(Object.entries(vals).some(([k,v])=>settings[k]!==v)){Object.assign(settings,vals);files.push({path:'js/game-settings.js',content:GitHubPush.settingsFile(settings)})}
@@ -3146,7 +3146,7 @@
    frames: window.ArtFrames ? {
     autoNote: 'ยังไม่มีค่าของภาพนี้ (ชิ้นนี้ยังไม่มีกรอบ ให้วางกรอบฟ้า/แดงก่อน)',
     state: key => { const E = frame.find(e => e.key === key); if (!E) return null; const AF = window.ArtFrames, o = data.edit[key] || {}, own = frOwn(o); return { own, tpl: AF.has(E.art), uses: frame.filter(e => e.art === E.art && !e.hidden && !frOwn(e.ov || {})).length } },
-    saveToArt: key => { const E = frame.find(e => e.key === key); if (!E) return; const o = ovOf(key), AF = window.ArtFrames; if (!frOwn(o) && !AF.has(E.art)) { flashStatus('วางกรอบฟ้า/แดงของชิ้นนี้ก่อน แล้วค่อยบันทึกลงภาพ'); return } UX.checkpoint(); AF.saveFrom({ ...o, ...window.ArtFrames.effective({ ...o, art: E.art, width: 100 }), art: E.art, width: 100, s: o.s, f: o.f }); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(key); UX.persist(); render() },
+    saveToArt: key => { const E = frame.find(e => e.key === key); if (!E) return; const o = ovOf(key), AF = window.ArtFrames; if (!frOwn(o) && !AF.has(E.art)) { flashStatus('วางกรอบฟ้า/แดงของชิ้นนี้ก่อน แล้วค่อยบันทึกลงภาพ'); return } UX.checkpoint(); try { sizeRec(key) } catch (e) { }   /* v98.718 · and the size next to the hero */ AF.saveFrom({ ...o, ...window.ArtFrames.effective({ ...o, art: E.art, width: 100 }), art: E.art, width: 100, s: o.s, f: o.f }); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(key); UX.persist(); render() },
     applyAll: key => { const E = frame.find(e => e.key === key); if (!E) return 0; UX.checkpoint(); let n = 0; for (const e of frame) if (e.art === E.art) { const o = data.edit[e.key]; if (o && frOwn(o)) { for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(e.key); n++ } } UX.persist(); render(); return n },
     useArt: key => { const o = data.edit[key]; if (!o) return; UX.checkpoint(); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(key); UX.persist(); render() }
    } : null,

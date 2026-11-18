@@ -1445,7 +1445,7 @@ const PB_ART = (() => {
     },
     frames: {
      state: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return null; return { own: AF.isOwn(o), tpl: AF.has(o.art) } },
-     saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom(o); AF.strip(o); dirty = true; save(); render() },
+     saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom(o); recSize(o); /* v98.718 · also the picture's size next to the hero (new pieces of it start at this size) */ AF.strip(o); dirty = true; save(); render() },
      useArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.strip(o); dirty = true; save(); render() }
     }
    };
