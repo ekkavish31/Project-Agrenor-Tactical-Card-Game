@@ -34,8 +34,22 @@
     if (pairFront ? ifo > ih : ifo < ih) return false;     // already right
     const [f] = list.splice(ifo, 1), at = list.findIndex(isHero); list.splice(pairFront ? at + 1 : at, 0, f); return true;
   }
+  /* v98.732 · ONE RULE for every map (village, sub-maps, battle fields): the layer system (z / layer) orders ASSETS among themselves only. A CHARACTER (hero, follower, villager, vendor, monster — anything that walks)
+     is placed only by the blue order frames: in front of / behind each piece by walkerInFront. Characters never take part in the layer ordering.
+     list = the draw list (back → front) · walkerOf(entry) → { u, v } for a character (else null) · fpOf(entry) → the order frame of a piece (else null). Moves each character just after the last piece it stands in front of,
+     or before the first piece it stands behind (the same moves village-place.html did for the hero and the vendors). */
+  function fixWalkers(list, walkerOf, fpOf) {
+    const ws = []; list.forEach(e => { const p = walkerOf(e); if (p) ws.push([e, p]) });
+    for (const [w, p] of ws) {
+      const ih = list.indexOf(w); if (ih < 0) continue; const fr = []; let must = Infinity, back = Infinity;
+      list.forEach((e, i) => { if (i === ih) return; const fp = fpOf(e); if (!fp) return; const inF = walkerInFront(fp, p.u, p.v); if (i > ih) { if (inF) fr.push(i); else must = Math.min(must, i) } else if (!inF) back = Math.min(back, i) });
+      const after = Math.max(-1, ...fr.filter(i => i < must));
+      if (after > ih) { const [r] = list.splice(ih, 1); list.splice(after, 0, r) }
+      else if (back < ih) { const [r] = list.splice(ih, 1); list.splice(back, 0, r) }
+    }
+  }
   const api = {
-    pairOrder,
+    pairOrder, fixWalkers,
     KEY, DEF, isLow, walkerInFront, dist,
     get: () => ({ ...read() }),
     set(patch) { const d = { ...read(), ...patch }; try { root.localStorage.setItem(KEY, JSON.stringify(d)) } catch (e) { } stamp = null; try { root.dispatchEvent(new Event('depthstyle')) } catch (e) { } },

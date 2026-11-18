@@ -1813,6 +1813,8 @@
     /* v96: a host with view depth (battle-field.html) sorts by depth so cells in front of a unit can be drawn over it */
     const extras = window.TownBattleExtras?.() || [], DEP = window.FieldDepth, order = [...st.units.map(u => ({ unit: u, y: project(u.vu, u.vv).y, d: DEP ? DEP(u.vu, u.vv) : 0 })), ...extras].sort(DEP ? (a, b) => (a.d ?? 0) - (b.d ?? 0) : (a, b) => a.y - b.y);
     const selUnit = inspectU || (st.turn === 'ally' && st.cur ? st.cur : st.turn === 'hero' ? h : null);
+    /* v98.732 · ONE RULE: units (hero, allies, monsters — any character) are placed against props ONLY by the props' order frames (DepthStyle.walkerInFront), never by a layer number */
+    if (window.DepthStyle?.fixWalkers && window.FieldRot && !/[?&]depthfix=0/.test(location.search)) { try { DepthStyle.fixWalkers(order, e => { if (!e.unit) return null; const r = FieldRot(e.unit.vu, e.unit.vv); return { u: r.u, v: r.v } }, e => e.fp || null) } catch (err) { } }
     window.__fieldOrder = order;   /* v98.284 · read by tools/check-field-occlusion.cjs */
     /* v98.71 · until a unit moves, acts or is turned (u.face changes), it shows SW/SE (toward the camera) so the player sees who is there; the rules still use u.face */
     const frontShown = u => { const i = u.idle0; if (!i) return false; if (u.walking || (u.pose && u.pose !== 'idle') || u.u !== i.u || u.v !== i.v || u.face !== i.face || u.hp <= 0) { u.idle0 = null; return false } return true };

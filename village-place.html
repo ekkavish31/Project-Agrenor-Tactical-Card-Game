@@ -939,26 +939,20 @@ function walls() {
 /* v98.309 · the hero against props that have an order footprint: move him after every prop he stands in front of, before every prop he stands behind (same rule as the village's fixOrder) */
 /* v98.552 · LAYER NUMBER (z) works between stations, their sets and loose small items: two pieces whose pictures overlap on screen are drawn lower z first, whatever their depth (y).
    Equal z keeps the depth order. People and the hero (no rect) are not moved here — they keep the depth / footprint rules. (Before, z only ordered the members INSIDE one station set.) */
+const isCharPlace = o => !!(o && (o.hero || o.follower || o.vendor || o.npc || o.monster || o.mobile));   /* v98.732 · anything that walks */
 function layerOrderPlace(list) {
- const R = e => e.o ? e.o.rect : e.G && e.G.rect, Z = e => e.o ? (e.o.z || 0) : (e.G.z || 0), hit = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+ /* v98.732 · layers (z) order ASSETS among themselves only — characters are skipped here and placed by the blue frames (fixOrderPlace) */
+ const R = e => e.o ? e.o.rect : e.G && e.G.rect, Z = e => e.o ? (e.o.z || 0) : (e.G.z || 0), hit = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h, ch = e => !!(e.o && isCharPlace(e.o));
  if (!list.some(e => Z(e))) return;
  for (let pass = 0; pass < 8; pass++) { let moved = false;
-  for (let i = 0; i < list.length && !moved; i++) { const a = list[i], ra = R(a); if (!ra) continue;
-   for (let j = i + 1; j < list.length; j++) { const b = list[j], rb = R(b); if (!rb || Z(b) >= Z(a) || !hit(ra, rb)) continue; const [x] = list.splice(j, 1); list.splice(i, 0, x); moved = true; break } }
+  for (let i = 0; i < list.length && !moved; i++) { const a = list[i], ra = R(a); if (!ra || ch(a)) continue;
+   for (let j = i + 1; j < list.length; j++) { const b = list[j], rb = R(b); if (!rb || ch(b) || Z(b) >= Z(a) || !hit(ra, rb)) continue; const [x] = list.splice(j, 1); list.splice(i, 0, x); moved = true; break } }
   if (!moved) break }
 }
 function fixOrderPlace(list) {
  if (!window.DepthStyle || /[?&]depthfix=0/.test(location.search)) return;
- /* v98.731 · … and the villagers (PlacePeople: wu/wv = their floor position) · v98.731 · the hero AND the sellers (stall vendors) follow the order-frame rule: in front of / behind each piece by DepthStyle.walkerInFront against that piece's blue frame */
- const walkers = list.filter(e => e.o && (e.o.hero || ((e.o.vendor || e.o.npc) && e.o.wu != null))).map(e => e.o);
- for (const w of walkers) {
-  const ih = list.findIndex(e => e.o === w); if (ih < 0) continue;
-  const fr = []; let must = Infinity, back = Infinity;
-  list.forEach((e, i) => { const fp = e.o ? e.o.fp : e.G?.fp; if (i === ih || !fp) return; const inF = DepthStyle.walkerInFront(fp, w.wu, w.wv); if (i > ih) { if (inF) fr.push(i); else must = Math.min(must, i) } else if (!inF) back = Math.min(back, i) });
-  const after = Math.max(-1, ...fr.filter(i => i < must));
-  if (after > ih) { const [r] = list.splice(ih, 1); list.splice(after, 0, r) }
-  else if (back < ih) { const [r] = list.splice(ih, 1); list.splice(back, 0, r) }
- }
+ /* v98.732 · every character (hero, villagers, vendors, monsters …) follows the order frames only (DepthStyle.fixWalkers) */
+ DepthStyle.fixWalkers(list, e => e.o && isCharPlace(e.o) && e.o.wu != null ? { u: e.o.wu, v: e.o.wv } : null, e => e.o ? e.o.fp : e.G?.fp);
 }
 let cvLeft = 0, cvTop = 0;   /* v98.309 · where the canvas starts on the page (0,0 normally; the docked editor layout insets it) */
 function resize() {
@@ -1736,4 +1730,4 @@ window.TouchControls?.attach({
  act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
  buttons: [{ id: 'bag', icon: 'cardbook', title: 'สมุดผนึก', run: () => send('menu', { id: 'bag' }) }, { id: 'menu', icon: 'settings', title: 'เมนู', run: () => send('menu', { id: 'settings' }) }, ...(KIND === 'forge' ? [{ id: 'wip', icon: 'forge', title: 'ซ่อน/แสดงการ์ดงาน', run: () => send('wip-toggle') }] : [])]
 });
-</script><script src="js/place-catalog.js?v=v98.526"></script><script src="js/art-frames.js?v=v98.731"></script><script src="js/place-build.js?v=v98.731"></script><script src="js/depth-style.js?v=98.292"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=v98.731"></script><script src="js/injury.js?v=v98.332"></script><script src="js/world-state.js?v=98.297"></script><script src="js/name-plate.js?v=v98.606"></script><script src="js/villager-draw.js?v=v98.650"></script><script src="js/village-life.js?v=v98.427"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=v98.731"></script><script src="js/editor-tools.js?v=91.77"></script></html>
+</script><script src="js/place-catalog.js?v=v98.526"></script><script src="js/art-frames.js?v=v98.731"></script><script src="js/place-build.js?v=v98.731"></script><script src="js/depth-style.js?v=98.732"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=v98.731"></script><script src="js/injury.js?v=v98.332"></script><script src="js/world-state.js?v=98.297"></script><script src="js/name-plate.js?v=v98.606"></script><script src="js/villager-draw.js?v=v98.650"></script><script src="js/village-life.js?v=v98.427"></script><script src="js/village-lines.js?v=97.50"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=v98.731"></script><script src="js/editor-tools.js?v=91.77"></script></html>
