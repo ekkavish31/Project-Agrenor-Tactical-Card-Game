@@ -171,7 +171,18 @@ ${caps().block === false ? '' : `<button id="pdSzReset" title="ระบาย�
     }
     const rng = (id, fn, fmt) => { const e = el(id); if (!e) return; let checkpoint = true; e.onpointerdown = () => { checkpoint = true }; e.onkeydown = () => { checkpoint = true }; e.oninput = () => { points = []; el(id + 'V').textContent = fmt(+e.value); edit(o => fn(o, +e.value), checkpoint); checkpoint = false } };
     rng('pdS', (o, v) => { o.s = v / 100 }, v => v + '%'); rng('pdR', (o, v) => { o.r = v }, v => v + '°'); rng('pdIx', (o, v) => { o.ix = v / 100 }, v => v + '%'); rng('pdIy', (o, v) => { o.iy = v / 100 }, v => v + '%');
-    el('pdF').onchange = e => { points = []; edit(o => { o.f = e.target.checked }) };
+    /* v98.693 · flipping a piece mirrors ITS OWN frames too (blue + red: offsets, widths, painted cells). A piece that follows its picture's template needs nothing: the template is mirrored for it automatically */
+    el('pdF').onchange = e => {
+      points = []; const own = D().frames ? !!D().frames.state(key)?.own : true, to = e.target.checked;
+      edit(o => {
+        const was = !!o.f; o.f = to;
+        if (own && was !== to) {
+          const sw = (a, b) => { const t = o[a]; if (o[b] === undefined) delete o[a]; else o[a] = o[b]; if (t === undefined) delete o[b]; else o[b] = t };
+          sw('orderU', 'orderV'); sw('blockU', 'blockV'); sw('sw', 'sh'); sw('fw', 'fh');
+          if (o.zo) o.zo = window.PieceGeometry.swapCells(o.zo); if (o.zb) o.zb = window.PieceGeometry.swapCells(o.zb);
+        }
+      }, true); build(); paint(); readouts();
+    };
     if (el('pdB')) el('pdB').onchange = e => edit(o => { o.block = e.target.checked });
     el('pdT').onchange = e => edit(o => { o.tall = e.target.value });
     dlg.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { const [f, d] = b.dataset.st.split(','); edit(o => { const base = f === 'sw' ? (o.sw ?? o.fw ?? .5) : f === 'sh' ? (o.sh ?? o.fh ?? .5) : (o[f] ?? .5); o[f] = Math.max(.5, Math.min(12, base + +d)) }) });
