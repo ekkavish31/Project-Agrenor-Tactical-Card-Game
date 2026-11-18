@@ -57,7 +57,7 @@
     const out = [], dt = Math.min(.1, (t - lastT) / 1000 || 0); lastT = t;
     for (const a of people) {
       const moving = walk(a, dt, blocked, hero), pt = project(a.u, a.v);
-      out.push({ y: pt.y, draw: () => {
+      out.push({ y: pt.y, wu: a.u, wv: a.v, npc: a.p.id, draw: () => {
         g.fillStyle = 'rgba(20,30,20,.35)'; g.beginPath(); g.ellipse(pt.x, pt.y, 14, 6, 0, 0, 7); g.fill();
         root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, scale: castScale('npc:' + a.p.id) });
         if (questNpc(a.p.id)) mark(g, pt, t);

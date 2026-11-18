@@ -949,8 +949,8 @@ function layerOrderPlace(list) {
 }
 function fixOrderPlace(list) {
  if (!window.DepthStyle || /[?&]depthfix=0/.test(location.search)) return;
- /* v98.729 · the hero AND the sellers (stall vendors) follow the order-frame rule: in front of / behind each piece by DepthStyle.walkerInFront against that piece's blue frame */
- const walkers = list.filter(e => e.o && (e.o.hero || (e.o.vendor && e.o.wu != null))).map(e => e.o);
+ /* v98.730 · … and the villagers (PlacePeople: wu/wv = their floor position) · v98.729 · the hero AND the sellers (stall vendors) follow the order-frame rule: in front of / behind each piece by DepthStyle.walkerInFront against that piece's blue frame */
+ const walkers = list.filter(e => e.o && (e.o.hero || ((e.o.vendor || e.o.npc) && e.o.wu != null))).map(e => e.o);
  for (const w of walkers) {
   const ih = list.findIndex(e => e.o === w); if (ih < 0) continue;
   const fr = []; let must = Infinity, back = Infinity;
