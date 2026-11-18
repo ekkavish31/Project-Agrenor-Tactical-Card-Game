@@ -17,19 +17,21 @@
   const vs = () => { try { return JSON.parse(localStorage.getItem('projectA.visual')) || {} } catch (e) { return {} } };
   const O = { arrow: ['gold', 'fantasy', 'system'].includes(vs().cursorArrow) ? vs().cursorArrow : 'gold', hands: vs().hands !== false };
   /* hands atlas (assets/cursor/cursor-atlas.webp, 8 × 3 cells of 48 px as shown) · gold atlas (cursor-gold-atlas.webp, 12 × 8 cells of 128 px → 48 px) */
-  const HAND = { pointer: { r: 2, c: 0, hs: [9, 4] }, grab: { r: 0, c: 0, hs: [24, 24] }, grabbing: { r: 0, c: 4, hs: [24, 28] }, zoom: { r: 1, c: 0, hs: [22, 22] } }, GOLD_HS = [9, 9], GOLD_N = 96, GOLD_LOOP = 4000;
+  const HAND = { pointer: { r: 2, c: 0, hs: [9, 4] }, grab: { r: 0, c: 0, hs: [24, 24] }, grabbing: { r: 0, c: 4, hs: [24, 28] }, zoom: { r: 1, c: 0, hs: [22, 22] }, talk: { r: 0, c: 0, hs: [3, 6], img: 'talk-atlas', loop: 130 }, walk: { r: 0, c: 0, hs: [24, 24], img: 'walk-atlas', loop: 140 } }, GOLD_HS = [9, 9], GOLD_N = 96, GOLD_LOOP = 4000;
   const st = document.createElement('style'); st.id = 'agcCss';
   st.textContent = `html.agc-hide,html.agc-hide *{cursor:none!important}
 html.agc-fantasy,html.agc-fantasy *{cursor:url(assets/cursor-fantasy.png) 4 3,default!important}
 html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=button],html.agc-sys .station{cursor:pointer!important}
 #agcCur{position:fixed;left:0;top:0;width:48px;height:48px;pointer-events:none;z-index:2147483647;display:none;will-change:transform;background-repeat:no-repeat}
 #agcCur.agc-hand{background-image:url(${D}cursor-atlas.webp);background-size:384px 144px;filter:drop-shadow(0 1px 2px #0007)}
+#agcCur.agc-talk{background-image:url(${D}talk-atlas.webp);background-size:384px 48px;filter:drop-shadow(0 1px 2px #0007)}
+#agcCur.agc-walk{background-image:url(${D}walk-atlas.webp);background-size:384px 48px;filter:drop-shadow(0 1px 2px #0007)}
 #agcCur.agc-gold{background-image:url(${D}cursor-gold-atlas.webp);background-size:576px 384px;filter:saturate(1.7) brightness(1.14) contrast(1.06) drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 4px #fffffff0) drop-shadow(0 0 9px #ffffff99)}`;
   document.head.appendChild(st);
   if (O.arrow === 'system') H.classList.add('agc-sys');
   const el = document.createElement('div'); el.id = 'agcCur'; el.setAttribute('aria-hidden', 'true');
   let on = true, kind = '', held = false, x = -99, y = -99, target = null, pend = false, seq = null, raf = 0, seen = false, lastKind = '';
-  new Image().src = D + 'cursor-atlas.webp'; new Image().src = D + 'cursor-gold-atlas.webp';
+  new Image().src = D + 'cursor-atlas.webp'; new Image().src = D + 'cursor-gold-atlas.webp'; new Image().src = D + 'talk-atlas.webp'; new Image().src = D + 'walk-atlas.webp';
   const host = () => { const d = document.querySelectorAll('dialog[open]'); return d.length ? d[d.length - 1] : document.body };   /* a modal <dialog> lives in the browser's top layer: draw inside it */
   const mount = () => { const h = host(); if (el.parentNode !== h) h.appendChild(el) };
   const place = () => { const hs = kind === 'arrow' ? GOLD_HS : (HAND[kind]?.hs || [0, 0]); el.style.transform = `translate(${Math.round(x - hs[0])}px,${Math.round(y - hs[1])}px)` };
@@ -39,7 +41,8 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
     let k = '';
     try {
       if (e && e.nodeType === 1) {
-        if (e.tagName === 'IFRAME' || e.tagName === 'FRAME') k = 'frame';   /* the page inside draws its own cursor */
+        if (e.dataset && e.id === 'world' && 'agc' in e.dataset) k = e.dataset.agc && O.hands ? e.dataset.agc : 'arrow';   /* the village map says what is under the pointer (js: village-town.html) */
+        else if (e.tagName === 'IFRAME' || e.tagName === 'FRAME') k = 'frame';   /* the page inside draws its own cursor */
         else {
           const c = (getComputedStyle(e).cursor || '').split(',').pop().trim();
           k = c === 'pointer' ? 'pointer' : c === 'grab' ? 'grab' : c === 'grabbing' ? 'grabbing' : (c === 'zoom-in' || c === 'help') ? 'zoom' : (c === 'auto' || c === 'default') ? 'arrow' : '';
@@ -48,17 +51,17 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
       }
     } catch (er) { }
     if (hid) H.classList.add('agc-hide'); if (fan) H.classList.add('agc-fantasy');
-    if (!O.hands && (k === 'pointer' || k === 'grab' || k === 'grabbing' || k === 'zoom')) k = 'arrow';   /* hands off: the arrow everywhere */
+    if (!O.hands && HAND[k]) k = 'arrow';   /* hands off: the arrow everywhere */
     if (k === 'arrow' && O.arrow === 'system') k = '';
     return k;
   };
   /* ---- apply a kind: which cursor is drawn, whether the OS cursor is hidden ---- */
   const apply = k => {
     if (k === kind) return; const was = kind; kind = k;
-    const drawn = k === 'pointer' || k === 'grab' || k === 'grabbing' || k === 'zoom' || (k === 'arrow' && O.arrow === 'gold');
+    const drawn = !!HAND[k] || (k === 'arrow' && O.arrow === 'gold');
     H.classList.toggle('agc-hide', drawn); H.classList.toggle('agc-fantasy', k === 'arrow' && O.arrow === 'fantasy');
     if (!drawn) { el.style.display = 'none'; seq = null; cancelAnimationFrame(raf); raf = 0; return }
-    mount(); el.className = k === 'arrow' ? 'agc-gold' : 'agc-hand'; el.style.display = seen ? 'block' : 'none'; place(); seq = null;
+    mount(); el.className = k === 'arrow' ? 'agc-gold' : HAND[k].img ? 'agc-' + k : 'agc-hand'; el.style.display = seen ? 'block' : 'none'; place(); seq = null;
     if (k === 'zoom' && was !== 'zoom') play(1, [1, 2, 3, 4, 5, 6, 7], 55);
     if (!raf) raf = requestAnimationFrame(loop);
   };
@@ -66,6 +69,7 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
     raf = 0; if (!on || !(kind === 'arrow' || HAND[kind])) return;
     if (kind === 'arrow') { const f = Math.floor(t / (GOLD_LOOP / GOLD_N)) % GOLD_N; el.style.backgroundPosition = `${-(f % 12) * 48}px ${-Math.floor(f / 12) * 48}px`; raf = requestAnimationFrame(loop); return }
     const h = HAND[kind]; let c = h.c, r = h.r;
+    if (h.loop) { el.style.backgroundPosition = `${-(Math.floor(t / h.loop) % 8) * 48}px 0px`; raf = requestAnimationFrame(loop); return }
     if (seq) { const i = Math.max(0, Math.floor((Math.max(t, seq.t0) - seq.t0) / seq.ms)); if (i >= seq.frames.length) seq = null; else { r = seq.r; c = seq.frames[i] } }
     el.style.backgroundPosition = `${-c * 48}px ${-r * 48}px`;
     if (seq) raf = requestAnimationFrame(loop);
