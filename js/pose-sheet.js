@@ -3,8 +3,7 @@
    (what is done to a pose applies to every frame of that pose), all on the same ruler: same scale, same ground line. SE / NW are the mirror copies of SW / NE.
    • DATUM POINTS (12, placed in this order): eyes L/R · chin · skull top · neck cut · shoulder L/R · crotch · leg edge L/R · foot L/R.  Numbers of each pose are shown under it
      (head · shoulder width · torso · leg length · leg thickness, px and % of the body height, and the change against the SW standing pose).
-     The FOOT POINT of a pose = the middle of the two ground-contact points (heel when the heel lands, ball when the toe pushes off); for the lying pose ('down') ONE point (foot L) =
-     the ground point under the middle of the torso.
+     The FOOT POINT of a pose = the middle of the two ground-contact points (heel when the heel lands, ball when the toe pushes off); for the lying pose ('down') the same: put the two points at the two ENDS of the body's ground contact, the foot point is the middle (v98.769; it used to be foot L alone and ran after it).
    • ✋ MOVE the picture inside its canvas (drag) — "⤓ เข้าเส้นพื้น" puts the foot point on the standard ground point (192, 360). The move is real: 💾 บันทึกตำแหน่งภาพ shifts the pixels of every frame
      of that pose and stores them as new pictures (🛒 Cart → push as before). The cells show 96 px of margin around the real 384 × 384 frame (red) so a foot outside it stays visible; a save that would cut the picture is refused.
    • 🛠 ปรับ: a window with the old head / torso / legs / shoulder / thickness sliders (live preview, "ให้หัวเท่าท่ายืน SW" auto) → saved as new pictures for every frame of the pose.
@@ -106,7 +105,6 @@
   const Pof = ck => (QA.ck === ck && QA.P) ? QA.P : (peek(ck)?.p || {});
   function anchorOf(ck) {
     const r = peek(ck), P = Pof(ck), c = cur?.cells[ck]; if (!c) return null;
-    if (c.pose === 'down') return P.footL || null;
     if (P.footL && P.footR) return [(P.footL[0] + P.footR[0]) / 2, (P.footL[1] + P.footR[1]) / 2];
     return P.footL || P.footR || null;
   }
@@ -114,7 +112,7 @@
     const P = Pof(ck), an = anchorOf(ck), c = cur?.cells[ck]; if (!c) return null; const d = (a, b) => a && b ? Math.hypot(a[0] - b[0], a[1] - b[1]) : null;
     if (!an || !P.top || !P.chin) return { need: 'วางจุดเท้า + ยอดกะโหลก + คางก่อน' };
     /* a LYING pose (down): the length is measured along the body axis (skull top → feet), not as a height — the same line whichever way the body lies */
-    const H = c.pose === 'down' ? d(P.top, an) : an[1] - P.top[1]; if (!(H >= 20)) return { need: 'ความสูงตัวผิดปกติ' };
+    const H = c.pose === 'down' ? Math.max(0, ...[P.footL, P.footR].filter(Boolean).map(f => d(P.top, f))) : an[1] - P.top[1]; if (!(H >= 20)) return { need: 'ความสูงตัวผิดปกติ' };
     const o = { H, head: d(P.top, P.chin), sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR) };
     return o;
   }
