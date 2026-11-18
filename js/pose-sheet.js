@@ -223,6 +223,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         <div class="ps-row"><button type="button" class="act" id="psHide" ${act ? '' : 'disabled'} title="ซ่อนท่าที่เลือกออกจากหน้ารวม (ไม่ลบจุด)">🙈 ซ่อนท่านี้</button><button type="button" class="act" id="psUnhideAll" ${HID.size ? '' : 'disabled'}>👁 แสดงทั้งหมด${HID.size ? ' (' + HID.size + ')' : ''}</button></div>
         <button type="button" class="act" id="psCopySW" title="คัดลอกจุด datum ของท่ายืน (SW / NE) ไปให้ท่าที่เลือก (คลิกในช่องของท่านั้นก่อน)">📋 datum SW → ท่าที่เลือก</button>
         <button type="button" class="act" id="psClear" ${act ? '' : 'disabled'}>ล้างจุดของท่าที่เลือก</button>
+        <button type="button" class="act" id="psSize100" title="ตั้งขนาดทุกท่า (ที่ไม่ล็อก) กลับเป็น 100% — ขนาดเริ่มต้นคือ 100% ไม่มีค่าอัตโนมัติ">↺ ขนาดทุกท่า 100%</button>
         <button type="button" class="act" id="psSnapAll" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น (192,360) ทุกท่าที่มีจุดเท้า">⤓ เข้าเส้นพื้นทุกท่า</button>
         <div class="ps-sh">ไม้บรรทัด</div><label><input type="checkbox" id="psRon" ${RUL.on ? 'checked' : ''}>เปิดไม้บรรทัด</label>
         <div class="ps-row"><button type="button" class="act" id="psRadd" title="เพิ่มเส้นนอน (ลากเพื่อย้าย · ดับเบิลคลิกเพื่อลบ)">＋ เส้น</button><button type="button" class="act" id="psMadd" title="ตัววัด: 2 เส้นขนาน บอกระยะห่าง">＋ ตัววัด 2 เส้น</button><button type="button" class="act" id="psRclr">ล้างไม้บรรทัด</button></div>
@@ -289,6 +290,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const isLocked = ck => !!ck && okOf(ck);
   let flashT = 0;
   function flash(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#a4341c">🔒 ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2200) }
+  function flashOk(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#2e6b4f">✔ ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2600) }
   const LOCKMSG = 'ท่านี้ล็อกอยู่ — เอาติ๊ก “ล็อก” ออกก่อนจึงจะแก้ได้';
   const marksFor = (P, mm) => ({ chin: Math.min(.9, Math.max(.04, (P.chin[1] - mm.top) / mm.H)), hip: Math.min(.95, Math.max(.2, (P.crotch[1] - mm.top) / mm.H)), headTop: 0, ankle: 1 });
   const ZCACHE = new Map();
@@ -452,6 +454,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     $('psHide').onclick = () => { if (!act) return; const s = hidSet(); s.add(act); hidSave(s); act = null; draw() };
     $('psUnhideAll').onclick = () => { hidSave(new Set()); draw() };
     ps.querySelectorAll('[data-unhide]').forEach(b => b.onclick = () => { const s = hidSet(); s.delete(b.dataset.unhide); hidSave(s); draw() });
+    $('psSize100').onclick = () => { const k = akey(cur.id); let n = 0; for (const ck of Object.keys(cur.cells)) { const c = cur.cells[ck]; if (isLocked(ck)) continue; const s = sizeOf(cur.id, c.pose, c.dir); if (Math.abs(s - 1) > .0005) { (DRAFT[k] ||= {})[ck] = 1; n++ } } write(SKEY, DRAFT); draw(); status(); flashOk(n ? 'ตั้งขนาด ' + n + ' ท่า กลับเป็น 100% แล้ว (กด 🛒 ใส่ Cart เพื่อบันทึก)' : 'ทุกท่าเป็น 100% อยู่แล้ว') };
     $('psUndo').onclick = undo; $('psRedo').onclick = redo;
     if (!ps._uk) { ps._uk = 1; document.addEventListener('keydown', ev => {
       if (!document.body.classList.contains('sheet-mode') || ev.target.closest?.('input,textarea,select,[contenteditable]')) return; const k = ev.key.toLowerCase();
