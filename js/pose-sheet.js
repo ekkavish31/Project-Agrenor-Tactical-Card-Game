@@ -321,21 +321,24 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const qaDirty = () => Object.values(QA.S).some(v => v !== 100);
   const qaScale = () => Object.fromEntries(Object.entries(QA.S).map(([k, v]) => [k, v / 100]));
   /* v98.777 · LYING pose (down): rotate the picture about its centre so that the line skull-top → feet points down, run the same re-proportion there (the head / torso / legs cut by the neck LINE and the crotch LINE, which turn with it), then rotate back */
-  const rotPt = (p, th) => { const c = Math.cos(th), s = Math.sin(th), x = p[0] - SRC / 2, y = p[1] - SRC / 2; return [SRC / 2 + x * c - y * s, SRC / 2 + x * s + y * c] };
+  /* the picture is turned on a canvas 1.5× bigger than the frame (a long body turned by an angle that is not 90° sticks out of a 384 × 384 canvas: the ends of the arms / legs were cut off), so nothing is lost; the points turn the same way */
+  const rotToD = (p, th, D) => { const c = Math.cos(th), s = Math.sin(th), x = p[0] - SRC / 2, y = p[1] - SRC / 2; return [D / 2 + x * c - y * s, D / 2 + x * s + y * c] };
+  const rotFromD = (q, th, D) => { const c = Math.cos(-th), s = Math.sin(-th), x = q[0] - D / 2, y = q[1] - D / 2; return [SRC / 2 + x * c - y * s, SRC / 2 + x * s + y * c] };
   function bodyAxisAngle(P) { const f = P.footL && P.footR ? [(P.footL[0] + P.footR[0]) / 2, (P.footL[1] + P.footR[1]) / 2] : (P.footL || P.footR); if (!P.top || !f) return null; const vx = f[0] - P.top[0], vy = f[1] - P.top[1]; if (Math.hypot(vx, vy) < 20) return null; return Math.PI / 2 - Math.atan2(vy, vx) }
+  function silS(img, S) { const c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, S, S); const d = g.getImageData(0, 0, S, S).data; let top = S, bot = -1; for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) if (d[(y * S + x) * 4 + 3] > 40) { top = Math.min(top, y); bot = Math.max(bot, y); break } if (bot < 0) return null; return { w: S, h: S, top, bottom: bot, H: bot - top + 1 } }
   function qaRenderDown(img, flip, P) {
-    const th = bodyAxisAngle(P); if (th == null) return null; const mk = () => { const c = document.createElement('canvas'); c.width = c.height = SRC; return c }, C = SRC / 2;
-    const src = mk(), sg = src.getContext('2d'); sg.translate(C, C); sg.rotate(th); sg.translate(-C, -C); if (flip) { sg.translate(SRC, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0, SRC, SRC);
-    const P2 = {}; for (const [k, v] of Object.entries(P)) P2[k] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? rotPt(v, th) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(q => rotPt(q, th)) : v;
-    const mm = sil(src, false); if (!mm) return null; const cuts = Array.isArray(P2.neckLine) && P2.neckLine.length >= 2 && Array.isArray(P2.crotchLine) && P2.crotchLine.length >= 2 && P2.top ? { neck: P2.neckLine, hip: P2.crotchLine, head: P2.top } : null;
+    const th = bodyAxisAngle(P); if (th == null) return null; const D = Math.ceil(SRC * 1.5), mk = n => { const c = document.createElement('canvas'); c.width = c.height = n; return c };
+    const src = mk(D), sg = src.getContext('2d'); sg.translate(D / 2, D / 2); sg.rotate(th); sg.translate(-SRC / 2, -SRC / 2); if (flip) { sg.translate(SRC, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0, SRC, SRC);
+    const P2 = {}; for (const [k, v] of Object.entries(P)) P2[k] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? rotToD(v, th, D) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(q => rotToD(q, th, D)) : v;
+    const mm = silS(src, D); if (!mm) return null; const cuts = Array.isArray(P2.neckLine) && P2.neckLine.length >= 2 && Array.isArray(P2.crotchLine) && P2.crotchLine.length >= 2 && P2.top ? { neck: P2.neckLine, hip: P2.crotchLine, head: P2.top } : null;
     const r = PA().warp(src, mm, marksFor(P2, mm), qaScale(), { keepHeight: QA.keep, flip: false, grow: Math.round(mm.H * .03), sharpen: 'auto', ...(cuts ? { cuts } : {}) });
-    const wo = mk(); wo.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]);
-    const out = mk(), og = out.getContext('2d'); og.translate(C, C); og.rotate(-th); og.translate(-C, -C); og.drawImage(wo, 0, 0); out.res = r; out.rot = th; return out;
+    const wo = mk(D); wo.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]);
+    const out = mk(SRC), og = out.getContext('2d'); og.translate(SRC / 2, SRC / 2); og.rotate(-th); og.translate(-D / 2, -D / 2); og.drawImage(wo, 0, 0); out.res = r; out.rot = th; out.D = D; return out;
   }
   function qaRender(img, flip, P, down) { if (down) return qaRenderDown(img, flip, P); const mm = sil(img, flip); if (!mm) return null; const r = PA().warp(img, mm, marksFor(P, mm), qaScale(), { keepHeight: QA.keep, flip, grow: Math.round(mm.H * .03), sharpen: 'auto' }); const o = document.createElement('canvas'); o.width = o.height = SRC; o.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]); o.res = r; return o }
   /* where every datum point goes with the picture (PA.mapPoint of the warp, minus the offset the preview is drawn at) */
   function qaMovePoints(P, cv) {
-    const r = cv.res, th = cv.rot, mv = v => { const a = th != null ? rotPt(v, th) : v, q = PA().mapPoint(r, a[0], a[1]); let b = [q[0] - r.offset[0], q[1] - r.offset[1]]; if (th != null) b = rotPt(b, -th); return [Math.round(b[0] * 10) / 10, Math.round(b[1] * 10) / 10] }, out = {};
+    const r = cv.res, th = cv.rot, D = cv.D, mv = v => { const a = th != null ? rotToD(v, th, D) : v, q = PA().mapPoint(r, a[0], a[1]); let b = [q[0] - r.offset[0], q[1] - r.offset[1]]; if (th != null) b = rotFromD(b, th, D); return [Math.round(b[0] * 10) / 10, Math.round(b[1] * 10) / 10] }, out = {};
     for (const [k, v] of Object.entries(P)) out[k] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? mv(v) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(mv) : v;
     return out;
   }
