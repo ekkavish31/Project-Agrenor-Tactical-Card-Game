@@ -1172,8 +1172,7 @@ const PB_ART = (() => {
   const props = st ? ownProps(s.id) : ownProps(null);
   place.sel = place.sel.filter(i => props.some(([, k]) => k === i));
   const tabs = st ? [
-   ['art', '🖼 ภาพ'],
-   ['base', '🔲 ฐาน'],
+   ['art', '🖼 ภาพ'],   /* v98.706 · the 🔲 ฐาน tab is gone: the blue / red frames of 🔍 แก้ละเอียด decide order and blocking */
    ['door', '🚪 จุดใช้งาน'],
    ['vendor', '🧑‍🌾 คนขาย'],
    ['props', '🪴 ของประดับ ' + props.length]
