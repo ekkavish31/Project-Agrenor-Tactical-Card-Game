@@ -6619,3 +6619,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 
 ## v98.750 — 18 พฤศจิกายน 2026
 - **แก้ Cursor หายที่หน้าแรก (เมนูเข้าเกม)**: ระหว่างหน้าชื่อเกม CSS (`css/title-screen.css`) ซ่อนทุกอย่างที่เป็นลูกของ body ยกเว้นหน้าชื่อ/โหลด/เมนู — ตัวเคอร์เซอร์ของเกม (#agcCur) ถูกซ่อนไปด้วย ขณะที่เคอร์เซอร์ของเบราว์เซอร์ก็ถูกปิดอยู่ จึงไม่เห็นเคอร์เซอร์เลย · เพิ่ม :not(#agcCur) ในข้อยกเว้น (ทดสอบ: visibility hidden → visible บนหน้าแรก)
+
+## v98.751 — 18 พฤศจิกายน 2026
+- **ตอนเล่น ไม่ให้เบราว์เซอร์ไฮไลต์ข้อความ / เมนูคัดลอก-ค้นหา-Copilot / เมนูคลิกขวา โผล่** (`js/play-guard.js`): `user-select:none` ทั้งหน้า + บล็อก selectstart และ contextmenu · ใช้กับหน้าเล่น: index, village-town, village-place, battle-field, world-map, place-interior · ไม่ทำงานในหน้า Editor (`?edit=1`, `?studio`, หรือหน้าเกมที่เปิดในกรอบ editor.html) · ช่องพิมพ์ (input/textarea/select/contenteditable) และ class `pg-select` ยังเลือกได้ · ทดสอบ: หน้าเล่นเลือกข้อความไม่ได้/คลิกขวาไม่ขึ้น, โหมด ?edit=1 ยังปกติ
