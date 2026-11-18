@@ -257,6 +257,12 @@ const PB_ART = (() => {
   ].map(([u, v]) => project(u, v))
  }
 
+ /* v98.714 · the lit area shown around the selected work point while editing = its BLUE frame + 1 cell (2 half-grid steps) on every side — display only, no gameplay effect (the 🔲 ฐาน tab is gone) */
+ function lightPts(s, extra = 1) {
+  let f; try { f = typeof stationFp === 'function' ? stationFp(s) : stationFp(s) } catch (e) { f = { u0: s.u - s.w, u1: s.u + s.w, v0: s.v - s.d, v1: s.v + s.d } }
+  return [[f.u0 - extra, f.v0 - extra], [f.u1 + extra, f.v0 - extra], [f.u1 + extra, f.v1 + extra], [f.u0 - extra, f.v1 + extra]].map(([a, b]) => project(a, b))
+ }
+
  function basePts(s, extra = 0) {
   return [
    [-s.w - extra, -s.d - extra],
@@ -299,7 +305,7 @@ const PB_ART = (() => {
    } else {
     const s = stOf(place.id);
     if (s) stamp('hole', q => {
-     poly(q, basePts(s, .4));
+     poly(q, lightPts(s));
      q.fill();
      const d = project(door(s).u, door(s).v);
      q.beginPath();
