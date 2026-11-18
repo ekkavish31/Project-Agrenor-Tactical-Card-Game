@@ -130,6 +130,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 #poseSheet .ps-side .ps-steps{display:flex;flex-direction:column;gap:3px}#poseSheet .ps-side .ps-steps button{display:flex;align-items:center;gap:7px;text-align:left;padding:4px 8px;font-size:13px}#poseSheet .ps-side .ps-steps .n{font-weight:700;opacity:.6;min-width:16px}
 #poseSheet .qa-r{border-top:1px solid #e4e6da;padding-top:4px}#poseSheet .qa-h{display:flex;justify-content:space-between;font-size:12.5px}#poseSheet .qa-b{display:flex;gap:4px;margin-top:2px}#poseSheet .qa-b button{flex:1;padding:3px 0}
 #poseSheet .ps-zone{grid-area:zone;min-width:0;overflow-x:auto}
+#poseSheet .ps-c{position:relative}#poseSheet .ps-loupe{position:absolute;top:8px;right:8px;width:180px;height:180px;border:3px solid #8a4fff;border-radius:10px;background:#fff;box-shadow:0 3px 12px #0006;pointer-events:none;z-index:5}
 #poseSheet:fullscreen{overflow:auto;background:#eef0e6;padding:0 10px 10px}#poseSheet:fullscreen .ps-top{top:0}
 #poseSheet .ps-next{flex:0 1 auto;padding:5px 12px;border-radius:10px;background:#fff8e1;border:2px solid #e0b64a;font-size:15px}#poseSheet .ps-next b{padding:2px 9px;border-radius:7px;color:#fff;margin-left:6px}#psTip{position:fixed;z-index:99999;pointer-events:none;padding:3px 9px;border-radius:7px;color:#fff;font:700 13px AgThai,system-ui,sans-serif;box-shadow:0 2px 6px #0006;white-space:nowrap}
 #poseSheet .ps-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}#poseSheet .ps-bar b{font-size:16px;margin-right:6px}
@@ -233,6 +234,22 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const back = () => { for (const [n, t, l] of keep.arr) { n.scrollTop = t; n.scrollLeft = l } scrollTo(keep.wx, keep.wy); const z = $('psZone'); if (z) { z.scrollLeft = keep.zl; z.scrollTop = keep.zt } const g = ps.querySelector('.ps-grid'); if (g) { g.scrollLeft = keep.gl; g.scrollTop = keep.gt } const s = $('psSide'); if (s) s.scrollTop = keep.st };
     back(); paintAll(); wire(ps); back();
   }
+  /* v98.752 · LOUPE: while you place / drag a point, a magnified view of the picture around the pointer + a cross-hair sits in the top-right corner of THAT pose's canvas */
+  const LOUPE = 180, LZ = 6;
+  function hideLoupes(except) { for (const l of document.querySelectorAll('#poseSheet .ps-loupe')) if (l.parentElement !== except) l.remove() }
+  function paintLoupe(ck, fx, fy, el) {
+    const c = cur?.cells[ck]; if (!c?.img) return; let L = el.querySelector('.ps-loupe');
+    if (!L) { hideLoupes(el); L = document.createElement('canvas'); L.className = 'ps-loupe'; L.width = L.height = LOUPE; el.append(L) }
+    const s0 = stepInfo(); L.style.borderColor = s0.col; const g = L.getContext('2d'), k = kOf(c), [ox, oy] = off(ck), x0 = GX + (ox - GX) * k, y0 = GY + (oy - GY) * k, s = SRC * k, src = (QA.ck === ck && QA.canvas) || c.img, flip = !(QA.ck === ck && QA.canvas) && c.flip;
+    g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, LOUPE, LOUPE); g.fillStyle = '#fff'; g.fillRect(0, 0, LOUPE, LOUPE);
+    g.save(); g.beginPath(); g.rect(0, 0, LOUPE, LOUPE); g.clip(); g.translate(LOUPE / 2, LOUPE / 2); g.scale(LZ, LZ); g.translate(-fx, -fy); g.imageSmoothingEnabled = false;
+    if (flip) { g.save(); g.translate(x0 + s, y0); g.scale(-1, 1); g.drawImage(src, 0, 0, s, s); g.restore() } else g.drawImage(src, x0, y0, s, s);
+    if (SHOW.pts) { const P = Pof(ck); for (const [key, , col] of STEPS) { const lk = LINES[key], pts = lk && P[lk]; for (const v of (pts && pts.length ? pts : (P[key] ? [P[key]] : []))) { const [px, py] = toFrame(c, ck, v[0], v[1]); g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 1 / LZ * 1.4; g.beginPath(); g.arc(px, py, 3.2 / LZ * 1.6, 0, 7); g.fill(); g.stroke() } } }
+    g.restore();
+    /* the cross-hair: the point goes exactly under the centre */
+    const m = LOUPE / 2; g.save(); g.lineWidth = 1.5; g.strokeStyle = s0.col; for (const [a, b, c2, d] of [[m, 0, m, m - 12], [m, m + 12, m, LOUPE], [0, m, m - 12, m], [m + 12, m, LOUPE, m]]) { g.beginPath(); g.moveTo(a, b); g.lineTo(c2, d); g.stroke() } g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.arc(m, m, 12, 0, 7); g.stroke(); g.strokeStyle = s0.col; g.beginPath(); g.arc(m, m, 12.8, 0, 7); g.stroke();
+    g.font = '700 11px sans-serif'; g.textAlign = 'left'; g.fillStyle = '#000b'; g.fillRect(0, LOUPE - 17, LOUPE, 17); g.fillStyle = '#fff'; g.fillText(s0.n + '/' + s0.all + ' · ' + s0.short + ' · ' + Math.round(fx) + ',' + Math.round(fy), 6, LOUPE - 5); g.restore();
+  }
   /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
   const stepInfo = () => { const i = STEPS.findIndex(s => s[0] === step), s = STEPS[Math.max(0, i)]; return { n: Math.max(0, i) + 1, all: STEPS.length, label: s[1], short: s[1].split(' · ')[0], col: s[2] } };
   /* v98.745 · SHOW: points on/off · colour zones on/off (head pink · torso blue · legs green, cut at the chin and the crotch line) */
@@ -304,7 +321,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     for (const id of ['psHide', 'psClear']) { const b = $(id); if (b) b.disabled = !act }   /* follow the selected pose without a full redraw */
     const box = $('psAdjBox'); if (box) { const hh = adjBar(); if (box._h !== hh) { box._h = hh; box.innerHTML = hh } }
     if (box) box.onclick = qaClick;
-    const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight; sd.style.top = hgt + 'px'; sd.style.maxHeight = 'calc(100vh - ' + (hgt + 8) + 'px)' }
+    const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight; sd.style.top = hgt + 'px'; sd.style.maxHeight = 'calc(100vh - ' + (hgt + 8) + 'px)'
+      const gd = $('poseSheet')?.querySelector('.ps-grid'); if (gd) gd.style.maxHeight = 'calc(100vh - ' + (hgt + 18) + 'px)' }   /* v98.752 · the grid scrolls inside the screen: its sideways scroll bar is always visible (it sat below the fold at a high zoom) */
     if (tool === 'hand') { el.innerHTML = '✋ โหมดย้ายภาพ · ลากภาพในช่อง'; el._h = ''; return } const s = stepInfo();
     const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
     const html = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}`;
@@ -378,8 +396,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function wire(ps) {
     if (!ps.dataset.tip) { ps.dataset.tip = '1';   /* the label that follows the pointer */
       const tip = () => { let t = $('psTip'); if (!t) { t = document.createElement('div'); t.id = 'psTip'; t.hidden = true; document.body.append(t) } return t };
+      ps.addEventListener('pointermove', ev => {
+        const cvs = ev.target.closest?.('.ps-c canvas'), cell = cvs?.closest('.ps-c[data-ck]');
+        if (cvs && cell && tool !== 'hand' && cur?.cells[cell.dataset.ck]?.img) { const [sx, sy] = ptr(cvs, ev), [fx, fy] = unsc(sx, sy); paintLoupe(cell.dataset.ck, fx, fy, cell) } else if (!drag) hideLoupes(null);
+      });
       ps.addEventListener('pointermove', ev => { const t = tip(), on = tool !== 'hand' && !drag && ev.target.closest?.('.ps-c canvas'); if (!on) { t.hidden = true; return } const s = stepInfo(); t.textContent = s.n + '/' + s.all + ' · ' + s.short; t.style.background = s.col; t.style.left = (ev.clientX + 16) + 'px'; t.style.top = (ev.clientY + 18) + 'px'; t.hidden = false });
-      ps.addEventListener('pointerleave', () => { const t = $('psTip'); if (t) t.hidden = true }) }
+      ps.addEventListener('pointerleave', () => { const t = $('psTip'); if (t) t.hidden = true; hideLoupes(null) }) }
     const msg = t => { const m = $('psMsg'); if (m) m.textContent = t };
     ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() });
     const zm = $('psZoom'); if (zm) zm.onchange = () => {
