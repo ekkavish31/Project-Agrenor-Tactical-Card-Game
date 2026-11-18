@@ -107,14 +107,19 @@ function setProgress(el,f,step){const pct=Math.round(f*100);el.querySelector('.g
 /* run(title, groups[, {bg, minMs, quiet}]) — groups: [{label, items:[url|promise|fn]}]. quiet = only show if it takes >150ms */
 let chain=Promise.resolve();
 function run(title,groups,opt={}){const p=chain.then(()=>runNow(title,groups,opt));chain=p.catch(()=>{});return p}
-async function runNow(title,groups,opt={}){const el=loadingScreen(),items=groups.flatMap(g=>g.items.map(it=>({it,label:g.label})));const total=Math.max(1,items.length);let done=0,shown=!opt.quiet,start=performance.now();
+async function runNow(title,groups,opt={}){const el=loadingScreen(),items=groups.flatMap(g=>g.items.map(it=>({it,label:g.label,share:g.share,n:g.items.length})));
+ /* v98.675 · WEIGHTED BAR: a group may carry share (0–1) = the part of the bar it owns. The bar used to count items, so one big last item (building the village scene) sat at 97% for seconds.
+    Now such a group owns e.g. 30 % of the bar and, while it is still running, its part CRAWLS up smoothly (never reaching the end until it is really done) — same total time, no long stall. */
+ const sumShare=groups.reduce((a,g)=>a+(g.share&&g.items.length?g.share:0),0),others=items.filter(x=>!x.share).length;for(const x of items)x.w=x.share?x.share/x.n:(others?(1-sumShare)/others:0);
+ let lastLabel='',doneW=0,shown=!opt.quiet,start=performance.now();const running=new Set();let shownF=0;
+ const frac=()=>{let f=doneW;const now=performance.now();for(const x of running)f+=x.w*.93*(1-Math.exp(-(now-x.t0)/4500));shownF=Math.max(shownF,Math.min(.995,f));return shownF};
  el.querySelector('.gl-title').textContent=title;el.querySelector('.gl-tip').textContent='เคล็ดลับ · '+TIPS[Math.floor(Math.random()*TIPS.length)];el.querySelector('.gl-bg').style.backgroundImage=opt.bg?`url("${opt.bg}")`:'';setProgress(el,0,groups[0]?.label||'');
  const reveal=()=>{if(!el.hidden)return;el.hidden=false;el.classList.remove('gl-out');shown=true};if(shown)reveal();const timer=opt.quiet?setTimeout(reveal,150):0;
  // a few at a time, in order, so the bar moves steadily and the first scene's files come first
- const queue=items.slice(),workers=Array.from({length:Math.min(6,queue.length)},async()=>{while(queue.length){const x=queue.shift();await load(x.it);done++;setProgress(el,done/total,x.label)}});
+ const queue=items.slice(),workers=Array.from({length:Math.min(6,queue.length)},async()=>{while(queue.length){const x=queue.shift();x.t0=performance.now();if(x.share)running.add(x);await load(x.it);running.delete(x);doneW+=x.w;lastLabel=x.label;setProgress(el,frac(),x.label)}}),tick=setInterval(()=>setProgress(el,frac(),running.size?[...running][0].label:lastLabel),90);
  // a slow connection never traps the player: after 7 s offer to continue while the rest keeps loading in the background
  let release;const early=new Promise(r=>release=r),later=setTimeout(()=>{const b=el.querySelector('.gl-skip');b.classList.add('on');b.tabIndex=0;b.removeAttribute('aria-hidden');b.onclick=()=>release()},7000);
- await Promise.race([Promise.all(workers),early]);clearTimeout(timer);clearTimeout(later);{const sk=el.querySelector('.gl-skip');sk.classList.remove('on');sk.tabIndex=-1;sk.setAttribute('aria-hidden','true')}
+ await Promise.race([Promise.all(workers),early]);clearInterval(tick);clearTimeout(timer);clearTimeout(later);{const sk=el.querySelector('.gl-skip');sk.classList.remove('on');sk.tabIndex=-1;sk.setAttribute('aria-hidden','true')}
  if(shown){const left=(opt.minMs??0)-(performance.now()-start);if(left>0)await wait(left);setProgress(el,1,'พร้อมแล้ว');await wait(reduced?0:220);
   /* v98.230 · opt.gate: wait for any key / tap before leaving the loading screen — that press is also what unlocks the music (browsers only start sound after a gesture) */
   if(opt.gate){await wait(250);const tip=el.querySelector('.gl-tip');tip.textContent=opt.gate;el.classList.add('gl-gate');await new Promise(res=>{const ev=['keydown','pointerdown','touchend'],done=e=>{if(e.type==='keydown'&&(e.repeat||['Shift','Control','Alt','Meta','CapsLock'].includes(e.key)))return;ev.forEach(n=>document.removeEventListener(n,done,true));e.stopPropagation();res()};ev.forEach(n=>document.addEventListener(n,done,true))});el.classList.remove('gl-gate')}
@@ -271,7 +276,7 @@ async function prepareStory(){if(preparing)return;preparing=true;title.classList
 /* ---------- into the game ---------- */
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}
  if(!isNew&&title)title.style.visibility='hidden';   /* v98.352 · the menu must not show again while the loading screen fades out */
- await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
+ await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'สร้างฉากหมู่บ้าน',share:.3,items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
  /* v97.04 · New Game: the opening cutscene (mother wakes the hero) fades in over the last prologue page and the title goes away underneath it,
     so the village map never shows in between (the story loop only starts a cutscene once T.active is false) */
  if(isNew&&root.Story&&root.Cutscene){T.active=false;const t0=Date.now();while(!root.Cutscene.isPlaying()&&Date.now()-t0<4000)await wait(100);if(root.Cutscene.isPlaying())await wait(reduced?0:600)}
