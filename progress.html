@@ -55,6 +55,14 @@ svg.map-svg{width:100%;min-width:760px;height:auto;display:block}
 svg.hist{width:100%;height:auto;display:block}
 .how{font-size:12px;color:var(--muted)}.how code{background:#0008;border:1px solid var(--line);border-radius:3px;padding:1px 6px;color:var(--gold)}
 .grid2{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-top:14px}
+
+/* v98.720 · review queue */
+.rq-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 10px}.rq-bar .meter{flex:1;min-width:220px;height:14px;border-radius:8px;background:#0006;border:1px solid var(--line);overflow:hidden;display:flex}.rq-bar .meter i{display:block;height:100%}
+.rq-tabs{display:flex;gap:6px;flex-wrap:wrap}.rq-tabs button,.rq-act button,#rqPush,#rqGh{font:inherit;color:var(--ink);background:#2f2842;border:1px solid var(--line);border-radius:8px;padding:4px 11px;cursor:pointer}.rq-tabs button.on{background:var(--gold);color:#241a07;border-color:var(--gold);font-weight:700}
+.rq-item{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#221c30;margin:8px 0}.rq-item .v{font-size:11px;color:var(--gold);background:#0006;border-radius:6px;padding:1px 7px;height:fit-content}
+.rq-item h3{margin:0;font-size:14px}.rq-item .chk{color:var(--muted);font-size:12.5px;grid-column:2}.rq-item .wh{color:#9fb7d9;font-size:12px;grid-column:2}
+.rq-act{grid-column:2;display:flex;gap:6px;flex-wrap:wrap;align-items:center}.rq-act button.ok.on{background:#2f7a3f;border-color:#7fd17f}.rq-act button.fix.on{background:#8a3a2c;border-color:#ff9a80}.rq-act input{flex:1;min-width:180px;font:inherit;background:#14121c;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:4px 8px}
+.rq-item.s-ok{opacity:.75;border-color:#3f7a4f}.rq-item.s-fix{border-color:#c8584a}
 @media(max-width:900px){.grid2{grid-template-columns:1fr}.hero{grid-template-columns:1fr;justify-items:center;text-align:center}.q{grid-template-columns:24px 1fr}.q .side{grid-column:2}}
 @media(prefers-reduced-motion:reduce){.node.act .pulse{animation:none}}
 </style>
@@ -70,12 +78,16 @@ svg.hist{width:100%;height:auto;display:block}
   <section class="box log" id="log"></section>
   <section class="box"><h2>📈 เส้นทางที่เดินมาแล้ว (ต่อเวอร์ชัน)</h2><div id="hist"></div><p class="note" id="histnote"></p></section>
 </div>
+<section class="box" style="margin-top:14px" id="rq"><h2>🎯 คิวรอผู้สร้างตรวจ — งานปรับแต่งที่ AI ทำเสร็จตามโค้ดแล้ว แต่ "ดีพอหรือยัง" คุณเป็นคนตัดสิน</h2>
+ <p class="note">AI ประเมินความพอใจแทนคุณไม่ได้ จึงแยกเป็น 2 แกน: <b>ทำแล้ว</b> (แถบ XP ด้านบน วัดจากงานตาม TODO) กับ <b>พอใจแล้ว</b> (ด้านล่างนี้ คุณกดเอง) · ✅ พอใจ = AI จะไม่รื้อโดยไม่ถาม · 🔧 ต้องแก้ + โน้ต = AI ทำเป็นอันดับแรกรอบหน้า · กด ⬆ Push เพื่อให้ AI เห็นผล</p>
+ <div class="rq-bar"><div class="meter" id="rqMeter"></div><b id="rqNum"></b><span id="rqBtns"></span></div>
+ <div class="rq-tabs" id="rqTabs"></div><div id="rqList"></div></section>
 <section class="box how" style="margin-top:14px"><h2>🔧 อัปเดตอย่างไร</h2>
  ตัวเลขทั้งหมดคำนวณจาก <code>data/master-plan.json</code> (รายการภารกิจ + น้ำหนัก) ร่วมกับสถานะใน <code>docs/TODO.md</code> (<code>[x]</code> เสร็จ 100% · <code>[~]</code> ครึ่งทาง · <code>[ ]</code> ยังไม่ทำ) — ติ๊กใน TODO แล้วรัน <code>node tools/update-progress.cjs</code> ตัวเลขและกราฟจะขยับ ทุกครั้งที่ขยับเวอร์ชันจะมีจุดใหม่ในกราฟ · ป้าย <span class="est">ประเมิน</span> คือค่าประมาณที่ยังไม่มีบรรทัดใน TODO รองรับ
  <br>ค่า % นี้วัด "งานที่ทำแล้วตามน้ำหนัก" ซึ่งคนละอย่างกับ "ความรู้สึกพร้อมเล่น" ที่คุณประเมิน — ธงสีแดงบนแถบ XP คือค่าที่คุณให้ไว้
 </section>
 </div>
-<script src="data/progress.js"></script>
+<script src="js/game-settings.js"></script><script src="js/github-push.js"></script><script src="data/progress.js"></script><script src="data/review-queue.js"></script>
 <script>
 (function(){
 'use strict';
@@ -138,6 +150,30 @@ function drawHist(){
 sel=(P.phases.filter(p=>p.pct<100).sort((a,b)=>b.pct-a.pct)[0]||P.phases[0]).id;
 drawMap();drawLog();drawHist();
 })();
+/* ---- review queue (v98.720): the creator rates, the AI reads the result from js/game-settings.js ('progress-review-v1') ---- */
+(function(){
+  const $=id=>document.getElementById(id), esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])), Q=window.REVIEW_QUEUE||[], KEY='progress-review-v1', rd=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}, wr=o=>localStorage.setItem(KEY,JSON.stringify(o));
+  let tab='wait',snap=null;const st=id=>(rd()[id]||{}).s||'wait', take=()=>{snap=new Set(Q.filter(q=>tab==='all'||st(q.id)===tab).map(q=>q.id))};   /* the list is frozen until you change tab, so a rated item stays on screen (you can add its note) */
+  function draw(){
+    const R=rd(), n={wait:0,fix:0,ok:0};for(const q of Q)n[st(q.id)]++;
+    const T=Q.length||1;$('rqMeter').innerHTML=`<i style="width:${n.ok/T*100}%;background:#5fbf6f" title="พอใจ"></i><i style="width:${n.fix/T*100}%;background:#d6634f" title="ต้องแก้"></i><i style="width:${n.wait/T*100}%;background:#6a5f80" title="รอตรวจ"></i>`;
+    $('rqNum').textContent=`พอใจแล้ว ${n.ok}/${Q.length} (${Math.round(n.ok/T*100)}%) · ต้องแก้ ${n.fix} · รอตรวจ ${n.wait}`;
+    $('rqTabs').innerHTML=[['wait','⏳ รอตรวจ',n.wait],['fix','🔧 ต้องแก้',n.fix],['ok','✅ พอใจแล้ว',n.ok],['all','ทั้งหมด',Q.length]].map(([k,l,c])=>`<button data-t="${k}" class="${tab===k?'on':''}">${l} ${c}</button>`).join('');
+    if(!snap)take();const list=Q.filter(q=>snap.has(q.id));
+    $('rqList').innerHTML=list.length?list.map(q=>{const r=R[q.id]||{},s=r.s||'wait';return `<div class="rq-item s-${s}"><span class="v">${esc(q.since)}</span><h3>${esc(q.title)}</h3><div class="chk">👀 ดู: ${esc(q.check)}</div><div class="wh">📍 ${esc(q.where)} · <i>${esc(q.area)}</i></div><div class="rq-act"><button class="ok ${s==='ok'?'on':''}" data-a="ok" data-id="${q.id}">✅ พอใจ</button><button class="fix ${s==='fix'?'on':''}" data-a="fix" data-id="${q.id}">🔧 ต้องแก้</button><button data-a="wait" data-id="${q.id}">↩ ยังไม่ดู</button><input data-note="${q.id}" placeholder="โน้ตถึง AI (ต้องแก้ตรงไหน / อยากให้เป็นแบบไหน)" value="${esc(r.n||'')}"></div></div>`}).join(''):'<p class="note">ไม่มีรายการในหมวดนี้</p>';
+  }
+  document.addEventListener('click',e=>{const t=e.target.closest('[data-t]'),a=e.target.closest('[data-a]');if(t&&$('rqTabs').contains(t)){tab=t.dataset.t;take();draw();return}
+    if(a){const R=rd(),o=R[a.dataset.id]||{};o.s=a.dataset.a;o.at=new Date().toISOString().slice(0,10);if(o.s==='wait'&&!o.n){delete R[a.dataset.id]}else R[a.dataset.id]=o;wr(R);draw()}});
+  document.addEventListener('change',e=>{const i=e.target.closest('[data-note]');if(!i)return;const R=rd(),o=R[i.dataset.note]||{s:'wait'};o.n=i.value.trim();if(!o.n&&o.s==='wait')delete R[i.dataset.note];else R[i.dataset.note]=o;wr(R);draw()});
+  /* push */
+  const msg=document.createElement('small');msg.style.color='var(--muted)';const push=document.createElement('button');push.id='rqPush';push.textContent='⬆ Push ผลการตรวจ';
+  push.onclick=async()=>{const G=window.GitHubPush;if(!G)return msg.textContent='ไม่มีระบบ push';if(!G.config().token){G.openSettings(()=>push.click());return}push.disabled=true;try{const sha=await G.pushSettings([KEY],'ผลตรวจงานปรับแต่ง (ผู้สร้าง)',[],t=>msg.textContent=t);msg.textContent=sha?'⬆ push แล้ว · '+sha:'ไม่มีค่าที่ต้อง push'}catch(er){msg.textContent='push ไม่สำเร็จ: '+er.message}finally{push.disabled=false}};
+  $('rqBtns').append(push);if(window.GitHubPush?.settingsButton){const g=GitHubPush.settingsButton();g.id='rqGh';$('rqBtns').append(g)}$('rqBtns').append(msg);
+  draw();
+  /* a second chip in the hero */
+  const ok=Q.filter(q=>st(q.id)==='ok').length;const ch=document.querySelector('#hero .chips');if(ch)ch.insertAdjacentHTML('beforeend',`<span class="chip" title="ผู้สร้างกดพอใจเอง">🎯 พอใจแล้ว <b>${ok}/${Q.length}</b></span>`);
+})();
+
 </script>
 </body>
 </html>
