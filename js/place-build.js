@@ -389,7 +389,7 @@ const PB_ART = (() => {
   };
   if (tool === 'chars') {
    const p = project(hero.u, hero.v),
-    s = window.placeScale ? placeScale() : (heroCast().s || 1);
+    s = window.placeScale ? placeScale() / (window.PLACE_CHAR_K || 1) : (heroCast().s || 1);
    gg.save();
    gg.lineWidth = 2.5 / Z;
    gg.strokeStyle = '#9ff3f5';
@@ -1111,7 +1111,7 @@ const PB_ART = (() => {
    heroSrc = c.img || (typeof TACTICS_SPRITES !== 'undefined' ? TACTICS_SPRITES.directions?.SE?.idle?.src : '');
   panel.innerHTML = `<div class="body"><h3>👤 ตัวละครใน${M.name}</h3><p class="sub">ค่าในหน้านี้ใช้เฉพาะแผนที่นี้ · ถ้าติ๊ก "ตามหมู่บ้าน" จะใช้ขนาดและภาพเดียวกับหมู่บ้าน</p>
   <b class="sec">ตัวเอก</b><div class="art"><span class="th">${heroSrc?`<img src="${heroSrc}">`:''}</span><div><label class="chk"><input type="checkbox" id="cFollow" ${own?'':'checked'}> ตามหมู่บ้าน</label>${own?`<div class="row"><button id="cSwap">เปลี่ยนภาพ…</button>${own.img?'<button id="cOrig">ใช้ภาพเดิม</button>':''}</div>`:''}</div></div>
-  ${sl('s','ขนาดตัวละครทั้งแผนที่',window.placeScale?placeScale():(c.s||1),.3,3,.05,pct)}<p class="sub">ตัวคูณเดียวสำหรับตัวละครทุกตัวในแผนที่นี้ (ไม่ตั้ง = ตามหมู่บ้าน) · สัดส่วนระหว่างตัวละครตั้งที่ ⚖ Scale Lineup</p>${own?.img?`<label class="chk"><input type="checkbox" id="cFlip" ${own.flip?'checked':''}> กลับด้านภาพ</label>`:''}</div>`;
+  ${sl('s','ขนาดตัวละครทั้งแผนที่',window.placeScale?placeScale():(c.s||1),.4,4,.05,pct)}<p class="sub">ตัวคูณเดียวสำหรับตัวละครทุกตัวในแผนที่นี้ (ไม่ตั้ง = ตามหมู่บ้าน) · สัดส่วนระหว่างตัวละครตั้งที่ ⚖ Scale Lineup</p>${own?.img?`<label class="chk"><input type="checkbox" id="cFlip" ${own.flip?'checked':''}> กลับด้านภาพ</label>`:''}</div>`;
   panel.querySelector('#cFollow').onchange = e => once(() => {
    if (e.target.checked) {
     if (M.cast) delete M.cast.hero;
@@ -1128,7 +1128,7 @@ const PB_ART = (() => {
     }
    }
   })();
-  sliders((k, v) => { if (k === 's' && window.MapScale) MapScale.set('place', window.PLACE_ID || (new URLSearchParams(location.search).get('place') || 'market'), v) });   /* v98.139 · one multiplier per sub-map */
+  sliders((k, v) => { if (k === 's' && window.MapScale) MapScale.set('place', window.PLACE_ID || (new URLSearchParams(location.search).get('place') || 'market'), v / (window.PLACE_CHAR_K || 1)) });   /* v98.139 · one multiplier per sub-map */
   act('#cSwap', () => openList('ภาพตัวเอกใน' + M.name, CAST_ART, own?.img, it => once(() => {
    M.cast.hero.img = it.id;
    if (it.back) M.cast.hero.back = it.back;

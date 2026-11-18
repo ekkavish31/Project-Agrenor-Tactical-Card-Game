@@ -1,6 +1,6 @@
 /* v98.576 · AssetSize — every picture remembers HOW BIG IT IS NEXT TO THE HERO (its own number, not a size preset of its category).
 
-   ratio = width of the picture as placed ÷ the hero's height on THAT map.   (the hero is drawn VILLAGE_HERO_PX × the map's hero multiplier; sub-maps also × PLACE_CHAR_K)
+   ratio = width of the picture as placed ÷ the hero reference height on THAT map = BASE × the map's one size multiplier (v98.724: no Lineup factor; sub-map multiplier includes its grid ratio)
    So a house that is 7 heroes wide is 7 heroes wide on the village, in the market and in a sub-map, whatever that map's own hero size is.
 
    • the number lives under the key of the picture FILE (assets/…/x.webp) in localStorage 'asset-hero-ratio-v1' → ⬆ Push (js/game-settings.js GAME_SETTINGS) with the maps
@@ -12,15 +12,19 @@
    AssetSize.get(src)                            → ratio | null
    AssetSize.startWidth(src, ctx, fallbackPx)    → width in map px for a new piece (ctx 'village' | 'place' | 'battle'), or fallbackPx when the picture has no number
    AssetSize.record(src, widthPx, ctx)           → store the ratio from a width that was just set (debounced write)
-   AssetSize.setHero(ctx, fn)                    → each page tells how tall the hero is on its map: fn() → px
+   AssetSize.setHero(ctx, fn)                    → optional override of the formula (not used since v98.724)
    AssetSize.all() · AssetSize.set(src, ratio) · AssetSize.heroPx(ctx) */
 (function (root) {
   'use strict';
   const KEY = 'asset-hero-ratio-v1';
+  /* v98.724 · ONE formula for every map: reference hero height = BASE px × that map's ONE size multiplier.
+     The ⚖ Scale Lineup factor of the hero is NOT in it (a taller / shorter hero must not change the starting size of new pieces); the sub-map multiplier already holds its grid ratio (placeScale).
+     REF_K = 0.96 is the lineup hero factor at the time the stored ratios were recorded, frozen so every stored ratio and every new piece keeps exactly the size it had. */
+  const REF_K = 0.96, HERO_BASE = () => (root.CharSize?.VILLAGE_HERO_PX || 93.6) * REF_K;
   const heroFns = {
-    village: () => { try { return CharSize.VILLAGE_HERO_PX * (root.MapScale ? MapScale.get('village') : 1) * (root.CharScaleAdjust?.factor('village', 'hero') || 1) } catch (e) { return 93.6 * .8 } },
-    place: () => { try { return CharSize.VILLAGE_HERO_PX * root.placeHeroScale() * (root.PLACE_CHAR_K || 90 / 56) } catch (e) { return 93.6 * 90 / 56 } },
-    battle: () => 109
+    village: () => HERO_BASE() * (root.MapScale ? MapScale.get('village') : 1),
+    place: () => HERO_BASE() * (root.placeScale ? root.placeScale() : (root.MapScale ? MapScale.get('village') : 1) * 90 / 56),
+    battle: () => 109 * (root.MapScale ? MapScale.get('battle', root.FIELD?.biome) : 1)
   };
   const read = () => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); return o && typeof o === 'object' ? o : {} } catch (e) { return {} } };
   let cache = null; const data = () => cache || (cache = read());

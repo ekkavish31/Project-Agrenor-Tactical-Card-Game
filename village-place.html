@@ -370,7 +370,11 @@ const VILLAGE_HERO = (() => {
 const heroCast = () => M.cast?.hero || VILLAGE_HERO;
 /* v98.139 · the ONE size multiplier of this sub-map (js/map-scale.js): its own value, else the village's */
 window.placeHeroScale = () => window.placeScale() * (window.CharScaleAdjust?.factor('village', 'hero') || 1);   /* v98.263 · the ⚖ Scale Lineup size of the hero applies in sub-maps too */
-window.placeScale = () => window.MapScale ? MapScale.get('place', PLACE) : (VILLAGE_HERO.s || 1);
+/* v98.724 · the ONE size multiplier of this sub-map INCLUDES the grid ratio (this grid is 90 px per cell, the village's 56): so every character here = 93.6 × placeScale() like the village = 93.6 × MapScale('village').
+   The stored group value (MapScale 'inside', shared with rooms) stays as it was; the ratio is applied here. */
+const PLACE_CHAR_K = 90 / 56;
+window.PLACE_CHAR_K = PLACE_CHAR_K;
+window.placeScale = () => (window.MapScale ? MapScale.get('place', PLACE) : (VILLAGE_HERO.s || 1)) * PLACE_CHAR_K;
 
 if (!DEFAULTS[PLACE]) DEFAULTS[PLACE] = {
  name: SAVED_MAP?.name || PLACE,
@@ -965,8 +969,6 @@ function resize() {
 /* v98.570 · the sub-map zoom is whatever draws the hero as big on screen as on the village map (CharSize.heroScreenPx) — needs the fit scale, so it is computed in fitView */
 const PLACE_ZOOM = 1.65;   /* fallback only */
 /* characters keep the same size relative to the floor grid as on the village map (that grid is 56 px wide per cell, this one 90) */
-const PLACE_CHAR_K = 90 / 56;
-window.PLACE_CHAR_K = PLACE_CHAR_K;
 let camHold = 0;
 function fitView() {
  const F = M.floor,
@@ -974,7 +976,7 @@ function fitView() {
   spanY = (F.w + F.d + 1) * S + 260;
  scale = Math.min((W - 60) / spanX, (H - 200) / spanY, 1.4);
  /* v98.20 · play view: zoomed in on the hero (the whole room is still one wheel-turn away); the editor keeps the fit-all view */
- zoom = (typeof editing !== 'undefined' && editing) ? 1 : (() => { try { const hw = CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K * scale, z = CharSize.heroScreenPx(W, H) / hw; return isFinite(z) && z > .3 ? Math.min(6, z) : PLACE_ZOOM } catch (e) { return PLACE_ZOOM } })();
+ zoom = (typeof editing !== 'undefined' && editing) ? 1 : (() => { try { const hw = CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * scale, z = CharSize.heroScreenPx(W, H) / hw; return isFinite(z) && z > .3 ? Math.min(6, z) : PLACE_ZOOM } catch (e) { return PLACE_ZOOM } })();
  pan = {
   x: 0,
   y: 60
@@ -1021,12 +1023,12 @@ const vendorWorld = s => { const df = vendorDefault(s), v = s.vendor || {}; retu
 function vendorObj(s, i) {
  if (!s.vendor?.kind || !VENDOR_KINDS[s.vendor.kind]) return null;
  const w = vendorWorld(s), p = project(w.u, w.v), face = vendorFace(s), kind = s.vendor.kind, hash = [...kind + s.id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % 628 / 100,
-  px = CharSize.VILLAGE_HERO_PX * (CharSize.DRAW.ally / CharSize.DRAW.hero) * window.placeScale() * PLACE_CHAR_K;
+  px = CharSize.VILLAGE_HERO_PX * (CharSize.DRAW.ally / CharSize.DRAW.hero) * window.placeScale();
  hits.push({ type: 'station', i, r: { x: p.x - px * .22, y: p.y - px * .9, w: px * .44, h: px * .95 } });   /* a click on the seller = the station */
  return { y: p.y, vendor: true, wu: w.u, wv: w.v, draw: (t = performance.now()) => {
   const im = TownArt.image('assets/village-town/vendors/' + kind + '-' + face.toLowerCase() + '.webp'), bob = Math.sin(t * .0018 + hash) * 1.1;
   if (im && im.complete && im.naturalWidth) { g.fillStyle = 'rgba(20,16,10,.28)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7); g.fill(); g.drawImage(im, p.x - px / 2, p.y - px * 360 / 384 - bob, px, px) }
-  else window.VillagerDraw?.(g, VENDOR_KINDS[kind].look, p.x, p.y, t, { face, scale: window.placeScale() * PLACE_CHAR_K })
+  else window.VillagerDraw?.(g, VENDOR_KINDS[kind].look, p.x, p.y, t, { face, scale: window.placeScale() })
  } }
 }
 const EXIT_DIRS = { SE: [1, 0], NW: [-1, 0], SW: [0, 1], NE: [0, -1] };
@@ -1179,7 +1181,7 @@ function draw(t) {
   })
  });
  for (const f of fencePieces()) objects.push({ y: project(f.m.u, f.m.v).y, draw: () => drawFencePiece(f, hp) });
- objects.push(...(window.HeroFollower?.objects(hero, dt, t, { show: !editing, project, g, ellipse: (x, y, rx, ry, c) => { g.fillStyle = c; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill() }, face: (du, dv, pd) => { if (window.WalkSpeed) return WalkSpeed.dir.face(FOLLOW_FACE, du, dv); const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') }, size: CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K, scale: window.placeScale() * PLACE_CHAR_K }) || []));
+ objects.push(...(window.HeroFollower?.objects(hero, dt, t, { show: !editing, project, g, ellipse: (x, y, rx, ry, c) => { g.fillStyle = c; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill() }, face: (du, dv, pd) => { if (window.WalkSpeed) return WalkSpeed.dir.face(FOLLOW_FACE, du, dv); const dx = du - dv, dy = du + dv; return dy >= 0 ? (dx >= 0 ? 'SE' : 'SW') : (dx >= 0 ? 'NE' : 'NW') }, size: CharSize.VILLAGE_HERO_PX * window.placeHeroScale(), scale: window.placeScale() }) || []));
  objects.push({
   y: hp.y, hero: true, wu: hero.u, wv: hero.v,
   draw: () => {
@@ -1188,7 +1190,7 @@ function draw(t) {
    g.ellipse(hp.x, hp.y, 13 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7);
    g.fill();
    const hc = heroCast();
-   /* v95.21: same size as on the village map (93.6 px × the village's hero scale) */ if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K, hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0 || !!window.TouchControls?.moving?.(), CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K)   /* v98.532 · was (hc.s || 1): the village editor's OLD per-hero cast scale (≈0.58 here) → the lead hero was drawn at ~60 % of the follower and every villager; same rule as the first branch now */
+   /* v95.21: same size as on the village map (93.6 px × the village's hero scale) */ if (!window.PlaceBuild?.drawHero?.(g, hp, hero.dir, CharSize.VILLAGE_HERO_PX * window.placeHeroScale(), hc)) TownArt.hero(g, hp, hero.dir, t, path.length > 0 || !!window.TouchControls?.moving?.(), CharSize.VILLAGE_HERO_PX * window.placeHeroScale())   /* v98.532 · was (hc.s || 1): the village editor's OLD per-hero cast scale (≈0.58 here) → the lead hero was drawn at ~60 % of the follower and every villager; same rule as the first branch now */
   }
  });
  { const dr = exitDoorObj(); if (dr) objects.push(dr) }   /* v98.548 */
@@ -1208,7 +1210,7 @@ list.sort((a, b) => a.y - b.y);
  fixOrderPlace(list);
  window.DepthStyle?.pairOrder?.(list, e => e.o && e.o.hero, e => e.o && e.o.follower, e => e.o ? e.o.y : null);   /* v98.538 · the follower is ordered against the lead by their own feet (south = in front, north = behind) */
  /* v98.309 · a TALL prop with an order footprint that the hero stands BEHIND turns see-through around him (DepthStyle: fade + silhouette), low ones (fence, bush…) cover naturally */
- const hi = list.findIndex(e => e.o && e.o.hero), hobj = hi >= 0 ? list[hi].o : null, heroH = CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * PLACE_CHAR_K;
+ const hi = list.findIndex(e => e.o && e.o.hero), hobj = hi >= 0 ? list[hi].o : null, heroH = CharSize.VILLAGE_HERO_PX * window.placeHeroScale();
  list.forEach((e, i) => {
   if (hobj && window.DepthStyle && i > hi && e.o && e.o.fp && e.o.rect && !DepthStyle.walkerInFront(e.o.fp, hobj.wu, hobj.wv)) {
    const r = e.o.rect, mode = DepthStyle.styleFor({ label: e.o.label, tall: e.o.tall });

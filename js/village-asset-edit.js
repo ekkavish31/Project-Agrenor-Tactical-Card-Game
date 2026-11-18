@@ -97,7 +97,7 @@
  const { DECOR_W, NAMES, NAME_KIND, LABEL_HINT } = window.VillageAssetTables;   /* v98.293 · js/village-asset-tables.js */
  const KINDS = {};
  /* v98.576 · AssetSize (js/asset-size.js): a decoration remembers how big it is next to the hero; a NEW one starts at that size, changing the size slider stores the new number */
- window.AssetSize?.setHero('village', () => CharSize.VILLAGE_HERO_PX * charScale('hero'));
+ /* v98.724 · AssetSize now holds ONE formula itself (no setHero here: the Lineup factor must not move the reference) */
  const decorFile = kind => /^decor:/.test(kind || '') ? 'assets/village-town/decor/' + kind.slice(6) + '.png' : '';
  function sizeStart(nid, kind) { const f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1], r = f && window.AssetSize?.get(f); if (r && w) ovOf(nid).s = +clampN(r * AssetSize.heroPx('village') / w, .2, 4).toFixed(3) }
  function buildingRec(id) { const b = data.buildings[id] || {}, spec = artSpecs[id], f = BUILDINGS[id]; if (spec && f && window.AssetSize) AssetSize.record(f, spec[0] * 2 * (b.sx ?? 1), 'village') }
