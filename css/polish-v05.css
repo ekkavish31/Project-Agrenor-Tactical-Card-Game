@@ -148,3 +148,23 @@ body.editor-menu main>header{display:flex!important}
 .game-tip>div{max-width:520px;margin:16px;background:#f9eed5;border:3px solid #b8995e;border-radius:12px;padding:18px 22px;color:#3a2a17;box-shadow:0 10px 30px #0008}
 .game-tip h4{margin:0 0 8px;font-size:18px}.game-tip p{margin:0 0 14px;line-height:1.7}.game-tip button{padding:6px 18px;border-radius:8px;background:#e7c58b;border:1px solid #8e632c;cursor:pointer;font-weight:700}
 .settings-box select{max-width:62%}.settings-box label{white-space:nowrap}
+
+/* v98.677 · menu-icon editor: tile list → detail */
+#menuPicker .mp-help{color:#bba57f;margin:0 0 6px}
+#menuPicker .mp-grp{margin:16px 0 8px;font-size:14px;color:#f6d79b;border-bottom:1px solid #4a3b29;padding-bottom:4px}
+#menuPicker .mp-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+#menuPicker .mp-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px 10px;background:#2a2219;border:2px solid #4a3b29;border-radius:12px;color:#f3e7cf;cursor:pointer;font:inherit}
+#menuPicker .mp-tile:hover{border-color:#c9893a;background:#33291d}#menuPicker .mp-tile.custom{border-color:#7fb06a}
+#menuPicker .mp-pic{display:grid;place-items:center;width:84px;height:84px}#menuPicker .mp-pic.big{width:120px;height:120px}
+#menuPicker .mp-pic img{width:100%;height:100%;object-fit:contain}
+#menuPicker .mp-drawn{display:grid;place-items:center;width:100%;height:100%;border:2px dashed #8a7650;border-radius:12px;color:#d8c392;font-size:14px}
+#menuPicker .mp-name{font-weight:700;font-size:13px;text-align:center}#menuPicker .mp-tile small{color:#bba57f;font-size:10.5px;text-align:center}
+#menuPicker .mp-bar{display:flex;align-items:center;gap:14px;margin-bottom:10px}#menuPicker .mp-bar h2{margin:0}
+#menuPicker .mp-back{padding:6px 12px;background:#3a2c1b;color:#f3e7cf;border:1px solid #6b5535;border-radius:8px;cursor:pointer;font:inherit}
+#menuPicker .mp-detail{display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:start}
+#menuPicker .mp-now{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px;background:#2a2219;border:1px solid #4a3b29;border-radius:12px;text-align:center}
+#menuPicker .mp-all{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px}
+#menuPicker .mp-opt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 4px;background:#1d1711;border:2px solid transparent;border-radius:10px;color:#f3e7cf;cursor:pointer;font:inherit;min-height:104px}
+#menuPicker .mp-opt img{width:64px;height:64px;object-fit:contain}#menuPicker .mp-opt small{font-size:10px;color:#bba57f}
+#menuPicker .mp-opt:hover{border-color:#8a6a35}#menuPicker .mp-opt.on{border-color:#ffd27a;box-shadow:0 0 8px #ffd27a}
+@media(max-width:760px){#menuPicker .mp-detail{grid-template-columns:1fr}}
