@@ -113635,7 +113635,7 @@
   },
   {
    "id": "studio-hero-sw-windup-mwfkzn64-62zu-1",
-   "file": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.png",
+   "file": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113652,7 +113652,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261118-195628",
+   "artRevision": "20261118-205049",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -113660,6 +113660,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-windup-mwfkzn64-62zu-1/20261118-205045.png",
+     "at": "2026-11-18T13:50:47.010Z",
+     "stamp": "20261118-205045",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-sw-windup-mwfkzn64-62zu-1/20261118-195627.png",
      "at": "2026-11-18T12:56:28.669Z",
@@ -113712,7 +113719,7 @@
   },
   {
    "id": "studio-hero-sw-strike-mwfkzn64-62zu-1",
-   "file": "assets/tactics/imported/strike-sw-mwfkzn64-62zu/frame-01.png",
+   "file": "assets/tactics/imported/strike-sw-mwfkzn64-62zu/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113729,7 +113736,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261118-201014",
+   "artRevision": "20261118-205407",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -113737,6 +113744,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-strike-mwfkzn64-62zu-1/20261118-205405.png",
+     "at": "2026-11-18T13:54:06.838Z",
+     "stamp": "20261118-205405",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-sw-strike-mwfkzn64-62zu-1/20261118-201012.png",
      "at": "2026-11-18T13:10:12.279Z",
@@ -113939,7 +113953,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261118-202805",
+   "artRevision": "20261118-205919",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -113947,6 +113961,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-down-mwfkzn64-62zu-1/20261118-205919.webp",
+     "at": "2026-11-18T13:59:19.579Z",
+     "stamp": "20261118-205919",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-sw-down-mwfkzn64-62zu-1/20261118-202805.png",
      "at": "2026-11-18T13:28:05.292Z",
@@ -140435,7 +140456,7 @@
       "frames": [
        {
         "assetId": "studio-hero-sw-windup-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.png",
+        "src": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.webp",
         "ms": 120
        }
       ]
@@ -140517,7 +140538,7 @@
       "frames": [
        {
         "assetId": "studio-hero-sw-strike-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/strike-sw-mwfkzn64-62zu/frame-01.png",
+        "src": "assets/tactics/imported/strike-sw-mwfkzn64-62zu/frame-01.webp",
         "ms": 120
        }
       ]
