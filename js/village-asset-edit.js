@@ -3124,7 +3124,7 @@
   frameList: () => frame.map(e => ({ key: e.key, art: e.art, label: e.label, own: frOwn(e.ov || {}), block: !!(e.geo || e.ov)?.block })),   /* v98.692 · for tests / tools */
   detail: {
    /* v98.522 · key 'bld:<placeId>' = the PLACE itself (its order frame zo / orderU / orderV live in data.buildings[id]); no red frame, no art transforms */
-   get caps() { return bldDetail ? { rot: false, slant: false, block: false, shape: false, zoom: 0.55, note: 'สถานที่: ระบายกรอบฟ้าให้เท่าส่วนที่แตะพื้นจริงของตัวอาคาร (รวมเฉลียง/ปีกยื่น) · ไม่ระบาย = ใช้กรอบแปลงเดิม' } : {} },
+   get caps() { return bldDetail ? { rot: false, slant: false, skew: false, block: false, shape: false, zoom: 0.55, note: 'สถานที่: ระบายกรอบฟ้าให้เท่าส่วนที่แตะพื้นจริงของตัวอาคาร (รวมเฉลียง/ปีกยื่น) · ไม่ระบาย = ใช้กรอบแปลงเดิม' } : { skew: false } },
    item: key => { if (String(key).startsWith('bld:')) { const o = locations.find(x => x.id === key.slice(4)); bldDetail = !!o; return o ? { key, label: bldName[o.id] || o.name || o.id, ax: 0, ay: 0, bld: o } : null } bldDetail = false; return frame.find(e => e.key === key) || null },
    ov: key => { if (String(key).startsWith('bld:')) return data.buildings[key.slice(4)] || {}; const o = data.edit[key] || {}, E = frame.find(e => e.key === key); return E ? geoOv(o, E.art) : o },   /* v98.692 · the window shows the frame the piece really uses (own → picture's template) */
    edit(key, fn, checkpoint) {
