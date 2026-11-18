@@ -320,10 +320,22 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const QROWS = [['head', 'หัว ใหญ่-เล็ก'], ['torso', 'ลำตัว สูง (แนวตั้ง)'], ['wTorso', 'ลำตัว หนา (แนวนอน)'], ['shoulder', 'ไหล่ กว้าง'], ['legs', 'ขา ยาว (แนวตั้ง)'], ['wLegs', 'ท่อนขา หนา (แนวนอน)']];
   const qaDirty = () => Object.values(QA.S).some(v => v !== 100);
   const qaScale = () => Object.fromEntries(Object.entries(QA.S).map(([k, v]) => [k, v / 100]));
-  function qaRender(img, flip, P) { const mm = sil(img, flip); if (!mm) return null; const r = PA().warp(img, mm, marksFor(P, mm), qaScale(), { keepHeight: QA.keep, flip, grow: Math.round(mm.H * .03), sharpen: 'auto' }); const o = document.createElement('canvas'); o.width = o.height = SRC; o.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]); o.res = r; return o }
+  /* v98.776 · LYING pose (down): rotate the picture about its centre so that the line skull-top → feet points down, run the same re-proportion there (the head / torso / legs cut by the neck LINE and the crotch LINE, which turn with it), then rotate back */
+  const rotPt = (p, th) => { const c = Math.cos(th), s = Math.sin(th), x = p[0] - SRC / 2, y = p[1] - SRC / 2; return [SRC / 2 + x * c - y * s, SRC / 2 + x * s + y * c] };
+  function bodyAxisAngle(P) { const f = P.footL && P.footR ? [(P.footL[0] + P.footR[0]) / 2, (P.footL[1] + P.footR[1]) / 2] : (P.footL || P.footR); if (!P.top || !f) return null; const vx = f[0] - P.top[0], vy = f[1] - P.top[1]; if (Math.hypot(vx, vy) < 20) return null; return Math.PI / 2 - Math.atan2(vy, vx) }
+  function qaRenderDown(img, flip, P) {
+    const th = bodyAxisAngle(P); if (th == null) return null; const mk = () => { const c = document.createElement('canvas'); c.width = c.height = SRC; return c }, C = SRC / 2;
+    const src = mk(), sg = src.getContext('2d'); sg.translate(C, C); sg.rotate(th); sg.translate(-C, -C); if (flip) { sg.translate(SRC, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0, SRC, SRC);
+    const P2 = {}; for (const [k, v] of Object.entries(P)) P2[k] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? rotPt(v, th) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(q => rotPt(q, th)) : v;
+    const mm = sil(src, false); if (!mm) return null; const cuts = Array.isArray(P2.neckLine) && P2.neckLine.length >= 2 && Array.isArray(P2.crotchLine) && P2.crotchLine.length >= 2 && P2.top ? { neck: P2.neckLine, hip: P2.crotchLine, head: P2.top } : null;
+    const r = PA().warp(src, mm, marksFor(P2, mm), qaScale(), { keepHeight: QA.keep, flip: false, grow: Math.round(mm.H * .03), sharpen: 'auto', ...(cuts ? { cuts } : {}) });
+    const wo = mk(); wo.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]);
+    const out = mk(), og = out.getContext('2d'); og.translate(C, C); og.rotate(-th); og.translate(-C, -C); og.drawImage(wo, 0, 0); out.res = r; out.rot = th; return out;
+  }
+  function qaRender(img, flip, P, down) { if (down) return qaRenderDown(img, flip, P); const mm = sil(img, flip); if (!mm) return null; const r = PA().warp(img, mm, marksFor(P, mm), qaScale(), { keepHeight: QA.keep, flip, grow: Math.round(mm.H * .03), sharpen: 'auto' }); const o = document.createElement('canvas'); o.width = o.height = SRC; o.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]); o.res = r; return o }
   /* where every datum point goes with the picture (PA.mapPoint of the warp, minus the offset the preview is drawn at) */
   function qaMovePoints(P, cv) {
-    const r = cv.res, mv = v => { const q = PA().mapPoint(r, v[0], v[1]); return [Math.round((q[0] - r.offset[0]) * 10) / 10, Math.round((q[1] - r.offset[1]) * 10) / 10] }, out = {};
+    const r = cv.res, th = cv.rot, mv = v => { const a = th != null ? rotPt(v, th) : v, q = PA().mapPoint(r, a[0], a[1]); let b = [q[0] - r.offset[0], q[1] - r.offset[1]]; if (th != null) b = rotPt(b, -th); return [Math.round(b[0] * 10) / 10, Math.round(b[1] * 10) / 10] }, out = {};
     for (const [k, v] of Object.entries(P)) out[k] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? mv(v) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(mv) : v;
     return out;
   }
@@ -333,11 +345,11 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!html) { old?.remove(); return } const t = document.createElement('div'); t.innerHTML = html; const n = t.firstElementChild; if (old) old.replaceWith(n); else cell.append(n);
   }
   function qaSync() { if (act !== QA.ck) { const was = QA.ck; QA.ck = act; QA.S = QD(); QA.canvas = null; QA.P = null; QA.msg = ''; if (was) refreshVals(was) } }
-  function qaLive() { clearTimeout(QA.t); QA.t = setTimeout(() => { const c = cur?.cells[QA.ck], P = peek(QA.ck)?.p; try { QA.canvas = c?.img && withChin(P || {}).chin && withChin(P || {}).crotch && qaDirty() ? qaRender(c.img, c.flip, P) : null; QA.P = QA.canvas ? qaMovePoints(P, QA.canvas) : null } catch (e) { QA.canvas = null; QA.P = null; QA.msg = 'พรีวิวไม่สำเร็จ: ' + e.message; console.error('pose-sheet preview', e) } paintAll(); refreshVals(QA.ck) }, 90) }
+  function qaLive() { clearTimeout(QA.t); QA.t = setTimeout(() => { const c = cur?.cells[QA.ck], P = peek(QA.ck)?.p; try { QA.canvas = c?.img && withChin(P || {}).chin && withChin(P || {}).crotch && qaDirty() ? qaRender(c.img, c.flip, P, c.pose === 'down') : null; QA.P = QA.canvas ? qaMovePoints(P, QA.canvas) : null } catch (e) { QA.canvas = null; QA.P = null; QA.msg = 'พรีวิวไม่สำเร็จ: ' + e.message; console.error('pose-sheet preview', e) } paintAll(); refreshVals(QA.ck) }, 90) }
   async function qaSave() {
     const ck = QA.ck, c = cur?.cells[ck], P = peek(ck)?.p; if (!c || !withChin(P || {}).chin || !qaDirty() || QA.busy) return false; QA.busy = true; const say = t => { QA.msg = t; const m = $('qaMsg'); if (m) m.textContent = t };
     try {
-      const items = []; let n = 0; for (const f of c.clip.frames) { say('ปรับ ' + (++n) + '/' + c.clip.frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), cv = qaRender(img, fl, P); items.push({ file: f.file, dataUrl: toURL(fl ? mirrorCv(cv) : cv) }); await new Promise(r => setTimeout(r, 0)) }
+      const items = []; let n = 0; for (const f of c.clip.frames) { say('ปรับ ' + (++n) + '/' + c.clip.frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), cv = qaRender(img, fl, P, c.pose === 'down'); if (!cv) throw new Error('วางยอดกะโหลก + จุดเท้า + เส้นตัดหัว/ขา ให้ครบก่อน'); items.push({ file: f.file, dataUrl: toURL(fl ? mirrorCv(cv) : cv) }); await new Promise(r => setTimeout(r, 0)) }
       say('กำลังบันทึก…'); const moved = QA.P; await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } write(KEY, DATA); QA.S = QD(); QA.canvas = null; QA.P = null; QA.busy = false; await load(); QA.msg = '✔ ใส่ Cart แล้ว (รอ Push) · ตรวจจุดอีกครั้ง'; updNext(); return true
     } catch (e) { QA.busy = false; say('ไม่สำเร็จ: ' + e.message); return false }
   }
@@ -351,7 +363,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function adjBar() {
     const c = act && cur?.cells[act]; if (!c) return '<div style="font-size:12.5px;color:#7a5a00">คลิกที่ภาพของท่าหนึ่งเพื่อเลือกท่า</div>';
     qaSync(); const P = peek(act)?.p || {}, name = (POSES.find(q => q[0] === c.pose) || [, c.pose])[1] + ' ' + c.dir;
-    if (c.pose === 'down') return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> เป็นท่านอน — ตัวปรับสัดส่วนตัดตามแนวตั้ง ใช้กับท่านอนไม่ได้ (โซนสีและตัวเลขใช้ได้ตามแกนลำตัว)</div>`;
+    if (c.pose === 'down' && bodyAxisAngle(P) == null) return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> เป็นท่านอน — วาง <b>ยอดกะโหลก</b> กับ <b>จุดเท้า</b> ให้ครบก่อน (ใช้หาแกนลำตัว) ตัวปรับจะหมุนภาพให้ลำตัวตั้ง ปรับ แล้วหมุนกลับ</div>`;
     if (isLocked(act)) return `<div style="font-size:13px;color:#2f7a3a">🔒 ท่า <b>${esc(name)}</b> ล็อกอยู่ — เอาติ๊ก “ล็อก” ที่ใต้ภาพออกก่อนจึงจะปรับ/แก้จุดได้</div>`;
     if (!(withChin(P).chin && withChin(P).crotch)) return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> · วาง <b>เส้นตัดหัว (คอ)</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีโซนสีและปุ่มปรับสัดส่วน</div>`;
     return `<div style="font-size:13.5px">ท่า <b style="background:#2e6b4f;color:#fff;padding:1px 8px;border-radius:6px">${esc(name)}</b> · 🛠 ปรับสัดส่วน (ดูผลสดบนภาพ)</div>`
