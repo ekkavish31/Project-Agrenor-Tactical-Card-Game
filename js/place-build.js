@@ -1426,7 +1426,7 @@ const PB_ART = (() => {
    const stView = s => { const o = { ...s }; if (o.sw == null && o.fw == null && !(o.zo && o.zo.length)) { o.sw = s.w * 2; o.sh = s.d * 2 } if (o.fw == null && !(o.zb && o.zb.length)) { o.fw = s.w * 2; o.fh = s.d * 2 } o.block = s.block !== false; return o };
    const stMaterialize = s => { const v = stView(s); for (const k of ['sw', 'sh', 'fw', 'fh']) if (s[k] == null) s[k] = v[k]; if (s.block == null) s.block = true };
    const propDetail = {
-    caps: { rot: false, slant: false, block: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · ตั้งกรอบแล้วตัวละครจะอยู่หน้า/หลังชิ้นนี้ตามกฎเดียวกับหมู่บ้าน' },
+    caps: { rot: false, slant: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · กรอบฟ้า = ใครอยู่หน้า/หลังชิ้นนี้ (กฎเดียวกับหมู่บ้าน) · กรอบแดง = ส่วนที่ห้ามเดิน (ติ๊ก "บล็อกเดิน" ถึงจะบล็อก)' },   /* v98.712 · props have the red (walk-block) frame too */
     item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
     ov: key => { const o = M.props[+key]; return o ? (window.ArtFrames ? ArtFrames.effective(o) : o) : {} },   /* v98.567 · the window shows the frame the piece really uses (own → picture's template → automatic) */
     edit(key, fn, cp) {
