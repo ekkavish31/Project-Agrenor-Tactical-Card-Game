@@ -63,7 +63,7 @@
     try { const actor = document.createElement('canvas'); actor.width = CW; actor.height = CH; drawWalker(actor.getContext('2d'), false, false); drawPiece(q, E, ov); q.globalCompositeOperation = 'destination-in'; q.drawImage(actor, 0, 0); const d = q.getImageData(0, 0, CW, CH).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 100) return true; return false } catch (_) { return true }
   }
   const hints = {
-    walk: 'ชี้ที่คนแล้วลาก = ย้ายคนทดสอบ (ทดสอบการบัง/การชน ชนกรอบแดงแล้วเข้าไม่ได้) · ชี้ที่ภาพแล้วลาก = ย้ายภาพ · ลากพื้นโล่ง = เลื่อนมุมมอง · ย้ายกรอบต้องเลือกโหมดกรอบก่อน',
+    walk: 'ชี้ที่คนแล้วลาก = ย้ายคนทดสอบ (ทดสอบการบัง/การชน ชนกรอบแดงแล้วเข้าไม่ได้) · ชี้ที่ภาพแล้วลาก = ย้ายภาพ · ลากพื้นโล่ง = เลื่อนมุมมอง · ย้ายกรอบต้องเลือกโหมดกรอบก่อน · กด W A S D เพื่อเดิน',
     art: 'ลากบนภาพเพื่อเลื่อนเฉพาะภาพ Asset เทียบกับฐาน · กรอบทั้งสองอยู่ที่เดิม',
     order: 'ลากเพื่อย้ายกรอบฟ้า · วางให้ครอบฐานที่แตะพื้น ใช้ตัดสินหน้า/หลัง',
     block: 'ลากเพื่อย้ายกรอบแดง · วางเฉพาะส่วนที่ไม่ให้คนเดินทะลุ',
@@ -168,6 +168,27 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
     s.textContent = `#pieceDetail{width:100vw;height:100vh;max-width:100vw;max-height:100vh;margin:0;box-sizing:border-box;border:0;border-radius:0;background:#1b2a23;color:#f1e6c4;padding:0;font:13px AgThai,system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column}#pieceDetail:not([open]){display:none}#pieceDetail::backdrop{background:#0008}#pieceDetail [hidden]{display:none!important}.pdhead{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #4d6656}.pdbody{display:flex;align-items:flex-start;gap:14px;padding:10px 14px;flex:1 1 auto;min-height:0;overflow:hidden}.pdview{flex:1 1 auto;min-width:0;overflow:auto}#pdCv{display:block;border-radius:10px;border:1px solid #4d6656;box-sizing:content-box;touch-action:none;cursor:grab}.pdside{width:340px;flex:0 0 340px;height:100%;overflow:auto;padding-right:6px}.pdsd{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}.pdsdh{grid-column:1/-1;font-size:12.5px;opacity:.9}.pdsdc{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:4px 6px;background:#0003;border-radius:8px}.pdsdc b{font-size:13px}.pdsdc span{display:flex;gap:4px}.pdzoom{display:flex;align-items:center;gap:6px;margin-left:auto}.pdzoom b{min-width:46px;text-align:center}.pdhead b{font-size:15px}#pieceDetail button{width:auto!important}#pieceDetail input[type=range]{width:100%}#pieceDetail label{display:grid}#pieceDetail label.pdc{display:flex}.pdside h4{margin:12px 0 4px;color:#f4dc9f;font-size:13px}.pdr{display:grid;grid-template-columns:78px 1fr 48px;gap:6px;align-items:center;margin:5px 0}.pdr:has(button){grid-template-columns:1fr auto}.pdc{display:flex;gap:6px;align-items:center;margin:6px 0}#pieceDetail button{background:#2c4437;color:#f1e6c4;border:1px solid #6f8b5b;border-radius:7px;padding:5px 8px;cursor:pointer}#pieceDetail button:disabled{opacity:.45;cursor:default}#pieceDetail button[aria-pressed=true]{background:#e6c77e;color:#221b0d;border-color:#ffe1a2}.pdst,.pdhelp,#pdFitPanel{margin:10px 0 0;padding:8px;background:#0003;border-radius:8px;line-height:1.5}.pdhelp ol{padding-left:22px;margin:6px 0}.pdtools{display:flex;gap:5px;flex-wrap:wrap}.pdhint{font-size:12px;line-height:1.5;margin:6px 0;min-height:36px}#pdOffsets{display:block;opacity:.8;margin-top:5px}@media(max-width:900px){.pdbody{flex-direction:column;overflow:auto}.pdside{width:100%;flex:0 0 auto;height:auto}}`;
     document.head.append(s);
   }
+  /* v98.731 · the test person walks to (u, v) in small steps and cannot enter the RED frame (slides along its edge); used by the pointer and by the W A S D keys */
+  const blockedAt = (u, v) => { const ov = D().ov(key); if (!ov.block) return false; const bl = G().footprint(ov, 0, 0, true); return (bl.parts || [bl]).some(r => u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) };
+  function walkTo(wu, wv) {
+    const wl = Math.round(5.5 * 1.9 / Z * 2) / 2, tu = limit(wu, wl), tv = limit(wv, wl);
+    let u = walker.u, v = walker.v; const dist = Math.hypot(tu - u, tv - v), n = Math.max(1, Math.ceil(dist / .08)), du = (tu - u) / n, dv = (tv - v) / n;
+    if (blockedAt(u, v)) { u = tu; v = tv }                 /* already inside (the frame was just painted over the person): let it leave freely */
+    else for (let i = 0; i < n; i++) { if (!blockedAt(u + du, v + dv)) { u += du; v += dv } else if (!blockedAt(u + du, v)) u += du; else if (!blockedAt(u, v + dv)) v += dv; else break }
+    walker = { u, v }; paint();
+  }
+  /* W A S D (by key position, so the Thai layout works too) = up / left / down / right ON THE SCREEN; ~3 cells a second */
+  const HELD = new Set(), DIR = { KeyW: [-1, -1], KeyS: [1, 1], KeyA: [-1, 1], KeyD: [1, -1] };
+  let kRaf = 0, kLast = 0;
+  function kLoop(t) {
+    kRaf = 0; if (!dlg || !dlg.open || !HELD.size) return;
+    const dt = Math.min(.05, (t - (kLast || t)) / 1000); kLast = t; let du = 0, dv = 0; for (const c of HELD) { du += DIR[c][0]; dv += DIR[c][1] }
+    const L = Math.hypot(du, dv); if (L > 0) walkTo(walker.u + du / L * 3 * dt * 1.5, walker.v + dv / L * 3 * dt * 1.5);
+    kRaf = requestAnimationFrame(kLoop)
+  }
+  addEventListener('keydown', e => { if (!dlg || !dlg.open || !DIR[e.code] || e.ctrlKey || e.metaKey || e.altKey || e.target.closest?.('input[type=text],input[type=number],textarea,select')) return; e.preventDefault(); e.stopPropagation(); HELD.add(e.code); if (!kRaf) { kLast = 0; kRaf = requestAnimationFrame(kLoop) } }, true);
+  addEventListener('keyup', e => { if (DIR[e.code]) { HELD.delete(e.code); if (dlg?.open) e.stopPropagation() } }, true);
+  addEventListener('blur', () => HELD.clear());
   function open(k) {
     const d = D(); if (!d || !G() || !DS()) return; const E = d.item(k); if (!E) return;
     key = k; Z = d.caps?.zoom || 1.9; Z0 = Z; S = 28 * Z; T = 14 * Z; fitCanvas(); css(); walker = { u: -.6, v: 3.4 }; points = []; undo = []; mode = 'walk'; gesture = null;
@@ -246,14 +267,7 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
     dlg.querySelectorAll('[data-fit]').forEach(b => b.onclick = () => { const result = G().fit(points, b.dataset.fit, G().matrix(D().ov(key))); if (!result) return; points = []; edit(o => { o.pm = result.matrix }); setMode('walk') });
     const at = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * CW / r.width, y: (e.clientY - r.top) * CH / r.height } };
     /* v98.691 · the test person cannot walk into the RED (blocked) frame: the move is made in small steps; a step that would enter the frame slides along its edge (u only, then v only) or stops */
-    const blockedAt = (u, v) => { const ov = D().ov(key); if (!ov.block) return false; const bl = G().footprint(ov, 0, 0, true); return (bl.parts || [bl]).some(r => u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) };
-    const moveWalker = p => {
-      const w = inv(p.x, p.y), wl = Math.round(5.5 * 1.9 / Z * 2) / 2, tu = limit(w.u, wl), tv = limit(w.v, wl);
-      let u = walker.u, v = walker.v; const dist = Math.hypot(tu - u, tv - v), n = Math.max(1, Math.ceil(dist / .08)), du = (tu - u) / n, dv = (tv - v) / n;
-      if (blockedAt(u, v)) { u = tu; v = tv }                 /* already inside (the frame was just painted over the person): let it leave freely */
-      else for (let i = 0; i < n; i++) { if (!blockedAt(u + du, v + dv)) { u += du; v += dv } else if (!blockedAt(u + du, v)) u += du; else if (!blockedAt(u, v + dv)) v += dv; else break }
-      walker = { u, v }; paint();
-    };
+    const moveWalker = p => { const w = inv(p.x, p.y); walkTo(w.u, w.v) };
     cv.onpointerdown = e => {
       if (e.button !== 0) return; e.preventDefault(); const p = at(e); cv.setPointerCapture(e.pointerId);
       if (mode === 'fit') { const i = points.findIndex(q => Math.hypot(q.x - p.x, q.y - p.y) <= 12); if (i >= 0) gesture = { kind: 'point', i, start: p, moved: false }; else if (points.length < 3) { points.push(p); paint() } return }
