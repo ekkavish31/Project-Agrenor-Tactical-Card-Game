@@ -10,7 +10,7 @@
   const FR = 128, COLS = 12, N = 96;
   const TEAL = 'assets/fx/head-arrow-teal.webp';
   const STYLES = {
-    new: { name: 'ใหม่ · ทอง / แดง (3D)', ally: 'assets/fx/head-arrow-gold-new.webp', foe: 'assets/fx/head-arrow-red-new.webp', k: .8, wk: 1, px: .5039, py: .8672, len: .8125, loop: 4000 },
+    new: { name: 'ใหม่ · ทอง / แดง (3D)', ally: 'assets/fx/head-arrow-gold-new.webp', foe: 'assets/fx/head-arrow-red-new.webp', k: .8, wk: .8, px: .5039, py: .8672, len: .8125, loop: 4000 },
     oldGold: { name: 'เดิม · ทองย้อมสี (เล็ก เรียว)', ally: TEAL, recolor: 'gold', foe: TEAL, foeRecolor: 'red', k: .8, wk: .8, px: .5078, py: .8672, len: .836, loop: 3200 },
     oldTeal: { name: 'เดิมดั้งเดิม · เขียวมิ้นต์', ally: TEAL, foe: TEAL, foeRecolor: 'red', k: 1, wk: 1, px: .5078, py: .8672, len: .836, loop: 3200 }
   };
