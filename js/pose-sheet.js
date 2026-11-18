@@ -184,9 +184,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const unsc = (sx, sy) => [sx / Z - PAD, sy / Z - PAD];
   const ptr = (cv, ev) => { const r = cv.getBoundingClientRect(); return [(ev.clientX - r.left) * cv.width / r.width, (ev.clientY - r.top) * cv.height / r.height] };
 
+  /* v98.748 · every scroll position that matters (page, every scrolling ancestor of the sheet, the zone, the side bar) — kept across a redraw, and across a moment where the sheet is emptied (no character selected for an instant) */
+  let SCROLLMEM = null, ZOOMKEEP = null;
+  function scrollNow(ps) { const k = { arr: [], wx: scrollX, wy: scrollY, zl: $('psZone')?.scrollLeft || 0, zt: $('psZone')?.scrollTop || 0, st: $('psSide')?.scrollTop || 0 }; for (let n = ps; n; n = n.parentElement) k.arr.push([n, n.scrollTop, n.scrollLeft]); return k }
   function draw() {
     const ps = $('poseSheet'); if (!ps || !document.body.classList.contains('sheet-mode')) return;
-    if (!cur) { ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
+    if (!cur) { if (ps.querySelector('.ps-app')) SCROLLMEM = scrollNow(ps); ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
     const HID = hidSet(), cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
     /* v98.742 · LAYOUT: a sticky TOP BAR (name · next point · the tools used all the time) + a sticky SIDE BAR (the 12 points, the selected pose, the other tools) + the edit ZONE. ⛶ = full screen: only these three. */
     const mkDirty = marksDirty();
@@ -194,7 +197,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     let h = `<div class="ps-app"><div class="ps-top" id="psTop"><b class="ps-name">${esc(cur.name)}</b><div class="ps-next" id="psNext"></div><span class="sp" style="flex:1"></span>
         <button type="button" class="act ${SHOW.pts ? 'on' : ''}" id="psShowPts" title="แสดง/ซ่อนจุด datum บนภาพ">● จุด</button><button type="button" class="act ${SHOW.zone ? 'on' : ''}" id="psShowZone" title="โซนสีแบ่งส่วน: หัว · ลำตัว · ขา (ท่าที่มี คาง + เส้นตัดขา แล้ว)">🎨 โซนสี</button>
         <button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button>
-        <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max=".8" step=".05" value="${Z}"></label>
+        <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max="2.5" step=".05" value="${Z}"></label>
         <span id="psCartMsg" style="font-size:12.5px;color:#315d46"></span>
         <button type="button" class="act main" id="psCartAll" ${moved || nd || mkDirty ? '' : 'disabled'} title="ที่เปลี่ยนทั้งหมด (ตำแหน่งภาพ · ขนาดเข้าเกม · จุด/ติ๊ก/ไม้บรรทัด) → 🛒 Cart รอ Push">🛒 ใส่ Cart${moved || nd || mkDirty ? ' (' + [moved ? 'ตำแหน่ง ' + moved : '', nd ? 'ขนาด ' + nd : '', mkDirty ? 'จุด/ติ๊ก' : ''].filter(Boolean).join(' · ') + ')' : ' · ไม่มีอะไรเปลี่ยน'}</button>
         <button type="button" class="act" id="psFull" title="เต็มจอ: เห็นแค่แถบบน + แถบข้าง + พื้นที่แก้ไข (Esc = ออก)">⛶ เต็มจอ</button></div>
@@ -225,7 +228,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     }
     h += `</div><div class="ps-msg" id="psMsg" role="status">${tool === 'hand' ? 'โหมด ✋: ลากภาพในช่องเพื่อย้าย' : 'คลิกบนภาพเพื่อวาง <b>' + STEP[step][1] + '</b> · ลากจุดเพื่อย้าย · ลูกศร = ขยับจุดที่เลือก 1 px · Delete = ลบจุด'} · กรอบแดง = ภาพจริง 384×384 (ขอบนอกกรอบจะถูกตัดตอนบันทึก) · เส้นเขียว = เส้นพื้น</div></div></div>`;
     /* v98.742 · re-drawing the sheet must not move the view: every scroll position (page, the sheet, the zone, the side bar) is put back, so you stay on the pose you are working on */
-    const keep = { arr: [], wx: scrollX, wy: scrollY, zl: $('psZone')?.scrollLeft || 0, zt: $('psZone')?.scrollTop || 0, st: $('psSide')?.scrollTop || 0 }; for (let n = ps; n; n = n.parentElement) keep.arr.push([n, n.scrollTop, n.scrollLeft]);
+    const keep = ZOOMKEEP || (ps.querySelector('.ps-app') ? scrollNow(ps) : (SCROLLMEM || scrollNow(ps))); SCROLLMEM = null; ZOOMKEEP = null;
     ps.innerHTML = h; document.body.classList.toggle('ps-hand', tool === 'hand');
     const back = () => { for (const [n, t, l] of keep.arr) { n.scrollTop = t; n.scrollLeft = l } scrollTo(keep.wx, keep.wy); const z = $('psZone'); if (z) { z.scrollLeft = keep.zl; z.scrollTop = keep.zt } const s = $('psSide'); if (s) s.scrollTop = keep.st };
     back(); paintAll(); wire(ps); back();
@@ -379,7 +382,11 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       ps.addEventListener('pointerleave', () => { const t = $('psTip'); if (t) t.hidden = true }) }
     const msg = t => { const m = $('psMsg'); if (m) m.textContent = t };
     ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() });
-    const zm = $('psZoom'); if (zm) zm.onchange = () => { Z = +zm.value; try { localStorage.setItem('pose-sheet.zoom', String(Z)) } catch (e) { } draw() };
+    const zm = $('psZoom'); if (zm) zm.onchange = () => {
+      const oldZ = Z; Z = +zm.value; try { localStorage.setItem('pose-sheet.zoom', String(Z)) } catch (e) { }
+      /* the cells grow / shrink with the zoom: scale the scroll positions by the same ratio so the pose you are looking at stays in view */
+      const r = Z / oldZ, k = scrollNow(ps); for (const a of k.arr) { a[1] *= r; a[2] *= r } k.zl *= r; k.zt *= r; ZOOMKEEP = k; draw()
+    };
     $('psHide').onclick = () => { if (!act) return; const s = hidSet(); s.add(act); hidSave(s); act = null; draw() };
     $('psUnhideAll').onclick = () => { hidSave(new Set()); draw() };
     ps.querySelectorAll('[data-unhide]').forEach(b => b.onclick = () => { const s = hidSet(); s.delete(b.dataset.unhide); hidSave(s); draw() });
