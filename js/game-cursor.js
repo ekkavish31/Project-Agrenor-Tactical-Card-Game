@@ -13,7 +13,7 @@
   const Q = location.search; if (/[?&](editor|edit)=/.test(Q) || /[?&]cursor=0/.test(Q)) return;
   try { if (localStorage.getItem('projectA.cursor') === '0') return } catch (e) { }
   if (!root.matchMedia || !matchMedia('(pointer:fine)').matches) return;
-  const D = 'assets/cursor/', H = document.documentElement, HS = { pointer: [8, 4], grab: [24, 24], grabbing: [24, 28], zoom: [21, 21] }, KEY = { pointer: 'pointer', grab: 'grab', grabbing: 'grabbing', zoom: 'zoom-in' };
+  const D = 'assets/cursor/', H = document.documentElement, HS = { pointer: [9, 4], grab: [24, 24], grabbing: [24, 28], zoom: [22, 22] }, KEY = { pointer: 'pointer', grab: 'grab', grabbing: 'grabbing', zoom: 'zoom-in' };
   const st = document.createElement('style'); st.id = 'agcCss';
   st.textContent = Object.keys(HS).map(k => `html.agc-${k},html.agc-${k} *{cursor:url(${D}${k}.png) ${HS[k][0]} ${HS[k][1]},${KEY[k]}!important;cursor:-webkit-image-set(url(${D}${k}.png) 1x,url(${D}${k}@2x.png) 2x) ${HS[k][0]} ${HS[k][1]},${KEY[k]}!important}`).join('\n') +
     '\nhtml.agc-anim,html.agc-anim *{cursor:none!important}\n#agcFx{position:fixed;left:0;top:0;width:48px;height:48px;pointer-events:none;z-index:2147483647;background:url(' + D + 'cursor-atlas.webp) 0 0/384px 144px no-repeat;display:none;will-change:transform}';
