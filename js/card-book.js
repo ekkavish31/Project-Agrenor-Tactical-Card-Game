@@ -41,6 +41,9 @@
       (items[cur] ||= []).push(...el.querySelectorAll(':scope > article, :scope > .bag-item-card'));
     }
     if (!found) return;
+    /* v98.758 · the selling price (when a card has one) → a number + gold coin badge on the card's bottom-right corner; the text it is read from is hidden by the CSS */
+    const priceOf = el => { const t = (el.querySelector('.gear-instance') || el.querySelector('button[data-sellg]') || el.querySelector('small.muted') || {}).textContent || ''; const m = t.match(/◉\s*([\d,]+)/); return m ? m[1] : null };
+    for (const list of Object.values(items)) for (const el of list) { if (el.querySelector('.cb-price')) continue; const v = priceOf(el); if (v) el.insertAdjacentHTML('beforeend', `<span class="cb-price" title="ราคาขาย">${v}<i></i></span>`) }
     const count = id => (items[id] || []).length;
     const tabs = TABS.filter(t => t.id !== 'event' || count('event') > 0);
     if (!tabs.some(t => t.id === tab)) tab = tabs[0].id;
