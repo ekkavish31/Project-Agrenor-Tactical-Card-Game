@@ -31,7 +31,19 @@
   const RCOL = ['#e03131', '#1971c2', '#2f9e44', '#f08c00', '#9c36b5', '#0c8599', '#c2255c', '#5c940d'];
   const $ = id => document.getElementById(id), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || 'null') || d } catch (e) { return d } };
-  const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) { } };
+  const write = (k, v) => { if (k === KEY || k === SKEY || k === RKEY) histNote(); try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) { } };
+  /* v98.754 · UNDO / REDO of everything you change in the sheet: the points, the ticks, the moved pictures, the pose sizes, the rulers. Every save is one step; the state before it is kept (80 steps, per character) */
+  const UNDO = [], REDO = []; let HLAST = '', HCHAR = null;
+  const histSnap = () => { try { return JSON.stringify({ D: DATA, S: DRAFT, R: RUL }) } catch (e) { return '' } };
+  function histNote() { const now = histSnap(); if (!HLAST) { HLAST = now; return } if (now === HLAST) return; UNDO.push(HLAST); if (UNDO.length > 80) UNDO.shift(); REDO.length = 0; HLAST = now }
+  function histSync(id) { if (HCHAR !== id) { HCHAR = id; UNDO.length = 0; REDO.length = 0 } HLAST = histSnap() }
+  function histGo(from, to) {
+    if (!from.length) return; const cur0 = histSnap(), s = from.pop(); to.push(cur0);
+    try { const o = JSON.parse(s); DATA = o.D || {}; DRAFT = o.S || {}; RUL = Object.assign({ on: true, center: true, ghost: false, lines: [], meas: [] }, o.R || {}) } catch (e) { return }
+    HLAST = s; try { localStorage.setItem(KEY, JSON.stringify(DATA)); localStorage.setItem(SKEY, JSON.stringify(DRAFT)); localStorage.setItem(RKEY, JSON.stringify(RUL)) } catch (e) { }
+    QA.S = QD(); QA.canvas = null; QA.P = null; QA.msg = ''; draw(); status();
+  }
+  const undo = () => histGo(UNDO, REDO), redo = () => histGo(REDO, UNDO);
   let DATA = read(KEY, {}), DRAFT = read(SKEY, {}), RUL = Object.assign({ on: true, center: true, ghost: false, lines: [], meas: [] }, read(RKEY, {}));
   const B = () => root.StudioBrowser, PA = () => root.ProportionAdjust;
   const akey = id => { id = String(id || ''); if (id === 'hero') return root.StudioVariants?.active === 'female' ? 'hero-female' : 'hero'; return id.replace(/^(ally|npc):/, '') };
@@ -61,7 +73,7 @@
     const e = entity(); if (!e) { cur = null; draw(); return }
     const c = { id: e.id, name: e.name, cells: {} }; cur = c;
     for (const [pose] of POSES) for (const [dir] of ROWS) { const ff = firstFrame(e, pose, dir); if (ff) c.cells[cellKey(pose, dir)] = mkCell(pose, dir, ff) }
-    importOld(c); draw(); status();
+    importOld(c); histSync(c.id); draw(); status();
     await Promise.all(Object.values(c.cells).map(async x => { try { x.img = await B().loadImage(x.file) } catch (er) { x.img = null } }));
     if (cur === c) { draw(); status() }
   }
@@ -196,6 +208,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const mkDirty = marksDirty();
     const swatches = `${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}`;
     let h = `<div class="ps-app"><div class="ps-top" id="psTop"><b class="ps-name">${esc(cur.name)}</b><div class="ps-next" id="psNext"></div><span class="sp" style="flex:1"></span>
+        <button type="button" class="act" id="psUndo" ${UNDO.length ? '' : 'disabled'} title="ย้อน (Ctrl+Z)">↶ ย้อน</button><button type="button" class="act" id="psRedo" ${REDO.length ? '' : 'disabled'} title="ทำซ้ำ (Ctrl+Y / Ctrl+Shift+Z)">↷ ทำซ้ำ</button>
         <button type="button" class="act ${SHOW.pts ? 'on' : ''}" id="psShowPts" title="แสดง/ซ่อนจุด datum บนภาพ">● จุด</button><button type="button" class="act ${SHOW.zone ? 'on' : ''}" id="psShowZone" title="โซนสีแบ่งส่วน: หัว · ลำตัว · ขา (ท่าที่มี คาง + เส้นตัดขา แล้ว)">🎨 โซนสี</button>
         <button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button>
         <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max="2.5" step=".05" value="${Z}"></label>
@@ -234,6 +247,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const back = () => { for (const [n, t, l] of keep.arr) { n.scrollTop = t; n.scrollLeft = l } scrollTo(keep.wx, keep.wy); const z = $('psZone'); if (z) { z.scrollLeft = keep.zl; z.scrollTop = keep.zt } const g = ps.querySelector('.ps-grid'); if (g) { g.scrollLeft = keep.gl; g.scrollTop = keep.gt } const s = $('psSide'); if (s) s.scrollTop = keep.st };
     back(); paintAll(); wire(ps); back();
   }
+  /* v98.754 · the height you can really SEE: the nearest scrolling ancestor of the sheet (inside Asset Studio it is the grid area, NOT the whole window — the grid's scroll bar sat below its bottom edge), the sheet itself in full screen, else the window */
+  function visibleH(ps) { for (let n = ps; n && n !== document.documentElement && n !== document.body; n = n.parentElement) { if (/(auto|scroll)/.test(getComputedStyle(n).overflowY) && n.clientHeight > 100) return n.clientHeight } return innerHeight }
   /* v98.753 · LOUPE: while you place / drag a point, a magnified view of the picture around the pointer + a cross-hair sits in the top-right corner of THAT pose's canvas */
   const LOUPE = 180, LZ = 6;
   function hideLoupes(except) { for (const l of document.querySelectorAll('#poseSheet .ps-loupe')) if (l.parentElement !== except) l.remove() }
@@ -318,11 +333,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   }
   function updNext() {
     const el = $('psNext'); if (!el) return;
-    for (const id of ['psHide', 'psClear']) { const b = $(id); if (b) b.disabled = !act }   /* follow the selected pose without a full redraw */
+    for (const id of ['psHide', 'psClear']) { const b = $(id); if (b) b.disabled = !act }
+    { const u = $('psUndo'), r = $('psRedo'); if (u) u.disabled = !UNDO.length; if (r) r.disabled = !REDO.length }   /* follow the selected pose without a full redraw */
     const box = $('psAdjBox'); if (box) { const hh = adjBar(); if (box._h !== hh) { box._h = hh; box.innerHTML = hh } }
     if (box) box.onclick = qaClick;
-    const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight; sd.style.top = hgt + 'px'; sd.style.maxHeight = 'calc(100vh - ' + (hgt + 8) + 'px)'
-      const gd = $('poseSheet')?.querySelector('.ps-grid'); if (gd) gd.style.maxHeight = 'calc(100vh - ' + (hgt + 18) + 'px)' }   /* v98.753 · the grid scrolls inside the screen: its sideways scroll bar is always visible (it sat below the fold at a high zoom) */
+    const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight, vh = visibleH($('poseSheet')); sd.style.top = hgt + 'px'; sd.style.maxHeight = Math.max(200, vh - hgt - 8) + 'px'
+      const gd = $('poseSheet')?.querySelector('.ps-grid'); if (gd) gd.style.maxHeight = Math.max(240, vh - hgt - 36) + 'px' }   /* v98.753 · the grid scrolls inside the screen: its sideways scroll bar is always visible (it sat below the fold at a high zoom) */
     if (tool === 'hand') { el.innerHTML = '✋ โหมดย้ายภาพ · ลากภาพในช่อง'; el._h = ''; return } const s = stepInfo();
     const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
     const html = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}`;
@@ -412,6 +428,10 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     $('psHide').onclick = () => { if (!act) return; const s = hidSet(); s.add(act); hidSave(s); act = null; draw() };
     $('psUnhideAll').onclick = () => { hidSave(new Set()); draw() };
     ps.querySelectorAll('[data-unhide]').forEach(b => b.onclick = () => { const s = hidSet(); s.delete(b.dataset.unhide); hidSave(s); draw() });
+    $('psUndo').onclick = undo; $('psRedo').onclick = redo;
+    if (!ps._uk) { ps._uk = 1; document.addEventListener('keydown', ev => {
+      if (!document.body.classList.contains('sheet-mode') || ev.target.closest?.('input,textarea,select,[contenteditable]')) return; const k = ev.key.toLowerCase();
+      if ((ev.ctrlKey || ev.metaKey) && k === 'z' && !ev.shiftKey) { ev.preventDefault(); undo() } else if ((ev.ctrlKey || ev.metaKey) && (k === 'y' || (k === 'z' && ev.shiftKey))) { ev.preventDefault(); redo() } }, true) }
     $('psShowPts').onclick = () => { SHOW.pts = !SHOW.pts; saveShow(); draw() }; $('psShowZone').onclick = () => { SHOW.zone = !SHOW.zone; saveShow(); draw() };
     $('psFull').onclick = () => { const e = document.fullscreenElement; if (e === ps) document.exitFullscreen?.(); else (ps.requestFullscreen?.() || Promise.reject()).catch(() => msg('เปิดเต็มจอไม่ได้ในหน้านี้ — ลองกด F11 ของเบราว์เซอร์')) };
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
