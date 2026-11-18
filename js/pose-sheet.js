@@ -120,7 +120,15 @@
 body.anim-mode main{grid-template-rows:auto minmax(0,1fr)}body.anim-mode main>#lineupDock{grid-column:1/-1;grid-row:1;margin:10px 12px 0}body.anim-mode main>#cats,body.anim-mode main>#gridWrap,body.anim-mode main>#detail{grid-row:2}
 body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet-mode main>#cats,body.sheet-mode main>#detail{display:none}body.sheet-mode main>#gridWrap{grid-column:1/-1}
 #poseSheet{display:none}body.sheet-mode #poseSheet{display:block}
-#poseSheet .ps-next{position:sticky;top:0;z-index:6;margin:0 0 8px;padding:8px 12px;border-radius:10px;background:#fff8e1;border:2px solid #e0b64a;font-size:16px;box-shadow:0 2px 8px #0003}#poseSheet .ps-next b{padding:2px 9px;border-radius:7px;color:#fff;margin-left:6px}#psTip{position:fixed;z-index:99999;pointer-events:none;padding:3px 9px;border-radius:7px;color:#fff;font:700 13px AgThai,system-ui,sans-serif;box-shadow:0 2px 6px #0006;white-space:nowrap}
+#poseSheet .ps-app{display:grid;grid-template-columns:268px minmax(0,1fr);grid-template-areas:"top top" "side zone";column-gap:12px;align-items:start}
+#poseSheet .ps-top{grid-area:top;position:sticky;top:0;z-index:30;background:#f4f2e8;border-bottom:1px solid #d6dccb;padding:6px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;box-shadow:0 2px 6px #0002}
+#poseSheet .ps-top .ps-name{font-size:17px;white-space:nowrap}
+#poseSheet .ps-side{grid-area:side;position:sticky;top:56px;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:6px;background:#f8f6ee;border:1px solid #d6dccb;border-radius:10px}
+#poseSheet .ps-side .ps-sh{font-weight:700;font-size:12.5px;color:#4a5b3f;margin-top:4px}#poseSheet .ps-side .ps-row{display:flex;flex-wrap:wrap;gap:4px}#poseSheet .ps-side label{font-size:13px;display:flex;gap:6px;align-items:center}
+#poseSheet .ps-side .ps-steps{display:flex;flex-direction:column;gap:3px}#poseSheet .ps-side .ps-steps button{display:flex;align-items:center;gap:7px;text-align:left;padding:4px 8px;font-size:13px}#poseSheet .ps-side .ps-steps .n{font-weight:700;opacity:.6;min-width:16px}
+#poseSheet .ps-zone{grid-area:zone;min-width:0;overflow-x:auto}
+#poseSheet:fullscreen{overflow:auto;background:#eef0e6;padding:0 10px 10px}#poseSheet:fullscreen .ps-top{top:0}
+#poseSheet .ps-next{flex:0 1 auto;padding:5px 12px;border-radius:10px;background:#fff8e1;border:2px solid #e0b64a;font-size:15px}#poseSheet .ps-next b{padding:2px 9px;border-radius:7px;color:#fff;margin-left:6px}#psTip{position:fixed;z-index:99999;pointer-events:none;padding:3px 9px;border-radius:7px;color:#fff;font:700 13px AgThai,system-ui,sans-serif;box-shadow:0 2px 6px #0006;white-space:nowrap}
 #poseSheet .ps-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}#poseSheet .ps-bar b{font-size:16px;margin-right:6px}
 #poseSheet .ps-steps{display:flex;flex-wrap:wrap;gap:4px}#poseSheet .ps-steps button{border:1px solid #ccd3bd;background:#fff;border-radius:999px;padding:3px 10px;font:inherit;font-size:12.5px;cursor:pointer}
 #poseSheet .ps-steps button.on{outline:2px solid #2f5d46;font-weight:700}#poseSheet .ps-steps i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
@@ -177,15 +185,25 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const ps = $('poseSheet'); if (!ps || !document.body.classList.contains('sheet-mode')) return;
     if (!cur) { ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
     const cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
-    let h = `<div class="ps-next" id="psNext"></div><div class="ps-bar"><b>${esc(cur.name)}</b><span class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${STEPS.map(([k, l, col]) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i>${l}</button>`).join('')}</span><span class="sp"></span>
-      <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max=".8" step=".05" value="${Z}"></label></div>
-      <div class="ps-tools"><button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button><button type="button" class="act" id="psCopySW" title="คัดลอกจุด datum ของท่ายืน (SW / NE) ไปให้ท่าที่เลือก (คลิกในช่องของท่านั้นก่อน)">📋 datum SW → ท่าที่เลือก</button><button type="button" class="act" id="psSnapAll" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น (192,360) ทุกท่าที่มีจุดเท้า">⤓ เข้าเส้นพื้นทุกท่า</button>
-        <span style="width:8px"></span><label><input type="checkbox" id="psRon" ${RUL.on ? 'checked' : ''}>ไม้บรรทัด</label><button type="button" class="act" id="psRadd" title="เพิ่มเส้นนอน (ลากเพื่อย้าย · ดับเบิลคลิกเพื่อลบ)">＋ เส้น</button><button type="button" class="act" id="psMadd" title="ตัววัด: 2 เส้นขนาน บอกระยะห่าง">＋ ตัววัด 2 เส้น</button><button type="button" class="act" id="psRclr">ล้างไม้บรรทัด</button>
-        <label><input type="checkbox" id="psCen" ${RUL.center ? 'checked' : ''}>เส้นกลางช่อง</label><label><input type="checkbox" id="psGho" ${RUL.ghost ? 'checked' : ''}>เงาท่ายืน SW</label><span class="sp" style="flex:1"></span>
-        <button type="button" class="act" id="psClear" ${act ? '' : 'disabled'}>ล้างจุดของท่าที่เลือก</button><button type="button" class="act" id="psCart" title="จุด/ติ๊ก/ไม้บรรทัด → 🛒 Cart (js/game-settings.js)">🛒 จุด/ติ๊ก ใส่ Cart</button>
+    /* v98.742 · LAYOUT: a sticky TOP BAR (name · next point · the tools used all the time) + a sticky SIDE BAR (the 12 points, the selected pose, the other tools) + the edit ZONE. ⛶ = full screen: only these three. */
+    const swatches = `${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}`;
+    let h = `<div class="ps-app"><div class="ps-top" id="psTop"><b class="ps-name">${esc(cur.name)}</b><div class="ps-next" id="psNext"></div><span class="sp" style="flex:1"></span>
+        <button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button>
+        <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max=".8" step=".05" value="${Z}"></label>
         <button type="button" class="act" id="psBake" ${moved ? '' : 'disabled'} title="เลื่อนพิกเซลจริงของทุกเฟรมในท่านั้น แล้วบันทึกเป็นภาพใหม่ → รอ Push">💾 บันทึกตำแหน่งภาพ${moved ? ' (' + moved + ')' : ''}</button>
-        <button type="button" class="act main" id="psSave" ${nd ? '' : 'disabled'} title="ขนาดที่ปรับ → js/character-scale-adjust-data.js">💾 บันทึกขนาดเข้าเกม${nd ? ' (' + nd + ')' : ''}</button></div>
-      <div class="ps-tools" style="margin-top:-2px;display:${RUL.on && (RUL.lines.length || RUL.meas.length) ? 'flex' : 'none'}">ไม้บรรทัด: ${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}</div>`;
+        <button type="button" class="act main" id="psSave" ${nd ? '' : 'disabled'} title="ขนาดที่ปรับ → js/character-scale-adjust-data.js">💾 บันทึกขนาดเข้าเกม${nd ? ' (' + nd + ')' : ''}</button>
+        <button type="button" class="act" id="psCart" title="จุด/ติ๊ก/ไม้บรรทัด → 🛒 Cart (js/game-settings.js)">🛒 จุด/ติ๊ก ใส่ Cart</button>
+        <button type="button" class="act" id="psFull" title="เต็มจอ: เห็นแค่แถบบน + แถบข้าง + พื้นที่แก้ไข (Esc = ออก)">⛶ เต็มจอ</button></div>
+      <div class="ps-side" id="psSide"><div class="ps-sh">จุดที่วาง (ตามลำดับ)</div><div class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${STEPS.map(([k, l, col], i) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i><span class="n">${i + 1}</span>${l.split(' · ')[0]}</button>`).join('')}</div>
+        <div class="ps-sh">ท่าที่เลือก</div><div id="psAdjBox"></div>
+        <button type="button" class="act" id="psCopySW" title="คัดลอกจุด datum ของท่ายืน (SW / NE) ไปให้ท่าที่เลือก (คลิกในช่องของท่านั้นก่อน)">📋 datum SW → ท่าที่เลือก</button>
+        <button type="button" class="act" id="psClear" ${act ? '' : 'disabled'}>ล้างจุดของท่าที่เลือก</button>
+        <button type="button" class="act" id="psSnapAll" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น (192,360) ทุกท่าที่มีจุดเท้า">⤓ เข้าเส้นพื้นทุกท่า</button>
+        <div class="ps-sh">ไม้บรรทัด</div><label><input type="checkbox" id="psRon" ${RUL.on ? 'checked' : ''}>เปิดไม้บรรทัด</label>
+        <div class="ps-row"><button type="button" class="act" id="psRadd" title="เพิ่มเส้นนอน (ลากเพื่อย้าย · ดับเบิลคลิกเพื่อลบ)">＋ เส้น</button><button type="button" class="act" id="psMadd" title="ตัววัด: 2 เส้นขนาน บอกระยะห่าง">＋ ตัววัด 2 เส้น</button><button type="button" class="act" id="psRclr">ล้างไม้บรรทัด</button></div>
+        <label><input type="checkbox" id="psCen" ${RUL.center ? 'checked' : ''}>เส้นกลางช่อง</label><label><input type="checkbox" id="psGho" ${RUL.ghost ? 'checked' : ''}>เงาท่ายืน SW</label>
+        <div class="ps-tools" style="margin:2px 0;display:${RUL.on && (RUL.lines.length || RUL.meas.length) ? 'flex' : 'none'}">สี: ${swatches}</div></div>
+      <div class="ps-zone" id="psZone">`;
     h += `<div class="ps-grid" style="grid-template-columns:34px repeat(${POSES.length},${W}px)"><div class="ps-h"></div>${POSES.map(([, l]) => `<div class="ps-h">${l}</div>`).join('')}`;
     for (const [dir, rl] of ROWS) {
       h += `<div class="ps-rl">${rl}</div>`;
@@ -199,9 +217,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
           <button type="button" data-b="sw" title="ใส่จุดทั้งหมดของท่ายืน ${dir} ทับท่านี้">📋 SW</button><button type="button" data-b="snap" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น">⤓ พื้น</button><button type="button" data-b="adj" title="เปิดหน้าต่างปรับสัดส่วน (บิดภาพ) — บันทึกเป็นภาพใหม่">🛠 ปรับ</button>${ox || oy ? `<span class="mv" title="ย้ายแล้ว ยังไม่บันทึก">ย้าย ${ox},${oy}</span>` : ''}</div>${valsHtml(ck)}</div>`;
       }
     }
-    h += `</div><div class="ps-msg" id="psMsg" role="status">${tool === 'hand' ? 'โหมด ✋: ลากภาพในช่องเพื่อย้าย' : 'คลิกบนภาพเพื่อวาง <b>' + STEP[step][1] + '</b> · ลากจุดเพื่อย้าย · ลูกศร = ขยับจุดที่เลือก 1 px · Delete = ลบจุด'} · กรอบแดง = ภาพจริง 384×384 (ขอบนอกกรอบจะถูกตัดตอนบันทึก) · เส้นเขียว = เส้นพื้น</div>`;
+    h += `</div><div class="ps-msg" id="psMsg" role="status">${tool === 'hand' ? 'โหมด ✋: ลากภาพในช่องเพื่อย้าย' : 'คลิกบนภาพเพื่อวาง <b>' + STEP[step][1] + '</b> · ลากจุดเพื่อย้าย · ลูกศร = ขยับจุดที่เลือก 1 px · Delete = ลบจุด'} · กรอบแดง = ภาพจริง 384×384 (ขอบนอกกรอบจะถูกตัดตอนบันทึก) · เส้นเขียว = เส้นพื้น</div></div></div>`;
+    /* v98.742 · re-drawing the sheet must not move the view: every scroll position (page, the sheet, the zone, the side bar) is put back, so you stay on the pose you are working on */
+    const keep = { arr: [], wx: scrollX, wy: scrollY, zl: $('psZone')?.scrollLeft || 0, zt: $('psZone')?.scrollTop || 0, st: $('psSide')?.scrollTop || 0 }; for (let n = ps; n; n = n.parentElement) keep.arr.push([n, n.scrollTop, n.scrollLeft]);
     ps.innerHTML = h; document.body.classList.toggle('ps-hand', tool === 'hand');
-    paintAll(); wire(ps);
+    const back = () => { for (const [n, t, l] of keep.arr) { n.scrollTop = t; n.scrollLeft = l } scrollTo(keep.wx, keep.wy); const z = $('psZone'); if (z) { z.scrollLeft = keep.zl; z.scrollTop = keep.zt } const s = $('psSide'); if (s) s.scrollTop = keep.st };
+    back(); paintAll(); wire(ps); back();
   }
   /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
   const stepInfo = () => { const i = STEPS.findIndex(s => s[0] === step), s = STEPS[Math.max(0, i)]; return { n: Math.max(0, i) + 1, all: STEPS.length, label: s[1], short: s[1].split(' · ')[0], col: s[2] } };
@@ -213,11 +234,14 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       : `<div style="margin-top:6px;font-size:13px;color:#7a5a00">ท่าที่เลือก <b>${esc(name)}</b> · วาง <b>คาง</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีปุ่มปรับสัดส่วน</div>`;
   }
   function updNext() {
-    const el = $('psNext'); if (!el) return; if (tool === 'hand') { el.hidden = true; return } el.hidden = false; const s = stepInfo();
-    const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
-    const html = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}${adjBar()}`;
-    if (el._h !== html) { el._h = html; el.innerHTML = html }   /* only when it changed (the button must survive a click) */
+    const el = $('psNext'); if (!el) return;
+    const box = $('psAdjBox'); if (box) { const hh = adjBar(); if (box._h !== hh) { box._h = hh; box.innerHTML = hh } }
     const ab = $('psAdjOpen'); if (ab) ab.onclick = () => openAdjust(act);
+    const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight; sd.style.top = hgt + 'px'; sd.style.maxHeight = 'calc(100vh - ' + (hgt + 8) + 'px)' }
+    if (tool === 'hand') { el.innerHTML = '✋ โหมดย้ายภาพ · ลากภาพในช่อง'; el._h = ''; return } const s = stepInfo();
+    const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
+    const html = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}`;
+    if (el._h !== html) { el._h = html; el.innerHTML = html }   /* only when it changed */
   }
   const paintAll = () => { updNext(); $('poseSheet')?.querySelectorAll('.ps-c[data-ck]').forEach(paint) };
   const ghostCache = new Map();
@@ -292,6 +316,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const msg = t => { const m = $('psMsg'); if (m) m.textContent = t };
     ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() });
     const zm = $('psZoom'); if (zm) zm.onchange = () => { Z = +zm.value; try { localStorage.setItem('pose-sheet.zoom', String(Z)) } catch (e) { } draw() };
+    $('psFull').onclick = () => { const e = document.fullscreenElement; if (e === ps) document.exitFullscreen?.(); else (ps.requestFullscreen?.() || Promise.reject()).catch(() => msg('เปิดเต็มจอไม่ได้ในหน้านี้ — ลองกด F11 ของเบราว์เซอร์')) };
+    if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
     $('psHand').onclick = () => { tool = tool === 'hand' ? 'mark' : 'hand'; draw() };
     $('psClear').onclick = () => { if (!act) return; const r = peek(act); if (r) { r.p = {}; r.ok = false; write(KEY, DATA) } pick = null; draw(); status() };
     $('psCart').onclick = () => pushMarks(); $('psSave').onclick = () => saveSizes(); $('psBake').onclick = () => bakeMoves();
