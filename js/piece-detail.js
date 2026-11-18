@@ -42,13 +42,15 @@
     }
     return HERO;
   }
+  let walkerBox = null;
   function drawWalker(q, ghost, shadow = true) {
     const p = P(walker.u, walker.v), H = heroSprite(); q.save(); q.globalAlpha = ghost ? .7 : 1;
     if (shadow) { q.fillStyle = '#0006'; q.beginPath(); q.ellipse(p.x, p.y, 17, 7, 0, 0, 7); q.fill() }
     if (H) {
       const b = H.box, vis = (b.y1 - b.y0 + 1) / H.im.naturalHeight, hpx = heroWorldPx() * vis * Z, k = hpx / (b.y1 - b.y0 + 1), w = (b.x1 - b.x0 + 1) * k;   /* v98.701 · the figure is drawn at the hero's REAL size on this kind of map (canvas px × the map's character multiplier), feet on the walker's point */
-      q.drawImage(ghost ? H.white : H.im, b.x0, b.y0, b.x1 - b.x0 + 1, b.y1 - b.y0 + 1, p.x - w / 2, p.y - hpx, w, hpx);
+      q.drawImage(ghost ? H.white : H.im, b.x0, b.y0, b.x1 - b.x0 + 1, b.y1 - b.y0 + 1, p.x - w / 2, p.y - hpx, w, hpx); if (!ghost) walkerBox = { x0: p.x - w / 2 - 6, x1: p.x + w / 2 + 6, y0: p.y - hpx - 6, y1: p.y + 14 };
     } else {
+      if (!ghost) walkerBox = { x0: p.x - 16, x1: p.x + 16, y0: p.y - 80, y1: p.y + 12 };
       q.fillStyle = ghost ? '#fff' : '#3c6fb0'; q.strokeStyle = ghost ? '#fff' : '#142840'; q.lineWidth = 2;
       q.beginPath(); q.roundRect(p.x - 11, p.y - 60, 22, 52, 9); q.fill(); if (!ghost) q.stroke();
       q.fillStyle = ghost ? '#fff' : '#f0c9a0'; q.beginPath(); q.arc(p.x, p.y - 68, 9, 0, 7); q.fill(); if (!ghost) q.stroke();
@@ -56,12 +58,14 @@
     q.restore();
   }
   function drawPiece(q, E, ov, alpha = 1) { q.save(); q.globalAlpha = alpha; q.translate(CX, CY); q.scale(Z, Z); D().drawTo(q, E, ov); q.restore() }
+  /* is there picture (opaque pixel) under the canvas point p? */
+  function artAt(p) { try { const E = D().item(key), ov = D().ov(key), c = document.createElement('canvas'); c.width = CW; c.height = CH; const q = c.getContext('2d', { willReadFrequently: true }); drawPiece(q, E, ov); const x = Math.round(p.x), y = Math.round(p.y); for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (x + dx >= 0 && y + dy >= 0 && x + dx < CW && y + dy < CH && q.getImageData(x + dx, y + dy, 1, 1).data[3] > 40) return true; return false } catch (e) { return true } }
   function overlaps(E, ov) {
     const c = document.createElement('canvas'); c.width = CW; c.height = CH; const q = c.getContext('2d', { willReadFrequently: true });
     try { const actor = document.createElement('canvas'); actor.width = CW; actor.height = CH; drawWalker(actor.getContext('2d'), false, false); drawPiece(q, E, ov); q.globalCompositeOperation = 'destination-in'; q.drawImage(actor, 0, 0); const d = q.getImageData(0, 0, CW, CH).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 100) return true; return false } catch (_) { return true }
   }
   const hints = {
-    walk: 'ลากบนภาพเพื่อย้ายคนทดสอบหน้า/หลัง (ชนขอบกรอบแดงแล้วเข้าไปไม่ได้ ไถไปตามขอบ)',
+    walk: 'ชี้ที่คนแล้วลาก = ย้ายคนทดสอบ (ทดสอบการบัง/การชน ชนกรอบแดงแล้วเข้าไม่ได้) · ชี้ที่ภาพแล้วลาก = ย้ายภาพ · ลากพื้นโล่ง = เลื่อนมุมมอง · ย้ายกรอบต้องเลือกโหมดกรอบก่อน',
     art: 'ลากบนภาพเพื่อเลื่อนเฉพาะภาพ Asset เทียบกับฐาน · กรอบทั้งสองอยู่ที่เดิม',
     order: 'ลากเพื่อย้ายกรอบฟ้า · วางให้ครอบฐานที่แตะพื้น ใช้ตัดสินหน้า/หลัง',
     block: 'ลากเพื่อย้ายกรอบแดง · วางเฉพาะส่วนที่ไม่ให้คนเดินทะลุ',
@@ -143,7 +147,7 @@
     const row = (id, label, v, mn, mx, st, fmt) => `<label class="pdr"><span>${label}</span><input type="range" id="${id}" min="${mn}" max="${mx}" step="${st}" value="${v}"><b id="${id}V">${fmt(v)}</b></label>`;
     const step = (f, label, cur) => `<div class="pdr"><span>${label} <b id="pd_${f}V">${cur}</b></span><span><button data-st="${f},-0.5">−</button><button data-st="${f},0.5">+</button></span></div>`;
     return `<div class="pdhead"><b>🔍 ${E.label || 'ชิ้นส่วน'}</b><div><button id="pdUndo">↶ ย้อน</button> <button id="pdClose">✓ ปิด</button></div></div>
-<div class="pdbody"><div class="pdview"><div class="pdtools">${[['walk', '👤 ทดสอบคน'], ['art', '✋ ย้ายภาพ'], ['order', '🟦 ย้ายกรอบฟ้า'], ['bo', '🖌 แปรงฟ้า'], ...(caps().block === false ? [] : [['block', '🟥 ย้ายกรอบแดง'], ['bb', '🖌 แปรงแดง']]), ['fit', '📐 ฐาน 3 จุด']].map(([k, n]) => `<button data-mode="${k}" aria-pressed="${mode === k}">${n}</button>`).join('')}<span class="pdzoom"><button id="pdZoomOut" title="ซูมออก (−)">−</button><b id="pdZoomV">${Math.round(Z / Z0 * 100)}%</b><button id="pdZoomIn" title="ซูมเข้า (+)">＋</button><button id="pdZoomReset" title="ขนาดเริ่มต้น">⟲</button></span></div><div id="pdBrushBar" class="pdtools" ${isBrush(mode) ? '' : 'hidden'}><button id="pdBr−" title="หัวแปรงเล็กลง">−</button><b id="pdBrN">${brushLabel()}</b><button id="pdBr+" title="หัวแปรงใหญ่ขึ้น">+</button><button id="pdBrDraw" aria-pressed="${!erase}">✏ วาด</button><button id="pdBrErase" aria-pressed="${erase}">🧽 ลบ</button><button id="pdBrFrom" title="เปลี่ยนกรอบสี่เหลี่ยมเดิมเป็นช่องกริด แล้วแก้ต่อได้">▦ เริ่มจากกรอบเดิม</button><button id="pdBrClear" title="ลบรูปร่างอิสระ กลับไปใช้กรอบสี่เหลี่ยมกว้าง/ลึก">↺ กลับเป็นสี่เหลี่ยม</button></div><label class="pdc"><input type="checkbox" id="pdSnap" ${snapOn ? 'checked' : ''}> 🧲 Snap เข้ากริด (ครึ่งช่อง) ตอนลากกรอบ</label><p id="pdDragHint" class="pdhint"></p><canvas id="pdCv" width="${CW}" height="${CH}"></canvas><small id="pdOffsets"></small></div><div class="pdside">
+<div class="pdbody"><div class="pdview"><div class="pdtools">${[['walk', '👆 ชี้ / ลาก (คนทดสอบ · ภาพ)'], ['order', '🟦 ย้ายกรอบฟ้า'], ['bo', '🖌 แปรงฟ้า'], ...(caps().block === false ? [] : [['block', '🟥 ย้ายกรอบแดง'], ['bb', '🖌 แปรงแดง']]), ['fit', '📐 ฐาน 3 จุด']].map(([k, n]) => `<button data-mode="${k}" aria-pressed="${mode === k}">${n}</button>`).join('')}<span class="pdzoom"><button id="pdZoomOut" title="ซูมออก (−)">−</button><b id="pdZoomV">${Math.round(Z / Z0 * 100)}%</b><button id="pdZoomIn" title="ซูมเข้า (+)">＋</button><button id="pdZoomReset" title="ขนาดเริ่มต้น">⟲</button></span></div><div id="pdBrushBar" class="pdtools" ${isBrush(mode) ? '' : 'hidden'}><button id="pdBr−" title="หัวแปรงเล็กลง">−</button><b id="pdBrN">${brushLabel()}</b><button id="pdBr+" title="หัวแปรงใหญ่ขึ้น">+</button><button id="pdBrDraw" aria-pressed="${!erase}">✏ วาด</button><button id="pdBrErase" aria-pressed="${erase}">🧽 ลบ</button><button id="pdBrFrom" title="เปลี่ยนกรอบสี่เหลี่ยมเดิมเป็นช่องกริด แล้วแก้ต่อได้">▦ เริ่มจากกรอบเดิม</button><button id="pdBrClear" title="ลบรูปร่างอิสระ กลับไปใช้กรอบสี่เหลี่ยมกว้าง/ลึก">↺ กลับเป็นสี่เหลี่ยม</button></div><label class="pdc"><input type="checkbox" id="pdSnap" ${snapOn ? 'checked' : ''}> 🧲 Snap เข้ากริด (ครึ่งช่อง) ตอนลากกรอบ</label><p id="pdDragHint" class="pdhint"></p><canvas id="pdCv" width="${CW}" height="${CH}" style="width:${CW}px!important;height:${CH}px!important;max-width:none!important"></canvas><small id="pdOffsets"></small></div><div class="pdside">
 <details class="pdhelp" open><summary>วิธีตั้งให้บังตัวละครถูก</summary><ol><li>เลือก “ย้ายภาพ” จัดภาพเทียบฐาน</li><li>เลือก “ย้ายกรอบฟ้า” วางครอบฐานที่แตะพื้น แล้วปรับกว้าง/ลึก</li><li>กรอบแดง = ส่วนที่ห้ามเดิน วางและปรับแยกจากกรอบฟ้าได้</li><li>เลือก “ทดสอบคน” ลากคนไปหลังพนัก/หน้าขา ดูว่าใครบังใคร</li></ol><small>กรอบฟ้าตัดสินหน้า/หลัง · สูง/เตี้ยกำหนดวิธีแสดงเมื่อถูกบัง<br>ปิดแล้วกด ✓ เสร็จที่แผงเดิม · ⬆ Push เพื่อใช้ทุกเครื่อง</small></details>
 <h4>รูปร่าง</h4>${row('pdS', 'ขนาด', Math.round((ov.s ?? 1) * 100), 30, 250, 1, v => v + '%')}${caps().rot === false ? '' : row('pdR', 'หมุน', ov.r || 0, -180, 180, 1, v => v + '°')}${caps().slant === false ? '' : row('pdIx', 'เฉียง ↗↙', Math.round((ov.ix ?? 1) * 100), 50, 200, 1, v => v + '%') + row('pdIy', 'เฉียง ↖↘', Math.round((ov.iy ?? 1) * 100), 50, 200, 1, v => v + '%')}
 <label class="pdc"><input type="checkbox" id="pdF" ${ov.f ? 'checked' : ''}> กลับด้านซ้าย-ขวา</label><button id="pdArtReset">คืนตำแหน่งภาพ</button>
@@ -197,11 +201,11 @@ ${caps().block === false ? '' : `<button id="pdSzReset" title="ระบาย�
     el('pdT').onchange = e => edit(o => { o.tall = e.target.value });
     dlg.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { const [f, d] = b.dataset.st.split(','); edit(o => { const base = f === 'sw' ? (o.sw ?? o.fw ?? .5) : f === 'sh' ? (o.sh ?? o.fh ?? .5) : (o[f] ?? .5); o[f] = Math.max(.5, Math.min(12, base + +d)) }) });
     /* v98.692 · "ปรับกรอบแดงตามกรอบฟ้า": the red frame is PAINTED over the whole blue area (the opposite of the old "blue = red"): blue cells (or the blue rectangle rounded onto the grid) are copied into the red zone, same offset, block turned on */
-    if (el('pdSzReset')) el('pdSzReset').onclick = () => { edit(o => { const zo = G().cellsOf(o.zo), cells = zo.length ? zo.map(c => [c[0], c[1]]) : (() => { /* v98.704 · round OUTWARD (floor / ceil) so the red area always covers the whole blue rectangle — rounding to the nearest cell left red smaller when the blue width is not a multiple of the grid (e.g. 4.4 → 4.0) */ const f = G().footprint({ ...o, zo: null, zb: null, orderU: 0, orderV: 0, blockU: 0, blockV: 0 }, 0, 0, false), h = H(), out = []; const i0 = Math.floor(f.u0 / h + 1e-6), i1 = Math.ceil(f.u1 / h - 1e-6), j0 = Math.floor(f.v0 / h + 1e-6), j1 = Math.ceil(f.v1 / h - 1e-6); for (let i = i0; i < i1; i++) for (let j = j0; j < j1; j++) out.push([i, j]); return out })(); o.zb = cells; o.blockU = o.orderU || 0; o.blockV = o.orderV || 0; o.fw = o.sw ?? o.fw ?? .5; o.fh = o.sh ?? o.fh ?? .5; o.block = true }, true); build(); paint(); readouts() };
+    if (el('pdSzReset')) el('pdSzReset').onclick = () => { edit(o => { /* v98.708 · EXACT copy of the blue frame: a painted blue shape → the same cells; a plain blue rectangle → the same rectangle (same width / depth / offset), so red = blue to the last decimal; brush it afterwards if you want a shape */ const zo = G().cellsOf(o.zo); if (zo.length) o.zb = zo.map(c => [c[0], c[1]]); else { delete o.zb; o.fw = o.sw ?? o.fw ?? .5; o.fh = o.sh ?? o.fh ?? .5 } o.blockU = o.orderU || 0; o.blockV = o.orderV || 0; o.block = true }, true); build(); paint(); readouts() };
     el('pdArtReset').onclick = () => { points = []; edit(o => { delete o.artX; delete o.artY }) };
     el('pdOrderReset').onclick = () => edit(o => { delete o.orderU; delete o.orderV });
     if (el('pdBlockReset')) el('pdBlockReset').onclick = () => edit(o => { delete o.blockU; delete o.blockV });
-    el('pdZoomIn').onclick = () => setZoom(Z * 1.2); el('pdZoomOut').onclick = () => setZoom(Z / 1.2); el('pdZoomReset').onclick = () => setZoom(Z0);
+    el('pdZoomIn').onclick = () => setZoom(Z * 1.2); el('pdZoomOut').onclick = () => setZoom(Z / 1.2); el('pdZoomReset').onclick = () => { fitCanvas(); setZoom(Z0) };
     cv.addEventListener('wheel', e => { e.preventDefault(); setZoom(Z * (e.deltaY < 0 ? 1.1 : 1 / 1.1)) }, { passive: false });
     if (!dlg._rz) { dlg._rz = true; addEventListener('resize', () => { if (dlg.open) { const z = Z; fitCanvas(); build(); setZoom(z) } }) }
     el('pdUndo').onclick = () => { const prev = undo.pop(); if (!prev) return; D().edit(key, o => { Object.keys(o).forEach(k => delete o[k]); Object.assign(o, prev) }, true); points = []; build() };
@@ -228,12 +232,14 @@ ${caps().block === false ? '' : `<button id="pdSzReset" title="ระบาย�
       if (e.button !== 0) return; e.preventDefault(); const p = at(e); cv.setPointerCapture(e.pointerId);
       if (mode === 'fit') { const i = points.findIndex(q => Math.hypot(q.x - p.x, q.y - p.y) <= 12); if (i >= 0) gesture = { kind: 'point', i, start: p, moved: false }; else if (points.length < 3) { points.push(p); paint() } return }
       if (isBrush(mode)) { const ov = D().ov(key), prop = propOf(mode); gesture = { kind: 'brush', first: true }; if (!G().cellsOf(ov[prop]).length && !erase) { const seed = rectCells(ov, mode); edit(o => { o[prop] = seed }, true); gesture.first = false } paintCells(mode, brushCells(p, mode), gesture.first); gesture.first = false; return }
-      gesture = { kind: mode, start: p, before: copy(D().ov(key)), moved: false }; if (mode === 'walk') moveWalker(p);
+      /* v98.708 · one pointer mode: press on the test person → move the person (collision / occlusion test) · press anywhere else on the picture → move the picture */
+      let kind = mode; if (mode === 'walk') { const b = walkerBox; kind = b && p.x >= b.x0 && p.x <= b.x1 && p.y >= b.y0 && p.y <= b.y1 ? 'walk' : artAt(p) ? 'art' : 'pan' }   /* person → person · on the picture → picture · empty ground → move the view */
+      gesture = { kind, start: p, before: copy(D().ov(key)), moved: false, cx: CX, cy: CY }; if (kind === 'walk') moveWalker(p);
     };
     cv.onpointermove = e => {
       const hp = at(e); if (isBrush(mode)) { hover = hp; if (gesture?.kind === 'brush') paintCells(mode, brushCells(hp, mode), false); else paint() }
       if (!gesture || gesture.kind === 'brush') return; const p = hp, d = gesture, dx = p.x - d.start.x, dy = p.y - d.start.y;
-      if (d.kind === 'walk') { moveWalker(p); return } if (!d.moved && Math.hypot(dx, dy) < 4) return;
+      if (d.kind === 'walk') { moveWalker(p); return } if (d.kind === 'pan') { CX = d.cx + dx; CY = d.cy + dy; paint(); return } if (!d.moved && Math.hypot(dx, dy) < 4) return;
       if (d.kind === 'point') { d.moved = true; points[d.i] = p; paint(); return }
       const first = !d.moved; d.moved = true; const a = inv(d.start.x, d.start.y), b = inv(p.x, p.y), before = d.before; points = [];
       edit(o => {
