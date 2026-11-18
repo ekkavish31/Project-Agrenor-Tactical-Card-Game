@@ -2632,7 +2632,7 @@
    ov = data.edit[key] || {},
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
-  <div class="art"><span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
+  <div class="art">${window.PieceDetail?.gauge?.(ov.chk)||''}<span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
   ${nudgeHtml}${sec('place','① วาง · ขนาด · หมุน',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <div class="row"><button id="aeFree" class="${ov.free?'on':''}" title="เปิด = ชิ้นนี้ลาก/ย้ายด้วยลูกศรได้อิสระ ไม่ดูดเข้ากริด ไม่หลบกรอบชิ้นข้างเคียง (ลูกศร = 2px ต่อครั้ง · Shift = 8px)">${ov.free?'✅':'⬜'} ย้ายอิสระ (ไม่แนบกริด)</button></div>
 `,1)}${groupHtml(1)}`;
@@ -3143,6 +3143,8 @@
     if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); render(); return }
     fn(ovOf(key)); clean(key); UX.persist(); render()
    },
+   check: key => String(key).startsWith('bld:') ? ((data.buildings[key.slice(4)] || {}).chk || {}) : ((data.edit[key] || {}).chk || {}),   /* v98.719 · review ticks (see PieceDetail.gauge) */
+   setCheck(key, f, v) { UX.checkpoint(); const bld = String(key).startsWith('bld:'), o = bld ? (data.buildings[key.slice(4)] ||= {}) : ovOf(key), c = { ...(o.chk || {}) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; if (!bld) clean(key); UX.persist(); render() },
    frames: window.ArtFrames ? {
     autoNote: 'ยังไม่มีค่าของภาพนี้ (ชิ้นนี้ยังไม่มีกรอบ ให้วางกรอบฟ้า/แดงก่อน)',
     state: key => { const E = frame.find(e => e.key === key); if (!E) return null; const AF = window.ArtFrames, o = data.edit[key] || {}, own = frOwn(o); return { own, tpl: AF.has(E.art), uses: frame.filter(e => e.art === E.art && !e.hidden && !frOwn(e.ov || {})).length } },

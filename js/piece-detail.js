@@ -157,6 +157,7 @@
 <section id="pdFitPanel" ${mode === 'fit' ? '' : 'hidden'}><h4>📐 ปรับมุมฐานแบบ Studio</h4><p class="pdhint">เลือกมุมฐานเดียวกัน ซ้าย → หน้าสุด → ขวา ไม่เลือกยอดพนักหรือจุดต่างระดับ</p><p id="pdFitMsg"></p><div class="pdtools"><button data-fit="balanced">ปรับ 2:1 (สมดุล)</button><button data-fit="height">รักษาความสูง</button><button data-fit="width">รักษาความกว้าง</button><button id="pdFitClear">วัดใหม่</button><button id="pdFitReset">คืนค่ามุมฐาน</button></div></section>
 ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint" id="pdFrState"></p><div class="pdr" style="display:flex;gap:6px;flex-wrap:wrap"><button id="pdFrSave" title="บันทึกกรอบฟ้า/แดง + ขนาดของภาพเทียบตัวเอก เป็นค่าของภาพนี้ — ทุกแมพที่ใช้ภาพนี้และไม่ได้แก้กรอบเองจะตามทันที · ชิ้นใหม่ของภาพนี้เริ่มที่ขนาดนี้">💾 บันทึกลงภาพนี้ (ทุกแมพ)</button><button id="pdFrUse" title="ทิ้งกรอบที่แก้เฉพาะชิ้นนี้ แล้วตามค่าของภาพ">↩ ใช้ค่าของภาพ</button>${D().frames.applyAll ? '<button id="pdFrAll" title="ชิ้นอื่นบนแมพนี้ที่ใช้ภาพเดียวกันแต่เคยแก้เฉพาะชิ้นไว้ จะทิ้งกรอบเดิมแล้วตามค่าของภาพทั้งหมด">⤵ ให้ทุกชิ้นของภาพนี้ตามค่าของภาพ</button>' : ''}</div>` : ''}<h4>กรอบพื้น</h4>${sides('order', '🟦 ขยาย/ลดกรอบฟ้า', G().cellsOf(ov.zo).length > 0)}<button id="pdOrderReset">คืนตำแหน่งกรอบฟ้า</button>
 ${caps().block === false ? '' : `<button id="pdSzReset" title="กรอบแดง = กรอบฟ้า + ขยายด้าน SE และ SW อีก 0.5 (เท่ากด + สองที) แล้วแก้ต่อได้">🟥 ปรับกรอบแดงตามกรอบฟ้า</button><label class="pdc"><input type="checkbox" id="pdB" ${ov.block ? 'checked' : ''}> 🟥 บล็อกเดิน</label>${sides('block', '🟥 ขยาย/ลดกรอบแดง', G().cellsOf(ov.zb).length > 0)}<button id="pdBlockReset">คืนตำแหน่งกรอบแดง</button>`}${caps().note ? `<p class="pdst">${caps().note}</p>` : ''}
+${D().check ? (() => { const c = D().check(key) || {}; const row = (f, col, t) => `<label class="pdc"><input type="checkbox" data-chk="${f}" ${c[f] ? 'checked' : ''}> <span style="color:${col}">■</span> ${t}</label>`; return `<h4>✔ ตรวจสอบแล้ว <small style="opacity:.7">(ติ๊กเองทีละข้อ · แสดงเป็นหลอดที่มุมบนขวาของแผงภาพ)</small></h4>${row('b', '#3c82ff', 'กรอบฟ้า ตรวจสอบแล้ว')}${row('r', '#e0435f', 'กรอบแดง ตรวจสอบแล้ว')}${row('s', '#f2c200', 'สัดส่วนเทียบตัวหลัก ตรวจสอบแล้ว')}` })() : ''}
 <h4>การบัง</h4><label class="pdc">ความสูง <select id="pdT"><option value="">อัตโนมัติ (จากชื่อ)</option><option value="tall"${ov.tall === 'tall' ? ' selected' : ''}>สูง</option><option value="low"${ov.tall === 'low' ? ' selected' : ''}>เตี้ย</option></select></label><p id="pdState" class="pdst"></p></div></div>`;
   }
   function css() {
@@ -219,6 +220,7 @@ ${caps().block === false ? '' : `<button id="pdSzReset" title="กรอบแ�
       else { nh = Math.max(.25, Hh + d); const k = (nh - Hh) / 2; dv += sd === 'sw' ? k : -k }
       const r3 = x => Math.round(x * 1000) / 1000; o[w] = r3(nw); o[h] = r3(nh); o[U] = r3(du); o[V] = r3(dv); if (bl) o.block = true
     }, true); build(); paint(); readouts() });
+    dlg.querySelectorAll('[data-chk]').forEach(b => b.onchange = () => D().setCheck(key, b.dataset.chk, b.checked));
     el('pdZoomIn').onclick = () => setZoom(Z * 1.2); el('pdZoomOut').onclick = () => setZoom(Z / 1.2); el('pdZoomReset').onclick = () => { fitCanvas(); setZoom(Z0) };
     cv.addEventListener('wheel', e => { e.preventDefault(); setZoom(Z * (e.deltaY < 0 ? 1.1 : 1 / 1.1)) }, { passive: false });
     if (!dlg._rz) { dlg._rz = true; addEventListener('resize', () => { if (dlg.open) { const z = Z; fitCanvas(); build(); setZoom(z) } }) }
@@ -267,5 +269,12 @@ ${caps().block === false ? '' : `<button id="pdSzReset" title="กรอบแ�
     cv.onpointerup = e => finish(e, false); cv.onpointercancel = e => finish(e, true); cv.onlostpointercapture = () => { gesture = null };
     paint(); readouts();
   }
-  window.PieceDetail = { open };
+  /* v98.719 · REVIEW GAUGE: three little cells at the top-right of a piece's panel — blue = blue frame checked · red = red frame checked · yellow = size next to the hero checked.
+     Each one is ticked by hand, separately, in the 🔍 detail window ("ตรวจสอบแล้ว"); the object keeps o.chk = { b, r, s } */
+  function gauge(chk) {
+    if (!document.getElementById('pdGaugeCss')) { const st = document.createElement('style'); st.id = 'pdGaugeCss'; st.textContent = '.pdg{position:absolute;top:5px;right:6px;display:flex;gap:3px;pointer-events:none}.pdg i{display:block;width:15px;height:8px;border-radius:2px;border:1px solid #ffffff55;background:#0006}.pdg i.b.on{background:#3c82ff;border-color:#9cc3ff}.pdg i.r.on{background:#e0435f;border-color:#ffb0bd}.pdg i.s.on{background:#f2c200;border-color:#fff1a0}.art{position:relative}'; document.head.append(st) }
+    const c = chk || {}; return `<span class="pdg" title="ตรวจแล้ว: ฟ้า ${c.b ? '✔' : '—'} · แดง ${c.r ? '✔' : '—'} · สัดส่วน ${c.s ? '✔' : '—'}"><i class="b ${c.b ? 'on' : ''}"></i><i class="r ${c.r ? 'on' : ''}"></i><i class="s ${c.s ? 'on' : ''}"></i></span>`;
+  }
+  window.PieceDetail = { open, gauge };
+
 })();

@@ -1241,7 +1241,7 @@ const PB_ART = (() => {
  }
 
  function tabArt(body, s) {
-  body.innerHTML = `<div class="art"><span class="th" id="aTh"></span><div><button id="aSwap">เปลี่ยนภาพ…</button> <button id="aDetail">🔍 แก้ละเอียด…</button><p class="sub" style="margin:6px 0 0">${propName(s)}</p></div></div>
+  body.innerHTML = `<div class="art">${window.PieceDetail?.gauge?.(s.chk) || ''}<span class="th" id="aTh"></span><div><button id="aSwap">เปลี่ยนภาพ…</button> <button id="aDetail">🔍 แก้ละเอียด…</button><p class="sub" style="margin:6px 0 0">${propName(s)}</p></div></div>
   ${sl('width','ความกว้างภาพ',s.width||120,30,700,5)}${sl('s','ขนาด',s.s||1,.3,2.5,.05,pct)}${slantRows(s)}
   <label class="chk"><input type="checkbox" id="aFlip" ${s.f?'checked':''}> กลับด้านภาพ</label>
   ${zRow('sz','ชั้นของจุดทำงาน',s.z||0,'เทียบกับของประดับของจุดนี้ · ของที่เลขมากกว่าจะทับ')}
@@ -1334,7 +1334,7 @@ const PB_ART = (() => {
    const i = sel[0],
     o = M.props[i];
    body.innerHTML = `<div class="row" style="margin-top:0"><button id="pBack">← ของประดับทั้งหมด</button></div><b class="sec">${propName(o)}</b>
-   <div class="art"><span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button> <button id="pDetail">🔍 แก้ละเอียด…</button></div></div>
+   <div class="art">${window.PieceDetail?.gauge?.(o.chk) || ''}<span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button> <button id="pDetail">🔍 แก้ละเอียด…</button></div></div>
    ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${slantRows(o)}${zRow('pz1','ชั้นของชิ้นนี้',o.z||0,o.owner?'ในจุดทำงานนี้ · จุดทำงาน = '+(stOf(o.owner)?.z||0):'ของประดับทั่วไป (ไม่อยู่ในชุดจุดทำงาน)')}
    <label class="chk"><input type="checkbox" id="pFlip" ${o.f?'checked':''}> กลับด้าน</label>${groupHtml(1)}
    <div class="row"><button id="pDup">ทำสำเนา</button><button id="pDel">ลบ (Delete)</button></div><div class="row"><button id="pSavePrefab">บันทึกเป็นชุด</button><button id="pUsePrefab">วางชุดที่บันทึก</button></div><p class="sub">ลากบนแผนที่เพื่อย้าย · ลูกศร = ขยับทีละ ¼ ช่อง · R หมุน · F กลับด้าน</p>`;
@@ -1461,6 +1461,8 @@ const PB_ART = (() => {
      dirty = true; save(); render()
     },
     get frameFields() { return STF },
+    check: key => { const o = isSt(key) ? stOfKey(key) : M.props[+key]; return o?.chk || {} },
+    setCheck(key, f, v) { const o = isSt(key) ? stOfKey(key) : M.props[+key]; if (!o) return; const c = { ...(o.chk || {}) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; dirty = true; save(); render() },
     drawTo(q, E, ov) { const main = g; g = q; try { q.save(); const p0 = project(0, 0); q.translate(-p0.x, -p0.y); const o = isSt(E.key) ? ov : ov; drawArt(isSt(E.key) ? stOfKey(E.key)?.art : ov.art, 0, 0, (isSt(E.key) ? stOfKey(E.key)?.width : ov.width) || (isSt(E.key) ? 120 : 110), (isSt(E.key) ? stOfKey(E.key)?.s : ov.s) || 1, isSt(E.key) ? stOfKey(E.key)?.f : ov.f, 0, null, o); q.restore() } catch (e) { } finally { g = main } }
    }
   })(),
