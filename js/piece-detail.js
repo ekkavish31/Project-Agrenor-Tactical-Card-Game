@@ -24,7 +24,12 @@
   /* v98.691 · the test person is the male hero, idle SW (assets/tactics/imported/idle-sw-mwcast2-m/frame-01.webp) — the blue capsule stays as a fallback while the picture loads */
   const HERO = { im: null, box: null, white: null };
   /* hero canvas size in map pixels: AssetSize.heroPx (the lineup / char-size setting) × the map-character multiplier of the map this window was opened from (village map → 'village', sub-map → 'place') */
-  function heroWorldPx() { let base = 93.6, m = 1; try { base = window.AssetSize?.heroPx?.('village') || 93.6 } catch (e) { } try { m = window.MapScale ? MapScale.get(window.PlaceBuild?.detail && D() === window.PlaceBuild.detail ? 'place' : 'village', window.PLACE) : 1 } catch (e) { } return base * (m || 1) }
+  function heroWorldPx() {
+    const place = !!(window.PlaceBuild?.detail && D() === window.PlaceBuild.detail);
+    /* v98.703 · sub-map: exactly the size village-place.html draws the hero at (hero px × the map's character scale × the lineup factor × PLACE_CHAR_K) · village map: AssetSize hero px × the village multiplier */
+    if (place && window.CharSize && typeof window.placeHeroScale === 'function') { try { return CharSize.VILLAGE_HERO_PX * window.placeHeroScale() * (window.PLACE_CHAR_K || 1) } catch (e) { } }
+    let base = 93.6, m = 1; try { base = window.AssetSize?.heroPx?.('village') || 93.6 } catch (e) { } try { m = window.MapScale ? MapScale.get('village') : 1 } catch (e) { } return base * (m || 1);
+  }
   function heroSprite() {
     if (!HERO.im) { HERO.im = new Image(); HERO.im.onload = () => { try { if (dlg && cv) paint() } catch (e) { } }; HERO.im.src = 'assets/tactics/imported/idle-sw-mwcast2-m/frame-01.webp' }
     const im = HERO.im; if (!im.complete || !im.naturalWidth) return null;
