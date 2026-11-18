@@ -1688,6 +1688,16 @@ setInterval(() => { try { if (!editing && active) reportLayout() } catch (e) { }
 /* v98.20 · play, don't press. Every work station, villager and the exit is something you walk up to and ACT on (big button / E / click); the station
    shortcut menu is gone. Several actions on one station = hold the big button for the ring of choices. (js/interactables.js + js/touch-controls.js) */
 function stationOutline(s) {
+ /* v98.733 · the white aura must sit ON the picture: the station's picture is drawn with its own geometry (offset artX/artY, slant, base fit …) — draw the aura inside the same transform */
+ const geo = (s.ix != null || s.iy != null || s.skx || s.sky || s.pm || s.artX || s.artY) && window.PieceGeometry ? s : null;
+ if (geo) {
+  const anchor = project(s.u, s.v); g.save();
+  try { g.translate(anchor.x, anchor.y); PieceGeometry.apply(g, geo); const ix = geo.ix ?? 1, iy = geo.iy ?? 1, tX = Math.tan((geo.skx || 0) * Math.PI / 180), tY = Math.tan((geo.sky || 0) * Math.PI / 180); if (ix !== 1 || iy !== 1) g.scale(ix, iy); if (tX || tY) g.transform(1, tY, tX, 1, 0, 0); g.translate(-anchor.x, -anchor.y); stationOutline1(s) } finally { g.restore() }
+  return
+ }
+ stationOutline1(s)
+}
+function stationOutline1(s) {
  const a = s.art, w = (s.width || 120) * (s.s || 1), p = project(s.u, s.v);
  if (!a || a.startsWith('code:')) { g.save(); g.strokeStyle = '#fff'; g.lineWidth = 3; g.globalAlpha = .9; g.beginPath(); g.ellipse(p.x, p.y, w * .42, w * .16, 0, 0, 7); g.stroke(); g.restore(); return }
  const im = imgOf(a); if (!im?.complete || !im.naturalWidth) return;
