@@ -275,7 +275,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const HKEY = 'pose-sheet.hidden', hidAll = () => { try { return JSON.parse(localStorage.getItem(HKEY)) || {} } catch (e) { return {} } };
   const hidSet = () => new Set(hidAll()[cur?.id] || []);
   const hidSave = set => { const o = hidAll(); if (set.size) o[cur.id] = [...set]; else delete o[cur.id]; try { localStorage.setItem(HKEY, JSON.stringify(o)) } catch (e) { } };
-  /* v98.768 · LOCK: a pose with its tick ON ("🔒 ล็อก" = the old "ตรวจแล้ว") cannot be changed by accident — no points, no move, no size, no adjust, no clear, no copy / snap — until the tick is taken off */
+  /* v98.769 · LOCK: a pose with its tick ON ("🔒 ล็อก" = the old "ตรวจแล้ว") cannot be changed by accident — no points, no move, no size, no adjust, no clear, no copy / snap — until the tick is taken off */
   const isLocked = ck => !!ck && okOf(ck);
   let flashT = 0;
   function flash(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#a4341c">🔒 ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2200) }
@@ -287,7 +287,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const mid2 = a => a && a.length ? [a.reduce((s, q) => s + q[0], 0) / a.length, a.reduce((s, q) => s + q[1], 0) / a.length] : null;
     const P = { ...P0, chin: P0.chin || mid2(P0.neckLine), crotch: P0.crotch || mid2(P0.crotchLine) };   /* zones need only the two lines; the old chin / crotch POINTS are the fallback */
     if (!P.chin || !P.crotch) return null;
-    /* v98.768 · the zones are cut by the LINES you drew (ProportionAdjust 'cuts'): the head side of the neck line = head, the far side of the crotch line = ALL legs, whatever direction the lines run (a lying pose: they run up-down) */
+    /* v98.769 · the zones are cut by the LINES you drew (ProportionAdjust 'cuts'): the head side of the neck line = head, the far side of the crotch line = ALL legs, whatever direction the lines run (a lying pose: they run up-down) */
     const lineOK = a => Array.isArray(a) && a.length >= 2, hp = P.top || (P.eyeL && P.eyeR ? [(P.eyeL[0] + P.eyeR[0]) / 2, (P.eyeL[1] + P.eyeR[1]) / 2] : null) || (lineOK(P.neckLine) && lineOK(P.crotchLine) ? (() => { const n = mid2(P.neckLine), h = mid2(P.crotchLine), dx = n[0] - h[0], dy = n[1] - h[1], l = Math.hypot(dx, dy) || 1; return [n[0] + dx / l * 12, n[1] + dy / l * 12] })() : P.chin), cuts = lineOK(P.neckLine) && lineOK(P.crotchLine) && hp ? { neck: P.neckLine, hip: P.crotchLine, head: hp } : null;
     const key = [c.fp, P.chin, P.crotch, cuts ? JSON.stringify([P.neckLine, P.crotchLine, hp]) : ''].join('|'); if (ZCACHE.has(key)) return ZCACHE.get(key); let out = null;
     try {
