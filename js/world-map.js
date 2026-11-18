@@ -1031,10 +1031,8 @@
     let mult = o.scene ? 1 : o.boss ? Math.round((BOSS_HP[foe] || 130) / base * 10) / 10 : Math.round((1.4 + dang * .8) * (elite ? 1.3 : 1) * (fierce && foe !== 'shadowWolf' ? 1.25 : 1) * 10) / 10;
     if (foe === 'shadowWolf') mult = Math.round((1.1 + dang * .5) * 10) / 10;
     const fs = window.Progression ? Progression.foeScale(Progression.heroLevel(WS.game())) : { hp: 1, atk: 1 };   /* v95.00: monsters grow a little with the hero */
-    /* v97.29 · the game's difficulty setting (⚙ ตั้งค่า · s.village.settings.difficulty — it only reached the old battles before) */
-    const DIFF = ({ easy: { hp: .8, atk: .8, gold: .9 }, hard: { hp: 1.25, atk: 1.2, gold: 1.2 } })[(() => { try { return WS.game().village.settings?.difficulty } catch (e) { return '' } })()] || { hp: 1, atk: 1, gold: 1 };
-    mult = Math.round(mult * fs.hp * DIFF.hp * 10) / 10; if (RS) mult = RS.mult;
-    let atk = Math.round((fierce ? 1.3 : 1) * fs.atk * DIFF.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6)); if (o.resume) hst = o.resume.hst;
+    mult = Math.round(mult * fs.hp * 10) / 10; if (RS) mult = RS.mult;
+    let atk = Math.round((fierce ? 1.3 : 1) * fs.atk * 100) / 100, hst = Math.max(20, Math.round(100 - S.fatigue * .6)); if (o.resume) hst = o.resume.hst;
     chatter('fight', .6);
     if (RS) { atk = RS.atk }
     if (!RS) await encounterFx(o.boss ? 'BOSS!' : o.ambush ? 'AMBUSH!' : fierce ? 'NIGHT TERROR!' : 'ENCOUNTER!');
@@ -1048,7 +1046,7 @@
     const roster = [...new Set(o.roster || G.FOES[here.biome] || G.FOES.grass)], wander = o.roster ? [] : ['bandit', 'wolf', 'bat', 'kobold', 'slime'].filter(k => !roster.includes(k)), used = { [foe]: 1 };
     for (let i = 1; !RS && i < n; i++) { let cand = roster.slice(); if (wander.length && Math.random() < .3) cand = cand.concat(wander);
       cand = cand.filter(k => (used[k] || 0) < 2); if (!cand.length) cand = roster.slice(); cand.sort((a, b) => ((used[a] || 0) - (used[b] || 0)) || (Math.random() - .5));
-      const k = cand[0]; used[k] = (used[k] || 0) + 1; group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * DIFF.hp * 10) / 10) }
+      const k = cand[0]; used[k] = (used[k] || 0) + 1; group.push(k + '*' + Math.round((1.2 + dang * .6) * (k === 'shadowWolf' ? .8 : 1) * fs.hp * 10) / 10) }
     const party = S.party.filter(p => p.hp > 0).map(p => p.key + ':' + p.hp + ':' + p.max + ':' + (p.order || 'charge') + ':' + (p.level || 1) + ':' + ((p.level || 1) >= CONTROL_LV ? 1 : 0)).join(',');   /* v97.15: Lv.3+ companions are commanded by the player */
     const hp0 = S.hp;   /* v98.41 · for titles: was the win flawless / a close call */
     const fighters = S.party.filter(p => p.hp > 0 && (!window.Injury || Injury.canFight(WS.game(), p.key))), heroQ = window.Progression ? '&' + Progression.battleParam(WS.game()) : '';   /* v95.00: level, weapon, stats → card battle */
@@ -1082,7 +1080,7 @@
     /* v98.41 · ฉายา: count the fight, award titles whose hidden condition is now true */
     let TM = {}; try { const T = window.Titles; if (T) { const g0 = WS.game(); { const ev = res.evolved || []; if (ev.length) { T.note(g0, 'evolve', ev.length); const k = ev.filter(e => e.dead).length; if (k) T.note(g0, 'evolveKill', k); window.Chaos?.seen(g0, ev) } } const got = T.battle(g0, { outcome: res.outcome, foe, boss: !!o.boss, elite, night, kills: res.kills || 0, hp0, hp1: S.hp, maxHp: S.maxHp, party: fighters.length, allyDown: (res.party || []).filter(r => r.hp <= 0).length }); TM = T.mods(g0); for (const d of got) { log('🏅 ได้รับฉายา «' + d.name + '» (' + T.TIERS[d.tier].name + ')'); toast('🏅 ฉายาใหม่ «' + d.name + '»'); if (d.tier >= 3) T.reveal(d) } if (got.length) WS.commit() } } catch (e) { }
     if (res.outcome === 'win') {
-      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (1 + (TM.gold || 0)) * (OBJ_GOLD[obj.split(':')[0]] || 1) * DIFF.gold); S.gold += gold; S.hp = Math.max(1, S.hp);
+      S.battles++; S.kills += res.kills || 0; const gold = o.boss ? 0 : Math.round((10 + dang * 30 + (elite ? 20 : 0)) * (night ? 1.5 : 1) * (1 + (TM.gold || 0)) * (OBJ_GOLD[obj.split(':')[0]] || 1)); S.gold += gold; S.hp = Math.max(1, S.hp);
       const loot = dropLoot(foe, here.biome, dang, o.boss, res.evolved); if (loot && (loot.length || Object.keys(loot).length)) window.Sfx?.play('item-get');
       { const hp = window.Offices?.perk(S, 'hunter') || 0; if (hp) { S.food += hp; log('➶ พรานหลวงได้เสบียง +' + hp) } }   /* v97.57 · office perk */
       /* v94.06 F2: experience — the hero and the companions who fought */

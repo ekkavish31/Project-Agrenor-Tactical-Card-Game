@@ -85,7 +85,7 @@
   const stiHtml = (k, title) => { const s = stiSrc(k); return s ? `<img class="sti" src="${s}" alt="" draggable="false"${title ? ` title="${title}"` : ''}>` : `<span${title ? ` title="${title}"` : ''}>${(FB.STATUS[k] || {}).icon || ''}</span>` };
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null, hoverU = null, pickU = null;   /* v98.358 · hoverU: the unit under the pointer (white edge + info window) · pickU: the unit last clicked (grey crystal over its head) */
   let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
-  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const wait = ms => new Promise(r => setTimeout(r, ms / SPD()));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const imgs = new Map(); function im(src) { let i = imgs.get(src); if (!i) { i = new Image(); i.src = src; imgs.set(src, i) } return i.complete && i.naturalWidth ? i : null }
 
@@ -325,9 +325,12 @@
   function shake(px, ms) { if (!CINE || window.BattlePolish?.shake === false) return; kick.shake = Math.max(kick.shake, px); kick.shakeT = performance.now(); kick.shakeDur = ms }
   function roll(deg) { if (CINE) kick.roll += deg }
   /* game clock: freezes during hit stop so poses, clips and effects hold for a beat */
-  let lag = 0, stopFrom = 0, stopTo = 0;
-  function now() { const t = performance.now(); return t < stopTo ? stopFrom - lag : t - lag }
-  function hitStop(ms) { if (!CINE) return; const t = performance.now(); if (t < stopTo) return; stopFrom = t; stopTo = t + ms; lag += ms }
+  /* v98.785 · BATTLE SPEED (⚙ ตั้งค่า · s.village.settings.speed: .75 / 1 / 1.5 / 2.2): the game clock runs `SPD()` × faster, the pauses (wait) and the walking shrink the same way, so poses, effects, hit stop and enemy turns all speed up together */
+  let spdAt = 0, spdV = 1;
+  function SPD() { const t = performance.now(); if (t - spdAt > 500) { spdAt = t; let v = 1; try { v = +window.WorldState?.game?.()?.village?.settings?.speed || 1 } catch (e) { } try { const q = +Q.get('speed'); if (q > 0) v = q } catch (e) { } spdV = Math.max(.5, Math.min(3, v)) } return spdV }
+  let gc = 0, gl = performance.now(), stopTo = 0;
+  function now() { const t = performance.now(); if (t < stopTo) { gl = t; return gc } gc += (t - gl) * SPD(); gl = t; return gc }
+  function hitStop(ms) { if (!CINE) return; const t = performance.now(); if (t < stopTo) return; now(); stopTo = t + ms / SPD() }
   function bars(on) {
     let top = document.getElementById('fbLbTop'), bot = document.getElementById('fbLbBot');
     if (!top) { for (const id of ['fbLbTop', 'fbLbBot']) { const d = document.createElement('div'); d.id = id; d.className = 'fb-lb'; document.body.append(d) } top = document.getElementById('fbLbTop'); bot = document.getElementById('fbLbBot') }
@@ -1458,7 +1461,7 @@
   function polyC(g, u, v) { if (window.FieldCellPoly) return FieldCellPoly(g, u, v); const L = window.FieldHeight ? FieldHeight.lift(u, v) : 0, F = window.projectFlat || project, P = (x, y) => { const q = F(x, y); return { x: q.x, y: q.y - L } }, a = P(u, v), b = P(u + 1, v), c = P(u + 1, v + 1), d = P(u, v + 1); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.lineTo(c.x, c.y); g.lineTo(d.x, d.y); g.closePath() }
   let last = 0;
   function step(t) {
-    const dt = Math.min(.1, Math.max(0, t - last) / 1000 || 0); last = t;
+    const dt = Math.min(.1, Math.max(0, t - last) / 1000 || 0) * SPD(); last = t;
     for (const u of st.units) u.walking = false;
     for (let k = anims.length - 1; k >= 0; k--) {
       const a = anims[k], u = a.unit, tgt = a.pts[a.i];

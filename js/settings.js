@@ -1,15 +1,14 @@
 // v15: Settings (⚙ in the top menu) + first-time tips.
-// • difficulty easy/normal/hard (enemy HP and damage) · battle animation speed · tips on/off · rename hero · replay tips
+// • battle animation speed (no difficulty setting — removed v98.785) · tips on/off · rename hero · replay tips
 // • tips show once each the first time you see the village, a battle, the adventure map and the deck builder
 (function(){
-const DEF={difficulty:'normal',speed:1,tips:true};
+const DEF={speed:1,tips:true};
 function S(){if(typeof s==='undefined'||!s.village)return {...DEF};s.village.settings||={...DEF};for(let k in DEF)s.village.settings[k]??=DEF[k];return s.village.settings}
-function apply(){let c=S();window.GAME_DIFFICULTY=c.difficulty;window.GAME_SPEED=c.speed||1}
+function apply(){let c=S();window.GAME_SPEED=c.speed||1}
 const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-window.openSettings=function(){let c=S(),D=window.TacticsCore?.DIFFICULTY||{};
+window.openSettings=function(){let c=S();
  villageDialog('ตั้งค่า',`<div class="settings-box">
  <label>ชื่อตัวเอก <span><b>${esc(window.heroName?.()||'')}</b> <button onclick="HeroIdentity.askHeroName(false);openSettings()">เปลี่ยนชื่อ</button></span></label>
- <label>ความยาก <select onchange="GameSettings.set('difficulty',this.value)">${['easy','normal','hard'].map(k=>`<option value="${k}" ${c.difficulty===k?'selected':''}>${D[k]?.name||k}${k==='easy'?' · ศัตรู HP/แรง −20%':k==='hard'?' · ศัตรู HP +25% แรง +20%':''}</option>`).join('')}</select></label>
  <label>ความเร็วแอนิเมชันต่อสู้ <select onchange="GameSettings.set('speed',+this.value)">${[[.75,'ช้า'],[1,'ปกติ'],[1.5,'เร็ว'],[2.2,'เร็วมาก']].map(([v,n])=>`<option value="${v}" ${c.speed==v?'selected':''}>${n}</option>`).join('')}</select></label>
  <label>ปุ่มควบคุมบนจอ (จอยสติ๊ก + ปุ่มคุย) <select onchange="try{localStorage.setItem('projectA.touchUI',this.value)}catch(e){}">${(()=>{let m='auto';try{m=localStorage.getItem('projectA.touchUI')||'auto'}catch(e){}return [['auto','อัตโนมัติ (แสดงบนจอสัมผัส)'],['on','แสดงเสมอ'],['off','ซ่อน']].map(([v,n])=>`<option value="${v}" ${m===v?'selected':''}>${n}</option>`).join('')})()}</select></label>
  <label>เสียงเอฟเฟกต์ <input type="range" min="0" max="1" step=".05" value="${window.BattlePolish?.volume??.65}" oninput="BattlePolish.set('volume',+this.value)"></label>
@@ -17,7 +16,7 @@ window.openSettings=function(){let c=S(),D=window.TacticsCore?.DIFFICULTY||{};
  <label>คำแนะนำครั้งแรก <span><input type="checkbox" ${c.tips?'checked':''} onchange="GameSettings.set('tips',this.checked)"> แสดง <button onclick="GameSettings.resetTips()">ดูคำแนะนำอีกครั้ง</button></span></label>
  <label>ลดความละเอียดอัตโนมัติเมื่อกระตุก (ภาพจะเบาลงเมื่อเครื่องช้า · ปกติปิดไว้) <span><input type="checkbox" ${(()=>{try{return localStorage.getItem('projectA.autoRes')==='1'?'checked':''}catch(e){return ''}})()} onchange="try{localStorage.setItem('projectA.autoRes',this.checked?'1':'0')}catch(e){};GameSettings&&alert('มีผลเมื่อโหลดหน้าใหม่')"> เปิด</span></label>
  <label>วัดประสิทธิภาพ (fps) <span><button onclick="GameSettings.perf()">📊 วัดประสิทธิภาพ</button></span></label>
- <p class="muted small">เดินด้วยจอยสติ๊กหรือแป้น W A S D / ลูกศร · ปุ่มใหญ่ (E หรือ Space) = คุย / เข้าประตู / ออก · ความยากมีผลกับการต่อสู้ครั้งถัดไป · เสียงและเพลงเริ่มหลังคลิกหรือกดปุ่มครั้งแรก · สำรอง/นำเข้าเซฟอยู่ท้ายหน้าเกม</p></div>`)};
+ <p class="muted small">เดินด้วยจอยสติ๊กหรือแป้น W A S D / ลูกศร · ปุ่มใหญ่ (E หรือ Space) = คุย / เข้าประตู / ออก · เสียงและเพลงเริ่มหลังคลิกหรือกดปุ่มครั้งแรก · สำรอง/นำเข้าเซฟอยู่ท้ายหน้าเกม</p></div>`)};
 const TIPS={
  village:['ยินดีต้อนรับสู่หมู่บ้าน','เดินทางด้วยปุ่ม <b>แผนที่</b> · โรงตีเหล็กใช้คราฟต์อาวุธ 9 ชนิด · ตลาดซื้อขายและจ้างเพื่อนร่วมทาง · ทางออกรอบหมู่บ้านพาไปผจญภัย (★ = ความยาก)'],
  battle:['การต่อสู้','คิวด้านซ้ายคือลำดับตามความเร็ว · ถึงตาตัวไหนใช้การ์ดของตัวนั้น: <b>เคลื่อนที่ได้ 2 ใบ</b> แต่ใบที่สองต้องยังไม่ใช้แอ็กชันและแลกสิทธิ์ต่อสู้ทั้งหมด · เดินแล้วเลือกทิศหัน · <b>แอ็กชันปกติ 2 ใบ</b> ชี้ศัตรูเพื่อดูความเสียหายล่วงหน้า · เวทที่กำหนดรอ CT และหลบวงร่ายได้ · สลบ 3 CT ยืนติดแล้วคลิกเพื่อช่วยฟื้น · ไอเทมสุ่ม 3 ใช้ 1 · Enter/Space = จบเทิร์น · ปุ่ม Auto ให้ AI เล่นแทน · พื้นและความสูงมีผล ชี้ช่องเพื่อดู'],
