@@ -186,13 +186,13 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!cur) { ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
     const cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
     /* v98.742 · LAYOUT: a sticky TOP BAR (name · next point · the tools used all the time) + a sticky SIDE BAR (the 12 points, the selected pose, the other tools) + the edit ZONE. ⛶ = full screen: only these three. */
+    const mkDirty = marksDirty();
     const swatches = `${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}`;
     let h = `<div class="ps-app"><div class="ps-top" id="psTop"><b class="ps-name">${esc(cur.name)}</b><div class="ps-next" id="psNext"></div><span class="sp" style="flex:1"></span>
         <button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button>
         <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max=".8" step=".05" value="${Z}"></label>
-        <button type="button" class="act" id="psBake" ${moved ? '' : 'disabled'} title="เลื่อนพิกเซลจริงของทุกเฟรมในท่านั้น แล้วบันทึกเป็นภาพใหม่ → รอ Push">💾 บันทึกตำแหน่งภาพ${moved ? ' (' + moved + ')' : ''}</button>
-        <button type="button" class="act main" id="psSave" ${nd ? '' : 'disabled'} title="ขนาดที่ปรับ → js/character-scale-adjust-data.js">💾 บันทึกขนาดเข้าเกม${nd ? ' (' + nd + ')' : ''}</button>
-        <button type="button" class="act" id="psCart" title="จุด/ติ๊ก/ไม้บรรทัด → 🛒 Cart (js/game-settings.js)">🛒 จุด/ติ๊ก ใส่ Cart</button>
+        <span id="psCartMsg" style="font-size:12.5px;color:#315d46"></span>
+        <button type="button" class="act main" id="psCartAll" ${moved || nd || mkDirty ? '' : 'disabled'} title="ที่เปลี่ยนทั้งหมด (ตำแหน่งภาพ · ขนาดเข้าเกม · จุด/ติ๊ก/ไม้บรรทัด) → 🛒 Cart รอ Push">🛒 ใส่ Cart${moved || nd || mkDirty ? ' (' + [moved ? 'ตำแหน่ง ' + moved : '', nd ? 'ขนาด ' + nd : '', mkDirty ? 'จุด/ติ๊ก' : ''].filter(Boolean).join(' · ') + ')' : ' · ไม่มีอะไรเปลี่ยน'}</button>
         <button type="button" class="act" id="psFull" title="เต็มจอ: เห็นแค่แถบบน + แถบข้าง + พื้นที่แก้ไข (Esc = ออก)">⛶ เต็มจอ</button></div>
       <div class="ps-side" id="psSide"><div class="ps-sh">จุดที่วาง (ตามลำดับ)</div><div class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${STEPS.map(([k, l, col], i) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i><span class="n">${i + 1}</span>${l.split(' · ')[0]}</button>`).join('')}</div>
         <div class="ps-sh">ท่าที่เลือก</div><div id="psAdjBox"></div>
@@ -320,7 +320,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
     $('psHand').onclick = () => { tool = tool === 'hand' ? 'mark' : 'hand'; draw() };
     $('psClear').onclick = () => { if (!act) return; const r = peek(act); if (r) { r.p = {}; r.ok = false; write(KEY, DATA) } pick = null; draw(); status() };
-    $('psCart').onclick = () => pushMarks(); $('psSave').onclick = () => saveSizes(); $('psBake').onclick = () => bakeMoves();
+    $('psCartAll').onclick = () => cartAll();
     $('psCopySW').onclick = () => { if (!act) { msg('คลิกเลือกท่าที่ต้องการก่อน (คลิกในช่องของท่านั้น) แล้วกดปุ่มนี้'); return } const n = copyFromSW(act); msg(n ? 'ใส่จุดของท่ายืน (' + cur.cells[act].dir + ') ให้ท่าที่เลือกแล้ว — ลากแก้ให้ตรงตัว' : 'ท่านี้เป็นท่าต้นแบบเอง หรือท่ายืนยังไม่มีจุด'); draw() };
     $('psSnapAll').onclick = () => { let n = 0; for (const ck of Object.keys(cur.cells)) if (snap(ck, true)) n++; write(KEY, DATA); draw(); msg(n ? 'จัดเท้าเข้าเส้นพื้น ' + n + ' ท่า — กด 💾 บันทึกตำแหน่งภาพ เพื่อเปลี่ยนจริง' : 'ยังไม่มีท่าที่วางจุดเท้าครบ') };
     $('psRon').onchange = ev => { RUL.on = ev.target.checked; saveRul(); draw() };
@@ -419,8 +419,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       }
       msg('กำลังบันทึก ' + items.length + ' ภาพ…'); await apply(items);
       for (const ck of done) { const r = peek(ck), c = cur.cells[ck], [ox, oy] = [r.ox || 0, r.oy || 0]; for (const k of Object.keys(r.p || {})) r.p[k] = [r.p[k][0] + ox, r.p[k][1] + oy]; r.ox = r.oy = 0; r.ok = false; r.fp = null }
-      write(KEY, DATA); msg('✔ บันทึกตำแหน่งภาพแล้ว · รอกด “Push ที่แก้” / Cart'); await new Promise(r => setTimeout(r, 400)); await load();
-    } catch (e) { msg('บันทึกตำแหน่งไม่สำเร็จ: ' + e.message) }
+      write(KEY, DATA); msg('✔ บันทึกตำแหน่งภาพแล้ว · รอกด “Push ที่แก้” / Cart'); await new Promise(r => setTimeout(r, 400)); await load(); return true
+    } catch (e) { msg('บันทึกตำแหน่งไม่สำเร็จ: ' + e.message); return false }
   }
 
   /* ---------- the adjust window (the old head / torso / legs sliders, live) ---------- */
@@ -464,12 +464,26 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   }
 
   /* ---------- push ---------- */
+  /* v98.744 · ONE button: everything that changed goes into the 🛒 Cart (waits for Push) — moved pictures, pose sizes, and the points / ticks / rulers */
+  function markSig() { try { return (localStorage.getItem(KEY) || '') + '|' + (localStorage.getItem(RKEY) || '') } catch (e) { return '' } }
+  function sigOf(s) { let x = 2166136261; for (let i = 0; i < s.length; i++) x = Math.imul(x ^ s.charCodeAt(i), 16777619); return (x >>> 0).toString(36) }
+  function marksDirty() { const s = markSig(); return s.length > 1 && sigOf(s) !== localStorage.getItem('pose-sheet.cart-sig') }
+  function markSent() { try { localStorage.setItem('pose-sheet.cart-sig', sigOf(markSig())) } catch (e) { } }
+  async function cartAll() {
+    const btn = $('psCartAll'); if (btn) btn.disabled = true; const done = [], fail = [], note = t => { const m = $('psCartMsg'); if (m) m.textContent = t };
+    const moved = Object.keys(cur?.cells || {}).filter(ck => { const [x, y] = off(ck); return x || y }).length;
+    try {
+      if (moved) { note('ตำแหน่งภาพ…'); (await bakeMoves() ? done : fail).push('ตำแหน่งภาพ') }
+      if (draftCount()) { note('ขนาด…'); (await saveSizes() ? done : fail).push('ขนาด') }
+      if (marksDirty()) { note('จุด/ติ๊ก…'); (await pushMarks() ? done : fail).push('จุด/ติ๊ก') }
+    } finally { draw(); note(fail.length ? '⚠ ไม่สำเร็จ: ' + fail.join(' · ') + (done.length ? ' · ใส่ Cart แล้ว: ' + done.join(' · ') : '') : done.length ? '✔ ใส่ Cart แล้ว: ' + done.join(' · ') + ' (รอ Push)' : '') }
+  }
   async function pushMarks() {
-    const G = root.GitHubPush; if (!G?.pushSettings) return msg('ไม่พบระบบ Push');
-    try { msg('กำลังใส่จุด/ติ๊กลง Cart…'); const r = await G.pushSettings([KEY], '📐 เรียงท่า: จุด datum + ติ๊กตรวจ'); msg('✔ ' + (r || 'บันทึกแล้ว')) } catch (e) { msg('ไม่สำเร็จ: ' + e.message) }
+    const G = root.GitHubPush; if (!G?.pushSettings) { msg('ไม่พบระบบ Push'); return false }
+    try { msg('กำลังใส่จุด/ติ๊กลง Cart…'); const r = await G.pushSettings([KEY], '📐 เรียงท่า: จุด datum + ติ๊กตรวจ'); markSent(); msg('✔ ' + (r || 'บันทึกแล้ว')); return true } catch (e) { msg('ไม่สำเร็จ: ' + e.message); return false }
   }
   async function saveSizes() {
-    const G = root.GitHubPush; if (!G?.commit) return msg('ไม่พบระบบ Push'); if (!draftCount()) return;
+    const G = root.GitHubPush; if (!G?.commit) { msg('ไม่พบระบบ Push'); return false } if (!draftCount()) return null;
     const draft = JSON.parse(JSON.stringify(DRAFT)), PATH = 'js/character-scale-adjust-data.js';
     const merge = text => {
       const i = text.indexOf('window.CHARACTER_SCALE_ADJUST'), a = text.indexOf('{', i), b = text.lastIndexOf('}'); const head = text.slice(0, i), data = JSON.parse(text.slice(a, b + 1));
@@ -482,8 +496,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       const r = await G.commit('📐 เรียงท่า: ปรับขนาดท่า', async h => { const t = await h.read(PATH); if (!t) throw new Error('อ่าน ' + PATH + ' ไม่ได้'); out = merge(t); return [{ path: PATH, content: out.text }] });
       if (out) root.CHARACTER_SCALE_ADJUST = out.data; DRAFT = {}; write(SKEY, DRAFT);
       try { const f = $('lineupDockFrame'); if (f?.src) f.contentWindow.location.reload() } catch (e) { }
-      draw(); msg('✔ ' + (r || 'บันทึกแล้ว') + ' · ขนาดท่าใช้ในเกมหลังเว็บอัปเดต');
-    } catch (e) { msg('บันทึกไม่สำเร็จ: ' + e.message) }
+      draw(); msg('✔ ' + (r || 'บันทึกแล้ว') + ' · ขนาดท่าใช้ในเกมหลังเว็บอัปเดต'); return true
+    } catch (e) { msg('บันทึกไม่สำเร็จ: ' + e.message); return false }
   }
 
   /* follow the character picked in the Animation tab / the lineup row */
