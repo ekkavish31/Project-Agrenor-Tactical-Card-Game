@@ -543,7 +543,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   /* ---------- baking moves / adjusts into new pictures (every frame of the pose) ---------- */
   const frameImg = async (f) => B().loadImage(f.file);
   const toURL = cv => cv.toDataURL('image/png');
-  function apply(items) { if (!root.StudioApplyFrames) throw new Error('ยังไม่พร้อมบันทึกภาพ (เปิดหน้า Asset Studio ใหม่)'); return root.StudioApplyFrames(items) }
+  function apply(items) { if (!root.StudioApplyFrames) throw new Error('ยังไม่พร้อมบันทึกภาพ (เปิดหน้า Asset Studio ใหม่)'); return Promise.resolve(root.StudioApplyFrames(items)).then(r => { UNDO.length = 0; REDO.length = 0; HLAST = histSnap(); return r }) }
   const mirrorCv = cv => { const o = document.createElement('canvas'); o.width = cv.width; o.height = cv.height; const g = o.getContext('2d'); g.translate(cv.width, 0); g.scale(-1, 1); g.drawImage(cv, 0, 0); return o };
   const flipOf = (c, f) => !!f.flip !== !!c.mirror;   /* is this frame shown mirrored in the cell */
   /* v98.759 · each pose is baked ON ITS OWN: a pose that cannot be baked (picture missing, or the move would push part of the figure out of the 384 × 384 frame) is SKIPPED with its reason, the others still go to the Cart.
@@ -612,7 +612,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       if (busy) return; busy = true; $('adjSave').disabled = true; try {
         const frames = c.clip.frames, items = []; let n = 0;
         for (const f of frames) { say('ปรับ ' + (++n) + '/' + frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), { canvas } = render(img, fl); items.push({ file: f.file, dataUrl: toURL(fl ? mirrorCv(canvas) : canvas) }); await new Promise(r => setTimeout(r, 0)) }
-        say('กำลังบันทึก…'); await apply(items); const r = peek(ck); if (r) { r.ok = false; r.fp = null } write(KEY, DATA); say('✔ บันทึกแล้ว · รอกด “Push ที่แก้” / Cart · จุดอาจเลื่อน ตรวจอีกครั้งในหน้าเรียงท่า'); setTimeout(async () => { box.remove(); await load() }, 900);
+        say('กำลังบันทึก…'); let moved = null; try { const first = render(c.img, c.flip); moved = P && Object.keys(P).length ? qaMovePoints(P, { res: first.res }) : null } catch (e) { moved = null }   /* where the points go with the bent picture (PA.mapPoint) */
+        await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } write(KEY, DATA); say('✔ บันทึกแล้ว · รอกด “Push ที่แก้” / Cart · จุดย้ายตามภาพแล้ว ตรวจอีกครั้งในหน้าเรียงท่า'); setTimeout(async () => { box.remove(); await load() }, 900);
       } catch (e) { say('ไม่สำเร็จ: ' + e.message); busy = false; $('adjSave').disabled = false }
     };
   }
