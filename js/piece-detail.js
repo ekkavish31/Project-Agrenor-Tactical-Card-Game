@@ -23,6 +23,8 @@
   }
   /* v98.691 · the test person is the male hero, idle SW (assets/tactics/imported/idle-sw-mwcast2-m/frame-01.webp) — the blue capsule stays as a fallback while the picture loads */
   const HERO = { im: null, box: null, white: null };
+  /* hero canvas size in map pixels: AssetSize.heroPx (the lineup / char-size setting) × the map-character multiplier of the map this window was opened from (village map → 'village', sub-map → 'place') */
+  function heroWorldPx() { let base = 93.6, m = 1; try { base = window.AssetSize?.heroPx?.('village') || 93.6 } catch (e) { } try { m = window.MapScale ? MapScale.get(window.PlaceBuild?.detail && D() === window.PlaceBuild.detail ? 'place' : 'village', window.PLACE) : 1 } catch (e) { } return base * (m || 1) }
   function heroSprite() {
     if (!HERO.im) { HERO.im = new Image(); HERO.im.onload = () => { try { if (dlg && cv) paint() } catch (e) { } }; HERO.im.src = 'assets/tactics/imported/idle-sw-mwcast2-m/frame-01.webp' }
     const im = HERO.im; if (!im.complete || !im.naturalWidth) return null;
@@ -39,7 +41,7 @@
     const p = P(walker.u, walker.v), H = heroSprite(); q.save(); q.globalAlpha = ghost ? .7 : 1;
     if (shadow) { q.fillStyle = '#0006'; q.beginPath(); q.ellipse(p.x, p.y, 17, 7, 0, 0, 7); q.fill() }
     if (H) {
-      const b = H.box, hpx = 104 * Z / 1.9, k = hpx / (b.y1 - b.y0 + 1), w = (b.x1 - b.x0 + 1) * k;   /* the visible figure is ~104 px tall at the default zoom, feet on the walker's point */
+      const b = H.box, vis = (b.y1 - b.y0 + 1) / H.im.naturalHeight, hpx = heroWorldPx() * vis * Z, k = hpx / (b.y1 - b.y0 + 1), w = (b.x1 - b.x0 + 1) * k;   /* v98.701 · the figure is drawn at the hero's REAL size on this kind of map (canvas px × the map's character multiplier), feet on the walker's point */
       q.drawImage(ghost ? H.white : H.im, b.x0, b.y0, b.x1 - b.x0 + 1, b.y1 - b.y0 + 1, p.x - w / 2, p.y - hpx, w, hpx);
     } else {
       q.fillStyle = ghost ? '#fff' : '#3c6fb0'; q.strokeStyle = ghost ? '#fff' : '#142840'; q.lineWidth = 2;
