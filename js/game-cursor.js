@@ -66,7 +66,7 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
     raf = 0; if (!on || !(kind === 'arrow' || HAND[kind])) return;
     if (kind === 'arrow') { const f = Math.floor(t / (GOLD_LOOP / GOLD_N)) % GOLD_N; el.style.backgroundPosition = `${-(f % 12) * 48}px ${-Math.floor(f / 12) * 48}px`; raf = requestAnimationFrame(loop); return }
     const h = HAND[kind]; let c = h.c, r = h.r;
-    if (seq) { const i = Math.max(0, Math.floor((Math.max(t, seq.t0) - seq.t0) / seq.ms)); if (i >= seq.frames.length) seq = null else { r = seq.r; c = seq.frames[i] } }
+    if (seq) { const i = Math.max(0, Math.floor((Math.max(t, seq.t0) - seq.t0) / seq.ms)); if (i >= seq.frames.length) seq = null; else { r = seq.r; c = seq.frames[i] } }
     el.style.backgroundPosition = `${-c * 48}px ${-r * 48}px`;
     if (seq) raf = requestAnimationFrame(loop);
   };
