@@ -521,26 +521,33 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function apply(items) { if (!root.StudioApplyFrames) throw new Error('ยังไม่พร้อมบันทึกภาพ (เปิดหน้า Asset Studio ใหม่)'); return root.StudioApplyFrames(items) }
   const mirrorCv = cv => { const o = document.createElement('canvas'); o.width = cv.width; o.height = cv.height; const g = o.getContext('2d'); g.translate(cv.width, 0); g.scale(-1, 1); g.drawImage(cv, 0, 0); return o };
   const flipOf = (c, f) => !!f.flip !== !!c.mirror;   /* is this frame shown mirrored in the cell */
+  /* v98.759 · each pose is baked ON ITS OWN: a pose that cannot be baked (picture missing, or the move would push part of the figure out of the 384 × 384 frame) is SKIPPED with its reason, the others still go to the Cart.
+     Before, one bad pose stopped all of them ("ไม่สำเร็จ: ตำแหน่งภาพ" and the number never went down). Returns { ok, err, skipped:[…] } */
   async function bakeMoves() {
-    const cells = Object.keys(cur.cells).filter(ck => { const [x, y] = off(ck); return x || y }); if (!cells.length) return; msg('กำลังเตรียมภาพ…');
-    const items = [], done = [];
-    try {
-      for (const ck of cells) {
-        const c = cur.cells[ck], [ox, oy] = off(ck), sx = c.flip ? -ox : ox, clip = c.clip, frames = clip.frames; let lost = 0;
+    const cells = Object.keys(cur.cells).filter(ck => { const [x, y] = off(ck); return x || y }); if (!cells.length) return { ok: true, skipped: [] };
+    msg('กำลังเตรียมภาพ…'); const items = [], done = [], skipped = [], nameOf = ck => { const c = cur.cells[ck]; return ((POSES.find(q => q[0] === c.pose) || [, c.pose])[1]) + ' ' + c.dir };
+    for (const ck of cells) {
+      try {
+        const c = cur.cells[ck], [ox, oy] = off(ck), sx = c.flip ? -ox : ox, clip = c.clip, frames = clip.frames, part = []; let lost = 0;
         for (const f of frames) {
-          const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้: ' + f.file); const cv = document.createElement('canvas'); cv.width = cv.height = SRC; const g = cv.getContext('2d'); g.drawImage(img, sx, oy, SRC, SRC);
-          /* any opaque pixel of the picture that would leave the frame? */
-          const t = document.createElement('canvas'); t.width = t.height = SRC; const tg = t.getContext('2d'); tg.drawImage(img, 0, 0, SRC, SRC); const d = tg.getImageData(0, 0, SRC, SRC).data;
-          for (let y = 0; y < SRC; y++) for (let x = 0; x < SRC; x++) if (d[(y * SRC + x) * 4 + 3] > 8) { const X = x + sx, Y = y + oy; if (X < 0 || X >= SRC || Y < 0 || Y >= SRC) lost++ }
-          items.push({ file: f.file, dataUrl: toURL(cv) });
+          const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้');
+          const cv = document.createElement('canvas'); cv.width = cv.height = SRC; const g = cv.getContext('2d'); g.drawImage(img, sx, oy, SRC, SRC);
+          /* any clearly visible pixel of the picture that would leave the frame? (the nearly transparent fringe does not count) */
+          const tc = document.createElement('canvas'); tc.width = tc.height = SRC; const tg = tc.getContext('2d'); tg.drawImage(img, 0, 0, SRC, SRC); const d = tg.getImageData(0, 0, SRC, SRC).data;
+          for (let y = 0; y < SRC; y++) for (let x = 0; x < SRC; x++) if (d[(y * SRC + x) * 4 + 3] > 40) { const X = x + sx, Y = y + oy; if (X < 0 || X >= SRC || Y < 0 || Y >= SRC) lost++ }
+          part.push({ file: f.file, dataUrl: toURL(cv) });
         }
-        if (lost > 40) throw new Error(`ท่า ${c.pose} ${c.dir}: เมื่อเลื่อนแล้วมีส่วนของตัว (${lost} พิกเซล) หลุดออกนอกกรอบ 384×384 · ปรับตำแหน่งหรือลดขนาดก่อน`);
-        done.push(ck);
-      }
+        if (lost > 60) throw new Error(`เมื่อเลื่อนแล้วมีส่วนของตัว ${lost} พิกเซลหลุดนอกกรอบ 384×384`);
+        items.push(...part); done.push(ck);
+      } catch (e) { skipped.push(nameOf(ck) + ': ' + e.message) }
+    }
+    if (!done.length) { const err = 'ข้ามทุกท่าที่ย้าย — ' + skipped.join(' · '); msg('บันทึกตำแหน่งไม่สำเร็จ: ' + err); return { ok: false, err, skipped } }
+    try {
       msg('กำลังบันทึก ' + items.length + ' ภาพ…'); await apply(items);
-      for (const ck of done) { const r = peek(ck), c = cur.cells[ck], [ox, oy] = [r.ox || 0, r.oy || 0]; for (const k of Object.keys(r.p || {})) r.p[k] = [r.p[k][0] + ox, r.p[k][1] + oy]; r.ox = r.oy = 0; r.ok = false; r.fp = null }
-      write(KEY, DATA); msg('✔ บันทึกตำแหน่งภาพแล้ว · รอกด “Push ที่แก้” / Cart'); await new Promise(r => setTimeout(r, 400)); await load(); return true
-    } catch (e) { msg('บันทึกตำแหน่งไม่สำเร็จ: ' + e.message); return false }
+      for (const ck of done) { const r = peek(ck), [ox, oy] = [r.ox || 0, r.oy || 0]; for (const k of Object.keys(r.p || {})) { const v = r.p[k]; r.p[k] = Array.isArray(v) && Array.isArray(v[0]) ? v.map(q => [q[0] + ox, q[1] + oy]) : Array.isArray(v) && typeof v[0] === 'number' ? [v[0] + ox, v[1] + oy] : v } r.ox = r.oy = 0; r.ok = false; r.fp = null }
+      write(KEY, DATA); msg('✔ บันทึกตำแหน่งภาพแล้ว ' + done.length + ' ท่า · รอกด “Push ที่แก้” / Cart' + (skipped.length ? ' · ข้าม ' + skipped.length + ' ท่า: ' + skipped.join(' · ') : '')); await new Promise(r => setTimeout(r, 400)); await load();
+      return { ok: true, skipped };
+    } catch (e) { const err = e.message || String(e); msg('บันทึกตำแหน่งไม่สำเร็จ: ' + err); return { ok: false, err, skipped } }
   }
 
   /* ---------- the adjust window (the old head / torso / legs sliders, live) ---------- */
@@ -590,13 +597,13 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function marksDirty() { const s = markSig(); return s.length > 1 && sigOf(s) !== localStorage.getItem('pose-sheet.cart-sig') }
   function markSent() { try { localStorage.setItem('pose-sheet.cart-sig', sigOf(markSig())) } catch (e) { } }
   async function cartAll() {
-    const btn = $('psCartAll'); if (btn) btn.disabled = true; const done = [], fail = [], note = t => { const m = $('psCartMsg'); if (m) m.textContent = t };
+    const btn = $('psCartAll'); if (btn) btn.disabled = true; const done = [], fail = [], why = [], note = t => { const m = $('psCartMsg'); if (m) m.textContent = t };
     const moved = Object.keys(cur?.cells || {}).filter(ck => { const [x, y] = off(ck); return x || y }).length;
     try {
-      if (moved) { note('ตำแหน่งภาพ…'); (await bakeMoves() ? done : fail).push('ตำแหน่งภาพ') }
+      if (moved) { note('ตำแหน่งภาพ…'); const r = await bakeMoves(); if (r.ok) { done.push('ตำแหน่งภาพ' + (r.skipped.length ? ' (ข้าม ' + r.skipped.length + ')' : '')); if (r.skipped.length) why.push('ข้าม: ' + r.skipped.join(' · ')) } else { fail.push('ตำแหน่งภาพ'); why.push(r.err) } }
       if (draftCount()) { note('ขนาด…'); (await saveSizes() ? done : fail).push('ขนาด') }
       if (marksDirty()) { note('จุด/ติ๊ก…'); (await pushMarks() ? done : fail).push('จุด/ติ๊ก') }
-    } finally { draw(); note(fail.length ? '⚠ ไม่สำเร็จ: ' + fail.join(' · ') + (done.length ? ' · ใส่ Cart แล้ว: ' + done.join(' · ') : '') : done.length ? '✔ ใส่ Cart แล้ว: ' + done.join(' · ') + ' (รอ Push)' : '') }
+    } finally { draw(); const extra = why.length ? ' — ' + why.join(' · ') : ''; note(fail.length ? '⚠ ไม่สำเร็จ: ' + fail.join(' · ') + (done.length ? ' · ใส่ Cart แล้ว: ' + done.join(' · ') : '') + extra : done.length ? '✔ ใส่ Cart แล้ว: ' + done.join(' · ') + ' (รอ Push)' + extra : ''); const m = $('psCartMsg'); if (m) { m.style.cssText = 'font-size:12.5px;color:' + (fail.length || why.length ? '#a4341c' : '#315d46') + ';max-width:46ch;white-space:normal;line-height:1.25'; m.title = extra.slice(3) } }
   }
   async function pushMarks() {
     const G = root.GitHubPush; if (!G?.pushSettings) { msg('ไม่พบระบบ Push'); return false }
