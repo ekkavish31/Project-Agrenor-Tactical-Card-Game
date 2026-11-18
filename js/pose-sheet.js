@@ -251,6 +251,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     back(); paintAll(); wire(ps); back();
   }
   /* v98.754 · the height you can really SEE: the nearest scrolling ancestor of the sheet (inside Asset Studio it is the grid area, NOT the whole window — the grid's scroll bar sat below its bottom edge), the sheet itself in full screen, else the window */
+  function gridMaxH(ps, gd) {
+    let sc = null; for (let n = ps; n && n !== document.documentElement && n !== document.body; n = n.parentElement) { if (/(auto|scroll)/.test(getComputedStyle(n).overflowY) && n.clientHeight > 100) { sc = n; break } }
+    const g = gd.getBoundingClientRect();
+    if (sc) { const s = sc.getBoundingClientRect(), startInContent = g.top - s.top + sc.scrollTop; return Math.max(240, Math.floor(sc.clientHeight - startInContent - 14)) }
+    return Math.max(240, Math.floor(innerHeight - (g.top + scrollY) - 14));
+  }
   function visibleH(ps) { for (let n = ps; n && n !== document.documentElement && n !== document.body; n = n.parentElement) { if (/(auto|scroll)/.test(getComputedStyle(n).overflowY) && n.clientHeight > 100) return n.clientHeight } return innerHeight }
   /* v98.755 · SELECT MODE: points hidden (● จุด off) and not moving the picture (✋ off) → the pointer is a plain arrow and a click only SELECTS the pose — nothing is placed */
   const selectMode = () => !SHOW.pts && tool !== 'hand';
@@ -356,7 +362,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const box = $('psAdjBox'); if (box) { const hh = adjBar(); if (box._h !== hh) { box._h = hh; box.innerHTML = hh } }
     if (box) box.onclick = qaClick;
     const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight, vh = visibleH($('poseSheet')); sd.style.top = hgt + 'px'; sd.style.maxHeight = Math.max(200, vh - hgt - 8) + 'px'
-      const gd = $('poseSheet')?.querySelector('.ps-grid'); if (gd) gd.style.maxHeight = Math.max(240, vh - hgt - 36) + 'px' }   /* v98.753 · the grid scrolls inside the screen: its sideways scroll bar is always visible (it sat below the fold at a high zoom) */
+      const gd = $('poseSheet')?.querySelector('.ps-grid'); if (gd) gd.style.maxHeight = gridMaxH($('poseSheet'), gd) + 'px' }   /* v98.753 · the grid scrolls inside the screen: its sideways scroll bar is always visible (it sat below the fold at a high zoom) */
     if (tool === 'hand') { el.innerHTML = '✋ โหมดย้ายภาพ · ลากภาพในช่อง'; el._h = ''; return } const s = stepInfo();
     const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
     const html = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}`;
@@ -452,6 +458,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       if ((ev.ctrlKey || ev.metaKey) && k === 'z' && !ev.shiftKey) { ev.preventDefault(); undo() } else if ((ev.ctrlKey || ev.metaKey) && (k === 'y' || (k === 'z' && ev.shiftKey))) { ev.preventDefault(); redo() } }, true) }
     $('psShowPts').onclick = () => { SHOW.pts = !SHOW.pts; saveShow(); draw() }; $('psShowZone').onclick = () => { SHOW.zone = !SHOW.zone; saveShow(); draw() };
     $('psFull').onclick = () => { const e = document.fullscreenElement; if (e === ps) document.exitFullscreen?.(); else (ps.requestFullscreen?.() || Promise.reject()).catch(() => msg('เปิดเต็มจอไม่ได้ในหน้านี้ — ลองกด F11 ของเบราว์เซอร์')) };
+    if (!ps._rz) { ps._rz = 1; addEventListener('resize', () => { try { updNext() } catch (e) { } }) }
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
     $('psHand').onclick = () => { tool = tool === 'hand' ? 'mark' : 'hand'; draw() };
     $('psClear').onclick = () => { if (!act) return; if (isLocked(act)) { flash(LOCKMSG); return } const r = peek(act); if (r) { r.p = {}; r.ok = false; write(KEY, DATA) } pick = null; draw(); status() };
