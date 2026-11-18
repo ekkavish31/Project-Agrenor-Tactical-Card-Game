@@ -90,14 +90,16 @@
   function counts() { if (!cur) return { ok: 0, all: 0 }; const ks = Object.keys(cur.cells); return { ok: ks.filter(okOf).length, all: ks.length } }
 
   /* ---------- numbers of a pose ---------- */
+  /* v98.747 · while the quick adjust (side bar) is live on a pose, its numbers and points are the points MOVED with the picture (QA.P), not the stored ones */
+  const Pof = ck => (QA.ck === ck && QA.P) ? QA.P : (peek(ck)?.p || {});
   function anchorOf(ck) {
-    const r = peek(ck), P = r?.p || {}, c = cur?.cells[ck]; if (!c) return null;
+    const r = peek(ck), P = Pof(ck), c = cur?.cells[ck]; if (!c) return null;
     if (c.pose === 'down') return P.footL || null;
     if (P.footL && P.footR) return [(P.footL[0] + P.footR[0]) / 2, (P.footL[1] + P.footR[1]) / 2];
     return P.footL || P.footR || null;
   }
   function vals(ck) {
-    const P = peek(ck)?.p || {}, an = anchorOf(ck), c = cur?.cells[ck]; if (!c || c.pose === 'down') return null; const d = (a, b) => a && b ? Math.hypot(a[0] - b[0], a[1] - b[1]) : null;
+    const P = Pof(ck), an = anchorOf(ck), c = cur?.cells[ck]; if (!c || c.pose === 'down') return null; const d = (a, b) => a && b ? Math.hypot(a[0] - b[0], a[1] - b[1]) : null;
     if (!an || !P.top || !P.chin) return { need: 'วางจุดเท้า + ยอดกะโหลก + คางก่อน' };
     const H = an[1] - P.top[1]; if (H < 20) return { need: 'ความสูงตัวผิดปกติ' };
     const o = { H, head: d(P.top, P.chin), sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR) };
@@ -253,23 +255,34 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   }
   /* v98.745 · QUICK ADJUST (the old 🛠 ปรับสัดส่วน sliders as ± buttons, live on the selected pose): head · torso height / width · shoulders · legs length / width */
   const QD = () => ({ head: 100, torso: 100, wTorso: 100, shoulder: 100, legs: 100, wLegs: 100 });
-  const QA = { ck: null, S: QD(), keep: true, canvas: null, t: 0, busy: false, msg: '' };
+  const QA = { ck: null, S: QD(), keep: true, canvas: null, P: null, t: 0, busy: false, msg: '' };
   const QROWS = [['head', 'หัว ใหญ่-เล็ก'], ['torso', 'ลำตัว สูง (แนวตั้ง)'], ['wTorso', 'ลำตัว หนา (แนวนอน)'], ['shoulder', 'ไหล่ กว้าง'], ['legs', 'ขา ยาว (แนวตั้ง)'], ['wLegs', 'ท่อนขา หนา (แนวนอน)']];
   const qaDirty = () => Object.values(QA.S).some(v => v !== 100);
   const qaScale = () => Object.fromEntries(Object.entries(QA.S).map(([k, v]) => [k, v / 100]));
-  function qaRender(img, flip, P) { const mm = sil(img, flip); if (!mm) return null; const r = PA().warp(img, mm, marksFor(P, mm), qaScale(), { keepHeight: QA.keep, flip, grow: Math.round(mm.H * .03), sharpen: 'auto' }); const o = document.createElement('canvas'); o.width = o.height = SRC; o.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]); return o }
-  function qaSync() { if (act !== QA.ck) { QA.ck = act; QA.S = QD(); QA.canvas = null; QA.msg = '' } }
-  function qaLive() { clearTimeout(QA.t); QA.t = setTimeout(() => { const c = cur?.cells[QA.ck], P = peek(QA.ck)?.p; try { QA.canvas = c?.img && P?.chin && P?.crotch && qaDirty() ? qaRender(c.img, c.flip, P) : null } catch (e) { QA.canvas = null; QA.msg = 'พรีวิวไม่สำเร็จ: ' + e.message; console.error('pose-sheet preview', e) } paintAll() }, 90) }
+  function qaRender(img, flip, P) { const mm = sil(img, flip); if (!mm) return null; const r = PA().warp(img, mm, marksFor(P, mm), qaScale(), { keepHeight: QA.keep, flip, grow: Math.round(mm.H * .03), sharpen: 'auto' }); const o = document.createElement('canvas'); o.width = o.height = SRC; o.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]); o.res = r; return o }
+  /* where every datum point goes with the picture (PA.mapPoint of the warp, minus the offset the preview is drawn at) */
+  function qaMovePoints(P, cv) {
+    const r = cv.res, mv = v => { const q = PA().mapPoint(r, v[0], v[1]); return [Math.round((q[0] - r.offset[0]) * 10) / 10, Math.round((q[1] - r.offset[1]) * 10) / 10] }, out = {};
+    for (const [k, v] of Object.entries(P)) out[k] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? mv(v) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(mv) : v;
+    return out;
+  }
+  /* the numbers under a pose follow the moved points in real time */
+  function refreshVals(ck) {
+    const cell = document.querySelector(`#poseSheet .ps-c[data-ck="${ck}"]`); if (!cell) return; const html = valsHtml(ck), old = cell.querySelector('.vals');
+    if (!html) { old?.remove(); return } const t = document.createElement('div'); t.innerHTML = html; const n = t.firstElementChild; if (old) old.replaceWith(n); else cell.append(n);
+  }
+  function qaSync() { if (act !== QA.ck) { const was = QA.ck; QA.ck = act; QA.S = QD(); QA.canvas = null; QA.P = null; QA.msg = ''; if (was) refreshVals(was) } }
+  function qaLive() { clearTimeout(QA.t); QA.t = setTimeout(() => { const c = cur?.cells[QA.ck], P = peek(QA.ck)?.p; try { QA.canvas = c?.img && P?.chin && P?.crotch && qaDirty() ? qaRender(c.img, c.flip, P) : null; QA.P = QA.canvas ? qaMovePoints(P, QA.canvas) : null } catch (e) { QA.canvas = null; QA.P = null; QA.msg = 'พรีวิวไม่สำเร็จ: ' + e.message; console.error('pose-sheet preview', e) } paintAll(); refreshVals(QA.ck) }, 90) }
   async function qaSave() {
     const ck = QA.ck, c = cur?.cells[ck], P = peek(ck)?.p; if (!c || !P?.chin || !qaDirty() || QA.busy) return; QA.busy = true; const say = t => { QA.msg = t; const m = $('qaMsg'); if (m) m.textContent = t };
     try {
       const items = []; let n = 0; for (const f of c.clip.frames) { say('ปรับ ' + (++n) + '/' + c.clip.frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), cv = qaRender(img, fl, P); items.push({ file: f.file, dataUrl: toURL(fl ? mirrorCv(cv) : cv) }); await new Promise(r => setTimeout(r, 0)) }
-      say('กำลังบันทึก…'); await apply(items); const r = peek(ck); if (r) { r.ok = false; r.fp = null } write(KEY, DATA); QA.S = QD(); QA.canvas = null; QA.busy = false; await load(); QA.msg = '✔ ใส่ Cart แล้ว (รอ Push) · จุดอาจเลื่อน ตรวจอีกครั้ง'; updNext()
+      say('กำลังบันทึก…'); const moved = QA.P; await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } write(KEY, DATA); QA.S = QD(); QA.canvas = null; QA.P = null; QA.busy = false; await load(); QA.msg = '✔ ใส่ Cart แล้ว (รอ Push) · จุดอาจเลื่อน ตรวจอีกครั้ง'; updNext()
     } catch (e) { QA.busy = false; say('ไม่สำเร็จ: ' + e.message) }
   }
   function qaClick(e) {
     const b = e.target.closest('[data-qd]'); if (b) { const [k, d] = b.dataset.qd.split(','); QA.S[k] = Math.max(60, Math.min(150, QA.S[k] + +d)); QA.msg = ''; qaLive(); updNext(); return }
-    if (e.target.closest('#qaReset')) { QA.S = QD(); QA.canvas = null; QA.msg = ''; paintAll(); return }
+    if (e.target.closest('#qaReset')) { QA.S = QD(); QA.canvas = null; QA.P = null; QA.msg = ''; paintAll(); refreshVals(QA.ck); return }
     if (e.target.closest('#qaSave')) return qaSave(); if (e.target.closest('#qaWin')) return openAdjust(act);
     if (e.target.id === 'qaKeep') { QA.keep = e.target.checked; qaLive() }
   }
@@ -321,8 +334,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         g.fillStyle = m.c; for (const y of [ya, yb]) { g.beginPath(); g.arc(14, y, rpick === 'm' + i ? 6 : 4.5, 0, 7); g.fill() } line(34, ya, 34, yb, m.c, 1, [3, 3]);
         const lbl = Math.round(d) + 'px' + (idleV && !idleV.need ? ' · ' + (d / idleV.H * 100).toFixed(1) + '% ของสูงยืน SW' : ''); g.font = '11px sans-serif'; g.textAlign = 'left'; const tx = 40, ty = (ya + yb) / 2 + 4; g.fillStyle = '#fffd'; g.fillRect(tx - 2, ty - 11, g.measureText(lbl).width + 6, 15); g.fillStyle = m.c; g.fillText(lbl, tx, ty) });
     }
-    /* the points of this pose */
-    const P = peek(ck)?.p || {};
+    /* the points of this pose (moved with the picture while the quick adjust is live) */
+    const P = Pof(ck);
     const dot = (key, v, col, label, sel) => { const [fx, fy] = toFrame(c, ck, v[0], v[1]), [x, y] = sc(fx, fy);
       g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 1.6; g.beginPath(); g.arc(x, y, sel ? 7 : 5, 0, 7); g.fill(); g.stroke();
       /* v98.743 · no text next to a point (it covered the picture) — the colour is enough, the side bar names the points */ };
