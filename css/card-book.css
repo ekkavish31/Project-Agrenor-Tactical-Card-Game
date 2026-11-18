@@ -64,7 +64,7 @@
 .cb-v2 .cb-pg .collection-tile,.cb-v2 .cb-pg .bag-item-card{align-self:start;height:fit-content;position:relative}
 .cb-v2 .cb-pg .collection-count{right:calc(var(--u)*.3);top:auto;bottom:auto}
 .cb-v2 .cb-pg{background:none!important;border:0!important;padding:0!important}
-/* v98.756 · no dark haze behind the cards: the card's own big drop-shadow (.gcard: 0 8px 18px) was cut at the edge of the page box (overflow:hidden) and showed as a dark rectangle on the paper */
+/* v98.757 · no dark haze behind the cards: the card's own big drop-shadow (.gcard: 0 8px 18px) was cut at the edge of the page box (overflow:hidden) and showed as a dark rectangle on the paper */
 .cb-v2 .cb-pg .gcard,.cb-v2 .cb-pg .adv-card,.cb-v2 .cb-pg .card-thumb,.cb-v2 .cb-pg .collection-tile,.cb-v2 .cb-pg .bag-item-card{filter:none!important;box-shadow:none!important}
 .cb-v2 .cb-close{right:8.6%;top:13.8%;width:calc(var(--u)*2.6);height:calc(var(--u)*2.6);filter:drop-shadow(0 0 2px #3a2208) drop-shadow(0 1px 1px #3a2208)}
 
