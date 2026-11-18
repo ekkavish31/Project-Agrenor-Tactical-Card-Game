@@ -155,7 +155,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 #poseSheet .ps-h{position:sticky;top:0;z-index:2;background:#edf0e6;padding:5px 8px;font-weight:700;font-size:13px;text-align:center;border-bottom:1px solid #d6dccb}
 #poseSheet .ps-rl{background:#edf0e6;font-weight:700;font-size:12.5px;padding:8px;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;border-right:1px solid #d6dccb}
 #poseSheet .ps-c{position:relative;border-right:1px solid #e6e9df;border-bottom:1px solid #e6e9df}#poseSheet .ps-c.act{box-shadow:inset 0 0 0 2px #2f5d46}
-#poseSheet .ps-c canvas{display:block;cursor:crosshair}body.ps-hand #poseSheet .ps-c canvas{cursor:grab}#poseSheet .ps-c .ctl{display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;padding:4px;font-size:12px}
+#poseSheet .ps-c canvas{display:block;cursor:crosshair}body.ps-hand #poseSheet .ps-c canvas{cursor:grab}body.ps-sel #poseSheet .ps-c canvas{cursor:default}#poseSheet .ps-c .ctl{display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;padding:4px;font-size:12px}
 #poseSheet .ps-c .ctl button{border:1px solid #ccd3bd;background:#fff;border-radius:6px;padding:1px 7px;font:inherit;cursor:pointer}#poseSheet .ps-c .ctl input[type=number]{width:54px;font:inherit;text-align:right}
 #poseSheet .ps-c .ctl label{display:flex;gap:3px;align-items:center;cursor:pointer}#poseSheet .ps-c .ctl .ok{color:#1f7a4d;font-weight:700}#poseSheet .ps-c .ctl .chg{color:#b5530b}#poseSheet .ps-c .ctl .mv{color:#8a4b06;font-weight:700}
 #poseSheet .vals{width:100%;font-size:11.5px;border-collapse:collapse;margin:0 0 4px}#poseSheet .vals td{padding:1px 6px;border-top:1px solid #eef0e6}#poseSheet .vals td:nth-child(2),#poseSheet .vals td:nth-child(3){text-align:right}
@@ -243,12 +243,14 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     h += `</div><div class="ps-msg" id="psMsg" role="status">${tool === 'hand' ? 'โหมด ✋: ลากภาพในช่องเพื่อย้าย' : 'คลิกบนภาพเพื่อวาง <b>' + STEP[step][1] + '</b> · ลากจุดเพื่อย้าย · ลูกศร = ขยับจุดที่เลือก 1 px · Delete = ลบจุด'} · กรอบแดง = ภาพจริง 384×384 (ขอบนอกกรอบจะถูกตัดตอนบันทึก) · เส้นเขียว = เส้นพื้น</div></div></div>`;
     /* v98.742 · re-drawing the sheet must not move the view: every scroll position (page, the sheet, the zone, the side bar) is put back, so you stay on the pose you are working on */
     const keep = ZOOMKEEP || (ps.querySelector('.ps-app') ? scrollNow(ps) : (SCROLLMEM || scrollNow(ps))); SCROLLMEM = null; ZOOMKEEP = null;
-    ps.innerHTML = h; document.body.classList.toggle('ps-hand', tool === 'hand');
+    ps.innerHTML = h; document.body.classList.toggle('ps-hand', tool === 'hand'); document.body.classList.toggle('ps-sel', selectMode());
     const back = () => { for (const [n, t, l] of keep.arr) { n.scrollTop = t; n.scrollLeft = l } scrollTo(keep.wx, keep.wy); const z = $('psZone'); if (z) { z.scrollLeft = keep.zl; z.scrollTop = keep.zt } const g = ps.querySelector('.ps-grid'); if (g) { g.scrollLeft = keep.gl; g.scrollTop = keep.gt } const s = $('psSide'); if (s) s.scrollTop = keep.st };
     back(); paintAll(); wire(ps); back();
   }
   /* v98.754 · the height you can really SEE: the nearest scrolling ancestor of the sheet (inside Asset Studio it is the grid area, NOT the whole window — the grid's scroll bar sat below its bottom edge), the sheet itself in full screen, else the window */
   function visibleH(ps) { for (let n = ps; n && n !== document.documentElement && n !== document.body; n = n.parentElement) { if (/(auto|scroll)/.test(getComputedStyle(n).overflowY) && n.clientHeight > 100) return n.clientHeight } return innerHeight }
+  /* v98.755 · SELECT MODE: points hidden (● จุด off) and not moving the picture (✋ off) → the pointer is a plain arrow and a click only SELECTS the pose — nothing is placed */
+  const selectMode = () => !SHOW.pts && tool !== 'hand';
   /* v98.753 · LOUPE: while you place / drag a point, a magnified view of the picture around the pointer + a cross-hair sits in the top-right corner of THAT pose's canvas */
   const LOUPE = 180, LZ = 6;
   function hideLoupes(except) { for (const l of document.querySelectorAll('#poseSheet .ps-loupe')) if (l.parentElement !== except) l.remove() }
@@ -414,9 +416,9 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       const tip = () => { let t = $('psTip'); if (!t) { t = document.createElement('div'); t.id = 'psTip'; t.hidden = true; document.body.append(t) } return t };
       ps.addEventListener('pointermove', ev => {
         const cvs = ev.target.closest?.('.ps-c canvas'), cell = cvs?.closest('.ps-c[data-ck]');
-        if (cvs && cell && tool !== 'hand' && cur?.cells[cell.dataset.ck]?.img) { const [sx, sy] = ptr(cvs, ev), [fx, fy] = unsc(sx, sy); paintLoupe(cell.dataset.ck, fx, fy, cell) } else if (!drag) hideLoupes(null);
+        if (cvs && cell && tool !== 'hand' && SHOW.pts && cur?.cells[cell.dataset.ck]?.img) { const [sx, sy] = ptr(cvs, ev), [fx, fy] = unsc(sx, sy); paintLoupe(cell.dataset.ck, fx, fy, cell) } else if (!drag) hideLoupes(null);
       });
-      ps.addEventListener('pointermove', ev => { const t = tip(), on = tool !== 'hand' && !drag && ev.target.closest?.('.ps-c canvas'); if (!on) { t.hidden = true; return } const s = stepInfo(); t.textContent = s.n + '/' + s.all + ' · ' + s.short; t.style.background = s.col; t.style.left = (ev.clientX + 16) + 'px'; t.style.top = (ev.clientY + 18) + 'px'; t.hidden = false });
+      ps.addEventListener('pointermove', ev => { const t = tip(), on = tool !== 'hand' && SHOW.pts && !drag && ev.target.closest?.('.ps-c canvas'); if (!on) { t.hidden = true; return } const s = stepInfo(); t.textContent = s.n + '/' + s.all + ' · ' + s.short; t.style.background = s.col; t.style.left = (ev.clientX + 16) + 'px'; t.style.top = (ev.clientY + 18) + 'px'; t.hidden = false });
       ps.addEventListener('pointerleave', () => { const t = $('psTip'); if (t) t.hidden = true; hideLoupes(null) }) }
     const msg = t => { const m = $('psMsg'); if (m) m.textContent = t };
     ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() });
@@ -457,6 +459,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       el.querySelector('[data-b="adj"]').onclick = () => openAdjust(ck);
       cv.ondblclick = ev => { const [sx, sy] = ptr(cv, ev), h = hitRuler(sx, sy); if (h) { (h.t === 'l' ? RUL.lines : RUL.meas).splice(h.i, 1); saveRul(); draw() } };
       cv.onpointerdown = ev => {
+        if (selectMode()) { act = ck; ps.querySelectorAll('.ps-c[data-ck]').forEach(x => x.classList.toggle('act', x.dataset.ck === ck)); hideLoupes(null); paintAll(); return }
         const [sx, sy] = ptr(cv, ev); act = ck; const rec = recOf(ck), P = rec.p;
         const hr = hitRuler(sx, sy); if (hr) { rpick = hr.t + hr.i; drag = { kind: 'rul', h: hr }; cv.setPointerCapture(ev.pointerId); paintAll(); return }
         if (tool === 'hand') { drag = { kind: 'hand', ck, sx, sy, ox: rec.ox || 0, oy: rec.oy || 0 }; cv.setPointerCapture(ev.pointerId); return }
