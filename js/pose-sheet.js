@@ -205,7 +205,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   }
   /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
   const stepInfo = () => { const i = STEPS.findIndex(s => s[0] === step), s = STEPS[Math.max(0, i)]; return { n: Math.max(0, i) + 1, all: STEPS.length, label: s[1], short: s[1].split(' · ')[0], col: s[2] } };
-  /* v98.740 · the selected pose (last clicked): once it has its chin + crotch line, the 🛠 re-proportion window (head · torso height / thickness · legs length / thickness) is one click away, right under the banner */
+  /* v98.741 · the selected pose (last clicked): once it has its chin + crotch line, the 🛠 re-proportion window (head · torso height / thickness · legs length / thickness) is one click away, right under the banner */
   function adjBar() {
     const c = act && cur?.cells[act]; if (!c) return '';
     const P = peek(act)?.p || {}, name = (POSES.find(q => q[0] === c.pose) || [, c.pose])[1] + ' ' + c.dir;
