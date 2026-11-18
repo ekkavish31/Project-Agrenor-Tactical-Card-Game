@@ -142,7 +142,7 @@
   }
   const brushLabel = () => (brush * (G()?.H || .5)).toFixed(1) + '×' + (brush * (G()?.H || .5)).toFixed(1) + ' ช่อง';
   function html(E, ov) {
-    /* v98.728 · size and base tilt are − / + buttons (no slider): [−5 −1 +1 +5] for the size in %, [−1 −0.5 +0.5 +1] for the tilt in degrees */
+    /* v98.729 · size and base tilt are − / + buttons (no slider): [−5 −1 +1 +5] for the size in %, [−1 −0.5 +0.5 +1] for the tilt in degrees */
     const zrow = (k, label, txt, steps) => `<div class="pdr pdz"><span>${label} <b id="pdz-${k}">${txt}</b></span><span class="pdzb" style="display:flex;gap:4px">${steps.map(d => `<button type="button" data-zz="${k}" data-d="${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</span></div>`;
     const row = (id, label, v, mn, mx, st, fmt) => `<label class="pdr"><span>${label}</span><input type="range" id="${id}" min="${mn}" max="${mx}" step="${st}" value="${v}"><b id="${id}V">${fmt(v)}</b></label>`;
     /* v98.712 · grow / shrink a frame ONE SIDE at a time (all 4 sides of the diamond): u+ = SE ↘ · v+ = SW ↙ · u− = NW ↖ · v− = NE ↗ — the opposite side stays where it is */
