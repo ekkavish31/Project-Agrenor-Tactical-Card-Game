@@ -1429,8 +1429,19 @@ const PB_ART = (() => {
    let curKey = '';
    const isSt = k => String(k).startsWith('st:'), stOfKey = k => M.stations.find(x => x.id === String(k).slice(3));
    const STF = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'zb', 'fw', 'fh', 'blockU', 'blockV'];
-   const stView = s => { const o = { ...s }; if (o.sw == null && o.fw == null && !(o.zo && o.zo.length)) { o.sw = s.w * 2; o.sh = s.d * 2 } if (o.fw == null && !(o.zb && o.zb.length)) { o.fw = s.w * 2; o.fh = s.d * 2 } o.block = s.block !== false; return o };
-   const stMaterialize = s => { const v = stView(s); for (const k of ['sw', 'sh', 'fw', 'fh']) if (s[k] == null) s[k] = v[k]; if (s.block == null) s.block = true };
+   /* v98.723 · stations can follow their PICTURE's frame template too (ArtFrames keyed by s.art): own frame fields (or s.fo) win, then the template, then the old box (±w ±d) */
+   const STFR = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'zb', 'fw', 'fh', 'blockU', 'blockV', 'block'];
+   const stOwn = s => !!s.fo || STFR.some(k => s[k] != null && !(Array.isArray(s[k]) && !s[k].length));
+   const stTpl = s => !!(window.ArtFrames && !stOwn(s) && ArtFrames.has(s.art));
+   const stBase = s => stTpl(s) ? ArtFrames.effective({ ...s, width: s.width || 120 }) : s;
+   const stView = s0 => { const s = stBase(s0), o = { ...s }; if (o.sw == null && o.fw == null && !(o.zo && o.zo.length)) { o.sw = s0.w * 2; o.sh = s0.d * 2 } if (o.fw == null && !(o.zb && o.zb.length)) { o.fw = s0.w * 2; o.fh = s0.d * 2 } o.block = s.block !== false; return o };
+   const stMaterialize = s => { const v = stView(s); for (const k of STFR) if (s[k] == null && v[k] != null) s[k] = Array.isArray(v[k]) ? v[k].map(c => [...c]) : v[k]; if (s.block == null) s.block = true; s.fo = true };
+   const stFrames = {
+    autoNote: 'ตามกรอบเดิมของจุดนี้',
+    state: key => { const s = stOfKey(key); if (!s || !window.ArtFrames) return null; return { own: stOwn(s), tpl: ArtFrames.has(s.art), uses: M.stations.filter(x => x.art === s.art && !stOwn(x)).length } },
+    saveToArt: key => { const s = stOfKey(key), AF = window.ArtFrames; if (!s || !AF) return; checkpoint(); AF.saveFrom({ ...stView(s), art: s.art, width: s.width || 120, s: s.s, f: s.f }); recSize({ art: s.art, width: s.width || 120, s: s.s }); for (const k of [...STFR, 'fo']) delete s[k]; dirty = true; save(); render() },
+    useArt: key => { const s = stOfKey(key); if (!s) return; checkpoint(); for (const k of [...STFR, 'fo']) delete s[k]; dirty = true; save(); render() }
+   };
    const propDetail = {
     caps: { rot: false, slant: false, note: 'แมพย่อย: ยังไม่ตั้งกรอบ = เรียงตามความลึก (y) เหมือนเดิม · กรอบฟ้า = ใครอยู่หน้า/หลังชิ้นนี้ (กฎเดียวกับหมู่บ้าน) · กรอบแดง = ส่วนที่ห้ามเดิน (ติ๊ก "บล็อกเดิน" ถึงจะบล็อก)' },   /* v98.712 · props have the red (walk-block) frame too */
     item: key => { const o = M.props[+key]; return o ? { key, label: propName(o), ax: 0, ay: 0 } : null },
@@ -1451,7 +1462,7 @@ const PB_ART = (() => {
    };
    return {
     get caps() { return isSt(curKey) ? { rot: false, slant: false, note: 'จุดทำงาน: กรอบฟ้า = ใครอยู่หน้า/หลังแผงนี้ · กรอบแดง = ส่วนที่ห้ามเดิน (ค่าเริ่มต้น = กรอบเดิมของจุดนี้) · ติ๊ก "บล็อกเดิน" ออก = เดินทะลุได้' } : propDetail.caps },
-    get frames() { return isSt(curKey) ? null : propDetail.frames },
+    get frames() { return isSt(curKey) ? (window.ArtFrames ? stFrames : null) : propDetail.frames },
     item: key => { curKey = String(key); if (isSt(key)) { const s = stOfKey(key); return s ? { key, label: s.name || propName(s), ax: 0, ay: 0 } : null } return propDetail.item(key) },
     ov: key => { curKey = String(key); if (isSt(key)) { const s = stOfKey(key); return s ? stView(s) : {} } return propDetail.ov(key) },
     edit(key, fn, cp) {
