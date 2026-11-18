@@ -186,7 +186,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 
   /* v98.748 · every scroll position that matters (page, every scrolling ancestor of the sheet, the zone, the side bar) — kept across a redraw, and across a moment where the sheet is emptied (no character selected for an instant) */
   let SCROLLMEM = null, ZOOMKEEP = null;
-  function scrollNow(ps) { const k = { arr: [], wx: scrollX, wy: scrollY, zl: $('psZone')?.scrollLeft || 0, zt: $('psZone')?.scrollTop || 0, st: $('psSide')?.scrollTop || 0 }; for (let n = ps; n; n = n.parentElement) k.arr.push([n, n.scrollTop, n.scrollLeft]); return k }
+  function scrollNow(ps) { const g = ps.querySelector('.ps-grid'), k = { gl: g ? g.scrollLeft : 0, gt: g ? g.scrollTop : 0, arr: [], wx: scrollX, wy: scrollY, zl: $('psZone')?.scrollLeft || 0, zt: $('psZone')?.scrollTop || 0, st: $('psSide')?.scrollTop || 0 }; for (let n = ps; n; n = n.parentElement) k.arr.push([n, n.scrollTop, n.scrollLeft]); return k }
   function draw() {
     const ps = $('poseSheet'); if (!ps || !document.body.classList.contains('sheet-mode')) return;
     if (!cur) { if (ps.querySelector('.ps-app')) SCROLLMEM = scrollNow(ps); ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
@@ -230,7 +230,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     /* v98.742 · re-drawing the sheet must not move the view: every scroll position (page, the sheet, the zone, the side bar) is put back, so you stay on the pose you are working on */
     const keep = ZOOMKEEP || (ps.querySelector('.ps-app') ? scrollNow(ps) : (SCROLLMEM || scrollNow(ps))); SCROLLMEM = null; ZOOMKEEP = null;
     ps.innerHTML = h; document.body.classList.toggle('ps-hand', tool === 'hand');
-    const back = () => { for (const [n, t, l] of keep.arr) { n.scrollTop = t; n.scrollLeft = l } scrollTo(keep.wx, keep.wy); const z = $('psZone'); if (z) { z.scrollLeft = keep.zl; z.scrollTop = keep.zt } const s = $('psSide'); if (s) s.scrollTop = keep.st };
+    const back = () => { for (const [n, t, l] of keep.arr) { n.scrollTop = t; n.scrollLeft = l } scrollTo(keep.wx, keep.wy); const z = $('psZone'); if (z) { z.scrollLeft = keep.zl; z.scrollTop = keep.zt } const g = ps.querySelector('.ps-grid'); if (g) { g.scrollLeft = keep.gl; g.scrollTop = keep.gt } const s = $('psSide'); if (s) s.scrollTop = keep.st };
     back(); paintAll(); wire(ps); back();
   }
   /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
@@ -385,7 +385,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const zm = $('psZoom'); if (zm) zm.onchange = () => {
       const oldZ = Z; Z = +zm.value; try { localStorage.setItem('pose-sheet.zoom', String(Z)) } catch (e) { }
       /* the cells grow / shrink with the zoom: scale the scroll positions by the same ratio so the pose you are looking at stays in view */
-      const r = Z / oldZ, k = scrollNow(ps); for (const a of k.arr) { a[1] *= r; a[2] *= r } k.zl *= r; k.zt *= r; ZOOMKEEP = k; draw()
+      const r = Z / oldZ, k = scrollNow(ps); for (const a of k.arr) { a[1] *= r; a[2] *= r } k.zl *= r; k.zt *= r; k.gl *= r; k.gt *= r; ZOOMKEEP = k; draw()
     };
     $('psHide').onclick = () => { if (!act) return; const s = hidSet(); s.add(act); hidSave(s); act = null; draw() };
     $('psUnhideAll').onclick = () => { hidSave(new Set()); draw() };
