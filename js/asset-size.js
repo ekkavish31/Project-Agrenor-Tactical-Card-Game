@@ -1,6 +1,6 @@
 /* v98.576 · AssetSize — every picture remembers HOW BIG IT IS NEXT TO THE HERO (its own number, not a size preset of its category).
 
-   ratio = width of the picture as placed ÷ the hero reference height on THAT map = BASE × the map's one size multiplier (v98.724: no Lineup factor; sub-map multiplier includes its grid ratio)
+   ratio = width of the picture as placed ÷ the hero reference height on THAT map = BASE × the map's one size multiplier (v98.725: no Lineup factor; sub-map multiplier includes its grid ratio)
    So a house that is 7 heroes wide is 7 heroes wide on the village, in the market and in a sub-map, whatever that map's own hero size is.
 
    • the number lives under the key of the picture FILE (assets/…/x.webp) in localStorage 'asset-hero-ratio-v1' → ⬆ Push (js/game-settings.js GAME_SETTINGS) with the maps
@@ -12,12 +12,12 @@
    AssetSize.get(src)                            → ratio | null
    AssetSize.startWidth(src, ctx, fallbackPx)    → width in map px for a new piece (ctx 'village' | 'place' | 'battle'), or fallbackPx when the picture has no number
    AssetSize.record(src, widthPx, ctx)           → store the ratio from a width that was just set (debounced write)
-   AssetSize.setHero(ctx, fn)                    → optional override of the formula (not used since v98.724)
+   AssetSize.setHero(ctx, fn)                    → optional override of the formula (not used since v98.725)
    AssetSize.all() · AssetSize.set(src, ratio) · AssetSize.heroPx(ctx) */
 (function (root) {
   'use strict';
   const KEY = 'asset-hero-ratio-v1';
-  /* v98.724 · ONE formula for every map: reference hero height = BASE px × that map's ONE size multiplier.
+  /* v98.725 · ONE formula for every map: reference hero height = BASE px × that map's ONE size multiplier.
      The ⚖ Scale Lineup factor of the hero is NOT in it (a taller / shorter hero must not change the starting size of new pieces); the sub-map multiplier already holds its grid ratio (placeScale).
      REF_K = 0.96 is the lineup hero factor at the time the stored ratios were recorded, frozen so every stored ratio and every new piece keeps exactly the size it had. */
   const REF_K = 0.96, HERO_BASE = () => (root.CharSize?.VILLAGE_HERO_PX || 93.6) * REF_K;
