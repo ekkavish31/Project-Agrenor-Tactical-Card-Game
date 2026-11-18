@@ -45,9 +45,28 @@
     }
     x.putImageData(d, 0, 0); return c;
   }
+  /* v98.699 · the new gold / red arrows are made more vivid (saturation ×1.7, a little brighter) and get a white aura baked in — same look as the gold cursor. Done once per sheet on a canvas. */
+  function vivid(im, foe) {
+    const k = im.src + '|vivid'; if (made[k]) return made[k];
+    try {
+      const W = im.naturalWidth, Hh = im.naturalHeight, c = document.createElement('canvas'); c.width = W; c.height = Hh; const q = c.getContext('2d');
+      q.filter = foe ? 'saturate(1.35) brightness(1.08)' : 'saturate(1.7) brightness(1.14) contrast(1.06)';
+      /* the aura: the silhouette blurred in white, under the frame (drawn per 128 px cell so cells never bleed into each other) */
+      const g = document.createElement('canvas'); g.width = W; g.height = Hh; const gq = g.getContext('2d');
+      for (let f = 0; f < N; f++) {
+        const cx = (f % COLS) * FR, cy = Math.floor(f / COLS) * FR;
+        gq.save(); gq.beginPath(); gq.rect(cx, cy, FR, FR); gq.clip();
+        gq.filter = 'brightness(0) invert(1) blur(5px)'; gq.globalAlpha = .95; gq.drawImage(im, cx, cy, FR, FR, cx, cy, FR, FR); gq.drawImage(im, cx, cy, FR, FR, cx, cy, FR, FR);
+        gq.filter = 'brightness(0) invert(1) blur(1.6px)'; gq.globalAlpha = 1; gq.drawImage(im, cx, cy, FR, FR, cx, cy, FR, FR);
+        gq.restore();
+      }
+      q.filter = 'none'; q.drawImage(g, 0, 0); q.filter = foe ? 'saturate(1.35) brightness(1.08)' : 'saturate(1.7) brightness(1.14) contrast(1.06)'; q.drawImage(im, 0, 0);
+      return made[k] = c;
+    } catch (e) { return made[k] = im }
+  }
   function sheet(st, foe) {
     const src = foe ? st.foe : st.ally, how = foe ? st.foeRecolor : st.recolor, im = load(src); if (!im) return null;
-    if (!how) return im;
+    if (!how) return vivid(im, foe);
     const k = src + '|' + how; if (!made[k]) { try { made[k] = how === 'red' ? makeRed(im) : makeGold(im) } catch (e) { made[k] = im } } return made[k];
   }
   function draw(g, x, y, size, t, opt = {}) {
